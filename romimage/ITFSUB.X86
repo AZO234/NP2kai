@@ -1,0 +1,15 @@
+
+WAITVSYNC1:		push	ax
+				mov		ah, 1
+				jmps	waitvsync_lp1
+WAITVSYNC:		push	ax
+waitvsync_lp1:	in		al, 0a0h
+				test	al, 20h
+				jne		waitvsync_lp1
+waitvsync_lp2:	in		al, 0a0h
+				test	al, 20h
+				je		waitvsync_lp2
+				dec		ah
+				jne		waitvsync_lp1
+				pop		ax
+				ret

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup
+    Condition="'$(YASMBeforeTargets)' == '' and '$(YASMAfterTargets)' == '' and '$(ConfigurationType)' != 'Makefile'">
+    <YASMBeforeTargets>Midl</YASMBeforeTargets>
+    <YASMAfterTargets>CustomBuild</YASMAfterTargets>
+  </PropertyGroup>
+  <PropertyGroup>
+    <YASMDependsOn
+      Condition="'$(ConfigurationType)' != 'Makefile'">_SelectedFiles;$(YASMDependsOn)</YASMDependsOn>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <YASM>
+      <ObjectFileName>$(IntDir)%(Filename).obj</ObjectFileName>
+      <CommandLineTemplate>yasm -Xvc -f $(Platform) [AdditionalOptions] [ListFileName] [Defines] [IncludePaths] [ObjectFileName] [inputs]</CommandLineTemplate>
+      <Outputs>%(ObjectFileName)</Outputs>
+      <ExecutionDescription>Assembling %(Filename)%(Extension)</ExecutionDescription>
+      <ShowOnlyRuleProperties>false</ShowOnlyRuleProperties>
+    </YASM>
+  </ItemDefinitionGroup>
+</Project>

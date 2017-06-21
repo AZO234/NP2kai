@@ -1,0 +1,185 @@
+
+enum {
+	OP3_80		= 0,
+	OP3_81,
+	OP3_83,
+	OP3_d0,
+	OP3_d1,
+	OP3_d2,
+	OP3_d3,
+	OP3_f6,
+	OP3_f7,
+	OP3_fe,
+	OP3_ff,
+	OP3_c0,
+	OP3_c1,
+
+	OP3_0f00,
+	OP3_0f01,
+	OP3_0fba,
+
+	OP3_MAX
+};
+
+static const UINT32 op3tbl[OP3_MAX][8] = {
+		// 80
+	   {OP_B_(RSTR_ADD,		OP_EA,	OP_IMM,	0),
+		OP_B_(RSTR_OR,		OP_EA,	OP_IMM,	0),
+		OP_B_(RSTR_ADC,		OP_EA,	OP_IMM,	0),
+		OP_B_(RSTR_SBB,		OP_EA,	OP_IMM,	0),
+		OP_B_(RSTR_AND,		OP_EA,	OP_IMM,	0),
+		OP_B_(RSTR_SUB,		OP_EA,	OP_IMM,	0),
+		OP_B_(RSTR_XOR,		OP_EA,	OP_IMM,	0),
+		OP_B_(RSTR_CMP,		OP_EA,	OP_IMM,	0)},
+
+		// 81
+	   {OP_W_(RSTR_ADD,		OP_EA,	OP_IMM,	0),
+		OP_W_(RSTR_OR,		OP_EA,	OP_IMM,	0),
+		OP_W_(RSTR_ADC,		OP_EA,	OP_IMM,	0),
+		OP_W_(RSTR_SBB,		OP_EA,	OP_IMM,	0),
+		OP_W_(RSTR_AND,		OP_EA,	OP_IMM,	0),
+		OP_W_(RSTR_SUB,		OP_EA,	OP_IMM,	0),
+		OP_W_(RSTR_XOR,		OP_EA,	OP_IMM,	0),
+		OP_W_(RSTR_CMP,		OP_EA,	OP_IMM,	0)},
+
+		// 83
+	   {OP_W_(RSTR_ADD,		OP_PEA,	OP_IS8,	0),
+		OP_W_(RSTR_OR,		OP_PEA,	OP_IS8,	0),
+		OP_W_(RSTR_ADC,		OP_PEA,	OP_IS8,	0),
+		OP_W_(RSTR_SBB,		OP_PEA,	OP_IS8,	0),
+		OP_W_(RSTR_AND,		OP_PEA,	OP_IS8,	0),
+		OP_W_(RSTR_SUB,		OP_PEA,	OP_IS8,	0),
+		OP_W_(RSTR_XOR,		OP_PEA,	OP_IS8,	0),
+		OP_W_(RSTR_CMP,		OP_PEA,	OP_IS8,	0)},
+
+		// d0
+	   {OP_B_(RSTR_SFT+0,	OP_EA,	OP_1,	0),
+		OP_B_(RSTR_SFT+1,	OP_EA,	OP_1,	0),
+		OP_B_(RSTR_SFT+2,	OP_EA,	OP_1,	0),
+		OP_B_(RSTR_SFT+3,	OP_EA,	OP_1,	0),
+		OP_B_(RSTR_SFT+4,	OP_EA,	OP_1,	0),
+		OP_B_(RSTR_SFT+5,	OP_EA,	OP_1,	0),
+		OP_B_(RSTR_SFT+6,	OP_EA,	OP_1,	0),
+		OP_B_(RSTR_SFT+7,	OP_EA,	OP_1,	0)},
+
+		// d1
+	   {OP_W_(RSTR_SFT+0,	OP_EA,	OP_1,	0),
+		OP_W_(RSTR_SFT+1,	OP_EA,	OP_1,	0),
+		OP_W_(RSTR_SFT+2,	OP_EA,	OP_1,	0),
+		OP_W_(RSTR_SFT+3,	OP_EA,	OP_1,	0),
+		OP_W_(RSTR_SFT+4,	OP_EA,	OP_1,	0),
+		OP_W_(RSTR_SFT+5,	OP_EA,	OP_1,	0),
+		OP_W_(RSTR_SFT+6,	OP_EA,	OP_1,	0),
+		OP_W_(RSTR_SFT+7,	OP_EA,	OP_1,	0)},
+
+		// d2
+	   {OP_B_(RSTR_SFT+0,	OP_EA,	OP_CL,	0),
+		OP_B_(RSTR_SFT+1,	OP_EA,	OP_CL,	0),
+		OP_B_(RSTR_SFT+2,	OP_EA,	OP_CL,	0),
+		OP_B_(RSTR_SFT+3,	OP_EA,	OP_CL,	0),
+		OP_B_(RSTR_SFT+4,	OP_EA,	OP_CL,	0),
+		OP_B_(RSTR_SFT+5,	OP_EA,	OP_CL,	0),
+		OP_B_(RSTR_SFT+6,	OP_EA,	OP_CL,	0),
+		OP_B_(RSTR_SFT+7,	OP_EA,	OP_CL,	0)},
+
+		// d3
+	   {OP_W_(RSTR_SFT+0,	OP_EA,	OP_CL,	0),
+		OP_W_(RSTR_SFT+1,	OP_EA,	OP_CL,	0),
+		OP_W_(RSTR_SFT+2,	OP_EA,	OP_CL,	0),
+		OP_W_(RSTR_SFT+3,	OP_EA,	OP_CL,	0),
+		OP_W_(RSTR_SFT+4,	OP_EA,	OP_CL,	0),
+		OP_W_(RSTR_SFT+5,	OP_EA,	OP_CL,	0),
+		OP_W_(RSTR_SFT+6,	OP_EA,	OP_CL,	0),
+		OP_W_(RSTR_SFT+7,	OP_EA,	OP_CL,	0)},
+
+		// f6
+	   {OP_B_(RSTR_TEST,	OP_EA,	OP_IMM,	0),
+		OP_ER,
+		OP_B_(RSTR_NOT,		OP_PEA,	0,		0),
+		OP_B_(RSTR_NEG,		OP_PEA,	0,		0),
+		OP_B_(RSTR_MUL,		OP_PEA,	0,		0),
+		OP_B_(RSTR_IMUL,	OP_PEA,	0,		0),
+		OP_B_(RSTR_DIV,		OP_PEA,	0,		0),
+		OP_B_(RSTR_IDIV,	OP_PEA,	0,		0)},
+
+		// f7
+	   {OP_W_(RSTR_TEST,	OP_EA,	OP_IMM,	0),
+		OP_ER,
+		OP_W_(RSTR_NOT,		OP_PEA,	0,		0),
+		OP_W_(RSTR_NEG,		OP_PEA,	0,		0),
+		OP_W_(RSTR_MUL,		OP_PEA,	0,		0),
+		OP_W_(RSTR_IMUL,	OP_PEA,	0,		0),
+		OP_W_(RSTR_DIV,		OP_PEA,	0,		0),
+		OP_W_(RSTR_IDIV,	OP_PEA,	0,		0)},
+
+		// fe
+	   {OP_B_(RSTR_INC,		OP_PEA,	0,		0),
+		OP_B_(RSTR_DEC,		OP_PEA,	0,		0),
+		OP_ER,
+		OP_ER,
+		OP_ER,
+		OP_ER,
+		OP_ER,
+		OP_ER},
+
+		// ff
+	   {OP_W_(RSTR_INC,		OP_PEA,	0,		0),
+		OP_W_(RSTR_DEC,		OP_PEA,	0,		0),
+		OP_W_(RSTR_CALL,	OP_EA,	0,		0),
+		OP_F1(RSTR_CALL,	OP1_FEA),
+		OP_W_(RSTR_JMP,		OP_EA,	0,		0),
+		OP_F1(RSTR_JMP,		OP1_FEA),
+		OP_W_(RSTR_PUSH,	OP_PEA,	0,		0),
+		OP_ER},
+
+		// c0
+	   {OP_B_(RSTR_SFT+0,	OP_EA,	OP_I8,	0),
+		OP_B_(RSTR_SFT+1,	OP_EA,	OP_I8,	0),
+		OP_B_(RSTR_SFT+2,	OP_EA,	OP_I8,	0),
+		OP_B_(RSTR_SFT+3,	OP_EA,	OP_I8,	0),
+		OP_B_(RSTR_SFT+4,	OP_EA,	OP_I8,	0),
+		OP_B_(RSTR_SFT+5,	OP_EA,	OP_I8,	0),
+		OP_B_(RSTR_SFT+6,	OP_EA,	OP_I8,	0),
+		OP_B_(RSTR_SFT+7,	OP_EA,	OP_I8,	0)},
+
+		// c1
+	   {OP_W_(RSTR_SFT+0,	OP_EA,	OP_I8,	0),
+		OP_W_(RSTR_SFT+1,	OP_EA,	OP_I8,	0),
+		OP_W_(RSTR_SFT+2,	OP_EA,	OP_I8,	0),
+		OP_W_(RSTR_SFT+3,	OP_EA,	OP_I8,	0),
+		OP_W_(RSTR_SFT+4,	OP_EA,	OP_I8,	0),
+		OP_W_(RSTR_SFT+5,	OP_EA,	OP_I8,	0),
+		OP_W_(RSTR_SFT+6,	OP_EA,	OP_I8,	0),
+		OP_W_(RSTR_SFT+7,	OP_EA,	OP_I8,	0)},
+
+		// 0f00
+	   {OP_W_(RSTR_SLDT,	OP_EA,	0,		0),
+		OP_W_(RSTR_STR,		OP_EA,	0,		0),
+		OP_W_(RSTR_LLDT,	OP_EA,	0,		0),
+		OP_W_(RSTR_LTR,		OP_EA,	0,		0),
+		OP_W_(RSTR_VERR,	OP_EA,	0,		0),
+		OP_W_(RSTR_VERW,	OP_EA,	0,		0),
+		OP_ER,
+		OP_ER},
+
+		// 0f01
+	   {OP_W_(RSTR_SGDT,	OP_EA,	0,		0),
+		OP_W_(RSTR_SIDT,	OP_EA,	0,		0),
+		OP_W_(RSTR_LGDT,	OP_EA,	0,		0),
+		OP_W_(RSTR_LIDT,	OP_EA,	0,		0),
+		OP_W_(RSTR_SMSW,	OP_EA,	0,		0),
+		OP_ER,
+		OP_W_(RSTR_LMSW,	OP_EA,	0,		0),
+		OP_F0(RSTR_INVLPG)},
+
+		// 0fba
+	   {OP_ER,
+		OP_ER,
+		OP_ER,
+		OP_ER,
+		OP_W_(RSTR_BT,		OP_EA,	OP_I8,	0),
+		OP_W_(RSTR_BTS,		OP_EA,	OP_I8,	0),
+		OP_W_(RSTR_BTR,		OP_EA,	OP_I8,	0),
+		OP_W_(RSTR_BTC,		OP_EA,	OP_I8,	0)},
+};
+

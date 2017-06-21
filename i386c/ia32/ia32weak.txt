@@ -1,0 +1,77 @@
+
+
+　現状では問題になっていないが、将来問題になる点。
+
+
+
+・結局のところ…
+　　メモリが一番スピードに関る、命令フェッチで毎回読む訳だし。
+
+　　・引き数 int crw と int user_modeをどうにか一本に出来ないか？
+　　　　crw + (user_mode << 3) の形で持つ？
+
+      →やってみました。どんなもんでしょ。
+
+
+・複雑なスタック処理の問題
+　　pushaの esp==7,9,11,13,15の GPF(やる気しない
+
+
+
+・repe/ne string命令
+　　現状、string命令中に外部割り込みを受け付けない。
+　　ドラッケンみたいな repのカウンタ数が長く、かつ 特定タイミングで割り込みを
+　　必要とするソフトで不都合が生じる。
+
+
+
+・デバグレジスタのブレーク
+　　現在はDRのブレークを使用するアプリは存在しないようだ。
+　　もし対応するのであれば 現在の形ではなく exec_1step()を二重化し、
+　　シングルステップ割り込みのように ia32()で振り分け処理を行なうとよい。
+
+
+
+・シフトマクロ
+	if ((s) == 0) CPU_FLAGL |= Z_FLAG;
+	if ((s) & (1 << (SIZE - 1))) CPU_FLAGL |= S_FLAG;
+
+	if ((s) == 0) CPU_FLAGL |= Z_FLAG;
+	else if ((s) & (1 << (SIZE - 1))) CPU_FLAGL |= S_FLAG;
+
+　　どっちが高速？(elseでジャンプが生まれる…)
+
+　　(所詮CPUによって変わるが) むしろ…
+
+	if ((s) == 0) CPU_FLAGL |= Z_FLAG;
+	CPU_FLAGL |= ((s) >> (SIZE - 8)) & S_FLAG;
+
+　　の方が面白い？
+
+
+	x86								ARM
+	cmp 	(s), 0					cmp		(s), #0
+	jne		short @f				orreq	CPU_FLAGL, CPU_FLAGL, #Z_FLAG
+	or		CPU_FLAGL, Z_FLAG
+@@:	test	(s), 1 << (SIZE - 1)	tst		(s), #(1 << (SIZE - 1))
+	je		short @f				orrne	CPU_FLAGL, CPU_FLAGL, #S_FLAG
+	or		CPU_FLAGL, S_FLAG
+@@:
+
+	cmp 	(s), 0					cmp		(s), #0
+	jne		short @1				orreq	CPU_FLAGL, CPU_FLAGL, #Z_FLAG
+	or		CPU_FLAGL, Z_FLAG		beq		@2
+	jmp		short @2
+@1:	test	(s), 1 << (SIZE - 1)	tst		(s), #(1 << (SIZE - 1))
+	je		short @2				orrne	CPU_FLAGL, CPU_FLAGL, #S_FLAG
+	or		CPU_FLAGL, S_FLAG
+@2:
+
+	mov		reg, (s)				movs	reg, (s)
+	cmp		reg, 0
+	jne		short @f
+	or		CPU_FLAGL, Z_FLAG		orreq	CPU_FLAGL, CPU_FLAGL, Z_FLAG
+@@:	shr		reg, SIZE - 8			mov		reg, reg lsr #(SIZE - 8)
+	and		reg, S_FLAG				and		reg, reg, #S_FLAG
+	or		CPU_FLAGL, reg			orr		CPU_FLAGL, reg, CPU_FLAGL
+

@@ -1,0 +1,25 @@
+
+section .text
+
+				global	_havemmx
+
+				align	16
+_havemmx:		pushfd
+				pop			eax
+				mov			edx, eax
+				xor			eax, 00200000h
+				push		eax
+				popfd
+				pushfd
+				pop			eax
+				sub			eax, edx
+				je			short nocpuid
+				xor			eax, eax
+				inc			eax
+				push		ebx
+				cpuid
+				pop			ebx
+				mov			eax, edx
+				and			eax, 00800000h
+nocpuid:		ret
+

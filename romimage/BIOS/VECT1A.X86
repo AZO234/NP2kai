@@ -1,0 +1,14 @@
+
+vect1a:			sti								; +00
+				push	ds						; +01
+				push	dx						; +02
+				test	ah, 0x10				; +03
+				jne		short .prt				; +06
+				call	bios1a_cmt				; +08
+				jmp		short .ed				; +0b
+				times	(0x19 - 0x0d) nop		; +0d
+.prt:			call	bios1a_prt				; +19  (use dos6.20)
+.ed:			pop		dx
+				pop		ds
+				iret
+

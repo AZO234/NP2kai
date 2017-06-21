@@ -1,0 +1,106 @@
+
+section .text
+
+	global	rand_setseed
+	global	rand_get
+	global	AdjustAfterMultiply
+	global	AdjustBeforeDivision
+	global	sjis2jis
+	global	jis2sjis
+	global	satuation_s16
+	global	satuation_s16x
+
+				align	16
+rand_get:		mov		eax, dword [_randseed]
+				imul	eax, 343fdh
+				add		eax, 269ec3h
+				mov		dword [_randseed], eax
+				sar		eax, 16
+				ret
+
+rand_setseed:	mov		dword [_randseed], ecx
+				ret
+
+				align	16
+AdjustAfterMultiply:
+				movzx	r8d, cl
+				mov		eax, 66666667h
+				imul	r8d
+				sar		edx, 2
+				mov		ecx, edx
+				shr		ecx, 31
+				add		edx, ecx
+				lea		ecx, dword [rdx+rdx*4]
+				shl		edx, 4
+				add		ecx, ecx
+				sub		r8d, ecx
+				lea		eax, dword [r8+rdx]
+				ret
+
+				align	16
+AdjustBeforeDivision:
+				movzx	edx, cl
+				mov		eax, edx
+				and		edx, byte 15
+				shr		eax, 4
+				lea		ecx, dword [rax+rax*4]
+				lea		eax, dword [rdx+rcx*2]
+				ret
+
+				align	16
+sjis2jis:		mov		eax, ecx
+				shl		ah, 1
+				sub		al, 1fh
+				js		short .1a
+				cmp		al, 61h
+				adc		al, 0deh
+.1a:			add		ax, 1fa1h
+				and		eax, 7f7fh
+				ret
+
+				align	16
+jis2sjis:		mov		eax, ecx
+				and		eax, 7f7fh
+				add		ah, 21h
+				shr		ah, 1
+				jnc		short .1a
+				add		al, 5eh
+.1a:			cmp		al, 60h
+				sbb		al, 0e0h
+				xor		ah, 0a0h
+				ret
+
+				align		16
+satuation_s16:	shr			r8d, 4
+				je			short .ed
+.lp:			lea			rcx, [rcx+16]
+				movdqa		xmm0, [rdx]
+				movdqa		xmm1, [rdx+16]
+				lea			rdx, [rdx+32]
+				packssdw	xmm0, xmm1
+				dec			r8d
+				movdqu		[rcx-16], xmm0
+				jne			short .lp
+.ed:			ret
+
+				align	16
+satuation_s16x:	shr			r8d, 4
+				je			short .ed
+.lp:			lea			rcx, [rcx+16]
+				movdqa		xmm0, [rdx]
+				movdqa		xmm1, [rdx+16]
+				pshufd		xmm0, xmm0, 2*64+3*16+0*4+1*1
+				pshufd		xmm1, xmm1, 2*64+3*16+0*4+1*1
+				lea			rdx, [rdx+32]
+				packssdw	xmm0, xmm1
+				dec			r8d
+				movdqu		[rcx-16], xmm0
+				jne			short .lp
+.ed:			ret
+
+section .data
+
+_randseed	dd		1
+
+	ends
+

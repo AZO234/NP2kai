@@ -1,0 +1,240 @@
+
+; MEMORY_CHECK broken ax
+
+ifdef NP2
+sub_memchk:		push	es
+				push	di
+				push	cx
+				mov		es, bx
+				xor		di, di
+				mov		al, cl
+				mov		ah, al
+				mov		cx, 8000h
+memchk1:		stosw
+				loop	memchk1
+				add		bh, 10h
+				mov		es, bx
+				mov		cx, 8000h
+memchk2:		stosw
+				loop	memchk2
+				mov		cx, 8000h
+memchk3:		scasw
+				loopz	memchk3
+				jne		memoryerror
+				sub		bh, 10h
+				mov		es, bx
+				mov		cx, 8000h
+memchk4:		scasw
+				loopz	memchk4
+memoryerror:	pop		cx
+				pop		di
+				pop		es
+				ret
+
+endif
+
+ifdef MSDOS
+sub_memchk:		mov		ah, 1
+				call	WAITVSYNC
+				sub		ax, ax
+				ret
+endif
+
+; --------------------------------------------------------------------------
+
+EXTMEMORYMAX	equ		128						; 128MB MAX
+
+res_memory128ok	db	"MEMORY 128"
+res_memoryok	db	"KB OK", 0
+res_plusspace	db	"+", 0
+
+res_ramchk		db	"RAM check    :   128KB Ok", 0
+res_extchk		db	"Extended RAM :   128KB Ok", 0
+
+
+extmemory_chk:	push	ax
+				mov		bx, 2000h
+				mov		cl, 0
+				call	bp
+				pop		ax
+				add		ax, 128
+				adc		dx, 0
+				push	bp
+				mov		bp, sp
+				push	ax
+				push	dx
+				call	STRING_L2A
+				mov		cl, 0e1h
+				mov		dx, [bp+6+2]					; location
+				mov		si, offset res_plusspace
+				call	TEXTOUT_CS
+				mov		si, [bp+2+2]					; offset
+				call	TEXTOUT_DS
+				mov		si, offset res_memoryok
+				call	TEXTOUT_CS
+				pop		dx
+				pop		ax
+				dec		word ptr [bp+4+2]				; count
+				pop		bp
+				jne		extmemory_chk
+				ret		4
+
+
+MEMORY_TEST:	mov		bp, offset sub_memchk
+
+				; ÉÅÉCÉìÉÅÉÇÉä Å`128KB
+				mov		bx, 2000h
+				mov		cl, 0
+				call	bp
+				mov		cl, 0e1h
+				mov		si, offset res_memory128ok
+				call	TEXTOUT_CS
+
+				; ÉÅÉCÉìÉÅÉÇÉä 128KBÅ`640KB
+				mov		ch, es:[MEM_MSW3]
+				and		ch, 7
+				je		short mainmemtest_ed
+				cmp		ch, 4
+				jbe		short mainmemtest_st
+				mov		ch, 4
+mainmemtest_st:	mov		cl, -1
+mainmemtest_l1:	call	bp
+				jne		short mainmemtest_ed
+				inc		cl
+				je		mainmemtest_l1
+				add		bh, 20h
+				push	cx
+				push	dx
+				mov		ax, bx
+				mov		cl, 6
+				shr		ax, cl
+				call	STRING_I2A
+				pop		dx
+				pop		cx
+				mov		dl, 7
+				mov		cl, 0e1h
+				call	TEXTOUT_DS
+				dec		ch
+				jne		mainmemtest_st
+mainmemtest_ed:
+				mov		dl, 13
+				push	dx
+				in		al, 42h
+				test	al, 2
+				jne		short extmemtest_end	; lowÉÇÅ[ÉhÇÕägí£ÉÅÉÇÉäñ≥Çµ
+				xor		bx, bx
+				push	ds
+				mov		ds, bx
+				or		bl, ds:[MEM_EXPMMSZ]
+				pop		ds
+				je		short extmemtest_end
+
+				mov		ah, 12
+				call	WAITVSYNC
+
+				xor		ax, ax
+				mov		dx, ax
+				push	bx
+				mov		cx, I2ABUFFER + 5
+				push	cx
+				call	extmemory_chk
+
+				push	ds
+				xor		bx, bx
+				mov		ds, bx
+				or		bx, ds:[MEM_EXTMSZ]
+				pop		ds
+				je		short extmemtest_end
+				cmp		bx, (EXTMEMORYMAX - 16)
+				jc		short extmomey_o16
+				mov		bx, (EXTMEMORYMAX - 16)
+extmomey_o16:
+				push	ax
+				mov		ah, 6
+				call	WAITVSYNC
+				pop		ax
+				mov		cl, 3
+				shl		bx, cl
+				push	bx
+				mov		cx, I2ABUFFER + 3
+				push	cx
+				call	extmemory_chk
+
+extmemtest_end:	pop		dx
+				ret
+
+
+; ---- epson
+
+epson_memtest:	mov		bx, 2000h				; ÉÅÉCÉìÉÅÉÇÉä Å`128KB
+				mov		cl, 0
+				call	sub_memchk
+				mov		cl, 0e1h
+				mov		si, offset res_ramchk
+				call	TEXTOUT_CS
+
+				mov		ch, es:[MEM_MSW3]		; ÉÅÉCÉìÉÅÉÇÉä 128KBÅ`640KB
+				and		ch, 7
+				je		short epmt_ext
+				cmp		ch, 4
+				jbe		short epmt_main_lp
+				mov		ch, 4
+epmt_main_lp:	mov		cl, 0
+				call	sub_memchk
+				add		bh, 20h
+				push	cx
+				push	dx
+				mov		ax, bx
+				mov		cl, 6
+				shr		ax, cl
+				call	STRING_I2A
+				pop		dx
+				pop		cx
+				mov		dl, 17
+				mov		cl, 0e1h
+				call	TEXTOUT_DS
+				dec		ch
+				jne		epmt_main_lp
+
+epmt_ext:		in		al, 42h					; ägí£ÉÅÉÇÉä
+				test	al, 2
+				jne		short epmt_exit
+				xor		ax, ax
+				push	ds
+				mov		ds, ax
+				or		al, ds:[MEM_EXPMMSZ]
+				pop		ds
+				je		short epmt_exit
+				inc		dh
+				mov		dl, 0
+				push	ax
+				mov		bx, 2000h
+				mov		cl, 0
+				call	sub_memchk
+				mov		cl, 0e1h
+				mov		si, offset res_extchk
+				call	TEXTOUT_CS
+				pop		ax
+epmt_ext_lp:	inc		ah
+				push	ax
+				mov		bx, 2000h
+				mov		cl, 0
+				call	sub_memchk
+				pop		ax
+				push	ax
+				push	dx
+				mov		al, 0
+				shr		ax, 1
+				call	STRING_I2A
+				pop		dx
+				mov		cl, 0e1h
+				mov		dl, 15
+				mov		si, I2ABUFFER + 5
+				call	TEXTOUT_DS
+				pop		ax
+				cmp		ah, al
+				jb		epmt_ext_lp
+epmt_exit:		inc		dh
+				mov		dl, 0
+				ret
+

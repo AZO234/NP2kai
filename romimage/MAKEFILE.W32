@@ -1,0 +1,50 @@
+AS		= nasmw
+TS		= ..\bin\bin2txt
+AOPT	= -f bin
+OBJ		= ..\obj\romrel
+
+all: $(OBJ) ..\bios\startup.res ..\bios\biosfd80.res ..\lio\lio.res ..\fdd\hddboot.res ..\cbus\idebios.res ..\cbus\sasibios.res ..\cbus\scsibios.res
+
+
+$(OBJ):
+	if not exist $(OBJ) mkdir $(OBJ)
+
+
+..\bios\startup.res: $(OBJ)\startup.bin
+	$(TS) $(OBJ)\startup.bin $*.res -snosyscode
+
+..\bios\biosfd80.res: $(OBJ)\biosfd80.bin
+	$(TS) $(OBJ)\biosfd80.bin $*.res -sbiosfd80
+
+..\lio\lio.res: $(OBJ)\lio.bin
+	$(TS) $(OBJ)\lio.bin $*.res -sliorom
+
+..\fdd\hddboot.res: $(OBJ)\hddboot.bin
+	$(TS) $(OBJ)\hddboot.bin $*.res -shdddiskboot
+
+..\cbus\idebios.res: $(OBJ)\idebios.bin
+	$(TS) $(OBJ)\idebios.bin $*.res -sidebios
+
+..\cbus\sasibios.res: $(OBJ)\sasibios.bin
+	$(TS) $(OBJ)\sasibios.bin $*.res -ssasibios
+
+..\cbus\scsibios.res: $(OBJ)\scsibios.bin
+	$(TS) $(OBJ)\scsibios.bin $*.res -sscsibios
+
+
+$(OBJ)\biosfd80.bin:	bios\biosfd80.asm bios\biosmain.x86 bios\eoi.x86 \
+						bios\vect02.x86 bios\vect08.x86 bios\vect09.x86 \
+						bios\vect13.x86 bios\vect1a.x86 bios\vect1f.x86
+	$(AS) .\bios\$(*B).asm $(AOPT) -i.\bios\ -o $*.bin -l $*.lst
+
+
+.asm{$(OBJ)}.bin:
+	$(AS) $(*B).asm $(AOPT) -o $*.bin -l $*.lst
+
+$(OBJ)\startup.bin	:
+$(OBJ)\lio.bin		:
+$(OBJ)\hddboot.bin	:
+$(OBJ)\idebios.bin	:
+$(OBJ)\sasibios.bin	:
+$(OBJ)\scsibios.bin	:
+

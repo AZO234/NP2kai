@@ -1,0 +1,134 @@
+.TH Xnp2 1 "Jan 13, 2016"
+.SH NAME
+Xnp2 \- PC-9801 シリーズエミュレータ
+.SH SYNOPSIS
+.B xnp2
+[
+.B \--config filename
+]
+[
+.B \--timidity-config filename
+]
+[
+.B FD1 image
+[
+.B FD2 image
+[
+.B FD3 image
+[
+.B FD4 image
+]
+]
+]
+]
+.SH DESCRIPTION
+.B Xnp2
+は UNIX プラットフォーム向けの PC-9801 シリーズエミュレータです。
+.SH OPTIONS
+.TP
+.B \--config
+起動時に読み込む設定ファイルを指定します。
+非指定時は $(HOME)/.np2/np2rc を読み込みます。
+.TP
+.B \--timidity-config
+.B Xnp2
+に内蔵されている TiMidity 互換のソフトウェア MIDI 音源で使用する音源設定
+ファイルを指定します。
+非指定時は $(HOME)/.np2/timidity.cfg を読み込みます。
+.SH EXAMPLES
+.nf
+設定ファイル np2.cfg を指定
+.ft B
+xnp2 --config np2.cfg
+.ft R
+
+TiMidity 音源設定ファイル /usr/local/lib/timidity/timidity.cfg を指定
+.ft B
+xnp2 --timidity-config /usr/local/lib/timidity/timidity.cfg
+.ft R
+
+FDD1 にイメージファイル system.d88、FDD2 に data.d88 を挿入して起動
+.ft B
+xnp2 system.d88 data.d88
+.ft R
+.fi
+.SH COMMAND
+.TP
+.B マウス中ボタン
+X と Xnp2 間のマウス操作の切替
+.SH FILES
+.TP
+.B $(HOME)/.np2/np2rc
+設定ファイル
+.TP
+.B $(HOME)/.np2/font.tmp
+フォントが検出できない場合に生成されるフォントビットマップファイル
+.TP
+.B $(HOME)/.np2/bios.rom
+実機の BIOS ROM
+.TP
+.B $(HOME)/.np2/FONT.ROM
+実機のフォント ROM
+.TP
+.B $(HOME)/.np2/sound26.rom
+PC-9801-26K に搭載されている BIOS ROM
+.TP
+.B $(HOME)/.np2/sound86.rom
+PC-9801-86 に搭載されている BIOS ROM
+.TP
+.B $(HOME)/.np2/sound118.rom
+PC-9801-118 に搭載されている BIOS ROM
+.TP
+.B $(HOME)/.np2/soundSPB.rom
+スピークボードに搭載されている BIOS ROM
+.TP
+.B $(HOME)/.np2/SCCI.ini
+SCCI (Sound Chip Common Interface) 設定ファイル
+.TP
+.B $(HOME)/.np2/timidity.cfg
+内蔵 TiMidity 互換ソフトウェア MIDI 音源用の音源設定ファイル
+.TP
+.B $(HOME)/.np2/2608_bd.wav
+OPNA に搭載されているリズム音源 (バスドラム)
+.TP
+.B $(HOME)/.np2/2608_sd.wav
+OPNA に搭載されているリズム音源 (スネアドラム)
+.TP
+.B $(HOME)/.np2/2608_top.wav
+OPNA に搭載されているリズム音源 (シンバル)
+.TP
+.B $(HOME)/.np2/2608_hh.wav
+OPNA に搭載されているリズム音源 (ハイハット)
+.TP
+.B $(HOME)/.np2/2608_tom.wav
+OPNA に搭載されているリズム音源 (タム)
+.TP
+.B $(HOME)/.np2/2608_rim.wav
+OPNA に搭載されているリズム音源 (リムショット)
+.TP
+.B @PKGDATADIR@/np2tool.d88
+hostdrv 機能を使用するために必要なドライバとドキュメントが入っている D88 形式ディスクイメージ
+.TP
+.B @PKGDATADIR@/fddseek.wav
+フロッピーシーク時に再生される PCM ファイル
+.TP
+.B @PKGDATADIR@/fddseek1.wav
+フロッピーシーク時に再生される PCM ファイル
+.SH AUTHOR
+Yui <np2@yui.ne.jp>, Windows 上で動作するオリジナルの
+.B ねこープロジェクト
+の開発者。
+また、MacOS 8.x, MacOS 9 への移植も手掛けました。
+.br
+NONAKA Kimihiro <nonakap@gmail.com>,
+.B ねこープロジェクト
+を UNIX プラットフォームに移植した
+.B Xnp2
+を開発しました。
+.br
+tk800 <tk_np2x@yahoo.co.jp>,
+.B ねこープロジェクト
+を MacOS X に移植した Neko Project IIx を開発しました。
+.SH "SEE ALSO"
+.B Xnp2
+の最新版等の情報は http://www.nonakap.org/np2/ を参照してください。

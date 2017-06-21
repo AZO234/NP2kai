@@ -1,0 +1,86 @@
+
+vect1f:			cmp		ah, 0x91
+				je		short .91
+				jmp		bios1f
+
+.91err:			push	bp
+				mov		bp, sp
+				or		byte [bp+6], 1
+				pop		bp
+				iret
+
+.91:			push	ax
+				in		al, 0x42
+				test	al, 0x02
+				pop		ax
+				jne		short .91err
+
+				CPU		286
+				lgdt	[es:bx+0x08]
+				lidt	[es:bx+0x10]
+
+				; PIC-master
+				mov		al, 0x11
+				out		0x00, al
+				out		0x5f, al
+				mov		al, dh
+				out		0x02, al
+				out		0x5f, al
+				mov		al, 0x80
+				out		0x02, al
+				out		0x5f, al
+				mov		al, 0x1d
+				out		0x02, al
+				out		0x5f, al
+
+				; PIC-slave
+				mov		al, 0x11
+				out		0x08, al
+				out		0x5f, al
+				mov		al, dl
+				out		0x0a, al
+				out		0x5f, al
+				mov		al, 0x07
+				out		0x0a, al
+				out		0x5f, al
+				mov		al, 0x09
+				out		0x0a, al
+				out		0x5f, al
+
+				; set descriptor
+				or		word [es:bx+0x38], byte -1
+				mov		word [es:bx+0x3a], 0xd800
+				mov		word [es:bx+0x3c], 0x9b0f
+				and		word [es:bx+0x3e], byte 0
+
+				; set A20-23
+				xor		ax, ax
+				out		0xf2, al
+				push	dx
+				mov		dx, 0x0439
+				mov		al, 0x30
+				out		dx, al
+				pop		dx
+				mov		al, 0x0a
+				out		0x37, al
+
+				mov		al, 0x01
+				lmsw	ax
+				db		0xea
+				dw		.protected
+				dw		0x0038			; segment
+
+.protected:		mov		ax, 0x0018
+				mov		ds, ax
+				mov		al, 0x20
+				mov		es, ax
+				mov		al, 0x28
+				mov		ss, ax
+				pop		bx
+				add		sp, byte 4
+				push	byte 0x30
+				push	bx
+				retf
+
+				CPU		8086
+

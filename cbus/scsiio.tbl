@@ -1,0 +1,145 @@
+
+enum {
+	SCSICTR_OWNID		= 0x00,
+	SCSICTR_CONTROL		= 0x01,
+	SCSICTR_TIMEOUT		= 0x02,
+	SCSICTR_SECTORS		= 0x03,
+	SCSICTR_HEADS		= 0x04,
+	SCSICTR_CYLINDERS	= 0x05,
+	SCSICTR_LOGICALADRS	= 0x07,
+	SCSICTR_SECTOR		= 0x0b,
+	SCSICTR_HEAD		= 0x0c,
+	SCSICTR_CYLINDER	= 0x0d,
+	SCSICTR_TARGETLUN	= 0x0f,
+	SCSICTR_CMDPHASE	= 0x10,
+	SCSICTR_SYNCTRANS	= 0x11,
+	SCSICTR_TRANSCNT	= 0x12,
+	SCSICTR_DSTID		= 0x15,
+	SCSICTR_SRCID		= 0x16,
+	SCSICTR_STATUS		= 0x17,
+	SCSICTR_CMD			= 0x18,
+	SCSICTR_DATA		= 0x19,
+	SCSICTR_MEMBANK		= 0x30,
+	SCSICTR_MEMWND		= 0x31,
+	SCSICTR_RESENT		= 0x33,
+
+	SCSICTR_CDB			= 0x03
+};
+
+enum {
+	SCSICMD_RESET		= 0x00,
+	SCSICMD_ABORT		= 0x01,
+	SCSICMD_ASSERT		= 0x02,
+	SCSICMD_NEGATE		= 0x03,
+	SCSICMD_DISCONNECT	= 0x04,
+	SCSICMD_RESEL		= 0x05,
+	SCSICMD_SEL_ATN		= 0x06,
+	SCSICMD_SEL			= 0x07,
+	SCSICMD_SEL_ATNTR	= 0x08,
+	SCSICMD_SEL_TR		= 0x09,
+	SCSICMD_RESEL_RECV	= 0x0a,
+	SCSICMD_RESEL_SEND	= 0x0b,
+	SCSICMD_WAIT		= 0x0c,
+	SCSICMD_RECV_CMD	= 0x10,
+	SCSICMD_RECV_DATA	= 0x11,
+	SCSICMD_RECV_MSG	= 0x12,
+	SCSICMD_RECV_INFO	= 0x13,
+	SCSICMD_SEND_CMD	= 0x14,
+	SCSICMD_SEND_DATA	= 0x15,
+	SCSICMD_SEND_MSG	= 0x16,
+	SCSICMD_SEND_INFO	= 0x17,
+	SCSICMD_TRANS_ADDR	= 0x18,
+	SCSICMD_TRANS_INFO	= 0x20,
+	SCSICMD_TRANS_PAD	= 0x21
+};
+
+enum {
+	SCSISTAT_RESET		= 0x00,
+	SCSISTAT_SUCCESS	= 0x10,
+	SCSISTAT_ABORT		= 0x20,
+	SCSISTAT_ERROR		= 0x40,
+	SCSISTAT_REQSERV	= 0x80
+};
+
+enum {
+	SCSIPH_DATAOUT		= 0x18,
+	SCSIPH_DATAIN		= 0x19,
+	SCSIPH_COMMAND		= 0x1a,
+	SCSIPH_STATUS		= 0x1b,
+	SCSIPH_INFOOUT		= 0x1c,
+	SCSIPH_INFOIN		= 0x1d,
+	SCSIPH_MSGOUT		= 0x1e,
+	SCSIPH_MSGIN		= 0x1f
+};
+
+#if defined(TRACE)
+static const char scsictr_res[] = "Reserved";
+static const char scsictr_nec[] = "NEC Reserved";
+static const char *scsictr[0x40] = {
+		"Own ID",					// 00
+		"Control",					// 01
+		"Timeout Period",			// 02
+		"Total Sectors",			// 03
+		"Total Heads",				// 04
+		"Total Cylinders (MSB)",	// 05
+		"Total Cylinders (LSB)",	// 06
+		"Logical Address (MSB)",	// 07
+		"Logical Address",			// 08
+		"Logical Address",			// 09
+		"Logical Address (LSB)",	// 0a
+		"Sector Number",			// 0b
+		"Head Number",				// 0c
+		"Cylinder Number (MSB)",	// 0d
+		"Cylinder Number (LSB)",	// 0e
+		"Target LUN",				// 0f
+		"Command Phase",			// 10
+		"Synchronous Transfer",		// 11
+		"Transfer Count (MSB)",		// 12
+		"Transfer Count",			// 13
+		"Transfer Count (LSB)",		// 14
+		"Destination ID",			// 15
+		"Source ID",				// 16
+		"SCSI Status",				// 17
+		"Command",					// 18
+		"Data",						// 19
+		scsictr_res,				// 1a
+		scsictr_res,				// 1b
+		scsictr_res,				// 1c
+		scsictr_res,				// 1d
+		scsictr_res,				// 1e
+		scsictr_res,				// 1f
+		scsictr_res,				// 20
+		scsictr_res,				// 21
+		scsictr_res,				// 22
+		scsictr_res,				// 23
+		scsictr_res,				// 24
+		scsictr_res,				// 25
+		scsictr_res,				// 26
+		scsictr_res,				// 27
+		scsictr_res,				// 28
+		scsictr_res,				// 29
+		scsictr_res,				// 2a
+		scsictr_res,				// 2b
+		scsictr_res,				// 2c
+		scsictr_res,				// 2d
+		scsictr_res,				// 2e
+		scsictr_res,				// 2f
+		"Memory Bank",				// 30
+		"Memory Window",			// 31
+		scsictr_nec,				// 32
+		"RESENT/INT",				// 33
+		scsictr_nec,				// 34
+		scsictr_nec,				// 35
+		scsictr_nec,				// 36
+		scsictr_nec,				// 37
+		scsictr_nec,				// 38
+		scsictr_nec,				// 39
+		scsictr_nec,				// 3a
+		scsictr_nec,				// 3b
+		scsictr_nec,				// 3c
+		scsictr_nec,				// 3d
+		scsictr_nec,				// 3e
+		scsictr_nec,				// 3f
+};
+#endif
+

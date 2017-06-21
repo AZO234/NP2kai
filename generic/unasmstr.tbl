@@ -1,0 +1,312 @@
+
+enum {
+	RSTR_16		= 0,
+	RSTR_32,
+	RSTR_8,
+	RSTR_64L,
+	RSTR_8L,
+	RSTR_16H,
+	RSTR_32H,
+	RSTR_SEG,
+	RSTR_64H,
+	RSTR_8H,
+	RSTR_MM,
+	RSTR_REGMAX
+};
+
+enum {
+	RSTR_UNKNOWN,
+
+	RSTR_AAA,		RSTR_AAD,		RSTR_AAM,		RSTR_AAS,
+	RSTR_ADC,		RSTR_ADD,		RSTR_AND,		RSTR_ARPL,
+
+	RSTR_BOUND,		RSTR_BSF,		RSTR_BSR,		RSTR_BSWAP,
+	RSTR_BT,		RSTR_BTC,		RSTR_BTR,		RSTR_BTS,
+
+	RSTR_CALL,
+	RSTR_CBW,		RSTR_CDQ,
+	RSTR_CLC,		RSTR_CLD,		RSTR_CLI,		RSTR_CMC,
+	RSTR_CLTS,		RSTR_CMP,		RSTR_CMPXCHG,
+	RSTR_CMPXCHG8B,	RSTR_CMPXCHG8B2,
+	RSTR_CPUID,		RSTR_CWD,		RSTR_CWDE,
+
+	RSTR_DAA,		RSTR_DAS,
+	RSTR_DEC,		RSTR_DIV,
+
+	RSTR_ENTER,
+
+	RSTR_HLT,
+
+	RSTR_IBTS,
+	RSTR_IDIV,		RSTR_IMUL,		RSTR_IN,		RSTR_INC,
+	RSTR_INT,		RSTR_INTO,		RSTR_INVD,		RSTR_INVLPG,
+	RSTR_IRET,		RSTR_IRETD,
+
+	RSTR_JCXZ,		RSTR_JECXZ,		RSTR_JMP,
+
+	RSTR_LAHF,		RSTR_LAR,		RSTR_LDS,		RSTR_LEA,
+	RSTR_LEAVE,		RSTR_LES,		RSTR_LFS,		RSTR_LGDT,
+	RSTR_LGS,		RSTR_LIDT,		RSTR_LLDT,		RSTR_LMSW,
+	RSTR_LOADALL,	RSTR_LOOP,		RSTR_LOOPNZ,	RSTR_LOOPZ,
+	RSTR_LSL,		RSTR_LTR,		RSTR_LSS,
+
+	RSTR_MOV,		RSTR_MOVSX,		RSTR_MOVZX,		RSTR_MUL,
+
+	RSTR_NEG,		RSTR_NOP,		RSTR_NOT,
+
+	RSTR_OR,		RSTR_OUT,
+
+	RSTR_POP,
+	RSTR_POPA,		RSTR_POPAD,
+	RSTR_POPF,		RSTR_POPFD,
+	RSTR_PUSH,
+	RSTR_PUSHA,		RSTR_PUSHAD,
+	RSTR_PUSHF,		RSTR_PUSHFD,
+
+	RSTR_RDSHR,		RSTR_RDMSR,		RSTR_RDPMC,		RSTR_RDTSC,
+	RSTR_RET,		RSTR_RETF,		RSTR_RSM,
+
+	RSTR_SAHF,		RSTR_SALC,		RSTR_SBB,		RSTR_SGDT,
+	RSTR_SHLD,		RSTR_SHRD,		RSTR_SIDT,		RSTR_SLDT,
+	RSTR_SMINT,		RSTR_SMSW,		RSTR_STC,		RSTR_STD,
+	RSTR_STI,		RSTR_STR,		RSTR_SUB,		RSTR_SVDC,
+	RSTR_SVLDT,		RSTR_SVTS,		RSTR_SYSCALL,
+	RSTR_SYSENTER,	RSTR_SYSENTER2,
+	RSTR_SYSEXIT,	RSTR_SYSRET,
+
+	RSTR_TEST,
+
+	RSTR_VERR,		RSTR_VERW,
+
+	RSTR_WAIT,		RSTR_WBINVD,	RSTR_WRMSR,		RSTR_WRSHR,
+
+	RSTR_XADD,		RSTR_XBTS,		RSTR_XCHG,		RSTR_XLAT,
+	RSTR_XOR,		RSTR_XSTORE,
+
+	RSTR_SFT,
+	RSTR_REP		= RSTR_SFT + 8,
+	RSTR_JCC		= RSTR_REP + 24,
+	RSTR_STCC		= RSTR_JCC + 16,
+	RSTR_CMCC		= RSTR_STCC + 16,
+
+
+	RSTR_F2XM1		= RSTR_CMCC + 16,
+	RSTR_FABS,		RSTR_FADD,		RSTR_FADDP,
+	RSTR_FBLD,		RSTR_FBSTP,
+	RSTR_FCHS,		RSTR_FCMOVB,	RSTR_FCMOVBE,	RSTR_FCMOVE,
+	RSTR_FCMOVNB,	RSTR_FCMOVNBE,	RSTR_FCMOVNBE2,
+	RSTR_FCMOVNE,	RSTR_FCMOVNU,
+	RSTR_FCMOVU,	RSTR_FCOM,		RSTR_FCOMI,		RSTR_FCOMIP,
+	RSTR_FCOMP,		RSTR_FCOMPP,	RSTR_FCOS,
+	RSTR_FDECSTP,	RSTR_FDIV,		RSTR_FDIVP,		RSTR_FDIVR,
+	RSTR_FDIVRP,
+	RSTR_FFREE,		RSTR_FFREEP,
+	RSTR_FIADD,		RSTR_FICOM,		RSTR_FICOMP,	RSTR_FIDIV,
+	RSTR_FIDIVR,	RSTR_FILD,		RSTR_FIMUL,		RSTR_FINCSTP,
+	RSTR_FIST,		RSTR_FISTP,		RSTR_FISUB,		RSTR_FISUBR,
+	RSTR_FLD,		RSTR_FLD1,		RSTR_FLDENV,	RSTR_FLDCW,
+	RSTR_FLDL2T,	RSTR_FLDL2E,	RSTR_FLDLG2,	RSTR_FLDLN2,
+	RSTR_FLDPI,		RSTR_FLDZ,
+	RSTR_FMUL,		RSTR_FMULP,
+	RSTR_FNCLEX,	RSTR_FNDISI,	RSTR_FNENI,		RSTR_FNINIT,
+	RSTR_FNOP,		RSTR_FNSAVE,	RSTR_FNSTCW,	RSTR_FNSTENV,
+	RSTR_FNSTSW,
+	RSTR_FPATAN,	RSTR_FPREM,		RSTR_FPREM1,	RSTR_FPTAN,
+	RSTR_FRNDINT,	RSTR_FRSTOR,
+	RSTR_FSCALE,	RSTR_FSETPM,	RSTR_FSIN,		RSTR_FSINCOS,
+	RSTR_FSQRT,		RSTR_FST,		RSTR_FSTP,		RSTR_FSUB,
+	RSTR_FSUBP,		RSTR_FSUBR,		RSTR_FSUBRP,
+	RSTR_FTST,
+	RSTR_FUCOM,		RSTR_FUCOMI,	RSTR_FUCOMIP,	RSTR_FUCOMP,
+	RSTR_FUCOMPP,
+	RSTR_FXAM,		RSTR_FXCH,		RSTR_FXTRACT,
+	RSTR_FYL2X,		RSTR_FYL2XP1,
+
+	RSTR_OPMAX
+};
+
+enum {
+	RSTR_CMPS		= RSTR_REP + 1*3,
+	RSTR_INS		= RSTR_REP + 2*3,
+	RSTR_LODS		= RSTR_REP + 3*3,
+	RSTR_MOVS		= RSTR_REP + 4*3,
+	RSTR_OUTS		= RSTR_REP + 5*3,
+	RSTR_SCAS		= RSTR_REP + 6*3,
+	RSTR_STOS		= RSTR_REP + 7*3
+};
+
+typedef struct {
+	char	reg[RSTR_REGMAX][8][5];
+	char	lea[8][8];
+	char	ptr[4][12];
+	char	ope[RSTR_OPMAX][9];
+} REGSTR;
+
+static const REGSTR rstr = {
+	   {{"ax",  "cx",  "dx",  "bx",  "sp",  "bp",  "si",  "di"},
+		{"eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi"},
+		{"al",  "cl",  "dl",  "bl",  "ah",  "ch",  "dh",  "bh"},
+		{"rax", "rcx", "rdx", "rbx", "rsp", "rbp", "rsi", "rdi"},
+		{"al",  "cl",  "dl",  "bl",  "spl", "bpl", "sil", "dil"},
+		{"r8w", "r9w", "r10w","r11w","r12w","r13w","r14w","r15w"},
+		{"r8d", "r9d", "r10d","r11d","r12d","r13d","r14d","r15d"},
+		{"es",  "cs",  "ss",  "ds",  "fs",  "gs",  "hs",  "is"},
+		{"r8",  "r9",  "r10", "r11", "r12", "r13", "r14", "r15"},
+		{"r8b", "r9b", "r10b","r11b","r12b","r13b","r14b","r15b"},
+		{"mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7"}},
+
+	   {"bx+si", "bx+di", "bp+si", "bp+di", "si", "di", "bp", "bx"},
+
+	   {"word ptr ", "dword ptr ", "byte ptr ", "qword ptr "},
+
+	   {"unknown",
+	   	"aaa",			"aad",			"aam",			"aas",
+		"adc",			"add",			"and",			"arpl",
+
+		"bound",		"bsf",			"bsr",			"bswap",
+		"bt",			"btc",			"btr",			"bts",
+
+		"call",
+		"cbw",			"cdq",
+		"clc",			"cld",			"cli",			"cmc",
+		"clts",			"cmp",			"cmpxchg",		"cmpxchg8", "b",
+		"cpuid",		"cwd",			"cwde",
+
+		"daa",			"das",
+		"dec",			"div",
+
+		"enter",
+
+		"hlt",
+
+		"ibts",
+		"idiv",			"imul",			"in",			"inc",
+		"int",			"into",			"invd",			"invlpg",
+		"iret",			"iretd",
+
+		"jcxz",			"jecxz",		"jmp",
+
+		"lahf",			"lar",			"lds",			"lea",
+		"leave",		"les",			"lfs",			"lgdt",
+		"lgs",			"lidt",			"lldt",			"lmsw",
+		"loadall",		"loop",			"loopnz",		"loopz",
+		"lsl",			"ltr",			"lss",
+
+		"mov",			"movsx",		"movzx",		"mul",
+
+		"neg",			"nop",			"not",
+
+		"or",			"out",
+
+		"pop",
+		"popa",			"popad",
+		"popf",			"popfd",
+		"push",
+		"pusha",		"pushad",
+		"pushf",		"pushfd",
+
+		"rdshr",		"rdmsr",		"rdpmc",		"rdtsc",
+		"ret",			"retf",			"rsm",
+
+		"sahf",			"salc",			"sbb",			"sgdt",
+		"shld",			"shrd",			"sidt",			"sldt",
+		"smint",		"smsw",			"stc",			"std",
+		"sti",			"str",			"sub",			"svdc",
+		"svldt",		"svts",			"syscall",
+		"sysenter", "",
+		"sysexit",		"sysret",
+
+		"test",
+
+		"verr",			"verw",
+
+		"wait",			"wbinvd",		"wrmsr",		"wrshr",
+
+		"xadd",			"xbts",			"xchg",			"xlat",	
+		"xor",			"xstore",
+
+		"rol",		"ror",		"rcl",		"rcr",
+		"shl",		"shr",		"shl",		"sar",
+
+		"lock",		"repne",	"repe",
+		"cmpsw",	"cmpsd",	"cmpsb",
+		"insw",		"insd",		"insb",
+		"lodsw",	"lodsd",	"lodsb",
+		"movsw",	"movsd",	"movsb",
+		"outsw",	"outsd",	"outsb",
+		"scasw",	"scasd",	"scasb",
+		"stosw",	"stosd",	"stosb",
+
+		"jo",		"jno",		"jb",		"jnb",
+		"jz",		"jnz",		"jbe",		"ja",
+		"js",		"jns",		"jp",		"jpo",
+		"jl",		"jge",		"jle",		"jg",
+
+		"seto",		"setno",	"setb",		"setnb",
+		"setz",		"setnz",	"setbe",	"seta",
+		"sets",		"setns",	"setp",		"setpo",
+		"setl",		"setge",	"setle",	"setg",
+
+		"cmovo",	"cmovno",	"cmovb",	"cmovnb",
+		"cmovz",	"cmovnz",	"cmovbe",	"cmova",
+		"cmovs",	"cmovns",	"cmovp",	"cmovpo",
+		"cmovl",	"cmovge",	"cmovle",	"cmovg",
+
+
+		"f2xm1",
+		"fabs",			"fadd",			"faddp",
+		"bld",			"fbstp",
+		"fchs",			"fcmovb",		"fcmovbe",		"fcmove",
+		"fcmovnb",		"fcmovnbe",		"",
+		"fcmovne",		"fcmovnu",
+		"fcmovu",		"fcom",			"fcomi",		"fcomip",
+		"fcomp",		"fcompp",		"fcos",
+		"fdecstp",		"fdiv",			"fdivp",		"fdivr",
+		"fdivrp",
+		"ffree",		"ffreep",
+		"fiadd",		"ficom",		"ficomp",		"fidiv",
+		"fidivr",		"fild",			"fimul",		"fincstp",
+		"fist",			"fistp",		"fisub",		"fisubr",
+		"fld",			"fld1",			"fldenv",		"fldcw",
+		"fldl2t",		"fldl2e",		"fldlg2",		"fldln2",
+		"fldpi",		"fldz",
+		"fmul",			"fmulp",
+		"fnclex",		"fndisi",		"fneni",		"fninit",
+		"fnop",			"fnsave",		"fnstcw",		"fnstenv",
+		"fnstsw",
+		"fpatan",		"fprem",		"fprem1",		"fptan",
+		"frndint",		"frstor",
+		"fscale",		"fsetpm",		"fsin",			"fsincos",
+		"fsqrt",		"fst",			"fstp",			"fsub",
+		"fsubp",		"fsubr",		"fsubrp",
+		"ftst",
+		"fucom",		"fucomi",		"fucomip",		"fucomp",
+		"fucompp",
+		"fxam",			"fxch",			"fxtract",
+		"fyl2x",		"fyl2xp1",
+	}
+};
+
+
+
+// ----
+
+enum {
+	OM_EMMS,
+	OM_MOVD,		OM_MOVQ,
+	OM_PACKSSDW,	OM_PACKSSWB,	OM_PACKUSWB,	OM_PADDB,
+	OM_PADDD,		OM_PADDW,		OM_PADDSB,		OM_PADDSW,
+	OM_PADDUSB,		OM_PADDUSW,		OM_PAND,		OM_PANDN,
+	OM_PCMPEQB,		OM_PCMPEQD,		OM_PCMPEQW,		OM_PCMPGTB,
+	OM_PCMPGTD,		OM_PCMPGTW,
+	OM_PMADDWD,		OM_PMULHW,		OM_PMULLW,
+	OM_POR,
+	OM_PSLLD,		OM_PSLLQ,		OM_PSLLW,		OM_PSRAD,
+	OM_PSRAW,		OM_PSRLD,		OM_PSRLQ,		OM_PSRLW,
+	OM_PSUBB,		OM_PSUBD,		OM_PSUBSB,		OM_PSUBSW,
+	OM_PSUBUSB,		OM_PSUBUSW,		OM_PSUBW,
+	OM_PUNPCKHBW,	OM_PUNPCKHDQ,	OM_PUNPCKHWD,	OM_PUNPCKLBW,
+	OM_PUNPCKLDQ,	OM_PUNPCKLWD,
+	OM_PXOR
+};
+

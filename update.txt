@@ -1,0 +1,784 @@
+
+// ---- info
+
+　TRACE版(i286_step())で シングルステップ割り込みが割り込み続けるとか
+　mov SS直後に割り込みが発生するとか不都合があります。
+　これについては、直す気力があれば(286コードを追っかける時だけだし…)
+
+
+　CHARSET_OEMについて
+　　要は毎回Shift-JISに変換せずに OS依存の文字コードで処理しようとする…
+　　まだ機能しません。定義しないで下さい。
+
+　　OEMCHAR (現状char固定、将来として UCS2でUINT16、UCS4でUINT32)
+　　OEMTEXTの追加
+　　コンパイルが通るかご確認下さい。
+
+　　ステップ.1 (WinCE,X11)
+　　　OEMコードと SJIS(EMBED/hostdrv)の変換調整
+　　　(FONTMNGは SJISのままで EMBEDで変換)
+
+　　　つか…X11版のDOSIO file_catname,file_cmpnameの入力が sjisになってる…
+　　　(NP2はファイル名は OSLANGに従う…筈…
+　　　と思ったら hostdrvで SJISのまま食わせてる？(汗
+
+　　　EUCの２バイトコード判定が (((c - 0xa1) & 0xff) < 0x5d)で
+　　　半角カナ(0x8e)の判定で狂う
+　　　(c & 0x80)のほうが良い？
+
+　　　現状の…
+
+　　　・codecnv.hのインクルードは compiler.hに移動
+
+　　　・#if defined(OSLANG_EUC)
+　　　　　codecnv_sjis2euc(tmp, NELEMENTS(tmp), src, (UINT)-1);
+　　　　　file_catname(path, tmp, NELEMENTS(path));
+　　　　#elif defined(OSLANG_UTF8)
+　　　　　oemtext_sjis2oem(tmp, NELEMENTS(tmp), src, (UINT)-1);
+　　　　　file_catname(path, tmp, NELEMENTS(path));
+　　　　#else
+　　　　　file_catname(path, src, NELEMENTS(path));
+　　　　#endif
+
+　　　　を
+
+　　　　#define oemtext_sjis2oem codecnv_sjis2euc
+　　　　#define oemtext_oemsjis2 codecnv_euc2sjis
+
+　　　　としておいて
+
+　　　　#if defined(OSLANG_ANK) || defined(OSLANG_SJIS)
+　　　　　file_catname(path, src, NELEMENTS(path));
+　　　　#else
+　　　　　oemtext_sjis2oem(tmp, NELEMENTS(tmp), src, (UINT)-1);
+　　　　　file_catname(path, tmp, NELEMENTS(path));
+　　　　#endif
+
+　　　　とする？
+
+　　　メモ: http://euc.jp/i18n/charcode.ja.html
+
+　　ステップ.2 (WinNT,MacOSX)
+　　　OEMCHARのUCS2対応
+
+　　ステップ.3 (MacOSX)
+　　　ANSI PageCodeと Macintosh PageCodeの調整
+　　　メモ: http://homepage1.nifty.com/nomenclator/unicode/normalization.htm
+
+　　ステップ.4 (WinNT,WinCE,MacOSX,X11)
+　　　フォント関数回りを SJISからOEMコードに移行
+
+
+// ----
+
+　ver0.84 → ver0.85
+
+　(X11)
+　　・環境によってサウンドの設定を変更した後にリセットするとプログラムが
+　　　クラッシュする不具合を修正
+　　・SDL 2.0 サポート追加
+　　　configure では SDL 2.0 → SDL 1.2 の順番でライブラリを検索するので
+　　　SDL 1.2 を明示的に使用したい場合には configure のオプションに
+　　　--disable-sdl2 を指定する必要がある
+　　・SDL audio のバックエンドとして PulseAudio を使用している場合に音が正常に
+　　　鳴らない不具合を修正
+　　・USB 接続外部 FM 音源サポート追加。C86BOX を使用するには libusb 1.0 が必要
+　　　SPFM Light + RE:birth RE1-YM2608、C86BOX + PC-9801-86 で動作確認済み
+
+
+// ----
+
+　ver0.83 → ver0.84
+　・i386c - 色々と変更
+　・i386c - rcl, rcr 命令の不具合を修正
+　・i386c - 命令実行中に例外が発生した際にスタックポインタがずれてしまう不具合
+　　        を修正
+　・i386c - 割込みゲート、トラップゲートで不正なエラーコードが設定されてしまう
+　　        不具合を修正
+　・i386c - セグメント有効範囲チェックの不具合を修正
+　・i386c - enter, leave, call, pusha, popa 命令でリアルモード時でもスタック
+　　        サイズチェックで例外が発生してしまう不具合を修正
+　・i386c - セグメントレジスタ設定時の不具合を修正
+　・i386c - タスクゲート処理時のエラーコードプッシュ処理の不具合を修正
+　・i386c - iret 命令で仮想86モードに復帰する際にスタック上の値によっては例外が
+　　        発生してしまう不具合を修正
+　・i386c - ゲートを通じて別コードセグメント移行時に使用するオペランドサイズに
+　　        ゲートタイプではなくスタックセグメントを使用していた不具合を修正
+　・BIOS - 1F90h A20有効後に戻していない不具合を修正
+　・BIOS - 1Bh メモリアクセスを修正
+
+　(Win32)
+　　・NASM 2.09を使用するように修正
+　　・UNICODE版(np2nt.exe) で hostdrv が利用できないバグを修正
+　　・G.I.M.I.C、C86BOX、RE:birth に対応
+
+　(X11)
+　　・STATSAVE 用のメニューを作成
+　　・レジューム/STATSAVE のファイル名を変更
+　　　- レジューム: ${HOME}/.np2/sav/sav → ${HOME}/.np2/sav/np2.sav
+　　　- STATSAVE  : ${HOME}/.np2/sav/s00 → ${HOME}/.np2/sav/np2.s00
+　　・フォントパスに設定ファイル名が含まれてしまう不具合を修正
+　　・エミュレーションウィンドウサイズ変更用のメニューを作成
+　　・GLIB, GTK+ の deprecated なインタフェースを使用しない様に修正
+　　・CPU 使用率を軽減する様に修正
+　　・コンフィグ画面からサウンドドライバを変更出切る様に修正
+　　・環境によってサウンドを有効にした場合にプログラムがクラッシュする
+　　　不具合を修正
+　　・ビルド、インストールに Autotools(configure) を使用するように修正
+　　・ファイル保存時に既に同名ファイルが存在した場合、上書き確認ダイアログを
+　　　表示するように修正 (GTK+-2.8 以降のみ有効)
+　　・F12 キー機能割り当てに Help キーを追加
+　　・ファイルダイアログの floppy disk image Files にて拡張子が flp のファイル
+　　　を表示する様に修正
+　　・Screen Option の LCD のチェックを外しても外れない不具合を修正
+　　・FDD シーク音が鳴らない不具合を修正
+　　・色深度が 8bpp の場合に配列の範囲外にアクセスしていた不具合を修正
+　　・F11 キーにフルスクリーン表示切り替え、フルスクリーン時のメニュー表示
+　　　切り替え機能を割り当て
+
+
+　(MacOSX)
+　　・新規対応
+
+　(iOS)
+　　・新規対応
+
+
+// ----
+
+　ver0.82 → ver0.83
+
+　(X11)
+　　・ファイルダイアログにて拡張子が大文字のディスク・イメージを認識する様に修正
+　　・ファイルダイアログの IDE disk image Files にて拡張子が .hdi .tfd の
+　　　ファイルを表示する様に修正
+
+
+// ----
+
+　ver0.81a → ver0.82
+　・MPU-PC98II - モード切替時のMIDIリセットを修正
+　・VERMOUTH - ver1.15版に差し替え
+
+　(Win9x)
+　　・モジュール判定不具合修正
+
+　(X11)
+　　・PC9801-26K の I/O ポートが設定できなかった不具合を修正
+　　・フルスクリーンモードサポート
+　　・F11 キーに機能割り当て
+　　　- フルスクリーンモードトグル
+　　　- フルスクリーン時のメニュー表示トグル
+
+
+// ----
+
+　ver0.81 → ver0.81a
+　・80286 (ARM版) - 割り込みハンドラを修正
+　・MOUSE - ボタンフラグの修正
+　・PIT - シリアルカウンタの修正
+　・HOSTDRV - 拡張子を消去する不都合を修正 (ver0.81エンバグ)
+　・BIOS - FDCスイッチ/シグナルの修正
+
+
+
+　ver0.80 → ver0.81
+　・80286 (x86版) - rep ins, ２バイトmov8命令の不都合修正
+　・80286 (x86版) - クロック修正 (enter)
+　・80286 (C版) - クロック修正 (cmp, jcc, test, enter)
+　・80286 (ARM版) - pop ss命令の修正
+　・80286 (ARM版) - クロック修正 (cmp, jcc, test, enter)
+　・80286 (C版) - rep outsw命令を修正
+　・MPU-PC98II - conductor修正
+　・MPU-PC98II - Request PC/Tempo コマンドの追加
+　・DMA - セルフイニシャライズを追加
+　・GDC - ソフトリセット時のフラグ修正
+　・GRCG - ソフトリセット時のフラグ修正
+　・PIT - シリアルカウンタの修正
+　・MOUSE - 割り込み修正
+　・ATRIC - 時間巻き戻りバグ修正
+　・SOUND - アドレスバスの修正
+　・WSS - データ転送サイズの修正
+　・BIOS - 1842h スクリーンモードを破壊する不都合修正 (ver0.75エンバグ)
+　・BIOS - CRTBIOSフラグ修正 (PC-9821モード)
+　・BIOS - FDDアクセス時にstatsaveを行なうと復帰できなくなる不都合修正
+　・一部(というか大部分…)のキーボードのmake/break関係を修正
+
+　・メモリを修正(C版コア)
+　・16MB以上のメモリをサポート(IA32)
+
+　・内部変更
+　　たぶん
+　　　#define OEMTEXT(string)    (string)
+　　を
+　　　#define OEMTEXT(string)    string
+　　にする必要がある。
+
+　　CPUフォルダの DMA EGC等がほぼ同様のコードなので memフォルダへ移動し
+　　共通にしました。
+
+　　embedのShift-JISを ネイティブコードにしました。
+　　文字コードがEUCの環境では SUPPORT_SJISは不要になります。
+　　また、fontmng_getsize, fontmng_getdrawsizeの引き数の文字コードが
+　　SJISからEUCへ変更になっています。
+
+　　codecnvとucscnvを /codecnv へ移動しました。
+
+　　pccore.cとかにあるデバグコードがウザイので trapフォルダへ移動。
+　　ENABLE_TRAPが定義されてなければ見る必要はありません。
+
+
+// ----
+
+　ver0.79 → ver0.80
+　・BIOS - スクロールコマンド修正
+　・BIOS - システムポートの修正(i286/V30ではほぼ無意味)
+　・GDC - ステップフラグの反映
+　・FDC - レディ信号を修正
+　・i286x - div命令 (i286モード側)
+　・i286c - div命令 (V30モード側)
+
+
+　(X11)
+　　・ジョイスティックサポート
+　　　サウンドドライバに SDL を使用している時にのみ使用可
+　　・screen depth == 24bpp の時にキーディスプレイ、ソフトウェアキーボードの
+　　　描画がおかしい不具合を修正
+　　・T98-Next(.NHD)形式、Anex(.HDI)形式ハードディスクイメージ作成サポート
+
+(MacOSX)
+　　・日本語リソース追加
+　　・ソフトウェアキーボードを有効にした
+
+
+// ----
+
+　ver0.78 → ver0.79
+　・CGROM - JIS83罫線の不都合修正
+　・CGROM - ２バイト半角アクセス修正
+　・86PCM - バッファリングの不都合を修正
+　・BEEP - BEEP PCMの修正
+　・BIOS - 2Dタイプのシリンダ倍移動を修正
+　・BIOS - FDD割り込みフラグを修正
+　・AMD98 - レジスタリードの追加
+　・VRAM - スキップライン描画の修正
+　・BMPSave - スキップライン有効時のセーブ不都合を修正
+
+　(Win9x)
+　　・ソフトウェアキーボードを有効にした
+
+　(MacOSX)
+　　・カレンダーに対応
+
+
+　・内部変更
+
+　　　char *file_getext(const char *path);
+　　　char *file_getname(const char *path);
+　　　(constが付きます)
+
+　　　記念に gif保存に対応してみたり
+　　　　vram/scrnbmp.c の代わりに vram/scrnsave.c をリンクして
+
+　　　　　SCRNSAVE ss = scrnsave_get();
+　　　　　scrnsave_writegif(ss, "out.gif", SCRNSAVE_AUTO);
+	　　　scrnsave_trash(ss);
+
+　　　　　bmpなら scrnsave_writebmp(ss, "out.bmp", SCRNSAVE_AUTO);
+
+　　　　　np21のVGA時に 257色以上になるのに注意
+　　　　　(ss->type == SCRNSAVE_24BITの時にgif保存出来ません)
+
+
+// ----
+
+　ver0.77 → ver0.78
+　・PIC - スレーヴのマスクの修正
+　・CGROM - JIS83罫線の不都合修正
+　・TEXTRAM - JIS83罫線の不都合修正
+　・86PCM - 割り込みステータスの修正
+　・BIOS - ブート時にメモリを完全に消去するようにした
+　　　　　　※ RanceII対策、他のホットスタートで不都合が出るかも
+　・BIOS - 直線描画のアルゴリズム修正
+　・BIOS - 円の半径が異常だった不都合の修正
+　・BIOS - JIS83罫線の不都合修正
+　・LIO - 内部塗り潰し指定付きBOX描画の対応
+　・LIO - 半角ひらがなの対応
+　・LIO - 円の仮サポート
+
+　(X11)
+　　・ソフトウェアキーボードサポート
+
+　・内部変更
+
+　　　追加ファイル
+　　　　/lio/gcircle.c
+
+
+
+// ----
+
+　ver0.76 → ver0.77
+　・BIOS - FDC BIOSの修正
+　・FDD - ディスクシーク音再生中にリセットを行なうと 以降ディスクアクセスが行なえなくなる不都合を修正。
+
+　(X11)
+　　・i386 アーキテクチャ以外でコンパイルできない不具合を修正
+
+
+
+// ----
+
+　ver0.74 → ver0.76 (branch...)
+　・DMA - バンク・アドレスマスクの修正
+　・PIC - スペシャルマスクモードの対応
+　・PIT - マルチプルラッチコマンドのサポート(uPD71054)
+　・CGROM - ２バイト半角の処理を修正
+　・CGWINDOW - ワードアクセスの挙動修正 (MacOS9/MacOSX/x11/SDL)
+　・MOUSE - uPD8255のコマンドレジスタの修正
+　・86PCM - 停止時にもかかわらずバッファを進めてしまう不都合を修正
+　・CS4231 - PIOサポート
+　・BIOS - ベクタ08/1A/1Fの修正
+　・BIOS - リセット時の挙動の修正
+
+　(Windows9x)
+　　・ATマシンの場合に PageUp/PageDownを反転
+
+
+　・内部変更
+　　　基本的にファイルが存在しなければプロジェクトから除外、
+　　　リンクエラーが出たらgrepしてファイル追加
+
+　　　　追加ファイル
+　　　　　/bios/bios1f.c
+　　　　　/bios/biosfd80.res
+　　　　　/cbus/ideio.h
+　　　　　/cbus/ideio.c         (SUPPORT_IDEIO定義時)
+　　　　　/cbus/atapicmd.h
+　　　　　/cbus/atapicmd.c      (SUPPORT_IDEIO定義時)
+　　　　　/cbus/idebios.res
+　　　　　/io/pcidev.h
+　　　　　/io/pcidev.c          (SUPPORT_PC9821定義時)
+
+
+　　　　削除ファイル
+　　　　　/bios/bios02.c
+　　　　　/bios/bios08.c
+　　　　　/bios/biosboot.res
+　　　　　/common/pf_key.tbl
+　　　　　/sound/wavemix.h
+　　　　　/sound/wavemix.c
+　　　　　/sound/rhythmg.c
+　　　　　/lio/gview.c
+　　　　　/lio/gcolor1.c
+　　　　　/lio/gcolor2.c
+　　　　　/lio/gcls.c
+
+
+　　　ROMIMAGEは MASMからNASMへ移行中でつ。
+
+　　　SUPPORT_IDEIOは定義しないで下さい(まだマトモに動きません)
+
+　　　IA32でもハードウェアEMSを有効にしてみるテスト。
+
+
+
+// ----
+
+　ver0.74 → ver0.75
+
+　・GDC - ベクタの初期化し忘れを修正
+　・GDC - パターンの修正
+　・ITF/BIOS - リセット時の挙動の修正
+　・BIOS - 1842h モノクロフラグを修正
+　・EGCの高速化(?)
+　・リズムの修正(PCM 44khz 16bit monoralの制限を外した)
+　・LIOの修正
+
+
+　(Windows)
+　　・(I286X) EGCバイトアクセス修正
+　　・(I286X) ストリング命令修正
+　　・フロッピードライブ接続状態指定
+
+　(MacOS9)
+　　・フロッピードライブ接続状態指定
+　　・MPU-PC98IIの設定ダイアログ
+
+　(WinCE)
+　　・(I286A) メモリの修正
+　　・GDC - GDCクロック 1.79MHzのサポート
+
+　(X11)
+　　・Configure Dialog にてアーキテクチャの指定を追加
+
+　(MacOSX)
+　　・フロッピードライブ接続状態指定（FDD1、FDD2のみ）
+　　・設定ダイアログのディップスイッチ画像表示
+　　・CoreMID経由のMIDI演奏に対応
+　　・MPU-PC98IIの設定ダイアログ拡充
+　　・Key Display対応（マウスクリックでFMとMIDIが切り替わります）
+
+
+　・200ラインモードについて (正式サポート / #define SUPPORT_CRT15KHZ)
+　　PC-9801シリーズ(FELLOW、PC-9821、ハイレゾ機を除く)に搭載されている
+　　200ラインモードは設定ファイルのDIPswtchにて設定可能となります。
+
+　　　400ラインモード
+　　　　DIPswtch=3e ?? ??
+
+　　　200ラインモード
+　　　　DIPswtch=3f ?? ??
+
+　　本機能は DIPSW1-1に相当する機能であり、PC-9801VM以降のマシンで
+　　一般に言われている200ラインモードとは異なる機能です。
+
+　　※PC-98シリーズの一般的な200ラインモードは、640x200を縦に２倍拡大し
+　　　400ラインモードで動作しています。
+
+　　本機能は DIPSW1-1の切り替え機能を削除した FELLOW、PC-9821、ハイレゾ機の
+　　BIOS.ROMを使用時には正常に動作致しません。
+　　これを理由に、本機能は NP2上で設定スイッチを設けません。
+
+　　また、レジューム動作時に DIPswtchの値を変更した場合、正常に
+　　スクリーンモードを変更できなくなります。
+　　(PC-98動作中にディップスイッチを変更した時と同じ状態になります。)
+　　必ずリセットして下さい。
+
+
+
+　・キー設定について
+　　bios.romとかと同じフォルダに key.txtというファイル名のテキストファイルを
+　　作成して、キー設定を記入して下さい。
+
+　　書式)
+　　　[keyname] = [key1] (key2) (key3)
+　　　[keyname] [TAB] [key1] (key2) (key3)
+　　　userkey[1-2] = [key1] (key2) (key3) ... (key15)
+　　　　フルキー 0～9 A～Z - ^ \ @ [ ] ; : , . / _
+　　　　         STOP COPY ESC TAB BS RET SPC XFER NFER
+                 INS DEL RLUP RLDN HMCL HELP
+　　　　ファンク F1～F10 VF1～VF5
+　　　　テンキー [0]～[9] [-] [/] [*] [+] [=] [,] [.]
+　　　　シフト   SHIFT CAPS KANA GRPH CTRL
+
+　　　通常キーは3個、userkeyは15個の同時押し設定が可能です。
+　　　[=] キーは = で区切られてしまうので TABで区切るか [EQU]として下さい。
+
+　　　例:
+　　　　W = UP                 (ダイアモンドキーをカーソルにしてみたり…)
+　　　　S = LEFT
+　　　　D = RIGHT
+　　　　X = DOWN
+　　　　[7] = [4] [8]          (テンキー斜め同時押しにしてみたり…)
+　　　　[9] = [6] [8]
+　　　　[1] = [4] [2]
+　　　　[3] = [6] [2]
+　　　　userkey1 = CTRL XFER   (CTRL+XFER FEP切り替え)
+　　　　userkey2 = D O A Z     (D+O+A+Z 同時押し)
+
+
+
+　・内部変更
+　　　win9x/unasmをgenericへ移動(+P6,FPU命令をサポート)
+
+　　　np2infoをgenericへ移動
+　　　　エスケープ文字を !KEY から %KEY%へ変更
+　　　　ex == NULLで OS指定の改行コードになる筈
+　　　　(MacOSXは np2info.cppがそのまんま移動になるかと思われ
+
+　　　io/serial.*に存在した keystat系を /keystat.* へ移動
+　　　　keystat.cをリンク、 keystat.hをインクルード
+
+　　　SUPPORT_WAVEMIX廃止
+　　　　→ SUPPORT_SWSEEKSNDに変更
+　　　　ハードウェアで対応してる場合には 一応 SUPPORT_HWSEEKSNDと定義して
+　　　　くれると嬉すぃ
+
+	　・keystat_initialize(keystat_reset)をコールして初期化すること…
+
+
+// ----
+
+　ver0.73 → ver0.74
+
+　・I/OレベルでのSASIに対応(INT3/DMA#0/BIOS:d0000-d0fff)
+　・SCSI HDDに対応
+　・np2qn形式 HOSTDRVに対応
+　・拡張メモリの修正 (80286)
+　・VRAM - 通常ディスプレイ時にメモリを破壊するバグを修正
+　・GDC - GDCクロック 1.79MHzのサポート
+　・GDC - 走査周波数を可変にした
+　・GDC - マスクが左右反転していたのを修正
+　・GDC - テキスト処理を修正(uPD7220A? cmd:05)
+　・GDC - VECTEコマンド(R)を修正 (undocumented Tを追加)
+　・GDC - TEXTEコマンド(SL/T)を修正 (undocumented L/C/Rを追加)
+　・GDC - GRCG/EGC動作中の挙動を修正
+　・EGC - マスクフラグを修正
+　・FDC - DMAとステータスを修正
+　・SERIAL - キーボードステータスの修正
+　・uPD4990 - ホールド時の出力が不定になっていたのを修正
+　・RHYTHM - レジュームが反映されなかった不都合を修正
+　・ADPCM - サンプルリードがMSB/LSB逆転していたのを修正
+　・BIOS - ブート時にディップスイッチで指定した画面モードを反映
+　・BIOS - 1840h/1841h/1842h/1847hの結果をワークメモリへ反映するようにした
+　・BIOS - 1847h マスクを左右反転させていなかったのを修正
+　・BIOS - 1848h/1849h/184ahをサポート
+　・ITF - PC-9801VM/PC-286時に BEEPが初期化されない不都合を修正
+　・ITF - SSP終了時にハードウェアリセットをかけるように修正
+　・IDE - ディップスイッチ内容(SW2-6)を反映するように修正
+
+
+　(Windows)
+　　・(I286X) sidt命令の修正
+　　・(I286X) テキストRAMアクセスの修正
+　　・(I286X) 割り込みの修正
+　　・(I286X) EGCシフタを修正
+　　・Aboutダイアログの修正
+　　・ろみおとか…
+
+　(MacOS9)
+　　・テンキーの [+] [/] の修正
+　　・file_attr()で FILEATTR_READONLY を返すように…
+
+　(MacOSX)
+　　・テンキーの [+] [/] の修正
+　　・file_attr()で FILEATTR_READONLY を返すように…
+　　・ツールウィンドウ修正
+　　・FDIイメージ対応（仕事早いよー＞ゆいさん）
+　　・フルスクリーン修正（たぶん・・）
+　　・マウスドラッグに対応（タコミス・汗）
+
+
+　・Userkeyについて
+　　userkey1, userkey2は、cfgを書換えることによりキーを自由に変更することが
+　　出来ます。
+　　書式)
+　　　userkey1 = [key1] (key2) (key3)...
+　　　　フルキー 0～9 A～Z - ^ \ @ [ ] ; : , . / _
+　　　　         STOP COPY ESC TAB BS RET SPC XFER NFER
+                 INS DEL RLUP RLDN HMCL HELP
+　　　　ファンク F1～F10 VF1～VF5
+　　　　テンキー [0]～[9] [-] [/] [*] [+] [=] [,] [.]
+　　　　シフト   SHIFT CAPS KANA GRPH CTRL
+
+　　　例:
+　　　　userkey1 = CTRL XFER   (CTRL+XFER FEP切り替え用)
+　　　　userkey2 = D O A Z     (D+O+A+Z 同時押し)
+
+　　本機能は 簡易的な実装であり ver0.75で変更されます。
+　　また、ver0.74ではシフト系は不整合が発生する可能性があります。
+
+
+
+　・内部変更
+　　　pccore.h の中で statsave.hをインクルード
+　　　　→ #include "statsave.h" をトル
+
+　　　io/extmem を io/emsioに変更
+　　　(IA32は emsioは要らないが、NEC EMSバンク形式で必要になるかも)
+
+　　　np2cfg.hddfile[2] -> np2cfg.sasihdd[2]
+
+　　　void diskdrv_sethdd(REG8 drv, const char *fname);
+　　　　drv = BIOSのデバイス番号
+　　　　　0x00～0x01  SASI #0-1
+　　　　　0x20～0x23  SCSI #0-3  (SUPPORT_SCSIを定義した時のみ)
+
+　　　bios/sxsibios.c はリンク必須
+　　　cbus/sasiio.c - SUPPORT_SCSIを定義した時にリンク
+　　　cbus/scsiio.c cbus/scsicmd.c - SUPPORT_SCSIを定義した時にリンク
+
+　　　IA32でハードウェアEMSを禁止しました。
+　　　　　→ #define CPU_SETEXTSIZE() init_mem() に変更 (済)
+　　　　　→ memory.cの EMM部分をトル (済)
+　　　　　→ cpumem extmem_size を CPU_EXTMEM, CPU_EXTMEMSIZEに変更(済)
+　　　　　→ protectmem_sizeをトル (済)
+
+　　　しかし emm386.exeが使えないから ハードウェアEMSを有効にした
+　　　ほーがいいかな？　辻褄は合いそうだし。
+　　　386以降に乗っかってる NEC EMSバンク方式だと あまりにアホだし。
+
+　　　dosio.hの FTYPEを common.hへ移動。
+　　　こそーり fdiを読めるよーにしてみたり。
+
+　　　フロッピードライブについて np2cfg.fddequipを見に行くようにしました
+　　　デフォルトで２基
+　　　np2cfg.fddequip = 0x03 (ドライブ1 = ビット0 ～ ドライブ4 = ビット3)
+　　　(実際に動作中の装備状態は fdc.equipで リセット時に更新されます)
+　　　必要によって main()で変える、cfgに書き出す等してください。
+
+　　　S98について SUPPORT_S98定義時のみリンクするようにしました。
+　　　(Win9x, MacOSX, x11(USE_GTK))
+
+　　　PC9861Kについて SUPPORT_PC9861K定義時のみリンクするようにしました。
+　　　(シリアル通信に対応していなければ無意味な機能です)
+
+　　　userkey
+　　　　ini.cで profile_setkeys, profile_getkeysで np2cfg.userkeyを更新
+　　　　キーボードのどこかにキーに キーコード 0x76,0x77を追加
+
+
+　メモ
+　　実機で FDでVRAMクリアされるのは何故？
+
+
+// ----
+
+　ver0.72 → ver0.73
+
+　・主にRISC向けの最適化、その２
+　・EPSON PCシリーズのアーキテクチャをサポート
+　・ARM版CPUコアのサポート
+　・CPU(I286C) … シングルステップ割り込みの修正
+　・CPU(I286C) … int3 / int imm8 / into クロック数を修正
+　・CPU(I286C) … shl r/m8,cl / shr r/m8,cl の修正
+　・CPU(I286C) … sar r/m (eVC3/eVC4コンパイラバグ回避)
+　・CPU(I286C/I286X/I286A) … グループ７とか…
+　・DMAC … インプットでアドレスとカウンタが逆なのを修正
+　・PIT … ビープカウンタを修正
+　・NP2SYSP … ポートを叩いた瞬間 フリーズするバグを修正
+　・CALENDAR … 時間をインクリメントしないバグの修正
+　・ITF … 拡張メモリ使用時にエミュレーション内部のメモリを破壊するのを修正
+　・CS4231 … 再生しなくなっていたのを修正
+　・CS4231 … DMA,IRQを変更出来るようにしました
+　・CS4231 … デフォルトのDMAチャネルを #1に変更
+　・MIDI … STATSAVEの修正
+　・SOUND … JAST SOUNDをサポート
+　・Vermouth … Roland GSコマンドの一部に対応
+
+　補足
+　　ver0.73では EPSONモードの時 D000～DFFFがRAM化されます。
+　　・SOUND BIOSは D000,D400に配置しないで下さい、もしくはUMB等で破壊されないようにして下さい。
+
+
+　(X11)
+　　・Qt 2.x の実験的なサポート
+　　・SDL の実験的なサポート
+　　・ビープ音量が設定ファイルに保存されないのを修正
+
+
+　ver0.73向け
+　　・io/necio.c io/epsonio.c をリンクして下さい
+　　・io/itf.cをリンクよりはずして下さい
+
+　　・configのモデル選択 http://retropc.net/yui/cvs/config.gif
+　　　np2cfg.model に それぞれ "VM" "VX" "EPSON"の文字列を設定する。
+　　　(それぞれ common/strresにstr_VM, str_VX, str_EPSONが用意されています)
+
+　　・JAST SOUNDの選択 http://retropc.net/yui/cvs/jastsnd.gif
+　　　パラレルなので 機種依存部の COMMNG.Cを修正して CMJASTCを呼ぶ
+　　　使用・未使用判定は OSごとに(np2oscfgで)設定すること
+
+　　・wavemix sound/getsnd については ver0.73では不要ですが、
+　　　ver0.74あたりで使用する予定(Seeksnd?/OPNA/AMD-98の共用ルーチン化)
+　　　今までのseeksndインタフェイスはどうするかね…
+
+
+　更新履歴に書かなくていい変更点
+　　・i286a/i286c/i286xに簡易プロテクトモードを追加(保護・タスクなし)
+　　・DMACを再配置できるように修正
+　　・CPU/EGCのストラクチャの調整
+　　・BIOS … DISK BIOSをサポート(但し 通常のBIOSコールは DISK BIOSを使用せずに BIOSレベルでシミュレートしています)
+　　・BIOS … SASI/SCSI BIOS ROMをサポート(BIOSアドレス d000:0000)
+　　　補足→ (ver0.74に回す)
+　　　　SASI/SCSI BIOSは 殆どの場合にはブート時にしか使っていないので RAM内容を破壊しても HDDアクセスは正常に行なわれます。
+　　　　※アプリケーションが SASI/SCSI BIOSを直視しない限りは大丈夫。
+　　　　　ver0.72までは SASI/SCSI BIOSがサポートされていない(＝つまり使われていない) ver0.72までに動いていたソフトウェアはほぼ大丈夫と言えます。
+　　・hostdrv...
+
+
+// ----
+
+　ver0.71 → ver0.72
+
+　・主にRISC向けの最適化(CPU, BEEP counter, BIOS etc...)
+　・CPU … aaa命令の修正
+　・PIT … インターバルタイマの割り込みを修正、リカバリ修正
+　・VRAM … SLとLRの関係をミスってた。
+　・PC-9801-26K … ステータスを修正
+　・PSG … サウンド作成タイミングの修正(ヴォリューム変更時)
+　・マウス … 負方向の演算の不都合を修正
+　・一部の設定だけを変更しても cfgに保存されないのを修正
+　・vermouth … Win9x,MacOS,X11でバンク切替えを有効にした
+            (済: MacOSX→cmverを使って下さい)
+            (済: x11→midimod_loadprogram/rhythmの代わりに midimod_loadallを)
+　・ini/cfg … biospathの追加 (nullstringでdosioカレント)
+
+　(MacOSX)
+　　・Open/Saveダイアログ修正
+　　・ドラッグ＆ドロップ修正
+　　・vermouthをcmverを使うように変更
+　　・XFERとNFERをそれぞれカナキーと英数キーに割り当てた。
+　　・ウィンドウの位置をnp2.cfgに記録するようになった。
+　　・これまでF12に割り当てていたキーをF11とF12で分担するように変更（要再設定）。
+　　・割り当て可能なキーにNFERとXFER（とカナ）を追加。
+　　・コマンド+クリックを右クリックに割り当てるように変更。
+
+　(Win9x)
+　　・標準ディスプレイ→プラズマディスプレイ移行時にゴミがのこるのを修正
+
+　(WinCE)
+　　・ソフトウェアキーボードのサポート
+
+　(X11)
+　　・Qt の実験的なサポート
+　　・MIT Shared-Memory Extention shared Pixmap サポート
+　　・画面描画時の無駄を減らした
+　　・Key Display のサポート
+
+
+　でぶねこ補足
+　　・必須
+　　　　compiler.h に 以下のうち必要な定義を入れること
+　　　　　　OSLANG_SJIS, OSLANG_EUC
+　　　　　　OSLINEBREAK_CR, OSLINEBREAK_LF, OSLINEBREAK_CRLF
+　　　　　　SUPPORT_ANK, SUPPORT_SJIS, SUPPORT_EUC
+
+　　・変更
+　　　　(target)/keydisp -> (generic)/keydisp
+　　　　(target)/cmmidi -> (target)/cmver  (vermouthのみ使用の場合)
+
+　　基本的には WinCE版とSDL版用のファイルで追加されたファイルで
+　　リンクエラーが発生しない限りは必要はないと思われ。
+
+
+// ----
+
+　ver0.70 → ver0.71
+
+　・CPU … enter命令(level>=2)の修正(C版のみ)
+　・メモリスイッチ … 初期値を修正(コプロセッサフラグ)
+　・FDC … Read IDの対応
+　・FDD … Write ID時にキャッシュがフラッシュされていなかったバグの修正
+　・np2sysp … ポート指定ミスを修正
+　・PSG … ステレオ出力の対応
+　・PC-9801-14 … DIPSWポートの修正、PITのクロックを変更
+　・AMD-98 … クロックを修正、レジュームの対応
+
+
+　(Win9x)
+　　・keydisp PSG修正
+　　・マウス修正
+
+　(MacOS9)
+　　・マウス対応(Classicのみ)
+　　・キーボード修正
+　　　　バックグラウンド処理中にキー入力を抑制
+         Classic - 旧Classicルーチンを使用するようにした
+         Carbon - キーリピートに対応
+　　・メニュー修正
+　　・エミュレーションウィンドウを可変サイズに
+
+　(MacOSX)
+　　・マウス修正
+　　・New Disk修正
+　　・ヘルプ対応
+　　・IIx専用ロゴ追加
+　　・書類アイコン追加/変更
+　　・About表示変更
+　　・AMD-98対応
+　　・画面回転対応
+　　・エミュレーションキー追加
+　　・シークサウンドをリソースに追加（外部ファイルは不要です）
+　　・その他にも細かな修正あり

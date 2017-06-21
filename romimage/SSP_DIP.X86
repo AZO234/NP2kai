@@ -1,0 +1,164 @@
+
+dipsw_dispall:	push	ax
+				push	cx
+				push	dx
+				push	si
+				push	di
+				xor		dx, dx
+				mov		si, 19*160+8*2
+dipsw_boxlp:	mov		cx, 20
+				call	dipsw_boxs1
+				add		si, 160-40
+				call	dipsw_boxs2
+				add		si, 8*4
+				call	dipsw_boxs2
+				add		si, 160-40
+				call	dipsw_boxs2
+				add		si, 8*4
+				call	dipsw_boxs2
+				add		si, 160-40
+				mov		cx, 20
+				call	dipsw_boxs1
+				sub		si, 160*3-4*2
+				call	dipsw_swdisp
+				inc		dx
+				cmp		dl, 3
+				jc		dipsw_boxlp
+				mov		si, offset dipbox_initmsgs
+				call	ssp_rtxtdisp
+				pop		di
+				pop		si
+				pop		dx
+				pop		cx
+				pop		ax
+				ret
+
+dipsw_boxs2:	mov		cl, 2
+dipsw_boxs1:	mov		byte ptr es:[si+2000h], 65h
+				mov		word ptr es:[si], 0
+				inc		si
+				inc		si
+				loop	dipsw_boxs1
+				ret
+
+
+dipsw_swdisp:	push	bx
+				push	cx
+				push	dx
+				mov		di, dx
+				and		di, 3
+				mov		ch, [di+DIPSW_1]
+				mov		ax, di
+				add		di, di
+				add		di, ax
+				mov		cl, 4
+				shl		di, cl
+				add		di, 160*20+20
+				mov		cl, 80h
+dipswput_lp:	mov		bx, 0a1h
+				test	dh, cl
+				je		dipswput_cured
+				mov		bl, 0e5h
+dipswput_cured:	mov		ax, 2101h
+				test	ch, cl
+				je		dipswput_hit
+				mov		ax, 2202h
+				xchg	bl, bh
+dipswput_hit:	mov		es:[di+0000h], ax
+				mov		es:[di+2000h], bh
+				mov		es:[di+2002h], bh
+				xor		ax, 0303h
+				mov		es:[di+00a0h], ax
+				mov		es:[di+20a0h], bl
+				mov		es:[di+20a2h], bl
+				add		di, 4
+				shr		cl, 1
+				jne		dipswput_lp
+				pop		dx
+				pop		cx
+				pop		bx
+				ret
+
+
+
+dipsw_start:	push	ax							; ax = ÉÅÉjÉÖÅ[Ç©ÇÁì¸óÕ
+				mov		si, offset dips_initmsgs
+				call	ssp_resdisp
+				call	dipsw_dispall
+				pop		dx
+
+mainlpstart:	call	dippage_set
+mainlpsub:		mov		si, offset dipsw_event
+				jmp		ssp_keyevent
+
+
+dswev_up:		and		dl, 7fh
+				call	dispdipitem
+				dec		dh
+				js		short pageprev
+				call	curitemputs
+				jmp		short mainlpsub
+pageprev:		dec		dl
+				jns		short mainlpstart
+				mov		dl, 2
+				jmps	mainlpstart
+
+
+dswev_dn:		and		dl, 7fh
+				call	dispdipitem
+				inc		dh
+				cmp		dh, bl
+				jae		short pagenext
+				call	curitemputs
+				jmps	mainlpsub
+pagenext:		mov		dh, 0
+				inc		dl
+				cmp		dl, 3
+				jb		short mainlpstart
+				mov		dl, 0
+				jmps	mainlpstart
+
+
+dswev_lt:		dec		ch
+				call	setdipitem
+				jmps	mainlpsub
+
+
+dswev_rt:		inc		ch
+				call	setdipitem
+				jmps	mainlpsub
+
+
+dswev_hm:		call	INIT_DIPSW
+				jmps	mainlpstart
+
+
+dswev_ret:		mov		al, dh
+				inc		al
+				cmp		al, bl
+				jne		mainlpsub
+
+dswev_esc:		push	dx
+				call	SET_DIPSW
+				pop		ax
+				and		ax, 7fh
+				ret
+
+
+
+dipsw_event		db		3ah
+				dw		offset dswev_up
+				db		3dh
+				dw		offset dswev_dn
+				db		3bh
+				dw		offset dswev_lt
+				db		3ch
+				dw		offset dswev_rt
+				db		3eh
+				dw		offset dswev_hm
+				db		1ch
+				dw		offset dswev_ret
+				db		0
+				dw		offset dswev_esc
+				db		-1
+

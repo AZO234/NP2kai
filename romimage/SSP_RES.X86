@@ -1,0 +1,312 @@
+; SSP用のリソース
+
+; ------------------------------------------------- ディップスイッチメニュー用
+
+dips_initmsgs	db		0e1h				; 画面上の枠
+				dw		0100h, 1050h
+				db		0a1h				; 画面下の枠
+				dw		1200h, 0650h
+				db		0
+				db		0e1h				; ここからテキスト
+				dw		0004h, offset menu_title
+				db		0e1h
+				dw		011eh, offset dipsw_title
+				db		0
+
+dipbox_initmsgs	db		0e1h
+				dw		121bh, offset dipsw_msg
+				db		0a1h
+				dw		130fh, offset dip1_msg
+				db		0a1h
+				dw		1327h, offset dip2_msg
+				db		0a1h
+				dw		133fh, offset dip3_msg
+				db		0a1h
+				dw		1404h, offset off_msg
+				db		0a1h
+				dw		1504h, offset on_msg
+				db		065h
+				dw		160ah, offset dipnum_msg
+				db		065h
+				dw		1622h, offset dipnum_msg
+				db		065h
+				dw		163ah, offset dipnum_msg
+				db		0c1h
+				dw		1800h, offset keyctl_meg
+				db		0
+
+
+dip1items		db	2, 3, 20h, 5, 1eh, 28h, 00h, 00h
+				dw	offset sw13_t
+				dw	offset sw13_i ,	offset sw13_i , 0, 0
+				dw	offset sw13_s0,	offset sw13_s1, 0, 0
+
+				db	2, 5, 10h, 4, 1eh, 30h, 00h, 00h
+				dw	offset sw14_t
+				dw	offset sw14_i0,	offset sw14_i1, 0, 0
+				dw	offset sw14_s0,	offset sw14_s1, 0, 0
+
+				db	4, 8, 0ch, 2, 1eh, 2ah, 36h, 44h
+				dw	offset sw15_t
+				dw	offset sw15_i0,	offset sw15_i1
+				dw	offset sw15_i2,	offset sw15_i3
+				dw	offset sw15_s0,	offset sw15_s1
+				dw	offset sw15_s2,	offset sw15_s3
+
+				db	2,10, 01h, 0, 1eh, 24h, 00h, 00h
+				dw	offset sw18_t
+				dw	offset sw18_i0,	offset sw18_i1, 0, 0
+				dw	offset sw18_s0,	offset sw18_s1, 0, 0
+
+				db	0,12, 00h, 0, 00h, 00h, 00h, 00h
+				dw	offset end_t, offset end_i
+
+dip2items		db	2, 3, 40h, 6, 1eh, 30h, 00h, 00h
+				dw	offset sw22_t
+				dw	offset sw22_i0,	offset sw22_i1, 0, 0
+				dw	offset sw22_s0,	offset sw22_s1, 0, 0
+
+				db	2, 5, 10h, 4, 1eh, 2ch, 00h, 00h
+				dw	offset sw24_t
+				dw	offset sw24_i0,	offset sw24_i1, 0, 0
+				dw	offset sw24_s0,	offset sw24_s1, 0, 0
+
+				db	2, 7, 08h, 3, 1eh, 28h, 00h, 00h
+				dw	offset sw25_t
+				dw	offset sw25_i0,	offset sw25_i1, 0, 0
+				dw	offset sw25_s0,	offset sw25_s1, 0, 0
+
+				db	2, 9, 04h, 2, 1eh, 28h, 00h, 00h
+				dw	offset sw26_t
+				dw	offset sw26_i0,	offset sw26_i1, 0, 0
+				dw	offset sw26_s0,	offset sw26_s1, 0, 0
+
+				db	2,11, 01h, 0, 1eh, 28h, 00h, 00h
+				dw	offset sw28_t
+				dw	offset sw28_i0,	offset sw28_i1, 0, 0
+				dw	offset sw28_s0,	offset sw28_s1, 0, 0
+
+				db	0,13, 00h, 0, 00h, 00h, 00h, 00h
+				dw	offset end_t, offset end_i
+
+dip3items		db	2, 3, 10h, 4, 1eh, 26h, 00h, 00h
+				dw	offset sw34_t
+				dw	offset sw34_i0,	offset sw34_i1, 0, 0
+				dw	offset sw34_s0,	offset sw34_s1, 0, 0
+
+				db	2, 5, 08h, 3, 1eh, 24h, 00h, 00h
+				dw	offset sw35_t
+				dw	offset sw35_i0,	offset sw35_i1, 0, 0
+				dw	offset sw35_s0,	offset sw35_s1, 0, 0
+
+				db	2, 7, 01h, 0, 1eh, 28h, 00h, 00h
+				dw	offset sw38_t
+				dw	offset sw38_i0,	offset sw38_i1, 0, 0
+				dw	offset sw38_s0,	offset sw38_s1, 0, 0
+
+				db	0, 9, 00h, 0, 00h, 00h, 00h, 00h
+				dw	offset end_t, offset end_i
+
+dipitems		dw	offset dip1items, dip2items, dip3items
+
+
+
+
+; ------------------------------------------------- メモリスイッチメニュー用
+
+MSWMENU_ITEMS		equ		11
+
+mswmainmenus		dw	offset msw_menu00
+					dw	offset msw_menu01
+					dw	offset msw_menu02
+					dw	offset msw_menu03
+					dw	offset msw_menu04
+					dw	offset msw_menu05
+					dw	offset msw_menu06
+					dw	offset msw_menu07
+					dw	offset msw_menu08
+					dw	offset msw_menu09
+					dw	offset end_t
+
+
+mswsub_m01			db	6
+
+					db	1, 2
+					dw	offset mswi011_t, offset mswi011_i
+					dw	30+ 2*256, offset msg_invalid
+					dw	60+ 2*256, offset msg_valid
+
+					db	3, 2
+					dw	offset mswi012_t, offset mswi012_i
+					dw	30+ 4*256, offset mswi012_1
+					dw	60+ 4*256, offset mswi012_2
+
+					db	5, 2
+					dw	offset mswi013_t, offset mswi013_i
+					dw	30+ 6*256, offset mswi013_1
+					dw	60+ 6*256, offset mswi013_2
+
+					db	7, 3
+					dw	offset mswi014_t, offset mswi014_i
+					dw	30+ 8*256, offset msg_nouse
+					dw	46+ 8*256, offset mswi014_2
+					dw	62+ 8*256, offset mswi014_3
+
+					db	9, 3
+					dw	offset mswi015_t, offset mswi015_i
+					dw	30+10*256, offset mswi015_1
+					dw	46+10*256, offset mswi015_2
+					dw	62+10*256, offset mswi015_3
+
+					db	11, 8
+					dw	offset mswi016_t, offset mswi016_i
+					dw	10+12*256, offset mswi016_1
+					dw	30+12*256, offset mswi016_2
+					dw	50+12*256, offset mswi016_3
+					dw	70+12*256, offset mswi016_4
+					dw	10+13*256, offset mswi016_5
+					dw	30+13*256, offset mswi016_6
+					dw	50+13*256, offset mswi016_7
+					dw	70+13*256, offset mswi016_8
+
+mswsub_m02			db	5
+
+					db	1, 2
+					dw	offset mswi021_t, offset mswi021_i
+					dw	30+ 2*256, offset mswi021_1
+					dw	30+ 3*256, offset mswi021_2
+
+					db	4, 2
+					dw	offset mswi022_t, offset mswi022_i
+					dw	30+ 5*256, offset mswi022_1
+					dw	30+ 6*256, offset mswi022_2
+
+					db	7, 2
+					dw	offset mswi023_t, offset mswi023_i
+					dw	30+ 8*256, offset mswi023_1
+					dw	60+ 8*256, offset mswi023_2
+
+					db	9, 2
+					dw	offset mswi024_t, offset mswi024_i
+					dw	30+10*256, offset msg_invalid
+					dw	60+10*256, offset msg_valid
+
+					db	11, 2
+					dw	offset mswi025_t, offset mswi025_i
+					dw	30+12*256, offset mswi025_1
+					dw	60+12*256, offset mswi025_2
+
+mswsub_m03			db	1
+
+					db	1, 5
+					dw	offset mswi031_t, offset mswi031_i
+					dw	 4+ 2*256, offset mswi031_1
+					dw	18+ 2*256, offset mswi031_2
+					dw	32+ 2*256, offset mswi031_3
+					dw	46+ 2*256, offset mswi031_4
+					dw	60+ 2*256, offset mswi031_5
+
+mswsub_m04			db	2
+
+					db	1, 2
+					dw	offset mswi041_t, offset mswi041_i
+					dw	30+ 2*256, offset msg_nouse
+					dw	60+ 2*256, offset msg_use
+
+					db	3, 2
+					dw	offset mswi042_t, offset mswi042_i
+					dw	30+ 4*256, offset mswi042_1
+					dw	60+ 4*256, offset mswi042_2
+
+mswsub_m05			db	1
+
+					db	1, 2
+					dw	offset mswi051_t, offset mswi051_i
+					dw	30+ 2*256, offset mswi051_1
+					dw	60+ 2*256, offset mswi051_2
+
+mswsub_m06			db	3
+
+					db	1, 2
+					dw	offset mswi061_t, offset mswi061_i
+					dw	30+ 2*256, offset msg_nouse
+					dw	60+ 2*256, offset msg_use
+
+					db	3, 2
+					dw	offset mswi062_t, offset mswi062_i
+					dw	30+ 4*256, offset msg_nouse
+					dw	60+ 4*256, offset msg_use
+
+					db	5, 2
+					dw	offset mswi063_t, offset mswi063_i
+					dw	30+ 6*256, offset msg_nouse
+					dw	60+ 6*256, offset msg_use
+
+mswsub_m07			db	3
+
+					db	1, 2
+					dw	offset mswi071_t, offset mswi071_i
+					dw	30+ 2*256, offset msg_nouse
+					dw	60+ 2*256, offset msg_use
+
+					db	3, 2
+					dw	offset mswi072_t, offset mswi072_i
+					dw	30+ 4*256, offset msg_nouse
+					dw	60+ 4*256, offset msg_use
+
+					db	5, 2
+					dw	offset mswi073_t, offset mswi073_i
+					dw	30+ 6*256, offset mswi073_1
+					dw	60+ 6*256, offset mswi073_2
+
+mswsub_m08			db	3
+
+					db	1, 6
+					dw	offset mswi081_t, offset mswi081_i
+					dw	20+ 2*256, offset mswi081_1
+					dw	20+ 3*256, offset mswi081_2
+					dw	20+ 4*256, offset mswi081_3
+					dw	20+ 5*256, offset mswi081_4
+					dw	20+ 6*256, offset mswi081_5
+					dw	20+ 7*256, offset mswi081_6
+
+					db	8, 2
+					dw	offset mswi082_t, offset mswi082_i
+					dw	20+ 9*256, offset mswi082_1
+					dw	20+10*256, offset mswi082_2
+
+					db	11, 2
+					dw	offset mswi083_t, offset mswi083_i
+					dw	30+12*256, offset msg_use
+					dw	60+12*256, offset msg_nouse
+
+mswsub_m09			db	2
+
+					db	1, 2
+					dw	offset mswi091_t, offset mswi091_i
+					dw	30+ 2*256, offset msg_nouse
+					dw	60+ 2*256, offset msg_use
+
+					db	3, 2
+					dw	offset mswi092_t, offset mswi092_i
+					dw	30+ 4*256, offset msg_nouse
+					dw	60+ 4*256, offset msg_use
+
+mswsub_m10			db	2
+
+					db	1, 2
+					dw	offset mswi101_t, offset mswi101_i
+					dw	30+ 2*256, offset msg_nouse
+					dw	60+ 2*256, offset msg_use
+
+					db	3, 2
+					dw	offset mswi102_t, offset mswi102_i
+					dw	20+ 4*256, offset mswi102_1
+					dw	20+ 5*256, offset mswi102_2
+
+
+mswsub_items		dw	offset mswsub_m01, offset mswsub_m02
+					dw	offset mswsub_m03, offset mswsub_m04
+					dw	offset mswsub_m05, offset mswsub_m06
+					dw	offset mswsub_m07, offset mswsub_m08
+					dw	offset mswsub_m09, offset mswsub_m10

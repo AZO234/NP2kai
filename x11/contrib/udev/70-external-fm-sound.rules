@@ -1,0 +1,11 @@
+ACTION!="add", GOTO="external_fm_sound_end"
+
+SUBSYSTEM=="tty", IMPORT{parent}="ID_VENDOR_ID", IMPORT{parent}="ID_MODEL_ID"
+
+# C86BOX
+SUBSYSTEM=="usb", ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="27d8", MODE="0666"
+
+# SPFM Light (a.k.a. FTDI FT232RL)
+SUBSYSTEM=="tty", KERNEL=="ttyUSB*", ENV{ID_VENDOR_ID}=="0403", ENV{ID_MODEL_ID}=="6001", MODE="0666"
+
+LABEL="external_fm_sound_end"

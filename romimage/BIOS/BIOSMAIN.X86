@@ -1,0 +1,90 @@
+
+biosmain:		sti
+				jmp		biosinit
+
+biosmain2:		test	byte [0x0480], 2
+				je		short .cpuided
+
+				CPU		286
+				cli
+				mov		al, 0x0e
+				out		0x37, al
+				smsw	ax
+				push	ax
+				push	cs
+				push	.reset
+				mov		[0x0406], ss
+				mov		[0x0404], sp
+				mov		al, 0
+				out		0xf0, al
+				hlt
+.reset:			pop		ax
+				lmsw	ax
+				mov		[0x0486], dx
+				sti
+.cpuided:
+				mov		al, 0x0f
+				out		0x37, al
+				mov		al, 0x0b
+				out		0x37, al
+				mov		al, 0x09
+				out		0x37, al
+
+				CPU		8086
+				mov		word [0x04ac], 0x0c
+				call	diskbios_set
+diskbiosinit1:	mov		es, [0x04ae]
+				cmp		word [es:0x0009], 0xaa55
+				jne		short nextparag1
+				mov		al, [bx]
+				or		al, al
+				jne		short nextparag1
+				call	calldiskbios
+nextparag1:		inc		bx
+				inc		byte [0x04af]
+				loop	diskbiosinit1
+
+				mov		word [0x04ac], 0x0f
+				call	diskbiosinit2
+				mov		word [0x04ac], 0x12
+				call	diskbiosinit2
+
+%if 0	; ide test
+				mov		ax, 0a0ah
+				mov		word [0x04ac], 0x15
+				call	diskbiosinit2
+%else
+				db		9ah					; call far
+				dw		027e8h
+				dw		0fd80h
+%endif
+
+				in		al, 31h
+				test	al, 1
+				jne		short callbasic
+				int		1fh
+callbasic:		int		1eh
+
+diskbios_set:	mov		bx, 04d0h
+				mov		cx, 0010h
+				mov		word [0x04ae], 0xd000
+				ret
+
+diskbiosinit2:	call	diskbios_set
+.loop:			test	byte [bx], 0x40
+				je		short .skip
+				call	calldiskbios
+.skip:			inc		bx
+				inc		byte [0x04af]
+				loop	.loop
+				ret
+
+calldiskbios:	push	ax
+				push	bx
+				push	cx
+				call	far [0x04ac]
+				pop		cx
+				pop		bx
+				pop		ax
+				ret
+

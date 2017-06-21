@@ -1,0 +1,35 @@
+; BEEP TEST
+
+beeptestwait:	mov		al, 4
+beeptestwaitlp1:mov		cx, 9000h
+				loop	$						; mine
+				dec		al
+				jne		beeptestwaitlp1
+				ret
+
+BEEP_TEST:		mov		bx, 3e6h				; 2.0MHz
+				in		al, 42h
+				test	al, 20h
+				jne		short beephzok
+				mov		bx, 4cdh				; 2.5MHz
+beephzok:		mov		al, 76h
+				out		77h, al					; BEEP setup mode#0
+
+				cmp		byte ptr ds:[MACTYPE], 0
+				jne		short beep_Hzset
+
+				call	beep_Hzset
+				mov		al, 6
+				out		37h, al					; BEEP ON
+				call	beeptestwait
+				shl		bx, 1
+				call	beep_Hzset
+				call	beeptestwait
+				mov		al, 7
+				out		37h, al					; BEEP OFF
+				shr		bx, 1
+beep_Hzset:		mov		al, bl
+				out		73h, al
+				mov		al, bh
+				out		73h, al
+				ret

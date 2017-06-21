@@ -1,0 +1,139 @@
+
+section .text
+
+	global	@rand_setseed@4
+	global	@rand_get@0
+	global	@AdjustAfterMultiply@4
+	global	@AdjustBeforeDivision@4
+	global	@sjis2jis@4
+	global	@jis2sjis@4
+	global	@satuation_s16@12
+	global	@satuation_s16x@12
+	global	@satuation_s16mmx@12
+
+				align	16
+@rand_get@0:	mov		eax, dword [_randseed]
+				imul	eax, 343fdh
+				add		eax, 269ec3h
+				mov		dword [_randseed], eax
+				sar		eax, 16
+				ret
+
+@rand_setseed@4:mov		dword [_randseed], ecx
+				ret
+
+				align	16
+@AdjustAfterMultiply@4:
+				mov		al, cl
+				aam
+				shl		ah, 4
+				add		al, ah
+				ret
+
+				align	16
+@AdjustBeforeDivision@4:
+				mov		al, cl
+				mov		ah, al
+				and		al, 0fh
+				shr		ah, 4
+				aad
+				ret
+
+				align	16
+@sjis2jis@4:	mov		eax, ecx
+				shl		ah, 1
+				sub		al, 1fh
+				js		sjis2jis1a
+				cmp		al, 61h
+				adc		al, 0deh
+sjis2jis1a:		add		ax, 1fa1h
+				and		eax, 7f7fh
+				ret
+
+				align	16
+@jis2sjis@4:	mov		eax, ecx
+				and		eax, 7f7fh
+				add		ah, 21h
+				shr		ah, 1
+				jnc		short jis2sjis1a
+				add		al, 5eh
+jis2sjis1a:		cmp		al, 60h
+				sbb		al, 0e0h
+				xor		ah, 0a0h
+				ret
+
+				align	16
+@satuation_s16@12:
+				push	ebx
+				mov		ebx, [esp+8]
+				shr		ebx, 1
+				je		short ss16_ed
+ss16_lp:		mov		eax, [edx]
+				cmp		eax, 000008000h
+				jl		short ss16_min
+				mov		ax, 7fffh
+				jmp		short ss16_set
+ss16_min:		cmp		eax, 0ffff8000h
+				jg		short ss16_set
+				mov		ax, 8001h
+ss16_set:		lea		edx, [edx+4]
+				mov		[ecx], ax
+				dec		ebx
+				lea		ecx, [ecx+2]
+				jne		short ss16_lp
+ss16_ed:		pop		ebx
+				ret		4
+
+				align	16
+@satuation_s16x@12:
+				push	ebx
+				mov		ebx, [esp+8]
+				shr		ebx, 2
+				je		short ss16x_ed
+ss16x_lp:		mov		eax, [edx]
+				cmp		eax, 000008000h
+				jl		short ss16xl_min
+				mov		ax, 7fffh
+				jmp		short ss16xl_set
+ss16xl_min:		cmp		eax, 0ffff8000h
+				jg		short ss16xl_set
+				mov		ax, 8001h
+ss16xl_set:		mov		[ecx+2], ax
+				mov		eax, [edx+4]
+				cmp		eax, 000008000h
+				jl		short ss16xr_min
+				mov		ax, 7fffh
+				jmp		short ss16xr_set
+ss16xr_min:		cmp		eax, 0ffff8000h
+				jg		short ss16xr_set
+				mov		ax, 8001h
+ss16xr_set:		mov		[ecx], ax
+				lea		edx, [edx+8]
+				dec		ebx
+				lea		ecx, [ecx+4]
+				jne		short ss16x_lp
+ss16x_ed:		pop		ebx
+				ret		4
+
+				align		16
+@satuation_s16mmx@12:
+				mov			eax, [esp+4]
+				shr			eax, 3
+				je			short ss16m_ed
+				pxor		mm0, mm0
+ss16m_lp:		movq		mm1, [edx]
+				movq		mm2, [edx+8]
+				packssdw	mm1, mm2
+				lea			edx, [edx+16]
+				movq		[ecx], mm1
+				lea			ecx, [ecx+8]
+				dec			eax
+				jne			short ss16m_lp
+				emms
+ss16m_ed:		ret		4
+
+
+section .data
+
+_randseed	dd		1
+

@@ -1,0 +1,527 @@
+MLMSW1	equ	(MEM_MSW1 and 0ffh)
+MLMSW2	equ	(MEM_MSW2 and 0ffh)
+MLMSW3	equ	(MEM_MSW3 and 0ffh)
+MLMSW4	equ	(MEM_MSW4 and 0ffh)
+MLMSW5	equ	(MEM_MSW5 and 0ffh)
+MLMSW6	equ	(MEM_MSW6 and 0ffh)
+
+
+memswbit	db		0*8+0,	MLMSW1,	001h,	0
+			db		0*8+1,	MLMSW1,	002h,	0
+			db		0*8+2,	MLMSW1,	00ch,	1*2-1	; data bit
+			db		0*8+3,	MLMSW1,	030h,	2*2-1	; crc
+			db		0*8+4,	MLMSW1,	0c0h,	3*2-1	; stop bit
+			db		0*8+5,	MLMSW2,	00fh,	4*2-1	; boau rate
+
+			db		1*8+0,	MLMSW2,	010h,	0
+			db		1*8+1,	MLMSW2,	020h,	0
+			db		1*8+2,	MLMSW2,	040h,	0
+			db		1*8+3,	MLMSW2,	080h,	0
+			db		1*8+4,	MLMSW3,	080h,	0
+
+			db		2*8+0,	MLMSW3,	007h,	5*2-1	; memory
+
+			db		3*8+0,	MLMSW3,	018h,	6*2-1	; coprocessor
+			db		3*8+1,	MLMSW3,	020h,	0
+
+			db		4*8+0,	MLMSW3,	040h,	0
+
+			db		5*8+0,	MLMSW4,	008h,	0
+			db		5*8+1,	MLMSW4,	010h,	0
+			db		5*8+2,	MLMSW4,	020h,	0
+
+			db		6*8+0,	MLMSW5,	001h,	0
+			db		6*8+1,	MLMSW6,	010h,	0
+			db		6*8+2,	MLMSW5,	008h,	0
+
+			db		7*8+0,	MLMSW5,	0f0h,	7*2-1	; boot
+			db		7*8+1,	MLMSW5,	002h,	0
+			db		7*8+2,	MLMSW5,	004h,	0
+
+			db		8*8+0,	MLMSW6,	008h,	0
+			db		8*8+1,	MLMSW6,	020h,	0
+
+mswsread_p6:	push	ax
+				mov		ax, 0100h
+				db		0d5h, 0
+				pop		ax
+				je		mswsread_p1
+				shr		al, 1						; V30
+
+mswsread_p1:	and		al, 1
+				ret
+
+mswsread_p2:	shr		al, 1
+				jnc		mswsread_0
+				inc		al
+				ret
+mswsread_0:		mov		al, 0
+				ret
+
+mswsread_p3:	test	al, al
+				je		mswsread_ret
+				dec		al
+mswsread_ret:	ret
+
+mswsread_p4:	dec		al
+				cmp		al, 8
+				jc		mswsread_ret
+				mov		al, 4
+				ret
+
+mswsread_p5:	cmp		al, 5
+				jc		mswsread_ret
+				mov		al, 4
+				ret
+
+mswr_bootdev	db	0, 5, 1, 5, 2, 5, 5, 5
+				db	5, 5, 3, 4, 5, 5, 5, 5
+
+mswsread_p7:	mov		bx, offset mswr_bootdev
+				db		FIXCS
+				xlat
+				ret
+
+mswsread_p		dw	offset mswsread_p1, offset mswsread_p2
+				dw	offset mswsread_p3, offset mswsread_p4
+				dw	offset mswsread_p5, offset mswsread_p6
+				dw	offset mswsread_p7
+
+
+msw_getparam:	mov		si, offset memswbit
+				mov		cx, 26
+msws_rbitoutlp:	mov		ax, cs:[si]
+				mov		dx, cs:[si+2]
+				mov		bx, (MEM_MSW1 and 0ff00h)
+				xchg	bl, ah
+				mov		di, ax
+				mov		al, es:[bx]
+				and		al, dl
+				mov		ah, dl
+				stc
+msws_rbitolp:	rcr		ah, 1
+				jc		msws_rbitoed
+				shr		al, 1
+				jmps	msws_rbitolp
+msws_rbitoed:	dec		dh
+				js		msws_rbitout
+				xor		bx, bx
+				mov		bl, dh
+				call	cs:mswsread_p[bx]
+msws_rbitout:	mov		ds:[di + MEMSW_X], al
+				add		si, 4
+				loop	msws_rbitoutlp
+				ret
+
+
+
+
+mswswrite_p1:	or		al, 2
+				ret
+
+mswswrite_p2:	test	al, al
+				jne		mswswrite_p2e
+				mov		dl, 10h				; bit
+				ret
+mswswrite_p2e:	inc		al
+				ret
+
+mswswrite_p3:	inc		al
+mswswrite_p5:	ret
+
+mswswrite_p6:	push	ax
+				mov		ax, 0100h
+				db		0d5h, 0
+				pop		ax
+				mov		dl, 08h
+				je		mswswrite_p6e
+				mov		dl, 10h						; V30
+mswswrite_p6e:	ret
+
+
+msww_bootdev	db	00h, 02h, 04h, 0ah, 0bh, 0fh, 0fh, 0fh
+
+mswswrite_p7:	and		al, 7
+				mov		bx, offset msww_bootdev
+				db		FIXCS
+				xlat
+				ret
+
+mswswrite_p		dw	offset mswswrite_p1, offset mswswrite_p2
+				dw	offset mswswrite_p3, offset mswswrite_p3
+				dw	offset mswswrite_p5, offset mswswrite_p6
+				dw	offset mswswrite_p7
+
+msw_setparam:
+ifndef DEBUG
+				mov		al, 0dh
+				out		68h, al						; memsw write enable
+endif
+				mov		si, offset memswbit
+				mov		cx, 26
+msws_wbitoutlp:	mov		ax, cs:[si]
+				mov		dx, cs:[si+2]
+				mov		bx, (MEM_MSW1 and 0ff00h)
+				xchg	bl, ah
+				mov		di, ax
+				mov		al, ds:[di + MEMSW_X]
+				dec		dh
+				js		msws_wbitout
+				push	bx
+				xor		bx, bx
+				mov		bl, dh
+				call	cs:mswswrite_p[bx]
+				pop		bx
+msws_wbitout:	not		dl
+				and		es:[bx], dl
+				not		dl
+				stc
+msws_wbitolp:	rcr		dl, 1
+				jc		msws_wbitoed
+				shl		al, 1
+				jmps	msws_wbitolp
+msws_wbitoed:	or		es:[bx], al
+				add		si, 4
+				loop	msws_wbitoutlp
+ifndef DEBUG
+				mov		al, 0ch
+				out		68h, al						; memsw write disable
+endif
+				ret
+
+
+
+
+; --------------------------------------------------------------------------
+
+msw_mitmput:		mov		dx, 0206h
+					add		dh, al
+					mov		si, ax
+					add		si, si
+					mov		si, cs:mswmainmenus[si]
+					jmp		TEXTOUT_CS
+
+
+memsw_start:		call	msw_getparam
+
+					call	SCREEN_CLEAR
+					mov		dx, 23*256+3
+					mov		cl, 0e1h
+					mov		si, offset memsw_help2
+					call	TEXTOUT_CS
+
+					xor		ax, ax
+
+msw_main:			push	ax
+					xor		di, di
+					mov		cx, 1750h
+					call	boxclear
+
+					mov		cl, 0e1h
+					xor		dx, dx
+					mov		si, offset memsw_title
+					call	TEXTOUT_CS
+
+					in		al, 31h
+					test	al, 10h
+					je		msw_mainmst
+
+					mov		dx, 1204h
+					mov		si, offset sw25_off
+					call	TEXTOUT_CS
+
+msw_mainmst:		xor		ax, ax
+
+msw_mainmlp:		push	ax
+					call	msw_mitmput
+					pop		ax
+					inc		al
+					cmp		al, MSWMENU_ITEMS
+					jb		msw_mainmlp
+					pop		ax
+					jmps	msw_mainml1
+
+mswev_up:			mov		bx, ax
+					dec		al
+					jns		msw_mainml0
+					mov		al, MSWMENU_ITEMS - 1
+					jmps	msw_mainml0
+
+mswev_dn:			mov		bx, ax
+					inc		al
+					cmp		al, MSWMENU_ITEMS
+					jb		msw_mainml0
+					mov		al, 0
+
+msw_mainml0:		push	ax
+					mov		ax, bx
+					mov		cl, 0e1h
+					call	msw_mitmput
+					pop		ax
+
+msw_mainml1:		push	ax
+					mov		cl, 0e5h
+					call	msw_mitmput
+					pop		ax
+
+					mov		si, offset memsw_event
+					jmp		ssp_keyevent
+
+memsw_event			db		3ah
+					dw		offset mswev_up
+					db		3dh
+					dw		offset mswev_dn
+					db		60h
+					dw		offset mswsv_stop
+					db		1ch
+					dw		offset mswev_ret
+					db		-1
+
+mswev_ret:			cmp		al, MSWMENU_ITEMS - 1
+					jb		mews_main
+					call	msw_setparam
+mswsv_stop:			ret
+
+; -------------------------------------------------------------------- sub menu
+
+memswline			db	"----", 0
+
+
+msws_miheader:		mov		si, bx
+					add		si, si
+					mov		si, cs:mswsub_items[si]
+					ret
+
+; 頭を呼び出し…
+msws_mihead:		call	msws_miheader
+					push	ax
+					inc		si
+					test	ah, ah
+					je		msws_miheaded
+msws_miheadlp:		mov		dl, cs:[si+1]
+					mov		dh, 0
+					add		dx, dx
+					add		dx, dx
+					add		dx, 6
+					add		si, dx
+					dec		ah
+					jne		msws_miheadlp
+msws_miheaded:		pop		ax
+					ret
+
+
+
+
+mews_main:			push	ax
+					xor		di, di
+					mov		cx, 1750h
+					call	boxclear
+
+					mov		dx, 20*256+3
+					mov		cl, 0e1h
+					mov		si, offset memsw_help1
+					call	TEXTOUT_CS
+
+					mov		cl, 0e1h
+					xor		dx, dx
+					mov		si, offset memswline
+					call	TEXTOUT_CS
+					inc		dl
+					inc		dl
+					pop		ax
+					mov		bx, ax
+					push	ax
+					add		ax, ax
+					mov		si, ax
+					mov		si, cs:mswmainmenus[si]
+					call	TEXTOUT_CS
+					inc		dl
+					inc		dl
+					mov		si, offset memswline
+					call	TEXTOUT_CS
+
+					; メニューをびるど
+					mov		cl, 0e1h
+					xor		ax, ax
+
+msws_msdplp0:		push	ax
+					call	msws_mihead
+					mov		dl, 3
+					mov		dh, cs:[si]
+					mov		ch, cs:[si+1]
+					mov		si, cs:[si+2]
+					call	TEXTOUT_CS
+					inc		dl
+					inc		dl
+					call	calc_dx2di
+msws_menub_lp:		mov		word ptr es:[di], 00a5h
+					inc		di
+					inc		di
+					inc		dl
+					cmp		dl, 72
+					jbe		msws_menub_lp
+					pop		ax
+
+msws_msdplp1:		call	msws_itemdisp
+					inc		al
+					cmp		al, ch
+					jb		msws_msdplp1
+
+					call	msws_curladrs
+					mov		al, ds:[di]
+					call	msws_micur
+
+					mov		al, 0
+					inc		ah
+					call	msws_miheader
+					cmp		ah, cs:[si]
+					jb		msws_msdplp0
+
+					xor		ax, ax
+
+mswsubmenu_st:		call	msws_curladrs
+					mov		al, ds:[di]
+					push	ax
+					mov		di, 18*160
+					mov		cx, 0150h
+					call	boxclear
+					pop		ax
+
+mswsubmenu_rd:		mov		cl, 0e5h
+					call	msws_itemdisp
+					mov		cl, 0e1h
+mswsubmenu_lp:		mov		si, offset memswsub_event
+					jmp		ssp_keyevent
+
+mswsev_help:		call	msws_mihead
+					push	ax
+					mov		dx, 18*256
+					mov		si, cs:[si+4]
+					call	TEXTOUT_CS
+					pop		ax
+					jmps	mswsubmenu_lp
+
+mswsev_up:			call	msws_itemdisp
+					dec		ah
+					jns		mswsubmenu_st
+					call	msws_miheader
+					mov		ah, cs:[si]
+					dec		ah
+					jmps	mswsubmenu_st
+
+mswsev_dn:			call	msws_itemdisp
+					inc		ah
+					call	msws_miheader
+					cmp		ah, cs:[si]
+					jb		mswsubmenu_st
+					mov		ah, 0
+					jmps	mswsubmenu_st
+
+mswsev_lt:			call	msws_itemdisp
+					dec		al
+					jns		mswsubmenu_rd
+					mov		al, cs:[si+1]
+					dec		al
+					jmps	mswsubmenu_rd
+
+mswsev_rt:			call	msws_itemdisp
+					inc		al
+					cmp		al, cs:[si+1]
+					jb		mswsubmenu_rd
+					mov		al, 0
+					jmps	mswsubmenu_rd
+
+mswsev_ret:			call	msws_micur
+					jmps	mswsubmenu_lp
+
+mswsev_esc:			pop		ax
+					jmp		msw_main
+
+mswsev_stop:		pop		ax
+					ret						; 戻る
+
+memswsub_event		db		3ah
+					dw		offset mswsev_up
+					db		3dh
+					dw		offset mswsev_dn
+					db		3bh
+					dw		offset mswsev_lt
+					db		3ch
+					dw		offset mswsev_rt
+					db		1ch
+					dw		offset mswsev_ret
+					db		3fh
+					dw		offset mswsev_help
+					db		60h
+					dw		offset mswsev_stop
+					db		0
+					dw		offset mswsev_esc
+					db		-1
+
+
+msws_curladrs:		push	ax
+					mov		di, bx
+					add		di, di
+					add		di, di
+					add		di, di
+					mov		al, ah
+					mov		ah, 0
+					add		ax, MEMSW_X
+					add		di, ax
+					pop		ax
+					ret
+
+
+mswm_cursoledip:	mov		ah, 0
+					add		ax, ax
+					add		ax, ax
+					push	si
+					add		si, ax
+					mov		dx, cs:[si + 6]
+					call	calc_dx2di
+					mov		es:[di-2], ch
+					mov		si, cs:[si + 6 + 2]
+					call	TEXTOUT_SKIP
+					call	calc_dx2di
+					cmp		ch, 28h
+					jne		mswm_cursoledipr
+					inc		ch
+mswm_cursoledipr:	mov		es:[di], ch
+					pop		si
+					ret
+
+
+msws_micur:			call	msws_mihead
+					cmp		al, cs:[si + 1]
+					jb		mswm_micurdel
+					mov		al, 0
+mswm_micurdel:		call	msws_curladrs
+					push	ax
+					xchg	al, ds:[di]
+					cmp		al, cs:[si + 1]
+					jae		mswm_micurdld
+					mov		ch, 20h
+					call	mswm_cursoledip
+mswm_micurdld:		pop		ax
+					push	ax
+					mov		ch, 28h
+					call	mswm_cursoledip
+					pop		ax
+					ret
+
+
+msws_itemdisp:		push	ax
+					call	msws_mihead
+					push	si
+					mov		ah, 0
+					add		ax, ax
+					add		ax, ax
+					add		si, ax
+					mov		dx, cs:[si+6]
+					mov		si, cs:[si+6+2]
+					call	TEXTOUT_CS
+					pop		si
+					pop		ax
+					ret
+
+

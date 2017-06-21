@@ -1,0 +1,35 @@
+
+perrbase	db	'PARITY ERROR - BASE MEMORY', 0
+perrext		db	'PARITY ERROR - EXTENDED MEMORY', 0
+
+vect02:			push	ax
+				in		al, 0x42
+				test	al, 0x06
+				jne		short .hlt
+				pop		ax
+				iret
+.hlt:			mov		si, perrbase
+				test	al, 0x04
+				jne		short .disp
+				mov		si, perrext
+.disp:			mov		ax, 0xa000
+				mov		es, ax
+				xor		di, di
+				cld
+				in		al, 0x31
+				and		ax, byte 0x04
+				shr		ax, 1
+				inc		ax
+				mov		dx, ax
+
+.loop:			db		FIXCS
+				lodsb
+				test	al, -1
+				je		short .looped
+				mov		byte [es:di + 0x2000], 0x43
+				stosb
+				add		di, dx
+				jmp		short .loop
+.looped:		cli
+				hlt
+

@@ -1,0 +1,190 @@
+
+typedef struct {
+	UINT8	num;
+	OEMCHAR	str[7];
+} KEYNAME;
+
+static const KEYNAME s_keyname[] = {
+		{0x00, OEMTEXT("ESC")},
+		{0x01, OEMTEXT("1")},
+		{0x02, OEMTEXT("2")},
+		{0x03, OEMTEXT("3")},
+		{0x04, OEMTEXT("4")},
+		{0x05, OEMTEXT("5")},
+		{0x06, OEMTEXT("6")},
+		{0x07, OEMTEXT("7")},
+
+		{0x08, OEMTEXT("8")},
+		{0x09, OEMTEXT("9")},
+		{0x0a, OEMTEXT("0")},
+		{0x0b, OEMTEXT("-")},
+		{0x0c, OEMTEXT("^")},
+		{0x0d, OEMTEXT("\\")},
+		{0x0e, OEMTEXT("BS")},
+		{0x0f, OEMTEXT("TAB")},
+
+		{0x10, OEMTEXT("Q")},
+		{0x11, OEMTEXT("W")},
+		{0x12, OEMTEXT("E")},
+		{0x13, OEMTEXT("R")},
+		{0x14, OEMTEXT("T")},
+		{0x15, OEMTEXT("Y")},
+		{0x16, OEMTEXT("U")},
+		{0x17, OEMTEXT("I")},
+
+		{0x18, OEMTEXT("O")},
+		{0x19, OEMTEXT("P")},
+		{0x1a, OEMTEXT("@")},
+		{0x1b, OEMTEXT("[")},
+		{0x1c, OEMTEXT("RET")},	{0x1c, OEMTEXT("ENTER")},
+		{0x1d, OEMTEXT("A")},
+		{0x1e, OEMTEXT("S")},
+		{0x1f, OEMTEXT("D")},
+
+		{0x20, OEMTEXT("F")},
+		{0x21, OEMTEXT("G")},
+		{0x22, OEMTEXT("H")},
+		{0x23, OEMTEXT("J")},
+		{0x24, OEMTEXT("K")},
+		{0x25, OEMTEXT("L")},
+		{0x26, OEMTEXT(";")},
+		{0x27, OEMTEXT(":")},
+
+		{0x28, OEMTEXT("]")},
+		{0x29, OEMTEXT("Z")},
+		{0x2a, OEMTEXT("X")},
+		{0x2b, OEMTEXT("C")},
+		{0x2c, OEMTEXT("V")},
+		{0x2d, OEMTEXT("B")},
+		{0x2e, OEMTEXT("N")},
+		{0x2f, OEMTEXT("M")},
+
+		{0x30, OEMTEXT(",")},
+		{0x31, OEMTEXT(".")},
+		{0x32, OEMTEXT("/")},
+		{0x33, OEMTEXT("_")},
+		{0x34, OEMTEXT("SPC")},
+		{0x35, OEMTEXT("XFER")},
+		{0x36, OEMTEXT("RLUP")},
+		{0x37, OEMTEXT("RLDN")},
+
+		{0x38, OEMTEXT("INS")},
+		{0x39, OEMTEXT("DEL")},
+		{0x3a, OEMTEXT("UP")},
+		{0x3b, OEMTEXT("LEFT")},
+		{0x3c, OEMTEXT("RIGHT")},
+		{0x3d, OEMTEXT("DOWN")},
+		{0x3e, OEMTEXT("HOME")}, {0x3e, OEMTEXT("HMCR")},
+		{0x3f, OEMTEXT("HELP")}, {0x3f, OEMTEXT("END")},
+
+		{0x40, OEMTEXT("[-]")},
+		{0x41, OEMTEXT("[/]")},
+		{0x42, OEMTEXT("[7]")},
+		{0x43, OEMTEXT("[8]")},
+		{0x44, OEMTEXT("[9]")},
+		{0x45, OEMTEXT("[*]")},
+		{0x46, OEMTEXT("[4]")},
+		{0x47, OEMTEXT("[5]")},
+
+		{0x48, OEMTEXT("[6]")},
+		{0x49, OEMTEXT("[+]")},
+		{0x4a, OEMTEXT("[1]")},
+		{0x4b, OEMTEXT("[2]")},
+		{0x4c, OEMTEXT("[3]")},
+		{0x4d, OEMTEXT("[=]")},	{0x4d, OEMTEXT("[EQU]")},
+		{0x4e, OEMTEXT("[0]")},
+		{0x4f, OEMTEXT("[,]")},
+
+		{0x50, OEMTEXT("[.]")},
+		{0x51, OEMTEXT("NFER")},
+		{0x52, OEMTEXT("VF1")},
+		{0x53, OEMTEXT("VF2")},
+		{0x54, OEMTEXT("VF3")},
+		{0x55, OEMTEXT("VF4")},
+		{0x56, OEMTEXT("VF5")},
+
+		{0x60, OEMTEXT("STOP")},
+		{0x61, OEMTEXT("COPY")},
+		{0x62, OEMTEXT("F1")},
+		{0x63, OEMTEXT("F2")},
+		{0x64, OEMTEXT("F3")},
+		{0x65, OEMTEXT("F4")},
+		{0x66, OEMTEXT("F5")},
+		{0x67, OEMTEXT("F6")},
+
+		{0x68, OEMTEXT("F7")},
+		{0x69, OEMTEXT("F8")},
+		{0x6a, OEMTEXT("F9")},
+		{0x6b, OEMTEXT("F10")},
+
+		{0x70, OEMTEXT("SHIFT")},
+		{0x71, OEMTEXT("CAPS")},
+		{0x72, OEMTEXT("KANA")},
+		{0x73, OEMTEXT("GRPH")}, {0x73, OEMTEXT("ALT")},
+		{0x74, OEMTEXT("CTRL")},
+		{0x77, OEMTEXT("LWIN")},
+
+		{0x78, OEMTEXT("RWIN")},
+		{0x79, OEMTEXT("APP")},
+		{0x7d, OEMTEXT("RSHIFT")}};
+
+
+
+// ----
+
+static const UINT8 joykeytable[12] = {
+				0x2a,	0x34,
+				0x29,	0x1c,
+				0x3c,	0x48,
+				0x3b,	0x46,
+				0x3d,	0x4b,
+				0x3a,	0x43};
+
+enum {
+	KBEX_JOYKEY		= 0x40,
+	KBEX_NONREP		= 0x80
+};
+
+static const UINT8 kbexflag[NKEY_SYSTEM] = {
+		//	 ESC,  ÇP,  ÇQ,  ÇR,  ÇS,  ÇT,  ÇU,  ÇV		; 00h
+			   0,   0,   0,   0,   0,   0,   0,   0,
+		//	  ÇW,  ÇX,  ÇO,  Å|,  ÅO,  Åè,  BS, TAB		; 08h
+			   0,   0,   0,   0,   0,   0,   0,   0,
+		//	  Çp,  Çv,  Çd,  Çq,  Çs,  Çx,  Çt,  Çh		; 10h
+			   0,   0,   0,   0,   0,   0,   0,   0,
+		//	  Çn,  Ço,  Åó,  Åm, Ret,  Ç`,  Çr,  Çc		; 18h
+			   0,   0,   0,   0,0x44,   0,   0,   0,
+		//	  Çe,  Çf,  Çg,  Çi,  Çj,  Çk,  ÅG,  ÅF		; 20h
+			   0,   0,   0,   0,   0,   0,   0,   0,
+		//    Ån,  Çy,  Çw,  Çb,  Çu,  Ça,  Çm,  Çl		; 28h
+			   0,0x44,0x45,   0,   0,   0,   0,   0,
+		//    ÅC,  ÅD,  Å^,  ÅQ, SPC,XFER,RLUP,RLDN		; 30h
+			   0,   0,   0,   0,0x45,   0,   0,   0,
+		//	 INS, DEL,  Å™,  Å©,  Å®,  Å´,HMCR,HELP		; 38h
+			   2,   0,0x40,0x42,0x43,0x41,   0,   0,
+		//	<Å|>,<Å^>,<ÇV>,<ÇW>,<ÇX>,<Åñ>,<ÇS>,<ÇT>		; 40h
+			   0,   0,   0,0x40,   0,   0,0x42,   0,
+		//	<ÇU>,<Å{>,<ÇP>,<ÇQ>,<ÇR>,<ÅÅ>,<ÇO>,<ÅC>		; 48h
+			0x43,   0,   0,0x41,   0,   0,   0,   0,
+		//	<ÅD>,NFER,vf.1,vf.2,vf.3,vf.4,vf.5,   		; 50h
+			   0,   0,0x80,0x80,0x80,0x80,0x80,   0,
+		//	    ,    ,    ,    ,    ,    ,HOME,   		; 58h
+			   0,   0,   0,   0,   0,   0,   0,   0,
+		//	STOP,COPY, f.1, f.2, f.3, f.4, f.5, f.6		; 60h
+			   0,   0,0x80,0x80,0x80,0x80,0x80,0x80,
+		//	 f.7, f.8, f.9, f10,    ,    ,    ,   		; 68h
+			0x80,0x80,0x80,0x80,   0,   0,   0,   0,
+		//	 SFT,CAPS,KANA,GRPH,CTRL,    ,    ,   		; 70h
+			0x80,0x80,0x80,0x80,0x80,   0,   0,   0,
+		//	    ,    ,    ,    ,    ,RSFT,    ,   		; 78h
+			   0,   0,   0,   0,   0,0x80,   0,   0,
+		//	    ,    ,    ,    ,    ,    ,    ,   		; 80h
+			   0,   0,   0,   0,   0,   0,   0,   0,
+		//	    ,    ,    ,    ,    ,    ,    ,   		; 88h
+			   0,   0,   0,   0,   0,   0,   0,   0};
+
+
+static const UINT8 mousedelta[] = {1, 1, 1, 1,
+									2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 4};
+#define	MOUSESTEPMAX ((sizeof(mousedelta) / sizeof(UINT8)) - 1)
+

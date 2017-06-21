@@ -1,0 +1,273 @@
+; テキスト操作系
+
+SCREEN_CLEAR:	mov		ax, 0a000h
+				mov		es, ax
+				xor		di, di
+				mov		ax, 20h					; ' '
+				mov		cx, 1000h
+				rep stosw
+				mov		cx, 0fe0h
+				mov		al, 0e1h
+scrnclr_atrclr:	stosb
+				inc		di
+				loop	scrnclr_atrclr
+				ret
+
+; ---------------------------------------------------------------------------
+
+sub_clri2a:		mov		si, I2ABUFFER
+				mov		cx, 10
+sub_clri2al:	mov		byte ptr [si], 20h
+				inc		si
+				loop	sub_clri2al
+				mov		[si], cl
+				ret
+
+; i2a in-ax / out-si / broken ax,cx,dx
+STRING_I2A:		call	sub_clri2a
+				or		ax, ax
+				jne		short sub_i2a
+				dec		si
+				mov		byte ptr [si], '0'
+				mov		cx, 4
+				ret
+
+; l2a in-ax,dx / out-si / broken ax,cx,dx
+STRING_L2A:		mov		cx, 10000
+				div		cx					; error case - dx:ax > 655350000
+				push	ax
+				mov		ax, dx
+				call	STRING_I2A
+				pop		ax
+				or		ax, ax
+				je		short sub_i2aed2
+				dec		cx
+				je		sub_i2a
+sub_l2afil0:	dec		si
+				mov		byte ptr [si], '0'
+				loop	sub_l2afil0
+
+sub_i2a:		push	bx
+				mov		cx, 5
+				mov		bx, 10
+sub_i2alp1:		xor		dx, dx
+				cmp		ax, dx
+				je		short sub_i2aed1
+				div		bx
+				add		dl, '0'
+				dec		si
+				mov		[si], dl
+				loop	sub_i2alp1
+sub_i2aed1:		pop		bx
+sub_i2aed2:		ret
+
+; ---------------------------------------------------------------------------
+
+calc_dx2di:		mov		di, dx
+				and		di, 007fh
+				add		di, di
+				mov		al, 160
+				mul		dh
+				add		di, ax
+textoutexit:	ret
+
+;TEXTOUT_DSLOC:	mov		dx, ds:[LOCATION]
+TEXTOUT_DS:		call	calc_dx2di
+textoutdslp:	lodsb
+				and		ax, 7fh
+				je		short textoutexit
+				mov		es:[di+2000h], cl
+				stosw
+				inc		dl
+				jmps	textoutdslp
+
+textoutcsr:		pop		dx
+				inc		dh
+TEXTOUT_CS:		push	dx
+textoutcsl:		call	calc_dx2di
+textoutcslp:	db		FIXCS
+				lodsb
+				and		ax, 00ffh
+				je		short textoutcse
+				cmp		al, 7fh
+				jae		textoutcsext
+				cmp		al, 20h
+				jc		short textoutcsp
+textoutcs1:		mov		es:[di+2000h], cl
+				stosw
+				inc		dl
+				jmps	textoutcslp
+textoutcse:		add		sp, 2
+				ret
+textoutcsp:		dec		al
+textoutcsp2:	add		ax, ax
+				push	si
+				mov		si, ax
+				mov		si, cs:KEYTABLE[si]
+				mov		ax, offset textoutcspe
+				push	ax
+				push	dx
+				jmps	textoutcslp
+textoutcspe:	pop		si
+				jmps	textoutcslp
+
+textoutcsext:	jne		short textoutcsk
+				inc		dh
+				mov		dl, ah
+				jmps	textoutcsl
+textoutcse2:	je		textoutcsr
+				dec		al
+				mov		ah, al
+				db		FIXCS
+				lodsb
+				add		ax, 31
+				jmps	textoutcsp2
+textoutcsk:		sub		al, 80h
+				je		short textoutcska
+				cmp		al, 1fh
+				jbe		short textoutcse2
+				mov		ah, al
+				db		FIXCS
+				lodsb
+				mov		es:[di+2000h], cl
+				stosw
+				mov		es:[di+2000h], cl
+				inc		di
+				inc		di
+				add		dl, 2
+				jmps	textoutcslp
+textoutcska:	db		FIXCS
+				lodsb
+				jmps	textoutcs1
+
+
+
+
+
+
+
+textoutskpr:	pop		dx
+				inc		dh
+TEXTOUT_SKIP:	push	dx
+textoutskplp:	db		FIXCS
+				lodsb
+				and		ax, 00ffh
+				je		short textoutcse
+				cmp		al, 7fh
+				jae		textoutskpext
+				cmp		al, 20h
+				jc		short textoutskpp
+				inc		dl
+				jmps	textoutskplp
+textoutskpe2:	je		textoutskpr
+				dec		al
+				mov		ah, al
+				db		FIXCS
+				lodsb
+				add		ax, 32
+textoutskpp:	dec		al
+textoutskp2:	add		ax, ax
+				push	si
+				mov		si, ax
+				mov		si, cs:KEYTABLE[si]
+				mov		ax, offset textoutskppe
+				push	ax
+				push	dx
+				jmps	textoutskplp
+textoutskppe:	pop		si
+				jmps	textoutskplp
+textoutskpext:	jne		short textoutskpk
+				inc		dh
+				mov		dl, ah
+				jmps	textoutskplp
+textoutskpk:	sub		al, 80h
+				je		short textoutskpka
+				cmp		al, 1fh
+				jbe		short textoutskpe2
+				inc		dl
+textoutskpka:	inc		si
+				inc		dl
+				jmps	textoutskplp
+
+
+
+
+
+; ---------------------------------------------------------------------------
+
+; boxclear: 黒色のboxfill - in: adrs->di, y->ch x->cl
+
+boxclear:		push	bx
+				mov		ax, 20h
+				mov		bh, 0e1h
+				mov		bl, ch
+boxclearylp:	push	di
+				push	cx
+				mov		ch, 0
+boxclearxlp:	mov		es:[di+2000h], bh
+				stosw
+				loop	boxclearxlp
+				pop		cx
+				pop		di
+				add		di, 160
+				dec		bl
+				jne		boxclearylp
+				pop		bx
+				ret
+
+
+
+; puttextbox: 枠 - in: start->dx, size->bx, color->cl
+
+puttextbox:		push	bx
+				push	cx
+				push	dx
+				push	di
+				call	calc_dx2di
+				mov		ch, bh
+				sub		ch, 2
+				js		putbox_ed
+				mov		bh, 0
+				sub		bx, 2
+				js		putbox_ed
+				mov		ax, 09ch
+				call	putboxv
+				add		di, 160
+				or		ch, ch
+				je		putbox_bm
+				push	bx
+				inc		bx
+				add		bx, bx
+putboxh_lp:		mov		word ptr es:[di], 96h
+				mov		es:[di+2000h], cl
+				mov		word ptr es:[di+bx], 96h
+				mov		es:[di+bx+2000h], cl
+				add		di, 160
+				dec		ch
+				jne		putboxh_lp
+				pop		bx
+putbox_bm:		mov		ax, 09eh
+				call	putboxv
+putbox_ed:		pop		di
+				pop		dx
+				pop		cx
+				pop		bx
+				ret
+putboxv:		push	di
+				mov		es:[di+2000h], cl
+				stosw
+				or		bx, bx
+				je		putboxr
+				push	bx
+putboxc_lp:		mov		es:[di+2000h], cl
+				mov		word ptr es:[di], 0095h
+				inc		di
+				inc		di
+				dec		bx
+				jne		putboxc_lp
+				pop		bx
+putboxr:		inc		al
+				mov		es:[di+2000h], cl
+				stosw
+				pop		di
+				ret

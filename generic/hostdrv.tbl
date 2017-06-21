@@ -1,0 +1,224 @@
+
+// ---- DOSとの受け渡し用
+
+#define IF4DOSPTR_OFF	0x0600
+#define IF4DOSPTR_SEG	0x0000
+		// IF4DOSのアドレスが入っているアドレス
+		// (割り込みを止めて、一時的に使用しているだけなので、
+		//  仮にここを使用するBIOS/OS/アプリがあっても大丈夫)
+
+typedef struct {
+	UINT8	off[2];
+	UINT8	seg[2];
+} REALPTR;
+
+typedef struct {
+	UINT8	drive_no;		// 作成したドライブ番号(A:=0)
+	UINT8	dosver_major;
+	UINT8	dosver_minor;
+	UINT8	sda_off[2];
+	UINT8	sda_seg[2];
+} IF4DOS;
+
+typedef struct {
+	UINT8	es[2];
+	UINT8	ds[2];
+	UINT8	di[2];
+	UINT8	si[2];
+	UINT8	bp[2];
+	UINT8	sp[2];
+	UINT8	bx[2];
+	UINT8	dx[2];
+	UINT8	cx[2];
+	UINT8	ax[2];
+	UINT8	ip[2];
+	UINT8	cs[2];
+	UINT8	flag[2];
+} IF4INTR;
+
+typedef struct {
+	UINT8	es[2];
+	UINT8	ds[2];
+	UINT8	di[2];
+	UINT8	si[2];
+	UINT8	bp[2];
+	UINT8	sp[2];
+	UINT8	bl;
+	UINT8	bh;
+	UINT8	dl;
+	UINT8	dh;
+	UINT8	cl;
+	UINT8	ch;
+	UINT8	al;
+	UINT8	ah;
+	UINT8	ip[2];
+	UINT8	cs[2];
+	UINT8	flag_l;
+	UINT8	flag_h;
+} IF4INTR8;
+
+
+// ---- MS-DOSストラクチャー (little endian!)
+
+#ifndef	__GNUC__
+#pragma pack(push, 1)
+#define	ATTRIBUTE_PACKED
+#else
+#define	ATTRIBUTE_PACKED	__attribute__((packed))
+#endif
+
+/* FindFirst/Next data block */
+typedef struct {
+	UINT8	drive_no;
+	char	srch_mask[11];
+	UINT8	attr_mask;
+	UINT8	dir_entry_no[2];
+	UINT8	dir_sector[2];
+	UINT8	f1[4];
+} ATTRIBUTE_PACKED _SRCHREC, *SRCHREC;	//	21bytes (see int214E)
+
+/* Directory entry for 'found' file */
+typedef struct {
+	UINT8	file_name[11];
+	UINT8	file_attr;
+	UINT8	f1[10];
+	UINT8	file_time[2];
+	UINT8	file_date[2];
+	UINT8	start_sector[2];
+	UINT8	file_size[4];
+} ATTRIBUTE_PACKED _DIRREC, *DIRREC;
+
+/* System File Table entry */
+typedef struct {
+	UINT8	handle_count[2];
+	UINT8	open_mode[2];
+	UINT8	file_attr;
+	UINT8	dev_info_word[2];
+	UINT8 	dev_drvr_ptr[4];
+	UINT8	start_sector[2];
+	UINT8	file_time[2];
+	UINT8	file_date[2];
+	UINT8	file_size[4];
+	UINT8	file_pos[4];
+	UINT8	rel_sector[2];
+	UINT8	abs_sector[2];
+	UINT8	dir_sector[2];
+	UINT8	dir_entry_no;
+	UINT8	file_name[11];
+} ATTRIBUTE_PACKED _SFTREC, *SFTREC;
+
+/* Current Directory Structure */
+typedef struct {
+	char	current_path[67];
+	UINT8	flags[2];
+	UINT8	f1[10];
+	UINT8	root_ofs[2];
+} ATTRIBUTE_PACKED _CDS3, *CDS3;
+
+typedef struct {
+	char	current_path[67];
+	UINT8	flags[2];
+	UINT8	f1[10];
+	UINT8	root_ofs[2];
+	UINT8	f2[7];
+} ATTRIBUTE_PACKED _CDS4, *CDS4;
+
+/* Swappable DOS Area for DOS3 */
+typedef struct {
+	UINT8		f0[12];
+	REALPTR		current_dta;
+	UINT8		f1[30];
+	UINT8		dd;
+	UINT8		mm;
+	UINT8		yy_1980[2];
+	UINT8		f2[96];
+	char		file_name[128];
+	char		file_name_2[128];
+	_SRCHREC	srchrec;
+	_DIRREC		dirrec;
+	UINT8		f3[81];
+	char		fcb_name[11];
+	UINT8		f4;
+	char		fcb_name_2[11];
+	UINT8		f5[11];
+	UINT8		srch_attr;
+	UINT8		open_mode;
+	UINT8		f6[48];
+	REALPTR		cdsptr;
+	UINT8		f7[72];
+	_SRCHREC	rename_srchrec;
+	_DIRREC		rename_dirrec;
+} ATTRIBUTE_PACKED _SDA3, *SDA3;		//	(see int215D06)
+
+/* Swappable DOS Area for DOS4+ */
+typedef struct {
+	UINT8		f0[12];
+	REALPTR		current_dta;
+	UINT8		f1[32];
+	UINT8		dd;
+	UINT8		mm;
+	UINT8		yy_1980[2];
+	UINT8		f2[106];
+	char		file_name[128];
+	char		file_name_2[128];
+	_SRCHREC	srchrec;
+	_DIRREC		dirrec;
+	UINT8		f3[88];
+	char		fcb_name[11];
+	UINT8		f4;
+	char		fcb_name_2[11];
+	UINT8		f5[11];
+	UINT8		srch_attr;
+	UINT8		open_mode;
+	UINT8		f6[51];
+	REALPTR		cdsptr;
+	UINT8		f7[87];
+	UINT8		action_2E[2];
+	UINT8		attr_2E[2];
+	UINT8		mode_2E[2];
+	UINT8		f8[29];
+	_SRCHREC	rename_srchrec;
+	_DIRREC		rename_dirrec;
+} ATTRIBUTE_PACKED _SDA4, *SDA4;		//	(see int215D06)
+
+typedef union {
+	struct {
+		_SDA3	sda;
+		_CDS3	cds;
+	} ATTRIBUTE_PACKED ver3;
+	struct {
+		_SDA4	sda;
+		_CDS4	cds;
+	} ATTRIBUTE_PACKED ver4;
+} _SDACDS, *SDACDS;
+
+#ifndef	__GNUC__
+#pragma pack(pop)
+#else
+#undef	ATTRIBUTE_PACKED
+#endif
+
+
+// ----
+
+typedef struct {
+	BOOL	is_chardev;
+	union {
+		IF4INTR8	b;
+		IF4INTR		w;
+	}		r;
+
+	char	*fcbname_ptr;
+	char	*filename_ptr;
+	char	*fcbname_ptr_2;
+	char	*filename_ptr_2;
+	SRCHREC	srchrec_ptr;
+	DIRREC	dirrec_ptr;
+	SRCHREC	srchrec_ptr_2;
+	DIRREC	dirrec_ptr_2;
+	UINT8	*srch_attr_ptr;
+	char	*root_path;
+	char	*current_path;
+} _INTRST, *INTRST;
+
+

@@ -1,0 +1,149 @@
+
+#define		NP2STATUS_VERSION		850
+
+static const NP2FHDR np2flagdef = {
+						"Neko Project II",
+						"create by NP2.EXE",
+						NP2STATUS_VERSION};
+
+static const PROCTBL evtproc[] = {
+			{PROCID('e','s','c','0'), screendisp},
+			{PROCID('e','s','c','1'), screenvsync},
+			{PROCID('e','p','i','t'), systimer},
+			{PROCID('e','b','e','p'), beeponeshot},
+			{PROCID('e','r','s','1'), rs232ctimer},
+			{PROCID('e','m','u','s'), mouseint},
+			{PROCID('e','k','e','y'), keyboard_callback},
+			{PROCID('e','p','i','c'), picmask},
+			{PROCID('e','g','s','w'), gdcslavewait},
+			{PROCID('e','f','b','o'), fdbiosout},
+			{PROCID('e','f','i','w'), fdc_intwait},
+			{PROCID('e','m','d','0'), midiwaitout},
+			{PROCID('e','m','d','1'), midiint},
+#if !defined(DISABLE_SOUND)
+			{PROCID('e','m','g','n'), musicgenint},
+			{PROCID('e','f','m','a'), fmport_a},
+			{PROCID('e','f','m','b'), fmport_b},
+			{PROCID('e','c','s','d'), cs4231_dma},
+			{PROCID('e','p','8','6'), pcm86_cb},
+			{PROCID('e','a','m','d'), amd98int},
+#endif
+#if defined(SUPPORT_SASI)
+			{PROCID('e','s','a','s'), sasiioint},
+#endif
+#if defined(SUPPORT_SCSI)
+			{PROCID('e','s','c','s'), scsiioint},
+#endif
+#if defined(SUPPORT_PC9861K)
+			{PROCID('e','p','k','1'), pc9861ch1cb},
+			{PROCID('e','p','k','2'), pc9861ch2cb},
+#endif
+};
+
+static const ENUMTBL evtnum[] = {
+			{PROCID('m','a','i','n'), NEVENT_FLAMES},
+			{PROCID('p','i','t',' '), NEVENT_ITIMER},
+			{PROCID('b','e','e','p'), NEVENT_BEEP},
+			{PROCID('r','2','3','2'), NEVENT_RS232C},
+			{PROCID('m','g','e','n'), NEVENT_MUSICGEN},
+			{PROCID('f','m','-','a'), NEVENT_FMTIMERA},
+			{PROCID('f','m','-','b'), NEVENT_FMTIMERB},
+			{PROCID('f','m','2','a'), NEVENT_FMTIMER2A},
+			{PROCID('f','m','2','b'), NEVENT_FMTIMER2B},
+			{PROCID('m','o','u','s'), NEVENT_MOUSE},
+			{PROCID('k','e','y',' '), NEVENT_KEYBOARD},
+			{PROCID('m','i','d','w'), NEVENT_MIDIWAIT},
+			{PROCID('m','i','d','i'), NEVENT_MIDIINT},
+			{PROCID('p','i','c','m'), NEVENT_PICMASK},
+			{PROCID('4','2','3','1'), NEVENT_CS4231},
+			{PROCID('g','d','c','s'), NEVENT_GDCSLAVE},
+			{PROCID('f','d','b','b'), NEVENT_FDBIOSBUSY},
+			{PROCID('f','d','c','i'), NEVENT_FDCINT},
+			{PROCID('k','c','h','1'), NEVENT_PC9861CH1},
+			{PROCID('k','c','h','2'), NEVENT_PC9861CH2},
+			{PROCID('p','c','m','8'), NEVENT_86PCM},
+			{PROCID('s','a','s','i'), NEVENT_SASIIO},
+			{PROCID('s','c','s','i'), NEVENT_SCSIIO},
+};
+
+static const PROCTBL dmaproc[] = {
+			{PROCID('d','o','d','m'), dma_dummyout},
+			{PROCID('d','i','d','m'), dma_dummyin},
+			{PROCID('d','e','d','m'), dma_dummyproc},
+			{PROCID('d','o','f','d'), fdc_dataread},
+			{PROCID('d','i','f','d'), fdc_datawrite},
+			{PROCID('d','e','f','d'), fdc_dmafunc},
+#if !defined(DISABLE_SOUND)
+			{PROCID('d','e','c','s'), cs4231dmafunc},
+#endif
+#if defined(SUPPORT_SASI)
+			{PROCID('d','o','s','a'), sasi_dataread},
+			{PROCID('d','i','s','a'), sasi_datawrite},
+			{PROCID('d','e','s','a'), sasi_dmafunc},
+#endif
+	};
+
+static const SFENTRY np2tbl[] = {
+	{"PCCORE",		0,	STATFLAG_BIN,	&pccore,		sizeof(pccore)},
+
+	{"CPU286",		0,	STATFLAG_BIN,	&CPU_STATSAVE,	sizeof(CPU_STATSAVE)},
+	{"MEMORY",		0,	STATFLAG_MEM,	NULL,			0x130000},
+	{"EXTMEM",		0,	STATFLAG_EXT,	NULL,			0},
+#if defined(SUPPORT_PC9821)
+	{"VRAMEX",		0,	STATFLAG_BIN,	vramex,			sizeof(vramex)},
+#endif
+
+	{"ARTIC",		0,	STATFLAG_BIN,	&artic,			sizeof(artic)},
+	{"CGROM",		0,	STATFLAG_BIN,	&cgrom,			sizeof(cgrom)},
+	{"CGWINDOW",	0,	STATFLAG_BIN,	&cgwindow,		sizeof(cgwindow)},
+	{"CRTC",		0,	STATFLAG_BIN,	&grcg,			sizeof(grcg)},
+	{"CRTC2",		0,	STATFLAG_BIN,	&crtc,			sizeof(crtc)},
+	{"DMAC",		0,	STATFLAG_DMA,	&dmac,			sizeof(dmac)},
+	{"EGC",			0,	STATFLAG_EGC,	NULL,			0},
+	{"EPSON",		0,	STATFLAG_EPSON,	NULL,			0},
+	{"FDC",			0,	STATFLAG_BIN,	&fdc,			sizeof(fdc)},
+	{"EMSIO",		0,	STATFLAG_BIN,	&emsio,			sizeof(emsio)},
+	{"GDC1",		0,	STATFLAG_BIN,	&gdc,			sizeof(gdc)},
+	{"GDC2",		0,	STATFLAG_BIN,	&gdcs,			sizeof(gdcs)},
+	{"PIT",			0,	STATFLAG_BIN,	&pit,			sizeof(pit)},
+	{"MOUSE",		0,	STATFLAG_BIN,	&mouseif,		sizeof(mouseif)},
+	{"NECIO",		0,	STATFLAG_BIN,	&necio,			sizeof(necio)},
+	{"NMIIO",		0,	STATFLAG_BIN,	&nmiio,			sizeof(nmiio)},
+	{"NP2SYSPORT",	0,	STATFLAG_BIN,	&np2sysp,		sizeof(np2sysp)},
+	{"PIC",			0,	STATFLAG_BIN,	&pic,			sizeof(pic)},
+	{"RS232C",		0,	STATFLAG_BIN,	&rs232c,		sizeof(rs232c)},
+	{"SYSTEMPORT",	0,	STATFLAG_BIN,	&sysport,		sizeof(sysport)},
+	{"uPD4990",		0,	STATFLAG_BIN,	&uPD4990,		sizeof(uPD4990)},
+	{"VRAMCTRL",	0,	STATFLAG_BIN,	&vramop,		sizeof(vramop)},
+	{"TEXTRAM",		0,	STATFLAG_BIN,	&tramflag,		sizeof(tramflag)},
+	{"GAIJI",		0,	STATFLAG_GIJ,	NULL,			0},
+	{"EVENT",		0,	STATFLAG_EVT,	&g_nevent,		sizeof(g_nevent)},
+	{"CALENDAR",	0,	STATFLAG_BIN,	&cal,			sizeof(cal)},
+	{"KEYSTAT",		0,	STATFLAG_BIN,	&keyctrl,		sizeof(keyctrl)},
+	{"PALEVENT",	0,	STATFLAG_BIN,	&palevent,		sizeof(palevent)},
+	{"MPU98II",		0,	STATFLAG_BIN,	&mpu98,			sizeof(mpu98)},
+	{"CMMPU98",		0,	STATFLAG_COM,	(void *)0,		0},
+	{"CMRS232C",	0,	STATFLAG_COM,	(void *)1,		0},
+	{"FDD",			0,	STATFLAG_FDD,	NULL,			0},
+	{"SXSI",		0,	STATFLAG_SXSI,	NULL,			0},
+#if !defined(DISABLE_SOUND)
+	{"FMBOARD",		0,	STATFLAG_FM,	NULL,			0},
+	{"BEEP",		0,	STATFLAG_BIN,	&g_beep,		sizeof(g_beep)},
+#endif
+#if defined(SUPPORT_IDEIO)
+	{"IDE",			0,	STATFLAG_BIN,	&ideio,			sizeof(ideio)},
+#endif
+#if defined(SUPPORT_SASI)
+	{"SASI",		0,	STATFLAG_BIN,	&sasiio,		sizeof(sasiio)},
+#endif
+#if defined(SUPPORT_SCSI)
+	{"SCSI",		0,	STATFLAG_BIN,	&scsiio,		sizeof(scsiio)},
+#endif
+#if defined(SUPPORT_PC9861K)
+	{"PC9861K",		0,	STATFLAG_BIN,	&pc9861k,		sizeof(pc9861k)},
+#endif
+#if defined(SUPPORT_HOSTDRV)
+	{"HOSTDRV",		0,	STATFLAG_HDRV,	NULL,			0},
+#endif
+	{"TERMINATE",	0,	STATFLAG_TERM,	NULL,			0}};
+

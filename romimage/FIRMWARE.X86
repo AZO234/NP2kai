@@ -1,0 +1,70 @@
+
+; CPUモードの表示
+
+cpumoderes		db		"CPU MODE  ", 0
+				db		"High", 0
+				db		"Low", 0
+
+CPUMODE_DISP:	mov		si, offset cpumoderes
+				call	TEXTOUT_CS
+				in		al, 42h
+				test	al, 2
+				je		cpumodedisp1
+				add		si, 5
+cpumodedisp1:	call	TEXTOUT_CS
+				mov		dl, 0
+				inc		dh
+				ret
+
+; ----------------------------------------------------------------------------
+
+; BIOS UPDATEのダミー
+
+FLASH_WRITE:	mov		cl, 0e1h
+				mov		si, offset res_wflash
+				call	TEXTOUT_CS
+flashwritelp:	call	WAITVSYNC1
+				jmps	flashwritelp
+
+; ----------------------------------------------------------------------------
+
+; BIOS Revision
+
+BIOS_REVISON:	mov		si, offset res_rev1
+				call	TEXTOUT_CS
+				mov		si, offset res_revver
+				call	TEXTOUT_CS
+				mov		si, offset res_rev2
+				jmp		TEXTOUT_CS
+
+; ----------------------------------------------------------------------------
+
+FIRMWARE_TEST:	mov		si, offset res_firm1
+				mov		cl, 0a9h
+				call	TEXTOUT_CS
+				mov		cl, 0e1h
+				mov		si, offset res_firm2
+				call	TEXTOUT_CS
+				call	PUT_CPU
+				mov		si, offset res_firm3
+				call	TEXTOUT_CS
+				call	PUT_CLOCK
+				mov		si, offset res_firm4
+				jmp		TEXTOUT_CS
+
+; ----------------------------------------------------------------------------
+
+RESET_ALLSW:	mov		si, offset res_resdip2
+				mov		cl, 041h
+				call	TEXTOUT_CS
+				call	MEMSW_INIT
+ra_dipinit:		call	INIT_DIPSW
+				jmp		SET_DIPSW
+
+; ----------------------------------------------------------------------------
+
+FLASH_CLEAR:	mov		si, offset res_resdip
+				mov		cl, 0c1h
+				call	TEXTOUT_CS
+				jmp		short ra_dipinit
+

@@ -1,0 +1,104 @@
+
+enum {
+	UAFLAG_D		= 0,
+	UAFLAG_OPE		= 1,
+	UAFLAG_ADDR		= 2,
+	UAFLAG_8BIT		= 3,
+	UAFLAG_REP		= 8,
+	UAFLAG_SOR		= 10
+};
+
+enum {
+	UAFLAG_RL		= 1,
+	UAFLAG_RNE		= 2,
+	UAFLAG_RE		= 3,
+	UAFLAG_REPMASK	= 3
+};
+
+enum {
+	UAFLAG_ES		= 1,
+	UAFLAG_CS		= 2,
+	UAFLAG_SS		= 3,
+	UAFLAG_DS		= 4,
+	UAFLAG_FS		= 5,
+	UAFLAG_GS		= 6,
+	UAFLAG_SOMASK	= 7
+};
+
+
+enum {
+	OPF_SOR			= 0,
+	OPF_REP,
+	OPF_OPE,
+	OPF_ADDR,
+	OPF_286,
+	OPF_OP3,
+	OPF_FPU
+};
+
+enum {
+	OP_CL			= 1,
+	OP_1,
+	OP_I8,
+	OP_IS8,
+	OP_I16,
+	OP_IMM,
+
+	OP_EA,
+	OP_PEA,
+	OP_REG,
+	OP_SEG,
+	OP_MEM,
+	OP_AX,
+	OP_DX,
+	OP_MR,
+
+	OP1_32,
+	OP1_3,
+	OP1_STR,
+	OP1_JCXZ,
+	OP1_SHORT,
+	OP1_NEAR,
+	OP1_FAR,
+	OP1_I10,
+	OP1_SOR,
+	OP1_FEA,
+	OP1_REx,
+	OP1_ExR,
+
+	OP1_E2,
+	OP1_E4,
+	OP1_E8,
+	OP1_ET,
+	OP1_ST,
+	OP1_ST1,
+	OP1_ST2,
+
+	OE_MX0,
+	OE_MX1
+};
+
+
+
+// --------------------
+// fedcba9876543210:fedcba9876543210
+
+// vvvvvvvvvvvvvvvv vvvvvvvvvvvvfff1  prefix
+#define	OP_PF(f, v)			(1 + ((f) << 1) + ((v) << 4))
+#define	OP_T3(t)			(1 + (OPF_OP3 << 1) + ((t) << 4))
+
+// ??ccc?bbbbaaaaaa ooooooooo?be???0
+
+#define	_OPCTL(f, o, a, b, c)	\
+			((f) | ((o) << 7) | ((a) << 16) | ((b) << 22) | ((c) << 27))
+
+#define	OP_B_(o, a, b, c)	_OPCTL(0x20, o, a, b, c)
+#define	OP_W_(o, a, b, c)	_OPCTL(0x00, o, a, b, c)
+#define	OP_BE(o, a, b, c)	_OPCTL(0x30, o, a, b, c)
+#define	OP_WE(o, a, b, c)	_OPCTL(0x10, o, a, b, c)
+#define	OP_F0(o)			_OPCTL(0x00, o, 0, 0, 0)
+#define	OP_F1(o, a)			_OPCTL(0x00, o, a, 0, 0)
+#define	OP_Fb(o, a)			_OPCTL(0x20, o, a, 0, 0)
+#define	OP_Fe(o, a)			_OPCTL(0x10, o, a, 0, 0)
+#define	OP_ER				0
+

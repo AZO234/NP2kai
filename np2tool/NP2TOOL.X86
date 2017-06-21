@@ -1,0 +1,32 @@
+
+; in cld/ds=cs / ret z & bx
+np2_check:		mov		ah, 0fh
+				int		10h
+				cmp		ah, 0fh
+				mov		bx, _msg_pcat
+				jne		short np2check_err
+				add		bx, byte 6
+				mov		si, bx
+				call	sendnp2port
+				xchg	si, bx
+checknp2port:	lodsb
+				mov		cl, al
+.lp:			in		al, dx
+				inc		si
+				cmp		al, [si-1]
+				loope	.lp
+np2check_err:	ret
+
+sendnp2port:	mov		dx, NP2PORT
+				xor		cx, cx
+				lodsb
+				mov		cl, al
+.lp:			lodsb
+				out		dx, al
+				loop	.lp
+				ret
+
+_msg_pcat		db	'PC/AT$'
+				db	3, 'NP2'
+				db	'Real PC-98x1$'
+

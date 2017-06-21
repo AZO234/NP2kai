@@ -1,0 +1,1458 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "..\..\resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (Taiwan) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHT)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL
+#pragma code_page(950)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_CONFIG DIALOG DISCARDABLE  0, 0, 182, 238
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "設定"
+CLASS "np2dialog"
+FONT 9, "新細明體"
+BEGIN
+    GROUPBOX        "CPU",IDC_STATIC,8,8,110,44
+    COMBOBOX        IDC_BASECLOCK,14,22,54,43,CBS_DROPDOWNLIST | WS_VSCROLL | 
+                    WS_GROUP | WS_TABSTOP
+    LTEXT           "x",IDC_STATIC,72,26,8,8
+    COMBOBOX        IDC_MULTIPLE,80,22,32,80,CBS_DROPDOWN | 
+                    WS_VSCROLL | WS_GROUP | WS_TABSTOP
+    RTEXT           "",IDC_CLOCKMSG,14,41,80,8
+    LTEXT           "MHz",IDC_STATIC,96,41,16,8
+    GROUPBOX        "模型",IDC_STATIC,8,56,166,28
+    CONTROL         "PC-9801VM",IDC_MODELVM,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,16,68,54,10
+    CONTROL         "PC-9801VX",IDC_MODELVX,"Button",BS_AUTORADIOBUTTON,72,
+                    68,54,10
+    CONTROL         "PC-286",IDC_MODELEPSON,"Button",BS_AUTORADIOBUTTON,128,
+                    68,44,10
+    GROUPBOX        "聲音",IDC_STATIC,8,88,166,84
+    LTEXT           "類型",IDC_STATIC,14,102,48,8
+    COMBOBOX        IDC_SOUND_DEVICE_TYPE,64,99,64,128,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "設備名稱",IDC_STATIC,14,120,48,8
+    COMBOBOX        IDC_SOUND_DEVICE_NAME,64,117,104,128,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "取樣速率",IDC_STATIC,14,138,48,8
+    COMBOBOX        IDC_SOUND_RATE,64,135,50,128,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "赫茲",IDC_STATIC,116,138,48,8
+    LTEXT           "緩衝區",IDC_STATIC,14,156,48,8
+    EDITTEXT        IDC_SOUND_BUFFER,64,153,30,12,WS_GROUP
+    LTEXT           "毫秒",IDC_STATIC,96,156,48,8
+    CONTROL         "允許視窗調整大小",IDC_ALLOWRESIZE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,8,180,162,10
+    CONTROL         "禁用的 MMX",IDC_DISABLEMMX,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,8,194,162,10
+    CONTROL         "確認對話方塊 (重設/結束時)",IDC_COMFIRM,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,8,208,162,10
+    CONTROL         "繼續",IDC_RESUME,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,8,222,162,10
+    DEFPUSHBUTTON   "確定",IDOK,130,8,44,14,WS_GROUP
+    PUSHBUTTON      "取消",IDCANCEL,130,26,44,14
+END
+
+IDD_NEWDISK DIALOG DISCARDABLE  0, 0, 180, 48
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "建立軟碟檔案"
+CLASS "np2dialog"
+FONT 9, "新細明體"
+BEGIN
+    LTEXT           "磁碟名稱",IDC_STATIC,8,10,38,8
+    EDITTEXT        IDC_DISKLABEL,48,8,64,12,ES_AUTOHSCROLL | WS_GROUP
+    LTEXT           "磁碟型別",IDC_STATIC,8,28,38,8
+    CONTROL         "2DD",IDC_MAKE2DD,"Button",BS_AUTORADIOBUTTON | WS_GROUP | 
+                    WS_TABSTOP,48,27,30,10
+    CONTROL         "2HD",IDC_MAKE2HD,"Button",BS_AUTORADIOBUTTON,80,27,30,
+                    10
+    DEFPUSHBUTTON   "確定",IDOK,128,8,44,14,WS_GROUP
+    PUSHBUTTON      "取消",IDCANCEL,128,26,44,14
+END
+
+IDD_NEWDISK2 DIALOG DISCARDABLE  0, 0, 196, 48
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "建立軟碟檔案"
+CLASS "np2dialog"
+FONT 9, "新細明體"
+BEGIN
+    LTEXT           "磁碟名稱",IDC_STATIC,8,10,38,8
+    EDITTEXT        IDC_DISKLABEL,48,8,64,12,ES_AUTOHSCROLL | WS_GROUP
+    LTEXT           "磁碟型別",IDC_STATIC,8,28,38,8
+    CONTROL         "2DD",IDC_MAKE2DD,"Button",BS_AUTORADIOBUTTON | WS_GROUP | 
+                    WS_TABSTOP,48,27,30,10
+    CONTROL         "2HD",IDC_MAKE2HD,"Button",BS_AUTORADIOBUTTON,78,27,30,
+                    10
+    CONTROL         "1.44",IDC_MAKE144,"Button",BS_AUTORADIOBUTTON,108,27,30,
+                    10
+    DEFPUSHBUTTON   "確定",IDOK,144,8,44,14,WS_GROUP
+    PUSHBUTTON      "取消",IDCANCEL,144,26,44,14
+END
+
+IDD_NEWHDDDISK DIALOG DISCARDABLE  0, 0, 160, 48
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "建立硬碟檔案"
+CLASS "np2dialog"
+FONT 9, "新細明體"
+BEGIN
+    LTEXT           "磁碟大小",IDC_STATIC,8,10,38,8
+    COMBOBOX        IDC_HDDSIZE,48,8,32,46,CBS_DROPDOWN | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "MB",IDC_STATIC,86,10,16,8
+    RTEXT           "",IDC_HDDLIMIT,48,30,54,8
+    DEFPUSHBUTTON   "確定",IDOK,108,8,44,14,WS_GROUP
+    PUSHBUTTON      "取消",IDCANCEL,108,26,44,14
+END
+
+IDD_NEWSASI DIALOG DISCARDABLE  0, 0, 144, 54
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "建立 SASI 硬碟檔案"
+CLASS "np2dialog"
+FONT 9, "新細明體"
+BEGIN
+    CONTROL         "5MB",IDC_NEWSASI5MB,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,8,8,38,10
+    CONTROL         "10MB",IDC_NEWSASI10MB,"Button",BS_AUTORADIOBUTTON,48,8,
+                    38,10
+    CONTROL         "15MB",IDC_NEWSASI15MB,"Button",BS_AUTORADIOBUTTON,8,22,
+                    38,10
+    CONTROL         "20MB",IDC_NEWSASI20MB,"Button",BS_AUTORADIOBUTTON,48,22,
+                    38,10
+    CONTROL         "30MB",IDC_NEWSASI30MB,"Button",BS_AUTORADIOBUTTON,8,36,
+                    38,10
+    CONTROL         "40MB",IDC_NEWSASI40MB,"Button",BS_AUTORADIOBUTTON,48,36,
+                    38,10
+    DEFPUSHBUTTON   "確定",IDOK,92,8,44,14,WS_GROUP
+    PUSHBUTTON      "取消",IDCANCEL,92,26,44,14
+END
+
+IDD_SCROPT1 DIALOG DISCARDABLE  0, 0, 172, 96
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "視訊"
+FONT 9, "新細明體"
+BEGIN
+    CONTROL         "Liquid Crystal Display",IDC_LCD,"Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,8,156,10
+    CONTROL         "反向",IDC_LCDX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    20,24,144,10
+    CONTROL         "使用跳行修正",IDC_SKIPLINE,"Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,40,156,10
+    LTEXT           "比例",IDC_STATIC,20,55,22,8
+    CONTROL         "Slider1",IDC_SKIPLIGHT,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,44,55,96,10
+    RTEXT           "",IDC_LIGHTSTR,144,54,20,10,SS_SUNKEN
+END
+
+IDD_SCROPT_FULLSCREEN DIALOG DISCARDABLE  0, 0, 172, 96
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "全螢幕"
+FONT 9, "新細明體"
+BEGIN
+    CONTROL         "不變更色彩深度",IDC_FULLSCREEN_SAMEBPP,"Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,8,156,10
+    CONTROL         "不變更螢幕解析度",IDC_FULLSCREEN_SAMERES,
+                    "Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,24,
+                    156,10
+    LTEXT           "變焦",IDC_STATIC,8,45,22,8
+    COMBOBOX        IDC_FULLSCREEN_ZOOM,40,42,96,80,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_GROUP | WS_TABSTOP
+END
+
+IDD_SCROPT2 DIALOG DISCARDABLE  0, 0, 172, 96
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "晶片"
+FONT 9, "新細明體"
+BEGIN
+    GROUPBOX        "Graphic Display Controller",IDC_STATIC,8,8,120,28
+    CONTROL         "uPD7220",IDC_GDC7220,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,20,20,50,10
+    CONTROL         "uPD72020",IDC_GDC72020,"Button",BS_AUTORADIOBUTTON,72,
+                    20,50,10
+    GROUPBOX        "Graphic Charger",IDC_GCBOX,8,42,156,28
+    CONTROL         "None",IDC_GRCGNON,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,20,54,34,10
+    CONTROL         "GRCG",IDC_GRCG,"Button",BS_AUTORADIOBUTTON,54,54,34,10
+    CONTROL         "GRCG+",IDC_GRCG2,"Button",BS_AUTORADIOBUTTON,88,54,40,
+                    10
+    CONTROL         "EGC",IDC_EGC,"Button",BS_AUTORADIOBUTTON,128,54,34,10
+    CONTROL         "使用 16色彩板 (PC-9801-24)",IDC_PC980124,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,80,148,10
+END
+
+IDD_SCROPT3 DIALOG DISCARDABLE  0, 0, 172, 96
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "時序"
+FONT 9, "新細明體"
+BEGIN
+    LTEXT           "T-RAM",IDC_STATIC,8,9,30,8
+    CONTROL         "Slider1",IDC_TRAMWAIT,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,40,9,80,10
+    RTEXT           "",IDC_TRAMSTR,124,8,20,10,SS_SUNKEN
+    LTEXT           "V-RAM",IDC_STATIC,8,25,30,8
+    CONTROL         "Slider2",IDC_VRAMWAIT,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,40,25,80,10
+    RTEXT           "",IDC_VRAMSTR,124,24,20,10,SS_SUNKEN
+    LTEXT           "GRCG",IDC_STATIC,8,41,30,8
+    CONTROL         "Slider3",IDC_GRCGWAIT,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,40,41,80,10
+    RTEXT           "",IDC_GRCGSTR,124,40,20,10,SS_SUNKEN
+    LTEXT           "clock",IDC_STATIC,148,9,22,8
+    LTEXT           "clock",IDC_STATIC,148,25,22,8
+    LTEXT           "clock",IDC_STATIC,148,41,22,8
+    LTEXT           "即時調色盤調整",IDC_STATIC,8,60,156,8
+    CONTROL         "Slider3",IDC_REALPAL,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,40,73,80,10
+    RTEXT           "",IDC_REALPALSTR,124,72,20,10,SS_SUNKEN
+END
+
+IDD_SERIAL1 DIALOG DISCARDABLE  0, 0, 202, 160
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "COM1"
+FONT 9, "新細明體"
+BEGIN
+    LTEXT           "連接埠",IDC_STATIC,8,10,30,8
+    COMBOBOX        IDC_COM1PORT,40,8,48,96,CBS_DROPDOWNLIST | WS_VSCROLL | 
+                    WS_TABSTOP
+    GROUPBOX        "連結",IDC_COM1STR00,8,28,144,84
+    LTEXT           "每秒傳輸位元",IDC_COM1STR01,16,45,48,8
+    COMBOBOX        IDC_COM1SPEED,68,42,44,128,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "比特/秒",IDC_COM1STR02,116,45,26,8
+    LTEXT           "資料位元",IDC_COM1STR03,16,61,48,8
+    COMBOBOX        IDC_COM1CHARSIZE,68,58,44,64,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "位元",IDC_COM1STR04,116,61,26,8
+    LTEXT           "同位檢查",IDC_COM1STR05,16,77,48,8
+    COMBOBOX        IDC_COM1PARITY,68,74,44,48,CBS_DROPDOWNLIST | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "停止位元",IDC_COM1STR06,16,93,48,8
+    COMBOBOX        IDC_COM1STOPBIT,68,90,44,64,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "位元",IDC_COM1STR07,116,93,26,8
+    GROUPBOX        "連結",IDC_COM1STR10,8,28,186,84
+    LTEXT           "裝置",IDC_COM1STR11,16,45,30,8
+    COMBOBOX        IDC_COM1MMAP,50,42,136,96,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "模組",IDC_COM1STR12,16,61,30,8
+    COMBOBOX        IDC_COM1MMDL,50,58,136,96,CBS_DROPDOWN | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "使用程式的檔案 (MIMPI 定義)",IDC_COM1DEFE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,82,170,10
+    LTEXT           "",IDC_COM1DEFF,26,94,148,10,SS_SUNKEN
+    PUSHBUTTON      "...",IDC_COM1DEFB,176,94,10,10
+END
+
+IDD_PC9861A DIALOG DISCARDABLE  0, 0, 202, 160
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "PC-9861K"
+FONT 9, "新細明體"
+BEGIN
+    CONTROL         "使用",IDC_PC9861E,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,8,8,48,10
+    LTEXT           "每秒傳輸位元",IDC_STATIC,16,27,48,8
+    LTEXT           "插斷要求",IDC_STATIC,16,45,48,8
+    LTEXT           "同步模式",IDC_STATIC,16,63,48,8
+    LTEXT           "CH.1",IDC_STATIC,68,9,40,8
+    COMBOBOX        IDC_CH1SPEED,68,24,56,128,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_CH1INT,68,42,56,64,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_CH1MODE,68,60,56,64,CBS_DROPDOWNLIST | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "CH.2",IDC_STATIC,136,9,40,8
+    COMBOBOX        IDC_CH2SPEED,136,24,56,128,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_CH2INT,136,42,56,64,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_CH2MODE,136,60,56,64,CBS_DROPDOWNLIST | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "切換板",IDC_STATIC,8,84,32,8
+    CONTROL         "",IDC_PC9861DIP,"Static",SS_ENHMETAFILE | SS_NOTIFY,44,
+                    84,156,68
+END
+
+IDD_MPUPC98 DIALOG DISCARDABLE  0, 0, 202, 178
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "MPU-PC98II"
+CLASS "np2dialog"
+FONT 9, "新細明體"
+BEGIN
+    LTEXT           "輸入/輸出",IDC_STATIC,8,10,40,8
+    COMBOBOX        IDC_MPUIO,52,8,48,52,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "插斷要求",IDC_STATIC,8,26,40,8
+    COMBOBOX        IDC_MPUINT,52,24,48,52,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "切換板",IDC_STATIC,8,46,40,8
+    CONTROL         "",IDC_MPUDIP,"Static",SS_ENHMETAFILE | SS_NOTIFY,52,46,
+                    96,26
+    GROUPBOX        "連結",IDC_STATIC,8,72,186,98
+    LTEXT           "MIDI 輸出",IDC_STATIC,16,87,36,8
+    COMBOBOX        IDC_MPU98MMAP,54,84,132,96,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "MIDI 輸入",IDC_STATIC,16,103,36,8
+    COMBOBOX        IDC_MPU98MDIN,54,100,132,96,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "模組",IDC_STATIC,16,119,36,8
+    COMBOBOX        IDC_MPU98MMDL,54,116,132,96,CBS_DROPDOWN | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "使用程式的檔案 (MIMPI 定義)",IDC_MPU98DEFE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,140,150,10
+    LTEXT           "",IDC_MPU98DEFF,26,152,148,10,SS_SUNKEN
+    PUSHBUTTON      "...",IDC_MPU98DEFB,176,152,10,10
+    DEFPUSHBUTTON   "確定",IDOK,150,8,44,14,WS_GROUP
+    PUSHBUTTON      "取消",IDCANCEL,150,26,44,14
+    PUSHBUTTON      "成預設值",IDC_MPUDEF,150,58,44,14
+END
+
+IDD_SNDMIX DIALOGEX 0, 0, 224, 124
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "混合"
+FONT 9, "新細明體", 0, 0, 0x1
+BEGIN
+    LTEXT           "FM",IDC_STATIC,8,9,40,8
+    CONTROL         "Slider1",IDC_VOLFM,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_GROUP | WS_TABSTOP,50,9,128,10
+    LTEXT           "",IDC_VOLFMSTR,180,8,26,10,SS_SUNKEN,WS_EX_RIGHT
+    LTEXT           "PSG",IDC_STATIC,8,23,40,8
+    CONTROL         "Slider16",IDC_VOLPSG,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,50,23,128,10
+    LTEXT           "",IDC_VOLPSGSTR,180,22,26,10,SS_SUNKEN,WS_EX_RIGHT
+    LTEXT           "ADPCM",IDC_STATIC,8,37,40,8
+    CONTROL         "Slider2",IDC_VOLADPCM,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,50,37,128,10
+    LTEXT           "",IDC_VOLADPCMSTR,180,36,26,10,SS_SUNKEN,WS_EX_RIGHT
+    LTEXT           "PCM",IDC_STATIC,8,51,40,8
+    CONTROL         "Slider4",IDC_VOLPCM,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,50,51,128,10
+    LTEXT           "",IDC_VOLPCMSTR,180,50,26,10,SS_SUNKEN,WS_EX_RIGHT
+    LTEXT           "Rhythm",IDC_STATIC,8,65,40,8
+    CONTROL         "Slider8",IDC_VOLRHYTHM,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,50,65,128,10
+    LTEXT           "",IDC_VOLRHYTHMSTR,180,64,26,10,SS_SUNKEN,WS_EX_RIGHT
+    PUSHBUTTON      "成預設值",IDC_SNDMIXDEF,176,102,40,14
+END
+
+IDD_SND14 DIALOGEX 0, 0, 224, 124
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "PC-9801-14"
+FONT 9, "新細明體", 0, 0, 0x1
+BEGIN
+    LTEXT           "Left",IDC_STATIC,8,9,40,8
+    CONTROL         "Slider1",IDC_VOL14L,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_GROUP | WS_TABSTOP,50,9,88,10
+    LTEXT           "",IDC_VOL14LSTR,144,8,26,10,SS_SUNKEN,WS_EX_RIGHT
+    LTEXT           "Right",IDC_STATIC,8,23,40,8
+    CONTROL         "Slider16",IDC_VOL14R,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,50,23,88,10
+    LTEXT           "",IDC_VOL14RSTR,144,22,26,10,SS_SUNKEN,WS_EX_RIGHT
+    LTEXT           "f2",IDC_STATIC,10,37,40,8
+    CONTROL         "Slider2",IDC_VOLF2,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,50,37,88,10
+    LTEXT           "",IDC_VOLF2STR,144,36,26,10,SS_SUNKEN,WS_EX_RIGHT
+    LTEXT           "f4",IDC_STATIC,10,51,40,8
+    CONTROL         "Slider4",IDC_VOLF4,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,50,51,88,10
+    LTEXT           "",IDC_VOLF4STR,144,50,26,10,SS_SUNKEN,WS_EX_RIGHT
+    LTEXT           "f8",IDC_STATIC,10,65,40,8
+    CONTROL         "Slider8",IDC_VOLF8,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,50,65,88,10
+    LTEXT           "",IDC_VOLF8STR,144,64,26,10,SS_SUNKEN,WS_EX_RIGHT
+    LTEXT           "f16",IDC_STATIC,10,79,40,8
+    CONTROL         "Slider16",IDC_VOLF16,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,50,79,88,10
+    LTEXT           "",IDC_VOLF16STR,144,78,26,10,SS_SUNKEN,WS_EX_RIGHT
+END
+
+IDD_SND26 DIALOG DISCARDABLE  0, 0, 224, 124
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "26"
+FONT 9, "新細明體"
+BEGIN
+    LTEXT           "輸入/輸出",IDC_STATIC,8,10,40,8
+    COMBOBOX        IDC_SND26IO,50,8,40,52,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "插斷要求",IDC_STATIC,124,10,40,8
+    COMBOBOX        IDC_SND26INT,166,8,40,52,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "記憶體位址",IDC_STATIC,8,28,40,8
+    COMBOBOX        IDC_SND26ROM,50,26,40,64,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "切換板",IDC_STATIC,8,66,40,8
+    CONTROL         "",IDC_SND26JMP,"Static",SS_ENHMETAFILE | SS_NOTIFY,50,
+                    66,156,34
+    PUSHBUTTON      "成預設值",IDC_SND26DEF,176,102,40,14
+END
+
+IDD_SND86 DIALOG DISCARDABLE  0, 0, 224, 124
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "86"
+FONT 9, "新細明體"
+BEGIN
+    LTEXT           "輸入/輸出",IDC_STATIC,8,10,40,8
+    COMBOBOX        IDC_SND86IO,50,8,40,52,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "插斷要求",IDC_SND86INT,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,114,9,50,10
+    COMBOBOX        IDC_SND86INTA,166,8,40,52,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "聲音 ID",IDC_STATIC,8,28,40,8
+    COMBOBOX        IDC_SND86ID,50,26,40,64,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "記憶體位址",IDC_SND86ROM,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    114,27,50,10
+    LTEXT           "切換板",IDC_STATIC,8,66,40,8
+    CONTROL         "",IDC_SND86DIP,"Static",SS_ENHMETAFILE | SS_NOTIFY,50,
+                    66,156,34
+    PUSHBUTTON      "成預設值",IDC_SND86DEF,176,102,40,14
+END
+
+IDD_SNDSPB DIALOG DISCARDABLE  0, 0, 224, 124
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "SPB"
+FONT 9, "新細明體"
+BEGIN
+    LTEXT           "輸入/輸出",IDC_STATIC,8,10,40,8
+    COMBOBOX        IDC_SPBIO,50,8,40,52,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "插斷要求",IDC_STATIC,124,10,40,8
+    COMBOBOX        IDC_SPBINT,166,8,40,52,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "記憶體位址",IDC_STATIC,8,28,40,8
+    COMBOBOX        IDC_SPBROM,50,26,40,64,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "左右反向的聲音",IDC_SPBREVERSE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,114,27,92,10
+    LTEXT           "VR",IDC_STATIC,8,46,30,8
+    CONTROL         "左",IDC_SPBVRL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,50,
+                    45,22,10
+    CONTROL         "右",IDC_SPBVRR,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,84,
+                    45,22,10
+    RTEXT           "感度",IDC_STATIC,108,46,22,8
+    CONTROL         "Slider16",IDC_SPBVRLEVEL,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,132,46,64,10
+    LTEXT           "切換板",IDC_STATIC,8,66,40,8
+    CONTROL         "",IDC_SPBJMP,"Static",SS_ENHMETAFILE | SS_NOTIFY,50,66,
+                    156,34
+    PUSHBUTTON      "成預設值",IDC_SPBDEF,176,102,40,14
+END
+
+IDD_SNDPAD1 DIALOG DISCARDABLE  0, 0, 224, 124
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "遊戲台"
+FONT 9, "新細明體"
+BEGIN
+    CONTROL         "使用遊戲台-1",IDC_JOYPAD1,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,8,8,144,10
+    LTEXT           "按鈕-1",IDC_STATIC,24,27,40,8
+    CONTROL         "A",IDC_PAD1_1A,"Button",BS_AUTOCHECKBOX | WS_GROUP | 
+                    WS_TABSTOP,64,26,30,10
+    CONTROL         "B",IDC_PAD1_1B,"Button",BS_AUTOCHECKBOX,96,26,30,10
+    CONTROL         "C",IDC_PAD1_1C,"Button",BS_AUTOCHECKBOX,128,26,30,10
+    CONTROL         "D",IDC_PAD1_1D,"Button",BS_AUTOCHECKBOX,160,26,30,10
+    LTEXT           "按鈕-2",IDC_STATIC,24,43,40,8
+    CONTROL         "A",IDC_PAD1_2A,"Button",BS_AUTOCHECKBOX | WS_GROUP | 
+                    WS_TABSTOP,64,42,30,10
+    CONTROL         "B",IDC_PAD1_2B,"Button",BS_AUTOCHECKBOX,96,42,30,10
+    CONTROL         "C",IDC_PAD1_2C,"Button",BS_AUTOCHECKBOX,128,42,30,10
+    CONTROL         "D",IDC_PAD1_2D,"Button",BS_AUTOCHECKBOX,160,42,30,10
+    LTEXT           "快速",IDC_STATIC,24,61,40,8
+    CONTROL         "A",IDC_PAD1_RA,"Button",BS_AUTOCHECKBOX | WS_GROUP | 
+                    WS_TABSTOP,64,60,30,10
+    CONTROL         "B",IDC_PAD1_RB,"Button",BS_AUTOCHECKBOX,96,60,30,10
+    CONTROL         "C",IDC_PAD1_RC,"Button",BS_AUTOCHECKBOX,128,60,30,10
+    CONTROL         "D",IDC_PAD1_RD,"Button",BS_AUTOCHECKBOX,160,60,30,10
+END
+
+IDD_CALENDAR DIALOG DISCARDABLE  0, 0, 164, 80
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "時間"
+CLASS "np2dialog"
+FONT 9, "新細明體"
+BEGIN
+    CONTROL         "即時 (localtime)",IDC_CLNDREAL,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,8,8,96,10
+    CONTROL         "虛擬時間",IDC_CLNDVIR,"Button",
+                    BS_AUTORADIOBUTTON,8,24,96,10
+    EDITTEXT        IDC_VIRYEAR,20,40,14,12,WS_GROUP
+    CTEXT           "/",IDC_STATIC,34,42,8,8
+    EDITTEXT        IDC_VIRMONTH,42,40,14,12
+    CTEXT           "/",IDC_STATIC,56,42,8,8
+    EDITTEXT        IDC_VIRDAY,64,40,13,12
+    EDITTEXT        IDC_VIRHOUR,20,60,14,12
+    CTEXT           ":",IDC_STATIC,34,62,8,8
+    EDITTEXT        IDC_VIRMINUTE,42,60,14,12
+    CTEXT           ":",IDC_STATIC,56,62,8,8
+    EDITTEXT        IDC_VIRSECOND,64,60,14,12
+    PUSHBUTTON      "現在",IDC_SETNOW,84,60,22,12,WS_GROUP
+    DEFPUSHBUTTON   "確定",IDOK,112,8,44,14,WS_GROUP
+    PUSHBUTTON      "取消",IDCANCEL,112,26,44,14
+END
+
+IDD_ABOUT DIALOG DISCARDABLE  0, 0, 196, 108
+STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "關於"
+CLASS "np2dialog"
+FONT 9, "新細明體"
+BEGIN
+    ICON            IDI_ICON1,IDC_NP2ICON,8,8,20,20
+    LTEXT           "",IDC_NP2VER,36,16,102,8
+    DEFPUSHBUTTON   "確定",IDOK,148,8,40,14,WS_GROUP
+    PUSHBUTTON      "詳細 >>",IDC_MORE,148,26,40,14
+    EDITTEXT        IDC_NP2INFO,8,52,180,48,ES_MULTILINE | ES_READONLY | 
+                    ES_WANTRETURN | WS_VSCROLL
+END
+
+IDD_LGY98 DIALOGEX 0, 0, 184, 124
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "LGY-98"
+FONT 9, "新細明體", 0, 0, 0x0
+BEGIN
+    CONTROL         "Enabled",IDC_LGY98ENABLED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,40,10
+    LTEXT           "I/O port",IDC_STATIC,8,26,30,8
+    COMBOBOX        IDC_LGY98IO,40,24,40,52,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Interrupt",IDC_STATIC,104,26,30,8
+    COMBOBOX        IDC_LGY98INT,136,24,40,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "TAP device name",IDC_STATIC,8,43,76,8
+    COMBOBOX        IDC_LGY98TAP,8,52,168,12,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Defaults",IDC_LGY98DEF,136,102,40,14
+END
+
+IDD_GD5430 DIALOGEX 0, 0, 184, 124
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "CL-GD5430"
+FONT 9, "新細明體", 0, 0, 0x0
+BEGIN
+    CONTROL         "Enabled",IDC_GD5430ENABLED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,40,10
+    LTEXT           "Type",IDC_STATIC,8,26,30,8
+    COMBOBOX        IDC_GD5430TYPE,40,24,136,52,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Defaults",IDC_GD5430DEF,136,102,40,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_CONFIG, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 174
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 230
+    END
+
+    IDD_NEWDISK, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 172
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 40
+    END
+
+    IDD_NEWDISK2, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 188
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 40
+    END
+
+    IDD_NEWHDDDISK, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 152
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 40
+    END
+
+    IDD_NEWSASI, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 136
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 46
+    END
+
+    IDD_SCROPT1, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 164
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_SCROPT_FULLSCREEN, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 164
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_SCROPT2, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 164
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_SCROPT3, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 164
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_SERIAL1, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 216
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 132
+    END
+
+    IDD_PC9861A, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 216
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 132
+    END
+
+    IDD_MPUPC98, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 174
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 170
+    END
+
+    IDD_SNDMIX, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 176
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 112
+    END
+
+    IDD_SND14, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 176
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 112
+    END
+
+    IDD_SND26, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 176
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 112
+    END
+
+    IDD_SND86, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 176
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 112
+    END
+
+    IDD_SNDSPB, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 176
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 112
+    END
+
+    IDD_SNDPAD1, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 176
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 112
+    END
+
+    IDD_CALENDAR, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 156
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 72
+    END
+
+    IDD_ABOUT, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 188
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 100
+    END
+
+    IDD_LGY98, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 176
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 112
+    END
+
+    IDD_GD5430, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 176
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 112
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "..\\..\\resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""np2.rc2""\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_SYS MENU DISCARDABLE 
+BEGIN
+    MENUITEM "工具視窗(&T)",                IDM_TOOLWIN
+    MENUITEM SEPARATOR
+    MENUITEM "移動至中心(&C)",              IDM_SCREENCENTER
+    MENUITEM "視窗銜接(&W)",                IDM_SNAPENABLE
+    MENUITEM "背景工作(&B)",                IDM_BACKGROUND
+    MENUITEM "背景聲音(&G)",                IDM_BGSOUND
+    MENUITEM SEPARATOR
+    MENUITEM " 320x200",                    IDM_SCRNMUL4
+    MENUITEM " 480x300",                    IDM_SCRNMUL6
+    MENUITEM " 640x400",                    IDM_SCRNMUL8
+    MENUITEM " 800x500",                    IDM_SCRNMUL10
+    MENUITEM " 960x600",                    IDM_SCRNMUL12
+    MENUITEM "1280x800",                    IDM_SCRNMUL16
+    MENUITEM SEPARATOR
+END
+
+IDR_SYSKEYDISP MENU DISCARDABLE 
+BEGIN
+    MENUITEM "聲音鍵盤(&K)",                IDM_KEYDISP
+END
+
+IDR_SYSSOFTKBD MENU DISCARDABLE 
+BEGIN
+    MENUITEM "軟體鍵盤(&S)",                IDM_SOFTKBD
+END
+
+IDR_SYSDEBUG32 MENU DISCARDABLE 
+BEGIN
+    MENUITEM "Memory debug",                IDM_MEMDBG32
+END
+
+IDR_SYSDEBUG MENU DISCARDABLE 
+BEGIN
+    MENUITEM "Memory dump",                 IDM_MEMORYDUMP
+    MENUITEM "Debug utility",               IDM_DEBUGUTY
+    MENUITEM SEPARATOR
+END
+
+IDR_MAIN MENU DISCARDABLE 
+BEGIN
+    POPUP "模擬(&E)"
+    BEGIN
+        MENUITEM "重設(&R)",                    IDM_RESET
+        MENUITEM SEPARATOR
+        MENUITEM "設定(&C)...",                 IDM_CONFIG
+        MENUITEM "建立磁碟(&N)...",             IDM_NEWDISK
+        MENUITEM "字型(&F)...",                 IDM_CHANGEFONT
+        MENUITEM SEPARATOR
+        MENUITEM "結束(&X)",                    IDM_EXIT
+    END
+    POPUP "螢幕(&S)"
+    BEGIN
+        MENUITEM "視窗(&W)",                    IDM_WINDOW
+        MENUITEM "全螢幕(&F)",                  IDM_FULLSCREEN
+        MENUITEM SEPARATOR
+        MENUITEM "標準(&M)",                    IDM_ROLNORMAL
+        MENUITEM "左旋轉(&L)",                  IDM_ROLLEFT
+        MENUITEM "右旋轉(&R)",                  IDM_ROLRIGHT
+        MENUITEM SEPARATOR
+        MENUITEM "垂直同步時繪圖(&D)",          IDM_DISPSYNC
+        MENUITEM "即時調色盤(&P)",              IDM_RASTER
+        MENUITEM "全速(&N)",                    IDM_NOWAIT
+        MENUITEM "自動畫面播放速率(&A)",        IDM_AUTOFPS
+        MENUITEM "全部畫面播放(&U)",            IDM_60FPS
+        MENUITEM "1跳過畫面播放",               IDM_30FPS
+        MENUITEM "&2跳過畫面播放",              IDM_20FPS
+        MENUITEM "&3跳過畫面播放",              IDM_15FPS
+        MENUITEM SEPARATOR
+        MENUITEM "螢幕選項(&S)...",             IDM_SCREENOPT
+    END
+    POPUP "裝置(&D)"
+    BEGIN
+        POPUP "鍵盤(&K)"
+        BEGIN
+            MENUITEM "鍵盤(&K)",                    IDM_KEY
+            MENUITEM "代用遊戲台-&1",               IDM_JOY1
+            MENUITEM "代用遊戲台-&2",               IDM_JOY2
+            MENUITEM SEPARATOR
+            MENUITEM "切換 &SHIFT",                 IDM_XSHIFT
+            MENUITEM "切換 &CTRL",                  IDM_XCTRL
+            MENUITEM "切換 &GRPH",                  IDM_XGRPH
+            MENUITEM SEPARATOR
+            MENUITEM "F12 = 滑鼠(&M)",              IDM_F12MOUSE
+            MENUITEM "F12 = Co&py",                 IDM_F12COPY
+            MENUITEM "F12 = S&top",                 IDM_F12STOP
+            MENUITEM "F12 = tenkey [=]",            IDM_F12EQU
+            MENUITEM "F12 = tenkey [ , ]",          IDM_F12COMMA
+            MENUITEM "F12 = User1",                 IDM_USERKEY1
+            MENUITEM "F12 = User2",                 IDM_USERKEY2
+        END
+        POPUP "聲音(&S)"
+        BEGIN
+            MENUITEM "嗶嗶聲 靜音(&O)",             IDM_BEEPOFF
+            MENUITEM "嗶嗶聲 小(&L)",               IDM_BEEPLOW
+            MENUITEM "嗶嗶聲 中(&M)",               IDM_BEEPMID
+            MENUITEM "嗶嗶聲 大(&H)",               IDM_BEEPHIGH
+            MENUITEM SEPARATOR
+            MENUITEM "停用聲音板(&D)",              IDM_NOSOUND
+            MENUITEM "PC-9801-&14",                 IDM_PC9801_14
+            MENUITEM "PC-9801-&26K",                IDM_PC9801_26K
+            MENUITEM "PC-9801-8&6",                 IDM_PC9801_86
+            MENUITEM "PC-9801-26&K + 86",           IDM_PC9801_26_86
+            MENUITEM "PC-9801-86 + &Chibi-oto",     IDM_PC9801_86_CB
+            MENUITEM "PC-9801-11&8",                IDM_PC9801_118
+            MENUITEM "S&peak board",                IDM_SPEAKBOARD
+            MENUITEM "Sp&ark board",                IDM_SPARKBOARD
+            MENUITEM "Sound &Orchestra",            IDM_SOUNDORCHESTRA
+            MENUITEM "Sound Orchestra-&V",          IDM_SOUNDORCHESTRAV
+            MENUITEM "&AMD-98",                     IDM_AMD98
+            MENUITEM "&JastSound",                  IDM_JASTSOUND
+            MENUITEM SEPARATOR
+            MENUITEM "磁碟搜尋聲音(&S)",            IDM_SEEKSND
+        END
+        POPUP "記憶體(&E)"
+        BEGIN
+            MENUITEM "64&0KB",                      IDM_MEM640
+            MENUITEM "&1.6MB",                      IDM_MEM16
+            MENUITEM "&3.6MB",                      IDM_MEM36
+            MENUITEM "&7.6MB",                      IDM_MEM76
+            MENUITEM "&11.6MB",                     IDM_MEM116
+            MENUITEM "&13.6MB",                     IDM_MEM136
+            MENUITEM "&16.6MB",                     IDM_MEM166
+            MENUITEM "&32.6MB",                     IDM_MEM326
+            MENUITEM "&64.6MB",                     IDM_MEM646
+            MENUITEM "&120.6MB",                    IDM_MEM1206
+        END
+        MENUITEM "滑鼠(&M)",                    IDM_MOUSE
+        MENUITEM SEPARATOR
+        MENUITEM "串行選項(&R)...",             IDM_SERIAL1
+        MENUITEM SEPARATOR
+        MENUITEM "MIDI 選項(&O)...",            IDM_MPUPC98
+        MENUITEM "MIDI 重設(&P)",               IDM_MIDIPANIC
+        MENUITEM SEPARATOR
+        MENUITEM "聲音選項(&U)...",             IDM_SNDOPT
+        MENUITEM SEPARATOR
+        MENUITEM "&Network option...",          IDM_NETOPT
+        MENUITEM SEPARATOR
+        MENUITEM "&Window Accelerator option...", IDM_WABOPT
+    END
+    POPUP "其他(&O)"
+    BEGIN
+        MENUITEM "另存點陣圖影像(&B)...",       IDM_BMPSAVE
+        MENUITEM "&S98 登錄...",                IDM_S98LOGGING
+        MENUITEM "時間(&L)...",                 IDM_CALENDAR
+        POPUP "快速鍵(&K)"
+        BEGIN
+            MENUITEM "Alt+Enter",                   IDM_ALTENTER
+            MENUITEM "Alt+F4",                      IDM_ALTF4
+        END
+        MENUITEM "顯示時脈(&C)",                IDM_DISPCLOCK
+        MENUITEM "顯示每秒畫面格數(&F)",        IDM_DISPFRAME
+        MENUITEM "反向的遊戲台按鍵(&V)",        IDM_JOYX
+        MENUITEM "快速的遊戲台按鍵(&R)",        IDM_RAPID
+        MENUITEM "快速的滑鼠按鍵(&M)",          IDM_MSRAPID
+        MENUITEM "&ITF work",                   IDM_ITFWORK
+        MENUITEM SEPARATOR
+        MENUITEM "說明主題(&H)...",             IDM_HELP
+        MENUITEM "關於(&A)...",                 IDM_ABOUT
+    END
+END
+
+IDR_STAT MENU DISCARDABLE 
+BEGIN
+    POPUP "狀態(&T)"
+    BEGIN
+        MENUITEM "另存 0",                      IDM_FLAGSAVE0
+        MENUITEM "另存 1",                      IDM_FLAGSAVE1
+        MENUITEM "另存 2",                      IDM_FLAGSAVE2
+        MENUITEM "另存 3",                      IDM_FLAGSAVE3
+        MENUITEM "另存 4",                      IDM_FLAGSAVE4
+        MENUITEM "另存 5",                      IDM_FLAGSAVE5
+        MENUITEM "另存 6",                      IDM_FLAGSAVE6
+        MENUITEM "另存 7",                      IDM_FLAGSAVE7
+        MENUITEM "另存 8",                      IDM_FLAGSAVE8
+        MENUITEM "另存 9",                      IDM_FLAGSAVE9
+        MENUITEM SEPARATOR
+        MENUITEM "載入 0",                      IDM_FLAGLOAD0
+        MENUITEM "載入 1",                      IDM_FLAGLOAD1
+        MENUITEM "載入 2",                      IDM_FLAGLOAD2
+        MENUITEM "載入 3",                      IDM_FLAGLOAD3
+        MENUITEM "載入 4",                      IDM_FLAGLOAD4
+        MENUITEM "載入 5",                      IDM_FLAGLOAD5
+        MENUITEM "載入 6",                      IDM_FLAGLOAD6
+        MENUITEM "載入 7",                      IDM_FLAGLOAD7
+        MENUITEM "載入 8",                      IDM_FLAGLOAD8
+        MENUITEM "載入 9",                      IDM_FLAGLOAD9
+    END
+END
+
+IDR_FDD1MENU MENU DISCARDABLE 
+BEGIN
+    POPUP "軟碟機-&1"
+    BEGIN
+        MENUITEM "開啟(&O)...",                 IDM_FDD1OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "彈出(&E)",                    IDM_FDD1EJECT
+    END
+END
+
+IDR_FDD2MENU MENU DISCARDABLE 
+BEGIN
+    POPUP "軟碟機-&2"
+    BEGIN
+        MENUITEM "開啟(&O)...",                 IDM_FDD2OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "彈出(&E)",                    IDM_FDD2EJECT
+    END
+END
+
+IDR_FDD3MENU MENU DISCARDABLE 
+BEGIN
+    POPUP "軟碟機-&3"
+    BEGIN
+        MENUITEM "開啟(&O)...",                 IDM_FDD3OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "彈出(&E)",                    IDM_FDD3EJECT
+    END
+END
+
+IDR_FDD4MENU MENU DISCARDABLE 
+BEGIN
+    POPUP "軟碟機-&4"
+    BEGIN
+        MENUITEM "開啟(&O)...",                 IDM_FDD4OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "彈出(&E)",                    IDM_FDD4EJECT
+    END
+END
+
+IDR_IDEMENU MENU DISCARDABLE 
+BEGIN
+    POPUP "IDE #0"
+    BEGIN
+        MENUITEM "開啟(&O)...",                 IDM_IDE0OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "移去(&R)",                    IDM_IDE0EJECT
+    END
+    POPUP "IDE #1"
+    BEGIN
+        MENUITEM "開啟(&O)...",                 IDM_IDE1OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "移去(&R)",                    IDM_IDE1EJECT
+    END
+    POPUP "IDE #2"
+    BEGIN
+        MENUITEM "開啟(&O)...",                 IDM_IDE2OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "彈出(&E)",                    IDM_IDE2EJECT
+    END
+    POPUP "IDE #3"
+    BEGIN
+        MENUITEM "開啟(&O)...",                 IDM_IDE3OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "彈出(&E)",                    IDM_IDE3EJECT
+    END
+END
+
+IDR_SASIMENU MENU DISCARDABLE 
+BEGIN
+    POPUP "SASI #0"
+    BEGIN
+        MENUITEM "開啟(&O)...",                 IDM_IDE0OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "移去(&R)",                    IDM_IDE0EJECT
+    END
+    POPUP "SASI #1"
+    BEGIN
+        MENUITEM "開啟(&O)...",                 IDM_IDE1OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "移去(&R)",                    IDM_IDE1EJECT
+    END
+END
+
+IDR_SCSIMENU MENU DISCARDABLE 
+BEGIN
+    POPUP "SCSI #0"
+    BEGIN
+        MENUITEM "開啟(&O)...",                 IDM_SCSI0OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "移去(&R)",                    IDM_SCSI0EJECT
+    END
+    POPUP "SCSI #1"
+    BEGIN
+        MENUITEM "開啟(&O)...",                 IDM_SCSI1OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "移去(&R)",                    IDM_SCSI1EJECT
+    END
+    POPUP "SCSI #2"
+    BEGIN
+        MENUITEM "開啟(&O)...",                 IDM_SCSI2OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "移去(&R)",                    IDM_SCSI2EJECT
+    END
+    POPUP "SCSI #3"
+    BEGIN
+        MENUITEM "開啟(&O)...",                 IDM_SCSI3OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "移去(&R)",                    IDM_SCSI3EJECT
+    END
+END
+
+IDR_PXMENU MENU DISCARDABLE 
+BEGIN
+    MENUITEM "Otomi x2",                    IDM_PX1
+    MENUITEM "Otomi x2 + 86",               IDM_PX2
+END
+
+IDR_WAVEREC MENU DISCARDABLE 
+BEGIN
+    MENUITEM "另存聲音(&W)...",             IDM_WAVEREC
+END
+
+IDR_CPUSAVE16 MENU DISCARDABLE 
+BEGIN
+    MENUITEM "&i286 另存",                  IDM_CPUSAVE
+END
+
+IDR_CPUSAVE32 MENU DISCARDABLE 
+BEGIN
+    MENUITEM "&i386 另存",                  IDM_CPUSAVE
+END
+
+IDR_CLOSE MENU DISCARDABLE 
+BEGIN
+    MENUITEM "關閉(&C)",                    IDM_CLOSE
+END
+
+IDR_TOOLWIN MENU DISCARDABLE 
+BEGIN
+    POPUP "主題(&S)"
+    BEGIN
+        MENUITEM "選取主題(&S)...",             IDM_TOOL_SKINSEL
+        MENUITEM SEPARATOR
+        MENUITEM "<預設主題>(&B)",              IDM_TOOL_SKINDEF
+    END
+END
+
+IDR_KEYDISP MENU DISCARDABLE 
+BEGIN
+    POPUP "模組(&M)"
+    BEGIN
+        MENUITEM "&FM",                         IDM_KDISPFM
+        MENUITEM "&MIDI",                       IDM_KDISPMIDI
+    END
+END
+
+IDR_VIEW MENU DISCARDABLE 
+BEGIN
+    POPUP "&System"
+    BEGIN
+        MENUITEM "&New window",                 IDM_VIEWWINNEW
+        MENUITEM SEPARATOR
+        MENUITEM "&Close",                      IDM_VIEWWINCLOSE
+        MENUITEM "&All close",                  IDM_VIEWWINALLCLOSE
+    END
+    POPUP "&Mode"
+    BEGIN
+        MENUITEM "&Register",                   IDM_VIEWMODEREG
+        MENUITEM "&Dump segment",               IDM_VIEWMODESEG
+        MENUITEM "&Main memory dump",           IDM_VIEWMODE1MB
+        MENUITEM "&Unassemble",                 IDM_VIEWMODEASM
+        MENUITEM "&Sound register",             IDM_VIEWMODESND
+        MENUITEM SEPARATOR
+        MENUITEM "&Lock",                       IDM_VIEWMODELOCK
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "Enter &address...",           IDM_SETSEG, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "Seg = &CS",                   IDM_SEGCS
+        MENUITEM "Seg = &DS",                   IDM_SEGDS
+        MENUITEM "Seg = &ES",                   IDM_SEGES
+        MENUITEM "Seg = &SS",                   IDM_SEGSS
+        MENUITEM "Seg = &TEXT",                 IDM_SEGTEXT
+        MENUITEM SEPARATOR
+        MENUITEM "Reload",                      IDM_RELOAD, GRAYED
+    END
+    POPUP "&Memory", GRAYED
+    BEGIN
+        MENUITEM "VRAM page&0",                 IDM_VRAM0
+        MENUITEM "VRAM page&1",                 IDM_VRAM1
+        MENUITEM SEPARATOR
+        MENUITEM "&A20 line",                   IDM_A20LINE
+    END
+END
+
+IDR_TRACE MENU DISCARDABLE 
+BEGIN
+    MENUITEM "TRACE",                       IDM_TRACE_TRACE
+    MENUITEM "VERBOSE",                     IDM_TRACE_VERBOSE
+    MENUITEM SEPARATOR
+    MENUITEM "Enable",                      IDM_TRACE_ENABLE
+    MENUITEM "File out",                    IDM_TRACE_FILEOUT
+    MENUITEM "Clear",                       IDM_TRACE_CLEAR
+    MENUITEM SEPARATOR
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+NP2BMP                  BITMAP  DISCARDABLE     "..\\nekop2.bmp"
+NP2TOOL                 BITMAP  DISCARDABLE     "..\\np2tool.bmp"
+NP21TOOL                BITMAP  DISCARDABLE     "..\\np21tool.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+IDI_ICON1               ICON    DISCARDABLE     "..\\np2.ico"
+IDI_ICON2               ICON    DISCARDABLE     "..\\np2debug.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// EXTROM
+//
+
+SEEKWAV                 EXTROM  DISCARDABLE     "..\\fddseek.wav"
+SEEK1WAV                EXTROM  DISCARDABLE     "..\\fddseek1.wav"
+RELAY1WAV               EXTROM  DISCARDABLE     "..\\relay1.wav"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_APP_NAME2           "Neko Project II"
+    IDS_APP_NAME21          "Neko Project 21"
+    IDS_FILENAME_HELP       "np2.chm"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_FONTFACE            "MS Gothic"
+    IDS_PFONTFACE           "MS PGothic"
+    IDS_FONTFACE_PRIMARY    "MS Gothic"
+    IDS_PFONTFACE_PRIMARY   "MS PGothic"
+    IDS_FONTFACE_SECONDARY  "MS Gothic"
+    IDS_PFONTFACE_SECONDARY "MS PGothic"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_CAPTION_TOOL        "工具視窗"
+    IDS_CAPTION_KEYDISP     "聲音鍵盤"
+    IDS_CAPTION_SOFTKEY     "軟體鍵盤"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_HDD                 "硬碟機(&H)"
+    IDS_SCREENOPTION        "螢幕選項"
+    IDS_SOUNDOPTION         "聲音板選項"
+    IDS_SERIALOPTION        "串行選項"
+    IDS_NETWORKOPTION       "Network option"
+    IDS_WABOPTION           "Window Accelerator board option"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_CAPTION_FDD1        " FDD1:%s"
+    IDS_CAPTION_FDD2        " FDD2:%s"
+    IDS_CAPTION_FDD3        " FDD3:%s"
+    IDS_CAPTION_FDD4        " FDD4:%s"
+    IDS_CAPTION_SEPALATOR   " - "
+    IDS_CAPTION_FRAME       "%sFPS"
+    IDS_CAPTION_CLOCK       "%sMHz"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ERROR_DIRECTDRAW    "不能建立 DirectDraw 物件"
+    IDS_CONFIRM_RESET       "重設嗎？"
+    IDS_CONFIRM_EXIT        "結束嗎？"
+    IDS_CONFIRM_RESUME      "衝突!\n\n%s\n繼續嗎?"
+    IDS_ERROR_RESUME        "不能再開始"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_NONCONNECT          "不連接"
+    IDS_1                   "1"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_1HALF               "1.5"
+    IDS_2                   "2"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_INT0                "INT0"
+    IDS_INT1                "INT1"
+    IDS_INT2                "INT2"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_INT41               "INT41"
+    IDS_INT42               "INT42"
+    IDS_INT5                "INT5"
+    IDS_INT6                "INT6"
+    IDS_C8000               "C8000"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_CC000               "CC000"
+    IDS_D0000               "D0000"
+    IDS_D4000               "D4000"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_SERIAL1             "COM1"
+    IDS_PC9861B             "CH.1"
+    IDS_PC9861C             "CH.2"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_COM1                "COM1"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_COM2                "COM2"
+    IDS_COM3                "COM3"
+    IDS_COM4                "COM4"
+    IDS_MIDI                "MIDI"
+    IDS_2_0MHZ              "1.9968MHz"
+    IDS_2_5MHZ              "2.4576MHz"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ZOOM_NONE           "實際大小"
+    IDS_ZOOM_FIXEDASPECT    "固定外觀比例"
+    IDS_ZOOM_ADJUSTASPECT   "調整外觀比例"
+    IDS_ZOOM_FULL           "全螢幕"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_0088                "0088"
+    IDS_0188                "0188"
+    IDS_0288                "0288"
+    IDS_0388                "0388"
+    IDS_0X                  "0x"
+    IDS_1X                  "1x"
+    IDS_2X                  "2x"
+    IDS_3X                  "3x"
+    IDS_4X                  "4x"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_5X                  "5x"
+    IDS_6X                  "6x"
+    IDS_7X                  "7x"
+    IDS_00D0                "00D0"
+    IDS_10D0                "10D0"
+    IDS_20D0                "20D0"
+    IDS_30D0                "30D0"
+    IDS_40D0                "40D0"
+    IDS_50D0                "50D0"
+    IDS_60D0                "60D0"
+    IDS_70D0                "70D0"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_PARITY_NONE         "無"
+    IDS_PARITY_ODD          "奇數"
+    IDS_PARITY_EVEN         "偶數"
+    IDS_SYNC                "同步"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ASYNC               "非同步"
+    IDS_ASYNC16X            "非同步 16x"
+    IDS_ASYNC64X            "非同步 64x"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_GD5430_XE           "PC-9821Xe built-in"
+    IDS_GD5430_CB           "PC-9821Cb built-in"
+    IDS_GD5430_CF           "PC-9821Cf built-in"
+    IDS_GD5430_XE10         "PC-9821Xe10,Xa7e,Xb10 built-in"
+    IDS_GD5430_CB2          "PC-9821Cb2 built-in"
+    IDS_GD5430_CX2          "PC-9821Cx2 built-in"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_FONTTITLE           "選取字型檔"
+    IDS_FONTEXT             "bmp"
+    IDS_FONTFILTER          "PC-98 點陣字型 (*.bmp)|*.bmp|Virtual98 字型|font.rom|所有支援檔案|*.bmp;pc88.fnt;kanji1.rom;kanji2.rom;font.rom;subsys_c.rom;kanji.rom;fnt0808.x1;fnt0816.x1;fnt1616.x1;cgrom.dat|"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_BMPTITLE            "另存點陣圖影像"
+    IDS_BMPEXT              "bmp"
+    IDS_BMPFILTER1          "1位元點陣圖影像 (*.bmp)|*.bmp|GIF 影像 (*.gif)|*.gif|"
+    IDS_BMPFILTER4          "4位元點陣圖影像 (*.bmp)|*.bmp|GIF 影像 (*.gif)|*.gif|"
+    IDS_BMPFILTER8          "8位元點陣圖影像 (*.bmp)|*.bmp|GIF 影像 (*.gif)|*.gif|"
+    IDS_BMPFILTER24         "24位元點陣圖影像 (*.bmp)|*.bmp|"
+    IDS_MIMPITITLE          "開啟 MIMPI 定義檔"
+    IDS_MIMPIEXT            "def"
+    IDS_MIMPIFILTER         "MIMPI 定義檔案 (*.def)|*.def|"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_FDDTITLE            "開啟軟碟檔"
+    IDS_FDDEXT              "d88"
+    IDS_FDDFILTER           "D88 軟碟檔案 (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|軟碟檔案 (*.xdf;*.hdm;*.dup;*.2hd)|*.xdf;*.hdm;*.dup;*.2hd;*.tfd|所有支援檔案|*.d88;*.88d;*.d98;*.98d;*.fdi;*.xdf;*.hdm;*.dup;*.2hd;*.tfd|所有檔案 (*.*)|*.*|"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_HDDTITLE            "選取硬碟檔"
+    IDS_HDDEXT              "thd"
+    IDS_HDDFILTER           "Anex86 硬碟檔案 (*.hdi)|*.hdi|T98 硬碟檔案 (*.thd)|*.thd|T98-Next 硬碟檔案 (*.nhd)|*.nhd|所有支援檔案|*.thd;*.nhd;*.hdi|"
+    IDS_SASITITLE           "選取 SASI/IDE 硬碟檔"
+    IDS_IDETITLE            "選取 IDE 硬碟檔"
+    IDS_ISOTITLE            "開啟 ISO-9660 檔案"
+    IDS_ISOEXT              "iso"
+    IDS_ISOFILTER           "Cue sheets (*.cue)|*.cue|ISO-9660 檔案 (*.iso)|*.iso;*.img|所有支援檔案|*.cue;*.iso;*.img|所有檔案 (*.*)|*.*|"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_SCSITITLE           "選取 SCSI 硬碟檔"
+    IDS_SCSIEXT             "hdd"
+    IDS_SCSIFILTER          "Virtual98 硬碟檔案 (*.hdd)|*.hdd|"
+    IDS_NEWDISKTITLE        "另存磁碟檔"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_NEWDISKEXT          "d88"
+    IDS_NEWDISKFILTER       "D88 軟碟檔案 (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Anex86 硬碟檔案 (*.hdi)|*.hdi|T98 harddisk 硬碟檔案 (*.thd)|*.thd|T98-Next 硬碟檔案 (*.nhd)|*.nhd|Virtual98 硬碟檔案 (*.hdd)|*.hdd|"
+    IDS_NEWDISKFILTER2      "D88 軟碟檔案 (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Anex86 硬碟檔案 (*.hdi)|*.hdi|T98 harddisk 硬碟檔案 (*.thd)|*.thd|T98-Next 硬碟檔案 (*.nhd)|*.nhd|"
+    IDS_S98TITLE            "另存 S98 登錄"
+    IDS_S98EXT              "s98"
+    IDS_S98FILTER           "S98 登錄 (*.s98)|*.s98|"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_WAVETITLE           "另存聲音"
+    IDS_WAVEEXT             "wav"
+    IDS_WAVEFILTER          "聲音 (*.wav)|*.wav|"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_SKINTITLE           "開啟主題檔"
+    IDS_SKINEXT             "ini"
+    IDS_SKINFILTER          "組態設定值 (*.ini)|*.ini|文字文件(*.txt)|*.txt|所有檔案 (*.*)|*.*|"
+END
+
+#endif    // Chinese (Taiwan) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#include "np2.rc2"
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

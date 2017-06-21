@@ -1,0 +1,77 @@
+/////////////////////////////////////////////////////////////////////////////
+//
+// Manifest
+//
+
+#ifdef NEEDS_MANIFEST
+#ifdef _WIN64
+#ifdef SUPPORT_PC9821
+IDR_MANIFEST            IRT_MANIFEST MOVEABLE PURE "..\\np21x64.mnf"
+#else
+IDR_MANIFEST            IRT_MANIFEST MOVEABLE PURE "..\\np2x64.mnf"
+#endif
+#else
+#ifdef SUPPORT_PC9821
+IDR_MANIFEST            IRT_MANIFEST MOVEABLE PURE "..\\np21.mnf"
+#else
+IDR_MANIFEST            IRT_MANIFEST MOVEABLE PURE "..\\np2.mnf"
+#endif
+#endif
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 0,8,6,0
+ PRODUCTVERSION 0,8,6,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040403b6"
+        BEGIN
+            VALUE "CompanyName", "\0"
+            VALUE "FileVersion", "0, 8, 6, 0\0"
+            VALUE "LegalCopyright", "貓女士開發隊\0"
+
+            VALUE "ProductVersion", "0, 8, 6, 0\0"
+#ifdef _USRDLL
+            VALUE "FileDescription", "PC-98x1 系列模擬器資源檔\0"
+            VALUE "ProductName", "Neko Project II 資源檔\0"
+            VALUE "InternalName", "np2_950\0"
+            VALUE "OriginalFilename", "np2_950.dll\0"
+#else
+#ifdef SUPPORT_PC9821
+            VALUE "FileDescription", "PC-9821 系列模擬器\0"
+            VALUE "ProductName", "Neko Project 21\0"
+#else
+            VALUE "FileDescription", "PC-9801 系列模擬器\0"
+            VALUE "ProductName", "Neko Project II\0"
+#endif
+#ifdef SUPPORT_PC9821
+            VALUE "InternalName", "np21\0"
+            VALUE "OriginalFilename", "np21.exe\0"
+#else
+            VALUE "InternalName", "np2\0"
+            VALUE "OriginalFilename", "np2.exe\0"
+#endif
+#endif
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x404, 950
+    END
+END
+

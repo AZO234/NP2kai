@@ -1,0 +1,84 @@
+
+keyint_proc:	push	ax
+				push	bx
+				push	cx
+				push	ds
+				push	es
+				mov		ax, DATASEG			; dsレジスタは設定しなくてもいいん
+				mov		ds, ax				; だけど DEBUG時に困るね…
+				xor		ax, ax
+				mov		es, ax
+				in		al, 43h
+				test	al, 2
+				je		short keyint_ed
+				in		al, 41h
+				mov		ds:[KEYSTAT], al
+				mov		cl, al
+				and		cl, 7
+				mov		ah, 1
+				shl		ah, cl
+				xor		bx, bx
+				mov		bl, al
+				mov		cl, 3
+				shr		bl, cl
+				and		bl, 0fh
+				add		bx, MEM_KB_KY_STS
+				test	al, 80h
+				jne		short keyrelease
+				or		es:[bx], ah
+				jmp		short keyint_shift
+keyrelease:		not		ah
+				and		es:[bx], ah
+				and		al, 7fh
+keyint_shift:	cmp		al, 70h
+				jb		short keyint_ed
+				cmp		al, 75h
+				ja		short keyint_ed
+				mov		al, es:[bx]
+				inc		bx
+				inc		bx
+				and		al, 1fh
+				and		byte ptr es:[bx], 0e0h
+				or		es:[bx], al
+keyint_ed:		mov		al, 20h
+				out		0, al
+				pop		es
+				pop		ds
+				pop		cx
+				pop		bx
+				pop		ax
+				iret
+
+
+boot_keycheck:	push	ds
+				xor		cx, cx
+				mov		ds, cx
+				cmp		byte ptr ds:[0531h], cl
+				jns		short bkc_nonhelp
+				mov		al, BOOT_WFLASH
+				mov		cl, ds:[0532h]
+				test	cl, 8							; '8'
+				jne		short bkc_helpret
+				mov		al, BOOT_REVISION
+				test	byte ptr ds:[0533h], 4			; '1'
+				jne		short bkc_helpret
+				mov		al, BOOT_RFLASH
+				test	cl, 10h							; '9'
+				jne		short bkc_helpret
+				mov		al, BOOT_MENU
+bkc_helpret:	pop		ds
+				ret
+
+bkc_nonhelp:	mov		cl, ds:[053ah]
+				mov		ch, cl
+				and		cx, 111eh
+				cmp		cl, 1eh
+				mov		al, BOOT_FIRMWARE
+				je		short bkc_end
+				cmp		ch, 11h
+				mov		al, BOOT_DIPSWINIT
+				je		short bkc_end
+				mov		al, BOOT_NORMAL
+bkc_end:		pop		ds
+				ret
+

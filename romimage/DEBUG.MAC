@@ -1,0 +1,31 @@
+
+; MS-DOSで himem, EMS使うと システムメモリ情報がリセットされるので
+; 初期値を与えておく
+
+DEBUG_UNDER16		equ		0				; 14
+DEBUG_OVER16		equ		0				; (128-16)
+
+ifdef MSDOS
+DEBUG_INIT		macro
+				push	0
+				pop		es
+				mov		al, DEBUG_UNDER16 * 8
+				xchg	al, es:[MEM_EXPMMSZ]
+				mov		ds:[BAK_UNDER16], al
+				mov		ax, DEBUG_OVER16
+				xchg	ax, es:[MEM_EXTMSZ]
+				mov		ds:[BAK_OVER16], ax
+				endm
+
+DEBUG_TERM		macro
+				push	0
+				pop		es
+				mov		al, DEBUG_UNDER16 * 8
+				mov		al, ds:[BAK_UNDER16]
+				mov		es:[MEM_EXPMMSZ], al
+				mov		ax,ds:[BAK_OVER16]
+				mov		es:[MEM_EXTMSZ], ax
+				endm
+endif
+
+

@@ -1,0 +1,28 @@
+
+ifdef NP2
+ITF_EXIT		macro
+				mov		al, 0fh
+				out		37h, al
+				mov		al, 0ah
+				out		37h, al
+				mov		ax, 0
+				mov		ds, ax
+itfexitp:		mov		word ptr ds:[04f8h], 0eaeeh
+				mov		word ptr ds:[04fah], 00008h
+				mov		word ptr ds:[04fch], 0fd80h
+				mov		dx, 043dh
+				mov		al, 12h
+				db		0eah
+				dw		04f8h
+				dw		0000h
+				endm
+endif
+
+
+ifdef MSDOS
+ITF_EXIT		macro
+				mov		ax, 4c00h
+				int		21h
+				endm
+endif
+

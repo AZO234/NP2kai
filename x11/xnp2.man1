@@ -1,0 +1,128 @@
+.TH XNP2 1 "Jan 13, 2016"
+.SH NAME
+Xnp2 \- PC-9801 series emulator
+.SH SYNOPSIS
+.B xnp2
+[
+.B \--config filename
+]
+[
+.B \--timidity-config filename
+]
+[
+.B FD1 image
+[
+.B FD2 image
+[
+.B FD3 image
+[
+.B FD4 image
+]
+]
+]
+]
+.SH DESCRIPTION
+.B PC-9801 series emulator for UNIX platform.
+.SH OPTIONS
+.TP
+.B \--config
+Indicate Xnp2 configuration file.
+[Default: $(HOME)/.np2/np2rc]
+.TP
+.B \--timidity-config
+Indicate Xnp2 included software MIDI configuration file.
+[Default: $(HOME)/.np2/timidity.cfg]
+.SH EXAMPLES
+.nf
+Indicate Xnp2 configuration file "np2.cfg".
+.ft B
+xnp2 --config np2.cfg
+.ft R
+
+Indicate software MIDI configuration file "/usr/local/lib/timidity/timidity.cfg".
+.ft B
+xnp2 --timidity-config /usr/local/lib/timidity/timidity.cfg
+.ft R
+
+Insert system.d88 disk image in floppy disk drive1, insert data.d88 disk image in floopy disk drive2. And Xnp2 is started.
+.ft B
+xnp2 system.d88 data.d88
+.ft R
+.fi
+.SH COMMAND
+.TP
+.B Mouse middle button
+Change mouse operation between X and Xnp2.
+.SH FILES
+.TP
+.B $(HOME)/.np2/np2rc
+Xnp2 configuration file
+.TP
+.B $(HOME)/.np2/font.tmp
+font bitmap file
+.TP
+.B $(HOME)/.np2/bios.rom
+BIOS ROM file
+.TP
+.B $(HOME)/.np2/FONT.ROM
+font ROM file
+.TP
+.B $(HOME)/.np2/sound26.rom
+PC-9801-26K BIOS ROM file
+.TP
+.B $(HOME)/.np2/sound86.rom
+PC-9801-86 BIOS ROM file
+.TP
+.B $(HOME)/.np2/sound118.rom
+PC-9801-118 BIOS ROM file
+.TP
+.B $(HOME)/.np2/soundSPB.rom
+Speak board BIOS ROM file
+.TP
+.B $(HOME)/.np2/SCCI.ini
+SCCI (Sound Chip Common Interface) configuration file
+.TP
+.B $(HOME)/.np2/timidity.cfg
+included software MIDI configuration file
+.TP
+.B $(HOME)/.np2/2608_bd.wav
+OPNA rythm sound source (bass drum)
+.TP
+.B $(HOME)/.np2/2608_sd.wav
+OPNA rythm sound source (snare drum)
+.TP
+.B $(HOME)/.np2/2608_top.wav
+OPNA rythm sound source (Cymbal)
+.TP
+.B $(HOME)/.np2/2608_hh.wav
+OPNA rythm sound source (High hat)
+.TP
+.B $(HOME)/.np2/2608_tom.wav
+OPNA rythm sound source (Tamm)
+.TP
+.B $(HOME)/.np2/2608_rim.wav
+OPNA rythm sound source (Rim shor)
+.TP
+.B @PKGDATADIR@/np2tool.d88
+disk image for hostdrv.
+.TP
+.B @PKGDATADIR@/fddseek.wav
+floppy disk seek sound file
+.TP
+.B @PKGDATADIR@/fddseek1.wav
+another floppy disk seek sound file
+.SH AUTHOR
+Yui <np2@yui.ne.jp>, the
+.B Neko Project II
+main developer, who is maintainer for MS-Windows, MacOS 8.x and MacOS 9 versions.
+.br
+NONAKA Kimihiro <nonakap@gmail.com>, who ported
+.B Neko Project II
+to the UNIX platform.
+.br
+tk800 <tk_np2x@yahoo.co.jp>, who ported
+.B Neko Project II
+to MacOS X.
+.SH "SEE ALSO"
+.B Xnp2
+Web site: http://www.nonakap.org/np2/ (japanese)

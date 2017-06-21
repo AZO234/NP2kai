@@ -1,0 +1,25 @@
+
+sendeoi:		push	ax
+				call	eoi
+				pop		ax
+biosnop:		iret
+
+eoi:			mov		al, 0bh
+				out		00h, al
+				out		5fh, al
+				in		al, 00h
+				test	al, 80h
+				je		short .master
+				mov		al, 20h
+				out		08h, al
+				out		5fh, al
+				mov		al, 0bh
+				out		08h, al
+				out		5fh, al
+				in		al, 08h
+				test	al, -1
+				jne		short .ed
+.master:		mov		al, 20h
+				out		00h, al
+.ed:			ret
+

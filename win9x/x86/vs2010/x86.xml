@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectSchemaDefinitions xmlns="clr-namespace:Microsoft.Build.Framework.XamlTypes;assembly=Microsoft.Build.Framework" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:transformCallback="Microsoft.Cpp.Dev10.ConvertPropertyCallback">
+  <Rule
+    Name="NASM"
+    PageTemplate="tool"
+    DisplayName="Netwide Macro Assembler"
+    Order="200">
+    <Rule.DataSource>
+      <DataSource
+        Persistence="ProjectFile"
+        ItemType="NASM" />
+    </Rule.DataSource>
+    <Rule.Categories>
+      <Category
+        Name="General">
+        <Category.DisplayName>
+          <sys:String>General</sys:String>
+        </Category.DisplayName>
+      </Category>
+      <Category
+        Name="Command Line"
+        Subtype="CommandLine">
+        <Category.DisplayName>
+          <sys:String>Command Line</sys:String>
+        </Category.DisplayName>
+      </Category>
+    </Rule.Categories>
+    <StringListProperty
+      Name="Inputs"
+      Category="Command Line"
+      IsRequired="true"
+      Switch=" ">
+      <StringListProperty.DataSource>
+        <DataSource
+          Persistence="ProjectFile"
+          ItemType="NASM"
+          SourceType="Item" />
+      </StringListProperty.DataSource>
+    </StringListProperty>
+    <BoolProperty
+      Name="TreatWarningsAsErrors"
+      HelpContext="0"
+      HelpUrl="http://www.nasm.us/doc/"
+      DisplayName="Treat Warnings As Errors"
+      Description="Returns an error code if warnings are generated.     (-Werror)"
+      Switch="-Werror" />
+    <BoolProperty
+      Name="GenerateDebugInformation"
+      HelpContext="0"
+      HelpUrl="http://www.nasm.us/doc/"
+      DisplayName="Generate Debug Information"
+      Description="Generates Debug Information.     (-g)"
+      Switch="-g" />
+    <StringProperty
+      Name="ObjectFileName"
+      Category="Object File"
+      HelpContext="0"
+      HelpUrl="http://www.nasm.us/doc/"
+      DisplayName="Object File Name"
+      Description="Specifies the name of the output object file.     (-o [file])"
+      Switch="-o &quot;[value]&quot;" />
+    <StringListProperty
+      Name="PreprocessorDefinitions"
+      HelpContext="0"
+      HelpUrl="http://www.nasm.us/doc/"
+      DisplayName="Preprocessor Definitions"
+      Description="Defines a text macro with the given name.     (-D[symbol])"
+      Separator=";"
+      Switch="-D[value]" />
+    <StringListProperty
+      Name="UndefinePreprocessorDefinitions"
+      HelpContext="0"
+      HelpUrl="http://www.nasm.us/doc/"
+      DisplayName="Undefine Preprocessor Definitions"
+      Description="Undefines a text macro with the given name.     (-U[symbol])"
+      Separator=";"
+      Switch="-U[value]" />
+    <StringProperty
+      Name="AssembledCodeListingFile"
+      Category="Listing File"
+      HelpContext="0"
+      HelpUrl="http://www.nasm.us/doc/"
+      DisplayName="Assembled Code Listing File"
+      Description="Generates an assembled code listing file.     (-l [file])"
+      Switch="-l &quot;[value]&quot;" />
+    <StringListProperty
+      Name="IncludePaths"
+      HelpContext="0"
+      HelpUrl="http://www.nasm.us/doc/"
+      DisplayName="Include Paths"
+      Description="Sets path for include file.     (-I[path])"
+      Separator=";"
+      Switch="-I[value]" />
+    <StringProperty
+      Name="CommandLineTemplate"
+      DisplayName="Command Line"
+      Visible="False"
+      IncludeInCommandLine="False" />
+    <DynamicEnumProperty
+      Name="NASMBeforeTargets"
+      Category="General"
+      EnumProvider="Targets"
+      IncludeInCommandLine="False">
+      <DynamicEnumProperty.DisplayName>
+        <sys:String>Execute Before</sys:String>
+      </DynamicEnumProperty.DisplayName>
+      <DynamicEnumProperty.Description>
+        <sys:String>Specifies the targets for the build customization to run before.</sys:String>
+      </DynamicEnumProperty.Description>
+      <DynamicEnumProperty.ProviderSettings>
+        <NameValuePair
+          Name="Exclude"
+          Value="^NASMBeforeTargets|^Compute" />
+      </DynamicEnumProperty.ProviderSettings>
+      <DynamicEnumProperty.DataSource>
+        <DataSource
+          Persistence="ProjectFile"
+          HasConfigurationCondition="true" />
+      </DynamicEnumProperty.DataSource>
+    </DynamicEnumProperty>
+    <DynamicEnumProperty
+      Name="NASMAfterTargets"
+      Category="General"
+      EnumProvider="Targets"
+      IncludeInCommandLine="False">
+      <DynamicEnumProperty.DisplayName>
+        <sys:String>Execute After</sys:String>
+      </DynamicEnumProperty.DisplayName>
+      <DynamicEnumProperty.Description>
+        <sys:String>Specifies the targets for the build customization to run after.</sys:String>
+      </DynamicEnumProperty.Description>
+      <DynamicEnumProperty.ProviderSettings>
+        <NameValuePair
+          Name="Exclude"
+          Value="^NASMAfterTargets|^Compute" />
+      </DynamicEnumProperty.ProviderSettings>
+      <DynamicEnumProperty.DataSource>
+        <DataSource
+          Persistence="ProjectFile"
+          ItemType=""
+          HasConfigurationCondition="true" />
+      </DynamicEnumProperty.DataSource>
+    </DynamicEnumProperty>
+    <StringListProperty
+      Name="Outputs"
+      DisplayName="Outputs"
+      Visible="False"
+      IncludeInCommandLine="False" />
+    <StringProperty
+      Name="ExecutionDescription"
+      DisplayName="Execution Description"
+      Visible="False"
+      IncludeInCommandLine="False" />
+    <StringListProperty
+      Name="AdditionalDependencies"
+      DisplayName="Additional Dependencies"
+      IncludeInCommandLine="False"
+      Visible="false" />
+    <StringProperty
+      Subtype="AdditionalOptions"
+      Name="AdditionalOptions"
+      Category="Command Line">
+      <StringProperty.DisplayName>
+        <sys:String>Additional Options</sys:String>
+      </StringProperty.DisplayName>
+      <StringProperty.Description>
+        <sys:String>Additional Options</sys:String>
+      </StringProperty.Description>
+    </StringProperty>
+  </Rule>
+  <ItemType
+    Name="NASM"
+    DisplayName="Netwide Macro Assembler" />
+  <FileExtension
+    Name="*.x86"
+    ContentType="NASM" />
+  <ContentType
+    Name="NASM"
+    DisplayName="Netwide Macro Assembler"
+    ItemType="NASM" />
+</ProjectSchemaDefinitions>

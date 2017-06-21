@@ -1,0 +1,41 @@
+
+vect09:			sti
+				push	ax
+				push	ds
+				xor		ax, ax
+				mov		ds, ax
+				in		al, 0x43
+				test	al, 0x38
+				jne		short .err
+.force:			mov		al, 0x16
+				out		0x43, al
+				mov		byte [0x0529], 0
+				in		al, 0x41
+				mov		ah, al
+				call	bios09
+.eoi:			pop		ds
+				cli
+				mov		al, 0x20
+				out		0x00, al
+				cmp		ah, 0x60
+				je		short .int6
+				cmp		ah, 0x61
+				je		short .int5
+				pop		ax
+				iret
+.err:			cmp		byte [0x0529], 3
+				jae		short .force
+				inc		byte [0x0529]
+				mov		al, 0x14
+				out		0x43, al
+				in		al, 0x41
+				jmp		short .eoi
+
+.int5:			pop		ax
+				int		0x05
+				iret
+
+.int6:			pop		ax
+				int		0x06
+				iret
+

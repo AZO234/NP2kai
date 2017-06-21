@@ -1,0 +1,155 @@
+sspm_initmsgs	db		0e1h				; âÊñ ç∂ÇÃòg
+				dw		0100h, 1124h
+				db		0e1h				; âÊñ âEÇÃòg
+				dw		0224h, 102ch
+				db		0a1h				; âÊñ â∫ÇÃòg
+				dw		1200h, 0650h
+				db		0
+				db		0e1h				; Ç±Ç±Ç©ÇÁÉeÉLÉXÉg
+				dw		0004h, offset menu_title
+				db		0e1h
+				dw		010ah, offset ssp_mntitle
+				db		0e1h
+				dw		0230h, offset ssp_infos
+				db		0c1h
+				dw		1800h, offset keyctl_meg
+				db		0
+
+SSPMENU_ITEMS	equ		5
+
+sspmenuitems	dw		offset sspmn1_t, offset sspmn1_s, 0, 0
+				dw		offset sspmn2_t, offset sspmn2_s, 0, 0
+				dw		offset sspmn3_t, offset sspmn3_s, 0, 0
+				dw		offset sspmn4_t, offset sspmn4_s, offset sspmn4_i, 0
+				dw		offset end_t, 0, offset end_i, 0
+
+ssp_menup:		mov		ah, 0
+				add		ax, ax
+				mov		dx, 0304h
+				add		dh, al
+				add		ax, ax
+				add		ax, ax
+				mov		bx, ax
+				add		bx, offset sspmenuitems
+				mov		si, cs:[bx]
+				jmp		TEXTOUT_CS
+
+sspev_hm:		push	ax
+				call	INIT_DIPSW
+				call	SET_DIPSW
+				call	MEMSW_INIT
+				pop		ax
+				jmps	ssp_main
+
+sspev_exit:		jmp		REBOOT_PROCESS
+
+sspev_ret:		cmp		al, 3
+				ja		sspev_exit
+				je		sspev_clmsw
+				call	dipsw_start
+				jmps	ssp_main
+
+sspev_clmsw:	call	memsw_start
+				mov		ax, 3
+				jmps	ssp_main
+
+
+ssp_start:		mov		di, 3fe0h
+dipswflag:		mov		al, es:[di]
+				test	al, 10h
+				jne		short dipswflag2
+				mov		byte ptr ds:[DIPSW_1], 01bh
+				mov		byte ptr ds:[DIPSW_2], 04bh
+				mov		byte ptr ds:[DIPSW_3], 048h
+				jmp		short dipswflaged
+dipswflag2:		mov		byte ptr ds:[DIPSW_1], 01ah
+				mov		byte ptr ds:[DIPSW_2], 070h
+				mov		byte ptr ds:[DIPSW_3], 071h
+dipswflaged:	call	GET_DIPSW
+
+				xor		ax, ax
+if 0
+				call	memsw_start
+				jmp		REBOOT_PROCESS
+endif
+
+ssp_main:		push	ax
+				mov		si, offset sspm_initmsgs
+				call	ssp_resdisp
+				xor		ax, ax
+				mov		cl, 0a1h
+ssp_mmitmdisp:	push	ax
+				call	ssp_menup
+				pop		ax
+				inc		al
+				cmp		al, SSPMENU_ITEMS
+				jb		ssp_mmitmdisp
+				pop		ax
+				jmps	ssp_mmenui0
+
+sspev_up:		mov		bx, ax
+				dec		al
+				jns		ssp_mmenui
+				mov		al, SSPMENU_ITEMS - 1
+				jmps	ssp_mmenui
+
+sspev_dn:		mov		bx, ax
+				inc		al
+				cmp		al, SSPMENU_ITEMS
+				jc		ssp_mmenui
+				mov		al, 0
+
+ssp_mmenui:		push	ax
+				mov		ax, bx
+				mov		cl, 0a1h
+				call	ssp_menup
+				pop		ax
+
+ssp_mmenui0:	push	ax
+				mov		cl, 0e5h
+				call	ssp_menup
+				mov		di, 4*160+2ch*2
+				mov		cx, 0a20h
+				call	boxclear
+				mov		si, cs:[bx+2]
+				test	si, si
+				je		ssp_mmenui1
+				mov		cl, 0e1h
+				mov		dx, 042ch
+				call	TEXTOUT_CS
+ssp_mmenui1:	push	bx
+				mov		dx, 1200h
+				mov		bx, 0650h
+				mov		cl, 0a1h
+				call	puttextbox
+				pop		bx
+				mov		di, 2+13h*160
+				mov		cx, 044eh
+				call	boxclear
+
+				mov		si, cs:[bx+4]
+				test	si, si
+				je		ssp_mmenui2
+				mov		cl, 0e1h
+				mov		dx, 1404h
+				call	TEXTOUT_CS
+				jmps	ssp_mmenui3
+ssp_mmenui2:	call	dipsw_dispall
+ssp_mmenui3:	pop		ax
+
+				mov		si, offset sspm_event
+				jmp		ssp_keyevent
+
+sspm_event		db		3ah						; up
+				dw		offset sspev_up
+				db		3dh						; dn
+				dw		offset sspev_dn
+				db		3eh						; hm
+				dw		offset sspev_hm
+				db		1ch						; ret
+				dw		offset sspev_ret
+				db		0						; esc
+				dw		offset REBOOT_PROCESS
+				db		-1
+
+

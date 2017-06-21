@@ -1,0 +1,17 @@
+
+mswdefault	db	048h, 005h, 004h, 000h, 001h, 000h, 000h, 06Eh
+
+MEMSW_INIT:		mov		si, offset mswdefault
+				mov		di, MEM_MSW1
+				cli
+				mov		al, 0dh
+				out		68h, al						; memsw write enable
+				mov		cx, 8
+mswresetlp:		db		FIXCS
+				movsb
+				add		di, 3
+				loop	mswresetlp
+				mov		al, 0ch
+				out		68h, al						; memsw write disable
+				sti
+				ret

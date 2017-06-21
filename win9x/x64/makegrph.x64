@@ -1,0 +1,244 @@
+
+%include 'pccore.inc'
+%include 'cpucore.inc'
+%include 'iocore.inc'
+%include 'vram.inc'
+
+section .bss
+
+	extern	np2cfg
+	extern	mem
+	extern	np2_vram
+	extern	renewal_line
+	extern	dsync
+	extern	vramupdate
+	global	grph_table
+
+grph_table		resd	4*256*2
+
+
+GDC_S_SYNC		equ		gdc + gdc_t.s + gdcd_t.para
+GDC_S_ZOOM		equ		(GDC_S_SYNC+8)
+GDC_S_CSRFORM	equ		(GDC_S_ZOOM+1)
+GDC_S_SCROLL	equ		(GDC_S_CSRFORM+3)
+GDC_S_TEXTW		equ		(GDC_S_SCROLL+8)
+GDC_S_PITCH		equ		(GDC_S_TEXTW+8)
+GDC_S_LPEN		equ		(GDC_S_PITCH+1)
+GDC_S_VECTW		equ		(GDC_S_LPEN+3)
+GDC_S_CSRW		equ		(GDC_S_VECTW+11)
+GDC_S_MASK		equ		(GDC_S_CSRW+3)
+GDC_S_CSRR		equ		(GDC_S_MASK+2)
+GDC_S_WRITE		equ		(GDC_S_CSRR+5)
+
+
+
+section .text
+
+		align	16
+		global	makegrph_initialize
+
+makegrph_initialize:
+				xor		r8, r8
+
+.0:				mov		ecx, 4
+				mov		edx, 1
+.1:				shl		eax, 8
+				test	r8d, edx
+				setnz	al
+				add		edx, edx
+				loop	.1
+
+				add		ecx, byte 4
+				lea		r9, [grph_table + 4]
+.2:				mov		[r9 + r8*8], eax
+				add		eax, eax
+				add		r9, 512*4
+				loop	.2
+
+				add		ecx, byte 4
+.3:				shl		eax, 8
+				test	r8d, edx
+				setnz	al
+				add		edx, edx
+				loop	.3
+
+				add		ecx, byte 4
+				sub		r9, 512*4*4+4
+.4:				mov		[r9 + r8*8], eax
+				add		eax, eax
+				add		r9, 512*4
+				loop	.4
+
+				inc		r8d
+				cmp		r8d, 256
+				jb		short .0
+
+				ret
+
+
+
+			align	16
+			global	makegrph
+
+	GRP_LR			equ		rsp + 0
+	LINE_WIDTH		equ		rsp + 4
+
+makegrph:		sub			rsp, byte 40
+				mov			[rsp+8], rbx
+				mov			[rsp+16], rsi
+				mov			[rsp+24], rdi
+				mov			[rsp+32], rbp
+
+				lea			r8, [mem]
+
+				mov			eax, [dsync + dsync_t.grphvad]
+				and			ecx, byte 1
+				je			short .adjustpage
+				add			eax, SCRN_BUFSIZE
+				add			r8, VRAM_STEP
+.adjustpage:	lea			rdi, [np2_vram]
+				inc			ecx
+				add			rdi, rax
+				pxor		xmm0, xmm0
+				movd		xmm1, ecx
+				punpcklbw	xmm1, xmm1
+				pshuflw		xmm1, xmm1, 0
+				punpcklqdq	xmm1, xmm1
+
+				mov			dh, dl
+				mov			dl, cl
+				cmp			dh, 0
+				je			short .calcmaxline
+
+				lea			rbx, [vramupdate]
+				mov			ecx, 8000h/32
+.dirtyfilllp:	movdqa		xmm2, [rbx]
+				movdqa		xmm3, [rbx+16]
+				por			xmm2, xmm1
+				por			xmm3, xmm1
+				movdqa		[rbx], xmm2
+				movdqa		[rbx+16], xmm3
+				add			rbx, byte 32
+				loop		.dirtyfilllp
+
+.calcmaxline:	movzx		eax, byte [GDC_S_CSRFORM]
+				and			eax, byte 01fh
+				mov			[GRP_LR], eax
+
+				mov			ebx, [dsync + dsync_t.grph_vbp]
+.drawlp:		mov			esi, [GDC_S_SCROLL+ 0]
+				call		.grphputlines
+				mov			esi, [GDC_S_SCROLL+ 4]
+				call		.grphputlines
+				cmp			byte [np2cfg + np2cfg_t.uPD72020], 0
+				jne			short .drawlp
+				mov			esi, [GDC_S_SCROLL+ 8]
+				call		.grphputlines
+				mov			esi, [GDC_S_SCROLL+12]
+				call		.grphputlines
+				jmp			short .drawlp
+
+.grphputlines:		movzx		eax, byte [GDC_S_PITCH]
+					test		esi, 40000000h
+					jne			short .storewidth
+					add			eax, eax
+.storewidth:		mov			ecx, esi
+					and			eax, 0000feh				; uPD72020Ç≈ämîFÅc
+					shr			ecx, 4+16
+					and			esi, 3fffh
+					mov			[LINE_WIDTH+8], eax
+					and			ecx, 03ffh
+					jne			short .grphlineputst
+					mov			ecx, 0400h
+.grphlineputst:		add			esi, esi
+					push		rcx
+
+.grphlineput_lp:	mov			ecx, [GRP_LR+16]
+.grphline1_lp:		mov			ebp, 79*2
+					test		bl, 1
+					je			short .putline
+					test		byte [gdc + gdc_t.mode1], 10h
+					je			short .putline
+					add			edi, 640
+
+					cmp			dh, 0						; ALL_DRAWFLAG
+					je			short .putlineskip
+					jmp			short .linedirtyon
+
+.putline:			push		rsi
+.linelp:			test		[vramupdate + rsi], dl
+					je			short .nodirty
+					movzx		eax, byte [r8 + rsi + VRAM0_B]
+					movzx		r9d, byte [r8 + rsi + VRAM0_R]
+					mov			r10, [grph_table + rax*8 + 0*0x800]
+					movzx		eax, byte [r8 + rsi + VRAM0_G]
+					or			r10, [grph_table + r9*8 + 1*0x800]
+					movzx		r9d, byte [r8 + rsi + VRAM0_E]
+					or			r10, [grph_table + rax*8 + 2*0x800]
+					or			r10, [grph_table + r9*8 + 3*0x800]
+					or			ebp, byte 1
+					mov			[rdi], r10
+.nodirty:			inc			esi
+					and			esi, 07fffh
+					add			rdi, byte 8
+					sub			ebp, byte 2
+					jns			short .linelp
+					pop			rsi
+
+					test		bpl, 1
+					je			short .putlineskip
+.linedirtyon:		or			[renewal_line + rbx], dl
+
+.putlineskip:		inc			ebx
+					cmp			ebx, [dsync + dsync_t.grphymax]
+					jnc			short .grphbreak
+					dec			dword [rsp]
+					je			short .grphline1ed
+					dec			ecx
+					jns			near .grphline1_lp
+					add			esi, [LINE_WIDTH+16]
+					and			esi, 7fffh
+					jmp			near .grphlineput_lp
+
+.grphline1ed:		add			rsp, byte 8
+					ret
+
+.grphbreak:		add			rsp, byte 16
+
+				cmp			dh, 0						; ALL_DRAWFLAG
+				je			short .deldirty
+
+				cmp			ebx, [dsync + dsync_t.scrnymax]
+				jae			short .deldirty
+.bottomfill0:	or			[renewal_line + rbx], dl
+				mov			ecx, 640/32
+.bottomfill1:	movdqa		[rdi], xmm0
+				movdqa		[rdi+16], xmm0
+				add			rdi, byte 32
+				loop		.bottomfill1
+				inc			ebx
+				cmp			ebx, [dsync + dsync_t.scrnymax]
+				jb			short .bottomfill0
+
+.deldirty:		pcmpeqd		xmm2, xmm2
+				lea			rbx, [vramupdate]
+				pandn		xmm1, xmm2
+				mov			ecx, 8000h/32
+.deldirtylp:	movdqa		xmm2, [rbx]
+				movdqa		xmm3, [rbx+16]
+				pand		xmm2, xmm1
+				pand		xmm3, xmm1
+				movdqa		[rbx], xmm2
+				movdqa		[rbx+16], xmm3
+				add			rbx, byte 32
+				loop		.deldirtylp
+
+				mov			rbx, [rsp+8]
+				mov			rsi, [rsp+16]
+				mov			rdi, [rsp+24]
+				mov			rbp, [rsp+32]
+				add			rsp, byte 40
+				ret
+
+	ends
+

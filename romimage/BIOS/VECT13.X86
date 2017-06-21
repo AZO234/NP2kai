@@ -1,0 +1,101 @@
+
+vect13:			push	ax
+				call	eoi
+				sti
+				cld
+				push	cx
+				push	dx
+				push	di
+				push	es
+				xor		ax, ax
+				mov		es, ax
+				mov		dx, 0x90
+
+.mainlp:		in		al, dx
+				test	al, 0x10
+				jne		short .recvstat
+				mov		ah, 0x08
+				call	fdc_sendcmd
+				jne		short .mained
+
+.recvstat:		call	fdc_recvdat
+				jne		short .mained
+				cmp		al, 0x80
+				je		short .mained
+
+				mov		cx, 0x0003
+				mov		di, ax
+				and		di, cx
+				shl		di, cl
+				add		di, 0x0564
+				mov		ah, 0x01
+				and		cl, al
+				shl		ah, cl
+
+%if 0
+				test	al, 0x80
+				je		short .setfddi
+				test	byte [es:0x055e], ah
+				je		short .recvlp
+.droplp:		call	fdc_recvforce
+				je		short .droplp
+				jmp		short .mainlp
+%endif
+
+.setfddi:		or		byte [es:0x055e], ah
+.recvlp:		stosb
+				call	fdc_recvforce
+				je		short .recvlp
+				jmp		short .mainlp
+
+.mained:		pop		es
+				pop		di
+				pop		dx
+				pop		cx
+				pop		ax
+				iret
+
+
+fdc_sendcmd:	xor		cx, cx
+.lp:			in		al, dx
+				and		al, 0xd0
+				cmp		al, 0x80
+				loopnz	.lp
+				jne		short .err
+				inc		dx
+				inc		dx
+				mov		al, ah
+				out		dx, al
+				dec		dx
+				dec		dx
+				xor		dh, dh
+.err:			ret
+
+fdc_recvdat:	xor		cx, cx
+.lp:			in		al, dx
+				and		al, 0xd0
+				cmp		al, 0xd0
+				loopne	.lp
+				jne		.err
+				inc		dx
+				inc		dx
+				in		al, dx
+				dec		dx
+				dec		dx
+				xor		dh, dh
+.err:			ret
+
+fdc_recvforce:	mov		cx, 32
+.lp:			in		al, dx
+				and		al, 0xc0
+				cmp		al, 0xc0
+				loopne	.lp
+				jne		short .err
+				inc		dx
+				inc		dx
+				in		al, dx
+				dec		dx
+				dec		dx
+				xor		dh, dh
+.err:			ret
+

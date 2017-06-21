@@ -1,0 +1,56 @@
+ssp_resdisp:	xor		di, di
+				mov		cx, 1950h
+				call	boxclear
+ssp_rboxdisp:	db		FIXCS
+				lodsb
+				cmp		al, 0
+				je		short ssp_rtxtdisp
+				mov		cl, al
+				db		FIXCS
+				lodsw
+				mov		dx, ax
+				db		FIXCS
+				lodsw
+				mov		bx, ax
+				call	puttextbox
+				jmps	ssp_rboxdisp
+ssp_rtxtdisp:	db		FIXCS
+				lodsb
+				cmp		al, 0
+				je		ssp_resdsp_ed
+				mov		cl, al
+				db		FIXCS
+				lodsw
+				mov		dx, ax
+				db		FIXCS
+				lodsw
+				push	si
+				mov		si, ax
+				call	disptextjis
+				pop		si
+				jmps	ssp_rtxtdisp
+ssp_resdsp_ed:	ret
+
+
+
+ssp_keyevent:	push	ax
+keyeventst:		mov		al, -1
+keyeventlp:		out		5fh, al
+				xchg	al, ds:[KEYSTAT]
+				out		5fh, al
+				cmp		al, -1
+				je		keyeventlp
+				push	si
+keyeventsea:	mov		ah, cs:[si]
+				cmp		ah, al
+				je		keyeventhit
+				add		si, 3
+				cmp		ah, -1
+				jne		keyeventsea
+				pop		si
+				jmps	keyeventst
+keyeventhit:	pop		ax
+				pop		ax
+				jmp		word ptr cs:[si+1]
+
+

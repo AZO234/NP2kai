@@ -1,0 +1,30 @@
+
+vect08:			sti
+				push	ax
+				push	ds
+				xor		ax, ax
+				mov		ds, ax
+				dec		word [0x058a]
+				pop		ds
+				cli
+				je		short .1
+				mov		al, 0x20
+				out		0x00, al
+				out		0x5f, al
+				sti
+				mov		ah, 0x03
+				int		0x1c
+				pop		ax
+				iret
+.1:				in		al, 0x02
+				or		al, 0x01
+				out		0x5f, al
+				out		0x02, al
+				mov		al, 0x20
+				out		0x00, al
+				out		0x5f, al
+				sti
+				pop		ax
+				int		0x07
+				iret
+
