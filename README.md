@@ -1,6 +1,6 @@
 Neko Project II 0.86 SDL2 port rev.6
 ===
-Jun 20, 2017  
+Jun 21, 2017  
 
 Build
 ---
@@ -24,6 +24,8 @@ Don't build other port. Maybe link errors occur.
 
 Release
 ---
+* Jun 21, 2017
+	- [X11] Applicate to X11 port
 * Jun 20, 2017
 	- [NP21] fix for VGA
 * Jun 19, 2017
