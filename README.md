@@ -7,9 +7,11 @@ Build
 
 1. Install SDL2.
 
+
     $ sudo apt-get install libsdl2-dev libsdl2-ttf-dev
 
 2. Build.
+
 
     $ cd NP2_SDL2/sdl2
     $ make -f makefile.unix
