@@ -39,7 +39,7 @@ static const char *baseclock_str[] = {
 };
 
 static const char *clockmult_str[] = {
-	"1", "2", "4", "5", "6", "8", "10", "12", "16", "20"
+	"1", "2", "4", "5", "6", "8", "10", "12", "16", "20", "24", "30", "36", "40", "42"
 };
 
 static const struct {
@@ -107,7 +107,7 @@ ok_button_clicked(GtkButton *b, gpointer d)
 	mult = milstr_solveINT(multp);
 	switch (mult) {
 	case 1: case 2: case 4: case 5: case 6: case 8: case 10: case 12:
-	case 16: case 20:
+	case 16: case 20: case 24: case 30: case 36: case 40: case 42:
 		if (mult != np2cfg.multiple) {
 			np2cfg.multiple = mult;
 			renewal |= SYS_UPDATECFG|SYS_UPDATECLOCK;
@@ -328,7 +328,7 @@ create_configure_dialog(void)
 	gtk_editable_set_editable(GTK_EDITABLE(clockmult_entry), FALSE);
 	switch (np2cfg.multiple) {
 	case 1: case 2: case 4: case 5: case 6: case 8: case 10: case 12:
-	case 16: case 20:
+	case 16: case 20: case 24: case 30: case 36: case 40: case 42:
 		g_snprintf(buf, sizeof(buf), "%d", np2cfg.multiple);
 		gtk_entry_set_text(GTK_ENTRY(clockmult_entry), buf);
 		break;

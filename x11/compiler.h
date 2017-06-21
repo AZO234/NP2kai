@@ -100,6 +100,10 @@ typedef	guint64		UINT64;
 
 typedef	gboolean	BOOL;
 
+typedef	signed char	CHAR;
+typedef	signed char	TCHAR;
+typedef	unsigned char	BYTE;
+
 #define	INTPTR		gintptr
 
 #define PTR_TO_UINT32(p)	((UINT32)GPOINTER_TO_UINT(p))
@@ -162,6 +166,21 @@ typedef	gboolean	BOOL;
 #endif
 #endif /* __GNUC__ */
 
+#if defined(SUPPORT_LARGE_HDD)
+typedef SINT64	FILEPOS;
+typedef SINT64	FILELEN;
+#define	NHD_MAXSIZE		8000
+#define	NHD_MAXSIZE2	32000
+#else
+typedef SINT32	FILEPOS;
+typedef SINT32	FILELEN;
+#define	NHD_MAXSIZE		2000
+#define	NHD_MAXSIZE2	2000
+#endif
+
+#define _T
+#define _tcscpy strcpy
+
 G_BEGIN_DECLS
 UINT32 gettick(void);
 G_END_DECLS
@@ -175,9 +194,9 @@ G_END_DECLS
 #define	OEMSPRINTF	sprintf
 #define	OEMSTRLEN	strlen
 
-#if defined(CPUCORE_IA32)
 #define	msgbox(title, msg)	toolkit_messagebox(title, msg);
 
+#if defined(CPUCORE_IA32)
 #if !defined(DISABLE_PC9821)
 #define	SUPPORT_PC9821
 #define	SUPPORT_CRT31KHZ

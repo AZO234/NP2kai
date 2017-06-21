@@ -33,7 +33,7 @@
 #include "ini.h"
 #include "pccore.h"
 
-#include "fdd/fddfile.h"
+#include "diskimage/fddfile.h"
 #include "fdd/newdisk.h"
 
 

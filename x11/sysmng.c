@@ -5,7 +5,7 @@
 #include "cpucore.h"
 #include "pccore.h"
 #include "iocore.h"
-#include "fdd/fddfile.h"
+#include "diskimage/fddfile.h"
 #include "ideio.h"
 #include "fdd/sxsi.h"
 #include "sysmng.h"

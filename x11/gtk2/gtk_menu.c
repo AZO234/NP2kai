@@ -283,6 +283,11 @@ static GtkRadioActionEntry memory_entries[] = {
 { "7.6mb",  NULL, "_7.6MB",  NULL, NULL, 7 },
 { "9.6mb",  NULL, "_9.6MB",  NULL, NULL, 9 },
 { "13.6mb", NULL, "13._6MB", NULL, NULL, 13 },
+{ "16.6mb", NULL, "16.6MB", NULL, NULL, 16 },
+{ "32.6mb", NULL, "32.6MB", NULL, NULL, 32 },
+{ "64.6mb", NULL, "64.6MB", NULL, NULL, 64 },
+{ "120.6mb", NULL, "120.6MB", NULL, NULL, 120 },
+{ "230.6mb", NULL, "230.6MB", NULL, NULL, 230 },
 };
 static const guint n_memory_entries = G_N_ELEMENTS(memory_entries);
 
@@ -461,6 +466,11 @@ static const gchar *ui_info =
 "    <menuitem action='7.6mb'/>\n"
 "    <menuitem action='9.6mb'/>\n"
 "    <menuitem action='13.6mb'/>\n"
+"    <menuitem action='16.6mb'/>\n"
+"    <menuitem action='32.6mb'/>\n"
+"    <menuitem action='64.6mb'/>\n"
+"    <menuitem action='120.6mb'/>\n"
+"    <menuitem action='230.6mb'/>\n"
 "   </menu>\n"
 "   <menuitem action='mousemode'/>\n"
 "   <separator/>\n"
@@ -771,7 +781,7 @@ cb_diskopen(GtkAction *action, gpointer user_data)
 	filter = gtk_file_filter_new();
 	if (filter) {
 		gtk_file_filter_set_name(filter, "Floppy disk image files");
-		gtk_file_filter_add_pattern(filter, "*.[xX][dD][fD]");
+		gtk_file_filter_add_pattern(filter, "*.[xX][dD][fF]");
 		gtk_file_filter_add_pattern(filter, "*.[hH][dD][mM]");
 		gtk_file_filter_add_pattern(filter, "*.[tT][fF][dD]");
 		gtk_file_filter_add_pattern(filter, "*.[dD][uU][pP]");
@@ -779,6 +789,20 @@ cb_diskopen(GtkAction *action, gpointer user_data)
 		gtk_file_filter_add_pattern(filter, "*.[fF][dD][iI]");
 		gtk_file_filter_add_pattern(filter, "*.[fF][sS]");
 		gtk_file_filter_add_pattern(filter, "*.[fF][lL][pP]");
+		gtk_file_filter_add_pattern(filter, "*.[nN][fF][dD]");
+		gtk_file_filter_add_pattern(filter, "*.[hH][dD]4");
+		gtk_file_filter_add_pattern(filter, "*.[hH][dD]5");
+		gtk_file_filter_add_pattern(filter, "*.[hH][dD]9");
+		gtk_file_filter_add_pattern(filter, "*.[fF][fF][dD]");
+		gtk_file_filter_add_pattern(filter, "*.[hH]01");
+		gtk_file_filter_add_pattern(filter, "*.[nN][dD][bB]");
+		gtk_file_filter_add_pattern(filter, "*.[dD][dD][bB]");
+		gtk_file_filter_add_pattern(filter, "*.[dD][dD]6");
+		gtk_file_filter_add_pattern(filter, "*.[dD][cC][pP]");
+		gtk_file_filter_add_pattern(filter, "*.[dD][cC][uU]");
+		gtk_file_filter_add_pattern(filter, "*.[fF][lL][pP]");
+		gtk_file_filter_add_pattern(filter, "*.[bB][iI][nN]");
+		gtk_file_filter_add_pattern(filter, "*.[fF][iI][mM]");
 		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 	}
 	filter = gtk_file_filter_new();
@@ -788,7 +812,7 @@ cb_diskopen(GtkAction *action, gpointer user_data)
 		gtk_file_filter_add_pattern(filter, "*.88[dD]");
 		gtk_file_filter_add_pattern(filter, "*.[dD]98");
 		gtk_file_filter_add_pattern(filter, "*.98[dD]");
-		gtk_file_filter_add_pattern(filter, "*.[xX][dD][fD]");
+		gtk_file_filter_add_pattern(filter, "*.[xX][dD][fF]");
 		gtk_file_filter_add_pattern(filter, "*.[hH][dD][mM]");
 		gtk_file_filter_add_pattern(filter, "*.[tT][fF][dD]");
 		gtk_file_filter_add_pattern(filter, "*.[dD][uU][pP]");
@@ -796,6 +820,20 @@ cb_diskopen(GtkAction *action, gpointer user_data)
 		gtk_file_filter_add_pattern(filter, "*.[fF][dD][iI]");
 		gtk_file_filter_add_pattern(filter, "*.[fF][sS]");
 		gtk_file_filter_add_pattern(filter, "*.[fF][lL][pP]");
+		gtk_file_filter_add_pattern(filter, "*.[nN][fF][dD]");
+		gtk_file_filter_add_pattern(filter, "*.[hH][dD]4");
+		gtk_file_filter_add_pattern(filter, "*.[hH][dD]5");
+		gtk_file_filter_add_pattern(filter, "*.[hH][dD]9");
+		gtk_file_filter_add_pattern(filter, "*.[fF][fF][dD]");
+		gtk_file_filter_add_pattern(filter, "*.[hH]01");
+		gtk_file_filter_add_pattern(filter, "*.[nN][dD][bB]");
+		gtk_file_filter_add_pattern(filter, "*.[dD][dD][bB]");
+		gtk_file_filter_add_pattern(filter, "*.[dD][dD]6");
+		gtk_file_filter_add_pattern(filter, "*.[dD][cC][pP]");
+		gtk_file_filter_add_pattern(filter, "*.[dD][cC][uU]");
+		gtk_file_filter_add_pattern(filter, "*.[fF][lL][pP]");
+		gtk_file_filter_add_pattern(filter, "*.[bB][iI][nN]");
+		gtk_file_filter_add_pattern(filter, "*.[fF][iI][mM]");
 		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 	}
 	gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(dialog), filter);
@@ -881,6 +919,8 @@ cb_ataopen(GtkAction *action, gpointer user_data)
 		gtk_file_filter_add_pattern(filter, "*.[tT][hH][dD]");
 		gtk_file_filter_add_pattern(filter, "*.[hH][dD][iI]");
 		gtk_file_filter_add_pattern(filter, "*.[nN][hH][dD]");
+		gtk_file_filter_add_pattern(filter, "*.[vV][hH][dD]");
+		gtk_file_filter_add_pattern(filter, "*.[sS][lL][nN]");
 		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 	}
 	gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(dialog), filter);
@@ -963,17 +1003,16 @@ cb_atapiopen(GtkAction *action, gpointer user_data)
 	}
 	filter = gtk_file_filter_new();
 	if (filter) {
-		gtk_file_filter_set_name(filter, "ISO CD-ROM image files");
+		gtk_file_filter_set_name(filter, "CD-ROM image files");
 		gtk_file_filter_add_pattern(filter, "*.[iI][sS][oO]");
+		gtk_file_filter_add_pattern(filter, "*.[cC][uU][eE]");
+		gtk_file_filter_add_pattern(filter, "*.[cC][cC][dD]");
+		gtk_file_filter_add_pattern(filter, "*.[cC][dD][mM]");
+		gtk_file_filter_add_pattern(filter, "*.[mM][dD][sS]");
+		gtk_file_filter_add_pattern(filter, "*.[nN][rR][gG]");
 		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 	}
 	gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(dialog), filter);
-	filter = gtk_file_filter_new();
-	if (filter) {
-		gtk_file_filter_set_name(filter, "CUE CD-ROM image files");
-		gtk_file_filter_add_pattern(filter, "*.[cC][uU][eE]");
-		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
-	}
 
 	if (gtk_dialog_run(GTK_DIALOG(dialog)) != GTK_RESPONSE_OK)
 		goto end;
@@ -1212,6 +1251,8 @@ cb_sasiopen(GtkAction *action, gpointer user_data)
 		gtk_file_filter_add_pattern(filter, "*.[tT][hH][dD]");
 		gtk_file_filter_add_pattern(filter, "*.[hH][dD][iI]");
 		gtk_file_filter_add_pattern(filter, "*.[nN][hH][dD]");
+		gtk_file_filter_add_pattern(filter, "*.[vV][hH][dD]");
+		gtk_file_filter_add_pattern(filter, "*.[sS][lL][nN]");
 		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 	}
 	gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(dialog), filter);

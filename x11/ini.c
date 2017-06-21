@@ -497,6 +497,7 @@ static const char ini_title[] =
 #else
 	"NekoProjectII_IA32";
 #endif
+static const char inifile[] = "np2.cfg";
 
 enum {
 	INIRO_STR	= INIFLAG_RO | INITYPE_STR,
@@ -726,3 +727,26 @@ initsave(void)
 	milstr_ncpy(path, modulefile, sizeof(path));
 	ini_write(path, ini_title, iniitem, INIITEMS, TRUE);
 }
+
+static const char s_szExt[] = ".ini";
+
+void initgetfile(char *lpPath, unsigned int cchPath)
+{
+	const char *lpIni = inifile;
+	if (lpIni)
+	{
+		file_cpyname(lpPath, lpIni, cchPath);
+		//LPCTSTR lpExt = file_getext(lpPath);
+		//if (lpExt[0] != '\0')
+		//{
+		//	file_catname(lpPath, s_szExt, cchPath);
+		//}
+	}
+	else
+	{
+		file_cpyname(lpPath, modulefile, cchPath);
+		file_cutext(lpPath);
+		file_catname(lpPath, s_szExt, cchPath);
+	}
+}
+
