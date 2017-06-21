@@ -112,7 +112,7 @@ static gint
 t98_newdisk_dialog(GtkWidget *dialog, const int kind)
 {
 	static const char *hddsizestr[] = {
-		"20", "41", "65", "80", "128",
+		"20", "41", "65", "80", "127", "255", "511", "1023", "2047", "4095", "8191",
 	};
 
 	char buf[32];
@@ -130,11 +130,11 @@ t98_newdisk_dialog(GtkWidget *dialog, const int kind)
 	minsize = 5;
 	switch (kind) {
 	case 2:	/* THD */
-		maxsize = 256;
+		maxsize = 8000;
 		break;
 
 	case 3:	/* NHD */
-		maxsize = 512;
+		maxsize = 8000;
 		break;
 
 	default:
