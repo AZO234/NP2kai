@@ -7,16 +7,16 @@ Build
 
 1. Install SDL2.  
 
-    $ sudo apt-get install libsdl2-dev libsdl2-ttf-dev
+	$ sudo apt-get install libsdl2-dev libsdl2-ttf-dev
 
 2. Build.  
 
-    $ cd NP2_SDL2/sdl2
-    $ make -f makefile.unix
+	$ cd NP2_SDL2/sdl2
+	$ make -f makefile.unix
 
 or
 
-    $ make -f makefile21.unix
+	$ make -f makefile21.unix
 
 3. 'np2' or 'np21' binary is outputed in NP2_SDL2/bin  
 
