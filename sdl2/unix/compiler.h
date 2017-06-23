@@ -9,6 +9,8 @@
 #include	<pthread.h>
 #include	<SDL2/SDL.h>
 
+#define	NP2VER_SDL2 "SDL2 Rev.6"
+
 #define BYTESEX_LITTLE
 #define	OSLANG_UTF8
 #define	OSLINEBREAK_LF
