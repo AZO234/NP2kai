@@ -2,7 +2,7 @@ Neko Project II 0.86 SDL2 port rev.6
 ===
 Jun 21, 2017  
 
-Build
+Build SDL2 port
 ---
 
 １． Install SDL2.  
@@ -20,13 +20,34 @@ or
 
 ３． 'np2' or 'np21' binary is outputed in NP2_SDL2/bin  
 
+Build X11 port
+---
+
+１． Install SDL2.  
+
+	$ sudo apt-get install libsdl2-dev libsdl2-ttf-dev
+
+２． Build.  
+
+	$ cd NP2_SDL2/x11
+	$ ./autogen.sh
+	$ ./configure
+	$ make
+
+or
+
+	$ ./configure --enable-ia32
+	$ make
+
+３． 'np2' or 'np21' binary is outputed in NP2_SDL2/x11  
+
 Don't build other port. Maybe link errors occur.
 
 Release
 ---
 * Jun 21, 2017
 	- [X11] Applicate to X11 port
-* Jun 20, 2017
+* Jun 20, 2017 (rev.6)
 	- [NP21] fix for VGA
 * Jun 19, 2017
 	- [NP21] fix IA-32

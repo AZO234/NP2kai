@@ -34,12 +34,12 @@ MENU		= ../embed/menu
 MENUBASE	= ../embed/menubase
 ZLIB		= ../zlib
 ARM			= arm
-TARGET		= .
+TARGET1		= .
 TARGET2		= ./unix
 
 HEADERS		=	$(TARGET2)/compiler.h $(BASE)/common.h $(COMMON)/milstr.h \
 				$(COMMON)/_memory.h $(COMMON)/rect.h $(COMMON)/lstarray.h \
-				$(TARGET)/trace.h
+				$(TARGET1)/trace.h
 
 CPUCORES	=	$(I386C)/cpucore.h $(I386C)/cpumem.h
 
@@ -67,7 +67,7 @@ EMBEDS		=	$(EMBED)/vramhdl.h $(EMBED)/vrammix.h \
 				$(MENUBASE)/menusys.h $(MENUBASE)/menudlg.h \
 				$(MENUBASE)/menumbox.h $(MENUBASE)/menures.h
 
-COPT	= -c -Wall -pipe -O3 -Wpointer-arith -fno-exceptions \
+COPT	= -c -Wall -pipe -O3 -fPIC -Wpointer-arith -fno-exceptions \
 			-fomit-frame-pointer -fsigned-char \
 			-I$(BASE) -I$(COMMON) -I$(CODECNV) -I$(I386C) -I$(I386C)/ia32 -I$(I386C)/ia32/intructions -I$(I386C)/ia32/intructions/fpu -I$(MEM) -I$(IO) \
 			-I$(CBUS) -I$(BIOS) -I$(LIO) -I$(VRAM) -I$(SOUND) -I$(VERMOUTH) \
@@ -208,14 +208,14 @@ $(OBJ)/strres.o		:	$(COMMON)/strres.c $(COMMON)/strres.h
 $(OBJ)/milstr.o		:	$(COMMON)/milstr.c $(HEADERS)
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/_memory.o	:	$(COMMON)/_memory.c $(HEADERS) $(TARGET)/dosio.h
+$(OBJ)/_memory.o	:	$(COMMON)/_memory.c $(HEADERS) $(TARGET1)/dosio.h
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/textfile.o	:	$(COMMON)/textfile.c $(HEADERS) $(TARGET)/dosio.h \
+$(OBJ)/textfile.o	:	$(COMMON)/textfile.c $(HEADERS) $(TARGET1)/dosio.h \
 						$(COMMON)/textfile.h
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/profile.o	:	$(COMMON)/profile.c $(HEADERS) $(TARGET)/dosio.h \
+$(OBJ)/profile.o	:	$(COMMON)/profile.c $(HEADERS) $(TARGET1)/dosio.h \
 						$(COMMON)/textfile.h $(COMMON)/profile.h
 	$(CC) $(COPT) -o $@ $<
 
@@ -228,7 +228,7 @@ $(OBJ)/lstarray.o	:	$(COMMON)/lstarray.c $(HEADERS)
 $(OBJ)/bmpdata.o	:	$(COMMON)/bmpdata.c $(HEADERS) $(COMMON)/bmpdata.h
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/mimpidef.o	:	$(COMMON)/mimpidef.c $(HEADERS) $(TARGET)/dosio.h \
+$(OBJ)/mimpidef.o	:	$(COMMON)/mimpidef.c $(HEADERS) $(TARGET1)/dosio.h \
 						$(COMMON)/textfile.h $(COMMON)/mimpidef.h
 	$(CC) $(COPT) -o $@ $<
 
@@ -488,7 +488,7 @@ $(OBJ)/crtc.o		:	$(IO)/crtc.c $(HEADERS) $(CPUCORES) $(PCCORES) \
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/dipsw.o		:	$(IO)/dipsw.c $(HEADERS) $(CPUCORES) $(PCCORES) \
-						$(IOCORES) $(TARGET)/sysmng.h \
+						$(IOCORES) $(TARGET1)/sysmng.h \
 						$(SOUND)/sound.h $(SOUND)/beep.h
 	$(CC) $(COPT) -o $@ $<
 
@@ -516,7 +516,7 @@ $(OBJ)/fdd320.o		:	$(IO)/fdd320.c $(HEADERS) $(PCCORES) $(IOCORES)
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/gdc.o		:	$(IO)/gdc.c $(HEADERS) $(CPUCORES) $(PCCORES) \
-						$(IOCORES) $(TARGET)/scrnmng.h $(IO)/gdc_cmd.tbl \
+						$(IOCORES) $(TARGET1)/scrnmng.h $(IO)/gdc_cmd.tbl \
 						$(VRAM)/vram.h $(VRAM)/palettes.h
 	$(CC) $(COPT) -o $@ $<
 
@@ -529,7 +529,7 @@ $(OBJ)/gdc_pset.o	:	$(IO)/gdc_pset.c $(HEADERS) $(CPUCORES) $(PCCORES) \
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/mouseif.o	:	$(IO)/mouseif.c $(HEADERS) $(CPUCORES) $(PCCORES) \
-						$(IOCORES) $(TARGET)/mousemng.h
+						$(IOCORES) $(TARGET1)/mousemng.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/necio.o		:	$(IO)/necio.c $(HEADERS) $(CPUCORES) $(PCCORES) \
@@ -543,7 +543,7 @@ $(OBJ)/np2sysp.o	:	$(IO)/np2sysp.c $(HEADERS) $(CPUCORES) $(PCCORES) $(IOCORES)
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/pcidev.o		:	$(IO)/pcidev.c $(HEADERS) $(CPUCORES) $(PCCORES) \
-						$(IOCORES) $(COMMON)/strres.h $(TARGET)/taskmng.h
+						$(IOCORES) $(COMMON)/strres.h $(TARGET1)/taskmng.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/pic.o		:	$(IO)/pic.c $(HEADERS) $(CPUCORES) $(PCCORES) \
@@ -555,11 +555,11 @@ $(OBJ)/pit.o		:	$(IO)/pit.c $(HEADERS) $(CPUCORES) $(PCCORES) \
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/printif.o	:	$(IO)/printif.c $(HEADERS) $(CPUCORES) $(PCCORES) \
-						$(IOCORES) $(TARGET)/commng.h
+						$(IOCORES) $(TARGET1)/commng.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/serial.o		:	$(IO)/serial.c $(HEADERS) $(PCCORES) $(IOCORES) \
-						$(TARGET)/commng.h
+						$(TARGET1)/commng.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/sysport.o	:	$(IO)/sysport.c $(HEADERS) $(PCCORES) $(IOCORES) \
@@ -567,7 +567,7 @@ $(OBJ)/sysport.o	:	$(IO)/sysport.c $(HEADERS) $(PCCORES) $(IOCORES) \
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/upd4990.o	:	$(IO)/upd4990.c $(HEADERS) $(PCCORES) $(IOCORES) \
-						$(TARGET)/timemng.h $(BASE)/calendar.h
+						$(TARGET1)/timemng.h $(BASE)/calendar.h
 	$(CC) $(COPT) -o $@ $<
 
 
@@ -577,12 +577,12 @@ $(OBJ)/cbuscore.o	:	$(CBUS)/cbuscore.c $(HEADERS) $(PCCORES) $(IOCORES) \
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/sasiio.o		:	$(CBUS)/sasiio.c $(HEADERS) $(PCCORES) $(IOCORES) \
-						$(TARGET)/dosio.h $(CBUS)/cbuscore.h \
+						$(TARGET1)/dosio.h $(CBUS)/cbuscore.h \
 						$(CBUS)/sasiio.h $(FDD)/sxsi.h $(CBUS)/sasibios.res
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/scsiio.o		:	$(CBUS)/scsiio.c $(HEADERS) $(PCCORES) $(IOCORES) \
-						$(TARGET)/dosio.h $(CBUS)/cbuscore.h \
+						$(TARGET1)/dosio.h $(CBUS)/cbuscore.h \
 						$(CBUS)/scsiio.h $(CBUS)/scsiio.tbl \
 						$(CBUS)/scsicmd.h $(CBUS)/scsibios.res
 	$(CC) $(COPT) -o $@ $<
@@ -594,12 +594,12 @@ $(OBJ)/scsicmd.o	:	$(CBUS)/scsicmd.c $(HEADERS) $(PCCORES) $(IOCORES) \
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/pc9861k.o	:	$(CBUS)/pc9861k.c $(HEADERS) $(PCCORES) $(IOCORES) \
-						$(TARGET)/commng.h $(CBUS)/cbuscore.h \
+						$(TARGET1)/commng.h $(CBUS)/cbuscore.h \
 						$(CBUS)/pc9861k.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/mpu98ii.o	:	$(CBUS)/mpu98ii.c $(HEADERS) $(PCCORES) $(IOCORES) \
-						$(TARGET)/commng.h $(CBUS)/cbuscore.h \
+						$(TARGET1)/commng.h $(CBUS)/cbuscore.h \
 						$(CBUS)/mpu98ii.h
 	$(CC) $(COPT) -o $@ $<
 
@@ -664,7 +664,7 @@ $(OBJ)/atapicmd.o	:	$(CBUS)/atapicmd.c $(HEADERS) $(CPUCORES) $(PCCORES) \
 
 # -fno-tree-vectorize to avoid internal compiler error in gcc 4.6
 $(OBJ)/bios.o		:	$(BIOS)/bios.c $(HEADERS) $(CPUCORES) $(PCCORES) \
-						$(IOCORES) $(TARGET)/dosio.h $(BIOS)/bios.h \
+						$(IOCORES) $(TARGET1)/dosio.h $(BIOS)/bios.h \
 						$(BIOS)/biosmem.h $(BIOS)/fdfmt.h \
 						$(BIOS)/keytable.res $(BIOS)/itfrom.res \
 						$(BIOS)/startup.res $(BIOS)/biosfd80.res \
@@ -709,7 +709,7 @@ $(OBJ)/bios1b.o		:	$(BIOS)/bios1b.c $(HEADERS) $(CPUCORES) $(PCCORES) \
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/bios1c.o		:	$(BIOS)/bios1c.c $(HEADERS) $(CPUCORES) $(PCCORES) \
-						$(IOCORES) $(TARGET)/timemng.h $(BASE)/calendar.h \
+						$(IOCORES) $(TARGET1)/timemng.h $(BASE)/calendar.h \
 						$(BIOS)/bios.h $(BIOS)/biosmem.h
 	$(CC) $(COPT) -o $@ $<
 
@@ -725,7 +725,7 @@ $(OBJ)/sxsibios.o	:	$(BIOS)/sxsibios.c $(HEADERS) $(CPUCORES) $(PCCORES) \
 
 
 $(OBJ)/sound.o		:	$(SOUND)/sound.c $(HEADERS) $(CPUCORES) $(PCCORES) \
-						$(IOCORES) $(TARGET)/soundmng.h $(SOUND)/sound.h \
+						$(IOCORES) $(TARGET1)/soundmng.h $(SOUND)/sound.h \
 						$(SOUND)/sndcsec.h $(SOUND)/beep.h
 	$(CC) $(COPT) -o $@ $<
 
@@ -734,7 +734,7 @@ $(OBJ)/sndcsec.o	:	$(SOUND)/sndcsec.c $(HEADERS) $(SOUND)/sound.h \
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/fmboard.o	:	$(SOUND)/fmboard.c $(HEADERS) $(PCCORES) $(IOCORES) \
-						$(FMBOARDS) $(TARGET)/joymng.h $(TARGET)/soundmng.h \
+						$(FMBOARDS) $(TARGET1)/joymng.h $(TARGET1)/soundmng.h \
 						$(CBUS)/cbuscore.h $(CBUS)/board14.h \
 						$(CBUS)/board26k.h $(CBUS)/board86.h \
 						$(CBUS)/boardx2.h $(CBUS)/board118.h \
@@ -801,7 +801,7 @@ $(OBJ)/psggeng.o	:	$(SOUND)/psggeng.c $(HEADERS) $(SOUND)/sound.h \
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/rhythmc.o	:	$(SOUND)/rhythmc.c $(HEADERS) $(PCCORES) \
-						$(COMMON)/wavefile.h $(TARGET)/dosio.h \
+						$(COMMON)/wavefile.h $(TARGET1)/dosio.h \
 						$(SOUND)/sound.h $(SOUND)/rhythm.h
 	$(CC) $(COPT) -o $@ $<
 
@@ -830,19 +830,19 @@ $(OBJ)/cs4231g.o	:	$(SOUND)/cs4231g.c $(HEADERS) $(CPUCORES) $(PCCORES) \
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/soundrom.o	:	$(SOUND)/soundrom.c $(HEADERS) $(CPUCORES) \
-						$(TARGET)/dosio.h $(SOUND)/soundrom.h
+						$(TARGET1)/dosio.h $(SOUND)/soundrom.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/s98.o		:	$(SOUND)/s98.c $(HEADERS) $(PCCORES) $(IOCORES) \
-						$(FMBOARDS) $(TARGET)/dosio.h $(SOUND)/sound.h \
+						$(FMBOARDS) $(TARGET1)/dosio.h $(SOUND)/sound.h \
 						$(SOUND)/s98.h
 	$(CC) $(COPT) -o $@ $<
 
 
-$(OBJ)/cmmidi.o		:	$(TARGET)/cmmidi.c $(HEADERS) $(TARGET)/commng.h \
+$(OBJ)/cmmidi.o		:	$(TARGET1)/cmmidi.c $(HEADERS) $(TARGET1)/commng.h \
 						$(COMMON)/mimpidef.h $(SOUND)/sound.h \
 						$(GENERIC)/keydisp.h $(VERMOUTH)/vermouth.h \
-						$(TARGET)/cmmidi.h
+						$(TARGET1)/cmmidi.h
 	$(CC) $(COPT) -o $@ $<
 
 
@@ -850,11 +850,11 @@ $(OBJ)/midiout.o	:	$(VERMOUTH)/midiout.c $(HEADERS) $(VERMOUTHS)
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/midimod.o	:	$(VERMOUTH)/midimod.c $(HEADERS) $(VERMOUTHS) \
-						$(COMMON)/textfile.h $(TARGET)/dosio.h 
+						$(COMMON)/textfile.h $(TARGET1)/dosio.h 
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/midinst.o	:	$(VERMOUTH)/midinst.c $(HEADERS) $(VERMOUTHS) \
-						$(TARGET)/dosio.h
+						$(TARGET1)/dosio.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/midvoice.o	:	$(VERMOUTH)/midvoice.c $(HEADERS) $(VERMOUTHS)
@@ -887,34 +887,34 @@ $(OBJ)/vram.o		:	$(VRAM)/vram.c $(HEADERS) $(CPUCORES) $(VRAM)/vram.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/scrndraw.o	:	$(VRAM)/scrndraw.c $(HEADERS) $(PCCORES) $(IOCORES) \
-						$(TARGET)/scrnmng.h $(VRAM)/scrndraw.h \
+						$(TARGET1)/scrnmng.h $(VRAM)/scrndraw.h \
 						$(VRAM)/sdraw.h $(VRAM)/dispsync.h $(VRAM)/palettes.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/sdraw.o		:	$(VRAM)/sdraw.c $(HEADERS) $(PCCORES) $(IOCORES) \
-						$(TARGET)/scrnmng.h $(VRAM)/scrndraw.h \
+						$(TARGET1)/scrnmng.h $(VRAM)/scrndraw.h \
 						$(VRAM)/sdraw.h $(VRAM)/palettes.h
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/sdrawq16.o	:	$(VRAM)/sdrawq16.c $(HEADERS) $(TARGET)/scrnmng.h \
+$(OBJ)/sdrawq16.o	:	$(VRAM)/sdrawq16.c $(HEADERS) $(TARGET1)/scrnmng.h \
 						$(VRAM)/scrndraw.h $(VRAM)/sdraw.h \
 						$(VRAM)/palettes.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/dispsync.o	:	$(VRAM)/dispsync.c $(HEADERS) $(CPUCORES) $(PCCORES) \
-						$(IOCORES) $(TARGET)/scrnmng.h $(VRAM)/scrndraw.h \
+						$(IOCORES) $(TARGET1)/scrnmng.h $(VRAM)/scrndraw.h \
 						$(VRAM)/dispsync.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/makegrex.o	:	$(VRAM)/makegrex.c $(HEADERS) $(CPUCORES) $(PCCORES) \
-						$(IOCORES) $(TARGET)/scrnmng.h $(VRAM)/scrndraw.h \
+						$(IOCORES) $(TARGET1)/scrnmng.h $(VRAM)/scrndraw.h \
 						$(VRAM)/dispsync.h $(VRAM)/vram.h $(VRAM)/palettes.h \
 						$(VRAM)/maketext.h $(VRAM)/maketgrp.h $(VRAM)/makegrph.h \
 						$(BASE)/font/font.h $(VRAM)/makegrph.mcr
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/palettes.o	:	$(VRAM)/palettes.c $(HEADERS) $(PCCORES) $(IOCORES) \
-						$(TARGET)/scrnmng.h $(VRAM)/scrndraw.h \
+						$(TARGET1)/scrnmng.h $(VRAM)/scrndraw.h \
 						$(VRAM)/palettes.h
 	$(CC) $(COPT) -o $@ $<
 
@@ -951,32 +951,32 @@ $(OBJ)/scrnbmp.o	:	$(VRAM)/scrnbmp.c $(HEADERS) $(PCCORES) $(IOCORES) \
 
 
 $(OBJ)/diskdrv.o	:	$(FDD)/diskdrv.c $(HEADERS) $(PCCORES) $(IOCORES) \
-						$(TARGET)/dosio.h $(TARGET)/sysmng.h \
+						$(TARGET1)/dosio.h $(TARGET1)/sysmng.h \
 						$(FDD)/diskdrv.h $(BASE)/diskimage/fddfile.h
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/newdisk.o	:	$(FDD)/newdisk.c $(HEADERS) $(TARGET)/dosio.h \
+$(OBJ)/newdisk.o	:	$(FDD)/newdisk.c $(HEADERS) $(TARGET1)/dosio.h \
 						$(FDD)/newdisk.h $(BASE)/diskimage/fddfile.h $(FDD)/sxsi.h \
 						$(FDD)/hddboot.res
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/fdd_mtr.o	:	$(FDD)/fdd_mtr.c $(HEADERS) $(PCCORES) \
-						$(TARGET)/soundmng.h $(FDD)/fdd_mtr.h
+						$(TARGET1)/soundmng.h $(FDD)/fdd_mtr.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/sxsi.o		:	$(FDD)/sxsi.c $(HEADERS) $(CPUCORES) $(PCCORES) \
-						$(COMMON)/strres.h $(TARGET)/dosio.h \
-						$(TARGET)/sysmng.h $(FDD)/sxsi.h
+						$(COMMON)/strres.h $(TARGET1)/dosio.h \
+						$(TARGET1)/sysmng.h $(FDD)/sxsi.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/sxsihdd.o	:	$(FDD)/sxsihdd.c $(HEADERS) $(CPUCORES) $(PCCORES) \
-						$(COMMON)/strres.h $(TARGET)/dosio.h \
-						$(TARGET)/sysmng.h $(FDD)/sxsi.h
+						$(COMMON)/strres.h $(TARGET1)/dosio.h \
+						$(TARGET1)/sysmng.h $(FDD)/sxsi.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/sxsicd.o		:	$(FDD)/sxsicd.c $(HEADERS) $(CPUCORES) $(PCCORES) \
-						$(COMMON)/strres.h $(TARGET)/dosio.h \
-						$(TARGET)/sysmng.h $(FDD)/sxsi.h
+						$(COMMON)/strres.h $(TARGET1)/dosio.h \
+						$(TARGET1)/sysmng.h $(FDD)/sxsi.h
 	$(CC) $(COPT) -o $@ $<
 
 
@@ -1020,7 +1020,7 @@ $(OBJ)/gput1.o		:	$(LIO)/gput1.c $(HEADERS) $(CPUCORES) $(LIO)/lio.h
 
 
 $(OBJ)/font.o		:	$(FONT)/font.c $(HEADERS) $(CPUCORES) \
-						$(COMMON)/strres.h $(TARGET)/dosio.h $(FONT)/font.h \
+						$(COMMON)/strres.h $(TARGET1)/dosio.h $(FONT)/font.h \
 						$(FONT)/fontdata.h $(FONT)/fontmake.h
 	$(CC) $(COPT) -o $@ $<
 
@@ -1029,41 +1029,41 @@ $(OBJ)/fontdata.o	:	$(FONT)/fontdata.c $(HEADERS) $(CPUCORES) \
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/fontpc88.o	:	$(FONT)/fontpc88.c $(HEADERS) $(CPUCORES) \
-						$(TARGET)/dosio.h $(FONT)/font.h $(FONT)/fontdata.h
+						$(TARGET1)/dosio.h $(FONT)/font.h $(FONT)/fontdata.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/fontpc98.o	:	$(FONT)/fontpc98.c $(HEADERS) $(CPUCORES) \
-						$(COMMON)/bmpdata.h $(TARGET)/dosio.h \
+						$(COMMON)/bmpdata.h $(TARGET1)/dosio.h \
 						$(FONT)/font.h $(FONT)/fontdata.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/fontv98.o	:	$(FONT)/fontv98.c $(HEADERS) $(CPUCORES) \
-						$(TARGET)/dosio.h $(FONT)/font.h $(FONT)/fontdata.h
+						$(TARGET1)/dosio.h $(FONT)/font.h $(FONT)/fontdata.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/fontfm7.o	:	$(FONT)/fontfm7.c $(HEADERS) $(CPUCORES) \
-						$(TARGET)/dosio.h $(FONT)/font.h $(FONT)/fontdata.h
+						$(TARGET1)/dosio.h $(FONT)/font.h $(FONT)/fontdata.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/fontx1.o		:	$(FONT)/fontx1.c $(HEADERS) $(CPUCORES) \
-						$(COMMON)/parts.h $(TARGET)/dosio.h $(FONT)/font.h \
+						$(COMMON)/parts.h $(TARGET1)/dosio.h $(FONT)/font.h \
 						$(FONT)/fontdata.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/fontx68k.o	:	$(FONT)/fontx68k.c $(HEADERS) $(CPUCORES) \
-						$(TARGET)/dosio.h $(FONT)/font.h $(FONT)/fontdata.h
+						$(TARGET1)/dosio.h $(FONT)/font.h $(FONT)/fontdata.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/fontmake.o	:	$(FONT)/fontmake.c $(HEADERS) $(COMMON)/bmpdata.h \
-						$(COMMON)/parts.h $(TARGET)/dosio.h \
-						$(TARGET)/fontmng.h $(FONT)/font.h \
+						$(COMMON)/parts.h $(TARGET1)/dosio.h \
+						$(TARGET1)/fontmng.h $(FONT)/font.h \
 						$(FONT)/fontdata.h $(FONT)/fontmake.h
 	$(CC) $(COPT) -o $@ $<
 
 
 
 $(OBJ)/cmndraw.o	:	$(GENERIC)/cmndraw.c $(HEADERS) \
-						$(TARGET)/scrnmng.h $(GENERIC)/cmndraw.h
+						$(TARGET1)/scrnmng.h $(GENERIC)/cmndraw.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/keydisp.o	:	$(GENERIC)/keydisp.c $(HEADERS) $(PCCORES) \
@@ -1075,13 +1075,13 @@ $(OBJ)/dipswbmp.o	:	$(GENERIC)/dipswbmp.c $(HEADERS) $(COMMON)/bmpdata.h \
 						$(GENERIC)/dipswbmp.h $(GENERIC)/dipswbmp.res
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/cmver.o		:	$(GENERIC)/cmver.c $(HEADERS) $(TARGET)/commng.h \
+$(OBJ)/cmver.o		:	$(GENERIC)/cmver.c $(HEADERS) $(TARGET1)/commng.h \
 						$(SOUND)/sound.h $(VERMOUTH)/vermouth.h \
 						$(GENERIC)/keydisp.h $(GENERIC)/cmver.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/cmjasts.o	:	$(GENERIC)/cmjasts.c $(HEADERS) $(CPUCORES) \
-						$(TARGET)/commng.h $(SOUND)/sound.h \
+						$(TARGET1)/commng.h $(SOUND)/sound.h \
 						$(GENERIC)/cmjasts.h
 	$(CC) $(COPT) -o $@ $<
 
@@ -1091,7 +1091,7 @@ $(OBJ)/hostdrv.o	:	$(GENERIC)/hostdrv.c $(HEADERS) $(CPUCORES) \
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/hostdrvs.o	:	$(GENERIC)/hostdrvs.c $(HEADERS) $(PCCORES) \
-						$(CODECNV)/codecnv.h $(TARGET)/dosio.h \
+						$(CODECNV)/codecnv.h $(TARGET1)/dosio.h \
 						$(GENERIC)/hostdrv.h $(GENERIC)/hostdrvs.h
 	$(CC) $(COPT) -o $@ $<
 
@@ -1105,7 +1105,7 @@ $(OBJ)/unasm.o		:	$(GENERIC)/unasm.c $(HEADER) $(GENERIC)/unasm.h
 
 $(OBJ)/np2info.o	:	$(GENERIC)/np2info.c $(HEADERS) $(CPUCORES) \
 						$(PCCORES) $(IOCORES) $(FMBOARDS) $(COMMON)/strres.h \
-						$(TARGET)/scrnmng.h $(BIOS)/bios.h \
+						$(TARGET1)/scrnmng.h $(BIOS)/bios.h \
 						$(GENERIC)/np2info.h
 	$(CC) $(COPT) -o $@ $<
 
@@ -1116,7 +1116,7 @@ $(OBJ)/vramhdl.o	:	$(EMBED)/vramhdl.c $(HEADERS) $(EMBEDS) \
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/vrammix.o	:	$(EMBED)/vrammix.c $(HEADERS) $(EMBEDS) \
-						$(TARGET)/fontmng.h
+						$(TARGET1)/fontmng.h
 	$(CC) $(COPT) -o $@ $<
 
 
@@ -1126,32 +1126,32 @@ $(OBJ)/menustr.o	:	$(MENU)/menustr.c $(HEADERS) $(EMBEDS)
 
 $(OBJ)/filesel.o	:	$(MENU)/filesel.c $(HEADERS) $(PCCORE) $(EMBEDS) \
 						$(COMMON)/strres.h $(CODECNV)/codecnv.h \
-						$(TARGET)/dosio.h $(TARGET)/soundmng.h \
+						$(TARGET1)/dosio.h $(TARGET1)/soundmng.h \
 						$(FDD)/diskdrv.h $(BASE)/diskimage/fddfile.h $(MENU)/filesel.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/dlgcfg.o		:	$(MENU)/dlgcfg.c $(HEADERS) $(PCCORE) $(EMBEDS) \
-						$(COMMON)/strres.h $(TARGET)/np2.h \
-						$(TARGET)/sysmng.h $(MENU)/menustr.h \
-						$(TARGET)/sysmenu.res
+						$(COMMON)/strres.h $(TARGET1)/np2.h \
+						$(TARGET1)/sysmng.h $(MENU)/menustr.h \
+						$(TARGET1)/sysmenu.res
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/dlgscr.o		:	$(MENU)/dlgscr.c $(HEADERS) $(PCCORE) $(IOCORE) \
-						$(EMBEDS) $(COMMON)/strres.h $(TARGET)/scrnmng.h \
-						$(TARGET)/sysmng.h $(VRAM)/scrndraw.h \
+						$(EMBEDS) $(COMMON)/strres.h $(TARGET1)/scrnmng.h \
+						$(TARGET1)/sysmng.h $(VRAM)/scrndraw.h \
 						$(VRAM)/palettes.h $(MENU)/menustr.h \
-						$(TARGET)/sysmenu.res
+						$(TARGET1)/sysmenu.res
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/dlgabout.o	:	$(MENU)/dlgabout.c $(HEADERS) $(PCCORE) $(EMBEDS) \
-						$(COMMON)/strres.h $(TARGET)/sysmenu.res
+						$(COMMON)/strres.h $(TARGET1)/sysmenu.res
 	$(CC) $(COPT) -o $@ $<
 
 
 
 $(OBJ)/menubase.o	:	$(MENUBASE)/menubase.c $(HEADERS) $(EMBEDS) \
-						$(TARGET)/fontmng.h $(TARGET)/inputmng.h \
-						$(TARGET)/scrnmng.h $(TARGET)/taskmng.h
+						$(TARGET1)/fontmng.h $(TARGET1)/inputmng.h \
+						$(TARGET1)/scrnmng.h $(TARGET1)/taskmng.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/menuvram.o	:	$(MENUBASE)/menuvram.c $(HEADERS) $(EMBEDS)
@@ -1161,15 +1161,15 @@ $(OBJ)/menuicon.o	:	$(MENUBASE)/menuicon.c $(HEADERS) $(EMBEDS)
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/menusys.o	:	$(MENUBASE)/menusys.c $(HEADERS) $(EMBEDS) \
-						$(TARGET)/fontmng.h $(TARGET)/inputmng.h
+						$(TARGET1)/fontmng.h $(TARGET1)/inputmng.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/menudlg.o	:	$(MENUBASE)/menudlg.c $(HEADERS) $(EMBEDS) \
-						$(TARGET)/fontmng.h
+						$(TARGET1)/fontmng.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/menumbox.o	:	$(MENUBASE)/menumbox.c $(HEADERS) $(EMBEDS) \
-						$(TARGET)/fontmng.h
+						$(TARGET1)/fontmng.h
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/menures.o	:	$(MENUBASE)/menures.c $(HEADERS) $(EMBEDS)
@@ -1197,79 +1197,79 @@ $(OBJ)/zutil.o		:	$(ZLIB)/zutil.c $(HEADERS) $(EMBEDS) $(ZLIB)/zutil.h
 	$(CC) $(COPT) -o $@ $<
 
 
-$(OBJ)/np2.o		:	$(TARGET)/np2.c $(HEADERS) $(PCCORES) $(IOCORES) \
-						$(EMBEDS) $(COMMON)/strres.h $(TARGET)/np2.h \
-						$(TARGET)/dosio.h $(TARGET)/commng.h \
-						$(TARGET)/inputmng.h $(TARGET)/scrnmng.h \
-						$(TARGET)/soundmng.h $(TARGET)/sysmng.h \
-						$(TARGET)/taskmng.h $(TARGET)/sdlkbd.h \
-						$(TARGET)/ini.h $(TARGET)/sysmenu.h \
+$(OBJ)/np2.o		:	$(TARGET1)/np2.c $(HEADERS) $(PCCORES) $(IOCORES) \
+						$(EMBEDS) $(COMMON)/strres.h $(TARGET1)/np2.h \
+						$(TARGET1)/dosio.h $(TARGET1)/commng.h \
+						$(TARGET1)/inputmng.h $(TARGET1)/scrnmng.h \
+						$(TARGET1)/soundmng.h $(TARGET1)/sysmng.h \
+						$(TARGET1)/taskmng.h $(TARGET1)/sdlkbd.h \
+						$(TARGET1)/ini.h $(TARGET1)/sysmenu.h \
 						$(VRAM)/scrndraw.h $(SOUND)/s98.h $(FDD)/diskdrv.h \
 						$(BASE)/timing.h $(BASE)/statsave.h
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/dosio.o		:	$(TARGET)/dosio.c $(HEADERS) $(TARGET)/dosio.h
+$(OBJ)/dosio.o		:	$(TARGET1)/dosio.c $(HEADERS) $(TARGET1)/dosio.h
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/trace.o		:	$(TARGET)/trace.c $(HEADERS) $(COMMON)/strres.h \
-						$(TARGET)/dosio.h
+$(OBJ)/trace.o		:	$(TARGET1)/trace.c $(HEADERS) $(COMMON)/strres.h \
+						$(TARGET1)/dosio.h
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/cmserial.o	:	$(TARGET)/cmserial.c $(HEADERS) $(TARGET)/cmserial.h \
+$(OBJ)/cmserial.o	:	$(TARGET1)/cmserial.c $(HEADERS) $(TARGET1)/cmserial.h \
 						$(GENERIC)/cmver.h
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/commng.o		:	$(TARGET)/commng.c $(HEADERS) $(TARGET)/commng.h
+$(OBJ)/commng.o		:	$(TARGET1)/commng.c $(HEADERS) $(TARGET1)/commng.h
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/fontmng.o	:	$(TARGET)/fontmng.c $(HEADERS) $(CODECNV)/codecnv.h \
-						$(TARGET)/fontmng.h $(TARGET)/oemtext.h
+$(OBJ)/fontmng.o	:	$(TARGET1)/fontmng.c $(HEADERS) $(CODECNV)/codecnv.h \
+						$(TARGET1)/fontmng.h $(TARGET1)/oemtext.h
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/inputmng.o	:	$(TARGET)/inputmng.c $(HEADERS) $(TARGET)/inputmng.h
+$(OBJ)/inputmng.o	:	$(TARGET1)/inputmng.c $(HEADERS) $(TARGET1)/inputmng.h
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/joymng.o		:	$(TARGET)/joymng.c $(HEADERS) $(TARGET)/joymng.h
+$(OBJ)/joymng.o		:	$(TARGET1)/joymng.c $(HEADERS) $(TARGET1)/joymng.h
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/mousemng.o	:	$(TARGET)/mousemng.c $(HEADERS) $(TARGET)/mousemng.h
+$(OBJ)/mousemng.o	:	$(TARGET1)/mousemng.c $(HEADERS) $(TARGET1)/mousemng.h
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/scrnmng.o	:	$(TARGET)/scrnmng.c $(HEADERS) $(EMBEDS) \
-						$(TARGET)/scrnmng.h
+$(OBJ)/scrnmng.o	:	$(TARGET1)/scrnmng.c $(HEADERS) $(EMBEDS) \
+						$(TARGET1)/scrnmng.h
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/soundmng.o	:	$(TARGET)/soundmng.cpp $(HEADERS) $(COMMON)/parts.h \
-						$(TARGET)/commng.h $(TARGET)/soundmng.h \
+$(OBJ)/soundmng.o	:	$(TARGET1)/soundmng.cpp $(HEADERS) $(COMMON)/parts.h \
+						$(TARGET1)/commng.h $(TARGET1)/soundmng.h \
 						$(SOUND)/sound.h $(VERMOUTH)/vermouth.h
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/sysmng.o		:	$(TARGET)/sysmng.c $(HEADERS) $(TARGET)/sysmng.h
+$(OBJ)/sysmng.o		:	$(TARGET1)/sysmng.c $(HEADERS) $(TARGET1)/sysmng.h
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/taskmng.o	:	$(TARGET)/taskmng.c $(HEADERS) $(EMBEDS) \
-						$(TARGET)/inputmng.h $(TARGET)/taskmng.h \
-						$(TARGET)/sdlkbd.h $(TARGET)/sysmenu.h
+$(OBJ)/taskmng.o	:	$(TARGET1)/taskmng.c $(HEADERS) $(EMBEDS) \
+						$(TARGET1)/inputmng.h $(TARGET1)/taskmng.h \
+						$(TARGET1)/sdlkbd.h $(TARGET1)/sysmenu.h
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/timemng.o	:	$(TARGET)/timemng.c $(HEADERS) $(TARGET)/timemng.h
+$(OBJ)/timemng.o	:	$(TARGET1)/timemng.c $(HEADERS) $(TARGET1)/timemng.h
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/sdlkbd.o		:	$(TARGET)/sdlkbd.c $(HEADERS) $(PCCORES) \
-						$(IOCORES) $(TARGET)/np2.h $(TARGET)/sdlkbd.h
+$(OBJ)/sdlkbd.o		:	$(TARGET1)/sdlkbd.c $(HEADERS) $(PCCORES) \
+						$(IOCORES) $(TARGET1)/np2.h $(TARGET1)/sdlkbd.h
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/ini.o		:	$(TARGET)/ini.c $(HEADERS) $(PCCORES) \
+$(OBJ)/ini.o		:	$(TARGET1)/ini.c $(HEADERS) $(PCCORES) \
 						$(COMMON)/strres.h $(COMMON)/profile.h \
-						$(TARGET)/np2.h $(TARGET)/dosio.h $(TARGET)/ini.h
+						$(TARGET1)/np2.h $(TARGET1)/dosio.h $(TARGET1)/ini.h
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/sysmenu.o	:	$(TARGET)/sysmenu.c $(HEADERS) $(PCCORES) $(IOCORE) \
-						$(EMBEDS) $(COMMON)/strres.h $(TARGET)/np2.h \
-						$(TARGET)/fontmng.h $(TARGET)/scrnmng.h \
-						$(TARGET)/sysmng.h $(TARGET)/taskmng.h \
-						$(TARGET)/sdlkbd.h $(TARGET)/sysmenu.h \
-						$(TARGET)/sysmenu.res $(TARGET)/sysmenu.str \
+$(OBJ)/sysmenu.o	:	$(TARGET1)/sysmenu.c $(HEADERS) $(PCCORES) $(IOCORE) \
+						$(EMBEDS) $(COMMON)/strres.h $(TARGET1)/np2.h \
+						$(TARGET1)/fontmng.h $(TARGET1)/scrnmng.h \
+						$(TARGET1)/sysmng.h $(TARGET1)/taskmng.h \
+						$(TARGET1)/sdlkbd.h $(TARGET1)/sysmenu.h \
+						$(TARGET1)/sysmenu.res $(TARGET1)/sysmenu.str \
 						$(CBUS)/pc9861k.h $(CBUS)/mpu98ii.h $(SOUND)/sound.h \
 						$(SOUND)/beep.h $(MENU)/menustr.h $(MENU)/dlgcfg.h \
 						$(MENU)/dlgabout.h
@@ -1279,8 +1279,8 @@ $(OBJ)/sysmenu.o	:	$(TARGET)/sysmenu.c $(HEADERS) $(PCCORES) $(IOCORE) \
 
 $(OBJ)/pccore.o		:	$(BASE)/pccore.c $(HEADERS) $(CPUCORES) $(PCCORES) \
 						$(IOCORES) $(FMBOARDS) $(COMMON)/strres.h \
-						$(TARGET)/dosio.h $(TARGET)/soundmng.h \
-						$(TARGET)/sysmng.h $(TARGET)/timemng.h \
+						$(TARGET1)/dosio.h $(TARGET1)/soundmng.h \
+						$(TARGET1)/sysmng.h $(TARGET1)/timemng.h \
 						$(CBUS)/cbuscore.h $(CBUS)/pc9861k.h \
 						$(CBUS)/mpu98ii.h $(BIOS)/bios.h $(BIOS)/biosmem.h \
 						$(VRAM)/vram.h $(VRAM)/scrndraw.h $(VRAM)/dispsync.h \
@@ -1297,7 +1297,7 @@ $(OBJ)/nevent.o		:	$(BASE)/nevent.c $(HEADERS) $(CPUCORES) $(PCCORES)
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/calendar.o	:	$(BASE)/calendar.c $(HEADERS) $(PCCORES) \
-						$(COMMON)/parts.h $(TARGET)/timemng.h \
+						$(COMMON)/parts.h $(TARGET1)/timemng.h \
 						$(BASE)/calendar.h
 	$(CC) $(COPT) -o $@ $<
 
@@ -1311,9 +1311,9 @@ $(OBJ)/keystat.o	:	$(BASE)/keystat.c $(HEADERS) $(PCCORES) $(IOCORES) \
 
 $(OBJ)/statsave.o	:	$(BASE)/statsave.c $(HEADERS) $(CPUCORES) $(PCCORES) \
 						$(IOCORES) $(FMBOARDS) $(COMMON)/strres.h \
-						$(TARGET)/dosio.h $(TARGET)/commng.h \
-						$(TARGET)/scrnmng.h $(TARGET)/soundmng.h \
-						$(TARGET)/timemng.h $(CBUS)/cbuscore.h \
+						$(TARGET1)/dosio.h $(TARGET1)/commng.h \
+						$(TARGET1)/scrnmng.h $(TARGET1)/soundmng.h \
+						$(TARGET1)/timemng.h $(CBUS)/cbuscore.h \
 						$(CBUS)/sasiio.h $(CBUS)/scsiio.h $(CBUS)/pc9861k.h \
 						$(CBUS)/mpu98ii.h $(CBUS)/board14.h $(CBUS)/amd98.h \
 						$(BIOS)/bios.h $(VRAM)/vram.h $(VRAM)/palettes.h \
@@ -1325,7 +1325,7 @@ $(OBJ)/statsave.o	:	$(BASE)/statsave.c $(HEADERS) $(CPUCORES) $(PCCORES) \
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/debugsub386.o	:	$(BASE)/debugsub386.c $(HEADERS) $(CPUCORES) $(PCCORES) \
-						$(IOCORES) $(COMMON)/strres.h $(TARGET)/dosio.h \
+						$(IOCORES) $(COMMON)/strres.h $(TARGET1)/dosio.h \
 						$(BASE)/debugsub.h
 	$(CC) $(COPT) -o $@ $<
 
@@ -1408,7 +1408,7 @@ $(OBJ)/fdd_xdf.o	:	$(BASE)/diskimage/fd/fdd_xdf.c $(HEADERS) $(CPUCORES) $(PCCOR
 						$(BASE)/diskimage/fddfile.h $(BASE)/diskimage/fd/fdd_xdf.h
 	$(CC) $(COPT) -o $@ $<
 
-$(OBJ)/main.o		:	$(TARGET2)/main.c $(HEADERS) $(TARGET)/np2.h
+$(OBJ)/main.o		:	$(TARGET2)/main.c $(HEADERS) $(TARGET1)/np2.h
 	$(CC) $(COPT) -o $@ $<
 
 
