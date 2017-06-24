@@ -284,7 +284,7 @@ $(OBJ)/cpumem.o		:	$(I386C)/cpumem.c $(HEADERS) $(CPUCORES) $(PCCORES) \
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/cpu.o		:	$(I386C)/ia32/cpu.c $(HEADERS) $(CPUCORES) $(PCCORES) \
-						$(TARGET)/dosio.h $(I386C)/ia32/cpu.h $(I386C)/ia32/ia32.mcr	\
+						$(TARGET1)/dosio.h $(I386C)/ia32/cpu.h $(I386C)/ia32/ia32.mcr	\
 						$(I386C)/ia32/inst_table.h $(BASE)/trap/steptrap.h
 	$(CC) $(COPT) -o $@ $<
 
@@ -588,7 +588,7 @@ $(OBJ)/scsiio.o		:	$(CBUS)/scsiio.c $(HEADERS) $(PCCORES) $(IOCORES) \
 	$(CC) $(COPT) -o $@ $<
 
 $(OBJ)/scsicmd.o	:	$(CBUS)/scsicmd.c $(HEADERS) $(PCCORES) $(IOCORES) \
-						$(TARGET)/dosio.h $(CBUS)/cbuscore.h \
+						$(TARGET1)/dosio.h $(CBUS)/cbuscore.h \
 						$(CBUS)/scsiio.h $(CBUS)/scsiio.tbl \
 						$(CBUS)/scsicmd.h $(FDD)/sxsi.h
 	$(CC) $(COPT) -o $@ $<
