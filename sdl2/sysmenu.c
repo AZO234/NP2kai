@@ -317,38 +317,6 @@ static void sys_cmd(MENUID id) {
 			update |= SYS_UPDATECFG;
 			break;
 
-#if 0
-		case MID_F12MOUSE:
-			np2oscfg.F12KEY = 0;
-			sdlkbd_resetf12();
-			update |= SYS_UPDATEOSCFG;
-			break;
-
-		case MID_F12COPY:
-			np2oscfg.F12KEY = 1;
-			sdlkbd_resetf12();
-			update |= SYS_UPDATEOSCFG;
-			break;
-
-		case MID_F12STOP:
-			np2oscfg.F12KEY = 2;
-			sdlkbd_resetf12();
-			update |= SYS_UPDATEOSCFG;
-			break;
-
-		case MID_F12EQU:
-			np2oscfg.F12KEY = 3;
-			sdlkbd_resetf12();
-			update |= SYS_UPDATEOSCFG;
-			break;
-
-		case MID_F12COMMA:
-			np2oscfg.F12KEY = 4;
-			sdlkbd_resetf12();
-			update |= SYS_UPDATEOSCFG;
-			break;
-#endif
-
 		case MID_BEEPOFF:
 			np2cfg.BEEP_VOL = 0;
 			beep_setvol(0);
@@ -504,12 +472,6 @@ static void sys_cmd(MENUID id) {
 			update |= SYS_UPDATECFG;
 			break;
 #if 0
-		case IDM_MOUSE:
-			mousemng_toggle(MOUSEPROC_SYSTEM);
-			xmenu_setmouse(np2oscfg.MOUSE_SW ^ 1);
-			update |= SYS_UPDATECFG;
-			break;
-
 		case IDM_SERIAL1:
 			winuienter();
 			dialog_serial(hWnd);

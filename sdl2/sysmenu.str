@@ -67,11 +67,6 @@ static const char str_mousekey[] = "Mouse-Key";
 static const char str_mecshift[] = "mechanical SHIFT";
 static const char str_mecctrl[] = "mechanical CTRL";
 static const char str_mecgrph[] = "mechanical GRPH";
-static const char str_f12mouse[] = "F12 = Mouse";
-static const char str_f12copy[] = "F12 = Copy";
-static const char str_f12stop[] = "F12 = Stop";
-static const char str_f12equ[] = "F12 = tenkey [=]";
-static const char str_f12comma[] = "F12 = tenkey [ , ]";
 
 static const char str_beep[] = "Beep";
 static const char str_off[] = "off";
@@ -108,7 +103,6 @@ static const char str_mem646[] = "64.6MB";
 static const char str_mem1206[] = "120.6MB";
 static const char str_mem2306[] = "230.6MB";
 
-static const char str_mouse[] = "Mouse";
 static const char str_seropt[] = "Serial option...";
 static const char str_midiopt[] = "MIDI option...";
 static const char str_midipanic[] = "MIDI Panic";
@@ -309,13 +303,7 @@ static const MSYSITEM s_keybd[] = {
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_mecshift,		NULL,		MID_XSHIFT,			0},
 		{str_mecctrl,		NULL,		MID_XCTRL,			0},
-		{str_mecgrph,		NULL,		MID_XGRPH,			0},
-		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
-		{str_f12mouse,		NULL,		MID_F12MOUSE,		0},
-		{str_f12copy,		NULL,		MID_F12COPY,		0},
-		{str_f12stop,		NULL,		MID_F12STOP,		0},
-		{str_f12equ,		NULL,		MID_F12EQU,			0},
-		{str_f12comma,		NULL,		MID_F12COMMA,		MENU_DELETED}};
+		{str_mecgrph,		NULL,		MID_XGRPH,			MENU_DELETED}};
 
 static const MSYSITEM s_beep[] = {
 		{str_off,			NULL,		MID_BEEPOFF,		0},
@@ -358,7 +346,6 @@ static const MSYSITEM s_device[] = {
 		{str_beep,			s_beep,		MID_STATIC,			0},
 		{str_soundboard,	s_snd,		MID_STATIC,			0},
 		{str_memory,		s_mem,		MID_STATIC,			0},
-		{str_mouse,			NULL,		MID_MOUSE,			MENU_GRAY},
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_seropt,		NULL,		MID_SERIAL1,		MENU_GRAY},
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},

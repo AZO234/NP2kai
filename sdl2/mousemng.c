@@ -22,6 +22,9 @@ void mousemng_initialize(void) {
 	ZeroMemory(&mousemng, sizeof(mousemng));
 	mousemng.btn = uPD8255A_LEFTBIT | uPD8255A_RIGHTBIT;
 	mousemng.flag = (1 << MOUSEPROC_SYSTEM);
+#if !defined(__LIBRETRO__)
+	mousemng.showcount = 1;
+#endif	/* __LIBRETRO__ */
 }
 
 void mousemng_sync(int pmx,int pmy) {
