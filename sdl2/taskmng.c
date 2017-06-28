@@ -1,12 +1,15 @@
 #include	"compiler.h"
 #include	"inputmng.h"
 #include	"taskmng.h"
-#include	"sdlkbd.h"
+#include	"kbtrans.h"
 #include	"vramhdl.h"
 #include	"menubase.h"
 #include	"sysmenu.h"
 #include	"mousemng.h"
 
+#if defined(__LIBRETRO__)
+#include <retro_miscellaneous.h>
+#endif	/* __LIBRETRO__ */
 
 	BOOL	task_avail;
 
@@ -30,6 +33,7 @@ void taskmng_exit(void) {
 
 void taskmng_rol(void) {
 
+#if !defined(__LIBRETRO__)
 	SDL_Event	e;
 
 	if ((!task_avail) || (!SDL_PollEvent(&e))) {
@@ -125,6 +129,7 @@ void taskmng_rol(void) {
 			task_avail = FALSE;
 			break;
 	}
+#endif	/* __LIBRETRO__ */
 }
 
 BOOL taskmng_sleep(UINT32 tick) {
@@ -134,7 +139,11 @@ BOOL taskmng_sleep(UINT32 tick) {
 	base = GETTICK();
 	while((task_avail) && ((GETTICK() - base) < tick)) {
 		taskmng_rol();
+#if defined(__LIBRETRO__)
+      retro_sleep(1);
+#else	/* __LIBRETRO__ */
 		SDL_Delay(1);
+#endif	/* __LIBRETRO__ */
 	}
 	return(task_avail);
 }

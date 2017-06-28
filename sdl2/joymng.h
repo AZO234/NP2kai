@@ -23,8 +23,24 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef	NP2_X11_JOYMNG_H__
-#define	NP2_X11_JOYMNG_H__
+#ifndef	NP2_SDL2_JOYMNG_H__
+#define	NP2_SDL2_JOYMNG_H__
+
+#if defined(__LIBRETRO__)
+
+#ifdef __cplusplus
+void joymng_sync();
+
+extern "C" {
+#endif
+
+UINT8 joymng_getstat(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#else	/* __LIBRETRO__ */
 
 /*
  * joystick manager
@@ -81,4 +97,6 @@ void joymng_sync(void);
 
 #endif	/* SUPPORT_JOYSTICK */
 
-#endif	/* NP2_X11_JOYMNG_H__ */
+#endif	/* __LIBRETRO__ */
+
+#endif	/* NP2_SDL2_JOYMNG_H__ */

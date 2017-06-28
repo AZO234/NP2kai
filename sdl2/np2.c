@@ -12,7 +12,7 @@
 #include	"soundmng.h"
 #include	"sysmng.h"
 #include	"taskmng.h"
-#include	"sdlkbd.h"
+#include	"kbtrans.h"
 #include	"ini.h"
 #include	"pccore.h"
 #include	"statsave.h"
@@ -32,8 +32,8 @@ NP2OSCFG np2oscfg = {
 	0,			/* DRAW_SKIP */
 
 	KEY_KEY106,		/* KEYBOARD */
-	0,			/* F12KEY */
 
+#if !defined(__LIBRETRO__)
 	0,			/* JOYPAD1 */
 	0,			/* JOYPAD2 */
 	{ 1, 2, 5, 6 },		/* JOY1BTN */
@@ -46,6 +46,7 @@ NP2OSCFG np2oscfg = {
 		{ 0, 1, 0xff, 0xff },	/* JOYBTNMAP[1] */
 	},
 	{ "", "" },		/* JOYDEV */
+#endif	/* __LIBRETRO__ */
 
 	{ COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", "" },	/* mpu */
 	{
@@ -220,7 +221,6 @@ int np2_main(int argc, char *argv[]) {
 	if (fontmng_init() != SUCCESS) {
 		goto np2main_err2;
 	}
-	sdlkbd_initialize();
 	inputmng_init();
 	keystat_initialize();
 
@@ -228,7 +228,9 @@ int np2_main(int argc, char *argv[]) {
 		goto np2main_err3;
 	}
 
+#if !defined(__LIBRETRO__)
 	joymng_initialize();
+#endif	/* __LIBRETRO__ */
 	mousemng_initialize();
 
 	scrnmng_initialize();
@@ -243,16 +245,20 @@ int np2_main(int argc, char *argv[]) {
 	pccore_init();
 	S98_init();
 
+#if !defined(__LIBRETRO__)
 	mousemng_hidecursor();
+#endif	/* __LIBRETRO__ */
 	scrndraw_redraw();
 	pccore_reset();
 
+#if defined(SUPPORT_RESUME)
 	if (np2oscfg.resume) {
 		id = flagload(str_sav, str_resume, FALSE);
 		if (id == DID_CANCEL) {
 			goto np2main_err5;
 		}
 	}
+#endif	/* defined(SUPPORT_RESUME) */
 
 	drvfdd = drvhddSASI = drvhddSCSI = 0;
 	for (i = 1; i < argc; i++) {
@@ -295,6 +301,33 @@ int np2_main(int argc, char *argv[]) {
 		}
 		
 	}
+
+#if defined(__LIBRETRO__)
+	return(SUCCESS);
+
+#if defined(SUPPORT_RESUME)
+np2main_err5:
+	pccore_term();
+	S98_trash();
+	soundmng_deinitialize();
+#endif	/* defined(SUPPORT_RESUME) */
+
+np2main_err4:
+	scrnmng_destroy();
+
+np2main_err3:
+	sysmenu_destroy();
+
+np2main_err2:
+	TRACETERM();
+	//SDL_Quit();
+
+np2main_err1:
+	return(FAILURE);
+}
+
+int np2_end(){
+#else	/* __LIBRETRO__ */
 	
 	while(taskmng_isavail()) {
 		taskmng_rol();
@@ -356,15 +389,20 @@ int np2_main(int argc, char *argv[]) {
 			}
 		}
 	}
+#endif	/* __LIBRETRO__ */
 
 	pccore_cfgupdate();
+#if defined(SUPPORT_RESUME)
 	if (np2oscfg.resume) {
 		flagsave(str_sav);
 	}
 	else {
 		flagdelete(str_sav);
 	}
+#endif
+#if !defined(__LIBRETRO__)
 	joymng_deinitialize();
+#endif	/* __LIBRETRO__ */
 	pccore_term();
 	S98_trash();
 	soundmng_deinitialize();
@@ -374,13 +412,18 @@ int np2_main(int argc, char *argv[]) {
 	scrnmng_destroy();
 	sysmenu_destroy();
 	TRACETERM();
+#if !defined(__LIBRETRO__)
 	SDL_Quit();
+#endif	/* __LIBRETRO__ */
 	return(SUCCESS);
 
+#if !defined(__LIBRETRO__)
+#if defined(SUPPORT_RESUME)
 np2main_err5:
 	pccore_term();
 	S98_trash();
 	soundmng_deinitialize();
+#endif	/* defined(SUPPORT_RESUME) */
 
 np2main_err4:
 	scrnmng_destroy();
@@ -394,5 +437,6 @@ np2main_err2:
 
 np2main_err1:
 	return(FAILURE);
+#endif	/* __LIBRETRO__ */
 }
 

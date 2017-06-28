@@ -1,6 +1,6 @@
 Neko Project II 0.86 SDL2 port rev.6
 ===
-Jun 21, 2017  
+Jun 28, 2017  
 
 Build SDL2 port
 ---
@@ -12,13 +12,13 @@ Build SDL2 port
 ２． Build.  
 
 	$ cd NP2_SDL2/sdl2
-	$ make -f makefile.unix
+	$ make -f Makefile.unix
 
 or
 
-	$ make -f makefile21.unix
+	$ make -f Makefile21.unix
 
-３． 'np2' or 'np21' binary is outputed in NP2_SDL2/bin  
+３． 'np2' or 'np21' binary is outputed in NP2_SDL2/sdl2  
 
 Build X11 port
 ---
@@ -41,10 +41,22 @@ or
 
 ３． 'np2' or 'np21' binary is outputed in NP2_SDL2/x11  
 
+Build libretro port
+---
+
+１． Build.  
+
+	$ cd NP2_SDL2/sdl2
+	$ make
+
+２． 'np2_libretro.so' binary is outputed in NP2_SDL2/sdl2  
+
 Don't build other port. Maybe link errors occur.
 
 Release
 ---
+* Jun 28, 2017
+	- [libretro] Applicate to libretro port
 * Jun 21, 2017
 	- [X11] Applicate to X11 port
 * Jun 20, 2017 (rev.6)

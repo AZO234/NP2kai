@@ -14,6 +14,20 @@
 static	char	curpath[MAX_PATH] = "./";
 static	char	*curfilep = curpath + 2;
 
+void
+dosio_init(void)
+{
+
+	/* nothing to do */
+}
+
+void
+dosio_term(void)
+{
+
+	/* nothing to do */
+}
+
 /* ÉtÉ@ÉCÉãëÄçÏ */
 FILEH file_open(const char *path) {
 

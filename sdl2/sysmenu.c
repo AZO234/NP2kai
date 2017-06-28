@@ -5,7 +5,7 @@
 #include	"scrnmng.h"
 #include	"sysmng.h"
 #include	"taskmng.h"
-#include	"sdlkbd.h"
+#include	"kbtrans.h"
 #include	"pccore.h"
 #include	"iocore.h"
 #include	"pc9861k.h"
@@ -317,6 +317,7 @@ static void sys_cmd(MENUID id) {
 			update |= SYS_UPDATECFG;
 			break;
 
+#if 0
 		case MID_F12MOUSE:
 			np2oscfg.F12KEY = 0;
 			sdlkbd_resetf12();
@@ -346,6 +347,7 @@ static void sys_cmd(MENUID id) {
 			sdlkbd_resetf12();
 			update |= SYS_UPDATEOSCFG;
 			break;
+#endif
 
 		case MID_BEEPOFF:
 			np2cfg.BEEP_VOL = 0;
@@ -675,12 +677,6 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 	menusys_setcheck(MID_XSHIFT, (b & 1));
 	menusys_setcheck(MID_XCTRL, (b & 2));
 	menusys_setcheck(MID_XGRPH, (b & 4));
-	b = np2oscfg.F12KEY;
-	menusys_setcheck(MID_F12MOUSE, (b == 0));
-	menusys_setcheck(MID_F12COPY, (b == 1));
-	menusys_setcheck(MID_F12STOP, (b == 2));
-	menusys_setcheck(MID_F12EQU, (b == 3));
-	menusys_setcheck(MID_F12COMMA, (b == 4));
 	b = np2cfg.BEEP_VOL & 3;
 	menusys_setcheck(MID_BEEPOFF, (b == 0));
 	menusys_setcheck(MID_BEEPLOW, (b == 1));

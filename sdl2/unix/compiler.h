@@ -9,7 +9,7 @@
 #include	<pthread.h>
 #include	<SDL2/SDL.h>
 
-#define	NP2VER_SDL2 "SDL2 Rev.6"
+#define	NP2VER_SDL2 " SDL2 Rev.6"
 
 #define BYTESEX_LITTLE
 #define	OSLANG_UTF8
@@ -123,6 +123,7 @@ typedef SINT32	FILELEN;
 
 #define _T
 #define _tcscpy strcpy
+#define	msgbox(title, msg)
 
 #define SIZE_VGA
 #if !defined(SIZE_VGA)
@@ -179,4 +180,3 @@ typedef SINT32	FILELEN;
 
 #define	SCREEN_BPP		16
 
-extern void msgbox();

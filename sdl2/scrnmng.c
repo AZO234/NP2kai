@@ -8,6 +8,47 @@
 #include	"vramhdl.h"
 #include	"menubase.h"
 
+#if defined(__LIBRETRO__)
+#include "libretro_exports.h"
+
+typedef struct {
+	int		xalign;
+	int		yalign;
+	int		width;
+	int		height;
+	int		srcpos;
+	int		dstpos;
+} DRAWRECT;
+
+static	SCRNSURF	scrnsurf;
+static	VRAMHDL		vram;
+
+void scrnmng_initialize(void){
+	scrnsurf.width = 640;
+	scrnsurf.height =  480;
+}
+
+void scrnmng_destroy(void){}
+
+const SCRNSURF *scrnmng_surflock(void){
+
+	scrnsurf.width = 640;
+	scrnsurf.height =  480;
+	scrnsurf.xalign = 2;
+	scrnsurf.yalign = 640*2;
+	scrnsurf.bpp = 16;
+	scrnsurf.extend = 0;
+
+	if (vram == NULL)
+		scrnsurf.ptr = (BYTE *)FrameBuffer;
+	else 
+		scrnsurf.ptr = vram->ptr;
+
+	return(&scrnsurf);
+}
+
+static BRESULT calcdrawrect(DRAWRECT *dr, const RECT_T *rt) {
+#else	/* __LIBRETRO__ */
 static SDL_Window *s_sdlWindow;
 static SDL_Renderer *s_renderer;
 static SDL_Texture *s_texture;
@@ -44,15 +85,26 @@ typedef struct {
 
 static BRESULT calcdrawrect(SDL_Surface *surface,
 								DRAWRECT *dr, VRAMHDL s, const RECT_T *rt) {
+#endif	/* __LIBRETRO__ */
 
 	int		pos;
 
+#if defined(__LIBRETRO__)
+	dr->xalign = 2;
+	dr->yalign = 640*2;
+#else	/* __LIBRETRO__ */
 	dr->xalign = surface->format->BytesPerPixel;
 	dr->yalign = surface->pitch;
+#endif	/* __LIBRETRO__ */
 	dr->srcpos = 0;
 	dr->dstpos = 0;
+#if defined(__LIBRETRO__)
+	dr->width = 640;
+	dr->height = 480;
+#else	/* __LIBRETRO__ */
 	dr->width = max(scrnmng.width, s->width);
 	dr->height = max(scrnmng.height, s->height);
+#endif	/* __LIBRETRO__ */
 	if (rt) {
 		pos = max(rt->left, 0);
 		dr->srcpos += pos;
@@ -60,7 +112,11 @@ static BRESULT calcdrawrect(SDL_Surface *surface,
 		dr->width = min(rt->right, dr->width) - pos;
 
 		pos = max(rt->top, 0);
+#if defined(__LIBRETRO__)
+		dr->srcpos += pos * 640;
+#else	/* __LIBRETRO__ */
 		dr->srcpos += pos * s->width;
+#endif	/* __LIBRETRO__ */
 		dr->dstpos += pos * dr->yalign;
 		dr->height = min(rt->bottom, dr->height) - pos;
 	}
@@ -70,15 +126,99 @@ static BRESULT calcdrawrect(SDL_Surface *surface,
 	return(SUCCESS);
 }
 
+#if defined(__LIBRETRO__)
+void draw(DRAWRECT dr){
+
+	const UINT8		*p;
+	const UINT8		*q;
+	UINT8		*r;
+	UINT8		*a;
+	int			salign;
+	int			dalign;
+	int			x;
+
+	p = vram->ptr + (dr.srcpos * 2);
+	q = (BYTE *)GuiBuffer + dr.dstpos;
+	a = menuvram->alpha + dr.srcpos;
+	salign = menuvram->width;
+	dalign = dr.yalign - (dr.width * dr.xalign);
+	do {
+		x = 0;
+		do {
+			if (a[x] == 0) {
+				*(UINT16 *)q = *(UINT16 *)(p + (x * 2));
+			}
+			q += dr.xalign;
+		} while(++x < dr.width);
+		p += salign * 2;
+		q += dalign;
+		a += salign;
+	} while(--dr.height);
+}
+
+void draw2(DRAWRECT dr){
+
+	const UINT8		*p;
+	const UINT8		*q;
+	UINT8		*r;
+	UINT8		*a;
+	int			salign;
+	int			dalign;
+	int			x;
+
+	p = vram->ptr + (dr.srcpos * 2);
+	q = menuvram->ptr + (dr.srcpos * 2);
+	r = (BYTE *)GuiBuffer + dr.dstpos;
+	a = menuvram->alpha + dr.srcpos;
+	salign = menuvram->width;
+	dalign = dr.yalign - (dr.width * dr.xalign);
+	do {
+		x = 0;
+		do {
+			if (a[x]) {
+				if (a[x] & 2) {
+					*(UINT16 *)r = *(UINT16 *)(q + (x * 2));
+				}
+				else {
+					a[x] = 0;
+					*(UINT16 *)r = *(UINT16 *)(p + (x * 2));
+				}
+			}
+			r += dr.xalign;
+		} while(++x < dr.width);
+		p += salign * 2;
+		q += salign * 2;
+		r += dalign;
+		a += salign;
+	} while(--dr.height);
+
+}
+#else	/* __LIBRETRO__ */
 
 void scrnmng_initialize(void) {
 
 	scrnstat.width = 640;
 	scrnstat.height = 400;
 }
+#endif	/* __LIBRETRO__ */
 
 BRESULT scrnmng_create(int width, int height) {
 
+#if defined(__LIBRETRO__)
+   if(width != 640 || height != 480){
+      printf("Invalid screen size:%dx%d\n", width, height);
+      abort();
+   }
+   
+   scrnsurf.ptr    = (UINT8*)FrameBuffer;
+   scrnsurf.xalign = 2;//bytes per pixel
+   scrnsurf.yalign = 640 * 2;//bytes per line
+   scrnsurf.width  = width;
+   scrnsurf.height = height;
+   scrnsurf.bpp    = 16;
+   scrnsurf.extend = 0;//?
+   return(SUCCESS);
+#else	/* __LIBRETRO__ */
 	SDL_Surface		*surface;
 	SDL_PixelFormat	*fmt;
 	BOOL			r;
@@ -133,12 +273,15 @@ BRESULT scrnmng_create(int width, int height) {
 		fprintf(stderr, "Error: Bad screen mode");
 		return(FAILURE);
 	}
+#endif	/* __LIBRETRO__ */
 }
 
+#if !defined(__LIBRETRO__)
 void scrnmng_destroy(void) {
 
 	scrnmng.enable = FALSE;
 }
+#endif	/* __LIBRETRO__ */
 
 RGB16 scrnmng_makepal16(RGB32 pal32) {
 
@@ -156,24 +299,33 @@ RGB16 scrnmng_makepal16(RGB32 pal32) {
 
 void scrnmng_setwidth(int posx, int width) {
 
+#if !defined(__LIBRETRO__)
 	SDL_FreeSurface(s_surface);
 	SDL_DestroyTexture(s_texture);
 	SDL_RenderSetLogicalSize(s_renderer, width, scrnmng.height);
 	s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STATIC, width, scrnmng.height);
 	s_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, scrnmng.height, 16, 0xf800, 0x07e0, 0x001f, 0);
 	scrnstat.width = width;
+#else	/* __LIBRETRO__ */
+	scrnsurf.width = width;
+#endif	/* __LIBRETRO__ */
 }
 
 void scrnmng_setheight(int posy, int height) {
 
+#if !defined(__LIBRETRO__)
 	SDL_FreeSurface(s_surface);
 	SDL_DestroyTexture(s_texture);
 	SDL_RenderSetLogicalSize(s_renderer, scrnstat.width, height);
 	s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STATIC, scrnstat.width, height);
 	s_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, scrnstat.width, height, 16, 0xf800, 0x07e0, 0x001f, 0);
 	scrnstat.height = height;
+#else	/* __LIBRETRO__ */
+	scrnsurf.height = height;
+#endif	/* __LIBRETRO__ */
 }
 
+#if !defined(__LIBRETRO__)
 const SCRNSURF *scrnmng_surflock(void) {
 
 	SDL_Surface	*surface;
@@ -201,9 +353,22 @@ const SCRNSURF *scrnmng_surflock(void) {
 	scrnsurf.extend = 0;
 	return(&scrnsurf);
 }
+#endif	/* __LIBRETRO__ */
 
 static void draw_onmenu(void) {
 
+#if defined(__LIBRETRO__)
+	RECT_T		rt;
+	DRAWRECT	dr;
+
+	rt.left = 0;
+	rt.top = 0;
+	rt.right =  640;
+	rt.bottom = 480;
+
+	if (calcdrawrect( &dr, &rt) == SUCCESS)
+		draw(dr);
+#else	/* __LIBRETRO__ */
 	RECT_T		rt;
 	SDL_Surface	*surface;
 	DRAWRECT	dr;
@@ -305,10 +470,19 @@ const UINT8		*a;
 	SDL_RenderClear(s_renderer);
 	SDL_RenderCopy(s_renderer, s_texture, NULL, NULL);
 	SDL_RenderPresent(s_renderer);
+#endif	/* __LIBRETRO__ */
 }
 
 void scrnmng_surfunlock(const SCRNSURF *surf) {
 
+#if defined(__LIBRETRO__)
+	if (surf)
+		if (vram == NULL);
+		else{
+			if (menuvram)
+				draw_onmenu();			
+		}
+#else	/* __LIBRETRO__ */
 	SDL_Surface	*surface;
 
 	if (surf) {
@@ -330,6 +504,7 @@ void scrnmng_surfunlock(const SCRNSURF *surf) {
 			}
 		}
 	}
+#endif	/* __LIBRETRO__ */
 }
 
 
@@ -340,17 +515,30 @@ BRESULT scrnmng_entermenu(SCRNMENU *smenu) {
 	if (smenu == NULL) {
 		goto smem_err;
 	}
+#if defined(__LIBRETRO__)
+	vram_destroy(vram);
+	vram = vram_create(640,480,FALSE,16);
+
+	if (vram == NULL) {
+#else	/* __LIBRETRO__ */
 	vram_destroy(scrnmng.vram);
 	scrnmng.vram = vram_create(scrnmng.width, scrnmng.height, FALSE,
 																scrnmng.bpp);
 	if (scrnmng.vram == NULL) {
+#endif	/* __LIBRETRO__ */
 		goto smem_err;
 	}
 	scrndraw_redraw();
+#if defined(__LIBRETRO__)
+	smenu->width = 640;
+	smenu->height = 480;
+	smenu->bpp = 16;
+#else	/* __LIBRETRO__ */
 	smenu->width = scrnmng.width;
 	smenu->height = scrnmng.height;
 	smenu->bpp = (scrnmng.bpp == 32)?24:scrnmng.bpp;
 	mousemng_showcursor();
+#endif	/* __LIBRETRO__ */
 	return(SUCCESS);
 
 smem_err:
@@ -359,10 +547,15 @@ smem_err:
 
 void scrnmng_leavemenu(void) {
 
+#if defined(__LIBRETRO__)
+	VRAM_RELEASE(vram);
+#else	/* __LIBRETRO__ */
 	VRAM_RELEASE(scrnmng.vram);
+#endif	/* __LIBRETRO__ */
 	mousemng_hidecursor();
 }
 
+#if !defined(__LIBRETRO__)
 void scrnmng_updatecursor(void) {
 	SDL_Surface	*surface;
 	surface = s_surface;
@@ -375,9 +568,16 @@ void scrnmng_updatecursor(void) {
 	SDL_RenderCopy(s_renderer, s_texture, NULL, NULL);
 	SDL_RenderPresent(s_renderer);
 }
+#endif	/* __LIBRETRO__ */
 
 void scrnmng_menudraw(const RECT_T *rct) {
 
+#if defined(__LIBRETRO__)
+	DRAWRECT	dr;
+
+	if (calcdrawrect( &dr, rct) == SUCCESS) 
+		draw2(dr);
+#else	/* __LIBRETRO__ */
 	SDL_Surface	*surface;
 	DRAWRECT	dr;
 const UINT8		*p;
@@ -502,5 +702,6 @@ const UINT8		*q;
 	SDL_RenderClear(s_renderer);
 	SDL_RenderCopy(s_renderer, s_texture, NULL, NULL);
 	SDL_RenderPresent(s_renderer);
+#endif	/* __LIBRETRO__ */
 }
 

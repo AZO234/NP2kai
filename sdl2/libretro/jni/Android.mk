@@ -1,0 +1,48 @@
+LOCAL_PATH := $(call my-dir)
+GIT_VERSION := " $(shell git rev-parse --short HEAD)"
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE    := retro
+
+ifeq ($(TARGET_ARCH_ABI), armeabi)
+LOCAL_CFLAGS += -DANDROID_ARM
+endif
+
+ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
+LOCAL_CFLAGS += -DANDROID_ARM
+endif
+
+ifeq ($(TARGET_ARCH_ABI), arm64-v8a)
+LOCAL_CFLAGS += -DANDROID_ARM
+endif
+
+ifeq ($(TARGET_ARCH_ABI), x86)
+LOCAL_CFLAGS +=  -DANDROID_X86
+endif
+
+ifeq ($(TARGET_ARCH_ABI), x86_64)
+LOCAL_CFLAGS +=  -DANDROID_X86
+endif
+
+ifeq ($(TARGET_ARCH_ABI), mips)
+LOCAL_CFLAGS += -DANDROID_MIPS -D__mips__ -D__MIPSEL__
+endif
+
+ifeq ($(TARGET_ARCH_ABI), mips64)
+LOCAL_CFLAGS += -DANDROID_MIPS -D__mips__ -D__MIPSEL__
+endif
+
+CORE_DIR := ..
+
+SOURCES_C   :=
+SOURCES_ASM :=
+INCFLAGS :=
+COMMONFLAGS :=
+
+include $(CORE_DIR)/Makefile.common
+
+LOCAL_SRC_FILES := $(SOURCES_C) $(SOURCES_CXX) $(SOURCES_ASM)
+LOCAL_CFLAGS += -O3 $(COMMONFLAGS) -D__LIBRETRO__ -DFRONTEND_SUPPORTS_RGB565 $(INCFLAGS) -DGIT_VERSION=\"$(GIT_VERSION)\"
+
+include $(BUILD_SHARED_LIBRARY)

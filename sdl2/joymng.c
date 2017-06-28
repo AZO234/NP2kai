@@ -26,6 +26,54 @@
 #include <errno.h>
 #include "compiler.h"
 
+#if defined(__LIBRETRO__)
+#include "libretro.h"
+extern retro_input_state_t input_cb;
+
+static UINT8 s_cJoyFlag = 0;
+
+enum
+{
+	JOY_LEFT_BIT	= 0x04,
+	JOY_RIGHT_BIT	= 0x08,
+	JOY_UP_BIT	= 0x01,
+	JOY_DOWN_BIT	= 0x02,
+	JOY_BTN1_BIT	= 0x40,
+	JOY_BTN2_BIT	= 0x20,
+	JOY_BTN3_BIT	= 0x80,
+	JOY_BTN4_BIT	= 0x10
+};
+
+void joymng_sync()
+{
+	s_cJoyFlag = 0;
+}
+
+BYTE joymng_getstat(void) {
+
+	if (s_cJoyFlag == 0)
+	{
+		UINT8 cJoyFlag = 0xff;
+
+	if (input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP))cJoyFlag &= ~JOY_UP_BIT;
+	if (input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN))cJoyFlag &= ~JOY_DOWN_BIT;
+	if (input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT))cJoyFlag &= ~JOY_LEFT_BIT;
+	if (input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT))cJoyFlag &= ~JOY_RIGHT_BIT;
+
+	if (input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A) )cJoyFlag &= ~JOY_BTN1_BIT;
+	if (input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B) )cJoyFlag &= ~JOY_BTN2_BIT;
+	if (input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X) )cJoyFlag &= ~JOY_BTN3_BIT;
+	if (input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y) )cJoyFlag &= ~JOY_BTN4_BIT;
+
+	s_cJoyFlag = cJoyFlag;
+
+	}
+	return s_cJoyFlag;
+
+}
+
+#else	/* __LIBRETRO__ */
+
 #if defined(SUPPORT_JOYSTICK)
 
 #include "np2.h"
@@ -161,8 +209,8 @@ joymng_getstat(void)
 
 #if defined(USE_SDL_JOYSTICK)
 
-#include <SDL.h>
-#include <SDL_joystick.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_joystick.h>
 
 typedef struct {
 	joymng_devinfo_t	dev;
@@ -375,3 +423,6 @@ joydrv_getstat(void *hdl, JOYINFO_T *ji)
 #endif	/* USE_SDL_JOYSTICK */
 
 #endif	/* SUPPORT_JOYSTICK */
+
+#endif	/* __LIBRETRO__ */
+

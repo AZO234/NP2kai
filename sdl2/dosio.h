@@ -58,6 +58,9 @@ typedef struct {
 extern "C" {
 #endif
 
+void dosio_init(void);
+void dosio_term(void);
+
 /* ƒtƒ@ƒCƒ‹‘€ì */
 FILEH file_open(const char *path);
 FILEH file_open_rb(const char *path);
