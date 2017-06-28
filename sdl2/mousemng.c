@@ -130,5 +130,10 @@ void mousemng_onmove(SDL_MouseMotionEvent *motion) {
 	mousemng.x += motion->xrel;
 	mousemng.y += motion->yrel;
 }
+#else	/* __LIBRETRO__ */
+void mousemng_onmove(int x, int y) {
+	mousemng.x += x;
+	mousemng.y += y;
+}
 #endif	/* __LIBRETRO__ */
 

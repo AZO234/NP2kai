@@ -77,14 +77,6 @@ void taskmng_rol(void) {
 						mousemng_buttonevent(&e.button);
 					}
 					break;
-
-				case SDL_BUTTON_MIDDLE:
-					if (menuvram == NULL) {
-						sysmenu_menuopen(0, e.button.x, e.button.y);
-					} else {
-						menubase_close();
-					}
-					break;
 			}
 			break;
 
@@ -102,6 +94,14 @@ void taskmng_rol(void) {
 				case SDL_BUTTON_RIGHT:
 					if (menuvram == NULL) {
 						mousemng_buttonevent(&e.button);
+					}
+					break;
+
+				case SDL_BUTTON_MIDDLE:
+					if (menuvram == NULL) {
+						sysmenu_menuopen(0, e.button.x, e.button.y);
+					} else {
+						menubase_close();
 					}
 					break;
 			}

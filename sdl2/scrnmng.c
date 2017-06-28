@@ -542,8 +542,8 @@ void scrnmng_leavemenu(void) {
 #endif	/* __LIBRETRO__ */
 }
 
-#if !defined(__LIBRETRO__)
 void scrnmng_updatecursor(void) {
+#if !defined(__LIBRETRO__)
 	SDL_Surface	*surface;
 	surface = s_surface;
 	if (surface == NULL) {
@@ -554,8 +554,8 @@ void scrnmng_updatecursor(void) {
 	SDL_RenderClear(s_renderer);
 	SDL_RenderCopy(s_renderer, s_texture, NULL, NULL);
 	SDL_RenderPresent(s_renderer);
-}
 #endif	/* __LIBRETRO__ */
+}
 
 void scrnmng_menudraw(const RECT_T *rct) {
 
