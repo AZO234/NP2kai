@@ -11,43 +11,8 @@
 #if defined(__LIBRETRO__)
 #include "libretro_exports.h"
 
-typedef struct {
-	int		xalign;
-	int		yalign;
-	int		width;
-	int		height;
-	int		srcpos;
-	int		dstpos;
-} DRAWRECT;
-
 static	SCRNSURF	scrnsurf;
 static	VRAMHDL		vram;
-
-void scrnmng_initialize(void){
-	scrnsurf.width = 640;
-	scrnsurf.height =  480;
-}
-
-void scrnmng_destroy(void){}
-
-const SCRNSURF *scrnmng_surflock(void){
-
-	scrnsurf.width = 640;
-	scrnsurf.height =  480;
-	scrnsurf.xalign = 2;
-	scrnsurf.yalign = 640*2;
-	scrnsurf.bpp = 16;
-	scrnsurf.extend = 0;
-
-	if (vram == NULL)
-		scrnsurf.ptr = (BYTE *)FrameBuffer;
-	else 
-		scrnsurf.ptr = vram->ptr;
-
-	return(&scrnsurf);
-}
-
-static BRESULT calcdrawrect(DRAWRECT *dr, const RECT_T *rt) {
 #else	/* __LIBRETRO__ */
 static SDL_Window *s_sdlWindow;
 static SDL_Renderer *s_renderer;
@@ -73,6 +38,7 @@ static const char app_name[] = "Neko Project II";
 static	SCRNMNG		scrnmng;
 static	SCRNSTAT	scrnstat;
 static	SCRNSURF	scrnsurf;
+#endif	/* __LIBRETRO__ */
 
 typedef struct {
 	int		xalign;
@@ -83,6 +49,9 @@ typedef struct {
 	int		dstpos;
 } DRAWRECT;
 
+#if defined(__LIBRETRO__)
+static BRESULT calcdrawrect(DRAWRECT *dr, const RECT_T *rt) {
+#else	/* __LIBRETRO__ */
 static BRESULT calcdrawrect(SDL_Surface *surface,
 								DRAWRECT *dr, VRAMHDL s, const RECT_T *rt) {
 #endif	/* __LIBRETRO__ */
@@ -193,14 +162,17 @@ void draw2(DRAWRECT dr){
 	} while(--dr.height);
 
 }
-#else	/* __LIBRETRO__ */
+#endif	/* __LIBRETRO__ */
 
 void scrnmng_initialize(void) {
 
 	scrnstat.width = 640;
+#if defined(__LIBRETRO__)
+	scrnstat.height = 480;
+#else	/* __LIBRETRO__ */
 	scrnstat.height = 400;
-}
 #endif	/* __LIBRETRO__ */
+}
 
 BRESULT scrnmng_create(int width, int height) {
 
@@ -276,12 +248,12 @@ BRESULT scrnmng_create(int width, int height) {
 #endif	/* __LIBRETRO__ */
 }
 
-#if !defined(__LIBRETRO__)
 void scrnmng_destroy(void) {
 
+#if !defined(__LIBRETRO__)
 	scrnmng.enable = FALSE;
-}
 #endif	/* __LIBRETRO__ */
+}
 
 RGB16 scrnmng_makepal16(RGB32 pal32) {
 
@@ -305,10 +277,8 @@ void scrnmng_setwidth(int posx, int width) {
 	SDL_RenderSetLogicalSize(s_renderer, width, scrnmng.height);
 	s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STATIC, width, scrnmng.height);
 	s_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, scrnmng.height, 16, 0xf800, 0x07e0, 0x001f, 0);
-	scrnstat.width = width;
-#else	/* __LIBRETRO__ */
-	scrnsurf.width = width;
 #endif	/* __LIBRETRO__ */
+	scrnsurf.width = width;
 }
 
 void scrnmng_setheight(int posy, int height) {
@@ -319,15 +289,27 @@ void scrnmng_setheight(int posy, int height) {
 	SDL_RenderSetLogicalSize(s_renderer, scrnstat.width, height);
 	s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STATIC, scrnstat.width, height);
 	s_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, scrnstat.width, height, 16, 0xf800, 0x07e0, 0x001f, 0);
-	scrnstat.height = height;
-#else	/* __LIBRETRO__ */
-	scrnsurf.height = height;
 #endif	/* __LIBRETRO__ */
+	scrnsurf.height = height;
 }
 
-#if !defined(__LIBRETRO__)
 const SCRNSURF *scrnmng_surflock(void) {
 
+#if defined(__LIBRETRO__)
+	scrnsurf.width = 640;
+	scrnsurf.height =  400;
+	scrnsurf.xalign = 2;
+	scrnsurf.yalign = 640*2;
+	scrnsurf.bpp = 16;
+	scrnsurf.extend = 0;
+
+	if (vram == NULL)
+		scrnsurf.ptr = (BYTE *)FrameBuffer;
+	else 
+		scrnsurf.ptr = vram->ptr;
+
+	return(&scrnsurf);
+#else	/* __LIBRETRO__ */
 	SDL_Surface	*surface;
 
 	if (scrnmng.vram == NULL) {
@@ -352,8 +334,8 @@ const SCRNSURF *scrnmng_surflock(void) {
 	scrnsurf.height = max(scrnstat.height, 400);
 	scrnsurf.extend = 0;
 	return(&scrnsurf);
-}
 #endif	/* __LIBRETRO__ */
+}
 
 static void draw_onmenu(void) {
 
@@ -551,8 +533,8 @@ void scrnmng_leavemenu(void) {
 	VRAM_RELEASE(vram);
 #else	/* __LIBRETRO__ */
 	VRAM_RELEASE(scrnmng.vram);
-#endif	/* __LIBRETRO__ */
 	mousemng_hidecursor();
+#endif	/* __LIBRETRO__ */
 }
 
 #if !defined(__LIBRETRO__)

@@ -1,5 +1,5 @@
 /**
- * @file	sdlkey.c
+ * @file	kbtrans.c
  * @brief	Implementation of the keyboard
  */
 
@@ -246,6 +246,7 @@ void sdlkbd_keydown(UINT key)
 {
 	UINT8	data;
 
+	data = getKey(key);
 	if (data != NC)
 	{
 		keystat_senddata(data);
@@ -260,6 +261,7 @@ void sdlkbd_keyup(UINT key)
 {
 	UINT8	data;
 
+	data = getKey(key);
 	if (data != NC)
 	{
 		keystat_senddata((UINT8)(data | 0x80));
