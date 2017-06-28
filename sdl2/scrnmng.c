@@ -166,10 +166,11 @@ void draw2(DRAWRECT dr){
 
 void scrnmng_initialize(void) {
 
-	scrnstat.width = 640;
 #if defined(__LIBRETRO__)
-	scrnstat.height = 480;
+	scrnsurf.width = 640;
+	scrnsurf.height = 480;
 #else	/* __LIBRETRO__ */
+	scrnstat.width = 640;
 	scrnstat.height = 400;
 #endif	/* __LIBRETRO__ */
 }
@@ -277,8 +278,10 @@ void scrnmng_setwidth(int posx, int width) {
 	SDL_RenderSetLogicalSize(s_renderer, width, scrnmng.height);
 	s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STATIC, width, scrnmng.height);
 	s_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, scrnmng.height, 16, 0xf800, 0x07e0, 0x001f, 0);
-#endif	/* __LIBRETRO__ */
+	scrnstat.width = width;
+#else	/* __LIBRETRO__ */
 	scrnsurf.width = width;
+#endif	/* __LIBRETRO__ */
 }
 
 void scrnmng_setheight(int posy, int height) {
@@ -289,8 +292,10 @@ void scrnmng_setheight(int posy, int height) {
 	SDL_RenderSetLogicalSize(s_renderer, scrnstat.width, height);
 	s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STATIC, scrnstat.width, height);
 	s_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, scrnstat.width, height, 16, 0xf800, 0x07e0, 0x001f, 0);
-#endif	/* __LIBRETRO__ */
+	scrnstat.height = height;
+#else	/* __LIBRETRO__ */
 	scrnsurf.height = height;
+#endif	/* __LIBRETRO__ */
 }
 
 const SCRNSURF *scrnmng_surflock(void) {

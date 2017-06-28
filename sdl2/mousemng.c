@@ -69,7 +69,7 @@ void mousemng_buttonevent(SDL_MouseButtonEvent *button) {
 	default:
 		return;
 	}
-	if (button->type == SDL_KEYDOWN)
+	if (button->type == SDL_MOUSEBUTTONDOWN)
 		mousemng.btn &= ~bit;
 	else
 		mousemng.btn |= bit;
