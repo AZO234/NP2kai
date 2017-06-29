@@ -281,6 +281,7 @@ void draw_cross(int x,int y) {
 static int lastx=320,lasty=240;
 static menukey=0;
 static menu_active=0;
+static int mbM = 0;
 
 void updateInput(){
 
@@ -334,61 +335,76 @@ void updateInput(){
    int mouse_x = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
    int mouse_y = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
 
-   if (!mousemng.flag){			
-	mousemng_sync(mouse_x,mouse_y);
-   }
+   if (!mousemng.flag)
+      mousemng_sync(mouse_x,mouse_y);
 
    mposx+=mouse_x;if(mposx<0)mposx=0;if(mposx>=LR_SCREENWIDTH)mposx=LR_SCREENWIDTH-1;
    mposy+=mouse_y;if(mposy<0)mposy=0;if(mposy>=LR_SCREENHEIGHT)mposy=LR_SCREENHEIGHT-1;
 
    if(lastx!=mposx || lasty!=mposy)
-	if (menuvram == NULL) {
-	}
-	else {
-		menubase_moving(mposx, mposy, 0);
-	}
+      if (menuvram != NULL)
+         menubase_moving(mposx, mposy, 0);
 
    int mouse_l = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_LEFT);
    int mouse_r = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_RIGHT);
+   int mouse_m = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_MIDDLE);
 		      
    if(mbL==0 && mouse_l)
    {
-      	mbL=1;		
-
-	if (menuvram != NULL)
-	{
-		menubase_moving(mposx, mposy, 1);
-	}
-	else mousemng_buttonevent(MOUSEMNG_LEFTDOWN);
-			
+      mbL=1;
+      if(menuvram == NULL)
+      {
+         mousemng_buttonevent(MOUSEMNG_LEFTDOWN);
+      }
+      else
+      {
+         menubase_moving(mposx, mposy, 1);
+      }
    }
    else if(mbL==1 && !mouse_l)
    {
-   	mbL=0;
-
-	if (!mousemng_buttonevent(MOUSEMNG_LEFTUP))
-	{
-		if (menuvram != NULL)
-		{
-			menubase_moving(mposx, mposy, 2);
-		}
-		else
-		{
-			sysmenu_menuopen(0, mposx, mposy);
-		}
-	}
-
+      mbL=0;
+      if(menuvram == NULL)
+      {
+         mousemng_buttonevent(MOUSEMNG_LEFTUP);
+      }
+      else
+      {
+         menubase_moving(mposx, mposy, 2);
+      }
    }
 
-   if(mbR==0 && mouse_r){
-      	mbR=1;		
-	mousemng_buttonevent(MOUSEMNG_RIGHTDOWN);
+   if(mbR==0 && mouse_r)
+   {
+      mbR=1;		
+      if(menuvram == NULL)
+      {
+         mousemng_buttonevent(MOUSEMNG_RIGHTDOWN);
+      }
    }
    else if(mbR==1 && !mouse_r)
    {
-   	mbR=0;
-	mousemng_buttonevent(MOUSEMNG_RIGHTUP);
+      mbR=0;
+      if(menuvram == NULL)
+      {
+         mousemng_buttonevent(MOUSEMNG_RIGHTUP);
+      }
    }
+
+   if(mbM==0 && mouse_m)
+   {
+      mbM=1;
+      if(menuvram == NULL)
+      {
+         sysmenu_menuopen(0, mposx, mposy);
+      }
+      else
+      {
+         menubase_close();
+      }
+   }
+   else if(mbM==1 && !mouse_m)
+      mbM=0;
 
    lastx=mposx;lasty=mposy;
 
