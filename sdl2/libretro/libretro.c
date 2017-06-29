@@ -281,7 +281,7 @@ void draw_cross(int x,int y) {
 static int lastx=320,lasty=240;
 static menukey=0;
 static menu_active=0;
-static int mbM = 0;
+static int mbL = 0, mbR = 0;
 
 void updateInput(){
 
@@ -301,11 +301,13 @@ void updateInput(){
       }
 
    if ((input_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_F11) || 
-            input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2)) && menukey==0){
+      input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2) ||
+      input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_MIDDLE)) && menukey==0){
 
       menukey=1; 
 
       if (menuvram == NULL) {
+         memcpy(GuiBuffer,FrameBuffer,LR_SCREENWIDTH*LR_SCREENHEIGHT*2);
          sysmenu_menuopen(0, 0, 0);
          mposx=0;mposy=0;
          lastx=0;lasty=0;
@@ -314,23 +316,13 @@ void updateInput(){
       } else {
          menubase_close();
          mousemng_enable(MOUSEPROC_SYSTEM);
-         memset(GuiBuffer,0,LR_SCREENWIDTH*LR_SCREENHEIGHT*2);
          scrndraw_redraw();
          menu_active=0;
       }
    } else if ( !(input_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_F11) || 
-            input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2)) && menukey==1)
+      input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2) ||
+      input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_MIDDLE)) && menukey==1)
       menukey=0;
-
-   if (menuvram == NULL && menu_active==1){
-      menubase_close();
-      menu_active==0;
-      mousemng_enable(MOUSEPROC_SYSTEM);
-      memset(GuiBuffer,0,LR_SCREENWIDTH*LR_SCREENHEIGHT*2);
-      scrndraw_redraw();
-   }
-
-   static int mbL = 0, mbR = 0;
 
    int mouse_x = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
    int mouse_y = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
@@ -371,6 +363,7 @@ void updateInput(){
       else
       {
          menubase_moving(mposx, mposy, 2);
+         scrndraw_redraw();
       }
    }
 
@@ -390,21 +383,6 @@ void updateInput(){
          mousemng_buttonevent(MOUSEMNG_RIGHTUP);
       }
    }
-
-   if(mbM==0 && mouse_m)
-   {
-      mbM=1;
-      if(menuvram == NULL)
-      {
-         sysmenu_menuopen(0, mposx, mposy);
-      }
-      else
-      {
-         menubase_close();
-      }
-   }
-   else if(mbM==1 && !mouse_m)
-      mbM=0;
 
    lastx=mposx;lasty=mposy;
 
@@ -729,7 +707,7 @@ static void update_variables(void)
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
-      if (strcmp(var.value, "FDD1|FDD2|IDE1|IDE2|CD-ROM") == 0)
+      if (strcmp(var.value, "FDD1") == 0)
          drvno = 0;
       else if (strcmp(var.value, "FDD2") == 0)
          drvno = 1;

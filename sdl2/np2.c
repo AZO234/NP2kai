@@ -56,7 +56,11 @@ NP2OSCFG np2oscfg = {
 	},
 
 	0,			/* resume */
+#if defined(__LIBRETRO__)
+	1,			/* statsave */
+#else	/* __LIBRETRO__ */
 	0,			/* statsave */
+#endif	/* __LIBRETRO__ */
 	0,			/* jastsnd */
 	0,			/* I286SAVE */
 

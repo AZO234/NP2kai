@@ -21,6 +21,8 @@
 #include "sdlremap/sdl.h"
 #include "sdlremap/sdl_keycode.h"
 
+#define	NP2VER_SDL2 " SDL2 Rev.6"
+
 #define	BYTESEX_LITTLE
 #define	OSLANG_UTF8
 #define	OSLINEBREAK_CRLF
@@ -176,8 +178,8 @@ typedef SINT32	FILELEN;
 
 #define	SUPPORT_HOSTDRV
 #define	SUPPORT_IDEIO
-#define	SUPPORT_SASI
-#define	SUPPORT_SCSI
+#undef	SUPPORT_SASI
+#undef	SUPPORT_SCSI
 
 #define	SUPPORT_RESUME
 #define	SUPPORT_STATSAVE	10

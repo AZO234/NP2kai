@@ -121,14 +121,7 @@ void send_libretro_key_down(uint16_t key){
 
    UINT8	data = pc98key[key];
 
-   if (key == RETROK_F11)
-   {
-      if (menuvram == NULL)
-         sysmenu_menuopen(0, 0, 0);
-      else
-         menubase_close();
-   }
-   else if (data != NC && !key_states[key])
+   if (data != NC && !key_states[key])
    {
       keystat_senddata(data);//keystat_keydown(data);
       key_states[key] = true;
