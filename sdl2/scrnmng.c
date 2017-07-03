@@ -9,9 +9,12 @@
 #include	"menubase.h"
 
 #if defined(__LIBRETRO__)
+#include "libretro.h"
 #include "libretro_exports.h"
 
-static	SCRNSURF	scrnsurf;
+extern retro_environment_t environ_cb;
+
+SCRNSURF	scrnsurf;
 static	VRAMHDL		vram;
 #else	/* __LIBRETRO__ */
 static SDL_Window *s_sdlWindow;
@@ -60,7 +63,7 @@ static BRESULT calcdrawrect(SDL_Surface *surface,
 
 #if defined(__LIBRETRO__)
 	dr->xalign = 2;
-	dr->yalign = 640*2;
+	dr->yalign = scrnsurf.width*2;
 #else	/* __LIBRETRO__ */
 	dr->xalign = surface->format->BytesPerPixel;
 	dr->yalign = surface->pitch;
@@ -68,8 +71,8 @@ static BRESULT calcdrawrect(SDL_Surface *surface,
 	dr->srcpos = 0;
 	dr->dstpos = 0;
 #if defined(__LIBRETRO__)
-	dr->width = 640;
-	dr->height = 480;
+	dr->width = scrnsurf.width;
+	dr->height = scrnsurf.height;
 #else	/* __LIBRETRO__ */
 	dr->width = max(scrnmng.width, s->width);
 	dr->height = max(scrnmng.height, s->height);
@@ -82,7 +85,7 @@ static BRESULT calcdrawrect(SDL_Surface *surface,
 
 		pos = max(rt->top, 0);
 #if defined(__LIBRETRO__)
-		dr->srcpos += pos * 640;
+		dr->srcpos += pos * scrnsurf.width;
 #else	/* __LIBRETRO__ */
 		dr->srcpos += pos * s->width;
 #endif	/* __LIBRETRO__ */
@@ -168,7 +171,7 @@ void scrnmng_initialize(void) {
 
 #if defined(__LIBRETRO__)
 	scrnsurf.width = 640;
-	scrnsurf.height = 480;
+	scrnsurf.height = 400;
 #else	/* __LIBRETRO__ */
 	scrnstat.width = 640;
 	scrnstat.height = 400;
@@ -178,16 +181,11 @@ void scrnmng_initialize(void) {
 BRESULT scrnmng_create(int width, int height) {
 
 #if defined(__LIBRETRO__)
-   if(width != 640 || height != 480){
-      printf("Invalid screen size:%dx%d\n", width, height);
-      abort();
-   }
-   
    scrnsurf.ptr    = (UINT8*)FrameBuffer;
    scrnsurf.xalign = 2;//bytes per pixel
-   scrnsurf.yalign = 640 * 2;//bytes per line
+   scrnsurf.yalign = width * 2;//bytes per line
    scrnsurf.width  = width;
-   scrnsurf.height = height;
+   scrnsurf.height = 400;
    scrnsurf.bpp    = 16;
    scrnsurf.extend = 0;//?
    return(SUCCESS);
@@ -280,7 +278,12 @@ void scrnmng_setwidth(int posx, int width) {
 	s_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, scrnmng.height, 16, 0xf800, 0x07e0, 0x001f, 0);
 	scrnstat.width = width;
 #else	/* __LIBRETRO__ */
-	scrnsurf.width = width;
+	struct retro_system_av_info info;
+	retro_get_system_av_info(&info);
+	info.geometry.base_width = info.geometry.max_width = scrnsurf.width = width;
+	info.geometry.base_height = info.geometry.max_height = scrnsurf.height;
+	info.geometry.aspect_ratio = (double)scrnsurf.width / scrnsurf.height;
+	environ_cb(RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO, &info);
 #endif	/* __LIBRETRO__ */
 }
 
@@ -294,17 +297,22 @@ void scrnmng_setheight(int posy, int height) {
 	s_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, scrnstat.width, height, 16, 0xf800, 0x07e0, 0x001f, 0);
 	scrnstat.height = height;
 #else	/* __LIBRETRO__ */
-	scrnsurf.height = height;
+	struct retro_system_av_info info;
+	retro_get_system_av_info(&info);
+	info.geometry.base_width = info.geometry.max_width = scrnsurf.width;
+	info.geometry.base_height = info.geometry.max_height = scrnsurf.height = height;
+	info.geometry.aspect_ratio = (double)scrnsurf.width / scrnsurf.height;
+	environ_cb(RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO, &info);
 #endif	/* __LIBRETRO__ */
 }
 
 const SCRNSURF *scrnmng_surflock(void) {
 
 #if defined(__LIBRETRO__)
-	scrnsurf.width = 640;
-	scrnsurf.height =  400;
+	scrnsurf.width = scrnsurf.width;
+//	scrnsurf.height =  400;
 	scrnsurf.xalign = 2;
-	scrnsurf.yalign = 640*2;
+	scrnsurf.yalign = scrnsurf.width*2;
 	scrnsurf.bpp = 16;
 	scrnsurf.extend = 0;
 
@@ -350,8 +358,8 @@ static void draw_onmenu(void) {
 
 	rt.left = 0;
 	rt.top = 0;
-	rt.right =  640;
-	rt.bottom = 480;
+	rt.right = min(scrnsurf.width, 640);
+	rt.bottom = min(scrnsurf.height, 400);
 
 	if (calcdrawrect( &dr, &rt) == SUCCESS)
 		draw(dr);
@@ -504,7 +512,7 @@ BRESULT scrnmng_entermenu(SCRNMENU *smenu) {
 	}
 #if defined(__LIBRETRO__)
 	vram_destroy(vram);
-	vram = vram_create(640,480,FALSE,16);
+	vram = vram_create(scrnsurf.width,scrnsurf.height,FALSE,scrnsurf.bpp);
 
 	if (vram == NULL) {
 #else	/* __LIBRETRO__ */
@@ -517,9 +525,9 @@ BRESULT scrnmng_entermenu(SCRNMENU *smenu) {
 	}
 	scrndraw_redraw();
 #if defined(__LIBRETRO__)
-	smenu->width = 640;
-	smenu->height = 480;
-	smenu->bpp = 16;
+	smenu->width = scrnsurf.width;
+	smenu->height = scrnsurf.height;
+	smenu->bpp = scrnsurf.bpp;
 #else	/* __LIBRETRO__ */
 	smenu->width = scrnmng.width;
 	smenu->height = scrnmng.height;

@@ -9,6 +9,9 @@
 
 #if defined(__LIBRETRO__)
 #include <retro_miscellaneous.h>
+#include "libretro.h"
+
+extern retro_environment_t environ_cb;
 #endif	/* __LIBRETRO__ */
 
 	BOOL	task_avail;
@@ -29,6 +32,9 @@ void taskmng_initialize(void) {
 void taskmng_exit(void) {
 
 	task_avail = FALSE;
+#if defined(__LIBRETRO__)
+	environ_cb(RETRO_ENVIRONMENT_SHUTDOWN, 0);
+#endif	/* __LIBRETRO__ /*/
 }
 
 void taskmng_rol(void) {

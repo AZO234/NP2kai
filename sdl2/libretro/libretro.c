@@ -46,10 +46,11 @@ static retro_log_printf_t log_cb = NULL;
 static retro_video_refresh_t video_cb = NULL;
 static retro_input_poll_t poll_cb = NULL;
 retro_input_state_t input_cb = NULL;
-static retro_environment_t environ_cb = NULL;
+retro_environment_t environ_cb = NULL;
 
 uint16_t   FrameBuffer[LR_SCREENWIDTH * LR_SCREENHEIGHT];
 uint16_t   GuiBuffer[LR_SCREENWIDTH * LR_SCREENHEIGHT]; //menu surf
+extern SCRNSURF	scrnsurf;
 
 retro_audio_sample_batch_t audio_batch_cb = NULL;
 
@@ -256,8 +257,10 @@ void DrawPointBmp(unsigned short *buffer,int x, int y, unsigned short color)
 {
    int idx;
 
-   idx=x+y*LR_SCREENWIDTH;
-   buffer[idx]=color;	
+   if(x>=0&&y>=0&&x<scrnsurf.width&&y<scrnsurf.height) {
+      idx=x+y*scrnsurf.width;
+      buffer[idx]=color;
+   }
 }
 
 
@@ -307,7 +310,7 @@ void updateInput(){
       menukey=1; 
 
       if (menuvram == NULL) {
-         memcpy(GuiBuffer,FrameBuffer,LR_SCREENWIDTH*LR_SCREENHEIGHT*2);
+         memcpy(GuiBuffer,FrameBuffer,scrnsurf.width*scrnsurf.height*2);
          sysmenu_menuopen(0, 0, 0);
          mposx=0;mposy=0;
          lastx=0;lasty=0;
@@ -330,8 +333,8 @@ void updateInput(){
    if (!mousemng.flag)
       mousemng_sync(mouse_x,mouse_y);
 
-   mposx+=mouse_x;if(mposx<0)mposx=0;if(mposx>=LR_SCREENWIDTH)mposx=LR_SCREENWIDTH-1;
-   mposy+=mouse_y;if(mposy<0)mposy=0;if(mposy>=LR_SCREENHEIGHT)mposy=LR_SCREENHEIGHT-1;
+   mposx+=mouse_x;if(mposx<0)mposx=0;if(mposx>=scrnsurf.width)mposx=scrnsurf.width-1;
+   mposy+=mouse_y;if(mposy<0)mposy=0;if(mposy>=scrnsurf.height)mposy=scrnsurf.height-1;
 
    if(lastx!=mposx || lasty!=mposy)
       if (menuvram != NULL)
@@ -339,7 +342,6 @@ void updateInput(){
 
    int mouse_l = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_LEFT);
    int mouse_r = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_RIGHT);
-   int mouse_m = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_MIDDLE);
 		      
    if(mbL==0 && mouse_l)
    {
@@ -671,7 +673,7 @@ void retro_set_environment(retro_environment_t cb)
    //environ_cb(RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME, &no_rom);
 
    struct retro_variable variables[] = {
-      { "np2_drive" , "Drive; FDD1|FDD2|IDE1|IDE2|CD-ROM" },
+//      { "np2_drive" , "Drive; FDD1|FDD2|IDE1|IDE2|CD-ROM" },
       { "np2_model" , "PC Model (Restart); PC-9801VX|PC-286|PC-9801VM" },
       { "np2_clk_base" , "CPU Base Clock (Restart); 2.4576 MHz|1.9968 MHz" },
       { "np2_clk_mult" , "CPU Clock Multiplier (Restart); 10|12|16|20|24|30|36|40|42|1|2|4|5|6|8" },
@@ -907,11 +909,11 @@ void retro_get_system_info(struct retro_system_info *info)
 
 void retro_get_system_av_info(struct retro_system_av_info *info)
 {
-   info->geometry.base_width   = LR_SCREENWIDTH;
-   info->geometry.base_height  = LR_SCREENHEIGHT;
-   info->geometry.max_width    = LR_SCREENWIDTH;
-   info->geometry.max_height   = LR_SCREENHEIGHT;
-   info->geometry.aspect_ratio = LR_SCREENASPECT;
+   info->geometry.base_width   = scrnsurf.width;
+   info->geometry.base_height  = scrnsurf.height;
+   info->geometry.max_width    = scrnsurf.width;
+   info->geometry.max_height   = scrnsurf.height;
+   info->geometry.aspect_ratio = (double)scrnsurf.width / scrnsurf.height;
    info->timing.fps            = LR_SCREENFPS;
    info->timing.sample_rate    = LR_SOUNDRATE;
 }
@@ -920,6 +922,8 @@ void retro_init (void)
 {
    enum retro_pixel_format rgb565;
    
+   scrnsurf.width = 640;
+   scrnsurf.height = 400;
 
    rgb565 = RETRO_PIXEL_FORMAT_RGB565;
    if(environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &rgb565) && log_cb)
@@ -974,7 +978,7 @@ void retro_run (void)
    updateInput();
 
    if (menuvram != NULL){
-	memcpy(FrameBuffer,GuiBuffer,LR_SCREENWIDTH*LR_SCREENHEIGHT*2);
+	memcpy(FrameBuffer,GuiBuffer,LR_SCREENWIDTH*scrnsurf.height*2);
 	draw_cross(lastx,lasty);
    }
    else {
@@ -983,7 +987,7 @@ void retro_run (void)
    	sound_play_cb(NULL, NULL,SNDSZ*4);
    }
 
-   video_cb(FrameBuffer, LR_SCREENWIDTH, LR_SCREENHEIGHT, LR_SCREENWIDTH * 2/*Pitch*/);
+   video_cb(FrameBuffer, scrnsurf.width, scrnsurf.height, scrnsurf.width * 2/*Pitch*/);
 }
 
 size_t retro_serialize_size (void)
@@ -1024,7 +1028,7 @@ bool retro_load_game(const struct retro_game_info *game)
    bool worked = environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &syspath);
    if(!worked)abort();
    
-   strcpy(np2path, syspath);
+   realpath(syspath, np2path);
 
 #ifdef _WIN32
    strcat(np2path, "\\np2");
