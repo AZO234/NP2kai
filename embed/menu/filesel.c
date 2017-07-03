@@ -375,7 +375,9 @@ const OEMCHAR	*title;
 		title = prm->title;
 		filesel.filter = prm->filter;
 		filesel.ext = prm->ext;
+#if defined(__LIBRETRO__)
 		filesel.drv = drv;
+#endif	/* __LIBRETRO__ */
 	}
 	menudlg_create(DLGFS_WIDTH, DLGFS_HEIGHT, title, dlgcmd);
 #if !defined(__LIBRETRO__)
