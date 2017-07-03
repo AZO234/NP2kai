@@ -40,7 +40,6 @@ typedef struct {
 	COMCFG	com[3];
 
 	UINT8	resume;
-	UINT8	statsave;
 	UINT8	jastsnd;
 	UINT8	I286SAVE;
 
@@ -78,7 +77,6 @@ typedef struct {
 	COMCFG	com[3];
 
 	UINT8	resume;
-	UINT8	statsave;
 	UINT8	jastsnd;
 	UINT8	I286SAVE;
 

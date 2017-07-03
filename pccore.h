@@ -166,7 +166,9 @@ struct tagNP2Config
 	OEMCHAR	hdrvroot[MAX_PATH];
 
 	UINT8	winntfix;
+#if defined(SUPPORT_STATSAVE)
 	UINT8	statsave;
+#endif
 	UINT8	fddrive3;
 	UINT8	fddrive4;
 };

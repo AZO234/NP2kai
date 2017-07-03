@@ -88,7 +88,15 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 #if defined(SUPPORT_SCSI)
 				{OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
 #endif
-				OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), 0, 0, 0, 0};
+				OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), 0,
+#if defined(SUPPORT_STATSAVE)
+#if defined(__LIBRETRO__)
+				1,			/* statsave */
+#else	/* __LIBRETRO__ */
+				0,			/* statsave */
+#endif	/* __LIBRETRO__ */
+#endif
+				0, 0};
 
 	PCCORE	pccore = {	PCBASECLOCK25, PCBASEMULTIPLE,
 						0, PCMODEL_VX, 0, 0, {0x3e, 0x73, 0x7b}, 0,

@@ -635,7 +635,7 @@ static const INITBL iniitem[] = {
 	{"e_resume", INITYPE_BOOL,	&np2oscfg.resume,	0},
 #endif
 #if defined(SUPPORT_STATSAVE)
-	{"STATSAVE", INIRO_BOOL,	&np2oscfg.statsave,	0},
+	{"STATSAVE", INITYPE_BOOL,	&np2cfg.statsave,	0},
 #endif
 
 	{"sounddrv", INITYPE_SNDDRV,	&np2oscfg.snddrv,	0},
