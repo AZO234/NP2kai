@@ -243,6 +243,10 @@ BRESULT sound_create(UINT rate, UINT ms) {
 #else
 	reserve = 0;
 #endif
+#ifdef __LIBRETRO__
+reserve=0;
+samples=735;
+#endif
 	sndstream.buffer = (SINT32 *)_MALLOC((samples + reserve) * 2 
 												* sizeof(SINT32), "stream");
 	if (sndstream.buffer == NULL) {

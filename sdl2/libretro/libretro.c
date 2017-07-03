@@ -36,8 +36,8 @@
 #include "np2.h"
 
 #define SOUNDRATE 44100.0
-#define SNDSZ 735
-signed short soundbuf[1024*2];
+#define SNDSZ 735 //44100Hz/60fps=735 (sample/flame)
+signed short soundbuf[1024*2]; //16bit*2ch
 
 char RPATH[512];
 char tmppath[4096]; 
@@ -978,7 +978,7 @@ void retro_run (void)
    updateInput();
 
    if (menuvram != NULL){
-	memcpy(FrameBuffer,GuiBuffer,LR_SCREENWIDTH*scrnsurf.height*2);
+	memcpy(FrameBuffer,GuiBuffer,scrnsurf.width*scrnsurf.height*2);
 	draw_cross(lastx,lasty);
    }
    else {
