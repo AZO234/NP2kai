@@ -123,7 +123,9 @@ typedef struct {
 const OEMCHAR	*title;
 const OEMCHAR	*filter;
 const OEMCHAR	*ext;
+#if defined(__LIBRETRO__)
 int drv;
+#endif	/* __LIBRETRO__ */
 } FSELPRM;
 
 typedef struct {
@@ -133,7 +135,9 @@ typedef struct {
 const OEMCHAR	*filter;
 const OEMCHAR	*ext;
 	OEMCHAR		path[MAX_PATH];
+#if defined(__LIBRETRO__)
 int drv;
+#endif	/* __LIBRETRO__ */
 } FILESEL;
 
 static	FILESEL		filesel;
@@ -302,10 +306,11 @@ static int dlgcmd(int msg, MENUID id, long param) {
 		case DLGMSG_COMMAND:
 			switch(id) {
 				case DID_OK:
-					if (dlgupdate()) {						
+					if (dlgupdate()) {
+#if defined(__LIBRETRO__)
 						if(filesel.drv>=0xff)diskdrv_setsxsi(filesel.drv-0xff,filesel.path);
 						else diskdrv_setfdd(filesel.drv, filesel.path, 0);
-						
+#endif	/* __LIBRETRO__ */
 						menubase_close();
 					}
 					break;
@@ -345,8 +350,13 @@ static int dlgcmd(int msg, MENUID id, long param) {
 	return(0);
 }
 
+#if defined(__LIBRETRO__)
 static BOOL selectfile(const FSELPRM *prm, OEMCHAR *path, int size, 
 														const OEMCHAR *def,int drv) {
+#else	/* __LIBRETRO__ */
+static BOOL selectfile(const FSELPRM *prm, OEMCHAR *path, int size, 
+														const OEMCHAR *def) {
+#endif	/* __LIBRETRO__ */
 
 const OEMCHAR	*title;
 
@@ -368,7 +378,9 @@ const OEMCHAR	*title;
 		filesel.drv = drv;
 	}
 	menudlg_create(DLGFS_WIDTH, DLGFS_HEIGHT, title, dlgcmd);
-	//menubase_modalproc();
+#if !defined(__LIBRETRO__)
+	menubase_modalproc();
+#endif	/* __LIBRETRO__ */
 	soundmng_play();
 	if (filesel.result) {
 		file_cpyname(path, filesel.path, size);
@@ -409,7 +421,11 @@ void filesel_fdd(REG8 drv) {
 	OEMCHAR	path[MAX_PATH];
 
 	if (drv < 4) {
+#if defined(__LIBRETRO__)
 		if (selectfile(&fddprm, path, NELEMENTS(path), fdd_diskname(drv),drv)) {
+#else	/* __LIBRETRO__ */
+		if (selectfile(&fddprm, path, NELEMENTS(path), fdd_diskname(drv))) {
+#endif	/* __LIBRETRO__ */
 			diskdrv_setfdd(drv, path, 0);
 		}
 	}
@@ -445,7 +461,11 @@ const FSELPRM	*prm;
 		}
 	}
 #endif
+#if defined(__LIBRETRO__)
 	if ((prm) && (selectfile(prm, path, NELEMENTS(path), p,drv+0xff))) {
+#else	/* __LIBRETRO__ */
+	if ((prm) && (selectfile(prm, path, NELEMENTS(path), p))) {
+#endif	/* __LIBRETRO__ */
 		diskdrv_setsxsi(drv, path);
 	}
 }
