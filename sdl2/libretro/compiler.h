@@ -21,8 +21,6 @@
 #include "sdlremap/sdl.h"
 #include "sdlremap/sdl_keycode.h"
 
-#define	NP2VER_SDL2 " SDL2 Rev.6"
-
 #define	BYTESEX_LITTLE
 #define	OSLANG_UTF8
 #define	OSLINEBREAK_CRLF
