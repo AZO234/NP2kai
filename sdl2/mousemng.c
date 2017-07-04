@@ -35,29 +35,24 @@ void mousemng_sync(int pmx,int pmy) {
 
 #if defined(__LIBRETRO__)
 BOOL mousemng_buttonevent(UINT event) {
-	if (!mousemng.flag) {
-		switch(event) {
-			case MOUSEMNG_LEFTDOWN:
-				mousemng.btn &= ~(uPD8255A_LEFTBIT);
-				break;
+	switch(event) {
+		case MOUSEMNG_LEFTDOWN:
+			mousemng.btn &= ~(uPD8255A_LEFTBIT);
+			break;
 
-			case MOUSEMNG_LEFTUP:
-				mousemng.btn |= uPD8255A_LEFTBIT;
-				break;
+		case MOUSEMNG_LEFTUP:
+			mousemng.btn |= uPD8255A_LEFTBIT;
+			break;
 
-			case MOUSEMNG_RIGHTDOWN:
-				mousemng.btn &= ~(uPD8255A_RIGHTBIT);
-				break;
+		case MOUSEMNG_RIGHTDOWN:
+			mousemng.btn &= ~(uPD8255A_RIGHTBIT);
+			break;
 
-			case MOUSEMNG_RIGHTUP:
-				mousemng.btn |= uPD8255A_RIGHTBIT;
-				break;
-		}
-		return(TRUE);
+		case MOUSEMNG_RIGHTUP:
+			mousemng.btn |= uPD8255A_RIGHTBIT;
+			break;
 	}
-	else {
-		return(FALSE);
-	}
+	return(TRUE);
 }
 #else	/* __LIBRETRO__ */
 void mousemng_buttonevent(SDL_MouseButtonEvent *button) {

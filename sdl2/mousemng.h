@@ -37,6 +37,9 @@ void mousemng_hidecursor();
 void mousemng_showcursor();
 void mousemng_onmove(SDL_MouseMotionEvent *motion);
 void mousemng_buttonevent(SDL_MouseButtonEvent *button);
+#else	/* __LIBRETRO__ */
+void mousemng_onmove(int x, int y);
+BOOL mousemng_buttonevent(UINT event);
 #endif	/* __LIBRETRO__ */
 
 #ifdef __cplusplus

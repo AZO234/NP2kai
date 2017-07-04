@@ -314,11 +314,9 @@ void updateInput(){
          sysmenu_menuopen(0, 0, 0);
          mposx=0;mposy=0;
          lastx=0;lasty=0;
-         mousemng_disable(MOUSEPROC_SYSTEM);
          menu_active=1;
       } else {
          menubase_close();
-         mousemng_enable(MOUSEPROC_SYSTEM);
          scrndraw_redraw();
          menu_active=0;
       }
@@ -330,7 +328,7 @@ void updateInput(){
    int mouse_x = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
    int mouse_y = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
 
-   if (!mousemng.flag)
+   if (menuvram == NULL)
       mousemng_sync(mouse_x,mouse_y);
 
    mposx+=mouse_x;if(mposx<0)mposx=0;if(mposx>=scrnsurf.width)mposx=scrnsurf.width-1;
@@ -342,7 +340,7 @@ void updateInput(){
 
    int mouse_l = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_LEFT);
    int mouse_r = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_RIGHT);
-		      
+
    if(mbL==0 && mouse_l)
    {
       mbL=1;
@@ -679,7 +677,7 @@ void retro_set_environment(retro_environment_t cb)
       { "np2_clk_mult" , "CPU Clock Multiplier (Restart); 10|12|16|20|24|30|36|40|42|1|2|4|5|6|8" },
       { "np2_ExMemory" , "RAM Size (Restart); 13|16|32|64|120|230|1|3|7|11" },
       { "np2_skipline" , "Skipline Revisions; Full 255 lines|ON|OFF" },
-      { "np2_SNDboard" , "Sound Board (Restart); PC9801-86|PC9801-26K + 86|PC9801-86 + Chibi-oto|PC9801-118|Speak Board|Spark Board|Sound Orchestra|Sound Orchestra-V|AMD-98|None|PC9801-14|PC9801-26K" },
+      { "np2_SNDboard" , "Sound Board (Restart); PC9801-26K + 86|PC9801-86 + Chibi-oto|PC9801-118|Speak Board|Spark Board|Sound Orchestra|Sound Orchestra-V|AMD-98|None|PC9801-14|PC9801-26K|PC9801-86" },
       { "np2_jast_snd" , "JastSound; OFF|ON" },
       { "np2_volume_F" , "Volume FM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
       { "np2_volume_S" , "Volume SSG; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
@@ -956,7 +954,6 @@ void retro_run (void)
       update_variables();
       pccore_cfgupdate();
       pccore_reset();
-      mousemng_enable(MOUSEPROC_SYSTEM);
       firstcall=0;
       printf("INIT done\n");
       return;
