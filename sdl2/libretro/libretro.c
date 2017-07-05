@@ -303,7 +303,7 @@ void updateInput(){
          send_libretro_key_up(keys_to_poll[i]);
       }
 
-   if ((input_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_F11) || 
+   if ((input_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_F12) || 
       input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2) ||
       input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_MIDDLE)) && menukey==0){
 
@@ -320,7 +320,7 @@ void updateInput(){
          scrndraw_redraw();
          menu_active=0;
       }
-   } else if ( !(input_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_F11) || 
+   } else if ( !(input_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_F12) || 
       input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2) ||
       input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_MIDDLE)) && menukey==1)
       menukey=0;
@@ -677,7 +677,7 @@ void retro_set_environment(retro_environment_t cb)
       { "np2_clk_mult" , "CPU Clock Multiplier (Restart); 10|12|16|20|24|30|36|40|42|1|2|4|5|6|8" },
       { "np2_ExMemory" , "RAM Size (Restart); 13|16|32|64|120|230|1|3|7|11" },
       { "np2_skipline" , "Skipline Revisions; Full 255 lines|ON|OFF" },
-      { "np2_SNDboard" , "Sound Board (Restart); PC9801-26K + 86|PC9801-86 + Chibi-oto|PC9801-118|Speak Board|Spark Board|Sound Orchestra|Sound Orchestra-V|AMD-98|None|PC9801-14|PC9801-26K|PC9801-86" },
+      { "np2_SNDboard" , "Sound Board (Restart); PC9801-26K|PC9801-86|PC9801-26K + 86|PC9801-86 + Chibi-oto|PC9801-118|Speak Board|Spark Board|Sound Orchestra|Sound Orchestra-V|AMD-98|None|PC9801-14" },
       { "np2_jast_snd" , "JastSound; OFF|ON" },
       { "np2_volume_F" , "Volume FM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
       { "np2_volume_S" , "Volume SSG; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
