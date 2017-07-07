@@ -662,6 +662,7 @@ void attachdiskswapinterface(){
 void retro_set_environment(retro_environment_t cb)
 {
    struct retro_log_callback logging;
+   BOOL allow_no_game = true;
    
    environ_cb = cb;
    
@@ -687,6 +688,8 @@ void retro_set_environment(retro_environment_t cb)
       { "np2_BEEP_vol" , "Volume Beep; 3|0|1|2" },
       { NULL, NULL },
    };
+
+   environ_cb(RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME, &allow_no_game);
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &logging))
       log_cb = logging.log;
@@ -1015,7 +1018,6 @@ void retro_cheat_set(unsigned index, bool enabled, const char *code)
 
 bool retro_load_game(const struct retro_game_info *game)
 {
-   
    //get system dir
    const char* syspath = 0;
    char np2path[4096];
@@ -1039,7 +1041,10 @@ bool retro_load_game(const struct retro_game_info *game)
   
    sprintf(np2cfg.biospath,"%s%c",np2path,G_DIR_SEPARATOR);
 
-   strcpy(RPATH,game->path);
+   if(game != NULL)
+      strcpy(RPATH,game->path);
+   else
+      strcpy(RPATH,"");
 
    attachdiskswapinterface();
 
