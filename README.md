@@ -20,6 +20,8 @@ or
 
 ３． 'np2' or 'np21' binary is outputed in NP2kai/sdl2  
 
+BIOS files locate in same directory executable file.
+
 Build X11 port
 ---
 
@@ -41,6 +43,8 @@ or
 
 ３． 'np2' or 'np21' binary is outputed in NP2kai/x11  
 
+BIOS files locate in same directory executable file.
+
 Build libretro port
 ---
 
@@ -51,7 +55,24 @@ Build libretro port
 
 ２． 'np2_libretro.so' binary is outputed in NP2kai/sdl2  
 
+BIOS files locate in "np2" directory at BIOS directory (configured by RetroArch).
+Configure file (np2.cfg) is made in "np2" BIOS directory.
+
+
 Don't build other port. Maybe link errors occur.
+
+
+BIOS files
+---
+* bios.rom
+* FONT.ROM (big letter)
+* itf.rom
+* 2608_bd.wav
+* 2608_sd.wav
+* 2608_top.wav
+* 2608_hh.wav
+* 2608_tom.wav
+* 2608_rim.wav
 
 Release
 ---
