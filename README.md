@@ -45,7 +45,10 @@ or
 
 BIOS files locate in same directory executable file.
 
-Build libretro port
+NP2 menu is opened when F11 key or mouse middle button.
+NP2 menu can FDD/HDD swap.
+
+Build libretro port (RetroArch)
 ---
 
 １． Build.  
@@ -57,6 +60,10 @@ Build libretro port
 
 BIOS files locate in "np2" directory at BIOS directory (configured by RetroArch).
 Configure file (np2.cfg) is made in "np2" BIOS directory.
+
+NP2 menu is opened when F12 key or mouse middle button.
+Mouse is cuptured (hidden/show toggle) by F11 key.
+NP2 menu can FDD/HDD swap.
 
 
 Don't build other port. Maybe link errors occur.
@@ -73,6 +80,53 @@ BIOS files
 * 2608_hh.wav
 * 2608_tom.wav
 * 2608_rim.wav
+
+Setting to RetroPie
+---
+
+１．locate BIOS files
+
+BIOS files locate in "/home/pi/RetroPie/BIOS/np2" directory.
+
+２．locate np2_libretro.so file
+
+    $ sudo mkdir /opt/retropie/libretrocores/lr-np2
+    $ sudo cp np2_libretro.soone /opt/retropie/libretrocores/lr-np2/
+
+２．Add "carbon-mod"
+
+    $ git clone https://github.com/eagle0wl/es-theme-carbon.git
+    $ sudo cp -r ./es-theme-carbon /etc/emulationstation/themes/carbon-mod
+
+３．Add to "/etc/emulationstation/es_systems.cfg" writing
+
+    $ sudo nano /etc/emulationstation/es_systems.cfg
+
+      </system>
+      <system>
+        <name>pc98</name>
+        <fullname>PC-98</fullname>
+        <path>/home/pi/RetroPie/roms/pc98</path>
+        <extension>.d88 .88d .d98 .98d .fdi .xdf .hdm .dup .2hd .tfd .nfd .hd4 .hd5 .hd9 .fdd .h01 .hdb .ddb .dd6 .dcp .dcu .flp .bin .fim .D88 .88D .D98 .98D .FDI .XDF .HDM .DUP .2HD .TFD .NFD .HD4 .HD5 .HD9 .FDD .H01 .HDB .DDB .DD6 .DCP .DCU .FLP .BIN .FIM .thd .nhd .hdi .vhd .sln .THD .NHD .HDI .VHD .SLN</extension>
+        <command>/opt/retropie/supplementary/runcommand/runcommand.sh 0 _SYS_ pc98 %ROM%</command>
+        <platform>pc98</platform>
+        <theme>pc98</theme>
+        <directlaunch/>
+      </system>
+      <system>
+
+４．Add to "/opt/retropie/configs/pc98/emulators.cfg" writing
+
+    $ cd /opt/retropie/configs
+cd media/domi/retropie/opt/retropie/configs
+    $ sudo mkdir pc98
+    $ cd pc98
+    $ sudo nano emulators.cfg
+
+    lr-np2="/opt/retropie/emulators/retroarch/bin/retroarch -L /opt/retropie/libretrocores/lr-np2/np2_libretro.so --config /opt/retropie/configs/pc98/retroarch.cfg %ROM%"
+    default="lr-np2"
+
+５．Launch ES and set "CARBON-MOD" to "THEME-SET"
 
 Release
 ---
