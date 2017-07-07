@@ -21,7 +21,8 @@ MIDIMOD vermouth_module = NULL;
 #endif
 #if defined(__LIBRETRO__)
 #include "libretro_exports.h"
-extern signed short soundbuf[1024*2];
+#include "libretro_params.h"
+extern signed short soundbuf[SNDSZ*2];
 #include "libretro.h"
 extern retro_audio_sample_batch_t audio_batch_cb;
 #endif	/* __LIBRETRO__ */

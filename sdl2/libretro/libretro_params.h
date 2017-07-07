@@ -1,5 +1,5 @@
-#ifndef LREXPORTS_
-#define LREXPORTS_
+#ifndef LRPARAMS_
+#define LRPARAMS_
 
 #include "np2ver.h"
 
@@ -9,6 +9,7 @@
 #define LR_SCREENFPS    60.0
 
 #define LR_SOUNDRATE    44100.0
+#define SNDSZ 735 //44100Hz/60fps=735 (sample/flame)
 
 #define LR_CORENAME        "Neko Project II"
 #define LR_LIBVERSION      NP2VER_CORE

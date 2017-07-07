@@ -72,7 +72,7 @@ static const LRKCNV lrcnv101[] =
 			{RETROK_KP3,			0x4c},	{RETROK_KP_EQUALS,	0x4d},
 			{RETROK_KP0,			0x4e},
    
-			{RETROK_KP_PERIOD,	0x50},
+			{RETROK_KP_PERIOD,	0x50},	{RETROK_KP_ENTER,	0x1c},
    
 			{RETROK_PAUSE,       0x60},	{RETROK_PRINT,       0x61},
 			{RETROK_F1,          0x62},	{RETROK_F2,          0x63},
