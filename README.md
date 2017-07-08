@@ -1,6 +1,6 @@
 Neko Project II 0.86 kai rev.6
 ===
-Jul 4, 2017  
+Jul 9, 2017  
 
 Build SDL2 port
 ---
@@ -45,7 +45,7 @@ or
 
 BIOS files locate in same directory executable file.
 
-NP2 menu is opened when F11 key or mouse middle button.
+NP2 menu is opened when F11 key or mouse middle button.  
 NP2 menu can FDD/HDD swap.
 
 Build libretro port (RetroArch)
@@ -58,11 +58,11 @@ Build libretro port (RetroArch)
 
 ２． 'np2_libretro.so' binary is outputed in NP2kai/sdl2  
 
-BIOS files locate in "np2" directory at BIOS directory (configured by RetroArch).
+BIOS files locate in "np2" directory at BIOS directory (configured by RetroArch).  
 Configure file (np2.cfg) is made in "np2" BIOS directory.
 
-NP2 menu is opened when F12 key or mouse middle button.
-NP2 menu can FDD/HDD swap.
+NP2 menu is opened when F12 key or mouse middle button.  
+NP2 menu can FDD/HDD swap.  
 Mouse is cuptured (hidden/show toggle) by F11 key.
 
 
@@ -93,7 +93,7 @@ Setting to RetroPie
 
 ２．locate BIOS files.
 
-BIOS files locate in "~/RetroPie/roms/pc98/np2/" directory.
+BIOS files locate in "~/RetroPie/roms/pc98/np2/" directory.  
 and "~/RetroPie/np2/" too.
 
 ３．Add "carbon-mod". (Japanese nize)
