@@ -12,11 +12,11 @@ Build SDL2 port
 ２． Build.  
 
 	$ cd NP2_SDL2/sdl2
-	$ make -f Makefile.unix
+	$ make -j4 -f Makefile.unix
 
 or
 
-	$ make -f Makefile21.unix
+	$ make -j4 -f Makefile21.unix
 
 ３． 'np2' or 'np21' binary is outputed in NP2kai/sdl2  
 
@@ -39,7 +39,7 @@ Build X11 port
 or
 
 	$ ./configure --enable-ia32
-	$ make
+	$ make -j4
 
 ３． 'np2' or 'np21' binary is outputed in NP2kai/x11  
 
@@ -54,7 +54,7 @@ Build libretro port (RetroArch)
 １． Build.  
 
 	$ cd NP2kai/sdl2
-	$ make
+	$ make -j4
 
 ２． 'np2_libretro.so' binary is outputed in NP2kai/sdl2  
 
@@ -84,24 +84,28 @@ BIOS files
 Setting to RetroPie
 ---
 
-１．locate np2_libretro.so file
+１．locate libretro & SDL2 port files.
 
     $ sudo mkdir /opt/retropie/libretrocores/lr-np2
     $ sudo cp np2_libretro.so /opt/retropie/libretrocores/lr-np2/
+    $ mkdir ~/RetroPie/np2
+    $ sudo cp np21 ~/RetroPie/np2/
 
-２．locate BIOS files
+２．locate BIOS files.
 
-BIOS files locate in "/home/pi/RetroPie/roms/pc98/np2" directory.
+BIOS files locate in "~/RetroPie/roms/pc98/np2/" directory.
+and "~/RetroPie/np2/" too.
 
-２．Add "carbon-mod"
+３．Add "carbon-mod". (Japanese nize)
 
     $ git clone https://github.com/eagle0wl/es-theme-carbon.git
     $ sudo cp -r ./es-theme-carbon /etc/emulationstation/themes/carbon-mod
 
-３．Add to "/etc/emulationstation/es_systems.cfg" writing
+４．Add to "/etc/emulationstation/es_systems.cfg" writing.
 
     $ sudo nano /etc/emulationstation/es_systems.cfg
 
+    ...
       </system>
       <system>
         <name>pc98</name>
@@ -114,19 +118,20 @@ BIOS files locate in "/home/pi/RetroPie/roms/pc98/np2" directory.
         <directlaunch/>
       </system>
       <system>
+    ...
 
-４．Add to "/opt/retropie/configs/pc98/emulators.cfg" writing
+５．Add to "/opt/retropie/configs/pc98/emulators.cfg" writing.
 
     $ cd /opt/retropie/configs
-cd media/domi/retropie/opt/retropie/configs
     $ sudo mkdir pc98
     $ cd pc98
     $ sudo nano emulators.cfg
 
+    np2="~/RetroPie/np2/np21 %ROM%"
     lr-np2="/opt/retropie/emulators/retroarch/bin/retroarch -L /opt/retropie/libretrocores/lr-np2/np2_libretro.so --config /opt/retropie/configs/pc98/retroarch.cfg %ROM%"
-    default="lr-np2"
+    default="np2"
 
-５．Launch ES and set "CARBON-MOD" to "THEME-SET"
+６．Launch ES and set "CARBON-MOD" to "THEME-SET".
 
 Release
 ---

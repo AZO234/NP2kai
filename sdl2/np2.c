@@ -88,7 +88,7 @@ static void usage(const char *progname) {
 static void getstatfilename(char *path, const char *ext, int size)
 {
 	char filename[32];
-	sprintf(filename, "np2sdl2.%s", ext);
+	sprintf(filename, "np2.%s", ext);
 
 	file_cpyname(path, file_getcd(filename), size);
 }
@@ -162,6 +162,7 @@ int np2_main(int argc, char *argv[]) {
 	int		id;
 	int		i, imagetype, drvfdd, drvhddSASI, drvhddSCSI;
 	char	*ext;
+	char	*tmppath;
 
 	pos = 1;
 	while(pos < argc) {
@@ -177,6 +178,13 @@ int np2_main(int argc, char *argv[]) {
 	}
 
 	initload();
+
+	if(np2cfg.biospath[0] == '\0') {
+		readlink("/proc/self/exe", np2cfg.biospath, sizeof(np2cfg.biospath) - 1);
+		file_setcd(np2cfg.biospath);
+		tmppath = dirname(np2cfg.biospath);
+		strcpy(np2cfg.biospath, tmppath);
+	}
 	
 #if defined(SUPPORT_IDEIO) || defined(SUPPORT_SATA) || defined(SUPPORT_SCSI)
 	drvhddSASI = drvhddSCSI = 0;
