@@ -88,13 +88,15 @@ Setting to RetroPie
 
     $ sudo mkdir /opt/retropie/libretrocores/lr-np2
     $ sudo cp np2_libretro.so /opt/retropie/libretrocores/lr-np2/
-    $ mkdir ~/RetroPie/np2
-    $ sudo cp np21 ~/RetroPie/np2/
+    $ sudo mkdir /opt/retropie/emulators/np2
+    $ sudo cp np2_libretro.so /opt/retropie/emulators/np2/
+    $ sudo touch /opt/retropie/emulators/np2/np2.cfg
+    $ sudo chmod 666 touch /opt/retropie/emulators/np2/np2.cfg
 
 ２．locate BIOS files.
 
 BIOS files locate in "&tilde;/RetroPie/roms/pc98/np2/" directory.  
-and "&tilde;/RetroPie/np2/" too.
+and "/opt/retropie/emulators/np2/" too.
 
 ３．Add "carbon-mod". (Japanese nize)
 
@@ -127,9 +129,9 @@ and "&tilde;/RetroPie/np2/" too.
     $ cd pc98
     $ sudo nano emulators.cfg
 
-    np2="~/RetroPie/np2/np21 %ROM%"
+    np2="/opt/retropie/emulators/np2/np21 %ROM%"
     lr-np2="/opt/retropie/emulators/retroarch/bin/retroarch -L /opt/retropie/libretrocores/lr-np2/np2_libretro.so --config /opt/retropie/configs/pc98/retroarch.cfg %ROM%"
-    default="np2"
+    default="lr-np2"
 
 ６．Launch ES and set "CARBON-MOD" to "THEME-SET".
 
