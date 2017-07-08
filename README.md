@@ -93,8 +93,8 @@ Setting to RetroPie
 
 ２．locate BIOS files.
 
-BIOS files locate in "&tilda;/RetroPie/roms/pc98/np2/" directory.  
-and "&tilda;/RetroPie/np2/" too.
+BIOS files locate in "&tilde;/RetroPie/roms/pc98/np2/" directory.  
+and "&tilde;/RetroPie/np2/" too.
 
 ３．Add "carbon-mod". (Japanese nize)
 
