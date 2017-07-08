@@ -91,7 +91,7 @@ Setting to RetroPie
     $ sudo mkdir /opt/retropie/emulators/np2
     $ sudo cp np2_libretro.so /opt/retropie/emulators/np2/
     $ sudo touch /opt/retropie/emulators/np2/np2.cfg
-    $ sudo chmod 666 touch /opt/retropie/emulators/np2/np2.cfg
+    $ sudo chmod 666 /opt/retropie/emulators/np2/np2.cfg
 
 ２．locate BIOS files.
 
