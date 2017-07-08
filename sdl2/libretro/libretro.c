@@ -38,7 +38,7 @@
 signed short soundbuf[SNDSZ*2]; //16bit*2ch
 
 char RPATH[512];
-char tmppath[4096]; 
+char tmppath[4096];
 
 static retro_log_printf_t log_cb = NULL;
 static retro_video_refresh_t video_cb = NULL;
@@ -65,7 +65,7 @@ int loadcmdfile(char *argv)
    if( fp != NULL )
    {
       if ( fgets (CMDFILE , 512 , fp) != NULL )
-         res=1;	
+         res=1;
       fclose (fp);
    }
 
@@ -106,7 +106,7 @@ void Add_Option(const char* option)
 
    if(first==0)
    {
-      PARAMCOUNT=0;	
+      PARAMCOUNT=0;
       first++;
    }
 
@@ -121,13 +121,13 @@ int pre_main(const char *argv)
    if (strlen(argv) > strlen("cmd"))
    {
       if( HandleExtension((char*)argv,"cmd") || HandleExtension((char*)argv,"CMD"))
-         i=loadcmdfile((char*)argv);     
+         i=loadcmdfile((char*)argv);
    }
 
    if(i==1)
-      parse_cmdline(CMDFILE);      
+      parse_cmdline(CMDFILE);
    else
-      parse_cmdline(argv); 
+      parse_cmdline(argv);
 
    Only1Arg = (strcmp(ARGUV[0],"np2") == 0) ? 0 : 1;
 
@@ -136,7 +136,7 @@ int pre_main(const char *argv)
 
 
    if(Only1Arg)
-   {  
+   {
       int cfgload=0;
 
       Add_Option("np2");
@@ -163,7 +163,7 @@ int pre_main(const char *argv)
    dosio_init();
    file_setcd(tmppath);
 
-   i=np2_main(PARAMCOUNT,( char **)xargv_cmd); 
+   i=np2_main(PARAMCOUNT,( char **)xargv_cmd);
 
    xargv_cmd[PARAMCOUNT - 2] = NULL;
 
@@ -206,7 +206,7 @@ void parse_cmdline(const char *argv)
                //... do something with the word ...
                for (c2 = 0,p2 = start_of_word; p2 < p; p2++, c2++)
                   ARGUV[ARGUC][c2] = (unsigned char) *p2;
-               ARGUC++; 
+               ARGUC++;
 
                state = DULL; /* back to "not in word, not in string" state */
             }
@@ -219,12 +219,12 @@ void parse_cmdline(const char *argv)
                //... do something with the word ...
                for (c2 = 0,p2 = start_of_word; p2 <p; p2++,c2++)
                   ARGUV[ARGUC][c2] = (unsigned char) *p2;
-               ARGUC++; 
+               ARGUC++;
 
                state = DULL; /* back to "not in word, not in string" state */
             }
             continue; /* either still IN_WORD or we handled the end above */
-      }	
+      }
    }
 }
 
@@ -273,7 +273,7 @@ void draw_cross(int x,int y) {
 		for(i=x;i<x+dx;i++){
 			if(cross[j-y][idx]=='.')DrawPointBmp(FrameBuffer,i,j,0xffff);
 			else if(cross[j-y][idx]=='X')DrawPointBmp(FrameBuffer,i,j,0);
-			idx++;			
+			idx++;
 		}
 	}
 
@@ -301,11 +301,11 @@ void updateInput(){
          send_libretro_key_up(keys_to_poll[i]);
       }
 
-   if ((input_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_F12) || 
+   if ((input_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_F12) ||
       input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2) ||
       input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_MIDDLE)) && menukey==0){
 
-      menukey=1; 
+      menukey=1;
 
       if (menuvram == NULL) {
          memcpy(GuiBuffer,FrameBuffer,scrnsurf.width*scrnsurf.height*2);
@@ -318,7 +318,7 @@ void updateInput(){
          scrndraw_redraw();
          menu_active=0;
       }
-   } else if ( !(input_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_F12) || 
+   } else if ( !(input_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_F12) ||
       input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2) ||
       input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_MIDDLE)) && menukey==1)
       menukey=0;
@@ -367,7 +367,7 @@ void updateInput(){
 
    if(mbR==0 && mouse_r)
    {
-      mbR=1;		
+      mbR=1;
       if(menuvram == NULL)
       {
          mousemng_buttonevent(MOUSEMNG_RIGHTDOWN);
@@ -430,7 +430,7 @@ int getmediatype(const char* filename){
    strcpy(workram,filename);
    lowerstring(workram);
    const char* extension = workram + strlen(workram) - 4;
-   
+
    if(strcasecmp(extension,".d88") == 0){
       return MEDIA_TYPE_DISK;
    }
@@ -533,7 +533,7 @@ int getmediatype(const char* filename){
    else if(strcasecmp(extension,".nrg") == 0){
       return MEDIA_TYPE_CD;
    }
-   
+
    return MEDIA_TYPE_OTHER;
 }
 /* end media support */
@@ -651,10 +651,10 @@ void attachdiskswapinterface(){
    dskcb.get_image_index = getdskindex;
    dskcb.get_num_images  = getnumimages;
    dskcb.add_image_index = addimageindex;
-   
+
    //this is the only real function,it will swap out the disk
    dskcb.replace_image_index = replacedsk;
-   
+
    environ_cb(RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE,&dskcb);
 }
 /* end media swap support */
@@ -663,9 +663,9 @@ void retro_set_environment(retro_environment_t cb)
 {
    struct retro_log_callback logging;
    BOOL allow_no_game = true;
-   
+
    environ_cb = cb;
-   
+
    //bool no_rom = !LR_REQUIRESROM;
    //environ_cb(RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME, &no_rom);
 
@@ -695,7 +695,7 @@ void retro_set_environment(retro_environment_t cb)
       log_cb = logging.log;
    else
       log_cb = NULL;
-   
+
    cb(RETRO_ENVIRONMENT_SET_VARIABLES, variables);
 }
 
@@ -920,7 +920,7 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
 void retro_init (void)
 {
    enum retro_pixel_format rgb565;
-   
+
    scrnsurf.width = 640;
    scrnsurf.height = 400;
 
@@ -1024,21 +1024,21 @@ bool retro_load_game(const struct retro_game_info *game)
    bool load_floppy=false;
    bool worked = environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &syspath);
    if(!worked)abort();
-   
+
    realpath(syspath, np2path);
 
 #ifdef _WIN32
    strcat(np2path, "\\np2");
-#else 
+#else
    strcat(np2path, "/np2");
 #endif
 
    sprintf(tmppath,"%s%c",np2path,G_DIR_SEPARATOR);
 
    np2cfg.delayms = 0;
-   
+
    sprintf(np2cfg.fontfile,"%s%cfont.bmp",np2path,G_DIR_SEPARATOR);
-  
+
    sprintf(np2cfg.biospath,"%s%c",np2path,G_DIR_SEPARATOR);
 
    if(game != NULL)
@@ -1068,6 +1068,6 @@ void retro_set_controller_port_device(unsigned port, unsigned device)
 }
 
 unsigned retro_get_region (void)
-{ 
+{
    return RETRO_REGION_NTSC;
 }

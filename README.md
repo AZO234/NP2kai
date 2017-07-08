@@ -62,8 +62,8 @@ BIOS files locate in "np2" directory at BIOS directory (configured by RetroArch)
 Configure file (np2.cfg) is made in "np2" BIOS directory.
 
 NP2 menu is opened when F12 key or mouse middle button.
-Mouse is cuptured (hidden/show toggle) by F11 key.
 NP2 menu can FDD/HDD swap.
+Mouse is cuptured (hidden/show toggle) by F11 key.
 
 
 Don't build other port. Maybe link errors occur.
@@ -84,14 +84,14 @@ BIOS files
 Setting to RetroPie
 ---
 
-１．locate BIOS files
-
-BIOS files locate in "/home/pi/RetroPie/BIOS/np2" directory.
-
-２．locate np2_libretro.so file
+１．locate np2_libretro.so file
 
     $ sudo mkdir /opt/retropie/libretrocores/lr-np2
-    $ sudo cp np2_libretro.soone /opt/retropie/libretrocores/lr-np2/
+    $ sudo cp np2_libretro.so /opt/retropie/libretrocores/lr-np2/
+
+２．locate BIOS files
+
+BIOS files locate in "/home/pi/RetroPie/roms/pc98/np2" directory.
 
 ２．Add "carbon-mod"
 
