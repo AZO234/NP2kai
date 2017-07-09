@@ -84,7 +84,11 @@ BIOS files
 Setting to RetroPie
 ---
 
-１．locate libretro & SDL2 port files.
+１．Install Japanese font.
+
+    $ sudo apt-get install fonts-horai-umefont
+
+２．locate libretro & SDL2 port files.
 
     $ sudo mkdir /opt/retropie/libretrocores/lr-np2
     $ sudo cp np2_libretro.so /opt/retropie/libretrocores/lr-np2/
@@ -93,17 +97,22 @@ Setting to RetroPie
     $ sudo touch /opt/retropie/emulators/np2/np2.cfg
     $ sudo chmod 666 /opt/retropie/emulators/np2/np2.cfg
 
-２．locate BIOS files.
+３．locate BIOS files.
 
 BIOS files locate in "&tilde;/RetroPie/roms/pc98/np2/" directory.  
 and "/opt/retropie/emulators/np2/" too.
 
-３．Add "carbon-mod". (Japanese nize)
+４．Make shortcut to Japanese font.
+
+    $ ln -s /usr/share/fonts/truetype/horai-umefont/ume-ugo4.ttf &tilde;/RetroPie/roms/pc98/np2/default.ttf
+    $ sudo ln -s /usr/share/fonts/truetype/horai-umefont/ume-ugo4.ttf /opt/retropie/emulators/np2/default.ttf
+
+５．Add "carbon-mod". (Japanese nize)
 
     $ git clone https://github.com/eagle0wl/es-theme-carbon.git
     $ sudo cp -r ./es-theme-carbon /etc/emulationstation/themes/carbon-mod
 
-４．Add to "/etc/emulationstation/es_systems.cfg" writing.
+６．Add to "/etc/emulationstation/es_systems.cfg" writing.
 
     $ sudo nano /etc/emulationstation/es_systems.cfg
 
@@ -122,7 +131,7 @@ and "/opt/retropie/emulators/np2/" too.
       <system>
     ...
 
-５．Add to "/opt/retropie/configs/pc98/emulators.cfg" writing.
+７．Add to "/opt/retropie/configs/pc98/emulators.cfg" writing.
 
     $ cd /opt/retropie/configs
     $ sudo mkdir pc98
@@ -133,7 +142,7 @@ and "/opt/retropie/emulators/np2/" too.
     lr-np2="/opt/retropie/emulators/retroarch/bin/retroarch -L /opt/retropie/libretrocores/lr-np2/np2_libretro.so --config /opt/retropie/configs/pc98/retroarch.cfg %ROM%"
     default="lr-np2"
 
-６．Launch ES and set "CARBON-MOD" to "THEME-SET".
+８．Launch ES and set "CARBON-MOD" to "THEME-SET".
 
 Release
 ---
