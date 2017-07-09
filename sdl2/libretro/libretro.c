@@ -1039,7 +1039,6 @@ bool retro_load_game(const struct retro_game_info *game)
 
    sprintf(np2cfg.fontfile,"%s%cfont.bmp",np2path,G_DIR_SEPARATOR);
    sprintf(np2cfg.biospath,"%s%c",np2path,G_DIR_SEPARATOR);
-   sprintf(np2cfg.biospath,"%s%cdefault.ttf",np2path,G_DIR_SEPARATOR);
 
    if(game != NULL)
       strcpy(RPATH,game->path);
