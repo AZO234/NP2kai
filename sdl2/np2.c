@@ -184,9 +184,9 @@ int np2_main(int argc, char *argv[]) {
 		file_setcd(np2cfg.biospath);
 		tmppath = dirname(np2cfg.biospath);
 		strcpy(np2cfg.biospath, tmppath);
-		sprintf(tmppath, "%s/default.ttf", np2cfg.biospath);
-		fontmng_setdeffontname(tmppath);
 	}
+	sprintf(tmppath, "%s/default.ttf", np2cfg.biospath);
+	fontmng_setdeffontname(tmppath);
 	
 #if defined(SUPPORT_IDEIO) || defined(SUPPORT_SATA) || defined(SUPPORT_SCSI)
 	drvhddSASI = drvhddSCSI = 0;
