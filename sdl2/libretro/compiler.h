@@ -26,6 +26,7 @@
 #define	OSLINEBREAK_CRLF
 #define  RESOURCE_US
 #ifdef __WIN32__
+#include <windows.h>
 #define	sigjmp_buf				jmp_buf
 #define	sigsetjmp(env, mask)	setjmp(env)
 #define	siglongjmp(env, val)	longjmp(env, val)

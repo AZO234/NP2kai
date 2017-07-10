@@ -181,7 +181,11 @@ int np2_main(int argc, char *argv[]) {
 	initload();
 
 	if(np2cfg.biospath[0] == '\0') {
+#if defined(__WIN32__)
+		GetModuleFileName(NULL, np2cfg.biospath, MAX_PATH);
+#else	/* __WIN32__ */
 		readlink("/proc/self/exe", np2cfg.biospath, sizeof(np2cfg.biospath) - 1);
+#endif	/* __WIN32__ */
 		file_setcd(np2cfg.biospath);
 		tmppath = dirname(np2cfg.biospath);
 		strcpy(np2cfg.biospath, tmppath);

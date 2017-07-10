@@ -1025,7 +1025,7 @@ bool retro_load_game(const struct retro_game_info *game)
    bool worked = environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &syspath);
    if(!worked)abort();
 
-   realpath(syspath, np2path);
+   strcpy(np2path, syspath);
 
 #ifdef _WIN32
    strcat(np2path, "\\np2");

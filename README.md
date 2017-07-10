@@ -48,7 +48,7 @@ BIOS files locate in same directory executable file.
 NP2 menu is opened when F11 key or mouse middle button.  
 NP2 menu can FDD/HDD swap.
 
-Build libretro port (RetroArch)
+Build libretro port (Linux)
 ---
 
 １． Build.  
@@ -57,6 +57,23 @@ Build libretro port (RetroArch)
 	$ make -j4
 
 ２． 'np2_libretro.so' binary is outputed in NP2kai/sdl2  
+
+BIOS files locate in "np2" directory at BIOS directory (configured by RetroArch).  
+Configure file (np2.cfg) is made in "np2" BIOS directory.
+
+NP2 menu is opened when F12 key or mouse middle button.  
+NP2 menu can FDD/HDD swap.  
+Mouse is cuptured (hidden/show toggle) by F11 key.
+
+Build libretro port (Windows)
+---
+
+１． Build by MinGW.  
+
+	$ cd NP2kai/sdl2
+	$ make -j4
+
+２． 'np2_libretro.dll' binary is outputed in NP2kai/sdl2  
 
 BIOS files locate in "np2" directory at BIOS directory (configured by RetroArch).  
 Configure file (np2.cfg) is made in "np2" BIOS directory.

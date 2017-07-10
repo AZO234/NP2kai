@@ -12,6 +12,7 @@
 
 	_SXSIDEV	sxsi_dev[SASIHDD_MAX + SCSIHDD_MAX];
 
+#if !defined(__WIN32__)
 unsigned GetTickCount()
 {
         struct timeval tv;
@@ -20,6 +21,7 @@ unsigned GetTickCount()
 
         return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 }
+#endif	/* __WIN32__ */
 
 // ----
 
