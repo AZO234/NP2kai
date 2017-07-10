@@ -1,6 +1,5 @@
 #include "compiler.h"
 #include "soundmng.h"
-#include <algorithm>
 #include "parts.h"
 #include "sound.h"
 #if defined(VERMOUTH_LIB)
@@ -50,7 +49,7 @@ static void sound_play_cb(void *userdata, UINT8 *stream, int len) {
 	SINT16		*dst;
 const SINT32	*src;
 
-	length = (std::min)(len, (int)(soundmng.samples * 2 * sizeof(SINT16)));
+	length = min(len, (int)(soundmng.samples * 2 * sizeof(SINT16)));
 #if defined(__LIBRETRO__)
 	dst = soundbuf;//soundmng.buf[soundmng.nsndbuf];
 #else	/* __LIBRETRO__ */

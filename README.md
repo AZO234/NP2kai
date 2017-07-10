@@ -1,6 +1,6 @@
 Neko Project II 0.86 kai rev.6
 ===
-Jul 9, 2017  
+Jul 11, 2017  
 
 Build SDL2 port
 ---
@@ -68,7 +68,9 @@ Mouse is cuptured (hidden/show toggle) by F11 key.
 Build libretro port (Windows)
 ---
 
-１． Build by MinGW.  
+１． Build by MSYS2 x86_64. (Reference follow URL)  
+
+https://bot.libretro.com/docs/compilation/windows/
 
 	$ cd NP2kai\sdl2
 	$ make -j4
