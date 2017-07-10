@@ -387,7 +387,11 @@ const char	*ret;
 
 	ret = path;
 	while((csize = milstr_charsize(path)) != 0) {
+#if defined(_WIN32)
+		if ((csize == 1) && (*path == '\\')) {
+#else	/* _WIN32 */
 		if ((csize == 1) && (*path == '/')) {
+#endif	/* _WIN32 */
 			ret = path + 1;
 		}
 		path += csize;
