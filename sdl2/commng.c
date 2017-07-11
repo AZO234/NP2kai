@@ -53,9 +53,9 @@ void
 commng_initialize(void)
 {
 
-#if !defined(__WIN32__)
+#if !defined(_WIN32)
 	cmmidi_initailize();
-#endif	/* __WIN32__ */
+#endif	/* _WIN32 */
 }
 
 COMMNG
@@ -97,17 +97,17 @@ commng_create(UINT device)
 	if (cfg) {
 		if ((cfg->port >= COMPORT_COM1)
 		 && (cfg->port <= COMPORT_COM4)) {
-#if !defined(__WIN32__)
+#if !defined(_WIN32)
 		 	ret = cmserial_create(cfg->port - COMPORT_COM1 + 1, cfg->param, cfg->speed);
-#endif	/* __WIN32__ */
+#endif	/* _WIN32 */
 		} else if (cfg->port == COMPORT_MIDI) {
-#if !defined(__WIN32__)
+#if !defined(_WIN32)
 			ret = cmmidi_create(cfg->mout, cfg->min, cfg->mdl);
 			if (ret) {
 				(*ret->msg)(ret, COMMSG_MIMPIDEFFILE, (INTPTR)cfg->def);
 				(*ret->msg)(ret, COMMSG_MIMPIDEFEN, (INTPTR)cfg->def_en);
 			}
-#endif	/* __WIN32__ */
+#endif	/* _WIN32 */
 		}
 	}
 	if (ret)

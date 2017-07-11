@@ -610,7 +610,7 @@ static const INITBL iniitem[] = {
 	{"mpu98mdl", INITYPE_STR,	np2oscfg.mpu.mdl,	64},
 	{"mpu98def", INITYPE_STR,	np2oscfg.mpu.def,	MAX_PATH},
 
-#if defined(__WIN32__)
+#if defined(_WIN32)
 	{"com1port", INIMAX_UINT8,	&np2oscfg.com[0].port,	COMPORT_MIDI},
 	{"com1para", INITYPE_UINT8,	&np2oscfg.com[0].param,	0},
 	{"com1_bps", INITYPE_UINT32,	&np2oscfg.com[0].speed,	0},
@@ -631,7 +631,7 @@ static const INITBL iniitem[] = {
 	{"com3mmap", INITYPE_STR,	np2oscfg.com[2].mout,	MAX_PATH},
 	{"com3mmdl", INITYPE_STR,	np2oscfg.com[2].mdl,	64},
 	{"com3mdef", INITYPE_STR,	np2oscfg.com[2].def,	MAX_PATH},
-#endif	/* __WIN32__ */
+#endif	/* _WIN32 */
 
 #if defined(SUPPORT_RESUME)
 	{"e_resume", INITYPE_BOOL,	&np2oscfg.resume,	0},
@@ -641,11 +641,11 @@ static const INITBL iniitem[] = {
 #endif
 
 	{"sounddrv", INITYPE_SNDDRV,	&np2oscfg.snddrv,	0},
-#if defined(__WIN32__)
+#if defined(_WIN32)
 	{"MIDIOUTd", INITYPE_STR,	&np2oscfg.MIDIDEV[0],	MAX_PATH},
 	{"MIDIIN_d", INITYPE_STR,	&np2oscfg.MIDIDEV[1],	MAX_PATH},
 	{"MIDIWAIT", INITYPE_UINT32,	&np2oscfg.MIDIWAIT,	0},
-#endif	/* __WIN32__ */
+#endif	/* _WIN32 */
 
 	{"s_NOWAIT", INITYPE_BOOL,		&np2oscfg.NOWAIT,		0},
 	{"SkpFrame", INITYPE_UINT8,		&np2oscfg.DRAW_SKIP,	0},
