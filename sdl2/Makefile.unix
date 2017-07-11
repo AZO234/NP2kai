@@ -24,6 +24,8 @@ include Makefile.common
 INCFLAGS += 	-I$(NP2_PATH)/i286c \
 		-I$(NP2_PATH)/sdl2/unix
 SOURCES_C += 	$(wildcard $(NP2_PATH)/i286c/*.c) \
+		$(NP2_PATH)/sdl2/cmmidi.c \
+		$(NP2_PATH)/sdl2/cmserial.c \
 		$(NP2_PATH)/sdl2/unix/main.c
 
 OBJECTS  = $(SOURCES_CXX:.cpp=.o) $(SOURCES_C:.c=.o)
