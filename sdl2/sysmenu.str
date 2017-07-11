@@ -125,13 +125,13 @@ static const char str_about[] = "About...";
 static const MSYSITEM s_emu[] = {
 		{str_reset,			NULL,		MID_RESET,			0},
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
-#if definded(__LIBRETRO__)
+#if defined(__LIBRETRO__)
+		{str_newdisk,		NULL,		MID_NEWDISK,		MENU_GRAY},
+#else	/* __LIBRETRO__ */
 		{str_config,		NULL,		MID_CONFIG,			0},
 		{str_newdisk,		NULL,		MID_NEWDISK,		MENU_GRAY},
 		{str_font,			NULL,		MID_CHANGEFONT,		MENU_GRAY},
-#else	/* __LIBRETRO__ */
-		{str_newdisk,		NULL,		MID_NEWDISK,		MENU_GRAY},
-#endiflse	/* __LIBRETRO__ */
+#endif	/* __LIBRETRO__ */
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_exit,			NULL,		MID_EXIT,			MENU_DELETED}};
 
