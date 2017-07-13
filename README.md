@@ -103,7 +103,7 @@ BIOS files
 Setting to RetroPie
 ---
 
-１．Install Japanese font.
+１．Install Japanese font. (SDL2 port only)
 
     $ sudo apt-get install fonts-horai-umefont
 
@@ -121,9 +121,8 @@ Setting to RetroPie
 BIOS files locate in "&tilde;/RetroPie/roms/pc98/np2/" directory.  
 and "/opt/retropie/emulators/np2/" too.
 
-４．Make shortcut to Japanese font.
+４．Make shortcut to Japanese font. (SDL2 port only)
 
-    $ ln -s /usr/share/fonts/truetype/horai-umefont/ume-ugo4.ttf &tilde;/RetroPie/roms/pc98/np2/default.ttf
     $ sudo ln -s /usr/share/fonts/truetype/horai-umefont/ume-ugo4.ttf /opt/retropie/emulators/np2/default.ttf
 
 ５．Add "carbon-mod". (Japanese nize)

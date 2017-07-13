@@ -106,7 +106,7 @@ UINT soundmng_create(UINT rate, UINT ms) {
 		goto smcre_err1;
 	}
 	soundmng.nsndbuf = 0;
-	soundmng.samples = samples = 1024;
+	soundmng.samples = samples = SNDSZ;
 
 	soundmng.opened = TRUE;
    
