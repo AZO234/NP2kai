@@ -44,6 +44,7 @@ static void sys_cmd(MENUID id) {
 											(char *)mstr_cfg, dlgcfg_cmd);
 			break;
 
+#if defined(SUPPORT_STATSAVE)
 		case MID_SAVESTAT0:
 			flagsave("s00");
 			break;
@@ -123,6 +124,7 @@ static void sys_cmd(MENUID id) {
 		case MID_LOADSTAT9:
 			flagload("s09", "Status Load", TRUE);
 			break;
+#endif	/* SUPPORT_STATSAVE */
 
 		case MID_FDD1OPEN:
 			filesel_fdd(0);
@@ -587,9 +589,11 @@ BRESULT sysmenu_create(void) {
 		goto smcre_err;
 	}
 	menuicon_regist(MICON_NP2, &np2icon);
+#if defined(SUPPORT_STATSAVE)
 	if(np2cfg.statsave) {
 		s_main[1].child = s_statee;
 	}
+#endif	/* SUPPORT_STATSAVE */
 	if(np2cfg.fddrive3) {
 		if(np2cfg.fddrive4) {
 			s_main[2].child = s_fddf;

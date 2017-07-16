@@ -5,7 +5,7 @@
 
 #include "compiler.h"
 #include "tty.h"
-#include <algorithm>
+//#include <algorithm>
 #include <setupapi.h>
 #include <tchar.h>
 
@@ -107,7 +107,7 @@ ssize_t CTty::Read(LPVOID lpcvData, ssize_t nDataSize)
 		return -1;
 	}
 
-	DWORD dwReadLength = (std::min)(stat.cbInQue, static_cast<DWORD>(nDataSize));
+	DWORD dwReadLength = min(stat.cbInQue, static_cast<DWORD>(nDataSize));
 	if (dwReadLength == 0)
 	{
 		return 0;

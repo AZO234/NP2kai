@@ -96,7 +96,7 @@ LPTSTR CUsbDev::GetDevicePath(const GUID& InterfaceGuid, LPTSTR lpDevicePath, in
 	if (hDeviceInfo == NULL)
 	{
 		printf("error device\n");
-		return false;
+		return NULL;
 	}
 
 	LPTSTR lpRet = NULL;
