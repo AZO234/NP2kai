@@ -58,15 +58,6 @@ Build libretro port (Linux)
 
 ２． 'np2_libretro.so' binary is outputed in NP2kai/sdl2  
 
-BIOS files locate in "np2" directory at BIOS directory (configured by RetroArch).  
-Configure file (np2.cfg) is made in "np2" BIOS directory.
-
-NP2 menu is opened when F12 key or mouse middle button or joypad L2 button.  
-NP2 menu can FDD/HDD swap.  
-Mouse is cuptured (hidden/show toggle) by F11 key.
-Mouse cursor is able to move with joypad when JoyMouse mode.  
-Switch JoyMouse mode with joypad R2 button.  
-
 Build libretro port (Windows)
 ---
 
@@ -79,18 +70,21 @@ https://bot.libretro.com/docs/compilation/windows/
 
 ２． 'np2_libretro.dll' binary is outputed in NP2kai\sdl2  
 
-BIOS files locate in "system\np2" directory.  
-Configure file (np2.cfg) is made in "system\np2" BIOS directory.
+about libretro port
+---
+BIOS files locate in "np2" directory at BIOS directory (configured by RetroArch).  
+Configure file (np2.cfg) is made in "np2" BIOS directory.
 
 NP2 menu is opened when F12 key or mouse middle button or joypad L2 button.  
 NP2 menu can FDD/HDD swap.  
+
 Mouse is cuptured (hidden/show toggle) by F11 key.
+
 Mouse cursor is able to move with joypad when JoyMouse mode.  
 Switch JoyMouse mode with joypad R2 button.  
-
-
-Don't build other port. Maybe link errors occur.
-
+D-UP/DOWN/LEFT/RIGHT: mouse move
+B button: left click
+A button: right click
 
 BIOS files
 ---
