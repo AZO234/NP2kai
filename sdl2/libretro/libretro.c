@@ -283,6 +283,10 @@ static int lastx=320,lasty=240;
 static menukey=0;
 static menu_active=0;
 static int mbL = 0, mbR = 0;
+static joymousekey=0;
+static int joymouse = 0;
+static int joymousemovebtn = 0;
+static double joymouseaxel = 1.0;
 
 void updateInput(){
 
@@ -323,67 +327,180 @@ void updateInput(){
       input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_MIDDLE)) && menukey==1)
       menukey=0;
 
-   int mouse_x = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
-   int mouse_y = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
-
-   if (menuvram == NULL)
-      mousemng_sync(mouse_x,mouse_y);
-
-   mposx+=mouse_x;if(mposx<0)mposx=0;if(mposx>=scrnsurf.width)mposx=scrnsurf.width-1;
-   mposy+=mouse_y;if(mposy<0)mposy=0;if(mposy>=scrnsurf.height)mposy=scrnsurf.height-1;
-
-   if(lastx!=mposx || lasty!=mposy)
-      if (menuvram != NULL)
-         menubase_moving(mposx, mposy, 0);
-
-   int mouse_l = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_LEFT);
-   int mouse_r = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_RIGHT);
-
-   if(mbL==0 && mouse_l)
-   {
-      mbL=1;
-      if(menuvram == NULL)
-      {
-         mousemng_buttonevent(MOUSEMNG_LEFTDOWN);
-      }
+   if (input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R2) && joymousekey==0) {
+      joymousekey=1;
+      if(joymouse == 0)
+         joymouse = 1;
       else
-      {
-         menubase_moving(mposx, mposy, 1);
-      }
-   }
-   else if(mbL==1 && !mouse_l)
-   {
-      mbL=0;
-      if(menuvram == NULL)
-      {
-         mousemng_buttonevent(MOUSEMNG_LEFTUP);
-      }
-      else
-      {
-         menubase_moving(mposx, mposy, 2);
-         scrndraw_redraw();
-      }
+         joymouse = 0;
+   } else if (!input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2) && joymousekey==1) {
+      joymousekey=0;
    }
 
-   if(mbR==0 && mouse_r)
-   {
-      mbR=1;
-      if(menuvram == NULL)
+   if (joymouse==0) {
+      int mouse_x = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
+      int mouse_y = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
+
+      if (menuvram == NULL)
+         mousemng_sync(mouse_x,mouse_y);
+
+      mposx+=mouse_x;if(mposx<0)mposx=0;if(mposx>=scrnsurf.width)mposx=scrnsurf.width-1;
+      mposy+=mouse_y;if(mposy<0)mposy=0;if(mposy>=scrnsurf.height)mposy=scrnsurf.height-1;
+
+      if(lastx!=mposx || lasty!=mposy)
+         if (menuvram != NULL)
+            menubase_moving(mposx, mposy, 0);
+
+      int mouse_l = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_LEFT);
+      int mouse_r = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_RIGHT);
+
+      if(mbL==0 && mouse_l)
       {
-         mousemng_buttonevent(MOUSEMNG_RIGHTDOWN);
+         mbL=1;
+         if(menuvram == NULL)
+         {
+            mousemng_buttonevent(MOUSEMNG_LEFTDOWN);
+         }
+         else
+         {
+            menubase_moving(mposx, mposy, 1);
+         }
       }
-   }
-   else if(mbR==1 && !mouse_r)
-   {
-      mbR=0;
-      if(menuvram == NULL)
+      else if(mbL==1 && !mouse_l)
       {
-         mousemng_buttonevent(MOUSEMNG_RIGHTUP);
+         mbL=0;
+         if(menuvram == NULL)
+         {
+            mousemng_buttonevent(MOUSEMNG_LEFTUP);
+         }
+         else
+         {
+            menubase_moving(mposx, mposy, 2);
+            scrndraw_redraw();
+         }
+      }
+
+      if(mbR==0 && mouse_r)
+      {
+         mbR=1;
+         if(menuvram == NULL)
+         {
+            mousemng_buttonevent(MOUSEMNG_RIGHTDOWN);
+         }
+      }
+      else if(mbR==1 && !mouse_r)
+      {
+         mbR=0;
+         if(menuvram == NULL)
+         {
+            mousemng_buttonevent(MOUSEMNG_RIGHTUP);
+         }
+      }
+   } else {
+      int mouse_x = 0;
+      int mouse_y = 0;
+
+      if((input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP) ||
+         input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN) ||
+         input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT) ||
+         input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT)) && joymousemovebtn==0)
+      {
+         joymousemovebtn = 1;
+         joymouseaxel = 1.0;
+      } else if(!(input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP) ||
+         input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN) ||
+         input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT) ||
+         input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT)) && joymousemovebtn==1)
+      {
+         joymousemovebtn = 0;
+      }
+      joymouseaxel += 0.1;
+
+      if(input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP) && joymousemovebtn == 1) {
+         if(input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT)) {
+            mouse_x = 1.0 * -joymouseaxel;
+            mouse_y = 1.0 * -joymouseaxel;
+         } else if(input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT)) {
+            mouse_x = 1.0 * joymouseaxel;
+            mouse_y = 1.0 * -joymouseaxel;
+         } else {
+            mouse_y = 1.0 * -joymouseaxel / 1.414;
+         }
+      } else if(input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN) && joymousemovebtn == 1) {
+         if(input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT)) {
+            mouse_x = 1.0 * -joymouseaxel;
+            mouse_y = 1.0 * joymouseaxel;
+         } else if(input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT)) {
+            mouse_x = 1.0 * joymouseaxel;
+            mouse_y = 1.0 * joymouseaxel;
+         } else {
+            mouse_y = 1.0 * joymouseaxel / 1.414;
+         }
+      } else {
+         if(input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT) && joymousemovebtn == 1)
+            mouse_x = 1.0 * -joymouseaxel / 1.414;
+         else if(input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT) && joymousemovebtn == 1)
+            mouse_x = 1.0 * joymouseaxel / 1.414;
+      }
+
+      if (menuvram == NULL)
+         mousemng_sync(mouse_x,mouse_y);
+
+      mposx+=mouse_x;if(mposx<0)mposx=0;if(mposx>=scrnsurf.width)mposx=scrnsurf.width-1;
+      mposy+=mouse_y;if(mposy<0)mposy=0;if(mposy>=scrnsurf.height)mposy=scrnsurf.height-1;
+
+      if(lastx!=mposx || lasty!=mposy)
+         if (menuvram != NULL)
+            menubase_moving(mposx, mposy, 0);
+
+      int mouse_l = input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B);
+      int mouse_r = input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A);
+
+      if(mbL==0 && mouse_l)
+      {
+         mbL=1;
+         if(menuvram == NULL)
+         {
+            mousemng_buttonevent(MOUSEMNG_LEFTDOWN);
+         }
+         else
+         {
+            menubase_moving(mposx, mposy, 1);
+         }
+      }
+      else if(mbL==1 && !mouse_l)
+      {
+         mbL=0;
+         if(menuvram == NULL)
+         {
+            mousemng_buttonevent(MOUSEMNG_LEFTUP);
+         }
+         else
+         {
+            menubase_moving(mposx, mposy, 2);
+            scrndraw_redraw();
+         }
+      }
+
+      if(mbR==0 && mouse_r)
+      {
+         mbR=1;
+         if(menuvram == NULL)
+         {
+            mousemng_buttonevent(MOUSEMNG_RIGHTDOWN);
+         }
+      }
+      else if(mbR==1 && !mouse_r)
+      {
+         mbR=0;
+         if(menuvram == NULL)
+         {
+            mousemng_buttonevent(MOUSEMNG_RIGHTUP);
+         }
       }
    }
 
    lastx=mposx;lasty=mposy;
-
 }
 
 //dummy functions
