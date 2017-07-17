@@ -11,7 +11,11 @@
 #include <dirent.h>
 #endif
 
+#if defined(_WIN32)
+static	char	curpath[MAX_PATH] = ".\\";
+#else	/* _WIN32 */
 static	char	curpath[MAX_PATH] = "./";
+#endif	/* _WIN32 */
 static	char	*curfilep = curpath + 2;
 
 void
@@ -373,9 +377,15 @@ void file_catname(char *path, const char *name, int maxlen) {
 	}
 	file_cpyname(path, name, maxlen);
 	while((csize = milstr_charsize(path)) != 0) {
+#if defined(_WIN32)
 		if ((csize == 1) && (*path == '\\')) {
+			*path = '\\';
+		}
+#else	/* _WIN32 */
+		if ((csize == 1) && (*path == '/')) {
 			*path = '/';
 		}
+#endif	/* _WIN32 */
 		path += csize;
 	}
 }
@@ -450,7 +460,11 @@ void file_cutseparator(char *path) {
 
 	pos = (int)strlen(path) - 1;
 	if ((pos > 0) &&							// 2文字以上でー
+#if defined(_WIN32)
+		(path[pos] == '\\') &&					// ケツが \ でー
+#else	/* _WIN32 */
 		(path[pos] == '/') &&					// ケツが \ でー
+#endif	/* _WIN32 */
 		((pos != 1) || (path[0] != '.'))) {		// './' ではなかったら
 		path[pos] = '\0';
 	}
@@ -461,8 +475,13 @@ void file_setseparator(char *path, int maxlen) {
 	int		pos;
 
 	pos = (int)strlen(path);
+#if defined(_WIN32)
+	if ((pos) && (path[pos-1] != '\\') && ((pos + 2) < maxlen)) {
+		path[pos++] = '\\';
+#else	/* _WIN32 */
 	if ((pos) && (path[pos-1] != '/') && ((pos + 2) < maxlen)) {
 		path[pos++] = '/';
+#endif	/* _WIN32 */
 		path[pos] = '\0';
 	}
 }
