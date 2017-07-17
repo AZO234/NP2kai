@@ -451,8 +451,8 @@ void updateInput(){
          if (menuvram != NULL)
             menubase_moving(mposx, mposy, 0);
 
-      int mouse_l = input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A);
-      int mouse_r = input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B);
+      int mouse_l = input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B);
+      int mouse_r = input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A);
 
       if(mbL==0 && mouse_l)
       {
@@ -801,7 +801,7 @@ void retro_set_environment(retro_environment_t cb)
       { "np2_Seek_Snd" , "Floppy Seek Sound; OFF|ON" },
       { "np2_Seek_Vol" , "Volume Floppy Seek; 80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76" },
       { "np2_BEEP_vol" , "Volume Beep; 3|0|1|2" },
-      { "np2_joy_mouse" , "Move Mouse With Gamepad; disabled|enabled" },
+      { "np2_joy_mouse" , "Control Mouse With Joypad; disabled|enabled" },
       { NULL, NULL },
    };
 
