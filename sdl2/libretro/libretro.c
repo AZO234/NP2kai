@@ -333,7 +333,7 @@ void updateInput(){
          joymouse = 1;
       else
          joymouse = 0;
-   } else if (!input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2) && joymousekey==1) {
+   } else if (!input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R2) && joymousekey==1) {
       joymousekey=0;
    }
 
