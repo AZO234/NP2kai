@@ -82,8 +82,8 @@ Mouse is cuptured (hidden/show toggle) by F11 key.
 
 Mouse cursor is able to move with joypad when JoyMouse mode.  
 Switch JoyMouse mode with joypad R2 button.  
-D-UP/DOWN/LEFT/RIGHT: mouse move
-B button: left click
+D-UP/DOWN/LEFT/RIGHT: mouse move  
+B button: left click  
 A button: right click
 
 BIOS files
