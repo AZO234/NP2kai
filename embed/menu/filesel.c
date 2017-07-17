@@ -254,6 +254,49 @@ static void dlgsetlist(void) {
 	}
 }
 
+static void dlgsetdrvlist(void) {
+
+	LISTARRAY	flist;
+	FLISTH		flh;
+	FLINFO		fli;
+	BOOL		append;
+	FLIST		fl;
+	ITEMEXPRM	prm;
+	UINT32		drives;
+	UINT		d;
+
+	menudlg_itemreset(DID_FLIST);
+	menudlg_settext(DID_FOLDER, "Drives");
+	listarray_destroy(filesel.flist);
+	flist = listarray_new(sizeof(_FLIST), 64);
+	filesel.flist = flist;
+	filesel.fbase = NULL;
+	drives = GetLogicalDrives();
+	for(d = 0; d < 26; d++) {
+		append = FALSE;
+		if ((drives & (1 << d)) != 0) {
+			append = TRUE;
+		}
+		if (append) {
+			sprintf(fli.path, "%c:", 'A' + d);
+			fli.attr = 0x10;
+			if (fappend(flist, &fli) != SUCCESS) {
+				break;
+			}
+		}
+	}
+	prm.pos = 0;
+	fl = filesel.fbase;
+	while(fl) {
+		menudlg_itemappend(DID_FLIST, NULL);
+		prm.icon = (fl->isdir)?MICON_FOLDER:MICON_FILE;
+		prm.str = fl->name;
+		menudlg_itemsetex(DID_FLIST, &prm);
+		fl = fl->next;
+		prm.pos++;
+	}
+}
+
 static void dlginit(void) {
 
 	menudlg_appends(res_fs, NELEMENTS(res_fs));
@@ -322,7 +365,14 @@ static int dlgcmd(int msg, MENUID id, long param) {
 				case DID_PARENT:
 					file_cutname(filesel.path);
 					file_cutseparator(filesel.path);
+#if defined(_WIN32)
+					if(filesel.path[0] == '\0')
+						dlgsetdrvlist();
+					else
+						dlgsetlist();
+#else	/* _WIN32 */
 					dlgsetlist();
+#endif	/* _WIN32 */
 					menudlg_settext(DID_FILE, NULL);
 					break;
 
