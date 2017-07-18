@@ -1,6 +1,6 @@
 Neko Project II 0.86 kai rev.6
 ===
-Jul 17, 2017  
+Jul 18, 2017  
 
 Build SDL2 port
 ---
@@ -162,16 +162,17 @@ and "/opt/retropie/emulators/np2/" too.
 
 Release
 ---
+* Jul 18, 2017 (rev.6)
 * Jul 17, 2017
 	- Apply HOSTDRV
-	- [libretro] Add JoyMouse mode (switch with R2)
+	- [libretro] Add JoyMouse mode (switch at config menu)
 * Jul 4, 2017
 	- rename to 'kai'
 * Jun 28, 2017
 	- [libretro] Applicate to libretro port
 * Jun 21, 2017
 	- [X11] Applicate to X11 port
-* Jun 20, 2017 (rev.6)
+* Jun 20, 2017 (rev.6 beta)
 	- [NP21] fix for VGA
 * Jun 19, 2017
 	- [NP21] fix IA-32
