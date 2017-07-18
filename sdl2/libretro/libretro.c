@@ -283,8 +283,7 @@ static int lastx=320,lasty=240;
 static menukey=0;
 static menu_active=0;
 static int mbL = 0, mbR = 0;
-static joymousekey=0;
-static int joymouse = 0;
+static bool joymouse;
 static int joymousemovebtn = 0;
 static double joymouseaxel = 1.0;
 
@@ -327,17 +326,7 @@ void updateInput(){
       input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_MIDDLE)) && menukey==1)
       menukey=0;
 
-   if (input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R2) && joymousekey==0) {
-      joymousekey=1;
-      if(joymouse == 0)
-         joymouse = 1;
-      else
-         joymouse = 0;
-   } else if (!input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R2) && joymousekey==1) {
-      joymousekey=0;
-   }
-
-   if (joymouse==0) {
+   if (!joymouse) {
       int mouse_x = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
       int mouse_y = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
 
@@ -446,8 +435,17 @@ void updateInput(){
       if (menuvram == NULL)
          mousemng_sync(mouse_x,mouse_y);
 
-      mposx+=mouse_x;if(mposx<0)mposx=0;if(mposx>=scrnsurf.width)mposx=scrnsurf.width-1;
-      mposy+=mouse_y;if(mposy<0)mposy=0;if(mposy>=scrnsurf.height)mposy=scrnsurf.height-1;
+      mposx += mouse_x;
+      if(mposx < 0)
+         mposx = 0;
+      if(mposx >= scrnsurf.width)
+         mposx = scrnsurf.width - 1;
+
+      mposy += mouse_y;
+      if(mposy < 0)
+         mposy = 0;
+      if(mposy >= scrnsurf.height)
+         mposy = scrnsurf.height - 1;
 
       if(lastx!=mposx || lasty!=mposy)
          if (menuvram != NULL)
@@ -800,9 +798,10 @@ void retro_set_environment(retro_environment_t cb)
       { "np2_volume_A" , "Volume ADPCM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
       { "np2_volume_P" , "Volume PCM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
       { "np2_volume_R" , "Volume RHYTHM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
-      { "np2_Seek_Snd" , "Floppy Seek Sound; ON|OFF" },
+      { "np2_Seek_Snd" , "Floppy Seek Sound; OFF|ON" },
       { "np2_Seek_Vol" , "Volume Floppy Seek; 80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76" },
       { "np2_BEEP_vol" , "Volume Beep; 3|0|1|2" },
+      { "np2_joy_mouse" , "Control Mouse With Joypad; disabled|enabled" },
       { NULL, NULL },
    };
 
@@ -1007,6 +1006,17 @@ static void update_variables(void)
    {
       np2cfg.BEEP_VOL = atoi(var.value);
       beep_setvol(np2cfg.BEEP_VOL);
+   }
+
+   var.key = "np2_joy_mouse";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "enabled") == 0)
+         joymouse = true;
+      else
+         joymouse = false;
    }
 
    initsave();
