@@ -1,6 +1,6 @@
-Neko Project II 0.86 kai rev.6
+Neko Project II 0.86 kai rev.7a
 ===
-Jul 18, 2017  
+Jul 19, 2017  
 
 Build SDL2 port
 ---
