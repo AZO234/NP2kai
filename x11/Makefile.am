@@ -268,7 +268,7 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/diskimage/fddfile.c \
 		$(real_topsrcdir)/diskimage/img_strres.c \
 		\
-		$(real_topsrcdir)/network/lgy98 \
+		$(real_topsrcdir)/network/lgy98.c \
 		$(real_topsrcdir)/network/net.c
 
 xnp2_SOURCES=	$(COMMON_SOURCES)
