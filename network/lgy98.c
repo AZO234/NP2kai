@@ -1007,8 +1007,8 @@ static void lgy98_recieve_packet(const UINT8 *buf, int size)
 }
 
 void lgy98_reset(const NP2CFG *pConfig){
-	UINT base = 0x00D0;
-	REG8 irq = 6;
+	UINT base = 0x10D0;
+	REG8 irq = 5;
 	
 	lgy98cfg.enabled = 1;//np2cfg.uselgy98;
 
@@ -1032,8 +1032,8 @@ void lgy98_reset(const NP2CFG *pConfig){
 void lgy98_bind(void){
 	int i;
     VLANState *vlan;
-	UINT base = 0x00D0;
-	REG8 irq = 6;
+	UINT base = 0x10D0;
+	REG8 irq = 5;
 	//NICInfo *nd;
 
 	if(!lgy98cfg.enabled) return;
