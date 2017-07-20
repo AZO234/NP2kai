@@ -56,6 +56,8 @@ typedef bool BOOL;
 typedef int8_t		CHAR;
 typedef	signed char		TCHAR;
 #endif
+#define	REG8		UINT8
+#define REG16		UINT16
 
 #ifndef	TRUE
 #define	TRUE	true

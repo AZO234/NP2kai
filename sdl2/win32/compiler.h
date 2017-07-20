@@ -33,6 +33,9 @@ typedef	signed int			SINT;
 typedef	unsigned int		UINT;
 #endif
 
+#define	REG8		UINT8
+#define REG16		UINT16
+
 #ifndef _SSIZE_T_DEFINED
 #define _SSIZE_T_DEFINED
 typedef LONG_PTR ssize_t;

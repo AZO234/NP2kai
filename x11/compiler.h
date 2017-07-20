@@ -217,12 +217,12 @@ G_END_DECLS
 #endif	/* !DEBUG && !NP2_CPU_ARCH_AMD64 */
 #elif defined(arm) || defined (__arm__)
 #define	MEMOPTIMIZE	2
-#define	REG8		UINT
-#define	REG16		UINT
 #define	OPNGENARM
 #else
 #define	MEMOPTIMIZE	1
 #endif
+#define	REG8		UINT8
+#define	REG16		UINT16
 
 #ifndef	FASTCALL
 #define	FASTCALL
