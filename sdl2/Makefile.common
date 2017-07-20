@@ -15,6 +15,7 @@ INCFLAGS := -I$(NP2_PATH) \
 	-I$(NP2_PATH)/generic \
 	-I$(NP2_PATH)/io \
 	-I$(NP2_PATH)/mem \
+	-I$(NP2_PATH)/network \
 	-I$(NP2_PATH)/sound \
 	-I$(NP2_PATH)/sound/vermouth \
 	-I$(NP2_PATH)/trap \
@@ -45,6 +46,7 @@ SOURCES_C := 		$(NP2_PATH)/calendar.c \
 		$(wildcard $(NP2_PATH)/io/*.c) \
 		$(wildcard $(NP2_PATH)/lio/*.c) \
 		$(wildcard $(NP2_PATH)/mem/*.c) \
+		$(wildcard $(NP2_PATH)/network/*.c) \
 		$(NP2_PATH)/sdl2/commng.c \
 		$(NP2_PATH)/sdl2/dosio.c \
 		$(NP2_PATH)/sdl2/fontmng.c \

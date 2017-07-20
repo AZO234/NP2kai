@@ -1,4 +1,4 @@
-#include "compiler.h"
+#include	"compiler.h"
 #include	"strres.h"
 #include	"np2.h"
 #include	"dosio.h"
@@ -25,6 +25,9 @@
 #include	"vramhdl.h"
 #include	"menubase.h"
 #include	"sysmenu.h"
+#if defined(SUPPORT_NET)
+#include	"net.h"
+#endif
 
 
 NP2OSCFG np2oscfg = {
@@ -259,6 +262,9 @@ int np2_main(int argc, char *argv[]) {
 	pccore_init();
 	S98_init();
 
+#if defined(SUPPORT_NET)
+	np2net_init();
+#endif
 #if !defined(__LIBRETRO__)
 	mousemng_hidecursor();
 #endif	/* __LIBRETRO__ */
@@ -417,6 +423,9 @@ int np2_end(){
 #if !defined(__LIBRETRO__)
 	joymng_deinitialize();
 #endif	/* __LIBRETRO__ */
+#if defined(SUPPORT_NET)
+	np2net_shutdown();
+#endif
 	pccore_term();
 	S98_trash();
 	soundmng_deinitialize();

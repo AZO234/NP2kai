@@ -165,6 +165,15 @@ struct tagNP2Config
 	OEMCHAR	biospath[MAX_PATH];
 	OEMCHAR	hdrvroot[MAX_PATH];
 
+#ifdef SUPPORT_NET
+	OEMCHAR	np2nettap[MAX_PATH];
+	UINT8	np2netpmm;
+#endif
+#ifdef SUPPORT_LGY98
+	UINT8	uselgy98;
+	UINT8	lgy98mac[6];
+#endif
+
 	UINT8	winntfix;
 #if defined(SUPPORT_STATSAVE)
 	UINT8	statsave;

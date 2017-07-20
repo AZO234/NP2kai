@@ -7,11 +7,23 @@
 #include	"scsiio.h"
 #include	"pc9861k.h"
 #include	"mpu98ii.h"
+#ifdef SUPPORT_NET
+#include	"net.h"
+#endif
+#ifdef SUPPORT_LGY98
+#include	"lgy98.h"
+#endif
 
 
 static const FNIORESET resetfn[] = {
 #if defined(SUPPORT_IDEIO)
 			ideio_reset,
+#endif
+#if defined(SUPPORT_NET)
+			np2net_reset,
+#endif
+#if defined(SUPPORT_LGY98)
+			lgy98_reset,
 #endif
 #if defined(SUPPORT_SASI)
 			sasiio_reset,
@@ -28,6 +40,12 @@ static const FNIORESET resetfn[] = {
 static const FNIOBIND bindfn[] = {
 #if defined(SUPPORT_IDEIO)
 			ideio_bind,
+#endif
+#if defined(SUPPORT_NET)
+			np2net_bind,
+#endif
+#if defined(SUPPORT_LGY98)
+			lgy98_bind,
 #endif
 #if defined(SUPPORT_SASI)
 			sasiio_bind,

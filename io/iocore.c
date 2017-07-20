@@ -8,6 +8,9 @@
 #include	"ideio.h"
 #include	"cs4231io.h"
 #include	"iocore16.tbl"
+#ifdef SUPPORT_LGY98
+#include	"lgy98.h"
+#endif
 
 
 	_ARTIC		artic;
@@ -560,6 +563,12 @@ void IOOUTCALL iocore_out16(UINT port, REG16 dat) {
 		return;
 	}
 #endif
+#if defined(SUPPORT_LGY98)
+	if (lgy98cfg.enabled && port == lgy98cfg.baseaddr + 0x200) {
+		lgy98_ob200_16(port, dat);
+		return;
+	}
+#endif
 	if ((port & 0xfff1) == 0x04a0) {
 		egc_w16(port, dat);
 		return;
@@ -594,6 +603,11 @@ REG16 IOINPCALL iocore_inp16(UINT port) {
 #if defined(SUPPORT_IDEIO)
 	if (port == 0x0640) {
 		return(ideio_r16(port));
+	}
+#endif
+#if defined(SUPPORT_LGY98)
+	if (lgy98cfg.enabled && port == lgy98cfg.baseaddr + 0x200) {
+		return(lgy98_ib200_16(port));
 	}
 #endif
 	if ((port & 0xfffc) == 0x005c) {

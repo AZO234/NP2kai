@@ -61,6 +61,9 @@
 #include "soundmng.h"
 #include "sysmng.h"
 #include "taskmng.h"
+#if defined(SUPPORT_NET)
+#include "net.h"
+#endif
 
 
 static const char appname[] =
@@ -305,6 +308,9 @@ main(int argc, char *argv[])
 	pccore_init();
 	S98_init();
 
+#if defined(SUPPORT_NET)
+	np2net_init();
+#endif
 	toolkit_widget_show();
 	scrndraw_redraw();
 
@@ -356,6 +362,9 @@ main(int argc, char *argv[])
 	} else {
 		flagdelete(np2resumeext);
 	}
+#endif
+#if defined(SUPPORT_NET)
+	np2net_shutdown();
 #endif
 
 	pccore_term();

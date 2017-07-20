@@ -266,7 +266,10 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/diskimage/fd/fdd_xdf.c \
 		$(real_topsrcdir)/diskimage/cddfile.c \
 		$(real_topsrcdir)/diskimage/fddfile.c \
-		$(real_topsrcdir)/diskimage/img_strres.c
+		$(real_topsrcdir)/diskimage/img_strres.c \
+		\
+		$(real_topsrcdir)/network/lgy98 \
+		$(real_topsrcdir)/network/net.c
 
 xnp2_SOURCES=	$(COMMON_SOURCES)
 
@@ -279,11 +282,12 @@ AM_CPPFLAGS=	-I$(real_topsrcdir) \
 		-I$(real_topsrcdir)/generic \
 		-I$(real_topsrcdir)/io \
 		-I$(real_topsrcdir)/mem \
+		-I$(real_topsrcdir)/network \
 		-I$(real_topsrcdir)/sound \
 		-I$(real_topsrcdir)/vram \
 		$(GTK_CFLAGS) $(SDL_CFLAGS) $(LIBUSB1_CFLAGS) \
 		$(X11_CFLAGS) $(XEXT_CFLAGS) \
-		-DSUPPORT_LARGE_HDD -DSUPPORT_VPCVHD -DSUPPORT_KAI_IMAGES -DHOOK_SYSKEY -DALLOW_MULTIRUN
+		-DSUPPORT_LARGE_HDD -DSUPPORT_VPCVHD -DSUPPORT_KAI_IMAGES -DHOOK_SYSKEY -DALLOW_MULTIRUN -DSUPPORT_NET -DSUPPORT_LGY98
 if BUILD_ALL
 AM_CPPFLAGS+=	-DX11_BUILD_ALL
 endif

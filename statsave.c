@@ -38,6 +38,13 @@
 #include "hostdrv.h"
 #include "calendar.h"
 #include "keystat.h"
+#if defined(SUPPORT_NET)
+#include "net.h"
+#endif
+#if defined(SUPPORT_LGY98)
+#include "lgy98.h"
+#include "lgy98dev.h"
+#endif
 
 #if defined(MACOS)
 #define	CRCONST		str_cr
@@ -1483,6 +1490,14 @@ const SFENTRY	*tblterm;
 	iocore_bind();
 	cbuscore_bind();
 	fmboard_bind();
+
+#if defined(SUPPORT_NET)
+	np2net_reset(&np2cfg);
+	np2net_bind();
+#endif
+#if defined(SUPPORT_LGY98)
+	lgy98_bind();
+#endif
 
 	gdcs.textdisp |= GDCSCRN_EXT;
 	gdcs.textdisp |= GDCSCRN_ALLDRAW2;

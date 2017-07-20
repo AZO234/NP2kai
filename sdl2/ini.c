@@ -598,6 +598,15 @@ static const INITBL iniitem[] = {
 	{"FDDRIVE3", INIRO_BITMAP,	&np2cfg.fddequip,	2},
 	{"FDDRIVE4", INIRO_BITMAP,	&np2cfg.fddequip,	3},
 
+#if defined(SUPPORT_NET)
+	{"NP2NETTAP", INITYPE_STR,	&np2cfg.np2nettap,	0},
+	{"NP2NETPMM", INITYPE_BOOL,	&np2cfg.np2netpmm,	0},
+#endif
+#if defined(SUPPORT_LGY98)
+	{"USELGY98", INITYPE_BOOL,	&np2cfg.uselgy98,	0},
+	{"LGY98MAC", INITYPE_ARGH8,	np2cfg.lgy98mac,	6},
+#endif
+
 	{"keyboard", INIRO_KB,		&np2oscfg.KEYBOARD,	0},
 #if !defined(__LIBRETRO__)
 	{"Joystick", INITYPE_BOOL,	&np2oscfg.JOYPAD1,	0},

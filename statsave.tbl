@@ -142,6 +142,10 @@ static const SFENTRY np2tbl[] = {
 #if defined(SUPPORT_PC9861K)
 	{"PC9861K",		0,	STATFLAG_BIN,	&pc9861k,		sizeof(pc9861k)},
 #endif
+#if defined(SUPPORT_LGY98)
+	{"LGY98",		0,	STATFLAG_BIN,	&lgy98,			sizeof(lgy98)},
+	{"LGY98CFG",	0,	STATFLAG_BIN,	&lgy98cfg,		sizeof(lgy98cfg)},
+#endif
 #if defined(SUPPORT_HOSTDRV)
 	{"HOSTDRV",		0,	STATFLAG_HDRV,	NULL,			0},
 #endif
