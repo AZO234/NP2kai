@@ -92,8 +92,8 @@ typedef	unsigned char	BYTE;
 
 
 // for ARM optimize
-#define	REG8		UINT
-#define REG16		UINT
+#define	REG8		UINT8
+#define REG16		UINT16
 #define	LOW12(a)	((((UINT32)(a)) << 20) >> 20)
 #define	LOW14(a)	((((UINT32)(a)) << 18) >> 18)
 #define	LOW15(a)	((((UINT32)(a)) << 17) >> 17)
