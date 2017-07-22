@@ -604,6 +604,7 @@ static INITBL iniitem[] = {
 	{"USELGY98", INITYPE_BOOL,	&np2cfg.uselgy98,	0},
 	{"LGY98MAC", INITYPE_ARGH8,	np2cfg.lgy98mac,	6},
 #endif
+	{"WINNTFIX", INITYPE_BOOL,	&np2cfg.winntfix,	0},
 
 	{"keyboard", INIRO_KB,		&np2oscfg.KEYBOARD,	0},
 	{"F12_COPY", INITYPE_UINT8,	&np2oscfg.F12KEY,	0},
