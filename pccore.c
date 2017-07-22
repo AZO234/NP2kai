@@ -651,6 +651,7 @@ void pccore_exec(BOOL draw) {
 
 	pcstat.drawframe = (UINT8)draw;
 //	keystat_sync();
+	keystat_sndcad();	/* send Ctrl+Alt+Del */
 	soundmng_sync();
 	mouseif_sync();
 	pal_eventclear();

@@ -6,6 +6,7 @@
 #include	"keystat.h"
 #include	"keystat.tbl"
 #include	"softkbd.h"
+#include	"sysmenu.h"
 
 
 typedef struct {
@@ -600,5 +601,26 @@ void keystat_forcerelease(REG8 data) {
 
 	keycode = cnvnewcode((REG8)(data & 0x7f));
 	keystat_releasekey(keycode);
+}
+
+/* send Ctrl+Alt+Del */
+int sndcad = 0;
+
+void keystat_sndcad(void) {
+
+	switch(sndcad) {
+	case 1:
+		keystat_senddata(0x73);
+		keystat_senddata(0x74);
+		keystat_senddata(0x39);
+		sndcad = 2;
+		break;
+	case 2:
+		keystat_senddata(0x73 | 0x80);
+		keystat_senddata(0x74 | 0x80);
+		keystat_senddata(0x39 | 0x80);
+		sndcad = 0;
+		break;
+	}
 }
 

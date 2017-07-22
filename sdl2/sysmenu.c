@@ -26,6 +26,8 @@
 #include	"dlgabout.h"
 #include	"vram/scrnsave.h"
 
+extern int sndcad;
+
 static UINT bmpno = 0;
 
 static void sys_cmd(MENUID id) {
@@ -317,6 +319,10 @@ static void sys_cmd(MENUID id) {
 			np2cfg.XSHIFT ^= 4;
 			keystat_forcerelease(0x73);
 			update |= SYS_UPDATECFG;
+			break;
+
+		case MID_SNDCAD:
+			sndcad = 1;
 			break;
 
 		case MID_BEEPOFF:
