@@ -26,6 +26,7 @@
 #define	OSLINEBREAK_CRLF
 #define  RESOURCE_US
 #ifdef _WIN32
+#define _WINDOWS
 #include <windows.h>
 #define	sigjmp_buf				jmp_buf
 #define	sigsetjmp(env, mask)	setjmp(env)

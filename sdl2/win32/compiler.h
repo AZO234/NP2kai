@@ -3,6 +3,8 @@
 #include	<stddef.h>
 #include	<SDL2\SDL.h>
 
+#define _WINDOWS
+
 #define	BYTESEX_LITTLE
 #define	OSLANG_UTF8
 #define	OSLINEBREAK_CRLF
