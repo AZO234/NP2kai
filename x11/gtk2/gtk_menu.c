@@ -196,6 +196,7 @@ static void cb_toolwindow(GtkToggleAction *action, gpointer user_data);
 static void cb_xctrlkey(GtkToggleAction *action, gpointer user_data);
 static void cb_xgrphkey(GtkToggleAction *action, gpointer user_data);
 static void cb_xshiftkey(GtkToggleAction *action, gpointer user_data);
+static void cb_sndcad(GtkToggleAction *action, gpointer user_data);
 
 static GtkToggleActionEntry togglemenu_entries[] = {
 { "clockdisp",    NULL, "_Clock disp",        NULL, NULL, G_CALLBACK(cb_clockdisp), FALSE },
@@ -1630,7 +1631,7 @@ cb_xshiftkey(GtkToggleAction *action, gpointer user_data)
 }
 
 static void
-cb_xshiftkey(GtkToggleAction *action, gpointer user_data)
+cb_sndcad(GtkToggleAction *action, gpointer user_data)
 {
 	keystat_senddata(0x73);
 	keystat_senddata(0x74);
