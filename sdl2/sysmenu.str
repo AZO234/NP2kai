@@ -67,7 +67,7 @@ static const char str_mousekey[] = "Mouse-Key";
 static const char str_mecshift[] = "mechanical SHIFT";
 static const char str_mecctrl[] = "mechanical CTRL";
 static const char str_mecgrph[] = "mechanical GRPH";
-static const char str_sndcad[] = "send Ctrl+Alt+Del";
+static const char str_sndcad[] = "Send Ctrl+Alt+Del";
 
 static const char str_beep[] = "Beep";
 static const char str_off[] = "off";
@@ -309,6 +309,7 @@ static const MSYSITEM s_keybd[] = {
 		{str_mecshift,		NULL,		MID_XSHIFT,			0},
 		{str_mecctrl,		NULL,		MID_XCTRL,			0},
 		{str_mecgrph,		NULL,		MID_XGRPH,			0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_sndcad,		NULL,		MID_SNDCAD,			MENU_DELETED}};
 
 static const MSYSITEM s_beep[] = {

@@ -216,6 +216,7 @@ static GtkToggleActionEntry togglemenu_entries[] = {
 { "xctrlkey",     NULL, "mechanical _CTRL",   NULL, NULL, G_CALLBACK(cb_xctrlkey), FALSE },
 { "xgrphkey",     NULL, "mechanical _GRPH",   NULL, NULL, G_CALLBACK(cb_xgrphkey), FALSE },
 { "xshiftkey",    NULL, "mechanical _SHIFT",  NULL, NULL, G_CALLBACK(cb_xshiftkey), FALSE },
+{ "sndcad",       NULL, "Send Ctrl+Alt+Del",  NULL, NULL, G_CALLBACK(cb_sndcad), FALSE },
 };
 static const guint n_togglemenu_entries = G_N_ELEMENTS(togglemenu_entries);
 
@@ -437,6 +438,8 @@ static const gchar *ui_info =
 "    <menuitem action='f12help'/>\n"
 "    <menuitem action='f12equal'/>\n"
 "    <menuitem action='f12comma'/>\n"
+"    <separator/>\n"
+"    <menuitem action='sndcad'/>\n"
 "   </menu>\n"
 "   <menu name='Sound' action='SoundMenu'>\n"
 "    <menuitem action='beepoff'/>\n"
@@ -1626,6 +1629,16 @@ cb_xshiftkey(GtkToggleAction *action, gpointer user_data)
 	}
 }
 
+static void
+cb_xshiftkey(GtkToggleAction *action, gpointer user_data)
+{
+	keystat_senddata(0x73);
+	keystat_senddata(0x74);
+	keystat_senddata(0x39);
+	keystat_senddata(0x73 | 0x80);
+	keystat_senddata(0x74 | 0x80);
+	keystat_senddata(0x39 | 0x80);
+}
 
 /*
  * radio item

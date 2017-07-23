@@ -26,8 +26,6 @@
 #include	"dlgabout.h"
 #include	"vram/scrnsave.h"
 
-extern int sndcad;
-
 static UINT bmpno = 0;
 
 static void sys_cmd(MENUID id) {
@@ -322,7 +320,12 @@ static void sys_cmd(MENUID id) {
 			break;
 
 		case MID_SNDCAD:
-			sndcad = 1;
+			keystat_senddata(0x73);
+			keystat_senddata(0x74);
+			keystat_senddata(0x39);
+			keystat_senddata(0x73 | 0x80);
+			keystat_senddata(0x74 | 0x80);
+			keystat_senddata(0x39 | 0x80);
 			break;
 
 		case MID_BEEPOFF:
