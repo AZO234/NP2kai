@@ -160,6 +160,16 @@ and "/opt/retropie/emulators/np2/" too.
 
 ８．Launch ES and set "CARBON-MOD" to "THEME-SET".
 
+About network
+---
+From rev.7 we can use network.
+
+NIC is follow spec.  
+
+MELCO LGY-98  
+IRQ:6  
+I/O:0x00D0
+
 Release
 ---
 * Jul 24, 2017 (rev.7)
