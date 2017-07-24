@@ -1,6 +1,6 @@
-Neko Project II 0.86 kai rev.7a
+Neko Project II 0.86 kai rev.7
 ===
-Jul 19, 2017  
+Jul 24, 2017  
 
 Build SDL2 port
 ---
@@ -162,6 +162,8 @@ and "/opt/retropie/emulators/np2/" too.
 
 Release
 ---
+* Jul 24, 2017 (rev.7)
+	- Apply network
 * Jul 18, 2017 (rev.6)
 * Jul 17, 2017
 	- Apply HOSTDRV
