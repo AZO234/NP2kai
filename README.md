@@ -172,10 +172,10 @@ and "/opt/retropie/emulators/np2/" too.
 
 Point of tuning performance NP2kai
 ---
-* CPU clock
+* CPU clock  
 Change "CPU Clock Multiplyer".
 
-* Memory size
+* Memory size  
 Change "RAM Size".
 
 Don't forget restart core.
