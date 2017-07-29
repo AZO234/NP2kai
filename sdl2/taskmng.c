@@ -32,9 +32,6 @@ void taskmng_initialize(void) {
 void taskmng_exit(void) {
 
 	task_avail = FALSE;
-#if defined(__LIBRETRO__)
-	environ_cb(RETRO_ENVIRONMENT_SHUTDOWN, 0);
-#endif	/* __LIBRETRO__ /*/
 }
 
 void taskmng_rol(void) {
