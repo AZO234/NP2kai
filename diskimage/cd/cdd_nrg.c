@@ -79,8 +79,8 @@ typedef struct {
 
 typedef struct {
 	char	*block_id;
-	SINT32	subblock_offset;
-	SINT32	subblock_length;
+	INT32	subblock_offset;
+	INT32	subblock_length;
 } __attribute__ ((packed)) NRG_BlockIDs;
 #else
 #pragma pack(push, 1)
@@ -129,8 +129,8 @@ typedef struct {
 
 typedef struct {
 	char	*block_id;
-	SINT32	subblock_offset;
-	SINT32	subblock_length;
+	INT32	subblock_offset;
+	INT32	subblock_length;
 } NRG_BlockIDs;
 #pragma pack(pop)
 #endif

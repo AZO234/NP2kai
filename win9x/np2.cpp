@@ -92,6 +92,9 @@
 #include "wab/cirrus_vga_extern.h"
 #endif
 #include "pcm86.h"
+#if defined(SUPPORT_PHYSICAL_CDDRV)
+#include "Dbt.h"
+#endif
 
 #ifdef BETA_RELEASE
 #define		OPENING_WAIT		1500
@@ -135,7 +138,7 @@ static	TCHAR		szClassName[] = _T("NP2-MainWindow");
 #if defined(SUPPORT_VSTi)
 						TEXT("%ProgramFiles%\\Roland\\Sound Canvas VA\\SOUND Canvas VA.dll"),
 #endif	// defined(SUPPORT_VSTi)
-						0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 8
+						0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 8, 0
 					};
 
 		OEMCHAR		fddfolder[MAX_PATH];
@@ -491,6 +494,73 @@ static void np2popup(HWND hWnd, LPARAM lp) {
 	DestroyMenu(hMenu);
 }
 
+#ifdef SUPPORT_PHYSICAL_CDDRV
+static void np2updatemenu() {
+	static char drvMenuVisible[4][26] = {0}; // 実ドライブメニューの表示状態
+	char drvAvailable[26] = {0}; // 使える実ドライブ
+	
+	REG8 drv;
+	HMENU hMenu = np2class_gethmenu(g_hWndMain);
+	HMENU hMenuTgt;
+	int hMenuTgtPos;
+	MENUITEMINFO mii = {0};
+
+	DWORD dwDrive;
+	int nDrive;
+	TCHAR szBuff2[] = OEMTEXT("A:\\");
+
+	// 有効なCDドライブのドライブ文字を調べる
+	dwDrive = GetLogicalDrives();
+	for ( nDrive = 0 ; nDrive < 26 ; nDrive++ ){
+		if ( dwDrive & (1 << nDrive) ){
+			szBuff2[0] = nDrive + 'A';
+			if(GetDriveType(szBuff2)==DRIVE_CDROM){
+				drvAvailable[nDrive] = 1;
+			}
+		}
+	}
+	szBuff2[2] = 0;
+#if defined(SUPPORT_IDEIO)
+	for (drv = 0x00; drv < 0x04; drv++)
+	{
+		int mnupos = 1;
+		if(menu_searchmenu(hMenu, IDM_IDE0OPEN+drv, &hMenuTgt, &hMenuTgtPos)){
+			// 一旦全部消す
+			for ( nDrive = 0 ; nDrive < 26 ; nDrive++ ){
+				if(drvMenuVisible[drv][nDrive]){
+					DeleteMenu(hMenuTgt, IDM_IDE0PHYSICALDRV_ID0 + 26*drv + nDrive, MF_BYCOMMAND);
+					drvMenuVisible[drv][nDrive] = 0;
+				}
+			}
+			if(np2cfg.idetype[drv]==SXSIDEV_CDROM){
+				// 再追加
+				for ( nDrive = 0 ; nDrive < 26 ; nDrive++ ){
+					if(drvAvailable[nDrive]){
+						TCHAR mnuText[200] = {0};
+						szBuff2[0] = nDrive + 'A';
+						if(!LoadString(g_hInstance, IDS_PHYSICALDRIVE, mnuText, sizeof(mnuText)/sizeof(mnuText[0]) - sizeof(szBuff2)/sizeof(szBuff2[0]))){
+							_tcscpy(mnuText, OEMTEXT("&Physical Drive "));
+						}
+						_tcscat(mnuText, szBuff2);
+						InsertMenu(hMenuTgt, mnupos++, MF_BYPOSITION, IDM_IDE0PHYSICALDRV_ID0 + 26*drv + nDrive, mnuText); 
+						drvMenuVisible[drv][nDrive] = 1;
+					}
+				}
+			}
+		}
+		//if(np2cfg.idetype[drv]==SXSIDEV_CDROM)
+		//{
+		//	EnableMenuItem(hMenu, IDM_IDE0PHYSICALDRV+drv, MF_BYCOMMAND|MFS_ENABLED);
+		//}
+		//else
+		//{
+		//	EnableMenuItem(hMenu, IDM_IDE0PHYSICALDRV+drv, MF_BYCOMMAND|MFS_GRAYED);
+		//}
+	}	
+#endif
+}
+#endif
+
 static void OnCommand(HWND hWnd, WPARAM wParam)
 {
 	UINT		update;
@@ -499,6 +569,18 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 
 	update = 0;
 	uID = LOWORD(wParam);
+#if defined(SUPPORT_IDEIO)
+#if defined(SUPPORT_PHYSICAL_CDDRV)
+	if(IDM_IDE0PHYSICALDRV_ID0 <= uID && uID < IDM_IDE0PHYSICALDRV_ID0 + 26*4){
+		TCHAR szBuff[] = OEMTEXT("\\\\.\\A:");
+		int idedrv = (uID - IDM_IDE0PHYSICALDRV_ID0) / 26;
+		int drvnum = (uID - IDM_IDE0PHYSICALDRV_ID0) % 26;
+		szBuff[4] = drvnum + 'A';
+		sysmng_update(SYS_UPDATEOSCFG);
+		diskdrv_setsxsi(idedrv, szBuff);
+	}
+#endif
+#endif
 	switch(uID)
 	{
 		case IDM_RESET:
@@ -526,6 +608,9 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 				pccore_cfgupdate();
 				pccore_reset();
 				sysmng_updatecaption(1);
+#ifdef SUPPORT_PHYSICAL_CDDRV
+				np2updatemenu();
+#endif
 			}
 			break;
 
@@ -694,6 +779,9 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 #if defined(SUPPORT_IDEIO)
 					}
 #endif
+				}
+				if(_tcsnicmp(fname, OEMTEXT("\\\\.\\"), 4)==0){
+					fname += 4;
 				}
 				if(fname && *fname){
 					TCHAR seltmp[500];
@@ -1096,6 +1184,28 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			update |= SYS_UPDATECFG;
 			break;
 			
+		case IDM_MOUSENC:
+			np2oscfg.mouse_nc = !np2oscfg.mouse_nc;
+			if(np2oscfg.mouse_nc){
+				SetClassLong(g_hWndMain, GCL_STYLE, GetClassLong(g_hWndMain, GCL_STYLE) & ~CS_DBLCLKS);
+				if (np2oscfg.mouse_nc && np2oscfg.wintype != 0) {
+					// XXX: メニューが出せなくなって詰むのを回避（暫定）
+					if (!scrnmng_isfullscreen()) {
+						WINLOCEX	wlex;
+						np2oscfg.wintype = 0;
+						wlex = np2_winlocexallwin(hWnd);
+						winlocex_setholdwnd(wlex, hWnd);
+						np2class_windowtype(hWnd, np2oscfg.wintype);
+						winlocex_move(wlex);
+						winlocex_destroy(wlex);
+						sysmng_update(SYS_UPDATEOSCFG);
+					}
+				}
+			}else{
+				SetClassLong(g_hWndMain, GCL_STYLE, GetClassLong(g_hWndMain, GCL_STYLE) | CS_DBLCLKS);
+			}
+			break;
+
 		case IDM_MOUSERAW:
 			np2oscfg.rawmouse = !np2oscfg.rawmouse;
 			mousemng_updateclip(); // キャプチャし直す
@@ -1401,6 +1511,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	UINT		update;
 	HWND		subwin;
 	WINLOCEX	wlex;
+
+	static int lastmx = -1;
+	static int lastmy = -1;
+	static int lastbtn = -1;
 
 	switch (msg) {
 		//	イメージファイルのＤ＆Ｄに対応(Kai1)
@@ -1772,6 +1886,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					SendMessage(hWnd, WM_CLOSE, 0, 0L);
 					break;
 				}
+				if (np2oscfg.mouse_nc && np2oscfg.wintype != 0) {
+					// XXX: メニューが出せなくなって詰むのを回避（暫定）
+					if (!scrnmng_isfullscreen()) {
+						np2oscfg.wintype = 0;
+						wlex = np2_winlocexallwin(hWnd);
+						winlocex_setholdwnd(wlex, hWnd);
+						np2class_windowtype(hWnd, np2oscfg.wintype);
+						winlocex_move(wlex);
+						winlocex_destroy(wlex);
+						sysmng_update(SYS_UPDATEOSCFG);
+						break;
+					}
+				}
 			}
 			winkbd_keydown(wParam, lParam);
 			break;
@@ -1785,6 +1912,43 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				POINT p;
 				if (GetCursorPos(&p)) {
 					scrnmng_fullscrnmenu(p.y);
+				}
+			}else{
+				if(np2oscfg.mouse_nc){
+					int x = LOWORD(lParam);
+					int y = HIWORD(lParam);
+					SINT16 dx, dy;
+					UINT8 btn;
+					btn = mousemng_getstat(&dx, &dy, 0);
+					if(lastmx == -1 || lastmy == -1){
+						lastmx = x;
+						lastmy = y;
+					}
+					if((x-lastmx) || (y-lastmy)){
+						RECT r;
+						int mouse_edge_sh_x = 100;
+						int mouse_edge_sh_y = 100;
+						GetClientRect(hWnd, &r);
+						mouse_edge_sh_x = (r.right-r.left)/8;
+						mouse_edge_sh_y = (r.bottom-r.top)/8;
+						dx += (x-lastmx);
+						dy += (y-lastmy);
+						// XXX: 端実験
+#define MOUSE_EDGE_ACM	4
+						if(x<mouse_edge_sh_x && dx < 0){
+							dx *= 1+(mouse_edge_sh_x - x)*MOUSE_EDGE_ACM/mouse_edge_sh_x;
+						}else if(r.right-mouse_edge_sh_x <= x && dx > 0){
+							dx *= 1+(mouse_edge_sh_x - (r.right-x))*MOUSE_EDGE_ACM/mouse_edge_sh_x;
+						}
+						if(y<mouse_edge_sh_y && dy < 0){
+							dy *= 1+(mouse_edge_sh_y - y)*MOUSE_EDGE_ACM/mouse_edge_sh_y;
+						}else if(r.bottom-mouse_edge_sh_y <= y && dy > 0){
+							dy *= 1+(mouse_edge_sh_y - (r.bottom-y))*MOUSE_EDGE_ACM/mouse_edge_sh_y;
+						}
+						mousemng_setstat(dx, dy, btn);
+						lastmx = x;
+						lastmy = y;
+					}
 				}
 			}
 			break;
@@ -1855,17 +2019,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			break;
 
 		case WM_LBUTTONDBLCLK:
-			if (!scrnmng_isfullscreen()) {
-				np2oscfg.wintype++;
-				if (np2oscfg.wintype >= 3) {
-					np2oscfg.wintype = 0;
+			if(!np2oscfg.mouse_nc){
+				if (!scrnmng_isfullscreen()) {
+					np2oscfg.wintype++;
+					if (np2oscfg.wintype >= 3) {
+						np2oscfg.wintype = 0;
+					}
+					wlex = np2_winlocexallwin(hWnd);
+					winlocex_setholdwnd(wlex, hWnd);
+					np2class_windowtype(hWnd, np2oscfg.wintype);
+					winlocex_move(wlex);
+					winlocex_destroy(wlex);
+					sysmng_update(SYS_UPDATEOSCFG);
 				}
-				wlex = np2_winlocexallwin(hWnd);
-				winlocex_setholdwnd(wlex, hWnd);
-				np2class_windowtype(hWnd, np2oscfg.wintype);
-				winlocex_move(wlex);
-				winlocex_destroy(wlex);
-				sysmng_update(SYS_UPDATEOSCFG);
 			}
 			break;
 
@@ -1921,6 +2087,62 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		case MM_MIM_LONGDATA:
 			CComMidiIn32::RecvExcv(reinterpret_cast<HMIDIIN>(wParam), reinterpret_cast<MIDIHDR*>(lParam));
 			break;
+			
+#if defined(SUPPORT_IDEIO)
+#ifdef SUPPORT_PHYSICAL_CDDRV
+		case WM_DEVICECHANGE:
+			{
+				PDEV_BROADCAST_HDR lpdb = (PDEV_BROADCAST_HDR)lParam;
+				switch(wParam)
+				{
+				case DBT_DEVICEARRIVAL:
+				case DBT_DEVICEREMOVECOMPLETE:
+					// See if a CD-ROM or DVD was inserted into a drive.
+					if (lpdb -> dbch_devicetype == DBT_DEVTYP_VOLUME)
+					{
+						PDEV_BROADCAST_VOLUME lpdbv = (PDEV_BROADCAST_VOLUME)lpdb;
+
+						if (lpdbv -> dbcv_flags & DBTF_MEDIA)
+						{
+							int i;
+							int drvlnum;
+							int unitmask = lpdbv ->dbcv_unitmask;
+							OEMCHAR *fname;
+							OEMCHAR fnamebuf[MAX_PATH];
+							OEMCHAR drvstr[] = OEMTEXT("x:");
+							for (drvlnum = 0; drvlnum < 26; ++drvlnum)
+							{
+								if (unitmask & 0x1)
+									break;
+								unitmask = unitmask >> 1;
+							}
+							drvstr[0] = 'A' + drvlnum;
+							for(i=0;i<4;i++){
+								if(sxsi_getdevtype(i)==SXSIDEV_CDROM){
+									fname = np2cfg.idecd[i];
+									if(_tcsnicmp(fname, OEMTEXT("\\\\.\\"), 4)==0){
+										fname += 4;
+										if(_tcsicmp(fname, drvstr)==0){
+											_tcscpy(fnamebuf, np2cfg.idecd[i]);
+											if(wParam == DBT_DEVICEARRIVAL){
+												// CD挿入
+												diskdrv_setsxsi(0x02, fnamebuf);
+											}else{
+												// CD取出 XXX: 中身が空でもマウントは継続
+												diskdrv_setsxsi(0x02, fnamebuf);
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+					break;
+				}
+			}
+			break;
+#endif
+#endif
 
 		default:
 			return(DefWindowProc(hWnd, msg, wParam, lParam));
@@ -2390,6 +2612,10 @@ void loadNP2INI(const OEMCHAR *fname){
 #ifdef HOOK_SYSKEY
 	hHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, hInstance, 0);
 #endif
+	
+#ifdef SUPPORT_PHYSICAL_CDDRV
+	np2updatemenu();
+#endif
 
 	pccore_reset();
 
@@ -2562,7 +2788,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 
 	np2class_initialize(hInstance);
 	if (!hPrevInst) {
-		wc.style = CS_BYTEALIGNCLIENT | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
+		if(np2oscfg.mouse_nc){
+			wc.style = CS_BYTEALIGNCLIENT | CS_HREDRAW | CS_VREDRAW;
+		}else{
+			wc.style = CS_BYTEALIGNCLIENT | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
+		}
 		wc.lpfnWndProc = WndProc;
 		wc.cbClsExtra = 0;
 		wc.cbWndExtra = NP2GWLP_SIZE;
@@ -2677,6 +2907,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 #endif
 #ifdef HOOK_SYSKEY
 	hHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, hInstance, 0);
+#endif
+	
+#ifdef SUPPORT_PHYSICAL_CDDRV
+	np2updatemenu();
 #endif
 
 	pccore_reset();

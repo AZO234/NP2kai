@@ -51,8 +51,8 @@ typedef struct {
 } __attribute__ ((packed)) MDS_Header;						/*	length: 88 bytes	*/
 
 typedef struct {
-	SINT32	session_start;			/*	Session's start address							*/
-	SINT32	session_end;			/*	Session's end address							*/
+	INT32	session_start;			/*	Session's start address							*/
+	INT32	session_end;			/*	Session's end address							*/
 	UINT16	session_number;			/*	(Unknown)										*/
 	UINT8	num_all_blocks;			/*	Number of all data blocks.						*/
 	UINT8	num_nontrack_blocks;	/*	Number of lead-in data blocks					*/

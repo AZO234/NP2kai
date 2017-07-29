@@ -486,3 +486,13 @@ void file_setseparator(char *path, int maxlen) {
 	}
 }
 
+short file_rename(const char* ExistFile, const char* NewFile)
+{
+	return (rename(ExistFile, NewFile)) ? 0 : -1;
+}
+
+short file_dirdelete(const char* PathName)
+{
+	return (remove(PathName)) ? 0 : -1;
+}
+

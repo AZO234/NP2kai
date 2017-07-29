@@ -13,7 +13,12 @@
 #include "pccore.h"
 #include "iocore.h"
 #include "common/strres.h"
+#include "bmpdata.h"
 #include "vram/scrnsave.h"
+#ifdef SUPPORT_WAB
+#include "wab/wab.h"
+#include "wab/wabbmpsave.h"
+#endif
 
 /** フィルター */
 static const UINT s_nFilter[4] =
@@ -48,6 +53,7 @@ static void GetDefaultFilename(LPCTSTR lpExt, LPTSTR lpFilename, UINT cchFilenam
 	}
 }
 
+
 /**
  * BMP 出力
  * @param[in] hWnd 親ウィンドウ
@@ -59,7 +65,12 @@ void dialog_writebmp(HWND hWnd)
 	{
 		return;
 	}
-	const int nType = scrnsave_gettype(ss);
+	int nType = scrnsave_gettype(ss);
+#ifdef SUPPORT_WAB
+	if(np2wab.relay){
+		nType = 3;
+	}
+#endif
 
 	std::tstring rExt(LoadTString(IDS_BMPEXT));
 	std::tstring rFilter(LoadTString(s_nFilter[nType]));
@@ -84,7 +95,15 @@ void dialog_writebmp(HWND hWnd)
 		}
 		else if (!file_cmpname(lpExt, str_bmp))
 		{
-			scrnsave_writebmp(ss, lpFilename, SCRNSAVE_AUTO);
+#ifdef SUPPORT_WAB
+			if(np2wab.relay){
+				np2wab_writebmp(lpFilename);
+			}else{
+#endif
+				scrnsave_writebmp(ss, lpFilename, SCRNSAVE_AUTO);
+#ifdef SUPPORT_WAB
+			}
+#endif
 		}
 	}
 	scrnsave_destroy(ss);

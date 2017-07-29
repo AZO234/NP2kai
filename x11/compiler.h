@@ -91,6 +91,7 @@ typedef	guint32		UINT;
 typedef	gint8		SINT8;
 typedef	gint16		SINT16;
 typedef	gint32		SINT32;
+typedef	gint32		INT32;
 typedef	gint64		SINT64;
 
 typedef	guint8		UINT8;
@@ -103,6 +104,8 @@ typedef	gboolean	BOOL;
 typedef	signed char	CHAR;
 typedef	signed char	TCHAR;
 typedef	unsigned char	BYTE;
+typedef	guint32		DWORD;
+typedef	guint16		WORD;
 
 #define	INTPTR		gintptr
 
@@ -180,6 +183,8 @@ typedef SINT32	FILELEN;
 
 #define _T
 #define _tcscpy strcpy
+#define	_tcsicmp	strcasecmp
+#define	_tcsnicmp	strncasecmp
 
 G_BEGIN_DECLS
 UINT32 gettick(void);

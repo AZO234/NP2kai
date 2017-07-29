@@ -381,6 +381,7 @@
 #define IDS_IDETYPE_NONE                30700
 #define IDS_IDETYPE_HDD                 30701
 #define IDS_IDETYPE_CDROM               30702
+#define IDS_PHYSICALDRIVE               30710
 #define IDS_FONTTITLE                   31001
 #define IDS_FONTEXT                     31002
 #define IDS_FONTFILTER                  31003
@@ -513,6 +514,10 @@
 #define IDM_IDE1STATE                   40452
 #define IDM_IDE2STATE                   40453
 #define IDM_IDE3STATE                   40454
+#define IDM_IDE0PHYSICALDRV             40461
+#define IDM_IDE1PHYSICALDRV             40462
+#define IDM_IDE2PHYSICALDRV             40463
+#define IDM_IDE3PHYSICALDRV             40464
 #define IDM_WINDOW                      40501
 #define IDM_FULLSCREEN                  40502
 #define IDM_ROLNORMAL                   40503
@@ -584,6 +589,7 @@
 #define IDM_NETOPT                      40676
 #define IDM_WABOPT                      40677
 #define IDM_HOSTDRVOPT                  40678
+#define IDM_MOUSENC                     40689
 #define IDM_MOUSERAW                    40690
 #define IDM_MOUSE30X                    40691
 #define IDM_MOUSE20X                    40692
@@ -653,6 +659,8 @@
 #define IDM_COPYPASTE_PASTE             43210
 #define IDM_WABSYSMENU_RESETSIZE        43301
 #define IDM_WABSYSMENU_HALFTONE         43302
+#define IDM_IDE0PHYSICALDRV_ID0         43400 // size = 26*4
+#define IDM_IDE0PHYSICALDRV_LAST        43503
 
 // Next default values for new objects
 // 

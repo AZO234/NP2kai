@@ -285,6 +285,10 @@ void xmenu_initialize(HMENU hMenu)
 #ifndef SUPPORT_CL_GD5430
 	EnableMenuItem(hMenu, IDM_WABOPT, MF_BYCOMMAND|MFS_GRAYED);
 #endif
+	
+#ifndef SUPPORT_PHYSICAL_CDDRV
+	EnableMenuItem(hMenu, IDM_WABOPT, MF_BYCOMMAND|MFS_GRAYED);
+#endif
 
 	if (np2oscfg.I286SAVE)
 	{
@@ -392,6 +396,7 @@ void xmenu_update(HMENU hMenu)
 	
 	// Mouse
 	CheckMenuItem(hMenu, IDM_MOUSERAW, MF_BYCOMMAND | MFCHECK(np2oscfg.rawmouse));
+	CheckMenuItem(hMenu, IDM_MOUSENC,  MF_BYCOMMAND | MFCHECK(np2oscfg.mouse_nc));
 	const UINT8 MMUL = (UINT8)np2oscfg.mousemul;
 	const UINT8 MDIV = (UINT8)np2oscfg.mousediv;
 	CheckMenuItem(hMenu, IDM_MOUSE30X, MF_BYCOMMAND | MFCHECK(MMUL == 3 && MDIV == 1));

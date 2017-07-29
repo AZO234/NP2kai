@@ -443,3 +443,14 @@ file_setseparator(OEMCHAR *path, int maxlen)
 		path[pos] = '\0';
 	}
 }
+
+short file_rename(const char* ExistFile, const char* NewFile)
+{
+	return (rename(ExistFile, NewFile)) ? 0 : -1;
+}
+
+short file_dirdelete(const char* PathName)
+{
+	return (remove(PathName)) ? 0 : -1;
+}
+

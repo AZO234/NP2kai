@@ -28,6 +28,7 @@ typedef	unsigned char	UINT8;
 typedef	signed short	SINT16;
 typedef	unsigned short	UINT16;
 typedef	signed int		SINT32;
+typedef	signed int		INT32;
 typedef	unsigned int	UINT32;
 #if __WORDSIZE == 64
 typedef signed long int   SINT64;
@@ -43,6 +44,8 @@ typedef	int				BOOL;
 typedef	signed char		CHAR;
 typedef	signed char		TCHAR;
 typedef	unsigned char	BYTE;
+typedef	unsigned int	DWORD;
+typedef	unsigned short	WORD;
 
 
 #ifndef	TRUE
@@ -106,6 +109,8 @@ typedef	unsigned char	BYTE;
 #define	OEMTEXT(string)		string
 #define	OEMSPRINTF			sprintf
 #define	OEMSTRLEN			strlen
+#define	_tcsicmp	strcasecmp
+#define	_tcsnicmp	strncasecmp
 
 #if defined(SUPPORT_LARGE_HDD)
 typedef SINT64	FILEPOS;

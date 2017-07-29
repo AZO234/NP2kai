@@ -65,6 +65,7 @@ typedef struct {
 static	_IOCORE		iocore;
 static	UINT8		ioterminate[0x100];
 
+//extern UINT lgy98_baseaddr;
 //extern UINT ne2000_baseaddr;
 
 // ----

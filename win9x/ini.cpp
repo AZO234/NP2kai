@@ -668,6 +668,8 @@ static const PFTBL s_IniItems[] =
 	PFVAL("SVSCRMUL", PFTYPE_BOOL,		&np2oscfg.svscrmul), // 画面表示倍率を保存するか
 	PFVAL("SCRN_MUL", PFTYPE_UINT8,		&np2oscfg.scrn_mul), // 画面表示倍率（8が等倍）
 	
+	PFVAL("MOUSE_NC", PFTYPE_BOOL,		&np2oscfg.mouse_nc), // マウススピード倍率（分母）
+	
 	PFVAL("I286SAVE", PFRO_BOOL,		&np2oscfg.I286SAVE)
 };
 

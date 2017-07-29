@@ -46,7 +46,7 @@ enum tagNEventId
 	NEVENT_CDWAIT		= 28, // XXX: Ÿè‚Ég‚Á‚ÄOK?
 	NEVENT_CT1741		= 29, // np2s‚æ‚è 28‚ğg‚Á‚¿‚á‚Á‚½‚Ì‚Å29‚É np21w ver0.86 rev29
 	/* ---- */
-	NEVENT_MAXEVENTS	= 32,
+	NEVENT_MAXEVENTS	= 32
 };
 typedef enum tagNEventId NEVENTID;
 

@@ -1317,7 +1317,7 @@ void ideio_reset(const NP2CFG *pConfig) {
 	FILEH	fh;
 	REG8	i;
 	IDEDRV	drv;
-	TCHAR tmpbiosname[16];
+	OEMCHAR tmpbiosname[16];
 
 	ZeroMemory(&ideio, sizeof(ideio));
 	for (i=0; i<4; i++) {

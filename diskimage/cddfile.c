@@ -644,10 +644,10 @@ BRESULT setsxsidev(SXSIDEV sxsi, const OEMCHAR *path, const _CDTRK *trk, UINT tr
 
 	mediatype = 0;
 	for (i = 0; i < trks; i++) {
-		if (cdinfo->trk[i].adr_ctl == TRACK_DATA) {
+		if (cdinfo->trk[i].adr_ctl == TRACKTYPE_DATA) {
 			mediatype |= SXSIMEDIA_DATA;
 		}
-		else if (cdinfo->trk[i].adr_ctl == TRACK_AUDIO) {
+		else if (cdinfo->trk[i].adr_ctl == TRACKTYPE_AUDIO) {
 			mediatype |= SXSIMEDIA_AUDIO;
 		}
 	}

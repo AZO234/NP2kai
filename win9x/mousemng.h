@@ -10,6 +10,7 @@ extern "C" {
 #endif
 
 UINT8 mousemng_getstat(SINT16 *x, SINT16 *y, int clear);
+void  mousemng_setstat(SINT16 x, SINT16 y, UINT8 btn);
 
 #ifdef __cplusplus
 }

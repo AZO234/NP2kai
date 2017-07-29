@@ -98,6 +98,8 @@ typedef struct {
 	
 	UINT8	svscrmul; // Save Screen Size Multiplying Value 
 	UINT8	scrn_mul; // Screen Size Multiplying Value
+	
+	UINT8	mouse_nc; // Always notify mouse event
 } NP2OSCFG;
 
 

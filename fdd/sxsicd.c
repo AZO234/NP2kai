@@ -5,6 +5,13 @@
 #include	"sysmng.h"
 #include	"sxsi.h"
 
+#ifdef SUPPORT_PHYSICAL_CDDRV
+
+#include	<winioctl.h>
+#include	<api/ntddcdrm.h>
+
+#endif
+
 #ifdef SUPPORT_KAI_IMAGES
 #include	"diskimage/cddfile.h"
 #include	"diskimage/cd/cdd_iso.h"
@@ -15,7 +22,14 @@
 
 BRESULT sxsicd_open(SXSIDEV sxsi, const OEMCHAR *fname) {
 
-const OEMCHAR	*ext;
+	const OEMCHAR	*ext;
+	
+#ifdef SUPPORT_PHYSICAL_CDDRV
+	// XXX: 手抜き判定注意（実CDドライブ）
+	if(_tcsnicmp(fname, OEMTEXT("\\\\.\\"), 4)==0){
+		return(openrealcdd(sxsi, fname));
+	}
+#endif
 
 	//	とりあえず拡張子で判断
 	ext = file_getext(fname);
@@ -59,6 +73,8 @@ BRESULT sxsicd_readraw(SXSIDEV sxsi, FILEPOS pos, void *buf) {
 	UINT	i;
 	UINT32	secs;
 //	UINT64	trk_offset;
+	
+	int isPhysicalCD = 0;
 
 	//	範囲外は失敗
 	if ((pos < 0) || (sxsi->totals < pos)) {
@@ -66,6 +82,13 @@ BRESULT sxsicd_readraw(SXSIDEV sxsi, FILEPOS pos, void *buf) {
 	}
 
 	cdinfo = (CDINFO)sxsi->hdl;
+	
+#ifdef SUPPORT_PHYSICAL_CDDRV
+
+	// XXX: 事前に判定して記録しておくべき･･･
+	isPhysicalCD = (cdinfo->path[0] == '\\' && cdinfo->path[1] == '\\' && cdinfo->path[2] == '.' && cdinfo->path[3] == '\\'); 
+
+#endif
 
 	//	pos位置のセクタサイズを取得
 	for (i = cdinfo->trks - 1; i > 0; i--) {
@@ -74,7 +97,7 @@ BRESULT sxsicd_readraw(SXSIDEV sxsi, FILEPOS pos, void *buf) {
 			break;
 		}
 	}
-	if (secsize == 2048) {
+	if (secsize == 2048 && !isPhysicalCD) {
 		return(FAILURE);
 	}
 
@@ -94,10 +117,28 @@ BRESULT sxsicd_readraw(SXSIDEV sxsi, FILEPOS pos, void *buf) {
 		secs += cdinfo->trk[i].sectors;
 	}
 	fpos += cdinfo->trk[0].start_offset;
-	if ((file_seek(fh, fpos, FSEEK_SET) != fpos) ||
-		(file_read(fh, buf, 2352) != 2352)) {
-		return(FAILURE);
+#ifdef SUPPORT_PHYSICAL_CDDRV
+	if(isPhysicalCD){
+		DWORD BytesReturned;
+		RAW_READ_INFO rawReadInfo;
+		rawReadInfo.TrackMode = CDDA;
+		rawReadInfo.SectorCount = 1;
+		rawReadInfo.DiskOffset.QuadPart = fpos;
+		if (!DeviceIoControl(fh,IOCTL_CDROM_RAW_READ,&rawReadInfo,sizeof(RAW_READ_INFO), buf, 2352, &BytesReturned,0)) {
+			return(FAILURE);
+		}
+		if (BytesReturned != 2352) {
+			return(FAILURE);
+		}
+	}else{
+#endif
+		if ((file_seek(fh, fpos, FSEEK_SET) != fpos) ||
+			(file_read(fh, buf, 2352) != 2352)) {
+			return(FAILURE);
+		}
+#ifdef SUPPORT_PHYSICAL_CDDRV
 	}
+#endif
 
 	return(SUCCESS);
 }

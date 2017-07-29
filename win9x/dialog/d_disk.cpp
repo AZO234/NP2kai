@@ -137,10 +137,10 @@ void dialog_changehdd(HWND hWnd, REG8 drv)
 		lpPath = np2cfg.idecd[drv];
 	}
 #endif
-	if ((lpPath == NULL) || (lpPath[0] == '\0'))
+	if ((lpPath == NULL) || (lpPath[0] == '\0') || _tcsnicmp(lpPath, OEMTEXT("\\\\.\\"), 4)==0)
 	{
 		lpPath = sxsi_getfilename(drv);
-		if ((lpPath == NULL) || (lpPath[0] == '\0'))
+		if ((lpPath == NULL) || (lpPath[0] == '\0') || _tcsnicmp(lpPath, OEMTEXT("\\\\.\\"), 4)==0)
 		{
 			if(sxsi_getdevtype(drv)!=SXSIDEV_CDROM)
 			{

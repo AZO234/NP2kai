@@ -28,7 +28,7 @@ typedef struct {
 	char		szFileID[15];					//	識別ID "T98FDDIMAGE.R0"
 	char		Reserve1[1];					//	予約
 	char		szComment[0x100];				//	イメージコメント(ASCIIz)
-	UINT32		dwHeadSize;						//	ヘッダ部のサイズ
+	DWORD		dwHeadSize;						//	ヘッダ部のサイズ
 	BYTE		flProtect;						//	0以外 : ライトプロテクト
 	BYTE		byHead;							//	ヘッド数
 	char		Reserve2[10];					//	予約
@@ -43,19 +43,19 @@ typedef struct {
 	char	szFileID[15];						//	識別ID	"T98FDDIMAGE.R1"
 	char	Reserv1[1];							//	予備
 	char	szComment[0x100];					//	コメント
-	UINT32	dwHeadSize;							//	ヘッダのサイズ
+	DWORD	dwHeadSize;							//	ヘッダのサイズ
 	BYTE	flProtect;							//	ライトプロテクト0以外
 	BYTE	byHead;								//	ヘッド数	1-2
 	char	Reserv2[0x10-4-1-1];				//	予備
-	UINT32	dwTrackHead[NFD_TRKMAX1];			//	トラックID位置
-	UINT32	dwAddInfo;							//	追加情報ヘッダのアドレス
+	DWORD	dwTrackHead[NFD_TRKMAX1];			//	トラックID位置
+	DWORD	dwAddInfo;							//	追加情報ヘッダのアドレス
 	char	Reserv3[0x10-4];					//	予備
 } __attribute__ ((packed)) NFD_FILE_HEAD1, *LP_NFD_FILE_HEAD1;
 
 //	トラックID
 typedef struct {
-	UINT16	wSector;							//	セクタID数
-	UINT16	wDiag;								//	特　殊ID数
+	WORD	wSector;							//	セクタID数
+	WORD	wDiag;								//	特　殊ID数
 	char	Reserv1[0x10-4];					//	予備
 } __attribute__ ((packed)) NFD_TRACK_ID1, *LP_NFD_TRACK_ID1;
 
@@ -88,7 +88,7 @@ typedef struct {
 	BYTE	bySTS1;								//	ST1
 	BYTE	bySTS2;								//	ST2
 	BYTE	byRetry;							//	RetryDataなし(0)あり(1-)
-	UINT32	dwDataLen;							//	転送を行うデータサイズ
+	DWORD	dwDataLen;							//	転送を行うデータサイズ
 	BYTE	byPDA;								//	PDA
 	char	Reserv1[0x10-15];					//	予備
 } __attribute__ ((packed)) NFD_DIAG_ID1, *LP_NFD_DIAG_ID1;
@@ -115,7 +115,7 @@ typedef struct {
 	char		szFileID[15];					//	識別ID	"T98FDDIMAGE.R0"
 	char		Reserve1[1];					//	予約
 	char		szComment[0x100];				//	イメージコメント(ASCIIz)
-	UINT32		dwHeadSize;						//	ヘッダ部のサイズ
+	DWORD		dwHeadSize;						//	ヘッダ部のサイズ
 	BYTE		flProtect;						//	0以外 : ライトプロテクト
 	BYTE		byHead;							//	ヘッド数
 	char		Reserve2[10];					//	予約
@@ -130,19 +130,19 @@ typedef struct {
 	char	szFileID[15];						//	識別ID	"T98FDDIMAGE.R1"
 	char	Reserv1[1];							//	予備
 	char	szComment[0x100];					//	コメント
-	UINT32	dwHeadSize;							//	ヘッダのサイズ
+	DWORD	dwHeadSize;							//	ヘッダのサイズ
 	BYTE	flProtect;							//	ライトプロテクト0以外
 	BYTE	byHead;								//	ヘッド数	1-2
 	char	Reserv2[0x10-4-1-1];				//	予備
-	UINT32	dwTrackHead[NFD_TRKMAX1];			//	トラックID位置
-	UINT32	dwAddInfo;							//	追加情報ヘッダのアドレス
+	DWORD	dwTrackHead[NFD_TRKMAX1];			//	トラックID位置
+	DWORD	dwAddInfo;							//	追加情報ヘッダのアドレス
 	char	Reserv3[0x10-4];					//	予備
 } NFD_FILE_HEAD1, *LP_NFD_FILE_HEAD1;
 
 //	トラックID
 typedef struct {
-	UINT16	wSector;							//	セクタID数
-	UINT16	wDiag;								//	特　殊ID数
+	WORD	wSector;							//	セクタID数
+	WORD	wDiag;								//	特　殊ID数
 	char	Reserv1[0x10-4];					//	予備
 } NFD_TRACK_ID1, *LP_NFD_TRACK_ID1;
 
@@ -175,7 +175,7 @@ typedef struct {
 	BYTE	bySTS1;								//	ST1
 	BYTE	bySTS2;								//	ST2
 	BYTE	byRetry;							//	RetryDataなし(0)あり(1-)
-	UINT32	dwDataLen;							//	転送を行うデータサイズ
+	DWORD	dwDataLen;							//	転送を行うデータサイズ
 	BYTE	byPDA;								//	PDA
 	char	Reserv1[0x10-15];					//	予備
 } NFD_DIAG_ID1, *LP_NFD_DIAG_ID1;

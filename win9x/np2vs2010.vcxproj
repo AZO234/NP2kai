@@ -238,6 +238,7 @@
     <ClCompile Include="..\diskimage\cd\cdd_iso.c" />
     <ClCompile Include="..\diskimage\cd\cdd_mds.c" />
     <ClCompile Include="..\diskimage\cd\cdd_nrg.c" />
+    <ClCompile Include="..\diskimage\cd\cdd_real.c" />
     <ClCompile Include="..\diskimage\fddfile.c" />
     <ClCompile Include="..\diskimage\fd\fdd_bkdsk.c" />
     <ClCompile Include="..\diskimage\fd\fdd_d88.c" />
@@ -613,6 +614,7 @@
     <ClInclude Include="..\diskimage\cd\cdd_iso.h" />
     <ClInclude Include="..\diskimage\cd\cdd_mds.h" />
     <ClInclude Include="..\diskimage\cd\cdd_nrg.h" />
+    <ClInclude Include="..\diskimage\cd\cdd_real.h" />
     <ClInclude Include="..\diskimage\fddfile.h" />
     <ClInclude Include="..\diskimage\fd\fdd_bkdsk.h" />
     <ClInclude Include="..\diskimage\fd\fdd_d88.h" />

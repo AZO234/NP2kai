@@ -441,7 +441,7 @@ static void remove_dir(INTRST intrst)
 			break;
 		}
 
-		if (remove(hdp.szPath))
+		if (file_dirdelete(hdp.szPath))
 		{
 			nResult = ERR_ACCESSDENIED;
 			break;
@@ -873,7 +873,7 @@ static void rename_file(INTRST intrst)
 			}
 
 			TRACEOUT(("renamed: %s -> %s", szPath, hdp.szPath));
-			if (rename(szPath, hdp.szPath))
+			if (file_rename(szPath, hdp.szPath))
 			{
 				nResult = ERR_ACCESSDENIED;
 				break;

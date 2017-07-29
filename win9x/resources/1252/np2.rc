@@ -936,6 +936,7 @@ BEGIN
         BEGIN
             MENUITEM "&Mouse Capture",              IDM_MOUSE
             MENUITEM "&Raw Input Mode",             IDM_MOUSERAW
+            MENUITEM "&Non-capture Control",        IDM_MOUSENC
             MENUITEM SEPARATOR
             MENUITEM "x3.0",                        IDM_MOUSE30X
             MENUITEM "x2.0",                        IDM_MOUSE20X
@@ -1449,6 +1450,11 @@ BEGIN
     IDS_IDETYPE_NONE        "None"
     IDS_IDETYPE_HDD         "HDD"
     IDS_IDETYPE_CDROM       "CD-ROM"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PHYSICALDRIVE       "&Host Drive "
 END
 
 STRINGTABLE

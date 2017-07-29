@@ -16,6 +16,7 @@ typedef	unsigned char		UINT8;
 typedef	signed short		SINT16;
 typedef	unsigned short		UINT16;
 typedef	signed int			SINT32;
+typedef	signed int			INT32;
 typedef	unsigned int		UINT32;
 typedef	signed long long	SINT64;
 typedef	unsigned long long	SINT64;
@@ -28,6 +29,7 @@ typedef	unsigned char		UINT8;
 typedef	signed short		SINT16;
 typedef	unsigned short		UINT16;
 typedef	signed int			SINT32;
+typedef	signed int			INT32;
 typedef	unsigned int		UINT32;
 typedef	signed long long	SINT64;
 typedef	unsigned long long	UINT64;
@@ -48,6 +50,9 @@ typedef LONG_PTR ssize_t;
 #define	OEMTEXT(string)		string
 #define	OEMSPRINTF			sprintf
 #define	OEMSTRLEN			strlen
+#define	_tcsicmp	strcasecmp
+#define	_tcsnicmp	strncasecmp
+
 #if defined(SUPPORT_LARGE_HDD)
 typedef SINT64	FILEPOS;
 typedef SINT64	FILELEN;

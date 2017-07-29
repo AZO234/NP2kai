@@ -928,6 +928,7 @@ BEGIN
         BEGIN
             MENUITEM "マウスキャプチャ(&M)",        IDM_MOUSE
             MENUITEM "高解像度マウス(&R)",          IDM_MOUSERAW
+            MENUITEM "キャプチャ無し操作(&N)",      IDM_MOUSENC
             MENUITEM SEPARATOR
             MENUITEM "x3.0",                        IDM_MOUSE30X
             MENUITEM "x2.0",                        IDM_MOUSE20X
@@ -1048,33 +1049,33 @@ IDR_IDEMENU MENU
 BEGIN
     POPUP "IDE #0"
     BEGIN
-        MENUITEM "開く(&O)...",                    IDM_IDE0OPEN
+        MENUITEM "開く(&O)...",                 IDM_IDE0OPEN
         MENUITEM SEPARATOR
-        MENUITEM "取り外し(&R)...",                     IDM_IDE0EJECT
+        MENUITEM "取り外し(&R)...",             IDM_IDE0EJECT
         MENUITEM SEPARATOR
         MENUITEM " ",							IDM_IDE0STATE
     END
     POPUP "IDE #1"
     BEGIN
-        MENUITEM "開く(&O)...",                    IDM_IDE1OPEN
+        MENUITEM "開く(&O)...",                 IDM_IDE1OPEN
         MENUITEM SEPARATOR
-        MENUITEM "取り外し(&R)...",                     IDM_IDE1EJECT
+        MENUITEM "取り外し(&R)...",             IDM_IDE1EJECT
         MENUITEM SEPARATOR
         MENUITEM " ",							IDM_IDE1STATE
     END
     POPUP "IDE #2"
     BEGIN
-        MENUITEM "開く(&O)...",                    IDM_IDE2OPEN
+        MENUITEM "開く(&O)...",                 IDM_IDE2OPEN
         MENUITEM SEPARATOR
-        MENUITEM "取り出し(&E)...",                      IDM_IDE2EJECT
+        MENUITEM "取り出し(&E)...",             IDM_IDE2EJECT
         MENUITEM SEPARATOR
         MENUITEM " ",							IDM_IDE2STATE
     END
     POPUP "IDE #3"
     BEGIN
-        MENUITEM "開く(&O)...",                    IDM_IDE3OPEN
+        MENUITEM "開く(&O)...",                 IDM_IDE3OPEN
         MENUITEM SEPARATOR
-        MENUITEM "取り出し(&E)...",                      IDM_IDE3EJECT
+        MENUITEM "取り出し(&E)...",             IDM_IDE3EJECT
         MENUITEM SEPARATOR
         MENUITEM " ",							IDM_IDE3STATE
     END
@@ -1453,6 +1454,11 @@ BEGIN
     IDS_IDETYPE_NONE        "なし"
     IDS_IDETYPE_HDD         "HDD"
     IDS_IDETYPE_CDROM       "CD-ROM"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PHYSICALDRIVE       "実ドライブ(&H) "
 END
 
 STRINGTABLE

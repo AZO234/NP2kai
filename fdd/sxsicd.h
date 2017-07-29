@@ -10,8 +10,9 @@ enum {
 
 #ifdef SUPPORT_KAI_IMAGES
 
-#define	TRACK_DATA	0x14
-#define	TRACK_AUDIO	0x10
+// WinDDKÇÃç\ë¢ëÃÇÃñºëOÇ∆îÌÇ¡ÇøÇ·Ç¡ÇΩÇÃÇ≈ TRACK -> TRACKTYPE Ç…ïœçX np21w ver0.86 rev33
+#define	TRACKTYPE_DATA	0x14
+#define	TRACKTYPE_AUDIO	0x10
 
 typedef struct {
 	UINT8	adr_ctl;		//	Adr/Ctl

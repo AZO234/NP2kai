@@ -52,6 +52,14 @@ BOOL sysmng_workclockrenewal(void) {
 	return(TRUE);
 }
 
+OEMCHAR* DOSIOCALL sysmng_file_getname(OEMCHAR* lpPathName){
+	if(_tcsnicmp(lpPathName, OEMTEXT("\\\\.\\"), 4)==0){
+		return lpPathName;
+	}else{
+		return file_getname(lpPathName);
+	}
+}
+
 void sysmng_updatecaption(UINT8 flag) {
 
 #ifdef SUPPORT_IDEIO
@@ -79,14 +87,14 @@ void sysmng_updatecaption(UINT8 flag) {
 				OEMSPRINTF(work, OEMTEXT("  CD%d:"), cddrvnum);
 				if (sxsi_getdevtype(i)==SXSIDEV_CDROM && *(np2cfg.idecd[i])) {
 					milstr_ncat(title, work, NELEMENTS(title));
-					milstr_ncat(title, file_getname(np2cfg.idecd[i]), NELEMENTS(title));
+					milstr_ncat(title, sysmng_file_getname(np2cfg.idecd[i]), NELEMENTS(title));
 				}
 				cddrvnum++;
 			}
 			if(g_hWndMain){
 				OEMCHAR newtext[MAX_PATH*2+100];
-				const OEMCHAR *fname;
-				const OEMCHAR *fnamenext;
+				OEMCHAR *fname;
+				OEMCHAR *fnamenext;
 				OEMCHAR *fnametmp;
 				OEMCHAR *fnamenexttmp;
 				HMENU hMenu = np2class_gethmenu(g_hWndMain);
@@ -107,20 +115,20 @@ void sysmng_updatecaption(UINT8 flag) {
 						if(np2cfg.idetype[i]==SXSIDEV_CDROM){
 							fnamenext = np2cfg.idecd[i];
 						}else{
-							fnamenext = diskdrv_getsxsi(i);
+							fnamenext = (OEMCHAR*)diskdrv_getsxsi(i);
 						}
-						if(fname && *fname && fnamenext && *fnamenext && (fnametmp = file_getname(fname)) && (fnamenexttmp = file_getname(fnamenext))){
+						if(fname && *fname && fnamenext && *fnamenext && (fnametmp = sysmng_file_getname(fname)) && (fnamenexttmp = sysmng_file_getname(fnamenext))){
 							_tcscpy(newtext, hddimgmenustrorg[i]);
 							_tcscat(newtext, fnametmp);
 							if(_tcscmp(fname, fnamenext)){
 								_tcscat(newtext, OEMTEXT(" -> "));
 								_tcscat(newtext, fnamenexttmp);
 							}
-						}else if(fnamenext && *fnamenext && (fnamenexttmp = file_getname(fnamenext))){
+						}else if(fnamenext && *fnamenext && (fnamenexttmp = sysmng_file_getname(fnamenext))){
 							_tcscpy(newtext, hddimgmenustrorg[i]);
 							_tcscat(newtext, OEMTEXT("[none] -> "));
 							_tcscat(newtext, fnamenexttmp);
-						}else if(fname && *fname && (fnametmp = file_getname(fname))){
+						}else if(fname && *fname && (fnametmp = sysmng_file_getname(fname))){
 							_tcscpy(newtext, hddimgmenustrorg[i]);
 							_tcscat(newtext, fnametmp);
 							_tcscat(newtext, OEMTEXT(" -> [none]"));

@@ -74,7 +74,7 @@ typedef struct {
 	UINT8	daplaying;
 	UINT8	padding;
 	UINT8   bios;
-	TCHAR   biosname[16];
+	OEMCHAR biosname[16];
 	UINT32  rwait;
 	UINT32  wwait;
 	UINT32  mwait;

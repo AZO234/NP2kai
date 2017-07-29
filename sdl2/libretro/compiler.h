@@ -41,6 +41,7 @@ typedef	uint8_t		UINT8;
 typedef	int16_t		SINT16;
 typedef	uint16_t		UINT16;
 typedef	int32_t		SINT32;
+typedef	int32_t		INT32;
 typedef	uint32_t		UINT32;
 typedef	int64_t		SINT64;
 typedef	uint64_t		UINT64;
@@ -48,6 +49,10 @@ typedef	uint64_t		UINT64;
 typedef  int32_t*    INTPTR;
 
 typedef	unsigned char	BYTE;
+#if !defined(_WIN32)
+typedef	uint32_t	DWORD;
+typedef	uint16_t	WORD;
+#endif	/* _WIN32 */
 
 #ifdef _WIN32
 typedef int BOOL;
@@ -129,6 +134,8 @@ typedef	signed char		TCHAR;
 #define	__ASSERT(s)
 #define	SPRINTF				sprintf
 #define	STRLEN				strlen
+#define	_tcsicmp	strcasecmp
+#define	_tcsnicmp	strncasecmp
 
 #if defined(SUPPORT_LARGE_HDD)
 typedef SINT64	FILEPOS;

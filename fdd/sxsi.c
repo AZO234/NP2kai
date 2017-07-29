@@ -1,3 +1,4 @@
+#include	<string.h>
 #include	"compiler.h"
 #include	"strres.h"
 #include	"dosio.h"
@@ -239,7 +240,7 @@ UINT8 sxsi_getdevtype(REG8 drv) {
 
 // CD入れ替えのタイムアウト（投げやり）
 char cdchange_flag = 0;
-UINT32 cdchange_reqtime = 0;
+DWORD cdchange_reqtime = 0;
 REG8 cdchange_drv;
 OEMCHAR cdchange_fname[MAX_PATH];
 void cdchange_timeoutproc(NEVENTITEM item) {
@@ -254,7 +255,7 @@ void cdchange_timeoutproc(NEVENTITEM item) {
 }
 static void cdchange_timeoutset(void) {
 
-	nevent_setbyms(NEVENT_CDWAIT, 5000, cdchange_timeoutproc, NEVENT_ABSOLUTE);
+	nevent_setbyms(NEVENT_CDWAIT, 6000, cdchange_timeoutproc, NEVENT_ABSOLUTE);
 }
 
 #ifdef SUPPORT_NVL_IMAGES
@@ -304,7 +305,7 @@ BRESULT sxsi_devopen(REG8 drv, const OEMCHAR *fname) {
 				return(SUCCESS);
 			}
 			else {
-				if(sxsi->flag & SXSIFLAG_READY){
+				if((sxsi->flag & SXSIFLAG_READY) && (_tcsnicmp(sxsi->fname, OEMTEXT("\\\\.\\"), 4)!=0 || _tcsicmp(sxsi->fname, np2cfg.idecd[drv & 0x0f])==0) ){
 					// いったん取り出す
 					ideio_notify(sxsi->drv, 0);
 					sxsi->flag = 0;
@@ -318,9 +319,12 @@ BRESULT sxsi_devopen(REG8 drv, const OEMCHAR *fname) {
 					return(FAILURE); // XXX: ここで失敗返してええの？
 				}
 				r = sxsicd_open(sxsi, fname);
-				if (r == SUCCESS) {
+				if (r == SUCCESS || _tcsnicmp(fname, OEMTEXT("\\\\.\\"), 4)==0) {
 					int num = drv & 0x0f;
 					file_cpyname(np2cfg.idecd[num], fname, NELEMENTS(cdchange_fname));
+					if(r != SUCCESS && _tcsnicmp(fname, OEMTEXT("\\\\.\\"), 4)==0){
+						ideio_notify(sxsi->drv, 0);
+					}
 				}else{
 					int num = drv & 0x0f;
 					file_cpyname(np2cfg.idecd[num], _T("\0\0\0\0"), 1);

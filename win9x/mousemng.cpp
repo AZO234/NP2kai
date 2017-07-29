@@ -40,6 +40,13 @@ UINT8 mousemng_getstat(SINT16 *x, SINT16 *y, int clear) {
 	}
 	return(mousemng.btn);
 }
+void mousemng_setstat(SINT16 x, SINT16 y, UINT8 btn) {
+	if (mousemng.flag){
+		mousemng.x = x;
+		mousemng.y = y;
+		mousemng.btn = btn;
+	}
+}
 
 UINT8 mousemng_supportrawinput() {
 	return(dinput && diRawMouse);
@@ -220,7 +227,7 @@ void mousemng_sync(void) {
 
 BOOL mousemng_buttonevent(UINT event) {
 
-	if (!mousemng.flag) {
+	if (!mousemng.flag || (np2oscfg.mouse_nc && mousemng.flag)) {
 		switch(event) {
 			case MOUSEMNG_LEFTDOWN:
 				mousemng.btn &= ~(uPD8255A_LEFTBIT);

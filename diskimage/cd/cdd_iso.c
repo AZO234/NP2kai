@@ -41,7 +41,7 @@ BRESULT openiso(SXSIDEV sxsi, const OEMCHAR *path) {
 		goto openiso_err2;
 	}
 
-	trk[0].adr_ctl			= TRACK_DATA;
+	trk[0].adr_ctl			= TRACKTYPE_DATA;
 	trk[0].point			= 1;
 	trk[0].pos				= 0;
 	trk[0].pos0				= 0;

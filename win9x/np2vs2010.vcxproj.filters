@@ -1143,6 +1143,9 @@
     <ClCompile Include="ext\opl3.cpp">
       <Filter>ソース ファイル\win9x\ext</Filter>
     </ClCompile>
+    <ClCompile Include="..\diskimage\cd\cdd_real.c">
+      <Filter>ソース ファイル\diskimage\cd</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\calendar.h">
@@ -1993,6 +1996,9 @@
     </ClInclude>
     <ClInclude Include="..\wab\wabbmpsave.h">
       <Filter>ヘッダー ファイル\wab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\diskimage\cd\cdd_real.h">
+      <Filter>ヘッダー ファイル\diskimage\cd</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
