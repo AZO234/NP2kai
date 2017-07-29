@@ -102,9 +102,9 @@ BIOS files
 Setting to RetroPie
 ---
 
-１．Install Japanese font. (SDL2 port only)
+１．Install Japanese font. (umefont need SDL2 port only)
 
-    $ sudo apt-get install fonts-horai-umefont
+    $ sudo apt-get install fonts-droid fonts-horai-umefont
 
 ２．Locate libretro & SDL2 port files.
 
