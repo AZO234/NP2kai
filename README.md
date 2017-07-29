@@ -91,6 +91,7 @@ BIOS files
 * bios.rom
 * FONT.ROM (big letter)
 * itf.rom
+* (d8000.rom  But I never see good dump file.)
 * 2608_bd.wav
 * 2608_sd.wav
 * 2608_top.wav
@@ -105,7 +106,7 @@ Setting to RetroPie
 
     $ sudo apt-get install fonts-horai-umefont
 
-２．locate libretro & SDL2 port files.
+２．Locate libretro & SDL2 port files.
 
     $ sudo mkdir /opt/retropie/libretrocores/lr-np2
     $ sudo cp np2_libretro.so /opt/retropie/libretrocores/lr-np2/
@@ -114,21 +115,30 @@ Setting to RetroPie
     $ sudo touch /opt/retropie/emulators/np2/np2.cfg
     $ sudo chmod 666 /opt/retropie/emulators/np2/np2.cfg
 
-３．locate BIOS files.
+３．Write & locate retroarch.cfg.
 
-BIOS files locate in "&tilde;/RetroPie/roms/pc98/np2/" directory.  
+    $ sudo vi /opt/retropie/configs/pc98/retroarch.cfg
+
+    # Settings made here will only override settings in the global retroarch.cfg if placed above the #include line
+    
+    input_remapping_directory = "/opt/retropie/configs/pc98/"
+    
+    #include "/opt/retropie/configs/all/retroarch.cfg"
+
+４．Locate BIOS files.
+
+BIOS files locate in "&tilde;/RetroPie/BIOS/np2/" directory.  
 and "/opt/retropie/emulators/np2/" too.
 
-４．Make shortcut to Japanese font. (SDL2 port only)
+５．Make shortcut to Japanese font. (SDL2 port only)
 
     $ sudo ln -s /usr/share/fonts/truetype/horai-umefont/ume-ugo4.ttf /opt/retropie/emulators/np2/default.ttf
 
-５．Add "carbon-mod". (Japanese nize)
-
+６．Add "carbon-mod". (Japanese nize)
     $ git clone https://github.com/eagle0wl/es-theme-carbon.git
     $ sudo cp -r ./es-theme-carbon /etc/emulationstation/themes/carbon-mod
 
-６．Add to "/etc/emulationstation/es_systems.cfg" writing.
+７．Add to "/etc/emulationstation/es_systems.cfg" writing.
 
     $ sudo nano /etc/emulationstation/es_systems.cfg
 
@@ -147,7 +157,7 @@ and "/opt/retropie/emulators/np2/" too.
       <system>
     ...
 
-７．Add to "/opt/retropie/configs/pc98/emulators.cfg" writing.
+８．Add to "/opt/retropie/configs/pc98/emulators.cfg" writing.
 
     $ cd /opt/retropie/configs
     $ sudo mkdir pc98
@@ -158,7 +168,17 @@ and "/opt/retropie/emulators/np2/" too.
     lr-np2="/opt/retropie/emulators/retroarch/bin/retroarch -L /opt/retropie/libretrocores/lr-np2/np2_libretro.so --config /opt/retropie/configs/pc98/retroarch.cfg %ROM%"
     default="lr-np2"
 
-８．Launch ES and set "CARBON-MOD" to "THEME-SET".
+９．Launch ES and set "CARBON-MOD" to "THEME-SET".
+
+Point of tuning performance NP2kai
+---
+* CPU clock
+Change "CPU Clock Multiplyer".
+
+* Memory size
+Change "RAM Size".
+
+Don't forget restart core.
 
 About network
 ---
