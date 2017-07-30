@@ -72,7 +72,7 @@ static const LRKCNV lrcnv101[] =
 			{RETROK_KP3,			0x4c},	{RETROK_KP_EQUALS,	0x4d},
 			{RETROK_KP0,			0x4e},
    
-			{RETROK_KP_PERIOD,	0x50},	{RETROK_KP_ENTER,	0x1c},
+			{RETROK_KP_PERIOD,	0x50},	{RETROK_KP_ENTER,	   0x1c},
    
 			{RETROK_PAUSE,       0x60},	{RETROK_PRINT,       0x61},
 			{RETROK_F1,          0x62},	{RETROK_F2,          0x63},
@@ -89,6 +89,12 @@ static const LRKCNV lrcnv101[] =
    
 			/* = */
 			{RETROK_EQUALS,		0x0c},
+   
+         /* @ and : keys for western qwerty kb */
+         {RETROK_BACKQUOTE,   0x1a},   {RETROK_QUOTE,       0x27},
+   
+         /* _ as shift+F11 for western qwerty kb */
+         {RETROK_F11,         0x33},
    
 			/* MacOS Yen */
 			//{0xa5,				0x0d}
