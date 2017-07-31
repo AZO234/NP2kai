@@ -35,6 +35,8 @@
 #include "strres.h"
 #include "np2.h"
 
+extern void upd4990_timingpulse(void);
+
 signed short soundbuf[SNDSZ*2]; //16bit*2ch
 
 char RPATH[512];
@@ -1103,13 +1105,17 @@ void retro_run (void)
    updateInput();
 
    if (menuvram != NULL){
-	memcpy(FrameBuffer,GuiBuffer,scrnsurf.width*scrnsurf.height*2);
-	draw_cross(lastx,lasty);
+      memcpy(FrameBuffer,GuiBuffer,scrnsurf.width*scrnsurf.height*2);
+      draw_cross(lastx,lasty);
    }
    else {
    	//emulate 1 frame
-   	pccore_exec(true /*draw*/);
-   	sound_play_cb(NULL, NULL,SNDSZ*4);
+#ifdef SUPPORT_HRTIMER
+      upd4990_timingpulse();
+#endif	/* SUPPORT_HRTIMER */
+
+      pccore_exec(true /*draw*/);
+      sound_play_cb(NULL, NULL,SNDSZ*4);
    }
 
    video_cb(FrameBuffer, scrnsurf.width, scrnsurf.height, scrnsurf.width * 2/*Pitch*/);

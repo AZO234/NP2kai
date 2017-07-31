@@ -93,6 +93,7 @@ static void IOOUTCALL upd4990_o20(UINT port, REG8 dat) {
 
 #ifdef SUPPORT_HRTIMER
 int io22value = 0;
+int hrtimerdiv = 32;
 static void IOOUTCALL upd4990_o22(UINT port, REG8 dat) {
 	io22value = dat;
 	(void)port;
@@ -132,6 +133,21 @@ static REG8 IOOUTCALL upd4990_i128(UINT port) {
 		return(0x83);
 	}
 	return(0x81);
+}
+
+static double inctime = 0;
+static double nexttime = 0;
+void upd4990_timingpulse(void) {
+	UINT32 time;
+	time = GETTICK();
+	if(hrtimerdiv != 0) {
+		inctime = 1000.0 / hrtimerdiv;
+		if(time - (time / 1000) * 1000 >= nexttime)
+			pic_setirq(0x15);
+		nexttime += inctime;
+		if(nexttime >= 1000)
+			nexttime = 0;
+	}
 }
 #endif
 
