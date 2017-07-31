@@ -93,8 +93,8 @@ static const LRKCNV lrcnv101[] =
          /* @ and : keys for western qwerty kb */
          {RETROK_BACKQUOTE,   0x1a},   {RETROK_QUOTE,       0x27},
 
-         /* _ as shift+F11 for western qwerty kb */
-         {RETROK_F11,         0x33},
+         /* _ as shift+rctrl for western qwerty kb */
+         {RETROK_RCTRL,       0x33},
 
          /* MacOS Yen */
          //{0xa5,            0x0d}
