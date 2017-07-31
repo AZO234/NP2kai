@@ -86,6 +86,9 @@ D-UP/DOWN/LEFT/RIGHT: mouse move
 B button: left click  
 A button: right click
 
+If you use 104 western keyboard,  
+to input underscore(_), press Shift+right Ctrl.
+
 BIOS files
 ---
 * bios.rom
