@@ -135,18 +135,34 @@ static REG8 IOOUTCALL upd4990_i128(UINT port) {
 	return(0x81);
 }
 
-static double inctime = 0;
 static double nexttime = 0;
+static int hrtimecount = 0;
 void upd4990_timingpulse(void) {
-	UINT32 time;
-	time = GETTICK();
+	UINT32 time, time2;
+	double inctime;
+
 	if(hrtimerdiv != 0) {
+		time = GETTICK();
 		inctime = 1000.0 / hrtimerdiv;
-		if(time - (time / 1000) * 1000 >= nexttime)
-			pic_setirq(0x15);
-		nexttime += inctime;
-		if(nexttime >= 1000)
+		time2 = time - (UINT32)((double)time / 1000) * 1000;
+		if(time2 >= nexttime) {
+			if(nexttime == 0) {
+				if(time2 < 1000.0 - inctime) {
+					pic_setirq(0x15);
+					nexttime += inctime;
+					hrtimecount++;
+				}
+			} else {
+				pic_setirq(0x15);
+				nexttime += inctime;
+				hrtimecount++;
+			}
+		}
+
+		if(hrtimecount >= hrtimerdiv) {
 			nexttime = 0;
+			hrtimecount = 0;
+		}
 	}
 }
 #endif
