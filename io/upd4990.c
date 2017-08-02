@@ -98,7 +98,6 @@ static void IOOUTCALL upd4990_o20(UINT port, REG8 dat) {
 int io22value = 0;
 static UINT32 hrtimerdiv = 32;
 static UINT32 hrtimerclock = 0;
-static UINT32 hrtimerclock32 = 0;
 
 static void IOOUTCALL upd4990_o22(UINT port, REG8 dat) {
 	io22value = dat;
@@ -175,17 +174,16 @@ void uPD4990_bind(void) {
 
 #if defined(SUPPORT_HRTIMER)
 static UINT32 clockcounter = 0;
-static UINT32 clockcounter32 = 0;
 
 void upd4990_hrtimer_start(void) {
-	hrtimerclock32 = pccore.realclock / 32;
 }
 
 void upd4990_hrtimer_stop(void) {
 }
 
 void upd4990_hrtimer_count(void) {
-	UINT32 lastclock;
+	_SYSTIME hrtimertime;
+	UINT32 hrtimertimeuint;
 
 	// pulse interrupt
 	if(hrtimerclock) {
@@ -197,16 +195,9 @@ void upd4990_hrtimer_count(void) {
 	}
 
 	// time update
-	clockcounter32 += CPU_BASECLOCK;
-	if(clockcounter32 > hrtimerclock32) {
-		UINT32 hrtimertimeuint;
-		clockcounter32 -= hrtimerclock32;
-		
-		hrtimertimeuint = LOADINTELDWORD(mem+0x04F1);
-		hrtimertimeuint++;
-		hrtimertimeuint &= 0xffffff;
-		STOREINTELDWORD(mem+0x04F1, hrtimertimeuint); // XXX: 04F4にも書いちゃってるけど差し当たっては問題なさそうなので･･･
-	}
+	timemng_gettime(&hrtimertime);
+	hrtimertimeuint = (((UINT32)hrtimertime.hour*60 + (UINT32)hrtimertime.minute)*60 + (UINT32)hrtimertime.second)*32 + ((UINT32)hrtimertime.milli*32) / 1000;
+	STOREINTELDWORD(mem+0x04F1, hrtimertimeuint);
 }
 #endif	/* SUPPORT_HRTIMER */
 

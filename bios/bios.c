@@ -225,17 +225,6 @@ static void bios_reinitbyswitch(void) {
 	if(np2cfg.modelnum) mem[0xF8E80+0x003F] = np2cfg.modelnum; // PC-9821 Model Number
 #endif
 	
-#if defined(SUPPORT_HRTIMER)
-	{
-		_SYSTIME hrtimertime;
-		UINT32 hrtimertimeuint;
-
-		timemng_gettime(&hrtimertime);
-		hrtimertimeuint = (((UINT32)hrtimertime.hour*60 + (UINT32)hrtimertime.minute)*60 + (UINT32)hrtimertime.second)*32 + ((UINT32)hrtimertime.milli*32)/1000;
-		STOREINTELDWORD(mem+0x04F1, hrtimertimeuint); // XXX: 04F4Ç…Ç‡èëÇ¢ÇøÇ·Ç¡ÇƒÇÈÇØÇ«ç∑ÇµìñÇΩÇ¡ÇƒÇÕñ‚ëËÇ»Ç≥ÇªÇ§Ç»ÇÃÇ≈•••
-	}
-#endif	/* SUPPORT_HRTIMER */
-
 #if defined(SUPPORT_PC9801_119)
 	mem[MEMB_BIOS_FLAG3] |= 0x40;
 #endif	/* defined(SUPPORT_PC9801_119) */
