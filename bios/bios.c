@@ -24,7 +24,9 @@
 #if defined(SUPPORT_IDEIO)
 #include	"fdd/sxsi.h"
 #endif
-
+#if defined(SUPPORT_HRTIMER)
+#include "timemng.h"
+#endif	/* SUPPORT_HRTIMER */
 
 #define	BIOS_SIMULATE
 
@@ -222,7 +224,7 @@ static void bios_reinitbyswitch(void) {
 	mem[0xF8E80+0x0011] = mem[0xF8E80+0x0011] & ~0x20; // 0x20のビットがONだとWin2000でマウスがカクカクする？
 	if(np2cfg.modelnum) mem[0xF8E80+0x003F] = np2cfg.modelnum; // PC-9821 Model Number
 #endif
-
+	
 #if defined(SUPPORT_PC9801_119)
 	mem[MEMB_BIOS_FLAG3] |= 0x40;
 #endif	/* defined(SUPPORT_PC9801_119) */

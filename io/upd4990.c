@@ -3,7 +3,10 @@
 #include	"pccore.h"
 #include	"iocore.h"
 #include	"calendar.h"
-
+#if defined(SUPPORT_HRTIMER)
+#include	"cpucore.h"
+#include	"cpumem.h"
+#endif	/* SUPPORT_HRTIMER */
 
 // ---- I/O
 
@@ -91,12 +94,16 @@ static void IOOUTCALL upd4990_o20(UINT port, REG8 dat) {
 }
 
 
-#ifdef SUPPORT_HRTIMER
+#if defined(SUPPORT_HRTIMER)
 int io22value = 0;
+static UINT32 hrtimerdiv = 32;
+static UINT32 hrtimerclock = 0;
+
 static void IOOUTCALL upd4990_o22(UINT port, REG8 dat) {
 	io22value = dat;
 	(void)port;
 }
+
 static REG8 IOOUTCALL upd4990_i22(UINT port) {
 	return io22value;
 }
@@ -117,6 +124,10 @@ static void IOOUTCALL upd4990_o128(UINT port, REG8 dat) {
 		hrtimerdiv = 16;
 		break;
 	}
+	if(hrtimerdiv)
+		hrtimerclock = pccore.realclock / hrtimerdiv;
+	else
+		hrtimerclock = 0;
 	(void)port;
 }
 
@@ -133,7 +144,7 @@ static REG8 IOOUTCALL upd4990_i128(UINT port) {
 	}
 	return(0x81);
 }
-#endif
+#endif	/* SUPPORT_HRTIMER */
 
 
 // ---- I/F
@@ -150,11 +161,43 @@ void uPD4990_reset(const NP2CFG *pConfig) {
 void uPD4990_bind(void) {
 
 	iocore_attachsysoutex(0x0020, 0x0cf1, updo20, 1);
-#ifdef SUPPORT_HRTIMER
+#if defined(SUPPORT_HRTIMER)
 	iocore_attachout(0x0022, upd4990_o22);
 	iocore_attachinp(0x0022, upd4990_i22);
 	iocore_attachout(0x0128, upd4990_o128);
 	iocore_attachinp(0x0128, upd4990_i128);
-#endif
+
+	hrtimerdiv = 32;
+	hrtimerclock = pccore.realclock/hrtimerdiv;
+#endif	/* SUPPORT_HRTIMER */
 }
+
+#if defined(SUPPORT_HRTIMER)
+static UINT32 clockcounter = 0;
+
+void upd4990_hrtimer_start(void) {
+}
+
+void upd4990_hrtimer_stop(void) {
+}
+
+void upd4990_hrtimer_count(void) {
+	_SYSTIME hrtimertime;
+	UINT32 hrtimertimeuint;
+
+	// pulse interrupt
+	if(hrtimerclock) {
+		clockcounter += CPU_BASECLOCK;
+		if(clockcounter > hrtimerclock) {
+			clockcounter -= hrtimerclock;
+			pic_setirq(15);
+		}
+	}
+
+	// time update
+	timemng_gettime(&hrtimertime);
+	hrtimertimeuint = (((UINT32)hrtimertime.hour*60 + (UINT32)hrtimertime.minute)*60 + (UINT32)hrtimertime.second)*32 + ((UINT32)hrtimertime.milli*32) / 1000;
+	STOREINTELDWORD(mem+0x04F1, hrtimertimeuint);
+}
+#endif	/* SUPPORT_HRTIMER */
 
