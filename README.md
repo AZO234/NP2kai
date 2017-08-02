@@ -1,6 +1,6 @@
-Neko Project II 0.86 kai rev.7
+Neko Project II 0.86 kai rev.8
 ===
-Jul 24, 2017  
+Aug 3, 2017  
 
 Build SDL2 port
 ---
@@ -94,7 +94,7 @@ BIOS files
 * bios.rom
 * FONT.ROM (big letter)
 * itf.rom
-* (d8000.rom  But I never see good dump file.)
+* (bios9821.rom or d8000.rom  But I never see good dump file.)
 * 2608_bd.wav
 * 2608_sd.wav
 * 2608_top.wav
@@ -195,6 +195,9 @@ I/O:0x00D0
 
 Release
 ---
+* Aug 3, 2017 (rev.8)
+	- Apply HRTIMER
+	- [libretro] input underscore(_) for western keyboard
 * Jul 24, 2017 (rev.7)
 	- Apply network
 * Jul 18, 2017 (rev.6)
