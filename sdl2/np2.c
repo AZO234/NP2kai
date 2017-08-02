@@ -350,9 +350,6 @@ int np2_end(){
 #else	/* __LIBRETRO__ */
 	
 	while(taskmng_isavail()) {
-#ifdef SUPPORT_HRTIMER
-		upd4990_timingpulse();
-#endif	/* SUPPORT_HRTIMER */
 		taskmng_rol();
 		if (np2oscfg.NOWAIT) {
 			joymng_sync();

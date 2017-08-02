@@ -48,6 +48,9 @@
 #include	"timing.h"
 #include	"keystat.h"
 #include	"debugsub.h"
+#if defined(SUPPORT_HRTIMER)
+#include	"upd4990.h"
+#endif	/* SUPPORT_HRTIMER */
 
 
 const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
@@ -299,9 +302,17 @@ void pccore_init(void) {
 #if defined(SUPPORT_HOSTDRV)
 	hostdrv_initialize();
 #endif
+
+#if defined(SUPPORT_HRTIMER)
+	upd4990_hrtimer_start();
+#endif	/* SUPPORT_HRTIMER */
 }
 
 void pccore_term(void) {
+
+#if defined(SUPPORT_HRTIMER)
+	upd4990_hrtimer_stop();
+#endif	/* SUPPORT_HRTIMER */
 
 #if defined(SUPPORT_HOSTDRV)
 	hostdrv_deinitialize();
@@ -688,6 +699,9 @@ void pccore_exec(BOOL draw) {
 			CPU_STEPEXEC();
 		}
 #endif
+#if defined(SUPPORT_HRTIMER)
+	upd4990_hrtimer_count();
+#endif	/* SUPPORT_HRTIMER */
 		nevent_progress();
 	}
 	artic_callback();
