@@ -7,9 +7,15 @@ BRESULT timemng_gettime(_SYSTIME *systime) {
 
 	struct timeval microtime;
 	struct tm *macrotime;
+#if defined(_WIN32)
+	SYSTEMTIME mmacrotime;
 
+	GetLocalTime(&mmacrotime);
+	macrotime = (struct tm *)&mmacrotime;
+#else
 	gettimeofday(&microtime, NULL);
 	macrotime = localtime(&microtime.tv_sec);
+#endif
 	if (macrotime != NULL) {
 		systime->year = macrotime->tm_year + 1900;
 		systime->month = macrotime->tm_mon + 1;
@@ -18,7 +24,11 @@ BRESULT timemng_gettime(_SYSTIME *systime) {
 		systime->hour = macrotime->tm_hour;
 		systime->minute = macrotime->tm_min;
 		systime->second = macrotime->tm_sec;
+#if defined(_WIN32)
+		systime->milli = mmacrotime.wMilliseconds;
+#else
 		systime->milli = microtime.tv_usec / 1000;
+#endif
 		return(SUCCESS);
 	}
 	else {
