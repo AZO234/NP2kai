@@ -54,7 +54,7 @@ retro_audio_sample_batch_t audio_batch_cb = NULL;
 
 static char CMDFILE[512];
 
-bool did_reset;
+bool did_reset, joy2key;
 
 int loadcmdfile(char *argv)
 {
@@ -287,6 +287,23 @@ static bool joymouse;
 static int joymousemovebtn = 0;
 static double joymouseaxel = 1.0;
 
+bool mapkey_down[12];
+
+static int joy2key_map[12][2] = { 
+   {RETRO_DEVICE_ID_JOYPAD_UP,     RETROK_UP},
+   {RETRO_DEVICE_ID_JOYPAD_DOWN,   RETROK_DOWN},
+   {RETRO_DEVICE_ID_JOYPAD_LEFT,   RETROK_LEFT},
+   {RETRO_DEVICE_ID_JOYPAD_RIGHT,  RETROK_RIGHT},
+   {RETRO_DEVICE_ID_JOYPAD_A,      RETROK_x},
+   {RETRO_DEVICE_ID_JOYPAD_B,      RETROK_z},
+   {RETRO_DEVICE_ID_JOYPAD_X,      RETROK_SPACE},
+   {RETRO_DEVICE_ID_JOYPAD_Y,      RETROK_LCTRL},
+   {RETRO_DEVICE_ID_JOYPAD_L,      RETROK_BACKSPACE},
+   {RETRO_DEVICE_ID_JOYPAD_R,      RETROK_RSHIFT},
+   {RETRO_DEVICE_ID_JOYPAD_SELECT, RETROK_ESCAPE},
+   {RETRO_DEVICE_ID_JOYPAD_START,  RETROK_RETURN}
+};
+   
 void updateInput(){
 
    static int mposx=LR_SCREENWIDTH/2,mposy=LR_SCREENHEIGHT/2;
@@ -296,13 +313,34 @@ void updateInput(){
    joymng_sync();
 
    uint32_t i;
-   for (i=0; i < keys_needed; i++)
-      if (input_cb(0, RETRO_DEVICE_KEYBOARD, 0, keys_to_poll[i])){
-         send_libretro_key_down(keys_to_poll[i]);
+   
+   if (joy2key)
+   {
+      for (i = 0; i < 12; i++)
+      {
+         if (input_cb(0, RETRO_DEVICE_JOYPAD, 0, joy2key_map[i][0]) && !mapkey_down[i] )
+         {
+            send_libretro_key_down(joy2key_map[i][1]);
+            mapkey_down[i] = 1;
+         }
+         else if (!input_cb(0, RETRO_DEVICE_JOYPAD, 0, joy2key_map[i][0]) )
+         {
+            send_libretro_key_up(joy2key_map[i][1]);
+            mapkey_down[i] = 0;
+         }
       }
-      else {
-         send_libretro_key_up(keys_to_poll[i]);
+   }
+   else
+   {
+      /* Keyboard Mapping */
+      for (i=0; i < keys_needed; i++)
+      {
+         if (input_cb(0, RETRO_DEVICE_KEYBOARD, 0, keys_to_poll[i]))
+            send_libretro_key_down(keys_to_poll[i]);
+         else
+            send_libretro_key_up(keys_to_poll[i]);
       }
+   }
 
    if ((input_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_F12) ||
       input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2) ||
@@ -801,7 +839,8 @@ void retro_set_environment(retro_environment_t cb)
       { "np2_Seek_Snd" , "Floppy Seek Sound; OFF|ON" },
       { "np2_Seek_Vol" , "Volume Floppy Seek; 80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76" },
       { "np2_BEEP_vol" , "Volume Beep; 3|0|1|2" },
-      { "np2_joy_mouse" , "Control Mouse With Joypad; disabled|enabled" },
+      { "np2_joy2mouse" , "Joypad to Mouse Mapping; OFF|ON" },
+      { "np2_joy2key" , "Joypad to Keyboard Mapping; OFF|ON" },
       { NULL, NULL },
    };
 
@@ -1008,15 +1047,26 @@ static void update_variables(void)
       beep_setvol(np2cfg.BEEP_VOL);
    }
 
-   var.key = "np2_joy_mouse";
+   var.key = "np2_joy2mouse";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
-      if (strcmp(var.value, "enabled") == 0)
+      if (strcmp(var.value, "ON") == 0)
          joymouse = true;
       else
          joymouse = false;
+   }
+
+   var.key = "np2_joy2key";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "ON") == 0)
+         joy2key = true;
+      else
+         joy2key = false;
    }
 
    initsave();
