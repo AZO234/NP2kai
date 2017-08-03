@@ -207,11 +207,10 @@ I/O:0x00D0
 
 Release
 ---
-* Aug 3, 2017
-	- [libretro] Add Joy2Key (thanks Tetsuya79)
 * Aug 3, 2017 (rev.8)
 	- Apply HRTIMER
 	- [libretro] input underscore(_) for western keyboard
+	- [libretro] Add Joy2Key (thanks Tetsuya79)
 * Jul 24, 2017 (rev.7)
 	- Apply network
 * Jul 18, 2017 (rev.6)
