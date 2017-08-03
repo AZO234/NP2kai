@@ -5,20 +5,20 @@
 
 BRESULT timemng_gettime(_SYSTIME *systime) {
 
-	time_t	long_time;
-struct tm	*now_time;
+	struct timeval microtime;
+	struct tm *macrotime;
 
-	time(&long_time);
-	now_time = localtime(&long_time);
-	if (now_time != NULL) {
-		systime->year = now_time->tm_year + 1900;
-		systime->month = now_time->tm_mon + 1;
-		systime->week = now_time->tm_wday;
-		systime->day = now_time->tm_mday;
-		systime->hour = now_time->tm_hour;
-		systime->minute = now_time->tm_min;
-		systime->second = now_time->tm_sec;
-		systime->milli = 0;
+	gettimeofday(&microtime, NULL);
+	macrotime = localtime(&microtime.tv_sec);
+	if (macrotime != NULL) {
+		systime->year = macrotime->tm_year + 1900;
+		systime->month = macrotime->tm_mon + 1;
+		systime->week = macrotime->tm_wday;
+		systime->day = macrotime->tm_mday;
+		systime->hour = macrotime->tm_hour;
+		systime->minute = macrotime->tm_min;
+		systime->second = macrotime->tm_sec;
+		systime->milli = microtime.tv_usec / 1000;
 		return(SUCCESS);
 	}
 	else {
