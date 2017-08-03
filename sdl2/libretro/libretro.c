@@ -35,8 +35,6 @@
 #include "strres.h"
 #include "np2.h"
 
-extern void upd4990_timingpulse(void);
-
 signed short soundbuf[SNDSZ*2]; //16bit*2ch
 
 char RPATH[512];
@@ -1109,11 +1107,7 @@ void retro_run (void)
       draw_cross(lastx,lasty);
    }
    else {
-   	//emulate 1 frame
-#ifdef SUPPORT_HRTIMER
-      upd4990_timingpulse();
-#endif	/* SUPPORT_HRTIMER */
-
+      //emulate 1 frame
       pccore_exec(true /*draw*/);
       sound_play_cb(NULL, NULL,SNDSZ*4);
    }
