@@ -90,12 +90,12 @@ Keyboard is able to control with joypad when Joy2Key mode.
 Switch Joy2Key mode in config.  
 D-UP/DOWN/LEFT/RIGHT: allow key  
 B button: Z key  
-A button: X key
+A button: X key  
 X button: Space key  
-Y button: left Ctrl key
-L button: Backspace key
-R button: right Shift key
-Select button: Escape key
+Y button: left Ctrl key  
+L button: Backspace key  
+R button: right Shift key  
+Select button: Escape key  
 Start button: Return key
 
 If you use 104 western keyboard,  
