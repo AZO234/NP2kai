@@ -80,11 +80,23 @@ NP2 menu can FDD/HDD swap.
 
 Mouse is cuptured (hidden/show toggle) by F11 key.
 
-Mouse cursor is able to move with joypad when JoyMouse mode.  
-Switch JoyMouse mode in config.  
+Mouse cursor is able to move with joypad when Joy2Mouse mode.  
+Switch Joy2Mouse mode in config.  
 D-UP/DOWN/LEFT/RIGHT: mouse move  
 B button: left click  
 A button: right click
+
+Keyboard is able to control with joypad when Joy2Key mode.  
+Switch Joy2Key mode in config.  
+D-UP/DOWN/LEFT/RIGHT: allow key  
+B button: Z key  
+A button: X key
+X button: Space key  
+Y button: left Ctrl key
+L button: Backspace key
+R button: right Shift key
+Select button: Escape key
+Start button: Return key
 
 If you use 104 western keyboard,  
 to input underscore(_), press Shift+right Ctrl.
@@ -195,6 +207,8 @@ I/O:0x00D0
 
 Release
 ---
+* Aug 3, 2017
+	- [libretro] Add Joy2Key (thanks Tetsuya79)
 * Aug 3, 2017 (rev.8)
 	- Apply HRTIMER
 	- [libretro] input underscore(_) for western keyboard
@@ -203,7 +217,7 @@ Release
 * Jul 18, 2017 (rev.6)
 * Jul 17, 2017
 	- Apply HOSTDRV
-	- [libretro] Add JoyMouse mode (switch at config menu)
+	- [libretro] Add Joy2Mouse mode (switch at config menu)
 * Jul 4, 2017
 	- rename to 'kai'
 * Jun 28, 2017
