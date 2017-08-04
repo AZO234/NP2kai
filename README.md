@@ -194,7 +194,7 @@ Change "CPU Clock Multiplyer".
 Change "RAM Size".
 
 * Sound device  
-26K: for old games.
+26K: for old games.  
 86: for newer games.
 
 Don't forget restart core.
