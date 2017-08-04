@@ -193,6 +193,10 @@ Change "CPU Clock Multiplyer".
 * Memory size  
 Change "RAM Size".
 
+* Sound device  
+26K: for old games.
+86: for newer games.
+
 Don't forget restart core.
 
 About network
