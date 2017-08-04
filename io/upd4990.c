@@ -103,7 +103,6 @@ static void IOOUTCALL upd4990_o22(UINT port, REG8 dat) {
 	io22value = dat;
 	(void)port;
 }
-
 static REG8 IOOUTCALL upd4990_i22(UINT port) {
 	return io22value;
 }
@@ -193,11 +192,6 @@ void upd4990_hrtimer_count(void) {
 			pic_setirq(15);
 		}
 	}
-
-	// time update
-	timemng_gettime(&hrtimertime);
-	hrtimertimeuint = (((UINT32)hrtimertime.hour*60 + (UINT32)hrtimertime.minute)*60 + (UINT32)hrtimertime.second)*32 + ((UINT32)hrtimertime.milli*32) / 1000;
-	STOREINTELDWORD(mem+0x04F1, hrtimertimeuint);
 }
 #endif	/* SUPPORT_HRTIMER */
 
