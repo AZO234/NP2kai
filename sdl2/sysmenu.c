@@ -679,6 +679,11 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 	menusys_setcheck(MID_MEM76, (b == 7));
 	menusys_setcheck(MID_MEM96, (b == 9));
 	menusys_setcheck(MID_MEM136, (b == 13));
+	menusys_setcheck(MID_MEM166, (b == 16));
+	menusys_setcheck(MID_MEM326, (b == 32));
+	menusys_setcheck(MID_MEM646, (b == 64));
+	menusys_setcheck(MID_MEM1206, (b == 120));
+	menusys_setcheck(MID_MEM2306, (b == 230));
 	menusys_setcheck(MID_JOYX, (np2cfg.BTN_MODE & 1));
 	menusys_setcheck(MID_RAPID, (np2cfg.BTN_RAPID & 1));
 	menusys_setcheck(MID_MSRAPID, (np2cfg.MOUSERAPID & 1));
