@@ -41,6 +41,7 @@ typedef unsigned long long int  UINT64;
 #endif
 
 typedef	int				BOOL;
+#define bool BOOL
 typedef	signed char		CHAR;
 typedef	signed char		TCHAR;
 typedef	unsigned char	BYTE;
@@ -50,10 +51,12 @@ typedef	unsigned short	WORD;
 
 #ifndef	TRUE
 #define	TRUE	1
+#define true TRUE
 #endif
 
 #ifndef	FALSE
 #define	FALSE	0
+#define false FALSE
 #endif
 
 #ifndef	MAX_PATH
@@ -181,6 +184,8 @@ typedef SINT32	FILELEN;
 
 #define SUPPORT_ARC
 #define SUPPORT_ZLIB
+
+#define	SUPPORT_FMGEN
 
 #define	SCREEN_BPP		16
 

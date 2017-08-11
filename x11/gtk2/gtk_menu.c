@@ -202,6 +202,9 @@ static GtkToggleActionEntry togglemenu_entries[] = {
 { "clockdisp",    NULL, "_Clock disp",        NULL, NULL, G_CALLBACK(cb_clockdisp), FALSE },
 { "dispvsync",    NULL, "_Disp Vsync",        NULL, NULL, G_CALLBACK(cb_dispvsync), FALSE },
 { "framedisp",    NULL, "_Frame disp",        NULL, NULL, G_CALLBACK(cb_framedisp), FALSE },
+#if defined(SUPPORT_FMGEN)
+{ "fmgen",        NULL, "fmgen",              NULL, NULL, G_CALLBACK(cb_fmgen), FALSE },
+#endif	/* SUPPORT_FMGEN */
 { "jastsound",    NULL, "_Jast sound",        NULL, NULL, G_CALLBACK(cb_jastsound), FALSE },
 { "joyrapid",     NULL, "Joy _rapid",         NULL, NULL, G_CALLBACK(cb_joyrapid), FALSE },
 { "joyreverse",   NULL, "Joy re_verse",       NULL, NULL, G_CALLBACK(cb_joyreverse), FALSE },
@@ -458,6 +461,9 @@ static const gchar *ui_info =
 "    <menuitem action='speakboard'/>\n"
 "    <menuitem action='sparkboard'/>\n"
 "    <menuitem action='amd98'/>\n"
+#if defined(SUPPORT_FMGEN)
+"    <menuitem action='fmgen'/>\n"
+#endif	/* SUPPORT_FMGEN */
 "    <menuitem action='jastsound'/>\n"
 "    <separator/>\n"
 "    <menuitem action='seeksound'/>\n"
@@ -1418,6 +1424,21 @@ cb_jastsound(GtkToggleAction *action, gpointer user_data)
 		sysmng_update(SYS_UPDATEOSCFG);
 	}
 }
+
+#if defined(SUPPORT_FMGEN)
+static void
+cb_fmgen(GtkToggleAction *action, gpointer user_data)
+{
+	gboolean b = gtk_toggle_action_get_active(action);
+	gboolean f;
+
+	f = (np2cfg.fmgen ? 1 : 0) ^ (b ? 1 : 0);
+	if (f) {
+		np2cfg.fmgen = !np2cfg.fmgen;
+		sysmng_update(SYS_UPDATEOSCFG);
+	}
+}
+#endif	/* SUPPORT_FMGEN */
 
 static void
 cb_joyrapid(GtkToggleAction *action, gpointer user_data)

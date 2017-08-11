@@ -77,7 +77,11 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 				3, {0x0c, 0x0c, 0x08, 0x06, 0x03, 0x0c}, 64, 64, 64, 64, 64,
 				1, 0x82, 0,
 				0, {0x17, 0x04, 0x1f}, {0x0c, 0x0c, 0x02, 0x10, 0x3f, 0x3f},
+#if defined(SUPPORT_FMGEN)
+				1, 3, 0, 80, 0, 0, 1,
+#eles	/* SUPPORT_FMGEN */
 				3, 0, 80, 0, 0, 1,
+#endif	/* SUPPORT_FMGEN */
 
 				0, {OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
 #if defined(SUPPORT_IDEIO)
@@ -120,7 +124,9 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 //	BOOL	drawframe;
 	UINT	drawcount = 0;
 //	BOOL	hardwarereset = FALSE;
-
+#if defined(SUPPORT_FMGEN)
+	UINT8	enable_fmgen = 0;
+#endif	/* SUPPORT_FMGEN */
 
 // ---------------------------------------------------------------------------
 
@@ -180,7 +186,7 @@ static void pccore_set(const NP2CFG *pConfig)
 	pccore.multiple = multiple;
 	pccore.realclock = pccore.baseclock * multiple;
 
-	// HDDÇÃê⁄ë± (I/OÇÃégópèÛë‘Ç™ïœÇÌÇÈÇÃÇ≈..
+	// HDD„ÅÆÊé•Á∂ö (I/O„ÅÆ‰ΩøÁî®Áä∂ÊÖã„ÅåÂ§â„Çè„Çã„ÅÆ„Åß..
 	if (pConfig->dipsw[1] & 0x20)
 	{
 		pccore.hddif |= PCHDD_IDE;
@@ -197,7 +203,7 @@ static void pccore_set(const NP2CFG *pConfig)
 		sxsi_setdevtype(0x03, SXSIDEV_NC);
 	}
 
-	// ägí£ÉÅÉÇÉä
+	// Êã°Âºµ„É°„É¢„É™
 	extsize = 0;
 	if (!(pConfig->dipsw[2] & 0x80))
 	{
@@ -211,10 +217,10 @@ static void pccore_set(const NP2CFG *pConfig)
 	pccore.extmem = extsize;
 	CopyMemory(pccore.dipsw, pConfig->dipsw, 3);
 
-	// ÉTÉEÉìÉhÉ{Å[ÉhÇÃê⁄ë±
+	// „Çµ„Ç¶„É≥„Éâ„Éú„Éº„Éâ„ÅÆÊé•Á∂ö
 	pccore.sound = (SOUNDID)pConfig->SOUND_SW;
 
-	// ÇªÇÃëºCBUSÇÃê⁄ë±
+	// „Åù„ÅÆ‰ªñCBUS„ÅÆÊé•Á∂ö
 	pccore.device = 0;
 	if (pConfig->pc9861enable)
 	{
@@ -289,6 +295,12 @@ void pccore_init(void) {
 	fddfile_initialize();
 
 #if !defined(DISABLE_SOUND)
+#if defined(SUPPORT_FMGEN)
+	enable_fmgen = 0;
+	if(np2cfg.fmgen)
+		enable_fmgen = 1;
+#endif	/* SUPPORT_FMGEN */
+
 	fmboard_construct();
 	sound_init();
 #endif
@@ -377,6 +389,12 @@ void pccore_reset(void) {
 
 	soundmng_stop();
 #if !defined(DISABLE_SOUND)
+#if defined(SUPPORT_FMGEN)
+	enable_fmgen = 0;
+	if(np2cfg.fmgen)
+		enable_fmgen = 1;
+#endif	/* SUPPORT_FMGEN */
+
 	if (soundrenewal) {
 		soundrenewal = 0;
 		sound_term();
@@ -388,7 +406,7 @@ void pccore_reset(void) {
 	ZeroMemory(mem + VRAM1_E, 0x08000);
 	ZeroMemory(mem + FONT_ADRS, 0x08000);
 
-	//ÉÅÉÇÉäÉXÉCÉbÉ`
+	//„É°„É¢„É™„Çπ„Ç§„ÉÉ„ÉÅ
 	for (i=0; i<8; i++)
 	{
 		mem[0xa3fe2 + i*4] = np2cfg.memsw[i];
@@ -412,9 +430,9 @@ void pccore_reset(void) {
 	}
 	font_setchargraph(epson);
 
-	// HDDÉZÉbÉg
+	// HDD„Çª„ÉÉ„Éà
 	diskdrv_hddbind();
-	// SASI/IDEÇ«Ç¡ÇøÅH
+	// SASI/IDE„Å©„Å£„Å°Ôºü
 #if defined(SUPPORT_SASI)
 	if (sxsi_issasi()) {
 		pccore.hddif &= ~PCHDD_IDE;
@@ -437,7 +455,7 @@ void pccore_reset(void) {
 	fddfile_reset2dmode();
 	bios0x18_16(0x20, 0xe1);
 
-	iocore_reset(&np2cfg);								// ÉTÉEÉìÉhÇ≈picÇåƒÇ‘ÇÃÇ≈Åc
+	iocore_reset(&np2cfg);								// „Çµ„Ç¶„É≥„Éâ„Åßpic„ÇíÂëº„Å∂„ÅÆ„Åß‚Ä¶
 	cbuscore_reset(&np2cfg);
 	fmboard_reset(&np2cfg, pccore.sound);
 
@@ -633,7 +651,7 @@ void screenvsync(NEVENTITEM item) {
 	}
 	nevent_set(NEVENT_FLAMES, gdc.vsyncclock, screendisp, NEVENT_RELATIVE);
 
-	// drawscreenÇ≈ pccore.vsyncclockÇ™ïœçXÇ≥ÇÍÇÈâ¬î\ê´Ç™Ç†ÇËÇ‹Ç∑
+	// drawscreen„Åß pccore.vsyncclock„ÅåÂ§âÊõ¥„Åï„Çå„ÇãÂèØËÉΩÊÄß„Åå„ÅÇ„Çä„Åæ„Åô
 	if (np2cfg.DISPSYNC) {
 		drawscreen();
 	}

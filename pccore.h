@@ -137,6 +137,10 @@ struct tagNP2Config
 	UINT8	pc9861sw[3];
 	UINT8	pc9861jmp[6];
 
+#if defined(SUPPORT_FMGEN)
+	UINT8	fmgen;
+#endif	/* SUPPORT_FMGEN */
+
 	UINT8	fddequip;
 	UINT8	MOTOR;
 	UINT8	MOTORVOL;
@@ -226,6 +230,9 @@ extern	PCCORE	pccore;
 extern	PCSTAT	pcstat;
 extern	UINT8	soundrenewal;
 extern	UINT	drawcount;
+#if defined(SUPPORT_FMGEN)
+extern	UINT8	enable_fmgen;
+#endif	/* SUPPORT_FMGEN */
 
 void getbiospath(OEMCHAR *path, const OEMCHAR *fname, int maxlen);
 void screendisp(NEVENTITEM item);

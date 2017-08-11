@@ -567,6 +567,10 @@ static const INITBL iniitem[] = {
 	{"volume_P", INIMAX_UINT8,	&np2cfg.vol_pcm,	128},
 	{"volume_R", INIMAX_UINT8,	&np2cfg.vol_rhythm,	128},
 
+#if defined(SUPPORT_FMGEN)
+	{"usefmgen", INITYPE_BOOL,	&np2cfg.fmgen,		0},
+#endif	/* SUPPORT_FMGEN */
+
 	{"Seek_Snd", INITYPE_BOOL,	&np2cfg.MOTOR,		0},
 	{"Seek_Vol", INIMAX_UINT8,	&np2cfg.MOTORVOL,	100},
 
