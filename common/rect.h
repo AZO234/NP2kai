@@ -1,3 +1,6 @@
+#ifndef NP2_RECT_H
+#define NP2_RECT_H
+
 
 typedef struct {
 	int		x;
@@ -48,4 +51,6 @@ const RECT_T *unionrect_get(const UNIRECT *unirct);
 #ifdef __cplusplus
 }
 #endif
+
+#endif	/* NP2_RECT_H */
 

@@ -254,6 +254,7 @@ static void dlgsetlist(void) {
 	}
 }
 
+#if defined(_WIN32)
 static void dlgsetdrvlist(void) {
 
 	LISTARRAY	flist;
@@ -296,6 +297,7 @@ static void dlgsetdrvlist(void) {
 		prm.pos++;
 	}
 }
+#endif
 
 static void dlginit(void) {
 

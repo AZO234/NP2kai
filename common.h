@@ -1,3 +1,5 @@
+#ifndef NP2_COMMON_H
+#define NP2_COMMON_H
 
 enum {
 	SUCCESS		= 0,
@@ -192,4 +194,6 @@ enum {
 #if !defined(FASTCALL)
 #define	FASTCALL
 #endif
+
+#endif	/* NP2_COMMON_H */
 
