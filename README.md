@@ -1,6 +1,6 @@
-Neko Project II 0.86 kai rev.8
+Neko Project II 0.86 kai rev.9
 ===
-Aug 3, 2017  
+Aug 17, 2017  
 
 Build SDL2 port
 ---
@@ -106,6 +106,7 @@ BIOS files
 * bios.rom
 * FONT.ROM (big letter)
 * itf.rom
+* sound.rom
 * (bios9821.rom or d8000.rom  But I never see good dump file.)
 * 2608_bd.wav
 * 2608_sd.wav
@@ -197,6 +198,10 @@ Change "RAM Size".
 26K: for old games.  
 86: for newer games.
 
+* Sound Generator
+Normal: default generator.
+fmgen: external generator.
+
 Don't forget restart core.
 
 About network
@@ -211,6 +216,8 @@ I/O:0x00D0
 
 Release
 ---
+* Aug 17, 2017 (rev.9)
+	- Apply fmgen
 * Aug 3, 2017 (rev.8)
 	- Apply HRTIMER
 	- [libretro] input underscore(_) for western keyboard
