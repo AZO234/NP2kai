@@ -33,13 +33,13 @@ void opna_construct(POPNA opna)
 #if defined(SUPPORT_FMGEN)
 	if(enable_fmgen) {
 		opna->fmgen = OPNA_Construct();
+		OPNA_Init(opna->fmgen, OPNA_CLOCK*2, np2cfg.samplingrate, false, "");
+		OPNA_SetVolumeFM(opna->fmgen, (int)((double)np2cfg.vol_fm / 64 * 212 - 192));
+//		OPNA_SetVolumePSG(opna->fmgen, np2cfg.vol_ssg);
+		OPNA_SetVolumePSG(opna->fmgen, 1);
+		OPNA_SetVolumeADPCM(opna->fmgen, np2cfg.vol_pcm);
+		OPNA_SetVolumeRhythmTotal(opna->fmgen, np2cfg.vol_rhythm);
 	}
-	OPNA_Init(opna->fmgen, OPNA_CLOCK*2, np2cfg.samplingrate, false, "");
-	OPNA_SetVolumeFM(opna->fmgen, (int)((double)np2cfg.vol_fm / 64 * 212 - 192));
-//	OPNA_SetVolumePSG(opna->fmgen, np2cfg.vol_ssg);
-	OPNA_SetVolumePSG(opna->fmgen, 1);
-	OPNA_SetVolumeADPCM(opna->fmgen, np2cfg.vol_pcm);
-	OPNA_SetVolumeRhythmTotal(opna->fmgen, np2cfg.vol_rhythm);
 #endif	/* SUPPORT_FMGEN */
 }
 
