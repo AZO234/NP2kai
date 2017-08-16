@@ -182,9 +182,6 @@ static void cb_clockdisp(GtkToggleAction *action, gpointer user_data);
 static void cb_dispvsync(GtkToggleAction *action, gpointer user_data);
 static void cb_framedisp(GtkToggleAction *action, gpointer user_data);
 static void cb_jastsound(GtkToggleAction *action, gpointer user_data);
-#if defined(SUPPORT_FMGEN)
-static void cb_fmgen(GtkToggleAction *action, gpointer user_data);
-#endif	/* SUPPORT_FMGEN */
 static void cb_joyrapid(GtkToggleAction *action, gpointer user_data);
 static void cb_joyreverse(GtkToggleAction *action, gpointer user_data);
 static void cb_keydisplay(GtkToggleAction *action, gpointer user_data);
@@ -205,9 +202,6 @@ static GtkToggleActionEntry togglemenu_entries[] = {
 { "clockdisp",    NULL, "_Clock disp",        NULL, NULL, G_CALLBACK(cb_clockdisp), FALSE },
 { "dispvsync",    NULL, "_Disp Vsync",        NULL, NULL, G_CALLBACK(cb_dispvsync), FALSE },
 { "framedisp",    NULL, "_Frame disp",        NULL, NULL, G_CALLBACK(cb_framedisp), FALSE },
-#if defined(SUPPORT_FMGEN)
-{ "fmgen",        NULL, "fmgen",              NULL, NULL, G_CALLBACK(cb_fmgen), FALSE },
-#endif	/* SUPPORT_FMGEN */
 { "jastsound",    NULL, "_Jast sound",        NULL, NULL, G_CALLBACK(cb_jastsound), FALSE },
 { "joyrapid",     NULL, "Joy _rapid",         NULL, NULL, G_CALLBACK(cb_joyrapid), FALSE },
 { "joyreverse",   NULL, "Joy re_verse",       NULL, NULL, G_CALLBACK(cb_joyreverse), FALSE },
@@ -322,6 +316,12 @@ static GtkRadioActionEntry screensize_entries[] = {
 };
 static const guint n_screensize_entries = G_N_ELEMENTS(screensize_entries);
 
+static GtkRadioActionEntry sndgen_entries[] = {
+{ "defsnd",  NULL, "D_efault",  NULL, NULL, 0 },
+{ "fmgen",  NULL, "f_mgen",  NULL, NULL, 1 },
+};
+static const guint n_sndgen_entries = G_N_ELEMENTS(sndgen_entries);
+
 static void cb_beepvol(gint idx);
 static void cb_f11key(gint idx);
 static void cb_f12key(gint idx);
@@ -332,6 +332,7 @@ static void cb_rotate(gint idx);
 static void cb_screenmode(gint idx);
 static void cb_screensize(gint idx);
 static void cb_soundboard(gint idx);
+static void cb_sndgen(gint idx);
 
 static const struct {
 	GtkRadioActionEntry	*entry;
@@ -464,10 +465,11 @@ static const gchar *ui_info =
 "    <menuitem action='speakboard'/>\n"
 "    <menuitem action='sparkboard'/>\n"
 "    <menuitem action='amd98'/>\n"
-#if defined(SUPPORT_FMGEN)
-"    <menuitem action='fmgen'/>\n"
-#endif	/* SUPPORT_FMGEN */
+"    <separator/>\n"
 "    <menuitem action='jastsound'/>\n"
+"    <separator/>\n"
+"    <menuitem action='defsnd'/>\n"
+"    <menuitem action='fmgen'/>\n"
 "    <separator/>\n"
 "    <menuitem action='seeksound'/>\n"
 "   </menu>\n"
@@ -1428,21 +1430,6 @@ cb_jastsound(GtkToggleAction *action, gpointer user_data)
 	}
 }
 
-#if defined(SUPPORT_FMGEN)
-static void
-cb_fmgen(GtkToggleAction *action, gpointer user_data)
-{
-	gboolean b = gtk_toggle_action_get_active(action);
-	gboolean f;
-
-	f = (np2cfg.fmgen ? 1 : 0) ^ (b ? 1 : 0);
-	if (f) {
-		np2cfg.fmgen = !np2cfg.fmgen;
-		sysmng_update(SYS_UPDATEOSCFG);
-	}
-}
-#endif	/* SUPPORT_FMGEN */
-
 static void
 cb_joyrapid(GtkToggleAction *action, gpointer user_data)
 {
@@ -1818,6 +1805,22 @@ cb_soundboard(gint idx)
 	}
 	if (np2cfg.SOUND_SW != value) {
 		np2cfg.SOUND_SW = value;
+		sysmng_update(SYS_UPDATECFG);
+	}
+}
+
+static void
+cb_sndgen(gint idx)
+{
+	guint value;
+
+	if (idx >= 0) {
+		value = sndgen_entries[idx].value;
+	} else {
+		value = 0;
+	}
+	if (np2cfg.sndgen != value) {
+		np2cfg.sndgen = value;
 		sysmng_update(SYS_UPDATECFG);
 	}
 }

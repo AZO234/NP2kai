@@ -88,9 +88,8 @@ static const char str_sparkboard[] = "Spark board";
 static const char str_sndorchestra[] = "Sound Orchestra";
 static const char str_sndorchestrav[] = "Sound Orchestra-V";
 static const char str_amd98[] = "AMD-98";
-#if defined(SUPPORT_FMGEN)
+static const char str_defsnd[] = "Default";
 static const char str_fmgen[] = "fmgen";
-#endif	/* SUPPORT_FMGEN */
 static const char str_jastsnd[] = "JAST SOUND";
 static const char str_seeksound[] = "Seek Sound";
 
@@ -333,11 +332,15 @@ static const MSYSITEM s_snd[] = {
 		{str_sparkboard,	NULL,		MID_SPARKBOARD,		0},
 		{str_sndorchestra,	NULL,		MID_SOUNDORCHESTRA,	0},
 		{str_sndorchestrav,	NULL,		MID_SOUNDORCHESTRAV,0},
-#if defined(SUPPORT_FMGEN)
-		{str_fmgen,			NULL,		MID_FMGEN,			0},
-#endif	/* SUPPORT_FMGEN */
 		{str_amd98,			NULL,		MID_AMD98,			0},
 		{str_jastsnd,		NULL,		MID_JASTSND,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_defsnd,			NULL,		MID_DEFSND,			0},
+#if defined(SUPPORT_FMGEN)
+		{str_fmgen,			NULL,		MID_FMGEN,			0},
+#else	/* SUPPORT_FMGEN */
+		{str_fmgen,			NULL,		MID_FMGEN,			MENU_GRAY},
+#endif	/* SUPPORT_FMGEN */
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_seeksound,		NULL,		MID_SEEKSND,		MENU_DELETED}};
 
