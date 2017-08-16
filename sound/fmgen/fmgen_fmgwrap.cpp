@@ -4,10 +4,8 @@
 #include "fmgen_fmgen.h"
 
 //	YM2203(OPN) ----------------------------------------------------
-FM::OPN fmgen_opn;
-
-void*	OPN_Construct(void) { return &fmgen_opn; }
-void	OPN_Destruct(void* OPN) { }
+void*	OPN_Construct(void) { return new FM::OPN; }
+void	OPN_Destruct(void* OPN) { if(OPN) delete (FM::OPN*)OPN; }
 
 bool	OPN_Init(void* OPN, uint c, uint r, bool ip, const char* str) { return ((FM::OPN*)OPN)->Init(c, r, ip); }
 bool	OPN_SetRate(void* OPN, uint c, uint r, bool b) { return ((FM::OPN*)OPN)->SetRate(c, r); }
@@ -34,10 +32,8 @@ int	OPN_dbgGetPGOut(void* OPN, int c, int s) { return ((FM::OPN*)OPN)->dbgGetPGO
 void* OPN_dbgGetCh(void* OPN, int c) { return ((FM::OPN*)OPN)->dbgGetCh(c); }
 
 //	YM2608(OPNA) ---------------------------------------------------
-FM::OPNA fmgen_opna;
-
-void*	OPNA_Construct(void) { return &fmgen_opna; }
-void	OPNA_Destruct(void* OPNA) { }
+void*	OPNA_Construct(void) { return new FM::OPNA; }
+void	OPNA_Destruct(void* OPNA) { if(OPNA) delete (FM::OPNA*)OPNA; }
 
 bool	OPNA_Init(void* OPNA, uint c, uint r, bool b, const char* str) { return ((FM::OPNA*)OPNA)->Init(c, r, b, str); }
 bool	OPNA_LoadRhythmSample(void* OPNA, const char* str) { return ((FM::OPNA*)OPNA)->LoadRhythmSample(str); }
@@ -70,10 +66,8 @@ int	OPNA_dbgGetPGOut(void* OPNA, int c, int s) { return ((FM::OPNA*)OPNA)->dbgGe
 void* OPNA_dbgGetCh(void* OPNA, int c) { return ((FM::OPNA*)OPNA)->dbgGetCh(c); }
 
 //	YM2151(OPM) ----------------------------------------------------
-FM::OPM fmgen_opm;
-
-void*	OPM_Construct(void) { return &fmgen_opm; }
-void	OPM_Destruct(void* OPM) { }
+void*	OPM_Construct(void) { return new FM::OPM; }
+void	OPM_Destruct(void* OPM) { if(OPM) delete (FM::OPM*)OPM; }
 
 //bool	OPM_Init(void* OPM, uint c, uint r, bool ip) { return ((FM::OPM*)OPM)->Init(c, r, ip); }
 //bool	OPM_SetRate(void* OPM, uint c, uint r, bool b) { return ((FM::OPM*)OPM)->SetRate(c, r, b); }

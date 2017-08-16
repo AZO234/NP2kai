@@ -11,6 +11,9 @@
 #include "sound.h"
 #include "s98.h"
 #include "generic/keydisp.h"
+#if defined(SUPPORT_FMGEN)
+#include "fmgen_fmgwrap.h"
+#endif	/* SUPPORT_FMGEN */
 
 static void writeRegister(POPNA opna, UINT nAddress, REG8 cData);
 static void writeExtendedRegister(POPNA opna, UINT nAddress, REG8 cData);

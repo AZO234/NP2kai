@@ -241,6 +241,13 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/sound/vermouth/midinst.c \
 		$(real_topsrcdir)/sound/vermouth/midvoice.c \
 		$(real_topsrcdir)/sound/vermouth/midtable.c \
+		$(real_topsrcdir)/sound/fmgen/fmgen_file.cpp \
+		$(real_topsrcdir)/sound/fmgen/fmgen_fmgen.cpp \
+		$(real_topsrcdir)/sound/fmgen/fmgen_fmgwrap.cpp \
+		$(real_topsrcdir)/sound/fmgen/fmgen_fmtimer.cpp \
+		$(real_topsrcdir)/sound/fmgen/fmgen_opm.cpp \
+		$(real_topsrcdir)/sound/fmgen/fmgen_opna.cpp \
+		$(real_topsrcdir)/sound/fmgen/fmgen_psg.cpp \
 		\
 		$(real_topsrcdir)/vram/vram.c \
 		$(real_topsrcdir)/vram/scrndraw.c \
@@ -284,6 +291,7 @@ AM_CPPFLAGS=	-I$(real_topsrcdir) \
 		-I$(real_topsrcdir)/mem \
 		-I$(real_topsrcdir)/network \
 		-I$(real_topsrcdir)/sound \
+		-I$(real_topsrcdir)/sound/fmgen \
 		-I$(real_topsrcdir)/vram \
 		$(GTK_CFLAGS) $(SDL_CFLAGS) $(LIBUSB1_CFLAGS) \
 		$(X11_CFLAGS) $(XEXT_CFLAGS) \

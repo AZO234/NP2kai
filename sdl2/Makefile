@@ -1,1 +1,1 @@
-include Makefile21.unix
+include Makefile.libretro

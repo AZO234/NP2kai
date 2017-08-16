@@ -182,6 +182,9 @@ static void cb_clockdisp(GtkToggleAction *action, gpointer user_data);
 static void cb_dispvsync(GtkToggleAction *action, gpointer user_data);
 static void cb_framedisp(GtkToggleAction *action, gpointer user_data);
 static void cb_jastsound(GtkToggleAction *action, gpointer user_data);
+#if defined(SUPPORT_FMGEN)
+static void cb_fmgen(GtkToggleAction *action, gpointer user_data);
+#endif	/* SUPPORT_FMGEN */
 static void cb_joyrapid(GtkToggleAction *action, gpointer user_data);
 static void cb_joyreverse(GtkToggleAction *action, gpointer user_data);
 static void cb_keydisplay(GtkToggleAction *action, gpointer user_data);

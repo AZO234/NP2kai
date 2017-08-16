@@ -60,6 +60,10 @@ struct tagOpna
 	_PSGGEN psg;
 	_RHYTHM rhythm;
 	_ADPCM adpcm;
+#if defined(SUPPORT_FMGEN)
+	void* fmgen;
+#endif	/* SUPPORT_FMGEN */
+
 };
 
 typedef struct tagOpna OPNA;

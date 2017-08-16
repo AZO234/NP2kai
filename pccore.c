@@ -78,10 +78,9 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 				1, 0x82, 0,
 				0, {0x17, 0x04, 0x1f}, {0x0c, 0x0c, 0x02, 0x10, 0x3f, 0x3f},
 #if defined(SUPPORT_FMGEN)
-				1, 3, 0, 80, 0, 0, 1,
-#else	/* SUPPORT_FMGEN */
-				3, 0, 80, 0, 0, 1,
+				0,
 #endif	/* SUPPORT_FMGEN */
+				3, 0, 80, 0, 0, 1,
 
 				0, {OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
 #if defined(SUPPORT_IDEIO)
