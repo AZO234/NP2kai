@@ -198,8 +198,8 @@ Change "RAM Size".
 26K: for old games.  
 86: for newer games.
 
-* Sound Generator
-Normal: default generator.
+* Sound Generator  
+Normal: default generator.  
 fmgen: external generator.
 
 Don't forget restart core.
