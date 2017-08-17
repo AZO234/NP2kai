@@ -83,6 +83,7 @@ static void cb_sasiremove(GtkAction *action, gpointer user_data);
 static void cb_statsave(GtkAction *action, gpointer user_data);
 static void cb_statload(GtkAction *action, gpointer user_data);
 #endif
+static void cb_sndcad(GtkToggleAction *action, gpointer user_data);
 
 static void cb_dialog(GtkAction *action, gpointer user_data);
 static void cb_radio(GtkRadioAction *action, GtkRadioAction *current, gpointer user_data);
@@ -174,6 +175,7 @@ static GtkActionEntry menu_entries[] = {
 { "stat08load",  NULL, "Load 8",            NULL, NULL, G_CALLBACK(cb_statload), },
 { "stat09load",  NULL, "Load 9",            NULL, NULL, G_CALLBACK(cb_statload), },
 #endif
+{ "sndcad",      NULL, "Send Ctrl+Alt+Del", NULL, NULL, G_CALLBACK(cb_sndcad), },
 };
 static const guint n_menu_entries = G_N_ELEMENTS(menu_entries);
 
@@ -196,7 +198,6 @@ static void cb_toolwindow(GtkToggleAction *action, gpointer user_data);
 static void cb_xctrlkey(GtkToggleAction *action, gpointer user_data);
 static void cb_xgrphkey(GtkToggleAction *action, gpointer user_data);
 static void cb_xshiftkey(GtkToggleAction *action, gpointer user_data);
-static void cb_sndcad(GtkToggleAction *action, gpointer user_data);
 
 static GtkToggleActionEntry togglemenu_entries[] = {
 { "clockdisp",    NULL, "_Clock disp",        NULL, NULL, G_CALLBACK(cb_clockdisp), FALSE },
@@ -217,7 +218,6 @@ static GtkToggleActionEntry togglemenu_entries[] = {
 { "xctrlkey",     NULL, "mechanical _CTRL",   NULL, NULL, G_CALLBACK(cb_xctrlkey), FALSE },
 { "xgrphkey",     NULL, "mechanical _GRPH",   NULL, NULL, G_CALLBACK(cb_xgrphkey), FALSE },
 { "xshiftkey",    NULL, "mechanical _SHIFT",  NULL, NULL, G_CALLBACK(cb_xshiftkey), FALSE },
-{ "sndcad",       NULL, "Send Ctrl+Alt+Del",  NULL, NULL, G_CALLBACK(cb_sndcad), FALSE },
 };
 static const guint n_togglemenu_entries = G_N_ELEMENTS(togglemenu_entries);
 
@@ -349,6 +349,7 @@ static const struct {
 	{ screenmode_entries, G_N_ELEMENTS(screenmode_entries), cb_screenmode },
 	{ screensize_entries, G_N_ELEMENTS(screensize_entries), cb_screensize },
 	{ soundboard_entries, G_N_ELEMENTS(soundboard_entries), cb_soundboard },
+	{ sndgen_entries, G_N_ELEMENTS(sndgen_entries), cb_sndgen },
 };
 static const guint n_radiomenu_entries = G_N_ELEMENTS(radiomenu_entries);
 
@@ -586,6 +587,8 @@ xmenu_select_item_by_index(MENU_HDL hdl, GtkRadioActionEntry *entry, guint nentr
 	xmenu_select_item_by_index(NULL, screensize_entries, n_screensize_entries, v);
 #define	xmenu_select_soundboard(v) \
 	xmenu_select_item_by_index(NULL, soundboard_entries, n_soundboard_entries, v);
+#define	xmenu_select_sndgen(v) \
+	xmenu_select_item_by_index(NULL, sndgen_entries, n_sndgen_entries, v);
 
 
 /*
@@ -2061,6 +2064,7 @@ create_menu(void)
 	xmenu_select_screenmode(scrnmode & SCRNMODE_FULLSCREEN);
 	xmenu_select_screensize(SCREEN_DEFMUL);
 	xmenu_select_soundboard(np2cfg.SOUND_SW);
+	xmenu_select_sndgen(np2cfg.sndgen);
 
 	menubar = gtk_ui_manager_get_widget(menu_hdl.ui_manager, "/MainMenu");
 

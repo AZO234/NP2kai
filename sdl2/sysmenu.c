@@ -414,12 +414,12 @@ static void sys_cmd(MENUID id) {
 
 		case MID_DEFSND:
 			np2cfg.sndgen = 0;
-			update |= SYS_UPDATEOSCFG;
+			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_FMGEN:
 			np2cfg.sndgen = 1;
-			update |= SYS_UPDATEOSCFG;
+			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_JASTSND:
@@ -680,8 +680,8 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 	menusys_setcheck(MID_SOUNDORCHESTRA, (b == 0x32));
 	menusys_setcheck(MID_SOUNDORCHESTRAV, (b == 0x82));
 	menusys_setcheck(MID_AMD98, (b == 0x80));
-	menusys_setcheck(MID_DEFSND, (np2cfg.sndgen == 0));
-	menusys_setcheck(MID_FMGEN, (np2cfg.sndgen == 1));
+	menusys_setcheck(MID_DEFSND, (b == 0));
+	menusys_setcheck(MID_FMGEN, (b == 1));
 	menusys_setcheck(MID_JASTSND, (np2oscfg.jastsnd & 1));
 	menusys_setcheck(MID_SEEKSND, (np2cfg.MOTOR & 1));
 	b = np2cfg.EXTMEM;
