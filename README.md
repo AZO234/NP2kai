@@ -199,8 +199,8 @@ Change "RAM Size".
 86: for newer games.
 
 * Sound Generator  
-Normal: default generator.  
-fmgen: external generator.
+Default: default sound generator.  
+fmgen: fmgen sound generator.
 
 Don't forget restart core.
 
