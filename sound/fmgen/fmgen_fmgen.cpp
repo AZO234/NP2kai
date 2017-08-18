@@ -340,7 +340,8 @@ void Operator::MakeTable()
 	}
 	while (p < cltable + FM_CLENTS)
 	{
-		*p++ = p[-512] / 2;
+		*p = p[-512] / 2;
+		p++;
 	}
 
 //	for (i=0; i<13*256; i++)
