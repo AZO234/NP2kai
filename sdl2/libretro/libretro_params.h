@@ -6,10 +6,11 @@
 #define LR_SCREENWIDTH  640
 #define LR_SCREENHEIGHT 480
 #define LR_SCREENASPECT 4.0 / 3.0
-#define LR_SCREENFPS    60.0
+#define LR_SCREENFPS    56.4
 
 #define LR_SOUNDRATE    44100.0
-#define SNDSZ 735 //44100Hz/60fps=735 (sample/flame)
+//#define SNDSZ 735 //44100Hz/60fps=735 (sample/flame)
+#define SNDSZ 782 //44100Hz/56.4fps=781.9 (sample/flame)
 
 #define LR_CORENAME        "Neko Project II"
 #define LR_LIBVERSION      NP2VER_CORE
