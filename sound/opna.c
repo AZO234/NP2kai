@@ -12,6 +12,7 @@
 #include "s98.h"
 #include "generic/keydisp.h"
 #if defined(SUPPORT_FMGEN)
+#include <math.h>
 #include "fmgen_fmgwrap.h"
 #endif	/* SUPPORT_FMGEN */
 
@@ -25,6 +26,8 @@ static void writeExtendedRegister(POPNA opna, UINT nAddress, REG8 cData);
 void opna_construct(POPNA opna)
 {
 #if defined(SUPPORT_FMGEN)
+	OEMCHAR	path[MAX_PATH];
+
 	if(enable_fmgen) {
 		if(opna->fmgen) OPNA_Destruct(opna->fmgen);
 	}
@@ -34,6 +37,8 @@ void opna_construct(POPNA opna)
 	if(enable_fmgen) {
 		opna->fmgen = OPNA_Construct();
 		OPNA_Init(opna->fmgen, OPNA_CLOCK*2, np2cfg.samplingrate, false, "");
+		getbiospath(path, "", NELEMENTS(path));
+		OPNA_LoadRhythmSample(opna->fmgen, path);
 		OPNA_SetVolumeFM(opna->fmgen, pow((double)np2cfg.vol_fm / 128, 0.12) * (20 + 192) - 192);
 		OPNA_SetVolumePSG(opna->fmgen, pow((double)np2cfg.vol_ssg / 128, 0.12) * (20 + 192) - 192);
 		OPNA_SetVolumeADPCM(opna->fmgen, pow((double)np2cfg.vol_pcm / 128, 0.12) * (20 + 192) - 192);
