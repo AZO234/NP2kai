@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include <math.h>
 
 #include "libretro.h"
 #include "libretro_params.h"
@@ -34,6 +35,10 @@
 #include "milstr.h"
 #include "strres.h"
 #include "np2.h"
+#include "fmboard.h"
+#if defined(SUPPORT_FMGEN)
+#include "fmgen_fmgwrap.h"
+#endif	/* defined(SUPPORT_FMGEN) */
 
 signed short soundbuf[SNDSZ*2]; //16bit*2ch
 
@@ -993,6 +998,10 @@ static void update_variables(void)
       np2cfg.vol_fm = atoi(var.value);
       opngen_setvol(np2cfg.vol_fm);
       oplgen_setvol(np2cfg.vol_fm);
+#if defined(SUPPORT_FMGEN)
+      if(g_opna[0].fmgen)
+         OPNA_SetVolumeFM(g_opna[0].fmgen, pow((double)np2cfg.vol_fm / 128, 0.12) * (20 + 192) - 192);
+#endif	/* defined(SUPPORT_FMGEN) */
    }
 
    var.key = "np2_volume_S";
@@ -1002,6 +1011,10 @@ static void update_variables(void)
    {
       np2cfg.vol_ssg = atoi(var.value);
       psggen_setvol(np2cfg.vol_ssg);
+#if defined(SUPPORT_FMGEN)
+      if(g_opna[0].fmgen)
+         OPNA_SetVolumePSG(g_opna[0].fmgen, pow((double)np2cfg.vol_ssg / 128, 0.12) * (20 + 192) - 192);
+#endif	/* defined(SUPPORT_FMGEN) */
    }
 
    var.key = "np2_volume_A";
@@ -1020,6 +1033,10 @@ static void update_variables(void)
    {
       np2cfg.vol_pcm = atoi(var.value);
       pcm86gen_setvol(np2cfg.vol_pcm);
+#if defined(SUPPORT_FMGEN)
+      if(g_opna[0].fmgen)
+         OPNA_SetVolumeADPCM(g_opna[0].fmgen, pow((double)np2cfg.vol_pcm / 128, 0.12) * (20 + 192) - 192);
+#endif	/* defined(SUPPORT_FMGEN) */
    }
 
    var.key = "np2_volume_R";
@@ -1029,6 +1046,10 @@ static void update_variables(void)
    {
       np2cfg.vol_rhythm = atoi(var.value);
       rhythm_setvol(np2cfg.vol_rhythm);
+#if defined(SUPPORT_FMGEN)
+      if(g_opna[0].fmgen)
+         OPNA_SetVolumeRhythmTotal(g_opna[0].fmgen, pow((double)np2cfg.vol_rhythm / 128, 0.12) * (20 + 192) - 192);
+#endif	/* defined(SUPPORT_FMGEN) */
    }
 
    var.key = "np2_Seek_Snd";

@@ -37,7 +37,11 @@
 
 #include "soundmng.h"
 #include "sysmng.h"
-
+#if defined(SUPPORT_FMGEN)
+#include "fmboard.h"
+#define bool BOOL
+#include "fmgen_fmgwrap.h"
+#endif	/* SUPPORT_FMGEN */
 
 /*
  * Mixer
@@ -337,6 +341,22 @@ ok_button_clicked(GtkButton *b, gpointer d)
 		    GTK_ADJUSTMENT(mixer_adj[i]));
 		if (*mixer_vol_tbl[i].valp != mixer_vol[i]) {
 			*mixer_vol_tbl[i].valp = mixer_vol[i];
+#if defined(SUPPORT_FMGEN)
+			switch(i) {
+			case 0:
+				OPNA_SetVolumeFM(g_opna[0].fmgen, pow((double)np2cfg.vol_fm / 128, 0.12) * (20 + 192) - 192);
+				break;
+			case 1:
+				OPNA_SetVolumePSG(g_opna[0].fmgen, pow((double)np2cfg.vol_ssg / 128, 0.12) * (20 + 192) - 192);
+				break;
+			case 3:
+				OPNA_SetVolumeADPCM(g_opna[0].fmgen, pow((double)np2cfg.vol_pcm / 128, 0.12) * (20 + 192) - 192);
+				break;
+			case 4:
+				OPNA_SetVolumeRhythmTotal(g_opna[0].fmgen, pow((double)np2cfg.vol_rhythm / 128, 0.12) * (20 + 192) - 192);
+				break;
+			}
+#endif	/* SUPPORT_FMGEN */
 			renewal = TRUE;
 		}
 	}
@@ -608,6 +628,13 @@ mixer_default_button_clicked(GtkButton *b, gpointer d)
 	for (i = 0; i < NELEMENTS(mixer_vol_tbl); i++) {
 		gtk_adjustment_set_value(GTK_ADJUSTMENT(mixer_adj[i]), 64.0);
 	}
+#if defined(SUPPORT_FMGEN)
+	OPNA_SetVolumeFM(g_opna[0].fmgen, pow((double)np2cfg.vol_fm / 128, 0.12) * (20 + 192) - 192);
+	OPNA_SetVolumePSG(g_opna[0].fmgen, pow((double)np2cfg.vol_ssg / 128, 0.12) * (20 + 192) - 192);
+	OPNA_SetVolumeADPCM(g_opna[0].fmgen, pow((double)np2cfg.vol_pcm / 128, 0.12) * (20 + 192) - 192);
+	OPNA_SetVolumeRhythmTotal(g_opna[0].fmgen, pow((double)np2cfg.vol_rhythm / 128, 0.12) * (20 + 192) - 192);
+#endif	/* SUPPORT_FMGEN */
+
 }
 
 static void
