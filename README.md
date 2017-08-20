@@ -1,6 +1,6 @@
 Neko Project II 0.86 kai rev.9
 ===
-Aug 17, 2017  
+Aug 21, 2017  
 
 Build SDL2 port
 ---
@@ -53,10 +53,10 @@ Build libretro port (Linux)
 
 １． Build.  
 
-	$ cd NP2kai/sdl2
+	$ cd NP2kai
 	$ make -j4
 
-２． 'np2_libretro.so' binary is outputed in NP2kai/sdl2  
+２． 'np2_libretro.so' binary is outputed in NP2kai  
 
 Build libretro port (Windows)
 ---
@@ -216,6 +216,8 @@ I/O:0x00D0
 
 Release
 ---
+* Aug 21, 2017
+	- Apply libretro-super build
 * Aug 17, 2017 (rev.9)
 	- Apply fmgen
 * Aug 3, 2017 (rev.8)
