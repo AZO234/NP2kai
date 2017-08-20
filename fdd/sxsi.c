@@ -10,6 +10,7 @@
 #if defined(SUPPORT_IDEIO)
 #include	"ideio.h"
 #endif
+#include <sys/time.h>
 
 	_SXSIDEV	sxsi_dev[SASIHDD_MAX + SCSIHDD_MAX];
 
