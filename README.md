@@ -65,10 +65,10 @@ Build libretro port (Windows)
 
 https://bot.libretro.com/docs/compilation/windows/
 
-	$ cd NP2kai/sdl2
+	$ cd NP2kai
 	$ make -j4
 
-２． 'np2_libretro.dll' binary is outputed in NP2kai\sdl2  
+２． 'np2_libretro.dll' binary is outputed in NP2kai  
 
 about libretro port
 ---
