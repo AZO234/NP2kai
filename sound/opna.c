@@ -25,23 +25,8 @@ static void writeExtendedRegister(POPNA opna, UINT nAddress, REG8 cData);
  */
 void opna_construct(POPNA opna)
 {
-#if defined(SUPPORT_FMGEN)
-	OEMCHAR	path[MAX_PATH];
-#endif	/* SUPPORT_FMGEN */
 
 	memset(opna, 0, sizeof(*opna));
-#if defined(SUPPORT_FMGEN)
-	if(enable_fmgen) {
-		opna->fmgen = OPNA_Construct();
-		OPNA_Init(opna->fmgen, OPNA_CLOCK*2, np2cfg.samplingrate, false, "");
-		getbiospath(path, "", NELEMENTS(path));
-		OPNA_LoadRhythmSample(opna->fmgen, path);
-		OPNA_SetVolumeFM(opna->fmgen, pow((double)np2cfg.vol_fm / 128, 0.12) * (20 + 192) - 192);
-		OPNA_SetVolumePSG(opna->fmgen, pow((double)np2cfg.vol_ssg / 128, 0.12) * (20 + 192) - 192);
-		OPNA_SetVolumeADPCM(opna->fmgen, pow((double)np2cfg.vol_pcm / 128, 0.12) * (20 + 192) - 192);
-		OPNA_SetVolumeRhythmTotal(opna->fmgen, pow((double)np2cfg.vol_rhythm / 128, 0.12) * (20 + 192) - 192);
-	}
-#endif	/* SUPPORT_FMGEN */
 }
 
 /**
@@ -67,8 +52,20 @@ void opna_reset(POPNA opna, REG8 cCaps)
 	UINT i;
 #if defined(SUPPORT_FMGEN)
 	UINT j;
-#endif	/* SUPPORT_FMGEN */
+	OEMCHAR	path[MAX_PATH];
 
+	if(enable_fmgen) {
+		if(!opna->fmgen) OPNA_Destruct(opna->fmgen);
+		opna->fmgen = OPNA_Construct();
+		OPNA_Init(opna->fmgen, OPNA_CLOCK*2, np2cfg.samplingrate, false, "");
+		getbiospath(path, "", NELEMENTS(path));
+		OPNA_LoadRhythmSample(opna->fmgen, path);
+		OPNA_SetVolumeFM(opna->fmgen, pow((double)np2cfg.vol_fm / 128, 0.12) * (20 + 192) - 192);
+		OPNA_SetVolumePSG(opna->fmgen, pow((double)np2cfg.vol_ssg / 128, 0.12) * (20 + 192) - 192);
+		OPNA_SetVolumeADPCM(opna->fmgen, pow((double)np2cfg.vol_pcm / 128, 0.12) * (20 + 192) - 192);
+		OPNA_SetVolumeRhythmTotal(opna->fmgen, pow((double)np2cfg.vol_rhythm / 128, 0.12) * (20 + 192) - 192);
+	}
+#endif	/* SUPPORT_FMGEN */
 
 	memset(&opna->s, 0, sizeof(opna->s));
 	opna->s.adpcmmask = ~(0x1c);
