@@ -29,11 +29,8 @@ void opna_construct(POPNA opna)
 {
 #if defined(SUPPORT_FMGEN)
 	OEMCHAR	path[MAX_PATH];
-
-	if(enable_fmgen) {
-		if(opna->fmgen) OPNA_Destruct(opna->fmgen);
-	}
 #endif	/* SUPPORT_FMGEN */
+
 	memset(opna, 0, sizeof(*opna));
 #if defined(SUPPORT_FMGEN)
 	if(enable_fmgen) {
