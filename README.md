@@ -56,7 +56,7 @@ Build libretro port (Linux)
 	$ cd NP2kai
 	$ make -j4
 
-２． 'np2_libretro.so' binary is outputed in NP2kai  
+２． 'NP2kai_libretro.so' binary is outputed in NP2kai  
 
 Build libretro port (Windows)
 ---
@@ -68,7 +68,7 @@ https://bot.libretro.com/docs/compilation/windows/
 	$ cd NP2kai
 	$ make -j4
 
-２． 'np2_libretro.dll' binary is outputed in NP2kai  
+２． 'NP2kai_libretro.dll' binary is outputed in NP2kai  
 
 about libretro port
 ---
