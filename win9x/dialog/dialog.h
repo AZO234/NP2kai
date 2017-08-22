@@ -5,6 +5,10 @@
 
 #pragma once
 
+#if defined(SUPPORT_BMS)
+LRESULT CALLBACK BMSDialogProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
+#endif
+
 // d_about.cpp
 void dialog_about(HWND hwndParent);
 

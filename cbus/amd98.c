@@ -13,6 +13,7 @@
 #include "sound.h"
 #include "sound/pcmmix.h"
 #include "joymng.h"
+#include "s98.h"
 
 	AMD98	g_amd98;
 
@@ -310,6 +311,7 @@ static void IOOUTCALL amd_oda(UINT port, REG8 dat)
 	addr = g_amd98.s.psg1reg;
 	if (addr < 0x10)
 	{
+		S98_put(NORMAL2608, addr, dat);
 		psggen_setreg(&g_amd98.psg[0], addr, dat);
 		keydisp_psg((UINT8 *)&g_amd98.psg[0].reg, addr);
 	}
@@ -323,6 +325,7 @@ static void IOOUTCALL amd_odb(UINT port, REG8 dat)
 	addr = g_amd98.s.psg2reg;
 	if (addr < 0x0e)
 	{
+		S98_put(NORMAL2608_2, addr, dat);
 		psggen_setreg(&g_amd98.psg[1], addr, dat);
 		keydisp_psg((UINT8 *)&g_amd98.psg[1].reg, addr);
 	}
@@ -341,6 +344,7 @@ static void IOOUTCALL amd_odb(UINT port, REG8 dat)
 			{
 				if (g_amd98.s.psg3reg < 0x0e)
 				{
+					S98_put(NORMAL2608_3, g_amd98.s.psg3reg, g_amd98.psg[0].reg.io2);
 					psggen_setreg(&g_amd98.psg[2], g_amd98.s.psg3reg, g_amd98.psg[0].reg.io2);
 					keydisp_psg((UINT8 *)&g_amd98.psg[2].reg, g_amd98.s.psg3reg);
 				}

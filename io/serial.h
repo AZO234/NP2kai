@@ -25,7 +25,11 @@ typedef struct {
 	UINT8	result;
 	UINT8	data;
 	UINT8	send;
+#if defined(VAEG_FIX)
+	UINT8	cmd;
+#else
 	UINT8	pad;
+#endif
 	UINT	pos;
 	UINT	dummyinst;
 	UINT	mul;

@@ -25,7 +25,11 @@ void mouseif_sync(void) {
 	mouseif.rx = mouseif.sx;
 	mouseif.ry = mouseif.sy;
 
+#if defined(VAEG_FIX)
 	mouseif.lastc = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
+#else
+	mouseif.lastc = CPU_CLOCK + CPU_BASECLOCK + CPU_REMCLOCK;
+#endif
 }
 
 static void calc_mousexy(void) {
@@ -33,12 +37,18 @@ static void calc_mousexy(void) {
 	UINT32	clk;
 	SINT32	diff;
 
+#if defined(VAEG_FIX)
 	clk = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
+#else
+	clk = CPU_CLOCK + CPU_BASECLOCK + CPU_REMCLOCK;
+#endif
 	diff = clk - mouseif.lastc;
 	if (diff >= 2000) {
 		SINT32 dx;
 		SINT32 dy;
+#if !defined(VAEG_EXT)
 		mouseif.rapid ^= 0xa0;
+#endif
 		diff /= 1000;
 		dx = mouseif.sx;
 		if (dx > 0) {
@@ -77,6 +87,14 @@ static void calc_mousexy(void) {
 		mouseif.ry -= dy;
 		mouseif.lastc += diff * 1000;
 	}
+
+#if defined(VAEG_EXT)
+	diff = clock - rapidlastc;
+	if (diff > 200000 || diff < 0) {
+		mouseif.rapid ^= 0xa0;
+		rapidlastc = clock;
+	}
+#endif
 }
 
 void mouseint(NEVENTITEM item) {

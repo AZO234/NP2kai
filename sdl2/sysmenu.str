@@ -88,6 +88,10 @@ static const char str_sparkboard[] = "Spark board";
 static const char str_sndorchestra[] = "Sound Orchestra";
 static const char str_sndorchestrav[] = "Sound Orchestra-V";
 static const char str_amd98[] = "AMD-98";
+#if defined(SUPPORT_PX)
+static const char str_px1[] = "Otomi x2";
+static const char str_px2[] = "Otomi x2 + 86";
+#endif	/* defined(SUPPORT_PX) */
 static const char str_defsnd[] = "Default";
 static const char str_fmgen[] = "fmgen";
 static const char str_jastsnd[] = "JAST SOUND";
@@ -333,6 +337,10 @@ static const MSYSITEM s_snd[] = {
 		{str_sndorchestra,	NULL,		MID_SOUNDORCHESTRA,	0},
 		{str_sndorchestrav,	NULL,		MID_SOUNDORCHESTRAV,0},
 		{str_amd98,			NULL,		MID_AMD98,			0},
+#if defined(SUPPORT_PX)
+		{str_px1,			NULL,		MID_PX1,			0},
+		{str_px2,			NULL,		MID_PX2,			0},
+#endif	/* defined(SUPPORT_PX) */
 		{str_jastsnd,		NULL,		MID_JASTSND,		0},
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_defsnd,			NULL,		MID_DEFSND,			0},

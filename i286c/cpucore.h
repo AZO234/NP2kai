@@ -13,10 +13,17 @@
 #endif
 
 #if 1 // !defined(CPUDEBUG)
+#if defined(SUPPORT_BMS)
+enum {
+	I286_MEMREADMAX		= 0x80000,
+	I286_MEMWRITEMAX	= 0x80000
+};
+#else
 enum {
 	I286_MEMREADMAX		= 0xa4000,
 	I286_MEMWRITEMAX	= 0xa0000
 };
+#endif
 #else									// ダイレクトアクセス範囲を狭める
 enum {
 	I286_MEMREADMAX		= 0x00400,

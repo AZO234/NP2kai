@@ -54,6 +54,34 @@ lsr_err:
 	return(FAILURE);
 }
 
+static BRESULT loadsoundromsne(const OEMCHAR *name) {
+
+	OEMCHAR	romname[24];
+	OEMCHAR	path[MAX_PATH];
+	FILEH	fh;
+	UINT	rsize;
+
+	file_cpyname(romname, file_sound, NELEMENTS(romname));
+	if (name) {
+		file_catname(romname, name, NELEMENTS(romname));
+		file_catname(romname, OEMTEXT("ex"), NELEMENTS(romname));
+	}
+	file_catname(romname, file_extrom, NELEMENTS(romname));
+	getbiospath(path, romname, NELEMENTS(path));
+	fh = file_open_rb(path);
+	if (fh == FILEH_INVALID) {
+		goto lsr_err;
+	}
+	rsize = file_read(fh, mem + 0xC4000, 0x4000);
+	file_close(fh);
+	if (rsize != 0x4000) {
+		goto lsr_err;
+	}
+	return(SUCCESS);
+
+lsr_err:
+	return(FAILURE);
+}
 
 // ----
 
@@ -87,3 +115,22 @@ void soundrom_loadex(UINT sw, const OEMCHAR *primary) {
 	}
 }
 
+void soundrom_loadsne(const OEMCHAR *primary) {
+
+	if (primary != NULL) {
+		// C4000-C7FFF OPL BIOS
+		loadsoundromsne(primary);
+
+		// CC000-CFFFF OPN BIOS
+		if (loadsoundrom(0xCC000, primary) == SUCCESS) {
+			return;
+		}
+	}
+	loadsoundromsne(NULL);
+	if (loadsoundrom(0xCC000, NULL) == SUCCESS) {
+		return;
+	}
+	CopyMemory(mem + 0xCC000 + 0x2e00, defsoundrom, sizeof(defsoundrom));
+	soundrom.name[0] = '\0';
+	soundrom.address = 0xCC000;
+}

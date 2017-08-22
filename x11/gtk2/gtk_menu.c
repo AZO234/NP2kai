@@ -273,7 +273,13 @@ static GtkRadioActionEntry soundboard_entries[] = {
 { "pc-9801-118",    NULL, "PC-9801-11_8",            NULL, NULL, 0x08 },
 { "speakboard",     NULL, "S_peak board",            NULL, NULL, 0x20 },
 { "sparkboard",     NULL, "Sp_ark board",            NULL, NULL, 0x40 },
+{ "sndorchestra",   NULL, "Sound Orchestra",         NULL, NULL, 0x32 },
+{ "sndorchestrav",  NULL, "Sound Orchestra-V",       NULL, NULL, 0x82 },
 { "amd98",          NULL, "_AMD98",                  NULL, NULL, 0x80 },
+#if defined(SUPPORT_PX)
+{ "px1",            NULL, "Otomi x2",                NULL, NULL, 0x30 },
+{ "px2",            NULL, "Otomi x2 + 86",           NULL, NULL, 0x50 },
+#endif	/* defined(SUPPORT_PX) */
 };
 static const guint n_soundboard_entries = G_N_ELEMENTS(soundboard_entries);
 
@@ -465,7 +471,13 @@ static const gchar *ui_info =
 "    <menuitem action='pc-9801-118'/>\n"
 "    <menuitem action='speakboard'/>\n"
 "    <menuitem action='sparkboard'/>\n"
+"    <menuitem action='sndorchestra'/>\n"
+"    <menuitem action='sndorchestrav'/>\n"
 "    <menuitem action='amd98'/>\n"
+#if defined(SUPPORT_PX)
+"    <menuitem action='px1'/>\n"
+"    <menuitem action='px2'/>\n"
+#endif	/* defined(SUPPORT_PX) */
 "    <separator/>\n"
 "    <menuitem action='jastsound'/>\n"
 "    <separator/>\n"

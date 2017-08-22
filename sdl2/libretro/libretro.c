@@ -834,7 +834,7 @@ void retro_set_environment(retro_environment_t cb)
       { "np2_clk_mult" , "CPU Clock Multiplier (Restart); 4|5|6|8|10|12|16|20|24|30|36|40|42|1|2" },
       { "np2_ExMemory" , "RAM Size (Restart); 3|7|11|13|16|32|64|120|230|1" },
       { "np2_skipline" , "Skipline Revisions; Full 255 lines|ON|OFF" },
-      { "np2_SNDboard" , "Sound Board (Restart); PC9801-26K|PC9801-86|PC9801-26K + 86|PC9801-86 + Chibi-oto|PC9801-118|Speak Board|Spark Board|Sound Orchestra|Sound Orchestra-V|AMD-98|None|PC9801-14" },
+      { "np2_SNDboard" , "Sound Board (Restart); PC9801-86|PC9801-26K + 86|PC9801-86 + Chibi-oto|PC9801-118|Speak Board|Spark Board|Sound Orchestra|Sound Orchestra-V|AMD-98|Otomi x2|Otomi x2 + 86|None|PC9801-14|PC9801-26K" },
       { "np2_jast_snd" , "JastSound; OFF|ON" },
       { "np2_sndgen" , "Sound Generator; Default|fmgen" },
       { "np2_volume_F" , "Volume FM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
@@ -960,6 +960,10 @@ static void update_variables(void)
          np2cfg.SOUND_SW = 0x82;
       else if (strcmp(var.value, "AMD-98") == 0)
          np2cfg.SOUND_SW = 0x80;
+      else if (strcmp(var.value, "Otomi x2") == 0)
+         np2cfg.SOUND_SW = 0x30;
+      else if (strcmp(var.value, "Otomi x2 + 86") == 0)
+         np2cfg.SOUND_SW = 0x50;
       else if (strcmp(var.value, "None") == 0)
          np2cfg.SOUND_SW = 0x00;
       else if (strcmp(var.value, "PC9801-14") == 0)

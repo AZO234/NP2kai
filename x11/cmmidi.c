@@ -116,6 +116,11 @@ struct _cmmidi {
 	UINT		recvsize;
 	UINT8		recvbuf[MIDI_BUFFER];
 	UINT8		midiinbuf[MIDI_BUFFER];
+
+#if defined(VAEG_FIX)
+	BYTE		rsflag;		// RS-232C bit5..RTS bit1..DTR
+							// ToDo: STATSAVEで保存するべき
+#endif
 };
 
 static const UINT8 midictrltbl[] = {

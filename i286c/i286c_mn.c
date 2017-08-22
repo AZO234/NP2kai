@@ -1829,7 +1829,11 @@ I286FN _popf(void) {						// 9D:	popf
 	REGPOP0(flag)
 	I286_OV = flag & O_FLAG;
 	I286_FLAG = flag & (0xfff ^ O_FLAG);
+#if defined(VAEG_FIX)
+	I286_TRAP = ((flag & 0x100) == 0x100);
+#else
 	I286_TRAP = ((flag & 0x300) == 0x300);
+#endif
 	I286_WORKCLOCK(5);
 #if defined(INTR_FAST)
 	if ((I286_TRAP) || ((flag & I_FLAG) && (PICEXISTINTR))) {

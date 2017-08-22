@@ -177,6 +177,8 @@ typedef SINT32	FILELEN;
 #define  USE_FPU
 #define	IA32_PAGING_EACHSIZE
 #define	SUPPORT_PC9801_119
+#else
+#define SUPPORT_BMS
 #endif
 
 #define	SUPPORT_PC9861K
@@ -200,6 +202,12 @@ typedef SINT32	FILELEN;
 #define  SUPPORT_FMGEN
 
 #define	SUPPORT_NORMALDISP
+
+#define SUPPORT_PX
+#define SUPPORT_V30ORIGINAL
+#define SUPPORT_V30EXT
+#define VAEG_FIX
+//#define SUPPORT_WAVEREC
 
 //unused paramaters
 

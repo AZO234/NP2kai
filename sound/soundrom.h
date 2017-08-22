@@ -19,6 +19,7 @@ extern	SOUNDROM	soundrom;
 void soundrom_reset(void);
 void soundrom_load(UINT32 address, const OEMCHAR *primary);
 void soundrom_loadex(UINT sw, const OEMCHAR *primary);
+void soundrom_loadsne(const OEMCHAR *primary);
 
 #ifdef __cplusplus
 }

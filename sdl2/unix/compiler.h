@@ -169,6 +169,8 @@ typedef SINT32	FILELEN;
 #if defined(SUPPORT_PC9821)
 #define	SUPPORT_CRT31KHZ
 #define	SUPPORT_PC9801_119
+#else
+#define SUPPORT_BMS
 #endif
 #define	SUPPORT_HOSTDRV
 #define	SUPPORT_SWSEEKSND
@@ -188,4 +190,10 @@ typedef SINT32	FILELEN;
 #define	SUPPORT_FMGEN
 
 #define	SCREEN_BPP		16
+
+#define SUPPORT_PX
+#define SUPPORT_V30ORIGINAL
+#define SUPPORT_V30EXT
+#define VAEG_FIX
+//#define SUPPORT_WAVEREC
 

@@ -1,5 +1,19 @@
 #define	I286CLOCK(clock)												\
 				__asm {	sub		I286_REMCLOCK, clock				}
+#if defined(SUPPORT_V30EXT)
+#define	I286CLOCK_X(idx, clock286, clockv30)							\
+				__asm { test	i286core.s.cpu_type, CPUTYPE_V30	}	\
+				__asm { jnz		short v30clock_##idx				}	\
+				__asm {	sub		I286_REMCLOCK, clock286				}	\
+				__asm { jmp		short endclock_##idx				}	\
+			v30clock_##idx:												\
+				__asm { sub		I286_REMCLOCK, clockv30				}	\
+			endclock_##idx:												\
+				__asm { nop											}
+#else
+#define	I286CLOCK_X(idx, clock286, clockv30)							\
+				__asm {	sub		I286_REMCLOCK, clock286				}
+#endif
 #define	I286CLOCKDEC													\
 				__asm {	inc		I286_REMCLOCK						}
 
@@ -18,6 +32,13 @@
 				__asm {	lahf										}	\
 				__asm {	mov		I286_FLAGL, ah						}	\
 				__asm {	and		I286_FLAG, not O_FLAG				}
+
+#if defined(SUPPORT_V30EXT)
+#define	FLAG_STORE00													\
+				__asm {	lahf										}	\
+				__asm {	mov		I286_FLAGL, ah						}	\
+				__asm {	and		I286_FLAG, not (O_FLAG or A_FLAG)	}
+#endif
 
 #define	FLAG_STORE_OF													\
 				__asm {	lahf										}	\

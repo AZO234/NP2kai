@@ -210,6 +210,9 @@ G_END_DECLS
 #else
 #define	SUPPORT_CRT15KHZ
 #endif
+#if !defined(SUPPORT_PC9821)
+#define SUPPORT_BMS
+#endif
 
 #if defined(NP2_CPU_ARCH_IA32)
 #undef	MEMOPTIMIZE
@@ -291,6 +294,11 @@ G_END_DECLS
 #define	USE_SDL_JOYSTICK
 #endif	/* USE_SDLAUDIO || USE_SDLMIXER */
 
+#define SUPPORT_PX
+#define SUPPORT_V30ORIGINAL
+#define SUPPORT_V30EXT
+#define VAEG_FIX
+//#define SUPPORT_WAVEREC
 /*
  * You could specify a complete path, e.g. "/etc/timidity.cfg", and
  * then specify the library directory in the configuration file.

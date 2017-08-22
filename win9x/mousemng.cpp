@@ -32,12 +32,22 @@ static  int mouseRawDeltaX = 0;
 static  int mouseRawDeltaY = 0;
 
 UINT8 mousemng_getstat(SINT16 *x, SINT16 *y, int clear) {
+
+#if defined(VAEG_FIX)
+	*x = mousemng.x / 2;
+	*y = mousemng.y / 2;
+	if (clear) {
+		mousemng.x %= 2;
+		mousemng.y %= 2;
+	}
+#else
 	*x = mousemng.x;
 	*y = mousemng.y;
 	if (clear) {
 		mousemng.x = 0;
 		mousemng.y = 0;
 	}
+#endif
 	return(mousemng.btn);
 }
 void mousemng_setstat(SINT16 x, SINT16 y, UINT8 btn) {
@@ -219,8 +229,15 @@ void mousemng_sync(void) {
 			mousemng.y += (SINT16)(mousebufY / mouseDiv);
 			mousebufY   = mousebufY % mouseDiv;
 		}
-		//mousemng.x += (SINT16)((p.x - cp.x));// / 2);
-		//mousemng.y += (SINT16)((p.y - cp.y));// / 2);
+#if defined(VAEG_FIX)
+		mousemng.x += (SINT16)(p.x - cp.x);
+		mousemng.y += (SINT16)(p.y - cp.y);
+			// ÷2するのはmousemng_getstatで。
+			// でないと、実マウスが1ドットだけ動いた場合に動きが0になってしまう
+#else
+		mousemng.x += (SINT16)((p.x - cp.x));// / 2);
+		mousemng.y += (SINT16)((p.y - cp.y));// / 2);
+#endif
 		SetCursorPos(cp.x, cp.y);
 	}
 }

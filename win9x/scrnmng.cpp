@@ -937,6 +937,9 @@ void scrnmng_setheight(int posy, int height) {
 
 	scrnstat.height = height;
 	renewalclientsize(TRUE);
+#if defined(VAEG_FIX)
+	clearoutscreen();
+#endif
 }
 
 const SCRNSURF *scrnmng_surflock(void) {

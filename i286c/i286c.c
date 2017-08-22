@@ -168,11 +168,24 @@ static void i286c_initreg(void) {
 	I286_ADRSMASK = 0xfffff;
 }
 
+#if defined(VAEG_FIX)
 void i286c_reset(void) {
-
+	UINT8 cputype = CPU_TYPE;
+	ZeroMemory(&i286core.s, sizeof(i286core.s));
+	CPU_TYPE = cputype;
+	if (cputype == CPUTYPE_V30) {
+		v30c_initreg();
+	}
+	else {
+		i286c_initreg();
+	}
+}
+#else
+void i286c_reset(void) {
 	ZeroMemory(&i286core.s, sizeof(i286core.s));
 	i286c_initreg();
 }
+#endif
 
 void i286c_shut(void) {
 

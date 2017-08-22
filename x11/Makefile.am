@@ -126,6 +126,7 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/cbus/board14.c \
 		$(real_topsrcdir)/cbus/board26k.c \
 		$(real_topsrcdir)/cbus/board86.c \
+		$(real_topsrcdir)/cbus/boardpx.c \
 		$(real_topsrcdir)/cbus/boardso.c \
 		$(real_topsrcdir)/cbus/boardspb.c \
 		$(real_topsrcdir)/cbus/boardx2.c \
@@ -166,6 +167,7 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		\
 		$(real_topsrcdir)/io/iocore.c \
 		$(real_topsrcdir)/io/artic.c \
+		$(real_topsrcdir)/io/bmsio.c \
 		$(real_topsrcdir)/io/cgrom.c \
 		$(real_topsrcdir)/io/cpuio.c \
 		$(real_topsrcdir)/io/crtc.c \

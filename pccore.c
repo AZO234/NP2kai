@@ -40,6 +40,7 @@
 #include	"fdd/fdd_mtr.h"
 #include	"fdd/sxsi.h"
 #include	"font/font.h"
+#include	"bmsio.h"
 #if defined(SUPPORT_HOSTDRV)
 #include	"hostdrv.h"
 #endif
@@ -409,15 +410,27 @@ void pccore_reset(void) {
 	}
 
 	pccore_set(&np2cfg);
+#if defined(SUPPORT_BMS)
+	bmsio_set();
+#endif
 	nevent_allreset();
 
+#if defined(VAEG_FIX)
+	//後ろに移動
+#else
 	CPU_RESET();
 	CPU_SETEXTSIZE((UINT32)pccore.extmem);
+#endif
 
 	CPU_TYPE = 0;
 	if (pccore.dipsw[2] & 0x80) {
 		CPU_TYPE = CPUTYPE_V30;
 	}
+
+#if defined(VAEG_FIX)
+	CPU_RESET();
+	CPU_SETEXTSIZE((UINT32)pccore.extmem);
+#endif
 
 	epson = (pccore.model & PCMODEL_EPSON) ? TRUE : FALSE;
 	if (epson) {

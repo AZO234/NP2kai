@@ -8,8 +8,8 @@
 #include	"memtram.h"
 #include	"memvram.h"
 #include	"memegc.h"
-#if defined(SUPPORT_PC9821)
-#include	"memvga.h"
+#if defined(SUPPORT_BMS)
+#include	"bmsio.h"
 #endif
 #include	"memems.h"
 #include	"memepp.h"
@@ -54,6 +54,79 @@ static void MEMCALL memmain_wr16(UINT32 address, REG16 value) {
 	STOREINTELWORD(ptr, value);
 }
 
+#if defined(SUPPORT_BMS)
+// ---- BMS
+
+static REG8 MEMCALL membms_rd8(UINT32 address) {
+
+	if (bmsio.cfg.enabled) {
+		if (bmsio.nomem) {
+			return(0xff);
+		}
+		if (bmsio.bank == 0) {
+			return(mem[address]);
+		}
+		return(bmsiowork.bmsmem[(((UINT32)bmsio.bank) << 17) + (address - 0x80000)]);
+	} else {
+		return(mem[address]);
+	}
+}
+
+static REG16 MEMCALL membms_rd16(UINT32 address) {
+
+	const UINT8	*ptr;
+
+	if (bmsio.cfg.enabled) {
+		if (bmsio.nomem) {
+			return(0xffff);
+		}
+		if (bmsio.bank == 0) {
+			ptr = mem + address;
+		} else {
+			ptr = bmsiowork.bmsmem + (((UINT32)bmsio.bank) << 17) + (address - 0x80000);
+		}
+	} else {
+		ptr = mem + address;
+	}
+	return(LOADINTELWORD(ptr));
+}
+
+static void MEMCALL membms_wr8(UINT32 address, REG8 value) {
+	if (bmsio.cfg.enabled) {
+		if (bmsio.nomem) {
+			return;
+		}
+		if (bmsio.bank == 0) {
+			mem[address] = (UINT8)value;
+		} else {
+			bmsiowork.bmsmem[(((UINT32)bmsio.bank) << 17) + (address - 0x80000)] = (UINT8)value;
+		}
+	} else {
+		mem[address] = (UINT8)value;
+	}
+}
+
+static void MEMCALL membms_wr16(UINT32 address, REG16 value) {
+
+	UINT8	*ptr;
+
+	if (bmsio.cfg.enabled) {
+		if (bmsio.nomem) {
+			return;
+		}
+		if (bmsio.bank == 0) {
+			ptr = mem + address;
+		} else {
+			ptr = bmsiowork.bmsmem + (((UINT32)bmsio.bank) << 17) + (address - 0x80000);
+		}
+		STOREINTELWORD(ptr, value);
+	} else {
+		ptr = mem + address;
+	}
+	STOREINTELWORD(ptr, value);
+}
+
+#endif	// defined(SUPPORT_BMS)
 
 // ---- N/C
 
@@ -112,7 +185,11 @@ static MEMFN0 memfn0 = {
 		memmain_rd8,	memmain_rd8,	memmain_rd8,	memmain_rd8,	// 20
 		memmain_rd8,	memmain_rd8,	memmain_rd8,	memmain_rd8,	// 40
 		memmain_rd8,	memmain_rd8,	memmain_rd8,	memmain_rd8,	// 60
+#if defined(SUPPORT_BMS)
+		membms_rd8,		membms_rd8,		membms_rd8,		membms_rd8,		// 80
+#else
 		memmain_rd8,	memmain_rd8,	memmain_rd8,	memmain_rd8,	// 80
+#endif	// defined(SUPPORT_BMS)
 		memtram_rd8,	memvram0_rd8,	memvram0_rd8,	memvram0_rd8,	// a0
 		memems_rd8,		memems_rd8,		memmain_rd8,	memmain_rd8,	// c0
 		memvram0_rd8,	memmain_rd8,	memmain_rd8,	memf800_rd8,	// e0
@@ -122,7 +199,11 @@ static MEMFN0 memfn0 = {
 		memmain_wr8,	memmain_wr8,	memmain_wr8,	memmain_wr8,	// 20
 		memmain_wr8,	memmain_wr8,	memmain_wr8,	memmain_wr8,	// 40
 		memmain_wr8,	memmain_wr8,	memmain_wr8,	memmain_wr8,	// 60
+#if defined(SUPPORT_BMS)
+		membms_wr8,	membms_wr8,	membms_wr8,	membms_wr8,	// 80
+#else
 		memmain_wr8,	memmain_wr8,	memmain_wr8,	memmain_wr8,	// 80
+#endif	// defined(SUPPORT_BMS)
 		memtram_wr8,	memvram0_wr8,	memvram0_wr8,	memvram0_wr8,	// a0
 		memems_wr8,		memems_wr8,		memd000_wr8,	memd000_wr8,	// c0
 		memvram0_wr8,	memnc_wr8,		memnc_wr8,		memnc_wr8,		// e0
@@ -132,7 +213,11 @@ static MEMFN0 memfn0 = {
 		memmain_rd16,	memmain_rd16,	memmain_rd16,	memmain_rd16,	// 20
 		memmain_rd16,	memmain_rd16,	memmain_rd16,	memmain_rd16,	// 40
 		memmain_rd16,	memmain_rd16,	memmain_rd16,	memmain_rd16,	// 60
+#if defined(SUPPORT_BMS)
+		membms_rd16,	membms_rd16,	membms_rd16,	membms_rd16,	// 80
+#else
 		memmain_rd16,	memmain_rd16,	memmain_rd16,	memmain_rd16,	// 80
+#endif	// defined(SUPPORT_BMS)
 		memtram_rd16,	memvram0_rd16,	memvram0_rd16,	memvram0_rd16,	// a0
 		memems_rd16,	memems_rd16,	memmain_rd16,	memmain_rd16,	// c0
 		memvram0_rd16,	memmain_rd16,	memmain_rd16,	memf800_rd16,	// e0
@@ -142,7 +227,11 @@ static MEMFN0 memfn0 = {
 		memmain_wr16,	memmain_wr16,	memmain_wr16,	memmain_wr16,	// 20
 		memmain_wr16,	memmain_wr16,	memmain_wr16,	memmain_wr16,	// 40
 		memmain_wr16,	memmain_wr16,	memmain_wr16,	memmain_wr16,	// 60
+#if defined(SUPPORT_BMS)
+		membms_wr16,	membms_wr16,	membms_wr16,	membms_wr16,	// 80
+#else
 		memmain_wr16,	memmain_wr16,	memmain_wr16,	memmain_wr16,	// 80
+#endif	// defined(SUPPORT_BMS)
 		memtram_wr16,	memvram0_wr16,	memvram0_wr16,	memvram0_wr16,	// a0
 		memems_wr16,	memems_wr16,	memd000_wr16,	memd000_wr16,	// c0
 		memvram0_wr16,	memnc_wr16,		memnc_wr16,		memnc_wr16,		// e0

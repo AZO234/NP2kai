@@ -19,7 +19,7 @@ static const OEMCHAR str_8MHz[] = OEMTEXT("8MHz");
 static const OEMCHAR str_notexist[] = OEMTEXT("not exist");
 static const OEMCHAR str_disable[] = OEMTEXT("disable");
 
-static const OEMCHAR str_cpu[] = OEMTEXT("8086-2\00070116\00080286\00080386\00080486\0Pentium\0PentiumPro");
+static const OEMCHAR str_cpu[] = OEMTEXT("8086-2\0uPD70116\00080286\00080386\00080486\0Pentium\0PentiumPro");
 static const OEMCHAR str_winclr[] = OEMTEXT("256-colors\00065536-colors\0full color\0true color");
 static const OEMCHAR str_winmode[] = OEMTEXT(" (window)\0 (fullscreen)");
 static const OEMCHAR str_grcgchip[] = OEMTEXT("\0GRCG \0GRCG CG-Window \0EGC CG-Window ");

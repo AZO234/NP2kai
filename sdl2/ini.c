@@ -6,6 +6,9 @@
 #include "pccore.h"
 #include "profile.h"
 #include "strres.h"
+#if defined(SUPPORT_BMS)
+#include "bmsio.h"
+#endif
 
 #include "commng.h"
 #include "joymng.h"
@@ -599,6 +602,12 @@ static const INITBL iniitem[] = {
 	{"FDDRIVE2", INIRO_BITMAP,	&np2cfg.fddequip,	1},
 	{"FDDRIVE3", INIRO_BITMAP,	&np2cfg.fddequip,	2},
 	{"FDDRIVE4", INIRO_BITMAP,	&np2cfg.fddequip,	3},
+
+#if defined(SUPPORT_BMS)
+	{"Use_BMS_", INITYPE_BOOL,	&bmsiocfg.enabled,	0},
+	{"BMS_Port", INIROAND_HEX32,	&bmsiocfg.port,		0},
+	{"BMS_Size", INIMAX_UINT8,	&bmsiocfg.numbanks,	256},
+#endif
 
 #if defined(SUPPORT_NET)
 	{"NP2NETTAP", INITYPE_STR,	&np2cfg.np2nettap,	0},

@@ -219,10 +219,18 @@ I286FN v30_popf(void) {						// 9D:	popf
 
 	I286_WORKCLOCK(5);
 	REGPOP0(I286_FLAG)
+#if defined(VAEG_FIX)
+	I286_FLAG |= 0xf002;
+#else
 	I286_FLAG |= 0xf000;
+#endif
 	I286_OV = I286_FLAG & O_FLAG;
 	I286_FLAG &= (0xfff ^ O_FLAG);
+#if defined(VAEG_FIX)
+	I286_TRAP = ((I286_FLAG & 0x100) == 0x100);
+#else
 	I286_TRAP = ((I286_FLAG & 0x300) == 0x300);
+#endif
 	I286IRQCHECKTERM
 }
 
@@ -325,6 +333,30 @@ I286FN v30shift_ea16_data8(void) {			// C1:	shift	EA16, DATA8
 	}
 	sft_r16cl_table[(op >> 3) & 7](out, cl);
 }
+
+#if defined(VAEG_FIX)
+I286FN v30_iret(void) {						// CF:	iret
+
+	UINT	flag;
+
+	REGPOP0(I286_IP)
+	REGPOP0(I286_CS)
+	REGPOP0(flag)
+	flag |= 0xf002;				// V30と286の唯一の差分
+	I286_OV = flag & O_FLAG;
+	I286_FLAG = (flag & (0xfff ^ O_FLAG));
+	I286_TRAP = ((flag & 0x100) == 0x100);
+	CS_BASE = I286_CS << 4;
+	I286_WORKCLOCK(31);
+#if defined(INTR_FAST)
+	if ((I286_TRAP) || ((flag & I_FLAG) && (PICEXISTINTR))) {
+		I286IRQCHECKTERM
+	}
+#else
+	I286IRQCHECKTERM
+#endif
+}
+#endif
 
 I286FN v30shift_ea8_cl(void) {				// D2:	shift EA8, cl
 
@@ -603,7 +635,11 @@ static const V30PATCH v30patch_op[] = {
 			{0x36, v30segprefix_ss},		// 36:	ss:
 			{0x3e, v30segprefix_ds},		// 3E:	ds:
 			{0x54, v30push_sp},				// 54:	push	sp
+#if !defined(VAEG_FIX)
+			/* V30/μPD9002ではPOP SPはスタックの値をSPに代入して終わり。(2を加算しない)
+			   以下の実装は誤り */
 			{0x5c, v30pop_sp},				// 5C:	pop		sp
+#endif
 			{0x63, v30_reserved},			// 63:	reserved
 			{0x64, v30_reserved},			// 64:	reserved
 			{0x65, v30_reserved},			// 65:	reserved
@@ -612,10 +648,15 @@ static const V30PATCH v30patch_op[] = {
 			{0x8e, v30mov_seg_ea},			// 8E:	mov		segrem, EA
 			{0x9c, v30_pushf},				// 9C:	pushf
 			{0x9d, v30_popf},				// 9D:	popf
+#if 0 // x64環境でまともに動かないので暫定的にコメントアウト
 			{0xc0, v30shift_ea8_data8},		// C0:	shift	EA8, DATA8
 			{0xc1, v30shift_ea16_data8},	// C1:	shift	EA16, DATA8
 			{0xd2, v30shift_ea8_cl},		// D2:	shift EA8, cl
 			{0xd3, v30shift_ea16_cl},		// D3:	shift EA16, cl
+#endif
+#if defined(VAEG_FIX)
+			{0xcf, v30_iret},				// CF:	iret
+#endif
 			{0xd4, v30_aam},				// D4:	AAM
 			{0xd5, v30_aad},				// D5:	AAD
 			{0xd6, v30_xlat},				// D6:	xlat (8086/V30)
@@ -701,7 +742,11 @@ static const V30PATCH v30patch_repe[] = {
 			{0x36, v30repe_segprefix_ss},	// 36:	repe ss:
 			{0x3e, v30repe_segprefix_ds},	// 3E:	repe ds:
 			{0x54, v30push_sp},				// 54:	push	sp
+#if !defined(VAEG_FIX)
+			/* V30/μPD9002ではPOP SPはスタックの値をSPに代入して終わり。(2を加算しない)
+			   以下の実装は誤り */
 			{0x5c, v30pop_sp},				// 5C:	pop		sp
+#endif
 			{0x63, v30_reserved},			// 63:	reserved
 			{0x64, v30_reserved},			// 64:	reserved
 			{0x65, v30_reserved},			// 65:	reserved
@@ -712,6 +757,9 @@ static const V30PATCH v30patch_repe[] = {
 			{0x9d, v30_popf},				// 9D:	popf
 			{0xc0, v30shift_ea8_data8},		// C0:	shift	EA8, DATA8
 			{0xc1, v30shift_ea16_data8},	// C1:	shift	EA16, DATA8
+#if defined(VAEG_FIX)
+			{0xcf, v30_iret},				// CF:	iret
+#endif
 			{0xd2, v30shift_ea8_cl},		// D2:	shift EA8, cl
 			{0xd3, v30shift_ea16_cl},		// D3:	shift EA16, cl
 			{0xd4, v30_aam},				// D4:	AAM
@@ -799,7 +847,11 @@ static const V30PATCH v30patch_repne[] = {
 			{0x36, v30repne_segprefix_ss},	// 36:	repne ss:
 			{0x3e, v30repne_segprefix_ds},	// 3E:	repne ds:
 			{0x54, v30push_sp},				// 54:	push	sp
+#if !defined(VAEG_FIX)
+			/* V30/μPD9002ではPOP SPはスタックの値をSPに代入して終わり。(2を加算しない)
+			   以下の実装は誤り */
 			{0x5c, v30pop_sp},				// 5C:	pop		sp
+#endif
 			{0x63, v30_reserved},			// 63:	reserved
 			{0x64, v30_reserved},			// 64:	reserved
 			{0x65, v30_reserved},			// 65:	reserved
@@ -810,6 +862,9 @@ static const V30PATCH v30patch_repne[] = {
 			{0x9d, v30_popf},				// 9D:	popf
 			{0xc0, v30shift_ea8_data8},		// C0:	shift	EA8, DATA8
 			{0xc1, v30shift_ea16_data8},	// C1:	shift	EA16, DATA8
+#if defined(VAEG_FIX)
+			{0xcf, v30_iret},				// CF:	iret
+#endif
 			{0xd2, v30shift_ea8_cl},		// D2:	shift EA8, cl
 			{0xd3, v30shift_ea16_cl},		// D3:	shift EA16, cl
 			{0xd4, v30_aam},				// D4:	AAM
@@ -848,6 +903,16 @@ void v30cinit(void) {
 	v30ope0xf7_table[6] = v30_div_ea16;
 	v30ope0xf7_table[7] = v30_idiv_ea16;
 }
+
+#if defined(VAEG_FIX)
+void v30c_initreg(void) {
+	I286_CS = 0xf000;
+	CS_BASE = 0xf0000;
+	I286_IP = 0xfff0;
+	I286_FLAG = 0xf002;				// 286との唯一の差異
+	I286_ADRSMASK = 0xfffff;
+}
+#endif
 
 void v30c(void) {
 
