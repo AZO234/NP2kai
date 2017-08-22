@@ -37,12 +37,6 @@ extern const OEMCHAR str_hdd[];
 extern const OEMCHAR str_nhd[];
 extern const OEMCHAR str_vhd[];
 extern const OEMCHAR str_slh[];
-//	追加(kai9)
-extern const OEMCHAR str_dcp[];
-extern const OEMCHAR str_dcu[];
-//
-extern const OEMCHAR str_nfd[];		//	追加(kaiA)
-extern const OEMCHAR str_vfdd[];	//	追加(kaiB)
 
 extern const OEMCHAR str_d[];
 extern const OEMCHAR str_u[];
