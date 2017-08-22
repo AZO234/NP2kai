@@ -128,6 +128,7 @@ struct tagNP2Config
 	UINT8	vol_adpcm;
 	UINT8	vol_pcm;
 	UINT8	vol_rhythm;
+	UINT8	vol_cdda;	//	’Ç‰Á(kaiE)
 
 	UINT8	mpuenable;
 	UINT8	mpuopt;

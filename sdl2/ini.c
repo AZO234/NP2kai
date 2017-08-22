@@ -569,6 +569,7 @@ static const INITBL iniitem[] = {
 	{"volume_A", INIMAX_UINT8,	&np2cfg.vol_adpcm,	128},
 	{"volume_P", INIMAX_UINT8,	&np2cfg.vol_pcm,	128},
 	{"volume_R", INIMAX_UINT8,	&np2cfg.vol_rhythm,	128},
+	{"volume_C", INIMAX_UINT8,	&np2cfg.vol_cdda,	128},
 
 	{"sndgen", INITYPE_UINT8,	&np2cfg.sndgen,		0},
 

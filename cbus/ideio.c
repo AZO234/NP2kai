@@ -1212,6 +1212,10 @@ static BRESULT SOUNDCALL playdevaudio(IDEDRV drv, SINT32 *pcm, UINT count) {
 const UINT8	*ptr;
 	SINT	sampl;
 	SINT	sampr;
+	UINT	skipcnt;
+
+	//	CDDA
+	count = count * soundcfg.cddaskip;
 
 	sxsi = sxsi_getptr(drv->sxsidrv);
 	if ((sxsi == NULL) || (sxsi->devtype != SXSIDEV_CDROM) ||
@@ -1225,13 +1229,27 @@ const UINT8	*ptr;
 			count -= r;
 			ptr = drv->dabuf + 2352 - (drv->dabufrem * 4);
 			drv->dabufrem -= r;
+			skipcnt = 0;
 			do {
 				sampl = ((SINT8)ptr[1] << 8) + ptr[0];
 				sampr = ((SINT8)ptr[3] << 8) + ptr[2];
+#if 0
 				pcm[0] += (SINT)((int)(sampl)*np2cfg.davolume/255);
 				pcm[1] += (SINT)((int)(sampr)*np2cfg.davolume/255);
+#else
+				skipcnt++;
+				if ((skipcnt % soundcfg.cddaskip) == 0) {
+					pcm[0] += sampl;
+					pcm[1] += sampr;
+					//	(kaiE)
+					pcm[0] = (pcm[0] * np2cfg.vol_cdda) >> 6;
+					pcm[1] = (pcm[1] * np2cfg.vol_cdda) >> 6;
+					//
+					pcm += 2;
+				}
+#endif
 				ptr += 4;
-				pcm += 2;
+//				pcm += 2;
 			} while(--r);
 		}
 		if (count == 0) {

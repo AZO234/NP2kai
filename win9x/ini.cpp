@@ -524,6 +524,7 @@ static const PFTBL s_IniItems[] =
 	PFMAX("volume_A", PFTYPE_UINT8,		&np2cfg.vol_adpcm,		128),
 	PFMAX("volume_P", PFTYPE_UINT8,		&np2cfg.vol_pcm,		128),
 	PFMAX("volume_R", PFTYPE_UINT8,		&np2cfg.vol_rhythm,		128),
+	PFMAX("volume_C", PFTYPE_UINT8,		&np2cfg.vol_cdda,		128),	//	CD-DA(kaiE)
 
 	PFVAL("Seek_Snd", PFTYPE_BOOL,		&np2cfg.MOTOR),
 	PFMAX("Seek_Vol", PFTYPE_UINT8,		&np2cfg.MOTORVOL,		100),

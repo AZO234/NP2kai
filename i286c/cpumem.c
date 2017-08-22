@@ -144,14 +144,41 @@ static REG16 MEMCALL memnc_rd16(UINT32 address) {
 
 static void MEMCALL memnc_wr8(UINT32 address, REG8 value) {
 
-	(void)address;
-	(void)value;
+// 強制RAM化
+//	(void)address;
+//	(void)value;
+
+	if (CPU_RAM_D000 & (1 << ((address >> 12) & 15))) {
+		mem[address] = (UINT8)value;
+	}
+//
 }
 
 static void MEMCALL memnc_wr16(UINT32 address, REG16 value) {
 
-	(void)address;
-	(void)value;
+// 強制RAM化
+//	(void)address;
+//	(void)value;
+
+	UINT8	*ptr;
+	UINT16	bit;
+
+	ptr = mem + address;
+	bit = 1 << ((address >> 12) & 15);
+	if ((address + 1) & 0xfff) {
+		if (CPU_RAM_D000 & bit) {
+			STOREINTELWORD(ptr, value);
+		}
+	}
+	else {
+		if (CPU_RAM_D000 & bit) {
+			ptr[0] = (UINT8)value;
+		}
+		if (CPU_RAM_D000 & (bit << 1)) {
+			ptr[1] = (UINT8)(value >> 8);
+		}
+	}
+//
 }
 
 
@@ -519,6 +546,13 @@ void MEMCALL memp_write8(UINT32 address, REG8 value) {
 	else {
 		address = address & CPU_ADRSMASK;
 		if (address < USE_HIMEM) {
+// 強制RAM化
+			if ((address >= 0xa5000) && (address < 0xa7fff)) {
+				if (CPU_RAM_D000 & (1 << ((address >> 12) & 15))) {
+					mem[address] = (UINT8)value;
+				}
+			}
+//
 			memfn0.wr8[address >> 15](address, value);
 		}
 		else if (address < CPU_EXTLIMIT16) {
@@ -553,6 +587,29 @@ void MEMCALL memp_write16(UINT32 address, REG16 value) {
 	else if ((address + 1) & 0x7fff) {			// non 32kb boundary
 		address = address & CPU_ADRSMASK;
 		if (address < USE_HIMEM) {
+// 強制RAM化
+			if ((address >= 0xa5000) && (address < 0xa7fff)) {
+
+				UINT8	*ptr;
+				UINT16	bit;
+
+				ptr = mem + address;
+				bit = 1 << ((address >> 12) & 15);
+				if ((address + 1) & 0xfff) {
+					if (CPU_RAM_D000 & bit) {
+						STOREINTELWORD(ptr, value);
+					}
+				}
+				else {
+					if (CPU_RAM_D000 & bit) {
+						ptr[0] = (UINT8)value;
+					}
+					if (CPU_RAM_D000 & (bit << 1)) {
+						ptr[1] = (UINT8)(value >> 8);
+					}
+				}
+			}
+//
 			memfn0.wr16[address >> 15](address, value);
 		}
 		else if (address < CPU_EXTLIMIT16) {

@@ -45,8 +45,16 @@ enum tagNEventId
 	NEVENT_SCSIIO		= 27,
 	NEVENT_CDWAIT		= 28, // XXX: èüéËÇ…égÇ¡ÇƒOK?
 	NEVENT_CT1741		= 29, // np2sÇÊÇË 28ÇégÇ¡ÇøÇ·Ç¡ÇΩÇÃÇ≈29Ç… np21w ver0.86 rev29
+#if defined(VAEG_EXT)
+	NEVENT_FDCTIMER		= 29,
+	NEVENT_FDDMOTOR		= 30,
+	NEVENT_FDCSTEPWAIT	= 31,
+#endif
+#if defined(VAEG_FIX)
+	NEVENT_FDCSTATE		= 32,
+#endif
 	/* ---- */
-	NEVENT_MAXEVENTS	= 32
+	NEVENT_MAXEVENTS	= 33
 };
 typedef enum tagNEventId NEVENTID;
 

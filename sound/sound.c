@@ -215,6 +215,8 @@ BRESULT sound_create(UINT rate, UINT ms) {
 	UINT	reserve;
 
 	ZeroMemory(&sndstream, sizeof(sndstream));
+	//	CDDA
+#if 0
 	switch(rate) {
 		case 11025:
 		case 22050:
@@ -229,6 +231,23 @@ BRESULT sound_create(UINT rate, UINT ms) {
 		default:
 			return(FAILURE);
 	}
+#else
+	switch(rate) {
+		case 11025:
+			soundcfg.cddaskip = 4;
+			break;
+		case 22050:
+			soundcfg.cddaskip = 2;
+			break;
+		case 44100:
+			soundcfg.cddaskip = 1;
+			break;
+
+		default:
+			soundcfg.cddaskip = 1;
+			return(FAILURE);
+	}
+#endif
 	samples = soundmng_create(rate, ms);
 	if (samples == 0) {
 		goto scre_err1;

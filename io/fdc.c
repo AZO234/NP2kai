@@ -136,6 +136,8 @@ void fdcsend_success7(void) {
 	fdc.buf[5] = fdc.R;
 	fdc.buf[6] = fdc.N;
 	fdc.status = FDCSTAT_RQM | FDCSTAT_CB | FDCSTAT_DIO;
+TRACEOUT(("\tbuf %02x %02x %02x %02x %02x %02x %02x",
+		fdc.buf[0], fdc.buf[1], fdc.buf[2], fdc.buf[3], fdc.buf[4], fdc.buf[5], fdc.buf[6]));
 	fdc.stat[fdc.us] = 0;										// ver0.29
 	fdc_dmaready(0);
 	dmac_check();

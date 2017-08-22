@@ -1139,12 +1139,13 @@ void gdc_reset(const NP2CFG *pConfig) {
 	ZeroMemory(&gdc, sizeof(gdc));
 	ZeroMemory(&gdcs, sizeof(gdcs));
 
-#if !defined(SUPPORT_PC9821)
-	if (pConfig->color16 & 1)
-#endif
-	{
+#if defined(SUPPORT_PC9821)
+	gdc.display |= (1 << GDCDISP_ANALOG);
+#else
+	if (np2cfg.color16 & 1) {
 		gdc.display |= (1 << GDCDISP_ANALOG);
 	}
+#endif
 	if (!(pccore.dipsw[0] & 0x04)) {			// dipsw1-3 on
 		gdc.display |= (1 << GDCDISP_PLAZMA2);
 	}
