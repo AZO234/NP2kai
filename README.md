@@ -222,11 +222,14 @@ Release
 		*AMD-98 Joyport
 		*S98V3
 		*Otomi x2
+		*V30 patch
+		*VAEG fix
 		Couldn't merged  
 		*CSM voice
 		*LittleOrchestra
 		*MultimediaOrchestra
 		*SB16
+		*WaveRec
 * Aug 21, 2017
 	- Apply libretro-super build
 * Aug 17, 2017 (rev.9)
