@@ -1,6 +1,6 @@
 Neko Project II 0.86 kai rev.9
 ===
-Aug 21, 2017  
+Aug 22, 2017  
 
 Build SDL2 port
 ---
@@ -216,6 +216,17 @@ I/O:0x00D0
 
 Release
 ---
+* Aug 22, 2017
+	- Merge 私家  
+		Merged  
+		*AMD-98 Joyport
+		*S98V3
+		*Otomi x2
+		Couldn't merged  
+		*CSM voice
+		*LittleOrchestra
+		*MultimediaOrchestra
+		*SB16
 * Aug 21, 2017
 	- Apply libretro-super build
 * Aug 17, 2017 (rev.9)
