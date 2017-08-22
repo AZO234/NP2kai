@@ -219,17 +219,17 @@ Release
 * Aug 22, 2017
 	- Merge 私家  
 		Merged  
-		*AMD-98 Joyport
-		*S98V3
-		*Otomi x2
-		*V30 patch
-		*VAEG fix
+		*AMD-98 Joyport  
+		*S98V3  
+		*Otomi x2  
+		*V30 patch  
+		*VAEG fix  
 		Couldn't merged  
-		*CSM voice
-		*LittleOrchestra
-		*MultimediaOrchestra
-		*SB16
-		*WaveRec
+		*CSM voice  
+		*LittleOrchestra  
+		*MultimediaOrchestra  
+		*SB16  
+		*WaveRec  
 * Aug 21, 2017
 	- Apply libretro-super build
 * Aug 17, 2017 (rev.9)
