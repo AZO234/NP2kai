@@ -2295,7 +2295,11 @@ I286FN _iret(void) {						// CF:	iret
 	REGPOP0(flag)
 	I286_OV = flag & O_FLAG;
 	I286_FLAG = flag & (0xfff ^ O_FLAG);
+#if defined(VAEG_FIX)
+	I286_TRAP = ((flag & 0x100) == 0x100);
+#else
 	I286_TRAP = ((flag & 0x300) == 0x300);
+#endif
 	CS_BASE = I286_CS << 4;
 //	CS_BASE = SEGSELECT(I286_CS);
 	I286_WORKCLOCK(31);
@@ -2665,7 +2669,10 @@ I286FN _cli(void) {							// FA:	cli
 
 	I286_WORKCLOCK(2);
 	I286_FLAG &= ~I_FLAG;
+#if defined(VAEG_FIX)
+#else
 	I286_TRAP = 0;
+#endif
 }
 
 I286FN _sti(void) {							// FB:	sti
@@ -2678,7 +2685,10 @@ I286FN _sti(void) {							// FB:	sti
 	}
 #endif
 	I286_FLAG |= I_FLAG;
+#if defined(VAEG_FIX)
+#else
 	I286_TRAP = (I286_FLAG & T_FLAG) >> 8;
+#endif
 #if defined(INTR_FAST)
 	if ((I286_TRAP) || (PICEXISTINTR)) {
 		REMAIN_ADJUST(1)

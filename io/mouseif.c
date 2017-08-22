@@ -34,6 +34,10 @@ void mouseif_sync(void) {
 
 static void calc_mousexy(void) {
 
+#if defined(VAEG_EXT)
+	static UINT32	rapidlastc;
+#endif
+
 	UINT32	clk;
 	SINT32	diff;
 

@@ -25,7 +25,7 @@ static const OEMCHAR fonttmpname[] = OEMTEXT("font.tmp");
  */
 void font_initialize(void) {
 
-	ZeroMemory(fontrom, 0x84000);
+	ZeroMemory(fontrom, sizeof(fontrom));
 	font_setchargraph(FALSE);
 }
 

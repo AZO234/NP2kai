@@ -79,11 +79,25 @@ static void i286x_initreg(void) {
 	i286x_resetprefetch();
 }
 
+#if defined(VAEG_FIX)
 void i286x_reset(void) {
+	UINT8 cputype = CPU_TYPE;
 
+	ZeroMemory(&i286core.s, sizeof(i286core.s));
+	CPU_TYPE = cputype;
+	if (cputype == CPUTYPE_V30) {
+		v30x_initreg();
+	}
+	else {
+		i286x_initreg();
+	}
+}
+#else
+void i286x_reset(void) {
 	ZeroMemory(&i286core.s, sizeof(i286core.s));
 	i286x_initreg();
 }
+#endif
 
 void i286x_shut(void) {
 
@@ -1755,7 +1769,11 @@ I286 imul_reg_ea_data16(void) {					// 69: imul REG, EA, DATA16
 				or		I286_FLAGL, ah
 				rcl		al, 1
 				adc		dx, 0
+#if defined(VAEG_FIX)
+				jz		imulnooverflow
+#else
 				jne		imulnooverflow
+#endif
 				or		I286_FLAG, (O_FLAG or C_FLAG)
 
 imulnooverflow:	GET_NEXTPRE2
@@ -1791,7 +1809,11 @@ I286 imul_reg_ea_data8(void) {					// 6B: imul REG, EA, DATA8
 				or		I286_FLAGL, ah
 				rcl		al, 1
 				adc		dx, 0
+#if defined(VAEG_FIX)
+				jz		imulnooverflow
+#else
 				jne		imulnooverflow
+#endif
 				or		I286_FLAG, (O_FLAG or C_FLAG)
 
 imulnooverflow:	GET_NEXTPRE1
@@ -2789,8 +2811,13 @@ I286 _popf(void) {								// 9D: popf
 				add		I286_SP, 2
 				and		ax, 0fffh
 				mov		I286_FLAG, ax
+#if defined(VAEG_FIX)
+				and		ah, 1
+				cmp		ah, 1
+#else
 				and		ah, 3
 				cmp		ah, 3
+#endif
 				sete	I286_TRAP
 
 				je		irqcheck				// fast_intr
@@ -3723,8 +3750,13 @@ I286 _iret(void) {								// CF: iret
 				mov		I286_SP, bx
 				and		ah, 0fh
 				mov		I286_FLAG, ax
+#if defined(VAEG_FIX)
+				and		ah, 1
+				cmp		ah, 1
+#else
 				and		ah, 3
 				cmp		ah, 3
+#endif
 				sete	I286_TRAP
 				RESET_XPREFETCH
 
@@ -4301,7 +4333,10 @@ I286 _cli(void) {								// FA: cli
 				GET_NEXTPRE1
 				I286CLOCK(2)
 				and		I286_FLAG, not I_FLAG
+#if defined(VAEG_FIX)
+#else
 				mov		I286_TRAP, 0
+#endif
 				ret
 		}
 }
@@ -4317,8 +4352,11 @@ I286 _sti(void) {								// FB: sti
 				movzx	ebp, bl
 				bts		I286_FLAG, 9
 				jne		jmp_nextop
+#if defined(VAEG_FIX)
+#else
 				test	I286_FLAG, T_FLAG
 				setne	I286_TRAP
+#endif
 
 				jne		nextopandexit			// fast_intr
 				mov		al, pic.pi[0 * (type _PICITEM)].imr

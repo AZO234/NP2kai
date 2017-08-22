@@ -7,6 +7,8 @@
 %include 'iocore.inc'
 %include 'vram.inc'
 
+BMS				equ		1		; added by Shinra
+
 section .bss
 
 	global	_mem
@@ -17,6 +19,27 @@ section .bss
 
 _mem	resb	0x200000
 
+
+%if BMS
+
+				struc	bmsiowork_t
+.bmsmem			resd	1
+.bmsmemsize		resd	1
+				endstruc
+
+				struc	bmsio_t
+.nomem			resb	1
+.bank			resb	1
+				endstruc
+
+	extern	_bmsiowork
+	extern	_bmsio
+
+BMSBASE			equ		080000h
+_bmsio_nomem	equ		_bmsio + bmsio_t.nomem
+_bmsio_bank		equ		_bmsio + bmsio_t.bank
+_bmsiowork_bmsmem	equ	_bmsiowork + bmsiowork_t.bmsmem
+%endif
 
 MAINMEMORY		equ		_mem
 EXTMEMORY		equ		0
@@ -101,11 +124,32 @@ section .text
 					pop		ebx
 					ret
 
+%if BMS
+; BMS memory
+					align	16
+@bms_wt:			test	byte [_bmsio_nomem], 0ffh
+					jnz		short bms_wt_exit
+					movzx	ebx, byte [_bmsio_bank]
+					shl		ebx, 17
+					add		ebx, [_bmsiowork_bmsmem]
+					add		ebx, ecx
+					sub		ebx, BMSBASE
+					;mov		ebx, ecx
+					;sub		ebx, BMSBASE
+					;add		ebx, [_bmsio_addr]
+					mov		[ebx], dl
+bms_wt_exit:
+					pop		ebx
+					ret
+%endif
+
 ; tram write
 					align	16
 @tram_wt:			mov		ebx, [_vramop + vramop_t.tramwait]
 					sub		[_i286core + cpucore_t.remainclock], ebx
 					mov		ebx, ecx
+					cmp		ecx, 0a5000h ; 追加
+					jae		short @i286_wt ; 追加
 					cmp		ecx, 000a2000h
 					jnc		short wtram_a
 					shr		ebx, 1
@@ -307,6 +351,28 @@ grcgtdw_end:		pop		ecx
 					pop		ebx
 					ret
 
+%if BMS
+; BMS memory
+					align	16
+@bms_rd:			test	byte [_bmsio_nomem], 0ffh
+					jnz		short bms_rd_nomem
+					movzx	ebx, byte [_bmsio_bank]
+					shl		ebx, 17
+					add		ebx, [_bmsiowork_bmsmem]
+					add		ebx, ecx
+					sub		ebx, BMSBASE
+					;mov		ebx, ecx
+					;sub		ebx, BMSBASE
+					;add		ebx, [_bmsio_addr]
+					mov		al, [ebx]
+					pop		ebx
+					ret
+
+bms_rd_nomem:		mov		al, 0ffh
+					pop		ebx
+					ret
+%endif
+
 ; font cg-window
 					align	16
 @tram_rd:			mov		ebx, [_vramop + vramop_t.tramwait]
@@ -432,11 +498,31 @@ readmem_itf:		mov		al, [MAINMEMORY + VRAM_STEP + ecx]
 					pop		ebx
 					ret
 
+%if BMS
+; BMS memory
+					align	16
+@bmsw_wt:			test	byte [_bmsio_nomem], 0ffh
+					jnz		short bmsw_wt_exit
+					movzx	ebx, byte [_bmsio_bank]
+					shl		ebx, 17
+					add		ebx, [_bmsiowork_bmsmem]
+					add		ebx, ecx
+					sub		ebx, BMSBASE
+					;mov		ebx, ecx
+					;sub		ebx, BMSBASE
+					;add		ebx, [_bmsio_addr]
+					mov		[ebx], dx
+bmsw_wt_exit:		pop		ebx
+					ret
+%endif
+
 ; tram write
 					align	16
 @tramw_wt:			mov		ebx, [_vramop + vramop_t.tramwait]
 					sub		[_i286core + cpucore_t.remainclock], ebx
 					mov		ebx, ecx
+					cmp		ecx, 0a5000h	; 追加
+					jae		short @i286w_wt	; 追加
 					cmp		ecx, 000a1fffh
 					jnc		short wtramw_a
 					mov		[MAINMEMORY + ecx], dx
@@ -660,6 +746,28 @@ grcgwtdw_end:		pop		ecx
 					pop		ebx
 					ret
 
+%if BMS
+; BMS memory
+					align	16
+@bmsw_rd:			test	byte [_bmsio_nomem], 0ffh
+					jnz		short bmsw_rd_nomem
+					movzx	ebx, byte [_bmsio_bank]
+					shl		ebx, 17
+					add		ebx, [_bmsiowork_bmsmem]
+					add		ebx, ecx
+					sub		ebx, BMSBASE
+					;mov		ebx, ecx
+					;sub		ebx, BMSBASE
+					;add		ebx, [_bmsio_addr]
+					mov		ax, [ebx]
+					pop		ebx
+					ret
+
+bmsw_rd_nomem:		mov		ax,0ffffh
+					pop		ebx
+					ret
+%endif
+
 ; font cg-window
 					align	16
 @tramw_rd:			mov		ebx, [_vramop + vramop_t.tramwait]
@@ -822,8 +930,13 @@ _memory_read	dd	@i286_rd,		@i286_rd		; 00
 				dd	@i286_rd,		@i286_rd		; 50
 				dd	@i286_rd,		@i286_rd		; 60
 				dd	@i286_rd,		@i286_rd		; 70
+%if BMS
+				dd	@bms_rd,		@bms_rd			; 80
+				dd	@bms_rd,		@bms_rd			; 90
+%else
 				dd	@i286_rd,		@i286_rd		; 80
 				dd	@i286_rd,		@i286_rd		; 90
+%endif
 				dd	@tram_rd,		@vram_r0		; a0
 				dd	@vram_r0,		@vram_r0		; b0
 				dd	@emmc_rd,		@emmc_rd		; c0
@@ -839,14 +952,22 @@ _memory_write	dd	@i286_wt,		@i286_wt		; 00
 				dd	@i286_wt,		@i286_wt		; 50
 				dd	@i286_wt,		@i286_wt		; 60
 				dd	@i286_wt,		@i286_wt		; 70
+%if BMS
+				dd	@bms_wt,		@bms_wt			; 80
+				dd	@bms_wt,		@bms_wt			; 90
+%else
 				dd	@i286_wt,		@i286_wt		; 80
 				dd	@i286_wt,		@i286_wt		; 90
+%endif
 				dd	@tram_wt,		@vram_w0		; a0
 				dd	@vram_w0,		@vram_w0		; b0
 				dd	@emmc_wt,		@emmc_wt		; c0
-				dd	@i286_wn,		@i286_wn		; d0
-				dd	@vram_w0,		@i286_wn		; e0
-				dd	@i286_wn,		@i286_wn		; f0
+				dd	@i286_wt,		@i286_wt		; d0	; 追加
+				dd	@vram_w0,		@i286_wt		; e0	; 追加
+				dd	@i286_wt,		@i286_wt		; f0	; 追加
+;				dd	@i286_wn,		@i286_wn		; d0
+;				dd	@vram_w0,		@i286_wn		; e0
+;				dd	@i286_wn,		@i286_wn		; f0
 
 _memword_read	dd	@i286w_rd,		@i286w_rd		; 00
 				dd	@i286w_rd,		@i286w_rd		; 10
@@ -856,8 +977,13 @@ _memword_read	dd	@i286w_rd,		@i286w_rd		; 00
 				dd	@i286w_rd,		@i286w_rd		; 50
 				dd	@i286w_rd,		@i286w_rd		; 60
 				dd	@i286w_rd,		@i286w_rd		; 70
+%if BMS
+				dd	@bmsw_rd,		@bmsw_rd		; 80
+				dd	@bmsw_rd,		@bmsw_rd		; 90
+%else
 				dd	@i286w_rd,		@i286w_rd		; 80
 				dd	@i286w_rd,		@i286w_rd		; 90
+%endif
 				dd	@tramw_rd,		@vramw_r0		; a0
 				dd	@vramw_r0,		@vramw_r0		; b0
 				dd	@emmcw_rd,		@emmcw_rd		; c0
@@ -873,26 +999,40 @@ _memword_write	dd	@i286w_wt,		@i286w_wt		; 00
 				dd	@i286w_wt,		@i286w_wt		; 50
 				dd	@i286w_wt,		@i286w_wt		; 60
 				dd	@i286w_wt,		@i286w_wt		; 70
+%if BMS
+				dd	@bmsw_wt,		@bmsw_wt		; 80
+				dd	@bmsw_wt,		@bmsw_wt		; 90
+%else
 				dd	@i286w_wt,		@i286w_wt		; 80
 				dd	@i286w_wt,		@i286w_wt		; 90
+%endif
 				dd	@tramw_wt,		@vramw_w0		; a0
 				dd	@vramw_w0,		@vramw_w0		; b0
 				dd	@emmcw_wt,		@emmcw_wt		; c0
-				dd	@i286_wn,		@i286_wn		; d0
-				dd	@vramw_w0,		@i286_wn		; e0
-				dd	@i286_wn,		@i286_wn		; f0
+				dd	@i286w_wt,		@i286w_wt		; d0	; 追加
+				dd	@vramw_w0,		@i286w_wt		; e0	; 追加
+				dd	@i286w_wt,		@i286w_wt		; f0	; 追加
+;				dd	@i286_wn,		@i286_wn		; d0
+;				dd	@vramw_w0,		@i286_wn		; e0
+;				dd	@i286_wn,		@i286_wn		; f0
 
 section .rdata
 
 memmap			dd	@i286_rd,		@i286_rb		; NEC
-				dd	@i286_wn,		@i286_wn
-				dd	@i286w_rd,		@i286w_rb
-				dd	@i286_wn,		@i286_wn
+				dd	@i286_wt,		@i286_wt	; 追加
+				dd	@i286w_rd,		@i286w_rb	; 追加
+				dd	@i286w_wt,		@i286w_wt	; 追加
+;				dd	@i286_wn,		@i286_wn
+;				dd	@i286w_rd,		@i286w_rb
+;				dd	@i286_wn,		@i286_wn
 
 				dd	@i286_rb,		@i286_rb		; EPSON
-				dd	@i286_wt,		@i286_wb
-				dd	@i286w_rb,		@i286w_rb
-				dd	@i286w_wt,		@i286w_wb
+				dd	@i286_wt,		@i286_wt	; 追加
+				dd	@i286w_rb,		@i286w_rb	; 追加
+				dd	@i286w_wt,		@i286w_wt	; 追加
+;				dd	@i286_wt,		@i286_wb
+;				dd	@i286w_rb,		@i286w_rb
+;				dd	@i286w_wt,		@i286w_wb
 
 
 vram_read		dd	@vram_r0,		@vram_r1		; 00
@@ -954,7 +1094,11 @@ section .text
 
 @i286_memorywrite_w@8:
 					MEMTRACE_W
+%if BMS
+					cmp		ecx, 07ffffh
+%else
 					cmp		ecx, 09ffffh
+%endif
 					jae		short writeextmem_w
 					mov		[MAINMEMORY + ecx], dx
 					ret
@@ -992,7 +1136,11 @@ wword_bound2:		xchg	dl, dh
 					align	16
 @i286_memorywrite@8:
 					MEMTRACE
+%if BMS
+					cmp		ecx, 080000h
+%else
 					cmp		ecx, 0a0000h
+%endif
 					jae		short writeextmem_b
 writemain_b:		mov		[MAINMEMORY + ecx], dl
 					ret
@@ -1009,7 +1157,11 @@ writeextmem_b:
 					jmp		[ebx + _memory_write]
 
 @i286_memoryread_w@4:
+%if BMS
+					cmp		ecx, 07ffffh
+%else
 					cmp		ecx, 0a3fffh
+%endif
 					jae		short readmemory_w
 					mov		ax, [MAINMEMORY + ecx]
 					ret
@@ -1044,7 +1196,11 @@ rword_bound2:		mov		ah, al
 
 					align	16
 @i286_memoryread@4:
+%if BMS
+					cmp		ecx, 080000h
+%else
 					cmp		ecx, 0a4000h
+%endif
 					jae		short readmemory_b
 readmain_b:			mov		al, [MAINMEMORY + ecx]
 					ret

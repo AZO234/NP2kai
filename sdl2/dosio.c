@@ -225,7 +225,7 @@ short file_delete_c(const char *path) {
 short file_attr_c(const char *path) {
 
 	file_cpyname(curfilep, path, NELEMENTS(curpath) - (UINT)(curfilep - curpath));
-	return(file_attr(curpath));
+	return(file_attr_c(curpath));
 }
 
 #if defined(WIN32)

@@ -125,7 +125,7 @@ static void IOOUTCALL pcm86_oa46c(UINT port, REG8 val) {
 		g_pcm86.realbuf += PCM86_REALBUFSIZE - 4;
 #endif
 	}
-//	g_pcm86.write = 1;
+	g_pcm86.write = 1;	//	(kaiD)
 	g_pcm86.reqirq = 1;
 #else
 	if (g_pcm86.virbuf < PCM86_LOGICALBUF) {
@@ -138,7 +138,7 @@ static void IOOUTCALL pcm86_oa46c(UINT port, REG8 val) {
 			g_pcm86.realbuf &= 3;				// align4Œˆ‚ßƒEƒ`
 			g_pcm86.realbuf += PCM86_REALBUFSIZE - 4;
 		}
-//		g_pcm86.write = 1;
+		g_pcm86.write = 1;
 		g_pcm86.reqirq = 1;
 	}
 #endif
@@ -188,25 +188,36 @@ static REG8 IOINPCALL pcm86_ia468(UINT port) {
 	REG8	ret;
 
 	ret = g_pcm86.fifo & (~0x10);
-#if 1
-	if (pcm86gen_intrq()) {
+#if 0	//	#if 1	//	(kai8)
+	if (g_pcm86gen_intrq()) {
 		ret |= 0x10;
 	}
-#elif 1		// ‚Þ‚µ‚ë‚±‚¤H
+#elif 1		// 
 	if (g_pcm86.fifo & 0x20) {
 		sound_sync();
-		if (g_pcm86.virbuf <= g_pcm86.fifosize) {
-			if (g_pcm86.write) {
-				g_pcm86.write = 0;
-			}
-			else {
+#if 0	//	(kaiE)
+//		if (g_pcm86.virbuf <= g_pcm86.fifosize) {
+		if (g_pcm86.virbuf <= g_pcm86.fifosize && g_pcm86.virbuf > 0) {	//	(kaiD)
+//			if (g_pcm86.write) {		//	(kai8)
+//				g_pcm86.write = 0;	//	(kai8)
+//			}						//	(kai8)
+//			else {					//	(kai8)
 				ret |= 0x10;
-			}
+//			}						//	(kai8)
 		}
+#else
+		//
+		if (g_pcm86.write) {
+			if (g_pcm86.virbuf)
+				g_pcm86.write = 0;
+		} else if (g_pcm86.virbuf <= g_pcm86.fifosize) {
+			ret |= 0x10;
+		}
+#endif
 	}
 #else
 	if ((g_pcm86.write) && (g_pcm86.fifo & 0x20)) {
-//		g_pcm86.write = 0;
+		g_pcm86.write = 0;
 		sound_sync();
 		if (g_pcm86.virbuf <= g_pcm86.fifosize) {
 			g_pcm86.write = 0;

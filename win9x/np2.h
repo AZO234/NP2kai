@@ -36,6 +36,12 @@ typedef struct {
 	UINT8	WINSNAP;
 	UINT8	NOWAIT;
 	UINT8	DRAW_SKIP;
+//	WindowSizeを保持するために追加(k8)
+	UINT8	SCRN_MUL;
+//
+//	DrawTypeを保持するために追加(k9)
+	BOOL	bDrawType;
+//
 
 	UINT8	background;
 	UINT8	DISPCLK;

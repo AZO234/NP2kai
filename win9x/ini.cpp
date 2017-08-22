@@ -9,6 +9,9 @@
 #include "np2.h"
 #include "np2arg.h"
 #include "dosio.h"
+#if defined(SUPPORT_BMS)
+#include "bmsio.h"
+#endif
 #include "ini.h"
 #include "winkbd.h"
 #include "pccore.h"
