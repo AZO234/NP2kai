@@ -81,6 +81,7 @@ typedef struct {
 	_IDEDEV	dev[2];
 } IDEIO;
 
+
 enum {
 	IDE_IRQ				= 0x09,
 

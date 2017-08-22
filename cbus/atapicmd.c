@@ -181,12 +181,7 @@ void atapicmd_a0(IDEDRV drv) {
 	cmd = drv->buf[0];
 	switch (cmd) {
 	case 0x00:		// test unit ready
-//		TRACEOUT(("ATAPI CMD: test unit ready"));
-//		TRACEOUT(("ATAPI CMD: test unit ready:[%02x %02x %02x %02x %02x %02x]",
-//								drv->buf[0], drv->buf[1], drv->buf[2], drv->buf[3], drv->buf[4], drv->buf[5]));
-		TRACEOUT(("ATAPI CMD: test unit ready"));
-		TRACEOUT(("\t[%02x %02x %02x %02x %02x %02x %02x %02x]",
-			drv->buf[0x00], drv->buf[0x01], drv->buf[0x02], drv->buf[0x03], drv->buf[0x04], drv->buf[0x05], drv->buf[0x06], drv->buf[0x07]));
+		TRACEOUT(("atapicmd: test unit ready"));
 		if (!(drv->media & IDEIO_MEDIA_LOADED)) {
 			/* medium not present */
 			ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_NOT_READY);
@@ -212,7 +207,7 @@ void atapicmd_a0(IDEDRV drv) {
 		break;
 
 	case 0x03:		// request sense
-		TRACEOUT(("ATAPI CMD: request sense"));
+		TRACEOUT(("atapicmd: request sense"));
 		leng = drv->buf[4];
 		ZeroMemory(drv->buf, 18);
 		drv->buf[0] = 0x70;
@@ -223,29 +218,29 @@ void atapicmd_a0(IDEDRV drv) {
 		break;
 
 	case 0x12:		// inquiry
-		TRACEOUT(("ATAPI CMD: inquiry"));
+		TRACEOUT(("atapicmd: inquiry"));
 		leng = drv->buf[4];
 		CopyMemory(drv->buf, cdrom_inquiry, sizeof(cdrom_inquiry));
 		senddata(drv, sizeof(cdrom_inquiry), leng);
 		break;
 
 	case 0x1b:		// start stop unit
-		TRACEOUT(("ATAPI CMD: start stop unit"));
+		TRACEOUT(("atapicmd: start stop unit"));
 		atapi_cmd_start_stop_unit(drv);
 		break;
 
 	case 0x1e:		// prevent allow medium removal
-		TRACEOUT(("ATAPI CMD: prevent allow medium removal"));
+		TRACEOUT(("atapicmd: prevent allow medium removal"));
 		atapi_cmd_prevent_allow_medium_removal(drv);
 		break;
 
 	case 0x25:		// read capacity
-		TRACEOUT(("ATAPI CMD: read capacity"));
+		TRACEOUT(("atapicmd: read capacity"));
 		atapi_cmd_read_capacity(drv);
 		break;
 
 	case 0x28:		// read(10)
-		TRACEOUT(("ATAPI CMD: read(10)"));
+		TRACEOUT(("atapicmd: read(10)"));
 		lba = (drv->buf[2] << 24) + (drv->buf[3] << 16) + (drv->buf[4] << 8) + drv->buf[5];
 		leng = (drv->buf[7] << 8) + drv->buf[8];
 		atapi_cmd_read(drv, lba, leng);
@@ -257,22 +252,22 @@ void atapicmd_a0(IDEDRV drv) {
 		break;
 
 	case 0x55:		// mode select
-		TRACEOUT(("ATAPI CMD: mode select"));
+		TRACEOUT(("atapicmd: mode select"));
 		atapi_cmd_mode_select(drv);
 		break;
 
 	case 0x5a:		// mode sense(10)
-//		TRACEOUT(("ATAPI CMD: mode sense(10)"));
+		TRACEOUT(("atapicmd: mode sense(10)"));
 		atapi_cmd_mode_sense(drv);
 		break;
 
 	case 0x42:
-//		TRACEOUT(("ATAPI CMD: read sub channel"));
+		TRACEOUT(("atapicmd: read sub channel"));
 		atapi_cmd_readsubch(drv);
 		break;
 
 	case 0x43:		// read TOC
-//		TRACEOUT(("ATAPI CMD: read TOC"));
+		TRACEOUT(("atapicmd: read TOC"));
 		atapi_cmd_readtoc(drv);
 		break;
 
@@ -282,12 +277,12 @@ void atapicmd_a0(IDEDRV drv) {
 		break;
 
 	case 0x47:		// Play Audio MSF
-//		TRACEOUT(("ATAPI CMD: Play Audio MSF"));
+		TRACEOUT(("atapicmd: Play Audio MSF"));
 		atapi_cmd_playaudiomsf(drv);
 		break;
 
 	case 0x4b:
-		TRACEOUT(("ATAPI CMD: pause resume"));
+		TRACEOUT(("atapicmd: pause resume"));
 		atapi_cmd_pauseresume(drv);
 		break;
 		
@@ -297,7 +292,7 @@ void atapicmd_a0(IDEDRV drv) {
 		break;
 		
 	default:
-		TRACEOUT(("ATAPI CMD: unknown command = %.2x", cmd));
+		TRACEOUT(("atapicmd: unknown command = %.2x", cmd));
 		sendabort(drv);
 		break;
 	}
@@ -325,8 +320,6 @@ static void atapi_cmd_start_stop_unit(IDEDRV drv) {
 		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_ILLEGAL_REQUEST);
 		drv->asc = ATAPI_ASC_INVALID_FIELD_IN_CDB;
 		goto send_error;
-	}else{
-		// XXX:
 	}
 	if (!(drv->media & IDEIO_MEDIA_LOADED)) {
 		/* medium not present */
@@ -338,7 +331,6 @@ static void atapi_cmd_start_stop_unit(IDEDRV drv) {
 	/* XXX play/read TOC, stop */
 
 	cmddone(drv);
-
 	return;
 
 send_error:
@@ -412,7 +404,7 @@ void atapi_dataread(IDEDRV drv) {
 	drv->bufsize = 2048;
 
 	if (!(drv->ctrl & IDECTRL_NIEN)) {
-		TRACEOUT(("ATAPI CMD: senddata()"));
+		TRACEOUT(("atapicmd: senddata()"));
 		ideio.bank[0] = ideio.bank[1] | 0x80;			// ????
 		pic_setirq(IDE_IRQ);
 	}
@@ -520,19 +512,13 @@ static void atapi_cmd_mode_sense(IDEDRV drv) {
 	UINT		cnt;
 	UINT8		pctrl, pcode;
 
-	TRACEOUT(("ATAPI CMD: mode sense(10)"));
-	TRACEOUT(("\t[%02x %02x %02x %02x %02x %02x %02x %02x]",
-			drv->buf[0x00], drv->buf[0x01], drv->buf[0x02], drv->buf[0x03], drv->buf[0x04], drv->buf[0x05], drv->buf[0x06], drv->buf[0x07]));
-	TRACEOUT(("\t[%02x %02x %02x %02x %02x %02x %02x %02x]",
-			drv->buf[0x08], drv->buf[0x09], drv->buf[0x0a], drv->buf[0x0b], drv->buf[0x0c], drv->buf[0x0d], drv->buf[0x0e], drv->buf[0x0f]));
-
 	leng = (drv->buf[7] << 8) + drv->buf[8];
 	pctrl = ((drv->buf[2] >> 6) & 3) & ~0x2;	// 0: current, 1: changeable, 2: default
 	pcode = drv->buf[2] & 0x3f;
 
 	if (pctrl == 3) {
 		/* Saved Page is not supported */
-		TRACEOUT(("\t\tSaved Page is not supported"));
+		TRACEOUT(("Saved Page is not supported"));
 		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_ILLEGAL_REQUEST);
 		drv->asc = ATAPI_ASC_SAVING_PARAMETERS_NOT_SUPPORTED;
 		senderror(drv);
@@ -559,7 +545,7 @@ static void atapi_cmd_mode_sense(IDEDRV drv) {
 	}
 
 	/* Mode Page */
-	TRACEOUT(("\t\tpcode = %.2x", pcode));
+	TRACEOUT(("pcode = %.2x", pcode));
 	switch (pcode) {
 #if defined(SUPPORT_NECCDD)
 	case 0x0f:
@@ -745,12 +731,6 @@ static void atapi_cmd_readsubch(IDEDRV drv) {
 	UINT	r;
 	UINT32	pos;
 
-	TRACEOUT(("ATAPI CMD: read sub channel"));
-	TRACEOUT(("\t[%02x %02x %02x %02x %02x %02x %02x %02x]",
-			drv->buf[0x00], drv->buf[0x01], drv->buf[0x02], drv->buf[0x03], drv->buf[0x04], drv->buf[0x05], drv->buf[0x06], drv->buf[0x07]));
-	TRACEOUT(("\t[%02x %02x %02x %02x %02x %02x %02x %02x]",
-			drv->buf[0x08], drv->buf[0x09], drv->buf[0x0a], drv->buf[0x0b], drv->buf[0x0c], drv->buf[0x0d], drv->buf[0x0e], drv->buf[0x0f]));
-
 	sxsi = sxsi_getptr(drv->sxsidrv);
 	if ((sxsi == NULL) || (sxsi->devtype != SXSIDEV_CDROM) ||
 		(!(sxsi->flag & SXSIFLAG_READY))) {
@@ -851,17 +831,11 @@ static void atapi_cmd_readtoc(IDEDRV drv) {
 	format = (drv->buf[9] >> 6);
 	leng = (drv->buf[7] << 8) + drv->buf[8];
 #endif
-	TRACEOUT(("ATAPI CMD: read TOC : time=%d fmt=%d leng=%d", time, format, leng));
-	TRACEOUT(("\t[%02x %02x %02x %02x %02x %02x %02x %02x]",
-			drv->buf[0x00], drv->buf[0x01], drv->buf[0x02], drv->buf[0x03], drv->buf[0x04], drv->buf[0x05], drv->buf[0x06], drv->buf[0x07]));
-	TRACEOUT(("\t[%02x %02x %02x %02x %02x %02x %02x %02x]",
-			drv->buf[0x08], drv->buf[0x09], drv->buf[0x0a], drv->buf[0x0b], drv->buf[0x0c], drv->buf[0x0d], drv->buf[0x0e], drv->buf[0x0f]));
 #endif
 
 #else /* SUPPORT_KAI_IMAGES */
 	leng = (drv->buf[7] << 8) + drv->buf[8];
 	format = (drv->buf[9] >> 6);
-	//TRACEOUT(("atapi_cmd_readtoc fmt=%d leng=%d", format, leng));
 #endif /* SUPPORT_KAI_IMAGES */
 	strack = drv->buf[6];
 

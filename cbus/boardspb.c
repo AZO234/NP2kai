@@ -10,7 +10,7 @@
 #include "sound/fmboard.h"
 #include "sound/sound.h"
 #include "sound/soundrom.h"
-#include	"s98.h"
+#include "s98.h"
 
 static void IOOUTCALL spb_o188(UINT port, REG8 dat)
 {

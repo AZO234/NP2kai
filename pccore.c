@@ -502,7 +502,6 @@ static void drawscreen(void) {
 	UINT8	timing;
 	void	(VRAMCALL * grphfn)(int page, int alldraw);
 	UINT8	bit;
-	
 
 	tramflag.timing++;
 	timing = ((LOADINTELWORD(gdc.m.para + GDC_CSRFORM + 1)) >> 5) & 0x3e;
@@ -678,6 +677,7 @@ static int execcnt = 0;
 int piccnt = 0;
 #endif
 
+
 void pccore_postevent(UINT32 event) {	// yet!
 
 	(void)event;
@@ -698,11 +698,10 @@ void pccore_exec(BOOL draw) {
 	MEMWAIT_TRAM = np2cfg.wait[0];
 	MEMWAIT_VRAM = np2cfg.wait[2];
 	MEMWAIT_GRCG = np2cfg.wait[4];
-	
 	nevent_set(NEVENT_FLAMES, gdc.dispclock, screenvsync, NEVENT_RELATIVE);
 
 //	nevent_get1stevent();
-	
+
 	while(pcstat.screendispflag) {
 #if defined(TRACE)
 		resetcnt++;

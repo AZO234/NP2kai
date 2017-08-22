@@ -408,6 +408,7 @@ void bios_initialize(void) {
 	CopyMemory(mem + 0x1e8000, mem + 0x0e8000, 0x10000);
 }
 
+
 static void bios_itfcall(void) {
 
 	int		i;

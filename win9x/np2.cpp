@@ -1117,7 +1117,7 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			np2oscfg.jastsnd = !np2oscfg.jastsnd;
 			update |= SYS_UPDATEOSCFG;
 			break;
-			
+
 		case IDM_SEEKSND:
 			np2cfg.MOTOR = !np2cfg.MOTOR;
 			update |= SYS_UPDATECFG;
@@ -2741,7 +2741,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	szClassName[0] = (TCHAR)np2oscfg.winid[0];
 	szClassName[1] = (TCHAR)np2oscfg.winid[1];
 	szClassName[2] = (TCHAR)np2oscfg.winid[2];
-	
+
 #ifndef ALLOW_MULTIRUN
 	if ((hWnd = FindWindow(szClassName, NULL)) != NULL) {
 		ShowWindow(hWnd, SW_RESTORE);
@@ -2833,7 +2833,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
-	
+
 #ifdef OPENING_WAIT
 	tick = GetTickCount();
 #endif
@@ -2990,7 +2990,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 
 	sysmng_workclockreset();
 	sysmng_updatecaption(3);
-	
 
 	while(1) {
 		if (!np2stopemulate) {

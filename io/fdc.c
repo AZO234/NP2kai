@@ -2,6 +2,7 @@
 // FDC ƒÊPD765A
 //
 
+
 #include	"compiler.h"
 #include	"cpucore.h"
 #include	"pccore.h"
@@ -32,8 +33,9 @@ static const UINT8 FDCCMD_TABLE[32] = {
 #define FDC_FORCEREADY (1)
 #define	FDC_DELAYERROR7
 
+
 void fdc_intwait(NEVENTITEM item) {
-	
+
 	if (item->flag & NEVENT_SETEVENT) {
 		fdc.intreq = TRUE;
 		if (fdc.chgreg & 1) {
@@ -46,7 +48,7 @@ void fdc_intwait(NEVENTITEM item) {
 }
 
 void fdc_interrupt(void) {
-	
+
 	nevent_set(NEVENT_FDCINT, 512, fdc_intwait, NEVENT_ABSOLUTE);
 }
 
@@ -514,7 +516,6 @@ static void FDC_SenceintStatus(void) {					// cmd: 08
 	fdc.bufcnt = 0;
 	fdc.status = FDCSTAT_RQM | FDCSTAT_CB | FDCSTAT_DIO;
 
-
 	if (fdc_isfdcinterrupt()) {
 		i = 0;
 		if (fdc.stat[fdc.us]) {
@@ -846,7 +847,7 @@ REG8 DMACCALL fdc_dataread(void) {
 
 static void IOOUTCALL fdc_o92(UINT port, REG8 dat) {
 
-	TRACEOUT(("fdc out %.2x %.2x [%.4x:%.4x]", port, dat, CPU_CS, CPU_IP));
+//	TRACEOUT(("fdc out %.2x %.2x [%.4x:%.4x]", port, dat, CPU_CS, CPU_IP));
 
 	if (((port >> 4) ^ fdc.chgreg) & 1) {
 		return;
@@ -866,7 +867,7 @@ static void IOOUTCALL fdc_o94(UINT port, REG8 dat) {
 
 	UINT8	i;
 
-	TRACEOUT(("fdc out %.2x %.2x [%.4x:%.4x]", port, dat, CPU_CS, CPU_IP));
+//	TRACEOUT(("fdc out %.2x %.2x [%.4x:%.4x]", port, dat, CPU_CS, CPU_IP));
 
 	if (((port >> 4) ^ fdc.chgreg) & 1) {
 		return;
@@ -897,8 +898,8 @@ static void IOOUTCALL fdc_o94(UINT port, REG8 dat) {
 
 static REG8 IOINPCALL fdc_i90(UINT port) {
 
-	TRACEOUT(("fdc in %.2x %.2x [%.4x:%.4x]", port, fdc.status,
-															CPU_CS, CPU_IP));
+//	TRACEOUT(("fdc in %.2x %.2x [%.4x:%.4x]", port, fdc.status,
+//															CPU_CS, CPU_IP));
 
 	if (((port >> 4) ^ fdc.chgreg) & 1) {
 		return(0xff);
@@ -920,7 +921,7 @@ static REG8 IOINPCALL fdc_i92(UINT port) {
 	else {
 		ret = fdc.lastdata;
 	}
-	TRACEOUT(("fdc in %.2x %.2x [%.4x:%.4x]", port, ret, CPU_CS, CPU_IP));
+//	TRACEOUT(("fdc in %.2x %.2x [%.4x:%.4x]", port, ret, CPU_CS, CPU_IP));
 	return(ret);
 }
 

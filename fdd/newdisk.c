@@ -129,7 +129,7 @@ static void hddsize2CHS(UINT hddsizeMB, UINT32 *C, UINT16 *H, UINT16 *S, UINT16 
 }
 
 void newdisk_thd(const OEMCHAR *fname, UINT hddsize) {
-	
+
 	FILEH	fh;
 	UINT8	work[256];
 	UINT	size;

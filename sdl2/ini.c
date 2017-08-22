@@ -86,13 +86,13 @@ inirdargh8(const char *src, INITBL *ini)
 	dst = (UINT8 *)ini->value;
 	dsize = ini->arg;
 
-	for (i = 0; i < dsize; i++) {
+	for (i=0; i<dsize; i++) {
 		val = 0;
 		set = FALSE;
-		while (*src == ' ') {
+		while(*src == ' ') {
 			src++;
 		}
-		for (;;) {
+		while(1) {
 			c = *src;
 			if ((c == '\0') || (c == ' ')) {
 				break;
@@ -298,7 +298,7 @@ inireadcb(void *arg, const char *para, const char *key, const char *data)
 		}
 		p++;
 	}
-	return (SUCCESS);
+	return(SUCCESS);
 }
 
 void
@@ -320,16 +320,17 @@ static void
 iniwrsetstr(char *work, int size, const char *ptr)
 {
 	UINT	i;
-	char c;
+	char	c;
 
 	if (ptr[0] == ' ') {
 		goto iwss_extend;
+		
 	}
 	i = (UINT)strlen(ptr);
 	if ((i) && (ptr[i-1] == ' ')) {
 		goto iwss_extend;
 	}
-	while (i > 0) {
+	while(i > 0) {
 		i--;
 		if (ptr[i] == '\"') {
 			goto iwss_extend;
@@ -342,7 +343,7 @@ iwss_extend:
 	if (size > 3) {
 		size -= 3;
 		*work++ = '\"';
-		while (size > 0) {
+		while(size > 0) {
 			size--;
 			c = *ptr++;
 			if (c == '\"') {
@@ -406,7 +407,6 @@ ini_write(const char *path, const char *title, INITBL *tbl, UINT count)
 	if (fh == FILEH_INVALID) {
 		return;
 	}
-
 	milstr_ncpy(work, "[", sizeof(work));
 	milstr_ncat(work, title, sizeof(work));
 	milstr_ncat(work, "]\n", sizeof(work));

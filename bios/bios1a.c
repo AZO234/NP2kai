@@ -37,7 +37,6 @@ static void printerbios_11(void) {
 
 void bios0x1a_prt(void) {
 
-	char buf[100];
 	switch(CPU_AH & 0x0f) {
 		case 0x00:
 			if (CPU_AH == 0x30) {
@@ -73,7 +72,7 @@ void bios0x1a_prt(void) {
 		case 0x02:
 			CPU_AH = (iocore_inp8(0x42) >> 2) & 1;
 			break;
-			
+
 		default:
 			CPU_AH = 0x00;
 			break;

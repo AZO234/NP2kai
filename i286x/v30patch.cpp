@@ -710,7 +710,6 @@ I286 v30shift_ea16_data8(void) {				// C1: shift EA16, DATA8
 	}
 }
 
-
 #if defined(VAEG_FIX)
 I286 v30_iret(void) {								// CF: iret
 
@@ -762,7 +761,6 @@ irqcheck:		I286IRQCHECKTERM
 		}
 }
 #endif
-
 
 I286 v30shift_ea8_cl(void) {					// D2: shift EA8, cl
 
@@ -1049,8 +1047,6 @@ I286 v30_ope0xf7(void) {						// F7:
 				jmp		v30ope0xf7_xtable[edi]
 		}
 }
-
-
 
 #if defined(SUPPORT_V30ORIGINAL)
 
@@ -2322,7 +2318,6 @@ static const V30PATCH v30patch_repc[] = {
 			{0xae, v30repc_xscasb},			// AE:	repc scasb
 };
 #endif
-
 
 // ---------------------------------------------------------------------------
 

@@ -285,7 +285,7 @@ void winloc_movingproc(WINLOC *wl, RECT *rect) {
 static UINT8 isconnect(const RECT *parent, const RECT *self) {
 
 	UINT8	connect;
-	
+
 	connect = 0;
 	if ((self->bottom >= parent->top) && (self->top <= parent->bottom)) {
 		if (self->right == parent->left) {
@@ -656,7 +656,7 @@ void winlocex_moving(WINLOCEX wle, RECT *rect) {
 	UINT	num;
 	RECT	*rc;
 	BOOL	changes;
-	
+
 	if (wle == NULL) {
 		return;
 	}

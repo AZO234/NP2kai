@@ -27,7 +27,6 @@ static void writeExtendedRegister(POPNA opna, UINT nAddress, REG8 cData);
  */
 void opna_construct(POPNA opna)
 {
-
 	memset(opna, 0, sizeof(*opna));
 }
 

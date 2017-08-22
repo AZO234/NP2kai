@@ -737,7 +737,7 @@ BOOL SndOpt86Page::OnCommand(WPARAM wParam, LPARAM lParam)
 			break;
 
 		case IDC_SND86INT:
-			SetJumper((IsDlgButtonChecked(IDC_SND86INT) != BST_UNCHECKED) ? 0x10 : 0x00, 0x10);
+			SetJumper((IsDlgButtonChecked(IDC_SND86INT) != BST_UNCHECKED) ?0x10 : 0x00, 0x10);
 			break;
 
 		case IDC_SND86INTA:

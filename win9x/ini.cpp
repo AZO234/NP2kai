@@ -725,7 +725,7 @@ void initload(void)
 void initsave(void)
 {
 	TCHAR szPath[MAX_PATH];
-	
+
 	initgetfile(szPath, _countof(szPath));
 	ini_write(szPath, s_szIniTitle, s_IniItems, _countof(s_IniItems));
 }

@@ -310,10 +310,7 @@ static REG8 fdd_operate(REG8 type, REG8 rpm, BOOL ndensity) {
 	// とりあえずBIOSの時は無視する
 	fdc.mf = 0xff;
 
-	TRACEOUT(("int 1Bh AH[%02x]:AL[%02x]", CPU_AH, CPU_AL));
-	TRACEOUT(("\tBX[%04x]", CPU_BX));
-	TRACEOUT(("\tCH[%02x]:CL[%02x]:DH[%02x]:DL[%02x]", CPU_CH, CPU_CL, CPU_DH, CPU_DL));
-	TRACEOUT(("\tES[%04x]:BP[%04x]", CPU_ES, CPU_BP));
+//	TRACE_("int 1Bh", CPU_AH);
 
 	if (setfdcmode((REG8)(CPU_AL & 3), type, rpm) != SUCCESS) {
 		return(0x40);
@@ -365,7 +362,6 @@ static REG8 fdd_operate(REG8 type, REG8 rpm, BOOL ndensity) {
 
 	switch(CPU_AH & 0x0f) {
 		case 0x00:								// シーク
-			//	0000b	SEEK
 			if (CPU_AH & 0x10) {
 				if (biosfd_seek(CPU_CL, ndensity) == SUCCESS) {
 					result = FDCBIOS_SEEKSUCCESS;
@@ -378,7 +374,6 @@ static REG8 fdd_operate(REG8 type, REG8 rpm, BOOL ndensity) {
 			break;
 
 		case 0x01:								// ベリファイ
-			//	0001b	VERIFY
 			if (CPU_AH & 0x10) {
 				if (biosfd_seek(CPU_CL, ndensity) == SUCCESS) {
 					result = FDCBIOS_SEEKSUCCESS;
@@ -435,13 +430,11 @@ static REG8 fdd_operate(REG8 type, REG8 rpm, BOOL ndensity) {
 			break;
 
 		case 0x03:								// 初期化
-			//	0011b	INITIALIZE
 			fddbios_equip(type, FALSE);
 			ret_ah = 0x00;
 			break;
 
 		case 0x04:								// センス
-			//	0100b	SENSE
 			ret_ah = 0x00;
 			if (fdd_diskprotect(fdc.us))
 			{
@@ -467,7 +460,6 @@ static REG8 fdd_operate(REG8 type, REG8 rpm, BOOL ndensity) {
 			break;
 
 		case 0x05:								// データの書き込み
-			//	0101b	WRITE DATA
 			if (CPU_AH & 0x10) {
 				if (biosfd_seek(CPU_CL, ndensity) == SUCCESS) {
 					result = FDCBIOS_SEEKSUCCESS;
@@ -533,11 +525,6 @@ static REG8 fdd_operate(REG8 type, REG8 rpm, BOOL ndensity) {
 
 		case 0x02:								// 診断の為の読み込み
 		case 0x06:								// データの読み込み
-			if ((CPU_AH & 0x0f) == 0x02) {
-				TRACEOUT(("\tREAD DIAGNOSTIC not Support, Use READ DATA logic"));
-			}
-			//	0010b	READ DIAGNOSTIC
-			//	0110b	READ DATA
 			if (CPU_AH & 0x10) {
 				if (biosfd_seek(CPU_CL, ndensity) == SUCCESS) {
 					result = FDCBIOS_SEEKSUCCESS;
@@ -625,7 +612,6 @@ static REG8 fdd_operate(REG8 type, REG8 rpm, BOOL ndensity) {
 			break;
 
 		case 0x07:						// シリンダ０へシーク
-			//	0111b	RECALIBRATE
 			biosfd_seek(0, 0);
 			ret_ah = 0x00;
 			result = FDCBIOS_SEEKSUCCESS;
@@ -637,7 +623,6 @@ static REG8 fdd_operate(REG8 type, REG8 rpm, BOOL ndensity) {
 			break;
 
 		case 0x0a:						// READ ID
-			//	1010b	READ ID
 			fdc.mf = CPU_AH & 0x40;
 			if (CPU_AH & 0x10) {
 				if (biosfd_seek(CPU_CL, ndensity) == SUCCESS) {
@@ -673,7 +658,6 @@ static REG8 fdd_operate(REG8 type, REG8 rpm, BOOL ndensity) {
 			break;
 
 		case 0x0d:						// フォーマット
-			//	1101b	FORMAT TRACK
 			if (CPU_AH & 0x10) {
 				biosfd_seek(CPU_CL, ndensity);
 			}
@@ -706,7 +690,6 @@ static REG8 fdd_operate(REG8 type, REG8 rpm, BOOL ndensity) {
 			break;
 
 		case 0x0e:													// ver0.78
-			//	0111b	SET OPERATION MODE
 			if (CPU_AH & 0x80) {			// 密度設定
 				mem[fmode] &= 0x0f;
 				mem[fmode] |= (UINT8)((CPU_AH & 0x0f) << 4);
