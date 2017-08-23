@@ -198,7 +198,7 @@ static void restore(POPNA opna)
 			{
 				continue;
 			}
-			OPNA_SetReg(opna->fmgen, 0x28, opna->s.reg[i]);
+			OPNA_SetReg(opna->fmgen, 0x28, opna->s.keyreg[i]);
 		}
 	}
 #endif	/* SUPPORT_FMGEN */
