@@ -22,7 +22,9 @@
 
 
 	IDEIO	ideio;
-
+	//
+	//UINT8   ideio_mediastatusnotification[4] = {0};
+	//UINT8   ideio_mediachangeflag[4] = {0};
 
 static IDEDEV getidedev(void) {
 
@@ -313,8 +315,8 @@ static void readsec(IDEDRV drv) {
 		goto read_err;
 	}
 	sec = getcursec(drv);
-	TRACEOUT(("readsec->drv %d sec %x cnt %d thr %d",
-								drv->sxsidrv, sec, drv->mulcnt, drv->multhr));
+	//TRACEOUT(("readsec->drv %d sec %x cnt %d thr %d",
+	//							drv->sxsidrv, sec, drv->mulcnt, drv->multhr));
 	if (sxsi_read(drv->sxsidrv, sec, drv->buf, 512)) {
 		TRACEOUT(("read error!"));
 		goto read_err;
@@ -508,6 +510,7 @@ static void IOOUTCALL ideio_o64c(UINT port, REG8 dat) {
 	dev->drv[drvnum].hd = dat & 0x0f;
 	dev->drivesel = drvnum;
 	TRACEOUT(("ideio set DRHD %.2x [%.4x:%.8x]", dat, CPU_CS, CPU_EIP));
+
 	(void)port;
 }
 
@@ -820,7 +823,7 @@ static void IOOUTCALL ideio_o64e(UINT port, REG8 dat) {
 			TRACEOUT(("ideio: READ NATIVE MAX ADDRESS reg = %.2x", drv->wp));
 			cmdabort(drv);
 			break;
-
+			
 		default:
 			panic("ideio: unknown command %.2x", dat);
 			break;
@@ -874,7 +877,7 @@ static void IOOUTCALL ideio_o74c(UINT port, REG8 dat) {
 }
 
 static void IOOUTCALL ideio_o74e(UINT port, REG8 dat) {
-
+	
 	TRACEOUT(("ideio %.4x,%.2x [%.4x:%.8x]", port, dat, CPU_CS, CPU_EIP));
 	(void)port;
 	(void)dat;
@@ -1080,8 +1083,8 @@ void IOOUTCALL ideio_w16(UINT port, REG16 value) {
 		p = drv->buf + drv->bufpos;
 		p[0] = (UINT8)value;
 		p[1] = (UINT8)(value >> 8);
-		TRACEOUT(("ide-data send %.4x (%.4x) [%.4x:%.8x]",
-										value, drv->bufpos, CPU_CS, CPU_EIP));
+		//TRACEOUT(("ide-data send %.4x (%.4x) [%.4x:%.8x]",
+		//								value, drv->bufpos, CPU_CS, CPU_EIP));
 		drv->bufpos += 2;
 		if (drv->bufpos >= drv->bufsize) {
 			drv->status &= ~IDESTAT_DRQ;
@@ -1095,8 +1098,8 @@ void IOOUTCALL ideio_w16(UINT port, REG16 value) {
 				case 0x31:
 				case 0xc5:
 					sec = getcursec(drv);
-					TRACEOUT(("writesec->drv %d sec %x cnt %d thr %d",
-								drv->sxsidrv, sec, drv->mulcnt, drv->multhr));
+					//TRACEOUT(("writesec->drv %d sec %x cnt %d thr %d",
+					//			drv->sxsidrv, sec, drv->mulcnt, drv->multhr));
 					if (sxsi_write(drv->sxsidrv, sec, drv->buf, drv->bufsize)) {
 						TRACEOUT(("write error!"));
 						cmdabort(drv);
@@ -1162,8 +1165,8 @@ REG16 IOINPCALL ideio_r16(UINT port) {
 	if ((drv->status & IDESTAT_DRQ) && (drv->bufdir == IDEDIR_IN)) {
 		p = drv->buf + drv->bufpos;
 		ret = p[0] + (p[1] << 8);
-		TRACEOUT(("ide-data recv %.4x (%.4x) [%.4x:%.8x]",
-										ret, drv->bufpos, CPU_CS, CPU_EIP));
+		//TRACEOUT(("ide-data recv %.4x (%.4x) [%.4x:%.8x]",
+		//								ret, drv->bufpos, CPU_CS, CPU_EIP));
 		drv->bufpos += 2;
 		if (drv->bufpos >= drv->bufsize) {
 			drv->status &= ~IDESTAT_DRQ;

@@ -196,4 +196,3 @@ enum {
 #endif
 
 #endif	/* NP2_COMMON_H */
-

@@ -130,7 +130,7 @@ ia32_setemm(UINT frame, UINT32 addr) {
 
 
 /*
- * ãƒ¢ãƒ¼ãƒ‰é·ç§»
+ * ƒ‚[ƒh‘JˆÚ
  */
 void CPUCALL
 change_pm(BOOL onoff)

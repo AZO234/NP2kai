@@ -3,7 +3,6 @@
 #include "ia32/ia32.mcr"
 #include "fp.h"
 
-
 void
 ESC0(void)
 {

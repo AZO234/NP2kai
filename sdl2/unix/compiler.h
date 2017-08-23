@@ -152,6 +152,8 @@ typedef SINT32	FILELEN;
 #define	STRLEN				strlen
 #define	SDL_main			main
 
+#define	SOUNDCALL
+
 #define	VERMOUTH_LIB
 //#define	SOUND_CRITICAL
 

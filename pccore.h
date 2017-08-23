@@ -50,6 +50,9 @@ enum tagSoundId
 	SOUNDID_PC_9801_86_ADPCM	= 0x14,		/*!< PC-9801-86 with ADPCM */
 	SOUNDID_SPEAKBOARD			= 0x20,		/*!< Speak board */
 	SOUNDID_SPARKBOARD			= 0x40,		/*!< Spark board */
+	SOUNDID_SB16				= 0x41,		/*!< Sound Blaster 16 */
+	SOUNDID_MATE_X_PCM			= 0x60,		/*!< Mate-X PCM */
+	SOUNDID_PC_9801_86_WSS		= 0x64,		/*!< PC-9801-86 + Mate-X PCM(B460) */
 	SOUNDID_AMD98				= 0x80,		/*!< AMD-98 */
 	SOUNDID_SOUNDORCHESTRA		= 0x32,		/*!< SOUND ORCHESTRA */
 	SOUNDID_SOUNDORCHESTRAV		= 0x82,		/*!< SOUND ORCHESTRA-V */
@@ -167,7 +170,7 @@ struct tagNP2Config
 	OEMCHAR	fontfile[MAX_PATH];
 	OEMCHAR	biospath[MAX_PATH];
 	OEMCHAR	hdrvroot[MAX_PATH];
-
+	
 #ifdef SUPPORT_NET
 	OEMCHAR	np2nettap[MAX_PATH];
 	UINT8	np2netpmm;

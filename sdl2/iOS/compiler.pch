@@ -1,6 +1,6 @@
 /**
  * @file	compiler.pch
- * @brief	繝励Μ繧ｳ繝ｳ繝代う繝ｫ貂医∩繝倥ャ繝繝ｼ
+ * @brief	プリコンパイル済みヘッダー
  */
 
 #ifndef np2sdl2_compiler_pch

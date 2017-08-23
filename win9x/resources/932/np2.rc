@@ -418,6 +418,14 @@ BEGIN
     CONTROL         "D",IDC_PAD1_RD,"Button",BS_AUTOCHECKBOX,130,60,21,10
 END
 
+IDD_SNDFMGEN DIALOG 0, 0, 184, 124
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "fmgen"
+FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+BEGIN
+    CONTROL         "Use fmgen",IDC_USEFMGEN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,58,10
+END
+
 IDD_CALENDAR DIALOG 0, 0, 164, 80
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Calendar"
@@ -544,21 +552,6 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,140,130,44,14
 END
 
-IDD_BMS DIALOG DISCARDABLE  0, 0, 187, 95
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "IO Bank Memory"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
-BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,130,7,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,130,24,50,14
-    LTEXT           "I/O port",IDC_STATIC,30,32,24,8
-    COMBOBOX        IDC_BMSIO,64,30,40,52,CBS_DROPDOWNLIST | CBS_SORT | 
-                    WS_VSCROLL | WS_TABSTOP
-    CONTROL         "Use IO Bank Memory",IDC_BMS,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,8,8,78,10
-    LTEXT           "Bank Size",IDC_STATIC,30,57,30,8
-    EDITTEXT        IDC_BMSBANKS,64,55,30,12,WS_GROUP
-END
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -888,6 +881,8 @@ BEGIN
             MENUITEM "mechanical &SHIFT",           IDM_XSHIFT
             MENUITEM "mechanical &CTRL",            IDM_XCTRL
             MENUITEM "mechanical &GRPH",            IDM_XGRPH
+            MENUITEM SEPARATOR
+            MENUITEM "Send Ctrl+Alt+Del",           IDM_SENDCAD
             MENUITEM SEPARATOR
             MENUITEM "F12 = &Mouse",                IDM_F12MOUSE
             MENUITEM "F12 = Co&py",                 IDM_F12COPY

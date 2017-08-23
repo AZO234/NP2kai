@@ -1,6 +1,6 @@
 /**
  * @file	tty.h
- * @brief	ã‚·ãƒªã‚¢ãƒ«é€šä¿¡ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
+ * @brief	ƒVƒŠƒAƒ‹’ÊMƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
  */
 
 #pragma once
@@ -8,7 +8,7 @@
 #include <termios.h>
 
 /**
- * @brief ã‚·ãƒªã‚¢ãƒ«é€šä¿¡
+ * @brief ƒVƒŠƒAƒ‹’ÊM
  */
 class CTty
 {
@@ -22,14 +22,14 @@ public:
 	bool IsOpened() const;
 
 private:
-	int m_fd;		//!< ãƒ•ã‚¡ã‚¤ãƒ« ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿
+	int m_fd;		//!< ƒtƒ@ƒCƒ‹ ƒfƒBƒXƒNƒŠƒvƒ^
 	static bool SetParam(const char* param, tcflag_t* cflag_ptr);
 };
 
 /**
- * ã‚ªãƒ¼ãƒ—ãƒ³æ¸ˆ?
- * @retval true ã‚ªãƒ¼ãƒ—ãƒ³æ¸ˆ
- * @retval false æœªã‚ªãƒ¼ãƒ—ãƒ³
+ * ƒI[ƒvƒ“Ï?
+ * @retval true ƒI[ƒvƒ“Ï
+ * @retval false –¢ƒI[ƒvƒ“
  */
 inline bool CTty::IsOpened() const
 {

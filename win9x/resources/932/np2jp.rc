@@ -418,6 +418,14 @@ BEGIN
     CONTROL         "D",IDC_PAD1_RD,"Button",BS_AUTOCHECKBOX,130,60,21,10
 END
 
+IDD_SNDFMGEN DIALOG 0, 0, 184, 124
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "fmgen"
+FONT 9, "ＭＳ Ｐゴシック"
+BEGIN
+    CONTROL         "fmgenを使う",IDC_USEFMGEN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,58,10
+END
+
 IDD_CALENDAR DIALOG 0, 0, 164, 80
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "カレンダ"
@@ -872,6 +880,8 @@ BEGIN
             MENUITEM "メカニカル &SHIFTキー",       IDM_XSHIFT
             MENUITEM "メカニカル &CTRLキー",        IDM_XCTRL
             MENUITEM "メカニカル &GRPHキー",        IDM_XGRPH
+            MENUITEM SEPARATOR
+            MENUITEM "Ctrl+Alt+Del 送信",           IDM_SENDCAD
             MENUITEM SEPARATOR
             MENUITEM "F12 = マウスキャプチャ(&M)",  IDM_F12MOUSE
             MENUITEM "F12 = Co&py",                 IDM_F12COPY

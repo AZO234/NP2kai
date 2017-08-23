@@ -1,6 +1,6 @@
 
 typedef struct {
-	UINT8	maxmem;
+	UINT8	maxmem; // LARGE_MEM //UINT8	UINT16	maxmem;
 	UINT8	target;
 	UINT16	padding;
 	UINT32	addr[4];

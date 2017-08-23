@@ -1,6 +1,6 @@
 /**
  * @file	main.m
- * @brief	ãƒ¡ã‚¤ãƒ³
+ * @brief	ƒƒCƒ“
  */
 
 #include "compiler.h"
@@ -8,10 +8,10 @@
 #include "../../dosio.h"
 
 /**
- * ãƒ¡ã‚¤ãƒ³
- * @param[in] argc å¼•æ•°
- * @param[in] argv å¼•æ•°
- * @return ãƒªã‚¶ãƒ«ãƒˆ ã‚³ãƒ¼ãƒ‰
+ * ƒƒCƒ“
+ * @param[in] argc ˆø”
+ * @param[in] argv ˆø”
+ * @return ƒŠƒUƒ‹ƒg ƒR[ƒh
  */
 int main(int argc, char * argv[])
 {

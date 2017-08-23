@@ -129,7 +129,7 @@ static void hddsize2CHS(UINT hddsizeMB, UINT32 *C, UINT16 *H, UINT16 *S, UINT16 
 }
 
 void newdisk_thd(const OEMCHAR *fname, UINT hddsize) {
-
+	
 	FILEH	fh;
 	UINT8	work[256];
 	UINT	size;
@@ -160,10 +160,10 @@ void newdisk_nhd_ex_CHS(const OEMCHAR *fname, UINT32 C, UINT16 H, UINT16 S, UINT
 
 	FILEH	fh;
 	NHDHDR	nhd;
-	UINT	hddsize;
+	FILELEN	hddsize;
 	BRESULT	r;
 
-	hddsize = (UINT32)((FILELEN)C * H * S * SS / 1024 / 1024);
+	hddsize = (FILELEN)C * H * S * SS / 1024 / 1024;
 	
 	if ((fname == NULL) || (hddsize < 5) || (hddsize > NHD_MAXSIZE2)) {
 		goto ndnhd_err;
@@ -180,7 +180,7 @@ void newdisk_nhd_ex_CHS(const OEMCHAR *fname, UINT32 C, UINT16 H, UINT16 S, UINT
 	STOREINTELWORD(nhd.sectors, S);
 	STOREINTELWORD(nhd.sectorsize, SS);
 	r = (file_write(fh, &nhd, sizeof(nhd)) == sizeof(nhd)) ? SUCCESS : FAILURE;
-	r |= writehddiplex(fh, SS, C * H * S * SS, progress, cancel);
+	r |= writehddiplex(fh, SS, (FILELEN)C * H * S * SS, progress, cancel);
 	file_close(fh);
 	if (r != SUCCESS) {
 		file_delete(fname);

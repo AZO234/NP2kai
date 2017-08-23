@@ -68,8 +68,7 @@ static void senddata(IDEDRV drv, UINT size, UINT limit) {
 	drv->bufsize = size;
 
 	if (!(drv->ctrl & IDECTRL_NIEN)) {
-//		TRACEOUT(("ATAPI CMD: senddata()"));
-		TRACEOUT(("ATAPI CMD RESULT: SEND DATA[ %d Byte]", size));
+		//TRACEOUT(("atapicmd: senddata()"));
 		ideio.bank[0] = ideio.bank[1] | 0x80;			// ????
 		pic_setirq(IDE_IRQ);
 	}
@@ -85,8 +84,7 @@ static void cmddone(IDEDRV drv) {
 	drv->asc = ATAPI_ASC_NO_ADDITIONAL_SENSE_INFORMATION;
 
 	if (!(drv->ctrl & IDECTRL_NIEN)) {
-//		TRACEOUT(("ATAPI CMD: cmddone()"));
-		TRACEOUT(("ATAPI CMD RESULT: COMMAND DONE"));
+		//TRACEOUT(("atapicmd: cmddone()"));
 		ideio.bank[0] = ideio.bank[1] | 0x80;			// ????
 		pic_setirq(IDE_IRQ);
 	}
@@ -99,8 +97,7 @@ static void senderror(IDEDRV drv) {
 	drv->status |= IDESTAT_CHK;
 
 	if (!(drv->ctrl & IDECTRL_NIEN)) {
-//		TRACEOUT(("ATAPI CMD: senderror()"));
-		TRACEOUT(("ATAPI CMD RESULT: SEND ERROR"));
+		//TRACEOUT(("atapicmd: senderror()"));
 		ideio.bank[0] = ideio.bank[1] | 0x80;			// ????
 		pic_setirq(IDE_IRQ);
 	}
@@ -181,7 +178,7 @@ void atapicmd_a0(IDEDRV drv) {
 	cmd = drv->buf[0];
 	switch (cmd) {
 	case 0x00:		// test unit ready
-		TRACEOUT(("atapicmd: test unit ready"));
+		//TRACEOUT(("atapicmd: test unit ready"));
 		if (!(drv->media & IDEIO_MEDIA_LOADED)) {
 			/* medium not present */
 			ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_NOT_READY);
@@ -267,7 +264,7 @@ void atapicmd_a0(IDEDRV drv) {
 		break;
 
 	case 0x43:		// read TOC
-		TRACEOUT(("atapicmd: read TOC"));
+		//TRACEOUT(("atapicmd: read TOC"));
 		atapi_cmd_readtoc(drv);
 		break;
 
@@ -320,6 +317,8 @@ static void atapi_cmd_start_stop_unit(IDEDRV drv) {
 		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_ILLEGAL_REQUEST);
 		drv->asc = ATAPI_ASC_INVALID_FIELD_IN_CDB;
 		goto send_error;
+	}else{
+		// XXX:
 	}
 	if (!(drv->media & IDEIO_MEDIA_LOADED)) {
 		/* medium not present */
@@ -331,6 +330,7 @@ static void atapi_cmd_start_stop_unit(IDEDRV drv) {
 	/* XXX play/read TOC, stop */
 
 	cmddone(drv);
+
 	return;
 
 send_error:
@@ -404,7 +404,7 @@ void atapi_dataread(IDEDRV drv) {
 	drv->bufsize = 2048;
 
 	if (!(drv->ctrl & IDECTRL_NIEN)) {
-		TRACEOUT(("atapicmd: senddata()"));
+		//TRACEOUT(("atapicmd: senddata()"));
 		ideio.bank[0] = ideio.bank[1] | 0x80;			// ????
 		pic_setirq(IDE_IRQ);
 	}
@@ -518,7 +518,7 @@ static void atapi_cmd_mode_sense(IDEDRV drv) {
 
 	if (pctrl == 3) {
 		/* Saved Page is not supported */
-		TRACEOUT(("Saved Page is not supported"));
+		//TRACEOUT(("Saved Page is not supported"));
 		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_ILLEGAL_REQUEST);
 		drv->asc = ATAPI_ASC_SAVING_PARAMETERS_NOT_SUPPORTED;
 		senderror(drv);
@@ -545,7 +545,7 @@ static void atapi_cmd_mode_sense(IDEDRV drv) {
 	}
 
 	/* Mode Page */
-	TRACEOUT(("pcode = %.2x", pcode));
+	//TRACEOUT(("pcode = %.2x", pcode));
 	switch (pcode) {
 #if defined(SUPPORT_NECCDD)
 	case 0x0f:
@@ -831,11 +831,17 @@ static void atapi_cmd_readtoc(IDEDRV drv) {
 	format = (drv->buf[9] >> 6);
 	leng = (drv->buf[7] << 8) + drv->buf[8];
 #endif
+	TRACEOUT(("ATAPI CMD: read TOC : time=%d fmt=%d leng=%d", time, format, leng));
+	TRACEOUT(("\t[%02x %02x %02x %02x %02x %02x %02x %02x]",
+			drv->buf[0x00], drv->buf[0x01], drv->buf[0x02], drv->buf[0x03], drv->buf[0x04], drv->buf[0x05], drv->buf[0x06], drv->buf[0x07]));
+	TRACEOUT(("\t[%02x %02x %02x %02x %02x %02x %02x %02x]",
+			drv->buf[0x08], drv->buf[0x09], drv->buf[0x0a], drv->buf[0x0b], drv->buf[0x0c], drv->buf[0x0d], drv->buf[0x0e], drv->buf[0x0f]));
 #endif
 
 #else /* SUPPORT_KAI_IMAGES */
 	leng = (drv->buf[7] << 8) + drv->buf[8];
 	format = (drv->buf[9] >> 6);
+	//TRACEOUT(("atapi_cmd_readtoc fmt=%d leng=%d", format, leng));
 #endif /* SUPPORT_KAI_IMAGES */
 	strack = drv->buf[6];
 
@@ -918,9 +924,6 @@ static void atapi_cmd_playaudiomsf(IDEDRV drv) {
 	UINT32	pos;
 	UINT32	leng;
 
-	TRACEOUT(("ATAPI CMD: Play Audio MSF : POS[%02d:%02d:%02d],LEN[%02d:%02d:%02d]",
-											drv->buf[3], drv->buf[4], drv->buf[5],
-											drv->buf[6], drv->buf[7], drv->buf[8]));
 	int M, S, F;
 	if(drv->damsfbcd){
 		M = BCD2HEX(drv->buf[3]);
@@ -988,7 +991,7 @@ static void atapi_cmd_seek(IDEDRV drv, UINT32 lba)
 	sxsi = sxsi_getptr(drv->sxsidrv);
 	trk = sxsicd_gettrk(sxsi, &tracks);
 	TRACEOUT(("atapicmd: seek LBA=%d NSEC=%d", lba, trk[tracks-1].pos + trk[tracks-1].sectors));
-	if (lba < drv->nsectors) {
+	if (lba < trk[tracks-1].pos + trk[tracks-1].sectors) {
 		drv->dacurpos = lba;
 	}
 	cmddone(drv);

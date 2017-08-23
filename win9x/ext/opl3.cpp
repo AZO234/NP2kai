@@ -289,9 +289,10 @@ static void writeExtendedRegister(POPL3 opl3, UINT nAddress, REG8 cData)
 			}
 			if (nAddress & 0x10)
 			{
-				keydisp_opl3keyon(opl3->s.reg, (nAddress & 0x0f) + 9, cData);
+				keydisp_opl3keyon(opl3->s.reg, (nAddress & 0x0f) + 9  , cData);
 			}
 			break;
+
 
 		case 0xc0:
 			if ((nAddress & 0x1f) >= 9)
@@ -299,6 +300,7 @@ static void writeExtendedRegister(POPL3 opl3, UINT nAddress, REG8 cData)
 				return;
 			}
 			break;
+
 
 		default:
 			if ((nAddress == 0x04) || (nAddress == 0x05) || (nAddress == 0x08))

@@ -256,6 +256,12 @@
     <Filter Include="ソース ファイル\win9x\ext\scci">
       <UniqueIdentifier>{41289458-0eb2-4530-b119-ddc4dcce989f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\sound\fmgen">
+      <UniqueIdentifier>{5ef9a6db-d298-4833-9090-c2e8754ce19d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\sound\fmgen">
+      <UniqueIdentifier>{ee0c62cc-af00-43a5-bd97-d7574c924b15}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\calendar.c">
@@ -1221,6 +1227,27 @@
     <ClCompile Include="..\diskimage\cd\cdd_real.c">
       <Filter>ソース ファイル\diskimage\cd</Filter>
     </ClCompile>
+    <ClCompile Include="..\sound\fmgen\fmgen_file.cpp">
+      <Filter>ソース ファイル\sound\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\fmgen\fmgen_fmgen.cpp">
+      <Filter>ソース ファイル\sound\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\fmgen\fmgen_fmgwrap.cpp">
+      <Filter>ソース ファイル\sound\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\fmgen\fmgen_fmtimer.cpp">
+      <Filter>ソース ファイル\sound\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\fmgen\fmgen_opm.cpp">
+      <Filter>ソース ファイル\sound\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\fmgen\fmgen_opna.cpp">
+      <Filter>ソース ファイル\sound\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\fmgen\fmgen_psg.cpp">
+      <Filter>ソース ファイル\sound\fmgen</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\calendar.h">
@@ -2137,6 +2164,42 @@
     </ClInclude>
     <ClInclude Include="..\diskimage\cd\cdd_real.h">
       <Filter>ヘッダー ファイル\diskimage\cd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_diag.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_file.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_fmgen.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_fmgeninl.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_fmgwrap.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_fmtimer.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_headers.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_misc.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_opm.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_opna.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_psg.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_types.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

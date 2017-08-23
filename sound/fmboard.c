@@ -15,12 +15,15 @@
 #endif	// defined(SUPPORT_PX)
 #include	"boardso.h"
 #include	"amd98.h"
+#if defined(SUPPORT_SOUND_SB16)
+#include	"boardsb16.h"
+#endif	// defined(SUPPORT_SOUND_SB16)
 #include	"pcm86io.h"
 #include	"cs4231io.h"
 #include	"sound.h"
 #include	"fmboard.h"
 #include	"beep.h"
-#include "soundrom.h"
+#include	"soundrom.h"
 #include	"keydisp.h"
 #include	"keystat.h"
 
@@ -28,6 +31,11 @@
 	SOUNDID g_nSoundID;
 	OPL3 g_opl3;
 	OPNA g_opna[OPNA_MAX];
+	
+#if defined(SUPPORT_SOUND_SB16)
+	OPL			g_opl;
+	SB16		g_sb16;
+#endif	// defined(SUPPORT_SOUND_SB16)
 
 	_PCM86		g_pcm86;
 	_CS4231		cs4231;
@@ -176,6 +184,17 @@ void fmboard_reset(const NP2CFG *pConfig, SOUNDID nSoundID)
 		case SOUNDID_PC_9801_118:
 			board118_reset(pConfig);
 			break;
+			
+		case SOUNDID_PC_9801_86_WSS:
+			g_nSoundID = nSoundID; // XXX: êÊÇ…ê›íË
+			board118_reset(pConfig);
+			board86_reset(pConfig, FALSE);
+			break;
+			
+		case SOUNDID_MATE_X_PCM:
+			g_nSoundID = nSoundID; // XXX: êÊÇ…ê›íË
+			board118_reset(pConfig);
+			break;
 
 		case SOUNDID_PC_9801_86_ADPCM:
 			board86_reset(pConfig, TRUE);
@@ -243,11 +262,20 @@ void fmboard_bind(void) {
 		case SOUNDID_PC_9801_118:
 			board118_bind();
 			break;
-
+			
+		case SOUNDID_PC_9801_86_WSS:
+			board118_bind();
+			board86_bind();
+			break;
+			
+		case SOUNDID_MATE_X_PCM:
+			board118_bind();
+			break;
+			
 		case SOUNDID_PC_9801_86_ADPCM:
 			board86_bind();
 			break;
-
+			
 		case SOUNDID_SPEAKBOARD:
 			boardspb_bind();
 			break;
@@ -264,7 +292,7 @@ void fmboard_bind(void) {
 		case SOUNDID_SOUNDORCHESTRAV:
 			boardso_bind();
 			break;
-
+			
 #if defined(SUPPORT_PX)
 		case SOUNDID_PX1:
 			boardpx1_bind();
@@ -275,6 +303,11 @@ void fmboard_bind(void) {
 			break;
 #endif	// defined(SUPPORT_PX)
 
+#if defined(SUPPORT_SOUND_SB16)
+		case SOUNDID_SB16:
+			boardsb16_bind();
+			break;
+#endif	// defined(SUPPORT_SOUND_SB16)
 		default:
 			break;
 	}

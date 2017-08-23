@@ -816,7 +816,14 @@ static UINT GetSoundFlags(SOUNDID nSoundID)
 
 		case SOUNDID_PC_9801_118:
 			return FLAG_OPNA1 | FLAG_CS4231;
-
+			
+		case SOUNDID_PC_9801_86_WSS:
+			return FLAG_OPNA1 | FLAG_PCM86 | FLAG_CS4231;
+			break;
+			
+		case SOUNDID_MATE_X_PCM:
+			return FLAG_OPNA1 | FLAG_CS4231;
+			
 		case SOUNDID_PC_9801_86_ADPCM:
 			return FLAG_OPNA1 | FLAG_PCM86;
 
@@ -929,7 +936,7 @@ static int flagload_fm(STFLAGH sfh, const SFENTRY *tbl)
 	pcm86gen_update();
 	if (nSaveFlags & FLAG_PCM86)
 	{
-		fmboard_extenable((REG8)(g_pcm86.extfunc & 1));
+		fmboard_extenable((REG8)(g_pcm86.soundflags & 1));
 	}
 	if (nSaveFlags & FLAG_CS4231)
 	{
@@ -1050,13 +1057,13 @@ static int flagcheck_sxsi(STFLAGH sfh, const SFENTRY *tbl) {
 	sxsi_allflash();
 	ret = statflag_read(sfh, &sds, sizeof(sds));
 	for (i=0; i<NELEMENTS(sds.ide); i++) {
-		if (sds.ide[i] != SXSIDEV_NC) {
+		if (sds.ide[i] != SXSIDEV_NC && sds.ide[i] != SXSIDEV_CDROM) {
 			OEMSPRINTF(buf, str_sasix, i+1);
 			ret |= statflag_checkpath(sfh, buf);
 		}
 	}
 	for (i=0; i<NELEMENTS(sds.scsi); i++) {
-		if (sds.scsi[i] != SXSIDEV_NC) {
+		if (sds.scsi[i] != SXSIDEV_NC && sds.ide[i] != SXSIDEV_CDROM) {
 			OEMSPRINTF(buf, str_scsix, i);
 			ret |= statflag_checkpath(sfh, buf);
 		}
@@ -1535,7 +1542,7 @@ const SFENTRY	*tblterm;
 	iocore_bind();
 	cbuscore_bind();
 	fmboard_bind();
-
+	
 #if defined(SUPPORT_NET)
 	np2net_reset(&np2cfg);
 	np2net_bind();

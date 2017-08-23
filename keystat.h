@@ -191,7 +191,6 @@ void keystat_releasekey(REG8 key);
 void keystat_resetjoykey(void);
 
 
-
 // ---- I/O
 
 void keystat_down(const UINT8 *key, REG8 keys, REG8 ref);

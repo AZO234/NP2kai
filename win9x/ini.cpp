@@ -557,6 +557,10 @@ static const PFTBL s_IniItems[] =
 	PFVAL("pc9861_e", PFTYPE_BOOL,		&np2cfg.pc9861enable),
 	PFEXT("pc9861_s", PFTYPE_BIN,		np2cfg.pc9861sw,		3),
 	PFEXT("pc9861_j", PFTYPE_BIN,		np2cfg.pc9861jmp,		6),
+	
+#if defined(SUPPORT_FMGEN)
+	PFVAL("USEFMGEN", PFTYPE_BOOL,		&np2cfg.usefmgen),
+#endif	/* SUPPORT_FMGEN */
 
 	PFVAL("calendar", PFTYPE_BOOL,		&np2cfg.calendar),
 	PFVAL("USE144FD", PFTYPE_BOOL,		&np2cfg.usefd144),
@@ -728,7 +732,7 @@ void initload(void)
 void initsave(void)
 {
 	TCHAR szPath[MAX_PATH];
-
+	
 	initgetfile(szPath, _countof(szPath));
 	ini_write(szPath, s_szIniTitle, s_IniItems, _countof(s_IniItems));
 }

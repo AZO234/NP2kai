@@ -29,4 +29,3 @@ void *listarray_enum(LISTARRAY laHandle,
 #endif
 
 #endif	/* NP2_LSTARRAY_H */
-

@@ -110,7 +110,7 @@ JMPfar_pm_code_segment(const selector_t *cs_sel, UINT32 new_ip)
 	/* check privilege level */
 	if (!SEG_IS_CONFORMING_CODE(&cs_sel->desc)) {
 		VERBOSE(("JMPfar_pm: NON-CONFORMING-CODE-SEGMENT"));
-		/* ä¸‹å·» p.119 4.8.1.1. */
+		/* ‰ºŠª p.119 4.8.1.1. */
 		if (cs_sel->rpl > CPU_STAT_CPL) {
 			VERBOSE(("JMPfar_pm: RPL(%d) > CPL(%d)", cs_sel->rpl, CPU_STAT_CPL));
 			EXCEPTION(GP_EXCEPTION, cs_sel->idx);
@@ -121,7 +121,7 @@ JMPfar_pm_code_segment(const selector_t *cs_sel, UINT32 new_ip)
 		}
 	} else {
 		VERBOSE(("JMPfar_pm: CONFORMING-CODE-SEGMENT"));
-		/* ä¸‹å·» p.120 4.8.1.2. */
+		/* ‰ºŠª p.120 4.8.1.2. */
 		if (cs_sel->desc.dpl > CPU_STAT_CPL) {
 			VERBOSE(("JMPfar_pm: DPL(%d) > CPL(%d)", cs_sel->desc.dpl, CPU_STAT_CPL));
 			EXCEPTION(GP_EXCEPTION, cs_sel->idx);
@@ -190,7 +190,7 @@ JMPfar_pm_call_gate(const selector_t *callgate_sel)
 
 	/* check privilege level */
 	if (!SEG_IS_CONFORMING_CODE(&cs_sel.desc)) {
-		/* ä¸‹å·» p.119 4.8.1.1. */
+		/* ‰ºŠª p.119 4.8.1.1. */
 		if (cs_sel.rpl > CPU_STAT_CPL) {
 			VERBOSE(("JMPfar_pm: RPL(%d) > CPL(%d)", cs_sel.rpl, CPU_STAT_CPL));
 			EXCEPTION(GP_EXCEPTION, cs_sel.idx);
@@ -200,7 +200,7 @@ JMPfar_pm_call_gate(const selector_t *callgate_sel)
 			EXCEPTION(GP_EXCEPTION, cs_sel.idx);
 		}
 	} else {
-		/* ä¸‹å·» p.120 4.8.1.2. */
+		/* ‰ºŠª p.120 4.8.1.2. */
 		if (cs_sel.desc.dpl > CPU_STAT_CPL) {
 			VERBOSE(("JMPfar_pm: DPL(%d) > CPL(%d)", cs_sel.desc.dpl, CPU_STAT_CPL));
 			EXCEPTION(GP_EXCEPTION, cs_sel.idx);
@@ -404,7 +404,7 @@ CALLfar_pm_code_segment(const selector_t *cs_sel, UINT32 new_ip)
 	/* check privilege level */
 	if (!SEG_IS_CONFORMING_CODE(&cs_sel->desc)) {
 		VERBOSE(("CALLfar_pm: NON-CONFORMING-CODE-SEGMENT"));
-		/* ä¸‹å·» p.119 4.8.1.1. */
+		/* ‰ºŠª p.119 4.8.1.1. */
 		if (cs_sel->rpl > CPU_STAT_CPL) {
 			VERBOSE(("CALLfar_pm: RPL(%d) > CPL(%d)", cs_sel->rpl, CPU_STAT_CPL));
 			EXCEPTION(GP_EXCEPTION, cs_sel->idx);
@@ -415,7 +415,7 @@ CALLfar_pm_code_segment(const selector_t *cs_sel, UINT32 new_ip)
 		}
 	} else {
 		VERBOSE(("CALLfar_pm: CONFORMING-CODE-SEGMENT"));
-		/* ä¸‹å·» p.120 4.8.1.2. */
+		/* ‰ºŠª p.120 4.8.1.2. */
 		if (cs_sel->desc.dpl > CPU_STAT_CPL) {
 			VERBOSE(("CALLfar_pm: DPL(%d) > CPL(%d)", cs_sel->desc.dpl, CPU_STAT_CPL));
 			EXCEPTION(GP_EXCEPTION, cs_sel->idx);

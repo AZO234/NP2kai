@@ -123,9 +123,38 @@ void oplgen_initialize(UINT rate)
 	}
 	for (i = 0; i < SIN_ENT; i++)
 	{
-		oplcfg.sintable[1][i] = (i & (SIN_ENT >> 1)) ? 0 : oplcfg.sintable[0][i];
-		oplcfg.sintable[2][i] = oplcfg.sintable[0][i & ((SIN_ENT >> 1) - 1)];
-		oplcfg.sintable[3][i] = (i & (SIN_ENT >> 2)) ? 0 : oplcfg.sintable[0][i & ((SIN_ENT >> 2) - 1)];
+		if (( 3/(8*SIN_ENT) < i) && (i < 4/(8*SIN_ENT))){
+						oplcfg.sintable[1][i] = 0;
+						oplcfg.sintable[2][i] = -oplcfg.sintable[0][i];
+								}
+				else if (i > 7/(8*SIN_ENT)){
+						oplcfg.sintable[1][i] = 0;
+						oplcfg.sintable[2][i] = -oplcfg.sintable[0][i];
+								}
+				else
+					oplcfg.sintable[1][i] = oplcfg.sintable[0][i];
+					oplcfg.sintable[2][i] = oplcfg.sintable[0][i];
+//		oplcfg.sintable[1][i] = (i & (SIN_ENT >> 1)) ? 0 : oplcfg.sintable[0][i];
+//		oplcfg.sintable[2][i] = oplcfg.sintable[0][i & ((SIN_ENT >> 1) - 1)];
+//		oplcfg.sintable[3][i] = (i & (SIN_ENT >> 2)) ? 0 : oplcfg.sintable[0][i & ((SIN_ENT >> 2) - 1)];
+	}
+	for (i = 0; i < SIN_ENT; i++)
+	{
+		pom = (double)((1 << SINTBL_BIT) - 1) * sin(4 * M_PI * i / SIN_ENT);
+		if (( 3/(8*SIN_ENT) < i) && (i < 4/(8*SIN_ENT))) oplcfg.sintable[4][i] = 0;
+		else if (i > 7/(8*SIN_ENT))	 oplcfg.sintable[4][i] = 0;
+		else 						oplcfg.sintable[4][i] = (SINT32)pom;
+	}
+	for (i = 0; i < SIN_ENT; i++)
+	{
+		if (( 3/(8*SIN_ENT) < i) && (i < 4/(8*SIN_ENT))){
+						oplcfg.sintable[5][i] = 0;
+						oplcfg.sintable[7][i] = 0;
+									}
+						else if (i > 7/(8*SIN_ENT)){
+						 oplcfg.sintable[5][i] = 0;
+						oplcfg.sintable[7][i] = 0;
+									}
 	}
 	for (i = 0; i < EVC_ENT; i++)
 	{
@@ -245,8 +274,9 @@ static void set_sl_rr(OPLSLOT *slot, REG8 value)
 }
 
 static void set_wavesel(OPLSLOT *slot, REG8 value)
-{
-	slot->sintable = oplcfg.sintable[value & 3];
+{	
+	slot->sintable = oplcfg.sintable[value & 7];
+
 }
 
 /* ----- */

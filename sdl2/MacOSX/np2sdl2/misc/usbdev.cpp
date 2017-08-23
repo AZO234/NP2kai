@@ -1,6 +1,6 @@
 /**
  * @file	usbdev.cpp
- * @brief	USB ã‚¢ã‚¯ã‚»ã‚¹ ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
+ * @brief	USB ƒAƒNƒZƒX ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
  */
 
 #include "compiler.h"
@@ -11,7 +11,7 @@
 #include <IOKit/usb/USBSpec.h>
 
 /**
- * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
  */
 CUsbDev::CUsbDev()
 	: m_device(NULL)
@@ -20,7 +20,7 @@ CUsbDev::CUsbDev()
 }
 
 /**
- * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒfƒXƒgƒ‰ƒNƒ^
  */
 CUsbDev::~CUsbDev()
 {
@@ -28,16 +28,16 @@ CUsbDev::~CUsbDev()
 }
 
 /**
- * USB ã‚ªãƒ¼ãƒ—ãƒ³
+ * USB ƒI[ƒvƒ“
  * @param[in] vid VID
  * @param[in] pid PID
- * @param[in] nIndex ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
- * @retval true æˆåŠŸ
- * @retval false å¤±æ•—
+ * @param[in] nIndex ƒCƒ“ƒfƒbƒNƒX
+ * @retval true ¬Œ÷
+ * @retval false ¸”s
  */
 bool CUsbDev::Open(unsigned int vid, unsigned int pid, unsigned int nIndex)
 {
-	// æ¢ã™ãƒ‡ãƒã‚¤ã‚¹
+	// ’T‚·ƒfƒoƒCƒX
 	const SInt32 usbVendor = vid;
 	const SInt32 usbProduct = pid;
 
@@ -60,7 +60,7 @@ bool CUsbDev::Open(unsigned int vid, unsigned int pid, unsigned int nIndex)
 	CFDictionarySetValue(matchingDict, CFSTR(kUSBVendorName), CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &usbVendor));
 	CFDictionarySetValue(matchingDict, CFSTR(kUSBProductName), CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &usbProduct));
 
-	// ã‚¤ãƒ³ã‚¿ãƒ•ã‚§ã‚¤ã‚¹ã‚’å¾—ã‚‹
+	// ƒCƒ“ƒ^ƒtƒFƒCƒX‚ğ“¾‚é
 	io_iterator_t iterator = 0;
 	IOServiceGetMatchingServices(kIOMasterPortDefault, matchingDict, &iterator);
 	io_service_t usbDevice = IOIteratorNext(iterator);
@@ -269,7 +269,7 @@ bool CUsbDev::Open(unsigned int vid, unsigned int pid, unsigned int nIndex)
 }
 
 /**
- * ã“ã‚“ã¦ãƒãã‚
+ * ‚±‚ñ‚Ä‚¡‚®‚ 
  * @param[in] dev Device interface
  * @return IOReturn
  */
@@ -306,7 +306,7 @@ IOReturn CUsbDev::ConfigureDevice(IOUSBDeviceInterface** dev)
 }
 
 /**
- * USB ã‚¯ãƒ­ãƒ¼ã‚º
+ * USB ƒNƒ[ƒY
  */
 void CUsbDev::Close()
 {
@@ -326,14 +326,14 @@ void CUsbDev::Close()
 }
 
 /**
- * ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«
- * @param[in] nType ã‚¿ã‚¤ãƒ—
- * @param[in] nRequest ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
- * @param[in] nValue å€¤
- * @param[in] nIndex ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
- * @param[out] lpBuffer ãƒãƒƒãƒ•ã‚¡
- * @param[in] cbBuffer ãƒãƒƒãƒ•ã‚¡é•·
- * @return ã‚µã‚¤ã‚º
+ * ƒRƒ“ƒgƒ[ƒ‹
+ * @param[in] nType ƒ^ƒCƒv
+ * @param[in] nRequest ƒŠƒNƒGƒXƒg
+ * @param[in] nValue ’l
+ * @param[in] nIndex ƒCƒ“ƒfƒbƒNƒX
+ * @param[out] lpBuffer ƒoƒbƒtƒ@
+ * @param[in] cbBuffer ƒoƒbƒtƒ@’·
+ * @return ƒTƒCƒY
  */
 int CUsbDev::CtrlXfer(int nType, int nRequest, int nValue, int nIndex, void* lpBuffer, int cbBuffer)
 {
@@ -361,10 +361,10 @@ int CUsbDev::CtrlXfer(int nType, int nRequest, int nValue, int nIndex, void* lpB
 }
 
 /**
- * ãƒ‡ãƒ¼ã‚¿é€ä¿¡
- * @param[in] lpBuffer ãƒãƒƒãƒ•ã‚¡
- * @param[in] cbBuffer ãƒãƒƒãƒ•ã‚¡é•·
- * @return ã‚µã‚¤ã‚º
+ * ƒf[ƒ^‘—M
+ * @param[in] lpBuffer ƒoƒbƒtƒ@
+ * @param[in] cbBuffer ƒoƒbƒtƒ@’·
+ * @return ƒTƒCƒY
  */
 int CUsbDev::WriteBulk(const void* lpBuffer, int cbBuffer)
 {
@@ -383,10 +383,10 @@ int CUsbDev::WriteBulk(const void* lpBuffer, int cbBuffer)
 }
 
 /**
- * ãƒ‡ãƒ¼ã‚¿å—ä¿¡
- * @param[out] lpBuffer ãƒãƒƒãƒ•ã‚¡
- * @param[in] cbBuffer ãƒãƒƒãƒ•ã‚¡é•·
- * @return ã‚µã‚¤ã‚º
+ * ƒf[ƒ^óM
+ * @param[out] lpBuffer ƒoƒbƒtƒ@
+ * @param[in] cbBuffer ƒoƒbƒtƒ@’·
+ * @return ƒTƒCƒY
  */
 int CUsbDev::ReadBulk(void* lpBuffer, int cbBuffer)
 {

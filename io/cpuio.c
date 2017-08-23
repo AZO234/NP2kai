@@ -3,6 +3,10 @@
 #include	"pccore.h"
 #include	"iocore.h"
 
+//#ifdef SUPPORT_IDEIO
+//#include	"fdd/sxsi.h"
+//int ide_f0portread = 0;
+//#endif
 
 // ---- I/O
 
@@ -17,6 +21,15 @@ static void IOOUTCALL cpuio_of0(UINT port, REG8 dat) {
 	CPU_A20EN(FALSE);
 	CPU_RESETREQ = 1;
 	nevent_forceexit();
+	(void)port;
+	(void)dat;
+}
+
+static void IOINPCALL cpuio_of1(UINT port, REG8 dat) {
+	
+//#ifdef SUPPORT_IDEIO
+//	ide_f0portread = 1;
+//#endif
 	(void)port;
 	(void)dat;
 }
@@ -38,6 +51,19 @@ static REG8 IOINPCALL cpuio_if0(UINT port) {
 	else {				// for AMD-98
 		ret = 0x18;		// 0x14?
 	}
+//#ifdef SUPPORT_IDEIO
+//	ret |= 0x20;
+//	if(ide_f0portread){
+//		if(sxsi_getdevtype(0)!=SXSIDEV_NC){
+//			ret &= ~0x20;
+//		}
+//		ide_f0portread--;
+//	}else{
+//		if(sxsi_getdevtype(2)!=SXSIDEV_NC){
+//			ret &= ~0x20;
+//		}
+//	}
+//#endif
 	(void)port;
 	return(ret);
 }
@@ -109,5 +135,6 @@ void cpuio_bind(void) {
 
 	iocore_attachsysoutex(0x00f0, 0x0cf1, cpuioof0, 8);
 	iocore_attachsysinpex(0x00f0, 0x0cf1, cpuioif0, 8);
+	//iocore_attachout(0x00f1, cpuio_of1);
 }
 

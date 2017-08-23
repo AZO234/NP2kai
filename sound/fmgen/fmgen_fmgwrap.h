@@ -1,6 +1,7 @@
 #ifndef FMGEN_FMGWRAP_H
 #define FMGEN_FMGWRAP_H
 
+#include "compiler.h"
 #include "fmgen_types.h"
 
 #ifdef __cplusplus
@@ -22,7 +23,7 @@ bool	OPN_Count(void* OPN, int32 us);
 int32	OPN_GetNextEvent(void* OPN);
 
 void	OPN_Reset(void* OPN);
-void 	OPN_Mix(void* OPN, int32* buffer, int nsamples);
+void 	SOUNDCALL OPN_Mix(void* OPN, int32* buffer, int nsamples);
 void 	OPN_SetReg(void* OPN, uint addr, uint data);
 uint	OPN_GetReg(void* OPN, uint addr);
 
@@ -47,7 +48,7 @@ void	OPNA_SetVolumePSG(void* OPNA, int db);
 void	OPNA_SetLPFCutoff(void* OPNA, uint freq);
 
 bool	OPNA_SetRate(void* OPNA, uint c, uint r, bool b);
-void 	OPNA_Mix(void* OPNA, int32* buffer, int nsamples);
+void 	SOUNDCALL OPNA_Mix(void* OPNA, int32* buffer, int nsamples);
 
 bool	OPNA_Count(void* OPNA, int32 us);
 int32	OPNA_GetNextEvent(void* OPNA);
@@ -85,7 +86,7 @@ void 	OPM_SetReg(void* OPM, uint addr, uint data);
 uint	OPM_GetReg(void* OPM, uint addr);
 uint	OPM_ReadStatus(void* OPM);
 
-void 	OPM_Mix(void* OPM, int32* buffer, int nsamples);
+void 	SOUNDCALL  OPM_Mix(void* OPM, int32* buffer, int nsamples);
 
 void	OPM_SetVolume(void* OPM, int db);
 void	OPM_SetChannelMask(void* OPM, uint mask);

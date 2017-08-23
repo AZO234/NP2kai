@@ -1,3 +1,5 @@
+#include "compiler.h"
+
 #include "fmgen_fmgwrap.h"
 #include "fmgen_opm.h"
 #include "fmgen_opna.h"
@@ -18,7 +20,7 @@ bool	OPN_Count(void* OPN, int32 us) { ((FM::OPN*)OPN)->Count(us); }
 int32	OPN_GetNextEvent(void* OPN) { ((FM::OPN*)OPN)->GetNextEvent(); }
 
 void	OPN_Reset(void* OPN) { ((FM::OPN*)OPN)->Reset(); }
-void 	OPN_Mix(void* OPN, int32* buffer, int nsamples) { ((FM::OPN*)OPN)->Mix(buffer, nsamples); }
+void 	SOUNDCALL OPN_Mix(void* OPN, int32* buffer, int nsamples) { ((FM::OPN*)OPN)->Mix(buffer, nsamples); }
 void 	OPN_SetReg(void* OPN, uint addr, uint data) { ((FM::OPN*)OPN)->SetReg(addr, data); }
 uint	OPN_GetReg(void* OPN, uint addr) { return ((FM::OPN*)OPN)->GetReg(addr); }
 
@@ -43,7 +45,7 @@ void	OPNA_SetVolumePSG(void* OPNA, int db) { ((FM::OPNA*)OPNA)->SetVolumePSG(db)
 void	OPNA_SetLPFCutoff(void* OPNA, uint freq) { ((FM::OPNA*)OPNA)->SetLPFCutoff(freq); }
 
 bool	OPNA_SetRate(void* OPNA, uint c, uint r, bool b) { return ((FM::OPNA*)OPNA)->SetRate(c, r, b); }
-void 	OPNA_Mix(void* OPNA, int32* buffer, int nsamples) { ((FM::OPNA*)OPNA)->Mix(buffer, nsamples); }
+void 	SOUNDCALL OPNA_Mix(void* OPNA, int32* buffer, int nsamples) { ((FM::OPNA*)OPNA)->Mix(buffer, nsamples); }
 
 bool	OPNA_Count(void* OPNA, int32 us) { ((FM::OPNA*)OPNA)->Count(us); }
 int32	OPNA_GetNextEvent(void* OPNA) { ((FM::OPNA*)OPNA)->GetNextEvent(); }
@@ -79,7 +81,7 @@ int32	OPM_GetNextEvent(void* OPM) { ((FM::OPM*)OPM)->GetNextEvent(); }
 void 	OPM_SetReg(void* OPM, uint addr, uint data) { ((FM::OPM*)OPM)->SetReg(addr, data); }
 uint	OPM_ReadStatus(void* OPM) { return ((FM::OPM*)OPM)->ReadStatus(); }
 
-void 	OPM_Mix(void* OPM, int32* buffer, int nsamples) { ((FM::OPM*)OPM)->Mix(buffer, nsamples); }
+void 	SOUNDCALL OPM_Mix(void* OPM, int32* buffer, int nsamples) { ((FM::OPM*)OPM)->Mix(buffer, nsamples); }
 
 void	OPM_SetVolume(void* OPM, int db) { ((FM::OPM*)OPM)->SetVolume(db); }
 void	OPM_SetChannelMask(void* OPM, uint mask) { ((FM::OPM*)OPM)->SetChannelMask(mask); }

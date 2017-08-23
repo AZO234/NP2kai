@@ -95,11 +95,12 @@ void pcm86_setpcmrate(REG8 val)
 void pcm86_cb(NEVENTITEM item)
 {
 	PCM86 pcm86 = &g_pcm86;
-
+	
 	if (pcm86->reqirq)
 	{
 		sound_sync();
 //		RECALC_NOWCLKP;
+
 		if (pcm86->virbuf <= pcm86->fifosize)
 		{
 			pcm86->reqirq = 0;
@@ -153,6 +154,8 @@ void SOUNDCALL pcm86gen_checkbuf(PCM86 pcm86)
 {
 	long	bufs;
 	UINT32	past;
+	static SINT32 lastvirbuf = 0;
+	static UINT32 lastvirbufcnt = 0;
 
 	past = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
 	past <<= 6;
@@ -162,6 +165,23 @@ void SOUNDCALL pcm86gen_checkbuf(PCM86 pcm86)
 		past = past / pcm86->stepclock;
 		pcm86->lastclock += (past * pcm86->stepclock);
 		RECALC_NOWCLKWAIT(past);
+	}
+	
+	// XXX: Windowsでフリーズする問題の暫定対症療法（ある程度時間が経った小さいバッファを捨てる）
+	if(0 < pcm86->virbuf && pcm86->virbuf < 128){
+		if(pcm86->virbuf == lastvirbuf){
+			lastvirbufcnt++;
+			if(lastvirbufcnt > 500){
+				// 500回呼ばれても値が変化しなかったら捨てる
+				pcm86->virbuf = 0;
+				lastvirbufcnt = 0;
+			}
+		}else{
+			lastvirbuf = pcm86->virbuf;
+			lastvirbufcnt = 0;
+		}
+	}else{
+		lastvirbufcnt = 0;
 	}
 
 	bufs = pcm86->realbuf - pcm86->virbuf;

@@ -26,6 +26,7 @@
 #define IDD_SND86                       155
 #define IDD_SNDSPB                      156
 #define IDD_SNDPAD1                     157
+#define IDD_SNDFMGEN                    158
 #define IDD_CALENDAR                    161
 #define IDD_ABOUT                       171
 #define IDD_BMS                         172
@@ -221,6 +222,7 @@
 #define IDC_PAD1_RB                     15711
 #define IDC_PAD1_RC                     15712
 #define IDC_PAD1_RD                     15713
+#define IDC_USEFMGEN                    15801
 #define IDC_CLNDREAL                    16101
 #define IDC_CLNDVIR                     16102
 #define IDC_VIRYEAR                     16103
@@ -544,6 +546,7 @@
 #define IDM_XSHIFT                      40611
 #define IDM_XCTRL                       40612
 #define IDM_XGRPH                       40613
+#define IDM_SENDCAD                     40614
 #define IDM_F12MOUSE                    40621
 #define IDM_F12COPY                     40622
 #define IDM_F12STOP                     40623
@@ -674,7 +677,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        101
-#define _APS_NEXT_COMMAND_VALUE         43504
+#define _APS_NEXT_COMMAND_VALUE         40135
 #define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

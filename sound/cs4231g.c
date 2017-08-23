@@ -144,7 +144,7 @@ const UINT8	*ptr1;
 const UINT8	*ptr2;
 	SINT32	samp1;
 	SINT32	samp2;
-
+	
 	leng = cs->bufdatas >> 2;
 	if (!leng) {
 		return;
@@ -171,7 +171,107 @@ const UINT8	*ptr2;
 		pcm += 2;
 		pos12 += cs->step12;
 	} while(--count);
+	
+	leng = min(leng, (pos12 >> 12));
+	cs->bufdatas -= (leng << 2);
+	cs->bufpos += (leng << 2);
+	cs->pos12 = pos12 & ((1 << 12) - 1);
+}
 
+static void SOUNDCALL pcm16m_ex(CS4231 cs, SINT32 *pcm, UINT count) {
+
+	UINT	leng;
+	UINT32	pos12;
+	SINT32	fract;
+	UINT	samppos;
+const UINT8	*ptr1;
+const UINT8	*ptr2;
+	SINT32	samp1;
+	SINT32	samp2;
+	UINT8	oddflag = 0;
+	
+	if(cs->bufdatas & 1){
+		oddflag = 1;
+	}
+
+	leng = cs->bufdatas >> 1;
+	if (!leng) {
+		return;
+	}
+	pos12 = cs->pos12;
+	do {
+		samppos = pos12 >> 12;
+		if (leng <= samppos) {
+			break;
+		}
+		fract = pos12 & ((1 << 12) - 1);
+		ptr1 = cs->buffer +
+						((cs->bufpos + (samppos << 1) + 0) & CS4231_BUFMASK);
+		ptr2 = cs->buffer +
+						((cs->bufpos + (samppos << 1) + 2) & CS4231_BUFMASK);
+		samp1 = (((SINT8)ptr1[1]) << 8) + ptr1[0];
+		samp2 = (((SINT8)ptr2[1]) << 8) + ptr2[0];
+		samp1 += ((samp2 - samp1) * fract) >> 12;
+		pcm[0] += samp1;
+		pcm[1] += samp1;
+		pcm += 2;
+		pos12 += cs->step12;
+	} while(--count);
+	
+	if(oddflag){
+		cs->bufdatas--;
+	}
+	leng = min(leng, (pos12 >> 12));
+	cs->bufdatas -= (leng << 1);
+	cs->bufpos += (leng << 1);
+	cs->pos12 = pos12 & ((1 << 12) - 1);
+}
+
+static void SOUNDCALL pcm16s_ex(CS4231 cs, SINT32 *pcm, UINT count) {
+
+	UINT	leng;
+	UINT32	pos12;
+	SINT32	fract;
+	UINT	samppos;
+const UINT8	*ptr1;
+const UINT8	*ptr2;
+	SINT32	samp1;
+	SINT32	samp2;
+	UINT8	oddflag = 0;
+	
+	if(cs->bufdatas & 1){
+		oddflag = 1;
+	}
+	leng = cs->bufdatas >> 2;
+	if (!leng) {
+		return;
+	}
+	pos12 = cs->pos12;
+	do {
+		samppos = pos12 >> 12;
+		if (leng <= samppos) {
+			break;
+		}
+		fract = pos12 & ((1 << 12) - 1);
+		ptr1 = cs->buffer +
+						((cs->bufpos + (samppos << 2) + 0) & CS4231_BUFMASK);
+		ptr2 = cs->buffer +
+						((cs->bufpos + (samppos << 2) + 4) & CS4231_BUFMASK);
+		samp1 = (((SINT8)ptr1[1]) << 8) + ptr1[0];
+		samp2 = (((SINT8)ptr2[1]) << 8) + ptr2[0];
+		samp1 += ((samp2 - samp1) * fract) >> 12;
+		pcm[0] += samp1;
+		samp1 = (((SINT8)ptr1[3]) << 8) + ptr1[2];
+		samp2 = (((SINT8)ptr2[3]) << 8) + ptr2[2];
+		samp1 += ((samp2 - samp1) * fract) >> 12;
+		pcm[1] += samp1;
+		pcm += 2;
+		pos12 += cs->step12;
+	} while(--count);
+	
+	if(oddflag){
+		cs->bufdatas--;
+	}
 	leng = min(leng, (pos12 >> 12));
 	cs->bufdatas -= (leng << 2);
 	cs->bufpos += (leng << 2);
@@ -193,8 +293,8 @@ static const CS4231FN cs4231fn[16] = {
 			pcm8s,
 			nomake,		// 1: u-Law
 			nomake,
-			nomake,		// 2:
-			nomake,
+			pcm16m_ex,		// 2:
+			pcm16s_ex,
 			nomake,		// 3: A-Law
 			nomake,
 			nomake,		// 4:

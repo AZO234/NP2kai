@@ -547,7 +547,7 @@ PFILEH profile_open(const OEMCHAR *lpFileName, UINT nFlags)
 {
 	PFILEH ret;
 	FILEH fh;
-
+	
 	ret = NULL;
 	if (lpFileName != NULL)
 	{

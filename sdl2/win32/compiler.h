@@ -105,6 +105,8 @@ typedef SINT32	FILELEN;
 #define	SPRINTF				sprintf
 #define	STRLEN				strlen
 
+#define	SOUNDCALL	__fastcall
+
 #define	VERMOUTH_LIB
 // #define	SOUND_CRITICAL
 

@@ -140,10 +140,10 @@
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_WIN2000HOST;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_PHYSICAL_CDDRV;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_WIN2000HOST;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_PHYSICAL_CDDRV;SUPPORT_FMGEN;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;.\x86;..\;..\common;..\i386c;..\mem;..\io;..\cbus;..\vram;..\sound;..\generic;..\zlib</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -171,10 +171,10 @@
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_PHYSICAL_CDDRV;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_PHYSICAL_CDDRV;SUPPORT_FMGEN;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;.\x64;..\;..\common;..\i386c;..\mem;..\io;..\cbus;..\vram;..\sound;..\generic;..\zlib</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -397,6 +397,13 @@
     <ClCompile Include="..\sound\cs4231c.c" />
     <ClCompile Include="..\sound\cs4231g.c" />
     <ClCompile Include="..\sound\fmboard.c" />
+    <ClCompile Include="..\sound\fmgen\fmgen_file.cpp" />
+    <ClCompile Include="..\sound\fmgen\fmgen_fmgen.cpp" />
+    <ClCompile Include="..\sound\fmgen\fmgen_fmgwrap.cpp" />
+    <ClCompile Include="..\sound\fmgen\fmgen_fmtimer.cpp" />
+    <ClCompile Include="..\sound\fmgen\fmgen_opm.cpp" />
+    <ClCompile Include="..\sound\fmgen\fmgen_opna.cpp" />
+    <ClCompile Include="..\sound\fmgen\fmgen_psg.cpp" />
     <ClCompile Include="..\sound\getsnd\getsmix.c" />
     <ClCompile Include="..\sound\getsnd\getsnd.c" />
     <ClCompile Include="..\sound\getsnd\getwave.c" />
@@ -712,6 +719,18 @@
     <ClInclude Include="..\sound\beep.h" />
     <ClInclude Include="..\sound\cs4231.h" />
     <ClInclude Include="..\sound\fmboard.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_diag.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_file.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_fmgen.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_fmgeninl.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_fmgwrap.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_fmtimer.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_headers.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_misc.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_opm.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_opna.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_psg.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_types.h" />
     <ClInclude Include="..\sound\getsnd\getsnd.h" />
     <ClInclude Include="..\sound\opl3.h" />
     <ClInclude Include="..\sound\oplgen.h" />

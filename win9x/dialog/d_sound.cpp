@@ -21,6 +21,9 @@
 #include "sound\sound.h"
 #include "sound\fmboard.h"
 #include "sound\tms3631.h"
+#if defined(SUPPORT_FMGEN)
+#include "sound/opna.h"
+#endif	/* SUPPORT_FMGEN */
 
 // ---- mixer
 
@@ -115,6 +118,9 @@ void SndOptMixerPage::OnOK()
 	{
 		np2cfg.vol_fm = cFM;
 		opngen_setvol(cFM);
+#if defined(SUPPORT_FMGEN)
+		opna_fmgen_setallvolumeFM_linear(cFM);
+#endif	/* SUPPORT_FMGEN */
 		bUpdated = true;
 	}
 
@@ -123,6 +129,9 @@ void SndOptMixerPage::OnOK()
 	{
 		np2cfg.vol_ssg = cPSG;
 		psggen_setvol(cPSG);
+#if defined(SUPPORT_FMGEN)
+		opna_fmgen_setallvolumePSG_linear(cPSG);
+#endif	/* SUPPORT_FMGEN */
 		bUpdated = true;
 	}
 
@@ -131,6 +140,9 @@ void SndOptMixerPage::OnOK()
 	{
 		np2cfg.vol_adpcm = cADPCM;
 		adpcm_setvol(cADPCM);
+#if defined(SUPPORT_FMGEN)
+		opna_fmgen_setallvolumeADPCM_linear(cADPCM);
+#endif	/* SUPPORT_FMGEN */
 		for (UINT i = 0; i < _countof(g_opna); i++)
 		{
 			adpcm_update(&g_opna[i].adpcm);
@@ -152,6 +164,9 @@ void SndOptMixerPage::OnOK()
 	{
 		np2cfg.vol_rhythm = cRhythm;
 		rhythm_setvol(cRhythm);
+#if defined(SUPPORT_FMGEN)
+		opna_fmgen_setallvolumeRhythmTotal_linear(cRhythm);
+#endif	/* SUPPORT_FMGEN */
 		for (UINT i = 0; i < _countof(g_opna); i++)
 		{
 			rhythm_update(&g_opna[i].rhythm);
@@ -737,7 +752,7 @@ BOOL SndOpt86Page::OnCommand(WPARAM wParam, LPARAM lParam)
 			break;
 
 		case IDC_SND86INT:
-			SetJumper((IsDlgButtonChecked(IDC_SND86INT) != BST_UNCHECKED) ?0x10 : 0x00, 0x10);
+			SetJumper((IsDlgButtonChecked(IDC_SND86INT) != BST_UNCHECKED) ? 0x10 : 0x00, 0x10);
 			break;
 
 		case IDC_SND86INTA:
@@ -1226,6 +1241,88 @@ void SndOptPadPage::OnOK()
 
 
 
+#if defined(SUPPORT_FMGEN)
+// ---- fmgen
+
+/**
+ * @brief fmgen ページ
+ */
+class SndOptFMGenPage : public CPropPageProc
+{
+public:
+	SndOptFMGenPage();
+
+protected:
+	virtual BOOL OnInitDialog();
+	virtual void OnOK();
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+
+private:
+	UINT8 m_enable;				//!< fmgenを使うか
+	CWndProc m_chkenable;		//!< USE FMGEN
+};
+
+/**
+ * コンストラクタ
+ */
+SndOptFMGenPage::SndOptFMGenPage()
+	: CPropPageProc(IDD_SNDFMGEN)
+{
+}
+
+/**
+ * このメソッドは WM_INITDIALOG のメッセージに応答して呼び出されます
+ * @retval TRUE 最初のコントロールに入力フォーカスを設定
+ * @retval FALSE 既に設定済
+ */
+BOOL SndOptFMGenPage::OnInitDialog()
+{
+	m_enable = np2cfg.usefmgen;
+
+	m_chkenable.SubclassDlgItem(IDC_USEFMGEN, this);
+	if(m_enable)
+		m_chkenable.SendMessage(BM_SETCHECK , BST_CHECKED , 0);
+	else
+		m_chkenable.SendMessage(BM_SETCHECK , BST_UNCHECKED , 0);
+
+	return TRUE;
+}
+
+/**
+ * ユーザーが OK のボタン (IDOK ID がのボタン) をクリックすると呼び出されます
+ */
+void SndOptFMGenPage::OnOK()
+{
+	UINT update = 0;
+
+	if (np2cfg.usefmgen != m_enable)
+	{
+		np2cfg.usefmgen = m_enable;
+		update |= SYS_UPDATECFG;
+	}
+	::sysmng_update(update);
+}
+
+/**
+ * ユーザーがメニューの項目を選択したときに、フレームワークによって呼び出されます
+ * @param[in] wParam パラメタ
+ * @param[in] lParam パラメタ
+ * @retval TRUE アプリケーションがこのメッセージを処理した
+ */
+BOOL SndOptFMGenPage::OnCommand(WPARAM wParam, LPARAM lParam)
+{
+	switch (LOWORD(wParam))
+	{
+		case IDC_USEFMGEN:
+			m_enable = (m_chkenable.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0);
+			return TRUE;
+	}
+	return FALSE;
+}
+#endif	/* SUPPORT_FMGEN */
+
+
+
 // ----
 
 /**
@@ -1253,6 +1350,11 @@ void dialog_sndopt(HWND hwndParent)
 
 	SndOptPadPage pad;
 	prop.AddPage(&pad);
+	
+#if defined(SUPPORT_FMGEN)
+	SndOptFMGenPage fmgen;
+	prop.AddPage(&fmgen);
+#endif	/* SUPPORT_FMGEN */
 
 	prop.m_psh.dwFlags |= PSH_NOAPPLYNOW | PSH_USEHICON | PSH_USECALLBACK;
 	prop.m_psh.hIcon = LoadIcon(CWndProc::GetResourceHandle(), MAKEINTRESOURCE(IDI_ICON2));

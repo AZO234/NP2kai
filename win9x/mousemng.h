@@ -32,7 +32,6 @@ enum {
 	MOUSEPROC_BG
 };
 
-
 void mousemng_initialize(void);
 void mousemng_sync(void);
 BOOL mousemng_buttonevent(UINT event);

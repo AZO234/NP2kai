@@ -53,7 +53,7 @@ static UINT8 rasterdraw(SDRAWFN sdrawfn, SDRAW sdraw, int maxy) {
 	int			nextupdate;
 	int			y;
 
-	TRACEOUT(("rasterdraw: maxy = %d", maxy));
+	//TRACEOUT(("rasterdraw: maxy = %d", maxy));
 	CopyMemory(pal, palevent.pal, sizeof(pal));
 	clk = maxy;
 	clk += 2;
@@ -133,6 +133,7 @@ const SDRAWFN	*sdrawfn;
 	UINT8		bit;
 	int			i;
 	int			height;
+	
 
 	if (redraw) {
 		updateallline(0x80808080);
@@ -153,10 +154,10 @@ const SDRAWFN	*sdrawfn;
 	if (sdrawfn == NULL) {
 		goto sddr_exit2;
 	}
-
-	bit = 0;
+	
+	bit = 0x00;
 	if (gdc.mode1 & 0x80) {						// ver0.28
-		if (gdcs.grphdisp & 0x80) {
+		if (gdcs.grphdisp & GDCSCRN_ENABLE) {
 #if defined(SUPPORT_PC9821)
 			if ((gdc.analog & 6) == 6) {
 				bit |= 0x01;
@@ -165,7 +166,7 @@ const SDRAWFN	*sdrawfn;
 #endif
 			bit |= (1 << gdcs.disp);
 		}
-		if (gdcs.textdisp & 0x80) {
+		if (gdcs.textdisp & GDCSCRN_ENABLE) {
 			bit |= 4;
 		}
 		else if (gdc.mode1 & 2) {

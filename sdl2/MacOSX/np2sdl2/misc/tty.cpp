@@ -1,6 +1,6 @@
 /**
  * @file	tty.cpp
- * @brief	ã‚·ãƒªã‚¢ãƒ«é€šä¿¡ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
+ * @brief	ƒVƒŠƒAƒ‹’ÊMƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
  */
 
 #include "compiler.h"
@@ -12,7 +12,7 @@
 #include <IOKit/serial/ioss.h>
 
 /**
- * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
  */
 CTty::CTty()
 	: m_fd(-1)
@@ -20,7 +20,7 @@ CTty::CTty()
 }
 
 /**
- * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒfƒXƒgƒ‰ƒNƒ^
  */
 CTty::~CTty()
 {
@@ -28,12 +28,12 @@ CTty::~CTty()
 }
 
 /**
- * ã‚ªãƒ¼ãƒ—ãƒ³ã™ã‚‹
- * @param[in] bsdPath ãƒ‡ãƒã‚¤ã‚¹
- * @param[in] speed ãƒœãƒ¼ãƒ¬ãƒ¼ãƒˆ
- * @param[in] param ãƒ‘ãƒ©ãƒ¡ã‚¿
- * @retval true æˆåŠŸ
- * @retval false å¤±æ•—
+ * ƒI[ƒvƒ“‚·‚é
+ * @param[in] bsdPath ƒfƒoƒCƒX
+ * @param[in] speed ƒ{[ƒŒ[ƒg
+ * @param[in] param ƒpƒ‰ƒƒ^
+ * @retval true ¬Œ÷
+ * @retval false ¸”s
  */
 bool CTty::Open(const char* bsdPath, unsigned int speed, const char* param)
 {
@@ -135,7 +135,7 @@ bool CTty::Open(const char* bsdPath, unsigned int speed, const char* param)
 }
 
 /**
- * ã‚¯ãƒ­ãƒ¼ã‚ºã™ã‚‹
+ * ƒNƒ[ƒY‚·‚é
  */
 void CTty::Close()
 {
@@ -147,10 +147,10 @@ void CTty::Close()
 }
 
 /**
- * ãƒ‡ãƒ¼ã‚¿å—ä¿¡
- * @param[in] data_ptr å—ä¿¡ãƒ‡ãƒ¼ã‚¿ã®ãƒã‚¤ãƒ³ã‚¿
- * @param[in] data_size å—ä¿¡ãƒ‡ãƒ¼ã‚¿ã®ã‚µã‚¤ã‚º
- * @return é€ä¿¡ã‚µã‚¤ã‚º
+ * ƒf[ƒ^óM
+ * @param[in] data_ptr óMƒf[ƒ^‚Ìƒ|ƒCƒ“ƒ^
+ * @param[in] data_size óMƒf[ƒ^‚ÌƒTƒCƒY
+ * @return ‘—MƒTƒCƒY
  */
 ssize_t CTty::Read(void* data_ptr, ssize_t data_size)
 {
@@ -167,10 +167,10 @@ ssize_t CTty::Read(void* data_ptr, ssize_t data_size)
 }
 
 /**
- * ãƒ‡ãƒ¼ã‚¿é€ä¿¡
- * @param[in] data_ptr é€ä¿¡ãƒ‡ãƒ¼ã‚¿ã®ãƒã‚¤ãƒ³ã‚¿
- * @param[in] data_size é€ä¿¡ãƒ‡ãƒ¼ã‚¿ã®ã‚µã‚¤ã‚º
- * @return é€ä¿¡ã‚µã‚¤ã‚º
+ * ƒf[ƒ^‘—M
+ * @param[in] data_ptr ‘—Mƒf[ƒ^‚Ìƒ|ƒCƒ“ƒ^
+ * @param[in] data_size ‘—Mƒf[ƒ^‚ÌƒTƒCƒY
+ * @return ‘—MƒTƒCƒY
  */
 ssize_t CTty::Write(const void* data_ptr, ssize_t data_size)
 {
@@ -187,11 +187,11 @@ ssize_t CTty::Write(const void* data_ptr, ssize_t data_size)
 }
 
 /**
- * ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®š
- * @param[in] param ãƒ‘ãƒ©ãƒ¡ã‚¿
- * @param[out] cflag_ptr ãƒ•ãƒ©ã‚°
- * @retval true æˆåŠŸ
- * @retval false å¤±æ•—
+ * ƒpƒ‰ƒ[ƒ^İ’è
+ * @param[in] param ƒpƒ‰ƒƒ^
+ * @param[out] cflag_ptr ƒtƒ‰ƒO
+ * @retval true ¬Œ÷
+ * @retval false ¸”s
  */
 bool CTty::SetParam(const char* param, tcflag_t* cflag_ptr)
 {

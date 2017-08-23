@@ -4,8 +4,8 @@
  */
 
 #include	"compiler.h"
-#include	"scrnsave.h"
 #include	"bmpdata.h"
+#include	"scrnsave.h"
 #include	"dosio.h"
 #include	"pccore.h"
 #include	"iocore.h"
@@ -404,6 +404,7 @@ sswb_err2:
 sswb_err1:
 	return(FAILURE);
 }
+
 
 
 // ---- GIF

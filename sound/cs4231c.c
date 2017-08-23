@@ -35,6 +35,8 @@ enum {
 	CS4231REG_RLINEIN	= 0x13,
 	CS4231REG_TIMERL	= 0x14,
 	CS4231REG_TIMERH	= 0x15,
+	CS4231REG_RESERVED1= 0x16,
+	CS4231REG_RESERVED2= 0x17,
 	CS4231REG_IRQSTAT	= 0x18,
 	CS4231REG_VERSION	= 0x19,
 	CS4231REG_MONOCTRL	= 0x1a,
@@ -43,6 +45,7 @@ enum {
 	CS4231REG_RECCNTM	= 0x1e,
 	CS4231REG_RECCNTL	= 0x1f
 };
+
 
 
 static const UINT32 cs4231xtal64[2] = {24576000/64, 16934400/64};
@@ -78,7 +81,6 @@ void cs4231_dma(NEVENTITEM item) {
 	UINT	size;
 	UINT	r;
 	SINT32	cnt;
-
 	if (item->flag & NEVENT_SETEVENT) {
 		if (cs4231.dmach != 0xff) {
 			sound_sync();
@@ -105,10 +107,8 @@ void cs4231_dma(NEVENTITEM item) {
 }
 
 void cs4231_datasend(REG8 dat) {
-
 	UINT	pos;
-
-	if (cs4231.reg.iface & 0x40) {				// PIO play enable
+	if (cs4231.reg.iface & 0x40) {		// PIO play enable
 		if (cs4231.bufsize <= cs4231.bufdatas) {
 			sound_sync();
 		}
@@ -121,9 +121,8 @@ void cs4231_datasend(REG8 dat) {
 }
 
 REG8 DMACCALL cs4231dmafunc(REG8 func) {
-
 	SINT32	cnt;
-
+	TRACEOUT(("dmafunc %x",func));
 	switch(func) {
 		case DMAEXT_START:
 			if (cs4231cfg.rate) {
@@ -131,10 +130,10 @@ REG8 DMACCALL cs4231dmafunc(REG8 func) {
 				nevent_set(NEVENT_CS4231, cnt, cs4231_dma, NEVENT_ABSOLUTE);
 			}
 			break;
-
 		case DMAEXT_END:
 			if ((cs4231.reg.pinctrl & 2) && (cs4231.dmairq != 0xff)) {
-				cs4231.intflag = 1;
+				cs4231.intflag |=1;
+				cs4231.reg.featurestatus |= 0x10;
 				pic_setirq(cs4231.dmairq);
 			}
 			break;
@@ -173,14 +172,22 @@ static void setdataalign(void) {
 }
 
 void cs4231_control(UINT idx, REG8 dat) {
-
 	UINT8	modify;
 	DMACH	dmach;
+
+	cs4231.index |= 0x40;
 
 	modify = ((UINT8 *)&cs4231.reg)[idx] ^ dat;
 	((UINT8 *)&cs4231.reg)[idx] = dat;
 	switch(idx) {
+		case CS4231REG_MISCINFO:
+				if (cs4231.reg.mode_id & 0x40) cs4231.index &= 0x0f;
+								else cs4231.index &= 0x1f;
+				break;
+			}
+	switch(idx) {
 		case CS4231REG_PLAYFMT:
+			TRACEOUT(("PLAYFMT= %x",dat));
 			if (modify & 0xf0) {
 				setdataalign();
 			}
@@ -204,7 +211,7 @@ void cs4231_control(UINT idx, REG8 dat) {
 			if (modify & 5) {
 				if (cs4231.dmach != 0xff) {
 					dmach = dmac.dmach + cs4231.dmach;
-					if ((dat & 0x5) == 0x5) {
+					if ((dat & 0x1) == 0x1) {
 						dmach->ready = 1;
 					}
 					else {
@@ -217,6 +224,14 @@ void cs4231_control(UINT idx, REG8 dat) {
 				}
 			}
 			break;
+		case CS4231REG_IRQSTAT:
+			if (modify & 0x10) {
+						pic_resetirq(cs4231.dmairq);
+						cs4231.intflag &= 0xfe;
+			}
+			break;
+				
 	}
+
 }
 

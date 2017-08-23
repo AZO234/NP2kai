@@ -18,10 +18,10 @@ static const SINT32 pcm86rescue[] = {PCM86_RESCUE * 32, PCM86_RESCUE * 24,
 static const UINT8 s_irqtable[8] = {0xff, 0xff, 0xff, 0xff, 0x03, 0x0a, 0x0d, 0x0c};
 
 
-static void IOOUTCALL pcm86_oa460(UINT port, REG8 val) {
-
+static void IOOUTCALL pcm86_oa460(UINT port, REG8 val)
+{
 //	TRACEOUT(("86pcm out %.4x %.2x", port, val));
-	g_pcm86.extfunc = val;
+	g_pcm86.soundflags = (g_pcm86.soundflags & 0xfe) | (val & 1);
 	fmboard_extenable((REG8)(val & 1));
 	(void)port;
 }
@@ -145,10 +145,10 @@ static void IOOUTCALL pcm86_oa46c(UINT port, REG8 val) {
 	(void)port;
 }
 
-static REG8 IOINPCALL pcm86_ia460(UINT port) {
-
+static REG8 IOINPCALL pcm86_ia460(UINT port)
+{
 	(void)port;
-	return(0x40 | (g_pcm86.extfunc & 1));
+	return g_pcm86.soundflags;
 }
 
 static REG8 IOINPCALL pcm86_ia466(UINT port) {
@@ -252,7 +252,8 @@ static REG8 IOINPCALL pcm86_inpdummy(UINT port) {
  */
 void pcm86io_setopt(REG8 cDipSw)
 {
-	g_pcm86.irq = s_irqtable[(cDipSw >> 3) & 7];
+	g_pcm86.soundflags = ((~cDipSw) >> 1) & 0x70;
+	g_pcm86.irq = s_irqtable[(cDipSw >> 2) & 7];
 }
 
 void pcm86io_bind(void) {

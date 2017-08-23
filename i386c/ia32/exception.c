@@ -96,35 +96,35 @@ exception(int num, int error_code)
 	}
 
 	switch (num) {
-	case DE_EXCEPTION:	/* (F) é™¤ç®—ã‚¨ãƒ©ãƒ¼ */
-	case DB_EXCEPTION:	/* (F/T) ãƒ‡ãƒãƒƒã‚° */
-	case BR_EXCEPTION:	/* (F) BOUND ã®ç¯„å›²å¤– */
-	case UD_EXCEPTION:	/* (F) ç„¡åŠ¹ã‚ªãƒšã‚³ãƒ¼ãƒ‰ */
-	case NM_EXCEPTION:	/* (F) ãƒ‡ãƒã‚¤ã‚¹ä½¿ç”¨ä¸å¯ (FPU ãŒç„¡ã„) */
-	case MF_EXCEPTION:	/* (F) æµ®å‹•å°æ•°ç‚¹ã‚¨ãƒ©ãƒ¼ */
+	case DE_EXCEPTION:	/* (F) œŽZƒGƒ‰[ */
+	case DB_EXCEPTION:	/* (F/T) ƒfƒoƒbƒO */
+	case BR_EXCEPTION:	/* (F) BOUND ‚Ì”ÍˆÍŠO */
+	case UD_EXCEPTION:	/* (F) –³ŒøƒIƒyƒR[ƒh */
+	case NM_EXCEPTION:	/* (F) ƒfƒoƒCƒXŽg—p•s‰Â (FPU ‚ª–³‚¢) */
+	case MF_EXCEPTION:	/* (F) •‚“®¬”“_ƒGƒ‰[ */
 		CPU_EIP = CPU_PREV_EIP;
 		if (CPU_STATSAVE.cpu_stat.backout_sp)
 			CPU_ESP = CPU_PREV_ESP;
 		/*FALLTHROUGH*/
-	case NMI_EXCEPTION:	/* (I) NMI å‰²ã‚Šè¾¼ã¿ */
-	case BP_EXCEPTION:	/* (T) ãƒ–ãƒ¬ãƒ¼ã‚¯ãƒã‚¤ãƒ³ãƒˆ */
-	case OF_EXCEPTION:	/* (T) ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼ */
+	case NMI_EXCEPTION:	/* (I) NMI Š„‚èž‚Ý */
+	case BP_EXCEPTION:	/* (T) ƒuƒŒ[ƒNƒ|ƒCƒ“ƒg */
+	case OF_EXCEPTION:	/* (T) ƒI[ƒo[ƒtƒ[ */
 		errorp = 0;
 		break;
 
-	case DF_EXCEPTION:	/* (A) ãƒ€ãƒ–ãƒ«ãƒ•ã‚©ãƒ«ãƒˆ (errcode: 0) */
+	case DF_EXCEPTION:	/* (A) ƒ_ƒuƒ‹ƒtƒHƒ‹ƒg (errcode: 0) */
 		errorp = 1;
 		error_code = 0;
 		break;
 
-	case AC_EXCEPTION:	/* (F) ã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆãƒã‚§ãƒƒã‚¯ (errcode: 0) */
+	case AC_EXCEPTION:	/* (F) ƒAƒ‰ƒCƒ“ƒƒ“ƒgƒ`ƒFƒbƒN (errcode: 0) */
 		error_code = 0;
 		/*FALLTHROUGH*/
-	case TS_EXCEPTION:	/* (F) ç„¡åŠ¹ TSS (errcode) */
-	case NP_EXCEPTION:	/* (F) ã‚»ã‚°ãƒ¡ãƒ³ãƒˆä¸åœ¨ (errcode) */
-	case SS_EXCEPTION:	/* (F) ã‚¹ã‚¿ãƒƒã‚¯ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãƒ•ã‚©ãƒ«ãƒˆ (errcode) */
-	case GP_EXCEPTION:	/* (F) ä¸€èˆ¬ä¿è­·ä¾‹å¤– (errcode) */
-	case PF_EXCEPTION:	/* (F) ãƒšãƒ¼ã‚¸ãƒ•ã‚©ãƒ«ãƒˆ (errcode) */
+	case TS_EXCEPTION:	/* (F) –³Œø TSS (errcode) */
+	case NP_EXCEPTION:	/* (F) ƒZƒOƒƒ“ƒg•sÝ (errcode) */
+	case SS_EXCEPTION:	/* (F) ƒXƒ^ƒbƒNƒZƒOƒƒ“ƒgƒtƒHƒ‹ƒg (errcode) */
+	case GP_EXCEPTION:	/* (F) ˆê”Ê•ÛŒì—áŠO (errcode) */
+	case PF_EXCEPTION:	/* (F) ƒy[ƒWƒtƒHƒ‹ƒg (errcode) */
 		CPU_EIP = CPU_PREV_EIP;
 		if (CPU_STATSAVE.cpu_stat.backout_sp)
 			CPU_ESP = CPU_PREV_ESP;
@@ -153,22 +153,22 @@ exception(int num, int error_code)
 }
 
 /*
- * ã‚³ãƒ¼ãƒ«ãƒ»ã‚²ãƒ¼ãƒˆãƒ»ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿
+ * ƒR[ƒ‹EƒQ[ƒgEƒfƒBƒXƒNƒŠƒvƒ^
  *
  *  31                                16 15 14 13 12       8 7   5 4       0
  * +------------------------------------+--+-----+----------+-----+---------+
- * |         ã‚ªãƒ•ã‚»ãƒƒãƒˆ 31..16          | P| DPL | 0 D 1 0 0|0 0 0|ã‚«ã‚¦ãƒ³ãƒˆ | 4
+ * |         ƒIƒtƒZƒbƒg 31..16          | P| DPL | 0 D 1 0 0|0 0 0|ƒJƒEƒ“ƒg | 4
  * +------------------------------------+--+-----+----------+-----+---------+
  *  31                                16 15                                0
  * +------------------------------------+-----------------------------------+
- * |        ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãƒ»ã‚»ãƒ¬ã‚¯ã‚¿        |          ã‚ªãƒ•ã‚»ãƒƒãƒˆ 15..0         | 0
+ * |        ƒZƒOƒƒ“ƒgEƒZƒŒƒNƒ^        |          ƒIƒtƒZƒbƒg 15..0         | 0
  * +------------------------------------+-----------------------------------+
  */
 
 /*
- * å‰²ã‚Šè¾¼ã¿ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿
+ * Š„‚èž‚ÝƒfƒBƒXƒNƒŠƒvƒ^
  *--
- * ã‚¿ã‚¹ã‚¯ãƒ»ã‚²ãƒ¼ãƒˆ
+ * ƒ^ƒXƒNEƒQ[ƒg
  *
  *  31                                16 15 14 13 12       8 7             0
  * +------------------------------------+--+-----+----------+---------------+
@@ -176,36 +176,36 @@ exception(int num, int error_code)
  * +------------------------------------+--+-----+----------+---------------+
  *  31                                16 15                                0
  * +------------------------------------+-----------------------------------+
- * |      TSS ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãƒ»ã‚»ãƒ¬ã‚¯ã‚¿      |              Reserved             | 0
+ * |      TSS ƒZƒOƒƒ“ƒgEƒZƒŒƒNƒ^      |              Reserved             | 0
  * +------------------------------------+-----------------------------------+
  *--
- * å‰²ã‚Šè¾¼ã¿ãƒ»ã‚²ãƒ¼ãƒˆ
+ * Š„‚èž‚ÝEƒQ[ƒg
  *
  *  31                                16 15 14 13 12       8 7   5 4       0
  * +------------------------------------+--+-----+----------+-----+---------+
- * |         ã‚ªãƒ•ã‚»ãƒƒãƒˆ 31..16          | P| DPL | 0 D 1 1 0|0 0 0|Reserved | 4
+ * |         ƒIƒtƒZƒbƒg 31..16          | P| DPL | 0 D 1 1 0|0 0 0|Reserved | 4
  * +------------------------------------+--+-----+----------+-----+---------+
  *  31                                16 15                                0
  * +------------------------------------+-----------------------------------+
- * |        ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãƒ»ã‚»ãƒ¬ã‚¯ã‚¿        |          ã‚ªãƒ•ã‚»ãƒƒãƒˆ 15..0         | 0
+ * |        ƒZƒOƒƒ“ƒgEƒZƒŒƒNƒ^        |          ƒIƒtƒZƒbƒg 15..0         | 0
  * +------------------------------------+-----------------------------------+
  *--
- * ãƒˆãƒ©ãƒƒãƒ—ãƒ»ã‚²ãƒ¼ãƒˆ
+ * ƒgƒ‰ƒbƒvEƒQ[ƒg
  *
  *  31                                16 15 14 13 12       8 7   5 4       0
  * +------------------------------------+--+-----+----------+-----+---------+
- * |         ã‚ªãƒ•ã‚»ãƒƒãƒˆ 31..16          | P| DPL | 0 D 1 1 1|0 0 0|Reserved | 4
+ * |         ƒIƒtƒZƒbƒg 31..16          | P| DPL | 0 D 1 1 1|0 0 0|Reserved | 4
  * +------------------------------------+--+-----+----------+-----+---------+
  *  31                                16 15                                0
  * +------------------------------------+-----------------------------------+
- * |        ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãƒ»ã‚»ãƒ¬ã‚¯ã‚¿        |          ã‚ªãƒ•ã‚»ãƒƒãƒˆ 15..0         | 0
+ * |        ƒZƒOƒƒ“ƒgEƒZƒŒƒNƒ^        |          ƒIƒtƒZƒbƒg 15..0         | 0
  * +------------------------------------+-----------------------------------+
  *--
- * DPL        : ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ç‰¹æ¨©ãƒ¬ãƒ™ãƒ«
- * ã‚ªãƒ•ã‚»ãƒƒãƒˆ : ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ãƒ»ã‚¨ãƒ³ãƒˆãƒªãƒ»ãƒã‚¤ãƒ³ãƒˆã¾ã§ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ
- * P          : ã‚»ã‚°ãƒ¡ãƒ³ãƒˆå­˜åœ¨ãƒ•ãƒ©ã‚°
- * ã‚»ãƒ¬ã‚¯ã‚¿   : ãƒ‡ã‚£ã‚¹ãƒ†ã‚£ãƒãƒ¼ã‚·ãƒ§ãƒ³ãƒ»ã‚³ãƒ¼ãƒ‰ãƒ»ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãƒ»ã‚»ãƒ¬ã‚¯ã‚¿
- * D          : ã‚²ãƒ¼ãƒˆã®ã‚µã‚¤ã‚ºï¼Ž0 = 16 bit, 1 = 32 bit
+ * DPL        : ƒfƒBƒXƒNƒŠƒvƒ^“ÁŒ ƒŒƒxƒ‹
+ * ƒIƒtƒZƒbƒg : ƒvƒƒV[ƒWƒƒEƒGƒ“ƒgƒŠEƒ|ƒCƒ“ƒg‚Ü‚Å‚ÌƒIƒtƒZƒbƒg
+ * P          : ƒZƒOƒƒ“ƒg‘¶Ýƒtƒ‰ƒO
+ * ƒZƒŒƒNƒ^   : ƒfƒBƒXƒeƒBƒl[ƒVƒ‡ƒ“EƒR[ƒhEƒZƒOƒƒ“ƒg‚ÌƒZƒOƒƒ“ƒgEƒZƒŒƒNƒ^
+ * D          : ƒQ[ƒg‚ÌƒTƒCƒYD0 = 16 bit, 1 = 32 bit
  */
 
 static void CPUCALL interrupt_task_gate(const descriptor_t *gsdp, int intrtype, int errorp, int error_code);
@@ -301,7 +301,7 @@ interrupt(int num, int intrtype, int errorp, int error_code)
 			break;
 		}
 
-		/* 5.10.1.1. ä¾‹å¤–ï¼å‰²ã‚Šè¾¼ã¿ãƒãƒ³ãƒ‰ãƒ©ãƒ»ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã®ä¿è­· */
+		/* 5.10.1.1. —áŠO^Š„‚èž‚Ýƒnƒ“ƒhƒ‰EƒvƒƒV[ƒWƒƒ‚Ì•ÛŒì */
 		if ((intrtype == INTR_TYPE_SOFTINTR) && (gsd.dpl < CPU_STAT_CPL)) {
 			VERBOSE(("interrupt: intrtype(softint) && DPL(%d) < CPL(%d)", gsd.dpl, CPU_STAT_CPL));
 			EXCEPTION(GP_EXCEPTION, exc_errcode);
@@ -614,11 +614,11 @@ interrupt_intr_or_trap(const descriptor_t *gsdp, int intrtype, int errorp, int e
 		}
 		/*
 		 * 17.1
-		 * ã‚³ãƒ¼ãƒ«ã‚²ãƒ¼ãƒˆã€å‰²ã‚Šè¾¼ã¿ã‚²ãƒ¼ãƒˆã€ã¾ãŸã¯ãƒˆãƒ©ãƒƒãƒ—ã‚²ãƒ¼ãƒˆã‚’é€šã˜ã¦
-		 * ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã®åˆ¶å¾¡ã‚’ä»–ã®ã‚³ãƒ¼ãƒ‰ãƒ»ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã«ç§»è¡Œã™ã‚‹ã¨ãã¯ã€
-		 * ç§»è¡Œä¸­ã«ä½¿ç”¨ã•ã‚Œã‚‹ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãƒ»ã‚µã‚¤ã‚ºã¯ä½¿ç”¨ã•ã‚Œã‚‹ã‚²ãƒ¼ãƒˆã®
-		 * ã‚¿ã‚¤ãƒ—ï¼ˆ16 ãƒ“ãƒƒãƒˆã¾ãŸã¯32 ãƒ“ãƒƒãƒˆï¼‰ã«ã‚ˆã£ã¦æ±ºã¾ã‚‹ï¼ˆç§»è¡Œå‘½
-		 * ä»¤ã®D ãƒ•ãƒ©ã‚°ã€ãƒ—ãƒªãƒ•ã‚£ãƒƒã‚¯ã‚¹ã®ã„ãšã‚Œã«ã‚‚ã‚ˆã‚‰ãªã„ï¼‰ã€‚
+		 * ƒR[ƒ‹ƒQ[ƒgAŠ„‚èž‚ÝƒQ[ƒgA‚Ü‚½‚Íƒgƒ‰ƒbƒvƒQ[ƒg‚ð’Ê‚¶‚Ä
+		 * ƒvƒƒOƒ‰ƒ€‚Ì§Œä‚ð‘¼‚ÌƒR[ƒhEƒZƒOƒƒ“ƒg‚ÉˆÚs‚·‚é‚Æ‚«‚ÍA
+		 * ˆÚs’†‚ÉŽg—p‚³‚ê‚éƒIƒyƒ‰ƒ“ƒhEƒTƒCƒY‚ÍŽg—p‚³‚ê‚éƒQ[ƒg‚Ì
+		 * ƒ^ƒCƒvi16 ƒrƒbƒg‚Ü‚½‚Í32 ƒrƒbƒgj‚É‚æ‚Á‚ÄŒˆ‚Ü‚éiˆÚs–½
+		 * —ß‚ÌD ƒtƒ‰ƒOAƒvƒŠƒtƒBƒbƒNƒX‚Ì‚¢‚¸‚ê‚É‚à‚æ‚ç‚È‚¢jB
 		 */
 		SS_PUSH_CHECK1(sp, stacksize, is32bit);
 

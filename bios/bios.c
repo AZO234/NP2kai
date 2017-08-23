@@ -25,8 +25,8 @@
 #include	"fdd/sxsi.h"
 #endif
 #if defined(SUPPORT_HRTIMER)
-#include "timemng.h"
-#endif	/* SUPPORT_HRTIMER */
+#include	"timemng.h"
+#endif
 
 #define	BIOS_SIMULATE
 
@@ -232,10 +232,10 @@ static void bios_reinitbyswitch(void) {
 
 		timemng_gettime(&hrtimertime);
 		hrtimertimeuint = (((UINT32)hrtimertime.hour*60 + (UINT32)hrtimertime.minute)*60 + (UINT32)hrtimertime.second)*32 + ((UINT32)hrtimertime.milli*32)/1000;
-		((UINT8*)(&hrtimertimeuint))[2] |= 0x40;	// 0x04F3 bit6 High
+		hrtimertimeuint |= 0x400000;
 		STOREINTELDWORD(mem+0x04F1, hrtimertimeuint); // XXX: 04F4Ç…Ç‡èëÇ¢ÇøÇ·Ç¡ÇƒÇÈÇØÇ«ç∑ÇµìñÇΩÇ¡ÇƒÇÕñ‚ëËÇ»Ç≥ÇªÇ§Ç»ÇÃÇ≈•••
 	}
-#endif	/* SUPPORT_HRTIMER */
+#endif	/* defined(SUPPORT_HRTIMER) */
 
 #if defined(SUPPORT_PC9801_119)
 	mem[MEMB_BIOS_FLAG3] |= 0x40;
@@ -407,7 +407,6 @@ void bios_initialize(void) {
 	CopyMemory(mem + 0x1c0000, mem + ITF_ADRS, 0x08000);
 	CopyMemory(mem + 0x1e8000, mem + 0x0e8000, 0x10000);
 }
-
 
 static void bios_itfcall(void) {
 

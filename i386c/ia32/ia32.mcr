@@ -87,7 +87,7 @@ do { \
 /*
  * instruction pointer
  */
-/* コードフェッチに使用するので、OpSize の影響を受けてはいけない */
+/* �R�[�h�t�F�b�`�Ɏg�p����̂ŁAOpSize �̉e�����󂯂Ă͂����Ȃ� */
 #define	_ADD_EIP(v) \
 do { \
 	UINT32 __tmp_ip = CPU_EIP + (v); \

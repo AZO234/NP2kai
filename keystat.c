@@ -601,4 +601,3 @@ void keystat_forcerelease(REG8 data) {
 	keycode = cnvnewcode((REG8)(data & 0x7f));
 	keystat_releasekey(keycode);
 }
-

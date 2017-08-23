@@ -1,5 +1,5 @@
 /**
- * @file	cs4231.h
+sudo make - * @file	cs4231.h
  * @brief	Interface of the CS4231
  */
 
@@ -9,6 +9,7 @@
 #include "io/dmac.h"
 
 enum {
+//
 	CS4231_BUFFERS	= (1 << 9),
 	CS4231_BUFMASK	= (CS4231_BUFFERS - 1)
 };
@@ -25,24 +26,23 @@ typedef struct {
 	UINT8	datafmt;			// 8
 	UINT8	iface;				// 9
 	UINT8	pinctrl;			// a
-	UINT8	errorstatus;
-	UINT8	mode_id;
-	UINT8	loopctrl;
-	UINT8	playcount[2];
-
-	UINT8	featurefunc[2];
-	UINT8	line_l;
-	UINT8	line_r;
-	UINT8	timer[2];
-	UINT8	reserved1;
-	UINT8	reserved2;
-	UINT8	featurestatus;
-	UINT8	chipid;
-	UINT8	monoinput;
-	UINT8	reserved3;
-	UINT8	cap_datafmt;
-	UINT8	reserved4;
-	UINT8	cap_basecount[2];
+	UINT8	errorstatus;		//b
+	UINT8	mode_id;		//c
+	UINT8	loopctrl;		//d
+	UINT8	playcount[2];		//e-f
+	UINT8	featurefunc[2];		//10-11
+	UINT8	line_l;		//12
+	UINT8	line_r;		//13
+	UINT8	timer[2];			//14-15
+	UINT8	reserved1;		//16
+	UINT8	reserved2;		//17
+	UINT8	featurestatus;		//18
+	UINT8	chipid;		//19
+	UINT8	monoinput;		//1a
+	UINT8	reserved3;		//1b
+	UINT8	cap_datafmt;		//1c
+	UINT8	reserved4;		//1d
+	UINT8	cap_basecount[2];		//1e-1f
 } CS4231REG;
 
 typedef struct {
@@ -56,7 +56,7 @@ typedef struct {
 	UINT8		portctrl;
 	UINT8		dmairq;
 	UINT8		dmach;
-	UINT16		port[8];
+	UINT32		port[16];
 	UINT8		adrs;
 	UINT8		index;
 	UINT8		intflag;

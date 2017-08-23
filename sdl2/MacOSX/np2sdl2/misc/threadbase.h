@@ -1,6 +1,6 @@
 /**
  * @file	threadbase.h
- * @brief	ã‚¹ãƒ¬ãƒƒãƒ‰åŸºåº•ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
+ * @brief	ƒXƒŒƒbƒhŠî’êƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
  */
 
 #pragma once
@@ -9,7 +9,7 @@
 #include <unistd.h>
 
 /**
- * @brief ã‚¹ãƒ¬ãƒƒãƒ‰åŸºåº•ã‚¯ãƒ©ã‚¹
+ * @brief ƒXƒŒƒbƒhŠî’êƒNƒ‰ƒX
  */
 class CThreadBase
 {
@@ -23,19 +23,19 @@ public:
 	static void Delay(unsigned int usec);
 
 protected:
-	virtual bool Task()=0;		//!< ã‚¹ãƒ¬ãƒƒãƒ‰ ã‚¿ã‚¹ã‚¯
+	virtual bool Task()=0;		//!< ƒXƒŒƒbƒh ƒ^ƒXƒN
 
 private:
-	pthread_t m_thread;			//!< ã‚¹ãƒ¬ãƒƒãƒ‰ ãƒ•ãƒ©ã‚°
-	bool m_bCreated;			//!< ã‚¹ãƒ¬ãƒƒãƒ‰ä½œæˆãƒ•ãƒ©ã‚°
-	bool m_bDone;				//!< çµ‚äº†ãƒ•ãƒ©ã‚°
-	size_t m_stack_size;		//!< ã‚¹ã‚¿ãƒƒã‚¯ ã‚µã‚¤ã‚º
+	pthread_t m_thread;			//!< ƒXƒŒƒbƒh ƒtƒ‰ƒO
+	bool m_bCreated;			//!< ƒXƒŒƒbƒhì¬ƒtƒ‰ƒO
+	bool m_bDone;				//!< I—¹ƒtƒ‰ƒO
+	size_t m_stack_size;		//!< ƒXƒ^ƒbƒN ƒTƒCƒY
 	static void* StartRoutine(void* arg);
 };
 
 /**
- * ã‚¹ã‚¿ãƒƒã‚¯ ã‚µã‚¤ã‚ºã®è¨­å®š
- * @param[in] stack_size ã‚¹ã‚¿ãƒƒã‚¯ ã‚µã‚¤ã‚º
+ * ƒXƒ^ƒbƒN ƒTƒCƒY‚Ìİ’è
+ * @param[in] stack_size ƒXƒ^ƒbƒN ƒTƒCƒY
  */
 inline void CThreadBase::SetStackSize(size_t stack_size)
 {
@@ -43,8 +43,8 @@ inline void CThreadBase::SetStackSize(size_t stack_size)
 }
 
 /**
- * ã‚¹ãƒªãƒ¼ãƒ—
- * @param[in] usec ãƒã‚¤ã‚¯ãƒ­ç§’
+ * ƒXƒŠ[ƒv
+ * @param[in] usec ƒ}ƒCƒNƒ•b
  */
 inline void CThreadBase::Delay(unsigned int usec)
 {
