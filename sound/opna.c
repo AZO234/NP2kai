@@ -2,6 +2,10 @@
  * @file	opna.c
  * @brief	Implementation of OPNA
  */
+#ifdef _WIN32
+#define bool _Bool
+#define false FALSE
+#endif
 
 #include "compiler.h"
 #include "opna.h"

@@ -1,6 +1,6 @@
 Neko Project II 0.86 kai rev.9
 ===
-Aug 22, 2017  
+Aug 23, 2017  
 
 Build SDL2 port
 ---
@@ -216,6 +216,9 @@ I/O:0x00D0
 
 Release
 ---
+* Aug 23, 2017
+	- Merge NP21/w rev.35 beta1
+		* SB16  
 * Aug 22, 2017
 	- Merge 私家  
 		Merged  
@@ -228,7 +231,6 @@ Release
 		* CSM voice  
 		* LittleOrchestra  
 		* MultimediaOrchestra  
-		* SB16  
 		* WaveRec  
 	- Merge kaiE
 		* force ROM to RAM 
