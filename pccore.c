@@ -259,7 +259,7 @@ static void sound_init(void)
 	pcm86gen_setvol(np2cfg.vol_pcm);
 	cs4231_initialize(rate);
 	amd98_initialize(rate);
-	oplgen_initialize(rate);
+//	oplgen_initialize(rate);
 	oplgen_setvol(np2cfg.vol_fm);
 }
 
