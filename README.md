@@ -1,4 +1,4 @@
-Neko Project II 0.86 kai rev.9
+Neko Project II 0.86 kai rev.10
 ===
 Aug 23, 2017  
 
@@ -216,7 +216,7 @@ I/O:0x00D0
 
 Release
 ---
-* Aug 23, 2017
+* Aug 23, 2017 (rev.10)
 	- Merge NP21/w rev.35 beta1
 		* SB16  
 * Aug 22, 2017
