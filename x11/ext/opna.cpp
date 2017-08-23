@@ -683,6 +683,15 @@ REG8 opna_read3438ExtRegister(POPNA opna, UINT nAddress)
 int opna_sfsave(PCOPNA opna, STFLAGH sfh, const SFENTRY *tbl)
 {
 	int ret = statflag_write(sfh, &opna->s, sizeof(opna->s));
+#if defined(SUPPORT_FMGEN)
+	if(enable_fmgen) {
+		void* buf;
+		buf = malloc(fmgen_opnadata_size);
+		OPNA_DataSave(opna->fmgen, buf);
+		ret |= statflag_write(sfh, buf, fmgen_opnadata_size);
+		free(buf);
+	}
+#endif	/* SUPPORT_FMGEN */
 	if (opna->s.cCaps & OPNA_HAS_ADPCM)
 	{
 		ret |= statflag_write(sfh, &opna->adpcm, sizeof(opna->adpcm));
@@ -701,6 +710,15 @@ int opna_sfsave(PCOPNA opna, STFLAGH sfh, const SFENTRY *tbl)
 int opna_sfload(POPNA opna, STFLAGH sfh, const SFENTRY *tbl)
 {
 	int ret = statflag_read(sfh, &opna->s, sizeof(opna->s));
+#if defined(SUPPORT_FMGEN)
+	if(enable_fmgen) {
+		void* buf;
+		buf = malloc(fmgen_opnadata_size);
+		ret |= statflag_read(sfh, buf, fmgen_opnadata_size);
+		OPNA_DataLoad(opna->fmgen, buf);
+		free(buf);
+	}
+#endif	/* SUPPORT_FMGEN */
 	if (opna->s.cCaps & OPNA_HAS_ADPCM)
 	{
 		ret |= statflag_read(sfh, &opna->adpcm, sizeof(opna->adpcm));

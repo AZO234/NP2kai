@@ -41,6 +41,22 @@
 //		Še‰¹Œ¹‚Ì‰¹—Ê‚ğ’²ß‚·‚é
 //		’PˆÊ‚Í–ñ 1/2 dB
 //
+struct PSGData {
+	uint8 reg[16];
+	uint olevel[3];
+	uint32 scount[3];
+	uint32 speriod[3];
+	uint32 ecount;
+	uint32 eperiod;
+	uint32 ncount;
+	uint32 nperiod;
+	uint32 tperiodbase;
+	uint32 eperiodbase;
+	uint32 nperiodbase;
+	int volume;
+	int mask;
+};
+
 class PSG
 {
 public:
@@ -69,6 +85,9 @@ public:
 	void SetReg(uint regnum, uint8 data);
 	uint GetReg(uint regnum) { return reg[regnum & 0x0f]; }
 
+	void DataSave(struct PSGData* data);
+	void DataLoad(struct PSGData* data);
+	
 protected:
 	void MakeNoiseTable();
 	void MakeEnvelopTable();

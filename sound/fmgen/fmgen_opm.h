@@ -74,6 +74,43 @@
 namespace FM
 {
 	//	YM2151(OPM) ----------------------------------------------------
+	struct OPMData {
+		struct TimerData timer;
+		int		fmvolume;
+
+		uint	clock;
+		uint	rate;
+		uint	pcmrate;
+
+		uint	pmd;
+		uint	amd;
+		uint	lfocount;
+		uint	lfodcount;
+
+		uint	lfo_count_;
+		uint	lfo_count_diff_;
+		uint	lfo_step_;
+		uint	lfo_count_prev_;
+
+		uint	lfowaveform;
+		uint	rateratio;
+		uint	noise;
+		int32	noisecount;
+		uint32	noisedelta;
+		
+		bool	interpolation;
+		uint8	lfofreq;
+		uint8	status;
+		uint8	reg01;
+
+		uint8	kc[8];
+		uint8	kf[8];
+		uint8	pan[8];
+
+		struct Channel4Data ch[8];
+		struct ChipData	chip;
+	};
+
 	class OPM : public Timer
 	{
 	public:
@@ -94,6 +131,9 @@ namespace FM
 		void	SetVolume(int db);
 		void	SetChannelMask(uint mask);
 		
+		void	DataSave(struct OPMData* data);
+		void	DataLoad(struct OPMData* data);
+
 	private:
 		virtual void Intr(bool) {}
 	

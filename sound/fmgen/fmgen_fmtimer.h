@@ -13,12 +13,24 @@
 
 namespace FM
 {
+	struct TimerData {
+		uint8	status;
+		uint8	regtc;
+		uint8	regta[2];
+		int32	timera, timera_count;
+		int32	timerb, timerb_count;
+		int32	timer_step;
+	};
+
 	class Timer
 	{
 	public:
 		void	Reset();
 		bool	Count(int32 us);
 		int32	GetNextEvent();
+
+		void    DataSave(struct TimerData* data);
+		void    DataLoad(struct TimerData* data);
 	
 	protected:
 		virtual void SetStatus(uint bit) = 0;

@@ -100,6 +100,34 @@ int32 Timer::GetNextEvent()
 }
 
 // ---------------------------------------------------------------------------
+void Timer::DataSave(struct TimerData* data)
+{
+	data->status = status;
+	data->regtc = regtc;
+	data->regta[0] = regta[0];
+	data->regta[1] = regta[1];
+	data->timera = timera;
+	data->timera_count = timera_count;
+	data->timerb = timerb;
+	data->timerb_count = timerb_count;
+	data->timer_step = timer_step;
+}
+
+// ---------------------------------------------------------------------------
+void Timer::DataLoad(struct TimerData* data)
+{
+	status = data->status;
+	regtc = data->regtc;
+	regta[0] = data->regta[0];
+	regta[1] = data->regta[1];
+	timera = data->timera;
+	timera_count = data->timera_count;
+	timerb = data->timerb;
+	timerb_count = data->timerb_count;
+	timer_step = data->timer_step;
+}
+
+// ---------------------------------------------------------------------------
 //	タイマー基準値設定
 //
 void Timer::SetTimerBase(uint clock)

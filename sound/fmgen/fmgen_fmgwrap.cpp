@@ -5,6 +5,11 @@
 #include "fmgen_opna.h"
 #include "fmgen_fmgen.h"
 
+int fmgen_opndata_size = sizeof(FM::OPNData);
+int fmgen_opnadata_size = sizeof(FM::OPNAData);
+int fmgen_opnbdata_size = sizeof(FM::OPNBData);
+int fmgen_opmdata_size = sizeof(FM::OPMData);
+
 //	YM2203(OPN) ----------------------------------------------------
 void*	OPN_Construct(void) { return new FM::OPN; }
 void	OPN_Destruct(void* OPN) { if(OPN) delete (FM::OPN*)OPN; }
@@ -32,6 +37,9 @@ void	OPN_SetChannelMask(void* OPN, uint mask) { ((FM::OPN*)OPN)->SetChannelMask(
 int	OPN_dbgGetOpOut(void* OPN, int c, int s) { return ((FM::OPN*)OPN)->dbgGetOpOut(c, s); }
 int	OPN_dbgGetPGOut(void* OPN, int c, int s) { return ((FM::OPN*)OPN)->dbgGetPGOut(c, s); }
 void* OPN_dbgGetCh(void* OPN, int c) { return ((FM::OPN*)OPN)->dbgGetCh(c); }
+
+void	OPN_DataSave(void* OPN, void* opndata) { ((FM::OPN*)OPN)->DataSave((FM::OPNData*)opndata); }
+void	OPN_DataLoad(void* OPN, void* opndata) { ((FM::OPN*)OPN)->DataLoad((FM::OPNData*)opndata); }
 
 //	YM2608(OPNA) ---------------------------------------------------
 void*	OPNA_Construct(void) { return new FM::OPNA; }
@@ -67,12 +75,45 @@ int	OPNA_dbgGetOpOut(void* OPNA, int c, int s) { return ((FM::OPNA*)OPNA)->dbgGe
 int	OPNA_dbgGetPGOut(void* OPNA, int c, int s) { return ((FM::OPNA*)OPNA)->dbgGetPGOut(c, s); }
 void* OPNA_dbgGetCh(void* OPNA, int c) { return ((FM::OPNA*)OPNA)->dbgGetCh(c); }
 
+void	OPNA_DataSave(void* OPNA, void* opnadata) { ((FM::OPNA*)OPNA)->DataSave((FM::OPNAData*)opnadata); }
+void	OPNA_DataLoad(void* OPNA, void* opnadata) { ((FM::OPNA*)OPNA)->DataLoad((FM::OPNAData*)opnadata); }
+
+//	YM2610/B(OPNB) -------------------------------------------------
+void*	OPNB_Construct(void) { return new FM::OPNB; }
+void	OPNB_Destruct(void* OPNB) { if(OPNB) delete (FM::OPNB*)OPNB; }
+
+bool	OPNB_Init(void* OPNB, uint c, uint r, bool ipflag, uint8 *_adpcma, int _adpcma_size, uint8 *_adpcmb, int _adpcmb_size) { return ((FM::OPNB*)OPNB)->Init(c, r, ipflag, _adpcma, _adpcma_size, _adpcmb, _adpcmb_size); }
+
+void	OPNB_SetVolumeFM(void* OPNB, int db) { ((FM::OPNB*)OPNB)->SetVolumeFM(db); }
+void	OPNB_SetVolumePSG(void* OPNB, int db) { ((FM::OPNB*)OPNB)->SetVolumePSG(db); }
+void	OPNB_SetLPFCutoff(void* OPNB, uint freq) { ((FM::OPNB*)OPNB)->SetLPFCutoff(freq); }
+
+bool	OPNB_SetRate(void* OPNB, uint c, uint r, bool b) { return ((FM::OPNB*)OPNB)->SetRate(c, r, b); }
+void 	SOUNDCALL OPNB_Mix(void* OPNB, int32* buffer, int nsamples) { ((FM::OPNB*)OPNB)->Mix(buffer, nsamples); }
+
+bool	OPNB_Count(void* OPNB, int32 us) { ((FM::OPNB*)OPNB)->Count(us); }
+int32	OPNB_GetNextEvent(void* OPNB) { ((FM::OPNB*)OPNB)->GetNextEvent(); }
+
+void	OPNB_Reset(void* OPNB) { ((FM::OPNB*)OPNB)->Reset(); }
+void 	OPNB_SetReg(void* OPNB, uint addr, uint data) { ((FM::OPNB*)OPNB)->SetReg(addr, data); }
+uint	OPNB_GetReg(void* OPNB, uint addr) { return ((FM::OPNB*)OPNB)->GetReg(addr); }
+
+uint	OPNB_ReadStatus(void* OPNB) { ((FM::OPNB*)OPNB)->ReadStatus(); }
+uint	OPNB_ReadStatusEx(void* OPNB) { ((FM::OPNB*)OPNB)->ReadStatusEx(); }
+
+void	OPNB_SetVolumeADPCMA(void* OPNB, int index, int db) { ((FM::OPNB*)OPNB)->SetVolumeADPCMA(index, db); }
+void	OPNB_SetVolumeADPCMATotal(void* OPNB, int db) { ((FM::OPNB*)OPNB)->SetVolumeADPCMATotal(db); }
+void	OPNB_SetVolumeADPCMB(void* OPNB, int db) { ((FM::OPNB*)OPNB)->SetVolumeADPCMB(db); }
+
+void	OPNB_DataSave(void* OPNB, void* opnbdata) { ((FM::OPNB*)OPNB)->DataSave((FM::OPNBData*)opnbdata); }
+void	OPNB_DataLoad(void* OPNB, void* opnbdata) { ((FM::OPNB*)OPNB)->DataLoad((FM::OPNBData*)opnbdata); }
+
 //	YM2151(OPM) ----------------------------------------------------
 void*	OPM_Construct(void) { return new FM::OPM; }
 void	OPM_Destruct(void* OPM) { if(OPM) delete (FM::OPM*)OPM; }
 
-//bool	OPM_Init(void* OPM, uint c, uint r, bool ip) { return ((FM::OPM*)OPM)->Init(c, r, ip); }
-//bool	OPM_SetRate(void* OPM, uint c, uint r, bool b) { return ((FM::OPM*)OPM)->SetRate(c, r, b); }
+bool	OPM_Init(void* OPM, uint c, uint r, bool ip) { return ((FM::OPM*)OPM)->Init(c, r, ip); }
+bool	OPM_SetRate(void* OPM, uint c, uint r, bool b) { return ((FM::OPM*)OPM)->SetRate(c, r, b); }
 void	OPM_Reset(void* OPM) { ((FM::OPM*)OPM)->Reset(); }
 
 bool	OPM_Count(void* OPM, int32 us) { ((FM::OPM*)OPM)->Count(us); }
@@ -85,4 +126,7 @@ void 	SOUNDCALL OPM_Mix(void* OPM, int32* buffer, int nsamples) { ((FM::OPM*)OPM
 
 void	OPM_SetVolume(void* OPM, int db) { ((FM::OPM*)OPM)->SetVolume(db); }
 void	OPM_SetChannelMask(void* OPM, uint mask) { ((FM::OPM*)OPM)->SetChannelMask(mask); }
+
+void	OPM_DataSave(void* OPM, void* opmdata) { ((FM::OPM*)OPM)->DataSave((FM::OPMData*)opmdata); }
+void	OPM_DataLoad(void* OPM, void* opmdata) { ((FM::OPM*)OPM)->DataLoad((FM::OPMData*)opmdata); }
 

@@ -39,12 +39,60 @@ namespace FM
 	typedef int32 			ISample;
 
 	enum OpType { typeN=0, typeM=1 };
+	enum EGPhase { next, attack, decay, sustain, release, off };
 
 	void StoreSample(ISample& dest, int data);
 
 	class Chip;
+	struct ChipData;
 
 	//	Operator -------------------------------------------------------------
+	struct OperatorData {
+//		struct ChipData	chip_;
+		ISample	out_;
+		ISample	out2_;
+		ISample in2_;
+		uint	dp_;
+		uint	detune_;
+		uint	detune2_;
+		uint	multiple_;
+		uint32	pg_count_;
+		uint32	pg_diff_;
+		int32	pg_diff_lfo_;
+		OpType	type_;
+		uint	bn_;
+		int		eg_level_;
+		int		eg_level_on_next_phase_;
+		int		eg_count_;
+		int		eg_count_diff_;
+		int		eg_out_;
+		int		tl_out_;
+		int		eg_rate_;
+		int		eg_curve_count_;
+		int		ssg_offset_;
+		int		ssg_vector_;
+		int		ssg_phase_;
+		uint	key_scale_rate_;
+		EGPhase	eg_phase_;
+		uint*	ams_;
+		uint	ms_;
+		
+		uint	tl_;
+		uint	tl_latch_;
+		uint	ar_;
+		uint	dr_;
+		uint	sr_;
+		uint	sl_;
+		uint	rr_;
+		uint	ks_;
+		uint	ssg_type_;
+
+		bool	keyon_;
+		bool	amon_;
+		bool	param_changed_;
+		bool	mute_;
+	};
+
 	class Operator
 	{
 	public:
@@ -91,6 +139,9 @@ namespace FM
 		int		dbgGetIn2() { return in2_; } 
 		void	dbgStopPG() { pg_diff_ = 0; pg_diff_lfo_ = 0; }
 		
+		void	DataSave(struct OperatorData* data);
+		void	DataLoad(struct OperatorData* data);
+	
 	private:
 		typedef uint32 Counter;
 		
@@ -111,8 +162,6 @@ namespace FM
 		int32	pg_diff_lfo_;	// Phase ·•ª’l >> x
 
 	//	Envelop Generator ---------------------------------------------------
-		enum	EGPhase { next, attack, decay, sustain, release, off };
-		
 		void	EGCalc();
 		void	EGStep();
 		void	ShiftPhase(EGPhase nextphase);
@@ -191,6 +240,16 @@ namespace FM
 	};
 	
 	//	4-op Channel ---------------------------------------------------------
+	struct Channel4Data {
+		uint	fb;
+		int		buf[4];
+		int*	in[3];
+		int*	out[3];
+		int*	pms;
+		int		algo_;
+		struct OperatorData op[4];
+	};
+
 	class Channel4
 	{
 	public:
@@ -215,6 +274,9 @@ namespace FM
 
 		void dbgStopPG() { for (int i=0; i<4; i++) op[i].dbgStopPG(); }
 		
+		void DataSave(struct Channel4Data* data);
+		void DataLoad(struct Channel4Data* data);
+	
 	private:
 		static const uint8 fbtable[8];
 		uint	fb;
@@ -236,6 +298,15 @@ namespace FM
 	};
 
 	//	Chip resource
+	struct ChipData {
+		uint	ratio_;
+		uint	aml_;
+		uint	pml_;
+		int		pmv_;
+		OpType	optype_;
+		uint32	multable_[4][16];
+	};
+
 	class Chip
 	{
 	public:
@@ -251,6 +322,9 @@ namespace FM
 		int		GetPMV() { return pmv_; }
 		uint	GetRatio() { return ratio_; }
 
+		void	DataSave(struct ChipData* data);
+		void	DataLoad(struct ChipData* data);
+	
 	private:
 		void	MakeTable();
 

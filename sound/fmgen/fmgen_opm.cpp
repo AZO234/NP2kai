@@ -497,5 +497,69 @@ void OPM::Mix(Sample* buffer, int nsamples)
 #undef IStoSample
 }
 
+void OPM::DataSave(struct OPMData* data) {
+	Timer::DataSave(&data->timer);
+	data->fmvolume = fmvolume;
+	data->clock = clock;
+	data->rate = rate;
+	data->pcmrate = pcmrate;
+	data->pmd = pmd;
+	data->amd = amd;
+	data->lfocount = lfocount;
+	data->lfodcount = lfodcount;
+	data->lfo_count_ = lfo_count_;
+	data->lfo_count_diff_ = lfo_count_diff_;
+	data->lfo_step_ = lfo_step_;
+	data->lfo_count_prev_ = lfo_count_prev_;
+	data->lfowaveform = lfowaveform;
+	data->rateratio = rateratio;
+	data->noise = noise;
+	data->noisecount = noisecount;
+	data->noisedelta = noisedelta;
+	data->interpolation = interpolation;
+	data->lfofreq = lfofreq;
+	data->status = status;
+	data->reg01 = reg01;
+	memcpy(data->kc, kc, 8);
+	memcpy(data->kf, kf, 8);
+	memcpy(data->pan, pan, 8);
+	for(int i = 0; i < 8; i++) {
+		ch[i].DataSave(&data->ch[i]);
+	}
+	chip.DataSave(&data->chip);
+}
+
+void OPM::DataLoad(struct OPMData* data) {
+	Timer::DataLoad(&data->timer);
+	fmvolume = data->fmvolume;
+	clock = data->clock;
+	rate = data->rate;
+	pcmrate = data->pcmrate;
+	pmd = data->pmd;
+	amd = data->amd;
+	lfocount = data->lfocount;
+	lfodcount = data->lfodcount;
+	lfo_count_ = data->lfo_count_;
+	lfo_count_diff_ = data->lfo_count_diff_;
+	lfo_step_ = data->lfo_step_;
+	lfo_count_prev_ = data->lfo_count_prev_;
+	lfowaveform = data->lfowaveform;
+	rateratio = data->rateratio;
+	noise = data->noise;
+	noisecount = data->noisecount;
+	noisedelta = data->noisedelta;
+	interpolation = data->interpolation;
+	lfofreq = data->lfofreq;
+	status = data->status;
+	reg01 = data->reg01;
+	memcpy(kc, data->kc, 8);
+	memcpy(kf, data->kf, 8);
+	memcpy(pan, data->pan, 8);
+	for(int i = 0; i < 8; i++) {
+		ch[i].DataLoad(&data->ch[i]);
+	}
+	chip.DataLoad(&data->chip);
+}
+
 }	// namespace FM
 

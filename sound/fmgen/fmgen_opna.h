@@ -81,6 +81,19 @@
 namespace FM
 {
 	//	OPN Base -------------------------------------------------------
+	struct OPNBaseData {
+		struct TimerData timer;
+		int fmvolume;
+		uint	clock;
+		uint	rate;
+		uint	psgrate;
+		uint	status;
+//		struct Channel4Data csmch;
+		uint8	prescale;
+		struct ChipData chip;
+		struct PSGData psg;
+	};
+
 	class OPNBase : public Timer
 	{
 	public:
@@ -93,6 +106,9 @@ namespace FM
 		void	SetVolumePSG(int db);
 		void	SetLPFCutoff(uint freq) {}	// obsolete
 
+		void    DataSave(struct OPNBaseData* data);
+		void    DataLoad(struct OPNBaseData* data);
+	
 	protected:
 		void	SetParameter(Channel4* ch, uint addr, uint data);
 		void	SetPrescaler(uint p);
@@ -119,6 +135,48 @@ namespace FM
 	};
 
 	//	OPN2 Base ------------------------------------------------------
+	struct OPNABaseData {
+		struct OPNBaseData opnbase;
+		uint8	pan[6];
+		uint8	fnum2[9];
+		uint8	reg22;
+		uint	reg29;
+		uint	stmask;
+		uint	statusnext;
+		uint32	lfocount;
+		uint32	lfodcount;
+		uint	fnum[6];
+		uint	fnum3[3];
+//		uint8*	adpcmbuf;
+		uint	adpcmmask;
+		uint	adpcmnotice;
+		uint	startaddr;
+		uint	stopaddr;
+		uint	memaddr;
+		uint	limitaddr;
+		int		adpcmlevel;
+		int		adpcmvolume;
+		int		adpcmvol;
+		uint	deltan;
+		int		adplc;
+		int		adpld;
+		uint	adplbase;
+		int		adpcmx;
+		int		adpcmd;
+		int		adpcmout;
+		int		apout0;
+		int		apout1;
+		uint	adpcmreadbuf;
+		bool	adpcmplay;
+		int8	granuality;		
+		bool	adpcmmask_;
+		uint8	control1;
+		uint8	control2;
+		uint8	adpcmreg[8];
+		int		rhythmmask_;
+		struct Channel4Data ch[6];
+	};
+
 	class OPNABase : public OPNBase
 	{
 	public:
@@ -129,6 +187,9 @@ namespace FM
 		uint	ReadStatusEx();
 		void	SetChannelMask(uint mask);
 	
+		void	DataSave(struct OPNABaseData* data);
+		void	DataLoad(struct OPNABaseData* data);
+		
 	private:
 		virtual void Intr(bool) {}
 
@@ -221,6 +282,14 @@ namespace FM
 	};
 
 	//	YM2203(OPN) ----------------------------------------------------
+	struct OPNData {
+		struct OPNBaseData opnbase;
+		uint	fnum[3];
+		uint	fnum3[3];
+		uint8	fnum2[6];
+		struct Channel4Data ch[3];
+	};
+
 	class OPN : public OPNBase
 	{
 	public:
@@ -243,6 +312,9 @@ namespace FM
 		int		dbgGetPGOut(int c, int s) { return ch[c].op[s].dbgpgout_; }
 		Channel4* dbgGetCh(int c) { return &ch[c]; }
 	
+		void	DataSave(struct OPNData* data);
+		void	DataLoad(struct OPNData* data);
+		
 	private:
 		virtual void Intr(bool) {}
 		
@@ -257,6 +329,26 @@ namespace FM
 	};
 
 	//	YM2608(OPNA) ---------------------------------------------------
+	struct Rhythm
+	{
+		uint8	pan;		// ぱん
+		int8	level;		// おんりょう
+		int		volume;		// おんりょうせってい
+		int16*	sample;		// さんぷる
+		uint	size;		// さいず
+		uint	pos;		// いち
+		uint	step;		// すてっぷち
+		uint	rate;		// さんぷるのれーと
+	};
+	
+	struct OPNAData {
+		struct OPNABaseData opnabase;
+		Rhythm	rhythm[6];
+		int8	rhythmtl;
+		int		rhythmtvol;		
+		uint8	rhythmkey;
+	};
+
 	class OPNA : public OPNABase
 	{
 	public:
@@ -283,20 +375,10 @@ namespace FM
 		int		dbgGetPGOut(int c, int s) { return ch[c].op[s].dbgpgout_; }
 		Channel4* dbgGetCh(int c) { return &ch[c]; }
 
+		void	DataSave(struct OPNAData* data);
+		void	DataLoad(struct OPNAData* data);
 		
 	private:
-		struct Rhythm
-		{
-			uint8	pan;		// ぱん
-			int8	level;		// おんりょう
-			int		volume;		// おんりょうせってい
-			int16*	sample;		// さんぷる
-			uint	size;		// さいず
-			uint	pos;		// いち
-			uint	step;		// すてっぷち
-			uint	rate;		// さんぷるのれーと
-		};
-	
 		void	RhythmMix(Sample* buffer, uint count);
 
 	// リズム音源関係
@@ -307,6 +389,34 @@ namespace FM
 	};
 
 	//	YM2610/B(OPNB) ---------------------------------------------------
+	struct ADPCMA
+	{
+		uint8	pan;		// ぱん
+		int8	level;		// おんりょう
+		int		volume;		// おんりょうせってい
+		uint	pos;		// いち
+		uint	step;		// すてっぷち
+
+		uint	start;		// 開始
+		uint	stop;		// 終了
+		uint	nibble;		// 次の 4 bit
+		int		adpcmx;		// 変換用
+		int		adpcmd;		// 変換用
+	};
+	
+	struct OPNBData {
+		struct OPNABaseData opnabase;
+//		uint8*	adpcmabuf;
+		int		adpcmasize;
+		ADPCMA	adpcma[6];
+		int8	adpcmatl;
+		int		adpcmatvol;		
+		uint8	adpcmakey;
+		int		adpcmastep;
+		uint8	adpcmareg[32];
+		struct Channel4Data ch[6];
+	};
+
 	class OPNB : public OPNABase
 	{
 	public:
@@ -331,22 +441,10 @@ namespace FM
 
 //		void	SetChannelMask(uint mask);
 		
+		void	DataSave(struct OPNBData* data);
+		void	DataLoad(struct OPNBData* data);
+		
 	private:
-		struct ADPCMA
-		{
-			uint8	pan;		// ぱん
-			int8	level;		// おんりょう
-			int		volume;		// おんりょうせってい
-			uint	pos;		// いち
-			uint	step;		// すてっぷち
-
-			uint	start;		// 開始
-			uint	stop;		// 終了
-			uint	nibble;		// 次の 4 bit
-			int		adpcmx;		// 変換用
-			int		adpcmd;		// 変換用
-		};
-	
 		int		DecodeADPCMASample(uint);
 		void	ADPCMAMix(Sample* buffer, uint count);
 		static void InitADPCMATable();

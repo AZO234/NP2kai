@@ -198,6 +198,40 @@ void PSG::SetReg(uint regnum, uint8 data)
 }
 
 // ---------------------------------------------------------------------------
+void PSG::DataSave(struct PSGData* data) {
+	memcpy(data->reg, reg, 16);
+	memcpy(data->olevel, olevel, sizeof(uint) * 6);
+	memcpy(data->scount, scount, sizeof(uint32) * 3);
+	memcpy(data->speriod, speriod, sizeof(uint32) * 3);
+	data->ecount = ecount;
+	data->eperiod = eperiod;
+	data->ncount = ncount;
+	data->nperiod = nperiod;
+	data->tperiodbase = tperiodbase;
+	data->eperiodbase = eperiodbase;
+	data->nperiodbase = nperiodbase;
+	data->volume = volume;
+	data->mask = mask;
+}
+
+// ---------------------------------------------------------------------------
+void PSG::DataLoad(struct PSGData* data) {
+	memcpy(reg, data->reg, 16);
+	memcpy(olevel, data->olevel, sizeof(uint) * 6);
+	memcpy(scount, data->scount, sizeof(uint32) * 3);
+	memcpy(speriod, data->speriod, sizeof(uint32) * 3);
+	ecount = data->ecount;
+	eperiod = data->eperiod;
+	ncount = data->ncount;
+	nperiod = data->nperiod;
+	tperiodbase = data->tperiodbase;
+	eperiodbase = data->eperiodbase;
+	nperiodbase = data->nperiodbase;
+	volume = data->volume;
+	mask = data->mask;
+}
+
+// ---------------------------------------------------------------------------
 //
 //
 inline void PSG::StoreSample(Sample& dest, int32 data)

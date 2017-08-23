@@ -166,6 +166,32 @@ void OPNBase::TimerA()
 	}
 }
 
+void OPNBase::DataSave(struct OPNBaseData* data) {
+	Timer::DataSave(&data->timer);
+	data->fmvolume = fmvolume;
+	data->clock = clock;
+	data->rate = rate;
+	data->psgrate = psgrate;
+	data->status = status;
+//	csmch.DataSave(&data->csmch);
+	data->prescale = prescale;
+	chip.DataSave(&data->chip);
+	psg.DataSave(&data->psg);
+}
+
+void OPNBase::DataLoad(struct OPNBaseData* data) {
+	Timer::DataLoad(&data->timer);
+	fmvolume = data->fmvolume;
+	clock = data->clock;
+	rate = data->rate;
+	psgrate = data->psgrate;
+	status = data->status;
+//	csmch.DataLoad(&data->csmch);
+	prescale = data->prescale;
+	chip.DataLoad(&data->chip);
+	psg.DataLoad(&data->psg);
+}
+
 #endif // defined(BUILD_OPN) || defined(BUILD_OPNA) || defined (BUILD_OPNB)
 
 // ---------------------------------------------------------------------------
@@ -327,6 +353,25 @@ void OPN::SetChannelMask(uint mask)
 	psg.SetChannelMask(mask >> 6);
 }
 
+void OPN::DataSave(struct OPNData* data) {
+	OPNBase::DataSave(&data->opnbase);
+	memcpy(data->fnum, fnum, sizeof(uint) * 3);
+	memcpy(data->fnum3, fnum3, sizeof(uint) * 3);
+	memcpy(data->fnum2, fnum2, 6);
+	for(int i = 0; i < 3; i++) {
+		ch[i].DataSave(&data->ch[i]);
+	}
+}
+
+void OPN::DataLoad(struct OPNData* data) {
+	OPNBase::DataLoad(&data->opnbase);
+	memcpy(fnum, data->fnum, sizeof(uint) * 3);
+	memcpy(fnum3, data->fnum3, sizeof(uint) * 3);
+	memcpy(fnum2, data->fnum2, 6);
+	for(int i = 0; i < 3; i++) {
+		ch[i].DataLoad(&data->ch[i]);
+	}
+}
 
 //	‡¬(2ch)
 void OPN::Mix(Sample* buffer, int nsamples)
@@ -498,6 +543,94 @@ void OPNABase::SetChannelMask(uint mask)
 	psg.SetChannelMask(mask >> 6);
 	adpcmmask_ = (mask & (1 << 9)) != 0;
 	rhythmmask_ = (mask >> 10) & ((1 << 6) - 1);
+}
+
+// ---------------------------------------------------------------------------
+void OPNABase::DataSave(struct OPNABaseData* data) {
+	OPNBase::DataSave(&data->opnbase);
+	memcpy(data->pan, pan, 6);
+	memcpy(data->fnum2, fnum2, 9);
+	data->reg22 = reg22;
+	data->reg29 = reg29;
+	data->stmask = stmask;
+	data->statusnext = statusnext;
+	data->lfocount = lfocount;
+	data->lfodcount = lfodcount;
+	memcpy(data->fnum, fnum, sizeof(uint) * 6);
+	memcpy(data->fnum3, fnum3, sizeof(uint) * 3);
+//	data->adpcmbuf = adpcmbuf;
+	data->adpcmmask = adpcmmask;
+	data->adpcmnotice = adpcmnotice;
+	data->startaddr = startaddr;
+	data->stopaddr = stopaddr;
+	data->memaddr = memaddr;
+	data->limitaddr = limitaddr;
+	data->adpcmlevel = adpcmlevel;
+	data->adpcmvolume = adpcmvolume;
+	data->adpcmvol = adpcmvol;
+	data->deltan = deltan;
+	data->adplc = adplc;
+	data->adpld = adpld;
+	data->adplbase = adplbase;
+	data->adpcmx = adpcmx;
+	data->adpcmd = adpcmd;
+	data->adpcmout = adpcmout;
+	data->apout0 = apout0;
+	data->apout1 = apout1;
+	data->adpcmreadbuf = adpcmreadbuf;
+	data->adpcmplay = adpcmplay;
+	data->granuality = granuality;
+	data->control1 = control1;
+	data->control2 = control2;
+	memcpy(data->adpcmreg, adpcmreg, 8);
+	data->rhythmmask_ = rhythmmask_;
+	for(int i = 0; i < 6; i++) {
+		ch[i].DataSave(&data->ch[i]);
+	}
+}
+
+// ---------------------------------------------------------------------------
+void OPNABase::DataLoad(struct OPNABaseData* data) {
+	OPNBase::DataLoad(&data->opnbase);
+	memcpy(pan, data->pan, 6);
+	memcpy(fnum2, data->fnum2, 9);
+	reg22 = data->reg22;
+	reg29 = data->reg29;
+	stmask = data->stmask;
+	statusnext = data->statusnext;
+	lfocount = data->lfocount;
+	lfodcount = data->lfodcount;
+	memcpy(fnum, data->fnum, sizeof(uint) * 6);
+	memcpy(fnum3, data->fnum3, sizeof(uint) * 3);
+//	adpcmbuf = data->adpcmbuf;
+	adpcmmask = data->adpcmmask;
+	adpcmnotice = data->adpcmnotice;
+	startaddr = data->startaddr;
+	stopaddr = data->stopaddr;
+	memaddr = data->memaddr;
+	limitaddr = data->limitaddr;
+	adpcmlevel = data->adpcmlevel;
+	adpcmvolume = data->adpcmvolume;
+	adpcmvol = data->adpcmvol;
+	deltan = data->deltan;
+	adplc = data->adplc;
+	adpld = data->adpld;
+	adplbase = data->adplbase;
+	adpcmx = data->adpcmx;
+	adpcmd = data->adpcmd;
+	adpcmout = data->adpcmout;
+	apout0 = data->apout0;
+	apout1 = data->apout1;
+	adpcmreadbuf = data->adpcmreadbuf;
+	adpcmplay = data->adpcmplay;
+	granuality = data->granuality;
+	control1 = data->control1;
+	control2 = data->control2;
+	memcpy(adpcmreg, data->adpcmreg, 8);
+	rhythmmask_ = data->rhythmmask_;
+	for(int i = 0; i < 6; i++) {
+		ch[i].DataLoad(&data->ch[i]);
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -1409,6 +1542,23 @@ void OPNA::SetReg(uint addr, uint data)
 	}
 }
 
+// ---------------------------------------------------------------------------
+void OPNA::DataSave(struct OPNAData* data) {
+	OPNABase::DataSave(&data->opnabase);
+	memcpy(data->rhythm, rhythm, sizeof(Rhythm) * 6);
+	data->rhythmtl = rhythmtl;
+	data->rhythmtvol = rhythmtvol;
+	data->rhythmkey = rhythmkey;
+}
+
+// ---------------------------------------------------------------------------
+void OPNA::DataLoad(struct OPNAData* data) {
+	OPNABase::DataLoad(&data->opnabase);
+	memcpy(rhythm, data->rhythm, sizeof(Rhythm) * 6);
+	rhythmtl = data->rhythmtl;
+	rhythmtvol = data->rhythmtvol;
+	rhythmkey = data->rhythmkey;
+}
 
 // ---------------------------------------------------------------------------
 //	ƒŠƒYƒ€‡¬
@@ -1867,6 +2017,38 @@ void OPNB::SetVolumeADPCMB(int db)
 }
 
 // ---------------------------------------------------------------------------
+void OPNB::DataSave(struct OPNBData* data) {
+	OPNABase::DataSave(&data->opnabase);
+//	data->adpcmabuf = adpcmabuf;
+	data->adpcmasize = adpcmasize;
+	memcpy(data->adpcma, adpcma, sizeof(ADPCMA) * 6);
+	data->adpcmatl = adpcmatl;
+	data->adpcmatvol = adpcmatvol;
+	data->adpcmakey = adpcmakey;
+	data->adpcmastep = adpcmastep;
+	memcpy(data->adpcmareg, adpcmareg, 32);
+	for(int i = 0; i < 6; i++) {
+		ch[i].DataSave(&data->ch[i]);
+	}
+}
+
+// ---------------------------------------------------------------------------
+void OPNB::DataLoad(struct OPNBData* data) {
+	OPNABase::DataSave(&data->opnabase);
+//	adpcmabuf = data->adpcmabuf;
+	adpcmasize = data->adpcmasize;
+	memcpy(adpcma, data->adpcma, sizeof(ADPCMA) * 6);
+	adpcmatl = data->adpcmatl;
+	adpcmatvol = data->adpcmatvol;
+	adpcmakey = data->adpcmakey;
+	adpcmastep = data->adpcmastep;
+	memcpy(adpcmareg, data->adpcmareg, 32);
+	for(int i = 0; i < 6; i++) {
+		ch[i].DataLoad(&data->ch[i]);
+	}
+}
+
+// ---------------------------------------------------------------------------
 //	‡¬
 //	in:		buffer		‡¬æ
 //			nsamples	‡¬ƒTƒ“ƒvƒ‹”
@@ -1880,6 +2062,5 @@ void OPNB::Mix(Sample* buffer, int nsamples)
 }
 
 #endif // BUILD_OPNB
-
 
 }	// namespace FM
