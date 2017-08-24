@@ -21,6 +21,8 @@
 #include "sdlremap/sdl.h"
 #include "sdlremap/sdl_keycode.h"
 
+//#define TRACE
+
 #define	BYTESEX_LITTLE
 #define	OSLANG_UTF8
 #define	OSLINEBREAK_CRLF
@@ -160,9 +162,6 @@ typedef SINT32	FILELEN;
 
 #define	SCREEN_BPP		16
 #define	SUPPORT_16BPP
-
-#define  TRACE
-
 
 //extras
 #define	SUPPORT_EUC

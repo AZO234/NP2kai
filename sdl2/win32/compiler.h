@@ -3,6 +3,8 @@
 #include	<stddef.h>
 #include	<SDL2\SDL.h>
 
+//#define TRACE
+
 #define _WINDOWS
 
 #define	BYTESEX_LITTLE

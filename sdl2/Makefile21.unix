@@ -1,4 +1,4 @@
-DEBUG=1
+DEBUG=0
 GIT_VERSION := " $(shell git rev-parse --short HEAD)"
 SDL_CONFIG := sdl2-config
 

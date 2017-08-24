@@ -9,6 +9,8 @@
 #include	<pthread.h>
 #include	<SDL2/SDL.h>
 
+//#define TRACE
+
 #define BYTESEX_LITTLE
 #define	OSLANG_UTF8
 #define	OSLINEBREAK_LF
