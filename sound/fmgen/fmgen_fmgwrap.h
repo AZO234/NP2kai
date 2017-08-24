@@ -111,8 +111,8 @@ void	OPNB_SetVolumeADPCMA(void* OPNB, int index, int db);
 void	OPNB_SetVolumeADPCMATotal(void* OPNB, int db);
 void	OPNB_SetVolumeADPCMB(void* OPNB, int db);
 
-void	OPNB_DataSave(void* OPNB, void* opnbdata);
-void	OPNB_DataLoad(void* OPNB, void* opnbdata);
+void	OPNB_DataSave(void* OPNB, void* opnbdata, void* adpcmadata);
+void	OPNB_DataLoad(void* OPNB, void* opnbdata, void* adpcmadata);
 
 //	YM2151(OPM) ----------------------------------------------------
 void*	OPM_Construct(void);

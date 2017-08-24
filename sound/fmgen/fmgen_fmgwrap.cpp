@@ -105,8 +105,8 @@ void	OPNB_SetVolumeADPCMA(void* OPNB, int index, int db) { ((FM::OPNB*)OPNB)->Se
 void	OPNB_SetVolumeADPCMATotal(void* OPNB, int db) { ((FM::OPNB*)OPNB)->SetVolumeADPCMATotal(db); }
 void	OPNB_SetVolumeADPCMB(void* OPNB, int db) { ((FM::OPNB*)OPNB)->SetVolumeADPCMB(db); }
 
-void	OPNB_DataSave(void* OPNB, void* opnbdata) { ((FM::OPNB*)OPNB)->DataSave((FM::OPNBData*)opnbdata); }
-void	OPNB_DataLoad(void* OPNB, void* opnbdata) { ((FM::OPNB*)OPNB)->DataLoad((FM::OPNBData*)opnbdata); }
+void	OPNB_DataSave(void* OPNB, void* opnbdata, void* adpcmadata) { ((FM::OPNB*)OPNB)->DataSave((FM::OPNBData*)opnbdata, adpcmadata); }
+void	OPNB_DataLoad(void* OPNB, void* opnbdata, void* adpcmadata) { ((FM::OPNB*)OPNB)->DataLoad((FM::OPNBData*)opnbdata, adpcmadata); }
 
 //	YM2151(OPM) ----------------------------------------------------
 void*	OPM_Construct(void) { return new FM::OPM; }

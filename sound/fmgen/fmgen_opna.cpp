@@ -2032,9 +2032,12 @@ void OPNB::SetVolumeADPCMB(int db)
 }
 
 // ---------------------------------------------------------------------------
-void OPNB::DataSave(struct OPNBData* data) {
+void OPNB::DataSave(struct OPNBData* data, void* adpcmadata) {
 	OPNABase::DataSave(&data->opnabase);
-//	data->adpcmabuf = adpcmabuf;
+	if(adpcmasize) {
+		adpcmadata = malloc(adpcmasize);
+		memcpy(adpcmadata, adpcmabuf, adpcmasize);
+	}
 	data->adpcmasize = adpcmasize;
 	memcpy(data->adpcma, adpcma, sizeof(ADPCMA) * 6);
 	data->adpcmatl = adpcmatl;
@@ -2048,9 +2051,12 @@ void OPNB::DataSave(struct OPNBData* data) {
 }
 
 // ---------------------------------------------------------------------------
-void OPNB::DataLoad(struct OPNBData* data) {
+void OPNB::DataLoad(struct OPNBData* data, void* adpcmadata) {
 	OPNABase::DataSave(&data->opnabase);
-//	adpcmabuf = data->adpcmabuf;
+	if(data->adpcmasize) {
+		adpcmabuf = (uint8*)malloc(data->adpcmasize);
+		memcpy(adpcmabuf, adpcmadata, data->adpcmasize);
+	}
 	adpcmasize = data->adpcmasize;
 	memcpy(adpcma, data->adpcma, sizeof(ADPCMA) * 6);
 	adpcmatl = data->adpcmatl;

@@ -441,8 +441,8 @@ namespace FM
 
 //		void	SetChannelMask(uint mask);
 		
-		void	DataSave(struct OPNBData* data);
-		void	DataLoad(struct OPNBData* data);
+		void	DataSave(struct OPNBData* data, void* adpcmdata);
+		void	DataLoad(struct OPNBData* data, void* adpcmdata);
 		
 	private:
 		int		DecodeADPCMASample(uint);
