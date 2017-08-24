@@ -48,7 +48,6 @@ namespace FM
 
 	//	Operator -------------------------------------------------------------
 	struct OperatorData {
-//		struct ChipData	chip_;
 		ISample	out_;
 		ISample	out2_;
 		ISample in2_;
@@ -74,7 +73,6 @@ namespace FM
 		int		ssg_phase_;
 		uint	key_scale_rate_;
 		EGPhase	eg_phase_;
-		uint*	ams_;
 		uint	ms_;
 		
 		uint	tl_;
@@ -243,9 +241,6 @@ namespace FM
 	struct Channel4Data {
 		uint	fb;
 		int		buf[4];
-		int*	in[3];
-		int*	out[3];
-		int*	pms;
 		int		algo_;
 		struct OperatorData op[4];
 	};

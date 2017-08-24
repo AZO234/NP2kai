@@ -88,7 +88,6 @@ namespace FM
 		uint	rate;
 		uint	psgrate;
 		uint	status;
-//		struct Channel4Data csmch;
 		uint8	prescale;
 		struct ChipData chip;
 		struct PSGData psg;
@@ -147,7 +146,8 @@ namespace FM
 		uint32	lfodcount;
 		uint	fnum[6];
 		uint	fnum3[3];
-//		uint8*	adpcmbuf;
+		bool    is_adpcmbuf;
+		uint8   adpcmbuf[0x40000];
 		uint	adpcmmask;
 		uint	adpcmnotice;
 		uint	startaddr;

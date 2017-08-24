@@ -443,7 +443,6 @@ void Operator::Prepare()
 
 void Operator::DataSave(struct OperatorData* data)
 {
-//	chip_.DataSave(&data->chip_);
 	data->out_ = out_;
 	data->out2_ = out2_;
 	data->in2_ = in2_;
@@ -469,7 +468,6 @@ void Operator::DataSave(struct OperatorData* data)
 	data->ssg_phase_ = ssg_phase_;
 	data->key_scale_rate_ = key_scale_rate_;
 	data->eg_phase_ = eg_phase_;
-//	data->ams_ = ams_;
 	data->ms_ = ms_;
 	data->tl_ = tl_;
 	data->tl_latch_ = tl_latch_;
@@ -488,7 +486,6 @@ void Operator::DataSave(struct OperatorData* data)
 
 void Operator::DataLoad(struct OperatorData* data)
 {
-//	chip_.DataLoad(&data->chip_);
 	out_ = data->out_;
 	out2_ = data->out2_;
 	in2_ = data->in2_;
@@ -514,7 +511,6 @@ void Operator::DataLoad(struct OperatorData* data)
 	ssg_phase_ = data->ssg_phase_;
 	key_scale_rate_ = data->key_scale_rate_;
 	eg_phase_ = data->eg_phase_;
-//	ams_ = data->ams_;
 	ms_ = data->ms_;
 	tl_ = data->tl_;
 	tl_latch_ = data->tl_latch_;
@@ -529,6 +525,7 @@ void Operator::DataLoad(struct OperatorData* data)
 	amon_ = data->amon_;
 	param_changed_ = data->param_changed_;
 	mute_ = data->mute_;
+	ams_ = amtable[type_][amon_ ? (ms_ >> 4) & 3 : 0];
 }
 
 
@@ -1070,11 +1067,6 @@ ISample Channel4::CalcLN(uint noise)
 void Channel4::DataSave(struct Channel4Data* data) {
 	data->fb = fb;
 	memcpy(data->buf, buf, sizeof(int) * 4);
-	for(int i = 0; i < 3; i++) {
-//		data->in[i] = in[i];
-//		data->out[i] = out[i];
-	}
-//	data->pms = pms;
 	data->algo_ = algo_;
 	for(int i = 0; i < 4; i++) {
 		op[i].DataSave(&data->op[i]);
@@ -1084,14 +1076,11 @@ void Channel4::DataSave(struct Channel4Data* data) {
 void Channel4::DataLoad(struct Channel4Data* data) {
 	fb = data->fb;
 	memcpy(buf, data->buf, sizeof(int) * 4);
-	for(int i = 0; i < 3; i++) {
-//		in[i] = data->in[i];
-//		out[i] = data->out[i];
-	}
-//	pms = data->pms;
 	algo_ = data->algo_;
+	SetAlgorithm(algo_);
 	for(int i = 0; i < 4; i++) {
 		op[i].DataLoad(&data->op[i]);
 	}
+	pms = pmtable[op[0].type_][op[0].ms_ & 7];
 }
 }	// namespace FM
