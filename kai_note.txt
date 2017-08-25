@@ -7,4 +7,6 @@ NP2 kai開発ノート by AZO
 ・ツーショットダイアリー BEEP 音声
   np2/fmgenでiniファイル内にBEEP_PCM=2とするとすごく綺麗。
 
+  タイマ資料 <- BEEP周波数に使用される
+  http://www.webtech.co.jp/company/doc/undocumented_mem/io_tcu.txt
 

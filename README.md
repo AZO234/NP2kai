@@ -70,6 +70,47 @@ https://bot.libretro.com/docs/compilation/windows/
 
 ２． 'NP2kai_libretro.dll' binary is outputed in NP2kai  
 
+Build libretro port (Mac)  * No confirmation to drive
+---
+
+１． Open terminal.
+
+２． First 'git' to install XCode.
+
+	$ git
+
+３． Clone this repository
+
+	$ git clone https://github.com/AZO234/NP2kai
+
+４． Build.
+
+	$ cd NP2kai
+	$ make -j4
+
+５． 'NP2kai_libretro.dylib' binary is outputed in NP2kai  
+
+Build with libretro-super  * No confirmation to drive
+---
+
+１． Open terminal.
+
+２． Clone libretro-super repository.
+
+	$ git clone https://github.com/libretro/libretro-super.git
+
+３． CD to libretro-super, and clone this repository, and rename.
+
+	$ cd libretro-super
+	$ git clone https://github.com/AZO234/NP2kai
+	$ mv NP2kai libretro-NP2kai
+
+４． Build. (e.g. iOS)
+
+	$ libretro-build-ios.sh NP2kai
+
+５． 'NP2kai_libretro_ios.dylib' binary is outputed in NP2kai  
+
 about libretro port
 ---
 BIOS files locate in "np2" directory at BIOS directory (configured by RetroArch).  
