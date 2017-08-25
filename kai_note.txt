@@ -1,0 +1,10 @@
+NP2 kai開発ノート by AZO
+===
+
+・GARUDIUS'95 タイトル表示 下部の表示が（16ライン？）欠落
+  Anex86はOK、T98-Nextは同様
+
+・ツーショットダイアリー BEEP 音声
+  np2/fmgenでiniファイル内にBEEP_PCM=2とするとすごく綺麗。
+
+

@@ -51,7 +51,7 @@ typedef struct
 	UINT	rate;
 	UINT	ratebit;
 
-	SINT32	sintable[4][SIN_ENT];
+	SINT32	sintable[8][SIN_ENT];
 	SINT32	envtable[EVC_ENT];
 #if defined(OPLGEN_ENVSHIFT)
 	char	envshift[EVC_ENT];
