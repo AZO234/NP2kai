@@ -99,17 +99,16 @@ Build with libretro-super  * No confirmation to drive
 
 	$ git clone https://github.com/libretro/libretro-super.git
 
-３． CD to libretro-super, and clone this repository, and rename.
+３． CD to libretro-super, and clone this repository.
 
 	$ cd libretro-super
-	$ git clone https://github.com/AZO234/NP2kai
-	$ mv NP2kai libretro-NP2kai
+	$ git clone https://github.com/AZO234/NP2kai libretro-NP2kai
 
 ４． Build. (e.g. iOS)
 
-	$ libretro-build-ios.sh NP2kai
+	$ ./libretro-build-ios.sh NP2kai
 
-５． 'NP2kai_libretro_ios.dylib' binary is outputed in NP2kai  
+'NP2kai_libretro_ios.dylib' binary is outputed in NP2kai  
 
 about libretro port
 ---
