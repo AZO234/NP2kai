@@ -165,8 +165,7 @@ int np2_main(int argc, char *argv[]) {
 	int		id;
 	int		i, imagetype, drvfdd, drvhddSASI, drvhddSCSI;
 	char	*ext;
-	char	*tmppath;
-	char	tmppath2[MAX_PATH];
+	char	tmppath[MAX_PATH];
 
 	pos = 1;
 	while(pos < argc) {
@@ -181,20 +180,19 @@ int np2_main(int argc, char *argv[]) {
 		}*/
 	}
 
+#if !defined(__LIBRETRO__)
+#if defined(_WIN32)
+	GetModuleFileName(NULL, np2cfg.biospath, MAX_PATH);
+#else	/* _WIN32 */
+	readlink("/proc/self/exe", np2cfg.biospath, sizeof(np2cfg.biospath) - 1);
+#endif	/* _WIN32 */
+	file_setcd(np2cfg.biospath);
+#endif	/* __LIBRETRO__ */
+
 	initload();
 
-	if(np2cfg.biospath[0] == '\0') {
-#if defined(_WIN32)
-		GetModuleFileName(NULL, np2cfg.biospath, MAX_PATH);
-#else	/* _WIN32 */
-		readlink("/proc/self/exe", np2cfg.biospath, sizeof(np2cfg.biospath) - 1);
-#endif	/* _WIN32 */
-		file_setcd(np2cfg.biospath);
-		tmppath = dirname(np2cfg.biospath);
-		strcpy(np2cfg.biospath, tmppath);
-	}
-	sprintf(tmppath2, "%sdefault.ttf", np2cfg.biospath);
-	fontmng_setdeffontname(tmppath2);
+	sprintf(tmppath, "%sdefault.ttf", np2cfg.biospath);
+	fontmng_setdeffontname(tmppath);
 	
 #if defined(SUPPORT_IDEIO) || defined(SUPPORT_SATA) || defined(SUPPORT_SCSI)
 	drvhddSASI = drvhddSCSI = 0;

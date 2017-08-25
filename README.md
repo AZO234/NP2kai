@@ -227,8 +227,8 @@ Release
 		* Otomi x2  
 		* V30 patch  
 		* VAEG fix  
-		Couldn't merged  
 		* CSM voice  
+		Couldn't merged  
 		* LittleOrchestra  
 		* MultimediaOrchestra  
 		* WaveRec  

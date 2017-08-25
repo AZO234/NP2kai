@@ -277,8 +277,8 @@ static GtkRadioActionEntry soundboard_entries[] = {
 { "sndorchestrav",  NULL, "Sound Orchestra-V",       NULL, NULL, 0x82 },
 { "amd98",          NULL, "_AMD98",                  NULL, NULL, 0x80 },
 #if defined(SUPPORT_PX)
-{ "px1",            NULL, "Otomi x2",                NULL, NULL, 0x30 },
-{ "px2",            NULL, "Otomi x2 + 86",           NULL, NULL, 0x50 },
+{ "px1",            NULL, "Otomi-chanx2",            NULL, NULL, 0x30 },
+{ "px2",            NULL, "Otomi-chanx2 + 86",       NULL, NULL, 0x50 },
 #endif	/* defined(SUPPORT_PX) */
 };
 static const guint n_soundboard_entries = G_N_ELEMENTS(soundboard_entries);
