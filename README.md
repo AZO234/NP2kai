@@ -113,13 +113,13 @@ https://developer.android.com/studio/index.html
 	$ chmod +x ./libretro-build-android-mk.sh
 	$ ./libretro-build-android-mk.sh NP2kai
 
-'libNP2kai.so' binary is outputed in NP2kai/libs  
+'libNP2kai.so' binary is outputed in libretro-NP2kai/libs  
 
 ４． Build. (e.g. iOS)
 
 	$ ./libretro-build-ios.sh NP2kai
 
-'NP2kai_libretro_ios.dylib' binary is outputed in NP2kai  
+'NP2kai_libretro_ios.dylib' binary is outputed in libretro-NP2kai  
 
 about libretro port
 ---
