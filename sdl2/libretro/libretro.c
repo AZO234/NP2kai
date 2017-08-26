@@ -62,7 +62,7 @@ retro_audio_sample_batch_t audio_batch_cb = NULL;
 
 static char CMDFILE[512];
 
-bool did_reset, joy2key;
+bool did_reset, joy2key_arr, joy2key_kpad;
 
 int loadcmdfile(char *argv)
 {
@@ -297,11 +297,26 @@ static double joymouseaxel = 1.0;
 
 bool mapkey_down[12];
 
-static int joy2key_map[12][2] = { 
+static int joy2key_map_arr[12][2] = { 
    {RETRO_DEVICE_ID_JOYPAD_UP,     RETROK_UP},
    {RETRO_DEVICE_ID_JOYPAD_DOWN,   RETROK_DOWN},
    {RETRO_DEVICE_ID_JOYPAD_LEFT,   RETROK_LEFT},
    {RETRO_DEVICE_ID_JOYPAD_RIGHT,  RETROK_RIGHT},
+   {RETRO_DEVICE_ID_JOYPAD_A,      RETROK_x},
+   {RETRO_DEVICE_ID_JOYPAD_B,      RETROK_z},
+   {RETRO_DEVICE_ID_JOYPAD_X,      RETROK_SPACE},
+   {RETRO_DEVICE_ID_JOYPAD_Y,      RETROK_LCTRL},
+   {RETRO_DEVICE_ID_JOYPAD_L,      RETROK_BACKSPACE},
+   {RETRO_DEVICE_ID_JOYPAD_R,      RETROK_RSHIFT},
+   {RETRO_DEVICE_ID_JOYPAD_SELECT, RETROK_ESCAPE},
+   {RETRO_DEVICE_ID_JOYPAD_START,  RETROK_RETURN}
+};
+
+static int joy2key_map_kpad[12][2] = { 
+   {RETRO_DEVICE_ID_JOYPAD_UP,     RETROK_KP8},
+   {RETRO_DEVICE_ID_JOYPAD_DOWN,   RETROK_KP2},
+   {RETRO_DEVICE_ID_JOYPAD_LEFT,   RETROK_KP4},
+   {RETRO_DEVICE_ID_JOYPAD_RIGHT,  RETROK_KP6},
    {RETRO_DEVICE_ID_JOYPAD_A,      RETROK_x},
    {RETRO_DEVICE_ID_JOYPAD_B,      RETROK_z},
    {RETRO_DEVICE_ID_JOYPAD_X,      RETROK_SPACE},
@@ -322,18 +337,34 @@ void updateInput(){
 
    uint32_t i;
    
-   if (joy2key)
+   if (joy2key_arr)
    {
       for (i = 0; i < 12; i++)
       {
-         if (input_cb(0, RETRO_DEVICE_JOYPAD, 0, joy2key_map[i][0]) && !mapkey_down[i] )
+         if (input_cb(0, RETRO_DEVICE_JOYPAD, 0, joy2key_map_arr[i][0]) && !mapkey_down[i] )
          {
-            send_libretro_key_down(joy2key_map[i][1]);
+            send_libretro_key_down(joy2key_map_arr[i][1]);
             mapkey_down[i] = 1;
          }
-         else if (!input_cb(0, RETRO_DEVICE_JOYPAD, 0, joy2key_map[i][0]) )
+         else if (!input_cb(0, RETRO_DEVICE_JOYPAD, 0, joy2key_map_arr[i][0]) )
          {
-            send_libretro_key_up(joy2key_map[i][1]);
+            send_libretro_key_up(joy2key_map_arr[i][1]);
+            mapkey_down[i] = 0;
+         }
+      }
+   }
+   else if (joy2key_kpad)
+   {
+      for (i = 0; i < 12; i++)
+      {
+         if (input_cb(0, RETRO_DEVICE_JOYPAD, 0, joy2key_map_kpad[i][0]) && !mapkey_down[i] )
+         {
+            send_libretro_key_down(joy2key_map_kpad[i][1]);
+            mapkey_down[i] = 1;
+         }
+         else if (!input_cb(0, RETRO_DEVICE_JOYPAD, 0, joy2key_map_kpad[i][0]) )
+         {
+            send_libretro_key_up(joy2key_map_kpad[i][1]);
             mapkey_down[i] = 0;
          }
       }
@@ -836,11 +867,13 @@ void retro_set_environment(retro_environment_t cb)
       { "np2_clk_base" , "CPU Base Clock (Restart); 2.4576 MHz|1.9968 MHz" },
       { "np2_clk_mult" , "CPU Clock Multiplier (Restart); 4|5|6|8|10|12|16|20|24|30|36|40|42|1|2" },
       { "np2_ExMemory" , "RAM Size (Restart); 3|7|11|13|16|32|64|120|230|1" },
-      { "np2_skipline" , "Skipline Revisions; Full 255 lines|ON|OFF" },
+      { "np2_gdc" , "GDC; uPD7220|uPD72020" },
       { "np2_dispsync" , "Disp Vsync; ON|OFF" },
-      { "np2_realpal" , "Real Palettes; OFF|ON" },
       { "np2_nowait" , "No Wait; OFF|ON" },
       { "np2_drawskip" , "Frame Skip; Auto|60fps|30fps|20fps|15fps" },
+      { "np2_skipline" , "Skipline Revisions; Full 255 lines|ON|OFF" },
+      { "np2_realpal" , "Real Palettes; OFF|ON" },
+      { "np2_lcd" , "LCD; OFF|ON" },
       { "np2_SNDboard" , "Sound Board (Restart); PC9801-86|PC9801-26K + 86|PC9801-86 + Chibi-oto|PC9801-118|Speak Board|Spark Board|Sound Orchestra|Sound Orchestra-V|AMD-98|Otomi-chanx2|Otomi-chanx2 + 86|None|PC9801-14|PC9801-26K" },
       { "np2_jast_snd" , "JastSound; OFF|ON" },
       { "np2_sndgen" , "Sound Generator; fmgen|Default" },
@@ -853,9 +886,7 @@ void retro_set_environment(retro_environment_t cb)
       { "np2_Seek_Vol" , "Volume Floppy Seek; 80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76" },
       { "np2_BEEP_vol" , "Volume Beep; 3|0|1|2" },
       { "np2_joy2mouse" , "Joypad to Mouse Mapping; OFF|ON" },
-      { "np2_joy2key" , "Joypad to Keyboard Mapping; OFF|ON" },
-      { "np2_lcd" , "LCD; OFF|ON" },
-      { "np2_gdc" , "GDC; uPD7220|uPD72020" },
+      { "np2_joy2key" , "Joypad to Keyboard Mapping; OFF|Arrows|Keypad" },
       { NULL, NULL },
    };
 
@@ -1163,10 +1194,21 @@ static void update_variables(void)
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
-      if (strcmp(var.value, "ON") == 0)
-         joy2key = true;
+      if (strcmp(var.value, "Arrows") == 0)
+      {
+         joy2key_arr = true;
+         joy2key_kpad = false;
+      }
+      else if (strcmp(var.value, "Keypad") == 0)
+      {
+         joy2key_arr = false;
+         joy2key_kpad = true;
+      }
       else
-         joy2key = false;
+      {
+         joy2key_arr = false;
+         joy2key_kpad = false;
+      }
    }
 
    var.key = "np2_lcd";
