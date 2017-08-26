@@ -405,8 +405,6 @@ sswb_err1:
 	return(FAILURE);
 }
 
-
-
 // ---- GIF
 
 #if 1

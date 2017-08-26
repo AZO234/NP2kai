@@ -52,34 +52,41 @@ void joymng_sync(void) {
 REG8 joymng_getstat(void) {
 
 	JOYINFO		ji;
+	static DWORD nojoy_time = 0;
 
-	if ((np2oscfg.JOYPAD1 == 1) &&
-		(joyGetPos(JOYSTICKID1, &ji) == JOYERR_NOERROR)) {
-		np2oscfg.JOYPAD1 |= 0x80;
-		joyflag = 0xff;
-		if (ji.wXpos < 0x4000U) {
-			joyflag &= ~JOY_LEFT_BIT;
-		}
-		else if (ji.wXpos > 0xc000U) {
-			joyflag &= ~JOY_RIGHT_BIT;
-		}
-		if (ji.wYpos < 0x4000U) {
-			joyflag &= ~JOY_UP_BIT;
-		}
-		else if (ji.wYpos > 0xc000U) {
-			joyflag &= ~JOY_DOWN_BIT;
-		}
-		if (ji.wButtons & JOY_BUTTON1) {
-			joyflag &= joypad1btn[0];							// ver0.28
-		}
-		if (ji.wButtons & JOY_BUTTON2) {
-			joyflag &= joypad1btn[1];							// ver0.28
-		}
-		if (ji.wButtons & JOY_BUTTON3) {
-			joyflag &= joypad1btn[2];							// ver0.28
-		}
-		if (ji.wButtons & JOY_BUTTON4) {
-			joyflag &= joypad1btn[3];							// ver0.28
+	if (np2oscfg.JOYPAD1 == 1){
+		if(nojoy_time == 0 || GetTickCount() - nojoy_time > 5000){
+			if(joyGetPos(JOYSTICKID1, &ji) == JOYERR_NOERROR) {
+				np2oscfg.JOYPAD1 |= 0x80;
+				joyflag = 0xff;
+				if (ji.wXpos < 0x4000U) {
+					joyflag &= ~JOY_LEFT_BIT;
+				}
+				else if (ji.wXpos > 0xc000U) {
+					joyflag &= ~JOY_RIGHT_BIT;
+				}
+				if (ji.wYpos < 0x4000U) {
+					joyflag &= ~JOY_UP_BIT;
+				}
+				else if (ji.wYpos > 0xc000U) {
+					joyflag &= ~JOY_DOWN_BIT;
+				}
+				if (ji.wButtons & JOY_BUTTON1) {
+					joyflag &= joypad1btn[0];							// ver0.28
+				}
+				if (ji.wButtons & JOY_BUTTON2) {
+					joyflag &= joypad1btn[1];							// ver0.28
+				}
+				if (ji.wButtons & JOY_BUTTON3) {
+					joyflag &= joypad1btn[2];							// ver0.28
+				}
+				if (ji.wButtons & JOY_BUTTON4) {
+					joyflag &= joypad1btn[3];							// ver0.28
+				}
+				nojoy_time = 0;
+			}else{
+				nojoy_time = GetTickCount();
+			}
 		}
 	}
 	return(joyflag);

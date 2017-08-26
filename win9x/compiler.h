@@ -137,7 +137,11 @@ typedef	signed __int64		SINT64;
 #define	DMACCALL	__fastcall
 #define	IOOUTCALL	__fastcall
 #define	IOINPCALL	__fastcall
+//#if defined(SUPPORT_FMGEN)
+//#define	SOUNDCALL	__cdecl
+//#else
 #define	SOUNDCALL	__fastcall
+//#endif
 #define	VRAMCALL	__fastcall
 #define	SCRNCALL	__fastcall
 #define	VERMOUTHCL	__fastcall

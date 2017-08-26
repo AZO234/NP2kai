@@ -335,6 +335,7 @@ REG8 sec2048_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 	if (file_seek(fh, pos, FSEEK_SET) != pos) {
 		return(0xd0);
 	}
+
 	while(size) {
 		rsize = min(size, 2048);
 		CPU_REMCLOCK -= rsize;

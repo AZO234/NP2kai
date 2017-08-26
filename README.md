@@ -1,6 +1,6 @@
-Neko Project II 0.86 kai rev.10
+Neko Project II 0.86 kai rev.11
 ===
-Aug 26, 2017  
+Aug 27, 2017  
 
 Build SDL2 port
 ---
@@ -139,7 +139,7 @@ A button: right click
 
 Keyboard is able to control with joypad when Joy2Key mode.  
 Switch Joy2Key mode in config.  
-D-UP/DOWN/LEFT/RIGHT: allow key  
+D-UP/DOWN/LEFT/RIGHT: Arrow key or Keypad(2468) key 
 B button: Z key  
 A button: X key  
 X button: Space key  
@@ -267,6 +267,9 @@ I/O:0x00D0
 
 Release
 ---
+* Aug 27, 2017 (rev.11)
+	- Merge NP21/w rev.35 beta2
+	- [libretro] state save/load
 * Aug 23, 2017 (rev.10)
 	- Merge NP21/w rev.35 beta1
 		* SB16  
@@ -275,7 +278,7 @@ Release
 		Merged  
 		* AMD-98 Joyport  
 		* S98V3  
-		* Otomi x2  
+		* Otomichanx2  
 		* V30 patch  
 		* VAEG fix  
 		* CSM voice  
