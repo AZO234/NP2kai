@@ -263,10 +263,8 @@ static const MSYSITEM s_scsi3[] = {
 
 static const MSYSITEM s_hdd[] = {
 #if defined(SUPPORT_IDEIO)
-#if !defined(__LIBRETRO__)
 		{str_ide1,			s_ide1,		MID_STATIC,			0},
 		{str_ide2,			s_ide2,		MID_STATIC,			0},
-#endif	/* __LIBRETRO__ */
 		{str_idecd,			s_idecd,	MID_STATIC,			0},
 #else
 		{str_sasi1,			s_sasi1,	MID_STATIC,			0},

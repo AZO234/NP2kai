@@ -943,7 +943,7 @@ static void update_variables(void)
          np2cfg.skiplight = 255;
          np2cfg.skipline = true;
       }
-	  scrndraw_redraw();
+      scrndraw_redraw();
    }
 
    var.key = "np2_dispsync";
@@ -952,9 +952,10 @@ static void update_variables(void)
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
       if (strcmp(var.value, "OFF") == 0)
-         np2cfg.DISPSYNC = false;
+         np2cfg.DISPSYNC = 0;
       else
-         np2cfg.DISPSYNC = true;
+         np2cfg.DISPSYNC = 1;
+      sysmng_update(SYS_UPDATECFG);
    }
 
    var.key = "np2_realpal";
@@ -963,9 +964,10 @@ static void update_variables(void)
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
       if (strcmp(var.value, "OFF") == 0)
-         np2cfg.RASTER = false;
+         np2cfg.RASTER = 0;
       else
-         np2cfg.RASTER = true;
+         np2cfg.RASTER = 1;
+      sysmng_update(SYS_UPDATECFG);
    }
 
    var.key = "np2_nowait";
@@ -974,9 +976,10 @@ static void update_variables(void)
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
       if (strcmp(var.value, "OFF") == 0)
-         np2oscfg.NOWAIT = false;
+         np2oscfg.NOWAIT = 0;
       else
-         np2oscfg.NOWAIT = true;
+         np2oscfg.NOWAIT = 1;
+      sysmng_update(SYS_UPDATEOSCFG);
    }
 
    var.key = "np2_drawskip";
@@ -994,6 +997,7 @@ static void update_variables(void)
          np2oscfg.DRAW_SKIP = 3;
       else if (strcmp(var.value, "15fps") == 0)
          np2oscfg.DRAW_SKIP = 4;
+      sysmng_update(SYS_UPDATEOSCFG);
    }
 
    var.key = "np2_SNDboard";
@@ -1170,11 +1174,12 @@ static void update_variables(void)
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
-      if (strcmp(var.value, "ON") == 0)
-         np2cfg.LCD_MODE = 1;
-      else
+      if (strcmp(var.value, "OFF") == 0)
          np2cfg.LCD_MODE = 0;
+      else
+         np2cfg.LCD_MODE = 1;
       pal_makelcdpal();
+      scrndraw_redraw();
    }
 
    var.key = "np2_gdc";
