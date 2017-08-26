@@ -104,6 +104,16 @@ Build with libretro-super  * No confirmation to drive
 	$ cd libretro-super
 	$ git clone https://github.com/AZO234/NP2kai libretro-NP2kai
 
+４． Build. (e.g. Android)
+
+To build needs Android SDK, and NDK.
+
+	$ export PATH=~/Android/Sdk/ndk-bundle:$PATH
+	$ chmod +x ./libretro-build-android-mk.sh
+	$ ./libretro-build-android-mk.sh NP2kai
+
+'libNP2kai.so' binary is outputed in NP2kai/libs  
+
 ４． Build. (e.g. iOS)
 
 	$ ./libretro-build-ios.sh NP2kai

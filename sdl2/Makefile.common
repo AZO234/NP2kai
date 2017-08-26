@@ -1,5 +1,5 @@
 
-NP2_PATH := $(CORE_DIR)/..
+NP2_PATH := $(CORE_DIR)
 
 INCFLAGS := -I$(NP2_PATH) \
 	-I$(NP2_PATH)/cbus \

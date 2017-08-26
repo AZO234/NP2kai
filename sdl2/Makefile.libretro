@@ -183,7 +183,7 @@ else
 COMMONFLAGS += -O3 -DNDEBUG -DGIT_VERSION=\"$(GIT_VERSION)\"
 endif
 
-CORE_DIR    := sdl2
+CORE_DIR    := .
 INCFLAGS    :=
 SOURCES_C   :=
 SOURCES_CXX :=
