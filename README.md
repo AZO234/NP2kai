@@ -106,7 +106,8 @@ Build with libretro-super  * No confirmation to drive
 
 ４． Build. (e.g. Android)
 
-To build needs Android SDK, and NDK.
+To build needs Android Studio, and NDK.  
+https://developer.android.com/studio/index.html
 
 	$ export PATH=~/Android/Sdk/ndk-bundle:$PATH
 	$ chmod +x ./libretro-build-android-mk.sh
