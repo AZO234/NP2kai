@@ -14,7 +14,7 @@ else
 COMMONFLAGS += -O3 -DNDEBUG -DGIT_VERSION=\"$(GIT_VERSION)\"
 endif
 
-CORE_DIR    := .
+CORE_DIR    := ..
 INCFLAGS    := `$(SDL_CONFIG) --cflags`
 SOURCES_C   :=
 SOURCES_CXX :=
