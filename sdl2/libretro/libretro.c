@@ -16,6 +16,7 @@
 
 #include "compiler.h"//required to prevent missing type errors
 #include "pccore.h"
+#include "iocore.h"
 #include "keystat.h"
 #include "fddfile.h"
 #include "newdisk.h"
@@ -36,6 +37,8 @@
 #include "strres.h"
 #include "np2.h"
 #include "fmboard.h"
+#include "dosio.h"
+#include "gdc.h"
 #if defined(SUPPORT_FMGEN)
 #include "fmgen_fmgwrap.h"
 #endif	/* defined(SUPPORT_FMGEN) */
@@ -834,6 +837,10 @@ void retro_set_environment(retro_environment_t cb)
       { "np2_clk_mult" , "CPU Clock Multiplier (Restart); 4|5|6|8|10|12|16|20|24|30|36|40|42|1|2" },
       { "np2_ExMemory" , "RAM Size (Restart); 3|7|11|13|16|32|64|120|230|1" },
       { "np2_skipline" , "Skipline Revisions; Full 255 lines|ON|OFF" },
+      { "np2_dispsync" , "Disp Vsync; ON|OFF" },
+      { "np2_realpal" , "Real Palettes; OFF|ON" },
+      { "np2_nowait" , "No Wait; OFF|ON" },
+      { "np2_drawskip" , "Frame Skip; Auto|60fps|30fps|20fps|15fps" },
       { "np2_SNDboard" , "Sound Board (Restart); PC9801-86|PC9801-26K + 86|PC9801-86 + Chibi-oto|PC9801-118|Speak Board|Spark Board|Sound Orchestra|Sound Orchestra-V|AMD-98|Otomi-chanx2|Otomi-chanx2 + 86|None|PC9801-14|PC9801-26K" },
       { "np2_jast_snd" , "JastSound; OFF|ON" },
       { "np2_sndgen" , "Sound Generator; fmgen|Default" },
@@ -847,6 +854,8 @@ void retro_set_environment(retro_environment_t cb)
       { "np2_BEEP_vol" , "Volume Beep; 3|0|1|2" },
       { "np2_joy2mouse" , "Joypad to Mouse Mapping; OFF|ON" },
       { "np2_joy2key" , "Joypad to Keyboard Mapping; OFF|ON" },
+      { "np2_lcd" , "LCD; OFF|ON" },
+      { "np2_gdc" , "GDC; uPD7220|uPD72020" },
       { NULL, NULL },
    };
 
@@ -935,6 +944,56 @@ static void update_variables(void)
          np2cfg.skipline = true;
       }
 	  scrndraw_redraw();
+   }
+
+   var.key = "np2_dispsync";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "OFF") == 0)
+         np2cfg.DISPSYNC = false;
+      else
+         np2cfg.DISPSYNC = true;
+   }
+
+   var.key = "np2_realpal";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "OFF") == 0)
+         np2cfg.RASTER = false;
+      else
+         np2cfg.RASTER = true;
+   }
+
+   var.key = "np2_nowait";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "OFF") == 0)
+         np2oscfg.NOWAIT = false;
+      else
+         np2oscfg.NOWAIT = true;
+   }
+
+   var.key = "np2_drawskip";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "Auto") == 0)
+         np2oscfg.DRAW_SKIP = 0;
+      else if (strcmp(var.value, "60fps") == 0)
+         np2oscfg.DRAW_SKIP = 1;
+      else if (strcmp(var.value, "30fps") == 0)
+         np2oscfg.DRAW_SKIP = 2;
+      else if (strcmp(var.value, "20fps") == 0)
+         np2oscfg.DRAW_SKIP = 3;
+      else if (strcmp(var.value, "15fps") == 0)
+         np2oscfg.DRAW_SKIP = 4;
    }
 
    var.key = "np2_SNDboard";
@@ -1106,6 +1165,31 @@ static void update_variables(void)
          joy2key = false;
    }
 
+   var.key = "np2_lcd";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "ON") == 0)
+         np2cfg.LCD_MODE = 1;
+      else
+         np2cfg.LCD_MODE = 0;
+      pal_makelcdpal();
+   }
+
+   var.key = "np2_gdc";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "uPD72020") == 0)
+         np2cfg.uPD72020 = 1;
+      else
+         np2cfg.uPD72020 = 0;
+      gdc_restorekacmode();
+      gdcs.grphdisp |= GDCSCRN_ALLDRAW2;
+   }
+
    initsave();
 
 }
@@ -1202,24 +1286,6 @@ void retro_run (void)
    video_cb(FrameBuffer, scrnsurf.width, scrnsurf.height, scrnsurf.width * 2/*Pitch*/);
 }
 
-size_t retro_serialize_size (void)
-{
-   //no savestates on this core
-   return 0;
-}
-
-bool retro_serialize(void *data, size_t size)
-{
-   //no savestates on this core
-   return false;
-}
-
-bool retro_unserialize(const void * data, size_t size)
-{
-   //no savestates on this core
-   return false;
-}
-
 void retro_cheat_reset(void)
 {
    //no cheats on this core
@@ -1285,3 +1351,64 @@ unsigned retro_get_region (void)
 {
    return RETRO_REGION_NTSC;
 }
+
+#define RETRO_NP2_TEMPSTATE "temp_.sxx"
+
+size_t retro_serialize_size(void)
+{
+   int ret;
+   char	*path;
+   size_t size;
+   FILEH fh;
+
+   path = file_getcd(RETRO_NP2_TEMPSTATE);
+   ret = statsave_save(path);
+   if(ret) {
+      size = 0;
+   } else {
+      fh = file_open_rb(path);
+      size = file_getsize(fh);
+      file_close(fh);
+   }
+   file_delete(path);
+
+   return size;
+}
+
+bool retro_serialize(void *data, size_t size)
+{
+   int ret;
+   char	*path;
+   FILEH fh;
+
+   path = file_getcd(RETRO_NP2_TEMPSTATE);
+   ret = statsave_save(path);
+   if(ret) {
+      file_delete(path);
+      return false;
+   }
+   fh = file_open_rb(path);
+   file_read(fh, data, size);
+   file_close(fh);
+   file_delete(path);
+   return true;
+}
+
+bool retro_unserialize(const void *data, size_t size)
+{
+   int ret;
+   char	*path;
+   FILEH fh;
+
+   if(size <= 0) {
+      return false;
+   }
+   path = file_getcd(RETRO_NP2_TEMPSTATE);
+   fh = file_create(path);
+   file_write(fh, data, size);
+   file_close(fh);
+   statsave_load(path);
+   file_delete(path);
+   return true;
+}
+

@@ -72,7 +72,13 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 
 				OEMTEXT("VX"), PCBASECLOCK25, PCBASEMULTIPLE, 1,
 				{0x48, 0x05, 0x04, 0x00, 0x01, 0x00, 0x00, 0x6e},
-				1, 3, 2, 1, 0x000000, 0xffffff,
+				1, 3,
+#if defined(SUPPORT_PC9821)
+				3,
+#else	 /* SUPPORT_PC9821 */
+				2,
+#endif	 /* SUPPORT_PC9821 */
+				1, 0x000000, 0xffffff,
 				44100, 250, 4, 0,
 				{0, 0, 0}, 0xd1, 0x7f, 0xd1, 0, 0, 1,
 				3, {0x0c, 0x0c, 0x08, 0x06, 0x03, 0x0c}, 64, 64, 64, 64, 64, 64,

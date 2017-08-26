@@ -1,3 +1,5 @@
+#ifndef NP2_GDC_H
+#define NP2_GDC_H
 
 #define	GDCCMD_MAX	32
 
@@ -112,3 +114,4 @@ void gdc_restorekacmode(void);
 }
 #endif
 
+#endif	/* NP2_GDC_H */

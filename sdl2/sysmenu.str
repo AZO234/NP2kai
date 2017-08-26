@@ -39,6 +39,10 @@ static const char str_sasi2[] = "SASI2";
 static const char str_ide1[] = "IDE1";
 static const char str_ide2[] = "IDE2";
 static const char str_idecd[] = "CD-ROM";
+static const char str_scsi0[] = "SCSI0";
+static const char str_scsi1[] = "SCSI1";
+static const char str_scsi2[] = "SCSI2";
+static const char str_scsi3[] = "SCSI3";
 static const char str_open[] = "Open...";
 static const char str_eject[] = "Eject";
 static const char str_remove[] = "Remove";
@@ -236,11 +240,6 @@ static const MSYSITEM s_sasi2[] = {
 #endif
 
 #if defined(SUPPORT_SCSI)
-static const char str_scsi0[] = "SCSI #0";
-static const char str_scsi1[] = "SCSI #1";
-static const char str_scsi2[] = "SCSI #2";
-static const char str_scsi3[] = "SCSI #3";
-
 static const MSYSITEM s_scsi0[] = {
 		{str_open,			NULL,		MID_SCSI0OPEN,		0},
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
@@ -260,31 +259,27 @@ static const MSYSITEM s_scsi3[] = {
 		{str_open,			NULL,		MID_SCSI3OPEN,		0},
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_remove,		NULL,		MID_SCSI3EJECT,		MENU_DELETED}};
+#endif
 
 static const MSYSITEM s_hdd[] = {
 #if defined(SUPPORT_IDEIO)
+#if !defined(__LIBRETRO__)
 		{str_ide1,			s_ide1,		MID_STATIC,			0},
 		{str_ide2,			s_ide2,		MID_STATIC,			0},
+#endif	/* __LIBRETRO__ */
 		{str_idecd,			s_idecd,	MID_STATIC,			0},
 #else
 		{str_sasi1,			s_sasi1,	MID_STATIC,			0},
 		{str_sasi2,			s_sasi2,	MID_STATIC,			0},
 #endif
+#if defined(SUPPORT_SCSI)
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_scsi0,			s_scsi0,	MID_STATIC,			0},
 		{str_scsi1,			s_scsi1,	MID_STATIC,			0},
 		{str_scsi2,			s_scsi2,	MID_STATIC,			0},
 		{str_scsi3,			s_scsi3,	MID_STATIC,			MENU_DELETED}};
 #else
-static const MSYSITEM s_hdd[] = {
-#if defined(SUPPORT_IDEIO)
-		{str_ide1,			s_ide1,		MID_STATIC,			0},
-		{str_ide2,			s_ide2,		MID_STATIC,			0},
-		{str_idecd,			s_idecd,	MID_STATIC,			MENU_DELETED}};
-#else
-		{str_sasi1,			s_sasi1,	MID_STATIC,			0},
-		{str_sasi2,			s_sasi2,	MID_STATIC,			MENU_DELETED}};
-#endif
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR | MENU_DELETED }};
 #endif
 
 static const MSYSITEM s_screen[] = {
@@ -386,6 +381,7 @@ static const MSYSITEM s_sc[] = {
 static const MSYSITEM s_other[] = {
 		{str_bmpsave,		NULL,		MID_BMPSAVE,			0},
 		{str_s98log,		NULL,		MID_S98LOGGING,		MENU_GRAY},
+#if !defined(__LIBRETRO__)
 		{str_calendar,		NULL,		MID_CALENDAR,		MENU_GRAY},
 		{str_shortcut,		s_sc,		MID_STATIC,			MENU_GRAY},
 		{str_clockdisp,		NULL,		MID_DISPCLOCK,		MENU_GRAY},
@@ -393,17 +389,22 @@ static const MSYSITEM s_other[] = {
 		{str_joyrev,		NULL,		MID_JOYX,			0},
 		{str_joyrapid,		NULL,		MID_RAPID,			0},
 		{str_mouserapid,	NULL,		MID_MSRAPID,		MENU_GRAY},
+#endif
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_about,			NULL,		MID_ABOUT,			MENU_DELETED}};
 
 static MSYSITEM s_main[] = {
+#if !defined(__LIBRETRO__)
 		{str_emulate,		s_emu,		MID_STATIC,			0},
 #if defined(SUPPORT_STATSAVE)
 		{str_stat,		s_state,		MID_STATIC,			0},
 #endif
+#endif
 		{str_fdd,			s_fdd,		MID_STATIC,			0},
 		{str_harddisk,		s_hdd,		MID_STATIC,			0},
+#if !defined(__LIBRETRO__)
 		{str_screen,		s_screen,	MID_STATIC,			0},
 		{str_device,		s_device,	MID_STATIC,			0},
+#endif
 		{str_other,			s_other,	MID_STATIC,			MENU_DELETED}};
 

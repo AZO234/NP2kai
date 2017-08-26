@@ -1,3 +1,5 @@
+#ifndef NP2_IOCORE_H
+#define NP2_IOCORE_H
 
 #ifndef IOOUTCALL
 #define	IOOUTCALL
@@ -120,3 +122,4 @@ UINT32 IOINPCALL iocore_inp32(UINT port);
 }
 #endif
 
+#endif	/* NP2_IOCORE_H */

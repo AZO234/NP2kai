@@ -1,6 +1,6 @@
 Neko Project II 0.86 kai rev.10
 ===
-Aug 23, 2017  
+Aug 26, 2017  
 
 Build SDL2 port
 ---
@@ -97,12 +97,12 @@ Build with libretro-super  * No confirmation to drive
 
 ２． Clone libretro-super repository.
 
-	$ git clone https://github.com/libretro/libretro-super.git
+	$ git clone --depth 1 https://github.com/libretro/libretro-super.git
 
 ３． CD to libretro-super, and clone this repository.
 
 	$ cd libretro-super
-	$ git clone https://github.com/AZO234/NP2kai libretro-NP2kai
+	$ git clone --depth 1 https://github.com/AZO234/NP2kai libretro-NP2kai
 
 ４． Build. (e.g. Android)
 
