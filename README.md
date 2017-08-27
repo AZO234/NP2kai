@@ -240,20 +240,47 @@ and "/opt/retropie/emulators/np2/" too.
 Point of tuning performance NP2kai
 ---
 * CPU clock  
+
 Change "CPU Clock Multiplyer".
 
 * Memory size  
+
 Change "RAM Size".
 
 * Sound device  
+
 26K: for old games.  
 86: for newer games.
 
 * Sound Generator  
-Default: default sound generator.  
+
 fmgen: fmgen sound generator.
+Default: default sound generator.  
 
 Don't forget restart core.
+
+* How to set GDC 2.5MHz/5MHz?  
+
+1.Press End key(assigned Help key) + reset
+2.Select 'ディップスイッチ２'(DIP switch 2)
+
+* How to key typing?  
+
+Unfortunery, libretro is unuseful for keytyping.
+Please use NP21/w.
+
+* How to use CD drive with MS-DOS 6.2?  
+
+Write follow to CONFIG.SYS. 
+
+    LASTDRIVE=Z
+    DEVICE=A:￥DOS￥NECCDD.SYS /D:CD_101
+
+And write follow to AUTOEXEC.BAT. 
+
+    A:￥DOS￥MSCDEX.EXE /D:CD_101 /L:Q
+
+Then, you'll can use CD drive as Q drive.
 
 About network
 ---
