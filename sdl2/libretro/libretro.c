@@ -868,9 +868,6 @@ void retro_set_environment(retro_environment_t cb)
       { "np2_clk_mult" , "CPU Clock Multiplier (Restart); 4|5|6|8|10|12|16|20|24|30|36|40|42|1|2" },
       { "np2_ExMemory" , "RAM Size (Restart); 3|7|11|13|16|32|64|120|230|1" },
       { "np2_gdc" , "GDC; uPD7220|uPD72020" },
-      { "np2_dispsync" , "Disp Vsync; ON|OFF" },
-      { "np2_nowait" , "No Wait; OFF|ON" },
-      { "np2_drawskip" , "Frame Skip; Auto|60fps|30fps|20fps|15fps" },
       { "np2_skipline" , "Skipline Revisions; Full 255 lines|ON|OFF" },
       { "np2_realpal" , "Real Palettes; OFF|ON" },
       { "np2_lcd" , "LCD; OFF|ON" },
@@ -977,18 +974,6 @@ static void update_variables(void)
       scrndraw_redraw();
    }
 
-   var.key = "np2_dispsync";
-   var.value = NULL;
-
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
-   {
-      if (strcmp(var.value, "OFF") == 0)
-         np2cfg.DISPSYNC = 0;
-      else
-         np2cfg.DISPSYNC = 1;
-      sysmng_update(SYS_UPDATECFG);
-   }
-
    var.key = "np2_realpal";
    var.value = NULL;
 
@@ -999,36 +984,6 @@ static void update_variables(void)
       else
          np2cfg.RASTER = 1;
       sysmng_update(SYS_UPDATECFG);
-   }
-
-   var.key = "np2_nowait";
-   var.value = NULL;
-
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
-   {
-      if (strcmp(var.value, "OFF") == 0)
-         np2oscfg.NOWAIT = 0;
-      else
-         np2oscfg.NOWAIT = 1;
-      sysmng_update(SYS_UPDATEOSCFG);
-   }
-
-   var.key = "np2_drawskip";
-   var.value = NULL;
-
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
-   {
-      if (strcmp(var.value, "Auto") == 0)
-         np2oscfg.DRAW_SKIP = 0;
-      else if (strcmp(var.value, "60fps") == 0)
-         np2oscfg.DRAW_SKIP = 1;
-      else if (strcmp(var.value, "30fps") == 0)
-         np2oscfg.DRAW_SKIP = 2;
-      else if (strcmp(var.value, "20fps") == 0)
-         np2oscfg.DRAW_SKIP = 3;
-      else if (strcmp(var.value, "15fps") == 0)
-         np2oscfg.DRAW_SKIP = 4;
-      sysmng_update(SYS_UPDATEOSCFG);
    }
 
    var.key = "np2_SNDboard";
