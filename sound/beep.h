@@ -7,7 +7,7 @@ enum {
 };
 
 typedef struct {
-	SINT32	clock;
+	UINT32	clock;
 	int		enable;
 } BPEVENT;
 
@@ -22,7 +22,10 @@ typedef struct {
 	int		low;
 	int		enable;
 	int		lastenable;
-	SINT32	clock;
+	int		lastremain;
+	int		lastonevt;
+	int		lastclk;
+	UINT32	clock;
 	UINT	events;
 	BPEVENT	event[BEEPEVENT_MAX];
 } _BEEP, *BEEP;
