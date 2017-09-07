@@ -10,7 +10,7 @@
 
 	_BEEP		g_beep;
 	BEEPCFG		beepcfg;
-
+	UINT16 beep_data[BEEPDATACOUNT];
 
 // #define	BEEPLOG
 

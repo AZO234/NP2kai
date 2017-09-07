@@ -336,6 +336,13 @@ static void IOOUTCALL pit_o71(UINT port, REG8 dat) {
 // beep
 static void IOOUTCALL pit_o73(UINT port, REG8 dat) {
 
+	if(port == 0x3FDB) {
+		beep_data[g_beep.beep_data_load_loc] = dat;
+		g_beep.beep_data_load_loc++;
+		if(g_beep.beep_data_load_loc >= BEEPDATACOUNT)
+			g_beep.beep_data_load_loc = 0;
+	}
+
 	PITCH	pitch;
 
 	pitch = pit.ch + 1;
@@ -347,7 +354,6 @@ static void IOOUTCALL pit_o73(UINT port, REG8 dat) {
 	if (pitch->ctrl & 0x0c) {
 		beep_hzset(pitch->value);
 	}
-	(void)port;
 }
 
 // rs-232c

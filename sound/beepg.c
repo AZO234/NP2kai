@@ -4,63 +4,26 @@
 
 
 extern	BEEPCFG		beepcfg;
+extern  UINT16 beep_data[BEEPDATACOUNT];
 
 static void oneshot(BEEP bp, SINT32 *pcm, UINT count) {
 
-	SINT32		vol;
-const BPEVENT	*bev;
-	SINT32		clk;
-	int			event;
-	SINT32		remain;
 	SINT32		samp;
-	SINT32		onevt;
-
-//#define BEEP_44K_CNT 65536
-#define BEEP_44K_CNT 61604
-
-	bev = bp->event;
-	onevt = bp->lastonevt;
-	event = bp->lastenable;
-	remain = bp->lastremain;
-	clk = bp->lastclk;
 
 	while(count--) {
-		if (!onevt) {
-			if (bp->events) {
-				clk=-1;
-				while(clk < 0 && bp->events) { 
-					bp->events--;
-					clk = bev->clock - remain;
-					if(clk < 0)
-						remain -= bev->clock;
-					event = bev->enable;
-					bev++;
-					onevt = 1;
-				}
-			}
-		}
-		samp = event ? 1 : -1;
-		samp *= beepcfg.vol;
-		samp <<= 10;
+		samp = (double)beep_data[bp->beep_data_curr_loc] / 0x100 * (0x1000 * beepcfg.vol) - (0x800 * beepcfg.vol);
 		pcm[0] += samp;
 		pcm[1] += samp;
 		pcm += 2;
-		if (onevt) {
-			if(clk <= BEEP_44K_CNT) {
-				remain = BEEP_44K_CNT - clk;
-				onevt = 0;
-			} else {
-				clk -= BEEP_44K_CNT;
+		bp->beep_cnt += 1000;
+		if(bp->beep_data_curr_loc < bp->beep_cnt / 2802) {
+			bp->beep_data_curr_loc++;
+			if(bp->beep_data_curr_loc >= BEEPDATACOUNT) {
+				bp->beep_data_curr_loc = 0;
+				bp->beep_cnt = 0;
 			}
-		} else {
-			remain = 0;
 		}
 	}
-
-	bp->lastonevt = onevt;
-	bp->lastremain = remain;
-	bp->lastclk = clk;
-	bp->lastenable = event;
 }
 
 static void rategenerator(BEEP bp, SINT32 *pcm, UINT count) {

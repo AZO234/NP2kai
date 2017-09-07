@@ -26,6 +26,9 @@ typedef struct {
 	int		lastonevt;
 	int		lastclk;
 	UINT32	clock;
+	UINT32  beep_data_curr_loc;
+	UINT32  beep_data_load_loc;
+	UINT32  beep_cnt;
 	UINT	events;
 	BPEVENT	event[BEEPEVENT_MAX];
 } _BEEP, *BEEP;
@@ -43,6 +46,8 @@ extern "C" {
 #endif
 
 extern	_BEEP		g_beep;
+#define BEEPDATACOUNT 0x1000
+extern UINT16 beep_data[BEEPDATACOUNT];
 
 void beep_initialize(UINT rate);
 void beep_deinitialize(void);
