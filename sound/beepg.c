@@ -16,7 +16,7 @@ static void oneshot(BEEP bp, SINT32 *pcm, UINT count) {
 		pcm[1] += samp;
 		pcm += 2;
 		bp->beep_cnt += 1000;
-		if(bp->beep_data_curr_loc < bp->beep_cnt / 2802) {
+		if(bp->beep_data_curr_loc < bp->beep_cnt / 2802 && bp->beep_data_curr_loc != bp->beep_data_load_loc) {
 			bp->beep_data_curr_loc++;
 			if(bp->beep_data_curr_loc >= BEEPDATACOUNT) {
 				bp->beep_data_curr_loc = 0;
