@@ -1,6 +1,6 @@
 Neko Project II 0.86 kai rev.11
 ===
-Aug 27, 2017  
+Sep 7, 2017  
 
 Build SDL2 port
 ---
@@ -294,6 +294,8 @@ I/O:0x00D0
 
 Release
 ---
+* Sep 7, 2017
+	- Fix BEEP PCM
 * Aug 27, 2017 (rev.11)
 	- Merge NP21/w rev.35 beta2
 	- [libretro] state save/load

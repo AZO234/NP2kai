@@ -107,11 +107,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 #endif
 				0,
 #if defined(SUPPORT_STATSAVE)
-#if defined(__LIBRETRO__)
-				1,			/* statsave */
-#else	/* __LIBRETRO__ */
 				0,			/* statsave */
-#endif	/* __LIBRETRO__ */
 #endif
 				0, 0};
 
