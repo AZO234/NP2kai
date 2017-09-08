@@ -10,3 +10,13 @@ NP2 kai開発ノート by AZO
   タイマ資料 <- BEEP周波数に使用される
   http://www.webtech.co.jp/company/doc/undocumented_mem/io_tcu.txt
 
+  => 対応。他のゲームでBEEPが変になるかも。
+     結子（一番右上のOL）のOPの音声タイミングがずれる。
+
+・トキオの声が低い
+
+  => モードレジスタ0x77に、0x70->0x50 の順に書かれたら、
+     トキオ用の周期にするように突貫対応。
+
+・libretro版・SDL2版で、イース１・２・３が起動しない。
+

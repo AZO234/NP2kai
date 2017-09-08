@@ -377,6 +377,15 @@ static void IOOUTCALL pit_o77(UINT port, REG8 dat) {
 	UINT	chnum;
 	PITCH	pitch;
 
+	if(port == 0x77 && dat == 0x50) {
+		if(beep_mode_temp == 0x70)
+			beep_mode_freq = 21;
+		else
+			beep_mode_freq = 28;
+	} else {
+		beep_mode_temp = dat;
+	}
+
 	chnum = (dat >> 6) & 3;
 	if (chnum != 3) {
 		pitch = pit.ch + chnum;

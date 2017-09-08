@@ -5,6 +5,8 @@
 
 extern	BEEPCFG		beepcfg;
 extern  UINT16 beep_data[BEEPDATACOUNT];
+int beep_mode_freq = 28;	// 28:normal 21:TOKIO
+int beep_mode_temp = 0;
 
 static void oneshot(BEEP bp, SINT32 *pcm, UINT count) {
 
@@ -15,12 +17,12 @@ static void oneshot(BEEP bp, SINT32 *pcm, UINT count) {
 		pcm[0] += samp;
 		pcm[1] += samp;
 		pcm += 2;
-		bp->beep_cnt += 1000;
-		if(bp->beep_data_curr_loc < bp->beep_cnt / 2802 && bp->beep_data_curr_loc != bp->beep_data_load_loc) {
+		bp->beep_cnt += 10;
+		if((bp->beep_data_curr_loc < bp->beep_cnt / beep_mode_freq) && (bp->beep_data_curr_loc != bp->beep_data_load_loc)) {
 			bp->beep_data_curr_loc++;
 			if(bp->beep_data_curr_loc >= BEEPDATACOUNT) {
 				bp->beep_data_curr_loc = 0;
-				bp->beep_cnt = 0;
+				bp->beep_cnt = bp->beep_cnt % beep_mode_freq;
 			}
 		}
 	}
