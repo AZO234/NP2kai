@@ -28,6 +28,7 @@ typedef struct {
 	UINT32	clock;
 	UINT32  beep_data_curr_loc;
 	UINT32  beep_data_load_loc;
+	UINT32  beep_laskclk;
 	UINT32  beep_cnt;
 	UINT	events;
 	BPEVENT	event[BEEPEVENT_MAX];
