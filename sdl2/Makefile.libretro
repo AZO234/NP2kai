@@ -189,7 +189,7 @@ INCFLAGS    :=
 SOURCES_C   :=
 SOURCES_CXX :=
 
-include sdl2/makefile.common
+include sdl2/Makefile.common
 
 INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro \
 		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include \

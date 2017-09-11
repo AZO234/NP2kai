@@ -1,6 +1,6 @@
 Neko Project II 0.86 kai rev.11
 ===
-Sep 7, 2017  
+Sep 11, 2017  
 
 Build SDL2 port
 ---
@@ -12,11 +12,11 @@ Build SDL2 port
 ２． Build.  
 
 	$ cd NP2_SDL2/sdl2
-	$ make -j4 -f makefile.unix
+	$ make -j4 -f Makefile.unix
 
 or
 
-	$ make -j4 -f makefile21.unix
+	$ make -j4 -f Makefile21.unix
 
 ３． 'np2' or 'np21' binary is outputed in NP2kai/sdl2  
 

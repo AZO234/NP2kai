@@ -20,7 +20,7 @@ INCFLAGS    := `$(SDL_CONFIG) --cflags`
 SOURCES_C   :=
 SOURCES_CXX :=
 
-include makefile.common
+include Makefile.common
 
 INCFLAGS += 	-I$(NP2_PATH)/i286c \
 		-I$(NP2_PATH)/sdl2/win32 

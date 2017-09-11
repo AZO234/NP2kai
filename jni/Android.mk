@@ -40,7 +40,7 @@ SOURCES_ASM :=
 INCFLAGS :=
 COMMONFLAGS :=
 
-include $(CORE_DIR)/sdl2/makefile.common
+include $(CORE_DIR)/sdl2/Makefile.common
 
 INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro \
 		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include \
