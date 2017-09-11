@@ -54,8 +54,7 @@ BRESULT fdd_set_nfd(FDDFILE fdd, FDDFUNC fdd_fn, const OEMCHAR *fname, int ro) {
 		/* 170101 ST modified to work on Windows 9x/2000 ... to */
 			
 		//	期待した値が入ってないことが…orz
-//		ptr = LOADINTELDWORD(&fdd->inf.nfd.head.r0.dwHeadSize);
-		ptr = fdd->inf.nfd.head.r0.dwHeadSize;
+		ptr = LOADINTELDWORD(&fdd->inf.nfd.head.r0.dwHeadSize);
 //		ptr = NFD_HEADERSIZE;
 //TRACEOUT(("NFD(r0) TopSec Offset[%08x]", ptr));
 		//	先頭格納セクタを見て決め打ち

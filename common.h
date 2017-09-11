@@ -15,73 +15,73 @@ enum {
 #endif
 
 #ifndef LOADINTELDWORD
-#define	LOADINTELDWORD(a)		(((UINT32)(a)[0]) |				\
-								((UINT32)(a)[1] << 8) |			\
-								((UINT32)(a)[2] << 16) |		\
-								((UINT32)(a)[3] << 24))
+#define	LOADINTELDWORD(a)		(((UINT32)((UINT8*)a)[0]) |				\
+								((UINT32)((UINT8*)a)[1] << 8) |			\
+								((UINT32)((UINT8*)a)[2] << 16) |		\
+								((UINT32)((UINT8*)a)[3] << 24))
 #endif
 
 #ifndef LOADINTELWORD
-#define	LOADINTELWORD(a)		(((UINT16)(a)[0]) | ((UINT16)(a)[1] << 8))
+#define	LOADINTELWORD(a)		(((UINT16)((UINT8*)a)[0]) | ((UINT16)((UINT8*)a)[1] << 8))
 #endif
 
 #ifndef STOREINTELDWORD
-#define	STOREINTELDWORD(a, b)	*((a)+0) = (UINT8)((b));		\
-								*((a)+1) = (UINT8)((b)>>8);		\
-								*((a)+2) = (UINT8)((b)>>16);	\
-								*((a)+3) = (UINT8)((b)>>24)
+#define	STOREINTELDWORD(a, b)	*(((UINT8*)a)+0) = (UINT8)((b));		\
+								*(((UINT8*)a)+1) = (UINT8)((b)>>8);		\
+								*(((UINT8*)a)+2) = (UINT8)((b)>>16);	\
+								*(((UINT8*)a)+3) = (UINT8)((b)>>24)
 #endif
 
 #ifndef STOREINTELWORD
-#define	STOREINTELWORD(a, b)	*((a)+0) = (UINT8)((b));			\
-								*((a)+1) = (UINT8)((b)>>8)
+#define	STOREINTELWORD(a, b)	*(((UINT8*)a)+0) = (UINT8)((b));			\
+								*(((UINT8*)a)+1) = (UINT8)((b)>>8)
 #endif
 
 /* Big Ending */
 
 #ifndef LOADMOTOROLAQWORD
-#define    LOADMOTOROLAQWORD(a)        (((UINT64)(a)[7]) |             \
-                               ((UINT64)(a)[6] << 8) |         \
-                               ((UINT64)(a)[5] << 16) |        \
-                               ((UINT64)(a)[4] << 24) |        \
-                               ((UINT64)(a)[3] << 32) |        \
-                               ((UINT64)(a)[2] << 40) |        \
-                               ((UINT64)(a)[1] << 48) |        \
-                               ((UINT64)(a)[0] << 56))
+#define    LOADMOTOROLAQWORD(a)        (((UINT64)((UINT8*)a)[7]) |             \
+                               ((UINT64)((UINT8*)a)[6] << 8) |         \
+                               ((UINT64)((UINT8*)a)[5] << 16) |        \
+                               ((UINT64)((UINT8*)a)[4] << 24) |        \
+                               ((UINT64)((UINT8*)a)[3] << 32) |        \
+                               ((UINT64)((UINT8*)a)[2] << 40) |        \
+                               ((UINT64)((UINT8*)a)[1] << 48) |        \
+                               ((UINT64)((UINT8*)a)[0] << 56))
 #endif
 
 #ifndef LOADMOTOROLADWORD
-#define    LOADMOTOROLADWORD(a)        (((UINT32)(a)[3]) |             \
-                               ((UINT32)(a)[2] << 8) |         \
-                               ((UINT32)(a)[1] << 16) |        \
-                               ((UINT32)(a)[0] << 24))
+#define    LOADMOTOROLADWORD(a)        (((UINT32)((UINT8*)a)[3]) |             \
+                               ((UINT32)((UINT8*)a)[2] << 8) |         \
+                               ((UINT32)((UINT8*)a)[1] << 16) |        \
+                               ((UINT32)((UINT8*)a)[0] << 24))
 #endif
 
 #ifndef LOADMOTOROLAWORD
-#define    LOADMOTOROLAWORD(a)     (((UINT16)(a)[1]) | ((UINT16)(a)[0] << 8))
+#define    LOADMOTOROLAWORD(a)     (((UINT16)((UINT8*)a)[1]) | ((UINT16)((UINT8*)a)[0] << 8))
 #endif
 
 #ifndef STOREMOTOROLAQWORD
-#define    STOREMOTOROLAQWORD(a, b)    *((a)+7) = (UINT8)((b));        \
-                               *((a)+6) = (UINT8)((b)>>8);     \
-                               *((a)+5) = (UINT8)((b)>>16);    \
-                               *((a)+4) = (UINT8)((b)>>24);    \
-                               *((a)+3) = (UINT8)((b)>>32);    \
-                               *((a)+2) = (UINT8)((b)>>40);    \
-                               *((a)+1) = (UINT8)((b)>>48);    \
-                               *((a)+0) = (UINT8)((b)>>56)
+#define    STOREMOTOROLAQWORD(a, b)    *(((UINT8*)a)+7) = (UINT8)((b));        \
+                               *(((UINT8*)a)+6) = (UINT8)((b)>>8);     \
+                               *(((UINT8*)a)+5) = (UINT8)((b)>>16);    \
+                               *(((UINT8*)a)+4) = (UINT8)((b)>>24);    \
+                               *(((UINT8*)a)+3) = (UINT8)((b)>>32);    \
+                               *(((UINT8*)a)+2) = (UINT8)((b)>>40);    \
+                               *(((UINT8*)a)+1) = (UINT8)((b)>>48);    \
+                               *(((UINT8*)a)+0) = (UINT8)((b)>>56)
 #endif
 
 #ifndef STOREMOTOROLADWORD
-#define    STOREMOTOROLADWORD(a, b)    *((a)+3) = (UINT8)((b));        \
-                               *((a)+2) = (UINT8)((b)>>8);     \
-                               *((a)+1) = (UINT8)((b)>>16);    \
-                               *((a)+0) = (UINT8)((b)>>24)
+#define    STOREMOTOROLADWORD(a, b)    *(((UINT8*)a)+3) = (UINT8)((b));        \
+                               *(((UINT8*)a)+2) = (UINT8)((b)>>8);     \
+                               *(((UINT8*)a)+1) = (UINT8)((b)>>16);    \
+                               *(((UINT8*)a)+0) = (UINT8)((b)>>24)
 #endif
 
 #ifndef STOREMOTOROLAWORD
-#define    STOREMOTOROLAWORD(a, b) *((a)+1) = (UINT8)((b));            \
-                               *((a)+0) = (UINT8)((b)>>8)
+#define    STOREMOTOROLAWORD(a, b) *(((UINT8*)a)+1) = (UINT8)((b));            \
+                               *(((UINT8*)a)+0) = (UINT8)((b)>>8)
 #endif
 
 /* *** */
