@@ -1,1 +1,1 @@
-include sdl2/Makefile.libretro
+include sdl2/makefile.libretro
