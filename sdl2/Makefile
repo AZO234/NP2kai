@@ -1,2 +1,2 @@
-include Makefile21.unix
+include makefile21.unix
 

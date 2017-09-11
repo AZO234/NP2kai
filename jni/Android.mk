@@ -3,7 +3,7 @@ GIT_VERSION := " $(shell git rev-parse --short HEAD)"
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE    := NP2kai
+LOCAL_MODULE    := np2kai
 
 ifeq ($(TARGET_ARCH_ABI), armeabi)
 LOCAL_CFLAGS += -DANDROID_ARM
@@ -40,7 +40,7 @@ SOURCES_ASM :=
 INCFLAGS :=
 COMMONFLAGS :=
 
-include $(CORE_DIR)/sdl2/Makefile.common
+include $(CORE_DIR)/sdl2/makefile.common
 
 INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro \
 		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include \

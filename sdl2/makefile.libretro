@@ -17,7 +17,7 @@ else ifneq ($(findstring win,$(UNAME)),)
 endif
 endif
 
-TARGET_NAME := NP2kai
+TARGET_NAME := np2kai
 
 # system platform
 system_platform = unix
@@ -189,7 +189,7 @@ INCFLAGS    :=
 SOURCES_C   :=
 SOURCES_CXX :=
 
-include sdl2/Makefile.common
+include sdl2/makefile.common
 
 INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro \
 		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include \
