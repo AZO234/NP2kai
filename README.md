@@ -53,10 +53,10 @@ Build libretro port (Linux)
 
 １． Build.  
 
-	$ cd NP2kai
+	$ cd NP2kai/sdl2
 	$ make -j4
 
-２． 'np2kai_libretro.so' binary is outputed in NP2kai  
+２． 'np2kai_libretro.so' binary is outputed in NP2kai/sdl2  
 
 Build libretro port (Windows)
 ---
@@ -65,10 +65,10 @@ Build libretro port (Windows)
 
 https://bot.libretro.com/docs/compilation/windows/
 
-	$ cd NP2kai
+	$ cd NP2kai/sdl2
 	$ make -j4
 
-２． 'np2kai_libretro.dll' binary is outputed in NP2kai  
+２． 'np2kai_libretro.dll' binary is outputed in NP2kai/sdl2  
 
 Build libretro port (Mac)  * No confirmation to drive
 ---
@@ -85,10 +85,10 @@ Build libretro port (Mac)  * No confirmation to drive
 
 ４． Build.
 
-	$ cd NP2kai
+	$ cd NP2kai/sdl2
 	$ make -j4
 
-５． 'np2kai_libretro.dylib' binary is outputed in NP2kai  
+５． 'np2kai_libretro.dylib' binary is outputed in NP2kai/sdl2  
 
 Build with libretro-super  * No confirmation to drive
 ---

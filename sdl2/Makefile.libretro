@@ -32,7 +32,7 @@ endif
 
 ifeq ($(platform), unix)
 	TARGET := $(TARGET_NAME)_libretro.so
-	LDFLAGS += -shared -Wl,--version-script=sdl2/link.T
+	LDFLAGS += -shared -Wl,--version-script=link.T
 
 	fpic = -fPIC
 else ifeq ($(platform), osx)
@@ -88,7 +88,7 @@ LIBRARY_NAME = $(TARGET_NAME)_libretro_ios
 else ifeq ($(platform), qnx)
 	TARGET := $(TARGET_NAME)_libretro_$(platform).so
 	fpic := -fPIC
-	SHARED := -lcpp -lm -shared -Wl,-version-script=sdl2/link.T
+	SHARED := -lcpp -lm -shared -Wl,-version-script=link.T
 	CC = qcc -Vgcc_ntoarmv7le
 	CC_AS = qcc -Vgcc_ntoarmv7le
 	CXX = QCC -Vgcc_ntoarmv7le_cpp
@@ -98,7 +98,7 @@ else ifeq ($(platform), qnx)
 else ifeq ($(platform), android)
 	TARGET := $(TARGET_NAME)_libretro.so
 	COMMONFLAGS += -fpermissive
-	LDFLAGS += -shared -Wl,--version-script=sdl2/link.T
+	LDFLAGS += -shared -Wl,--version-script=link.T
 
 	CC = arm-linux-androideabi-gcc
 	CXX = arm-linux-androideabi-g++
@@ -167,7 +167,7 @@ else ifeq ($(platform), wincross64)
 #   CFLAGS += -mno-ms-bitfields
 # -DX64_WINDOWS_ABI
    TARGET := $(TARGET_NAME)_libretro.dll
-   LDFLAGS += --shared -static-libgcc -static-libstdc++ -Wl,--version-script=sdl2/link.T -L/usr/x86_64-w64-mingw32/lib
+   LDFLAGS += --shared -static-libgcc -static-libstdc++ -Wl,--version-script=link.T -L/usr/x86_64-w64-mingw32/lib
 
 LDFLAGS += -lws2_32 -luser32 -lwinmm -ladvapi32 -lshlwapi -lwsock32 -lws2_32 -lpsapi -liphlpapi -lshell32 -luserenv -lmingw32 -shared -lgcc -lm -lmingw32
 
@@ -175,7 +175,7 @@ LDFLAGS += -lws2_32 -luser32 -lwinmm -ladvapi32 -lshlwapi -lwsock32 -lws2_32 -lp
 else
 	CXXFLAGS += -mno-ms-bitfields
 	TARGET := $(TARGET_NAME)_libretro.dll
-	LDFLAGS += -shared -static-libgcc -static-libstdc++ -Wl,--version-script=sdl2/link.T -lwinmm
+	LDFLAGS += -shared -static-libgcc -static-libstdc++ -Wl,--version-script=link.T -lwinmm
 endif
 
 ifeq ($(DEBUG), 1)
@@ -184,12 +184,12 @@ else
 COMMONFLAGS += -O3 -DNDEBUG -DGIT_VERSION=\"$(GIT_VERSION)\"
 endif
 
-CORE_DIR    := .
+CORE_DIR    := ..
 INCFLAGS    :=
 SOURCES_C   :=
 SOURCES_CXX :=
 
-include sdl2/Makefile.common
+include Makefile.common
 
 INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro \
 		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include \
