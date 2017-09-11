@@ -12,11 +12,11 @@ Build SDL2 port
 ２． Build.  
 
 	$ cd NP2_SDL2/sdl2
-	$ make -j4 -f Makefile.unix
+	$ make -j4 -f makefile.unix
 
 or
 
-	$ make -j4 -f Makefile21.unix
+	$ make -j4 -f makefile21.unix
 
 ３． 'np2' or 'np21' binary is outputed in NP2kai/sdl2  
 
@@ -56,7 +56,7 @@ Build libretro port (Linux)
 	$ cd NP2kai
 	$ make -j4
 
-２． 'NP2kai_libretro.so' binary is outputed in NP2kai  
+２． 'np2kai_libretro.so' binary is outputed in NP2kai  
 
 Build libretro port (Windows)
 ---
@@ -68,7 +68,7 @@ https://bot.libretro.com/docs/compilation/windows/
 	$ cd NP2kai
 	$ make -j4
 
-２． 'NP2kai_libretro.dll' binary is outputed in NP2kai  
+２． 'np2kai_libretro.dll' binary is outputed in NP2kai  
 
 Build libretro port (Mac)  * No confirmation to drive
 ---
@@ -88,7 +88,7 @@ Build libretro port (Mac)  * No confirmation to drive
 	$ cd NP2kai
 	$ make -j4
 
-５． 'NP2kai_libretro.dylib' binary is outputed in NP2kai  
+５． 'np2kai_libretro.dylib' binary is outputed in NP2kai  
 
 Build with libretro-super  * No confirmation to drive
 ---
@@ -102,7 +102,7 @@ Build with libretro-super  * No confirmation to drive
 ３． CD to libretro-super, and clone this repository.
 
 	$ cd libretro-super
-	$ git clone --depth 1 https://github.com/AZO234/NP2kai libretro-NP2kai
+	$ git clone --depth 1 https://github.com/AZO234/NP2kai libretro-np2kai
 
 ４． Build. (e.g. Android)
 
@@ -111,15 +111,15 @@ https://developer.android.com/studio/index.html
 
 	$ export PATH=~/Android/Sdk/ndk-bundle:$PATH
 	$ chmod +x ./libretro-build-android-mk.sh
-	$ ./libretro-build-android-mk.sh NP2kai
+	$ ./libretro-build-android-mk.sh np2kai
 
-'libNP2kai.so' binary is outputed in libretro-NP2kai/libs  
+'libnp2kai.so' binary is outputed in libretro-np2kai/libs  
 
 ４． Build. (e.g. iOS)
 
-	$ ./libretro-build-ios.sh NP2kai
+	$ ./libretro-build-ios.sh np2kai
 
-'NP2kai_libretro_ios.dylib' binary is outputed in libretro-NP2kai  
+'np2kai_libretro_ios.dylib' binary is outputed in libretro-np2kai  
 
 about libretro port
 ---
