@@ -14,7 +14,7 @@
 
 #if !defined(RESOURCE_US)		/* use TTF */
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE || defined(USE_SDL_CONFIG)
 #include "SDL_ttf.h"
 #else
 #include <SDL2/SDL_ttf.h>

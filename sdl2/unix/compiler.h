@@ -7,7 +7,11 @@
 #include	<unistd.h>
 #include	<assert.h>
 #include	<pthread.h>
+#if defined(USE_SDL_CONFIG)
+#include	"SDL.h"
+#else
 #include	<SDL2/SDL.h>
+#endif
 
 //#define TRACE
 
