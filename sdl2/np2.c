@@ -194,7 +194,7 @@ int np2_main(int argc, char *argv[]) {
 	sprintf(tmppath, "%sdefault.ttf", np2cfg.biospath);
 	fontmng_setdeffontname(tmppath);
 	
-#if defined(SUPPORT_IDEIO) || defined(SUPPORT_SATA) || defined(SUPPORT_SCSI)
+#if defined(SUPPORT_IDEIO) || defined(SUPPORT_SASI) || defined(SUPPORT_SCSI)
 	drvhddSASI = drvhddSCSI = 0;
 	for (i = 1; i < argc; i++) {
 		if (OEMSTRLEN(argv[i]) < 5) {
@@ -211,7 +211,7 @@ int np2_main(int argc, char *argv[]) {
 		else if (0 == milstr_cmp(ext, ".hdd"))	imagetype = IMAGETYPE_SCSI; // SCSI
 		
 		switch (imagetype) {
-#if defined(SUPPORT_IDEIO) || defined(SUPPORT_SATA)
+#if defined(SUPPORT_IDEIO) || defined(SUPPORT_SASI)
 		case IMAGETYPE_SASI_IDE:
 			if (drvhddSASI < 2) {
 				milstr_ncpy(np2cfg.sasihdd[drvhddSASI], argv[i], MAX_PATH);
