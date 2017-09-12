@@ -1,7 +1,11 @@
 #include	<windows.h>
 #include	<stdio.h>
 #include	<stddef.h>
+#if defined(USE_SDL_CONFIG)
+#include	"SDL.h"
+#else
 #include	<SDL2\SDL.h>
+#endif
 
 //#define TRACE
 
@@ -10,6 +14,8 @@
 #define	BYTESEX_LITTLE
 #define	OSLANG_UTF8
 #define	OSLINEBREAK_CRLF
+#define	RESOURCE_US
+#define	USE_TTF
 
 #ifndef __GNUC__
 typedef	signed int			SINT;

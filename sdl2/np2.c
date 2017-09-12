@@ -166,6 +166,7 @@ int np2_main(int argc, char *argv[]) {
 	int		i, imagetype, drvfdd, drvhddSASI, drvhddSCSI;
 	char	*ext;
 	char	tmppath[MAX_PATH];
+	FILE	*fcheck;
 
 	pos = 1;
 	while(pos < argc) {
@@ -187,14 +188,19 @@ int np2_main(int argc, char *argv[]) {
 	readlink("/proc/self/exe", np2cfg.biospath, sizeof(np2cfg.biospath) - 1);
 #endif	/* _WIN32 */
 	file_setcd(np2cfg.biospath);
+	*(file_getname(np2cfg.biospath)) = '\0';
 #endif	/* __LIBRETRO__ */
 
 	initload();
 
 	sprintf(tmppath, "%sdefault.ttf", np2cfg.biospath);
-	fontmng_setdeffontname(tmppath);
+	fcheck = fopen(tmppath, "rb");
+	if (fcheck != NULL) {
+		fclose(fcheck);
+		fontmng_setdeffontname(tmppath);
+	}
 	
-#if defined(SUPPORT_IDEIO) || defined(SUPPORT_SATA) || defined(SUPPORT_SCSI)
+#if defined(SUPPORT_IDEIO) || defined(SUPPORT_SASI) || defined(SUPPORT_SCSI)
 	drvhddSASI = drvhddSCSI = 0;
 	for (i = 1; i < argc; i++) {
 		if (OEMSTRLEN(argv[i]) < 5) {
@@ -211,7 +217,7 @@ int np2_main(int argc, char *argv[]) {
 		else if (0 == milstr_cmp(ext, ".hdd"))	imagetype = IMAGETYPE_SCSI; // SCSI
 		
 		switch (imagetype) {
-#if defined(SUPPORT_IDEIO) || defined(SUPPORT_SATA)
+#if defined(SUPPORT_IDEIO) || defined(SUPPORT_SASI)
 		case IMAGETYPE_SASI_IDE:
 			if (drvhddSASI < 2) {
 				milstr_ncpy(np2cfg.sasihdd[drvhddSASI], argv[i], MAX_PATH);

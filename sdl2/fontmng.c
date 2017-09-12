@@ -12,9 +12,15 @@
 #include "ank12.res"
 #endif	/* defined(SIZE_QVGA) */
 
-#if !defined(RESOURCE_US)		/* use TTF */
+#if !defined(USE_TTF)
+# if !defined(RESOURCE_US) && !defined(__LIBRETRO__)
+#  define USE_TTF
+# endif
+#endif
 
-#if TARGET_OS_IPHONE
+#if defined(USE_TTF)		/* use TTF */
+
+#if TARGET_OS_IPHONE || defined(USE_SDL_CONFIG)
 #include "SDL_ttf.h"
 #else
 #include <SDL2/SDL_ttf.h>
@@ -33,7 +39,7 @@ typedef struct
 } FNTCTBL;
 #endif
 
-#endif	/* !defined(RESOURCE_US) */
+#endif	/* defined(USE_TTF) */
 
 /*! Font face */
 static char s_sFontName[MAX_PATH] = "./default.ttf";
@@ -46,11 +52,11 @@ struct TagFontManager
 	int			fontsize;
 	UINT		fonttype;
 
-#if !defined(RESOURCE_US)
+#if defined(USE_TTF)
 	TTF_Font	*ttf_font;
 	int			ptsize;
 	int			fontalign;
-#endif	/* !defined(RESOURCE_US) */
+#endif	/* defined(USE_TTF) */
 
 #if defined(FONTMNG_CACHE)
 	UINT		caches;
@@ -124,7 +130,7 @@ static BOOL fdatgetcache(FNTMNG fhdl, UINT16 c, FNTDAT *pfdat)
  */
 BRESULT fontmng_init(void)
 {
-#if !defined(RESOURCE_US)
+#if defined(USE_TTF)
 
 	if (TTF_Init() < 0)
 	{
@@ -135,7 +141,7 @@ BRESULT fontmng_init(void)
 	atexit(TTF_Quit);
 #endif
 
-#endif	/* !defined(RESOURCE_US) */
+#endif	/* defined(USE_TTF) */
 
 	return SUCCESS;
 }
@@ -159,10 +165,10 @@ void *fontmng_create(int size, UINT type, const char *fontface)
 	int		allocsize;
 	FNTMNG	ret;
 
-#if !defined(RESOURCE_US)
+#if defined(USE_TTF)
 	TTF_Font	*ttf_font;
 	int			ptsize;
-#endif	/* !defined(RESOURCE_US) */
+#endif	/* defined(USE_TTF) */
 
 	if (size < 0)
 	{
@@ -177,7 +183,7 @@ void *fontmng_create(int size, UINT type, const char *fontface)
 		size = 128;
 	}
 
-#if !defined(RESOURCE_US)
+#if defined(USE_TTF)
 
 	if (size < 10)
 	{
@@ -207,14 +213,14 @@ void *fontmng_create(int size, UINT type, const char *fontface)
 		type &= FDAT_PROPORTIONAL;
 	}
 
-#else	/* !defined(RESOURCE_US) */
+#else	/* defined(USE_TTF) */
 
 	if (size < ANKFONTSIZE)
 	{
 		return NULL;
 	}
 
-#endif	/* !defined(RESOURCE_US) */
+#endif	/* defined(USE_TTF) */
 
 	fontalign = sizeof(_FNTDAT) + (size * size);
 	fontalign = (fontalign + 3) & (~3);
@@ -228,9 +234,9 @@ void *fontmng_create(int size, UINT type, const char *fontface)
 	ret = (FNTMNG)_MALLOC(allocsize, "font mng");
 	if (ret == NULL)
 	{
-#if !defined(RESOURCE_US)
+#if defined(USE_TTF)
 		TTF_CloseFont(ttf_font);
-#endif	/* !defined(RESOURCE_US) */
+#endif	/* defined(USE_TTF) */
 		return NULL;
 	}
 
@@ -238,11 +244,11 @@ void *fontmng_create(int size, UINT type, const char *fontface)
 	ret->fontsize = size;
 	ret->fonttype = type;
 
-#if !defined(RESOURCE_US)
+#if defined(USE_TTF)
 	ret->ttf_font = ttf_font;
 	ret->ptsize = ptsize;
 	ret->fontalign = fontalign;
-#endif	/* !defined(RESOURCE_US) */
+#endif	/* defined(USE_TTF) */
 
 	return ret;
 }
@@ -259,9 +265,9 @@ void fontmng_destroy(void *hdl)
 	if (_this)
 	{
 
-#if !defined(RESOURCE_US)
+#if defined(USE_TTF)
 		TTF_CloseFont(_this->ttf_font);
-#endif	/* !defined(RESOURCE_US) */
+#endif	/* defined(USE_TTF) */
 
 		_MFREE(_this);
 	}
@@ -342,12 +348,12 @@ const UINT8	*src;
 	}
 }
 
-#if defined(RESOURCE_US)
+#if !defined(USE_TTF)
 
 #define GetLength1		AnkGetLength1		/*!< length function */
 #define GetFont1		AnkGetFont1			/*!< face function */
 
-#else	// defined(RESOURCE_US)
+#else	// !defined(USE_TTF)
 
 #define GetLength1		TTFGetLength1		/*!< length function */
 #define GetFont1		TTFGetFont1			/*!< face function */
@@ -503,7 +509,7 @@ static void TTFGetFont1(FNTMNG _this, FNTDAT fdat, UINT16 c)
 	}
 }
 
-#endif	/* defined(RESOURCE_US) */
+#endif	/* !defined(USE_TTF) */
 
 /**
  * Get charactor

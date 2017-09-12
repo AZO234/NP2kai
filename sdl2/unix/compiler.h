@@ -7,7 +7,11 @@
 #include	<unistd.h>
 #include	<assert.h>
 #include	<pthread.h>
+#if defined(USE_SDL_CONFIG)
+#include	"SDL.h"
+#else
 #include	<SDL2/SDL.h>
+#endif
 
 //#define TRACE
 
@@ -15,6 +19,8 @@
 #define	OSLANG_UTF8
 #define	OSLINEBREAK_LF
 #define SIZE_VGA
+#define RESOURCE_US
+#define USE_TTF
 
 typedef	signed int		INT;
 
