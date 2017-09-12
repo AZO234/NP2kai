@@ -19,6 +19,8 @@
 #define	OSLANG_UTF8
 #define	OSLINEBREAK_LF
 #define SIZE_VGA
+#define RESOURCE_US
+#define USE_TTF
 
 typedef	signed int		INT;
 
