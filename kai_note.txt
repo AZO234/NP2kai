@@ -18,4 +18,14 @@ NP2 kai開発ノート by AZO
   => モードレジスタ0x77に、0x70->0x50 の順に書かれたら、
      トキオ用の周期にするように突貫対応。
 
+・LOADINTELWORDマクロが変な値を取得する
+
+  => common.h にて、a を UINT8* にキャストするよう修正。
+
+・ERCACHE.EXEの組み込み時にtriple fault発生
+
+  => http://egg.2ch.net/test/read.cgi/software/1500009461/181-184
+     の修正。
+
+・VEM486 + Turbo C++ 4J（のTC.EXE）でtriple fault発生
 

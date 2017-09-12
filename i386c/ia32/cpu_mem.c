@@ -236,7 +236,9 @@ cpu_stack_push_check(UINT16 s, descriptor_t *sdp, UINT32 sp, UINT len,
 		goto exc;
 	}
 
-	start = sp - len;
+//	start = sp - len;
+	sp = (sp - 1) & (SEG_IS_32BIT(sdp) ? 0xffffffff : 0x0000ffff);
+	start = (sp - len) & (SEG_IS_32BIT(sdp) ? 0xffffffff : 0x0000ffff);
 	limit = is32bit ? 0xffffffff : 0x0000ffff;
 
 	if (SEG_IS_EXPANDDOWN_DATA(sdp)) {
@@ -320,7 +322,8 @@ cpu_stack_push_check(UINT16 s, descriptor_t *sdp, UINT32 sp, UINT len,
 			 */
 			if ((len > sdp->u.seg.limit)		/* len check */
 			 || (start > sp)			/* wrap check */
-			 || (sp > sdp->u.seg.limit + 1)) {	/* [1] */
+//			 || (sp > sdp->u.seg.limit + 1)) {	/* [1] */
+			 || (sp > sdp->u.seg.limit)) {		/* [1] */
 				goto exc;
 			}
 		}
