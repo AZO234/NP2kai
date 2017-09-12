@@ -3,7 +3,7 @@ GIT_VERSION := " $(shell git rev-parse --short HEAD)"
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE    := np2kai
+LOCAL_MODULE    := retro
 
 ifeq ($(TARGET_ARCH_ABI), armeabi)
 LOCAL_CFLAGS += -DANDROID_ARM
