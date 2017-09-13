@@ -1,3 +1,4 @@
+SUPPORT_NET?=1
 LOCAL_PATH := $(call my-dir)
 GIT_VERSION := " $(shell git rev-parse --short HEAD)"
 
