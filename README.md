@@ -295,7 +295,7 @@ I/O:0x00D0
 Release
 ---
 * Sep 14, 2017 (rev.12)
-	- (newest libretro core is available library)
+	- [libretro] (newest core binary is auto released by buildbot)
 	- Fix triple fault case
 * Sep 7, 2017
 	- Fix BEEP PCM
