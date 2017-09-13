@@ -3,7 +3,7 @@
  * @brief	The version
  */
 
-#define	NP2VER_CORE			"ver.0.86 kai rev.11"
+#define	NP2VER_CORE			"ver.0.86 kai rev.12"
 
 // #define	NP2VER_WIN9X
 // #define	NP2VER_MACOSX

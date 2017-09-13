@@ -1,6 +1,6 @@
 Neko Project II 0.86 kai rev.11
 ===
-Sep 11, 2017  
+Sep 14, 2017  
 
 Build SDL2 port
 ---
@@ -294,6 +294,8 @@ I/O:0x00D0
 
 Release
 ---
+* Sep 14, 2017 (rev.12)
+	- (newest libretro core is available library)
 * Sep 7, 2017
 	- Fix BEEP PCM
 * Aug 27, 2017 (rev.11)
