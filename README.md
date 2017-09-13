@@ -1,4 +1,4 @@
-Neko Project II 0.86 kai rev.11
+Neko Project II 0.86 kai rev.12
 ===
 Sep 14, 2017  
 
@@ -296,6 +296,7 @@ Release
 ---
 * Sep 14, 2017 (rev.12)
 	- (newest libretro core is available library)
+	- Fix triple fault case
 * Sep 7, 2017
 	- Fix BEEP PCM
 * Aug 27, 2017 (rev.11)
