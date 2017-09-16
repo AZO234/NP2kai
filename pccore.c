@@ -52,6 +52,9 @@
 #if defined(SUPPORT_HRTIMER)
 #include	"upd4990.h"
 #endif	/* SUPPORT_HRTIMER */
+#if defined(SUPPORT_IDEIO)
+#include	"ideio.h"
+#endif
 
 
 const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
@@ -711,6 +714,12 @@ void pccore_exec(BOOL draw) {
 		pic_irq();
 		if (CPU_RESETREQ) {
 			CPU_RESETREQ = 0;
+#if defined(SUPPORT_IDEIO)
+			ideio_reset(&np2cfg); // XXX: Win9xの再起動で必要
+#endif
+#if defined(SUPPORT_HOSTDRV)
+			hostdrv_reset(); // XXX: Win9xの再起動で必要
+#endif
 			CPU_SHUT();
 		}
 #if !defined(SINGLESTEPONLY)

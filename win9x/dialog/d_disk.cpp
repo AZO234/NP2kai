@@ -115,7 +115,7 @@ void dialog_changehdd(HWND hWnd, REG8 drv)
 			nTitle = IDS_SCSITITLE;
 			nExt = IDS_SCSIEXT;
 			nFilter = IDS_SCSIFILTER;
-			nIndex = 1;
+			nIndex = 3;
 		}
 	}
 #endif	// defined(SUPPORT_SCSI)
@@ -885,6 +885,10 @@ static DWORD WINAPI newdisk_ThreadFunc(LPVOID vdParam)
 	{
 		newdisk_vhd(lpPath, _mt_diskSize);
 	}
+	else if (!file_cmpname(ext, str_hdn))
+	{
+		newdisk_hdn(lpPath, _mt_diskSize);
+	}
 #endif
 #ifdef SUPPORT_VPCVHD
 	else if (!file_cmpname(ext, str_vhd))
@@ -984,6 +988,14 @@ void dialog_newdisk(HWND hWnd)
 		if (dlg.DoModal() == IDOK)
 		{
 			newdisk_vhd(lpPath, dlg.GetSize());
+		}
+	}
+	else if (!file_cmpname(ext, str_hdn))
+	{
+		CNewHddDlg dlg(hWnd, 2, 399);
+		if (dlg.DoModal() == IDOK)
+		{
+			newdisk_hdn(lpPath, dlg.GetSize());
 		}
 	}
 #endif

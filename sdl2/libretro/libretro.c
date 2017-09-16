@@ -707,6 +707,9 @@ int getmediatype(const char* filename){
    else if(strcasecmp(extension,".sln") == 0){
       return MEDIA_TYPE_HD;
    }
+   else if(strcasecmp(extension,".hdn") == 0){
+      return MEDIA_TYPE_HD;
+   }
    else if(strcasecmp(extension,".iso") == 0){
       return MEDIA_TYPE_CD;
    }

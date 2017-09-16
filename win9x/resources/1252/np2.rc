@@ -1518,14 +1518,14 @@ STRINGTABLE
 BEGIN
     IDS_SCSITITLE           "Select SCSI image"
     IDS_SCSIEXT             "hdd"
-    IDS_SCSIFILTER          "Virtual98 harddisk image files (*.hdd)|*.hdd|"
+    IDS_SCSIFILTER          "Virtual98 harddisk image files (*.hdd)|*.hdd|RaSCSI harddisk image files (*.hdn)|*.hdn|All supported files|*.hdd;*.hdn|"
     IDS_NEWDISKTITLE        "Create disk image"
 END
 
 STRINGTABLE
 BEGIN
     IDS_NEWDISKEXT          "d88"
-    IDS_NEWDISKFILTER       "D88 image files (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Anex86 harddisk image files (*.hdi)|*.hdi|T98 harddisk image files (*.thd)|*.thd|T98-Next harddisk image files (*.nhd)|*.nhd|Virtual98 harddisk image files (*.hdd)|*.hdd|VirtualPC harddisk image files (*.vhd)|*.vhd|"
+    IDS_NEWDISKFILTER       "D88 image files (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Anex86 harddisk image files (*.hdi)|*.hdi|T98 harddisk image files (*.thd)|*.thd|T98-Next harddisk image files (*.nhd)|*.nhd|Virtual98 harddisk image files (*.hdd)|*.hdd|RaSCSI harddisk image files (*.hdn)|*.hdn|VirtualPC harddisk image files (*.vhd)|*.vhd|"
     IDS_NEWDISKFILTER2      "D88 image files (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Anex86 harddisk image files (*.hdi)|*.hdi|T98 harddisk image files (*.thd)|*.thd|T98-Next harddisk image files (*.nhd)|*.nhd|VirtualPC harddisk image files (*.vhd)|*.vhd|"
     IDS_S98TITLE            "Save as S98 log"
     IDS_S98EXT              "s98"

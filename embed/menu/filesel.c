@@ -452,7 +452,7 @@ static const OEMCHAR diskfilter[] = OEMTEXT("All supported files");
 static const OEMCHAR fddtitle[] = OEMTEXT("Select floppy image");
 static const OEMCHAR fddext[] = OEMTEXT("d88\0") OEMTEXT("88d\0") OEMTEXT("d98\0") OEMTEXT("98d\0") OEMTEXT("fdi\0") OEMTEXT("xdf\0") OEMTEXT("hdm\0") OEMTEXT("dup\0") OEMTEXT("2hd\0") OEMTEXT("tfd\0") OEMTEXT("nfd\0") OEMTEXT("hd4\0") OEMTEXT("hd5\0") OEMTEXT("hd9\0") OEMTEXT("fdd\0") OEMTEXT("h01\0") OEMTEXT("hdb\0") OEMTEXT("ddb\0") OEMTEXT("dd6\0") OEMTEXT("dcp\0") OEMTEXT("dcu\0") OEMTEXT("flp\0") OEMTEXT("bin\0") OEMTEXT("fim\0");
 static const OEMCHAR hddtitle[] = OEMTEXT("Select HDD image");
-static const OEMCHAR sasiext[] = OEMTEXT("thd\0") OEMTEXT("nhd\0") OEMTEXT("hdi\0") OEMTEXT("vhd\0") OEMTEXT("sln\0");
+static const OEMCHAR sasiext[] = OEMTEXT("thd\0") OEMTEXT("nhd\0") OEMTEXT("hdi\0") OEMTEXT("vhd\0") OEMTEXT("sln\0") OEMTEXT("hdn\0");
 #if defined(SUPPORT_IDEIO)
 static const OEMCHAR cdtitle[] = OEMTEXT("Select CD-ROM image");
 static const OEMCHAR cdext[] = OEMTEXT("iso\0") OEMTEXT("cue\0") OEMTEXT("ccd\0") OEMTEXT("cdm\0") OEMTEXT("mds\0") OEMTEXT("nrg\0");
@@ -465,7 +465,7 @@ static const FSELPRM cdprm = {cdtitle, diskfilter, cdext};
 #endif
 
 #if defined(SUPPORT_SCSI)
-static const OEMCHAR scsiext[] = OEMTEXT("hdd\0");
+static const OEMCHAR scsiext[] = OEMTEXT("hdd\0") OEMTEXT("hdn\0");
 static const FSELPRM scsiprm = {hddtitle, diskfilter, scsiext};
 #endif
 

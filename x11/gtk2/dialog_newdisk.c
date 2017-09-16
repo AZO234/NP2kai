@@ -137,6 +137,10 @@ t98_newdisk_dialog(GtkWidget *dialog, const int kind)
 		maxsize = 8000;
 		break;
 
+	case 4:	/* HDN */
+		maxsize = 8000;
+		break;
+
 	default:
 		return 0;
 	}
@@ -248,6 +252,12 @@ create_newdisk_hd_dialog(const char *filename, int kind)
 		hdsize = t98_newdisk_dialog(dialog, kind);
 		if (hdsize > 0) {
 			newdisk_nhd(filename, hdsize);
+		}
+		break;
+	case 4:	/* HDN */
+		hdsize = t98_newdisk_dialog(dialog, kind);
+		if (hdsize > 0) {
+			newdisk_hdn(filename, hdsize);
 		}
 		break;
 	}

@@ -91,11 +91,6 @@ void opna_construct(POPNA opna)
 	memset(opna, 0, sizeof(*opna));
 #if defined(SUPPORT_FMGEN)
 	opna->fmgen = OPNA_Construct();
-	OPNA_Init(opna->fmgen, OPNA_CLOCK*2, np2cfg.samplingrate, false, "");
-	OPNA_SetVolumeFM(opna->fmgen, (int)LINEAR2DB((double)np2cfg.vol_fm / 128));
-	OPNA_SetVolumePSG(opna->fmgen, (int)LINEAR2DB((double)np2cfg.vol_ssg / 128));
-	OPNA_SetVolumeADPCM(opna->fmgen, (int)LINEAR2DB((double)np2cfg.vol_adpcm / 128));
-	OPNA_SetVolumeRhythmTotal(opna->fmgen, (int)LINEAR2DB((double)np2cfg.vol_rhythm / 128));
 	opnalist_push(opna);
 #endif	/* SUPPORT_FMGEN */
 }
@@ -143,7 +138,17 @@ void opna_reset(POPNA opna, REG8 cCaps)
 	}
 #if defined(SUPPORT_FMGEN)
 	if(np2cfg.usefmgen) {
+		OEMCHAR path[MAX_PATH];
+		char strbuf[MAX_PATH];
+
 		OPNA_Init(opna->fmgen, OPNA_CLOCK*2, np2cfg.samplingrate, false, ""); // サンプリングレート強制変更･･･
+		getbiospath(path, OEMTEXT(""), NELEMENTS(path));
+#ifdef UNICODE
+		wcstombs(strbuf, path, MAX_PATH);
+#else
+		strcpy(strbuf, path);
+#endif
+		OPNA_LoadRhythmSample(opna->fmgen, strbuf);
 		OPNA_SetVolumeFM(opna->fmgen, (int)LINEAR2DB((double)np2cfg.vol_fm / 128));
 		OPNA_SetVolumePSG(opna->fmgen, (int)LINEAR2DB((double)np2cfg.vol_ssg / 128));
 		OPNA_SetVolumeADPCM(opna->fmgen, (int)LINEAR2DB((double)np2cfg.vol_adpcm / 128));
@@ -267,7 +272,7 @@ static void restore(POPNA opna)
 			{
 				continue;
 			}
-			OPNA_SetReg(opna->fmgen, 0x28, opna->s.reg[i]);
+			OPNA_SetReg(opna->fmgen, 0x28, opna->s.keyreg[i]);
 		}
 	}
 #endif	/* SUPPORT_FMGEN */
@@ -756,6 +761,17 @@ int opna_sfsave(PCOPNA opna, STFLAGH sfh, const SFENTRY *tbl)
 	{
 		ret |= statflag_write(sfh, &opna->adpcm, sizeof(opna->adpcm));
 	}
+#if defined(SUPPORT_FMGEN)
+	statflag_write(sfh, &opna->usefmgen, sizeof(opna->usefmgen));
+	if(opna->usefmgen) {
+		void* buf;
+
+		buf = malloc(fmgen_opnadata_size);
+		OPNA_DataSave(opna->fmgen, buf);
+		ret |= statflag_write(sfh, buf, fmgen_opnadata_size);
+		free(buf);
+	}
+#endif	/* SUPPORT_FMGEN */
 
 	return ret;
 }
@@ -775,6 +791,28 @@ int opna_sfload(POPNA opna, STFLAGH sfh, const SFENTRY *tbl)
 		ret |= statflag_read(sfh, &opna->adpcm, sizeof(opna->adpcm));
 		adpcm_update(&opna->adpcm);
 	}
+#if defined(SUPPORT_FMGEN)
+	if(statflag_read(sfh, &opna->usefmgen, sizeof(opna->usefmgen))==STATFLAG_SUCCESS){
+		if(opna->usefmgen) {
+			OEMCHAR	path[MAX_PATH];
+			char strbuf[MAX_PATH] = {0};
+			void* buf;
+			buf = malloc(fmgen_opnadata_size);
+			ret |= statflag_read(sfh, buf, fmgen_opnadata_size);
+			OPNA_DataLoad(opna->fmgen, buf);
+			free(buf);
+			getbiospath(path, OEMTEXT(""), NELEMENTS(path));
+#ifdef UNICODE
+			wcstombs(strbuf, path, MAX_PATH);
+#else
+			strcpy(strbuf, path);
+#endif
+			OPNA_LoadRhythmSample(opna->fmgen, strbuf);
+		}
+	}else{
+		opna->usefmgen = 0;
+	}
+#endif	/* SUPPORT_FMGEN */
 
 	return ret;
 }

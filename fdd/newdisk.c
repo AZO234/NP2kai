@@ -282,6 +282,41 @@ ndvhd_err:
 	return;
 }
 
+void newdisk_hdn(const OEMCHAR *fname, UINT hddsize) {
+
+	FILEH	fh;
+	FILELEN	tmp;
+	BRESULT	r;
+
+	// HDN : RaSCSI HD image (suitable for NEC PC-9801-55/92)
+	// structure     : flat
+	// sectors/track : 25 (fixed)
+	// heads         :  8 (fixed)
+	// cylinders     : up to 4095 (12bits) (for old BIOS) =  399MiB
+	//                      65535 (16bits)                = 6399MiB
+	if ((fname == NULL) || (hddsize < 2) || (hddsize > 399)) {
+		goto ndhdn_err;
+	}
+	fh = file_create(fname);
+	if (fh == FILEH_INVALID) {
+		goto ndhdn_err;
+	}
+	tmp = hddsize * 1024 * 1024;
+	// round up 
+	if ((tmp % (512 * 25 * 8)) != 0) {
+		tmp = tmp / (512 * 25 * 8) + 1;
+		tmp *= (512 * 25 * 8);
+	}
+	r = writezero(fh, tmp);
+	file_close(fh);
+	if (r != SUCCESS) {
+		file_delete(fname);
+	}
+
+ndhdn_err:
+	return;
+}
+
 #ifdef SUPPORT_VPCVHD
 const char vpcvhd_sig[] = "conectix";
 const char vpcvhd_sigDH[] = "cxsparse";

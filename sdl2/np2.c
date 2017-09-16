@@ -215,6 +215,7 @@ int np2_main(int argc, char *argv[]) {
 		else if (0 == milstr_cmp(ext, ".vhd"))	imagetype = IMAGETYPE_SASI_IDE;
 		else if (0 == milstr_cmp(ext, ".sln"))	imagetype = IMAGETYPE_SASI_IDE;
 		else if (0 == milstr_cmp(ext, ".hdd"))	imagetype = IMAGETYPE_SCSI; // SCSI
+		else if (0 == milstr_cmp(ext, ".hdn"))	imagetype = IMAGETYPE_SCSI;
 		
 		switch (imagetype) {
 #if defined(SUPPORT_IDEIO) || defined(SUPPORT_SASI)

@@ -1522,7 +1522,7 @@ STRINGTABLE
 BEGIN
     IDS_SCSITITLE           "SCSIイメージ選択"
     IDS_SCSIEXT             "hdd"
-    IDS_SCSIFILTER          "Virtual98ハードディスクイメージ(*.hdd)|*.hdd|"
+    IDS_SCSIFILTER          "Virtual98ハードディスクイメージ(*.hdd)|*.hdd|RaSCSIハードディスクイメージ(*.hdn)|*.hdn|対応しているすべての形式|*.hdd;*.hdn|すべてのファイル(*.*)|*.*|"
     IDS_NEWDISKTITLE        "Create disk image"
 END
 
@@ -1531,7 +1531,7 @@ BEGIN
     IDS_NEWDISKEXT          "d88"
 //    IDS_NEWDISKFILTER       "D88フロッピーイメージ(*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Anex86ハードディスクイメージ(*.hdi)|*.hdi|T98ハードディスクイメージ(*.thd)|*.thd|T98-Nextハードディスクイメージ(*.nhd)|*.nhd|Virtual98ハードディスクイメージ(*.hdd)|*.hdd|"
 //    IDS_NEWDISKFILTER2      "D88フロッピーイメージ(*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Anex86ハードディスクイメージ(*.hdi)|*.hdi|T98ハードディスクイメージ(*.thd)|*.thd|T98-Nextハードディスクイメージ(*.nhd)|*.nhd|"
-    IDS_NEWDISKFILTER       "D88フロッピーイメージ(*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Anex86ハードディスクイメージ(*.hdi)|*.hdi|T98ハードディスクイメージ(*.thd)|*.thd|T98-Nextハードディスクイメージ(*.nhd)|*.nhd|Virtual98ハードディスクイメージ(*.hdd)|*.hdd|VirtualPCハードディスクイメージ (*.vhd)|*.vhd|"
+    IDS_NEWDISKFILTER       "D88フロッピーイメージ(*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Anex86ハードディスクイメージ(*.hdi)|*.hdi|T98ハードディスクイメージ(*.thd)|*.thd|T98-Nextハードディスクイメージ(*.nhd)|*.nhd|RaSCSIハードディスクイメージ(*.hdn)|*.hdn|Virtual98ハードディスクイメージ(*.hdd)|*.hdd|VirtualPCハードディスクイメージ (*.vhd)|*.vhd|"
     IDS_NEWDISKFILTER2      "D88フロッピーイメージ(*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Anex86ハードディスクイメージ(*.hdi)|*.hdi|T98ハードディスクイメージ(*.thd)|*.thd|T98-Nextハードディスクイメージ(*.nhd)|*.nhd|VirtualPCハードディスクイメージ (*.vhd)|*.vhd|"
     IDS_S98TITLE            "S98サウンドログ作成"
     IDS_S98EXT              "s98"

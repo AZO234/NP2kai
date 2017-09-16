@@ -1098,10 +1098,11 @@ cb_newdisk(GtkAction *action, gpointer user_data)
 		{ "hdi", 1 },
 		{ "thd", 2 },
 		{ "nhd", 3 },
+		{ "hdn", 4 },
 	};
-	static const char *extname[4] = { "d88", "hdi", "thd", "nhd" };
+	static const char *extname[5] = { "d88", "hdi", "thd", "nhd", "hdn" };
 	GtkWidget *dialog = NULL;
-	GtkFileFilter *f, *filter[4];
+	GtkFileFilter *f, *filter[5];
 	gchar *utf8, *path, *tmp;
 	const char *ext;
 	int kind;
@@ -1164,6 +1165,12 @@ cb_newdisk(GtkAction *action, gpointer user_data)
 		gtk_file_filter_add_pattern(filter[3], "*.[nN][hH][dD]");
 		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter[3]);
 	}
+	filter[4] = gtk_file_filter_new();
+	if (filter[4]) {
+		gtk_file_filter_set_name(filter[4], "RaSCSI hard disk image (*.nhd)");
+		gtk_file_filter_add_pattern(filter[4], "*.[hH][dD][nN]");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter[4]);
+	}
 	gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(dialog), filter[0]);
 
 	if (gtk_dialog_run(GTK_DIALOG(dialog)) != GTK_RESPONSE_OK)
@@ -1212,6 +1219,7 @@ cb_newdisk(GtkAction *action, gpointer user_data)
 	case 1: /* HDI */
 	case 2: /* THD */
 	case 3: /* NHD */
+	case 4: /* HDN */
 		create_newdisk_hd_dialog(path, kind);
 		break;
 

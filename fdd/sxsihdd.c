@@ -230,6 +230,17 @@ const OEMCHAR	*ext;
 		size = LOADINTELWORD(vhd.sectorsize);
 		totals = (SINT32)LOADINTELDWORD(vhd.totals);
 	}
+	else if ((iftype == SXSIDRV_SCSI) && (!file_cmpname(ext, str_hdn))) {
+		// RaSCSI flat disk image (NEC PC-9801-55)
+		FILELEN fsize = file_getsize(fh);
+		headersize = 0;
+		size = 512;
+		surfaces = 8;
+		sectors = 25;
+		cylinders = fsize / (sectors * surfaces * size);
+		totals = fsize / size;
+		// totals = (FILEPOS)cylinders * sectors * surfaces;
+	}
 	else if ((iftype == SXSIDRV_SASI) && (!file_cmpname(ext, str_slh))) {
 		SLHHDR slh;						// SL9821 HDD (IDE)
 		if ((file_read(fh, &slh, sizeof(slh)) != sizeof(slh)) ||
