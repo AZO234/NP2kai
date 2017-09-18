@@ -4,6 +4,8 @@ NP2 kai開発ノート by AZO
 ・GARUDIUS'95 タイトル表示 下部の表示が（16ライン？）欠落
   Anex86はOK、T98-Nextは同様
 
+  => 実機でも欠落する。
+
 ・ツーショットダイアリー BEEP 音声
   np2/fmgenでiniファイル内にBEEP_PCM=2とするとすごく綺麗。
 
@@ -24,7 +26,7 @@ NP2 kai開発ノート by AZO
 
 ・ERCACHE.EXEの組み込み時にtriple fault発生
 
-  => http://egg.2ch.net/test/read.cgi/software/1500009461/181-184
+  => http://egg.2ch.net/test/read.cgi/software/1500009461/181-203
      の修正。
 
 ・VEM486 + Turbo C++ 4J（のTC.EXE）でtriple fault発生
