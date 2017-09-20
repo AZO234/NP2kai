@@ -7,13 +7,13 @@ Build SDL2 port
 
 １． Install SDL2.  
 
-	(Windows + MSYS2)
-	$ pacman -S mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_mixer
+	(Linux)
+	$ sudo apt-get install libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev
 
 or
 
-	(Linux)
-	$ sudo apt-get install libsdl2-dev libsdl2-ttf-dev
+	(Windows + MSYS2)
+	$ pacman -S mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL2_mixer
 
 ２． Build.  
 
