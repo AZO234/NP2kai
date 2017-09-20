@@ -1285,7 +1285,7 @@ void retro_run (void)
    else {
       //emulate 1 frame
       pccore_exec(true /*draw*/);
-      sound_play_cb(NULL, NULL,SNDSZ*4);
+      sdlaudio_callback(NULL, NULL,SNDSZ*4);
    }
 
    video_cb(FrameBuffer, scrnsurf.width, scrnsurf.height, scrnsurf.width * 2/*Pitch*/);

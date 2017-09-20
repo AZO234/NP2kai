@@ -56,6 +56,7 @@ SOURCES_C := 		$(NP2_PATH)/calendar.c \
 		$(NP2_PATH)/sdl2/mousemng.c \
 		$(NP2_PATH)/sdl2/np2.c \
 		$(NP2_PATH)/sdl2/scrnmng.c \
+		$(NP2_PATH)/sdl2/soundmng.c \
 		$(NP2_PATH)/sdl2/sysmenu.c \
 		$(NP2_PATH)/sdl2/sysmng.c \
 		$(NP2_PATH)/sdl2/taskmng.c \
@@ -68,8 +69,7 @@ SOURCES_C := 		$(NP2_PATH)/calendar.c \
 		$(wildcard $(NP2_PATH)/vram/*.c) \
 		$(wildcard $(NP2_PATH)/zlib/*.c)
 
-SOURCES_CXX := $(NP2_PATH)/sdl2/soundmng.cpp \
-		$(wildcard $(NP2_PATH)/sound/fmgen/*.cpp)
+SOURCES_CXX := $(wildcard $(NP2_PATH)/sound/fmgen/*.cpp)
 
 ifeq ($(SUPPORT_NET), 1)
 	INCFLAGS+=	-I$(NP2_PATH)/network

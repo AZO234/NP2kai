@@ -1,12 +1,18 @@
 Neko Project II 0.86 kai rev.12
 ===
-Sep 16, 2017  
+Sep 20, 2017  
 
 Build SDL2 port
 ---
 
 １． Install SDL2.  
 
+	(Windows + MSYS2)
+	$ pacman -S mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_mixer
+
+or
+
+	(Linux)
 	$ sudo apt-get install libsdl2-dev libsdl2-ttf-dev
 
 ２． Build.  
@@ -294,6 +300,8 @@ I/O:0x00D0
 
 Release
 ---
+* Sep 20, 2017
+	- [SDL2] Use SDL2 mixer
 * Sep 16, 2017
 	- Add RaSCSI hdd image file support
 * Sep 14, 2017 (rev.12)
