@@ -83,7 +83,7 @@ static const MENUPRM res_cfg[] = {
 			{DLGTYPE_LTEXT,		DID_STATIC,		0,
 				str_buffer,								 16, 139,  40,  11},
 			{DLGTYPE_SLIDER,	DID_BUFFER,		MSS_BOTH | MENU_TABSTOP,
-				(void *)SLIDERPOS(100, 1000),			 60, 138, 140,  13},
+				(void *)SLIDERPOS(20, 1000),			 60, 138, 140,  13},
 			{DLGTYPE_RTEXT,		DID_BUFSTR,		0,
 				NULL,									200, 139,  44,  11},
 			{DLGTYPE_CHECK,		DID_RESUME,		MENU_TABSTOP,
@@ -131,7 +131,7 @@ static const MENUPRM res_cfg[] = {
 			{DLGTYPE_LTEXT,		DID_STATIC,		0,
 				str_buffer,								 20, 165,  48,  13},
 			{DLGTYPE_SLIDER,	DID_BUFFER,		MSS_BOTH | MENU_TABSTOP,
-				(void *)SLIDERPOS(100, 1000),			 68, 165, 160,  13},
+				(void *)SLIDERPOS(20, 1000),			 68, 165, 160,  13},
 			{DLGTYPE_RTEXT,		DID_BUFSTR,		0,
 				NULL,									228, 165,  48,  13},
 			{DLGTYPE_CHECK,		DID_RESUME,		MENU_TABSTOP,
@@ -195,8 +195,8 @@ static void setbufstr(void) {
 	OEMCHAR	work[32];
 
 	val = menudlg_getval(DID_BUFFER);
-	if (val < 100) {
-		val = 100;
+	if (val < 20) {
+		val = 20;
 	}
 	else if (val > 1000) {
 		val = 1000;
@@ -314,8 +314,8 @@ const OEMCHAR	*str;
 		soundrenewal = 1;
 	}
 	val = menudlg_getval(DID_BUFFER);
-	if (val < 100) {
-		val = 100;
+	if (val < 20) {
+		val = 20;
 	}
 	else if (val > 1000) {
 		val = 1000;
