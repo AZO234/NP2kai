@@ -61,6 +61,7 @@ struct tagOpna
 	_RHYTHM rhythm;
 	_ADPCM adpcm;
 #if defined(SUPPORT_FMGEN)
+	UINT8 usefmgen;
 	void* fmgen;
 #endif	/* SUPPORT_FMGEN */
 
