@@ -55,7 +55,7 @@ void	OPNA_SetLPFCutoff(void* OPNA, uint freq) { ((FM::OPNA*)OPNA)->SetLPFCutoff(
 bool	OPNA_SetRate(void* OPNA, uint c, uint r, bool b) { return ((FM::OPNA*)OPNA)->SetRate(c, r, b); }
 void 	SOUNDCALL OPNA_Mix(void* OPNA, int32* buffer, int nsamples) { ((FM::OPNA*)OPNA)->Mix(buffer, nsamples); }
 
-bool	OPNA_Count(void* OPNA, int32 us) { ((FM::OPNA*)OPNA)->Count(us); }
+bool	OPNA_Count(void* OPNA, int32 us) { return ((FM::OPNA*)OPNA)->Count(us); }
 int32	OPNA_GetNextEvent(void* OPNA) { return ((FM::OPNA*)OPNA)->GetNextEvent(); }
 
 void	OPNA_Reset(void* OPNA) { ((FM::OPNA*)OPNA)->Reset(); }
@@ -91,7 +91,7 @@ void	OPNB_SetLPFCutoff(void* OPNB, uint freq) { ((FM::OPNB*)OPNB)->SetLPFCutoff(
 bool	OPNB_SetRate(void* OPNB, uint c, uint r, bool b) { return ((FM::OPNB*)OPNB)->SetRate(c, r, b); }
 void 	SOUNDCALL OPNB_Mix(void* OPNB, int32* buffer, int nsamples) { ((FM::OPNB*)OPNB)->Mix(buffer, nsamples); }
 
-bool	OPNB_Count(void* OPNB, int32 us) { ((FM::OPNB*)OPNB)->Count(us); }
+bool	OPNB_Count(void* OPNB, int32 us) { return ((FM::OPNB*)OPNB)->Count(us); }
 int32	OPNB_GetNextEvent(void* OPNB) { return ((FM::OPNB*)OPNB)->GetNextEvent(); }
 
 void	OPNB_Reset(void* OPNB) { ((FM::OPNB*)OPNB)->Reset(); }
