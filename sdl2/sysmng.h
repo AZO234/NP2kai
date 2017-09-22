@@ -3,7 +3,8 @@
  *	@brief	Interface of the system
  */
 
-#pragma once
+#ifndef NP2_SYSMNG_H
+#define NP2_SYSMNG_H
 
 // Ç«Å[Ç≈Ç‡Ç¢Ç¢í ímån
 
@@ -36,4 +37,6 @@ void sysmng_cpureset(void);
 #ifdef __cplusplus
 }
 #endif
+
+#endif	/* NP2_SYSMNG_H */
 

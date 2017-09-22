@@ -7,10 +7,13 @@
 #include	"pccore.h"
 #include	"iocore.h"
 #include	"sxsi.h"
+#include	"sysmng.h"
 #if defined(SUPPORT_IDEIO)
 #include	"ideio.h"
 #endif
+#if !defined(_MSC_VER)
 #include <sys/time.h>
+#endif
 
 	_SXSIDEV	sxsi_dev[SASIHDD_MAX + SCSIHDD_MAX];
 
