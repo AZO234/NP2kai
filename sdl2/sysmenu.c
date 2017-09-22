@@ -425,12 +425,12 @@ static void sys_cmd(MENUID id) {
 #endif	/* defined(SUPPORT_PX) */
 
 		case MID_DEFSND:
-			np2cfg.sndgen = 0;
+			np2cfg.usefmgen = 0;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_FMGEN:
-			np2cfg.sndgen = 1;
+			np2cfg.usefmgen = 1;
 			update |= SYS_UPDATECFG;
 			break;
 
@@ -694,7 +694,7 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 	menusys_setcheck(MID_PX2, (b == 0x50));
 #endif	/* defined(SUPPORT_PX) */
 	menusys_setcheck(MID_AMD98, (b == 0x80));
-	b = np2cfg.sndgen;
+	b = np2cfg.usefmgen;
 	menusys_setcheck(MID_DEFSND, (b == 0));
 	menusys_setcheck(MID_FMGEN, (b == 1));
 	menusys_setcheck(MID_JASTSND, (np2oscfg.jastsnd & 1));

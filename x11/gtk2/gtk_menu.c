@@ -322,11 +322,11 @@ static GtkRadioActionEntry screensize_entries[] = {
 };
 static const guint n_screensize_entries = G_N_ELEMENTS(screensize_entries);
 
-static GtkRadioActionEntry sndgen_entries[] = {
+static GtkRadioActionEntry usefmgen_entries[] = {
 { "defsnd",  NULL, "D_efault",  NULL, NULL, 0 },
 { "fmgen",  NULL, "f_mgen",  NULL, NULL, 1 },
 };
-static const guint n_sndgen_entries = G_N_ELEMENTS(sndgen_entries);
+static const guint n_usefmgen_entries = G_N_ELEMENTS(usefmgen_entries);
 
 static void cb_beepvol(gint idx);
 static void cb_f11key(gint idx);
@@ -338,7 +338,7 @@ static void cb_rotate(gint idx);
 static void cb_screenmode(gint idx);
 static void cb_screensize(gint idx);
 static void cb_soundboard(gint idx);
-static void cb_sndgen(gint idx);
+static void cb_usefmgen(gint idx);
 
 static const struct {
 	GtkRadioActionEntry	*entry;
@@ -355,7 +355,7 @@ static const struct {
 	{ screenmode_entries, G_N_ELEMENTS(screenmode_entries), cb_screenmode },
 	{ screensize_entries, G_N_ELEMENTS(screensize_entries), cb_screensize },
 	{ soundboard_entries, G_N_ELEMENTS(soundboard_entries), cb_soundboard },
-	{ sndgen_entries, G_N_ELEMENTS(sndgen_entries), cb_sndgen },
+	{ usefmgen_entries, G_N_ELEMENTS(usefmgen_entries), cb_usefmgen },
 };
 static const guint n_radiomenu_entries = G_N_ELEMENTS(radiomenu_entries);
 
@@ -599,8 +599,8 @@ xmenu_select_item_by_index(MENU_HDL hdl, GtkRadioActionEntry *entry, guint nentr
 	xmenu_select_item_by_index(NULL, screensize_entries, n_screensize_entries, v);
 #define	xmenu_select_soundboard(v) \
 	xmenu_select_item_by_index(NULL, soundboard_entries, n_soundboard_entries, v);
-#define	xmenu_select_sndgen(v) \
-	xmenu_select_item_by_index(NULL, sndgen_entries, n_sndgen_entries, v);
+#define	xmenu_select_usefmgen(v) \
+	xmenu_select_item_by_index(NULL, usefmgen_entries, n_usefmgen_entries, v);
 
 
 /*
@@ -1833,17 +1833,17 @@ cb_soundboard(gint idx)
 }
 
 static void
-cb_sndgen(gint idx)
+cb_usefmgen(gint idx)
 {
 	guint value;
 
 	if (idx >= 0) {
-		value = sndgen_entries[idx].value;
+		value = usefmgen_entries[idx].value;
 	} else {
 		value = 0;
 	}
-	if (np2cfg.sndgen != value) {
-		np2cfg.sndgen = value;
+	if (np2cfg.usefmgen != value) {
+		np2cfg.usefmgen = value;
 		sysmng_update(SYS_UPDATECFG);
 	}
 }
@@ -2084,7 +2084,7 @@ create_menu(void)
 	xmenu_select_screenmode(scrnmode & SCRNMODE_FULLSCREEN);
 	xmenu_select_screensize(SCREEN_DEFMUL);
 	xmenu_select_soundboard(np2cfg.SOUND_SW);
-	xmenu_select_sndgen(np2cfg.sndgen);
+	xmenu_select_usefmgen(np2cfg.usefmgen);
 
 	menubar = gtk_ui_manager_get_widget(menu_hdl.ui_manager, "/MainMenu");
 

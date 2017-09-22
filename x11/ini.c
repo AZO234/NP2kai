@@ -565,7 +565,7 @@ static INITBL iniitem[] = {
 	{"volume_R", INIMAX_UINT8,	&np2cfg.vol_rhythm,	128},
 	{"volume_C", INIMAX_UINT8,	&np2cfg.vol_cdda,	128},
 
-	{"sndgen", INITYPE_UINT8,	&np2cfg.sndgen,		0},
+	{"usefmgen", INITYPE_BOOL,	&np2cfg.usefmgen,	0},
 
 	{"Seek_Snd", INITYPE_BOOL,	&np2cfg.MOTOR,		0},
 	{"Seek_Vol", INIMAX_UINT8,	&np2cfg.MOTORVOL,	100},

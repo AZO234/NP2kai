@@ -299,7 +299,7 @@ void pccore_init(void) {
 #if !defined(DISABLE_SOUND)
 #if defined(SUPPORT_FMGEN)
 	enable_fmgen = 0;
-	if(np2cfg.sndgen == 1)
+	if(np2cfg.usefmgen == 1)
 		enable_fmgen = 1;
 #endif	/* SUPPORT_FMGEN */
 
@@ -393,7 +393,7 @@ void pccore_reset(void) {
 #if !defined(DISABLE_SOUND)
 #if defined(SUPPORT_FMGEN)
 	enable_fmgen = 0;
-	if(np2cfg.sndgen == 1)
+	if(np2cfg.usefmgen == 1)
 		enable_fmgen = 1;
 #endif	/* SUPPORT_FMGEN */
 

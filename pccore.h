@@ -141,7 +141,7 @@ struct tagNP2Config
 	UINT8	pc9861sw[3];
 	UINT8	pc9861jmp[6];
 
-	UINT8	sndgen;
+	UINT8	usefmgen;
 
 	UINT8	fddequip;
 	UINT8	MOTOR;
