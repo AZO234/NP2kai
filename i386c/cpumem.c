@@ -1,4 +1,4 @@
-#include	"compiler.h"
+﻿#include	"compiler.h"
 
 #ifndef NP2_MEMORY_ASM
 

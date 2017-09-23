@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file	pccore.c
  * @brief	emluration core
  *

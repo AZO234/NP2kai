@@ -1,3 +1,5 @@
+#ifndef NP2_WIN9X_SYSMNG_H
+#define NP2_WIN9X_SYSMNG_H
 
 // Ç«Å[Ç≈Ç‡Ç¢Ç¢í ímån
 
@@ -66,3 +68,4 @@ void toolwin_hddaccess(UINT8 drv);
 }
 #endif
 
+#endif	/* NP2_WIN9X_SYSMNG_H */
