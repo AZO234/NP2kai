@@ -6,7 +6,7 @@
 #include	"pccore.h"
 #include	"diskimage/fddfile.h"
 #include	"fdd/diskdrv.h"
-#ifdef SUPPORT_IDEIO
+#if defined(SUPPORT_IDEIO)||defined(SUPPORT_SCSI)
 #include	"fdd/sxsi.h"
 #include	"resource.h"
 #include	"win9x/dialog/np2class.h"
@@ -61,11 +61,17 @@ OEMCHAR* DOSIOCALL sysmng_file_getname(OEMCHAR* lpPathName){
 }
 
 void sysmng_updatecaption(UINT8 flag) {
-
-#ifdef SUPPORT_IDEIO
+	
+#if defined(SUPPORT_IDEIO)||defined(SUPPORT_SCSI)
 	int i, cddrvnum = 1;
+#endif
+#if defined(SUPPORT_IDEIO)
 	static OEMCHAR hddimgmenustrorg[4][MAX_PATH] = {0};
 	static OEMCHAR hddimgmenustr[4][MAX_PATH] = {0};
+#endif
+#if defined(SUPPORT_SCSI)
+	static OEMCHAR scsiimgmenustrorg[4][MAX_PATH] = {0};
+	static OEMCHAR scsiimgmenustr[4][MAX_PATH] = {0};
 #endif
 	OEMCHAR	work[512];
 
@@ -144,6 +150,57 @@ void sysmng_updatecaption(UINT8 flag) {
 						mii.dwTypeData = hddimgmenustr[i];
 						mii.cch = _tcslen(hddimgmenustr[i]);
 						SetMenuItemInfo(hMenuTgt, IDM_IDE0STATE+i, MF_BYCOMMAND, &mii);
+					}
+				}
+			}
+		}
+#endif
+#ifdef SUPPORT_SCSI
+		for(i=0;i<4;i++){
+			if(g_hWndMain){
+				OEMCHAR newtext[MAX_PATH*2+100];
+				OEMCHAR *fname;
+				OEMCHAR *fnamenext;
+				OEMCHAR *fnametmp;
+				OEMCHAR *fnamenexttmp;
+				HMENU hMenu = np2class_gethmenu(g_hWndMain);
+				HMENU hMenuTgt;
+				int hMenuTgtPos;
+				MENUITEMINFO mii = {0};
+				menu_searchmenu(hMenu, IDM_SCSI0STATE+i, &hMenuTgt, &hMenuTgtPos);
+				if(hMenu){
+					mii.cbSize = sizeof(MENUITEMINFO);
+					if(!scsiimgmenustrorg[i][0]){
+						GetMenuString(hMenuTgt, IDM_SCSI0STATE+i, scsiimgmenustrorg[i], NELEMENTS(scsiimgmenustrorg[0]), MF_BYCOMMAND);
+					}
+					fname = sxsi_getfilename(i+0x20);
+					fnamenext = (OEMCHAR*)diskdrv_getsxsi(i+0x20);
+					if(fname && *fname && fnamenext && *fnamenext && (fnametmp = sysmng_file_getname(fname)) && (fnamenexttmp = sysmng_file_getname(fnamenext))){
+						_tcscpy(newtext, scsiimgmenustrorg[i]);
+						_tcscat(newtext, fnametmp);
+						if(_tcscmp(fname, fnamenext)){
+							_tcscat(newtext, OEMTEXT(" -> "));
+							_tcscat(newtext, fnamenexttmp);
+						}
+					}else if(fnamenext && *fnamenext && (fnamenexttmp = sysmng_file_getname(fnamenext))){
+						_tcscpy(newtext, scsiimgmenustrorg[i]);
+						_tcscat(newtext, OEMTEXT("[none] -> "));
+						_tcscat(newtext, fnamenexttmp);
+					}else if(fname && *fname && (fnametmp = sysmng_file_getname(fname))){
+						_tcscpy(newtext, scsiimgmenustrorg[i]);
+						_tcscat(newtext, fnametmp);
+						_tcscat(newtext, OEMTEXT(" -> [none]"));
+					}else{
+						_tcscpy(newtext, scsiimgmenustrorg[i]);
+						_tcscat(newtext, OEMTEXT("[none]"));
+					}
+					if(_tcscmp(newtext, scsiimgmenustr[i])){
+						_tcscpy(scsiimgmenustr[i], newtext);
+						mii.fMask = MIIM_TYPE;
+						mii.fType = MFT_STRING;
+						mii.dwTypeData = scsiimgmenustr[i];
+						mii.cch = _tcslen(scsiimgmenustr[i]);
+						SetMenuItemInfo(hMenuTgt, IDM_SCSI0STATE+i, MF_BYCOMMAND, &mii);
 					}
 				}
 			}

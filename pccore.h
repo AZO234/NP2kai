@@ -141,7 +141,9 @@ struct tagNP2Config
 	UINT8	pc9861sw[3];
 	UINT8	pc9861jmp[6];
 
+#if defined(SUPPORT_FMGEN)
 	UINT8	usefmgen;
+#endif	/* SUPPORT_FMGEN */
 
 	UINT8	fddequip;
 	UINT8	MOTOR;

@@ -1114,24 +1114,32 @@ BEGIN
         MENUITEM "&Open...",                    IDM_SCSI0OPEN
         MENUITEM SEPARATOR
         MENUITEM "&Remove",                     IDM_SCSI0EJECT
+        MENUITEM SEPARATOR
+        MENUITEM " ",							IDM_SCSI0STATE
     END
     POPUP "SCSI #1"
     BEGIN
         MENUITEM "&Open...",                    IDM_SCSI1OPEN
         MENUITEM SEPARATOR
         MENUITEM "&Remove",                     IDM_SCSI1EJECT
+        MENUITEM SEPARATOR
+        MENUITEM " ",							IDM_SCSI1STATE
     END
     POPUP "SCSI #2"
     BEGIN
         MENUITEM "&Open...",                    IDM_SCSI2OPEN
         MENUITEM SEPARATOR
         MENUITEM "&Remove",                     IDM_SCSI2EJECT
+        MENUITEM SEPARATOR
+        MENUITEM " ",							IDM_SCSI2STATE
     END
     POPUP "SCSI #3"
     BEGIN
         MENUITEM "&Open...",                    IDM_SCSI3OPEN
         MENUITEM SEPARATOR
         MENUITEM "&Remove",                     IDM_SCSI3EJECT
+        MENUITEM SEPARATOR
+        MENUITEM " ",							IDM_SCSI3STATE
     END
 END
 

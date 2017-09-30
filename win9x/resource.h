@@ -525,6 +525,14 @@
 #define IDM_IDE1PHYSICALDRV             40462
 #define IDM_IDE2PHYSICALDRV             40463
 #define IDM_IDE3PHYSICALDRV             40464
+#define IDM_SCSI0STATE                  40471
+#define IDM_SCSI1STATE                  40472
+#define IDM_SCSI2STATE                  40473
+#define IDM_SCSI3STATE                  40474
+#define IDM_SCSI4STATE                  40475
+#define IDM_SCSI5STATE                  40476
+#define IDM_SCSI6STATE                  40477
+#define IDM_SCSI7STATE                  40478
 #define IDM_WINDOW                      40501
 #define IDM_FULLSCREEN                  40502
 #define IDM_ROLNORMAL                   40503
