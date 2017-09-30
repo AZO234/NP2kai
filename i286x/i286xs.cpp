@@ -1289,14 +1289,16 @@ const I286TBL sftext16cl_xtable[8] = {
 I286 test_ea8_data8(void) {
 
 		__asm {
-				PREPART_EA8(2)
+				//PREPART_EA8(2)
+				PREPART_EA8_X(2, 4)
 					mov		ecx, ebx
 					shr		ecx, 8
 					test	byte ptr I286_REG[eax], ch
 					FLAG_STORE0
 					GET_NEXTPRE3
 					ret
-				MEMORY_EA8(6)
+				//MEMORY_EA8(6)
+				MEMORY_EA8_X(6, 11)
 					test	byte ptr I286_MEM[ecx], bl
 					FLAG_STORE0
 					GET_NEXTPRE1
@@ -1316,7 +1318,8 @@ I286 not_ea8(void) {
 					not		byte ptr I286_REG[eax]
 					GET_NEXTPRE2
 					ret
-				MEMORY_EA8(7)
+				//MEMORY_EA8(7)
+				MEMORY_EA8_X(7, 16)
 					not		byte ptr I286_MEM[ecx]
 					ret
 				EXTMEM_EA8
@@ -1334,7 +1337,8 @@ I286 neg_ea8(void) {
 					FLAG_STORE_OF
 					GET_NEXTPRE2
 					ret
-				MEMORY_EA8(7)
+				//MEMORY_EA8(7)
+				MEMORY_EA8_X(7, 16)
 					neg		byte ptr I286_MEM[ecx]
 					FLAG_STORE_OF
 					ret
@@ -1349,14 +1353,16 @@ I286 neg_ea8(void) {
 I286 mul_ea8(void) {
 
 		__asm {
-				PREPART_EA8(13)
+				//PREPART_EA8(13)
+				PREPART_EA8_X(13, 21)
 					mov		al, byte ptr I286_REG[eax]
 					mul		I286_AL
 					mov		I286_AX, ax
 					FLAG_STORE_OF
 					GET_NEXTPRE2
 					ret
-				MEMORY_EA8(16)
+				//MEMORY_EA8(16)
+				MEMORY_EA8_X(16, 27)
 					mov		al, byte ptr I286_MEM[ecx]
 					mul		I286_AL
 					mov		I286_AX, ax
@@ -1373,14 +1379,16 @@ I286 mul_ea8(void) {
 I286 imul_ea8(void) {
 
 		__asm {
-				PREPART_EA8(13)
+				//PREPART_EA8(13)
+				PREPART_EA8_X(13, 36)
 					mov		al, byte ptr I286_REG[eax]
 					imul	I286_AL
 					mov		I286_AX, ax
 					FLAG_STORE_OF
 					GET_NEXTPRE2
 					ret
-				MEMORY_EA8(16)
+				//MEMORY_EA8(16)
+				MEMORY_EA8_X(16, 42)
 					mov		al, byte ptr I286_MEM[ecx]
 					imul	I286_AL
 					mov		I286_AX, ax
@@ -1447,8 +1455,6 @@ I286 idiv_ea8(void) {
 	idivcheck:	test	ebp, ebp
 				je		idivovf
 				mov		ax, I286_AX
-				cmp		ax, 0x8000
-				je		idivovf
 				cwd
 				idiv	bp
 				mov		I286_AL, al
@@ -1470,14 +1476,16 @@ I286 idiv_ea8(void) {
 I286 test_ea16_data16(void) {
 
 		__asm {
-				PREPART_EA16(2)
+				//PREPART_EA16(2)
+				PREPART_EA16_X(2, 4)
 					mov		ecx, ebx
 					shr		ecx, 16
 					test	word ptr I286_REG[eax*2], cx
 					FLAG_STORE0
 					GET_NEXTPRE4
 					ret
-				MEMORY_EA16(6)
+				//MEMORY_EA16(6)
+				MEMORY_EA16_X(6, 11)
 					test	word ptr I286_MEM[ecx], bx
 					FLAG_STORE0
 					GET_NEXTPRE2
@@ -1497,7 +1505,8 @@ I286 not_ea16(void) {
 					not		word ptr I286_REG[eax*2]
 					GET_NEXTPRE2
 					ret
-				MEMORY_EA16(7)
+				//MEMORY_EA16(7)
+				MEMORY_EA16_X(7, 16)
 					not		word ptr I286_MEM[ecx]
 					ret
 				EXTMEM_EA16
@@ -1515,7 +1524,8 @@ I286 neg_ea16(void) {
 					FLAG_STORE_OF
 					GET_NEXTPRE2
 					ret
-				MEMORY_EA16(7)
+				//MEMORY_EA16(7)
+				MEMORY_EA16_X(7, 16)
 					neg		word ptr I286_MEM[ecx]
 					FLAG_STORE_OF
 					ret
@@ -1530,7 +1540,8 @@ I286 neg_ea16(void) {
 I286 mul_ea16(void) {
 
 		__asm {
-				PREPART_EA16(21)
+				//PREPART_EA16(21)
+				PREPART_EA16_X(21, 29)
 					mov		ax, word ptr I286_REG[eax*2]
 					mul		I286_AX
 					mov		I286_AX, ax
@@ -1538,7 +1549,8 @@ I286 mul_ea16(void) {
 					FLAG_STORE_OF
 					GET_NEXTPRE2
 					ret
-				MEMORY_EA16(24)
+				//MEMORY_EA16(24)
+				MEMORY_EA16_X(24, 35)
 					mov		ax, word ptr I286_MEM[ecx]
 					mul		I286_AX
 					mov		I286_AX, ax
@@ -1557,7 +1569,8 @@ I286 mul_ea16(void) {
 I286 imul_ea16(void) {
 
 		__asm {
-				PREPART_EA16(21)
+				//PREPART_EA16(21)
+				PREPART_EA16_X(21, 44)
 					mov		ax, word ptr I286_REG[eax*2]
 					imul	I286_AX
 					mov		I286_AX, ax
@@ -1565,7 +1578,8 @@ I286 imul_ea16(void) {
 					FLAG_STORE_OF
 					GET_NEXTPRE2
 					ret
-				MEMORY_EA16(24)
+				//MEMORY_EA16(24)
+				MEMORY_EA16_X(24, 50)
 					mov		ax, word ptr I286_MEM[ecx]
 					imul	I286_AX
 					mov		I286_AX, ax
@@ -1635,12 +1649,9 @@ I286 idiv_ea16(void) {
 				align	4
 	idivcheck:	test	ebp, ebp
 				je		idivovf
-				movzx	edx, I286_DX
-				movzx	eax, I286_AX
-				shl		edx, 16
-				or		eax, edx
-				cmp		eax, 0x80000000
-				je		idivovf
+				movzx	eax, I286_DX
+				shl		eax, 16
+				mov		ax, I286_AX
 				cdq
 				idiv	ebp
 				mov		I286_AX, ax
@@ -1682,7 +1693,8 @@ I286 inc_ea8(void) {
 					FLAG_STORE_NC
 					GET_NEXTPRE2
 					ret
-				MEMORY_EA8(7)
+				//MEMORY_EA8(7)
+				MEMORY_EA8_X(7, 16)
 					inc		byte ptr I286_MEM[ecx]
 					FLAG_STORE_NC
 					ret
@@ -1702,7 +1714,8 @@ I286 dec_ea8(void) {
 					FLAG_STORE_NC
 					GET_NEXTPRE2
 					ret
-				MEMORY_EA8(7)
+				//MEMORY_EA8(7)
+				MEMORY_EA8_X(7, 16)
 					dec		byte ptr I286_MEM[ecx]
 					FLAG_STORE_NC
 					ret
@@ -1722,7 +1735,8 @@ I286 inc_ea16(void) {
 					FLAG_STORE_NC
 					GET_NEXTPRE2
 					ret
-				MEMORY_EA16(7)
+				//MEMORY_EA16(7)
+				MEMORY_EA16_X(7, 16)
 					inc		word ptr I286_MEM[ecx]
 					FLAG_STORE_NC
 					ret
@@ -1742,7 +1756,8 @@ I286 dec_ea16(void) {
 					FLAG_STORE_NC
 					GET_NEXTPRE2
 					ret
-				MEMORY_EA16(7)
+				//MEMORY_EA16(7)
+				MEMORY_EA16_X(7, 16)
 					dec		word ptr I286_MEM[ecx]
 					FLAG_STORE_NC
 					ret
@@ -1758,7 +1773,8 @@ I286 call_ea16(void) {
 
 		__asm {
 				sub		I286_SP, 2
-				PREPART_EA16(7)
+				//PREPART_EA16(7)
+				PREPART_EA16_X(7, (14+4))
 					add		si, 2
 					mov		dx, word ptr I286_REG[eax*2]
 					xchg	dx, si
@@ -1766,7 +1782,8 @@ I286 call_ea16(void) {
 					movzx	ecx, I286_SP
 					add		ecx, SS_BASE
 					jmp		i286_memorywrite_w
-				MEMORY_EA16(11)
+				//MEMORY_EA16(11)
+				MEMORY_EA16_X(11, (23+4))
 					mov		dx, word ptr I286_MEM[ecx]
 					xchg	dx, si
 					RESET_XPREFETCH
@@ -1788,7 +1805,8 @@ I286 call_far_ea16(void) {
 		__asm {
 				cmp		al, 0c0h
 				jnc		register_eareg16
-				I286CLOCK(16)
+				//I286CLOCK(16)
+				I286CLOCK_X(a, 16, (31+4))
 				call	p_get_ea[eax*4]
 				push	edi
 				mov		edi, SS_BASE
@@ -1829,12 +1847,14 @@ register_eareg16:
 I286 jmp_ea16(void) {
 
 		__asm {
-				PREPART_EA16(7)
+				//PREPART_EA16(7)
+				PREPART_EA16_X(7, (11+4))
 					mov		ax, word ptr I286_REG[eax*2]
 					mov		si, ax
 					RESET_XPREFETCH
 					ret
-				MEMORY_EA16(11)
+				//MEMORY_EA16(11)
+				MEMORY_EA16_X(11, (20+4))
 					mov		ax, word ptr I286_MEM[ecx]
 					mov		si, ax
 					RESET_XPREFETCH
@@ -1851,7 +1871,8 @@ I286 jmp_far_ea16(void) {
 		__asm {
 				cmp		al, 0c0h
 				jnc		register_eareg16
-				I286CLOCK(11)
+				//I286CLOCK(11)
+				I286CLOCK_X(a, 11, (27+4))
 				call	p_get_ea[eax*4]
 				lea		ecx, [edi + ebp]
 				call	i286_memoryread_w
@@ -1880,13 +1901,15 @@ I286 push_ea16(void) {
 
 		__asm {
 				sub		I286_SP, 2
-				PREPART_EA16(3)
+				//PREPART_EA16(3)
+				PREPART_EA16_X(3, 8)
 					mov		dx, word ptr I286_REG[eax*2]
 					GET_NEXTPRE2
 					movzx	ecx, I286_SP
 					add		ecx, SS_BASE
 					jmp		i286_memorywrite_w
-				MEMORY_EA16(5)
+				//MEMORY_EA16(5)
+				MEMORY_EA16_X(5, 18)
 					mov		dx, word ptr I286_MEM[ecx]
 					movzx	ecx, I286_SP
 					add		ecx, SS_BASE
@@ -1902,7 +1925,8 @@ I286 push_ea16(void) {
 I286 pop_ea16(void) {
 
 		__asm {
-				I286CLOCK(5)
+				//I286CLOCK(5)
+				I286CLOCK_X(a, 5, 17)
 				push	eax
 				movzx	ecx, I286_SP
 				add		I286_SP, 2

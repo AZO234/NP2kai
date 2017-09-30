@@ -10,7 +10,7 @@
 #include	"iocore.h"
 #include	"i286x.mcr"
 #include	"i286xea.mcr"
-#include	"dmax86.h"
+#include	"dmap.h"
 #if defined(ENABLE_TRAP)
 #include "trap/steptrap.h"
 #endif
@@ -31,7 +31,7 @@ static	I286TBL v30ope0xf7_xtable[8];
 static	I286TBL	v30op_repc[256];
 #endif
 
-static const UINT8 rotatebase16[256] =
+static const BYTE shiftbase16[256] =
 				{0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,
 				16, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,
 				16, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,
@@ -49,7 +49,7 @@ static const UINT8 rotatebase16[256] =
 				16, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,
 				16, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15};
 
-static const UINT8 rotatebase09[256] =
+static const BYTE shiftbase09[256] =
 				{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6,
 				 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4,
 				 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2,
@@ -67,7 +67,7 @@ static const UINT8 rotatebase09[256] =
 				 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5,
 				 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3};
 
-static const UINT8 rotatebase17[256] =
+static const BYTE shiftbase17[256] =
 				{0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,
 				16,17, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,
 				15,16,17, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,
@@ -84,24 +84,6 @@ static const UINT8 rotatebase17[256] =
 				 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17, 1, 2,
 				 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17, 1,
 				 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17};
-
-static const UINT8 shiftbase[256] =
-				{0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,
-				16,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,
-				17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,
-				17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,
-				17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,
-				17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,
-				17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,
-				17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,
-				17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,
-				17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,
-				17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,
-				17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,
-				17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,
-				17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,
-				17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,
-				17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17};
 
 
 
@@ -177,7 +159,8 @@ I286 v30segprefix_ds(void) {					// 3E: ds:
 I286 v30push_sp(void) {							// 54: push sp
 
 		__asm {
-				I286CLOCK(3)
+				//I286CLOCK(3)
+				I286CLOCK(8)
 				GET_NEXTPRE1
 				sub		I286_SP, 2
 				movzx	ecx, I286_SP
@@ -190,7 +173,8 @@ I286 v30push_sp(void) {							// 54: push sp
 I286 v30pop_sp(void) {							// 5C: pop sp
 
 		__asm {
-				I286CLOCK(5)
+				//I286CLOCK(5)
+				I286CLOCK(8)
 				REGPOP(I286_SP)
 				GET_NEXTPRE1
 				ret
@@ -223,7 +207,8 @@ I286 v30mov_seg_ea(void) {						// 8E: mov segrem, EA
 				jmp		segset
 				align	4
 		src_memory:
-				I286CLOCK(5)
+				//I286CLOCK(5)
+				I286CLOCK(11)
 				call	p_ea_dst[eax*4]
 				call	i286_memoryread_w
 		segset:
@@ -256,7 +241,8 @@ I286 v30_pushf(void) {							// 9C: pushf
 
 		__asm {
 				GET_NEXTPRE1
-				I286CLOCK(3)
+				//I286CLOCK(3)
+				I286CLOCK(8)
 				mov		dx, I286_FLAG
 				or		dx, 0f000h
 				sub		I286_SP, 2
@@ -270,7 +256,8 @@ I286 v30_popf(void) {							// 9D: popf
 
 		__asm {
 				GET_NEXTPRE1
-				I286CLOCK(5)
+				//I286CLOCK(5)
+				I286CLOCK(8)
 				movzx	ecx, I286_SP
 				add		ecx, SS_BASE
 				call	i286_memoryread_w
@@ -299,7 +286,7 @@ I286 v30_popf(void) {							// 9D: popf
 I286 rol_r8_v30(void) {
 
 		__asm {
-				mov		cl, rotatebase16[ecx]
+				mov		cl, shiftbase16[ecx]
 				rol		byte ptr [edx], cl
 				FLAG_STORE_OC
 				ret
@@ -309,7 +296,7 @@ I286 rol_r8_v30(void) {
 I286 ror_r8_v30(void) {
 
 		__asm {
-				mov		cl, rotatebase16[ecx]
+				mov		cl, shiftbase16[ecx]
 				ror		byte ptr [edx], cl
 				FLAG_STORE_OC
 				ret
@@ -319,7 +306,7 @@ I286 ror_r8_v30(void) {
 I286 rcl_r8_v30(void) {
 
 		__asm {
-				mov		cl, rotatebase09[ecx]
+				mov		cl, shiftbase09[ecx]
 				CFLAG_LOAD
 				rcl		byte ptr [edx], cl
 				FLAG_STORE_OC
@@ -330,7 +317,7 @@ I286 rcl_r8_v30(void) {
 I286 rcr_r8_v30(void) {
 
 		__asm {
-				mov		cl, rotatebase09[ecx]
+				mov		cl, shiftbase09[ecx]
 				CFLAG_LOAD
 				rcr		byte ptr [edx], cl
 				FLAG_STORE_OC
@@ -341,7 +328,7 @@ I286 rcr_r8_v30(void) {
 I286 shl_r8_v30(void) {
 
 		__asm {
-				mov		cl, shiftbase[ecx]
+				mov		cl, shiftbase16[ecx]
 				shl		byte ptr [edx], cl
 				FLAG_STORE_OF
 				ret
@@ -351,7 +338,7 @@ I286 shl_r8_v30(void) {
 I286 shr_r8_v30(void) {
 
 		__asm {
-				mov		cl, shiftbase[ecx]
+				mov		cl, shiftbase16[ecx]
 				shr		byte ptr [edx], cl
 				FLAG_STORE_OF
 				ret
@@ -361,7 +348,7 @@ I286 shr_r8_v30(void) {
 I286 sar_r8_v30(void) {
 
 		__asm {
-				mov		cl, shiftbase[ecx]
+				mov		cl, shiftbase16[ecx]
 				sar		byte ptr [edx], cl
 				FLAG_STORE0
 				ret
@@ -375,7 +362,7 @@ static void (*sftreg8v30_table[])(void) = {
 I286 rol_ext8_v30(void) {
 
 		__asm {
-				mov		cl, rotatebase16[ecx]
+				mov		cl, shiftbase16[ecx]
 				rol		dl, cl
 				FLAG_STORE_OC
 				mov		ecx, ebp
@@ -386,7 +373,7 @@ I286 rol_ext8_v30(void) {
 I286 ror_ext8_v30(void) {
 
 		__asm {
-				mov		cl, rotatebase16[ecx]
+				mov		cl, shiftbase16[ecx]
 				ror		dl, cl
 				FLAG_STORE_OC
 				mov		ecx, ebp
@@ -397,7 +384,7 @@ I286 ror_ext8_v30(void) {
 I286 rcl_ext8_v30(void) {
 
 		__asm {
-				mov		cl, rotatebase09[ecx]
+				mov		cl, shiftbase09[ecx]
 				CFLAG_LOAD
 				rcl		dl, cl
 				FLAG_STORE_OC
@@ -409,7 +396,7 @@ I286 rcl_ext8_v30(void) {
 I286 rcr_ext8_v30(void) {
 
 		__asm {
-				mov		cl, rotatebase09[ecx]
+				mov		cl, shiftbase09[ecx]
 				CFLAG_LOAD
 				rcr		dl, cl
 				FLAG_STORE_OC
@@ -421,7 +408,7 @@ I286 rcr_ext8_v30(void) {
 I286 shl_ext8_v30(void) {
 
 		__asm {
-				mov		cl, shiftbase[ecx]
+				mov		cl, shiftbase16[ecx]
 				shl		dl, cl
 				FLAG_STORE_OF
 				mov		ecx, ebp
@@ -432,7 +419,7 @@ I286 shl_ext8_v30(void) {
 I286 shr_ext8_v30(void) {
 
 		__asm {
-				mov		cl, shiftbase[ecx]
+				mov		cl, shiftbase16[ecx]
 				shr		dl, cl
 				FLAG_STORE_OF
 				mov		ecx, ebp
@@ -443,7 +430,7 @@ I286 shr_ext8_v30(void) {
 I286 sar_ext8_v30(void) {
 
 		__asm {
-				mov		cl, shiftbase[ecx]
+				mov		cl, shiftbase16[ecx]
 				sar		dl, cl
 				FLAG_STORE0
 				mov		ecx, ebp
@@ -464,7 +451,8 @@ I286 v30shift_ea8_data8(void) {					// C0: shift EA8, DATA8
 				and		edi, 7*4						// opcode
 				cmp		al, 0c0h
 				jc		memory_eareg8
-				I286CLOCK(5)
+				//I286CLOCK(5)
+				I286CLOCK(7)
 				bt		ax, 2
 				rcl		eax, 1
 				and		eax, 7
@@ -479,7 +467,8 @@ I286 v30shift_ea8_data8(void) {					// C0: shift EA8, DATA8
 				jmp		sftreg8v30_table[edi]
 				align	4
 		memory_eareg8:
-				I286CLOCK(8)
+				//I286CLOCK(8)
+				I286CLOCK(19)
 				call	p_ea_dst[eax*4]
 				cmp		ecx, I286_MEMWRITEMAX
 				jnc		extmem_eareg8
@@ -507,7 +496,7 @@ I286 v30shift_ea8_data8(void) {					// C0: shift EA8, DATA8
 I286 rol_r16_v30(void) {
 
 		__asm {
-				mov		cl, rotatebase16[ecx]
+				mov		cl, shiftbase16[ecx]
 				rol		word ptr [edx], cl
 				FLAG_STORE_OC
 				ret
@@ -517,7 +506,7 @@ I286 rol_r16_v30(void) {
 I286 ror_r16_v30(void) {
 
 		__asm {
-				mov		cl, rotatebase16[ecx]
+				mov		cl, shiftbase16[ecx]
 				ror		word ptr [edx], cl
 				FLAG_STORE_OC
 				ret
@@ -527,7 +516,7 @@ I286 ror_r16_v30(void) {
 I286 rcl_r16_v30(void) {
 
 		__asm {
-				mov		cl, rotatebase17[ecx]
+				mov		cl, shiftbase17[ecx]
 				CFLAG_LOAD
 				rcl		word ptr [edx], cl
 				FLAG_STORE_OC
@@ -538,7 +527,7 @@ I286 rcl_r16_v30(void) {
 I286 rcr_r16_v30(void) {
 
 		__asm {
-				mov		cl, rotatebase17[ecx]
+				mov		cl, shiftbase17[ecx]
 				CFLAG_LOAD
 				rcr		word ptr [edx], cl
 				FLAG_STORE_OC
@@ -549,7 +538,7 @@ I286 rcr_r16_v30(void) {
 I286 shl_r16_v30(void) {
 
 		__asm {
-				mov		cl, shiftbase[ecx]
+				mov		cl, shiftbase16[ecx]
 				shl		word ptr [edx], cl
 				FLAG_STORE_OF
 				ret
@@ -559,7 +548,7 @@ I286 shl_r16_v30(void) {
 I286 shr_r16_v30(void) {
 
 		__asm {
-				mov		cl, shiftbase[ecx]
+				mov		cl, shiftbase16[ecx]
 				shr		word ptr [edx], cl
 				FLAG_STORE_OF
 				ret
@@ -569,7 +558,7 @@ I286 shr_r16_v30(void) {
 I286 sar_r16_v30(void) {
 
 		__asm {
-				mov		cl, shiftbase[ecx]
+				mov		cl, shiftbase16[ecx]
 				sar		word ptr [edx], cl
 				FLAG_STORE0
 				ret
@@ -583,7 +572,7 @@ static void (*sftreg16v30_table[])(void) = {
 I286 rol_ext16_v30(void) {
 
 		__asm {
-				mov		cl, rotatebase16[ecx]
+				mov		cl, shiftbase16[ecx]
 				rol		dx, cl
 				FLAG_STORE_OC
 				mov		ecx, ebp
@@ -594,7 +583,7 @@ I286 rol_ext16_v30(void) {
 I286 ror_ext16_v30(void) {
 
 		__asm {
-				mov		cl, rotatebase16[ecx]
+				mov		cl, shiftbase16[ecx]
 				ror		dx, cl
 				FLAG_STORE_OC
 				mov		ecx, ebp
@@ -605,7 +594,7 @@ I286 ror_ext16_v30(void) {
 I286 rcl_ext16_v30(void) {
 
 		__asm {
-				mov		cl, rotatebase17[ecx]
+				mov		cl, shiftbase17[ecx]
 				CFLAG_LOAD
 				rcl		dx, cl
 				FLAG_STORE_OC
@@ -617,7 +606,7 @@ I286 rcl_ext16_v30(void) {
 I286 rcr_ext16_v30(void) {
 
 		__asm {
-				mov		cl, rotatebase17[ecx]
+				mov		cl, shiftbase17[ecx]
 				CFLAG_LOAD
 				rcr		dx, cl
 				FLAG_STORE_OC
@@ -629,7 +618,7 @@ I286 rcr_ext16_v30(void) {
 I286 shl_ext16_v30(void) {
 
 		__asm {
-				mov		cl, shiftbase[ecx]
+				mov		cl, shiftbase16[ecx]
 				shl		dx, cl
 				FLAG_STORE_OF
 				mov		ecx, ebp
@@ -640,7 +629,7 @@ I286 shl_ext16_v30(void) {
 I286 shr_ext16_v30(void) {
 
 		__asm {
-				mov		cl, shiftbase[ecx]
+				mov		cl, shiftbase16[ecx]
 				shr		dx, cl
 				FLAG_STORE_OF
 				mov		ecx, ebp
@@ -651,7 +640,7 @@ I286 shr_ext16_v30(void) {
 I286 sar_ext16_v30(void) {
 
 		__asm {
-				mov		cl, shiftbase[ecx]
+				mov		cl, shiftbase16[ecx]
 				sar		dx, cl
 				FLAG_STORE0
 				mov		ecx, ebp
@@ -673,7 +662,8 @@ I286 v30shift_ea16_data8(void) {				// C1: shift EA16, DATA8
 				cmp		al, 0c0h
 				jc		memory_eareg16
 				and		eax, 7
-				I286CLOCK(5)
+				//I286CLOCK(5)
+				I286CLOCK(7)
 				lea		edx, I286_REG[eax*2]
 				mov		ecx, ebx
 				shr		ecx, 16
@@ -685,7 +675,8 @@ I286 v30shift_ea16_data8(void) {				// C1: shift EA16, DATA8
 				jmp		sftreg16v30_table[edi]
 				align	4
 		memory_eareg16:
-				I286CLOCK(8)
+				//I286CLOCK(8)
+				I286CLOCK(19)
 				call	p_ea_dst[eax*4]
 				cmp		ecx, (I286_MEMWRITEMAX-1)
 				jnc		extmem_eareg16
@@ -710,6 +701,7 @@ I286 v30shift_ea16_data8(void) {				// C1: shift EA16, DATA8
 	}
 }
 
+
 #if defined(VAEG_FIX)
 I286 v30_iret(void) {								// CF: iret
 
@@ -733,7 +725,7 @@ I286 v30_iret(void) {								// CF: iret
 				call	i286_memoryread_w
 				mov		I286_SP, bx
 				and		ah, 0fh
-				or		ax, 0f002h				// V30\82\C6286\82̗B\88\EA\82̍\B7\95\AA
+				or		ax, 0f002h				// V30と286の唯一の差分
 				mov		I286_FLAG, ax
 
 				and		ah, 1
@@ -762,6 +754,7 @@ irqcheck:		I286IRQCHECKTERM
 }
 #endif
 
+
 I286 v30shift_ea8_cl(void) {					// D2: shift EA8, cl
 
 		__asm {
@@ -771,7 +764,8 @@ I286 v30shift_ea8_cl(void) {					// D2: shift EA8, cl
 				and		edi, 7*4						// opcode
 				cmp		al, 0c0h
 				jc		memory_eareg8
-				I286CLOCK(5)
+				//I286CLOCK(5)
+				I286CLOCK(7)
 				bt		ax, 2
 				rcl		eax, 1
 				and		eax, 7
@@ -782,7 +776,8 @@ I286 v30shift_ea8_cl(void) {					// D2: shift EA8, cl
 				jmp		sftreg8v30_table[edi]
 				align	4
 		memory_eareg8:
-				I286CLOCK(8)
+				//I286CLOCK(8)
+				I286CLOCK(19)
 				call	p_ea_dst[eax*4]
 				cmp		ecx, I286_MEMWRITEMAX
 				jnc		extmem_eareg8
@@ -810,7 +805,8 @@ I286 v30shift_ea16_cl(void) {					// D3: shift EA16, cl
 				and		edi, 7*4						// opcode
 				cmp		al, 0c0h
 				jc		memory_eareg16
-				I286CLOCK(5)
+				//I286CLOCK(5)
+				I286CLOCK(7)
 				and		eax, 7
 				lea		edx, I286_REG[eax*2]
 				GET_NEXTPRE2
@@ -819,7 +815,8 @@ I286 v30shift_ea16_cl(void) {					// D3: shift EA16, cl
 				jmp		sftreg16v30_table[edi]
 				align	4
 		memory_eareg16:
-				I286CLOCK(8)
+				//I286CLOCK(8)
+				I286CLOCK(19)
 				call	p_ea_dst[eax*4]
 				cmp		ecx, (I286_MEMWRITEMAX-1)
 				jnc		extmem_eareg16
@@ -895,11 +892,13 @@ I286 v30_repe(void) {							// F3: repe
 I286 v30div_ea8(void) {							// F6-6: div ea8
 
 		__asm {
-				PREPART_EA8(14)
+				//PREPART_EA8(14)
+				PREPART_EA8(19)
 					movzx	ebp, byte ptr I286_REG[eax]
 					GET_NEXTPRE2
 					jmp		divcheck
-				MEMORY_EA8(17)
+				//MEMORY_EA8(17)
+				MEMORY_EA8(25)
 					movzx	ebp, byte ptr I286_MEM[ecx]
 					jmp		divcheck
 				EXTMEM_EA8
@@ -927,11 +926,13 @@ I286 v30div_ea8(void) {							// F6-6: div ea8
 I286 v30idiv_ea8(void) {						// F6-7 idiv ea8
 
 		__asm {
-				PREPART_EA8(17)
+				//PREPART_EA8(17)
+				PREPART_EA8(31)
 					movsx	ebp, byte ptr I286_REG[eax]
 					GET_NEXTPRE2
 					jmp		idivcheck
-				MEMORY_EA8(20)
+				//MEMORY_EA8(20)
+				MEMORY_EA8(38)
 					movsx	ebp, byte ptr I286_MEM[ecx]
 					jmp		idivcheck
 				EXTMEM_EA8
@@ -971,11 +972,13 @@ I286 v30_ope0xf6(void) {						// F6:
 I286 v30div_ea16(void) {						// F7-6: div ea16
 
 		__asm {
-				PREPART_EA16(22)
+				//PREPART_EA16(22)
+				PREPART_EA16(25)
 					movzx	ebp, word ptr I286_REG[eax*2]
 					GET_NEXTPRE2
 					jmp		divcheck
-				MEMORY_EA16(25)
+				//MEMORY_EA16(25)
+				MEMORY_EA16(31)
 					movzx	ebp, word ptr I286_MEM[ecx]
 					jmp		divcheck
 				EXTMEM_EA16
@@ -1004,11 +1007,13 @@ I286 v30div_ea16(void) {						// F7-6: div ea16
 I286 v30idiv_ea16(void) {						// F7-7: idiv ea16
 
 		__asm {
-				PREPART_EA16(25)
+				//PREPART_EA16(25)
+				PREPART_EA16(41)
 					movsx	ebp, word ptr I286_REG[eax*2]
 					GET_NEXTPRE2
 					jmp		idivcheck
-				MEMORY_EA16(28)
+				//MEMORY_EA16(28)
+				MEMORY_EA16(47)
 					movsx	ebp, word ptr I286_MEM[ecx]
 					jmp		idivcheck
 				EXTMEM_EA16
@@ -1048,6 +1053,8 @@ I286 v30_ope0xf7(void) {						// F7:
 		}
 }
 
+
+
 #if defined(SUPPORT_V30ORIGINAL)
 
 
@@ -1055,16 +1062,16 @@ I286 v30_ope0xf7(void) {						// F7:
 // ----------------------------------------------------------------- 0F
 
 /*
-	\88ȉ\BA\82͔j\89󂵂Ă͂\A2\82\AF\82Ȃ\A2\81B
+	以下は破壊してはいけない。
 	esi		IP
-	ebx		\83v\83\8A\83t\83F\83b\83`\82\B3\82ꂽ\83f\81[\83^
+	ebx		プリフェッチされたデータ
 */
 
 I286 v30_reserved_0x0f(void) {
 
 		__asm {
 				I286CLOCK(2)
-				//GET_NEXTPRE1		// \83f\83o\83b\83O\82̖ړI\82̂\BD\82߁AIP\82\F0\90i\82߂\B8\82ɒ\E2\8E~\82\B3\82\B9\82\E9
+				//GET_NEXTPRE1		// デバッグの目的のため、IPを進めずに停止させる
 				ret
 		}
 }
@@ -1085,7 +1092,7 @@ I286 v30_add4s(void) {							// 0F 20
 				add		edi, ES_BASE
 
 
-				//----\82\B1\82\B1\82\A9\82\E71\89\F1\96\DA
+				//----ここから1回目
 				push	esi
 				push	edi
 
@@ -1105,16 +1112,16 @@ I286 v30_add4s(void) {							// 0F 20
 				add		al, dl
 				daa
 				lahf
-				mov		bh, ah				//bh=\83t\83\89\83O
+				mov		bh, ah				//bh=フラグ
 				mov		bl, bh
-				or		bl, ~40h			//\88ȍ~\81Adaa\82ň\EA\93x\82ł\E0ZF=0\82ƂȂ\E9\82ƁAbl=0bfh\82ƂȂ\E9
+				or		bl, ~40h			//以降、daaで一度でもZF=0となると、bl=0bfhとなる
 
 				mov		dl, al
 				call	i286_memorywrite
 
 				pop		edi
 				pop		esi
-				//---- \82\B1\82\B1\82܂\C51\89\F1\96\DA
+				//---- ここまで1回目
 
 				mov		cl, I286_CL
 				inc		cl
@@ -1168,7 +1175,7 @@ I286 v30_add4s(void) {							// 0F 20
 				jz		cf_zero
 	
 				//CF=1
-				mov		bh, 93h		//SF,AF,CF=1 \82ق\A9\82\CD0
+				mov		bh, 93h		//SF,AF,CF=1 ほかは0
 				jmp		add4s_end
 
 			cf_zero:
@@ -1177,12 +1184,12 @@ I286 v30_add4s(void) {							// 0F 20
 				jz		zf_zero
 	
 				//ZF=1
-				mov		bh, 46h		//ZF,PF=1 \82ق\A9\82\CD0
+				mov		bh, 46h		//ZF,PF=1 ほかは0
 				jmp		add4s_end
 
 			zf_zero:
 				//CF=0, ZF=0
-				mov		bh, 02h		//\82\B7\82ׂ\C40
+				mov		bh, 02h		//すべて0
 
 			add4s_end:
 
@@ -1216,7 +1223,7 @@ I286 v30_sub4s(void) {							// 0F 22
 				add		edi, ES_BASE
 
 
-				//----\82\B1\82\B1\82\A9\82\E71\89\F1\96\DA
+				//----ここから1回目
 				push	esi
 				push	edi
 
@@ -1236,16 +1243,16 @@ I286 v30_sub4s(void) {							// 0F 22
 				sub		al, dl
 				das
 				lahf
-				mov		bh, ah				//bh=\83t\83\89\83O
+				mov		bh, ah				//bh=フラグ
 				mov		bl, bh
-				or		bl, ~40h			//\88ȍ~\81Adaa\82ň\EA\93x\82ł\E0ZF=0\82ƂȂ\E9\82ƁAbl=0bfh\82ƂȂ\E9
+				or		bl, ~40h			//以降、daaで一度でもZF=0となると、bl=0bfhとなる
 
 				mov		dl, al
 				call	i286_memorywrite
 
 				pop		edi
 				pop		esi
-				//---- \82\B1\82\B1\82܂\C51\89\F1\96\DA
+				//---- ここまで1回目
 
 				mov		cl, I286_CL
 				inc		cl
@@ -1299,7 +1306,7 @@ I286 v30_sub4s(void) {							// 0F 22
 				jz		cf_zero
 	
 				//CF=1
-				mov		bh, 93h		//SF,AF,CF=1 \82ق\A9\82\CD0
+				mov		bh, 93h		//SF,AF,CF=1 ほかは0
 				jmp		add4s_end
 
 			cf_zero:
@@ -1308,12 +1315,12 @@ I286 v30_sub4s(void) {							// 0F 22
 				jz		zf_zero
 	
 				//ZF=1
-				mov		bh, 46h		//ZF,PF=1 \82ق\A9\82\CD0
+				mov		bh, 46h		//ZF,PF=1 ほかは0
 				jmp		add4s_end
 
 			zf_zero:
 				//CF=0, ZF=0
-				mov		bh, 02h		//\82\B7\82ׂ\C40
+				mov		bh, 02h		//すべて0
 
 			add4s_end:
 
@@ -1333,18 +1340,18 @@ I286 v30_sub4s(void) {							// 0F 22
 I286 v30_ror4_ea8(void) {						// 0F 2A 11/000/reg
 												// 0F 2A mod/000/mem disp
 		__asm {
-									// EAX \82ɂ͖\BD\97߂\CC2\83o\83C\83g\96\DA(0F\82̎\9F)\82\AA\93\FC\82\C1\82Ă\A2\82\E9
+									// EAX には命令の2バイト目(0Fの次)が入っている
 
-				GET_NEXTPRE1		// 0F \82\CC1\83o\83C\83g\95\AA\81AIP\82\F0\90i\82߁A\96\BD\97߂\F0\90\E6\93ǂ݂\B7\82\E9
-									// PREPART_EA8, MEMORY_EA8\82Ȃǂ̃}\83N\83\8D\82\AA\81A
-									// 2\83o\83C\83g\82̖\BD\97ߗp\82ɍ쐬\82\B3\82\EA\82Ă\A2\82邽\82߁B
-									// (ROR4\82\CD3\83o\83C\83g)
-									// BL=\96\BD\97\DF2\83o\83C\83g\96ځABH=\96\BD\97\DF3\83o\83C\83g\96\DA ... \82ƂȂ\E9
-				movzx	eax, bh		// EAX \82ɖ\BD\97߂\CC3\83o\83C\83g\96ڂ\F0\91\E3\93\FC
+				GET_NEXTPRE1		// 0F の1バイト分、IPを進め、命令を先読みする
+									// PREPART_EA8, MEMORY_EA8などのマクロが、
+									// 2バイトの命令用に作成されているため。
+									// (ROR4は3バイト)
+									// BL=命令2バイト目、BH=命令3バイト目 ... となる
+				movzx	eax, bh		// EAX に命令の3バイト目を代入
 
 				PREPART_EA8(25)
-					// \83I\83y\83\89\83\93\83h\82\AA\83\8C\83W\83X\83^\82̏ꍇ
-					// byte ptr I286_REG[eax]\82Ń\8C\83W\83X\83^\82ɃA\83N\83Z\83X\82ł\AB\82\E9
+					// オペランドがレジスタの場合
+					// byte ptr I286_REG[eax]でレジスタにアクセスできる
 
 					mov		dh, I286_AL
 					mov		ch, dh
@@ -1357,13 +1364,13 @@ I286 v30_ror4_ea8(void) {						// 0F 2A 11/000/reg
 					shr		dx, 4
 					mov		byte ptr I286_REG[eax], dl
 
-					GET_NEXTPRE2	// \96\BD\97\DF2\83o\83C\83g\96ځA3\83o\83C\83g\96ڂ̕\AA IP\82\F0\90i\82߂\E9
+					GET_NEXTPRE2	// 命令2バイト目、3バイト目の分 IPを進める
 					ret
 
 				MEMORY_EA8(25)
-					// \83I\83y\83\89\83\93\83h\82\AA\83\81\83\82\83\8A(\92\BC\90ڃA\83N\83Z\83X)\82̏ꍇ
-					// ecx\82ɃA\83h\83\8C\83X\82\AA\93\FC\82\C1\82Ă\A2\82\E9
-					// GET_NEXTPRE?\82͎\C0\8Ds\8Dς\DD
+					// オペランドがメモリ(直接アクセス)の場合
+					// ecxにアドレスが入っている
+					// GET_NEXTPRE?は実行済み
 
 					mov		ah, I286_AL
 					mov		dh, ah
@@ -1379,9 +1386,9 @@ I286 v30_ror4_ea8(void) {						// 0F 2A 11/000/reg
 					ret
 
 				EXTMEM_EA8
-					// \83I\83y\83\89\83\93\83h\82\AA\83\81\83\82\83\8A\82̏ꍇ
-					// ecx\82ɃA\83h\83\8C\83X\82\AA\81Aeax\82Ƀ\81\83\82\83\8A\82\A9\82\E7\93ǂ񂾒l(\83o\83C\83g)\82\AA\93\FC\82\C1\82Ă\A2\82\E9
-					// GET_NEXTPRE?\82͎\C0\8Ds\8Dς\DD
+					// オペランドがメモリの場合
+					// ecxにアドレスが、eaxにメモリから読んだ値(バイト)が入っている
+					// GET_NEXTPRE?は実行済み
 
 					mov		ah, I286_AL
 					mov		dh, ah
@@ -1403,49 +1410,49 @@ I286 v30_ror4_ea8(void) {						// 0F 2A 11/000/reg
 I286 v30_test1_ea8_cl(void) {					// F0 10 11/000/reg
 												// F0 10 mod/000/mem disp
 		__asm {
-				GET_NEXTPRE1		// 0F \82\CC1\83o\83C\83g\95\AA\81AIP\82\F0\90i\82߁A\96\BD\97߂\F0\90\E6\93ǂ݂\B7\82\E9
-									// BL=\96\BD\97\DF2\83o\83C\83g\96ځABH=\96\BD\97\DF3\83o\83C\83g\96\DA ... \82ƂȂ\E9
-				movzx	eax, bh		// EAX \82ɖ\BD\97߂\CC3\83o\83C\83g\96ڂ\F0\91\E3\93\FC
+				GET_NEXTPRE1		// 0F の1バイト分、IPを進め、命令を先読みする
+									// BL=命令2バイト目、BH=命令3バイト目 ... となる
+				movzx	eax, bh		// EAX に命令の3バイト目を代入
 
 				PREPART_EA8(3)
-					// \83I\83y\83\89\83\93\83h\82\AA\83\8C\83W\83X\83^\82̏ꍇ
-					// byte ptr I286_REG[eax]\82Ń\8C\83W\83X\83^\82ɃA\83N\83Z\83X\82ł\AB\82\E9
+					// オペランドがレジスタの場合
+					// byte ptr I286_REG[eax]でレジスタにアクセスできる
 
 					mov		cl, CPU_CL
-					and		cl, 0007h	// \89\BA\88\CA3bit\82\AA\97L\8C\F8
+					and		cl, 0007h	// 下位3bitが有効
 					mov		dx, 1
 					shl		dx, cl
-					test	byte ptr I286_REG[eax], dl		// cl\83r\83b\83g\96ڂ\F0\83e\83X\83g
+					test	byte ptr I286_REG[eax], dl		// clビット目をテスト
 					FLAG_STORE00
 
-					GET_NEXTPRE2		// \96\BD\97\DF2\81`3\83o\83C\83g\96ڂ̕\AA IP\82\F0\90i\82߂\E9
+					GET_NEXTPRE2		// 命令2〜3バイト目の分 IPを進める
 					ret
 
 				MEMORY_EA8(12)
-					// \83I\83y\83\89\83\93\83h\82\AA\83\81\83\82\83\8A(\92\BC\90ڃA\83N\83Z\83X)\82̏ꍇ
-					// ecx\82ɃA\83h\83\8C\83X\82\AA\93\FC\82\C1\82Ă\A2\82\E9
-					// GET_NEXTPRE?\82͎\C0\8Ds\8Dς\DD
+					// オペランドがメモリ(直接アクセス)の場合
+					// ecxにアドレスが入っている
+					// GET_NEXTPRE?は実行済み
 
 					mov		al, byte ptr I286_MEM[ecx]
 					mov		cl, CPU_CL
-					and		cl, 0007h	// \89\BA\88\CA3bit\82\AA\97L\8C\F8
+					and		cl, 0007h	// 下位3bitが有効
 					mov		dx, 1
 					shl		dx, cl
-					test	al, dl		// cl\83r\83b\83g\96ڂ\F0\83e\83X\83g
+					test	al, dl		// clビット目をテスト
 					FLAG_STORE00
 
 					ret
 
 				EXTMEM_EA8
-					// \83I\83y\83\89\83\93\83h\82\AA\83\81\83\82\83\8A\82̏ꍇ
-					// ecx\82ɃA\83h\83\8C\83X\82\AA\81Aeax\82Ƀ\81\83\82\83\8A\82\A9\82\E7\93ǂ񂾒l(\83o\83C\83g)\82\AA\93\FC\82\C1\82Ă\A2\82\E9
-					// GET_NEXTPRE?\82͎\C0\8Ds\8Dς\DD
+					// オペランドがメモリの場合
+					// ecxにアドレスが、eaxにメモリから読んだ値(バイト)が入っている
+					// GET_NEXTPRE?は実行済み
 
 					mov		cl, CPU_CL
-					and		cl, 0007h	// \89\BA\88\CA3bit\82\AA\97L\8C\F8
+					and		cl, 0007h	// 下位3bitが有効
 					mov		dx, 1
 					shl		dx, cl
-					test	al, dl		// cl\83r\83b\83g\96ڂ\F0\83e\83X\83g
+					test	al, dl		// clビット目をテスト
 					FLAG_STORE00
 
 					ret
@@ -1456,49 +1463,49 @@ I286 v30_test1_ea8_cl(void) {					// F0 10 11/000/reg
 I286 v30_test1_ea16_cl(void) {					// F0 11 11/000/reg
 												// F0 11 mod/000/mem disp
 		__asm {
-				GET_NEXTPRE1		// 0F \82\CC1\83o\83C\83g\95\AA\81AIP\82\F0\90i\82߁A\96\BD\97߂\F0\90\E6\93ǂ݂\B7\82\E9
-									// BL=\96\BD\97\DF2\83o\83C\83g\96ځABH=\96\BD\97\DF3\83o\83C\83g\96\DA ... \82ƂȂ\E9
-				movzx	eax, bh		// EAX \82ɖ\BD\97߂\CC3\83o\83C\83g\96ڂ\F0\91\E3\93\FC
+				GET_NEXTPRE1		// 0F の1バイト分、IPを進め、命令を先読みする
+									// BL=命令2バイト目、BH=命令3バイト目 ... となる
+				movzx	eax, bh		// EAX に命令の3バイト目を代入
 
 				PREPART_EA16(3)
-					// \83I\83y\83\89\83\93\83h\82\AA\83\8C\83W\83X\83^\82̏ꍇ
-					// word ptr I286_REG[eax*2]\82Ń\8C\83W\83X\83^\82ɃA\83N\83Z\83X\82ł\AB\82\E9
+					// オペランドがレジスタの場合
+					// word ptr I286_REG[eax*2]でレジスタにアクセスできる
 
 					mov		cl, CPU_CL
-					and		cl, 000fh	// \89\BA\88\CA4bit\82\AA\97L\8C\F8
+					and		cl, 000fh	// 下位4bitが有効
 					mov		dx, 1
 					shl		dx, cl
-					test	word ptr I286_REG[eax*2], dx		// cl\83r\83b\83g\96ڂ\F0\83e\83X\83g
+					test	word ptr I286_REG[eax*2], dx		// clビット目をテスト
 					FLAG_STORE00
 
-					GET_NEXTPRE2		// \96\BD\97\DF2\81`3\83o\83C\83g\96ڂ̕\AA IP\82\F0\90i\82߂\E9
+					GET_NEXTPRE2		// 命令2〜3バイト目の分 IPを進める
 					ret
 
 				MEMORY_EA16(12)
-					// \83I\83y\83\89\83\93\83h\82\AA\83\81\83\82\83\8A(\92\BC\90ڃA\83N\83Z\83X)\82̏ꍇ
-					// ecx\82ɃA\83h\83\8C\83X\82\AA\93\FC\82\C1\82Ă\A2\82\E9
-					// GET_NEXTPRE?\82͎\C0\8Ds\8Dς\DD
+					// オペランドがメモリ(直接アクセス)の場合
+					// ecxにアドレスが入っている
+					// GET_NEXTPRE?は実行済み
 
 					mov		ax, word ptr I286_MEM[ecx]
 					mov		cl, CPU_CL
-					and		cl, 000fh	// \89\BA\88\CA4bit\82\AA\97L\8C\F8
+					and		cl, 000fh	// 下位4bitが有効
 					mov		dx, 1
 					shl		dx, cl
-					test	ax, dx		// cl\83r\83b\83g\96ڂ\F0\83e\83X\83g
+					test	ax, dx		// clビット目をテスト
 					FLAG_STORE00
 
 					ret
 
 				EXTMEM_EA16
-					// \83I\83y\83\89\83\93\83h\82\AA\83\81\83\82\83\8A\82̏ꍇ
-					// ecx\82ɃA\83h\83\8C\83X\82\AA\81Aeax\82Ƀ\81\83\82\83\8A\82\A9\82\E7\93ǂ񂾒l(\83\8F\81[\83h)\82\AA\93\FC\82\C1\82Ă\A2\82\E9
-					// GET_NEXTPRE?\82͎\C0\8Ds\8Dς\DD
+					// オペランドがメモリの場合
+					// ecxにアドレスが、eaxにメモリから読んだ値(ワード)が入っている
+					// GET_NEXTPRE?は実行済み
 
 					mov		cl, CPU_CL
-					and		cl, 000fh	// \89\BA\88\CA4bit\82\AA\97L\8C\F8
+					and		cl, 000fh	// 下位4bitが有効
 					mov		dx, 1
 					shl		dx, cl
-					test	ax, dx		// cl\83r\83b\83g\96ڂ\F0\83e\83X\83g
+					test	ax, dx		// clビット目をテスト
 					FLAG_STORE00
 
 					ret
@@ -1509,44 +1516,44 @@ I286 v30_test1_ea16_cl(void) {					// F0 11 11/000/reg
 I286 v30_clr1_ea8_cl(void) {					// 0F 12 11/000/reg
 												// 0F 12 mod/000/mem disp
 		__asm {
-				GET_NEXTPRE1		// 0F \82\CC1\83o\83C\83g\95\AA\81AIP\82\F0\90i\82߁A\96\BD\97߂\F0\90\E6\93ǂ݂\B7\82\E9
-									// BL=\96\BD\97\DF2\83o\83C\83g\96ځABH=\96\BD\97\DF3\83o\83C\83g\96\DA ... \82ƂȂ\E9
-				movzx	eax, bh		// EAX \82ɖ\BD\97߂\CC3\83o\83C\83g\96ڂ\F0\91\E3\93\FC
+				GET_NEXTPRE1		// 0F の1バイト分、IPを進め、命令を先読みする
+									// BL=命令2バイト目、BH=命令3バイト目 ... となる
+				movzx	eax, bh		// EAX に命令の3バイト目を代入
 
 				PREPART_EA8(5)
-					// \83I\83y\83\89\83\93\83h\82\AA\83\8C\83W\83X\83^\82̏ꍇ
-					// byte ptr I286_REG[eax]\82Ń\8C\83W\83X\83^\82ɃA\83N\83Z\83X\82ł\AB\82\E9
+					// オペランドがレジスタの場合
+					// byte ptr I286_REG[eax]でレジスタにアクセスできる
 
 					mov		dl, CPU_CL
 					and		dx, 0007h
 					mov		cl, byte ptr I286_REG[eax]
-					btr		cx, dx		// dx\83r\83b\83g\96ڂ\F0\83\8A\83Z\83b\83g
+					btr		cx, dx		// dxビット目をリセット
 					mov		byte ptr I286_REG[eax], cl
 
-					GET_NEXTPRE2		// \96\BD\97\DF2\81`3\83o\83C\83g\96ڂ̕\AA IP\82\F0\90i\82߂\E9
+					GET_NEXTPRE2		// 命令2〜3バイト目の分 IPを進める
 					ret
 
 				MEMORY_EA8(14)
-					// \83I\83y\83\89\83\93\83h\82\AA\83\81\83\82\83\8A(\92\BC\90ڃA\83N\83Z\83X)\82̏ꍇ
-					// ecx\82ɃA\83h\83\8C\83X\82\AA\93\FC\82\C1\82Ă\A2\82\E9
-					// GET_NEXTPRE?\82͎\C0\8Ds\8Dς\DD
+					// オペランドがメモリ(直接アクセス)の場合
+					// ecxにアドレスが入っている
+					// GET_NEXTPRE?は実行済み
 
 					mov		dl, CPU_CL
 					and		dx, 0007h
 					mov		al, byte ptr I286_MEM[ecx]
-					btr		ax, dx		// dx\83r\83b\83g\96ڂ\F0\83\8A\83Z\83b\83g
+					btr		ax, dx		// dxビット目をリセット
 					mov		byte ptr I286_MEM[ecx], al
 
 					ret
 
 				EXTMEM_EA8
-					// \83I\83y\83\89\83\93\83h\82\AA\83\81\83\82\83\8A\82̏ꍇ
-					// ecx\82ɃA\83h\83\8C\83X\82\AA\81Aeax\82Ƀ\81\83\82\83\8A\82\A9\82\E7\93ǂ񂾒l(\83o\83C\83g)\82\AA\93\FC\82\C1\82Ă\A2\82\E9
-					// GET_NEXTPRE?\82͎\C0\8Ds\8Dς\DD
+					// オペランドがメモリの場合
+					// ecxにアドレスが、eaxにメモリから読んだ値(バイト)が入っている
+					// GET_NEXTPRE?は実行済み
 
 					mov		dl, CPU_CL
 					and		dx, 0007h
-					btr		ax, dx		// dx\83r\83b\83g\96ڂ\F0\83\8A\83Z\83b\83g
+					btr		ax, dx		// dxビット目をリセット
 					mov		dl, al
 					call	i286_memorywrite
 
@@ -1558,44 +1565,44 @@ I286 v30_clr1_ea8_cl(void) {					// 0F 12 11/000/reg
 I286 v30_set1_ea8_cl(void) {					// 0F 14 11/000/reg
 												// 0F 14 mod/000/mem disp
 		__asm {
-				GET_NEXTPRE1		// 0F \82\CC1\83o\83C\83g\95\AA\81AIP\82\F0\90i\82߁A\96\BD\97߂\F0\90\E6\93ǂ݂\B7\82\E9
-									// BL=\96\BD\97\DF2\83o\83C\83g\96ځABH=\96\BD\97\DF3\83o\83C\83g\96\DA ... \82ƂȂ\E9
-				movzx	eax, bh		// EAX \82ɖ\BD\97߂\CC3\83o\83C\83g\96ڂ\F0\91\E3\93\FC
+				GET_NEXTPRE1		// 0F の1バイト分、IPを進め、命令を先読みする
+									// BL=命令2バイト目、BH=命令3バイト目 ... となる
+				movzx	eax, bh		// EAX に命令の3バイト目を代入
 
 				PREPART_EA8(4)
-					// \83I\83y\83\89\83\93\83h\82\AA\83\8C\83W\83X\83^\82̏ꍇ
-					// byte ptr I286_REG[eax]\82Ń\8C\83W\83X\83^\82ɃA\83N\83Z\83X\82ł\AB\82\E9
+					// オペランドがレジスタの場合
+					// byte ptr I286_REG[eax]でレジスタにアクセスできる
 
 					mov		dl, CPU_CL
 					and		dx, 0007h
 					mov		cl, byte ptr I286_REG[eax]
-					bts		cx, dx		// dx\83r\83b\83g\96ڂ\F0\83Z\83b\83g
+					bts		cx, dx		// dxビット目をセット
 					mov		byte ptr I286_REG[eax], cl
 
-					GET_NEXTPRE2		// \96\BD\97\DF2\81`3\83o\83C\83g\96ڂ̕\AA IP\82\F0\90i\82߂\E9
+					GET_NEXTPRE2		// 命令2〜3バイト目の分 IPを進める
 					ret
 
 				MEMORY_EA8(13)
-					// \83I\83y\83\89\83\93\83h\82\AA\83\81\83\82\83\8A(\92\BC\90ڃA\83N\83Z\83X)\82̏ꍇ
-					// ecx\82ɃA\83h\83\8C\83X\82\AA\93\FC\82\C1\82Ă\A2\82\E9
-					// GET_NEXTPRE?\82͎\C0\8Ds\8Dς\DD
+					// オペランドがメモリ(直接アクセス)の場合
+					// ecxにアドレスが入っている
+					// GET_NEXTPRE?は実行済み
 
 					mov		dl, CPU_CL
 					and		dx, 0007h
 					mov		al, byte ptr I286_MEM[ecx]
-					bts		ax, dx		// dx\83r\83b\83g\96ڂ\F0\83Z\83b\83g
+					bts		ax, dx		// dxビット目をセット
 					mov		byte ptr I286_MEM[ecx], al
 
 					ret
 
 				EXTMEM_EA8
-					// \83I\83y\83\89\83\93\83h\82\AA\83\81\83\82\83\8A\82̏ꍇ
-					// ecx\82ɃA\83h\83\8C\83X\82\AA\81Aeax\82Ƀ\81\83\82\83\8A\82\A9\82\E7\93ǂ񂾒l(\83\8F\81[\83h)\82\AA\93\FC\82\C1\82Ă\A2\82\E9
-					// GET_NEXTPRE?\82͎\C0\8Ds\8Dς\DD
+					// オペランドがメモリの場合
+					// ecxにアドレスが、eaxにメモリから読んだ値(ワード)が入っている
+					// GET_NEXTPRE?は実行済み
 
 					mov		dl, CPU_CL
 					and		dx, 0007h
-					bts		ax, dx		// dx\83r\83b\83g\96ڂ\F0\83Z\83b\83g
+					bts		ax, dx		// dxビット目をセット
 					mov		dl, al
 					call	i286_memorywrite
 
@@ -1606,13 +1613,13 @@ I286 v30_set1_ea8_cl(void) {					// 0F 14 11/000/reg
 I286 v30_test1_ea8_i3(void) {					// F0 18 11/000/reg  imm3
 												// F0 18 mod/000/mem disp imm3
 		__asm {
-				GET_NEXTPRE1		// 0F \82\CC1\83o\83C\83g\95\AA\81AIP\82\F0\90i\82߁A\96\BD\97߂\F0\90\E6\93ǂ݂\B7\82\E9
-									// BL=\96\BD\97\DF2\83o\83C\83g\96ځABH=\96\BD\97\DF3\83o\83C\83g\96\DA ... \82ƂȂ\E9
-				movzx	eax, bh		// EAX \82ɖ\BD\97߂\CC3\83o\83C\83g\96ڂ\F0\91\E3\93\FC
+				GET_NEXTPRE1		// 0F の1バイト分、IPを進め、命令を先読みする
+									// BL=命令2バイト目、BH=命令3バイト目 ... となる
+				movzx	eax, bh		// EAX に命令の3バイト目を代入
 
 				PREPART_EA8(4)
-					// \83I\83y\83\89\83\93\83h\82\AA\83\8C\83W\83X\83^\82̏ꍇ
-					// byte ptr I286_REG[eax]\82Ń\8C\83W\83X\83^\82ɃA\83N\83Z\83X\82ł\AB\82\E9
+					// オペランドがレジスタの場合
+					// byte ptr I286_REG[eax]でレジスタにアクセスできる
 
 					mov		ecx, ebx
 					shr		ecx, 16
@@ -1620,41 +1627,41 @@ I286 v30_test1_ea8_i3(void) {					// F0 18 11/000/reg  imm3
 					mov		al, byte ptr I286_REG[eax]
 					mov		dx, 1
 					shl		dx, cl
-					test	al, dl		// cl\83r\83b\83g\96ڂ\F0\83e\83X\83g
+					test	al, dl		// clビット目をテスト
 					FLAG_STORE00
 
-					GET_NEXTPRE3		// \96\BD\97\DF2\81`4\83o\83C\83g\96ڂ̕\AA IP\82\F0\90i\82߂\E9
+					GET_NEXTPRE3		// 命令2〜4バイト目の分 IPを進める
 					ret
 
 				MEMORY_EA8(13)
-					// \83I\83y\83\89\83\93\83h\82\AA\83\81\83\82\83\8A(\92\BC\90ڃA\83N\83Z\83X)\82̏ꍇ
-					// ecx\82ɃA\83h\83\8C\83X\82\AA\93\FC\82\C1\82Ă\A2\82\E9
-					// GET_NEXTPRE?\82͎\C0\8Ds\8Dς\DD
+					// オペランドがメモリ(直接アクセス)の場合
+					// ecxにアドレスが入っている
+					// GET_NEXTPRE?は実行済み
 
 					mov		al, byte ptr I286_MEM[ecx]
 					mov		cl, bl
 					and		cl, 0007h	// imm3
 					mov		dx, 1
 					shl		dx, cl
-					test	al, dl		// cl\83r\83b\83g\96ڂ\F0\83e\83X\83g
+					test	al, dl		// clビット目をテスト
 					FLAG_STORE00
 
-					GET_NEXTPRE1		// imm3 \82̕\AA\81AIP\82\F0\90i\82߂\E9
+					GET_NEXTPRE1		// imm3 の分、IPを進める
 					ret
 
 				EXTMEM_EA8
-					// \83I\83y\83\89\83\93\83h\82\AA\83\81\83\82\83\8A\82̏ꍇ
-					// ecx\82ɃA\83h\83\8C\83X\82\AA\81Aeax\82Ƀ\81\83\82\83\8A\82\A9\82\E7\93ǂ񂾒l(\83\8F\81[\83h)\82\AA\93\FC\82\C1\82Ă\A2\82\E9
-					// GET_NEXTPRE?\82͎\C0\8Ds\8Dς\DD
+					// オペランドがメモリの場合
+					// ecxにアドレスが、eaxにメモリから読んだ値(ワード)が入っている
+					// GET_NEXTPRE?は実行済み
 
 					mov		cl, bl
 					and		cl, 0007h	// imm3
 					mov		dx, 1
 					shl		dx, cl
-					test	al, dl		// cl\83r\83b\83g\96ڂ\F0\83e\83X\83g
+					test	al, dl		// clビット目をテスト
 					FLAG_STORE00
 
-					GET_NEXTPRE1		// imm3 \82̕\AA\81AIP\82\F0\90i\82߂\E9
+					GET_NEXTPRE1		// imm3 の分、IPを進める
 					ret
 		}
 }
@@ -1662,54 +1669,54 @@ I286 v30_test1_ea8_i3(void) {					// F0 18 11/000/reg  imm3
 I286 v30_test1_ea16_i4(void) {					// F0 19 11/000/reg  imm4
 												// F0 19 mod/000/mem disp imm4
 		__asm {
-				GET_NEXTPRE1		// 0F \82\CC1\83o\83C\83g\95\AA\81AIP\82\F0\90i\82߁A\96\BD\97߂\F0\90\E6\93ǂ݂\B7\82\E9
-									// BL=\96\BD\97\DF2\83o\83C\83g\96ځABH=\96\BD\97\DF3\83o\83C\83g\96\DA ... \82ƂȂ\E9
-				movzx	eax, bh		// EAX \82ɖ\BD\97߂\CC3\83o\83C\83g\96ڂ\F0\91\E3\93\FC
+				GET_NEXTPRE1		// 0F の1バイト分、IPを進め、命令を先読みする
+									// BL=命令2バイト目、BH=命令3バイト目 ... となる
+				movzx	eax, bh		// EAX に命令の3バイト目を代入
 
 				PREPART_EA16(4)
-					// \83I\83y\83\89\83\93\83h\82\AA\83\8C\83W\83X\83^\82̏ꍇ
-					// word ptr I286_REG[eax*2]\82Ń\8C\83W\83X\83^\82ɃA\83N\83Z\83X\82ł\AB\82\E9
+					// オペランドがレジスタの場合
+					// word ptr I286_REG[eax*2]でレジスタにアクセスできる
 
 					mov		ecx, ebx
 					shr		ecx, 16
 					and		cx, 000fh	// imm4
 					mov		dx, 1
 					shl		dx, cl
-					test	word ptr I286_REG[eax*2], dx		// cl\83r\83b\83g\96ڂ\F0\83e\83X\83g
+					test	word ptr I286_REG[eax*2], dx		// clビット目をテスト
 					FLAG_STORE00
 
-					GET_NEXTPRE3		// \96\BD\97\DF2\81`4\83o\83C\83g\96ڂ̕\AA IP\82\F0\90i\82߂\E9
+					GET_NEXTPRE3		// 命令2〜4バイト目の分 IPを進める
 					ret
 
 				MEMORY_EA16(13)
-					// \83I\83y\83\89\83\93\83h\82\AA\83\81\83\82\83\8A(\92\BC\90ڃA\83N\83Z\83X)\82̏ꍇ
-					// ecx\82ɃA\83h\83\8C\83X\82\AA\93\FC\82\C1\82Ă\A2\82\E9
-					// GET_NEXTPRE?\82͎\C0\8Ds\8Dς\DD
+					// オペランドがメモリ(直接アクセス)の場合
+					// ecxにアドレスが入っている
+					// GET_NEXTPRE?は実行済み
 
 					mov		ax, word ptr I286_MEM[ecx]
 					mov		cl, bl
 					and		cl, 000fh	// imm4
 					mov		dx, 1
 					shl		dx, cl
-					test	ax, dx		// cl\83r\83b\83g\96ڂ\F0\83e\83X\83g
+					test	ax, dx		// clビット目をテスト
 					FLAG_STORE00
 
-					GET_NEXTPRE1		// imm4 \82̕\AA\81AIP\82\F0\90i\82߂\E9
+					GET_NEXTPRE1		// imm4 の分、IPを進める
 					ret
 
 				EXTMEM_EA16
-					// \83I\83y\83\89\83\93\83h\82\AA\83\81\83\82\83\8A\82̏ꍇ
-					// ecx\82ɃA\83h\83\8C\83X\82\AA\81Aeax\82Ƀ\81\83\82\83\8A\82\A9\82\E7\93ǂ񂾒l(\83\8F\81[\83h)\82\AA\93\FC\82\C1\82Ă\A2\82\E9
-					// GET_NEXTPRE?\82͎\C0\8Ds\8Dς\DD
+					// オペランドがメモリの場合
+					// ecxにアドレスが、eaxにメモリから読んだ値(ワード)が入っている
+					// GET_NEXTPRE?は実行済み
 
 					mov		cl, bl
 					and		cl, 000fh	// imm4
 					mov		dx, 1
 					shl		dx, cl
-					test	ax, dx		// cl\83r\83b\83g\96ڂ\F0\83e\83X\83g
+					test	ax, dx		// clビット目をテスト
 					FLAG_STORE00
 
-					GET_NEXTPRE1		// imm4 \82̕\AA\81AIP\82\F0\90i\82߂\E9
+					GET_NEXTPRE1		// imm4 の分、IPを進める
 					ret
 		}
 }
@@ -1718,50 +1725,50 @@ I286 v30_test1_ea16_i4(void) {					// F0 19 11/000/reg  imm4
 I286 v30_clr1_ea8_i3(void) {					// 0F 1A 11/000/reg  imm3
 												// 0F 1A mod/000/mem disp imm3
 		__asm {
-				GET_NEXTPRE1		// 0F \82\CC1\83o\83C\83g\95\AA\81AIP\82\F0\90i\82߁A\96\BD\97߂\F0\90\E6\93ǂ݂\B7\82\E9
-									// BL=\96\BD\97\DF2\83o\83C\83g\96ځABH=\96\BD\97\DF3\83o\83C\83g\96\DA ... \82ƂȂ\E9
-				movzx	eax, bh		// EAX \82ɖ\BD\97߂\CC3\83o\83C\83g\96ڂ\F0\91\E3\93\FC
+				GET_NEXTPRE1		// 0F の1バイト分、IPを進め、命令を先読みする
+									// BL=命令2バイト目、BH=命令3バイト目 ... となる
+				movzx	eax, bh		// EAX に命令の3バイト目を代入
 
 				PREPART_EA8(6)
-					// \83I\83y\83\89\83\93\83h\82\AA\83\8C\83W\83X\83^\82̏ꍇ
-					// byte ptr I286_REG[eax]\82Ń\8C\83W\83X\83^\82ɃA\83N\83Z\83X\82ł\AB\82\E9
+					// オペランドがレジスタの場合
+					// byte ptr I286_REG[eax]でレジスタにアクセスできる
 
 					mov		edx, ebx
 					shr		edx, 16
 					and		dx, 0007h	// imm3
 					mov		cl, byte ptr I286_REG[eax]
-					btr		cx, dx		// dx\83r\83b\83g\96ڂ\F0\83\8A\83Z\83b\83g
+					btr		cx, dx		// dxビット目をリセット
 					mov		byte ptr I286_REG[eax], cl
 
-					GET_NEXTPRE3		// \96\BD\97\DF2\81`4\83o\83C\83g\96ڂ̕\AA IP\82\F0\90i\82߂\E9
+					GET_NEXTPRE3		// 命令2〜4バイト目の分 IPを進める
 					ret
 
 				MEMORY_EA8(15)
-					// \83I\83y\83\89\83\93\83h\82\AA\83\81\83\82\83\8A(\92\BC\90ڃA\83N\83Z\83X)\82̏ꍇ
-					// ecx\82ɃA\83h\83\8C\83X\82\AA\93\FC\82\C1\82Ă\A2\82\E9
-					// GET_NEXTPRE?\82͎\C0\8Ds\8Dς\DD
+					// オペランドがメモリ(直接アクセス)の場合
+					// ecxにアドレスが入っている
+					// GET_NEXTPRE?は実行済み
 
 					mov		dl, bl
 					and		dx, 0007h	// imm3
 					mov		al, byte ptr I286_MEM[ecx]
-					btr		ax, dx		// dx\83r\83b\83g\96ڂ\F0\83\8A\83Z\83b\83g
+					btr		ax, dx		// dxビット目をリセット
 					mov		byte ptr I286_MEM[ecx], al
 
-					GET_NEXTPRE1		// imm3 \82̕\AA\81AIP\82\F0\90i\82߂\E9
+					GET_NEXTPRE1		// imm3 の分、IPを進める
 					ret
 
 				EXTMEM_EA8
-					// \83I\83y\83\89\83\93\83h\82\AA\83\81\83\82\83\8A\82̏ꍇ
-					// ecx\82ɃA\83h\83\8C\83X\82\AA\81Aeax\82Ƀ\81\83\82\83\8A\82\A9\82\E7\93ǂ񂾒l(\83\8F\81[\83h)\82\AA\93\FC\82\C1\82Ă\A2\82\E9
-					// GET_NEXTPRE?\82͎\C0\8Ds\8Dς\DD
+					// オペランドがメモリの場合
+					// ecxにアドレスが、eaxにメモリから読んだ値(ワード)が入っている
+					// GET_NEXTPRE?は実行済み
 
 					mov		dl, bl
 					and		dx, 0007h	// imm3
-					btr		ax, dx		// dx\83r\83b\83g\96ڂ\F0\83\8A\83Z\83b\83g
+					btr		ax, dx		// dxビット目をリセット
 					mov		dl, al
 					call	i286_memorywrite
 
-					GET_NEXTPRE1		// imm3 \82̕\AA\81AIP\82\F0\90i\82߂\E9
+					GET_NEXTPRE1		// imm3 の分、IPを進める
 					ret
 		}
 }
@@ -1769,46 +1776,46 @@ I286 v30_clr1_ea8_i3(void) {					// 0F 1A 11/000/reg  imm3
 I286 v30_clr1_ea16_i4(void) {					// 0F 1B 11/000/reg  imm4
 												// 0F 1B mod/000/mem disp imm4
 		__asm {
-				GET_NEXTPRE1		// 0F \82\CC1\83o\83C\83g\95\AA\81AIP\82\F0\90i\82߁A\96\BD\97߂\F0\90\E6\93ǂ݂\B7\82\E9
-									// BL=\96\BD\97\DF2\83o\83C\83g\96ځABH=\96\BD\97\DF3\83o\83C\83g\96\DA ... \82ƂȂ\E9
-				movzx	eax, bh		// EAX \82ɖ\BD\97߂\CC3\83o\83C\83g\96ڂ\F0\91\E3\93\FC
+				GET_NEXTPRE1		// 0F の1バイト分、IPを進め、命令を先読みする
+									// BL=命令2バイト目、BH=命令3バイト目 ... となる
+				movzx	eax, bh		// EAX に命令の3バイト目を代入
 
 				PREPART_EA16(6)
-					// \83I\83y\83\89\83\93\83h\82\AA\83\8C\83W\83X\83^\82̏ꍇ
-					// word ptr I286_REG[eax*2]\82Ń\8C\83W\83X\83^\82ɃA\83N\83Z\83X\82ł\AB\82\E9
+					// オペランドがレジスタの場合
+					// word ptr I286_REG[eax*2]でレジスタにアクセスできる
 
 					mov		edx, ebx
 					shr		edx, 16
 					and		dx, 000fh	// imm4
-					btr		word ptr I286_REG[eax*2], dx	// dx\83r\83b\83g\96ڂ\F0\83\8A\83Z\83b\83g
+					btr		word ptr I286_REG[eax*2], dx	// dxビット目をリセット
 
-					GET_NEXTPRE3	// \96\BD\97\DF2\81`4\83o\83C\83g\96ڂ̕\AA IP\82\F0\90i\82߂\E9
+					GET_NEXTPRE3	// 命令2〜4バイト目の分 IPを進める
 					ret
 
 				MEMORY_EA16(15)
-					// \83I\83y\83\89\83\93\83h\82\AA\83\81\83\82\83\8A(\92\BC\90ڃA\83N\83Z\83X)\82̏ꍇ
-					// ecx\82ɃA\83h\83\8C\83X\82\AA\93\FC\82\C1\82Ă\A2\82\E9
-					// GET_NEXTPRE?\82͎\C0\8Ds\8Dς\DD
+					// オペランドがメモリ(直接アクセス)の場合
+					// ecxにアドレスが入っている
+					// GET_NEXTPRE?は実行済み
 
 					mov		dl, bl
 					and		dx, 000fh	// imm4
-					btr		word ptr I286_MEM[ecx], dx	// dx\83r\83b\83g\96ڂ\F0\83\8A\83Z\83b\83g
+					btr		word ptr I286_MEM[ecx], dx	// dxビット目をリセット
 
-					GET_NEXTPRE1		// imm4 \82̕\AA\81AIP\82\F0\90i\82߂\E9
+					GET_NEXTPRE1		// imm4 の分、IPを進める
 					ret
 
 				EXTMEM_EA16
-					// \83I\83y\83\89\83\93\83h\82\AA\83\81\83\82\83\8A\82̏ꍇ
-					// ecx\82ɃA\83h\83\8C\83X\82\AA\81Aeax\82Ƀ\81\83\82\83\8A\82\A9\82\E7\93ǂ񂾒l(\83\8F\81[\83h)\82\AA\93\FC\82\C1\82Ă\A2\82\E9
-					// GET_NEXTPRE?\82͎\C0\8Ds\8Dς\DD
+					// オペランドがメモリの場合
+					// ecxにアドレスが、eaxにメモリから読んだ値(ワード)が入っている
+					// GET_NEXTPRE?は実行済み
 
 					mov		dl, bl
 					and		dx, 000fh	// imm4
-					btr		ax, dx		// dx\83r\83b\83g\96ڂ\F0\83\8A\83Z\83b\83g
+					btr		ax, dx		// dxビット目をリセット
 					mov		dx, ax
 					call	i286_memorywrite_w
 
-					GET_NEXTPRE1		// imm4 \82̕\AA\81AIP\82\F0\90i\82߂\E9
+					GET_NEXTPRE1		// imm4 の分、IPを進める
 					ret
 		}
 }
@@ -1816,50 +1823,50 @@ I286 v30_clr1_ea16_i4(void) {					// 0F 1B 11/000/reg  imm4
 I286 v30_set1_ea8_i3(void) {					// 0F 1C 11/000/reg  imm3
 												// 0F 1C mod/000/mem disp imm3
 		__asm {
-				GET_NEXTPRE1		// 0F \82\CC1\83o\83C\83g\95\AA\81AIP\82\F0\90i\82߁A\96\BD\97߂\F0\90\E6\93ǂ݂\B7\82\E9
-									// BL=\96\BD\97\DF2\83o\83C\83g\96ځABH=\96\BD\97\DF3\83o\83C\83g\96\DA ... \82ƂȂ\E9
-				movzx	eax, bh		// EAX \82ɖ\BD\97߂\CC3\83o\83C\83g\96ڂ\F0\91\E3\93\FC
+				GET_NEXTPRE1		// 0F の1バイト分、IPを進め、命令を先読みする
+									// BL=命令2バイト目、BH=命令3バイト目 ... となる
+				movzx	eax, bh		// EAX に命令の3バイト目を代入
 
 				PREPART_EA8(5)
-					// \83I\83y\83\89\83\93\83h\82\AA\83\8C\83W\83X\83^\82̏ꍇ
-					// byte ptr I286_REG[eax]\82Ń\8C\83W\83X\83^\82ɃA\83N\83Z\83X\82ł\AB\82\E9
+					// オペランドがレジスタの場合
+					// byte ptr I286_REG[eax]でレジスタにアクセスできる
 
 					mov		edx, ebx
 					shr		edx, 16
 					and		dx, 0007h	// imm3
 					mov		cl, byte ptr I286_REG[eax]
-					bts		cx, dx		// dx\83r\83b\83g\96ڂ\F0\83Z\83b\83g
+					bts		cx, dx		// dxビット目をセット
 					mov		byte ptr I286_REG[eax], cl
 
-					GET_NEXTPRE3		// \96\BD\97\DF2\81`4\83o\83C\83g\96ڂ̕\AA IP\82\F0\90i\82߂\E9
+					GET_NEXTPRE3		// 命令2〜4バイト目の分 IPを進める
 					ret
 
 				MEMORY_EA8(14)
-					// \83I\83y\83\89\83\93\83h\82\AA\83\81\83\82\83\8A(\92\BC\90ڃA\83N\83Z\83X)\82̏ꍇ
-					// ecx\82ɃA\83h\83\8C\83X\82\AA\93\FC\82\C1\82Ă\A2\82\E9
-					// GET_NEXTPRE?\82͎\C0\8Ds\8Dς\DD
+					// オペランドがメモリ(直接アクセス)の場合
+					// ecxにアドレスが入っている
+					// GET_NEXTPRE?は実行済み
 
 					mov		dl, bl
 					and		dx, 0007h	// imm3
 					mov		al, byte ptr I286_MEM[ecx]
-					bts		ax, dx		// dx\83r\83b\83g\96ڂ\F0\83Z\83b\83g
+					bts		ax, dx		// dxビット目をセット
 					mov		byte ptr I286_MEM[ecx], al
 
-					GET_NEXTPRE1		// imm3 \82̕\AA\81AIP\82\F0\90i\82߂\E9
+					GET_NEXTPRE1		// imm3 の分、IPを進める
 					ret
 
 				EXTMEM_EA8
-					// \83I\83y\83\89\83\93\83h\82\AA\83\81\83\82\83\8A\82̏ꍇ
-					// ecx\82ɃA\83h\83\8C\83X\82\AA\81Aeax\82Ƀ\81\83\82\83\8A\82\A9\82\E7\93ǂ񂾒l(\83\8F\81[\83h)\82\AA\93\FC\82\C1\82Ă\A2\82\E9
-					// GET_NEXTPRE?\82͎\C0\8Ds\8Dς\DD
+					// オペランドがメモリの場合
+					// ecxにアドレスが、eaxにメモリから読んだ値(ワード)が入っている
+					// GET_NEXTPRE?は実行済み
 
 					mov		dl, bl
 					and		dx, 0007h	// imm3
-					bts		ax, dx		// dx\83r\83b\83g\96ڂ\F0\83Z\83b\83g
+					bts		ax, dx		// dxビット目をセット
 					mov		dl, al
 					call	i286_memorywrite
 
-					GET_NEXTPRE1		// imm3 \82̕\AA\81AIP\82\F0\90i\82߂\E9
+					GET_NEXTPRE1		// imm3 の分、IPを進める
 					ret
 		}
 }
@@ -1867,46 +1874,46 @@ I286 v30_set1_ea8_i3(void) {					// 0F 1C 11/000/reg  imm3
 I286 v30_set1_ea16_i4(void) {					// 0F 1D 11/000/reg  imm4
 												// 0F 1D mod/000/mem disp imm4
 		__asm {
-				GET_NEXTPRE1		// 0F \82\CC1\83o\83C\83g\95\AA\81AIP\82\F0\90i\82߁A\96\BD\97߂\F0\90\E6\93ǂ݂\B7\82\E9
-									// BL=\96\BD\97\DF2\83o\83C\83g\96ځABH=\96\BD\97\DF3\83o\83C\83g\96\DA ... \82ƂȂ\E9
-				movzx	eax, bh		// EAX \82ɖ\BD\97߂\CC3\83o\83C\83g\96ڂ\F0\91\E3\93\FC
+				GET_NEXTPRE1		// 0F の1バイト分、IPを進め、命令を先読みする
+									// BL=命令2バイト目、BH=命令3バイト目 ... となる
+				movzx	eax, bh		// EAX に命令の3バイト目を代入
 
 				PREPART_EA16(5)
-					// \83I\83y\83\89\83\93\83h\82\AA\83\8C\83W\83X\83^\82̏ꍇ
-					// word ptr I286_REG[eax*2]\82Ń\8C\83W\83X\83^\82ɃA\83N\83Z\83X\82ł\AB\82\E9
+					// オペランドがレジスタの場合
+					// word ptr I286_REG[eax*2]でレジスタにアクセスできる
 
 					mov		edx, ebx
 					shr		edx, 16
 					and		dx, 000fh	// imm4
-					bts		word ptr I286_REG[eax*2], dx	// dx\83r\83b\83g\96ڂ\F0\83Z\83b\83g
+					bts		word ptr I286_REG[eax*2], dx	// dxビット目をセット
 
-					GET_NEXTPRE3	// \96\BD\97\DF2\81`4\83o\83C\83g\96ڂ̕\AA IP\82\F0\90i\82߂\E9
+					GET_NEXTPRE3	// 命令2〜4バイト目の分 IPを進める
 					ret
 
 				MEMORY_EA16(14)
-					// \83I\83y\83\89\83\93\83h\82\AA\83\81\83\82\83\8A(\92\BC\90ڃA\83N\83Z\83X)\82̏ꍇ
-					// ecx\82ɃA\83h\83\8C\83X\82\AA\93\FC\82\C1\82Ă\A2\82\E9
-					// GET_NEXTPRE?\82͎\C0\8Ds\8Dς\DD
+					// オペランドがメモリ(直接アクセス)の場合
+					// ecxにアドレスが入っている
+					// GET_NEXTPRE?は実行済み
 
 					mov		dl, bl
 					and		dx, 000fh	// imm4
-					bts		word ptr I286_MEM[ecx], dx	// dx\83r\83b\83g\96ڂ\F0\83Z\83b\83g
+					bts		word ptr I286_MEM[ecx], dx	// dxビット目をセット
 
-					GET_NEXTPRE1		// imm4 \82̕\AA\81AIP\82\F0\90i\82߂\E9
+					GET_NEXTPRE1		// imm4 の分、IPを進める
 					ret
 
 				EXTMEM_EA16
-					// \83I\83y\83\89\83\93\83h\82\AA\83\81\83\82\83\8A\82̏ꍇ
-					// ecx\82ɃA\83h\83\8C\83X\82\AA\81Aeax\82Ƀ\81\83\82\83\8A\82\A9\82\E7\93ǂ񂾒l(\83\8F\81[\83h)\82\AA\93\FC\82\C1\82Ă\A2\82\E9
-					// GET_NEXTPRE?\82͎\C0\8Ds\8Dς\DD
+					// オペランドがメモリの場合
+					// ecxにアドレスが、eaxにメモリから読んだ値(ワード)が入っている
+					// GET_NEXTPRE?は実行済み
 
 					mov		dl, bl
 					and		dx, 000fh	// imm4
-					bts		ax, dx		// dx\83r\83b\83g\96ڂ\F0\83Z\83b\83g
+					bts		ax, dx		// dxビット目をセット
 					mov		dx, ax
 					call	i286_memorywrite_w
 
-					GET_NEXTPRE1		// imm4 \82̕\AA\81AIP\82\F0\90i\82߂\E9
+					GET_NEXTPRE1		// imm4 の分、IPを進める
 					ret
 		}
 }
@@ -1987,8 +1994,8 @@ I286 v30_ope0x0f(void) {						// 0F:
 		__asm {
 				test	bh, 0c0h
 				jz		jmpbytbl
-												// 40 \88ȏ\E3\82̖\BD\97߂Ƃ\B5\82ẮA
-												// FF(BREAKM)\82\AA\82\A0\82\E9\82̂݁B
+												// 40 以上の命令としては、
+												// FF(BREAKM)があるのみ。
 				jmp		v30_reserved_0x0f
 
 	jmpbytbl:	movzx	eax, bh
@@ -2015,8 +2022,8 @@ static const V30PATCH v30patch_op[] = {
 			{0x3e, v30segprefix_ds},		// 3E:	ds:
 			{0x54, v30push_sp},				// 54:	push	sp
 #if !defined(VAEG_FIX)
-			/* V30/\83\CAPD9002\82ł\CDPOP SP\82̓X\83^\83b\83N\82̒l\82\F0SP\82ɑ\E3\93\FC\82\B5\82ďI\82\ED\82\E8\81B(2\82\F0\89\C1\8EZ\82\B5\82Ȃ\A2)
-			   \88ȉ\BA\82̎\C0\91\95\82͌\EB\82\E8 */
+			/* V30/μPD9002ではPOP SPはスタックの値をSPに代入して終わり。(2を加算しない)
+			   以下の実装は誤り */
 			{0x5c, v30pop_sp},				// 5C:	pop		sp
 #endif
 			{0x63, v30_reserved},			// 63:	reserved
@@ -2110,8 +2117,8 @@ static const V30PATCH v30patch_repe[] = {
 			{0x3e, v30repe_segprefix_ds},	// 3E:	repe ds:
 			{0x54, v30push_sp},				// 54:	push	sp
 #if !defined(VAEG_FIX)
-			/* V30/\83\CAPD9002\82ł\CDPOP SP\82̓X\83^\83b\83N\82̒l\82\F0SP\82ɑ\E3\93\FC\82\B5\82ďI\82\ED\82\E8\81B(2\82\F0\89\C1\8EZ\82\B5\82Ȃ\A2)
-			   \88ȉ\BA\82̎\C0\91\95\82͌\EB\82\E8 */
+			/* V30/μPD9002ではPOP SPはスタックの値をSPに代入して終わり。(2を加算しない)
+			   以下の実装は誤り */
 			{0x5c, v30pop_sp},				// 5C:	pop		sp
 #endif
 			{0x63, v30_reserved},			// 63:	reserved
@@ -2196,8 +2203,8 @@ static const V30PATCH v30patch_repne[] = {
 			{0x3e, v30repne_segprefix_ds},	// 3E:	repne ds:
 			{0x54, v30push_sp},				// 54:	push	sp
 #if !defined(VAEG_FIX)
-			/* V30/\83\CAPD9002\82ł\CDPOP SP\82̓X\83^\83b\83N\82̒l\82\F0SP\82ɑ\E3\93\FC\82\B5\82ďI\82\ED\82\E8\81B(2\82\F0\89\C1\8EZ\82\B5\82Ȃ\A2)
-			   \88ȉ\BA\82̎\C0\91\95\82͌\EB\82\E8 */
+			/* V30/μPD9002ではPOP SPはスタックの値をSPに代入して終わり。(2を加算しない)
+			   以下の実装は誤り */
 			{0x5c, v30pop_sp},				// 5C:	pop		sp
 #endif
 			{0x63, v30_reserved},			// 63:	reserved
@@ -2229,7 +2236,7 @@ I286 v30_reserved_repc(void) {
 
 		__asm {
 				I286CLOCK(2)
-				//GET_NEXTPRE1		// \83f\83o\83b\83O\82̖ړI\82̂\BD\82߁AIP\82\F0\90i\82߂\B8\82ɒ\E2\8E~\82\B3\82\B9\82\E9
+				//GET_NEXTPRE1		// デバッグの目的のため、IPを進めずに停止させる
 				mov		esi, I286_REPPOSBAK
 				RESET_XPREFETCH
 				ret
@@ -2319,6 +2326,7 @@ static const V30PATCH v30patch_repc[] = {
 };
 #endif
 
+
 // ---------------------------------------------------------------------------
 
 static void v30patching(I286TBL *dst, const V30PATCH *patch, int length) {
@@ -2362,14 +2370,14 @@ void v30x_initreg(void) {
 	I286_CS = 0xf000;
 	CS_BASE = 0xf0000;
 	I286_IP = 0xfff0;
-	I286_FLAG = 0xf002;				// 286\82Ƃ̗B\88\EA\82̍\B7\88\D9
+	I286_FLAG = 0xf002;				// 286との唯一の差異
 	i286core.s.adrsmask = 0xfffff;
 	i286x_resetprefetch();
 }
 #endif
 
 LABEL void v30x(void) {
-	/* ToDo: \83V\83\93\83O\83\8B\83X\83e\83b\83v\8A\84\82荞\82݂̋\93\93\AE\82\AA\91\BD\95\AA\90\B3\82\B5\82\AD\82Ȃ\A2\81B Shinra */
+	/* ToDo: シングルステップ割り込みの挙動が多分正しくない。 Shinra */
 
 	__asm {
 				pushad
@@ -2382,7 +2390,23 @@ LABEL void v30x(void) {
 				jne		short v30_dma_mnlp
 
 				align	4
-v30_mnlp:
+v30_mnlp:		movzx	eax, bl
+
+/*
+				cmp		esi, 61e3h
+				jnz		goahead
+
+				nop
+	goahead:
+*/
+/*
+
+				cmp		I286_CS, 1ff0h
+				jnz		goahead
+
+				nop
+	goahead:
+*/
 #if defined(ENABLE_TRAP)
 				mov		edx, esi
 				movzx	ecx, I286_CS
@@ -2398,7 +2422,7 @@ v30_mnlp:
 				ret
 
 				align	4
-v30_dma_mnlp:
+v30_dma_mnlp:	movzx	eax, bl
 #if defined(ENABLE_TRAP)
 				mov		edx, esi
 				movzx	ecx, I286_CS
@@ -2406,7 +2430,7 @@ v30_dma_mnlp:
 #endif
 				movzx	eax, bl
 				call	v30op[eax*4]
-				call	dmax86
+				call	dmap_i286
 				cmp		I286_REMCLOCK, 0
 				jg		v30_dma_mnlp
 				mov		dword ptr (i286core.s.prefetchque), ebx
@@ -2415,7 +2439,7 @@ v30_dma_mnlp:
 				ret
 
 				align	4
-v30_trapping:
+v30_trapping:	movzx	eax, bl
 #if defined(ENABLE_TRAP)
 				mov		edx, esi
 				movzx	ecx, I286_CS
@@ -2435,7 +2459,7 @@ v30notrap:		mov		dword ptr (i286core.s.prefetchque), ebx
 }
 
 #if defined(VAEG_FIX)
-				/* \83V\83\93\83O\83\8B\83X\83e\83b\83v\8A\84\82荞\82݂̓\AE\8D\EC\82\F0\8FC\90\B3 */
+				/* シングルステップ割り込みの動作を修正 */
 LABEL void v30x_step(void) {
 
 	__asm {
@@ -2482,9 +2506,9 @@ nexts:
 				mov		dword ptr (i286core.s.prefetchque), ebx
 				mov		I286_IP, si
 
-				call	dmax86
+				call	dmap_i286
 				popad
 				ret
 		}
 }
-
+#endif

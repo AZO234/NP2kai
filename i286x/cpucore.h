@@ -31,7 +31,8 @@ enum {
 #endif
 #else									// ダイレクトアクセス範囲を狭める
 enum {
-	I286_MEMWRITEMAX	= 0xa0000
+	I286_MEMREADMAX		= 0x00400,
+	I286_MEMWRITEMAX	= 0x00400
 };
 #endif
 

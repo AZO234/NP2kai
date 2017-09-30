@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -19,38 +19,43 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{D0AC326F-CEFF-492D-839A-27D6CDA7EF64}</ProjectGuid>
+    <ProjectGuid>{CA040333-3357-4598-A480-57C957DA24B5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>np2vs2010</RootNamespace>
-    <ProjectName>np2w</ProjectName>
+    <RootNamespace>np21vs2017</RootNamespace>
+    <ProjectName>np21w</ProjectName>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
-    <Import Project="x86\vs2010\x86.props" />
-    <Import Project="x64\vs2010\x64.props" />
+    <Import Project="x86\vs2017\x86.props" />
+    <Import Project="x64\vs2017\x64.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -79,11 +84,13 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\bin\$(SolutionName)\$(PlatformName)\$(Configuration)\</OutDir>
     <IntDir>..\obj\$(SolutionName)\$(PlatformName)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>H:\WinDDK\7600.16385.1\inc;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\bin\$(SolutionName)\$(PlatformName)\$(Configuration)\</OutDir>
     <IntDir>..\obj\$(SolutionName)\$(PlatformName)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>H:\WinDDK\7600.16385.1\inc;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -91,16 +98,22 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\x86;..\;..\common;..\i286x;..\mem;..\io;..\cbus;..\vram;..\sound;..\generic;..\zlib</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_WIN2000HOST;SUPPORT_KAI_IMAGES;HOOK_SYSKEY;ALLOW_MULTIRUN;TRACE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\;.\x86;..\;..\common;..\i386c;..\mem;..\io;..\cbus;..\network;..\vram;..\sound;..\generic;..\zlib;\VST3_SDK</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <NASM>
-      <AdditionalOptions>-I.\x86\ -I..\i286x\ -I..\io\x86\ %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>-I.\x86\ -I..\i386c\x86\ -I..\io\x86\ %(AdditionalOptions)</AdditionalOptions>
     </NASM>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;SUPPORT_PC9821;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -108,8 +121,9 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\x64;..\;..\common;..\i286c;..\mem;..\io;..\cbus;..\vram;..\sound;..\generic;..\zlib</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\;.\x64;..\;..\common;..\i386c;..\mem;..\io;..\cbus;..\network;..\vram;..\sound;..\generic;..\zlib;\VST3_SDK</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -117,13 +131,13 @@
       <LargeAddressAware>false</LargeAddressAware>
     </Link>
     <NASM>
-      <AdditionalOptions>-I.\x86\ -I..\i286x\ -I..\io\x86\ %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>-I.\x86\ -I..\i386c\x86\ -I..\io\x86\ %(AdditionalOptions)</AdditionalOptions>
     </NASM>
     <YASM>
-      <AdditionalOptions>-I.\x64 -I..\i286c\x64 -I..\io\x64 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>-I.\x64\ -I..\i386c\x64\ -I..\io\x64\ %(AdditionalOptions)</AdditionalOptions>
     </YASM>
     <ResourceCompile>
-      <PreprocessorDefinitions>_WIN64;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WIN64;_UNICODE;UNICODE;SUPPORT_PC9821;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -131,11 +145,18 @@
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_KAI_IMAGES;ALLOW_MULTIRUN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\x86;..\;..\common;..\i286x;..\mem;..\io;..\cbus;..\vram;..\sound;..\generic;..\zlib</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_WIN2000HOST;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_PHYSICAL_CDDRV;SUPPORT_FMGEN;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\;.\x86;..\;..\common;..\i386c;..\mem;..\io;..\cbus;..\network;..\vram;..\sound;..\generic;..\zlib;\VST3_SDK</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -144,8 +165,11 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <NASM>
-      <AdditionalOptions>-I.\x86\ -I..\i286x\ -I..\io\x86\ %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>-I.\x86\ -I..\i386c\x86\ -I..\io\x86\ %(AdditionalOptions)</AdditionalOptions>
     </NASM>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;SUPPORT_PC9821;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -155,9 +179,15 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_KAI_IMAGES;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_VPCVHD;HOOK_SYSKEY;ALLOW_MULTIRUN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\x64;..\;..\common;..\i286c;..\mem;..\io;..\cbus;..\vram;..\sound;..\generic;..\zlib</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_PHYSICAL_CDDRV;SUPPORT_FMGEN;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\;.\x64;..\;..\common;..\i386c;..\mem;..\io;..\cbus;..\network;..\vram;..\sound;..\generic;..\zlib;\VST3_SDK</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -167,14 +197,17 @@
       <LargeAddressAware>false</LargeAddressAware>
     </Link>
     <NASM>
-      <AdditionalOptions>-I.\x86\ -I..\i286x\ -I..\io\x86\ %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>-I.\x86\ -I..\i386c\x86\ -I..\io\x86\ %(AdditionalOptions)</AdditionalOptions>
     </NASM>
     <YASM>
-      <AdditionalOptions>-I.\x64 -I..\i286c\x64 -I..\io\x64 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>-I.\x64\ -I..\i386c\x64\ -I..\io\x64\ %(AdditionalOptions)</AdditionalOptions>
     </YASM>
     <ResourceCompile>
-      <PreprocessorDefinitions>_WIN64;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WIN64;_UNICODE;UNICODE;SUPPORT_PC9821;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
+    <Manifest>
+      <EnableDPIAwareness>true</EnableDPIAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\bios\bios.c" />
@@ -197,11 +230,14 @@
     <ClCompile Include="..\cbus\board26k.c" />
     <ClCompile Include="..\cbus\board86.c" />
     <ClCompile Include="..\cbus\boardpx.c" />
+    <ClCompile Include="..\cbus\boardsb16.c" />
     <ClCompile Include="..\cbus\boardso.c" />
     <ClCompile Include="..\cbus\boardspb.c" />
     <ClCompile Include="..\cbus\boardx2.c" />
     <ClCompile Include="..\cbus\cbuscore.c" />
     <ClCompile Include="..\cbus\cs4231io.c" />
+    <ClCompile Include="..\cbus\ct1741io.c" />
+    <ClCompile Include="..\cbus\ct1745io.c" />
     <ClCompile Include="..\cbus\ideio.c" />
     <ClCompile Include="..\cbus\mpu98ii.c" />
     <ClCompile Include="..\cbus\pc9861k.c" />
@@ -238,7 +274,6 @@
     <ClCompile Include="..\diskimage\cd\cdd_iso.c" />
     <ClCompile Include="..\diskimage\cd\cdd_mds.c" />
     <ClCompile Include="..\diskimage\cd\cdd_nrg.c" />
-    <ClCompile Include="..\diskimage\cd\cdd_real.c" />
     <ClCompile Include="..\diskimage\fddfile.c" />
     <ClCompile Include="..\diskimage\fd\fdd_bkdsk.c" />
     <ClCompile Include="..\diskimage\fd\fdd_d88.c" />
@@ -253,6 +288,7 @@
     <ClCompile Include="..\fdd\sxsi.c" />
     <ClCompile Include="..\fdd\sxsicd.c" />
     <ClCompile Include="..\fdd\sxsihdd.c" />
+    <ClCompile Include="..\fdd\sxsihdd_nvl.c" />
     <ClCompile Include="..\font\font.c" />
     <ClCompile Include="..\font\fontdata.c" />
     <ClCompile Include="..\font\fontfm7.c" />
@@ -268,77 +304,52 @@
     <ClCompile Include="..\generic\hostdrv.c" />
     <ClCompile Include="..\generic\hostdrvs.c" />
     <ClCompile Include="..\generic\keydisp.c" />
+    <ClCompile Include="..\generic\memdbg32.c" />
     <ClCompile Include="..\generic\np2info.c" />
     <ClCompile Include="..\generic\softkbd.c" />
     <ClCompile Include="..\generic\unasm.c" />
-    <ClCompile Include="..\i286c\cpumem.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    <ClCompile Include="..\i386c\cpucore.c" />
+    <ClCompile Include="..\i386c\cpumem.c" />
+    <ClCompile Include="..\i386c\ia32\cpu.c" />
+    <ClCompile Include="..\i386c\ia32\cpu_io.c" />
+    <ClCompile Include="..\i386c\ia32\cpu_mem.c" />
+    <ClCompile Include="..\i386c\ia32\ctrlxfer.c" />
+    <ClCompile Include="..\i386c\ia32\debug.c" />
+    <ClCompile Include="..\i386c\ia32\disasm.c" />
+    <ClCompile Include="..\i386c\ia32\exception.c" />
+    <ClCompile Include="..\i386c\ia32\groups.c" />
+    <ClCompile Include="..\i386c\ia32\ia32.c" />
+    <ClCompile Include="..\i386c\ia32\instructions\bin_arith.c" />
+    <ClCompile Include="..\i386c\ia32\instructions\bit_byte.c" />
+    <ClCompile Include="..\i386c\ia32\instructions\ctrl_trans.c" />
+    <ClCompile Include="..\i386c\ia32\instructions\data_trans.c" />
+    <ClCompile Include="..\i386c\ia32\instructions\dec_arith.c" />
+    <ClCompile Include="..\i386c\ia32\instructions\flag_ctrl.c" />
+    <ClCompile Include="..\i386c\ia32\instructions\fpu.c" />
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\fpdummy.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\i286c\i286c.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\i286c\i286c_0f.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\i286c\i286c_8x.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\i286c\i286c_ea.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\i286c\i286c_f6.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\i286c\i286c_fe.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\i286c\i286c_mn.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\i286c\i286c_rp.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\i286c\i286c_sf.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\i286c\v30patch.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\i286x\i286x.cpp">
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\fpemul.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\i286x\i286xadr.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\i286x\i286xcts.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\i286x\i286xrep.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\i286x\i286xs.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\i286x\v30patch.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\fpemul_dosbox.c" />
+    <ClCompile Include="..\i386c\ia32\instructions\logic_arith.c" />
+    <ClCompile Include="..\i386c\ia32\instructions\misc_inst.c" />
+    <ClCompile Include="..\i386c\ia32\instructions\seg_reg.c" />
+    <ClCompile Include="..\i386c\ia32\instructions\shift_rotate.c" />
+    <ClCompile Include="..\i386c\ia32\instructions\string_inst.c" />
+    <ClCompile Include="..\i386c\ia32\instructions\system_inst.c" />
+    <ClCompile Include="..\i386c\ia32\inst_table.c" />
+    <ClCompile Include="..\i386c\ia32\interface.c" />
+    <ClCompile Include="..\i386c\ia32\paging.c" />
+    <ClCompile Include="..\i386c\ia32\resolve.c" />
+    <ClCompile Include="..\i386c\ia32\segments.c" />
+    <ClCompile Include="..\i386c\ia32\task.c" />
     <ClCompile Include="..\io\artic.c" />
     <ClCompile Include="..\io\cgrom.c" />
     <ClCompile Include="..\io\cpuio.c" />
@@ -372,38 +383,13 @@
     <ClCompile Include="..\lio\gput1.c" />
     <ClCompile Include="..\lio\gscreen.c" />
     <ClCompile Include="..\lio\lio.c" />
-    <ClCompile Include="..\mem\dmav30.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\mem\dmax86.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\mem\memegc.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\mem\memems.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\mem\memepp.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\mem\memtram.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\mem\memvga.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\mem\memvram.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="..\mem\dmax86.c" />
+    <ClCompile Include="..\mem\memegc.c" />
+    <ClCompile Include="..\mem\memems.c" />
+    <ClCompile Include="..\mem\memepp.c" />
+    <ClCompile Include="..\mem\memtram.c" />
+    <ClCompile Include="..\mem\memvga.c" />
+    <ClCompile Include="..\mem\memvram.c" />
     <ClCompile Include="..\network\lgy98.c" />
     <ClCompile Include="..\network\net.c" />
     <ClCompile Include="..\nevent.c" />
@@ -415,9 +401,17 @@
     <ClCompile Include="..\sound\cs4231c.c" />
     <ClCompile Include="..\sound\cs4231g.c" />
     <ClCompile Include="..\sound\fmboard.c" />
+    <ClCompile Include="..\sound\fmgen\fmgen_file.cpp" />
+    <ClCompile Include="..\sound\fmgen\fmgen_fmgen.cpp" />
+    <ClCompile Include="..\sound\fmgen\fmgen_fmgwrap.cpp" />
+    <ClCompile Include="..\sound\fmgen\fmgen_fmtimer.cpp" />
+    <ClCompile Include="..\sound\fmgen\fmgen_opm.cpp" />
+    <ClCompile Include="..\sound\fmgen\fmgen_opna.cpp" />
+    <ClCompile Include="..\sound\fmgen\fmgen_psg.cpp" />
     <ClCompile Include="..\sound\getsnd\getsmix.c" />
     <ClCompile Include="..\sound\getsnd\getsnd.c" />
     <ClCompile Include="..\sound\getsnd\getwave.c" />
+    <ClCompile Include="..\sound\opl3.c" />
     <ClCompile Include="..\sound\oplgenc.c" />
     <ClCompile Include="..\sound\oplgeng.c" />
     <ClCompile Include="..\sound\opngenc.c" />
@@ -463,8 +457,6 @@
     <ClCompile Include="..\vram\sdraw.c" />
     <ClCompile Include="..\vram\sdrawq16.c" />
     <ClCompile Include="..\vram\vram.c" />
-    <ClCompile Include="..\wab\cirrus_vga.c" />
-    <ClCompile Include="..\wab\wab.c" />
     <ClCompile Include="..\zlib\adler32.c" />
     <ClCompile Include="..\zlib\crc32.c" />
     <ClCompile Include="..\zlib\inffast.c" />
@@ -508,6 +500,7 @@
     <ClCompile Include="dialog\d_disk.cpp" />
     <ClCompile Include="dialog\d_font.cpp" />
     <ClCompile Include="dialog\d_hostdrv.cpp" />
+    <ClCompile Include="dialog\d_ide.cpp" />
     <ClCompile Include="dialog\d_mpu98.cpp" />
     <ClCompile Include="dialog\d_network.cpp" />
     <ClCompile Include="dialog\d_screen.cpp" />
@@ -515,7 +508,6 @@
     <ClCompile Include="dialog\d_sound.cpp" />
     <ClCompile Include="dialog\d_soundlog.cpp" />
     <ClCompile Include="dialog\d_txt.cpp" />
-    <ClCompile Include="dialog\d_wab.cpp" />
     <ClCompile Include="dialog\np2class.cpp" />
     <ClCompile Include="dosio.cpp" />
     <ClCompile Include="ext\c86ctl\c86ctlif.cpp" />
@@ -579,11 +571,14 @@
     <ClInclude Include="..\cbus\board26k.h" />
     <ClInclude Include="..\cbus\board86.h" />
     <ClInclude Include="..\cbus\boardpx.h" />
+    <ClInclude Include="..\cbus\boardsb16.h" />
     <ClInclude Include="..\cbus\boardso.h" />
     <ClInclude Include="..\cbus\boardspb.h" />
     <ClInclude Include="..\cbus\boardx2.h" />
     <ClInclude Include="..\cbus\cbuscore.h" />
     <ClInclude Include="..\cbus\cs4231io.h" />
+    <ClInclude Include="..\cbus\ct1741io.h" />
+    <ClInclude Include="..\cbus\ct1745io.h" />
     <ClInclude Include="..\cbus\ideio.h" />
     <ClInclude Include="..\cbus\mpu98ii.h" />
     <ClInclude Include="..\cbus\pc9861k.h" />
@@ -614,7 +609,6 @@
     <ClInclude Include="..\diskimage\cd\cdd_iso.h" />
     <ClInclude Include="..\diskimage\cd\cdd_mds.h" />
     <ClInclude Include="..\diskimage\cd\cdd_nrg.h" />
-    <ClInclude Include="..\diskimage\cd\cdd_real.h" />
     <ClInclude Include="..\diskimage\fddfile.h" />
     <ClInclude Include="..\diskimage\fd\fdd_bkdsk.h" />
     <ClInclude Include="..\diskimage\fd\fdd_d88.h" />
@@ -631,6 +625,8 @@
     <ClInclude Include="..\fdd\d88head.h" />
     <ClInclude Include="..\fdd\diskdrv.h" />
     <ClInclude Include="..\fdd\fdd_mtr.h" />
+    <ClInclude Include="..\fdd\hdd_vhd.h" />
+    <ClInclude Include="..\fdd\hdd_vpc.h" />
     <ClInclude Include="..\fdd\newdisk.h" />
     <ClInclude Include="..\fdd\sxsi.h" />
     <ClInclude Include="..\fdd\sxsicd.h" />
@@ -644,21 +640,37 @@
     <ClInclude Include="..\generic\hostdrv.h" />
     <ClInclude Include="..\generic\hostdrvs.h" />
     <ClInclude Include="..\generic\keydisp.h" />
+    <ClInclude Include="..\generic\memdbg32.h" />
     <ClInclude Include="..\generic\np2info.h" />
     <ClInclude Include="..\generic\softkbd.h" />
     <ClInclude Include="..\generic\unasm.h" />
-    <ClInclude Include="..\i286c\cpucore.h" />
-    <ClInclude Include="..\i286c\cpumem.h" />
-    <ClInclude Include="..\i286c\i286c.h" />
-    <ClInclude Include="..\i286c\v30patch.h" />
-    <ClInclude Include="..\i286x\cpucore.h" />
-    <ClInclude Include="..\i286x\cpumem.h" />
-    <ClInclude Include="..\i286x\i286x.h" />
-    <ClInclude Include="..\i286x\i286xadr.h" />
-    <ClInclude Include="..\i286x\i286xcts.h" />
-    <ClInclude Include="..\i286x\i286xrep.h" />
-    <ClInclude Include="..\i286x\i286xs.h" />
-    <ClInclude Include="..\i286x\v30patch.h" />
+    <ClInclude Include="..\i386c\cpucore.h" />
+    <ClInclude Include="..\i386c\cpumem.h" />
+    <ClInclude Include="..\i386c\ia32\cpu.h" />
+    <ClInclude Include="..\i386c\ia32\cpu_io.h" />
+    <ClInclude Include="..\i386c\ia32\cpu_mem.h" />
+    <ClInclude Include="..\i386c\ia32\ctrlxfer.h" />
+    <ClInclude Include="..\i386c\ia32\exception.h" />
+    <ClInclude Include="..\i386c\ia32\groups.h" />
+    <ClInclude Include="..\i386c\ia32\instructions\bin_arith.h" />
+    <ClInclude Include="..\i386c\ia32\instructions\bit_byte.h" />
+    <ClInclude Include="..\i386c\ia32\instructions\ctrl_trans.h" />
+    <ClInclude Include="..\i386c\ia32\instructions\data_trans.h" />
+    <ClInclude Include="..\i386c\ia32\instructions\dec_arith.h" />
+    <ClInclude Include="..\i386c\ia32\instructions\flag_ctrl.h" />
+    <ClInclude Include="..\i386c\ia32\instructions\fpu\fp.h" />
+    <ClInclude Include="..\i386c\ia32\instructions\logic_arith.h" />
+    <ClInclude Include="..\i386c\ia32\instructions\misc_inst.h" />
+    <ClInclude Include="..\i386c\ia32\instructions\seg_reg.h" />
+    <ClInclude Include="..\i386c\ia32\instructions\shift_rotate.h" />
+    <ClInclude Include="..\i386c\ia32\instructions\string_inst.h" />
+    <ClInclude Include="..\i386c\ia32\instructions\system_inst.h" />
+    <ClInclude Include="..\i386c\ia32\inst_table.h" />
+    <ClInclude Include="..\i386c\ia32\interface.h" />
+    <ClInclude Include="..\i386c\ia32\paging.h" />
+    <ClInclude Include="..\i386c\ia32\resolve.h" />
+    <ClInclude Include="..\i386c\ia32\segments.h" />
+    <ClInclude Include="..\i386c\ia32\task.h" />
     <ClInclude Include="..\io\artic.h" />
     <ClInclude Include="..\io\cgrom.h" />
     <ClInclude Include="..\io\cpuio.h" />
@@ -707,6 +719,18 @@
     <ClInclude Include="..\sound\beep.h" />
     <ClInclude Include="..\sound\cs4231.h" />
     <ClInclude Include="..\sound\fmboard.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_diag.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_file.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_fmgen.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_fmgeninl.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_fmgwrap.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_fmtimer.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_headers.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_misc.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_opm.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_opna.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_psg.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_types.h" />
     <ClInclude Include="..\sound\getsnd\getsnd.h" />
     <ClInclude Include="..\sound\opl3.h" />
     <ClInclude Include="..\sound\oplgen.h" />
@@ -744,13 +768,6 @@
     <ClInclude Include="..\vram\scrnsave.h" />
     <ClInclude Include="..\vram\sdraw.h" />
     <ClInclude Include="..\vram\vram.h" />
-    <ClInclude Include="..\wab\cirrus_vga.h" />
-    <ClInclude Include="..\wab\cirrus_vga_extern.h" />
-    <ClInclude Include="..\wab\cirrus_vga_rop.h" />
-    <ClInclude Include="..\wab\cirrus_vga_rop2.h" />
-    <ClInclude Include="..\wab\vga_int.h" />
-    <ClInclude Include="..\wab\wab.h" />
-    <ClInclude Include="..\wab\wabbmpsave.h" />
     <ClInclude Include="..\zlib\crc32.h" />
     <ClInclude Include="..\zlib\inffast.h" />
     <ClInclude Include="..\zlib\inffixed.h" />
@@ -852,18 +869,6 @@
     <ClInclude Include="x86\cputype.h" />
   </ItemGroup>
   <ItemGroup>
-    <NASM Include="..\i286x\cpumem.x86">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </NASM>
-    <NASM Include="..\mem\x86\dmax86.x86">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </NASM>
-    <NASM Include="..\mem\x86\memegc.x86">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </NASM>
     <NASM Include="x86\cputype.x86">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -886,9 +891,6 @@
     </NASM>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="resources\1252\np2.rc" />
-  </ItemGroup>
-  <ItemGroup>
     <YASM Include="x64\makegrph.x64">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -898,9 +900,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </YASM>
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resources\932\np2.rc" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="x86\vs2010\x86.targets" />
-    <Import Project="x64\vs2010\x64.targets" />
+    <Import Project="x86\vs2017\x86.targets" />
+    <Import Project="x64\vs2017\x64.targets" />
   </ImportGroup>
 </Project>

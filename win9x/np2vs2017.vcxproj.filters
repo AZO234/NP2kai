@@ -235,14 +235,8 @@
     <Filter Include="ヘッダー ファイル\diskimage\cd">
       <UniqueIdentifier>{a056b450-e130-4ca1-9cd0-e3c2e4b50570}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\wab">
-      <UniqueIdentifier>{e2e1f52a-3c69-40fa-b28d-66b6790d1d16}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\network">
       <UniqueIdentifier>{355c185c-0473-45fe-a779-d70d341f4ee7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\wab">
-      <UniqueIdentifier>{f098451e-ba19-4e53-b8c7-f0499e65bd53}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\network">
       <UniqueIdentifier>{851cf1df-2a92-4676-9f39-c8030611fa29}</UniqueIdentifier>
@@ -1116,16 +1110,7 @@
     <ClCompile Include="..\network\net.c">
       <Filter>ソース ファイル\network</Filter>
     </ClCompile>
-    <ClCompile Include="..\wab\cirrus_vga.c">
-      <Filter>ソース ファイル\wab</Filter>
-    </ClCompile>
-    <ClCompile Include="..\wab\wab.c">
-      <Filter>ソース ファイル\wab</Filter>
-    </ClCompile>
     <ClCompile Include="dialog\d_network.cpp">
-      <Filter>ソース ファイル\win9x\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="dialog\d_wab.cpp">
       <Filter>ソース ファイル\win9x\dialog</Filter>
     </ClCompile>
     <ClCompile Include="dialog\d_txt.cpp">
@@ -1142,9 +1127,6 @@
     </ClCompile>
     <ClCompile Include="ext\opl3.cpp">
       <Filter>ソース ファイル\win9x\ext</Filter>
-    </ClCompile>
-    <ClCompile Include="..\diskimage\cd\cdd_real.c">
-      <Filter>ソース ファイル\diskimage\cd</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1967,9 +1949,6 @@
     <ClInclude Include="..\diskimage\fd\fdd_xdf.h">
       <Filter>ヘッダー ファイル\diskimage\fd</Filter>
     </ClInclude>
-    <ClInclude Include="..\wab\wab.h">
-      <Filter>ヘッダー ファイル\wab</Filter>
-    </ClInclude>
     <ClInclude Include="..\network\net.h">
       <Filter>ヘッダー ファイル\network</Filter>
     </ClInclude>
@@ -1979,26 +1958,8 @@
     <ClInclude Include="..\network\lgy98dev.h">
       <Filter>ヘッダー ファイル\network</Filter>
     </ClInclude>
-    <ClInclude Include="..\wab\cirrus_vga.h">
-      <Filter>ヘッダー ファイル\wab</Filter>
-    </ClInclude>
-    <ClInclude Include="..\wab\cirrus_vga_extern.h">
-      <Filter>ヘッダー ファイル\wab</Filter>
-    </ClInclude>
-    <ClInclude Include="..\wab\cirrus_vga_rop.h">
-      <Filter>ヘッダー ファイル\wab</Filter>
-    </ClInclude>
-    <ClInclude Include="..\wab\cirrus_vga_rop2.h">
-      <Filter>ヘッダー ファイル\wab</Filter>
-    </ClInclude>
-    <ClInclude Include="..\wab\vga_int.h">
-      <Filter>ヘッダー ファイル\wab</Filter>
-    </ClInclude>
-    <ClInclude Include="..\wab\wabbmpsave.h">
-      <Filter>ヘッダー ファイル\wab</Filter>
-    </ClInclude>
-    <ClInclude Include="..\diskimage\cd\cdd_real.h">
-      <Filter>ヘッダー ファイル\diskimage\cd</Filter>
+    <ClInclude Include="..\i286x\dmap.h">
+      <Filter>ヘッダー ファイル\i286x</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2022,6 +1983,9 @@
     </NASM>
     <NASM Include="x86\makegrph.x86">
       <Filter>ソース ファイル\win9x\x86</Filter>
+    </NASM>
+    <NASM Include="..\i286x\dmap.x86">
+      <Filter>ソース ファイル\i286x</Filter>
     </NASM>
   </ItemGroup>
   <ItemGroup>

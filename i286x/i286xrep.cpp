@@ -64,7 +64,7 @@ I286EXT rep_xinsw(void) {
 				movzx	ebp, I286_DI
 				align	4
 insw_lp:		I286CLOCK(4)
-				movzx	ecx, I286_DX
+				movzx	cx, I286_DX
 				call	iocore_inp16
 				lea		ecx, [edi + ebp]
 				mov		dx, ax
@@ -130,7 +130,7 @@ I286EXT rep_xoutsw(void) {
 outsw_lp:		I286CLOCK(4)
 				lea		ecx, [edi + ebp]
 				call	i286_memoryread_w
-				movzx	ecx, I286_DX
+				movzx	cx, I286_DX
 				mov		dx, ax
 				call	iocore_out16
 				STRING_DIRx2
@@ -161,7 +161,8 @@ I286EXT rep_xmovsb(void) {
 				mov		esi, ES_BASE
 				movzx	ebx, I286_DI
 				align	4
-movsb_lp:		I286CLOCK(4)
+movsb_lp:		//I286CLOCK(4)
+				I286CLOCK_X(a, 4, 8)
 				lea		ecx, [edi + ebp]
 				call	i286_memoryread
 				mov		edx, eax
@@ -183,7 +184,8 @@ movsb_cnt:		mov		I286_SI, bp
 				mov		I286_DI, bx
 				pop		ebx
 				pop		esi
-movsb_ed:		I286CLOCK(5)
+movsb_ed:		//I286CLOCK(5)
+				I286CLOCK_X(b, 5, 11)
 				GET_NEXTPRE1
 				ret
 		}
@@ -200,7 +202,8 @@ I286EXT rep_xmovsw(void) {
 				mov		esi, ES_BASE
 				movzx	ebx, I286_DI
 				align	4
-movsw_lp:		I286CLOCK(4)
+movsw_lp:		//I286CLOCK(4)
+				I286CLOCK_X(a, 4, 8)
 				lea		ecx, [edi + ebp]
 				call	i286_memoryread_w
 				mov		edx, eax
@@ -222,7 +225,8 @@ movsw_cnt:		mov		I286_SI, bp
 				mov		I286_DI, bx
 				pop		ebx
 				pop		esi
-movsw_ed:		I286CLOCK(5)
+movsw_ed:		//I286CLOCK(5)
+				I286CLOCK_X(b, 5, 11)
 				GET_NEXTPRE1
 				ret
 		}
@@ -237,7 +241,8 @@ I286EXT rep_xlodsb(void) {
 				je		lodsb_ed
 				LOAD_DS_SI
 				align	4
-lodsb_lp:		I286CLOCK(4)
+lodsb_lp:		//I286CLOCK(4)
+				I286CLOCK_X(a, 4, 9)
 				lea		ecx, [edi + ebp]
 				call	i286_memoryread
 				mov		I286_AL, al
@@ -250,7 +255,8 @@ lodsb_lp:		I286CLOCK(4)
 				RESET_XPREFETCH
 				ret
 lodsb_cnt:		mov		I286_SI, bp
-lodsb_ed:		I286CLOCK(5)
+lodsb_ed:		//I286CLOCK(5)
+				I286CLOCK_X(b, 5, 7)
 				GET_NEXTPRE1
 				ret
 		}
@@ -263,7 +269,8 @@ I286EXT rep_xlodsw(void) {
 				je		lodsw_ed
 				LOAD_DS_SI
 				align	4
-lodsw_lp:		I286CLOCK(4)
+lodsw_lp:		//I286CLOCK(4)
+				I286CLOCK_X(a, 4, 9)
 				lea		ecx, [edi + ebp]
 				call	i286_memoryread_w
 				mov		I286_AX, ax
@@ -276,7 +283,8 @@ lodsw_lp:		I286CLOCK(4)
 				RESET_XPREFETCH
 				ret
 lodsw_cnt:		mov		I286_SI, bp
-lodsw_ed:		I286CLOCK(5)
+lodsw_ed:		//I286CLOCK(5)
+				I286CLOCK_X(b, 5, 7)
 				GET_NEXTPRE1
 				ret
 		}
@@ -292,7 +300,8 @@ I286EXT rep_xstosb(void) {
 				mov		edi, ES_BASE
 				movzx	ebp, I286_DI
 				align	4
-stosb_lp:		I286CLOCK(3)
+stosb_lp:		//I286CLOCK(3)
+				I286CLOCK_X(a, 3, 4)
 				lea		ecx, [edi + ebp]
 				mov		dl, I286_AL
 				call	i286_memorywrite
@@ -305,7 +314,8 @@ stosb_lp:		I286CLOCK(3)
 				RESET_XPREFETCH
 				ret
 stosb_cnt:		mov		I286_DI, bp
-stosb_ed:		I286CLOCK(4)
+stosb_ed:		//I286CLOCK(4)
+				I286CLOCK_X(b, 4, 7)
 				GET_NEXTPRE1
 				ret
 		}
@@ -319,7 +329,8 @@ I286EXT rep_xstosw(void) {
 				mov		edi, ES_BASE
 				movzx	ebp, I286_DI
 				align	4
-stosw_lp:		I286CLOCK(3)
+stosw_lp:		//I286CLOCK(3)
+				I286CLOCK_X(a, 3, 4)
 				lea		ecx, [edi + ebp]
 				mov		dx, I286_AX
 				call	i286_memorywrite_w
@@ -332,7 +343,8 @@ stosw_lp:		I286CLOCK(3)
 				RESET_XPREFETCH
 				ret
 stosw_cnt:		mov		I286_DI, bp
-stosw_ed:		I286CLOCK(4)
+stosw_ed:		//I286CLOCK(4)
+				I286CLOCK_X(b, 4, 7)
 				GET_NEXTPRE1
 				ret
 		}
@@ -350,7 +362,8 @@ I286EXT repe_xcmpsb(void) {
 				LOAD_DS_SI
 				mov		esi, ES_BASE
 				movzx	ebx, I286_DI
-zcmpsb_lp:		I286CLOCK(9)
+zcmpsb_lp:		//I286CLOCK(9)
+				I286CLOCK_X(a, 9, 14)
 				lea		ecx, [edi + ebp]
 				call	i286_memoryread
 				mov		dl, al
@@ -369,7 +382,8 @@ zcmpsb_ed:		mov		I286_SI, bp
 				mov		I286_DI, bx
 				pop		ebx
 				pop		esi
-cmpsb_ed:		I286CLOCK(5)
+cmpsb_ed:		//I286CLOCK(5)
+				I286CLOCK_X(b, 5, 7)
 				GET_NEXTPRE1
 				ret
 		}
@@ -385,7 +399,8 @@ I286EXT repne_xcmpsb(void) {
 				LOAD_DS_SI
 				mov		esi, ES_BASE
 				movzx	ebx, I286_DI
-nzcmpsb_lp:		I286CLOCK(9)
+nzcmpsb_lp:		//I286CLOCK(9)
+				I286CLOCK_X(a, 9, 14)
 				lea		ecx, [edi + ebp]
 				call	i286_memoryread
 				mov		dl, al
@@ -404,7 +419,8 @@ nzcmpsb_ed:		mov		I286_SI, bp
 				mov		I286_DI, bx
 				pop		ebx
 				pop		esi
-cmpsb_ed:		I286CLOCK(5)
+cmpsb_ed:		//I286CLOCK(5)
+				I286CLOCK_X(b, 5, 7)
 				GET_NEXTPRE1
 				ret
 		}
@@ -420,7 +436,8 @@ I286EXT repe_xcmpsw(void) {
 				LOAD_DS_SI
 				mov		esi, ES_BASE
 				movzx	ebx, I286_DI
-zcmpsw_lp:		I286CLOCK(9)
+zcmpsw_lp:		//I286CLOCK(9)
+				I286CLOCK_X(a, 9, 14)
 				lea		ecx, [edi + ebp]
 				call	i286_memoryread_w
 				mov		dx, ax
@@ -439,7 +456,8 @@ zcmpsw_ed:		mov		I286_SI, bp
 				mov		I286_DI, bx
 				pop		ebx
 				pop		esi
-cmpsw_ed:		I286CLOCK(5)
+cmpsw_ed:		//I286CLOCK(5)
+				I286CLOCK_X(b, 5, 7)
 				GET_NEXTPRE1
 				ret
 		}
@@ -455,7 +473,8 @@ I286EXT repne_xcmpsw(void) {
 				LOAD_DS_SI
 				mov		esi, ES_BASE
 				movzx	ebx, I286_DI
-nzcmpsw_lp:		I286CLOCK(9)
+nzcmpsw_lp:		//I286CLOCK(9)
+				I286CLOCK_X(a, 9, 14)
 				lea		ecx, [edi + ebp]
 				call	i286_memoryread_w
 				mov		dx, ax
@@ -474,7 +493,8 @@ nzcmpsw_ed:		mov		I286_SI, bp
 				mov		I286_DI, bx
 				pop		ebx
 				pop		esi
-cmpsw_ed:		I286CLOCK(5)
+cmpsw_ed:		//I286CLOCK(5)
+				I286CLOCK_X(b, 5, 7)
 				GET_NEXTPRE1
 				ret
 		}
@@ -489,7 +509,8 @@ I286EXT repe_xscasb(void) {
 				je		scasb_ed
 				mov		edi, ES_BASE
 				movzx	ebp, I286_DI
-zscasb_lp:		I286CLOCK(8)
+zscasb_lp:		//I286CLOCK(8)
+				I286CLOCK_X(a, 8, 10)
 				lea		ecx, [edi + ebp]
 				call	i286_memoryread
 				cmp		I286_AL, al
@@ -501,7 +522,8 @@ zscasb_lp:		I286CLOCK(8)
 				test	I286_FLAG, Z_FLAG
 				jne		zscasb_lp
 zscasb_ed:		mov		I286_DI, bp
-scasb_ed:		I286CLOCK(5)
+scasb_ed:		//I286CLOCK(5)
+				I286CLOCK_X(b, 5, 7)
 				GET_NEXTPRE1
 				ret
 		}
@@ -514,7 +536,8 @@ I286EXT repne_xscasb(void) {
 				je		scasb_ed
 				mov		edi, ES_BASE
 				movzx	ebp, I286_DI
-nzscasb_lp:		I286CLOCK(8)
+nzscasb_lp:		//I286CLOCK(8)
+				I286CLOCK_X(a, 8, 10)
 				lea		ecx, [edi + ebp]
 				call	i286_memoryread
 				cmp		I286_AL, al
@@ -526,7 +549,8 @@ nzscasb_lp:		I286CLOCK(8)
 				test	I286_FLAG, Z_FLAG
 				je		nzscasb_lp
 nzscasb_ed:		mov		I286_DI, bp
-scasb_ed:		I286CLOCK(5)
+scasb_ed:		//I286CLOCK(5)
+				I286CLOCK_X(b, 5, 7)
 				GET_NEXTPRE1
 				ret
 		}
@@ -539,7 +563,8 @@ I286EXT repe_xscasw(void) {
 				je		scasw_ed
 				mov		edi, ES_BASE
 				movzx	ebp, I286_DI
-zscasw_lp:		I286CLOCK(8)
+zscasw_lp:		//I286CLOCK(8)
+				I286CLOCK_X(a, 8, 10)
 				lea		ecx, [edi + ebp]
 				call	i286_memoryread_w
 				cmp		I286_AX, ax
@@ -551,7 +576,8 @@ zscasw_lp:		I286CLOCK(8)
 				test	I286_FLAG, Z_FLAG
 				jne		zscasw_lp
 zscasw_ed:		mov		I286_DI, bp
-scasw_ed:		I286CLOCK(5)
+scasw_ed:		//I286CLOCK(5)
+				I286CLOCK_X(b, 5, 7)
 				GET_NEXTPRE1
 				ret
 		}
@@ -564,7 +590,8 @@ I286EXT repne_xscasw(void) {
 				je		scasw_ed
 				mov		edi, ES_BASE
 				movzx	ebp, I286_DI
-nzscasw_lp:		I286CLOCK(8)
+nzscasw_lp:		//I286CLOCK(8)
+				I286CLOCK_X(a, 8, 10)
 				lea		ecx, [edi + ebp]
 				call	i286_memoryread_w
 				cmp		I286_AX, ax
@@ -576,7 +603,8 @@ nzscasw_lp:		I286CLOCK(8)
 				test	I286_FLAG, Z_FLAG
 				je		nzscasw_lp
 nzscasw_ed:		mov		I286_DI, bp
-scasw_ed:		I286CLOCK(5)
+scasw_ed:		//I286CLOCK(5)
+				I286CLOCK_X(b, 5, 7)
 				GET_NEXTPRE1
 				ret
 		}
