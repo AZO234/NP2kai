@@ -15,9 +15,6 @@ typedef void (SOUNDCALL * SOUNDCB)(void *hdl, SINT32 *pcm, UINT count);
 
 typedef struct {
 	UINT	rate;
-	//	CDDATvOf[^Ôø«ÌœßÌ¬×H
-	UINT	cddaskip;
-	//
 	UINT32	hzbase;
 	UINT32	clockbase;
 	UINT32	minclock;

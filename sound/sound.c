@@ -215,8 +215,6 @@ BRESULT sound_create(UINT rate, UINT ms) {
 	UINT	reserve;
 
 	ZeroMemory(&sndstream, sizeof(sndstream));
-	//	CDDA
-#if 0
 	switch(rate) {
 		case 11025:
 		case 22050:
@@ -231,23 +229,6 @@ BRESULT sound_create(UINT rate, UINT ms) {
 		default:
 			return(FAILURE);
 	}
-#else
-	switch(rate) {
-		case 11025:
-			soundcfg.cddaskip = 4;
-			break;
-		case 22050:
-			soundcfg.cddaskip = 2;
-			break;
-		case 44100:
-			soundcfg.cddaskip = 1;
-			break;
-
-		default:
-			soundcfg.cddaskip = 1;
-			return(FAILURE);
-	}
-#endif
 	samples = soundmng_create(rate, ms);
 	if (samples == 0) {
 		goto scre_err1;
@@ -261,11 +242,6 @@ BRESULT sound_create(UINT rate, UINT ms) {
 	reserve = rate * SOUNDRESERVE / 1000;
 #else
 	reserve = 0;
-#endif
-#ifdef __LIBRETRO__
-reserve=0;
-//samples=735; //44100Hz/60fps=735 (sample/flame)
-samples=782; //44100Hz/56.4fps=781.9 (sample/flame)
 #endif
 	sndstream.buffer = (SINT32 *)_MALLOC((samples + reserve) * 2 
 												* sizeof(SINT32), "stream");

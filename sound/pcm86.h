@@ -60,8 +60,7 @@ typedef struct {
 	UINT8	fifo;
 	UINT8	soundflags;			/*!< サウンド フラグ (A460) */
 	UINT8	dactrl;
-	//UINT8	_write;
-	UINT8	write;		//	(kaiD)
+	UINT8	_write;
 	UINT8	stepbit;
 	UINT8	irq;
 	UINT8	reqirq;
