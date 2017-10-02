@@ -1,6 +1,6 @@
-Neko Project II 0.86 kai rev.12
+Neko Project II 0.86 kai rev.13
 ===
-Sep 20, 2017  
+Oct 2, 2017  
 
 Build SDL2 port
 ---
@@ -300,6 +300,8 @@ I/O:0x00D0
 
 Release
 ---
+* Oct 2, 2017 (rev.13)
+	- remove CDDA mod
 * Sep 20, 2017
 	- [SDL2] Use SDL2 mixer
 * Sep 16, 2017
