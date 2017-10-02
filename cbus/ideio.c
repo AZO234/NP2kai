@@ -1212,6 +1212,9 @@ static BRESULT SOUNDCALL playdevaudio(IDEDRV drv, SINT32 *pcm, UINT count) {
 const UINT8	*ptr;
 	SINT	sampl;
 	SINT	sampr;
+	SINT	samplbias = soundcfg.rate >= 44100 ? 1 : (44100 / soundcfg.rate);
+	SINT	samphbias = soundcfg.rate >= 44100 ? soundcfg.rate / 44100 : 1;
+	SINT	samphloop;
 
 	sxsi = sxsi_getptr(drv->sxsidrv);
 	if ((sxsi == NULL) || (sxsi->devtype != SXSIDEV_CDROM) ||
@@ -1220,18 +1223,20 @@ const UINT8	*ptr;
 		return(FAILURE);
 	}
 	while(count) {
-		r = min(count, drv->dabufrem);
+		r = min(count, drv->dabufrem / samplbias);
 		if (r) {
 			count -= r;
-			ptr = drv->dabuf + 2352 - (drv->dabufrem * 4);
-			drv->dabufrem -= r;
+			ptr = drv->dabuf + 2352 - drv->dabufrem * 4;
+			drv->dabufrem -= r * samplbias;
 			do {
 				sampl = ((SINT8)ptr[1] << 8) + ptr[0];
 				sampr = ((SINT8)ptr[3] << 8) + ptr[2];
-				pcm[0] += (SINT)((int)(sampl)*np2cfg.davolume/255);
-				pcm[1] += (SINT)((int)(sampr)*np2cfg.davolume/255);
-				ptr += 4;
-				pcm += 2;
+				for(samphloop = 0; samphloop < samphbias; samphloop++) {
+					pcm[samphloop * 2 + 0] += (SINT)((int)(sampl)*np2cfg.davolume/255);
+					pcm[samphloop * 2 + 1] += (SINT)((int)(sampr)*np2cfg.davolume/255);
+				}
+				ptr += 4 * samplbias;
+				pcm += 2 * samphbias;
 			} while(--r);
 		}
 		if (count == 0) {
