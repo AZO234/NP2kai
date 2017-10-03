@@ -1213,7 +1213,7 @@ const UINT8	*ptr;
 	SINT	sampl;
 	SINT	sampr;
 	SINT	samplbias = soundcfg.rate >= 44100 ? 1 : (44100 / soundcfg.rate);
-	SINT	samphbias = soundcfg.rate >= 44100 ? soundcfg.rate / 44100 : 1;
+	SINT	samphbias = soundcfg.rate >  44100 ? (soundcfg.rate / 44100) : 1;
 	SINT	samphloop;
 
 	sxsi = sxsi_getptr(drv->sxsidrv);
@@ -1223,11 +1223,17 @@ const UINT8	*ptr;
 		return(FAILURE);
 	}
 	while(count) {
-		r = min(count, drv->dabufrem / samplbias);
+		if(soundcfg.rate > 44100)
+			r = min(count, drv->dabufrem * samphbias);
+		else
+			r = min(count, drv->dabufrem / samplbias);
 		if (r) {
 			count -= r;
 			ptr = drv->dabuf + 2352 - drv->dabufrem * 4;
-			drv->dabufrem -= r * samplbias;
+			if(soundcfg.rate > 44100)
+				drv->dabufrem -= r / samphbias;
+			else
+				drv->dabufrem -= r * samplbias;
 			do {
 				sampl = ((SINT8)ptr[1] << 8) + ptr[0];
 				sampr = ((SINT8)ptr[3] << 8) + ptr[2];
