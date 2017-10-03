@@ -1216,6 +1216,7 @@ const UINT8	*ptr;
 	SINT	samploop;
 	double	samploop2 = 0.0;
 	SINT	samploopcount;
+	double	sampcount2 = 0.0;
 
 	sxsi = sxsi_getptr(drv->sxsidrv);
 	if ((sxsi == NULL) || (sxsi->devtype != SXSIDEV_CDROM) ||
@@ -1229,18 +1230,34 @@ const UINT8	*ptr;
 			count -= r;
 			ptr = drv->dabuf + 2352 - drv->dabufrem * 4;
 			drv->dabufrem -= r / sampbias;
-			do {
-				sampl = ((SINT8)ptr[1] << 8) + ptr[0];
-				sampr = ((SINT8)ptr[3] << 8) + ptr[2];
-				samploopcount = (sampbias + samploop2) < 1.0 ? 1 : (SINT)(sampbias + samploop2);
-				for(samploop = 0; samploop < samploopcount; samploop++) {
-					pcm[samploop * 2 + 0] += (SINT)((int)(sampl)*np2cfg.davolume/255);
-					pcm[samploop * 2 + 1] += (SINT)((int)(sampr)*np2cfg.davolume/255);
-				}
-				ptr += 4 * (1.0 / sampbias < 1.0 ? 1 : (SINT)(1.0 / sampbias + samploop2));
-				pcm += 2 * samploopcount;
-				samploop2 = ((SINT)((sampbias + samploop2) * 1000) % 1000) / 1000.0;
-			} while(--r);
+			if(sampbias >= 1.0) {
+				sampcount2 = sampbias;
+				do {
+					sampl = ((SINT8)ptr[1] << 8) + ptr[0];
+					sampr = ((SINT8)ptr[3] << 8) + ptr[2];
+					pcm[0] += (SINT)((int)(sampl)*np2cfg.davolume/255);
+					pcm[1] += (SINT)((int)(sampr)*np2cfg.davolume/255);
+					sampcount2 -= 1.0;
+					if(sampcount2 < 1.0) {
+						sampcount2 += sampbias;
+						ptr += 4;
+					}
+					pcm += 2;
+				} while(--r);
+			} else {
+				do {
+					sampl = ((SINT8)ptr[1] << 8) + ptr[0];
+					sampr = ((SINT8)ptr[3] << 8) + ptr[2];
+					samploopcount = (sampbias + samploop2) < 1.0 ? 1 : (SINT)(sampbias + samploop2);
+					for(samploop = 0; samploop < samploopcount; samploop++) {
+						pcm[samploop * 2 + 0] += (SINT)((int)(sampl)*np2cfg.davolume/255);
+						pcm[samploop * 2 + 1] += (SINT)((int)(sampr)*np2cfg.davolume/255);
+					}
+					ptr += 4 * (1.0 / sampbias < 1.0 ? 1 : (SINT)(1.0 / sampbias + samploop2));
+					pcm += 2 * samploopcount;
+					samploop2 = ((SINT)((sampbias + samploop2) * 1000) % 1000) / 1000.0;
+				} while(--r);
+			}
 		}
 		if (count == 0) {
 			break;
