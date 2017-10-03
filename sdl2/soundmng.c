@@ -274,9 +274,24 @@ soundmng_create(UINT rate, UINT bufmsec)
 	UINT samples;
 	int i;
 
-	if (opened || ((rate != 11025) && (rate != 22050) && (rate != 44100))) {
+	if (opened) {
 		return 0;
 	}
+	switch(rate) {
+		case 11025:
+		case 22050:
+		case 44100:
+		case 48000:
+		case 88200:
+		case 96000:
+		case 176400:
+		case 192000:
+			break;
+
+		default:
+		return 0;
+	}
+
 
 	if (bufmsec < 20)
 		bufmsec = 20;
