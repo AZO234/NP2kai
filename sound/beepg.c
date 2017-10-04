@@ -11,18 +11,19 @@ int beep_mode_temp = 0;
 static void oneshot(BEEP bp, SINT32 *pcm, UINT count) {
 
 	SINT32		samp;
+	double		sampbias = soundcfg.rate / 44100.0;
 
 	while(count--) {
 		samp = (double)beep_data[bp->beep_data_curr_loc] / 0x100 * (0x1000 * beepcfg.vol) - (0x800 * beepcfg.vol);
 		pcm[0] += samp;
 		pcm[1] += samp;
 		pcm += 2;
-		bp->beep_cnt += 10;
+		bp->beep_cnt += 20 * (1.0 / sampbias);
 		if((bp->beep_data_curr_loc < bp->beep_cnt / beep_mode_freq) && (bp->beep_data_curr_loc != bp->beep_data_load_loc)) {
-			bp->beep_data_curr_loc++;
+			bp->beep_data_curr_loc = bp->beep_cnt / beep_mode_freq;
 			if(bp->beep_data_curr_loc >= BEEPDATACOUNT) {
 				bp->beep_data_curr_loc = 0;
-				bp->beep_cnt = bp->beep_cnt % beep_mode_freq;
+				bp->beep_cnt %= beep_mode_freq;
 			}
 		}
 	}

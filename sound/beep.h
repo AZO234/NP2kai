@@ -47,7 +47,7 @@ extern "C" {
 #endif
 
 extern	_BEEP		g_beep;
-#define BEEPDATACOUNT 0x1000
+#define BEEPDATACOUNT 0x10000
 extern UINT16 beep_data[BEEPDATACOUNT];
 extern int beep_mode_freq;
 extern int beep_mode_temp;

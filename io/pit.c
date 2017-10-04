@@ -380,9 +380,9 @@ static void IOOUTCALL pit_o77(UINT port, REG8 dat) {
 
 	if(port == 0x77 && dat == 0x50) {
 		if(beep_mode_temp == 0x70)
-			beep_mode_freq = 21;
+			beep_mode_freq = 42;
 		else
-			beep_mode_freq = 28;
+			beep_mode_freq = 56;
 	} else {
 		beep_mode_temp = dat;
 	}
