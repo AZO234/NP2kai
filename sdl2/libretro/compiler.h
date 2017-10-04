@@ -30,10 +30,10 @@
 #ifdef _WIN32
 #define _WINDOWS
 #include <windows.h>
+#endif
 #define	sigjmp_buf				jmp_buf
 #define	sigsetjmp(env, mask)	setjmp(env)
 #define	siglongjmp(env, val)	longjmp(env, val)
-#endif
 
 typedef	int32_t		SINT;
 typedef	uint32_t    UINT;
