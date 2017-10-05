@@ -190,7 +190,7 @@ else ifeq ($(platform), wiiu)
 	CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc$(EXE_EXT)
 	CXX = $(DEVKITPPC)/bin/powerpc-eabi-g++$(EXE_EXT)
 	AR = $(DEVKITPPC)/bin/powerpc-eabi-ar$(EXE_EXT)
-	FLAGS += -DGEKKO -mwup -mcpu=750 -meabi -mhard-float
+	FLAGS += -DWIIU -mwup -mcpu=750 -meabi -mhard-float
 	FLAGS += -U__INT32_TYPE__ -U __UINT32_TYPE__ -D__INT32_TYPE__=int
 	ENDIANNESS_DEFINES += -DMSB_FIRST
 	EXTRA_INCLUDES := -Ideps
@@ -255,6 +255,12 @@ INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro \
 		-I$(NP2_PATH)/i386c/ia32 \
 		-I$(NP2_PATH)/i386c/ia32/instructions \
 		-I$(NP2_PATH)/i386c/ia32/instructions/fpu
+ifneq ($(platform),ctr)
+INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro/ctr
+endif
+ifneq (,$(filter $(platform),ngc wii))
+INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro/gc
+endif
 SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strl.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_posix_string.c \

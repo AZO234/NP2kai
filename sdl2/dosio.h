@@ -97,6 +97,8 @@ char *file_getext(const char *path);
 void file_cutext(char *path);
 void file_cutseparator(char *path);
 void file_setseparator(char *path, int maxlen);
+short file_rename(const char* ExistFile, const char* NewFile);
+short file_dirdelete(const char* PathName);
 
 #ifdef	__cplusplus
 }

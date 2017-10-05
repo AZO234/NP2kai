@@ -44,6 +44,8 @@ void ini_write(const char *path, const char *title, INITBL *tbl, UINT count);
 void initload(void);
 void initsave(void);
 
+void initgetfile(char *lpPath, unsigned int cchPath);
+
 #ifdef __cplusplus
 }
 #endif

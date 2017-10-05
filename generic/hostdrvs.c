@@ -287,7 +287,11 @@ static const char *DosPath2FcbSub(char *lpFcbname, UINT cchFcbname, const char *
 	while (cchFcbname)
 	{
 		c = lpDosPath[0];
+#if defined(_WIN32)
 		if ((c == 0) || (c == '.') || (c == '\\'))
+#else	/* _WIN32 */
+		if ((c == 0) || (c == '.') || (c == '/'))
+#endif	/* _WIN32 */
 		{
 			break;
 		}
@@ -397,7 +401,11 @@ UINT hostdrvs_getrealdir(HDRVPATH *phdp, char *lpFcbname, const char *lpDosPath)
 		TCHAR pathbuf[MAX_PATH+1];
 		TCHAR *pathtmp;
 		initgetfile(pathbuf, _countof(pathbuf));
+#if defined(_WIN32)
 		pathtmp = strrchr(pathbuf, '\\');
+#else	/* _WIN32 */
+		pathtmp = strrchr(pathbuf, '/');
+#endif	/* _WIN32 */
 		if(pathtmp){
 			*(pathtmp+1) = 0;
 		}else{
