@@ -105,6 +105,16 @@ else ifeq ($(platform), android)
 
 	fpic = -fPIC
 
+# PS3
+else ifeq ($(platform), ps3)
+	HAVE_GCC_WARNINGS := 0
+	TARGET := $(TARGET_NAME)_libretro_ps3.a
+	CXX = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-g++.exe
+	CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
+	AR = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-ar.exe
+	PLATFORM_DEFINES := -D__CELLOS_LV2__
+	STATIC_LINKING = 1
+
 # sncps3
 else ifeq ($(platform), sncps3)
 	TARGET := $(TARGET_NAME)_libretro_ps3.a
