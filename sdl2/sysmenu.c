@@ -25,6 +25,7 @@
 #include	"dlgscr.h"
 #include	"dlgabout.h"
 #include	"vram/scrnsave.h"
+#include	"ini.h"
 
 static UINT bmpno = 0;
 

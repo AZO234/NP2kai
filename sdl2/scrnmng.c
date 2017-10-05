@@ -7,6 +7,7 @@
 #include	"scrndraw.h"
 #include	"vramhdl.h"
 #include	"menubase.h"
+#include	"cmver.h"
 
 #if defined(__LIBRETRO__)
 #include "libretro.h"
