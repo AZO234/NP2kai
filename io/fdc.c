@@ -18,6 +18,7 @@
 #define	TRACEOUT(s)	(void)(s)
 #endif	/* 0 */
 
+extern void fddmtrsnd_play(UINT num, BOOL play);
 
 enum {
 	FDC_DMACH2HD	= 2,

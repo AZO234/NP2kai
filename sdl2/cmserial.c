@@ -34,6 +34,11 @@
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
+#if defined(__LIBRETRO__)
+#if defined(_3DS)
+#include "sys/termios.h"
+#endif	/* _3DS */
+#endif	/* __LIBRETRO__ */
 #include <termios.h>
 
 

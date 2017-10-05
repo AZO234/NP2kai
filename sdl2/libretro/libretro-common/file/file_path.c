@@ -27,6 +27,7 @@
 #include <errno.h>
 
 #include <sys/stat.h>
+#include <sys/time.h>
 
 #include <file/file_path.h>
 
