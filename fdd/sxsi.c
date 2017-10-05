@@ -7,7 +7,6 @@
 #include	"pccore.h"
 #include	"iocore.h"
 #include	"sxsi.h"
-#include	"sysmng.h"
 #if defined(SUPPORT_IDEIO)
 #include	"ideio.h"
 #endif

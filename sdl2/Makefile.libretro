@@ -105,6 +105,28 @@ else ifeq ($(platform), android)
 
 	fpic = -fPIC
 
+# sncps3
+else ifeq ($(platform), sncps3)
+	TARGET := $(TARGET_NAME)_libretro_ps3.a
+	CC = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
+	CXX = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
+	AR = $(CELL_SDK)/host-win32/sn/bin/ps3snarl.exe
+	ENDIANNESS_DEFINES := -DMSB_FIRST
+	CXXFLAGS += -Xc+=exceptions
+	OLD_GCC := 1
+	NO_GCC := 1
+	FLAGS += -DARCH_POWERPC_ALTIVEC
+	STATIC_LINKING = 1
+
+# Lightweight PS3 Homebrew SDK
+else ifeq ($(platform), psl1ght)
+	TARGET := $(TARGET_NAME)_libretro_$(platform).a
+	CC = $(PS3DEV)/ppu/bin/ppu-gcc$(EXE_EXT)
+	CXX = $(PS3DEV)/ppu/bin/ppu-g++$(EXE_EXT)
+	AR = $(PS3DEV)/ppu/bin/ppu-ar$(EXE_EXT)
+	ENDIANNESS_DEFINES := -DMSB_FIRST
+	STATIC_LINKING = 1
+
 # PSP
 else ifeq ($(platform), psp1)
 	TARGET := $(TARGET_NAME)_libretro_$(platform).a
@@ -126,6 +148,16 @@ else ifeq ($(platform), vita)
 	COMMONFLAGS += -fno-optimize-sibling-calls
 	STATIC_LINKING = 1
 
+# Xbox 360
+else ifeq ($(platform), xenon)
+	TARGET := $(TARGET_NAME)_libretro_xenon360.a
+	CC = xenon-gcc$(EXE_EXT)
+	CXX = xenon-g++$(EXE_EXT)
+	AR = xenon-ar$(EXE_EXT)
+	ENDIANNESS_DEFINES += -D__LIBXENON__ -m32 -D__ppc__ -DMSB_FIRST 
+	LIBS := $(PTHREAD_FLAGS)
+	STATIC_LINKING = 1
+
 # CTR
 else ifeq ($(platform), ctr)
 	TARGET := $(TARGET_NAME)_libretro_$(platform).a
@@ -143,13 +175,25 @@ else ifeq ($(platform), ctr)
 	IS_X86 := 0
 	NEED_BPP := 16
 
-# Wii
-else ifeq ($(platform), wii)
+# Nintendo Game Cube / Nintendo Wii
+else ifneq (,$(filter $(platform),ngc wii))
 	TARGET := $(TARGET_NAME)_libretro_$(platform).a
 	CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc$(EXE_EXT)
 	CXX = $(DEVKITPPC)/bin/powerpc-eabi-g++$(EXE_EXT)
 	AR = $(DEVKITPPC)/bin/powerpc-eabi-ar$(EXE_EXT)
 	COMMONFLAGS += -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float -D__POWERPC__ -D__ppc__ -DWORDS_BIGENDIAN=1
+	STATIC_LINKING = 1
+
+# Nintendo WiiU
+else ifeq ($(platform), wiiu)
+	TARGET := $(TARGET_NAME)_libretro_$(platform).a
+	CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc$(EXE_EXT)
+	CXX = $(DEVKITPPC)/bin/powerpc-eabi-g++$(EXE_EXT)
+	AR = $(DEVKITPPC)/bin/powerpc-eabi-ar$(EXE_EXT)
+	FLAGS += -DGEKKO -mwup -mcpu=750 -meabi -mhard-float
+	FLAGS += -U__INT32_TYPE__ -U __UINT32_TYPE__ -D__INT32_TYPE__=int
+	ENDIANNESS_DEFINES += -DMSB_FIRST
+	EXTRA_INCLUDES := -Ideps
 	STATIC_LINKING = 1
 
 else ifeq ($(platform), emscripten)
@@ -184,6 +228,19 @@ else
 COMMONFLAGS += -O3 -DNDEBUG -DGIT_VERSION=\"$(GIT_VERSION)\"
 endif
 
+ifeq ($(HAVE_RUST),1)
+   FLAGS += -DHAVE_RUST
+   LDFLAGS += -ldl -L. -lrsx
+endif
+
+ifeq ($(HAVE_VULKAN),1)
+	FLAGS += -DHAVE_VULKAN
+endif
+
+ifeq ($(HAVE_JIT),1)
+   LDFLAGS += -ljit
+endif
+
 CORE_DIR    := ..
 INCFLAGS    :=
 SOURCES_C   :=
@@ -192,6 +249,7 @@ SOURCES_CXX :=
 include Makefile.common
 
 INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common \
 		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include \
 		-I$(NP2_PATH)/i386c \
 		-I$(NP2_PATH)/i386c/ia32 \
@@ -203,6 +261,7 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 		$(NP2_PATH)/sdl2/libretro/libretro-common/features/features_cpu.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/file/file_path.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/file/retro_stat.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/file/retro_dirent.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/file_stream.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/string/stdstring.c \
 		$(NP2_PATH)/sdl2/libretro/libretro.c \

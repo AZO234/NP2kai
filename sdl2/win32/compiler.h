@@ -1,5 +1,6 @@
 #include	<windows.h>
 #include	<stdio.h>
+#include	<setjmp.h>
 #include	<stddef.h>
 #if defined(USE_SDL_CONFIG)
 #include	"SDL.h"
@@ -16,6 +17,14 @@
 #define	OSLINEBREAK_CRLF
 #define	RESOURCE_US
 #define	USE_TTF
+
+#define	sigjmp_buf				jmp_buf
+#ifndef	sigsetjmp
+#define	sigsetjmp(env, mask)	setjmp(env)
+#endif
+#ifndef	siglongjmp
+#define	siglongjmp(env, val)	longjmp(env, val)
+#endif
 
 #ifndef __GNUC__
 typedef	signed int			SINT;
@@ -73,10 +82,10 @@ typedef SINT32	FILELEN;
 #define	NHD_MAXSIZE2	2000
 #endif
 
-#define SIZE_VGA
-#if !defined(SIZE_VGA)
+#define NP2_SIZE_VGA
+#if !defined(NP2_SIZE_VGA)
 #define	RGB16		UINT32
-#define	SIZE_QVGA
+#define	NP2_SIZE_QVGA
 #endif
 
 

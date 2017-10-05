@@ -180,7 +180,7 @@ static BRESULT gettextsz(DLGHDL hdl, POINT_T *sz) {
 	*sz = hdl->c.dt.pt;
 	if (prm->icon) {
 		if (sz->x) {
-#if defined(SIZE_QVGA)
+#if defined(NP2_SIZE_QVGA)
 			sz->x += 1;
 #else
 			sz->x += 2;
@@ -259,7 +259,7 @@ const OEMCHAR	*string;
 			vramcpy_cpy(dlg->vram, &fp, icon, NULL);
 		}
 		fp.x += icon->width;
-#if defined(SIZE_QVGA)
+#if defined(NP2_SIZE_QVGA)
 		fp.x += 1;
 #else
 		fp.x += 2;
@@ -531,7 +531,7 @@ static void dlglist_drawitem(DLGHDL hdl, DLGPRM prm, int focus,
 			vramcpy_cpy(hdl->vram, &fp, icon, NULL);
 		}
 		fp.x += icon->width;
-#if defined(SIZE_QVGA)
+#if defined(NP2_SIZE_QVGA)
 		fp.x += 1;
 #else
 		fp.x += 2;

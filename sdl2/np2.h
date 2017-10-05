@@ -85,7 +85,7 @@ typedef struct {
 	UINT32	MIDIWAIT;
 } NP2OSCFG;
 
-#if defined(SIZE_QVGA)
+#if defined(NP2_SIZE_QVGA)
 enum {
 	FULLSCREEN_WIDTH	= 320,
 	FULLSCREEN_HEIGHT	= 240

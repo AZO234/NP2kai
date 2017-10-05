@@ -1,5 +1,5 @@
 
-#if defined(SIZE_QVGA)
+#if defined(NP2_SIZE_QVGA)
 enum {
 	DLGABOUT_WIDTH	= 232,
 	DLGABOUT_HEIGHT	= 40

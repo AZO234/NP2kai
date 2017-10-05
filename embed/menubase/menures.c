@@ -61,7 +61,7 @@ const OEMCHAR mstr_no[] = OEMTEXT("No");
 #endif
 
 
-#ifndef SIZE_QVGA
+#ifndef NP2_SIZE_QVGA
 
 // ---- minimize, close
 

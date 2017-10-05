@@ -31,10 +31,10 @@ typedef	unsigned int		UINT32;
 #define	OEMSPRINTF			sprintf
 #define	OEMSTRLEN			strlen
 
-#define SIZE_VGA
-#if !defined(SIZE_VGA)
+#define NP2_SIZE_VGA
+#if !defined(NP2_SIZE_VGA)
 #define	RGB16		UINT32
-#define	SIZE_QVGA
+#define	NP2_SIZE_QVGA
 #endif
 
 #if !defined(OBJC_BOOL_DEFINED)

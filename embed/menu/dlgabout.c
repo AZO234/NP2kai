@@ -14,7 +14,7 @@ enum {
 	DID_VER
 };
 
-#if defined(SIZE_QVGA)
+#if defined(NP2_SIZE_QVGA)
 static const MENUPRM res_about[] = {
 			{DLGTYPE_ICON,		DID_ICON,		0,
 				(void *)MICON_NP2,						  7,   7,  24,  24},

@@ -6,11 +6,11 @@
 #include "compiler.h"
 #include "fontmng.h"
 
-#if defined(SIZE_QVGA)
+#if defined(NP2_SIZE_QVGA)
 #include "ank10.res"
-#else	/* defined(SIZE_QVGA) */
+#else	/* defined(NP2_SIZE_QVGA) */
 #include "ank12.res"
-#endif	/* defined(SIZE_QVGA) */
+#endif	/* defined(NP2_SIZE_QVGA) */
 
 #if !defined(USE_TTF)
 # if !defined(RESOURCE_US) && !defined(__LIBRETRO__)

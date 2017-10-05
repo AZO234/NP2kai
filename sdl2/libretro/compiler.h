@@ -32,8 +32,12 @@
 #include <windows.h>
 #endif
 #define	sigjmp_buf				jmp_buf
+#ifndef	sigsetjmp
 #define	sigsetjmp(env, mask)	setjmp(env)
+#endif
+#ifndef	siglongjmp
 #define	siglongjmp(env, val)	longjmp(env, val)
+#endif
 
 typedef	int32_t		SINT;
 typedef	uint32_t    UINT;
@@ -84,7 +88,7 @@ typedef	signed char		TCHAR;
 #define	STRLEN		strlen
 #define	GETRAND()	random()
 
-#define SIZE_VGA
+#define NP2_SIZE_VGA
 
 #ifdef _WIN32
 #define G_DIR_SEPARATOR '\\'

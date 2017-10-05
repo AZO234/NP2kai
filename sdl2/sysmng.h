@@ -33,6 +33,7 @@ void sysmng_update(UINT update);
 void sysmng_cpureset(void);
 #define	sysmng_fddaccess(a)
 #define	sysmng_hddaccess(a)
+void sysmng_updatecaption(UINT8 flag);
 
 #ifdef __cplusplus
 }

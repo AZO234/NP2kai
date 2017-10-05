@@ -44,6 +44,7 @@ COMMONFLAGS :=
 include $(CORE_DIR)/sdl2/Makefile.common
 
 INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common \
 		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include \
 		-I$(NP2_PATH)/i386c \
 		-I$(NP2_PATH)/i386c/ia32 \
@@ -55,6 +56,7 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 		$(NP2_PATH)/sdl2/libretro/libretro-common/features/features_cpu.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/file/file_path.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/file/retro_stat.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/file/retro_dirent.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/file_stream.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/string/stdstring.c \
 		$(NP2_PATH)/sdl2/libretro/libretro.c \

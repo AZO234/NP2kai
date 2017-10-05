@@ -1,5 +1,5 @@
 
-#if defined(SIZE_QVGA)
+#if defined(NP2_SIZE_QVGA)
 enum {
 	DLGSCR_WIDTH	= 280,
 	DLGSCR_HEIGHT	= 166

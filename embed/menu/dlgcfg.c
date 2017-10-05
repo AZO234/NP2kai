@@ -44,7 +44,7 @@ static const OEMCHAR str_44khz[] = OEMTEXT("44KHz");
 static const OEMCHAR str_buffer[] = OEMTEXT("Buffer");
 
 
-#if defined(SIZE_QVGA)
+#if defined(NP2_SIZE_QVGA)
 static const MENUPRM res_cfg[] = {
 			{DLGTYPE_FRAME,		DID_STATIC,		0,
 				str_cpu,								  6,   6, 185,  58},

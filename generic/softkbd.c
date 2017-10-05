@@ -24,7 +24,7 @@ typedef struct {
 static	SOFTKBD	softkbd;
 
 #if (SUPPORT_SOFTKBD == 1)
-#if defined(SIZE_QVGA)
+#if defined(NP2_SIZE_QVGA)
 #include	"softkbd1.res"
 #else
 #include	"softkbd2.res"

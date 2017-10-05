@@ -1,6 +1,7 @@
 #include	<sys/param.h>
 #include	<stdio.h>
 #include	<stdlib.h>
+#include	<setjmp.h>
 #include	<stdarg.h>
 #include	<stddef.h>
 #include	<string.h>
@@ -18,9 +19,16 @@
 #define BYTESEX_LITTLE
 #define	OSLANG_UTF8
 #define	OSLINEBREAK_LF
-#define SIZE_VGA
 #define RESOURCE_US
 #define USE_TTF
+
+#define	sigjmp_buf				jmp_buf
+#ifndef	sigsetjmp
+#define	sigsetjmp(env, mask)	setjmp(env)
+#endif
+#ifndef	siglongjmp
+#define	siglongjmp(env, val)	longjmp(env, val)
+#endif
 
 typedef	signed int		INT;
 
@@ -139,10 +147,10 @@ typedef SINT32	FILELEN;
 #define _tcscpy strcpy
 #define	msgbox(title, msg)
 
-#define SIZE_VGA
-#if !defined(SIZE_VGA)
+#define NP2_SIZE_VGA
+#if !defined(NP2_SIZE_VGA)
 #define	RGB16		UINT32
-#define	SIZE_QVGA
+#define	NP2_SIZE_QVGA
 #endif
 
 
@@ -172,7 +180,7 @@ typedef SINT32	FILELEN;
 #define	SOUNDRESERVE	100
 #define	OPNGENARM
 
-#define	CPUSTRUC_MEMWAIT
+//#define	CPUSTRUC_MEMWAIT
 
 #define	SUPPORT_PC9861K
 #define	SUPPORT_CRT15KHZ

@@ -61,7 +61,7 @@ static const OEMCHAR str_clock[] = OEMTEXT("clock");
 static const OEMCHAR str_realpal[] = OEMTEXT("RealPalettes Adjust");
 
 
-#if defined(SIZE_QVGA)
+#if defined(NP2_SIZE_QVGA)
 static const MENUPRM res_scr0[] = {
 			{DLGTYPE_TABLIST,	DID_TAB,		0,
 				NULL,									  5,   3, 270, 144},

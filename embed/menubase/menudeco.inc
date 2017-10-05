@@ -2,7 +2,7 @@
 // めにゅーでこれーしょん。
 // VGA用。
 
-#ifndef SIZE_QVGA
+#ifndef NP2_SIZE_QVGA
 
 enum {
 	MENU_FBORDER		= 2,

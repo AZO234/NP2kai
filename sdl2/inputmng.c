@@ -15,10 +15,10 @@ typedef struct {
 static	INPMNG	inpmng;
 
 static const KEYBIND keybind[] = {
-					{SDL_SCANCODE_UP,		KEY_UP},
-					{SDL_SCANCODE_DOWN,		KEY_DOWN},
-					{SDL_SCANCODE_LEFT,		KEY_LEFT},
-					{SDL_SCANCODE_RIGHT,	KEY_RIGHT},
+					{SDL_SCANCODE_UP,		NP2_KEY_UP},
+					{SDL_SCANCODE_DOWN,		NP2_KEY_DOWN},
+					{SDL_SCANCODE_LEFT,		NP2_KEY_LEFT},
+					{SDL_SCANCODE_RIGHT,	NP2_KEY_RIGHT},
 					{SDL_SCANCODE_RETURN,	KEY_ENTER},
 					{SDL_SCANCODE_ESCAPE,	KEY_MENU},
 					{SDL_SCANCODE_TAB,		KEY_SKIP}};		/* Ç∆ÇËÇ†Ç¶Ç∏ÇÀÅc */

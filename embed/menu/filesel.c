@@ -55,7 +55,7 @@ static const OEMCHAR str_filetype[] = OEMTEXT("Files of type");
 static const OEMCHAR str_open[] = OEMTEXT("Open");
 #endif
 
-#if defined(SIZE_QVGA)
+#if defined(NP2_SIZE_QVGA)
 enum {
 	DLGFS_WIDTH		= 294,
 	DLGFS_HEIGHT	= 187

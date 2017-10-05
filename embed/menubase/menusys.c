@@ -960,13 +960,13 @@ void menusys_key(UINT key) {
 	sys = &menusys;
 	topwnd = sys->depth - 1;
 	if (topwnd == 0) {
-		if (key & KEY_LEFT) {
+		if (key & NP2_KEY_LEFT) {
 			focusmove(sys, 0, -1);
 		}
-		if (key & KEY_RIGHT) {
+		if (key & NP2_KEY_RIGHT) {
 			focusmove(sys, 0, 1);
 		}
-		if (key & KEY_DOWN) {
+		if (key & NP2_KEY_DOWN) {
 			focusenter(sys, 0, FALSE);
 		}
 		if (key & KEY_ENTER) {
@@ -974,13 +974,13 @@ void menusys_key(UINT key) {
 		}
 	}
 	else {
-		if (key & KEY_UP) {
+		if (key & NP2_KEY_UP) {
 			focusmove(sys, topwnd, -1);
 		}
-		if (key & KEY_DOWN) {
+		if (key & NP2_KEY_DOWN) {
 			focusmove(sys, topwnd, 1);
 		}
-		if (key & KEY_LEFT) {
+		if (key & NP2_KEY_LEFT) {
 			if (topwnd >= 2) {
 				wndclose(sys, topwnd);
 			}
@@ -988,7 +988,7 @@ void menusys_key(UINT key) {
 				focusmove(sys, 0, -1);
 			}
 		}
-		if (key & KEY_RIGHT) {
+		if (key & NP2_KEY_RIGHT) {
 			focusenter(sys, topwnd, FALSE);
 		}
 		if (key & KEY_ENTER) {

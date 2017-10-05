@@ -4,7 +4,7 @@
 #include	"sdraw.h"
 #include	"palettes.h"
 
-#if !defined(SIZE_QVGA) || defined(SIZE_VGATEST)
+#if !defined(NP2_SIZE_QVGA) || defined(SIZE_VGATEST)
 
 #if defined(SUPPORT_8BPP)
 #define	SDSYM(sym)				sdraw8##sym
