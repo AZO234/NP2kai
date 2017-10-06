@@ -9,6 +9,7 @@
 
 #if defined(__LIBRETRO__)
 #include <retro_miscellaneous.h>
+#include <retro_timers.h>
 #include "libretro.h"
 
 extern retro_environment_t environ_cb;
