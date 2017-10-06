@@ -32,7 +32,7 @@
 #elif defined(GEKKO) || defined(__PSL1GHT__) || defined(__QNX__)
 #include <unistd.h>
 #elif defined(WIIU)
-#include <wiiu/os/thread.h>
+#include <wiiu/os.h>
 #elif defined(PSP)
 #include <pspthreadman.h>
 #elif defined(VITA)

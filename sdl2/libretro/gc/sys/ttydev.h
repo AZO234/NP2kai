@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 1982, 1986 The Regents of the University of California.
+ * Copyright (c) 1982, 1986, 1990 The Regents of the University of California.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,62 +30,32 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)ttydefaults.h	7.9 (Berkeley) 5/9/91
+ *	@(#)ttydev.h	7.8 (Berkeley) 5/9/91
  */
 
-/*
- * System wide defaults for terminal state.
- */
-#ifndef _TTYDEFAULTS_H_
-#define	_TTYDEFAULTS_H_
+/* COMPATABILITY HEADER FILE */
 
-/*
- * Defaults on "first" open.
- */
-#define	TTYDEF_IFLAG	(BRKINT | ISTRIP | ICRNL | IMAXBEL | IXON | IXANY)
-#define TTYDEF_OFLAG	(OPOST | ONLCR | OXTABS)
-#define TTYDEF_LFLAG	(ECHO | ICANON | ISIG | IEXTEN | ECHOE|ECHOKE|ECHOCTL)
-#define TTYDEF_CFLAG	(CREAD | CS7 | PARENB | HUPCL)
-#define TTYDEF_SPEED	(B9600)
+#ifndef _TTYDEV_H_
+#define	_TTYDEV_H_
 
-/*
- * Control Character Defaults
- */
-#define CTRL(x)	(x&037)
-#define	CEOF		CTRL('d')
-#define	CEOL		((unsigned)'\377')	/* XXX avoid _POSIX_VDISABLE */
-#define	CERASE		0177
-#define	CINTR		CTRL('c')
-#define	CSTATUS		((unsigned)'\377')	/* XXX avoid _POSIX_VDISABLE */
-#define	CKILL		CTRL('u')
-#define	CMIN		1
-#define	CQUIT		034		/* FS, ^\ */
-#define	CSUSP		CTRL('z')
-#define	CTIME		0
-#define	CDSUSP		CTRL('y')
-#define	CSTART		CTRL('q')
-#define	CSTOP		CTRL('s')
-#define	CLNEXT		CTRL('v')
-#define	CDISCARD 	CTRL('o')
-#define	CWERASE 	CTRL('w')
-#define	CREPRINT 	CTRL('r')
-#define	CEOT		CEOF
-/* compat */
-#define	CBRK		CEOL
-#define CRPRNT		CREPRINT
-#define	CFLUSH		CDISCARD
+#ifdef USE_OLD_TTY
+#define B0	0
+#define B50	1
+#define B75	2
+#define B110	3
+#define B134	4
+#define B150	5
+#define B200	6
+#define B300	7
+#define B600	8
+#define B1200	9
+#define	B1800	10
+#define B2400	11
+#define B4800	12
+#define B9600	13
+#define EXTA	14
+#define EXTB	15
+#endif /* USE_OLD_TTY */
 
-/* PROTECTED INCLUSION ENDS HERE */
-#endif /* !_TTYDEFAULTS_H_ */
+#endif /* !_TTYDEV_H_ */
 
-/*
- * #define TTYDEFCHARS to include an array of default control characters.
- */
-#ifdef TTYDEFCHARS
-cc_t	ttydefchars[NCCS] = {
-	CEOF,	CEOL,	CEOL,	CERASE, CWERASE, CKILL, CREPRINT, 
-	_POSIX_VDISABLE, CINTR,	CQUIT,	CSUSP,	CDSUSP,	CSTART,	CSTOP,	CLNEXT,
-	CDISCARD, CMIN,	CTIME,  CSTATUS, _POSIX_VDISABLE
-};
-#undef TTYDEFCHARS
-#endif /* TTYDEFCHARS */

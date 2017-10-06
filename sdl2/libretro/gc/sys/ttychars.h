@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 1982, 1986 The Regents of the University of California.
+ * Copyright (c) 1982, 1986, 1990 The Regents of the University of California.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,62 +30,35 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)ttydefaults.h	7.9 (Berkeley) 5/9/91
+ *	@(#)ttychars.h	7.6 (Berkeley) 5/9/91
  */
 
 /*
- * System wide defaults for terminal state.
+ * 4.3 COMPATIBILITY FILE
+ *
+ * User visible structures and constants related to terminal handling.
  */
-#ifndef _TTYDEFAULTS_H_
-#define	_TTYDEFAULTS_H_
+#ifndef _TTYCHARS_H_
+#define	_TTYCHARS_H_
 
-/*
- * Defaults on "first" open.
- */
-#define	TTYDEF_IFLAG	(BRKINT | ISTRIP | ICRNL | IMAXBEL | IXON | IXANY)
-#define TTYDEF_OFLAG	(OPOST | ONLCR | OXTABS)
-#define TTYDEF_LFLAG	(ECHO | ICANON | ISIG | IEXTEN | ECHOE|ECHOKE|ECHOCTL)
-#define TTYDEF_CFLAG	(CREAD | CS7 | PARENB | HUPCL)
-#define TTYDEF_SPEED	(B9600)
-
-/*
- * Control Character Defaults
- */
-#define CTRL(x)	(x&037)
-#define	CEOF		CTRL('d')
-#define	CEOL		((unsigned)'\377')	/* XXX avoid _POSIX_VDISABLE */
-#define	CERASE		0177
-#define	CINTR		CTRL('c')
-#define	CSTATUS		((unsigned)'\377')	/* XXX avoid _POSIX_VDISABLE */
-#define	CKILL		CTRL('u')
-#define	CMIN		1
-#define	CQUIT		034		/* FS, ^\ */
-#define	CSUSP		CTRL('z')
-#define	CTIME		0
-#define	CDSUSP		CTRL('y')
-#define	CSTART		CTRL('q')
-#define	CSTOP		CTRL('s')
-#define	CLNEXT		CTRL('v')
-#define	CDISCARD 	CTRL('o')
-#define	CWERASE 	CTRL('w')
-#define	CREPRINT 	CTRL('r')
-#define	CEOT		CEOF
-/* compat */
-#define	CBRK		CEOL
-#define CRPRNT		CREPRINT
-#define	CFLUSH		CDISCARD
-
-/* PROTECTED INCLUSION ENDS HERE */
-#endif /* !_TTYDEFAULTS_H_ */
-
-/*
- * #define TTYDEFCHARS to include an array of default control characters.
- */
-#ifdef TTYDEFCHARS
-cc_t	ttydefchars[NCCS] = {
-	CEOF,	CEOL,	CEOL,	CERASE, CWERASE, CKILL, CREPRINT, 
-	_POSIX_VDISABLE, CINTR,	CQUIT,	CSUSP,	CDSUSP,	CSTART,	CSTOP,	CLNEXT,
-	CDISCARD, CMIN,	CTIME,  CSTATUS, _POSIX_VDISABLE
+struct ttychars {
+	char	tc_erase;	/* erase last character */
+	char	tc_kill;	/* erase entire line */
+	char	tc_intrc;	/* interrupt */
+	char	tc_quitc;	/* quit */
+	char	tc_startc;	/* start output */
+	char	tc_stopc;	/* stop output */
+	char	tc_eofc;	/* end-of-file */
+	char	tc_brkc;	/* input delimiter (like nl) */
+	char	tc_suspc;	/* stop process signal */
+	char	tc_dsuspc;	/* delayed stop process signal */
+	char	tc_rprntc;	/* reprint line */
+	char	tc_flushc;	/* flush output (toggles) */
+	char	tc_werasc;	/* word erase */
+	char	tc_lnextc;	/* literal next character */
 };
-#undef TTYDEFCHARS
-#endif /* TTYDEFCHARS */
+#ifdef USE_OLD_TTY
+#include <sys/ttydefaults.h>	/* to pick up character defaults */
+#endif
+#endif /* !_TTYCHARS_H_ */
+
