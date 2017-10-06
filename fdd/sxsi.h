@@ -67,6 +67,10 @@ struct _sxsidev {
 extern "C" {
 #endif
 
+#if !defined(_WIN32)
+unsigned GetTickCount();
+#endif
+
 void sxsi_initialize(void);
 void sxsi_allflash(void);
 void sxsi_alltrash(void);

@@ -29,11 +29,10 @@
 #if defined(__LIBRETRO__)
 
 #ifdef __cplusplus
-void joymng_sync();
-
 extern "C" {
 #endif
 
+void joymng_sync();
 UINT8 joymng_getstat(void);
 
 #ifdef __cplusplus

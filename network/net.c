@@ -6,13 +6,16 @@
  */
 
 #include	"compiler.h"
+#include	<unistd.h>
 
-#define TRACEOUT(a) printf(a);printf("\n");
+//#define TRACEOUT(a) printf(a);printf("\n");
+#define TRACEOUT(a)
 
 #if defined(SUPPORT_NET)
 
 #include	"pccore.h"
 #include	"net.h"
+#include	"sxsi.h"
 
 #if defined(_WINDOWS)
 #include <winioctl.h>
@@ -141,7 +144,7 @@ static int doWriteTap(int hTap, const UINT8 *pSendBuf, UINT32 len)
 #endif // defined(_WINDOWS)
 
 // パケットデータをバッファに送る（実際の送信はnp2net_ThreadFuncW内で行われる）
-static int sendDataToBuffer(UINT8 *pSendBuf, UINT32 len){
+static int sendDataToBuffer(const UINT8 *pSendBuf, UINT32 len){
 	if(len > NET_BUFLEN){
 		TRACEOUT(("LGY-98: too large packet!! %d bytes", len));
 		return 1;

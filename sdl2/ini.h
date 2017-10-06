@@ -38,8 +38,8 @@ typedef struct {
 extern "C" {
 #endif
 
-void ini_read(const char *path, const char *title, INITBL *tbl, UINT count);
-void ini_write(const char *path, const char *title, INITBL *tbl, UINT count);
+void ini_read(const char *path, const char *title, const INITBL *tbl, UINT count);
+void ini_write(const char *path, const char *title, const INITBL *tbl, UINT count);
 
 void initload(void);
 void initsave(void);

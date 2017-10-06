@@ -24,6 +24,7 @@
  */
 
 #include "compiler.h"
+#include "cmver.h"
 
 #include "soundmng.h"
 
@@ -1229,7 +1230,7 @@ static void
 #endif	/* __LIBRETRO__ */
 sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 {
-	const UINT frame_size = (UINT32)(userdata);
+	const UINTPTR frame_size = (UINTPTR)(userdata);
 	struct sndbuf *sndbuf;
 
 #if defined(__LIBRETRO__)

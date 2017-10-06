@@ -2,6 +2,7 @@
 // vermouth‚Ì‚İg—p‚ÌCOMMNG-MIDI
 // ‚ ‚Ü‚è‚Éˆê‚·‚¬‚é‚ñ‚Å ŠÖ”–¼•Ï‚¦‚Ä‚±‚Á‚¿‚Ö
 
+#include "commng.h"
 
 // ---- com manager midi for vermouth
 

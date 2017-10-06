@@ -1,6 +1,6 @@
 #include	"compiler.h"
 #include	"commng.h"
-#include	"cmver.h"
+//#include	"cmver.h"
 
 
 #if defined(VERMOUTH_LIB)

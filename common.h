@@ -13,6 +13,9 @@ enum {
 #ifndef INTPTR
 #define	INTPTR		intptr_t
 #endif
+#ifndef UINTPTR
+#define	UINTPTR		uintptr_t
+#endif
 
 #ifndef LOADINTELDWORD
 #define	LOADINTELDWORD(a)		(((UINT32)(a)[0]) |				\

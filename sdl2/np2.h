@@ -55,6 +55,9 @@ enum {
 
 extern	NP2OSCFG	np2oscfg;
 
+extern int np2_main(int argc, char *argv[]);
+extern int np2_end();
+
 #else	/* __LIBRETRO__ */
 #include <signal.h>
 
@@ -103,5 +106,6 @@ extern BOOL s98logging;
 extern int s98log_count;
 
 extern int np2_main(int argc, char *argv[]);
+extern int np2_end();
 #endif	/* __LIBRETRO__ */
 

@@ -516,7 +516,7 @@ static void FPU_FBST(UINT32 addr)
 	fpu_memorywrite_b(addr+9,p);
 }
 
-#define isinf(x) (!(_finite(x) || _isnan(x)))
+//#define isinf(x) (!(_finite(x) || _isnan(x)))
 #define isdenormal(x) (fpclassify(x) == FP_SUBNORMAL)
 
 static void FPU_FADD(UINT op1, UINT op2){

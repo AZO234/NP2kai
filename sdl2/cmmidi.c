@@ -1,5 +1,6 @@
 #include <fcntl.h>
 #include <sys/time.h>
+#include <unistd.h>
 #include "compiler.h"
 
 #include "np2.h"

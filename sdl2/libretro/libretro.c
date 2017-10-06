@@ -10,11 +10,13 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <math.h>
+#include <ctype.h>
 
 #include "libretro.h"
 #include "libretro_params.h"
 
 #include "compiler.h"//required to prevent missing type errors
+#include "beep.h"
 #include "pccore.h"
 #include "iocore.h"
 #include "keystat.h"
@@ -32,7 +34,9 @@
 #include "kbtrans.h"
 #include "vramhdl.h"
 #include "menubase.h"
+#include "palettes.h"
 #include "sysmenu.h"
+#include "scrndraw.h"
 #include "milstr.h"
 #include "strres.h"
 #include "np2.h"
@@ -42,6 +46,8 @@
 #if defined(SUPPORT_FMGEN)
 #include "fmgen_fmgwrap.h"
 #endif	/* defined(SUPPORT_FMGEN) */
+
+extern void sdlaudio_callback(void *userdata, unsigned char *stream, int len);
 
 signed short soundbuf[SNDSZ*2]; //16bit*2ch
 
@@ -118,7 +124,7 @@ void Add_Option(const char* option)
       first++;
    }
 
-   sprintf(XARGV[PARAMCOUNT++],"%s\0",option);
+   sprintf(XARGV[PARAMCOUNT++],"%s",option);
 }
 
 int pre_main(const char *argv)
@@ -288,8 +294,8 @@ void draw_cross(int x,int y) {
 }
 
 static int lastx=320,lasty=240;
-static menukey=0;
-static menu_active=0;
+static int menukey=0;
+static int menu_active=0;
 static int mbL = 0, mbR = 0;
 static bool joymouse;
 static int joymousemovebtn = 0;

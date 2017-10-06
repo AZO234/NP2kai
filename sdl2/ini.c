@@ -302,7 +302,7 @@ inireadcb(void *arg, const char *para, const char *key, const char *data)
 }
 
 void
-ini_read(const char *path, const char *title, INITBL *tbl, UINT count)
+ini_read(const char *path, const char *title, const INITBL *tbl, UINT count)
 {
 	_INIARG	iniarg;
 
@@ -395,7 +395,7 @@ iniwrinterp(UINT8 interp)
 static BOOL read_iniread_flag(const INITBL *p);
 
 void
-ini_write(const char *path, const char *title, INITBL *tbl, UINT count)
+ini_write(const char *path, const char *title, const INITBL *tbl, UINT count)
 {
 	char	work[512];
 	INITBL	*p;
@@ -412,8 +412,8 @@ ini_write(const char *path, const char *title, INITBL *tbl, UINT count)
 	milstr_ncat(work, "]\n", sizeof(work));
 	file_write(fh, work, (UINT)strlen(work));
 
-	p = tbl;
-	pterm = tbl + count;
+	p = (INITBL*)tbl;
+	pterm = (INITBL*)tbl + count;
 	while (p < pterm) {
 		if (!(p->itemtype & INIFLAG_RO) || read_iniread_flag(p)) {
 			work[0] = '\0';
