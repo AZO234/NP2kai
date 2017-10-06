@@ -259,7 +259,11 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 		goto cscre_failure;
 	}
 
+#if defined(__LIBRETRO__) && (defined(GEKKO) || defined(_3DS))
+	hdl = open(np2oscfg.com[port].mout, O_RDWR | O_NOCTTY);
+#else
 	hdl = open(np2oscfg.com[port].mout, O_RDWR | O_NOCTTY | O_NDELAY);
+#endif
 	if (hdl == -1) {
 		VERBOSE(("cmserial_create: open failure %s, %s", np2oscfg.com[port].mout, strerror(errno)));
 		goto cscre_failure;
