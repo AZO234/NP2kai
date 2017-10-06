@@ -97,7 +97,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\x86;..\;..\common;..\i286x;..\mem;..\io;..\cbus;..\network;..\vram;..\sound;..\generic;..\zlib;\VST3_SDK</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;.\x86;..\;..\common;..\fdd;..\i286x;..\mem;..\io;..\cbus;..\network;..\vram;..\sound;..\generic;..\zlib;\VST3_SDK</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -114,7 +114,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\x64;..\;..\common;..\i286c;..\mem;..\io;..\cbus;..\network;..\vram;..\sound;..\generic;..\zlib;\VST3_SDK</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;.\x64;..\;..\common;..\fdd;..\i286c;..\mem;..\io;..\cbus;..\network;..\vram;..\sound;..\generic;..\zlib;\VST3_SDK</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -140,7 +140,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_KAI_IMAGES;ALLOW_MULTIRUN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\x86;..\;..\common;..\i286x;..\mem;..\io;..\cbus;..\network;..\vram;..\sound;..\generic;..\zlib;\VST3_SDK</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;.\x86;..\;..\common;..\fdd;..\i286x;..\mem;..\io;..\cbus;..\network;..\vram;..\sound;..\generic;..\zlib;\VST3_SDK</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -161,7 +161,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_KAI_IMAGES;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_VPCVHD;HOOK_SYSKEY;ALLOW_MULTIRUN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\x64;..\;..\common;..\i286c;..\mem;..\io;..\cbus;..\network;..\vram;..\sound;..\generic;..\zlib;\VST3_SDK</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;.\x64;..\;..\common;..\fdd;..\i286c;..\mem;..\io;..\cbus;..\network;..\vram;..\sound;..\generic;..\zlib;\VST3_SDK</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>

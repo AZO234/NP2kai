@@ -6,7 +6,12 @@
  */
 
 #include	"compiler.h"
+#if defined(_MSC_VER)
+#include	<io.h>
+#else
 #include	<unistd.h>
+#endif
+
 
 //#define TRACEOUT(a) printf(a);printf("\n");
 #define TRACEOUT(a)

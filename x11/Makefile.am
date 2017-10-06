@@ -288,6 +288,7 @@ AM_CPPFLAGS=	-I$(real_topsrcdir) \
 		-I$(real_topsrcdir)/x11/debug \
 		-I$(real_topsrcdir)/common \
 		-I$(real_topsrcdir)/cbus \
+		-I$(real_topsrcdir)/fdd \
 		-I$(real_topsrcdir)/generic \
 		-I$(real_topsrcdir)/io \
 		-I$(real_topsrcdir)/mem \
