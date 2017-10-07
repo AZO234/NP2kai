@@ -49,11 +49,19 @@ typedef struct {
 } _COMFLAG, *COMFLAG;
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 COMMNG commng_create(UINT device);
 void commng_destroy(COMMNG hdl);
 
+#ifdef __cplusplus
+}
+#endif
 
-// ---- com manager for unix
+
+// ----
 
 enum {
 	COMPORT_NONE			= 0,
@@ -79,8 +87,10 @@ enum {
 
 void commng_initialize(void);
 
+#if !defined(__LIBRETRO__)
 #include "cmmidi.h"
 #include "cmserial.h"
 #include "cmpara.h"
+#endif	/* __LIBRETRO__ */
 
 #endif	/* NP2_COMMNG_H__ */
