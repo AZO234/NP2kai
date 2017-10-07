@@ -68,6 +68,7 @@ COMMNG
 commng_create(UINT device)
 {
 	COMMNG ret;
+
 #if !defined(__LIBRETRO__)
 	COMCFG *cfg;
 
