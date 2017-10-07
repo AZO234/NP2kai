@@ -64,10 +64,6 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 		$(wildcard $(NP2_PATH)/i386c/ia32/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/*.c) \
 		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox.c
-ifneq ($(platform),win)
-SOURCES_C += 	$(NP2_PATH)/sdl2/cmmidi.c \
-		$(NP2_PATH)/sdl2/cmserial.c
-endif
 
 OBJECTS  = $(SOURCES_CXX:.cpp=.o) $(SOURCES_C:.c=.o)
 CXXFLAGS += -D__LIBRETRO__ $(fpic) $(INCFLAGS) $(COMMONFLAGS) -DSUPPORT_LARGE_HDD -DSUPPORT_VPCVHD -DSUPPORT_KAI_IMAGES -DHOOK_SYSKEY -DALLOW_MULTIRUN
