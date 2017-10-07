@@ -2,6 +2,9 @@
 
 #include "np2.h"
 #include "commng.h"
+#if !defined(__LIBRETRO__)
+#include　"cmver.h"
+#endif	/* __LIBRETRO__ */
 #include "cmjasts.h"
 
 
@@ -53,15 +56,19 @@ void
 commng_initialize(void)
 {
 
+	cmvermouth_initialize();
+#if !defined(__LIBRETRO__)
 #if !defined(_WIN32)
 	cmmidi_initailize();
 #endif	/* _WIN32 */
+#endif	/* __LIBRETRO__ */
 }
 
 COMMNG
 commng_create(UINT device)
 {
 	COMMNG ret;
+#if !defined(__LIBRETRO__)
 	COMCFG *cfg;
 
 	ret = NULL;
@@ -113,6 +120,21 @@ commng_create(UINT device)
 	if (ret)
 		return ret;
 	return (COMMNG)&com_nc;
+#else	/* __LIBRETRO__ */
+	ret = NULL;
+	if (device == COMCREATE_MPU98II) {
+		ret = cmvermouth_create();
+	}
+	else if (device == COMCREATE_PRINTER) {
+		if (np2oscfg.jastsnd) {
+			ret = cmjasts_create();
+		}
+	}
+	if (ret == NULL) {
+		ret = (COMMNG)&com_nc;
+	}
+	return(ret);
+#endif	/* __LIBRETRO__ */
 }
 
 void
