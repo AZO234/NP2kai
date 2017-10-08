@@ -2,9 +2,7 @@
 
 #include "np2.h"
 #include "commng.h"
-#if !defined(__LIBRETRO__)
-#include　"cmver.h"
-#endif	/* __LIBRETRO__ */
+#include "cmver.h"
 #include "cmjasts.h"
 
 
