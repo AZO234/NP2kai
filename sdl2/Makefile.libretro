@@ -265,6 +265,9 @@ INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro \
 		-I$(NP2_PATH)/i386c/ia32 \
 		-I$(NP2_PATH)/i386c/ia32/instructions \
 		-I$(NP2_PATH)/i386c/ia32/instructions/fpu
+ifneq (,$(filter $(platform),ngc wii))
+INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro/gc
+endif
 SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strl.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_posix_string.c \

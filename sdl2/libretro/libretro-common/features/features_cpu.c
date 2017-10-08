@@ -75,9 +75,9 @@
 #include <ogc/lwp_watchdog.h>
 #endif
 
-//#ifdef WIIU
-//#include <wiiu/os/time.h>
-//#endif
+#ifdef WIIU
+#include <wiiu/os/time.h>
+#endif
 
 #if defined(_3DS)
 #include <3ds/svc.h>
