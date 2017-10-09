@@ -318,26 +318,26 @@ void file_listclose(FLISTH hdl) {
 #else
 FLISTH file_list1st(const char *dir, FLINFO *fli) {
 
-//#if defined(__LIBRETRO__)
-//	struct RDIR	*ret;
-//
-//	ret = retro_opendir(dir);
-//#else
+#if defined(__LIBRETRO__) && devined(VITA)
+	SceIoDirent	*ret;
+
+	ret = sceIoDopen(dir);
+#else
 	DIR		*ret;
 
 	ret = opendir(dir);
-//#endif
+#endif
 	if (ret == NULL) {
 		goto ff1_err;
 	}
 	if (file_listnext((FLISTH)ret, fli) == SUCCESS) {
 		return((FLISTH)ret);
 	}
-//#if defined(__LIBRETRO__)
-//	retro_closedir(ret);
-//#else
+#if defined(__LIBRETRO__) && devined(VITA)
+	sceIoDclose(ret);
+#else
 	closedir(ret);
-//#endif
+#endif
 
 ff1_err:
 	return(FLISTH_INVALID);
@@ -345,25 +345,29 @@ ff1_err:
 
 BRESULT file_listnext(FLISTH hdl, FLINFO *fli) {
 
+#if defined(__LIBRETRO__) && devined(VITA)
+int	de;
+#else
 struct dirent	*de;
+#endif
 struct stat		sb;
 
-//#if defined(__LIBRETRO__)
-//	de = retro_readdir((struct RDIR *)hdl);
-//#else
+#if defined(__LIBRETRO__) && devined(VITA)
+	de = sceIoDread(---);
+#else
 	de = readdir((DIR *)hdl);
-//#endif
+#endif
 	if (de == NULL) {
 		return(FAILURE);
 	}
 	if (fli) {
 		memset(fli, 0, sizeof(*fli));
 		fli->caps = FLICAPS_ATTR;
-//#if defined(__LIBRETRO__)
-//		fli->attr = retro_dirent_is_dir((struct RDIR *)hdl, "") ? FILEATTR_DIRECTORY : 0;
-//#else
+#if defined(__LIBRETRO__)
+		fli->attr = retro_dirent_is_dir((struct RDIR *)hdl, "") ? FILEATTR_DIRECTORY : 0;
+#else
 		fli->attr = (de->d_type & DT_DIR) ? FILEATTR_DIRECTORY : 0;
-//#endif
+#endif
 
 		if (stat(de->d_name, &sb) == 0) {
 			fli->caps |= FLICAPS_SIZE;
@@ -382,7 +386,11 @@ struct stat		sb;
 
 void file_listclose(FLISTH hdl) {
 
+#if defined(__LIBRETRO__) && devined(VITA)
+	sceIoDclose(hdl);
+#else
 	closedir((DIR *)hdl);
+#endif
 }
 #endif
 
