@@ -5,15 +5,16 @@
 #include "codecnv/codecnv.h"
 #endif
 #include "dosio.h"
-//#if defined(__LIBRETRO__)
-//#include "retro_dirent.h"
-//#else
+#if defined(__LIBRETRO__)
+#if defined(VITA)
+#include <psp2/io/dirent.h>
+#else
 #if defined(WIN32)
 #include <direct.h>
 #else
 #include <dirent.h>
 #endif
-//#endif
+#endif
 
 #if defined(_WIN32)
 static	char	curpath[MAX_PATH] = ".\\";

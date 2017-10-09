@@ -265,6 +265,9 @@ INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro \
 		-I$(NP2_PATH)/i386c/ia32 \
 		-I$(NP2_PATH)/i386c/ia32/instructions \
 		-I$(NP2_PATH)/i386c/ia32/instructions/fpu
+ifneq (,$(filter $(platform),ngc vita))
+INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro/vita
+endif
 ifneq (,$(filter $(platform),ngc wii))
 INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro/gc
 endif
