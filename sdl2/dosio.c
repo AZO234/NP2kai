@@ -9,6 +9,9 @@
 #if defined(VITA)
 #include <psp2/io/dirent.h>
 #else
+#include <dirent.h>
+#endif
+#else
 #if defined(WIN32)
 #include <direct.h>
 #else
