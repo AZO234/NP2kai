@@ -318,7 +318,7 @@ void file_listclose(FLISTH hdl) {
 #else
 FLISTH file_list1st(const char *dir, FLINFO *fli) {
 
-#if defined(__LIBRETRO__) && devined(VITA)
+#if defined(__LIBRETRO__) && defined(VITA)
 	SceIoDirent	*ret;
 
 	ret = sceIoDopen(dir);
@@ -333,7 +333,7 @@ FLISTH file_list1st(const char *dir, FLINFO *fli) {
 	if (file_listnext((FLISTH)ret, fli) == SUCCESS) {
 		return((FLISTH)ret);
 	}
-#if defined(__LIBRETRO__) && devined(VITA)
+#if defined(__LIBRETRO__) && defined(VITA)
 	sceIoDclose(ret);
 #else
 	closedir(ret);
@@ -345,14 +345,14 @@ ff1_err:
 
 BRESULT file_listnext(FLISTH hdl, FLINFO *fli) {
 
-#if defined(__LIBRETRO__) && devined(VITA)
+#if defined(__LIBRETRO__) && defined(VITA)
 int	de;
 #else
 struct dirent	*de;
 #endif
 struct stat		sb;
 
-#if defined(__LIBRETRO__) && devined(VITA)
+#if defined(__LIBRETRO__) && defined(VITA)
 	de = sceIoDread(---);
 #else
 	de = readdir((DIR *)hdl);
@@ -386,7 +386,7 @@ struct stat		sb;
 
 void file_listclose(FLISTH hdl) {
 
-#if defined(__LIBRETRO__) && devined(VITA)
+#if defined(__LIBRETRO__) && defined(VITA)
 	sceIoDclose(hdl);
 #else
 	closedir((DIR *)hdl);
