@@ -5,12 +5,8 @@
 #include "codecnv/codecnv.h"
 #endif
 #include "dosio.h"
-#if defined(__LIBRETRO__)
-#if defined(VITA)
+#if defined(__LIBRETRO__) && defined(VITA)
 #include <psp2/io/dirent.h>
-#else
-#include <dirent.h>
-#endif
 #else
 #if defined(WIN32)
 #include <direct.h>
