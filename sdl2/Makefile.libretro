@@ -268,6 +268,9 @@ INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro \
 ifneq (,$(filter $(platform),ngc wii))
 INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro/gc
 endif
+ifneq (,$(filter $(platform),ngc wiiu))
+INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro/wiiu
+endif
 SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strl.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_posix_string.c \
