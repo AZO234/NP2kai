@@ -16,7 +16,7 @@ static void oneshot(BEEP bp, SINT32 *pcm, UINT count) {
 	double		sampbias = soundcfg.rate / 44100.0;
 
 	while(count--) {
-		samp = (double)beep_data[bp->beep_data_curr_loc] / 0x100 * (0x1000 * beepcfg.vol) - (0x800 * beepcfg.vol);
+		samp = (double)beep_data[bp->beep_data_curr_loc] / 0x100 * (0x5000 * beepcfg.vol) - (0x2500 * beepcfg.vol);
 		pcm[0] += samp;
 		pcm[1] += samp;
 		pcm += 2;
