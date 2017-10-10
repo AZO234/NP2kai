@@ -51,6 +51,8 @@ extern	_BEEP		g_beep;
 extern UINT16 beep_data[BEEPDATACOUNT];
 extern int beep_mode_freq;
 extern int beep_mode_temp;
+extern int beep_mode_bit;
+extern int beep_mode_bit_c;
 
 void beep_initialize(UINT rate);
 void beep_deinitialize(void);

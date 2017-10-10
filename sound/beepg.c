@@ -5,8 +5,10 @@
 
 extern	BEEPCFG		beepcfg;
 extern  UINT16 beep_data[BEEPDATACOUNT];
-int beep_mode_freq = 28;	// 28:normal 21:TOKIO
+int beep_mode_freq = 56;	// 56:normal 42:TOKIO
 int beep_mode_temp = 0;
+int beep_mode_bit = 0;
+int beep_mode_bit_c = 0;
 
 static void oneshot(BEEP bp, SINT32 *pcm, UINT count) {
 
