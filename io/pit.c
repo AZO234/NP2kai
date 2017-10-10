@@ -414,7 +414,11 @@ static void IOOUTCALL pit_o77(UINT port, REG8 dat) {
 		break;
 	case 0x30:
 		beep_mode_bit = 2;
+#if !defined(__LIBRETRO__) && !defined(MSC_VER)
 		beep_mode_freq = 112;
+#else
+		beep_mode_freq = 56;
+#endif
 		break;
 	}
 	beep_mode_bit_c = 0;
