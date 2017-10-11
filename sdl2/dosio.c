@@ -354,10 +354,11 @@ struct stat		sb;
 
 #if defined(__LIBRETRO__) && defined(VITA)
 	de = retro_readdir((struct RDIR *)hdl);
+	if (de == 0) {
 #else
 	de = readdir((DIR *)hdl);
-#endif
 	if (de == NULL) {
+#endif
 		return(FAILURE);
 	}
 	if (fli) {
@@ -369,6 +370,7 @@ struct stat		sb;
 		fli->attr = (de->d_type & DT_DIR) ? FILEATTR_DIRECTORY : 0;
 #endif
 
+#if !(defined(__LIBRETRO__) && defined(VITA))
 		if (stat(de->d_name, &sb) == 0) {
 			fli->caps |= FLICAPS_SIZE;
 			fli->size = (UINT)sb.st_size;
@@ -380,6 +382,7 @@ struct stat		sb;
 			}
 		}
 		milstr_ncpy(fli->path, de->d_name, sizeof(fli->path));
+#endif
 	}
 	return(SUCCESS);
 }
@@ -387,7 +390,7 @@ struct stat		sb;
 void file_listclose(FLISTH hdl) {
 
 #if defined(__LIBRETRO__) && defined(VITA)
-	retro_closedir(ret);
+	retro_closedir((struct RDIR *)hdl);
 #else
 	closedir((DIR *)hdl);
 #endif
