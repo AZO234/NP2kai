@@ -6,7 +6,7 @@
 #endif
 #include "dosio.h"
 #if defined(__LIBRETRO__) && defined(VITA)
-#include <psp2/io/dirent.h>
+#include <retro_dirent.h>
 #else
 #if defined(WIN32)
 #include <direct.h>
@@ -319,9 +319,9 @@ void file_listclose(FLISTH hdl) {
 FLISTH file_list1st(const char *dir, FLINFO *fli) {
 
 #if defined(__LIBRETRO__) && defined(VITA)
-	SceIoDirent	*ret;
+	struct RDIR	*ret;
 
-	ret = sceIoDopen(dir);
+	ret = retro_opendir(dir);
 #else
 	DIR		*ret;
 
@@ -334,7 +334,7 @@ FLISTH file_list1st(const char *dir, FLINFO *fli) {
 		return((FLISTH)ret);
 	}
 #if defined(__LIBRETRO__) && defined(VITA)
-	sceIoDclose(ret);
+	retro_closedir(ret);
 #else
 	closedir(ret);
 #endif
@@ -353,7 +353,7 @@ struct dirent	*de;
 struct stat		sb;
 
 #if defined(__LIBRETRO__) && defined(VITA)
-	de = sceIoDread(---);
+	de = retro_readdir((struct RDIR *)hdl);
 #else
 	de = readdir((DIR *)hdl);
 #endif
@@ -363,11 +363,11 @@ struct stat		sb;
 	if (fli) {
 		memset(fli, 0, sizeof(*fli));
 		fli->caps = FLICAPS_ATTR;
-//#if defined(__LIBRETRO__)
-//		fli->attr = retro_dirent_is_dir((struct RDIR *)hdl, "") ? FILEATTR_DIRECTORY : 0;
-//#else
+#if defined(__LIBRETRO__) && defined(VITA)
+		fli->attr = retro_dirent_is_dir((struct RDIR *)hdl, "") ? FILEATTR_DIRECTORY : 0;
+#else
 		fli->attr = (de->d_type & DT_DIR) ? FILEATTR_DIRECTORY : 0;
-//#endif
+#endif
 
 		if (stat(de->d_name, &sb) == 0) {
 			fli->caps |= FLICAPS_SIZE;
@@ -387,7 +387,7 @@ struct stat		sb;
 void file_listclose(FLISTH hdl) {
 
 #if defined(__LIBRETRO__) && defined(VITA)
-	sceIoDclose(hdl);
+	retro_closedir(ret);
 #else
 	closedir((DIR *)hdl);
 #endif
