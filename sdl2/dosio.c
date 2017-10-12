@@ -1,5 +1,6 @@
 #include "compiler.h"
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <time.h>
 #if defined(WIN32) && defined(OSLANG_UTF8)
 #include "codecnv/codecnv.h"
@@ -180,10 +181,12 @@ short file_delete(const char *path) {
 
 short file_dircreate(const char *path) {
 
+#if !(defined(__LIBRETRO__) && defined(VITA))
 #if defined(WIN32)
 	return((short)mkdir(path));
 #else
 	return((short)mkdir(path, 0777));
+#endif
 #endif
 }
 
