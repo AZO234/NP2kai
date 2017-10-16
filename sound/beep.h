@@ -29,7 +29,6 @@ typedef struct {
 	UINT32  beep_data_curr_loc;
 	UINT32  beep_data_load_loc;
 	UINT32  beep_laskclk;
-	UINT32  beep_cnt;
 	UINT	events;
 	BPEVENT	event[BEEPEVENT_MAX];
 } _BEEP, *BEEP;
@@ -47,12 +46,9 @@ extern "C" {
 #endif
 
 extern	_BEEP		g_beep;
-#define BEEPDATACOUNT 0x10000
+#define BEEPDATACOUNT 0x100000
 extern UINT16 beep_data[BEEPDATACOUNT];
-extern int beep_mode_freq;
-extern int beep_mode_temp;
-extern int beep_mode_bit;
-extern int beep_mode_bit_c;
+extern UINT32 beep_time[BEEPDATACOUNT];
 
 void beep_initialize(UINT rate);
 void beep_deinitialize(void);

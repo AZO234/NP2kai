@@ -333,32 +333,38 @@ static void IOOUTCALL pit_o71(UINT port, REG8 dat) {
 	(void)port;
 }
 
+static int beep_mode_bit = 0;
+static int beep_mode_bit_c = 0;
+
 // beep
 static void IOOUTCALL pit_o73(UINT port, REG8 dat) {
 
 	PITCH	pitch;
 
-	switch(beep_mode_bit) {
-	case 0:
-		beep_data[g_beep.beep_data_load_loc] = dat;
-		break;
-	case 1:
-		beep_data[g_beep.beep_data_load_loc] = dat << 8;
-		break;
-	case 2:
-		if(beep_mode_bit_c == 0)
+	if(g_beep.mode == 0) {
+		switch(beep_mode_bit) {
+		case 0:
 			beep_data[g_beep.beep_data_load_loc] = dat;
-		else
-			beep_data[g_beep.beep_data_load_loc] += dat << 8;
-		break;
+			break;
+		case 1:
+			beep_data[g_beep.beep_data_load_loc] = dat << 8;
+			break;
+		case 2:
+			if(beep_mode_bit_c == 0)
+				beep_data[g_beep.beep_data_load_loc] = dat;
+			else
+				beep_data[g_beep.beep_data_load_loc] += dat << 8;
+			break;
+		}
+		beep_time[g_beep.beep_data_load_loc] = CPU_CLOCK;
+		if(!(beep_mode_bit == 2 && beep_mode_bit_c == 0)) {
+			g_beep.beep_data_load_loc++;
+			if(g_beep.beep_data_load_loc >= BEEPDATACOUNT)
+				g_beep.beep_data_load_loc = 0;
+			g_beep.beep_laskclk = CPU_CLOCK;
+		}
+		beep_mode_bit_c ^= 1;
 	}
-	if(!(beep_mode_bit == 2 && beep_mode_bit_c == 0)) {
-		g_beep.beep_data_load_loc++;
-		if(g_beep.beep_data_load_loc >= BEEPDATACOUNT)
-			g_beep.beep_data_load_loc = 0;
-		g_beep.beep_laskclk = CPU_CLOCK;
-	}
-	beep_mode_bit_c ^= 1;
 
 	pitch = pit.ch + 1;
 	if (pit_setcount(pitch, dat)) {
@@ -392,45 +398,14 @@ static void IOOUTCALL pit_o77(UINT port, REG8 dat) {
 	UINT	chnum;
 	PITCH	pitch;
 
-	if(CPU_CLOCK - g_beep.beep_laskclk >= 20000000) {
-		g_beep.beep_data_load_loc = 0;
-		g_beep.beep_data_curr_loc = 0;
-		g_beep.beep_cnt = 0;
+	if((dat & 0xC0) == 0x40) {
+		if(CPU_CLOCK - g_beep.beep_laskclk >= 20000000) {
+			g_beep.beep_data_load_loc = 0;
+			g_beep.beep_data_curr_loc = 0;
+		}
+		beep_mode_bit = ((dat >> 4) & 3) - 1;
+		beep_mode_bit_c = 0;
 	}
-	switch(dat & 0x30) {
-	case 0x10:
-		beep_mode_bit = 0;
-		if(port == 0x77 && dat == 0x50) {
-			if(beep_mode_temp == 0x70)	/* for TOKIO */
-				beep_mode_freq = 42;
-			else
-				beep_mode_freq = 56;
-		} else
-			beep_mode_freq = 56;
-		break;
-	case 0x20:
-		beep_mode_bit = 1;
-		beep_mode_freq = 56;
-		break;
-	case 0x30:
-		beep_mode_bit = 2;
-#if defined(__LIBRETRO__)
-#if defined(_WIN32)
-		beep_mode_freq = 112;
-#else
-		beep_mode_freq = 56;
-#endif
-#else
-#if defined(_MSC_VER)
-		beep_mode_freq = 56;
-#else
-		beep_mode_freq = 112;
-#endif
-#endif
-		break;
-	}
-	beep_mode_bit_c = 0;
-	beep_mode_temp = dat;
 
 	chnum = (dat >> 6) & 3;
 	if (chnum != 3) {

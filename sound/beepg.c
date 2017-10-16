@@ -1,33 +1,38 @@
 #include	"compiler.h"
+#include	"cpucore.h"
 #include	"sound.h"
 #include	"beep.h"
 
 
 extern	BEEPCFG		beepcfg;
-extern  UINT16 beep_data[BEEPDATACOUNT];
-int beep_mode_freq = 56;	// 56:normal 42:TOKIO
-int beep_mode_temp = 0;
-int beep_mode_bit = 0;
-int beep_mode_bit_c = 0;
 
 static void oneshot(BEEP bp, SINT32 *pcm, UINT count) {
 
 	SINT32		samp;
-	double		sampbias = soundcfg.rate / 44100.0;
+	UINT32		firsttime = beep_time[bp->beep_data_curr_loc];
+	UINT32		time = firsttime;
+	UINT32		bound;
+
+	if(bp->beep_data_load_loc != 0)
+		bound = (beep_time[bp->beep_data_load_loc - 1] - firsttime) / count;
+	else
+		bound = (beep_time[BEEPDATACOUNT - 1] - firsttime) / count;
 
 	while(count--) {
-		samp = (double)beep_data[bp->beep_data_curr_loc] / 0x100 * (0x5000 * beepcfg.vol) - (0x2500 * beepcfg.vol);
+		while(time >= beep_time[bp->beep_data_curr_loc] && bp->beep_data_curr_loc != bp->beep_data_load_loc) {
+			bp->beep_data_curr_loc++;
+			if(bp->beep_data_curr_loc >= BEEPDATACOUNT)
+				bp->beep_data_curr_loc = 0;
+		}
+		if(bp->beep_data_curr_loc != 0)
+			samp = beep_data[bp->beep_data_curr_loc - 1];
+		else
+			samp = beep_data[BEEPDATACOUNT - 1];
+		samp = (double)samp / 0x100 * (0x5000 * beepcfg.vol) - (0x2500 * beepcfg.vol);
 		pcm[0] += samp;
 		pcm[1] += samp;
 		pcm += 2;
-		bp->beep_cnt += 20 * (1.0 / sampbias);
-		if((bp->beep_data_curr_loc < bp->beep_cnt / beep_mode_freq) && (bp->beep_data_curr_loc != bp->beep_data_load_loc)) {
-			bp->beep_data_curr_loc = bp->beep_cnt / beep_mode_freq;
-			if(bp->beep_data_curr_loc >= BEEPDATACOUNT) {
-				bp->beep_data_curr_loc = 0;
-				bp->beep_cnt %= beep_mode_freq;
-			}
-		}
+		time += bound;
 	}
 }
 
