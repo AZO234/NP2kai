@@ -18,14 +18,14 @@ enum {
 #endif
 
 #ifndef LOADINTELDWORD
-#define	LOADINTELDWORD(a)		(((UINT32)(a)[0]) |				\
-								((UINT32)(a)[1] << 8) |			\
-								((UINT32)(a)[2] << 16) |		\
-								((UINT32)(a)[3] << 24))
+#define	LOADINTELDWORD(a)		(((UINT32)(((UINT8*)a)[0])) |				\
+								((UINT32)(((UINT8*)a)[1]) << 8) |			\
+								((UINT32)(((UINT8*)a)[2]) << 16) |		\
+								((UINT32)(((UINT8*)a)[3]) << 24))
 #endif
 
 #ifndef LOADINTELWORD
-#define	LOADINTELWORD(a)		(((UINT16)(a)[0]) | ((UINT16)(a)[1] << 8))
+#define	LOADINTELWORD(a)		(((UINT16)((UINT8*)a)[0]) | ((UINT16)(((UINT8*)a)[1]) << 8))
 #endif
 
 #ifndef STOREINTELDWORD
@@ -43,25 +43,25 @@ enum {
 /* Big Ending */
 
 #ifndef LOADMOTOROLAQWORD
-#define    LOADMOTOROLAQWORD(a)        (((UINT64)(a)[7]) |             \
-                               ((UINT64)(a)[6] << 8) |         \
-                               ((UINT64)(a)[5] << 16) |        \
-                               ((UINT64)(a)[4] << 24) |        \
-                               ((UINT64)(a)[3] << 32) |        \
-                               ((UINT64)(a)[2] << 40) |        \
-                               ((UINT64)(a)[1] << 48) |        \
-                               ((UINT64)(a)[0] << 56))
+#define    LOADMOTOROLAQWORD(a)        (((UINT64)((UINT8*)a)[7]) |             \
+                               ((UINT64)(((UINT8*)a)[6]) << 8) |         \
+                               ((UINT64)(((UINT8*)a)[5]) << 16) |        \
+                               ((UINT64)(((UINT8*)a)[4]) << 24) |        \
+                               ((UINT64)(((UINT8*)a)[3]) << 32) |        \
+                               ((UINT64)(((UINT8*)a)[2]) << 40) |        \
+                               ((UINT64)(((UINT8*)a)[1]) << 48) |        \
+                               ((UINT64)(((UINT8*)a)[0]) << 56))
 #endif
 
 #ifndef LOADMOTOROLADWORD
-#define    LOADMOTOROLADWORD(a)        (((UINT32)(a)[3]) |             \
-                               ((UINT32)(a)[2] << 8) |         \
-                               ((UINT32)(a)[1] << 16) |        \
-                               ((UINT32)(a)[0] << 24))
+#define    LOADMOTOROLADWORD(a)        (((UINT32)((UINT8*)a)[3]) |             \
+                               ((UINT32)(((UINT8*)a)[2]) << 8) |         \
+                               ((UINT32)(((UINT8*)a)[1]) << 16) |        \
+                               ((UINT32)(((UINT8*)a)[0]) << 24))
 #endif
 
 #ifndef LOADMOTOROLAWORD
-#define    LOADMOTOROLAWORD(a)     (((UINT16)(a)[1]) | ((UINT16)(a)[0] << 8))
+#define    LOADMOTOROLAWORD(a)     (((UINT16)((UINT8*)a)[1]) | ((UINT16)(((UINT8*)a)[0]) << 8))
 #endif
 
 #ifndef STOREMOTOROLAQWORD
