@@ -245,12 +245,14 @@ static void dlgsetlist(void) {
 	prm.pos = 0;
 	fl = filesel.fbase;
 	while(fl) {
-		menudlg_itemappend(DID_FLIST, NULL);
-		prm.icon = (fl->isdir)?MICON_FOLDER:MICON_FILE;
-		prm.str = fl->name;
-		menudlg_itemsetex(DID_FLIST, &prm);
+		if(!((strcmp(filesel.path, "") == 0 || strcmp(filesel.path, "/") == 0) && (strcmp(fl->name, ".") == 0 || strcmp(fl->name, "..") == 0))) {
+			menudlg_itemappend(DID_FLIST, NULL);
+			prm.icon = (fl->isdir)?MICON_FOLDER:MICON_FILE;
+			prm.str = fl->name;
+			menudlg_itemsetex(DID_FLIST, &prm);
+			prm.pos++;
+		}
 		fl = fl->next;
-		prm.pos++;
 	}
 }
 
