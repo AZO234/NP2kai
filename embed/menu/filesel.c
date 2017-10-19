@@ -228,11 +228,13 @@ static void dlgsetlist(void) {
 	if (flh != FLISTH_INVALID) {
 		do {
 			append = FALSE;
-			if (fli.attr & 0x10) {
-				append = TRUE;
-			}
-			else if (!(fli.attr & 0x08)) {
-				append = checkext(fli.path, filesel.ext);
+			if(!((strcmp(filesel.path, "") == 0 || strcmp(filesel.path, "/") == 0) && strcmp(fli.path, "..") == 0)) {
+				if (fli.attr & 0x10) {
+					append = TRUE;
+				}
+				else if (!(fli.attr & 0x08)) {
+					append = checkext(fli.path, filesel.ext);
+				}
 			}
 			if (append) {
 				if (fappend(flist, &fli) != SUCCESS) {
@@ -245,14 +247,12 @@ static void dlgsetlist(void) {
 	prm.pos = 0;
 	fl = filesel.fbase;
 	while(fl) {
-		if(!((strcmp(filesel.path, "") == 0 || strcmp(filesel.path, "/") == 0) && (strcmp(fl->name, ".") == 0 || strcmp(fl->name, "..") == 0))) {
-			menudlg_itemappend(DID_FLIST, NULL);
-			prm.icon = (fl->isdir)?MICON_FOLDER:MICON_FILE;
-			prm.str = fl->name;
-			menudlg_itemsetex(DID_FLIST, &prm);
-			prm.pos++;
-		}
+		menudlg_itemappend(DID_FLIST, NULL);
+		prm.icon = (fl->isdir)?MICON_FOLDER:MICON_FILE;
+		prm.str = fl->name;
+		menudlg_itemsetex(DID_FLIST, &prm);
 		fl = fl->next;
+		prm.pos++;
 	}
 }
 
