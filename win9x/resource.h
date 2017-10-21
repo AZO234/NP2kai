@@ -280,6 +280,7 @@
 #define IDC_IDERWAIT                    19106
 #define IDC_SPINIDERWAIT				19107
 #define IDC_USEIDEBIOS					19108
+#define IDC_AUTOIDEBIOS					19109
 #define IDS_APP_NAME2                   30001
 #define IDS_APP_NAME21                  30002
 #define IDS_FILENAME_HELP               30003
@@ -586,6 +587,7 @@
 #define IDM_SOUNDORCHESTRAV             40656
 #define IDM_PC9801_86_WSS               40657
 #define IDM_MATE_X_PCM                  40658
+#define IDM_SB16                        40659
 #define IDM_MEM640                      40661
 #define IDM_MEM16                       40662
 #define IDM_MEM36                       40663

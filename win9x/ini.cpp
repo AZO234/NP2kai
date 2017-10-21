@@ -500,6 +500,7 @@ static const PFTBL s_IniItems[] =
 	PFVAL("IDE3TYPE", PFTYPE_UINT8,		&np2cfg.idetype[2]),
 	PFVAL("IDE4TYPE", PFTYPE_UINT8,		&np2cfg.idetype[3]),
 	PFVAL("IDE_BIOS", PFTYPE_BOOL,		&np2cfg.idebios),  // 実機IDE BIOS使用
+	PFVAL("AIDEBIOS", PFTYPE_BOOL,		&np2cfg.autoidebios),  // 実機IDE BIOS使用を自動設定する
 	PFVAL("IDERWAIT", PFTYPE_UINT32,	&np2cfg.iderwait),
 	PFVAL("IDEWWAIT", PFTYPE_UINT32,	&np2cfg.idewwait),
 	PFVAL("IDEMWAIT", PFTYPE_UINT32,	&np2cfg.idemwait),
@@ -527,7 +528,6 @@ static const PFTBL s_IniItems[] =
 	PFMAX("volume_A", PFTYPE_UINT8,		&np2cfg.vol_adpcm,		128),
 	PFMAX("volume_P", PFTYPE_UINT8,		&np2cfg.vol_pcm,		128),
 	PFMAX("volume_R", PFTYPE_UINT8,		&np2cfg.vol_rhythm,		128),
-	PFMAX("volume_C", PFTYPE_UINT8,		&np2cfg.vol_cdda,		128),	//	CD-DA(kaiE)
 
 	PFVAL("Seek_Snd", PFTYPE_BOOL,		&np2cfg.MOTOR),
 	PFMAX("Seek_Vol", PFTYPE_UINT8,		&np2cfg.MOTORVOL,		100),

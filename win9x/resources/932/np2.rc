@@ -530,6 +530,7 @@ BEGIN
     LTEXT           "Interrupt Delay(Write)",IDC_STATIC,8,100,70,8
     LTEXT           "clock",IDC_STATIC,126,100,32,8
     CONTROL         "Use IDE BIOS",IDC_USEIDEBIOS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,120,200,10
+    CONTROL         "Auto IDE BIOS",IDC_AUTOIDEBIOS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,134,80,10
     DEFPUSHBUTTON   "&OK",IDOK,92,130,44,14,WS_GROUP
     PUSHBUTTON      "Cancel",IDCANCEL,140,130,44,14
 END
@@ -916,6 +917,7 @@ BEGIN
             MENUITEM "Sp&ark board",                IDM_SPARKBOARD
             MENUITEM "Sound &Orchestra",            IDM_SOUNDORCHESTRA
             MENUITEM "Sound Orchestra-&V",          IDM_SOUNDORCHESTRAV
+            MENUITEM "Sound &Blaster 16",           IDM_SB16
             MENUITEM "&AMD-98",                     IDM_AMD98
             MENUITEM "&JastSound",                  IDM_JASTSOUND
             MENUITEM SEPARATOR

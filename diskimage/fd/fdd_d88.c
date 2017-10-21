@@ -489,15 +489,16 @@ BRESULT fdd_readid_d88(FDDFILE fdd) {
 			/* 170101 ST modified to work on Windows 9x/2000 form ... */
 			if (++fdc.crcn >= sectors) {
 				fdc.crcn = 0;
-				if(fdc.mt) {
-					fdc.hd ^= 1;
-					if (fdc.hd == 0) {
-						fdc.treg[fdc.us]++;
-					}
-				}
-				else {
-					fdc.treg[fdc.us]++;
-				}
+				/* np21w rev36 removed */
+				//if(fdc.mt) {
+				//	fdc.hd ^= 1;
+				//	if (fdc.hd == 0) {
+				//		fdc.treg[fdc.us]++;
+				//	}
+				//}
+				//else {
+				//	fdc.treg[fdc.us]++;
+				//}
 			}
 			fdc.C = fdc.treg[fdc.us];
 			fdc.H = fdc.hd;

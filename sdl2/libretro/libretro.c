@@ -880,7 +880,7 @@ void retro_set_environment(retro_environment_t cb)
       { "np2_skipline" , "Skipline Revisions; Full 255 lines|ON|OFF" },
       { "np2_realpal" , "Real Palettes; OFF|ON" },
       { "np2_lcd" , "LCD; OFF|ON" },
-      { "np2_SNDboard" , "Sound Board (Restart); PC9801-86|PC9801-26K + 86|PC9801-86 + Chibi-oto|PC9801-118|Speak Board|Spark Board|Sound Orchestra|Sound Orchestra-V|AMD-98|Otomi-chanx2|Otomi-chanx2 + 86|None|PC9801-14|PC9801-26K" },
+      { "np2_SNDboard" , "Sound Board (Restart); PC9801-86|PC9801-26K + 86|PC9801-86 + Chibi-oto|PC9801-118|PC9801-86 + Mate-X PCM(B460)|Mate-X PCM(B460)|Chibi-oto|Speak Board|Spark Board|Sound Orchestra|Sound Orchestra-V|Sound Blaster 16|AMD-98|Otomi-chanx2|Otomi-chanx2 + 86|None|PC9801-14|PC9801-26K" },
       { "np2_jast_snd" , "JastSound; OFF|ON" },
       { "np2_usefmgen" , "Sound Generator; fmgen|Default" },
       { "np2_volume_F" , "Volume FM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
@@ -888,6 +888,7 @@ void retro_set_environment(retro_environment_t cb)
       { "np2_volume_A" , "Volume ADPCM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
       { "np2_volume_P" , "Volume PCM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
       { "np2_volume_R" , "Volume RHYTHM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
+      { "np2_volume_C" , "Volume CD-DA; 128|136|144|154|160|168|196|184|192|200|208|216|224|232|240|248|255|0|8|16|24|32|40|48|56|64|72|80|88|96|104|112|120" },
       { "np2_Seek_Snd" , "Floppy Seek Sound; OFF|ON" },
       { "np2_Seek_Vol" , "Volume Floppy Seek; 80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76" },
       { "np2_BEEP_vol" , "Volume Beep; 3|0|1|2" },
@@ -1008,6 +1009,10 @@ static void update_variables(void)
          np2cfg.SOUND_SW = 0x14;
       else if (strcmp(var.value, "PC9801-118") == 0)
          np2cfg.SOUND_SW = 0x08;
+      else if (strcmp(var.value, "PC9801-86 + Mate-X PCM(B460)") == 0)
+         np2cfg.SOUND_SW = 0x64;
+      else if (strcmp(var.value, "Mate-X PCM(B460)") == 0)
+         np2cfg.SOUND_SW = 0x60;
       else if (strcmp(var.value, "Speak Board") == 0)
          np2cfg.SOUND_SW = 0x20;
       else if (strcmp(var.value, "Spark Board") == 0)
@@ -1016,6 +1021,8 @@ static void update_variables(void)
          np2cfg.SOUND_SW = 0x32;
       else if (strcmp(var.value, "Sound Orchestra-V") == 0)
          np2cfg.SOUND_SW = 0x82;
+      else if (strcmp(var.value, "Sound Blaster 16") == 0)
+         np2cfg.SOUND_SW = 0x41;
       else if (strcmp(var.value, "AMD-98") == 0)
          np2cfg.SOUND_SW = 0x80;
       else if (strcmp(var.value, "Otomi-chanx2") == 0)
@@ -1112,6 +1119,15 @@ static void update_variables(void)
       if(g_opna[0].fmgen)
          OPNA_SetVolumeRhythmTotal(g_opna[0].fmgen, pow((double)np2cfg.vol_rhythm / 128, 0.12) * (20 + 192) - 192);
 #endif	/* defined(SUPPORT_FMGEN) */
+   }
+
+   var.key = "np2_volume_C";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      np2cfg.davolume = atoi(var.value);
+      rhythm_setvol(np2cfg.davolume);
    }
 
    var.key = "np2_Seek_Snd";

@@ -14,7 +14,7 @@
 
 enum {
 	DMAEXT_START		= 0,
-	DMAEXT_END			= 1,
+	DMAEXT_END		= 1,
 	DMAEXT_BREAK		= 2,
 
 	DMA_INITSIGNALONLY	= 1,
@@ -51,6 +51,9 @@ typedef struct {
 } DMAPROC;
 
 typedef struct {
+	UINT32 startaddr;
+	UINT32 lastaddr;
+	UINT16 startcount;
 	union {
 		UINT8	b[4];
 		UINT16	w[2];
@@ -83,7 +86,7 @@ typedef struct {
 } DMADEV;
 
 typedef struct {
-	_DMACH	dmach[4];
+	_DMACH	dmach[8];
 	int		lh;
 	UINT8	work;
 	UINT8	working;
@@ -108,7 +111,6 @@ void dmac_extbind(void);
 
 void dmac_check(void);
 UINT dmac_getdatas(DMACH dmach, UINT8 *buf, UINT size);
-
 void dmac_procset(void);
 void dmac_attach(REG8 device, REG8 channel);
 void dmac_detach(REG8 device);

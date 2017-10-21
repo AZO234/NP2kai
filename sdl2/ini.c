@@ -548,6 +548,19 @@ static const INITBL iniitem[] = {
 	{"SCSIHDD2", INITYPE_STR,	np2cfg.scsihdd[2],	MAX_PATH},
 	{"SCSIHDD3", INITYPE_STR,	np2cfg.scsihdd[3],	MAX_PATH},
 #endif
+#if defined(SUPPORT_IDEIO)
+	{"HDD3FILE", INIRO_STR,	np2cfg.sasihdd[2],	MAX_PATH},
+	{"HDD4FILE", INIRO_STR,	np2cfg.sasihdd[3],	MAX_PATH},
+	{"HDD1TYPE", INIRO_UINT8,	&np2cfg.idetype[2],	0},
+	{"HDD2TYPE", INIRO_UINT8,	&np2cfg.idetype[2],	0},
+	{"HDD3TYPE", INIRO_UINT8,	&np2cfg.idetype[2],	0},
+	{"HDD4TYPE", INIRO_UINT8,	&np2cfg.idetype[2],	0},
+	{"IDE_BIOS", INIRO_BOOL,	&np2cfg.idebios,	0},
+	{"AIDEBIOS", INIRO_BOOL,	&np2cfg.autoidebios,	0},
+	{"IDERWAIT", INITYPE_UINT32,	&np2cfg.iderwait,	0},
+	{"IDEWWAIT", INITYPE_UINT32,	&np2cfg.idewwait,	0},
+	{"IDEMWAIT", INITYPE_UINT32,	&np2cfg.idemwait,	0},
+#endif
 	{"SampleHz", INITYPE_UINT32,	&np2cfg.samplingrate,	0},
 	{"Latencys", INITYPE_UINT16,	&np2cfg.delayms,	0},
 	{"SNDboard", INITYPE_HEX8,	&np2cfg.SOUND_SW,	0},
@@ -569,7 +582,7 @@ static const INITBL iniitem[] = {
 	{"volume_A", INIMAX_UINT8,	&np2cfg.vol_adpcm,	128},
 	{"volume_P", INIMAX_UINT8,	&np2cfg.vol_pcm,	128},
 	{"volume_R", INIMAX_UINT8,	&np2cfg.vol_rhythm,	128},
-	{"volume_C", INIMAX_UINT8,	&np2cfg.vol_cdda,	128},
+	{"DAVOLUME", INIMAX_UINT8,	&np2cfg.davolume,	128},
 
 	{"usefmgen", INITYPE_BOOL,	&np2cfg.usefmgen,	0},
 

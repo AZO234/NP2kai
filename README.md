@@ -1,6 +1,6 @@
-Neko Project II 0.86 kai rev.13
+Neko Project II 0.86 kai rev.14
 ===
-Oct 2, 2017  
+Oct 21, 2017  
 
 Build SDL2 port
 ---
@@ -300,6 +300,14 @@ I/O:0x00D0
 
 Release
 ---
+* Oct 21, 2017 (rev.14)
+	- Merge NP21/w rev.36
+		* Mate-X PCM  
+		* Sound Blaster 16  
+		* OPL3 (MAME codes is GPL licence)  
+		* Auto IDE BIOS  
+* Oct 16, 2017 (rev.13)
+	- Refix BEEP PCM
 * Oct 2, 2017 (rev.13)
 	- remove CDDA mod
 * Sep 20, 2017
@@ -316,7 +324,6 @@ Release
 	- [libretro] state save/load
 * Aug 23, 2017 (rev.10)
 	- Merge NP21/w rev.35 beta1
-		* SB16  
 * Aug 22, 2017
 	- Merge 私家  
 		Merged  

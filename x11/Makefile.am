@@ -127,10 +127,13 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/cbus/board26k.c \
 		$(real_topsrcdir)/cbus/board86.c \
 		$(real_topsrcdir)/cbus/boardpx.c \
+		$(real_topsrcdir)/cbus/boardsb16.c \
 		$(real_topsrcdir)/cbus/boardso.c \
 		$(real_topsrcdir)/cbus/boardspb.c \
 		$(real_topsrcdir)/cbus/boardx2.c \
 		$(real_topsrcdir)/cbus/cs4231io.c \
+		$(real_topsrcdir)/cbus/ct1741io.c \
+		$(real_topsrcdir)/cbus/ct1745io.c \
 		$(real_topsrcdir)/cbus/pcm86io.c \
 		$(real_topsrcdir)/cbus/sasiio.c \
 		$(real_topsrcdir)/cbus/scsiio.c \
@@ -250,6 +253,9 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/sound/fmgen/fmgen_opm.cpp \
 		$(real_topsrcdir)/sound/fmgen/fmgen_opna.cpp \
 		$(real_topsrcdir)/sound/fmgen/fmgen_psg.cpp \
+		$(real_topsrcdir)/sound/mame/fmopl.c \
+		$(real_topsrcdir)/sound/mame/ymdeltat.c \
+		$(real_topsrcdir)/sound/mame/ymf262.c \
 		\
 		$(real_topsrcdir)/vram/vram.c \
 		$(real_topsrcdir)/vram/scrndraw.c \
@@ -298,7 +304,7 @@ AM_CPPFLAGS=	-I$(real_topsrcdir) \
 		-I$(real_topsrcdir)/vram \
 		$(GTK_CFLAGS) $(SDL_CFLAGS) $(LIBUSB1_CFLAGS) \
 		$(X11_CFLAGS) $(XEXT_CFLAGS) \
-		-DSUPPORT_LARGE_HDD -DSUPPORT_VPCVHD -DSUPPORT_KAI_IMAGES -DHOOK_SYSKEY -DALLOW_MULTIRUN -DSUPPORT_NET -DSUPPORT_LGY98
+		-DSUPPORT_LARGE_HDD -DSUPPORT_VPCVHD -DSUPPORT_KAI_IMAGES -DHOOK_SYSKEY -DALLOW_MULTIRUN -DSUPPORT_NET -DSUPPORT_LGY98 -DUSE_MAME -DSUPPORT_SOUND_SB16
 if BUILD_ALL
 AM_CPPFLAGS+=	-DX11_BUILD_ALL
 endif

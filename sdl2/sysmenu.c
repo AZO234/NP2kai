@@ -388,6 +388,16 @@ static void sys_cmd(MENUID id) {
 			update |= SYS_UPDATECFG;
 			break;
 
+		case MID_PC9801_86_MX:
+			np2cfg.SOUND_SW = 0x64;
+			update |= SYS_UPDATECFG;
+			break;
+
+		case MID_PC9801_MX:
+			np2cfg.SOUND_SW = 0x60;
+			update |= SYS_UPDATECFG;
+			break;
+
 		case MID_SPEAKBOARD:
 			np2cfg.SOUND_SW = 0x20;
 			update |= SYS_UPDATECFG;
@@ -405,6 +415,11 @@ static void sys_cmd(MENUID id) {
 
 		case MID_SOUNDORCHESTRAV:
 			np2cfg.SOUND_SW = 0x82;
+			update |= SYS_UPDATECFG;
+			break;
+
+		case MID_SB16:
+			np2cfg.SOUND_SW = 0x41;
 			update |= SYS_UPDATECFG;
 			break;
 

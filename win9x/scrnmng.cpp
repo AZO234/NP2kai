@@ -561,9 +561,9 @@ BRESULT scrnmng_create(UINT8 scrnmode) {
 			}
 		}
 	}
-	if ((r = DirectDrawCreate(&devguid, &ddraw.ddraw1, NULL)) != DD_OK) {
+	if ((r = DirectDrawCreate(devlpguid, &ddraw.ddraw1, NULL)) != DD_OK) {
 		// ƒvƒ‰ƒCƒ}ƒŠ‚ÅÄ’§í
-		if (DirectDrawCreate(NULL, &ddraw.ddraw1, NULL) != DD_OK) {
+		if (DirectDrawCreate(np2oscfg.emuddraw ? (LPGUID)DDCREATE_EMULATIONONLY : NULL, &ddraw.ddraw1, NULL) != DD_OK) {
 			goto scre_err;
 		}
 	}

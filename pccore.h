@@ -53,6 +53,7 @@ enum tagSoundId
 	SOUNDID_SB16				= 0x41,		/*!< Sound Blaster 16 */
 	SOUNDID_MATE_X_PCM			= 0x60,		/*!< Mate-X PCM */
 	SOUNDID_PC_9801_86_WSS		= 0x64,		/*!< PC-9801-86 + Mate-X PCM(B460) */
+	SOUNDID_PC_9801_86_118		= 0x68,		/*!< PC-9801-86 + PC-9801-118(B460) */
 	SOUNDID_AMD98				= 0x80,		/*!< AMD-98 */
 	SOUNDID_SOUNDORCHESTRA		= 0x32,		/*!< SOUND ORCHESTRA */
 	SOUNDID_SOUNDORCHESTRAV		= 0x82,		/*!< SOUND ORCHESTRA-V */
@@ -131,7 +132,6 @@ struct tagNP2Config
 	UINT8	vol_adpcm;
 	UINT8	vol_pcm;
 	UINT8	vol_rhythm;
-	UINT8	vol_cdda;	//	’Ç‰Á(kaiE)
 
 	UINT8	mpuenable;
 	UINT8	mpuopt;
@@ -160,6 +160,7 @@ struct tagNP2Config
 	UINT8	idetype[4];												// ver0.86w
 	OEMCHAR	idecd[4][MAX_PATH];										// ver0.85w
 	UINT8	idebios;												// ver0.86w rev20
+	UINT8	autoidebios;												// ver0.86w rev36
 	UINT32	iderwait; // IDE“Ç‚ÝŽæ‚è‚ÌŠ„‚èž‚Ý’x‰„ŽžŠÔ(clock)B  np21w ver0.86 rev19
 	UINT32	idewwait; // IDE‘‚«ž‚Ý‚ÌŠ„‚èž‚Ý’x‰„ŽžŠÔ(clock)B  np21w ver0.86 rev18
 	UINT32	idemwait; // IDE BIOS‚ª‚ ‚éê‡‚ÌŠ„‚èž‚Ý’x‰„Å¬’l  np21w ver0.86 rev26

@@ -45,6 +45,7 @@ private:
 	CComboData m_cmbsm;			//!< セカンダリ マスタ
 	CComboData m_cmbss;			//!< セカンダリ スレーブ
 	CWndProc m_chkidebios;		//!< Use IDE BIOS
+	CWndProc m_chkautoidebios;	//!< Auto IDE BIOS
 	CWndProc m_nudrwait;		//!< 割り込み（書き込み）ディレイ
 	CWndProc m_nudwwait;		//!< 割り込み（書き込み）ディレイ
 };
@@ -100,12 +101,22 @@ BOOL CIdeDlg::OnInitDialog()
 	_stprintf(numbuf, _T("%d"), np2cfg.idewwait);
 	m_nudwwait.SetWindowTextW(numbuf);
 	
+	m_chkautoidebios.SubclassDlgItem(IDC_AUTOIDEBIOS, this);
+	if(np2cfg.autoidebios){
+		m_chkautoidebios.SendMessage(BM_SETCHECK , BST_CHECKED , 0);
+	}else{
+		m_chkautoidebios.SendMessage(BM_SETCHECK , BST_UNCHECKED , 0);
+	}
+	
 	m_chkidebios.SubclassDlgItem(IDC_USEIDEBIOS, this);
-	if(np2cfg.idebios)
+	if(np2cfg.idebios){
 		m_chkidebios.SendMessage(BM_SETCHECK , BST_CHECKED , 0);
-	else
+		m_chkautoidebios.EnableWindow(TRUE);
+	}else{
 		m_chkidebios.SendMessage(BM_SETCHECK , BST_UNCHECKED , 0);
-
+		m_chkautoidebios.EnableWindow(FALSE);
+	}
+	
 	m_cmbpm.SetFocus();
 
 	return FALSE;
@@ -163,6 +174,11 @@ void CIdeDlg::OnOK()
 		np2cfg.idebios = (m_chkidebios.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0);
 		update |= SYS_UPDATECFG;
 	}
+	if (np2cfg.autoidebios != (m_chkautoidebios.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0))
+	{
+		np2cfg.autoidebios = (m_chkautoidebios.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0);
+		update |= SYS_UPDATECFG;
+	}
 
 	sysmng_update(update);
 
@@ -183,6 +199,9 @@ BOOL CIdeDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 		case IDC_IDE2TYPE:
 		case IDC_IDE3TYPE:
 		case IDC_IDE4TYPE:
+			return TRUE;
+		case IDC_USEIDEBIOS:
+			m_chkautoidebios.EnableWindow((m_chkidebios.SendMessage(BM_GETCHECK , 0 , 0) ? TRUE : FALSE));
 			return TRUE;
 	}
 	return FALSE;

@@ -69,6 +69,10 @@ typedef struct
 	SINT32	sintable[SIN_ENT];
 	SINT32	envtable[EVC_ENT];
 	SINT32	envcurve[EVC_ENT*2 + 1];
+	
+#if defined(SUPPORT_FMGEN)
+	UINT8 usefmgen;
+#endif	/* SUPPORT_FMGEN */
 } OPNCFG;
 
 extern OPNCFG opncfg;

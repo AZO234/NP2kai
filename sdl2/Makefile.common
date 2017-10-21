@@ -17,6 +17,7 @@ INCFLAGS := -I$(NP2_PATH) \
 	-I$(NP2_PATH)/mem \
 	-I$(NP2_PATH)/sound \
 	-I$(NP2_PATH)/sound/vermouth \
+	-I$(NP2_PATH)/sound/mame \
 	-I$(NP2_PATH)/sound/fmgen \
 	-I$(NP2_PATH)/trap \
 	-I$(NP2_PATH)/vram \
@@ -64,6 +65,7 @@ SOURCES_C := 		$(NP2_PATH)/calendar.c \
 		$(NP2_PATH)/sdl2/trace.c \
 		$(wildcard $(NP2_PATH)/sound/*.c) \
 		$(wildcard $(NP2_PATH)/sound/getsnd/*.c) \
+		$(wildcard $(NP2_PATH)/sound/mame/*.c) \
 		$(wildcard $(NP2_PATH)/sound/vermouth/*.c) \
 		$(wildcard $(NP2_PATH)/trap/*.c) \
 		$(wildcard $(NP2_PATH)/vram/*.c) \

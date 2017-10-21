@@ -13,36 +13,6 @@
  * Creative SoundBlaster16 mixer CT1745
  */
 
-enum {
-	MIXER_RESET = 0x00,
-	MIXER_VOL_START = 0x30,
-	MIXER_VOL_END = 0x47,
-	MIXER_MASTER_LEFT = 0x0,
-	MIXER_MASTER_RIGHT,
-	MIXER_VOC_LEFT,
-	MIXER_VOC_RIGHT,
-	MIXER_MIDI_LEFT,
-	MIXER_MIDI_RIGHT,
-	MIXER_CD_LEFT,
-	MIXER_CD_RIGHT,
-	MIXER_LINE_LEFT,
-	MIXER_LINE_RIGHT,
-	MIXER_MIC,
-	MIXER_PCSPEAKER,
-	MIXER_OUT_SW,
-	MIXER_IN_SW_LEFT,
-	MIXER_IN_SW_RIGHT,
-	MIXER_IN_GAIN_LEFT,
-	MIXER_IN_GAIN_RIGHT,
-	MIXER_OUT_GAIN_LEFT,
-	MIXER_OUT_GAIN_RIGHT,
-	MIXER_AGC,
-	MIXER_TREBLE_LEFT,
-	MIXER_TREBLE_RIGHT,
-	MIXER_BASS_LEFT,
-	MIXER_BASS_RIGHT
-};
-
 static void ct1745_mixer_reset() {
 	ZeroMemory(g_sb16.mixreg, sizeof(g_sb16.mixreg));
 
@@ -70,7 +40,7 @@ static void IOOUTCALL sb16_o2500(UINT port, REG8 dat) {
 
 	if (g_sb16.mixsel >= MIXER_VOL_START &&
 		g_sb16.mixsel <= MIXER_VOL_END) {
-		g_sb16.mixreg[g_sb16.mixsel - MIXER_VOL_START] = dat;
+		g_sb16.mixreg[g_sb16.mixsel] = dat;
 		return;
 	}
 

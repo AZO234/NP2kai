@@ -8,7 +8,7 @@
 #include	"fmboard.h"
 
 
-static const UINT8 cs4231dma[] = {0xff,0x00,0x01,0x03,0xff,0xff,0xff,0xff};
+static const UINT8 cs4231dma[] = {0xff,0x00,0x01,0x03,0xff,0x00,0x01,0x03};
 static const UINT8 cs4231irq[] = {0xff,0x03,0x06,0x0a,0x0c,0xff,0xff,0xff};
 
 
@@ -68,6 +68,8 @@ static REG8 IOINPCALL csctrl_ic2d(UINT port) {
 	return((REG8)(cs4231.port[num] >> 8));
 }
 REG8 sa3_control;
+REG8 sa3_control;
+UINT8 sa3data[256];
 static void IOOUTCALL csctrl_o480(UINT port, REG8 dat) {
 
 	sa3_control = dat;
@@ -75,22 +77,47 @@ static void IOOUTCALL csctrl_o480(UINT port, REG8 dat) {
 
 }
 static REG8 IOINPCALL csctrl_i480(UINT port) {
-
+	TRACEOUT(("read %x",port));
 	return sa3_control;
 	(void)port;
 
 }
-
-static REG8 IOINPCALL csctrl_i481(UINT port) {
-
+static void IOOUTCALL csctrl_o481(UINT port, REG8 dat) {
+	sa3data[sa3_control] = dat;
 	(void)port;
-	if(sa3_control == 0x17) return 0;
-	if(sa3_control == 0x18) return 0;
-	else return 0;
+
+}
+static REG8 IOINPCALL csctrl_i481(UINT port) {
+	TRACEOUT(("read %x",port));
+	(void)port;
+	return sa3data[sa3_control];
+}
+REG8 f4a_control;
+UINT8 f4bdata[256];
+static void IOOUTCALL csctrl_of4a(UINT port, REG8 dat) {
+	f4a_control = dat;
+	(void)port;
+}
+
+static REG8 IOINPCALL csctrl_if4a(UINT port) {
+	TRACEOUT(("read %x",port));
+	return f4a_control;
+	(void)port;
+}
+
+static void IOOUTCALL csctrl_of4b(UINT port, REG8 dat) {
+	f4bdata[f4a_control] = dat;
+	(void)port;
+}
+
+static REG8 IOINPCALL csctrl_if4b(UINT port) {
+	TRACEOUT(("read %x",port));
+	(void)port;
+	return f4bdata[f4a_control];
 }
 
 static REG8 IOINPCALL csctrl_iac6d(UINT port) {
-
+	TRACEOUT(("read %x",port));
 	(void)port;
 	return (0x54);
 }
@@ -101,43 +128,47 @@ static REG8 IOINPCALL csctrl_iac6e(UINT port) {
 	(void)port;
 	return 0;
 }
-static void IOOUTCALL csctrl_o51ee(UINT port, REG8 dat) {
+
+static REG8 IOINPCALL srnf_i51ee(UINT port) {
+	TRACEOUT(("read %x",port));
 	(void)port;
-}
-static void IOOUTCALL csctrl_o51ef(UINT port, REG8 dat) {
-	(void)port;
-}
-static void IOOUTCALL csctrl_o56ef(UINT port, REG8 dat) {
-	(void)port;
-}
-static void IOOUTCALL csctrl_o57ef(UINT port, REG8 dat) {
-	(void)port;
-}
-static void IOOUTCALL csctrl_o5bef(UINT port, REG8 dat) {
-	(void)port;
+	return (0x02);
 }
 
-static REG8 IOINPCALL csctrl_i51ee(UINT port) {
+static REG8 IOINPCALL srnf_i51ef(UINT port) {
+	TRACEOUT(("read %x",port));
 	(void)port;
-	return 0x1;//0b1;
-}
-static REG8 IOINPCALL csctrl_i51ef(UINT port) {
-	(void)port;
-	return (0xc2);
-}
-static REG8 IOINPCALL csctrl_i56ef(UINT port) {
-	(void)port;
-	return 0x10;//(0b00010000);
-}
-static REG8 IOINPCALL csctrl_i57ef(UINT port) {
-	(void)port;
-	return 0xc0;//(0b11000000);
-}
-static REG8 IOINPCALL csctrl_i5bef(UINT port) {
-	(void)port;
-	return 0x0a;//(0b00001010);
+	return 0xc2;
 }
 
+static REG8 IOINPCALL srnf_i56ef(UINT port) {
+	TRACEOUT(("read %x",port));
+	(void)port;
+	return (0x9f);
+}
+static REG8 IOINPCALL srnf_i57ef(UINT port) {
+	TRACEOUT(("read %x",port));
+	(void)port;
+	return (0xc0);
+}
+
+static REG8 IOINPCALL srnf_i59ef(UINT port) {
+	TRACEOUT(("read %x",port));
+	(void)port;
+	return 0x3;
+}
+
+static REG8 IOINPCALL srnf_i5bef(UINT port) {
+	TRACEOUT(("read %x",port));
+	(void)port;
+	return (0x0e);
+}
+	
+static REG8 IOINPCALL ifab(UINT port) {
+	TRACEOUT(("read %x",port));
+	(void)port;
+	return (0);
+}
 
 
 // ----
@@ -145,14 +176,6 @@ static REG8 IOINPCALL csctrl_i5bef(UINT port) {
 void cs4231io_reset(void) {
 
 	cs4231.enable = 1;
-	if(g_nSoundID==SOUNDID_PC_9801_86_WSS){
-		cs4231.adrs = 0x0a;////0b00 001 010  INT0 DMA1
-	}else{
-		cs4231.adrs = 0x22;////0b00 100 010  INT5 DMA1
-	}
-	cs4231.dmairq = cs4231irq[(cs4231.adrs >> 3) & 7];
-	cs4231.dmach = cs4231dma[cs4231.adrs & 7];
-	
 /*		7	未使用
 	R/W	6	不明
 	R/W	5-3	PCM音源割り込みアドレス
@@ -168,13 +191,16 @@ void cs4231io_reset(void) {
 			011b= DMA #3
 			100b～101b= 未定義
 			111b= DMAを使用しない
-*/			
-	if ((cs4231.adrs & 7) == 0x1/*0b001*/) cs4231.dmach = 0x00;
-	if ((cs4231.adrs & 7) == 0x2/*0b010*/) cs4231.dmach = 0x01;
-	if ((cs4231.adrs & 7) == 0x3/*0b011*/) cs4231.dmach = 0x03;
-	if ((cs4231.adrs & 7) == 0x6/*0b110*/) cs4231.dmach = 0x01;//YMF-701,715
-	if ((cs4231.adrs & 7) == 0x0/*0b000*/) cs4231.dmach = 0x01;//YMF-701,715
-	if ((cs4231.adrs & 7) == 0x7/*0b111*/) cs4231.dmach = 0xff;
+*/		
+	if(g_nSoundID==SOUNDID_PC_9801_86_WSS){
+		cs4231.adrs = 0x0a;////0b00 001 010  INT0 DMA1
+	}else if(g_nSoundID==SOUNDID_MATE_X_PCM){
+		cs4231.adrs = 0x22;////0b00 100 010  INT0 DMA1
+	}else{
+		cs4231.adrs = 0x23;////0b00 100 011  INT5 DMA3
+	}
+	cs4231.dmairq = cs4231irq[(cs4231.adrs >> 3) & 7];
+	cs4231.dmach = cs4231dma[cs4231.adrs & 7];
 	if (cs4231.dmach != 0xff) {
 		dmac_attach(DMADEV_CS4231, cs4231.dmach);
 	}
@@ -186,38 +212,14 @@ void cs4231io_reset(void) {
 	}
 	cs4231.port[2] = 0x0f48; // WSS FIFO port
 	cs4231.port[4] = 0x0188; // OPN port
-	cs4231.port[5] = 0x0f4a;  // canbe mixer i/o port?
-/*Port	　	　bit　	
-0F4Ah	　R/W	　7-0 	音量制御する周辺デバイスＩＤ
-PnP により移動可			　00h: ？
-			　01h: OPNA ON/OFF???
-			　02h: 内蔵モデム(ステレオ)？ 左音量
-			　03h: 内蔵モデム(ステレオ)？ 右音量
-			　30h: FM音源 左音量
-			　31h: FM音源 右音量
-			　32h: CD-ROM 左音量
-			　33h: CD-ROM 右音量
-			　34h: ＴＶ 左音量
-			　35h: ＴＶ 右音量
-			　36h: 内蔵モデム(モノラル)？
-			　
-0F4Bh	　R/W	　7　 	ミュート設定
-PnP により移動可			　0:ミュートしない
-			　1:ミュートする
-		　6-5	未使用
-		　4-0	音量設定
-			　00000b:最大
-　　（
-　　 ）
-　11111b:最小
-*/
+	cs4231.port[5] = 0x0f4a; // canbe mixer i/o port?
 	cs4231.port[6] = 0x548e; // YMF-701/715?
 	cs4231.port[8] = 0x1480; // Joystick
 	cs4231.port[9] = 0x1488; // OPL3
 	cs4231.port[10] = 0x148c; // MIDI
-	cs4231.port[11] = 0x0480; //9801-118 control? OPLという情報もありだが…
+	cs4231.port[11] = 0x0480; //9801-118 control?
 	cs4231.port[14] = 0x148e; //9801-118 config 
-	cs4231.port[15] = 0xffff;
+	cs4231.port[15] = 0xa460; //空いてるのでこっちを利用
 
 	TRACEOUT(("CS4231 - IRQ = %d", cs4231.dmairq));
 	TRACEOUT(("CS4231 - DMA channel = %d", cs4231.dmach));
@@ -240,7 +242,16 @@ PnP により移動可			　0:ミュートしない
 	cs4231.reg.monoinput=0xc0;//1a from PC-9821Nr166
 	cs4231.reg.reserved3=0x80; //1b from PC-9821Nr166
 	cs4231.reg.reserved4=0x80; //1d from PC-9821Nr166
-	cs4231.intflag = 0x22;// 0x22??
+	cs4231.intflag = 0xcc;
+
+	sa3data[7] = 7;
+	sa3data[8] = 7;
+	switch (cs4231.dmairq){
+		case 0x0c:f4bdata[1] = 0;break;
+		case 0x0a:f4bdata[1] = 0x02;break;
+		case 0x03:f4bdata[1] = 0x03;break;
+		case 0x05:f4bdata[1] = 0x08;break;
+	}
 }
 
 void cs4231io_bind(void) {
@@ -259,39 +270,37 @@ void cs4231io_bind(void) {
 		iocore_attachinp(0xac6d, csctrl_iac6d);
 		iocore_attachinp(0xac6e, csctrl_iac6e);
 
-
+/*　必要な時だけ有効にすべき
 //WSN-F???
-		iocore_attachout(0x51ee, csctrl_o51ee);
-		iocore_attachout(0x51ef, csctrl_o51ef);
-		iocore_attachout(0x56ef, csctrl_o56ef);
-		iocore_attachout(0x57ef, csctrl_o57ef);
-		iocore_attachout(0x5bef, csctrl_o5bef);
-		iocore_attachinp(0x51ee, csctrl_i51ee);
-		iocore_attachinp(0x51ef, csctrl_i51ef);
-		iocore_attachinp(0x56ef, csctrl_i56ef);
-		iocore_attachinp(0x57ef, csctrl_i57ef);
-		iocore_attachinp(0x5bef, csctrl_i5bef);
+	iocore_attachinp(0x51ee, srnf_i51ee);//7番めに読まれる
+	iocore_attachinp(0x51ef, srnf_i51ef);//1番最初にC2を返す
+//	iocore_attachinp(0x52ef, srnf_i52ef);//f40等を読み書きしたあとここを読んでエラー
+	iocore_attachinp(0x56ef, srnf_i56ef);//2番めに読まれて割り込み等の設定？　4番めに2回読まれ直す
+	iocore_attachinp(0x57ef, srnf_i57ef);//5番めに読まれる
+	iocore_attachinp(0x59ef, srnf_i59ef);//3番めに読まれて何か調査 ３と４でとりあえず通る
+//	iocore_attachinp(0x5aef, srnf_i5aef);//8番めに読まれて終わり
+	iocore_attachinp(0x5bef, srnf_i5bef);//6番めに読まれる
+
+*/
 	}
 }
-
+int acicounter;
 void IOOUTCALL cs4231io0_w8(UINT port, REG8 value) {
 
 	switch(port - cs4231.port[0]) {
 		case 0x00:
-			cs4231.adrs = value;
+			cs4231.adrs = value &= ~0x40;
 			cs4231.dmairq = cs4231irq[(value >> 3) & 7];
 			cs4231.dmach = cs4231dma[value & 7];
-			if ((value & 7) == 0x1/*0b001*/) cs4231.dmach = 0x00;
-			if ((value & 7) == 0x2/*0b010*/) cs4231.dmach = 0x01;
-			if ((value & 7) == 0x3/*0b011*/) cs4231.dmach = 0x03;
-			if ((value & 7) == 0x6/*0b110*/) cs4231.dmach = 0x01;// YMF-701,715
-			if ((value & 7) == 0x0/*0b000*/) cs4231.dmach = 0x01;// YMF-701.715
-			if ((value & 7) == 0x7/*0b111*/) cs4231.dmach = 0xff;
 			dmac_detach(DMADEV_CS4231);
 			if (cs4231.dmach != 0xff) {
+			if ((cs4231.adrs >>2) & 1){
+				if (cs4231.dmach == 0)dmac_attach(DMADEV_NONE, 1);
+				else dmac_attach(DMADEV_NONE, 0);
+				}
 				dmac_attach(DMADEV_CS4231, cs4231.dmach);
 #if 0
-				if (cs4231.sdc_enable) {
+				if (cs4231.reg.iface & SDC) {
 					dmac.dmach[cs4231.dmach].ready = 1;
 					dmac_check();
 				}
@@ -299,50 +308,58 @@ void IOOUTCALL cs4231io0_w8(UINT port, REG8 value) {
 			}
 			break;
 			
-		case 0x04:
-			cs4231.index = value;
-			TRACEOUT(("index %x", cs4231.index & 0x1f));
+		case 0x04://Index Address
+			if ( !(cs4231.index & MCE) && (value & MCE) && (cs4231.reg.iface & (CAL0|CAL1) ) ) acicounter = 1;
+			if (!(cs4231.index & MCE)) cs4231.intflag |=(PRDY|CRDY);
+			cs4231.index = value & ~(INIT|TRD);
 			break;
-		case 0x05:
+		case 0x05://Index_Data
 			cs4231_control(cs4231.index & 0x1f, value);
-			TRACEOUT(("register %x", value ));
 			break;
 
-		case 0x06:
-			pic_resetirq(cs4231.dmairq);
-			cs4231.intflag &= 0xfe;
-			cs4231.reg.featurestatus &= 0x8f;
-			//TRACEOUT(("status %x", value));
+		case 0x06://Status
+			if (cs4231.intflag & INt) {
+				pic_resetirq(cs4231.dmairq);
+			}
+			cs4231.intflag &= ~INt;
+			cs4231.reg.featurestatus &= ~(PI|TI|CI);
 			break;
 
 		case 0x07:
 			cs4231_datasend(value);
-//			TRACEOUT(("PCM %x", value));
 			break;
 	}
 }
 
 REG8 IOINPCALL cs4231io0_r8(UINT port) {
 
-	REG8 ret;
 	switch(port - cs4231.port[0]) {
 		case 0x00:
 			return(cs4231.adrs);
 		case 0x03:
 			return(0x04);
 //			return(0x05);//PC-9821Nr
-		case 0x04:
-			TRACEOUT(("index r 0x%02x", cs4231.index & 0x7f));
-			if (cs4231.reg.mode_id & 0x40) return (cs4231.index &= 0x0f);
-			else return (cs4231.index &= 0x1f);
-//			return(cs4231.index & 0x7f);
-		case 0x05:
-			if ((cs4231.index & 0x1f) == 0x0c) return (cs4231.reg.mode_id |= 0x8a); //why 8a???
+		case 0x04://Index address
+			return(cs4231.index & ~(INIT|TRD|MCE));
+		case 0x05://Index Data
+			switch (cs4231.index & 0x1f){
+				case 0x0b://featurestatus
+					if(acicounter){
+							TRACEOUT(("acicounter"));
+							acicounter -= 1;
+							cs4231.reg.errorstatus |= ACI;
+					}else cs4231.reg.errorstatus &= ~ACI;
+					break;	
+				case 0x0d:return 0;					
+				default:
+					break;
+			}
 			return(*(((UINT8 *)(&cs4231.reg)) + (cs4231.index & 0x1f)));
 		case 0x06:
-			TRACEOUT(("status r 0x%02x", cs4231.intflag));
-			pic_resetirq(cs4231.dmairq);
-			return(cs4231.intflag);
+			if (cs4231.reg.errorstatus & (1 << 6)) cs4231.intflag |= SER;
+			return (cs4231.intflag);
+		case 0x07:
+			return (0x80);
 	}
 	return(0);
 }
@@ -352,6 +369,22 @@ void IOOUTCALL cs4231io5_w8(UINT port, REG8 value) {
 	switch(port - cs4231.port[5]) {
 		case 0x00:
 			cs4231.extindex = value;
+			break;
+
+		case 0x01:
+			switch(cs4231.extindex){
+			case 0x02: // MODEM L ?
+			case 0x03: // MODEM R ?
+			case 0x30: // FM音源 L
+			case 0x31: // FM音源 R
+			case 0x32: // CD-DA L
+			case 0x33: // CD-DA R
+			case 0x34: // TV L
+			case 0x35: // TV R
+			case 0x36: // MODEM mono ?
+				// bit7:mute, bit6,5:reserved, bit4-0:volume(00000(MAX) - 11111(MIN))
+				cs4231.devvolume[cs4231.extindex] = value;
+			}
 			break;
 	}
 }
@@ -363,8 +396,20 @@ REG8 IOINPCALL cs4231io5_r8(UINT port) {
 			return(cs4231.extindex);
 
 		case 0x01:
-			if (cs4231.extindex == 1) {
+			switch(cs4231.extindex){
+			case 1:
 				return(0);				// means opna int5 ???
+			case 0x02: // MODEM L ?
+			case 0x03: // MODEM R ?
+			case 0x30: // FM音源 L
+			case 0x31: // FM音源 R
+			case 0x32: // CD-DA L
+			case 0x33: // CD-DA R
+			case 0x34: // TV L
+			case 0x35: // TV R
+			case 0x36: // MODEM mono ?
+				// bit7:mute, bit6,5:reserved, bit4-0:volume(00000(MAX) - 11111(MIN))
+				return cs4231.devvolume[cs4231.extindex];
 			}
 			break;
 	}

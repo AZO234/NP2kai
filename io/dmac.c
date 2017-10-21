@@ -11,14 +11,14 @@
 #include	"cs4231.h"
 #include	"sasiio.h"
 
-
 void DMACCALL dma_dummyout(REG8 data) {
-
+	
+	TRACEOUT(("dma_dummyout"));
 	(void)data;
 }
 
 REG8 DMACCALL dma_dummyin(void) {
-
+	TRACEOUT(("dma_dummyin"));
 	return(0xff);
 }
 
@@ -30,10 +30,10 @@ REG8 DMACCALL dma_dummyproc(REG8 func) {
 
 static const DMAPROC dmaproc[] = {
 		{dma_dummyout,		dma_dummyin,		dma_dummyproc},		// NONE
-		{fdc_datawrite,		fdc_dataread,		fdc_dmafunc},		// 2HD
-		{fdc_datawrite,		fdc_dataread,		fdc_dmafunc},		// 2DD
+		{fdc_datawrite,		fdc_dataread,	fdc_dmafunc},		// 2HD
+		{fdc_datawrite,		fdc_dataread,	fdc_dmafunc},		// 2DD
 #if defined(SUPPORT_SASI)
-		{sasi_datawrite,	sasi_dataread,		sasi_dmafunc},		// SASI
+		{sasi_datawrite,		sasi_dataread,	sasi_dmafunc},		// SASI
 #else
 		{dma_dummyout,		dma_dummyin,		dma_dummyproc},		// SASI
 #endif
@@ -47,7 +47,8 @@ static const DMAPROC dmaproc[] = {
 
 
 // ----
-
+UINT8 bank;
+UINT8 bank2;
 void dmac_check(void) {
 
 	BOOL	workchg;
@@ -113,7 +114,6 @@ UINT dmac_getdatas(DMACH dmach, UINT8 *buf, UINT size) {
 	return(leng);
 }
 
-
 // ---- I/O
 
 static void IOOUTCALL dmac_o01(UINT port, REG8 dat) {
@@ -126,6 +126,7 @@ static void IOOUTCALL dmac_o01(UINT port, REG8 dat) {
 	dmac.lh = (UINT8)(lh ^ 1);
 	dmach->adrs.b[lh + DMA32_LOW] = dat;
 	dmach->adrsorg.b[lh] = dat;
+	dmach->startaddr = dmach->adrs.d;
 }
 
 static void IOOUTCALL dmac_o03(UINT port, REG8 dat) {
@@ -141,11 +142,26 @@ static void IOOUTCALL dmac_o03(UINT port, REG8 dat) {
 	dmach->leng.b[lh] = dat;
 	dmach->lengorg.b[lh] = dat;
 	dmac.stat &= ~(1 << ch);
+	//dmach->startcount =dmach->leng.w;
+	//dmach->lastaddr = dmach->startaddr + dmach->leng.w;
+	dmach->startcount = dmach->leng.w;
+	dmach->lastaddr = dmach->startaddr + dmach->leng.w;
 }
 
-static void IOOUTCALL dmac_o13(UINT port, REG8 dat) {
+static void IOOUTCALL dmac_o13_(UINT port, REG8 dat) {
+	if (dat& 4)
+	dmac.stat |= 1 << ((dat & 3) +4);
+	else
+	dmac.stat &= ~(1 << ((dat & 3) +4));
+	dmac.stat &=~(1 << (dat & 3));
+	dmac_check();
+	(void)port;
+}
 
+
+static void IOOUTCALL dmac_o13(UINT port, REG8 dat) {
 	dmac.dmach[dat & 3].sreq = dat;
+	dmac_check();
 	(void)port;
 }
 
@@ -177,6 +193,22 @@ static void IOOUTCALL dmac_o19(UINT port, REG8 dat) {
 static void IOOUTCALL dmac_o1b(UINT port, REG8 dat) {
 
 	dmac.mask = 0x0f;
+	dmac.dmach[0].adrs.d = 0;
+	dmac.dmach[0].leng.w = 0;
+	dmac.dmach[1].adrs.d = 0;
+	dmac.dmach[1].leng.w = 0;
+	dmac.dmach[2].adrs.d = 0;
+	dmac.dmach[2].leng.w = 0;
+	dmac.dmach[3].adrs.d = 0;
+	dmac.dmach[3].leng.w = 0;
+	(void)port;
+	(void)dat;
+}
+
+static void IOOUTCALL dmac_o1d(UINT port, REG8 dat) {
+
+	dmac.mask = 0;
+	dmac_check();
 	(void)port;
 	(void)dat;
 }
@@ -188,19 +220,28 @@ static void IOOUTCALL dmac_o1f(UINT port, REG8 dat) {
 	(void)port;
 }
 
-static void IOOUTCALL dmac_o21(UINT port, REG8 dat) {
+static void IOOUTCALL dmac_o21(UINT port, REG8 dat) {//バンク設定
 
 	DMACH	dmach;
-
 	dmach = dmac.dmach + (((port >> 1) + 1) & 3);
 #if defined(CPUCORE_IA32)
 	dmach->adrs.b[DMA32_HIGH + DMA16_LOW] = dat;
 #else
 	// IA16では ver0.75で無効、ver0.76で修正
-	dmach->adrs.b[DMA32_HIGH + DMA16_LOW] = dat & 0x0f;
+	dmach->adrs.b[DMA32_HIGH + DMA16_LOW] = dat & 0x0f;//V30は20bitまで
 #endif
-	/* 170101 ST modified to work on Windows 9x/2000 */
-	dmach->adrs.b[DMA32_HIGH + DMA16_HIGH] = 0;
+	dmach->adrs.b[DMA32_HIGH + DMA16_HIGH] = 0;//25bitより上はここでは転送できない→0E05
+	bank = dat;
+	if (dmach->bound != 3){
+	dmach->startaddr = dmach->adrs.d;
+	dmach->lastaddr = (bank <<16 | dmach->lastaddr);
+	}
+	else
+	{
+	dmach->startaddr = bank << 16 | dmach->adrs.d;
+	dmach->lastaddr = (bank <<16 | dmach->lastaddr);
+	TRACEOUT(("port =%x ch=%x bank = %x dma_address = %x\n",port,((port >> 1) + 1) & 3, dat, dmach->adrs.d));
+	}
 }
 
 static void IOOUTCALL dmac_o29(UINT port, REG8 dat) {
@@ -208,19 +249,12 @@ static void IOOUTCALL dmac_o29(UINT port, REG8 dat) {
 	DMACH	dmach;
 
 	dmach = dmac.dmach + (dat & 3);
-	dmach->bound = dat;
+//	dmach = dmac.dmach + (dat & 0xf);
+//	TRACEOUT (("dmach %x",dat));// PC-98は4chしか持ってない
+	dmach->bound = (dat >> 2) & 3;
 	(void)port;
+	TRACEOUT(("port =%x ch= %x dma bound =%x\n",port,dat & 03 ,dmach->bound));
 }
-
-/* 170101 ST modified to work on Windows 9x/2000 form ... */
-static void IOOUTCALL dmac_oE01(UINT port, REG8 dat) {
-
-	DMACH	dmach;
-
-	dmach = dmac.dmach + ((port >> 1) & 0x07) - 2;
-	dmach->adrs.b[DMA32_HIGH + DMA16_HIGH] = dat;
-}
-/* 170101 ST modified to work on Windows 9x/2000 ... to */
 
 static REG8 IOINPCALL dmac_i01(UINT port) {
 
@@ -247,9 +281,33 @@ static REG8 IOINPCALL dmac_i03(UINT port) {
 static REG8 IOINPCALL dmac_i11(UINT port) {
 
 	(void)port;
-	return(dmac.stat);												// ToDo!!
+	return(dmac.stat &= 0xf0);												// ToDo!!
 }
+static void IOOUTCALL dmac_oe05(UINT port, REG8 dat) {
 
+	DMACH	dmach;
+
+//	dmach = dmac.dmach + (((port >> 1) - 2) & 3);//qemu
+//	dmach = dmac.dmach + ((port >> 1) & 0x07) - 2;//np21/w
+
+	char channel;
+	//switch(port){//シフト計算は頭がおかしくなるのでswitchでごまかしました
+	//	case 0xe05:channel = 0;break;
+	//	case 0xe07:channel = 1;break;
+	//	case 0xe09:channel = 2;break;
+	//	case 0xe0b:channel = 3;
+	//}
+	channel = ((port - 0x05) & 0x07) >> 1;
+	dmach = dmac.dmach + channel;
+	dmach->adrs.b[DMA32_HIGH + DMA16_HIGH] = dat;
+	bank2 = dat;
+	dmach->startaddr = ((bank2 &0x7f) << 24) | dmach->adrs.d;
+	dmach->lastaddr = ((bank2 &0x7f) << 24) | (dmach->lastaddr);
+	TRACEOUT(("32bit DMA ch %x bank %x\n",channel, dmach->adrs.b[3]));	
+}
+static void IOOUTCALL dmac_o2b(UINT port, REG8 dat) {
+	(void)port;
+}
 
 // ---- I/F
 
@@ -257,7 +315,7 @@ static const IOOUT dmaco00[16] = {
 					dmac_o01,	dmac_o03,	dmac_o01,	dmac_o03,
 					dmac_o01,	dmac_o03,	dmac_o01,	dmac_o03,
 					NULL,		dmac_o13,	dmac_o15,	dmac_o17,
-					dmac_o19,	dmac_o1b,	NULL,		dmac_o1f};
+					dmac_o19,	dmac_o1b,	dmac_o1d,	dmac_o1f};
 
 static const IOINP dmaci00[16] = {
 					dmac_i01,	dmac_i03,	dmac_i01,	dmac_i03,
@@ -275,8 +333,7 @@ void dmac_reset(const NP2CFG *pConfig) {
 	dmac.lh = DMA16_LOW;
 	dmac.mask = 0xf;
 	dmac_procset();
-//	TRACEOUT(("sizeof(_DMACH) = %d", sizeof(_DMACH)));
-
+	TRACEOUT(("sizeof(_DMACH) = %d", sizeof(_DMACH)));
 	(void)pConfig;
 }
 
@@ -285,13 +342,14 @@ void dmac_bind(void) {
 	iocore_attachsysoutex(0x0001, 0x0ce1, dmaco00, 16);
 	iocore_attachsysinpex(0x0001, 0x0ce1, dmaci00, 16);
 	iocore_attachsysoutex(0x0021, 0x0cf1, dmaco21, 8);
-
-	/* 170101 ST modified to work on Windows 9x/2000 form ... */
-	iocore_attachout(0x0e05, dmac_oE01);
-	iocore_attachout(0x0e07, dmac_oE01);
-	iocore_attachout(0x0e09, dmac_oE01);
-	iocore_attachout(0x0e0b, dmac_oE01);
-	/* 170101 ST modified to work on Windows 9x/2000 ... to */
+	iocore_attachout(0x0e05, dmac_oe05); //DMA ch.0
+	iocore_attachout(0x0e07, dmac_oe05); //DMA ch.1
+	iocore_attachout(0x0e09, dmac_oe05); //DMA ch.2
+	iocore_attachout(0x0e0b, dmac_oe05); //DMA ch.3
+//0x489はnecio.cで使ってる
+//PC-H98??? EMM386.exeを組み込むと現れる
+//	iocore_attachout(0x2b,dmac_o11);
+//	iocore_attachinp(0x2d,dmac_i11);//when 0x2b = c8???
 }
 
 
@@ -315,7 +373,15 @@ static void dmacset(REG8 channel) {
 	if (dmadev >= NELEMENTS(dmaproc)) {
 		dmadev = 0;
 	}
-//	TRACEOUT(("dmac set %d - %d", channel, dmadev));
+	
+	switch(dmadev){
+		case 0:TRACEOUT(("dmac set %d - dummy", channel));break;
+		case 1:TRACEOUT(("dmac set %d - 2HD", channel));break;
+		case 2:TRACEOUT(("dmac set %d - 2DD", channel));break;
+		case 3:TRACEOUT(("dmac set %d - SASI", channel));break;
+		case 4:TRACEOUT(("dmac set %d - SCSI", channel));break;
+		case 5:TRACEOUT(("dmac set %d - cs4231p", channel));break;
+	}
 	dmac.dmach[channel].proc = dmaproc[dmadev];
 }
 
@@ -362,7 +428,7 @@ void dmac_detach(REG8 device) {
 			dev++;
 		}
 		dmac.devices--;
+		//if (ch < 5)
 		dmacset(ch);
 	}
 }
-

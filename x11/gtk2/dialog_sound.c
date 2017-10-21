@@ -57,6 +57,7 @@ static const struct {
 	{ "ADPCM",  &np2cfg.vol_adpcm,  0.0, 128.0 },
 	{ "PCM",    &np2cfg.vol_pcm,    0.0, 128.0 },
 	{ "Rhythm", &np2cfg.vol_rhythm, 0.0, 128.0 },
+	{ "CD-DA",  &np2cfg.davolume,   0.0, 255.0 },
 };
 
 static GObject *mixer_adj[NELEMENTS(mixer_vol_tbl)];
@@ -625,9 +626,10 @@ mixer_default_button_clicked(GtkButton *b, gpointer d)
 {
 	int i;
 
-	for (i = 0; i < NELEMENTS(mixer_vol_tbl); i++) {
+	for (i = 0; i < NELEMENTS(mixer_vol_tbl) - 1; i++) {
 		gtk_adjustment_set_value(GTK_ADJUSTMENT(mixer_adj[i]), 64.0);
 	}
+	gtk_adjustment_set_value(GTK_ADJUSTMENT(mixer_adj[5]), 128.0);
 #if defined(SUPPORT_FMGEN)
 	OPNA_SetVolumeFM(g_opna[0].fmgen, pow((double)np2cfg.vol_fm / 128, 0.12) * (20 + 192) - 192);
 	OPNA_SetVolumePSG(g_opna[0].fmgen, pow((double)np2cfg.vol_ssg / 128, 0.12) * (20 + 192) - 192);

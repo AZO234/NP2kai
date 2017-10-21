@@ -19,6 +19,8 @@
 #include	"sound.h"
 #include	"idebios.res"
 #include	"bios/biosmem.h"
+#include	"fmboard.h"
+#include	"cs4231io.h"
 
 
 	IDEIO	ideio;
@@ -1205,6 +1207,10 @@ REG16 IOINPCALL ideio_r16(UINT port) {
 // ----
 
 #if 1
+static SINT32 cdda_softvolume_L = 0;
+static SINT32 cdda_softvolume_R = 0;
+static SINT32 cdda_softvolumereg_L = 0xff;
+static SINT32 cdda_softvolumereg_R = 0xff;
 static BRESULT SOUNDCALL playdevaudio(IDEDRV drv, SINT32 *pcm, UINT count) {
 
 	SXSIDEV	sxsi;
@@ -1212,11 +1218,44 @@ static BRESULT SOUNDCALL playdevaudio(IDEDRV drv, SINT32 *pcm, UINT count) {
 const UINT8	*ptr;
 	SINT	sampl;
 	SINT	sampr;
-	double	sampbias = soundcfg.rate / 44100.0;
-	SINT	samploop;
-	double	samploop2 = 0.0;
-	SINT	samploopcount;
-	double	sampcount2 = 0.0;
+	SINT32	buf_l;
+	SINT32	buf_r;
+	SINT32	buf_count;
+	SINT32	samplen_n;
+	SINT32	samplen_d;
+static SINT32	sampcount2_n = 0;
+	SINT32	sampcount2_d;
+
+	samplen_n = soundcfg.rate;
+	samplen_d = 44100;
+	//if(samplen_n > samplen_d){
+	//	// XXX: サンプリングレートが大きい場合のオーバーフロー対策･･･
+	//	samplen_n /= 100;
+	//	samplen_d /= 100;
+	//}
+	//if(g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_MATE_X_PCM || g_nSoundID == SOUNDID_PC_9801_86_WSS){
+	//	if(cdda_softvolumereg_L != cs4231.devvolume[0x32]){
+	//		cdda_softvolumereg_L = cs4231.devvolume[0x32];
+	//		if(cdda_softvolumereg_L & 0x80){ // FM L Mute
+	//			cdda_softvolume_L = 0;
+	//		}else{
+	//			cdda_softvolume_L = ((~cdda_softvolumereg_L) & 0x1f); // FM L Volume
+	//		}
+	//	}
+	//	if(cdda_softvolumereg_R != cs4231.devvolume[0x33]){
+	//		cdda_softvolumereg_R = cs4231.devvolume[0x33];
+	//		if(cdda_softvolumereg_R & 0x80){ // FM R Mute
+	//			cdda_softvolume_R = 0;
+	//		}else{
+	//			cdda_softvolume_R = ((~cdda_softvolumereg_R) & 0x1f); // FM R Volume
+	//		}
+	//	}
+	//}else{
+		cdda_softvolume_L = 0x1f;
+		cdda_softvolume_R = 0x1f;
+		cdda_softvolumereg_L = 0;
+		cdda_softvolumereg_R = 0;
+	//}
 
 	sxsi = sxsi_getptr(drv->sxsidrv);
 	if ((sxsi == NULL) || (sxsi->devtype != SXSIDEV_CDROM) ||
@@ -1225,37 +1264,48 @@ const UINT8	*ptr;
 		return(FAILURE);
 	}
 	while(count) {
-		r = min(count, drv->dabufrem * sampbias);
+		r = min(count, drv->dabufrem * samplen_n / samplen_d);
 		if (r) {
 			count -= r;
-			ptr = drv->dabuf + 2352 - drv->dabufrem * 4;
-			drv->dabufrem -= r / sampbias;
-			if(sampbias >= 1.0) {
-				sampcount2 = sampbias;
+			ptr = drv->dabuf + 2352 - (drv->dabufrem * 4);
+			drv->dabufrem -= r * samplen_d / samplen_n;
+			if(samplen_n < samplen_d){
+				//sampcount2_n = 0;
+				sampcount2_d = samplen_d;
+				buf_l = buf_r = buf_count = 0;
 				do {
 					sampl = ((SINT8)ptr[1] << 8) + ptr[0];
 					sampr = ((SINT8)ptr[3] << 8) + ptr[2];
-					pcm[0] += (SINT)((int)(sampl)*np2cfg.davolume/255);
-					pcm[1] += (SINT)((int)(sampr)*np2cfg.davolume/255);
-					sampcount2 -= 1.0;
-					if(sampcount2 < 1.0) {
-						sampcount2 += sampbias;
+					ptr += 4;
+					sampcount2_n += samplen_n;
+					buf_l += (SINT)((int)(sampl)*np2cfg.davolume*cdda_softvolume_L/255/31);
+					buf_r += (SINT)((int)(sampr)*np2cfg.davolume*cdda_softvolume_R/255/31);
+					buf_count++;
+					if(sampcount2_n > sampcount2_d){
+						pcm[0] += buf_l / buf_count;
+						pcm[1] += buf_r / buf_count;
+						//pcm[0] += (SINT)((int)(sampl)*np2cfg.davolume/255);
+						//pcm[1] += (SINT)((int)(sampr)*np2cfg.davolume/255);
+						pcm += 2 * (sampcount2_n / sampcount2_d);
+						--r;
+						sampcount2_n = sampcount2_n % sampcount2_d;
+						buf_l = buf_r = buf_count = 0;
+					}
+				} while(r > 0);
+			}else{
+				sampcount2_n = samplen_n;
+				sampcount2_d = samplen_d;
+				do {
+					sampl = ((SINT8)ptr[1] << 8) + ptr[0];
+					sampr = ((SINT8)ptr[3] << 8) + ptr[2];
+					pcm[0] += (SINT)((int)(sampl)*np2cfg.davolume*cdda_softvolume_L/255/31);
+					pcm[1] += (SINT)((int)(sampr)*np2cfg.davolume*cdda_softvolume_L/255/31);
+					sampcount2_n -= sampcount2_d;
+					if(sampcount2_n <= 0){
+						sampcount2_n += samplen_n;
 						ptr += 4;
 					}
 					pcm += 2;
-				} while(--r);
-			} else {
-				do {
-					sampl = ((SINT8)ptr[1] << 8) + ptr[0];
-					sampr = ((SINT8)ptr[3] << 8) + ptr[2];
-					samploopcount = (sampbias + samploop2) < 1.0 ? 1 : (SINT)(sampbias + samploop2);
-					for(samploop = 0; samploop < samploopcount; samploop++) {
-						pcm[samploop * 2 + 0] += (SINT)((int)(sampl)*np2cfg.davolume/255);
-						pcm[samploop * 2 + 1] += (SINT)((int)(sampr)*np2cfg.davolume/255);
-					}
-					ptr += 4 * (1.0 / sampbias < 1.0 ? 1 : (SINT)(1.0 / sampbias + samploop2));
-					pcm += 2 * samploopcount;
-					samploop2 = ((SINT)((sampbias + samploop2) * 1000) % 1000) / 1000.0;
 				} while(--r);
 			}
 		}
@@ -1276,6 +1326,149 @@ const UINT8	*ptr;
 	}
 	return(SUCCESS);
 }
+//static BRESULT SOUNDCALL playdevaudio(IDEDRV drv, SINT32 *pcm, UINT count) {
+//
+//	SXSIDEV	sxsi;
+//	UINT	r;
+//const UINT8	*ptr;
+//	SINT	sampl;
+//	SINT	sampr;
+//	double	samplen;
+//	double	sampcount2;
+//
+//	samplen = (double)soundcfg.rate / 44100;
+//
+//	sxsi = sxsi_getptr(drv->sxsidrv);
+//	if ((sxsi == NULL) || (sxsi->devtype != SXSIDEV_CDROM) ||
+//		(!(sxsi->flag & SXSIFLAG_READY))) {
+//		drv->daflag = 0x14;
+//		return(FAILURE);
+//	}
+//	while(count) {
+//		r = min(count, drv->dabufrem * samplen);
+//		if (r) {
+//			count -= r;
+//			ptr = drv->dabuf + 2352 - (drv->dabufrem * 4);
+//			drv->dabufrem -= r / samplen;
+//			if(samplen < 1.0){
+//				sampcount2 = 0;
+//				do {
+//					sampl = ((SINT8)ptr[1] << 8) + ptr[0];
+//					sampr = ((SINT8)ptr[3] << 8) + ptr[2];
+//					ptr += 4;
+//					sampcount2 += samplen;
+//					if((int)(sampcount2) > 0){
+//						pcm[0] += (SINT)((int)(sampl)*np2cfg.davolume/255);
+//						pcm[1] += (SINT)((int)(sampr)*np2cfg.davolume/255);
+//						pcm += 2 * (int)(sampcount2);
+//						--r;
+//						sampcount2 = sampcount2 - (int)sampcount2;
+//					}
+//				} while(r > 0);
+//			}else{
+//				sampcount2 = samplen;
+//				do {
+//					sampl = ((SINT8)ptr[1] << 8) + ptr[0];
+//					sampr = ((SINT8)ptr[3] << 8) + ptr[2];
+//					pcm[0] += (SINT)((int)(sampl)*np2cfg.davolume/255);
+//					pcm[1] += (SINT)((int)(sampr)*np2cfg.davolume/255);
+//					sampcount2 -= 1.0;
+//					if(sampcount2 < 1.0){
+//						sampcount2 += samplen;
+//						ptr += 4;
+//					}
+//					pcm += 2;
+//				} while(--r);
+//			}
+//		}
+//		if (count == 0) {
+//			break;
+//		}
+//		if (drv->dalength == 0) {
+//			drv->daflag = 0x13;
+//			return(FAILURE);
+//		}
+//		if (sxsicd_readraw(sxsi, drv->dacurpos, drv->dabuf) != SUCCESS) {
+//			drv->daflag = 0x14;
+//			return(FAILURE);
+//		}
+//		drv->dalength--;
+//		drv->dacurpos++;
+//		drv->dabufrem = sizeof(drv->dabuf) / 4;
+//	}
+//	return(SUCCESS);
+//}
+//static BRESULT SOUNDCALL playdevaudio(IDEDRV drv, SINT32 *pcm, UINT count) {
+//
+//	SXSIDEV	sxsi;
+//	UINT	r;
+//const UINT8	*ptr;
+//	SINT	sampl;
+//	SINT	sampr;
+//	double	sampbias = soundcfg.rate / 44100.0;
+//	SINT	samploop;
+//	double	samploop2 = 0.0;
+//	SINT	samploopcount;
+//	double	sampcount2 = 0.0;
+//
+//	sxsi = sxsi_getptr(drv->sxsidrv);
+//	if ((sxsi == NULL) || (sxsi->devtype != SXSIDEV_CDROM) ||
+//		(!(sxsi->flag & SXSIFLAG_READY))) {
+//		drv->daflag = 0x14;
+//		return(FAILURE);
+//	}
+//	while(count) {
+//		r = min(count, drv->dabufrem * sampbias);
+//		if (r) {
+//			count -= r;
+//			ptr = drv->dabuf + 2352 - drv->dabufrem * 4;
+//			drv->dabufrem -= r / sampbias;
+//			if(sampbias >= 1.0) {
+//				sampcount2 = sampbias;
+//				do {
+//					sampl = ((SINT8)ptr[1] << 8) + ptr[0];
+//					sampr = ((SINT8)ptr[3] << 8) + ptr[2];
+//					pcm[0] += (SINT)((int)(sampl)*np2cfg.davolume/255);
+//					pcm[1] += (SINT)((int)(sampr)*np2cfg.davolume/255);
+//					sampcount2 -= 1.0;
+//					if(sampcount2 < 1.0) {
+//						sampcount2 += sampbias;
+//						ptr += 4;
+//					}
+//					pcm += 2;
+//				} while(--r);
+//			} else {
+//				do {
+//					sampl = ((SINT8)ptr[1] << 8) + ptr[0];
+//					sampr = ((SINT8)ptr[3] << 8) + ptr[2];
+//					samploopcount = (sampbias + samploop2) < 1.0 ? 1 : (SINT)(sampbias + samploop2);
+//					for(samploop = 0; samploop < samploopcount; samploop++) {
+//						pcm[samploop * 2 + 0] += (SINT)((int)(sampl)*np2cfg.davolume/255);
+//						pcm[samploop * 2 + 1] += (SINT)((int)(sampr)*np2cfg.davolume/255);
+//					}
+//					ptr += 4 * (1.0 / sampbias < 1.0 ? 1 : (SINT)(1.0 / sampbias + samploop2));
+//					pcm += 2 * samploopcount;
+//					samploop2 = ((SINT)((sampbias + samploop2) * 1000) % 1000) / 1000.0;
+//				} while(--r);
+//			}
+//		}
+//		if (count == 0) {
+//			break;
+//		}
+//		if (drv->dalength == 0) {
+//			drv->daflag = 0x13;
+//			return(FAILURE);
+//		}
+//		if (sxsicd_readraw(sxsi, drv->dacurpos, drv->dabuf) != SUCCESS) {
+//			drv->daflag = 0x14;
+//			return(FAILURE);
+//		}
+//		drv->dalength--;
+//		drv->dacurpos++;
+//		drv->dabufrem = sizeof(drv->dabuf) / 4;
+//	}
+//	return(SUCCESS);
+//}
 
 static void SOUNDCALL playaudio(void *hdl, SINT32 *pcm, UINT count) {
 
@@ -1343,6 +1536,7 @@ void ideio_reset(const NP2CFG *pConfig) {
 	REG8	i;
 	IDEDRV	drv;
 	OEMCHAR tmpbiosname[16];
+	UINT8 useidebios;
 
 	ZeroMemory(&ideio, sizeof(ideio));
 	for (i=0; i<4; i++) {
@@ -1354,7 +1548,21 @@ void ideio_reset(const NP2CFG *pConfig) {
 	ideio.wwait = np2cfg.idewwait;
 	ideio.bios = IDETC_NOBIOS;
 
-	if(np2cfg.idebios){
+	useidebios = np2cfg.idebios;
+	if(useidebios && np2cfg.autoidebios){
+		SXSIDEV	sxsi;
+		for (i=0; i<4; i++) {
+			sxsi = sxsi_getptr(i);
+			if ((sxsi != NULL) && (np2cfg.idetype[i] == SXSIDEV_HDD) && 
+					(sxsi->devtype == SXSIDEV_HDD) && (sxsi->flag & SXSIFLAG_READY)) {
+				if(sxsi->surfaces != 8 || sxsi->sectors != 17){
+					TRACEOUT(("Incompatible CHS parameter detected. IDE BIOS automatically disabled."));
+					useidebios = 0;
+				}
+			}
+		}
+	}
+	if(useidebios){
 		_tcscpy(tmpbiosname, OEMTEXT("ide.rom"));
 		getbiospath(path, tmpbiosname, NELEMENTS(path));
 		fh = file_open_rb(path);

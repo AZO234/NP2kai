@@ -271,10 +271,13 @@ static GtkRadioActionEntry soundboard_entries[] = {
 { "pc-9801-26k-86", NULL, "PC-9801-26_K + 86",       NULL, NULL, 0x06 },
 { "pc-9801-86-cb",  NULL, "PC-9801-86 + _Chibi-oto", NULL, NULL, 0x14 },
 { "pc-9801-118",    NULL, "PC-9801-11_8",            NULL, NULL, 0x08 },
+{ "pc-9801-86-mx",  NULL, "PC-9801-86 + Mate-X PCM(B460)", NULL, NULL, 0x64 },
+{ "pc-9801-mx",     NULL, "Mate-X PCM(B460)",        NULL, NULL, 0x60 },
 { "speakboard",     NULL, "S_peak board",            NULL, NULL, 0x20 },
 { "sparkboard",     NULL, "Sp_ark board",            NULL, NULL, 0x40 },
 { "sndorchestra",   NULL, "Sound Orchestra",         NULL, NULL, 0x32 },
 { "sndorchestrav",  NULL, "Sound Orchestra-V",       NULL, NULL, 0x82 },
+{ "sb16",	    NULL, "Sound Blaster 16",        NULL, NULL, 0x41 },
 { "amd98",          NULL, "_AMD98",                  NULL, NULL, 0x80 },
 #if defined(SUPPORT_PX)
 { "px1",            NULL, "Otomi-chanx2",            NULL, NULL, 0x30 },
@@ -469,10 +472,13 @@ static const gchar *ui_info =
 "    <menuitem action='pc-9801-26k-86'/>\n"
 "    <menuitem action='pc-9801-86-cb'/>\n"
 "    <menuitem action='pc-9801-118'/>\n"
+"    <menuitem action='pc-9801-86-mx'/>\n"
+"    <menuitem action='pc-9801-mx'/>\n"
 "    <menuitem action='speakboard'/>\n"
 "    <menuitem action='sparkboard'/>\n"
 "    <menuitem action='sndorchestra'/>\n"
 "    <menuitem action='sndorchestrav'/>\n"
+"    <menuitem action='sb16'/>\n"
 "    <menuitem action='amd98'/>\n"
 #if defined(SUPPORT_PX)
 "    <menuitem action='px1'/>\n"

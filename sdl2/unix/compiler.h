@@ -40,18 +40,23 @@ typedef	unsigned int	UINT;
 typedef	unsigned long	ULONG;
 
 typedef	signed char		SINT8;
+typedef	signed char		INT8;
 typedef	unsigned char	UINT8;
 typedef	signed short	SINT16;
+typedef	signed short	INT16;
 typedef	unsigned short	UINT16;
 typedef	signed int		SINT32;
 typedef	signed int		INT32;
 typedef	unsigned int	UINT32;
 #if __WORDSIZE == 64
 typedef signed long int   SINT64;
+typedef signed long int   INT64;
 typedef unsigned long int   UINT64;
 #else
 __extension__
-typedef signed long long int  SINT64;
+typedef signed long int   SINT64;
+__extension__
+typedef signed long int   INT64;
 __extension__
 typedef unsigned long long int  UINT64;
 #endif

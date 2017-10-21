@@ -835,6 +835,25 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 		case IDM_SCSI3EJECT:
 			diskdrv_setsxsi(0x23, NULL);
 			break;
+			
+		case IDM_SCSI0STATE:
+		case IDM_SCSI1STATE:
+		case IDM_SCSI2STATE:
+		case IDM_SCSI3STATE:
+			{
+				const OEMCHAR *fname;
+				fname = sxsi_getfilename(uID - IDM_SCSI0STATE + 0x20);
+				if(!fname || !(*fname)){
+					fname = diskdrv_getsxsi(uID - IDM_IDE0STATE + 0x20);
+				}
+				if(fname && *fname){
+					TCHAR seltmp[500];
+					_tcscpy(seltmp, OEMTEXT("/select,"));
+					_tcscat(seltmp, fname);
+					ShellExecute(NULL, NULL, OEMTEXT("explorer.exe"), seltmp, NULL, SW_SHOWNORMAL);
+				}
+			}
+			break;
 #endif
 
 		case IDM_WINDOW:
@@ -1097,6 +1116,13 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			np2cfg.SOUND_SW = 0x40;
 			update |= SYS_UPDATECFG | SYS_UPDATESBOARD;
 			break;
+			
+#if defined(SUPPORT_SOUND_SB16)
+		case IDM_SB16:
+			np2cfg.SOUND_SW = SOUNDID_SB16;
+			update |= SYS_UPDATECFG | SYS_UPDATESBOARD;
+			break;
+#endif	// defined(SUPPORT_SOUND_SB16)
 
 #if defined(SUPPORT_PX)
 		case IDM_PX1:
@@ -2444,7 +2470,7 @@ void unloadNP2INI(){
 	//np2net_shutdown();
 #endif
 
-	pccore_term();
+	//pccore_term();
 
 	CSoundMng::GetInstance()->Close();
 	CSoundMng::Deinitialize();

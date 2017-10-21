@@ -86,13 +86,17 @@
 #include <glib.h>
 
 typedef	gint32		SINT;
+typedef	gint32		INT;
 typedef	guint32		UINT;
 
 typedef	gint8		SINT8;
+typedef	gint8		INT8;
 typedef	gint16		SINT16;
+typedef	gint16		INT16;
 typedef	gint32		SINT32;
 typedef	gint32		INT32;
 typedef	gint64		SINT64;
+typedef	gint64		INT64;
 
 typedef	guint8		UINT8;
 typedef	guint16		UINT16;

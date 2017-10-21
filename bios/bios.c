@@ -27,6 +27,7 @@
 #if defined(SUPPORT_HRTIMER)
 #include	"timemng.h"
 #endif
+#include	"fmboard.h"
 
 #define	BIOS_SIMULATE
 
@@ -97,8 +98,8 @@ static void bios_reinitbyswitch(void) {
 	UINT8	biosflag;
 	UINT8	extmem; // LARGE_MEM //UINT16	extmem;
 	UINT8	boot;
-	FILEH	fh;
-	OEMCHAR	path[MAX_PATH];
+	//FILEH	fh;
+	//OEMCHAR	path[MAX_PATH];
 
 	if (!(pccore.dipsw[2] & 0x80)) {
 #if defined(CPUCORE_IA32)
@@ -483,8 +484,13 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 			bios_screeninit();
 			if (((pccore.model & PCMODELMASK) >= PCMODEL_VX) &&
 				(pccore.sound & 0x7e)) {
-				iocore_out8(0x188, 0x27);
-				iocore_out8(0x18a, 0x3f);
+				if(g_nSoundID == SOUNDID_MATE_X_PCM || g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_WSS){
+					iocore_out8(0x188, 0x27);
+					iocore_out8(0x18a, 0x30);
+				}else{
+					iocore_out8(0x188, 0x27);
+					iocore_out8(0x18a, 0x3f);
+				}
 			}
 			return(1);
 

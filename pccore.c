@@ -84,7 +84,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 				1, 0x000000, 0xffffff,
 				44100, 250, 4, 0,
 				{0, 0, 0}, 0xd1, 0x7f, 0xd1, 0, 0, 1,
-				3, {0x0c, 0x0c, 0x08, 0x06, 0x03, 0x0c}, 64, 64, 64, 64, 64, 64,
+				3, {0x0c, 0x0c, 0x08, 0x06, 0x03, 0x0c}, 64, 64, 64, 64, 64,
 				1, 0x82, 0,
 				0, {0x17, 0x04, 0x1f}, {0x0c, 0x0c, 0x02, 0x10, 0x3f, 0x3f},
 #if defined(SUPPORT_FMGEN)
@@ -97,7 +97,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 				{OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")}, 
 				{SXSIDEV_HDD, SXSIDEV_HDD, SXSIDEV_CDROM, SXSIDEV_HDD}, 
 				{OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
-				1, 0, 0, 40000,
+				1, 1, 0, 0, 0,
 #else
 				{OEMTEXT(""), OEMTEXT("")},
 #endif

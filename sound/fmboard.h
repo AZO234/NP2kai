@@ -30,7 +30,7 @@ typedef struct {
 	UINT8	dmach;
 	UINT16	base;
 	UINT8	mixsel;
-	UINT8	mixreg[0x18];
+	UINT8	mixreg[0x100];
 } SB16;
 
 #ifdef __cplusplus
