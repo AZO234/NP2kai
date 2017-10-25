@@ -44,7 +44,7 @@ const _VFDD_ID	*sec_vfdd;
 
 	fdd->type = DISKTYPE_VFDD;
 	fdd->protect = ((attr & 0x01) || (ro)) ? TRUE : FALSE;
-	if (fdd->inf.vfdd.head.write_protect) {
+	if (LOADINTELWORD(&fdd->inf.vfdd.head.write_protect)) {
 		fdd->protect = TRUE;
 	}
 
@@ -56,7 +56,7 @@ const _VFDD_ID	*sec_vfdd;
 	//	ディスクアクセス時用に各セクタのオフセットを算出
 	for (i = 0; i < VFDD_TRKMAX * VFDD_SECMAX; i++) {
 		if (sec_vfdd->C != 0xff) {
-			fdd->inf.vfdd.ptr[(sec_vfdd->C << 1) + sec_vfdd->H][sec_vfdd->R - 1] = sec_vfdd->dataPoint;
+			fdd->inf.vfdd.ptr[(sec_vfdd->C << 1) + sec_vfdd->H][sec_vfdd->R - 1] = LOADINTELDWORD(&sec_vfdd->dataPoint);
 		}
 		sec_vfdd++;
 	}
@@ -65,9 +65,14 @@ const _VFDD_ID	*sec_vfdd;
 	//	…2DD/2HD混在フォーマットでまずい気がする
 	sec_vfdd = &fdd->inf.vfdd.id[0][0];
 	if (sec_vfdd->flHD) {
-		//	1.2M
+		/* 1.2M */
 		fdd->inf.xdf.disktype = DISKTYPE_2HD;
 		fdd->inf.xdf.rpm = 0;
+		sec_vfdd = &fdd->inf.vfdd.id[0][17];
+		if (sec_vfdd->flMF == 0x01 && sec_vfdd->flHD == 0x01) {
+			/* 1.44M(暫定) */
+			fdd->inf.xdf.rpm = 1;
+		}
 	}
 	else {
 		//	640K
@@ -198,7 +203,7 @@ BRESULT fdd_write_vfdd(FDDFILE fdd) {
 			UINT32	fdsize;
 
 			fdsize = file_getsize(hdl);
-			fdd->inf.vfdd.id[trk][secR].dataPoint = fdsize;
+			STOREINTELDWORD(&fdd->inf.vfdd.id[trk][secR].dataPoint, fdsize);
 			fdd->inf.vfdd.ptr[trk][sec] = fdsize;
 			file_seek(hdl, 0, 0);
 			file_write(hdl, &fdd->inf.vfdd.head, VFDD_HEADERSIZE);
