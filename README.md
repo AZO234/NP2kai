@@ -300,6 +300,8 @@ I/O:0x00D0
 
 Release
 ---
+* Oct 26, 2017
+	- Apply to 1.44MB FDD floppy image file
 * Oct 21, 2017 (rev.14)
 	- Merge NP21/w rev.36
 		* Mate-X PCM  
