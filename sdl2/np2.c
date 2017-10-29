@@ -214,6 +214,11 @@ int np2_main(int argc, char *argv[]) {
 		else if (0 == milstr_cmp(ext, ".nhd"))	imagetype = IMAGETYPE_SASI_IDE;
 		else if (0 == milstr_cmp(ext, ".vhd"))	imagetype = IMAGETYPE_SASI_IDE;
 		else if (0 == milstr_cmp(ext, ".sln"))	imagetype = IMAGETYPE_SASI_IDE;
+		else if (0 == milstr_cmp(ext, ".iso"))	imagetype = IMAGETYPE_SASI_IDE_CD; // SASI/IDE CD
+		else if (0 == milstr_cmp(ext, ".cue"))	imagetype = IMAGETYPE_SASI_IDE_CD;
+		else if (0 == milstr_cmp(ext, ".ccd"))	imagetype = IMAGETYPE_SASI_IDE_CD;
+		else if (0 == milstr_cmp(ext, ".mds"))	imagetype = IMAGETYPE_SASI_IDE_CD;
+		else if (0 == milstr_cmp(ext, ".nrg"))	imagetype = IMAGETYPE_SASI_IDE_CD;
 		else if (0 == milstr_cmp(ext, ".hdd"))	imagetype = IMAGETYPE_SCSI; // SCSI
 		else if (0 == milstr_cmp(ext, ".hdn"))	imagetype = IMAGETYPE_SCSI;
 		
@@ -224,6 +229,9 @@ int np2_main(int argc, char *argv[]) {
 				milstr_ncpy(np2cfg.sasihdd[drvhddSASI], argv[i], MAX_PATH);
 				drvhddSASI++;
 			}
+			break;
+		case IMAGETYPE_SASI_IDE_CD:
+			milstr_ncpy(np2cfg.sasihdd[2], argv[i], MAX_PATH);
 			break;
 #endif
 #if defined(SUPPORT_SCSI)
