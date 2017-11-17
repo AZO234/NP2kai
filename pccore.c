@@ -115,7 +115,9 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 #if defined(SUPPORT_STATSAVE)
 				0,			/* statsave */
 #endif
-				0, 0};
+				0, 0,
+				0xff00,
+	};
 
 	PCCORE	pccore = {	PCBASECLOCK25, PCBASEMULTIPLE,
 						0, PCMODEL_VX, 0, 0, {0x3e, 0x73, 0x7b}, 0,

@@ -295,7 +295,7 @@ MOV_CdRd(void)
 			VERBOSE(("MOV_CdRd: %04x:%08x: cr0: 0x%08x <- 0x%08x(%s)", CPU_CS, CPU_PREV_EIP, reg, CPU_CR0, reg32_str[op & 7]));
 
 			if ((reg ^ CPU_CR0) & (CPU_CR0_PE|CPU_CR0_PG)) {
-				tlb_flush(1);
+				tlb_flush_all();
 			}
 			if ((reg ^ CPU_CR0) & CPU_CR0_PE) {
 				if (CPU_CR0 & CPU_CR0_PE) {
@@ -366,7 +366,7 @@ MOV_CdRd(void)
 			VERBOSE(("MOV_CdRd: %04x:%08x: cr4: 0x%08x <- 0x%08x(%s)", CPU_CS, CPU_PREV_EIP, reg, CPU_CR4, reg32_str[op & 7]));
 
 			if ((reg ^ CPU_CR4) & (CPU_CR4_PSE|CPU_CR4_PGE|CPU_CR4_PAE)) {
-				tlb_flush(1);
+				tlb_flush_all();
 			}
 			break;
 
@@ -1075,7 +1075,7 @@ WRMSR(void)
 
 	idx = CPU_ECX;
 	switch (idx) {
-		/* MTRR ‚Ö‚Ì‘‚«ž‚ÝŽž tlb_flush(1); */
+		/* MTRR ‚Ö‚Ì‘‚«ž‚ÝŽž tlb_flush_all(); */
 
 	default:
 		EXCEPTION(GP_EXCEPTION, 0);

@@ -148,7 +148,7 @@ void sysmng_updatecaption(UINT8 flag) {
 						mii.fMask = MIIM_TYPE;
 						mii.fType = MFT_STRING;
 						mii.dwTypeData = hddimgmenustr[i];
-						mii.cch = _tcslen(hddimgmenustr[i]);
+						mii.cch = (UINT)_tcslen(hddimgmenustr[i]);
 						SetMenuItemInfo(hMenuTgt, IDM_IDE0STATE+i, MF_BYCOMMAND, &mii);
 					}
 				}
@@ -199,7 +199,7 @@ void sysmng_updatecaption(UINT8 flag) {
 						mii.fMask = MIIM_TYPE;
 						mii.fType = MFT_STRING;
 						mii.dwTypeData = scsiimgmenustr[i];
-						mii.cch = _tcslen(scsiimgmenustr[i]);
+						mii.cch = (UINT)_tcslen(scsiimgmenustr[i]);
 						SetMenuItemInfo(hMenuTgt, IDM_SCSI0STATE+i, MF_BYCOMMAND, &mii);
 					}
 				}

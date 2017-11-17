@@ -61,6 +61,9 @@ void MEMCALL memp_write16(UINT32 address, REG16 value);
 void MEMCALL memp_write32(UINT32 address, UINT32 value);
 void MEMCALL memp_reads(UINT32 address, void *dat, UINT leng);
 void MEMCALL memp_writes(UINT32 address, const void *dat, UINT leng);
+REG8 MEMCALL memp_read8_codefetch(UINT32 address);
+REG16 MEMCALL memp_read16_codefetch(UINT32 address);
+UINT32 MEMCALL memp_read32_codefetch(UINT32 address);
 
 REG8 MEMCALL meml_read8(UINT32 address);
 REG16 MEMCALL meml_read16(UINT32 address);

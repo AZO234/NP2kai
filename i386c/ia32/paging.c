@@ -179,7 +179,6 @@ static const UINT8 page_access_bit[32] = {
  * |
  * +- CR3(ï®óùÉAÉhÉåÉX)
  */
-
 /* TLB */
 struct tlb_entry {
 	UINT32	tag;	/* linear address */
@@ -300,8 +299,12 @@ cpu_memory_access_la_RMW_d(UINT32 laddr, UINT32 (CPUCALL *func)(UINT32, void *),
 UINT8 MEMCALL
 cpu_linear_memory_read_b(UINT32 laddr, int ucrw)
 {
-
 	return cpu_memoryread(paging(laddr, ucrw));
+}
+UINT8 MEMCALL
+cpu_linear_memory_read_b_codefetch(UINT32 laddr, int ucrw)
+{
+	return cpu_memoryread_codefetch(paging(laddr, ucrw));
 }
 
 UINT16 MEMCALL
@@ -316,9 +319,25 @@ cpu_linear_memory_read_w(UINT32 laddr, int ucrw)
 
 	paddr[1] = paging(laddr + 1, ucrw);
 	value = cpu_memoryread_b(paddr[0]);
-	value += (UINT16)cpu_memoryread_b(paddr[1]) << 8;
+	value |= (UINT16)cpu_memoryread_b(paddr[1]) << 8;
 	return value;
 }
+UINT16 MEMCALL
+cpu_linear_memory_read_w_codefetch(UINT32 laddr, int ucrw)
+{
+	UINT32 paddr[2];
+	UINT16 value;
+
+	paddr[0] = paging(laddr, ucrw);
+	if ((laddr + 1) & CPU_PAGE_MASK)
+		return cpu_memoryread_w_codefetch(paddr[0]);
+
+	paddr[1] = paging(laddr + 1, ucrw);
+	value = cpu_memoryread_b_codefetch(paddr[0]);
+	value |= (UINT16)cpu_memoryread_b_codefetch(paddr[1]) << 8;
+	return value;
+}
+
 
 UINT32 MEMCALL
 cpu_linear_memory_read_d(UINT32 laddr, int ucrw)
@@ -336,19 +355,57 @@ cpu_linear_memory_read_d(UINT32 laddr, int ucrw)
 	switch (remain) {
 	case 3:
 		value = cpu_memoryread(paddr[0]);
-		value += (UINT32)cpu_memoryread_w(paddr[0] + 1) << 8;
-		value += (UINT32)cpu_memoryread(paddr[1]) << 24;
+		value |= (UINT32)cpu_memoryread_w(paddr[0] + 1) << 8;
+		value |= (UINT32)cpu_memoryread(paddr[1]) << 24;
 		break;
 
 	case 2:
 		value = cpu_memoryread_w(paddr[0]);
-		value += (UINT32)cpu_memoryread_w(paddr[1]) << 16;
+		value |= (UINT32)cpu_memoryread_w(paddr[1]) << 16;
 		break;
 
 	case 1:
 		value = cpu_memoryread(paddr[0]);
-		value += (UINT32)cpu_memoryread_w(paddr[1]) << 8;
-		value += (UINT32)cpu_memoryread(paddr[1] + 2) << 24;
+		value |= (UINT32)cpu_memoryread_w(paddr[1]) << 8;
+		value |= (UINT32)cpu_memoryread(paddr[1] + 2) << 24;
+		break;
+
+	default:
+		ia32_panic("cpu_linear_memory_read_d: out of range (remain=%d)\n", remain);
+		value = 0;	/* XXX compiler happy */
+		break;
+	}
+	return value;
+}
+UINT32 MEMCALL
+cpu_linear_memory_read_d_codefetch(UINT32 laddr, int ucrw)
+{
+	UINT32 paddr[2];
+	UINT32 value;
+	UINT remain;
+
+	paddr[0] = paging(laddr, ucrw);
+	remain = CPU_PAGE_SIZE - (laddr & CPU_PAGE_MASK);
+	if (remain >= sizeof(value))
+		return cpu_memoryread_d_codefetch(paddr[0]);
+
+	paddr[1] = paging(laddr + remain, ucrw);
+	switch (remain) {
+	case 3:
+		value = cpu_memoryread_codefetch(paddr[0]);
+		value |= (UINT32)cpu_memoryread_w_codefetch(paddr[0] + 1) << 8;
+		value |= (UINT32)cpu_memoryread_codefetch(paddr[1]) << 24;
+		break;
+
+	case 2:
+		value = cpu_memoryread_w_codefetch(paddr[0]);
+		value |= (UINT32)cpu_memoryread_w_codefetch(paddr[1]) << 16;
+		break;
+
+	case 1:
+		value = cpu_memoryread_codefetch(paddr[0]);
+		value |= (UINT32)cpu_memoryread_w_codefetch(paddr[1]) << 8;
+		value |= (UINT32)cpu_memoryread_codefetch(paddr[1] + 2) << 24;
 		break;
 
 	default:
@@ -755,7 +812,7 @@ do { \
 } while (/*CONSTCOND*/ 0)
 
 #define	NTLB		2	/* 0: DTLB, 1: ITLB */
-#define	NENTRY		(1 << 6)
+#define	NENTRY		(1 << 8)
 #define	TLB_ENTRY_SHIFT	12
 #define	TLB_ENTRY_MASK	(NENTRY - 1)
 
@@ -767,21 +824,15 @@ static tlb_t tlb[NTLB];
 void
 tlb_init(void)
 {
-
 	memset(tlb, 0, sizeof(tlb));
 }
 
 void MEMCALL
-tlb_flush(BOOL allflush)
+tlb_flush()
 {
 	struct tlb_entry *ep;
 	int i;
 	int n;
-
-	if (allflush) {
-		tlb_init();
-		return;
-	}
 
 	for (n = 0; n < NTLB; n++) {
 		for (i = 0; i < NENTRY ; i++) {
@@ -791,6 +842,12 @@ tlb_flush(BOOL allflush)
 			}
 		}
 	}
+}
+
+void MEMCALL
+tlb_flush_all()
+{
+	tlb_init();
 }
 
 void MEMCALL

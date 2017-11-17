@@ -89,6 +89,14 @@ void MEMCALL memvgaf_wr16(UINT32 address, REG16 value) {
 	gdcs.grphdisp |= bit;
 }
 
+UINT32 MEMCALL memvgaf_rd32(UINT32 address){
+	return (UINT32)memvgaf_rd16(address)|(memvgaf_rd16(address+2)<<16);
+}
+void MEMCALL memvgaf_wr32(UINT32 address, UINT32 value){
+	memvgaf_wr16(address, (REG16)value);
+	memvgaf_wr16(address+2, (REG16)(value >> 16));
+}
+
 
 // ---- 8086 bank memory
 
@@ -104,6 +112,21 @@ void MEMCALL memvga0_wr16(UINT32 address, REG16 value)
 											VGAWR16(0, address, value)
 void MEMCALL memvga1_wr16(UINT32 address, REG16 value)
 											VGAWR16(1, address, value)
+
+UINT32 MEMCALL memvga0_rd32(UINT32 address){
+	return (UINT32)memvga0_rd16(address)|(memvga0_rd16(address+2)<<16);
+}
+UINT32 MEMCALL memvga1_rd32(UINT32 address){
+	return (UINT32)memvga1_rd16(address)|(memvga1_rd16(address+2)<<16);
+}
+void MEMCALL memvga0_wr32(UINT32 address, UINT32 value){
+	memvga0_wr16(address, (REG16)value);
+	memvga0_wr16(address+2, (REG16)(value >> 16));
+}
+void MEMCALL memvga1_wr32(UINT32 address, UINT32 value){
+	memvga1_wr16(address, (REG16)value);
+	memvga1_wr16(address+2, (REG16)(value >> 16));
+}
 
 
 // ---- 8086 bank I/O
@@ -154,6 +177,14 @@ void MEMCALL memvgaio_wr16(UINT32 address, REG16 value) {
 
 	memvgaio_wr8(address + 0, (REG8)value);
 	memvgaio_wr8(address + 1, (REG8)(value >> 8));
+}
+
+UINT32 MEMCALL memvgaio_rd32(UINT32 address){
+	return (UINT32)memvgaio_rd16(address)|(memvgaio_rd16(address+2)<<16);
+}
+void MEMCALL memvgaio_wr32(UINT32 address, UINT32 value){
+	memvgaio_wr16(address, (REG16)value);
+	memvgaio_wr16(address+2, (REG16)(value >> 16));
 }
 
 #endif

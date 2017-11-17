@@ -383,9 +383,9 @@ cpu_codefetch(UINT32 offset)
 	addr = sdp->u.seg.segbase + offset;
 
 	if (!CPU_STAT_PM)
-		return cpu_memoryread(addr);
+		return cpu_memoryread_codefetch(addr);
 	if (offset <= sdp->u.seg.limit)
-		return cpu_lmemoryread(addr, ucrw);
+		return cpu_lmemoryread_codefetch(addr, ucrw);
 
 	EXCEPTION(GP_EXCEPTION, 0);
 	return 0;	/* compiler happy */
@@ -402,9 +402,9 @@ cpu_codefetch_w(UINT32 offset)
 	addr = sdp->u.seg.segbase + offset;
 
 	if (!CPU_STAT_PM)
-		return cpu_memoryread_w(addr);
+		return cpu_memoryread_w_codefetch(addr);
 	if (offset <= sdp->u.seg.limit - 1)
-		return cpu_lmemoryread_w(addr, ucrw);
+		return cpu_lmemoryread_w_codefetch(addr, ucrw);
 
 	EXCEPTION(GP_EXCEPTION, 0);
 	return 0;	/* compiler happy */
@@ -421,10 +421,10 @@ cpu_codefetch_d(UINT32 offset)
 	addr = sdp->u.seg.segbase + offset;
 
 	if (!CPU_STAT_PM)
-		return cpu_memoryread_d(addr);
+		return cpu_memoryread_d_codefetch(addr);
 
 	if (offset <= sdp->u.seg.limit - 3)
-		return cpu_lmemoryread_d(addr, ucrw);
+		return cpu_lmemoryread_d_codefetch(addr, ucrw);
 
 	EXCEPTION(GP_EXCEPTION, 0);
 	return 0;	/* compiler happy */

@@ -66,6 +66,10 @@
 #define	cpu_memoryread_b(a)	memp_read8(a)
 #define	cpu_memoryread_w(a)	memp_read16(a)
 #define	cpu_memoryread_d(a)	memp_read32(a)
+#define	cpu_memoryread_codefetch(a)	memp_read8_codefetch(a)
+#define	cpu_memoryread_b_codefetch(a)	memp_read8_codefetch(a)
+#define	cpu_memoryread_w_codefetch(a)	memp_read16_codefetch(a)
+#define	cpu_memoryread_d_codefetch(a)	memp_read32_codefetch(a)
 
 #define	cpu_memoryread_region(a,p,l)	memp_reads(a,p,l)
 #define	cpu_memorywrite_region(a,p,l)	memp_writes(a,p,l)

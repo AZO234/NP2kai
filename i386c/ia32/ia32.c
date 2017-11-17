@@ -239,7 +239,7 @@ set_cr3(UINT32 new_cr3)
 
 	CPU_CR3 = new_cr3 & CPU_CR3_MASK;
 	CPU_STAT_PDE_BASE = CPU_CR3 & CPU_CR3_PD_MASK;
-	tlb_flush(0);
+	tlb_flush();
 }
 
 /*

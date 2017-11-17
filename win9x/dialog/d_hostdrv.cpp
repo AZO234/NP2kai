@@ -130,8 +130,8 @@ BOOL CHostdrvDlg::OnInitDialog()
 void CHostdrvDlg::OnOK()
 {
 	UINT update = 0;
-	UINT32 valtmp;
-	TCHAR numbuf[31];
+	//UINT32 valtmp;
+	//TCHAR numbuf[31];
 	
 	hostdrv_setcurrentpath(m_hdrvroot);
 	if (m_hdrvenable!=np2cfg.hdrvenable || _tcscmp(np2cfg.hdrvroot, m_hdrvroot)!=0 || m_hdrvacc!=np2cfg.hdrvacc)
@@ -160,7 +160,7 @@ BOOL CHostdrvDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 	switch (LOWORD(wParam))
 	{
 		case IDC_HOSTDRVENABLE:
-			m_hdrvenable = m_chkenabled.SendMessage(BM_GETCHECK , 0 , 0);
+			m_hdrvenable = (UINT8)m_chkenabled.SendMessage(BM_GETCHECK , 0 , 0);
 			return TRUE;
 
 		case IDC_HOSTDRVDIR:
@@ -176,7 +176,7 @@ BOOL CHostdrvDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 				}
 			}
 			if(hdrvroottmp[0]){
-				hdrvpathlen = _tcslen(hdrvroottmp);
+				hdrvpathlen = (int)_tcslen(hdrvroottmp);
 				if(hdrvroottmp[hdrvpathlen-1]=='\\'){
 					hdrvroottmp[hdrvpathlen-1] = '\0';
 				}
@@ -217,7 +217,7 @@ BOOL CHostdrvDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 				if((idlist = SHBrowseForFolder(&binfo))){
 					SHGetPathFromIDList(idlist, dir);
 					_tcscpy(hdrvroottmp, dir);
-					hdrvpathlen = _tcslen(hdrvroottmp);
+					hdrvpathlen = (int)_tcslen(hdrvroottmp);
 					if(hdrvroottmp[hdrvpathlen-1]=='\\'){
 						hdrvroottmp[hdrvpathlen-1] = '\0';
 					}

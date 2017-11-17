@@ -11,6 +11,7 @@
 	UINT8	renewal_line[SURFACE_HEIGHT];
 	UINT8	np2_tram[SURFACE_SIZE];
 	UINT8	np2_vram[2][SURFACE_SIZE];
+	UINT8	redrawpending = 0;
 
 
 static void updateallline(UINT32 update) {
@@ -22,6 +23,9 @@ static void updateallline(UINT32 update) {
 	}
 }
 
+void scrndraw_updateallline(void) {
+	redrawpending = 1;
+}
 
 // ----
 
@@ -135,8 +139,9 @@ const SDRAWFN	*sdrawfn;
 	int			height;
 	
 
-	if (redraw) {
+	if (redraw || redrawpending) {
 		updateallline(0x80808080);
+		redrawpending = 0;
 	}
 
 	ret = 0;

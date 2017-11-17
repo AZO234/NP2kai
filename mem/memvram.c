@@ -210,6 +210,12 @@ REG8 MEMCALL memvram0_rd8(UINT32 address)	VRAMRD8(0, address)
 REG8 MEMCALL memvram1_rd8(UINT32 address)	VRAMRD8(1, address)
 REG16 MEMCALL memvram0_rd16(UINT32 address)	VRAMRD16(0, address)
 REG16 MEMCALL memvram1_rd16(UINT32 address)	VRAMRD16(1, address)
+UINT32 MEMCALL memvram0_rd32(UINT32 address){
+	return (UINT32)memvram0_rd16(address)|(memvram0_rd16(address+2)<<16);
+}
+UINT32 MEMCALL memvram1_rd32(UINT32 address){
+	return (UINT32)memvram1_rd16(address)|(memvram1_rd16(address+2)<<16);
+}
 void MEMCALL memvram0_wr8(UINT32 address, REG8 value)
 											VRAMWR8(0, address, value)
 void MEMCALL memvram1_wr8(UINT32 address, REG8 value)
@@ -218,11 +224,25 @@ void MEMCALL memvram0_wr16(UINT32 address, REG16 value)
 											VRAMWR16(0, address, value)
 void MEMCALL memvram1_wr16(UINT32 address, REG16 value)
 											VRAMWR16(1, address, value)
+void MEMCALL memvram0_wr32(UINT32 address, UINT32 value){
+	memvram0_wr16(address, (REG16)value);
+	memvram0_wr16(address+2, (REG16)(value >> 16));
+}
+void MEMCALL memvram1_wr32(UINT32 address, UINT32 value){
+	memvram1_wr16(address, (REG16)value);
+	memvram1_wr16(address+2, (REG16)(value >> 16));
+}
 
 REG8 MEMCALL memtcr0_rd8(UINT32 address)	TCRRD8(0, address)
 REG8 MEMCALL memtcr1_rd8(UINT32 address)	TCRRD8(1, address)
 REG16 MEMCALL memtcr0_rd16(UINT32 address)	TCRRD16(0, address)
 REG16 MEMCALL memtcr1_rd16(UINT32 address)	TCRRD16(1, address)
+UINT32 MEMCALL memtcr0_rd32(UINT32 address){
+	return (UINT32)memtcr0_rd16(address)|(memtcr0_rd16(address+2)<<16);
+}
+UINT32 MEMCALL memtcr1_rd32(UINT32 address){
+	return (UINT32)memtcr1_rd16(address)|(memtcr1_rd16(address+2)<<16);
+}
 
 void MEMCALL memrmw0_wr8(UINT32 address, REG8 value)
 											RMWWR8(0, address, value)
@@ -232,6 +252,14 @@ void MEMCALL memrmw0_wr16(UINT32 address, REG16 value)
 											RMWWR16(0, address, value)
 void MEMCALL memrmw1_wr16(UINT32 address, REG16 value)
 											RMWWR16(1, address, value)
+void MEMCALL memrmw0_wr32(UINT32 address, UINT32 value){
+	memrmw0_wr16(address, (REG16)value);
+	memrmw0_wr16(address+2, (REG16)(value >> 16));
+}
+void MEMCALL memrmw1_wr32(UINT32 address, UINT32 value){
+	memrmw1_wr16(address, (REG16)value);
+	memrmw1_wr16(address+2, (REG16)(value >> 16));
+}
 
 void MEMCALL memtdw0_wr8(UINT32 address, REG8 value)
 											TDWWR8(0, address, value)
@@ -241,4 +269,12 @@ void MEMCALL memtdw0_wr16(UINT32 address, REG16 value)
 											TDWWR16(0, address, value)
 void MEMCALL memtdw1_wr16(UINT32 address, REG16 value)
 											TDWWR16(1, address, value)
+void MEMCALL memtdw0_wr32(UINT32 address, UINT32 value){
+	memtdw0_wr16(address, (REG16)value);
+	memtdw0_wr16(address+2, (REG16)(value >> 16));
+}
+void MEMCALL memtdw1_wr32(UINT32 address, UINT32 value){
+	memtdw1_wr16(address, (REG16)value);
+	memtdw1_wr16(address+2, (REG16)(value >> 16));
+}
 

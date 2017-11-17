@@ -1247,3 +1247,12 @@ void MEMCALL memegc_wr16(UINT32 addr, REG16 value) {
 		egc_writebyte(addr, (REG8)value);
 	}
 }
+
+UINT32 MEMCALL memegc_rd32(UINT32 address){
+	return (UINT32)memegc_rd16(address)|(memegc_rd16(address+2)<<16);
+}
+
+void MEMCALL memegc_wr32(UINT32 address, UINT32 value){
+	memegc_wr16(address, (REG16)value);
+	memegc_wr16(address+2, (REG16)(value >> 16));
+}

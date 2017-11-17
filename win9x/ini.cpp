@@ -600,7 +600,9 @@ static const PFTBL s_IniItems[] =
 	PFVAL("TIMERFIX", PFTYPE_BOOL,		&np2cfg.timerfix),
 	
 	PFVAL("WINNTFIX", PFTYPE_BOOL,		&np2cfg.winntfix),
-
+	
+	PFVAL("SYSIOMSK", PFTYPE_HEX16,		&np2cfg.sysiomsk), // システムIOマスク
+	
 	// OS依存？
 	PFVAL("keyboard", PFRO_KB,			&np2oscfg.KEYBOARD),
 	PFVAL("F12_COPY", PFTYPE_UINT8,		&np2oscfg.F12COPY),

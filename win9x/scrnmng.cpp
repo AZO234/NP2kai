@@ -209,6 +209,16 @@ static void renewalclientsize(BOOL winloc) {
 					scrnwidth = (scrnheight * width) / height;
 				}
 				break;
+				
+			case FSCRNMOD_FORCE43:
+				if(ddraw.width*3 > ddraw.height*4){
+					scrnwidth = ddraw.height*4/3;
+					scrnheight = ddraw.height;
+				}else{
+					scrnwidth = ddraw.width;
+					scrnheight = ddraw.width*3/4;
+				}
+				break;
 
 			case FSCRNMOD_LARGE:
 				scrnwidth = ddraw.width;
@@ -237,6 +247,7 @@ static void renewalclientsize(BOOL winloc) {
 					case FSCRNMOD_ASPECTFIX8:
 					case FSCRNMOD_ASPECTFIX:
 					case FSCRNMOD_INTMULTIPLE:
+					case FSCRNMOD_FORCE43:
 						ddraw.rectclip.bottom = (tmpcy * height) / scrnheight;
 						break;
 						
@@ -248,6 +259,7 @@ static void renewalclientsize(BOOL winloc) {
 		}
 	}
 	else {
+		fscrnmod = np2oscfg.fscrnmod & FSCRNMOD_ASPECTMASK;
 		multiple = scrnstat.multiple;
 		if (!(ddraw.scrnmode & SCRNMODE_ROTATE)) {
 			if ((np2oscfg.paddingx) && (multiple == 8)) {
@@ -255,6 +267,15 @@ static void renewalclientsize(BOOL winloc) {
 			}
 			scrnwidth = (width * multiple) >> 3;
 			scrnheight = (height * multiple) >> 3;
+			if(fscrnmod==FSCRNMOD_FORCE43) { // Force 4:3 Screen
+				if(((width * multiple) >> 3)*3 < ((height * multiple) >> 3)*4){
+					scrnwidth = ((height * multiple) >> 3)*4/3;
+					scrnheight = ((height * multiple) >> 3);
+				}else{
+					scrnwidth = ((width * multiple) >> 3);
+					scrnheight = ((width * multiple) >> 3)*3/4;
+				}
+			}
 			ddraw.rect.right = width + extend;
 			ddraw.rect.bottom = height;
 			ddraw.scrn.left = np2oscfg.paddingx - extend;
@@ -266,6 +287,15 @@ static void renewalclientsize(BOOL winloc) {
 			}
 			scrnwidth = (height * multiple) >> 3;
 			scrnheight = (width * multiple) >> 3;
+			if(fscrnmod==FSCRNMOD_FORCE43) { // Force 4:3 Screen
+				if(((width * multiple) >> 3)*4 < ((height * multiple) >> 3)*3){
+					scrnwidth = ((height * multiple) >> 3)*3/4;
+					scrnheight = ((height * multiple) >> 3);
+				}else{
+					scrnwidth = ((width * multiple) >> 3);
+					scrnheight = ((width * multiple) >> 3)*4/3;
+				}
+			}
 			ddraw.rect.right = height;
 			ddraw.rect.bottom = width + extend;
 			ddraw.scrn.left = np2oscfg.paddingx;
@@ -439,6 +469,15 @@ static void make16mask(DWORD bmask, DWORD rmask, DWORD gmask) {
 	}
 	ddraw.pal16mask.p.g = (UINT8)gmask;
 	ddraw.l16g = sft;
+}
+
+static void restoresurfaces() {
+		ddraw.backsurf->Restore();
+		ddraw.primsurf->Restore();
+#if defined(SUPPORT_WAB)
+		ddraw.wabsurf->Restore();
+#endif
+		scrndraw_updateallline();
 }
 
 
@@ -954,8 +993,9 @@ const SCRNSURF *scrnmng_surflock(void) {
 	}
 	r = ddraw.backsurf->Lock(NULL, &destscrn, DDLOCK_WAIT, NULL);
 	if (r == DDERR_SURFACELOST) {
-		ddraw.backsurf->Restore();
-		r = ddraw.backsurf->Lock(NULL, &destscrn, DDLOCK_WAIT, NULL);
+		restoresurfaces();
+		return(NULL);
+		//r = ddraw.backsurf->Lock(NULL, &destscrn, DDLOCK_WAIT, NULL);
 	}
 	if (r != DD_OK) {
 //		TRACEOUT(("backsurf lock error: %d (%d)", r));
@@ -1017,10 +1057,10 @@ void scrnmng_update(void) {
 			r = ddraw.primsurf->Blt(scrn, ddraw.backsurf, rect,
 															DDBLT_WAIT, NULL);
 			if (r == DDERR_SURFACELOST) {
-				ddraw.backsurf->Restore();
-				ddraw.primsurf->Restore();
-				ddraw.primsurf->Blt(scrn, ddraw.backsurf, rect,
-															DDBLT_WAIT, NULL);
+				restoresurfaces();
+				return;
+				//ddraw.primsurf->Blt(scrn, ddraw.backsurf, rect,
+				//											DDBLT_WAIT, NULL);
 			}
 		}
 		else {
@@ -1038,10 +1078,10 @@ void scrnmng_update(void) {
 			r = ddraw.primsurf->Blt(&dst, ddraw.backsurf, &ddraw.rect,
 									DDBLT_WAIT, NULL);
 			if (r == DDERR_SURFACELOST) {
-				ddraw.backsurf->Restore();
-				ddraw.primsurf->Restore();
-				ddraw.primsurf->Blt(&dst, ddraw.backsurf, &ddraw.rect,
-														DDBLT_WAIT, NULL);
+				restoresurfaces();
+				return;
+				//ddraw.primsurf->Blt(&dst, ddraw.backsurf, &ddraw.rect,
+				//										DDBLT_WAIT, NULL);
 			}
 		}
 	}
@@ -1120,7 +1160,7 @@ void scrnmng_dispclock(void)
 									ddraw.clocksurf, (RECT *)&rectclk,
 									DDBLTFAST_WAIT) == DDERR_SURFACELOST)
 	{
-		ddraw.primsurf->Restore();
+		restoresurfaces();
 		ddraw.clocksurf->Restore();
 	}
 	DispClock::GetInstance()->CountDown(np2oscfg.DRAW_SKIP);
@@ -1298,9 +1338,9 @@ void scrnmng_updatefsres(void) {
 
 // ウィンドウアクセラレータ画面転送
 void scrnmng_blthdc(HDC hdc) {
+#if defined(SUPPORT_WAB)
 	HRESULT	r;
 	HDC hDCDD;
-#if defined(SUPPORT_WAB)
 	mt_wabdrawing = 0;
 	if (np2wabwnd.multiwindow) return;
 	if (mt_wabpausedrawing) return;
@@ -1316,13 +1356,13 @@ void scrnmng_blthdc(HDC hdc) {
 #endif
 }
 void scrnmng_bltwab() {
+#if defined(SUPPORT_WAB)
 	RECT	*dst;
 	RECT	src;
 	RECT	dstmp;
-	DDBLTFX ddfx;
+	//DDBLTFX ddfx;
 	HRESULT	r;
 	int exmgn = 0;
-#if defined(SUPPORT_WAB)
 	if (np2wabwnd.multiwindow) return;
 	if (ddraw.backsurf != NULL) {
 		if (ddraw.scrnmode & SCRNMODE_FULLSCREEN) {
@@ -1344,9 +1384,7 @@ void scrnmng_bltwab() {
 		dstmp.right = dstmp.left + scrnstat.width;
 		r = ddraw.backsurf->Blt(&dstmp, ddraw.wabsurf, &src, DDBLT_WAIT, NULL);
 		if (r == DDERR_SURFACELOST) {
-			ddraw.backsurf->Restore();
-			ddraw.primsurf->Restore();
-			ddraw.wabsurf->Restore();
+			restoresurfaces();
 		}
 	}
 #endif

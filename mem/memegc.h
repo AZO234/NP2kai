@@ -14,6 +14,8 @@ REG8 MEMCALL memegc_rd8(UINT32 addr);
 void MEMCALL memegc_wr8(UINT32 addr, REG8 value);
 REG16 MEMCALL memegc_rd16(UINT32 addr);
 void MEMCALL memegc_wr16(UINT32 addr, REG16 value);
+UINT32 MEMCALL memegc_rd32(UINT32 address);
+void MEMCALL memegc_wr32(UINT32 address, UINT32 value);
 
 #ifdef __cplusplus
 }

@@ -7,25 +7,35 @@ REG8 MEMCALL memvram0_rd8(UINT32 address);
 REG8 MEMCALL memvram1_rd8(UINT32 address);
 REG16 MEMCALL memvram0_rd16(UINT32 address);
 REG16 MEMCALL memvram1_rd16(UINT32 address);
+UINT32 MEMCALL memvram0_rd32(UINT32 address);
+UINT32 MEMCALL memvram1_rd32(UINT32 address);
 void MEMCALL memvram0_wr8(UINT32 address, REG8 value);
 void MEMCALL memvram1_wr8(UINT32 address, REG8 value);
 void MEMCALL memvram0_wr16(UINT32 address, REG16 value);
 void MEMCALL memvram1_wr16(UINT32 address, REG16 value);
+void MEMCALL memvram0_wr32(UINT32 address, UINT32 value);
+void MEMCALL memvram1_wr32(UINT32 address, UINT32 value);
 
 REG8 MEMCALL memtcr0_rd8(UINT32 address);
 REG8 MEMCALL memtcr1_rd8(UINT32 address);
 REG16 MEMCALL memtcr0_rd16(UINT32 address);
 REG16 MEMCALL memtcr1_rd16(UINT32 address);
+UINT32 MEMCALL memtcr0_rd32(UINT32 address);
+UINT32 MEMCALL memtcr1_rd32(UINT32 address);
 
 void MEMCALL memrmw0_wr8(UINT32 address, REG8 value);
 void MEMCALL memrmw1_wr8(UINT32 address, REG8 value);
 void MEMCALL memrmw0_wr16(UINT32 address, REG16 value);
 void MEMCALL memrmw1_wr16(UINT32 address, REG16 value);
+void MEMCALL memrmw0_wr32(UINT32 address, UINT32 value);
+void MEMCALL memrmw1_wr32(UINT32 address, UINT32 value);
 
 void MEMCALL memtdw0_wr8(UINT32 address, REG8 value);
 void MEMCALL memtdw1_wr8(UINT32 address, REG8 value);
 void MEMCALL memtdw0_wr16(UINT32 address, REG16 value);
 void MEMCALL memtdw1_wr16(UINT32 address, REG16 value);
+void MEMCALL memtdw0_wr32(UINT32 address, UINT32 value);
+void MEMCALL memtdw1_wr32(UINT32 address, UINT32 value);
 
 #ifdef __cplusplus
 }

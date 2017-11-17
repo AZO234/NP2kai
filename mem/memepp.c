@@ -36,6 +36,11 @@ void MEMCALL memd000_wr16(UINT32 address, REG16 value) {
 	}
 }
 
+void MEMCALL memd000_wr32(UINT32 address, UINT32 value){
+	memd000_wr16(address, (REG16)value);
+	memd000_wr16(address+2, (REG16)(value >> 16));
+}
+
 
 // ---- ITF
 
@@ -55,6 +60,10 @@ REG16 MEMCALL memf800_rd16(UINT32 address) {
 	return(LOADINTELWORD(mem + address));
 }
 
+UINT32 MEMCALL memf800_rd32(UINT32 address){
+	return (UINT32)memf800_rd16(address)|(memf800_rd16(address+2)<<16);
+}
+
 
 // ---- EPSON ROM
 
@@ -69,5 +78,10 @@ void MEMCALL memepson_wr16(UINT32 address, REG16 value) {
 
 	ptr = mem + (address + 0x1c8000 - 0xe8000);
 	STOREINTELWORD(ptr, value);
+}
+
+void MEMCALL memepson_wr32(UINT32 address, UINT32 value){
+	memepson_wr16(address, (REG16)value);
+	memepson_wr16(address+2, (REG16)(value >> 16));
 }
 

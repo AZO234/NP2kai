@@ -358,7 +358,7 @@ static void atapi_cmd_read_capacity(IDEDRV drv) {
 		senderror(drv);
 		return;
 	}
-	totals = sxsi->totals;
+	totals = (UINT32)sxsi->totals;
 
 	b[0] = (UINT8)(totals >> 24);
 	b[1] = (UINT8)(totals >> 16);
@@ -1000,7 +1000,7 @@ static void atapi_cmd_seek(IDEDRV drv, UINT32 lba)
 // 0xBD: MECHANISM STATUS
 static void atapi_cmd_mechanismstatus(IDEDRV drv) {
 
-	SXSIDEV	sxsi;
+	//SXSIDEV	sxsi;
 
 	//sxsi = sxsi_getptr(drv->sxsidrv);
 	//ZeroMemory(drv->buf, 12);

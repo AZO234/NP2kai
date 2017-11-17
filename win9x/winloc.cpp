@@ -82,8 +82,8 @@ BOOL winloc_GetWindowRect(HWND hwnd, LPRECT lpRect) {
 	if(F_DwmGetWindowAttribute){
 		HRESULT hr = 0;
 		BOOL dwmenable = FALSE;
-		F_DwmIsCompositionEnabled(&dwmenable);
-		if(dwmenable){
+		hr = F_DwmIsCompositionEnabled(&dwmenable);
+		if(SUCCEEDED(hr) && dwmenable){
 			// DWMŠÂ‹«
 			hr = F_DwmGetWindowAttribute(hwnd, DWMWA_EXTENDED_FRAME_BOUNDS, lpRect, sizeof(RECT));
 			if(SUCCEEDED(hr)){
@@ -159,8 +159,10 @@ void winloc_setclientsize(HWND hwnd, int width, int height) {
 			winloc_GetWindowRect(hwnd, &rectmp2);
 			x -= rectmp2.left   - rectmp1.left;
 			y -= rectmp2.top    - rectmp1.top;
-			w -= 2*abs(rectmp2.left - rectmp1.left);
-			h -= 2*abs(rectmp2.left - rectmp1.left);
+			w = width + (rectmp1.right - rectmp1.left)
+						- (rectClient.right - rectClient.left);
+			h = height + (rectmp1.bottom - rectmp1.top)
+						- (rectClient.bottom - rectClient.top);
 		}
 		MoveWindow(hwnd, x, y, w, h, TRUE);
 	} while(--cnt);
@@ -484,6 +486,7 @@ static BOOL gravityx(WINLOCEX wle, RECT *rect) {
 	d = SNAPDOTPULL;
 	wnd = (WLEXWND *)(wle + 1);
 	for (i=0; i<wle->count; i++, wnd++) {
+		winloc_GetWindowRect(wnd->hwnd, &wnd->rect);
 		if (!wnd->connect) {
 			if ((rect->bottom >= wnd->rect.top) &&
 				(rect->top <= wnd->rect.bottom)) {

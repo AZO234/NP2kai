@@ -73,17 +73,19 @@ static	UINT8		ioterminate[0x100];
 static void IOOUTCALL defout8(UINT port, REG8 dat) {
 
 #if !defined(DISABLE_SOUND)
-	UINT	tmp;
+	if(cs4231.enable){
+		UINT	tmp;
 
-	tmp = port - cs4231.port[0];
-	if (tmp < 8) {
-		cs4231io0_w8(port, dat);
-		return;
-	}
-	tmp = port - cs4231.port[5];
-	if (tmp < 2) {
-		cs4231io5_w8(port, dat);
-		return;
+		tmp = port - cs4231.port[0];
+		if (tmp < 8) {
+			cs4231io0_w8(port, dat);
+			return;
+		}
+		tmp = port - cs4231.port[5];
+		if (tmp < 2) {
+			cs4231io5_w8(port, dat);
+			return;
+		}
 	}
 #endif
 	if ((port & 0xf0ff) == 0x801e) {
@@ -96,15 +98,17 @@ static void IOOUTCALL defout8(UINT port, REG8 dat) {
 static REG8 IOINPCALL definp8(UINT port) {
 
 #if !defined(DISABLE_SOUND)
-	UINT	tmp;
+	if(cs4231.enable){
+		UINT	tmp;
 
-	tmp = port - cs4231.port[0];
-	if (tmp < 8) {
-		return(cs4231io0_r8(port));
-	}
-	tmp = port - cs4231.port[5];
-	if (tmp < 2) {
-		return(cs4231io5_r8(port));
+		tmp = port - cs4231.port[0];
+		if (tmp < 8) {
+			return(cs4231io0_r8(port));
+		}
+		tmp = port - cs4231.port[5];
+		if (tmp < 2) {
+			return(cs4231io5_r8(port));
+		}
 	}
 #endif
 	if ((port & 0xf0ff) == 0x801e) {
@@ -430,7 +434,11 @@ BRESULT iocore_build(void) {
 	}
 	sys->type = IOFUNC_SYS;
 	for (i=0; i<256; i++) {
+#ifdef SUPPORT_PC9821
+		if (!(i & (0x0c|(np2cfg.sysiomsk >> 8)))) { // PC-9821用 追加マスク(0x0c -> 0xff) np21w ver0.86 rev37
+#else
 		if (!(i & 0x0c)) {
+#endif
 			ioc->base[i] = sys;
 		}
 		else {
@@ -520,13 +528,13 @@ void IOOUTCALL iocore_out8(UINT port, REG8 dat) {
 
 	IOFUNC	iof;
 
-#if defined(SUPPORT_PC9821)
-	if((port&0xff) == 0xf0 && (port&0xff00) != 0x0000){
-		// Win2000\83f\83o\83C\83X\8C\9F\8Fo\83\8A\83Z\83b\83g\91΍\F4\81i\8D\AA\8B\92\96\B3\82\B5\81j
-		CPU_REMCLOCK -= iocore.busclock;
-		return;
-	}
-#endif
+//#if defined(SUPPORT_PC9821)
+//	if((port&0xff) == 0xf0 && (port&0xff00) != 0x0000){
+//		// Win2000デバイス検出リセット対策（根拠無し）
+//		CPU_REMCLOCK -= iocore.busclock;
+//		return;
+//	}
+//#endif
 //	TRACEOUT(("iocore_out8(%.2x, %.2x)", port, dat));
 	CPU_REMCLOCK -= iocore.busclock;
 	iof = iocore.base[(port >> 8) & 0xff];
@@ -537,14 +545,14 @@ REG8 IOINPCALL iocore_inp8(UINT port) {
 
 	IOFUNC	iof;
 	REG8	ret;
-
-#if defined(SUPPORT_PC9821)
-	if((port&0xff) == 0xf0 && (port&0xff00) != 0x0000){
-		// Win2000\83f\83o\83C\83X\8C\9F\8Fo\83\8A\83Z\83b\83g\91΍\F4\81i\8D\AA\8B\92\96\B3\82\B5\81j
-		CPU_REMCLOCK -= iocore.busclock;
-		return 0xff;
-	}
-#endif
+//
+//#if defined(SUPPORT_PC9821)
+//	if((port&0xff) == 0xf0 && (port&0xff00) != 0x0000){
+//		// Win2000デバイス検出リセット対策（根拠無し）
+//		CPU_REMCLOCK -= iocore.busclock;
+//		return 0xff;
+//	}
+//#endif
 	CPU_REMCLOCK -= iocore.busclock;
 	iof = iocore.base[(port >> 8) & 0xff];
 	ret = iof->ioinp[port & 0xff](port);

@@ -15,41 +15,63 @@
 
 	CS4231CFG	cs4231cfg;
 
-	static SINT32 cs4231_totalsample = 0;
+	int calpenflag = 0; // XXX: CAL0だけ(0x04)→CAL0とPENが同時に立つ状態(0x05)に遷移した時だけ挙動を変える･･･ Win3.1+necpcm.drv用のその場しのぎ
+	int w31play = 0; // XXX: CAL0だけ(0x04)→CAL0とPENが同時に立つ状態(0x05)に遷移した時だけ挙動を変える･･･ Win3.1+necpcm.drv用のその場しのぎ
+	
+// 1サンプルあたりのバイト数（モノラル, ステレオの順）
+static const SINT32 cs4231_playcountshift[16] = {
+			1  ,		// 0: 8bit PCM
+			1*2,
+			1  ,		// 1: u-Law
+			1  ,
+			1*2,		// 2: 16bit PCM(little endian)?
+			1*4,
+			1  ,		// 3: A-Law
+			1  ,
+			1  ,		// 4:
+			1  ,
+			1  ,		// 5: ADPCM
+			1  ,
+			1*2,		// 6: 16bit PCM
+			1*4,
+			1  ,		// 7: ADPCM
+			1  };
 
+// Indirect Mapped Registers
 enum {
-	CS4231REG_LINPUT	= 0x00,
-	CS4231REG_RINPUT	= 0x01,
-	CS4231REG_AUX1L		= 0x02,
-	CS4231REG_AUX1R		= 0x03,
-	CS4231REG_AUX2L		= 0x04,
-	CS4231REG_AUX2R		= 0x05,
-	CS4231REG_LOUTPUT	= 0x06,
-	CS4231REG_ROUTPUT	= 0x07,
-	CS4231REG_PLAYFMT	= 0x08,
-	CS4231REG_INTERFACE	= 0x09,
-	CS4231REG_PINCTRL	= 0x0a,
-	CS4231REG_TESTINIT	= 0x0b,
-	CS4231REG_MISCINFO	= 0x0c,
-	CS4231REG_LOOPBACK	= 0x0d,
-	CS4231REG_PLAYCNTM	= 0x0e,
-	CS4231REG_PLAYCNTL	= 0x0f,
+	CS4231REG_LINPUT	= 0x00, // Left ADC Input Control (I0)
+	CS4231REG_RINPUT	= 0x01, // Right ADC Input Control (I1)
+	CS4231REG_AUX1L		= 0x02, // Left Auxiliary #1 Input Control (I2)
+	CS4231REG_AUX1R		= 0x03, // Right Auxiliary #1 Input Control (I3)
+	CS4231REG_AUX2L		= 0x04, // Left Auxiliary #2 Input Control (I4)
+	CS4231REG_AUX2R		= 0x05, // Right Auxiliary #2 Input Control (I5)
+	CS4231REG_LOUTPUT	= 0x06, // Left DAC Output Control (I6)
+	CS4231REG_ROUTPUT	= 0x07, // Right DAC Output Control (I7)
+	CS4231REG_PLAYFMT	= 0x08, // Fs and Playback Data Format (I8)
+	CS4231REG_INTERFACE	= 0x09, // Interface Configuration (I9)
+	CS4231REG_PINCTRL	= 0x0a, // Pin Control (I10)
+	CS4231REG_TESTINIT	= 0x0b, // Error Status and Initialization (I11, Read Only)
+	CS4231REG_MISCINFO	= 0x0c, // MODE and ID (I12)
+	CS4231REG_LOOPBACK	= 0x0d, // Loopback Control (I13)
+	CS4231REG_PLAYCNTM	= 0x0e, // Playback Upper Base (I14)
+	CS4231REG_PLAYCNTL	= 0x0f, // Playback Lower Base (I15)
 
-	CS4231REG_FEATURE1	= 0x10,
-	CS4231REG_FEATURE2	= 0x11,
-	CS4231REG_LLINEIN	= 0x12,
-	CS4231REG_RLINEIN	= 0x13,
-	CS4231REG_TIMERL	= 0x14,
-	CS4231REG_TIMERH	= 0x15,
-	CS4231REG_RESERVED1= 0x16,
-	CS4231REG_RESERVED2= 0x17,
-	CS4231REG_IRQSTAT	= 0x18,
-	CS4231REG_VERSION	= 0x19,
-	CS4231REG_MONOCTRL	= 0x1a,
-	CS4231REG_RECFMT	= 0x1c,
-	CS4231REG_PLAYFREQ	= 0x1d,
-	CS4231REG_RECCNTM	= 0x1e,
-	CS4231REG_RECCNTL	= 0x1f
+	CS4231REG_FEATURE1	= 0x10, // Alternate Feature Enable I (I16)
+	CS4231REG_FEATURE2	= 0x11, // Alternate Feature Enable II (I17)
+	CS4231REG_LLINEIN	= 0x12, // Left Line Input Control (I18)
+	CS4231REG_RLINEIN	= 0x13, // Right Line Input Control (I19)
+	CS4231REG_TIMERL	= 0x14, // Timer Lower Base (I20)
+	CS4231REG_TIMERH	= 0x15, // Timer Upper Base (I21)
+	CS4231REG_RESERVED1 = 0x16, // RESERVED (I22)
+	CS4231REG_RESERVED2 = 0x17, // Alternate Feature Enable III (I23)
+	CS4231REG_IRQSTAT	= 0x18, // Alternate Feature Status (I24)
+	CS4231REG_VERSION	= 0x19, // Version / ID (I25)
+	CS4231REG_MONOCTRL	= 0x1a, // Mono Input & Output Control (I26)
+	CS4231REG_RESERVED3	= 0x1b, // RESERVED (I27)
+	CS4231REG_RECFMT	= 0x1c, // Capture Data Format (I28)
+	CS4231REG_PLAYFREQ	= 0x1d, // RESERVED (I29)
+	CS4231REG_RECCNTM	= 0x1e, // Capture Upper Base (I30)
+	CS4231REG_RECCNTL	= 0x1f  // Capture Lower Base (I31)
 };
 
 
@@ -73,6 +95,21 @@ void cs4231_initialize(UINT rate) {
 	cs4231cfg.rate = rate;
 }
 
+void cs4231_reset(void) {
+
+	ZeroMemory(&cs4231, sizeof(cs4231));
+	cs4231.bufsize = CS4231_BUFFERS;
+//	cs4231.proc = cs4231_nodecode;
+	cs4231.dmach = 0xff;
+	cs4231.dmairq = 0xff;
+	cs4231.totalsample = 0;
+	FillMemory(cs4231.port, sizeof(cs4231.port), 0xff);
+}
+
+void cs4231_update(void) {
+}
+
+// 廃止：cs4231g.cで調整
 void cs4231_setvol(UINT vol) {
 
 	(void)vol;
@@ -87,30 +124,45 @@ void cs4231_dma(NEVENTITEM item) {
 	UINT	size;
 	UINT	r;
 	SINT32	cnt;
+	UINT	bufsize;
 	if (item->flag & NEVENT_SETEVENT) {
 		if (cs4231.dmach != 0xff) {
 			dmach = dmac.dmach + cs4231.dmach;
+			bufsize = cs4231.bufsize * cs4231_playcountshift[cs4231.reg.datafmt >> 4] / 4;
+
+			// バッファに空きがあればデータを読み出す
+			if(!w31play || !(cs4231.reg.featurestatus & (PI|TI|CI))){
+				if (bufsize - 4 > cs4231.bufdatas) {
+					rem = min(bufsize - 4 - cs4231.bufdatas, CS4231_MAXDMAREADBYTES); //読み取り単位は16bitステレオの1サンプル分(4byte)にしておかないと雑音化する
+					pos = cs4231.bufwpos & CS4231_BUFMASK; // バッファ書き込み位置
+					size = min(rem, dmach->startcount); // バッファ書き込みサイズ
+					r = dmac_getdata_(dmach, cs4231.buffer, pos, size); // DMA読み取り実行
+					cs4231.bufwpos = (cs4231.bufwpos + r) & CS4231_BUFMASK; // バッファ書き込み位置を更新
+					cs4231.bufdatas += r; // バッファ内の有効なデータ数を更新 = (bufwpos-bufpos)&CS4231_BUFMASK
+				}
+			}
+
+			// NEVENTをセット
+			if (cs4231cfg.rate) {
+				SINT32 neventms;
+				int playcountsmp = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)); // PI割り込みを発生させるサンプル数(Playback Base register)
+				playcountsmp = min(min(bufsize, CS4231_MAXDMAREADBYTES) / cs4231_playcountshift[cs4231.reg.datafmt >> 4], playcountsmp);
+				if (bufsize - 4 - cs4231.bufdatas > bufsize/2) {
+					playcountsmp /= 2;
+					if(playcountsmp==0) playcountsmp = 1;
+				}
+				//neventms = playcountsmp * 1000 / cs4231cfg.rate;
+				//if(neventms <= 0) neventms = 1;
+				//cnt = pccore.realclock / cs4231cfg.rate * 32;
+				//nevent_set(NEVENT_CS4231, cnt, cs4231_dma, NEVENT_RELATIVE);
+				//cnt = (UINT32)((UINT64)pccore.realclock * playcountsmp / cs4231cfg.rate / 10);
+				//nevent_setbyms(NEVENT_CS4231, neventms, cs4231_dma, NEVENT_RELATIVE);
+				nevent_set(NEVENT_CS4231, pccore.realclock / cs4231cfg.rate * playcountsmp, cs4231_dma, NEVENT_RELATIVE);
+			}
 
 			// サウンド再生用バッファに送る？(cs4231g.c)
 			sound_sync();
-
-			// バッファに空きがあればデータを読み出す
-			if (cs4231.bufsize-4 > cs4231.bufdatas) {
-				rem = min(cs4231.bufsize - 4 - cs4231.bufdatas, 512); //読み取り単位は16bitステレオの1サンプル分(4byte)にしておかないと雑音化する
-				pos = cs4231.bufwpos & CS4231_BUFMASK; // バッファ書き込み位置
-				size = min(rem, dmach->startcount); // バッファ書き込みサイズ
-				r = dmac_getdata_(dmach, cs4231.buffer, pos, size); // DMA読み取り実行
-				cs4231.bufwpos = (cs4231.bufwpos + r) & CS4231_BUFMASK; // バッファ書き込み位置を更新
-				cs4231.bufdatas += r; // バッファ内の有効なデータ数を更新 = (bufwpos-bufpos)&CS4231_BUFMASK
-			}
-
-			// まだデータがありそうならNEVENTをセット
-			if ((dmach->leng.w) && (cs4231cfg.rate)) {
-				cnt = pccore.realclock * 4 / cs4231cfg.rate;
-				nevent_set(NEVENT_CS4231, cnt, cs4231_dma, NEVENT_RELATIVE);
-			}
 		}
-
 	}
 	(void)item;
 }
@@ -137,13 +189,13 @@ REG8 DMACCALL cs4231dmafunc(REG8 func) {
 	switch(func) {
 		case DMAEXT_START:
 			if (cs4231cfg.rate) {
-				//DMACH	dmach;
-				//dmach = dmac.dmach + cs4231.dmach;
-				//dmach->adrs.d = dmach->startaddr;
-				//cs4231.bufpos = cs4231.bufwpos;
-				//cs4231.bufdatas = 0;
-				cs4231_totalsample = 0;
-				cnt = pccore.realclock * 4 / cs4231cfg.rate;
+				int playcountsmp = CS4231_MAXDMAREADBYTES;
+				// DMA読み取り数カウンタを初期化
+				cs4231.totalsample = 0; 
+
+				// DMA読み取り処理開始(NEVENTセット)
+				//nevent_setbyms(NEVENT_CS4231, CS4231_MAXDMAREADBYTES * 1000 / cs4231cfg.rate, cs4231_dma, NEVENT_ABSOLUTE);
+				cnt = pccore.realclock / cs4231cfg.rate * 16;
 				nevent_set(NEVENT_CS4231, cnt, cs4231_dma, NEVENT_ABSOLUTE);
 			}
 			break;
@@ -157,31 +209,12 @@ REG8 DMACCALL cs4231dmafunc(REG8 func) {
 			break;
 
 		case DMAEXT_BREAK:
-			//{
-			//	DMACH	dmach;
-			//	dmach = dmac.dmach + cs4231.dmach;
-			//	dmach->adrs.d = dmach->startaddr;
-			//}
+			// DMA読み取り処理終了(NEVENT解除)
 			nevent_reset(NEVENT_CS4231);
 			break;
 
 	}
 	return(0);
-}
-
-void cs4231_reset(void) {
-
-	ZeroMemory(&cs4231, sizeof(cs4231));
-	cs4231.bufsize = CS4231_BUFFERS;
-//	cs4231.proc = cs4231_nodecode;
-	cs4231.dmach = 0xff;
-	cs4231.dmairq = 0xff;
-	//cs4231.timer = 200; // XXX: 何も入れてくれないのでそれっぽいのを入れる･･･(10usec単位)
-	cs4231_totalsample = 0;
-	FillMemory(cs4231.port, sizeof(cs4231.port), 0xff);
-}
-
-void cs4231_update(void) {
 }
 
 // バッファ位置のズレ修正用（雑音化防止）
@@ -202,7 +235,7 @@ static void setdataalign(void) {
 	}
 }
 
-// CS4231 Indexed Data registerの処理
+// CS4231 Indexed Data registerのWRITE処理
 void cs4231_control(UINT idx, REG8 dat) {
 	UINT8	modify;
 	DMACH	dmach;
@@ -210,19 +243,33 @@ void cs4231_control(UINT idx, REG8 dat) {
 	case 0xd:
 		break;
 	case 0xc:
+		// MODE and ID (I12)
 		dat &= 0x40;
 		dat |= 0x8a;
 		break;
 	case 0xb://ErrorStatus 
 	case 0x19://Version ID
 		return;
+	case CS4231REG_IRQSTAT:
+		// バッファオーバーラン・アンダーランや割り込みの状態を表すレジスタ　Alternate Feature Status (I24)
+		// 0をセットしたビットだけ消す（1の場合はそのまま）
+		modify = ((UINT8 *)&cs4231.reg)[idx] & (~(dat|0x0f));
+		((UINT8 *)&cs4231.reg)[idx] &= dat|0x0f;
+		if (modify & (PI|TI|CI)) {
+			// PI,TI,CIビットが全て消去されていたら割り込み解除
+			if(((((UINT8 *)&cs4231.reg)[idx]) & (PI|TI|CI)) == 0){
+				pic_resetirq(cs4231.dmairq);
+				cs4231.intflag &= ~INt;
+			}
+		}
+        return; // 他とは処理が違うので抜ける
 	default:
 		break;
 
 	}
 	dmach = dmac.dmach + cs4231.dmach;
-	modify = ((UINT8 *)&cs4231.reg)[idx] ^ dat;
-	((UINT8 *)&cs4231.reg)[idx] = dat;
+	modify = ((UINT8 *)&cs4231.reg)[idx] ^ dat; // 変更されたビットを取得
+	((UINT8 *)&cs4231.reg)[idx] = dat; // レジスタ値を新しい値に変更
 	switch(idx) {
 	case CS4231REG_PLAYFMT:
 		// 再生フォーマット設定とか　Fs and Playback Data Format (I8)
@@ -262,72 +309,20 @@ void cs4231_control(UINT idx, REG8 dat) {
 				cs4231.pos12 = 0; 
 			}
 		}
-		break;
-	case CS4231REG_IRQSTAT:
-		// バッファオーバーラン・アンダーランや割り込みを検出するためのレジスタ？　Alternate Feature Status (I24)
-		if (modify & PI) {
-			/* XXX: TI CI */
-			pic_resetirq (cs4231.dmairq);
-			cs4231.intflag &= ~INt;
+		// XXX: CAL0だけ(0x04)→CAL0とPENが同時に立つ状態(0x05)に遷移した時だけ挙動を変える･･･ Win3.1+necpcm.drv用のその場しのぎ
+		if(((UINT8 *)&cs4231.reg)[idx] == 0x05 && calpenflag == 1){
+			calpenflag = 2;
+			w31play = 1;
+		}else if(((UINT8 *)&cs4231.reg)[idx] == 0x04){
+			calpenflag = 1;
+			w31play = 0;
+		}else{
+			calpenflag = 0;
+			w31play = 0;
 		}
-        break;
-	case CS4231REG_PLAYCNTM:
-		// Playback Upper Base (I14)
-		// cs4231.reg.playcount[0]
-        break;
-	case CS4231REG_PLAYCNTL:
-		// Playback Lower Base (I15)
-		// cs4231.reg.playcount[1]
-        break;
-	//case CS4231REG_TIMERL:
-	//	// CS4231 割り込みタイマー設定(下位バイト)
-	//	cs4231.reg.timer[0]
-	//	break;
-	//case CS4231REG_TIMERH:
-	//	// CS4231 割り込みタイマー設定(上位バイト)
-	//	cs4231.reg.timer[1] 
-	//	break;
+		break;
 	}
 }
-
-// 各フォーマットの割り込み間隔テーブル（たぶん1サンプルあたりのバイト数）
-//static const SINT32 cs4231_irqsamples[16] = {
-//			1  ,		// 0: 8bit PCM
-//			1*2,
-//			1  ,		// 1: u-Law
-//			1  ,
-//			1*2,		// 2: 16bit PCM(little endian)?
-//			1*4,
-//			1  ,		// 3: A-Law
-//			1  ,
-//			1  ,		// 4:
-//			1  ,
-//			1  ,		// 5: ADPCM
-//			1  ,
-//			1*2,		// 6: 16bit PCM
-//			1*4,
-//			1  ,		// 7: ADPCM
-//			1  };
-
-
-static const SINT32 cs4231_playcountshift[16] = {
-			1  ,		// 0: 8bit PCM
-			1*2,
-			1  ,		// 1: u-Law
-			1  ,
-			1*2,		// 2: 16bit PCM(little endian)?
-			1*4,
-			1  ,		// 3: A-Law
-			1  ,
-			1  ,		// 4:
-			1  ,
-			1  ,		// 5: ADPCM
-			1  ,
-			1*2,		// 6: 16bit PCM
-			1*4,
-			1  ,		// 7: ADPCM
-			1  };
-
 
 // CS4231 DMAデータ読み取り
 UINT dmac_getdata_(DMACH dmach, UINT8 *buf, UINT offset, UINT size) {
@@ -335,71 +330,75 @@ UINT dmac_getdata_(DMACH dmach, UINT8 *buf, UINT offset, UINT size) {
 	UINT	lengsum; // 合計読み取り数
 	UINT32	addr;
 	UINT	i;
-	SINT32 sampleirq = 0; // 割り込みまでに必要なデータ転送数(byte)
+	SINT32	sampleirq = 0; // 割り込みまでに必要なデータ転送数(byte)
+	static UINT	playcount_adjustcounter = 0;
 	
 	lengsum = 0;
 	while(size > 0) {
 		leng = min(dmach->leng.w, size);
 		if (leng) {
+			int playcount = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)) * cs4231_playcountshift[cs4231.reg.datafmt >> 4]; // PI割り込みを発生させるサンプル数(Playback Base register) * サンプルあたりのバイト数
+			if(cs4231.totalsample + leng > playcount){
+				// DMA再生サンプル数カウンタ(Playback DMA count register)がPI割り込みを発生させるサンプル数(Playback Base register)を超えないように調整
+				leng = playcount - cs4231.totalsample;
+			}
+
 			addr = dmach->adrs.d; // 現在のメモリ読み取り位置
 			if (!(dmach->mode & 0x20)) {			// dir +
 				// +方向にDMA転送
 				for (i=0; i<leng ; i++) {
-					buf[offset] = MEMP_READ8(addr);
+					buf[offset] = MEMP_READ8(addr); // DMA MEM -> CS4231 BUFFER
 					addr++;
 					if(addr > dmach->lastaddr){
-						addr = dmach->startaddr;
+						addr = dmach->startaddr; // DMA読み取りアドレスがアドレス範囲の最後に到達したら最初に戻す
 					}
-					offset = (offset+1) & CS4231_BUFMASK;
+					offset = (offset+1) & CS4231_BUFMASK; // DMAデータ読み取りバッファの書き込み位置を進める（＆最後に到達したら最初に戻す）
 				}
-				dmach->adrs.d = addr;
+				dmach->adrs.d = addr; // DMA読み取りアドレス現在位置を更新
 			}
 			else {									// dir -
 				// -方向にDMA転送
 				for (i=0; i<leng; i++) {
-					buf[offset] = MEMP_READ8(addr);
+					buf[offset] = MEMP_READ8(addr); // DMA MEM -> CS4231 BUFFER
 					addr--;
 					if(addr < dmach->startaddr){
-						addr = dmach->lastaddr;
+						addr = dmach->lastaddr; // DMA読み取りアドレスがアドレス範囲の最初に到達したら最後に戻す
 					}
-					offset = (offset-1) & CS4231_BUFMASK;
+					offset = (offset+1) & CS4231_BUFMASK; // DMAデータ読み取りバッファの書き込み位置を進める（＆最後に到達したら最初に戻す）
 				}
 				dmach->adrs.d = addr;
 			}
-			dmach->leng.w -= leng;
 
-			if (dmach->leng.w <= 0) {
-				dmach->leng.w = dmach->startcount; // 戻す
+			// 読み取りバイト数だけdmach->leng.wを減らす（0以下になったらdmach->startcountに戻す）
+			if (dmach->leng.w <= leng) {
+				dmach->leng.w = dmach->leng.w + dmach->startcount - leng; // 戻す
 				dmach->proc.extproc(DMAEXT_END);
+			}else{
+				dmach->leng.w -= leng;
 			}
 
 			// 読み取り数と残り数更新
 			lengsum += leng;
 			size -= leng;
 			
-			// Playback Countだけデータを転送したら割り込みを発生させる
-			if ((cs4231.reg.pinctrl & IEN) && (cs4231.dmairq != 0xff)) {
-				int playcount = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)) * cs4231_playcountshift[cs4231.reg.datafmt >> 4];
-				// 読み取り数カウント
-				cs4231_totalsample += leng;
+			// 読み取り数カウント
+			cs4231.totalsample += leng;
 			
-				if(cs4231_totalsample >= playcount){
-					cs4231_totalsample -= playcount;
-					cs4231.intflag |= INt;
-					cs4231.reg.featurestatus |= PI;
-					pic_setirq(cs4231.dmairq);
+			// DMA再生バイト数カウンタ(Playback DMA count register)がPI割り込みを発生させるバイト数になったらPI割り込みを発生させる
+			if(cs4231.totalsample >= playcount){
+				cs4231.totalsample -= playcount;
+				// 割り込みが有効な場合割り込みを発生させる
+				if ((cs4231.reg.pinctrl & IEN) && (cs4231.dmairq != 0xff)) {
+					// XXX: CAL0だけ(0x04)→CAL0とPENが同時に立つ状態(0x05)に遷移した時だけ挙動を変える･･･ Win3.1+necpcm.drv用のその場しのぎ
+					if(calpenflag != 2){
+						cs4231.intflag |= INt; // 割り込み中(Interrupt Status)ビットをセット
+						cs4231.reg.featurestatus |= PI; // PI(Playback Interrupt)ビットをセット
+						pic_setirq(cs4231.dmairq); // 割り込みを発生させる
+					}
+					calpenflag = 0;
 				}
+				break;
 			}
-			//// XXX: 一定バイト数読む毎に割り込みする（あまり根拠のない実装･･･）
-			//sampleirq = cs4231_irqsamples[cs4231.reg.datafmt >> 4] * ((cs4231.step12*cs4231cfg.rate)>>12) / 32; // * 1100/1000; //XXX: 割り込み間隔実験式
-			//if(cs4231_totalsample >= sampleirq){
-			//	if ((cs4231.reg.pinctrl & 2) && (cs4231.dmairq != 0xff)) {
-			//		//cs4231.intflag |= INt;
-			//		//cs4231.reg.featurestatus |= PI;
-			//		//pic_setirq(cs4231.dmairq);
-			//	}
-			//	cs4231_totalsample -= sampleirq;
-			//}
 		}else{
 			break;
 		}

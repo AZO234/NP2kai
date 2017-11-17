@@ -16,6 +16,7 @@ static SINT32 cs4231_DACvolume_R = 1024;
 static UINT16 cs4231_DACvolumereg_L = 0xff;
 static UINT16 cs4231_DACvolumereg_R = 0xff;
 
+// 8bit モノラル
 static void SOUNDCALL pcm8m(CS4231 cs, SINT32 *pcm, UINT count) {
 
 	UINT32	leng;
@@ -57,6 +58,7 @@ const UINT8	*ptr2;
 	cs->pos12 = pos12 & ((1 << 12) - 1);
 }
 
+// 8bit ステレオ
 static void SOUNDCALL pcm8s(CS4231 cs, SINT32 *pcm, UINT count) {
 
 	UINT32	leng;
@@ -101,6 +103,7 @@ const UINT8	*ptr2;
 	cs->pos12 = pos12 & ((1 << 12) - 1);
 }
 
+// 16bit モノラル
 static void SOUNDCALL pcm16m(CS4231 cs, SINT32 *pcm, UINT count) {
 
 	UINT32	leng;
@@ -142,6 +145,7 @@ const UINT8	*ptr2;
 	cs->pos12 = pos12 & ((1 << 12) - 1);
 }
 
+// 16bit ステレオ
 static void SOUNDCALL pcm16s(CS4231 cs, SINT32 *pcm, UINT count) {
 
 	UINT32	leng;
@@ -186,6 +190,7 @@ const UINT8	*ptr2;
 	cs->pos12 = pos12 & ((1 << 12) - 1);
 }
 
+// 16bit モノラル(little endian)
 static void SOUNDCALL pcm16m_ex(CS4231 cs, SINT32 *pcm, UINT count) {
 
 	UINT32	leng;
@@ -227,6 +232,7 @@ const UINT8	*ptr2;
 	cs->pos12 = pos12 & ((1 << 12) - 1);
 }
 
+// 16bit ステレオ(little endian)
 static void SOUNDCALL pcm16s_ex(CS4231 cs, SINT32 *pcm, UINT count) {
 
 	UINT32	leng;
@@ -304,7 +310,10 @@ static const CS4231FN cs4231fn[16] = {
 
 void SOUNDCALL cs4231_getpcm(CS4231 cs, SINT32 *pcm, UINT count) {
 
-	if ((cs->reg.iface & 1) && (count)) {
+	static int bufdelaycounter = 0;
+
+	if (((cs->reg.iface & 1) || bufdelaycounter > 0) && (count)) {
+		// CS4231内蔵ボリューム 
 		if(cs4231_DACvolumereg_L != cs->reg.dac_l){
 			cs4231_DACvolumereg_L = cs->reg.dac_l;
 			if(cs->reg.dac_l & 0x80){ // DAC L Mute
@@ -321,9 +330,12 @@ void SOUNDCALL cs4231_getpcm(CS4231 cs, SINT32 *pcm, UINT count) {
 				cs4231_DACvolume_R = (int)(pow(10, -1.5 * ((cs4231_DACvolumereg_R) & 0x3f) / 20.0) * 1024); // DAC R Volume (1bit毎に-1.5dB)
 			}
 		}
+		
+		// 再生用バッファに送る
 		(*cs4231fn[cs->reg.datafmt >> 4])(cs, pcm, count);
-		//// CS4231タイマー割り込み（手抜き）
-		//if ((cs->reg.pinctrl & 2) && (cs->dmairq != 0xff) && (cs->timer)) {
+
+		//// CS4231タイマー割り込みTI（手抜き）
+		//if ((cs->reg.pinctrl & 2) && (cs->dmairq != 0xff) && LOADINTELWORD(cs->reg.timer)) {
 		//	static double timercount = 0;
 		//	int decval = 0;
 		//	timercount += (double)count/44100 * 1000 * 100; // 10usec timer
@@ -331,12 +343,21 @@ void SOUNDCALL cs4231_getpcm(CS4231 cs, SINT32 *pcm, UINT count) {
 		//	timercount -= (double)decval;
 		//	cs->timercounter -= decval;
 		//	if(cs->timercounter < 0){
-		//		cs->timercounter = 3000;//cs->timer;
+		//		cs->timercounter = LOADINTELWORD(cs->reg.timer);
 		//		cs->intflag |= INt;
-		//		cs->reg.featurestatus |= PI;
+		//		cs->reg.featurestatus |= TI;
 		//		pic_setirq(cs->dmairq);
 		//	}
 		//}
+
+		// Playback Enableがローになってもバッファのディレイ分は再生する
+		if((cs->reg.iface & 1)){
+			bufdelaycounter = CS4231_BUFFERS;
+		}else if(cs->bufdatas == 0){
+			bufdelaycounter = 0;
+		}else{
+			bufdelaycounter--;
+		}
 	}
 		
 }

@@ -247,7 +247,7 @@ WINLOCEX np2_winlocexallwin(HWND base) {
 
 	UINT	i;
 	UINT	cnt;
-	HWND	list[5];
+	HWND	list[10];
 
 	cnt = 0;
 	list[cnt++] = g_hWndMain;
@@ -255,6 +255,9 @@ WINLOCEX np2_winlocexallwin(HWND base) {
 	list[cnt++] = kdispwin_gethwnd();
 	list[cnt++] = skbdwin_gethwnd();
 	list[cnt++] = mdbgwin_gethwnd();
+	if(FindWindow(OEMTEXT("Shell_TrayWnd"), NULL)){
+		list[cnt++] = FindWindow(OEMTEXT("Shell_TrayWnd"), NULL);
+	}
 	for (i=0; i<cnt; i++) {
 		if (list[i] == base) {
 			list[i] = NULL;
@@ -1464,7 +1467,7 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 				}
 				hDC = GetDC(NULL);
 				dwHeaderSize = LOADINTELDWORD(bf.bfOffBits) - sizeof(BMPFILE);
-				lpbinfo = (BITMAPINFO*)_MALLOC(dwHeaderSize);
+				lpbinfo = (BITMAPINFO*)malloc(dwHeaderSize);
 				CopyMemory(lpbinfo, &bi, sizeof(BMPINFO));
 				if(LOADINTELWORD(bi.biBitCount) <= 8){
 					CopyMemory(lpbinfo->bmiColors, lppal, 4 << LOADINTELWORD(bi.biBitCount));
@@ -1499,14 +1502,14 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 				if(autokey_sendbuffer==NULL){
 					if (OpenClipboard(hWnd)){
 						if(hg = GetClipboardData(CF_TEXT)) {
-							txtlen = GlobalSize(hg);
+							txtlen = (int)GlobalSize(hg);
 							autokey_sendbufferlen = 0;
-							autokey_sendbuffer = (char*)_MALLOC(txtlen);
+							autokey_sendbuffer = (char*)malloc(txtlen);
 							strClip = (char*)GlobalLock(hg);
 							strcpy(autokey_sendbuffer , strClip);
 							GlobalUnlock(hg);
 							CloseClipboard();
-							autokey_sendbufferlen = strlen(autokey_sendbuffer);
+							autokey_sendbufferlen = (int)strlen(autokey_sendbuffer);
 							autokey_sendbufferpos = 0;
 							keystat_senddata(0x80|0x70);
 						}else{
@@ -1974,14 +1977,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 						// XXX: 端実験
 #define MOUSE_EDGE_ACM	4
 						if(x<mouse_edge_sh_x && dx < 0){
-							dx *= 1+(mouse_edge_sh_x - x)*MOUSE_EDGE_ACM/mouse_edge_sh_x;
+							dx *= (SINT16)(1+(mouse_edge_sh_x - x)*MOUSE_EDGE_ACM/mouse_edge_sh_x);
 						}else if(r.right-mouse_edge_sh_x <= x && dx > 0){
-							dx *= 1+(mouse_edge_sh_x - (r.right-x))*MOUSE_EDGE_ACM/mouse_edge_sh_x;
+							dx *= (SINT16)(1+(mouse_edge_sh_x - (r.right-x))*MOUSE_EDGE_ACM/mouse_edge_sh_x);
 						}
 						if(y<mouse_edge_sh_y && dy < 0){
-							dy *= 1+(mouse_edge_sh_y - y)*MOUSE_EDGE_ACM/mouse_edge_sh_y;
+							dy *= (SINT16)(1+(mouse_edge_sh_y - y)*MOUSE_EDGE_ACM/mouse_edge_sh_y);
 						}else if(r.bottom-mouse_edge_sh_y <= y && dy > 0){
-							dy *= 1+(mouse_edge_sh_y - (r.bottom-y))*MOUSE_EDGE_ACM/mouse_edge_sh_y;
+							dy *= (SINT16)(1+(mouse_edge_sh_y - (r.bottom-y))*MOUSE_EDGE_ACM/mouse_edge_sh_y);
 						}
 						mousemng_setstat(dx, dy, btn);
 						lastmx = x;
@@ -2207,30 +2210,12 @@ void autoSendKey(){
 	static int shift = 0;
 	static DWORD lastsendtime = 0;
 	int capslock = 0;
-	int i;
+	//int i;
 	DWORD curtime = 0;
 	
 	// 送るものなし
 	if(autokey_sendbufferlen==0) return;
 	
-	//// 送れるだけ送る(安全のためバッファの半分までとする)
-	//while(keybrd.buffers < KB_BUF/2 && autokey_sendbufferpos < autokey_sendbufferlen){
-	//	char sendchar = autokey_sendbuffer[autokey_sendbufferpos];
-	//	if(vkeylist[sendchar]){
-	//		if( shift_on[sendchar] && !(capslock^shift)){
-	//			keystat_senddata(0x00|0x70);
-	//			shift = 1;
-	//		}
-	//		if(!shift_on[sendchar] &&  (capslock^shift)){
-	//			keystat_senddata(0x80|0x70);
-	//			shift = 0;
-	//		}
-	//		keystat_senddata(0x00|vkeylist[sendchar]);
-	//		keystat_senddata(0x80|vkeylist[sendchar]);
-	//	}
-	//	autokey_sendbufferpos++;
-	//}
-
 	// 10文字だけ送る(入力速度制御付き)
 	curtime = GetTickCount();
 	if(curtime - lastsendtime > 256/pccore.multiple+8){

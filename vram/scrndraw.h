@@ -25,6 +25,7 @@ void scrndraw_initialize(void);
 void scrndraw_changepalette(void);
 UINT8 scrndraw_draw(UINT8 update);
 void scrndraw_redraw(void);
+void scrndraw_updateallline(void);
 
 #ifdef __cplusplus
 }

@@ -231,6 +231,7 @@ public:
 		, m_HddS(0)
 		, m_HddSS(0)
 		, m_dynsize(0)
+		, m_blank(0)
 	{
 	}
 
@@ -296,12 +297,21 @@ public:
 	}
 	
 	/**
-	 * 詳細設定モードならtrue
+	 * 容量可変モードならtrue
 	 * @return 詳細設定モード
 	 */
 	bool IsDynamicDisk() const
 	{
-		return m_dynsize;
+		return (m_dynsize != 0);
+	}
+	
+	/**
+	 * 空ディスク作成ならtrue
+	 * @return 詳細設定モード
+	 */
+	bool IsBlankDisk() const
+	{
+		return (m_blank != 0);
 	}
 	
 	/**
@@ -418,6 +428,9 @@ protected:
 		m_rdbfixsize.SubclassDlgItem(IDC_HDDADVANCED_FIXSIZE, this);
 		m_rdbdynsize.SubclassDlgItem(IDC_HDDADVANCED_DYNSIZE, this);
 		m_rdbfixsize.SendMessage(BM_SETCHECK , BST_CHECKED , 0);
+		
+		m_chkblank.SubclassDlgItem(IDC_HDDADVANCED_BLANK, this);
+		m_chkblank.SendMessage(BM_SETCHECK , BST_UNCHECKED , 0);
 
 		RECT rect;
 		GetWindowRect(&rect);
@@ -565,6 +578,10 @@ protected:
 			case IDC_HDDADVANCED_DYNSIZE:
 				m_dynsize = (m_rdbdynsize.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0);
 				return TRUE;
+				
+			case IDC_HDDADVANCED_BLANK:
+				m_blank = (m_chkblank.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0);
+				return TRUE;
 		}
 		return FALSE;
 	}
@@ -601,6 +618,8 @@ private:
 	UINT8 m_dynsize;				/*!< 動的割り当てディスク（VHDのみ） */
 	CWndProc m_rdbfixsize;			//!< FIXED
 	CWndProc m_rdbdynsize;			//!< DYNAMIC
+	UINT8 m_blank;					/*!< 空ディスク作成フラグ */
+	CWndProc m_chkblank;			//!< BLANK
 };
 
 
@@ -851,6 +870,7 @@ private:
 static HANDLE	newdisk_hThread = NULL; // ディスク作成用スレッド
 static int _mt_cancel = 0;
 static int _mt_dyndisk = 0;
+static int _mt_blank = 0;
 static TCHAR _mt_lpPath[MAX_PATH] = {0};
 static UINT32 _mt_diskSize = 0;
 static UINT32 _mt_diskC = 0;
@@ -870,10 +890,10 @@ static DWORD WINAPI newdisk_ThreadFunc(LPVOID vdParam)
 	{
 		if(_mt_diskSize){
 			// 全容量指定モード
-			newdisk_nhd_ex(lpPath, _mt_diskSize, &_mt_progressvalue, &_mt_cancel);
+			newdisk_nhd_ex(lpPath, _mt_diskSize, _mt_blank, &_mt_progressvalue, &_mt_cancel);
 		}else{
 			// CHS指定モード
-			newdisk_nhd_ex_CHS(lpPath, _mt_diskC, _mt_diskH, _mt_diskS, _mt_diskSS, &_mt_progressvalue, &_mt_cancel);
+			newdisk_nhd_ex_CHS(lpPath, _mt_diskC, _mt_diskH, _mt_diskS, _mt_diskSS, _mt_blank, &_mt_progressvalue, &_mt_cancel);
 		}
 	}
 	else if (!file_cmpname(ext, str_hdi))
@@ -895,10 +915,10 @@ static DWORD WINAPI newdisk_ThreadFunc(LPVOID vdParam)
 	{
 		if(_mt_diskSize){
 			// 全容量指定モード
-			newdisk_vpcvhd_ex(lpPath, _mt_diskSize, _mt_dyndisk, &_mt_progressvalue, &_mt_cancel);
+			newdisk_vpcvhd_ex(lpPath, _mt_diskSize, _mt_dyndisk, _mt_blank, &_mt_progressvalue, &_mt_cancel);
 		}else{
 			// CHS指定モード
-			newdisk_vpcvhd_ex_CHS(lpPath, _mt_diskC, _mt_diskH, _mt_diskS, _mt_diskSS, _mt_dyndisk, &_mt_progressvalue, &_mt_cancel);
+			newdisk_vpcvhd_ex_CHS(lpPath, _mt_diskC, _mt_diskH, _mt_diskS, _mt_diskSS, _mt_dyndisk, _mt_blank, &_mt_progressvalue, &_mt_cancel);
 		}
 	}
 #endif
@@ -958,6 +978,7 @@ void dialog_newdisk(HWND hWnd)
 			}else{
 				_mt_diskSize = dlg.GetSize();
 			}
+			_mt_blank = dlg.IsBlankDisk();
 			_mt_dyndisk = 0;
 			_mt_cancel = 0;
 			_mt_progressvalue = 0;
@@ -1016,6 +1037,7 @@ void dialog_newdisk(HWND hWnd)
 			}else{
 				_mt_diskSize = dlg.GetSize();
 			}
+			_mt_blank = dlg.IsBlankDisk();
 			_mt_dyndisk = dlg.IsDynamicDisk();
 			_mt_cancel = 0;
 			_mt_progressvalue = 0;

@@ -9,8 +9,9 @@ sudo make - * @file	cs4231.h
 #include "io/dmac.h"
 
 enum {
-	CS4231_BUFFERS	= (1 << 9),
-	CS4231_BUFMASK	= (CS4231_BUFFERS - 1)
+	CS4231_BUFFERS	= (1 << 11),
+	CS4231_BUFMASK	= (CS4231_BUFFERS - 1),
+	CS4231_MAXDMAREADBYTES	= (1 << 9)
 };
 
 typedef struct {
@@ -52,25 +53,27 @@ typedef struct {
 	UINT32		pos12;
 	UINT32		step12;
 
-	UINT8		enable;
+	UINT8		enable; // CS4231有効フラグ
 	UINT8		portctrl;
-	UINT8		dmairq;
-	UINT8		dmach;
-	UINT16		port[16];
-	UINT8		adrs;
-	UINT8		index;
-	UINT8		intflag;
+	UINT8		dmairq; // CS4231 IRQ
+	UINT8		dmach; // CS4231 DMAチャネル
+	UINT16		port[16]; // I/Oポートアドレス（再配置可能）
+	UINT8		adrs; // DMA読み取りアドレス
+	UINT8		index; // Index Address Register
+	UINT8		intflag; // Status Register
 	UINT8		outenable;
 	UINT8		extfunc;
 	UINT8		extindex;
 	
-	UINT16		timer;
-	SINT32		timercounter;
+	UINT16		timer; // 廃止
+	SINT32		timercounter; // TI割り込み用のダウンカウンタ（の予定）
 
 	CS4231REG	reg;
-	UINT8		buffer[CS4231_BUFFERS];
+	UINT8		buffer[CS4231_BUFFERS]; // DMA読み取りアドレス
 
-	UINT8		devvolume[0x100];
+	UINT8		devvolume[0x100]; // CS4231内蔵ボリューム
+
+	SINT32		totalsample; // PI割り込み用のデータ数カウンタ
 } _CS4231, *CS4231;
 
 typedef struct {
@@ -83,11 +86,11 @@ extern "C"
 {
 #endif
 
-//Index Address Register 0xf44
+// Index Address Register (R0) 0xf44
 #define TRD (1 << 5) //cs4231.index bit5 Transfer Request Disable
 #define MCE (1 << 6) //cs4231.index bit6 Mode Change Enable
 
-//Status Register 0xf46
+// Status Register (R2, Read Only) 0xf46
 #define INt (1 << 0) //cs4231.intflag bit0 Interrupt Status
 #define PRDY (1 << 1) //cs4231.intflag bit1 Playback Data Ready(PIO data)
 #define PLR (1 << 2) //cs4231.intflag bit2 Playback Left/Right Sample
@@ -97,7 +100,7 @@ extern "C"
 #define CLR (1 << 6) //cs4231.intflag bit6 Capture Left/Right Sample
 #define CUL (1 << 7) //cs4231.intglag bit7 Capture Upper/Lower Byte
 
-//cs4231.reg.iface(9)
+//cs4231.reg.iface(9) Interface Configuration (I9)
 #define PEN (1 << 0) //bit0 Playback Enable set and reset without MCE
 #define CEN (1 << 1) //bit1 Capture Enable
 #define SDC (1 << 2) //bit2 Single DMA Channel 0 Dual 1 Single 逆と思ってたので修正すべし
@@ -106,17 +109,17 @@ extern "C"
 #define PPIO (1 << 6) //bit6 Playback PIO Enable 0 DMA 1 PIO
 #define CPIO (1 << 7) //bit7 Capture PIO Enable 0 DMA 1 PIO
 
-//cs4231.reg.errorstatus(11)b
+//cs4231.reg.errorstatus(11)0xb  Error Status and Initialization (I11, Read Only)
 #define ACI (1 << 5) //bit5 Auto-calibrate In-Progress
 
-//cs4231.reg.pinctrl(10)a
+//cs4231.reg.pinctrl(10)0xa  Pin Control (I10)
 #define IEN (1 << 1) //bit1 Interrupt Enable reflect cs4231.intflag bit0
 #define DEN (1 << 3) //bit3 Dither Enable only active in 8-bit unsigned mode
 
-//cs4231.reg.modeid(12)c
+//cs4231.reg.modeid(12)0xc  MODE and ID (I12)
 #define MODE2 (1 << 6) //bit6
 
-//cs4231.reg.featurestatus(24)0x18
+//cs4231.reg.featurestatus(24)0x18  Alternate Feature Status (I24)
 #define PI (1 << 4) //bit4 Playback Interrupt pending from Playback DMA count registers
 #define CI (1 << 5) //bit5 Capture Interrupt pending from record DMA count registers when SDC=1 non-functional
 #define TI (1 << 6) //bit6 Timer Interrupt pending from timer count registers

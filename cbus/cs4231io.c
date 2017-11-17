@@ -176,7 +176,10 @@ static REG8 IOINPCALL ifab(UINT port) {
 void cs4231io_reset(void) {
 
 	cs4231.enable = 1;
-/*		7	未使用
+
+/* [cs4231.adrsの書き方]
+		bit	
+		7	未使用
 	R/W	6	不明
 	R/W	5-3	PCM音源割り込みアドレス
 			000b= サウンド機能を使用しない
@@ -195,18 +198,15 @@ void cs4231io_reset(void) {
 	if(g_nSoundID==SOUNDID_PC_9801_86_WSS){
 		cs4231.adrs = 0x0a;////0b00 001 010  INT0 DMA1
 	}else if(g_nSoundID==SOUNDID_MATE_X_PCM){
-		cs4231.adrs = 0x22;////0b00 100 010  INT0 DMA1
+		cs4231.adrs = 0x22;////0b00 100 010  INT5 DMA1
 	}else{
 		cs4231.adrs = 0x23;////0b00 100 011  INT5 DMA3
 	}
-	cs4231.dmairq = cs4231irq[(cs4231.adrs >> 3) & 7];
-	cs4231.dmach = cs4231dma[cs4231.adrs & 7];
-	if (cs4231.dmach != 0xff) {
-		dmac_attach(DMADEV_CS4231, cs4231.dmach);
-	}
+	cs4231.dmairq = cs4231irq[(cs4231.adrs >> 3) & 7]; // IRQをセット
+	cs4231.dmach = cs4231dma[cs4231.adrs & 7]; // DMAチャネルをセット
 	cs4231.port[0] = 0x0f40; //WSS BASE I/O port
 	if(g_nSoundID==SOUNDID_PC_9801_86_WSS){
-		cs4231.port[1] = 0xb460; // Sound ID I/O port
+		cs4231.port[1] = 0xb460; // Sound ID I/O port (A460hは86音源が使うのでB460hに変更)
 	}else{
 		cs4231.port[1] = 0xa460; // Sound ID I/O port
 	}
@@ -256,13 +256,16 @@ void cs4231io_reset(void) {
 
 void cs4231io_bind(void) {
 
-	sound_streamregist(&cs4231, (SOUNDCB)cs4231_getpcm);
+	sound_streamregist(&cs4231, (SOUNDCB)cs4231_getpcm); // CS4231用 オーディオ再生ストリーム
 	iocore_attachout(0xc24, csctrl_oc24);
 	iocore_attachout(0xc2b, csctrl_oc2b);
 	iocore_attachout(0xc2d, csctrl_oc2d);
 	iocore_attachinp(0xc24, csctrl_ic24);
 	iocore_attachinp(0xc2b, csctrl_ic2b);
 	iocore_attachinp(0xc2d, csctrl_ic2d);
+	if (cs4231.dmach != 0xff) {
+		dmac_attach(DMADEV_CS4231, cs4231.dmach); // CS4231のDMAチャネルを割り当て
+	}
 	if(g_nSoundID!=SOUNDID_PC_9801_86_WSS && g_nSoundID!=SOUNDID_MATE_X_PCM){
 		iocore_attachout(0x480, csctrl_o480);
 		iocore_attachinp(0x480, csctrl_i480);
@@ -272,33 +275,34 @@ void cs4231io_bind(void) {
 
 /*　必要な時だけ有効にすべき
 //WSN-F???
-	iocore_attachinp(0x51ee, srnf_i51ee);//7番めに読まれる
-	iocore_attachinp(0x51ef, srnf_i51ef);//1番最初にC2を返す
-//	iocore_attachinp(0x52ef, srnf_i52ef);//f40等を読み書きしたあとここを読んでエラー
-	iocore_attachinp(0x56ef, srnf_i56ef);//2番めに読まれて割り込み等の設定？　4番めに2回読まれ直す
-	iocore_attachinp(0x57ef, srnf_i57ef);//5番めに読まれる
-	iocore_attachinp(0x59ef, srnf_i59ef);//3番めに読まれて何か調査 ３と４でとりあえず通る
-//	iocore_attachinp(0x5aef, srnf_i5aef);//8番めに読まれて終わり
-	iocore_attachinp(0x5bef, srnf_i5bef);//6番めに読まれる
-
+		iocore_attachinp(0x51ee, srnf_i51ee);//7番めに読まれる
+		iocore_attachinp(0x51ef, srnf_i51ef);//1番最初にC2を返す
+//		iocore_attachinp(0x52ef, srnf_i52ef);//f40等を読み書きしたあとここを読んでエラー
+		iocore_attachinp(0x56ef, srnf_i56ef);//2番めに読まれて割り込み等の設定？　4番めに2回読まれ直す
+		iocore_attachinp(0x57ef, srnf_i57ef);//5番めに読まれる
+		iocore_attachinp(0x59ef, srnf_i59ef);//3番めに読まれて何か調査 ３と４でとりあえず通る
+//		iocore_attachinp(0x5aef, srnf_i5aef);//8番めに読まれて終わり
+		iocore_attachinp(0x5bef, srnf_i5bef);//6番めに読まれる
 */
 	}
 }
+
 int acicounter;
+// CS4231 I/O WRITE
 void IOOUTCALL cs4231io0_w8(UINT port, REG8 value) {
 
 	switch(port - cs4231.port[0]) {
-		case 0x00:
+		case 0x00: // PCM音源の割り込みアドレス設定
 			cs4231.adrs = value &= ~0x40;
 			cs4231.dmairq = cs4231irq[(value >> 3) & 7];
 			cs4231.dmach = cs4231dma[value & 7];
 			dmac_detach(DMADEV_CS4231);
 			if (cs4231.dmach != 0xff) {
-			if ((cs4231.adrs >>2) & 1){
-				if (cs4231.dmach == 0)dmac_attach(DMADEV_NONE, 1);
-				else dmac_attach(DMADEV_NONE, 0);
+				if ((cs4231.adrs >> 2) & 1){
+					if (cs4231.dmach == 0)dmac_attach(DMADEV_NONE, 1);
+					else dmac_attach(DMADEV_NONE, 0);
 				}
-				dmac_attach(DMADEV_CS4231, cs4231.dmach);
+				dmac_attach(DMADEV_CS4231, cs4231.dmach); // CS4231のDMAチャネルを割り当て
 #if 0
 				if (cs4231.reg.iface & SDC) {
 					dmac.dmach[cs4231.dmach].ready = 1;
@@ -308,16 +312,17 @@ void IOOUTCALL cs4231io0_w8(UINT port, REG8 value) {
 			}
 			break;
 			
-		case 0x04://Index Address
+		case 0x04: // Index Address Register (R0) INIT MCE TRD IA4 IA3 IA2 IA1 IA0
 			if ( !(cs4231.index & MCE) && (value & MCE) && (cs4231.reg.iface & (CAL0|CAL1) ) ) acicounter = 1;
-			if (!(cs4231.index & MCE)) cs4231.intflag |=(PRDY|CRDY);
+			if (!(cs4231.index & MCE)) cs4231.intflag |= (PRDY|CRDY);
 			cs4231.index = value & ~(INIT|TRD);
 			break;
-		case 0x05://Index_Data
-			cs4231_control(cs4231.index & 0x1f, value);
+		case 0x05: // Indexed Data Register (R1) ID7 ID6 ID5 ID4 ID3 ID2 ID1 ID0
+			cs4231_control(cs4231.index & 0x1f, value); // cs4231c.c内で処理
 			break;
 
-		case 0x06://Status
+		case 0x06: // Status Register (R2, Read Only) CU/L CL/R CRDY SER PU/L PL/R PRDY INT
+			// PI,CI,TI割り込みビットを全部クリア
 			if (cs4231.intflag & INt) {
 				pic_resetirq(cs4231.dmairq);
 			}
@@ -325,45 +330,51 @@ void IOOUTCALL cs4231io0_w8(UINT port, REG8 value) {
 			cs4231.reg.featurestatus &= ~(PI|TI|CI);
 			break;
 
-		case 0x07:
+		case 0x07: // Capture I/O Data Register (R3, Read Only) CD7 CD6 CD5 CD4 CD3 CD2 CD1 CD0
 			cs4231_datasend(value);
 			break;
 	}
 }
-
+// CS4231 I/O READ
 REG8 IOINPCALL cs4231io0_r8(UINT port) {
 
 	switch(port - cs4231.port[0]) {
-		case 0x00:
+		case 0x00: // PCM音源の割り込みアドレス設定
 			return(cs4231.adrs);
-		case 0x03:
+		case 0x03: // Windows Sound System ID (Read Only)
 			return(0x04);
 //			return(0x05);//PC-9821Nr
-		case 0x04://Index address
+		case 0x04: // Index Address Register (R0) INIT MCE TRD IA4 IA3 IA2 IA1 IA0
 			return(cs4231.index & ~(INIT|TRD|MCE));
-		case 0x05://Index Data
-			switch (cs4231.index & 0x1f){
-				case 0x0b://featurestatus
-					if(acicounter){
+		case 0x05: // Indexed Data Register (R1) ID7 ID6 ID5 ID4 ID3 ID2 ID1 ID0
+			{
+				switch (cs4231.index & 0x1f){
+					case 0x0b: // Error Status and Initialization (I11, Read Only) COR PUR ACI DRS ORR1 ORR0 ORL1 ORL0
+						if(acicounter){
 							TRACEOUT(("acicounter"));
 							acicounter -= 1;
 							cs4231.reg.errorstatus |= ACI;
-					}else cs4231.reg.errorstatus &= ~ACI;
-					break;	
-				case 0x0d:return 0;					
-				default:
-					break;
+						}else{
+							cs4231.reg.errorstatus &= ~ACI;
+						}
+						break;	
+					case 0x0d: // Loopback Control (I13) LBA5 LBA4 LBA3 LBA2 LBA1 LBA0 res LBE
+						return 0;					
+					default:
+						break;
+				}
+				return(*(((UINT8 *)(&cs4231.reg)) + (cs4231.index & 0x1f)));
 			}
-			return(*(((UINT8 *)(&cs4231.reg)) + (cs4231.index & 0x1f)));
-		case 0x06:
+		case 0x06: // Status Register (R2, Read Only) CU/L CL/R CRDY SER PU/L PL/R PRDY INT
 			if (cs4231.reg.errorstatus & (1 << 6)) cs4231.intflag |= SER;
 			return (cs4231.intflag);
-		case 0x07:
+		case 0x07: // Capture I/O Data Register (R3, Read Only) CD7 CD6 CD5 CD4 CD3 CD2 CD1 CD0
 			return (0x80);
 	}
 	return(0);
 }
 
+// canbe mixer i/o port? WRITE
 void IOOUTCALL cs4231io5_w8(UINT port, REG8 value) {
 
 	switch(port - cs4231.port[5]) {
@@ -388,7 +399,7 @@ void IOOUTCALL cs4231io5_w8(UINT port, REG8 value) {
 			break;
 	}
 }
-
+// canbe mixer i/o port? READ
 REG8 IOINPCALL cs4231io5_r8(UINT port) {
 
 	switch(port - cs4231.port[5]) {

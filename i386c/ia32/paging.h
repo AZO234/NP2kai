@@ -139,6 +139,9 @@ UINT8 MEMCALL cpu_linear_memory_read_b(UINT32 laddr, int ucrw);
 UINT16 MEMCALL cpu_linear_memory_read_w(UINT32 laddr, int ucrw);
 UINT32 MEMCALL cpu_linear_memory_read_d(UINT32 laddr, int ucrw);
 UINT64 MEMCALL cpu_linear_memory_read_q(UINT32 laddr, int ucrw);
+UINT8 MEMCALL cpu_linear_memory_read_b_codefetch(UINT32 laddr, int ucrw);
+UINT16 MEMCALL cpu_linear_memory_read_w_codefetch(UINT32 laddr, int ucrw);
+UINT32 MEMCALL cpu_linear_memory_read_d_codefetch(UINT32 laddr, int ucrw);
 REG80 MEMCALL cpu_linear_memory_read_f(UINT32 laddr, int ucrw);
 void MEMCALL cpu_linear_memory_write_b(UINT32 laddr, UINT8 value, int ucrw);
 void MEMCALL cpu_linear_memory_write_w(UINT32 laddr, UINT16 value, int ucrw);
@@ -204,7 +207,16 @@ cpu_lmemoryread_b(UINT32 laddr, int ucrw)
 		return cpu_memoryread_b(laddr);
 	return cpu_linear_memory_read_b(laddr, ucrw);
 }
+STATIC_INLINE UINT8 MEMCALL
+cpu_lmemoryread_b_codefetch(UINT32 laddr, int ucrw)
+{
+
+	if (!CPU_STAT_PAGING)
+		return cpu_memoryread_b_codefetch(laddr);
+	return cpu_linear_memory_read_b_codefetch(laddr, ucrw);
+}
 #define	cpu_lmemoryread(a,ucrw) cpu_lmemoryread_b((a),(ucrw))
+#define	cpu_lmemoryread_codefetch(a,ucrw) cpu_lmemoryread_b_codefetch((a),(ucrw))
 
 STATIC_INLINE UINT16 MEMCALL
 cpu_lmemoryread_w(UINT32 laddr, int ucrw)
@@ -214,6 +226,15 @@ cpu_lmemoryread_w(UINT32 laddr, int ucrw)
 		return cpu_memoryread_w(laddr);
 	return cpu_linear_memory_read_w(laddr, ucrw);
 }
+STATIC_INLINE UINT16 MEMCALL
+cpu_lmemoryread_w_codefetch(UINT32 laddr, int ucrw)
+{
+
+	if (!CPU_STAT_PAGING)
+		return cpu_memoryread_w_codefetch(laddr);
+	return cpu_linear_memory_read_w_codefetch(laddr, ucrw);
+}
+
 
 STATIC_INLINE UINT32 MEMCALL
 cpu_lmemoryread_d(UINT32 laddr, int ucrw)
@@ -222,6 +243,14 @@ cpu_lmemoryread_d(UINT32 laddr, int ucrw)
 	if (!CPU_STAT_PAGING)
 		return cpu_memoryread_d(laddr);
 	return cpu_linear_memory_read_d(laddr, ucrw);
+}
+STATIC_INLINE UINT32 MEMCALL
+cpu_lmemoryread_d_codefetch(UINT32 laddr, int ucrw)
+{
+
+	if (!CPU_STAT_PAGING)
+		return cpu_memoryread_d_codefetch(laddr);
+	return cpu_linear_memory_read_d_codefetch(laddr, ucrw);
 }
 
 STATIC_INLINE UINT64
@@ -336,7 +365,8 @@ laddr_to_paddr(UINT32 laddr, int ucrw)
  */
 struct tlb_entry;
 void tlb_init(void);
-void MEMCALL tlb_flush(BOOL allflush);
+void MEMCALL tlb_flush();
+void MEMCALL tlb_flush_all();
 void MEMCALL tlb_flush_page(UINT32 laddr);
 struct tlb_entry *MEMCALL tlb_lookup(UINT32 laddr, int ucrw);
 

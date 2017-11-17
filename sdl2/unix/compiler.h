@@ -220,3 +220,13 @@ typedef SINT32	FILELEN;
 #define VAEG_FIX
 //#define SUPPORT_WAVEREC
 
+#define	FASTCALL
+#define	CPUCALL
+#define	MEMCALL
+#define	DMACCALL
+#define	IOOUTCALL
+#define	IOINPCALL
+#define	SOUNDCALL
+#define	VRAMCALL
+#define	SCRNCALL
+#define	VERMOUTHCL

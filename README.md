@@ -1,6 +1,6 @@
 Neko Project II 0.86 kai rev.14
 ===
-Oct 21, 2017  
+Nov 18, 2017  
 
 Build SDL2 port
 ---
@@ -300,6 +300,8 @@ I/O:0x00D0
 
 Release
 ---
+* Nov 18, 2017
+	- Merge NP21/w rev.37
 * Oct 26, 2017
 	- Apply to 1.44MB FDD floppy image file
 * Oct 21, 2017 (rev.14)

@@ -55,7 +55,7 @@ static BRESULT writezero(FILEH fh, FILELEN size) {
 	return(SUCCESS);
 }
 
-static BRESULT writehddiplex(FILEH fh, UINT ssize, FILELEN tsize, int *progress, int *cancel) {
+static BRESULT writehddiplex2(FILEH fh, UINT ssize, FILELEN tsize, int blank, int *progress, int *cancel) {
 
 	UINT8	work[65536];
 	FILELEN	size;
@@ -64,10 +64,12 @@ static BRESULT writehddiplex(FILEH fh, UINT ssize, FILELEN tsize, int *progress,
 	progtotal = tsize;
 	*progress = 0;
 	ZeroMemory(work, sizeof(work));
-	CopyMemory(work, hdddiskboot, sizeof(hdddiskboot));
-	if (ssize < 1024) {
-		work[ssize - 2] = 0x55;
-		work[ssize - 1] = 0xaa;
+	if(!blank){
+		CopyMemory(work, hdddiskboot, sizeof(hdddiskboot));
+		if (ssize < 1024) {
+			work[ssize - 2] = 0x55;
+			work[ssize - 1] = 0xaa;
+		}
 	}
 	if (file_write(fh, work, sizeof(work)) != sizeof(work)) {
 		return(FAILURE);
@@ -88,6 +90,10 @@ static BRESULT writehddiplex(FILEH fh, UINT ssize, FILELEN tsize, int *progress,
 		}
 	}
 	return(SUCCESS);
+}
+static BRESULT writehddiplex(FILEH fh, UINT ssize, FILELEN tsize, int *progress, int *cancel) {
+	
+	return writehddiplex2(fh, ssize, tsize, 0, progress, cancel);
 }
 static BRESULT writehddipl(FILEH fh, UINT ssize, FILELEN tsize) {
 
@@ -156,7 +162,7 @@ ndthd_err:
 	return;
 }
 
-void newdisk_nhd_ex_CHS(const OEMCHAR *fname, UINT32 C, UINT16 H, UINT16 S, UINT16 SS, int *progress, int *cancel) {
+void newdisk_nhd_ex_CHS(const OEMCHAR *fname, UINT32 C, UINT16 H, UINT16 S, UINT16 SS, int blank, int *progress, int *cancel) {
 
 	FILEH	fh;
 	NHDHDR	nhd;
@@ -180,7 +186,7 @@ void newdisk_nhd_ex_CHS(const OEMCHAR *fname, UINT32 C, UINT16 H, UINT16 S, UINT
 	STOREINTELWORD(nhd.sectors, S);
 	STOREINTELWORD(nhd.sectorsize, SS);
 	r = (file_write(fh, &nhd, sizeof(nhd)) == sizeof(nhd)) ? SUCCESS : FAILURE;
-	r |= writehddiplex(fh, SS, (FILELEN)C * H * S * SS, progress, cancel);
+	r |= writehddiplex2(fh, SS, (FILELEN)C * H * S * SS, blank, progress, cancel);
 	file_close(fh);
 	if (r != SUCCESS) {
 		file_delete(fname);
@@ -189,7 +195,7 @@ void newdisk_nhd_ex_CHS(const OEMCHAR *fname, UINT32 C, UINT16 H, UINT16 S, UINT
 ndnhd_err:
 	return;
 }
-void newdisk_nhd_ex(const OEMCHAR *fname, UINT hddsize, int *progress, int *cancel) {
+void newdisk_nhd_ex(const OEMCHAR *fname, UINT hddsize, int blank, int *progress, int *cancel) {
 	
 	UINT32 C;
 	UINT16 H;
@@ -198,14 +204,14 @@ void newdisk_nhd_ex(const OEMCHAR *fname, UINT hddsize, int *progress, int *canc
 	
 	hddsize2CHS(hddsize, &C, &H, &S, &SS);
 
-	newdisk_nhd_ex_CHS(fname, C, H, S, SS, progress, cancel);
+	newdisk_nhd_ex_CHS(fname, C, H, S, SS, blank, progress, cancel);
 }
 void newdisk_nhd(const OEMCHAR *fname, UINT hddsize) {
 	
 	int progress;
 	int cancel = 0;
 	
-	newdisk_nhd_ex(fname, hddsize, &progress, &cancel);
+	newdisk_nhd_ex(fname, hddsize, 0, &progress, &cancel);
 }
 
 // hddtype = 0:5MB / 1:10MB / 2:15MB / 3:20MB / 5:30MB / 6:40MB
@@ -323,7 +329,7 @@ const char vpcvhd_sigDH[] = "cxsparse";
 const char vpcvhd_creator[] = "vpc ";
 const char vpcvhd_os[] = "Wi2k";
 
-void newdisk_vpcvhd_ex_CHS(const OEMCHAR *fname, UINT32 C, UINT16 H, UINT16 S, UINT16 SS, int dynamic, int *progress, int *cancel) {
+void newdisk_vpcvhd_ex_CHS(const OEMCHAR *fname, UINT32 C, UINT16 H, UINT16 S, UINT16 SS, int dynamic, int blank, int *progress, int *cancel) {
 
 	FILEH   fh;
 	VPCVHDFOOTER    vpcvhd;
@@ -357,8 +363,8 @@ void newdisk_vpcvhd_ex_CHS(const OEMCHAR *fname, UINT32 C, UINT16 H, UINT16 S, U
 	STOREMOTOROLADWORD(vpcvhd.DiskType, 2);
 
 	STOREMOTOROLAWORD(vpcvhd.Cylinder, (UINT16)C);
-	vpcvhd.Heads = H;
-	vpcvhd.SectorsPerCylinder = S;
+	vpcvhd.Heads = (UINT8)H;
+	vpcvhd.SectorsPerCylinder = (UINT8)S;
 	origsize = (UINT64)C * H * S * SS;
 	STOREMOTOROLAQWORD(vpcvhd.OriginalSize, origsize);
 	CopyMemory(&vpcvhd.CurrentSize, &vpcvhd.OriginalSize, 8);
@@ -375,7 +381,7 @@ void newdisk_vpcvhd_ex_CHS(const OEMCHAR *fname, UINT32 C, UINT16 H, UINT16 S, U
 		checksum = vpc_calc_checksum((UINT8*)(&vpcvhd), footerlen);
 		STOREMOTOROLADWORD(vpcvhd.CheckSum, checksum);
 		
-		blockcount = (UINT64)((origsize + blocksize - 1) / blocksize);
+		blockcount = (UINT32)((origsize + blocksize - 1) / blocksize);
 		ZeroMemory(&vpcvhd_dh, sizeof(VPCVHDDDH));
 		CopyMemory(&vpcvhd_dh.Cookie, vpcvhd_sigDH, 8);
 		STOREMOTOROLAQWORD(vpcvhd_dh.DataOffset, (SINT64)-1);
@@ -403,7 +409,7 @@ void newdisk_vpcvhd_ex_CHS(const OEMCHAR *fname, UINT32 C, UINT16 H, UINT16 S, U
 		checksum = vpc_calc_checksum((UINT8*)(&vpcvhd), footerlen);
 		STOREMOTOROLADWORD(vpcvhd.CheckSum, checksum);
 
-		r = writehddiplex(fh, SS, origsize, progress, cancel);
+		r = writehddiplex2(fh, SS, (FILELEN)origsize, blank, progress, cancel);
 	}
 
 	r |= (file_write(fh, &vpcvhd, sizeof(vpcvhd)) == sizeof(vpcvhd)) ? SUCCESS : FAILURE;
@@ -416,7 +422,7 @@ void newdisk_vpcvhd_ex_CHS(const OEMCHAR *fname, UINT32 C, UINT16 H, UINT16 S, U
 vpcvhd_err:
 	return;
 }
-void newdisk_vpcvhd_ex(const OEMCHAR *fname, UINT hddsize, int dynamic, int *progress, int *cancel) {
+void newdisk_vpcvhd_ex(const OEMCHAR *fname, UINT hddsize, int dynamic, int blank, int *progress, int *cancel) {
 	
 	UINT32 C;
 	UINT16 H;
@@ -425,13 +431,13 @@ void newdisk_vpcvhd_ex(const OEMCHAR *fname, UINT hddsize, int dynamic, int *pro
 	
 	hddsize2CHS(hddsize, &C, &H, &S, &SS);
 
-	newdisk_vpcvhd_ex_CHS(fname, C, H, S, SS, dynamic, progress, cancel);
+	newdisk_vpcvhd_ex_CHS(fname, C, H, S, SS, dynamic, blank, progress, cancel);
 }
 void newdisk_vpcvhd(const OEMCHAR *fname, UINT hddsize) {
 	
 	int progress;
 	int cancel = 0;
 	
-	newdisk_vpcvhd_ex(fname, hddsize, 0, &progress, &cancel);
+	newdisk_vpcvhd_ex(fname, hddsize, 0, 0, &progress, &cancel);
 }
 #endif

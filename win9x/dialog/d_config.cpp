@@ -41,9 +41,11 @@ private:
 	CComboData m_type;				//!< タイプ
 	CComboData m_name;				//!< デバイス名
 	CComboData m_rate;				//!< レート
+	CWndProc   m_chk21port;			//!< PC-9821ポートマップ
 	std::vector<LPCTSTR> m_dsound3;	//!< DSound3
 	std::vector<LPCTSTR> m_wasapi;	//!< WASAPI
 	std::vector<LPCTSTR> m_asio;	//!< ASIO
+	UINT16 m_21port;	//!< PC-9821 port
 	void SetClock(UINT nMultiple = 0);
 	void UpdateDeviceList();
 };
@@ -103,6 +105,19 @@ BOOL CConfigureDlg::OnInitDialog()
 		nModel = IDC_MODELVX;
 	}
 	CheckDlgButton(nModel, BST_CHECKED);
+	
+	m_21port = np2cfg.sysiomsk;
+	m_chk21port.SubclassDlgItem(IDC_MODEL21, this);
+#if defined(SUPPORT_PC9821)
+	if(m_21port == 0xff00)
+		m_chk21port.SendMessage(BM_SETCHECK , BST_CHECKED , 0);
+	else if((m_21port & ~0x0c00) == 0x0000)
+		m_chk21port.SendMessage(BM_SETCHECK , BST_UNCHECKED , 0);
+	else
+		m_chk21port.SendMessage(BM_SETCHECK , BST_INDETERMINATE , 0);
+#else
+	m_chk21port.EnableWindow(FALSE);
+#endif
 
 	// サウンド関係
 	m_type.SubclassDlgItem(IDC_SOUND_DEVICE_TYPE, this);
@@ -284,6 +299,13 @@ void CConfigureDlg::OnOK()
 		milstr_ncpy(np2cfg.model, str, NELEMENTS(np2cfg.model));
 		nUpdated |= SYS_UPDATECFG;
 	}
+	
+#if defined(SUPPORT_PC9821)
+	if(np2cfg.sysiomsk != m_21port){
+		np2cfg.sysiomsk = m_21port;
+		nUpdated |= SYS_UPDATECFG;
+	}
+#endif
 
 	const CSoundMng::DeviceType nOldType = static_cast<CSoundMng::DeviceType>(np2oscfg.cSoundDeviceType);
 	const CSoundMng::DeviceType nType = static_cast<CSoundMng::DeviceType>(m_type.GetCurItemData(nOldType));
@@ -392,6 +414,10 @@ BOOL CConfigureDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 			{
 				SetClock(0);
 			}
+			return TRUE;
+
+		case IDC_MODEL21:
+			m_21port = (m_chk21port.SendMessage(BM_GETCHECK , 0 , 0) ? 0xff00 : 0x0000);
 			return TRUE;
 
 		case IDC_SOUND_DEVICE_TYPE:

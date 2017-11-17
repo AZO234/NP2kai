@@ -53,6 +53,10 @@ REG16 MEMCALL memtram_rd16(UINT32 address) {
 	return(LOADINTELWORD(mem + address));
 }
 
+UINT32 MEMCALL memtram_rd32(UINT32 address){
+	return (UINT32)memtram_rd16(address)|(memtram_rd16(address+2)<<16);
+}
+
 void MEMCALL memtram_wr8(UINT32 address, REG8 value) {
 
 	CPU_REMCLOCK -= MEMWAIT_TRAM;
@@ -129,5 +133,10 @@ void MEMCALL memtram_wr16(UINT32 address, REG16 value) {
 			fontrom[cgwindow.high + ((address >> 1) & 0x0f)] = (UINT8)value;
 		}
 	}
+}
+
+void MEMCALL memtram_wr32(UINT32 address, UINT32 value){
+	memtram_wr16(address, (REG16)value);
+	memtram_wr16(address+2, (REG16)(value >> 16));
 }
 

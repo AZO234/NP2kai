@@ -69,6 +69,7 @@
 #define IDC_MODELVM                     11104
 #define IDC_MODELVX                     11105
 #define IDC_MODELEPSON                  11106
+#define IDC_MODEL21                     11107
 #define IDC_SOUND_BUFFER                11110
 #define IDC_ALLOWRESIZE                 11111
 #define IDC_DISABLEMMX                  11112
@@ -91,6 +92,7 @@
 #define IDC_HDDADVANCED_SS              12207
 #define IDC_HDDADVANCED_FIXSIZE         12210
 #define IDC_HDDADVANCED_DYNSIZE         12211
+#define IDC_HDDADVANCED_BLANK           12212
 #define IDC_HDDCREATE_PROGRESS          12290
 #define IDC_HDDCREATE_VAL	            12291
 #define IDC_NEWSASI5MB                  12301
