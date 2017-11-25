@@ -25,11 +25,20 @@ void sysmng_deinitialize(void)
  * Notifies flags
  * @param[in] update update flags
  */
+#if defined(__LIBRETRO__)
+extern int lr_init;
+#endif
+
 void sysmng_update(UINT update)
 {
 	if (update & (SYS_UPDATECFG | SYS_UPDATEOSCFG))
 	{
+#if defined(__LIBRETRO__)
+		if(lr_init != 0)
+			initsave();
+#else
 		initsave();
+#endif
 	}
 }
 

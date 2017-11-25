@@ -69,6 +69,7 @@ retro_audio_sample_batch_t audio_batch_cb = NULL;
 static char CMDFILE[512];
 
 bool did_reset, joy2key_arr, joy2key_kpad;
+int lr_init = 0;
 
 int loadcmdfile(char *argv)
 {
@@ -993,7 +994,6 @@ static void update_variables(void)
          np2cfg.RASTER = 0;
       else
          np2cfg.RASTER = 1;
-      sysmng_update(SYS_UPDATECFG);
    }
 
    var.key = "np2_SNDboard";
@@ -1217,7 +1217,7 @@ static void update_variables(void)
       gdcs.grphdisp |= GDCSCRN_ALLDRAW2;
    }
 
-   initsave();
+   sysmng_update(SYS_UPDATECFG);
 
 }
 
@@ -1333,6 +1333,7 @@ bool retro_load_game(const struct retro_game_info *game)
    if(!worked)abort();
 
    strcpy(np2path, syspath);
+   lr_init = 1;
 
 #ifdef _WIN32
    strcat(np2path, "\\np2");
