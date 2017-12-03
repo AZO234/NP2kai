@@ -306,6 +306,9 @@ void pccore_init(void) {
 	enable_fmgen = 0;
 	if(np2cfg.usefmgen == 1)
 		enable_fmgen = 1;
+#ifdef WIIU
+		enable_fmgen = 0;
+#endif
 #endif	/* SUPPORT_FMGEN */
 
 	fmboard_construct();
@@ -400,6 +403,9 @@ void pccore_reset(void) {
 	enable_fmgen = 0;
 	if(np2cfg.usefmgen == 1)
 		enable_fmgen = 1;
+#ifdef WIIU
+		enable_fmgen = 0;
+#endif
 #endif	/* SUPPORT_FMGEN */
 
 	if (soundrenewal) {

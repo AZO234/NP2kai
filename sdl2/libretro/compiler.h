@@ -22,8 +22,11 @@
 #include "sdlremap/sdl_keycode.h"
 
 //#define TRACE
-
+#ifndef MSB_FIRST
 #define	BYTESEX_LITTLE
+#else
+#define	BYTESEX_BIG
+#endif
 #define	OSLANG_UTF8
 #define	OSLINEBREAK_CRLF
 #define  RESOURCE_US
