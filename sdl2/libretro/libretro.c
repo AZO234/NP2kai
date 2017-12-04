@@ -872,29 +872,29 @@ void retro_set_environment(retro_environment_t cb)
    //environ_cb(RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME, &no_rom);
 
    struct retro_variable variables[] = {
-//      { "np2_drive" , "Drive; FDD1|FDD2|IDE1|IDE2|CD-ROM" },
-      { "np2_model" , "PC Model (Restart); PC-9801VX|PC-286|PC-9801VM" },
-      { "np2_clk_base" , "CPU Base Clock (Restart); 2.4576 MHz|1.9968 MHz" },
-      { "np2_clk_mult" , "CPU Clock Multiplier (Restart); 4|5|6|8|10|12|16|20|24|30|36|40|42|1|2" },
-      { "np2_ExMemory" , "RAM Size (Restart); 3|7|11|13|16|32|64|120|230|1" },
-      { "np2_gdc" , "GDC; uPD7220|uPD72020" },
-      { "np2_skipline" , "Skipline Revisions; Full 255 lines|ON|OFF" },
-      { "np2_realpal" , "Real Palettes; OFF|ON" },
-      { "np2_lcd" , "LCD; OFF|ON" },
-      { "np2_SNDboard" , "Sound Board (Restart); PC9801-86|PC9801-26K + 86|PC9801-86 + Chibi-oto|PC9801-118|PC9801-86 + Mate-X PCM(B460)|Mate-X PCM(B460)|Chibi-oto|Speak Board|Spark Board|Sound Orchestra|Sound Orchestra-V|Sound Blaster 16|AMD-98|Otomi-chanx2|Otomi-chanx2 + 86|None|PC9801-14|PC9801-26K" },
-      { "np2_jast_snd" , "JastSound; OFF|ON" },
-      { "np2_usefmgen" , "Sound Generator; fmgen|Default" },
-      { "np2_volume_F" , "Volume FM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
-      { "np2_volume_S" , "Volume SSG; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
-      { "np2_volume_A" , "Volume ADPCM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
-      { "np2_volume_P" , "Volume PCM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
-      { "np2_volume_R" , "Volume RHYTHM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
-      { "np2_volume_C" , "Volume CD-DA; 128|136|144|154|160|168|196|184|192|200|208|216|224|232|240|248|255|0|8|16|24|32|40|48|56|64|72|80|88|96|104|112|120" },
-      { "np2_Seek_Snd" , "Floppy Seek Sound; OFF|ON" },
-      { "np2_Seek_Vol" , "Volume Floppy Seek; 80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76" },
-      { "np2_BEEP_vol" , "Volume Beep; 3|0|1|2" },
-      { "np2_joy2mouse" , "Joypad to Mouse Mapping; OFF|ON" },
-      { "np2_joy2key" , "Joypad to Keyboard Mapping; OFF|Arrows|Keypad" },
+//      { "np2kai_drive" , "Drive; FDD1|FDD2|IDE1|IDE2|CD-ROM" },
+      { "np2kai_model" , "PC Model (Restart); PC-9801VX|PC-286|PC-9801VM" },
+      { "np2kai_clk_base" , "CPU Base Clock (Restart); 2.4576 MHz|1.9968 MHz" },
+      { "np2kai_clk_mult" , "CPU Clock Multiplier (Restart); 4|5|6|8|10|12|16|20|24|30|36|40|42|1|2" },
+      { "np2kai_ExMemory" , "RAM Size (Restart); 3|7|11|13|16|32|64|120|230|1" },
+      { "np2kai_gdc" , "GDC; uPD7220|uPD72020" },
+      { "np2kai_skipline" , "Skipline Revisions; Full 255 lines|ON|OFF" },
+      { "np2kai_realpal" , "Real Palettes; OFF|ON" },
+      { "np2kai_lcd" , "LCD; OFF|ON" },
+      { "np2kai_SNDboard" , "Sound Board (Restart); PC9801-86|PC9801-26K + 86|PC9801-86 + Chibi-oto|PC9801-118|PC9801-86 + Mate-X PCM(B460)|Mate-X PCM(B460)|Chibi-oto|Speak Board|Spark Board|Sound Orchestra|Sound Orchestra-V|Sound Blaster 16|AMD-98|Otomi-chanx2|Otomi-chanx2 + 86|None|PC9801-14|PC9801-26K" },
+      { "np2kai_jast_snd" , "JastSound; OFF|ON" },
+      { "np2kai_usefmgen" , "Sound Generator; fmgen|Default" },
+      { "np2kai_volume_F" , "Volume FM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
+      { "np2kai_volume_S" , "Volume SSG; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
+      { "np2kai_volume_A" , "Volume ADPCM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
+      { "np2kai_volume_P" , "Volume PCM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
+      { "np2kai_volume_R" , "Volume RHYTHM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
+      { "np2kai_volume_C" , "Volume CD-DA; 128|136|144|154|160|168|196|184|192|200|208|216|224|232|240|248|255|0|8|16|24|32|40|48|56|64|72|80|88|96|104|112|120" },
+      { "np2kai_Seek_Snd" , "Floppy Seek Sound; OFF|ON" },
+      { "np2kai_Seek_Vol" , "Volume Floppy Seek; 80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76" },
+      { "np2kai_BEEP_vol" , "Volume Beep; 3|0|1|2" },
+      { "np2kai_joy2mouse" , "Joypad to Mouse Mapping; OFF|ON" },
+      { "np2kai_joy2key" , "Joypad to Keyboard Mapping; OFF|Arrows|Keypad" },
       { NULL, NULL },
    };
 
@@ -912,7 +912,7 @@ static void update_variables(void)
 {
    struct retro_variable var = {0};
 
-   var.key = "np2_drive";
+   var.key = "np2kai_drive";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -929,7 +929,7 @@ static void update_variables(void)
          drvno = 4;
    }
 
-   var.key = "np2_model";
+   var.key = "np2kai_model";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -942,7 +942,7 @@ static void update_variables(void)
          milstr_ncpy(np2cfg.model, str_VM, 3);
    }
 
-   var.key = "np2_clk_base";
+   var.key = "np2kai_clk_base";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -953,7 +953,7 @@ static void update_variables(void)
          np2cfg.baseclock = 2457600;
    }
 
-   var.key = "np2_clk_mult";
+   var.key = "np2kai_clk_mult";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -961,7 +961,7 @@ static void update_variables(void)
       np2cfg.multiple = atoi(var.value);
    }
 
-   var.key = "np2_ExMemory";
+   var.key = "np2kai_ExMemory";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -969,7 +969,7 @@ static void update_variables(void)
       np2cfg.EXTMEM = atoi(var.value);
    }
 
-   var.key = "np2_skipline";
+   var.key = "np2kai_skipline";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -985,7 +985,7 @@ static void update_variables(void)
       scrndraw_redraw();
    }
 
-   var.key = "np2_realpal";
+   var.key = "np2kai_realpal";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -996,7 +996,7 @@ static void update_variables(void)
          np2cfg.RASTER = 1;
    }
 
-   var.key = "np2_SNDboard";
+   var.key = "np2kai_SNDboard";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -1037,7 +1037,7 @@ static void update_variables(void)
          np2cfg.SOUND_SW = 0x02;
    }
 
-   var.key = "np2_jast_snd";
+   var.key = "np2kai_jast_snd";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -1048,7 +1048,7 @@ static void update_variables(void)
          np2oscfg.jastsnd = 1;
    }
 
-   var.key = "np2_usefmgen";
+   var.key = "np2kai_usefmgen";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -1059,7 +1059,7 @@ static void update_variables(void)
          np2cfg.usefmgen = 0x01;
    }
 
-   var.key = "np2_volume_F";
+   var.key = "np2kai_volume_F";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -1073,7 +1073,7 @@ static void update_variables(void)
 #endif	/* defined(SUPPORT_FMGEN) */
    }
 
-   var.key = "np2_volume_S";
+   var.key = "np2kai_volume_S";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -1086,7 +1086,7 @@ static void update_variables(void)
 #endif	/* defined(SUPPORT_FMGEN) */
    }
 
-   var.key = "np2_volume_A";
+   var.key = "np2kai_volume_A";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -1095,7 +1095,7 @@ static void update_variables(void)
       adpcm_setvol(np2cfg.vol_adpcm);
    }
 
-   var.key = "np2_volume_P";
+   var.key = "np2kai_volume_P";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -1108,7 +1108,7 @@ static void update_variables(void)
 #endif	/* defined(SUPPORT_FMGEN) */
    }
 
-   var.key = "np2_volume_R";
+   var.key = "np2kai_volume_R";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -1121,7 +1121,7 @@ static void update_variables(void)
 #endif	/* defined(SUPPORT_FMGEN) */
    }
 
-   var.key = "np2_volume_C";
+   var.key = "np2kai_volume_C";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -1130,7 +1130,7 @@ static void update_variables(void)
       rhythm_setvol(np2cfg.davolume);
    }
 
-   var.key = "np2_Seek_Snd";
+   var.key = "np2kai_Seek_Snd";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -1141,7 +1141,7 @@ static void update_variables(void)
          np2cfg.MOTOR = true;
    }
 
-   var.key = "np2_Seek_Vol";
+   var.key = "np2kai_Seek_Vol";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -1149,7 +1149,7 @@ static void update_variables(void)
       np2cfg.MOTORVOL = atoi(var.value);
    }
 
-   var.key = "np2_BEEP_vol";
+   var.key = "np2kai_BEEP_vol";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -1158,7 +1158,7 @@ static void update_variables(void)
       beep_setvol(np2cfg.BEEP_VOL);
    }
 
-   var.key = "np2_joy2mouse";
+   var.key = "np2kai_joy2mouse";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -1169,7 +1169,7 @@ static void update_variables(void)
          joymouse = false;
    }
 
-   var.key = "np2_joy2key";
+   var.key = "np2kai_joy2key";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -1191,7 +1191,7 @@ static void update_variables(void)
       }
    }
 
-   var.key = "np2_lcd";
+   var.key = "np2kai_lcd";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -1204,7 +1204,7 @@ static void update_variables(void)
       scrndraw_redraw();
    }
 
-   var.key = "np2_gdc";
+   var.key = "np2kai_gdc";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
