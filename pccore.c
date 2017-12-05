@@ -69,7 +69,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 	NP2CFG	np2cfg = {
 				0, 1, 0, 32, 0, 0, 0x40,
 				0, 0, 0, 0,
-				{0x3e, 0x73, 0x7b}, 0,
+				{0x3e, 0xf3, 0x7b}, 0,
 				0, 0, {1, 1, 6, 1, 8, 1},
 				128, 0x00, 1, 
 

@@ -37,3 +37,6 @@ NP2 kai開発ノート by AZO
 
 ・VEM486 + Turbo C++ 4J（のTC.EXE）でtriple fault発生
 
+
+・DIPスイッチ2、bit7 GDC の初期を 2.5MHz にした。
+
