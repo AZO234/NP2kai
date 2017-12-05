@@ -487,7 +487,11 @@ void updateInput(){
       {
          joymousemovebtn = 0;
       }
+
       joymouseaxel += 0.1;
+      if(input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R)) {
+         joymouseaxel += 0.2;
+      }
 
       if(input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP) && joymousemovebtn == 1) {
          if(input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT)) {

@@ -142,6 +142,7 @@ Switch Joy2Mouse mode in config.
 D-UP/DOWN/LEFT/RIGHT: mouse move  
 B button: left click  
 A button: right click
+R button: inclease mouse speed  
 
 Keyboard is able to control with joypad when Joy2Key mode.  
 Switch Joy2Key mode in config.  
@@ -300,6 +301,9 @@ I/O:0x00D0
 
 Release
 ---
+* Dec 5, 2017
+	- Default GDC clock is 2.5MHz
+	- In Joy2Mousem, mouse speed up with R key
 * Nov 18, 2017
 	- Merge NP21/w rev.37
 * Oct 26, 2017
