@@ -40,7 +40,7 @@ static UINT scsicmd_datain(SXSIDEV sxsi, UINT8 *cdb) {
 			// Page code = cdb[2];
 			length = cdb[4];
 			if (length) {
-				CopyMemory(scsiio.data, hdd_inquiry, min(length, 0x20));
+				CopyMemory(scsiio.data, hdd_inquiry, np2min(length, 0x20));
 			}
 			break;
 

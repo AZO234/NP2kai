@@ -692,7 +692,7 @@ static BOOL dlglist_append(MENUDLG dlg, DLGHDL hdl, const OEMCHAR* arg) {
 			if (barsize >= 8) {
 				barsize *= hdl->c.dl.dispmax;
 				barsize /= hdl->prmcnt;
-				barsize = max(barsize, 6);
+				barsize = np2max(barsize, 6);
 				if (!hdl->c.dl.scrollbar) {
 					dlglist_drawall(hdl);
 					dlglist_setbtn(hdl, 0);

@@ -49,8 +49,8 @@ const BYTE	*q;
 			ctrl = ptr;
 			*ptr++ = 0x00;
 		}
-		back = min(pos, maxhis);
-		rem = min(datasize - pos, maxlen);
+		back = np2min(pos, maxhis);
+		rem = np2min(datasize - pos, maxlen);
 		minback = back;
 		minr = rem;
 		while(back) {

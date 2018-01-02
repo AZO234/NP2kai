@@ -75,23 +75,23 @@ static BRESULT calcdrawrect(SDL_Surface *surface,
 	dr->width = scrnsurf.width;
 	dr->height = scrnsurf.height;
 #else	/* __LIBRETRO__ */
-	dr->width = max(scrnmng.width, s->width);
-	dr->height = max(scrnmng.height, s->height);
+	dr->width = np2max(scrnmng.width, s->width);
+	dr->height = np2max(scrnmng.height, s->height);
 #endif	/* __LIBRETRO__ */
 	if (rt) {
-		pos = max(rt->left, 0);
+		pos = np2max(rt->left, 0);
 		dr->srcpos += pos;
 		dr->dstpos += pos * dr->xalign;
-		dr->width = min(rt->right, dr->width) - pos;
+		dr->width = np2min(rt->right, dr->width) - pos;
 
-		pos = max(rt->top, 0);
+		pos = np2max(rt->top, 0);
 #if defined(__LIBRETRO__)
 		dr->srcpos += pos * scrnsurf.width;
 #else	/* __LIBRETRO__ */
 		dr->srcpos += pos * s->width;
 #endif	/* __LIBRETRO__ */
 		dr->dstpos += pos * dr->yalign;
-		dr->height = min(rt->bottom, dr->height) - pos;
+		dr->height = np2min(rt->bottom, dr->height) - pos;
 	}
 	if ((dr->width <= 0) || (dr->height <= 0)) {
 		return(FAILURE);
@@ -344,8 +344,8 @@ const SCRNSURF *scrnmng_surflock(void) {
 		scrnsurf.yalign = scrnmng.vram->yalign;
 		scrnsurf.bpp = scrnmng.vram->bpp;
 	}
-	scrnsurf.width = max(scrnstat.width, 640);
-	scrnsurf.height = max(scrnstat.height, 400);
+	scrnsurf.width = np2max(scrnstat.width, 640);
+	scrnsurf.height = np2max(scrnstat.height, 400);
 	scrnsurf.extend = 0;
 	return(&scrnsurf);
 #endif	/* __LIBRETRO__ */
@@ -359,8 +359,8 @@ static void draw_onmenu(void) {
 
 	rt.left = 0;
 	rt.top = 0;
-	rt.right = min(scrnsurf.width, 640);
-	rt.bottom = min(scrnsurf.height, 400);
+	rt.right = np2min(scrnsurf.width, 640);
+	rt.bottom = np2min(scrnsurf.height, 400);
 
 	if (calcdrawrect( &dr, &rt) == SUCCESS)
 		draw(dr);
@@ -377,8 +377,8 @@ const UINT8		*a;
 
 	rt.left = 0;
 	rt.top = 0;
-	rt.right = min(scrnstat.width, 640);
-	rt.bottom = min(scrnstat.height, 400);
+	rt.right = np2min(scrnstat.width, 640);
+	rt.bottom = np2min(scrnstat.height, 400);
 #if defined(NP2_SIZE_QVGA)
 	rt.right >>= 1;
 	rt.bottom >>= 1;

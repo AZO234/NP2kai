@@ -466,8 +466,8 @@ protected:
 	virtual void OnOK()
 	{
 		UINT nSize = GetDlgItemInt(IDC_HDDSIZE, NULL, FALSE);
-		nSize = max(nSize, m_nHddMinSize);
-		nSize = min(nSize, m_nHddMaxSize);
+		nSize = np2max(nSize, m_nHddMinSize);
+		nSize = np2min(nSize, m_nHddMaxSize);
 		m_nHddSize = nSize;
 		CDlgProc::OnOK();
 	}

@@ -500,7 +500,7 @@ void ct1741_dma(NEVENTITEM item)
 				// “]‘—`
 				rem = cs4231.bufsize - cs4231.bufdatas;
 				pos = (cs4231.bufpos + cs4231.bufdatas) & (DMA_BUFSIZE -1);
-				size = min(rem, DMA_BUFSIZE - pos);
+				size = np2min(rem, DMA_BUFSIZE - pos);
 				r = dmac_getdatas(dsp_info.dma.chan, (UINT8*)(dsp_info.dma.buf.b16 + pos), size);
 //			}
 			if ((dsp_info.dma.chan->leng.w) && (dsp_info.freq)) {

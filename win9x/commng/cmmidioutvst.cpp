@@ -165,7 +165,7 @@ void CComMidiOutVst::Process32(SINT32* lpBuffer, UINT nBufferCount)
 		}
 
 		UINT nSize = m_nBlockSize - m_nIndex;
-		nSize = min(nSize, nBufferCount);
+		nSize = np2min(nSize, nBufferCount);
 		nBufferCount -= nSize;
 		float** output = m_output.GetBuffer();
 		do

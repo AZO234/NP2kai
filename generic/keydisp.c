@@ -371,7 +371,7 @@ static UINT8 GetOpnaNote(const OPNACTL *k, UINT16 wFNum)
 	}
 
 	nKey += nOct * 12;
-	return (int)(min(nKey, 127));
+	return (int)(np2min(nKey, 127));
 }
 
 static void opnakeyoff(KEYDISP *keydisp, OPNACTL *k, UINT nChannel)
@@ -540,7 +540,7 @@ static UINT8 GetPSGNote(const PSGCTL *k, UINT16 nTone)
 	{
 	}
 	nKey += nOct * 12;
-	return (int)(min(nKey, 127));
+	return (int)(np2min(nKey, 127));
 }
 
 static void psgmix(KEYDISP *keydisp, PSGCTL *k)
@@ -704,7 +704,7 @@ static UINT8 GetOpl3Note(const OPL3CTL *k, UINT16 wFNum)
 	}
 
 	nKey += nOct * 12;
-	return (int)(min(nKey, 127));
+	return (int)(np2min(nKey, 127));
 }
 
 static void opl3keyoff(KEYDISP *keydisp, OPL3CTL *k, UINT nChannel)
@@ -970,7 +970,7 @@ static UINT getdispkeys(const KEYDISP *keydisp)
 			keys = 0;
 			break;
 	}
-	return min(keys, KEYDISP_CHMAX);
+	return np2min(keys, KEYDISP_CHMAX);
 }
 
 static void clearrect(CMNVRAM *vram, int x, int y, int cx, int cy)
@@ -1296,7 +1296,7 @@ BOOL keydisp_paint(CMNVRAM *vram, BOOL redraw)
 	}
 	vram->ptr += vram->xalign + vram->yalign;
 	keys = (vram->height - 1) / KEYDISP_KEYCY;
-	keys = min(keys, getdispkeys(&s_keydisp));
+	keys = np2min(keys, getdispkeys(&s_keydisp));
 	for (i = 0, p = s_keydisp.ch; i < keys; i++, p++)
 	{
 		draw |= draw1ch(vram, s_keydisp.framepast, p);

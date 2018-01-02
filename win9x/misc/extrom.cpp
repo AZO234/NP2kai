@@ -78,7 +78,7 @@ void CExtRom::Close()
 UINT CExtRom::Read(LPVOID lpBuffer, UINT cbBuffer)
 {
 	UINT nLength = m_nSize - m_nPointer;
-	nLength = min(nLength, cbBuffer);
+	nLength = np2min(nLength, cbBuffer);
 	if (nLength)
 	{
 		if (lpBuffer)

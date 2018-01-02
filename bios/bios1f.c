@@ -36,9 +36,9 @@ static REG8 bios0x1f_90(void) {
 	leng = LOW16(CPU_CX - 1) + 1;
 //	TRACEOUT(("move %.8x %.8x %.4x", srcbase + srcaddr, dstbase + dstaddr, leng));
 	do {
-		l = min(leng, sizeof(work));
-		l = min(l, srclimit - srcaddr);
-		l = min(l, dstlimit - dstaddr);
+		l = np2min(leng, sizeof(work));
+		l = np2min(l, srclimit - srcaddr);
+		l = np2min(l, dstlimit - dstaddr);
 		if (!l) {
 			CPU_A20EN(FALSE);
 			goto p90_err2;

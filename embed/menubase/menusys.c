@@ -351,7 +351,7 @@ static BRESULT wndopenbase(MENUSYS *sys) {
 		goto wopn0_err;
 	}
 	if (sys->style & MENUSTYLE_BOTTOM) {
-		vram->posy = max(0, menuvram->height - height);
+		vram->posy = np2max(0, menuvram->height - height);
 	}
 	menuvram_caption(vram, &mrect, sys->icon, sys->title);
 	menubase_setrect(vram, NULL);
@@ -502,7 +502,7 @@ static BRESULT childopn(MENUSYS *sys, int depth, int pos) {
 	wnd = sys->wnd + depth;
 	if ((menu->flag & MENUS_CTRLMASK) == MENUS_POPUP) {
 		parent.left = sys->popupx;
-		parent.top = max(sys->popupy, wnd->vram->height);
+		parent.top = np2max(sys->popupy, wnd->vram->height);
 		parent.right = parent.left;
 		parent.bottom = parent.top;
 		dir = 0;
@@ -586,8 +586,8 @@ static BRESULT childopn(MENUSYS *sys, int depth, int pos) {
 			parent.top = parent.bottom - height;
 		}
 	}
-	wnd->vram->posx = min(parent.left, menubase.width - width);
-	wnd->vram->posy = min(parent.top, menubase.height - height);
+	wnd->vram->posx = np2min(parent.left, menubase.width - width);
+	wnd->vram->posy = np2min(parent.top, menubase.height - height);
 	wnd->items = items;
 	wnd->focus = -1;
 	sys->depth++;

@@ -128,8 +128,8 @@ renewal_client_size(void)
 	int scrnheight;
 	int multiple;
 
-	width = min(scrnstat.width, drawmng.width);
-	height = min(scrnstat.height, drawmng.height);
+	width = np2min(scrnstat.width, drawmng.width);
+	height = np2min(scrnstat.height, drawmng.height);
 	extend = 0;
 
 	if (drawmng.scrnmode & SCRNMODE_FULLSCREEN) {
@@ -155,7 +155,7 @@ renewal_client_size(void)
 		multiple = scrnstat.multiple;
 		if (!(drawmng.scrnmode & SCRNMODE_ROTATE)) {
 			if ((np2oscfg.paddingx > 0) && (multiple == SCREEN_DEFMUL)) {
-				extend = min(scrnstat.extend, drawmng.extend);
+				extend = np2min(scrnstat.extend, drawmng.extend);
 			}
 			scrnwidth = (width * multiple) / SCREEN_DEFMUL;
 			scrnheight = (height * multiple) / SCREEN_DEFMUL;
@@ -170,7 +170,7 @@ renewal_client_size(void)
 			drawmng.scrn.top = np2oscfg.paddingy;
 		} else {
 			if ((np2oscfg.paddingy > 0) && (multiple == SCREEN_DEFMUL)) {
-				extend = min(scrnstat.extend, drawmng.extend);
+				extend = np2min(scrnstat.extend, drawmng.extend);
 			}
 			scrnwidth = (height * multiple) / SCREEN_DEFMUL;
 			scrnheight = (width * multiple) / SCREEN_DEFMUL;
@@ -217,8 +217,8 @@ clear_out_of_rect(const RECT_T *target, const RECT_T *base)
 		    rect.left, rect.top, rect.right, rect.bottom);
 	}
 
-	rect.top = max(base->top, target->top);
-	rect.bottom = min(base->bottom, target->bottom);
+	rect.top = np2max(base->top, target->top);
+	rect.bottom = np2min(base->bottom, target->bottom);
 	if (rect.top < rect.bottom) {
 		rect.left = base->left;
 		rect.right = target->left;

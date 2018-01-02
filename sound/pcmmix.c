@@ -118,7 +118,7 @@ const SINT16	*s;
 			flag = t->flag;
 			vol = t->volume;
 			do {
-				r = min(srem, drem);
+				r = np2min(srem, drem);
 				switch(flag & (PMIXFLAG_L | PMIXFLAG_R)) {
 					case PMIXFLAG_L:
 						for (j=0; j<r; j++) {

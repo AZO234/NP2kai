@@ -1264,7 +1264,7 @@ static SINT32	sampcount2_n = 0;
 		return(FAILURE);
 	}
 	while(count) {
-		r = min(count, drv->dabufrem * samplen_n / samplen_d);
+		r = np2min(count, drv->dabufrem * samplen_n / samplen_d);
 		if (r) {
 			count -= r;
 			ptr = drv->dabuf + 2352 - (drv->dabufrem * 4);
@@ -1345,7 +1345,7 @@ static SINT32	sampcount2_n = 0;
 //		return(FAILURE);
 //	}
 //	while(count) {
-//		r = min(count, drv->dabufrem * samplen);
+//		r = np2min(count, drv->dabufrem * samplen);
 //		if (r) {
 //			count -= r;
 //			ptr = drv->dabuf + 2352 - (drv->dabufrem * 4);
@@ -1418,7 +1418,7 @@ static SINT32	sampcount2_n = 0;
 //		return(FAILURE);
 //	}
 //	while(count) {
-//		r = min(count, drv->dabufrem * sampbias);
+//		r = np2min(count, drv->dabufrem * sampbias);
 //		if (r) {
 //			count -= r;
 //			ptr = drv->dabuf + 2352 - drv->dabufrem * 4;

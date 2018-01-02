@@ -65,7 +65,7 @@ static REG8 sxsibios_write(UINT type, SXSIDEV sxsi) {
 	if (!ret) {
 		addr = (CPU_ES << 4) + CPU_BP;
 		while(size) {
-			r = min(size, sxsi->size);
+			r = np2min(size, sxsi->size);
 			MEML_READS(addr, work, r);
 			ret = sxsi_write(CPU_AL, pos, work, r);
 			if (ret >= 0x20) {
@@ -96,7 +96,7 @@ static REG8 sxsibios_read(UINT type, SXSIDEV sxsi) {
 	if (!ret) {
 		addr = (CPU_ES << 4) + CPU_BP;
 		while(size) {
-			r = min(size, sxsi->size);
+			r = np2min(size, sxsi->size);
 			ret = sxsi_read(CPU_AL, pos, work, r);
 			if (ret >= 0x20) {
 				break;

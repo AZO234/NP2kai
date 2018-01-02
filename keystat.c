@@ -61,11 +61,11 @@ void keystat_tblset(REG8 ref, const UINT8 *key, UINT cnt) {
 
 	if ((ref >= NKEY_USER) && (ref < (NKEY_USER + NKEY_USERKEYS))) {
 		nkey = (NKEYM *)(nkeytbl.user + (ref - NKEY_USER));
-		cnt = min(cnt, 15);
+		cnt = np2min(cnt, 15);
 	}
 	else if (ref < NKEY_SYSTEM) {
 		nkey = (NKEYM *)(nkeytbl.key + ref);
-		cnt = min(cnt, 3);
+		cnt = np2min(cnt, 3);
 	}
 	else {
 		return;

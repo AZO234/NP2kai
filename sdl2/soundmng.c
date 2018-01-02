@@ -1237,7 +1237,7 @@ sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 	int		length;
 	const SINT32	*src;
 
-	length = min(len, (int)(SNDSZ * 2 * sizeof(SINT16)));
+	length = np2min(len, (int)(SNDSZ * 2 * sizeof(SINT16)));
 	src = sound_pcmlock();
 	if (src) {
 		satuation_s16(soundbuf, src, length);

@@ -114,7 +114,7 @@ static UINT getcatfilename(const ZIPCAT *cat, char *filename, UINT size) {
 	}
 	size = size - 1;
 	fnamesize = LOADINTELWORD(cat->filenamesize);
-	size = min(size, fnamesize);
+	size = np2min(size, fnamesize);
 	if (size) {
 		CopyMemory(filename, cat + 1, size);
 	}
@@ -157,7 +157,7 @@ static UINT method0_read(ARCFH arcfh, void *buffer, UINT size) {
 
 	m0 = (METHOD0 *)arcfh;
 	rsize = m0->size - m0->pos;
-	rsize = min(rsize, size);
+	rsize = np2min(rsize, size);
 	if (rsize == 0) {
 		return(0);
 	}
@@ -271,11 +271,11 @@ static UINT method8read(METHOD8 *m8, void *buffer, UINT size) {
 	long	fpos;
 
 	r = m8->dstsize - m8->dstpos;
-	size = min(size, r);
+	size = np2min(size, r);
 	ptr = (UINT8 *)buffer;
 	while(size) {
 		dstrem = NELEMENTS(m8->dst) - m8->stream.avail_out - m8->pos;
-		r = min(dstrem, size);
+		r = np2min(dstrem, size);
 		if (r) {
 			if (buffer != NULL) {
 				CopyMemory(ptr, m8->dst + m8->pos, r);
@@ -295,7 +295,7 @@ static UINT method8read(METHOD8 *m8, void *buffer, UINT size) {
 //		TRACEOUT(("try decompress"));
 		if (m8->stream.avail_in == 0) {
 			r = m8->srcsize - m8->srcpos;
-			r = min(r, NELEMENTS(m8->src));
+			r = np2min(r, NELEMENTS(m8->src));
 			if (r == 0) {
 				break;
 			}
@@ -575,7 +575,7 @@ static BRESULT getziphdrpos(FILEH fh, long *hdrpos) {
 	bufrem = 0;
 	while(fpos > 0) {
 		rsize = NELEMENTS(buf) - bufrem;
-		rsize = (UINT)(min(fpos, (long)rsize));
+		rsize = (UINT)(np2min(fpos, (long)rsize));
 		fpos -= rsize;
 		r = bufrem;
 		while(r) {

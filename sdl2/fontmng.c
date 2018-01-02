@@ -289,7 +289,7 @@ static void AnkSetFontHeader(FNTMNG _this, FNTDAT fdat, int width)
 	}
 	else
 	{
-		fdat->width = max(width, _this->fontsize >> 1);
+		fdat->width = np2max(width, _this->fontsize >> 1);
 		fdat->pitch = (_this->fontsize >> 1) + 1;
 		fdat->height = _this->fontsize;
 	}
@@ -372,8 +372,8 @@ static void TTFSetFontHeader(FNTMNG _this, FNTDAT fdat, const SDL_Surface *s)
 
 	if (s)
 	{
-		width = min(s->w, _this->ptsize);
-		height = min(s->h, _this->ptsize);
+		width = np2min(s->w, _this->ptsize);
+		height = np2min(s->h, _this->ptsize);
 	}
 	else
 	{
@@ -621,7 +621,7 @@ BRESULT fontmng_getdrawsize(void *hdl, const char *lpString, POINT_T *pt)
 			break;
 		}
 		GetLength1(_this, &fontData, c);
-		nWidth = nPosX + max(fontData.width, fontData.pitch);
+		nWidth = nPosX + np2max(fontData.width, fontData.pitch);
 		nPosX += fontData.pitch;
 	}
 	if (pt)

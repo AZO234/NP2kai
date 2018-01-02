@@ -160,7 +160,7 @@ const UINT8	*p;
 				}
 			}
 		}
-		c = min(cnt, width);
+		c = np2min(cnt, width);
 		cnt -= c;
 		width -= c;
 		if (pix) {
@@ -225,7 +225,7 @@ const UINT8	*p;
 			}
 			cnt += c;
 		}
-		c = min(cnt, width);
+		c = np2min(cnt, width);
 		cnt -= c;
 		width -= c;
 		if (!pix) {
@@ -378,7 +378,7 @@ const UINT8	*p;
 				}
 			}
 		}
-		c = min(cnt, width);
+		c = np2min(cnt, width);
 		cnt -= c;
 		width -= c;
 		if (pix) {
@@ -444,7 +444,7 @@ const UINT8	*p;
 			}
 			cnt += c;
 		}
-		c = min(cnt, width);
+		c = np2min(cnt, width);
 		cnt -= c;
 		width -= c;
 		if (!pix) {
@@ -585,7 +585,7 @@ static void vramlzxsolve(UINT8 *ptr, int size, const UINT8 *dat) {
 			tmp |= *dat++;
 			pos = -1 - (tmp >> level);
 			leng = (tmp & mask) + 1;
-			leng = min(leng, size);
+			leng = np2min(leng, size);
 			size -= leng;
 			while(leng--) {
 				*ptr = *(ptr + pos);

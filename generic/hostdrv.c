@@ -327,7 +327,7 @@ static BRESULT read_data(UINT num, UINT32 pos, UINT size, UINT seg, UINT off) {
 		return(FAILURE);
 	}
 	while(size) {
-		r = min(size, sizeof(work));
+		r = np2min(size, sizeof(work));
 		if (file_read(fh, work, r) != r) {
 			return(FAILURE);
 		}
@@ -358,7 +358,7 @@ static BRESULT write_data(UINT num, UINT32 pos, UINT size, UINT seg, UINT off) {
 	}
 	else {
 		do {
-			r = min(size, sizeof(work));
+			r = np2min(size, sizeof(work));
 			MEMR_READS(seg, off, work, r);
 			if (file_write(fh, work, r) != r) {
 				return(FAILURE);

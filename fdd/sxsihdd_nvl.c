@@ -128,7 +128,7 @@ static REG8 hdd_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size)
 	{
 		UINT rsize;
 
-		rsize = min(size, sxsi->size);
+		rsize = np2min(size, sxsi->size);
 		CPU_REMCLOCK -= rsize;
 
 		if (!(*p->f4)(p->pv, pos, rsize, buf))
@@ -164,7 +164,7 @@ static REG8 hdd_write(SXSIDEV sxsi, FILEPOS pos, const UINT8 *buf, UINT size)
 	{
 		UINT wsize;
 
-		wsize = min(size, sxsi->size);
+		wsize = np2min(size, sxsi->size);
 		CPU_REMCLOCK -= wsize;
 
 		if (!(*p->f5)(p->pv, pos, wsize, buf))
@@ -208,7 +208,7 @@ static REG8 hdd_format(SXSIDEV sxsi, FILEPOS pos)
 		{
 			UINT wsize;
 
-			wsize = min(size, sizeof(work));
+			wsize = np2min(size, sizeof(work));
 			size -= wsize;
 			CPU_REMCLOCK -= wsize;
 

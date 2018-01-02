@@ -93,7 +93,7 @@ ia32_setextsize(UINT32 size)
 			CPU_EXTMEM = extmem;
 			CPU_EXTMEMSIZE = size;
 			CPU_EXTMEMBASE = CPU_EXTMEM - 0x100000;
-			CPU_EXTLIMIT16 = min(size + 0x100000, 0xf00000);
+			CPU_EXTLIMIT16 = np2min(size + 0x100000, 0xf00000);
 			CPU_EXTLIMIT = size + 0x100000;
 		}
 		else {

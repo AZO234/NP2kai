@@ -755,7 +755,7 @@ BRESULT profile_read(const OEMCHAR *lpAppName, const OEMCHAR *lpKeyName, const O
 	}
 	else
 	{
-		nSize = min(nSize, pfp.cchString + 1);
+		nSize = np2min(nSize, pfp.cchString + 1);
 		milstr_ncpy(lpReturnedString, pfp.lpString, nSize);
 		return SUCCESS;
 	}
@@ -781,7 +781,7 @@ int profile_readint(const OEMCHAR *lpAppName, const OEMCHAR *lpKeyName, int nDef
 	}
 	else
 	{
-		nSize = min(NELEMENTS(szBuffer), pfp.cchString + 1);
+		nSize = np2min(NELEMENTS(szBuffer), pfp.cchString + 1);
 		milstr_ncpy(szBuffer, pfp.lpString, nSize);
 		return (int)milstr_solveINT(szBuffer);
 	}

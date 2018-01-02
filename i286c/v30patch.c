@@ -261,7 +261,7 @@ I286FN v30shift_ea8_data8(void) {			// C0:	shift	EA8, DATA8
 				}
 			}
 			else {
-				cl = max(cl, 9);
+				cl = np2max(cl, 9);
 			}
 			sft_e8cl_table[(op >> 3) & 7](madr, cl);
 			return;
@@ -279,7 +279,7 @@ I286FN v30shift_ea8_data8(void) {			// C0:	shift	EA8, DATA8
 		}
 	}
 	else {
-		cl = max(cl, 9);
+		cl = np2max(cl, 9);
 	}
 	sft_r8cl_table[(op >> 3) & 7](out, cl);
 }
@@ -311,7 +311,7 @@ I286FN v30shift_ea16_data8(void) {			// C1:	shift	EA16, DATA8
 				}
 			}
 			else {								// shift
-				cl = max(cl, 17);
+				cl = np2max(cl, 17);
 			}
 			sft_e16cl_table[(op >> 3) & 7](madr, cl);
 			return;
@@ -329,7 +329,7 @@ I286FN v30shift_ea16_data8(void) {			// C1:	shift	EA16, DATA8
 		}
 	}
 	else {								// shift
-		cl = max(cl, 17);
+		cl = np2max(cl, 17);
 	}
 	sft_r16cl_table[(op >> 3) & 7](out, cl);
 }
@@ -385,7 +385,7 @@ I286FN v30shift_ea8_cl(void) {				// D2:	shift EA8, cl
 				}
 			}
 			else {
-				cl = max(cl, 9);
+				cl = np2max(cl, 9);
 			}
 			sft_e8cl_table[(op >> 3) & 7](madr, cl);
 			return;
@@ -403,7 +403,7 @@ I286FN v30shift_ea8_cl(void) {				// D2:	shift EA8, cl
 		}
 	}
 	else {
-		cl = max(cl, 9);
+		cl = np2max(cl, 9);
 	}
 	sft_r8cl_table[(op >> 3) & 7](out, cl);
 }
@@ -435,7 +435,7 @@ I286FN v30shift_ea16_cl(void) {				// D3:	shift EA16, cl
 				}
 			}
 			else {								// shift
-				cl = max(cl, 17);
+				cl = np2max(cl, 17);
 			}
 			sft_e16cl_table[(op >> 3) & 7](madr, cl);
 			return;
@@ -453,7 +453,7 @@ I286FN v30shift_ea16_cl(void) {				// D3:	shift EA16, cl
 		}
 	}
 	else {								// shift
-		cl = max(cl, 17);
+		cl = np2max(cl, 17);
 	}
 	sft_r16cl_table[(op >> 3) & 7](out, cl);
 }

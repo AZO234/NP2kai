@@ -1069,7 +1069,7 @@ void MEMCALL meml_reads(UINT32 address, void *dat, UINT leng) {
 	else {
 		while(leng) {
 			size = 0x1000 - (address & 0xfff);
-			size = min(size, leng);
+			size = np2min(size, leng);
 			memp_reads(physicaladdr(address, FALSE), dat, size);
 			address += size;
 			dat = ((UINT8 *)dat) + size;
@@ -1088,7 +1088,7 @@ void MEMCALL meml_writes(UINT32 address, const void *dat, UINT leng) {
 	else {
 		while(leng) {
 			size = 0x1000 - (address & 0xfff);
-			size = min(size, leng);
+			size = np2min(size, leng);
 			memp_writes(physicaladdr(address, TRUE), dat, size);
 			address += size;
 			dat = ((UINT8 *)dat) + size;
@@ -1161,10 +1161,10 @@ void MEMCALL memr_reads(UINT seg, UINT off, void *dat, UINT leng) {
 		off = LOW16(off);
 		addr = (seg << 4) + off;
 		rem = 0x10000 - off;
-		size = min(leng, rem);
+		size = np2min(leng, rem);
 		if (CPU_STAT_PAGING) {
 			rem = 0x1000 - (addr & 0xfff);
-			size = min(size, rem);
+			size = np2min(size, rem);
 			addr = physicaladdr(addr, FALSE);
 		}
 		memp_reads(addr, dat, size);
@@ -1184,10 +1184,10 @@ void MEMCALL memr_writes(UINT seg, UINT off, const void *dat, UINT leng) {
 		off = LOW16(off);
 		addr = (seg << 4) + off;
 		rem = 0x10000 - off;
-		size = min(leng, rem);
+		size = np2min(leng, rem);
 		if (CPU_STAT_PAGING) {
 			rem = 0x1000 - (addr & 0xfff);
-			size = min(size, rem);
+			size = np2min(size, rem);
 			addr = physicaladdr(addr, TRUE);
 		}
 		memp_writes(addr, dat, size);

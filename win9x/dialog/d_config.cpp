@@ -274,8 +274,8 @@ void CConfigureDlg::OnOK()
 	}
 
 	UINT nMultiple = GetDlgItemInt(IDC_MULTIPLE, NULL, FALSE);
-	nMultiple = max(nMultiple, 1);
-	nMultiple = min(nMultiple, 256);
+	nMultiple = np2max(nMultiple, 1);
+	nMultiple = np2min(nMultiple, 256);
 	if (np2cfg.multiple != nMultiple)
 	{
 		np2cfg.multiple = nMultiple;
@@ -332,8 +332,8 @@ void CConfigureDlg::OnOK()
 	}
 
 	UINT nBuffer = GetDlgItemInt(IDC_SOUND_BUFFER, NULL, FALSE);
-	nBuffer = max(nBuffer, 40);
-	nBuffer = min(nBuffer, 1000);
+	nBuffer = np2max(nBuffer, 40);
+	nBuffer = np2min(nBuffer, 1000);
 	if (np2cfg.delayms != static_cast<UINT16>(nBuffer))
 	{
 		np2cfg.delayms = static_cast<UINT16>(nBuffer);
@@ -438,8 +438,8 @@ void CConfigureDlg::SetClock(UINT nMultiple)
 	{
 		nMultiple = GetDlgItemInt(IDC_MULTIPLE, NULL, FALSE);
 	}
-	nMultiple = max(nMultiple, 1);
-	nMultiple = min(nMultiple, 256);
+	nMultiple = np2max(nMultiple, 1);
+	nMultiple = np2min(nMultiple, 256);
 
 	const UINT nClock = (nBaseClock / 100) * nMultiple;
 

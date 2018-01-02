@@ -125,6 +125,13 @@ typedef	signed __int64		SINT64;
 #define	LABEL				__declspec(naked)
 #define	RELEASE(x) 			if (x) {(x)->Release(); (x) = NULL;}
 
+#ifndef	np2max
+#define	np2max(a,b)	(((a) > (b)) ? (a) : (b))
+#endif
+#ifndef	np2min
+#define	np2min(a,b)	(((a) < (b)) ? (a) : (b))
+#endif
+
 #if !defined(_WIN64)
 #define	OPNGENX86
 #endif

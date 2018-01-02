@@ -91,7 +91,7 @@ UINT dmac_getdatas(DMACH dmach, UINT8 *buf, UINT size) {
 	UINT32	addr;
 	UINT	i;
 
-	leng = min(dmach->leng.w, size);
+	leng = np2min(dmach->leng.w, size);
 	if (leng) {
 		addr = dmach->adrs.d;					// + mask
 		if (!(dmach->mode & 0x20)) {			// dir +

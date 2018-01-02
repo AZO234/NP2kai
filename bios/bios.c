@@ -147,7 +147,7 @@ static void bios_reinitbyswitch(void) {
 	}
 	mem[MEMB_BIOS_FLAG1] = biosflag;
 	extmem = pccore.extmem;
-	extmem = min(extmem, 14);
+	extmem = np2min(extmem, 14);
 	mem[MEMB_EXPMMSZ] = (UINT8)(extmem << 3);
 	if (pccore.extmem >= 15) {
 		mem[0x0594] = pccore.extmem - 15;

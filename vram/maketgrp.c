@@ -136,7 +136,7 @@ void maketextgrph(int plane, int text_renewal, int grph_renewal) {
 
 	ppage = (plane)?VRAM_STEP:0;
 	gbit = 0x01010101 << plane;
-	ymax = min(dsync.textymax, dsync.grphymax);
+	ymax = np2min(dsync.textymax, dsync.grphymax);
 	q = np2_vram[plane] + dsync.textvad;
 	wait1 = 0;
 	TEXT_LRcnt = 0;
@@ -394,7 +394,7 @@ void maketextgrph40(int plane, int text_renewal, int grph_renewal) {
 
 	ppage = (plane)?VRAM_STEP:0;
 	gbit = 0x01010101 << plane;
-	ymax = min(dsync.textymax, dsync.grphymax);
+	ymax = np2min(dsync.textymax, dsync.grphymax);
 	q = np2_vram[plane] + dsync.textvad;
 	wait1 = 0;
 	TEXT_LRcnt = 0;

@@ -122,10 +122,10 @@ static void writeseg(const OEMCHAR *fname, UINT32 addr, UINT limit) {
 	if (fh == FILEH_INVALID) {
 		return;
 	}
-	limit = min(limit, 0xffff);
+	limit = np2min(limit, 0xffff);
 	limit++;
 	while(limit) {
-		size = min(limit, sizeof(buf));
+		size = np2min(limit, sizeof(buf));
 		MEML_READS(addr, buf, size);
 		file_write(fh, buf, size);
 		addr += size;

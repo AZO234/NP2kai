@@ -61,7 +61,7 @@ const BPEVENT	*bev;
 	do {
 		if (clk >= (1 << 16)) {
 			r = clk >> 16;
-			r = min(r, count);
+			r = np2min(r, count);
 			clk -= r << 16;
 			count -= r;
 			if (bp->lastenable) {

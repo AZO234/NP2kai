@@ -126,7 +126,7 @@ static void gline(const _GLIO *lio, const LINEPT *lp, UINT16 pat) {
 	if (d2 < 0) {
 		d2 = 0 - d2;
 	}
-	d1 = max(d1, d2) & 15;
+	d1 = np2max(d1, d2) & 15;
 	pat = (UINT16)((pat >> d1) | (pat << (16 - d1)));
 
 	csrw = (y1 * 40) + (x1 >> 4) + ((x1 & 0xf) << 20);
@@ -213,10 +213,10 @@ static void gbox(const _GLIO *lio, const LINEPT *lp, UINT8 *tile, UINT leng) {
 		(y1 > lio->draw.y2) || (y2 < lio->draw.y1)) {
 		return;
 	}
-	x1 = max(x1, lio->draw.x1);
-	y1 = max(y1, lio->draw.y1);
-	x2 = min(x2, lio->draw.x2);
-	y2 = min(y2, lio->draw.y2);
+	x1 = np2max(x1, lio->draw.x1);
+	y1 = np2max(y1, lio->draw.y1);
+	x2 = np2min(x2, lio->draw.x2);
+	y2 = np2min(y2, lio->draw.y2);
 
 	csrw = 0;
 	if (lio->draw.flag & LIODRAW_UPPER) {

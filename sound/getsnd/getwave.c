@@ -75,7 +75,7 @@ static UINT pcm_dec(GETSND snd, void *dst) {
 
 	UINT	size;
 
-	size = min(snd->blocksize, snd->datsize);
+	size = np2min(snd->blocksize, snd->datsize);
 	if (size) {
 		CopyMemory(dst, snd->datptr, size);
 		snd->datptr += size;
@@ -91,7 +91,7 @@ static UINT pcm_dec(GETSND snd, UINT8 *dst) {
 	UINT	cnt;
 	UINT8	*src;
 
-	size = min(snd->blocksize, snd->datsize);
+	size = np2min(snd->blocksize, snd->datsize);
 	if (size) {
 		if (snd->bit == 16) {
 			cnt = size >> 1;
@@ -164,7 +164,7 @@ static UINT msa_dec(GETSND snd, SINT16 *dst) {
 	SINT32		outdata;
 
 	buf = snd->datptr;						// ワーク使ってません。
-	size = min(snd->datsize, snd->blocksize);
+	size = np2min(snd->datsize, snd->blocksize);
 	snd->datptr += size;
 	snd->datsize -= size;
 
@@ -531,7 +531,7 @@ BRESULT getwave_open(GETSND snd, UINT8 *ptr, UINT size) {
 	ptr += pos;
 	size -= pos;
 	datasize = LOADINTELDWORD(head->size);
-	size = min(size, datasize);
+	size = np2min(size, datasize);
 
 	switch(format) {
 		case 0x01:				// PCM
