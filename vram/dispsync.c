@@ -123,7 +123,7 @@ BOOL dispsync_renewalvertical(void) {
 	dsync.textymax = textymax;
 	dsync.grphymax = grphymax;
 
-	scrnymax = max(grphymax, textymax);
+	scrnymax = np2max(grphymax, textymax);
 	scrnymax = (scrnymax + 7) & (~7);
 	if (dsync.scrnymax != scrnymax) {
 		dsync.scrnymax = scrnymax;

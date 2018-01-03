@@ -133,9 +133,9 @@ void cs4231_dma(NEVENTITEM item) {
 			// バッファに空きがあればデータを読み出す
 			if(!w31play || !(cs4231.reg.featurestatus & (PI|TI|CI))){
 				if (bufsize - 4 > cs4231.bufdatas) {
-					rem = min(bufsize - 4 - cs4231.bufdatas, CS4231_MAXDMAREADBYTES); //読み取り単位は16bitステレオの1サンプル分(4byte)にしておかないと雑音化する
+					rem = np2min(bufsize - 4 - cs4231.bufdatas, CS4231_MAXDMAREADBYTES); //読み取り単位は16bitステレオの1サンプル分(4byte)にしておかないと雑音化する
 					pos = cs4231.bufwpos & CS4231_BUFMASK; // バッファ書き込み位置
-					size = min(rem, dmach->startcount); // バッファ書き込みサイズ
+					size = np2min(rem, dmach->startcount); // バッファ書き込みサイズ
 					r = dmac_getdata_(dmach, cs4231.buffer, pos, size); // DMA読み取り実行
 					cs4231.bufwpos = (cs4231.bufwpos + r) & CS4231_BUFMASK; // バッファ書き込み位置を更新
 					cs4231.bufdatas += r; // バッファ内の有効なデータ数を更新 = (bufwpos-bufpos)&CS4231_BUFMASK
@@ -146,7 +146,7 @@ void cs4231_dma(NEVENTITEM item) {
 			if (cs4231cfg.rate) {
 				SINT32 neventms;
 				int playcountsmp = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)); // PI割り込みを発生させるサンプル数(Playback Base register)
-				playcountsmp = min(min(bufsize, CS4231_MAXDMAREADBYTES) / cs4231_playcountshift[cs4231.reg.datafmt >> 4], playcountsmp);
+				playcountsmp = np2min(np2min(bufsize, CS4231_MAXDMAREADBYTES) / cs4231_playcountshift[cs4231.reg.datafmt >> 4], playcountsmp);
 				if (bufsize - 4 - cs4231.bufdatas > bufsize/2) {
 					playcountsmp /= 2;
 					if(playcountsmp==0) playcountsmp = 1;
@@ -226,7 +226,7 @@ static void setdataalign(void) {
 	step = (0 - cs4231.bufpos) & 3;
 	if (step) {
 		cs4231.bufpos += step;
-		cs4231.bufdatas -= min(step, cs4231.bufdatas);
+		cs4231.bufdatas -= np2min(step, cs4231.bufdatas);
 	}
 	cs4231.bufdatas &= ~3;
 	step = (0 - cs4231.bufwpos) & 3;
@@ -335,7 +335,7 @@ UINT dmac_getdata_(DMACH dmach, UINT8 *buf, UINT offset, UINT size) {
 	
 	lengsum = 0;
 	while(size > 0) {
-		leng = min(dmach->leng.w, size);
+		leng = np2min(dmach->leng.w, size);
 		if (leng) {
 			int playcount = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)) * cs4231_playcountshift[cs4231.reg.datafmt >> 4]; // PI割り込みを発生させるサンプル数(Playback Base register) * サンプルあたりのバイト数
 			if(cs4231.totalsample + leng > playcount){
