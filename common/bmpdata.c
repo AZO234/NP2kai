@@ -96,9 +96,11 @@ BRESULT bmpdata_getinfo(const BMPINFO *bi, BMPDATA *inf) {
 	}
 
 	tmp = LOADINTELDWORD(bi->biSize);
+	/*
 	if (tmp != sizeof(BMPINFO)) {
 		goto bdgi_err;
 	}
+	*/
 	tmp = LOADINTELWORD(bi->biPlanes);
 	if (tmp != 1) {
 		goto bdgi_err;
