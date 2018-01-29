@@ -37,13 +37,17 @@ Build X11 port
 
 ２． Build.  
 
+	$ export CFLAGS='-pthread'
+	$ export LDFLAGS='-pthread'
 	$ cd NP2kai/x11
 	$ ./autogen.sh
-	$ ./configure
+	$ ./configure --enable-ia32
 	$ make
 
 or
 
+	$ export CFLAGS='-pthread'
+	$ export LDFLAGS='-pthread'
 	$ ./configure --enable-ia32
 	$ make -j4
 
