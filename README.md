@@ -273,8 +273,13 @@ Don't forget restart core.
 
 * How to key typing?  
 
-Unfortunery, libretro is unuseful for keytyping.
-Please use NP21/w.
+There are two ways:
+
+1. map the 'enable hotkeys' hotkey in settings > input > input hotkey binds and RetroArch will stop listening for hotkeys unless/until you hold that button/key
+
+2. enable the "game focus mode" (mapped to scroll_lock by default) and it will send all of your inputs to the core instead of the frontend. However, some people have reported having trouble getting out of game focus mode.
+
+(Thanks hasenbanck)
 
 * How to use CD drive with MS-DOS 6.2?  
 
