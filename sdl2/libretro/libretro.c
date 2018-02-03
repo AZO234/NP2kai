@@ -299,8 +299,10 @@ static int menukey=0;
 static int menu_active=0;
 static int mbL = 0, mbR = 0;
 static bool joymouse;
-static int joymousemovebtn = 0;
 static double joymouseaxel = 1.0;
+static int joymousemovebtn = 0;
+static int joymouseaxelmode = 0;
+static int joymouseaxelmodebtn = 0;
 
 bool mapkey_down[12];
 
@@ -488,9 +490,21 @@ void updateInput(){
          joymousemovebtn = 0;
       }
 
-      joymouseaxel += 0.1;
-      if(input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R)) {
-         joymouseaxel += 0.2;
+      if(input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R) && joymouseaxelmodebtn == 0) {
+         if(joymouseaxelmode == 0) {
+            joymouseaxelmode = 1;
+         } else {
+            joymouseaxelmode = 0;
+         }
+         joymouseaxelmodebtn = 1;
+      } else if(input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R) && joymouseaxelmodebtn == 1){
+         joymouseaxelmodebtn = 0;
+      } else
+
+      if(joymouseaxelmode == 0) {
+         joymouseaxel += 0.1;
+      } else {
+         joymouseaxel += 0.5;
       }
 
       if(input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP) && joymousemovebtn == 1) {
