@@ -301,8 +301,7 @@ static int mbL = 0, mbR = 0;
 static bool joymouse;
 static double joymouseaxel = 1.0;
 static int joymousemovebtn = 0;
-static int joymouseaxelmode = 0;
-static int joymouseaxelmodebtn = 0;
+static int joymouseaxelratio = 10;
 
 bool mapkey_down[12];
 
@@ -490,21 +489,10 @@ void updateInput(){
          joymousemovebtn = 0;
       }
 
-      if(input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R) && joymouseaxelmodebtn == 0) {
-         if(joymouseaxelmode == 0) {
-            joymouseaxelmode = 1;
-         } else {
-            joymouseaxelmode = 0;
-         }
-         joymouseaxelmodebtn = 1;
-      } else if(input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R) && joymouseaxelmodebtn == 1){
-         joymouseaxelmodebtn = 0;
-      } else
-
-      if(joymouseaxelmode == 0) {
-         joymouseaxel += 0.1;
+      if(input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R)) {
+         joymouseaxel += 0.1 * joymouseaxelratio;
       } else {
-         joymouseaxel += 0.5;
+         joymouseaxel += 0.1;
       }
 
       if(input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP) && joymousemovebtn == 1) {
@@ -912,6 +900,7 @@ void retro_set_environment(retro_environment_t cb)
       { "np2kai_Seek_Vol" , "Volume Floppy Seek; 80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76" },
       { "np2kai_BEEP_vol" , "Volume Beep; 3|0|1|2" },
       { "np2kai_joy2mouse" , "Joypad to Mouse Mapping; OFF|ON" },
+      { "np2kai_j2msuratio" , "J2M Cursor Speed up Ratio; x10|x20|x1|x5" },
       { "np2kai_joy2key" , "Joypad to Keyboard Mapping; OFF|Arrows|Keypad" },
       { NULL, NULL },
    };
@@ -1187,7 +1176,22 @@ static void update_variables(void)
          joymouse = false;
    }
 
-   var.key = "np2kai_joy2key";
+    var.key = "np2kai_j2msuratio";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "x1") == 0)
+         joymouseaxelratio = 1;
+      else if (strcmp(var.value, "x5") == 0)
+         joymouseaxelratio = 5;
+      else if (strcmp(var.value, "x20") == 0)
+         joymouseaxelratio = 20;
+      else
+         joymouseaxelratio = 10;
+   }
+
+  var.key = "np2kai_joy2key";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
