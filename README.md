@@ -37,21 +37,22 @@ Build X11 port
 
 ２． Build.  
 
-	$ export CFLAGS='-pthread'
-	$ export LDFLAGS='-pthread'
 	$ cd NP2kai/x11
 	$ ./autogen.sh
-	$ ./configure --enable-ia32
+	$ ./configure
 	$ make
 
 or
 
-	$ export CFLAGS='-pthread'
-	$ export LDFLAGS='-pthread'
 	$ ./configure --enable-ia32
 	$ make -j4
 
 ３． 'np2' or 'np21' binary is outputed in NP2kai/x11  
+
+４． If you got errors like `//lib/x86_64-linux-gnu/libpthread.so.0: error adding symbols: DSO missing from command line` while linking and you've already installed `libpthread-dev`, please try the following commands before running `autogen.sh`:
+
+	$ export CFLAGS='-pthread'
+	$ export LDFLAGS='-pthread'
 
 BIOS files locate in same directory executable file.
 
