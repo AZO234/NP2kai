@@ -142,7 +142,7 @@ Switch Joy2Mouse mode in config.
 D-UP/DOWN/LEFT/RIGHT: mouse move  
 B button: left click  
 A button: right click
-R button: toggle mouse speed  
+R button: mouse speed up durling hold  
 
 Keyboard is able to control with joypad when Joy2Key mode.  
 Switch Joy2Key mode in config.  
