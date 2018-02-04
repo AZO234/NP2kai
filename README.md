@@ -306,9 +306,11 @@ I/O:0x00D0
 
 Release
 ---
+* Feb 4, 2018
+	- Add setting Joy to Mouse cursor speed up rasio
 * Dec 5, 2017
 	- Default GDC clock is 2.5MHz
-	- In Joy2Mousem, mouse speed up with R key
+	- In Joy2Mousem, mouse speed up with R button
 * Nov 18, 2017
 	- Merge NP21/w rev.37
 * Oct 26, 2017
