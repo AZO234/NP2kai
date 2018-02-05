@@ -354,7 +354,7 @@ void bios_initialize(void) {
 	//}
 	CopyMemory(mem + ITF_ADRS, itfrom, sizeof(itfrom)+1);
 	if(np2cfg.memchkmx){
-		mem[ITF_ADRS + 6057] = mem[ITF_ADRS + 6061] = (UINT8)max((int)np2cfg.memchkmx-14, 1); // XXX: èÍèäåàÇﬂë≈Çø
+		mem[ITF_ADRS + 6057] = mem[ITF_ADRS + 6061] = (UINT8)np2max((int)np2cfg.memchkmx-14, 1); // XXX: èÍèäåàÇﬂë≈Çø
 	}
 	mem[ITF_ADRS + 0x7ff0] = 0xea;
 	STOREINTELDWORD(mem + ITF_ADRS + 0x7ff1, 0xf8000000);

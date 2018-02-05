@@ -134,7 +134,7 @@ void cs4231_dma(NEVENTITEM item) {
 			// バッファに空きがあればデータを読み出す
 			if(!w31play || !(cs4231.reg.featurestatus & (PI|TI|CI))){
 				if (cs4231.bufsize * cs4231_playcountshift[cs4231.reg.datafmt >> 4] / 4 - 4 > cs4231.bufdatas) {
-					rem = min(cs4231.bufsize - 4 - cs4231.bufdatas, CS4231_MAXDMAREADBYTES); //読み取り単位は16bitステレオの1サンプル分(4byte)にしておかないと雑音化する
+					rem = np2min(cs4231.bufsize - 4 - cs4231.bufdatas, CS4231_MAXDMAREADBYTES); //読み取り単位は16bitステレオの1サンプル分(4byte)にしておかないと雑音化する
 					pos = cs4231.bufwpos & CS4231_BUFMASK; // バッファ書き込み位置
 					size = np2min(rem, dmach->startcount); // バッファ書き込みサイズ
 					r = dmac_getdata_(dmach, cs4231.buffer, pos, size); // DMA読み取り実行
@@ -147,7 +147,7 @@ void cs4231_dma(NEVENTITEM item) {
 			if (cs4231cfg.rate) {
 				SINT32 neventms;
 				int playcountsmp = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)); // PI割り込みを発生させるサンプル数(Playback Base register)
-				playcountsmp = min(max(r, CS4231_MAXDMAREADBYTES/4) / cs4231_playcountshift[cs4231.reg.datafmt >> 4], playcountsmp) / 2;
+				playcountsmp = np2min(np2max(r, CS4231_MAXDMAREADBYTES/4) / cs4231_playcountshift[cs4231.reg.datafmt >> 4], playcountsmp) / 2;
 				//neventms = playcountsmp * 1000 / cs4231cfg.rate;
 				//if(neventms <= 0) neventms = 1;
 				//cnt = pccore.realclock / cs4231cfg.rate * 32;

@@ -306,17 +306,19 @@ I/O:0x00D0
 
 Release
 ---
+* Feb 5, 2018
+	- Merge NP21/W 0.86 rev.38
 * Feb 4, 2018
 	- Add setting Joy to Mouse cursor speed up rasio
 * Dec 5, 2017
 	- Default GDC clock is 2.5MHz
 	- In Joy2Mousem, mouse speed up with R button
 * Nov 18, 2017
-	- Merge NP21/w rev.37
+	- Merge NP21/W 0.86 rev.37
 * Oct 26, 2017
 	- Apply to 1.44MB FDD floppy image file
 * Oct 21, 2017 (rev.14)
-	- Merge NP21/w rev.36
+	- Merge NP21/W 0.86 rev.36
 		* Mate-X PCM  
 		* Sound Blaster 16  
 		* OPL3 (MAME codes is GPL licence)  
