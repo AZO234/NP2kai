@@ -179,47 +179,13 @@ static void bios_reinitbyswitch(void) {
 #if defined(SUPPORT_IDEIO)
 	mem[0xF8E80+0x0010] = (sxsi_getdevtype(3)!=SXSIDEV_NC ? 0x8 : 0x0)|(sxsi_getdevtype(2)!=SXSIDEV_NC ? 0x4 : 0x0)|
 						  (sxsi_getdevtype(1)!=SXSIDEV_NC ? 0x2 : 0x0)|(sxsi_getdevtype(0)!=SXSIDEV_NC ? 0x1 : 0x0);
-	//mem[0x0457] = (sxsi_getdevtype(1)==SXSIDEV_HDD ? 0x42 : 0x07)|(sxsi_getdevtype(0)==SXSIDEV_HDD ? 0x90 : 0x38);
-	//mem[0x045D] |= 0x0C;
-	//mem[0x045E] |= 0x60;
-	//mem[0x0481] |= 0x03;
+
 	if(np2cfg.winntfix){
 		// WinNT4.0でHDDが認識するようになる（ただしWin9xではHDD認識失敗の巻き添えになってCDが認識しなくなる）
 		mem[0x05ba] = (sxsi_getdevtype(3)==SXSIDEV_HDD ? 0x8 : 0x0)|(sxsi_getdevtype(2)==SXSIDEV_HDD ? 0x4 : 0x0)|
 					  (sxsi_getdevtype(1)==SXSIDEV_HDD ? 0x2 : 0x0)|(sxsi_getdevtype(0)==SXSIDEV_HDD ? 0x1 : 0x0);
 	}
-	//mem[0x055D] |= (sxsi_getdevtype(3)==SXSIDEV_HDD ? 0x8 : 0x0)|(sxsi_getdevtype(2)==SXSIDEV_HDD ? 0x4 : 0x0)|
-	//			   (sxsi_getdevtype(1)==SXSIDEV_HDD ? 0x2 : 0x0)|(sxsi_getdevtype(0)==SXSIDEV_HDD ? 0x1 : 0x0);
-	//mem[0x05ba] = (sxsi_getdevtype(3)==SXSIDEV_HDD ? 0x8 : 0x0)|(sxsi_getdevtype(2)==SXSIDEV_HDD ? 0x4 : 0x0)|
-	//			  (sxsi_getdevtype(1)==SXSIDEV_HDD ? 0x2 : 0x0)|(sxsi_getdevtype(0)==SXSIDEV_HDD ? 0x1 : 0x0);
-	//mem[0x05A9] = 0xF3;
-	//mem[0x05AA] = 0x6D;
-	//mem[0x05AB] = 0xCB;
-	//mem[0x05b0] = 0xff;
-	//mem[0x05E8] = 0x8F;
-	//mem[0x05E9] = 0x07;
-	//mem[0x05EA] = 0x00;
-	//mem[0x05EB] = 0xD8;
-	//mem[0x05EC] = 0x89;
-	//mem[0x05ED] = 0x07;
-	//mem[0x05EE] = 0x00;
-	//mem[0x05EF] = 0xD8;
-	//mem[0x04DA] = 0xAA;
-	//mem[0x04DB] = 0xAA;
-	//getbiospath(path, _T("test.bin"), NELEMENTS(path));
-	//fh = file_open_rb(path);
-	//if (fh != FILEH_INVALID) {
-	//	file_read(fh, mem + 0x0DA000, 0x2B0);
-	//	file_close(fh);
-	//}
-	//getbiospath(path, _T("ide.romemu"), NELEMENTS(path));
-//	fh = file_open_rb(path);
-//	if (fh != FILEH_INVALID) {
-//#define READSIZE 0
-//		file_seek(fh, READSIZE, SEEK_CUR);
-//		file_read(fh, mem + 0x0D8000+READSIZE, 0x2000-READSIZE);
-//		file_close(fh);
-//	}
+
 	mem[0x45B] |= 0x80; // XXX: TEST
 #endif
 	mem[0xF8E80+0x0011] = mem[0xF8E80+0x0011] & ~0x20; // 0x20のビットがONだとWin2000でマウスがカクカクする？
@@ -386,7 +352,10 @@ void bios_initialize(void) {
 	//	file_close(fh);
 	//	TRACEOUT(("write emuitf.rom"));
 	//}
-	CopyMemory(mem + ITF_ADRS, itfrom, sizeof(itfrom));
+	CopyMemory(mem + ITF_ADRS, itfrom, sizeof(itfrom)+1);
+	if(np2cfg.memchkmx){
+		mem[ITF_ADRS + 6057] = mem[ITF_ADRS + 6061] = (UINT8)max((int)np2cfg.memchkmx-14, 1); // XXX: 場所決め打ち
+	}
 	mem[ITF_ADRS + 0x7ff0] = 0xea;
 	STOREINTELDWORD(mem + ITF_ADRS + 0x7ff1, 0xf8000000);
 	if (pccore.model & PCMODEL_EPSON) {
@@ -484,7 +453,7 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 			bios_screeninit();
 			if (((pccore.model & PCMODELMASK) >= PCMODEL_VX) &&
 				(pccore.sound & 0x7e)) {
-				if(g_nSoundID == SOUNDID_MATE_X_PCM || g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_WSS){
+				if(g_nSoundID == SOUNDID_MATE_X_PCM || (g_nSoundID == SOUNDID_PC_9801_118 && np2cfg.snd118irqf == np2cfg.snd118irqp) || g_nSoundID == SOUNDID_PC_9801_86_WSS){
 					iocore_out8(0x188, 0x27);
 					iocore_out8(0x18a, 0x30);
 				}else{

@@ -170,10 +170,11 @@ static REG8 IOINPCALL ifab(UINT port) {
 	return (0);
 }
 
-
 // ----
 
 void cs4231io_reset(void) {
+	
+	UINT8 sndirq, snddma;
 
 	cs4231.enable = 1;
 
@@ -195,13 +196,47 @@ void cs4231io_reset(void) {
 			100b～101b= 未定義
 			111b= DMAを使用しない
 */		
-	if(g_nSoundID==SOUNDID_PC_9801_86_WSS){
-		cs4231.adrs = 0x0a;////0b00 001 010  INT0 DMA1
-	}else if(g_nSoundID==SOUNDID_MATE_X_PCM){
-		cs4231.adrs = 0x22;////0b00 100 010  INT5 DMA1
+	if(g_nSoundID==SOUNDID_PC_9801_86_WSS || g_nSoundID==SOUNDID_MATE_X_PCM){
+		sndirq = np2cfg.sndwssirq;
+		snddma = np2cfg.sndwssdma;
+		//cs4231.adrs = 0x0a;////0b00 001 010  INT0 DMA1
+		//cs4231.adrs = 0x22;////0b00 100 010  INT5 DMA1
 	}else{
-		cs4231.adrs = 0x23;////0b00 100 011  INT5 DMA3
+		sndirq = np2cfg.snd118irqp;
+		snddma = np2cfg.snd118dma;
+		//cs4231.adrs = 0x23;////0b00 100 011  INT5 DMA3
 	}
+	cs4231.adrs = 0;
+	switch(sndirq){
+	case 3:
+		cs4231.adrs |= (0x1 << 3);
+		break;
+	case 5:
+		cs4231.adrs |= (0x2 << 3);
+		break;
+	case 10:
+		cs4231.adrs |= (0x3 << 3);
+		break;
+	case 12:
+		cs4231.adrs |= (0x4 << 3);
+		break;
+	default:
+		break;
+	}
+	switch(snddma){
+	case 0:
+		cs4231.adrs |= (0x1);
+		break;
+	case 1:
+		cs4231.adrs |= (0x2);
+		break;
+	case 3:
+		cs4231.adrs |= (0x3);
+		break;
+	default:
+		break;
+	}
+
 	cs4231.dmairq = cs4231irq[(cs4231.adrs >> 3) & 7]; // IRQをセット
 	cs4231.dmach = cs4231dma[cs4231.adrs & 7]; // DMAチャネルをセット
 	cs4231.port[0] = 0x0f40; //WSS BASE I/O port
@@ -211,7 +246,7 @@ void cs4231io_reset(void) {
 		cs4231.port[1] = 0xa460; // Sound ID I/O port
 	}
 	cs4231.port[2] = 0x0f48; // WSS FIFO port
-	cs4231.port[4] = 0x0188; // OPN port
+	cs4231.port[4] = np2cfg.snd118io;//0x0188; // OPN port
 	cs4231.port[5] = 0x0f4a; // canbe mixer i/o port?
 	cs4231.port[6] = 0x548e; // YMF-701/715?
 	cs4231.port[8] = 0x1480; // Joystick
@@ -325,6 +360,7 @@ void IOOUTCALL cs4231io0_w8(UINT port, REG8 value) {
 			// PI,CI,TI割り込みビットを全部クリア
 			if (cs4231.intflag & INt) {
 				pic_resetirq(cs4231.dmairq);
+				//nevent_set(NEVENT_CS4231, 0, cs4231_dma, NEVENT_ABSOLUTE);
 			}
 			cs4231.intflag &= ~INt;
 			cs4231.reg.featurestatus &= ~(PI|TI|CI);

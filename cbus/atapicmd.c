@@ -92,8 +92,9 @@ static void cmddone(IDEDRV drv) {
 
 static void senderror(IDEDRV drv) {
 
-	drv->sc = IDEINTR_IO;
-	drv->status &= ~(IDESTAT_BSY|IDESTAT_DMRD|IDESTAT_SERV);
+	//drv->sc = IDEINTR_IO;
+	drv->sc = IDEINTR_IO | IDEINTR_CD; // set Command or Data bit np21w ver0.86 rev38
+	drv->status &= ~(IDESTAT_BSY|IDESTAT_DMRD|IDESTAT_SERV|IDESTAT_DRQ); // clear DRQ bit np21w ver0.86 rev38
 	drv->status |= IDESTAT_CHK;
 
 	if (!(drv->ctrl & IDECTRL_NIEN)) {

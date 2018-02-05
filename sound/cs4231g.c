@@ -352,7 +352,7 @@ void SOUNDCALL cs4231_getpcm(CS4231 cs, SINT32 *pcm, UINT count) {
 
 		// Playback Enableがローになってもバッファのディレイ分は再生する
 		if((cs->reg.iface & 1)){
-			bufdelaycounter = CS4231_BUFFERS;
+			bufdelaycounter = cs->bufdatas;
 		}else if(cs->bufdatas == 0){
 			bufdelaycounter = 0;
 		}else{

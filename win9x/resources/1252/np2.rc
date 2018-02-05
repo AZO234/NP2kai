@@ -351,7 +351,7 @@ END
 
 IDD_SND26 DIALOG 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "26"
+CAPTION "PC-9801-26"
 FONT 9, "MS Sans Serif"
 BEGIN
     LTEXT           "I/O port",IDC_STATIC,8,10,30,8
@@ -367,7 +367,7 @@ END
 
 IDD_SND86 DIALOG 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "86"
+CAPTION "PC-9801-86"
 FONT 9, "MS Sans Serif"
 BEGIN
     LTEXT           "I/O port",IDC_STATIC,8,10,30,8
@@ -380,6 +380,54 @@ BEGIN
     LTEXT           "DIP-SW",IDC_STATIC,8,66,30,8
     CONTROL         "",IDC_SND86DIP,"Static",SS_ENHMETAFILE | SS_NOTIFY,40,66,136,34
     PUSHBUTTON      "Defaults",IDC_SND86DEF,136,102,40,14
+END
+
+IDD_SND118 DIALOG 0, 0, 184, 124
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "PC-9801-118"
+FONT 9, "MS Sans Serif"
+BEGIN
+    LTEXT           "I/O port",IDC_STATIC,8,10,30,8
+    COMBOBOX        IDC_SND118IO,40,8,46,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Sound ID",IDC_STATIC,8,28,30,8
+    COMBOBOX        IDC_SND118ID,40,26,46,64,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "DMA",IDC_STATIC,8,46,40,10
+    COMBOBOX        IDC_SND118DMA,40,44,46,64,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Interrupt(FM)",IDC_STATIC,94,10,50,10
+    COMBOBOX        IDC_SND118INTF,146,8,60,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Interrupt(PCM)",IDC_STATIC,94,28,50,10
+    COMBOBOX        IDC_SND118INTP,146,26,60,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Interrupt(MIDI)",IDC_STATIC,94,46,50,10
+    COMBOBOX        IDC_SND118INTM,146,44,60,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Defaults",IDC_SND118DEF,136,102,40,14
+END
+
+IDD_SNDWSS DIALOG 0, 0, 184, 124
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Mate-X PCM"
+FONT 9, "MS Sans Serif"
+BEGIN
+    LTEXT           "Sound ID",IDC_STATIC,8,28,30,8
+    COMBOBOX        IDC_SND118ID,40,26,46,64,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "DMA",IDC_STATIC,8,46,40,10
+    COMBOBOX        IDC_SND118DMA,40,44,46,64,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Interrupt",IDC_STATIC,94,28,50,10
+    COMBOBOX        IDC_SND118INTP,146,26,60,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Defaults",IDC_SND118DEF,136,102,40,14
+END
+
+IDD_SNDSB16 DIALOG 0, 0, 184, 124
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "SB16"
+FONT 9, "MS Sans Serif"
+BEGIN
+    LTEXT           "I/O port",IDC_STATIC,8,10,30,8
+    COMBOBOX        IDC_SND118IO,40,8,40,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "DMA",IDC_STATIC,8,46,40,10
+    COMBOBOX        IDC_SND118DMA,40,44,40,64,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Interrupt",IDC_STATIC,94,10,50,10
+    COMBOBOX        IDC_SND118INTF,146,8,60,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Defaults",IDC_SND118DEF,136,102,40,14
 END
 
 IDD_SNDSPB DIALOG 0, 0, 184, 124
@@ -872,6 +920,7 @@ BEGIN
         MENUITEM "&Disp vsync",                 IDM_DISPSYNC
         MENUITEM "Real &palettes",              IDM_RASTER
         MENUITEM "&No wait",                    IDM_NOWAIT
+        MENUITEM SEPARATOR
         MENUITEM "&Auto frame",                 IDM_AUTOFPS
         MENUITEM "F&ull frame",                 IDM_60FPS
         MENUITEM "1/&2 frame",                  IDM_30FPS
@@ -989,6 +1038,7 @@ BEGIN
         MENUITEM "&Mouse rapid",                IDM_MSRAPID
         MENUITEM "&ITF work",                   IDM_ITFWORK
         MENUITEM "Fix &MMTimer",                IDM_TIMERFIX
+        MENUITEM "&Skip over 16MB memcheck",    IDM_SKIP16MEMCHK
         MENUITEM SEPARATOR
         MENUITEM "&Help...",                    IDM_HELP
         MENUITEM "&About...",                   IDM_ABOUT
@@ -1423,6 +1473,7 @@ BEGIN
     IDS_5X                  "5x"
     IDS_6X                  "6x"
     IDS_7X                  "7x"
+    IDS_8X                  "8x"
     IDS_00D0                "00D0"
     IDS_10D0                "10D0"
     IDS_20D0                "20D0"
@@ -1431,6 +1482,17 @@ BEGIN
     IDS_50D0                "50D0"
     IDS_60D0                "60D0"
     IDS_70D0                "70D0"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_20D2                "20D2"
+    IDS_20D4                "20D4"
+    IDS_20D6                "20D6"
+    IDS_20D8                "20D8"
+    IDS_20DA                "20DA"
+    IDS_20DC                "20DC"
+    IDS_20DE                "20DE"
 END
 
 STRINGTABLE
@@ -1477,6 +1539,27 @@ END
 STRINGTABLE
 BEGIN
     IDS_PHYSICALDRIVE       "&Host Drive "
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DISABLE             "Disable"
+    IDS_INT0IRQ3            "INT0 (IRQ3)"
+    IDS_INT1IRQ5            "INT1 (IRQ5)"
+    IDS_INT2IRQ6            "INT2 (IRQ6)"
+    IDS_INT3IRQ9            "INT3 (IRQ9)"
+    IDS_INT41IRQ10          "INT41 (IRQ10)"
+    IDS_INT42IRQ11          "INT42 (IRQ11)"
+    IDS_INT5IRQ12           "INT5 (IRQ12)"
+    IDS_INT6IRQ13           "INT6 (IRQ13)"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DMA0                "DMA #0"
+    IDS_DMA1                "DMA #1"
+    IDS_DMA2                "DMA #2"
+    IDS_DMA3                "DMA #3"
 END
 
 STRINGTABLE

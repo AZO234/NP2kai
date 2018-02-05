@@ -14,6 +14,8 @@ public:
 	CExtRom();
 	~CExtRom();
 	bool Open(LPCTSTR lpFilename);
+	bool Open(LPCTSTR lpFilename, DWORD extlen);
+	bool Open(LPCTSTR lpFilename, LPCTSTR lpExt);
 	void Close();
 	UINT Read(LPVOID lpBuffer, UINT cbBuffer);
 	LONG Seek(LONG lDistanceToMove, DWORD dwMoveMethod);
@@ -23,4 +25,5 @@ private:
 	LPVOID m_lpRes;		//!< リソース
 	UINT m_nSize;		//!< サイズ
 	UINT m_nPointer;	//!< ポインタ
+	UINT m_isfile;		//!< 外部ファイルかどうか
 };

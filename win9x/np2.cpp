@@ -1426,6 +1426,15 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			update |= SYS_UPDATECFG;
 			break;
 			
+		case IDM_SKIP16MEMCHK:
+			if(np2cfg.memchkmx != 0){
+				np2cfg.memchkmx = 0;
+			}else{
+				np2cfg.memchkmx = 15;
+			}
+			update |= SYS_UPDATECFG;
+			break;
+			
 		case IDM_COPYPASTE_COPYTVRAM:
 			{
 				HGLOBAL hMem;

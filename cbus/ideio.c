@@ -140,11 +140,11 @@ static BRESULT setidentify(IDEDRV drv) {
 		tmp[126] = 0x0000;		// ATAPI byte count
 	}
 	if (drv->sxsidrv & 0x1){
-		// master
-		tmp[93] = 0x407a;
-	}else{
 		// slave
 		tmp[93] = 0x4b00;
+	}else{
+		// master
+		tmp[93] = 0x407b;
 	}
 
 	p = drv->buf;
@@ -170,7 +170,7 @@ static void setintr(IDEDRV drv) {
 	}
 }
 
-// 遅延付き割り込み（IDE BIOSは遅延があることが前提？）
+// 遅延付き割り込み
 static void setdintr(IDEDRV drv, UINT8 errno, UINT8 status, UINT32 delay) {
 
 	if (!(drv->ctrl & IDECTRL_NIEN)) {
@@ -505,7 +505,7 @@ static void IOOUTCALL ideio_o64c(UINT port, REG8 dat) {
 		//dev->drv[drvnum].status = dev->drv[drvnum].status & ~(IDESTAT_DRQ|IDESTAT_BSY);
 		//drvreset(&(dev->drv[drvnum]));
 		//dev->drv[drvnum].status = IDESTAT_DRDY | IDESTAT_DSC;
-		dev->drv[drvnum].error = IDEERR_AMNF;
+		//dev->drv[drvnum].error = IDEERR_AMNF;
 		//if(!drvnum) dev->drv[drvnum].error |= IDEERR_BBK;
 	}
 	dev->drv[drvnum].dr = dat & 0xf0;
@@ -578,15 +578,15 @@ static void IOOUTCALL ideio_o64e(UINT port, REG8 dat) {
 		case 0x1c: case 0x1d: case 0x1e: case 0x1f:
 			TRACEOUT(("ideio: recalibrate"));
 			if (drv->device == IDETYPE_HDD) {
-				drv->hd = 0x00;
-				drv->sc = 0x00;
+				//drv->hd = 0x00;
+				//drv->sc = 0x00;
 				drv->cy = 0x0000;
-				if (!(drv->dr & IDEDEV_LBA)) {
-					drv->sn = 0x01;
-				}
-				else {
-					drv->sn = 0x00;
-				}
+				//if (!(drv->dr & IDEDEV_LBA)) {
+				//	drv->sn = 0x01;
+				//}
+				//else {
+				//	drv->sn = 0x00;
+				//}
 				drv->status = IDESTAT_DRDY | IDESTAT_DSC;
 				drv->error = 0;
 				setintr(drv);
@@ -632,7 +632,7 @@ static void IOOUTCALL ideio_o64e(UINT port, REG8 dat) {
 			if (drv->device == IDETYPE_HDD) {
 				drv->surfaces = drv->hd + 1;
 				drv->sectors = drv->sc;
-				drv->status &= ~(IDESTAT_BSY | IDESTAT_DRQ | IDESTAT_ERR);
+				drv->status &= ~(IDESTAT_BSY | IDESTAT_DRQ | IDESTAT_ERR | 0x20);
 				drv->status |= IDESTAT_DRDY;
 				setintr(drv);
 			}
@@ -647,7 +647,7 @@ static void IOOUTCALL ideio_o64e(UINT port, REG8 dat) {
 				drv->sc &= ~(IDEINTR_REL | IDEINTR_IO);
 				drv->sc |= IDEINTR_CD;
 				drv->status &= ~(IDESTAT_BSY | IDESTAT_DMRD | IDESTAT_SERV | IDESTAT_CHK);
-				drv->status |= IDESTAT_DRQ;
+				drv->status |= IDESTAT_DRDY | IDESTAT_DRQ | IDESTAT_DSC;
 				drv->error = 0;
 				drv->bufpos = 0;
 				drv->bufsize = 12;
@@ -914,8 +914,12 @@ static REG8 IOINPCALL ideio_i644(UINT port) {
 
 	drv = getidedrv();
 	if (drv) {
+		UINT8 ret = drv->sc;
 		TRACEOUT(("ideio get SC %.2x [%.4x:%.8x]", drv->sc, CPU_CS, CPU_EIP));
-		return(drv->sc);
+		//if (drv->device == IDETYPE_CDROM && drv->cmd == 0xa0) {
+		//	drv->sc = 7; // ????
+		//}
+		return(ret);
 	}
 	else {
 		return(0xff);
@@ -1181,8 +1185,7 @@ REG16 IOINPCALL ideio_r16(UINT port) {
 					if (drv->sc) {
 						readsec(drv);
 					}else{
-						// ここには来ないはず
-						TRACEOUT(("ide-data read error?"));
+						// 読み取り終わり
 					}
 					break;
 
@@ -1192,8 +1195,8 @@ REG16 IOINPCALL ideio_r16(UINT port) {
 						break;
 					}
 					drv->sc = IDEINTR_IO | IDEINTR_CD;
-					drv->status &= ~(IDESTAT_BSY | IDESTAT_SERV | IDESTAT_CHK);
-					drv->status |= IDESTAT_DRDY;
+					drv->status &= ~(IDESTAT_BSY | IDESTAT_SERV | IDESTAT_CHK | IDESTAT_DRQ); // clear DRQ bit np21w ver0.86 rev38
+					drv->status |= IDESTAT_DRDY | IDESTAT_DSC;
 					drv->error = 0;
 					setintr(drv);
 					break;
@@ -1548,7 +1551,7 @@ void ideio_reset(const NP2CFG *pConfig) {
 	ideio.wwait = np2cfg.idewwait;
 	ideio.bios = IDETC_NOBIOS;
 
-	useidebios = np2cfg.idebios;
+	useidebios = np2cfg.idebios && np2cfg.usebios;
 	if(useidebios && np2cfg.autoidebios){
 		SXSIDEV	sxsi;
 		for (i=0; i<4; i++) {

@@ -232,7 +232,15 @@ static void info_sound(OEMCHAR *str, int maxlen, const NP2INFOEX *ex)
 		case SOUNDID_PC_9801_118:
 			lpBoard = OEMTEXT("PC-9801-118");
 			break;
-
+			
+		case SOUNDID_PC_9801_86_WSS:
+			lpBoard = OEMTEXT("PC-9801-86 + Mate-X PCM");
+			break;
+			
+		case SOUNDID_MATE_X_PCM:
+			lpBoard = OEMTEXT("Mate-X PCM");
+			break;
+			
 		case SOUNDID_PC_9801_86_ADPCM:
 			lpBoard = OEMTEXT("C-9801-86 + Chibi-oto");
 			break;
@@ -256,6 +264,12 @@ static void info_sound(OEMCHAR *str, int maxlen, const NP2INFOEX *ex)
 		case SOUNDID_SOUNDORCHESTRAV:
 			lpBoard = OEMTEXT("SOUND ORCHESTRA-V");
 			break;
+			
+#if defined(SUPPORT_SOUND_SB16)
+		case SOUNDID_SB16:
+			lpBoard = OEMTEXT("Sound Blaster 16");
+			break;
+#endif	// defined(SUPPORT_SOUND_SB16)
 
 #if defined(SUPPORT_PX)
 		case SOUNDID_PX1:

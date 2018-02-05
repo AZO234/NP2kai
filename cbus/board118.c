@@ -16,6 +16,7 @@
 
 
 static int opna_idx = 0;
+static int a460_soundid = 0x80;
 
 /*********** for OPL (MAME) ***********/
 
@@ -211,12 +212,8 @@ static void IOOUTCALL ymf_oa460(UINT port, REG8 dat)
 
 static REG8 IOINPCALL ymf_ia460(UINT port)
 {
+	return (a460_soundid | (cs4231.extfunc & 1));
 	(void)port;
-	if(g_nSoundID==SOUNDID_MATE_X_PCM || g_nSoundID==SOUNDID_PC_9801_86_WSS){
-		return (0x70 | (cs4231.extfunc & 1));
-	}else{
-		return (0x80 | (cs4231.extfunc & 1));
-	}
 }
 
 /*********** SRN-F I/O ***********/
@@ -453,39 +450,59 @@ void board118_reset(const NP2CFG *pConfig)
 		// OPNAタイマーをセットしない
 		//opna_timer(&g_opna[opna_idx], 0x10, NEVENT_FMTIMERA, NEVENT_FMTIMERB);
 	}else{
-		// OPNAタイマーをIRQ12でセット
-		opna_timer(&g_opna[opna_idx], 0xd0, NEVENT_FMTIMERA, NEVENT_FMTIMERB);
+		// OPNAタイマーをセット
+		UINT irqval = 0x00;
+		switch(np2cfg.snd118irqf){
+		case 3:
+			irqval = 0x10|(0 << 6);
+			break;
+		case 10:
+			irqval = 0x10|(2 << 6);
+			break;
+		case 12:
+			irqval = 0x10|(3 << 6);
+			break;
+		case 13:
+			irqval = 0x10|(1 << 6);
+			break;
+		}
+		opna_timer(&g_opna[opna_idx], irqval, NEVENT_FMTIMERA, NEVENT_FMTIMERB);
+
+		// OPLリセット
+		opl3_reset(&g_opl3, OPL3_HAS_OPL3L|OPL3_HAS_OPL3);
+		opngen_setcfg(&g_opna[opna_idx].opngen, 3, OPN_STEREO | 0x038);
 	}
-	
-	// OPLリセット
-	opl3_reset(&g_opl3, OPL3_HAS_OPL3L|OPL3_HAS_OPL3);
-	opngen_setcfg(&g_opna[opna_idx].opngen, 3, OPN_STEREO | 0x038);
 	
 	// CS4231リセット
 	cs4231io_reset();
 	
 	// 色々設定
-	soundrom_load(0xcc000, OEMTEXT("118"));
-	fmboard_extreg(extendchannel);
+	if(g_nSoundID==SOUNDID_PC_9801_86_WSS || g_nSoundID==SOUNDID_MATE_X_PCM){
+	}else{
+		soundrom_load(0xcc000, OEMTEXT("118"));
+		fmboard_extreg(extendchannel);
 #ifdef SUPPORT_SOUND_SB16
 #ifdef USE_MAME
-	if (opl3) {
-		if (samplerate != pConfig->samplingrate) {
-			YMF262Shutdown(opl3);
-			opl3 = YMF262Init(14400000, pConfig->samplingrate);
-			samplerate = pConfig->samplingrate;
-		} else {
-			YMF262ResetChip(opl3);
+		if (opl3) {
+			if (samplerate != pConfig->samplingrate) {
+				YMF262Shutdown(opl3);
+				opl3 = YMF262Init(14400000, pConfig->samplingrate);
+				samplerate = pConfig->samplingrate;
+			} else {
+				YMF262ResetChip(opl3);
+			}
 		}
+		//ZeroMemory(&g_sb16, sizeof(g_sb16));
+		ZeroMemory(&g_opl, sizeof(g_opl));
+		//// ボードデフォルト IO:D2 DMA:3 INT:5 
+		//g_sb16.base = 0xd2;
+		//g_sb16.dmach = 0x3;
+		//g_sb16.dmairq = 0x5;
+#endif
+#endif
+		//cs4231.extfunc = 0x01;
+		//extendchannel((REG8)(cs4231.extfunc & 1));
 	}
-	//ZeroMemory(&g_sb16, sizeof(g_sb16));
-	ZeroMemory(&g_opl, sizeof(g_opl));
-	//// ボードデフォルト IO:D2 DMA:3 INT:5 
-	//g_sb16.base = 0xd2;
-	//g_sb16.dmach = 0x3;
-	//g_sb16.dmairq = 0x5;
-#endif
-#endif
 	(void)pConfig;
 }
 
@@ -503,6 +520,12 @@ void board118_bind(void)
 	}else{
 		opna_idx = 0;
 	}
+
+	if(g_nSoundID==SOUNDID_MATE_X_PCM || g_nSoundID==SOUNDID_PC_9801_86_WSS){
+		a460_soundid = np2cfg.sndwssid;//0x70;
+	}else{
+		a460_soundid = np2cfg.snd118id;//0x80;
+	}
 	
 	if(g_nSoundID==SOUNDID_PC_9801_86_WSS || g_nSoundID==SOUNDID_MATE_X_PCM){
 		// Mate-X PCMの場合、CS4231だけ
@@ -513,8 +536,10 @@ void board118_bind(void)
 		// 118音源の場合、色々割り当て
 
 		// OPNA割り当て
-		opna_bind(&g_opna[opna_idx]);
-		cbuscore_attachsndex(cs4231.port[4],ymf_o, ymf_i);
+		if(cs4231.port[4]){
+			opna_bind(&g_opna[opna_idx]);
+			cbuscore_attachsndex(cs4231.port[4],ymf_o, ymf_i);
+		}
 		
 		// OPL割り当て
 #ifdef USE_MAME

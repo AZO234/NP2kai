@@ -522,6 +522,23 @@ static const PFTBL s_IniItems[] =
 	PFVAL("optSPB_X", PFTYPE_BOOL,		&np2cfg.spb_x),
 	PFVAL("optMPU98", PFTYPE_HEX8,		&np2cfg.mpuopt),
 	PFVAL("optMPUAT", PFTYPE_BOOL,		&np2cfg.mpu_at),
+	
+	PFVAL("opt118io", PFTYPE_HEX16,		&np2cfg.snd118io),
+	PFVAL("opt118id", PFTYPE_HEX8,		&np2cfg.snd118id),
+	PFVAL("opt118dm", PFTYPE_UINT8,		&np2cfg.snd118dma),
+	PFVAL("opt118if", PFTYPE_UINT8,		&np2cfg.snd118irqf),
+	PFVAL("opt118ip", PFTYPE_UINT8,		&np2cfg.snd118irqp),
+	PFVAL("opt118im", PFTYPE_UINT8,		&np2cfg.snd118irqm),
+	
+	PFVAL("optwssid", PFTYPE_HEX8,		&np2cfg.sndwssid),
+	PFVAL("optwssdm", PFTYPE_UINT8,		&np2cfg.sndwssdma),
+	PFVAL("optwssip", PFTYPE_UINT8,		&np2cfg.sndwssirq),
+	
+#if defined(SUPPORT_SOUND_SB16)
+	PFVAL("optsb16p", PFTYPE_HEX8,		&np2cfg.sndsb16io),
+	PFVAL("optsb16d", PFTYPE_UINT8,		&np2cfg.sndsb16dma),
+	PFVAL("optsb16i", PFTYPE_UINT8,		&np2cfg.sndsb16irq),
+#endif	/* SUPPORT_SOUND_SB16 */
 
 	PFMAX("volume_F", PFTYPE_UINT8,		&np2cfg.vol_fm,			128),
 	PFMAX("volume_S", PFTYPE_UINT8,		&np2cfg.vol_ssg,		128),
@@ -602,6 +619,8 @@ static const PFTBL s_IniItems[] =
 	PFVAL("WINNTFIX", PFTYPE_BOOL,		&np2cfg.winntfix),
 	
 	PFVAL("SYSIOMSK", PFTYPE_HEX16,		&np2cfg.sysiomsk), // システムIOマスク
+	
+	PFMAX("MEMCHKMX", PFTYPE_UINT8,		&np2cfg.memchkmx,		0), // メモリチェックする最大サイズ（最小は15MB・0は制限無し・メモリチェックが長いのが嫌だけど見かけ上カウントだけはしておきたい人向け）
 	
 	// OS依存？
 	PFVAL("keyboard", PFRO_KB,			&np2oscfg.KEYBOARD),

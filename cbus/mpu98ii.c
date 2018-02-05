@@ -1106,6 +1106,11 @@ void mpu98ii_bind(void) {
 		iocore_attachinp(cs4231.port[10], mpu98ii_i0);
 		iocore_attachout(cs4231.port[10]+1, mpu98ii_o2);
 		iocore_attachinp(cs4231.port[10]+1, mpu98ii_i2);
+		switch(np2cfg.snd118irqm){
+		case 10:
+			mpu98.irqnum = 10;
+			break;
+		}
 	}
 }
 
