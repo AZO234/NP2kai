@@ -73,7 +73,9 @@ UINT file_getsize(FILEH handle);
 short file_getdatetime(FILEH handle, DOSDATE *dosdate, DOSTIME *dostime);
 short file_delete(const char *path);
 short file_attr(const char *path);
+short file_rename(const char *existpath, const char *newpath);
 short file_dircreate(const char *path);
+short file_dirdelete(const char *path);
 
 /* カレントファイル操作 */
 void file_setcd(const char *exepath);
@@ -97,8 +99,6 @@ char *file_getext(const char *path);
 void file_cutext(char *path);
 void file_cutseparator(char *path);
 void file_setseparator(char *path, int maxlen);
-short file_rename(const char* ExistFile, const char* NewFile);
-short file_dirdelete(const char* PathName);
 
 #ifdef	__cplusplus
 }
