@@ -1,4 +1,4 @@
-Neko Project II 0.86 kai rev.14
+Neko Project II 0.86 kai rev.15
 ===
 Feb 6, 2018  
 
@@ -322,7 +322,7 @@ I/O:0x00D0
 
 Release
 ---
-* Feb 6, 2018
+* Feb 6, 2018 (rev.15)
 	- NP2 namespace change to NP2kai
 	- [SDL2] Locate of config files is ~/.config/np2kai
 	- [X11] Locate of config files is ~/.config/xnp2kai
