@@ -149,8 +149,8 @@ https://developer.android.com/studio/index.html
 
 about libretro port
 ---
-BIOS files locate in "np2" directory at BIOS directory (configured by RetroArch).  
-Configure file (np2.cfg) is made in "np2" BIOS directory.
+BIOS files locate in "np2kai" directory at BIOS directory (configured by RetroArch).  
+Configure file (np2.cfg) is made in "np2kai" BIOS directory.
 
 NP2 menu is opened when F12 key or mouse middle button or joypad L2 button.  
 NP2 menu can swap FDD/HDD diskimages.  
