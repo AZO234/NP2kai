@@ -225,6 +225,7 @@ and "/opt/retropie/emulators/np2/" too.
     $ sudo ln -s /usr/share/fonts/truetype/horai-umefont/ume-ugo4.ttf /opt/retropie/emulators/np2/default.ttf
 
 ６．Add "carbon-mod". (Japanese nize)
+
     $ git clone https://github.com/eagle0wl/es-theme-carbon.git
     $ sudo cp -r ./es-theme-carbon /etc/emulationstation/themes/carbon-mod
 
