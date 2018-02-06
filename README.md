@@ -17,7 +17,7 @@ or
 
 ２． Build.  
 
-	$ cd NP2_SDL2/sdl2
+	$ cd NP2kai/sdl2
 	$ make -j4 -f Makefile.unix
 
 or
@@ -25,6 +25,10 @@ or
 	$ make -j4 -f Makefile21.unix
 
 ３． Install NP2kai.  
+
+	$ sudo -f Makefile.unix install
+
+or
 
 	$ sudo -f Makefile21.unix install
 
