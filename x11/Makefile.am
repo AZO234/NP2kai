@@ -1,6 +1,6 @@
 real_topsrcdir=	$(top_srcdir)/..
 
-bin_PROGRAMS=	xnp2
+bin_PROGRAMS=	xnp2kai
 
 nodist_man1_MANS=	xnp2.1 xnp2.1j
 CLEANFILES=		$(nodist_man1_MANS)
@@ -286,7 +286,7 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/network/lgy98.c \
 		$(real_topsrcdir)/network/net.c
 
-xnp2_SOURCES=	$(COMMON_SOURCES)
+xnp2kai_SOURCES=	$(COMMON_SOURCES)
 
 AM_CPPFLAGS=	-I$(real_topsrcdir) \
 		-I$(real_topsrcdir)/x11 \
@@ -308,7 +308,7 @@ AM_CPPFLAGS=	-I$(real_topsrcdir) \
 if BUILD_ALL
 AM_CPPFLAGS+=	-DX11_BUILD_ALL
 endif
-xnp2_CPPFLAGS=	$(AM_CPPFLAGS)
+xnp2kai_CPPFLAGS=	$(AM_CPPFLAGS)
 
 if HAVE_GCC
 AM_CFLAGS=	-fsigned-char
@@ -376,19 +376,19 @@ IA32_CPPFLAGS=	-I$(real_topsrcdir)/i386c \
 
 if CPUCORE_IA32
 if BUILD_ALL
-bin_PROGRAMS+=	xnp21
+bin_PROGRAMS+=	xnp21kai
 nodist_man1_MANS+= xnp21.1 xnp21.1j
-xnp21_SOURCES=	$(COMMON_SOURCES) $(IA32_SOURCES)
-xnp21_CPPFLAGS=	$(AM_CPPFLAGS) $(IA32_CPPFLAGS)
-xnp2_SOURCES+=	$(I286C_SOURCES)
-xnp2_CPPFLAGS+=	$(I286C_CPPFLAGS)
+xnp21kai_SOURCES=	$(COMMON_SOURCES) $(IA32_SOURCES)
+xnp21kai_CPPFLAGS=	$(AM_CPPFLAGS) $(IA32_CPPFLAGS)
+xnp2kai_SOURCES+=	$(I286C_SOURCES)
+xnp2kai_CPPFLAGS+=	$(I286C_CPPFLAGS)
 else	# !BUILD_ALL
-xnp2_SOURCES+=	$(IA32_SOURCES)
-xnp2_CPPFLAGS+=	$(IA32_CPPFLAGS)
+xnp2kai_SOURCES+=	$(IA32_SOURCES)
+xnp2kai_CPPFLAGS+=	$(IA32_CPPFLAGS)
 endif	# BUILD_ALL
 else	# !CPUCORE_IA32
-xnp2_SOURCES+=	$(I286C_SOURCES)
-xnp2_CPPFLAGS+=	$(I286C_CPPFLAGS)
+xnp2kai_SOURCES+=	$(I286C_SOURCES)
+xnp2kai_CPPFLAGS+=	$(I286C_CPPFLAGS)
 endif	# CPUCORE_IA32
 
 CLEANFILES+=	make.log

@@ -5,7 +5,7 @@ SDL_CONFIG ?= sdl2-config
 SDL_CFLAGS := $(shell $(SDL_CONFIG) --cflags) -DUSE_SDL_CONFIG
 SDL_LIBS := $(shell $(SDL_CONFIG) --libs)
 
-TARGET_NAME := np21
+TARGET_NAME := np21kai
 
 TARGET := $(TARGET_NAME)
 LDFLAGS :=
@@ -65,4 +65,18 @@ endif
 
 clean:
 	rm -f $(OBJECTS) $(TARGET)
+
+
+install:
+	strip $(TARGET)
+	mv $(TARGET) /usr/local/bin/
+	mkdir -p $(HOME)/.config/np2kai
+	if [ -n $(SUDO_USER) ]; then
+		chown $(SUDO_USER) $(HOME)/.config/np2kai
+	fi
+
+
+uninstall:
+	rm /usr/local/bin/$(TARGET)
+	rm -rf -p $(HOME)/.config/np2kai
 

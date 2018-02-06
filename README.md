@@ -1,6 +1,6 @@
 Neko Project II 0.86 kai rev.14
 ===
-Nov 18, 2017  
+Feb 6, 2018  
 
 Build SDL2 port
 ---
@@ -24,9 +24,19 @@ or
 
 	$ make -j4 -f Makefile21.unix
 
-３． 'np2' or 'np21' binary is outputed in NP2kai/sdl2  
+３． Install NP2kai.  
 
-BIOS files locate in same directory executable file.
+	$ sudo -f Makefile21.unix install
+
+４． Run NP2kai.  
+
+	$ np2kai
+
+or
+
+	$ np21kai
+
+BIOS files locate in ~/.config/np2kai .
 
 Build X11 port
 ---
@@ -47,12 +57,18 @@ or
 	$ ./configure --enable-ia32
 	$ make -j4
 
-３． 'np2' or 'np21' binary is outputed in NP2kai/x11  
+３． Install NP2kai.  
 
-BIOS files locate in same directory executable file.
+	$ sudo make install
+
+４． Run NP2kai.  
+
+	$ xnp2kai
+
+BIOS files locate in ~/.config/xnp2kai .
 
 NP2 menu is opened when F11 key or mouse middle button.  
-NP2 menu can FDD/HDD swap.
+NP2 menu can swap FDD/HDD diskimages.
 
 Build libretro port (Linux)
 ---
@@ -133,7 +149,7 @@ BIOS files locate in "np2" directory at BIOS directory (configured by RetroArch)
 Configure file (np2.cfg) is made in "np2" BIOS directory.
 
 NP2 menu is opened when F12 key or mouse middle button or joypad L2 button.  
-NP2 menu can FDD/HDD swap.  
+NP2 menu can swap FDD/HDD diskimages.  
 
 Mouse is cuptured (hidden/show toggle) by F11 key.
 
@@ -306,6 +322,10 @@ I/O:0x00D0
 
 Release
 ---
+* Feb 6, 2018
+	- NP2 namespace change to NP2kai
+	- [SDL2] Locate of config files is ~/.config/np2kai
+	- [X11] Locate of config files is ~/.config/xnp2kai
 * Feb 5, 2018
 	- Merge NP21/W 0.86 rev.38
 * Feb 4, 2018

@@ -1,4 +1,4 @@
-Xnp2 - ねこープロジェクトII for X Window System
+Xnp2kai - ねこープロジェクトII for X Window System
 
 
 1. はじめに
@@ -6,7 +6,7 @@ Xnp2 - ねこープロジェクトII for X Window System
   ねこープロジェクトII はぷにゅ氏により作成された Windows 上で動作する
   i286 CPU を塔載した PC-9801 シリーズのエミュレータです。
 
-  Xnp2 はねこープロジェクトII を UNIX 系 OS で動作する様に移植したものです。
+  Xnp2kai はねこープロジェクトII を UNIX 系 OS で動作する様に移植したものです。
 
 
 2. 動作環境
@@ -58,14 +58,14 @@ Xnp2 - ねこープロジェクトII for X Window System
 
     プログラムの実行はコマンドラインから以下の様に行います。
 
-      $ xnp2
+      $ xnp2kai
 
     また、起動時にフロッピーディスクドライブにディスクイメージを挿入したい場合、
     以下の様にディスクイメージを引数に指定してください。
 
       例: FDD1 に system.d88、FDD2 に data.d88 を挿入して起動
 
-        $ xnp2 system.d88 data.d88
+        $ xnp2kai system.d88 data.d88
 
   5.2. 初期設定
 
@@ -207,11 +207,11 @@ Xnp2 - ねこープロジェクトII for X Window System
     --config-file <filename>
       起動時に読み込む設定ファイルを指定します。また、このオプションが指定
       されるとホームディレクトリとして、設定ファイルの存在するディレクトリ
-      を使用します。非指定時には $(HOME)/.np2/np2rc を使用します。
+      を使用します。非指定時には $(HOME)/.config/xnp2kai/np2rc を使用します。
 
     --timidity-config <filename>
       Xnp2 に内蔵されている TiMidity 互換のソフトウェア MIDI 音源で使用する
-      音源設定ファイルを指定します。非指定時は $(HOME)/.np2/timidity.cfg を
+      音源設定ファイルを指定します。非指定時は $(HOME)/.config/xnp2kai/timidity.cfg を
       使用します。
 
 

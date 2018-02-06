@@ -1,10 +1,10 @@
 dnl
-dnl Configure for Xnp2
+dnl Configure for Xnp2kai
 dnl
 
 AC_PREREQ(2.69)
 
-AC_INIT(Xnp2,0.86,nonakap@gmail.com,xnp2)
+AC_INIT(Xnp2kai,0.86,nonakap@gmail.com,xnp2kai)
 AM_INIT_AUTOMAKE([no-define no-dist no-installinfo subdir-objects])
 AC_CONFIG_SRCDIR([../np2ver.h])
 AC_CONFIG_HEADERS(config.h)
@@ -81,7 +81,7 @@ AC_PATH_X
 AC_PATH_XTRA
 
 dnl
-dnl Xnp2 configure options.
+dnl Xnp2kai configure options.
 dnl
 AC_ARG_ENABLE(gtk3,
   AC_HELP_STRING([--enable-gtk3],[Use GTK+-3 library [default=no]]),,
@@ -106,7 +106,7 @@ AC_ARG_ENABLE(ia32,
   AC_HELP_STRING([--enable-ia32],[Use IA-32 emulation [default=no]]),,
   [enable_ia32="no"])
 AC_ARG_ENABLE(build-all,
-  AC_HELP_STRING([--enable-build-all],[Build xnp2(i286 emulation) and xnp21(IA-32 emulation) programs [default=no]]),,
+  AC_HELP_STRING([--enable-build-all],[Build xnp2kai(i286 emulation) and xnp21kai(IA-32 emulation) programs [default=no]]),,
   [enable_build_all="no"])
 AC_ARG_ENABLE(debug,
   AC_HELP_STRING([--enable-debug],[Enable debugging [default=no]]),,
@@ -121,7 +121,7 @@ AC_ARG_ENABLE(gtk-deprecated-api,
 dnl
 dnl Checks for X11
 dnl
-PKG_CHECK_MODULES([X11],[x11],,[AC_MSG_ERROR(Xnp2 needs X11)])
+PKG_CHECK_MODULES([X11],[x11],,[AC_MSG_ERROR(Xnp2kai needs X11)])
 AC_SUBST(X11_CFLAGS)
 AC_SUBST(X11_LIBS)
 PKG_CHECK_MODULES([XEXT],[xext])
@@ -279,12 +279,12 @@ fi
 AC_MSG_RESULT($enable_gtk_deprecated_api)
 
 dnl
-dnl Checks for Xnp2 version
+dnl Checks for Xnp2kai version
 dnl
 NP2VER_X11=`echo $PACKAGE_VERSION | $AWK 'BEGIN {FS="-"} NF==2 {print $2}'`
 if test x"$NP2VER_X11" != "x"; then
   NP2VER_X11="\"-$NP2VER_X11\""
-  AC_DEFINE_UNQUOTED(NP2VER_X11,$NP2VER_X11,[Define if Xnp2 version is available])
+  AC_DEFINE_UNQUOTED(NP2VER_X11,$NP2VER_X11,[Define if Xnp2kai version is available])
 fi
 
 dnl

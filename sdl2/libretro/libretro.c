@@ -144,7 +144,7 @@ int pre_main(const char *argv)
    else
       parse_cmdline(argv);
 
-   Only1Arg = (strcmp(ARGUV[0],"np2") == 0) ? 0 : 1;
+   Only1Arg = (strcmp(ARGUV[0],"np2kai") == 0) ? 0 : 1;
 
    for (i = 0; i<64; i++)
       xargv_cmd[i] = NULL;
@@ -154,7 +154,7 @@ int pre_main(const char *argv)
    {
       int cfgload=0;
 
-      Add_Option("np2");
+      Add_Option("np2kai");
 
       if(cfgload==0)
       {
@@ -1358,9 +1358,9 @@ bool retro_load_game(const struct retro_game_info *game)
    lr_init = 1;
 
 #ifdef _WIN32
-   strcat(np2path, "\\np2");
+   strcat(np2path, "\\np2kai");
 #else
-   strcat(np2path, "/np2");
+   strcat(np2path, "/np2kai");
 #endif
 
    sprintf(tmppath,"%s%c",np2path,G_DIR_SEPARATOR);

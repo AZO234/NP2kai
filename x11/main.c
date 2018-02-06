@@ -185,7 +185,7 @@ main(int argc, char *argv[])
 		if (env) {
 			/* base dir */
 			g_snprintf(modulefile, sizeof(modulefile),
-			    "%s/.np2/", env);
+			    "%s/.config/xnp2kai/", env);
 			if (stat(modulefile, &sb) < 0) {
 				if (mkdir(modulefile, 0700) < 0) {
 					perror(modulefile);

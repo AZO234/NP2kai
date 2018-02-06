@@ -159,9 +159,9 @@ getstatfilename(char* path, const char* ext, int size)
 
 	/*
 	 * default:
-	 * e.g. resume:   "/home/user_name/.np2/sav/np2.sav"
-	 *      statpath: "/home/user_name/.np2/sav/np2.s00"
-	 *      config:   "/home/user_name/.np2/np2rc"
+	 * e.g. resume:   "/home/user_name/.config/xnp2kai/sav/np2.sav"
+	 *      statpath: "/home/user_name/.config/xnp2kai/sav/np2.s00"
+	 *      config:   "/home/user_name/.config/xnp2kai/np2rc"
 	 *
 	 * --config option:
 	 * e.g. resume:   "/config_file_path/sav/np2.sav"

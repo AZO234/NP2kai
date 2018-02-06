@@ -260,10 +260,10 @@ gui_gtk_arginit(int *argcp, char ***argvp)
 
 	homeenv = getenv("HOME");
 	if (homeenv) {
-		g_snprintf(buf, sizeof(buf), "%s/.np2/gtkrc", homeenv);
+		g_snprintf(buf, sizeof(buf), "%s/.config/xnp2kai/gtkrc", homeenv);
 		gtk_rc_add_default_file(buf);
 
-		g_snprintf(buf, sizeof(buf), "%s/.np2/accels", homeenv);
+		g_snprintf(buf, sizeof(buf), "%s/.config/xnp2kai/accels", homeenv);
 		if (g_file_test(buf, G_FILE_TEST_IS_REGULAR))
 			gtk_accel_map_load(buf);
 	}
