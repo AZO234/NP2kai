@@ -197,9 +197,7 @@ short file_dircreate(const char *path) {
 
 short file_dirdelete(const char *path) {
 
-#if !(defined(__LIBRETRO__) && defined(VITA))
 	return((short)rmdir(path));
-#endif
 }
 
 
@@ -244,10 +242,10 @@ short file_delete_c(const char *path) {
 short file_attr_c(const char *path) {
 
 	file_cpyname(curfilep, path, NELEMENTS(curpath) - (UINT)(curfilep - curpath));
-	return(file_attr(curpath));
+	return(file_attr_c(curpath));
 }
 
-#if defined(WIN32) && !defined(__LIBRETRO__)
+#if defined(WIN32)
 static BRESULT cnvdatetime(FILETIME *file, DOSDATE *dosdate, DOSTIME *dostime) {
 
 	FILETIME	localtime;
