@@ -83,7 +83,16 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 #endif	 /* SUPPORT_PC9821 */
 				1, 0x000000, 0xffffff,
 				44100, 250, 4, 0,
-				{0, 0, 0}, 0xd1, 0x7f, 0xd1, 0, 0, 1,
+				{0, 0, 0}, 0xd1, 0x7f, 0xd1, 0, 0, 1, 
+				
+				0x0188, 0x80, 3, 12, 12, 0xff, // 118
+
+				0x70, 1, 3, // Mate-X PCM
+
+#if defined(SUPPORT_SOUND_SB16)
+				0xd2, 3, 5,
+#endif	/* SUPPORT_FMGEN */
+
 				3, {0x0c, 0x0c, 0x08, 0x06, 0x03, 0x0c}, 64, 64, 64, 64, 64,
 				1, 0x82, 0,
 				0, {0x17, 0x04, 0x1f}, {0x0c, 0x0c, 0x02, 0x10, 0x3f, 0x3f},
@@ -116,7 +125,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 				0,			/* statsave */
 #endif
 				0, 0,
-				0xff00,
+				0xff00, 0,
 	};
 
 	PCCORE	pccore = {	PCBASECLOCK25, PCBASEMULTIPLE,
@@ -415,7 +424,7 @@ void pccore_reset(void) {
 	}
 #endif
 	ZeroMemory(mem, 0x110000);
-	FillMemory(mem + 0xC0000, 0x100000 - 0xC0000, 0xff); // なぞ
+	FillMemory(mem + 0xC0000, 0xE8000 - 0xC0000, 0xff); // なぞ
 	ZeroMemory(mem + VRAM1_B, 0x18000);
 	ZeroMemory(mem + VRAM1_E, 0x08000);
 	ZeroMemory(mem + FONT_ADRS, 0x08000);

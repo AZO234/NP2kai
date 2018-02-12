@@ -182,13 +182,9 @@ int np2_main(int argc, char *argv[]) {
 	}
 
 #if !defined(__LIBRETRO__)
-#if defined(_WIN32)
-	GetModuleFileName(NULL, np2cfg.biospath, MAX_PATH);
-#else	/* _WIN32 */
-	readlink("/proc/self/exe", np2cfg.biospath, sizeof(np2cfg.biospath) - 1);
-#endif	/* _WIN32 */
+	strcpy(np2cfg.biospath, getenv("HOME"));
+	strcat(np2cfg.biospath, "/.config/np2kai/");
 	file_setcd(np2cfg.biospath);
-	*(file_getname(np2cfg.biospath)) = '\0';
 #endif	/* __LIBRETRO__ */
 
 	initload();

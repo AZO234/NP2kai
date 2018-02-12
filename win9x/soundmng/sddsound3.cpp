@@ -453,7 +453,7 @@ LPDIRECTSOUNDBUFFER CSoundDeviceDSound3::CreateWaveBuffer(LPCTSTR lpFilename)
 
 	do
 	{
-		if (!extrom.Open(lpFilename))
+		if (!extrom.Open(lpFilename, 3))
 		{
 			break;
 		}

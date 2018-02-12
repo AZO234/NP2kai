@@ -15,7 +15,7 @@
  * Creative Sound Blaster 16(98)
  * YMF262-M(OPL3) + CT1741(PCM) + CT1745(MIXER) + YM2203(OPN - option)
  *
- * 現状は以下の固定仕様で動く IO:D2 DMA:3 INT:5 
+ * デフォルト仕様 IO:D2 DMA:3 INT:5 
  */
 
 static void *opl3;
@@ -191,10 +191,10 @@ void boardsb16_reset(const NP2CFG *pConfig) {
 	}
 	ZeroMemory(&g_sb16, sizeof(g_sb16));
 	ZeroMemory(&g_opl, sizeof(g_opl));
-	// ボードデフォルト IO:D2 DMA:3 INT:5 
-	g_sb16.base = 0xd2;
-	g_sb16.dmach = 0x3;
-	g_sb16.dmairq = 0x5;
+	// ボードデフォルト IO:D2 DMA:3 IRQ:5(INT1) 
+	g_sb16.base = np2cfg.sndsb16io; //0xd2;
+	g_sb16.dmach = np2cfg.sndsb16dma; //0x3;
+	g_sb16.dmairq = np2cfg.sndsb16irq; //0x5;
 	ct1745io_reset();
 	ct1741io_reset();
 }

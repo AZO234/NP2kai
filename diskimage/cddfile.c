@@ -296,11 +296,9 @@ long set_trkinfo(FILEH fh, _CDTRK *trk, UINT trks, FILELEN imagesize) {
 		total += trk[i-1].sectors;
 		fsize -= trk[i-1].sectors * trk[i-1].sector_size;
 	}
-	/*
 	if (fsize % trk[trks-1].sector_size != 0) {
 		return(-1);
 	}
-	*/
 	if (trk[trks-1].pos0 == 0) {
 		trk[trks-1].str_sec = trk[trks-1].pos;
 	}

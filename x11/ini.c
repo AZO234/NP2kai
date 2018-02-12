@@ -496,9 +496,9 @@ ini_write(const char *path, const char *title, INITBL *tbl, UINT count, BOOL cre
 
 static const char ini_title[] =
 #if !defined(CPUCORE_IA32)
-	"NekoProjectII";
+	"NekoProjectIIkai";
 #else
-	"NekoProjectII_IA32";
+	"NekoProjectIIkai_IA32";
 #endif
 static const char inifile[] = "np2.cfg";
 

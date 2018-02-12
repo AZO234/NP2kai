@@ -124,16 +124,17 @@ void cs4231_dma(NEVENTITEM item) {
 	UINT	size;
 	UINT	r;
 	SINT32	cnt;
-	UINT	bufsize;
 	if (item->flag & NEVENT_SETEVENT) {
 		if (cs4231.dmach != 0xff) {
 			dmach = dmac.dmach + cs4231.dmach;
-			bufsize = cs4231.bufsize * cs4231_playcountshift[cs4231.reg.datafmt >> 4] / 4;
+
+			// サウンド再生用バッファに送る？(cs4231g.c)
+			sound_sync();
 
 			// バッファに空きがあればデータを読み出す
 			if(!w31play || !(cs4231.reg.featurestatus & (PI|TI|CI))){
-				if (bufsize - 4 > cs4231.bufdatas) {
-					rem = np2min(bufsize - 4 - cs4231.bufdatas, CS4231_MAXDMAREADBYTES); //読み取り単位は16bitステレオの1サンプル分(4byte)にしておかないと雑音化する
+				if (cs4231.bufsize * cs4231_playcountshift[cs4231.reg.datafmt >> 4] / 4 - 4 > cs4231.bufdatas) {
+					rem = np2min(cs4231.bufsize - 4 - cs4231.bufdatas, CS4231_MAXDMAREADBYTES); //読み取り単位は16bitステレオの1サンプル分(4byte)にしておかないと雑音化する
 					pos = cs4231.bufwpos & CS4231_BUFMASK; // バッファ書き込み位置
 					size = np2min(rem, dmach->startcount); // バッファ書き込みサイズ
 					r = dmac_getdata_(dmach, cs4231.buffer, pos, size); // DMA読み取り実行
@@ -146,11 +147,7 @@ void cs4231_dma(NEVENTITEM item) {
 			if (cs4231cfg.rate) {
 				SINT32 neventms;
 				int playcountsmp = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)); // PI割り込みを発生させるサンプル数(Playback Base register)
-				playcountsmp = np2min(np2min(bufsize, CS4231_MAXDMAREADBYTES) / cs4231_playcountshift[cs4231.reg.datafmt >> 4], playcountsmp);
-				if (bufsize - 4 - cs4231.bufdatas > bufsize/2) {
-					playcountsmp /= 2;
-					if(playcountsmp==0) playcountsmp = 1;
-				}
+				playcountsmp = np2min(np2max(r, CS4231_MAXDMAREADBYTES/4) / cs4231_playcountshift[cs4231.reg.datafmt >> 4], playcountsmp) / 2;
 				//neventms = playcountsmp * 1000 / cs4231cfg.rate;
 				//if(neventms <= 0) neventms = 1;
 				//cnt = pccore.realclock / cs4231cfg.rate * 32;
@@ -159,9 +156,6 @@ void cs4231_dma(NEVENTITEM item) {
 				//nevent_setbyms(NEVENT_CS4231, neventms, cs4231_dma, NEVENT_RELATIVE);
 				nevent_set(NEVENT_CS4231, pccore.realclock / cs4231cfg.rate * playcountsmp, cs4231_dma, NEVENT_RELATIVE);
 			}
-
-			// サウンド再生用バッファに送る？(cs4231g.c)
-			sound_sync();
 		}
 	}
 	(void)item;
@@ -189,13 +183,13 @@ REG8 DMACCALL cs4231dmafunc(REG8 func) {
 	switch(func) {
 		case DMAEXT_START:
 			if (cs4231cfg.rate) {
-				int playcountsmp = CS4231_MAXDMAREADBYTES;
+				int playcount = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)) * cs4231_playcountshift[cs4231.reg.datafmt >> 4]; // PI割り込みを発生させるサンプル数(Playback Base register) * サンプルあたりのバイト数
 				// DMA読み取り数カウンタを初期化
 				cs4231.totalsample = 0; 
 
 				// DMA読み取り処理開始(NEVENTセット)
 				//nevent_setbyms(NEVENT_CS4231, CS4231_MAXDMAREADBYTES * 1000 / cs4231cfg.rate, cs4231_dma, NEVENT_ABSOLUTE);
-				cnt = pccore.realclock / cs4231cfg.rate * 16;
+				cnt = pccore.realclock / cs4231cfg.rate * 512;
 				nevent_set(NEVENT_CS4231, cnt, cs4231_dma, NEVENT_ABSOLUTE);
 			}
 			break;

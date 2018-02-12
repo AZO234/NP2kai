@@ -503,8 +503,8 @@ ini_write(const char *path, const char *title, const INITBL *tbl, UINT count)
 	file_close(fh);
 }
 
-static const char ini_title[] = "NekoProjectII";
-static const char inifile[] = "np2.cfg";
+static const char ini_title[] = "NekoProjectIIkai";
+static const char inifile[] = "np2kai.cfg";
 
 enum {
 	INIRO_STR	= INIFLAG_RO | INITYPE_STR,

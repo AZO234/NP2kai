@@ -859,6 +859,595 @@ void SndOpt86Page::OnDipSw()
 }
 
 
+// ---- PC-9801-118
+
+/**
+ * @brief 118 ページ
+ */
+class SndOpt118Page : public CPropPageProc
+{
+public:
+	SndOpt118Page();
+	virtual ~SndOpt118Page();
+
+protected:
+	virtual BOOL OnInitDialog();
+	virtual void OnOK();
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
+
+private:
+	UINT16 m_snd118io;				//!< IO設定値
+	UINT8 m_snd118id;				//!< ID設定値
+	UINT8 m_snd118dma;				//!< DMA設定値
+	UINT8 m_snd118irqf;				//!< IRQ(FM)設定値
+	UINT8 m_snd118irqp;				//!< IRQ(PCM)設定値
+	UINT8 m_snd118irqm;				//!< IRQ(MIDI)設定値
+	CComboData m_cmbio;				//!< IO
+	CComboData m_cmbid;				//!< ID
+	CComboData m_cmbdma;			//!< DMA
+	CComboData m_cmbirqf;			//!< IRQ(FM)
+	CComboData m_cmbirqp;			//!< IRQ(PCM)
+	CComboData m_cmbirqm;			//!< IRQ(MIDI)
+};
+
+//! 118 I/O
+static const CComboData::Entry s_io118[] =
+{
+	{MAKEINTRESOURCE(IDS_0088),		0x0088},
+	{MAKEINTRESOURCE(IDS_0188),		0x0188},
+	{MAKEINTRESOURCE(IDS_0288),		0x0288},
+	{MAKEINTRESOURCE(IDS_0388),		0x0388},
+};
+
+//! 118 Sound ID
+static const CComboData::Entry s_id118[] =
+{
+	{MAKEINTRESOURCE(IDS_0X),	0x00},
+	{MAKEINTRESOURCE(IDS_1X),	0x10},
+	{MAKEINTRESOURCE(IDS_2X),	0x20},
+	{MAKEINTRESOURCE(IDS_3X),	0x30},
+	{MAKEINTRESOURCE(IDS_4X),	0x40},
+	{MAKEINTRESOURCE(IDS_5X),	0x50},
+	{MAKEINTRESOURCE(IDS_6X),	0x60},
+	{MAKEINTRESOURCE(IDS_7X),	0x70},
+	{MAKEINTRESOURCE(IDS_8X),	0x80},
+};
+
+//! 118 DMA
+static const CComboData::Entry s_dma118[] =
+{
+	{MAKEINTRESOURCE(IDS_DMA0),	0},
+	{MAKEINTRESOURCE(IDS_DMA1),	1},
+	{MAKEINTRESOURCE(IDS_DMA3),	3},
+};
+
+//! 118 INT(FM)
+static const CComboData::Entry s_int118f[] =
+{
+	{MAKEINTRESOURCE(IDS_INT0IRQ3),		3},
+	{MAKEINTRESOURCE(IDS_INT41IRQ10),	10},
+	{MAKEINTRESOURCE(IDS_INT5IRQ12),	12},
+	{MAKEINTRESOURCE(IDS_INT6IRQ13),	13},
+};
+
+//! 118 INT(PCM)
+static const CComboData::Entry s_int118p[] =
+{
+	{MAKEINTRESOURCE(IDS_INT0IRQ3),		3},
+	{MAKEINTRESOURCE(IDS_INT1IRQ5),		5},
+	{MAKEINTRESOURCE(IDS_INT41IRQ10),	10},
+	{MAKEINTRESOURCE(IDS_INT5IRQ12),	12},
+};
+
+//! 118 INT(MIDI)
+static const CComboData::Entry s_int118m[] =
+{
+	{MAKEINTRESOURCE(IDS_DISABLE),		0xff},
+	{MAKEINTRESOURCE(IDS_INT41IRQ10),	10},
+};
+
+/**
+ * コンストラクタ
+ */
+SndOpt118Page::SndOpt118Page()
+	: CPropPageProc(IDD_SND118)
+	, m_snd118io(0)
+	, m_snd118id(0)
+	, m_snd118dma(0)
+	, m_snd118irqf(0)
+	, m_snd118irqp(0)
+	, m_snd118irqm(0)
+{
+}
+
+/**
+ * デストラクタ
+ */
+SndOpt118Page::~SndOpt118Page()
+{
+}
+
+/**
+ * このメソッドは WM_INITDIALOG のメッセージに応答して呼び出されます
+ * @retval TRUE 最初のコントロールに入力フォーカスを設定
+ * @retval FALSE 既に設定済
+ */
+BOOL SndOpt118Page::OnInitDialog()
+{
+	m_snd118io = np2cfg.snd118io;
+	m_snd118id = np2cfg.snd118id;
+	m_snd118dma = np2cfg.snd118dma;
+	m_snd118irqf = np2cfg.snd118irqf;
+	m_snd118irqp = np2cfg.snd118irqp;
+	m_snd118irqm = np2cfg.snd118irqm;
+	
+	m_cmbio.SubclassDlgItem(IDC_SND118IO, this);
+	m_cmbio.Add(s_io118, _countof(s_io118));
+	
+	m_cmbid.SubclassDlgItem(IDC_SND118ID, this);
+	m_cmbid.Add(s_id118, _countof(s_id118));
+
+	m_cmbdma.SubclassDlgItem(IDC_SND118DMA, this);
+	m_cmbdma.Add(s_dma118, _countof(s_dma118));
+	
+	m_cmbirqf.SubclassDlgItem(IDC_SND118INTF, this);
+	m_cmbirqf.Add(s_int118f, _countof(s_int118f));
+	
+	m_cmbirqp.SubclassDlgItem(IDC_SND118INTP, this);
+	m_cmbirqp.Add(s_int118p, _countof(s_int118p));
+
+	m_cmbirqm.SubclassDlgItem(IDC_SND118INTM, this);
+	m_cmbirqm.Add(s_int118m, _countof(s_int118m));
+
+	m_cmbio.SetCurItemData(m_snd118io);
+	m_cmbid.SetCurItemData(m_snd118id);
+	m_cmbdma.SetCurItemData(m_snd118dma);
+	m_cmbirqf.SetCurItemData(m_snd118irqf);
+	m_cmbirqp.SetCurItemData(m_snd118irqp);
+	m_cmbirqm.SetCurItemData(m_snd118irqm);
+
+	m_cmbio.SetFocus();
+
+	return FALSE;
+}
+
+/**
+ * ユーザーが OK のボタン (IDOK ID がのボタン) をクリックすると呼び出されます
+ */
+void SndOpt118Page::OnOK()
+{
+	if (np2cfg.snd118io != m_snd118io)
+	{
+		np2cfg.snd118io = m_snd118io;
+		::sysmng_update(SYS_UPDATECFG);
+	}
+	if (np2cfg.snd118id != m_snd118id)
+	{
+		np2cfg.snd118id = m_snd118id;
+		::sysmng_update(SYS_UPDATECFG);
+	}
+	if (np2cfg.snd118dma != m_snd118dma)
+	{
+		np2cfg.snd118dma = m_snd118dma;
+		::sysmng_update(SYS_UPDATECFG);
+	}
+	if (np2cfg.snd118irqf != m_snd118irqf)
+	{
+		np2cfg.snd118irqf = m_snd118irqf;
+		::sysmng_update(SYS_UPDATECFG);
+	}
+	if (np2cfg.snd118irqp != m_snd118irqp)
+	{
+		np2cfg.snd118irqp = m_snd118irqp;
+		::sysmng_update(SYS_UPDATECFG);
+	}
+	if (np2cfg.snd118irqm != m_snd118irqm)
+	{
+		np2cfg.snd118irqm = m_snd118irqm;
+		::sysmng_update(SYS_UPDATECFG);
+	}
+}
+
+/**
+ * ユーザーがメニューの項目を選択したときに、フレームワークによって呼び出されます
+ * @param[in] wParam パラメタ
+ * @param[in] lParam パラメタ
+ * @retval TRUE アプリケーションがこのメッセージを処理した
+ */
+BOOL SndOpt118Page::OnCommand(WPARAM wParam, LPARAM lParam)
+{
+	switch (LOWORD(wParam))
+	{
+		case IDC_SND118IO:
+			m_snd118io = m_cmbio.GetCurItemData(0x0188);
+			return TRUE;
+			
+		case IDC_SND118ID:
+			m_snd118id = m_cmbid.GetCurItemData(0x80);
+			return TRUE;
+
+		case IDC_SND118DMA:
+			m_snd118dma = m_cmbdma.GetCurItemData(3);
+			return TRUE;
+
+		case IDC_SND118INTF:
+			m_snd118irqf = m_cmbirqf.GetCurItemData(12);
+			return TRUE;
+
+		case IDC_SND118INTP:
+			m_snd118irqp = m_cmbirqp.GetCurItemData(12);
+			return TRUE;
+
+		case IDC_SND118INTM:
+			m_snd118irqm = m_cmbirqm.GetCurItemData(0xff);
+			return TRUE;
+
+		case IDC_SND118DEF:
+			m_snd118io = 0x0188;
+			m_snd118id = 0x80;
+			m_snd118dma = 3;
+			m_snd118irqf = 12;
+			m_snd118irqp = 12;
+			m_snd118irqm = 0xff;
+			m_cmbio.SetCurItemData(m_snd118io);
+			m_cmbid.SetCurItemData(m_snd118id);
+			m_cmbdma.SetCurItemData(m_snd118dma);
+			m_cmbirqf.SetCurItemData(m_snd118irqf);
+			m_cmbirqp.SetCurItemData(m_snd118irqp);
+			m_cmbirqm.SetCurItemData(m_snd118irqm);
+			return TRUE;
+	}
+	return FALSE;
+}
+
+/**
+ * CWndProc オブジェクトの Windows プロシージャ (WindowProc) が用意されています
+ * @param[in] nMsg 処理される Windows メッセージを指定します
+ * @param[in] wParam メッセージの処理で使う付加情報を提供します。このパラメータの値はメッセージに依存します
+ * @param[in] lParam メッセージの処理で使う付加情報を提供します。このパラメータの値はメッセージに依存します
+ * @return メッセージに依存する値を返します
+ */
+LRESULT SndOpt118Page::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMsg)
+	{
+		case WM_DRAWITEM:
+			return FALSE;
+	}
+	return CDlgProc::WindowProc(nMsg, wParam, lParam);
+}
+
+
+
+// ---- Mate-X PCM
+
+/**
+ * @brief Mate-X PCM(WSS) ページ
+ */
+class SndOptWSSPage : public CPropPageProc
+{
+public:
+	SndOptWSSPage();
+	virtual ~SndOptWSSPage();
+
+protected:
+	virtual BOOL OnInitDialog();
+	virtual void OnOK();
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
+
+private:
+	UINT8 m_snd118id;				//!< ID設定値
+	UINT8 m_snd118dma;				//!< DMA設定値
+	UINT8 m_snd118irqp;				//!< IRQ設定値
+	CComboData m_cmbid;				//!< ID
+	CComboData m_cmbdma;			//!< DMA
+	CComboData m_cmbirqp;			//!< IRQ
+};
+
+/**
+ * コンストラクタ
+ */
+SndOptWSSPage::SndOptWSSPage()
+	: CPropPageProc(IDD_SNDWSS)
+	, m_snd118id(0)
+	, m_snd118dma(0)
+	, m_snd118irqp(0)
+{
+}
+
+/**
+ * デストラクタ
+ */
+SndOptWSSPage::~SndOptWSSPage()
+{
+}
+
+/**
+ * このメソッドは WM_INITDIALOG のメッセージに応答して呼び出されます
+ * @retval TRUE 最初のコントロールに入力フォーカスを設定
+ * @retval FALSE 既に設定済
+ */
+BOOL SndOptWSSPage::OnInitDialog()
+{
+	m_snd118id = np2cfg.sndwssid;
+	m_snd118dma = np2cfg.sndwssdma;
+	m_snd118irqp = np2cfg.sndwssirq;
+	
+	m_cmbid.SubclassDlgItem(IDC_SND118ID, this);
+	m_cmbid.Add(s_id118, _countof(s_id118));
+
+	m_cmbdma.SubclassDlgItem(IDC_SND118DMA, this);
+	m_cmbdma.Add(s_dma118, _countof(s_dma118));
+	
+	m_cmbirqp.SubclassDlgItem(IDC_SND118INTP, this);
+	m_cmbirqp.Add(s_int118p, _countof(s_int118p));
+
+	m_cmbid.SetCurItemData(m_snd118id);
+	m_cmbdma.SetCurItemData(m_snd118dma);
+	m_cmbirqp.SetCurItemData(m_snd118irqp);
+
+	m_cmbid.SetFocus();
+
+	return FALSE;
+}
+
+/**
+ * ユーザーが OK のボタン (IDOK ID がのボタン) をクリックすると呼び出されます
+ */
+void SndOptWSSPage::OnOK()
+{
+	if (np2cfg.sndwssid != m_snd118id)
+	{
+		np2cfg.sndwssid = m_snd118id;
+		::sysmng_update(SYS_UPDATECFG);
+	}
+	if (np2cfg.sndwssdma != m_snd118dma)
+	{
+		np2cfg.sndwssdma = m_snd118dma;
+		::sysmng_update(SYS_UPDATECFG);
+	}
+	if (np2cfg.sndwssirq != m_snd118irqp)
+	{
+		np2cfg.sndwssirq = m_snd118irqp;
+		::sysmng_update(SYS_UPDATECFG);
+	}
+}
+
+/**
+ * ユーザーがメニューの項目を選択したときに、フレームワークによって呼び出されます
+ * @param[in] wParam パラメタ
+ * @param[in] lParam パラメタ
+ * @retval TRUE アプリケーションがこのメッセージを処理した
+ */
+BOOL SndOptWSSPage::OnCommand(WPARAM wParam, LPARAM lParam)
+{
+	switch (LOWORD(wParam))
+	{
+		case IDC_SND118ID:
+			m_snd118id = m_cmbid.GetCurItemData(0x70);
+			return TRUE;
+
+		case IDC_SND118DMA:
+			m_snd118dma = m_cmbdma.GetCurItemData(1);
+			return TRUE;
+
+		case IDC_SND118INTP:
+			m_snd118irqp = m_cmbirqp.GetCurItemData(3);
+			return TRUE;
+
+		case IDC_SND118DEF:
+			m_snd118id = 0x70;
+			m_snd118dma = 1;
+			m_snd118irqp = 3;
+			m_cmbid.SetCurItemData(m_snd118id);
+			m_cmbdma.SetCurItemData(m_snd118dma);
+			m_cmbirqp.SetCurItemData(m_snd118irqp);
+			return TRUE;
+	}
+	return FALSE;
+}
+
+/**
+ * CWndProc オブジェクトの Windows プロシージャ (WindowProc) が用意されています
+ * @param[in] nMsg 処理される Windows メッセージを指定します
+ * @param[in] wParam メッセージの処理で使う付加情報を提供します。このパラメータの値はメッセージに依存します
+ * @param[in] lParam メッセージの処理で使う付加情報を提供します。このパラメータの値はメッセージに依存します
+ * @return メッセージに依存する値を返します
+ */
+LRESULT SndOptWSSPage::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMsg)
+	{
+		case WM_DRAWITEM:
+			return FALSE;
+	}
+	return CDlgProc::WindowProc(nMsg, wParam, lParam);
+}
+
+
+	
+#if defined(SUPPORT_SOUND_SB16)
+
+// ---- Sound Blaster 16(98)
+
+/**
+ * @brief SB16 ページ
+ */
+class SndOptSB16Page : public CPropPageProc
+{
+public:
+	SndOptSB16Page();
+	virtual ~SndOptSB16Page();
+
+protected:
+	virtual BOOL OnInitDialog();
+	virtual void OnOK();
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
+
+private:
+	UINT16 m_snd118io;				//!< IO設定値
+	UINT8 m_snd118dma;				//!< DMA設定値
+	UINT8 m_snd118irqf;				//!< IRQ設定値
+	CComboData m_cmbio;				//!< IO
+	CComboData m_cmbdma;			//!< DMA
+	CComboData m_cmbirqf;			//!< IRQ
+};
+
+//! SB16 I/O
+static const CComboData::Entry s_iosb16[] =
+{
+	{MAKEINTRESOURCE(IDS_20D2),		0xD2},
+	{MAKEINTRESOURCE(IDS_20D4),		0xD4},
+	{MAKEINTRESOURCE(IDS_20D6),		0xD6},
+	{MAKEINTRESOURCE(IDS_20D8),		0xD8},
+	{MAKEINTRESOURCE(IDS_20DA),		0xDA},
+	{MAKEINTRESOURCE(IDS_20DC),		0xDC},
+	{MAKEINTRESOURCE(IDS_20DE),		0xDE},
+};
+
+//! SB16 DMA
+static const CComboData::Entry s_dmasb16[] =
+{
+	{MAKEINTRESOURCE(IDS_DMA0),	0},
+	{MAKEINTRESOURCE(IDS_DMA3),	3},
+};
+
+//! SB16 INT
+static const CComboData::Entry s_intsb16[] =
+{
+	{MAKEINTRESOURCE(IDS_INT0IRQ3),		3},
+	{MAKEINTRESOURCE(IDS_INT1IRQ5),		5},
+	{MAKEINTRESOURCE(IDS_INT41IRQ10),	10},
+	{MAKEINTRESOURCE(IDS_INT5IRQ12),	12},
+};
+
+/**
+ * コンストラクタ
+ */
+SndOptSB16Page::SndOptSB16Page()
+	: CPropPageProc(IDD_SNDSB16)
+	, m_snd118io(0)
+	, m_snd118dma(0)
+	, m_snd118irqf(0)
+{
+}
+
+/**
+ * デストラクタ
+ */
+SndOptSB16Page::~SndOptSB16Page()
+{
+}
+
+/**
+ * このメソッドは WM_INITDIALOG のメッセージに応答して呼び出されます
+ * @retval TRUE 最初のコントロールに入力フォーカスを設定
+ * @retval FALSE 既に設定済
+ */
+BOOL SndOptSB16Page::OnInitDialog()
+{
+	m_snd118io = np2cfg.sndsb16io;
+	m_snd118dma = np2cfg.sndsb16dma;
+	m_snd118irqf = np2cfg.sndsb16irq;
+	
+	m_cmbio.SubclassDlgItem(IDC_SND118IO, this);
+	m_cmbio.Add(s_iosb16, _countof(s_iosb16));
+	
+	m_cmbdma.SubclassDlgItem(IDC_SND118DMA, this);
+	m_cmbdma.Add(s_dmasb16, _countof(s_dmasb16));
+	
+	m_cmbirqf.SubclassDlgItem(IDC_SND118INTF, this);
+	m_cmbirqf.Add(s_intsb16, _countof(s_intsb16));
+	
+	m_cmbio.SetCurItemData(m_snd118io);
+	m_cmbdma.SetCurItemData(m_snd118dma);
+	m_cmbirqf.SetCurItemData(m_snd118irqf);
+
+	m_cmbio.SetFocus();
+
+	return FALSE;
+}
+
+/**
+ * ユーザーが OK のボタン (IDOK ID がのボタン) をクリックすると呼び出されます
+ */
+void SndOptSB16Page::OnOK()
+{
+	if (np2cfg.sndsb16io != m_snd118io)
+	{
+		np2cfg.sndsb16io = m_snd118io;
+		::sysmng_update(SYS_UPDATECFG);
+	}
+	if (np2cfg.sndsb16dma != m_snd118dma)
+	{
+		np2cfg.sndsb16dma = m_snd118dma;
+		::sysmng_update(SYS_UPDATECFG);
+	}
+	if (np2cfg.sndsb16irq != m_snd118irqf)
+	{
+		np2cfg.sndsb16irq = m_snd118irqf;
+		::sysmng_update(SYS_UPDATECFG);
+	}
+}
+
+/**
+ * ユーザーがメニューの項目を選択したときに、フレームワークによって呼び出されます
+ * @param[in] wParam パラメタ
+ * @param[in] lParam パラメタ
+ * @retval TRUE アプリケーションがこのメッセージを処理した
+ */
+BOOL SndOptSB16Page::OnCommand(WPARAM wParam, LPARAM lParam)
+{
+	switch (LOWORD(wParam))
+	{
+		case IDC_SND118IO:
+			m_snd118io = m_cmbio.GetCurItemData(0x0188);
+			return TRUE;
+
+		case IDC_SND118DMA:
+			m_snd118dma = m_cmbdma.GetCurItemData(3);
+			return TRUE;
+
+		case IDC_SND118INTF:
+			m_snd118irqf = m_cmbirqf.GetCurItemData(12);
+			return TRUE;
+
+		case IDC_SND118DEF:
+			// ボードデフォルト IO:D2 DMA:3 IRQ:5(INT1) 
+			m_snd118io = 0xd2;
+			m_snd118dma = 3;
+			m_snd118irqf = 5;
+			m_cmbio.SetCurItemData(m_snd118io);
+			m_cmbdma.SetCurItemData(m_snd118dma);
+			m_cmbirqf.SetCurItemData(m_snd118irqf);
+			return TRUE;
+	}
+	return FALSE;
+}
+
+/**
+ * CWndProc オブジェクトの Windows プロシージャ (WindowProc) が用意されています
+ * @param[in] nMsg 処理される Windows メッセージを指定します
+ * @param[in] wParam メッセージの処理で使う付加情報を提供します。このパラメータの値はメッセージに依存します
+ * @param[in] lParam メッセージの処理で使う付加情報を提供します。このパラメータの値はメッセージに依存します
+ * @return メッセージに依存する値を返します
+ */
+LRESULT SndOptSB16Page::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMsg)
+	{
+		case WM_DRAWITEM:
+			return FALSE;
+	}
+	return CDlgProc::WindowProc(nMsg, wParam, lParam);
+}
+
+#endif	/* SUPPORT_SOUND_SB16 */
+
+
 
 // ---- Speak board
 
@@ -1344,6 +1933,17 @@ void dialog_sndopt(HWND hwndParent)
 
 	SndOpt86Page pc980186;
 	prop.AddPage(&pc980186);
+	
+	SndOpt118Page pc9801118;
+	prop.AddPage(&pc9801118);
+	
+	SndOptWSSPage wss;
+	prop.AddPage(&wss);
+	
+#if defined(SUPPORT_SOUND_SB16)
+	SndOptSB16Page sb16;
+	prop.AddPage(&sb16);
+#endif	/* SUPPORT_SOUND_SB16 */
 
 	SndOptSpbPage spb;
 	prop.AddPage(&spb);

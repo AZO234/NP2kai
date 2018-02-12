@@ -1,6 +1,6 @@
-Neko Project II 0.86 kai rev.14
+Neko Project II 0.86 kai rev.15
 ===
-Nov 18, 2017  
+Feb 6, 2018  
 
 Build SDL2 port
 ---
@@ -17,16 +17,30 @@ or
 
 ２． Build.  
 
-	$ cd NP2_SDL2/sdl2
+	$ cd NP2kai/sdl2
 	$ make -j4 -f Makefile.unix
 
 or
 
 	$ make -j4 -f Makefile21.unix
 
-３． 'np2' or 'np21' binary is outputed in NP2kai/sdl2  
+３． Install NP2kai.  
 
-BIOS files locate in same directory executable file.
+	$ sudo -f Makefile.unix install
+
+or
+
+	$ sudo -f Makefile21.unix install
+
+４． Run NP2kai.  
+
+	$ np2kai
+
+or
+
+	$ np21kai
+
+BIOS files locate in ~/.config/np2kai .
 
 Build X11 port
 ---
@@ -47,17 +61,18 @@ or
 	$ ./configure --enable-ia32
 	$ make -j4
 
-３． 'np2' or 'np21' binary is outputed in NP2kai/x11  
+３． Install NP2kai.  
 
-４． If you got errors like `//lib/x86_64-linux-gnu/libpthread.so.0: error adding symbols: DSO missing from command line` while linking and you've already installed `libpthread-dev`, please try the following commands before running `autogen.sh`:
+	$ sudo make install
 
-	$ export CFLAGS='-pthread'
-	$ export LDFLAGS='-pthread'
+４． Run NP2kai.  
 
-BIOS files locate in same directory executable file.
+	$ xnp2kai
+
+BIOS files locate in ~/.config/xnp2kai .
 
 NP2 menu is opened when F11 key or mouse middle button.  
-NP2 menu can FDD/HDD swap.
+NP2 menu can swap FDD/HDD diskimages.
 
 Build libretro port (Linux)
 ---
@@ -134,11 +149,11 @@ https://developer.android.com/studio/index.html
 
 about libretro port
 ---
-BIOS files locate in "np2" directory at BIOS directory (configured by RetroArch).  
-Configure file (np2.cfg) is made in "np2" BIOS directory.
+BIOS files locate in "np2kai" directory at BIOS directory (configured by RetroArch).  
+Configure file (np2.cfg) is made in "np2kai" BIOS directory.
 
 NP2 menu is opened when F12 key or mouse middle button or joypad L2 button.  
-NP2 menu can FDD/HDD swap.  
+NP2 menu can swap FDD/HDD diskimages.  
 
 Mouse is cuptured (hidden/show toggle) by F11 key.
 
@@ -147,7 +162,7 @@ Switch Joy2Mouse mode in config.
 D-UP/DOWN/LEFT/RIGHT: mouse move  
 B button: left click  
 A button: right click
-R button: inclease mouse speed  
+R button: mouse speed up durling hold  
 
 Keyboard is able to control with joypad when Joy2Key mode.  
 Switch Joy2Key mode in config.  
@@ -214,6 +229,7 @@ and "/opt/retropie/emulators/np2/" too.
     $ sudo ln -s /usr/share/fonts/truetype/horai-umefont/ume-ugo4.ttf /opt/retropie/emulators/np2/default.ttf
 
 ６．Add "carbon-mod". (Japanese nize)
+
     $ git clone https://github.com/eagle0wl/es-theme-carbon.git
     $ sudo cp -r ./es-theme-carbon /etc/emulationstation/themes/carbon-mod
 
@@ -278,8 +294,13 @@ Don't forget restart core.
 
 * How to key typing?  
 
-Unfortunery, libretro is unuseful for keytyping.
-Please use NP21/w.
+There are two ways:
+
+1. map the 'enable hotkeys' hotkey in settings > input > input hotkey binds and RetroArch will stop listening for hotkeys unless/until you hold that button/key
+
+2. enable the "game focus mode" (mapped to scroll_lock by default) and it will send all of your inputs to the core instead of the frontend. However, some people have reported having trouble getting out of game focus mode.
+
+(Thanks hasenbanck)
 
 * How to use CD drive with MS-DOS 6.2?  
 
@@ -306,15 +327,23 @@ I/O:0x00D0
 
 Release
 ---
+* Feb 6, 2018 (rev.15)
+	- NP2 namespace change to NP2kai
+	- [SDL2] Locate of config files is ~/.config/np2kai
+	- [X11] Locate of config files is ~/.config/xnp2kai
+* Feb 5, 2018
+	- Merge NP21/W 0.86 rev.38
+* Feb 4, 2018
+	- Add setting Joy to Mouse cursor speed up rasio
 * Dec 5, 2017
 	- Default GDC clock is 2.5MHz
-	- In Joy2Mousem, mouse speed up with R key
+	- In Joy2Mousem, mouse speed up with R button
 * Nov 18, 2017
-	- Merge NP21/w rev.37
+	- Merge NP21/W 0.86 rev.37
 * Oct 26, 2017
 	- Apply to 1.44MB FDD floppy image file
 * Oct 21, 2017 (rev.14)
-	- Merge NP21/w rev.36
+	- Merge NP21/W 0.86 rev.36
 		* Mate-X PCM  
 		* Sound Blaster 16  
 		* OPL3 (MAME codes is GPL licence)  

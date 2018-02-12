@@ -179,6 +179,11 @@ short file_delete(const char *path) {
 	return(remove(path));
 }
 
+short file_rename(const char *existpath, const char *newpath) {
+
+	return((short)rename(existpath, newpath));
+}
+
 short file_dircreate(const char *path) {
 
 #if !(defined(__LIBRETRO__) && defined(VITA))
@@ -188,6 +193,11 @@ short file_dircreate(const char *path) {
 	return((short)mkdir(path, 0777));
 #endif
 #endif
+}
+
+short file_dirdelete(const char *path) {
+
+	return((short)rmdir(path));
 }
 
 
@@ -377,6 +387,9 @@ struct stat		sb;
 		if (stat(de->d_name, &sb) == 0) {
 			fli->caps |= FLICAPS_SIZE;
 			fli->size = (UINT)sb.st_size;
+			if (S_ISDIR(sb.st_mode)) {
+				fli->attr |= FILEATTR_DIRECTORY;
+			}
 			if (!(sb.st_mode & S_IWUSR)) {
 				fli->attr |= FILEATTR_READONLY;
 			}
@@ -520,15 +533,5 @@ void file_setseparator(char *path, int maxlen) {
 #endif	/* _WIN32 */
 		path[pos] = '\0';
 	}
-}
-
-short file_rename(const char* ExistFile, const char* NewFile)
-{
-	return (rename(ExistFile, NewFile)) ? 0 : -1;
-}
-
-short file_dirdelete(const char* PathName)
-{
-	return (remove(PathName)) ? 0 : -1;
 }
 
