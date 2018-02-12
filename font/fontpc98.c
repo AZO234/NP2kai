@@ -81,7 +81,8 @@ UINT8 fontpc98_read(const OEMCHAR *filename, UINT8 loading) {
 	// BITMAPINFOHEADER ÇÃì«Ç›çûÇ›
 	if ((file_read(fh, &bi, sizeof(bi)) != sizeof(bi)) ||
 		(bmpdata_getinfo(&bi, &bd) != SUCCESS) ||
-		(bd.width != BMPWIDTH) || (bd.height != BMPHEIGHT) || (bd.bpp != 1) /*|| (LOADINTELDWORD(bi.biSizeImage) != BMPDATASIZE)*/) {
+		(bd.width != BMPWIDTH) || (bd.height != BMPHEIGHT) || (bd.bpp != 1) ||
+		(LOADINTELDWORD(bi.biSizeImage) != BMPDATASIZE)) {
 		goto fr98_err2;
 	}
 
