@@ -42,7 +42,7 @@ static UINT32 getpos(const OEMCHAR *str) {
 	UINT	s;
 	UINT	f;
 
-	sscanf(str, "%d:%d:%d", &m, &s, &f);
+	sscanf(str, "%2d:%2d:%2d", &m, &s, &f);
 	return((((m * 60) + s) * 75) + f);
 }
 
