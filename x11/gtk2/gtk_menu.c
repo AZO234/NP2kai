@@ -839,6 +839,8 @@ cb_diskopen(GtkAction *action, gpointer user_data)
 		gtk_file_filter_add_pattern(filter, "*.[fF][lL][pP]");
 		gtk_file_filter_add_pattern(filter, "*.[bB][iI][nN]");
 		gtk_file_filter_add_pattern(filter, "*.[fF][iI][mM]");
+		gtk_file_filter_add_pattern(filter, "*.[iI][mM][gG]");
+		gtk_file_filter_add_pattern(filter, "*.[iI][mM][aA]");
 		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 	}
 	filter = gtk_file_filter_new();
@@ -870,6 +872,8 @@ cb_diskopen(GtkAction *action, gpointer user_data)
 		gtk_file_filter_add_pattern(filter, "*.[fF][lL][pP]");
 		gtk_file_filter_add_pattern(filter, "*.[bB][iI][nN]");
 		gtk_file_filter_add_pattern(filter, "*.[fF][iI][mM]");
+		gtk_file_filter_add_pattern(filter, "*.[iI][mM][gG]");
+		gtk_file_filter_add_pattern(filter, "*.[iI][mM][aA]");
 		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 	}
 	gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(dialog), filter);
