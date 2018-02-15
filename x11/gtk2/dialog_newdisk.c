@@ -173,13 +173,13 @@ t98_newdisk_dialog(GtkWidget *dialog, const int kind)
 	for (i = 0; i < NELEMENTS(hddsizestr); ++i) {
 		gtk_combo_box_append_text(GTK_COMBO_BOX(combo), hddsizestr[i]);
 	}
-	gtk_widget_set_size_request(combo, 60, -1);
+	gtk_widget_set_size_request(combo, 70, -1);
 	gtk_box_pack_start(GTK_BOX(hbox), combo, FALSE, FALSE, 5);
 	gtk_widget_show(combo);
 
 	entry = gtk_bin_get_child(GTK_BIN(combo));
 	gtk_editable_set_editable(GTK_EDITABLE(entry), TRUE);
-	gtk_entry_set_max_length(GTK_ENTRY(entry), 3);
+	gtk_entry_set_max_length(GTK_ENTRY(entry), 4);
 	gtk_entry_set_text(GTK_ENTRY(entry), "");
 	gtk_widget_show(entry);
 
