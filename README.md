@@ -243,7 +243,7 @@ and "/opt/retropie/emulators/np2/" too.
         <name>pc98</name>
         <fullname>PC-98</fullname>
         <path>/home/pi/RetroPie/roms/pc98</path>
-        <extension>.d88 .88d .d98 .98d .fdi .xdf .hdm .dup .2hd .tfd .nfd .hd4 .hd5 .hd9 .fdd .h01 .hdb .ddb .dd6 .dcp .dcu .flp .bin .fim .D88 .88D .D98 .98D .FDI .XDF .HDM .DUP .2HD .TFD .NFD .HD4 .HD5 .HD9 .FDD .H01 .HDB .DDB .DD6 .DCP .DCU .FLP .BIN .FIM .thd .nhd .hdi .vhd .sln .hdn .hdd .THD .NHD .HDI .VHD .SLN .HDN .HDD</extension>
+        <extension>.d88 .88d .d98 .98d .fdi .xdf .hdm .dup .2hd .tfd .nfd .hd4 .hd5 .hd9 .fdd .h01 .hdb .ddb .dd6 .dcp .dcu .flp .bin .fim .img .ima .D88 .88D .D98 .98D .FDI .XDF .HDM .DUP .2HD .TFD .NFD .HD4 .HD5 .HD9 .FDD .H01 .HDB .DDB .DD6 .DCP .DCU .FLP .BIN .FIM .IMG .IMA .thd .nhd .hdi .vhd .sln .hdn .hdd .THD .NHD .HDI .VHD .SLN .HDN .HDD</extension>
         <command>/opt/retropie/supplementary/runcommand/runcommand.sh 0 _SYS_ pc98 %ROM%</command>
         <platform>pc98</platform>
         <theme>pc98</theme>
@@ -327,6 +327,9 @@ I/O:0x00D0
 
 Release
 ---
+* Feb 17, 2018
+	- [X11] Mouse moving is more smopothly (Thanks frank-deng)
+	- Using *.img *.ima type floppy image (Thanks frank-deng)
 * Feb 14, 2018
 	- Fix parse CUE sheet (Thanks frank-deng)
 * Feb 6, 2018 (rev.15)
