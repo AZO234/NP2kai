@@ -151,15 +151,33 @@ mouse_running(UINT8 flg)
 void
 mousemng_callback(void)
 {
-	int wx, wy;
-	int cx, cy;
+	static int active = 0;
+	static int wx, wy, wx0 = -1, wy0 = -1;
+	int cx, cy, l, t, r, b;
 
 	if (ms.lastmouse & 1) {
-		gdk_window_get_pointer(main_window->window, &wx, &wy, NULL);
 		getmaincenter(main_window, &cx, &cy);
-		ms.mousex += (short)((wx - cx) / 2);
-		ms.mousey += (short)((wy - cy) / 2);
-		gdk_window_set_pointer(main_window->window, cx, cy);
+		if (wx0 < 0 || wy0 < 0) {
+			wx = wx0 = cx; wy = wy0 = cy;
+		}
+		if (!active) {
+			active = 1;
+			wx0 = wx = cx; wy0 = wy = cy;
+			gdk_window_set_pointer(main_window->window, cx, cy);
+			return;
+		}
+
+		gdk_window_get_pointer(main_window->window, &wx, &wy, NULL);
+		ms.mousex += (short)((wx - wx0)/2);
+		ms.mousey += (short)((wy - wy0)/2);
+		wx0 = wx; wy0 = wy;
+		l = cx / 2; r = cx / 2 + cx; t = cy / 2; b = cy / 2 + cy;
+		if (wx <= l || wy <= t || wx >= r || wy >= b) {
+			wx = wx0 = cx; wy = wy0 = cy;
+			gdk_window_set_pointer(main_window->window, cx, cy);
+		}
+	} else {
+		active = 0;
 	}
 }
 
