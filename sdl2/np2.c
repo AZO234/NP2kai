@@ -279,6 +279,7 @@ int np2_main(int argc, char *argv[]) {
 		else if (0 == milstr_cmp(ext, ".hdn"))	imagetype = IMAGETYPE_SCSI;
 		else if (0 == milstr_cmp(ext, ".m3u")) {
 			while(read_m3u(&m3uFiles, ImgFile, m3uFiles, argv[i])) {
+printf("%d:%s\n",m3uFiles,ImgFile);
 				imagetype = IMAGETYPE_UNKNOWN;
 				m3u_ext = ImgFile + OEMSTRLEN(ImgFile) - 4;
 				if      (0 == milstr_cmp(m3u_ext, ".hdi"))	imagetype = IMAGETYPE_SASI_IDE; // SASI/IDE
