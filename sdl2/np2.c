@@ -28,7 +28,7 @@
 #if defined(SUPPORT_NET)
 #include	"net.h"
 #endif
-
+#include	<libgen.h>
 
 NP2OSCFG np2oscfg = {
 	0,			/* NOWAIT */
@@ -158,14 +158,75 @@ static void processwait(UINT cnt) {
 	}
 }
 
+static bool read_m3u(int* found_line, char* path, const int ignore_lines, char *file) {
+   char* m3udir;
+   char m3utemp[MAX_PATH];
+   char line[MAX_PATH];
+   char name[MAX_PATH];
+   FILE *f = fopen(file, "r");
+   int lines = 0;
+   int getfile = 0;
+
+   if (!f)
+      return false;
+
+   strcpy(m3utemp, file);
+   m3udir = dirname(m3utemp);
+
+   while (fgets(line, sizeof(line), f))
+   {
+      lines++;
+
+      if(lines - 1 < ignore_lines)
+         continue;
+
+      if (line[0] == '#')
+         continue;
+
+      if (line[0] == '\r' || line[0] == '\n')
+         continue;
+
+      char *carriage_return = strchr(line, '\r');
+      if (carriage_return)
+         *carriage_return = '\0';
+
+      char *newline = strchr(line, '\n');
+      if (newline)
+         *newline = '\0';
+
+      // Remove any beginning and ending quotes as these can cause issues when feeding the paths into command line later
+      if (line[0] == '"')
+          memmove(line, line + 1, strlen(line));
+
+      if (line[strlen(line) - 1] == '"')
+          line[strlen(line) - 1]  = '\0';
+
+      if (line[0] != '\0')
+      {
+         snprintf(path, MAX_PATH, "%s/%s", m3udir, line);
+      }
+
+      *found_line = lines;
+
+      getfile = 1;
+
+      break;
+   }
+
+   fclose(f);
+   return (getfile);
+}
+
 int np2_main(int argc, char *argv[]) {
 
 	int		pos;
 	char	*p;
 	int		id;
-	int		i, imagetype, drvfdd, drvhddSASI, drvhddSCSI;
+	int		i, imagetype, drvfdd, drvhddSASI, drvhddSCSI, m3uFiles;
 	char	*ext;
+	char	*m3u_ext;
 	char	tmppath[MAX_PATH];
+	char	ImgFile[MAX_PATH];
 	FILE	*fcheck;
 
 	pos = 1;
@@ -320,11 +381,50 @@ int np2_main(int argc, char *argv[]) {
 		else if (0 == milstr_cmp(ext, ".bin")) imagetype = IMAGETYPE_FDD;
 		else if (0 == milstr_cmp(ext, ".tfd")) imagetype = IMAGETYPE_FDD;
 		else if (0 == milstr_cmp(ext, ".fim")) imagetype = IMAGETYPE_FDD;
-		if (imagetype == IMAGETYPE_UNKNOWN) {
-			continue;
+		else if (0 == milstr_cmp(ext, ".img")) imagetype = IMAGETYPE_FDD;
+		else if (0 == milstr_cmp(ext, ".ima")) imagetype = IMAGETYPE_FDD;
+		else if (0 == milstr_cmp(ext, ".m3u")) {
+			m3uFiles = 0;
+			while(read_m3u(&m3uFiles, ImgFile, m3uFiles, argv[i])) {
+				imagetype = IMAGETYPE_UNKNOWN;
+				m3u_ext = ImgFile + OEMSTRLEN(ImgFile) - 4;
+				if      (0 == milstr_cmp(m3u_ext, ".d88")) imagetype = IMAGETYPE_FDD; // FDD
+				else if (0 == milstr_cmp(m3u_ext, ".d98")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".fdi")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".hdm")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".xdf")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".dup")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".2hd")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".nfd")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".fdd")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".hd4")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".hd5")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".hd9")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".h01")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".hdb")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".ddb")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".dd6")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".dd9")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".dcp")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".dcu")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".flp")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".bin")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".tfd")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".fim")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".img")) imagetype = IMAGETYPE_FDD;
+				else if (0 == milstr_cmp(m3u_ext, ".ima")) imagetype = IMAGETYPE_FDD;
+				if (imagetype == IMAGETYPE_UNKNOWN) {
+					continue;
+				}
+
+				if (drvfdd < 4) {
+					diskdrv_readyfdd(drvfdd, ImgFile, 0);
+					drvfdd++;
+				}
+			}
 		}
 		
-		if (drvfdd < 4) {
+		if (0 != milstr_cmp(ext, ".m3u") && imagetype == IMAGETYPE_FDD && drvfdd < 4) {
 			diskdrv_readyfdd(drvfdd, argv[i], 0);
 			drvfdd++;
 		}

@@ -327,6 +327,8 @@ I/O:0x00D0
 
 Release
 ---
+* Feb 18, 2018
+	- *.m3u load (FD image only)
 * Feb 17, 2018
 	- [X11] Mouse moving is more smopothly (Thanks frank-deng)
 	- Using *.img *.ima type floppy image (Thanks frank-deng)
