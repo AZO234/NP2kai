@@ -182,7 +182,7 @@ to input underscore(_), press Shift+right Ctrl.
 BIOS files
 ---
 * bios.rom
-* FONT.ROM (big letter)
+* FONT.ROM (big letter) or FONT.BMP (big letter)
 * itf.rom
 * sound.rom
 * (bios9821.rom or d8000.rom  But I never see good dump file.)
