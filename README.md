@@ -327,6 +327,8 @@ I/O:0x00D0
 
 Release
 ---
+* Feb 19, 2018
+	- [libretro] Apply disk swap interface
 * Feb 17, 2018
 	- [X11] Mouse moving is more smopothly (Thanks frank-deng)
 	- Using *.img *.ima type floppy image (Thanks frank-deng)

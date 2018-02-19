@@ -71,6 +71,83 @@ static char CMDFILE[512];
 bool did_reset, joy2key_arr, joy2key_kpad;
 int lr_init = 0;
 
+static char base_dir[MAX_PATH];
+
+#ifdef _WIN32
+static char slash = '\\';
+#else
+static char slash = '/';
+#endif
+
+static void update_variables(void);
+
+/* media swap support */
+struct retro_disk_control_callback dskcb;
+static char disk_paths[50][MAX_PATH] = {0};
+static unsigned drvno = 1;
+static unsigned disk_index = 0;
+static unsigned disk_images = 0;
+static bool disk_inserted = false;
+
+//all the fake functions used to limit swapping to 1 disk drive
+bool setdskeject(bool ejected){
+   disk_inserted = !ejected;
+   return true;
+}
+
+bool getdskeject(){
+   return !disk_inserted;
+}
+
+unsigned getdskindex(){
+   return disk_index;
+}
+
+bool setdskindex(unsigned index){
+   disk_index = index;
+   if(disk_index == disk_images)
+   {
+      //retroarch is trying to set "no disk in tray"
+      return true;
+   }
+
+   update_variables();
+   strcpy(np2cfg.fddfile[drvno], disk_paths[disk_index]);
+   diskdrv_setfdd(drvno, disk_paths[disk_index], 0);
+   return true;
+}
+
+unsigned getnumimages(){
+   return disk_images;
+}
+
+bool addimageindex() {
+   if (disk_images >= 50)
+      return false;
+
+   disk_images++;
+   return true;
+}
+
+bool replacedsk(unsigned index,const struct retro_game_info *info){
+   strcpy(disk_paths[index], info->path);
+   return true;
+}
+
+void attach_disk_swap_interface(){
+   //these functions are unused
+   dskcb.set_eject_state = setdskeject;
+   dskcb.get_eject_state = getdskeject;
+   dskcb.set_image_index = setdskindex;
+   dskcb.get_image_index = getdskindex;
+   dskcb.get_num_images  = getnumimages;
+   dskcb.add_image_index = addimageindex;
+   dskcb.replace_image_index = replacedsk;
+
+   environ_cb(RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE,&dskcb);
+}
+/* end media swap support */
+
 int loadcmdfile(char *argv)
 {
    int res=0;
@@ -115,6 +192,64 @@ extern int cmain(int argc, char *argv[]);
 
 void parse_cmdline( const char *argv );
 
+static void extract_directory(char *buf, const char *path, size_t size)
+{
+   char *base = NULL;
+
+   strncpy(buf, path, size - 1);
+   buf[size - 1] = '\0';
+
+   base = strrchr(buf, '/');
+   if (!base)
+      base = strrchr(buf, '\\');
+
+   if (base)
+      *base = '\0';
+   else
+      buf[0] = '\0';
+}
+
+static bool read_m3u(const char *file)
+{
+   char line[MAX_PATH];
+   char name[MAX_PATH];
+   FILE *f = fopen(file, "r");
+
+   if (!f)
+      return false;
+
+   while (fgets(line, sizeof(line), f) && disk_images < sizeof(disk_paths) / sizeof(disk_paths[0]))
+   {
+      if (line[0] == '#')
+         continue;
+
+      char *carriage_return = strchr(line, '\r');
+      if (carriage_return)
+         *carriage_return = '\0';
+
+      char *newline = strchr(line, '\n');
+      if (newline)
+         *newline = '\0';
+
+      // Remove any beginning and ending quotes as these can cause issues when feeding the paths into command line later
+      if (line[0] == '"')
+          memmove(line, line + 1, strlen(line));
+
+      if (line[strlen(line) - 1] == '"')
+          line[strlen(line) - 1]  = '\0';
+
+      if (line[0] != '\0')
+      {
+         snprintf(name, sizeof(name), "%s%c%s", base_dir, slash, line);
+         strcpy(disk_paths[disk_images], name);
+         disk_images++;
+      }
+   }
+
+   fclose(f);
+   return (disk_images != 0);
+}
+
 void Add_Option(const char* option)
 {
    static int first=0;
@@ -137,6 +272,23 @@ int pre_main(const char *argv)
    {
       if( HandleExtension((char*)argv,"cmd") || HandleExtension((char*)argv,"CMD"))
          i=loadcmdfile((char*)argv);
+      else if (HandleExtension((char*)argv, "m3u") || HandleExtension((char*)argv, "M3U"))
+      {
+         if (!read_m3u((char*)argv))
+         {
+            if (log_cb)
+               log_cb(RETRO_LOG_ERROR, "%s\n", "[libretro]: failed to read m3u file ...");
+            return false;
+         }
+
+         sprintf((char*)argv, "np2kai \"%s\"", disk_paths[0]);
+         if(disk_images > 1)
+         {
+            sprintf((char*)argv, "%s \"%s\"", argv, disk_paths[1]);
+         }
+         disk_inserted = true;
+         attach_disk_swap_interface();
+      }
    }
 
    if(i==1)
@@ -615,14 +767,6 @@ void retro_set_input_state(retro_input_state_t cb)
    input_cb = cb;
 }
 
-/* media support */
-enum{
-   MEDIA_TYPE_DISK = 0,
-   MEDIA_TYPE_HD,
-   MEDIA_TYPE_CD,
-   MEDIA_TYPE_OTHER
-};
-
 void lowerstring(char* str)
 {
    int i;
@@ -631,243 +775,6 @@ void lowerstring(char* str)
       str[i] = tolower(str[i]);
    }
 }
-
-int getmediatype(const char* filename){
-   char workram[4096/*max path name length for all existing OSes*/];
-   strcpy(workram,filename);
-   lowerstring(workram);
-   const char* extension = workram + strlen(workram) - 4;
-
-   if(strcasecmp(extension,".d88") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".88d") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".d98") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".98d") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".fdi") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".xdf") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".hdm") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".dup") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".2hd") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".tfd") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".nfd") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".hd4") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".hd5") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".hd9") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".fdd") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".h01") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".hdb") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".ddb") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".dd6") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".dup") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".flp") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".bin") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".fim") == 0){
-      return MEDIA_TYPE_DISK;
-   }
-   else if(strcasecmp(extension,".thd") == 0){
-      return MEDIA_TYPE_HD;
-   }
-   else if(strcasecmp(extension,".nhd") == 0){
-      return MEDIA_TYPE_HD;
-   }
-   else if(strcasecmp(extension,".hdi") == 0){
-      return MEDIA_TYPE_HD;
-   }
-   else if(strcasecmp(extension,".vhd") == 0){
-      return MEDIA_TYPE_HD;
-   }
-   else if(strcasecmp(extension,".sln") == 0){
-      return MEDIA_TYPE_HD;
-   }
-   else if(strcasecmp(extension,".hdn") == 0){
-      return MEDIA_TYPE_HD;
-   }
-   else if(strcasecmp(extension,".iso") == 0){
-      return MEDIA_TYPE_CD;
-   }
-   else if(strcasecmp(extension,".cue") == 0){
-      return MEDIA_TYPE_CD;
-   }
-   else if(strcasecmp(extension,".ccd") == 0){
-      return MEDIA_TYPE_CD;
-   }
-   else if(strcasecmp(extension,".cdm") == 0){
-      return MEDIA_TYPE_CD;
-   }
-   else if(strcasecmp(extension,".mds") == 0){
-      return MEDIA_TYPE_CD;
-   }
-   else if(strcasecmp(extension,".nrg") == 0){
-      return MEDIA_TYPE_CD;
-   }
-
-   return MEDIA_TYPE_OTHER;
-}
-/* end media support */
-/* media swap support */
-struct retro_disk_control_callback dskcb;
-bool diskinserted[5] = {true};
-static unsigned drvno = 0;
-static unsigned mediaidx = 0;
-
-//all the fake functions used to limit swapping to 1 disk drive
-bool setdskeject(bool ejected){
-   if(ejected) {
-      switch(drvno) {
-      case 0:
-         if(np2cfg.fddfile[0][0] != '\0') {
-            diskdrv_setfdd(0, NULL, 0);
-            return true;
-         } else {
-            return false;
-         }
-      case 1:
-         if(np2cfg.fddfile[1][0] != '\0') {
-            diskdrv_setfdd(1, NULL, 0);
-            return true;
-         } else {
-            return false;
-         }
-         break;
-      case 2:
-         if(np2cfg.sasihdd[0][0] != '\0') {
-            diskdrv_setsxsi(0x00, NULL);
-            return true;
-         } else {
-            return false;
-         }
-         break;
-      case 3:
-         if(np2cfg.sasihdd[1][0] != '\0') {
-            diskdrv_setsxsi(0x00, NULL);
-            return true;
-         } else {
-            return false;
-         }
-         break;
-      case 4:
-         if(np2cfg.sasihdd[2][0] != '\0') {
-            diskdrv_setsxsi(0x00, NULL);
-            return true;
-         } else {
-            return false;
-         }
-         break;
-      }
-   }
-   return false;
-}
-
-bool getdskeject(){
-   return !diskinserted[drvno];
-}
-
-unsigned getdskindex(){
-   return mediaidx;
-}
-
-bool setdskindex(unsigned index){
-   mediaidx = index;
-   return true;
-}
-
-unsigned getnumimages(){
-   return mediaidx;
-}
-
-bool addimageindex() {
-   mediaidx++;
-   return true;
-}
-
-
-
-//this is the only real function,it will swap out the disk
-bool replacedsk(unsigned index,const struct retro_game_info *info){
-   switch(drvno) {
-   case 0:
-      if(getmediatype(info->path) != MEDIA_TYPE_DISK) return false;
-      strcpy(np2cfg.fddfile[0], info->path);
-      return true;
-   case 1:
-      if(getmediatype(info->path) != MEDIA_TYPE_DISK) return false;
-      strcpy(np2cfg.fddfile[1], info->path);
-      return true;
-   case 2:
-      if(getmediatype(info->path) != MEDIA_TYPE_HD) return false;
-      strcpy(np2cfg.sasihdd[0], info->path);
-      return true;
-   case 3:
-      if(getmediatype(info->path) != MEDIA_TYPE_HD) return false;
-      strcpy(np2cfg.sasihdd[1], info->path);
-      return true;
-   case 4:
-      if(getmediatype(info->path) != MEDIA_TYPE_CD) return false;
-      strcpy(np2cfg.sasihdd[2], info->path);
-      return true;
-   }
-
-   return false;
-}
-
-void attachdiskswapinterface(){
-   //these functions are unused
-   dskcb.set_eject_state = setdskeject;
-   dskcb.get_eject_state = getdskeject;
-   dskcb.set_image_index = setdskindex;
-   dskcb.get_image_index = getdskindex;
-   dskcb.get_num_images  = getnumimages;
-   dskcb.add_image_index = addimageindex;
-
-   //this is the only real function,it will swap out the disk
-   dskcb.replace_image_index = replacedsk;
-
-   environ_cb(RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE,&dskcb);
-}
-/* end media swap support */
 
 void retro_set_environment(retro_environment_t cb)
 {
@@ -880,7 +787,7 @@ void retro_set_environment(retro_environment_t cb)
    //environ_cb(RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME, &no_rom);
 
    struct retro_variable variables[] = {
-//      { "np2kai_drive" , "Drive; FDD1|FDD2|IDE1|IDE2|CD-ROM" },
+      { "np2kai_drive" , "Swap Disks on Drive; FDD2|FDD1" },
       { "np2kai_model" , "PC Model (Restart); PC-9801VX|PC-286|PC-9801VM" },
       { "np2kai_clk_base" , "CPU Base Clock (Restart); 2.4576 MHz|1.9968 MHz" },
       { "np2kai_clk_mult" , "CPU Clock Multiplier (Restart); 4|5|6|8|10|12|16|20|24|30|36|40|42|1|2" },
@@ -930,12 +837,6 @@ static void update_variables(void)
          drvno = 0;
       else if (strcmp(var.value, "FDD2") == 0)
          drvno = 1;
-      else if (strcmp(var.value, "IDE1") == 0)
-         drvno = 2;
-      else if (strcmp(var.value, "IDE2") == 0)
-         drvno = 3;
-      else if (strcmp(var.value, "CD-ROM") == 0)
-         drvno = 4;
    }
 
    var.key = "np2kai_model";
@@ -1356,6 +1257,8 @@ bool retro_load_game(const struct retro_game_info *game)
    bool worked = environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &syspath);
    if(!worked)abort();
 
+   extract_directory(base_dir, game->path, sizeof(base_dir));
+
    strcpy(np2path, syspath);
    lr_init = 1;
 
@@ -1377,8 +1280,6 @@ bool retro_load_game(const struct retro_game_info *game)
       strcpy(RPATH,game->path);
    else
       strcpy(RPATH,"");
-
-   attachdiskswapinterface();
 
    return true;
 }

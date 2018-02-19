@@ -320,6 +320,8 @@ int np2_main(int argc, char *argv[]) {
 		else if (0 == milstr_cmp(ext, ".bin")) imagetype = IMAGETYPE_FDD;
 		else if (0 == milstr_cmp(ext, ".tfd")) imagetype = IMAGETYPE_FDD;
 		else if (0 == milstr_cmp(ext, ".fim")) imagetype = IMAGETYPE_FDD;
+		else if (0 == milstr_cmp(ext, ".img")) imagetype = IMAGETYPE_FDD;
+		else if (0 == milstr_cmp(ext, ".ima")) imagetype = IMAGETYPE_FDD;
 		if (imagetype == IMAGETYPE_UNKNOWN) {
 			continue;
 		}
