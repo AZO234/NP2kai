@@ -182,7 +182,7 @@ to input underscore(_), press Shift+right Ctrl.
 BIOS files
 ---
 * bios.rom
-* FONT.ROM (big letter) or FONT.BMP (big letter)
+* font.rom or font.bmp
 * itf.rom
 * sound.rom
 * (bios9821.rom or d8000.rom  But I never see good dump file.)
@@ -327,6 +327,8 @@ I/O:0x00D0
 
 Release
 ---
+* Feb 20, 2018
+	- FONT.ROM/FONT.BMP can be loaded lower case.
 * Feb 19, 2018
 	- [libretro] Apply disk swap interface
 * Feb 17, 2018
