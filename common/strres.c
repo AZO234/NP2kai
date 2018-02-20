@@ -17,6 +17,7 @@ const OEMCHAR str_ini[] = OEMTEXT("ini");
 const OEMCHAR str_cfg[] = OEMTEXT("cfg");
 const OEMCHAR str_sav[] = OEMTEXT("sav");
 const OEMCHAR str_bmp[] = OEMTEXT("bmp");
+const OEMCHAR str_bmp_b[] = OEMTEXT("BMP");
 const OEMCHAR str_d88[] = OEMTEXT("d88");
 const OEMCHAR str_d98[] = OEMTEXT("d98");
 const OEMCHAR str_88d[] = OEMTEXT("88d");

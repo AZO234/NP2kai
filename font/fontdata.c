@@ -9,13 +9,16 @@ const OEMCHAR pc88ankname[]		= OEMTEXT("PC88.FNT");
 const OEMCHAR pc88knj1name[]	= OEMTEXT("KANJI1.ROM");
 const OEMCHAR pc88knj2name[]	= OEMTEXT("KANJI2.ROM");
 const OEMCHAR pc98fontname[]	= OEMTEXT("FONT.BMP");
+const OEMCHAR pc98fontname_s[]	= OEMTEXT("font.bmp");
 const OEMCHAR v98fontname[]		= OEMTEXT("FONT.ROM");
+const OEMCHAR v98fontname_s[]		= OEMTEXT("font.rom");
 const OEMCHAR fm7ankname[]		= OEMTEXT("SUBSYS_C.ROM");
 const OEMCHAR fm7knjname[]		= OEMTEXT("KANJI.ROM");
 const OEMCHAR x1ank1name[]		= OEMTEXT("FNT0808.X1");
 const OEMCHAR x1ank2name[]		= OEMTEXT("FNT0816.X1");
 const OEMCHAR x1knjname[]		= OEMTEXT("FNT1616.X1");
 const OEMCHAR x68kfontname[]	= OEMTEXT("CGROM.DAT");
+const OEMCHAR x68kfontname_s[]	= OEMTEXT("cgrom.dat");
 
 
 static void patch29(UINT jish, const UINT8 *src) {

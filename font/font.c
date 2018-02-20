@@ -79,8 +79,14 @@ const OEMCHAR	*p;
 	if (!file_cmpname(p, str_bmp)) {
 		return(FONTTYPE_PC98);
 	}
+	if (!file_cmpname(p, str_bmp_b)) {
+		return(FONTTYPE_PC98);
+	}
 	p = file_getname(fname);
 	if (!file_cmpname(p, v98fontname)) {
+		return(FONTTYPE_V98);
+	}
+	if (!file_cmpname(p, v98fontname_s)) {
 		return(FONTTYPE_V98);
 	}
 	if ((!file_cmpname(p, pc88ankname)) ||
@@ -98,6 +104,9 @@ const OEMCHAR	*p;
 		return(FONTTYPE_X1);
 	}
 	if (!file_cmpname(p, x68kfontname)) {
+		return(FONTTYPE_X68);
+	}
+	if (!file_cmpname(p, x68kfontname_s)) {
 		return(FONTTYPE_X68);
 	}
 	return(FONTTYPE_NONE);
@@ -178,7 +187,9 @@ const UINT8	*p;
 			break;
 	}
 	loading = fontpc98_read(file_getcd(pc98fontname), loading);
+	loading = fontpc98_read(file_getcd(pc98fontname_s), loading);
 	loading = fontv98_read(file_getcd(v98fontname), loading);
+	loading = fontv98_read(file_getcd(v98fontname_s), loading);
 	loading = fontpc88_read(file_getcd(pc88ankname), loading);
 	if (loading & FONTLOAD_16) {
 		file_cpyname(fname, file_getcd(fonttmpname), NELEMENTS(fname));

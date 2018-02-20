@@ -32,13 +32,16 @@ extern const OEMCHAR pc88ankname[];
 extern const OEMCHAR pc88knj1name[];
 extern const OEMCHAR pc88knj2name[];
 extern const OEMCHAR pc98fontname[];
+extern const OEMCHAR pc98fontname_s[];
 extern const OEMCHAR v98fontname[];
+extern const OEMCHAR v98fontname_s[];
 extern const OEMCHAR fm7ankname[];
 extern const OEMCHAR fm7knjname[];
 extern const OEMCHAR x1ank1name[];
 extern const OEMCHAR x1ank2name[];
 extern const OEMCHAR x1knjname[];
 extern const OEMCHAR x68kfontname[];
+extern const OEMCHAR x68kfontname_s[];
 
 extern const UINT8 fontdata_8[256*8];
 extern const UINT8 fontdata_16[3*32*16];

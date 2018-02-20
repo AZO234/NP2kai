@@ -26,6 +26,7 @@ extern const OEMCHAR str_ini[];
 extern const OEMCHAR str_cfg[];
 extern const OEMCHAR str_sav[];
 extern const OEMCHAR str_bmp[];
+extern const OEMCHAR str_bmp_b[];
 extern const OEMCHAR str_d88[];
 extern const OEMCHAR str_d98[];
 extern const OEMCHAR str_88d[];
