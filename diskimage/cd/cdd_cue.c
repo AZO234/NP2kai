@@ -5,7 +5,7 @@
 
 #ifdef SUPPORT_KAI_IMAGES
 
-#include	"diskimage/cddfile.h"
+#include	"DiskImage/cddfile.h"
 
 //const OEMCHAR str_cue[] = OEMTEXT("cue");	//	CUEシート
 
@@ -24,27 +24,52 @@ static const OEMCHAR str_mode1[] = OEMTEXT("MODE1");
 static const OEMCHAR str_mode2[] = OEMTEXT("MODE2");	//	暫定対応
 static const OEMCHAR str_audio[] = OEMTEXT("AUDIO");
 
-static BRESULT getint2(const OEMCHAR *str, UINT *val) {
-
-	if ((str[0] < '0') || (str[0] > '9') ||
-		(str[1] < '0') || (str[1] > '9')) {
-		return(FAILURE);
-	}
-	if (val) {
-		*val = ((str[0] - '0') * 10) + (str[1] - '0');
-	}
-	return(SUCCESS);
-}
+//static BRESULT getint2(const OEMCHAR *str, UINT *val) {
+//
+//	if ((str[0] < '0') || (str[0] > '9') ||
+//		(str[1] < '0') || (str[1] > '9')) {
+//		return(FAILURE);
+//	}
+//	if (val) {
+//		*val = ((str[0] - '0') * 10) + (str[1] - '0');
+//	}
+//	return(SUCCESS);
+//}
 
 static UINT32 getpos(const OEMCHAR *str) {
 
-	UINT	m;
-	UINT	s;
-	UINT	f;
+	UINT	m = 0;
+	UINT	s = 0;
+	UINT	f = 0;
+	
+	int idx = 0; // 文字位置
+	UINT sdata[3] = {0}; // 数値バッファ
+	UINT sdatapos = 0; // 数値バッファの格納位置
+	int numdig = 0; // 通知の桁数
 
-	if (3 != sscanf(str, "%2d:%2d:%2d", &m, &s, &f)) {
-		return 0;
+	while(str[idx]){ // NULL文字まで続ける
+		if('0' <= str[idx] && str[idx] <= '9'){ // 0から9の数字ならバッファに入れる
+			sdata[sdatapos] *= 10; // 桁上げ
+			sdata[sdatapos] += (str[idx] - '0');
+			numdig++; // 桁数カウント
+		}else if(str[idx] == ':' && numdig >= 1){ // 「:」なら区切り文字（ただし、数字が一桁も無い場合は不正扱い）
+			if(sdatapos == 2){
+				break; // 3個目のデータならループを抜ける（配列を3つ分しか確保していない＆そもそも4つ以上があり得ないので）
+			}
+			sdatapos++; // 格納位置変更
+			numdig = 0; // 桁数カウントリセット
+		}else{
+			return(0); // 不正な文字
+		}
+		idx++;
 	}
+	sdatapos++; // データ数にするために1を足す
+	if(sdatapos!=3){
+		return(0); // データ数が変（3個ではない）
+	}
+	m = sdata[0];
+	s = sdata[1];
+	f = sdata[2];
 	return((((m * 60) + s) * 75) + f);
 }
 
