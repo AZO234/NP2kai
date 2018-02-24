@@ -5,7 +5,7 @@
 
 #ifdef SUPPORT_KAI_IMAGES
 
-#include	"DiskImage/cddfile.h"
+#include	"diskimage/cddfile.h"
 
 //const OEMCHAR str_cue[] = OEMTEXT("cue");	//	CUEÉVÅ[Ég
 
