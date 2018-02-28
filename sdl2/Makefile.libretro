@@ -137,15 +137,6 @@ else ifeq ($(platform), psl1ght)
 	ENDIANNESS_DEFINES := -DMSB_FIRST
 	STATIC_LINKING = 1
 
-# PSP
-else ifeq ($(platform), psp1)
-	TARGET := $(TARGET_NAME)_libretro_$(platform).a
-	CC = psp-gcc$(EXE_EXT)
-	CXX = psp-g++$(EXE_EXT)
-	AR = psp-ar$(EXE_EXT)
-	COMMONFLAGS += -DPSP -G0
-	STATIC_LINKING = 1
-
 # Vita
 else ifeq ($(platform), vita)
 	TARGET := $(TARGET_NAME)_libretro_$(platform).a
