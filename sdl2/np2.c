@@ -82,7 +82,8 @@ char modulefile[MAX_PATH];
 static void usage(const char *progname) {
 
 	printf("Usage: %s [options]\n", progname);
-	printf("\t--help   [-h]       : print this message\n");
+	printf("\t--help   [-h]        : print this message\n");
+	printf("\t--config [-c] <file> : specify config file\n");
 }
 
 
@@ -174,6 +175,13 @@ int np2_main(int argc, char *argv[]) {
 		if ((!milstr_cmp(p, "-h")) || (!milstr_cmp(p, "--help"))) {
 			usage(argv[0]);
 			goto np2main_err1;
+		} else if ((!milstr_cmp(p, "-c")) || (!milstr_cmp(p, "--config"))) {
+			if(pos < argc) {
+				milstr_ncpy(modulefile, argv[pos++], sizeof(modulefile));
+			} else {
+				printf("Invalid option.\n");
+				goto np2main_err1;
+			}
 		}/*
 		else {
 			printf("error command: %s\n", p);

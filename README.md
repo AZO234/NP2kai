@@ -327,6 +327,8 @@ I/O:0x00D0
 
 Release
 ---
+* Feb 28, 2018
+	- [SDL2] config file selectable by command line
 * Feb 20, 2018
 	- FONT.ROM/FONT.BMP can be loaded lower case.
 * Feb 19, 2018
