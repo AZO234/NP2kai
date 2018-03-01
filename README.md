@@ -157,7 +157,7 @@ NP2 menu can swap FDD/HDD diskimages.
 
 If you run libretro by .m3u file include floppy disk images,  
 F1 key menu durling play game, you can swap disk.  
-[Disk Control] -> [Disk Cycle Tray Status](eject) -> [Disk Index] -> [Disk Cycle Tray Status](disk set)
+[Disk Control] -> [Disk Cycle Tray Status] (eject) -> [Disk Index] -> [Disk Cycle Tray Status] (disk set)
 
 Mouse is cuptured (hidden/show toggle) by F11 key.
 
