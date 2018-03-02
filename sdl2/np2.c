@@ -19,6 +19,7 @@
 #include	"iocore.h"
 #include	"scrndraw.h"
 #include	"s98.h"
+#include	"sxsi.h"
 #include	"fdd/diskdrv.h"
 #include	"timing.h"
 #include	"keystat.h"
@@ -164,7 +165,7 @@ int np2_main(int argc, char *argv[]) {
 	int		pos;
 	char	*p;
 	int		id;
-	int		i, imagetype, drvfdd, drvhddSASI, drvhddSCSI;
+	int		i, imagetype, drvfdd, drvhddSASI, drvhddSCSI, IsCD, CDArgv;
 	char	*ext;
 	char	tmppath[MAX_PATH];
 	FILE	*fcheck;
@@ -205,7 +206,7 @@ int np2_main(int argc, char *argv[]) {
 	}
 	
 #if defined(SUPPORT_IDEIO) || defined(SUPPORT_SASI) || defined(SUPPORT_SCSI)
-	drvhddSASI = drvhddSCSI = 0;
+	drvhddSASI = drvhddSCSI = IsCD = 0;
 	for (i = 1; i < argc; i++) {
 		if (OEMSTRLEN(argv[i]) < 5) {
 			continue;
@@ -235,7 +236,8 @@ int np2_main(int argc, char *argv[]) {
 			}
 			break;
 		case IMAGETYPE_SASI_IDE_CD:
-			milstr_ncpy(np2cfg.sasihdd[2], argv[i], MAX_PATH);
+			IsCD = 1;
+			CDArgv = i;
 			break;
 #endif
 #if defined(SUPPORT_SCSI)
@@ -296,6 +298,10 @@ int np2_main(int argc, char *argv[]) {
 		}
 	}
 #endif	/* defined(SUPPORT_RESUME) */
+
+	if(IsCD) {
+		sxsi_devopen(2, argv[CDArgv]);
+	}
 
 	drvfdd = drvhddSASI = drvhddSCSI = 0;
 	for (i = 1; i < argc; i++) {
