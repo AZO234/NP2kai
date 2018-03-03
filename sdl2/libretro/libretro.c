@@ -24,6 +24,7 @@
 #include "newdisk.h"
 #include "diskdrv.h"
 #include "fontmng.h"
+#include "kbdmng.h"
 #include "ini.h"
 #include "scrnmng.h"
 #include "soundmng.h"
@@ -788,6 +789,7 @@ void retro_set_environment(retro_environment_t cb)
 
    struct retro_variable variables[] = {
       { "np2kai_drive" , "Swap Disks on Drive; FDD2|FDD1" },
+      { "np2kai_keyboard" , "Keyboard (Restart); Ja|Us" },
       { "np2kai_model" , "PC Model (Restart); PC-9801VX|PC-286|PC-9801VM" },
       { "np2kai_clk_base" , "CPU Base Clock (Restart); 2.4576 MHz|1.9968 MHz" },
       { "np2kai_clk_mult" , "CPU Clock Multiplier (Restart); 4|5|6|8|10|12|16|20|24|30|36|40|42|1|2" },
@@ -837,6 +839,17 @@ static void update_variables(void)
          drvno = 0;
       else if (strcmp(var.value, "FDD2") == 0)
          drvno = 1;
+   }
+
+   var.key = "np2kai_keyboard";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "Us") == 0)
+         np2oscfg.KEYBOARD == KEY_KEY101;
+      else
+         np2oscfg.KEYBOARD == KEY_KEY106;
    }
 
    var.key = "np2kai_model";

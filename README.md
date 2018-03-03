@@ -331,6 +331,8 @@ I/O:0x00D0
 
 Release
 ---
+* Mar 4, 2018
+	- refine keyboard map
 * Feb 28, 2018
 	- [SDL2] config file selectable by command line
 * Feb 20, 2018
