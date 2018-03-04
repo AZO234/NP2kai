@@ -206,21 +206,17 @@ JP106 keyboard(default)
 
 |PC-98key|key|info|
 |:---:|:---:|:---:|
-|7 '|7 '|two event 0x07,0x27|
-|- =|- =|two event 0x0B,0x0C|
-|^ `|^ ~|don't come event|
 |￥ \||￥ \||don't come event|
-|_ _|\\ _|two event 0x0D,0x33|
+|_ _||L2? Menu has open?|
 
 US101 keyboard
 
 |PC-98key|key|info|
 |:---:|:---:|:---:|
 |2 "|2 @|two event 0x02,0x2A|
-|- =|- _|two event 0x0B,0x33|
 |￥ \||\\ \|||
-|@ `|` ~||
-|; +|; :|two event 0x26,0x27|
+|@ `|` ~|don't come event|
+|; +|; :||
 |: *|' "||
 |_ _||can't push|
 

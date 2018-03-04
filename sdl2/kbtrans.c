@@ -49,7 +49,7 @@ static const LRKCNV lrcnv101[] =
 	{RETROK_8,		0x08},	/* 8 ( */
 	{RETROK_9,		0x09},	/* 9 ) */
 	{RETROK_0,		0x0a},	/* 0 0 */
-	{RETROK_MINUS,		0x0b},	/* - = (T 0x0B,0x33) */
+	{RETROK_MINUS,		0x0b},	/* - = */
 	{RETROK_EQUALS,		0x0c},	/* ^ ` */
 	{RETROK_BACKSLASH,	0x0d},	/* Yen | */
 	{RETROK_BACKSPACE,	0x0e},	/* BS */
@@ -65,7 +65,7 @@ static const LRKCNV lrcnv101[] =
 	{RETROK_i,		0x17},	/* i I */
         {RETROK_o,		0x18},	/* o O */
 	{RETROK_p,		0x19},	/* p P */
-	{RETROK_BACKQUOTE,	0x1a},	/* @ ~ */
+	{RETROK_BACKQUOTE,	0x1a},	/* @ ~ (M) */
 	{RETROK_LEFTBRACKET,	0x1b},	/* [ { */
 	{RETROK_RETURN,		0x1c},	/* Enter */
 
@@ -80,7 +80,7 @@ static const LRKCNV lrcnv101[] =
 	{RETROK_j,		0x23},	/* j J */
 	{RETROK_k,		0x24},	/* k K */
 	{RETROK_l,		0x25},	/* l L */
-	{RETROK_SEMICOLON,	0x26},	/* ; + (T 0x26,0x27) */
+	{RETROK_SEMICOLON,	0x26},	/* ; + */
 	{RETROK_QUOTE,		0x27},	/* : * */
 	{RETROK_RIGHTBRACKET,	0x28},	/* ] } */
 
@@ -163,12 +163,12 @@ static const LRKCNV lrcnv106[] =
 	{RETROK_4,		0x04},	/* 4 $ */
 	{RETROK_5,		0x05},	/* 5 % */
 	{RETROK_6,		0x06},	/* 6 & */
-	{RETROK_7,		0x07},	/* 7 ' (T 0x07,0x27) */
+	{RETROK_7,		0x07},	/* 7 ' */
 	{RETROK_8,		0x08},	/* 8 ( */
 	{RETROK_9,		0x09},	/* 9 ) */
 	{RETROK_0,		0x0a},	/* 0 0 */
-	{RETROK_MINUS,		0x0b},	/* - = (T 0x0B,0x0C) */
-	{RETROK_CARET,		0x0c},	/* ^ ` (M) */
+	{RETROK_MINUS,		0x0b},	/* - = */
+	{RETROK_EQUALS,		0x0c},	/* ^ ` */
 	{RETROK_BACKSLASH,	0x0d},	/* Yen | (M) */
 	{RETROK_BACKSPACE,	0x0e},	/* BS */
 
@@ -199,7 +199,7 @@ static const LRKCNV lrcnv106[] =
 	{RETROK_k,		0x24},	/* k K */
 	{RETROK_l,		0x25},	/* l L */
 	{RETROK_SEMICOLON,	0x26},	/* ; + */
-	{RETROK_COLON,		0x27},	/* : * */
+	{RETROK_QUOTE,		0x27},	/* : * */
 	{RETROK_RIGHTBRACKET,	0x28},	/* ] } */
 
 	{RETROK_LSHIFT,		0x70},	/* LShift */
@@ -213,7 +213,7 @@ static const LRKCNV lrcnv106[] =
 	{RETROK_COMMA,		0x30},	/* , < */
 	{RETROK_PERIOD,		0x31},	/* . > */
 	{RETROK_SLASH,		0x32},	/* / ? */
-	{RETROK_UNDERSCORE,	0x33},	/* _ _ (T 0x0D,0x33) */
+	{2,			0x33},	/* _ _ (L2?menu open?) */
 	{RETROK_RSHIFT,		0x75},	/* RShift */
 
 	/* Kana */
@@ -256,18 +256,15 @@ static const LRKCNV lrcnv106[] =
 	{RETROK_KP_ENTER,	0x1c},	/* KPEnter */
 };
 
-static UINT8 pc98key[0xFFFF];
 static bool key_states[0xFFFF];
 uint16_t keys_to_poll[500];
 uint16_t keys_needed;
 
 void init_lr_key_to_pc98(){
-	memset(pc98key, 0xFF, 0xFFFF);
-   
 	size_t i;
+
 	if(np2oscfg.KEYBOARD == KEY_KEY101) {
 		for (i = 0; i < SDL_arraysize(lrcnv101); i++) {
-			pc98key[lrcnv101[i].lrkey] = lrcnv101[i].keycode;
 			keys_to_poll[i] = lrcnv101[i].lrkey;
 		}
 		   
@@ -278,7 +275,6 @@ void init_lr_key_to_pc98(){
 		keys_needed = SDL_arraysize(lrcnv101);
 	} else if(np2oscfg.KEYBOARD == KEY_KEY106) {
 		for (i = 0; i < SDL_arraysize(lrcnv106); i++) {
-			pc98key[lrcnv106[i].lrkey] = lrcnv106[i].keycode;
 			keys_to_poll[i] = lrcnv106[i].lrkey;
 		}
 		   
@@ -290,24 +286,52 @@ void init_lr_key_to_pc98(){
 	}
 }
 
-void send_libretro_key_down(uint16_t key){
+void send_libretro_key_down(uint16_t key) {
+	size_t i;
 
-   UINT8   data = pc98key[key];
-   if (data != NC && !key_states[key])
-   {
-      keystat_senddata(data);//keystat_keydown(data);
-      key_states[key] = true;
-   }
+	if(np2oscfg.KEYBOARD == KEY_KEY101) {
+		for (i = 0; i < SDL_arraysize(lrcnv101); i++) {
+			if(lrcnv101[i].keycode != NC && !key_states[key]) {
+				if(lrcnv101[i].lrkey == key) {
+					keystat_senddata(lrcnv101[i].keycode);//keystat_keydown(data);
+					key_states[key] = true;
+				}
+			}
+		}
+	} else if(np2oscfg.KEYBOARD == KEY_KEY106) {
+		for (i = 0; i < SDL_arraysize(lrcnv106); i++) {
+			if(lrcnv106[i].keycode != NC && !key_states[key]) {
+				if(lrcnv106[i].lrkey == key) {
+					keystat_senddata(lrcnv106[i].keycode);//keystat_keydown(data);
+					key_states[key] = true;
+				}
+			}
+		}
+	}
 }
 
-void send_libretro_key_up(uint16_t key){
-   UINT8   data = pc98key[key];
+void send_libretro_key_up(uint16_t key) {
+	size_t i;
 
-   if (data != NC && key_states[key])
-   {
-      keystat_senddata((UINT8)(data | 0x80));//keystat_keyup(data);
-      key_states[key] = false;
-   }
+	if(np2oscfg.KEYBOARD == KEY_KEY101) {
+		for (i = 0; i < SDL_arraysize(lrcnv101); i++) {
+			if(lrcnv101[i].keycode != NC && key_states[key]) {
+				if(lrcnv101[i].lrkey == key) {
+					keystat_senddata((UINT8)(lrcnv101[i].keycode | 0x80));//keystat_keyup(data);
+					key_states[key] = false;
+				}
+			}
+		}
+	} else if(np2oscfg.KEYBOARD == KEY_KEY106) {
+		for (i = 0; i < SDL_arraysize(lrcnv106); i++) {
+			if(lrcnv106[i].keycode != NC && key_states[key]) {
+				if(lrcnv106[i].lrkey == key) {
+					keystat_senddata((UINT8)(lrcnv106[i].keycode | 0x80));//keystat_keyup(data);
+					key_states[key] = false;
+				}
+			}
+		}
+	}
 }
 #else   /* __LIBRETRO__ */
 typedef struct {
