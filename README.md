@@ -180,8 +180,49 @@ R button: right Shift key
 Select button: Escape key  
 Start button: Return key
 
-If you use 104 western keyboard,  
-to input underscore(_), press Shift+right Ctrl.
+Keyboard(libretro)
+---
+Common
+
+|PC-98key|key|info|
+|:---:|:---:|:---:|
+|STOP|Pause||
+|COPY|PrintScreen|don't come event|
+|v.f1||can't push|
+|v.f2||can't push|
+|v.f3||can't push|
+|v.f4||can't push|
+|v.f5||can't push|
+|Kana||can't push|
+|GRPH|RCtrl||
+|NFER|LAlt||
+|XFER|RAlt||
+|HOME/CLR|Home||
+|HELP|End||
+|KP=|KP=|can't push|
+|KP.|KP.|don't come event|
+
+JP106 keyboard(default)
+
+|PC-98key|key|info|
+|:---:|:---:|:---:|
+|7 '|7 '|two event 0x07,0x27|
+|- =|- =|two event 0x0B,0x0C|
+|^ `|^ ~|don't come event|
+|￥ \||￥ \||don't come event|
+|_ _|\\ _|two event 0x0D,0x33|
+
+US101 keyboard
+
+|PC-98key|key|info|
+|:---:|:---:|:---:|
+|2 "|2 @|two event 0x02,0x2A|
+|- =|- _|two event 0x0B,0x33|
+|￥ \||\\ \|||
+|@ `|` ~||
+|; +|; :|two event 0x26,0x27|
+|: *|' "||
+|_ _||can't push|
 
 BIOS files
 ---

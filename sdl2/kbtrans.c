@@ -135,7 +135,7 @@ static const LRKCNV lrcnv101[] =
 	{RETROK_KP0,		0x4e},	/* KP0 */
 	/* KP, */
 	{RETROK_KP_PERIOD,	0x50},	/* KP. (M) */
-	{RETROK_KP_ENTER,	0x1c},	/* KPEnter*/
+	{RETROK_KP_ENTER,	0x1c},	/* KPEnter */
 };
 
 /* 106 keyboard key table */
@@ -253,7 +253,7 @@ static const LRKCNV lrcnv106[] =
 	{RETROK_KP0,		0x4e},	/* KP0 */
 	/* KP, */
 	{RETROK_KP_PERIOD,	0x50},	/* KP. (M) */
-	{RETROK_KP_ENTER,	0x1c},	/* KPEnter*/
+	{RETROK_KP_ENTER,	0x1c},	/* KPEnter */
 };
 
 static UINT8 pc98key[0xFFFF];
@@ -432,7 +432,7 @@ static const SDLKCNV sdlcnv101[] =
 	{SDL_SCANCODE_KP_0,		0x4e},	/* KP0 */
 	{SDL_SCANCODE_KP_COMMA,		0x4f},	/* KP, (N) */
 	{SDL_SCANCODE_KP_PERIOD,	0x50},	/* KP. */
-	{SDL_SCANCODE_KP_ENTER,		0x1c},	/* KPEnter*/
+	{SDL_SCANCODE_KP_ENTER,		0x1c},	/* KPEnter */
 };
 
 /* 106 keyboard key table */
@@ -550,7 +550,7 @@ static const SDLKCNV sdlcnv106[] =
 	{SDL_SCANCODE_KP_0,		0x4e},	/* KP0 */
 	{SDL_SCANCODE_KP_COMMA,		0x4f},	/* KP, (N) */
 	{SDL_SCANCODE_KP_PERIOD,	0x50},	/* KP. */
-	{SDL_SCANCODE_KP_ENTER,		0x1c},	/* KPEnter*/
+	{SDL_SCANCODE_KP_ENTER,		0x1c},	/* KPEnter */
 };
 
 /**
