@@ -320,6 +320,42 @@ static void sys_cmd(MENUID id) {
 			update |= SYS_UPDATECFG;
 			break;
 
+		case MID_KEY_YEN:
+			keystat_senddata(0x0d);
+			keystat_senddata(0x0d | 0x80);
+			break;
+
+		case MID_KEY_SYEN:
+			keystat_senddata(0x70);
+			keystat_senddata(0x0d);
+			keystat_senddata(0x0d | 0x80);
+			keystat_senddata(0x70 | 0x80);
+			break;
+
+		case MID_KEY_AT:
+			keystat_senddata(0x1a);
+			keystat_senddata(0x1a | 0x80);
+			break;
+
+		case MID_KEY_SAT:
+			keystat_senddata(0x70);
+			keystat_senddata(0x1a);
+			keystat_senddata(0x1a | 0x80);
+			keystat_senddata(0x70 | 0x80);
+			break;
+
+		case MID_KEY_UB:
+			keystat_senddata(0x33);
+			keystat_senddata(0x33 | 0x80);
+			break;
+
+		case MID_KEY_SUB:
+			keystat_senddata(0x70);
+			keystat_senddata(0x33);
+			keystat_senddata(0x33 | 0x80);
+			keystat_senddata(0x70 | 0x80);
+			break;
+
 		case MID_SNDCAD:
 			keystat_senddata(0x73);
 			keystat_senddata(0x74);

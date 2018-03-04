@@ -65,7 +65,7 @@ static const LRKCNV lrcnv101[] =
 	{RETROK_i,		0x17},	/* i I */
         {RETROK_o,		0x18},	/* o O */
 	{RETROK_p,		0x19},	/* p P */
-	{RETROK_BACKQUOTE,	0x1a},	/* @ ~ (M) */
+	{RETROK_TILDE,		0x1a},	/* @ ~ (M) */
 	{RETROK_LEFTBRACKET,	0x1b},	/* [ { */
 	{RETROK_RETURN,		0x1c},	/* Enter */
 

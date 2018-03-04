@@ -71,6 +71,13 @@ static const char str_mousekey[] = "Mouse-Key";
 static const char str_mecshift[] = "mechanical SHIFT";
 static const char str_mecctrl[] = "mechanical CTRL";
 static const char str_mecgrph[] = "mechanical GRPH";
+
+static const char str_key_Yen[] = "Send Yen";
+static const char str_key_SYen[] = "Send Shift+Yen";
+static const char str_key_At[] = "Send @";
+static const char str_key_SAt[] = "Send Shift+@";
+static const char str_key_UB[] = "Send _";
+static const char str_key_SUB[] = "Send Shift+_";
 static const char str_sndcad[] = "Send Ctrl+Alt+Del";
 
 static const char str_beep[] = "Beep";
@@ -303,6 +310,7 @@ static const MSYSITEM s_screen[] = {
 		{str_scropt,		NULL,		MID_SCREENOPT,		MENU_DELETED}};
 
 static const MSYSITEM s_keybd[] = {
+#if !defined(__LIBRETRO__)
 		{str_keyboard,		NULL,		MID_KEY,			0},
 		{str_joykey1,		NULL,		MID_JOY1,			0},
 		{str_joykey2,		NULL,		MID_JOY2,			0},
@@ -313,6 +321,16 @@ static const MSYSITEM s_keybd[] = {
 		{str_mecgrph,		NULL,		MID_XGRPH,			0},
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_sndcad,		NULL,		MID_SNDCAD,			MENU_DELETED}};
+#else
+		{str_key_Yen,		NULL,		MID_KEY_YEN,			0},
+		{str_key_SYen,		NULL,		MID_KEY_SYEN,			0},
+		{str_key_At,		NULL,		MID_KEY_AT,			0},
+		{str_key_SAt,		NULL,		MID_KEY_SAT,			0},
+		{str_key_UB,		NULL,		MID_KEY_UB,			0},
+		{str_key_SUB,		NULL,		MID_KEY_SUB,			0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_sndcad,		NULL,		MID_SNDCAD,			MENU_DELETED}};
+#endif
 
 static const MSYSITEM s_beep[] = {
 		{str_off,			NULL,		MID_BEEPOFF,		0},
@@ -365,6 +383,7 @@ static const MSYSITEM s_mem[] = {
 		{str_mem2306,			NULL,		MID_MEM2306,			MENU_DELETED}};
 
 static const MSYSITEM s_device[] = {
+#if !defined(__LIBRETRO__)
 		{str_keyboard,		s_keybd,	MID_STATIC,			0},
 		{str_beep,			s_beep,		MID_STATIC,			0},
 		{str_soundboard,	s_snd,		MID_STATIC,			0},
@@ -377,6 +396,9 @@ static const MSYSITEM s_device[] = {
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_sndopt,		NULL,		MID_SNDOPT,			MENU_GRAY |
 															MENU_DELETED}};
+#else
+		{str_keyboard,		s_keybd,	MID_STATIC,			MENU_DELETED}};
+#endif
 
 static const MSYSITEM s_sc[] = {
 		{str_altenter,		NULL,		MID_ALTENTER,		MENU_GRAY},
@@ -408,7 +430,7 @@ static MSYSITEM s_main[] = {
 		{str_harddisk,		s_hdd,		MID_STATIC,			0},
 #if !defined(__LIBRETRO__)
 		{str_screen,		s_screen,	MID_STATIC,			0},
-		{str_device,		s_device,	MID_STATIC,			0},
 #endif
+		{str_device,		s_device,	MID_STATIC,			0},
 		{str_other,			s_other,	MID_STATIC,			MENU_DELETED}};
 
