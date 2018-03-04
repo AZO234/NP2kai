@@ -184,41 +184,41 @@ Keyboard(libretro)
 ---
 Common
 
-|PC-98key|key|info|
-|:---:|:---:|:---:|
-|STOP|Pause||
-|COPY|PrintScreen|don't come event|
-|v.f1||can't push|
-|v.f2||can't push|
-|v.f3||can't push|
-|v.f4||can't push|
-|v.f5||can't push|
-|Kana||can't push|
-|GRPH|RCtrl||
-|NFER|LAlt||
-|XFER|RAlt||
-|HOME/CLR|Home||
-|HELP|End||
-|KP=|KP=|can't push|
-|KP.|KP.|don't come event|
+|PC-98key|key|problem|menu|
+|:---:|:---:|:---:|:---:|
+|STOP|Pause|||
+|COPY|PrintScreen|don't come event|implemented|
+|v.f1||can't push||
+|v.f2||can't push||
+|v.f3||can't push||
+|v.f4||can't push||
+|v.f5||can't push||
+|Kana||can't push|implemented|
+|GRPH|RCtrl|||
+|NFER|LAlt|||
+|XFER|RAlt|||
+|HOME/CLR|Home|||
+|HELP|End|||
+|KP=|KP=|can't push|implemented|
+|KP.|KP.|don't come event|implemented|
 
 JP106 keyboard(default)
 
-|PC-98key|key|info|
-|:---:|:---:|:---:|
-|￥ \||￥ \||don't come event|
-|_ _||L2? Menu has open?|
+|PC-98key|key|info|menu|
+|:---:|:---:|:---:|:---:|
+|￥ \||￥ \||don't come event|implemented|
+|_ _||L2? Menu has open?|implemented|
 
 US101 keyboard
 
-|PC-98key|key|info|
-|:---:|:---:|:---:|
+|PC-98key|key|info|menu|
+|:---:|:---:|:---:|:---:|
 |2 "|2 @|two event 0x02,0x2A|
-|￥ \||\\ \|||
-|@ `|` ~|don't come event|
-|; +|; :||
-|: *|' "||
-|_ _||can't push|
+|￥ \||\\ \||||
+|@ `|` ~|don't come event|implemented|
+|; +|; :|||
+|: *|' "|||
+|_ _||can't push|implemented|
 
 BIOS files
 ---

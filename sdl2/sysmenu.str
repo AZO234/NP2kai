@@ -72,12 +72,16 @@ static const char str_mecshift[] = "mechanical SHIFT";
 static const char str_mecctrl[] = "mechanical CTRL";
 static const char str_mecgrph[] = "mechanical GRPH";
 
+static const char str_key_Copy[] = "Send COPY";
+static const char str_key_Kana[] = "Send Kana";
 static const char str_key_Yen[] = "Send Yen";
 static const char str_key_SYen[] = "Send Shift+Yen";
 static const char str_key_At[] = "Send @";
 static const char str_key_SAt[] = "Send Shift+@";
 static const char str_key_UB[] = "Send _";
 static const char str_key_SUB[] = "Send Shift+_";
+static const char str_key_KPEquals[] = "Send KP=";
+static const char str_key_KPComma[] = "Send KP,";
 static const char str_sndcad[] = "Send Ctrl+Alt+Del";
 
 static const char str_beep[] = "Beep";
@@ -322,12 +326,16 @@ static const MSYSITEM s_keybd[] = {
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_sndcad,		NULL,		MID_SNDCAD,			MENU_DELETED}};
 #else
+		{str_key_Copy,		NULL,		MID_KEY_COPY,			0},
+		{str_key_Kana,		NULL,		MID_KEY_KANA,			0},
 		{str_key_Yen,		NULL,		MID_KEY_YEN,			0},
 		{str_key_SYen,		NULL,		MID_KEY_SYEN,			0},
 		{str_key_At,		NULL,		MID_KEY_AT,			0},
 		{str_key_SAt,		NULL,		MID_KEY_SAT,			0},
 		{str_key_UB,		NULL,		MID_KEY_UB,			0},
 		{str_key_SUB,		NULL,		MID_KEY_SUB,			0},
+		{str_key_KPEquals,	NULL,		MID_KEY_KPEQUALS,		0},
+		{str_key_KPComma,	NULL,		MID_KEY_KPCOMMA,		0},
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_sndcad,		NULL,		MID_SNDCAD,			MENU_DELETED}};
 #endif
