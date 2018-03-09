@@ -43,7 +43,7 @@ static const char *clockmult_str[] = {
 };
 
 static const char *samplingrate_str[] = {
-	"11025", "22050", "44100", "48000", "88200", "96000"
+	"11025", "22050", "44100", "48000", "88200", "96000", "176400", "192000"
 };
 
 static const struct {
@@ -144,6 +144,8 @@ ok_button_clicked(GtkButton *b, gpointer d)
 	case 48000:
 	case 88200:
 	case 96000:
+	case 176400:
+	case 192000:
 		if (rate != np2cfg.samplingrate) {
 			np2cfg.samplingrate = rate;
 			renewal |= SYS_UPDATECFG|SYS_UPDATERATE;
@@ -476,6 +478,12 @@ create_configure_dialog(void)
 		break;
 	case 96000:
 		gtk_entry_set_text(GTK_ENTRY(samplingrate_entry),samplingrate_str[5]);
+		break;
+	case 176400:
+		gtk_entry_set_text(GTK_ENTRY(samplingrate_entry),samplingrate_str[6]);
+		break;
+	case 192000:
+		gtk_entry_set_text(GTK_ENTRY(samplingrate_entry),samplingrate_str[7]);
 		break;
 	default:
 		np2cfg.samplingrate = 44100;

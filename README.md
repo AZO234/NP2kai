@@ -368,6 +368,9 @@ I/O:0x00D0
 
 Release
 ---
+* Mar 9, 2018
+	- [X11] add UI
+	- [SDL2] add and fix UI
 * Mar 4, 2018
 	- refine keyboard map
 * Feb 28, 2018

@@ -245,7 +245,7 @@ soundmng_create(UINT rate, UINT bufmsec)
 	UINT samples;
 	int i;
 
-	if (opened || ((rate != 11025) && (rate != 22050) && (rate != 44100))) {
+	if (opened || ((rate != 11025) && (rate != 22050) && (rate != 44100) && (rate != 48000) && (rate != 88200) && (rate != 96000) && (rate != 176400) && (rate != 192000))) {
 		return 0;
 	}
 
