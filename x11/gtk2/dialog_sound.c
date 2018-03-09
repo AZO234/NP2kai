@@ -39,6 +39,7 @@
 #include "sysmng.h"
 #if defined(SUPPORT_FMGEN)
 #include "fmboard.h"
+#include <math.h>
 #define bool BOOL
 #include "fmgen_fmgwrap.h"
 #endif	/* SUPPORT_FMGEN */
@@ -130,6 +131,10 @@ static const char *snd26_romaddr_str[] = {
 	"C8000", "CC000", "D0000", "D4000", "N/C"
 };
 
+static const char *soundif_str[] = {
+	"0x", "1x", "2x", "3x", "4x", "5x", "6x", "7x", "8x"
+};
+
 static GtkWidget *snd26_ioport_entry;
 static GtkWidget *snd26_int_entry;
 static GtkWidget *snd26_romaddr_entry;
@@ -190,6 +195,86 @@ static GtkWidget *snd86_int_entry;
 static GtkWidget *snd86_soundid_entry;
 static GtkWidget *snd86_int_checkbutton;
 static GtkWidget *snd86_rom_checkbutton;
+
+
+/*
+ * PC-9801-118
+ */
+
+static const char *snd118_ioport_str[] = {
+	"0388", "0288", "0188", "0088"
+};
+
+static const char *snd118_intr_fm_str[] = {
+	"INT0 (IRQ3)", "INT41 (IRQ10)", "INT5 (IRQ12)", "INT6 (IRQ13)"
+};
+
+static const char *snd118_intr_pcm_str[] = {
+	"INT0 (IRQ3)", "INT1 (IRQ5)", "INT41 (IRQ10)", "INT5 (IRQ12)"
+};
+
+static const char *snd118_intr_midi_str[] = {
+	"Disable", "INT41 (IRQ10)"
+};
+
+static const char *snd118_soundid_str[] = {
+	"0x", "1x", "2x", "3x", "4x", "5x", "6x", "7x", "8x"
+};
+
+static const char *snd118_dma_str[] = {
+	"DMA #0", "DMA #1", "DMA #3"
+};
+
+static GtkWidget *snd118_ioport_entry;
+static GtkWidget *snd118_int_fm_entry;
+static GtkWidget *snd118_int_pcm_entry;
+static GtkWidget *snd118_int_midi_entry;
+static GtkWidget *snd118_soundid_entry;
+static GtkWidget *snd118_dma_entry;
+
+
+/*
+ * Mate-X PCM
+ */
+
+static const char *matex_pcm_intr_str[] = {
+	"INT0 (IRQ3)", "INT41 (IRQ10)", "INT5 (IRQ12)", "INT6 (IRQ13)"
+};
+
+static const char *matex_pcm_soundid_str[] = {
+	"0x", "1x", "2x", "3x", "4x", "5x", "6x", "7x", "8x"
+};
+
+static const char *matex_pcm_dma_str[] = {
+	"DMA #0", "DMA #1", "DMA #3"
+};
+
+static GtkWidget *matex_pcm_int_entry;
+static GtkWidget *matex_pcm_soundid_entry;
+static GtkWidget *matex_pcm_dma_entry;
+
+
+#if defined(SUPPORT_SOUND_SB16)
+/*
+ * Sound Blaster 16
+ */
+
+static const char *sb16_ioport_str[] = {
+	"20D2", "20D4", "20D6", "20D8", "20DA", "20DC", "20DE"
+};
+
+static const char *sb16_intr_str[] = {
+	"INT0 (IRQ3)", "INT1 (IRQ5)", "INT41 (IRQ10)", "INT5 (IRQ12)"
+};
+
+static const char *sb16_dma_str[] = {
+	"DMA #0", "DMA #3"
+};
+
+static GtkWidget *sb16_ioport_entry;
+static GtkWidget *sb16_int_entry;
+static GtkWidget *sb16_dma_entry;
+#endif	/* SUPPORT_SOUND_SB16 */
 
 
 /*
@@ -317,6 +402,27 @@ ok_button_clicked(GtkButton *b, gpointer d)
 	gint snd86_biosrom;
 	UINT8 snd86opt, snd86opt_mask;
 
+	/* PC-9801-118 */
+	const gchar *snd118_ioport;
+	const gchar *snd118_intr_fm;
+	const gchar *snd118_intr_pcm;
+	const gchar *snd118_intr_midi;
+	const gchar *snd118_soundid;
+	const gchar *snd118_dma;
+	UINT16 snd118_ioport_temp;
+
+	/* Mate-X PCM */
+	const gchar *matex_pcm_intr;
+	const gchar *matex_pcm_soundid;
+	const gchar *matex_pcm_dma;
+
+#if defined(SUPPORT_SOUND_SB16)
+	/* Sound Braster 16 */
+	const gchar *sb16_ioport;
+	const gchar *sb16_intr;
+	const gchar *sb16_dma;
+#endif	/* SUPPORT_SOUND_SB16 */
+
 	/* Speak board */
 	const gchar *spb_ioport;
 	const gchar *spb_intr;
@@ -334,6 +440,7 @@ ok_button_clicked(GtkButton *b, gpointer d)
 	char buf[32];
 	int i;
 	BOOL renewal;
+	UINT8 temp;
 
 	/* Mixer */
 	renewal = FALSE;
@@ -483,6 +590,285 @@ ok_button_clicked(GtkButton *b, gpointer d)
 		sysmng_update(SYS_UPDATECFG);
 	}
 
+	/* PC-9801-118 */
+	snd118_ioport = gtk_entry_get_text(GTK_ENTRY(snd118_ioport_entry));
+	snd118_intr_fm = gtk_entry_get_text(GTK_ENTRY(snd118_int_fm_entry));
+	snd118_intr_pcm = gtk_entry_get_text(GTK_ENTRY(snd118_int_pcm_entry));
+	snd118_intr_midi = gtk_entry_get_text(GTK_ENTRY(snd118_int_midi_entry));
+	snd118_soundid = gtk_entry_get_text(GTK_ENTRY(snd118_soundid_entry));
+	snd118_dma = gtk_entry_get_text(GTK_ENTRY(snd118_dma_entry));
+
+	renewal = FALSE;
+	for (i = 0; i < NELEMENTS(snd118_ioport_str); i++) {
+		if (strcmp(snd118_ioport, snd118_ioport_str[i]) == 0) {
+			switch(i) {
+			case 0:
+				snd118_ioport_temp = 0x0088;
+				break;
+			case 1:
+				snd118_ioport_temp = 0x0188;
+				break;
+			case 2:
+				snd118_ioport_temp = 0x0288;
+				break;
+			case 3:
+				snd118_ioport_temp = 0x0388;
+				break;
+			}
+			if (np2cfg.snd118io != snd118_ioport_temp) {
+				np2cfg.snd118io = snd118_ioport_temp;
+				renewal = TRUE;
+			}
+			break;
+		}
+	}
+	for (i = 0; i < NELEMENTS(snd118_intr_fm_str); i++) {
+		if (strcmp(snd118_intr_fm, snd118_intr_fm_str[i]) == 0) {
+			switch(i) {
+			case 0:
+				temp = 3;
+				break;
+			case 1:
+				temp = 10;
+				break;
+			case 2:
+				temp = 12;
+				break;
+			case 3:
+				temp = 13;
+				break;
+			}
+			if (np2cfg.snd118irqf != temp) {
+				np2cfg.snd118irqf = temp;
+				renewal = TRUE;
+			}
+			break;
+		}
+	}
+	for (i = 0; i < NELEMENTS(snd118_intr_pcm_str); i++) {
+		if (strcmp(snd118_intr_pcm, snd118_intr_pcm_str[i]) == 0) {
+			switch(i) {
+			case 0:
+				temp = 3;
+				break;
+			case 1:
+				temp = 5;
+				break;
+			case 2:
+				temp = 10;
+				break;
+			case 3:
+				temp = 12;
+				break;
+			}
+			if (np2cfg.snd118irqp != temp) {
+				np2cfg.snd118irqp = temp;
+				renewal = TRUE;
+			}
+			break;
+		}
+	}
+	for (i = 0; i < NELEMENTS(snd118_intr_midi_str); i++) {
+		if (strcmp(snd118_intr_midi, snd118_intr_midi_str[i]) == 0) {
+			switch(i) {
+			case 0:
+				temp = 0xFF;
+				break;
+			case 1:
+				temp = 10;
+				break;
+			}
+			if (np2cfg.snd118irqm != temp) {
+				np2cfg.snd118irqm = temp;
+				renewal = TRUE;
+			}
+			break;
+		}
+	}
+	for (i = 0; i < NELEMENTS(snd118_soundid_str); i++) {
+		if (strcmp(snd118_soundid, snd118_soundid_str[i]) == 0) {
+			temp = (snd118_soundid[0] - '0') << 4;
+			if (np2cfg.snd118id != temp) {
+				np2cfg.snd118id = temp;
+				renewal = TRUE;
+			}
+			break;
+		}
+	}
+	for (i = 0; i < NELEMENTS(snd118_dma_str); i++) {
+		if (strcmp(snd118_dma, snd118_dma_str[i]) == 0) {
+			switch(i) {
+			case 0:
+				temp = 0;
+				break;
+			case 1:
+				temp = 1;
+				break;
+			case 2:
+				temp = 3;
+				break;
+			}
+			if (np2cfg.snd118dma != temp) {
+				np2cfg.snd118dma = temp;
+				renewal = TRUE;
+			}
+			break;
+		}
+	}
+
+	if (renewal) {
+		sysmng_update(SYS_UPDATECFG);
+	}
+
+	/* Mate-X PCM */
+	matex_pcm_intr = gtk_entry_get_text(GTK_ENTRY(matex_pcm_int_entry));
+	matex_pcm_soundid = gtk_entry_get_text(GTK_ENTRY(matex_pcm_soundid_entry));
+	matex_pcm_dma = gtk_entry_get_text(GTK_ENTRY(matex_pcm_dma_entry));
+
+	renewal = FALSE;
+	for (i = 0; i < NELEMENTS(matex_pcm_intr_str); i++) {
+		if (strcmp(matex_pcm_intr, matex_pcm_intr_str[i]) == 0) {
+			switch(i) {
+			case 0:
+				temp = 3;
+				break;
+			case 1:
+				temp = 5;
+				break;
+			case 2:
+				temp = 10;
+				break;
+			case 3:
+				temp = 12;
+				break;
+			}
+			if (np2cfg.sndwssirq != temp) {
+				np2cfg.sndwssirq = temp;
+				renewal = TRUE;
+			}
+			break;
+		}
+	}
+	for (i = 0; i < NELEMENTS(matex_pcm_soundid_str); i++) {
+		if (strcmp(matex_pcm_soundid, matex_pcm_soundid_str[i]) == 0) {
+			temp = (matex_pcm_soundid[0] - '0') << 4;
+			if (np2cfg.sndwssid != temp) {
+				np2cfg.sndwssid = temp;
+				renewal = TRUE;
+			}
+			break;
+		}
+	}
+	for (i = 0; i < NELEMENTS(matex_pcm_dma_str); i++) {
+		if (strcmp(matex_pcm_dma, matex_pcm_dma_str[i]) == 0) {
+			switch(i) {
+			case 0:
+				temp = 0;
+				break;
+			case 1:
+				temp = 1;
+				break;
+			case 2:
+				temp = 3;
+				break;
+			}
+			if (np2cfg.sndwssdma != temp) {
+				np2cfg.sndwssdma = temp;
+				renewal = TRUE;
+			}
+			break;
+		}
+	}
+
+	if (renewal) {
+		sysmng_update(SYS_UPDATECFG);
+	}
+
+#if defined(SUPPORT_SOUND_SB16)
+	/* Sound Blaster 16 */
+	sb16_ioport = gtk_entry_get_text(GTK_ENTRY(sb16_ioport_entry));
+	sb16_intr = gtk_entry_get_text(GTK_ENTRY(sb16_int_entry));
+	sb16_dma = gtk_entry_get_text(GTK_ENTRY(sb16_dma_entry));
+
+	renewal = FALSE;
+	for (i = 0; i < NELEMENTS(sb16_ioport_str); i++) {
+		if (strcmp(sb16_ioport, sb16_ioport_str[i]) == 0) {
+			switch(sb16_ioport[3]) {
+			case '2':
+				temp = 0xD2;
+				break;
+			case '4':
+				temp = 0xD4;
+				break;
+			case '6':
+				temp = 0xD6;
+				break;
+			case '8':
+				temp = 0xD8;
+				break;
+			case 'A':
+				temp = 0xDA;
+				break;
+			case 'C':
+				temp = 0xDC;
+				break;
+			case 'E':
+				temp = 0xDE;
+				break;
+			}
+			if (np2cfg.sndsb16io != temp) {
+				np2cfg.sndsb16io = temp;
+				renewal = TRUE;
+			}
+			break;
+		}
+	}
+	for (i = 0; i < NELEMENTS(sb16_intr_str); i++) {
+		if (strcmp(sb16_intr, sb16_intr_str[i]) == 0) {
+			switch(i) {
+			case 0:
+				temp = 3;
+				break;
+			case 1:
+				temp = 5;
+				break;
+			case 2:
+				temp = 10;
+				break;
+			case 3:
+				temp = 12;
+				break;
+			}
+			if (np2cfg.sndsb16irq != temp) {
+				np2cfg.sndsb16irq = temp;
+				renewal = TRUE;
+			}
+			break;
+		}
+	}
+	for (i = 0; i < NELEMENTS(sb16_dma_str); i++) {
+		if (strcmp(sb16_dma, sb16_dma_str[i]) == 0) {
+			switch(i) {
+			case 0:
+				temp = 0;
+				break;
+			case 1:
+				temp = 3;
+				break;
+			}
+			if (np2cfg.sndsb16dma != temp) {
+				np2cfg.sndsb16dma = temp;
+				renewal = TRUE;
+			}
+			break;
+		}
+	}
+
+	if (renewal) {
+		sysmng_update(SYS_UPDATECFG);
+	}
+#endif	/* SUPPORT_SOUND_SB16 */
+
 	/* Speak board */
 	spb_ioport = gtk_entry_get_text(GTK_ENTRY(spb_ioport_entry));
 	spb_intr = gtk_entry_get_text(GTK_ENTRY(spb_int_entry));
@@ -497,8 +883,8 @@ ok_button_clicked(GtkButton *b, gpointer d)
 	for (i = 0; i < NELEMENTS(spb_ioport_str); i++) {
 		if (strcmp(spb_ioport, spb_ioport_str[i]) == 0) {
 			if (SPB_GET_IOPORT() != i) {
-				snd86opt |= SPB_SET_IOPORT(i);
-				snd86opt_mask |= SPB_MASK_IOPORT;
+				spbopt |= SPB_SET_IOPORT(i);
+				spbopt_mask |= SPB_MASK_IOPORT;
 				renewal = TRUE;
 			}
 			break;
@@ -677,6 +1063,38 @@ snd86_default_button_clicked(GtkButton *b, gpointer d)
 		g_signal_emit_by_name(G_OBJECT(snd86_rom_checkbutton),
 		    "clicked");
 }
+
+static void
+snd118_default_button_clicked(GtkButton *b, gpointer d)
+{
+
+	gtk_entry_set_text(GTK_ENTRY(snd118_ioport_entry), "0188");
+	gtk_entry_set_text(GTK_ENTRY(snd118_int_fm_entry), "INT5 (IRQ12)");
+	gtk_entry_set_text(GTK_ENTRY(snd118_int_pcm_entry), "INT5 (IRQ12)");
+	gtk_entry_set_text(GTK_ENTRY(snd118_int_midi_entry), "Disable");
+	gtk_entry_set_text(GTK_ENTRY(snd118_soundid_entry), "8x");
+	gtk_entry_set_text(GTK_ENTRY(snd118_dma_entry), "DMA #3");
+}
+
+static void
+matex_pcm_default_button_clicked(GtkButton *b, gpointer d)
+{
+
+	gtk_entry_set_text(GTK_ENTRY(matex_pcm_int_entry), "INT0 (IRQ3)");
+	gtk_entry_set_text(GTK_ENTRY(matex_pcm_soundid_entry), "7x");
+	gtk_entry_set_text(GTK_ENTRY(matex_pcm_dma_entry), "DMA #1");
+}
+
+#if defined(SUPPORT_SOUND_SB16)
+static void
+sb16_default_button_clicked(GtkButton *b, gpointer d)
+{
+
+	gtk_entry_set_text(GTK_ENTRY(sb16_ioport_entry), "20D2");
+	gtk_entry_set_text(GTK_ENTRY(sb16_int_entry), "INT1 (IRQ5)");
+	gtk_entry_set_text(GTK_ENTRY(sb16_dma_entry), "DMA #3");
+}
+#endif	/* SUPPORT_SOUND_SB16 */
 
 static void
 spb_default_button_clicked(GtkButton *b, gpointer d)
@@ -995,6 +1413,451 @@ create_pc9801_86_note(void)
 
 	return root_widget;
 }
+
+static GtkWidget *
+create_pc9801_118_note(void)
+{
+	GtkWidget *root_widget;
+	GtkWidget *table;
+	GtkWidget *ioport_label;
+	GtkWidget *ioport_combo;
+	GtkWidget *int_fm_label;
+	GtkWidget *int_fm_combo;
+	GtkWidget *soundid_label;
+	GtkWidget *soundid_combo;
+	GtkWidget *int_pcm_label;
+	GtkWidget *int_pcm_combo;
+	GtkWidget *dma_label;
+	GtkWidget *dma_combo;
+	GtkWidget *int_midi_label;
+	GtkWidget *int_midi_combo;
+	GtkWidget *snd118_default_button;
+	GtkWidget *hbox;
+	int i;
+	char temp[16];
+
+	root_widget = gtk_vbox_new(FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(root_widget), 5);
+	gtk_widget_show(root_widget);
+
+	table = gtk_table_new(4, 3, FALSE);
+	gtk_table_set_row_spacings(GTK_TABLE(table), 5);
+	gtk_table_set_col_spacings(GTK_TABLE(table), 5);
+	gtk_box_pack_start(GTK_BOX(root_widget), table, FALSE, FALSE, 0);
+	gtk_widget_show(table);
+
+	/* I/O port */
+	ioport_label = gtk_label_new("I/O port");
+	gtk_widget_show(ioport_label);
+	gtk_table_attach_defaults(GTK_TABLE(table), ioport_label, 0, 1, 0, 1);
+
+	ioport_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(ioport_combo);
+	gtk_table_attach_defaults(GTK_TABLE(table), ioport_combo, 1, 2, 0, 1);
+	gtk_widget_set_size_request(ioport_combo, 80, -1);
+	for (i = NELEMENTS(snd118_ioport_str) - 1; i >= 0; i--) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(ioport_combo), snd118_ioport_str[i]);
+	}
+
+	snd118_ioport_entry = gtk_bin_get_child(GTK_BIN(ioport_combo));
+	gtk_widget_show(snd118_ioport_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(snd118_ioport_entry), FALSE);
+	sprintf(temp, "%04X", np2cfg.snd118io);
+	gtk_entry_set_text(GTK_ENTRY(snd118_ioport_entry), temp);
+
+	/* interrupt(FM) */
+	int_fm_label = gtk_label_new("Interrupt(FM)");
+	gtk_widget_show(int_fm_label);
+	gtk_table_attach_defaults(GTK_TABLE(table), int_fm_label, 2, 3, 0, 1);
+
+	int_fm_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(int_fm_combo);
+	gtk_table_attach_defaults(GTK_TABLE(table), int_fm_combo, 3, 4, 0, 1);
+	gtk_widget_set_size_request(int_fm_combo, 80, -1);
+	for (i = 0; i < NELEMENTS(snd118_intr_fm_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(int_fm_combo), snd118_intr_fm_str[i]);
+	}
+
+	snd118_int_fm_entry = gtk_bin_get_child(GTK_BIN(int_fm_combo));
+	gtk_widget_show(snd118_int_fm_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(snd118_int_fm_entry), FALSE);
+	switch(np2cfg.snd118irqf) {
+	case 3:
+		strcpy(temp, snd118_intr_fm_str[0]);
+		break;
+	case 10:
+		strcpy(temp, snd118_intr_fm_str[1]);
+		break;
+	case 13:
+		strcpy(temp, snd118_intr_fm_str[3]);
+		break;
+	default:
+		strcpy(temp, snd118_intr_fm_str[2]);
+		break;
+	}
+	gtk_entry_set_text(GTK_ENTRY(snd118_int_fm_entry), temp);
+
+	/* Sound ID */
+	soundid_label = gtk_label_new("Sound ID");
+	gtk_widget_show(soundid_label);
+	gtk_table_attach_defaults(GTK_TABLE(table), soundid_label, 0, 1, 1, 2);
+
+	soundid_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(soundid_combo);
+	gtk_table_attach_defaults(GTK_TABLE(table), soundid_combo, 1, 2, 1, 2);
+	gtk_widget_set_size_request(soundid_combo, 80, -1);
+	for (i = NELEMENTS(snd118_soundid_str) - 1; i >= 0; i--) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(soundid_combo), snd118_soundid_str[i]);
+	}
+
+	snd118_soundid_entry = gtk_bin_get_child(GTK_BIN(soundid_combo));
+	gtk_widget_show(snd118_soundid_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(snd118_soundid_entry), FALSE);
+	sprintf(temp, "%dx", np2cfg.snd118id >> 4);
+	gtk_entry_set_text(GTK_ENTRY(snd118_soundid_entry), temp);
+
+	/* interrupt(PCM) */
+	int_pcm_label = gtk_label_new("Interrupt(PCM)");
+	gtk_widget_show(int_pcm_label);
+	gtk_table_attach_defaults(GTK_TABLE(table), int_pcm_label, 2, 3, 1, 2);
+
+	int_pcm_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(int_pcm_combo);
+	gtk_table_attach_defaults(GTK_TABLE(table), int_pcm_combo, 3, 4, 1, 2);
+	gtk_widget_set_size_request(int_pcm_combo, 80, -1);
+	for (i = 0; i < NELEMENTS(snd118_intr_pcm_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(int_pcm_combo), snd118_intr_pcm_str[i]);
+	}
+
+	snd118_int_pcm_entry = gtk_bin_get_child(GTK_BIN(int_pcm_combo));
+	gtk_widget_show(snd118_int_pcm_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(snd118_int_pcm_entry), FALSE);
+	switch(np2cfg.snd118irqp) {
+	case 3:
+		strcpy(temp, snd118_intr_pcm_str[0]);
+		break;
+	case 5:
+		strcpy(temp, snd118_intr_pcm_str[1]);
+		break;
+	case 10:
+		strcpy(temp, snd118_intr_pcm_str[2]);
+		break;
+	default:
+		strcpy(temp, snd118_intr_pcm_str[3]);
+		break;
+	}
+	gtk_entry_set_text(GTK_ENTRY(snd118_int_pcm_entry), temp);
+
+	/* DMA */
+	dma_label = gtk_label_new("DMA");
+	gtk_widget_show(dma_label);
+	gtk_table_attach_defaults(GTK_TABLE(table), dma_label, 0, 1, 2, 3);
+
+	dma_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(dma_combo);
+	gtk_table_attach_defaults(GTK_TABLE(table), dma_combo, 1, 2, 2, 3);
+	gtk_widget_set_size_request(dma_combo, 80, -1);
+	for (i = 0; i < NELEMENTS(snd118_dma_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(dma_combo), snd118_dma_str[i]);
+	}
+
+	snd118_dma_entry = gtk_bin_get_child(GTK_BIN(dma_combo));
+	gtk_widget_show(snd118_dma_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(snd118_dma_entry), FALSE);
+	switch(np2cfg.snd118dma) {
+	case 0:
+		strcpy(temp, snd118_dma_str[0]);
+		break;
+	case 1:
+		strcpy(temp, snd118_dma_str[1]);
+		break;
+	default:
+		strcpy(temp, snd118_dma_str[2]);
+		break;
+	}
+	gtk_entry_set_text(GTK_ENTRY(snd118_dma_entry), temp);
+
+	/* interrupt(MIDI) */
+	int_midi_label = gtk_label_new("Interrupt(MIDI)");
+	gtk_widget_show(int_midi_label);
+	gtk_table_attach_defaults(GTK_TABLE(table), int_midi_label, 2, 3, 2, 3);
+
+	int_midi_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(int_midi_combo);
+	gtk_table_attach_defaults(GTK_TABLE(table), int_midi_combo, 3, 4, 2, 3);
+	gtk_widget_set_size_request(int_midi_combo, 80, -1);
+	for (i = 0; i < NELEMENTS(snd118_intr_midi_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(int_midi_combo), snd118_intr_midi_str[i]);
+	}
+
+	snd118_int_midi_entry = gtk_bin_get_child(GTK_BIN(int_midi_combo));
+	gtk_widget_show(snd118_int_midi_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(snd118_int_midi_entry), FALSE);
+	switch(np2cfg.snd118irqp) {
+	case 10:
+		strcpy(temp, snd118_intr_midi_str[1]);
+		break;
+	default:
+		strcpy(temp, snd118_intr_midi_str[0]);
+		break;
+	}
+	gtk_entry_set_text(GTK_ENTRY(snd118_int_midi_entry), temp);
+
+	/* "Default" button */
+	hbox = gtk_hbox_new(FALSE, 0);
+	gtk_widget_show(hbox);
+	gtk_container_set_border_width(GTK_CONTAINER(hbox), 5);
+	gtk_box_pack_start(GTK_BOX(root_widget), hbox, FALSE, FALSE, 0);
+
+	snd118_default_button = gtk_button_new_with_label("Default");
+	gtk_widget_show(snd118_default_button);
+	gtk_box_pack_end(GTK_BOX(hbox), snd118_default_button, FALSE, FALSE, 5);
+	g_signal_connect_swapped(G_OBJECT(snd118_default_button), "clicked",
+	    G_CALLBACK(snd118_default_button_clicked), NULL);
+
+	return root_widget;
+}
+
+static GtkWidget *
+create_matex_pcm_note(void)
+{
+	GtkWidget *root_widget;
+	GtkWidget *table;
+	GtkWidget *soundid_label;
+	GtkWidget *soundid_combo;
+	GtkWidget *int_label;
+	GtkWidget *int_combo;
+	GtkWidget *dma_label;
+	GtkWidget *dma_combo;
+	GtkWidget *matex_pcm_default_button;
+	GtkWidget *hbox;
+	int i;
+	char temp[16];
+
+	root_widget = gtk_vbox_new(FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(root_widget), 5);
+	gtk_widget_show(root_widget);
+
+	table = gtk_table_new(4, 2, FALSE);
+	gtk_table_set_row_spacings(GTK_TABLE(table), 5);
+	gtk_table_set_col_spacings(GTK_TABLE(table), 5);
+	gtk_box_pack_start(GTK_BOX(root_widget), table, FALSE, FALSE, 0);
+	gtk_widget_show(table);
+
+	/* Sound ID */
+	soundid_label = gtk_label_new("Sound ID");
+	gtk_widget_show(soundid_label);
+	gtk_table_attach_defaults(GTK_TABLE(table), soundid_label, 0, 1, 0, 1);
+
+	soundid_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(soundid_combo);
+	gtk_table_attach_defaults(GTK_TABLE(table), soundid_combo, 1, 2, 0, 1);
+	gtk_widget_set_size_request(soundid_combo, 80, -1);
+	for (i = NELEMENTS(matex_pcm_soundid_str) - 1; i >= 0; i--) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(soundid_combo), matex_pcm_soundid_str[i]);
+	}
+
+	matex_pcm_soundid_entry = gtk_bin_get_child(GTK_BIN(soundid_combo));
+	gtk_widget_show(matex_pcm_soundid_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(matex_pcm_soundid_entry), FALSE);
+	sprintf(temp, "%dx", np2cfg.sndwssid >> 4);
+	gtk_entry_set_text(GTK_ENTRY(matex_pcm_soundid_entry), temp);
+
+	/* interrupt */
+	int_label = gtk_label_new("Interrupt");
+	gtk_widget_show(int_label);
+	gtk_table_attach_defaults(GTK_TABLE(table), int_label, 2, 3, 0, 1);
+
+	int_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(int_combo);
+	gtk_table_attach_defaults(GTK_TABLE(table), int_combo, 3, 4, 0, 1);
+	gtk_widget_set_size_request(int_combo, 80, -1);
+	for (i = 0; i < NELEMENTS(matex_pcm_intr_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(int_combo), matex_pcm_intr_str[i]);
+	}
+
+	matex_pcm_int_entry = gtk_bin_get_child(GTK_BIN(int_combo));
+	gtk_widget_show(matex_pcm_int_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(matex_pcm_int_entry), FALSE);
+	switch(np2cfg.sndwssirq) {
+	case 5:
+		strcpy(temp, matex_pcm_intr_str[1]);
+		break;
+	case 10:
+		strcpy(temp, matex_pcm_intr_str[2]);
+		break;
+	case 12:
+		strcpy(temp, matex_pcm_intr_str[3]);
+		break;
+	default:
+		strcpy(temp, matex_pcm_intr_str[0]);
+		break;
+	}
+	gtk_entry_set_text(GTK_ENTRY(matex_pcm_int_entry), temp);
+
+	/* DMA */
+	dma_label = gtk_label_new("DMA");
+	gtk_widget_show(dma_label);
+	gtk_table_attach_defaults(GTK_TABLE(table), dma_label, 0, 1, 1, 2);
+
+	dma_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(dma_combo);
+	gtk_table_attach_defaults(GTK_TABLE(table), dma_combo, 1, 2, 1, 2);
+	gtk_widget_set_size_request(dma_combo, 80, -1);
+	for (i = 0; i < NELEMENTS(matex_pcm_dma_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(dma_combo), matex_pcm_dma_str[i]);
+	}
+
+	matex_pcm_dma_entry = gtk_bin_get_child(GTK_BIN(dma_combo));
+	gtk_widget_show(matex_pcm_dma_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(matex_pcm_dma_entry), FALSE);
+	switch(np2cfg.sndwssdma) {
+	case 0:
+		strcpy(temp, matex_pcm_dma_str[0]);
+		break;
+	case 3:
+		strcpy(temp, matex_pcm_dma_str[2]);
+		break;
+	default:
+		strcpy(temp, matex_pcm_dma_str[1]);
+		break;
+	}
+	gtk_entry_set_text(GTK_ENTRY(matex_pcm_dma_entry), temp);
+
+	/* "Default" button */
+	hbox = gtk_hbox_new(FALSE, 0);
+	gtk_widget_show(hbox);
+	gtk_container_set_border_width(GTK_CONTAINER(hbox), 5);
+	gtk_box_pack_start(GTK_BOX(root_widget), hbox, FALSE, FALSE, 0);
+
+	matex_pcm_default_button = gtk_button_new_with_label("Default");
+	gtk_widget_show(matex_pcm_default_button);
+	gtk_box_pack_end(GTK_BOX(hbox), matex_pcm_default_button, FALSE, FALSE, 5);
+	g_signal_connect_swapped(G_OBJECT(matex_pcm_default_button), "clicked",
+	    G_CALLBACK(matex_pcm_default_button_clicked), NULL);
+
+	return root_widget;
+}
+
+#if defined(SUPPORT_SOUND_SB16)
+static GtkWidget *
+create_sb16_note(void)
+{
+	GtkWidget *root_widget;
+	GtkWidget *table;
+	GtkWidget *ioport_label;
+	GtkWidget *ioport_combo;
+	GtkWidget *int_label;
+	GtkWidget *int_combo;
+	GtkWidget *dma_label;
+	GtkWidget *dma_combo;
+	GtkWidget *sb16_default_button;
+	GtkWidget *hbox;
+	int i;
+	char temp[16];
+
+	root_widget = gtk_vbox_new(FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(root_widget), 5);
+	gtk_widget_show(root_widget);
+
+	table = gtk_table_new(4, 2, FALSE);
+	gtk_table_set_row_spacings(GTK_TABLE(table), 5);
+	gtk_table_set_col_spacings(GTK_TABLE(table), 5);
+	gtk_box_pack_start(GTK_BOX(root_widget), table, FALSE, FALSE, 0);
+	gtk_widget_show(table);
+
+	/* I/O port */
+	ioport_label = gtk_label_new("I/O port");
+	gtk_widget_show(ioport_label);
+	gtk_table_attach_defaults(GTK_TABLE(table), ioport_label, 0, 1, 0, 1);
+
+	ioport_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(ioport_combo);
+	gtk_table_attach_defaults(GTK_TABLE(table), ioport_combo, 1, 2, 0, 1);
+	gtk_widget_set_size_request(ioport_combo, 80, -1);
+	for (i = NELEMENTS(sb16_ioport_str) - 1; i >= 0; i--) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(ioport_combo), sb16_ioport_str[i]);
+	}
+
+	sb16_ioport_entry = gtk_bin_get_child(GTK_BIN(ioport_combo));
+	gtk_widget_show(sb16_ioport_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(sb16_ioport_entry), FALSE);
+	sprintf(temp, "20%02X", np2cfg.sndsb16io);
+	gtk_entry_set_text(GTK_ENTRY(sb16_ioport_entry), temp);
+
+	/* interrupt */
+	int_label = gtk_label_new("Interrupt");
+	gtk_widget_show(int_label);
+	gtk_table_attach_defaults(GTK_TABLE(table), int_label, 2, 3, 0, 1);
+
+	int_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(int_combo);
+	gtk_table_attach_defaults(GTK_TABLE(table), int_combo, 3, 4, 0, 1);
+	gtk_widget_set_size_request(int_combo, 80, -1);
+	for (i = 0; i < NELEMENTS(sb16_intr_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(int_combo), sb16_intr_str[i]);
+	}
+
+	sb16_int_entry = gtk_bin_get_child(GTK_BIN(int_combo));
+	gtk_widget_show(sb16_int_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(sb16_int_entry), FALSE);
+	switch(np2cfg.sndsb16irq) {
+	case 3:
+		strcpy(temp, sb16_intr_str[0]);
+		break;
+	case 10:
+		strcpy(temp, sb16_intr_str[2]);
+		break;
+	case 12:
+		strcpy(temp, sb16_intr_str[3]);
+		break;
+	default:
+		strcpy(temp, sb16_intr_str[1]);
+		break;
+	}
+	gtk_entry_set_text(GTK_ENTRY(sb16_int_entry), temp);
+
+	/* DMA */
+	dma_label = gtk_label_new("DMA");
+	gtk_widget_show(dma_label);
+	gtk_table_attach_defaults(GTK_TABLE(table), dma_label, 0, 1, 1, 2);
+
+	dma_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(dma_combo);
+	gtk_table_attach_defaults(GTK_TABLE(table), dma_combo, 1, 2, 1, 2);
+	gtk_widget_set_size_request(dma_combo, 80, -1);
+	for (i = 0; i < NELEMENTS(sb16_dma_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(dma_combo), sb16_dma_str[i]);
+	}
+
+	sb16_dma_entry = gtk_bin_get_child(GTK_BIN(dma_combo));
+	gtk_widget_show(sb16_dma_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(sb16_dma_entry), FALSE);
+	switch(np2cfg.sndsb16dma) {
+	case 0:
+		strcpy(temp, sb16_dma_str[0]);
+		break;
+	default:
+		strcpy(temp, sb16_dma_str[1]);
+		break;
+	}
+	gtk_entry_set_text(GTK_ENTRY(sb16_dma_entry), temp);
+
+	/* "Default" button */
+	hbox = gtk_hbox_new(FALSE, 0);
+	gtk_widget_show(hbox);
+	gtk_container_set_border_width(GTK_CONTAINER(hbox), 5);
+	gtk_box_pack_start(GTK_BOX(root_widget), hbox, FALSE, FALSE, 0);
+
+	sb16_default_button = gtk_button_new_with_label("Default");
+	gtk_widget_show(sb16_default_button);
+	gtk_box_pack_end(GTK_BOX(hbox), sb16_default_button, FALSE, FALSE, 5);
+	g_signal_connect_swapped(G_OBJECT(sb16_default_button), "clicked",
+	    G_CALLBACK(sb16_default_button_clicked), NULL);
+
+	return root_widget;
+}
+#endif	/* SUPPORT_SOUND_SB16 */
 
 static GtkWidget *
 create_spb_note(void)
@@ -1419,6 +2282,11 @@ create_sound_dialog(void)
 	GtkWidget *pc9801_14_note;
 	GtkWidget *pc9801_26_note;
 	GtkWidget *pc9801_86_note;
+	GtkWidget *pc9801_118_note;
+	GtkWidget *matex_pcm_note;
+#if defined(SUPPORT_SOUND_SB16)
+	GtkWidget *sb16_note;
+#endif	/* SUPPORT_SOUND_SB16 */
 	GtkWidget *spb_note;
 	GtkWidget *joypad_note;
 	GtkWidget *driver_note;
@@ -1460,6 +2328,20 @@ create_sound_dialog(void)
 	/* "86" note */
 	pc9801_86_note = create_pc9801_86_note();
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), pc9801_86_note, gtk_label_new("86"));
+
+	/* "118" note */
+	pc9801_118_note = create_pc9801_118_note();
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), pc9801_118_note, gtk_label_new("118"));
+
+	/* "Mate-X PCM" note */
+	matex_pcm_note = create_matex_pcm_note();
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), matex_pcm_note, gtk_label_new("Mate-X PCM"));
+
+#if defined(SUPPORT_SOUND_SB16)
+	/* "SB16" note */
+	sb16_note = create_sb16_note();
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), sb16_note, gtk_label_new("SB16"));
+#endif	/* SUPPORT_SOUND_SB16 */
 
 	/* "SPB" note */
 	spb_note = create_spb_note();

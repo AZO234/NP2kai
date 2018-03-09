@@ -212,6 +212,8 @@ struct tagNP2Config
 	UINT16	sysiomsk;
 	
 	UINT8	memchkmx;
+	UINT8	sbeeplen;
+	UINT8	sbeepadj;
 };
 typedef struct tagNP2Config  NP2CFG;		/*!< The define of config */
 

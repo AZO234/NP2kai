@@ -42,6 +42,10 @@ static const char *clockmult_str[] = {
 	"1", "2", "4", "5", "6", "8", "10", "12", "16", "20", "24", "30", "36", "40", "42"
 };
 
+static const char *samplingrate_str[] = {
+	"11025", "22050", "44100", "48000", "88200", "96000"
+};
+
 static const struct {
 	const char*	label;
 	const char*	arch;
@@ -51,18 +55,11 @@ static const struct {
 	{ "PC-286", "EPSON" },
 };
 
-static const struct {
-	const char*	label;
-	const int	rate;
-} samplingrate[] = {
-	{ "11KHz", 11025 },
-	{ "22KHz", 22050 },
-	{ "44KHz", 44100 }
-};
-
 static GtkWidget *baseclock_entry;
 static GtkWidget *clockmult_entry;
+static GtkWidget *samplingrate_entry;
 static GtkWidget *buffer_entry;
+static GtkWidget *always16bio_checkbutton;
 #if defined(SUPPORT_RESUME)
 static GtkWidget *resume_checkbutton;
 #endif
@@ -87,10 +84,13 @@ ok_button_clicked(GtkButton *b, gpointer d)
 	gint disablemmx = gtk_toggle_button_get_active(
 	    GTK_TOGGLE_BUTTON(disablemmx_checkbutton));
 #endif
+	gint always16bio = gtk_toggle_button_get_active(
+	    GTK_TOGGLE_BUTTON(always16bio_checkbutton));
 	guint bufsize;
 	guint mult;
 	UINT renewal = 0;
 	int i;
+	UINT16 always16bio_temp;
 
 	if (strcmp(base, "1.9968MHz") == 0) {
 		if (np2cfg.baseclock != PCBASECLOCK20) {
@@ -127,10 +127,23 @@ ok_button_clicked(GtkButton *b, gpointer d)
 		renewal |= SYS_UPDATECFG;
 	}
 
+	if(always16bio) {
+		always16bio_temp = 0xFF00;
+	} else {
+		always16bio_temp = 0;
+	}
+	if(np2cfg.sysiomsk != always16bio_temp) {
+		np2cfg.sysiomsk = always16bio_temp;
+		renewal |= SYS_UPDATECFG;
+	}
+
 	switch (rate) {
 	case 11025:
 	case 22050:
 	case 44100:
+	case 48000:
+	case 88200:
+	case 96000:
 		if (rate != np2cfg.samplingrate) {
 			np2cfg.samplingrate = rate;
 			renewal |= SYS_UPDATECFG|SYS_UPDATERATE;
@@ -192,13 +205,6 @@ arch_radiobutton_clicked(GtkButton *b, gpointer d)
 }
 
 static void
-rate_radiobutton_clicked(GtkButton *b, gpointer d)
-{
-
-	rate = GPOINTER_TO_INT(d);
-}
-
-static void
 clock_changed(GtkEditable *e, gpointer d)
 {
 	const gchar *base = gtk_entry_get_text(GTK_ENTRY(baseclock_entry));
@@ -212,9 +218,15 @@ clock_changed(GtkEditable *e, gpointer d)
 	} else {
 		clk = PCBASECLOCK25 * mult;
 	}
-	g_snprintf(buf, sizeof(buf), "%2d.%03dMHz",
+	g_snprintf(buf, sizeof(buf), "%2d.%03d MHz",
 	    clk / 1000000U, (clk / 1000) % 1000);
 	gtk_label_set_text(GTK_LABEL((GtkWidget*)d), buf);
+}
+
+static void
+samplingrate_changed(GtkEditable *e, gpointer d)
+{
+	rate = atoi(gtk_entry_get_text(GTK_ENTRY(samplingrate_entry)));
 }
 
 void
@@ -234,13 +246,16 @@ create_configure_dialog(void)
 	GtkWidget *ok_button;
 	GtkWidget *cancel_button;
 	GtkWidget *arch_frame;
+	GtkWidget *arch_vbox;
 	GtkWidget *arch_hbox;
 	GtkWidget *arch_radiobutton[NELEMENTS(architecture)];
+	GtkWidget *always16bio_hbox;
 	GtkWidget *sound_frame;
 	GtkWidget *soundframe_vbox;
 	GtkWidget *soundrate_hbox;
 	GtkWidget *rate_label;
-	GtkWidget *rate_radiobutton[NELEMENTS(samplingrate)];
+	GtkWidget *rate2_label;
+	GtkWidget *samplingrate_combo;
 	GtkWidget *soundbuffer_hbox;
 	GtkWidget *buffer_label;
 	GtkWidget *ms_label;
@@ -288,7 +303,7 @@ create_configure_dialog(void)
 	baseclock_combo = gtk_combo_box_entry_new_text();
 	gtk_widget_show(baseclock_combo);
 	gtk_box_pack_start(GTK_BOX(cpuclock_hbox), baseclock_combo, TRUE, FALSE, 0);
-	gtk_widget_set_size_request(baseclock_combo, 96, -1);
+	gtk_widget_set_size_request(baseclock_combo, 128, -1);
 	for (i = 0; i < NELEMENTS(baseclock_str); i++) {
 		gtk_combo_box_append_text(GTK_COMBO_BOX(baseclock_combo), baseclock_str[i]);
 	}
@@ -318,7 +333,7 @@ create_configure_dialog(void)
 	rate_combo = gtk_combo_box_entry_new_text();
 	gtk_widget_show(rate_combo);
 	gtk_box_pack_start(GTK_BOX(cpuclock_hbox), rate_combo, TRUE, FALSE, 0);
-	gtk_widget_set_size_request(rate_combo, 48, -1);
+	gtk_widget_set_size_request(rate_combo, 64, -1);
 	for (i = 0; i < NELEMENTS(clockmult_str); i++) {
 		gtk_combo_box_append_text(GTK_COMBO_BOX(rate_combo), clockmult_str[i]);
 	}
@@ -365,9 +380,14 @@ create_configure_dialog(void)
 	gtk_box_pack_start(GTK_BOX(main_widget), arch_frame, TRUE, TRUE, 0);
 
 	/* architecture */
+	arch_vbox = gtk_vbox_new(FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(arch_vbox), 5);
+	gtk_widget_show(arch_vbox);
+	gtk_container_add(GTK_CONTAINER(arch_frame), arch_vbox);
+
 	arch_hbox = gtk_hbox_new(TRUE, 0);
 	gtk_widget_show(arch_hbox);
-	gtk_container_add(GTK_CONTAINER(arch_frame), arch_hbox);
+	gtk_container_add(GTK_CONTAINER(arch_vbox), arch_hbox);
 
 	for (i = 0; i < NELEMENTS(architecture); i++) {
 		arch_radiobutton[i] = gtk_radio_button_new_with_label_from_widget(i > 0 ? GTK_RADIO_BUTTON(arch_radiobutton[i-1]) : NULL, architecture[i].label);
@@ -393,6 +413,18 @@ create_configure_dialog(void)
 	}
 	g_signal_emit_by_name(G_OBJECT(arch_radiobutton[i]), "clicked");
 
+	/* Always use 16bit I/O port addressing (PC-9821) */
+	always16bio_hbox = gtk_hbox_new(FALSE, 0);
+	gtk_widget_show(always16bio_hbox);
+	gtk_container_add(GTK_CONTAINER(arch_vbox), always16bio_hbox);
+
+	always16bio_checkbutton = gtk_check_button_new_with_label("Always use 16bit I/O port addressing (PC-9821)");
+	gtk_widget_show(always16bio_checkbutton);
+	gtk_box_pack_start(GTK_BOX(always16bio_hbox), always16bio_checkbutton, FALSE, FALSE, 1);
+	if (np2cfg.sysiomsk == 0xFF00) {
+		g_signal_emit_by_name(G_OBJECT(always16bio_checkbutton), "clicked");
+	}
+
 	/*
 	 * Sound frame
 	 */
@@ -408,37 +440,55 @@ create_configure_dialog(void)
 	/* sampling rate */
 	soundrate_hbox = gtk_hbox_new(FALSE, 0);
 	gtk_widget_show(soundrate_hbox);
-	gtk_box_pack_start(GTK_BOX(soundframe_vbox), soundrate_hbox, TRUE, TRUE, 2);
+	gtk_box_pack_start(GTK_BOX(soundframe_vbox), soundrate_hbox, FALSE, TRUE, 2);
 
 	rate_label = gtk_label_new("Sampling Rate");
 	gtk_widget_show(rate_label);
-	gtk_box_pack_start(GTK_BOX(soundrate_hbox), rate_label, FALSE, TRUE, 3);
-	gtk_widget_set_size_request(rate_label, 96, -1);
+	gtk_box_pack_start(GTK_BOX(soundrate_hbox), rate_label, FALSE, TRUE, 1);
+	gtk_widget_set_size_request(rate_label, 128, -1);
 
-	for (i = 0; i < NELEMENTS(samplingrate); i++) {
-		rate_radiobutton[i] = gtk_radio_button_new_with_label_from_widget((i > 0) ? GTK_RADIO_BUTTON(rate_radiobutton[i-1]) : NULL, samplingrate[i].label);
-		gtk_widget_show(rate_radiobutton[i]);
-		gtk_box_pack_start(GTK_BOX(soundrate_hbox), rate_radiobutton[i], FALSE, FALSE, 0);
-#if GTK_MAJOR_VERSION > 2 || (GTK_MAJOR_VERSION == 2 && GTK_MINOR_VERSION >= 18)
-		gtk_widget_set_can_focus(rate_radiobutton[i], FALSE);
-#else
-		GTK_WIDGET_UNSET_FLAGS(rate_radiobutton[i], GTK_CAN_FOCUS);
-#endif
-		g_signal_connect(G_OBJECT(rate_radiobutton[i]), "clicked",
-		    G_CALLBACK(rate_radiobutton_clicked), GINT_TO_POINTER(samplingrate[i].rate));
+	samplingrate_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(samplingrate_combo);
+	gtk_box_pack_start(GTK_BOX(soundrate_hbox), samplingrate_combo, FALSE, TRUE, 1);
+	gtk_widget_set_size_request(samplingrate_combo, 96, -1);
+	for (i = 0; i < NELEMENTS(samplingrate_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(samplingrate_combo), samplingrate_str[i]);
 	}
-	if (np2cfg.samplingrate == 11025) {
-		i = 0;
-	} else if (np2cfg.samplingrate == 22050) {
-		i = 1;
-	} else if (np2cfg.samplingrate == 44100) {
-		i = 2;
-	} else {
-		i = 1;
-		np2cfg.samplingrate = 22050;
-		sysmng_update(SYS_UPDATECFG|SYS_UPDATERATE);
+
+	samplingrate_entry = gtk_bin_get_child(GTK_BIN(samplingrate_combo));
+	gtk_widget_show(samplingrate_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(samplingrate_entry), FALSE);
+	switch (np2cfg.samplingrate) {
+	case 11025:
+		gtk_entry_set_text(GTK_ENTRY(samplingrate_entry),samplingrate_str[0]);
+		break;
+	case 22050:
+		gtk_entry_set_text(GTK_ENTRY(samplingrate_entry),samplingrate_str[1]);
+		break;
+	case 44100:
+		gtk_entry_set_text(GTK_ENTRY(samplingrate_entry),samplingrate_str[2]);
+		break;
+	case 48000:
+		gtk_entry_set_text(GTK_ENTRY(samplingrate_entry),samplingrate_str[3]);
+		break;
+	case 88200:
+		gtk_entry_set_text(GTK_ENTRY(samplingrate_entry),samplingrate_str[4]);
+		break;
+	case 96000:
+		gtk_entry_set_text(GTK_ENTRY(samplingrate_entry),samplingrate_str[5]);
+		break;
+	default:
+		np2cfg.samplingrate = 44100;
+		sysmng_update(SYS_UPDATECFG|SYS_UPDATECLOCK);
+		break;
 	}
-	g_signal_emit_by_name(G_OBJECT(rate_radiobutton[i]), "clicked");
+	g_signal_connect(G_OBJECT(samplingrate_entry), "changed",
+	  G_CALLBACK(samplingrate_changed), (gpointer)realclock_label);
+
+	rate2_label = gtk_label_new("kHz");
+	gtk_widget_show(rate2_label);
+	gtk_box_pack_start(GTK_BOX(soundrate_hbox), rate2_label, FALSE, TRUE, 1);
+	gtk_widget_set_size_request(rate2_label, 32, -1);
 
 	soundbuffer_hbox = gtk_hbox_new(FALSE, 0);
 	gtk_widget_show(soundbuffer_hbox);

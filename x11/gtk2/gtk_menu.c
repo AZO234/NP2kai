@@ -149,9 +149,16 @@ static GtkActionEntry menu_entries[] = {
 { "sasi2open",   NULL, "_Open...",          NULL, NULL, G_CALLBACK(cb_sasiopen), },
 { "sasi2remove", NULL, "_Remove",           NULL, NULL, G_CALLBACK(cb_sasiremove), },
 #endif
+{ "ideopt",      NULL, "_IDE option...",    NULL, NULL, G_CALLBACK(cb_dialog) },
 { "screenopt",   NULL, "Screen _option...", NULL, NULL, G_CALLBACK(cb_dialog) },
 { "serialopt",   NULL, "Se_rial option...", NULL, NULL, G_CALLBACK(cb_dialog) },
 { "soundopt",    NULL, "So_und option...",  NULL, NULL, G_CALLBACK(cb_dialog) },
+#if defined(SUPPORT_NET)
+{ "networkopt",  NULL, "Network option...", NULL, NULL, G_CALLBACK(cb_dialog) },
+#endif	/* SUPPORT_NET */
+#if defined(SUPPORT_HOSTDRV)
+{ "hostdrvopt",  NULL, "Hostdrv option...", NULL, NULL, G_CALLBACK(cb_dialog) },
+#endif	/* SUPPORT_HOSTDRV */
 { "reset",       NULL, "_Reset",            NULL, NULL, G_CALLBACK(cb_reset) },
 #if defined(SUPPORT_STATSAVE)
 { "stat00save",  NULL, "Save 0",            NULL, NULL, G_CALLBACK(cb_statsave), },
@@ -198,6 +205,9 @@ static void cb_toolwindow(GtkToggleAction *action, gpointer user_data);
 static void cb_xctrlkey(GtkToggleAction *action, gpointer user_data);
 static void cb_xgrphkey(GtkToggleAction *action, gpointer user_data);
 static void cb_xshiftkey(GtkToggleAction *action, gpointer user_data);
+static void cb_itfwork(GtkToggleAction *action, gpointer user_data);
+static void cb_fixmmtimer(GtkToggleAction *action, gpointer user_data);
+static void cb_16mbmemchk(GtkToggleAction *action, gpointer user_data);
 
 static GtkToggleActionEntry togglemenu_entries[] = {
 { "clockdisp",    NULL, "_Clock disp",        NULL, NULL, G_CALLBACK(cb_clockdisp), FALSE },
@@ -218,6 +228,9 @@ static GtkToggleActionEntry togglemenu_entries[] = {
 { "xctrlkey",     NULL, "mechanical _CTRL",   NULL, NULL, G_CALLBACK(cb_xctrlkey), FALSE },
 { "xgrphkey",     NULL, "mechanical _GRPH",   NULL, NULL, G_CALLBACK(cb_xgrphkey), FALSE },
 { "xshiftkey",    NULL, "mechanical _SHIFT",  NULL, NULL, G_CALLBACK(cb_xshiftkey), FALSE },
+{ "itfwork",      NULL, "ITF work",           NULL, NULL, G_CALLBACK(cb_itfwork), FALSE },
+{ "fixmmtimer",   NULL, "Fix MMTimer",        NULL, NULL, G_CALLBACK(cb_fixmmtimer), FALSE },
+{ "16mbmemchk",   NULL, "Skip over 16MB memcheck", NULL, NULL, G_CALLBACK(cb_16mbmemchk), FALSE },
 };
 static const guint n_togglemenu_entries = G_N_ELEMENTS(togglemenu_entries);
 
@@ -277,12 +290,14 @@ static GtkRadioActionEntry soundboard_entries[] = {
 { "sparkboard",     NULL, "Sp_ark board",            NULL, NULL, 0x40 },
 { "sndorchestra",   NULL, "Sound Orchestra",         NULL, NULL, 0x32 },
 { "sndorchestrav",  NULL, "Sound Orchestra-V",       NULL, NULL, 0x82 },
+#if defined(SUPPORT_SOUND_SB16)
 { "sb16",	    NULL, "Sound Blaster 16",        NULL, NULL, 0x41 },
+#endif	/* SUPPORT_SOUND_SB16 */
 { "amd98",          NULL, "_AMD98",                  NULL, NULL, 0x80 },
 #if defined(SUPPORT_PX)
 { "px1",            NULL, "Otomi-chanx2",            NULL, NULL, 0x30 },
 { "px2",            NULL, "Otomi-chanx2 + 86",       NULL, NULL, 0x50 },
-#endif	/* defined(SUPPORT_PX) */
+#endif	/* SUPPORT_PX */
 };
 static const guint n_soundboard_entries = G_N_ELEMENTS(soundboard_entries);
 
@@ -325,11 +340,13 @@ static GtkRadioActionEntry screensize_entries[] = {
 };
 static const guint n_screensize_entries = G_N_ELEMENTS(screensize_entries);
 
+#if defined(SUPPORT_FMGEN)
 static GtkRadioActionEntry usefmgen_entries[] = {
 { "defsnd",  NULL, "D_efault",  NULL, NULL, 0 },
 { "fmgen",  NULL, "f_mgen",  NULL, NULL, 1 },
 };
 static const guint n_usefmgen_entries = G_N_ELEMENTS(usefmgen_entries);
+#endif	/* SUPPORT_FMGEN */
 
 static void cb_beepvol(gint idx);
 static void cb_f11key(gint idx);
@@ -341,7 +358,9 @@ static void cb_rotate(gint idx);
 static void cb_screenmode(gint idx);
 static void cb_screensize(gint idx);
 static void cb_soundboard(gint idx);
+#if defined(SUPPORT_FMGEN)
 static void cb_usefmgen(gint idx);
+#endif	/* SUPPORT_FMGEN */
 
 static const struct {
 	GtkRadioActionEntry	*entry;
@@ -358,7 +377,9 @@ static const struct {
 	{ screenmode_entries, G_N_ELEMENTS(screenmode_entries), cb_screenmode },
 	{ screensize_entries, G_N_ELEMENTS(screensize_entries), cb_screensize },
 	{ soundboard_entries, G_N_ELEMENTS(soundboard_entries), cb_soundboard },
+#if defined(SUPPORT_FMGEN)
 	{ usefmgen_entries, G_N_ELEMENTS(usefmgen_entries), cb_usefmgen },
+#endif	/* SUPPORT_FMGEN */
 };
 static const guint n_radiomenu_entries = G_N_ELEMENTS(radiomenu_entries);
 
@@ -395,6 +416,8 @@ static const gchar *ui_info =
 "    <menuitem action='atapiopen'/>\n"
 "    <menuitem action='atapiremove'/>\n"
 "   </menu>\n"
+"   <separator/>\n"
+"   <menuitem action='ideopt'/>\n"
 #else	/* !SUPPORT_IDEIO */
 "   <menu name='SASI1' action='SASI1Menu'>\n"
 "    <menuitem action='sasi1open'/>\n"
@@ -478,12 +501,14 @@ static const gchar *ui_info =
 "    <menuitem action='sparkboard'/>\n"
 "    <menuitem action='sndorchestra'/>\n"
 "    <menuitem action='sndorchestrav'/>\n"
+#if defined(SUPPORT_SOUND_SB16)
 "    <menuitem action='sb16'/>\n"
+#endif	/* SUPPORT_SOUND_SB16 */
 "    <menuitem action='amd98'/>\n"
 #if defined(SUPPORT_PX)
 "    <menuitem action='px1'/>\n"
 "    <menuitem action='px2'/>\n"
-#endif	/* defined(SUPPORT_PX) */
+#endif	/* SUPPORT_PX */
 "    <separator/>\n"
 "    <menuitem action='jastsound'/>\n"
 "    <separator/>\n"
@@ -514,6 +539,14 @@ static const gchar *ui_info =
 "   <menuitem action='midipanic'/>\n"
 "   <separator/>\n"
 "   <menuitem action='soundopt'/>\n"
+#if defined(SUPPORT_NET)
+"   <separator/>\n"
+"   <menuitem action='networkopt'/>\n"
+#endif	/* SUPPORT_NET */
+#if defined(SUPPORT_HOSTDRV)
+"   <separator/>\n"
+"   <menuitem action='hostdrvopt'/>\n"
+#endif	/* SUPPORT_HOSTDRV */
 "  </menu>\n"
 "  <menu name='Other' action='OtherMenu'>\n"
 "   <menuitem action='bmpsave'/>\n"
@@ -524,6 +557,9 @@ static const gchar *ui_info =
 "   <menuitem action='joyreverse'/>\n"
 "   <menuitem action='joyrapid'/>\n"
 "   <menuitem action='mouserapid'/>\n"
+"   <menuitem action='itfwork'/>\n"
+"   <menuitem action='fixmmtimer'/>\n"
+"   <menuitem action='16mbmemchk'/>\n"
 "   <separator/>\n"
 "   <menuitem action='toolwindow'/>\n"
 "   <menuitem action='keydisplay'/>\n"
@@ -1389,8 +1425,20 @@ cb_dialog(GtkAction *action, gpointer user_data)
 
 	if (g_ascii_strcasecmp(name, "configure") == 0) {
 		create_configure_dialog();
+#if defined(SUPPORT_HOSTDRV)
+	} else if (g_ascii_strcasecmp(name, "hostdrvopt") == 0) {
+		create_hostdrv_dialog();
+#endif	/* SUPPORT_HOSTDRV */
+#if defined(SUPPORT_IDEIO)
+	} else if (g_ascii_strcasecmp(name, "ideopt") == 0) {
+		create_ide_dialog();
+#endif	/* SUPPORT_IDEIO */
 	} else if (g_ascii_strcasecmp(name, "soundopt") == 0) {
 		create_sound_dialog();
+#if defined(SUPPORT_NET)
+	} else if (g_ascii_strcasecmp(name, "networkopt") == 0) {
+		create_network_dialog();
+#endif	/* SUPPORT_NET */
 	} else if (g_ascii_strcasecmp(name, "screenopt") == 0) {
 		create_screen_dialog();
 	} else if (g_ascii_strcasecmp(name, "midiopt") == 0) {
@@ -1666,10 +1714,48 @@ cb_xshiftkey(GtkToggleAction *action, gpointer user_data)
 	gboolean b = gtk_toggle_action_get_active(action);
 	gboolean f;
 
+	f = (np2cfg.ITF_WORK & 1) ^ (b ? 1 : 0);
+	if (f) {
+		np2cfg.ITF_WORK ^= 1;
+		sysmng_update(SYS_UPDATECFG);
+	}
+}
+
+static void
+cb_fixmmtimer(GtkToggleAction *action, gpointer user_data)
+{
+	gboolean b = gtk_toggle_action_get_active(action);
+	gboolean f;
+
+	f = (np2cfg.timerfix & 1) ^ (b ? 1 : 0);
+	if (f) {
+		np2cfg.timerfix ^= 1;
+		sysmng_update(SYS_UPDATECFG);
+	}
+}
+
+static void
+cb_16mbmemchk(GtkToggleAction *action, gpointer user_data)
+{
+	gboolean b = gtk_toggle_action_get_active(action);
+	gboolean f;
+
+	f = (np2cfg.memchkmx == 15) ^ (b ? 1 : 0);
+	if (f) {
+		np2cfg.memchkmx = (b ? 15 : 0);
+		sysmng_update(SYS_UPDATECFG);
+	}
+}
+
+static void
+cb_itfwork(GtkToggleAction *action, gpointer user_data)
+{
+	gboolean b = gtk_toggle_action_get_active(action);
+	gboolean f;
+
 	f = (np2cfg.XSHIFT & 1) ^ (b ? 1 : 0);
 	if (f) {
 		np2cfg.XSHIFT ^= 1;
-		keystat_forcerelease(0x70);
 		sysmng_update(SYS_UPDATECFG);
 	}
 }
@@ -1842,6 +1928,7 @@ cb_soundboard(gint idx)
 	}
 }
 
+#if defined(SUPPORT_FMGEN)
 static void
 cb_usefmgen(gint idx)
 {
@@ -1857,6 +1944,7 @@ cb_usefmgen(gint idx)
 		sysmng_update(SYS_UPDATECFG);
 	}
 }
+#endif	/* SUPPORT_FMGEN */
 
 static void
 cb_radio(GtkRadioAction *action, GtkRadioAction *current, gpointer user_data)
@@ -2074,6 +2162,9 @@ create_menu(void)
 	xmenu_toggle_item(NULL, "xctrlkey", np2cfg.XSHIFT & 2);
 	xmenu_toggle_item(NULL, "xgrphkey", np2cfg.XSHIFT & 4);
 	xmenu_toggle_item(NULL, "xshiftkey", np2cfg.XSHIFT & 1);
+	xmenu_toggle_item(NULL, "itfwork", np2cfg.ITF_WORK);
+	xmenu_toggle_item(NULL, "fixmmtimer", np2cfg.timerfix);
+	xmenu_toggle_item(NULL, "16mbmemchk", np2cfg.memchkmx == 15);
 
 	xmenu_toggle_item(NULL, "clockdisp", np2oscfg.DISPCLK & 1);
 	xmenu_toggle_item(NULL, "framedisp", np2oscfg.DISPCLK & 2);
@@ -2094,7 +2185,9 @@ create_menu(void)
 	xmenu_select_screenmode(scrnmode & SCRNMODE_FULLSCREEN);
 	xmenu_select_screensize(SCREEN_DEFMUL);
 	xmenu_select_soundboard(np2cfg.SOUND_SW);
+#if defined(SUPPORT_FMGEN)
 	xmenu_select_usefmgen(np2cfg.usefmgen);
+#endif	/* SUPPORT_FMGEN */
 
 	menubar = gtk_ui_manager_get_widget(menu_hdl.ui_manager, "/MainMenu");
 

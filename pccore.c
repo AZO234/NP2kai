@@ -125,7 +125,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 				0,			/* statsave */
 #endif
 				0, 0,
-				0xff00, 0,
+				0xff00, 0, 0, 0,
 	};
 
 	PCCORE	pccore = {	PCBASECLOCK25, PCBASEMULTIPLE,
@@ -507,7 +507,7 @@ void pccore_reset(void) {
 	pal_change(1);
 
 	bios_initialize();
-
+	
 	CS_BASE = 0xf0000;
 	CPU_CS = 0xf000;
 	CPU_IP = 0xfff0;
@@ -528,6 +528,7 @@ static void drawscreen(void) {
 	UINT8	timing;
 	void	(VRAMCALL * grphfn)(int page, int alldraw);
 	UINT8	bit;
+	
 
 	tramflag.timing++;
 	timing = ((LOADINTELWORD(gdc.m.para + GDC_CSRFORM + 1)) >> 5) & 0x3e;
@@ -724,6 +725,7 @@ void pccore_exec(BOOL draw) {
 	MEMWAIT_TRAM = np2cfg.wait[0];
 	MEMWAIT_VRAM = np2cfg.wait[2];
 	MEMWAIT_GRCG = np2cfg.wait[4];
+	
 	nevent_set(NEVENT_FLAMES, gdc.dispclock, screenvsync, NEVENT_RELATIVE);
 
 //	nevent_get1stevent();

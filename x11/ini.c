@@ -529,6 +529,12 @@ static INITBL iniitem[] = {
 	{"hdrvroot", INIRO_STR,		np2cfg.hdrvroot,	MAX_PATH},
 	{"hdrv_acc", INIRO_UINT8,	&np2cfg.hdrvacc,	0},
 
+#if defined(SUPPORT_HOSTDRV)
+	{"use_hdrv", INITYPE_BOOL,	&np2cfg.hdrvenable,	0},
+	{"hdrvroot", INITYPE_STR,	&np2cfg.hdrvroot,	MAX_PATH},
+	{"hdrv_acc", INITYPE_UINT8,	&np2cfg.hdrvacc,	0},
+#endif
+
 	{"pc_model", INITYPE_STR,	np2cfg.model,		sizeof(np2cfg.model)},
 
 	{"clk_base", INITYPE_UINT32,	&np2cfg.baseclock,	0},
@@ -544,10 +550,10 @@ static INITBL iniitem[] = {
 #if defined(SUPPORT_IDEIO)
 	{"HDD3FILE", INIRO_STR,		np2cfg.sasihdd[2],	MAX_PATH},
 	{"HDD4FILE", INIRO_STR,		np2cfg.sasihdd[3],	MAX_PATH},
-	{"HDD1TYPE", INIRO_UINT8,	&np2cfg.idetype[2],	0},
-	{"HDD2TYPE", INIRO_UINT8,	&np2cfg.idetype[2],	0},
-	{"HDD3TYPE", INIRO_UINT8,	&np2cfg.idetype[2],	0},
-	{"HDD4TYPE", INIRO_UINT8,	&np2cfg.idetype[2],	0},
+	{"IDE1TYPE", INIRO_UINT8,	&np2cfg.idetype[0],	0},
+	{"IDE2TYPE", INIRO_UINT8,	&np2cfg.idetype[1],	0},
+	{"IDE3TYPE", INIRO_UINT8,	&np2cfg.idetype[2],	0},
+	{"IDE4TYPE", INIRO_UINT8,	&np2cfg.idetype[3],	0},
 	{"IDE_BIOS", INIRO_BOOL,	&np2cfg.idebios,	0},
 	{"AIDEBIOS", INIRO_BOOL,	&np2cfg.autoidebios,	0},
 	{"IDERWAIT", INITYPE_UINT32,	&np2cfg.iderwait,	0},
@@ -570,6 +576,23 @@ static INITBL iniitem[] = {
 	{"optSPBVL", INIMAX_UINT8,	&np2cfg.spb_vrl,	24},
 	{"optSPB_X", INITYPE_BOOL,	&np2cfg.spb_x,		0},
 	{"optMPU98", INITYPE_HEX8,	&np2cfg.mpuopt,		0},
+	{"optMPUAT", INITYPE_BOOL,	&np2cfg.mpu_at,		0},
+	{"opt118io", INITYPE_HEX16,	&np2cfg.snd118io,	0},
+	{"opt118id", INITYPE_HEX8,	&np2cfg.snd118id,	0},
+	{"opt118dm", INITYPE_UINT8,	&np2cfg.snd118dma,	0},
+	{"opt118if", INITYPE_UINT8,	&np2cfg.snd118irqf,	0},
+	{"opt118ip", INITYPE_UINT8,	&np2cfg.snd118irqp,	0},
+	{"opt118im", INITYPE_UINT8,	&np2cfg.snd118irqm,	0},
+
+	{"optwssid", INITYPE_HEX8,	&np2cfg.sndwssid,	0},
+	{"optwssdm", INITYPE_UINT8,	&np2cfg.sndwssdma,	0},
+	{"optwssip", INITYPE_UINT8,	&np2cfg.sndwssirq,	0},
+
+#if defined(SUPPORT_SOUND_SB16)
+	{"optsb16p", INITYPE_HEX8,	&np2cfg.sndsb16io,	0},
+	{"optsb16d", INITYPE_UINT8,	&np2cfg.sndsb16dma,	0},
+	{"optsb16i", INITYPE_UINT8,	&np2cfg.sndsb16irq,	0},
+#endif	/* SUPPORT_SOUND_SB16 */
 
 	{"volume_F", INIMAX_UINT8,	&np2cfg.vol_fm,		128},
 	{"volume_S", INIMAX_UINT8,	&np2cfg.vol_ssg,	128},
@@ -578,7 +601,9 @@ static INITBL iniitem[] = {
 	{"volume_R", INIMAX_UINT8,	&np2cfg.vol_rhythm,	128},
 	{"DAVOLUME", INIMAX_UINT8,	&np2cfg.davolume,	128},
 
-	{"usefmgen", INITYPE_BOOL,	&np2cfg.usefmgen,	0},
+#if defined(SUPPORT_FMGEN)
+	{"USEFMGEN", INITYPE_BOOL,	&np2cfg.usefmgen,	0},
+#endif	/* SUPPORT_FMGEN */
 
 	{"Seek_Snd", INITYPE_BOOL,	&np2cfg.MOTOR,		0},
 	{"Seek_Vol", INIMAX_UINT8,	&np2cfg.MOTORVOL,	100},
@@ -627,9 +652,25 @@ static INITBL iniitem[] = {
 #endif
 #if defined(SUPPORT_LGY98)
 	{"USELGY98", INITYPE_BOOL,	&np2cfg.uselgy98,	0},
+	{"LGY98_IO", INITYPE_UINT16,	&np2cfg.lgy98io,	0},
+	{"LGY98IRQ", INITYPE_UINT8,	&np2cfg.lgy98irq,	0},
 	{"LGY98MAC", INITYPE_ARGH8,	np2cfg.lgy98mac,	6},
 #endif
+#if defined(SUPPORT_WAB)
+	{"WAB_ANSW", INITYPE_UINT8,	&np2cfg.wabasw,		0},
+#endif
+#if defined(SUPPORT_CL_GD5430)
+	{"USEGD5430", INITYPE_BOOL,	&np2cfg.usegd5430,	0},
+	{"GD5430TYPE", INITYPE_UINT16,	&np2cfg.gd5430type,	0},
+	{"GD5430FCUR", INITYPE_BOOL,	&np2cfg.gd5430fakecur,	0},
+#endif
+	{"TIMERFIX", INITYPE_BOOL,	&np2cfg.timerfix,	0},
+
 	{"WINNTFIX", INITYPE_BOOL,	&np2cfg.winntfix,	0},
+
+	{"SYSIOMSK", INITYPE_HEX16,	&np2cfg.sysiomsk,	0},
+
+	{"MEMCHKMX", INITYPE_UINT8,	&np2cfg.memchkmx,	0},
 
 	{"keyboard", INIRO_KB,		&np2oscfg.KEYBOARD,	0},
 	{"F12_COPY", INITYPE_UINT8,	&np2oscfg.F12KEY,	0},

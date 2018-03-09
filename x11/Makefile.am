@@ -54,7 +54,10 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/x11/gtk2/dialog_about.c \
 		$(real_topsrcdir)/x11/gtk2/dialog_calendar.c \
 		$(real_topsrcdir)/x11/gtk2/dialog_config.c \
+		$(real_topsrcdir)/x11/gtk2/dialog_hostdrv.c \
+		$(real_topsrcdir)/x11/gtk2/dialog_ide.c \
 		$(real_topsrcdir)/x11/gtk2/dialog_midi.c \
+		$(real_topsrcdir)/x11/gtk2/dialog_network.c \
 		$(real_topsrcdir)/x11/gtk2/dialog_newdisk.c \
 		$(real_topsrcdir)/x11/gtk2/dialog_screen.c \
 		$(real_topsrcdir)/x11/gtk2/dialog_sound.c \
