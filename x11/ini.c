@@ -672,7 +672,7 @@ static INITBL iniitem[] = {
 
 	{"MEMCHKMX", INITYPE_UINT8,	&np2cfg.memchkmx,	0},
 
-	{"keyboard", INIRO_KB,		&np2oscfg.KEYBOARD,	0},
+	{"keyboard", INITYPE_KB,	&np2oscfg.KEYBOARD,	0},
 	{"F12_COPY", INITYPE_UINT8,	&np2oscfg.F12KEY,	0},
 	{"Joystick", INITYPE_BOOL,	&np2oscfg.JOYPAD1,	0},
 	{"Joy1_btn", INITYPE_ARGH8,	np2oscfg.JOY1BTN,	JOY_NBUTTON},
