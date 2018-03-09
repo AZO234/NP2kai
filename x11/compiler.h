@@ -210,10 +210,10 @@ G_END_DECLS
 #define	SUPPORT_PC9821
 #define	SUPPORT_CRT31KHZ
 #endif
-#define	SUPPORT_IDEIO
 #else
 #define	SUPPORT_CRT15KHZ
 #endif
+#define	SUPPORT_IDEIO
 #if !defined(SUPPORT_PC9821)
 #define SUPPORT_BMS
 #endif
