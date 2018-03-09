@@ -165,7 +165,7 @@ int np2_main(int argc, char *argv[]) {
 	int		pos;
 	char	*p;
 	int		id;
-	int		i, imagetype, drvfdd, drvhddSASI, drvhddSCSI, IsCD, CDArgv;
+	int		i, j, imagetype, drvfdd, setmedia, drvhddSCSI, CDCount, CDDrv[4], CDArgv[4];
 	char	*ext;
 	char	tmppath[MAX_PATH];
 	FILE	*fcheck;
@@ -206,7 +206,7 @@ int np2_main(int argc, char *argv[]) {
 	}
 	
 #if defined(SUPPORT_IDEIO) || defined(SUPPORT_SASI) || defined(SUPPORT_SCSI)
-	drvhddSASI = drvhddSCSI = IsCD = 0;
+	setmedia = drvhddSCSI = CDCount = 0;
 	for (i = 1; i < argc; i++) {
 		if (OEMSTRLEN(argv[i]) < 5) {
 			continue;
@@ -230,14 +230,28 @@ int np2_main(int argc, char *argv[]) {
 		switch (imagetype) {
 #if defined(SUPPORT_IDEIO) || defined(SUPPORT_SASI)
 		case IMAGETYPE_SASI_IDE:
-			if (drvhddSASI < 2) {
-				milstr_ncpy(np2cfg.sasihdd[drvhddSASI], argv[i], MAX_PATH);
-				drvhddSASI++;
+			for(j = 0; j < 4; j++) {
+				if (np2cfg.idetype[j] == SXSIDEV_HDD) {
+					if(!(setmedia & (1 << j))) {
+						milstr_ncpy(np2cfg.sasihdd[j], argv[i], MAX_PATH);
+						setmedia |= 1 << j;
+						break;
+					}
+				}
 			}
 			break;
 		case IMAGETYPE_SASI_IDE_CD:
-			IsCD = 1;
-			CDArgv = i;
+			for(j = 0; j < 4; j++) {
+				if (np2cfg.idetype[j] == SXSIDEV_CDROM) {
+					if(!(setmedia & (1 << j))) {
+						CDDrv[CDCount] = j;
+						CDArgv[CDCount] = i;
+						CDCount++;
+						setmedia |= 1 << j;
+						break;
+					}
+				}
+			}
 			break;
 #endif
 #if defined(SUPPORT_SCSI)
@@ -299,11 +313,11 @@ int np2_main(int argc, char *argv[]) {
 	}
 #endif	/* defined(SUPPORT_RESUME) */
 
-	if(IsCD) {
-		sxsi_devopen(2, argv[CDArgv]);
+	for(i = 0; i < CDCount; i++) {
+		sxsi_devopen(CDDrv[i], argv[CDArgv[i]]);
 	}
 
-	drvfdd = drvhddSASI = drvhddSCSI = 0;
+	drvfdd = 0;
 	for (i = 1; i < argc; i++) {
 		if (OEMSTRLEN(argv[i]) < 5) {
 			continue;

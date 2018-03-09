@@ -557,10 +557,10 @@ static const INITBL iniitem[] = {
 #if defined(SUPPORT_IDEIO)
 	{"HDD3FILE", INIRO_STR,	np2cfg.sasihdd[2],	MAX_PATH},
 	{"HDD4FILE", INIRO_STR,	np2cfg.sasihdd[3],	MAX_PATH},
-	{"IDE1TYPE", INIRO_UINT8,	&np2cfg.idetype[2],	0},
-	{"IDE2TYPE", INIRO_UINT8,	&np2cfg.idetype[2],	0},
+	{"IDE1TYPE", INIRO_UINT8,	&np2cfg.idetype[0],	0},
+	{"IDE2TYPE", INIRO_UINT8,	&np2cfg.idetype[1],	0},
 	{"IDE3TYPE", INIRO_UINT8,	&np2cfg.idetype[2],	0},
-	{"IDE4TYPE", INIRO_UINT8,	&np2cfg.idetype[2],	0},
+	{"IDE4TYPE", INIRO_UINT8,	&np2cfg.idetype[3],	0},
 	{"IDE_BIOS", INIRO_BOOL,	&np2cfg.idebios,	0},
 	{"AIDEBIOS", INIRO_BOOL,	&np2cfg.autoidebios,	0},
 	{"IDERWAIT", INITYPE_UINT32,	&np2cfg.iderwait,	0},
