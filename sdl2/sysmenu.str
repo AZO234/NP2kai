@@ -104,14 +104,17 @@ static const char str_spreakboard[] = "Speak board";
 static const char str_sparkboard[] = "Spark board";
 static const char str_sndorchestra[] = "Sound Orchestra";
 static const char str_sndorchestrav[] = "Sound Orchestra-V";
+#if defined(SUPPORT_SOUND_SB16)
 static const char str_sb16[] = "Sound Blaster 16";
+#endif	/* SUPPORT_SOUND_SB16 */
 static const char str_amd98[] = "AMD-98";
 #if defined(SUPPORT_PX)
 static const char str_px1[] = "Otomi-chanx2";
 static const char str_px2[] = "Otomi-chanx2 + 86";
 #endif	/* defined(SUPPORT_PX) */
-static const char str_defsnd[] = "Default";
+#if defined(SUPPORT_FMGEN)
 static const char str_fmgen[] = "fmgen";
+#endif	/* SUPPORT_FMGEN */
 static const char str_jastsnd[] = "JAST SOUND";
 static const char str_seeksound[] = "Seek Sound";
 
@@ -145,6 +148,9 @@ static const char str_framedisp[] = "Frame Disp";
 static const char str_joyrev[] = "Joy Reverse";
 static const char str_joyrapid[] = "Joy Rapid";
 static const char str_mouserapid[] = "Mouse Rapid";
+static const char str_itfwork[] = "ITF work";
+static const char str_fixmmtimer[] = "Fix MMTimer";
+static const char str_skip16mbmemchk[] = "Skip over 16MB memcheck";
 static const char str_about[] = "About...";
 
 static const MSYSITEM s_emu[] = {
@@ -360,20 +366,15 @@ static const MSYSITEM s_snd[] = {
 		{str_sparkboard,	NULL,		MID_SPARKBOARD,		0},
 		{str_sndorchestra,	NULL,		MID_SOUNDORCHESTRA,	0},
 		{str_sndorchestrav,	NULL,		MID_SOUNDORCHESTRAV,	0},
+#if defined(SUPPORT_SOUND_SB16)
 		{str_sb16,		NULL,		MID_SB16,		0},
+#endif	/* SUPPORT_SOUND_SB16 */
 		{str_amd98,			NULL,		MID_AMD98,			0},
 #if defined(SUPPORT_PX)
 		{str_px1,			NULL,		MID_PX1,			0},
 		{str_px2,			NULL,		MID_PX2,			0},
 #endif	/* defined(SUPPORT_PX) */
 		{str_jastsnd,		NULL,		MID_JASTSND,		0},
-		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
-		{str_defsnd,			NULL,		MID_DEFSND,			0},
-#if defined(SUPPORT_FMGEN)
-		{str_fmgen,			NULL,		MID_FMGEN,			0},
-#else	/* SUPPORT_FMGEN */
-		{str_fmgen,			NULL,		MID_FMGEN,			MENU_GRAY},
-#endif	/* SUPPORT_FMGEN */
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_seeksound,		NULL,		MID_SEEKSND,		MENU_DELETED}};
 
@@ -402,6 +403,9 @@ static const MSYSITEM s_device[] = {
 		{str_midiopt,		NULL,		MID_MPUPC98,		MENU_GRAY},
 		{str_midipanic,		NULL,		MID_MIDIPANIC,		0},
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+#if defined(SUPPORT_FMGEN)
+		{str_fmgen,			NULL,		MID_FMGEN,			0},
+#endif	/* SUPPORT_FMGEN */
 		{str_sndopt,		NULL,		MID_SNDOPT,			MENU_GRAY |
 															MENU_DELETED}};
 #else
@@ -423,6 +427,9 @@ static const MSYSITEM s_other[] = {
 		{str_joyrev,		NULL,		MID_JOYX,			0},
 		{str_joyrapid,		NULL,		MID_RAPID,			0},
 		{str_mouserapid,	NULL,		MID_MSRAPID,		MENU_GRAY},
+		{str_itfwork,		NULL,		MID_ITFWORK,			0},
+		{str_fixmmtimer,	NULL,		MID_FIXMMTIMER,			0},
+		{str_skip16mbmemchk,	NULL,		MID_SKIP16MBMEMCHK,		0},
 #endif
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_about,			NULL,		MID_ABOUT,			MENU_DELETED}};

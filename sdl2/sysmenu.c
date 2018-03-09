@@ -474,10 +474,12 @@ static void sys_cmd(MENUID id) {
 			update |= SYS_UPDATECFG;
 			break;
 
+#if defined(SUPPORT_SOUND_SB16)
 		case MID_SB16:
 			np2cfg.SOUND_SW = 0x41;
 			update |= SYS_UPDATECFG;
 			break;
+#endif	/* SUPPORT_SOUND_SB16 */
 
 		case MID_AMD98:
 			np2cfg.SOUND_SW = 0x80;
@@ -496,15 +498,12 @@ static void sys_cmd(MENUID id) {
 			break;
 #endif	/* defined(SUPPORT_PX) */
 
-		case MID_DEFSND:
-			np2cfg.usefmgen = 0;
-			update |= SYS_UPDATECFG;
-			break;
-
+#if defined(SUPPORT_FMGEN)
 		case MID_FMGEN:
-			np2cfg.usefmgen = 1;
+			np2cfg.usefmgen ^= 1;
 			update |= SYS_UPDATECFG;
 			break;
+#endif	/* SUPPORT_FMGEN */
 
 		case MID_JASTSND:
 			np2oscfg.jastsnd ^= 1;
@@ -665,6 +664,24 @@ static void sys_cmd(MENUID id) {
 			update |= SYS_UPDATECFG;
 			break;
 
+		case MID_ITFWORK:
+			np2cfg.ITF_WORK ^= 1;
+			update |= SYS_UPDATECFG;
+			break;
+
+		case MID_FIXMMTIMER:
+			np2cfg.timerfix ^= 1;
+			update |= SYS_UPDATECFG;
+			break;
+
+		case MID_SKIP16MBMEMCHK:
+			if(np2cfg.memchkmx == 0)
+				np2cfg.memchkmx = 15;
+			else
+				np2cfg.memchkmx = 0;
+			update |= SYS_UPDATECFG;
+			break;
+
 		case MID_ABOUT:
 			menudlg_create(DLGABOUT_WIDTH, DLGABOUT_HEIGHT,
 											(char *)mstr_about, dlgabout_cmd);
@@ -761,14 +778,19 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 	menusys_setcheck(MID_PC9801_118, (b == 0x08));
 	menusys_setcheck(MID_SPEAKBOARD, (b == 0x20));
 	menusys_setcheck(MID_SPARKBOARD, (b == 0x40));
+	menusys_setcheck(MID_SOUNDORCHESTRA, (b == 0x32));
+	menusys_setcheck(MID_SOUNDORCHESTRAV, (b == 0x82));
+	menusys_setcheck(MID_AMD98, (b == 0x80));
+#if defined(SUPPORT_SOUND_SB16)
+	menusys_setcheck(MID_SB16, (b == 0x41));
+#endif	/* SUPPORT_SOUND_SB16 */
 #if defined(SUPPORT_PX)
 	menusys_setcheck(MID_PX1, (b == 0x30));
 	menusys_setcheck(MID_PX2, (b == 0x50));
 #endif	/* defined(SUPPORT_PX) */
-	menusys_setcheck(MID_AMD98, (b == 0x80));
-	b = np2cfg.usefmgen;
-	menusys_setcheck(MID_DEFSND, (b == 0));
-	menusys_setcheck(MID_FMGEN, (b == 1));
+#if defined(SUPPORT_FMGEN)
+	menusys_setcheck(MID_FMGEN, (np2cfg.usefmgen & 1));
+#endif	/* SUPPORT_FMGEN */
 	menusys_setcheck(MID_JASTSND, (np2oscfg.jastsnd & 1));
 	menusys_setcheck(MID_SEEKSND, (np2cfg.MOTOR & 1));
 	b = np2cfg.EXTMEM;
@@ -786,6 +808,9 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 	menusys_setcheck(MID_JOYX, (np2cfg.BTN_MODE & 1));
 	menusys_setcheck(MID_RAPID, (np2cfg.BTN_RAPID & 1));
 	menusys_setcheck(MID_MSRAPID, (np2cfg.MOUSERAPID & 1));
+	menusys_setcheck(MID_ITFWORK, (np2cfg.ITF_WORK & 1));
+	menusys_setcheck(MID_FIXMMTIMER, (np2cfg.timerfix & 1));
+	menusys_setcheck(MID_SKIP16MBMEMCHK, (np2cfg.memchkmx != 0));
 	return(menusys_open(x, y));
 }
 
