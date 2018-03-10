@@ -366,6 +366,19 @@ MELCO LGY-98
 IRQ:6  
 I/O:0x00D0
 
+[X11] To use external MIDI sound generator
+---
+We can use external MIDI sound generator with UM-1.
+
+1. Connect UM-1 to USB
+2. Check you can see 'midi3' by '$ ls /dev' command
+3. Open xnp2kai
+* Select xnp2kai's menu 'Device' -> 'MIDI option...'
+* Set '/dev/midi3' to 'MIDI-OUT' in ’Device' frame
+* Select 'MIDI-OUT device' to 'MIDI-OUT' in ’Assign' frame
+* Press 'OK'
+4. I tried with Touhou 2 (set MIDI option), I can listen MIDI sound.
+
 Release
 ---
 * Mar 9, 2018
