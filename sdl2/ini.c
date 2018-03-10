@@ -666,7 +666,7 @@ static const INITBL iniitem[] = {
 
 	{"MEMCHKMX", INITYPE_UINT8,	&np2cfg.memchkmx,	0},
 
-	{"keyboard", INIRO_KB,		&np2oscfg.KEYBOARD,	0},
+	{"keyboard", INITYPE_KB,	&np2oscfg.KEYBOARD,	0},
 #if !defined(__LIBRETRO__)
 	{"Joystick", INITYPE_BOOL,	&np2oscfg.JOYPAD1,	0},
 	{"Joy1_btn", INITYPE_ARGH8,	np2oscfg.JOY1BTN,	JOY_NBUTTON},

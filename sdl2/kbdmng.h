@@ -29,7 +29,7 @@
 #include "keystat.h"
 
 enum {
-	KEY_KEY106,
+	KEY_KEY106 = 0,
 	KEY_KEY101,
 	KEY_TYPEMAX
 };
