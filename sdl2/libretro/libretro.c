@@ -847,9 +847,9 @@ static void update_variables(void)
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
       if (strcmp(var.value, "Us") == 0)
-         np2oscfg.KEYBOARD == KEY_KEY101;
+         np2oscfg.KEYBOARD = KEY_KEY101;
       else
-         np2oscfg.KEYBOARD == KEY_KEY106;
+         np2oscfg.KEYBOARD = KEY_KEY106;
    }
 
    var.key = "np2kai_model";
