@@ -386,26 +386,27 @@ We can software synthesizer timidity as Virtual MIDI.
 It seems that timidity is incompatible with PulseAudio.  
 By changing to ALSA output, I was able to play sound.
 
-1. Install timidity and fluid-soundfont-gm  
+１． Install timidity and fluid-soundfont-gm  
 
     $ sudo apt-get install timidity fluid-soundfont-gm
 
-2. Edit timidity.cfg  
+２． Edit timidity.cfg  
 
     $ sudo nano /etc/timidity  
 
     #source /etc/timidity/freepats.cfg  
     source /etc/timidity/fluidr3_gm.cfg
 
-3. restart timidity  
+３． restart timidity  
 
     $ sudo service timidity restart
 
-4. 
+４． 
 
     $ aconnect -o  
 This time, you can see like Timidity port 128:0 to 128:3.
-5. 
+
+５． 
 
     $ timidity -iA -B2,8 -Os &  
 
@@ -414,7 +415,8 @@ Drive timidity daemon output to ALSA.
     $ aconnect -o  
 
 This time, you can see like ALSAed Timidity port 129:0 to 129:3.
-6. 
+
+６． 
 
     $ sudo modprobe snd-virmidi  
 
@@ -423,16 +425,18 @@ Add virtual MIDI port module.
     $ aconnect -o  
 
 This time, you can see like VirMIDI 3-0 to 3-3 at 28:0 to 31:0.
-7. 
+
+７． 
 
     $ ls /dev/snd  
 
 You can also see VirMIDI 3-0 to 3-3 at midiC3D0 to midiC3D3.
-8. Connect VirMIDI 3-0 and ALSAed Timidity port 0.  
+
+８． Connect VirMIDI 3-0 and ALSAed Timidity port 0.  
 
     $ aconnect 28:0 129:0  
 
-9. Finally set '/dev/snd/midiC3D0' to XNP2.
+９． Finally set '/dev/snd/midiC3D0' to XNP2.
 
 Next boot computer, you command from 4.
 
