@@ -371,10 +371,10 @@ I/O:0x00D0
 We can use external MIDI sound generator with UM-1.
 
 1. Connect UM-1 to USB
-2. Check you can see 'midi3' by '$ ls /dev' command
+2. Check you can see 'C4D0' by '$ ls /dev/snd' command
 3. Open xnp2kai
 * Select xnp2kai's menu 'Device' -> 'MIDI option...'
-* Set '/dev/midi3' to 'MIDI-OUT' in ’Device' frame
+* Set '/dev/snd/C4D0' to 'MIDI-OUT' in ’Device' frame
 * Select 'MIDI-OUT device' to 'MIDI-OUT' in ’Assign' frame
 * Press 'OK'
 4. I tried with Touhou 2 (set MIDI option), I can listen MIDI sound.
@@ -386,28 +386,28 @@ We can software synthesizer timidity as Virtual MIDI.
 It seems that timidity is incompatible with PulseAudio.
 By changing to ALSA output, I was able to play sound.
 
-1. Install timidity and fluid-soundfont-gm
+1. Install timidity and fluid-soundfont-gm  
 $ sudo apt-get install timidity fluid-soundfont-gm
-2. Edit timidity.cfg
-$ sudo nano /etc/timidity
-#source /etc/timidity/freepats.cfg
+2. Edit timidity.cfg  
+$ sudo nano /etc/timidity  
+#source /etc/timidity/freepats.cfg  
 source /etc/timidity/fluidr3_gm.cfg
-3. restart timidity
+3. restart timidity  
 $ service timidity restart
-4. $ aconnect -o
+4. $ aconnect -o  
 This time, you can see like Timidity port 128:0 to 128:3.
-5. $ timidity -iA -B2,8 -Os &
-Drive timidity daemon output to ALSA.
-$ aconnect -o
+5. $ timidity -iA -B2,8 -Os &  
+Drive timidity daemon output to ALSA.  
+$ aconnect -o  
 This time, you can see like ALSAed Timidity port 129:0 to 129:3.
-6. $ sudo modprobe snd-virmidi
-Add virtual MIDI port module.
-$ aconnect -o
+6. $ sudo modprobe snd-virmidi  
+Add virtual MIDI port module.  
+$ aconnect -o  
 This time, you can see like VirMIDI 3-0 to 3-3 at 28:0 to 31:0.
-7. $ ls /dev/snd
+7. $ ls /dev/snd  
 You can also see VirMIDI 3-0 to 3-3 at midiC3D0 to midiC3D3.
-8. Connect VirMIDI 3-0 and ALSAed Timidity port 0.
-$ aconnect 28:0 129:0
+8. Connect VirMIDI 3-0 and ALSAed Timidity port 0.  
+$ aconnect 28:0 129:0  
 Finally set '/dev/snd/midiC3D0' to XNP2.
 
 Next boot computer, you command from 4.
