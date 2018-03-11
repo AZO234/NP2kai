@@ -180,7 +180,7 @@ R button: right Shift key
 Select button: Escape key  
 Start button: Return key
 
-Keyboard(libretro)
+[libretro] Keyboard
 ---
 Common
 
@@ -218,6 +218,44 @@ US101 keyboard
 |@ `|` ~|don't come event|implemented|
 |; +|; :|||
 |: *|' "|||
+|_ _||can't push|implemented|
+
+[X11] Keyboard
+---
+Common
+
+|PC-98key|key|problem|menu|
+|:---:|:---:|:---:|:---:|
+|STOP|Pause|||
+|COPY||can't push||
+|v.f1||can't push||
+|v.f2||can't push||
+|v.f3||can't push||
+|v.f4||can't push||
+|v.f5||can't push||
+|Kana||can't push||
+|GRPH|RCtrl|||
+|NFER|LAlt|||
+|XFER|RAlt|||
+|HOME/CLR|Home|||
+|HELP|End|||
+|KP=|KP=|can't push||
+
+JP106 keyboard(default)
+
+All keys OK.
+
+US101 keyboard
+
+|PC-98key|key|info|menu|
+|:---:|:---:|:---:|:---:|
+|2 "|2 @|||
+|￥ \||\\ \||||
+|@ `|[ {|||
+|[ {|] }|||
+|; +|; :|||
+|: *|' "|||
+|] }|` ~|||
 |_ _||can't push|implemented|
 
 BIOS files
