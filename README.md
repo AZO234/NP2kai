@@ -383,7 +383,7 @@ We can use external MIDI sound generator with UM-1.
 ---
 We can software synthesizer timidity as Virtual MIDI.
 
-It seems that timidity is incompatible with PulseAudio.
+It seems that timidity is incompatible with PulseAudio.  
 By changing to ALSA output, I was able to play sound.
 
 1. Install timidity and fluid-soundfont-gm  
