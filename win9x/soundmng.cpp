@@ -233,9 +233,9 @@ UINT CSoundMng::CreateStream(UINT nSamplingRate, UINT ms)
 		return 0;
 	}
 
-	if (ms < 40)
+	if (ms < 5)
 	{
-		ms = 40;
+		ms = 5;
 	}
 	else if (ms > 1000)
 	{

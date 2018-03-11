@@ -245,12 +245,27 @@ soundmng_create(UINT rate, UINT bufmsec)
 	UINT samples;
 	int i;
 
-	if (opened || ((rate != 11025) && (rate != 22050) && (rate != 44100) && (rate != 48000) && (rate != 88200) && (rate != 96000) && (rate != 176400) && (rate != 192000))) {
+	if (opened) {
+		return 0;
+	}
+	switch(rate) {
+		case 11025:
+		case 22050:
+		case 44100:
+		case 48000:
+		case 88200:
+		case 96000:
+		case 176400:
+		case 192000:
+			break;
+
+		default:
 		return 0;
 	}
 
-	if (bufmsec < 20)
-		bufmsec = 20;
+
+	if (bufmsec < 5)
+		bufmsec = 5;
 	else if (bufmsec > 1000)
 		bufmsec = 1000;
 
@@ -376,7 +391,9 @@ soundmng_sync(void)
 			sounddrv_unlock();
 
 			pcm = sound_pcmlock();
-			(*fnmix)((SINT16 *)sndbuf->buf, pcm, opna_frame);
+			if(pcm) {
+				(*fnmix)((SINT16 *)sndbuf->buf, pcm, opna_frame);
+			}
 			sound_pcmunlock(pcm);
 			sndbuf->remain = sndbuf->size;
 

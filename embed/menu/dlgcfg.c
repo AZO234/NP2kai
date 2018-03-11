@@ -314,8 +314,8 @@ const OEMCHAR	*str;
 		soundrenewal = 1;
 	}
 	val = menudlg_getval(DID_BUFFER);
-	if (val < 20) {
-		val = 20;
+	if (val < 5) {
+		val = 5;
 	}
 	else if (val > 1000) {
 		val = 1000;
