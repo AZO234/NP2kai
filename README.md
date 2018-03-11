@@ -393,7 +393,7 @@ $ sudo nano /etc/timidity
 #source /etc/timidity/freepats.cfg  
 source /etc/timidity/fluidr3_gm.cfg
 3. restart timidity  
-$ service timidity restart
+$ sudo service timidity restart
 4. $ aconnect -o  
 This time, you can see like Timidity port 128:0 to 128:3.
 5. $ timidity -iA -B2,8 -Os &  
