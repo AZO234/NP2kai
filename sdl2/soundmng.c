@@ -294,8 +294,8 @@ soundmng_create(UINT rate, UINT bufmsec)
 	}
 
 
-	if (bufmsec < 5)
-		bufmsec = 5;
+	if (bufmsec < 20)
+		bufmsec = 20;
 	else if (bufmsec > 1000)
 		bufmsec = 1000;
 

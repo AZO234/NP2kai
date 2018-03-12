@@ -487,8 +487,6 @@ Next boot computer, you command from 4.
 
 Release
 ---
-* Mar 12, 2018
-	- sound buffer minimum is 5ms
 * Mar 9, 2018
 	- [X11] add UI
 	- [SDL2] add and fix UI

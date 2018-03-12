@@ -332,7 +332,7 @@ void CConfigureDlg::OnOK()
 	}
 
 	UINT nBuffer = GetDlgItemInt(IDC_SOUND_BUFFER, NULL, FALSE);
-	nBuffer = np2max(nBuffer, 5);
+	nBuffer = np2max(nBuffer, 40);
 	nBuffer = np2min(nBuffer, 1000);
 	if (np2cfg.delayms != static_cast<UINT16>(nBuffer))
 	{
