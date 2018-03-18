@@ -725,6 +725,7 @@ BRESULT sysmenu_create(void) {
 		s_main[1].child = s_statee;
 	}
 #endif	/* SUPPORT_STATSAVE */
+/*
 	if(np2cfg.fddrive3) {
 		if(np2cfg.fddrive4) {
 			s_main[2].child = s_fddf;
@@ -736,6 +737,7 @@ BRESULT sysmenu_create(void) {
 			s_main[2].child = s_fdd124;
 		}
 	}
+*/
 	if (menusys_create(s_main, sys_cmd, MICON_NP2, str_np2)) {
 		goto smcre_err;
 	}

@@ -135,7 +135,6 @@ typedef	signed char		TCHAR;
 //#define	msgbox(title, msg)	toolkit_messagebox(title, msg);
 #define	msgbox(title, msg)
 
-#include "common.h"
 #include "milstr.h"
 #include "_memory.h"
 #include "rect.h"
@@ -180,11 +179,8 @@ typedef SINT32	FILELEN;
 
 #define	SUPPORT_CRT31KHZ
 #define	SUPPORT_SWSEEKSND
-#define  SUPPORT_PC9821
 
 #if defined(SUPPORT_PC9821)
-#define	CPUCORE_IA32
-#define  USE_FPU
 #define	IA32_PAGING_EACHSIZE
 #define	SUPPORT_PC9801_119
 #else
@@ -251,3 +247,7 @@ typedef SINT32	FILELEN;
 #define	VRAMCALL
 #define	SCRNCALL
 #define	VERMOUTHCL
+#define	INLINE inline
+
+#include "common.h"
+

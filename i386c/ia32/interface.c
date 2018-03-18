@@ -26,15 +26,13 @@
 #include "compiler.h"
 #include "cpu.h"
 #include "ia32.mcr"
-#if defined(USE_FPU)
-#include "instructions/fpu/fp.h"
-#endif
 
 #include "pccore.h"
 #include "iocore.h"
 #include "dmax86.h"
 #include "bios/bios.h"
 
+#include "ia32/instructions/fpu/fp.h"
 
 void
 ia32_initreg(void)
@@ -47,8 +45,13 @@ ia32_initreg(void)
 	CPU_EFLAG = 2;
 	CPU_CR0 = CPU_CR0_CD | CPU_CR0_NW;
 #if defined(USE_FPU)
-	CPU_CR0 &= ~CPU_CR0_EM;
-	CPU_CR0 |= CPU_CR0_ET;
+	if(i386cpuid.cpu_feature & CPU_FEATURE_FPU){
+		CPU_CR0 |= CPU_CR0_ET;	/* FPU present */
+		CPU_CR0 &= ~CPU_CR0_EM;
+	}else{
+		CPU_CR0 |= CPU_CR0_EM | CPU_CR0_NE;
+		CPU_CR0 &= ~(CPU_CR0_MP | CPU_CR0_ET);
+	}
 #else
 	CPU_CR0 |= CPU_CR0_EM | CPU_CR0_NE;
 	CPU_CR0 &= ~(CPU_CR0_MP | CPU_CR0_ET);
@@ -75,9 +78,7 @@ ia32_initreg(void)
 	CPU_ADRSMASK = 0x000fffff;
 
 	tlb_init();
-#if defined(USE_FPU)
-	fpu_init();
-#endif
+	fpu_initialize();
 }
 
 void

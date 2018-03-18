@@ -8,6 +8,9 @@
 #include	"memtram.h"
 #include	"memvram.h"
 #include	"memegc.h"
+#if defined(SUPPORT_PC9821)
+#include	"memvga.h"
+#endif
 #if defined(SUPPORT_BMS)
 #include	"bmsio.h"
 #endif

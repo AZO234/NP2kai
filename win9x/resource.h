@@ -73,6 +73,7 @@
 #define IDC_MODELVX                     11105
 #define IDC_MODELEPSON                  11106
 #define IDC_MODEL21                     11107
+#define IDC_CPU_TYPE                    11109
 #define IDC_SOUND_BUFFER                11110
 #define IDC_ALLOWRESIZE                 11111
 #define IDC_DISABLEMMX                  11112
@@ -470,6 +471,17 @@
 #define IDS_DMA1                        32010
 #define IDS_DMA2                        32011
 #define IDS_DMA3                        32012
+#define IDS_CPU_CUSTOM                  32020
+#define IDS_CPU_I486SX                  32021
+#define IDS_CPU_I486DX                  32022
+#define IDS_CPU_PENTIUM                 32023
+#define IDS_CPU_MMXPENTIUM              32024
+#define IDS_CPU_PENTIUMPRO              32025
+#define IDS_CPU_PENTIUMII               32026
+#define IDS_CPU_AMD_K6_2                32035
+#define IDS_CPU_AMD_K6_III              32036
+#define IDS_CPU_80286					32040
+#define IDS_CPU_NEKOPRO                 32049
 #define IDM_TOOLWIN                     40001
 #define IDM_KEYDISP                     40002
 #define IDM_SOFTKBD                     40003
@@ -581,6 +593,7 @@
 #define IDM_20FPS                       40512
 #define IDM_15FPS                       40513
 #define IDM_SCREENOPT                   40514
+#define IDM_CPUSTABILIZER               40515
 #define IDM_KEY                         40601
 #define IDM_JOY1                        40602
 #define IDM_JOY2                        40603
@@ -632,6 +645,9 @@
 #define IDM_MEM646                      40669
 #define IDM_MEM1206                     40670
 #define IDM_MEM2306                     49671
+#define IDM_FPU80                       49680
+#define IDM_FPU64                       49681
+#define IDM_FPU64INT                    49682
 #define IDM_MOUSE                       40671
 #define IDM_SERIAL1                     40672
 #define IDM_MPUPC98                     40673

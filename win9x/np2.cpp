@@ -138,7 +138,11 @@ static	TCHAR		szClassName[] = _T("NP2-MainWindow");
 #if defined(SUPPORT_VSTi)
 						TEXT("%ProgramFiles%\\Roland\\Sound Canvas VA\\SOUND Canvas VA.dll"),
 #endif	// defined(SUPPORT_VSTi)
-						0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 8, 0
+						0, 0, 0, 1, 0, 1, 1, 
+						0, 0, 
+						0, 8, 
+						0, 
+						0
 					};
 
 		OEMCHAR		fddfolder[MAX_PATH];
@@ -156,6 +160,7 @@ static	int			np2opening = 1;
 static	int			np2quitmsg = 0;
 static	WINLOCEX	smwlex;
 static	HMODULE		s_hModResource;
+static  UINT		lateframecount; // ÉtÉåÅ[ÉÄíxÇÍêî
 
 static const OEMCHAR np2help[] = OEMTEXT("np2.chm");
 static const OEMCHAR np2flagext[] = OEMTEXT("S%02d");
@@ -573,6 +578,8 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 	UINT		uID;
 	BOOL		b;
 
+	static UINT16 oldcpustabf = 90;
+
 	update = 0;
 	uID = LOWORD(wParam);
 #if defined(SUPPORT_IDEIO)
@@ -902,6 +909,16 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			update |= SYS_UPDATECFG;
 			break;
 
+		case IDM_CPUSTABILIZER:
+			if(np2oscfg.cpustabf == 0){
+				np2oscfg.cpustabf = oldcpustabf;
+			}else{
+				oldcpustabf = np2oscfg.cpustabf;
+				np2oscfg.cpustabf = 0;
+			}
+			update |= SYS_UPDATECFG;
+			break;
+
 		case IDM_AUTOFPS:
 			np2oscfg.DRAW_SKIP = 0;
 			update |= SYS_UPDATECFG;
@@ -1219,6 +1236,21 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			update |= SYS_UPDATECFG | SYS_UPDATEMEMORY;
 			break;
 
+		case IDM_FPU80:
+			np2cfg.fpu_type = FPU_TYPE_SOFTFLOAT;
+			update |= SYS_UPDATECFG;
+			break;
+			
+		case IDM_FPU64:
+			np2cfg.fpu_type = FPU_TYPE_DOSBOX;
+			update |= SYS_UPDATECFG;
+			break;
+			
+		case IDM_FPU64INT:
+			np2cfg.fpu_type = FPU_TYPE_DOSBOX2;
+			update |= SYS_UPDATECFG;
+			break;
+			
 		case IDM_MOUSE:
 			mousemng_toggle(MOUSEPROC_SYSTEM);
 			np2oscfg.MOUSE_SW = !np2oscfg.MOUSE_SW;
@@ -1978,6 +2010,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 						RECT r;
 						int mouse_edge_sh_x = 100;
 						int mouse_edge_sh_y = 100;
+						int dxmul, dymul;
 						GetClientRect(hWnd, &r);
 						mouse_edge_sh_x = (r.right-r.left)/8;
 						mouse_edge_sh_y = (r.bottom-r.top)/8;
@@ -1986,15 +2019,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 						// XXX: í[é¿å±
 #define MOUSE_EDGE_ACM	4
 						if(x<mouse_edge_sh_x && dx < 0){
-							dx *= (SINT16)(1+(mouse_edge_sh_x - x)*MOUSE_EDGE_ACM/mouse_edge_sh_x);
+							dxmul = 1+(mouse_edge_sh_x - x)*MOUSE_EDGE_ACM/mouse_edge_sh_x;
 						}else if(r.right-mouse_edge_sh_x <= x && dx > 0){
-							dx *= (SINT16)(1+(mouse_edge_sh_x - (r.right-x))*MOUSE_EDGE_ACM/mouse_edge_sh_x);
+							dxmul = 1+(mouse_edge_sh_x - (r.right-x))*MOUSE_EDGE_ACM/mouse_edge_sh_x;
+						}else{
+							dxmul = 1;
 						}
 						if(y<mouse_edge_sh_y && dy < 0){
-							dy *= (SINT16)(1+(mouse_edge_sh_y - y)*MOUSE_EDGE_ACM/mouse_edge_sh_y);
+							dymul = 1+(mouse_edge_sh_y - y)*MOUSE_EDGE_ACM/mouse_edge_sh_y;
 						}else if(r.bottom-mouse_edge_sh_y <= y && dy > 0){
-							dy *= (SINT16)(1+(mouse_edge_sh_y - (r.bottom-y))*MOUSE_EDGE_ACM/mouse_edge_sh_y);
+							dymul = 1+(mouse_edge_sh_y - (r.bottom-y))*MOUSE_EDGE_ACM/mouse_edge_sh_y;
+						}else{
+							dymul = 1;
 						}
+						dxmul = (int)dx * dxmul;
+						dymul = (int)dy * dymul;
+						if(dxmul < -128) dxmul = -128;
+						if(dxmul > +127) dxmul = +127;
+						if(dymul < -128) dymul = -128;
+						if(dymul > +127) dymul = +127;
+						dx = (SINT16)dxmul;
+						dy = (SINT16)dymul;
 						mousemng_setstat(dx, dy, btn);
 						lastmx = x;
 						lastmy = y;
@@ -2417,12 +2462,19 @@ static void framereset(UINT cnt) {
 
 static void processwait(UINT cnt) {
 
-	if (timing_getcount() >= cnt) {
+	UINT count = timing_getcount();
+	if (count+lateframecount >= cnt) {
+		lateframecount = lateframecount + count - cnt;
+		if(lateframecount > np2oscfg.cpustabf) lateframecount = np2oscfg.cpustabf;
 		timing_setcount(0);
 		framereset(cnt);
 	}
 	else {
-		Sleep(1);
+		if(lateframecount){
+			SleepEx(0, TRUE);
+		}else{
+			Sleep(1);
+		}
 	}
 	soundmng_sync();
 }
@@ -2463,7 +2515,8 @@ void unloadNP2INI(){
 #ifdef SUPPORT_NET
 	//np2net_shutdown();
 #endif
-
+	
+	sxsi_alltrash();
 	//pccore_term();
 
 	CSoundMng::GetInstance()->Close();
@@ -3039,6 +3092,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	sysmng_updatecaption(3);
 	
 
+	lateframecount = 0;
 	while(1) {
 		if (!np2stopemulate) {
 			if (PeekMessage(&msg, 0, 0, 0, PM_NOREMOVE)) {
@@ -3113,6 +3167,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 		}
 		else if ((np2stopemulate == 1) ||				// background sleep
 				(PeekMessage(&msg, 0, 0, 0, PM_NOREMOVE))) {
+			if(np2stopemulate == 1) {
+				lateframecount = 0;
+				timing_setcount(0);
+			}
 			if (!GetMessage(&msg, NULL, 0, 0)) {
 				break;
 			}

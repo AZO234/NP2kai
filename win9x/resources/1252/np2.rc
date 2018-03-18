@@ -31,39 +31,41 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Dialog
 //
 
-IDD_CONFIG DIALOG 0, 0, 182, 274
+IDD_CONFIG DIALOG 0, 0, 182, 294
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Configure"
 CLASS "np2dialog"
 FONT 9, "MS Sans Serif"
 BEGIN
-    GROUPBOX        "CPU",IDC_STATIC,8,8,110,44
+    GROUPBOX        "CPU",IDC_STATIC,8,8,110,64
     COMBOBOX        IDC_BASECLOCK,14,22,54,43,CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP
     LTEXT           "x",IDC_STATIC,72,26,8,8
     COMBOBOX        IDC_MULTIPLE,80,22,32,80,CBS_DROPDOWN | WS_VSCROLL | WS_GROUP | WS_TABSTOP
     RTEXT           "",IDC_CLOCKMSG,14,41,80,8
     LTEXT           "MHz",IDC_STATIC,96,41,16,8
-    GROUPBOX        "Base Architecture",IDC_STATIC,8,56,166,48
-    CONTROL         "PC-9801VM",IDC_MODELVM,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,16,68,54,10
-    CONTROL         "PC-9801VX",IDC_MODELVX,"Button",BS_AUTORADIOBUTTON,72,68,54,10
-    CONTROL         "PC-286",IDC_MODELEPSON,"Button",BS_AUTORADIOBUTTON,128,68,44,10
-    CONTROL         "Always use 16bit I/O port addressing(PC-9821)",IDC_MODEL21,"Button",BS_AUTOCHECKBOX|WS_TABSTOP,14,88,158,10
-    GROUPBOX        "Sound",IDC_STATIC,8,108,166,84
-    LTEXT           "Type",IDC_STATIC,14,122,48,8
-    COMBOBOX        IDC_SOUND_DEVICE_TYPE,64,119,64,128,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Device",IDC_STATIC,14,140,48,8
-    COMBOBOX        IDC_SOUND_DEVICE_NAME,64,137,104,128,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Sampling Rate",IDC_STATIC,14,158,48,8
-    COMBOBOX        IDC_SOUND_RATE,64,155,50,128,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Hz",IDC_STATIC,116,158,48,8
-    LTEXT           "Buffer",IDC_STATIC,14,176,48,8
-    EDITTEXT        IDC_SOUND_BUFFER,64,173,30,12,WS_GROUP
-    LTEXT           "milliseconds",IDC_STATIC,96,176,48,8
-    CONTROL         "Allow resize",IDC_ALLOWRESIZE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,200,162,10
-    CONTROL         "Disable MMX",IDC_DISABLEMMX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,214,162,10
-    CONTROL         "Confirm dialog (on reset/exit)",IDC_COMFIRM,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,228,162,10
-    CONTROL         "Resume",IDC_RESUME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,242,162,10
-    CONTROL         "Save window size",IDC_SAVEWINDOWSIZE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,256,162,10
+    LTEXT           "Type",IDC_STATIC,14,53,20,8
+    COMBOBOX        IDC_CPU_TYPE,36,51,74,128,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Base Architecture",IDC_STATIC,8,76,166,48
+    CONTROL         "PC-9801VM",IDC_MODELVM,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,16,88,54,10
+    CONTROL         "PC-9801VX",IDC_MODELVX,"Button",BS_AUTORADIOBUTTON,72,88,54,10
+    CONTROL         "PC-286",IDC_MODELEPSON,"Button",BS_AUTORADIOBUTTON,128,88,44,10
+    CONTROL         "Always use 16bit I/O port addressing(PC-9821)",IDC_MODEL21,"Button",BS_AUTOCHECKBOX|WS_TABSTOP,14,108,158,10
+    GROUPBOX        "Sound",IDC_STATIC,8,128,166,84
+    LTEXT           "Type",IDC_STATIC,14,142,48,8
+    COMBOBOX        IDC_SOUND_DEVICE_TYPE,64,139,64,128,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Device",IDC_STATIC,14,160,48,8
+    COMBOBOX        IDC_SOUND_DEVICE_NAME,64,157,104,128,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Sampling Rate",IDC_STATIC,14,178,48,8
+    COMBOBOX        IDC_SOUND_RATE,64,175,50,128,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Hz",IDC_STATIC,116,178,48,8
+    LTEXT           "Buffer",IDC_STATIC,14,196,48,8
+    EDITTEXT        IDC_SOUND_BUFFER,64,193,30,12,WS_GROUP
+    LTEXT           "milliseconds",IDC_STATIC,96,196,48,8
+    CONTROL         "Allow resize",IDC_ALLOWRESIZE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,220,162,10
+    CONTROL         "Disable MMX",IDC_DISABLEMMX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,234,162,10
+    CONTROL         "Confirm dialog (on reset/exit)",IDC_COMFIRM,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,248,162,10
+    CONTROL         "Resume",IDC_RESUME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,262,162,10
+    CONTROL         "Save window size",IDC_SAVEWINDOWSIZE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,276,162,10
     DEFPUSHBUTTON   "&OK",IDOK,130,8,44,14,WS_GROUP
     PUSHBUTTON      "Cancel",IDCANCEL,130,26,44,14
 END
@@ -506,7 +508,7 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,112,26,44,14
 END
 
-IDD_ABOUT DIALOG 0, 0, 196, 108
+IDD_ABOUT DIALOG 0, 0, 216, 108
 STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 CLASS "np2dialog"
@@ -994,6 +996,12 @@ BEGIN
             MENUITEM "&64.6MB",                     IDM_MEM646
             MENUITEM "&120.6MB",                    IDM_MEM1206
             MENUITEM "&230.6MB",                    IDM_MEM2306
+        END
+        POPUP "F&PU"
+        BEGIN
+            MENUITEM "80bit Extended Precision FPU (recommended)",IDM_FPU80
+            MENUITEM "64bit Double Precision FPU",  IDM_FPU64
+            MENUITEM "64bit Double Precision FPU + INT64 Load/Store", IDM_FPU64INT
         END
         POPUP "&Mouse"
         BEGIN
@@ -1564,6 +1572,18 @@ END
 
 STRINGTABLE
 BEGIN
+    IDS_CPU_CUSTOM          "(custom)"
+    IDS_CPU_80286           "Intel 80286"
+    IDS_CPU_I486SX          "Intel i486SX"
+    IDS_CPU_I486DX          "Intel i486DX"
+    IDS_CPU_PENTIUM         "Intel Pentium"
+    IDS_CPU_MMXPENTIUM      "Intel MMX Pentium"
+    IDS_CPU_PENTIUMPRO      "Intel Pentium Pro"
+    IDS_CPU_PENTIUMII       "Intel Pentium II"
+END
+
+STRINGTABLE
+BEGIN
     IDS_FONTTITLE           "Select font file"
     IDS_FONTEXT             "bmp"
     IDS_FONTFILTER          "PC-98 BMP font (*.bmp)|*.bmp|Virtual98 font|font.rom|All supported files|*.bmp;pc88.fnt;kanji1.rom;kanji2.rom;font.rom;subsys_c.rom;kanji.rom;fnt0808.x1;fnt0816.x1;fnt1616.x1;cgrom.dat|"
@@ -1594,7 +1614,7 @@ STRINGTABLE
 BEGIN
     IDS_FDDTITLE            "Select floppy image"
     IDS_FDDEXT              "d88"
-    IDS_FDDFILTER           "Anex86 floppy disk images (*.fdi)|*.fdi|T98-Next floppy disk images (*.nfd)|*.nfd|Virtual floppy disk images (*.fdd)|*.fdd|BKDSK images (*.hdm;*.hd4;*.hd5;*.hd9;*.h01;*.hdb;*.ddb;*.dd6;*.dd9)|*.hdm;*.hd4;*.hd5;*.hd9;*.h01;*.hdb;*.ddb;*.dd6;*.dd9|D88 image files (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|DCP/DCU image files (*.dcp;*.dcu)|*.dcp;*.dcu|Floppy disk images (*.xdf;*.hdm;*.dup;*.2hd;*.flp;*.bin;*.tfd)|*.fdi;*.hdm;*.hd4;*.hd5;*.hd9;*.h01;*.hdb;*.ddb;*.dd6;*.dd9;*.dcp;*.dcu;*.xdf;*.dup;*.2hd;*.flp;*.bin;*.tfd;*.fim;*.img;*.ima|All supported files|*.fdi;*.nfd;*.fdd;*.hdm;*.hd4;*.hd5;*.hd9;*.h01;*hdb;*.ddb;*.dd6;*.dd9;*.d88;*.88d;*.d98;*.98d;*.dcp;*.dcu;*.xdf;*.dup;*.2hd;*.flp;*.bin;*.tfd;*.fim;*.img;*.ima|All files (*.*)|*.*|"
+    IDS_FDDFILTER           "Anex86 floppy disk images (*.fdi)|*.fdi|T98-Next floppy disk images (*.nfd)|*.nfd|Virtual floppy disk images (*.fdd)|*.fdd|BKDSK images (*.hdm;*.hd4;*.hd5;*.hd9;*.h01;*.hdb;*.ddb;*.dd6;*.dd9)|*.hdm;*.hd4;*.hd5;*.hd9;*.h01;*.hdb;*.ddb;*.dd6;*.dd9|D88 image files (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|DCP/DCU image files (*.dcp;*.dcu)|*.dcp;*.dcu|Floppy disk images (*.xdf;*.hdm;*.dup;*.2hd;*.flp;*.bin;*.tfd)|*.fdi;*.hdm;*.hd4;*.hd5;*.hd9;*.h01;*.hdb;*.ddb;*.dd6;*.dd9;*.dcp;*.dcu;*.xdf;*.dup;*.2hd;*.flp;*.bin;*.tfd;*.fim|All supported files|*.fdi;*.nfd;*.fdd;*.hdm;*.hd4;*.hd5;*.hd9;*.h01;*hdb;*.ddb;*.dd6;*.dd9;*.d88;*.88d;*.d98;*.98d;*.dcp;*.dcu;*.xdf;*.dup;*.2hd;*.flp;*.bin;*.tfd;*.fim|All files (*.*)|*.*|"
 END
 
 STRINGTABLE

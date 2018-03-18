@@ -43,7 +43,8 @@
 #include "ia32/instructions/system_inst.h"
 
 #include "ia32/instructions/fpu/fp.h"
-
+#include "ia32/instructions/mmx/mmx.h"
+#include "ia32/instructions/mmx/3dnow.h"
 
 /*
  * UNDEF OP
@@ -504,7 +505,7 @@ void (*insttable_1byte[2][256])(void) = {
 		CBW,			/* 98 */
 		CWD,
 		CALL16_Ap,
-		FWAIT,
+		FPU_FWAIT,
 		PUSHF_Fw,
 		POPF_Fw,
 		SAHF,
@@ -569,14 +570,14 @@ void (*insttable_1byte[2][256])(void) = {
 		AAD,
 		SALC,				/* undoc(8086) */
 		XLAT,
-		ESC0,			/* D8 */
-		ESC1,
-		ESC2,
-		ESC3,
-		ESC4,
-		ESC5,
-		ESC6,
-		ESC7,
+		NOFPU_ESC0,			/* D8 */
+		NOFPU_ESC1,
+		NOFPU_ESC2,
+		NOFPU_ESC3,
+		NOFPU_ESC4,
+		NOFPU_ESC5,
+		NOFPU_ESC6,
+		NOFPU_ESC7,
 
 		LOOPNE_Jb,		/* E0 */
 		LOOPE_Jb,
@@ -844,14 +845,14 @@ void (*insttable_1byte[2][256])(void) = {
 		AAD,
 		SALC,				/* undoc(8086) */
 		XLAT,
-		ESC0,			/* D8 */
-		ESC1,
-		ESC2,
-		ESC3,
-		ESC4,
-		ESC5,
-		ESC6,
-		ESC7,
+		NOFPU_ESC0,			/* D8 */
+		NOFPU_ESC1,
+		NOFPU_ESC2,
+		NOFPU_ESC3,
+		NOFPU_ESC4,
+		NOFPU_ESC5,
+		NOFPU_ESC6,
+		NOFPU_ESC7,
 
 		LOOPNE_Jb,		/* E0 */
 		LOOPE_Jb,
@@ -905,8 +906,8 @@ void (*insttable_2byte[2][256])(void) = {
 		undef_op,
 		UD2,
 		undef_op,
-		undef_op,
-		undef_op,
+		AMD3DNOW_PREFETCH,
+		AMD3DNOW_FEMMS,
 		undef_op,
 
 		undef_op,		/* 10 */
@@ -946,7 +947,7 @@ void (*insttable_2byte[2][256])(void) = {
 		WRMSR,			/* 30 */
 		RDTSC,
 		RDMSR,
-		undef_op,
+		RDPMC,
 		undef_op,
 		undef_op,
 		undef_op,
@@ -993,40 +994,40 @@ void (*insttable_2byte[2][256])(void) = {
 		undef_op,
 		undef_op,
 		undef_op,
-
-		undef_op,		/* 60 */
+		
+		MMX_PUNPCKLBW,		/* 60 */
+		MMX_PUNPCKLWD,
+		MMX_PUNPCKLDQ,
+		MMX_PACKSSWB,
+		MMX_PCMPGTB,
+		MMX_PCMPGTW,
+		MMX_PCMPGTD,
+		MMX_PACKUSWB,
+		MMX_PUNPCKHBW,		/* 68 */
+		MMX_PUNPCKHWD,
+		MMX_PUNPCKHDQ,
+		MMX_PACKSSDW,
 		undef_op,
 		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,		/* 68 */
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
+		MMX_MOVD_mm_rm32,
+		MMX_MOVQ_mm_mmm64,
 
 		undef_op,		/* 70 */
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
+		MMX_PSxxW_imm8,
+		MMX_PSxxD_imm8,
+		MMX_PSxxQ_imm8,
+		MMX_PCMPEQB,
+		MMX_PCMPEQW,
+		MMX_PCMPEQD,
+		MMX_EMMS,
 		undef_op,		/* 78 */
 		undef_op,
 		undef_op,
 		undef_op,
 		undef_op,
 		undef_op,
-		undef_op,
-		undef_op,
+		MMX_MOVD_rm32_mm,
+		MMX_MOVQ_mmm64_mm,
 
 		JO_Jw,			/* 80 */
 		JNO_Jw,
@@ -1076,7 +1077,7 @@ void (*insttable_2byte[2][256])(void) = {
 		BTS_EwGw,
 		SHRD_EwGwIb,
 		SHRD_EwGwCL,
-		undef_op,
+		NOFPU_FPU_FXSAVERSTOR,
 		IMUL_GwEw,
 
 		CMPXCHG_EbGb,		/* B0 */
@@ -1114,54 +1115,54 @@ void (*insttable_2byte[2][256])(void) = {
 		BSWAP_EDI,
 
 		undef_op,		/* D0 */
+		MMX_PSRLW,
+		MMX_PSRLD,
+		MMX_PSRLQ,
+		undef_op,
+		MMX_PMULLW,
 		undef_op,
 		undef_op,
+		MMX_PSUBUSB,		/* D8 */
+		MMX_PSUBUSW,
 		undef_op,
+		MMX_PAND,
+		MMX_PADDUSB,
+		MMX_PADDUSW,
 		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,		/* D8 */
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
+		MMX_PANDN,
 
 		undef_op,		/* E0 */
+		MMX_PSRAW,
+		MMX_PSRAD,
+		undef_op,
+		MMX_PMULHUW,
+		MMX_PMULHW,
 		undef_op,
 		undef_op,
+		MMX_PSUBSB,		/* E8 */
+		MMX_PSUBSW,
 		undef_op,
+		MMX_POR,
+		MMX_PADDSB,
+		MMX_PADDSW,
 		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,		/* E8 */
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
+		MMX_PXOR,
 
-		undef_op,		/* F0 */
+		AMD3DNOW_F0,		/* F0 */
+		MMX_PSLLW,
+		MMX_PSLLD,
+		MMX_PSLLQ,
+		undef_op,
+		MMX_PMADDWD,
 		undef_op,
 		undef_op,
+		MMX_PSUBB,		/* F8 */
+		MMX_PSUBW,
+		MMX_PSUBD,
 		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,		/* F8 */
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
+		MMX_PADDB,
+		MMX_PADDW,
+		MMX_PADDD,
 		undef_op,
 	},
 
@@ -1180,8 +1181,8 @@ void (*insttable_2byte[2][256])(void) = {
 		undef_op,
 		UD2,
 		undef_op,
-		undef_op,
-		undef_op,
+		AMD3DNOW_PREFETCH,
+		AMD3DNOW_FEMMS,
 		undef_op,
 
 		undef_op,		/* 10 */
@@ -1269,39 +1270,39 @@ void (*insttable_2byte[2][256])(void) = {
 		undef_op,
 		undef_op,
 
-		undef_op,		/* 60 */
+		MMX_PUNPCKLBW,		/* 60 */
+		MMX_PUNPCKLWD,
+		MMX_PUNPCKLDQ,
+		MMX_PACKSSWB,
+		MMX_PCMPGTB,
+		MMX_PCMPGTW,
+		MMX_PCMPGTD,
+		MMX_PACKUSWB,
+		MMX_PUNPCKHBW,		/* 68 */
+		MMX_PUNPCKHWD,
+		MMX_PUNPCKHDQ,
+		MMX_PACKSSDW,
 		undef_op,
 		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,		/* 68 */
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
+		MMX_MOVD_mm_rm32,
+		MMX_MOVQ_mm_mmm64,
 
 		undef_op,		/* 70 */
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
+		MMX_PSxxW_imm8,
+		MMX_PSxxD_imm8,
+		MMX_PSxxQ_imm8,
+		MMX_PCMPEQB,
+		MMX_PCMPEQW,
+		MMX_PCMPEQD,
+		MMX_EMMS,
 		undef_op,		/* 78 */
 		undef_op,
 		undef_op,
 		undef_op,
 		undef_op,
 		undef_op,
-		undef_op,
-		undef_op,
+		MMX_MOVD_rm32_mm,
+		MMX_MOVQ_mmm64_mm,
 
 		JO_Jd,			/* 80 */
 		JNO_Jd,
@@ -1351,7 +1352,7 @@ void (*insttable_2byte[2][256])(void) = {
 		BTS_EdGd,
 		SHRD_EdGdIb,
 		SHRD_EdGdCL,
-		undef_op,
+		NOFPU_FPU_FXSAVERSTOR,
 		IMUL_GdEd,
 
 		CMPXCHG_EbGb,		/* B0 */
@@ -1389,54 +1390,54 @@ void (*insttable_2byte[2][256])(void) = {
 		BSWAP_EDI,
 
 		undef_op,		/* D0 */
+		MMX_PSRLW,
+		MMX_PSRLD,
+		MMX_PSRLQ,
+		undef_op,
+		MMX_PMULLW,
 		undef_op,
 		undef_op,
+		MMX_PSUBUSB,		/* D8 */
+		MMX_PSUBUSW,
 		undef_op,
+		MMX_PAND,
+		MMX_PADDUSB,
+		MMX_PADDUSW,
 		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,		/* D8 */
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
+		MMX_PANDN,
 
 		undef_op,		/* E0 */
+		MMX_PSRAW,
+		MMX_PSRAD,
+		undef_op,
+		MMX_PMULHUW,
+		MMX_PMULHW,
 		undef_op,
 		undef_op,
+		MMX_PSUBSB,		/* E8 */
+		MMX_PSUBSW,
 		undef_op,
+		MMX_POR,
+		MMX_PADDSB,
+		MMX_PADDSW,
 		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,		/* E8 */
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
+		MMX_PXOR,
 
-		undef_op,		/* F0 */
+		AMD3DNOW_F0,		/* F0 */
+		MMX_PSLLW,
+		MMX_PSLLD,
+		MMX_PSLLQ,
+		undef_op,
+		MMX_PMADDWD,
 		undef_op,
 		undef_op,
+		MMX_PSUBB,		/* F8 */
+		MMX_PSUBW,
+		MMX_PSUBD,
 		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,		/* F8 */
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
+		MMX_PADDB,
+		MMX_PADDW,
+		MMX_PADDD,
 		undef_op,
 	},
 };

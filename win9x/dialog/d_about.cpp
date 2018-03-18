@@ -17,7 +17,7 @@
 static const TCHAR s_np2title[] = TEXT(PROJECTNAME) TEXT(PROJECTSUBNAME) TEXT("  ");
 
 //! 情報
-static const TCHAR s_np2infostr[] = TEXT("CPU: %CPU% %CLOCK%\nMEM: %MEM1%\nGDC: %GDC%\n     %GDC2%\nTEXT: %TEXT%\nGRPH: %GRPH%\nSOUND: %EXSND%\n\nBIOS: %BIOS%\nRHYTHM: %RHYTHM%\n\nSCREEN: %DISP%");
+static const TCHAR s_np2infostr[] = TEXT("CPU: %CPU% %CLOCK%\nMEM: %MEM1%\nFPU:%FPU%\nGDC: %GDC%\n     %GDC2%\nTEXT: %TEXT%\nGRPH: %GRPH%\nSOUND: %EXSND%\n\nBIOS: %BIOS%\nRHYTHM: %RHYTHM%\n\nSCREEN: %DISP%");
 
 /**
  * @brief バージョン情報ダイアログ
@@ -98,7 +98,7 @@ BOOL CAboutDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 {
 	if (LOWORD(wParam) == IDC_MORE)
 	{
-		TCHAR szInfo[1024];
+		TCHAR szInfo[2048];
 		np2info(szInfo, s_np2infostr, _countof(szInfo), NULL);
 
 		SetDlgItemText(IDC_NP2INFO, szInfo);

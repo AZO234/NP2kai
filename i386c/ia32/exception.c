@@ -96,10 +96,20 @@ exception(int num, int error_code)
 	}
 
 	switch (num) {
+	case UD_EXCEPTION:	/* (F) 無効オペコード */
+		//ia32_warning("warning: undefined op!");
+		//{ // TEST!!
+		//	UINT32 op[5];
+		//	CPU_EIP = CPU_PREV_EIP;
+		//	GET_PCBYTE(op[0]);
+		//	GET_PCBYTE(op[1]);
+		//	GET_PCBYTE(op[2]);
+		//	GET_PCBYTE(op[3]);
+		//	GET_PCBYTE(op[4]);
+		//}
 	case DE_EXCEPTION:	/* (F) 除算エラー */
 	case DB_EXCEPTION:	/* (F/T) デバッグ */
 	case BR_EXCEPTION:	/* (F) BOUND の範囲外 */
-	case UD_EXCEPTION:	/* (F) 無効オペコード */
 	case NM_EXCEPTION:	/* (F) デバイス使用不可 (FPU が無い) */
 	case MF_EXCEPTION:	/* (F) 浮動小数点エラー */
 		CPU_EIP = CPU_PREV_EIP;
@@ -220,7 +230,7 @@ interrupt(int num, int intrtype, int errorp, int error_code)
 	UINT16 new_cs;
 	int exc_errcode;
 
-//	VERBOSE(("interrupt: num = 0x%02x, intrtype = %s, errorp = %s, error_code = %08x", num, (intrtype == INTR_TYPE_EXTINTR) ? "external" : (intrtype == INTR_TYPE_EXCEPTION ? "exception" : "softint"), errorp ? "on" : "off", error_code));
+	VERBOSE(("interrupt: num = 0x%02x, intrtype = %s, errorp = %s, error_code = %08x", num, (intrtype == INTR_TYPE_EXTINTR) ? "external" : (intrtype == INTR_TYPE_EXCEPTION ? "exception" : "softint"), errorp ? "on" : "off", error_code));
 
 	CPU_SET_PREV_ESP();
 

@@ -26,6 +26,7 @@
 #include "compiler.h"
 #include "ia32/cpu.h"
 #include "ia32/ia32.mcr"
+#include "pccore.h"
 
 #include "system_inst.h"
 
@@ -285,8 +286,13 @@ MOV_CdRd(void)
 			reg = CPU_CR0;
 			src &= CPU_CR0_ALL;
 #if defined(USE_FPU)
-			src |= CPU_CR0_ET;	/* FPU present */
-			src &= ~CPU_CR0_EM;
+			if(i386cpuid.cpu_feature & CPU_FEATURE_FPU){
+				src |= CPU_CR0_ET;	/* FPU present */
+				//src &= ~CPU_CR0_EM;
+			}else{
+				src |= CPU_CR0_EM | CPU_CR0_NE;
+				src &= ~(CPU_CR0_MP | CPU_CR0_ET);
+			}
 #else
 			src |= CPU_CR0_EM | CPU_CR0_NE;
 			src &= ~(CPU_CR0_MP | CPU_CR0_ET);
@@ -353,6 +359,9 @@ MOV_CdRd(void)
 #if (CPU_FEATURES & CPU_FEATURE_PGE) == CPU_FEATURE_PGE
 			    | CPU_CR4_PGE
 #endif
+#if (CPU_FEATURES & CPU_FEATURE_FXSR) == CPU_FEATURE_FXSR
+			    | CPU_CR4_OSFXSR
+#endif
 			;
 			if (src & ~reg) {
 				if (src & 0xfffffc00) {
@@ -365,7 +374,7 @@ MOV_CdRd(void)
 			CPU_CR4 = src;
 			VERBOSE(("MOV_CdRd: %04x:%08x: cr4: 0x%08x <- 0x%08x(%s)", CPU_CS, CPU_PREV_EIP, reg, CPU_CR4, reg32_str[op & 7]));
 
-			if ((reg ^ CPU_CR4) & (CPU_CR4_PSE|CPU_CR4_PGE|CPU_CR4_PAE)) {
+			if ((reg ^ CPU_CR4) & (CPU_CR4_PSE|CPU_CR4_PGE|CPU_CR4_PAE|CPU_CR4_OSFXSR)) {
 				tlb_flush_all();
 			}
 			break;
@@ -1057,8 +1066,16 @@ RDMSR(void)
 
 	idx = CPU_ECX;
 	switch (idx) {
+	case 0x10:
+		RDTSC();
+		break;
+	case 0x2c:
+		CPU_EDX = 0x00000000;
+		CPU_EAX = 0xfee00800;
+		break;
 	default:
-		EXCEPTION(GP_EXCEPTION, 0);
+		CPU_EDX = CPU_EAX = 0;
+		//EXCEPTION(GP_EXCEPTION, 0); // XXX: ‚Æ‚è‚ ‚¦‚¸’Ê‚·
 		break;
 	}
 }
@@ -1078,7 +1095,7 @@ WRMSR(void)
 		/* MTRR ‚Ö‚Ì‘‚«ž‚ÝŽž tlb_flush_all(); */
 
 	default:
-		EXCEPTION(GP_EXCEPTION, 0);
+		//EXCEPTION(GP_EXCEPTION, 0); // XXX: ‚Æ‚è‚ ‚¦‚¸’Ê‚·
 		break;
 	}
 }
@@ -1087,13 +1104,32 @@ void
 RDTSC(void)
 {
 #ifdef _WIN32
-	static LARGE_INTEGER li = {0};
+	LARGE_INTEGER li = {0};
+	LARGE_INTEGER qpf;
 	QueryPerformanceCounter(&li);
-	CPU_STATSAVE.cpu_regs.reg[CPU_EDX_INDEX].d = li.HighPart;
-	CPU_STATSAVE.cpu_regs.reg[CPU_EAX_INDEX].d = li.LowPart;
+	if (QueryPerformanceFrequency(&qpf)) {
+		li.QuadPart = li.QuadPart * pccore.realclock / qpf.QuadPart;
+	}
+	CPU_EDX = li.HighPart;
+	CPU_EAX = li.LowPart;
 #else
 	ia32_panic("RDTSC: not implemented yet!");
 #endif
+}
+
+void
+RDPMC(void)
+{
+	int idx;
+
+	if (CPU_STAT_PM && (CPU_STAT_VM86 || CPU_STAT_CPL != 0)) {
+		VERBOSE(("RDPMC: VM86(%s) or CPL(%d) != 0", CPU_STAT_VM86 ? "true" : "false", CPU_STAT_CPL));
+		EXCEPTION(GP_EXCEPTION, 0);
+	}
+
+	idx = CPU_ECX;
+	switch (idx) {
+	}
 }
 
 void

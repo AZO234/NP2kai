@@ -54,8 +54,7 @@ enum tagNEventId
 	NEVENT_FDCSTATE		= 32,
 #endif
 	/* ---- */
-	NEVENT_MAXEVENTS	= 33,
-	NEVENT_CS4231PLAY	= 34
+	NEVENT_MAXEVENTS	= 33
 };
 typedef enum tagNEventId NEVENTID;
 

@@ -278,9 +278,9 @@ IDIV_ALEb(UINT32 op)
 		if (((r + 0x80) & 0xff00) == 0) {
 			CPU_AL = (SINT8)r;
 			CPU_AH = tmp % src;
-#if (CPU_FAMILY == 4)
-			CPU_FLAGL ^= A_FLAG;
-#endif
+			if(i386cpuid.cpu_family == 4){
+				CPU_FLAGL ^= A_FLAG;
+			}
 			return;
 		}
 	}
@@ -308,9 +308,9 @@ IDIV_AXEw(UINT32 op)
 		if (((r + 0x8000) & 0xffff0000) == 0) {
 			CPU_AX = (SINT16)r;
 			CPU_DX = tmp % src;
-#if (CPU_FAMILY == 4)
-			CPU_FLAGL ^= A_FLAG;
-#endif
+			if(i386cpuid.cpu_family == 4){
+				CPU_FLAGL ^= A_FLAG;
+			}
 			return;
 		}
 	}
@@ -338,9 +338,9 @@ IDIV_EAXEd(UINT32 op)
 		if (((r + SQWORD_CONST(0x80000000)) & QWORD_CONST(0xffffffff00000000)) == 0) {
 			CPU_EAX = (SINT32)r;
 			CPU_EDX = (SINT32)(tmp % src);
-#if (CPU_FAMILY == 4)
-			CPU_FLAGL ^= A_FLAG;
-#endif
+			if(i386cpuid.cpu_family == 4){
+				CPU_FLAGL ^= A_FLAG;
+			}
 			return;
 		}
 	}
@@ -371,9 +371,9 @@ DIV_ALEb(UINT32 op)
 		if (tmp < ((UINT16)src << 8)) {
 			CPU_AL = tmp / src;
 			CPU_AH = tmp % src;
-#if (CPU_FAMILY == 4)
-			CPU_FLAGL ^= A_FLAG;
-#endif
+			if(i386cpuid.cpu_family == 4){
+				CPU_FLAGL ^= A_FLAG;
+			}
 			return;
 		}
 	}
@@ -400,9 +400,9 @@ DIV_AXEw(UINT32 op)
 		if (tmp < ((UINT32)src << 16)) {
 			CPU_AX = (UINT16)(tmp / src);
 			CPU_DX = (UINT16)(tmp % src);
-#if (CPU_FAMILY == 4)
-			CPU_FLAGL ^= A_FLAG;
-#endif
+			if(i386cpuid.cpu_family == 4){
+				CPU_FLAGL ^= A_FLAG;
+			}
 			return;
 		}
 	}
@@ -429,9 +429,9 @@ DIV_EAXEd(UINT32 op)
 		if (tmp < ((UINT64)src << 32)) {
 			CPU_EAX = (UINT32)(tmp / src);
 			CPU_EDX = (UINT32)(tmp % src);
-#if (CPU_FAMILY == 4)
-			CPU_FLAGL ^= A_FLAG;
-#endif
+			if(i386cpuid.cpu_family == 4){
+				CPU_FLAGL ^= A_FLAG;
+			}
 			return;
 		}
 	}

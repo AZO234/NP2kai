@@ -550,8 +550,9 @@ static void FDC_SenceintStatus(void) {					// cmd: 08
 	}
 	/* 170101 ST modified to work on Windows 9x/2000 form ... */
 	else if ((fdc.ctrlreg & 0x08) == 0) {
-		fdc.buf[0] |= 0x08;
-		fdc.bufcnt = 1;
+		//fdc.buf[0] |= 0x08;
+		//fdc.bufcnt = 1;
+		fdc.ctrlreg |= 0x08; // アクセスされたらモータ回す･･･ np21w ver0.86 rev39
 	}
 	/* 170101 ST modified to work on Windows 9x/2000 ... to */
 }

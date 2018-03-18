@@ -134,6 +134,8 @@ static REG8 IOINPCALL sb16_i2000(UINT port) {
 	(void)port;
 #ifdef USE_MAME
 	return YMF262Read(opl3, 0);
+#else
+	return 0;
 #endif
 }
 
@@ -141,6 +143,8 @@ static REG8 IOINPCALL sb16_i2200(UINT port) {
 	(void)port;
 #ifdef USE_MAME
 	return YMF262Read(opl3, 1);
+#else
+	return 0;
 #endif
 }
 
@@ -148,6 +152,8 @@ static REG8 IOINPCALL sb16_i2800(UINT port) {
 	(void)port;
 #ifdef USE_MAME
 	return YMF262Read(opl3, 0);
+#else
+	return 0;
 #endif
 }
 

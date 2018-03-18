@@ -65,6 +65,12 @@ enum tagSoundId
 };
 typedef enum tagSoundId		SOUNDID;
 
+enum {
+	FPU_TYPE_SOFTFLOAT	= 0, /* Berkeley SoftFloat */
+	FPU_TYPE_DOSBOX		= 1, /* DOSBox FPU */
+	FPU_TYPE_DOSBOX2	= 2  /* DOSBox FPU+INT64 */
+};
+
 /**
  * @brief config
  */
@@ -157,7 +163,7 @@ struct tagNP2Config
 	UINT8	pc9861enable;
 	UINT8	pc9861sw[3];
 	UINT8	pc9861jmp[6];
-
+	
 #if defined(SUPPORT_FMGEN)
 	UINT8	usefmgen;
 #endif	/* SUPPORT_FMGEN */
@@ -202,18 +208,28 @@ struct tagNP2Config
 	UINT8	lgy98mac[6];
 #endif
 
-	UINT8	winntfix;
 #if defined(SUPPORT_STATSAVE)
 	UINT8	statsave;
 #endif
-	UINT8	fddrive3;
-	UINT8	fddrive4;
 	
+	UINT8	winntfix;
 	UINT16	sysiomsk;
 	
 	UINT8	memchkmx;
 	UINT8	sbeeplen;
 	UINT8	sbeepadj;
+
+	char	cpu_vendor[16]; // ベンダー（12byte）
+	UINT32	cpu_family; // ファミリ
+	UINT32	cpu_model; // モデル
+	UINT32	cpu_stepping; // ステッピング
+	UINT32	cpu_feature; // 機能フラグ
+	UINT32	cpu_feature_ex; // 拡張機能フラグ
+	char	cpu_brandstring[64]; // ブランド名（48byte）
+	OEMCHAR	cpu_vendor_o[16]; // ベンダー（12byte）OEMCHAR
+	OEMCHAR	cpu_brandstring_o[64]; // ブランド名（48byte）OEMCHAR
+	
+	UINT8	fpu_type; // FPU種類（0=Berkeley SoftFloat, 1=DOSBox FPU, 2=DOSBox FPU+INT64）
 };
 typedef struct tagNP2Config  NP2CFG;		/*!< The define of config */
 

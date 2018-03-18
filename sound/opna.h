@@ -64,7 +64,6 @@ struct tagOpna
 	UINT8 usefmgen;
 	void* fmgen;
 #endif	/* SUPPORT_FMGEN */
-
 };
 
 typedef struct tagOpna OPNA;

@@ -256,6 +256,30 @@
     <Filter Include="ヘッダー ファイル\sound\fmgen">
       <UniqueIdentifier>{ee0c62cc-af00-43a5-bd97-d7574c924b15}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\sound\mame">
+      <UniqueIdentifier>{ee6acd1f-9c68-403d-92cf-0b23f3a65bad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\sound\mame">
+      <UniqueIdentifier>{38dcff0a-5ded-4497-916f-bd20b78b3897}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\i386c\ia32\instructions\mmx">
+      <UniqueIdentifier>{938bfba8-4190-4032-9894-c9b7a81f0304}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\i386c\ia32\instructions\mmx">
+      <UniqueIdentifier>{ae731bcd-2e4a-42fe-b045-f5b1e97a7616}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\i386c\ia32\instructions\fpu\softfloat">
+      <UniqueIdentifier>{da27d676-cbee-458a-832c-935c0d556bc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\i386c\ia32\instructions\fpu\softfloat">
+      <UniqueIdentifier>{a75abfc2-c1e6-4d90-a883-3d16434e44d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\i386c\ia32\instructions\sse">
+      <UniqueIdentifier>{d22e0c91-e644-4425-a584-a259bb1e6e9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\i386c\ia32\instructions\sse">
+      <UniqueIdentifier>{1624adcd-5244-4b38-9099-0fc098198614}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\calendar.c">
@@ -1104,9 +1128,6 @@
     <ClCompile Include="..\zlib\zutil.c">
       <Filter>ソース ファイル\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\i386c\ia32\instructions\fpu\fpemul.c">
-      <Filter>ソース ファイル\i386c\ia32\instructions\fpu</Filter>
-    </ClCompile>
     <ClCompile Include="..\diskimage\cddfile.c">
       <Filter>ソース ファイル\diskimage</Filter>
     </ClCompile>
@@ -1229,6 +1250,33 @@
     </ClCompile>
     <ClCompile Include="..\sound\fmgen\fmgen_psg.cpp">
       <Filter>ソース ファイル\sound\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\mame\fmopl.c">
+      <Filter>ソース ファイル\sound\mame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\mame\ymdeltat.c">
+      <Filter>ソース ファイル\sound\mame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\mame\ymf262.c">
+      <Filter>ソース ファイル\sound\mame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\mmx\mmx.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\mmx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\fpemul_softfloat.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\softfloat.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\fpemul_dosbox2.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\mmx\3dnow.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\mmx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\sse\sse.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\sse</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2158,6 +2206,45 @@
     </ClInclude>
     <ClInclude Include="..\sound\fmgen\fmgen_types.h">
       <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\mame\driver.h">
+      <Filter>ヘッダー ファイル\sound\mame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\mame\fm.h">
+      <Filter>ヘッダー ファイル\sound\mame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\mame\fmopl.h">
+      <Filter>ヘッダー ファイル\sound\mame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\mame\ymdeltat.h">
+      <Filter>ヘッダー ファイル\sound\mame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\mame\ymf262.h">
+      <Filter>ヘッダー ファイル\sound\mame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\i386c\ia32\instructions\mmx\mmx.h">
+      <Filter>ヘッダー ファイル\i386c\ia32\instructions\mmx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\i386c\ia32\instructions\fpu\softfloat\softfloat.h">
+      <Filter>ヘッダー ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\i386c\ia32\instructions\fpu\softfloat\softfloatdef.h">
+      <Filter>ヘッダー ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\i386c\ia32\instructions\fpu\softfloat\softfloat-macros.h">
+      <Filter>ヘッダー ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\i386c\ia32\instructions\fpu\softfloat\softfloat-specialize.h">
+      <Filter>ヘッダー ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\i386c\ia32\instructions\fpu\fpumem.h">
+      <Filter>ヘッダー ファイル\i386c\ia32\instructions\fpu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\i386c\ia32\instructions\mmx\3dnow.h">
+      <Filter>ヘッダー ファイル\i386c\ia32\instructions\mmx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\i386c\ia32\instructions\sse\sse.h">
+      <Filter>ヘッダー ファイル\i386c\ia32\instructions\sse</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

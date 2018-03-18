@@ -12,11 +12,14 @@
 #ifndef CPU_STAT_PM
 #define CPU_STAT_PM	0
 #endif
+#define CS4231_BUFREADSMP	128
 
 	CS4231CFG	cs4231cfg;
 
 	int calpenflag = 0; // XXX: CAL0だけ(0x04)→CAL0とPENが同時に立つ状態(0x05)に遷移した時だけ挙動を変える･･･ Win3.1+necpcm.drv用のその場しのぎ
 	int w31play = 0; // XXX: CAL0だけ(0x04)→CAL0とPENが同時に立つ状態(0x05)に遷移した時だけ挙動を変える･･･ Win3.1+necpcm.drv用のその場しのぎ
+	
+	static int playcountsmp_Ictl = CS4231_BUFREADSMP; // 積分制御で無理やり一定サンプルずつ読むようにする･･･
 	
 // 1サンプルあたりのバイト数（モノラル, ステレオの順）
 static const SINT32 cs4231_playcountshift[16] = {
@@ -142,20 +145,42 @@ void cs4231_dma(NEVENTITEM item) {
 					cs4231.bufdatas += r; // バッファ内の有効なデータ数を更新 = (bufwpos-bufpos)&CS4231_BUFMASK
 				}
 			}
-
 			// NEVENTをセット
 			if (cs4231cfg.rate) {
 				SINT32 neventms;
-				int playcountsmp = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)); // PI割り込みを発生させるサンプル数(Playback Base register)
-				playcountsmp = np2min(np2max(r, CS4231_MAXDMAREADBYTES/4) / cs4231_playcountshift[cs4231.reg.datafmt >> 4], playcountsmp) / 2;
+				//int playcountsmpmax = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)); // PI割り込みを発生させるサンプル数(Playback Base register)
+				playcountsmp_Ictl += ((CS4231_BUFREADSMP - (int)r) / cs4231_playcountshift[cs4231.reg.datafmt >> 4])/2;
+				if(playcountsmp_Ictl < 1)
+					playcountsmp_Ictl = 1;
+				if(playcountsmp_Ictl > CS4231_MAXDMAREADBYTES) 
+					playcountsmp_Ictl = CS4231_MAXDMAREADBYTES;
+				//int playcountsmp = np2min(playcountsmpmax, r / cs4231_playcountshift[cs4231.reg.datafmt >> 4])-4;
+				//if(playcountsmp < CS4231_MINDMAREADBYTES) 
+				//	playcountsmp = CS4231_MINDMAREADBYTES*2;
+
+				//playcountsmp = np2min(np2max(r, CS4231_MAXDMAREADBYTES/4) / cs4231_playcountshift[cs4231.reg.datafmt >> 4], playcountsmp) / 2;
 				//neventms = playcountsmp * 1000 / cs4231cfg.rate;
 				//if(neventms <= 0) neventms = 1;
 				//cnt = pccore.realclock / cs4231cfg.rate * 32;
 				//nevent_set(NEVENT_CS4231, cnt, cs4231_dma, NEVENT_RELATIVE);
 				//cnt = (UINT32)((UINT64)pccore.realclock * playcountsmp / cs4231cfg.rate / 10);
 				//nevent_setbyms(NEVENT_CS4231, neventms, cs4231_dma, NEVENT_RELATIVE);
-				nevent_set(NEVENT_CS4231, pccore.realclock / cs4231cfg.rate * playcountsmp, cs4231_dma, NEVENT_RELATIVE);
+				nevent_set(NEVENT_CS4231, pccore.realclock / cs4231cfg.rate * playcountsmp_Ictl, cs4231_dma, NEVENT_RELATIVE);
 			}
+
+			//// NEVENTをセット
+			//if (cs4231cfg.rate) {
+			//	SINT32 neventms;
+			//	int playcountsmp;// = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)); // PI割り込みを発生させるサンプル数(Playback Base register)
+			//	playcountsmp = 32 / cs4231_playcountshift[cs4231.reg.datafmt >> 4];//max(r, 32) / cs4231_playcountshift[cs4231.reg.datafmt >> 4];//min(max(r, 64) / cs4231_playcountshift[cs4231.reg.datafmt >> 4], playcountsmp) / 2; // 謎
+			//	//neventms = playcountsmp * 1000 / cs4231cfg.rate;
+			//	//if(neventms <= 0) neventms = 1;
+			//	//cnt = pccore.realclock / cs4231cfg.rate * 32;
+			//	//nevent_set(NEVENT_CS4231, cnt, cs4231_dma, NEVENT_RELATIVE);
+			//	//cnt = (UINT32)((UINT64)pccore.realclock * playcountsmp / cs4231cfg.rate / 10);
+			//	//nevent_setbyms(NEVENT_CS4231, neventms, cs4231_dma, NEVENT_RELATIVE);
+			//	nevent_set(NEVENT_CS4231, pccore.realclock / cs4231cfg.rate * playcountsmp, cs4231_dma, NEVENT_RELATIVE);
+			//}
 		}
 	}
 	(void)item;
@@ -189,7 +214,10 @@ REG8 DMACCALL cs4231dmafunc(REG8 func) {
 
 				// DMA読み取り処理開始(NEVENTセット)
 				//nevent_setbyms(NEVENT_CS4231, CS4231_MAXDMAREADBYTES * 1000 / cs4231cfg.rate, cs4231_dma, NEVENT_ABSOLUTE);
-				cnt = pccore.realclock / cs4231cfg.rate * 512;
+				//cnt = pccore.realclock / cs4231cfg.rate * 512;
+				//nevent_set(NEVENT_CS4231, cnt, cs4231_dma, NEVENT_ABSOLUTE);
+				playcountsmp_Ictl = CS4231_BUFREADSMP;
+				cnt = pccore.realclock / cs4231cfg.rate * playcountsmp_Ictl;
 				nevent_set(NEVENT_CS4231, cnt, cs4231_dma, NEVENT_ABSOLUTE);
 			}
 			break;

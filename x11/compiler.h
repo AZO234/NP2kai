@@ -248,6 +248,8 @@ G_END_DECLS
 #define	VRAMCALL	FASTCALL
 #define	SCRNCALL	FASTCALL
 #define	VERMOUTHCL	FASTCALL
+#define	INLINE inline
+
 
 #ifdef	DEBUG
 #define	INLINE

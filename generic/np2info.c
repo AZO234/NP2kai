@@ -26,6 +26,7 @@ static const OEMCHAR str_grcgchip[] = OEMTEXT("\0GRCG \0GRCG CG-Window \0EGC CG-
 static const OEMCHAR str_vrammode[] = OEMTEXT("Digital\0Analog\000256colors");
 static const OEMCHAR str_vrampage[] = OEMTEXT(" page-0\0 page-1\0 page-all");
 static const OEMCHAR str_chpan[] = OEMTEXT("none\0Mono-R\0Mono-L\0Stereo");
+static const OEMCHAR str_fpu[] = OEMTEXT("none\0 Berkeley SoftFloat 80bit Extended Precision FPU\0 64bit Double Precision FPU\0 64bit Double Precision FPU + INT64 Load/Store");
 
 static const OEMCHAR str_clockfmt[] = OEMTEXT("%d.%1dMHz");
 static const OEMCHAR str_memfmt[] = OEMTEXT("%3uKB");
@@ -51,12 +52,22 @@ static void info_cpu(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
 	UINT	family;
 
+#if defined(CPUCORE_IA32)
+#ifdef UNICODE
+	MultiByteToWideChar(CP_ACP, 0, np2cfg.cpu_brandstring, -1, str, maxlen);
+#else
+	milstr_ncpy(str, i386cpuid.cpu_brandstring, maxlen);
+#endif
+#else
 #if defined(CPU_FAMILY)
 	family = np2min(CPU_FAMILY, 6);
 #else
 	family = (CPU_TYPE & CPUTYPE_V30)?1:2;
 #endif
 	milstr_ncpy(str, milstr_list(str_cpu, family), maxlen);
+	
+#endif
+	
 	(void)ex;
 }
 
@@ -361,6 +372,24 @@ static void info_display(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 	(void)ex;
 }
 
+static void info_fpu(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
+
+	OEMCHAR	buf[64];
+	
+#if defined(CPUCORE_IA32)
+	if(i386cpuid.cpu_feature & CPU_FEATURE_FPU){
+		if(i386cpuid.fpu_type < 3){
+			milstr_ncpy(str, milstr_list(str_fpu, 1+i386cpuid.fpu_type), maxlen);
+		}else{
+			milstr_ncpy(str, OEMTEXT(" unknown"), maxlen);
+		}
+	}else
+#endif
+	{
+		milstr_ncpy(str, milstr_list(str_fpu, 0), maxlen);
+	}
+}
+
 
 // ---- make string
 
@@ -377,6 +406,7 @@ static const INFOPROC infoproc[] = {
 			{OEMTEXT("MEM1"),	info_mem1},
 			{OEMTEXT("MEM2"),	info_mem2},
 			{OEMTEXT("MEM3"),	info_mem3},
+			{OEMTEXT("FPU"),	info_fpu},
 			{OEMTEXT("GDC"),	info_gdc},
 			{OEMTEXT("GDC2"),	info_gdc2},
 			{OEMTEXT("TEXT"),	info_text},

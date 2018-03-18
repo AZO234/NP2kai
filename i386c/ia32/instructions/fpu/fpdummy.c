@@ -1,10 +1,19 @@
 #include "compiler.h"
+
 #include "ia32/cpu.h"
 #include "ia32/ia32.mcr"
 #include "fp.h"
 
+void NOFPU_FPU_FINIT(void){
+	// Nothing to do
+}
+
+void NOFPU_FPU_FXSAVERSTOR(void){
+	EXCEPTION(UD_EXCEPTION, 0);
+}
+
 void
-ESC0(void)
+NOFPU_ESC0(void)
 {
 	UINT32 op, madr;
 
@@ -19,7 +28,7 @@ ESC0(void)
 }
 
 void
-ESC1(void)
+NOFPU_ESC1(void)
 {
 	UINT32 op, madr;
 
@@ -48,7 +57,7 @@ ESC1(void)
 }
 
 void
-ESC2(void)
+NOFPU_ESC2(void)
 {
 	UINT32 op, madr;
 
@@ -63,7 +72,7 @@ ESC2(void)
 }
 
 void
-ESC3(void)
+NOFPU_ESC3(void)
 {
 	UINT32 op, madr;
 
@@ -82,7 +91,7 @@ ESC3(void)
 }
 
 void
-ESC4(void)
+NOFPU_ESC4(void)
 {
 	UINT32 op, madr;
 
@@ -97,7 +106,7 @@ ESC4(void)
 }
 
 void
-ESC5(void)
+NOFPU_ESC5(void)
 {
 	UINT32 op, madr;
 
@@ -117,7 +126,7 @@ ESC5(void)
 }
 
 void
-ESC6(void)
+NOFPU_ESC6(void)
 {
 	UINT32 op, madr;
 
@@ -132,7 +141,7 @@ ESC6(void)
 }
 
 void
-ESC7(void)
+NOFPU_ESC7(void)
 {
 	UINT32 op, madr;
 

@@ -87,6 +87,9 @@ static const SFENTRY np2tbl[] = {
 	{"PCCORE",		0,	STATFLAG_BIN,	&pccore,		sizeof(pccore)},
 
 	{"CPU286",		0,	STATFLAG_BIN,	&CPU_STATSAVE,	sizeof(CPU_STATSAVE)},
+#if defined(CPUCORE_IA32)
+	{"CPUID",		0,	STATFLAG_BIN,	&i386cpuid,		sizeof(i386cpuid)},
+#endif
 	{"MEMORY",		0,	STATFLAG_MEM,	NULL,			0x130000},
 	{"EXTMEM",		0,	STATFLAG_EXT,	NULL,			0},
 #if defined(SUPPORT_PC9821)

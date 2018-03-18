@@ -106,6 +106,8 @@ typedef struct {
 	UINT8	scrn_mul; // Screen Size Multiplying Value
 	
 	UINT8	mouse_nc; // Always notify mouse event
+	
+	UINT16	cpustabf; // CPU clock stabilizer frame
 } NP2OSCFG;
 
 

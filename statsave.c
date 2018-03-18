@@ -46,6 +46,9 @@
 #include "lgy98.h"
 #include "lgy98dev.h"
 #endif
+#if defined(CPUCORE_IA32)
+#include "ia32/instructions/fpu/fp.h"
+#endif
 
 #if defined(MACOS)
 #define	CRCONST		str_cr
@@ -1543,6 +1546,10 @@ const SFENTRY	*tblterm;
 	cbuscore_bind();
 	fmboard_bind();
 	
+#if defined(CPUCORE_IA32)
+	fpu_initialize();
+#endif
+
 #if defined(SUPPORT_NET)
 	np2net_reset(&np2cfg);
 	np2net_bind();
@@ -1565,7 +1572,7 @@ const SFENTRY	*tblterm;
 	MEMM_VRAM(vramop.operate);
 	fddmtr_reset();
 	soundmng_play();
-
+	
 	return(ret);
 }
 

@@ -30,6 +30,7 @@
 #include "misc_inst.h"
 #include "ia32/inst_table.h"
 
+#include "pccore.h"
 
 void
 LEA_GwM(void)
@@ -95,20 +96,19 @@ XLAT(void)
 void
 _CPUID(void)
 {
-
 	switch (CPU_EAX) {
 	case 0:
 		CPU_EAX = 1;
-		CPU_EBX = CPU_VENDOR_1;
-		CPU_EDX = CPU_VENDOR_2;
-		CPU_ECX = CPU_VENDOR_3;
+		CPU_EBX = LOADINTELDWORD(((UINT8*)(i386cpuid.cpu_vendor+0)));
+		CPU_EDX = LOADINTELDWORD(((UINT8*)(i386cpuid.cpu_vendor+4)));
+		CPU_ECX = LOADINTELDWORD(((UINT8*)(i386cpuid.cpu_vendor+8)));
 		break;
 
 	case 1:
-		CPU_EAX = (CPU_FAMILY << 8) | (CPU_MODEL << 4) | CPU_STEPPING;
+		CPU_EAX = (i386cpuid.cpu_family << 8) | (i386cpuid.cpu_model << 4) | i386cpuid.cpu_stepping;
 		CPU_EBX = 0;
 		CPU_ECX = 0;
-		CPU_EDX = CPU_FEATURES;
+		CPU_EDX = i386cpuid.cpu_feature & CPU_FEATURES_ALL;
 		break;
 
 	case 2:
@@ -116,6 +116,51 @@ _CPUID(void)
 		CPU_EBX = 0;
 		CPU_ECX = 0;
 		CPU_EDX = 0;
+		break;
+		
+	case 0x80000000:
+		CPU_EAX = 0x80000004;
+		if(strcmp(i386cpuid.cpu_vendor, CPU_VENDOR_AMD)==0){ // AMD”»’è
+			CPU_EBX = LOADINTELDWORD(((UINT8*)(i386cpuid.cpu_vendor+0)));
+			CPU_EDX = LOADINTELDWORD(((UINT8*)(i386cpuid.cpu_vendor+4)));
+			CPU_ECX = LOADINTELDWORD(((UINT8*)(i386cpuid.cpu_vendor+8)));
+		}else{
+			CPU_EBX = 0;
+			CPU_ECX = 0;
+			CPU_EDX = 0;
+		}
+		break;
+
+	case 0x80000001:
+		if(strcmp(i386cpuid.cpu_vendor, CPU_VENDOR_AMD)==0){ // AMD”»’è
+			if(i386cpuid.cpu_family >= 6 || (i386cpuid.cpu_family==5 && i386cpuid.cpu_model >= 6)){
+				CPU_EAX = ((i386cpuid.cpu_family+1) << 8) | (i386cpuid.cpu_model << 4) | i386cpuid.cpu_stepping;
+			}else{
+				CPU_EAX = (i386cpuid.cpu_family << 8) | (i386cpuid.cpu_model << 4) | i386cpuid.cpu_stepping;
+			}
+		}else{
+			CPU_EAX = 0;
+		}
+		CPU_EBX = 0;
+		CPU_ECX = 0;
+		CPU_EDX = i386cpuid.cpu_feature_ex & CPU_FEATURES_EX_ALL;
+		break;
+		
+	case 0x80000002:
+	case 0x80000003:
+	case 0x80000004:
+		{
+			UINT32 clkMHz;
+			char cpu_brandstringbuf[64] = {0};
+			int stroffset = (CPU_EAX - 0x80000002) * 16;
+			clkMHz = pccore.realclock/1000/1000;
+			sprintf(cpu_brandstringbuf, "%s%d MHz", i386cpuid.cpu_brandstring, clkMHz);
+			CPU_EAX = LOADINTELDWORD(((UINT8*)(cpu_brandstringbuf + stroffset + 0)));
+			CPU_EBX = LOADINTELDWORD(((UINT8*)(cpu_brandstringbuf + stroffset + 4)));
+			CPU_ECX = LOADINTELDWORD(((UINT8*)(cpu_brandstringbuf + stroffset + 8)));
+			CPU_EDX = LOADINTELDWORD(((UINT8*)(cpu_brandstringbuf + stroffset + 12)));
+		}
+
 		break;
 	}
 }

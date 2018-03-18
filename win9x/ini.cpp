@@ -437,7 +437,7 @@ enum
 	PFRO_HEX8		= PFFLAG_RO + PFTYPE_HEX8,
 	PFRO_HEX32		= PFFLAG_RO + PFTYPE_HEX32,
 	PFRO_BYTE3		= PFFLAG_RO + PFTYPE_BYTE3,
-	PFRO_KB			= PFFLAG_RO + PFTYPE_KB
+	PFRO_KB			= PFFLAG_RO + PFTYPE_KB,
 };
 
 /**
@@ -621,6 +621,20 @@ static const PFTBL s_IniItems[] =
 	PFVAL("SYSIOMSK", PFTYPE_HEX16,		&np2cfg.sysiomsk), // システムIOマスク
 	
 	PFMAX("MEMCHKMX", PFTYPE_UINT8,		&np2cfg.memchkmx,		0), // メモリチェックする最大サイズ（最小は15MB・0は制限無し・メモリチェックが長いのが嫌だけど見かけ上カウントだけはしておきたい人向け）
+	PFMAX("SBEEPLEN", PFTYPE_UINT8,		&np2cfg.sbeeplen,		0), // ピポ音の長さ（0でデフォルト・4がNP2標準）
+	PFMAX("SBEEPADJ", PFTYPE_BOOL,		&np2cfg.sbeepadj,		0), // ピポ音の長さ自動調整
+	
+	PFSTR("cpu_vend", PFRO_STR,			np2cfg.cpu_vendor_o),
+	PFVAL("cpu_fami", PFTYPE_UINT32,	&np2cfg.cpu_family),
+	PFVAL("cpu_mode", PFTYPE_UINT32,	&np2cfg.cpu_model),
+	PFVAL("cpu_step", PFTYPE_UINT32,	&np2cfg.cpu_stepping),
+	PFVAL("cpu_feat", PFTYPE_HEX32,		&np2cfg.cpu_feature),
+	PFVAL("cpu_f_ex", PFTYPE_HEX32,		&np2cfg.cpu_feature_ex),
+	PFSTR("cpu_bran", PFRO_STR,			np2cfg.cpu_brandstring_o),
+
+	PFMAX("FPU_TYPE", PFTYPE_UINT8,		&np2cfg.fpu_type,		0), // FPU種類
+
+
 	
 	// OS依存？
 	PFVAL("keyboard", PFRO_KB,			&np2oscfg.KEYBOARD),
@@ -703,7 +717,9 @@ static const PFTBL s_IniItems[] =
 	PFVAL("SVSCRMUL", PFTYPE_BOOL,		&np2oscfg.svscrmul), // 画面表示倍率を保存するか
 	PFVAL("SCRN_MUL", PFTYPE_UINT8,		&np2oscfg.scrn_mul), // 画面表示倍率（8が等倍）
 	
-	PFVAL("MOUSE_NC", PFTYPE_BOOL,		&np2oscfg.mouse_nc), // マウススピード倍率（分母）
+	PFVAL("MOUSE_NC", PFTYPE_BOOL,		&np2oscfg.mouse_nc), // マウスキャプチャ無しコントロール
+	
+	PFVAL("CPUSTABF", PFTYPE_UINT16,	&np2oscfg.cpustabf), // クロック安定器適用限界時間（フレーム）
 	
 	PFVAL("I286SAVE", PFRO_BOOL,		&np2oscfg.I286SAVE)
 };

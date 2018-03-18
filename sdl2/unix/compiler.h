@@ -159,7 +159,6 @@ typedef SINT32	FILELEN;
 #endif
 
 
-#include	"common.h"
 #include	"milstr.h"
 #include	"_memory.h"
 #include	"rect.h"
@@ -230,3 +229,7 @@ typedef SINT32	FILELEN;
 #define	VRAMCALL
 #define	SCRNCALL
 #define	VERMOUTHCL
+#define	INLINE inline
+
+#include	"common.h"
+

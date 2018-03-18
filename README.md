@@ -487,6 +487,8 @@ Next boot computer, you command from 4.
 
 Release
 ---
+* Mar 18, 2018
+	- Merge NP21/W 0.86 rev.40
 * Mar 9, 2018
 	- [X11] add UI
 	- [SDL2] add and fix UI

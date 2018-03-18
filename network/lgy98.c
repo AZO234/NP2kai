@@ -1007,10 +1007,10 @@ static void lgy98_recieve_packet(const UINT8 *buf, int size)
 }
 
 void lgy98_reset(const NP2CFG *pConfig){
-	UINT base = 0x00D0;
-	REG8 irq = 6;
+	UINT base = 0x10D0;
+	REG8 irq = 5;
 	
-	lgy98cfg.enabled = 1;//np2cfg.uselgy98;
+	lgy98cfg.enabled = np2cfg.uselgy98;
 
 	// èâä˙âª
 	memset(&lgy98, 0, sizeof(lgy98));
@@ -1020,8 +1020,8 @@ void lgy98_reset(const NP2CFG *pConfig){
 
 	np2net.recieve_packet = np2net_lgy98_default_recieve_packet;
 
-	//if(np2cfg.lgy98io) base = np2cfg.lgy98io;
-	//if(np2cfg.lgy98irq) irq = np2cfg.lgy98irq;
+	if(np2cfg.lgy98io) base = np2cfg.lgy98io;
+	if(np2cfg.lgy98irq) irq = np2cfg.lgy98irq;
 	
 	lgy98cfg.baseaddr = base;
 	lgy98cfg.irq = irq;
@@ -1032,8 +1032,8 @@ void lgy98_reset(const NP2CFG *pConfig){
 void lgy98_bind(void){
 	int i;
     VLANState *vlan;
-	UINT base = 0x00D0;
-	REG8 irq = 6;
+	UINT base = 0x10D0;
+	REG8 irq = 5;
 	//NICInfo *nd;
 
 	if(!lgy98cfg.enabled) return;

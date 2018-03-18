@@ -371,11 +371,24 @@ IA32_SOURCES=	$(real_topsrcdir)/i386c/cpucore.c \
 		$(real_topsrcdir)/i386c/ia32/instructions/shift_rotate.c \
 		$(real_topsrcdir)/i386c/ia32/instructions/string_inst.c \
 		$(real_topsrcdir)/i386c/ia32/instructions/system_inst.c \
+		$(real_topsrcdir)/i386c/ia32/instructions/fpu/fpdummy.c \
 		$(real_topsrcdir)/i386c/ia32/instructions/fpu/fpemul_dosbox.c \
+		$(real_topsrcdir)/i386c/ia32/instructions/fpu/fpemul_dosbox2.c \
+		$(real_topsrcdir)/i386c/ia32/instructions/fpu/fpemul_softfloat.c \
+		$(real_topsrcdir)/i386c/ia32/instructions/fpu/softfloat/softfloat.c \
+		$(real_topsrcdir)/i386c/ia32/instructions/mmx/3dnow.c \
+		$(real_topsrcdir)/i386c/ia32/instructions/mmx/mmx.c \
+		$(real_topsrcdir)/i386c/ia32/instructions/sse/sse.c \
 		$(real_topsrcdir)/debugsub386.c
 
 IA32_CPPFLAGS=	-I$(real_topsrcdir)/i386c \
-		-DCPUCORE_IA32 -DUSE_FPU
+		-I$(real_topsrcdir)/i386c/ia32 \
+		-I$(real_topsrcdir)/i386c/ia32/instructions \
+		-I$(real_topsrcdir)/i386c/ia32/instructions/fpu \
+		-I$(real_topsrcdir)/i386c/ia32/instructions/fpu/softfloat \
+		-I$(real_topsrcdir)/i386c/ia32/instructions/mmx \
+		-I$(real_topsrcdir)/i386c/ia32/instructions/sse \
+		-DCPUCORE_IA32 -DUSE_FPU -DSUPPORT_FPU_DOSBOX -DSUPPORT_FPU_DOSBOX2 -DSUPPORT_FPU_SOFTFLOAT -DUSE_MMX -DUSE_3DNOW -DUSE_SSE -DUSE_TSC
 
 if CPUCORE_IA32
 if BUILD_ALL

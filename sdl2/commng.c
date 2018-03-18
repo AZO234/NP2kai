@@ -57,7 +57,7 @@ commng_initialize(void)
 	cmvermouth_initialize();
 #if !defined(__LIBRETRO__)
 #if !defined(_WIN32)
-	cmmidi_initailize();
+//	cmmidi_initailize();
 #endif	/* _WIN32 */
 #endif	/* __LIBRETRO__ */
 }
@@ -104,15 +104,15 @@ commng_create(UINT device)
 		if ((cfg->port >= COMPORT_COM1)
 		 && (cfg->port <= COMPORT_COM4)) {
 #if !defined(_WIN32)
-		 	ret = cmserial_create(cfg->port - COMPORT_COM1 + 1, cfg->param, cfg->speed);
+//		 	ret = cmserial_create(cfg->port - COMPORT_COM1 + 1, cfg->param, cfg->speed);
 #endif	/* _WIN32 */
 		} else if (cfg->port == COMPORT_MIDI) {
 #if !defined(_WIN32)
-			ret = cmmidi_create(cfg->mout, cfg->min, cfg->mdl);
-			if (ret) {
-				(*ret->msg)(ret, COMMSG_MIMPIDEFFILE, (INTPTR)cfg->def);
-				(*ret->msg)(ret, COMMSG_MIMPIDEFEN, (INTPTR)cfg->def_en);
-			}
+//			ret = cmmidi_create(cfg->mout, cfg->min, cfg->mdl);
+//			if (ret) {
+//				(*ret->msg)(ret, COMMSG_MIMPIDEFFILE, (INTPTR)cfg->def);
+//				(*ret->msg)(ret, COMMSG_MIMPIDEFEN, (INTPTR)cfg->def_en);
+//			}
 #endif	/* _WIN32 */
 		}
 	}

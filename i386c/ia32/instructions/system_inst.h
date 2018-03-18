@@ -87,6 +87,8 @@ void WRMSR(void);
 /* ctrl reg */
 void RDTSC(void);
 
+void RDPMC(void);
+
 /* test reg */
 void MOV_TdRd(void);
 void MOV_RdTd(void);

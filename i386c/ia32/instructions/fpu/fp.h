@@ -29,19 +29,61 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+	
+void fpu_initialize(void);
 
-void fpu_init(void);
-void fpu_fwait(void);
+void FPU_FWAIT(void);
 
-void FWAIT(void);
-void ESC0(void);
-void ESC1(void);
-void ESC2(void);
-void ESC3(void);
-void ESC4(void);
-void ESC5(void);
-void ESC6(void);
-void ESC7(void);
+#if defined(USE_FPU)
+#if defined(SUPPORT_FPU_DOSBOX)
+void DB_FPU_FINIT(void);
+void DB_FPU_FXSAVERSTOR(void);
+void DB_ESC0(void);
+void DB_ESC1(void);
+void DB_ESC2(void);
+void DB_ESC3(void);
+void DB_ESC4(void);
+void DB_ESC5(void);
+void DB_ESC6(void);
+void DB_ESC7(void);
+#endif
+#if defined(SUPPORT_FPU_DOSBOX2)
+void DB2_FPU_FINIT(void);
+void DB2_FPU_FXSAVERSTOR(void);
+void DB2_ESC0(void);
+void DB2_ESC1(void);
+void DB2_ESC2(void);
+void DB2_ESC3(void);
+void DB2_ESC4(void);
+void DB2_ESC5(void);
+void DB2_ESC6(void);
+void DB2_ESC7(void);
+#endif
+#if defined(SUPPORT_FPU_SOFTFLOAT)
+void SF_FPU_FINIT(void);
+void SF_FPU_FXSAVERSTOR(void);
+void SF_ESC0(void);
+void SF_ESC1(void);
+void SF_ESC2(void);
+void SF_ESC3(void);
+void SF_ESC4(void);
+void SF_ESC5(void);
+void SF_ESC6(void);
+void SF_ESC7(void);
+#endif
+#endif
+
+// for i486SX
+void NOFPU_FPU_FINIT(void);
+void NOFPU_FPU_FXSAVERSTOR(void);
+void NOFPU_ESC0(void);
+void NOFPU_ESC1(void);
+void NOFPU_ESC2(void);
+void NOFPU_ESC3(void);
+void NOFPU_ESC4(void);
+void NOFPU_ESC5(void);
+void NOFPU_ESC6(void);
+void NOFPU_ESC7(void);
 
 #ifdef __cplusplus
 }

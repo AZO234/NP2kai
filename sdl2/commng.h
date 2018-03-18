@@ -88,9 +88,11 @@ enum {
 void commng_initialize(void);
 
 #if !defined(__LIBRETRO__)
+/*
 #include "cmmidi.h"
 #include "cmserial.h"
 #include "cmpara.h"
+*/
 #endif	/* __LIBRETRO__ */
 
 #endif	/* NP2_COMMNG_H__ */

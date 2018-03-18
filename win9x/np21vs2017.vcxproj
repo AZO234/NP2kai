@@ -148,7 +148,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_WIN2000HOST;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_PHYSICAL_CDDRV;SUPPORT_FMGEN;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_SSE;USE_TSC;USE_MAME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;.\x86;..\;..\common;..\fdd;..\i386c;..\mem;..\io;..\cbus;..\network;..\vram;..\sound;..\generic;..\zlib;\VST3_SDK</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -179,7 +179,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_PHYSICAL_CDDRV;SUPPORT_FMGEN;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_TSC;USE_MAME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;.\x64;..\;..\common;..\fdd;..\i386c;..\mem;..\io;..\cbus;..\network;..\vram;..\sound;..\generic;..\zlib;\VST3_SDK</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -327,21 +327,29 @@
     <ClCompile Include="..\i386c\ia32\instructions\flag_ctrl.c" />
     <ClCompile Include="..\i386c\ia32\instructions\fpu.c" />
     <ClCompile Include="..\i386c\ia32\instructions\fpu\fpdummy.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\i386c\ia32\instructions\fpu\fpemul.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\fpemul_dosbox.c">
+      <FloatingPointModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Precise</FloatingPointModel>
+      <FloatingPointModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Precise</FloatingPointModel>
+      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotSet</EnableEnhancedInstructionSet>
     </ClCompile>
-    <ClCompile Include="..\i386c\ia32\instructions\fpu\fpemul_dosbox.c" />
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\fpemul_dosbox2.c">
+      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotSet</EnableEnhancedInstructionSet>
+      <FloatingPointModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Precise</FloatingPointModel>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\fpemul_softfloat.c">
+      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotSet</EnableEnhancedInstructionSet>
+      <FloatingPointModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Precise</FloatingPointModel>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\softfloat.c" />
     <ClCompile Include="..\i386c\ia32\instructions\logic_arith.c" />
     <ClCompile Include="..\i386c\ia32\instructions\misc_inst.c" />
+    <ClCompile Include="..\i386c\ia32\instructions\mmx\3dnow.c" />
+    <ClCompile Include="..\i386c\ia32\instructions\mmx\mmx.c" />
     <ClCompile Include="..\i386c\ia32\instructions\seg_reg.c" />
     <ClCompile Include="..\i386c\ia32\instructions\shift_rotate.c" />
+    <ClCompile Include="..\i386c\ia32\instructions\sse\sse.c" />
     <ClCompile Include="..\i386c\ia32\instructions\string_inst.c" />
     <ClCompile Include="..\i386c\ia32\instructions\system_inst.c" />
     <ClCompile Include="..\i386c\ia32\inst_table.c" />
@@ -659,10 +667,18 @@
     <ClInclude Include="..\i386c\ia32\instructions\dec_arith.h" />
     <ClInclude Include="..\i386c\ia32\instructions\flag_ctrl.h" />
     <ClInclude Include="..\i386c\ia32\instructions\fpu\fp.h" />
+    <ClInclude Include="..\i386c\ia32\instructions\fpu\fpumem.h" />
+    <ClInclude Include="..\i386c\ia32\instructions\fpu\softfloat\softfloat-macros.h" />
+    <ClInclude Include="..\i386c\ia32\instructions\fpu\softfloat\softfloat-specialize.h" />
+    <ClInclude Include="..\i386c\ia32\instructions\fpu\softfloat\softfloat.h" />
+    <ClInclude Include="..\i386c\ia32\instructions\fpu\softfloat\softfloatdef.h" />
     <ClInclude Include="..\i386c\ia32\instructions\logic_arith.h" />
     <ClInclude Include="..\i386c\ia32\instructions\misc_inst.h" />
+    <ClInclude Include="..\i386c\ia32\instructions\mmx\3dnow.h" />
+    <ClInclude Include="..\i386c\ia32\instructions\mmx\mmx.h" />
     <ClInclude Include="..\i386c\ia32\instructions\seg_reg.h" />
     <ClInclude Include="..\i386c\ia32\instructions\shift_rotate.h" />
+    <ClInclude Include="..\i386c\ia32\instructions\sse\sse.h" />
     <ClInclude Include="..\i386c\ia32\instructions\string_inst.h" />
     <ClInclude Include="..\i386c\ia32\instructions\system_inst.h" />
     <ClInclude Include="..\i386c\ia32\inst_table.h" />

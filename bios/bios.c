@@ -353,8 +353,17 @@ void bios_initialize(void) {
 	//	TRACEOUT(("write emuitf.rom"));
 	//}
 	CopyMemory(mem + ITF_ADRS, itfrom, sizeof(itfrom)+1);
-	if(np2cfg.memchkmx){
+	if(np2cfg.memchkmx){ // メモリカウント最大値変更
 		mem[ITF_ADRS + 6057] = mem[ITF_ADRS + 6061] = (UINT8)np2max((int)np2cfg.memchkmx-14, 1); // XXX: 場所決め打ち
+	}
+	if(np2cfg.sbeeplen || np2cfg.sbeepadj){ // ピポ音長さ変更
+		UINT16 beeplen = (np2cfg.sbeeplen ? np2cfg.sbeeplen : mem[ITF_ADRS + 5553]); // XXX: 場所決め打ち
+		if(np2cfg.sbeepadj){ // 自動調節
+			beeplen = beeplen * np2cfg.multiple / 10;
+			if(beeplen == 0) beeplen = 1;
+			if(beeplen > 255) beeplen = 255;
+		}
+		mem[ITF_ADRS + 5553] = (UINT8)beeplen; // XXX: 場所決め打ち
 	}
 	mem[ITF_ADRS + 0x7ff0] = 0xea;
 	STOREINTELDWORD(mem + ITF_ADRS + 0x7ff1, 0xf8000000);
