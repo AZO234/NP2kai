@@ -676,7 +676,7 @@ static const INITBL iniitem[] = {
 	{"cpu_f_ex", INITYPE_HEX32,	&np2cfg.cpu_feature_ex,	0},
 	{"cpu_bran", INIRO_STR,		np2cfg.cpu_brandstring_o, 63},
 
-	{"cpu_fami", PFTYPE_UINT8,	&np2cfg.fpu_type,	0},
+	{"FPU_TYPE", INITYPE_UINT8,	&np2cfg.fpu_type,	0},
 
 	{"keyboard", INITYPE_KB,	&np2oscfg.KEYBOARD,	0},
 #if !defined(__LIBRETRO__)
