@@ -117,6 +117,7 @@ static GtkActionEntry menu_entries[] = {
 #endif
 { "ScrnSizeMenu", NULL, "Size",      NULL, NULL, NULL },
 { "SoundMenu",    NULL, "_Sound",    NULL, NULL, NULL },
+{ "FPUMenu",      NULL, "FPU",       NULL, NULL, NULL },
 
 /* MenuItem */
 { "about",       NULL, "_About",            NULL, NULL, G_CALLBACK(cb_dialog) },
@@ -352,6 +353,13 @@ static GtkRadioActionEntry screensize_entries[] = {
 };
 static const guint n_screensize_entries = G_N_ELEMENTS(screensize_entries);
 
+static GtkRadioActionEntry fpu_entries[] = {
+{ "fpu80",  NULL, "80bit Extended Precision FPU (recommended)",  NULL, NULL, 0 },
+{ "fpu64",  NULL, "64bit Double Precision FPU",  NULL, NULL, 1 },
+{ "fpuINT64",  NULL, "64bit Double Precision FPU + INT64 Load/Save",  NULL, NULL, 2 },
+};
+static const guint n_fpu_entries = G_N_ELEMENTS(fpu_entries);
+
 static void cb_beepvol(gint idx);
 static void cb_kbtype(gint idx);
 static void cb_f11key(gint idx);
@@ -363,6 +371,7 @@ static void cb_rotate(gint idx);
 static void cb_screenmode(gint idx);
 static void cb_screensize(gint idx);
 static void cb_soundboard(gint idx);
+static void cb_fpu(gint idx);
 
 static const struct {
 	GtkRadioActionEntry	*entry;
@@ -380,6 +389,7 @@ static const struct {
 	{ screenmode_entries, G_N_ELEMENTS(screenmode_entries), cb_screenmode },
 	{ screensize_entries, G_N_ELEMENTS(screensize_entries), cb_screensize },
 	{ soundboard_entries, G_N_ELEMENTS(soundboard_entries), cb_soundboard },
+	{ fpu_entries, G_N_ELEMENTS(fpu_entries), cb_fpu },
 };
 static const guint n_radiomenu_entries = G_N_ELEMENTS(radiomenu_entries);
 
@@ -536,6 +546,11 @@ static const gchar *ui_info =
 "    <menuitem action='120.6mb'/>\n"
 "    <menuitem action='230.6mb'/>\n"
 "   </menu>\n"
+"   <menu name='FPU' action='FPUMenu'>\n"
+"    <menuitem action='fpu80'/>\n"
+"    <menuitem action='fpu64'/>\n"
+"    <menuitem action='fpuINT64'/>\n"
+"   </menu>\n"
 "   <menuitem action='mousemode'/>\n"
 "   <separator/>\n"
 "   <menuitem action='serialopt'/>\n"
@@ -648,6 +663,8 @@ xmenu_select_item_by_index(MENU_HDL hdl, GtkRadioActionEntry *entry, guint nentr
 	xmenu_select_item_by_index(NULL, screensize_entries, n_screensize_entries, v);
 #define	xmenu_select_soundboard(v) \
 	xmenu_select_item_by_index(NULL, soundboard_entries, n_soundboard_entries, v);
+#define	xmenu_select_fpu(v) \
+	xmenu_select_item_by_index(NULL, fpu_entries, n_fpu_entries, v);
 
 
 /*
@@ -1975,6 +1992,38 @@ cb_soundboard(gint idx)
 }
 
 static void
+cb_fpu(gint idx)
+{
+	guint value;
+
+	if (idx >= 0) {
+		value = fpu_entries[idx].value;
+	} else {
+		value = 0;
+	}
+	switch(value) {
+	case 0:
+		if (np2cfg.fpu_type != FPU_TYPE_SOFTFLOAT) {
+			np2cfg.fpu_type = FPU_TYPE_SOFTFLOAT;
+			sysmng_update(SYS_UPDATECFG);
+		}
+		break;
+	case 1:
+		if (np2cfg.fpu_type != FPU_TYPE_DOSBOX) {
+			np2cfg.fpu_type = FPU_TYPE_DOSBOX;
+			sysmng_update(SYS_UPDATECFG);
+		}
+		break;
+	case 2:
+		if (np2cfg.fpu_type != FPU_TYPE_DOSBOX2) {
+			np2cfg.fpu_type = FPU_TYPE_DOSBOX2;
+			sysmng_update(SYS_UPDATECFG);
+		}
+		break;
+	}
+}
+
+static void
 cb_radio(GtkRadioAction *action, GtkRadioAction *current, gpointer user_data)
 {
 	gint value = gtk_radio_action_get_current_value(action);
@@ -2217,6 +2266,19 @@ create_menu(void)
 	xmenu_select_screenmode(scrnmode & SCRNMODE_FULLSCREEN);
 	xmenu_select_screensize(SCREEN_DEFMUL);
 	xmenu_select_soundboard(np2cfg.SOUND_SW);
+	i = 0;
+	switch(np2cfg.fpu_type) {
+	case FPU_TYPE_SOFTFLOAT:
+		i = 0;
+		break;
+	case FPU_TYPE_DOSBOX:
+		i = 1;
+		break;
+	case FPU_TYPE_DOSBOX2:
+		i = 2;
+		break;
+	}
+	xmenu_select_fpu(i);
 
 	menubar = gtk_ui_manager_get_widget(menu_hdl.ui_manager, "/MainMenu");
 
