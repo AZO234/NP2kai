@@ -675,14 +675,14 @@ static INITBL iniitem[] = {
 	{"SBEEPLEN", INITYPE_BOOL,	&np2cfg.sbeepadj,	0},
 	
 	{"cpu_vend", INITYPE_STR,	np2cfg.cpu_vendor_o,	15},
-	{"cpu_fami", INITYPE_UINT32,	np2cfg.cpu_family,	0},
-	{"cpu_mode", INITYPE_UINT32,	np2cfg.cpu_model,	0},
-	{"cpu_step", INITYPE_UINT32,	np2cfg.cpu_stepping,	0},
-	{"cpu_feat", INITYPE_HEX32,	np2cfg.cpu_feature,	0},
-	{"cpu_f_ex", INITYPE_HEX32,	np2cfg.cpu_feature_ex,	0},
+	{"cpu_fami", INITYPE_UINT32,	&np2cfg.cpu_family,	0},
+	{"cpu_mode", INITYPE_UINT32,	&np2cfg.cpu_model,	0},
+	{"cpu_step", INITYPE_UINT32,	&np2cfg.cpu_stepping,	0},
+	{"cpu_feat", INITYPE_HEX32,	&np2cfg.cpu_feature,	0},
+	{"cpu_f_ex", INITYPE_HEX32,	&np2cfg.cpu_feature_ex,	0},
 	{"cpu_bran", INIRO_STR,		np2cfg.cpu_brandstring_o, 63},
 
-	{"cpu_fami", PFTYPE_UINT8,	np2cfg.fpu_type,	0},
+	{"cpu_fami", PFTYPE_UINT8,	&np2cfg.fpu_type,	0},
 
 	{"keyboard", INITYPE_KB,	&np2oscfg.KEYBOARD,	0},
 	{"F12_COPY", INITYPE_UINT8,	&np2oscfg.F12KEY,	0},
