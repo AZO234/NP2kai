@@ -211,6 +211,8 @@ struct tagNP2Config
 #if defined(SUPPORT_STATSAVE)
 	UINT8	statsave;
 #endif
+	UINT8	fddrive3;
+	UINT8	fddrive4;
 	
 	UINT8	winntfix;
 	UINT16	sysiomsk;

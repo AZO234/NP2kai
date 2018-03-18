@@ -135,6 +135,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 #if defined(SUPPORT_STATSAVE)
 				0,			/* statsave */
 #endif
+				0, 0,
 				0, 0xff00, 
 				0, 0, 0,
 				CPU_VENDOR, CPU_FAMILY, CPU_MODEL, CPU_STEPPING, CPU_FEATURES, CPU_FEATURES_EX, CPU_BRAND_STRING, OEMTEXT(""), OEMTEXT(""),
