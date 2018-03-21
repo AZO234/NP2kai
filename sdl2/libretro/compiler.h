@@ -247,7 +247,7 @@ typedef SINT32	FILELEN;
 #define	VRAMCALL
 #define	SCRNCALL
 #define	VERMOUTHCL
-#define	INLINE inline
 
+#include "retro_inline.h"
 #include "common.h"
 
