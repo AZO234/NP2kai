@@ -13,9 +13,9 @@
 #pragma warning(disable: 4245)
 #define INLINE __inline static
 #elif defined(__BORLANDC__)
-#define INLINE __inline static
+#define INLINE __inline
 #elif defined(__GNUC__)
-#define INLINE __inline__ static
+#define INLINE __inline__
 #else
 #define INLINE static
 #endif

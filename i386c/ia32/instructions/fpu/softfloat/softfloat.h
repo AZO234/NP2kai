@@ -250,31 +250,14 @@ char float128_is_signaling_nan( float128 );
 
 #endif
 
-float INLINE float32_to_c_float(float32 a){
-	return *((float*)(&a));
-}
-double INLINE float64_to_c_double(float64 a){
-	return *((double*)(&a));
-}
-float32 INLINE c_float_to_float32(float a){
-	return *((float32*)(&a));
-}
-float64 INLINE c_double_to_float64(double a){
-	return *((float64*)(&a));
-}
+float float32_to_c_float(float32 a);
+double float64_to_c_double(float64 a);
+float32 c_float_to_float32(float a);
+float64 c_double_to_float64(double a);
 
 #ifdef FLOATX80
-float INLINE floatx80_to_c_float(floatx80 a){
-	return float32_to_c_float(floatx80_to_float32(a));
-}
-double INLINE floatx80_to_c_double(floatx80 a){
-	return float64_to_c_double(floatx80_to_float64(a));
-}
-floatx80 INLINE c_float_to_floatx80(float a){
-	return float32_to_floatx80(c_float_to_float32(a));
-}
-floatx80 INLINE c_double_to_floatx80(double a){
-	return float64_to_floatx80(c_double_to_float64(a));
-}
+float floatx80_to_c_float(floatx80 a);
+double floatx80_to_c_double(floatx80 a);
+floatx80 c_float_to_floatx80(float a);
+floatx80 c_double_to_floatx80(double a);
 #endif
-

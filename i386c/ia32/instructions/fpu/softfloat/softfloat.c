@@ -5168,4 +5168,32 @@ flag float128_lt_quiet( float128 a, float128 b )
 
 #endif
 
+float float32_to_c_float(float32 a){
+	return *((float*)(&a));
+}
+double float64_to_c_double(float64 a){
+	return *((double*)(&a));
+}
+float32 c_float_to_float32(float a){
+	return *((float32*)(&a));
+}
+float64 c_double_to_float64(double a){
+	return *((float64*)(&a));
+}
+
+#ifdef FLOATX80
+float floatx80_to_c_float(floatx80 a){
+	return float32_to_c_float(floatx80_to_float32(a));
+}
+double floatx80_to_c_double(floatx80 a){
+	return float64_to_c_double(floatx80_to_float64(a));
+}
+floatx80 c_float_to_floatx80(float a){
+	return float32_to_floatx80(c_float_to_float32(a));
+}
+floatx80 c_double_to_floatx80(double a){
+	return float64_to_floatx80(c_double_to_float64(a));
+}
+#endif
+
 #endif
