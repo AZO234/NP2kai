@@ -39,6 +39,12 @@
 #include "calendar.h"
 #include "keystat.h"
 #include "bmsio.h"
+#if defined(SUPPORT_WAB)
+#include "wab.h"
+#endif
+#if defined(SUPPORT_CL_GD5430)
+#include "cirrus_vga_extern.h"
+#endif
 #if defined(SUPPORT_NET)
 #include "net.h"
 #endif
@@ -1258,6 +1264,10 @@ const SFENTRY	*tblterm;
 	if (sffh == NULL) {
 		return(STATFLAG_FAILURE);
 	}
+	
+#if defined(SUPPORT_CL_GD5430)
+	pc98_cirrus_vga_save();
+#endif
 
 	ret = STATFLAG_SUCCESS;
 	tbl = np2tbl;
@@ -1557,6 +1567,13 @@ const SFENTRY	*tblterm;
 #if defined(SUPPORT_LGY98)
 	lgy98_bind();
 #endif
+#if defined(SUPPORT_WAB)
+	np2wab_bind();
+#endif
+#if defined(SUPPORT_CL_GD5430)
+	pc98_cirrus_vga_bind();
+	pc98_cirrus_vga_load();
+#endif
 
 	gdcs.textdisp |= GDCSCRN_EXT;
 	gdcs.textdisp |= GDCSCRN_ALLDRAW2;
@@ -1572,6 +1589,16 @@ const SFENTRY	*tblterm;
 	MEMM_VRAM(vramop.operate);
 	fddmtr_reset();
 	soundmng_play();
+
+#if defined(SUPPORT_WAB)
+	np2wab.relay = 0;
+	np2wab_setRelayState(np2wab.relaystateint|np2wab.relaystateext);
+	np2wab.realWidth = np2wab.wndWidth; // XXX: ???
+	np2wab.realHeight = np2wab.wndHeight; // XXX: ???
+	np2wab.lastWidth = 0;
+	np2wab.lastHeight = 0;
+	np2wab_setScreenSize(np2wab.wndWidth, np2wab.wndHeight);
+#endif
 	
 	return(ret);
 }

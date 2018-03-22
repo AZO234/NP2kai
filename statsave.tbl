@@ -1,5 +1,5 @@
 
-#define		NP2STATUS_VERSION		850
+#define		NP2STATUS_VERSION		10850
 
 static const NP2FHDR np2flagdef = {
 						"Neko Project II",
@@ -148,6 +148,14 @@ static const SFENTRY np2tbl[] = {
 #if defined(SUPPORT_LGY98)
 	{"LGY98",		0,	STATFLAG_BIN,	&lgy98,			sizeof(lgy98)},
 	{"LGY98CFG",	0,	STATFLAG_BIN,	&lgy98cfg,		sizeof(lgy98cfg)},
+#endif
+#if defined(SUPPORT_WAB)
+	{"WAB",			0,	STATFLAG_BIN,	&np2wab,		sizeof(np2wab)},
+	{"WABCFG",		0,	STATFLAG_BIN,	&np2wabcfg,		sizeof(np2wabcfg)},
+#endif
+#if defined(SUPPORT_CL_GD5430)
+	{"NP2CLVGA",	0,	STATFLAG_BIN,	&np2clvga,		sizeof(np2clvga)},
+	{"CLVGA",		0,	STATFLAG_BIN,	cirrusvga_statsavebuf, sizeof(cirrusvga_statsavebuf)},
 #endif
 #if defined(SUPPORT_HOSTDRV)
 	{"HOSTDRV",		0,	STATFLAG_HDRV,	NULL,			0},

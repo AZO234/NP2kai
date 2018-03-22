@@ -660,9 +660,9 @@ static INITBL iniitem[] = {
 	{"WAB_ANSW", INITYPE_UINT8,	&np2cfg.wabasw,		0},
 #endif
 #if defined(SUPPORT_CL_GD5430)
-	{"USEGD5430", INITYPE_BOOL,	&np2cfg.usegd5430,	0},
-	{"GD5430TYPE", INITYPE_UINT16,	&np2cfg.gd5430type,	0},
-	{"GD5430FCUR", INITYPE_BOOL,	&np2cfg.gd5430fakecur,	0},
+	{"USE_CLGD", INITYPE_BOOL,	&np2cfg.usegd5430,	0},
+	{"CLGDTYPE", INITYPE_UINT16,	&np2cfg.gd5430type,	0},
+	{"CLGDFCUR", INITYPE_BOOL,	&np2cfg.gd5430fakecur,	0},
 #endif
 	{"TIMERFIX", INITYPE_BOOL,	&np2cfg.timerfix,	0},
 

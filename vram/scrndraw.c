@@ -6,6 +6,9 @@
 #include	"sdraw.h"
 #include	"dispsync.h"
 #include	"palettes.h"
+#ifdef SUPPORT_WAB
+#include	"wab/wab.h"
+#endif
 
 
 	UINT8	renewal_line[SURFACE_HEIGHT];
@@ -145,6 +148,17 @@ const SDRAWFN	*sdrawfn;
 	}
 
 	ret = 0;
+#ifdef SUPPORT_WAB
+	if(np2wab.relay & 0x3){
+		np2wab_drawframe(); 
+		if(!np2wabwnd.multiwindow){
+			// XXX: ウィンドウアクセラレータ動作中は内蔵グラフィックを描画しない
+			scrnmng_update();
+			ret = 1;
+			return(ret);
+		}
+	}
+#endif
 	surf = scrnmng_surflock();
 	if (surf == NULL) {
 		goto sddr_exit1;

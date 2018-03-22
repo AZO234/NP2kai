@@ -49,6 +49,12 @@
 #include	"timing.h"
 #include	"keystat.h"
 #include	"debugsub.h"
+#if defined(SUPPORT_WAB)
+#include	"wab.h"
+#endif
+#if defined(SUPPORT_CL_GD5430)
+#include	"cirrus_vga_extern.h"
+#endif
 #if defined(SUPPORT_HRTIMER)
 #include	"upd4990.h"
 #endif	/* SUPPORT_HRTIMER */
@@ -87,13 +93,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 
 				OEMTEXT("VX"), PCBASECLOCK25, PCBASEMULTIPLE, 1,
 				{0x48, 0x05, 0x04, 0x00, 0x01, 0x00, 0x00, 0x6e},
-				1, 3,
-#if defined(SUPPORT_PC9821)
-				3,
-#else	 /* SUPPORT_PC9821 */
-				2,
-#endif	 /* SUPPORT_PC9821 */
-				1, 0x000000, 0xffffff,
+				1, 13, 2, 1, 0x000000, 0xffffff,
 				44100, 150, 4, 0,
 				{0, 0, 0}, 0xd1, 0x7f, 0xd1, 0, 0, 1, 
 				
@@ -131,6 +131,12 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 #endif
 #if defined(SUPPORT_LGY98)
 				0, 0x10D0, 5, {0x00, 0x40, 0x26, 0x12, 0x34, 0x56},
+#endif
+#if defined(SUPPORT_WAB)
+				0,
+#endif
+#if defined(SUPPORT_CL_GD5430)
+				0, 0x5B, 0,
 #endif
 #if defined(SUPPORT_STATSAVE)
 				0,			/* statsave */
@@ -644,6 +650,18 @@ static void drawscreen(void) {
 	if (!pcstat.drawframe) {
 		return;
 	}
+#ifdef SUPPORT_WAB
+	if(np2wab.relay & 0x3){
+		if(!np2wabcfg.multiwindow){
+			pcstat.screenupdate = scrndraw_draw((UINT8)(pcstat.screenupdate & 2));
+			drawcount++;
+			return;
+		}else{
+			pcstat.screenupdate = 1;
+			drawcount++;
+		}
+	}
+#endif
 	if ((gdcs.textdisp & GDCSCRN_EXT) || (gdcs.grphdisp & GDCSCRN_EXT)) {
 		if (dispsync_renewalvertical()) {
 			gdcs.textdisp |= GDCSCRN_ALLDRAW2;
@@ -832,6 +850,13 @@ void pccore_exec(BOOL draw) {
 		pic_irq();
 		if (CPU_RESETREQ) {
 			CPU_RESETREQ = 0;
+#if defined(SUPPORT_WAB)
+			np2wab.relaystateint = np2wab.relaystateext = 0;
+			np2wab_setRelayState(0); // XXX:
+#endif
+#if defined(SUPPORT_CL_GD5430)
+			np2clvga.gd54xxtype = np2clvga.defgd54xxtype; // Auto Select用
+#endif
 #if defined(SUPPORT_IDEIO)
 			ideio_reset(&np2cfg); // XXX: Win9xの再起動で必要
 #endif

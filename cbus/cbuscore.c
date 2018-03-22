@@ -14,6 +14,12 @@
 #ifdef SUPPORT_LGY98
 #include	"lgy98.h"
 #endif
+#ifdef SUPPORT_WAB
+#include	"wab.h"
+#endif
+#ifdef SUPPORT_CL_GD5430
+#include	"cirrus_vga_extern.h"
+#endif
 
 
 static const FNIORESET resetfn[] = {
@@ -25,6 +31,12 @@ static const FNIORESET resetfn[] = {
 #endif
 #if defined(SUPPORT_LGY98)
 			lgy98_reset,
+#endif
+#if defined(SUPPORT_CL_GD5430)
+			pc98_cirrus_vga_reset,
+#endif
+#if defined(SUPPORT_WAB)
+			np2wab_reset,
 #endif
 #if defined(SUPPORT_SASI)
 			sasiio_reset,
@@ -50,6 +62,12 @@ static const FNIOBIND bindfn[] = {
 #endif
 #if defined(SUPPORT_LGY98)
 			lgy98_bind,
+#endif
+#if defined(SUPPORT_WAB)
+			np2wab_bind,
+#endif
+#if defined(SUPPORT_CL_GD5430)
+			pc98_cirrus_vga_bind,
 #endif
 #if defined(SUPPORT_SASI)
 			sasiio_bind,

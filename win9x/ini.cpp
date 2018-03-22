@@ -606,9 +606,9 @@ static const PFTBL s_IniItems[] =
 	PFVAL("WAB_ANSW", PFTYPE_UINT8,		&np2cfg.wabasw),
 #endif
 #if defined(SUPPORT_CL_GD5430)
-	PFVAL("USEGD5430", PFTYPE_BOOL,		&np2cfg.usegd5430),
-	PFVAL("GD5430TYPE",PFTYPE_UINT16,	&np2cfg.gd5430type),
-	PFVAL("GD5430FCUR",PFTYPE_BOOL,		&np2cfg.gd5430fakecur),
+	PFVAL("USE_CLGD", PFTYPE_BOOL,		&np2cfg.usegd5430),
+	PFVAL("CLGDTYPE", PFTYPE_UINT16,	&np2cfg.gd5430type),
+	PFVAL("CLGDFCUR", PFTYPE_BOOL,		&np2cfg.gd5430fakecur),
 #endif
 	
 	PFMAX("DAVOLUME", PFTYPE_UINT8,		&np2cfg.davolume,		255),

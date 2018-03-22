@@ -64,6 +64,13 @@
 #if defined(SUPPORT_NET)
 #include "net.h"
 #endif
+#if defined(SUPPORT_WAB)
+#include "wab.h"
+#include "wabbmpsave.h"
+#endif
+#if defined(SUPPORT_CL_GD5430)
+#include "cirrus_vga_extern.h"
+#endif
 
 
 static const char appname[] =
@@ -246,6 +253,12 @@ main(int argc, char *argv[])
 	toolwin_readini();
 	kdispwin_readini();
 	skbdwin_readini();
+#if defined(SUPPORT_WAB)
+	wabwin_readini();
+#endif	// defined(SUPPORT_WAB)
+#if defined(SUPPORT_HOSTDRV)
+	hostdrv_readini();
+#endif	// defined(SUPPORT_HOSTDRV)
 
 	rand_setseed((SINT32)time(NULL));
 
@@ -293,6 +306,14 @@ main(int argc, char *argv[])
 		if (result == SUCCESS) {
 			soundmng_pcmvolume(SOUND_PCMSEEK1, np2cfg.MOTORVOL);
 		}
+
+		result = soundmng_pcmload(SOUND_RELAY1, file_getcd("relay1.wav"));
+		if (result != SUCCESS) {
+			result = soundmng_pcmload(SOUND_RELAY1, SYSRESPATH "/relay1.wav");
+		}
+		if (result == SUCCESS) {
+			soundmng_pcmvolume(SOUND_RELAY1, np2cfg.MOTORVOL);
+		}
 	}
 
 	joymng_initialize();
@@ -310,6 +331,12 @@ main(int argc, char *argv[])
 
 #if defined(SUPPORT_NET)
 	np2net_init();
+#endif
+#ifdef SUPPORT_WAB
+	np2wab_init();
+#endif
+#ifdef SUPPORT_CL_GD5430
+	pc98_cirrus_vga_init();
 #endif
 	toolkit_widget_show();
 	scrndraw_redraw();
@@ -366,6 +393,12 @@ main(int argc, char *argv[])
 #if defined(SUPPORT_NET)
 	np2net_shutdown();
 #endif
+#ifdef SUPPORT_CL_GD5430
+	pc98_cirrus_vga_shutdown();
+#endif
+#ifdef SUPPORT_WAB
+	np2wab_shutdown();
+#endif
 
 	pccore_term();
 	debugwin_destroy();
@@ -385,6 +418,12 @@ fontmng_failure:
 		skbdwin_writeini();
 	}
 
+#if defined(SUPPORT_HOSTDRV)
+	hostdrv_writeini();
+#endif	// defined(SUPPORT_HOSTDRV)
+#if defined(SUPPORT_WAB)
+	wabwin_writeini();
+#endif	// defined(SUPPORT_WAB)
 	skbdwin_deinitialize();
 
 #if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER)

@@ -207,6 +207,14 @@ struct tagNP2Config
 	UINT8	lgy98irq;
 	UINT8	lgy98mac[6];
 #endif
+#ifdef SUPPORT_WAB
+	UINT8	wabasw;
+#endif
+#ifdef SUPPORT_CL_GD5430
+	UINT8	usegd5430;
+	UINT16	gd5430type;
+	UINT8	gd5430fakecur;
+#endif
 
 #if defined(SUPPORT_STATSAVE)
 	UINT8	statsave;
