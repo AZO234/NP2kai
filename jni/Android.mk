@@ -49,7 +49,10 @@ INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro \
 		-I$(NP2_PATH)/i386c \
 		-I$(NP2_PATH)/i386c/ia32 \
 		-I$(NP2_PATH)/i386c/ia32/instructions \
-		-I$(NP2_PATH)/i386c/ia32/instructions/fpu
+		-I$(NP2_PATH)/i386c/ia32/instructions/fpu \
+		-I$(NP2_PATH)/i386c/ia32/instructions/fpu/softfloat \
+		-I$(NP2_PATH)/i386c/ia32/instructions/mmx \
+		-I$(NP2_PATH)/i386c/ia32/instructions/sse
 SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strl.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_posix_string.c \
@@ -63,6 +66,13 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 		$(wildcard $(NP2_PATH)/i386c/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/*.c) \
+		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpdummy.c \
+		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox.c \
+		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox2.c \
+		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_softfloat.c \
+		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/fpu/softfloat/*.c) \
+		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/mmx/*.c) \
+		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse/*.c) \
 		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox.c
 
 OBJECTS  = $(SOURCES_CXX:.cpp=.o) $(SOURCES_C:.c=.o)
