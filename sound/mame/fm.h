@@ -79,7 +79,7 @@ typedef signed int		INT32;   /* signed 32bit   */
 #endif
 
 #ifndef INLINE
-#define INLINE static __inline__
+#define INLINE __inline__
 #endif
 
 

@@ -192,7 +192,11 @@ enum {
 
 
 #if !defined(INLINE)
+#if defined(DEBUG)
 #define	INLINE
+#else
+#define INLINE inline
+#endif
 #endif
 #if !defined(FASTCALL)
 #define	FASTCALL
