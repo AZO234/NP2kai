@@ -250,6 +250,7 @@ create_general_note(void)
 	gtk_container_add(GTK_CONTAINER(root_widget), wab_multiwindow_checkbutton);
 	if (np2wabcfg.multiwindow)
 		g_signal_emit_by_name(G_OBJECT(wab_multiwindow_checkbutton), "clicked");
+gtk_widget_set_sensitive(wab_multiwindow_checkbutton, FALSE);
 
 	/* Multi Thread Mode */
 	wab_multithread_checkbutton = gtk_check_button_new_with_label("Multi Thread Mode");
@@ -257,6 +258,7 @@ create_general_note(void)
 	gtk_container_add(GTK_CONTAINER(root_widget), wab_multithread_checkbutton);
 	if (np2wabcfg.multithread)
 		g_signal_emit_by_name(G_OBJECT(wab_multithread_checkbutton), "clicked");
+gtk_widget_set_sensitive(wab_multithread_checkbutton, FALSE);
 
 	return root_widget;
 }

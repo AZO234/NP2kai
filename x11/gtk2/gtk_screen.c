@@ -26,8 +26,10 @@
 #include "compiler.h"
 
 #include <math.h>
+#include <gdk/gdk.h>
 
 #include "np2.h"
+#include "pccore.h"
 #include "palettes.h"
 #include "scrndraw.h"
 
@@ -41,6 +43,9 @@
 #include "gtk2/gtk_drawmng.h"
 #include "gtk2/gtk_menu.h"
 
+#if defined(SUPPORT_WAB)
+#include "wab.h"
+#endif
 
 typedef struct {
 	UINT8		scrnmode;
@@ -58,6 +63,9 @@ typedef struct {
 	/* toolkit depend */
 	GdkPixbuf	*drawsurf;
 	GdkPixbuf	*backsurf;
+#if defined(SUPPORT_WAB)
+	GdkPixbuf	*wabsurf;
+#endif
 	GdkPixbuf	*surface;
 	double		ratio_w, ratio_h;
 	int		interp;
@@ -85,6 +93,11 @@ GtkWidget *drawarea;
 
 #define	BITS_PER_PIXEL	24
 #define	BYTES_PER_PIXEL	3
+
+#ifdef SUPPORT_WAB
+int mt_wabdrawing = 0;
+int mt_wabpausedrawing = 0;
+#endif
 
 /*
  * drawarea のアスペクト比を 4:3 (640x480) にする。
@@ -367,18 +380,40 @@ scrnmng_create(UINT8 mode)
 		scrnmng.flag = 0;
 		drawmng.extend = 0;
 		if (real_fullscreen) {
+#if defined(SUPPORT_WAB)
+			if(!np2wabwnd.multiwindow && (np2wab.relay & 0x3)) {
+				if(np2wab.realWidth >= 640 && np2wab.realHeight >= 400){
+					drawmng.width = np2wab.realWidth;
+					drawmng.height = np2wab.realHeight;
+				} else {
+					drawmng.width = FULLSCREEN_WIDTH;
+					drawmng.height = FULLSCREEN_HEIGHT;
+				}
+			}
+#else
 			drawmng.width = FULLSCREEN_WIDTH;
 			drawmng.height = FULLSCREEN_HEIGHT;
+#endif
 		} else {
 			screen = gdk_screen_get_default();
 			drawmng.width = gdk_screen_get_width(screen);
 			drawmng.height = gdk_screen_get_height(screen);
 		}
 	} else {
-		scrnmng.flag = SCRNFLAG_HAVEEXTEND;
-		drawmng.extend = 1;
+#if defined(SUPPORT_WAB)
+		if(!np2wabwnd.multiwindow && (np2wab.relay & 0x3) && np2wab.realWidth >= 640 && np2wab.realHeight >= 400) {
+			drawmng.width = np2wab.realWidth;
+			drawmng.height = np2wab.realHeight;
+		} else {
+			drawmng.width = 640;
+			drawmng.height = 480;
+		}
+#else
 		drawmng.width = 640;
 		drawmng.height = 480;
+#endif
+		scrnmng.flag = SCRNFLAG_HAVEEXTEND;
+		drawmng.extend = 1;
 	}
 
 	if (!(mode & SCRNMODE_ROTATE)) {
@@ -395,8 +430,20 @@ scrnmng_create(UINT8 mode)
 	drawmng.clipping = 0;
 	renewal_client_size();
 
+#ifdef SUPPORT_WAB
+	drawmng.wabsurf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, 1280, 1024);
+	if (drawmng.wabsurf == NULL) {
+		drawmng.drawing = FALSE;
+		g_message("can't create wabsurf.");
+		return FAILURE;
+	}
+	gdk_pixbuf_fill(drawmng.wabsurf, 0);
+
+	drawmng.backsurf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, 1280, 1024);
+#else
 	drawmng.backsurf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8,
 	    rect.right, rect.bottom);
+#endif
 	if (drawmng.backsurf == NULL) {
 		drawmng.drawing = FALSE;
 		g_message("can't create backsurf.");
@@ -404,6 +451,12 @@ scrnmng_create(UINT8 mode)
 	}
 	gdk_pixbuf_fill(drawmng.backsurf, 0);
 
+#ifdef SUPPORT_WAB
+	drawmng.surface = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, 1280, 1024);
+#else
+	drawmng.backsurf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8,
+	    rect.right, rect.bottom);
+#endif
 	drawmng.surface = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8,
 	    drawmng.rect.right, drawmng.rect.bottom);
 	if (drawmng.surface == NULL) {
@@ -412,6 +465,10 @@ scrnmng_create(UINT8 mode)
 		return FAILURE;
 	}
 	gdk_pixbuf_fill(drawmng.surface, 0);
+
+#if defined(SUPPORT_WAB)
+	mt_wabpausedrawing = 0; // for MultiThread
+#endif
 
 	if (mode & SCRNMODE_FULLSCREEN) {
 		drawmng.drawsurf =
@@ -434,6 +491,15 @@ void
 scrnmng_destroy(void)
 {
 
+#if defined(SUPPORT_WAB)
+	if (drawmng.wabsurf) {
+		mt_wabpausedrawing = 1; // for MultiThread
+		while(mt_wabdrawing) 
+			sleep(10);
+		g_object_unref(drawmng.wabsurf);
+		drawmng.wabsurf = NULL;
+	}
+#endif
 	if (drawmng.backsurf) {
 		g_object_unref(drawmng.backsurf);
 		drawmng.backsurf = NULL;
@@ -467,6 +533,9 @@ scrnmng_setwidth(int posx, int width)
 {
 
 	scrnstat.width = width;
+#ifdef SUPPORT_WAB
+	drawmng.width = width;
+#endif
 	renewal_client_size();
 }
 
@@ -475,6 +544,9 @@ scrnmng_setheight(int posy, int height)
 {
 
 	scrnstat.height = height;
+#ifdef SUPPORT_WAB
+	drawmng.height = height;
+#endif
 	renewal_client_size();
 }
 
@@ -483,6 +555,9 @@ scrnmng_setextend(int extend)
 {
 
 	scrnstat.extend = extend;
+#ifdef SUPPORT_WAB
+	drawmng.extend = extend;
+#endif
 	scrnmng.allflash = TRUE;
 	renewal_client_size();
 }
@@ -587,4 +662,53 @@ scrnmng_update(void)
 	    GDK_RGB_DITHER_NORMAL, 0, 0);
 
 	drawmng.drawing = FALSE;
+}
+
+// fullscreen resolution
+void scrnmng_updatefsres(void) {
+#ifdef SUPPORT_WAB
+#endif
+}
+
+// transmit WAB display
+void scrnmng_blthdc(GdkPixbuf* wab_pixbuf) {
+#if defined(SUPPORT_WAB)
+	mt_wabdrawing = 0;
+	if (np2wabwnd.multiwindow) return;
+	if (mt_wabpausedrawing) return;
+	if (drawmng.wabsurf != NULL) {
+		mt_wabdrawing = 1;
+		gdk_pixbuf_scale(drawmng.wabsurf, drawmng.backsurf,
+			0, 0, 1280, 1024,
+			0, 0, 1, 1,
+			GDK_INTERP_NEAREST);
+		mt_wabdrawing = 0;
+	}
+#endif
+}
+
+void scrnmng_bltwab() {
+#if defined(SUPPORT_WAB)
+	GdkRectangle	*dst;
+	GdkRectangle	src;
+	GdkRectangle	dstmp;
+	int exmgn = 0;
+	if (np2wabwnd.multiwindow) return;
+	if (drawmng.backsurf != NULL) {
+		dst = &drawmng.rect;
+		if (!(drawmng.scrnmode & SCRNMODE_FULLSCREEN)) {
+			exmgn = scrnstat.extend;
+		}
+		src.x = src.y = 0;
+		src.width = scrnstat.width;
+		src.height = scrnstat.height;
+		memcpy(&dstmp, dst, sizeof(GdkRectangle));
+		dstmp.x += exmgn;
+		dstmp.width = scrnstat.width;
+		gdk_pixbuf_scale(np2wabwnd.pPixbuf, drawmng.backsurf,
+			0, 0, dstmp.width, dstmp.height,
+			0, 0, 1, 1,
+			GDK_INTERP_NEAREST);
+	}
+#endif
 }

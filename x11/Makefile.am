@@ -5,7 +5,8 @@ bin_PROGRAMS=	xnp2kai
 nodist_man1_MANS=	xnp2.1 xnp2.1j
 CLEANFILES=		$(nodist_man1_MANS)
 dist_pkgdata_DATA=	$(real_topsrcdir)/x11/resources/fddseek.wav \
-			$(real_topsrcdir)/x11/resources/fddseek1.wav
+			$(real_topsrcdir)/x11/resources/fddseek1.wav \
+			$(real_topsrcdir)/x11/resources/relay1.wav
 dist_pkgdata_DATA+=	$(real_topsrcdir)/np2tool/np2tool.d88
 
 #EMUFM_SOURCES=	$(real_topsrcdir)/sound/opl3.c \
@@ -61,6 +62,7 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/x11/gtk2/dialog_newdisk.c \
 		$(real_topsrcdir)/x11/gtk2/dialog_screen.c \
 		$(real_topsrcdir)/x11/gtk2/dialog_sound.c \
+		$(real_topsrcdir)/x11/gtk2/dialog_wab.c \
 		$(real_topsrcdir)/x11/gtk2/window_keydisp.c \
 		$(real_topsrcdir)/x11/gtk2/window_softkbd.c \
 		$(real_topsrcdir)/x11/gtk2/gtk_drawmng.c \
@@ -287,7 +289,10 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/diskimage/img_strres.c \
 		\
 		$(real_topsrcdir)/network/lgy98.c \
-		$(real_topsrcdir)/network/net.c
+		$(real_topsrcdir)/network/net.c \
+		\
+		$(real_topsrcdir)/wab/cirrus_vga.c \
+		$(real_topsrcdir)/wab/wab.c
 
 xnp2kai_SOURCES=	$(COMMON_SOURCES)
 
@@ -305,9 +310,10 @@ AM_CPPFLAGS=	-I$(real_topsrcdir) \
 		-I$(real_topsrcdir)/sound \
 		-I$(real_topsrcdir)/sound/fmgen \
 		-I$(real_topsrcdir)/vram \
-		$(GTK_CFLAGS) $(SDL_CFLAGS) $(LIBUSB1_CFLAGS) \
+		-I$(real_topsrcdir)/wab \
+		$(GTK_CFLAGS) $(GDK_CFLAGS) $(GDK_PIXBUF_CFLAGS) $(SDL_CFLAGS) $(LIBUSB1_CFLAGS) \
 		$(X11_CFLAGS) $(XEXT_CFLAGS) \
-		-DSUPPORT_LARGE_HDD -DSUPPORT_VPCVHD -DSUPPORT_KAI_IMAGES -DHOOK_SYSKEY -DALLOW_MULTIRUN -DSUPPORT_NET -DSUPPORT_LGY98 -DUSE_MAME -DSUPPORT_SOUND_SB16
+		-DNP2_X11 -DSUPPORT_LARGE_HDD -DSUPPORT_VPCVHD -DSUPPORT_KAI_IMAGES -DHOOK_SYSKEY -DALLOW_MULTIRUN -DSUPPORT_NET -DSUPPORT_LGY98 -DSUPPORT_WAB -DSUPPORT_CL_GD5430 -DUSE_MAME -DSUPPORT_SOUND_SB16
 if BUILD_ALL
 AM_CPPFLAGS+=	-DX11_BUILD_ALL
 endif
@@ -320,7 +326,7 @@ AM_CXXFLAGS=	$(AM_CFLAGS)
 AM_CXXFLAGS+=	-std=c++11
 endif
 
-LDADD=		$(GTK_LIBS) $(SDL_LIBS) $(LIBUSB1_LIBS) \
+LDADD=		$(GTK_LIBS) $(GDK_LIBS) $(GDK_PIXBUF_LIBS) $(SDL_LIBS) $(LIBUSB1_LIBS) \
 		$(X11_LIBS) $(XEXT_LIBS) \
 		$(X_LIBS) $(X_PRE_LIBS) $(XLIB) $(X_EXTRA_LIBS)
 
