@@ -4327,6 +4327,11 @@ void cirrusvga_drawGraphic(){
 	int scanshift = 0;
 	uint8_t *scanptr;
 	uint8_t *vram_ptr;
+	
+#if defined(NP2_X11)
+	GdkPixbuf *VRAMBuf = NULL;
+	char* p;
+#endif
 
 
 	// VRAM上での1ラインのサイズ（表示幅と等しくない場合有り）
@@ -4464,8 +4469,6 @@ void cirrusvga_drawGraphic(){
 #elif defined(NP2_X11)
 			scanptr = vram_ptr;
 			if(np2wabwnd.pPixbuf) {
-				GdkPixbuf *VRAMBuf;
-				char* p;
 				VRAMBuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
 				p = gdk_pixbuf_get_pixels(VRAMBuf);
 				for(j = 0; j < height; j++) {
@@ -4475,26 +4478,6 @@ void cirrusvga_drawGraphic(){
 						p[(j * width + i) * 3 + 2] = cirrusvga->palette[vram_ptr[j * width + i] * 3 + 2] << 2;
 					}
 				}
-				if (cirrusvga->sr[0x12] & CIRRUS_CURSOR_SHOW) {
-					int fcx, fcy;
-					UINT8 col;
-					for(fcy = 0; fcy < CIRRUS_FMC_H; fcy++) {
-						for(fcx = 0; fcx < CIRRUS_FMC_W; fcx++) {
-							col = FakeMouseCursorData[fcy * CIRRUS_FMC_W + fcx];
-							if(col && cirrusvga->hw_cursor_x + fcx < width && cirrusvga->hw_cursor_y + fcy < height) {
-								col--;
-								p[((cirrusvga->hw_cursor_y + fcy) * width + cirrusvga->hw_cursor_x + fcx) * 3    ] = \
-								p[((cirrusvga->hw_cursor_y + fcy) * width + cirrusvga->hw_cursor_x + fcx) * 3 + 1] = \
-								p[((cirrusvga->hw_cursor_y + fcy) * width + cirrusvga->hw_cursor_x + fcx) * 3 + 2] = col * 0xFF;
-							}
-						}
-					}
-				}
-				gdk_pixbuf_scale(VRAMBuf, np2wabwnd.pPixbuf,
-					0, 0, width, height,
-					0, 0, 1, 1,
-					GDK_INTERP_NEAREST);
-				g_object_unref(VRAMBuf);
 			}
 #endif
 		}else{
@@ -4511,8 +4494,6 @@ void cirrusvga_drawGraphic(){
 #elif defined(NP2_X11)
 			scanptr = vram_ptr;
 			if(np2wabwnd.pPixbuf) {
-				GdkPixbuf *VRAMBuf;
-				char* p;
 				VRAMBuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
 				p = gdk_pixbuf_get_pixels(VRAMBuf);
 				for(j = 0; j < height; j++) {
@@ -4522,26 +4503,6 @@ void cirrusvga_drawGraphic(){
 						p[(j * width + i) * 3 + 2] = cirrusvga->palette[vram_ptr[j * width + i] * 3 + 2] << 2;
 					}
 				}
-				if (cirrusvga->sr[0x12] & CIRRUS_CURSOR_SHOW) {
-					int fcx, fcy;
-					UINT8 col;
-					for(fcy = 0; fcy < CIRRUS_FMC_H; fcy++) {
-						for(fcx = 0; fcx < CIRRUS_FMC_W; fcx++) {
-							col = FakeMouseCursorData[fcy * CIRRUS_FMC_W + fcx];
-							if(col && cirrusvga->hw_cursor_x + fcx < width && cirrusvga->hw_cursor_y + fcy < height) {
-								col--;
-								p[((cirrusvga->hw_cursor_y + fcy) * width + cirrusvga->hw_cursor_x + fcx) * 3    ] = \
-								p[((cirrusvga->hw_cursor_y + fcy) * width + cirrusvga->hw_cursor_x + fcx) * 3 + 1] = \
-								p[((cirrusvga->hw_cursor_y + fcy) * width + cirrusvga->hw_cursor_x + fcx) * 3 + 2] = col * 0xFF;
-							}
-						}
-					}
-				}
-				gdk_pixbuf_scale(VRAMBuf, np2wabwnd.pPixbuf,
-					0, 0, width, height,
-					0, 0, 1, 1,
-					GDK_INTERP_NEAREST);
-				g_object_unref(VRAMBuf);
 			}
 #endif
 		}
@@ -4562,30 +4523,8 @@ void cirrusvga_drawGraphic(){
 #elif defined(NP2_X11)
 				scanptr = vram_ptr;
 				if(np2wabwnd.pPixbuf) {
-					char* p;
-					GdkPixbuf *VRAMBuf;
 					VRAMBuf = gdk_pixbuf_new_from_data(vram_ptr, GDK_COLORSPACE_RGB, FALSE, 8, width, height, width*bpp/8, NULL,NULL);
 					p = gdk_pixbuf_get_pixels(VRAMBuf);
-					if(bpp == 16) {
-						int fcx, fcy;
-						UINT8 col;
-						for(fcy = 0; fcy < CIRRUS_FMC_H; fcy++) {
-							for(fcx = 0; fcx < CIRRUS_FMC_W; fcx++) {
-								col = FakeMouseCursorData[fcy * CIRRUS_FMC_W + fcx];
-								if(col && cirrusvga->hw_cursor_x + fcx < width && cirrusvga->hw_cursor_y + fcy < height) {
-									col--;
-									p[((cirrusvga->hw_cursor_y + fcy) * width + cirrusvga->hw_cursor_x + fcx) * 3    ] = \
-									p[((cirrusvga->hw_cursor_y + fcy) * width + cirrusvga->hw_cursor_x + fcx) * 3 + 1] = \
-									p[((cirrusvga->hw_cursor_y + fcy) * width + cirrusvga->hw_cursor_x + fcx) * 3 + 2] = col * 0xFF;
-								}
-							}
-						}
-					}
-					gdk_pixbuf_scale(VRAMBuf, np2wabwnd.pPixbuf,
-						0, 0, width, height,
-						0, 0, 1, 1,
-						GDK_INTERP_NEAREST);
-					g_object_unref(VRAMBuf);
 				}
 #endif
 			}else{
@@ -4602,24 +4541,9 @@ void cirrusvga_drawGraphic(){
 #elif defined(NP2_X11)
 				scanptr = vram_ptr;
 				if(np2wabwnd.pPixbuf) {
-					GdkPixbuf *VRAMBuf;
 					if(bpp == 24) {
 						VRAMBuf = gdk_pixbuf_new_from_data(vram_ptr, GDK_COLORSPACE_RGB, FALSE, 8, width, height, width*bpp/8, NULL,NULL);
-						gdk_pixbuf_scale(VRAMBuf, np2wabwnd.pPixbuf,
-							0, 0, width, height,
-							0, 0, 1, 1,
-							GDK_INTERP_NEAREST);
-						g_object_unref(VRAMBuf);
-						if(np2wabwnd.pPixbuf) {
-							UINT8* ptr = (UINT8 *)gdk_pixbuf_get_pixels(np2wabwnd.pPixbuf);
-							for(i = 0; i < 1280 * 1024; i++) {
-								j = ptr[i * 3];
-								ptr[i * 3] = ptr[i * 3 + 2];
-								ptr[i * 3 + 2] = j;
-							}
-						}
 					} else if(bpp == 16) {
-						char* p;
 						VRAMBuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
 						p = gdk_pixbuf_get_pixels(VRAMBuf);
 						for(j = 0; j < height; j++) {
@@ -4629,26 +4553,6 @@ void cirrusvga_drawGraphic(){
 								p[(j * width + i) * 3 + 2] = (((((UINT16*)vram_ptr)[j * width + i]) & 0x001F) << 3) & 0xFF;
 							}
 						}
-						if (cirrusvga->sr[0x12] & CIRRUS_CURSOR_SHOW) {
-							int fcx, fcy;
-							UINT8 col;
-							for(fcy = 0; fcy < CIRRUS_FMC_H; fcy++) {
-								for(fcx = 0; fcx < CIRRUS_FMC_W; fcx++) {
-									col = FakeMouseCursorData[fcy * CIRRUS_FMC_W + fcx];
-									if(col && cirrusvga->hw_cursor_x + fcx < width && cirrusvga->hw_cursor_y + fcy < height) {
-										col--;
-										p[((cirrusvga->hw_cursor_y + fcy) * width + cirrusvga->hw_cursor_x + fcx) * 3    ] = \
-										p[((cirrusvga->hw_cursor_y + fcy) * width + cirrusvga->hw_cursor_x + fcx) * 3 + 1] = \
-										p[((cirrusvga->hw_cursor_y + fcy) * width + cirrusvga->hw_cursor_x + fcx) * 3 + 2] = col * 0xFF;
-									}
-								}
-							}
-						}
-						gdk_pixbuf_scale(VRAMBuf, np2wabwnd.pPixbuf,
-							0, 0, width, height,
-							0, 0, 1, 1,
-							GDK_INTERP_NEAREST);
-						g_object_unref(VRAMBuf);
 					}
 				}
 #endif
@@ -4673,11 +4577,6 @@ void cirrusvga_drawGraphic(){
 			if(np2wabwnd.pPixbuf) {
 				GdkPixbuf *VRAMBuf;
 				VRAMBuf = gdk_pixbuf_new_from_data(vram_ptr, GDK_COLORSPACE_RGB, FALSE, 8, width, height, width*bpp/8, NULL,NULL);
-				gdk_pixbuf_scale(VRAMBuf, np2wabwnd.pPixbuf,
-					0, 0, width, height,
-					0, 0, 1, 1,
-					GDK_INTERP_NEAREST);
-				g_object_unref(VRAMBuf);
 			}
 #endif
 		}
@@ -4689,6 +4588,21 @@ void cirrusvga_drawGraphic(){
 			// ハードウェアカーソルが上手く表示できない場合用
 #if defined(_WIN32)
 			DrawIcon(hdc, hwcur_x, hwcur_y, ga_hFakeCursor);
+#elif defined(NP2_X11)
+			int fcx, fcy;
+			UINT8 col;
+			p = gdk_pixbuf_get_pixels(VRAMBuf);
+			for(fcy = 0; fcy < CIRRUS_FMC_H; fcy++) {
+				for(fcx = 0; fcx < CIRRUS_FMC_W; fcx++) {
+					col = FakeMouseCursorData[fcy * CIRRUS_FMC_W + fcx];
+					if(col && cirrusvga->hw_cursor_x + fcx < width && cirrusvga->hw_cursor_y + fcy < height) {
+						col--;
+						p[((cirrusvga->hw_cursor_y + fcy) * width + cirrusvga->hw_cursor_x + fcx) * 3    ] = \
+						p[((cirrusvga->hw_cursor_y + fcy) * width + cirrusvga->hw_cursor_x + fcx) * 3 + 1] = \
+						p[((cirrusvga->hw_cursor_y + fcy) * width + cirrusvga->hw_cursor_x + fcx) * 3 + 2] = col * 0xFF;
+					}
+				}
+			}
 #endif
 		}else{
 			//HPALETTE oldCurPalette;
@@ -4707,7 +4621,6 @@ void cirrusvga_drawGraphic(){
 			}
 #if defined(_WIN32)
 			BitBlt(ga_hdc_cursor , 0 , 0 , cursize , cursize , hdc , hwcur_x , hwcur_y , SRCCOPY);
-#endif
 		
 			if(np2clvga.gd54xxtype <= 0xff){
 				base = cirrusvga->vram_ptr + 1024 * 1024 - 16 * 1024; // ??? 1MB前提？
@@ -4722,6 +4635,7 @@ void cirrusvga_drawGraphic(){
 				dst = (uint32_t_ *)cursorptr;
 				dst += 64*64;
 				dst -= 64;
+				if(y2 > height) y2 = height;
 				for(y=y1;y<y2;y++){
 					src = base;
 					if (cirrusvga->sr[0x12] & CIRRUS_CURSOR_LARGE) {
@@ -4740,27 +4654,101 @@ void cirrusvga_drawGraphic(){
 							((uint32_t_ *)(src + 128))[0];
 					}
 					/* if nothing to draw, no need to continue */
-#if defined(_WIN32)
-					if (1){
+					uint32_t_ colortmp;
+					const uint8_t *plane0, *plane1;
+					int b0, b1;
+					x1 = hwcur_x;
+					if (x1 < width){
+						x2 = hwcur_x + cursize;
+						w = x2 - x1;
+						palette = cirrusvga->cirrus_hidden_palette;
+						color0 = rgb_to_pixel32(c6_to_8(palette[0x0 * 3]),
+													c6_to_8(palette[0x0 * 3 + 1]),
+													c6_to_8(palette[0x0 * 3 + 2]));
+						color1 = rgb_to_pixel32(c6_to_8(palette[0xf * 3]),
+													c6_to_8(palette[0xf * 3 + 1]),
+													c6_to_8(palette[0xf * 3 + 2]));
+						for(x=0;x<w;x++){
+							colortmp = *dst;
+							plane0 = src;
+							plane1 = src + poffset;
+							b0 = (plane0[(x) >> 3] >> (7 - ((x) & 7))) & 1;
+							b1 = (plane1[(x) >> 3] >> (7 - ((x) & 7))) & 1;
+							switch(b0 | (b1 << 1)) {
+							case 0:
+								break;
+							case 1:
+								colortmp ^= 0xffffff;
+								break;
+							case 2:
+								colortmp = color0;
+								break;
+							case 3:
+								colortmp = color1;
+								break;
+							}
+							*dst = colortmp;
+							dst++;
+						}
+						dst += (64 - w);
+					}
+					dst -= 64*2;
+				}
+			}
+			BitBlt(hdc , hwcur_x , hwcur_y , cursize , cursize , ga_hdc_cursor , 0 , 0 , SRCCOPY);
 #elif defined(NP2_X11)
-					if (0){
-#endif
-						uint32_t_ colortmp;
-						const uint8_t *plane0, *plane1;
-						int b0, b1;
-						x1 = hwcur_x;
-						if (x1 < width){
-							x2 = hwcur_x + cursize;
-							w = x2 - x1;
-							palette = cirrusvga->cirrus_hidden_palette;
-							color0 = rgb_to_pixel32(c6_to_8(palette[0x0 * 3]),
-														c6_to_8(palette[0x0 * 3 + 1]),
-														c6_to_8(palette[0x0 * 3 + 2]));
-							color1 = rgb_to_pixel32(c6_to_8(palette[0xf * 3]),
-														c6_to_8(palette[0xf * 3 + 1]),
-														c6_to_8(palette[0xf * 3 + 2]));
-							for(x=0;x<w;x++){
-								colortmp = *dst;
+			if(np2clvga.gd54xxtype <= 0xff){
+				base = cirrusvga->vram_ptr + 1024 * 1024 - 16 * 1024; // ??? 1MB前提？
+			}else{
+				base = cirrusvga->vram_ptr + cirrusvga->real_vram_size - 16 * 1024;
+			}
+			if (height >= hwcur_y && 0 <= (hwcur_y + cursize)){
+				UINT8 color0_r, color0_g, color0_b;
+				UINT8 color1_r, color1_g, color1_b;
+				int y1, y2;
+				y1 = hwcur_y; 
+				y2 = hwcur_y+cursize; 
+				h = cursize;
+				p = gdk_pixbuf_get_pixels(VRAMBuf);
+				p += (cirrusvga->hw_cursor_y * width + cirrusvga->hw_cursor_x) * 3; // カーソル位置のポインタ
+				palette = cirrusvga->cirrus_hidden_palette;
+				color0_r = c6_to_8(palette[0x0 * 3]);
+				color0_g = c6_to_8(palette[0x0 * 3 + 1]);
+				color0_b = c6_to_8(palette[0x0 * 3 + 2]);
+				color1_r = c6_to_8(palette[0xf * 3]);
+				color1_g = c6_to_8(palette[0xf * 3 + 1]);
+				color1_b = c6_to_8(palette[0xf * 3 + 2]);
+				if(y2 > height) y2 = height;
+				for(y=y1;y<y2;y++){
+					src = base;
+					if (cirrusvga->sr[0x12] & CIRRUS_CURSOR_LARGE) {
+						src += (cirrusvga->sr[0x13] & 0x3c) * 256;
+						src += (y - (int)hwcur_y) * 16;
+						poffset = 8;
+						content = ((uint32_t_ *)src)[0] |
+							((uint32_t_ *)src)[1] |
+							((uint32_t_ *)src)[2] |
+							((uint32_t_ *)src)[3];
+					} else {
+						src += (cirrusvga->sr[0x13] & 0x3f) * 256;
+						src += (y - (int)hwcur_y) * 4;
+						poffset = 128;
+						content = ((uint32_t_ *)src)[0] |
+							((uint32_t_ *)(src + 128))[0];
+					}
+					/* if nothing to draw, no need to continue */
+					UINT8 colortmp_r, colortmp_g, colortmp_b;
+					const uint8_t *plane0, *plane1;
+					int b0, b1;
+					x1 = hwcur_x;
+					if (x1 < width){
+						x2 = hwcur_x + cursize;
+						w = x2 - x1;
+						for(x=0;x<w;x++){
+							if(hwcur_x + x < width){
+								colortmp_r = *p;
+								colortmp_g = *(p+1);
+								colortmp_b = *(p+2);
 								plane0 = src;
 								plane1 = src + poffset;
 								b0 = (plane0[(x) >> 3] >> (7 - ((x) & 7))) & 1;
@@ -4769,29 +4757,51 @@ void cirrusvga_drawGraphic(){
 								case 0:
 									break;
 								case 1:
-									colortmp ^= 0xffffff;
+									colortmp_r ^= 0xff;
+									colortmp_g ^= 0xff;
+									colortmp_b ^= 0xff;
 									break;
 								case 2:
-									colortmp = color0;
+									colortmp_r = color0_r;
+									colortmp_g = color0_g;
+									colortmp_b = color0_b;
 									break;
 								case 3:
-									colortmp = color1;
+									colortmp_r = color1_r;
+									colortmp_g = color1_g;
+									colortmp_b = color1_b;
 									break;
 								}
-								*dst = colortmp;
-								dst++;
+								*p = colortmp_r;
+								*(p+1) = colortmp_g;
+								*(p+2) = colortmp_b;
 							}
-							dst += (64 - w);
+							p += 3;
 						}
+						p += (width - w) * 3;
 					}
-					dst -= 64*2;
 				}
 			}
-#if defined(_WIN32)
-			BitBlt(hdc , hwcur_x , hwcur_y , cursize , cursize , ga_hdc_cursor , 0 , 0 , SRCCOPY);
 #endif
 		}
 	}
+#if defined(NP2_X11)
+	if(VRAMBuf && np2wabwnd.pPixbuf) {
+		gdk_pixbuf_scale(VRAMBuf, np2wabwnd.pPixbuf,
+			0, 0, width, height,
+			0, 0, 1, 1,
+			GDK_INTERP_NEAREST);
+		g_object_unref(VRAMBuf);
+		if(bpp == 24) {
+			UINT8* ptr = (UINT8 *)gdk_pixbuf_get_pixels(np2wabwnd.pPixbuf);
+			for(i = 0; i < 1280 * 1024; i++) {
+				j = ptr[i * 3];
+				ptr[i * 3] = ptr[i * 3 + 2];
+				ptr[i * 3 + 2] = j;
+			}
+		}
+	}
+#endif
 #if defined(_WIN32)
 	ga_bmpInfo->bmiHeader.biWidth = width; // 前回の解像度を保存
 	ga_bmpInfo->bmiHeader.biHeight = height; // 前回の解像度を保存
