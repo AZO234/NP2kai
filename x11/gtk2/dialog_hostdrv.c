@@ -35,6 +35,8 @@
 #if defined(CPUCORE_IA32)
 #include "i386c/ia32/cpu.h"
 #endif
+#include "hostdrv.h"
+#include "ini.h"
 
 
 static GtkWidget *config_dialog;
@@ -44,6 +46,7 @@ static GtkWidget *hostdrv_read_checkbutton;
 static GtkWidget *hostdrv_write_checkbutton;
 static GtkWidget *hostdrv_delete_checkbutton;
 
+static TCHAR s_hostdrvdir[10][MAX_PATH] = {0};
 
 static void
 ok_button_clicked(GtkButton *b, gpointer d)
@@ -242,4 +245,66 @@ create_hostdrv_dialog(void)
 	    G_CALLBACK(gtk_widget_destroy), G_OBJECT(config_dialog));
 
 	gtk_widget_show_all(config_dialog);
+}
+
+/* title */
+static const char s_hostdrvapp[] = "NP2 hostdrv";
+
+/**
+ * settings
+ */
+static const INITBL s_hostdrvini[] =
+{
+	{"HOSTDRV0",  INITYPE_STR,	s_hostdrvdir[0],	MAX_PATH},
+	{"HOSTDRV1",  INITYPE_STR,	s_hostdrvdir[1],	MAX_PATH},
+	{"HOSTDRV2",  INITYPE_STR,	s_hostdrvdir[2],	MAX_PATH},
+	{"HOSTDRV3",  INITYPE_STR,	s_hostdrvdir[3],	MAX_PATH},
+	{"HOSTDRV4",  INITYPE_STR,	s_hostdrvdir[4],	MAX_PATH},
+	{"HOSTDRV5",  INITYPE_STR,	s_hostdrvdir[5],	MAX_PATH},
+	{"HOSTDRV6",  INITYPE_STR,	s_hostdrvdir[6],	MAX_PATH},
+	{"HOSTDRV7",  INITYPE_STR,	s_hostdrvdir[7],	MAX_PATH},
+	{"HOSTDRV8",  INITYPE_STR,	s_hostdrvdir[8],	MAX_PATH},
+	{"HOSTDRV9",  INITYPE_STR,	s_hostdrvdir[9],	MAX_PATH},
+};
+
+/**
+ * read settings
+ */
+void hostdrv_readini()
+{
+	memset(&s_hostdrvdir, 0, sizeof(s_hostdrvdir));
+
+	OEMCHAR szPath[MAX_PATH];
+	milstr_ncpy(szPath, modulefile, sizeof(szPath));
+	ini_read(szPath, s_hostdrvapp, s_hostdrvini, sizeof(s_hostdrvini) / sizeof(INITBL));
+}
+
+/**
+ * write settings
+ */
+void hostdrv_writeini()
+{
+	char szPath[MAX_PATH];
+	milstr_ncpy(szPath, modulefile, sizeof(szPath));
+	ini_write(szPath, s_hostdrvapp, s_hostdrvini, sizeof(s_hostdrvini) / sizeof(INITBL), FALSE);
+}
+
+/**
+ * path to top
+ */
+void hostdrv_setcurrentpath(const char* newpath)
+{
+	int i;
+	if(!newpath[0]) 
+		return;
+	for(i=0;i<sizeof(s_hostdrvini) / sizeof(INITBL);i++){
+		if(_tcsicmp(s_hostdrvdir[i], newpath)==0){
+			i++;
+			break;
+		}
+	}
+	for(i=i-1;i>=1;i--){
+		strcpy(s_hostdrvdir[i], s_hostdrvdir[i-1]);
+	}
+	strcpy(s_hostdrvdir[0], newpath);
 }
