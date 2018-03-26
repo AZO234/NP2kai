@@ -388,7 +388,8 @@ IA32_CPPFLAGS=	-I$(real_topsrcdir)/i386c \
 		-I$(real_topsrcdir)/i386c/ia32/instructions/fpu/softfloat \
 		-I$(real_topsrcdir)/i386c/ia32/instructions/mmx \
 		-I$(real_topsrcdir)/i386c/ia32/instructions/sse \
-		-DCPUCORE_IA32 -DUSE_FPU -DSUPPORT_FPU_DOSBOX -DSUPPORT_FPU_DOSBOX2 -DSUPPORT_FPU_SOFTFLOAT -DUSE_MMX -DUSE_3DNOW -DUSE_SSE -DUSE_TSC
+		-DCPUCORE_IA32 -DUSE_FPU -DSUPPORT_FPU_DOSBOX -DSUPPORT_FPU_DOSBOX2 -DSUPPORT_FPU_SOFTFLOAT -DUSE_MMX -DUSE_3DNOW -DUSE_SSE
+# -DUSE_TSC
 
 if CPUCORE_IA32
 if BUILD_ALL
