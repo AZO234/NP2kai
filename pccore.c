@@ -840,6 +840,11 @@ void pccore_exec(BOOL draw) {
 #endif
 			CPU_SHUT();
 		}
+#if defined(USE_TSC)
+#ifndef _WIN32
+		CPU_MSR_TSC += CPU_BASECLOCK;//CPU_REMCLOCK;
+#endif
+#endif
 #if !defined(SINGLESTEPONLY)
 		if (CPU_REMCLOCK > 0) {
 			if (!(CPU_TYPE & CPUTYPE_V30)) {

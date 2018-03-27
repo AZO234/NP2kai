@@ -57,6 +57,10 @@ ia32_initreg(void)
 	CPU_CR0 &= ~(CPU_CR0_MP | CPU_CR0_ET);
 #endif
 	CPU_MXCSR = 0x1f80;
+	
+#if defined(USE_TSC)
+	CPU_MSR_TSC = 0;
+#endif
 
 	CPU_GDTR_BASE = 0x0;
 	CPU_GDTR_LIMIT = 0xffff;

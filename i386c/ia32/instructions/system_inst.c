@@ -1113,7 +1113,17 @@ RDTSC(void)
 	CPU_EDX = li.HighPart;
 	CPU_EAX = li.LowPart;
 #else
-	ia32_panic("RDTSC: not implemented yet!");
+//	ia32_panic("RDTSC: not implemented yet!");
+	UINT64 tsc_tmp;
+	if(CPU_REMCLOCK != -1){
+		tsc_tmp = CPU_MSR_TSC - CPU_REMCLOCK;
+	}else{
+		tsc_tmp = CPU_MSR_TSC;
+	}
+	//tsc_tmp /= 1000;
+	tsc_tmp = (tsc_tmp >> 10); // XXX: ????
+	CPU_EDX = ((tsc_tmp >> 32) & 0xffffffff);
+	CPU_EAX = (tsc_tmp & 0xffffffff);
 #endif
 }
 

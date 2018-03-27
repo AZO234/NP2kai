@@ -363,6 +363,10 @@ typedef struct {
 	SINT32		remainclock;
 	SINT32		baseclock;
 	UINT32		clock;
+	
+#if defined(USE_TSC)
+	UINT64		cpu_tsc;
+#endif
 } I386STAT;
 
 typedef struct {
@@ -805,6 +809,8 @@ do { \
 #define CPU_CR3			CPU_STATSAVE.cpu_sysregs.cr3
 #define CPU_CR4			CPU_STATSAVE.cpu_sysregs.cr4
 #define CPU_MXCSR		CPU_STATSAVE.cpu_sysregs.mxcsr
+
+#define CPU_MSR_TSC		CPU_STATSAVE.cpu_tsc
 
 #define	CPU_CR0_PE		(1 << 0)
 #define	CPU_CR0_MP		(1 << 1)
