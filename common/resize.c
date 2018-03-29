@@ -64,6 +64,22 @@ static void cc16by24(RSZHDL hdl, UINT8 *dst, const UINT8 *src) {
 	} while(--width);
 }
 
+static void cc16by32(RSZHDL hdl, UINT8 *dst, const UINT8 *src) {
+
+	UINT	width;
+	UINT	col;
+
+	width = hdl->width;
+	do {
+		col = (src[0] >> (8 - B16BIT)) << B16SFT;
+		col += (src[1] >> (8 - G16BIT)) << G16SFT;
+		col += (src[2] >> (8 - R16BIT)) << R16SFT;
+		*(UINT16 *)dst = (UINT16)col;
+		src += 4;
+		dst += 2;
+	} while(--width);
+}
+
 static void cc24by16(RSZHDL hdl, UINT8 *dst, const UINT8 *src) {
 
 	UINT	width;
@@ -81,6 +97,40 @@ static void cc24by16(RSZHDL hdl, UINT8 *dst, const UINT8 *src) {
 		dst[2] = (UINT8)((tmp << (8 - R16BIT)) + (tmp >> (R16BIT * 2 - 8)));
 		src += 2;
 		dst += 3;
+	} while(--width);
+}
+
+static void cc32by16(RSZHDL hdl, UINT8 *dst, const UINT8 *src) {
+
+	UINT	width;
+	UINT	col;
+	UINT	tmp;
+
+	width = hdl->width;
+	do {
+		col = *(UINT16 *)src;
+		tmp = (col >> B16SFT) & ((1 << B16BIT) - 1);
+		dst[0] = (UINT8)((tmp << (8 - B16BIT)) + (tmp >> (B16BIT * 2 - 8)));
+		tmp = (col >> G16SFT) & ((1 << G16BIT) - 1);
+		dst[1] = (UINT8)((tmp << (8 - G16BIT)) + (tmp >> (G16BIT * 2 - 8)));
+		tmp = (col >> R16SFT) & ((1 << R16BIT) - 1);
+		dst[2] = (UINT8)((tmp << (8 - R16BIT)) + (tmp >> (R16BIT * 2 - 8)));
+		src += 2;
+		dst += 4;
+	} while(--width);
+}
+
+static void cc32by24(RSZHDL hdl, UINT8 *dst, const UINT8 *src) {
+
+	UINT	width;
+
+	width = hdl->width;
+	do {
+		dst[0] = src[0];
+		dst[1] = src[1];
+		dst[2] = src[2];
+		src += 3;
+		dst += 4;
 	} while(--width);
 }
 #endif
@@ -101,7 +151,12 @@ static void cc24(RSZHDL hdl, UINT8 *dst, const UINT8 *src) {
 	CopyMemory(dst, src, hdl->width * 3);
 }
 
-static const FNCNV cnvcpy[RSZFNMAX] = {cc8, cc16, cc24, cc16by24, cc24by16};
+static void cc32(RSZHDL hdl, UINT8 *dst, const UINT8 *src) {
+
+	CopyMemory(dst, src, hdl->width * 4);
+}
+
+static const FNCNV cnvcpy[RSZFNMAX] = {cc8, cc16, cc24, cc32, cc16by24, cc16by32, cc24by16, cc32by16, cc32by24};
 #endif
 
 
@@ -246,6 +301,39 @@ static void aamix24(RSZEX hdl, const UINT8 *src, int volume) {
 	}
 }
 
+static void aamix32(RSZEX hdl, const UINT8 *src, int volume) {
+
+	UINT	*buf;
+	UINT	posx;
+	int		i;
+	UINT	curx;
+	int		vol;
+
+	buf = hdl->buf;
+	posx = 0;
+	for (i=0; i<hdl->orgx; i++) {
+		curx = hdl->h[i];
+		while((curx ^ posx) >> MXBITS) {
+			vol = (int)(MULTIX - (posx & MXMASK)) * volume;
+			buf[0] += (int)src[0] * vol;
+			buf[1] += (int)src[1] * vol;
+			buf[2] += (int)src[2] * vol;
+			buf += 4;
+			posx &= ~MXMASK;
+			posx += MULTIX;
+		}
+		curx -= posx;
+		if (curx) {
+			posx += curx;
+			vol = (int)curx * volume;
+			buf[0] += (int)src[0] * vol;
+			buf[1] += (int)src[1] * vol;
+			buf[2] += (int)src[2] * vol;
+		}
+		src += 4;
+	}
+}
+
 static void aaout8(RSZEX hdl, UINT8 *dst) {
 
 const UINT	*buf;
@@ -295,6 +383,18 @@ const UINT	*buf;
 	} while(--rem);
 }
 
+static void aaout32(RSZEX hdl, UINT8 *dst) {
+
+const UINT	*buf;
+	int		rem;
+
+	buf = hdl->buf;
+	rem = hdl->width * 4;
+	do {
+		*dst++ = (UINT8)((*buf++) >> (MXBITS + MYBITS));
+	} while(--rem);
+}
+
 static void aaout16by24(RSZEX hdl, UINT8 *dst) {
 
 const UINT	*buf;
@@ -316,6 +416,27 @@ const UINT	*buf;
 	} while(--rem);
 }
 
+static void aaout16by32(RSZEX hdl, UINT8 *dst) {
+
+const UINT	*buf;
+	int		rem;
+	UINT	col;
+
+	buf = hdl->buf;
+	rem = hdl->width;
+	do {
+		col = (buf[0] >> (MXBITS + MYBITS + 8 - B16BIT - B16SFT)) &
+											(((1 << B16BIT) - 1) << B16SFT);
+		col += (buf[1] >> (MXBITS + MYBITS + 8 - G16BIT - G16SFT)) &
+											(((1 << G16BIT) - 1) << G16SFT);
+		col += (buf[2] >> (MXBITS + MYBITS + 8 - R16BIT - R16SFT)) &
+											(((1 << R16BIT) - 1) << R16SFT);
+		*(UINT16 *)dst = (UINT16)col;
+		dst += 2;
+		buf += 4;
+	} while(--rem);
+}
+
 static void aaout24by16(RSZEX hdl, UINT8 *dst) {
 
 const UINT	*buf;
@@ -332,13 +453,45 @@ const UINT	*buf;
 	} while(--rem);
 }
 
+static void aaout32by16(RSZEX hdl, UINT8 *dst) {
+
+const UINT	*buf;
+	int		rem;
+
+	buf = hdl->buf;
+	rem = hdl->width;
+	do {
+		dst[0] = (UINT8)(buf[0] >> (MXBITS + MYBITS - 8 + B16BIT));
+		dst[1] = (UINT8)(buf[1] >> (MXBITS + MYBITS - 8 + G16BIT));
+		dst[2] = (UINT8)(buf[2] >> (MXBITS + MYBITS - 8 + R16BIT));
+		dst += 4;
+		buf += 3;
+	} while(--rem);
+}
+
+static void aaout32by24(RSZEX hdl, UINT8 *dst) {
+
+const UINT	*buf;
+	int		rem;
+
+	buf = hdl->buf;
+	rem = hdl->width;
+	do {
+		dst[0] = buf[0] >> (UINT8)((MXBITS + MYBITS));
+		dst[1] = buf[1] >> (UINT8)((MXBITS + MYBITS));
+		dst[2] = buf[2] >> (UINT8)((MXBITS + MYBITS));
+		dst += 4;
+		buf += 3;
+	} while(--rem);
+}
+
 typedef void (*AAMIX)(RSZEX hdl, const UINT8 *src, int volume);
 typedef void (*AAOUT)(RSZEX hdl, UINT8 *dst);
 
-static const AAMIX fnaamix[RSZFNMAX] = {aamix8, aamix16, aamix24,
-										aamix24, aamix16};
-static const AAOUT fnaaout[RSZFNMAX] = {aaout8, aaout16, aaout24,
-										aaout16by24, aaout24by16};
+static const AAMIX fnaamix[RSZFNMAX] = {aamix8, aamix16, aamix24, aamix32,
+										aamix24, aamix32, aamix16, aamix16, aamix24};
+static const AAOUT fnaaout[RSZFNMAX] = {aaout8, aaout16, aaout24, aaout32,
+										aaout16by24, aaout16by32, aaout24by16, aaout32by16, aaout32by24};
 
 static void areaavefunc(RSZEX hdl, UINT type, UINT8 *dst, int dalign,
 											const UINT8 *src, int salign) {
@@ -421,6 +574,9 @@ UINT resize_gettype(int dbpp, int sbpp) {
 	}
 	else if (dbpp == 24) {
 		ret = (sbpp == 16)?RSZFN_24BY16:RSZFN_24BPP;
+	}
+	else if (dbpp == 32) {
+		ret = (sbpp == 16)?RSZFN_32BY16:((sbpp == 24)?RSZFN_32BY24:RSZFN_32BPP);
 	}
 	else {
 		ret = RSZFNMAX;

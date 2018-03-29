@@ -37,7 +37,7 @@ typedef struct {
 	int		height;
 } SCRNSTAT;
 
-static const char app_name[] = "Neko Project II";
+static const char app_name[] = "Neko Project II kai";
 
 static	SCRNMNG		scrnmng;
 static	SCRNSTAT	scrnstat;
@@ -202,8 +202,8 @@ BRESULT scrnmng_create(int width, int height) {
 	s_sdlWindow = SDL_CreateWindow(app_name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, 0);
 	s_renderer = SDL_CreateRenderer(s_sdlWindow, -1, 0);
 	SDL_RenderSetLogicalSize(s_renderer, width, 400);
-	s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STATIC, width, 400);
-	s_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, 400, 16, 0xf800, 0x07e0, 0x001f, 0);
+	s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STATIC, width, 400);
+	s_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, 400, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
 
 	surface = s_surface;
 	r = FALSE;
@@ -276,7 +276,7 @@ void scrnmng_setwidth(int posx, int width) {
 	SDL_DestroyTexture(s_texture);
 	SDL_RenderSetLogicalSize(s_renderer, width, scrnmng.height);
 	s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STATIC, width, scrnmng.height);
-	s_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, scrnmng.height, 16, 0xf800, 0x07e0, 0x001f, 0);
+	s_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, scrnmng.height, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
 	scrnstat.width = width;
 #else	/* __LIBRETRO__ */
 	struct retro_system_av_info info;
@@ -295,7 +295,7 @@ void scrnmng_setheight(int posy, int height) {
 	SDL_DestroyTexture(s_texture);
 	SDL_RenderSetLogicalSize(s_renderer, scrnstat.width, height);
 	s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STATIC, scrnstat.width, height);
-	s_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, scrnstat.width, height, 16, 0xf800, 0x07e0, 0x001f, 0);
+	s_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, scrnstat.width, height, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
 	scrnstat.height = height;
 #else	/* __LIBRETRO__ */
 	struct retro_system_av_info info;
@@ -532,7 +532,7 @@ BRESULT scrnmng_entermenu(SCRNMENU *smenu) {
 #else	/* __LIBRETRO__ */
 	smenu->width = scrnmng.width;
 	smenu->height = scrnmng.height;
-	smenu->bpp = (scrnmng.bpp == 32)?24:scrnmng.bpp;
+	smenu->bpp = 32;
 	mousemng_showcursor();
 #endif	/* __LIBRETRO__ */
 	return(SUCCESS);
@@ -660,7 +660,7 @@ const UINT8		*q;
 #if defined(SUPPORT_32BPP)
 			case 32:
 				p = scrnmng.vram->ptr + (dr.srcpos * 4);
-				q = menuvram->ptr + (dr.srcpos * 3);
+				q = menuvram->ptr + (dr.srcpos * 4);
 				r = (UINT8 *)surface->pixels + dr.dstpos;
 				a = menuvram->alpha + dr.srcpos;
 				salign = menuvram->width;
@@ -670,9 +670,9 @@ const UINT8		*q;
 					do {
 						if (a[x]) {
 							if (a[x] & 2) {
-								((RGB32 *)r)->p.b = q[x*3+0];
-								((RGB32 *)r)->p.g = q[x*3+1];
-								((RGB32 *)r)->p.r = q[x*3+2];
+								((RGB32 *)r)->p.b = q[x*4+0];
+								((RGB32 *)r)->p.g = q[x*4+1];
+								((RGB32 *)r)->p.r = q[x*4+2];
 							//	((RGB32 *)r)->p.e = 0;
 							}
 							else {
@@ -683,7 +683,7 @@ const UINT8		*q;
 						r += dr.xalign;
 					} while(++x < dr.width);
 					p += salign * 4;
-					q += salign * 3;
+					q += salign * 4;
 					r += dalign;
 					a += salign;
 				} while(--dr.height);

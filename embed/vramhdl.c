@@ -141,6 +141,9 @@ void vram_fill(VRAMHDL hdl, const RECT_T *rect, UINT32 color, UINT8 alpha) {
 #ifdef SUPPORT_24BPP
 	UINT8	c24[3];
 #endif
+#ifdef SUPPORT_32BPP
+	UINT8	c32[3];
+#endif
 
 	if (hdl == NULL) {
 		return;
@@ -173,6 +176,19 @@ void vram_fill(VRAMHDL hdl, const RECT_T *rect, UINT32 color, UINT8 alpha) {
 					p[1] = c24[1];
 					p[2] = c24[2];
 					p += 3;
+				} while(--remain);
+				break;
+#endif
+#ifdef SUPPORT_32BPP
+			case 32:
+				c32[0] = (UINT8)color;
+				c32[1] = (UINT8)(color >> 8);
+				c32[2] = (UINT8)(color >> 16);
+				do {
+					p[0] = c32[0];
+					p[1] = c32[1];
+					p[2] = c32[2];
+					p += 4;
 				} while(--remain);
 				break;
 #endif
@@ -237,6 +253,24 @@ void vram_fill(VRAMHDL hdl, const RECT_T *rect, UINT32 color, UINT8 alpha) {
 					} while(--remain);
 					break;
 #endif
+#ifdef SUPPORT_32BPP
+				case 32:
+					c32[0] = (UINT8)color;
+					c32[1] = (UINT8)(color >> 8);
+					c32[2] = (UINT8)(color >> 16);
+					remain = height;
+					do {
+						int r = width;
+						do {
+							p[0] = c32[0];
+							p[1] = c32[1];
+							p[2] = c32[2];
+							p += 4;
+						} while(--r);
+						p += hdl->yalign - (width * 4);
+					} while(--remain);
+					break;
+#endif
 				default:
 					TRACEOUT(("vram_fill: unsupport %dbpp", hdl->bpp));
 					break;
@@ -266,6 +300,9 @@ void vram_filldat(VRAMHDL hdl, const RECT_T *rect, UINT32 color) {
 #endif
 #ifdef SUPPORT_24BPP
 	UINT8	c24[3];
+#endif
+#ifdef SUPPORT_32BPP
+	UINT8	c32[3];
 #endif
 
 	if (hdl == NULL) {
@@ -299,6 +336,19 @@ void vram_filldat(VRAMHDL hdl, const RECT_T *rect, UINT32 color) {
 					p[1] = c24[1];
 					p[2] = c24[2];
 					p += 3;
+				} while(--remain);
+				break;
+#endif
+#ifdef SUPPORT_32BPP
+			case 32:
+				c32[0] = (UINT8)color;
+				c32[1] = (UINT8)(color >> 8);
+				c32[2] = (UINT8)(color >> 16);
+				do {
+					p[0] = c32[0];
+					p[1] = c32[1];
+					p[2] = c32[2];
+					p += 4;
 				} while(--remain);
 				break;
 #endif
@@ -360,6 +410,24 @@ void vram_filldat(VRAMHDL hdl, const RECT_T *rect, UINT32 color) {
 					} while(--remain);
 					break;
 #endif
+#ifdef SUPPORT_32BPP
+				case 32:
+					c32[0] = (UINT8)color;
+					c32[1] = (UINT8)(color >> 8);
+					c32[2] = (UINT8)(color >> 16);
+					remain = height;
+					do {
+						int r = width;
+						do {
+							p[0] = c32[0];
+							p[1] = c32[1];
+							p[2] = c32[2];
+							p += 4;
+						} while(--r);
+						p += hdl->yalign - (width * 4);
+					} while(--remain);
+					break;
+#endif
 				default:
 					TRACEOUT(("vram_filldat: unsupport %dbpp", hdl->bpp));
 					break;
@@ -418,6 +486,9 @@ void vram_fillex(VRAMHDL hdl, const RECT_T *rect, UINT32 color, UINT8 alpha) {
 #ifdef SUPPORT_24BPP
 	int		c24[3];
 #endif
+#ifdef SUPPORT_32BPP
+	int		c32[3];
+#endif
 
 	if (hdl == NULL) {
 		return;
@@ -454,6 +525,19 @@ void vram_fillex(VRAMHDL hdl, const RECT_T *rect, UINT32 color, UINT8 alpha) {
 					p[1] = (UINT8)MAKEALPHA24(p[1], c24[1], alpha, 6);
 					p[2] = (UINT8)MAKEALPHA24(p[2], c24[2], alpha, 6);
 					p += 3;
+				} while(--remain);
+				break;
+#endif
+#ifdef SUPPORT_32BPP
+			case 32:
+				c32[0] = color & 0xff;
+				c32[1] = (color >> 8) & 0xff;
+				c32[2] = (color >> 16) & 0xff;
+				do {
+					p[0] = (UINT8)MAKEALPHA24(p[0], c32[0], alpha, 6);
+					p[1] = (UINT8)MAKEALPHA24(p[1], c32[1], alpha, 6);
+					p[2] = (UINT8)MAKEALPHA24(p[2], c32[2], alpha, 6);
+					p += 4;
 				} while(--remain);
 				break;
 #endif
@@ -511,6 +595,24 @@ void vram_fillex(VRAMHDL hdl, const RECT_T *rect, UINT32 color, UINT8 alpha) {
 							p += 3;
 						} while(--r);
 						p += hdl->yalign - (width * 3);
+					} while(--remain);
+					break;
+#endif
+#ifdef SUPPORT_32BPP
+				case 32:
+					remain = height;
+					c32[0] = color & 0xff;
+					c32[1] = (color >> 8) & 0xff;
+					c32[2] = (color >> 16) & 0xff;
+					do {
+						int r = width;
+						do {
+							p[0] = (UINT8)MAKEALPHA24(p[0], c32[0], alpha, 6);
+							p[1] = (UINT8)MAKEALPHA24(p[1], c32[1], alpha, 6);
+							p[2] = (UINT8)MAKEALPHA24(p[2], c32[2], alpha, 6);
+							p += 4;
+						} while(--r);
+						p += hdl->yalign - (width * 4);
 					} while(--remain);
 					break;
 #endif

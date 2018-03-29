@@ -179,7 +179,7 @@ typedef SINT32	FILELEN;
 
 #define	SUPPORT_UTF8
 
-#define	SUPPORT_16BPP
+#define	SUPPORT_32BPP
 
 #define	SOUNDRESERVE	100
 #define	OPNGENARM
@@ -211,7 +211,7 @@ typedef SINT32	FILELEN;
 
 #define	SUPPORT_FMGEN
 
-#define	SCREEN_BPP		16
+#define	SCREEN_BPP		32
 
 #define SUPPORT_PX
 #define SUPPORT_V30ORIGINAL

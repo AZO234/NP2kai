@@ -28,7 +28,7 @@ enum {
 									* (a)) >> (b))) & (m))
 #endif
 
-#ifdef SUPPORT_24BPP
+#if defined(SUPPORT_24BPP) || defined(SUPPORT_32BPP)
 #define MAKEALPHA24(d, s, a, b)		((d) +									\
 									((((int)(s) - (int)(d)) * (a)) >> (b)))
 #endif
