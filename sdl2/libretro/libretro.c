@@ -61,8 +61,8 @@ static retro_input_poll_t poll_cb = NULL;
 retro_input_state_t input_cb = NULL;
 retro_environment_t environ_cb = NULL;
 
-uint16_t   FrameBuffer[LR_SCREENWIDTH * LR_SCREENHEIGHT];
-uint16_t   GuiBuffer[LR_SCREENWIDTH * LR_SCREENHEIGHT]; //menu surf
+uint32_t   FrameBuffer[LR_SCREENWIDTH * LR_SCREENHEIGHT];
+uint32_t   GuiBuffer[LR_SCREENWIDTH * LR_SCREENHEIGHT]; //menu surf
 extern SCRNSURF	scrnsurf;
 
 retro_audio_sample_batch_t audio_batch_cb = NULL;
@@ -73,6 +73,8 @@ bool did_reset, joy2key_arr, joy2key_kpad;
 int lr_init = 0;
 
 static char base_dir[MAX_PATH];
+
+extern char temp_bppswitch;
 
 #ifdef _WIN32
 static char slash = '\\';
@@ -419,13 +421,17 @@ static const char *cross[] = {
   "                                ",
 };
 
-void DrawPointBmp(unsigned short *buffer,int x, int y, unsigned short color)
+void DrawPointBmp(unsigned int *buffer,int x, int y, unsigned int color)
 {
    int idx;
 
    if(x>=0&&y>=0&&x<scrnsurf.width&&y<scrnsurf.height) {
       idx=x+y*scrnsurf.width;
+   if(temp_bppswitch) {
       buffer[idx]=color;
+   } else {
+      ((unsigned short*)buffer)[idx]=(unsigned short)(color & 0xFFFF);
+   }
    }
 }
 
@@ -439,7 +445,7 @@ void draw_cross(int x,int y) {
 	for(j=y;j<y+dy;j++){
 		idx=0;
 		for(i=x;i<x+dx;i++){
-			if(cross[j-y][idx]=='.')DrawPointBmp(FrameBuffer,i,j,0xffff);
+			if(cross[j-y][idx]=='.')DrawPointBmp(FrameBuffer,i,j,0xffffff);
 			else if(cross[j-y][idx]=='X')DrawPointBmp(FrameBuffer,i,j,0);
 			idx++;
 		}
@@ -549,7 +555,11 @@ void updateInput(){
       menukey=1;
 
       if (menuvram == NULL) {
+   if(temp_bppswitch) {
+         memcpy(GuiBuffer,FrameBuffer,scrnsurf.width*scrnsurf.height*4);
+   } else {
          memcpy(GuiBuffer,FrameBuffer,scrnsurf.width*scrnsurf.height*2);
+   }
          sysmenu_menuopen(0, 0, 0);
          mposx=0;mposy=0;
          lastx=0;lasty=0;
@@ -1182,14 +1192,18 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
 
 void retro_init (void)
 {
-   enum retro_pixel_format rgb565;
+   enum retro_pixel_format rgb;
 
    scrnsurf.width = 640;
    scrnsurf.height = 400;
 
-   rgb565 = RETRO_PIXEL_FORMAT_RGB565;
-   if(environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &rgb565) && log_cb)
-         log_cb(RETRO_LOG_INFO, "Frontend supports RGB565 - will use that instead of XRGB1555.\n");
+   if(temp_bppswitch) {
+   rgb = RETRO_PIXEL_FORMAT_XRGB8888;
+   } else {
+   rgb = RETRO_PIXEL_FORMAT_RGB565;
+   }
+   if(environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &rgb) && log_cb)
+         log_cb(RETRO_LOG_INFO, "Frontend supports RGB565(or XRGB8888).\n");
 
    update_variables();
 
@@ -1239,7 +1253,11 @@ void retro_run (void)
    updateInput();
 
    if (menuvram != NULL){
+   if(temp_bppswitch) {
+      memcpy(FrameBuffer,GuiBuffer,scrnsurf.width*scrnsurf.height*4);
+   } else {
       memcpy(FrameBuffer,GuiBuffer,scrnsurf.width*scrnsurf.height*2);
+   }
       draw_cross(lastx,lasty);
    }
    else {
@@ -1248,7 +1266,11 @@ void retro_run (void)
       sdlaudio_callback(NULL, NULL,SNDSZ*4);
    }
 
+   if(temp_bppswitch) {
+   video_cb(FrameBuffer, scrnsurf.width, scrnsurf.height, scrnsurf.width * 4/*Pitch*/);
+   } else {
    video_cb(FrameBuffer, scrnsurf.width, scrnsurf.height, scrnsurf.width * 2/*Pitch*/);
+   }
 }
 
 void retro_cheat_reset(void)
