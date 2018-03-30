@@ -80,6 +80,8 @@ char bmpfilefolder[MAX_PATH];
 UINT bmpfilenumber;
 char modulefile[MAX_PATH];
 
+char temp_bppswitch = 0;	// 0:16bit 1:32bit
+
 static void usage(const char *progname) {
 
 	printf("Usage: %s [options]\n", progname);

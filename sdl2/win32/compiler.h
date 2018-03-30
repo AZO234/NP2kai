@@ -136,6 +136,7 @@ typedef SINT32	FILELEN;
 
 #define	SUPPORT_UTF8
 
+#define	SUPPORT_16BPP
 #define	SUPPORT_32BPP
 #define	MEMOPTIMIZE		2
 
@@ -172,8 +173,6 @@ typedef SINT32	FILELEN;
 
 #define SUPPORT_ARC
 #define SUPPORT_ZLIB
-
-#define	SCREEN_BPP		32
 
 #define SUPPORT_PX
 #define SUPPORT_V30ORIGINAL

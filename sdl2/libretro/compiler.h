@@ -170,7 +170,7 @@ typedef SINT32	FILELEN;
 
 #define	SUPPORT_SWSEEKSND
 
-#define	SCREEN_BPP		32
+#define	SUPPORT_16BPP
 #define	SUPPORT_32BPP
 
 //extras

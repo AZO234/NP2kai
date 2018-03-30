@@ -11,11 +11,11 @@ VRAMHDL vram_create(int width, int height, BOOL alpha, int bpp) {
 	int		alphasize;
 	VRAMHDL	ret;
 
-#if defined(SCREEN_BPP)
-	if (bpp == DEFAULT_BPP) {
-		bpp = SCREEN_BPP;
-	}
-#endif
+//#if defined(SCREEN_BPP)
+//	if (bpp == DEFAULT_BPP) {
+//		bpp = SCREEN_BPP;
+//	}
+//#endif
 	size = width * height;
 	xalign = (bpp + 7) >> 3;
 	if ((width <= 0) || (size <= 0) || (size > 0x1000000) ||
