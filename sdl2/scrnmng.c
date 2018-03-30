@@ -175,9 +175,9 @@ void draw2(DRAWRECT dr){
 			if (a[x]) {
 				if (a[x] & 2) {
 					if(temp_bppswitch) {
-						*(UINT32 *)r = *(UINT32 *)(p + (x * 4));
+						*(UINT32 *)r = *(UINT32 *)(q + (x * 4));
 					} else {
-						*(UINT16 *)r = *(UINT16 *)(p + (x * 2));
+						*(UINT16 *)r = *(UINT16 *)(q + (x * 2));
 					}
 				}
 				else {
@@ -372,11 +372,13 @@ const SCRNSURF *scrnmng_surflock(void) {
 #if defined(__LIBRETRO__)
 	scrnsurf.width = scrnsurf.width;
 //	scrnsurf.height =  400;
-	scrnsurf.xalign = 2;
-	scrnsurf.yalign = scrnsurf.width*2;
 	if(temp_bppswitch) {
+	scrnsurf.xalign = 4;
+	scrnsurf.yalign = scrnsurf.width*4;
 		scrnsurf.bpp = 32;
 	} else {
+	scrnsurf.xalign = 2;
+	scrnsurf.yalign = scrnsurf.width*2;
 		scrnsurf.bpp = 16;
 	}
 	scrnsurf.extend = 0;
