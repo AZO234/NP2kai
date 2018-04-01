@@ -401,9 +401,9 @@ create_wab_dialog(void)
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), general_note, gtk_label_new("General"));
 
 #if defined(SUPPORT_CL_GD5430)
-	/* "CL-CD54xx" note */
+	/* "CL-GD54xx" note */
 	cl_gd5430_note = create_cl_gd54xx_note();
-	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), cl_gd5430_note, gtk_label_new("CL-CD54xx"));
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), cl_gd5430_note, gtk_label_new("CL-GD54xx"));
 #endif	/* SUPPORT_CL_GD5430 */
 
 	/*
