@@ -1103,16 +1103,7 @@ WRMSR(void)
 void
 RDTSC(void)
 {
-#ifdef _WIN32
-	LARGE_INTEGER li = {0};
-	LARGE_INTEGER qpf;
-	QueryPerformanceCounter(&li);
-	if (QueryPerformanceFrequency(&qpf)) {
-		li.QuadPart = li.QuadPart * pccore.realclock / qpf.QuadPart;
-	}
-	CPU_EDX = li.HighPart;
-	CPU_EAX = li.LowPart;
-#else
+#if defined(NP2_X11) || defined(NP2_SDL2) || defined(__LIBRETRO__)
 //	ia32_panic("RDTSC: not implemented yet!");
 	UINT64 tsc_tmp;
 	if(CPU_REMCLOCK != -1){
@@ -1124,6 +1115,15 @@ RDTSC(void)
 	tsc_tmp = (tsc_tmp >> 10); // XXX: ????
 	CPU_EDX = ((tsc_tmp >> 32) & 0xffffffff);
 	CPU_EAX = (tsc_tmp & 0xffffffff);
+#else
+	LARGE_INTEGER li = {0};
+	LARGE_INTEGER qpf;
+	QueryPerformanceCounter(&li);
+	if (QueryPerformanceFrequency(&qpf)) {
+		li.QuadPart = li.QuadPart * pccore.realclock / qpf.QuadPart;
+	}
+	CPU_EDX = li.HighPart;
+	CPU_EAX = li.LowPart;
 #endif
 }
 

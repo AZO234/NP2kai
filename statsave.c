@@ -59,7 +59,7 @@
 
 #if defined(MACOS)
 #define	CRCONST		str_cr
-#elif defined(WIN32) || defined(X11)
+#elif defined(_WIN32) || defined(NP2_X11) || defined(NP2_SDL2) || defined(__LIBRETRO__)
 #define	CRCONST		str_lf
 #else
 #define	CRCONST		str_crlf

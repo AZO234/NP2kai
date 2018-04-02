@@ -89,7 +89,7 @@ typedef	signed short	int16_t;
 typedef	unsigned short	uint16_t_;
 typedef	signed int		int32_t;
 typedef	unsigned int	uint32_t_;
-#if defined(WIN32) || defined(WIN64)
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 typedef	signed __int64	int64_t;
 typedef	unsigned __int64	uint64_t;
 #endif
@@ -180,7 +180,7 @@ void pc98_cirrus_vga_shutdown(void);
 void pc98_cirrus_vga_save(void);
 void pc98_cirrus_vga_load(void);
 
-#if !defined(_WIN32)
+#if defined(NP2_X11) || defined(NP2_SDL2) || defined(__LIBRETRO__)
 #define __fastcall
 #endif
 UINT16 __fastcall cirrusvga_ioport_read_wrap16(UINT addr);

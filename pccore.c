@@ -875,7 +875,7 @@ void pccore_exec(BOOL draw) {
 			CPU_SHUT();
 		}
 #if defined(USE_TSC)
-#ifndef _WIN32
+#if defined(NP2_X11) || defined(NP2_SDL2) || defined(__LIBRETRO__)
 		CPU_MSR_TSC += CPU_BASECLOCK;//CPU_REMCLOCK;
 #endif
 #endif

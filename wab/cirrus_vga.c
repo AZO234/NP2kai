@@ -5540,7 +5540,7 @@ static void pc98_cirrus_reset(CirrusVGAState * s, int device_id, int is_pci)
 
 	np2wab.relaystateext = 0;
 	np2wab_setRelayState(np2wab.relaystateint|np2wab.relaystateext);
-#if defined(_WIN32)
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 	ShowWindow(np2wabwnd.hWndWAB, SW_HIDE); // Ý’è•ÏX‘Îô
 #endif
 
@@ -5732,7 +5732,7 @@ static void pc98_cirrus_init_common(CirrusVGAState * s, int device_id, int is_pc
 
 void pc98_cirrus_vga_init(void)
 {
-#if defined(_WIN32)
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 	HDC hdc;
 	UINT i;
 	WORD* PalIndexes;
@@ -5842,7 +5842,7 @@ void pc98_cirrus_vga_bind(void)
 	
 	np2wabwnd.drawframe = cirrusvga_drawGraphic;
 
-#if defined(_WIN32)
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 	ga_bmpInfo->bmiHeader.biWidth = 0;
 	ga_bmpInfo->bmiHeader.biHeight = 0;
 #endif
@@ -5852,12 +5852,12 @@ void pc98_cirrus_vga_bind(void)
 void pc98_cirrus_vga_shutdown(void)
 {
 	np2wabwnd.drawframe = NULL;
-#if defined(_WIN32)
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 	free(ga_bmpInfo_cursor);
 	free(ga_bmpInfo);
 #endif
 	free(vramptr);
-#if defined(_WIN32)
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 	DeleteDC(ga_hdc_cursor);
 	DeleteObject(ga_hbmp_cursor);
 #endif

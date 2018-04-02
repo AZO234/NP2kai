@@ -8,21 +8,23 @@
 
 #if defined(SOUND_CRITICAL)
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(NP2_SDL2)
 
-	CRITICAL_SECTION g_sndcsec;
+	SDL_mutex* g_sndcsec;
+
+#elif defined(NP2_X11)
+
+	pthread_mutex_t g_sndcsec;		/* = PTHREAD_MUTEX_INITIALIZER; */
+
+#elif defined(__LIBRETRO__)
 
 #elif defined(MACOS)
 
 	MPCriticalRegionID g_sndcsec;
 
-#elif defined(X11)
+#else
 
-	pthread_mutex_t g_sndcsec;		/* = PTHREAD_MUTEX_INITIALIZER; */
-
-#elif defined(_SDL_mutex_h)
-
-	SDL_mutex* g_sndcsec;
+	CRITICAL_SECTION g_sndcsec;
 
 #endif
 
