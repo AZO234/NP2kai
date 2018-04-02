@@ -823,7 +823,7 @@ void retro_set_environment(retro_environment_t cb)
       { "np2kai_Seek_Vol" , "Volume Floppy Seek; 80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76" },
       { "np2kai_BEEP_vol" , "Volume Beep; 3|0|1|2" },
 #if defined(SUPPORT_WAB)
-      { "np2kai_CLGD_en" , "Enable WAB (Restart); OFF|ON" },
+      { "np2kai_CLGD_en" , "Enable WAB (Restart App); OFF|ON" },
       { "np2kai_CLGD_type" , "WAB Type; PC-9821Xe10,Xa7e,Xb10 built-in|PC-9821Bp,Bs,Be,Bf built-in|PC-9821Xe built-in|PC-9821Cb built-in|PC-9821Cf built-in|PC-9821Cb2 built-in|PC-9821Cx2 built-in|MELCO WAB-S|MELCO WSN-A2F|MELCO WSN-A4F|I-O DATA GA-98NBI/C,II,IV|PC-9801-96(PC-9801B3-E02)|Auto Select(Xe10, WAB-S)|Auto Select(Xe10, WSN-A2F)|Auto Select(Xe10, WSN-A4F)" },
       { "np2kai_CLGD_fc" , "Use Fake Hardware Cursor; OFF|ON" },
 #endif	/* defined(SUPPORT_WAB) */
