@@ -6,6 +6,7 @@
 
 const OEMCHAR mstr_cfg[] = OEMTEXT("Configure");
 const OEMCHAR mstr_scropt[] = OEMTEXT("Screen Option");
+const OEMCHAR mstr_wabopt[] = OEMTEXT("WAB Option");
 const OEMCHAR mstr_about[] = OEMTEXT("About");
 
 

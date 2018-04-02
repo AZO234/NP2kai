@@ -32,6 +32,7 @@
 #include "beep.h"
 #include "diskimage/fddfile.h"
 #include "fdd/fdd_mtr.h"
+#include "wab/wab_rly.h"
 #include "fdd/sxsi.h"
 #include "font/font.h"
 #include "keydisp.h"
@@ -1454,6 +1455,7 @@ const SFENTRY	*tblterm;
 	beep_changeclock();
 	sound_reset();
 	fddmtrsnd_bind();
+	wabrlysnd_bind();
 
 	iocore_reset(&np2cfg);							// サウンドでpicを呼ぶので…
 	cbuscore_reset(&np2cfg);

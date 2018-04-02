@@ -38,6 +38,7 @@
 #include	"fdd/diskdrv.h"
 #include	"diskimage/fddfile.h"
 #include	"fdd/fdd_mtr.h"
+#include	"wab/wab_rly.h"
 #include	"fdd/sxsi.h"
 #include	"font/font.h"
 #include	"bmsio.h"
@@ -133,7 +134,11 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 				0, 0x10D0, 5, {0x00, 0x40, 0x26, 0x12, 0x34, 0x56},
 #endif
 #if defined(SUPPORT_WAB)
+#if defined(__LIBRETRO__)
+				1,
+#else
 				0,
+#endif
 #endif
 #if defined(SUPPORT_CL_GD5430)
 				0, 0x5B, 0,
@@ -282,6 +287,7 @@ static void sound_init(void)
 		rate = 0;
 	}
 	fddmtrsnd_initialize(rate);
+	wabrlysnd_initialize(rate);
 	beep_initialize(rate);
 	beep_setvol(np2cfg.BEEP_VOL);
 	tms3631_initialize(rate);
@@ -308,6 +314,7 @@ static void sound_term(void) {
 	amd98_deinitialize();
 	rhythm_deinitialize();
 	beep_deinitialize();
+	wabrlysnd_deinitialize();
 	fddmtrsnd_deinitialize();
 	sound_destroy();
 }
@@ -587,6 +594,7 @@ void pccore_reset(void) {
 	beep_changeclock();
 	sound_reset();
 	fddmtrsnd_bind();
+	wabrlysnd_bind();
 
 	fddfile_reset2dmode();
 	bios0x18_16(0x20, 0xe1);
@@ -602,6 +610,7 @@ void pccore_reset(void) {
 	fmboard_bind();
 
 	fddmtr_initialize();
+	wabrly_initialize();
 	calendar_initialize();
 	vram_initialize();
 

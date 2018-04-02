@@ -8,6 +8,12 @@
 #include	"vramhdl.h"
 #include	"menubase.h"
 #include	"commng.h"
+#include	"pccore.h"
+#include	"np2.h"
+
+#if defined(SUPPORT_WAB)
+#include "wab.h"
+#endif
 
 #if defined(__LIBRETRO__)
 #include "libretro.h"
@@ -17,11 +23,17 @@ extern retro_environment_t environ_cb;
 
 SCRNSURF	scrnsurf;
 static	VRAMHDL		vram;
+#if defined(SUPPORT_WAB)
+static	VRAMHDL		wabvram;
+#endif
 #else	/* __LIBRETRO__ */
 static SDL_Window *s_sdlWindow;
 static SDL_Renderer *s_renderer;
 static SDL_Texture *s_texture;
 static SDL_Surface *s_surface;
+#if defined(SUPPORT_WAB)
+static SDL_Surface *s_wabsurf;
+#endif
 
 typedef struct {
 	BOOL		enable;
@@ -53,7 +65,10 @@ typedef struct {
 	int		dstpos;
 } DRAWRECT;
 
-extern char temp_bppswitch;
+#ifdef SUPPORT_WAB
+int mt_wabdrawing = 0;
+int mt_wabpausedrawing = 0;
+#endif
 
 #if defined(__LIBRETRO__)
 static BRESULT calcdrawrect(DRAWRECT *dr, const RECT_T *rt) {
@@ -65,7 +80,7 @@ static BRESULT calcdrawrect(SDL_Surface *surface,
 	int		pos;
 
 #if defined(__LIBRETRO__)
-	if(temp_bppswitch) {
+	if(draw32bit) {
 		dr->xalign = 4;
 		dr->yalign = scrnsurf.width*4;
 	} else {
@@ -117,7 +132,7 @@ void draw(DRAWRECT dr){
 	int			dalign;
 	int			x;
 
-	if(temp_bppswitch) {
+	if(draw32bit) {
 		p = vram->ptr + (dr.srcpos * 4);
 	} else {
 		p = vram->ptr + (dr.srcpos * 2);
@@ -130,7 +145,7 @@ void draw(DRAWRECT dr){
 		x = 0;
 		do {
 			if (a[x] == 0) {
-				if(temp_bppswitch) {
+				if(draw32bit) {
 					*(UINT32 *)q = *(UINT32 *)(p + (x * 4));
 				} else {
 					*(UINT16 *)q = *(UINT16 *)(p + (x * 2));
@@ -138,7 +153,7 @@ void draw(DRAWRECT dr){
 			}
 			q += dr.xalign;
 		} while(++x < dr.width);
-		if(temp_bppswitch) {
+		if(draw32bit) {
 			p += salign * 4;
 		} else {
 			p += salign * 2;
@@ -158,7 +173,7 @@ void draw2(DRAWRECT dr){
 	int			dalign;
 	int			x;
 
-	if(temp_bppswitch) {
+	if(draw32bit) {
 		p = vram->ptr + (dr.srcpos * 4);
 		q = menuvram->ptr + (dr.srcpos * 4);
 	} else {
@@ -174,7 +189,7 @@ void draw2(DRAWRECT dr){
 		do {
 			if (a[x]) {
 				if (a[x] & 2) {
-					if(temp_bppswitch) {
+					if(draw32bit) {
 						*(UINT32 *)r = *(UINT32 *)(q + (x * 4));
 					} else {
 						*(UINT16 *)r = *(UINT16 *)(q + (x * 2));
@@ -182,7 +197,7 @@ void draw2(DRAWRECT dr){
 				}
 				else {
 					a[x] = 0;
-					if(temp_bppswitch) {
+					if(draw32bit) {
 						*(UINT32 *)r = *(UINT32 *)(p + (x * 4));
 					} else {
 						*(UINT16 *)r = *(UINT16 *)(p + (x * 2));
@@ -191,7 +206,7 @@ void draw2(DRAWRECT dr){
 			}
 			r += dr.xalign;
 		} while(++x < dr.width);
-		if(temp_bppswitch) {
+		if(draw32bit) {
 			p += salign * 4;
 			q += salign * 4;
 		} else {
@@ -220,7 +235,7 @@ BRESULT scrnmng_create(int width, int height) {
 
 #if defined(__LIBRETRO__)
    scrnsurf.ptr    = (UINT8*)FrameBuffer;
-   if(temp_bppswitch) {
+   if(draw32bit) {
       scrnsurf.xalign = 4;//bytes per pixel
       scrnsurf.yalign = width * 4;//bytes per line
    } else {
@@ -229,10 +244,10 @@ BRESULT scrnmng_create(int width, int height) {
    }
    scrnsurf.width  = width;
    scrnsurf.height = 400;
-   if(temp_bppswitch) {
-	   scrnsurf.bpp    = 32;
+   if(draw32bit) {
+      scrnsurf.bpp    = 32;
    } else {
-	   scrnsurf.bpp    = 16;
+      scrnsurf.bpp    = 16;
    }
    scrnsurf.extend = 0;//?
    return(SUCCESS);
@@ -248,8 +263,8 @@ BRESULT scrnmng_create(int width, int height) {
 	s_sdlWindow = SDL_CreateWindow(app_name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, 0);
 	s_renderer = SDL_CreateRenderer(s_sdlWindow, -1, 0);
 	SDL_RenderSetLogicalSize(s_renderer, width, 400);
-	if(temp_bppswitch) {
-		s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STATIC, width, 400);
+	if(draw32bit) {
+		s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, width, 400);
 		s_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, 400, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
 	} else {
 		s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STATIC, width, 400);
@@ -325,14 +340,15 @@ void scrnmng_setwidth(int posx, int width) {
 	SDL_FreeSurface(s_surface);
 	SDL_DestroyTexture(s_texture);
 	SDL_RenderSetLogicalSize(s_renderer, width, scrnmng.height);
-	if(temp_bppswitch) {
-		s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STATIC, width, scrnmng.height);
+	if(draw32bit) {
+		s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, width, scrnmng.height);
 		s_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, scrnmng.height, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
 	} else {
 		s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STATIC, width, scrnmng.height);
 		s_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, scrnmng.height, 16, 0xf800, 0x07e0, 0x001f, 0);
 	}
 	scrnstat.width = width;
+	SDL_SetWindowSize(s_sdlWindow, width, scrnmng.height);
 #else	/* __LIBRETRO__ */
 	struct retro_system_av_info info;
 	retro_get_system_av_info(&info);
@@ -349,14 +365,15 @@ void scrnmng_setheight(int posy, int height) {
 	SDL_FreeSurface(s_surface);
 	SDL_DestroyTexture(s_texture);
 	SDL_RenderSetLogicalSize(s_renderer, scrnstat.width, height);
-	if(temp_bppswitch) {
-		s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STATIC, scrnstat.width, height);
+	if(draw32bit) {
+		s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, scrnstat.width, height);
 		s_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, scrnstat.width, height, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
 	} else {
 		s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STATIC, scrnstat.width, height);
 		s_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, scrnstat.width, height, 16, 0xf800, 0x07e0, 0x001f, 0);
 	}
 	scrnstat.height = height;
+	SDL_SetWindowSize(s_sdlWindow, scrnstat.width, height);
 #else	/* __LIBRETRO__ */
 	struct retro_system_av_info info;
 	retro_get_system_av_info(&info);
@@ -372,13 +389,13 @@ const SCRNSURF *scrnmng_surflock(void) {
 #if defined(__LIBRETRO__)
 	scrnsurf.width = scrnsurf.width;
 //	scrnsurf.height =  400;
-	if(temp_bppswitch) {
-	scrnsurf.xalign = 4;
-	scrnsurf.yalign = scrnsurf.width*4;
+	if(draw32bit) {
+		scrnsurf.xalign = 4;
+		scrnsurf.yalign = scrnsurf.width*4;
 		scrnsurf.bpp = 32;
 	} else {
-	scrnsurf.xalign = 2;
-	scrnsurf.yalign = scrnsurf.width*2;
+		scrnsurf.xalign = 2;
+		scrnsurf.yalign = scrnsurf.width*2;
 		scrnsurf.bpp = 16;
 	}
 	scrnsurf.extend = 0;
@@ -598,7 +615,7 @@ BRESULT scrnmng_entermenu(SCRNMENU *smenu) {
 #else	/* __LIBRETRO__ */
 	smenu->width = scrnmng.width;
 	smenu->height = scrnmng.height;
-	if(temp_bppswitch) {
+	if(draw32bit) {
 		smenu->bpp = 32;
 	} else {
 		smenu->bpp = 16;
@@ -771,3 +788,80 @@ const UINT8		*q;
 #endif	/* __LIBRETRO__ */
 }
 
+void
+scrnmng_update(void)
+{
+#if defined(NP2_SDL2)
+	SDL_Surface	*surface;
+
+	if (scrnmng.vram == NULL) {
+		if (scrnmng.surface != NULL) {
+			surface = scrnmng.surface;
+			scrnmng.surface = NULL;
+			SDL_UnlockSurface(surface);
+
+			SDL_UpdateTexture(s_texture, NULL, surface->pixels, surface->pitch);
+			SDL_RenderClear(s_renderer);
+			SDL_RenderCopy(s_renderer, s_texture, NULL, NULL);
+			SDL_RenderPresent(s_renderer);
+		}
+	}
+	else {
+		if (menuvram) {
+			draw_onmenu();
+		}
+	}
+#endif
+}
+
+// fullscreen resolution
+void scrnmng_updatefsres(void) {
+#ifdef SUPPORT_WAB
+#endif
+}
+
+// transmit WAB display
+void scrnmng_blthdc() {
+#if defined(SUPPORT_WAB)
+	if (np2wabwnd.multiwindow) return;
+	if (mt_wabpausedrawing) return;
+#if defined(NP2_SDL2)
+	SDL_LockSurface(s_surface);
+	if (menuvram == NULL) {
+		memcpy(s_surface->pixels, np2wabwnd.pBuffer, scrnstat.width * scrnstat.height * sizeof(unsigned int));
+	}
+	SDL_UnlockSurface(s_surface);
+	SDL_UpdateTexture(s_texture, NULL, s_surface->pixels, s_surface->pitch);
+	SDL_RenderClear(s_renderer);
+	SDL_RenderCopy(s_renderer, s_texture, NULL, NULL);
+	SDL_RenderPresent(s_renderer);
+#elif defined(__LIBRETRO__)
+	memcpy(FrameBuffer, np2wabwnd.pBuffer, scrnsurf.width * scrnsurf.height * sizeof(unsigned int));
+	if (menuvram) {
+		draw_onmenu();
+	}
+#endif
+#endif
+}
+
+void scrnmng_bltwab() {
+#if defined(SUPPORT_WAB)
+	if (np2wabwnd.multiwindow) return;
+#if defined(NP2_SDL2)
+	SDL_LockSurface(s_surface);
+	if (menuvram == NULL) {
+		memcpy(s_surface->pixels, np2wabwnd.pBuffer, scrnstat.width * scrnstat.height * sizeof(unsigned int));
+	}
+	SDL_UnlockSurface(s_surface);
+	SDL_UpdateTexture(s_texture, NULL, s_surface->pixels, s_surface->pitch);
+	SDL_RenderClear(s_renderer);
+	SDL_RenderCopy(s_renderer, s_texture, NULL, NULL);
+	SDL_RenderPresent(s_renderer);
+#elif defined(__LIBRETRO__)
+	memcpy(FrameBuffer, np2wabwnd.pBuffer, scrnsurf.width * scrnsurf.height * sizeof(unsigned int));
+	if (menuvram) {
+		draw_onmenu();
+	}
+#endif
+#endif
+}

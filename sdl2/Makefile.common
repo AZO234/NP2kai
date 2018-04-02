@@ -21,6 +21,7 @@ INCFLAGS := -I$(NP2_PATH) \
 	-I$(NP2_PATH)/sound/fmgen \
 	-I$(NP2_PATH)/trap \
 	-I$(NP2_PATH)/vram \
+	-I$(NP2_PATH)/wab \
 	-I$(NP2_PATH)/sdl2 \
 	-I$(NP2_PATH)/zlib
 
@@ -69,6 +70,7 @@ SOURCES_C := 		$(NP2_PATH)/calendar.c \
 		$(wildcard $(NP2_PATH)/sound/vermouth/*.c) \
 		$(wildcard $(NP2_PATH)/trap/*.c) \
 		$(wildcard $(NP2_PATH)/vram/*.c) \
+		$(wildcard $(NP2_PATH)/wab/*.c) \
 		$(wildcard $(NP2_PATH)/zlib/*.c)
 
 SOURCES_CXX := $(wildcard $(NP2_PATH)/sound/fmgen/*.cpp)

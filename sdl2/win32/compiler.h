@@ -160,6 +160,9 @@ typedef SINT32	FILELEN;
 #endif
 #define	SUPPORT_HOSTDRV
 #define	SUPPORT_SWSEEKSND
+#if defined(SUPPORT_WAB)
+#define	SUPPORT_SWWABRLYSND
+#endif
 #undef	SUPPORT_SASI
 #undef	SUPPORT_SCSI
 #define SUPPORT_IDEIO

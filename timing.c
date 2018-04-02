@@ -45,6 +45,9 @@ UINT timing_getcount(void) {
 	if (span) {
 		timing.tick = ticknow;
 		fddmtr_callback(ticknow);
+#ifdef SUPPORT_WAB
+		wabrly_callback(ticknow);
+#endif
 
 		if (span >= 1000) {
 			span = 1000;

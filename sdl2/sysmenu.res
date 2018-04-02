@@ -73,6 +73,9 @@ enum {
 	MID_20FPS,
 	MID_15FPS,
 	MID_SCREENOPT,
+#if defined(SUPPORT_WAB) && defined(SUPPORT_CL_GD5430)
+	MID_WABOPT,
+#endif
 
 	MID_KEY,
 	MID_JOY1,

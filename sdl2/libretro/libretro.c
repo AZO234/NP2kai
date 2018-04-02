@@ -47,6 +47,10 @@
 #if defined(SUPPORT_FMGEN)
 #include "fmgen_fmgwrap.h"
 #endif	/* defined(SUPPORT_FMGEN) */
+#if defined(SUPPORT_WAB)
+#include "wab.h"
+#include "cirrus_vga_extern.h"
+#endif	/* defined(SUPPORT_WAB) */
 
 extern void sdlaudio_callback(void *userdata, unsigned char *stream, int len);
 
@@ -73,8 +77,6 @@ bool did_reset, joy2key_arr, joy2key_kpad;
 int lr_init = 0;
 
 static char base_dir[MAX_PATH];
-
-extern char temp_bppswitch;
 
 #ifdef _WIN32
 static char slash = '\\';
@@ -427,11 +429,11 @@ void DrawPointBmp(unsigned int *buffer,int x, int y, unsigned int color)
 
    if(x>=0&&y>=0&&x<scrnsurf.width&&y<scrnsurf.height) {
       idx=x+y*scrnsurf.width;
-   if(temp_bppswitch) {
-      buffer[idx]=color;
-   } else {
-      ((unsigned short*)buffer)[idx]=(unsigned short)(color & 0xFFFF);
-   }
+      if(draw32bit) {
+         buffer[idx]=color;
+      } else {
+         ((unsigned short*)buffer)[idx]=(unsigned short)(color & 0xFFFF);
+      }
    }
 }
 
@@ -496,7 +498,7 @@ static int joy2key_map_kpad[12][2] = {
    
 void updateInput(){
 
-   static int mposx=LR_SCREENWIDTH/2,mposy=LR_SCREENHEIGHT/2;
+   static int mposx=320,mposy=240;
 
    poll_cb();
 
@@ -555,11 +557,11 @@ void updateInput(){
       menukey=1;
 
       if (menuvram == NULL) {
-   if(temp_bppswitch) {
-         memcpy(GuiBuffer,FrameBuffer,scrnsurf.width*scrnsurf.height*4);
-   } else {
-         memcpy(GuiBuffer,FrameBuffer,scrnsurf.width*scrnsurf.height*2);
-   }
+         if(draw32bit) {
+            memcpy(GuiBuffer,FrameBuffer,scrnsurf.width*scrnsurf.height*4);
+         } else {
+            memcpy(GuiBuffer,FrameBuffer,scrnsurf.width*scrnsurf.height*2);
+         }
          sysmenu_menuopen(0, 0, 0);
          mposx=0;mposy=0;
          lastx=0;lasty=0;
@@ -820,6 +822,11 @@ void retro_set_environment(retro_environment_t cb)
       { "np2kai_Seek_Snd" , "Floppy Seek Sound; OFF|ON" },
       { "np2kai_Seek_Vol" , "Volume Floppy Seek; 80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76" },
       { "np2kai_BEEP_vol" , "Volume Beep; 3|0|1|2" },
+#if defined(SUPPORT_WAB)
+      { "np2kai_CLGD_en" , "Enable WAB (Restart); OFF|ON" },
+      { "np2kai_CLGD_type" , "WAB Type; PC-9821Xe10,Xa7e,Xb10 built-in|PC-9821Bp,Bs,Be,Bf built-in|PC-9821Xe built-in|PC-9821Cb built-in|PC-9821Cf built-in|PC-9821Cb2 built-in|PC-9821Cx2 built-in|MELCO WAB-S|MELCO WSN-A2F|MELCO WSN-A4F|I-O DATA GA-98NBI/C,II,IV|PC-9801-96(PC-9801B3-E02)|Auto Select(Xe10, WAB-S)|Auto Select(Xe10, WSN-A2F)|Auto Select(Xe10, WSN-A4F)" },
+      { "np2kai_CLGD_fc" , "Use Fake Hardware Cursor; OFF|ON" },
+#endif	/* defined(SUPPORT_WAB) */
       { "np2kai_joy2mouse" , "Joypad to Mouse Mapping; OFF|ON" },
       { "np2kai_j2msuratio" , "J2M Cursor Speed up Ratio; x10|x20|up stop|x5" },
       { "np2kai_joy2key" , "Joypad to Keyboard Mapping; OFF|Arrows|Keypad" },
@@ -1091,6 +1098,67 @@ static void update_variables(void)
       beep_setvol(np2cfg.BEEP_VOL);
    }
 
+#if defined(SUPPORT_WAB)
+   var.key = "np2kai_CLGD_en";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "ON") == 0)
+         np2cfg.usegd5430 = 1;
+      else
+         np2cfg.usegd5430 = 0;
+   }
+
+   var.key = "np2kai_CLGD_type";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "PC-9821Xe10,Xa7e,Xb10 built-in") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_Xe10;
+      else if (strcmp(var.value, "PC-9821Bp,Bs,Be,Bf built-in") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_Be;
+      else if (strcmp(var.value, "PC-9821Xe built-in") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_Xe;
+      else if (strcmp(var.value, "PC-9821Cb built-in") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_Cb;
+      else if (strcmp(var.value, "PC-9821Cf built-in") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_Cf;
+      else if (strcmp(var.value, "PC-9821Cb2 built-in") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_Cb2;
+      else if (strcmp(var.value, "PC-9821Cx2 built-in") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_Cx2;
+      else if (strcmp(var.value, "MELCO WAB-S") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_WAB;
+      else if (strcmp(var.value, "MELCO WSN-A2F") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_WSN_A2F;
+      else if (strcmp(var.value, "MELCO WSN-A4F") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_WSN;
+      else if (strcmp(var.value, "I-O DATA GA-98NBI/C,II,IV") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_GA98NB;
+      else if (strcmp(var.value, "PC-9801-96(PC-9801B3-E02)") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_96;
+      else if (strcmp(var.value, "Auto Select(Xe10, WAB-S)") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_AUTO_XE10_WABS;
+      else if (strcmp(var.value, "Auto Select(Xe10, WSN-A2F)") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_AUTO_XE10_WSN2;
+      else if (strcmp(var.value, "Auto Select(Xe10, WSN-A4F)") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_AUTO_XE10_WSN4;
+   }
+
+   var.key = "np2kai_CLGD_fc";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "ON") == 0)
+         np2cfg.gd5430fakecur = 1;
+      else
+         np2cfg.gd5430fakecur = 0;
+   }
+#endif	/* defined(SUPPORT_WAB) */
+
    var.key = "np2kai_joy2mouse";
    var.value = NULL;
 
@@ -1197,15 +1265,19 @@ void retro_init (void)
    scrnsurf.width = 640;
    scrnsurf.height = 400;
 
-   if(temp_bppswitch) {
-   rgb = RETRO_PIXEL_FORMAT_XRGB8888;
+   update_variables();
+
+#if defined(SUPPORT_CL_GD5430)
+   draw32bit = np2cfg.usegd5430;
+#endif
+
+   if(draw32bit) {
+      rgb = RETRO_PIXEL_FORMAT_XRGB8888;
    } else {
-   rgb = RETRO_PIXEL_FORMAT_RGB565;
+      rgb = RETRO_PIXEL_FORMAT_RGB565;
    }
    if(environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &rgb) && log_cb)
-         log_cb(RETRO_LOG_INFO, "Frontend supports RGB565(or XRGB8888).\n");
-
-   update_variables();
+         log_cb(RETRO_LOG_INFO, "Frontend supports RGB565 (or XRGB8888).\n");
 
    init_lr_key_to_pc98();
 }
@@ -1253,11 +1325,11 @@ void retro_run (void)
    updateInput();
 
    if (menuvram != NULL){
-   if(temp_bppswitch) {
-      memcpy(FrameBuffer,GuiBuffer,scrnsurf.width*scrnsurf.height*4);
-   } else {
-      memcpy(FrameBuffer,GuiBuffer,scrnsurf.width*scrnsurf.height*2);
-   }
+      if(draw32bit) {
+         memcpy(FrameBuffer,GuiBuffer,scrnsurf.width*scrnsurf.height*4);
+      } else {
+         memcpy(FrameBuffer,GuiBuffer,scrnsurf.width*scrnsurf.height*2);
+      }
       draw_cross(lastx,lasty);
    }
    else {
@@ -1266,10 +1338,10 @@ void retro_run (void)
       sdlaudio_callback(NULL, NULL,SNDSZ*4);
    }
 
-   if(temp_bppswitch) {
-   video_cb(FrameBuffer, scrnsurf.width, scrnsurf.height, scrnsurf.width * 4/*Pitch*/);
+   if(draw32bit) {
+      video_cb(FrameBuffer, scrnsurf.width, scrnsurf.height, scrnsurf.width * 4/*Pitch*/);
    } else {
-   video_cb(FrameBuffer, scrnsurf.width, scrnsurf.height, scrnsurf.width * 2/*Pitch*/);
+      video_cb(FrameBuffer, scrnsurf.width, scrnsurf.height, scrnsurf.width * 2/*Pitch*/);
    }
 }
 

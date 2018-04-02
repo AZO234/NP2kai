@@ -53,8 +53,11 @@ enum tagNEventId
 #if defined(VAEG_FIX)
 	NEVENT_FDCSTATE		= 32,
 #endif
+#if defined(SUPPORT_WAB)
+	NEVENT_WABSNDOFF	= 33,
+#endif
 	/* ---- */
-	NEVENT_MAXEVENTS	= 33
+	NEVENT_MAXEVENTS	= 34
 };
 typedef enum tagNEventId NEVENTID;
 

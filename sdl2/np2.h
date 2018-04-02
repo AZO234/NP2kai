@@ -21,6 +21,7 @@ extern char fddfolder[MAX_PATH];
 extern char bmpfilefolder[MAX_PATH];
 extern UINT bmpfilenumber;
 extern char modulefile[MAX_PATH];
+extern char draw32bit;
 
 enum {
 	IMAGETYPE_UNKNOWN	= 0,

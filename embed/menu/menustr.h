@@ -5,6 +5,7 @@ extern "C" {
 
 extern const OEMCHAR mstr_cfg[];
 extern const OEMCHAR mstr_scropt[];
+extern const OEMCHAR mstr_wabopt[];
 extern const OEMCHAR mstr_about[];
 
 extern const MENURES np2icon;

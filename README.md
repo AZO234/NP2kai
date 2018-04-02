@@ -369,7 +369,7 @@ Change "RAM Size".
 * Sound Generator  
 
 fmgen: fmgen sound generator.
-Default: default sound generator.  
+Default: NP2's default sound generator.  
 
 Don't forget restart core.
 
@@ -485,8 +485,18 @@ You can also see VirMIDI 3-0 to 3-3 at midiC3D0 to midiC3D3.
 
 Next boot computer, you command from 4.
 
+WAB
+---
+We can use WAB(Window Accelerator Boards).
+
+To use WAB, enable WAB and restart.
+
+WAB Type normally uses 'PC-9821Xe10,Xa7e,Xb10 built-in'.
+
 Release
 ---
+* Apr 2, 2018
+	- Add WAB (and a little tune)
 * Mar 18, 2018
 	- Merge NP21/W 0.86 rev.40
 * Mar 9, 2018

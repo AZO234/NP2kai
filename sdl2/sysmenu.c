@@ -24,6 +24,7 @@
 #include	"filesel.h"
 #include	"dlgcfg.h"
 #include	"dlgscr.h"
+#include	"dlgwab.h"
 #include	"dlgabout.h"
 #include	"vram/scrnsave.h"
 #include	"ini.h"
@@ -278,6 +279,13 @@ static void sys_cmd(MENUID id) {
 			menudlg_create(DLGSCR_WIDTH, DLGSCR_HEIGHT,
 											(char *)mstr_scropt, dlgscr_cmd);
 			break;
+
+#if defined(SUPPORT_WAB) && defined(SUPPORT_CL_GD5430)
+		case MID_WABOPT:
+			menudlg_create(DLGWAB_WIDTH, DLGWAB_HEIGHT,
+											(char *)mstr_wabopt, dlgwab_cmd);
+			break;
+#endif
 
 		case MID_KEY:
 			np2cfg.KEY_MODE = 0;

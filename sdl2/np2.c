@@ -29,6 +29,13 @@
 #if defined(SUPPORT_NET)
 #include	"net.h"
 #endif
+#if defined(SUPPORT_WAB)
+#include	"wab.h"
+#include	"wabbmpsave.h"
+#endif
+#if defined(SUPPORT_CL_GD5430)
+#include	"cirrus_vga_extern.h"
+#endif
 
 
 NP2OSCFG np2oscfg = {
@@ -79,8 +86,7 @@ char fddfolder[MAX_PATH];
 char bmpfilefolder[MAX_PATH];
 UINT bmpfilenumber;
 char modulefile[MAX_PATH];
-
-char temp_bppswitch = 0;	// 0:16bit 1:32bit
+char draw32bit;
 
 static void usage(const char *progname) {
 
@@ -199,6 +205,13 @@ int np2_main(int argc, char *argv[]) {
 #endif	/* __LIBRETRO__ */
 
 	initload();
+#if defined(SUPPORT_WAB)
+	wabwin_readini();
+#endif	// defined(SUPPORT_WAB)
+
+#if defined(SUPPORT_CL_GD5430)
+	draw32bit = np2cfg.usegd5430;
+#endif
 
 	sprintf(tmppath, "%sdefault.ttf", np2cfg.biospath);
 	fcheck = fopen(tmppath, "rb");
@@ -286,7 +299,7 @@ int np2_main(int argc, char *argv[]) {
 	mousemng_initialize();
 
 	scrnmng_initialize();
-	if (scrnmng_create(FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT) != SUCCESS) {
+	if (scrnmng_create(FULLSCREEN_WIDTH, 400) != SUCCESS) {
 		goto np2main_err4;
 	}
 
@@ -299,6 +312,12 @@ int np2_main(int argc, char *argv[]) {
 
 #if defined(SUPPORT_NET)
 	np2net_init();
+#endif
+#ifdef SUPPORT_WAB
+	np2wab_init();
+#endif
+#ifdef SUPPORT_CL_GD5430
+	pc98_cirrus_vga_init();
 #endif
 #if !defined(__LIBRETRO__)
 	mousemng_hidecursor();
@@ -467,6 +486,12 @@ int np2_end(){
 #if defined(SUPPORT_NET)
 	np2net_shutdown();
 #endif
+#ifdef SUPPORT_CL_GD5430
+	pc98_cirrus_vga_shutdown();
+#endif
+#ifdef SUPPORT_WAB
+	np2wab_shutdown();
+#endif
 	pccore_term();
 	S98_trash();
 	soundmng_deinitialize();
@@ -475,6 +500,9 @@ int np2_end(){
 
 	scrnmng_destroy();
 	sysmenu_destroy();
+#if defined(SUPPORT_WAB)
+	wabwin_writeini();
+#endif	// defined(SUPPORT_WAB)
 	TRACETERM();
 #if !defined(__LIBRETRO__)
 	SDL_Quit();

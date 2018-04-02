@@ -169,6 +169,9 @@ typedef SINT32	FILELEN;
 #define	VERMOUTH_LIB
 
 #define	SUPPORT_SWSEEKSND
+#if defined(SUPPORT_WAB)
+#define	SUPPORT_SWWABRLYSND
+#endif
 
 #define	SUPPORT_16BPP
 #define	SUPPORT_32BPP
@@ -178,7 +181,6 @@ typedef SINT32	FILELEN;
 #define	SUPPORT_UTF8
 
 #define	SUPPORT_CRT31KHZ
-#define	SUPPORT_SWSEEKSND
 
 #if defined(SUPPORT_PC9821)
 #define	IA32_PAGING_EACHSIZE
