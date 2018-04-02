@@ -292,6 +292,7 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/network/net.c \
 		\
 		$(real_topsrcdir)/wab/cirrus_vga.c \
+		$(real_topsrcdir)/wab/wab_rly.c \
 		$(real_topsrcdir)/wab/wab.c
 
 xnp2kai_SOURCES=	$(COMMON_SOURCES)

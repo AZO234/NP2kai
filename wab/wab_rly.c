@@ -2,6 +2,7 @@
 #include	"soundmng.h"
 #include	"pccore.h"
 #include	"wab_rly.h"
+#include	"soundmng.h"
 #if defined(SUPPORT_SWWABRLYSND)
 #include	"sound/pcmmix.h"
 #include	"wab_rly.res"
@@ -87,7 +88,7 @@ static void wabrly_event(void) {
 			wabrlysnd_play(0, FALSE);
 #else
 #if !defined(NP2_SDL2)
-			soundmng_pcmstop(SOUND_PCMRELAY1);
+			soundmng_pcmstop(SOUND_RELAY1);
 #endif
 #endif
 			wabrly.curevent = 0;
@@ -105,7 +106,7 @@ void wabrly_initialize(void) {
 	wabrlysnd_play(0, FALSE);
 #else
 #if !defined(NP2_SDL2)
-	soundmng_pcmstop(SOUND_PCMRELAY1);
+	soundmng_pcmstop(SOUND_RELAY1);
 #endif
 #endif
 	ZeroMemory(&wabrly, sizeof(wabrly));
@@ -137,7 +138,7 @@ void wabrly_switch(void) {
 	wabrlysnd_play(0, TRUE);
 #else
 #if !defined(NP2_SDL2)
-	soundmng_pcmplay(SOUND_PCMRELAY1, FALSE);
+	soundmng_pcmplay(SOUND_RELAY1, FALSE);
 #endif
 #endif
 	wabrly.curevent = 100;
