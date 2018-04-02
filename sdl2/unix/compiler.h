@@ -175,7 +175,7 @@ typedef SINT32	FILELEN;
 #define	SOUNDCALL
 
 #define	VERMOUTH_LIB
-//#define	SOUND_CRITICAL
+#define	SOUND_CRITICAL
 
 #define	SUPPORT_UTF8
 

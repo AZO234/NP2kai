@@ -18,13 +18,13 @@
 
 #elif defined(__LIBRETRO__)
 
+#elif defined(_WIN32) || defined(_WIN32_WCE)
+
+	CRITICAL_SECTION g_sndcsec;
+
 #elif defined(MACOS)
 
 	MPCriticalRegionID g_sndcsec;
-
-#else
-
-	CRITICAL_SECTION g_sndcsec;
 
 #endif
 
