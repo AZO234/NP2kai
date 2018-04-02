@@ -1,6 +1,6 @@
-Neko Project II 0.86 kai rev.15
+Neko Project II 0.86 kai rev.16
 ===
-Feb 6, 2018  
+Apr 2, 2018  
 
 Build SDL2 port
 ---
@@ -487,7 +487,7 @@ Next boot computer, you command from 4.
 
 WAB
 ---
-We can use WAB(Window Accelerator Boards).
+From rev.16 we can use WAB (Window Accelerator Boards).
 
 To use WAB, enable WAB and restart.
 
@@ -495,7 +495,7 @@ WAB Type normally uses 'PC-9821Xe10,Xa7e,Xb10 built-in'.
 
 Release
 ---
-* Apr 2, 2018
+* Apr 2, 2018 (rev.16)
 	- Add WAB (and a little tune)
 * Mar 18, 2018
 	- Merge NP21/W 0.86 rev.40
