@@ -401,6 +401,47 @@ And write follow to AUTOEXEC.BAT.
 
 Then, you'll can use CD drive as Q drive.
 
+* How many files(0-15)?
+
+This screen is boot as PC-98 ROM BASIC mode.  
+Your floppy/harddisk image isn't mount correctry.
+
+Check selecting image files and restart.
+
+* Floppy disk image
+
+NP2 is made according to PC-98 specifications.  
+Floppy disk types are 720KB(2DD) and 1.23MB(2HD).  
+The floppy drive differs from the one of the PC/AT on the hardware level.  
+(There are a few floppies formatted to 1.44MB(2HD) using MS-DOS 6.2.)
+
+A common mistake is to create a floppy disk image with PC/AT.  
+Some disk imager for PC/AT software is useful, but don't use PC-98 formatted floppy disk.
+
+To read data from PC-98 formatted floppy disk,  
+You must use Win2000 older and 3-mode floppy disk drive.
+
+Also, many PC-98 floppy disks are provided with powerful copy guard for DRM.  
+If you are in the way, you should use WIZARD V3/V5.  
+It is better to have no obstacle.
+
+And also, you may simply convert the image format.
+
+VFIC (Virtual Floppy Image Converter)  
+https://www.vector.co.jp/soft/win95/util/se151106.html
+
+Virtual Floppy Drive  
+https://sites.google.com/site/chitchatvmback/vfd
+
+* Hard disk image
+
+DiskExplorer is useful for hard disk image management.  
+This software can access files in image nicely.  
+Only FAT is supported, NTFS does not correspond.
+
+DiskExplorer  
+https://hp.vector.co.jp/authors/VA013937/editdisk/index.html
+
 About network
 ---
 From rev.7 we can use network.
