@@ -6,7 +6,7 @@
 #include "codecnv/codecnv.h"
 #endif
 #include "dosio.h"
-#if defined(__LIBRETRO__) && defined(VITA)
+#if defined(__LIBRETRO__)
 #include <retro_dirent.h>
 #else
 #if defined(WIN32)
@@ -331,7 +331,7 @@ void file_listclose(FLISTH hdl) {
 #else
 FLISTH file_list1st(const char *dir, FLINFO *fli) {
 
-#if defined(__LIBRETRO__) && defined(VITA)
+#if defined(__LIBRETRO__)
 	struct RDIR	*ret;
 
 	ret = retro_opendir(dir);
@@ -346,7 +346,7 @@ FLISTH file_list1st(const char *dir, FLINFO *fli) {
 	if (file_listnext((FLISTH)ret, fli) == SUCCESS) {
 		return((FLISTH)ret);
 	}
-#if defined(__LIBRETRO__) && defined(VITA)
+#if defined(__LIBRETRO__)
 	retro_closedir(ret);
 #else
 	closedir(ret);
@@ -358,14 +358,14 @@ ff1_err:
 
 BRESULT file_listnext(FLISTH hdl, FLINFO *fli) {
 
-#if defined(__LIBRETRO__) && defined(VITA)
+#if defined(__LIBRETRO__)
 int	de;
 #else
 struct dirent	*de;
 #endif
 struct stat		sb;
 
-#if defined(__LIBRETRO__) && defined(VITA)
+#if defined(__LIBRETRO__)
 	de = retro_readdir((struct RDIR *)hdl);
 	if (de == 0) {
 #else
@@ -377,13 +377,15 @@ struct stat		sb;
 	if (fli) {
 		memset(fli, 0, sizeof(*fli));
 		fli->caps = FLICAPS_ATTR;
-#if defined(__LIBRETRO__) && defined(VITA)
+#if defined(__LIBRETRO__)
 		fli->attr = retro_dirent_is_dir((struct RDIR *)hdl, "") ? FILEATTR_DIRECTORY : 0;
 #else
 		fli->attr = (de->d_type & DT_DIR) ? FILEATTR_DIRECTORY : 0;
 #endif
 
-#if !(defined(__LIBRETRO__) && defined(VITA))
+#if defined(__LIBRETRO__)
+		milstr_ncpy(fli->path, retro_dirent_get_name((struct RDIR *)hdl), sizeof(fli->path));
+#else
 		if (stat(de->d_name, &sb) == 0) {
 			fli->caps |= FLICAPS_SIZE;
 			fli->size = (UINT)sb.st_size;
@@ -405,7 +407,7 @@ struct stat		sb;
 
 void file_listclose(FLISTH hdl) {
 
-#if defined(__LIBRETRO__) && defined(VITA)
+#if defined(__LIBRETRO__)
 	retro_closedir((struct RDIR *)hdl);
 #else
 	closedir((DIR *)hdl);

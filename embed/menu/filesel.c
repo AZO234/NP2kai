@@ -228,7 +228,7 @@ static void dlgsetlist(void) {
 	if (flh != FLISTH_INVALID) {
 		do {
 			append = FALSE;
-			if(!((strcmp(filesel.path, "") == 0 || strcmp(filesel.path, "/") == 0) && strcmp(fli.path, "..") == 0)) {
+			if(!(strcmp(fli.path, ".") == 0 || strcmp(fli.path, "..") == 0)) {
 				if (fli.attr & 0x10) {
 					append = TRUE;
 				}
