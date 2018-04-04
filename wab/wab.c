@@ -118,7 +118,7 @@ void wabwin_readini()
 	np2wabcfg.multiwindow = 0;
 	np2wabcfg.halftone = 0;
 
-#if defined(NP2_X11) || defined(NP2_SDL2)
+#if defined(NP2_X11) || defined(NP2_SDL2) || defined(__LIBRETRO__)
 	milstr_ncpy(szPath, modulefile, sizeof(szPath));
 #else
 	initgetfile(szPath, _countof(szPath));
@@ -132,7 +132,7 @@ void wabwin_readini()
 void wabwin_writeini()
 {
 	TCHAR szPath[MAX_PATH];
-#if defined(NP2_SDL2)
+#if defined(NP2_SDL2) || defined(__LIBRETRO__)
 	milstr_ncpy(szPath, modulefile, sizeof(szPath));
 	ini_write(szPath, g_Name, s_wabwndini, _countof(s_wabwndini));
 #elif defined(NP2_X11)
