@@ -93,6 +93,7 @@ static unsigned drvno = 1;
 static unsigned disk_index = 0;
 static unsigned disk_images = 0;
 static bool disk_inserted = false;
+static unsigned int lastidx = 0;
 
 //all the fake functions used to limit swapping to 1 disk drive
 bool setdskeject(bool ejected){
@@ -150,6 +151,26 @@ void attach_disk_swap_interface(){
    dskcb.replace_image_index = replacedsk;
 
    environ_cb(RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE,&dskcb);
+}
+
+void setnxtdskindex(void){
+	if(disk_images > 2) {
+		if(disk_index + 1 != disk_images) {
+			setdskindex(disk_index + 1);
+		} else {
+			setdskindex(0);
+		}
+	}
+}
+
+void setpredskindex(void){
+	if(disk_images > 2) {
+		if(disk_index == 0) {
+			setdskindex(disk_images - 1);
+		} else {
+			setdskindex(disk_index - 1);
+		}
+	}
 }
 /* end media swap support */
 
