@@ -30,7 +30,6 @@
 #include "ini.h"
 #include "dispsync.h"
 #include "wab.h"
-#include "bmpdata.h"
 #include "wabbmpsave.h"
 #include "wab_rly.h"
 #if defined(NP2_X11)
@@ -752,7 +751,6 @@ void np2wab_setRelayState(REG8 state)
 	}
 }
 
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 /**
  * ウィンドウアクセラレータ画面をBMPで取得
  */
@@ -767,9 +765,15 @@ BRESULT np2wab_getbmp(BMPFILE *lpbf, BMPINFO *lpbi, UINT8 **lplppal, UINT8 **lpl
 	//int			r;
 	//int			x;
 	UINT8		*dstpix;
+#if defined(NP2_X11) || defined(NP2_SDL2) || defined(__LIBRETRO__)
+	void*       lpbits;
+#else
 	LPVOID      lpbits;
+#endif
 	UINT8       *buf;
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 	HBITMAP     hBmpTmp;
+#endif
 
 	// 24bit固定
 	bd.width = np2wab.wndWidth;
@@ -798,15 +802,52 @@ BRESULT np2wab_getbmp(BMPFILE *lpbf, BMPINFO *lpbi, UINT8 **lplppal, UINT8 **lpl
 	bitmp = bi;
 	STOREINTELDWORD(bitmp.biWidth, WAB_MAX_WIDTH);
 	STOREINTELDWORD(bitmp.biHeight, WAB_MAX_HEIGHT);
+#if defined(NP2_SDL2) || defined(__LIBRETRO__)
+	buf = (UINT8*)(np2wabwnd.pBuffer) + (np2wab.wndHeight - 1) * np2wab.wndWidth*4;
+#elif defined(NP2_X11)
+	buf = (UINT8*)(gdk_pixbuf_get_pixels(np2wabwnd.pPixbuf)) + (np2wab.wndHeight - 1) * WAB_MAX_WIDTH*bd.bpp/8;
+#else
 	hBmpTmp = CreateDIBSection(NULL, (LPBITMAPINFO)&bitmp, DIB_RGB_COLORS, &lpbits, NULL, 0);
 	GetDIBits(np2wabwnd.hDCBuf, np2wabwnd.hBmpBuf, 0, WAB_MAX_HEIGHT, lpbits, (LPBITMAPINFO)&bitmp, DIB_RGB_COLORS);
 	buf = (UINT8*)(lpbits) + (WAB_MAX_HEIGHT - bd.height) * WAB_MAX_WIDTH*bd.bpp/8;
+#endif
 	do {
+#if defined(NP2_SDL2) || defined(__LIBRETRO__)
+		int i;
+		for(i = 0; i < np2wab.wndWidth; i++) {
+			((UINT8*)dstpix)[i * 3    ] = ((UINT8*)buf)[i * 4    ];
+			((UINT8*)dstpix)[i * 3 + 1] = ((UINT8*)buf)[i * 4 + 1];
+			((UINT8*)dstpix)[i * 3 + 2] = ((UINT8*)buf)[i * 4 + 2];
+		}
+		dstpix += np2wab.wndWidth*3;
+		buf -= np2wab.wndWidth*4;
+#elif defined(NP2_X11)
+		CopyMemory(dstpix, buf, np2wab.wndWidth*bd.bpp/8);
+		dstpix += align;
+		buf -= WAB_MAX_WIDTH*bd.bpp/8;
+#else
 		CopyMemory(dstpix, buf, np2wab.wndWidth*bd.bpp/8);
 		dstpix += align;
 		buf += WAB_MAX_WIDTH*bd.bpp/8;
+#endif
 	} while(--bd.height);
+#if defined(NP2_X11)
+	{
+		int i, j;
+		UINT8 tmp;
+		dstpix = *lplppixels;
+		for(j = 0; j < np2wab.wndHeight; j++) {
+			for(i = 0; i < np2wab.wndWidth; i++) {
+				tmp = dstpix[(j * np2wab.wndWidth + i) * 3];
+				dstpix[(j * np2wab.wndWidth + i) * 3] = dstpix[(j * np2wab.wndWidth + i) * 3 + 2];
+				dstpix[(j * np2wab.wndWidth + i) * 3 + 2] = tmp;
+			}
+		}
+	}
+#endif
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 	DeleteObject(hBmpTmp);
+#endif
 
 	return(SUCCESS);
 }
@@ -864,6 +905,5 @@ sswb_err3:
 sswb_err1:
 	return(FAILURE);
 }
-#endif
 
 #endif	/* SUPPORT_WAB */

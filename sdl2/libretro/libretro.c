@@ -240,6 +240,7 @@ static bool read_m3u(const char *file)
    char line[MAX_PATH];
    char name[MAX_PATH];
    FILE *f = fopen(file, "r");
+printf("momo7: read_m3u()\n");
 
    if (!f)
       return false;
@@ -293,6 +294,7 @@ int pre_main(const char *argv)
 {
    int i=0;
    int Only1Arg;
+printf("momo6: pre_main()\n");
 
    if (strlen(argv) > strlen("cmd"))
    {
@@ -369,6 +371,7 @@ void parse_cmdline(const char *argv)
    int c,c2;
    static char buffer[512*4];
    enum states { DULL, IN_WORD, IN_STRING } state = DULL;
+printf("momo5: parse_cmdline()\n");
 
    strcpy(buffer,argv);
    strcat(buffer," \0");
@@ -1282,6 +1285,7 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
 void retro_init (void)
 {
    enum retro_pixel_format rgb;
+printf("momo1: retro_init()\n");
 
    scrnsurf.width = 640;
    scrnsurf.height = 400;
@@ -1310,6 +1314,7 @@ void retro_deinit(void)
 
 void retro_reset (void)
 {
+printf("momo2: retro_reset()\n");
    pccore_reset();
    did_reset = true;
 }
@@ -1319,6 +1324,7 @@ static int firstcall=1;
 
 void retro_run (void)
 {
+printf("momo3: retro_run()\n");
    if(firstcall)
    {
       pre_main(RPATH);
@@ -1383,6 +1389,7 @@ bool retro_load_game(const struct retro_game_info *game)
    char np2path[4096];
    bool load_floppy=false;
    bool worked = environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &syspath);
+printf("momo4: retro_load_game()\n");
    if(!worked)abort();
 
    extract_directory(base_dir, game->path, sizeof(base_dir));

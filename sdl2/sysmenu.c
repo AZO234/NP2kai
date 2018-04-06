@@ -28,6 +28,10 @@
 #include	"dlgabout.h"
 #include	"vram/scrnsave.h"
 #include	"ini.h"
+#ifdef SUPPORT_WAB
+#include	"wab/wab.h"
+#include	"wab/wabbmpsave.h"
+#endif
 
 static UINT bmpno = 0;
 
@@ -619,12 +623,21 @@ static void sys_cmd(MENUID id) {
 				SCRNSAVE bmp = NULL;
 				char path[MAX_PATH];
 
+#ifdef SUPPORT_WAB
+			if(np2wab.relay){
+				sprintf(path, "%s%06d.bmp", bmpfilefolder, bmpfilenumber);
+				np2wab_writebmp(path);
+			}else{
+#endif
 				bmp = scrnsave_create();
 				if (bmp == NULL)
 					break;
 				sprintf(path, "%s%06d.bmp", bmpfilefolder, bmpfilenumber);
 				scrnsave_writebmp(bmp, path, SCRNSAVE_AUTO);
 				scrnsave_destroy(bmp);
+#ifdef SUPPORT_WAB
+			}
+#endif
 
 				bmpfilenumber++;
 				if(bmpfilenumber >= 1000000) {

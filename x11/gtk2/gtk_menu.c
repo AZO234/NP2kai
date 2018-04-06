@@ -57,6 +57,11 @@
 #include "gtk2/gtk_menu.h"
 #include "gtk2/gtk_keyboard.h"
 
+#ifdef SUPPORT_WAB
+#include "wab/wab.h"
+#include "wab/wabbmpsave.h"
+#endif
+
 #ifndef	NSTATSAVE
 #define	NSTATSAVE	10
 #endif
@@ -746,7 +751,15 @@ cb_bmpsave(GtkAction *action, gpointer user_data)
 			}
 			file_cpyname(bmpfilefolder, path, sizeof(bmpfilefolder));
 			sysmng_update(SYS_UPDATEOSCFG);
+#ifdef SUPPORT_WAB
+			if(np2wab.relay){
+				np2wab_writebmp(path);
+			}else{
+#endif
 			scrnsave_writebmp(bmp, path, SCRNSAVE_AUTO);
+#ifdef SUPPORT_WAB
+			}
+#endif
 			g_free(path);
 		}
 		g_free(utf8);
