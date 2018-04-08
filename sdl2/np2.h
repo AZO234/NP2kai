@@ -1,14 +1,3 @@
-typedef struct {
-	UINT8	port;
-	UINT8	def_en;
-	UINT8	param;
-	UINT32	speed;
-	char	mout[MAX_PATH];
-	char	min[MAX_PATH];
-	char	mdl[64];
-	char	def[MAX_PATH];
-} COMCFG;
-
 enum {
 	INTERP_NEAREST		= 0,
 	INTERP_TILES		= 1,
@@ -37,9 +26,6 @@ typedef struct {
 	UINT8	DRAW_SKIP;
 
 	UINT8	KEYBOARD;
-
-	COMCFG	mpu;
-	COMCFG	com[3];
 
 	UINT8	resume;
 	UINT8	jastsnd;
@@ -77,9 +63,6 @@ typedef struct {
 	UINT8	JOYAXISMAP[2][JOY_NAXIS];
 	UINT8	JOYBTNMAP[2][JOY_NBUTTON];
 	char	JOYDEV[2][MAX_PATH];
-
-	COMCFG	mpu;
-	COMCFG	com[3];
 
 	UINT8	resume;
 	UINT8	jastsnd;

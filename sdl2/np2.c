@@ -59,13 +59,6 @@ NP2OSCFG np2oscfg = {
 	{ "", "" },		/* JOYDEV */
 #endif	/* __LIBRETRO__ */
 
-	{ COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", "" },	/* mpu */
-	{
-		{ COMPORT_NONE, 0, 0x3e, 19200, "", "", "", "" },/* com1 */
-		{ COMPORT_NONE, 0, 0x3e, 19200, "", "", "", "" },/* com2 */
-		{ COMPORT_NONE, 0, 0x3e, 19200, "", "", "", "" },/* com3 */
-	},
-
 	0,			/* resume */
 	0,			/* jastsnd */
 	0,			/* I286SAVE */
