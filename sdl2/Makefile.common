@@ -48,22 +48,7 @@ SOURCES_C := 		$(NP2_PATH)/calendar.c \
 		$(wildcard $(NP2_PATH)/io/*.c) \
 		$(wildcard $(NP2_PATH)/lio/*.c) \
 		$(wildcard $(NP2_PATH)/mem/*.c) \
-		$(NP2_PATH)/sdl2/commng.c \
-		$(NP2_PATH)/sdl2/dosio.c \
-		$(NP2_PATH)/sdl2/fontmng.c \
-		$(NP2_PATH)/sdl2/ini.c \
-		$(NP2_PATH)/sdl2/inputmng.c \
-		$(NP2_PATH)/sdl2/joymng.c \
-		$(NP2_PATH)/sdl2/kbtrans.c \
-		$(NP2_PATH)/sdl2/mousemng.c \
-		$(NP2_PATH)/sdl2/np2.c \
-		$(NP2_PATH)/sdl2/scrnmng.c \
-		$(NP2_PATH)/sdl2/soundmng.c \
-		$(NP2_PATH)/sdl2/sysmenu.c \
-		$(NP2_PATH)/sdl2/sysmng.c \
-		$(NP2_PATH)/sdl2/taskmng.c \
-		$(NP2_PATH)/sdl2/timemng.c \
-		$(NP2_PATH)/sdl2/trace.c \
+		$(wildcard $(NP2_PATH)/sdl2/*.c) \
 		$(wildcard $(NP2_PATH)/sound/*.c) \
 		$(wildcard $(NP2_PATH)/sound/getsnd/*.c) \
 		$(wildcard $(NP2_PATH)/sound/mame/*.c) \
