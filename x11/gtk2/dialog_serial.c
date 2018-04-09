@@ -39,7 +39,7 @@
 
 
 static const char *ch1_int_speed_str[] = {
-	"Disable", "75", "150", "150", "300", "600", "1200", "2400", "4800", "9600"
+	"Disable", "75", "150", "300", "600", "1200", "2400", "4800", "9600"
 };
 
 static const char *ch23_int_speed_str[] = {
@@ -230,70 +230,13 @@ ok_button_clicked(GtkButton *b, gpointer d)
 	text = gtk_entry_get_text(GTK_ENTRY(ch2_int_speed_entry));
 	for (i = 0; i < NELEMENTS(ch23_int_speed_str); i++) {
 		if (strcmp(text, ch23_int_speed_str[i]) == 0) {
-			switch(i) {
-			case 0:
-				if(!(np2cfg.pc9861sw[0] & 0x2)) {
-					j = 15;
-				} else {
-					j = 12;
-				}
-				break;
-			case 1:
-				if(!(np2cfg.pc9861sw[0] & 0x2)) {
-					j = 15;
-				} else {
-					j = 11;
-				}
-				break;
-			case 2:
-				if(!(np2cfg.pc9861sw[0] & 0x2)) {
-					j = 14;
-				} else {
-					j = 10;
-				}
-				break;
-			case 3:
-				if(!(np2cfg.pc9861sw[0] & 0x2)) {
-					j = 13;
-				} else {
-					j = 9;
-				}
-				break;
-			case 4:
-				if(!(np2cfg.pc9861sw[0] & 0x2)) {
-					j = 12;
-				} else {
+			if(!(np2cfg.pc9861sw[0] & 0x2)) {	// Sync
+				j = 15 - i;
+				if(j < 8) {
 					j = 8;
 				}
-				break;
-			case 5:
-				if(!(np2cfg.pc9861sw[0] & 0x2)) {
-					j = 11;
-				} else {
-					j = 7;
-				}
-				break;
-			case 6:
-				if(!(np2cfg.pc9861sw[0] & 0x2)) {
-					j = 10;
-				} else {
-					j = 6;
-				}
-				break;
-			case 7:
-				if(!(np2cfg.pc9861sw[0] & 0x2)) {
-					j = 9;
-				} else {
-					j = 5;
-				}
-				break;
-			case 8:
-				if(!(np2cfg.pc9861sw[0] & 0x2)) {
-					j = 8;
-				} else {
-					j = 4;
-				}
-				break;
+			} else {	// Async
+				j = 12 - i;
 			}
 			if(((np2cfg.pc9861sw[0] >> 2) & 0xF) != j) {
 				np2cfg.pc9861sw[0] &= ~0x3C;
@@ -348,70 +291,13 @@ ok_button_clicked(GtkButton *b, gpointer d)
 	text = gtk_entry_get_text(GTK_ENTRY(ch3_int_speed_entry));
 	for (i = 0; i < NELEMENTS(ch23_int_speed_str); i++) {
 		if (strcmp(text, ch23_int_speed_str[i]) == 0) {
-			switch(i) {
-			case 0:
-				if(!(np2cfg.pc9861sw[2] & 0x2)) {
-					j = 15;
-				} else {
-					j = 12;
-				}
-				break;
-			case 1:
-				if(!(np2cfg.pc9861sw[2] & 0x2)) {
-					j = 15;
-				} else {
-					j = 11;
-				}
-				break;
-			case 2:
-				if(!(np2cfg.pc9861sw[2] & 0x2)) {
-					j = 14;
-				} else {
-					j = 10;
-				}
-				break;
-			case 3:
-				if(!(np2cfg.pc9861sw[2] & 0x2)) {
-					j = 13;
-				} else {
-					j = 9;
-				}
-				break;
-			case 4:
-				if(!(np2cfg.pc9861sw[2] & 0x2)) {
-					j = 12;
-				} else {
+			if(!(np2cfg.pc9861sw[0] & 0x2)) {	// Sync
+				j = 15 - i;
+				if(j < 8) {
 					j = 8;
 				}
-				break;
-			case 5:
-				if(!(np2cfg.pc9861sw[2] & 0x2)) {
-					j = 11;
-				} else {
-					j = 7;
-				}
-				break;
-			case 6:
-				if(!(np2cfg.pc9861sw[2] & 0x2)) {
-					j = 10;
-				} else {
-					j = 6;
-				}
-				break;
-			case 7:
-				if(!(np2cfg.pc9861sw[2] & 0x2)) {
-					j = 9;
-				} else {
-					j = 5;
-				}
-				break;
-			case 8:
-				if(!(np2cfg.pc9861sw[2] & 0x2)) {
-					j = 8;
-				} else {
-					j = 4;
-				}
-				break;
+			} else {	// Async
+				j = 12 - i;
 			}
 			if(((np2cfg.pc9861sw[2] >> 2) & 0xF) != j) {
 				np2cfg.pc9861sw[2] &= ~0x3C;
@@ -923,64 +809,9 @@ create_pc9861k_note(void)
 	gtk_widget_show(ch2_int_speed_entry);
 	gtk_editable_set_editable(GTK_EDITABLE(ch2_int_speed_entry), FALSE);
 	if(!(np2cfg.pc9861sw[0] & 0x2)) {	// Sync
-		switch((np2cfg.pc9861sw[0] >> 2) & 0xF) {
-		case 8:
-			gtk_entry_set_text(GTK_ENTRY(ch2_int_speed_entry), "19200");
-			break;
-		case 9:
-			gtk_entry_set_text(GTK_ENTRY(ch2_int_speed_entry), "9600");
-			break;
-		case 10:
-			gtk_entry_set_text(GTK_ENTRY(ch2_int_speed_entry), "4800");
-			break;
-		case 11:
-			gtk_entry_set_text(GTK_ENTRY(ch2_int_speed_entry), "2400");
-			break;
-		case 12:
-			gtk_entry_set_text(GTK_ENTRY(ch2_int_speed_entry), "1200");
-			break;
-		case 13:
-			gtk_entry_set_text(GTK_ENTRY(ch2_int_speed_entry), "600");
-			break;
-		case 14:
-			gtk_entry_set_text(GTK_ENTRY(ch2_int_speed_entry), "300");
-			break;
-		case 15:
-		default:
-			gtk_entry_set_text(GTK_ENTRY(ch2_int_speed_entry), "150");
-			break;
-		}
+		gtk_entry_set_text(GTK_ENTRY(ch2_int_speed_entry), ch23_int_speed_str[7 - ((np2cfg.pc9861sw[0] >> 2) & 0x7) + 1]);
 	} else {	// Async
-		switch((np2cfg.pc9861sw[0] >> 2) & 0xF) {
-		case 4:
-			gtk_entry_set_text(GTK_ENTRY(ch2_int_speed_entry), "19200");
-			break;
-		case 5:
-			gtk_entry_set_text(GTK_ENTRY(ch2_int_speed_entry), "9600");
-			break;
-		case 6:
-			gtk_entry_set_text(GTK_ENTRY(ch2_int_speed_entry), "4800");
-			break;
-		case 7:
-			gtk_entry_set_text(GTK_ENTRY(ch2_int_speed_entry), "2400");
-			break;
-		case 8:
-			gtk_entry_set_text(GTK_ENTRY(ch2_int_speed_entry), "1200");
-			break;
-		case 9:
-			gtk_entry_set_text(GTK_ENTRY(ch2_int_speed_entry), "600");
-			break;
-		case 10:
-			gtk_entry_set_text(GTK_ENTRY(ch2_int_speed_entry), "300");
-			break;
-		case 11:
-			gtk_entry_set_text(GTK_ENTRY(ch2_int_speed_entry), "150");
-			break;
-		case 12:
-		default:
-			gtk_entry_set_text(GTK_ENTRY(ch2_int_speed_entry), "75");
-			break;
-		}
+		gtk_entry_set_text(GTK_ENTRY(ch2_int_speed_entry), ch23_int_speed_str[8 - (((np2cfg.pc9861sw[0] >> 2) & 0xF) - 4)]);
 	}
 
 	/* Ch.2 INT */
@@ -1005,18 +836,19 @@ create_pc9861k_note(void)
 	gtk_editable_set_editable(GTK_EDITABLE(ch2_int_int_entry), FALSE);
 	switch(np2cfg.pc9861sw[1] & 0x03) {
 	case 0:
-		gtk_entry_set_text(GTK_ENTRY(ch2_int_int_entry), "0");
+		i = 0;
 		break;
 	case 1:
-		gtk_entry_set_text(GTK_ENTRY(ch2_int_int_entry), "2");
+		i = 2;
 		break;
 	case 2:
-		gtk_entry_set_text(GTK_ENTRY(ch2_int_int_entry), "1");
+		i = 1;
 		break;
 	case 3:
-		gtk_entry_set_text(GTK_ENTRY(ch2_int_int_entry), "3");
+		i = 3;
 		break;
 	}
+	gtk_entry_set_text(GTK_ENTRY(ch2_int_int_entry), ch2_int_int_str[i]);
 
 	/* Ch.2 Mode */
 	ch2_int_mode_hbox = gtk_hbox_new(FALSE, 0);
@@ -1065,64 +897,9 @@ create_pc9861k_note(void)
 	gtk_widget_show(ch3_int_speed_entry);
 	gtk_editable_set_editable(GTK_EDITABLE(ch3_int_speed_entry), FALSE);
 	if(!(np2cfg.pc9861sw[2] & 0x2)) {	// Sync
-		switch((np2cfg.pc9861sw[2] >> 2) & 0xF) {
-		case 8:
-			gtk_entry_set_text(GTK_ENTRY(ch3_int_speed_entry), "19200");
-			break;
-		case 9:
-			gtk_entry_set_text(GTK_ENTRY(ch3_int_speed_entry), "9600");
-			break;
-		case 10:
-			gtk_entry_set_text(GTK_ENTRY(ch3_int_speed_entry), "4800");
-			break;
-		case 11:
-			gtk_entry_set_text(GTK_ENTRY(ch3_int_speed_entry), "2400");
-			break;
-		case 12:
-			gtk_entry_set_text(GTK_ENTRY(ch3_int_speed_entry), "1200");
-			break;
-		case 13:
-			gtk_entry_set_text(GTK_ENTRY(ch3_int_speed_entry), "600");
-			break;
-		case 14:
-			gtk_entry_set_text(GTK_ENTRY(ch3_int_speed_entry), "300");
-			break;
-		case 15:
-		default:
-			gtk_entry_set_text(GTK_ENTRY(ch3_int_speed_entry), "150");
-			break;
-		}
+		gtk_entry_set_text(GTK_ENTRY(ch3_int_speed_entry), ch23_int_speed_str[7 - ((np2cfg.pc9861sw[2] >> 2) & 0x7) + 1]);
 	} else {	// Async
-		switch((np2cfg.pc9861sw[2] >> 2) & 0xF) {
-		case 4:
-			gtk_entry_set_text(GTK_ENTRY(ch3_int_speed_entry), "19200");
-			break;
-		case 5:
-			gtk_entry_set_text(GTK_ENTRY(ch3_int_speed_entry), "9600");
-			break;
-		case 6:
-			gtk_entry_set_text(GTK_ENTRY(ch3_int_speed_entry), "4800");
-			break;
-		case 7:
-			gtk_entry_set_text(GTK_ENTRY(ch3_int_speed_entry), "2400");
-			break;
-		case 8:
-			gtk_entry_set_text(GTK_ENTRY(ch3_int_speed_entry), "1200");
-			break;
-		case 9:
-			gtk_entry_set_text(GTK_ENTRY(ch3_int_speed_entry), "600");
-			break;
-		case 10:
-			gtk_entry_set_text(GTK_ENTRY(ch3_int_speed_entry), "300");
-			break;
-		case 11:
-			gtk_entry_set_text(GTK_ENTRY(ch3_int_speed_entry), "150");
-			break;
-		case 12:
-		default:
-			gtk_entry_set_text(GTK_ENTRY(ch3_int_speed_entry), "75");
-			break;
-		}
+		gtk_entry_set_text(GTK_ENTRY(ch3_int_speed_entry), ch23_int_speed_str[8 - (((np2cfg.pc9861sw[2] >> 2) & 0xF) - 4)]);
 	}
 
 	/* Ch.3 INT */
@@ -1145,20 +922,21 @@ create_pc9861k_note(void)
 	ch3_int_int_entry = gtk_bin_get_child(GTK_BIN(ch3_int_int_combo));
 	gtk_widget_show(ch3_int_int_entry);
 	gtk_editable_set_editable(GTK_EDITABLE(ch3_int_int_entry), FALSE);
-	switch(np2cfg.pc9861sw[1] & 0x0C) {
+	switch((np2cfg.pc9861sw[1] & 0x0C) >> 2) {
 	case 0:
-		gtk_entry_set_text(GTK_ENTRY(ch3_int_int_entry), "0");
+		i = 0;
 		break;
-	case 4:
-		gtk_entry_set_text(GTK_ENTRY(ch3_int_int_entry), "5");
+	case 1:
+		i = 2;
 		break;
-	case 8:
-		gtk_entry_set_text(GTK_ENTRY(ch3_int_int_entry), "4");
+	case 2:
+		i = 1;
 		break;
-	case 12:
-		gtk_entry_set_text(GTK_ENTRY(ch3_int_int_entry), "6");
+	case 3:
+		i = 3;
 		break;
 	}
+	gtk_entry_set_text(GTK_ENTRY(ch3_int_int_entry), ch3_int_int_str[i]);
 
 	/* Ch.3 Mode */
 	ch3_int_mode_hbox = gtk_hbox_new(FALSE, 0);
