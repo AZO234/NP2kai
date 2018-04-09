@@ -43,7 +43,7 @@ static const char *ch1_int_speed_str[] = {
 };
 
 static const char *ch23_int_speed_str[] = {
-	"75", "150", "150", "300", "600", "1200", "2400", "4800", "9600", "19200"
+	"75", "150", "300", "600", "1200", "2400", "4800", "9600", "19200"
 };
 
 static const char *ch2_int_int_str[] = {
@@ -130,7 +130,7 @@ ok_button_clicked(GtkButton *b, gpointer d)
 	/* Ch.1 Speed */
 	text = gtk_entry_get_text(GTK_ENTRY(ch1_ext_speed_entry));
 	i = atoi(text);
-	if (strcmp(text, np2oscfg.com[0].speed) != i) {
+	if (np2oscfg.com[0].speed != i) {
 		np2oscfg.com[0].speed = i;
 		update |= SYS_UPDATEOSCFG;
 	}
@@ -140,8 +140,8 @@ ok_button_clicked(GtkButton *b, gpointer d)
 	for (i = 0; i < NELEMENTS(ext_datasize_str); i++) {
 		if (strcmp(text, ext_datasize_str[i]) == 0) {
 			if(((np2oscfg.com[0].param >> 2) & 3) != i) {
-				np2oscfg.com[0].param &= ~3;
-				np2oscfg.com[0].param |= i;
+				np2oscfg.com[0].param &= ~0xC;
+				np2oscfg.com[0].param |= i << 2;
 				update |= SYS_UPDATEOSCFG;
 			}
 			break;
@@ -459,7 +459,7 @@ ok_button_clicked(GtkButton *b, gpointer d)
 	/* Ch.2 Speed */
 	text = gtk_entry_get_text(GTK_ENTRY(ch2_ext_speed_entry));
 	i = atoi(text);
-	if (strcmp(text, np2oscfg.com[1].speed) != i) {
+	if (np2oscfg.com[1].speed != i) {
 		np2oscfg.com[1].speed = i;
 		update |= SYS_UPDATEOSCFG;
 	}
@@ -469,8 +469,8 @@ ok_button_clicked(GtkButton *b, gpointer d)
 	for (i = 0; i < NELEMENTS(ext_datasize_str); i++) {
 		if (strcmp(text, ext_datasize_str[i]) == 0) {
 			if(((np2oscfg.com[1].param >> 2) & 3) != i) {
-				np2oscfg.com[1].param &= ~3;
-				np2oscfg.com[1].param |= i;
+				np2oscfg.com[1].param &= ~0xC;
+				np2oscfg.com[1].param |= i << 2;
 				update |= SYS_UPDATEOSCFG;
 			}
 			break;
@@ -545,7 +545,7 @@ ok_button_clicked(GtkButton *b, gpointer d)
 	/* Ch.3 Speed */
 	text = gtk_entry_get_text(GTK_ENTRY(ch2_ext_speed_entry));
 	i = atoi(text);
-	if (strcmp(text, np2oscfg.com[2].speed) != i) {
+	if (np2oscfg.com[2].speed != i) {
 		np2oscfg.com[2].speed = i;
 		update |= SYS_UPDATEOSCFG;
 	}
@@ -555,8 +555,8 @@ ok_button_clicked(GtkButton *b, gpointer d)
 	for (i = 0; i < NELEMENTS(ext_datasize_str); i++) {
 		if (strcmp(text, ext_datasize_str[i]) == 0) {
 			if(((np2oscfg.com[2].param >> 2) & 3) != i) {
-				np2oscfg.com[2].param &= ~3;
-				np2oscfg.com[2].param |= i;
+				np2oscfg.com[2].param &= ~0xC;
+				np2oscfg.com[2].param |= i << 2;
 				update |= SYS_UPDATEOSCFG;
 			}
 			break;
