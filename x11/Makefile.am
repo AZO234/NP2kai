@@ -61,6 +61,7 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/x11/gtk2/dialog_network.c \
 		$(real_topsrcdir)/x11/gtk2/dialog_newdisk.c \
 		$(real_topsrcdir)/x11/gtk2/dialog_screen.c \
+		$(real_topsrcdir)/x11/gtk2/dialog_serial.c \
 		$(real_topsrcdir)/x11/gtk2/dialog_sound.c \
 		$(real_topsrcdir)/x11/gtk2/dialog_wab.c \
 		$(real_topsrcdir)/x11/gtk2/window_keydisp.c \

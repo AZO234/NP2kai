@@ -277,7 +277,7 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 	/* baud rates */
 	for (i = 0; i < NELEMENTS(cmserial_speed); i++) {
 		if (cmserial_speed[i] >= speed) {
-			VERBOSE(("cmserial_create: speed = %d", cmserial_speed[i]));
+			VERBOSE(("cmserial_create: spped = %d", cmserial_speed[i]));
 			break;
 		}
 	}
@@ -350,7 +350,7 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 	/* set the new options for the port */
 	tcsetattr(hdl, TCSANOW, &options);
 
-#if 0
+#if 1
 	ret->connect = COMCONNECT_MIDI;
 #else
 	ret->connect = COMCONNECT_SERIAL;

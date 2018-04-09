@@ -1490,6 +1490,7 @@ cb_dialog(GtkAction *action, gpointer user_data)
 	} else if (g_ascii_strcasecmp(name, "midiopt") == 0) {
 		create_midi_dialog();
 	} else if (g_ascii_strcasecmp(name, "serialopt") == 0) {
+		create_serial_dialog();
 	} else if (g_ascii_strcasecmp(name, "calendar") == 0) {
 		create_calendar_dialog();
 	} else if (g_ascii_strcasecmp(name, "about") == 0) {
