@@ -46,6 +46,46 @@ static const char *ch23_int_speed_str[] = {
 	"75", "150", "300", "600", "1200", "2400", "4800", "9600", "19200"
 };
 
+static const char *ch1_int_stopbit_str[] = {
+	"1", "1.5", "2"
+};
+
+static const char *ch1_int_parity_str[] = {
+	"None", "Odd", "Even"
+};
+
+static const char *ch1_int_datasize_str[] = {
+	"7", "8"
+};
+
+static const char *ch1_int_duplex_str[] = {
+	"Full", "Half"
+};
+
+static const char *ch1_int_flowctrl_str[] = {
+	"Disable", "Enable"
+};
+
+static const char *ch1_int_7bitkana_str[] = {
+	"Disable", "Enable"
+};
+
+static const char *ch1_int_sendnl_str[] = {
+	"CR", "CR+LF"
+};
+
+static const char *ch1_int_rcvnl_str[] = {
+	"CR", "CR+LF"
+};
+
+static const char *ch1_int_jscode_str[] = {
+	"KI:1B4Bh KO:1B48h", "KI:1A70h KO:1A71h"
+};
+
+static const char *ch1_int_rcvdel_str[] = {
+	"Process", "Ignore"
+};
+
 static const char *ch2_int_int_str[] = {
 	"0", "1", "2", "3"
 };
@@ -76,6 +116,16 @@ static const char *ext_stopbit_str[] = {
 
 
 static GtkWidget *ch1_int_speed_entry;
+static GtkWidget *ch1_int_stopbit_entry;
+static GtkWidget *ch1_int_parity_entry;
+static GtkWidget *ch1_int_datasize_entry;
+static GtkWidget *ch1_int_duplex_entry;
+static GtkWidget *ch1_int_flowctrl_entry;
+static GtkWidget *ch1_int_7bitkana_entry;
+static GtkWidget *ch1_int_sendnl_entry;
+static GtkWidget *ch1_int_rcvnl_entry;
+static GtkWidget *ch1_int_jscode_entry;
+static GtkWidget *ch1_int_rcvdel_entry;
 static GtkWidget *ch1_ext_mout_entry;
 static GtkWidget *ch1_ext_speed_entry;
 static GtkWidget *ch1_ext_datasize_entry;
@@ -114,6 +164,147 @@ ok_button_clicked(GtkButton *b, gpointer d)
 			if((np2cfg.memsw[1] & 0xF) != i) {
 				np2cfg.memsw[1] &= ~0xF;
 				np2cfg.memsw[1] |= i;
+				update |= SYS_UPDATECFG;
+			}
+			break;
+		}
+	}
+
+	/* Ch.1 DataSize */
+	text = gtk_entry_get_text(GTK_ENTRY(ch1_int_datasize_entry));
+	for (i = 0; i < NELEMENTS(ch1_int_datasize_str); i++) {
+		if (strcmp(text, ch1_int_datasize_str[i]) == 0) {
+			if((np2cfg.memsw[0] & 0xC) != (i << 2) + 2) {
+				np2cfg.memsw[0] &= ~0xC;
+				np2cfg.memsw[0] |= (i << 2) + 2;
+				update |= SYS_UPDATECFG;
+			}
+			break;
+		}
+	}
+
+	/* Ch.1 Parity */
+	text = gtk_entry_get_text(GTK_ENTRY(ch1_int_parity_entry));
+	for (i = 0; i < NELEMENTS(ch1_int_parity_str); i++) {
+		if (strcmp(text, ch1_int_parity_str[i]) == 0) {
+			switch(i) {
+			case 0:
+				j = 0;
+				break;
+			case 1:
+				j = 1;
+				break;
+			case 2:
+				j = 3;
+				break;
+			}
+			if((np2cfg.memsw[0] & 0x30) != j << 4) {
+				np2cfg.memsw[0] &= ~0x30;
+				np2cfg.memsw[0] |= j << 4;
+				update |= SYS_UPDATECFG;
+			}
+			break;
+		}
+	}
+
+	/* Ch.1 StopBit */
+	text = gtk_entry_get_text(GTK_ENTRY(ch1_int_stopbit_entry));
+	for (i = 0; i < NELEMENTS(ch1_int_stopbit_str); i++) {
+		if (strcmp(text, ch1_int_stopbit_str[i]) == 0) {
+			if((np2cfg.memsw[0] & 0xC0) != (i << 6) + 1) {
+				np2cfg.memsw[0] &= ~0xC0;
+				np2cfg.memsw[0] |= (i << 6) + 1;
+				update |= SYS_UPDATECFG;
+			}
+			break;
+		}
+	}
+
+	/* Ch.1 FlowCtrl */
+	text = gtk_entry_get_text(GTK_ENTRY(ch1_int_flowctrl_entry));
+	for (i = 0; i < NELEMENTS(ch1_int_flowctrl_str); i++) {
+		if (strcmp(text, ch1_int_flowctrl_str[i]) == 0) {
+			if((np2cfg.memsw[0] & 0x1) != i) {
+				np2cfg.memsw[0] &= ~0x1;
+				np2cfg.memsw[0] |= i;
+				update |= SYS_UPDATECFG;
+			}
+			break;
+		}
+	}
+
+	/* Ch.1 Duplex */
+	text = gtk_entry_get_text(GTK_ENTRY(ch1_int_duplex_entry));
+	for (i = 0; i < NELEMENTS(ch1_int_duplex_str); i++) {
+		if (strcmp(text, ch1_int_duplex_str[i]) == 0) {
+			if((np2cfg.memsw[0] & 0x2) != i << 1) {
+				np2cfg.memsw[0] &= ~0x2;
+				np2cfg.memsw[0] |= i << 1;
+				update |= SYS_UPDATECFG;
+			}
+			break;
+		}
+	}
+
+	/* Ch.1 7bitKana */
+	text = gtk_entry_get_text(GTK_ENTRY(ch1_int_7bitkana_entry));
+	for (i = 0; i < NELEMENTS(ch1_int_7bitkana_str); i++) {
+		if (strcmp(text, ch1_int_7bitkana_str[i]) == 0) {
+			if((np2cfg.memsw[1] & 0x80) != i << 7) {
+				np2cfg.memsw[1] &= ~0x80;
+				np2cfg.memsw[1] |= i << 7;
+				update |= SYS_UPDATECFG;
+			}
+			break;
+		}
+	}
+
+	/* Ch.1 SendNl */
+	text = gtk_entry_get_text(GTK_ENTRY(ch1_int_sendnl_entry));
+	for (i = 0; i < NELEMENTS(ch1_int_sendnl_str); i++) {
+		if (strcmp(text, ch1_int_sendnl_str[i]) == 0) {
+			if((np2cfg.memsw[1] & 0x40) != i << 6) {
+				np2cfg.memsw[1] &= ~0x40;
+				np2cfg.memsw[1] |= i << 6;
+				update |= SYS_UPDATECFG;
+			}
+			break;
+		}
+	}
+
+	/* Ch.1 RcvNl */
+	text = gtk_entry_get_text(GTK_ENTRY(ch1_int_rcvnl_entry));
+	for (i = 0; i < NELEMENTS(ch1_int_rcvnl_str); i++) {
+		if (strcmp(text, ch1_int_rcvnl_str[i]) == 0) {
+			if((np2cfg.memsw[1] & 0x20) != i << 5) {
+				np2cfg.memsw[1] &= ~0x20;
+				np2cfg.memsw[1] |= i << 5;
+				update |= SYS_UPDATECFG;
+			}
+			break;
+		}
+	}
+
+	/* Ch.1 JSCode */
+	text = gtk_entry_get_text(GTK_ENTRY(ch1_int_jscode_entry));
+	for (i = 0; i < NELEMENTS(ch1_int_jscode_str); i++) {
+		if (strcmp(text, ch1_int_jscode_str[i]) == 0) {
+			if((np2cfg.memsw[1] & 0x10) != i << 4) {
+				np2cfg.memsw[1] &= ~0x10;
+				np2cfg.memsw[1] |= i << 4;
+				update |= SYS_UPDATECFG;
+			}
+			break;
+		}
+	}
+
+	/* Ch.1 RcvDel */
+	text = gtk_entry_get_text(GTK_ENTRY(ch1_int_rcvdel_entry));
+	for (i = 0; i < NELEMENTS(ch1_int_rcvdel_str); i++) {
+		if (strcmp(text, ch1_int_rcvdel_str[i]) == 0) {
+			if((np2cfg.memsw[2] & 0x80) != i << 7) {
+				np2cfg.memsw[2] &= ~0x80;
+				np2cfg.memsw[2] |= i << 7;
 				update |= SYS_UPDATECFG;
 			}
 			break;
@@ -532,6 +723,36 @@ create_ch1_note(void)
 	GtkWidget *ch1_int_speed_hbox;
 	GtkWidget *ch1_int_speed_label;
 	GtkWidget *ch1_int_speed_combo;
+	GtkWidget *ch1_int_stopbit_hbox;
+	GtkWidget *ch1_int_stopbit_label;
+	GtkWidget *ch1_int_stopbit_combo;
+	GtkWidget *ch1_int_parity_hbox;
+	GtkWidget *ch1_int_parity_label;
+	GtkWidget *ch1_int_parity_combo;
+	GtkWidget *ch1_int_datasize_hbox;
+	GtkWidget *ch1_int_datasize_label;
+	GtkWidget *ch1_int_datasize_combo;
+	GtkWidget *ch1_int_flowctrl_hbox;
+	GtkWidget *ch1_int_flowctrl_label;
+	GtkWidget *ch1_int_flowctrl_combo;
+	GtkWidget *ch1_int_duplex_hbox;
+	GtkWidget *ch1_int_duplex_label;
+	GtkWidget *ch1_int_duplex_combo;
+	GtkWidget *ch1_int_7bitkana_hbox;
+	GtkWidget *ch1_int_7bitkana_label;
+	GtkWidget *ch1_int_7bitkana_combo;
+	GtkWidget *ch1_int_sendnl_hbox;
+	GtkWidget *ch1_int_sendnl_label;
+	GtkWidget *ch1_int_sendnl_combo;
+	GtkWidget *ch1_int_rcvnl_hbox;
+	GtkWidget *ch1_int_rcvnl_label;
+	GtkWidget *ch1_int_rcvnl_combo;
+	GtkWidget *ch1_int_jscode_hbox;
+	GtkWidget *ch1_int_jscode_label;
+	GtkWidget *ch1_int_jscode_combo;
+	GtkWidget *ch1_int_rcvdel_hbox;
+	GtkWidget *ch1_int_rcvdel_label;
+	GtkWidget *ch1_int_rcvdel_combo;
 	GtkWidget *external_frame;
 	GtkWidget *external_frame_vbox;
 	GtkWidget *ch1_ext_mout_hbox;
@@ -551,7 +772,7 @@ create_ch1_note(void)
 	int i;
 	char str[32];
 
-	root_widget = gtk_vbox_new(FALSE, 0);
+	root_widget = gtk_hbox_new(FALSE, 0);
 	gtk_container_set_border_width(GTK_CONTAINER(root_widget), 5);
 	gtk_widget_show(root_widget);
 
@@ -590,6 +811,253 @@ create_ch1_note(void)
 	} else {
 		gtk_entry_set_text(GTK_ENTRY(ch1_int_speed_entry), ch1_int_speed_str[i]);
 	}
+
+	/* Ch.1 DataSize */
+	ch1_int_datasize_hbox = gtk_hbox_new(FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(ch1_int_datasize_hbox), 5);
+	gtk_widget_show(ch1_int_datasize_hbox);
+	gtk_box_pack_start(GTK_BOX(internal_frame_vbox), ch1_int_datasize_hbox, FALSE, FALSE, 0);
+
+	ch1_int_datasize_label = gtk_label_new("DataSize");
+	gtk_widget_show(ch1_int_datasize_label);
+	gtk_container_add(GTK_CONTAINER(ch1_int_datasize_hbox), ch1_int_datasize_label);
+
+	ch1_int_datasize_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(ch1_int_datasize_combo);
+	gtk_container_add(GTK_CONTAINER(ch1_int_datasize_hbox), ch1_int_datasize_combo);
+	gtk_widget_set_size_request(ch1_int_datasize_combo, 80, -1);
+	for (i = 0; i < NELEMENTS(ch1_int_datasize_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(ch1_int_datasize_combo), ch1_int_datasize_str[i]);
+	}
+	ch1_int_datasize_entry = gtk_bin_get_child(GTK_BIN(ch1_int_datasize_combo));
+	gtk_widget_show(ch1_int_datasize_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(ch1_int_datasize_entry), FALSE);
+	switch(np2cfg.memsw[0] & 0xC) {
+	case 0xC:
+		gtk_entry_set_text(GTK_ENTRY(ch1_int_datasize_entry), ch1_int_datasize_str[1]);
+		break;
+	default:
+		gtk_entry_set_text(GTK_ENTRY(ch1_int_datasize_entry), ch1_int_datasize_str[0]);
+		break;
+	}
+
+	/* Ch.1 Parity */
+	ch1_int_parity_hbox = gtk_hbox_new(FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(ch1_int_parity_hbox), 5);
+	gtk_widget_show(ch1_int_parity_hbox);
+	gtk_box_pack_start(GTK_BOX(internal_frame_vbox), ch1_int_parity_hbox, FALSE, FALSE, 0);
+
+	ch1_int_parity_label = gtk_label_new("Parity");
+	gtk_widget_show(ch1_int_parity_label);
+	gtk_container_add(GTK_CONTAINER(ch1_int_parity_hbox), ch1_int_parity_label);
+
+	ch1_int_parity_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(ch1_int_parity_combo);
+	gtk_container_add(GTK_CONTAINER(ch1_int_parity_hbox), ch1_int_parity_combo);
+	gtk_widget_set_size_request(ch1_int_parity_combo, 80, -1);
+	for (i = 0; i < NELEMENTS(ch1_int_parity_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(ch1_int_parity_combo), ch1_int_parity_str[i]);
+	}
+	ch1_int_parity_entry = gtk_bin_get_child(GTK_BIN(ch1_int_parity_combo));
+	gtk_widget_show(ch1_int_parity_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(ch1_int_parity_entry), FALSE);
+	switch(np2cfg.memsw[0] & 0x30) {
+	case 0x10:
+		gtk_entry_set_text(GTK_ENTRY(ch1_int_parity_entry), ch1_int_parity_str[1]);
+		break;
+	case 0x30:
+		gtk_entry_set_text(GTK_ENTRY(ch1_int_parity_entry), ch1_int_parity_str[2]);
+		break;
+	default:
+		gtk_entry_set_text(GTK_ENTRY(ch1_int_parity_entry), ch1_int_parity_str[0]);
+		break;
+	}
+
+	/* Ch.1 StopBit */
+	ch1_int_stopbit_hbox = gtk_hbox_new(FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(ch1_int_stopbit_hbox), 5);
+	gtk_widget_show(ch1_int_stopbit_hbox);
+	gtk_box_pack_start(GTK_BOX(internal_frame_vbox), ch1_int_stopbit_hbox, FALSE, FALSE, 0);
+
+	ch1_int_stopbit_label = gtk_label_new("StopBit");
+	gtk_widget_show(ch1_int_stopbit_label);
+	gtk_container_add(GTK_CONTAINER(ch1_int_stopbit_hbox), ch1_int_stopbit_label);
+
+	ch1_int_stopbit_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(ch1_int_stopbit_combo);
+	gtk_container_add(GTK_CONTAINER(ch1_int_stopbit_hbox), ch1_int_stopbit_combo);
+	gtk_widget_set_size_request(ch1_int_stopbit_combo, 80, -1);
+	for (i = 0; i < NELEMENTS(ch1_int_stopbit_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(ch1_int_stopbit_combo), ch1_int_stopbit_str[i]);
+	}
+	ch1_int_stopbit_entry = gtk_bin_get_child(GTK_BIN(ch1_int_stopbit_combo));
+	gtk_widget_show(ch1_int_stopbit_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(ch1_int_stopbit_entry), FALSE);
+	switch(np2cfg.memsw[0] & 0xC0) {
+	case 0x80:
+		gtk_entry_set_text(GTK_ENTRY(ch1_int_stopbit_entry), ch1_int_stopbit_str[1]);
+		break;
+	case 0xC0:
+		gtk_entry_set_text(GTK_ENTRY(ch1_int_stopbit_entry), ch1_int_stopbit_str[2]);
+		break;
+	default:
+		gtk_entry_set_text(GTK_ENTRY(ch1_int_stopbit_entry), ch1_int_stopbit_str[0]);
+		break;
+	}
+
+	/* Ch.1 FlowCtrl */
+	ch1_int_flowctrl_hbox = gtk_hbox_new(FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(ch1_int_flowctrl_hbox), 5);
+	gtk_widget_show(ch1_int_flowctrl_hbox);
+	gtk_box_pack_start(GTK_BOX(internal_frame_vbox), ch1_int_flowctrl_hbox, FALSE, FALSE, 0);
+
+	ch1_int_flowctrl_label = gtk_label_new("Flow Control");
+	gtk_widget_show(ch1_int_flowctrl_label);
+	gtk_container_add(GTK_CONTAINER(ch1_int_flowctrl_hbox), ch1_int_flowctrl_label);
+
+	ch1_int_flowctrl_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(ch1_int_flowctrl_combo);
+	gtk_container_add(GTK_CONTAINER(ch1_int_flowctrl_hbox), ch1_int_flowctrl_combo);
+	gtk_widget_set_size_request(ch1_int_flowctrl_combo, 80, -1);
+	for (i = 0; i < NELEMENTS(ch1_int_flowctrl_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(ch1_int_flowctrl_combo), ch1_int_flowctrl_str[i]);
+	}
+	ch1_int_flowctrl_entry = gtk_bin_get_child(GTK_BIN(ch1_int_flowctrl_combo));
+	gtk_widget_show(ch1_int_flowctrl_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(ch1_int_flowctrl_entry), FALSE);
+	gtk_entry_set_text(GTK_ENTRY(ch1_int_flowctrl_entry), ch1_int_flowctrl_str[np2cfg.memsw[0] & 0x1]);
+
+	/* Ch.1 Duplex */
+	ch1_int_duplex_hbox = gtk_hbox_new(FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(ch1_int_duplex_hbox), 5);
+	gtk_widget_show(ch1_int_duplex_hbox);
+	gtk_box_pack_start(GTK_BOX(internal_frame_vbox), ch1_int_duplex_hbox, FALSE, FALSE, 0);
+
+	ch1_int_duplex_label = gtk_label_new("Duplex");
+	gtk_widget_show(ch1_int_duplex_label);
+	gtk_container_add(GTK_CONTAINER(ch1_int_duplex_hbox), ch1_int_duplex_label);
+
+	ch1_int_duplex_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(ch1_int_duplex_combo);
+	gtk_container_add(GTK_CONTAINER(ch1_int_duplex_hbox), ch1_int_duplex_combo);
+	gtk_widget_set_size_request(ch1_int_duplex_combo, 80, -1);
+	for (i = 0; i < NELEMENTS(ch1_int_duplex_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(ch1_int_duplex_combo), ch1_int_duplex_str[i]);
+	}
+	ch1_int_duplex_entry = gtk_bin_get_child(GTK_BIN(ch1_int_duplex_combo));
+	gtk_widget_show(ch1_int_duplex_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(ch1_int_duplex_entry), FALSE);
+	gtk_entry_set_text(GTK_ENTRY(ch1_int_duplex_entry), ch1_int_duplex_str[(np2cfg.memsw[0] & 0x2) >> 1]);
+
+	/* Ch.1 7bitKana */
+	ch1_int_7bitkana_hbox = gtk_hbox_new(FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(ch1_int_7bitkana_hbox), 5);
+	gtk_widget_show(ch1_int_7bitkana_hbox);
+	gtk_box_pack_start(GTK_BOX(internal_frame_vbox), ch1_int_7bitkana_hbox, FALSE, FALSE, 0);
+
+	ch1_int_7bitkana_label = gtk_label_new("7bit Kana");
+	gtk_widget_show(ch1_int_7bitkana_label);
+	gtk_container_add(GTK_CONTAINER(ch1_int_7bitkana_hbox), ch1_int_7bitkana_label);
+
+	ch1_int_7bitkana_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(ch1_int_7bitkana_combo);
+	gtk_container_add(GTK_CONTAINER(ch1_int_7bitkana_hbox), ch1_int_7bitkana_combo);
+	gtk_widget_set_size_request(ch1_int_7bitkana_combo, 80, -1);
+	for (i = 0; i < NELEMENTS(ch1_int_7bitkana_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(ch1_int_7bitkana_combo), ch1_int_7bitkana_str[i]);
+	}
+	ch1_int_7bitkana_entry = gtk_bin_get_child(GTK_BIN(ch1_int_7bitkana_combo));
+	gtk_widget_show(ch1_int_7bitkana_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(ch1_int_7bitkana_entry), FALSE);
+	gtk_entry_set_text(GTK_ENTRY(ch1_int_7bitkana_entry), ch1_int_7bitkana_str[(np2cfg.memsw[1] & 0x80) >> 7]);
+
+	/* Ch.1 SendNl */
+	ch1_int_sendnl_hbox = gtk_hbox_new(FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(ch1_int_sendnl_hbox), 5);
+	gtk_widget_show(ch1_int_sendnl_hbox);
+	gtk_box_pack_start(GTK_BOX(internal_frame_vbox), ch1_int_sendnl_hbox, FALSE, FALSE, 0);
+
+	ch1_int_sendnl_label = gtk_label_new("Send NewLine");
+	gtk_widget_show(ch1_int_sendnl_label);
+	gtk_container_add(GTK_CONTAINER(ch1_int_sendnl_hbox), ch1_int_sendnl_label);
+
+	ch1_int_sendnl_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(ch1_int_sendnl_combo);
+	gtk_container_add(GTK_CONTAINER(ch1_int_sendnl_hbox), ch1_int_sendnl_combo);
+	gtk_widget_set_size_request(ch1_int_sendnl_combo, 80, -1);
+	for (i = 0; i < NELEMENTS(ch1_int_sendnl_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(ch1_int_sendnl_combo), ch1_int_sendnl_str[i]);
+	}
+	ch1_int_sendnl_entry = gtk_bin_get_child(GTK_BIN(ch1_int_sendnl_combo));
+	gtk_widget_show(ch1_int_sendnl_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(ch1_int_sendnl_entry), FALSE);
+	gtk_entry_set_text(GTK_ENTRY(ch1_int_sendnl_entry), ch1_int_sendnl_str[(np2cfg.memsw[1] & 0x40) >> 6]);
+
+	/* Ch.1 RcvNl */
+	ch1_int_rcvnl_hbox = gtk_hbox_new(FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(ch1_int_rcvnl_hbox), 5);
+	gtk_widget_show(ch1_int_rcvnl_hbox);
+	gtk_box_pack_start(GTK_BOX(internal_frame_vbox), ch1_int_rcvnl_hbox, FALSE, FALSE, 0);
+
+	ch1_int_rcvnl_label = gtk_label_new("Receive NewLine");
+	gtk_widget_show(ch1_int_rcvnl_label);
+	gtk_container_add(GTK_CONTAINER(ch1_int_rcvnl_hbox), ch1_int_rcvnl_label);
+
+	ch1_int_rcvnl_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(ch1_int_rcvnl_combo);
+	gtk_container_add(GTK_CONTAINER(ch1_int_rcvnl_hbox), ch1_int_rcvnl_combo);
+	gtk_widget_set_size_request(ch1_int_rcvnl_combo, 80, -1);
+	for (i = 0; i < NELEMENTS(ch1_int_rcvnl_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(ch1_int_rcvnl_combo), ch1_int_rcvnl_str[i]);
+	}
+	ch1_int_rcvnl_entry = gtk_bin_get_child(GTK_BIN(ch1_int_rcvnl_combo));
+	gtk_widget_show(ch1_int_rcvnl_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(ch1_int_rcvnl_entry), FALSE);
+	gtk_entry_set_text(GTK_ENTRY(ch1_int_rcvnl_entry), ch1_int_rcvnl_str[(np2cfg.memsw[1] & 0x20) >> 5]);
+
+	/* Ch.1 JSCode */
+	ch1_int_jscode_hbox = gtk_hbox_new(FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(ch1_int_jscode_hbox), 5);
+	gtk_widget_show(ch1_int_jscode_hbox);
+	gtk_box_pack_start(GTK_BOX(internal_frame_vbox), ch1_int_jscode_hbox, FALSE, FALSE, 0);
+
+	ch1_int_jscode_label = gtk_label_new("Japanese Shift Code");
+	gtk_widget_show(ch1_int_jscode_label);
+	gtk_container_add(GTK_CONTAINER(ch1_int_jscode_hbox), ch1_int_jscode_label);
+
+	ch1_int_jscode_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(ch1_int_jscode_combo);
+	gtk_container_add(GTK_CONTAINER(ch1_int_jscode_hbox), ch1_int_jscode_combo);
+	gtk_widget_set_size_request(ch1_int_jscode_combo, 80, -1);
+	for (i = 0; i < NELEMENTS(ch1_int_jscode_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(ch1_int_jscode_combo), ch1_int_jscode_str[i]);
+	}
+	ch1_int_jscode_entry = gtk_bin_get_child(GTK_BIN(ch1_int_jscode_combo));
+	gtk_widget_show(ch1_int_jscode_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(ch1_int_jscode_entry), FALSE);
+	gtk_entry_set_text(GTK_ENTRY(ch1_int_jscode_entry), ch1_int_jscode_str[(np2cfg.memsw[1] & 0x10) >> 4]);
+
+	/* Ch.1 RcvDel */
+	ch1_int_rcvdel_hbox = gtk_hbox_new(FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(ch1_int_rcvdel_hbox), 5);
+	gtk_widget_show(ch1_int_rcvdel_hbox);
+	gtk_box_pack_start(GTK_BOX(internal_frame_vbox), ch1_int_rcvdel_hbox, FALSE, FALSE, 0);
+
+	ch1_int_rcvdel_label = gtk_label_new("Receive Del");
+	gtk_widget_show(ch1_int_rcvdel_label);
+	gtk_container_add(GTK_CONTAINER(ch1_int_rcvdel_hbox), ch1_int_rcvdel_label);
+
+	ch1_int_rcvdel_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(ch1_int_rcvdel_combo);
+	gtk_container_add(GTK_CONTAINER(ch1_int_rcvdel_hbox), ch1_int_rcvdel_combo);
+	gtk_widget_set_size_request(ch1_int_rcvdel_combo, 80, -1);
+	for (i = 0; i < NELEMENTS(ch1_int_rcvdel_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(ch1_int_rcvdel_combo), ch1_int_rcvdel_str[i]);
+	}
+	ch1_int_rcvdel_entry = gtk_bin_get_child(GTK_BIN(ch1_int_rcvdel_combo));
+	gtk_widget_show(ch1_int_rcvdel_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(ch1_int_rcvdel_entry), FALSE);
+	gtk_entry_set_text(GTK_ENTRY(ch1_int_rcvdel_entry), ch1_int_rcvdel_str[(np2cfg.memsw[2] & 0x80) >> 7]);
 
 	external_frame = gtk_frame_new("External");
 	gtk_container_set_border_width(GTK_CONTAINER(external_frame), 2);
