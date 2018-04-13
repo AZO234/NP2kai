@@ -127,6 +127,9 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 				{OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
 #endif
 				OEMTEXT(""), OEMTEXT(""), OEMTEXT(""),
+#if defined(SUPPORT_GPIB)
+				0x20,
+#endif
 #if defined(SUPPORT_NET)
 				OEMTEXT(""), 0,
 #endif

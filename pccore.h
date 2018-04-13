@@ -196,6 +196,9 @@ struct tagNP2Config
 	OEMCHAR	fontfile[MAX_PATH];
 	OEMCHAR	biospath[MAX_PATH];
 	OEMCHAR	hdrvroot[MAX_PATH];
+#ifdef SUPPORT_GPIB
+	UINT8	gpibcfg;
+#endif
 	
 #ifdef SUPPORT_NET
 	OEMCHAR	np2nettap[MAX_PATH];

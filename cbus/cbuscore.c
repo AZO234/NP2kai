@@ -20,6 +20,9 @@
 #ifdef SUPPORT_CL_GD5430
 #include	"cirrus_vga_extern.h"
 #endif
+#ifdef SUPPORT_GPIB
+#include	"gpibio.h"
+#endif
 
 
 static const FNIORESET resetfn[] = {
@@ -51,6 +54,9 @@ static const FNIORESET resetfn[] = {
 #if defined(SUPPORT_BMS)
 			bmsio_reset,
 #endif
+#if defined(SUPPORT_GPIB)
+			gpibio_reset,
+#endif
 	};
 
 static const FNIOBIND bindfn[] = {
@@ -81,6 +87,9 @@ static const FNIOBIND bindfn[] = {
 			mpu98ii_bind,
 #if defined(SUPPORT_BMS)
 			bmsio_bind,
+#endif
+#if defined(SUPPORT_GPIB)
+			gpibio_bind,
 #endif
 	};
 
