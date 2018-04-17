@@ -700,6 +700,7 @@ static INITBL iniitem[] = {
 	{"mpu98def", INITYPE_STR,	np2oscfg.mpu.def,	MAX_PATH},
 
 	{"com1port", INIMAX_UINT8,	&np2oscfg.com[0].port,	COMPORT_MIDI},
+	{"com1dir",  INITYPE_BOOL,	&np2oscfg.com[0].direct,	1},
 	{"com1para", INITYPE_UINT8,	&np2oscfg.com[0].param,	0},
 	{"com1_bps", INITYPE_UINT32,	&np2oscfg.com[0].speed,	0},
 	{"com1mmap", INITYPE_STR,	np2oscfg.com[0].mout,	MAX_PATH},
@@ -707,6 +708,7 @@ static INITBL iniitem[] = {
 	{"com1mdef", INITYPE_STR,	np2oscfg.com[0].def,	MAX_PATH},
 
 	{"com2port", INIMAX_UINT8,	&np2oscfg.com[1].port,	COMPORT_MIDI},
+	{"com2dir",  INITYPE_BOOL,	&np2oscfg.com[1].direct,	1},
 	{"com2para", INITYPE_UINT8,	&np2oscfg.com[1].param,	0},
 	{"com2_bps", INITYPE_UINT32,	&np2oscfg.com[1].speed,	0},
 	{"com2mmap", INITYPE_STR,	np2oscfg.com[1].mout,	MAX_PATH},
@@ -714,6 +716,7 @@ static INITBL iniitem[] = {
 	{"com2mdef", INITYPE_STR,	np2oscfg.com[1].def,	MAX_PATH},
 
 	{"com3port", INIMAX_UINT8,	&np2oscfg.com[2].port,	COMPORT_MIDI},
+	{"com3dir",  INITYPE_BOOL,	&np2oscfg.com[2].direct,	1},
 	{"com3para", INITYPE_UINT8,	&np2oscfg.com[2].param,	0},
 	{"com3_bps", INITYPE_UINT32,	&np2oscfg.com[2].speed,	0},
 	{"com3mmap", INITYPE_STR,	np2oscfg.com[2].mout,	MAX_PATH},

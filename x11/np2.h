@@ -8,6 +8,7 @@
 G_BEGIN_DECLS
 
 typedef struct {
+	UINT8	direct;
 	UINT8	port;
 	UINT8	def_en;
 	UINT8	param;
