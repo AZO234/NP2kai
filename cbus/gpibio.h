@@ -156,6 +156,7 @@ typedef struct NIPCIIAState {
 	int gpib_dev[30];
 	int cur_talker;
 	int cur_listener;
+	UINT8	bios[0x2000];
 
 	talker_state_t talker_state;
 	listener_state_t listener_state;

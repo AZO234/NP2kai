@@ -1492,7 +1492,24 @@ void gpibio_deinitialize(void) {
 
 void gpibio_reset(const NP2CFG *pConfig) {
 
+	FILEH	fh;
+	UINT	r;
+
 	ZeroMemory(&gpibio, sizeof(_GPIBIO));
+
+	fh = file_open_rb_c(OEMTEXT("gpib.rom"));
+	if (fh != FILEH_INVALID) {
+		fh = file_open_rb_c(OEMTEXT("GPIB.ROM"));
+	}
+	r = 0;
+	if (fh != FILEH_INVALID) {
+		r = file_read(fh, gpibio.bios, 0x2000);
+		file_close(fh);
+	}
+	if (r != 0) { // if (r == 0x2000) {
+		TRACEOUT(("load gpib.rom"));
+	}
+	CopyMemory(mem + 0xd4000, gpibio.bios, 0x2000);
 
 	(void)pConfig;
 }
