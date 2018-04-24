@@ -526,13 +526,6 @@ You can also see VirMIDI 3-0 to 3-3 at midiC3D0 to midiC3D3.
 
 Next boot computer, you command from 4.
 
-WAB
----
-From rev.16 we can use WAB (Window Accelerator Boards).
-
-To use WAB, enable WAB and restart.
-
-WAB Type normally uses 'PC-9821Xe10,Xa7e,Xb10 built-in'.
 
 PEGC 640x480 256 color support for Windows 3.1
 ---
@@ -545,6 +538,15 @@ You may need Windows 3.1 installation disks when applying changes for the displa
 5. Type `win` command to check if the driver works well.
 
 **NOTE:** Do not run MS-DOS prompt under fullscreen mode, or your screen will get garbled when switching back to Windows environment.
+
+
+WAB
+---
+From rev.16 we can use WAB (Window Accelerator Boards).
+
+To use WAB, enable WAB and restart.
+
+WAB Type normally uses 'PC-9821Xe10,Xa7e,Xb10 built-in'.
 
 Release
 ---
