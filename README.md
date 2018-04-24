@@ -442,11 +442,6 @@ Only FAT is supported, NTFS does not correspond.
 DiskExplorer  
 https://hp.vector.co.jp/authors/VA013937/editdisk/index.html
 
-* Add PEGC 640x480x256 support for Windows 3.1
-
-1. Switch to directory `A:\WINDOWS`, then execute `SETUP` command.
-2. Select `640x480x256`
-
 About network
 ---
 From rev.7 we can use network.
