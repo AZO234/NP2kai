@@ -526,7 +526,6 @@ You can also see VirMIDI 3-0 to 3-3 at midiC3D0 to midiC3D3.
 
 Next boot computer, you command from 4.
 
-
 WAB
 ---
 From rev.16 we can use WAB (Window Accelerator Boards).
@@ -543,7 +542,7 @@ WAB Type normally uses 'PC-9821Xe10,Xa7e,Xb10 built-in'.
 4. Copy extracted `EGCN4.DRV` and `PEGCV8.DRV` to `A:￥WINDOWS￥SYSTEM` directory, so as to replace the original driver files from Windows 3.1 installation disk.
 5. Type `win` command to check if the driver works well.
 
-**NOTE:** Do not run MS-DOS prompt under fullscreen mode, or your screen will get garbled when switching back to Windows environment.
+**NOTE:** Do not run MS-DOS prompt with fullscreen mode, or your screen will get garbled when switching back to Windows environment.
 
 
 Release
