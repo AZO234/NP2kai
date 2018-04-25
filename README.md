@@ -147,7 +147,7 @@ https://developer.android.com/studio/index.html
 
 'np2kai_libretro_ios.dylib' binary is outputed in libretro-np2kai  
 
-about libretro port
+About libretro port
 ---
 BIOS files locate in "np2kai" directory at BIOS directory (configured by RetroArch).  
 Configure file (np2.cfg) is made in "np2kai" BIOS directory.
@@ -533,6 +533,17 @@ From rev.16 we can use WAB (Window Accelerator Boards).
 To use WAB, enable WAB and restart.
 
 WAB Type normally uses 'PC-9821Xe10,Xa7e,Xb10 built-in'.
+
+**640x480 256 color support for Windows 3.1**
+
+1. Switch to directory `A:￥WINDOWS`, then run `SETUP` command.
+2. Select display mode `640x480 256色 16ﾄﾞｯﾄ(9821ｼﾘｰｽﾞ対応)`, or `640x480 256色 12ﾄﾞｯﾄ(9821ｼﾘｰｽﾞ対応)` for smaller system font, then complete the changes. You may need Windows 3.1 installation disks when applying changes for the display driver.
+3. Extract `EGCN4.DRV` and `PEGCV8.DRV` from `MINI3.CAB` in Windows 98 CD.
+4. Copy extracted `EGCN4.DRV` and `PEGCV8.DRV` to `A:￥WINDOWS￥SYSTEM` directory, so as to replace the original driver files from Windows 3.1 installation disk.
+5. Type `win` command to check if the driver works well.
+
+**NOTE:** Do not run MS-DOS prompt with fullscreen mode, or your screen will get garbled when switching back to Windows environment.
+
 
 Release
 ---
