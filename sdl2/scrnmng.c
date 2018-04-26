@@ -262,6 +262,9 @@ BRESULT scrnmng_create(int width, int height) {
 	}
 	s_sdlWindow = SDL_CreateWindow(app_name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, 0);
 	s_renderer = SDL_CreateRenderer(s_sdlWindow, -1, 0);
+#ifdef GCW0
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
+#endif
 	SDL_RenderSetLogicalSize(s_renderer, width, 400);
 	if(draw32bit) {
 		s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, width, 400);
@@ -339,6 +342,9 @@ void scrnmng_setwidth(int posx, int width) {
 #if !defined(__LIBRETRO__)
 	SDL_FreeSurface(s_surface);
 	SDL_DestroyTexture(s_texture);
+#ifdef GCW0
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
+#endif
 	SDL_RenderSetLogicalSize(s_renderer, width, scrnmng.height);
 	if(draw32bit) {
 		s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, width, scrnmng.height);
@@ -364,6 +370,9 @@ void scrnmng_setheight(int posy, int height) {
 #if !defined(__LIBRETRO__)
 	SDL_FreeSurface(s_surface);
 	SDL_DestroyTexture(s_texture);
+#ifdef GCW0
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
+#endif
 	SDL_RenderSetLogicalSize(s_renderer, scrnstat.width, height);
 	if(draw32bit) {
 		s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, scrnstat.width, height);
@@ -402,7 +411,7 @@ const SCRNSURF *scrnmng_surflock(void) {
 
 	if (vram == NULL)
 		scrnsurf.ptr = (BYTE *)FrameBuffer;
-	else 
+	else
 		scrnsurf.ptr = vram->ptr;
 
 	return(&scrnsurf);
@@ -559,7 +568,7 @@ void scrnmng_surfunlock(const SCRNSURF *surf) {
 		if (vram == NULL);
 		else{
 			if (menuvram)
-				draw_onmenu();			
+				draw_onmenu();
 		}
 #else	/* __LIBRETRO__ */
 	SDL_Surface	*surface;
@@ -658,7 +667,7 @@ void scrnmng_menudraw(const RECT_T *rct) {
 #if defined(__LIBRETRO__)
 	DRAWRECT	dr;
 
-	if (calcdrawrect( &dr, rct) == SUCCESS) 
+	if (calcdrawrect( &dr, rct) == SUCCESS)
 		draw2(dr);
 #else	/* __LIBRETRO__ */
 	SDL_Surface	*surface;
