@@ -560,6 +560,8 @@ WAB Type normally uses 'PC-9821Xe10,Xa7e,Xb10 built-in'.
 
 Release
 ---
+* Apr 26, 2018
+	- Add build for GCW Zero
 * Apr 2, 2018 (rev.16)
 	- Add WAB (and a little tune)
 * Mar 18, 2018

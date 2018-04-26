@@ -1103,6 +1103,7 @@ WRMSR(void)
 void
 RDTSC(void)
 {
+#if defined(USE_TSC)
 #if defined(NP2_X11) || defined(NP2_SDL2) || defined(__LIBRETRO__)
 //	ia32_panic("RDTSC: not implemented yet!");
 	UINT64 tsc_tmp;
@@ -1124,6 +1125,9 @@ RDTSC(void)
 	}
 	CPU_EDX = li.HighPart;
 	CPU_EAX = li.LowPart;
+#endif
+#else
+	ia32_panic("RDTSC: not implemented!");
 #endif
 }
 

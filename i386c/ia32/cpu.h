@@ -259,7 +259,11 @@ typedef enum {
 } FP_RND;
 
 typedef union {
+#ifdef FLOATX80
     floatx80 d;
+#else
+    float d;
+#endif
     double d64;
     struct {
         UINT32 lower;
@@ -810,7 +814,9 @@ do { \
 #define CPU_CR4			CPU_STATSAVE.cpu_sysregs.cr4
 #define CPU_MXCSR		CPU_STATSAVE.cpu_sysregs.mxcsr
 
+#if defined(USE_TSC)
 #define CPU_MSR_TSC		CPU_STATSAVE.cpu_tsc
+#endif
 
 #define	CPU_CR0_PE		(1 << 0)
 #define	CPU_CR0_MP		(1 << 1)
