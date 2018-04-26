@@ -35,10 +35,48 @@ void taskmng_exit(void) {
 	task_avail = FALSE;
 }
 
+#if defined(GCW0)
+
+int ENABLE_MOUSE=0; //0--disable
+
+int convertKeyMap(int scancode){
+  switch(scancode){
+    case 82: //up
+      return SDL_SCANCODE_UP;
+    case 81: //down
+      return SDL_SCANCODE_DOWN;
+    case 80: //left
+      return SDL_SCANCODE_LEFT;
+    case 79: //right
+      return SDL_SCANCODE_RIGHT;
+    case 225: //x
+      return SDL_SCANCODE_UNKNOWN;
+    case 44:  //y
+      return SDL_SCANCODE_UNKNOWN;
+    case 224: //A
+      return  SDL_SCANCODE_RETURN;
+    case 226: //B
+      return SDLK_TAB;
+    case 41: //select
+      return SDL_SCANCODE_ESCAPE;
+    case 40: //start
+      return SDL_SCANCODE_RETURN;
+    case 43: //L
+      return SDL_SCANCODE_F11;
+    case 42: //R
+      // ENABLE_MOUSE++;
+      // ENABLE_MOUSE=ENABLE_MOUSE%2;
+      return 	999;
+  }
+}
+
+#endif //GCW0
+
 void taskmng_rol(void) {
 
 #if !defined(__LIBRETRO__)
 	SDL_Event	e;
+
 
 	if ((!task_avail) || (!SDL_PollEvent(&e))) {
 		return;
@@ -112,6 +150,13 @@ void taskmng_rol(void) {
 			break;
 
 		case SDL_KEYDOWN:
+
+#if defined(GCW0)
+      e.key.keysym.scancode=convertKeyMap(e.key.keysym.scancode);
+      if(e.key.keysym.scancode==SDL_SCANCODE_UNKNOWN || e.key.keysym.scancode ==999){
+        return;
+      }
+#endif //GCW0
 			if (e.key.keysym.scancode == SDL_SCANCODE_F11) {
 				if (menuvram == NULL) {
 					sysmenu_menuopen(0, 0, 0);
@@ -126,7 +171,14 @@ void taskmng_rol(void) {
 			break;
 
 		case SDL_KEYUP:
-			sdlkbd_keyup(e.key.keysym.scancode);
+#if defined(GCW0)
+      e.key.keysym.scancode=convertKeyMap(e.key.keysym.scancode);
+      if(e.key.keysym.scancode==SDL_SCANCODE_UNKNOWN || e.key.keysym.scancode ==999){
+        return;
+      }
+#endif //GCW0
+
+      sdlkbd_keyup(e.key.keysym.scancode);
 			break;
 
 		case SDL_QUIT:
@@ -151,4 +203,3 @@ BOOL taskmng_sleep(UINT32 tick) {
 	}
 	return(task_avail);
 }
-

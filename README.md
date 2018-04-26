@@ -24,6 +24,12 @@ or
 
 	$ make -j4 -f Makefile21.unix
 
+or for GCW Zero (GCW0) game device only
+
+	$ make -j4 -f Makefile21.gcw0
+
+
+
 ３． Install NP2kai.  
 
 	$ sudo -f Makefile.unix install
@@ -31,6 +37,13 @@ or
 or
 
 	$ sudo -f Makefile21.unix install
+
+or for GCW Zero (GCW0) game device only
+
+	$ make -j4 -f Makefile21.gcw0 buildopk
+
+	then transfer np2kai.opk to /media/apps/
+	BIOS files should locate in ~/.config/np2kai
 
 ４． Run NP2kai.  
 
@@ -170,7 +183,7 @@ R button: mouse speed up durling hold
 
 Keyboard is able to control with joypad when Joy2Key mode.  
 Switch Joy2Key mode in config.  
-D-UP/DOWN/LEFT/RIGHT: Arrow key or Keypad(2468) key 
+D-UP/DOWN/LEFT/RIGHT: Arrow key or Keypad(2468) key
 B button: Z key  
 A button: X key  
 X button: Space key  
@@ -300,9 +313,9 @@ Setting to RetroPie
     $ sudo vi /opt/retropie/configs/pc98/retroarch.cfg
 
     # Settings made here will only override settings in the global retroarch.cfg if placed above the #include line
-    
+
     input_remapping_directory = "/opt/retropie/configs/pc98/"
-    
+
     #include "/opt/retropie/configs/all/retroarch.cfg"
 
 ４．Locate BIOS files.
@@ -390,12 +403,12 @@ There are two ways:
 
 * How to use CD drive with MS-DOS 6.2?  
 
-Write follow to CONFIG.SYS. 
+Write follow to CONFIG.SYS.
 
     LASTDRIVE=Z
     DEVICE=A:￥DOS￥NECCDD.SYS /D:CD_101
 
-And write follow to AUTOEXEC.BAT. 
+And write follow to AUTOEXEC.BAT.
 
     A:￥DOS￥MSCDEX.EXE /D:CD_101 /L:Q
 
@@ -487,12 +500,12 @@ By changing to ALSA output, I was able to play sound.
 
     $ sudo service timidity restart
 
-４． 
+４．
 
     $ aconnect -o  
 This time, you can see like Timidity port 128:0 to 128:3.
 
-５． 
+５．
 
     $ timidity -iA -B2,8 -Os &  
 
@@ -502,7 +515,7 @@ Drive timidity daemon output to ALSA.
 
 This time, you can see like ALSAed Timidity port 129:0 to 129:3.
 
-６． 
+６．
 
     $ sudo modprobe snd-virmidi  
 
@@ -512,7 +525,7 @@ Add virtual MIDI port module.
 
 This time, you can see like VirMIDI 3-0 to 3-3 at 28:0 to 31:0.
 
-７． 
+７．
 
     $ ls /dev/snd  
 
@@ -620,7 +633,7 @@ Release
 		* MultimediaOrchestra  
 		* WaveRec  
 	- Merge kaiE
-		* force ROM to RAM 
+		* force ROM to RAM
 		* CDDA fix
 		* Floppie fix
 * Aug 21, 2017
@@ -671,4 +684,3 @@ Reference
 * http://eagle0wl.hatenadiary.jp/entry/2016/10/07/213830
 * https://sites.google.com/site/np21win/home
 * https://github.com/meepingsnesroms/libretro-meowPC98
-
