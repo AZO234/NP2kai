@@ -15,7 +15,7 @@
 #elif defined(__BORLANDC__)
 #define INLINE __inline
 #elif defined(__GNUC__)
-#define INLINE __inline__
+#define INLINE __inline__ __attribute__((always_inline))
 #else
 #define INLINE
 #endif

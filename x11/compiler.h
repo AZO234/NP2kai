@@ -258,7 +258,7 @@ G_END_DECLS
 #define	__ASSERT(s)
 #endif
 #ifndef	INLINE
-#define	INLINE		inline
+#define	INLINE		inline __attribute__((always_inline))
 #endif
 #endif
 
