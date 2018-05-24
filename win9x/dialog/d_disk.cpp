@@ -466,8 +466,8 @@ protected:
 	virtual void OnOK()
 	{
 		UINT nSize = GetDlgItemInt(IDC_HDDSIZE, NULL, FALSE);
-		nSize = np2max(nSize, m_nHddMinSize);
-		nSize = np2min(nSize, m_nHddMaxSize);
+		nSize = max(nSize, m_nHddMinSize);
+		nSize = min(nSize, m_nHddMaxSize);
 		m_nHddSize = nSize;
 		CDlgProc::OnOK();
 	}
@@ -930,21 +930,44 @@ static DWORD WINAPI newdisk_ThreadFunc(LPVOID vdParam)
  * 新規ディスク作成 ダイアログ
  * @param[in] hWnd 親ウィンドウ
  */
-void dialog_newdisk(HWND hWnd)
+void dialog_newdisk_ex(HWND hWnd, int mode)
 {
 	DWORD dwID;
 	TCHAR szPath[MAX_PATH];
-	file_cpyname(szPath, fddfolder, _countof(szPath));
-	file_cutname(szPath);
-	file_catname(szPath, str_newdisk, _countof(szPath));
-
-	std::tstring rTitle(LoadTString(IDS_NEWDISKTITLE));
-	std::tstring rDefExt(LoadTString(IDS_NEWDISKEXT));
+	std::tstring rTitle;
+	std::tstring rDefExt;
+	std::tstring rFilter;
+	if(mode == NEWDISKMODE_HD){
+		file_cpyname(szPath, hddfolder, _countof(szPath));
+		file_cutname(szPath);
+		file_catname(szPath, str_newdisk, _countof(szPath));
+		rTitle = std::tstring(LoadTString(IDS_NEWDISKTITLE));
+		rDefExt = std::tstring(OEMTEXT("nhd"));
 #if defined(SUPPORT_SCSI)
-	std::tstring rFilter(LoadTString(IDS_NEWDISKFILTER));
+		rFilter = std::tstring(LoadTString(IDS_NEWDISKHDFILTER));
 #else	// defined(SUPPORT_SCSI)
-	std::tstring rFilter(LoadTString(IDS_NEWDISKFILTER2));
+		rFilter = std::tstring(LoadTString(IDS_NEWDISKHDFILTER2));
 #endif	// defined(SUPPORT_SCSI)
+	}else if(mode == NEWDISKMODE_FD){
+		file_cpyname(szPath, fddfolder, _countof(szPath));
+		file_cutname(szPath);
+		file_catname(szPath, str_newdisk, _countof(szPath));
+		rTitle = std::tstring(LoadTString(IDS_NEWDISKTITLE));
+		rDefExt = std::tstring(LoadTString(IDS_NEWDISKEXT));
+		rFilter = std::tstring(LoadTString(IDS_NEWDISKFDFILTER));
+	}else{
+		file_cpyname(szPath, fddfolder, _countof(szPath));
+		file_cutname(szPath);
+		file_catname(szPath, str_newdisk, _countof(szPath));
+		rTitle = std::tstring(LoadTString(IDS_NEWDISKTITLE));
+		rDefExt = std::tstring(LoadTString(IDS_NEWDISKEXT));
+#if defined(SUPPORT_SCSI)
+		rFilter = std::tstring(LoadTString(IDS_NEWDISKFILTER));
+#else	// defined(SUPPORT_SCSI)
+		rFilter = std::tstring(LoadTString(IDS_NEWDISKFILTER2));
+#endif	// defined(SUPPORT_SCSI)
+	}
+
 
 	CFileDlg fileDlg(FALSE, rDefExt.c_str(), szPath, OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY, rFilter.c_str(), hWnd);
 	fileDlg.m_ofn.lpstrTitle = rTitle.c_str();
@@ -1065,4 +1088,22 @@ void dialog_newdisk(HWND hWnd)
 			newdisk_fdd(lpPath, dlg.GetType(), dlg.GetLabel());
 		}
 	}
+	else if (!file_cmpname(ext, str_hdm))
+	{
+		newdisk_123mb_fdd(lpPath);
+	}
+	else if (!file_cmpname(ext, str_hd4))
+	{
+		newdisk_144mb_fdd(lpPath);
+	}
 }
+
+/**
+ * 新規ディスク作成 ダイアログ
+ * @param[in] hWnd 親ウィンドウ
+ */
+void dialog_newdisk(HWND hWnd)
+{
+	dialog_newdisk_ex(hWnd, NEWDISKMODE_ALL);
+}
+

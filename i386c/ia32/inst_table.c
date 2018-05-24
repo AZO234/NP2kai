@@ -45,6 +45,7 @@
 #include "ia32/instructions/fpu/fp.h"
 #include "ia32/instructions/mmx/mmx.h"
 #include "ia32/instructions/mmx/3dnow.h"
+#include "ia32/instructions/sse/sse.h"
 
 /*
  * UNDEF OP
@@ -724,7 +725,7 @@ void (*insttable_1byte[2][256])(void) = {
 		ARPL_EwGw,
 		undef_op,			/* Prefix_FS */
 		undef_op,			/* Prefix_GS */
-		undef_op,			/* OpSize */
+		_2byte_Prefix660F_32,			/* OpSize */
 		undef_op,			/* AddrSize */
 		PUSH_Id,		/* 68 */
 		IMUL_GdEdId,
@@ -873,8 +874,8 @@ void (*insttable_1byte[2][256])(void) = {
 
 		_LOCK,			/* F0 */
 		INT1,
-		undef_op,			/* repne */
-		undef_op,			/* repe */
+		_2byte_PrefixF20F_32,			/* repne */
+		_2byte_PrefixF30F_32,			/* repe */
 		HLT,
 		CMC,
 		Grp3_Eb,
@@ -910,15 +911,15 @@ void (*insttable_2byte[2][256])(void) = {
 		AMD3DNOW_FEMMS,
 		undef_op,
 
-		undef_op,		/* 10 */
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,		/* 18 */
+		SSE_MOVUPSmem2reg,		/* 10 */
+		SSE_MOVUPSreg2mem,
+		SSE_MOVLPSmem2reg, // + MOVHLPS
+		SSE_MOVLPSreg2mem,
+		SSE_UNPCKLPS,
+		SSE_UNPCKHPS,
+		SSE_MOVHPSmem2reg, // + MOVLHPS
+		SSE_MOVHPSreg2mem,
+		SSE_PREFETCHTx,		/* 18 */
 		undef_op,
 		undef_op,
 		undef_op,
@@ -935,14 +936,14 @@ void (*insttable_2byte[2][256])(void) = {
 		undef_op,
 		MOV_TdRd,
 		undef_op,
-		undef_op,		/* 28 */
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
+		SSE_MOVAPSmem2reg,		/* 28 */
+		SSE_MOVAPSreg2mem,
+		SSE_CVTPI2PS,
+		SSE_MOVNTPS,
+		SSE_CVTTPS2PI,
+		SSE_CVTPS2PI,
+		SSE_UCOMISS,
+		SSE_COMISS,
 
 		WRMSR,			/* 30 */
 		RDTSC,
@@ -978,22 +979,22 @@ void (*insttable_2byte[2][256])(void) = {
 		CMOVLE_GwEw,
 		CMOVNLE_GwEw,
 
-		undef_op,		/* 50 */
+		SSE_MOVMSKPS,		/* 50 */
+		SSE_SQRTPS,
+		SSE_RSQRTPS,
+		SSE_RCPPS,
+		SSE_ANDPS,
+		SSE_ANDNPS,
+		SSE_ORPS,
+		SSE_XORPS,
+		SSE_ADDPS,		/* 58 */
+		SSE_MULPS,
 		undef_op,
 		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,		/* 58 */
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
+		SSE_SUBPS,
+		SSE_MINPS,
+		SSE_DIVPS,
+		SSE_MAXPS,
 		
 		MMX_PUNPCKLBW,		/* 60 */
 		MMX_PUNPCKLWD,
@@ -1012,7 +1013,7 @@ void (*insttable_2byte[2][256])(void) = {
 		MMX_MOVD_mm_rm32,
 		MMX_MOVQ_mm_mmm64,
 
-		undef_op,		/* 70 */
+		SSE_PSHUFW,		/* 70 */
 		MMX_PSxxW_imm8,
 		MMX_PSxxD_imm8,
 		MMX_PSxxQ_imm8,
@@ -1077,7 +1078,7 @@ void (*insttable_2byte[2][256])(void) = {
 		BTS_EwGw,
 		SHRD_EwGwIb,
 		SHRD_EwGwCL,
-		NOFPU_FPU_FXSAVERSTOR,
+		NOFPU_FPU_FXSAVERSTOR, // + LDMXCSR + STMXCSR + SFENCE
 		IMUL_GwEw,
 
 		CMPXCHG_EbGb,		/* B0 */
@@ -1099,11 +1100,11 @@ void (*insttable_2byte[2][256])(void) = {
 
 		XADD_EbGb,		/* C0 */
 		XADD_EwGw,
+		SSE_CMPPS,
 		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
+		SSE_PINSRW,
+		SSE_PEXTRW,
+		SSE_SHUFPS,
 		Grp9,
 		BSWAP_EAX,		/* C8 */
 		BSWAP_ECX,
@@ -1121,31 +1122,31 @@ void (*insttable_2byte[2][256])(void) = {
 		undef_op,
 		MMX_PMULLW,
 		undef_op,
-		undef_op,
+		SSE_PMOVMSKB,
 		MMX_PSUBUSB,		/* D8 */
 		MMX_PSUBUSW,
-		undef_op,
+		SSE_PMINUB,
 		MMX_PAND,
 		MMX_PADDUSB,
 		MMX_PADDUSW,
-		undef_op,
+		SSE_PMAXUB,
 		MMX_PANDN,
 
-		undef_op,		/* E0 */
+		SSE_PAVGB,		/* E0 */
 		MMX_PSRAW,
 		MMX_PSRAD,
-		undef_op,
-		MMX_PMULHUW,
+		SSE_PAVGW,
+		SSE_PMULHUW,
 		MMX_PMULHW,
 		undef_op,
-		undef_op,
+		SSE_MOVNTQ,
 		MMX_PSUBSB,		/* E8 */
 		MMX_PSUBSW,
-		undef_op,
+		SSE_PMINSW,
 		MMX_POR,
 		MMX_PADDSB,
 		MMX_PADDSW,
-		undef_op,
+		SSE_PMAXSW,
 		MMX_PXOR,
 
 		AMD3DNOW_F0,		/* F0 */
@@ -1154,8 +1155,8 @@ void (*insttable_2byte[2][256])(void) = {
 		MMX_PSLLQ,
 		undef_op,
 		MMX_PMADDWD,
-		undef_op,
-		undef_op,
+		SSE_PSADBW,
+		SSE_MASKMOVQ,
 		MMX_PSUBB,		/* F8 */
 		MMX_PSUBW,
 		MMX_PSUBD,
@@ -1184,16 +1185,16 @@ void (*insttable_2byte[2][256])(void) = {
 		AMD3DNOW_PREFETCH,
 		AMD3DNOW_FEMMS,
 		undef_op,
-
-		undef_op,		/* 10 */
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,		/* 18 */
+		
+		SSE_MOVUPSmem2reg,		/* 10 */
+		SSE_MOVUPSreg2mem,
+		SSE_MOVLPSmem2reg, // + MOVHLPS
+		SSE_MOVLPSreg2mem,
+		SSE_UNPCKLPS,
+		SSE_UNPCKHPS,
+		SSE_MOVHPSmem2reg, // + MOVLHPS
+		SSE_MOVHPSreg2mem,
+		SSE_PREFETCHTx,		/* 18 */
 		undef_op,
 		undef_op,
 		undef_op,
@@ -1210,14 +1211,14 @@ void (*insttable_2byte[2][256])(void) = {
 		undef_op,
 		MOV_TdRd,
 		undef_op,
-		undef_op,		/* 28 */
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
+		SSE_MOVAPSmem2reg,		/* 28 */
+		SSE_MOVAPSreg2mem,
+		SSE_CVTPI2PS,
+		SSE_MOVNTPS,
+		SSE_CVTTPS2PI,
+		SSE_CVTPS2PI,
+		SSE_UCOMISS,
+		SSE_COMISS,
 
 		WRMSR,			/* 30 */
 		RDTSC,
@@ -1252,23 +1253,23 @@ void (*insttable_2byte[2][256])(void) = {
 		CMOVNL_GdEd,
 		CMOVLE_GdEd,
 		CMOVNLE_GdEd,
-
-		undef_op,		/* 50 */
+		
+		SSE_MOVMSKPS,		/* 50 */
+		SSE_SQRTPS,
+		SSE_RSQRTPS,
+		SSE_RCPPS,
+		SSE_ANDPS,
+		SSE_ANDNPS,
+		SSE_ORPS,
+		SSE_XORPS,
+		SSE_ADDPS,		/* 58 */
+		SSE_MULPS,
 		undef_op,
 		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,		/* 58 */
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
+		SSE_SUBPS,
+		SSE_MINPS,
+		SSE_DIVPS,
+		SSE_MAXPS,
 
 		MMX_PUNPCKLBW,		/* 60 */
 		MMX_PUNPCKLWD,
@@ -1286,8 +1287,8 @@ void (*insttable_2byte[2][256])(void) = {
 		undef_op,
 		MMX_MOVD_mm_rm32,
 		MMX_MOVQ_mm_mmm64,
-
-		undef_op,		/* 70 */
+		
+		SSE_PSHUFW,		/* 70 */
 		MMX_PSxxW_imm8,
 		MMX_PSxxD_imm8,
 		MMX_PSxxQ_imm8,
@@ -1352,7 +1353,7 @@ void (*insttable_2byte[2][256])(void) = {
 		BTS_EdGd,
 		SHRD_EdGdIb,
 		SHRD_EdGdCL,
-		NOFPU_FPU_FXSAVERSTOR,
+		NOFPU_FPU_FXSAVERSTOR, // + LDMXCSR + STMXCSR + SFENCE
 		IMUL_GdEd,
 
 		CMPXCHG_EbGb,		/* B0 */
@@ -1374,11 +1375,11 @@ void (*insttable_2byte[2][256])(void) = {
 
 		XADD_EbGb,		/* C0 */
 		XADD_EdGd,
+		SSE_CMPPS,
 		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
+		SSE_PINSRW,
+		SSE_PEXTRW,
+		SSE_SHUFPS,
 		Grp9,
 		BSWAP_EAX,		/* C8 */
 		BSWAP_ECX,
@@ -1396,31 +1397,31 @@ void (*insttable_2byte[2][256])(void) = {
 		undef_op,
 		MMX_PMULLW,
 		undef_op,
-		undef_op,
+		SSE_PMOVMSKB,
 		MMX_PSUBUSB,		/* D8 */
 		MMX_PSUBUSW,
-		undef_op,
+		SSE_PMINUB,
 		MMX_PAND,
 		MMX_PADDUSB,
 		MMX_PADDUSW,
-		undef_op,
+		SSE_PMAXUB,
 		MMX_PANDN,
-
-		undef_op,		/* E0 */
+		
+		SSE_PAVGB,		/* E0 */
 		MMX_PSRAW,
 		MMX_PSRAD,
-		undef_op,
-		MMX_PMULHUW,
+		SSE_PAVGW,
+		SSE_PMULHUW,
 		MMX_PMULHW,
 		undef_op,
-		undef_op,
+		SSE_MOVNTQ,
 		MMX_PSUBSB,		/* E8 */
 		MMX_PSUBSW,
-		undef_op,
+		SSE_PMINSW,
 		MMX_POR,
 		MMX_PADDSB,
 		MMX_PADDSW,
-		undef_op,
+		SSE_PMAXSW,
 		MMX_PXOR,
 
 		AMD3DNOW_F0,		/* F0 */
@@ -1429,8 +1430,8 @@ void (*insttable_2byte[2][256])(void) = {
 		MMX_PSLLQ,
 		undef_op,
 		MMX_PMADDWD,
-		undef_op,
-		undef_op,
+		SSE_PSADBW,
+		SSE_MASKMOVQ,
 		MMX_PSUBB,		/* F8 */
 		MMX_PSUBW,
 		MMX_PSUBD,
@@ -1441,6 +1442,829 @@ void (*insttable_2byte[2][256])(void) = {
 		undef_op,
 	},
 };
+
+void (*insttable_2byte660F_32[256])(void) = {
+	undef_op,		/* 00 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		
+	undef_op,
+	undef_op,
+	undef_op,		/* 08 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 10 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 18 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 20 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 28 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 30 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 38 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 40 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 48 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 50 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 58 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 60 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 68 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 70 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 78 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 80 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 88 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 90 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 98 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* A0 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		
+	undef_op,		
+	undef_op,		/* A8 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* B0 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* B8 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* C0 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* C8 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* D0 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* D8 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* E0 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* E8 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* F0 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* F8 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+};
+
+void (*insttable_2byteF20F_32[256])(void) = {
+	undef_op,		/* 00 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		
+	undef_op,
+	undef_op,
+	undef_op,		/* 08 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 10 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 18 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 20 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 28 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 30 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 38 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 40 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 48 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 50 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 58 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 60 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 68 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 70 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 78 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 80 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 88 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 90 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 98 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* A0 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		
+	undef_op,		
+	undef_op,		/* A8 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* B0 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* B8 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* C0 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* C8 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* D0 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* D8 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* E0 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* E8 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* F0 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* F8 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+};
+
+void (*insttable_2byteF30F_32[256])(void) = {
+	undef_op,		/* 00 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		
+	undef_op,
+	undef_op,
+	undef_op,		/* 08 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	SSE_MOVSSmem2reg,		/* 10 */
+	SSE_MOVSSreg2mem,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 18 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 20 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 28 */
+	undef_op,
+	SSE_CVTSI2SS,
+	undef_op,
+	SSE_CVTTSS2SI,
+	SSE_CVTSS2SI,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 30 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 38 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 40 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 48 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 50 */
+	SSE_SQRTSS,
+	SSE_RSQRTSS,
+	SSE_RCPSS,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	SSE_ADDSS,		/* 58 */
+	SSE_MULSS,
+	undef_op,
+	undef_op,
+	SSE_SUBSS,
+	SSE_MINSS,
+	SSE_DIVSS,
+	SSE_MAXSS,
+
+	undef_op,		/* 60 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 68 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 70 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 78 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 80 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 88 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* 90 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* 98 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* A0 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		
+	undef_op,		
+	undef_op,		/* A8 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* B0 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* B8 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* C0 */
+	undef_op,
+	SSE_CMPSS,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* C8 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* D0 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* D8 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* E0 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* E8 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+
+	undef_op,		/* F0 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,		/* F8 */
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+	undef_op,
+};
+
 
 
 /*

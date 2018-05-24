@@ -220,9 +220,9 @@ static void pccore_set(const NP2CFG *pConfig)
 	{
 		multiple = 1;
 	}
-	else if (multiple > 256)
+	else if (multiple > 2048)
 	{
-		multiple = 256;
+		multiple = 2048;
 	}
 	pccore.multiple = multiple;
 	pccore.realclock = pccore.baseclock * multiple;
@@ -469,25 +469,34 @@ void pccore_reset(void) {
 	}else if(np2cfg.cpu_family == CPU_I486DX_FAMILY && np2cfg.cpu_model == CPU_I486DX_MODEL){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_I486DX);
-	}else if(np2cfg.cpu_family == CPU_PENTIUM_FAMILY && np2cfg.cpu_model == CPU_PENTIUM_MODEL){
+	}else if(np2cfg.cpu_family == CPU_PENTIUM_FAMILY && np2cfg.cpu_model == CPU_PENTIUM_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM);
-	}else if(np2cfg.cpu_family == CPU_MMX_PENTIUM_FAMILY && np2cfg.cpu_model == CPU_MMX_PENTIUM_MODEL){
+	}else if(np2cfg.cpu_family == CPU_MMX_PENTIUM_FAMILY && np2cfg.cpu_model == CPU_MMX_PENTIUM_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_MMX_PENTIUM);
-	}else if(np2cfg.cpu_family == CPU_PENTIUM_PRO_FAMILY && np2cfg.cpu_model == CPU_PENTIUM_PRO_MODEL){
+	}else if(np2cfg.cpu_family == CPU_PENTIUM_PRO_FAMILY && np2cfg.cpu_model == CPU_PENTIUM_PRO_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_PRO);
-	}else if(np2cfg.cpu_family == CPU_PENTIUM_II_FAMILY && np2cfg.cpu_model == CPU_PENTIUM_II_MODEL){
+	}else if(np2cfg.cpu_family == CPU_PENTIUM_II_FAMILY && np2cfg.cpu_model == CPU_PENTIUM_II_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_II);
+	}else if(np2cfg.cpu_family == CPU_PENTIUM_III_FAMILY && np2cfg.cpu_model == CPU_PENTIUM_III_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
+		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_III);
 	}else if(np2cfg.cpu_family == CPU_AMD_K6_2_FAMILY && np2cfg.cpu_model == CPU_AMD_K6_2_MODEL){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K6_2);
 	}else if(np2cfg.cpu_family == CPU_AMD_K6_III_FAMILY && np2cfg.cpu_model == CPU_AMD_K6_III_MODEL){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K6_III);
-	}else if(np2cfg.cpu_family == 0 && np2cfg.cpu_model == 0 && np2cfg.cpu_stepping == 0 && np2cfg.cpu_feature == 0 && np2cfg.cpu_feature_ex == 0){
+	}else if(np2cfg.cpu_family == CPU_AMD_K7_ATHLON_FAMILY && np2cfg.cpu_model == CPU_AMD_K7_ATHLON_MODEL){
+		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
+		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K7_ATHLON);
+	}else if(np2cfg.cpu_family == CPU_AMD_K7_ATHLON_XP_FAMILY && np2cfg.cpu_model == CPU_AMD_K7_ATHLON_XP_MODEL){
+		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
+		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K7_ATHLON_XP);
+	}else if(np2cfg.cpu_family == 0 && np2cfg.cpu_model == 0 && np2cfg.cpu_stepping == 0 && np2cfg.cpu_feature == 0){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_NEKOPRO);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_NEKOPRO2);
 	}else{

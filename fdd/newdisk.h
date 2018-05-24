@@ -4,6 +4,8 @@ extern "C" {
 #endif
 
 void newdisk_fdd(const OEMCHAR *fname, REG8 type, const OEMCHAR *label);
+void newdisk_123mb_fdd(const OEMCHAR *fname);
+void newdisk_144mb_fdd(const OEMCHAR *fname);
 
 void newdisk_thd(const OEMCHAR *fname, UINT hddsize);
 void newdisk_nhd_ex_CHS(const OEMCHAR *fname, UINT32 C, UINT16 H, UINT16 S, UINT16 SS, int blank, int *progress, int *cancel);

@@ -32,7 +32,6 @@
 #define IDD_SNDSB16                     162
 #define IDD_CALENDAR                    161
 #define IDD_ABOUT                       171
-#define IDD_BMS                         172
 #define IDD_LGY98                       180
 #define IDD_NETWORK                     181
 #define IDD_GD5430                      190
@@ -250,10 +249,6 @@
 #define IDC_MORE                        17103
 #define IDC_NP2INFO                     17104
 #define IDC_NP2STR                      17105
-#define IDC_BMSIO                       17209
-#define IDC_BMS                         17210
-#define IDC_BMSIOBANK                   17210
-#define IDC_BMSBANKS                    17211
 #define IDC_TOOL_HDDACC                 18001
 #define IDC_TOOL_FDD1ACC                18002
 #define IDC_TOOL_FDD1LIST               18003
@@ -441,6 +436,9 @@
 #define IDS_NEWDISKEXT                  31072
 #define IDS_NEWDISKFILTER               31073
 #define IDS_NEWDISKFILTER2              31074
+#define IDS_NEWDISKHDFILTER             31075
+#define IDS_NEWDISKHDFILTER2            31076
+#define IDS_NEWDISKFDFILTER             31077
 #define IDS_S98TITLE                    31081
 #define IDS_S98EXT                      31082
 #define IDS_S98FILTER                   31083
@@ -478,8 +476,11 @@
 #define IDS_CPU_MMXPENTIUM              32024
 #define IDS_CPU_PENTIUMPRO              32025
 #define IDS_CPU_PENTIUMII               32026
+#define IDS_CPU_PENTIUMIII              32027
 #define IDS_CPU_AMD_K6_2                32035
 #define IDS_CPU_AMD_K6_III              32036
+#define IDS_CPU_AMD_K7_ATHLON           32037
+#define IDS_CPU_AMD_K7_ATHLONXP         32038
 #define IDS_CPU_80286					32040
 #define IDS_CPU_NEKOPRO                 32049
 #define IDM_TOOLWIN                     40001
@@ -508,6 +509,8 @@
 #define IDM_EXIT                        40105
 #define IDM_SAVEVMCFG                   40106
 #define IDM_LOADVMCFG                   40107
+#define IDM_NEWDISKFD                   40108
+#define IDM_NEWDISKHD                   40109
 #define IDM_FLAGSAVE                    40201
 #define IDM_FLAGSAVE0                   40201
 #define IDM_FLAGSAVE1                   40202
@@ -611,6 +614,7 @@
 #define IDM_USERKEY2                    40627
 #define IDM_F12NOWAIT                   40628
 #define IDM_F12NOWAIT2                  40629
+#define IDM_F12WABRELAY                 40630
 #define IDM_BEEPOFF                     40631
 #define IDM_BEEPLOW                     40632
 #define IDM_BEEPMID                     40633
@@ -693,7 +697,6 @@
 #define IDM_TOOL_SKINMRU1               41152
 #define IDM_TOOL_SKINMRU2               41153
 #define IDM_TOOL_SKINMRU3               41154
-#define IDM_BMS                         41155
 #define IDM_KDISPFM                     42001
 #define IDM_KDISPMIDI                   42002
 #define IDM_VIEWWINNEW                  43001

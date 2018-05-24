@@ -30,6 +30,8 @@ const OEMCHAR str_nhd[] = OEMTEXT("nhd");
 const OEMCHAR str_vhd[] = OEMTEXT("vhd");
 const OEMCHAR str_slh[] = OEMTEXT("slh");
 const OEMCHAR str_hdn[] = OEMTEXT("hdn");
+const OEMCHAR str_hdm[] = OEMTEXT("hdm");
+const OEMCHAR str_hd4[] = OEMTEXT("hd4");
 
 const OEMCHAR str_d[] = OEMTEXT("%d");
 const OEMCHAR str_u[] = OEMTEXT("%u");

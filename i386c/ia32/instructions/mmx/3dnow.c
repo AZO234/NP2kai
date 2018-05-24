@@ -114,7 +114,7 @@ void AMD3DNOW_PSWAPD_MEM(UINT8 reg1, UINT32 memaddr);
 static INLINE void
 AMD3DNOW_check_NM_EXCEPTION(){
 	// 3DNow!なしならUD(無効オペコード例外)を発生させる
-	if(!(i386cpuid.cpu_feature & CPU_FEATURE_MMX)){
+	if(!(i386cpuid.cpu_feature & CPU_FEATURE_MMX) || !(i386cpuid.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
 	// エミュレーションならUD(無効オペコード例外)を発生させる

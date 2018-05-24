@@ -29,6 +29,10 @@
 
 #include "string_inst.h"
 
+#ifdef USE_SSE
+#include "misc_inst.h"
+#endif
+
 
 /* movs */
 void
@@ -311,15 +315,29 @@ STOSD_YdEAX(void)
 void
 _REPNE(void)
 {
-
-	CPU_INST_REPUSE = 0xf2;
+//#ifdef USE_SSE
+//	UINT8 nextop = cpu_codefetch(CPU_EIP);
+//	if(nextop==0x0f){
+//		_2byte_PrefixF20F_32();// SSE
+//	}else
+//#endif
+//	{
+		CPU_INST_REPUSE = 0xf2;
+	//}
 }
 
 void
 _REPE(void)
 {
-
-	CPU_INST_REPUSE = 0xf3;
+//#ifdef USE_SSE
+//	UINT8 nextop = cpu_codefetch(CPU_EIP);
+//	if(nextop==0x0f){
+//		_2byte_PrefixF30F_32();// SSE
+//	}else
+//#endif
+//	{
+		CPU_INST_REPUSE = 0xf3;
+	//}
 }
 
 

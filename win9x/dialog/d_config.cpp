@@ -73,8 +73,11 @@ static const CComboData::Entry s_cputype[] =
 	{MAKEINTRESOURCE(IDS_CPU_MMXPENTIUM),	4},
 	{MAKEINTRESOURCE(IDS_CPU_PENTIUMPRO),	5},
 	{MAKEINTRESOURCE(IDS_CPU_PENTIUMII),	6},
+	{MAKEINTRESOURCE(IDS_CPU_PENTIUMIII),	7},
 	{MAKEINTRESOURCE(IDS_CPU_AMD_K6_2),		15},
 	{MAKEINTRESOURCE(IDS_CPU_AMD_K6_III),	16},
+	{MAKEINTRESOURCE(IDS_CPU_AMD_K7_ATHLON),	17},
+	{MAKEINTRESOURCE(IDS_CPU_AMD_K7_ATHLONXP),	18},
 	{MAKEINTRESOURCE(IDS_CPU_NEKOPRO),	255},
 };
 static const CComboData::Entry s_cputype_286[] =
@@ -353,6 +356,14 @@ int CConfigureDlg::GetCpuTypeIndex(){
 	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_PENTIUM_II){
 		return 6;
 	}
+	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_III) != CPU_FEATURES_PENTIUM_III) goto AMDCPUCheck;
+	if(np2cfg.cpu_family == CPU_PENTIUM_III_FAMILY && 
+	   np2cfg.cpu_model == CPU_PENTIUM_III_MODEL &&
+	   np2cfg.cpu_stepping == CPU_PENTIUM_III_STEPPING &&
+	   np2cfg.cpu_feature == CPU_FEATURES_PENTIUM_III &&
+	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_PENTIUM_III){
+		return 7;
+	}
 
 AMDCPUCheck:
 	if((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K6_2) != CPU_FEATURES_AMD_K6_2 ||
@@ -372,6 +383,24 @@ AMDCPUCheck:
 	   np2cfg.cpu_feature == CPU_FEATURES_AMD_K6_III &&
 	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_AMD_K6_III){
 		return 16;
+	}
+	if((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K7_ATHLON) != CPU_FEATURES_AMD_K7_ATHLON ||
+		(CPU_FEATURES_EX_ALL & CPU_FEATURES_EX_AMD_K7_ATHLON) != CPU_FEATURES_EX_AMD_K7_ATHLON) goto NekoCPUCheck;
+	if(np2cfg.cpu_family == CPU_AMD_K7_ATHLON_FAMILY && 
+	   np2cfg.cpu_model == CPU_AMD_K7_ATHLON_MODEL &&
+	   np2cfg.cpu_stepping == CPU_AMD_K7_ATHLON_STEPPING &&
+	   np2cfg.cpu_feature == CPU_FEATURES_AMD_K7_ATHLON &&
+	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_AMD_K7_ATHLON){
+		return 17;
+	}
+	if((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K7_ATHLON_XP) != CPU_FEATURES_AMD_K7_ATHLON_XP ||
+		(CPU_FEATURES_EX_ALL & CPU_FEATURES_EX_AMD_K7_ATHLON_XP) != CPU_FEATURES_EX_AMD_K7_ATHLON_XP) goto NekoCPUCheck;
+	if(np2cfg.cpu_family == CPU_AMD_K7_ATHLON_XP_FAMILY && 
+	   np2cfg.cpu_model == CPU_AMD_K7_ATHLON_XP_MODEL &&
+	   np2cfg.cpu_stepping == CPU_AMD_K7_ATHLON_XP_STEPPING &&
+	   np2cfg.cpu_feature == CPU_FEATURES_AMD_K7_ATHLON_XP &&
+	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_AMD_K7_ATHLON_XP){
+		return 18;
 	}
 	
 NekoCPUCheck:
@@ -442,6 +471,15 @@ int CConfigureDlg::SetCpuTypeIndex(UINT index){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_II);
 		break;
+	case 7:
+		np2cfg.cpu_family = CPU_PENTIUM_III_FAMILY;
+		np2cfg.cpu_model = CPU_PENTIUM_III_MODEL;
+		np2cfg.cpu_stepping = CPU_PENTIUM_III_STEPPING;
+		np2cfg.cpu_feature = CPU_FEATURES_PENTIUM_III;
+		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM_III;
+		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_III);
+		break;
 	case 15:
 		np2cfg.cpu_family = CPU_AMD_K6_2_FAMILY;
 		np2cfg.cpu_model = CPU_AMD_K6_2_MODEL;
@@ -459,6 +497,24 @@ int CConfigureDlg::SetCpuTypeIndex(UINT index){
 		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_AMD_K6_III;
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K6_III);
+		break;
+	case 17:
+		np2cfg.cpu_family = CPU_AMD_K7_ATHLON_FAMILY;
+		np2cfg.cpu_model = CPU_AMD_K7_ATHLON_MODEL;
+		np2cfg.cpu_stepping = CPU_AMD_K7_ATHLON_STEPPING;
+		np2cfg.cpu_feature = CPU_FEATURES_AMD_K7_ATHLON;
+		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_AMD_K7_ATHLON;
+		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
+		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K7_ATHLON);
+		break;
+	case 18:
+		np2cfg.cpu_family = CPU_AMD_K7_ATHLON_XP_FAMILY;
+		np2cfg.cpu_model = CPU_AMD_K7_ATHLON_XP_MODEL;
+		np2cfg.cpu_stepping = CPU_AMD_K7_ATHLON_XP_STEPPING;
+		np2cfg.cpu_feature = CPU_FEATURES_AMD_K7_ATHLON_XP;
+		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_AMD_K7_ATHLON_XP;
+		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
+		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K7_ATHLON_XP);
 		break;
 	case 255: // 全機能使用可能
 		np2cfg.cpu_family = 0;
@@ -498,8 +554,8 @@ void CConfigureDlg::OnOK()
 	}
 
 	UINT nMultiple = GetDlgItemInt(IDC_MULTIPLE, NULL, FALSE);
-	nMultiple = np2max(nMultiple, 1);
-	nMultiple = np2min(nMultiple, 256);
+	nMultiple = max(nMultiple, 1);
+	nMultiple = min(nMultiple, 2048);
 	if (np2cfg.multiple != nMultiple)
 	{
 		np2cfg.multiple = nMultiple;
@@ -562,8 +618,8 @@ void CConfigureDlg::OnOK()
 	}
 
 	UINT nBuffer = GetDlgItemInt(IDC_SOUND_BUFFER, NULL, FALSE);
-	nBuffer = np2max(nBuffer, 40);
-	nBuffer = np2min(nBuffer, 1000);
+	nBuffer = max(nBuffer, 40);
+	nBuffer = min(nBuffer, 1000);
 	if (np2cfg.delayms != static_cast<UINT16>(nBuffer))
 	{
 		np2cfg.delayms = static_cast<UINT16>(nBuffer);
@@ -668,8 +724,8 @@ void CConfigureDlg::SetClock(UINT nMultiple)
 	{
 		nMultiple = GetDlgItemInt(IDC_MULTIPLE, NULL, FALSE);
 	}
-	nMultiple = np2max(nMultiple, 1);
-	nMultiple = np2min(nMultiple, 256);
+	nMultiple = max(nMultiple, 1);
+	nMultiple = min(nMultiple, 2048);
 
 	const UINT nClock = (nBaseClock / 100) * nMultiple;
 

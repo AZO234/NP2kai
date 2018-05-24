@@ -113,7 +113,7 @@ static	TCHAR		szClassName[] = _T("NP2-MainWindow");
 		NP2OSCFG	np2oscfg = {
 						OEMTEXT(PROJECTNAME) OEMTEXT(PROJECTSUBNAME),
 						OEMTEXT("NP2"),
-						CW_USEDEFAULT, CW_USEDEFAULT, 1, 1, 0, 0, 0, 1, 0, 0,
+						CW_USEDEFAULT, CW_USEDEFAULT, 1, 1, 0, 0, 0, 1, 0, 1,
 						0, 0, KEY_UNKNOWN, 0,
 						0, 0, 0, {1, 2, 2, 1},
 						{5, 0, 0x3e, 19200,
@@ -650,6 +650,18 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			dialog_newdisk(hWnd);
 			winuileave();
 			break;
+			
+		case IDM_NEWDISKFD:
+			winuienter();
+			dialog_newdisk_ex(hWnd, NEWDISKMODE_FD);
+			winuileave();
+			break;
+
+		case IDM_NEWDISKHD:
+			winuienter();
+			dialog_newdisk_ex(hWnd, NEWDISKMODE_HD);
+			winuileave();
+			break;
 
 		case IDM_CHANGEFONT:
 			winuienter();
@@ -908,7 +920,7 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			np2oscfg.NOWAIT = !np2oscfg.NOWAIT;
 			update |= SYS_UPDATECFG;
 			break;
-
+			
 		case IDM_CPUSTABILIZER:
 			if(np2oscfg.cpustabf == 0){
 				np2oscfg.cpustabf = oldcpustabf;
@@ -1055,6 +1067,13 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			np2oscfg.F12COPY = 8;
 			winkbd_resetf12();
 			winkbd_setf12(8);
+			update |= SYS_UPDATEOSCFG;
+			break;
+			
+		case IDM_F12WABRELAY:
+			np2oscfg.F12COPY = 9;
+			winkbd_resetf12();
+			winkbd_setf12(9);
 			update |= SYS_UPDATEOSCFG;
 			break;
 
@@ -1235,7 +1254,7 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			np2cfg.EXTMEM = 230;
 			update |= SYS_UPDATECFG | SYS_UPDATEMEMORY;
 			break;
-
+			
 		case IDM_FPU80:
 			np2cfg.fpu_type = FPU_TYPE_SOFTFLOAT;
 			update |= SYS_UPDATECFG;
@@ -1261,7 +1280,7 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			np2oscfg.mouse_nc = !np2oscfg.mouse_nc;
 			if(np2oscfg.mouse_nc){
 				SetClassLong(g_hWndMain, GCL_STYLE, GetClassLong(g_hWndMain, GCL_STYLE) & ~CS_DBLCLKS);
-				if (np2oscfg.mouse_nc && np2oscfg.wintype != 0) {
+				if (np2oscfg.wintype != 0) {
 					// XXX: メニューが出せなくなって詰むのを回避（暫定）
 					if (!scrnmng_isfullscreen()) {
 						WINLOCEX	wlex;
@@ -1935,6 +1954,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				np2oscfg.NOWAIT = !np2oscfg.NOWAIT;
 				update |= SYS_UPDATECFG;
 			}
+#if defined(SUPPORT_CL_GD5430) && defined(SUPPORT_WAB)
+			else if ((wParam == VK_F12) && (np2oscfg.F12COPY==9)) {
+				if(np2clvga.enabled && cirrusvga_opaque){
+					np2wab_setRelayState(np2wab.relay ? 0 : 1);
+				}
+			}
+#endif
 			else {
 				winkbd_keydown(wParam, lParam);
 			}
@@ -1996,7 +2022,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					scrnmng_fullscrnmenu(p.y);
 				}
 			}else{
-				if(np2oscfg.mouse_nc){
+				if(np2oscfg.mouse_nc && !scrnmng_isfullscreen()){
 					int x = LOWORD(lParam);
 					int y = HIWORD(lParam);
 					SINT16 dx, dy;
@@ -2126,6 +2152,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					winlocex_move(wlex);
 					winlocex_destroy(wlex);
 					sysmng_update(SYS_UPDATEOSCFG);
+				}
+			}else if (!scrnmng_isfullscreen()) {
+				SetClassLong(g_hWndMain, GCL_STYLE, GetClassLong(g_hWndMain, GCL_STYLE) & ~CS_DBLCLKS);
+				if (np2oscfg.wintype != 0) {
+					// XXX: メニューが出せなくなって詰むのを回避（暫定）
+					if (!scrnmng_isfullscreen()) {
+						WINLOCEX	wlex;
+						np2oscfg.wintype = 0;
+						wlex = np2_winlocexallwin(hWnd);
+						winlocex_setholdwnd(wlex, hWnd);
+						np2class_windowtype(hWnd, np2oscfg.wintype);
+						winlocex_move(wlex);
+						winlocex_destroy(wlex);
+						sysmng_update(SYS_UPDATEOSCFG);
+					}
 				}
 			}
 			break;
@@ -2888,7 +2929,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 
 	np2class_initialize(hInstance);
 	if (!hPrevInst) {
-		if(np2oscfg.mouse_nc){
+		if(np2oscfg.mouse_nc && !scrnmng_isfullscreen()){
 			wc.style = CS_BYTEALIGNCLIENT | CS_HREDRAW | CS_VREDRAW;
 		}else{
 			wc.style = CS_BYTEALIGNCLIENT | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
@@ -3091,7 +3132,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	sysmng_workclockreset();
 	sysmng_updatecaption(3);
 	
-
 	lateframecount = 0;
 	while(1) {
 		if (!np2stopemulate) {

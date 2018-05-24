@@ -39,6 +39,8 @@ extern const OEMCHAR str_nhd[];
 extern const OEMCHAR str_vhd[];
 extern const OEMCHAR str_slh[];
 extern const OEMCHAR str_hdn[];
+extern const OEMCHAR str_hdm[];
+extern const OEMCHAR str_hd4[];
 
 extern const OEMCHAR str_d[];
 extern const OEMCHAR str_u[];

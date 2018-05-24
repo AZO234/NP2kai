@@ -36,6 +36,49 @@ void newdisk_fdd(const OEMCHAR *fname, REG8 type, const OEMCHAR *label) {
 	}
 }
 
+void newdisk_123mb_fdd(const OEMCHAR *fname) {
+	
+	FILEH		fh;
+	char databuf[8192] = {0};
+	int fdsize = 1261568;
+
+	fh = file_create(fname);
+	if (fh != FILEH_INVALID) {
+		while(fdsize){
+			if(fdsize < sizeof(databuf)){
+				file_write(fh, &databuf, fdsize);
+				break;
+			}else{
+				file_write(fh, &databuf, sizeof(databuf));
+				fdsize -= sizeof(databuf);
+			}
+		}
+		file_close(fh);
+	}
+}
+
+void newdisk_144mb_fdd(const OEMCHAR *fname) {
+	
+	FILEH		fh;
+	char databuf[8192] = {0};
+	int fdsize = 1474560;
+
+	fh = file_create(fname);
+	if (fh != FILEH_INVALID) {
+		while(fdsize){
+			if(fdsize < sizeof(databuf)){
+				file_write(fh, &databuf, fdsize);
+				break;
+			}else{
+				file_write(fh, &databuf, sizeof(databuf));
+				fdsize -= sizeof(databuf);
+			}
+		}
+		file_close(fh);
+	}
+}
+
+
 
 // ---- hdd
 

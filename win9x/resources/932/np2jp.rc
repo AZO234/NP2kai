@@ -894,7 +894,11 @@ BEGIN
         MENUITEM "リセット(&R)",                IDM_RESET
         MENUITEM SEPARATOR
         MENUITEM "設定(&C)...",                 IDM_CONFIG
-        MENUITEM "ディスクイメージ作成(&N)...", IDM_NEWDISK
+        POPUP "ディスクイメージ作成(&N)"
+        BEGIN
+            MENUITEM "フロッピーディスクイメージ(&F)...",   IDM_NEWDISKFD
+            MENUITEM "ハードディスクイメージ(&H)...",     IDM_NEWDISKHD
+        END
         MENUITEM "フォント(&F)...",             IDM_CHANGEFONT
         MENUITEM SEPARATOR
         MENUITEM "&VM設定ファイル読込(&O)...",  IDM_LOADVMCFG
@@ -913,7 +917,9 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "画面同期(&D)",                IDM_DISPSYNC
         MENUITEM "擬似多色パレット再現(&P)",    IDM_RASTER
+        MENUITEM SEPARATOR
         MENUITEM "CPUウェイト無し(&N)",         IDM_NOWAIT
+        MENUITEM "CPUクロック安定化(&C)",       IDM_CPUSTABILIZER
         MENUITEM SEPARATOR
         MENUITEM "自動フレームスキップ(&A)",    IDM_AUTOFPS
         MENUITEM "フレームスキップ無し(&U)",    IDM_60FPS
@@ -1584,6 +1590,12 @@ BEGIN
     IDS_CPU_MMXPENTIUM      "Intel MMX Pentium"
     IDS_CPU_PENTIUMPRO      "Intel Pentium Pro"
     IDS_CPU_PENTIUMII       "Intel Pentium II"
+    IDS_CPU_PENTIUMIII      "Intel Pentium III"
+    IDS_CPU_AMD_K6_2        "AMD K6-2"
+    IDS_CPU_AMD_K6_III      "AMD K6-III"
+    IDS_CPU_AMD_K7_ATHLON   "AMD K7 Athlon"
+    IDS_CPU_AMD_K7_ATHLONXP "AMD K7 Athlon XP"
+    IDS_CPU_NEKOPRO         "Neko Processor II"
 END
 
 STRINGTABLE
@@ -1644,10 +1656,11 @@ END
 STRINGTABLE
 BEGIN
     IDS_NEWDISKEXT          "d88"
-//    IDS_NEWDISKFILTER       "D88フロッピーイメージ(*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Anex86ハードディスクイメージ(*.hdi)|*.hdi|T98ハードディスクイメージ(*.thd)|*.thd|T98-Nextハードディスクイメージ(*.nhd)|*.nhd|Virtual98ハードディスクイメージ(*.hdd)|*.hdd|"
-//    IDS_NEWDISKFILTER2      "D88フロッピーイメージ(*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Anex86ハードディスクイメージ(*.hdi)|*.hdi|T98ハードディスクイメージ(*.thd)|*.thd|T98-Nextハードディスクイメージ(*.nhd)|*.nhd|"
-    IDS_NEWDISKFILTER       "D88フロッピーイメージ(*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Anex86ハードディスクイメージ(*.hdi)|*.hdi|T98ハードディスクイメージ(*.thd)|*.thd|T98-Nextハードディスクイメージ(*.nhd)|*.nhd|RaSCSIハードディスクイメージ(*.hdn)|*.hdn|Virtual98ハードディスクイメージ(*.hdd)|*.hdd|VirtualPCハードディスクイメージ (*.vhd)|*.vhd|"
-    IDS_NEWDISKFILTER2      "D88フロッピーイメージ(*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Anex86ハードディスクイメージ(*.hdi)|*.hdi|T98ハードディスクイメージ(*.thd)|*.thd|T98-Nextハードディスクイメージ(*.nhd)|*.nhd|VirtualPCハードディスクイメージ (*.vhd)|*.vhd|"
+    IDS_NEWDISKFILTER       "D88フロッピーイメージ(*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|1.25MBベタフロッピーイメージ (*.hdm)|*.hdm|1.44MBベタフロッピーイメージ (*.hd4)|*.hd4|Anex86ハードディスクイメージ(*.hdi)|*.hdi|T98ハードディスクイメージ(*.thd)|*.thd|T98-Nextハードディスクイメージ(*.nhd)|*.nhd|RaSCSIハードディスクイメージ(*.hdn)|*.hdn|Virtual98ハードディスクイメージ(*.hdd)|*.hdd|VirtualPCハードディスクイメージ (*.vhd)|*.vhd|"
+    IDS_NEWDISKFILTER2      "D88フロッピーイメージ(*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|1.25MBベタフロッピーイメージ (*.hdm)|*.hdm|1.44MBベタフロッピーイメージ (*.hd4)|*.hd4|Anex86ハードディスクイメージ(*.hdi)|*.hdi|T98ハードディスクイメージ(*.thd)|*.thd|T98-Nextハードディスクイメージ(*.nhd)|*.nhd|VirtualPCハードディスクイメージ (*.vhd)|*.vhd|"
+    IDS_NEWDISKHDFILTER     "T98-Nextハードディスクイメージ(*.nhd)|*.nhd|VirtualPCハードディスクイメージ (*.vhd)|*.vhd|Anex86ハードディスクイメージ(*.hdi)|*.hdi|T98ハードディスクイメージ(*.thd)|*.thd|RaSCSIハードディスクイメージ(*.hdn)|*.hdn|Virtual98ハードディスクイメージ(*.hdd)|*.hdd|"
+    IDS_NEWDISKHDFILTER2    "T98-Nextハードディスクイメージ(*.nhd)|*.nhd|VirtualPCハードディスクイメージ (*.vhd)|*.vhd|Anex86ハードディスクイメージ(*.hdi)|*.hdi|T98ハードディスクイメージ(*.thd)|*.thd|"
+    IDS_NEWDISKFDFILTER     "D88フロッピーイメージ(*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|1.25MBベタフロッピーイメージ (*.hdm)|*.hdm|1.44MBベタフロッピーイメージ (*.hd4)|*.hd4|"
     IDS_S98TITLE            "S98サウンドログ作成"
     IDS_S98EXT              "s98"
     IDS_S98FILTER           "S98サウンドログ(*.s98)|*.s98|"

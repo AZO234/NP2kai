@@ -151,7 +151,7 @@ static void getlength1(FNTMNG fhdl, FNTDAT fdat,
 	SIZE	fntsize;
 
 	if (GetTextExtentPoint32(fhdl->hdcimage, string, length, &fntsize)) {
-		fntsize.cx = np2min(fntsize.cx, fhdl->bmpwidth);
+		fntsize.cx = min(fntsize.cx, fhdl->bmpwidth);
 		fdat->width = fntsize.cx;
 		fdat->pitch = fntsize.cx;
 	}
@@ -230,7 +230,7 @@ BRESULT fontmng_getdrawsize(void *hdl, const OEMCHAR *string, POINT_T *pt) {
 		buf[leng] = '\0';
 		string += leng;
 		getlength1((FNTMNG)hdl, &fdat, buf, leng);
-		width = posx + np2max(fdat.width, fdat.pitch);
+		width = posx + max(fdat.width, fdat.pitch);
 		posx += fdat.pitch;
 	}
 

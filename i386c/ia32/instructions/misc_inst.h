@@ -52,6 +52,10 @@ void Prefix_DS(void);
 void Prefix_FS(void);
 void Prefix_GS(void);
 
+void _2byte_Prefix660F_32(void);
+void _2byte_PrefixF20F_32(void);
+void _2byte_PrefixF30F_32(void);
+
 #ifdef __cplusplus
 }
 #endif

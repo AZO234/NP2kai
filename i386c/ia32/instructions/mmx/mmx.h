@@ -68,7 +68,6 @@ void MMX_PCMPGTD(void);
 
 void MMX_PMADDWD(void);
 
-void MMX_PMULHUW(void);
 void MMX_PMULHW(void);
 void MMX_PMULLW(void);
 

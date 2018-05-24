@@ -56,6 +56,9 @@
 
 #include "ia32/instructions/fpu/fp.h"
 #include "ia32/instructions/fpu/fpumem.h"
+#ifdef USE_SSE
+#include "ia32/instructions/sse/sse.h"
+#endif
 
 #if 1
 #undef	TRACEOUT
@@ -891,6 +894,28 @@ void SF_FPU_FXSAVERSTOR(void){
 		maddr = calc_ea_dst(op);
 		FPU_FXRSTOR(maddr);
 		break;
+#ifdef USE_SSE
+	case 2: // LDMXCSR
+		maddr = calc_ea_dst(op);
+		SSE_LDMXCSR(maddr);
+		break;
+	case 3: // STMXCSR
+		maddr = calc_ea_dst(op);
+		SSE_STMXCSR(maddr);
+		break;
+	case 4: // SFENCE
+		SSE_SFENCE();
+		break;
+	case 5: // LFENCE
+		SSE_LFENCE();
+		break;
+	case 6: // MFENCE
+		SSE_MFENCE();
+		break;
+	case 7: // CLFLUSH;
+		SSE_CLFLUSH(op);
+		break;
+#endif
 	default:
 		ia32_panic("invalid opcode = %02x\n", op);
 		break;

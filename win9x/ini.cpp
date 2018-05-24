@@ -9,9 +9,6 @@
 #include "np2.h"
 #include "np2arg.h"
 #include "dosio.h"
-#if defined(SUPPORT_BMS)
-#include "bmsio.h"
-#endif
 #include "ini.h"
 #include "winkbd.h"
 #include "pccore.h"
@@ -585,12 +582,6 @@ static const PFTBL s_IniItems[] =
 	PFEXT("FDDRIVE2", PFRO_BITMAP,		&np2cfg.fddequip,		1),
 	PFEXT("FDDRIVE3", PFRO_BITMAP,		&np2cfg.fddequip,		2),
 	PFEXT("FDDRIVE4", PFRO_BITMAP,		&np2cfg.fddequip,		3),
-
-#if defined(SUPPORT_BMS)
-	PFEXT("Use_BMS_", PFTYPE_BOOL,		&bmsiocfg.enabled,		0),
-	PFEXT("BMS_Port", PFTYPE_HEX16,		&bmsiocfg.port,			0),
-	PFEXT("BMS_Size", PFTYPE_UINT8,		&bmsiocfg.numbanks,		0),
-#endif
 	
 #if defined(SUPPORT_NET)
 	PFSTR("NP2NETTAP", PFTYPE_STR,		np2cfg.np2nettap),
@@ -606,9 +597,15 @@ static const PFTBL s_IniItems[] =
 	PFVAL("WAB_ANSW", PFTYPE_UINT8,		&np2cfg.wabasw),
 #endif
 #if defined(SUPPORT_CL_GD5430)
-	PFVAL("USE_CLGD", PFTYPE_BOOL,		&np2cfg.usegd5430),
-	PFVAL("CLGDTYPE", PFTYPE_UINT16,	&np2cfg.gd5430type),
-	PFVAL("CLGDFCUR", PFTYPE_BOOL,		&np2cfg.gd5430fakecur),
+	PFVAL("USEGD5430", PFTYPE_BOOL,		&np2cfg.usegd5430),
+	PFVAL("GD5430TYPE",PFTYPE_UINT16,	&np2cfg.gd5430type),
+	PFVAL("GD5430FCUR",PFTYPE_BOOL,		&np2cfg.gd5430fakecur),
+#endif
+#if defined(SUPPORT_GPIB)
+	PFVAL("USE_GPIB", PFTYPE_BOOL,		&np2cfg.usegpib),
+	PFVAL("GPIB_IRQ", PFTYPE_UINT8,		&np2cfg.gpibirq),
+	PFVAL("GPIBMODE", PFTYPE_UINT8,		&np2cfg.gpibmode),
+	PFVAL("GPIBADDR", PFTYPE_UINT8,		&np2cfg.gpibaddr),
 #endif
 	
 	PFMAX("DAVOLUME", PFTYPE_UINT8,		&np2cfg.davolume,		255),
@@ -635,7 +632,6 @@ static const PFTBL s_IniItems[] =
 	PFMAX("FPU_TYPE", PFTYPE_UINT8,		&np2cfg.fpu_type,		0), // FPUéÌóﬁ
 
 
-	
 	// OSàÀë∂ÅH
 	PFVAL("keyboard", PFRO_KB,			&np2oscfg.KEYBOARD),
 	PFVAL("F12_COPY", PFTYPE_UINT8,		&np2oscfg.F12COPY),

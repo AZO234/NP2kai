@@ -167,8 +167,8 @@ static void renewalclientsize(BOOL winloc) {
 	int			tmpcy;
 	WINLOCEX	wlex;
 
-	width = np2min(scrnstat.width, ddraw.width);
-	height = np2min(scrnstat.height, ddraw.height);
+	width = min(scrnstat.width, ddraw.width);
+	height = min(scrnstat.height, ddraw.height);
 
 	extend = 0;
 
@@ -187,7 +187,7 @@ static void renewalclientsize(BOOL winloc) {
 			case FSCRNMOD_ASPECTFIX8:
 				scrnwidth = (ddraw.width << 3) / width;
 				scrnheight = (ddraw.height << 3) / height;
-				multiple = np2min(scrnwidth, scrnheight);
+				multiple = min(scrnwidth, scrnheight);
 				scrnwidth = (width * multiple) >> 3;
 				scrnheight = (height * multiple) >> 3;
 				break;
@@ -240,7 +240,7 @@ static void renewalclientsize(BOOL winloc) {
 				switch(fscrnmod) {
 					default:
 					case FSCRNMOD_NORESIZE:
-						tmpcy = np2min(tmpcy, height);
+						tmpcy = min(tmpcy, height);
 						ddraw.rectclip.bottom = tmpcy;
 						break;
 
@@ -263,7 +263,7 @@ static void renewalclientsize(BOOL winloc) {
 		multiple = scrnstat.multiple;
 		if (!(ddraw.scrnmode & SCRNMODE_ROTATE)) {
 			if ((np2oscfg.paddingx) && (multiple == 8)) {
-				extend = np2min(scrnstat.extend, ddraw.extend);
+				extend = min(scrnstat.extend, ddraw.extend);
 			}
 			scrnwidth = (width * multiple) >> 3;
 			scrnheight = (height * multiple) >> 3;
@@ -283,7 +283,7 @@ static void renewalclientsize(BOOL winloc) {
 		}
 		else {
 			if ((np2oscfg.paddingy) && (multiple == 8)) {
-				extend = np2min(scrnstat.extend, ddraw.extend);
+				extend = min(scrnstat.extend, ddraw.extend);
 			}
 			scrnwidth = (height * multiple) >> 3;
 			scrnheight = (width * multiple) >> 3;
@@ -345,8 +345,8 @@ static void clearoutofrect(const RECT *target, const RECT *base) {
 		primsurf->Blt(&rect, NULL, NULL, DDBLT_COLORFILL, &ddbf);
 	}
 
-	rect.top = np2max(base->top, target->top);
-	rect.bottom = np2min(base->bottom, target->bottom);
+	rect.top = max(base->top, target->top);
+	rect.bottom = min(base->bottom, target->bottom);
 	if (rect.top < rect.bottom) {
 		rect.left = base->left;
 		rect.right = target->left;
@@ -533,6 +533,11 @@ BRESULT scrnmng_create(UINT8 scrnmode) {
 	winstyle = GetWindowLong(g_hWndMain, GWL_STYLE);
 	winstyleex = GetWindowLong(g_hWndMain, GWL_EXSTYLE);
 	if (scrnmode & SCRNMODE_FULLSCREEN) {
+		//if(np2oscfg.mouse_nc){
+		//	winstyle &= ~CS_DBLCLKS;
+		//}else{
+			winstyle |= CS_DBLCLKS;
+		//}
 		if(!(lastscrnmode & SCRNMODE_FULLSCREEN)){
 			GetWindowPlacement(g_hWndMain, &wp);
 		}
@@ -550,6 +555,22 @@ BRESULT scrnmng_create(UINT8 scrnmode) {
 	else {
 		scrnmng.flag = SCRNFLAG_HAVEEXTEND;
 		winstyle |= WS_SYSMENU;
+		if(np2oscfg.mouse_nc){
+			winstyle &= ~CS_DBLCLKS;
+			if (np2oscfg.wintype != 0) {
+				WINLOCEX	wlex;
+				// XXX: メニューが出せなくなって詰むのを回避（暫定）
+				np2oscfg.wintype = 0;
+				np2oscfg.wintype = 0;
+				wlex = np2_winlocexallwin(g_hWndMain);
+				winlocex_setholdwnd(wlex, g_hWndMain);
+				np2class_windowtype(g_hWndMain, np2oscfg.wintype);
+				winlocex_move(wlex);
+				winlocex_destroy(wlex);
+			}
+		}else{
+			winstyle |= CS_DBLCLKS;
+		}
 		if (np2oscfg.thickframe) {
 			winstyle |= WS_THICKFRAME;
 		}
@@ -976,9 +997,6 @@ void scrnmng_setheight(int posy, int height) {
 
 	scrnstat.height = height;
 	renewalclientsize(TRUE);
-#if defined(VAEG_FIX)
-	clearoutscreen();
-#endif
 }
 
 const SCRNSURF *scrnmng_surflock(void) {
@@ -1199,9 +1217,9 @@ void scrnmng_entersizing(void) {
 	scrnsizing.by = (np2oscfg.paddingy * 2) +
 					(rectwindow.bottom - rectwindow.top) -
 					(rectclient.bottom - rectclient.top);
-	cx = np2min(scrnstat.width, ddraw.width);
+	cx = min(scrnstat.width, ddraw.width);
 	cx = (cx + 7) >> 3;
-	cy = np2min(scrnstat.height, ddraw.height);
+	cy = min(scrnstat.height, ddraw.height);
 	cy = (cy + 7) >> 3;
 	if (!(ddraw.scrnmode & SCRNMODE_ROTATE)) {
 		scrnsizing.cx = cx;
@@ -1234,7 +1252,7 @@ void scrnmng_sizing(UINT side, RECT *rect) {
 	else {
 		height = 16;
 	}
-	mul = np2min(width, height);
+	mul = min(width, height);
 	if (mul <= 0) {
 		mul = 1;
 	}

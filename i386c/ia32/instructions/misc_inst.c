@@ -105,8 +105,13 @@ _CPUID(void)
 		break;
 
 	case 1:
+		//CPU_EAX = (2 << 16) | (i386cpuid.cpu_family << 8) | (i386cpuid.cpu_model << 4) | i386cpuid.cpu_stepping; // Šg’£ƒ‚ƒfƒ‹
 		CPU_EAX = (i386cpuid.cpu_family << 8) | (i386cpuid.cpu_model << 4) | i386cpuid.cpu_stepping;
-		CPU_EBX = 0;
+		if(strncmp(i386cpuid.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_III, 27)==0){
+			CPU_EBX = 2;
+		}else{
+			CPU_EBX = 0;
+		}
 		CPU_ECX = 0;
 		CPU_EDX = i386cpuid.cpu_feature & CPU_FEATURES_ALL;
 		break;
@@ -120,7 +125,7 @@ _CPUID(void)
 		
 	case 0x80000000:
 		CPU_EAX = 0x80000004;
-		if(strcmp(i386cpuid.cpu_vendor, CPU_VENDOR_AMD)==0){ // AMD”»’è
+		if(strncmp(i386cpuid.cpu_vendor, CPU_VENDOR_AMD, 12)==0){ // AMD”»’è
 			CPU_EBX = LOADINTELDWORD(((UINT8*)(i386cpuid.cpu_vendor+0)));
 			CPU_EDX = LOADINTELDWORD(((UINT8*)(i386cpuid.cpu_vendor+4)));
 			CPU_ECX = LOADINTELDWORD(((UINT8*)(i386cpuid.cpu_vendor+8)));
@@ -132,7 +137,7 @@ _CPUID(void)
 		break;
 
 	case 0x80000001:
-		if(strcmp(i386cpuid.cpu_vendor, CPU_VENDOR_AMD)==0){ // AMD”»’è
+		if(strncmp(i386cpuid.cpu_vendor, CPU_VENDOR_AMD, 12)==0){ // AMD”»’è
 			if(i386cpuid.cpu_family >= 6 || (i386cpuid.cpu_family==5 && i386cpuid.cpu_model >= 6)){
 				CPU_EAX = ((i386cpuid.cpu_family+1) << 8) | (i386cpuid.cpu_model << 4) | i386cpuid.cpu_stepping;
 			}else{
@@ -268,4 +273,56 @@ Prefix_GS(void)
 
 	CPU_INST_SEGUSE = 1;
 	CPU_INST_SEGREG_INDEX = CPU_GS_INDEX;
+}
+
+void
+_2byte_Prefix660F_32(void)
+{
+#ifdef USE_SSE2
+	UINT32 op;
+
+	GET_PCBYTE(op);
+	if(op==0x0f){
+		GET_PCBYTE(op);
+		(*insttable_2byte660F_32[op])();
+	}else{
+		EXCEPTION(UD_EXCEPTION, 0);
+	}
+#else
+	EXCEPTION(UD_EXCEPTION, 0);
+#endif
+}
+void
+_2byte_PrefixF20F_32(void)
+{
+#ifdef USE_SSE2
+	UINT32 op;
+
+	GET_PCBYTE(op);
+	if(op==0x0f){
+		GET_PCBYTE(op);
+		(*insttable_2byteF20F_32[op])();
+	}else{
+		EXCEPTION(UD_EXCEPTION, 0);
+	}
+#else
+	EXCEPTION(UD_EXCEPTION, 0);
+#endif
+}
+void
+_2byte_PrefixF30F_32(void)
+{
+#ifdef USE_SSE
+	UINT32 op;
+
+	GET_PCBYTE(op);
+	if(op==0x0f){
+		GET_PCBYTE(op);
+		(*insttable_2byteF30F_32[op])();
+	}else{
+		EXCEPTION(UD_EXCEPTION, 0);
+	}
+#else
+	EXCEPTION(UD_EXCEPTION, 0);
+#endif
 }

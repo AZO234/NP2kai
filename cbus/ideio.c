@@ -136,7 +136,7 @@ static BRESULT setidentify(IDEDRV drv) {
 		tmp[53] = 0x0001;
 		tmp[63] = 0x0000;		// no support multiword DMA
 		tmp[80] = 0x003e;		// support ATA-1 to 5
-		tmp[82] = 0x0210;		// support PACKET/DEVICE RESET
+		tmp[82] = 0x0214;		// support PACKET/DEVICE RESET
 		tmp[126] = 0x0000;		// ATAPI byte count
 	}
 	if (drv->sxsidrv & 0x1){
@@ -1679,10 +1679,31 @@ do_notify:
 	}
 }
 
-// Win2kセットアップでメディア交換を通知するのに必要？
 void ideio_mediachange(REG8 sxsidrv) {
+	
+	//SXSIDEV sxsi;
+	//IDEDRV	drv;
+	//REG8 i;
+	//
+	//sxsi = sxsi_getptr(sxsidrv);
+	//if ((sxsi == NULL)
+	// || (!(sxsi->flag & SXSIFLAG_READY))
+	// || (sxsi->devtype != SXSIDEV_CDROM)) {
+	//	return;
+	//}
 
-	//ideio_mediachangeflag[sxsidrv] = 1;
+	//for (i=0; i<4; i++) {
+	//	drv = ideio.dev[i >> 1].drv + (i & 1);
+	//	if ((drv != NULL) && (drv->sxsidrv == sxsidrv)) {
+	//		break;
+	//	}
+	//}
+	//if(i==4) return;
+	//
+	//drv->status |= IDESTAT_ERR;
+	//drv->error |= IDEERR_MCNG;
+	//setintr(drv);
+	////ideio_mediachangeflag[sxsidrv] = 1;
 }
 
 #endif	/* SUPPORT_IDEIO */

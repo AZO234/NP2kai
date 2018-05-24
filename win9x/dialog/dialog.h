@@ -5,9 +5,11 @@
 
 #pragma once
 
-#if defined(SUPPORT_BMS)
-LRESULT CALLBACK BMSDialogProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
-#endif
+enum {
+	NEWDISKMODE_ALL = 0,
+	NEWDISKMODE_FD = 1,
+	NEWDISKMODE_HD = 2,
+};
 
 // d_about.cpp
 void dialog_about(HWND hwndParent);
@@ -34,6 +36,7 @@ void dialog_configure(HWND hwndParent);
 // d_disk.cpp
 void dialog_changefdd(HWND hWnd, REG8 drv);
 void dialog_changehdd(HWND hWnd, REG8 drv);
+void dialog_newdisk_ex(HWND hWnd, int mode);
 void dialog_newdisk(HWND hWnd);
 
 // d_font.cpp

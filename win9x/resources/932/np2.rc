@@ -895,7 +895,11 @@ BEGIN
         MENUITEM "&Reset",                      IDM_RESET
         MENUITEM SEPARATOR
         MENUITEM "&Configure...",               IDM_CONFIG
-        MENUITEM "&New disk...",                IDM_NEWDISK
+        POPUP "&New disk"
+        BEGIN
+            MENUITEM "&Floppy disk image...",   IDM_NEWDISKFD
+            MENUITEM "&Hard disk image...",     IDM_NEWDISKHD
+        END
         MENUITEM "&Font...",                    IDM_CHANGEFONT
         MENUITEM SEPARATOR
         MENUITEM "&Load VM config...",          IDM_LOADVMCFG
@@ -916,7 +920,7 @@ BEGIN
         MENUITEM "Real &palettes",              IDM_RASTER
         MENUITEM SEPARATOR
         MENUITEM "&No wait",                    IDM_NOWAIT
-        //MENUITEM "&CPU clock stabilizer",       IDM_CPUSTABILIZER
+        MENUITEM "&CPU clock stabilizer",       IDM_CPUSTABILIZER
         MENUITEM SEPARATOR
         MENUITEM "&Auto frame",                 IDM_AUTOFPS
         MENUITEM "F&ull frame",                 IDM_60FPS
@@ -949,6 +953,7 @@ BEGIN
             MENUITEM "F12 = User2",                 IDM_USERKEY2
             MENUITEM "F12 = No wait",               IDM_F12NOWAIT
             MENUITEM "F12 = No wait(toggle)",       IDM_F12NOWAIT2
+            MENUITEM "F12 = WAB relay SW",          IDM_F12WABRELAY
             MENUITEM SEPARATOR
             MENUITEM "&System Key Hook",            IDM_SYSKHOOK
         END
@@ -1587,8 +1592,11 @@ BEGIN
     IDS_CPU_MMXPENTIUM      "Intel MMX Pentium"
     IDS_CPU_PENTIUMPRO      "Intel Pentium Pro"
     IDS_CPU_PENTIUMII       "Intel Pentium II"
+    IDS_CPU_PENTIUMIII      "Intel Pentium III"
     IDS_CPU_AMD_K6_2        "AMD K6-2"
     IDS_CPU_AMD_K6_III      "AMD K6-III"
+    IDS_CPU_AMD_K7_ATHLON   "AMD K7 Athlon"
+    IDS_CPU_AMD_K7_ATHLONXP "AMD K7 Athlon XP"
     IDS_CPU_NEKOPRO         "Neko Processor II"
 END
 
@@ -1625,7 +1633,7 @@ STRINGTABLE
 BEGIN
     IDS_FDDTITLE            "Select floppy image"
     IDS_FDDEXT              "d88"
-    IDS_FDDFILTER           "Anex86 floppy disk images (*.fdi)|*.fdi|T98-Next floppy disk images (*.nfd)|*.nfd|Virtual floppy disk images (*.fdd)|*.fdd|BKDSK images (*.hdm;*.hd4;*.hd5;*.hd9;*.h01;*.hdb;*.ddb;*.dd6;*.dd9)|*.hdm;*.hd4;*.hd5;*.hd9;*.h01;*.hdb;*.ddb;*.dd6;*.dd9|D88 image files (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|DCP/DCU image files (*.dcp;*.dcu)|*.dcp;*.dcu|Floppy disk images (*.xdf;*.hdm;*.dup;*.2hd;*.flp;*.bin;*.tfd)|*.fdi;*.hdm;*.hd4;*.hd5;*.hd9;*.h01;*.hdb;*.ddb;*.dd6;*.dd9;*.dcp;*.dcu;*.xdf;*.dup;*.2hd;*.flp;*.bin;*.tfd;*.fim;*.img;*.ima|All supported files|*.fdi;*.nfd;*.fdd;*.hdm;*.hd4;*.hd5;*.hd9;*.h01;*hdb;*.ddb;*.dd6;*.dd9;*.d88;*.88d;*.d98;*.98d;*.dcp;*.dcu;*.xdf;*.dup;*.2hd;*.flp;*.bin;*.tfd;*.fim;*.img;*.ima|All files (*.*)|*.*|"
+    IDS_FDDFILTER           "Anex86 floppy disk images (*.fdi)|*.fdi|T98-Next floppy disk images (*.nfd)|*.nfd|Virtual floppy disk images (*.fdd)|*.fdd|BKDSK images (*.hdm;*.hd4;*.hd5;*.hd9;*.h01;*.hdb;*.ddb;*.dd6;*.dd9)|*.hdm;*.hd4;*.hd5;*.hd9;*.h01;*.hdb;*.ddb;*.dd6;*.dd9|D88 image files (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|DCP/DCU image files (*.dcp;*.dcu)|*.dcp;*.dcu|Floppy disk images (*.xdf;*.hdm;*.dup;*.2hd;*.flp;*.bin;*.tfd)|*.fdi;*.hdm;*.hd4;*.hd5;*.hd9;*.h01;*.hdb;*.ddb;*.dd6;*.dd9;*.dcp;*.dcu;*.xdf;*.dup;*.2hd;*.flp;*.bin;*.tfd;*.fim|All supported files|*.fdi;*.nfd;*.fdd;*.hdm;*.hd4;*.hd5;*.hd9;*.h01;*hdb;*.ddb;*.dd6;*.dd9;*.d88;*.88d;*.d98;*.98d;*.dcp;*.dcu;*.xdf;*.dup;*.2hd;*.flp;*.bin;*.tfd;*.fim|All files (*.*)|*.*|"
 //    IDS_FDDFILTER           "D88 image files (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Floppy disk images (*.xdf;*.hdm;*.dup;*.2hd)|*.xdf;*.hdm;*.hd4;*.dup;*.2hd;*.tfd|All supported files|*.d88;*.88d;*.d98;*.98d;*.fdi;*.xdf;*.hdm;*.hd4;*.dup;*.2hd;*.tfd|All files (*.*)|*.*|"
 END
 
@@ -1655,8 +1663,11 @@ BEGIN
     IDS_NEWDISKEXT          "d88"
 //    IDS_NEWDISKFILTER       "D88 image files (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Anex86 harddisk image files (*.hdi)|*.hdi|T98 harddisk image files (*.thd)|*.thd|T98-Next harddisk image files (*.nhd)|*.nhd|Virtual98 harddisk image files (*.hdd)|*.hdd|"
 //    IDS_NEWDISKFILTER2      "D88 image files (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Anex86 harddisk image files (*.hdi)|*.hdi|T98 harddisk image files (*.thd)|*.thd|T98-Next harddisk image files (*.nhd)|*.nhd|"
-    IDS_NEWDISKFILTER       "D88 image files (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Anex86 harddisk image files (*.hdi)|*.hdi|T98 harddisk image files (*.thd)|*.thd|T98-Next harddisk image files (*.nhd)|*.nhd|Virtual98 harddisk image files (*.hdd)|*.hdd|RaSCSI harddisk image files (*.hdn)|*.hdn|VirtualPC harddisk image files (*.vhd)|*.vhd|"
-    IDS_NEWDISKFILTER2      "D88 image files (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Anex86 harddisk image files (*.hdi)|*.hdi|T98 harddisk image files (*.thd)|*.thd|T98-Next harddisk image files (*.nhd)|*.nhd|VirtualPC harddisk image files (*.vhd)|*.vhd|"
+    IDS_NEWDISKFILTER       "D88 image files (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|1.25MB raw image file (*.hdm)|*.hdm|1.44MB raw image file (*.hd4)|*.hd4|Anex86 harddisk image files (*.hdi)|*.hdi|T98 harddisk image files (*.thd)|*.thd|T98-Next harddisk image files (*.nhd)|*.nhd|Virtual98 harddisk image files (*.hdd)|*.hdd|RaSCSI harddisk image files (*.hdn)|*.hdn|VirtualPC harddisk image files (*.vhd)|*.vhd|"
+    IDS_NEWDISKFILTER2      "D88 image files (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|1.25MB raw image file (*.hdm)|*.hdm|1.44MB raw image file (*.hd4)|*.hd4|Anex86 harddisk image files (*.hdi)|*.hdi|T98 harddisk image files (*.thd)|*.thd|T98-Next harddisk image files (*.nhd)|*.nhd|VirtualPC harddisk image files (*.vhd)|*.vhd|"
+    IDS_NEWDISKHDFILTER     "T98-Next harddisk image files (*.nhd)|*.nhd|VirtualPC harddisk image files (*.vhd)|*.vhd|Anex86 harddisk image files (*.hdi)|*.hdi|T98 harddisk image files (*.thd)|*.thd|Virtual98 harddisk image files (*.hdd)|*.hdd|RaSCSI harddisk image files (*.hdn)|*.hdn|"
+    IDS_NEWDISKHDFILTER2    "T98-Next harddisk image files (*.nhd)|*.nhd|VirtualPC harddisk image files (*.vhd)|*.vhd|Anex86 harddisk image files (*.hdi)|*.hdi|T98 harddisk image files (*.thd)|*.thd|"
+    IDS_NEWDISKFDFILTER     "D88 image files (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|1.25MB raw image file (*.hdm)|*.hdm|1.44MB raw image file (*.hd4)|*.hd4|"
     IDS_S98TITLE            "Save as S98 log"
     IDS_S98EXT              "s98"
     IDS_S98FILTER           "S98 log (*.s98)|*.s98|"

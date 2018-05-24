@@ -175,6 +175,7 @@ void atapicmd_a0(IDEDRV drv) {
 
 	UINT32	lba, leng;
 	UINT8	cmd;
+	static int mediachangeflag = 0;
 
 	cmd = drv->buf[0];
 	switch (cmd) {
@@ -188,18 +189,30 @@ void atapicmd_a0(IDEDRV drv) {
 			break;
 		}
 		if (drv->media & IDEIO_MEDIA_CHANGED) {
-			drv->media &= ~IDEIO_MEDIA_CHANGED;
 			ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_NOT_READY);
 			if(drv->damsfbcd){
 				// NECCDD.SYS
-				drv->asc = ATAPI_ASC_NOT_READY_TO_READY_TRANSITION;
+				if(mediachangeflag){
+					drv->media &= ~IDEIO_MEDIA_CHANGED;
+					drv->asc = ATAPI_ASC_NOT_READY_TO_READY_TRANSITION;
+				}else{
+					drv->asc = ATAPI_ASC_MEDIUM_NOT_PRESENT;
+					mediachangeflag++;
+				}
 			}else{
 				// for WinNT,2000 setup
-				drv->asc = 0x04; // LOGICAL DRIVE NOT READY - INITIALIZING COMMAND REQUIRED
+				if(mediachangeflag){
+					drv->media &= ~IDEIO_MEDIA_CHANGED;
+					drv->asc = 0x0204; // LOGICAL DRIVE NOT READY - INITIALIZING COMMAND REQUIRED
+				}else{
+					drv->asc = ATAPI_ASC_MEDIUM_NOT_PRESENT;
+					mediachangeflag++;
+				}
 			}
 			senderror(drv);
 			break;
 		}
+		mediachangeflag = 0;
 
 		cmddone(drv);
 		break;
@@ -211,7 +224,8 @@ void atapicmd_a0(IDEDRV drv) {
 		drv->buf[0] = 0x70;
 		drv->buf[2] = drv->sk;
 		drv->buf[7] = 11;	// length
-		drv->buf[12] = (UINT8)(drv->asc & 0xff);
+		drv->buf[12] = (UINT8)(drv->asc & 0xff); // Additional Sense Code
+		drv->buf[13] = (UINT8)((drv->asc>>8) & 0xff); // Additional Sense Code Qualifier (Optional)
 		senddata(drv, 18, leng);
 		break;
 
@@ -879,6 +893,7 @@ static void atapi_cmd_readtoc(IDEDRV drv) {
 		}
 		//senddata(drv, (tracks * 8) + 12, leng);
 		senddata(drv, 2 + datasize, leng);
+		drv->media &= ~IDEIO_MEDIA_CHANGED;
 		break;
 
 	case 1:	// multi session
@@ -891,6 +906,7 @@ static void atapi_cmd_readtoc(IDEDRV drv) {
 		//drv->buf[10] = 0x02;
 		drv->buf[10] = time ? 0x02 : 0;
 		senddata(drv, 12, leng);
+		drv->media &= ~IDEIO_MEDIA_CHANGED;
 		break;
 
 	default:

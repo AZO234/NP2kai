@@ -340,8 +340,8 @@ void CKeyDisplayWnd::OnDraw(BOOL redraw)
 	RECT draw;
 	draw.left = 0;
 	draw.top = 0;
-	draw.right = np2min(KEYDISP_WIDTH, rect.right - rect.left);
-	draw.bottom = np2min(KEYDISP_HEIGHT, rect.bottom - rect.top);
+	draw.right = min(KEYDISP_WIDTH, rect.right - rect.left);
+	draw.bottom = min(KEYDISP_HEIGHT, rect.bottom - rect.top);
 	if ((draw.right <= 0) || (draw.bottom <= 0))
 	{
 		return;

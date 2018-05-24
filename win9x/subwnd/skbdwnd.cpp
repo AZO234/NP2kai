@@ -217,8 +217,8 @@ void CSoftKeyboardWnd::OnDraw(BOOL redraw)
 	RECT draw;
 	draw.left = 0;
 	draw.top = 0;
-	draw.right = np2min(m_nWidth, rect.right - rect.left);
-	draw.bottom = np2min(m_nHeight, rect.bottom - rect.top);
+	draw.right = min(m_nWidth, rect.right - rect.left);
+	draw.bottom = min(m_nHeight, rect.bottom - rect.top);
 	CMNVRAM* vram = m_dd2.Lock();
 	if (vram)
 	{

@@ -1037,7 +1037,7 @@ REG8 IOINPCALL mpu98ii_i2(UINT port) {
 	if (cm_mpu98 == NULL) {
 		cm_mpu98 = commng_create(COMCREATE_MPU98II);
 	}
-	if (cm_mpu98->connect != COMCONNECT_OFF) {
+	if (cm_mpu98->connect != COMCONNECT_OFF || g_nSoundID == SOUNDID_PC_9801_118) {
 		ret = mpu98.status;
 		if ((mpu98.r.cnt == 0) && (mpu98.intreq == 0)) {
 			ret |= MIDIIN_AVAIL;
