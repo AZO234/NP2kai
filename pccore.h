@@ -215,6 +215,12 @@ struct tagNP2Config
 	UINT16	gd5430type;
 	UINT8	gd5430fakecur;
 #endif
+#if defined(SUPPORT_GPIB)
+	UINT8	usegpib; // GPIBŽg—p
+	UINT8	gpibirq; // GPIB IRQ
+	UINT8	gpibmode; // GPIB Master/Slave
+	UINT8	gpibaddr; // GPIB Address
+#endif
 
 #if defined(SUPPORT_STATSAVE)
 	UINT8	statsave;
