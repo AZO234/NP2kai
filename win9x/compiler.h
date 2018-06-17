@@ -108,6 +108,13 @@ typedef	signed __int64		SINT64;
 #include "misc\trace.h"
 #include "misc\vc6macros.h"
 
+#ifndef	np2max
+#define	np2max(a,b)	(((a) > (b)) ? (a) : (b))
+#endif
+#ifndef	np2min
+#define	np2min(a,b)	(((a) < (b)) ? (a) : (b))
+#endif
+
 #define	GETTICK()			GetTickCounter()
 #if defined(TRACE)
 #define	__ASSERT(s)			assert(s)
