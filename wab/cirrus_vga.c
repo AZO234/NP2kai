@@ -3916,11 +3916,19 @@ void pc98_cirrus_vga_save()
     int pos = 0;
 	UINT8 *f = cirrusvga_statsavebuf; 
 	//char test[500] = {0};
-	uint32_t_ state_ver = 2;
+	uint32_t_ state_ver = 3;
 	uint32_t_ intbuf;
-	
+	char en[3] = "en";
+
     array_write(f, pos, &state_ver, sizeof(state_ver)); // ステートセーブ バージョン番号
 	
+	if(vramptr == NULL || s == NULL) {
+		strcpy(en, "di");
+		array_write(f, pos, en, 2);
+		return;
+	}
+	array_write(f, pos, en, 2);
+
 	// この際全部保存
 	array_write(f, pos, vramptr, CIRRUS_VRAM_SIZE);
 	array_write(f, pos, &s->vram_offset, sizeof(s->vram_offset));
@@ -4040,6 +4048,7 @@ void pc98_cirrus_vga_load()
 	uint32_t_ state_ver = 0;
 	uint32_t_ intbuf;
 	int width, height;
+	char en[3];
 	
 	array_read(f, pos, &state_ver, sizeof(state_ver)); // バージョン番号
 	switch(state_ver){
@@ -4081,6 +4090,11 @@ void pc98_cirrus_vga_load()
 		array_read(f, pos, vramptr, CIRRUS_VRAM_SIZE);
 
 		break;
+	case 3:
+		array_read(f, pos, en, 2);
+		if(en[0] != 'e' || en[0] != 'n')
+			break;
+
 	case 1:
 	case 2:
 		// この際全部保存
