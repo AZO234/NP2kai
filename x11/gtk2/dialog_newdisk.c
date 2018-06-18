@@ -129,20 +129,24 @@ t98_newdisk_dialog(GtkWidget *dialog, const int kind)
 
 	minsize = 5;
 	switch (kind) {
-	case 2:	/* THD */
-		maxsize = 8000;
+	case 4:	/* HDD */
+	case 5:	/* HDN */
+		minsize = 2;
 		break;
-
-	case 3:	/* NHD */
-		maxsize = 8000;
+	}
+	switch (kind) {
+	case 3:	/* THD */
+		maxsize = 256;
 		break;
-
-	case 4:	/* HDN */
-		maxsize = 8000;
+	case 4:	/* HDD */
+		maxsize = 512;
 		break;
-
+	case 5:	/* HDN */
+		maxsize = 399;
+		break;
 	default:
-		return 0;
+		maxsize = 8000;
+		break;
 	}
 
 	/* dialog table */
@@ -234,27 +238,42 @@ create_newdisk_hd_dialog(const char *filename, int kind)
 		return;
 
 	switch (kind) {
-	case 1:	/* HDI */
+	case 0:	/* NHD */
+		hdsize = t98_newdisk_dialog(dialog, kind);
+		if (hdsize > 0) {
+			newdisk_nhd(filename, hdsize);
+		}
+		break;
+
+	case 1:	/* VHD */
+		hdsize = t98_newdisk_dialog(dialog, kind);
+		if (hdsize > 0) {
+			newdisk_vhd(filename, hdsize);
+		}
+		break;
+
+	case 2:	/* HDI */
 		hdsize = anex_newdisk_dialog(dialog);
 		if (hdsize >= 0) {
 			newdisk_hdi(filename, hdsize);
 		}
 		break;
 
-	case 2:	/* THD */
+	case 3:	/* THD */
 		hdsize = t98_newdisk_dialog(dialog, kind);
 		if (hdsize > 0) {
 			newdisk_thd(filename, hdsize);
 		}
 		break;
 
-	case 3:	/* NHD */
+	case 4:	/* HDD */
 		hdsize = t98_newdisk_dialog(dialog, kind);
 		if (hdsize > 0) {
-			newdisk_nhd(filename, hdsize);
+			newdisk_vhd(filename, hdsize);
 		}
 		break;
-	case 4:	/* HDN */
+
+	case 5:	/* HDN */
 		hdsize = t98_newdisk_dialog(dialog, kind);
 		if (hdsize > 0) {
 			newdisk_hdn(filename, hdsize);

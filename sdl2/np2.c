@@ -202,6 +202,8 @@ int np2_main(int argc, char *argv[]) {
 	wabwin_readini();
 #endif	// defined(SUPPORT_WAB)
 
+	mmxflag = havemmx() ? 0 : MMXFLAG_NOTSUPPORT;
+
 #if defined(SUPPORT_CL_GD5430)
 	draw32bit = np2cfg.usegd5430;
 #endif
@@ -525,3 +527,40 @@ np2main_err1:
 #endif	/* __LIBRETRO__ */
 }
 
+int mmxflag;
+
+int
+havemmx(void)
+{
+#if !defined(GCC_CPU_ARCH_IA32)
+	return 0;
+#else	/* GCC_CPU_ARCH_IA32 */
+	int rv;
+
+#if defined(GCC_CPU_ARCH_AMD64)
+	rv = 1;
+#else	/* !GCC_CPU_ARCH_AMD64 */
+	asm volatile (
+		"pushf;"
+		"popl	%%eax;"
+		"movl	%%eax, %%edx;"
+		"xorl	$0x00200000, %%eax;"
+		"pushl	%%eax;"
+		"popf;"
+		"pushf;"
+		"popl	%%eax;"
+		"subl	%%edx, %%eax;"
+		"je	.nocpuid;"
+		"xorl	%%eax, %%eax;"
+		"incl	%%eax;"
+		"pushl	%%ebx;"
+		"cpuid;"
+		"popl	%%ebx;"
+		"movl	%%edx, %0;"
+		"andl	$0x00800000, %0;"
+	".nocpuid:"
+		: "=a" (rv));
+#endif /* GCC_CPU_ARCH_AMD64 */
+	return rv;
+#endif /* GCC_CPU_ARCH_IA32 */
+}

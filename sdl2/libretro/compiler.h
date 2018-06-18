@@ -184,6 +184,7 @@ typedef SINT32	FILELEN;
 
 #if defined(SUPPORT_PC9821)
 #define	IA32_PAGING_EACHSIZE
+#define	IA32_REBOOT_ON_PANIC
 #define	SUPPORT_PC9801_119
 #else
 #define SUPPORT_BMS

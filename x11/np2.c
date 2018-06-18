@@ -107,7 +107,7 @@ NP2OSCFG np2oscfg = {
 
 	MOUSE_RATIO_100,	/* mouse_move_ratio */
 
-	MMXFLAG_DISABLE,	/* disablemmx */
+	0,			/* disablemmx */
 	INTERP_NEAREST,		/* drawinterp */
 	0,			/* F11KEY */
 

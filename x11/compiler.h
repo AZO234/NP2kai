@@ -207,6 +207,8 @@ G_END_DECLS
 
 #if defined(CPUCORE_IA32)
 #if !defined(DISABLE_PC9821)
+#define	IA32_PAGING_EACHSIZE
+#define	IA32_REBOOT_ON_PANIC
 #define	SUPPORT_PC9821
 #define	SUPPORT_CRT31KHZ
 #endif

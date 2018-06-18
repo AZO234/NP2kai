@@ -1,4 +1,9 @@
 enum {
+	MMXFLAG_DISABLE		= 1,
+	MMXFLAG_NOTSUPPORT	= 2
+};
+
+enum {
 	INTERP_NEAREST		= 0,
 	INTERP_TILES		= 1,
 	INTERP_BILINEAR		= 2,
@@ -45,6 +50,9 @@ extern	NP2OSCFG	np2oscfg;
 
 extern int np2_main(int argc, char *argv[]);
 extern int np2_end();
+
+extern int mmxflag;
+int havemmx(void);
 
 #else	/* __LIBRETRO__ */
 #include <signal.h>

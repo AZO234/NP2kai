@@ -78,7 +78,8 @@ static void cb_atapiopen(GtkAction *action, gpointer user_data);
 static void cb_atapiremove(GtkAction *action, gpointer user_data);
 #endif
 static void cb_midipanic(GtkAction *action, gpointer user_data);
-static void cb_newdisk(GtkAction *action, gpointer user_data);
+static void cb_newfdisk(GtkAction *action, gpointer user_data);
+static void cb_newhdisk(GtkAction *action, gpointer user_data);
 static void cb_reset(GtkAction *action, gpointer user_data);
 #if !defined(SUPPORT_IDEIO)
 static void cb_sasiopen(GtkAction *action, gpointer user_data);
@@ -105,6 +106,7 @@ static GtkActionEntry menu_entries[] = {
 { "StatMenu",     NULL, "Stat",     NULL, NULL, NULL },
 
 /* Submenu */
+{ "NewDiskMenu",  NULL, "_New disk", NULL, NULL, NULL },
 { "Drive1Menu",   NULL, "Drive_1",   NULL, NULL, NULL },
 { "Drive2Menu",   NULL, "Drive_2",   NULL, NULL, NULL },
 { "Drive3Menu",   NULL, "Drive_3",   NULL, NULL, NULL },
@@ -139,6 +141,8 @@ static GtkActionEntry menu_entries[] = {
 { "disk4open",   NULL, "_Open...",          NULL, NULL, G_CALLBACK(cb_diskopen), },
 { "exit",        NULL, "E_xit",             NULL, NULL, G_CALLBACK(gtk_main_quit) },
 { "font",        NULL, "_Font...",          NULL, NULL, G_CALLBACK(cb_change_font), },
+{ "newfdisk",    NULL, "_Floppy disk image...", NULL, NULL, G_CALLBACK(cb_newfdisk) },
+{ "newhdisk",    NULL, "_Hard disk image...",   NULL, NULL, G_CALLBACK(cb_newhdisk) },
 #if defined(SUPPORT_IDEIO)
 { "ata00open",   NULL, "_Open...",          NULL, NULL, G_CALLBACK(cb_ataopen), },
 { "ata00remove", NULL, "_Remove",           NULL, NULL, G_CALLBACK(cb_ataremove), },
@@ -149,7 +153,6 @@ static GtkActionEntry menu_entries[] = {
 #endif
 { "midiopt",     NULL, "MIDI _option...",   NULL, NULL, G_CALLBACK(cb_dialog) },
 { "midipanic",   NULL, "MIDI _panic",       NULL, NULL, G_CALLBACK(cb_midipanic) },
-{ "newdisk",     NULL, "_New disk...",      NULL, NULL, G_CALLBACK(cb_newdisk), },
 #if !defined(SUPPORT_IDEIO)
 { "sasi1open",   NULL, "_Open...",          NULL, NULL, G_CALLBACK(cb_sasiopen), },
 { "sasi1remove", NULL, "_Remove",           NULL, NULL, G_CALLBACK(cb_sasiremove), },
@@ -409,7 +412,10 @@ static const gchar *ui_info =
 "   <menuitem action='reset'/>\n"
 "   <separator/>\n"
 "   <menuitem action='configure'/>\n"
-"   <menuitem action='newdisk'/>\n"
+"   <menu name='NewDisk' action='NewDiskMenu'>\n"
+"    <menuitem action='newfdisk'/>\n"
+"    <menuitem action='newhdisk'/>\n"
+"   </menu>\n"
 "   <menuitem action='font'/>\n"
 "   <separator/>\n"
 "   <menuitem action='exit'/>\n"
@@ -1173,7 +1179,7 @@ cb_midipanic(GtkAction *action, gpointer user_data)
 }
 
 static void
-cb_newdisk(GtkAction *action, gpointer user_data)
+cb_newfdisk(GtkAction *action, gpointer user_data)
 {
 	static const struct {
 		const char *name;
@@ -1183,14 +1189,12 @@ cb_newdisk(GtkAction *action, gpointer user_data)
 		{ "88d", 0 },
 		{ "d98", 0 },
 		{ "98d", 0 },
-		{ "hdi", 1 },
-		{ "thd", 2 },
-		{ "nhd", 3 },
-		{ "hdn", 4 },
+		{ "hdm", 1 },
+		{ "hd4", 2 },
 	};
-	static const char *extname[5] = { "d88", "hdi", "thd", "nhd", "hdn" };
+	static const char *extname[3] = { "d88", "hdm", "hd4" };
 	GtkWidget *dialog = NULL;
-	GtkFileFilter *f, *filter[5];
+	GtkFileFilter *f, *filter[3];
 	gchar *utf8, *path, *tmp;
 	const char *ext;
 	int kind;
@@ -1198,7 +1202,7 @@ cb_newdisk(GtkAction *action, gpointer user_data)
 
 	uninstall_idle_process();
 
-	dialog = gtk_file_chooser_dialog_new("Create new disk image file",
+	dialog = gtk_file_chooser_dialog_new("Create new floppy disk image file",
 	    GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_SAVE,
 	    GTK_STOCK_SAVE, GTK_RESPONSE_OK,
 	    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
@@ -1228,7 +1232,7 @@ cb_newdisk(GtkAction *action, gpointer user_data)
 
 	filter[0] = gtk_file_filter_new();
 	if (filter[0]) {
-		gtk_file_filter_set_name(filter[0], "D88 floppy disk image (*.d88,*.d98,*.88d,*.98d)");
+		gtk_file_filter_set_name(filter[0], "D88 image files (*.d88,*.d98,*.88d,*.98d)");
 		gtk_file_filter_add_pattern(filter[0], "*.[dD]88");
 		gtk_file_filter_add_pattern(filter[0], "*.88[dD]");
 		gtk_file_filter_add_pattern(filter[0], "*.[dD]98");
@@ -1237,27 +1241,15 @@ cb_newdisk(GtkAction *action, gpointer user_data)
 	}
 	filter[1] = gtk_file_filter_new();
 	if (filter[1]) {
-		gtk_file_filter_set_name(filter[1], "Anex86 hard disk image (*.hdi)");
-		gtk_file_filter_add_pattern(filter[1], "*.[hH][dD][iI]");
+		gtk_file_filter_set_name(filter[1], "1.25MB raw image file (*.hdm)");
+		gtk_file_filter_add_pattern(filter[1], "*.[hH][dD][mM]");
 		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter[1]);
 	}
 	filter[2] = gtk_file_filter_new();
 	if (filter[2]) {
-		gtk_file_filter_set_name(filter[2], "T98 hard disk image (*.thd)");
-		gtk_file_filter_add_pattern(filter[2], "*.[tT][hH][dD]");
+		gtk_file_filter_set_name(filter[2], "1.44MB raw image file (*.hd4)");
+		gtk_file_filter_add_pattern(filter[2], "*.[hH][dD]4");
 		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter[2]);
-	}
-	filter[3] = gtk_file_filter_new();
-	if (filter[3]) {
-		gtk_file_filter_set_name(filter[3], "T98-Next hard disk image (*.nhd)");
-		gtk_file_filter_add_pattern(filter[3], "*.[nN][hH][dD]");
-		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter[3]);
-	}
-	filter[4] = gtk_file_filter_new();
-	if (filter[4]) {
-		gtk_file_filter_set_name(filter[4], "RaSCSI hard disk image (*.nhd)");
-		gtk_file_filter_add_pattern(filter[4], "*.[hH][dD][nN]");
-		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter[4]);
 	}
 	gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(dialog), filter[0]);
 
@@ -1304,16 +1296,166 @@ cb_newdisk(GtkAction *action, gpointer user_data)
 		create_newdisk_fd_dialog(path);
 		break;
 
-	case 1: /* HDI */
-	case 2: /* THD */
-	case 3: /* NHD */
-	case 4: /* HDN */
-		create_newdisk_hd_dialog(path, kind);
+	case 1: /* HDM */
+		newdisk_123mb_fdd(path);
+		break;
+
+	case 2: /* HD4 */
+		newdisk_144mb_fdd(path);
 		break;
 
 	default:
 		break;
 	}
+	g_free(path);
+
+	install_idle_process();
+	return;
+
+end:
+	if (dialog)
+		gtk_widget_destroy(dialog);
+	install_idle_process();
+}
+
+static void
+cb_newhdisk(GtkAction *action, gpointer user_data)
+{
+	static const struct {
+		const char *name;
+		int         kind;
+	} exttbl[] = {
+		{ "nhd", 0 },
+		{ "vhd", 1 },
+		{ "hdi", 2 },
+		{ "thd", 3 },
+		{ "hdd", 4 },
+#if defined(SUPPORT_SCSI)
+		{ "hdn", 5 },
+#endif	// defined(SUPPORT_SCSI)
+	};
+#if defined(SUPPORT_SCSI)
+	static const char *extname[6] = { "nhd", "vhd", "hdi", "thd", "hdd", "hdn" };
+	GtkFileFilter *f, *filter[6];
+#else	// defined(SUPPORT_SCSI)
+	static const char *extname[5] = { "nhd", "vhd", "hdi", "thd", "hdd" };
+	GtkFileFilter *f, *filter[5];
+#endif	// defined(SUPPORT_SCSI)
+	GtkWidget *dialog = NULL;
+	gchar *utf8, *path, *tmp;
+	const char *ext;
+	int kind;
+	int i;
+
+	uninstall_idle_process();
+
+	dialog = gtk_file_chooser_dialog_new("Create new hard disk image file",
+	    GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_SAVE,
+	    GTK_STOCK_SAVE, GTK_RESPONSE_OK,
+	    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+	    NULL);
+	if (dialog == NULL)
+		goto end;
+
+	gtk_file_chooser_set_show_hidden(GTK_FILE_CHOOSER(dialog), TRUE);
+#if GTK_MAJOR_VERSION > 2 || (GTK_MAJOR_VERSION == 2 && GTK_MINOR_VERSION >= 8)
+	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog),
+	    TRUE);
+#endif
+	if (strlen(fddfolder) == 0) {
+		g_strlcpy(fddfolder, modulefile, sizeof(fddfolder));
+		file_cutname(fddfolder);
+	}
+	utf8 = g_filename_to_utf8(fddfolder, -1, NULL, NULL, NULL);
+	if (utf8) {
+		gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dialog), utf8);
+		g_free(utf8);
+	}
+	utf8 = g_filename_to_utf8("newdisk", -1, NULL, NULL, NULL);
+	if (utf8) {
+		gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), utf8);
+		g_free(utf8);
+	}
+
+	filter[0] = gtk_file_filter_new();
+	if (filter[0]) {
+		gtk_file_filter_set_name(filter[0], "T98-Next harddisk image files (*.nhd)");
+		gtk_file_filter_add_pattern(filter[0], "*.[nN][hH][dD]");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter[0]);
+	}
+	filter[1] = gtk_file_filter_new();
+	if (filter[1]) {
+		gtk_file_filter_set_name(filter[1], "VirtualPC harddisk image files (*.vhd)");
+		gtk_file_filter_add_pattern(filter[1], "*.[vV][hH][dD]");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter[1]);
+	}
+	filter[2] = gtk_file_filter_new();
+	if (filter[2]) {
+		gtk_file_filter_set_name(filter[2], "Anex86 harddisk image files (*.hdi)");
+		gtk_file_filter_add_pattern(filter[2], "*.[hH][dD][iI]");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter[2]);
+	}
+	filter[3] = gtk_file_filter_new();
+	if (filter[3]) {
+		gtk_file_filter_set_name(filter[3], "T98 harddisk image files (*.thd)");
+		gtk_file_filter_add_pattern(filter[3], "*.[tT][hH][dD]");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter[3]);
+	}
+	filter[4] = gtk_file_filter_new();
+	if (filter[4]) {
+		gtk_file_filter_set_name(filter[4], "Virtual98 harddisk image files (*.hdd)");
+		gtk_file_filter_add_pattern(filter[4], "*.[hH][hH][dD]");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter[4]);
+	}
+#if defined(SUPPORT_SCSI)
+	filter[5] = gtk_file_filter_new();
+	if (filter[5]) {
+		gtk_file_filter_set_name(filter[5], "RaSCSI harddisk image files (*.hdn)");
+		gtk_file_filter_add_pattern(filter[5], "*.[hH][dD][nN]");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter[5]);
+	}
+#endif	// defined(SUPPORT_SCSI)
+	gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(dialog), filter[0]);
+
+	if (gtk_dialog_run(GTK_DIALOG(dialog)) != GTK_RESPONSE_OK)
+		goto end;
+
+	utf8 = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+	if (utf8 == NULL)
+		goto end;
+
+	path = g_filename_from_utf8(utf8, -1, NULL, NULL, NULL);
+	g_free(utf8);
+	if (path == NULL)
+		goto end;
+
+	kind = -1;
+	ext = file_getext(path);
+	for (i = 0; i < NELEMENTS(exttbl); i++) {
+		if (g_ascii_strcasecmp(ext, exttbl[i].name) == 0) {
+			kind = exttbl[i].kind;
+			break;
+		}
+	}
+	if (i == NELEMENTS(exttbl)) {
+		f = gtk_file_chooser_get_filter(GTK_FILE_CHOOSER(dialog));
+		for (i = 0; i < NELEMENTS(filter); i++) {
+			if (f == filter[i]) {
+				kind = i;
+				tmp = g_strjoin(".", path, extname[i], NULL);
+				if (tmp) {
+					g_free(path);
+					path = tmp;
+				}
+				break;
+			}
+		}
+	}
+
+	/* XXX system has only one modal dialog? */
+	gtk_widget_destroy(dialog);
+
+	create_newdisk_hd_dialog(path, kind);
 	g_free(path);
 
 	install_idle_process();

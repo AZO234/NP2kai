@@ -46,7 +46,7 @@ static const char *clockmult_str[] = {
 };
 
 static const char *cputype_str[] = {
-	"(custom)", "Intel i486SX", "Intel i486DX", "Intel Pentium", "Intel MMX Pentium", "Intel Pentium Pro", "Intel Pentium II", "AMD K6-2", "AMD K6-III", "Neko Processor II"
+	"(custom)", "Intel i486SX", "Intel i486DX", "Intel Pentium", "Intel MMX Pentium", "Intel Pentium Pro", "Intel Pentium II", "Intel Pentium III", "AMD K6-2", "AMD K6-III", "AMD K7 Athlon", "AMD K7 Athlon XP", "Neko Processor II"
 };
 
 static const char *samplingrate_str[] = {
@@ -130,6 +130,14 @@ int GetCpuTypeIndex(){
 	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_PENTIUM_II){
 		return 6;
 	}
+	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_III) != CPU_FEATURES_PENTIUM_III) goto AMDCPUCheck;
+	if(np2cfg.cpu_family == CPU_PENTIUM_III_FAMILY && 
+	   np2cfg.cpu_model == CPU_PENTIUM_III_MODEL &&
+	   np2cfg.cpu_stepping == CPU_PENTIUM_III_STEPPING &&
+	   np2cfg.cpu_feature == CPU_FEATURES_PENTIUM_III &&
+	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_PENTIUM_III){
+		return 7;
+	}
 
 AMDCPUCheck:
 	if((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K6_2) != CPU_FEATURES_AMD_K6_2 ||
@@ -149,6 +157,24 @@ AMDCPUCheck:
 	   np2cfg.cpu_feature == CPU_FEATURES_AMD_K6_III &&
 	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_AMD_K6_III){
 		return 16;
+	}
+	if((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K7_ATHLON) != CPU_FEATURES_AMD_K7_ATHLON ||
+		(CPU_FEATURES_EX_ALL & CPU_FEATURES_EX_AMD_K7_ATHLON) != CPU_FEATURES_EX_AMD_K7_ATHLON) goto NekoCPUCheck;
+	if(np2cfg.cpu_family == CPU_AMD_K7_ATHLON_FAMILY && 
+	   np2cfg.cpu_model == CPU_AMD_K7_ATHLON_MODEL &&
+	   np2cfg.cpu_stepping == CPU_AMD_K7_ATHLON_STEPPING &&
+	   np2cfg.cpu_feature == CPU_FEATURES_AMD_K7_ATHLON &&
+	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_AMD_K7_ATHLON){
+		return 17;
+	}
+	if((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K7_ATHLON_XP) != CPU_FEATURES_AMD_K7_ATHLON_XP ||
+		(CPU_FEATURES_EX_ALL & CPU_FEATURES_EX_AMD_K7_ATHLON_XP) != CPU_FEATURES_EX_AMD_K7_ATHLON_XP) goto NekoCPUCheck;
+	if(np2cfg.cpu_family == CPU_AMD_K7_ATHLON_XP_FAMILY && 
+	   np2cfg.cpu_model == CPU_AMD_K7_ATHLON_XP_MODEL &&
+	   np2cfg.cpu_stepping == CPU_AMD_K7_ATHLON_XP_STEPPING &&
+	   np2cfg.cpu_feature == CPU_FEATURES_AMD_K7_ATHLON_XP &&
+	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_AMD_K7_ATHLON_XP){
+		return 18;
 	}
 	
 NekoCPUCheck:
@@ -219,6 +245,15 @@ int SetCpuTypeIndex(UINT index){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_II);
 		break;
+	case 7:
+		np2cfg.cpu_family = CPU_PENTIUM_III_FAMILY;
+		np2cfg.cpu_model = CPU_PENTIUM_III_MODEL;
+		np2cfg.cpu_stepping = CPU_PENTIUM_III_STEPPING;
+		np2cfg.cpu_feature = CPU_FEATURES_PENTIUM_III;
+		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM_III;
+		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_III);
+		break;
 	case 15:
 		np2cfg.cpu_family = CPU_AMD_K6_2_FAMILY;
 		np2cfg.cpu_model = CPU_AMD_K6_2_MODEL;
@@ -236,6 +271,24 @@ int SetCpuTypeIndex(UINT index){
 		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_AMD_K6_III;
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K6_III);
+		break;
+	case 17:
+		np2cfg.cpu_family = CPU_AMD_K7_ATHLON_FAMILY;
+		np2cfg.cpu_model = CPU_AMD_K7_ATHLON_MODEL;
+		np2cfg.cpu_stepping = CPU_AMD_K7_ATHLON_STEPPING;
+		np2cfg.cpu_feature = CPU_FEATURES_AMD_K7_ATHLON;
+		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_AMD_K7_ATHLON;
+		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
+		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K7_ATHLON);
+		break;
+	case 18:
+		np2cfg.cpu_family = CPU_AMD_K7_ATHLON_XP_FAMILY;
+		np2cfg.cpu_model = CPU_AMD_K7_ATHLON_XP_MODEL;
+		np2cfg.cpu_stepping = CPU_AMD_K7_ATHLON_XP_STEPPING;
+		np2cfg.cpu_feature = CPU_FEATURES_AMD_K7_ATHLON_XP;
+		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_AMD_K7_ATHLON_XP;
+		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
+		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K7_ATHLON_XP);
 		break;
 	case 255: // 全機能使用可能
 		np2cfg.cpu_family = 0;
@@ -317,15 +370,22 @@ ok_button_clicked(GtkButton *b, gpointer d)
 			case 4:
 			case 5:
 			case 6:
+			case 7:
 				SetCpuTypeIndex(i);
 				break;
-			case 7:
+			case 8:
 				SetCpuTypeIndex(15);
 				break;
-			case 8:
+			case 9:
 				SetCpuTypeIndex(16);
 				break;
-			case 9:
+			case 10:
+				SetCpuTypeIndex(17);
+				break;
+			case 11:
+				SetCpuTypeIndex(18);
+				break;
+			case 12:
 				SetCpuTypeIndex(255);
 				break;
 			}
@@ -617,16 +677,23 @@ create_configure_dialog(void)
 	case 4:
 	case 5:
 	case 6:
+	case 7:
 		j = i;
 		break;
 	case 15:
-		j = 6;
+		j = 8;
 		break;
 	case 16:
-		j = 7;
+		j = 9;
+		break;
+	case 17:
+		j = 10;
+		break;
+	case 18:
+		j = 11;
 		break;
 	case 255:
-		j = 8;
+		j = 12;
 		break;
 	default:
 		j = 0;
