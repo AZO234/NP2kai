@@ -73,7 +73,7 @@ retro_audio_sample_batch_t audio_batch_cb = NULL;
 
 static char CMDFILE[512];
 
-bool did_reset, joy2key_arr, joy2key_kpad;
+bool did_reset, joy2key;
 int lr_init = 0;
 
 static char base_dir[MAX_PATH];
@@ -487,34 +487,49 @@ static int joymouseaxelratio = 10;
 
 bool mapkey_down[12];
 
-static int joy2key_map_arr[12][2] = { 
-   {RETRO_DEVICE_ID_JOYPAD_UP,     RETROK_UP},
-   {RETRO_DEVICE_ID_JOYPAD_DOWN,   RETROK_DOWN},
-   {RETRO_DEVICE_ID_JOYPAD_LEFT,   RETROK_LEFT},
-   {RETRO_DEVICE_ID_JOYPAD_RIGHT,  RETROK_RIGHT},
-   {RETRO_DEVICE_ID_JOYPAD_A,      RETROK_x},
-   {RETRO_DEVICE_ID_JOYPAD_B,      RETROK_z},
-   {RETRO_DEVICE_ID_JOYPAD_X,      RETROK_SPACE},
-   {RETRO_DEVICE_ID_JOYPAD_Y,      RETROK_LCTRL},
-   {RETRO_DEVICE_ID_JOYPAD_L,      RETROK_BACKSPACE},
-   {RETRO_DEVICE_ID_JOYPAD_R,      RETROK_RSHIFT},
-   {RETRO_DEVICE_ID_JOYPAD_SELECT, RETROK_ESCAPE},
-   {RETRO_DEVICE_ID_JOYPAD_START,  RETROK_RETURN}
+static int joy2key_map[12] = { 
+   RETRO_DEVICE_ID_JOYPAD_UP,
+   RETRO_DEVICE_ID_JOYPAD_DOWN,
+   RETRO_DEVICE_ID_JOYPAD_LEFT,
+   RETRO_DEVICE_ID_JOYPAD_RIGHT,
+   RETRO_DEVICE_ID_JOYPAD_A,
+   RETRO_DEVICE_ID_JOYPAD_B,
+   RETRO_DEVICE_ID_JOYPAD_X,
+   RETRO_DEVICE_ID_JOYPAD_Y,
+   RETRO_DEVICE_ID_JOYPAD_L,
+   RETRO_DEVICE_ID_JOYPAD_R,
+   RETRO_DEVICE_ID_JOYPAD_SELECT,
+   RETRO_DEVICE_ID_JOYPAD_START
 };
 
-static int joy2key_map_kpad[12][2] = { 
-   {RETRO_DEVICE_ID_JOYPAD_UP,     RETROK_KP8},
-   {RETRO_DEVICE_ID_JOYPAD_DOWN,   RETROK_KP2},
-   {RETRO_DEVICE_ID_JOYPAD_LEFT,   RETROK_KP4},
-   {RETRO_DEVICE_ID_JOYPAD_RIGHT,  RETROK_KP6},
-   {RETRO_DEVICE_ID_JOYPAD_A,      RETROK_x},
-   {RETRO_DEVICE_ID_JOYPAD_B,      RETROK_z},
-   {RETRO_DEVICE_ID_JOYPAD_X,      RETROK_SPACE},
-   {RETRO_DEVICE_ID_JOYPAD_Y,      RETROK_LCTRL},
-   {RETRO_DEVICE_ID_JOYPAD_L,      RETROK_BACKSPACE},
-   {RETRO_DEVICE_ID_JOYPAD_R,      RETROK_RSHIFT},
-   {RETRO_DEVICE_ID_JOYPAD_SELECT, RETROK_ESCAPE},
-   {RETRO_DEVICE_ID_JOYPAD_START,  RETROK_RETURN}
+static uint16_t joy2key_map_arr[12] = { 
+   RETROK_UP,
+   RETROK_DOWN,
+   RETROK_LEFT,
+   RETROK_RIGHT,
+   RETROK_x,
+   RETROK_z,
+   RETROK_SPACE,
+   RETROK_LCTRL,
+   RETROK_BACKSPACE,
+   RETROK_RSHIFT,
+   RETROK_ESCAPE,
+   RETROK_RETURN
+};
+
+static uint16_t joy2key_map_kpad[12] = { 
+   RETROK_KP8,
+   RETROK_KP2,
+   RETROK_KP4,
+   RETROK_KP6,
+   RETROK_x,
+   RETROK_z,
+   RETROK_SPACE,
+   RETROK_LCTRL,
+   RETROK_BACKSPACE,
+   RETROK_RSHIFT,
+   RETROK_ESCAPE,
+   RETROK_RETURN
 };
    
 void updateInput(){
@@ -527,34 +542,18 @@ void updateInput(){
 
    uint32_t i;
    
-   if (joy2key_arr)
+   if (joy2key)
    {
       for (i = 0; i < 12; i++)
       {
-         if (input_cb(0, RETRO_DEVICE_JOYPAD, 0, joy2key_map_arr[i][0]) && !mapkey_down[i] )
+         if (input_cb(0, RETRO_DEVICE_JOYPAD, 0, joy2key_map[i]) && !mapkey_down[i] )
          {
-            send_libretro_key_down(joy2key_map_arr[i][1]);
+            send_libretro_key_down(np2oscfg.lrjoybtn[i]);
             mapkey_down[i] = 1;
          }
-         else if (!input_cb(0, RETRO_DEVICE_JOYPAD, 0, joy2key_map_arr[i][0]) )
+         else if (!input_cb(0, RETRO_DEVICE_JOYPAD, 0, joy2key_map[i]) )
          {
-            send_libretro_key_up(joy2key_map_arr[i][1]);
-            mapkey_down[i] = 0;
-         }
-      }
-   }
-   else if (joy2key_kpad)
-   {
-      for (i = 0; i < 12; i++)
-      {
-         if (input_cb(0, RETRO_DEVICE_JOYPAD, 0, joy2key_map_kpad[i][0]) && !mapkey_down[i] )
-         {
-            send_libretro_key_down(joy2key_map_kpad[i][1]);
-            mapkey_down[i] = 1;
-         }
-         else if (!input_cb(0, RETRO_DEVICE_JOYPAD, 0, joy2key_map_kpad[i][0]) )
-         {
-            send_libretro_key_up(joy2key_map_kpad[i][1]);
+            send_libretro_key_up(np2oscfg.lrjoybtn[i]);
             mapkey_down[i] = 0;
          }
       }
@@ -850,7 +849,7 @@ void retro_set_environment(retro_environment_t cb)
 #endif	/* defined(SUPPORT_WAB) */
       { "np2kai_joy2mouse" , "Joypad to Mouse Mapping; OFF|ON" },
       { "np2kai_j2msuratio" , "J2M Cursor Speed up Ratio; x10|x20|up stop|x5" },
-      { "np2kai_joy2key" , "Joypad to Keyboard Mapping; OFF|Arrows|Keypad" },
+      { "np2kai_joy2key" , "Joypad to Keyboard Mapping; OFF|Arrows|Keypad|Manual" },
       { NULL, NULL },
    };
 
@@ -1213,18 +1212,21 @@ static void update_variables(void)
    {
       if (strcmp(var.value, "Arrows") == 0)
       {
-         joy2key_arr = true;
-         joy2key_kpad = false;
+         joy2key = true;
+         memcpy(np2oscfg.lrjoybtn, joy2key_map_arr, sizeof(uint16_t) * 12);
       }
       else if (strcmp(var.value, "Keypad") == 0)
       {
-         joy2key_arr = false;
-         joy2key_kpad = true;
+         joy2key = true;
+         memcpy(np2oscfg.lrjoybtn, joy2key_map_kpad, sizeof(uint16_t) * 12);
+      }
+      else if (strcmp(var.value, "Manual") == 0)
+      {
+         joy2key = true;
       }
       else
       {
-         joy2key_arr = false;
-         joy2key_kpad = false;
+         joy2key = false;
       }
    }
 
@@ -1254,7 +1256,7 @@ static void update_variables(void)
       gdcs.grphdisp |= GDCSCRN_ALLDRAW2;
    }
 
-   sysmng_update(SYS_UPDATECFG);
+   sysmng_update(SYS_UPDATEOSCFG | SYS_UPDATECFG);
 
 }
 

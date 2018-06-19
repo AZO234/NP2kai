@@ -1,6 +1,6 @@
 Neko Project II 0.86 kai rev.16
 ===
-Apr 2, 2018  
+Jun 19, 2018  
 
 Build SDL2 port
 ---
@@ -192,6 +192,12 @@ L button: Backspace key
 R button: right Shift key  
 Select button: Escape key  
 Start button: Return key
+
+You can custom keycode for button.  
+Change 'lrjoybtn' value in system/np2kai/np2kai.cfg.  
+This value is little endian and 12 values ​​of 16bits(2Bytes) are arranged.  
+Write the key code of RETROK (see libretro.h) to this value.  
+The order is D-UP/DOWN/LEFT/RIGHT/A/B/X/Y/L/R/Select/Start.
 
 [libretro] Keyboard
 ---
@@ -560,6 +566,10 @@ WAB Type normally uses 'PC-9821Xe10,Xa7e,Xb10 built-in'.
 
 Release
 ---
+* Jun 19, 2018
+	- Add Joy2Key manual mode
+	- Merge NP21/W 0.86 rev.41
+	- Read GP-IB BIOS.(not work)
 * Apr 26, 2018
 	- Add build for GCW Zero
 * Apr 2, 2018 (rev.16)

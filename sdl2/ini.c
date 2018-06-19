@@ -693,6 +693,8 @@ static const INITBL iniitem[] = {
 	{"Joy1_dev", INITYPE_STR,	&np2oscfg.JOYDEV[0],	MAX_PATH},
 	{"Joy1amap", INITYPE_ARGH8,	np2oscfg.JOYAXISMAP[0],	JOY_NAXIS},
 	{"Joy1bmap", INITYPE_ARGH8,	np2oscfg.JOYBTNMAP[0],	JOY_NBUTTON},
+#else	/* __LIBRETRO__ */
+	{"lrjoybtn", INITYPE_ARGH8,	np2oscfg.lrjoybtn,	24},
 #endif	/* __LIBRETRO__ */
 
 #if defined(SUPPORT_RESUME)

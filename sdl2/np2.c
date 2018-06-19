@@ -57,6 +57,8 @@ NP2OSCFG np2oscfg = {
 		{ 0, 1, 0xff, 0xff },	/* JOYBTNMAP[1] */
 	},
 	{ "", "" },		/* JOYDEV */
+#else	/* __LIBRETRO__ */
+	{ 273, 274, 276, 275, 120, 122, 32, 306, 8, 303, 27, 13 },	/* lrjoybtn */
 #endif	/* __LIBRETRO__ */
 
 	0,			/* resume */

@@ -32,6 +32,8 @@ typedef struct {
 
 	UINT8	KEYBOARD;
 
+	UINT16	lrjoybtn[12];
+
 	UINT8	resume;
 	UINT8	jastsnd;
 	UINT8	I286SAVE;
