@@ -74,4 +74,3 @@ buildopk:
 
 uninstall:
 	rm /usr/local/bin/$(TARGET)
-	rm -rf -p $(HOME)/.config/np2kai
