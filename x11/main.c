@@ -188,30 +188,38 @@ main(int argc, char *argv[])
 	argv += optind;
 
 	if (modulefile[0] == '\0') {
-		char *env = getenv("HOME");
-		if (env) {
+		char *config_home = getenv("XDG_CONFIG_HOME");
+		char *home = getenv("HOME");
+		if (config_home && config_home[0] == '/') {
 			/* base dir */
 			g_snprintf(modulefile, sizeof(modulefile),
-			    "%s/.config/xnp2kai/", env);
-			if (stat(modulefile, &sb) < 0) {
-				if (mkdir(modulefile, 0700) < 0) {
-					perror(modulefile);
-					exit(1);
-				}
-			} else if (!S_ISDIR(sb.st_mode)) {
-				g_printerr("%s isn't directory.\n",
-				    modulefile);
+			    "%s/xnp2kai/", config_home);
+		} else if (home) {
+			/* base dir */
+			g_snprintf(modulefile, sizeof(modulefile),
+			    "%s/.config/xnp2kai/", home);
+		} else {
+			g_printerr("$HOME isn't defined.\n");
+			exit(1);
+		}
+		if (stat(modulefile, &sb) < 0) {
+			if (mkdir(modulefile, 0700) < 0) {
+				perror(modulefile);
 				exit(1);
 			}
+		} else if (!S_ISDIR(sb.st_mode)) {
+			g_printerr("%s isn't directory.\n",
+			    modulefile);
+			exit(1);
+		}
 
-			/* config file */
-			milstr_ncat(modulefile, appname, sizeof(modulefile));
-			milstr_ncat(modulefile, "rc", sizeof(modulefile));
-			if ((stat(modulefile, &sb) >= 0)
-			 && !S_ISREG(sb.st_mode)) {
-				g_printerr("%s isn't regular file.\n",
-				    modulefile);
-			}
+		/* config file */
+		milstr_ncat(modulefile, appname, sizeof(modulefile));
+		milstr_ncat(modulefile, "rc", sizeof(modulefile));
+		if ((stat(modulefile, &sb) >= 0)
+		 && !S_ISREG(sb.st_mode)) {
+			g_printerr("%s isn't regular file.\n",
+			    modulefile);
 		}
 	}
 	if (modulefile[0] != '\0') {

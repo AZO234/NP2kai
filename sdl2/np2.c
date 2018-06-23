@@ -192,8 +192,20 @@ int np2_main(int argc, char *argv[]) {
 	}
 
 #if !defined(__LIBRETRO__)
-	strcpy(np2cfg.biospath, getenv("HOME"));
-	strcat(np2cfg.biospath, "/.config/np2kai/");
+	char *config_home = getenv("XDG_CONFIG_HOME");
+	char *home = getenv("HOME");
+	if (config_home && config_home[0] == '/') {
+		/* base dir */
+		milstr_ncpy(np2cfg.biospath, config_home, sizeof(np2cfg.biospath));
+		milstr_ncat(np2cfg.biospath, "/np2kai/", sizeof(np2cfg.biospath));
+	} else if (home) {
+		/* base dir */
+		milstr_ncpy(np2cfg.biospath, home, sizeof(np2cfg.biospath));
+		milstr_ncat(np2cfg.biospath, "/.config/np2kai/", sizeof(np2cfg.biospath));
+	} else {
+		printf("$HOME isn't defined.\n");
+		goto np2main_err1;
+	}
 	file_setcd(np2cfg.biospath);
 #endif	/* __LIBRETRO__ */
 
