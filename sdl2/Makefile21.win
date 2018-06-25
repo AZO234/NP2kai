@@ -79,11 +79,8 @@ clean:
 install:
 	strip $(TARGET)
 	cp $(TARGET) /usr/local/bin/
-	mkdir -p $(HOME)/.config/np2kai
-	chown $(SUDO_USER) $(HOME)/.config/np2kai
 
 
 uninstall:
 	rm /usr/local/bin/$(TARGET)
-	rm -rf -p $(HOME)/.config/np2kai
 
