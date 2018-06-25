@@ -193,7 +193,7 @@ R button: right Shift key
 Select button: Escape key  
 Start button: Return key
 
-You can custom keycode for button.  
+By setting Joy2Key mode to 'Manual', you can custom keycode for button.  
 Change 'lrjoybtn' value in system/np2kai/np2kai.cfg.  
 This value is little endian and 12 values ​​of 16bits(2Bytes) are arranged.  
 Write the key code of RETROK (see libretro.h) to this value.  
