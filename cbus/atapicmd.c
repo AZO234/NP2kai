@@ -1175,5 +1175,35 @@ static void atapi_cmd_mechanismstatus(IDEDRV drv) {
 	sendabort(drv);
 }
 
+void atapi_initialize(void) {
+#if defined(_WINDOWS)
+	UINT32 dwID = 0;
+	//if(!pic_cs_initialized){
+	//	memset(&pic_cs, 0, sizeof(pic_cs));
+	//	InitializeCriticalSection(&pic_cs);
+	//	pic_cs_initialized = 1;
+	//}
+	if(!atapi_thread_initialized){
+		atapi_thread_initialized = 1;
+		atapi_thread = (HANDLE)_beginthreadex(NULL, 0, atapi_dataread_threadfunc, NULL, CREATE_SUSPENDED, &dwID);
+	}
+#else
+	// TODO: 非Windows用コードを書く
+#endif
+}
+
+void atapi_deinitialize(void) {
+#if defined(_WINDOWS)
+	if(atapi_thread_initialized){
+		atapi_thread_initialized = 0;
+		while(((int)ResumeThread(atapi_thread)) > 0);
+		WaitForSingleObject(atapi_thread,  INFINITE);
+		CloseHandle(atapi_thread);
+		atapi_thread = NULL;
+	}
+#else
+	// TODO: 非Windows用コードを書く
+#endif
+}
 #endif	/* SUPPORT_IDEIO */
 
