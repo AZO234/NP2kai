@@ -17,6 +17,27 @@ enum {
 	PIC_OCW3_ESMM	= 0x40
 };
 
+#if defined(_WINDOWS)
+static int pic_cs_initialized = 0;
+static CRITICAL_SECTION pic_cs;
+#else
+	// TODO: 非Windows用コードを書く
+#endif
+
+static void pic_enter_criticalsection(void){
+#if defined(_WINDOWS)
+	EnterCriticalSection(&pic_cs);
+#else
+	// TODO: 非Windows用コードを書く
+#endif
+}
+static void pic_leave_criticalsection(void){
+#if defined(_WINDOWS)
+	LeaveCriticalSection(&pic_cs);
+#else
+	// TODO: 非Windows用コードを書く
+#endif
+}
 
 static const _PICITEM def_master = {
 								{0x11, 0x08, 0x80, 0x1d},
@@ -111,7 +132,8 @@ void pic_irq(void) {												// ver0.78
 		return;
 	}
 	p = &pic;
-
+	
+	pic_enter_criticalsection();
 	sir = p->pi[1].irr & (~p->pi[1].imr);
 	slave = 1 << (p->pi[1].icw[2] & 7);
 	mir = p->pi[0].irr;
@@ -120,6 +142,7 @@ void pic_irq(void) {												// ver0.78
 	}
 	mir &= (~p->pi[0].imr);
 	if (mir == 0) {
+		pic_leave_criticalsection();
 		return;
 	}
 	if (!(p->pi[0].ocw3 & PIC_OCW3_SMM)) {
@@ -133,6 +156,7 @@ void pic_irq(void) {												// ver0.78
 	}
 	if (p->pi[0].icw[2] & bit) {					// スレーヴ
 		if (sir == 0) {
+			pic_leave_criticalsection();
 			return;
 		}
 		if (!(p->pi[1].ocw3 & PIC_OCW3_SMM)) {
@@ -162,6 +186,7 @@ void pic_irq(void) {												// ver0.78
 //		TRACEOUT(("hardware-int %.2x [%.4x:%.4x]", (p->pi[0].icw[1] & 0xf8) | num, CPU_CS, CPU_IP));
 		CPU_INTERRUPT((REG8)((p->pi[0].icw[1] & 0xf8) | num), 0);
 	}
+	pic_leave_criticalsection();
 }
 #endif
 
@@ -170,18 +195,21 @@ void pic_irq(void) {												// ver0.78
 void picmask(NEVENTITEM item) {
 
 	PICITEM		pi;
-
+	
+	pic_enter_criticalsection();
 	if (item->flag & NEVENT_SETEVENT) {
 		pi = &pic.pi[0];
 		pi->irr &= ~(pi->imr & PIC_SYSTEMTIMER);
 	}
+	pic_leave_criticalsection();
 }
 
 void pic_setirq(REG8 irq) {
 
 	PICITEM	pi;
 	REG8	bit;
-
+	
+	pic_enter_criticalsection();
 	pi = pic.pi;
 	bit = 1 << (irq & 7);
 	if (!(irq & 8)) {
@@ -211,14 +239,17 @@ void pic_setirq(REG8 irq) {
 	else {
 		pi[1].irr |= bit;
 	}
+	pic_leave_criticalsection();
 }
 
 void pic_resetirq(REG8 irq) {
 
 	PICITEM		pi;
-
+	
+	pic_enter_criticalsection();
 	pi = pic.pi + ((irq >> 3) & 1);
 	pi->irr &= ~(1 << (irq & 7));
+	pic_leave_criticalsection();
 }
 
 
@@ -230,6 +261,7 @@ static void IOOUTCALL pic_o00(UINT port, REG8 dat) {
 	REG8	level;
 	UINT8	ocw3;
 
+	pic_enter_criticalsection();
 //	TRACEOUT(("pic %x %x", port, dat));
 	picp = &pic.pi[(port >> 3) & 1];
 	picp->writeicw = 0;
@@ -282,12 +314,14 @@ static void IOOUTCALL pic_o00(UINT port, REG8 dat) {
 			picp->writeicw = 1;
 			break;
 	}
+	pic_leave_criticalsection();
 }
 
 static void IOOUTCALL pic_o02(UINT port, REG8 dat) {
 
 	PICITEM		picp;
-
+	
+	pic_enter_criticalsection();
 //	TRACEOUT(("pic %x %x", port, dat));
 	picp = &pic.pi[(port >> 3) & 1];
 	if (!picp->writeicw) {
@@ -297,6 +331,7 @@ static void IOOUTCALL pic_o02(UINT port, REG8 dat) {
 		// リセットされたビットは割り込みある？
 		if ((CPU_isDI) || (!(picp->irr & set))) {
 			picp->imr = dat;
+			pic_leave_criticalsection();
 			return;
 		}
 #endif
@@ -309,6 +344,7 @@ static void IOOUTCALL pic_o02(UINT port, REG8 dat) {
 			picp->writeicw = 0;
 		}
 	}
+	pic_leave_criticalsection();
 	nevent_forceexit();
 }
 
@@ -349,6 +385,29 @@ static const IOOUT pico00[4] = {
 static const IOINP pici00[4] = {
 					pic_i00,	pic_i02,	NULL,	NULL};
 #endif
+
+void pic_initialize(void) {
+#if defined(_WINDOWS)
+	if(!pic_cs_initialized){
+		memset(&pic_cs, 0, sizeof(pic_cs));
+		InitializeCriticalSection(&pic_cs);
+		pic_cs_initialized = 1;
+	}
+#else
+	// TODO: 非Windows用コードを書く
+#endif
+}
+
+void pic_deinitialize(void) {
+#if defined(_WINDOWS)
+	if(pic_cs_initialized){
+		DeleteCriticalSection(&pic_cs);
+		pic_cs_initialized = 0;
+	}
+#else
+	// TODO: 非Windows用コードを書く
+#endif
+}
 
 void pic_reset(const NP2CFG *pConfig) {
 

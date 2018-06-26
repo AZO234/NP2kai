@@ -130,17 +130,19 @@ void wabwin_readini()
  */
 void wabwin_writeini()
 {
-	TCHAR szPath[MAX_PATH];
+	if(!np2wabcfg.readonly){
+		TCHAR szPath[MAX_PATH];
 #if defined(NP2_SDL2) || defined(__LIBRETRO__)
-	milstr_ncpy(szPath, modulefile, sizeof(szPath));
-	ini_write(szPath, g_Name, s_wabwndini, _countof(s_wabwndini));
+		milstr_ncpy(szPath, modulefile, sizeof(szPath));
+		ini_write(szPath, g_Name, s_wabwndini, _countof(s_wabwndini));
 #elif defined(NP2_X11)
-	milstr_ncpy(szPath, modulefile, sizeof(szPath));
-	ini_write(szPath, g_Name, s_wabwndini, _countof(s_wabwndini), FALSE);
+		milstr_ncpy(szPath, modulefile, sizeof(szPath));
+		ini_write(szPath, g_Name, s_wabwndini, _countof(s_wabwndini), FALSE);
 #else
-	initgetfile(szPath, _countof(szPath));
-	ini_write(szPath, g_Name, s_wabwndini, _countof(s_wabwndini));
+		initgetfile(szPath, _countof(szPath));
+		ini_write(szPath, g_Name, s_wabwndini, _countof(s_wabwndini));
 #endif
+	}
 }
 
 /**

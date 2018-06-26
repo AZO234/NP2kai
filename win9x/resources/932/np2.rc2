@@ -25,8 +25,8 @@ IDR_MANIFEST            IRT_MANIFEST MOVEABLE PURE "..\\np2.mnf"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,8,6,41
- PRODUCTVERSION 0,8,6,41
+ FILEVERSION 0,8,6,42
+ PRODUCTVERSION 0,8,6,42
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -42,10 +42,10 @@ BEGIN
         BLOCK "041103a4"
         BEGIN
             VALUE "CompanyName", "\0"
-            VALUE "FileVersion", "0, 8, 6, 41\0"
+            VALUE "FileVersion", "0, 8, 6, 42\0"
             VALUE "LegalCopyright", "ÇÀÇ±Ç≥ÇÒäJî≠ÇøÅ[Çﬁ\0"
 
-            VALUE "ProductVersion", "0, 8, 6, 41\0"
+            VALUE "ProductVersion", "0, 8, 6, 42\0"
 #ifdef _USRDLL
             VALUE "FileDescription", "PC-98x1series emulator resource file\0"
             VALUE "ProductName", "Neko Project II resource file\0"

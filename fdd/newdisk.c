@@ -377,7 +377,7 @@ void newdisk_vpcvhd_ex_CHS(const OEMCHAR *fname, UINT32 C, UINT16 H, UINT16 S, U
 	FILEH   fh;
 	VPCVHDFOOTER    vpcvhd;
 	VPCVHDDDH		vpcvhd_dh;
-	BRESULT r;
+	BRESULT r = 0;
 	UINT64  origsize;
 	UINT32  checksum;
 	size_t footerlen;
@@ -418,7 +418,7 @@ void newdisk_vpcvhd_ex_CHS(const OEMCHAR *fname, UINT32 C, UINT16 H, UINT16 S, U
 		UINT32 blocksize = 0x00200000;
 		UINT32 nodata = 0xffffffff;
 		
-		STOREMOTOROLAQWORD(vpcvhd.DataOffset, sizeof(VPCVHDFOOTER));
+		STOREMOTOROLAQWORD(vpcvhd.DataOffset, (UINT64)(sizeof(VPCVHDFOOTER)));
 		STOREMOTOROLADWORD(vpcvhd.DiskType, 3);
 
 		checksum = vpc_calc_checksum((UINT8*)(&vpcvhd), footerlen);
@@ -428,7 +428,7 @@ void newdisk_vpcvhd_ex_CHS(const OEMCHAR *fname, UINT32 C, UINT16 H, UINT16 S, U
 		ZeroMemory(&vpcvhd_dh, sizeof(VPCVHDDDH));
 		CopyMemory(&vpcvhd_dh.Cookie, vpcvhd_sigDH, 8);
 		STOREMOTOROLAQWORD(vpcvhd_dh.DataOffset, (SINT64)-1);
-		STOREMOTOROLAQWORD(vpcvhd_dh.TableOffset, sizeof(VPCVHDFOOTER) + sizeof(VPCVHDDDH));
+		STOREMOTOROLAQWORD(vpcvhd_dh.TableOffset, (UINT64)(sizeof(VPCVHDFOOTER) + sizeof(VPCVHDDDH)));
 		STOREMOTOROLADWORD(vpcvhd_dh.HeaderVersion, 0x00010000);
 		STOREMOTOROLADWORD(vpcvhd_dh.MaxTableEntries, blockcount);
 		STOREMOTOROLADWORD(vpcvhd_dh.BlockSize, blocksize);

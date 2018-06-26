@@ -186,6 +186,8 @@ REG16 IOINPCALL ideio_r16(UINT port);
 void IOOUTCALL ideio_w32(UINT port, UINT32 value);
 UINT32 IOINPCALL ideio_r32(UINT port);
 
+void ideio_initialize(void);
+void ideio_deinitialize(void);
 void ideio_reset(const NP2CFG *pConfig);
 void ideio_bind(void);
 void ideio_notify(REG8 sxsidrv, UINT action);

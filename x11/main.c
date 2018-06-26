@@ -418,7 +418,7 @@ scrnmng_failure:
 	fontmng_terminate();
 
 fontmng_failure:
-	if (!np2oscfg.cfgreadonly
+	if (!np2oscfg.readonly
 	 && (sys_updates & (SYS_UPDATECFG|SYS_UPDATEOSCFG))) {
 		initsave();
 		toolwin_writeini();
@@ -431,6 +431,7 @@ fontmng_failure:
 #endif	// defined(SUPPORT_HOSTDRV)
 #if defined(SUPPORT_WAB)
 	wabwin_writeini();
+	np2wabcfg.readonly = np2oscfg.readonly;
 #endif	// defined(SUPPORT_WAB)
 	skbdwin_deinitialize();
 

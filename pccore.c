@@ -119,7 +119,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 				{OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")}, 
 				{SXSIDEV_HDD, SXSIDEV_HDD, SXSIDEV_CDROM, SXSIDEV_HDD}, 
 				{OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
-				1, 1, 0, 0, 0,
+				1, 1, 0, 0, 0, 0, 0, 0, 0,
 #else
 				{OEMTEXT(""), OEMTEXT("")},
 #endif

@@ -44,6 +44,8 @@ private:
 	CComboData m_cmbps;			//!< プライマリ スレーブ
 	CComboData m_cmbsm;			//!< セカンダリ マスタ
 	CComboData m_cmbss;			//!< セカンダリ スレーブ
+	CWndProc m_chkasynccd;		//!< Use Async CD-ROM Access
+	CWndProc m_chkallowtraycmd;	//!< Allow CD Tray Open/Close Command
 	CWndProc m_chkidebios;		//!< Use IDE BIOS
 	CWndProc m_chkautoidebios;	//!< Auto IDE BIOS
 	CWndProc m_nudrwait;		//!< 割り込み（書き込み）ディレイ
@@ -92,6 +94,21 @@ BOOL CIdeDlg::OnInitDialog()
 	m_cmbss.SubclassDlgItem(IDC_IDE4TYPE, this);
 	m_cmbss.Add(s_type, _countof(s_type));
 	m_cmbss.SetCurItemData(np2cfg.idetype[3]);
+
+	
+	m_chkasynccd.SubclassDlgItem(IDC_USEASYNCCD, this);
+	if(np2cfg.useasynccd){
+		m_chkasynccd.SendMessage(BM_SETCHECK , BST_CHECKED , 0);
+	}else{
+		m_chkasynccd.SendMessage(BM_SETCHECK , BST_UNCHECKED , 0);
+	}
+	
+	m_chkallowtraycmd.SubclassDlgItem(IDC_ALLOWCDTRAYOP, this);
+	if(np2cfg.allowcdtraycmd){
+		m_chkallowtraycmd.SendMessage(BM_SETCHECK , BST_CHECKED , 0);
+	}else{
+		m_chkallowtraycmd.SendMessage(BM_SETCHECK , BST_UNCHECKED , 0);
+	}
 	
 	m_nudrwait.SubclassDlgItem(IDC_IDERWAIT, this);
 	_stprintf(numbuf, _T("%d"), np2cfg.iderwait);
@@ -151,6 +168,16 @@ void CIdeDlg::OnOK()
 		np2cfg.idetype[3] = m_cmbss.GetCurItemData(np2cfg.idetype[3]);
 		update |= SYS_UPDATECFG | SYS_UPDATEHDD;
 	}
+	if (np2cfg.useasynccd != (m_chkasynccd.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0))
+	{
+		np2cfg.useasynccd = (m_chkasynccd.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0);
+		update |= SYS_UPDATECFG;
+	}
+	if (np2cfg.allowcdtraycmd != (m_chkallowtraycmd.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0))
+	{
+		np2cfg.allowcdtraycmd = (m_chkallowtraycmd.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0);
+		update |= SYS_UPDATECFG;
+	}
 	m_nudrwait.GetWindowTextW(numbuf, 30);
 	valtmp = _ttol(numbuf);
 	if (valtmp < 0) valtmp = 0;
@@ -179,7 +206,7 @@ void CIdeDlg::OnOK()
 		np2cfg.autoidebios = (m_chkautoidebios.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0);
 		update |= SYS_UPDATECFG;
 	}
-
+	
 	sysmng_update(update);
 
 	CDlgProc::OnOK();

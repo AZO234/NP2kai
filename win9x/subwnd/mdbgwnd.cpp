@@ -263,8 +263,10 @@ void mdbgwin_readini()
  */
 void mdbgwin_writeini()
 {
-	TCHAR szPath[MAX_PATH];
-	initgetfile(szPath, _countof(szPath));
-	ini_write(szPath, s_mdbgapp, s_mdbgini, _countof(s_mdbgini));
+	if(!np2oscfg.readonly){
+		TCHAR szPath[MAX_PATH];
+		initgetfile(szPath, _countof(szPath));
+		ini_write(szPath, s_mdbgapp, s_mdbgini, _countof(s_mdbgini));
+	}
 }
 #endif

@@ -59,6 +59,8 @@ void pic_resetirq(REG8 irq);
 
 void picmask(NEVENTITEM item);
 
+void pic_initialize(void);
+void pic_deinitialize(void);
 void pic_reset(const NP2CFG *pConfig);
 void pic_bind(void);
 

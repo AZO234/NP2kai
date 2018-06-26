@@ -696,7 +696,7 @@ static void FPU_FPREM1(void){
 }
 
 static void FPU_FXAM(void){
-	if(FPU_STAT.reg[FPU_STAT_TOP].ll & QWORD_CONST(0x8000000000000000))	//sign
+	if(FPU_STAT.reg[FPU_STAT_TOP].d.high & 0x8000)	//sign
 	{ 
 		FPU_SET_C1(1);
 	} 

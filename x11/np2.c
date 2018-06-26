@@ -111,7 +111,7 @@ NP2OSCFG np2oscfg = {
 	INTERP_NEAREST,		/* drawinterp */
 	0,			/* F11KEY */
 
-	FALSE,			/* cfgreadonly */
+	0,			/* readonly */
 };
 
 volatile sig_atomic_t np2running = 0;

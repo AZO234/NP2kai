@@ -46,6 +46,9 @@ enum {
 extern "C" {
 #endif
 
+void atapi_initialize(void);
+void atapi_deinitialize(void);
+
 void atapicmd_a0(IDEDRV drv);
 
 void atapi_dataread(IDEDRV drv);
