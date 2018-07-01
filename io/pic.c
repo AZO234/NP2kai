@@ -387,7 +387,7 @@ static const IOINP pici00[4] = {
 #endif
 
 void pic_initialize(void) {
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 	if(!pic_cs_initialized){
 		memset(&pic_cs, 0, sizeof(pic_cs));
 		InitializeCriticalSection(&pic_cs);
@@ -399,7 +399,7 @@ void pic_initialize(void) {
 }
 
 void pic_deinitialize(void) {
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 	if(pic_cs_initialized){
 		DeleteCriticalSection(&pic_cs);
 		pic_cs_initialized = 0;

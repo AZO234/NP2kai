@@ -8,7 +8,7 @@
 // Ç±ÇÍÅAscsicmdÇ∆Ç«Ç§ìùçáÇ∑ÇÈÇÃÇÊÅH
 
 #if defined(SUPPORT_IDEIO)
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 #include	<process.h>
 #endif
 
@@ -27,7 +27,7 @@
 #define HEX2BCD(hex)	( (((hex/10)%10)<<4)|((hex)%10) )
 #define BCD2HEX(bcd)	( (((bcd>>4)&0xf)*10)+((bcd)&0xf) )
 
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 static int atapi_thread_initialized = 0;
 static HANDLE atapi_thread = NULL;
 static IDEDRV atapi_thread_drv = NULL;
@@ -327,7 +327,7 @@ void atapicmd_a0(IDEDRV drv) {
 
 // 0x1b: START/STOP UNIT
 void atapi_cmd_traycmd_threadfunc(void* vdParam) {
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 	if(vdParam){
 		mciSendString(OEMTEXT("Set CDaudio Door Open"), NULL, 0, NULL );
 	}else{
@@ -365,7 +365,7 @@ static void atapi_cmd_start_stop_unit(IDEDRV drv) {
 	case 2: // Eject the Disc if possible
 #ifdef SUPPORT_PHYSICAL_CDDRV
 		if(np2cfg.allowcdtraycmd && _tcsnicmp(sxsi->fname, OEMTEXT("\\\\.\\"), 4)==0){
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 			//mciSendString(OEMTEXT("Set CDaudio Door Open"), NULL, 0, NULL );
 			_beginthread(atapi_cmd_traycmd_threadfunc, 0, (void*)1);
 #else
@@ -382,7 +382,7 @@ static void atapi_cmd_start_stop_unit(IDEDRV drv) {
 	case 3: // Load the Disc (Close Tray)
 #ifdef SUPPORT_PHYSICAL_CDDRV
 		if(np2cfg.allowcdtraycmd && _tcsnicmp(sxsi->fname, OEMTEXT("\\\\.\\"), 4)==0){
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 			//mciSendString(OEMTEXT("Set CDaudio Door Closed"), NULL, 0, NULL );
 			_beginthread(atapi_cmd_traycmd_threadfunc, 0, (void*)0);;
 #else
@@ -452,7 +452,7 @@ static void atapi_cmd_read_capacity(IDEDRV drv) {
 }
 
 // 0x28: READ(10)
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 void atapi_dataread_threadfunc_part(IDEDRV drv) {
 	if (sxsi_read(drv->sxsidrv, drv->sector, drv->buf, 2048) != 0) {
 		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_ILLEGAL_REQUEST);
@@ -1176,7 +1176,7 @@ static void atapi_cmd_mechanismstatus(IDEDRV drv) {
 }
 
 void atapi_initialize(void) {
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 	UINT32 dwID = 0;
 	//if(!pic_cs_initialized){
 	//	memset(&pic_cs, 0, sizeof(pic_cs));
@@ -1193,7 +1193,7 @@ void atapi_initialize(void) {
 }
 
 void atapi_deinitialize(void) {
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 	if(atapi_thread_initialized){
 		atapi_thread_initialized = 0;
 		while(((int)ResumeThread(atapi_thread)) > 0);

@@ -22,7 +22,7 @@
 #include	"fmboard.h"
 #include	"cs4231io.h"
 
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 #include	<process.h>
 #endif
 
@@ -31,7 +31,7 @@
 	//UINT8   ideio_mediastatusnotification[4] = {0};
 	//UINT8   ideio_mediachangeflag[4] = {0};
 	
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 static int ideio_thread_initialized = 0;
 static HANDLE ideio_threadR = NULL;
 static HANDLE ideio_threadW = NULL;
@@ -385,7 +385,7 @@ static FILEPOS getcursec(const IDEDRV drv) {
 	return(ret);
 }
 
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 void ideio_threadfuncR_part(IDEDRV drv) {
 	FILEPOS	sec;
 	sec = getcursec(drv);
@@ -1225,7 +1225,7 @@ static void IOOUTCALL ideio_o1e8e(UINT port, REG8 dat) {
 
 // ---- data
 
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 void ideio_threadfuncW_part(IDEDRV drv) {
 	
 	FILEPOS	sec;
@@ -1297,7 +1297,7 @@ void IOOUTCALL ideio_w16(UINT port, REG16 value) {
 				case 0x30:
 				case 0x31:
 				case 0xc5:
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 					drv->status |= IDESTAT_BSY;
 					if(np2cfg.useasynchd){
 						if(ideio_threadW){
@@ -1741,7 +1741,7 @@ static void devinit(IDEDRV drv, REG8 sxsidrv) {
 }
 
 void ideio_initialize(void) {
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 	UINT32 dwID = 0;
 	//if(!pic_cs_initialized){
 	//	memset(&pic_cs, 0, sizeof(pic_cs));
@@ -1761,7 +1761,7 @@ void ideio_initialize(void) {
 
 void ideio_deinitialize(void) {
 	atapi_deinitialize();
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 	if(ideio_thread_initialized){
 		ideio_thread_initialized = 0;
 		while(((int)ResumeThread(ideio_threadR))>0);
