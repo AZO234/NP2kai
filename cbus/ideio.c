@@ -41,14 +41,14 @@ static IDEDRV ideio_thread_drv = NULL;
 #endif
 
 //static void ideio_enter_criticalsection(void){
-//#if defined(_WINDOWS)
+//#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 //	EnterCriticalSection(&ideio_cs);
 //#else
 //	// TODO: 非Windows用コードを書く
 //#endif
 //}
 //static void ideio_leave_criticalsection(void){
-//#if defined(_WINDOWS)
+//#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 //	LeaveCriticalSection(&ideio_cs);
 //#else
 //	// TODO: 非Windows用コードを書く

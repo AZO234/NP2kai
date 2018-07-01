@@ -17,7 +17,7 @@ enum {
 	PIC_OCW3_ESMM	= 0x40
 };
 
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 static int pic_cs_initialized = 0;
 static CRITICAL_SECTION pic_cs;
 #else
@@ -25,14 +25,14 @@ static CRITICAL_SECTION pic_cs;
 #endif
 
 static void pic_enter_criticalsection(void){
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 	EnterCriticalSection(&pic_cs);
 #else
 	// TODO: 非Windows用コードを書く
 #endif
 }
 static void pic_leave_criticalsection(void){
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 	LeaveCriticalSection(&pic_cs);
 #else
 	// TODO: 非Windows用コードを書く
