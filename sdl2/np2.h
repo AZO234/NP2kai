@@ -106,5 +106,9 @@ extern int s98log_count;
 
 extern int np2_main(int argc, char *argv[]);
 extern int np2_end();
+
+extern int mmxflag;
+int havemmx(void);
+
 #endif	/* __LIBRETRO__ */
 
