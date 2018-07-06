@@ -102,7 +102,7 @@ Build libretro port (Windows)
 
 １． Build by MSYS2 x86_64. (Reference follow URL)  
 
-https://bot.libretro.com/docs/compilation/windows/
+https://docs.libretro.com/compilation/windows/
 
 	$ cd NP2kai/sdl2
 	$ make -j4
