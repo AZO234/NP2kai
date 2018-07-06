@@ -1251,15 +1251,6 @@
     <ClCompile Include="..\sound\fmgen\fmgen_psg.cpp">
       <Filter>ソース ファイル\sound\fmgen</Filter>
     </ClCompile>
-    <ClCompile Include="..\sound\mame\fmopl.c">
-      <Filter>ソース ファイル\sound\mame</Filter>
-    </ClCompile>
-    <ClCompile Include="..\sound\mame\ymdeltat.c">
-      <Filter>ソース ファイル\sound\mame</Filter>
-    </ClCompile>
-    <ClCompile Include="..\sound\mame\ymf262.c">
-      <Filter>ソース ファイル\sound\mame</Filter>
-    </ClCompile>
     <ClCompile Include="..\i386c\ia32\instructions\mmx\mmx.c">
       <Filter>ソース ファイル\i386c\ia32\instructions\mmx</Filter>
     </ClCompile>
@@ -1277,6 +1268,9 @@
     </ClCompile>
     <ClCompile Include="..\i386c\ia32\instructions\sse\sse.c">
       <Filter>ソース ファイル\i386c\ia32\instructions\sse</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cbus\gpibio.c">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2207,21 +2201,6 @@
     <ClInclude Include="..\sound\fmgen\fmgen_types.h">
       <Filter>ヘッダー ファイル\sound\fmgen</Filter>
     </ClInclude>
-    <ClInclude Include="..\sound\mame\driver.h">
-      <Filter>ヘッダー ファイル\sound\mame</Filter>
-    </ClInclude>
-    <ClInclude Include="..\sound\mame\fm.h">
-      <Filter>ヘッダー ファイル\sound\mame</Filter>
-    </ClInclude>
-    <ClInclude Include="..\sound\mame\fmopl.h">
-      <Filter>ヘッダー ファイル\sound\mame</Filter>
-    </ClInclude>
-    <ClInclude Include="..\sound\mame\ymdeltat.h">
-      <Filter>ヘッダー ファイル\sound\mame</Filter>
-    </ClInclude>
-    <ClInclude Include="..\sound\mame\ymf262.h">
-      <Filter>ヘッダー ファイル\sound\mame</Filter>
-    </ClInclude>
     <ClInclude Include="..\i386c\ia32\instructions\mmx\mmx.h">
       <Filter>ヘッダー ファイル\i386c\ia32\instructions\mmx</Filter>
     </ClInclude>
@@ -2245,6 +2224,9 @@
     </ClInclude>
     <ClInclude Include="..\i386c\ia32\instructions\sse\sse.h">
       <Filter>ヘッダー ファイル\i386c\ia32\instructions\sse</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cbus\gpibio.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

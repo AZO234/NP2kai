@@ -6,7 +6,7 @@
 #pragma once
 
 #include <vector>
-#include <pluginterfaces/vst2.x/aeffectx.h>
+#include <VST2_SDK/pluginterfaces/vst2.x/aeffectx.h>
 
 /**
  * @brief VST MIDI ƒNƒ‰ƒX
