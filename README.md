@@ -8,21 +8,45 @@ Build SDL2 port
 １． Install SDL2.  
 
 	(Linux)
-	$ sudo apt-get install libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev
+	$ sudo apt-get install git gcc make libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev
 
 or
 
 	(Windows + MSYS2)
-	$ pacman -S mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL2_mixer
+	$ pacman -S git gcc make mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL2_mixer
+
+or
+
+	(Mac)
+        1.Install XCode
+        2.Install module of SDL2, SDL2_mixier, freetype, SDL2_ttf from source
+        3.Install framework of SDL2, SDL2_mixier, SDL2_ttf
 
 ２． Build.  
 
+	(Linux)
 	$ cd NP2kai/sdl2
 	$ make -j4 -f Makefile.unix
 
 or
 
 	$ make -j4 -f Makefile21.unix
+
+	(Windows + MSYS2)
+	$ cd NP2kai/sdl2
+	$ make -j4 -f Makefile.win
+
+or
+
+	$ make -j4 -f Makefile21.win
+
+	(Mac)
+	$ cd NP2kai/sdl2
+	$ make -j4 -f Makefile.mac
+
+or
+
+	$ make -j4 -f Makefile21.mac
 
 or for GCW Zero (GCW0) game device only
 
