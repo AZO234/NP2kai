@@ -28,6 +28,9 @@ typedef	signed short		SINT16;
 typedef	unsigned short		UINT16;
 typedef	signed int			SINT32;
 typedef	unsigned int		UINT32;
+typedef signed long int		SINT64;
+typedef signed long int		INT64;
+typedef unsigned long int	UINT64;
 
 #define	BRESULT				UINT
 #define	OEMCHAR				char
@@ -35,15 +38,27 @@ typedef	unsigned int		UINT32;
 #define	OEMSPRINTF			sprintf
 #define	OEMSTRLEN			strlen
 
+#if defined(SUPPORT_LARGE_HDD)
+typedef SINT64	FILEPOS;
+typedef SINT64	FILELEN;
+#define	NHD_MAXSIZE		8000
+#define	NHD_MAXSIZE2	32000
+#else
+typedef SINT32	FILEPOS;
+typedef SINT32	FILELEN;
+#define	NHD_MAXSIZE		2000
+#define	NHD_MAXSIZE2	2000
+#endif
+
 #define NP2_SIZE_VGA
 #if !defined(NP2_SIZE_VGA)
 #define	RGB16		UINT32
 #define	NP2_SIZE_QVGA
 #endif
 
-#if !defined(OBJC_BOOL_DEFINED)
-typedef	unsigned char	BOOL;
-#endif
+//#if !defined(OBJC_BOOL_DEFINED)
+//typedef	unsigned char	BOOL;
+//#endif
 
 #ifndef	TRUE
 #define	TRUE	1
