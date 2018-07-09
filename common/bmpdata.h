@@ -1,3 +1,5 @@
+#ifndef BMPDATA_H
+#define BMPDATA_H
 
 #if defined(__GNUC__)
 typedef struct {
@@ -70,3 +72,4 @@ UINT8 *bmpdata_solvedata(const UINT8 *dat);
 }
 #endif
 
+#endif	/* BMPDATA_H */

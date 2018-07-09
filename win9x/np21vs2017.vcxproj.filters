@@ -1272,6 +1272,15 @@
     <ClCompile Include="..\cbus\gpibio.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="..\sound\mame\fmopl.c">
+      <Filter>ソース ファイル\sound\mame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\mame\ymdeltat.c">
+      <Filter>ソース ファイル\sound\mame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\mame\ymf262.c">
+      <Filter>ソース ファイル\sound\mame</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\calendar.h">

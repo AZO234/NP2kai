@@ -420,6 +420,9 @@
     <ClCompile Include="..\sound\getsnd\getsmix.c" />
     <ClCompile Include="..\sound\getsnd\getsnd.c" />
     <ClCompile Include="..\sound\getsnd\getwave.c" />
+    <ClCompile Include="..\sound\mame\fmopl.c" />
+    <ClCompile Include="..\sound\mame\ymdeltat.c" />
+    <ClCompile Include="..\sound\mame\ymf262.c" />
     <ClCompile Include="..\sound\opl3.c" />
     <ClCompile Include="..\sound\oplgenc.c" />
     <ClCompile Include="..\sound\oplgeng.c" />

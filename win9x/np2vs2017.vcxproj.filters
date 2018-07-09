@@ -241,6 +241,12 @@
     <Filter Include="ソース ファイル\wab">
       <UniqueIdentifier>{1cca2f75-8c68-4850-86c3-c7c498ea5fcd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\sound\fmgen">
+      <UniqueIdentifier>{9fb3a4ee-bab7-4ab6-926c-269ff04e10ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\sound\mame">
+      <UniqueIdentifier>{6733dfde-dbb2-424e-971c-aa456d15000c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\calendar.c">
@@ -1139,6 +1145,36 @@
     </ClCompile>
     <ClCompile Include="..\wab\wab_rly.c">
       <Filter>ソース ファイル\wab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\fmgen\fmgen_file.cpp">
+      <Filter>ソース ファイル\sound\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\fmgen\fmgen_fmgen.cpp">
+      <Filter>ソース ファイル\sound\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\fmgen\fmgen_fmgwrap.cpp">
+      <Filter>ソース ファイル\sound\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\fmgen\fmgen_fmtimer.cpp">
+      <Filter>ソース ファイル\sound\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\fmgen\fmgen_opm.cpp">
+      <Filter>ソース ファイル\sound\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\fmgen\fmgen_opna.cpp">
+      <Filter>ソース ファイル\sound\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\fmgen\fmgen_psg.cpp">
+      <Filter>ソース ファイル\sound\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\mame\fmopl.c">
+      <Filter>ソース ファイル\sound\mame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\mame\ymdeltat.c">
+      <Filter>ソース ファイル\sound\mame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\mame\ymf262.c">
+      <Filter>ソース ファイル\sound\mame</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
