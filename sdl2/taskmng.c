@@ -72,6 +72,7 @@ int convertKeyMap(int scancode){
 
 #endif //GCW0
 
+static int lmx = 320, lmy = 240;
 void taskmng_rol(void) {
 
 #if !defined(__LIBRETRO__)
@@ -88,6 +89,8 @@ void taskmng_rol(void) {
 			}
 			else {
 				menubase_moving(e.motion.x, e.motion.y, 0);
+				lmx = e.motion.x;
+				lmy = e.motion.y;
 			}
 			break;
 
@@ -96,11 +99,12 @@ void taskmng_rol(void) {
 				case SDL_BUTTON_LEFT:
 					if (menuvram != NULL)
 					{
-						menubase_moving(e.button.x, e.button.y, 2);
+						menubase_moving(lmx, lmy, 2);
 					}
 #if defined(__IPHONEOS__)
 					else if (SDL_IsTextInputActive())
 					{
+
 						SDL_StopTextInput();
 					}
 					else if (e.button.y >= 320)
