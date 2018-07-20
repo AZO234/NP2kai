@@ -2,6 +2,7 @@
 #include	<stdio.h>
 #include	<setjmp.h>
 #include	<stddef.h>
+#include	<limits.h>
 #if defined(USE_SDL_CONFIG)
 #include	"SDL.h"
 #else
@@ -26,6 +27,8 @@
 #define	siglongjmp(env, val)	longjmp(env, val)
 #endif
 
+typedef	int				BOOL;
+#define bool BOOL
 #ifndef __GNUC__
 typedef	signed int			SINT;
 typedef	signed char			SINT8;
@@ -77,6 +80,20 @@ typedef LONG_PTR ssize_t;
 #define	OEMSTRLEN			strlen
 #define	_tcsicmp	strcasecmp
 #define	_tcsnicmp	strncasecmp
+
+#ifndef	TRUE
+#define	TRUE	1
+#endif
+#ifndef	true
+#define true TRUE
+#endif
+
+#ifndef	FALSE
+#define	FALSE	0
+#endif
+#ifndef	false
+#define false FALSE
+#endif
 
 #if defined(SUPPORT_LARGE_HDD)
 typedef SINT64	FILEPOS;
@@ -146,8 +163,8 @@ typedef SINT32	FILELEN;
 #define _tcscpy strcpy
 #define	msgbox(title, msg)
 #define	sigjmp_buf	jmp_buf
-#define	siglongjmp(env, val)	longjmp(env, val)
-#define	sigsetjmp(env, mask)	setjmp(env)
+//#define	siglongjmp(env, val)	longjmp(env, val)
+//#define	sigsetjmp(env, mask)	setjmp(env)
 
 #define	SUPPORT_PC9861K
 #define	SUPPORT_CRT15KHZ
@@ -190,7 +207,7 @@ typedef SINT32	FILELEN;
 #define	DMACCALL
 #define	IOOUTCALL
 #define	IOINPCALL
-#define	SOUNDCALL
+//#define	SOUNDCALL
 #define	VRAMCALL
 #define	SCRNCALL
 #define	VERMOUTHCL
