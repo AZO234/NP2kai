@@ -37,7 +37,6 @@ void taskmng_exit(void) {
 
 #if defined(GCW0)
 
-int mx = 320, my = 240;
 int ENABLE_MOUSE=0; //0--disable
 
 int convertKeyMap(int scancode){
@@ -72,6 +71,8 @@ int convertKeyMap(int scancode){
 }
 
 #endif //GCW0
+
+int mx = 320, my = 240;
 
 void taskmng_rol(void) {
 
