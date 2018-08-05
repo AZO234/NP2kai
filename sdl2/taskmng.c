@@ -37,6 +37,7 @@ void taskmng_exit(void) {
 
 #if defined(GCW0)
 
+int mx = 320, my = 240;
 int ENABLE_MOUSE=0; //0--disable
 
 int convertKeyMap(int scancode){
@@ -88,6 +89,8 @@ void taskmng_rol(void) {
 			}
 			else {
 				menubase_moving(e.motion.x, e.motion.y, 0);
+				mx = e.motion.x;
+				my = e.motion.y;
 			}
 			break;
 
@@ -96,7 +99,8 @@ void taskmng_rol(void) {
 				case SDL_BUTTON_LEFT:
 					if (menuvram != NULL)
 					{
-						menubase_moving(e.button.x, e.button.y, 2);
+//						menubase_moving(e.button.x, e.button.y, 2);
+						menubase_moving(mx, my, 2);
 					}
 #if defined(__IPHONEOS__)
 					else if (SDL_IsTextInputActive())
@@ -128,7 +132,8 @@ void taskmng_rol(void) {
 				case SDL_BUTTON_LEFT:
 					if (menuvram != NULL)
 					{
-						menubase_moving(e.button.x, e.button.y, 1);
+//						menubase_moving(e.button.x, e.button.y, 1);
+						menubase_moving(mx, my, 1);
 					} else {
 						mousemng_buttonevent(&e.button);
 					}
@@ -142,7 +147,8 @@ void taskmng_rol(void) {
 
 				case SDL_BUTTON_MIDDLE:
 					if (menuvram == NULL) {
-						sysmenu_menuopen(0, e.button.x, e.button.y);
+//						sysmenu_menuopen(0, e.button.x, e.button.y);
+						sysmenu_menuopen(0, mx, my);
 					} else {
 						menubase_close();
 					}
