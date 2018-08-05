@@ -131,7 +131,7 @@ void taskmng_rol(void) {
 				case SDL_BUTTON_LEFT:
 					if (menuvram != NULL)
 					{
-						menubase_moving(e.button.x, e.button.y, 1);
+						menubase_moving(lmx, lmy, 1);
 					} else {
 						mousemng_buttonevent(&e.button);
 					}
