@@ -130,5 +130,11 @@ tk800 <tk_np2x@yahoo.co.jp>,
 .B ねこープロジェクト
 を MacOS X に移植した Neko Project IIx を開発しました。
 .SH "SEE ALSO"
-.B Xnp2kai
+.B Xnp2
 の最新版等の情報は http://www.nonakap.org/np2/ を参照してください。
+AZO <typesylph@gmail.com>,
+.B ねこープロジェクト
+を libretro に移植した Neko Project II kai を開発しました。
+.SH "SEE ALSO"
+.B Xnp2kai
+の最新版等の情報は http://domisan.sakura.ne.jp/article/np2kai/np2kai.html を参照してください。
