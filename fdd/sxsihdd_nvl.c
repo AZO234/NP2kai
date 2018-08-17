@@ -2,6 +2,9 @@
 
 #ifdef SUPPORT_NVL_IMAGES
 
+#if !defined(_WIN32)
+#include	<dlfcn.h>
+#endif
 #include	"strres.h"
 #include	"dosio.h"
 #include	"sysmng.h"
@@ -10,16 +13,29 @@
 #include	"sxsi.h"
 
 
+#if defined(_WIN32)
 typedef void *sxsihdd_nvl_1(LPCTSTR path, BOOL ro);
+#else
+typedef void *sxsihdd_nvl_1(const char *path, SINT32 ro);
+#endif
 typedef void sxsihdd_nvl_2(void *pv);
 typedef void sxsihdd_nvl_3(void *pv, UINT32 *a);
+#if defined(_WIN32)
 typedef BOOL sxsihdd_nvl_4(void *pv, INT64 p, UINT32 s, void *b);
 typedef BOOL sxsihdd_nvl_5(void *pv, INT64 p, UINT32 s, const void *b);
+#else
+typedef SINT32 sxsihdd_nvl_4(void *pv, SINT64 p, UINT32 s, void *b);
+typedef SINT32 sxsihdd_nvl_5(void *pv, SINT64 p, UINT32 s, const void *b);
+#endif
 
 
 typedef struct _sxsihdd_nvl
 {
+#if defined(_WIN32)
 	HMODULE hModule;
+#else
+	void *hModule;
+#endif
 	sxsihdd_nvl_1 *f1;
 	sxsihdd_nvl_2 *f2;
 	sxsihdd_nvl_3 *f3;
@@ -43,7 +59,11 @@ static void nvl_close(sxsihdd_nvl *p)
 
 	if (p->hModule != NULL)
 	{
+#if defined(_WIN32)
 		FreeLibrary(p->hModule);
+#else
+		dlclose(p->hModule);
+#endif
 	}
 
 	_MFREE(p);
@@ -53,7 +73,11 @@ static void nvl_close(sxsihdd_nvl *p)
 static sxsihdd_nvl *nvl_open(const OEMCHAR *fname)
 {
 	sxsihdd_nvl *p = NULL;
+#if defined(_WIN32)
 	HMODULE hModule = NULL;
+#else
+	void *hModule = NULL;
+#endif
 
 	p = (sxsihdd_nvl*)_MALLOC(sizeof(sxsihdd_nvl), "sxsihdd_nvl_open");
 	if (p == NULL)
@@ -64,12 +88,17 @@ static sxsihdd_nvl *nvl_open(const OEMCHAR *fname)
 	p->hModule = NULL;
 	p->pv = NULL;
 
+#if defined(_WIN32)
 	p->hModule = LoadLibrary(_T("NVL.DLL"));
+#else
+	p->hModule = dlopen("libnvl.so", RTLD_LAZY);
+#endif
 	if (p->hModule == NULL)
 	{
 		goto sxsiope_err;
 	}
 
+#if defined(_WIN32)
 	p->f1 = (sxsihdd_nvl_1 *)GetProcAddress(p->hModule, MAKEINTRESOURCEA(1));
 	p->f2 = (sxsihdd_nvl_2 *)GetProcAddress(p->hModule, MAKEINTRESOURCEA(2));
 	p->f3 = (sxsihdd_nvl_3 *)GetProcAddress(p->hModule, MAKEINTRESOURCEA(3));
@@ -77,6 +106,15 @@ static sxsihdd_nvl *nvl_open(const OEMCHAR *fname)
 	p->f5 = (sxsihdd_nvl_5 *)GetProcAddress(p->hModule, MAKEINTRESOURCEA(5));
 
 	p->pv = (*p->f1)(fname, FALSE);
+#else
+	p->f1 = (sxsihdd_nvl_1 *)dlsym(p->hModule, "_1");
+	p->f2 = (sxsihdd_nvl_2 *)dlsym(p->hModule, "_2");
+	p->f3 = (sxsihdd_nvl_3 *)dlsym(p->hModule, "_3");
+	p->f4 = (sxsihdd_nvl_4 *)dlsym(p->hModule, "_4");
+	p->f5 = (sxsihdd_nvl_5 *)dlsym(p->hModule, "_5");
+
+	p->pv = (*p->f1)(fname, 0);
+#endif
 	if (p->pv == NULL)
 	{
 		goto sxsiope_err;
