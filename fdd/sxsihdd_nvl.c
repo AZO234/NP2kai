@@ -46,11 +46,18 @@ typedef struct _sxsihdd_nvl
 
 BOOL nvl_check()
 {
+#if defined(_WIN32)
 	HMODULE hModule = NULL;
 
 	hModule = LoadLibrary(_T("NVL.DLL"));
+#else
+	void *hModule = NULL;
+
+	hModule = dlopen("libnvl.so", RTLD_LAZY);
+#endif
 	if(!hModule) return FALSE;
 
+#if defined(_WIN32)
 	if(!GetProcAddress(hModule, MAKEINTRESOURCEA(1))) goto check_err;
 	if(!GetProcAddress(hModule, MAKEINTRESOURCEA(2))) goto check_err;
 	if(!GetProcAddress(hModule, MAKEINTRESOURCEA(3))) goto check_err;
@@ -58,6 +65,15 @@ BOOL nvl_check()
 	if(!GetProcAddress(hModule, MAKEINTRESOURCEA(5))) goto check_err;
 
 	FreeLibrary(hModule);
+#else
+	if(!dlsym(hModule, "_1")) goto check_err;
+	if(!dlsym(hModule, "_2")) goto check_err;
+	if(!dlsym(hModule, "_3")) goto check_err;
+	if(!dlsym(hModule, "_4")) goto check_err;
+	if(!dlsym(hModule, "_5")) goto check_err;
+
+	dlclose(hModule);
+#endif
 
 	return TRUE;
 check_err:
