@@ -31,6 +31,9 @@
 #include "dispsync.h"
 #include "wab.h"
 #include "wabbmpsave.h"
+#if defined(_WINDOWS)
+#include	<process.h>
+#endif
 #include "wab_rly.h"
 #if defined(NP2_X11)
 #include "xnp2.h"
@@ -496,7 +499,7 @@ void np2wab_drawframe()
 /**
  * 非同期描画（ga_threadmodeが真）
  */
-DWORD WINAPI ga_ThreadFunc(LPVOID vdParam) {
+unsigned int __stdcall ga_ThreadFunc(LPVOID vdParam) {
 	DWORD time = GetTickCount();
 	int timeleft = 0;
 	while (!ga_exitThread && ga_threadmode) {
@@ -661,7 +664,7 @@ void np2wab_bind(void)
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 	// マルチスレッドモードならスレッド開始
 	if(ga_threadmode){
-		ga_hThread  = CreateThread(NULL , 0 , ga_ThreadFunc  , NULL , 0 , &dwID);
+		ga_hThread  = (HANDLE)_beginthreadex(NULL , 0 , ga_ThreadFunc  , NULL , 0 , &dwID);
 	}
 #endif
 	

@@ -1043,7 +1043,14 @@ const OEMCHAR	*path;
 	ret = statflag_write(sfh, &sds, sizeof(sds));
 	for (i=0; i<NELEMENTS(sds.ide); i++) {
 		if (sds.ide[i] != SXSIDEV_NC) {
-			path = sxsi_getfilename((REG8)i);
+#if defined(SUPPORT_IDEIO)||defined(SUPPORT_PHYSICAL_CDDRV)
+			if(sds.ide[i]==SXSIDEV_CDROM){ // CD-ROM‚Ìê‡Anp2cfg‚ð—Dæ
+				path = np2cfg.idecd[i];
+			}else
+#endif
+			{
+				path = sxsi_getfilename((REG8)i);
+			}
 			ret |= statflag_writepath(sfh, path, FTYPE_NONE, 0);
 		}
 	}

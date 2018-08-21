@@ -1644,6 +1644,7 @@ BEGIN
     IDS_HDDTITLE            "Select HD image"
     IDS_HDDEXT              "thd"
     IDS_HDDFILTER           "Anex86 harddisk image files (*.hdi)|*.hdi|T98 harddisk image files (*.thd)|*.thd|T98-Next harddisk image files (*.nhd)|*.nhd|VirtualPC harddisk image files (*.vhd)|*.vhd|SL9821 harddisk image files (*.slh)|*.slh|All supported files|*.thd;*.nhd;*.hdi;*.vhd;*.slh|All files (*.*)|*.*|"
+    IDS_HDDFILTER_NVL       "Anex86 harddisk image files (*.hdi)|*.hdi|T98 harddisk image files (*.thd)|*.thd|T98-Next harddisk image files (*.nhd)|*.nhd|VirtualPC harddisk image files (*.vhd)|*.vhd|SL9821 harddisk image files (*.slh)|*.slh|Virtual Machine harddisk image files (*.vmdk;*.dsk)|*.vmdk;*.dsk|Hyper-V harddisk image files (*.vhdx)|*.vhdx|VirtualBox harddisk image files (*.vdi)|*.vdi|QEMU harddisk image files (*.qcow;*.qcow2)|*.qcow;*.qcow2|Parallels harddisk image files (*.hdd)|*.hdd|All supported files|*.thd;*.nhd;*.hdi;*.vhd;*.slh;*.vmdk;*.dsk;*.vhdx;*.vdi;*.qcow;*.qcow2;*.hdd|All files (*.*)|*.*|"
     IDS_SASITITLE           "Select SASI/IDE HDD image"
     IDS_IDETITLE            "Select IDE HDD image"
     IDS_ISOTITLE            "Select ISO-9660 image"

@@ -1640,6 +1640,7 @@ BEGIN
     IDS_HDDTITLE            "HDイメージ選択"
     IDS_HDDEXT              "thd"
     IDS_HDDFILTER           "Anex86ハードディスクイメージ(*.hdi)|*.hdi|T98ハードディスクイメージ(*.thd)|*.thd|T98-Nextハードディスクイメージ(*.nhd)|*.nhd|VirtualPCハードディスクイメージ (*.vhd)|*.vhd|SL9821ハードディスクイメージ(*.slh)|*.slh|対応しているすべての形式|*.thd;*.nhd;*.hdi;*.vhd;*.slh|すべてのファイル(*.*)|*.*|"
+    IDS_HDDFILTER_NVL       "Anex86ハードディスクイメージ(*.hdi)|*.hdi|T98ハードディスクイメージ(*.thd)|*.thd|T98-Nextハードディスクイメージ(*.nhd)|*.nhd|VirtualPCハードディスクイメージ (*.vhd)|*.vhd|SL9821ハードディスクイメージ(*.slh)|*.slh|VMwareハードディスクイメージ(*.vmdk;*.dsk)|*.vmdk;*.dsk|Hyper-Vハードディスクイメージ(*.vhdx)|*.vhdx|VirtualBox ハードディスクイメージ(*.vdi)|*.vdi|QEMU ハードディスクイメージ(*.qcow;*.qcow2)|*.qcow;*.qcow2|Parallels ハードディスクイメージ(*.hdd)|*.hdd|対応しているすべての形式|*.thd;*.nhd;*.hdi;*.vhd;*.slh;*.vmdk;*.dsk;*.vhdx;*.vdi;*.qcow;*.qcow2;*.hdd|すべてのファイル(*.*)|*.*|"
     IDS_SASITITLE           "SASI/IDE HDDイメージ"
     IDS_IDETITLE            "IDE HDDイメージ"
     IDS_ISOTITLE            "ISO-9660ディスクイメージ"

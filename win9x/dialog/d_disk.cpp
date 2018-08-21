@@ -19,6 +19,13 @@
 #include "fdd/newdisk.h"
 #include "fdd/sxsi.h"
 #include "np2class.h"
+#if defined(_WINDOWS)
+#include	<process.h>
+#endif
+#ifdef SUPPORT_NVL_IMAGES
+extern "C" BOOL nvl_check();
+#endif
+
 
 // 進捗表示用（実装酷すぎ･･･）
 static int _mt_progressvalue = 0;
@@ -83,14 +90,16 @@ void dialog_changehdd(HWND hWnd, REG8 drv)
 				nTitle = IDS_SASITITLE;
 				nExt = IDS_HDDEXT;
 				nFilter = IDS_HDDFILTER;
-				nIndex = 6;
+				//nIndex = 6;
+				nIndex = 0;
 			}
 			else
 			{
 				nTitle = IDS_ISOTITLE;
 				nExt = IDS_ISOEXT;
 				nFilter = IDS_ISOFILTER;
-				nIndex = 7; // 3
+				//nIndex = 7; // 3
+				nIndex = 0;
 			}
 		}
 #else
@@ -103,7 +112,8 @@ void dialog_changehdd(HWND hWnd, REG8 drv)
 #endif
 			nExt = IDS_HDDEXT;
 			nFilter = IDS_HDDFILTER;
-			nIndex = 6;//4;
+			//nIndex = 6;//4;
+			nIndex = 0;
 		}
 #endif
 	}
@@ -115,7 +125,8 @@ void dialog_changehdd(HWND hWnd, REG8 drv)
 			nTitle = IDS_SCSITITLE;
 			nExt = IDS_SCSIEXT;
 			nFilter = IDS_SCSIFILTER;
-			nIndex = 3;
+			//nIndex = 3;	
+			nIndex = 0;
 		}
 	}
 #endif	// defined(SUPPORT_SCSI)
@@ -152,10 +163,35 @@ void dialog_changehdd(HWND hWnd, REG8 drv)
 			}
 		}
 	}
+	
+#ifdef SUPPORT_NVL_IMAGES
+	if(nFilter == IDS_HDDFILTER && nvl_check()){
+		nFilter = IDS_HDDFILTER_NVL;
+		nIndex = 0;
+	}
+#endif
 
 	std::tstring rExt(LoadTString(nExt));
 	std::tstring rFilter(LoadTString(nFilter));
 	std::tstring rTitle(LoadTString(nTitle));
+	
+	if(nIndex==0){ // All supported files（後ろから2番目）を自動選択
+		int seppos = 0;
+		int seppostmp;
+		int sepcount = 0;
+		// 区切り文字の数を数える
+		while((seppostmp = rFilter.find('|', seppos)) != std::string::npos){
+			if(seppostmp == std::string::npos) break;
+			seppos = seppostmp + 1;
+			sepcount++;
+		}
+		if(rFilter.back()!='|'){
+			sepcount++; // 末尾が|でなければあるものとする
+		}
+		if((sepcount / 2) - 1 > 0){
+			nIndex = (sepcount / 2) - 1; // 最後がAll filesなので一つ前を選択
+		}
+	}
 
 	CFileDlg dlg(TRUE, rExt.c_str(), lpPath, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_SHAREAWARE, rFilter.c_str(), hWnd);
 	dlg.m_ofn.lpstrTitle = rTitle.c_str();
@@ -878,7 +914,7 @@ static UINT16 _mt_diskH = 0;
 static UINT16 _mt_diskS = 0;
 static UINT16 _mt_diskSS = 0;
 
-static DWORD WINAPI newdisk_ThreadFunc(LPVOID vdParam)
+static unsigned int __stdcall newdisk_ThreadFunc(LPVOID vdParam)
 {
 	LPCTSTR lpPath = _mt_lpPath;
 	LPCTSTR ext = file_getext(lpPath);
@@ -932,7 +968,7 @@ static DWORD WINAPI newdisk_ThreadFunc(LPVOID vdParam)
  */
 void dialog_newdisk_ex(HWND hWnd, int mode)
 {
-	DWORD dwID;
+	unsigned int dwID;
 	TCHAR szPath[MAX_PATH];
 	std::tstring rTitle;
 	std::tstring rDefExt;
@@ -1007,7 +1043,7 @@ void dialog_newdisk_ex(HWND hWnd, int mode)
 			_mt_progressvalue = 0;
 			_mt_progressmax = 100;
 			_tcscpy(_mt_lpPath, lpPath);
-			newdisk_hThread = CreateThread(NULL , 0 , newdisk_ThreadFunc  , NULL , 0 , &dwID);
+			newdisk_hThread = (HANDLE)_beginthreadex(NULL , 0 , newdisk_ThreadFunc  , NULL , 0 , &dwID);
 			CNewHddDlgProg dlg2(hWnd, _mt_progressmax, _mt_progressvalue);
 			if (dlg2.DoModal() != IDOK)
 			{
@@ -1066,7 +1102,7 @@ void dialog_newdisk_ex(HWND hWnd, int mode)
 			_mt_progressvalue = 0;
 			_mt_progressmax = 100;
 			_tcscpy(_mt_lpPath, lpPath);
-			newdisk_hThread = CreateThread(NULL , 0 , newdisk_ThreadFunc  , NULL , 0 , &dwID);
+			newdisk_hThread = (HANDLE)_beginthreadex(NULL , 0 , newdisk_ThreadFunc  , NULL , 0 , &dwID);
 			CNewHddDlgProg dlg2(hWnd, _mt_progressmax, _mt_progressvalue);
 			if (dlg2.DoModal() != IDOK)
 			{

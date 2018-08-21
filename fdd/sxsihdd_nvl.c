@@ -44,6 +44,26 @@ typedef struct _sxsihdd_nvl
 	void *pv;
 } sxsihdd_nvl;
 
+BOOL nvl_check()
+{
+	HMODULE hModule = NULL;
+
+	hModule = LoadLibrary(_T("NVL.DLL"));
+	if(!hModule) return FALSE;
+
+	if(!GetProcAddress(hModule, MAKEINTRESOURCEA(1))) goto check_err;
+	if(!GetProcAddress(hModule, MAKEINTRESOURCEA(2))) goto check_err;
+	if(!GetProcAddress(hModule, MAKEINTRESOURCEA(3))) goto check_err;
+	if(!GetProcAddress(hModule, MAKEINTRESOURCEA(4))) goto check_err;
+	if(!GetProcAddress(hModule, MAKEINTRESOURCEA(5))) goto check_err;
+
+	FreeLibrary(hModule);
+
+	return TRUE;
+check_err:
+	return FALSE;
+}
+
 
 static void nvl_close(sxsihdd_nvl *p)
 {

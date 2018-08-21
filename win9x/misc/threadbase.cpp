@@ -41,8 +41,10 @@ bool CThreadBase::Start()
 
 	m_bAbort = false;
 	m_bDone = false;
-	DWORD dwThreadId = 0;
-	HANDLE hThread = ::CreateThread(NULL, m_nStackSize, &ThreadProc, this, 0, &dwThreadId);
+	//DWORD dwThreadId = 0;
+	unsigned int dwThreadId = 0;
+	//HANDLE hThread = ::CreateThread(NULL, m_nStackSize, &ThreadProc, this, 0, &dwThreadId);
+	HANDLE hThread = (HANDLE)_beginthreadex(NULL, m_nStackSize, &ThreadProc, this, 0, &dwThreadId);
 	if (hThread == INVALID_HANDLE_VALUE)
 	{
 		return false;
@@ -88,7 +90,8 @@ bool CThreadBase::Restart()
  * @param[in] pParam this É|ÉCÉìÉ^
  * @retval 0 èÌÇ…0
  */
-DWORD __stdcall CThreadBase::ThreadProc(LPVOID pParam)
+//DWORD __stdcall CThreadBase::ThreadProc(LPVOID pParam)
+unsigned int __stdcall  CThreadBase::ThreadProc(LPVOID pParam)
 {
 	CThreadBase& obj = *(static_cast<CThreadBase*>(pParam));
 	while ((!obj.m_bAbort) && (obj.Task()))

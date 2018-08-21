@@ -326,17 +326,38 @@ void atapicmd_a0(IDEDRV drv) {
 //-- command
 
 // 0x1b: START/STOP UNIT
-void atapi_cmd_traycmd_threadfunc(void* vdParam) {
-#if defined(_WINDOWS) && !defined(__LIBRETRO__)
-	if(vdParam){
-		mciSendString(OEMTEXT("Set CDaudio Door Open"), NULL, 0, NULL );
-	}else{
-		mciSendString(OEMTEXT("Set CDaudio Door Closed"), NULL, 0, NULL );
+#ifdef SUPPORT_PHYSICAL_CDDRV
+void atapi_cmd_traycmd_eject_threadfunc(void* vdParam) {
+#if defined(_WINDOWS)
+	HANDLE handle;
+	DWORD dwRet = 0;
+	handle = CreateFile(np2cfg.idecd[(int)vdParam], GENERIC_READ|GENERIC_WRITE, FILE_SHARE_READ|FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	if(handle != INVALID_HANDLE_VALUE){
+		if(DeviceIoControl(handle, FSCTL_LOCK_VOLUME, 0, 0, 0, 0, &dwRet, 0)){
+			if(DeviceIoControl(handle, FSCTL_DISMOUNT_VOLUME, 0, 0, 0, 0, &dwRet, 0)){
+				DeviceIoControl(handle, IOCTL_STORAGE_EJECT_MEDIA, 0, 0, 0, 0, &dwRet, 0);
+			}
+		}
+		CloseHandle(handle);
 	}
 #else
 	// TODO: Windows以外のコードを書く
 #endif
 }
+void atapi_cmd_traycmd_close_threadfunc(void* vdParam) {
+#if defined(_WINDOWS)
+	HANDLE handle;
+	DWORD dwRet = 0;
+	handle = CreateFile(np2cfg.idecd[(int)vdParam], GENERIC_READ, FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
+	if(handle != INVALID_HANDLE_VALUE){
+		DeviceIoControl(handle, IOCTL_STORAGE_LOAD_MEDIA, 0, 0, 0, 0, &dwRet, 0);
+		CloseHandle(handle);
+	}
+#else
+	// TODO: Windows以外のコードを書く
+#endif
+}
+#endif
 static void atapi_cmd_start_stop_unit(IDEDRV drv) {
 
 	UINT	power;
@@ -364,10 +385,9 @@ static void atapi_cmd_start_stop_unit(IDEDRV drv) {
 		break;
 	case 2: // Eject the Disc if possible
 #ifdef SUPPORT_PHYSICAL_CDDRV
-		if(np2cfg.allowcdtraycmd && _tcsnicmp(sxsi->fname, OEMTEXT("\\\\.\\"), 4)==0){
+		if(np2cfg.allowcdtraycmd && _tcsnicmp(np2cfg.idecd[sxsi->drv], OEMTEXT("\\\\.\\"), 4)==0){
 #if defined(_WINDOWS) && !defined(__LIBRETRO__)
-			//mciSendString(OEMTEXT("Set CDaudio Door Open"), NULL, 0, NULL );
-			_beginthread(atapi_cmd_traycmd_threadfunc, 0, (void*)1);
+			_beginthread(atapi_cmd_traycmd_eject_threadfunc, 0, (void*)sxsi->drv);
 #else
 			// TODO: Windows以外のコードを書く
 #endif
@@ -381,10 +401,9 @@ static void atapi_cmd_start_stop_unit(IDEDRV drv) {
 		break;
 	case 3: // Load the Disc (Close Tray)
 #ifdef SUPPORT_PHYSICAL_CDDRV
-		if(np2cfg.allowcdtraycmd && _tcsnicmp(sxsi->fname, OEMTEXT("\\\\.\\"), 4)==0){
+		if(np2cfg.allowcdtraycmd && _tcsnicmp(np2cfg.idecd[sxsi->drv], OEMTEXT("\\\\.\\"), 4)==0){
 #if defined(_WINDOWS) && !defined(__LIBRETRO__)
-			//mciSendString(OEMTEXT("Set CDaudio Door Closed"), NULL, 0, NULL );
-			_beginthread(atapi_cmd_traycmd_threadfunc, 0, (void*)0);;
+			_beginthread(atapi_cmd_traycmd_close_threadfunc, 0, (void*)sxsi->drv);
 #else
 			// TODO: Windows以外のコードを書く
 #endif
