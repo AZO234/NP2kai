@@ -66,6 +66,10 @@
 #define	NSTATSAVE	10
 #endif
 
+#ifdef SUPPORT_NVL_IMAGES
+BOOL nvl_check();
+#endif
+
 /* normal */
 static void cb_bmpsave(GtkAction *action, gpointer user_data);
 static void cb_change_font(GtkAction *action, gpointer user_data);
@@ -1044,7 +1048,18 @@ cb_ataopen(GtkAction *action, gpointer user_data)
 		gtk_file_filter_add_pattern(filter, "*.[hH][dD][iI]");
 		gtk_file_filter_add_pattern(filter, "*.[nN][hH][dD]");
 		gtk_file_filter_add_pattern(filter, "*.[vV][hH][dD]");
-		gtk_file_filter_add_pattern(filter, "*.[sS][lL][nN]");
+		gtk_file_filter_add_pattern(filter, "*.[sS][lL][hH]");
+#ifdef SUPPORT_NVL_IMAGES
+		if(nvl_check()) {
+			gtk_file_filter_add_pattern(filter, "*.[vV][mM][dD][kK]");
+			gtk_file_filter_add_pattern(filter, "*.[dD][sS][kK]");
+			gtk_file_filter_add_pattern(filter, "*.[vV][mM][dD][xX]");
+			gtk_file_filter_add_pattern(filter, "*.[vV][dD][iI]");
+			gtk_file_filter_add_pattern(filter, "*.[qQ][cC][oO][wW]");
+			gtk_file_filter_add_pattern(filter, "*.[qQ][cC][oO][wW]2");
+			gtk_file_filter_add_pattern(filter, "*.[hH][dD][dD]");
+		}
+#endif	/* SUPPORT_NVL_IMAGES */
 		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 	}
 	gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(dialog), filter);
@@ -1520,7 +1535,18 @@ cb_sasiopen(GtkAction *action, gpointer user_data)
 		gtk_file_filter_add_pattern(filter, "*.[hH][dD][iI]");
 		gtk_file_filter_add_pattern(filter, "*.[nN][hH][dD]");
 		gtk_file_filter_add_pattern(filter, "*.[vV][hH][dD]");
-		gtk_file_filter_add_pattern(filter, "*.[sS][lL][nN]");
+		gtk_file_filter_add_pattern(filter, "*.[sS][lL][hH]");
+#ifdef SUPPORT_NVL_IMAGES
+		if(nvl_check()) {
+			gtk_file_filter_add_pattern(filter, "*.[vV][mM][dD][kK]");
+			gtk_file_filter_add_pattern(filter, "*.[dD][sS][kK]");
+			gtk_file_filter_add_pattern(filter, "*.[vV][mM][dD][xX]");
+			gtk_file_filter_add_pattern(filter, "*.[vV][dD][iI]");
+			gtk_file_filter_add_pattern(filter, "*.[qQ][cC][oO][wW]");
+			gtk_file_filter_add_pattern(filter, "*.[qQ][cC][oO][wW]2");
+			gtk_file_filter_add_pattern(filter, "*.[hH][dD][dD]");
+		}
+#endif	/* SUPPORT_NVL_IMAGES */
 		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 	}
 	gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(dialog), filter);
