@@ -485,6 +485,20 @@ Only FAT is supported, NTFS does not correspond.
 DiskExplorer  
 https://hp.vector.co.jp/authors/VA013937/editdisk/index.html
 
+[X11][SDL2] To use libnvl.so functions
+---
+http://euee.web.fc2.com/tool/nvl/np2kainvl.html
+Locate libnvl.so to /usr/local/lib/.  
+Then we can read/write follow types.  
+
+* vmdk
+* dsk
+* vmdx
+* vdi
+* qcow
+* qcow2
+* hdd
+
 About network
 ---
 From rev.7 we can use network.
@@ -590,6 +604,9 @@ WAB Type normally uses 'PC-9821Xe10,Xa7e,Xb10 built-in'.
 
 Release
 ---
+* Aug 22, 2018
+	- Apply for libnvl.so
+	- Merge NP21/W 0.86 rev.43
 * Jun 27, 2018 (rev.17)
 	- Merge NP21/W 0.86 rev.42
 * Jun 19, 2018
