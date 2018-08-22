@@ -487,9 +487,9 @@ https://hp.vector.co.jp/authors/VA013937/editdisk/index.html
 
 [X11][SDL2] To use libnvl.so functions
 ---
-http://euee.web.fc2.com/tool/nvl/np2kainvl.html
+http://euee.web.fc2.com/tool/nvl/np2kainvl.html  
 Locate libnvl.so to /usr/local/lib/.  
-Then we can read/write follow types.  
+Then we can use follow types HDD image files.  
 
 * vmdk
 * dsk
