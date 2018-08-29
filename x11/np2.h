@@ -66,7 +66,7 @@ typedef struct {
 	UINT8	drawinterp;
 	UINT8	F11KEY;
 
-	UINT8	cfgreadonly;
+	UINT8	readonly; // No save changed settings
 } NP2OSCFG;
 
 

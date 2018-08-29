@@ -284,9 +284,11 @@ void hostdrv_readini()
  */
 void hostdrv_writeini()
 {
-	char szPath[MAX_PATH];
-	milstr_ncpy(szPath, modulefile, sizeof(szPath));
-	ini_write(szPath, s_hostdrvapp, s_hostdrvini, sizeof(s_hostdrvini) / sizeof(INITBL), FALSE);
+	if(!np2oscfg.readonly){
+		char szPath[MAX_PATH];
+		milstr_ncpy(szPath, modulefile, sizeof(szPath));
+		ini_write(szPath, s_hostdrvapp, s_hostdrvini, sizeof(s_hostdrvini) / sizeof(INITBL), FALSE);
+	}
 }
 
 /**

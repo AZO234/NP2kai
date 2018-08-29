@@ -501,6 +501,14 @@ static const PFTBL s_IniItems[] =
 	PFVAL("IDERWAIT", PFTYPE_UINT32,	&np2cfg.iderwait),
 	PFVAL("IDEWWAIT", PFTYPE_UINT32,	&np2cfg.idewwait),
 	PFVAL("IDEMWAIT", PFTYPE_UINT32,	&np2cfg.idemwait),
+	PFVAL("CD_ASYNC", PFTYPE_BOOL,		&np2cfg.useasynccd),
+	PFVAL("CDTRAYOP", PFTYPE_BOOL,		&np2cfg.allowcdtraycmd),
+	PFVAL("SVCDFILE", PFTYPE_BOOL,		&np2cfg.savecdfile),
+	PFVAL("HD_ASYNC", PFRO_BOOL,		&np2cfg.useasynchd),
+	PFSTR("CD1_FILE", PFTYPE_STR,		np2cfg.idecd[0]),
+	PFSTR("CD2_FILE", PFTYPE_STR,		np2cfg.idecd[1]),
+	PFSTR("CD3_FILE", PFTYPE_STR,		np2cfg.idecd[2]),
+	PFSTR("CD4_FILE", PFTYPE_STR,		np2cfg.idecd[3]),
 #endif
 
 	PFVAL("SampleHz", PFTYPE_UINT32,	&np2cfg.samplingrate),
@@ -717,6 +725,8 @@ static const PFTBL s_IniItems[] =
 	
 	PFVAL("CPUSTABF", PFTYPE_UINT16,	&np2oscfg.cpustabf), // クロック安定器適用限界時間（フレーム）
 	
+	PFVAL("READONLY", PFRO_BOOL,		&np2oscfg.readonly), // 変更を設定ファイルに書き込まない
+
 	PFVAL("I286SAVE", PFRO_BOOL,		&np2oscfg.I286SAVE)
 };
 
@@ -764,8 +774,10 @@ void initload(void)
  */
 void initsave(void)
 {
-	TCHAR szPath[MAX_PATH];
+	if(!np2oscfg.readonly){
+		TCHAR szPath[MAX_PATH];
 	
-	initgetfile(szPath, _countof(szPath));
-	ini_write(szPath, s_szIniTitle, s_IniItems, _countof(s_IniItems));
+		initgetfile(szPath, _countof(szPath));
+		ini_write(szPath, s_szIniTitle, s_IniItems, _countof(s_IniItems));
+	}
 }

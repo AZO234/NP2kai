@@ -10,6 +10,8 @@ ifeq ($(shell uname -a),)
 	platform = win
 else ifneq ($(findstring MINGW,$(UNAME)),)
 	platform = win
+else ifneq ($(findstring MSYS,$(UNAME)),)
+	platform = win
 else ifneq ($(findstring Darwin,$(UNAME)),)
 	platform = osx
 else ifneq ($(findstring win,$(UNAME)),)

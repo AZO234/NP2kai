@@ -68,6 +68,7 @@ NP2OSCFG np2oscfg = {
 	SNDDRV_SDL,		/* snddrv */
 	{ "", "" }, 		/* MIDIDEV */
 	0,			/* MIDIWAIT */
+	0,			/* readonly */
 };
 static	UINT		framecnt;
 static	UINT		waitcnt;
@@ -511,6 +512,7 @@ int np2_end(){
 	sysmenu_destroy();
 #if defined(SUPPORT_WAB)
 	wabwin_writeini();
+	np2wabcfg.readonly = np2oscfg.readonly;
 #endif	// defined(SUPPORT_WAB)
 	TRACETERM();
 #if !defined(__LIBRETRO__)

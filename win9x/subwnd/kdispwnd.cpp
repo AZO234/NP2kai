@@ -403,9 +403,11 @@ void kdispwin_readini()
  */
 void kdispwin_writeini()
 {
-	TCHAR szPath[MAX_PATH];
+	if(!np2oscfg.readonly){
+		TCHAR szPath[MAX_PATH];
 
-	initgetfile(szPath, _countof(szPath));
-	ini_write(szPath, s_kdispapp, s_kdispini, _countof(s_kdispini));
+		initgetfile(szPath, _countof(szPath));
+		ini_write(szPath, s_kdispapp, s_kdispini, _countof(s_kdispini));
+	}
 }
 #endif

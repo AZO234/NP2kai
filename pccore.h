@@ -186,7 +186,11 @@ struct tagNP2Config
 	UINT8	autoidebios;												// ver0.86w rev36
 	UINT32	iderwait; // IDE“Ç‚İæ‚è‚ÌŠ„‚è‚İ’x‰„ŠÔ(clock)B  np21w ver0.86 rev19
 	UINT32	idewwait; // IDE‘‚«‚İ‚ÌŠ„‚è‚İ’x‰„ŠÔ(clock)B  np21w ver0.86 rev18
-	UINT32	idemwait; // IDE BIOS‚ª‚ ‚éê‡‚ÌŠ„‚è‚İ’x‰„Å¬’l  np21w ver0.86 rev26
+	UINT32	idemwait; // IDE BIOS‚ª‚ ‚éê‡‚ÌŠ„‚è‚İ’x‰„Å¬’l  np21w ver0.86 rev26 ”p~
+	UINT8	savecdfile;	
+	UINT8	useasynccd;
+	UINT8	allowcdtraycmd;	
+	UINT8	useasynchd;
 #else
 	OEMCHAR	sasihdd[2][MAX_PATH];									// ver0.74
 #endif

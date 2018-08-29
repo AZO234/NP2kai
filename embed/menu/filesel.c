@@ -10,6 +10,9 @@
 #include	"menubase.h"
 #include	"menustr.h"
 
+#ifdef SUPPORT_NVL_IMAGES
+BOOL nvl_check();
+#endif
 
 enum {
 	DID_FOLDER	= DID_USER,
@@ -454,7 +457,7 @@ static const OEMCHAR diskfilter[] = OEMTEXT("All supported files");
 static const OEMCHAR fddtitle[] = OEMTEXT("Select floppy image");
 static const OEMCHAR fddext[] = OEMTEXT("d88\0") OEMTEXT("88d\0") OEMTEXT("d98\0") OEMTEXT("98d\0") OEMTEXT("fdi\0") OEMTEXT("xdf\0") OEMTEXT("hdm\0") OEMTEXT("dup\0") OEMTEXT("2hd\0") OEMTEXT("tfd\0") OEMTEXT("nfd\0") OEMTEXT("hd4\0") OEMTEXT("hd5\0") OEMTEXT("hd9\0") OEMTEXT("fdd\0") OEMTEXT("h01\0") OEMTEXT("hdb\0") OEMTEXT("ddb\0") OEMTEXT("dd6\0") OEMTEXT("dcp\0") OEMTEXT("dcu\0") OEMTEXT("flp\0") OEMTEXT("bin\0") OEMTEXT("fim\0") OEMTEXT("img\0") OEMTEXT("ima\0");
 static const OEMCHAR hddtitle[] = OEMTEXT("Select HDD image");
-static const OEMCHAR sasiext[] = OEMTEXT("thd\0") OEMTEXT("nhd\0") OEMTEXT("hdi\0") OEMTEXT("vhd\0") OEMTEXT("sln\0") OEMTEXT("hdn\0");
+static OEMCHAR sasiext[1000] = OEMTEXT("thd\0") OEMTEXT("nhd\0") OEMTEXT("hdi\0") OEMTEXT("vhd\0") OEMTEXT("slh\0") OEMTEXT("hdn\0");
 #if defined(SUPPORT_IDEIO)
 static const OEMCHAR cdtitle[] = OEMTEXT("Select CD-ROM image");
 static const OEMCHAR cdext[] = OEMTEXT("iso\0") OEMTEXT("cue\0") OEMTEXT("ccd\0") OEMTEXT("cdm\0") OEMTEXT("mds\0") OEMTEXT("nrg\0");
@@ -500,6 +503,12 @@ const FSELPRM	*prm;
 	if (!(drv & 0x20)) {		// SASI/IDE
 		if (num < 2) {
 			p = np2cfg.sasihdd[num];
+#ifdef SUPPORT_NVL_IMAGES
+		if(nvl_check()) {
+			strcat(sasiext, OEMTEXT("vmdk\0") OEMTEXT("dsk\0") OEMTEXT("vmdx\0") OEMTEXT("vdi\0") OEMTEXT("qcow\0") OEMTEXT("qcow2\0") OEMTEXT("hdd\0"));
+		}
+#endif	/* SUPPORT_NVL_IMAGES */
+
 			prm = &sasiprm;
 		}
 #if defined(SUPPORT_IDEIO)

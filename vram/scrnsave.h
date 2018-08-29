@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include	"bmpdata.h"
+
 /**
  * types
  */
@@ -37,6 +39,7 @@ SCRNSAVE scrnsave_create(void);
 void scrnsave_destroy(SCRNSAVE hdl);
 int scrnsave_gettype(SCRNSAVE hdl);
 BRESULT scrnsave_writebmp(SCRNSAVE hdl, const OEMCHAR *filename, UINT flag);
+BRESULT scrnsave_getbmp(SCRNSAVE hdl, BMPFILE *lpbf, BMPINFO *lpbi, UINT8 **lplppal, UINT8 **lplppixels, UINT flag);
 BRESULT scrnsave_writegif(SCRNSAVE hdl, const OEMCHAR *filename, UINT flag);
 
 #ifdef __cplusplus

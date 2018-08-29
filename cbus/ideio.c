@@ -22,11 +22,38 @@
 #include	"fmboard.h"
 #include	"cs4231io.h"
 
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+#include	<process.h>
+#endif
 
 	IDEIO	ideio;
 	//
 	//UINT8   ideio_mediastatusnotification[4] = {0};
 	//UINT8   ideio_mediachangeflag[4] = {0};
+	
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+static int ideio_thread_initialized = 0;
+static HANDLE ideio_threadR = NULL;
+static HANDLE ideio_threadW = NULL;
+static IDEDRV ideio_thread_drv = NULL;
+#else
+	// TODO: 非Windows用コードを書く
+#endif
+
+//static void ideio_enter_criticalsection(void){
+//#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+//	EnterCriticalSection(&ideio_cs);
+//#else
+//	// TODO: 非Windows用コードを書く
+//#endif
+//}
+//static void ideio_leave_criticalsection(void){
+//#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+//	LeaveCriticalSection(&ideio_cs);
+//#else
+//	// TODO: 非Windows用コードを書く
+//#endif
+//}
 
 static IDEDEV getidedev(void) {
 
@@ -170,23 +197,41 @@ static void setintr(IDEDRV drv) {
 	}
 }
 
-// 遅延付き割り込み
-static void setdintr(IDEDRV drv, UINT8 errno, UINT8 status, UINT32 delay) {
-
-	if (!(drv->ctrl & IDECTRL_NIEN)) {
-		//drv->status |= IDESTAT_BSY;
-		ideio.bank[0] = ideio.bank[1] | 0x80;           // ????
-		TRACEOUT(("ideio: reg setdintr()"));
-
-		//// 指定した時間遅延（マイクロ秒）
-		//nevent_set(NEVENT_SASIIO, (pccore.realclock / 1000 / 1000) * delay, ideioint, NEVENT_ABSOLUTE);
-
-		// 指定した時間遅延（クロック数）
-		nevent_set(NEVENT_SASIIO, delay, ideioint, NEVENT_ABSOLUTE);
-	}
-}
-
 void ideioint(NEVENTITEM item) {
+	
+	IDEDRV	drv;
+	IDEDEV  dev;
+
+	//ドライブがあるか
+	dev = getidedev();
+	if (dev == NULL) {
+		return;
+	}
+
+	drv = getidedrv();
+	if (drv == NULL) {
+		return;
+	}
+
+	//BUSY解除
+	if(dev->drv[0].status != 0xFF){
+		dev->drv[0].status |= IDESTAT_DRQ;
+		dev->drv[0].status &= ~IDESTAT_BSY;
+	}
+	if(dev->drv[1].status != 0xFF){
+		dev->drv[1].status |= IDESTAT_DRQ;
+		dev->drv[1].status &= ~IDESTAT_BSY;
+	}
+
+	//割り込み実行//(割り込みはドライブ毎には指定できない仕様)
+	if(!(dev->drv[0].ctrl & IDECTRL_NIEN) || !(dev->drv[1].ctrl & IDECTRL_NIEN)){
+		TRACEOUT(("ideio: run setdintr()"));
+		pic_setirq(IDE_IRQ);
+		//mem[MEMB_DISK_INTH] |= 0x01; 
+	}
+   (void)item;
+}
+void ideioint2(NEVENTITEM item) {
 	
 	IDEDRV	drv;
 	IDEDEV  dev;
@@ -218,6 +263,37 @@ void ideioint(NEVENTITEM item) {
 	}
    (void)item;
 }
+
+// 遅延付き割り込み
+static void setdintr(IDEDRV drv, UINT8 errno, UINT8 status, UINT32 delay) {
+
+	if (!(drv->ctrl & IDECTRL_NIEN)) {
+		//drv->status |= IDESTAT_BSY;
+		ideio.bank[0] = ideio.bank[1] | 0x80;           // ????
+		TRACEOUT(("ideio: reg setdintr()"));
+
+		//// 指定した時間遅延（マイクロ秒）
+		//nevent_set(NEVENT_SASIIO, (pccore.realclock / 1000 / 1000) * delay, ideioint, NEVENT_ABSOLUTE);
+
+		// 指定した時間遅延（クロック数）
+		nevent_set(NEVENT_SASIIO, delay, ideioint, NEVENT_ABSOLUTE);
+	}
+}
+static void setdintr2(IDEDRV drv, UINT8 errno, UINT8 status, UINT32 delay) {
+
+	if (!(drv->ctrl & IDECTRL_NIEN)) {
+		//drv->status |= IDESTAT_BSY;
+		ideio.bank[0] = ideio.bank[1] | 0x80;           // ????
+		TRACEOUT(("ideio: reg setdintr()"));
+
+		//// 指定した時間遅延（マイクロ秒）
+		//nevent_set(NEVENT_SASIIO, (pccore.realclock / 1000 / 1000) * delay, ideioint, NEVENT_ABSOLUTE);
+
+		// 指定した時間遅延（クロック数）
+		nevent_set(NEVENT_SASIIO, delay, ideioint2, NEVENT_ABSOLUTE);
+	}
+}
+
 
 static void cmdabort(IDEDRV drv) {
 
@@ -309,6 +385,76 @@ static FILEPOS getcursec(const IDEDRV drv) {
 	return(ret);
 }
 
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+void ideio_threadfuncR_part(IDEDRV drv) {
+	FILEPOS	sec;
+	sec = getcursec(drv);
+	//TRACEOUT(("readsec->drv %d sec %x cnt %d thr %d",
+	//							drv->sxsidrv, sec, drv->mulcnt, drv->multhr));
+	if (sxsi_read(drv->sxsidrv, sec, drv->buf, 512)) {
+		TRACEOUT(("read error!"));
+		cmdabort(drv);
+	}else{
+		drv->bufdir = IDEDIR_IN;
+		drv->buftc = IDETC_TRANSFEREND;
+		drv->bufpos = 0;
+		drv->bufsize = 512;
+
+		if ((drv->mulcnt & (drv->multhr - 1)) == 0) {
+			drv->status = IDESTAT_DRDY | IDESTAT_DSC | IDESTAT_DRQ;
+			drv->error = 0;
+			if(!np2cfg.useasynchd && ideio.rwait > 0){
+				drv->status |= IDESTAT_BSY;
+				drv->status &= ~IDESTAT_DRQ;
+				setdintr(drv, 0, 0, ideio.rwait);
+				//mem[MEMB_DISK_INTH] &= ~0x01; 
+			}else{
+				drv->status &= ~(IDESTAT_BSY);
+				drv->status |= IDESTAT_DRQ;
+				setintr(drv);
+			}
+			//setintr(drv);
+		}else{
+			drv->status &= ~(IDESTAT_BSY);
+		}
+		drv->mulcnt++;
+	}
+}
+unsigned int __stdcall ideio_threadfuncR(void* vdParam) {
+	IDEDRV drv = NULL;
+
+	while(ideio_thread_initialized){
+		drv = ideio_thread_drv;
+		ideio_threadfuncR_part(drv);
+
+		SuspendThread(ideio_threadR);
+	}
+	
+    _endthreadex(0);
+	return 0;
+
+}
+static void readsec(IDEDRV drv) {
+
+	if (drv->device != IDETYPE_HDD) {
+		cmdabort(drv);
+		return;
+	}
+	
+	drv->status |= IDESTAT_BSY;
+	
+	if(np2cfg.useasynchd){
+		if(ideio_threadR){
+			ideio_thread_drv = drv;
+			ResumeThread(ideio_threadR);
+		}else{
+			ideio_threadfuncR_part(drv);
+		}
+	}else{
+		ideio_threadfuncR_part(drv);
+	}
+}
+#else
 static void readsec(IDEDRV drv) {
 
 	FILEPOS	sec;
@@ -333,6 +479,7 @@ static void readsec(IDEDRV drv) {
 		drv->error = 0;
 		if(ideio.rwait > 0){
 			drv->status |= IDESTAT_BSY;
+			drv->status &= ~IDESTAT_DRQ;
 			setdintr(drv, 0, 0, ideio.rwait);
 			//mem[MEMB_DISK_INTH] &= ~0x01; 
 		}else{
@@ -346,6 +493,7 @@ static void readsec(IDEDRV drv) {
 read_err:
 	cmdabort(drv);
 }
+#endif
 
 static void writeinit(IDEDRV drv) {
 	if (drv->device == IDETYPE_NONE) {
@@ -366,6 +514,7 @@ static void writeinit(IDEDRV drv) {
 write_err:
 	cmdabort(drv);
 }
+
 static void writesec(IDEDRV drv) {
 
 	if (drv->device == IDETYPE_NONE) {
@@ -381,13 +530,14 @@ static void writesec(IDEDRV drv) {
 		drv->status = IDESTAT_DRDY | IDESTAT_DSC | IDESTAT_DRQ;
 		drv->error = 0;
 		setintr(drv);
-		if((ideio.bios == IDETC_BIOS && ideio.mwait > 0) || ideio.wwait > 0){
-			drv->status |= IDESTAT_BSY;
-			setdintr(drv, 0, 0, ideio.wwait);
-			//mem[MEMB_DISK_INTH] &= ~0x01; 
-		}else{
-			setintr(drv);
-		}
+		//if((ideio.bios == IDETC_BIOS && ideio.mwait > 0) || ideio.wwait > 0){
+		//	drv->status |= IDESTAT_BSY;
+		//	drv->status &= ~IDESTAT_DRQ;
+		//	setdintr(drv, 0, 0, ideio.wwait);
+		//	//mem[MEMB_DISK_INTH] &= ~0x01; 
+		//}else{
+		//	setintr(drv);
+		//}
 	}
 	return;
 
@@ -1075,6 +1225,50 @@ static void IOOUTCALL ideio_o1e8e(UINT port, REG8 dat) {
 
 // ---- data
 
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+void ideio_threadfuncW_part(IDEDRV drv) {
+	
+	FILEPOS	sec;
+	sec = getcursec(drv);
+	//TRACEOUT(("writesec->drv %d sec %x cnt %d thr %d",
+	//			drv->sxsidrv, sec, drv->mulcnt, drv->multhr));
+	if (sxsi_write(drv->sxsidrv, sec, drv->buf, drv->bufsize)) {
+		TRACEOUT(("write error!"));
+		cmdabort(drv);
+		return;
+	}
+	drv->mulcnt++;
+	incsec(drv);
+	drv->sc--;
+	if (drv->sc) {
+		writesec(drv);
+	}else{
+		// 1セクタ書き込み完了
+		if(!np2cfg.useasynchd && ideio.wwait > 0){
+			drv->status |= IDESTAT_BSY;
+			setdintr2(drv, 0, 0, ideio.rwait);
+		}else{
+			setintr(drv);
+		}
+	}
+	drv->status &= ~(IDESTAT_BSY);
+}
+unsigned int __stdcall ideio_threadfuncW(void* vdParam) {
+	IDEDRV drv = NULL;
+	FILEPOS	sec;
+
+	while(ideio_thread_initialized){
+		drv = ideio_thread_drv;
+		ideio_threadfuncW_part(drv);
+
+		SuspendThread(ideio_threadW);
+	}
+	
+    _endthreadex(0);
+	return 0;
+
+}
+#endif
 void IOOUTCALL ideio_w16(UINT port, REG16 value) {
 
 	IDEDEV  dev;
@@ -1094,15 +1288,28 @@ void IOOUTCALL ideio_w16(UINT port, REG16 value) {
 		drv->bufpos += 2;
 		if (drv->bufpos >= drv->bufsize) {
 			drv->status &= ~IDESTAT_DRQ;
-			if((ideio.bios == IDETC_BIOS && ideio.mwait > 0) || ideio.wwait > 0){
-				//割り込み前にポーリングされる問題の対策
-				dev->drv[0].status |= IDESTAT_BSY;
-				dev->drv[1].status |= IDESTAT_BSY;
-			}
+			//if((ideio.bios == IDETC_BIOS && ideio.mwait > 0) || ideio.wwait > 0){
+			//	//割り込み前にポーリングされる問題の対策
+			//	dev->drv[0].status |= IDESTAT_BSY;
+			//	dev->drv[1].status |= IDESTAT_BSY;
+			//}
 			switch(drv->cmd) {
 				case 0x30:
 				case 0x31:
 				case 0xc5:
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+					drv->status |= IDESTAT_BSY;
+					if(np2cfg.useasynchd){
+						if(ideio_threadW){
+							ideio_thread_drv = drv;
+							ResumeThread(ideio_threadW);
+						}else{
+							ideio_threadfuncW_part(drv);
+						}
+					}else{
+						ideio_threadfuncW_part(drv);
+					}
+#else
 					sec = getcursec(drv);
 					//TRACEOUT(("writesec->drv %d sec %x cnt %d thr %d",
 					//			drv->sxsidrv, sec, drv->mulcnt, drv->multhr));
@@ -1118,12 +1325,12 @@ void IOOUTCALL ideio_w16(UINT port, REG16 value) {
 						writesec(drv);
 					}else{
 						// 1セクタ書き込み完了
-						if((ideio.bios == IDETC_BIOS && ideio.mwait > 0) || ideio.wwait > 0){
-							drv->status |= IDESTAT_BSY;
-							setdintr(drv, 0, 0, ideio.rwait);
-						}else{
+						//if((ideio.bios == IDETC_BIOS && ideio.mwait > 0) || ideio.wwait > 0){
+						//	drv->status |= IDESTAT_BSY;
+						//	setdintr(drv, 0, 0, ideio.rwait);
+						//}else{
 							setintr(drv);
-						}
+						//}
 					}
 					//drv->mulcnt++;
 					//drv->sc--;
@@ -1143,6 +1350,7 @@ void IOOUTCALL ideio_w16(UINT port, REG16 value) {
 					////次セクタ書き込み準備
 					//incsec(drv);
 					//writesec(drv);
+#endif
 					break;
 
 				case 0xa0:
@@ -1530,6 +1738,44 @@ static void devinit(IDEDRV drv, REG8 sxsidrv) {
 	}
 	//memset(ideio_mediastatusnotification, 0, sizeof(ideio_mediastatusnotification));
 	//memset(ideio_mediachangeflag, 0, sizeof(ideio_mediachangeflag));
+}
+
+void ideio_initialize(void) {
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+	UINT32 dwID = 0;
+	//if(!pic_cs_initialized){
+	//	memset(&pic_cs, 0, sizeof(pic_cs));
+	//	InitializeCriticalSection(&pic_cs);
+	//	pic_cs_initialized = 1;
+	//}
+	if(!ideio_thread_initialized){
+		ideio_thread_initialized = 1;
+		ideio_threadR = (HANDLE)_beginthreadex(NULL, 0, ideio_threadfuncR, NULL, CREATE_SUSPENDED, &dwID);
+		ideio_threadW = (HANDLE)_beginthreadex(NULL, 0, ideio_threadfuncW, NULL, CREATE_SUSPENDED, &dwID);
+	}
+#else
+	// TODO: 非Windows用コードを書く
+#endif
+	atapi_initialize();
+}
+
+void ideio_deinitialize(void) {
+	atapi_deinitialize();
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+	if(ideio_thread_initialized){
+		ideio_thread_initialized = 0;
+		while(((int)ResumeThread(ideio_threadR))>0);
+		while(((int)ResumeThread(ideio_threadW))>0);
+		WaitForSingleObject(ideio_threadR,  INFINITE);
+		WaitForSingleObject(ideio_threadW,  INFINITE);
+		CloseHandle(ideio_threadR);
+		CloseHandle(ideio_threadW);
+		ideio_threadR = NULL;
+		ideio_threadW = NULL;
+	}
+#else
+	// TODO: 非Windows用コードを書く
+#endif
 }
 
 void ideio_reset(const NP2CFG *pConfig) {

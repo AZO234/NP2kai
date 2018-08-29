@@ -98,15 +98,15 @@ exception(int num, int error_code)
 	switch (num) {
 	case UD_EXCEPTION:	/* (F) 無効オペコード */
 		//ia32_warning("warning: undefined op!");
-		{ // TEST!!
-			UINT32 op[5];
-			CPU_EIP = CPU_PREV_EIP;
-			GET_PCBYTE(op[0]);
-			GET_PCBYTE(op[1]);
-			GET_PCBYTE(op[2]);
-			GET_PCBYTE(op[3]);
-			GET_PCBYTE(op[4]);
-		}
+		//{ // TEST!!
+		//	UINT32 op[5];
+		//	CPU_EIP = CPU_PREV_EIP;
+		//	GET_PCBYTE(op[0]);
+		//	GET_PCBYTE(op[1]);
+		//	GET_PCBYTE(op[2]);
+		//	GET_PCBYTE(op[3]);
+		//	GET_PCBYTE(op[4]);
+		//}
 	case DE_EXCEPTION:	/* (F) 除算エラー */
 	case DB_EXCEPTION:	/* (F/T) デバッグ */
 	case BR_EXCEPTION:	/* (F) BOUND の範囲外 */

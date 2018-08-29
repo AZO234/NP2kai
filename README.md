@@ -1,6 +1,6 @@
-Neko Project II 0.86 kai rev.16
+Neko Project II 0.86 kai rev.17
 ===
-Jun 19, 2018  
+Jun 27, 2018  
 
 Build SDL2 port
 ---
@@ -8,21 +8,45 @@ Build SDL2 port
 １． Install SDL2.  
 
 	(Linux)
-	$ sudo apt-get install libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev
+	$ sudo apt-get install git gcc make libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev
 
 or
 
 	(Windows + MSYS2)
-	$ pacman -S mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL2_mixer
+	$ pacman -S git gcc make mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL2_mixer
+
+or
+
+	(Mac)
+        1.Install XCode
+        2.Install module of SDL2, SDL2_mixier, freetype, SDL2_ttf from source
+        3.Install framework of SDL2, SDL2_mixier, SDL2_ttf
 
 ２． Build.  
 
+	(Linux)
 	$ cd NP2kai/sdl2
 	$ make -j4 -f Makefile.unix
 
 or
 
 	$ make -j4 -f Makefile21.unix
+
+	(Windows + MSYS2)
+	$ cd NP2kai/sdl2
+	$ make -j4 -f Makefile.win
+
+or
+
+	$ make -j4 -f Makefile21.win
+
+	(Mac)
+	$ cd NP2kai/sdl2
+	$ make -j4 -f Makefile.mac
+
+or
+
+	$ make -j4 -f Makefile21.mac
 
 or for GCW Zero (GCW0) game device only
 
@@ -102,7 +126,7 @@ Build libretro port (Windows)
 
 １． Build by MSYS2 x86_64. (Reference follow URL)  
 
-https://bot.libretro.com/docs/compilation/windows/
+https://docs.libretro.com/compilation/windows/
 
 	$ cd NP2kai/sdl2
 	$ make -j4
@@ -461,6 +485,20 @@ Only FAT is supported, NTFS does not correspond.
 DiskExplorer  
 https://hp.vector.co.jp/authors/VA013937/editdisk/index.html
 
+[X11][SDL2] To use libnvl.so functions
+---
+http://euee.web.fc2.com/tool/nvl/np2kainvl.html  
+Locate libnvl.so to /usr/local/lib/.  
+Then we can use follow types HDD image files.  
+
+* vmdk
+* dsk
+* vmdx
+* vdi
+* qcow
+* qcow2
+* hdd
+
 About network
 ---
 From rev.7 we can use network.
@@ -566,6 +604,11 @@ WAB Type normally uses 'PC-9821Xe10,Xa7e,Xb10 built-in'.
 
 Release
 ---
+* Aug 22, 2018
+	- Apply for libnvl.so
+	- Merge NP21/W 0.86 rev.43
+* Jun 27, 2018 (rev.17)
+	- Merge NP21/W 0.86 rev.42
 * Jun 19, 2018
 	- Add Joy2Key manual mode
 	- Merge NP21/W 0.86 rev.41

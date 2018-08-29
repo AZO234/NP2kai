@@ -26,6 +26,10 @@
 #include <winioctl.h>
 #include <tchar.h>
 
+#if defined(_WINDOWS)
+#include	<process.h>
+#endif
+
 #pragma warning(disable: 4996)
 #pragma comment(lib, "Advapi32.lib")
 
@@ -207,7 +211,7 @@ static void np2net_updateHighSpeedMode(){
 
 #if defined(_WINDOWS)
 //  非同期で通信してみる（Write）
-static DWORD WINAPI np2net_ThreadFuncW(LPVOID vdParam) {
+static unsigned int __stdcall np2net_ThreadFuncW(LPVOID vdParam) {
 	while (!np2net_hThreadexit) {
 		if(np2net.recieve_packet != np2net_default_recieve_packet){
 			if(np2net_membuf_readpos!=np2net_membuf_writepos){
@@ -226,7 +230,7 @@ static DWORD WINAPI np2net_ThreadFuncW(LPVOID vdParam) {
 	return 0;
 }
 //  非同期で通信してみる（Read）
-static DWORD WINAPI np2net_ThreadFuncR(LPVOID vdParam) {
+static unsigned int __stdcall np2net_ThreadFuncR(LPVOID vdParam) {
 	HANDLE hEvent = NULL;
 	DWORD dwLen;
 	OVERLAPPED ovl;
@@ -409,8 +413,8 @@ static int np2net_openTAP(const OEMCHAR* tapname){
 		return 3;
 	}
  
-	np2net_hThreadR = CreateThread(NULL , 0 , np2net_ThreadFuncR  , NULL , 0 , &dwID);
-	np2net_hThreadW = CreateThread(NULL , 0 , np2net_ThreadFuncW , NULL , 0 , &dwID);
+	np2net_hThreadR = (HANDLE)_beginthreadex(NULL , 0 , np2net_ThreadFuncR  , NULL , 0 , &dwID);
+	np2net_hThreadW = (HANDLE)_beginthreadex(NULL , 0 , np2net_ThreadFuncW , NULL , 0 , &dwID);
 #else
 	struct ifreq ifr;
 	np2net_hTap = open("/dev/net/tun", O_RDWR);

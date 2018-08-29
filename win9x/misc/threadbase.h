@@ -29,7 +29,8 @@ private:
 	bool m_bAbort;				//!< 中断フラグ
 	bool m_bDone;				//!< 完了フラグ
 	size_t m_nStackSize;		//!< スタック サイズ
-	static DWORD __stdcall ThreadProc(LPVOID pParam);
+	//static DWORD __stdcall ThreadProc(LPVOID pParam);
+	static unsigned int __stdcall ThreadProc(LPVOID pParam);
 };
 
 /**

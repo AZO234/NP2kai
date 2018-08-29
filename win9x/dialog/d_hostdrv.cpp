@@ -317,9 +317,11 @@ void hostdrv_readini()
  */
 void hostdrv_writeini()
 {
-	TCHAR szPath[MAX_PATH];
-	initgetfile(szPath, _countof(szPath));
-	ini_write(szPath, s_hostdrvapp, s_hostdrvini, _countof(s_hostdrvini));
+	if(!np2oscfg.readonly){
+		TCHAR szPath[MAX_PATH];
+		initgetfile(szPath, _countof(szPath));
+		ini_write(szPath, s_hostdrvapp, s_hostdrvini, _countof(s_hostdrvini));
+	}
 }
 
 /**
