@@ -190,7 +190,7 @@ short file_rename(const char *existpath, const char *newpath) {
 short file_dircreate(const char *path) {
 
 #if !(defined(__LIBRETRO__) && defined(VITA))
-#if defined(_WIN32)
+#if defined(_WIN32) && (!defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR))
 	return((short)mkdir(path));
 #else
 	return((short)mkdir(path, 0777));
