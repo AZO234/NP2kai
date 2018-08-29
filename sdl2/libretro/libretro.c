@@ -1398,7 +1398,8 @@ bool retro_load_game(const struct retro_game_info *game)
    bool worked = environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &syspath);
    if(!worked)abort();
 
-   extract_directory(base_dir, game->path, sizeof(base_dir));
+   if(game != NULL)
+      extract_directory(base_dir, game->path, sizeof(base_dir));
 
    strcpy(np2path, syspath);
    lr_init = 1;

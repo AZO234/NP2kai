@@ -154,6 +154,7 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/fdd/sxsi.c \
 		$(real_topsrcdir)/fdd/sxsihdd.c \
 		$(real_topsrcdir)/fdd/sxsicd.c \
+		$(real_topsrcdir)/fdd/sxsihdd_nvl.c \
 		\
 		$(real_topsrcdir)/font/font.c \
 		$(real_topsrcdir)/font/fontdata.c \
@@ -316,7 +317,7 @@ AM_CPPFLAGS=	-I$(real_topsrcdir) \
 		-I$(real_topsrcdir)/wab \
 		$(GTK_CFLAGS) $(GDK_CFLAGS) $(GDK_PIXBUF_CFLAGS) $(SDL_CFLAGS) $(LIBUSB1_CFLAGS) \
 		$(X11_CFLAGS) $(XEXT_CFLAGS) \
-		-DNP2_X11 -DSUPPORT_LARGE_HDD -DSUPPORT_VPCVHD -DSUPPORT_KAI_IMAGES -DHOOK_SYSKEY -DALLOW_MULTIRUN -DSUPPORT_NET -DSUPPORT_LGY98 -DSUPPORT_WAB -DSUPPORT_CL_GD5430 -DUSE_MAME -DSUPPORT_SOUND_SB16
+		-DNP2_X11 -DSUPPORT_LARGE_HDD -DSUPPORT_VPCVHD -DSUPPORT_KAI_IMAGES -DHOOK_SYSKEY -DALLOW_MULTIRUN -DSUPPORT_NET -DSUPPORT_LGY98 -DSUPPORT_WAB -DSUPPORT_CL_GD5430 -DUSE_MAME -DSUPPORT_SOUND_SB16 -DSUPPORT_NVL_IMAGES
 if BUILD_ALL
 AM_CPPFLAGS+=	-DX11_BUILD_ALL
 endif
@@ -331,7 +332,7 @@ endif
 
 LDADD=		$(GTK_LIBS) $(GDK_LIBS) $(GDK_PIXBUF_LIBS) $(SDL_LIBS) $(LIBUSB1_LIBS) \
 		$(X11_LIBS) $(XEXT_LIBS) \
-		$(X_LIBS) $(X_PRE_LIBS) $(XLIB) $(X_EXTRA_LIBS)
+		$(X_LIBS) $(X_PRE_LIBS) $(XLIB) $(X_EXTRA_LIBS) -ldl
 
 DEFS=		@DEFS@ -DSYSRESPATH=\""$(pkgdatadir)"\"
 

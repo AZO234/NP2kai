@@ -405,6 +405,136 @@ sswb_err1:
 	return(FAILURE);
 }
 
+BRESULT scrnsave_getbmp(SCRNSAVE hdl, BMPFILE *lpbf, BMPINFO *lpbi, UINT8 **lplppal, UINT8 **lplppixels, UINT flag) {
+
+const SCRNDATA	*sd;
+	BMPDATA		bd;
+	UINT		type;
+	UINT		palsize;
+	BMPFILE		bf;
+	UINT		pos;
+	BMPINFO		bi;
+	UINT8		palwork[1024];
+	UINT		align;
+	UINT8		*work;
+const PALNUM	*s;
+	int			r;
+	int			x;
+	BMPPAL		curpal;
+	UINT8		*dstpix;
+
+	(void)flag;
+
+	if (hdl == NULL) {
+		goto sswb_err1;
+	}
+	sd = (SCRNDATA *)hdl;
+
+	bd.width = sd->width;
+	bd.height = sd->height;
+	if (sd->pals <= 2) {
+		type = SCRNSAVE_1BIT;
+		bd.bpp = 1;
+		palsize = 4 << 1;
+	}
+	else if (sd->pals <= 16) {
+		type = SCRNSAVE_4BIT;
+		bd.bpp = 4;
+		palsize = 4 << 4;
+	}
+	else if (sd->pals <= 256) {
+		type = SCRNSAVE_8BIT;
+		bd.bpp = 8;
+		palsize = 4 << 8;
+	}
+	else {
+		type = SCRNSAVE_24BIT;
+		bd.bpp = 24;
+		palsize = 0;
+	}
+
+	// Bitmap File
+	ZeroMemory(&bf, sizeof(bf));
+	bf.bfType[0] = 'B';
+	bf.bfType[1] = 'M';
+	pos = sizeof(BMPFILE) + sizeof(BMPINFO) + palsize;
+	STOREINTELDWORD(bf.bfOffBits, pos);
+	CopyMemory(lpbf, &bf, sizeof(bf));
+
+	// Bitmap Info
+	bmpdata_setinfo(&bi, &bd);
+	STOREINTELDWORD(bi.biClrImportant, sd->pals);
+	align = bmpdata_getalign(&bi);
+	CopyMemory(lpbi, &bi, sizeof(bi));
+	*lplppal = (UINT8*)malloc(palsize);
+	if (palsize) {
+		ZeroMemory(palwork, palsize);
+		CopyMemory(palwork, sd->pal, sd->pals * 4);
+		CopyMemory(*lplppal, palwork, palsize);
+	}
+
+	work = (UINT8 *)_MALLOC(align, filename);
+	if (work == NULL) {
+		goto sswb_err2;
+	}
+	ZeroMemory(work, align);
+	
+	*lplppixels = (UINT8*)malloc(bmpdata_getalign(&bi) * bd.height);
+	dstpix = *lplppixels;
+	s = sd->dat + (SURFACE_WIDTH * bd.height);
+	do {
+		s -= SURFACE_WIDTH;
+		switch(type) {
+			case SCRNSAVE_1BIT:
+				ZeroMemory(work, align);
+				for (x=0; x<bd.width; x++) {
+					if (s[x]) {
+						work[x >> 3] |= 0x80 >> (x & 7);
+					}
+				}
+				break;
+
+			case SCRNSAVE_4BIT:
+				r = bd.width / 2;
+				for (x=0; x<r; x++) {
+					work[x] = (s[x*2+0] << 4) + s[x*2+1];
+				}
+				if (bd.width & 1) {
+					work[x] = s[x*2+0] << 4;
+				}
+				break;
+
+			case SCRNSAVE_8BIT:
+				for (x=0; x<bd.width; x++) {
+					work[x] = (UINT8)s[x];
+				}
+				break;
+
+			case SCRNSAVE_24BIT:
+				for (x=0; x<bd.width; x++) {
+					curpal.d = sd->pal[s[x]].d;
+					work[x*3+0] = curpal.rgb[0];
+					work[x*3+1] = curpal.rgb[1];
+					work[x*3+2] = curpal.rgb[2];
+				}
+				break;
+		}
+		
+		CopyMemory(dstpix, work, align);
+		dstpix += align;
+	} while(--bd.height);
+
+	_MFREE(work);
+	return(SUCCESS);
+
+//sswb_err3:
+//	_MFREE(work);
+sswb_err2:
+sswb_err1:
+	return(FAILURE);
+}
+
+
 // ---- GIF
 
 #if 1

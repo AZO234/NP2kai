@@ -325,7 +325,7 @@ static const MSYSITEM s_screen[] = {
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_wabopt,		NULL,		MID_WABOPT,		MENU_DELETED}};
 #else
-		{str_scropt,		NULL,		MID_SCREENOPT,		0}};
+		{str_scropt,		NULL,		MID_SCREENOPT,		MENU_DELETED}};
 #endif
 
 static const MSYSITEM s_keybd[] = {

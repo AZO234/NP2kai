@@ -56,7 +56,7 @@ create_about_dialog(void)
 	uninstall_idle_process();
 
 	about_dialog = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_window_set_title(GTK_WINDOW(about_dialog), "About Neko Project II");
+	gtk_window_set_title(GTK_WINDOW(about_dialog), "About Neko Project II kai");
 	gtk_window_set_position(GTK_WINDOW(about_dialog), GTK_WIN_POS_CENTER);
 	gtk_window_set_modal(GTK_WINDOW(about_dialog), TRUE);
 	gtk_window_set_resizable(GTK_WINDOW(about_dialog), FALSE);
@@ -74,7 +74,7 @@ create_about_dialog(void)
 	gtk_widget_show(neko_image);
 	gtk_box_pack_start(GTK_BOX(main_widget), neko_image, FALSE, FALSE, 10);
 
-	milstr_ncpy(work, "Neko Project II\n", sizeof(work));
+	milstr_ncpy(work, "Neko Project II kai\n", sizeof(work));
 	milstr_ncat(work, NP2VER_CORE, sizeof(work));
 #if defined(NP2VER_X11)
 	milstr_ncat(work, NP2VER_X11, sizeof(work));

@@ -186,6 +186,9 @@ typedef	signed __int64		SINT64;
 /* #define	SUPPORT_IDEIO */
 #define SUPPORT_ARC
 #define SUPPORT_ZLIB
+#if !defined(SUPPORT_PC9821)
+#define SUPPORT_BMS
+#endif
 #if !defined(_WIN64)
 #define	SUPPORT_DCLOCK
 #endif

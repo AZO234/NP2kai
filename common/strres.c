@@ -49,7 +49,7 @@ const OEMCHAR str_posy[] = OEMTEXT("posy");
 const OEMCHAR str_width[] = OEMTEXT("width");
 const OEMCHAR str_height[] = OEMTEXT("height");
 
-const OEMCHAR str_np2[] = OEMTEXT("Neko Project II");
+const OEMCHAR str_np2[] = OEMTEXT("Neko Project II kai");
 const OEMCHAR str_resume[] = OEMTEXT("Resume");
 
 const OEMCHAR str_VM[] = OEMTEXT("VM");

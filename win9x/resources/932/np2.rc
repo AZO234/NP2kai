@@ -559,7 +559,7 @@ BEGIN
     PUSHBUTTON      "Defaults",IDC_GD5430DEF,136,102,40,14
 END
 
-IDD_IDE DIALOGEX 0, 0, 195, 156
+IDD_IDE DIALOGEX 0, 0, 195, 186
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "IDE Configure"
 CLASS "np2dialog"
@@ -581,10 +581,12 @@ BEGIN
 	CONTROL			"", IDC_SPINIDEWWAIT, "msctls_updown32", UDS_ALIGNRIGHT | UDS_ARROWKEYS, 114, 98, 10, 14
     LTEXT           "Interrupt Delay(Write)",IDC_STATIC,8,100,70,8
     LTEXT           "clock",IDC_STATIC,126,100,32,8
-    CONTROL         "Use IDE BIOS",IDC_USEIDEBIOS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,120,200,10
-    CONTROL         "Auto IDE BIOS",IDC_AUTOIDEBIOS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,134,80,10
-    DEFPUSHBUTTON   "&OK",IDOK,92,130,44,14,WS_GROUP
-    PUSHBUTTON      "Cancel",IDCANCEL,140,130,44,14
+    CONTROL         "Use Async CD-ROM Access",IDC_USEASYNCCD,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,120,160,10
+    CONTROL         "Allow CD Tray Open/Close Command",IDC_ALLOWCDTRAYOP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,134,160,10
+    CONTROL         "Use IDE BIOS",IDC_USEIDEBIOS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,148,200,10
+    CONTROL         "Auto IDE BIOS",IDC_AUTOIDEBIOS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,162,80,10
+    DEFPUSHBUTTON   "&OK",IDOK,92,160,44,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,140,160,44,14
 END
 
 IDD_HOSTDRV DIALOGEX 0, 0, 195, 156
@@ -1642,6 +1644,7 @@ BEGIN
     IDS_HDDTITLE            "Select HD image"
     IDS_HDDEXT              "thd"
     IDS_HDDFILTER           "Anex86 harddisk image files (*.hdi)|*.hdi|T98 harddisk image files (*.thd)|*.thd|T98-Next harddisk image files (*.nhd)|*.nhd|VirtualPC harddisk image files (*.vhd)|*.vhd|SL9821 harddisk image files (*.slh)|*.slh|All supported files|*.thd;*.nhd;*.hdi;*.vhd;*.slh|All files (*.*)|*.*|"
+    IDS_HDDFILTER_NVL       "Anex86 harddisk image files (*.hdi)|*.hdi|T98 harddisk image files (*.thd)|*.thd|T98-Next harddisk image files (*.nhd)|*.nhd|VirtualPC harddisk image files (*.vhd)|*.vhd|SL9821 harddisk image files (*.slh)|*.slh|Virtual Machine harddisk image files (*.vmdk;*.dsk)|*.vmdk;*.dsk|Hyper-V harddisk image files (*.vhdx)|*.vhdx|VirtualBox harddisk image files (*.vdi)|*.vdi|QEMU harddisk image files (*.qcow;*.qcow2)|*.qcow;*.qcow2|Parallels harddisk image files (*.hdd)|*.hdd|All supported files|*.thd;*.nhd;*.hdi;*.vhd;*.slh;*.vmdk;*.dsk;*.vhdx;*.vdi;*.qcow;*.qcow2;*.hdd|All files (*.*)|*.*|"
     IDS_SASITITLE           "Select SASI/IDE HDD image"
     IDS_IDETITLE            "Select IDE HDD image"
     IDS_ISOTITLE            "Select ISO-9660 image"

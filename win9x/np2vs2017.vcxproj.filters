@@ -98,9 +98,6 @@
     <Filter Include="ソース ファイル\win9x\subwnd">
       <UniqueIdentifier>{95017b7f-7ee6-4e42-aa4c-11153515dc18}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\win9x\x64">
-      <UniqueIdentifier>{a1871462-146b-47bb-84ed-8f784482e501}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\win9x\x86">
       <UniqueIdentifier>{29819abb-2d69-47c1-8275-aced08ddf2fc}</UniqueIdentifier>
     </Filter>
@@ -240,6 +237,15 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\network">
       <UniqueIdentifier>{851cf1df-2a92-4676-9f39-c8030611fa29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\wab">
+      <UniqueIdentifier>{1cca2f75-8c68-4850-86c3-c7c498ea5fcd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\sound\fmgen">
+      <UniqueIdentifier>{9fb3a4ee-bab7-4ab6-926c-269ff04e10ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\sound\mame">
+      <UniqueIdentifier>{6733dfde-dbb2-424e-971c-aa456d15000c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1128,6 +1134,48 @@
     <ClCompile Include="ext\opl3.cpp">
       <Filter>ソース ファイル\win9x\ext</Filter>
     </ClCompile>
+    <ClCompile Include="..\io\bmsio.c">
+      <Filter>ソース ファイル\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wab\cirrus_vga.c">
+      <Filter>ソース ファイル\wab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wab\wab.c">
+      <Filter>ソース ファイル\wab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wab\wab_rly.c">
+      <Filter>ソース ファイル\wab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\fmgen\fmgen_file.cpp">
+      <Filter>ソース ファイル\sound\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\fmgen\fmgen_fmgen.cpp">
+      <Filter>ソース ファイル\sound\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\fmgen\fmgen_fmgwrap.cpp">
+      <Filter>ソース ファイル\sound\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\fmgen\fmgen_fmtimer.cpp">
+      <Filter>ソース ファイル\sound\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\fmgen\fmgen_opm.cpp">
+      <Filter>ソース ファイル\sound\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\fmgen\fmgen_opna.cpp">
+      <Filter>ソース ファイル\sound\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\fmgen\fmgen_psg.cpp">
+      <Filter>ソース ファイル\sound\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\mame\fmopl.c">
+      <Filter>ソース ファイル\sound\mame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\mame\ymdeltat.c">
+      <Filter>ソース ファイル\sound\mame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\mame\ymf262.c">
+      <Filter>ソース ファイル\sound\mame</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\calendar.h">
@@ -1994,11 +2042,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <YASM Include="x64\makegrph.x64">
-      <Filter>ソース ファイル\win9x\x64</Filter>
-    </YASM>
-    <YASM Include="x64\parts.x64">
-      <Filter>ソース ファイル\win9x\x64</Filter>
-    </YASM>
+    <YASM Include="x64\makegrph.x64" />
+    <YASM Include="x64\parts.x64" />
   </ItemGroup>
 </Project>

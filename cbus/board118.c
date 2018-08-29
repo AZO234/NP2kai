@@ -418,8 +418,8 @@ void SOUNDCALL opl3gen_getpcm2(void* opl3, SINT32 *pcm, UINT count) {
 	for (i=0; i < count; i++) {
 		s1l = s1r = s2l = s2r = 0;
 		YMF262UpdateOne(opl3, buf, 1);
-		outbuf[0] += (SINT32)(((s1l << 1) * oplfm_volume * oplfm_softvolume_L) >> 10);
-		outbuf[1] += (SINT32)(((s1r << 1) * oplfm_volume * oplfm_softvolume_R) >> 10);
+		outbuf[0] += ((((SINT32)s1l << 1) * oplfm_volume * oplfm_softvolume_L) >> 10);
+		outbuf[1] += ((((SINT32)s1r << 1) * oplfm_volume * oplfm_softvolume_R) >> 10);
 		outbuf += 2;
 	}
 }

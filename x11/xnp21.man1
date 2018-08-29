@@ -121,8 +121,13 @@ NONAKA Kimihiro <nonakap@gmail.com>, who ported
 to the UNIX platform.
 .br
 tk800 <tk_np2x@yahoo.co.jp>, who ported
-.B Neko Project II
+.B Neko Project IIx
 to MacOS X.
 .SH "SEE ALSO"
-.B Xnp2kai
+.B Xnp2
 Web site: http://www.nonakap.org/np2/ (japanese)
+.B Neko Project II kai
+to libretro.
+.SH "SEE ALSO"
+.B Xnp2kai
+Web site: http://domisan.sakura.ne.jp/article/np2kai/np2kai.html (japanese)

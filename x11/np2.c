@@ -51,9 +51,9 @@
 
 NP2OSCFG np2oscfg = {
 #if !defined(CPUCORE_IA32)		/* titles */
-	"Neko Project II",
+	"Neko Project II kai",
 #else
-	"Neko Project II + IA32",
+	"Neko Project II kai + IA32",
 #endif
 
 	0, 			/* paddingx */
@@ -111,7 +111,7 @@ NP2OSCFG np2oscfg = {
 	INTERP_NEAREST,		/* drawinterp */
 	0,			/* F11KEY */
 
-	FALSE,			/* cfgreadonly */
+	0,			/* readonly */
 };
 
 volatile sig_atomic_t np2running = 0;

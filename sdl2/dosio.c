@@ -9,7 +9,7 @@
 #if defined(__LIBRETRO__)
 #include <retro_dirent.h>
 #else
-#if defined(WIN32)
+#if defined(WIN32) && (!defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR))
 #include <direct.h>
 #else
 #include <dirent.h>
@@ -117,7 +117,7 @@ struct stat	sb;
 	if (stat(path, &sb) == 0)
 #endif
 	{
-#if defined(WIN32)
+#if defined(WIN32) && (!defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR))
 		if (sb.st_mode & _S_IFDIR) {
 			attr = FILEATTR_DIRECTORY;
 		}
@@ -187,7 +187,7 @@ short file_rename(const char *existpath, const char *newpath) {
 short file_dircreate(const char *path) {
 
 #if !(defined(__LIBRETRO__) && defined(VITA))
-#if defined(WIN32)
+#if defined(WIN32) && (!defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR))
 	return((short)mkdir(path));
 #else
 	return((short)mkdir(path, 0777));

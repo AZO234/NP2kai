@@ -349,7 +349,11 @@ void xmenu_update(HMENU hMenu)
 	CheckMenuItem(hMenu, IDM_USERKEY2, MF_BYCOMMAND | MFCHECK(F12COPY == 6));
 	CheckMenuItem(hMenu, IDM_F12NOWAIT, MF_BYCOMMAND | MFCHECK(F12COPY == 7));
 	CheckMenuItem(hMenu, IDM_F12NOWAIT2, MF_BYCOMMAND | MFCHECK(F12COPY == 8));
-	CheckMenuItem(hMenu, IDM_F12WABRELAY, MF_BYCOMMAND | MFCHECK(F12COPY == 9));
+	if(!np2oscfg.I286SAVE){
+		DeleteMenu(hMenu, IDM_F12WABRELAY, MF_BYCOMMAND);
+	}else{
+		CheckMenuItem(hMenu, IDM_F12WABRELAY, MF_BYCOMMAND | MFCHECK(F12COPY == 9));
+	}
 
 	// Device-Sound
 	const UINT8 BEEP_VOL = np2cfg.BEEP_VOL;
@@ -405,7 +409,7 @@ void xmenu_update(HMENU hMenu)
 	// Device
 	CheckMenuItem(hMenu, IDM_MOUSE, MF_BYCOMMAND | MFCHECK(np2oscfg.MOUSE_SW));
 	
-	// Mouse
+	// Device-Mouse
 	CheckMenuItem(hMenu, IDM_MOUSERAW, MF_BYCOMMAND | MFCHECK(np2oscfg.rawmouse));
 	CheckMenuItem(hMenu, IDM_MOUSENC,  MF_BYCOMMAND | MFCHECK(np2oscfg.mouse_nc));
 	const UINT8 MMUL = (UINT8)np2oscfg.mousemul;
@@ -417,7 +421,7 @@ void xmenu_update(HMENU hMenu)
 	CheckMenuItem(hMenu, IDM_MOUSED2X, MF_BYCOMMAND | MFCHECK(MMUL == 1 && MDIV == 2));
 	CheckMenuItem(hMenu, IDM_MOUSED3X, MF_BYCOMMAND | MFCHECK(MMUL == 1 && MDIV == 3));
 	CheckMenuItem(hMenu, IDM_MOUSED4X, MF_BYCOMMAND | MFCHECK(MMUL == 1 && MDIV == 4));
-
+	
 	// Other-ShortcutKey
 	const UINT8 shortcut = np2oscfg.shortcut;
 	CheckMenuItem(hMenu, IDM_ALTENTER, MF_BYCOMMAND | MFCHECK(shortcut & 1));

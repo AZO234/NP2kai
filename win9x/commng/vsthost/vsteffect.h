@@ -6,7 +6,7 @@
 #pragma once
 
 #include <map>
-#include <pluginterfaces/vst2.x/aeffectx.h>
+#include <VST2_SDK/pluginterfaces/vst2.x/aeffectx.h>
 
 class IVstEditWnd;
 

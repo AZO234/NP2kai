@@ -41,6 +41,8 @@ typedef struct {
 	UINT8	snddrv;
 	char	MIDIDEV[2][MAX_PATH];
 	UINT32	MIDIWAIT;
+
+	UINT8	readonly; // No save changed settings
 } NP2OSCFG;
 
 enum {
@@ -81,6 +83,8 @@ typedef struct {
 	UINT8	snddrv;
 	char	MIDIDEV[2][MAX_PATH];
 	UINT32	MIDIWAIT;
+
+	UINT8	readonly; // No save changed settings
 } NP2OSCFG;
 
 #if defined(NP2_SIZE_QVGA)
@@ -102,5 +106,9 @@ extern int s98log_count;
 
 extern int np2_main(int argc, char *argv[]);
 extern int np2_end();
+
+extern int mmxflag;
+int havemmx(void);
+
 #endif	/* __LIBRETRO__ */
 

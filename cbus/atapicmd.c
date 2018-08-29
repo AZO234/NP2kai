@@ -8,6 +8,9 @@
 // これ、scsicmdとどう統合するのよ？
 
 #if defined(SUPPORT_IDEIO)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+#include	<process.h>
+#endif
 
 #include	"dosio.h"
 #include	"cpucore.h"
@@ -23,6 +26,14 @@
 
 #define HEX2BCD(hex)	( (((hex/10)%10)<<4)|((hex)%10) )
 #define BCD2HEX(bcd)	( (((bcd>>4)&0xf)*10)+((bcd)&0xf) )
+
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+static int atapi_thread_initialized = 0;
+static HANDLE atapi_thread = NULL;
+static IDEDRV atapi_thread_drv = NULL;
+#else
+	// TODO: 非Windows用コードを書く
+#endif
 
 // INQUIRY
 static const UINT8 cdrom_inquiry[] = {
@@ -175,16 +186,17 @@ void atapicmd_a0(IDEDRV drv) {
 
 	UINT32	lba, leng;
 	UINT8	cmd;
-	static int mediachangeflag = 0;
+	static int mediachangeflag = 1;
 
 	cmd = drv->buf[0];
 	switch (cmd) {
 	case 0x00:		// test unit ready
-		//TRACEOUT(("atapicmd: test unit ready"));
+		TRACEOUT(("atapicmd: test unit ready"));
 		if (!(drv->media & IDEIO_MEDIA_LOADED)) {
 			/* medium not present */
 			ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_NOT_READY);
 			drv->asc = ATAPI_ASC_MEDIUM_NOT_PRESENT;
+			mediachangeflag = 1;
 			senderror(drv);
 			break;
 		}
@@ -279,7 +291,7 @@ void atapicmd_a0(IDEDRV drv) {
 		break;
 
 	case 0x43:		// read TOC
-		//TRACEOUT(("atapicmd: read TOC"));
+		TRACEOUT(("atapicmd: read TOC"));
 		atapi_cmd_readtoc(drv);
 		break;
 
@@ -314,9 +326,44 @@ void atapicmd_a0(IDEDRV drv) {
 //-- command
 
 // 0x1b: START/STOP UNIT
+#ifdef SUPPORT_PHYSICAL_CDDRV
+void atapi_cmd_traycmd_eject_threadfunc(void* vdParam) {
+#if defined(_WINDOWS)
+	HANDLE handle;
+	DWORD dwRet = 0;
+	handle = CreateFile(np2cfg.idecd[(int)vdParam], GENERIC_READ|GENERIC_WRITE, FILE_SHARE_READ|FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	if(handle != INVALID_HANDLE_VALUE){
+		if(DeviceIoControl(handle, FSCTL_LOCK_VOLUME, 0, 0, 0, 0, &dwRet, 0)){
+			if(DeviceIoControl(handle, FSCTL_DISMOUNT_VOLUME, 0, 0, 0, 0, &dwRet, 0)){
+				DeviceIoControl(handle, IOCTL_STORAGE_EJECT_MEDIA, 0, 0, 0, 0, &dwRet, 0);
+			}
+		}
+		CloseHandle(handle);
+	}
+#else
+	// TODO: Windows以外のコードを書く
+#endif
+}
+void atapi_cmd_traycmd_close_threadfunc(void* vdParam) {
+#if defined(_WINDOWS)
+	HANDLE handle;
+	DWORD dwRet = 0;
+	handle = CreateFile(np2cfg.idecd[(int)vdParam], GENERIC_READ, FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
+	if(handle != INVALID_HANDLE_VALUE){
+		DeviceIoControl(handle, IOCTL_STORAGE_LOAD_MEDIA, 0, 0, 0, 0, &dwRet, 0);
+		CloseHandle(handle);
+	}
+#else
+	// TODO: Windows以外のコードを書く
+#endif
+}
+#endif
 static void atapi_cmd_start_stop_unit(IDEDRV drv) {
 
 	UINT	power;
+	SXSIDEV		sxsi;
+
+	sxsi = sxsi_getptr(drv->sxsidrv);
 
 	stop_daplay(drv);
 
@@ -327,13 +374,47 @@ static void atapi_cmd_start_stop_unit(IDEDRV drv) {
 		drv->asc = ATAPI_ASC_INVALID_FIELD_IN_CDB;
 		goto send_error;
 	}
-	if (drv->buf[4] & 2) {
-		/* lock/eject op. is not supported */
-		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_ILLEGAL_REQUEST);
-		drv->asc = ATAPI_ASC_INVALID_FIELD_IN_CDB;
-		goto send_error;
-	}else{
-		// XXX:
+	switch(drv->buf[4] & 2){
+	case 0: // Stop the Disc
+		break;
+	case 1: // Start the Disc and read the TOC
+		if (!(drv->media & IDEIO_MEDIA_LOADED)) {
+			atapi_cmd_readtoc(drv);
+			return;
+		}
+		break;
+	case 2: // Eject the Disc if possible
+#ifdef SUPPORT_PHYSICAL_CDDRV
+		if(np2cfg.allowcdtraycmd && _tcsnicmp(np2cfg.idecd[sxsi->drv], OEMTEXT("\\\\.\\"), 4)==0){
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+			_beginthread(atapi_cmd_traycmd_eject_threadfunc, 0, (void*)sxsi->drv);
+#else
+			// TODO: Windows以外のコードを書く
+#endif
+		}else
+#endif
+		{
+			ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_ILLEGAL_REQUEST);
+			drv->asc = ATAPI_ASC_INVALID_FIELD_IN_CDB;
+			goto send_error;
+		}
+		break;
+	case 3: // Load the Disc (Close Tray)
+#ifdef SUPPORT_PHYSICAL_CDDRV
+		if(np2cfg.allowcdtraycmd && _tcsnicmp(np2cfg.idecd[sxsi->drv], OEMTEXT("\\\\.\\"), 4)==0){
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+			_beginthread(atapi_cmd_traycmd_close_threadfunc, 0, (void*)sxsi->drv);
+#else
+			// TODO: Windows以外のコードを書く
+#endif
+		}else
+#endif
+		{
+			ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_ILLEGAL_REQUEST);
+			drv->asc = ATAPI_ASC_INVALID_FIELD_IN_CDB;
+			goto send_error;
+		}
+		break;
 	}
 	if (!(drv->media & IDEIO_MEDIA_LOADED)) {
 		/* medium not present */
@@ -390,6 +471,80 @@ static void atapi_cmd_read_capacity(IDEDRV drv) {
 }
 
 // 0x28: READ(10)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+void atapi_dataread_threadfunc_part(IDEDRV drv) {
+	if (sxsi_read(drv->sxsidrv, drv->sector, drv->buf, 2048) != 0) {
+		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_ILLEGAL_REQUEST);
+		drv->asc = 0x21;
+		senderror(drv);
+		return;
+	}
+	drv->sector++;
+	drv->nsectors--;
+
+	drv->sc = IDEINTR_IO;
+	drv->cy = 2048;
+	drv->status &= ~(IDESTAT_DMRD|IDESTAT_SERV|IDESTAT_CHK);
+	drv->status |= IDESTAT_DRQ;
+	drv->error = 0;
+	ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_NO_SENSE);
+	drv->asc = ATAPI_ASC_NO_ADDITIONAL_SENSE_INFORMATION;
+	drv->bufdir = IDEDIR_IN;
+	drv->buftc = (drv->nsectors)?IDETC_ATAPIREAD:IDETC_TRANSFEREND;
+	drv->bufpos = 0;
+	drv->bufsize = 2048;
+
+	drv->status &= ~(IDESTAT_BSY); // 念のため直前で解除
+	if (!(drv->ctrl & IDECTRL_NIEN)) {
+		//TRACEOUT(("atapicmd: senddata()"));
+		ideio.bank[0] = ideio.bank[1] | 0x80;			// ????
+		pic_setirq(IDE_IRQ);
+	}
+}
+unsigned int __stdcall atapi_dataread_threadfunc(void* vdParam) {
+	IDEDRV drv = NULL;
+
+	while(atapi_thread_initialized){
+		drv = atapi_thread_drv;
+		atapi_dataread_threadfunc_part(drv);
+
+		SuspendThread(atapi_thread);
+	}
+	
+    _endthreadex(0);
+	return 0;
+
+}
+void atapi_dataread(IDEDRV drv) {
+	
+	if(drv->status & IDESTAT_BSY) {
+		return;
+	}
+
+	// エラー処理目茶苦茶～
+	if (drv->nsectors == 0) {
+		sendabort(drv);
+		return;
+	}
+
+	drv->status |= IDESTAT_BSY;
+	drv->status &= ~(IDESTAT_DRQ);
+	
+	if(np2cfg.useasynccd){
+		if(atapi_thread){
+			atapi_thread_drv = drv;
+			ResumeThread(atapi_thread);
+		}else{
+			atapi_dataread_threadfunc_part(drv);
+		}
+		//if(_beginthread(atapi_dataread_threadfunc, 0, (void*)drv)==-1){
+			//atapi_dataread_threadfunc((void*)drv);
+		//}
+	}else{
+		atapi_dataread_threadfunc_part(drv);
+	}
+}
+#else
 void atapi_dataread(IDEDRV drv) {
 
 	// エラー処理目茶苦茶～
@@ -397,6 +552,7 @@ void atapi_dataread(IDEDRV drv) {
 		sendabort(drv);
 		return;
 	}
+
 	if (sxsi_read(drv->sxsidrv, drv->sector, drv->buf, 2048) != 0) {
 		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_ILLEGAL_REQUEST);
 		drv->asc = 0x21;
@@ -424,6 +580,7 @@ void atapi_dataread(IDEDRV drv) {
 		pic_setirq(IDE_IRQ);
 	}
 }
+#endif
 
 static void atapi_cmd_read(IDEDRV drv, UINT32 lba, UINT32 nsec) {
 
@@ -1037,5 +1194,35 @@ static void atapi_cmd_mechanismstatus(IDEDRV drv) {
 	sendabort(drv);
 }
 
+void atapi_initialize(void) {
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+	UINT32 dwID = 0;
+	//if(!pic_cs_initialized){
+	//	memset(&pic_cs, 0, sizeof(pic_cs));
+	//	InitializeCriticalSection(&pic_cs);
+	//	pic_cs_initialized = 1;
+	//}
+	if(!atapi_thread_initialized){
+		atapi_thread_initialized = 1;
+		atapi_thread = (HANDLE)_beginthreadex(NULL, 0, atapi_dataread_threadfunc, NULL, CREATE_SUSPENDED, &dwID);
+	}
+#else
+	// TODO: 非Windows用コードを書く
+#endif
+}
+
+void atapi_deinitialize(void) {
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+	if(atapi_thread_initialized){
+		atapi_thread_initialized = 0;
+		while(((int)ResumeThread(atapi_thread)) > 0);
+		WaitForSingleObject(atapi_thread,  INFINITE);
+		CloseHandle(atapi_thread);
+		atapi_thread = NULL;
+	}
+#else
+	// TODO: 非Windows用コードを書く
+#endif
+}
 #endif	/* SUPPORT_IDEIO */
 

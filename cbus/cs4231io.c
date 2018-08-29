@@ -236,7 +236,6 @@ void cs4231io_reset(void) {
 	default:
 		break;
 	}
-
 	cs4231.dmairq = cs4231irq[(cs4231.adrs >> 3) & 7]; // IRQをセット
 	cs4231.dmach = cs4231dma[cs4231.adrs & 7]; // DMAチャネルをセット
 	cs4231.port[0] = 0x0f40; //WSS BASE I/O port
