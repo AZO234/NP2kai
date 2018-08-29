@@ -240,7 +240,9 @@ typedef SINT32	FILELEN;
 //#define UINT32_TO_PTR(v)	GUINT_TO_POINTER((UINT32)(v))
 
 //outdated things to ignore
+#if !defined(FASTCALL)
 #define	FASTCALL
+#endif
 #define	CPUCALL
 #define	MEMCALL
 #define	DMACCALL
