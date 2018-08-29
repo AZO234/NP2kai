@@ -187,7 +187,7 @@ short file_rename(const char *existpath, const char *newpath) {
 short file_dircreate(const char *path) {
 
 #if !(defined(__LIBRETRO__) && defined(VITA))
-#if defined(WIN32) && (!defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR))
+#if (defined(__LIBRETRO__) && defined(_WIN32)) || (defined(WIN32) && (!defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR)))
 	return((short)mkdir(path));
 #else
 	return((short)mkdir(path, 0777));
@@ -199,7 +199,6 @@ short file_dirdelete(const char *path) {
 
 	return((short)rmdir(path));
 }
-
 
 /* カレントファイル操作 */
 void file_setcd(const char *exepath) {
