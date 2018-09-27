@@ -6,6 +6,7 @@ extern "C" {
 
 void cs4231io_reset(void);
 void cs4231io_bind(void);
+void cs4231io_unbind(void);
 
 void IOOUTCALL cs4231io0_w8(UINT port, REG8 value);
 REG8 IOINPCALL cs4231io0_r8(UINT port);

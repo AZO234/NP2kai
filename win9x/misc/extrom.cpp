@@ -73,8 +73,8 @@ bool CExtRom::Open(LPCTSTR lpFilename, DWORD extlen)
 	Close();
 	
 	_tcscpy(tmpfilesname, lpFilename);
-	int fnamelen = _tcslen(tmpfilesname);
-	for (int i=0; i<extlen+1; i++)
+	int fnamelen = (int)_tcslen(tmpfilesname);
+	for (int i=0; i<(int)extlen+1; i++)
 	{
 		tmpfilesname[fnamelen+1-i] = tmpfilesname[fnamelen+1-i-1];
 	}
@@ -83,7 +83,7 @@ bool CExtRom::Open(LPCTSTR lpFilename, DWORD extlen)
 	fh = file_open_rb(tmpfilesname2);
 	if (fh != FILEH_INVALID)
 	{
-		m_nSize = file_getsize(fh);
+		m_nSize = (UINT)file_getsize(fh);
 		m_lpRes = malloc(m_nSize);
 		file_read(fh, m_lpRes, m_nSize);
 		m_hGlobal = NULL;
@@ -130,7 +130,7 @@ bool CExtRom::Open(LPCTSTR lpFilename, LPCTSTR lpExt)
 	fh = file_open_rb(tmpfilesname2);
 	if (fh != FILEH_INVALID)
 	{
-		m_nSize = file_getsize(fh);
+		m_nSize = (UINT)file_getsize(fh);
 		m_lpRes = malloc(m_nSize);
 		file_read(fh, m_lpRes, m_nSize);
 		m_hGlobal = NULL;
@@ -191,7 +191,7 @@ void CExtRom::Close()
 UINT CExtRom::Read(LPVOID lpBuffer, UINT cbBuffer)
 {
 	UINT nLength = m_nSize - m_nPointer;
-	nLength = np2min(nLength, cbBuffer);
+	nLength = min(nLength, cbBuffer);
 	if (nLength)
 	{
 		if (lpBuffer)

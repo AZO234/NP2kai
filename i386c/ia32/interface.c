@@ -283,5 +283,12 @@ ia32_bioscall(void)
 			LOAD_SEGREG(CPU_SS_INDEX, CPU_SS);
 			LOAD_SEGREG(CPU_DS_INDEX, CPU_DS);
 		}
+	}else{
+#ifdef SUPPORT_PCI
+		adrs = CPU_EIP;
+		if (bios32func(adrs)) {
+			/* Nothing to do */
+		}
+#endif
 	}
 }

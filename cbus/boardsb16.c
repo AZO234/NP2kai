@@ -245,5 +245,34 @@ void boardsb16_bind(void) {
 	sound_streamregist(opl3, (SOUNDCB)opl3gen_getpcm);
 	opl3_bind(&g_opl3); // MAMEégópÇÃèÍçáKey Displayóp
 }
+void boardsb16_unbind(void) {
+	ct1745io_unbind();
+	ct1741io_unbind();
+
+	iocore_detachout(0x2000 + g_sb16.base);	/* FM Music Register Address Port */
+	iocore_detachout(0x2100 + g_sb16.base);	/* FM Music Data Port */
+	iocore_detachout(0x2200 + g_sb16.base);	/* Advanced FM Music Register Address Port */
+	iocore_detachout(0x2300 + g_sb16.base);	/* Advanced FM Music Data Port */
+	iocore_detachout(0x2800 + g_sb16.base);	/* FM Music Register Port */
+	iocore_detachout(0x2900 + g_sb16.base);	/* FM Music Data Port */
+
+	iocore_detachinp(0x2000 + g_sb16.base);	/* FM Music Status Port */
+	iocore_detachinp(0x2200 + g_sb16.base);	/* Advanced FM Music Status Port */
+	iocore_detachinp(0x2800 + g_sb16.base);	/* FM Music Status Port */
+
+	iocore_detachout(0x0400 + g_sb16.base);	/* GAME Port */
+	iocore_detachout(0x0500 + g_sb16.base);	/* GAME Port */
+	iocore_detachout(0x0600 + g_sb16.base);	/* GAME Port */
+	iocore_detachout(0x0700 + g_sb16.base);	/* GAME Port */
+	iocore_detachinp(0x0400 + g_sb16.base);	/* GAME Port */
+	iocore_detachinp(0x0500 + g_sb16.base);	/* GAME Port */
+	iocore_detachinp(0x0600 + g_sb16.base);	/* GAME Port */
+	iocore_detachinp(0x0700 + g_sb16.base);	/* GAME Port */
+
+	iocore_detachout(0x8000 + g_sb16.base);	/* MIDI Port */
+	iocore_detachout(0x8100 + g_sb16.base);	/* MIDI Port */
+	iocore_detachinp(0x8000 + g_sb16.base);	/* MIDI Port */
+	iocore_detachinp(0x8100 + g_sb16.base);	/* MIDI Port */
+}
 
 #endif

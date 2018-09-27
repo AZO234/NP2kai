@@ -567,8 +567,31 @@ static REG8 IOINPCALL ideio_i430(UINT port) {
 	ideio.bank[bank] = ret & (~0x80);
 	TRACEOUT(("ideio getbank%d %.2x [%.4x:%.8x]",
 									(port >> 1) & 1, ret, CPU_CS, CPU_EIP));
-	return(ret & 0x01);
+	return(ret & 0x7f);
 }
+
+
+
+// ----
+
+static void IOOUTCALL ideio_o433(UINT port, REG8 dat) {
+
+}
+
+static REG8 IOINPCALL ideio_i433(UINT port) {
+
+	return(0x00);
+}
+
+static void IOOUTCALL ideio_o435(UINT port, REG8 dat) {
+
+}
+
+static REG8 IOINPCALL ideio_i435(UINT port) {
+
+	return(0x00);
+}
+
 
 
 // ----
@@ -671,6 +694,7 @@ static void IOOUTCALL ideio_o64e(UINT port, REG8 dat) {
 	IDEDRV	drv, d;
 	IDEDEV	dev;
 	int		i;
+	FILEPOS	sec;
 
 	// execute device diagnostic
 	if (dat == 0x90) {
@@ -1255,7 +1279,6 @@ void ideio_threadfuncW_part(IDEDRV drv) {
 }
 unsigned int __stdcall ideio_threadfuncW(void* vdParam) {
 	IDEDRV drv = NULL;
-	FILEPOS	sec;
 
 	while(ideio_thread_initialized){
 		drv = ideio_thread_drv;
@@ -1778,20 +1801,26 @@ void ideio_deinitialize(void) {
 #endif
 }
 
-void ideio_reset(const NP2CFG *pConfig) {
-	
-	OEMCHAR	path[MAX_PATH];
-	FILEH	fh;
+void ideio_basereset() {
 	REG8	i;
 	IDEDRV	drv;
-	OEMCHAR tmpbiosname[16];
-	UINT8 useidebios;
 
-	ZeroMemory(&ideio, sizeof(ideio));
 	for (i=0; i<4; i++) {
 		drv = ideio.dev[i >> 1].drv + (i & 1);
 		devinit(drv, i);
 	}
+}
+void ideio_reset(const NP2CFG *pConfig) {
+	REG8	i;
+	
+	OEMCHAR	path[MAX_PATH];
+	FILEH	fh;
+	OEMCHAR tmpbiosname[16];
+	UINT8 useidebios;
+
+	ZeroMemory(&ideio, sizeof(ideio));
+
+	ideio_basereset();
 	
 	ideio.rwait = np2cfg.iderwait;
 	ideio.wwait = np2cfg.idewwait;
@@ -1849,15 +1878,53 @@ void ideio_reset(const NP2CFG *pConfig) {
 		TRACEOUT(("use simulate ide.rom"));
 	}
 
+	//if(ideio.bios==IDETC_NOBIOS){
+	//	UINT16 param_2[] = {0x0598, 0x05b1, 0x058c, 0x058e};
+	//	UINT16 param_4[] = {0x045d, 0x045d, 0x045e, 0x045e};
+	//	UINT8 param_19[] = {0x08, 0x10, 0x20, 0x40};
+	//	int paramofs = 0;
+	//	for (i=0; i<4; i++) {
+	//		drv = ideio.dev[i >> 1].drv + (i & 1);
+	//		if (drv != NULL) {
+	//			SXSIDEV sxsi;
+	//			UINT32	size;
+	//			sxsi = sxsi_getptr(drv->sxsidrv);
+	//			size = sxsi->cylinders * sxsi->surfaces * sxsi->sectors;
+	//			if (drv->device == IDETYPE_HDD) {
+	//				STOREINTELWORD(mem + 0xda100 + paramofs, (size / drv->surfaces / drv->sectors) & 0xffff);
+	//				STOREINTELWORD(mem + 0xda100 + paramofs + 2, param_2[i]);
+	//				STOREINTELWORD(mem + 0xda100 + paramofs + 4, param_4[i]);
+	//				*(mem + 0xda100 + paramofs + 7) = drv->sectors;
+	//				STOREINTELWORD(mem + 0xda100 + paramofs + 8, (drv->surfaces * drv->sectors) & 0xffff);
+	//				*(mem + 0xda100 + paramofs + 10) = drv->surfaces;
+	//				STOREINTELWORD(mem + 0xda100 + paramofs + 1, (drv->surfaces * drv->sectors) & 0xffff);
+	//				*(mem + 0xda100 + paramofs + 16) = 0;
+	//				*(mem + 0xda100 + paramofs + 19) = param_19[i];
+	//			}else{
+	//				STOREINTELWORD(mem + 0xda100 + paramofs + 2, param_2[i]);
+	//				STOREINTELWORD(mem + 0xda100 + paramofs + 4, param_4[i]);
+	//				*(mem + 0xda100 + paramofs + 16) = 0x02;
+	//				*(mem + 0xda100 + paramofs + 19) = param_19[i];
+	//			}
+	//		}
+	//		paramofs += 32;
+	//	}
+	//}
+
 	(void)pConfig;
+}
+
+void ideio_bindCDDA(void) {
+	if (pccore.hddif & PCHDD_IDE) {
+		sound_streamregist(NULL, (SOUNDCB)playaudio);
+	}
 }
 
 void ideio_bind(void) {
 
 	if (pccore.hddif & PCHDD_IDE) {
-#if 1
-		sound_streamregist(NULL, (SOUNDCB)playaudio);
-#endif
+		ideio_bindCDDA();
+
 		iocore_attachout(0x0430, ideio_o430);
 		iocore_attachout(0x0432, ideio_o430);
 		iocore_attachinp(0x0430, ideio_i430);
@@ -1885,6 +1952,11 @@ void ideio_bind(void) {
 
 		iocore_attachout(0x1e8e, ideio_o1e8e); // 一部IDE BIOSはこれがないと起動時にフリーズしたりシリンダ数が0になる
 		iocore_attachinp(0x1e8e, ideio_i1e8e); // 一部IDE BIOSはこれがないと起動時にフリーズしたりシリンダ数が0になる
+		
+		iocore_attachout(0x0433, ideio_o433);
+		iocore_attachinp(0x0433, ideio_i433);
+		iocore_attachout(0x0435, ideio_o435);
+		iocore_attachinp(0x0435, ideio_i435);
 	}
 }
 

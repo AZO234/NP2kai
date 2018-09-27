@@ -1385,6 +1385,13 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			sysmng_updatecaption(1);
 			break;
 #endif
+#if defined(SUPPORT_PCI)
+		case IDM_PCIOPT:
+			winuienter();
+			dialog_pciopt(hWnd);
+			winuileave();
+			break;
+#endif
 
 		case IDM_BMPSAVE:
 			winuienter();

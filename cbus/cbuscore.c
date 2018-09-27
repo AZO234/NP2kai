@@ -123,4 +123,14 @@ void cbuscore_attachsndex(UINT port, const IOOUT *out, const IOINP *inp) {
 		port += 2;
 	}
 }
+void cbuscore_detachsndex(UINT port) {
+
+	UINT	i;
+
+	for (i=0; i<4; i++) {
+		iocore_detachsndout(port);
+		iocore_detachsndinp(port);
+		port += 2;
+	}
+}
 

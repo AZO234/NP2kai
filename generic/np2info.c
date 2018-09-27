@@ -19,14 +19,23 @@ static const OEMCHAR str_8MHz[] = OEMTEXT("8MHz");
 static const OEMCHAR str_notexist[] = OEMTEXT("not exist");
 static const OEMCHAR str_disable[] = OEMTEXT("disable");
 
-static const OEMCHAR str_cpu[] = OEMTEXT("8086-2\0uPD70116\00080286\00080386\00080486\0Pentium\0PentiumPro");
+static const OEMCHAR str_cpu[] = OEMTEXT("8086-2\00070116\00080286\00080386\00080486\0Pentium\0PentiumPro");
 static const OEMCHAR str_winclr[] = OEMTEXT("256-colors\00065536-colors\0full color\0true color");
 static const OEMCHAR str_winmode[] = OEMTEXT(" (window)\0 (fullscreen)");
 static const OEMCHAR str_grcgchip[] = OEMTEXT("\0GRCG \0GRCG CG-Window \0EGC CG-Window ");
 static const OEMCHAR str_vrammode[] = OEMTEXT("Digital\0Analog\000256colors");
 static const OEMCHAR str_vrampage[] = OEMTEXT(" page-0\0 page-1\0 page-all");
 static const OEMCHAR str_chpan[] = OEMTEXT("none\0Mono-R\0Mono-L\0Stereo");
-static const OEMCHAR str_fpu[] = OEMTEXT("none\0 Berkeley SoftFloat 80bit Extended Precision FPU\0 64bit Double Precision FPU\0 64bit Double Precision FPU + INT64 Load/Store");
+static const OEMCHAR str_fpu[] = OEMTEXT(" none\0 Berkeley SoftFloat 80bit Extended Precision FPU\0 64bit Double Precision FPU\0 64bit Double Precision FPU + INT64 Load/Store");
+static const OEMCHAR str_simd_mmx[] = OEMTEXT("MMX ");
+static const OEMCHAR str_simd_sse[] = OEMTEXT("SSE ");
+static const OEMCHAR str_simd_sse2[] = OEMTEXT("SSE2 ");
+static const OEMCHAR str_simd_sse3[] = OEMTEXT("SSE3 ");
+static const OEMCHAR str_simd_ssse3[] = OEMTEXT("SSSE3 ");
+static const OEMCHAR str_simd_sse4_1[] = OEMTEXT("SSE4.1 ");
+static const OEMCHAR str_simd_sse4_2[] = OEMTEXT("SSE4.2 ");
+static const OEMCHAR str_simd_3dnow[] = OEMTEXT("3DNow! ");
+static const OEMCHAR str_simd_e3dnow[] = OEMTEXT("Enhanced 3DNow! ");
 
 static const OEMCHAR str_clockfmt[] = OEMTEXT("%d.%1dMHz");
 static const OEMCHAR str_memfmt[] = OEMTEXT("%3uKB");
@@ -253,7 +262,7 @@ static void info_sound(OEMCHAR *str, int maxlen, const NP2INFOEX *ex)
 			break;
 			
 		case SOUNDID_PC_9801_86_ADPCM:
-			lpBoard = OEMTEXT("C-9801-86 + Chibi-oto");
+			lpBoard = OEMTEXT("PC-9801-86 + Chibi-oto");
 			break;
 
 		case SOUNDID_SPEAKBOARD:
@@ -338,6 +347,14 @@ static void info_bios(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 		milstr_ncat(str, ideio.biosname, maxlen);
 	}
 #endif
+#if defined(SUPPORT_PCI)
+	if (pcidev.biosname[0]) {
+		if (str[0]) {
+			milstr_ncat(str, str_comma, maxlen);
+		}
+		milstr_ncat(str, pcidev.biosname, maxlen);
+	}
+#endif
 	if (str[0] == '\0') {
 		milstr_ncat(str, str_notexist, maxlen);
 	}
@@ -374,8 +391,6 @@ static void info_display(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
 static void info_fpu(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
-	OEMCHAR	buf[64];
-	
 #if defined(CPUCORE_IA32)
 	if(i386cpuid.cpu_feature & CPU_FEATURE_FPU){
 		if(i386cpuid.fpu_type < 3){
@@ -387,6 +402,53 @@ static void info_fpu(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 #endif
 	{
 		milstr_ncpy(str, milstr_list(str_fpu, 0), maxlen);
+	}
+}
+
+static void info_simd(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
+
+	int simdcount = 0;
+	milstr_ncpy(str, OEMTEXT(" "), maxlen);
+#if defined(CPUCORE_IA32)
+	if(i386cpuid.cpu_feature & CPU_FEATURE_MMX){
+		milstr_ncat(str, str_simd_mmx, maxlen);
+		simdcount++;
+	}
+	if(i386cpuid.cpu_feature & CPU_FEATURE_SSE){
+		milstr_ncat(str, str_simd_sse, maxlen);
+		simdcount++;
+	}
+	if(i386cpuid.cpu_feature & CPU_FEATURE_SSE2){
+		milstr_ncat(str, str_simd_sse2, maxlen);
+		simdcount++;
+	}
+	if(i386cpuid.cpu_feature_ecx & CPU_FEATURE_ECX_SSE3){
+		milstr_ncat(str, str_simd_sse3, maxlen);
+		simdcount++;
+	}
+	if(i386cpuid.cpu_feature_ecx & CPU_FEATURE_ECX_SSSE3){
+		milstr_ncat(str, str_simd_ssse3, maxlen);
+		simdcount++;
+	}
+	if(i386cpuid.cpu_feature_ecx & CPU_FEATURE_ECX_SSE4_1){
+		milstr_ncat(str, str_simd_sse4_1, maxlen);
+		simdcount++;
+	}
+	if(i386cpuid.cpu_feature_ecx & CPU_FEATURE_ECX_SSE4_2){
+		milstr_ncat(str, str_simd_sse4_2, maxlen);
+		simdcount++;
+	}
+	if(i386cpuid.cpu_feature_ex & CPU_FEATURE_EX_3DNOW){
+		milstr_ncat(str, str_simd_3dnow, maxlen);
+		simdcount++;
+	}
+	if(i386cpuid.cpu_feature_ex & CPU_FEATURE_EX_E3DNOW){
+		milstr_ncat(str, str_simd_e3dnow, maxlen);
+		simdcount++;
+	}
+#endif
+	if(simdcount==0){
+		milstr_ncat(str, OEMTEXT("none"), maxlen);
 	}
 }
 
@@ -407,6 +469,7 @@ static const INFOPROC infoproc[] = {
 			{OEMTEXT("MEM2"),	info_mem2},
 			{OEMTEXT("MEM3"),	info_mem3},
 			{OEMTEXT("FPU"),	info_fpu},
+			{OEMTEXT("SIMD"),	info_simd},
 			{OEMTEXT("GDC"),	info_gdc},
 			{OEMTEXT("GDC2"),	info_gdc2},
 			{OEMTEXT("TEXT"),	info_text},

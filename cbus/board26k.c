@@ -81,3 +81,7 @@ void board26k_bind(void)
 	opna_bind(&g_opna[0]);
 	cbuscore_attachsndex(0x188 - g_opna[0].s.base, opn_o, opn_i);
 }
+void board26k_unbind(void)
+{
+	cbuscore_detachsndex(0x188 - g_opna[0].s.base);
+}

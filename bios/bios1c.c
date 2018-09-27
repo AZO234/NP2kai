@@ -72,6 +72,21 @@ void bios0x1c(void) {
 			}
 			pic.pi[0].imr &= ~(PIC_SYSTEMTIMER);
 			break;
+
+		case 0x80:					// hrtimer read
+			CPU_AL = ((mem[0x04F3] >> 6) - 1) & 0x3; // Œo‰ß“ú”
+			{
+				UINT32 hrtimertimeuint;
+				hrtimertimeuint = LOADINTELDWORD(mem+0x04F1) & 0x3fffff;
+				CPU_CX = (UINT16)((hrtimertimeuint >> 16) & 0x3f);
+				CPU_DX = (UINT16)(hrtimertimeuint & 0xffff);
+			}
+			break;
+
+		case 0x81:					// hrtimer write
+			mem[0x04F3] = (CPU_CX & 0x3f) | ((CPU_AL & 0x3) << 6);
+			STOREINTELWORD(mem+0x04F1, CPU_DX);
+			break;
 	}
 }
 

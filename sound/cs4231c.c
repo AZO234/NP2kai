@@ -126,7 +126,7 @@ void cs4231_dma(NEVENTITEM item) {
 	UINT	pos;
 	UINT	size;
 	UINT	r;
-	SINT32	cnt;
+	//SINT32	cnt;
 	if (item->flag & NEVENT_SETEVENT) {
 		if (cs4231.dmach != 0xff) {
 			dmach = dmac.dmach + cs4231.dmach;
@@ -147,7 +147,7 @@ void cs4231_dma(NEVENTITEM item) {
 			}
 			// NEVENTをセット
 			if (cs4231cfg.rate) {
-				SINT32 neventms;
+				//SINT32 neventms;
 				//int playcountsmpmax = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)); // PI割り込みを発生させるサンプル数(Playback Base register)
 				playcountsmp_Ictl += ((CS4231_BUFREADSMP - (int)r) / cs4231_playcountshift[cs4231.reg.datafmt >> 4])/2;
 				if(playcountsmp_Ictl < 1)
@@ -360,7 +360,7 @@ UINT dmac_getdata_(DMACH dmach, UINT8 *buf, UINT offset, UINT size) {
 		leng = np2min(dmach->leng.w, size);
 		if (leng) {
 			int playcount = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)) * cs4231_playcountshift[cs4231.reg.datafmt >> 4]; // PI割り込みを発生させるサンプル数(Playback Base register) * サンプルあたりのバイト数
-			if(cs4231.totalsample + leng > playcount){
+			if(cs4231.totalsample + (SINT32)leng > playcount){
 				// DMA再生サンプル数カウンタ(Playback DMA count register)がPI割り込みを発生させるサンプル数(Playback Base register)を超えないように調整
 				leng = playcount - cs4231.totalsample;
 			}

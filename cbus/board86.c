@@ -169,3 +169,8 @@ void board86_bind(void)
 	pcm86io_bind();
 	cbuscore_attachsndex(0x188 + g_opna[0].s.base, opna_o, opna_i);
 }
+void board86_unbind(void)
+{
+	pcm86io_unbind();
+	cbuscore_detachsndex(0x188 + g_opna[0].s.base);
+}

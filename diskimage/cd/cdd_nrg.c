@@ -222,7 +222,7 @@ BRESULT opennrg(SXSIDEV sxsi, const OEMCHAR *fname) {
 		}
 	}
 
-    file_seek(fh, trailer_offset, FSEEK_SET);
+    file_seek(fh, (FILEPOS)trailer_offset, FSEEK_SET);
 
 	if (file_read(fh, sig, sizeof(sig)) != sizeof(sig)) {
 		goto opennrg_err1;
@@ -327,7 +327,7 @@ BRESULT opennrg(SXSIDEV sxsi, const OEMCHAR *fname) {
 
 	set_secread(sxsi, trk, index);
 
-	total_sec = set_trkinfo(fh, trk, index, trailer_offset);
+	total_sec = set_trkinfo(fh, trk, index, (FILELEN)trailer_offset);
 	if (total_sec < 0) {
 		goto opennrg_err1;
 	}

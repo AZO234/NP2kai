@@ -456,7 +456,11 @@ static void FPU_FBST(UINT32 addr)
 	fpu_memorywrite_b(addr+9,p);
 }
 
+#if defined(_WIN32) && !defined(__LIBRETRO__)
 #define isinf(x) (!(_finite(x) || _isnan(x)))
+#else
+#define isinf(x) (!(_finite(x) || isnan(x)))
+#endif
 #define isdenormal(x) (_fpclass(x) == _FPCLASS_ND || _fpclass(x) == _FPCLASS_PD)
 
 static void FPU_FADD(UINT op1, UINT op2){
@@ -1768,6 +1772,15 @@ DB_ESC5(void)
 			FPU_PREP_PUSH();
 			FPU_FLD_F64(madr,FPU_STAT_TOP);
 			break;
+		case 1:	/* FISTTP (QWORD) */
+			{
+				FP_RND oldrnd = FPU_STAT.round;
+				FPU_STAT.round = ROUND_Down;
+				FPU_FST_I64(madr);
+				FPU_STAT.round = oldrnd;
+			}
+			FPU_FPOP();
+			break;
 		case 2:	/* FST (î{ê∏ìxé¿êî) */
 			TRACEOUT(("FST double real"));
 			FPU_FST_F64(madr);
@@ -1940,6 +1953,15 @@ DB_ESC7(void)
 			TRACEOUT(("FILD SINT16"));
 			FPU_PREP_PUSH();
 			FPU_FLD_I16(madr,FPU_STAT_TOP);
+			break;
+		case 1:	/* FISTTP (WORD) */
+			{
+				FP_RND oldrnd = FPU_STAT.round;
+				FPU_STAT.round = ROUND_Down;
+				FPU_FST_I16(madr);
+				FPU_STAT.round = oldrnd;
+			}
+			FPU_FPOP();
 			break;
 		case 2:	/* FIST (WORD) */
 			TRACEOUT(("FIST SINT16"));

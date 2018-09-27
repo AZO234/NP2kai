@@ -172,8 +172,13 @@ void np2wab_setScreenSize(int width, int height)
 		np2wab.wndWidth = ga_lastwabwidth = width;
 		np2wab.wndHeight = ga_lastwabheight = height;
 		if(np2wab.relay & 0x3){
-			scrnmng_setwidth(0, width);
-			scrnmng_setheight(0, height);
+			if(width < 32 || height < 32){
+				scrnmng_setwidth(0, 640);
+				scrnmng_setheight(0, 480);
+			}else{
+				scrnmng_setwidth(0, width);
+				scrnmng_setheight(0, height);
+			}
 			scrnmng_updatefsres(); // フルスクリーン解像度更新
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 			mousemng_updateclip(); // マウスキャプチャのクリップ範囲を修正
@@ -496,6 +501,7 @@ void np2wab_drawframe()
 #endif
 }
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+}
 /**
  * 非同期描画（ga_threadmodeが真）
  */
@@ -673,6 +679,11 @@ void np2wab_bind(void)
 
 	// 描画再開
 	np2wabwnd.ready = 1;
+}
+void np2wab_unbind(void)
+{
+	iocore_detachout(0xfac);
+	iocore_detachinp(0xfac);
 }
 // NP2終了時の処理
 void np2wab_shutdown()

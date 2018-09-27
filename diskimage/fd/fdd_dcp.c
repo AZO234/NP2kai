@@ -47,7 +47,7 @@ const __DCPINFO	*dcp;
 	if (fh == FILEH_INVALID) {
 		return(FAILURE);
 	}
-	fdsize = file_getsize(fh);
+	fdsize = (UINT32)file_getsize(fh);
 	rsize = file_read(fh, &fdd->inf.dcp.head, DCP_HEADERSIZE);	//	DCPÉwÉbÉ_ì«çû
 	file_close(fh);
 	if (rsize != DCP_HEADERSIZE) {
@@ -236,7 +236,7 @@ BRESULT makenewtrack_dcp(FDDFILE fdd) {
 		return(FAILURE);
 	}
 
-	fdsize = file_getsize(hdl);
+	fdsize = (UINT32)file_getsize(hdl);
 
 	newtrack = (fdc.treg[fdc.us] << 1) + fdc.hd;
 	tracksize = fdd->inf.xdf.sectors * (128 << fdd->inf.xdf.n);

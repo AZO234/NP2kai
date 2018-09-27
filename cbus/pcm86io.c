@@ -264,4 +264,21 @@ void pcm86io_bind(void) {
 	iocore_attachinp(0xa46c, pcm86_inpdummy);
 	iocore_attachinp(0xa46e, pcm86_inpdummy);
 }
+void pcm86io_unbind(void) {
+
+	iocore_detachout(0xa460);
+	iocore_detachout(0xa466);
+	iocore_detachout(0xa468);
+	iocore_detachout(0xa46a);
+	iocore_detachout(0xa46c);
+
+	iocore_detachinp(0xa460);
+	iocore_detachinp(0xa462);
+	iocore_detachinp(0xa464);
+	iocore_detachinp(0xa466);
+	iocore_detachinp(0xa468);
+	iocore_detachinp(0xa46a);
+	iocore_detachinp(0xa46c);
+	iocore_detachinp(0xa46e);
+}
 

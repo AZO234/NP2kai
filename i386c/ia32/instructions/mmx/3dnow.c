@@ -182,7 +182,7 @@ AMD3DNOW_FEMMS(void)
 void
 AMD3DNOW_PREFETCH(void)
 {
-	UINT32 op, src;
+	UINT32 op;
 	UINT idx, sub;
 	
 	AMD3DNOW_check_NM_EXCEPTION();
@@ -214,7 +214,7 @@ AMD3DNOW_PREFETCH(void)
 void
 AMD3DNOW_F0(void)
 {
-	UINT32 op, src;
+	UINT32 op;
 	UINT idx, sub;
 	UINT8 suffix;
 	UINT8 reg1;
@@ -651,8 +651,8 @@ void AMD3DNOW_PFRSQIT1_MEM(UINT8 reg1, UINT32 memaddr){
 
 // PFRSQRT
 void AMD3DNOW_PFRSQRT(float *data1, float *data2){
-	data1[0] = 1.0f / sqrt(data2[0]);
-	data1[1] = 1.0f / sqrt(data2[1]);
+	data1[0] = (float)(1.0f / sqrt(data2[0]));
+	data1[1] = (float)(1.0f / sqrt(data2[1]));
 }
 void AMD3DNOW_PFRSQRT_REG(UINT8 reg1, UINT8 reg2){
 	float *data1 = (float*)(&(FPU_STAT.reg[reg1]));

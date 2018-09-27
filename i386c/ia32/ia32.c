@@ -28,7 +28,8 @@
 #include "ia32.mcr"
 
 I386CORE	i386core;
-I386CPUID	i386cpuid = {CPU_VENDOR, CPU_FAMILY, CPU_MODEL, CPU_STEPPING, CPU_FEATURES, CPU_FEATURES_EX, CPU_BRAND_STRING};
+I386CPUID	i386cpuid = {I386CPUID_VERSION, CPU_VENDOR, CPU_FAMILY, CPU_MODEL, CPU_STEPPING, CPU_FEATURES, CPU_FEATURES_EX, CPU_BRAND_STRING, CPU_BRAND_ID, CPU_FEATURES_ECX};
+I386MSR		i386msr = {0};
 
 UINT8	*reg8_b20[0x100];
 UINT8	*reg8_b53[0x100];
@@ -42,8 +43,12 @@ ia32_init(void)
 {
 	int i;
 
+	i386msr.version = I386MSR_VERSION;
+	i386cpuid.version = I386CPUID_VERSION;
+
 	memset(&i386core.s, 0, sizeof(i386core.s));
 	ia32_initreg();
+	memset(&i386msr.regs, 0, sizeof(i386msr.regs));
 
 	for (i = 0; i < 0x100; ++i) {
 		/* 8bit */

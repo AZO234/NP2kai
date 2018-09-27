@@ -40,6 +40,7 @@ void amd98int(NEVENTITEM item);
 
 void amd98_reset(const NP2CFG *pConfig);
 void amd98_bind(void);
+void amd98_unbind(void);
 
 int amd98_sfsave(STFLAGH sfh, const SFENTRY *tbl);
 int amd98_sfload(STFLAGH sfh, const SFENTRY *tbl);

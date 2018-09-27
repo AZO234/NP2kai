@@ -488,6 +488,24 @@ void amd98_bind(void)
 	iocore_attachinp(0xde, amd_inp);
 #endif
 }
+void amd98_unbind(void)
+{
+	iocore_detachout(0xd8);
+	iocore_detachout(0xd9);
+	iocore_detachout(0xda);
+	iocore_detachout(0xdb);
+	iocore_detachout(0xdc);
+	iocore_detachout(0xde);
+
+	iocore_detachinp(0xda);
+	iocore_detachinp(0xdb);
+#if defined(TRACE)
+	iocore_detachinp(0xd8);
+	iocore_detachinp(0xd9);
+	iocore_detachinp(0xdc);
+	iocore_detachinp(0xde);
+#endif
+}
 
 /**
  * state save

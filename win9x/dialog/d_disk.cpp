@@ -180,7 +180,7 @@ void dialog_changehdd(HWND hWnd, REG8 drv)
 		int seppostmp;
 		int sepcount = 0;
 		// ‹æØ‚è•¶š‚Ì”‚ğ”‚¦‚é
-		while((seppostmp = rFilter.find('|', seppos)) != std::string::npos){
+		while((seppostmp = (int)rFilter.find('|', seppos)) != std::string::npos){
 			if(seppostmp == std::string::npos) break;
 			seppos = seppostmp + 1;
 			sepcount++;

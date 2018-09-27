@@ -96,6 +96,8 @@ void mpu98ii_bind(void);
 void mpu98ii_callback(void);
 void mpu98ii_midipanic(void);
 
+void mpu98ii_changeclock(void);
+
 void IOOUTCALL mpu98ii_o0(UINT port, REG8 dat);
 void IOOUTCALL mpu98ii_o2(UINT port, REG8 dat);
 REG8 IOINPCALL mpu98ii_i0(UINT port);

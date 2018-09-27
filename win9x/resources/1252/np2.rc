@@ -614,6 +614,17 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,140,130,44,14
 END
 
+IDD_PCI DIALOGEX 0, 0, 184, 124
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "General"
+FONT 9, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    CONTROL         "Enabled",IDC_PCIENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,140,10
+    LTEXT           "PCMC Type",IDC_STATIC,8,26,30,8
+    COMBOBOX        IDC_PCIPCMCTYPE,40,24,136,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Use BIOS32 (not recommended)",IDC_PCIBIOS32,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,44,140,10
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1005,7 +1016,7 @@ BEGIN
             MENUITEM "&120.6MB",                    IDM_MEM1206
             MENUITEM "&230.6MB",                    IDM_MEM2306
         END
-        POPUP "F&PU"
+        POPUP "&FPU"
         BEGIN
             MENUITEM "80bit Extended Precision FPU (recommended)",IDM_FPU80
             MENUITEM "64bit Double Precision FPU",  IDM_FPU64
@@ -1035,6 +1046,10 @@ BEGIN
         MENUITEM "&Network option...",          IDM_NETOPT
         MENUITEM SEPARATOR
         MENUITEM "&Window Accelerator option...", IDM_WABOPT
+        MENUITEM SEPARATOR
+        MENUITEM "P&CI option...",                  IDM_PCIOPT
+        MENUITEM SEPARATOR
+        MENUITEM "&Hostdrv option...",              IDM_HOSTDRVOPT
     END
     POPUP "&Other"
     BEGIN
@@ -1535,14 +1550,23 @@ BEGIN
     IDS_GD5430_XE10         "PC-9821Xe10,Xa7e,Xb10 built-in"
     IDS_GD5430_CB2          "PC-9821Cb2 built-in"
     IDS_GD5430_CX2          "PC-9821Cx2 built-in"
+    IDS_GD5430_PCI          "PC-9821 PCI CL-GD5446 built-in"
     IDS_GD5430_WAB          "MELCO WAB-S"
     IDS_GD5430_WSN_A2F      "MELCO WSN-A2F"
     IDS_GD5430_WSN          "MELCO WSN-A2F,A4F"
     IDS_GD5430_GA98NB       "I-O DATA GA-98NBI/C,II,IV"
     IDS_GD5430_96           "PC-9801-96(PC-9801B3-E02)"
+    IDS_GD5430_AUTO_XE_WS_PCI    "Auto Select(Xe10, WSN-A2F, PCI)"
     IDS_GD5430_AUTO_XE10_WABS    "Auto Select(Xe10, WAB-S)"
     IDS_GD5430_AUTO_XE10_WSN2    "Auto Select(Xe10, WSN-A2F)"
     IDS_GD5430_AUTO_XE10_WSN4    "Auto Select(Xe10, WSN-A4F)"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PCI_PCMC_82434LX    "Intel 82434LX"
+    IDS_PCI_PCMC_82441FX    "Intel 82441FX"
+    IDS_PCI_PCMC_WILDCAT    "VLSI Wildcat"
 END
 
 STRINGTABLE
@@ -1589,6 +1613,8 @@ BEGIN
     IDS_CPU_PENTIUMPRO      "Intel Pentium Pro"
     IDS_CPU_PENTIUMII       "Intel Pentium II"
     IDS_CPU_PENTIUMIII      "Intel Pentium III"
+    IDS_CPU_PENTIUMM        "Intel Pentium M"
+    IDS_CPU_PENTIUM4        "Intel Pentium 4"
     IDS_CPU_AMD_K6_2        "AMD K6-2"
     IDS_CPU_AMD_K6_III      "AMD K6-III"
     IDS_CPU_AMD_K7_ATHLON   "AMD K7 Athlon"

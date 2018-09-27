@@ -605,7 +605,7 @@ static void endoftrack(UINT fmtsize, UINT8 sectors) {
 	if (hdl == FILEH_INVALID) {
 		return;
 	}
-	lastpointer = file_getsize(hdl);	/*	lastpointer = file_seek(hdl, 0, FSEEK_END);	*/
+	lastpointer = (long)file_getsize(hdl);	/*	lastpointer = file_seek(hdl, 0, FSEEK_END);	*/
 	fpointer = fdd->inf.d88.ptr[trk];
 	if (fpointer == 0) {
 		for (i=trk; i>=0; i--) {					// 新規トラック

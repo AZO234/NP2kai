@@ -59,7 +59,7 @@ void gpibio_reset(const NP2CFG *pConfig) {
 	OEMCHAR	path[MAX_PATH];
 	FILEH	fh;
 	OEMCHAR tmpbiosname[16];
-	int i;
+	//int i;
 	UINT16 iobase = 0x00D0;
 	
 	_tcscpy(tmpbiosname, OEMTEXT("gpib.rom"));

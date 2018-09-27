@@ -202,7 +202,7 @@ BRESULT fdd_write_vfdd(FDDFILE fdd) {
 		if (seekp == -1 || seekp == 0) {
 			UINT32	fdsize;
 
-			fdsize = file_getsize(hdl);
+			fdsize = (UINT32)file_getsize(hdl);
 			STOREINTELDWORD(&fdd->inf.vfdd.id[trk][secR].dataPoint, fdsize);
 			fdd->inf.vfdd.ptr[trk][sec] = fdsize;
 			file_seek(hdl, 0, 0);

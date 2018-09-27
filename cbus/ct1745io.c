@@ -127,5 +127,12 @@ void ct1745io_bind(void)
 	iocore_attachinp(0x2400 + g_sb16.base, sb16_i2400);	/* Mixer Chip Register Address Port */
 	iocore_attachinp(0x2500 + g_sb16.base, sb16_i2500);	/* Mixer Chip Data Port */
 }
+void ct1745io_unbind(void)
+{
+	iocore_detachout(0x2400 + g_sb16.base);	/* Mixer Chip Register Address Port */
+	iocore_detachout(0x2500 + g_sb16.base);	/* Mixer Chip Data Port */
+	iocore_detachinp(0x2400 + g_sb16.base);	/* Mixer Chip Register Address Port */
+	iocore_detachinp(0x2500 + g_sb16.base);	/* Mixer Chip Data Port */
+}
 
 #endif

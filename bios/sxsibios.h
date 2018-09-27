@@ -30,6 +30,8 @@ void np2sysp_scsi(const void *arg1, long arg2);
 void np2sysp_scsidev(const void *arg1, long arg2);
 #endif
 
+void np2sysp_scsidev(const void *arg1, long arg2);
+
 #ifdef __cplusplus
 }
 #endif

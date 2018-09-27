@@ -237,7 +237,7 @@ const OEMCHAR	*ext;
 		size = 512;
 		surfaces = 8;
 		sectors = 25;
-		cylinders = fsize / (sectors * surfaces * size);
+		cylinders = (UINT32)(fsize / (sectors * surfaces * size));
 		totals = fsize / size;
 		// totals = (FILEPOS)cylinders * sectors * surfaces;
 	}

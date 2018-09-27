@@ -36,6 +36,7 @@
 #define IDD_NETWORK                     181
 #define IDD_GD5430                      190
 #define IDD_WAB                         191
+#define IDD_PCI                         197
 #define IDD_HOSTDRV                     198
 #define IDD_IDE                         199
 #define IDR_SYS                         201
@@ -273,6 +274,9 @@
 #define IDC_WABMULTIWIN                 19015
 #define IDC_WABMULTHREAD                19016
 #define IDC_GD5430FAKECURSOR            19017
+#define IDC_PCIENABLE                   19070
+#define IDC_PCIPCMCTYPE                 19071
+#define IDC_PCIBIOS32                   19072
 #define IDC_HOSTDRVENABLE				19090
 #define IDC_HOSTDRVDIR					19091
 #define IDC_HOSTDRVREAD					19092
@@ -309,6 +313,7 @@
 #define IDS_SERIALOPTION                30043
 #define IDS_NETWORKOPTION               30044
 #define IDS_WABOPTION                   30045
+#define IDS_PCIOPTION                   30046
 #define IDS_CAPTION_FDD1                30051
 #define IDS_CAPTION_FDD2                30052
 #define IDS_CAPTION_FDD3                30053
@@ -396,10 +401,12 @@
 #define IDS_GD5430_XE10                 30604
 #define IDS_GD5430_CB2                  30605
 #define IDS_GD5430_CX2                  30606
+#define IDS_GD5430_PCI                  30609
 #define IDS_GD5430_WAB                  30610
 #define IDS_GD5430_WSN_A2F              30611
 #define IDS_GD5430_WSN                  30612
 #define IDS_GD5430_GA98NB               30620
+#define IDS_GD5430_AUTO_XE_WS_PCI       30695
 #define IDS_GD5430_96                   30696
 #define IDS_GD5430_AUTO_XE10_WABS       30697
 #define IDS_GD5430_AUTO_XE10_WSN2       30698
@@ -408,6 +415,9 @@
 #define IDS_IDETYPE_HDD                 30701
 #define IDS_IDETYPE_CDROM               30702
 #define IDS_PHYSICALDRIVE               30710
+#define IDS_PCI_PCMC_82434LX            30800
+#define IDS_PCI_PCMC_82441FX            30801
+#define IDS_PCI_PCMC_WILDCAT            30802
 #define IDS_FONTTITLE                   31001
 #define IDS_FONTEXT                     31002
 #define IDS_FONTFILTER                  31003
@@ -428,6 +438,7 @@
 #define IDS_HDDFILTER                   31043
 #define IDS_SASITITLE                   31044
 #define IDS_IDETITLE                    31045
+#define IDS_HDDFILTER_NVL               31046
 #define IDS_ISOTITLE                    31051
 #define IDS_ISOEXT                      31052
 #define IDS_ISOFILTER                   31053
@@ -479,6 +490,8 @@
 #define IDS_CPU_PENTIUMPRO              32025
 #define IDS_CPU_PENTIUMII               32026
 #define IDS_CPU_PENTIUMIII              32027
+#define IDS_CPU_PENTIUMM                32028
+#define IDS_CPU_PENTIUM4                32029
 #define IDS_CPU_AMD_K6_2                32035
 #define IDS_CPU_AMD_K6_III              32036
 #define IDS_CPU_AMD_K7_ATHLON           32037
@@ -662,6 +675,7 @@
 #define IDM_NETOPT                      40676
 #define IDM_WABOPT                      40677
 #define IDM_HOSTDRVOPT                  40678
+#define IDM_PCIOPT                      40679
 #define IDM_MOUSENC                     40689
 #define IDM_MOUSERAW                    40690
 #define IDM_MOUSE30X                    40691

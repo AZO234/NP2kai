@@ -1,4 +1,4 @@
-Ôªø/**
+/**
  * @file	pccore.c
  * @brief	emluration core
  *
@@ -73,6 +73,8 @@
 #define	CPU_FEATURES		(0)
 #define	CPU_FEATURES_EX		(0)
 #define	CPU_BRAND_STRING	"Intel(R) 80286 Processor "
+#define	CPU_FEATURES_ECX	(0)
+#define	CPU_BRAND_ID_AUTO	(0xffffffff)
 #endif
 
 
@@ -146,13 +148,16 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 #if defined(SUPPORT_GPIB)
 				0, 12, 1, 0, 
 #endif
+#if defined(SUPPORT_PCI)
+				0, 0, 0,
+#endif
 #if defined(SUPPORT_STATSAVE)
 				0,			/* statsave */
 #endif
 				0, 0,
 				0, 0xff00, 
 				0, 0, 0,
-				CPU_VENDOR, CPU_FAMILY, CPU_MODEL, CPU_STEPPING, CPU_FEATURES, CPU_FEATURES_EX, CPU_BRAND_STRING, OEMTEXT(""), OEMTEXT(""),
+				CPU_VENDOR, CPU_FAMILY, CPU_MODEL, CPU_STEPPING, CPU_FEATURES, CPU_FEATURES_EX, CPU_BRAND_STRING, OEMTEXT(""), OEMTEXT(""), CPU_BRAND_ID_AUTO, CPU_FEATURES_ECX,
 				FPU_TYPE_SOFTFLOAT
 	};
 
@@ -230,7 +235,7 @@ static void pccore_set(const NP2CFG *pConfig)
 	pccore.multiple = multiple;
 	pccore.realclock = pccore.baseclock * multiple;
 
-	// HDD„ÅÆÊé•Á∂ö (I/O„ÅÆ‰ΩøÁî®Áä∂ÊÖã„ÅåÂ§â„Çè„Çã„ÅÆ„Åß..
+	// HDDÇÃê⁄ë± (I/OÇÃégópèÛë‘Ç™ïœÇÌÇÈÇÃÇ≈..
 	if (pConfig->dipsw[1] & 0x20)
 	{
 		pccore.hddif |= PCHDD_IDE;
@@ -247,7 +252,7 @@ static void pccore_set(const NP2CFG *pConfig)
 		sxsi_setdevtype(0x03, SXSIDEV_NC);
 	}
 
-	// Êã°Âºµ„É°„É¢„É™
+	// ägí£ÉÅÉÇÉä
 	extsize = 0;
 	if (!(pConfig->dipsw[2] & 0x80))
 	{
@@ -261,10 +266,10 @@ static void pccore_set(const NP2CFG *pConfig)
 	pccore.extmem = extsize;
 	CopyMemory(pccore.dipsw, pConfig->dipsw, 3);
 
-	// „Çµ„Ç¶„É≥„Éâ„Éú„Éº„Éâ„ÅÆÊé•Á∂ö
+	// ÉTÉEÉìÉhÉ{Å[ÉhÇÃê⁄ë±
 	pccore.sound = (SOUNDID)pConfig->SOUND_SW;
 
-	// „Åù„ÅÆ‰ªñCBUS„ÅÆÊé•Á∂ö
+	// ÇªÇÃëºCBUSÇÃê⁄ë±
 	pccore.device = 0;
 	if (pConfig->pc9861enable)
 	{
@@ -326,6 +331,8 @@ static void sound_term(void) {
 void pccore_init(void) {
 
 	CPU_INITIALIZE();
+	
+	pic_initialize();
 
 	pal_initlcdtable();
 	pal_makelcdpal();
@@ -360,6 +367,10 @@ void pccore_init(void) {
 
 	iocore_create();
 
+#if defined(SUPPORT_IDEIO)
+	ideio_initialize();
+#endif
+
 #if defined(SUPPORT_HOSTDRV)
 	hostdrv_initialize();
 #endif
@@ -388,6 +399,10 @@ void pccore_term(void) {
 	fdd_eject(1);
 	fdd_eject(2);
 	fdd_eject(3);
+	
+#if defined(SUPPORT_IDEIO)
+	ideio_deinitialize();
+#endif
 
 	iocore_destroy();
 
@@ -396,6 +411,8 @@ void pccore_term(void) {
 	rs232c_destruct();
 
 	sxsi_alltrash();
+	
+	pic_deinitialize();
 
 	CPU_DEINITIALIZE();
 }
@@ -454,12 +471,12 @@ void pccore_reset(void) {
 	}
 #endif
 	ZeroMemory(mem, 0x110000);
-	FillMemory(mem + 0xC0000, 0xE8000 - 0xC0000, 0xff); // „Å™„Åû
+	FillMemory(mem + 0xC0000, 0xE8000 - 0xC0000, 0xff); // Ç»Çº
 	ZeroMemory(mem + VRAM1_B, 0x18000);
 	ZeroMemory(mem + VRAM1_E, 0x08000);
 	ZeroMemory(mem + FONT_ADRS, 0x08000);
 
-	//„É°„É¢„É™„Çπ„Ç§„ÉÉ„ÉÅ
+	//ÉÅÉÇÉäÉXÉCÉbÉ`
 	for (i=0; i<8; i++)
 	{
 		mem[0xa3fe2 + i*4] = np2cfg.memsw[i];
@@ -487,6 +504,13 @@ void pccore_reset(void) {
 	}else if(np2cfg.cpu_family == CPU_PENTIUM_III_FAMILY && np2cfg.cpu_model == CPU_PENTIUM_III_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_III);
+	}else if(np2cfg.cpu_family == CPU_PENTIUM_M_FAMILY && np2cfg.cpu_model == CPU_PENTIUM_M_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
+		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_M);
+	}else if(np2cfg.cpu_family == CPU_PENTIUM_4_FAMILY && np2cfg.cpu_model == CPU_PENTIUM_4_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
+		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_4);
+
 	}else if(np2cfg.cpu_family == CPU_AMD_K6_2_FAMILY && np2cfg.cpu_model == CPU_AMD_K6_2_MODEL){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K6_2);
@@ -499,6 +523,7 @@ void pccore_reset(void) {
 	}else if(np2cfg.cpu_family == CPU_AMD_K7_ATHLON_XP_FAMILY && np2cfg.cpu_model == CPU_AMD_K7_ATHLON_XP_MODEL){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K7_ATHLON_XP);
+
 	}else if(np2cfg.cpu_family == 0 && np2cfg.cpu_model == 0 && np2cfg.cpu_stepping == 0 && np2cfg.cpu_feature == 0){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_NEKOPRO);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_NEKOPRO2);
@@ -514,7 +539,7 @@ void pccore_reset(void) {
 #else
 		strcpy(np2cfg.cpu_vendor, np2cfg.cpu_vendor_o);
 #endif
-		// Â≠óÊï∞„ÅåË∂≥„Çä„Å™„ÅÑÊôÇ„Çπ„Éö„Éº„Çπ„ÅßÂüã„ÇÅ„Çã
+		// éöêîÇ™ë´ÇËÇ»Ç¢éûÉXÉyÅ[ÉXÇ≈ñÑÇﬂÇÈ
 		for(i=0;i<12;i++){
 			if(np2cfg.cpu_vendor[i] == '\0'){
 				np2cfg.cpu_vendor[i] = ' ';
@@ -529,28 +554,45 @@ void pccore_reset(void) {
 #else
 		strcpy(np2cfg.cpu_brandstring, np2cfg.cpu_brandstring_o);
 #endif
-		// ÊúÄÂæå„Å´1ÊñáÂ≠ó„Çπ„Éö„Éº„Çπ„ÇíÂÖ•„Çå„Çã
+		// ç≈å„Ç…1ï∂éöÉXÉyÅ[ÉXÇì¸ÇÍÇÈ
 		strcat(np2cfg.cpu_brandstring, " ");
 	}
 #endif
 	strcpy(i386cpuid.cpu_vendor, np2cfg.cpu_vendor);
 	if(np2cfg.cpu_family == 0 && np2cfg.cpu_model == 0 && np2cfg.cpu_stepping == 0 && np2cfg.cpu_feature == 0 && np2cfg.cpu_feature_ex == 0){
-		// Ë®≠ÂÆö„Å´Èñ¢‰øÇ„Å™„ÅèÂÖ®ÈÉ®‰Ωø„Åà„Çã„Çà„ÅÜ„Å´„Åô„Çã
+		// ê›íËÇ…ä÷åWÇ»Ç≠ëSïîégÇ¶ÇÈÇÊÇ§Ç…Ç∑ÇÈ
 		i386cpuid.cpu_family = CPU_FAMILY;
 		i386cpuid.cpu_model = CPU_MODEL;
 		i386cpuid.cpu_stepping = CPU_STEPPING;
 		i386cpuid.cpu_feature = CPU_FEATURES_ALL;
 		i386cpuid.cpu_feature_ex = CPU_FEATURES_EX_ALL;
+		i386cpuid.cpu_feature_ecx = CPU_FEATURES_ALL;
+		i386cpuid.cpu_brandid = 0;
 	}else{
 		i386cpuid.cpu_family = np2cfg.cpu_family;
 		i386cpuid.cpu_model = np2cfg.cpu_model;
 		i386cpuid.cpu_stepping = np2cfg.cpu_stepping;
 		i386cpuid.cpu_feature = CPU_FEATURES_ALL & np2cfg.cpu_feature;
 		i386cpuid.cpu_feature_ex = CPU_FEATURES_EX_ALL & np2cfg.cpu_feature_ex;
+		i386cpuid.cpu_feature_ecx = CPU_FEATURES_ECX_ALL & np2cfg.cpu_feature_ecx;
+		i386cpuid.cpu_brandid = np2cfg.cpu_brandid;
 	}
 	strcpy(i386cpuid.cpu_brandstring, np2cfg.cpu_brandstring);
 
-	// FPUÁ®ÆÈ°û„ÇíË®≠ÂÆö
+	// BrandIDé©ìÆê›íËÅiâﬂãéÉoÅ[ÉWÉáÉìÇ∆ÇÃå›ä∑à€éùópÅj
+	if(i386cpuid.cpu_brandid == CPU_BRAND_ID_AUTO){
+		if(strncmp(i386cpuid.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_III, 27)==0){
+			CPU_EBX = 0x2;
+		}else if(strncmp(i386cpuid.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_M, 27)==0){
+			CPU_EBX = 0x16;
+		}else if(strncmp(i386cpuid.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_4, 27)==0){
+			CPU_EBX = 0x9;
+		}else{
+			CPU_EBX = 0;
+		}
+	}
+
+	// FPUéÌóﬁÇê›íË
 	i386cpuid.fpu_type = np2cfg.fpu_type;
 	fpu_initialize();
 #endif
@@ -562,7 +604,7 @@ void pccore_reset(void) {
 	nevent_allreset();
 
 #if defined(VAEG_FIX)
-	//Âæå„Çç„Å´ÁßªÂãï
+	//å„ÇÎÇ…à⁄ìÆ
 #else
 	CPU_RESET();
 	CPU_SETEXTSIZE((UINT32)pccore.extmem);
@@ -585,9 +627,9 @@ void pccore_reset(void) {
 	}
 	font_setchargraph(epson);
 
-	// HDD„Çª„ÉÉ„Éà
+	// HDDÉZÉbÉg
 	diskdrv_hddbind();
-	// SASI/IDE„Å©„Å£„Å°Ôºü
+	// SASI/IDEÇ«Ç¡ÇøÅH
 #if defined(SUPPORT_SASI)
 	if (sxsi_issasi()) {
 		pccore.hddif &= ~PCHDD_IDE;
@@ -611,7 +653,7 @@ void pccore_reset(void) {
 	fddfile_reset2dmode();
 	bios0x18_16(0x20, 0xe1);
 
-	iocore_reset(&np2cfg);								// „Çµ„Ç¶„É≥„Éâ„Åßpic„ÇíÂëº„Å∂„ÅÆ„Åß‚Ä¶
+	iocore_reset(&np2cfg);								// ÉTÉEÉìÉhÇ≈picÇåƒÇ‘ÇÃÇ≈Åc
 	cbuscore_reset(&np2cfg);
 	fmboard_reset(&np2cfg, pccore.sound);
 
@@ -820,7 +862,7 @@ void screenvsync(NEVENTITEM item) {
 	}
 	nevent_set(NEVENT_FLAMES, gdc.vsyncclock, screendisp, NEVENT_RELATIVE);
 
-	// drawscreen„Åß pccore.vsyncclock„ÅåÂ§âÊõ¥„Åï„Çå„ÇãÂèØËÉΩÊÄß„Åå„ÅÇ„Çä„Åæ„Åô
+	// drawscreenÇ≈ pccore.vsyncclockÇ™ïœçXÇ≥ÇÍÇÈâ¬î\ê´Ç™Ç†ÇËÇ‹Ç∑
 	if (np2cfg.DISPSYNC) {
 		drawscreen();
 	}
@@ -837,7 +879,6 @@ static int resetcnt = 0;
 static int execcnt = 0;
 int piccnt = 0;
 #endif
-
 
 void pccore_postevent(UINT32 event) {	// yet!
 
@@ -863,7 +904,7 @@ void pccore_exec(BOOL draw) {
 	nevent_set(NEVENT_FLAMES, gdc.dispclock, screenvsync, NEVENT_RELATIVE);
 
 //	nevent_get1stevent();
-
+	
 	while(pcstat.screendispflag) {
 #if defined(TRACE)
 		resetcnt++;
@@ -876,13 +917,17 @@ void pccore_exec(BOOL draw) {
 			np2wab_setRelayState(0); // XXX:
 #endif
 #if defined(SUPPORT_CL_GD5430)
-			np2clvga.gd54xxtype = np2clvga.defgd54xxtype; // Auto SelectÁî®
+			np2clvga.gd54xxtype = np2clvga.defgd54xxtype; // Auto Selectóp
+			pc98_cirrus_vga_resetresolution();
 #endif
 #if defined(SUPPORT_IDEIO)
-			ideio_reset(&np2cfg); // XXX: Win9x„ÅÆÂÜçËµ∑Âãï„ÅßÂøÖË¶Å
+			ideio_basereset(); // XXX: Win9xÇÃçƒãNìÆÇ≈ïKóv
 #endif
 #if defined(SUPPORT_HOSTDRV)
-			hostdrv_reset(); // XXX: Win9x„ÅÆÂÜçËµ∑Âãï„ÅßÂøÖË¶Å
+			hostdrv_reset(); // XXX: Win9xÇÃçƒãNìÆÇ≈ïKóv
+#endif
+#if defined(SUPPORT_PCI)
+			pcidev_basereset(); // XXX: Win9xÇÃçƒãNìÆÇ≈ïKóv
 #endif
 			CPU_SHUT();
 		}

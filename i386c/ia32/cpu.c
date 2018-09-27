@@ -141,7 +141,7 @@ exec_1step(void)
 	}
 	ctx_index = (ctx_index + 1) % NELEMENTS(ctx);
 #endif
-
+	
 	/* normal / rep, but not use */
 	if (!(insttable_info[op] & INST_STRING) || !CPU_INST_REPUSE) {
 #if defined(DEBUG)

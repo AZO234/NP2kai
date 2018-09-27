@@ -235,6 +235,11 @@ void board14_bind(void)
 	cbuscore_attachsndex(0x088, musicgen_o0, musicgen_i0);
 	cbuscore_attachsndex(0x188, musicgen_o1, musicgen_i1);
 }
+void board14_unbind(void)
+{
+	cbuscore_detachsndex(0x088);
+	cbuscore_detachsndex(0x188);
+}
 
 /**
  * Restore

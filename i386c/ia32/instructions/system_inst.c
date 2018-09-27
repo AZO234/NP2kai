@@ -1070,6 +1070,18 @@ RDMSR(void)
 
 	idx = CPU_ECX;
 	switch (idx) {
+	case 0x174:
+		CPU_EDX = (UINT32)((i386msr.reg.ia32_sysenter_cs >> 32) & 0xffffffff);
+		CPU_EAX = (UINT32)((i386msr.reg.ia32_sysenter_cs      ) & 0xffffffff);
+		break;
+	case 0x175:
+		CPU_EDX = (UINT32)((i386msr.reg.ia32_sysenter_esp >> 32) & 0xffffffff);
+		CPU_EAX = (UINT32)((i386msr.reg.ia32_sysenter_esp      ) & 0xffffffff);
+		break;
+	case 0x176:
+		CPU_EDX = (UINT32)((i386msr.reg.ia32_sysenter_eip >> 32) & 0xffffffff);
+		CPU_EAX = (UINT32)((i386msr.reg.ia32_sysenter_eip      ) & 0xffffffff);
+		break;
 	case 0x10:
 		RDTSC();
 		break;
@@ -1100,8 +1112,16 @@ WRMSR(void)
 
 	idx = CPU_ECX;
 	switch (idx) {
+	case 0x174:
+		i386msr.reg.ia32_sysenter_cs = ((UINT64)CPU_EDX << 32) | ((UINT64)CPU_EAX);
+		break;
+	case 0x175:
+		i386msr.reg.ia32_sysenter_esp = ((UINT64)CPU_EDX << 32) | ((UINT64)CPU_EAX);
+		break;
+	case 0x176:
+		i386msr.reg.ia32_sysenter_eip = ((UINT64)CPU_EDX << 32) | ((UINT64)CPU_EAX);
+		break;
 		/* MTRR への書き込み時 tlb_flush_all(); */
-
 	default:
 		//EXCEPTION(GP_EXCEPTION, 0); // XXX: とりあえず通す
 		break;
@@ -1177,4 +1197,66 @@ MOV_RdTd(void)
 {
 
 	ia32_panic("MOV_RdTd: not implemented yet!");
+}
+
+// 中途半端＆ノーチェック注意
+void
+SYSENTER(void)
+{
+	// SEPなしならUD(無効オペコード例外)を発生させる
+	if(!(i386cpuid.cpu_feature & CPU_FEATURE_SEP)){
+		EXCEPTION(UD_EXCEPTION, 0);
+	}
+	// プロテクトモードチェック
+	if (!CPU_STAT_PM) {
+		EXCEPTION(GP_EXCEPTION, 0);
+	}
+	// MSRレジスタチェック
+	if (i386msr.reg.ia32_sysenter_cs == 0) {
+		EXCEPTION(GP_EXCEPTION, 0);
+	}
+
+	CPU_EFLAG = CPU_EFLAG & ~(VM_FLAG|I_FLAG|RF_FLAG);
+	CPU_CS = (UINT32)i386msr.reg.ia32_sysenter_cs;
+
+	CPU_SS = CPU_CS + 8;
+	
+	CPU_ESP = (UINT32)i386msr.reg.ia32_sysenter_esp;
+	CPU_EIP = (UINT32)i386msr.reg.ia32_sysenter_eip;
+
+	CPU_STAT_CPL = 0;
+	CPU_STAT_USER_MODE = (CPU_STAT_CPL == 3) ? CPU_MODE_USER : CPU_MODE_SUPERVISER;
+}
+
+// 中途半端＆ノーチェック注意
+void
+SYSEXIT(void)
+{
+	// SEPなしならUD(無効オペコード例外)を発生させる
+	if(!(i386cpuid.cpu_feature & CPU_FEATURE_SEP)){
+		EXCEPTION(UD_EXCEPTION, 0);
+	}
+	// プロテクトモードチェック
+	if (!CPU_STAT_PM) {
+		EXCEPTION(GP_EXCEPTION, 0);
+	}
+	// MSRレジスタチェック
+	if (i386msr.reg.ia32_sysenter_cs == 0) {
+		EXCEPTION(GP_EXCEPTION, 0);
+	}
+	// 特権レベルチェック
+	if (CPU_STAT_CPL != 0) {
+		VERBOSE(("SYSENTER: CPL(%d) != 0", CPU_STAT_CPL));
+		EXCEPTION(GP_EXCEPTION, 0);
+	}
+
+	CPU_CS = (UINT32)i386msr.reg.ia32_sysenter_cs + 16;
+
+	CPU_SS = (UINT32)i386msr.reg.ia32_sysenter_cs + 24;
+	
+	CPU_ESP = CPU_ECX;
+	CPU_EIP = CPU_EDX;
+
+	CPU_STAT_CPL = 3;
+	CPU_STAT_USER_MODE = (CPU_STAT_CPL == 3) ? CPU_MODE_USER : CPU_MODE_SUPERVISER;
 }

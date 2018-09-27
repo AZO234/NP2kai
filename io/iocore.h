@@ -94,11 +94,15 @@ void iocore_attachsysinpex(UINT port, UINT mask,
 
 // ƒTƒEƒ“ƒhI/O - 12bit decode
 BRESULT iocore_attachsndout(UINT port, IOOUT func);
+BRESULT iocore_detachsndout(UINT port);
 BRESULT iocore_attachsndinp(UINT port, IOINP func);
+BRESULT iocore_detachsndinp(UINT port);
 
 // Šg’£I/O - 16bit decode
 BRESULT iocore_attachout(UINT port, IOOUT func);
+BRESULT iocore_detachout(UINT port);
 BRESULT iocore_attachinp(UINT port, IOINP func);
+BRESULT iocore_detachinp(UINT port);
 
 void iocore_create(void);
 void iocore_destroy(void);

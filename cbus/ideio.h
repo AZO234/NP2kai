@@ -188,7 +188,9 @@ UINT32 IOINPCALL ideio_r32(UINT port);
 
 void ideio_initialize(void);
 void ideio_deinitialize(void);
+void ideio_basereset();
 void ideio_reset(const NP2CFG *pConfig);
+void ideio_bindCDDA(void);
 void ideio_bind(void);
 void ideio_notify(REG8 sxsidrv, UINT action);
 void ideioint(NEVENTITEM item);

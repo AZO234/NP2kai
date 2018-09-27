@@ -214,6 +214,3 @@ void *qemu_mallocz(size_t size)
     memset(ptr, 0, size);
     return ptr;
 }
-
-void pc98_cirrus_vga_initVRAMWindowAddr();
-void pc98_cirrus_vga_setvramsize();

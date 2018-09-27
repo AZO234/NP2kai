@@ -225,6 +225,11 @@ struct tagNP2Config
 	UINT8	gpibmode; // GPIB Master/Slave
 	UINT8	gpibaddr; // GPIB Address
 #endif
+#if defined(SUPPORT_PCI)
+	UINT8	usepci; // PCI Bus使用
+	UINT8	pci_bios32; // BIOS32使用
+	UINT8	pci_pcmc; // PCMC選択
+#endif
 
 #if defined(SUPPORT_STATSAVE)
 	UINT8	statsave;
@@ -248,6 +253,8 @@ struct tagNP2Config
 	char	cpu_brandstring[64]; // ブランド名（48byte）
 	OEMCHAR	cpu_vendor_o[16]; // ベンダー（12byte）OEMCHAR
 	OEMCHAR	cpu_brandstring_o[64]; // ブランド名（48byte）OEMCHAR
+	UINT32	cpu_brandid; // ブランドID
+	UINT32  cpu_feature_ecx; // ECX機能フラグ
 	
 	UINT8	fpu_type; // FPU種類（0=Berkeley SoftFloat, 1=DOSBox FPU, 2=DOSBox FPU+INT64）
 };

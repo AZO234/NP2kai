@@ -1,6 +1,6 @@
 Neko Project II 0.86 kai rev.17
 ===
-Jun 27, 2018  
+Sep 27, 2018  
 
 Build SDL2 port
 ---
@@ -604,6 +604,8 @@ WAB Type normally uses 'PC-9821Xe10,Xa7e,Xb10 built-in'.
 
 Release
 ---
+* Sep 27, 2018
+	- Merge NP21/W 0.86 rev.44
 * Aug 22, 2018
 	- Apply for libnvl.so
 	- Merge NP21/W 0.86 rev.43

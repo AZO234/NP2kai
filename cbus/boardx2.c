@@ -220,4 +220,11 @@ void boardx2_bind(void)
 	cbuscore_attachsndex(0x088, opn_o, opn_i);
 	cbuscore_attachsndex(0x188, opna_o, opna_i);
 }
+void boardx2_unbind(void)
+{
+	pcm86io_unbind();
+	cbuscore_detachsndex(0x088);
+	cbuscore_detachsndex(0x188);
+}
+
 

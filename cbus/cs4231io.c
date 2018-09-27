@@ -239,7 +239,7 @@ void cs4231io_reset(void) {
 	cs4231.dmairq = cs4231irq[(cs4231.adrs >> 3) & 7]; // IRQをセット
 	cs4231.dmach = cs4231dma[cs4231.adrs & 7]; // DMAチャネルをセット
 	cs4231.port[0] = 0x0f40; //WSS BASE I/O port
-	if(g_nSoundID==SOUNDID_PC_9801_86_WSS){
+	if(g_nSoundID==SOUNDID_PC_9801_86_WSS||g_nSoundID==SOUNDID_PC_9801_86_118){
 		cs4231.port[1] = 0xb460; // Sound ID I/O port (A460hは86音源が使うのでB460hに変更)
 	}else{
 		cs4231.port[1] = 0xa460; // Sound ID I/O port
@@ -268,7 +268,7 @@ void cs4231io_reset(void) {
 	cs4231.reg.line_r = 0x88;//13
 	cs4231.reg.reserved1=0x80; //16 from PC-9821Nr166
 	cs4231.reg.reserved2=0x80; //17 from PC-9821Nr166
-	if(g_nSoundID==SOUNDID_PC_9801_118){
+	if(g_nSoundID==SOUNDID_PC_9801_118 || g_nSoundID==SOUNDID_PC_9801_86_118){
 		cs4231.reg.chipid	=0xa2;//19 from PC-9801-118 CS4231
 	}else{
 		cs4231.reg.chipid	=0x80;//19 from PC-9821Nr166 YMF715
@@ -317,6 +317,37 @@ void cs4231io_bind(void) {
 		iocore_attachinp(0x59ef, srnf_i59ef);//3番めに読まれて何か調査 ３と４でとりあえず通る
 //		iocore_attachinp(0x5aef, srnf_i5aef);//8番めに読まれて終わり
 		iocore_attachinp(0x5bef, srnf_i5bef);//6番めに読まれる
+*/
+	}
+}
+void cs4231io_unbind(void) {
+
+	iocore_detachout(0xc24);
+	iocore_detachout(0xc2b);
+	iocore_detachout(0xc2d);
+	iocore_detachinp(0xc24);
+	iocore_detachinp(0xc2b);
+	iocore_detachinp(0xc2d);
+	if (cs4231.dmach != 0xff) {
+		dmac_detach(DMADEV_CS4231); // CS4231のDMAチャネルを割り当て
+	}
+	if(g_nSoundID!=SOUNDID_PC_9801_86_WSS && g_nSoundID!=SOUNDID_MATE_X_PCM){
+		iocore_detachout(0x480);
+		iocore_detachinp(0x480);
+		iocore_detachinp(0x481);
+		iocore_detachinp(0xac6d);
+		iocore_detachinp(0xac6e);
+
+/*　必要な時だけ有効にすべき
+//WSN-F???
+		iocore_detachinp(0x51ee);//7番めに読まれる
+		iocore_detachinp(0x51ef);//1番最初にC2を返す
+//		iocore_detachinp(0x52ef);//f40等を読み書きしたあとここを読んでエラー
+		iocore_detachinp(0x56ef);//2番めに読まれて割り込み等の設定？　4番めに2回読まれ直す
+		iocore_detachinp(0x57ef);//5番めに読まれる
+		iocore_detachinp(0x59ef);//3番めに読まれて何か調査 ３と４でとりあえず通る
+//		iocore_detachinp(0x5aef);//8番めに読まれて終わり
+		iocore_detachinp(0x5bef);//6番めに読まれる
 */
 	}
 }

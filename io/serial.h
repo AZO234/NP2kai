@@ -48,6 +48,7 @@ void keyboard_bind(void);
 void keyboard_resetsignal(void);
 void keyboard_ctrl(REG8 data);
 void keyboard_send(REG8 data);
+void keyboard_changeclock();
 
 
 

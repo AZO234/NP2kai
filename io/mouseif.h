@@ -26,6 +26,7 @@ void mouseif_reset(const NP2CFG *pConfig);
 void mouseif_bind(void);
 void mouseif_sync(void);
 void mouseint(NEVENTITEM item);
+void mouseif_changeclock(void);
 
 #ifdef __cplusplus
 }

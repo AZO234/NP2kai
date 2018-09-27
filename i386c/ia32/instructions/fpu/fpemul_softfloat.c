@@ -225,6 +225,7 @@ static void FPU_PREP_PUSH(void){
 
 static void FPU_FPOP(void){
 	FPU_STAT.tag[FPU_STAT_TOP] = TAG_Empty;
+	FPU_STAT.mmxenable = 0;
 	//maybe set zero in it as well
 	FPU_STAT_TOP = ((FPU_STAT_TOP+1)&7);
 //	LOG(LOG_FPU,LOG_ERROR)("popped from %d  %g off the stack",top,fpu.regs[top].d);
@@ -362,23 +363,29 @@ static void FPU_FST_F80(UINT32 addr) {
 
 static void FPU_FST_I16(UINT32 addr) {
 	INT16 blah;
-
-	blah = floatx80_to_int32(FPU_STAT.reg[FPU_STAT_TOP].d);
-	fpu_memorywrite_w(addr,(SINT16)blah);
+	
+	float_exception_flags = (FPU_STATUSWORD & 0x3f);
+	blah = (SINT16)floatx80_to_int32(FPU_STAT.reg[FPU_STAT_TOP].d);
+	fpu_memorywrite_w(addr,(UINT16)blah);
+	FPU_STATUSWORD |= float_exception_flags;
 }
 
 static void FPU_FST_I32(UINT32 addr) {
 	INT32 blah;
-
+	
+	float_exception_flags = (FPU_STATUSWORD & 0x3f);
 	blah = floatx80_to_int32(FPU_STAT.reg[FPU_STAT_TOP].d);
 	fpu_memorywrite_d(addr,blah);
+	FPU_STATUSWORD |= float_exception_flags;
 }
 
 static void FPU_FST_I64(UINT32 addr) {
 	INT64 blah;
-
+	
+	float_exception_flags = (FPU_STATUSWORD & 0x3f);
 	blah = floatx80_to_int64(FPU_STAT.reg[FPU_STAT_TOP].d);
 	fpu_memorywrite_q(addr,blah);
+	FPU_STATUSWORD |= float_exception_flags;
 }
 
 static void FPU_FBST(UINT32 addr) 
@@ -419,97 +426,124 @@ static void FPU_FBST(UINT32 addr)
 	fpu_memorywrite_b(addr+9,(UINT8)p);
 
 	float_rounding_mode = oldrnd;
+	FPU_STATUSWORD |= float_exception_flags;
 }
 
+#if defined(_WIN32) && !defined(__LIBRETRO__)
 #define isinf(x) (!(_finite(x) || _isnan(x)))
+#else
+#define isinf(x) (!(_finite(x) || isnan(x)))
+#endif
 #define isdenormal(x) (_fpclass(x) == _FPCLASS_ND || _fpclass(x) == _FPCLASS_PD)
 
 static void FPU_FADD(UINT op1, UINT op2){
-
+	float_exception_flags = (FPU_STATUSWORD & 0x3f);
 	FPU_STAT.reg[op1].d = floatx80_add(FPU_STAT.reg[op1].d, FPU_STAT.reg[op2].d);
+	FPU_STATUSWORD |= float_exception_flags;
 	return;
 }
 
 static void FPU_FSIN(void){
+	float_exception_flags = (FPU_STATUSWORD & 0x3f);
 	FPU_STAT.reg[FPU_STAT_TOP].d = c_double_to_floatx80(sin(floatx80_to_c_double(FPU_STAT.reg[FPU_STAT_TOP].d)));
 	FPU_SET_C2(0);
 	//flags and such :)
+	FPU_STATUSWORD |= float_exception_flags;
 	return;
 }
 
 static void FPU_FSINCOS(void){
 	double temp;
-
+	
+	float_exception_flags = (FPU_STATUSWORD & 0x3f);
 	temp = floatx80_to_c_double(FPU_STAT.reg[FPU_STAT_TOP].d);
 	FPU_STAT.reg[FPU_STAT_TOP].d = c_double_to_floatx80(sin(temp));
 	FPU_PUSH(c_double_to_floatx80(cos(temp)));
 	FPU_SET_C2(0);
 	//flags and such :)
+	FPU_STATUSWORD |= float_exception_flags;
 	return;
 }
 
 static void FPU_FCOS(void){
+	float_exception_flags = (FPU_STATUSWORD & 0x3f);
 	FPU_STAT.reg[FPU_STAT_TOP].d = c_double_to_floatx80(cos(floatx80_to_c_double(FPU_STAT.reg[FPU_STAT_TOP].d)));
 	FPU_SET_C2(0);
 	//flags and such :)
+	FPU_STATUSWORD |= float_exception_flags;
 	return;
 }
 
 static void FPU_FSQRT(void){
+	float_exception_flags = (FPU_STATUSWORD & 0x3f);
 	FPU_STAT.reg[FPU_STAT_TOP].d = floatx80_sqrt(FPU_STAT.reg[FPU_STAT_TOP].d);
 	//flags and such :)
+	FPU_STATUSWORD |= float_exception_flags;
 	return;
 }
 static void FPU_FPATAN(void){
+	float_exception_flags = (FPU_STATUSWORD & 0x3f);
 	FPU_STAT.reg[FPU_ST(1)].d = c_double_to_floatx80(atan2(floatx80_to_c_double(FPU_STAT.reg[FPU_ST(1)].d),floatx80_to_c_double(FPU_STAT.reg[FPU_STAT_TOP].d)));
 	FPU_FPOP();
 	//flags and such :)
+	FPU_STATUSWORD |= float_exception_flags;
 	return;
 }
 static void FPU_FPTAN(void){
+	float_exception_flags = (FPU_STATUSWORD & 0x3f);
 	FPU_STAT.reg[FPU_STAT_TOP].d = c_double_to_floatx80(tan(floatx80_to_c_double(FPU_STAT.reg[FPU_STAT_TOP].d)));
 	FPU_PUSH(c_double_to_floatx80(1.0));
 	FPU_SET_C2(0);
 	//flags and such :)
+	FPU_STATUSWORD |= float_exception_flags;
 	return;
 }
 static void FPU_FDIV(UINT st, UINT other){
-	if(floatx80_eq(FPU_STAT.reg[other].d, c_double_to_floatx80(0.0))){
-		FPU_STATUSWORD |= FP_ZE_FLAG;
-		if(!(FPU_CTRLWORD & FP_ZE_FLAG))
-			return;
-	}
+	float_exception_flags = (FPU_STATUSWORD & 0x3f);
+	//if(floatx80_eq(FPU_STAT.reg[other].d, c_double_to_floatx80(0.0))){
+	//	FPU_STATUSWORD |= FP_ZE_FLAG;
+	//	if(!(FPU_CTRLWORD & FP_ZE_FLAG))
+	//		return;
+	//}
 	FPU_STAT.reg[st].d = floatx80_div(FPU_STAT.reg[st].d, FPU_STAT.reg[other].d);
 	//flags and such :)
+	FPU_STATUSWORD |= float_exception_flags;
 	return;
 }
 
 static void FPU_FDIVR(UINT st, UINT other){
-	if(floatx80_eq(FPU_STAT.reg[st].d, c_double_to_floatx80(0.0))){
-		FPU_STATUSWORD |= FP_ZE_FLAG;
-		if(!(FPU_CTRLWORD & FP_ZE_FLAG))
-			return;
-	}
+	float_exception_flags = (FPU_STATUSWORD & 0x3f);
+	//if(floatx80_eq(FPU_STAT.reg[st].d, c_double_to_floatx80(0.0))){
+	//	FPU_STATUSWORD |= FP_ZE_FLAG;
+	//	if(!(FPU_CTRLWORD & FP_ZE_FLAG))
+	//		return;
+	//}
 	FPU_STAT.reg[st].d = floatx80_div(FPU_STAT.reg[other].d, FPU_STAT.reg[st].d);
 	// flags and such :)
+	FPU_STATUSWORD |= float_exception_flags;
 	return;
 }
 
 static void FPU_FMUL(UINT st, UINT other){
+	float_exception_flags = (FPU_STATUSWORD & 0x3f);
 	FPU_STAT.reg[st].d = floatx80_mul(FPU_STAT.reg[st].d, FPU_STAT.reg[other].d);
 	//flags and such :)
+	FPU_STATUSWORD |= float_exception_flags;
 	return;
 }
 
 static void FPU_FSUB(UINT st, UINT other){
+	float_exception_flags = (FPU_STATUSWORD & 0x3f);
 	FPU_STAT.reg[st].d = floatx80_sub(FPU_STAT.reg[st].d, FPU_STAT.reg[other].d);
 	//flags and such :)
 	return;
 }
 
 static void FPU_FSUBR(UINT st, UINT other){
+	float_exception_flags = (FPU_STATUSWORD & 0x3f);
 	FPU_STAT.reg[st].d = floatx80_sub(FPU_STAT.reg[other].d, FPU_STAT.reg[st].d);
 	//flags and such :)
+	FPU_STATUSWORD |= float_exception_flags;
 	return;
 }
 
@@ -645,16 +679,18 @@ static void FPU_FCMOVNU(UINT st, UINT other){
 }
 
 static void FPU_FRNDINT(void){
-	SINT64 temp;
-
+	
+	float_exception_flags = (FPU_STATUSWORD & 0x3f);
 	FPU_STAT.reg[FPU_STAT_TOP].d = floatx80_round_to_int(FPU_STAT.reg[FPU_STAT_TOP].d);
+	FPU_STATUSWORD |= float_exception_flags;
 }
 
 static void FPU_FPREM(void){
 	floatx80 valtop;
 	floatx80 valdiv;
 	SINT64 ressaved;
-
+	
+	float_exception_flags = (FPU_STATUSWORD & 0x3f);
 	valtop = FPU_STAT.reg[FPU_STAT_TOP].d;
 	valdiv = FPU_STAT.reg[FPU_ST(1)].d;
 	ressaved = floatx80_to_int64_round_to_zero(floatx80_div(valtop, valdiv)); 
@@ -666,6 +702,7 @@ static void FPU_FPREM(void){
 	FPU_SET_C3((UINT)(ressaved&2));
 	FPU_SET_C1((UINT)(ressaved&1));
 	FPU_SET_C2(0);
+	FPU_STATUSWORD |= float_exception_flags;
 }
 
 static void FPU_FPREM1(void){
@@ -675,6 +712,7 @@ static void FPU_FPREM1(void){
 	floatx80 v05 = c_double_to_floatx80(0.5);
 	signed char oldrnd = float_rounding_mode;
 	
+	float_exception_flags = (FPU_STATUSWORD & 0x3f);
 	valtop = FPU_STAT.reg[FPU_STAT_TOP].d;
 	valdiv = FPU_STAT.reg[FPU_ST(1)].d;
 	quot = floatx80_div(valtop, valdiv);
@@ -693,6 +731,7 @@ static void FPU_FPREM1(void){
 	FPU_SET_C2(0);
 
 	float_rounding_mode = oldrnd;
+	FPU_STATUSWORD |= float_exception_flags;
 }
 
 static void FPU_FXAM(void){
@@ -939,13 +978,17 @@ static void FPU_FXTRACT(void) {
 }
 
 static void FPU_FCHS(void){
+	float_exception_flags = (FPU_STATUSWORD & 0x3f);
 	FPU_STAT.reg[FPU_STAT_TOP].d = floatx80_mul(c_double_to_floatx80(-1.0), FPU_STAT.reg[FPU_STAT_TOP].d);
+	FPU_STATUSWORD |= float_exception_flags;
 }
 
 static void FPU_FABS(void){
+	float_exception_flags = (FPU_STATUSWORD & 0x3f);
 	if(floatx80_le(FPU_STAT.reg[FPU_STAT_TOP].d, c_double_to_floatx80(0.0))){
 		FPU_STAT.reg[FPU_STAT_TOP].d = floatx80_mul(c_double_to_floatx80(-1.0), FPU_STAT.reg[FPU_STAT_TOP].d);
 	}
+	FPU_STATUSWORD |= float_exception_flags;
 }
 
 static void FPU_FTST(void){
@@ -987,6 +1030,7 @@ static void FPU_FLDZ(void){
 	FPU_PREP_PUSH();
 	FPU_STAT.reg[FPU_STAT_TOP].d = c_double_to_floatx80(0.0);
 	FPU_STAT.tag[FPU_STAT_TOP] = TAG_Zero;
+	FPU_STAT.mmxenable = 0;
 }
 
 
@@ -1032,6 +1076,7 @@ FPU_FINIT(void)
 		//FPU_STAT.reg[i].ll = 0;
 	}
 	FPU_STAT.tag[8] = TAG_Valid; // is only used by us
+	FPU_STAT.mmxenable = 0;
 }
 void SF_FPU_FINIT(void){
 	int i;
@@ -1698,6 +1743,7 @@ SF_ESC5(void)
 		case 0:	/* FFREE */
 			TRACEOUT(("FFREE"));
 			FPU_STAT.tag[FPU_ST(sub)]=TAG_Empty;
+			FPU_STAT.mmxenable = 0;
 			break;
 		case 1: /* FXCH */
 			TRACEOUT(("FXCH"));
@@ -1732,6 +1778,15 @@ SF_ESC5(void)
 			TRACEOUT(("FLD double real"));
 			FPU_PREP_PUSH();
 			FPU_FLD_F64(madr,FPU_STAT_TOP);
+			break;
+		case 1:	/* FISTTP (QWORD) */
+			{
+				signed char oldrnd = float_rounding_mode;
+				float_rounding_mode = float_round_down;
+				FPU_FST_I64(madr);
+				float_rounding_mode = oldrnd;
+			}
+			FPU_FPOP();
 			break;
 		case 2:	/* FST (î{ê∏ìxé¿êî) */
 			TRACEOUT(("FST double real"));
@@ -1858,6 +1913,7 @@ SF_ESC7(void)
 		case 0: /* FFREEP */
 			TRACEOUT(("FFREEP"));
 			FPU_STAT.tag[FPU_ST(sub)]=TAG_Empty;
+			FPU_STAT.mmxenable = 0;
 			FPU_FPOP();
 			break;
 		case 1: /* FXCH */
@@ -1905,6 +1961,15 @@ SF_ESC7(void)
 			TRACEOUT(("FILD SINT16"));
 			FPU_PREP_PUSH();
 			FPU_FLD_I16(madr,FPU_STAT_TOP);
+			break;
+		case 1:	/* FISTTP (WORD) */
+			{
+				signed char oldrnd = float_rounding_mode;
+				float_rounding_mode = float_round_down;
+				FPU_FST_I16(madr);
+				float_rounding_mode = oldrnd;
+			}
+			FPU_FPOP();
 			break;
 		case 2:	/* FIST (WORD) */
 			TRACEOUT(("FIST SINT16"));

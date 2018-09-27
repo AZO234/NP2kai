@@ -66,7 +66,7 @@ long issec2048(FILEH fh) {
 	if ((fsize % 2048) != 0) {
 		goto sec2048_err;
 	}
-	return(fsize / 2048);
+	return((long)(fsize / 2048));
 
 sec2048_err:
 	return(-1);
@@ -101,7 +101,7 @@ long issec2352(FILEH fh) {
 	if ((fsize % 2352) != 0) {
 		goto sec2352_err;
 	}
-	return(fsize / 2352);
+	return((long)(fsize / 2352));
 
 sec2352_err:
 	return(-1);
@@ -136,7 +136,7 @@ long issec2448(FILEH fh) {
 	if ((fsize % 2448) != 0) {
 		goto sec2448_err;
 	}
-	return(fsize / 2448);
+	return((long)(fsize / 2448));
 
 sec2448_err:
 	return(-1);
@@ -225,7 +225,7 @@ long issec(FILEH fh, _CDTRK *trk, UINT trks) {
 	else {
 		trk[trks-1].str_sec = trk[trks-1].pos0;
 	}
-	trk[trks-1].end_sec = trk[trks-1].str_sec + (fsize / trk[trks-1].sector_size);
+	trk[trks-1].end_sec = (UINT32)(trk[trks-1].str_sec + (fsize / trk[trks-1].sector_size));
 	trk[trks-1].sectors = trk[trks-1].end_sec - trk[trks-1].str_sec + 1;
 	total += trk[trks-1].sectors;
 
@@ -305,7 +305,7 @@ long set_trkinfo(FILEH fh, _CDTRK *trk, UINT trks, FILELEN imagesize) {
 	else {
 		trk[trks-1].str_sec = trk[trks-1].pos0;
 	}
-	trk[trks-1].end_sec = trk[trks-1].str_sec + (fsize / trk[trks-1].sector_size);
+	trk[trks-1].end_sec = (UINT32)(trk[trks-1].str_sec + (fsize / trk[trks-1].sector_size));
 	trk[trks-1].sectors = trk[trks-1].end_sec - trk[trks-1].str_sec + 1;
 	total += trk[trks-1].sectors;
 
@@ -331,7 +331,7 @@ REG8 sec2048_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 	cdinfo = (CDINFO)sxsi->hdl;
 	fh = cdinfo->fh;
 
-	pos = pos * 2048 + cdinfo->trk[0].start_offset;
+	pos = (FILEPOS)(pos * 2048 + cdinfo->trk[0].start_offset);
 	if (file_seek(fh, pos, FSEEK_SET) != pos) {
 		return(0xd0);
 	}
@@ -368,7 +368,7 @@ REG8 sec2352_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 	fh = cdinfo->fh;
 
 	while(size) {
-		fpos = (pos * 2352) + 16 + cdinfo->trk[0].start_offset;
+		fpos = (FILEPOS)((pos * 2352) + 16 + cdinfo->trk[0].start_offset);
 		if (file_seek(fh, fpos, FSEEK_SET) != fpos) {
 			return(0xd0);
 		}
@@ -403,7 +403,7 @@ REG8 sec2448_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 	cdinfo = (CDINFO)sxsi->hdl;
 	fh = cdinfo->fh;
 	while(size) {
-		fpos = (pos * 2448) + 16 + cdinfo->trk[0].start_offset;
+		fpos = (FILEPOS)((pos * 2448) + 16 + cdinfo->trk[0].start_offset);
 		if (file_seek(fh, fpos, FSEEK_SET) != fpos) {
 			return(0xd0);
 		}
@@ -445,7 +445,7 @@ REG8 sec_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 		fpos = 0;
 		secs = 0;
 		for (i = 0; i < cdinfo->trks; i++) {
-			if (cdinfo->trk[i].str_sec <= pos && pos <= cdinfo->trk[i].end_sec) {
+			if (cdinfo->trk[i].str_sec <= (UINT32)pos && (UINT32)pos <= cdinfo->trk[i].end_sec) {
 				fpos += (pos - secs) * cdinfo->trk[i].sector_size;
 				if (cdinfo->trk[i].sector_size != 2048) {
 					fpos += 16;
@@ -455,7 +455,7 @@ REG8 sec_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 			fpos += cdinfo->trk[i].sectors * cdinfo->trk[i].sector_size;
 			secs += cdinfo->trk[i].sectors;
 		}
-		fpos += cdinfo->trk[0].start_offset;
+		fpos += (FILEPOS)cdinfo->trk[0].start_offset;
 		if (file_seek(fh, fpos, FSEEK_SET) != fpos) {
 			return(0xd0);
 		}
@@ -657,7 +657,7 @@ BRESULT setsxsidev(SXSIDEV sxsi, const OEMCHAR *path, const _CDTRK *trk, UINT tr
 	cdinfo->trk[trks].adr_ctl	= 0x10;
 	cdinfo->trk[trks].point		= 0xaa;
 //	cdinfo->trk[trks].pos		= totals;
-	cdinfo->trk[trks].pos		= sxsi->totals;
+	cdinfo->trk[trks].pos		= (UINT32)sxsi->totals;
 
 	cdinfo->trks = trks;
 	file_cpyname(cdinfo->path, path, NELEMENTS(cdinfo->path));

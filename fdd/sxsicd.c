@@ -92,7 +92,7 @@ BRESULT sxsicd_readraw(SXSIDEV sxsi, FILEPOS pos, void *buf) {
 
 	//	pos位置のセクタサイズを取得
 	for (i = cdinfo->trks - 1; i >= 0; i--) {
-		if (cdinfo->trk[i].pos <= pos) {
+		if (cdinfo->trk[i].pos <= (UINT32)pos) {
 			secsize = cdinfo->trk[i].sector_size;
 			break;
 		}
@@ -109,14 +109,14 @@ BRESULT sxsicd_readraw(SXSIDEV sxsi, FILEPOS pos, void *buf) {
 	fpos = 0;
 	secs = 0;
 	for (i = 0; i < cdinfo->trks; i++) {
-		if (cdinfo->trk[i].str_sec <= pos && pos <= cdinfo->trk[i].end_sec) {
+		if (cdinfo->trk[i].str_sec <= (UINT32)pos && (UINT32)pos <= cdinfo->trk[i].end_sec) {
 			fpos += (pos - secs) * cdinfo->trk[i].sector_size;
 			break;
 		}
 		fpos += cdinfo->trk[i].sectors * cdinfo->trk[i].sector_size;
 		secs += cdinfo->trk[i].sectors;
 	}
-	fpos += cdinfo->trk[0].start_offset;
+	fpos += (FILEPOS)(cdinfo->trk[0].start_offset);
 #ifdef SUPPORT_PHYSICAL_CDDRV
 	if(isPhysicalCD){
 		DWORD BytesReturned;

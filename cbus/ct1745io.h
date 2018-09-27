@@ -34,6 +34,7 @@ enum {
 
 void ct1745io_reset(void);
 void ct1745io_bind(void);
+void ct1745io_unbind(void);
 
 #ifdef __cplusplus
 }

@@ -203,6 +203,8 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/io/necio.c \
 		$(real_topsrcdir)/io/epsonio.c \
 		$(real_topsrcdir)/io/pcidev.c \
+		$(real_topsrcdir)/io/pci/98graphbridge.c \
+		$(real_topsrcdir)/io/pci/cbusbridge.c \
 		\
 		$(real_topsrcdir)/lio/lio.c \
 		$(real_topsrcdir)/lio/gscreen.c \
@@ -309,6 +311,7 @@ AM_CPPFLAGS=	-I$(real_topsrcdir) \
 		-I$(real_topsrcdir)/fdd \
 		-I$(real_topsrcdir)/generic \
 		-I$(real_topsrcdir)/io \
+		-I$(real_topsrcdir)/io/pci \
 		-I$(real_topsrcdir)/mem \
 		-I$(real_topsrcdir)/network \
 		-I$(real_topsrcdir)/sound \
@@ -389,6 +392,8 @@ IA32_SOURCES=	$(real_topsrcdir)/i386c/cpucore.c \
 		$(real_topsrcdir)/i386c/ia32/instructions/mmx/3dnow.c \
 		$(real_topsrcdir)/i386c/ia32/instructions/mmx/mmx.c \
 		$(real_topsrcdir)/i386c/ia32/instructions/sse/sse.c \
+		$(real_topsrcdir)/i386c/ia32/instructions/sse2/sse2.c \
+		$(real_topsrcdir)/i386c/ia32/instructions/sse3/sse3.c \
 		$(real_topsrcdir)/debugsub386.c
 
 IA32_CPPFLAGS=	-I$(real_topsrcdir)/i386c \
@@ -398,7 +403,9 @@ IA32_CPPFLAGS=	-I$(real_topsrcdir)/i386c \
 		-I$(real_topsrcdir)/i386c/ia32/instructions/fpu/softfloat \
 		-I$(real_topsrcdir)/i386c/ia32/instructions/mmx \
 		-I$(real_topsrcdir)/i386c/ia32/instructions/sse \
-		-DCPUCORE_IA32 -DUSE_FPU -DSUPPORT_FPU_DOSBOX -DSUPPORT_FPU_DOSBOX2 -DSUPPORT_FPU_SOFTFLOAT -DSUPPORT_GPIB -DUSE_MMX -DUSE_3DNOW -DUSE_SSE -DUSE_TSC
+		-I$(real_topsrcdir)/i386c/ia32/instructions/sse2 \
+		-I$(real_topsrcdir)/i386c/ia32/instructions/sse3 \
+		-DCPUCORE_IA32 -DUSE_FPU -DSUPPORT_FPU_DOSBOX -DSUPPORT_FPU_DOSBOX2 -DSUPPORT_FPU_SOFTFLOAT -DSUPPORT_PCI -DSUPPORT_GPIB -DUSE_MMX -DUSE_3DNOW -DUSE_SSE -DUSE_SSE2 -DUSE_SSE3 -DUSE_TSC
 
 if CPUCORE_IA32
 if BUILD_ALL

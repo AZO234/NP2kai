@@ -67,4 +67,4 @@ void AMD3DNOW_PREFETCH(void);
 }
 #endif
 
-#endif	/* IA32_CPU_INSTRUCTION_MMX_MMX_H__ */
+#endif	/* IA32_CPU_INSTRUCTION_MMX_AMD3DNOW_H__ */

@@ -23,6 +23,7 @@
 #include "biosfd80.res"
 #if defined(SUPPORT_IDEIO)
 #include	"fdd/sxsi.h"
+#include	"cbus/ideio.h"
 #endif
 #if defined(SUPPORT_HRTIMER)
 #include	"timemng.h"
@@ -103,7 +104,7 @@ static void bios_reinitbyswitch(void) {
 
 	if (!(pccore.dipsw[2] & 0x80)) {
 #if defined(CPUCORE_IA32)
-		mem[MEMB_SYS_TYPE] = 0x03;		// 80386`
+		mem[MEMB_SYS_TYPE] = 0x03;		// 80386ã€œ
 #else
 		mem[MEMB_SYS_TYPE] = 0x01;		// 80286
 #endif
@@ -181,15 +182,21 @@ static void bios_reinitbyswitch(void) {
 						  (sxsi_getdevtype(1)!=SXSIDEV_NC ? 0x2 : 0x0)|(sxsi_getdevtype(0)!=SXSIDEV_NC ? 0x1 : 0x0);
 
 	if(np2cfg.winntfix){
-		// WinNT4.0‚ÅHDD‚ª”F¯‚·‚é‚æ‚¤‚É‚È‚éi‚½‚¾‚µWin9x‚Å‚ÍHDD”F¯¸”s‚ÌŠª‚«“Y‚¦‚É‚È‚Á‚ÄCD‚ª”F¯‚µ‚È‚­‚È‚éj
+		// WinNT4.0ã§HDDãŒèªè­˜ã™ã‚‹ã‚ˆã†ã«ãªã‚‹ï¼ˆãŸã ã—Win9xã§ã¯HDDèªè­˜å¤±æ•—ã®å·»ãæ·»ãˆã«ãªã£ã¦CDãŒèªè­˜ã—ãªããªã‚‹ï¼‰
 		mem[0x05ba] = (sxsi_getdevtype(3)==SXSIDEV_HDD ? 0x8 : 0x0)|(sxsi_getdevtype(2)==SXSIDEV_HDD ? 0x4 : 0x0)|
 					  (sxsi_getdevtype(1)==SXSIDEV_HDD ? 0x2 : 0x0)|(sxsi_getdevtype(0)==SXSIDEV_HDD ? 0x1 : 0x0);
 	}
+	
+	mem[0x5B8] = 0x00; // No C-Bus PnP boards
 
-	mem[0x45B] |= 0x80; // XXX: TEST
+	mem[0x45B] |= 0x80; // XXX: TEST OUT 5Fh,AL wait
 #endif
-	mem[0xF8E80+0x0011] = mem[0xF8E80+0x0011] & ~0x20; // 0x20‚Ìƒrƒbƒg‚ªON‚¾‚ÆWin2000‚Åƒ}ƒEƒX‚ªƒJƒNƒJƒN‚·‚éH
+	mem[0xF8E80+0x0011] = mem[0xF8E80+0x0011] & ~0x20; // 0x20ã®ãƒ“ãƒƒãƒˆãŒONã ã¨Win2000ã§ãƒã‚¦ã‚¹ãŒã‚«ã‚¯ã‚«ã‚¯ã™ã‚‹ï¼Ÿ
 	if(np2cfg.modelnum) mem[0xF8E80+0x003F] = np2cfg.modelnum; // PC-9821 Model Number
+#endif
+	
+#if defined(SUPPORT_PCI)
+	mem[0xF8E80+0x0004] |= 0x2c;
 #endif
 	
 #if defined(SUPPORT_HRTIMER)
@@ -199,8 +206,8 @@ static void bios_reinitbyswitch(void) {
 
 		timemng_gettime(&hrtimertime);
 		hrtimertimeuint = (((UINT32)hrtimertime.hour*60 + (UINT32)hrtimertime.minute)*60 + (UINT32)hrtimertime.second)*32 + ((UINT32)hrtimertime.milli*32)/1000;
-		hrtimertimeuint |= 0x400000;
-		STOREINTELDWORD(mem+0x04F1, hrtimertimeuint); // XXX: 04F4‚É‚à‘‚¢‚¿‚á‚Á‚Ä‚é‚¯‚Ç·‚µ“–‚½‚Á‚Ä‚Í–â‘è‚È‚³‚»‚¤‚È‚Ì‚Å¥¥¥
+		hrtimertimeuint |= 0x400000; // ã“ã†ã—ãªã„ã¨Win98ã®æ™‚è¨ˆãŒ1æ—¥ãšã‚Œã‚‹?
+		STOREINTELDWORD(mem+0x04F1, hrtimertimeuint); // XXX: 04F4ã«ã‚‚æ›¸ã„ã¡ã‚ƒã£ã¦ã‚‹ã‘ã©å·®ã—å½“ãŸã£ã¦ã¯å•é¡Œãªã•ãã†ãªã®ã§ï½¥ï½¥ï½¥
 	}
 #endif	/* defined(SUPPORT_HRTIMER) */
 
@@ -218,6 +225,7 @@ static void bios_reinitbyswitch(void) {
 		mem[MEMB_SYS_TYPE] |= 0x80;		// IDE
 		CPU_AX = 0x8300;
 		sasibios_operate();
+		//mem[0x457] = 0x97; // 10010111
 	}
 }
 
@@ -263,7 +271,7 @@ void bios_initialize(void) {
 	BOOL	biosrom;
 	OEMCHAR	path[MAX_PATH];
 	FILEH	fh;
-	UINT	i;
+	UINT	i, j;
 	UINT32	tmp;
 	UINT	pos;
 
@@ -279,7 +287,7 @@ void bios_initialize(void) {
 	if (biosrom) {
 		TRACEOUT(("load bios.rom"));
 		pccore.rom |= PCROM_BIOS;
-		// PnP BIOS‚ğ’×‚·
+		// PnP BIOSã‚’æ½°ã™
 		for (i=0; i<0x10000; i+=0x10) {
 			tmp = LOADINTELDWORD(mem + 0xf0000 + i);
 			if (tmp == 0x506e5024) {
@@ -301,12 +309,12 @@ void bios_initialize(void) {
 	}
 
 #if defined(SUPPORT_PC9821)
-	// ideio.c‚ÖˆÚ“®
+	// ideio.cã¸ç§»å‹•
 	//getbiospath(path, OEMTEXT("bios9821.rom"), NELEMENTS(path));
 	//fh = file_open_rb(path);
 	//if (fh != FILEH_INVALID) {
 	//	if (file_read(fh, mem + 0x0d8000, 0x2000) == 0x2000) {
-	//		// IDE BIOS‚ğ’×‚·
+	//		// IDE BIOSã‚’æ½°ã™
 	//		TRACEOUT(("load bios9821.rom"));
 	//		STOREINTELWORD(mem + 0x0d8009, 0);
 	//	}
@@ -320,7 +328,7 @@ void bios_initialize(void) {
 	mem[0xf8e84] = 0x2c;
 	mem[0xf8e85] = 0xb0;
 
-	// mem[0xf8eaf] = 0x21;		// <- ‚±‚ê‚Á‚Ä‰½‚¾‚Á‚¯H
+	// mem[0xf8eaf] = 0x21;		// <- ã“ã‚Œã£ã¦ä½•ã ã£ã‘ï¼Ÿ
 #endif
 #endif
 
@@ -353,17 +361,17 @@ void bios_initialize(void) {
 	//	TRACEOUT(("write emuitf.rom"));
 	//}
 	CopyMemory(mem + ITF_ADRS, itfrom, sizeof(itfrom)+1);
-	if(np2cfg.memchkmx){ // ƒƒ‚ƒŠƒJƒEƒ“ƒgÅ‘å’l•ÏX
-		mem[ITF_ADRS + 6057] = mem[ITF_ADRS + 6061] = (UINT8)np2max((int)np2cfg.memchkmx-14, 1); // XXX: êŠŒˆ‚ß‘Å‚¿
+	if(np2cfg.memchkmx){ // ãƒ¡ãƒ¢ãƒªã‚«ã‚¦ãƒ³ãƒˆæœ€å¤§å€¤å¤‰æ›´
+		mem[ITF_ADRS + 6057] = mem[ITF_ADRS + 6061] = (UINT8)np2max((int)np2cfg.memchkmx-14, 1); // XXX: å ´æ‰€æ±ºã‚æ‰“ã¡
 	}
-	if(np2cfg.sbeeplen || np2cfg.sbeepadj){ // ƒsƒ|‰¹’·‚³•ÏX
-		UINT16 beeplen = (np2cfg.sbeeplen ? np2cfg.sbeeplen : mem[ITF_ADRS + 5553]); // XXX: êŠŒˆ‚ß‘Å‚¿
-		if(np2cfg.sbeepadj){ // ©“®’²ß
+	if(np2cfg.sbeeplen || np2cfg.sbeepadj){ // ãƒ”ãƒéŸ³é•·ã•å¤‰æ›´
+		UINT16 beeplen = (np2cfg.sbeeplen ? np2cfg.sbeeplen : mem[ITF_ADRS + 5553]); // XXX: å ´æ‰€æ±ºã‚æ‰“ã¡
+		if(np2cfg.sbeepadj){ // è‡ªå‹•èª¿ç¯€
 			beeplen = beeplen * np2cfg.multiple / 10;
 			if(beeplen == 0) beeplen = 1;
 			if(beeplen > 255) beeplen = 255;
 		}
-		mem[ITF_ADRS + 5553] = (UINT8)beeplen; // XXX: êŠŒˆ‚ß‘Å‚¿
+		mem[ITF_ADRS + 5553] = (UINT8)beeplen; // XXX: å ´æ‰€æ±ºã‚æ‰“ã¡
 	}
 	mem[ITF_ADRS + 0x7ff0] = 0xea;
 	STOREINTELDWORD(mem + ITF_ADRS + 0x7ff1, 0xf8000000);
@@ -385,6 +393,55 @@ void bios_initialize(void) {
 
 	CopyMemory(mem + 0x1c0000, mem + ITF_ADRS, 0x08000);
 	CopyMemory(mem + 0x1e8000, mem + 0x0e8000, 0x10000);
+	
+#if defined(SUPPORT_PCI)
+	// PCI BIOS32 Service Directoryã‚’æ¢ã™
+	for (i=0; i<0x10000; i+=0x4) {
+		tmp = LOADINTELDWORD(mem + 0xf0000 + i);
+		if (tmp == 0x5F32335F) { // "_32_"
+			UINT8 checksum = 0;
+			for(j=0;j<16;j++){
+				checksum += mem[0xf0000 + i + j];
+			}
+			if(checksum==0){
+				// ç™ºè¦‹ã—ãŸå ´åˆã¯ãã®ä½ç½®ã‚’ä½¿ã†
+				TRACEOUT(("found BIOS32 Service Directory at %.5x", 0xf0000 + i));
+				pcidev.bios32svcdir = 0xf0000 + i;
+				pcidev_updateBIOS32data();
+				break;
+			}
+		}
+	}
+	if(i==0x10000){
+		int emptyflag = 0;
+		TRACEOUT(("BIOS32 Service Directory not found."));
+		
+		// PCI BIOS32 Service Directoryã‚’å‰²ã‚Šå½“ã¦ã‚‹
+		// XXX: å¤šåˆ†ã“ã®è¾ºãªã‚‰ç©ºã„ã¦ã‚‹ã ã‚ãƒ¼ã¨ã„ã†ã“ã¨ã§ï½¥ï½¥ï½¥
+		pcidev.bios32svcdir = 0xffa00;
+		for(i=0;i<0x400;i+=0x10){
+			emptyflag = 1;
+			// 16byteåˆ†ç©ºã„ã¦ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ï¼ˆ0ã ã‹ã‚‰ã¨ã„ã£ã¦ç©ºã„ã¦ã‚‹ã¨ã¯é™ã‚‰ãªã„ã‘ã©ï½¥ï½¥ï½¥ï¼‰
+			for(j=0;j<16;j++){
+				if(mem[pcidev.bios32svcdir+i+j] != 0){
+					emptyflag = 0;
+				}
+			}
+			if(emptyflag){
+				// BIOS32 Service Directoryã‚’ç½®ã
+				TRACEOUT(("Allocate BIOS32 Service Directory at 0x%.5x", pcidev.bios32svcdir));
+				pcidev.bios32svcdir += i;
+				pcidev_updateBIOS32data();
+				break;
+			}
+		}
+		if(i==0x400){
+			// ç©ºããŒãªã„ã®ã§BIOS32 Service Directoryã‚’ç½®ã‘ãšï½¥ï½¥ï½¥
+			TRACEOUT(("Error: Cannot allocate memory for BIOS32 Service Directory."));
+			pcidev.bios32svcdir = 0;
+		}
+	}
+#endif
 }
 
 static void bios_itfcall(void) {
@@ -445,11 +502,11 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 #endif
 
 	switch(adrs) {
-		case BIOS_BASE + BIOSOFST_ITF:		// ƒŠƒZƒbƒg
+		case BIOS_BASE + BIOSOFST_ITF:		// ãƒªã‚»ãƒƒãƒˆ
 			bios_itfcall();
 			return(1);
 
-		case BIOS_BASE + BIOSOFST_INIT:		// ƒu[ƒg
+		case BIOS_BASE + BIOSOFST_INIT:		// ãƒ–ãƒ¼ãƒˆ
 #if 1		// for RanceII
 			bios_memclear();
 #endif
@@ -462,7 +519,7 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 			bios_screeninit();
 			if (((pccore.model & PCMODELMASK) >= PCMODEL_VX) &&
 				(pccore.sound & 0x7e)) {
-				if(g_nSoundID == SOUNDID_MATE_X_PCM || (g_nSoundID == SOUNDID_PC_9801_118 && np2cfg.snd118irqf == np2cfg.snd118irqp) || g_nSoundID == SOUNDID_PC_9801_86_WSS){
+				if(g_nSoundID == SOUNDID_MATE_X_PCM || ((g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_118) && np2cfg.snd118irqf == np2cfg.snd118irqp) || g_nSoundID == SOUNDID_PC_9801_86_WSS){
 					iocore_out8(0x188, 0x27);
 					iocore_out8(0x18a, 0x30);
 				}else{
@@ -509,7 +566,16 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 
 		case BIOS_BASE + BIOSOFST_PRT:
 			CPU_REMCLOCK -= 200;
-			bios0x1a_prt();
+#if defined(SUPPORT_PCI)
+			if(CPU_AH == 0xb1){
+				bios0x1a_pci();
+			}else if(CPU_AH == 0xb4){
+				bios0x1a_pcipnp();
+			}else
+#endif
+			{
+				bios0x1a_prt();
+			}
 			return(1);
 
 		case BIOS_BASE + BIOSOFST_1b:
@@ -532,7 +598,7 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 			CPU_STI;
 			return(bios0x1b_wait());								// ver0.78
 
-		case 0xfffe8:					// ƒu[ƒgƒXƒgƒ‰ƒbƒvƒ[ƒh
+		case 0xfffe8:					// ãƒ–ãƒ¼ãƒˆã‚¹ãƒˆãƒ©ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰
 			CPU_REMCLOCK -= 2000;
 			bootseg = bootstrapload();
 			if (bootseg) {
@@ -563,3 +629,14 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 	return(0);
 }
 
+#ifdef SUPPORT_PCI
+UINT MEMCALL bios32func(UINT32 adrs) {
+	
+	// ã‚¢ãƒ‰ãƒ¬ã‚¹ãŒBIOS32 Entry Pointãªã‚‰å‡¦ç†
+	if (pcidev.bios32entrypoint && adrs == pcidev.bios32entrypoint) {
+		CPU_REMCLOCK -= 200;
+		bios0x1a_pci_part(1);
+	}
+	return(0);
+}
+#endif

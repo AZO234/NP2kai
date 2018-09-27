@@ -131,12 +131,20 @@ static void attachout(IOFUNC iof, UINT port, IOOUT func) {
 		iof->ioout[port] = func;
 	}
 }
+static void detachout(IOFUNC iof, UINT port) {
+
+	iof->ioout[port] = &defout8;
+}
 
 static void attachinp(IOFUNC iof, UINT port, IOINP func) {
 
 	if (func) {
 		iof->ioinp[port] = func;
 	}
+}
+static void detachinp(IOFUNC iof, UINT port) {
+
+	iof->ioinp[port] = &definp8;
 }
 
 
@@ -318,6 +326,21 @@ BRESULT iocore_attachsndout(UINT port, IOOUT func) {
 	}
 	return(r);
 }
+BRESULT iocore_detachsndout(UINT port) {
+
+	BRESULT	r;
+	UINT	num;
+
+	r = makesndiofunc(port);
+	if (r == SUCCESS) {
+		num = (port >> 8) & 15;
+		do {
+			detachout(iocore.base[num], port & 0xff);
+			num += 0x10;
+		} while(num < 0x100);
+	}
+	return(r);
+}
 
 BRESULT iocore_attachsndinp(UINT port, IOINP func) {
 
@@ -329,6 +352,21 @@ BRESULT iocore_attachsndinp(UINT port, IOINP func) {
 		num = (port >> 8) & 15;
 		do {
 			attachinp(iocore.base[num], port & 0xff, func);
+			num += 0x10;
+		} while(num < 0x100);
+	}
+	return(r);
+}
+BRESULT iocore_detachsndinp(UINT port) {
+
+	BRESULT	r;
+	UINT	num;
+
+	r = makesndiofunc(port);
+	if (r == SUCCESS) {
+		num = (port >> 8) & 15;
+		do {
+			detachinp(iocore.base[num], port & 0xff);
 			num += 0x10;
 		} while(num < 0x100);
 	}
@@ -367,6 +405,19 @@ BRESULT iocore_attachout(UINT port, IOOUT func) {
 		return(FAILURE);
 	}
 }
+BRESULT iocore_detachout(UINT port) {
+
+	IOFUNC	iof;
+
+	iof = getextiofunc(port);
+	if (iof) {
+		detachout(iof, port & 0xff);
+		return(SUCCESS);
+	}
+	else {
+		return(FAILURE);
+	}
+}
 
 BRESULT iocore_attachinp(UINT port, IOINP func) {
 
@@ -375,6 +426,19 @@ BRESULT iocore_attachinp(UINT port, IOINP func) {
 	iof = getextiofunc(port);
 	if (iof) {
 		attachinp(iof, port & 0xff, func);
+		return(SUCCESS);
+	}
+	else {
+		return(FAILURE);
+	}
+}
+BRESULT iocore_detachinp(UINT port) {
+
+	IOFUNC	iof;
+
+	iof = getextiofunc(port);
+	if (iof) {
+		detachinp(iof, port & 0xff);
 		return(SUCCESS);
 	}
 	else {
@@ -441,7 +505,7 @@ BRESULT iocore_build(void) {
 	sys->type = IOFUNC_SYS;
 	for (i=0; i<256; i++) {
 #ifdef SUPPORT_PC9821
-		if (!(i & (0x0c|(np2cfg.sysiomsk >> 8)))) { // PC-9821用 追加マスク(0x0c -> 0xff) np21w ver0.86 rev37
+		if (!(i & (0x0c|(np2cfg.sysiomsk >> 8)))) { // PC-9821�p �ǉ��}�X�N(0x0c -> 0xff) np21w ver0.86 rev37
 #else
 		if (!(i & 0x0c)) {
 #endif
@@ -534,13 +598,6 @@ void IOOUTCALL iocore_out8(UINT port, REG8 dat) {
 
 	IOFUNC	iof;
 
-//#if defined(SUPPORT_PC9821)
-//	if((port&0xff) == 0xf0 && (port&0xff00) != 0x0000){
-//		// Win2000デバイス検出リセット対策（根拠無し）
-//		CPU_REMCLOCK -= iocore.busclock;
-//		return;
-//	}
-//#endif
 //	TRACEOUT(("iocore_out8(%.2x, %.2x)", port, dat));
 	CPU_REMCLOCK -= iocore.busclock;
 	iof = iocore.base[(port >> 8) & 0xff];
@@ -551,14 +608,7 @@ REG8 IOINPCALL iocore_inp8(UINT port) {
 
 	IOFUNC	iof;
 	REG8	ret;
-//
-//#if defined(SUPPORT_PC9821)
-//	if((port&0xff) == 0xf0 && (port&0xff00) != 0x0000){
-//		// Win2000デバイス検出リセット対策（根拠無し）
-//		CPU_REMCLOCK -= iocore.busclock;
-//		return 0xff;
-//	}
-//#endif
+
 	CPU_REMCLOCK -= iocore.busclock;
 	iof = iocore.base[(port >> 8) & 0xff];
 	ret = iof->ioinp[port & 0xff](port);
@@ -572,6 +622,12 @@ void IOOUTCALL iocore_out16(UINT port, REG16 dat) {
 
 //	TRACEOUT(("iocore_out16(%.4x, %.4x)", port, dat));
 	CPU_REMCLOCK -= iocore.busclock;
+#if defined(SUPPORT_PC9821)&&defined(SUPPORT_PCI)
+	if (0x0cfc <= port && port <= 0x0cff) {
+		pcidev_w16_0xcfc(port, dat);
+		return;
+	}
+#endif
 #if defined(SUPPORT_IDEIO)
 	if (port == 0x0640) {
 		ideio_w16(port, dat);
@@ -634,6 +690,11 @@ REG16 IOINPCALL iocore_inp16(UINT port) {
 	REG8	ret;
 
 	CPU_REMCLOCK -= iocore.busclock;
+#if defined(SUPPORT_PC9821)&&defined(SUPPORT_PCI)
+	if (0x0cfc <= port && port <= 0x0cff) {
+		return(pcidev_r16_0xcfc(port));
+	}
+#endif
 #if defined(SUPPORT_IDEIO)
 	if (port == 0x0640) {
 		return(ideio_r16(port));

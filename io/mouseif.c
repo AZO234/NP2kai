@@ -283,8 +283,7 @@ void mouseif_reset(const NP2CFG *pConfig) {
 	mouseif.upd8255.portb = 0x00;
 	mouseif.upd8255.portc = 0xf0;									// ver0.82
 	mouseif.upd8255.mode = 0x93;
-	mouseif.intrclock = pccore.realclock / 120;
-	mouseif.moveclock = pccore.realclock / 56400;
+	mouseif_changeclock();
 	mouseif.latch_x = -1;
 	mouseif.latch_y = -1;
 
@@ -301,5 +300,11 @@ void mouseif_bind(void) {
 	iocore_attachinp(0x7fdb, mouseif_i7fdb);
 	iocore_attachinp(0x7fdd, mouseif_i7fdd);
 	iocore_attachout(0xbfdb, mouseif_obfdb);
+}
+
+void mouseif_changeclock(void) {
+	
+	mouseif.intrclock = pccore.realclock / 120;
+	mouseif.moveclock = pccore.realclock / 56400;
 }
 

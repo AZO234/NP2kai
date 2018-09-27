@@ -555,5 +555,15 @@ void ct1741io_bind(void)
 	iocore_attachinp(0x2c00 + g_sb16.base, ct1741_read_wstatus);	/* DSP Write Buffer Status (Bit 7) */
 	iocore_attachinp(0x2e00 + g_sb16.base, ct1741_read_rstatus);	/* DSP Read Buffer Status (Bit 7) */
 }
+void ct1741io_unbind(void)
+{
+	iocore_detachout(0x2600 + g_sb16.base);	/* DSP Reset */
+	iocore_detachout(0x2C00 + g_sb16.base);	/* DSP Write Command/Data */
+
+	iocore_detachinp(0x2600 + g_sb16.base);	/* DSP Reset */
+	iocore_detachinp(0x2a00 + g_sb16.base);		/* DSP Read Data Port */
+	iocore_detachinp(0x2c00 + g_sb16.base);	/* DSP Write Buffer Status (Bit 7) */
+	iocore_detachinp(0x2e00 + g_sb16.base);	/* DSP Read Buffer Status (Bit 7) */
+}
 
 #endif

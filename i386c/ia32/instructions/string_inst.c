@@ -315,29 +315,13 @@ STOSD_YdEAX(void)
 void
 _REPNE(void)
 {
-//#ifdef USE_SSE
-//	UINT8 nextop = cpu_codefetch(CPU_EIP);
-//	if(nextop==0x0f){
-//		_2byte_PrefixF20F_32();// SSE
-//	}else
-//#endif
-//	{
-		CPU_INST_REPUSE = 0xf2;
-	//}
+	CPU_INST_REPUSE = 0xf2;
 }
 
 void
 _REPE(void)
 {
-//#ifdef USE_SSE
-//	UINT8 nextop = cpu_codefetch(CPU_EIP);
-//	if(nextop==0x0f){
-//		_2byte_PrefixF30F_32();// SSE
-//	}else
-//#endif
-//	{
-		CPU_INST_REPUSE = 0xf3;
-	//}
+	CPU_INST_REPUSE = 0xf3;
 }
 
 

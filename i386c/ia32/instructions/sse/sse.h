@@ -29,6 +29,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+float SSE_ROUND(float val);
 	
 void SSE_ADDPS(void);
 void SSE_ADDSS(void);
@@ -108,4 +110,4 @@ void SSE_CLFLUSH(UINT32 op);
 }
 #endif
 
-#endif	/* IA32_CPU_INSTRUCTION_MMX_MMX_H__ */
+#endif	/* IA32_CPU_INSTRUCTION_SSE_SSE_H__ */

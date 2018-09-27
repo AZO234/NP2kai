@@ -35,7 +35,7 @@ const _XDFINFO	*xdf;
 	if (fh == FILEH_INVALID) {
 		return(FAILURE);
 	}
-	fdsize = file_getsize(fh);
+	fdsize = (UINT32)file_getsize(fh);
 	file_close(fh);
 
 	//	イメージファイルサイズチェック

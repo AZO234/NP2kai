@@ -92,6 +92,37 @@ int mt_wabdrawing = 0;
 int mt_wabpausedrawing = 0;
 #endif
 
+// プライマリサーフェイスのDirectDraw DDBLT_COLORFILLで例外が出る環境があるようなので代替
+//#define DDBLT_COLORFILL_FIX
+
+#ifdef DDBLT_COLORFILL_FIX
+static void DDBlt_ColorFill(LPDIRECTDRAWSURFACE lpDst, LPRECT lpDstRect, LPDDBLTFX lpDDBltFx, LPDIRECTDRAWSURFACE lpOffScrBuf)
+{
+	HDC hDC = NULL;
+	RECT	src;
+
+	src.left = src.top = 0;
+	src.right = 4;
+	src.bottom = 4;
+
+	if(lpOffScrBuf->GetDC(&hDC)==DD_OK){
+		HBRUSH hBrs = CreateSolidBrush(lpDDBltFx->dwFillColor);
+		FillRect(hDC, &src, hBrs);
+		DeleteObject(hBrs);
+		lpOffScrBuf->ReleaseDC(hDC);
+		src.left += 1;
+		src.top += 1;
+		src.right -= 1;
+		src.bottom -= 1;
+		lpDst->Blt(lpDstRect, lpOffScrBuf, &src, DDBLT_WAIT, NULL);
+	}
+}
+#else
+static void DDBlt_ColorFill(LPDIRECTDRAWSURFACE lpDst, LPRECT lpRect, LPDDBLTFX lpDDBltFx, LPDIRECTDRAWSURFACE lpOffScrBuf)
+{
+	lpDst->Blt(lpRect,NULL,NULL, DDBLT_COLORFILL | DDBLT_WAIT, lpDDBltFx);
+}
+#endif
 static void setwindowsize(HWND hWnd, int width, int height)
 {
 	RECT workrc;
@@ -337,12 +368,14 @@ static void clearoutofrect(const RECT *target, const RECT *base) {
 	rect.top = base->top;
 	rect.bottom = target->top;
 	if (rect.top < rect.bottom) {
-		primsurf->Blt(&rect, NULL, NULL, DDBLT_COLORFILL, &ddbf);
+		//primsurf->Blt(&rect, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbf);
+		DDBlt_ColorFill(primsurf, &rect, &ddbf, ddraw.backsurf);
 	}
 	rect.top = target->bottom;
 	rect.bottom = base->bottom;
 	if (rect.top < rect.bottom) {
-		primsurf->Blt(&rect, NULL, NULL, DDBLT_COLORFILL, &ddbf);
+		//primsurf->Blt(&rect, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbf);
+		DDBlt_ColorFill(primsurf, &rect, &ddbf, ddraw.backsurf);
 	}
 
 	rect.top = max(base->top, target->top);
@@ -351,12 +384,14 @@ static void clearoutofrect(const RECT *target, const RECT *base) {
 		rect.left = base->left;
 		rect.right = target->left;
 		if (rect.left < rect.right) {
-			primsurf->Blt(&rect, NULL, NULL, DDBLT_COLORFILL, &ddbf);
+			//primsurf->Blt(&rect, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbf);
+			DDBlt_ColorFill(primsurf, &rect, &ddbf, ddraw.backsurf);
 		}
 		rect.left = target->right;
 		rect.right = base->right;
 		if (rect.left < rect.right) {
-			primsurf->Blt(&rect, NULL, NULL, DDBLT_COLORFILL, &ddbf);
+			//primsurf->Blt(&rect, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbf);
+			DDBlt_ColorFill(primsurf, &rect, &ddbf, ddraw.backsurf);
 		}
 	}
 }
@@ -472,12 +507,12 @@ static void make16mask(DWORD bmask, DWORD rmask, DWORD gmask) {
 }
 
 static void restoresurfaces() {
-		ddraw.backsurf->Restore();
-		ddraw.primsurf->Restore();
+	ddraw.backsurf->Restore();
+	ddraw.primsurf->Restore();
 #if defined(SUPPORT_WAB)
-		ddraw.wabsurf->Restore();
+	ddraw.wabsurf->Restore();
 #endif
-		scrndraw_updateallline();
+	scrndraw_updateallline();
 }
 
 
@@ -732,6 +767,11 @@ BRESULT scrnmng_create(UINT8 scrnmode) {
 #ifdef SUPPORT_WAB
 		if (ddraw2->CreateSurface(&ddsd, &ddraw.wabsurf, NULL) != DD_OK) {
 			goto scre_err;
+		}else{
+			DDBLTFX	ddbf = {0};
+			ddbf.dwSize = sizeof(ddbf);
+			ddbf.dwFillColor = 0;
+			ddraw.wabsurf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbf);
 		}
 #endif
 		if (bitcolor == 8) {
@@ -1306,19 +1346,32 @@ void scrnmng_exitsizing(void)
 // フルスクリーン解像度調整
 void scrnmng_updatefsres(void) {
 #ifdef SUPPORT_WAB
+	RECT rect;
 	int width = scrnstat.width;
 	int height = scrnstat.height;
+	DDBLTFX	ddbf = {0};
+
+	rect.left = rect.top = 0;
+	rect.right = width;
+	rect.bottom = height;
+
+	ddbf.dwSize = sizeof(ddbf);
+	ddbf.dwFillColor = 0;
 
 	if((np2oscfg.fscrnmod & FSCRNMOD_SAMERES) && (g_scrnmode & SCRNMODE_FULLSCREEN)){
-		DDBLTFX ddbltfx = {0};
-		ddbltfx.dwSize = sizeof(DDBLTFX);
-		ddraw.primsurf->Blt(NULL,NULL,NULL,DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx);
-		ddraw.backsurf->Blt(NULL,NULL,NULL,DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx);
+		ddraw.wabsurf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbf);
+		ddraw.backsurf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbf);
+		clearoutscreen();
 		np2wab.lastWidth = 0;
 		np2wab.lastHeight = 0;
 		return;
 	}
-	if(scrnstat.width<100 || scrnstat.height<100) return;
+	if(scrnstat.width<100 || scrnstat.height<100){
+		ddraw.wabsurf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbf);
+		ddraw.backsurf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbf);
+		clearoutscreen();
+		return;
+	}
 	
 	if(np2wab.lastWidth!=width || np2wab.lastHeight!=height){
 		np2wab.lastWidth = width;
@@ -1346,10 +1399,9 @@ void scrnmng_updatefsres(void) {
 				g_scrnmode = g_scrnmode | SCRNMODE_FULLSCREEN;
 			}
 		}
-		DDBLTFX ddbltfx = {0};
-		ddbltfx.dwSize = sizeof(DDBLTFX);
-		ddraw.primsurf->Blt(NULL,NULL,NULL,DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx);
-		ddraw.backsurf->Blt(NULL,NULL,NULL,DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx);
+		clearoutscreen();
+		ddraw.wabsurf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbf);
+		ddraw.backsurf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbf);
 	}
 #endif
 }
@@ -1361,6 +1413,8 @@ void scrnmng_blthdc(HDC hdc) {
 	HDC hDCDD;
 	mt_wabdrawing = 0;
 	if (np2wabwnd.multiwindow) return;
+	if (mt_wabpausedrawing) return;
+	if (np2wab.wndWidth < 32 || np2wab.wndHeight < 32) return;
 	if (mt_wabpausedrawing) return;
 	if (ddraw.wabsurf != NULL) {
 		mt_wabdrawing = 1;

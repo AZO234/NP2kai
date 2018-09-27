@@ -78,3 +78,8 @@ void dialog_hostdrvopt(HWND hwndParent);
 void hostdrv_readini(); // b’è hostdrv.c‚ ‚½‚è‚ÉˆÚ“®‚·‚×‚«H
 void hostdrv_writeini(); // b’è hostdrv.c‚ ‚½‚è‚ÉˆÚ“®‚·‚×‚«H
 #endif
+
+// d_pci.cpp
+#if defined(SUPPORT_PCI)
+void dialog_pciopt(HWND hWnd);
+#endif

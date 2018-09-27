@@ -192,11 +192,17 @@ void fmboard_reset(const NP2CFG *pConfig, SOUNDID nSoundID)
 			board86_reset(pConfig, FALSE);
 			break;
 			
+		case SOUNDID_PC_9801_86_118:
+			g_nSoundID = nSoundID; // XXX: êÊÇ…ê›íË
+			board118_reset(pConfig);
+			board86_reset(pConfig, FALSE);
+			break;
+			
 		case SOUNDID_MATE_X_PCM:
 			g_nSoundID = nSoundID; // XXX: êÊÇ…ê›íË
 			board118_reset(pConfig);
 			break;
-
+			
 		case SOUNDID_PC_9801_86_ADPCM:
 			board86_reset(pConfig, TRUE);
 			break;
@@ -321,4 +327,79 @@ void fmboard_bind(void) {
 	}
 
 	sound_streamregist(&g_beep, (SOUNDCB)beep_getpcm);
+}
+
+void fmboard_unbind(void) {
+
+	switch (g_nSoundID)
+	{
+		case SOUNDID_PC_9801_14:
+			board14_unbind();
+			break;
+
+		case SOUNDID_PC_9801_26K:
+			board26k_unbind();
+			break;
+
+		case SOUNDID_PC_9801_86:
+			board86_unbind();
+			break;
+
+		case SOUNDID_PC_9801_86_26K:
+			boardx2_unbind();
+			break;
+
+		case SOUNDID_PC_9801_118:
+			board118_unbind();
+			break;
+			
+		case SOUNDID_PC_9801_86_WSS:
+			board118_unbind();
+			board86_unbind();
+			break;
+			
+		case SOUNDID_MATE_X_PCM:
+			board118_unbind();
+			break;
+			
+		case SOUNDID_PC_9801_86_ADPCM:
+			board86_unbind();
+			break;
+			
+		case SOUNDID_SPEAKBOARD:
+			boardspb_unbind();
+			break;
+
+		case SOUNDID_SPARKBOARD:
+			boardspr_unbind();
+			break;
+
+		case SOUNDID_AMD98:
+			amd98_unbind();
+			break;
+
+		case SOUNDID_SOUNDORCHESTRA:
+		case SOUNDID_SOUNDORCHESTRAV:
+			boardso_unbind();
+			break;
+			
+#if defined(SUPPORT_SOUND_SB16)
+		case SOUNDID_SB16:
+			boardsb16_unbind();
+			break;
+#endif	// defined(SUPPORT_SOUND_SB16)
+
+#if defined(SUPPORT_PX)
+		case SOUNDID_PX1:
+			boardpx1_unbind();
+			break;
+
+		case SOUNDID_PX2:
+			boardpx2_unbind();
+			break;
+#endif	// defined(SUPPORT_PX)
+
+		default:
+			break;
+	}
 }

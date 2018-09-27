@@ -422,6 +422,13 @@ void boardpx1_bind(void)
 	cbuscore_attachsndex(0x088, spb_o2, spb_i2);
 	cbuscore_attachsndex(0x488, spr_o2, spr_i2);
 }
+void boardpx1_unbind(void)
+{
+	cbuscore_detachsndex(0x188);
+	cbuscore_detachsndex(0x588);
+	cbuscore_detachsndex(0x088);
+	cbuscore_detachsndex(0x488);
+}
 
 
 static void extendchannelx2(REG8 enable) {
@@ -485,6 +492,15 @@ void boardpx2_bind(void)
 	cbuscore_attachsndex(0x088, spb_o2, spb_i2);
 	cbuscore_attachsndex(0x488, spr_o2, spr_i2);
 	cbuscore_attachsndex(0x288, p86_o3, p86_i3);
+}
+void boardpx2_unbind(void)
+{
+	pcm86io_unbind();
+	cbuscore_detachsndex(0x188);
+	cbuscore_detachsndex(0x588);
+	cbuscore_detachsndex(0x088);
+	cbuscore_detachsndex(0x488);
+	cbuscore_detachsndex(0x288);
 }
 
 #endif	// defined(SUPPORT_PX)

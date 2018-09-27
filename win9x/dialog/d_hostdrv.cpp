@@ -42,7 +42,7 @@ int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpDa
 }
 
 /**
- * @brief IDE 設定ダイアログ
+ * @brief HOSTDRV 設定ダイアログ
  * @param[in] hwndParent 親ウィンドウ
  */
 class CHostdrvDlg : public CDlgProc

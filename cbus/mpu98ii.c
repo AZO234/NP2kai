@@ -1082,8 +1082,8 @@ void mpu98ii_bind(void) {
 
 	UINT	port;
 
-	mpu98.xferclock = pccore.realclock / 3125;
-	makeintclock();
+	mpu98ii_changeclock();
+
 	port = mpu98.port;
 	iocore_attachout(port, mpu98ii_o0);
 	iocore_attachinp(port, mpu98ii_i0);
@@ -1135,4 +1135,11 @@ void mpu98ii_midipanic(void) {
 		cm_mpu98->msg(cm_mpu98, COMMSG_MIDIRESET, 0);
 	}
 }
+
+void mpu98ii_changeclock(void) {
+	
+	mpu98.xferclock = pccore.realclock / 3125;
+	makeintclock();
+}
+
 

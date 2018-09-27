@@ -1288,7 +1288,7 @@ protected:
 	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	UINT16 m_snd118io;				//!< IO設定値
+	UINT8 m_snd118io;				//!< IO設定値
 	UINT8 m_snd118dma;				//!< DMA設定値
 	UINT8 m_snd118irqf;				//!< IRQ設定値
 	CComboData m_cmbio;				//!< IO

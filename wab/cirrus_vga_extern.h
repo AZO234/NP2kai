@@ -43,11 +43,13 @@
 #define CIRRUS_98ID_Xe10	0x5B
 #define CIRRUS_98ID_Cb2		0x5C
 #define CIRRUS_98ID_Cx2		0x5D
+#define CIRRUS_98ID_PCI		0xA0
 #define CIRRUS_98ID_WAB		0x100
 #define CIRRUS_98ID_WSN_A2F	0x101
 #define CIRRUS_98ID_WSN		0x102
 #define CIRRUS_98ID_GA98NB	0x200
 #define CIRRUS_98ID_AUTOMSK	0xFFF0
+#define CIRRUS_98ID_AUTO_XE_WS_PCI	0xFFFC
 #define CIRRUS_98ID_AUTO_XE10_WABS	0xFFFD
 #define CIRRUS_98ID_AUTO_XE10_WSN2	0xFFFE
 #define CIRRUS_98ID_AUTO_XE10_WSN4	0xFFFF
@@ -102,6 +104,12 @@ typedef uint32_t_ CPUReadMemoryFunc(void *opaque, target_phys_addr_t addr);
 
 extern CPUWriteMemoryFunc *g_cirrus_linear_write[3];
 
+extern int pcidev_cirrus_deviceid;
+
+void cirrus_linear_mem_writeb(void *opaque, target_phys_addr_t addr, uint32_t_ val);
+void cirrus_linear_mem_writew(void *opaque, target_phys_addr_t addr, uint32_t_ val);
+void cirrus_linear_mem_writel(void *opaque, target_phys_addr_t addr, uint32_t_ val);
+
 uint32_t_ cirrus_vga_mem_readb(void *opaque, target_phys_addr_t addr);
 uint32_t_ cirrus_vga_mem_readw(void *opaque, target_phys_addr_t addr);
 uint32_t_ cirrus_vga_mem_readl(void *opaque, target_phys_addr_t addr);
@@ -155,6 +163,10 @@ typedef struct {
 	UINT32	VRAMWindowAddr3;
 	//UINT32	VRAMWindowAddr3;
 	//UINT32	VRAMWindowAddr3size;
+	UINT32	pciLFB_Addr;
+	UINT32	pciLFB_Mask;
+	UINT32	pciMMIO_Addr;
+	UINT32	pciMMIO_Mask;
 	REG8	mmioenable;
 	UINT32	gd54xxtype;
 	UINT32	defgd54xxtype;
@@ -175,7 +187,9 @@ void cirrusvga_drawGraphic();
 void pc98_cirrus_vga_init(void);
 void pc98_cirrus_vga_reset(const NP2CFG *pConfig);
 void pc98_cirrus_vga_bind(void);
+void pc98_cirrus_vga_unbind(void);
 void pc98_cirrus_vga_shutdown(void);
+void pc98_cirrus_vga_resetresolution(void);
 
 void pc98_cirrus_vga_save(void);
 void pc98_cirrus_vga_load(void);
@@ -189,6 +203,10 @@ void __fastcall cirrusvga_ioport_write_wrap16(UINT addr, UINT16 dat);
 void __fastcall cirrusvga_ioport_write_wrap32(UINT addr, UINT32 dat);
 
 int pc98_cirrus_isWABport(UINT port);
+
+void pc98_cirrus_vga_updatePCIaddr();
+void pc98_cirrus_vga_initVRAMWindowAddr();
+void pc98_cirrus_vga_setvramsize();
 
 #ifdef __cplusplus
 }
