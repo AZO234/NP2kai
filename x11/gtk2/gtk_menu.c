@@ -173,6 +173,9 @@ static GtkActionEntry menu_entries[] = {
 #if defined(SUPPORT_WAB)
 { "wabopt",      NULL, "Window Accelerator option...", NULL, NULL, G_CALLBACK(cb_dialog) },
 #endif	/* SUPPORT_WAB */
+#if defined(SUPPORT_PCI)
+{ "pciopt",      NULL, "PCI option...",     NULL, NULL, G_CALLBACK(cb_dialog) },
+#endif	/* SUPPORT_PCI */
 #if defined(SUPPORT_HOSTDRV)
 { "hostdrvopt",  NULL, "Hostdrv option...", NULL, NULL, G_CALLBACK(cb_dialog) },
 #endif	/* SUPPORT_HOSTDRV */
@@ -585,6 +588,10 @@ static const gchar *ui_info =
 "   <separator/>\n"
 "   <menuitem action='wabopt'/>\n"
 #endif	/* SUPPORT_WAB */
+#if defined(SUPPORT_PCI)
+"   <separator/>\n"
+"   <menuitem action='pciopt'/>\n"
+#endif	/* SUPPORT_PCI */
 #if defined(SUPPORT_HOSTDRV)
 "   <separator/>\n"
 "   <menuitem action='hostdrvopt'/>\n"
@@ -1649,6 +1656,10 @@ cb_dialog(GtkAction *action, gpointer user_data)
 	} else if (g_ascii_strcasecmp(name, "wabopt") == 0) {
 		create_wab_dialog();
 #endif	/* SUPPORT_WAB */
+#if defined(SUPPORT_PCI)
+	} else if (g_ascii_strcasecmp(name, "pciopt") == 0) {
+		create_pci_dialog();
+#endif	/* SUPPORT_PCI */
 #if defined(SUPPORT_NET)
 	} else if (g_ascii_strcasecmp(name, "networkopt") == 0) {
 		create_network_dialog();

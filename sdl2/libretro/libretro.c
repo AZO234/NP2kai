@@ -847,6 +847,11 @@ void retro_set_environment(retro_environment_t cb)
       { "np2kai_CLGD_type" , "WAB Type; PC-9821Xe10,Xa7e,Xb10 built-in|PC-9821Bp,Bs,Be,Bf built-in|PC-9821Xe built-in|PC-9821Cb built-in|PC-9821Cf built-in|PC-9821Cb2 built-in|PC-9821Cx2 built-in|MELCO WAB-S|MELCO WSN-A2F|MELCO WSN-A4F|I-O DATA GA-98NBI/C,II,IV|PC-9801-96(PC-9801B3-E02)|Auto Select(Xe10, WAB-S)|Auto Select(Xe10, WSN-A2F)|Auto Select(Xe10, WSN-A4F)" },
       { "np2kai_CLGD_fc" , "Use Fake Hardware Cursor; OFF|ON" },
 #endif	/* defined(SUPPORT_WAB) */
+#if defined(SUPPORT_PCI)
+      { "np2kai_PCI_en" , "Enable PCI (Restart App); OFF|ON" },
+      { "np2kai_PCI_type" , "PCMC Type; Intel 82434LX|Intel 82441FX|VLSI Wildcat" },
+      { "np2kai_PCI_bios32" , "Use BIOS32 (not recommended); OFF|ON" },
+#endif	/* defined(SUPPORT_PCI) */
       { "np2kai_joy2mouse" , "Joypad to Mouse Mapping; OFF|ON" },
       { "np2kai_j2msuratio" , "J2M Cursor Speed up Ratio; x10|x20|up stop|x5" },
       { "np2kai_joy2key" , "Joypad to Keyboard Mapping; OFF|Arrows|Keypad|Manual" },
@@ -1178,6 +1183,43 @@ static void update_variables(void)
          np2cfg.gd5430fakecur = 0;
    }
 #endif	/* defined(SUPPORT_WAB) */
+
+#if defined(SUPPORT_PCI)
+   var.key = "np2kai_PCI_en";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "ON") == 0)
+         np2cfg.usepci = 1;
+      else
+         np2cfg.usepci = 0;
+   }
+
+   var.key = "np2kai_PCI_type";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "Intel 82434LX") == 0)
+         np2cfg.pci_pcmc = PCI_PCMC_82434LX;
+      else if (strcmp(var.value, "Intel 82441FX") == 0)
+         np2cfg.pci_pcmc = PCI_PCMC_82441FX;
+      else if (strcmp(var.value, "VLSI Wildcat") == 0)
+         np2cfg.pci_pcmc = PCI_PCMC_WILDCAT;
+   }
+
+   var.key = "np2kai_PCI_bios32";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "ON") == 0)
+         np2cfg.pci_bios32 = 1;
+      else
+         np2cfg.pci_bios32 = 0;
+   }
+#endif	/* defined(SUPPORT_PCI) */
 
    var.key = "np2kai_joy2mouse";
    var.value = NULL;
