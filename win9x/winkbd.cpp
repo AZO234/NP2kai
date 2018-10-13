@@ -160,7 +160,8 @@ void winkbd_keydown(WPARAM wParam, LPARAM lParam) {
 		}
 		else if ((np2oscfg.KEYBOARD != KEY_PC98) &&
 				(!(lParam & 0x01000000)) &&
-				(key106ext[wParam & 0xff] != NC)) {			// ver0.28
+				(key106ext[wParam & 0xff] != NC) &&
+				(!np2oscfg.USENUMLOCK)) {			// ver0.28
 			keystat_senddata(0x70);							// PC/AT only!
 			data = key106ext[wParam & 0xff];
 		}
@@ -187,7 +188,8 @@ void winkbd_keyup(WPARAM wParam, LPARAM lParam) {
 		}
 		else if ((np2oscfg.KEYBOARD != KEY_PC98) &&
 				(!(lParam & 0x01000000)) &&
-				(key106ext[wParam & 0xff] != NC)) {		// ver0.28
+				(key106ext[wParam & 0xff] != NC) &&
+				(!np2oscfg.USENUMLOCK)) {		// ver0.28
 			keystat_senddata(0x70 | 0x80);				// PC/AT only
 			data = key106ext[wParam & 0xff];
 		}

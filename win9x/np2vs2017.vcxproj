@@ -562,6 +562,8 @@
     <ClCompile Include="oemtext.cpp" />
     <ClCompile Include="recvideo.cpp" />
     <ClCompile Include="scrnmng.cpp" />
+    <ClCompile Include="scrnmng_d3d.cpp" />
+    <ClCompile Include="scrnmng_dd.cpp" />
     <ClCompile Include="soundmng.cpp" />
     <ClCompile Include="soundmng\asio\asiodriverlist.cpp" />
     <ClCompile Include="soundmng\sdasio.cpp" />
@@ -837,6 +839,8 @@
     <ClInclude Include="recvideo.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="scrnmng.h" />
+    <ClInclude Include="scrnmng_d3d.h" />
+    <ClInclude Include="scrnmng_dd.h" />
     <ClInclude Include="soundmng.h" />
     <ClInclude Include="soundmng\asio\asiodriverlist.h" />
     <ClInclude Include="soundmng\asio\asiosdk.h" />

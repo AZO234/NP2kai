@@ -11,6 +11,9 @@
 #include "np2class.h"
 #include "np2.h"
 #include "scrnmng.h"
+#ifdef SUPPORT_SCRN_DIRECT3D
+#include "scrnmng_d3d.h"
+#endif
 #include "sysmng.h"
 #include "misc\PropProc.h"
 #include "pccore.h"
@@ -18,6 +21,8 @@
 #include "common\strres.h"
 #include "vram\scrndraw.h"
 #include "vram\palettes.h"
+
+static int resetScreen = 0;
 
 /**
  * @brief Video ページ
@@ -502,6 +507,7 @@ void ScrOptFullscreenPage::OnOK()
 	{
 		np2oscfg.fscrnmod = c;
 		::sysmng_update(SYS_UPDATEOSCFG);
+		resetScreen = 1;
 	}
 }
 
@@ -520,6 +526,125 @@ BOOL ScrOptFullscreenPage::OnCommand(WPARAM wParam, LPARAM lParam)
 	}
 	return FALSE;
 }
+
+
+
+#ifdef SUPPORT_SCRN_DIRECT3D
+// ----
+
+/**
+ * @brief Renderer ページ
+ */
+class ScrOptRendererPage : public CPropPageProc
+{
+public:
+	ScrOptRendererPage();
+	virtual ~ScrOptRendererPage();
+
+protected:
+	virtual BOOL OnInitDialog();
+	virtual void OnOK();
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+
+private:
+	CComboData m_type;				//!< 種類
+	CComboData m_mode;				//!< 補間モード
+};
+
+//! 種類 リスト
+static const CComboData::Entry s_renderer_type[] =
+{
+	{MAKEINTRESOURCE(IDS_RENDERER_DIRECTDRAW),	DRAWTYPE_DIRECTDRAW_HW},
+	{MAKEINTRESOURCE(IDS_RENDERER_DIRECT3D),	DRAWTYPE_DIRECT3D},
+};
+//! 補間モード リスト
+static const CComboData::Entry s_renderer_mode[] =
+{
+	{MAKEINTRESOURCE(IDS_RENDERER_IMODE_NN),	D3D_IMODE_NEAREST_NEIGHBOR},
+	{MAKEINTRESOURCE(IDS_RENDERER_IMODE_LINEAR),D3D_IMODE_BILINEAR},
+	{MAKEINTRESOURCE(IDS_RENDERER_IMODE_PIXEL),	D3D_IMODE_PIXEL},
+	{MAKEINTRESOURCE(IDS_RENDERER_IMODE_PIXEL2),D3D_IMODE_PIXEL2},
+	{MAKEINTRESOURCE(IDS_RENDERER_IMODE_PIXEL3),D3D_IMODE_PIXEL3},
+};
+
+/**
+ * コンストラクタ
+ */
+ScrOptRendererPage::ScrOptRendererPage()
+	: CPropPageProc(IDD_SCROPT_RENDERER)
+{
+}
+
+/**
+ * デストラクタ
+ */
+ScrOptRendererPage::~ScrOptRendererPage()
+{
+}
+
+/**
+ * このメソッドは WM_INITDIALOG のメッセージに応答して呼び出されます
+ * @retval TRUE 最初のコントロールに入力フォーカスを設定
+ * @retval FALSE 既に設定済
+ */
+BOOL ScrOptRendererPage::OnInitDialog()
+{
+	m_type.SubclassDlgItem(IDC_RENDERER_TYPE, this);
+	m_type.Add(s_renderer_type, _countof(s_renderer_type));
+	m_type.SetCurItemData(np2oscfg.drawtype);
+	
+	m_mode.SubclassDlgItem(IDC_RENDERER_IMODE, this);
+	m_mode.Add(s_renderer_mode, _countof(s_renderer_mode));
+	m_mode.SetCurItemData(np2oscfg.d3d_imode);
+	m_mode.EnableWindow(np2oscfg.drawtype==DRAWTYPE_DIRECT3D ? TRUE : FALSE);
+
+	return TRUE;
+}
+
+/**
+ * ユーザーが OK のボタン (IDOK ID がのボタン) をクリックすると呼び出されます
+ */
+void ScrOptRendererPage::OnOK()
+{
+	UINT32 tmp;
+	tmp = m_type.GetCurItemData(np2oscfg.drawtype);
+	if (tmp != np2oscfg.drawtype)
+	{
+		if(tmp==DRAWTYPE_DIRECT3D){
+			if(scrnmngD3D_check() != SUCCESS){
+				MessageBox(g_hWndMain, _T("Failed to initialize Direct3D."), _T("Direct3D Error"), MB_OK|MB_ICONEXCLAMATION);
+				tmp = DRAWTYPE_DIRECTDRAW_HW;
+			}
+		}
+		np2oscfg.drawtype = tmp;
+		::sysmng_update(SYS_UPDATEOSCFG);
+		resetScreen = 1;
+	}
+	tmp = m_mode.GetCurItemData(np2oscfg.d3d_imode);
+	if (tmp != np2oscfg.d3d_imode)
+	{
+		np2oscfg.d3d_imode = tmp;
+		::sysmng_update(SYS_UPDATEOSCFG);
+		resetScreen = 1;
+	}
+}
+
+/**
+ * ユーザーがメニューの項目を選択したときに、フレームワークによって呼び出されます
+ * @param[in] wParam パラメタ
+ * @param[in] lParam パラメタ
+ * @retval TRUE アプリケーションがこのメッセージを処理した
+ */
+BOOL ScrOptRendererPage::OnCommand(WPARAM wParam, LPARAM lParam)
+{
+	if (LOWORD(wParam) == IDC_RENDERER_TYPE)
+	{
+		m_mode.EnableWindow(m_type.GetCurItemData(np2oscfg.drawtype)==DRAWTYPE_DIRECT3D ? TRUE : FALSE);
+		return TRUE;
+	}
+	return FALSE;
+}
+#endif
 
 
 
@@ -544,6 +669,11 @@ void dialog_scropt(HWND hwndParent)
 
 	ScrOptFullscreenPage fullscreen;
 	prop.AddPage(&fullscreen);
+	
+#ifdef SUPPORT_SCRN_DIRECT3D
+	ScrOptRendererPage renderer;
+	prop.AddPage(&renderer);
+#endif
 
 	prop.m_psh.dwFlags |= PSH_NOAPPLYNOW | PSH_USEHICON | PSH_USECALLBACK;
 	prop.m_psh.hIcon = LoadIcon(CWndProc::GetResourceHandle(), MAKEINTRESOURCE(IDI_ICON2));
@@ -551,4 +681,10 @@ void dialog_scropt(HWND hwndParent)
 	prop.DoModal();
 
 	::InvalidateRect(hwndParent, NULL, TRUE);
+	
+	// デバイス再作成
+	if(resetScreen){
+		scrnmng.forcereset = 1;
+		resetScreen = 0;
+	}
 }

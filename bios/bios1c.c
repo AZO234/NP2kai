@@ -72,7 +72,8 @@ void bios0x1c(void) {
 			}
 			pic.pi[0].imr &= ~(PIC_SYSTEMTIMER);
 			break;
-
+			
+#if defined(SUPPORT_HRTIMER)
 		case 0x80:					// hrtimer read
 			CPU_AL = ((mem[0x04F3] >> 6) - 1) & 0x3; // åoâﬂì˙êî
 			{
@@ -87,6 +88,7 @@ void bios0x1c(void) {
 			mem[0x04F3] = (CPU_CX & 0x3f) | ((CPU_AL & 0x3) << 6);
 			STOREINTELWORD(mem+0x04F1, CPU_DX);
 			break;
+#endif
 	}
 }
 

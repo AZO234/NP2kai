@@ -114,7 +114,7 @@ static	TCHAR		szClassName[] = _T("NP2-MainWindow");
 						OEMTEXT(PROJECTNAME) OEMTEXT(PROJECTSUBNAME),
 						OEMTEXT("NP2"),
 						CW_USEDEFAULT, CW_USEDEFAULT, 1, 1, 0, 0, 0, 1, 0, 1,
-						0, 0, KEY_UNKNOWN, 0,
+						0, 0, KEY_UNKNOWN, 0, 0,
 						0, 0, 0, {1, 2, 2, 1},
 						{5, 0, 0x3e, 19200,
 						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
@@ -133,12 +133,17 @@ static	TCHAR		szClassName[] = _T("NP2-MainWindow");
 						0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 						FSCRNMOD_SAMEBPP | FSCRNMOD_SAMERES | FSCRNMOD_ASPECTFIX8,
 
+#if defined(SUPPORT_SCRN_DIRECT3D)
+						0, 
+#endif
+
 						CSoundMng::kDSound3, TEXT(""),
 
 #if defined(SUPPORT_VSTi)
 						TEXT("%ProgramFiles%\\Roland\\Sound Canvas VA\\SOUND Canvas VA.dll"),
 #endif	// defined(SUPPORT_VSTi)
-						0, 0, 0, 1, 0, 1, 1, 
+						0, 0, 
+						0, 0, 1, 0, 1, 1, 
 						0, 0, 
 						0, 8, 
 						0, 
@@ -182,6 +187,26 @@ int autokey_sendbufferpos = 0;
 
 // オートラン抑制用
 static int WM_QueryCancelAutoPlay;
+
+// システムキーフック用
+#ifdef HOOK_SYSKEY
+LRESULT CALLBACK LowLevelKeyboardProc(INT nCode, WPARAM wParam, LPARAM lParam);
+HHOOK hHook = NULL;
+static void start_hook_systemey()
+{
+	if(!hHook){
+		hHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, g_hInstance, 0);
+	}
+}
+static void stop_hook_systemey()
+{
+	if(hHook){
+		UnhookWindowsHookEx(hHook);
+		hHook = NULL;
+	}
+}
+#endif
+
 
 // ----
 
@@ -304,6 +329,15 @@ static void changescreen(UINT8 newmode) {
 		soundmng_stop();
 		mousemng_disable(MOUSEPROC_WINUI);
 		scrnmng_destroy();
+		if((newmode & SCRNMODE_FULLSCREEN)==0){
+			DEVMODE devmode;
+			if (EnumDisplaySettings(NULL, ENUM_REGISTRY_SETTINGS, &devmode)) {
+				while ((DWORD)((scrnstat.width * scrnstat.multiple) >> 3) >= devmode.dmPelsWidth-64 || (DWORD)((scrnstat.height * scrnstat.multiple) >> 3) >= devmode.dmPelsHeight-64){
+					scrnstat.multiple--;
+					if(scrnstat.multiple==1) break;
+				}
+			}
+		}
 		if (scrnmng_create(newmode) == SUCCESS) {
 			g_scrnmode = newmode;
 			if(np2oscfg.scrnmode != g_scrnmode){
@@ -619,15 +653,20 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 					sys_updates &= ~SYS_UPDATESNDDEV;
 					OpenSoundDevice(hWnd);
 				}
+#ifdef HOOK_SYSKEY
+				stop_hook_systemey();
+#endif
 				pccore_cfgupdate();
 				pccore_reset();
 				sysmng_updatecaption(1);
 #ifdef SUPPORT_PHYSICAL_CDDRV
 				np2updatemenu();
 #endif
+#ifdef HOOK_SYSKEY
+				start_hook_systemey();
+#endif
 			}
 			break;
-
 		case IDM_CONFIG:
 			winuienter();
 			dialog_configure(hWnd);
@@ -1006,6 +1045,11 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			keystat_senddata(0x73 | 0x80);
 			keystat_senddata(0x74 | 0x80);
 			keystat_senddata(0x39 | 0x80);
+			break;
+			
+		case IDM_USENUMLOCK:
+			np2oscfg.USENUMLOCK = !np2oscfg.USENUMLOCK;
+			update |= SYS_UPDATEOSCFG;
 			break;
 
 		case IDM_F12MOUSE:
@@ -1493,6 +1537,19 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			}
 			update |= SYS_UPDATECFG;
 			break;
+
+		case IDM_RESTOREBORDER:
+			if(np2oscfg.wintype!=0){
+				WINLOCEX	wlex;
+				np2oscfg.wintype = 0;
+				wlex = np2_winlocexallwin(hWnd);
+				winlocex_setholdwnd(wlex, hWnd);
+				np2class_windowtype(hWnd, np2oscfg.wintype);
+				winlocex_move(wlex);
+				winlocex_destroy(wlex);
+				sysmng_update(SYS_UPDATEOSCFG);
+			}
+			break;
 			
 		case IDM_COPYPASTE_COPYTVRAM:
 			{
@@ -1701,12 +1758,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				if (GetKeyState(VK_SHIFT) & 0x8000) {
 					//	Shiftキーが押下されていればリセット
 					pccore_cfgupdate();
+#ifdef HOOK_SYSKEY
+					stop_hook_systemey();
+#endif
 					pccore_reset();
+#ifdef HOOK_SYSKEY
+					start_hook_systemey();
+#endif
 				}
 			}
 			break;
 
 		case WM_CREATE:
+			g_hWndMain = hWnd;
 			np2class_wmcreate(hWnd);
 			np2class_windowtype(hWnd, np2oscfg.wintype);
 #ifndef __GNUC__
@@ -1781,6 +1845,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				case IDM_BGSOUND:
 					np2oscfg.background ^= 2;
 					update |= SYS_UPDATEOSCFG;
+					break;
+
+				case IDM_RESTOREBORDER:
+					if(np2oscfg.wintype!=0){
+						WINLOCEX	wlex;
+						np2oscfg.wintype = 0;
+						wlex = np2_winlocexallwin(hWnd);
+						winlocex_setholdwnd(wlex, hWnd);
+						np2class_windowtype(hWnd, np2oscfg.wintype);
+						winlocex_move(wlex);
+						winlocex_destroy(wlex);
+						sysmng_update(SYS_UPDATEOSCFG);
+					}
 					break;
 
 				case IDM_MEMORYDUMP:
@@ -2029,8 +2106,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				if (GetCursorPos(&p)) {
 					scrnmng_fullscrnmenu(p.y);
 				}
-			}else{
-				if(np2oscfg.mouse_nc && !scrnmng_isfullscreen()){
+			}/*else*/{
+				if(np2oscfg.mouse_nc/* && !scrnmng_isfullscreen()*/){
 					int x = LOWORD(lParam);
 					int y = HIWORD(lParam);
 					SINT16 dx, dy;
@@ -2120,7 +2197,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			if (!np2oscfg.MOUSE_SW) {
 				if(!np2oscfg.mouse_nc){
 					SetClassLong(g_hWndMain, GCL_STYLE, GetClassLong(g_hWndMain, GCL_STYLE) | CS_DBLCLKS);
-				}else if (!scrnmng_isfullscreen()) {
+				}else/* if (!scrnmng_isfullscreen())*/ {
 					SetClassLong(g_hWndMain, GCL_STYLE, GetClassLong(g_hWndMain, GCL_STYLE) & ~CS_DBLCLKS);
 					if (np2oscfg.wintype != 0) {
 						// XXX: メニューが出せなくなって詰むのを回避（暫定）
@@ -2208,7 +2285,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		case WM_RBUTTONDBLCLK:
 			if (!np2oscfg.MOUSE_SW) {
 				if(!np2oscfg.mouse_nc){
-				}else if (!scrnmng_isfullscreen()) {
+				}else/* if (!scrnmng_isfullscreen())*/ {
 					SetClassLong(g_hWndMain, GCL_STYLE, GetClassLong(g_hWndMain, GCL_STYLE) & ~CS_DBLCLKS);
 					if (np2oscfg.wintype != 0) {
 						// XXX: メニューが出せなくなって詰むのを回避（暫定）
@@ -2269,7 +2346,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 				case NP2CMD_RESET:
 					pccore_cfgupdate();
+#ifdef HOOK_SYSKEY
+					stop_hook_systemey();
+#endif
 					pccore_reset();
+#ifdef HOOK_SYSKEY
+					start_hook_systemey();
+#endif
 					break;
 			}
 			break;
@@ -2450,9 +2533,8 @@ void createAsciiTo98KeyCodeList(){
 }
 
 #ifdef HOOK_SYSKEY
-HHOOK hHook = NULL;
 // システムショートカットキー
-LRESULT CALLBACK LowLevelKeyboardProc (INT nCode, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK LowLevelKeyboardProc(INT nCode, WPARAM wParam, LPARAM lParam)
 {
 	if(np2oscfg.syskhook){
 		// By returning a non-zero value from the hook procedure, the
@@ -2583,9 +2665,6 @@ void unloadNP2INI(){
 
 	// 画面表示倍率を保存
 	np2oscfg.scrn_mul = scrnmng_getmultiple();
-#ifdef HOOK_SYSKEY
-	UnhookWindowsHookEx(hHook);
-#endif
 	toolwin_destroy();
 	kdispwin_destroy();
 	skbdwin_destroy();
@@ -2656,6 +2735,10 @@ void loadNP2INI(const OEMCHAR *fname){
 	DWORD		tick;
 #endif
 	
+#ifdef HOOK_SYSKEY
+	stop_hook_systemey();
+#endif
+
 	LPTSTR lpFilenameBuf = (LPTSTR)malloc((_tcslen(fname)+1)*sizeof(TCHAR));
 	_tcscpy(lpFilenameBuf, fname);
 	hInstance = g_hInstance;
@@ -2807,9 +2890,6 @@ void loadNP2INI(const OEMCHAR *fname){
 #ifdef SUPPORT_CL_GD5430
 	//pc98_cirrus_vga_init();
 #endif
-#ifdef HOOK_SYSKEY
-	hHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, hInstance, 0);
-#endif
 	
 #ifdef SUPPORT_PHYSICAL_CDDRV
 	np2updatemenu();
@@ -2886,7 +2966,6 @@ void loadNP2INI(const OEMCHAR *fname){
 	}
 #endif
 	
-
 	if (!(g_scrnmode & SCRNMODE_FULLSCREEN)) {
 		if (np2oscfg.toolwin) {
 			toolwin_create();
@@ -2905,6 +2984,10 @@ void loadNP2INI(const OEMCHAR *fname){
 
 	sysmng_workclockreset();
 	sysmng_updatecaption(3);
+	
+#ifdef HOOK_SYSKEY
+	start_hook_systemey();
+#endif
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
@@ -2920,7 +3003,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	BOOL		xrollkey;
 	
 #if defined(SUPPORT_WIN2000HOST)
+#ifdef _WINDOWS
+#ifndef _WIN64
+#define WINVER2 0x0500
 	initialize_findacx();
+#endif
+#endif
 #endif
 
 	winloc_InitDwmFunc();
@@ -3005,7 +3093,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 
 	np2class_initialize(hInstance);
 	if (!hPrevInst) {
-		if(np2oscfg.mouse_nc && !scrnmng_isfullscreen()){
+		if(np2oscfg.mouse_nc/* && !scrnmng_isfullscreen()*/){
 			wc.style = CS_BYTEALIGNCLIENT | CS_HREDRAW | CS_VREDRAW;
 		}else{
 			wc.style = CS_BYTEALIGNCLIENT | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
@@ -3126,9 +3214,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 #ifdef SUPPORT_CL_GD5430
 	pc98_cirrus_vga_init();
 #endif
-#ifdef HOOK_SYSKEY
-	hHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, hInstance, 0);
-#endif
 	
 #ifdef SUPPORT_PHYSICAL_CDDRV
 	np2updatemenu();
@@ -3212,6 +3297,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	sysmng_workclockreset();
 	sysmng_updatecaption(3);
 	
+#ifdef HOOK_SYSKEY
+	start_hook_systemey();
+#endif
+
 	lateframecount = 0;
 	while(1) {
 		if (!np2stopemulate) {
@@ -3299,11 +3388,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 		}
 	}
 	
+#ifdef HOOK_SYSKEY
+	stop_hook_systemey();
+#endif
+
 	// 画面表示倍率を保存
 	np2oscfg.scrn_mul = scrnmng_getmultiple();
-#ifdef HOOK_SYSKEY
-	UnhookWindowsHookEx(hHook);
-#endif
+
 	toolwin_destroy();
 	kdispwin_destroy();
 	skbdwin_destroy();

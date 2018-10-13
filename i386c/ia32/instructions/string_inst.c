@@ -95,6 +95,375 @@ MOVSD_XdYd(void)
 	}
 }
 
+#define	MOVSB_XbYb_rep16_part	\
+  do { \
+	CPU_WORKCLOCK(5);\
+	tmp = cpu_vmemoryread(CPU_INST_SEGREG_INDEX, CPU_SI); \
+	cpu_vmemorywrite(CPU_ES_INDEX, CPU_DI, tmp); \
+	CPU_SI += STRING_DIR; \
+	CPU_DI += STRING_DIR; \
+  } while (0)
+
+#define	MOVSW_XwYw_rep16_part	\
+  do { \
+	CPU_WORKCLOCK(5);\
+	tmp = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, CPU_SI); \
+	cpu_vmemorywrite_w(CPU_ES_INDEX, CPU_DI, tmp); \
+	CPU_SI += STRING_DIRx2; \
+	CPU_DI += STRING_DIRx2; \
+  } while (0)
+
+#define	MOVSD_XdYd_rep16_part	\
+  do { \
+	CPU_WORKCLOCK(5);\
+	tmp = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, CPU_SI); \
+	cpu_vmemorywrite_d(CPU_ES_INDEX, CPU_DI, tmp); \
+	CPU_SI += STRING_DIRx4; \
+	CPU_DI += STRING_DIRx4; \
+  } while (0)
+
+#define	MOVSB_XbYb_rep32_part	\
+  do { \
+	CPU_WORKCLOCK(5);\
+	tmp = cpu_vmemoryread(CPU_INST_SEGREG_INDEX, CPU_ESI); \
+	cpu_vmemorywrite(CPU_ES_INDEX, CPU_EDI, tmp); \
+	CPU_ESI += STRING_DIR; \
+	CPU_EDI += STRING_DIR; \
+  } while (0)
+
+#define	MOVSW_XwYw_rep32_part	\
+  do { \
+	CPU_WORKCLOCK(5);\
+	tmp = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, CPU_ESI); \
+	cpu_vmemorywrite_w(CPU_ES_INDEX, CPU_EDI, tmp); \
+	CPU_ESI += STRING_DIRx2; \
+	CPU_EDI += STRING_DIRx2; \
+  } while (0)
+
+#define	MOVSD_XdYd_rep32_part	\
+  do { \
+	CPU_WORKCLOCK(5);\
+	tmp = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, CPU_ESI); \
+	cpu_vmemorywrite_d(CPU_ES_INDEX, CPU_EDI, tmp); \
+	CPU_ESI += STRING_DIRx4; \
+	CPU_EDI += STRING_DIRx4; \
+  } while (0)
+
+void
+MOVSB_XbYb_rep(int reptype)
+{
+	UINT8 tmp;
+	/* rep */
+	CPU_INST_SEGREG_INDEX = DS_FIX;
+	if(!CPU_INST_AS32){
+		switch(reptype){
+		case 0: /* rep */
+			for (;;) {
+				MOVSB_XbYb_rep16_part;
+				if (--CPU_CX == 0) {
+	#if defined(DEBUG)
+				cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 1: /* repe */
+			for (;;) {
+				MOVSB_XbYb_rep16_part;
+				if (--CPU_CX == 0 || CC_NZ) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 2: /* repne */
+			for (;;) {
+				MOVSB_XbYb_rep16_part;
+				if (--CPU_CX == 0 || CC_Z) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		}
+	}else{
+		switch(reptype){
+		case 0: /* rep */
+			for (;;) {
+				MOVSB_XbYb_rep32_part;
+				if (--CPU_ECX == 0) {
+	#if defined(DEBUG)
+				cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 1: /* repe */
+			for (;;) {
+				MOVSB_XbYb_rep32_part;
+				if (--CPU_ECX == 0 || CC_NZ) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 2: /* repne */
+			for (;;) {
+				MOVSB_XbYb_rep32_part;
+				if (--CPU_ECX == 0 || CC_Z) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		}
+	}
+}
+
+void
+MOVSW_XwYw_rep(int reptype)
+{
+	UINT16 tmp;
+	/* rep */
+	CPU_INST_SEGREG_INDEX = DS_FIX;
+	if(!CPU_INST_AS32){
+		switch(reptype){
+		case 0: /* rep */
+			for (;;) {
+				MOVSW_XwYw_rep16_part;
+				if (--CPU_CX == 0) {
+	#if defined(DEBUG)
+				cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 1: /* repe */
+			for (;;) {
+				MOVSW_XwYw_rep16_part;
+				if (--CPU_CX == 0 || CC_NZ) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 2: /* repne */
+			for (;;) {
+				MOVSW_XwYw_rep16_part;
+				if (--CPU_CX == 0 || CC_Z) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		}
+	}else{
+		switch(reptype){
+		case 0: /* rep */
+			for (;;) {
+				MOVSW_XwYw_rep32_part;
+				if (--CPU_ECX == 0) {
+	#if defined(DEBUG)
+				cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 1: /* repe */
+			for (;;) {
+				MOVSW_XwYw_rep32_part;
+				if (--CPU_ECX == 0 || CC_NZ) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 2: /* repne */
+			for (;;) {
+				MOVSW_XwYw_rep32_part;
+				if (--CPU_ECX == 0 || CC_Z) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		}
+	}
+}
+
+void
+MOVSD_XdYd_rep(int reptype)
+{
+	UINT32 tmp;
+	/* rep */
+	CPU_INST_SEGREG_INDEX = DS_FIX;
+	if(!CPU_INST_AS32){
+		switch(reptype){
+		case 0: /* rep */
+			for (;;) {
+				MOVSD_XdYd_rep16_part;
+				if (--CPU_CX == 0) {
+	#if defined(DEBUG)
+				cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 1: /* repe */
+			for (;;) {
+				MOVSD_XdYd_rep16_part;
+				if (--CPU_CX == 0 || CC_NZ) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 2: /* repne */
+			for (;;) {
+				MOVSD_XdYd_rep16_part;
+				if (--CPU_CX == 0 || CC_Z) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		}
+	}else{
+		switch(reptype){
+		case 0: /* rep */
+			for (;;) {
+				MOVSD_XdYd_rep32_part;
+				if (--CPU_ECX == 0) {
+	#if defined(DEBUG)
+				cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 1: /* repe */
+			for (;;) {
+				MOVSD_XdYd_rep32_part;
+				if (--CPU_ECX == 0 || CC_NZ) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 2: /* repne */
+			for (;;) {
+				MOVSD_XdYd_rep32_part;
+				if (--CPU_ECX == 0 || CC_Z) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		}
+	}
+}
+
 
 /* cmps */
 void
@@ -160,6 +529,380 @@ CMPSD_XdYd(void)
 		DWORD_SUB(res, dst, src);
 		CPU_ESI += STRING_DIRx4;
 		CPU_EDI += STRING_DIRx4;
+	}
+}
+
+#define	CMPSB_XbYb_rep16_part	\
+  do { \
+		CPU_WORKCLOCK(8);\
+		dst = cpu_vmemoryread(CPU_INST_SEGREG_INDEX, CPU_SI);\
+		src = cpu_vmemoryread(CPU_ES_INDEX, CPU_DI);\
+		BYTE_SUB(res, dst, src);\
+		CPU_SI += STRING_DIR;\
+		CPU_DI += STRING_DIR;\
+  } while (0)
+
+#define	CMPSW_XwYw_rep16_part	\
+  do { \
+		CPU_WORKCLOCK(8);\
+		dst = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, CPU_SI);\
+		src = cpu_vmemoryread_w(CPU_ES_INDEX, CPU_DI);\
+		WORD_SUB(res, dst, src);\
+		CPU_SI += STRING_DIRx2;\
+		CPU_DI += STRING_DIRx2;\
+  } while (0)
+
+#define	CMPSD_XdYd_rep16_part	\
+  do { \
+		CPU_WORKCLOCK(8);\
+		dst = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, CPU_SI);\
+		src = cpu_vmemoryread_d(CPU_ES_INDEX, CPU_DI);\
+		DWORD_SUB(res, dst, src);\
+		CPU_SI += STRING_DIRx4;\
+		CPU_DI += STRING_DIRx4;\
+  } while (0)
+
+#define	CMPSB_XbYb_rep32_part	\
+  do { \
+		CPU_WORKCLOCK(8);\
+		dst = cpu_vmemoryread(CPU_INST_SEGREG_INDEX, CPU_ESI);\
+		src = cpu_vmemoryread(CPU_ES_INDEX, CPU_EDI);\
+		BYTE_SUB(res, dst, src);\
+		CPU_ESI += STRING_DIR;\
+		CPU_EDI += STRING_DIR;\
+  } while (0)
+
+#define	CMPSW_XwYw_rep32_part	\
+  do { \
+		CPU_WORKCLOCK(8);\
+		dst = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, CPU_ESI);\
+		src = cpu_vmemoryread_w(CPU_ES_INDEX, CPU_EDI);\
+		WORD_SUB(res, dst, src);\
+		CPU_ESI += STRING_DIRx2;\
+		CPU_EDI += STRING_DIRx2;\
+  } while (0)
+
+#define	CMPSD_XdYd_rep32_part	\
+  do { \
+		CPU_WORKCLOCK(8);\
+		dst = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, CPU_ESI);\
+		src = cpu_vmemoryread_d(CPU_ES_INDEX, CPU_EDI);\
+		DWORD_SUB(res, dst, src);\
+		CPU_ESI += STRING_DIRx4;\
+		CPU_EDI += STRING_DIRx4;\
+  } while (0)
+void
+CMPSB_XbYb_rep(int reptype)
+{
+	UINT32 src, dst, res;
+	
+	CPU_INST_SEGREG_INDEX = DS_FIX;
+	if (!CPU_INST_AS32) {
+		switch(reptype){
+		case 0: /* rep */
+			for (;;) {
+				CMPSB_XbYb_rep16_part;
+				if (--CPU_CX == 0) {
+	#if defined(DEBUG)
+				cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 1: /* repe */
+			for (;;) {
+				CMPSB_XbYb_rep16_part;
+				if (--CPU_CX == 0 || CC_NZ) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 2: /* repne */
+			for (;;) {
+				CMPSB_XbYb_rep16_part;
+				if (--CPU_CX == 0 || CC_Z) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		}
+	}else{
+		switch(reptype){
+		case 0: /* rep */
+			for (;;) {
+				CMPSB_XbYb_rep32_part;
+				if (--CPU_ECX == 0) {
+	#if defined(DEBUG)
+				cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 1: /* repe */
+			for (;;) {
+				CMPSB_XbYb_rep32_part;
+				if (--CPU_ECX == 0 || CC_NZ) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 2: /* repne */
+			for (;;) {
+				CMPSB_XbYb_rep32_part;
+				if (--CPU_ECX == 0 || CC_Z) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		}
+	}
+}
+
+void
+CMPSW_XwYw_rep(int reptype)
+{
+	UINT32 src, dst, res;
+	
+	CPU_INST_SEGREG_INDEX = DS_FIX;
+	if (!CPU_INST_AS32) {
+		switch(reptype){
+		case 0: /* rep */
+			for (;;) {
+				CMPSW_XwYw_rep16_part;
+				if (--CPU_CX == 0) {
+	#if defined(DEBUG)
+				cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 1: /* repe */
+			for (;;) {
+				CMPSW_XwYw_rep16_part;
+				if (--CPU_CX == 0 || CC_NZ) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 2: /* repne */
+			for (;;) {
+				CMPSW_XwYw_rep16_part;
+				if (--CPU_CX == 0 || CC_Z) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		}
+	}else{
+		switch(reptype){
+		case 0: /* rep */
+			for (;;) {
+				CMPSW_XwYw_rep32_part;
+				if (--CPU_ECX == 0) {
+	#if defined(DEBUG)
+				cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 1: /* repe */
+			for (;;) {
+				CMPSW_XwYw_rep32_part;
+				if (--CPU_ECX == 0 || CC_NZ) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 2: /* repne */
+			for (;;) {
+				CMPSW_XwYw_rep32_part;
+				if (--CPU_ECX == 0 || CC_Z) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		}
+	}
+}
+
+void
+CMPSD_XdYd_rep(int reptype)
+{
+	UINT32 src, dst, res;
+	
+	CPU_INST_SEGREG_INDEX = DS_FIX;
+	if (!CPU_INST_AS32) {
+		switch(reptype){
+		case 0: /* rep */
+			for (;;) {
+				CMPSD_XdYd_rep16_part;
+				if (--CPU_CX == 0) {
+	#if defined(DEBUG)
+				cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 1: /* repe */
+			for (;;) {
+				CMPSD_XdYd_rep16_part;
+				if (--CPU_CX == 0 || CC_NZ) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 2: /* repne */
+			for (;;) {
+				CMPSD_XdYd_rep16_part;
+				if (--CPU_CX == 0 || CC_Z) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		}
+	}else{
+		switch(reptype){
+		case 0: /* rep */
+			for (;;) {
+				CMPSD_XdYd_rep32_part;
+				if (--CPU_ECX == 0) {
+	#if defined(DEBUG)
+				cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 1: /* repe */
+			for (;;) {
+				CMPSD_XdYd_rep32_part;
+				if (--CPU_ECX == 0 || CC_NZ) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		case 2: /* repne */
+			for (;;) {
+				CMPSD_XdYd_rep32_part;
+				if (--CPU_ECX == 0 || CC_Z) {
+	#if defined(DEBUG)
+					cpu_debug_rep_cont = 0;
+	#endif
+					break;
+				}
+				if (CPU_REMCLOCK <= 0) {
+					CPU_EIP = CPU_PREV_EIP;
+					break;
+				}
+			}
+			break;
+		}
 	}
 }
 
@@ -307,6 +1050,123 @@ STOSD_YdEAX(void)
 	} else {
 		cpu_vmemorywrite_d(CPU_ES_INDEX, CPU_EDI, CPU_EAX);
 		CPU_EDI += STRING_DIRx4;
+	}
+}
+
+// rep\82̂\DD
+void
+STOSB_YbAL_rep(int reptype)
+{
+	if (!CPU_INST_AS32) {
+		for (;;) {
+			CPU_WORKCLOCK(3);
+			cpu_vmemorywrite(CPU_ES_INDEX, CPU_DI, CPU_AL);
+			CPU_DI += STRING_DIR;
+			if (--CPU_CX == 0) {
+#if defined(DEBUG)
+			cpu_debug_rep_cont = 0;
+#endif
+				break;
+			}
+			if (CPU_REMCLOCK <= 0) {
+				CPU_EIP = CPU_PREV_EIP;
+				break;
+			}
+		}
+	} else {
+		for (;;) {
+			CPU_WORKCLOCK(3);
+			cpu_vmemorywrite(CPU_ES_INDEX, CPU_EDI, CPU_AL);
+			CPU_EDI += STRING_DIR;
+			if (--CPU_ECX == 0) {
+#if defined(DEBUG)
+			cpu_debug_rep_cont = 0;
+#endif
+				break;
+			}
+			if (CPU_REMCLOCK <= 0) {
+				CPU_EIP = CPU_PREV_EIP;
+				break;
+			}
+		}
+	}
+}
+
+void
+STOSW_YwAX_rep(int reptype)
+{
+	
+	if (!CPU_INST_AS32) {
+		for (;;) {
+			CPU_WORKCLOCK(3);
+			cpu_vmemorywrite_w(CPU_ES_INDEX, CPU_DI, CPU_AX);
+			CPU_DI += STRING_DIRx2;
+			if (--CPU_CX == 0) {
+#if defined(DEBUG)
+			cpu_debug_rep_cont = 0;
+#endif
+				break;
+			}
+			if (CPU_REMCLOCK <= 0) {
+				CPU_EIP = CPU_PREV_EIP;
+				break;
+			}
+		}
+	} else {
+		for (;;) {
+			CPU_WORKCLOCK(3);
+			cpu_vmemorywrite_w(CPU_ES_INDEX, CPU_EDI, CPU_AX);
+			CPU_EDI += STRING_DIRx2;
+			if (--CPU_ECX == 0) {
+#if defined(DEBUG)
+			cpu_debug_rep_cont = 0;
+#endif
+				break;
+			}
+			if (CPU_REMCLOCK <= 0) {
+				CPU_EIP = CPU_PREV_EIP;
+				break;
+			}
+		}
+	}
+}
+
+void
+STOSD_YdEAX_rep(int reptype)
+{
+	
+	if (!CPU_INST_AS32) {
+		for (;;) {
+			CPU_WORKCLOCK(3);
+			cpu_vmemorywrite_d(CPU_ES_INDEX, CPU_DI, CPU_EAX);
+			CPU_DI += STRING_DIRx4;
+			if (--CPU_CX == 0) {
+#if defined(DEBUG)
+			cpu_debug_rep_cont = 0;
+#endif
+				break;
+			}
+			if (CPU_REMCLOCK <= 0) {
+				CPU_EIP = CPU_PREV_EIP;
+				break;
+			}
+		}
+	} else {
+		for (;;) {
+			CPU_WORKCLOCK(3);
+			cpu_vmemorywrite_d(CPU_ES_INDEX, CPU_EDI, CPU_EAX);
+			CPU_EDI += STRING_DIRx4;
+			if (--CPU_ECX == 0) {
+#if defined(DEBUG)
+			cpu_debug_rep_cont = 0;
+#endif
+				break;
+			}
+			if (CPU_REMCLOCK <= 0) {
+				CPU_EIP = CPU_PREV_EIP;
+				break;
+			}
+		}
 	}
 }
 

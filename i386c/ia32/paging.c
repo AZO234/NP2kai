@@ -715,7 +715,7 @@ paging(UINT32 laddr, int ucrw)
 		return ep->paddr + (laddr & CPU_PAGE_MASK);
 
 	pde_addr = CPU_STAT_PDE_BASE + ((laddr >> 20) & 0xffc);
-	pde = cpu_memoryread_d(pde_addr);
+	pde = cpu_memoryread_d_paging(pde_addr);
 	if (!(pde & CPU_PDE_PRESENT)) {
 		VERBOSE(("paging: PTE page is not present"));
 		VERBOSE(("paging: CPU_CR3 = 0x%08x", CPU_CR3));
@@ -725,11 +725,11 @@ paging(UINT32 laddr, int ucrw)
 	}
 	if (!(pde & CPU_PDE_ACCESS)) {
 		pde |= CPU_PDE_ACCESS;
-		cpu_memorywrite_d(pde_addr, pde);
+		cpu_memorywrite_d_paging(pde_addr, pde);
 	}
 
 	pte_addr = (pde & CPU_PDE_BASEADDR_MASK) + ((laddr >> 10) & 0xffc);
-	pte = cpu_memoryread_d(pte_addr);
+	pte = cpu_memoryread_d_paging(pte_addr);
 	if (!(pte & CPU_PTE_PRESENT)) {
 		VERBOSE(("paging: page is not present"));
 		VERBOSE(("paging: laddr = 0x%08x, pde_addr = 0x%08x, pde = 0x%08x", laddr, pde_addr, pde));
@@ -739,7 +739,7 @@ paging(UINT32 laddr, int ucrw)
 	}
 	if (!(pte & CPU_PTE_ACCESS)) {
 		pte |= CPU_PTE_ACCESS;
-		cpu_memorywrite_d(pte_addr, pte);
+		cpu_memorywrite_d_paging(pte_addr, pte);
 	}
 
 	/* make physical address */
@@ -765,7 +765,7 @@ paging(UINT32 laddr, int ucrw)
 
 	if ((ucrw & CPU_PAGE_WRITE) && !(pte & CPU_PTE_DIRTY)) {
 		pte |= CPU_PTE_DIRTY;
-		cpu_memorywrite_d(pte_addr, pte);
+		cpu_memorywrite_d_paging(pte_addr, pte);
 	}
 
 	tlb_update(laddr, pte, (bit & (CPU_PTE_WRITABLE|CPU_PTE_USER_MODE)) + ((ucrw & CPU_PAGE_CODE) ? 1 : 0));

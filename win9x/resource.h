@@ -17,6 +17,7 @@
 #define IDD_SCROPT_FULLSCREEN           132
 #define IDD_SCROPT2                     133
 #define IDD_SCROPT3                     134
+#define IDD_SCROPT_RENDERER             135
 #define IDD_SERIAL1                     141
 #define IDD_PC9861A                     142
 #define IDD_MPUPC98                     151
@@ -114,6 +115,8 @@
 #define IDC_FULLSCREEN_SAMEBPP          13201
 #define IDC_FULLSCREEN_SAMERES          13202
 #define IDC_FULLSCREEN_ZOOM             13203
+#define IDC_RENDERER_TYPE               13210
+#define IDC_RENDERER_IMODE              13211
 #define IDC_GDC7220                     13301
 #define IDC_GDC72020                    13302
 #define IDC_GCBOX                       13303
@@ -498,6 +501,13 @@
 #define IDS_CPU_AMD_K7_ATHLONXP         32038
 #define IDS_CPU_80286					32040
 #define IDS_CPU_NEKOPRO                 32049
+#define IDS_RENDERER_DIRECTDRAW         32100
+#define IDS_RENDERER_DIRECT3D           32101
+#define IDS_RENDERER_IMODE_NN           32110
+#define IDS_RENDERER_IMODE_LINEAR       32111
+#define IDS_RENDERER_IMODE_PIXEL        32112
+#define IDS_RENDERER_IMODE_PIXEL2       32113
+#define IDS_RENDERER_IMODE_PIXEL3       32114
 #define IDM_TOOLWIN                     40001
 #define IDM_KEYDISP                     40002
 #define IDM_SOFTKBD                     40003
@@ -510,6 +520,7 @@
 #define IDM_MEMORYDUMP                  40010
 #define IDM_DEBUGUTY                    40011
 #define IDM_VIEWER                      40012
+#define IDM_RESTOREBORDER               40013
 #define IDM_SCRNMUL                     40050
 #define IDM_SCRNMUL4                    40054
 #define IDM_SCRNMUL6                    40056
@@ -620,6 +631,7 @@
 #define IDM_XCTRL                       40612
 #define IDM_XGRPH                       40613
 #define IDM_SENDCAD                     40614
+#define IDM_USENUMLOCK                  40615
 #define IDM_F12MOUSE                    40621
 #define IDM_F12COPY                     40622
 #define IDM_F12STOP                     40623

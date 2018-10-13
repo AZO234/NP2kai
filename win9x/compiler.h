@@ -207,6 +207,7 @@ typedef	signed __int64		SINT64;
 
 #define	SUPPORT_TEXTCNV
 
+#define SUPPORT_WIN2000HOST
 
 #if defined(CPUCORE_IA32)
 #pragma warning(disable: 4819)

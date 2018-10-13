@@ -68,8 +68,8 @@ void np2wab_init(HINSTANCE hInstance, HWND g_hWndMain);
 #endif
 void np2wab_reset(const NP2CFG *pConfig);
 void np2wab_bind(void);
-void np2wab_drawframe();
-void np2wab_shutdown();
+void np2wab_drawframe(void);
+void np2wab_shutdown(void);
 
 void np2wab_setRelayState(REG8 state);
 void np2wab_setScreenSize(int width, int height);

@@ -354,6 +354,7 @@ void xmenu_update(HMENU hMenu)
 	}else{
 		CheckMenuItem(hMenu, IDM_F12WABRELAY, MF_BYCOMMAND | MFCHECK(F12COPY == 9));
 	}
+	CheckMenuItem(hMenu, IDM_USENUMLOCK, MF_BYCOMMAND | MFCHECK(np2oscfg.USENUMLOCK));
 
 	// Device-Sound
 	const UINT8 BEEP_VOL = np2cfg.BEEP_VOL;

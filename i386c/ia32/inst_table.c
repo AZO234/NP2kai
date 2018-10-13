@@ -893,6 +893,559 @@ void (*insttable_1byte[2][256])(void) = {
 	},
 };
 
+
+void (*insttable_1byte_repfunc[2][256])(int reptype) = {
+	/* 16bit */
+	{
+		NULL,		/* 00 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,		/* 08 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,		/* 10 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,		/* 18 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,		/* 20 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,		/* 28 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,		/* 30 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,		/* 38 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,			/* 40 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,			/* 48 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,		/* 50 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,		/* 58 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,	/* 60 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,	/* 68 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,		/* 70 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,		/* 78 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,		/* 80 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,		/* 88 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,	/* 90 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,	/* 98 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,	/* A0 */
+		NULL,
+		NULL,
+		NULL,
+		MOVSB_XbYb_rep,
+		MOVSW_XwYw_rep,
+		CMPSB_XbYb_rep,
+		CMPSW_XwYw_rep,
+		NULL,	/* A8 */
+		NULL,
+		STOSB_YbAL_rep,
+		STOSW_YwAX_rep,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,		/* B0 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,		/* B8 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,	/* C0 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,		/* C8 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,	/* D0 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,		/* undoc(8086) */
+		NULL,
+		NULL,			/* D8 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,		/* E0 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,	/* E8 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,		/* F0 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,		/* F8 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+	},
+
+	/* 32bit */
+	{
+		NULL,		/* 00 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,		/* 08 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,		/* 10 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,		/* 18 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,		/* 20 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,		/* 28 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,		/* 30 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,		/* 38 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,			/* 40 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,			/* 48 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,		/* 50 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,		/* 58 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,	/* 60 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,	/* 68 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,		/* 70 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,		/* 78 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,		/* 80 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,		/* 88 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,	/* 90 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,	/* 98 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,	/* A0 */
+		NULL,
+		NULL,
+		NULL,
+		MOVSB_XbYb_rep,
+		MOVSD_XdYd_rep,
+		CMPSB_XbYb_rep,
+		CMPSD_XdYd_rep,
+		NULL,	/* A8 */
+		NULL,
+		STOSB_YbAL_rep,
+		STOSD_YdEAX_rep,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,		/* B0 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,		/* B8 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,	/* C0 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,		/* C8 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,	/* D0 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,		/* undoc(8086) */
+		NULL,
+		NULL,			/* D8 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,		/* E0 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,	/* E8 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+
+		NULL,		/* F0 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,		/* F8 */
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+	},
+};
+
 void (*insttable_2byte[2][256])(void) = {
 	/* 16bit */
 	{
@@ -913,14 +1466,14 @@ void (*insttable_2byte[2][256])(void) = {
 		AMD3DNOW_FEMMS,
 		undef_op,
 
-		SSE_MOVUPSmem2reg,		/* 10 */
-		SSE_MOVUPSreg2mem,
-		SSE_MOVLPSmem2reg, // + MOVHLPS
-		SSE_MOVLPSreg2mem,
+		SSE_MOVUPSmem2xmm,		/* 10 */
+		SSE_MOVUPSxmm2mem,
+		SSE_MOVLPSmem2xmm, // + MOVHLPS
+		SSE_MOVLPSxmm2mem,
 		SSE_UNPCKLPS,
 		SSE_UNPCKHPS,
-		SSE_MOVHPSmem2reg, // + MOVLHPS
-		SSE_MOVHPSreg2mem,
+		SSE_MOVHPSmem2xmm, // + MOVLHPS
+		SSE_MOVHPSxmm2mem,
 		SSE_PREFETCHTx,		/* 18 */
 		undef_op,
 		undef_op,
@@ -938,8 +1491,8 @@ void (*insttable_2byte[2][256])(void) = {
 		undef_op,
 		MOV_TdRd,
 		undef_op,
-		SSE_MOVAPSmem2reg,		/* 28 */
-		SSE_MOVAPSreg2mem,
+		SSE_MOVAPSmem2xmm,		/* 28 */
+		SSE_MOVAPSxmm2mem,
 		SSE_CVTPI2PS,
 		SSE_MOVNTPS,
 		SSE_CVTTPS2PI,
@@ -1188,14 +1741,14 @@ void (*insttable_2byte[2][256])(void) = {
 		AMD3DNOW_FEMMS,
 		undef_op,
 		
-		SSE_MOVUPSmem2reg,		/* 10 */
-		SSE_MOVUPSreg2mem,
-		SSE_MOVLPSmem2reg, // + MOVHLPS
-		SSE_MOVLPSreg2mem,
+		SSE_MOVUPSmem2xmm,		/* 10 */
+		SSE_MOVUPSxmm2mem,
+		SSE_MOVLPSmem2xmm, // + MOVHLPS
+		SSE_MOVLPSxmm2mem,
 		SSE_UNPCKLPS,
 		SSE_UNPCKHPS,
-		SSE_MOVHPSmem2reg, // + MOVLHPS
-		SSE_MOVHPSreg2mem,
+		SSE_MOVHPSmem2xmm, // + MOVLHPS
+		SSE_MOVHPSxmm2mem,
 		SSE_PREFETCHTx,		/* 18 */
 		undef_op,
 		undef_op,
@@ -1213,8 +1766,8 @@ void (*insttable_2byte[2][256])(void) = {
 		undef_op,
 		MOV_TdRd,
 		undef_op,
-		SSE_MOVAPSmem2reg,		/* 28 */
-		SSE_MOVAPSreg2mem,
+		SSE_MOVAPSmem2xmm,		/* 28 */
+		SSE_MOVAPSxmm2mem,
 		SSE_CVTPI2PS,
 		SSE_MOVNTPS,
 		SSE_CVTTPS2PI,
@@ -2011,8 +2564,8 @@ void (*insttable_2byteF30F_32[256])(void) = {
 	NULL,
 	NULL,
 
-	SSE_MOVSSmem2reg,		/* 10 */
-	SSE_MOVSSreg2mem,
+	SSE_MOVSSmem2xmm,		/* 10 */
+	SSE_MOVSSxmm2mem,
 	SSE3_MOVSLDUP,
 	NULL,
 	NULL,

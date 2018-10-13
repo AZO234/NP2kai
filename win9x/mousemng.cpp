@@ -32,6 +32,50 @@ static  LPDIRECTINPUTDEVICE8 diRawMouse = NULL;
 static  int mouseRawDeltaX = 0;
 static  int mouseRawDeltaY = 0;
 
+static  int dinput8available = 0;
+typedef HRESULT (WINAPI *TEST_DIRECTINPUT8CREATE)(HINSTANCE hinst, DWORD dwVersion, REFIID riidltf, LPVOID *ppvOut, LPUNKNOWN punkOuter);
+
+BRESULT mousemng_checkdinput8(){
+	// DirectInput8が使用できるかチェック
+	HMODULE hModule;
+	TEST_DIRECTINPUT8CREATE fndi8create;
+	LPDIRECTINPUT8 test_dinput = NULL; 
+	LPDIRECTINPUTDEVICE8 test_didevice = NULL;
+
+	if(dinput8available) return(SUCCESS);
+
+	hModule = LoadLibrary(_T("dinput8.dll"));
+	if(!hModule){
+		goto scre_err;
+	}
+	
+	fndi8create = (TEST_DIRECTINPUT8CREATE)GetProcAddress(hModule, "DirectInput8Create");
+	if(!fndi8create){
+		goto scre_err2;
+	}
+	if(FAILED(fndi8create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (LPVOID*)&test_dinput, NULL))){
+		goto scre_err2;
+	}
+	if(FAILED(test_dinput->CreateDevice(GUID_SysMouse, &test_didevice, NULL))){
+		goto scre_err3;
+	}
+
+	// デバイス作成まで出来そうならOKとする
+	test_didevice->Release();
+	test_dinput->Release();
+	FreeLibrary(hModule);
+
+	dinput8available = 1;
+
+	return(SUCCESS);
+scre_err3:
+	test_dinput->Release();
+scre_err2:
+	FreeLibrary(hModule);
+scre_err:
+	return(FAILURE);
+}
+
 UINT8 mousemng_getstat(SINT16 *x, SINT16 *y, int clear) {
 	*x = mousemng.x;
 	*y = mousemng.y;
@@ -132,6 +176,13 @@ static void mousecapture(BOOL capture) {
 	POINT	cp;
 	RECT	rct;
 
+	if(np2oscfg.rawmouse){
+		if(mousemng_checkdinput8()!=SUCCESS){
+			np2oscfg.rawmouse = 0;
+			MessageBox(g_hWndMain, _T("Failed to initialize DirectInput8."), _T("DirectInput Error"), MB_OK|MB_ICONEXCLAMATION);
+		}
+	}
+
 	mouseMul = np2oscfg.mousemul != 0 ? np2oscfg.mousemul : 1;
 	mouseDiv = np2oscfg.mousediv != 0 ? np2oscfg.mousediv : 1;
 
@@ -147,7 +198,7 @@ static void mousecapture(BOOL capture) {
 		ClipCursor(&rct);
 		style &= ~(CS_DBLCLKS);
 		mousecaptureflg = 1;
-		if(np2oscfg.rawmouse){
+		if(np2oscfg.rawmouse && dinput8available){
 			initDirectInput();
 		}
 	}
@@ -156,7 +207,7 @@ static void mousecapture(BOOL capture) {
 		ClipCursor(NULL);
 		style |= CS_DBLCLKS;
 		mousecaptureflg = 0;
-		if(np2oscfg.rawmouse){
+		if(np2oscfg.rawmouse && dinput8available){
 			diRawMouse->Unacquire();
 			//destroyDirectInput();
 		}
@@ -183,9 +234,9 @@ void mousemng_sync(void) {
 
 	if ((!mousemng.flag) && (GetCursorPos(&p))) {
 		getmaincenter(&cp);
-		if(np2oscfg.rawmouse && dinput==NULL)
+		if(np2oscfg.rawmouse && dinput8available && dinput==NULL)
 			initDirectInput();
-		if(np2oscfg.rawmouse && mousemng_supportrawinput()){
+		if(np2oscfg.rawmouse && dinput8available && mousemng_supportrawinput()){
 			DIMOUSESTATE diMouseState = {0};
 			HRESULT hr;
 			hr = diRawMouse->GetDeviceState(sizeof(DIMOUSESTATE), &diMouseState);
@@ -228,7 +279,7 @@ void mousemng_sync(void) {
 
 BOOL mousemng_buttonevent(UINT event) {
 
-	if (!mousemng.flag || (np2oscfg.mouse_nc && !scrnmng_isfullscreen() && mousemng.flag)) {
+	if (!mousemng.flag || (np2oscfg.mouse_nc/* && !scrnmng_isfullscreen()*/ && mousemng.flag)) {
 		switch(event) {
 			case MOUSEMNG_LEFTDOWN:
 				mousemng.btn &= ~(uPD8255A_LEFTBIT);

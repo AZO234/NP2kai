@@ -3,6 +3,7 @@
 #include	"resource.h"
 #include	"winloc.h"
 #include	"np2class.h"
+#include	"np2.h"
 
 
 const TCHAR np2dlgclass[] = _T("np2dialog");

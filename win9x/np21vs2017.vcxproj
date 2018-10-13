@@ -98,7 +98,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_WIN2000HOST;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_PCI;SUPPORT_GPIB;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;TRACE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_WIN2000HOST;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_GPIB;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;TRACE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;.\x86;..\;..\common;..\fdd;..\i386c;..\mem;..\io;..\io\pci;..\cbus;..\network;..\vram;..\sound;..\wab;..\generic;..\zlib;\VST_SDK</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
@@ -121,7 +121,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_WIN2000HOST;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_PCI;SUPPORT_GPIB;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;TRACE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_WIN2000HOST;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_GPIB;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;TRACE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;.\x64;..\;..\common;..\fdd;..\i386c;..\mem;..\io;..\io\pci;..\cbus;..\network;..\vram;..\sound;..\wab;..\generic;..\zlib;\VST_SDK</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
     </ClCompile>
@@ -129,6 +129,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LargeAddressAware>false</LargeAddressAware>
+      <DelayLoadDLLs>d3d9.dll;dinput8.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <NASM>
       <AdditionalOptions>-I.\x86\ -I..\i386c\x86\ -I..\io\x86\ %(AdditionalOptions)</AdditionalOptions>
@@ -148,7 +149,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_WIN2000HOST;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_PCI;SUPPORT_GPIB;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_WIN2000HOST;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_GPIB;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;.\x86;..\;..\common;..\fdd;..\i386c;..\mem;..\io;..\io\pci;..\cbus;..\network;..\vram;..\sound;..\wab;..\generic;..\zlib;\VST_SDK</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -179,7 +180,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_WIN2000HOST;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_PCI;SUPPORT_GPIB;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_WIN2000HOST;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_GPIB;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;.\x64;..\;..\common;..\fdd;..\i386c;..\mem;..\io;..\io\pci;..\cbus;..\network;..\vram;..\sound;..\wab;..\generic;..\zlib;\VST_SDK</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -195,6 +196,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <LargeAddressAware>false</LargeAddressAware>
+      <DelayLoadDLLs>d3d9.dll;dinput8.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <NASM>
       <AdditionalOptions>-I.\x86\ -I..\i386c\x86\ -I..\io\x86\ %(AdditionalOptions)</AdditionalOptions>
@@ -556,6 +558,8 @@
     <ClCompile Include="oemtext.cpp" />
     <ClCompile Include="recvideo.cpp" />
     <ClCompile Include="scrnmng.cpp" />
+    <ClCompile Include="scrnmng_d3d.cpp" />
+    <ClCompile Include="scrnmng_dd.cpp" />
     <ClCompile Include="soundmng.cpp" />
     <ClCompile Include="soundmng\asio\asiodriverlist.cpp" />
     <ClCompile Include="soundmng\sdasio.cpp" />
@@ -876,6 +880,8 @@
     <ClInclude Include="recvideo.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="scrnmng.h" />
+    <ClInclude Include="scrnmng_d3d.h" />
+    <ClInclude Include="scrnmng_dd.h" />
     <ClInclude Include="soundmng.h" />
     <ClInclude Include="soundmng\asio\asiodriverlist.h" />
     <ClInclude Include="soundmng\asio\asiosdk.h" />

@@ -224,7 +224,7 @@ static INLINE void SSE_PART_GETDATA1DATA2_SDm64(double **data1, float **data2, f
 	}
 }
 
-// mm/m64 -> xmm
+// mm/m128 -> xmm
 static INLINE void SSE_PART_GETDATA1DATA2_PD_MMX2XMM(double **data1, SINT32 **data2, SINT32 *data2buf){
 	UINT32 op;
 	UINT idx, sub;
@@ -268,7 +268,7 @@ static INLINE void SSE_PART_GETDATA1DATA2_SD_MMX2XMM(double **data1, SINT32 **da
 		*data2 = data2buf;
 	}
 }
-// xmm/m64 -> mm
+// xmm/m128 -> mm
 static INLINE void SSE_PART_GETDATA1DATA2_PD_XMM2MMX(SINT32 **data1, double **data2, double *data2buf){
 	UINT32 op;
 	UINT idx, sub;
@@ -286,8 +286,8 @@ static INLINE void SSE_PART_GETDATA1DATA2_PD_XMM2MMX(SINT32 **data1, double **da
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
-		*((UINT32*)(data2buf+ 0)) = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+ 0);
-		*((UINT32*)(data2buf+ 1)) = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+ 4);
+		*((UINT64*)(data2buf+ 0)) = cpu_vmemoryread_q(CPU_INST_SEGREG_INDEX, maddr+ 0);
+		*((UINT64*)(data2buf+ 1)) = cpu_vmemoryread_q(CPU_INST_SEGREG_INDEX, maddr+ 8);
 		*data2 = data2buf;
 	}
 }
@@ -308,7 +308,7 @@ static INLINE void SSE_PART_GETDATA1DATA2_SD_XMM2MMX(SINT32 **data1, double **da
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
-		*((UINT32*)(data2buf+ 0)) = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+ 0);
+		*((UINT64*)(data2buf+ 0)) = cpu_vmemoryread_q(CPU_INST_SEGREG_INDEX, maddr+ 0);
 		*data2 = data2buf;
 	}
 }
@@ -330,7 +330,7 @@ static INLINE void SSE_PART_GETDATA1DATA2_SD_REG2XMM(double **data1, SINT32 **da
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
-		*((UINT32*)(data2buf+ 0)) = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+ 0);
+		*((UINT64*)(data2buf+ 0)) = cpu_vmemoryread_q(CPU_INST_SEGREG_INDEX, maddr+ 0);
 		*data2 = data2buf;
 	}
 }
@@ -653,7 +653,7 @@ void SSE2_CVTPS2DQ(void)
 	SSE_PART_GETDATA1DATA2_PD((double**)(&data1), (double**)(&data2), (double*)data2buf);
 	
 	for(i=0;i<4;i++){
-		data1[i] = (SINT32)SSE2_ROUND_DOUBLE(data2[i]);
+		data1[i] = (SINT32)SSE2_ROUND_FLOAT(data2[i]);
 	}
 }
 void SSE2_CVTTPS2DQ(void)
@@ -757,27 +757,27 @@ void SSE2_MINSD(void)
 }
 void SSE2_MOVAPDmem2xmm(void)
 {
-	SSE_MOVAPSmem2reg();
+	SSE_MOVAPSmem2xmm();
 }
 void SSE2_MOVAPDxmm2mem(void)
 {
-	SSE_MOVAPSreg2mem();
+	SSE_MOVAPSxmm2mem();
 }
 void SSE2_MOVHPDmem2xmm(void)
 {
-	SSE_MOVHPSmem2reg();
+	SSE_MOVHPSmem2xmm();
 }
 void SSE2_MOVHPDxmm2mem(void)
 {
-	SSE_MOVHPSreg2mem();
+	SSE_MOVHPSxmm2mem();
 }
 void SSE2_MOVLPDmem2xmm(void)
 {
-	SSE_MOVLPSmem2reg();
+	SSE_MOVLPSmem2xmm();
 }
 void SSE2_MOVLPDxmm2mem(void)
 {
-	SSE_MOVLPSreg2mem();
+	SSE_MOVLPSxmm2mem();
 }
 void SSE2_MOVMSKPD(void)
 {
@@ -798,8 +798,8 @@ void SSE2_MOVMSKPD(void)
 	} else {
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	*data1 = ((data2[0] >> 31) & 0x1)|
-			 ((data2[2] >> 30) & 0x2);
+	*data1 = ((data2[1] >> 31) & 0x1)|
+			 ((data2[3] >> 30) & 0x2);
 }
 void SSE2_MOVSDmem2xmm(void)
 {
@@ -822,9 +822,9 @@ void SSE2_MOVSDmem2xmm(void)
 		maddr = calc_ea_dst((op));
 		*((UINT64*)(data2buf+ 0)) = cpu_vmemoryread_q(CPU_INST_SEGREG_INDEX, maddr+ 0);
 		data2 = data2buf;
+		*(UINT64*)(data1+1) = 0;
 	}
 	data1[0] = data2[0];
-	*(UINT64*)(data1+1) = 0;
 }
 void SSE2_MOVSDxmm2mem(void)
 {
@@ -1019,11 +1019,11 @@ void SSE2_MOVDxmm2rm(void)
 }
 void SSE2_MOVDQAmem2xmm(void)
 {
-	SSE_MOVAPSmem2reg();
+	SSE_MOVAPSmem2xmm();
 }
 void SSE2_MOVDQAxmm2mem(void)
 {
-	SSE_MOVAPSreg2mem();
+	SSE_MOVAPSxmm2mem();
 }
 void SSE2_MOVDQUmem2xmm(void)
 {
@@ -1087,6 +1087,7 @@ void SSE2_MOVQmem2xmm(void)
 		UINT32 madr;
 		madr = calc_ea_dst(op);
 		FPU_STAT.xmm_reg[idx].ul64[0] = cpu_vmemoryread_q(CPU_INST_SEGREG_INDEX, madr);
+		FPU_STAT.xmm_reg[idx].ul64[1] = 0;
 	}
 }
 void SSE2_MOVQxmm2mem(void)
@@ -1650,22 +1651,22 @@ void SSE2_PMOVMSKB(void)
 	} else {
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	*data1 = ((data2[0] >> 7) & 0x1 )|
-			 ((data2[1] >> 6) & 0x2 )|
-			 ((data2[2] >> 5) & 0x4 )|
-			 ((data2[3] >> 4) & 0x8 )|
-			 ((data2[4] >> 3) & 0x10)|
-			 ((data2[5] >> 2) & 0x20)|
-			 ((data2[6] >> 1) & 0x40)|
-			 ((data2[7] >> 0) & 0x80)|
-			 (((data2[8] >> 7) & 0x1 ) << 8)|
-			 (((data2[9] >> 6) & 0x2 ) << 8)|
-			 (((data2[10]>> 5) & 0x4 ) << 8)|
-			 (((data2[11]>> 4) & 0x8 ) << 8)|
-			 (((data2[12]>> 3) & 0x10) << 8)|
-			 (((data2[13]>> 2) & 0x20) << 8)|
-			 (((data2[14]>> 1) & 0x40) << 8)|
-			 (((data2[15]>> 0) & 0x80) << 8);
+	*data1 = ((UINT32)(data2[0] >> 7) & 0x1 )|
+			 ((UINT32)(data2[1] >> 6) & 0x2 )|
+			 ((UINT32)(data2[2] >> 5) & 0x4 )|
+			 ((UINT32)(data2[3] >> 4) & 0x8 )|
+			 ((UINT32)(data2[4] >> 3) & 0x10)|
+			 ((UINT32)(data2[5] >> 2) & 0x20)|
+			 ((UINT32)(data2[6] >> 1) & 0x40)|
+			 ((UINT32)(data2[7] >> 0) & 0x80)|
+			 (((UINT32)(data2[8] >> 7) & 0x1 ) << 8)|
+			 (((UINT32)(data2[9] >> 6) & 0x2 ) << 8)|
+			 (((UINT32)(data2[10]>> 5) & 0x4 ) << 8)|
+			 (((UINT32)(data2[11]>> 4) & 0x8 ) << 8)|
+			 (((UINT32)(data2[12]>> 3) & 0x10) << 8)|
+			 (((UINT32)(data2[13]>> 2) & 0x20) << 8)|
+			 (((UINT32)(data2[14]>> 1) & 0x40) << 8)|
+			 (((UINT32)(data2[15]>> 0) & 0x80) << 8);
 }
 void SSE2_PMULHUW(void)
 {
@@ -1827,13 +1828,17 @@ void SSE2_PSHUFLW(void)
 	UINT32 imm8;
 	UINT16 data2buf[8];
 	UINT16 *data1, *data2;
+	UINT16 dstbuf[8];
 	int i;
 	
 	SSE_PART_GETDATA1DATA2_PD_UINT64((UINT64**)(&data1), (UINT64**)(&data2), (UINT64*)data2buf);
 	GET_PCBYTE((imm8));
 	for(i=0;i<4;i++){
-		data1[i] = data2[imm8 & 0x3];
+		dstbuf[i] = data2[imm8 & 0x3];
 		imm8 = imm8 >> 2;
+	}
+	for(i=0;i<4;i++){
+		data1[i] = dstbuf[i];
 	}
 	for(i=4;i<8;i++){
 		data1[i] = data2[i];
@@ -1844,6 +1849,7 @@ void SSE2_PSHUFHW(void)
 	UINT32 imm8;
 	UINT16 data2buf[8];
 	UINT16 *data1, *data2;
+	UINT16 dstbuf[8];
 	int i;
 	
 	SSE_PART_GETDATA1DATA2_PD_UINT64((UINT64**)(&data1), (UINT64**)(&data2), (UINT64*)data2buf);
@@ -1852,8 +1858,11 @@ void SSE2_PSHUFHW(void)
 		data1[i] = data2[i];
 	}
 	for(i=4;i<8;i++){
-		data1[i] = data2[4 + (imm8 & 0x3)];
+		dstbuf[i] = data2[4 + (imm8 & 0x3)];
 		imm8 = imm8 >> 2;
+	}
+	for(i=4;i<8;i++){
+		data1[i] = dstbuf[i];
 	}
 }
 void SSE2_PSHUFD(void)
@@ -1861,13 +1870,17 @@ void SSE2_PSHUFD(void)
 	UINT32 imm8;
 	UINT32 data2buf[4];
 	UINT32 *data1, *data2;
+	UINT32 dstbuf[4];
 	int i;
 	
 	SSE_PART_GETDATA1DATA2_PD_UINT64((UINT64**)(&data1), (UINT64**)(&data2), (UINT64*)data2buf);
 	GET_PCBYTE((imm8));
 	for(i=0;i<4;i++){
-		data1[i] = data2[imm8 & 0x3];
+		dstbuf[i] = data2[imm8 & 0x3];
 		imm8 = imm8 >> 2;
+	}
+	for(i=0;i<4;i++){
+		data1[i] = dstbuf[i];
 	}
 }
 //void SSE2_PSLLDQ(void)

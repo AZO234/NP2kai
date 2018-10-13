@@ -1281,6 +1281,12 @@
     <ClCompile Include="..\sound\mame\ymf262.c">
       <Filter>ソース ファイル\sound\mame</Filter>
     </ClCompile>
+    <ClCompile Include="scrnmng_dd.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
+    <ClCompile Include="scrnmng_d3d.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\calendar.h">
@@ -2236,6 +2242,12 @@
     </ClInclude>
     <ClInclude Include="..\cbus\gpibio.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="scrnmng_dd.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="scrnmng_d3d.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

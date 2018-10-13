@@ -649,6 +649,7 @@ static const PFTBL s_IniItems[] =
 
 	// OS依存？
 	PFVAL("keyboard", PFRO_KB,			&np2oscfg.KEYBOARD),
+	PFVAL("usenlock", PFTYPE_BOOL,		&np2oscfg.USENUMLOCK),
 	PFVAL("F12_COPY", PFTYPE_UINT8,		&np2oscfg.F12COPY),
 	PFVAL("Joystick", PFTYPE_BOOL,		&np2oscfg.JOYPAD1),
 	PFEXT("Joy1_btn", PFTYPE_BIN,		np2oscfg.JOY1BTN,		4),
@@ -706,6 +707,10 @@ static const PFTBL s_IniItems[] =
 	PFVAL("fscrnbpp", PFRO_UINT8,		&np2oscfg.fscrnbpp),
 	PFVAL("fscrnmod", PFTYPE_HEX8,		&np2oscfg.fscrnmod),
 
+#if defined(SUPPORT_SCRN_DIRECT3D)
+	PFVAL("D3D_IMODE", PFTYPE_UINT8,	&np2oscfg.d3d_imode),
+#endif
+
 	PFVAL("snddev_t", PFTYPE_UINT8,		&np2oscfg.cSoundDeviceType),
 	PFSTR("snddev_n", PFTYPE_STR,		np2oscfg.szSoundDeviceName),
 
@@ -714,6 +719,7 @@ static const PFTBL s_IniItems[] =
 #endif	// defined(SUPPORT_VSTi)
 	
 	PFVAL("EMUDDRAW", PFTYPE_BOOL,		&np2oscfg.emuddraw), // 最近はEMULATIONONLYにした方速かったりする（特にピクセル操作する場合とか）
+	PFVAL("DRAWTYPE", PFTYPE_UINT8,		&np2oscfg.drawtype),
 	
 	PFVAL("DRAGDROP", PFRO_BOOL,		&np2oscfg.dragdrop), // ドラッグアンドドロップサポート
 	PFVAL("MAKELHDD", PFRO_BOOL,		&np2oscfg.makelhdd), // 巨大HDDイメージ作成サポート

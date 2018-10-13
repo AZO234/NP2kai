@@ -102,7 +102,7 @@ REG8 cirrusvga_regindex = 0; // I/OポートFAAhで指定されているレジスタ番号
 
 NP2CLVGA	np2clvga = {0};
 void *cirrusvga_opaque = NULL; // CIRRUS VGAの変数をグローバルアクセス出来るようにしておく･･･（良くない実装）
-UINT8	cirrusvga_statsavebuf[CIRRUS_VRAM_SIZE + 1024 * 1024]; // ステートセーブ用のバッファ（無駄が多いけど互換性は保ちやすいはず）
+UINT8	cirrusvga_statsavebuf[CIRRUS_VRAM_SIZE_4MB + 1024 * 1024]; // ステートセーブ用のバッファ（無駄が多いけど互換性は保ちやすいはず）
 
 int g_cirrus_linear_map_enabled = 0; // CIRRUS VGAの変数のリニアメモリアクセス(cpumem.cのmemp_*)有効フラグ
 CPUWriteMemoryFunc *g_cirrus_linear_write[3] = {0}; // CIRRUS VGAの変数のリニアメモリアクセスWRITEで呼ばれる関数（[0]=8bit, [0]=16bit, [0]=32bit）
@@ -271,6 +271,8 @@ DisplayState *graphic_console_init(vga_hw_update_ptr update,
 #define CIRRUS_ROP_SRC_INDEX 5
 
 // control 0x33
+#define CIRRUS_BLTMODEEXT_BLTSYNCDISP      0x10
+#define CIRRUS_BLTMODEEXT_BGNDONLYCLIP     0x08
 #define CIRRUS_BLTMODEEXT_SOLIDFILL        0x04
 #define CIRRUS_BLTMODEEXT_COLOREXPINV      0x02
 #define CIRRUS_BLTMODEEXT_DWORDGRANULARITY 0x01
@@ -435,6 +437,8 @@ typedef struct CirrusVGAState {
     //CPUWriteMemoryFunc **cirrus_linear_write;
     int device_id;
     int bustype;
+    uint8_t videowindow_dblbuf_index;
+    uint8_t graphics_dblbuf_index;
 } CirrusVGAState;
 
 CirrusVGAState *cirrusvga = NULL;
@@ -643,6 +647,7 @@ static rgb_to_pixel_dup_func *rgb_to_pixel_dup_table[NB_DEPTHS] = {
  ***************************************/
 
 
+static void cirrus_bitblt_dblbufferswitch();
 static void cirrus_bitblt_reset(CirrusVGAState *s);
 static void cirrus_update_memory_access(CirrusVGAState *s);
 
@@ -1157,6 +1162,7 @@ static void cirrus_bitblt_cputovideo_next(CirrusVGAState * s)
 			cirrus_bitblt_common_patterncopy(s, s->cirrus_bltbuf);
         the_end:
             s->cirrus_srccounter = 0;
+			cirrus_bitblt_dblbufferswitch();
             cirrus_bitblt_reset(s);
         } else {
             /* at least one scan line */
@@ -1197,6 +1203,7 @@ static void cirrus_bitblt_videotocpu_next(CirrusVGAState * s)
 			//cirrus_bitblt_common_patterncopy(s, s->cirrus_bltbuf);
         the_end:
             s->cirrus_srccounter = 0;
+			cirrus_bitblt_dblbufferswitch();
             cirrus_bitblt_reset(s);
         } else {
             s->cirrus_blt_srcaddr += s->cirrus_blt_srcpitch;
@@ -1326,6 +1333,9 @@ static int cirrus_bitblt_videotovideo(CirrusVGAState * s)
     }
     if (ret)
 		cirrus_bitblt_reset(s);
+
+	cirrus_bitblt_dblbufferswitch();
+
     return ret;
 }
 
@@ -1482,18 +1492,36 @@ static void cirrus_write_bitblt(CirrusVGAState * s, unsigned reg_value)
 
     if (((old_value & CIRRUS_BLT_RESET) != 0) &&
 		((reg_value & CIRRUS_BLT_RESET) == 0)) {
-		cirrus_bitblt_start(s);// XXX: Win2000のハードウェアアクセラレーションを正常に動かすのに必要。根拠無し。
-		if(np2clvga.gd54xxtype == CIRRUS_98ID_WAB || np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F){
-			// XXX: Win3.1の最初のBitBltが無視される問題の回避策
-			if(!(old_value & 0x04)){
+		if(s->device_id == CIRRUS_ID_CLGD5446){
+			cirrus_bitblt_reset(s);
+		}else{
+			cirrus_bitblt_start(s);// XXX: Win2000のハードウェアアクセラレーションを正常に動かすのに必要。根拠無し。
+			if(np2clvga.gd54xxtype == CIRRUS_98ID_WAB || np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F){
+				// XXX: Win3.1の最初のBitBltが無視される問題の回避策
+				if(!(old_value & 0x04)){
+					cirrus_bitblt_reset(s);
+				}
+			}else{
 				cirrus_bitblt_reset(s);
 			}
-		}else{
-			cirrus_bitblt_reset(s);
 		}
     } else if (((old_value & CIRRUS_BLT_START) == 0) &&
 			   ((reg_value & CIRRUS_BLT_START) != 0)) {
 		cirrus_bitblt_start(s);
+	}
+}
+
+static void cirrus_bitblt_dblbufferswitch(){
+	CirrusVGAState *s = cirrusvga;
+	if(s->device_id == CIRRUS_ID_CLGD5446){
+		if(s->cirrus_blt_modeext & CIRRUS_BLTMODEEXT_BLTSYNCDISP){
+			if((s->cr[0x5e] & 0x7) == 0x7){
+				s->graphics_dblbuf_index = (s->graphics_dblbuf_index + 1) & 0x1;
+			}
+			if((s->cr[0x5e] & 0x30) == 0x30){
+				s->videowindow_dblbuf_index = (s->videowindow_dblbuf_index + 1) & 0x1;
+			}
+		}
 	}
 }
 
@@ -2163,6 +2191,27 @@ cirrus_hook_write_cr(CirrusVGAState * s, unsigned reg_index, int reg_value)
     case 0x5e:			// Double Buffer Control (CL-GD5446)
 		if(s->device_id == CIRRUS_ID_CLGD5446){
 			s->cr[reg_index] = reg_value;
+			switch(reg_value & 0x7){
+			case 0: // Compatible VGA display address control
+				s->graphics_dblbuf_index = 0;
+				break;
+			case 1: // VSYNC switching
+				break;
+			case 2: // Forces graphics buffer 1 as display
+				s->graphics_dblbuf_index = 0;
+				break;
+			case 3: // Forces graphics buffer 2 as display
+				s->graphics_dblbuf_index = 1;
+				break;
+			case 4: // A18 controls switching
+				break;
+			case 5: // A19 controls switching
+				break;
+			case 6: // Reserved
+				break;
+			case 7: // Bitblt switches
+				break;
+			}
 		}
         break;
     case 0x25:			// Part Status
@@ -3972,7 +4021,7 @@ void pc98_cirrus_vga_save()
     int pos = 0;
 	UINT8 *f = cirrusvga_statsavebuf; 
 	//char test[500] = {0};
-	uint32_t_ state_ver = 3;
+	uint32_t_ state_ver = 4;
 	uint32_t_ intbuf;
 	char en[3] = "en";
 	
@@ -4092,6 +4141,9 @@ void pc98_cirrus_vga_save()
 	array_write(f, pos, &s->bustype, sizeof(s->bustype));
 	
 	array_write(f, pos, &np2clvga.VRAMWindowAddr3, sizeof(np2clvga.VRAMWindowAddr3));
+	
+	array_write(f, pos, &s->videowindow_dblbuf_index, sizeof(s->videowindow_dblbuf_index));
+	array_write(f, pos, &s->graphics_dblbuf_index, sizeof(s->graphics_dblbuf_index));
 
 	TRACEOUT(("CIRRUS VGA datalen=%d", pos));
 }
@@ -4147,6 +4199,7 @@ void pc98_cirrus_vga_load()
 
 		break;
 	case 3:
+	case 4:
 		array_read(f, pos, en, 2);
 		if(en[0] != 'e' || en[0] != 'n')
 			break;
@@ -4261,6 +4314,10 @@ void pc98_cirrus_vga_load()
 
 		if(state_ver >= 2){
 			array_read(f, pos, &np2clvga.VRAMWindowAddr3, sizeof(np2clvga.VRAMWindowAddr3));
+		}
+		if(state_ver >= 4){
+			array_read(f, pos, &s->videowindow_dblbuf_index, sizeof(s->videowindow_dblbuf_index));
+			array_read(f, pos, &s->graphics_dblbuf_index, sizeof(s->graphics_dblbuf_index));
 		}
 
 		break;
@@ -4433,6 +4490,22 @@ void cirrusvga_drawGraphic(){
     line_offset <<= 3;
 
 	vram_ptr = cirrusvga->vram_ptr + np2wab.vramoffs;
+	
+	if(cirrusvga->device_id == CIRRUS_ID_CLGD5446){
+		if((cirrusvga->cr[0x5e] & 0x7) == 0x1){
+			cirrusvga->graphics_dblbuf_index = (cirrusvga->graphics_dblbuf_index + 1) & 0x1;
+		}
+		if(cirrusvga->graphics_dblbuf_index != 0 || (cirrusvga->cr[0x1a] & 0x2)){
+			// Screen Start A
+			int addroffset = 
+				(((int)(cirrusvga->cr[0x1d] >> 7) & 0x01) << 19)|
+				(((int)(cirrusvga->cr[0x1b] >> 2) & 0x03) << 17)|
+				(((int)(cirrusvga->cr[0x1b] >> 0) & 0x01) << 16)|
+				(((int)(cirrusvga->cr[0x0c] >> 0) & 0xff) << 8)|
+				(((int)(cirrusvga->cr[0x0d] >> 0) & 0xff) << 0);
+			vram_ptr += addroffset * 4; // ???
+		}
+	}
 	
 	//// DEBUG 
 	////////	vram_ptr = mem + 640*16*memshift;

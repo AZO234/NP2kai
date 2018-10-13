@@ -16,6 +16,21 @@ typedef struct {
 } SCRNSURF;
 
 enum {
+	DRAWTYPE_DIRECTDRAW_HW	= 0x00,
+	DRAWTYPE_DIRECTDRAW_SW	= 0x01,
+	DRAWTYPE_DIRECT3D		= 0x02,
+	DRAWTYPE_INVALID		= 0xff
+};
+
+enum {
+	D3D_IMODE_NEAREST_NEIGHBOR	= 0x00,
+	D3D_IMODE_BILINEAR	= 0x01,
+	D3D_IMODE_PIXEL		= 0x02,
+	D3D_IMODE_PIXEL2	= 0x03,
+	D3D_IMODE_PIXEL3	= 0x04,
+};
+
+enum {
 	SCRNMODE_FULLSCREEN		= 0x01,
 	SCRNMODE_HIGHCOLOR		= 0x02,
 	SCRNMODE_ROTATE			= 0x10,
@@ -48,7 +63,15 @@ typedef struct {
 	UINT8	bpp;
 	UINT8	allflash;
 	UINT8	palchanged;
+	UINT8	forcereset;
 } SCRNMNG;
+
+typedef struct {
+	int		width;
+	int		height;
+	int		extend;
+	int		multiple;
+} SCRNSTAT;
 
 
 #ifdef __cplusplus
@@ -56,6 +79,11 @@ extern "C" {
 #endif
 
 extern	SCRNMNG		scrnmng;			// É}ÉNÉçóp
+extern	SCRNSTAT	scrnstat;
+
+extern UINT8 scrnmng_current_drawtype;
+
+void scrnmng_setwindowsize(HWND hWnd, int width, int height);
 
 void scrnmng_initialize(void);
 BRESULT scrnmng_create(UINT8 scrnmode);

@@ -1100,6 +1100,7 @@ void ia32_step(void);
 void CPUCALL ia32_interrupt(int vect, int soft);
 
 void exec_1step(void);
+void exec_allstep(void);
 #define	INST_PREFIX	(1 << 0)
 #define	INST_STRING	(1 << 1)
 #define	REP_CHECKZF	(1 << 7)

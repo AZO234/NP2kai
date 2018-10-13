@@ -173,6 +173,17 @@ BEGIN
     COMBOBOX        IDC_FULLSCREEN_ZOOM,40,42,96,80,CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP
 END
 
+IDD_SCROPT_RENDERER DIALOG 0, 0, 172, 96
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Renderer"
+FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+BEGIN
+    LTEXT           "Type",IDC_STATIC,8,15,60,8
+    COMBOBOX        IDC_RENDERER_TYPE,70,12,96,80,CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP
+    LTEXT           "Interpolation Mode",IDC_STATIC,8,35,60,8
+    COMBOBOX        IDC_RENDERER_IMODE,70,32,96,80,CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP
+END
+
 IDD_SCROPT2 DIALOG 0, 0, 172, 96
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Chip"
@@ -869,13 +880,14 @@ BEGIN
     MENUITEM "&Window snap",                IDM_SNAPENABLE
     MENUITEM "&Background",                 IDM_BACKGROUND
     MENUITEM "Back&ground sound",           IDM_BGSOUND
+    MENUITEM "&Restore window border",      IDM_RESTOREBORDER
     MENUITEM SEPARATOR
-    MENUITEM " 320x200",                    IDM_SCRNMUL4
-    MENUITEM " 480x300",                    IDM_SCRNMUL6
-    MENUITEM " 640x400",                    IDM_SCRNMUL8
-    MENUITEM " 800x500",                    IDM_SCRNMUL10
-    MENUITEM " 960x600",                    IDM_SCRNMUL12
-    MENUITEM "1280x800",                    IDM_SCRNMUL16
+    MENUITEM " 320x200(x0.5)",              IDM_SCRNMUL4
+    MENUITEM " 480x300(x0.75)",             IDM_SCRNMUL6
+    MENUITEM " 640x400(x1)",                IDM_SCRNMUL8
+    MENUITEM " 800x500(x1.25)",             IDM_SCRNMUL10
+    MENUITEM " 960x600(x1.5)",              IDM_SCRNMUL12
+    MENUITEM "1280x800(x2)",                IDM_SCRNMUL16
     MENUITEM SEPARATOR
 END
 
@@ -924,6 +936,7 @@ BEGIN
     BEGIN
         MENUITEM "&Window",                     IDM_WINDOW
         MENUITEM "&Fullscreen",                 IDM_FULLSCREEN
+		//MENUITEM "&Restore window border",      IDM_RESTOREBORDER
         MENUITEM SEPARATOR
         MENUITEM "Nor&mal",                     IDM_ROLNORMAL
         MENUITEM "&Left rotated",               IDM_ROLLEFT
@@ -968,6 +981,8 @@ BEGIN
             MENUITEM "F12 = No wait(toggle)",       IDM_F12NOWAIT2
             MENUITEM "F12 = WAB relay SW",          IDM_F12WABRELAY
             MENUITEM SEPARATOR
+            MENUITEM "Use &NumLock key",            IDM_USENUMLOCK
+            MENUITEM SEPARATOR
             MENUITEM "&System Key Hook",            IDM_SYSKHOOK
         END
         POPUP "&Sound"
@@ -1010,7 +1025,7 @@ BEGIN
             MENUITEM "&120.6MB",                    IDM_MEM1206
             MENUITEM "&230.6MB",                    IDM_MEM2306
         END
-        POPUP "F&PU"
+        POPUP "&FPU"
         BEGIN
             MENUITEM "80bit Extended Precision FPU (recommended)",IDM_FPU80
             MENUITEM "64bit Double Precision FPU",  IDM_FPU64
@@ -1625,6 +1640,21 @@ BEGIN
     IDS_CPU_AMD_K7_ATHLON   "AMD K7 Athlon"
     IDS_CPU_AMD_K7_ATHLONXP "AMD K7 Athlon XP"
     IDS_CPU_NEKOPRO         "Neko Processor II"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_RENDERER_DIRECTDRAW "DirectDraw"
+    IDS_RENDERER_DIRECT3D   "Direct3D"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_RENDERER_IMODE_NN       "Nearest Neighbor"
+    IDS_RENDERER_IMODE_LINEAR   "Bilinear"
+    IDS_RENDERER_IMODE_PIXEL    "Pixel-retained (Light)"
+    IDS_RENDERER_IMODE_PIXEL2   "Pixel-retained (Soft)"
+    IDS_RENDERER_IMODE_PIXEL3   "Pixel-retained (Hard)"
 END
 
 

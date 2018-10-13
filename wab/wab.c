@@ -324,25 +324,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){
 			break;
 
 		case WM_LBUTTONDOWN:
-			if(!np2wabwnd.multiwindow){
+			if(np2wabwnd.multiwindow){
 				SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // やはり丸投げ
 			}
 			break;
 
 		case WM_LBUTTONUP:
-			if(!np2wabwnd.multiwindow){
+			if(np2wabwnd.multiwindow){
 				SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // ここも丸投げ
 			}
 			break;
 
 		case WM_RBUTTONDOWN:
-			if(!np2wabwnd.multiwindow){
+			if(np2wabwnd.multiwindow){
 				SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // そのまま丸投げ
 			}
 			break;
 
 		case WM_RBUTTONUP:
-			if(!np2wabwnd.multiwindow){
+			if(np2wabwnd.multiwindow){
 				SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // なんでも丸投げ
 			}
 			break;
@@ -488,8 +488,7 @@ void np2wab_drawframe()
 			if(np2wabwnd.ready && (np2wab.relay&0x3)!=0){
 				if(ga_screenupdated){
 					if(!np2wabwnd.multiwindow){
-						// 画面転送だけメインスレッドで
-						//np2wab_drawWABWindow(np2wabwnd.hDCBuf);
+						//np2wab_drawWABWindow(np2wabwnd.hDCBuf); // ga_ThreadFuncでやる
 						scrnmng_bltwab();
 					}
 					ga_screenupdated = 0;
@@ -511,7 +510,6 @@ unsigned int __stdcall ga_ThreadFunc(LPVOID vdParam) {
 	while (!ga_exitThread && ga_threadmode) {
 		if(np2wabwnd.ready && np2wabwnd.hWndWAB!=NULL && np2wabwnd.drawframe!=NULL && (np2wab.relay&0x3)!=0){
 			np2wabwnd.drawframe();
-			// 画面転送も別スレッドで
 			np2wab_drawWABWindow(np2wabwnd.hDCBuf); 
 			// 画面転送待ち
 			ga_screenupdated = 1;

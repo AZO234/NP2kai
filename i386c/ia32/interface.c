@@ -130,8 +130,14 @@ ia32(void)
 		VERBOSE(("ia32: return from unknown cause"));
 		break;
 	}
-
-	if (CPU_TRAP) {
+	if (!CPU_TRAP && !dmac.working) {
+		exec_allstep();
+	}else if (!CPU_TRAP) {
+		do {
+			exec_1step();
+			dmax86();
+		} while (CPU_REMCLOCK > 0);
+	}else{
 		do {
 			exec_1step();
 			if (CPU_TRAP) {
@@ -140,16 +146,8 @@ ia32(void)
 			}
 			dmax86();
 		} while (CPU_REMCLOCK > 0);
-	} else if (dmac.working) {
-		do {
-			exec_1step();
-			dmax86();
-		} while (CPU_REMCLOCK > 0);
-	} else {
-		do {
-			exec_1step();
-		} while (CPU_REMCLOCK > 0);
 	}
+
 }
 
 void
