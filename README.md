@@ -53,11 +53,11 @@ or
 
 ３． Install NP2kai.  
 
-	$ sudo -f Makefile.unix install
+	$ sudo make -f Makefile.unix install
 
 or
 
-	$ sudo -f Makefile21.unix install
+	$ sudo make -f Makefile21.unix install
 
 or
 	GCW Zero (GCW0) game device only
