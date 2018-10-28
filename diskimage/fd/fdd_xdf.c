@@ -89,7 +89,7 @@ const OEMCHAR	*p;			//	BKDSK(DD6) or BKDSK(DDB)”»’è—p
 	if (fh == FILEH_INVALID) {
 		return(FAILURE);
 	}
-	fdsize = (UINT32)file_getsize(fh);
+	fdsize = file_getsize(fh);
 	file_close(fh);
 
 	p = file_getext(fname);	//	BKDSK(DD6) or BKDSK(DDB)”»’è—p
@@ -163,7 +163,7 @@ BRESULT fdd_set_fdi(FDDFILE fdd, FDDFUNC fdd_fn, const OEMCHAR *fname, int ro) {
 	r = 0;
 	fh = file_open_rb(fname);
 	if (fh != FILEH_INVALID) {
-		fdsize = (UINT32)file_getsize(fh);
+		fdsize = file_getsize(fh);
 		r = file_read(fh, &fdi, sizeof(fdi));
 		file_close(fh);
 	}
@@ -309,12 +309,12 @@ BRESULT fdd_read_xdf(FDDFILE fdd) {
 		fddlasterror = 0xc0;
 		return(FAILURE);
 	}
-	/* 170101 ST modified to work on Windows 9x/2000 form ... */
-	if (fdc.eot > fdd->inf.xdf.sectors) {
-		fddlasterror = 0xc0;
-		return(FAILURE);
-	}
-	/* 170101 ST modified to work on Windows 9x/2000 ... to */
+//	/* 170101 ST modified to work on Windows 9x/2000 form ... */
+//	if (fdc.eot < fdd->inf.xdf.sectors) {
+//		fddlasterror = 0xc0;
+//		return(FAILURE);
+//	}
+//	/* 170101 ST modified to work on Windows 9x/2000 ... to */
 
 	seekp = (fdc.treg[fdc.us] << 1) + fdc.hd;
 	seekp *= fdd->inf.xdf.sectors;

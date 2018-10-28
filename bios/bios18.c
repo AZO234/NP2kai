@@ -856,7 +856,7 @@ void bios0x18(void) {
 							MEMR_READ16(CPU_SS, CPU_SP+2),
 							MEMR_READ16(CPU_SS, CPU_SP)));
 #endif
-
+	
 	switch(CPU_AH) {
 		case 0x00:						// キー・データの読みだし
 			if (mem[MEMB_KB_COUNT]) {
@@ -912,6 +912,9 @@ void bios0x18(void) {
 
    		case 0x0c:						// テキスト画面の表示開始
 			bios0x18_0c();
+#if defined(BIOS_IO_EMULATION)
+			biosioemu_push8(0x62, 0x0D); // np21w ver0.86 rev46 BIOS I/O emulation
+#endif
  			break;
 
    		case 0x0d:						// テキスト画面の表示終了
@@ -919,6 +922,9 @@ void bios0x18(void) {
 				gdcs.textdisp &= ~(GDCSCRN_ENABLE);
 				pcstat.screenupdate |= 2;
 			}
+#if defined(BIOS_IO_EMULATION)
+			biosioemu_push8(0x62, 0x0C); // np21w ver0.86 rev46 BIOS I/O emulation
+#endif
  			break;
 
 		case 0x0e:						// 一つの表示領域の設定
@@ -1040,10 +1046,16 @@ void bios0x18(void) {
 #endif
    		case 0x40:						// グラフィック画面の表示開始
 			bios0x18_40();
+#if defined(BIOS_IO_EMULATION)
+			biosioemu_push8(0xa2, 0x0D); // np21w ver0.86 rev46 BIOS I/O emulation
+#endif
  			break;
 
    		case 0x41:						// グラフィック画面の表示終了
 			bios0x18_41();
+#if defined(BIOS_IO_EMULATION)
+			biosioemu_push8(0xa2, 0x0C); // np21w ver0.86 rev46 BIOS I/O emulation
+#endif
  			break;
 
    		case 0x42:						// 表示領域の設定
@@ -1098,4 +1110,5 @@ void bios0x18(void) {
 #endif
 	}
 }
+
 

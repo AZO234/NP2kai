@@ -58,6 +58,9 @@ static const IODATA iodata[] = {
 static const UINT8 msw_default[8] =
 							{0x48, 0x05, 0x04, 0x00, 0x01, 0x00, 0x00, 0x6e};
 
+#if defined(BIOS_IO_EMULATION)
+BIOSIOEMU	biosioemu; // np21w ver0.86 rev46 BIOS I/O emulation
+#endif
 
 static void bios_itfprepare(void) {
 
@@ -274,6 +277,12 @@ void bios_initialize(void) {
 	UINT	i, j;
 	UINT32	tmp;
 	UINT	pos;
+	
+#if defined(BIOS_IO_EMULATION)
+	// np21w ver0.86 rev46 BIOS I/O emulation
+	memset(&biosioemu, 0, sizeof(biosioemu));
+	biosioemu.enable = np2cfg.biosioemu;
+#endif
 
 	biosrom = FALSE;
 	getbiospath(path, str_biosrom, NELEMENTS(path));
@@ -442,6 +451,16 @@ void bios_initialize(void) {
 		}
 	}
 #endif
+	
+// np21w ver0.86 rev46 BIOS I/O emulation
+#if defined(BIOS_IO_EMULATION)
+	// エミュレーション用に書き換え。とりあえずINT 18Hのみ対応
+	if(biosioemu.enable){
+		mem[BIOS_BASE + BIOSOFST_18 + 1] = 0xee; // 0xcf(IRET) -> 0xee(OUT DX, AL)
+		mem[BIOS_BASE + BIOSOFST_18 + 2] = 0x90; // 0x90(NOP) BIOS hook
+		mem[BIOS_BASE + BIOSOFST_18 + 3] = 0xcf; // 0xcf(IRET)
+	}
+#endif
 }
 
 static void bios_itfcall(void) {
@@ -472,10 +491,65 @@ static void bios_itfcall(void) {
 	}
 }
 
+// np21w ver0.86 rev46 BIOS I/O emulation
+#if defined(BIOS_IO_EMULATION)
+void biosioemu_push8(UINT16 port, UINT8 data) {
+	
+	if(!biosioemu.enable) return;
+
+	if(biosioemu.count < BIOSIOEMU_DATA_MAX){
+		biosioemu.data[biosioemu.count].flag = BIOSIOEMU_FLAG_NONE;
+		biosioemu.data[biosioemu.count].port = port;
+		biosioemu.data[biosioemu.count].data = data;
+		biosioemu.count++;
+	}
+}
+void biosioemu_begin(void) {
+	
+	if(!biosioemu.enable) return;
+
+	if(biosioemu.count==0){
+		// データが無いのでI/Oポート出力をスキップ
+		CPU_EIP += 2;
+	}else{
+		int idx = biosioemu.count-1;
+		// レジスタ退避
+		biosioemu.oldEAX = CPU_EAX;
+		biosioemu.oldEDX = CPU_EDX;
+		// I/O出力データ設定
+		CPU_DX = biosioemu.data[idx].port;
+		CPU_AL = biosioemu.data[idx].data;
+		biosioemu.count--;
+	}
+}
+void biosioemu_proc(void) {
+	
+	if(!biosioemu.enable) return;
+
+	if(biosioemu.count==0){
+		// レジスタ戻す
+		CPU_EAX = biosioemu.oldEAX;
+		CPU_EDX = biosioemu.oldEDX;
+	}else{
+		int idx = biosioemu.count-1;
+		// I/O出力データ設定
+		CPU_DX = biosioemu.data[idx].port;
+		CPU_AL = biosioemu.data[idx].data;
+		biosioemu.count--;
+		// 命令位置を戻す
+		CPU_EIP -= 2;
+	}
+}
+#endif
 
 UINT MEMCALL biosfunc(UINT32 adrs) {
 
 	UINT16	bootseg;
+	
+// np21w ver0.86 rev46 BIOS I/O emulation
+#if defined(BIOS_IO_EMULATION)
+	UINT32	oldEIP;
+#endif
 
 	if ((CPU_ITFBANK) && (adrs >= 0xf8000) && (adrs < 0x100000)) {
 		// for epson ITF
@@ -551,8 +625,25 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 
 		case BIOS_BASE + BIOSOFST_18:
 			CPU_REMCLOCK -= 200;
+#if defined(BIOS_IO_EMULATION)
+			oldEIP = CPU_EIP;
+#endif
 			bios0x18();
+#if defined(BIOS_IO_EMULATION)
+			// np21w ver0.86 rev46 BIOS I/O emulation
+			if(oldEIP == CPU_EIP){
+				biosioemu_begin(); 
+			}else{
+				biosioemu.count = 0; 
+			}
+#endif
 			return(1);
+			
+#if defined(BIOS_IO_EMULATION)
+		case BIOS_BASE + BIOSOFST_18 + 2: // np21w ver0.86 rev46 BIOS I/O emulation
+			biosioemu_proc();
+			return(1);
+#endif
 
 		case BIOS_BASE + BIOSOFST_19:
 			CPU_REMCLOCK -= 200;

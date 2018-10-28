@@ -156,6 +156,7 @@ bool CSoundMng::Open(DeviceType nType, LPCTSTR lpName, HWND hWnd)
 #if defined(MT32SOUND_DLL)
 	MT32Sound::GetInstance()->Initialize();
 #endif
+	
 	return true;
 }
 
@@ -369,6 +370,18 @@ inline void CSoundMng::SetReverse(bool bReverse)
 }
 
 /**
+ * マスター ヴォリューム設定
+ * @param[in] nVolume ヴォリューム
+ */
+void CSoundMng::SetMasterVolume(int nVolume)
+{
+	if (m_pSoundDevice)
+	{
+		m_pSoundDevice->SetMasterVolume(nVolume);
+	}
+}
+
+/**
  * PCM データ読み込み
  * @param[in] nNum PCM 番号
  * @param[in] lpFilename ファイル名
@@ -480,6 +493,15 @@ void soundmng_setreverse(BOOL bReverse)
 }
 
 /**
+ * ボリューム設定
+ * @param[in] nVolume ボリューム(最小 0 ～ 100 最大)
+ */
+void soundmng_setvolume(int nVolume)
+{
+	CSoundMng::GetInstance()->SetMasterVolume(nVolume);
+}
+
+/**
  * PCM 再生
  * @param[in] nNum PCM 番号
  * @param[in] bLoop ループ
@@ -499,3 +521,5 @@ void soundmng_pcmstop(enum SoundPCMNumber nNum)
 {
 	CSoundMng::GetInstance()->StopPCM(nNum);
 }
+
+

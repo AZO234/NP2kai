@@ -27,6 +27,7 @@ void soundmng_play(void);
 void soundmng_stop(void);
 #define soundmng_sync()
 void soundmng_setreverse(BOOL bReverse);
+void soundmng_setvolume(int nVolume);
 
 BRESULT soundmng_pcmplay(enum SoundPCMNumber nNum, BOOL bLoop);
 void soundmng_pcmstop(enum SoundPCMNumber nNum);
@@ -79,6 +80,7 @@ public:
 	void PlayStream();
 	void StopStream();
 	void SetReverse(bool bReverse);
+	void SetMasterVolume(int nVolume);
 	void LoadPCM(SoundPCMNumber nNum, LPCTSTR lpFilename);
 	void SetPCMVolume(SoundPCMNumber nNum, int nVolume);
 	bool PlayPCM(SoundPCMNumber nNum, BOOL bLoop);

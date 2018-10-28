@@ -1377,7 +1377,11 @@ INT_Ib(void)
 		return;
 	}
 	VERBOSE(("INT_Ib: VM86 && IOPL < 3 && INTn"));
+#if defined(USE_VME)
+	EXCEPTION(GP_EXCEPTION, 0); // XXX: ˆê‰ž“®‚¢‚Ä‚é‚¯‚ÇŽÀ‘•‚µ‚È‚¢‚Æ‚Ü‚¸‚¢¥¥¥H
+#else
 	EXCEPTION(GP_EXCEPTION, 0);
+#endif
 }
 
 void

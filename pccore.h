@@ -150,6 +150,7 @@ struct tagNP2Config
 
 	UINT8	BEEP_VOL;
 	UINT8	vol14[6];
+	UINT8	vol_master;
 	UINT8	vol_fm;
 	UINT8	vol_ssg;
 	UINT8	vol_adpcm;
@@ -224,6 +225,7 @@ struct tagNP2Config
 	UINT8	gpibirq; // GPIB IRQ
 	UINT8	gpibmode; // GPIB Master/Slave
 	UINT8	gpibaddr; // GPIB Address
+	UINT8	gpibexio; // GPIB custom I/O port base
 #endif
 #if defined(SUPPORT_PCI)
 	UINT8	usepci; // PCI Bus使用
@@ -243,6 +245,8 @@ struct tagNP2Config
 	UINT8	memchkmx;
 	UINT8	sbeeplen;
 	UINT8	sbeepadj;
+	
+	UINT8	biosioemu;
 
 	char	cpu_vendor[16]; // ベンダー（12byte）
 	UINT32	cpu_family; // ファミリ

@@ -96,6 +96,14 @@ public:
 	 * ストリームの停止
 	 */
 	virtual void StopStream() = 0;
+	
+	/**
+	 * ストリーム ヴォリューム設定
+	 * @param[in] nVolume ヴォリューム(max 100)
+	 */
+	virtual void SetMasterVolume(int nVolume)
+	{
+	}
 
 	/**
 	 * PCM データ読み込み

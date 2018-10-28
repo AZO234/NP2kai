@@ -1395,6 +1395,7 @@ IRET_pm_return_from_vm86(UINT16 new_cs, UINT32 new_ip, UINT32 new_flags)
 
 	if (CPU_STAT_IOPL == CPU_IOPL3) {
 		VERBOSE(("IRET_pm: virtual-8086 mode: IOPL=3"));
+//vme_emulate:
 		if (CPU_INST_OP32) {
 			stacksize = 12;
 		} else {
@@ -1416,5 +1417,20 @@ IRET_pm_return_from_vm86(UINT16 new_cs, UINT32 new_ip, UINT32 new_flags)
 		return;
 	}
 	VERBOSE(("IRET_pm: trap to virtual-8086 monitor: VM=1, IOPL<3"));
+#if defined(USE_VME)
+	//if(CPU_CR4 & CPU_CR4_VME){
+	//	if((CPU_EFLAG & VIP_FLAG) || (CPU_EFLAG & T_FLAG)){
+	//		EXCEPTION(GP_EXCEPTION, 0);
+	//	}else{
+	//		new_flags = (new_flags & ~VIF_FLAG) | ((new_flags & I_FLAG) << 10); // IF → VIFにコピー
+	//		new_flags = (new_flags & ~(IOPL_FLAG|I_FLAG)) | (CPU_EFLAG & (IOPL_FLAG|I_FLAG)); // IF, IOPLは変更させない
+	//		goto vme_emulate;
+	//	}
+	//}else{
+	//	EXCEPTION(GP_EXCEPTION, 0);
+	//}
+	EXCEPTION(GP_EXCEPTION, 0); // XXX: 一応動いてるけど実装しないとまずい･･･？
+#else
 	EXCEPTION(GP_EXCEPTION, 0);
+#endif
 }

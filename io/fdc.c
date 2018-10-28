@@ -33,6 +33,8 @@ static const UINT8 FDCCMD_TABLE[32] = {
 #define FDC_FORCEREADY (1)
 #define	FDC_DELAYERROR7
 
+#define FDC_INT_DELAY		5			/*!< Delay 100ms */
+
 void fdc_intwait(NEVENTITEM item) {
 	
 	if (item->flag & NEVENT_SETEVENT) {
@@ -101,7 +103,9 @@ void fdcsend_error7(void) {
 	fdc.buf[4] = fdc.H;
 	fdc.buf[5] = fdc.R;
 	fdc.buf[6] = fdc.N;
-	fdc.status = FDCSTAT_RQM | FDCSTAT_CB | FDCSTAT_DIO;
+	fdc.status &= 0x0f;
+	fdc.status |= (1 << fdc.us);
+	fdc.status |= FDCSTAT_RQM | FDCSTAT_CB | FDCSTAT_DIO;
 	fdc.stat[fdc.us] = 0;										// ver0.29
 	fdc_dmaready(0);
 	dmac_check();
@@ -136,7 +140,9 @@ void fdcsend_success7(void) {
 	fdc.buf[4] = fdc.H;
 	fdc.buf[5] = fdc.R;
 	fdc.buf[6] = fdc.N;
-	fdc.status = FDCSTAT_RQM | FDCSTAT_CB | FDCSTAT_DIO;
+	fdc.status &= 0x0f;
+	fdc.status |= (1 << fdc.us);
+	fdc.status |= FDCSTAT_RQM | FDCSTAT_CB | FDCSTAT_DIO;
 	fdc.stat[fdc.us] = 0;										// ver0.29
 	fdc_dmaready(0);
 	dmac_check();
@@ -163,12 +169,14 @@ static void fdc_timeoutset(void) {
 
 static BOOL FDC_DriveCheck(BOOL protectcheck) {
 
-	if (!fddfile[fdc.us].fname[0]) {
+//	if (!fddfile[fdc.us].fname[0]) {
+	if (!fdd_diskready(fdc.us)) {
 		fdc.stat[fdc.us] = FDCRLT_IC0 | FDCRLT_NR | (fdc.hd << 2) | fdc.us;
 		fdcsend_error7();
 		return(FALSE);
 	}
-	else if ((protectcheck) && (fddfile[fdc.us].protect)) {
+//	else if ((protectcheck) && (fddfile[fdc.us].protect)) {
+	else if ((protectcheck) && fdd_diskprotect(fdc.us)) {
 		fdc.stat[fdc.us] = FDCRLT_IC0 | FDCRLT_NW | (fdc.hd << 2) | fdc.us;
 		fdcsend_error7();
 		return(FALSE);
@@ -214,7 +222,8 @@ static void FDC_Invalid(void) {							// cmd: xx
 	fdc.bufcnt = 1;
 	fdc.bufp = 0;
 	fdc.buf[0] = 0x80;
-	fdc.status = FDCSTAT_RQM | FDCSTAT_CB | FDCSTAT_DIO;
+	fdc.status &= 0x0f;
+	fdc.status |= FDCSTAT_RQM | FDCSTAT_CB | FDCSTAT_DIO;
 }
 
 #ifdef SUPPORT_KAI_IMAGES
@@ -253,12 +262,13 @@ static void FDC_Specify(void) {							// cmd: 03
 			break;
 	}
 	fdc.event = FDCEVENT_NEUTRAL;
-	fdc.status = FDCSTAT_RQM;
+	fdc.status &= 0x0f;
+	fdc.status |= FDCSTAT_RQM;
 }
 
 static void FDC_SenseDeviceStatus(void) {				// cmd: 04
 
-	switch(fdc.event) {
+	switch (fdc.event) {
 		case FDCEVENT_CMDRECV:
 			get_hdus();
 			fdc.buf[0] = (fdc.hd << 2) | fdc.us;
@@ -268,7 +278,7 @@ static void FDC_SenseDeviceStatus(void) {				// cmd: 04
 				if (!fdc.treg[fdc.us]) {
 					fdc.buf[0] |= 0x10;
 				}
-				if ((fddfile[fdc.us].fname[0]) || (fdc.ctrlreg & 0x40)) {/* 170107 念のため */
+				if (fdd_diskready(fdc.us) || (fdc.ctrlreg & 0x40)) {/* 170107 念のため */
 					fdc.buf[0] |= 0x20;
 				}
 				if (fddfile[fdc.us].protect) {
@@ -282,12 +292,15 @@ static void FDC_SenseDeviceStatus(void) {				// cmd: 04
 			fdc.event = FDCEVENT_BUFSEND;
 			fdc.bufcnt = 1;
 			fdc.bufp = 0;
-			fdc.status = FDCSTAT_RQM | FDCSTAT_CB | FDCSTAT_DIO;
+			fdc.status &= 0x0f;
+			fdc.status |= (1 << fdc.us);
+			fdc.status |= FDCSTAT_RQM | FDCSTAT_CB | FDCSTAT_DIO;
 			break;
 
 		default:
 			fdc.event = FDCEVENT_NEUTRAL;
-			fdc.status = FDCSTAT_RQM;
+			fdc.status &= 0x0f;
+			fdc.status |= FDCSTAT_RQM;
 			break;
 	}
 }
@@ -306,7 +319,7 @@ static BRESULT writesector(void) {
 	fdc.event = FDCEVENT_BUFRECV;
 	fdc.bufcnt = 128 << fdc.N;
 	fdc.bufp = 0;
-	fdc.status = FDCSTAT_RQM | FDCSTAT_NDM | FDCSTAT_CB;
+//	fdc.status = FDCSTAT_RQM | FDCSTAT_NDM | FDCSTAT_CB;
 #if defined(SUPPORT_SWSEEKSND)
 	if(np2cfg.MOTOR) fddmtrsnd_play(1, TRUE);
 #else
@@ -331,9 +344,11 @@ static void FDC_WriteData(void) {						// cmd: 05
 				fdc.bufcnt = 128 << fdc.N;
 				fdc.bufp = 0;
 #if 1															// ver0.27 ??
-				fdc.status = FDCSTAT_NDM | FDCSTAT_CB;
-				if (!(fdc.ctrlreg & 0x10)) {
-					fdc.status |= FDCSTAT_RQM;
+				fdc.status &= 0x0f;
+				fdc.status |= (1 << fdc.us);
+				fdc.status |= FDCSTAT_RQM | FDCSTAT_CB;
+				if (fdc.nd) {
+					fdc.status |= FDCSTAT_NDM;
 				}
 #else
 				fdc.status = FDCSTAT_RQM | FDCSTAT_NDM | FDCSTAT_CB;
@@ -378,7 +393,8 @@ static void FDC_WriteData(void) {						// cmd: 05
 
 		default:
 			fdc.event = FDCEVENT_NEUTRAL;
-			fdc.status = FDCSTAT_RQM;
+			fdc.status &= 0x0f;
+			fdc.status |= FDCSTAT_RQM;
 			break;
 	}
 }
@@ -408,7 +424,12 @@ static void readsector(void) {
 		fdc.status |= FDCSTAT_RQM | FDCSTAT_DIO;
 	}
 #else
-	fdc.status = FDCSTAT_RQM | FDCSTAT_DIO | FDCSTAT_NDM | FDCSTAT_CB;
+	fdc.status &= 0x0f;
+	fdc.status |= (1 << fdc.us);
+	fdc.status |= FDCSTAT_RQM | FDCSTAT_DIO | FDCSTAT_CB;
+	if (fdc.nd) {
+		fdc.status |= FDCSTAT_NDM;
+	}
 #endif
 	fdc_dmaready(1);
 	dmac_check();
@@ -456,7 +477,8 @@ static void FDC_ReadData(void) {						// cmd: 06
 
 		default:
 			fdc.event = FDCEVENT_NEUTRAL;
-			fdc.status = FDCSTAT_RQM;
+			fdc.status &= 0x0f;
+			fdc.status |= FDCSTAT_RQM;
 			break;
 	}
 }
@@ -466,42 +488,64 @@ static void FDC_Recalibrate(void) {						// cmd: 07
 	switch(fdc.event) {
 		case FDCEVENT_CMDRECV:
 			get_hdus();
-			fdc.ncn = 0;
-			fdc.R = 1;						/* 170107 for Windows95 */
-			fdc.crcn = fdc.R;				/* 170107 for Windows95 */
-			fdc.stat[fdc.us] = (fdc.hd << 2) | fdc.us;
-			fdc.stat[fdc.us] |= FDCRLT_SE;
+//			fdc.ncn = 0;
+//			fdc.R = 1;						/* 170107 for Windows95 */
+//			fdc.crcn = fdc.R;				/* 170107 for Windows95 */
+			fdc.int_stat[fdc.us] = /* (fdc.hd << 2) | */ fdc.us;
+			fdc.int_stat[fdc.us] |= FDCRLT_SE;
 			if (!(fdc.equip & (1 << fdc.us))) {
-				fdc.stat[fdc.us] |= FDCRLT_NR | FDCRLT_IC0;
+				fdc.int_stat[fdc.us] |= FDCRLT_IC0;
+				if (!(fdc.ctrlreg & 0x40)) {
+					// 強制ReadyでなければNR
+					fdc.int_stat[fdc.us] |= FDCRLT_NR;
+				}
+				else {
+					// 強制ReadyならばNRは立たないがECが立つ(sector0が見つからないので)
+					fdc.int_stat[fdc.us] |= FDCRLT_EC;
+				}
 			}
-			/* 170107 modified to work on Windows 9x/2000 from ...*/
-			else if (fdc.ctrlreg & 0x40) {
-				fdc.treg[fdc.us] = fdc.ncn;
-			}
-			/* 170107 modified to work on Windows 9x/2000 ... to */
-			else if (!fddfile[fdc.us].fname[0]) {
-				fdc.stat[fdc.us] |= FDCRLT_NR;
+			else if (!fdd_diskready(fdc.us)) {
+				// Win95, 98用
+				fdc.ncn = 0;
+				fdc.R = 1;						/* 170107 for Windows95 */
+				fdc.crcn = fdc.R;				/* 170107 for Windows95 */
+				if (fdc.ctrlreg & 0x40) {
+					fdc.treg[fdc.us] = fdc.ncn;
+				}else{
+					fdc.int_stat[fdc.us] |= FDCRLT_NR;
+				}
 			}
 			else {
+				fdc.ncn = 0;
+				fdc.treg[fdc.us] = fdc.ncn;
+				fdc.R = 1;						/* 170107 for Windows95 */
+				fdc.crcn = fdc.R;				/* 170107 for Windows95 */
 				/* 170107 for Windows95 form ... */
-				if (fdd_seek()) {
-					fdc.stat[fdc.us] |= FDCRLT_IC0;
+//				if (fdd_seek()) {
+//					fdc.stat[fdc.us] |= FDCRLT_IC0;
+				if (fdd_diskready(fdc.us)) {
 #if defined(SUPPORT_SWSEEKSND)
 					if(np2cfg.MOTOR) fddmtrsnd_play(1, TRUE);
 #else
 					if(np2cfg.MOTOR) soundmng_pcmplay(SOUND_PCMSEEK1, FALSE);
 #endif
 				}
+//				}
 				/* 170107 for Windows95 ... to */
 			}
-			fdc_interrupt();
+			fdc.int_timer[fdc.us] = FDC_INT_DELAY;
+			fdc.status &= 0x0f;
+			fdc.status |= (1 << fdc.us);
+
+//			fdc_interrupt();
 			break;
-		default:
-			fdc_interrupt();
-			break;
+//		default:
+//		fdc_interrupt();
+//		break;
 	}
 	fdc.event = FDCEVENT_NEUTRAL;
-	fdc.status = FDCSTAT_RQM;
+	fdc.status |= FDCSTAT_RQM;
+	fdc.status &= ~FDCSTAT_CB;
 }
 
 static void FDC_SenceintStatus(void) {					// cmd: 08
@@ -511,11 +555,12 @@ static void FDC_SenceintStatus(void) {					// cmd: 08
 	fdc.event = FDCEVENT_BUFSEND;
 	fdc.bufp = 0;
 	fdc.bufcnt = 0;
-	fdc.status = FDCSTAT_RQM | FDCSTAT_CB | FDCSTAT_DIO;
+	fdc.status &= 0x0f;
+	fdc.status |= FDCSTAT_RQM | FDCSTAT_CB | FDCSTAT_DIO;
 
 
-	if (fdc_isfdcinterrupt()) {
-		i = 0;
+//	if (fdc_isfdcinterrupt()) {
+//		i = 0;
 		if (fdc.stat[fdc.us]) {
 			fdc.buf[0] = (UINT8)fdc.stat[fdc.us];
 			fdc.buf[1] = fdc.treg[fdc.us];
@@ -524,7 +569,7 @@ static void FDC_SenceintStatus(void) {					// cmd: 08
 //			TRACEOUT(("fdc stat - %d [%.2x]", fdc.us, fdc.buf[0]));
 		}
 		else {
-			for (; i<4; i++) {
+			for (i=0; i<4; i++) {
 				if (fdc.stat[i]) {
 					fdc.buf[0] = (UINT8)fdc.stat[i];
 					fdc.buf[1] = fdc.treg[i];
@@ -535,15 +580,16 @@ static void FDC_SenceintStatus(void) {					// cmd: 08
 				}
 			}
 		}
-		for (; i<4; i++) {
-			if (fdc.stat[i]) {
-				break;
-			}
-		}
-		if (i >= 4) {
-			fdc_interruptreset();
-		}
-	}
+//		for (; i<4; i++) {
+//			if (fdc.stat[i]) {
+//				break;
+//			}
+//		}
+//		if (i >= 4) {
+//			fdc_interruptreset();
+//		}
+//
+//	}
 	if (!fdc.bufcnt) {
 		fdc.buf[0] = FDCRLT_IC1;
 		fdc.bufcnt = 1;
@@ -574,7 +620,9 @@ static void FDC_ReadID(void) {							// cmd: 0a
 			}
 			else {
 				fdc.stat[fdc.us] = fdc.us | (fdc.hd << 2) |
-													FDCRLT_IC0 | FDCRLT_MA;
+//													FDCRLT_IC0 | FDCRLT_MA;
+													FDCRLT_IC0 | FDCRLT_ND;
+
 				fdcsend_error7();
 			}
 			break;
@@ -610,9 +658,11 @@ static void FDC_WriteID(void) {							// cmd: 0d
 				fdc.bufcnt = 4;
 				fdc.bufp = 0;
 #if 1															// ver0.27 ??
-				fdc.status = FDCSTAT_NDM | FDCSTAT_CB;
-				if (!(fdc.ctrlreg & 0x10)) {
-					fdc.status |= FDCSTAT_RQM;
+				fdc.status &= 0x0f;
+				fdc.status |= (1 << fdc.us);
+				fdc.status |= FDCSTAT_RQM | FDCSTAT_CB;
+				if (fdc.nd) {
+					fdc.status |= FDCSTAT_NDM;
 				}
 #else
 				fdc.status = FDCSTAT_RQM | FDCSTAT_NDM | FDCSTAT_CB;
@@ -635,9 +685,11 @@ static void FDC_WriteID(void) {							// cmd: 0d
 			fdc.bufcnt = 4;
 			fdc.bufp = 0;
 #if 1															// ver0.27 ??
-			fdc.status = FDCSTAT_NDM | FDCSTAT_CB;
-			if (!(fdc.ctrlreg & 0x10)) {
-				fdc.status |= FDCSTAT_RQM;
+			fdc.status &= 0x0f;
+			fdc.status |= (1 << fdc.us);
+			fdc.status |= FDCSTAT_RQM | FDCSTAT_CB;
+			if (fdc.nd) {
+				fdc.status |= FDCSTAT_NDM;
 			}
 #else
 			fdc.status = FDCSTAT_RQM | FDCSTAT_NDM | FDCSTAT_CB;
@@ -656,34 +708,41 @@ static void FDC_Seek(void) {							// cmd: 0f
 	switch(fdc.event) {
 		case FDCEVENT_CMDRECV:
 			get_hdus();
-			fdc.ncn = fdc.cmds[1];
-			fdc.treg[fdc.us] = fdc.ncn;
-			fdc.R = 1;
-			fdc.crcn = fdc.R;				/* 170107 for Windows95 */
+//			fdc.ncn = fdc.cmds[1];
+//			fdc.treg[fdc.us] = fdc.ncn;
+//			fdc.R = 1;
+//			fdc.crcn = fdc.R;				/* 170107 for Windows95 */
 			/* 170101 ST modified to work on Windows 9x/2000 */
-			fdc.stat[fdc.us] = /*(fdc.hd << 2) |*/ fdc.us;	
-			fdc.stat[fdc.us] |= FDCRLT_SE;
-			if ((!(fdc.equip & (1 << fdc.us))) ||
-				(!fddfile[fdc.us].fname[0])) {
-				fdc.stat[fdc.us] |= FDCRLT_NR | FDCRLT_IC0;
+			fdc.int_stat[fdc.us] = /*(fdc.hd << 2) |*/ fdc.us;
+			fdc.int_stat[fdc.us] |= FDCRLT_SE;
+			if (!fdd_diskready(fdc.us)) {
+				fdc.int_stat[fdc.us] |= FDCRLT_IC0 | FDCRLT_NR;
 			}
 			else {
+				fdc.ncn = fdc.cmds[1];
+				fdc.treg[fdc.us] = fdc.ncn;
+				fdc.R = 1;
+				fdc.crcn = fdc.R;				/* 170107 for Windows95 */
 				/* 170107 for Windows95 form ... */
-				if (fdd_seek()) {
-					fdc.stat[fdc.us] |= FDCRLT_IC0;
-				}
+				//if (fdd_seek()) {
+				//	fdc.stat[fdc.us] |= FDCRLT_IC0;
 #if defined(SUPPORT_SWSEEKSND)
-				if(np2cfg.MOTOR) fddmtrsnd_play(1, TRUE);
+					if(np2cfg.MOTOR) fddmtrsnd_play(1, TRUE);
 #else
-				if(np2cfg.MOTOR) soundmng_pcmplay(SOUND_PCMSEEK1, FALSE);
+					if(np2cfg.MOTOR) soundmng_pcmplay(SOUND_PCMSEEK1, FALSE);
 #endif
+				//}
 				/* 170107 for Windows95 ... to */
 			}
-			fdc_interrupt();
+			fdc.int_timer[fdc.us] = FDC_INT_DELAY;
+			fdc.status &= 0x0f;
+			fdc.status |= (1 << fdc.us);
+//			fdc_interrupt();
 			break;
 	}
 	fdc.event = FDCEVENT_NEUTRAL;
-	fdc.status = FDCSTAT_RQM;
+	fdc.status |= FDCSTAT_RQM;
+	fdc.status &= ~FDCSTAT_CB;
 }
 
 #ifdef SUPPORT_KAI_IMAGES
@@ -784,11 +843,12 @@ void DMACCALL fdc_datawrite(REG8 data) {
 			default:
 				fdc.cmd = data;
 				get_mtmfsk();
+				fdc.status |= FDCSTAT_CB;	// コマンド受けたらCBをセット
 				if (FDCCMD_TABLE[data & 0x1f]) {
 					fdc.event = FDCEVENT_CMDRECV;
 					fdc.cmdp = 0;
 					fdc.cmdcnt = FDCCMD_TABLE[data & 0x1f];
-					fdc.status = FDCSTAT_RQM | FDCSTAT_CB;
+					fdc.status |= FDCSTAT_RQM;
 				}
 				else {
 					fdc.status &= ~FDCSTAT_RQM;
@@ -801,6 +861,8 @@ void DMACCALL fdc_datawrite(REG8 data) {
 
 REG8 DMACCALL fdc_dataread(void) {
 
+	int		i;
+
 //	if ((fdc.status & (FDCSTAT_RQM | FDCSTAT_DIO))
 //									== (FDCSTAT_RQM | FDCSTAT_DIO)) {
 		switch(fdc.event) {
@@ -808,7 +870,18 @@ REG8 DMACCALL fdc_dataread(void) {
 				fdc.lastdata = fdc.buf[fdc.bufp++];
 				if (!(--fdc.bufcnt)) {
 					fdc.event = FDCEVENT_NEUTRAL;
-					fdc.status = FDCSTAT_RQM;
+					fdc.status &= ~(1 << fdc.us);
+					fdc.status &= ~(FDCSTAT_DIO | FDCSTAT_CB);
+					fdc.status |= FDCSTAT_RQM;
+				}
+				// 割り込みクリア処理
+				for (i = 0; i < 4; i++) {
+					if (fdc.stat[i]) {
+						break;
+					}
+				}
+				if (i >= 4) {
+					fdc_interruptreset();
 				}
 				break;
 
@@ -841,6 +914,21 @@ REG8 DMACCALL fdc_dataread(void) {
 	return(fdc.lastdata);
 }
 
+/* SEEKとRECALIBRATEの割り込み通知処理 */
+void fdc_intdelay(void) {
+
+	int		i;
+
+	for (i = 0; i < 4; i++) {
+		if (fdc.int_timer[i]) {
+			fdc.int_timer[i]--;
+			if (!fdc.int_timer[i]) {
+				fdc.stat[i] = fdc.int_stat[i];
+				fdc_interrupt();
+			}
+		}
+	}
+}
 
 // ---- I/O
 
@@ -851,12 +939,13 @@ static void IOOUTCALL fdc_o92(UINT port, REG8 dat) {
 	if (((port >> 4) ^ fdc.chgreg) & 1) {
 		return;
 	}
-	/* 170101 ST modified to work on Windows 9x/2000 form ... */
-	if (fdc.status & FDCSTAT_DIO) {
-		fdc.status &= ~FDCSTAT_DIO;
-		fdc.status |= FDCSTAT_RQM;
-	}
-	/* 170101 ST modified to work on Windows 9x/2000 ... to */
+//	/* 170101 ST modified to work on Windows 9x/2000 form ... */
+//	if (fdc.status & FDCSTAT_DIO) {
+//		fdc.status &= ~FDCSTAT_DIO;
+//		fdc.status |= FDCSTAT_RQM;
+//	}
+//	/* 170101 ST modified to work on Windows 9x/2000 ... to */
+
 	if ((fdc.status & (FDCSTAT_RQM | FDCSTAT_DIO)) == FDCSTAT_RQM) {
 		fdc_datawrite(dat);
 	}
@@ -877,16 +966,28 @@ static void IOOUTCALL fdc_o94(UINT port, REG8 dat) {
 		dmac_check();
 	}
 	/* 170101 ST modified to work on Windows 9x/2000 form ... */
-	if (dat & 0x80) {
-		fdcstatusreset();
-	} else if ((fdc.ctrlreg ^ dat) & 0x88) {
-		if (dat & 0x08) {
-			for (i=0; i<4; i++) {
-				if (fdd_diskready(i)) {
-					fdc.stat[i] = FDCRLT_AI | i;
-					fdc.status = FDCSTAT_RQM;
-					fdc_interrupt();
-					break;
+	if ((fdc.ctrlreg ^ dat) & 0x80) {
+		if (dat & 0x80) {
+			fdcstatusreset();
+
+			if(dat & 0x08){ // XXX: Workaround for OSASK
+				// FDCリセット後 1,024ms以内にINTがアクティブになる
+				for (i = 0; i < 4; i++) {
+					fdc.int_stat[i] = fdc.stat[i];
+					fdc.int_timer[i] = FDC_INT_DELAY;
+				}
+			}
+		}
+	}
+	if (fdc.chgreg & 4) {
+		if ((fdc.ctrlreg ^ dat) & 0x08) {
+			if (dat & 0x08) {
+				for (i = 0; i < 4; i++) {
+					if (fdd_diskready(i)) {
+						fdc.int_stat[i] = FDCRLT_AI | i;
+						fdc.int_timer[i] = FDC_INT_DELAY;
+						fdc.status |= (1 << i);
+					}
 				}
 			}
 		}
@@ -974,7 +1075,7 @@ static REG8 IOINPCALL fdc_ibe(UINT port) {
 	TRACEOUT(("fdc in %.2x %.2x [%.4x:%.4x]", port, ((fdc.chgreg & 3) | 8),
 														CPU_CS, CPU_IP));
 
-	return((fdc.chgreg & 3) | 8)|0xf0;
+	return((fdc.chgreg & 3) | 8 | 0xf0);
 }
 
 static void IOOUTCALL fdc_o4be(UINT port, REG8 dat) {
@@ -993,7 +1094,7 @@ static REG8 IOINPCALL fdc_i4be(UINT port) {
 	(void)port;
 	TRACEOUT(("fdc in %.2x %.2x [%.4x:%.4x]", port, (fdc.rpm[(fdc.reg144 >> 5) & 3] | 0xf0),
 													CPU_CS, CPU_IP));
-	return(fdc.rpm[(fdc.reg144 >> 5) & 3] | 0xf0);
+	return(fdc.rpm[(fdc.reg144 >> 5) & 3] | 0xfe);
 }
 
 

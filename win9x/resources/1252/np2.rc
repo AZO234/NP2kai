@@ -316,24 +316,27 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Mixer"
 FONT 9, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    LTEXT           "FM",IDC_STATIC,8,9,30,8
-    CONTROL         "Slider1",IDC_VOLFM,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_GROUP | WS_TABSTOP,40,9,88,10
-    LTEXT           "",IDC_VOLFMSTR,134,8,16,10,SS_SUNKEN,WS_EX_RIGHT
-    LTEXT           "PSG",IDC_STATIC,8,23,30,8
-    CONTROL         "Slider16",IDC_VOLPSG,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,40,23,88,10
-    LTEXT           "",IDC_VOLPSGSTR,134,22,16,10,SS_SUNKEN,WS_EX_RIGHT
-    LTEXT           "ADPCM",IDC_STATIC,8,37,30,8
-    CONTROL         "Slider2",IDC_VOLADPCM,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,40,37,88,10
-    LTEXT           "",IDC_VOLADPCMSTR,134,36,16,10,SS_SUNKEN,WS_EX_RIGHT
-    LTEXT           "PCM",IDC_STATIC,8,51,30,8
-    CONTROL         "Slider4",IDC_VOLPCM,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,40,51,88,10
-    LTEXT           "",IDC_VOLPCMSTR,134,50,16,10,SS_SUNKEN,WS_EX_RIGHT
-    LTEXT           "Rhythm",IDC_STATIC,8,65,30,8
-    CONTROL         "Slider8",IDC_VOLRHYTHM,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,40,65,88,10
-    LTEXT           "",IDC_VOLRHYTHMSTR,134,64,16,10,SS_SUNKEN,WS_EX_RIGHT
-    LTEXT           "CD-DA",IDC_STATIC,8,79,30,8
-    CONTROL         "Slider32",IDC_VOLCDDA,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,40,79,88,10
-    LTEXT           "",IDC_VOLCDDASTR,134,78,16,10,SS_SUNKEN,WS_EX_RIGHT
+    LTEXT           "Master",IDC_STATIC,8,5,30,8
+    CONTROL         "Slider1",IDC_VOLMASTER,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_GROUP | WS_TABSTOP,40,5,88,10
+    LTEXT           "",IDC_VOLMASTERSTR,134,4,16,10,SS_SUNKEN,WS_EX_RIGHT
+    LTEXT           "FM",IDC_STATIC,8,19,30,8
+    CONTROL         "Slider1",IDC_VOLFM,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_GROUP | WS_TABSTOP,40,19,88,10
+    LTEXT           "",IDC_VOLFMSTR,134,18,16,10,SS_SUNKEN,WS_EX_RIGHT
+    LTEXT           "PSG",IDC_STATIC,8,33,30,8
+    CONTROL         "Slider16",IDC_VOLPSG,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,40,33,88,10
+    LTEXT           "",IDC_VOLPSGSTR,134,32,16,10,SS_SUNKEN,WS_EX_RIGHT
+    LTEXT           "ADPCM",IDC_STATIC,8,47,30,8
+    CONTROL         "Slider2",IDC_VOLADPCM,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,40,47,88,10
+    LTEXT           "",IDC_VOLADPCMSTR,134,46,16,10,SS_SUNKEN,WS_EX_RIGHT
+    LTEXT           "PCM",IDC_STATIC,8,61,30,8
+    CONTROL         "Slider4",IDC_VOLPCM,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,40,61,88,10
+    LTEXT           "",IDC_VOLPCMSTR,134,60,16,10,SS_SUNKEN,WS_EX_RIGHT
+    LTEXT           "Rhythm",IDC_STATIC,8,75,30,8
+    CONTROL         "Slider8",IDC_VOLRHYTHM,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,40,75,88,10
+    LTEXT           "",IDC_VOLRHYTHMSTR,134,74,16,10,SS_SUNKEN,WS_EX_RIGHT
+    LTEXT           "CD-DA",IDC_STATIC,8,89,30,8
+    CONTROL         "Slider32",IDC_VOLCDDA,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,40,89,88,10
+    LTEXT           "",IDC_VOLCDDASTR,134,88,16,10,SS_SUNKEN,WS_EX_RIGHT
     PUSHBUTTON      "Defaults",IDC_SNDMIXDEF,136,102,40,14
 END
 
@@ -887,13 +890,14 @@ BEGIN
     MENUITEM "&Window snap",                IDM_SNAPENABLE
     MENUITEM "&Background",                 IDM_BACKGROUND
     MENUITEM "Back&ground sound",           IDM_BGSOUND
+    MENUITEM "&Restore window border",      IDM_RESTOREBORDER
     MENUITEM SEPARATOR
-    MENUITEM " 320x200",                    IDM_SCRNMUL4
-    MENUITEM " 480x300",                    IDM_SCRNMUL6
-    MENUITEM " 640x400",                    IDM_SCRNMUL8
-    MENUITEM " 800x500",                    IDM_SCRNMUL10
-    MENUITEM " 960x600",                    IDM_SCRNMUL12
-    MENUITEM "1280x800",                    IDM_SCRNMUL16
+    MENUITEM " 320x200(x0.5)",              IDM_SCRNMUL4
+    MENUITEM " 480x300(x0.75)",             IDM_SCRNMUL6
+    MENUITEM " 640x400(x1)",                IDM_SCRNMUL8
+    MENUITEM " 800x500(x1.25",              IDM_SCRNMUL10
+    MENUITEM " 960x600(x1.5)",              IDM_SCRNMUL12
+    MENUITEM "1280x800(x2)",                IDM_SCRNMUL16
     MENUITEM SEPARATOR
 END
 
@@ -1411,6 +1415,7 @@ BEGIN
     IDS_SERIALOPTION        "Serial option"
     IDS_NETWORKOPTION       "Network option"
     IDS_WABOPTION           "Window Accelerator board option"
+    IDS_PCIOPTION           "PCI option"
 END
 
 STRINGTABLE

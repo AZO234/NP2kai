@@ -39,12 +39,14 @@ public:
 	virtual void DestroyStream();
 	virtual bool PlayStream();
 	virtual void StopStream();
+	virtual void SetMasterVolume(int nVolume);
 
 protected:
 	virtual bool Task();
 
 private:
 	static std::vector<WasapiDevice> sm_devices;	//!< デバイス リスト
+	int m_mastervolume;								//!< マスタボリューム
 
 	IMMDeviceEnumerator* m_pEnumerator;			//!< デバイス列挙インスタンス
 	IMMDevice* m_pDevice;						//!< デバイス インスタンス

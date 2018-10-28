@@ -87,7 +87,7 @@ BRESULT opencue(SXSIDEV sxsi, const OEMCHAR *fname) {
 	OEMCHAR		*argv[8];
 	int			argc;
 //	--------
-	UINT16		curssize;
+	UINT16		curssize = 0;
 	UINT32		curpos0;
 	UINT32		curpregap;
 

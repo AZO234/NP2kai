@@ -359,6 +359,9 @@ MOV_CdRd(void)
 #if (CPU_FEATURES & CPU_FEATURE_PGE) == CPU_FEATURE_PGE
 			    | CPU_CR4_PGE
 #endif
+#if (CPU_FEATURES & CPU_FEATURE_VME) == CPU_FEATURE_VME
+			    | CPU_CR4_PVI | CPU_CR4_VME
+#endif
 #if (CPU_FEATURES & CPU_FEATURE_FXSR) == CPU_FEATURE_FXSR
 			    | CPU_CR4_OSFXSR
 #endif
@@ -378,7 +381,7 @@ MOV_CdRd(void)
 			CPU_CR4 = src;
 			VERBOSE(("MOV_CdRd: %04x:%08x: cr4: 0x%08x <- 0x%08x(%s)", CPU_CS, CPU_PREV_EIP, reg, CPU_CR4, reg32_str[op & 7]));
 
-			if ((reg ^ CPU_CR4) & (CPU_CR4_PSE|CPU_CR4_PGE|CPU_CR4_PAE|CPU_CR4_OSFXSR)) {
+			if ((reg ^ CPU_CR4) & (CPU_CR4_PSE|CPU_CR4_PGE|CPU_CR4_PAE|CPU_CR4_PVI|CPU_CR4_VME|CPU_CR4_OSFXSR|CPU_CR4_OSXMMEXCPT)) {
 				tlb_flush_all();
 			}
 			break;
@@ -1181,6 +1184,7 @@ RDPMC(void)
 
 	idx = CPU_ECX;
 	switch (idx) {
+	default:
 		CPU_EDX = CPU_EAX = 0;
 	}
 }

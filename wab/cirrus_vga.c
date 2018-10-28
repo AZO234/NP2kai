@@ -3306,7 +3306,7 @@ uint32_t_ cirrus_linear_memwnd3_readl(void *opaque, target_phys_addr_t addr)
 uint32_t_ cirrus_linear_bitblt_readb(void *opaque, target_phys_addr_t addr)
 {
     CirrusVGAState *s = (CirrusVGAState *) opaque;
-    uint32_t_ ret;
+    uint32_t_ ret = 0;
 
     /* handle bitblt */
     if (s->cirrus_srcptr != s->cirrus_srcptr_end) {

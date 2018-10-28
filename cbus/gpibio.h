@@ -8,6 +8,7 @@ typedef struct {
 	UINT8 gpibaddr; // GP-IBアドレス(0x0～0x1F)
 	UINT8 ifcflag; // IFC# 1=アクティブ, 0=非アクティブ
 
+	UINT16 exiobase;
 } _GPIB, *GPIB;
 
 #ifdef __cplusplus

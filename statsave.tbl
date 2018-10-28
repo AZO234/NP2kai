@@ -164,5 +164,8 @@ static const SFENTRY np2tbl[] = {
 #if defined(SUPPORT_HOSTDRV)
 	{"HOSTDRV",		0,	STATFLAG_HDRV,	NULL,			0},
 #endif
+#if defined(BIOS_IO_EMULATION)
+	{"BIOSIOEMU",	0,	STATFLAG_BIN,	&biosioemu,		sizeof(biosioemu)},
+#endif
 	{"TERMINATE",	0,	STATFLAG_TERM,	NULL,			0}};
 

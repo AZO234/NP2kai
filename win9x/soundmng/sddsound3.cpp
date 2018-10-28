@@ -92,8 +92,10 @@ CSoundDeviceDSound3::CSoundDeviceDSound3()
 	, m_nChannels(0)
 	, m_nBufferSize(0)
 	, m_dwHalfBufferSize(0)
+	, m_mastervolume(100)
 {
 	ZeroMemory(m_hEvents, sizeof(m_hEvents));
+	ZeroMemory(m_pcmvolume, sizeof(m_pcmvolume));
 }
 
 /**
@@ -240,6 +242,8 @@ UINT CSoundDeviceDSound3::CreateStream(UINT nSamplingRate, UINT nChannels, UINT 
 	}
 	pNotify->SetNotificationPositions(_countof(pos), pos);
 	pNotify->Release();
+	
+	SetMasterVolume(m_mastervolume);
 
 	ResetStream();
 	CThreadBase::Start();
@@ -328,6 +332,37 @@ void CSoundDeviceDSound3::StopStream()
 	{
 		m_lpDSStream->Stop();
 	}
+}
+
+/**
+ * ストリーム ヴォリューム設定
+ * @param[in] nVolume ヴォリューム(max 100)
+ */
+void CSoundDeviceDSound3::SetMasterVolume(int nVolume)
+{
+
+	m_mastervolume = nVolume;
+	if (m_lpDSStream)
+	{
+		if(m_mastervolume == 0){
+			m_lpDSStream->SetVolume(DSBVOLUME_MIN);
+		}else{
+			m_lpDSStream->SetVolume((LONG)(10*log10(m_mastervolume/100.0f)*100));
+		}
+	}
+	for( auto it = m_pcm.begin(); it != m_pcm.end() ; ++it ) {
+		LPDIRECTSOUNDBUFFER lpDSBuffer = it->second;
+		int volume = 100;
+		if(it->first < PCMVOLUME_MAXCOUNT){
+			volume = m_pcmvolume[it->first];
+		}
+		volume *= m_mastervolume;
+		if(volume == 0){
+			lpDSBuffer->SetVolume(DSBVOLUME_MIN);
+		}else{
+			lpDSBuffer->SetVolume((LONG)(10*log10(volume/100000.0f)*100));
+		}
+    }
 }
 
 /**
@@ -470,7 +505,7 @@ LPDIRECTSOUNDBUFFER CSoundDeviceDSound3::CreateWaveBuffer(LPCTSTR lpFilename)
 
 		bool bValid = false;
 		Chunk chunk;
-		PCMWAVEFORMAT pcmwf;
+		PCMWAVEFORMAT pcmwf = {0};
 		while (true /*CONSTCOND*/)
 		{
 			if (extrom.Read(&chunk, sizeof(chunk)) != sizeof(chunk))
@@ -584,7 +619,17 @@ void CSoundDeviceDSound3::SetPCMVolume(UINT nNum, int nVolume)
 	if (it != m_pcm.end())
 	{
 		LPDIRECTSOUNDBUFFER lpDSBuffer = it->second;
-		lpDSBuffer->SetVolume((((DSBVOLUME_MAX - DSBVOLUME_MIN) * nVolume) / 100) + DSBVOLUME_MIN);
+		int volume = nVolume;
+		if(nNum	< PCMVOLUME_MAXCOUNT){
+			m_pcmvolume[nNum] = nVolume;
+		}
+		volume *= m_mastervolume;
+		if(volume == 0){
+			lpDSBuffer->SetVolume(DSBVOLUME_MIN);
+		}else{
+			lpDSBuffer->SetVolume((LONG)(10*log10(volume/100000.0f)*100));
+		}
+		//lpDSBuffer->SetVolume((((DSBVOLUME_MAX - DSBVOLUME_MIN) * nVolume) / 100) + DSBVOLUME_MIN);
 	}
 }
 

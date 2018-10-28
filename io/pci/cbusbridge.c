@@ -48,7 +48,7 @@ void pcidev_cbusbridge_bind(void) {
 	pcidev.devices[devid].header.deviceID = 0x0001;
 	pcidev.devices[devid].header.command = 0x010f;//0x0107;
 	pcidev.devices[devid].header.status = 0x0200;//0x0400;
-	pcidev.devices[devid].header.revisionID = 0x00;//0x03;
+	pcidev.devices[devid].header.revisionID = 0x01;//0x03;
 	pcidev.devices[devid].header.classcode[0] = 0x00; // レジスタレベルプログラミングインタフェース
 	pcidev.devices[devid].header.classcode[1] = 0x80; // サブクラスコード
 	pcidev.devices[devid].header.classcode[2] = 0x06; // ベースクラスコード

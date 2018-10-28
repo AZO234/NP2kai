@@ -17,6 +17,7 @@
 #include "misc\PropProc.h"
 #include "pccore.h"
 #include "iocore.h"
+#include "soundmng.h"
 #include "generic\dipswbmp.h"
 #include "sound\sound.h"
 #include "sound\fmboard.h"
@@ -43,6 +44,7 @@ protected:
 	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
 
 private:
+	CSliderValue m_master;		//!< マスター ヴォリューム
 	CSliderValue m_fm;			//!< FM ヴォリューム
 	CSliderValue m_psg;			//!< PSG ヴォリューム
 	CSliderValue m_adpcm;		//!< ADPCM ヴォリューム
@@ -73,6 +75,11 @@ SndOptMixerPage::~SndOptMixerPage()
  */
 BOOL SndOptMixerPage::OnInitDialog()
 {
+	m_master.SubclassDlgItem(IDC_VOLMASTER, this);
+	m_master.SetStaticId(IDC_VOLMASTERSTR);
+	m_master.SetRange(0, 100);
+	m_master.SetPos(np2cfg.vol_master);
+
 	m_fm.SubclassDlgItem(IDC_VOLFM, this);
 	m_fm.SetStaticId(IDC_VOLFMSTR);
 	m_fm.SetRange(0, 128);
@@ -112,6 +119,14 @@ BOOL SndOptMixerPage::OnInitDialog()
 void SndOptMixerPage::OnOK()
 {
 	bool bUpdated = false;
+	
+	const UINT8 cMaster = static_cast<UINT8>(m_master.GetPos());
+	if (np2cfg.vol_master != cMaster)
+	{
+		np2cfg.vol_master = cMaster;
+		soundmng_setvolume(cMaster);
+		bUpdated = true;
+	}
 
 	const UINT8 cFM = static_cast<UINT8>(m_fm.GetPos());
 	if (np2cfg.vol_fm != cFM)
@@ -222,6 +237,10 @@ LRESULT SndOptMixerPage::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 	{
 		switch (::GetDlgCtrlID(reinterpret_cast<HWND>(lParam)))
 		{
+			case IDC_VOLMASTER:
+				m_master.UpdateValue();
+				break;
+
 			case IDC_VOLFM:
 				m_fm.UpdateValue();
 				break;

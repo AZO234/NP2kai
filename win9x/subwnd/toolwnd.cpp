@@ -393,7 +393,7 @@ void CToolWnd::CreateSubItems()
 	{
 		HWND sub = NULL;
 		const TCHAR *cls = NULL;
-		DWORD style;
+		DWORD style = 0;
 
 		const SUBITEM *p = &subitem[i];
 		switch (p->tctl)

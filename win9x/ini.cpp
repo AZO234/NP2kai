@@ -544,7 +544,8 @@ static const PFTBL s_IniItems[] =
 	PFVAL("optsb16d", PFTYPE_UINT8,		&np2cfg.sndsb16dma),
 	PFVAL("optsb16i", PFTYPE_UINT8,		&np2cfg.sndsb16irq),
 #endif	/* SUPPORT_SOUND_SB16 */
-
+	
+	PFMAX("volume_M", PFTYPE_UINT8,		&np2cfg.vol_master,		100),
 	PFMAX("volume_F", PFTYPE_UINT8,		&np2cfg.vol_fm,			128),
 	PFMAX("volume_S", PFTYPE_UINT8,		&np2cfg.vol_ssg,		128),
 	PFMAX("volume_A", PFTYPE_UINT8,		&np2cfg.vol_adpcm,		128),
@@ -614,6 +615,7 @@ static const PFTBL s_IniItems[] =
 	PFVAL("GPIB_IRQ", PFTYPE_UINT8,		&np2cfg.gpibirq),
 	PFVAL("GPIBMODE", PFTYPE_UINT8,		&np2cfg.gpibmode),
 	PFVAL("GPIBADDR", PFTYPE_UINT8,		&np2cfg.gpibaddr),
+	PFVAL("GPIBEXIO", PFTYPE_UINT8,		&np2cfg.gpibexio),
 #endif
 #if defined(SUPPORT_PCI)
 	PFVAL("USE98PCI", PFTYPE_BOOL,		&np2cfg.usepci),
@@ -633,6 +635,8 @@ static const PFTBL s_IniItems[] =
 	PFMAX("MEMCHKMX", PFTYPE_UINT8,		&np2cfg.memchkmx,		0), // メモリチェックする最大サイズ（最小は15MB・0は制限無し・メモリチェックが長いのが嫌だけど見かけ上カウントだけはしておきたい人向け）
 	PFMAX("SBEEPLEN", PFTYPE_UINT8,		&np2cfg.sbeeplen,		0), // ピポ音の長さ（0でデフォルト・4がNP2標準）
 	PFMAX("SBEEPADJ", PFTYPE_BOOL,		&np2cfg.sbeepadj,		0), // ピポ音の長さ自動調整
+
+	PFVAL("BIOSIOEM", PFTYPE_BOOL,		&np2cfg.biosioemu), // np21w ver0.86 rev46 BIOS I/O emulation
 	
 	PFSTR("cpu_vend", PFRO_STR,			np2cfg.cpu_vendor_o),
 	PFVAL("cpu_fami", PFTYPE_UINT32,	&np2cfg.cpu_family),

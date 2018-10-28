@@ -659,13 +659,13 @@ void winlocex_moving(WINLOCEX wle, RECT *rect) {
 	UINT	num;
 	RECT	*rc;
 	BOOL	changes;
+	RECT	rectmp1 = {0};
+	RECT	rectmp2 = {0};
 	
 	if (wle == NULL) {
 		return;
 	}
 	
-	RECT	rectmp1;
-	RECT	rectmp2;
 	if(!noDWM){
 		// DWMï‚ê≥
 		GetWindowRect(GetActiveWindow(), &rectmp1);

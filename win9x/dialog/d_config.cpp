@@ -313,81 +313,81 @@ int CConfigureDlg::GetCpuTypeIndex(){
 	if(np2cfg.cpu_family == CPU_I486SX_FAMILY && 
 	   np2cfg.cpu_model == CPU_I486SX_MODEL &&
 	   np2cfg.cpu_stepping == CPU_I486SX_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_I486SX &&
-	   np2cfg.cpu_feature_ecx == CPU_FEATURES_ECX_I486SX &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_I486SX){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_I486SX &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_I486SX &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_I486SX){
 		return 1;
 	}
 	if((CPU_FEATURES_ALL & CPU_FEATURES_I486DX) != CPU_FEATURES_I486DX) goto AMDCPUCheck;
 	if(np2cfg.cpu_family == CPU_I486DX_FAMILY && 
 	   np2cfg.cpu_model == CPU_I486DX_MODEL &&
 	   np2cfg.cpu_stepping == CPU_I486DX_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_I486DX &&
-	   np2cfg.cpu_feature_ecx == CPU_FEATURES_ECX_I486DX &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_I486DX){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_I486DX &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_I486DX &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_I486DX){
 		return 2;
 	}
 	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM) != CPU_FEATURES_PENTIUM) goto AMDCPUCheck;
 	if(np2cfg.cpu_family == CPU_PENTIUM_FAMILY && 
 	   np2cfg.cpu_model == CPU_PENTIUM_MODEL &&
 	   np2cfg.cpu_stepping == CPU_PENTIUM_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_PENTIUM &&
-	   np2cfg.cpu_feature_ecx == CPU_FEATURES_ECX_PENTIUM &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_PENTIUM){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_PENTIUM &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_PENTIUM){
 		return 3;
 	}
 	if((CPU_FEATURES_ALL & CPU_FEATURES_MMX_PENTIUM) != CPU_FEATURES_MMX_PENTIUM) goto AMDCPUCheck;
 	if(np2cfg.cpu_family == CPU_MMX_PENTIUM_FAMILY && 
 	   np2cfg.cpu_model == CPU_MMX_PENTIUM_MODEL &&
 	   np2cfg.cpu_stepping == CPU_MMX_PENTIUM_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_MMX_PENTIUM &&
-	   np2cfg.cpu_feature_ecx == CPU_FEATURES_ECX_MMX_PENTIUM &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_MMX_PENTIUM){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_MMX_PENTIUM &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_MMX_PENTIUM &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_MMX_PENTIUM){
 		return 4;
 	}
 	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_PRO) != CPU_FEATURES_PENTIUM_PRO) goto AMDCPUCheck;
 	if(np2cfg.cpu_family == CPU_PENTIUM_PRO_FAMILY && 
 	   np2cfg.cpu_model == CPU_PENTIUM_PRO_MODEL &&
 	   np2cfg.cpu_stepping == CPU_PENTIUM_PRO_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_PENTIUM_PRO &&
-	   np2cfg.cpu_feature_ecx == CPU_FEATURES_ECX_PENTIUM_PRO &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_PENTIUM_PRO){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM_PRO &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_PENTIUM_PRO &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_PENTIUM_PRO){
 		return 5;
 	}
 	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_II) != CPU_FEATURES_PENTIUM_II) goto AMDCPUCheck;
 	if(np2cfg.cpu_family == CPU_PENTIUM_II_FAMILY && 
 	   np2cfg.cpu_model == CPU_PENTIUM_II_MODEL &&
 	   np2cfg.cpu_stepping == CPU_PENTIUM_II_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_PENTIUM_II &&
-	   np2cfg.cpu_feature_ecx == CPU_FEATURES_ECX_PENTIUM_II &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_PENTIUM_II){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM_II &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_PENTIUM_II &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_PENTIUM_II){
 		return 6;
 	}
 	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_III) != CPU_FEATURES_PENTIUM_III) goto AMDCPUCheck;
 	if(np2cfg.cpu_family == CPU_PENTIUM_III_FAMILY && 
 	   np2cfg.cpu_model == CPU_PENTIUM_III_MODEL &&
 	   np2cfg.cpu_stepping == CPU_PENTIUM_III_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_PENTIUM_III &&
-	   np2cfg.cpu_feature_ecx == CPU_FEATURES_ECX_PENTIUM_III &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_PENTIUM_III){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM_III &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_PENTIUM_III &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_PENTIUM_III){
 		return 7;
 	}
 	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_M) != CPU_FEATURES_PENTIUM_M) goto AMDCPUCheck;
 	if(np2cfg.cpu_family == CPU_PENTIUM_M_FAMILY && 
 	   np2cfg.cpu_model == CPU_PENTIUM_M_MODEL &&
 	   np2cfg.cpu_stepping == CPU_PENTIUM_M_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_PENTIUM_M &&
-	   np2cfg.cpu_feature_ecx == CPU_FEATURES_ECX_PENTIUM_M &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_PENTIUM_M){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM_M &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_PENTIUM_M &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_PENTIUM_M){
 		return 8;
 	}
 	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_4) != CPU_FEATURES_PENTIUM_4) goto AMDCPUCheck;
 	if(np2cfg.cpu_family == CPU_PENTIUM_4_FAMILY && 
 	   np2cfg.cpu_model == CPU_PENTIUM_4_MODEL &&
 	   np2cfg.cpu_stepping == CPU_PENTIUM_4_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_PENTIUM_4 &&
-	   np2cfg.cpu_feature_ecx == CPU_FEATURES_ECX_PENTIUM_4 &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_PENTIUM_4){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM_4 &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_PENTIUM_4 &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_PENTIUM_4){
 		return 9;
 	}
 
@@ -397,9 +397,9 @@ AMDCPUCheck:
 	if(np2cfg.cpu_family == CPU_AMD_K6_2_FAMILY && 
 	   np2cfg.cpu_model == CPU_AMD_K6_2_MODEL &&
 	   np2cfg.cpu_stepping == CPU_AMD_K6_2_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_AMD_K6_2 &&
-	   np2cfg.cpu_feature_ecx == CPU_FEATURES_ECX_AMD_K6_2 &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_AMD_K6_2){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_AMD_K6_2 &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_AMD_K6_2 &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_AMD_K6_2){
 		return 15;
 	}
 	if((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K6_III) != CPU_FEATURES_AMD_K6_III ||
@@ -407,9 +407,9 @@ AMDCPUCheck:
 	if(np2cfg.cpu_family == CPU_AMD_K6_III_FAMILY && 
 	   np2cfg.cpu_model == CPU_AMD_K6_III_MODEL &&
 	   np2cfg.cpu_stepping == CPU_AMD_K6_III_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_AMD_K6_III &&
-	   np2cfg.cpu_feature_ecx == CPU_FEATURES_ECX_AMD_K6_III &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_AMD_K6_III){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_AMD_K6_III &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_AMD_K6_III &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_AMD_K6_III){
 		return 16;
 	}
 	if((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K7_ATHLON) != CPU_FEATURES_AMD_K7_ATHLON ||
@@ -417,9 +417,9 @@ AMDCPUCheck:
 	if(np2cfg.cpu_family == CPU_AMD_K7_ATHLON_FAMILY && 
 	   np2cfg.cpu_model == CPU_AMD_K7_ATHLON_MODEL &&
 	   np2cfg.cpu_stepping == CPU_AMD_K7_ATHLON_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_AMD_K7_ATHLON &&
-	   np2cfg.cpu_feature_ecx == CPU_FEATURES_ECX_AMD_K7_ATHLON &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_AMD_K7_ATHLON){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_AMD_K7_ATHLON &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_AMD_K7_ATHLON &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_AMD_K7_ATHLON){
 		return 17;
 	}
 	if((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K7_ATHLON_XP) != CPU_FEATURES_AMD_K7_ATHLON_XP ||
@@ -427,9 +427,9 @@ AMDCPUCheck:
 	if(np2cfg.cpu_family == CPU_AMD_K7_ATHLON_XP_FAMILY && 
 	   np2cfg.cpu_model == CPU_AMD_K7_ATHLON_XP_MODEL &&
 	   np2cfg.cpu_stepping == CPU_AMD_K7_ATHLON_XP_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_AMD_K7_ATHLON_XP &&
-	   np2cfg.cpu_feature_ecx == CPU_FEATURES_ECX_AMD_K7_ATHLON_XP &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_AMD_K7_ATHLON_XP){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_AMD_K7_ATHLON_XP &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_AMD_K7_ATHLON_XP &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_AMD_K7_ATHLON_XP){
 		return 18;
 	}
 	

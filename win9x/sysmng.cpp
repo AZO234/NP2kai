@@ -123,18 +123,18 @@ void sysmng_updatecaption(UINT8 flag) {
 						}else{
 							fnamenext = (OEMCHAR*)diskdrv_getsxsi(i);
 						}
-						if(fname && *fname && fnamenext && *fnamenext && (fnametmp = sysmng_file_getname(fname)) && (fnamenexttmp = sysmng_file_getname(fnamenext))){
+						if(fname && *fname && fnamenext && *fnamenext && (fnametmp = sysmng_file_getname(fname))!=NULL && (fnamenexttmp = sysmng_file_getname(fnamenext))!=NULL){
 							_tcscpy(newtext, hddimgmenustrorg[i]);
 							_tcscat(newtext, fnametmp);
 							if(_tcscmp(fname, fnamenext)){
 								_tcscat(newtext, OEMTEXT(" -> "));
 								_tcscat(newtext, fnamenexttmp);
 							}
-						}else if(fnamenext && *fnamenext && (fnamenexttmp = sysmng_file_getname(fnamenext))){
+						}else if(fnamenext && *fnamenext && (fnamenexttmp = sysmng_file_getname(fnamenext))!=NULL){
 							_tcscpy(newtext, hddimgmenustrorg[i]);
 							_tcscat(newtext, OEMTEXT("[none] -> "));
 							_tcscat(newtext, fnamenexttmp);
-						}else if(fname && *fname && (fnametmp = sysmng_file_getname(fname))){
+						}else if(fname && *fname && (fnametmp = sysmng_file_getname(fname))!=NULL){
 							_tcscpy(newtext, hddimgmenustrorg[i]);
 							_tcscat(newtext, fnametmp);
 							_tcscat(newtext, OEMTEXT(" -> [none]"));
@@ -175,18 +175,18 @@ void sysmng_updatecaption(UINT8 flag) {
 					}
 					fname = sxsi_getfilename(i+0x20);
 					fnamenext = (OEMCHAR*)diskdrv_getsxsi(i+0x20);
-					if(fname && *fname && fnamenext && *fnamenext && (fnametmp = sysmng_file_getname(fname)) && (fnamenexttmp = sysmng_file_getname(fnamenext))){
+					if(fname && *fname && fnamenext && *fnamenext && (fnametmp = sysmng_file_getname(fname))!=NULL && (fnamenexttmp = sysmng_file_getname(fnamenext))!=NULL){
 						_tcscpy(newtext, scsiimgmenustrorg[i]);
 						_tcscat(newtext, fnametmp);
 						if(_tcscmp(fname, fnamenext)){
 							_tcscat(newtext, OEMTEXT(" -> "));
 							_tcscat(newtext, fnamenexttmp);
 						}
-					}else if(fnamenext && *fnamenext && (fnamenexttmp = sysmng_file_getname(fnamenext))){
+					}else if(fnamenext && *fnamenext && (fnamenexttmp = sysmng_file_getname(fnamenext))!=NULL){
 						_tcscpy(newtext, scsiimgmenustrorg[i]);
 						_tcscat(newtext, OEMTEXT("[none] -> "));
 						_tcscat(newtext, fnamenexttmp);
-					}else if(fname && *fname && (fnametmp = sysmng_file_getname(fname))){
+					}else if(fname && *fname && (fnametmp = sysmng_file_getname(fname))!=NULL){
 						_tcscpy(newtext, scsiimgmenustrorg[i]);
 						_tcscat(newtext, fnametmp);
 						_tcscat(newtext, OEMTEXT(" -> [none]"));

@@ -56,6 +56,9 @@
 #if defined(CPUCORE_IA32)
 #include "ia32/instructions/fpu/fp.h"
 #endif
+#if defined(BIOS_IO_EMULATION)
+#include "bios/bios.h"
+#endif
 
 #if defined(MACOS)
 #define	CRCONST		str_cr

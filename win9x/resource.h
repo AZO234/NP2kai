@@ -183,6 +183,8 @@
 #define IDC_VOLRHYTHM                   15209
 #define IDC_VOLRHYTHMSTR                15210
 #define IDC_SNDMIXDEF                   15211
+#define IDC_VOLMASTER                   15213
+#define IDC_VOLMASTERSTR                15214
 #define IDC_VOLCDDA                     15220
 #define IDC_VOLCDDASTR                  15221
 #define IDC_VOL14L                      15301

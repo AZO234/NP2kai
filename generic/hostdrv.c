@@ -787,6 +787,11 @@ static void get_fileattr(INTRST intrst) {
 			fail(intrst, ERR_FILENOTFOUND);
 			return;
 		}
+	}else{
+		if (hostdrvs_getrealpath(&hdp, intrst->filename_ptr) != ERR_NOERROR) {
+			fail(intrst, ERR_FILENOTFOUND);
+			return;
+		}
 	}
 	TRACEOUT(("get_fileattr: %s - %x", hdp.szPath, hdp.file.attr));
 	ax = hdp.file.attr & 0x37;

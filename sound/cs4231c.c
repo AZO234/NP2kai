@@ -125,7 +125,7 @@ void cs4231_dma(NEVENTITEM item) {
 	UINT	rem;
 	UINT	pos;
 	UINT	size;
-	UINT	r;
+	UINT	r = 0;
 	//SINT32	cnt;
 	if (item->flag & NEVENT_SETEVENT) {
 		if (cs4231.dmach != 0xff) {

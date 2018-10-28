@@ -52,7 +52,7 @@ enum {
 	FDCRLT_DD		= 0x200000,
 	FDCRLT_CM		= 0x400000,
 
-	FDCRLT_NT		= 0x80000000,
+	FDCRLT_NT		= 0x00000000,	// type miss ?
 	FDCRLT_AT		= 0x00000040,
 	FDCRLT_IC		= 0x00000080,
 	FDCRLT_AI		= 0x000000c0,
@@ -103,6 +103,10 @@ typedef struct {
 	UINT8	data[16];
 
 	UINT8	buf[0x8000];
+
+	// SEEKÇ∆RECALIBRATEÇÃí ímäÑÇËçûÇ›óp
+	UINT8	int_timer[4];
+	UINT8	int_stat[4];
 } _FDC, *FDC;
 
 
@@ -125,6 +129,8 @@ void fdcsend_success7(void);
 
 void fdc_reset(const NP2CFG *pConfig);
 void fdc_bind(void);
+
+void fdc_intdelay(void);
 
 #ifdef __cplusplus
 }

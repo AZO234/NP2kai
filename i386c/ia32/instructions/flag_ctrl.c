@@ -119,7 +119,24 @@ PUSHFD_Fd(void)
 		return;
 	}
 	/* VM86 && IOPL != 3 */
+#if defined(USE_VME)
+	if(CPU_CR4 & CPU_CR4_VME){
+		if(CPU_EFLAG & VIP_FLAG){
+			EXCEPTION(GP_EXCEPTION, 0);
+		}else{
+			UINT32 flags = REAL_EFLAGREG & ~(RF_FLAG|VM_FLAG);
+			flags = (flags & ALL_EFLAG) | 2;
+			flags = (flags & ~I_FLAG) | ((flags & VIF_FLAG) >> 10); // VIF → IFにコピー
+			flags |= IOPL_FLAG; // IOPL == 3 の振りをする
+			PUSH0_32(flags);
+			return;
+		}
+	}else{
+		EXCEPTION(GP_EXCEPTION, 0);
+	}
+#else
 	EXCEPTION(GP_EXCEPTION, 0);
+#endif
 }
 
 void
@@ -188,10 +205,29 @@ POPFD_Fd(void)
 		POP0_32(flags);
 		mask = I_FLAG;
 	} else {
+		/* Virtual-8086 Mode, IOPL != 3 */
+#if defined(USE_VME)
+		if(CPU_CR4 & CPU_CR4_VME){
+			if((CPU_EFLAG & VIP_FLAG) || (CPU_EFLAG & T_FLAG)){
+				EXCEPTION(GP_EXCEPTION, 0);
+				flags = 0;
+				mask = 0;
+			}else{
+				POP0_32(flags);
+				flags = (flags & ~VIF_FLAG) | ((flags & I_FLAG) << 10); // IF → VIFにコピー
+				mask = I_FLAG | IOPL_FLAG; // IF, IOPLは変更させない
+			}
+		}else{
+			EXCEPTION(GP_EXCEPTION, 0);
+			flags = 0;
+			mask = 0;
+		}
+#else
 		EXCEPTION(GP_EXCEPTION, 0);
 		flags = 0;
 		mask = 0;
 		/* compiler happy */
+#endif
 	}
 	set_eflags(flags, mask);
 	CPU_CLEAR_PREV_ESP();
@@ -206,11 +242,37 @@ STI(void)
 	if (CPU_STAT_PM) {
 		if (!CPU_STAT_VM86) {
 			if (CPU_STAT_CPL > CPU_STAT_IOPL) {
+#if defined(USE_VME)
+				if((CPU_CR4 & CPU_CR4_PVI) && CPU_STAT_CPL==3){
+					if(CPU_EFLAG & VIP_FLAG){
+						EXCEPTION(GP_EXCEPTION, 0);
+					}else{
+						CPU_EFLAG |= VIF_FLAG;
+						return;
+					}
+				}else{
+					EXCEPTION(GP_EXCEPTION, 0);
+				}
+#else
 				EXCEPTION(GP_EXCEPTION, 0);
+#endif
 			}
 		} else {
 			if (CPU_STAT_IOPL < 3) {
+#if defined(USE_VME)
+				if(CPU_CR4 & CPU_CR4_VME){
+					if(CPU_EFLAG & VIP_FLAG){
+						EXCEPTION(GP_EXCEPTION, 0);
+					}else{
+						CPU_EFLAG |= VIF_FLAG;
+						return;
+					}
+				}else{
+					EXCEPTION(GP_EXCEPTION, 0);
+				}
+#else
 				EXCEPTION(GP_EXCEPTION, 0);
+#endif
 			}
 		}
 	}
@@ -228,11 +290,29 @@ CLI(void)
 	if (CPU_STAT_PM) {
 		if (!CPU_STAT_VM86) {
 			if (CPU_STAT_CPL > CPU_STAT_IOPL) {
+#if defined(USE_VME)
+				if((CPU_CR4 & CPU_CR4_PVI) && CPU_STAT_CPL==3){
+					CPU_EFLAG &= ~VIF_FLAG;
+					return;
+				}else{
+					EXCEPTION(GP_EXCEPTION, 0);
+				}
+#else
 				EXCEPTION(GP_EXCEPTION, 0);
+#endif
 			}
 		} else {
 			if (CPU_STAT_IOPL < 3) {
+#if defined(USE_VME)
+				if(CPU_CR4 & CPU_CR4_VME){
+					CPU_EFLAG &= ~VIF_FLAG;
+					return;
+				}else{
+					EXCEPTION(GP_EXCEPTION, 0);
+				}
+#else
 				EXCEPTION(GP_EXCEPTION, 0);
+#endif
 			}
 		}
 	}

@@ -1626,7 +1626,7 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 				//char *strText;
 				if(autokey_sendbuffer==NULL){
 					if (OpenClipboard(hWnd)){
-						if(hg = GetClipboardData(CF_TEXT)) {
+						if((hg = GetClipboardData(CF_TEXT))!=NULL) {
 							txtlen = (int)GlobalSize(hg);
 							autokey_sendbufferlen = 0;
 							autokey_sendbuffer = (char*)malloc(txtlen);
@@ -2855,6 +2855,7 @@ void loadNP2INI(const OEMCHAR *fname){
 
 	CSoundMng::Initialize();
 	OpenSoundDevice(hWnd);
+	soundmng_setvolume(np2cfg.vol_master);
 
 	if (CSoundMng::GetInstance()->Open(static_cast<CSoundMng::DeviceType>(np2oscfg.cSoundDeviceType), np2oscfg.szSoundDeviceName, hWnd))
 	{
@@ -3179,6 +3180,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 
 	CSoundMng::Initialize();
 	OpenSoundDevice(hWnd);
+	soundmng_setvolume(np2cfg.vol_master);
 
 	if (CSoundMng::GetInstance()->Open(static_cast<CSoundMng::DeviceType>(np2oscfg.cSoundDeviceType), np2oscfg.szSoundDeviceName, hWnd))
 	{

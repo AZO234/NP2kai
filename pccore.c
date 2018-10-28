@@ -108,7 +108,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 				0xd2, 3, 5,
 #endif	/* SUPPORT_SOUND_SB16 */
 
-				3, {0x0c, 0x0c, 0x08, 0x06, 0x03, 0x0c}, 64, 64, 64, 64, 64,
+				3, {0x0c, 0x0c, 0x08, 0x06, 0x03, 0x0c}, 100, 64, 64, 64, 64, 64,
 				1, 0x82, 0,
 				0, {0x17, 0x04, 0x17}, {0x0c, 0x0c, 0x02, 0x10, 0x3f, 0x3f},
 #if defined(SUPPORT_FMGEN)
@@ -146,7 +146,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 				0, 0x5B, 0,
 #endif
 #if defined(SUPPORT_GPIB)
-				0, 12, 1, 0, 
+				0, 12, 1, 0, 0, 
 #endif
 #if defined(SUPPORT_PCI)
 				0, 0, 0,
@@ -157,6 +157,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 				0, 0,
 				0, 0xff00, 
 				0, 0, 0,
+				1,
 				CPU_VENDOR, CPU_FAMILY, CPU_MODEL, CPU_STEPPING, CPU_FEATURES, CPU_FEATURES_EX, CPU_BRAND_STRING, OEMTEXT(""), OEMTEXT(""), CPU_BRAND_ID_AUTO, CPU_FEATURES_ECX,
 				FPU_TYPE_SOFTFLOAT
 	};
@@ -961,6 +962,7 @@ void pccore_exec(BOOL draw) {
 	calendar_inc();
 	S98_sync();
 	sound_sync();
+	fdc_intdelay();	// FDC SEEK & RECALIBRATE, etc. np21w ver0.86 rev46
 
 	if (pcstat.hardwarereset) {
 		pcstat.hardwarereset = FALSE;

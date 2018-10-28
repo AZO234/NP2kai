@@ -113,6 +113,7 @@ CSoundDeviceWasapi::CSoundDeviceWasapi()
 	, m_pwfx(NULL)
 	, m_pRenderClient(NULL)
 	, m_nBufferSize(0)
+	, m_mastervolume(100)
 {
 	ZeroMemory(m_hEvents, sizeof(m_hEvents));
 }
@@ -266,6 +267,8 @@ UINT CSoundDeviceWasapi::CreateStream(UINT nSamplingRate, UINT nChannels, UINT n
 			break;
 		}
 
+		SetMasterVolume(m_mastervolume);
+
 		ResetStream();
 
 		m_hEvents[1] = ::CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -362,6 +365,19 @@ void CSoundDeviceWasapi::StopStream()
 	if (m_pAudioClient)
 	{
 		m_pAudioClient->Stop();
+	}
+}
+
+/**
+ * ストリーム ヴォリューム設定
+ * @param[in] nVolume ヴォリューム(max 100)
+ */
+void CSoundDeviceWasapi::SetMasterVolume(int nVolume)
+{
+	m_mastervolume = nVolume;
+	if (m_pAudioClient)
+	{
+		// TODO: マスタボリューム設定
 	}
 }
 

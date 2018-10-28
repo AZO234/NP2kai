@@ -214,7 +214,7 @@ BOOL CHostdrvDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 				binfo.lParam = (LPARAM)(hdrvroottmp);               
 				binfo.iImage = 0;
     
-				if((idlist = SHBrowseForFolder(&binfo))){
+				if((idlist = SHBrowseForFolder(&binfo))!=NULL){
 					SHGetPathFromIDList(idlist, dir);
 					_tcscpy(hdrvroottmp, dir);
 					hdrvpathlen = (int)_tcslen(hdrvroottmp);
