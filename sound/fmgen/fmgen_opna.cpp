@@ -2052,7 +2052,7 @@ void OPNB::DataSave(struct OPNBData* data, void* adpcmadata) {
 
 // ---------------------------------------------------------------------------
 void OPNB::DataLoad(struct OPNBData* data, void* adpcmadata) {
-	OPNABase::DataSave(&data->opnabase);
+	OPNABase::DataLoad(&data->opnabase);
 	if(data->adpcmasize) {
 		adpcmabuf = (uint8*)malloc(data->adpcmasize);
 		memcpy(adpcmabuf, adpcmadata, data->adpcmasize);
