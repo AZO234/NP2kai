@@ -123,7 +123,7 @@ static void info_mem1(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 static void info_mem2(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
 	UINT	memsize;
-	OEMCHAR	memstr[16];
+	OEMCHAR	memstr[32];
 
 	memsize = np2cfg.memsw[2] & 7;
 	if (memsize < 6) {
@@ -141,7 +141,7 @@ static void info_mem2(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 static void info_mem3(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
 	UINT	memsize;
-	OEMCHAR	memstr[16];
+	OEMCHAR	memstr[32];
 
 	memsize = np2cfg.memsw[2] & 7;
 	if (memsize < 6) {

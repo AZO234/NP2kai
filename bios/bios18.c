@@ -305,13 +305,27 @@ const CRTDATA	*p;
 	}
 	if ((scrn & 0x30) == 0x30) {				// 640x480
 #if defined(SUPPORT_PC9821)
-		if (rate & 4) {
-			gdc_analogext(TRUE);
-			mem[MEMB_PRXDUPD] |= 0x80;
-			crt = 4;
-			master = 3 + (scrn & 3);
-			slave = 1;
-			gdc.analog |= (1 << GDCANALOG_256E);
+		//if (rate & 4) {
+		if (rate & 0xc) { // np21w ver0.86 rev47 workaround
+//#if defined(BIOS_IO_EMULATION)
+//			// XXX: Windows3.1 DOSプロンプト用 無理やり
+//			if (CPU_STAT_PM && CPU_STAT_VM86) {
+//				biosioemu_enq8(0x6a, 0x21);
+//				mem[MEMB_PRXDUPD] |= 0x80;
+//				crt = 4;
+//				master = 3 + (scrn & 3);
+//				slave = 1;
+//				biosioemu_enq8(0x6a, 0x69);
+//			}else
+//#endif	
+			{
+				gdc_analogext(TRUE);
+				mem[MEMB_PRXDUPD] |= 0x80;
+				crt = 4;
+				master = 3 + (scrn & 3);
+				slave = 1;
+				gdc.analog |= (1 << GDCANALOG_256E);
+			}
 		}
 		else
 #endif
@@ -341,19 +355,48 @@ const CRTDATA	*p;
 		}
 #if defined(SUPPORT_PC9821)
 		else {
-			gdc_analogext(FALSE);
+//#if defined(BIOS_IO_EMULATION)
+//			// XXX: Windows3.1 DOSプロンプト用 無理やり
+//			if (CPU_STAT_PM && CPU_STAT_VM86) {
+//				biosioemu_enq8(0x6a, 0x20);
+//			}else
+//#endif	
+			{
+				gdc_analogext(FALSE);
+			}
 			mem[MEMB_PRXDUPD] &= ~0x80;
 		}
-		gdc.analog &= ~(1 << (GDCANALOG_256E));
+#if defined(BIOS_IO_EMULATION)
+		// XXX: Windows3.1 DOSプロンプト用 無理やり
+		if (CPU_STAT_PM && CPU_STAT_VM86) {
+			biosioemu_enq8(0x6a, 0x68);
+		}else
+#endif	
+		{
+			gdc.analog &= ~(1 << (GDCANALOG_256E));
+		}
 #endif
 	}
 	crt += (scrn & 3);
-
-	if (rate & 4) {
-		gdc.display |= (1 << GDCDISP_31);
-	}
-	else {
-		gdc.display &= ~(1 << GDCDISP_31);
+	
+//#if defined(BIOS_IO_EMULATION)
+//	// XXX: Windows3.1 DOSプロンプト用 無理やり
+//	if (CPU_STAT_PM && CPU_STAT_VM86) {
+//		if (rate & 4) {
+//			biosioemu_push8(0x09a8, 0x01);
+//		}
+//		else {
+//			biosioemu_push8(0x09a8, 0x00);
+//		}
+//	}else
+//#endif	
+	{
+		if (rate & 4) {
+			gdc.display |= (1 << GDCDISP_31);
+		}
+		else {
+			gdc.display &= ~(1 << GDCDISP_31);
+		}
 	}
 
 	CopyMemory(gdc.m.para + GDC_SYNC, gdcmastersync[master], 8);
@@ -374,13 +417,31 @@ const CRTDATA	*p;
 	CopyMemory(gdc.s.para + GDC_SYNC, gdcslavesync[slave], 8);
 	ZeroMemory(gdc.s.para + GDC_SCROLL, 4);
 	if (slave & 1) {
-		gdc.s.para[GDC_PITCH] = 80;
+#if defined(BIOS_IO_EMULATION)
+		// XXX: Windows3.1 DOSプロンプト用 無理やり
+		if (CPU_STAT_PM && CPU_STAT_VM86) {
+			biosioemu_enq8(0xa2, CMD_PITCH);
+			biosioemu_enq8(0xa0, 80);
+		}else
+#endif	
+		{
+			gdc.s.para[GDC_PITCH] = 80;
+		}
 		gdc.clock |= 3;
 		mem[MEMB_PRXDUPD] |= 0x04;
 		gdc.s.para[GDC_SCROLL+3] = 0x40;
 	}
 	else {
-		gdc.s.para[GDC_PITCH] = 40;
+#if defined(BIOS_IO_EMULATION)
+		// XXX: Windows3.1 DOSプロンプト用 無理やり
+		if (CPU_STAT_PM && CPU_STAT_VM86) {
+			biosioemu_enq8(0xa2, CMD_PITCH);
+			biosioemu_enq8(0xa0, 40);
+		}else
+#endif	
+		{
+			gdc.s.para[GDC_PITCH] = 40;
+		}
 		gdc.clock &= ~3;
 		mem[MEMB_PRXDUPD] &= ~0x04;
 	}
@@ -397,10 +458,22 @@ const CRTDATA	*p;
 		gdc.s.para[GDC_CSRFORM] = 1;
 	}
 
-	gdcs.textdisp &= ~GDCSCRN_ENABLE;
-	gdcs.textdisp |= GDCSCRN_EXT | GDCSCRN_ALLDRAW2;
-	gdcs.grphdisp |= GDCSCRN_EXT | GDCSCRN_ALLDRAW2;
-	pcstat.screenupdate |= 2;
+#if defined(BIOS_IO_EMULATION)
+	// XXX: Windows3.1 DOSプロンプト用 無理やり
+	if (CPU_STAT_PM && CPU_STAT_VM86) {
+		biosioemu_enq8(0x6a, 0x40 | ((gdc.display & (1 << GDCDISP_PLAZMA)) ? 1 : 0)); // gdcs.textdisp |= GDCSCRN_EXT; の代わり・・・
+		biosioemu_enq8(0x6a, 0x82 | (gdc.clock & 1)); // gdcs.grphdisp |= GDCSCRN_EXT;
+		biosioemu_enq8(0x62, CMD_STOP); // gdcs.textdisp &= ~GDCSCRN_ENABLE; pcstat.screenupdate |= 2;
+	}else
+#endif	
+	{
+		gdcs.textdisp &= ~GDCSCRN_ENABLE;
+		gdcs.textdisp |= GDCSCRN_EXT;
+		gdcs.grphdisp |= GDCSCRN_EXT;
+		pcstat.screenupdate |= 2;
+	}
+	gdcs.textdisp |= GDCSCRN_ALLDRAW2;
+	gdcs.grphdisp |= GDCSCRN_ALLDRAW2;
 
 	mem[0x597] &= ~3;
 	mem[0x597] |= (scrn >> 4) & 3;
@@ -885,7 +958,24 @@ void bios0x18(void) {
 			break;
 
    		case 0x03:						// キーボード・インタフェイスの初期化
-			bios0x09_init();
+#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
+			// np21w ver0.86 rev47 BIOS I/O emulation
+			if (CPU_STAT_PM && CPU_STAT_VM86) {
+				biosioemu_push8(0x43, 0x3a);
+				biosioemu_push8(0x43, 0x32);
+				biosioemu_push8(0x43, 0x16);
+				ZeroMemory(mem + 0x00502, 0x20);
+				ZeroMemory(mem + 0x00528, 0x13);
+				SETBIOSMEM16(MEMW_KB_SHIFT_TBL, 0x0e00);
+				SETBIOSMEM16(MEMW_KB_BUF_HEAD, 0x0502);
+				SETBIOSMEM16(MEMW_KB_BUF_TAIL, 0x0502);
+				SETBIOSMEM16(MEMW_KB_CODE_OFF, 0x0e00);
+				SETBIOSMEM16(MEMW_KB_CODE_SEG, 0xfd80);
+			}else
+#endif
+			{
+				bios0x09_init();
+			}
 			break;
 
    		case 0x04:						// キー入力状態のセンス
@@ -911,20 +1001,36 @@ void bios0x18(void) {
  			break;
 
    		case 0x0c:						// テキスト画面の表示開始
-			bios0x18_0c();
-#if defined(BIOS_IO_EMULATION)
-			biosioemu_push8(0x62, 0x0D); // np21w ver0.86 rev46 BIOS I/O emulation
+#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
+			// np21w ver0.86 rev47 BIOS I/O emulation
+			if (CPU_STAT_PM && CPU_STAT_VM86) {
+				if (!(gdcs.textdisp & GDCSCRN_ENABLE)) {
+					pcstat.screenupdate |= 2;
+ 				}
+				biosioemu_push8(0x62, CMD_START);
+			} else
 #endif
+			{
+				bios0x18_0c();
+			}
  			break;
 
    		case 0x0d:						// テキスト画面の表示終了
-			if (gdcs.textdisp & GDCSCRN_ENABLE) {
-				gdcs.textdisp &= ~(GDCSCRN_ENABLE);
-				pcstat.screenupdate |= 2;
-			}
-#if defined(BIOS_IO_EMULATION)
-			biosioemu_push8(0x62, 0x0C); // np21w ver0.86 rev46 BIOS I/O emulation
+#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
+			// np21w ver0.86 rev47 BIOS I/O emulation
+			if (CPU_STAT_PM && CPU_STAT_VM86) {
+				if (gdcs.textdisp & GDCSCRN_ENABLE) {
+					pcstat.screenupdate |= 2;
+				}
+				biosioemu_push8(0x62, CMD_STOP);
+			} else
 #endif
+			{
+				if (gdcs.textdisp & GDCSCRN_ENABLE) {
+					gdcs.textdisp &= ~(GDCSCRN_ENABLE);
+					pcstat.screenupdate |= 2;
+				}
+			}
  			break;
 
 		case 0x0e:						// 一つの表示領域の設定
@@ -1045,17 +1151,37 @@ void bios0x18(void) {
 			break;
 #endif
    		case 0x40:						// グラフィック画面の表示開始
-			bios0x18_40();
-#if defined(BIOS_IO_EMULATION)
-			biosioemu_push8(0xa2, 0x0D); // np21w ver0.86 rev46 BIOS I/O emulation
+#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
+			// np21w ver0.86 rev47 BIOS I/O emulation
+			if (CPU_STAT_PM && CPU_STAT_VM86) {
+				gdc_forceready(GDCWORK_SLAVE);
+				if (!(gdcs.grphdisp & GDCSCRN_ENABLE)) {
+					pcstat.screenupdate |= 2;
+				}
+				biosioemu_push8(0xa2, CMD_START); 
+				mem[MEMB_PRXCRT] |= 0x80;
+			} else
 #endif
+			{
+				bios0x18_40();
+			}
  			break;
 
    		case 0x41:						// グラフィック画面の表示終了
-			bios0x18_41();
-#if defined(BIOS_IO_EMULATION)
-			biosioemu_push8(0xa2, 0x0C); // np21w ver0.86 rev46 BIOS I/O emulation
+#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
+			// np21w ver0.86 rev47 BIOS I/O emulation
+			if (CPU_STAT_PM && CPU_STAT_VM86) {
+				gdc_forceready(GDCWORK_SLAVE);
+				if (gdcs.grphdisp & GDCSCRN_ENABLE) {
+					pcstat.screenupdate |= 2;
+				}
+				biosioemu_push8(0xa2, CMD_STOP);
+				mem[MEMB_PRXCRT] &= 0x7f;
+			} else
 #endif
+			{
+				bios0x18_41();
+			}
  			break;
 
    		case 0x42:						// 表示領域の設定

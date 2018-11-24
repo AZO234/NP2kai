@@ -642,7 +642,7 @@ void IOOUTCALL iocore_out16(UINT port, REG16 dat) {
 #endif
 #if defined(SUPPORT_CL_GD5430)
 	if(np2clvga.enabled && cirrusvga_opaque){
-		if(np2clvga.gd54xxtype == CIRRUS_98ID_WAB || np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F || np2clvga.gd54xxtype == CIRRUS_98ID_GA98NB){
+		if((np2clvga.gd54xxtype & CIRRUS_98ID_WABMASK) == CIRRUS_98ID_WAB || (np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC){
 			if(pc98_cirrus_isWABport(port)){
 				cirrusvga_ioport_write_wrap16(port, (UINT16)dat);
 				return;
@@ -707,7 +707,7 @@ REG16 IOINPCALL iocore_inp16(UINT port) {
 #endif
 #if defined(SUPPORT_CL_GD5430)
 	if(np2clvga.enabled && cirrusvga_opaque){
-		if(np2clvga.gd54xxtype == CIRRUS_98ID_WAB || np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F || np2clvga.gd54xxtype == CIRRUS_98ID_GA98NB){
+		if((np2clvga.gd54xxtype & CIRRUS_98ID_WABMASK) == CIRRUS_98ID_WAB || (np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC){
 			if(pc98_cirrus_isWABport(port)){
 				return(cirrusvga_ioport_read_wrap16(port));
 			}
@@ -760,7 +760,7 @@ void IOOUTCALL iocore_out32(UINT port, UINT32 dat) {
 #endif
 #if defined(SUPPORT_CL_GD5430)
 	if(np2clvga.enabled && cirrusvga_opaque){
-		if(np2clvga.gd54xxtype == CIRRUS_98ID_WAB || np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F || np2clvga.gd54xxtype == CIRRUS_98ID_GA98NB){
+		if((np2clvga.gd54xxtype & CIRRUS_98ID_WABMASK) == CIRRUS_98ID_WAB || (np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC){
 			if(pc98_cirrus_isWABport(port)){
 				cirrusvga_ioport_write_wrap32(port, (UINT32)dat);
 				return;
@@ -784,7 +784,7 @@ UINT32 IOINPCALL iocore_inp32(UINT port) {
 #endif
 #if defined(SUPPORT_CL_GD5430)
 	if(np2clvga.enabled && cirrusvga_opaque){
-		if(np2clvga.gd54xxtype == CIRRUS_98ID_WAB || np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F || np2clvga.gd54xxtype == CIRRUS_98ID_GA98NB){
+		if((np2clvga.gd54xxtype & CIRRUS_98ID_WABMASK) == CIRRUS_98ID_WAB || (np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC){
 			if(pc98_cirrus_isWABport(port)){
 				return(cirrusvga_ioport_read_wrap32(port));
 			}

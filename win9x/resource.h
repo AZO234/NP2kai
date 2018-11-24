@@ -410,7 +410,11 @@
 #define IDS_GD5430_WAB                  30610
 #define IDS_GD5430_WSN_A2F              30611
 #define IDS_GD5430_WSN                  30612
-#define IDS_GD5430_GA98NB               30620
+#define IDS_GD5430_GA98NBIC             30620
+#define IDS_GD5430_GA98NBII             30621
+#define IDS_GD5430_GA98NBIV             30622
+#define IDS_GD5430_AUTO_XE_WA_PCI       30693
+#define IDS_GD5430_AUTO_XE_W4_PCI       30694
 #define IDS_GD5430_AUTO_XE_WS_PCI       30695
 #define IDS_GD5430_96                   30696
 #define IDS_GD5430_AUTO_XE10_WABS       30697
@@ -715,6 +719,7 @@
 #define IDM_TXTSAVE                     40715
 #define IDM_TIMERFIX                    40716
 #define IDM_SKIP16MEMCHK                40717
+#define IDM_FASTMEMCHK                  40718
 #define IDM_ALTENTER                    40721
 #define IDM_ALTF4                       40722
 #define IDM_SYSKHOOK                    40729

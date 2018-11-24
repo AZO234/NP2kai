@@ -15,11 +15,14 @@
 
 	UINT	sys_updates;
 
+	SYSMNGMISCINFO	sys_miscinfo = {0};
+
 
 // ----
 
-static	OEMCHAR	title[512];
-static	OEMCHAR	clock[64];
+static	OEMCHAR	title[2048] = {0};
+static	OEMCHAR	clock[256] = {0};
+static	OEMCHAR	misc[256] = {0};
 
 static struct {
 	UINT32	tick;
@@ -73,8 +76,8 @@ void sysmng_updatecaption(UINT8 flag) {
 	static OEMCHAR scsiimgmenustrorg[4][MAX_PATH] = {0};
 	static OEMCHAR scsiimgmenustr[4][MAX_PATH] = {0};
 #endif
-	OEMCHAR	work[512];
-
+	OEMCHAR	work[2048] = {0};
+	
 	if (flag & 1) {
 		title[0] = '\0';
 		if (fdd_diskready(0)) {
@@ -233,7 +236,20 @@ void sysmng_updatecaption(UINT8 flag) {
 #endif
 		}
 	}
+	
+	if (flag & 4) {
+		misc[0] = '\0';
+		if(sys_miscinfo.showvolume && sys_miscinfo.showmousespeed){
+			OEMSPRINTF(misc, OEMTEXT(" (Volume: %d%%, Mouse speed: %d%%)"), np2cfg.vol_master, 100 * np2oscfg.mousemul/np2oscfg.mousediv);
+		}else if(sys_miscinfo.showvolume){
+			OEMSPRINTF(misc, OEMTEXT(" (Volume: %d%%)"), np2cfg.vol_master);
+		}else if(sys_miscinfo.showmousespeed){
+			OEMSPRINTF(misc, OEMTEXT(" (Mouse speed: %d%%)"), 100 * np2oscfg.mousemul/np2oscfg.mousediv);
+		}
+	}
+
 	milstr_ncpy(work, np2oscfg.titles, NELEMENTS(work));
+	milstr_ncat(work, misc, NELEMENTS(work));
 	milstr_ncat(work, title, NELEMENTS(work));
 	milstr_ncat(work, clock, NELEMENTS(work));
 	SetWindowText(g_hWndMain, work);

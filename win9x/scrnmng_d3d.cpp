@@ -92,6 +92,9 @@ UINT8	current_d3d_imode = 0;
 static int d3d_cs_initialized = 0;
 static CRITICAL_SECTION d3d_cs;
 
+static BOOL d3d_tryenter_criticalsection(void){
+	return TryEnterCriticalSection(&d3d_cs);
+}
 static void d3d_enter_criticalsection(void){
 	EnterCriticalSection(&d3d_cs);
 }
@@ -324,7 +327,8 @@ static void clearoutofrect(const RECT *target, const RECT *base) {
 	if (dev == NULL) {
 		return;
 	}
-
+	
+	d3d_enter_criticalsection();
 	rect.left = base->left;
 	rect.right = base->right;
 	rect.top = base->top;
@@ -373,13 +377,12 @@ static void clearoutofrect(const RECT *target, const RECT *base) {
 		}
 	}
 	if(rectd3dc){
-		d3d_enter_criticalsection();
 		dev->Clear(rectd3dc, rectd3d, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 0.0f, 0);
 		dev->Present(NULL, NULL, NULL, NULL);
 		dev->Clear(rectd3dc, rectd3d, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 0.0f, 0);
 		dev->Present(NULL, NULL, NULL, NULL);
-		d3d_leave_criticalsection();
 	}
+	d3d_leave_criticalsection();
 }
 
 static void clearoutscreen(void) {
@@ -464,6 +467,11 @@ static void update_backbuffer2size(){
 		if(d3d.backsurf2height < 480){
 			d3d.backsurf2height = 480;
 		}
+		d3d_enter_criticalsection();
+		if (d3d.backsurf2) {
+			d3d.backsurf2->Release();
+			d3d.backsurf2 = NULL;
+		}
 		if(d3d.backsurf2width/2 == d3d.d3dparam.BackBufferWidth || d3d.backsurf2width/2+2 == d3d.d3dparam.BackBufferWidth || d3d.d3ddev->CreateRenderTarget(d3d.backsurf2width + 2, d3d.backsurf2height + 2, d3d.d3dparam.BackBufferFormat, D3DMULTISAMPLE_NONE, 0, FALSE, &d3d.backsurf2, NULL) != D3D_OK){
 			d3d.backsurf2width /= 2;
 			d3d.backsurf2height /= 2;
@@ -472,6 +480,7 @@ static void update_backbuffer2size(){
 				d3d.backsurf2 = NULL;
 			}
 		}
+		d3d_leave_criticalsection();
 		d3d.backsurf2width += 2;
 		d3d.backsurf2height += 2;
 	}
@@ -479,11 +488,33 @@ static void update_backbuffer2size(){
 
 static void restoresurfaces() {
 	HRESULT r;
+
 	d3d_enter_criticalsection();
 	if(d3d.d3ddev->TestCooperativeLevel()==D3DERR_DEVICENOTRESET){
 		static UINT  bufwidth, bufheight;
 		static UINT  wabwidth, wabheight;
 		D3DSURFACE_DESC d3dsdesc;
+
+		if(devicelostflag==2 || devicelostflag==3){
+			// 強制再作成
+			if(devicelostflag==2){
+				devicelostflag = 0;
+				scrnmngD3D_destroy();
+			}else{
+				devicelostflag = 0;
+			}
+			if(scrnmngD3D_create(g_scrnmode) == SUCCESS){
+				devicelostflag = 0;
+				mt_wabpausedrawing = 0;
+				d3d_leave_criticalsection();
+				scrnmngD3D_updatefsres();
+				scrndraw_updateallline();
+			}else{
+				devicelostflag = 3;
+			}
+			return;
+		}
+
 #if defined(SUPPORT_DCLOCK)
 		if (d3d.clocksurf) {
 			d3d.clocksurf->Release();
@@ -547,11 +578,11 @@ static void restoresurfaces() {
 			scrnmngD3D_updatefsres();
 			scrndraw_updateallline();
 		}else{
-			devicelostflag = 1;
+			devicelostflag = 2;
 			d3d_leave_criticalsection();
 		}
 	}else{
-		devicelostflag = 1;
+		if(!devicelostflag) devicelostflag = 1;
 		d3d_leave_criticalsection();
 	}
 }
@@ -937,13 +968,6 @@ void scrnmngD3D_destroy(void) {
 	if(devicelostflag) return;
 	
 	d3d_enter_criticalsection();
-	if (scrnmng.flag & SCRNFLAG_FULLSCREEN) {
-		np2class_enablemenu(g_hWndMain, (!np2oscfg.wintype));
-		oldwindowed = d3d.d3dparam.Windowed;
-		d3d.d3dparam.Windowed = TRUE;
-		d3d.d3ddev->Reset(&d3d.d3dparam);
-		d3d.d3dparam.Windowed = oldwindowed;
-	}
 #if defined(SUPPORT_DCLOCK)
 	if (d3d.clocksurf) {
 		d3d.clocksurf->Release();
@@ -970,6 +994,13 @@ void scrnmngD3D_destroy(void) {
 	if (d3d.d3dbacksurf) {
 		d3d.d3dbacksurf->Release();
 		d3d.d3dbacksurf = NULL;
+	}
+	if (scrnmng.flag & SCRNFLAG_FULLSCREEN) {
+		np2class_enablemenu(g_hWndMain, (!np2oscfg.wintype));
+		oldwindowed = d3d.d3dparam.Windowed;
+		d3d.d3dparam.Windowed = TRUE;
+		d3d.d3ddev->Reset(&d3d.d3dparam);
+		d3d.d3dparam.Windowed = oldwindowed;
 	}
 	if (d3d.d3ddev) {
 		d3d.d3ddev->Release();
@@ -1062,40 +1093,45 @@ void scrnmngD3D_clearwinui(void) {
 		}
 	}
 	mousemng_enable(MOUSEPROC_WINUI);
-	
-	d3d_leave_criticalsection();
 
 	if(scrnmng.forcereset){
 		scrnmng_destroy();
 		if (scrnmng_create(g_scrnmode) != SUCCESS) {
 			g_scrnmode &= ~SCRNMODE_FULLSCREEN;
 			if (scrnmng_create(g_scrnmode) != SUCCESS) {
+				d3d_leave_criticalsection();
 				PostQuitMessage(0);
 				return;
 			}
 		}
 		scrnmng.forcereset = 0;
 	}
+	
+	d3d_leave_criticalsection();
 }
 
 void scrnmngD3D_setwidth(int posx, int width) {
 
 	if(scrnstat.width != width){
 		scrnstat.width = width;
-		if (d3d.scrnmode & SCRNMODE_FULLSCREEN) {
-			renewalclientsize(TRUE);
-			update_backbuffer2size();
-			clearoutfullscreen();
-		}else{
-			DEVMODE devmode;
-			if (EnumDisplaySettings(NULL, ENUM_REGISTRY_SETTINGS, &devmode)) {
-				while (((width * scrnstat.multiple) >> 3) >= (int)devmode.dmPelsWidth-64){
-					scrnstat.multiple--;
-					if(scrnstat.multiple==1) break;
+		if(d3d.d3dbacksurf){
+			if (d3d.scrnmode & SCRNMODE_FULLSCREEN) {
+				renewalclientsize(TRUE);
+				update_backbuffer2size();
+				clearoutfullscreen();
+			}else{
+				DEVMODE devmode;
+				if (EnumDisplaySettings(NULL, ENUM_REGISTRY_SETTINGS, &devmode)) {
+					while (((width * scrnstat.multiple) >> 3) >= (int)devmode.dmPelsWidth-32){
+						scrnstat.multiple--;
+						if(scrnstat.multiple==1) break;
+					}
 				}
+				d3d_enter_criticalsection();
+				scrnmngD3D_destroy();
+				scrnmngD3D_create(g_scrnmode);
+				d3d_leave_criticalsection();
 			}
-			scrnmngD3D_destroy();
-			scrnmngD3D_create(g_scrnmode);
 		}
 	}
 }
@@ -1105,13 +1141,17 @@ void scrnmngD3D_setextend(int extend) {
 	if(scrnstat.extend != extend){
 		scrnstat.extend = extend;
 		scrnmng.allflash = TRUE;
-		if (d3d.scrnmode & SCRNMODE_FULLSCREEN) {
-			renewalclientsize(TRUE);
-			update_backbuffer2size();
-			clearoutfullscreen();
-		}else{
-			scrnmngD3D_destroy();
-			scrnmngD3D_create(g_scrnmode);
+		if(d3d.d3dbacksurf){
+			if (d3d.scrnmode & SCRNMODE_FULLSCREEN) {
+				renewalclientsize(TRUE);
+				update_backbuffer2size();
+				clearoutfullscreen();
+			}else{
+				d3d_enter_criticalsection();
+				scrnmngD3D_destroy();
+				scrnmngD3D_create(g_scrnmode);
+				d3d_leave_criticalsection();
+			}
 		}
 	}
 }
@@ -1120,20 +1160,24 @@ void scrnmngD3D_setheight(int posy, int height) {
 	
 	if(scrnstat.height != height){
 		scrnstat.height = height;
-		if (d3d.scrnmode & SCRNMODE_FULLSCREEN) {
-			renewalclientsize(TRUE);
-			update_backbuffer2size();
-			clearoutfullscreen();
-		}else{
-			DEVMODE devmode;
-			if (EnumDisplaySettings(NULL, ENUM_REGISTRY_SETTINGS, &devmode)) {
-				while (((height * scrnstat.multiple) >> 3) >= (int)devmode.dmPelsHeight-64){
-					scrnstat.multiple--;
-					if(scrnstat.multiple==1) break;
+		if(d3d.d3dbacksurf){
+			if (d3d.scrnmode & SCRNMODE_FULLSCREEN) {
+				renewalclientsize(TRUE);
+				update_backbuffer2size();
+				clearoutfullscreen();
+			}else{
+				DEVMODE devmode;
+				if (EnumDisplaySettings(NULL, ENUM_REGISTRY_SETTINGS, &devmode)) {
+					while (((height * scrnstat.multiple) >> 3) >= (int)devmode.dmPelsHeight-32){
+						scrnstat.multiple--;
+						if(scrnstat.multiple==1) break;
+					}
 				}
+				d3d_enter_criticalsection();
+				scrnmngD3D_destroy();
+				scrnmngD3D_create(g_scrnmode);
+				d3d_leave_criticalsection();
 			}
-			scrnmngD3D_destroy();
-			scrnmngD3D_create(g_scrnmode);
 		}
 	}
 }
@@ -1177,9 +1221,9 @@ const SCRNSURF *scrnmngD3D_surflock(void) {
 void scrnmngD3D_surfunlock(const SCRNSURF *surf) {
 	
 	d3d.backsurf->UnlockRect();
-	d3d_leave_criticalsection();
 	scrnmngD3D_update();
 	recvideo_update();
+	d3d_leave_criticalsection();
 }
 
 void scrnmngD3D_update(void) {
@@ -1207,6 +1251,7 @@ void scrnmngD3D_update(void) {
 		paletteset();
 	}
 	
+	//if(!d3d_tryenter_criticalsection()) return;
 	d3d_enter_criticalsection();
 	if(d3d.backsurf != NULL) {
 		if(d3d.backsurf2 != NULL && (current_d3d_imode == D3D_IMODE_PIXEL || current_d3d_imode == D3D_IMODE_PIXEL2 || current_d3d_imode == D3D_IMODE_PIXEL3)){
@@ -1358,20 +1403,24 @@ void scrnmngD3D_setmultiple(int multiple)
 	if (scrnstat.multiple != multiple)
 	{
 		scrnstat.multiple = multiple;
-		if (d3d.scrnmode & SCRNMODE_FULLSCREEN) {
-			renewalclientsize(TRUE);
-			update_backbuffer2size();
-			clearoutfullscreen();
-		}else{
-			DEVMODE devmode;
-			if (EnumDisplaySettings(NULL, ENUM_REGISTRY_SETTINGS, &devmode)) {
-				while (((scrnstat.width * scrnstat.multiple) >> 3) >= (int)devmode.dmPelsWidth-64 || ((scrnstat.height * scrnstat.multiple) >> 3) >= (int)devmode.dmPelsHeight-64){
-					scrnstat.multiple--;
-					if(scrnstat.multiple==1) break;
+		if(d3d.d3dbacksurf){
+			if (d3d.scrnmode & SCRNMODE_FULLSCREEN) {
+				renewalclientsize(TRUE);
+				update_backbuffer2size();
+				clearoutfullscreen();
+			}else{
+				DEVMODE devmode;
+				if (EnumDisplaySettings(NULL, ENUM_REGISTRY_SETTINGS, &devmode)) {
+					while (((scrnstat.width * scrnstat.multiple) >> 3) >= (int)devmode.dmPelsWidth-32 || ((scrnstat.height * scrnstat.multiple) >> 3) >= (int)devmode.dmPelsHeight-32){
+						scrnstat.multiple--;
+						if(scrnstat.multiple==1) break;
+					}
 				}
+				d3d_enter_criticalsection();
+				scrnmngD3D_destroy();
+				scrnmngD3D_create(g_scrnmode);
+				d3d_leave_criticalsection();
 			}
-			scrnmngD3D_destroy();
-			scrnmngD3D_create(g_scrnmode);
 		}
 	}
 }
@@ -1574,7 +1623,7 @@ void scrnmngD3D_updatefsres(void) {
 	int height = scrnstat.height;
 
 	if(devicelostflag) return;
-
+	
 	rect.left = rect.top = 0;
 	rect.right = width;
 	rect.bottom = height;
@@ -1583,8 +1632,8 @@ void scrnmngD3D_updatefsres(void) {
 		d3d_enter_criticalsection();
 		d3d.d3ddev->ColorFill(d3d.wabsurf, NULL, D3DCOLOR_XRGB(0, 0, 0));
 		d3d.d3ddev->ColorFill(d3d.backsurf, NULL, D3DCOLOR_XRGB(0, 0, 0));
-		d3d_leave_criticalsection();
 		clearoutscreen();
+		d3d_leave_criticalsection();
 		np2wab.lastWidth = 0;
 		np2wab.lastHeight = 0;
 		return;
@@ -1593,39 +1642,44 @@ void scrnmngD3D_updatefsres(void) {
 		d3d_enter_criticalsection();
 		d3d.d3ddev->ColorFill(d3d.wabsurf, NULL, D3DCOLOR_XRGB(0, 0, 0));
 		d3d.d3ddev->ColorFill(d3d.backsurf, NULL, D3DCOLOR_XRGB(0, 0, 0));
-		d3d_leave_criticalsection();
 		clearoutscreen();
+		d3d_leave_criticalsection();
 		return;
 	}
 	if(np2wab.lastWidth!=width || np2wab.lastHeight!=height){
+		d3d_enter_criticalsection();
+
 		np2wab.lastWidth = width;
 		np2wab.lastHeight = height;
 		if((g_scrnmode & SCRNMODE_FULLSCREEN)!=0){
-			g_scrnmode = g_scrnmode & ~SCRNMODE_FULLSCREEN;
 			scrnmngD3D_destroy();
+			g_scrnmode = g_scrnmode & ~SCRNMODE_FULLSCREEN;
 			if (scrnmngD3D_create(g_scrnmode | SCRNMODE_FULLSCREEN) == SUCCESS) {
 				g_scrnmode = g_scrnmode | SCRNMODE_FULLSCREEN;
 			}
 			else {
+				// ウィンドウでリトライ
 				if (scrnmngD3D_create(g_scrnmode) != SUCCESS) {
 					PostQuitMessage(0);
+					d3d_leave_criticalsection();
 					return;
 				}
 			}
 		}else if(d3d.width != width || d3d.height != height){
 			scrnmngD3D_destroy();
 			if (scrnmngD3D_create(g_scrnmode) != SUCCESS) {
-				if (scrnmngD3D_create(g_scrnmode | SCRNMODE_FULLSCREEN) != SUCCESS) { // フルスクリーンでリトライ
+				//if (scrnmngD3D_create(g_scrnmode | SCRNMODE_FULLSCREEN) != SUCCESS) { // フルスクリーンでリトライ
 					PostQuitMessage(0);
+					d3d_leave_criticalsection();
 					return;
-				}
-				g_scrnmode = g_scrnmode | SCRNMODE_FULLSCREEN;
+				//}
+				//g_scrnmode = g_scrnmode | SCRNMODE_FULLSCREEN;
 			}
 		}
 		clearoutscreen();
-		d3d_enter_criticalsection();
 		d3d.d3ddev->ColorFill(d3d.wabsurf, NULL, D3DCOLOR_XRGB(0, 0, 0));
 		d3d.d3ddev->ColorFill(d3d.backsurf, NULL, D3DCOLOR_XRGB(0, 0, 0));
+		
 		d3d_leave_criticalsection();
 	}
 #endif

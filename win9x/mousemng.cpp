@@ -97,6 +97,11 @@ UINT8 mousemng_supportrawinput() {
 	return(dinput && diRawMouse);
 }
 
+void mousemng_updatespeed() {
+	mouseMul = np2oscfg.mousemul != 0 ? np2oscfg.mousemul : 1;
+	mouseDiv = np2oscfg.mousediv != 0 ? np2oscfg.mousediv : 1;
+}
+
 // ----
 
 static void getmaincenter(POINT *cp) {
@@ -183,8 +188,7 @@ static void mousecapture(BOOL capture) {
 		}
 	}
 
-	mouseMul = np2oscfg.mousemul != 0 ? np2oscfg.mousemul : 1;
-	mouseDiv = np2oscfg.mousediv != 0 ? np2oscfg.mousediv : 1;
+	mousemng_updatespeed();
 
 	style = GetClassLong(g_hWndMain, GCL_STYLE);
 	if (capture) {
@@ -220,7 +224,8 @@ void mousemng_initialize(void) {
 	ZeroMemory(&mousemng, sizeof(mousemng));
 	mousemng.btn = uPD8255A_LEFTBIT | uPD8255A_RIGHTBIT;
 	mousemng.flag = (1 << MOUSEPROC_SYSTEM);
-
+	
+	mousemng_updatespeed();
 }
 
 void mousemng_destroy(void) {

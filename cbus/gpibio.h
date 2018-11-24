@@ -1,6 +1,11 @@
 
 #if defined(SUPPORT_GPIB)
 
+enum {
+	GPIB_MODE_MASTER	= 1,
+	GPIB_MODE_SLAVE		= 0,
+};
+
 typedef struct {
 	UINT8 enable;
 	UINT8 irq; // äÑÇËçûÇ›
@@ -18,6 +23,9 @@ extern "C" {
 extern	_GPIB		gpib;
 
 void gpibint(NEVENTITEM item);
+
+void gpibio_initialize(void);
+void gpibio_shutdown(void);
 
 void gpibio_reset(const NP2CFG *pConfig);
 void gpibio_bind(void);

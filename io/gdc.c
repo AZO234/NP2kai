@@ -8,6 +8,9 @@
 #include	"vram.h"
 #include	"palettes.h"
 #include	"timing.h"
+#if defined(BIOS_IO_EMULATION)
+#include	"bios/bios.h"
+#endif
 
 #if !defined(CPUCORE_IA32)
 #define	SEARCH_SYNC
@@ -442,7 +445,7 @@ static void IOOUTCALL gdc_o60(UINT port, REG8 dat) {
 }
 
 static void IOOUTCALL gdc_o62(UINT port, REG8 dat) {
-
+	
 	if (gdc.m.cnt < GDCCMD_MAX) {
 		gdc.m.fifo[gdc.m.cnt++] = 0x100 | dat;
 	}
@@ -460,7 +463,7 @@ static void IOOUTCALL gdc_o64(UINT port, REG8 dat) {
 static void IOOUTCALL gdc_o68(UINT port, REG8 dat) {
 
 	REG8	bit;
-
+	
 	if (!(dat & 0xf0)) {
 		bit = 1 << ((dat >> 1) & 7);
 		if (dat & 1) {
@@ -698,7 +701,7 @@ static void IOOUTCALL gdc_oa0(UINT port, REG8 dat) {
 }
 
 static void IOOUTCALL gdc_oa2(UINT port, REG8 dat) {
-
+	
 	if (gdc.s.cnt < GDCCMD_MAX) {
 		gdc.s.fifo[gdc.s.cnt++] = 0x100 | dat;
 	}

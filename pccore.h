@@ -112,7 +112,11 @@ struct tagNP2Config
 	UINT8	memsw[8];
 
 	UINT8	ITF_WORK;
+#if defined(SUPPORT_LARGE_MEMORY)
+	UINT16	EXTMEM;
+#else
 	UINT8	EXTMEM;
+#endif
 	UINT8	grcg;
 	UINT8	color16;
 	UINT32	BG_COLOR;
@@ -219,6 +223,7 @@ struct tagNP2Config
 	UINT8	usegd5430;
 	UINT16	gd5430type;
 	UINT8	gd5430fakecur;
+	UINT8	gd5430melofs;
 #endif
 #if defined(SUPPORT_GPIB)
 	UINT8	usegpib; // GPIB使用
@@ -261,6 +266,10 @@ struct tagNP2Config
 	UINT32  cpu_feature_ecx; // ECX機能フラグ
 	
 	UINT8	fpu_type; // FPU種類（0=Berkeley SoftFloat, 1=DOSBox FPU, 2=DOSBox FPU+INT64）
+	
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+	UINT8	memcheckspeed; // メモリチェック速度
+#endif
 };
 typedef struct tagNP2Config  NP2CFG;		/*!< The define of config */
 
@@ -271,7 +280,11 @@ typedef struct {
 	UINT8	cpumode;
 	UINT8	model;
 	UINT8	hddif;
-	UINT8	extmem; // LARGEMEM // UINT16	extmem;
+#if defined(SUPPORT_LARGE_MEMORY)
+	UINT16	extmem;
+#else
+	UINT8	extmem;
+#endif
 	UINT8	dipsw[3];		// リセット時のDIPSW
 	UINT8	rom;
 

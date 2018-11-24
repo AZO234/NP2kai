@@ -564,6 +564,20 @@ static REG8 IOINPCALL ideio_i430(UINT port) {
 
 	bank = (port >> 1) & 1;
 	ret = ideio.bank[bank];
+	if ((port >> 1) & 1) {
+		// 432h
+	}
+	else {
+		// 430h
+		IDEDEV	dev;
+		dev = getidedev();
+		//
+		// Win2000はbit6が1の時スレーブデバイスを見に行く
+		//
+		if (dev->drv[1].device != IDETYPE_NONE) {
+			ret |= 0x40;
+		}
+	}
 	ideio.bank[bank] = ret & (~0x80);
 	TRACEOUT(("ideio getbank%d %.2x [%.4x:%.8x]",
 									(port >> 1) & 1, ret, CPU_CS, CPU_EIP));

@@ -44,11 +44,17 @@ static const OEMCHAR *str_cl_gd54xx_type[] = {
 	OEMTEXT("PC-9821Xe10,Xa7e,Xb10 built-in"),
 	OEMTEXT("PC-9821Cb2 built-in"),
 	OEMTEXT("PC-9821Cx2 built-in"),
+	OEMTEXT("PC-9821 PCI CL-GD5446 built-in"),
 	OEMTEXT("MELCO WAB-S"),
 	OEMTEXT("MELCO WSN-A2F"),
 	OEMTEXT("MELCO WSN-A4F"),
-	OEMTEXT("I-O DATA GA-98NBI/C,II,IV"),
+	OEMTEXT("I-O DATA GA-98NBI/C"),
+	OEMTEXT("I-O DATA GA-98NBII"),
+	OEMTEXT("I-O DATA GA-98NBIV"),
 	OEMTEXT("PC-9801-96(PC-9801B3-E02)"),
+	OEMTEXT("Auto Select(Xe10, WAB-S), PCI"),
+	OEMTEXT("Auto Select(Xe10, WSN-A2F), PCI"),
+	OEMTEXT("Auto Select(Xe10, WSN-A4F), PCI"),
 	OEMTEXT("Auto Select(Xe10, WAB-S)"),
 	OEMTEXT("Auto Select(Xe10, WSN-A2F)"),
 	OEMTEXT("Auto Select(Xe10, WSN-A4F)"),
@@ -136,29 +142,47 @@ const TABLISTS	*tl;
 	case CIRRUS_98ID_Cx2:
 		type = 6;
 		break;
-	case CIRRUS_98ID_WAB:
+	case CIRRUS_98ID_PCI:
 		type = 7;
 		break;
-	case CIRRUS_98ID_WSN_A2F:
+	case CIRRUS_98ID_WAB:
 		type = 8;
 		break;
-	case CIRRUS_98ID_WSN:
+	case CIRRUS_98ID_WSN_A2F:
 		type = 9;
 		break;
-	case CIRRUS_98ID_GA98NB:
+	case CIRRUS_98ID_WSN:
 		type = 10;
 		break;
-	case CIRRUS_98ID_96:
+	case CIRRUS_98ID_GA98NBIC:
 		type = 11;
 		break;
-	case CIRRUS_98ID_AUTO_XE10_WABS:
+	case CIRRUS_98ID_GA98NBII:
 		type = 12;
 		break;
-	case CIRRUS_98ID_AUTO_XE10_WSN2:
+	case CIRRUS_98ID_GA98NBIV:
 		type = 13;
 		break;
-	case CIRRUS_98ID_AUTO_XE10_WSN4:
+	case CIRRUS_98ID_96:
 		type = 14;
+		break;
+	case CIRRUS_98ID_AUTO_XE_WA_PCI:
+		type = 15;
+		break;
+	case CIRRUS_98ID_AUTO_XE_WS_PCI:
+		type = 16;
+		break;
+	case CIRRUS_98ID_AUTO_XE_W4_PCI:
+		type = 17;
+		break;
+	case CIRRUS_98ID_AUTO_XE10_WABS:
+		type = 18;
+		break;
+	case CIRRUS_98ID_AUTO_XE10_WSN2:
+		type = 19;
+		break;
+	case CIRRUS_98ID_AUTO_XE10_WSN4:
+		type = 20;
 		break;
 	}
 
@@ -234,27 +258,45 @@ static void dlgupdate(void) {
 		type = CIRRUS_98ID_Cx2;
 		break;
 	case 7:
-		type = CIRRUS_98ID_WAB;
+		type = CIRRUS_98ID_PCI;
 		break;
 	case 8:
-		type = CIRRUS_98ID_WSN_A2F;
+		type = CIRRUS_98ID_WAB;
 		break;
 	case 9:
-		type = CIRRUS_98ID_WSN;
+		type = CIRRUS_98ID_WSN_A2F;
 		break;
 	case 10:
-		type = CIRRUS_98ID_GA98NB;
+		type = CIRRUS_98ID_WSN;
 		break;
 	case 11:
-		type = CIRRUS_98ID_96;
+		type = CIRRUS_98ID_GA98NBIC;
 		break;
 	case 12:
-		type = CIRRUS_98ID_AUTO_XE10_WABS;
+		type = CIRRUS_98ID_GA98NBII;
 		break;
 	case 13:
-		type = CIRRUS_98ID_AUTO_XE10_WSN2;
+		type = CIRRUS_98ID_GA98NBIV;
 		break;
 	case 14:
+		type = CIRRUS_98ID_96;
+		break;
+	case 15:
+		type = CIRRUS_98ID_AUTO_XE_WA_PCI;
+		break;
+	case 16:
+		type = CIRRUS_98ID_AUTO_XE_WS_PCI;
+		break;
+	case 17:
+		type = CIRRUS_98ID_AUTO_XE_W4_PCI;
+		break;
+	case 18:
+		type = CIRRUS_98ID_AUTO_XE10_WABS;
+		break;
+	case 19:
+		type = CIRRUS_98ID_AUTO_XE10_WSN2;
+		break;
+	case 20:
 		type = CIRRUS_98ID_AUTO_XE10_WSN4;
 		break;
 	}

@@ -80,7 +80,7 @@ typedef struct {
 	UINT8	fscrnmod;
 
 #if defined(SUPPORT_SCRN_DIRECT3D)
-	UINT8	d3d_imode;
+	UINT8	d3d_imode; // Direct3D interpolation mode
 #endif
 
 	UINT8	cSoundDeviceType;
@@ -106,10 +106,10 @@ typedef struct {
 	UINT8	scrn_mul; // Screen Size Multiplying Value (8: default)
 	
 	UINT8	mouse_nc; // Always notify mouse event
-	
 	UINT16	cpustabf; // CPU clock stabilizer frame
-	
 	UINT8	readonly; // No save changed settings
+	UINT8	usewheel; // Use mouse wheel
+	UINT8	tickmode; // Force Set Tick Counter Mode
 } NP2OSCFG;
 
 

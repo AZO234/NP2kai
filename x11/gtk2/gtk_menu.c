@@ -229,6 +229,9 @@ static void cb_xshiftkey(GtkToggleAction *action, gpointer user_data);
 static void cb_itfwork(GtkToggleAction *action, gpointer user_data);
 static void cb_fixmmtimer(GtkToggleAction *action, gpointer user_data);
 static void cb_16mbmemchk(GtkToggleAction *action, gpointer user_data);
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+static void cb_fastmemchk(GtkToggleAction *action, gpointer user_data);
+#endif
 static void cb_fmgen(GtkToggleAction *action, gpointer user_data);
 
 static GtkToggleActionEntry togglemenu_entries[] = {
@@ -253,6 +256,9 @@ static GtkToggleActionEntry togglemenu_entries[] = {
 { "itfwork",      NULL, "ITF work",           NULL, NULL, G_CALLBACK(cb_itfwork), FALSE },
 { "fixmmtimer",   NULL, "Fix MMTimer",        NULL, NULL, G_CALLBACK(cb_fixmmtimer), FALSE },
 { "16mbmemchk",   NULL, "Skip over 16MB memcheck", NULL, NULL, G_CALLBACK(cb_16mbmemchk), FALSE },
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+{ "fastmemchk",   NULL, "Fast memcheck", NULL, NULL, G_CALLBACK(cb_fastmemchk), FALSE },
+#endif
 #if defined(SUPPORT_FMGEN)
 { "fmgen",        NULL, "fmgen",              NULL, NULL, G_CALLBACK(cb_fmgen), FALSE },
 #endif	/* SUPPORT_FMGEN */
@@ -609,6 +615,9 @@ static const gchar *ui_info =
 "   <menuitem action='itfwork'/>\n"
 "   <menuitem action='fixmmtimer'/>\n"
 "   <menuitem action='16mbmemchk'/>\n"
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+"   <menuitem action='fastmemchk'/>\n"
+#endif
 "   <separator/>\n"
 "   <menuitem action='toolwindow'/>\n"
 "   <menuitem action='keydisplay'/>\n"
@@ -1972,6 +1981,21 @@ cb_16mbmemchk(GtkToggleAction *action, gpointer user_data)
 		sysmng_update(SYS_UPDATECFG);
 	}
 }
+
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+static void
+cb_fastmemchk(GtkToggleAction *action, gpointer user_data)
+{
+	gboolean b = gtk_toggle_action_get_active(action);
+	gboolean f;
+
+	f = (np2cfg.memcheckspeed > 1) ^ (b ? 1 : 0);
+	if (f) {
+		np2cfg.memcheckspeed = (b ? 8 : 1);
+		sysmng_update(SYS_UPDATECFG);
+	}
+}
+#endif
 
 static void
 cb_itfwork(GtkToggleAction *action, gpointer user_data)

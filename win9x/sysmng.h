@@ -17,12 +17,26 @@ enum {
 	SYS_UPDATESNDDEV	= 0x1000
 };
 
+enum {
+	SYS_UPDATECAPTION_FDD	= 0x01,
+	SYS_UPDATECAPTION_CLK	= 0x02,
+	SYS_UPDATECAPTION_MISC	= 0x04,
+	
+	SYS_UPDATECAPTION_ALL	= 0xff,
+};
+
+typedef struct {
+	UINT8	showvolume;
+	UINT8	showmousespeed;
+} SYSMNGMISCINFO;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 extern	UINT	sys_updates;
+
+extern	SYSMNGMISCINFO	sys_miscinfo;
 
 #if 0
 void sysmng_initialize(void);
@@ -38,7 +52,7 @@ void sysmng_hddaccess(UINT8 drv);
 
 #define	sysmng_update(a)												\
 			sys_updates |= (a);											\
-			if ((a) & SYS_UPDATEFDD) sysmng_updatecaption(1)
+			if ((a) & SYS_UPDATEFDD) sysmng_updatecaption(SYS_UPDATECAPTION_FDD)
 
 #define	sysmng_cpureset()												\
 			sys_updates &= (SYS_UPDATECFG | SYS_UPDATEOSCFG);			\

@@ -220,6 +220,7 @@ ia32_panic(const char *str, ...)
 #if defined(IA32_REBOOT_ON_PANIC)
 	VERBOSE(("ia32_panic: reboot"));
 	pccore_reset();
+	pcstat.screendispflag = 0;
 	siglongjmp(exec_1step_jmpbuf, 2);
 #else
 	__ASSERT(0);

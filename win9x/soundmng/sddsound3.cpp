@@ -20,6 +20,8 @@
 #define DSBVOLUME_MIN		(-10000)					/*!< ヴォリューム最小値 */
 #endif
 
+#define NP2VOLUME2DSDB(a)	((LONG)(10*log10((a)/100.0f)*100))
+
 //! デバイス リスト
 std::vector<DSound3Device> CSoundDeviceDSound3::sm_devices;
 
@@ -347,7 +349,7 @@ void CSoundDeviceDSound3::SetMasterVolume(int nVolume)
 		if(m_mastervolume == 0){
 			m_lpDSStream->SetVolume(DSBVOLUME_MIN);
 		}else{
-			m_lpDSStream->SetVolume((LONG)(10*log10(m_mastervolume/100.0f)*100));
+			m_lpDSStream->SetVolume(NP2VOLUME2DSDB(m_mastervolume));
 		}
 	}
 	for( auto it = m_pcm.begin(); it != m_pcm.end() ; ++it ) {
@@ -360,7 +362,7 @@ void CSoundDeviceDSound3::SetMasterVolume(int nVolume)
 		if(volume == 0){
 			lpDSBuffer->SetVolume(DSBVOLUME_MIN);
 		}else{
-			lpDSBuffer->SetVolume((LONG)(10*log10(volume/100000.0f)*100));
+			lpDSBuffer->SetVolume(NP2VOLUME2DSDB(volume));
 		}
     }
 }
@@ -624,10 +626,11 @@ void CSoundDeviceDSound3::SetPCMVolume(UINT nNum, int nVolume)
 			m_pcmvolume[nNum] = nVolume;
 		}
 		volume *= m_mastervolume;
+		
 		if(volume == 0){
 			lpDSBuffer->SetVolume(DSBVOLUME_MIN);
 		}else{
-			lpDSBuffer->SetVolume((LONG)(10*log10(volume/100000.0f)*100));
+			lpDSBuffer->SetVolume(NP2VOLUME2DSDB(volume));
 		}
 		//lpDSBuffer->SetVolume((((DSBVOLUME_MAX - DSBVOLUME_MIN) * nVolume) / 100) + DSBVOLUME_MIN);
 	}

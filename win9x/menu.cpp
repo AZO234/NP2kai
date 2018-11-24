@@ -388,7 +388,7 @@ void xmenu_update(HMENU hMenu)
 	CheckMenuItem(hMenu, IDM_SEEKSND, MF_BYCOMMAND | MFCHECK(np2cfg.MOTOR));
 
 	// Device-Memory
-	const UINT8 EXTMEM = np2cfg.EXTMEM;
+	const UINT16 EXTMEM = np2cfg.EXTMEM;
 	CheckMenuItem(hMenu, IDM_MEM640, MF_BYCOMMAND | MFCHECK(EXTMEM == 0));
 	CheckMenuItem(hMenu, IDM_MEM16,  MF_BYCOMMAND | MFCHECK(EXTMEM == 1));
 	CheckMenuItem(hMenu, IDM_MEM36,  MF_BYCOMMAND | MFCHECK(EXTMEM == 3));
@@ -456,4 +456,7 @@ void xmenu_update(HMENU hMenu)
 	CheckMenuItem(hMenu, IDM_ITFWORK, MF_BYCOMMAND | MFCHECK(np2cfg.ITF_WORK));
 	CheckMenuItem(hMenu, IDM_TIMERFIX, MF_BYCOMMAND | MFCHECK(np2cfg.timerfix));
 	CheckMenuItem(hMenu, IDM_SKIP16MEMCHK, MF_BYCOMMAND | MFCHECK(np2cfg.memchkmx != 0));
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+	CheckMenuItem(hMenu, IDM_FASTMEMCHK, MF_BYCOMMAND | MFCHECK(np2cfg.memcheckspeed != 1));
+#endif
 }

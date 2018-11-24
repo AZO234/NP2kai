@@ -1080,8 +1080,9 @@ BEGIN
         MENUITEM "Joy &rapid",                  IDM_RAPID
         MENUITEM "&Mouse rapid",                IDM_MSRAPID
         MENUITEM "&ITF work",                   IDM_ITFWORK
-        MENUITEM "Fix &MMTimer",                IDM_TIMERFIX
+        // MENUITEM "Fix &MMTimer",                IDM_TIMERFIX
         MENUITEM "&Skip over 16MB memcheck",    IDM_SKIP16MEMCHK
+        MENUITEM "Fast m&emcheck",              IDM_FASTMEMCHK
         MENUITEM SEPARATOR
         MENUITEM "&Help...",                    IDM_HELP
         MENUITEM "&About...",                   IDM_ABOUT
@@ -1577,9 +1578,13 @@ BEGIN
     IDS_GD5430_WAB          "MELCO WAB-S"
     IDS_GD5430_WSN_A2F      "MELCO WSN-A2F"
     IDS_GD5430_WSN          "MELCO WSN-A4F"
-    IDS_GD5430_GA98NB       "I-O DATA GA-98NBI/C,II,IV"
+    IDS_GD5430_GA98NBIC     "I-O DATA GA-98NBI/C"
+    IDS_GD5430_GA98NBII     "I-O DATA GA-98NBII"
+    IDS_GD5430_GA98NBIV     "I-O DATA GA-98NBIV"
     IDS_GD5430_96           "PC-9801-96(PC-9801B3-E02)"
+    IDS_GD5430_AUTO_XE_WA_PCI    "Auto Select(Xe10, WAB-S, PCI)"
     IDS_GD5430_AUTO_XE_WS_PCI    "Auto Select(Xe10, WSN-A2F, PCI)"
+    IDS_GD5430_AUTO_XE_W4_PCI    "Auto Select(Xe10, WSN-A4F, PCI)"
     IDS_GD5430_AUTO_XE10_WABS    "Auto Select(Xe10, WAB-S)"
     IDS_GD5430_AUTO_XE10_WSN2    "Auto Select(Xe10, WSN-A2F)"
     IDS_GD5430_AUTO_XE10_WSN4    "Auto Select(Xe10, WSN-A4F)"

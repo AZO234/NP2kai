@@ -17,6 +17,10 @@
 
 #if defined(SUPPORT_GPIB)
 
+#if defined(SUPPORT_GPIB_CONTEC)
+#include	"Gpibac.h"
+#endif
+
 
 	_GPIB		gpib;
 
@@ -47,6 +51,10 @@ UINT8 idx2irq(UINT8 idx){
 	return 3;
 }
 
+UINT32 getGPIBinfoAddr(){
+	return (LOADINTELWORD((mem+0x5c2))<<4)+(LOADINTELWORD((mem+0x5c4)));
+}
+
 // ----
 
 // Byte Out 
@@ -57,7 +65,13 @@ static void IOOUTCALL gpib_o1(UINT port, REG8 dat) {
 // Data In
 static REG8 IOOUTCALL gpib_i1(UINT port) {
 	// TODO: Windows対応の uPD7210互換 GP-IBボードに丸投げ
+#if defined(SUPPORT_GPIB_CONTEC)
+	DWORD reg;
+	GpBoardsts(0x00, &reg);
+	return (REG8)reg;
+#else
 	return 0xff;
+#endif
 }
 
 // Interrupt Mask 1
@@ -68,7 +82,13 @@ static void IOOUTCALL gpib_o3(UINT port, REG8 dat) {
 // Interrupt Status 1
 static REG8 IOOUTCALL gpib_i3(UINT port) {
 	// TODO: Windows対応の uPD7210互換 GP-IBボードに丸投げ
+#if defined(SUPPORT_GPIB_CONTEC)
+	DWORD reg;
+	GpBoardsts(0x01, &reg);
+	return (REG8)reg;
+#else
 	return 0xff;
+#endif
 }
 
 // Interrupt Mask 2
@@ -79,7 +99,13 @@ static void IOOUTCALL gpib_o5(UINT port, REG8 dat) {
 // Interrupt Status 2
 static REG8 IOOUTCALL gpib_i5(UINT port) {
 	// TODO: Windows対応の uPD7210互換 GP-IBボードに丸投げ
+#if defined(SUPPORT_GPIB_CONTEC)
+	DWORD reg;
+	GpBoardsts(0x02, &reg);
+	return (REG8)reg;
+#else
 	return 0xff;
+#endif
 }
 
 // Serial Poll Mode
@@ -90,7 +116,13 @@ static void IOOUTCALL gpib_o7(UINT port, REG8 dat) {
 // Serial Poll Status
 static REG8 IOOUTCALL gpib_i7(UINT port) {
 	// TODO: Windows対応の uPD7210互換 GP-IBボードに丸投げ
+#if defined(SUPPORT_GPIB_CONTEC)
+	DWORD reg;
+	GpBoardsts(0x03, &reg);
+	return (REG8)reg;
+#else
 	return 0xff;
+#endif
 }
 
 // Address Mode
@@ -101,18 +133,41 @@ static void IOOUTCALL gpib_o9(UINT port, REG8 dat) {
 // Address Status
 static REG8 IOOUTCALL gpib_i9(UINT port) {
 	// TODO: Windows対応の uPD7210互換 GP-IBボードに丸投げ
+#if defined(SUPPORT_GPIB_CONTEC)
+	DWORD reg;
+	GpBoardsts(0x04, &reg);
+	return (REG8)reg;
+#else
 	return 0xff;
+#endif
 }
 
 // Auxiliary Mode
 static void IOOUTCALL gpib_ob(UINT port, REG8 dat) {
 	// TODO: Windows対応の uPD7210互換 GP-IBボードに丸投げ
+	static int cmd = 0;
+	if(dat==0x11 && cmd==0){
+		cmd = 1;
+	}else if(dat==0x10 && cmd==1){
+		UINT32 addr = getGPIBinfoAddr();
+		mem[addr+2] = 0x3f;
+		mem[addr+3] = 0x7f;
+		cmd = 0;
+	}else{
+		cmd = 0;
+	}
 	(void)port;
 }
 // Command Pass Through
 static REG8 IOOUTCALL gpib_ib(UINT port) {
 	// TODO: Windows対応の uPD7210互換 GP-IBボードに丸投げ
+#if defined(SUPPORT_GPIB_CONTEC)
+	DWORD reg;
+	GpBoardsts(0x05, &reg);
+	return (REG8)reg;
+#else
 	return 0xff;
+#endif
 }
 
 // Address 0/1
@@ -123,7 +178,13 @@ static void IOOUTCALL gpib_od(UINT port, REG8 dat) {
 // Address 0
 static REG8 IOOUTCALL gpib_id(UINT port) {
 	// TODO: Windows対応の uPD7210互換 GP-IBボードに丸投げ
+#if defined(SUPPORT_GPIB_CONTEC)
+	DWORD reg;
+	GpBoardsts(0x06, &reg);
+	return (REG8)reg;
+#else
 	return 0xff;
+#endif
 }
 
 // End of String
@@ -134,17 +195,35 @@ static void IOOUTCALL gpib_of(UINT port, REG8 dat) {
 // Address 1
 static REG8 IOOUTCALL gpib_if(UINT port) {
 	// TODO: Windows対応の uPD7210互換 GP-IBボードに丸投げ
+#if defined(SUPPORT_GPIB_CONTEC)
+	DWORD reg;
+	GpBoardsts(0x07, &reg);
+	return (REG8)reg;
+#else
 	return 0xff;
+#endif
 }
 
 // Read Switch
 static REG8 IOOUTCALL gpib_i99(UINT port) {
 	// TODO: Windows対応の uPD7210互換 GP-IBボードから設定を取る
+#if defined(SUPPORT_GPIB_CONTEC)
+	DWORD reg;
+	GpBoardsts(0x8, &reg);
+	gpib.gpibaddr = (UINT8)reg;
+	GpBoardsts(0xa, &reg);
+	gpib.mode = (reg==0 ? GPIB_MODE_MASTER : GPIB_MODE_SLAVE);
+#endif
 	return (irq2idx(gpib.irq) << 6)|(gpib.mode << 5)|(gpib.gpibaddr);
 }
 // Read IFC
 static REG8 IOOUTCALL gpib_i9b(UINT port) {
 	// TODO: Windows対応の uPD7210互換 GP-IBボードからIFCフラグを取ってくる
+#if defined(SUPPORT_GPIB_CONTEC)
+	DWORD reg;
+	GpBoardsts(0x17, &reg);
+	gpib.ifcflag = (UINT8)reg;
+#endif
 	return (gpib.ifcflag ? 0x00: 0x80)|(gpib_i99(0x99) & ~0x80);
 }
 
@@ -212,6 +291,33 @@ static const IOOUT gpib_o[] = {
 static const IOINP gpib_i[] = {
 					gpib_i0, gpib_i1, gpib_i2, gpib_i3, gpib_i4, gpib_i5, gpib_i6, gpib_i7, gpib_i8, gpib_i9, gpib_ia, gpib_ib, gpib_ic, gpib_id, gpib_ie, gpib_if};
 
+// NP2起動時の処理
+void gpibio_initialize(void)
+{
+#if defined(SUPPORT_GPIB_CONTEC)
+	GpExit();
+	GpIni();
+	GpTimeout(10000);
+#endif
+}
+// NP2終了時の処理
+void gpibio_shutdown(void)
+{
+#if defined(SUPPORT_GPIB_CONTEC)
+	DWORD	master;
+	DWORD	cmd[32];
+	if(GpBoardsts(0x0a, &master) == 80) return;
+	if(master == 0){
+		cmd[0] = 2;
+		cmd[1] = 0x3f;
+		cmd[2] = 0x5f;
+		GpComand(cmd);
+	}
+	GpResetren();
+	GpExit();
+#endif
+}
+
 void gpibio_reset(const NP2CFG *pConfig) {
 	
 	OEMCHAR	path[MAX_PATH];
@@ -240,11 +346,15 @@ void gpibio_reset(const NP2CFG *pConfig) {
 		}else{
 			//CopyMemory(mem + 0x0d4000, gpibbios, sizeof(gpibbios));
 			//TRACEOUT(("use simulate gpib.rom"));
+			gpib.enable = 0;
+			return;
 		}
 		file_close(fh);
 	}else{
 		//CopyMemory(mem + 0x0d4000, gpibbios, sizeof(gpibbios));
 		//TRACEOUT(("use simulate gpib.rom"));
+		gpib.enable = 0;
+		return;
 	}
 	
 	(void)pConfig;

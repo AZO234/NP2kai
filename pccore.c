@@ -62,6 +62,9 @@
 #if defined(SUPPORT_IDEIO)
 #include	"ideio.h"
 #endif
+#if defined(SUPPORT_GPIB)
+#include	"cbus/gpibio.h"
+#endif
 #if defined(CPUCORE_IA32)
 #include	"ia32/cpu.h"
 #include	"ia32/instructions/fpu/fp.h"
@@ -143,7 +146,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 #endif
 #endif
 #if defined(SUPPORT_CL_GD5430)
-				0, 0x5B, 0,
+				0, 0x5B, 0, CIRRUS_MELCOWAB_OFS_DEFAULT,
 #endif
 #if defined(SUPPORT_GPIB)
 				0, 12, 1, 0, 0, 
@@ -159,7 +162,10 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 				0, 0, 0,
 				1,
 				CPU_VENDOR, CPU_FAMILY, CPU_MODEL, CPU_STEPPING, CPU_FEATURES, CPU_FEATURES_EX, CPU_BRAND_STRING, OEMTEXT(""), OEMTEXT(""), CPU_BRAND_ID_AUTO, CPU_FEATURES_ECX,
-				FPU_TYPE_SOFTFLOAT
+				FPU_TYPE_SOFTFLOAT,
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+				1,
+#endif
 	};
 
 	PCCORE	pccore = {	PCBASECLOCK25, PCBASEMULTIPLE,
@@ -202,7 +208,7 @@ static void pccore_set(const NP2CFG *pConfig)
 {
 	UINT8	model;
 	UINT32	multiple;
-	UINT8	extsize;
+	UINT16	extsize;
 
 	ZeroMemory(&pccore, sizeof(pccore));
 	model = PCMODEL_VX;
@@ -259,7 +265,7 @@ static void pccore_set(const NP2CFG *pConfig)
 	{
 		extsize = np2cfg.EXTMEM;
 #if defined(CPUCORE_IA32)
-		extsize = np2min(extsize, 230);
+		extsize = np2min(extsize, MEMORY_MAXSIZE);
 #else
 		extsize = np2min(extsize, 13);
 #endif
@@ -379,9 +385,17 @@ void pccore_init(void) {
 #if defined(SUPPORT_HRTIMER)
 	upd4990_hrtimer_start();
 #endif	/* SUPPORT_HRTIMER */
+
+#if defined(SUPPORT_GPIB)
+	gpibio_initialize();
+#endif
 }
 
 void pccore_term(void) {
+	
+#if defined(SUPPORT_GPIB)
+	gpibio_shutdown();
+#endif
 
 #if defined(SUPPORT_HRTIMER)
 	upd4990_hrtimer_stop();
@@ -415,6 +429,7 @@ void pccore_term(void) {
 	
 	pic_deinitialize();
 
+	CPU_SETEXTSIZE(0);	// ÉÅÉÇÉäâï˙
 	CPU_DEINITIALIZE();
 }
 

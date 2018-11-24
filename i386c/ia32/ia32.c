@@ -103,6 +103,11 @@ ia32_setextsize(UINT32 size)
 			CPU_EXTLIMIT = size + 0x100000;
 		}
 		else {
+#if defined(SUPPORT_LARGE_MEMORY)
+			if(size != 0){
+				msgbox("Error", "Cannot allocate extended memory.");
+			}
+#endif
 			CPU_EXTMEM = NULL;
 			CPU_EXTMEMSIZE = 0;
 			CPU_EXTMEMBASE = NULL;

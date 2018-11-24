@@ -39,11 +39,17 @@ static const char *cl_gd54xx_type_str[] = {
 	"PC-9821Xe10,Xa7e,Xb10 built-in",
 	"PC-9821Cb2 built-in",
 	"PC-9821Cx2 built-in",
+	"PC-9821 PCI CL-GD5446 built-in",
 	"MELCO WAB-S",
 	"MELCO WSN-A2F",
 	"MELCO WSN-A4F",
-	"I-O DATA GA-98NBI/C,II,IV",
+	"I-O DATA GA-98NBI/C",
+	"I-O DATA GA-98NBII,IV",
+	"I-O DATA GA-98NBIV",
 	"PC-9801-96(PC-9801B3-E02)",
+	"Auto Select(Xe10, WAB-S), PCI",
+	"Auto Select(Xe10, WSN-A2F), PCI",
+	"Auto Select(Xe10, WSN-A4F), PCI",
 	"Auto Select(Xe10, WAB-S)",
 	"Auto Select(Xe10, WSN-A2F)",
 	"Auto Select(Xe10, WSN-A4F)",
@@ -160,48 +166,84 @@ ok_button_clicked(GtkButton *b, gpointer d)
 				}
 				break;
 			case 7:
+				if(np2cfg.gd5430type != CIRRUS_98ID_PCI) {
+					np2cfg.gd5430type = CIRRUS_98ID_PCI;
+					renewal = TRUE;
+				}
+				break;
+			case 8:
 				if(np2cfg.gd5430type != CIRRUS_98ID_WAB) {
 					np2cfg.gd5430type = CIRRUS_98ID_WAB;
 					renewal = TRUE;
 				}
 				break;
-			case 8:
+			case 9:
 				if(np2cfg.gd5430type != CIRRUS_98ID_WSN_A2F) {
 					np2cfg.gd5430type = CIRRUS_98ID_WSN_A2F;
 					renewal = TRUE;
 				}
 				break;
-			case 9:
+			case 10:
 				if(np2cfg.gd5430type != CIRRUS_98ID_WSN) {
 					np2cfg.gd5430type = CIRRUS_98ID_WSN;
 					renewal = TRUE;
 				}
 				break;
-			case 10:
-				if(np2cfg.gd5430type != CIRRUS_98ID_GA98NB) {
-					np2cfg.gd5430type = CIRRUS_98ID_GA98NB;
+			case 11:
+				if(np2cfg.gd5430type != CIRRUS_98ID_GA98NBIC) {
+					np2cfg.gd5430type = CIRRUS_98ID_GA98NBIC;
 					renewal = TRUE;
 				}
 				break;
-			case 11:
+			case 12:
+				if(np2cfg.gd5430type != CIRRUS_98ID_GA98NBII) {
+					np2cfg.gd5430type = CIRRUS_98ID_GA98NBII;
+					renewal = TRUE;
+				}
+				break;
+			case 13:
+				if(np2cfg.gd5430type != CIRRUS_98ID_GA98NBIV) {
+					np2cfg.gd5430type = CIRRUS_98ID_GA98NBIV;
+					renewal = TRUE;
+				}
+				break;
+			case 14:
 				if(np2cfg.gd5430type != CIRRUS_98ID_96) {
 					np2cfg.gd5430type = CIRRUS_98ID_96;
 					renewal = TRUE;
 				}
 				break;
-			case 12:
+			case 15:
+				if(np2cfg.gd5430type != CIRRUS_98ID_AUTO_XE_WA_PCI) {
+					np2cfg.gd5430type = CIRRUS_98ID_AUTO_XE_WA_PCI;
+					renewal = TRUE;
+				}
+				break;
+			case 16:
+				if(np2cfg.gd5430type != CIRRUS_98ID_AUTO_XE_WS_PCI) {
+					np2cfg.gd5430type = CIRRUS_98ID_AUTO_XE_WS_PCI;
+					renewal = TRUE;
+				}
+				break;
+			case 17:
+				if(np2cfg.gd5430type != CIRRUS_98ID_AUTO_XE_W4_PCI) {
+					np2cfg.gd5430type = CIRRUS_98ID_AUTO_XE_W4_PCI;
+					renewal = TRUE;
+				}
+				break;
+			case 18:
 				if(np2cfg.gd5430type != CIRRUS_98ID_AUTO_XE10_WABS) {
 					np2cfg.gd5430type = CIRRUS_98ID_AUTO_XE10_WABS;
 					renewal = TRUE;
 				}
 				break;
-			case 13:
+			case 19:
 				if(np2cfg.gd5430type != CIRRUS_98ID_AUTO_XE10_WSN2) {
 					np2cfg.gd5430type = CIRRUS_98ID_AUTO_XE10_WSN2;
 					renewal = TRUE;
 				}
 				break;
-			case 14:
+			case 20:
 				if(np2cfg.gd5430type != CIRRUS_98ID_AUTO_XE10_WSN4) {
 					np2cfg.gd5430type = CIRRUS_98ID_AUTO_XE10_WSN4;
 					renewal = TRUE;
@@ -326,29 +368,47 @@ create_cl_gd54xx_note(void)
 	case CIRRUS_98ID_Cx2:
 		gtk_entry_set_text(GTK_ENTRY(cl_gd54xx_type_entry), cl_gd54xx_type_str[6]);
 		break;
-	case CIRRUS_98ID_WAB:
+	case CIRRUS_98ID_PCI:
 		gtk_entry_set_text(GTK_ENTRY(cl_gd54xx_type_entry), cl_gd54xx_type_str[7]);
 		break;
-	case CIRRUS_98ID_WSN_A2F:
+	case CIRRUS_98ID_WAB:
 		gtk_entry_set_text(GTK_ENTRY(cl_gd54xx_type_entry), cl_gd54xx_type_str[8]);
 		break;
-	case CIRRUS_98ID_WSN:
+	case CIRRUS_98ID_WSN_A2F:
 		gtk_entry_set_text(GTK_ENTRY(cl_gd54xx_type_entry), cl_gd54xx_type_str[9]);
 		break;
-	case CIRRUS_98ID_GA98NB:
+	case CIRRUS_98ID_WSN:
 		gtk_entry_set_text(GTK_ENTRY(cl_gd54xx_type_entry), cl_gd54xx_type_str[10]);
 		break;
-	case CIRRUS_98ID_96:
+	case CIRRUS_98ID_GA98NBIC:
 		gtk_entry_set_text(GTK_ENTRY(cl_gd54xx_type_entry), cl_gd54xx_type_str[11]);
 		break;
-	case CIRRUS_98ID_AUTO_XE10_WABS:
+	case CIRRUS_98ID_GA98NBII:
 		gtk_entry_set_text(GTK_ENTRY(cl_gd54xx_type_entry), cl_gd54xx_type_str[12]);
 		break;
-	case CIRRUS_98ID_AUTO_XE10_WSN2:
+	case CIRRUS_98ID_GA98NBIV:
 		gtk_entry_set_text(GTK_ENTRY(cl_gd54xx_type_entry), cl_gd54xx_type_str[13]);
 		break;
-	case CIRRUS_98ID_AUTO_XE10_WSN4:
+	case CIRRUS_98ID_96:
 		gtk_entry_set_text(GTK_ENTRY(cl_gd54xx_type_entry), cl_gd54xx_type_str[14]);
+		break;
+	case CIRRUS_98ID_AUTO_XE_WA_PCI:
+		gtk_entry_set_text(GTK_ENTRY(cl_gd54xx_type_entry), cl_gd54xx_type_str[15]);
+		break;
+	case CIRRUS_98ID_AUTO_XE_WS_PCI:
+		gtk_entry_set_text(GTK_ENTRY(cl_gd54xx_type_entry), cl_gd54xx_type_str[16]);
+		break;
+	case CIRRUS_98ID_AUTO_XE_W4_PCI:
+		gtk_entry_set_text(GTK_ENTRY(cl_gd54xx_type_entry), cl_gd54xx_type_str[17]);
+		break;
+	case CIRRUS_98ID_AUTO_XE10_WABS:
+		gtk_entry_set_text(GTK_ENTRY(cl_gd54xx_type_entry), cl_gd54xx_type_str[18]);
+		break;
+	case CIRRUS_98ID_AUTO_XE10_WSN2:
+		gtk_entry_set_text(GTK_ENTRY(cl_gd54xx_type_entry), cl_gd54xx_type_str[19]);
+		break;
+	case CIRRUS_98ID_AUTO_XE10_WSN4:
+		gtk_entry_set_text(GTK_ENTRY(cl_gd54xx_type_entry), cl_gd54xx_type_str[20]);
 		break;
 	}
 

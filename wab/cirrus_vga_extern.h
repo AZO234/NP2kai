@@ -47,8 +47,14 @@
 #define CIRRUS_98ID_WAB		0x100
 #define CIRRUS_98ID_WSN_A2F	0x101
 #define CIRRUS_98ID_WSN		0x102
-#define CIRRUS_98ID_GA98NB	0x200
+#define CIRRUS_98ID_WABMASK	0xfffc
+#define CIRRUS_98ID_GA98NBIC	0x200
+#define CIRRUS_98ID_GA98NBII	0x201
+#define CIRRUS_98ID_GA98NBIV	0x202
+#define CIRRUS_98ID_GA98NBMASK	0xfffc
 #define CIRRUS_98ID_AUTOMSK	0xFFF0
+#define CIRRUS_98ID_AUTO_XE_WA_PCI	0xFFFA
+#define CIRRUS_98ID_AUTO_XE_W4_PCI	0xFFFB
 #define CIRRUS_98ID_AUTO_XE_WS_PCI	0xFFFC
 #define CIRRUS_98ID_AUTO_XE10_WABS	0xFFFD
 #define CIRRUS_98ID_AUTO_XE10_WSN2	0xFFFE
@@ -64,7 +70,7 @@
 #define VRA2WINDOW_ADDR	0x0F2000UL  // VRAMウィンドウ マッピングアドレス（場所不明）
 #define VRA2WINDOW_SIZE	0x000000UL   // VRAMウィンドウ マッピングサイズ（サイズ不明）
 #define VRA2WINDOW_SIZEX  0x8000UL   // VRAMウィンドウ マッピングサイズ（サイズ不明）
-#define VRA3WINDOW_SIZEX  0x20000UL  // VRAMウィンドウ F00000
+#define VRA3WINDOW_SIZEX  0x10000UL  // VRAMウィンドウ F00000
 #define CIRRUS_VRAMWND2_FUNC_rb(a,b)	cirrus_linear_memwnd_readb(a,b)
 #define CIRRUS_VRAMWND2_FUNC_rw(a,b)	cirrus_linear_memwnd_readw(a,b)
 #define CIRRUS_VRAMWND2_FUNC_rl(a,b)	cirrus_linear_memwnd_readl(a,b)
@@ -83,7 +89,7 @@
 #define TEST_ADDR		0xF0000000
 #define TEST_ADDR_SIZE	0//0x8000
 
-#define CIRRUS_MELCOWAB_OFS	0x2
+#define CIRRUS_MELCOWAB_OFS_DEFAULT	0x0
 
 typedef	signed char		int8_t;
 typedef	unsigned char	uint8_t;
@@ -151,6 +157,23 @@ uint32_t_ cirrus_mmio_readl(void *opaque, target_phys_addr_t addr);
 void cirrus_mmio_writeb(void *opaque, target_phys_addr_t addr, uint32_t_ val);
 void cirrus_mmio_writew(void *opaque, target_phys_addr_t addr, uint32_t_ val);
 void cirrus_mmio_writel(void *opaque, target_phys_addr_t addr, uint32_t_ val);
+
+uint32_t_ cirrus_mmio_readb_wab(void *opaque, target_phys_addr_t addr);
+uint32_t_ cirrus_mmio_readw_wab(void *opaque, target_phys_addr_t addr);
+uint32_t_ cirrus_mmio_readl_wab(void *opaque, target_phys_addr_t addr);
+void cirrus_mmio_writeb_wab(void *opaque, target_phys_addr_t addr, uint32_t_ val);
+void cirrus_mmio_writew_wab(void *opaque, target_phys_addr_t addr, uint32_t_ val);
+void cirrus_mmio_writel_wab(void *opaque, target_phys_addr_t addr, uint32_t_ val);
+
+uint32_t_ cirrus_mmio_readb_iodata(void *opaque, target_phys_addr_t addr);
+uint32_t_ cirrus_mmio_readw_iodata(void *opaque, target_phys_addr_t addr);
+uint32_t_ cirrus_mmio_readl_iodata(void *opaque, target_phys_addr_t addr);
+void cirrus_mmio_writeb_iodata(void *opaque, target_phys_addr_t addr, uint32_t_ val);
+void cirrus_mmio_writew_iodata(void *opaque, target_phys_addr_t addr, uint32_t_ val);
+void cirrus_mmio_writel_iodata(void *opaque, target_phys_addr_t addr, uint32_t_ val);
+
+extern CPUReadMemoryFunc *cirrus_mmio_read[3];
+extern CPUWriteMemoryFunc *cirrus_mmio_write[3];
 
 #ifdef __cplusplus
 extern "C" {

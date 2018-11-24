@@ -87,7 +87,6 @@ void bios0x12(void);
 void bios0x13(void);
 
 void bios0x18(void);
-void bios0x18_regrestore(void);
 void bios0x18_0a(REG8 mode);
 void bios0x18_0c(void);
 void bios0x18_10(REG8 curdel);
@@ -120,6 +119,7 @@ void bios0x1f(void);
 #if defined(BIOS_IO_EMULATION)
 // np21w ver0.86 rev46 BIOS I/O emulation
 void biosioemu_push8(UINT16 port, UINT8 data);
+void biosioemu_enq8(UINT16 port, UINT8 data);
 #endif
 
 #ifdef __cplusplus

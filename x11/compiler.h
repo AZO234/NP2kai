@@ -313,6 +313,12 @@ G_END_DECLS
 extern char timidity_cfgfile_path[MAX_PATH];
 #define	TIMIDITY_CFGFILE	timidity_cfgfile_path
 
+#if defined(SUPPORT_LARGE_MEMORY)
+#define	MEMORY_MAXSIZE		4000
+#else
+#define	MEMORY_MAXSIZE		230
+#endif
+
 #include "common.h"
 #include "milstr.h"
 #include "_memory.h"
