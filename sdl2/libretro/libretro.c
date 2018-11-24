@@ -826,6 +826,8 @@ void retro_set_environment(retro_environment_t cb)
       { "np2kai_clk_base" , "CPU Base Clock (Restart); 2.4576 MHz|1.9968 MHz" },
       { "np2kai_clk_mult" , "CPU Clock Multiplier (Restart); 4|5|6|8|10|12|16|20|24|30|36|40|42|1|2" },
       { "np2kai_ExMemory" , "RAM Size (Restart); 3|7|11|13|16|32|64|120|230|1" },
+      { "np2kai_Skip16MC" , "Skip over 16MB memcheck; OFF|ON" },
+      { "np2kai_FastMC" , "Fast memcheck; OFF|ON" },
       { "np2kai_gdc" , "GDC; uPD7220|uPD72020" },
       { "np2kai_skipline" , "Skipline Revisions; Full 255 lines|ON|OFF" },
       { "np2kai_realpal" , "Real Palettes; OFF|ON" },
@@ -844,7 +846,7 @@ void retro_set_environment(retro_environment_t cb)
       { "np2kai_BEEP_vol" , "Volume Beep; 3|0|1|2" },
 #if defined(SUPPORT_WAB)
       { "np2kai_CLGD_en" , "Enable WAB (Restart App); OFF|ON" },
-      { "np2kai_CLGD_type" , "WAB Type; PC-9821Xe10,Xa7e,Xb10 built-in|PC-9821Bp,Bs,Be,Bf built-in|PC-9821Xe built-in|PC-9821Cb built-in|PC-9821Cf built-in|PC-9821Cb2 built-in|PC-9821Cx2 built-in|MELCO WAB-S|MELCO WSN-A2F|MELCO WSN-A4F|I-O DATA GA-98NBI/C,II,IV|PC-9801-96(PC-9801B3-E02)|Auto Select(Xe10, WAB-S)|Auto Select(Xe10, WSN-A2F)|Auto Select(Xe10, WSN-A4F)" },
+      { "np2kai_CLGD_type" , "WAB Type; PC-9821Xe10,Xa7e,Xb10 built-in|PC-9821Bp,Bs,Be,Bf built-in|PC-9821Xe built-in|PC-9821Cb built-in|PC-9821Cf built-in|PC-9821Cb2 built-in|PC-9821Cx2 built-in|PC-9821 PCI CL-GD5446 built-in|MELCO WAB-S|MELCO WSN-A2F|MELCO WSN-A4F|I-O DATA GA-98NBI/C|I-O DATA GA-98NBII|I-O DATA GA-98NBIV|PC-9801-96(PC-9801B3-E02)|Auto Select(Xe10, WAB-S), PCI|Auto Select(Xe10, WSN-A2F), PCI|Auto Select(Xe10, WSN-A4F), PCI|Auto Select(Xe10, WAB-S)|Auto Select(Xe10, WSN-A2F)|Auto Select(Xe10, WSN-A4F)" },
       { "np2kai_CLGD_fc" , "Use Fake Hardware Cursor; OFF|ON" },
 #endif	/* defined(SUPPORT_WAB) */
 #if defined(SUPPORT_PCI)
@@ -932,6 +934,28 @@ static void update_variables(void)
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
       np2cfg.EXTMEM = atoi(var.value);
+   }
+
+   var.key = "np2kai_Skip16MC";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "OFF") == 0)
+         np2cfg.memchkmx = 0;
+      else
+         np2cfg.memchkmx = 15;
+   }
+
+   var.key = "np2kai_FastMC";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "OFF") == 0)
+         np2cfg.memcheckspeed = 1;
+      else
+         np2cfg.memcheckspeed = 8;
    }
 
    var.key = "np2kai_skipline";
@@ -1154,16 +1178,28 @@ static void update_variables(void)
          np2cfg.gd5430type = CIRRUS_98ID_Cb2;
       else if (strcmp(var.value, "PC-9821Cx2 built-in") == 0)
          np2cfg.gd5430type = CIRRUS_98ID_Cx2;
+      else if (strcmp(var.value, "PC-9821 PCI CL-GD5446 built-in") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_PCI;
       else if (strcmp(var.value, "MELCO WAB-S") == 0)
          np2cfg.gd5430type = CIRRUS_98ID_WAB;
       else if (strcmp(var.value, "MELCO WSN-A2F") == 0)
          np2cfg.gd5430type = CIRRUS_98ID_WSN_A2F;
       else if (strcmp(var.value, "MELCO WSN-A4F") == 0)
          np2cfg.gd5430type = CIRRUS_98ID_WSN;
-      else if (strcmp(var.value, "I-O DATA GA-98NBI/C,II,IV") == 0)
-         np2cfg.gd5430type = CIRRUS_98ID_GA98NB;
+      else if (strcmp(var.value, "I-O DATA GA-98NBI/C") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_GA98NBIC;
+      else if (strcmp(var.value, "I-O DATA GA-98NBII") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_GA98NBII;
+      else if (strcmp(var.value, "I-O DATA GA-98NBIV") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_GA98NBIV;
       else if (strcmp(var.value, "PC-9801-96(PC-9801B3-E02)") == 0)
          np2cfg.gd5430type = CIRRUS_98ID_96;
+      else if (strcmp(var.value, "Auto Select(Xe10, WAB-S), PCI") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_AUTO_XE_WA_PCI;
+      else if (strcmp(var.value, "Auto Select(Xe10, WSN-A2F), PCI") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_AUTO_XE_WS_PCI;
+      else if (strcmp(var.value, "Auto Select(Xe10, WSN-A4F), PCI") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_AUTO_XE_W4_PCI;
       else if (strcmp(var.value, "Auto Select(Xe10, WAB-S)") == 0)
          np2cfg.gd5430type = CIRRUS_98ID_AUTO_XE10_WABS;
       else if (strcmp(var.value, "Auto Select(Xe10, WSN-A2F)") == 0)

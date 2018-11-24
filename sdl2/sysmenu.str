@@ -154,6 +154,9 @@ static const char str_mouserapid[] = "Mouse Rapid";
 static const char str_itfwork[] = "ITF work";
 static const char str_fixmmtimer[] = "Fix MMTimer";
 static const char str_skip16mbmemchk[] = "Skip over 16MB memcheck";
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+static const char str_fastmemchk[] = "Fast memcheck";
+#endif
 static const char str_about[] = "About...";
 
 static const MSYSITEM s_emu[] = {
@@ -442,6 +445,9 @@ static const MSYSITEM s_other[] = {
 		{str_itfwork,		NULL,		MID_ITFWORK,			0},
 		{str_fixmmtimer,	NULL,		MID_FIXMMTIMER,			0},
 		{str_skip16mbmemchk,	NULL,		MID_SKIP16MBMEMCHK,		0},
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+		{str_fastmemchk,	NULL,		MID_FASTMEMCHK,			0},
+#endif
 #endif
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_about,			NULL,		MID_ABOUT,			MENU_DELETED}};

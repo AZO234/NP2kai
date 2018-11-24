@@ -235,5 +235,11 @@ typedef SINT32	FILELEN;
 #define	VERMOUTHCL
 #define	INLINE inline
 
+#if defined(SUPPORT_LARGE_MEMORY)
+#define	MEMORY_MAXSIZE		4000
+#else
+#define	MEMORY_MAXSIZE		230
+#endif
+
 #include	"common.h"
 
