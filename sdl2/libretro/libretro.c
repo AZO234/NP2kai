@@ -64,6 +64,7 @@ static retro_video_refresh_t video_cb = NULL;
 static retro_input_poll_t poll_cb = NULL;
 retro_input_state_t input_cb = NULL;
 retro_environment_t environ_cb = NULL;
+extern struct retro_midi_interface *retro_midi_interface;
 
 uint32_t   FrameBuffer[LR_SCREENWIDTH * LR_SCREENHEIGHT];
 uint32_t   GuiBuffer[LR_SCREENWIDTH * LR_SCREENHEIGHT]; //menu surf
@@ -1367,6 +1368,25 @@ void retro_init (void)
    scrnsurf.height = 400;
 
    update_variables();
+
+	struct retro_log_callback log;
+	if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log))
+		log_cb = log.log;
+	else
+		log_cb = NULL;
+
+	if (log_cb)
+		log_cb(RETRO_LOG_INFO, "Logger interface initialized\n");
+
+	static struct retro_midi_interface midi_interface;
+	if(environ_cb(RETRO_ENVIRONMENT_GET_MIDI_INTERFACE, &midi_interface))
+		retro_midi_interface = &midi_interface;
+	else
+		retro_midi_interface = NULL;
+
+	if (log_cb)
+		log_cb(RETRO_LOG_INFO, "MIDI interface %s.\n",
+			retro_midi_interface ? "initialized" : "unavailable\n");
 
 #if defined(SUPPORT_CL_GD5430)
    draw32bit = np2cfg.usegd5430;
