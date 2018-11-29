@@ -23,6 +23,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if !defined(__LIBRETRO__)
+
 #include "compiler.h"
 
 #include "pccore.h"
@@ -439,3 +441,5 @@ cscre_close:
 cscre_failure:
 	return NULL;
 }
+
+#endif	/* __LIBRETRO__ */

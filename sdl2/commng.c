@@ -99,7 +99,9 @@ commng_create(UINT device)
 	if (cfg) {
 		if ((cfg->port >= COMPORT_COM1)
 		 && (cfg->port <= COMPORT_COM4)) {
+#if !defined(__LIBRETRO__)
 			ret = cmserial_create(cfg->port - COMPORT_COM1 + 1, cfg->param, cfg->speed);
+#endif	/* __LIBRETRO__ */
 		} else if (cfg->port == COMPORT_MIDI) {
 			ret = cmmidi_create(cfg->mout, cfg->min, cfg->mdl);
 			if (ret) {

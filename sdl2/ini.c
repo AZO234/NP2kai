@@ -738,11 +738,13 @@ static const INITBL iniitem[] = {
 #endif
 
 	{"sounddrv", INITYPE_SNDDRV,	&np2oscfg.snddrv,	0},
+#if !defined(__LIBRETRO__)
 #if defined(_WIN32)
 	{"MIDIOUTd", INITYPE_STR,	&np2oscfg.MIDIDEV[0],	MAX_PATH},
 	{"MIDIIN_d", INITYPE_STR,	&np2oscfg.MIDIDEV[1],	MAX_PATH},
 	{"MIDIWAIT", INITYPE_UINT32,	&np2oscfg.MIDIWAIT,	0},
 #endif	/* _WIN32 */
+#endif	/* __LIBRETRO__ */
 
 	{"s_NOWAIT", INITYPE_BOOL,		&np2oscfg.NOWAIT,		0},
 	{"SkpFrame", INITYPE_UINT8,		&np2oscfg.DRAW_SKIP,	0},
