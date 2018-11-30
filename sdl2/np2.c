@@ -68,8 +68,8 @@ NP2OSCFG np2oscfg = {
 	SNDDRV_SDL,		/* snddrv */
 #if !defined(__LIBRETRO__)
 	{ "", "" }, 		/* MIDIDEV */
-	0,			/* MIDIWAIT */
 #endif	/* __LIBRETRO__ */
+	0,			/* MIDIWAIT */
 
 	{ FALSE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", "" },	/* mpu */
 #if !defined(__LIBRETRO__)

@@ -53,6 +53,7 @@ typedef struct {
 	UINT8	I286SAVE;
 
 	UINT8	snddrv;
+	UINT32	MIDIWAIT;
 
 	COMCFG	mpu;
 

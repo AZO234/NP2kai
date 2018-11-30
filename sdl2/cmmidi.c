@@ -4,6 +4,8 @@
 #include "commng.h"
 #include "mimpidef.h"
 #include "sound.h"
+#include "cpucore.h"
+#include "pccore.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -154,7 +156,7 @@ getmidiout(const char *midiout)
 		}
 	}
 #else	/* __LIBRETRO__ */
-	if(np2oscfg.mpu.direct)
+//	if(np2oscfg.mpu.direct)
 		hmidiout = 0;
 #endif	/* __LIBRETRO__ */
 	return hmidiout;
@@ -194,16 +196,12 @@ module2number(const char *module)
 
 #if defined(__LIBRETRO__)
 struct retro_midi_interface *retro_midi_interface;
+UINT64 Midi_write_time;
 #endif	/* __LIBRETRO__ */
 
 static INLINE void 
 midi_write(CMMIDI midi, const UINT8 *cmd, UINT cnt)
 {
-#if defined(__LIBRETRO__)
-	if (retro_midi_interface && retro_midi_interface->output_enabled()) {
-		retro_midi_interface->write(cmd, (uint32_t)cnt);
-	}
-#else	/* __LIBRETRO__ */
 	struct timeval ct;
 	int ds, du;
 	int rv;
@@ -221,7 +219,24 @@ midi_write(CMMIDI midi, const UINT8 *cmd, UINT cnt)
 
 	for (i = 0; i < cnt; i++) {
 		do {
+#if defined(__LIBRETRO__)
+			if (retro_midi_interface && retro_midi_interface->output_enabled()) {
+				UINT64 current_time = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
+				UINT64 delta_time;
+				if (Midi_write_time == 0)
+					Midi_write_time = current_time;
+				delta_time = (UINT64)((1.0 / (pccore.baseclock * pccore.multiple)) * (current_time - Midi_write_time) * 1000000);
+				Midi_write_time = current_time;
+				if (delta_time > 0xFFFFFFFF)
+					delta_time = 0;
+				if(retro_midi_interface->write(cmd[i], (uint32_t)delta_time))
+					rv = 1;
+				else
+					rv = 0;
+			}
+#else	/* __LIBRETRO__ */
 			rv = write(midi->hmidiout, cmd + i, 1);
+#endif	/* __LIBRETRO__ */
 		} while (rv != 1);
 	}
 
@@ -237,7 +252,6 @@ midi_write(CMMIDI midi, const UINT8 *cmd, UINT cnt)
 		midi->hmidiout_nextstart.tv_usec -= 1000000;
 		midi->hmidiout_nextstart.tv_sec++;
 	}
-#endif	/* __LIBRETRO__ */
 }
 
 #if 1
@@ -712,15 +726,10 @@ cmmidi_create(const char *midiout, const char *midiin, const char *module)
 	/* MIDI-OUT */
 	outfn = midiout_none;
 	hmidiout = getmidiout(midiout);
-#if !defined(__LIBRETRO__)
-	outfn = midiout_device;
-	opened |= CMMIDI_MIDIOUT;
-#else	/* __LIBRETRO__ */
 	if (hmidiout >= 0) {
 		outfn = midiout_device;
 		opened |= CMMIDI_MIDIOUT;
 	}
-#endif	/* __LIBRETRO__ */
 #if defined(VERMOUTH_LIB)
 	else if (!milstr_cmp(midiout, cmmidi_vermouth)) {
 		vermouth = midiout_create(vermouth_module, 512);
