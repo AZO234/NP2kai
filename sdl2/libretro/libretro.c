@@ -1463,6 +1463,9 @@ void retro_run (void)
    } else {
       video_cb(FrameBuffer, scrnsurf.width, scrnsurf.height, scrnsurf.width * 2/*Pitch*/);
    }
+
+    if (retro_midi_interface && retro_midi_interface->output_enabled())
+        retro_midi_interface->flush();
 }
 
 void retro_cheat_reset(void)
