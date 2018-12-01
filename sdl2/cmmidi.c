@@ -156,7 +156,7 @@ getmidiout(const char *midiout)
 		}
 	}
 #else	/* __LIBRETRO__ */
-//	if(np2oscfg.mpu.direct)
+	if(np2oscfg.mpu.direct)
 		hmidiout = 0;
 #endif	/* __LIBRETRO__ */
 	return hmidiout;
