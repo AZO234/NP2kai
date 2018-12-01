@@ -71,7 +71,7 @@ NP2OSCFG np2oscfg = {
 #endif	/* __LIBRETRO__ */
 	0,			/* MIDIWAIT */
 
-	{ FALSE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", "" },	/* mpu */
+	{ TRUE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", "" },	/* mpu */
 #if !defined(__LIBRETRO__)
 	{
 		{ TRUE, COMPORT_NONE, 0, 0x3e, 19200, "", "", "", "" },/* com1 */
