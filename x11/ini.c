@@ -663,6 +663,8 @@ static INITBL iniitem[] = {
 	{"USE_CLGD", INITYPE_BOOL,	&np2cfg.usegd5430,	0},
 	{"CLGDTYPE", INITYPE_UINT16,	&np2cfg.gd5430type,	0},
 	{"CLGDFCUR", INITYPE_BOOL,	&np2cfg.gd5430fakecur,	0},
+	{"GDMELOFS", INITYPE_UINT8,	&np2cfg.gd5430melofs,	0},
+	{"GANBBSEX", INITYPE_BOOL,	&np2cfg.ga98nb_bigscrn_ex,	0},
 #endif
 	{"TIMERFIX", INITYPE_BOOL,	&np2cfg.timerfix,	0},
 
@@ -683,6 +685,10 @@ static INITBL iniitem[] = {
 	{"cpu_bran", INIRO_STR,		np2cfg.cpu_brandstring_o, 63},
 
 	{"FPU_TYPE", INITYPE_UINT8,	&np2cfg.fpu_type,	0},
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+	{"memckspd", INITYPE_UINT8,	&np2cfg.memcheckspeed,	0},
+#endif
+	{"USERAM_D", INITYPE_BOOL,	&np2cfg.useram_d,	0},
 
 	{"keyboard", INITYPE_KB,	&np2oscfg.KEYBOARD,	0},
 	{"F12_COPY", INITYPE_UINT8,	&np2oscfg.F12KEY,	0},

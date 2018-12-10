@@ -1891,6 +1891,7 @@ void ideio_reset(const NP2CFG *pConfig) {
 		CopyMemory(mem + 0xd8000, idebios, sizeof(idebios));
 		TRACEOUT(("use simulate ide.rom"));
 	}
+	CPU_RAM_D000 &= ~(0x3 << 8);
 
 	//if(ideio.bios==IDETC_NOBIOS){
 	//	UINT16 param_2[] = {0x0598, 0x05b1, 0x058c, 0x058e};

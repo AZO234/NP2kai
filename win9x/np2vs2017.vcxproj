@@ -96,7 +96,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);SUPPORT_KAI_IMAGES</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_GPIB;SUPPORT_SCRN_DIRECT3D;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_MAME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;.\x86;..\;..\common;..\fdd;..\i286x;..\mem;..\io;..\cbus;..\network;..\vram;..\sound;..\generic;..\zlib;\VST_SDK</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -113,7 +113,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+<PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_GPIB;SUPPORT_SCRN_DIRECT3D;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_MAME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;.\x64;..\;..\common;..\fdd;..\i286c;..\mem;..\io;..\cbus;..\network;..\vram;..\sound;..\generic;..\zlib;\VST_SDK</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -139,7 +139,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_KAI_IMAGES;ALLOW_MULTIRUN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+<PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_GPIB;SUPPORT_SCRN_DIRECT3D;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_MAME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;.\x86;..\;..\common;..\fdd;..\i286x;..\mem;..\io;..\cbus;..\network;..\vram;..\sound;..\generic;..\zlib;\VST_SDK</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -160,7 +160,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_KAI_IMAGES;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_VPCVHD;HOOK_SYSKEY;ALLOW_MULTIRUN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_GPIB;SUPPORT_SCRN_DIRECT3D;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_MAME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;.\x64;..\;..\common;..\fdd;..\i286c;..\mem;..\io;..\cbus;..\network;..\vram;..\sound;..\generic;..\zlib;\VST_SDK</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
@@ -202,11 +202,14 @@
     <ClCompile Include="..\cbus\board26k.c" />
     <ClCompile Include="..\cbus\board86.c" />
     <ClCompile Include="..\cbus\boardpx.c" />
+    <ClCompile Include="..\cbus\boardsb16.c" />
     <ClCompile Include="..\cbus\boardso.c" />
     <ClCompile Include="..\cbus\boardspb.c" />
     <ClCompile Include="..\cbus\boardx2.c" />
     <ClCompile Include="..\cbus\cbuscore.c" />
     <ClCompile Include="..\cbus\cs4231io.c" />
+    <ClCompile Include="..\cbus\ct1741io.c" />
+    <ClCompile Include="..\cbus\ct1745io.c" />
     <ClCompile Include="..\cbus\ideio.c" />
     <ClCompile Include="..\cbus\mpu98ii.c" />
     <ClCompile Include="..\cbus\pc9861k.c" />
@@ -257,6 +260,7 @@
     <ClCompile Include="..\fdd\sxsi.c" />
     <ClCompile Include="..\fdd\sxsicd.c" />
     <ClCompile Include="..\fdd\sxsihdd.c" />
+    <ClCompile Include="..\fdd\sxsihdd_nvl.c" />
     <ClCompile Include="..\font\font.c" />
     <ClCompile Include="..\font\fontdata.c" />
     <ClCompile Include="..\font\fontfm7.c" />
@@ -596,11 +600,14 @@
     <ClInclude Include="..\cbus\board26k.h" />
     <ClInclude Include="..\cbus\board86.h" />
     <ClInclude Include="..\cbus\boardpx.h" />
+    <ClInclude Include="..\cbus\boardsb16.h" />
     <ClInclude Include="..\cbus\boardso.h" />
     <ClInclude Include="..\cbus\boardspb.h" />
     <ClInclude Include="..\cbus\boardx2.h" />
     <ClInclude Include="..\cbus\cbuscore.h" />
     <ClInclude Include="..\cbus\cs4231io.h" />
+    <ClInclude Include="..\cbus\ct1741io.h" />
+    <ClInclude Include="..\cbus\ct1745io.h" />
     <ClInclude Include="..\cbus\ideio.h" />
     <ClInclude Include="..\cbus\mpu98ii.h" />
     <ClInclude Include="..\cbus\pc9861k.h" />
@@ -724,7 +731,24 @@
     <ClInclude Include="..\sound\beep.h" />
     <ClInclude Include="..\sound\cs4231.h" />
     <ClInclude Include="..\sound\fmboard.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_diag.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_file.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_fmgen.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_fmgeninl.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_fmgwrap.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_fmtimer.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_headers.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_misc.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_opm.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_opna.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_psg.h" />
+    <ClInclude Include="..\sound\fmgen\fmgen_types.h" />
     <ClInclude Include="..\sound\getsnd\getsnd.h" />
+    <ClInclude Include="..\sound\mame\driver.h" />
+    <ClInclude Include="..\sound\mame\fm.h" />
+    <ClInclude Include="..\sound\mame\fmopl.h" />
+    <ClInclude Include="..\sound\mame\ymdeltat.h" />
+    <ClInclude Include="..\sound\mame\ymf262.h" />
     <ClInclude Include="..\sound\opl3.h" />
     <ClInclude Include="..\sound\oplgen.h" />
     <ClInclude Include="..\sound\oplgencfg.h" />

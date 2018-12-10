@@ -11,6 +11,7 @@ void scrnmngD3D_destroy(void);
 void scrnmngD3D_setwidth(int posx, int width);
 void scrnmngD3D_setextend(int extend);
 void scrnmngD3D_setheight(int posy, int height);
+void scrnmngD3D_setsize(int posx, int posy, int width, int height);
 #define scrnmngD3D_setbpp(commendablebpp)
 const SCRNSURF *scrnmngD3D_surflock(void);
 void scrnmngD3D_surfunlock(const SCRNSURF *surf);

@@ -83,16 +83,47 @@ ia32_init(void)
 void
 ia32_setextsize(UINT32 size)
 {
+//#if defined(SUPPORT_LARGE_MEMORY)&&defined(_WIN32) && !defined(MEMTRACE) && !defined(MEMCHECK)
+//	static int vallocflag = 0;
+//	static int vallocsize = 0;
+//	static LPVOID memblock = NULL;
+//#endif
 
 	if (CPU_EXTMEMSIZE != size) {
 		UINT8 *extmem;
 		extmem = CPU_EXTMEM;
 		if (extmem != NULL) {
-			_MFREE(extmem);
+//#if defined(SUPPORT_LARGE_MEMORY) && defined(_WIN32) && !defined(MEMTRACE) && !defined(MEMCHECK)
+//			if(vallocflag){
+//				VirtualFree((LPVOID)extmem, vallocsize, MEM_DECOMMIT);
+//				VirtualFree(memblock, 0, MEM_RELEASE);
+//				vallocflag = 0;
+//			}else
+//#endif
+			{
+				_MFREE(extmem);
+			}
 			extmem = NULL;
 		}
 		if (size != 0) {
-			extmem = (UINT8 *)_MALLOC(size + 16, "EXTMEM");
+//#if defined(SUPPORT_LARGE_MEMORY) && defined(_WIN32) && !defined(MEMTRACE) && !defined(MEMCHECK)
+//			if(size > (255 << 20)){
+//				HANDLE hp = OpenProcess(PROCESS_ALL_ACCESS, TRUE, GetCurrentProcessId());
+//				vallocsize = size + 16;
+//				SetProcessWorkingSetSize(hp, vallocsize + 50*1024*1024, vallocsize + 50*1024*1024);
+//				CloseHandle(hp);
+//				memblock = VirtualAlloc(NULL, vallocsize, MEM_RESERVE, PAGE_READWRITE);
+//				extmem = (UINT8 *)VirtualAlloc(memblock, vallocsize, MEM_COMMIT, PAGE_READWRITE);
+//				if(!extmem){
+//					extmem = (UINT8 *)_MALLOC(size + 16, "EXTMEM");
+//				}else{
+//					vallocflag = 1;
+//				}
+//			}else
+//#endif
+			{
+				extmem = (UINT8 *)_MALLOC(size + 16, "EXTMEM");
+			}
 		}
 		if (extmem != NULL) {
 			ZeroMemory(extmem, size + 16);

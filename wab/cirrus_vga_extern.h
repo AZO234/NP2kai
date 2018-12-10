@@ -53,6 +53,9 @@
 #define CIRRUS_98ID_GA98NBIV	0x202
 #define CIRRUS_98ID_GA98NBMASK	0xfffc
 #define CIRRUS_98ID_AUTOMSK	0xFFF0
+#define CIRRUS_98ID_AUTO_XE_G1_PCI	0xFFF7
+#define CIRRUS_98ID_AUTO_XE_G2_PCI	0xFFF8
+#define CIRRUS_98ID_AUTO_XE_G4_PCI	0xFFF9
 #define CIRRUS_98ID_AUTO_XE_WA_PCI	0xFFFA
 #define CIRRUS_98ID_AUTO_XE_W4_PCI	0xFFFB
 #define CIRRUS_98ID_AUTO_XE_WS_PCI	0xFFFC
@@ -111,6 +114,8 @@ typedef uint32_t_ CPUReadMemoryFunc(void *opaque, target_phys_addr_t addr);
 extern CPUWriteMemoryFunc *g_cirrus_linear_write[3];
 
 extern int pcidev_cirrus_deviceid;
+
+extern int cirrusvga_wab_46e8;
 
 void cirrus_linear_mem_writeb(void *opaque, target_phys_addr_t addr, uint32_t_ val);
 void cirrus_linear_mem_writew(void *opaque, target_phys_addr_t addr, uint32_t_ val);

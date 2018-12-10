@@ -20,10 +20,14 @@
 #define DSBVOLUME_MIN		(-10000)					/*!< ヴォリューム最小値 */
 #endif
 
-#define NP2VOLUME2DSDB(a)	((LONG)(10*log10((a)/100.0f)*100))
+#define NP2VOLUME2DSDB(a)	((LONG)(10*log((a)/100.0f)/log(2.0)*100))
 
 //! デバイス リスト
 std::vector<DSound3Device> CSoundDeviceDSound3::sm_devices;
+
+//! マスタボリューム使用可能？ 
+bool CSoundDeviceDSound3::s_mastervol_available = true;
+
 
 /**
  * @brief RIFF chunk
@@ -206,7 +210,7 @@ UINT CSoundDeviceDSound3::CreateStream(UINT nSamplingRate, UINT nChannels, UINT 
 	DSBUFFERDESC dsbdesc;
 	ZeroMemory(&dsbdesc, sizeof(dsbdesc));
 	dsbdesc.dwSize = sizeof(dsbdesc);
-	dsbdesc.dwFlags = DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME |
+	dsbdesc.dwFlags = DSBCAPS_CTRLPAN | (s_mastervol_available ? DSBCAPS_CTRLVOLUME : 0) |
 						DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRLPOSITIONNOTIFY |
 						DSBCAPS_STICKYFOCUS | DSBCAPS_GETCURRENTPOSITION2;
 	dsbdesc.lpwfxFormat = reinterpret_cast<LPWAVEFORMATEX>(&pcmwf);
@@ -344,27 +348,33 @@ void CSoundDeviceDSound3::SetMasterVolume(int nVolume)
 {
 
 	m_mastervolume = nVolume;
-	if (m_lpDSStream)
-	{
-		if(m_mastervolume == 0){
-			m_lpDSStream->SetVolume(DSBVOLUME_MIN);
-		}else{
-			m_lpDSStream->SetVolume(NP2VOLUME2DSDB(m_mastervolume));
+	if(s_mastervol_available){
+		if (m_lpDSStream)
+		{
+			if(m_mastervolume == 0){
+				m_lpDSStream->SetVolume(DSBVOLUME_MIN);
+			}else if(m_mastervolume == 100){
+				m_lpDSStream->SetVolume(DSBVOLUME_MAX);
+			}else{
+				m_lpDSStream->SetVolume(NP2VOLUME2DSDB(m_mastervolume));
+			}
+		}
+		for( auto it = m_pcm.begin(); it != m_pcm.end() ; ++it ) {
+			LPDIRECTSOUNDBUFFER lpDSBuffer = it->second;
+			int volume = 100;
+			if(it->first < PCMVOLUME_MAXCOUNT){
+				volume = m_pcmvolume[it->first];
+			}
+			volume *= m_mastervolume;
+			if(volume == 0){
+				lpDSBuffer->SetVolume(DSBVOLUME_MIN);
+			}else if(volume == 100){
+				lpDSBuffer->SetVolume(DSBVOLUME_MAX);
+			}else{
+				lpDSBuffer->SetVolume(NP2VOLUME2DSDB(volume));
+			}
 		}
 	}
-	for( auto it = m_pcm.begin(); it != m_pcm.end() ; ++it ) {
-		LPDIRECTSOUNDBUFFER lpDSBuffer = it->second;
-		int volume = 100;
-		if(it->first < PCMVOLUME_MAXCOUNT){
-			volume = m_pcmvolume[it->first];
-		}
-		volume *= m_mastervolume;
-		if(volume == 0){
-			lpDSBuffer->SetVolume(DSBVOLUME_MIN);
-		}else{
-			lpDSBuffer->SetVolume(NP2VOLUME2DSDB(volume));
-		}
-    }
 }
 
 /**
@@ -550,7 +560,7 @@ LPDIRECTSOUNDBUFFER CSoundDeviceDSound3::CreateWaveBuffer(LPCTSTR lpFilename)
 		DSBUFFERDESC dsbdesc;
 		ZeroMemory(&dsbdesc, sizeof(dsbdesc));
 		dsbdesc.dwSize = sizeof(dsbdesc);
-		dsbdesc.dwFlags = DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFREQUENCY | DSBCAPS_STATIC | DSBCAPS_STICKYFOCUS | DSBCAPS_GETCURRENTPOSITION2;
+		dsbdesc.dwFlags = DSBCAPS_CTRLPAN | (s_mastervol_available ? DSBCAPS_CTRLVOLUME : 0) | DSBCAPS_CTRLFREQUENCY | DSBCAPS_STATIC | DSBCAPS_STICKYFOCUS | DSBCAPS_GETCURRENTPOSITION2;
 		dsbdesc.dwBufferBytes = chunk.nSize;
 		dsbdesc.lpwfxFormat = reinterpret_cast<LPWAVEFORMATEX>(&pcmwf);
 
@@ -617,22 +627,26 @@ void CSoundDeviceDSound3::UnloadPCM(UINT nNum)
  */
 void CSoundDeviceDSound3::SetPCMVolume(UINT nNum, int nVolume)
 {
-	std::map<UINT, LPDIRECTSOUNDBUFFER>::iterator it = m_pcm.find(nNum);
-	if (it != m_pcm.end())
-	{
-		LPDIRECTSOUNDBUFFER lpDSBuffer = it->second;
-		int volume = nVolume;
-		if(nNum	< PCMVOLUME_MAXCOUNT){
-			m_pcmvolume[nNum] = nVolume;
-		}
-		volume *= m_mastervolume;
+	if(s_mastervol_available){
+		std::map<UINT, LPDIRECTSOUNDBUFFER>::iterator it = m_pcm.find(nNum);
+		if (it != m_pcm.end())
+		{
+			LPDIRECTSOUNDBUFFER lpDSBuffer = it->second;
+			int volume = nVolume;
+			if(nNum	< PCMVOLUME_MAXCOUNT){
+				m_pcmvolume[nNum] = nVolume;
+			}
+			volume *= m_mastervolume;
 		
-		if(volume == 0){
-			lpDSBuffer->SetVolume(DSBVOLUME_MIN);
-		}else{
-			lpDSBuffer->SetVolume(NP2VOLUME2DSDB(volume));
+			if(volume == 0){
+				lpDSBuffer->SetVolume(DSBVOLUME_MIN);
+			}else if(volume == 100){
+				lpDSBuffer->SetVolume(DSBVOLUME_MAX);
+			}else{
+				lpDSBuffer->SetVolume(NP2VOLUME2DSDB(volume));
+			}
+			//lpDSBuffer->SetVolume((((DSBVOLUME_MAX - DSBVOLUME_MIN) * nVolume) / 100) + DSBVOLUME_MIN);
 		}
-		//lpDSBuffer->SetVolume((((DSBVOLUME_MAX - DSBVOLUME_MIN) * nVolume) / 100) + DSBVOLUME_MIN);
 	}
 }
 

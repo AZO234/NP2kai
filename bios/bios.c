@@ -379,6 +379,7 @@ void bios_initialize(void) {
 		mem[ITF_ADRS + 5924] = 0x90;
 	}
 #endif
+	np2cfg.memchkmx = 0; // 無効化 (obsolete)
 	if(np2cfg.memchkmx){ // メモリカウント最大値変更
 		mem[ITF_ADRS + 6057] = mem[ITF_ADRS + 6061] = (UINT8)np2max((int)np2cfg.memchkmx-14, 1); // XXX: 場所決め打ち
 	}else{
@@ -603,7 +604,7 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 	// 高速メモリチェック
 	if (CPU_ITFBANK && adrs == 0xf9724) {
 		UINT16 subvalue = LOADINTELWORD((mem + ITF_ADRS + 5886)) / 128;
-		UINT16 memaddr = cpu_codefetch_w(CPU_EIP);
+		UINT16 memaddr = MEMP_READ16(CPU_EIP);
 		UINT16 counter = MEMR_READ16(CPU_SS, CPU_EBP + 6);
 		if(subvalue == 0) subvalue = 1;
 		if(counter >= subvalue){

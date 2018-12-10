@@ -58,6 +58,7 @@ void CSoundMng::Initialize()
 	::CoInitializeEx(NULL, COINIT_MULTITHREADED);
 #endif	// defined(SUPPORT_ASIO) || defined(SUPPORT_WASAPI)
 
+	CSoundDeviceDSound3::s_mastervol_available = np2oscfg.usemastervolume ? true : false;
 	CSoundDeviceDSound3::Initialize();
 #if defined(SUPPORT_WASAPI)
 	CSoundDeviceWasapi::Initialize();

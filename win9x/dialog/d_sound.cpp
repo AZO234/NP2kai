@@ -79,6 +79,10 @@ BOOL SndOptMixerPage::OnInitDialog()
 	m_master.SetStaticId(IDC_VOLMASTERSTR);
 	m_master.SetRange(0, 100);
 	m_master.SetPos(np2cfg.vol_master);
+	if(!np2oscfg.usemastervolume){
+		m_master.SetPos(100);
+		m_master.EnableWindow(FALSE);
+	}
 
 	m_fm.SubclassDlgItem(IDC_VOLFM, this);
 	m_fm.SetStaticId(IDC_VOLFMSTR);
@@ -120,12 +124,14 @@ void SndOptMixerPage::OnOK()
 {
 	bool bUpdated = false;
 	
-	const UINT8 cMaster = static_cast<UINT8>(m_master.GetPos());
-	if (np2cfg.vol_master != cMaster)
-	{
-		np2cfg.vol_master = cMaster;
-		soundmng_setvolume(cMaster);
-		bUpdated = true;
+	if(np2oscfg.usemastervolume){
+		const UINT8 cMaster = static_cast<UINT8>(m_master.GetPos());
+		if (np2cfg.vol_master != cMaster)
+		{
+			np2cfg.vol_master = cMaster;
+			soundmng_setvolume(cMaster);
+			bUpdated = true;
+		}
 	}
 
 	const UINT8 cFM = static_cast<UINT8>(m_fm.GetPos());

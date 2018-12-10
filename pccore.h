@@ -224,6 +224,7 @@ struct tagNP2Config
 	UINT16	gd5430type;
 	UINT8	gd5430fakecur;
 	UINT8	gd5430melofs;
+	UINT8	ga98nb_bigscrn_ex;
 #endif
 #if defined(SUPPORT_GPIB)
 	UINT8	usegpib; // GPIB使用
@@ -270,6 +271,8 @@ struct tagNP2Config
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 	UINT8	memcheckspeed; // メモリチェック速度
 #endif
+	
+	UINT8	useram_d; // EPSONでなくてもD0000h-DFFFFhをRAMに（ただしIDE BIOS D8000h-DBFFFhは駄目）
 };
 typedef struct tagNP2Config  NP2CFG;		/*!< The define of config */
 

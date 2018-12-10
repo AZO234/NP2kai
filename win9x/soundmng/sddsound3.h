@@ -28,6 +28,8 @@ struct DSound3Device
 class CSoundDeviceDSound3 : public CSoundDeviceBase, protected CThreadBase
 {
 public:
+	static bool s_mastervol_available;			//!< マスタボリューム使用可能？
+
 	static void Initialize();
 	static void EnumerateDevices(std::vector<LPCTSTR>& devices);
 

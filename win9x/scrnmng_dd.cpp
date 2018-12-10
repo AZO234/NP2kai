@@ -972,6 +972,13 @@ void scrnmngDD_setheight(int posy, int height) {
 	renewalclientsize(TRUE);
 }
 
+void scrnmngDD_setsize(int posx, int posy, int width, int height) {
+
+	scrnstat.width = width;
+	scrnstat.height = height;
+	renewalclientsize(TRUE);
+}
+
 const SCRNSURF *scrnmngDD_surflock(void) {
 
 	DDSURFACEDESC	destscrn;

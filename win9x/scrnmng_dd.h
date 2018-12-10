@@ -9,6 +9,7 @@ void scrnmngDD_destroy(void);
 void scrnmngDD_setwidth(int posx, int width);
 void scrnmngDD_setextend(int extend);
 void scrnmngDD_setheight(int posy, int height);
+void scrnmngDD_setsize(int posx, int posy, int width, int height);
 #define scrnmngDD_setbpp(commendablebpp)
 const SCRNSURF *scrnmngDD_surflock(void);
 void scrnmngDD_surfunlock(const SCRNSURF *surf);

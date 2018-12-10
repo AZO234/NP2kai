@@ -28,7 +28,7 @@ void bios0x1c(void) {
 			SETBIOSMEM16(0x0001c, CPU_BX);
 			SETBIOSMEM16(0x0001e, CPU_ES);
 			SETBIOSMEM16(0x0058a, CPU_CX);
-#if defined(BIOS_IO_EMULATION)
+#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 			if (CPU_STAT_PM && CPU_STAT_VM86) {
 				biosioemu_enq8(0x77, 0x36); 
 			} else
@@ -39,7 +39,7 @@ void bios0x1c(void) {
 			/*FALLTHROUGH*/
 
 		case 0x03:					// continue interval timer
-#if defined(BIOS_IO_EMULATION)
+#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 			if (CPU_STAT_PM && CPU_STAT_VM86) {
 				biosioemu_enq8(0x71, 0x00);
 				if (pccore.cpumode & CPUMODE_8MHZ) {

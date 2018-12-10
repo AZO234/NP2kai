@@ -247,6 +247,12 @@
     <Filter Include="ソース ファイル\sound\mame">
       <UniqueIdentifier>{6733dfde-dbb2-424e-971c-aa456d15000c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\sound\fmgen">
+      <UniqueIdentifier>{1fbae04d-6163-4fc0-99e3-af4a99fad012}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\sound\mame">
+      <UniqueIdentifier>{69e55071-1b40-4cc2-928d-d45bc986a5af}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\calendar.c">
@@ -1182,6 +1188,18 @@
     <ClCompile Include="scrnmng_d3d.cpp">
       <Filter>ソース ファイル\win9x</Filter>
     </ClCompile>
+    <ClCompile Include="..\fdd\sxsihdd_nvl.c">
+      <Filter>ソース ファイル\fdd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cbus\boardsb16.c">
+      <Filter>ソース ファイル\cbus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cbus\ct1741io.c">
+      <Filter>ソース ファイル\cbus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cbus\ct1745io.c">
+      <Filter>ソース ファイル\cbus</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\calendar.h">
@@ -2020,6 +2038,66 @@
     </ClInclude>
     <ClInclude Include="scrnmng_d3d.h">
       <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\mame\driver.h">
+      <Filter>ヘッダー ファイル\sound\mame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\mame\fm.h">
+      <Filter>ヘッダー ファイル\sound\mame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\mame\fmopl.h">
+      <Filter>ヘッダー ファイル\sound\mame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\mame\ymdeltat.h">
+      <Filter>ヘッダー ファイル\sound\mame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\mame\ymf262.h">
+      <Filter>ヘッダー ファイル\sound\mame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_diag.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_file.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_fmgen.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_fmgeninl.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_fmgwrap.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_fmtimer.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_headers.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_misc.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_opm.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_opna.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_psg.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_types.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cbus\boardsb16.h">
+      <Filter>ヘッダー ファイル\cbus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cbus\ct1741io.h">
+      <Filter>ヘッダー ファイル\cbus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cbus\ct1745io.h">
+      <Filter>ヘッダー ファイル\cbus</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

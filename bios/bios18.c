@@ -961,9 +961,9 @@ void bios0x18(void) {
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 			// np21w ver0.86 rev47 BIOS I/O emulation
 			if (CPU_STAT_PM && CPU_STAT_VM86) {
-				biosioemu_push8(0x43, 0x3a);
-				biosioemu_push8(0x43, 0x32);
-				biosioemu_push8(0x43, 0x16);
+				biosioemu_enq8(0x43, 0x3a);
+				biosioemu_enq8(0x43, 0x32);
+				biosioemu_enq8(0x43, 0x16);
 				ZeroMemory(mem + 0x00502, 0x20);
 				ZeroMemory(mem + 0x00528, 0x13);
 				SETBIOSMEM16(MEMW_KB_SHIFT_TBL, 0x0e00);

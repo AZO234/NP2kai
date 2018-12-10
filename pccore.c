@@ -146,7 +146,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 #endif
 #endif
 #if defined(SUPPORT_CL_GD5430)
-				0, 0x5B, 0, CIRRUS_MELCOWAB_OFS_DEFAULT,
+				0, 0x5B, 0, CIRRUS_MELCOWAB_OFS_DEFAULT, 0,
 #endif
 #if defined(SUPPORT_GPIB)
 				0, 12, 1, 0, 0, 
@@ -166,6 +166,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 				1,
 #endif
+				0,
 	};
 
 	PCCORE	pccore = {	PCBASECLOCK25, PCBASEMULTIPLE,
@@ -637,7 +638,7 @@ void pccore_reset(void) {
 #endif
 
 	epson = (pccore.model & PCMODEL_EPSON) ? TRUE : FALSE;
-	if (epson) {
+	if (epson || np2cfg.useram_d) {
 		/* enable RAM (D0000-DFFFF) */
 		CPU_RAM_D000 = 0xffff;
 	}

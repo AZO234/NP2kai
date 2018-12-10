@@ -92,6 +92,7 @@ void scrnmng_destroy(void);
 void scrnmng_setwidth(int posx, int width);
 void scrnmng_setextend(int extend);
 void scrnmng_setheight(int posy, int height);
+void scrnmng_setsize(int posx, int posy, int width, int height);
 #define scrnmng_setbpp(commendablebpp)
 const SCRNSURF *scrnmng_surflock(void);
 void scrnmng_surfunlock(const SCRNSURF *surf);

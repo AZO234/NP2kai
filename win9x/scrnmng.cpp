@@ -256,6 +256,19 @@ void scrnmng_setheight(int posy, int height) {
 	}
 }
 
+void scrnmng_setsize(int posx, int posy, int width, int height) {
+	
+#ifdef SUPPORT_SCRN_DIRECT3D
+	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) return;
+	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
+		scrnmngD3D_setsize(posx, posy, width, height);
+	}else
+#endif
+	{
+		scrnmngDD_setsize(posx, posy, width, height);
+	}
+}
+
 const SCRNSURF *scrnmng_surflock(void) {
 	
 #ifdef SUPPORT_SCRN_DIRECT3D

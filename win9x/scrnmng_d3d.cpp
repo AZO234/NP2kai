@@ -788,9 +788,12 @@ BRESULT scrnmngD3D_create(UINT8 scrnmode) {
 		height = np2oscfg.fscrn_cy;
 #ifdef SUPPORT_WAB
 		if(!np2wabwnd.multiwindow && (np2wab.relay&0x3)){
-			if(np2wab.realWidth>=640 && np2wab.realHeight>=400){
-				width = np2wab.realWidth;
-				height = np2wab.realHeight;
+			if(scrnstat.width>=640 && scrnstat.height>=400){
+			//if(np2wab.realWidth>=640 && np2wab.realHeight>=400){
+				//width = np2wab.realWidth;
+				//height = np2wab.realHeight;
+				width = scrnstat.width;//np2wab.realWidth;
+				height = scrnstat.height;//np2wab.realHeight;
 			}else{
 				width = 640;
 				height = 480;
@@ -868,10 +871,11 @@ BRESULT scrnmngD3D_create(UINT8 scrnmode) {
 		RECT crect;
 
 #ifdef SUPPORT_WAB
-		if(!np2wabwnd.multiwindow && (np2wab.relay&0x3)!=0 && np2wab.realWidth>=640 && np2wab.realHeight>=400){
+		//if(!np2wabwnd.multiwindow && (np2wab.relay&0x3)!=0 && np2wab.realWidth>=640 && np2wab.realHeight>=400){
+		if(!np2wabwnd.multiwindow && (np2wab.relay&0x3)!=0 && scrnstat.width>=640 && scrnstat.height>=400){
 			// ŽÀƒTƒCƒY‚É
-			width = bufwidth = np2wab.realWidth;
-			height = bufheight = np2wab.realHeight;
+			width = bufwidth = scrnstat.width;//np2wab.realWidth;
+			height = bufheight = scrnstat.height;//np2wab.realHeight;
 			bufwidth++; // +1‚µ‚È‚¢‚Æ‘Ê–Ú‚ç‚µ‚¢
 			bufheight++; // +1‚µ‚È‚¢‚Æ‘Ê–Ú‚ç‚µ‚¢
 		}else{
@@ -1169,6 +1173,33 @@ void scrnmngD3D_setheight(int posy, int height) {
 				DEVMODE devmode;
 				if (EnumDisplaySettings(NULL, ENUM_REGISTRY_SETTINGS, &devmode)) {
 					while (((height * scrnstat.multiple) >> 3) >= (int)devmode.dmPelsHeight-32){
+						scrnstat.multiple--;
+						if(scrnstat.multiple==1) break;
+					}
+				}
+				d3d_enter_criticalsection();
+				scrnmngD3D_destroy();
+				scrnmngD3D_create(g_scrnmode);
+				d3d_leave_criticalsection();
+			}
+		}
+	}
+}
+
+void scrnmngD3D_setsize(int posx, int posy, int width, int height) {
+	
+	if(scrnstat.width != width || scrnstat.height != height){
+		scrnstat.width = width;
+		scrnstat.height = height;
+		if(d3d.d3dbacksurf){
+			if (d3d.scrnmode & SCRNMODE_FULLSCREEN) {
+				renewalclientsize(TRUE);
+				update_backbuffer2size();
+				clearoutfullscreen();
+			}else{
+				DEVMODE devmode;
+				if (EnumDisplaySettings(NULL, ENUM_REGISTRY_SETTINGS, &devmode)) {
+					while (((width * scrnstat.multiple) >> 3) >= (int)devmode.dmPelsWidth-32){
 						scrnstat.multiple--;
 						if(scrnstat.multiple==1) break;
 					}

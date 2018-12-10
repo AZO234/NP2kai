@@ -133,7 +133,7 @@ BOOL memdbg32_paint(CMNVRAM *vram, CMNPALCNV cnv, BOOL redraw) {
 		FillMemory(use, 256, MEMDBG32_PALREAL);
 		FillMemory(use + (0xfa0000 >> 12), (0x60000 >> 12), MEMDBG32_PALREAL);
 		if ((CPU_STAT_PM) && (pccore.extmem)) {
-			FillMemory(use + 256, 256 * pccore.extmem, MEMDBG32_PALPM);
+			FillMemory(use + 256, np2min(256 * pccore.extmem, sizeof(use) - 256), MEMDBG32_PALPM);
 		}
 	}
 	for (i=0; i<32; i++) {

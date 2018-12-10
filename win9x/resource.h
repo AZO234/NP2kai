@@ -413,6 +413,9 @@
 #define IDS_GD5430_GA98NBIC             30620
 #define IDS_GD5430_GA98NBII             30621
 #define IDS_GD5430_GA98NBIV             30622
+#define IDS_GD5430_AUTO_XE_G1_PCI       30690
+#define IDS_GD5430_AUTO_XE_G2_PCI       30691
+#define IDS_GD5430_AUTO_XE_G4_PCI       30692
 #define IDS_GD5430_AUTO_XE_WA_PCI       30693
 #define IDS_GD5430_AUTO_XE_W4_PCI       30694
 #define IDS_GD5430_AUTO_XE_WS_PCI       30695
@@ -682,9 +685,6 @@
 #define IDM_MEM646                      40669
 #define IDM_MEM1206                     40670
 #define IDM_MEM2306                     49671
-#define IDM_FPU80                       49680
-#define IDM_FPU64                       49681
-#define IDM_FPU64INT                    49682
 #define IDM_MOUSE                       40671
 #define IDM_SERIAL1                     40672
 #define IDM_MPUPC98                     40673
@@ -694,6 +694,9 @@
 #define IDM_WABOPT                      40677
 #define IDM_HOSTDRVOPT                  40678
 #define IDM_PCIOPT                      40679
+#define IDM_FPU80                       49680
+#define IDM_FPU64                       49681
+#define IDM_FPU64INT                    49682
 #define IDM_MOUSENC                     40689
 #define IDM_MOUSERAW                    40690
 #define IDM_MOUSE30X                    40691

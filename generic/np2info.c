@@ -11,6 +11,9 @@
 #if defined(SUPPORT_IDEIO)
 #include	"ideio.h"
 #endif
+#if defined(SUPPORT_GPIB)
+#include	"gpibio.h"
+#endif
 
 static const OEMCHAR str_comma[] = OEMTEXT(", ");
 static const OEMCHAR str_2halfMHz[] = OEMTEXT("2.5MHz");
@@ -257,6 +260,10 @@ static void info_sound(OEMCHAR *str, int maxlen, const NP2INFOEX *ex)
 			lpBoard = OEMTEXT("PC-9801-86 + Mate-X PCM");
 			break;
 			
+		case SOUNDID_PC_9801_86_118:
+			lpBoard = OEMTEXT("PC-9801-86 + PC-9801-118");
+			break;
+			
 		case SOUNDID_MATE_X_PCM:
 			lpBoard = OEMTEXT("Mate-X PCM");
 			break;
@@ -353,6 +360,14 @@ static void info_bios(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 			milstr_ncat(str, str_comma, maxlen);
 		}
 		milstr_ncat(str, pcidev.biosname, maxlen);
+	}
+#endif
+#if defined(SUPPORT_GPIB)
+	if (gpib.enable) {
+		if (str[0]) {
+			milstr_ncat(str, str_comma, maxlen);
+		}
+		milstr_ncat(str, OEMTEXT("gpib.rom"), maxlen);
 	}
 #endif
 	if (str[0] == '\0') {

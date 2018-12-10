@@ -470,7 +470,11 @@ static const PFTBL s_IniItems[] =
 
 	PFEXT("DIPswtch", PFTYPE_BIN,		np2cfg.dipsw,			3),
 	PFEXT("MEMswtch", PFTYPE_BIN,		np2cfg.memsw,			8),
-	PFMAX("ExMemory", PFTYPE_UINT8,		&np2cfg.EXTMEM,			244),
+#if defined(SUPPORT_LARGE_MEMORY)
+	PFMAX("ExMemory", PFTYPE_UINT16,	&np2cfg.EXTMEM,			MEMORY_MAXSIZE),
+#else
+	PFMAX("ExMemory", PFTYPE_UINT8,		&np2cfg.EXTMEM,			MEMORY_MAXSIZE),
+#endif
 	PFVAL("ITF_WORK", PFTYPE_BOOL,		&np2cfg.ITF_WORK),
 	
 	PFVAL("USE_BIOS", PFTYPE_BOOL,		&np2cfg.usebios),  // 実機BIOS使用
@@ -609,6 +613,8 @@ static const PFTBL s_IniItems[] =
 	PFVAL("USEGD5430", PFTYPE_BOOL,		&np2cfg.usegd5430),
 	PFVAL("GD5430TYPE",PFTYPE_UINT16,	&np2cfg.gd5430type),
 	PFVAL("GD5430FCUR",PFTYPE_BOOL,		&np2cfg.gd5430fakecur),
+	PFVAL("GDMELOFS", PFTYPE_UINT8,		&np2cfg.gd5430melofs),
+	PFVAL("GANBBSEX", PFTYPE_BOOL,		&np2cfg.ga98nb_bigscrn_ex),
 #endif
 #if defined(SUPPORT_GPIB)
 	PFVAL("USE_GPIB", PFTYPE_BOOL,		&np2cfg.usegpib),
@@ -649,7 +655,13 @@ static const PFTBL s_IniItems[] =
 	PFVAL("cpu_fecx", PFTYPE_HEX32,		&np2cfg.cpu_feature_ecx),
 
 	PFMAX("FPU_TYPE", PFTYPE_UINT8,		&np2cfg.fpu_type,		0), // FPU種類
-
+	
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+	PFVAL("memckspd", PFTYPE_UINT8,		&np2cfg.memcheckspeed),
+#endif
+	
+	PFMAX("USERAM_D", PFTYPE_BOOL,		&np2cfg.useram_d,		0), // EPSONでなくてもD0000h-DFFFFhをRAMに（ただしIDE BIOS D8000h-DBFFFhは駄目）
+	
 
 	// OS依存？
 	PFVAL("keyboard", PFRO_KB,			&np2oscfg.KEYBOARD),
@@ -702,6 +714,7 @@ static const PFTBL s_IniItems[] =
 	PFVAL("toolwind", PFTYPE_BOOL,		&np2oscfg.toolwin),
 	PFVAL("keydispl", PFTYPE_BOOL,		&np2oscfg.keydisp),
 	PFVAL("skbdwind", PFTYPE_BOOL,		&np2oscfg.skbdwin),
+	PFVAL("I286SAVE", PFRO_BOOL,		&np2oscfg.I286SAVE),
 	PFVAL("jast_snd", PFTYPE_BOOL,		&np2oscfg.jastsnd),
 	PFVAL("useromeo", PFTYPE_BOOL,		&np2oscfg.useromeo),
 	PFVAL("thickfrm", PFTYPE_BOOL,		&np2oscfg.thickframe),
@@ -712,7 +725,7 @@ static const PFTBL s_IniItems[] =
 	PFVAL("fscrnmod", PFTYPE_HEX8,		&np2oscfg.fscrnmod),
 
 #if defined(SUPPORT_SCRN_DIRECT3D)
-	PFVAL("D3D_IMODE", PFTYPE_UINT8,	&np2oscfg.d3d_imode),
+	PFVAL("D3D_IMODE", PFTYPE_UINT8,	&np2oscfg.d3d_imode), // Direct3D 拡大縮小補間モード
 #endif
 
 	PFVAL("snddev_t", PFTYPE_UINT8,		&np2oscfg.cSoundDeviceType),
@@ -723,7 +736,7 @@ static const PFTBL s_IniItems[] =
 #endif	// defined(SUPPORT_VSTi)
 	
 	PFVAL("EMUDDRAW", PFTYPE_BOOL,		&np2oscfg.emuddraw), // 最近はEMULATIONONLYにした方速かったりする（特にピクセル操作する場合とか）
-	PFVAL("DRAWTYPE", PFTYPE_UINT8,		&np2oscfg.drawtype),
+	PFVAL("DRAWTYPE", PFTYPE_UINT8,		&np2oscfg.drawtype), // 画面レンダラ (0: DirectDraw, 1: reserved(DirecrDraw), 2: Direct3D)
 	
 	PFVAL("DRAGDROP", PFRO_BOOL,		&np2oscfg.dragdrop), // ドラッグアンドドロップサポート
 	PFVAL("MAKELHDD", PFRO_BOOL,		&np2oscfg.makelhdd), // 巨大HDDイメージ作成サポート
@@ -739,12 +752,11 @@ static const PFTBL s_IniItems[] =
 	PFVAL("SCRN_MUL", PFTYPE_UINT8,		&np2oscfg.scrn_mul), // 画面表示倍率（8が等倍）
 	
 	PFVAL("MOUSE_NC", PFTYPE_BOOL,		&np2oscfg.mouse_nc), // マウスキャプチャ無しコントロール
-	
 	PFVAL("CPUSTABF", PFTYPE_UINT16,	&np2oscfg.cpustabf), // クロック安定器適用限界時間（フレーム）
-	
 	PFVAL("READONLY", PFRO_BOOL,		&np2oscfg.readonly), // 変更を設定ファイルに書き込まない
-
-	PFVAL("I286SAVE", PFRO_BOOL,		&np2oscfg.I286SAVE)
+	PFVAL("TICKMODE", PFRO_UINT8,		&np2oscfg.tickmode), // Tickカウンタのモードを強制的に設定する
+	PFVAL("USEWHEEL", PFRO_BOOL,		&np2oscfg.usewheel), // マウスホイールによる音量・マウス速度設定を使用する
+	PFVAL("USE_MVOL", PFRO_BOOL,		&np2oscfg.usemastervolume), // マスタボリューム設定を使用する
 };
 
 //! .ini 拡張子

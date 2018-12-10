@@ -281,6 +281,11 @@ void fmboard_bind(void) {
 			board86_bind();
 			break;
 			
+		case SOUNDID_PC_9801_86_118:
+			board118_bind();
+			board86_bind();
+			break;
+			
 		case SOUNDID_MATE_X_PCM:
 			board118_bind();
 			break;

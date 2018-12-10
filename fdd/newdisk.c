@@ -214,7 +214,7 @@ void newdisk_nhd_ex_CHS(const OEMCHAR *fname, UINT32 C, UINT16 H, UINT16 S, UINT
 
 	hddsize = (FILELEN)C * H * S * SS / 1024 / 1024;
 	
-	if ((fname == NULL) || (hddsize < 5) || (hddsize > NHD_MAXSIZE2)) {
+	if ((fname == NULL) || (hddsize < 1) || (hddsize > NHD_MAXSIZE2)) {
 		goto ndnhd_err;
 	}
 	fh = file_create(fname);
@@ -385,7 +385,7 @@ void newdisk_vpcvhd_ex_CHS(const OEMCHAR *fname, UINT32 C, UINT16 H, UINT16 S, U
    
 	hddsize = (UINT32)((FILELEN)C * H * S * SS / 1024 / 1024);
 	
-	if ((fname == NULL) || (hddsize < 5) || (hddsize > NHD_MAXSIZE2)) {
+	if ((fname == NULL) || (hddsize < 1) || (hddsize > NHD_MAXSIZE2)) {
 		goto vpcvhd_err;
 	}
 	fh = file_create(fname);

@@ -342,6 +342,7 @@ void gpibio_reset(const NP2CFG *pConfig) {
 	if (fh != FILEH_INVALID) {
 		// GP-IB BIOS
 		if (file_read(fh, mem + 0x0d4000, 0x2000) == 0x2000) {
+			CPU_RAM_D000 &= ~(0x3 << 4);
 			TRACEOUT(("load gpib.rom"));
 		}else{
 			//CopyMemory(mem + 0x0d4000, gpibbios, sizeof(gpibbios));

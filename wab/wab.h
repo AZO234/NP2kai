@@ -11,6 +11,10 @@
 #include <gtk/gtk.h>
 #endif
 
+// XXX: 1600x1024ˆÈã‚É‚È‚ç‚È‚¢‚Ì‚Å·‚µ“–‚½‚Á‚Ä‚Í‚±‚ê‚Å\•ª
+#define WAB_MAX_WIDTH	1600
+#define WAB_MAX_HEIGHT	1024
+
 #ifdef __cplusplus
 extern "C" {
 #endif
