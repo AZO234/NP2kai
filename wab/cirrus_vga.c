@@ -1753,7 +1753,19 @@ cirrus_hook_read_sr(CirrusVGAState * s, unsigned reg_index, int *reg_value)
     case 0x05:			// ???
     case 0x07:			// Extended Sequencer Mode
 //		cirrus_update_memory_access(s);
+#ifdef DEBUG_CIRRUS
+		printf("cirrus: handled inport sr_index %02x\n", reg_index);
+#endif
+		*reg_value = s->sr[reg_index];
+		break;
     case 0x08:			// EEPROM Control
+#if defined(SUPPORT_PCI)
+		// XXX: Win2000でPnPデバイス検出を動かすのに必要。理由は謎
+		if(pcidev.enable && np2clvga.gd54xxtype == CIRRUS_98ID_PCI){
+			*reg_value = cirrusvga->sr[0x08] = 0xFE;
+			break;
+		}
+#endif
     case 0x09:			// Scratch Register 0
     case 0x0a:			// Scratch Register 1
     case 0x0b:			// VCLK 0
@@ -6369,8 +6381,8 @@ static void pc98_cirrus_init_common(CirrusVGAState * s, int device_id, int is_pc
 			pcidev.devices[pcidev_cirrus_deviceid].regwfn = &pcidev_cirrus_cfgreg_w;
 			pcidev.devices[pcidev_cirrus_deviceid].header.vendorID = 0x1013;
 			pcidev.devices[pcidev_cirrus_deviceid].header.deviceID = CIRRUS_ID_CLGD5446;
-			pcidev.devices[pcidev_cirrus_deviceid].header.command = 0x0003;
-			pcidev.devices[pcidev_cirrus_deviceid].header.status = 0x0280;
+			pcidev.devices[pcidev_cirrus_deviceid].header.command = 0x0003;//0x0006;//;0x0003;
+			pcidev.devices[pcidev_cirrus_deviceid].header.status = 0x0000;//0x0000;//0x0280;
 			pcidev.devices[pcidev_cirrus_deviceid].header.revisionID = 0x00;
 			pcidev.devices[pcidev_cirrus_deviceid].header.classcode[0] = 0x00; // レジスタレベルプログラミングインタフェース
 			pcidev.devices[pcidev_cirrus_deviceid].header.classcode[1] = 0x00; // サブクラスコード
@@ -6381,19 +6393,17 @@ static void pc98_cirrus_init_common(CirrusVGAState * s, int device_id, int is_pc
 			pcidev.devices[pcidev_cirrus_deviceid].header.BIST = 0x00;
 			pcidev.devices[pcidev_cirrus_deviceid].header.subsysID = 0x0000;
 			pcidev.devices[pcidev_cirrus_deviceid].header.subsysventorID = 0x0000;
-			pcidev.devices[pcidev_cirrus_deviceid].header.interruptpin = 0x00;
+			pcidev.devices[pcidev_cirrus_deviceid].header.interruptpin = 0xff;
 			pcidev.devices[pcidev_cirrus_deviceid].header.interruptline = 0x00;
-			pcidev.devices[pcidev_cirrus_deviceid].header.baseaddrregs[0] = 0x0;
-			pcidev.devices[pcidev_cirrus_deviceid].header.baseaddrregs[1] = 0x0;
 			pcidev.devices[pcidev_cirrus_deviceid].header.baseaddrregs[0] = 0xF0000000;
 			pcidev.devices[pcidev_cirrus_deviceid].header.baseaddrregs[1] = 0xF2000000;
 			pcidev.devices[pcidev_cirrus_deviceid].headerrom.baseaddrregs[0] = 0x02000000-1;
 			pcidev.devices[pcidev_cirrus_deviceid].headerrom.baseaddrregs[1] = CIRRUS_PNPMMIO_SIZE-1;
-			//pcidev.devices[pcidev_cirrus_deviceid].header.expROMbaseaddr = 0xF4000000;
 			pcidev.devices[pcidev_cirrus_deviceid].headerrom.baseaddrregs[2] = 0xffffffff;
 			pcidev.devices[pcidev_cirrus_deviceid].headerrom.baseaddrregs[3] = 0xffffffff;
 			pcidev.devices[pcidev_cirrus_deviceid].headerrom.baseaddrregs[4] = 0xffffffff;
 			pcidev.devices[pcidev_cirrus_deviceid].headerrom.baseaddrregs[5] = 0xffffffff;
+			pcidev.devices[pcidev_cirrus_deviceid].headerrom.expROMbaseaddr = 0xffffffff;
 			pc98_cirrus_vga_initVRAMWindowAddr();
             s->bustype = CIRRUS_BUSTYPE_PCI;
 			
@@ -6879,7 +6889,7 @@ void pc98_cirrus_vga_bind(void)
 		cirrusvga_melcowab_ofs = 0x2; // WSNだけ2で固定
 	}
 	else {
-		cirrusvga_melcowab_ofs = np2cfg.gd5430melofs;	// WSN以外は自由選択可能　
+		cirrusvga_melcowab_ofs = np2cfg.gd5430melofs;	// WSN以外は自由選択可
 	}
 	
 	s = cirrusvga;

@@ -47,8 +47,8 @@ void pcidev_98graphbridge_bind(void) {
 	pcidev.devices[devid].regwfn = &pcidev_98graphbridge_cfgreg_w;
 	pcidev.devices[devid].header.vendorID = 0x1033;
 	pcidev.devices[devid].header.deviceID = 0x0009;
-	pcidev.devices[devid].header.command = 0x0003;
-	pcidev.devices[devid].header.status = 0x0280;
+	pcidev.devices[devid].header.command = 0x0003;//0x0006;//0x0003;
+	pcidev.devices[devid].header.status = 0x0280;//0x0000;//0x0280;
 	pcidev.devices[devid].header.revisionID = 0x01;
 	pcidev.devices[devid].header.classcode[0] = 0x00; // レジスタレベルプログラミングインタフェース
 	pcidev.devices[devid].header.classcode[1] = 0x80; // サブクラスコード
@@ -74,6 +74,7 @@ void pcidev_98graphbridge_bind(void) {
 	pcidev.devices[devid].headerrom.baseaddrregs[3] = 0xffffffff;
 	pcidev.devices[devid].headerrom.baseaddrregs[4] = 0xffffffff;
 	pcidev.devices[devid].headerrom.baseaddrregs[5] = 0xffffffff;
+	pcidev.devices[devid].headerrom.expROMbaseaddr = 0xffffffff;
 	memset(&(pcidev.devices[devid].headerrom), 0xff, sizeof(_PCICSH));
 }
 

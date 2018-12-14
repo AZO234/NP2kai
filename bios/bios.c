@@ -191,16 +191,17 @@ static void bios_reinitbyswitch(void) {
 					  (sxsi_getdevtype(1)==SXSIDEV_HDD ? 0x2 : 0x0)|(sxsi_getdevtype(0)==SXSIDEV_HDD ? 0x1 : 0x0);
 	}
 	
-	mem[0x5B8] = 0x00; // No C-Bus PnP boards
-
 	mem[0x45B] |= 0x80; // XXX: TEST OUT 5Fh,AL wait
 #endif
 	mem[0xF8E80+0x0011] = mem[0xF8E80+0x0011] & ~0x20; // 0x20のビットがONだとWin2000でマウスがカクカクする？
 	if(np2cfg.modelnum) mem[0xF8E80+0x003F] = np2cfg.modelnum; // PC-9821 Model Number
+	
 #endif
 	
 #if defined(SUPPORT_PCI)
 	mem[0xF8E80+0x0004] |= 0x2c;
+	//mem[0x5B7] = (0x277 >> 2); // READ_DATA port address
+	mem[0x5B8] = 0x00; // No C-Bus PnP boards
 #endif
 	
 #if defined(SUPPORT_HRTIMER)

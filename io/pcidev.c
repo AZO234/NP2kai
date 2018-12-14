@@ -106,11 +106,13 @@ void IOOUTCALL pcidev_w8_0xcfc(UINT port, UINT8 value) {
 			UINT8 funcNumber = (pcidev.reg32_caddr >> 8) & 0x7;
 			UINT8 cfgregOffset = ((pcidev.reg32_caddr >> 0) & 0xff) + (port-0xcfc);
 			if(!pcidev.enable && idselSelect!=0) return;
-			if(pcidev.devices[idselSelect].enable/* && funcNumber==0*/){
-				UINT32 mask = GETCFGREG_B(pcidev.devices[idselSelect].cfgreg8rom, cfgregOffset);
-				SETCFGREG_B_MASK(pcidev.devices[idselSelect].cfgreg8, cfgregOffset, value, mask);
-				if(pcidev.devices[idselSelect].regwfn){
-					(*pcidev.devices[idselSelect].regwfn)(idselSelect, funcNumber, cfgregOffset, 1, value);
+			if(busNumber==0){
+				if(pcidev.devices[idselSelect].enable/* && funcNumber==0*/){
+					UINT32 mask = GETCFGREG_B(pcidev.devices[idselSelect].cfgreg8rom, cfgregOffset);
+					SETCFGREG_B_MASK(pcidev.devices[idselSelect].cfgreg8, cfgregOffset, value, mask);
+					if(pcidev.devices[idselSelect].regwfn){
+						(*pcidev.devices[idselSelect].regwfn)(idselSelect, funcNumber, cfgregOffset, 1, value);
+					}
 				}
 			}
 			if(idselSelect==0 && cfgregOffset==0x64) setRAM_D000(value);
@@ -133,11 +135,13 @@ void IOOUTCALL pcidev_w16_0xcfc(UINT port, UINT16 value) {
 			UINT8 funcNumber = (pcidev.reg32_caddr >> 8) & 0x7;
 			UINT8 cfgregOffset = ((pcidev.reg32_caddr >> 0) & 0xff) + (port-0xcfc);
 			if(!pcidev.enable && idselSelect!=0) return;
-			if(pcidev.devices[idselSelect].enable/* && funcNumber==0*/){
-				UINT32 mask = GETCFGREG_W(pcidev.devices[idselSelect].cfgreg8rom, cfgregOffset);
-				SETCFGREG_W_MASK(pcidev.devices[idselSelect].cfgreg8, cfgregOffset, value, mask);
-				if(pcidev.devices[idselSelect].regwfn){
-					(*pcidev.devices[idselSelect].regwfn)(idselSelect, funcNumber, cfgregOffset, 2, value);
+			if(busNumber==0){
+				if(pcidev.devices[idselSelect].enable/* && funcNumber==0*/){
+					UINT32 mask = GETCFGREG_W(pcidev.devices[idselSelect].cfgreg8rom, cfgregOffset);
+					SETCFGREG_W_MASK(pcidev.devices[idselSelect].cfgreg8, cfgregOffset, value, mask);
+					if(pcidev.devices[idselSelect].regwfn){
+						(*pcidev.devices[idselSelect].regwfn)(idselSelect, funcNumber, cfgregOffset, 2, value);
+					}
 				}
 			}
 			if(idselSelect==0 && cfgregOffset==0x64){
@@ -166,11 +170,13 @@ void IOOUTCALL pcidev_w32(UINT port, UINT32 value) {
 				UINT8 funcNumber = (pcidev.reg32_caddr >> 8) & 0x7;
 				UINT8 cfgregOffset = (pcidev.reg32_caddr >> 0) & 0xff;
 				if(!pcidev.enable && idselSelect!=0) return;
-				if(pcidev.devices[idselSelect].enable/* && funcNumber==0*/){
-					UINT32 mask = GETCFGREG_D(pcidev.devices[idselSelect].cfgreg8rom, cfgregOffset);
-					SETCFGREG_D_MASK(pcidev.devices[idselSelect].cfgreg8, cfgregOffset, value, mask);
-					if(pcidev.devices[idselSelect].regwfn){
-						(*pcidev.devices[idselSelect].regwfn)(idselSelect, funcNumber, cfgregOffset, 4, value);
+				if(busNumber==0){
+					if(pcidev.devices[idselSelect].enable/* && funcNumber==0*/){
+						UINT32 mask = GETCFGREG_D(pcidev.devices[idselSelect].cfgreg8rom, cfgregOffset);
+						SETCFGREG_D_MASK(pcidev.devices[idselSelect].cfgreg8, cfgregOffset, value, mask);
+						if(pcidev.devices[idselSelect].regwfn){
+							(*pcidev.devices[idselSelect].regwfn)(idselSelect, funcNumber, cfgregOffset, 4, value);
+						}
 					}
 				}
 				if(idselSelect==0 && cfgregOffset==0x64){
@@ -199,8 +205,10 @@ UINT8 IOOUTCALL pcidev_r8_0xcfc(UINT port) {
 		UINT8 funcNumber = (pcidev.reg32_caddr >> 8) & 0x7;
 		UINT8 cfgregOffset = ((pcidev.reg32_caddr >> 0) & 0xff) + (port-0xcfc);
 		if(!pcidev.enable && idselSelect!=0) return 0xff;
-		if(pcidev.devices[idselSelect].enable/* && funcNumber==0*/){
-			return GETCFGREG_B(pcidev.devices[idselSelect].cfgreg8, cfgregOffset);
+		if(busNumber==0){
+			if(pcidev.devices[idselSelect].enable/* && funcNumber==0*/){
+				return GETCFGREG_B(pcidev.devices[idselSelect].cfgreg8, cfgregOffset);
+			}
 		}
 	//}else{ 
 	//	// Configuration Mechanism #1 Type1
@@ -220,8 +228,10 @@ UINT16 IOOUTCALL pcidev_r16_0xcfc(UINT port) {
 		UINT8 funcNumber = (pcidev.reg32_caddr >> 8) & 0x7;
 		UINT8 cfgregOffset = ((pcidev.reg32_caddr >> 0) & 0xff) + (port-0xcfc);
 		if(!pcidev.enable && idselSelect!=0) return 0xffff;
-		if(pcidev.devices[idselSelect].enable/* && funcNumber==0*/){
-			return GETCFGREG_W(pcidev.devices[idselSelect].cfgreg8, cfgregOffset);
+		if(busNumber==0){
+			if(pcidev.devices[idselSelect].enable/* && funcNumber==0*/){
+				return GETCFGREG_W(pcidev.devices[idselSelect].cfgreg8, cfgregOffset);
+			}
 		}
 	//}else{ 
 	//	// Configuration Mechanism #1 Type1
@@ -244,8 +254,10 @@ UINT32 IOOUTCALL pcidev_r32(UINT port) {
 			UINT8 funcNumber = (pcidev.reg32_caddr >> 8) & 0x7;
 			UINT8 cfgregOffset = (pcidev.reg32_caddr >> 0) & 0xff;
 			if(!pcidev.enable && idselSelect!=0) return 0xffffffff;
-			if(pcidev.devices[idselSelect].enable/* && funcNumber==0*/){
-				return GETCFGREG_D(pcidev.devices[idselSelect].cfgreg8, cfgregOffset);
+			if(busNumber==0){
+				if(pcidev.devices[idselSelect].enable/* && funcNumber==0*/){
+					return GETCFGREG_D(pcidev.devices[idselSelect].cfgreg8, cfgregOffset);
+				}
 			}
 		//}else{ 
 		//	// Configuration Mechanism #1 Type1
@@ -311,6 +323,10 @@ static REG8 IOINPCALL pci_i18f2(UINT port) {
 // Cバス PnP関連
 static UINT8 pnp_addr = 0;
 static UINT8 pnp_data[0x100] = {0};
+static REG8 IOINPCALL pnp_iReg(UINT port) {
+	
+    return 0xff;
+}
 static void IOOUTCALL pnp_o259(UINT port, REG8 dat) {
 	
     pnp_addr = dat;
@@ -322,15 +338,19 @@ static REG8 IOINPCALL pnp_i259(UINT port) {
 }
 static void IOOUTCALL pnp_oA59(UINT port, REG8 dat) {
 	
+	if(pnp_addr==0){
+		iocore_detachinp((pnp_data[pnp_addr] << 2) | 0x3);
+		iocore_attachinp((dat << 2) | 0x3, pnp_iReg);
+		mem[0x5B7] = dat;
+	}
     pnp_data[pnp_addr] = dat;
-	if(pnp_addr==0)
-		mem[0x5B7] = pnp_data[pnp_addr] >> 2;
 	(void)port;
 }
 static REG8 IOINPCALL pnp_iA59(UINT port) {
 	
-	if(pnp_addr==0)
-		pnp_data[pnp_addr] = (mem[0x5B7] << 2) | 0x3;
+	if(pnp_addr==0){
+		pnp_data[pnp_addr] = mem[0x5B7];
+	}
 	return pnp_data[pnp_addr];
 }
 
@@ -409,8 +429,8 @@ void pcidev_reset(const NP2CFG *pConfig) {
 			pcidev.devices[devid].header.vendorID = 0x8086;
 			pcidev.devices[devid].header.deviceID = 0x04A3;
 		}
-		pcidev.devices[devid].header.command = 0x0006;//0x0106;//0x0006;
-		pcidev.devices[devid].header.status = 0x0200;//0x2280;//0x0400;
+		pcidev.devices[devid].header.command = 0x0006;//0x0006;//0x0106;//0x0006;
+		pcidev.devices[devid].header.status = 0x0200;//0x0200;//0x2280;//0x0400;
 		pcidev.devices[devid].header.revisionID = 0x02;//0x03;
 		pcidev.devices[devid].header.classcode[0] = 0x00; // レジスタレベルプログラミングインタフェース
 		pcidev.devices[devid].header.classcode[1] = 0x00; // サブクラスコード
@@ -464,6 +484,7 @@ void pcidev_reset(const NP2CFG *pConfig) {
 		pcidev.devices[devid].headerrom.baseaddrregs[3] = 0xffffffff;
 		pcidev.devices[devid].headerrom.baseaddrregs[4] = 0xffffffff;
 		pcidev.devices[devid].headerrom.baseaddrregs[5] = 0xffffffff;
+		pcidev.devices[devid].headerrom.expROMbaseaddr = 0xffffffff;
 	
 		// PCI PC-9821標準デバイスreset
 		pcidev_cbusbridge_reset(pConfig);
@@ -513,10 +534,15 @@ void pcidev_bind(void) {
 	memset(pcidev.unkreg, 0, sizeof(pcidev.unkreg));
     pcidev.unkreg_bank1 = pcidev.unkreg_bank2 = 0;
 	
-	iocore_attachout(0x259, pnp_o259);
-	iocore_attachout(0xA59, pnp_oA59);
-	iocore_attachinp(0x259, pnp_i259);
-	iocore_attachinp(0xA59, pnp_iA59);
+	//// C-Bus PnP
+	//pnp_data[0] = (0x277 >> 2); // READ_DATA port address 0000 00xx xxxx xx11b
+	//mem[0x5B7] = pnp_data[0]; // READ_DATA port address
+	//mem[0x5B8] = 0x00; // No C-Bus PnP boards
+	//iocore_attachinp((pnp_data[pnp_addr] << 2) | 0x3, pnp_iReg);
+	//iocore_attachout(0x259, pnp_o259);
+	//iocore_attachout(0xA59, pnp_oA59);
+	//iocore_attachinp(0x259, pnp_i259);
+	//iocore_attachinp(0xA59, pnp_iA59);
 	
 	if(pcidev.enable){
 		// 関数アドレス入れ直し（ステートセーブ用）

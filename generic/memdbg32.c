@@ -8,6 +8,9 @@
 #include	"iocore.h"
 #include	"memdbg32.h"
 
+#define MEMDBG32_MAXMEM	16
+#define MEMDBG32_DATAPERLINE	128
+#define MEMDBG32_LEFTMARGIN	8
 
 typedef struct {
 	UINT	mode;
@@ -36,8 +39,8 @@ static const RGB32 md32pal[MEMDBG32_PALS] = {
 void memdbg32_initialize(void) {
 
 	ZeroMemory(&memdbg32, sizeof(memdbg32));
-	memdbg32.width = (MEMDBG32_BLOCKW * 128) + 8;
-	memdbg32.height = (MEMDBG32_BLOCKH * 2 * 16) + 8;
+	memdbg32.width = (MEMDBG32_BLOCKW * MEMDBG32_DATAPERLINE) + MEMDBG32_LEFTMARGIN;
+	memdbg32.height = (MEMDBG32_BLOCKH * 2 * MEMDBG32_MAXMEM) + 8;
 }
 
 void memdbg32_getsize(int *width, int *height) {
@@ -58,7 +61,7 @@ REG8 memdbg32_process(void) {
 BOOL memdbg32_paint(CMNVRAM *vram, CMNPALCNV cnv, BOOL redraw) {
 
 	UINT	mode;
-	UINT8	use[16*256];
+	UINT8	use[MEMDBG32_MAXMEM*MEMDBG32_DATAPERLINE*2 + 256];
 	UINT32	pd[1024];
 	UINT	pdmax;
 	UINT	i, j;
@@ -118,7 +121,7 @@ BOOL memdbg32_paint(CMNVRAM *vram, CMNPALCNV cnv, BOOL redraw) {
 			pdea = pde & CPU_PDE_BASEADDR_MASK;
 			for (j=0; j<1024; j++) {
 				pte = cpu_memoryread_d(pdea + (j * 4));
-				if ((pte & CPU_PTE_PRESENT) && (pte < 0x1000000)) {
+				if ((pte & CPU_PTE_PRESENT) && (pte < 0x1000000/16*MEMDBG32_MAXMEM/128*MEMDBG32_DATAPERLINE)) {
 					if ((pde & CPU_PDE_ACCESS) && (pte & CPU_PTE_ACCESS)) {
 						use[pte >> 12] = MEMDBG32_PALPAGE1;
 					}
@@ -133,17 +136,17 @@ BOOL memdbg32_paint(CMNVRAM *vram, CMNPALCNV cnv, BOOL redraw) {
 		FillMemory(use, 256, MEMDBG32_PALREAL);
 		FillMemory(use + (0xfa0000 >> 12), (0x60000 >> 12), MEMDBG32_PALREAL);
 		if ((CPU_STAT_PM) && (pccore.extmem)) {
-			FillMemory(use + 256, np2min(256 * pccore.extmem, sizeof(use) - 256), MEMDBG32_PALPM);
+			FillMemory(use + 256, min(MEMDBG32_DATAPERLINE * 2 * pccore.extmem, sizeof(use) - 256), MEMDBG32_PALPM);
 		}
 	}
-	for (i=0; i<32; i++) {
-		for (j=0; j<128; j++) {
-			cmndraw_fill(vram, 8 + j * MEMDBG32_BLOCKW, i * MEMDBG32_BLOCKH,
+	for (i=0; i<MEMDBG32_MAXMEM*2; i++) {
+		for (j=0; j<MEMDBG32_DATAPERLINE; j++) {
+			cmndraw_fill(vram, MEMDBG32_LEFTMARGIN + j * MEMDBG32_BLOCKW, i * MEMDBG32_BLOCKH,
 									MEMDBG32_BLOCKW - 1, MEMDBG32_BLOCKH - 1,
-									memdbg32.pal[use[(i * 128) + j]]);
+									memdbg32.pal[use[(i * MEMDBG32_DATAPERLINE) + j]]);
 		}
 	}
-	for (i=0; i<16; i++) {
+	for (i=0; i<MEMDBG32_MAXMEM; i++) {
 		SPRINTF(str, "%x", i);
 		cmddraw_text8(vram, 0, i * MEMDBG32_BLOCKH * 2, str,
 											memdbg32.pal[MEMDBG32_PALTXT]);

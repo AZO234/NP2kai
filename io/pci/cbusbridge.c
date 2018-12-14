@@ -46,8 +46,8 @@ void pcidev_cbusbridge_bind(void) {
 	pcidev.devices[devid].regwfn = &pcidev_cbusbridge_cfgreg_w;
 	pcidev.devices[devid].header.vendorID = 0x1033;
 	pcidev.devices[devid].header.deviceID = 0x0001;
-	pcidev.devices[devid].header.command = 0x010f;//0x0107;
-	pcidev.devices[devid].header.status = 0x0200;//0x0400;
+	pcidev.devices[devid].header.command = 0x010f;//0x010f;//0x0107;
+	pcidev.devices[devid].header.status = 0x0200;//0x0200;//0x0400;
 	pcidev.devices[devid].header.revisionID = 0x01;//0x03;
 	pcidev.devices[devid].header.classcode[0] = 0x00; // レジスタレベルプログラミングインタフェース
 	pcidev.devices[devid].header.classcode[1] = 0x80; // サブクラスコード
@@ -187,6 +187,7 @@ void pcidev_cbusbridge_bind(void) {
 	pcidev.devices[devid].headerrom.baseaddrregs[3] = 0xffffffff;
 	pcidev.devices[devid].headerrom.baseaddrregs[4] = 0xffffffff;
 	pcidev.devices[devid].headerrom.baseaddrregs[5] = 0xffffffff;
+	pcidev.devices[devid].headerrom.expROMbaseaddr = 0xffffffff;
 	memset(&(pcidev.devices[devid].headerrom), 0xff, sizeof(_PCICSH));
 }
 
