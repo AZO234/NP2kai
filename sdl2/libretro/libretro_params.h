@@ -3,7 +3,7 @@
 
 #include "np2ver.h"
 
-#define LR_SCREENWIDTH  1280
+#define LR_SCREENWIDTH  1640
 #define LR_SCREENHEIGHT 1024
 #define LR_SCREENASPECT 4.0 / 3.0
 #define LR_SCREENFPS    56.4

@@ -322,6 +322,7 @@ static GtkRadioActionEntry soundboard_entries[] = {
 { "pc-9801-86-cb",  NULL, "PC-9801-86 + _Chibi-oto", NULL, NULL, 0x14 },
 { "pc-9801-118",    NULL, "PC-9801-11_8",            NULL, NULL, 0x08 },
 { "pc-9801-86-mx",  NULL, "PC-9801-86 + Mate-X PCM(B460)", NULL, NULL, 0x64 },
+{ "pc-9801-86-118", NULL, "PC-9801-86 + 118",        NULL, NULL, 0x68 },
 { "pc-9801-mx",     NULL, "Mate-X PCM(B460)",        NULL, NULL, 0x60 },
 { "speakboard",     NULL, "S_peak board",            NULL, NULL, 0x20 },
 { "sparkboard",     NULL, "Sp_ark board",            NULL, NULL, 0x40 },
@@ -613,8 +614,8 @@ static const gchar *ui_info =
 "   <menuitem action='joyrapid'/>\n"
 "   <menuitem action='mouserapid'/>\n"
 "   <menuitem action='itfwork'/>\n"
-"   <menuitem action='fixmmtimer'/>\n"
-"   <menuitem action='16mbmemchk'/>\n"
+//"   <menuitem action='fixmmtimer'/>\n"
+//"   <menuitem action='16mbmemchk'/>\n"
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 "   <menuitem action='fastmemchk'/>\n"
 #endif
