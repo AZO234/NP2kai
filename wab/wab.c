@@ -375,6 +375,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){
 
 /**
  * ウィンドウアクセラレータ画面転送
+ *  別窓モード: GDI Device Independent Bitmap -> GDI Window
+ *  統合モード: GDI Device Independent Bitmap -> Direct3D/DirectDraw WAB surface ( call scrnmng_blthdc() )
  */
 #if defined(NP2_X11) || defined(NP2_SDL2) || defined(__LIBRETRO__)
 void np2wab_drawWABWindow(void)

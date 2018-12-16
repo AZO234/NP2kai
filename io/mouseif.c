@@ -136,8 +136,8 @@ static void setportc(REG8 value) {
 	if ((value ^ mouseif.upd8255.portc) & 0x10) {
 		if (!(value & 0x10)) {
 			if (!nevent_iswork(NEVENT_MOUSE)) {
-				// Š„‚è‚İ‚ğ“ü‚ê‚Æ‚­
-				pic_setirq(0x0d);
+				// Š„‚è‚İ‚ğ“ü‚ê‚Æ‚­ ¨ Š„‚è‚İ‚Í‚â‚ß‚Æ‚­ ver0.86 rev51
+				//pic_setirq(0x0d);
 				nevent_set(NEVENT_MOUSE, mouseif.intrclock << mouseif.timing,
 												mouseint, NEVENT_ABSOLUTE);
 			}
@@ -286,7 +286,8 @@ void mouseif_reset(const NP2CFG *pConfig) {
 	mouseif_changeclock();
 	mouseif.latch_x = -1;
 	mouseif.latch_y = -1;
-
+	
+	//mouseif.timing = 2;
 	(void)pConfig;
 }
 

@@ -1716,7 +1716,7 @@ void scrnmngD3D_updatefsres(void) {
 #endif
 }
 
-// ウィンドウアクセラレータ画面転送
+// ウィンドウアクセラレータ画面転送 GDI Device Independent Bitmap -> Direct3D WAB surface
 void scrnmngD3D_blthdc(HDC hdc) {
 #if defined(SUPPORT_WAB)
 	HRESULT	r;
@@ -1741,6 +1741,8 @@ void scrnmngD3D_blthdc(HDC hdc) {
 	}
 #endif
 }
+
+// ウィンドウアクセラレータ画面転送 Direct3D WAB surface -> Direct3D back surface
 void scrnmngD3D_bltwab() {
 #if defined(SUPPORT_WAB)
 	RECT	*dst;

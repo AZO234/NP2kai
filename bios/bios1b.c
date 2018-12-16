@@ -996,6 +996,7 @@ UINT bios0x1b_wait(void) {
 
 	UINT	addr;
 	REG8	bit;
+	static UINT32 int_timeout = 0; // np21w ver0.86 rev51 Win3.1用 暫定無限ループ回避
 
 	if (fddmtr.busy) {
 		CPU_REMCLOCK = -1;
@@ -1010,12 +1011,19 @@ UINT bios0x1b_wait(void) {
 			bit = 0x10;
 		}
 		bit <<= fdc.us;
-		if (mem[addr] & bit) {
+		if ((mem[addr] & bit) || int_timeout > pccore.realclock*3) {
 			mem[addr] &= ~bit;
+			int_timeout = 0;
 			return(0);
 		}
 		else {
 			CPU_REMCLOCK -= 1000;
+#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
+			// np21w ver0.86 rev51 Win3.1用 暫定無限ループ回避
+			if (CPU_STAT_PM && CPU_STAT_VM86) {
+				int_timeout += 1000;
+			}
+#endif
 		}
 	}
 	CPU_IP--;

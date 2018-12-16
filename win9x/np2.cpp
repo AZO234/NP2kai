@@ -148,7 +148,8 @@ static	TCHAR		szClassName[] = _T("NP2-MainWindow");
 						0, 0, 1, 0, 1, 1, 
 						0, 0, 
 						0, 8, 
-						0, 0, 0, TCMODE_DEFAULT, 0, 1
+						0, 0, 0, TCMODE_DEFAULT, 0, 1, 
+						0
 					};
 
 		OEMCHAR		fddfolder[MAX_PATH];

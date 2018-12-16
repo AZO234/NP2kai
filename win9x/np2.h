@@ -111,6 +111,8 @@ typedef struct {
 	UINT8	usewheel; // Use mouse wheel
 	UINT8	tickmode; // Force Set Tick Counter Mode
 	UINT8	usemastervolume; // Use MAster Volume
+	
+	UINT8	tollwndhistory; // Number of data of recently opened FD image list in Tool Window
 } NP2OSCFG;
 
 

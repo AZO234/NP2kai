@@ -4903,6 +4903,7 @@ LOGPALETTE * NewLogPal(const uint8_t *pCirrusPalette , int iSize) {
 }
 #endif
 //　画面表示(仮)　本当はQEMUのオリジナルのコードを移植すべきなんだけど･･･
+//  Cirrus VRAM (screen & cursor) -> GDI Device Independent Bitmap
 void cirrusvga_drawGraphic(){
 	//static UINT32 kdown = 0;
 	//static UINT32 kdownc = 0;
@@ -5025,8 +5026,10 @@ void cirrusvga_drawGraphic(){
 		scanW = line_offset;
 	}
 
+	// 色数判定
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 	if(bpp==16){
+		// ビットフィールドでRGB565を指定
 		uint32_t_* bitfleld = (uint32_t_*)(ga_bmpInfo->bmiColors);
 		bitfleld[0] = 0x0000F800;
 		bitfleld[1] = 0x000007E0;
@@ -5035,6 +5038,7 @@ void cirrusvga_drawGraphic(){
 	}else{
 		ga_bmpInfo->bmiHeader.biCompression = BI_RGB;
 	}
+	// Windowsの16bitカラーは標準でRGB555なのでそのままbpp=16に変更
 	if(bpp==15){
 		bpp = 16;
 	}

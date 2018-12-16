@@ -7,10 +7,12 @@
 
 #include "subwnd.h"
 
+#define FDDLIST_DEFAULT	8 // デフォルトは8件記憶
+
 enum {
 	SKINMRU_MAX			= 4,
 	FDDLIST_DRV			= 2,
-	FDDLIST_MAX			= 8
+	FDDLIST_MAX			= 64
 };
 
 typedef struct {
