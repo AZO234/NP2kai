@@ -1,6 +1,6 @@
 Neko Project II 0.86 kai rev.18
 ===
-Dec 14, 2018  
+Dec 16, 2018  
 
 Build SDL2 port
 ---
@@ -14,6 +14,9 @@ or
 
 	(Windows + MSYS2 64bit (32bit console))
 	$ pacman -S git gcc make mingw-w64-i686-gcc mingw-w64-i686-SDL2 mingw-w64-i686-SDL2_ttf mingw-w64-i686-SDL2_mixer
+
+	(Windows + MSYS2 64bit (64bit console))
+	$ pacman -S git gcc make mingw-w64-x86_64-gcc mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL2_mixer
 
 or
 
@@ -598,9 +601,21 @@ WAB Type normally uses 'PC-9821Xe10,Xa7e,Xb10 built-in'.
 
 **NOTE:** Do not run MS-DOS prompt with fullscreen mode, or your screen will get garbled when switching back to Windows environment.
 
+You can use WAB Type 'WAB-S', 'WSN', 'GA-98NB'.
+
+* WAB-S driver
+http://buffalo.jp/download/driver/multi/wab.html
+
+* WSN driver
+http://buffalo.jp/download/driver/multi/wgna_95.html
+
+* GA-98NB driver
+https://www.iodata.jp/lib/product/g/175_win95.htm
 
 Release
 ---
+* Dec 16, 2018
+	- Fix WAB
 * Dec 14, 2018
 	- Merge NP21/W 0.86 rev.50
 * Dec 10, 2018 (rev.18)

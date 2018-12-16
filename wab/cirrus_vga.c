@@ -5013,7 +5013,7 @@ void cirrusvga_drawGraphic(){
 	realHeight = height;
 	
 	// CRTC offset Ý’è
-	scanW = width*bpp/8;
+	scanW = width*(bpp/8);
 	scanpixW = width;
 	if(bpp && line_offset){
 		// 32bit color—p‚â‚Á‚Â‚¯C³ for GA-98NB & WSN-A2F/A4F
@@ -5035,10 +5035,10 @@ void cirrusvga_drawGraphic(){
 	}else{
 		ga_bmpInfo->bmiHeader.biCompression = BI_RGB;
 	}
-#endif
 	if(bpp==15){
 		bpp = 16;
 	}
+#endif
 	
 	// GA-98NB—p
 	if((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC){
@@ -5282,6 +5282,14 @@ void cirrusvga_drawGraphic(){
 							p[(j * width + i) * 4    ] = (((((UINT16*)vram_ptr)[j * width + i]) & 0x001F) << 3) & 0xFF;
 						}
 					}
+				} else if(bpp == 32) {
+					for(j = 0; j < height; j++) {
+						for(i = 0; i < width; i++) {
+							p[(j * width + i) * 4 + 2] = (((((UINT32*)vram_ptr)[j * width + i]) & 0x00FF0000) >> 16) & 0xFF;
+							p[(j * width + i) * 4 + 1] = (((((UINT32*)vram_ptr)[j * width + i]) & 0x0000FF00) >>  8) & 0xFF;
+							p[(j * width + i) * 4    ] = (((((UINT32*)vram_ptr)[j * width + i]) & 0x000000FF)      ) & 0xFF;
+						}
+					}
 				}
 #elif defined(NP2_X11)
 				scanptr = vram_ptr;
@@ -5296,6 +5304,16 @@ void cirrusvga_drawGraphic(){
 								p[(j * width + i) * 3    ] = (((((UINT16*)vram_ptr)[j * width + i]) & 0xF800) >> 8) & 0xFF;
 								p[(j * width + i) * 3 + 1] = (((((UINT16*)vram_ptr)[j * width + i]) & 0x07C0) >> 3) & 0xFF;
 								p[(j * width + i) * 3 + 2] = (((((UINT16*)vram_ptr)[j * width + i]) & 0x001F) << 3) & 0xFF;
+							}
+						}
+					} else if(bpp == 32) {
+						VRAMBuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
+						p = gdk_pixbuf_get_pixels(VRAMBuf);
+						for(j = 0; j < height; j++) {
+							for(i = 0; i < width; i++) {
+								p[(j * width + i) * 3    ] = (((((UINT32*)vram_ptr)[j * width + i]) & 0x00FF0000) >> 16) & 0xFF;
+								p[(j * width + i) * 3 + 1] = (((((UINT32*)vram_ptr)[j * width + i]) & 0x0000FF00) >>  8) & 0xFF;
+								p[(j * width + i) * 3 + 2] = (((((UINT32*)vram_ptr)[j * width + i]) & 0x000000FF)      ) & 0xFF;
 							}
 						}
 					}
@@ -5321,18 +5339,93 @@ void cirrusvga_drawGraphic(){
 			scanptr = vram_ptr;
 			VRAMBuf = (unsigned int*)malloc(width * height * sizeof(unsigned int));
 			p = (unsigned char*)VRAMBuf;
-			for(j = 0; j < height; j++) {
-				for(i = 0; i < width; i++) {
-					p[(j * width + i) * 4    ] = vram_ptr[(j * width + i) * 3    ];
-					p[(j * width + i) * 4 + 1] = vram_ptr[(j * width + i) * 3 + 1];
-					p[(j * width + i) * 4 + 2] = vram_ptr[(j * width + i) * 3 + 2];
+			if(bpp == 15) {
+				for(j = 0; j < height; j++) {
+					for(i = 0; i < width; i++) {
+						p[(j * width + i) * 4 + 2] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0x7C00) >> 7) & 0xFF;
+						p[(j * width + i) * 4 + 1] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0x03E0) >> 2) & 0xFF;
+						p[(j * width + i) * 4    ] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0x001F) << 3) & 0xFF;
+					}
+				}
+			} else if(bpp == 16) {
+				for(j = 0; j < height; j++) {
+					for(i = 0; i < width; i++) {
+						p[(j * width + i) * 4    ] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0xF800) >> 8) & 0xFF;
+						p[(j * width + i) * 4 + 1] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0x07C0) >> 3) & 0xFF;
+						p[(j * width + i) * 4 + 2] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0x001F) << 3) & 0xFF;
+					}
+				}
+			} else if(bpp == 24) {
+				for(j = 0; j < height; j++) {
+					for(i = 0; i < width; i++) {
+						p[(j * width + i) * 4    ] = vram_ptr[j * scanW + i * 3    ];
+						p[(j * width + i) * 4 + 1] = vram_ptr[j * scanW + i * 3 + 1];
+						p[(j * width + i) * 4 + 2] = vram_ptr[j * scanW + i * 3 + 2];
+					}
+				}
+			} else if(bpp == 32) {
+				for(j = 0; j < height; j++) {
+					for(i = 0; i < width; i++) {
+						p[(j * width + i) * 4 + 2] = ((*(UINT32*)(vram_ptr + j * scanW + i * 4) & 0x00FF0000) >> 16) & 0xFF;
+						p[(j * width + i) * 4 + 1] = ((*(UINT32*)(vram_ptr + j * scanW + i * 4) & 0x0000FF00) >>  8) & 0xFF;
+						p[(j * width + i) * 4    ] = ((*(UINT32*)(vram_ptr + j * scanW + i * 4) & 0x000000FF)      ) & 0xFF;
+					}
+				}
+			} else {
+				for(j = 0; j < height; j++) {
+					for(i = 0; i < width; i++) {
+						p[(j * width + i) * 4    ] = vram_ptr[j * scanW + i * 3    ];
+						p[(j * width + i) * 4 + 1] = vram_ptr[j * scanW + i * 3 + 1];
+						p[(j * width + i) * 4 + 2] = vram_ptr[j * scanW + i * 3 + 2];
+					}
 				}
 			}
 #elif defined(NP2_X11)
 			scanptr = vram_ptr;
 			if(np2wabwnd.pPixbuf) {
-				GdkPixbuf *VRAMBuf;
-				VRAMBuf = gdk_pixbuf_new_from_data(vram_ptr, GDK_COLORSPACE_RGB, FALSE, 8, width, height, width*bpp/8, NULL,NULL);
+				if(bpp == 15) {
+					VRAMBuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
+					p = gdk_pixbuf_get_pixels(VRAMBuf);
+					for(j = 0; j < height; j++) {
+						for(i = 0; i < width; i++) {
+							p[(j * width + i) * 3    ] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0x7C00) >> 7) & 0xFF;
+							p[(j * width + i) * 3 + 1] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0x03E0) >> 2) & 0xFF;
+							p[(j * width + i) * 3 + 2] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0x001F) << 3) & 0xFF;
+						}
+					}
+				} else if(bpp == 16) {
+					VRAMBuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
+					p = gdk_pixbuf_get_pixels(VRAMBuf);
+					for(j = 0; j < height; j++) {
+						for(i = 0; i < width; i++) {
+							p[(j * width + i) * 3    ] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0xF800) >> 8) & 0xFF;
+							p[(j * width + i) * 3 + 1] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0x07C0) >> 3) & 0xFF;
+							p[(j * width + i) * 3 + 2] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0x001F) << 3) & 0xFF;
+						}
+					}
+				} else if(bpp == 24) {
+					VRAMBuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
+					p = gdk_pixbuf_get_pixels(VRAMBuf);
+					for(j = 0; j < height; j++) {
+						for(i = 0; i < width; i++) {
+							p[(j * width + i) * 3    ] = vram_ptr[(j * scanW) + i * 3    ];
+							p[(j * width + i) * 3 + 1] = vram_ptr[(j * scanW) + i * 3 + 1];
+							p[(j * width + i) * 3 + 2] = vram_ptr[(j * scanW) + i * 3 + 2];
+						}
+					}
+				} else if(bpp == 32) {
+					VRAMBuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
+					p = gdk_pixbuf_get_pixels(VRAMBuf);
+					for(j = 0; j < height; j++) {
+						for(i = 0; i < width; i++) {
+							p[(j * width + i) * 3    ] = vram_ptr[(j * scanW) + i * 4    ];
+							p[(j * width + i) * 3 + 1] = vram_ptr[(j * scanW) + i * 4 + 1];
+							p[(j * width + i) * 3 + 2] = vram_ptr[(j * scanW) + i * 4 + 2];
+						}
+					}
+				} else {
+					VRAMBuf = gdk_pixbuf_new_from_data(vram_ptr, GDK_COLORSPACE_RGB, FALSE, 8, width, height, width*(bpp/8), NULL,NULL);
+				}
 			}
 #endif
 		}
