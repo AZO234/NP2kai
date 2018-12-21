@@ -166,7 +166,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 				1,
 #endif
-				0,
+				0, 0,
 	};
 
 	PCCORE	pccore = {	PCBASECLOCK25, PCBASEMULTIPLE,

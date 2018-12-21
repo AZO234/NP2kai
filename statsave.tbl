@@ -167,5 +167,8 @@ static const SFENTRY np2tbl[] = {
 #if defined(BIOS_IO_EMULATION)
 	{"BIOSIOEMU",	0,	STATFLAG_BIN,	&biosioemu,		sizeof(biosioemu)},
 #endif
+#if defined(SUPPORT_PC9821)&&defined(SUPPORT_PCI)
+	{"PEGC",		0,	STATFLAG_BIN,	&pegc,			sizeof(pegc)},
+#endif
 	{"TERMINATE",	0,	STATFLAG_TERM,	NULL,			0}};
 

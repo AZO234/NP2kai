@@ -125,6 +125,7 @@
 #define IDC_GRCG2                       13306
 #define IDC_EGC                         13307
 #define IDC_PC980124                    13308
+#define IDC_PEGC                        13309
 #define IDC_TRAMWAIT                    13401
 #define IDC_TRAMSTR                     13402
 #define IDC_VRAMWAIT                    13403

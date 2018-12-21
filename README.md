@@ -1,6 +1,6 @@
 Neko Project II 0.86 kai rev.18
 ===
-Dec 16, 2018  
+Dec 22, 2018  
 
 Build SDL2 port
 ---
@@ -614,6 +614,10 @@ https://www.iodata.jp/lib/product/g/175_win95.htm
 
 Release
 ---
+* Dec 22, 2018
+	- Merge NP21/W 0.86 rev.52
+* Dec 19, 2018
+	- Merge NP21/W 0.86 rev.51
 * Dec 16, 2018
 	- Fix WAB
 * Dec 14, 2018

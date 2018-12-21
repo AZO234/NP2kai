@@ -212,6 +212,7 @@ BOOL ScrOptChipPage::OnInitDialog()
 	CheckDlgButton((np2cfg.uPD72020) ? IDC_GDC72020 : IDC_GDC7220, BST_CHECKED);
 	CheckDlgButton(s_gdcchip[np2cfg.grcg & 3], BST_CHECKED);
 	CheckDlgButton(IDC_PC980124, (np2cfg.color16) ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(IDC_PEGC, (np2cfg.usepegcplane) ? BST_CHECKED : BST_UNCHECKED);
 
 #if defined(SUPPORT_PC9821)
 	static const UINT s_disabled[] =
@@ -228,6 +229,9 @@ BOOL ScrOptChipPage::OnInitDialog()
 	CheckDlgButton(s_gdcchip[1], BST_UNCHECKED);
 	CheckDlgButton(s_gdcchip[2], BST_UNCHECKED);
 	CheckDlgButton(s_gdcchip[3], BST_CHECKED);
+#else
+	GetDlgItem(IDC_PEGC).EnableWindow(FALSE);
+	CheckDlgButton(IDC_PEGC, BST_UNCHECKED);
 #endif	// defined(SUPPORT_PC9821)
 
 	return TRUE;
@@ -268,6 +272,13 @@ void ScrOptChipPage::OnOK()
 	if (np2cfg.color16 != cColor16)
 	{
 		np2cfg.color16 = cColor16;
+		bUpdated = true;
+	}
+	
+	const UINT8 cPEGC = (IsDlgButtonChecked(IDC_PEGC) != BST_UNCHECKED) ? 1 : 0;
+	if (np2cfg.usepegcplane != cPEGC)
+	{
+		np2cfg.usepegcplane = cPEGC;
 		bUpdated = true;
 	}
 

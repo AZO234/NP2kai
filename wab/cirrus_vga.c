@@ -3709,12 +3709,13 @@ static void cirrus_update_memory_access(CirrusVGAState *s)
 		np2clvga.VRAMWindowAddr3 = 0xf00000;
 	}
 	else {
-		if (s->gr[0x06] & 0x08) {
-			np2clvga.VRAMWindowAddr3 = 0xb0000;
-		}
-		else {
-			np2clvga.VRAMWindowAddr3 = 0xa0000;
-		}
+		// アクセス不可にしておく
+		//if (s->gr[0x06] & 0x08) {
+		//	np2clvga.VRAMWindowAddr3 = 0xb0000;
+		//}
+		//else {
+		//	np2clvga.VRAMWindowAddr3 = 0xa0000;
+		//}
 	}
 
     if ((s->sr[0x17] & 0x44) == 0x44) {

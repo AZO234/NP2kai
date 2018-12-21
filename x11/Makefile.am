@@ -204,6 +204,7 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/io/necio.c \
 		$(real_topsrcdir)/io/epsonio.c \
 		$(real_topsrcdir)/io/pcidev.c \
+		$(real_topsrcdir)/io/pegc.c \
 		$(real_topsrcdir)/io/pci/98graphbridge.c \
 		$(real_topsrcdir)/io/pci/cbusbridge.c \
 		\
@@ -406,7 +407,7 @@ IA32_CPPFLAGS=	-I$(real_topsrcdir)/i386c \
 		-I$(real_topsrcdir)/i386c/ia32/instructions/sse \
 		-I$(real_topsrcdir)/i386c/ia32/instructions/sse2 \
 		-I$(real_topsrcdir)/i386c/ia32/instructions/sse3 \
-		-DCPUCORE_IA32 -DUSE_FPU -DSUPPORT_FPU_DOSBOX -DSUPPORT_FPU_DOSBOX2 -DSUPPORT_FPU_SOFTFLOAT -DSUPPORT_LARGE_MEMORY -DSUPPORT_PCI -DUSE_MMX -DUSE_3DNOW -DUSE_SSE -DUSE_SSE2 -DUSE_SSE3 -DUSE_TSC -DUSE_FASTPAGING -DUSE_VME -DSUPPORT_WAB -DSUPPORT_CL_GD5430 -DBIOS_IO_EMULATION
+		-DCPUCORE_IA32 -DUSE_FPU -DSUPPORT_FPU_DOSBOX -DSUPPORT_FPU_DOSBOX2 -DSUPPORT_FPU_SOFTFLOAT -DSUPPORT_LARGE_MEMORY -DSUPPORT_PCI -DUSE_MMX -DUSE_3DNOW -DUSE_SSE -DUSE_SSE2 -DUSE_SSE3 -DUSE_TSC -DUSE_FASTPAGING -DSUPPORT_PEGC -DUSE_VME -DSUPPORT_WAB -DSUPPORT_CL_GD5430 -DBIOS_IO_EMULATION
 
 if CPUCORE_IA32
 if BUILD_ALL

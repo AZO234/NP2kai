@@ -45,6 +45,9 @@
 #if defined(SUPPORT_PC9821)
 	_PCIDEV		pcidev;
 #endif
+#if defined(SUPPORT_PEGC)
+	_PEGC		pegc;
+#endif
 
 
 // ----

@@ -1018,7 +1018,7 @@ UINT bios0x1b_wait(void) {
 		}
 		else {
 			CPU_REMCLOCK -= 1000;
-#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
+#if defined(CPUCORE_IA32)
 			// np21w ver0.86 rev51 Win3.1óp ébíËñ≥å¿ÉãÅ[ÉvâÒî
 			if (CPU_STAT_PM && CPU_STAT_VM86) {
 				int_timeout += 1000;

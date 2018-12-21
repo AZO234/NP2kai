@@ -42,6 +42,10 @@ typedef	REG8 (IOINPCALL *IOINP)(UINT port);
 #if defined(SUPPORT_PC9821)
 #include	"pcidev.h"
 #endif
+#if defined(SUPPORT_PEGC)
+#include	"pegc.h"
+extern	_PEGC		pegc;
+#endif
 
 
 #ifdef __cplusplus

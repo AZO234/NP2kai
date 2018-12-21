@@ -661,6 +661,7 @@ static const PFTBL s_IniItems[] =
 #endif
 	
 	PFMAX("USERAM_D", PFTYPE_BOOL,		&np2cfg.useram_d,		0), // EPSONでなくてもD0000h-DFFFFhをRAMに（ただしIDE BIOS D8000h-DBFFFhは駄目）
+	PFMAX("USEPEGCP", PFTYPE_BOOL,		&np2cfg.usepegcplane,		0), // PEGC プレーンモードサポート
 	
 
 	// OS依存？

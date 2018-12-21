@@ -368,7 +368,7 @@ const CRTDATA	*p;
 		}
 #if defined(BIOS_IO_EMULATION)
 		// XXX: Windows3.1 DOSプロンプト用 無理やり
-		if (CPU_STAT_PM && CPU_STAT_VM86) {
+		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
 			biosioemu_enq8(0x6a, 0x68);
 		}else
 #endif	
@@ -419,7 +419,7 @@ const CRTDATA	*p;
 	if (slave & 1) {
 #if defined(BIOS_IO_EMULATION)
 		// XXX: Windows3.1 DOSプロンプト用 無理やり
-		if (CPU_STAT_PM && CPU_STAT_VM86) {
+		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
 			biosioemu_enq8(0xa2, CMD_PITCH);
 			biosioemu_enq8(0xa0, 80);
 		}else
@@ -434,7 +434,7 @@ const CRTDATA	*p;
 	else {
 #if defined(BIOS_IO_EMULATION)
 		// XXX: Windows3.1 DOSプロンプト用 無理やり
-		if (CPU_STAT_PM && CPU_STAT_VM86) {
+		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
 			biosioemu_enq8(0xa2, CMD_PITCH);
 			biosioemu_enq8(0xa0, 40);
 		}else
@@ -460,7 +460,7 @@ const CRTDATA	*p;
 
 #if defined(BIOS_IO_EMULATION)
 	// XXX: Windows3.1 DOSプロンプト用 無理やり
-	if (CPU_STAT_PM && CPU_STAT_VM86) {
+	if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
 		biosioemu_enq8(0x6a, 0x40 | ((gdc.display & (1 << GDCDISP_PLAZMA)) ? 1 : 0)); // gdcs.textdisp |= GDCSCRN_EXT; の代わり・・・
 		biosioemu_enq8(0x6a, 0x82 | (gdc.clock & 1)); // gdcs.grphdisp |= GDCSCRN_EXT;
 		biosioemu_enq8(0x62, CMD_STOP); // gdcs.textdisp &= ~GDCSCRN_ENABLE; pcstat.screenupdate |= 2;
@@ -960,7 +960,7 @@ void bios0x18(void) {
    		case 0x03:						// キーボード・インタフェイスの初期化
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 			// np21w ver0.86 rev47 BIOS I/O emulation
-			if (CPU_STAT_PM && CPU_STAT_VM86) {
+			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
 				biosioemu_enq8(0x43, 0x3a);
 				biosioemu_enq8(0x43, 0x32);
 				biosioemu_enq8(0x43, 0x16);
@@ -1003,7 +1003,7 @@ void bios0x18(void) {
    		case 0x0c:						// テキスト画面の表示開始
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 			// np21w ver0.86 rev47 BIOS I/O emulation
-			if (CPU_STAT_PM && CPU_STAT_VM86) {
+			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
 				if (!(gdcs.textdisp & GDCSCRN_ENABLE)) {
 					pcstat.screenupdate |= 2;
  				}
@@ -1018,7 +1018,7 @@ void bios0x18(void) {
    		case 0x0d:						// テキスト画面の表示終了
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 			// np21w ver0.86 rev47 BIOS I/O emulation
-			if (CPU_STAT_PM && CPU_STAT_VM86) {
+			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
 				if (gdcs.textdisp & GDCSCRN_ENABLE) {
 					pcstat.screenupdate |= 2;
 				}
@@ -1153,7 +1153,7 @@ void bios0x18(void) {
    		case 0x40:						// グラフィック画面の表示開始
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 			// np21w ver0.86 rev47 BIOS I/O emulation
-			if (CPU_STAT_PM && CPU_STAT_VM86) {
+			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
 				gdc_forceready(GDCWORK_SLAVE);
 				if (!(gdcs.grphdisp & GDCSCRN_ENABLE)) {
 					pcstat.screenupdate |= 2;
@@ -1170,7 +1170,7 @@ void bios0x18(void) {
    		case 0x41:						// グラフィック画面の表示終了
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 			// np21w ver0.86 rev47 BIOS I/O emulation
-			if (CPU_STAT_PM && CPU_STAT_VM86) {
+			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
 				gdc_forceready(GDCWORK_SLAVE);
 				if (gdcs.grphdisp & GDCSCRN_ENABLE) {
 					pcstat.screenupdate |= 2;
