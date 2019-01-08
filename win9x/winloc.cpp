@@ -43,6 +43,7 @@ BOOL winloc_GetWindowRect(HWND hwnd, LPRECT lpRect);
 
 BOOL winloc_InitDwmFunc() {
 	RECT r = {0};
+
 	if(noDWM){
 		// DWMŠÂ‹«‚Å‚È‚¢
 		return FALSE;
@@ -807,8 +808,8 @@ void winlocex_move(WINLOCEX wle) {
 			rect.top    -= rectmp2.top    - rectmp1.top;
 			rect.right  -= rectmp2.right  - rectmp1.right;
 			rect.bottom -= rectmp2.bottom - rectmp1.bottom;
-			cx -= 2*abs(rectmp2.left - rectmp1.left);
-			cy -= 2*abs(rectmp2.left - rectmp1.left);
+			cx -= (rectmp1.left - rectmp2.left) - (rectmp1.right - rectmp2.right);
+			cy -= (rectmp1.top - rectmp2.top) - (rectmp1.bottom - rectmp2.bottom);
 		}
 		MoveWindow(wle->hold, rect.left, rect.top, cx, cy, TRUE);
 	}
@@ -875,8 +876,8 @@ void winlocex_move(WINLOCEX wle) {
 				rect.top    -= rectmp2.top    - rectmp1.top;
 				rect.right  -= rectmp2.right  - rectmp1.right;
 				rect.bottom -= rectmp2.bottom - rectmp1.bottom;
-				cx -= 2*abs(rectmp2.left - rectmp1.left);
-				cy -= 2*abs(rectmp2.left - rectmp1.left);
+				cx -= (rectmp1.left - rectmp2.left) - (rectmp1.right - rectmp2.right);
+				cy -= (rectmp1.top - rectmp2.top) - (rectmp1.bottom - rectmp2.bottom);
 			}
 			MoveWindow(wnd->hwnd, rect.left, rect.top, cx, cy, TRUE);
 			wnd->rect.left = rect.left;

@@ -1627,6 +1627,7 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			}else{
 				np2cfg.memcheckspeed = 1;
 			}
+			update |= SYS_UPDATECFG;
 #endif
 			break;
 			

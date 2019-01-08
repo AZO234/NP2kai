@@ -201,6 +201,19 @@ void cs4231io_reset(void) {
 		snddma = np2cfg.sndwssdma;
 		//cs4231.adrs = 0x0a;////0b00 001 010  INT0 DMA1
 		//cs4231.adrs = 0x22;////0b00 100 010  INT5 DMA1
+	}else if(g_nSoundID==SOUNDID_PC_9801_86_118){
+		UINT8 irq86table[4] = {0x03, 0x0d, 0x0a, 0x0c};
+		UINT8 nIrq86 = (np2cfg.snd86opt & 0x10) | ((np2cfg.snd86opt & 0x4) << 5) | ((np2cfg.snd86opt & 0x8) << 3);
+		UINT8 irq86 = irq86table[nIrq86 >> 6];
+		sndirq = np2cfg.snd118irqp;
+		snddma = np2cfg.snd118dma;
+		if(sndirq == irq86){
+			if(irq86!=3){
+				sndirq = 0x3;
+			}else{
+				sndirq = 0xC;
+			}
+		}
 	}else{
 		sndirq = np2cfg.snd118irqp;
 		snddma = np2cfg.snd118dma;

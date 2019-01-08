@@ -41,9 +41,6 @@
     <Filter Include="ソース ファイル\io">
       <UniqueIdentifier>{9d73e98b-7a0a-4020-bc6c-7aaa04a461b6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\lio">
-      <UniqueIdentifier>{7d11f730-6a89-4d86-ac7d-e77ea77f94c3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\mem">
       <UniqueIdentifier>{01579648-5982-43cb-833c-6b7a4a7bcb08}</UniqueIdentifier>
     </Filter>
@@ -140,9 +137,6 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\io">
       <UniqueIdentifier>{365eee28-18cb-4b90-ad6d-39cc2f26318d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\lio">
-      <UniqueIdentifier>{d605a614-597c-43ec-ab71-c141d16ddccc}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\mem">
       <UniqueIdentifier>{3a4f5730-0e13-42b9-baee-87d5d4a11e9a}</UniqueIdentifier>
@@ -692,24 +686,6 @@
     </ClCompile>
     <ClCompile Include="..\io\upd4990.c">
       <Filter>ソース ファイル\io</Filter>
-    </ClCompile>
-    <ClCompile Include="..\lio\gcircle.c">
-      <Filter>ソース ファイル\lio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\lio\gline.c">
-      <Filter>ソース ファイル\lio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\lio\gpset.c">
-      <Filter>ソース ファイル\lio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\lio\gput1.c">
-      <Filter>ソース ファイル\lio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\lio\gscreen.c">
-      <Filter>ソース ファイル\lio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\lio\lio.c">
-      <Filter>ソース ファイル\lio</Filter>
     </ClCompile>
     <ClCompile Include="..\mem\dmax86.c">
       <Filter>ソース ファイル\mem</Filter>
@@ -1657,9 +1633,6 @@
     </ClInclude>
     <ClInclude Include="..\io\upd4990.h">
       <Filter>ヘッダー ファイル\io</Filter>
-    </ClInclude>
-    <ClInclude Include="..\lio\lio.h">
-      <Filter>ヘッダー ファイル\lio</Filter>
     </ClInclude>
     <ClInclude Include="..\mem\dmav30.h">
       <Filter>ヘッダー ファイル\mem</Filter>

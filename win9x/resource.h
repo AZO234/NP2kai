@@ -301,6 +301,7 @@
 #define IDC_AUTOIDEBIOS					19109
 #define IDC_USEASYNCCD					19110
 #define IDC_ALLOWCDTRAYOP				19111
+#define IDC_USECDECC					19112
 #define IDS_APP_NAME2                   30001
 #define IDS_APP_NAME21                  30002
 #define IDS_FILENAME_HELP               30003

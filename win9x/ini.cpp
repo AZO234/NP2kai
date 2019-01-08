@@ -640,7 +640,7 @@ static const PFTBL s_IniItems[] =
 	
 	PFMAX("MEMCHKMX", PFTYPE_UINT8,		&np2cfg.memchkmx,		0), // メモリチェックする最大サイズ（最小は15MB・0は制限無し・メモリチェックが長いのが嫌だけど見かけ上カウントだけはしておきたい人向け）
 	PFMAX("SBEEPLEN", PFTYPE_UINT8,		&np2cfg.sbeeplen,		0), // ピポ音の長さ（0でデフォルト・4がNP2標準）
-	PFMAX("SBEEPADJ", PFTYPE_BOOL,		&np2cfg.sbeepadj,		0), // ピポ音の長さ自動調整
+	PFVAL("SBEEPADJ", PFTYPE_BOOL,		&np2cfg.sbeepadj), // ピポ音の長さ自動調整
 
 	PFVAL("BIOSIOEM", PFTYPE_BOOL,		&np2cfg.biosioemu), // np21w ver0.86 rev46 BIOS I/O emulation
 	
@@ -660,8 +660,10 @@ static const PFTBL s_IniItems[] =
 	PFVAL("memckspd", PFTYPE_UINT8,		&np2cfg.memcheckspeed),
 #endif
 	
-	PFMAX("USERAM_D", PFTYPE_BOOL,		&np2cfg.useram_d,		0), // EPSONでなくてもD0000h-DFFFFhをRAMに（ただしIDE BIOS D8000h-DBFFFhは駄目）
-	PFMAX("USEPEGCP", PFTYPE_BOOL,		&np2cfg.usepegcplane,		0), // PEGC プレーンモードサポート
+	PFVAL("USERAM_D", PFTYPE_BOOL,		&np2cfg.useram_d), // EPSONでなくてもD0000h-DFFFFhをRAMに（ただしIDE BIOS D8000h-DBFFFhは駄目）
+	PFVAL("USEPEGCP", PFTYPE_BOOL,		&np2cfg.usepegcplane), // PEGC プレーンモードサポート
+	
+	PFVAL("USECDECC", PFTYPE_BOOL,		&np2cfg.usecdecc), // CD-ROM EDC/ECC エミュレーションサポート
 	
 
 	// OS依存？

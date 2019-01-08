@@ -473,12 +473,31 @@ static void atapi_cmd_read_capacity(IDEDRV drv) {
 // 0x28: READ(10)
 #if defined(_WINDOWS) && !defined(__LIBRETRO__)
 void atapi_dataread_threadfunc_part(IDEDRV drv) {
+
+	SXSIDEV	sxsi;
+	sxsi = sxsi_getptr(drv->sxsidrv);
+	sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
+
 	if (sxsi_read(drv->sxsidrv, drv->sector, drv->buf, 2048) != 0) {
 		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_ILLEGAL_REQUEST);
 		drv->asc = 0x21;
+		sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
 		senderror(drv);
 		return;
 	}
+
+	// EDC/ECC check
+	if(np2cfg.usecdecc && (sxsi->cdflag_ecc & CD_ECC_BITMASK)==CD_ECC_ERROR){
+		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_MEDIUM_ERROR);
+		drv->sk = 0x03;
+		drv->asc = 0x11;
+		drv->status |= IDESTAT_ERR;
+		drv->error |= IDEERR_UNC;
+		sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
+		senderror(drv);
+		return;
+	}
+
 	drv->sector++;
 	drv->nsectors--;
 
@@ -493,6 +512,13 @@ void atapi_dataread_threadfunc_part(IDEDRV drv) {
 	drv->buftc = (drv->nsectors)?IDETC_ATAPIREAD:IDETC_TRANSFEREND;
 	drv->bufpos = 0;
 	drv->bufsize = 2048;
+	
+	if(np2cfg.usecdecc && (sxsi->cdflag_ecc & CD_ECC_BITMASK)==CD_ECC_RECOVERED){
+		drv->status |= IDESTAT_CORR;
+		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_RECOVERED_ERROR);
+		drv->asc = 0x18;
+	}
+	sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
 
 	drv->status &= ~(IDESTAT_BSY); // ”O‚Ì‚½‚ß’¼‘O‚Å‰ðœ
 	if (!(drv->ctrl & IDECTRL_NIEN)) {
@@ -547,18 +573,37 @@ void atapi_dataread(IDEDRV drv) {
 #else
 void atapi_dataread(IDEDRV drv) {
 
+	SXSIDEV	sxsi;
+	sxsi = sxsi_getptr(drv->sxsidrv);
+
 	// ƒGƒ‰[ˆ—–Ú’ƒ‹ê’ƒ`
 	if (drv->nsectors == 0) {
 		sendabort(drv);
 		return;
 	}
+	
+	sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
 
 	if (sxsi_read(drv->sxsidrv, drv->sector, drv->buf, 2048) != 0) {
 		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_ILLEGAL_REQUEST);
 		drv->asc = 0x21;
 		senderror(drv);
+		sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
 		return;
 	}
+
+	// EDC/ECC check
+	if(np2cfg.usecdecc && (sxsi->cdflag_ecc & CD_ECC_BITMASK)==CD_ECC_ERROR){
+		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_MEDIUM_ERROR);
+		drv->sk = 0x03;
+		drv->asc = 0x11;
+		drv->status |= IDESTAT_ERR;
+		drv->error |= IDEERR_UNC;
+		sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
+		senderror(drv);
+		return;
+	}
+
 	drv->sector++;
 	drv->nsectors--;
 
@@ -573,6 +618,13 @@ void atapi_dataread(IDEDRV drv) {
 	drv->buftc = (drv->nsectors)?IDETC_ATAPIREAD:IDETC_TRANSFEREND;
 	drv->bufpos = 0;
 	drv->bufsize = 2048;
+	
+	if(np2cfg.usecdecc && (sxsi->cdflag_ecc & CD_ECC_BITMASK)==CD_ECC_RECOVERED){
+		drv->status |= IDESTAT_CORR;
+		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_RECOVERED_ERROR);
+		drv->asc = 0x18;
+	}
+	sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
 
 	if (!(drv->ctrl & IDECTRL_NIEN)) {
 		//TRACEOUT(("atapicmd: senddata()"));

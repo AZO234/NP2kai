@@ -45,6 +45,7 @@ private:
 	CComboData m_cmbsm;			//!< セカンダリ マスタ
 	CComboData m_cmbss;			//!< セカンダリ スレーブ
 	CWndProc m_chkasynccd;		//!< Use Async CD-ROM Access
+	CWndProc m_chkuseecc;		//!< Use CD-ROM EDC/ECC Emulation
 	CWndProc m_chkallowtraycmd;	//!< Allow CD Tray Open/Close Command
 	CWndProc m_chkidebios;		//!< Use IDE BIOS
 	CWndProc m_chkautoidebios;	//!< Auto IDE BIOS
@@ -101,6 +102,13 @@ BOOL CIdeDlg::OnInitDialog()
 		m_chkasynccd.SendMessage(BM_SETCHECK , BST_CHECKED , 0);
 	}else{
 		m_chkasynccd.SendMessage(BM_SETCHECK , BST_UNCHECKED , 0);
+	}
+	
+	m_chkuseecc.SubclassDlgItem(IDC_USECDECC, this);
+	if(np2cfg.usecdecc){
+		m_chkuseecc.SendMessage(BM_SETCHECK , BST_CHECKED , 0);
+	}else{
+		m_chkuseecc.SendMessage(BM_SETCHECK , BST_UNCHECKED , 0);
 	}
 	
 	m_chkallowtraycmd.SubclassDlgItem(IDC_ALLOWCDTRAYOP, this);
@@ -171,6 +179,11 @@ void CIdeDlg::OnOK()
 	if (np2cfg.useasynccd != (m_chkasynccd.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0))
 	{
 		np2cfg.useasynccd = (m_chkasynccd.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0);
+		update |= SYS_UPDATECFG;
+	}
+	if (np2cfg.usecdecc != (m_chkuseecc.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0))
+	{
+		np2cfg.usecdecc = (m_chkuseecc.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0);
 		update |= SYS_UPDATECFG;
 	}
 	if (np2cfg.allowcdtraycmd != (m_chkallowtraycmd.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0))

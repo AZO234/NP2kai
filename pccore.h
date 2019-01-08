@@ -274,6 +274,8 @@ struct tagNP2Config
 	
 	UINT8	useram_d; // EPSONでなくてもD0000h-DFFFFhをRAMに（ただしIDE BIOS D8000h-DBFFFhは駄目）
 	UINT8	usepegcplane; // PEGC プレーンモードサポート
+	
+	UINT8	usecdecc; // CD-ROM EDC/ECC エミュレーションサポート
 };
 typedef struct tagNP2Config  NP2CFG;		/*!< The define of config */
 

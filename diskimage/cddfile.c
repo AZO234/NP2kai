@@ -19,6 +19,22 @@
 static const UINT8 cd001[7] = {0x01,'C','D','0','0','1',0x01};
 #endif
 
+#define CD_EDC_POLYNOMIAL	0xD8018001 // Reverse 0x8001801B
+
+UINT32 crcTable[256];
+
+void makeCRCTable( void)
+{
+	UINT32 i, j;
+    for( i=0; i<256; i++){
+        UINT32 crc = i;
+        for( j=0; j<8; j++){
+            crc = ( crc >> 1) ^ ( ( crc & 0x1) ? CD_EDC_POLYNOMIAL : 0);
+        }
+        crcTable[i] = crc;
+    }
+}
+
 //	追加(kaiA)
 BOOL isCDImage(const OEMCHAR *fname) {
 
@@ -385,6 +401,68 @@ REG8 sec2352_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 }
 
 
+UINT32 calcCRC(UINT8 *buf, int len)
+{
+	int i;
+    UINT32 crc = 0x00000000;
+    for( i=0; i<len; i++){
+        crc = (crc >> 8) ^ crcTable[(crc^buf[i]) & 0xff];
+    }
+    return crc;
+}
+
+//	イメージファイル内全トラックセクタ長2352byte用(ECCチェック有効)
+REG8 sec2352_read_with_ecc(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
+	
+	CDINFO	cdinfo;
+	FILEH	fh;
+	FILEPOS	fpos;
+	UINT	rsize;
+	UINT8	bufedc[4];
+	UINT8	bufecc[276];
+	UINT8	bufdata[2352];
+
+	if (sxsi_prepare(sxsi) != SUCCESS) {
+		return(0x60);
+	}
+	if ((pos < 0) || (pos >= sxsi->totals)) {
+		return(0x40);
+	}
+
+	cdinfo = (CDINFO)sxsi->hdl;
+	fh = cdinfo->fh;
+
+	while(size) {
+		fpos = (FILEPOS)((pos * 2352) + cdinfo->trk[0].start_offset);
+		if (file_seek(fh, fpos, FSEEK_SET) != fpos) {
+			return(0xd0);
+		}
+		rsize = 2352;
+		CPU_REMCLOCK -= rsize;
+		if (file_read(fh, bufdata, rsize) != rsize) {
+			return(0xd0);
+		}
+		memcpy(buf, bufdata+16, 2048);
+		memcpy(bufedc, bufdata+16+2048, 4);
+		memcpy(bufecc, bufdata+16+2048+4+8, 276);
+
+		// Check EDC
+		if(calcCRC(bufdata, 2064) != LOADINTELDWORD(bufedc)){
+			// EDC Error
+			// TODO: Check ECC
+			//sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_RECOVERED; // ECC recovered
+			sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_ERROR; // ECC error
+			//return(0xd0);
+		}
+
+		rsize = np2min(size, 2048);
+		buf += rsize;
+		size -= rsize;
+		pos++;
+	}
+	return(0x00);
+}
+
 //	イメージファイル内全トラックセクタ長2448(2352+96)用
 REG8 sec2448_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 
@@ -520,7 +598,7 @@ void set_secread(SXSIDEV sxsi, const _CDTRK *trk, UINT trks) {
 				sxsi->read = sec2048_read;
 				break;
 			case	2352:
-				sxsi->read = sec2352_read;
+				sxsi->read = sec2352_read_with_ecc; // sec2352_read;
 				break;
 			case	2448:
 				sxsi->read = sec2448_read;
@@ -556,6 +634,8 @@ BRESULT setsxsidev(SXSIDEV sxsi, const OEMCHAR *path, const _CDTRK *trk, UINT tr
 	OEMCHAR		logbuf[2048];
 	TEXTFILEH	tfh;
 #endif
+
+	makeCRCTable();
 
 	//	trk、trksは有効な値が設定済みなのが前提
 	if ((trk == NULL) || (trks == 0)) {

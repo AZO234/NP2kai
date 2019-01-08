@@ -370,19 +370,27 @@ DisplayState *graphic_console_init(vga_hw_update_ptr update,
 
 #define ABS(a) ((signed)(a) > 0 ? a : -a)
 
-// XXX: WAB系をとりあえず使えるようにするために本来のVRAMサイズの2倍まで書き込み許可
-#define BLTUNSAFE(s) \
-    ( \
+// XXX: WAB系をとりあえず使えるようにするために4MB VRAMサイズまで書き込み許可
+#define BLTUNSAFE_DST(s) \
         ( /* check dst is within bounds */ \
             (s)->cirrus_blt_height * ABS((s)->cirrus_blt_dstpitch) \
                 + ((s)->cirrus_blt_dstaddr & (s)->cirrus_addr_mask) > \
-                    CIRRUS_VRAM_SIZE*2 \
-        ) || \
+                    CIRRUS_VRAM_SIZE_4MB \
+        )
+#define BLTUNSAFE_SRC(s) \
         ( /* check src is within bounds */ \
             (s)->cirrus_blt_height * ABS((s)->cirrus_blt_srcpitch) \
                 + ((s)->cirrus_blt_srcaddr & (s)->cirrus_addr_mask) > \
-                    CIRRUS_VRAM_SIZE*2 \
-        ) \
+                    CIRRUS_VRAM_SIZE_4MB \
+        )
+#define BLTUNSAFE(s) \
+    ( \
+        BLTUNSAFE_DST(s) || BLTUNSAFE_SRC(s) \
+    )
+// SRC未使用なら1
+#define BLTUNSAFE_NOSRC(s) \
+    ( \
+        rop_to_index[(s)->gr[0x32]]==0 || rop_to_index[(s)->gr[0x32]]==6 \
     )
 //#define BLTUNSAFE(s) \
 //    ( \
@@ -1030,8 +1038,9 @@ static int cirrus_bitblt_common_patterncopy(CirrusVGAState * s,
 
     dst = s->vram_ptr + (s->cirrus_blt_dstaddr & s->cirrus_addr_mask);
 
-    if (BLTUNSAFE(s))
-        return 0;
+	if(BLTUNSAFE_DST(s)){
+		return 0;
+	}
 
     (*s->cirrus_rop) (s, dst, src,
                       s->cirrus_blt_dstpitch, 0,
@@ -1047,9 +1056,11 @@ static int cirrus_bitblt_common_patterncopy(CirrusVGAState * s,
 static int cirrus_bitblt_solidfill(CirrusVGAState *s, int blt_rop)
 {
     cirrus_fill_t rop_func;
+	
+	if(BLTUNSAFE_DST(s)){
+		return 0;
+	}
 
-    if (BLTUNSAFE(s))
-        return 0;
     rop_func = cirrus_fill[rop_to_index[blt_rop]][s->cirrus_blt_pixelwidth - 1];
     rop_func(s, s->vram_ptr + (s->cirrus_blt_dstaddr & s->cirrus_addr_mask),
              s->cirrus_blt_dstpitch,
@@ -1148,8 +1159,9 @@ static void cirrus_do_copy(CirrusVGAState *s, int dst, int src, int w, int h)
 
 static int cirrus_bitblt_videotovideo_copy(CirrusVGAState * s)
 {
-    if (BLTUNSAFE(s))
-        return 0;
+	if(BLTUNSAFE_DST(s) || (!BLTUNSAFE_NOSRC(s) && BLTUNSAFE_SRC(s))){ // XXX: ソースを使用しないならソースの範囲外チェック不要。抜本解決必要
+		return 0;
+	}
 
     cirrus_do_copy(s, s->cirrus_blt_dstaddr - s->start_addr,
             s->cirrus_blt_srcaddr - s->start_addr,
@@ -1193,7 +1205,7 @@ static void cirrus_bitblt_cputovideo_next(CirrusVGAState * s)
                 /* XXX: keep alignment to speed up transfer */
                 end_ptr = s->cirrus_bltbuf + s->cirrus_blt_srcpitch;
                 copy_count = (int)(s->cirrus_srcptr_end - end_ptr);
-				if(s->cirrus_blt_srcpitch + copy_count <= sizeof(s->cirrus_bltbuf)) // 範囲外になっていないかチェック
+				if(copy_count >= 0 && s->cirrus_blt_srcpitch + copy_count <= sizeof(s->cirrus_bltbuf)) // 範囲外になっていないかチェック
 					memmove(s->cirrus_bltbuf, end_ptr, copy_count);
                 s->cirrus_srcptr = s->cirrus_bltbuf + copy_count;
                 s->cirrus_srcptr_end = s->cirrus_bltbuf + s->cirrus_blt_srcpitch;
@@ -3086,7 +3098,6 @@ void cirrus_linear_memwnd_addr_convert(void *opaque, target_phys_addr_t *addrval
 			offset <<= 12;
 
 		addr += (offset);
-		addr &= s->cirrus_addr_mask;
 	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F){
 		addr &= 0x7fff;
 		if ((s->gr[0x0b] & 0x01) != 0){
@@ -3107,7 +3118,6 @@ void cirrus_linear_memwnd_addr_convert(void *opaque, target_phys_addr_t *addrval
 			offset <<= 12;
 
 		addr += (offset);
-		addr &= s->cirrus_addr_mask;
 	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_WAB){
 		addr &= 0x7fff;
 		if ((s->gr[0x0b] & 0x01) != 0){
@@ -3139,8 +3149,8 @@ void cirrus_linear_memwnd_addr_convert(void *opaque, target_phys_addr_t *addrval
 			addr += (offset) << 14L;
 		else
 			addr += (offset) << 12L;
-		addr &= s->cirrus_addr_mask;
 	}
+	addr &= s->cirrus_addr_mask;
 	*addrval = addr;
 }
 // I-O DATA用

@@ -72,6 +72,7 @@ void nevent_progress(void)
 	UINT i;
 	NEVENTID id;
 	NEVENTITEM item;
+	UINT8 fevtchk = 0;
 
 	CPU_CLOCK += CPU_BASECLOCK;
 	nEvents = 0;
@@ -101,11 +102,18 @@ void nevent_progress(void)
 			item->flag &= ~(NEVENT_ENABLE);
 //			TRACEOUT(("event = %x", id));
 		}
+		fevtchk |= (id==NEVENT_FLAMES ? 1 : 0);
 	}
 	g_nevent.readyevents = nEvents;
 	CPU_BASECLOCK = nextbase;
 	CPU_REMCLOCK += nextbase;
 	nevent_execute();
+
+	// NEVENT_FLAMESÇ™è¡Ç¶ÇÈñ‚ëËÇ…ébíËëŒèà
+	if(!fevtchk){
+		printf("NEVENT_FLAMES is missing!!\n");
+		pcstat.screendispflag = 0;
+	}
 //	TRACEOUT(("nextbase = %d (%d)", nextbase, CPU_REMCLOCK));
 }
 

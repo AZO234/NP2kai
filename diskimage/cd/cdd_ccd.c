@@ -1,6 +1,7 @@
 #include	"compiler.h"
 #include	"textfile.h"
 #include	"dosio.h"
+#include	"cpucore.h"
 #include	"fdd/sxsi.h"
 
 #ifdef SUPPORT_KAI_IMAGES
@@ -96,8 +97,8 @@ BRESULT openccd(SXSIDEV sxsi, const OEMCHAR *fname) {
 	if (index == 0) {
 		goto openccd_err1;
 	}
-
-	sxsi->read = sec2352_read;
+	
+	sxsi->read = sec2352_read_with_ecc; //sec2352_read;
 	sxsi->totals = -1;
 
 	textfile_close(tfh);

@@ -27,6 +27,13 @@ enum {
 	SXSIFLAG_FILEOPENED	= 0x02
 };
 
+enum {
+	CD_ECC_NOERROR		= 0,
+	CD_ECC_RECOVERED	= 1,
+	CD_ECC_ERROR		= 2,
+	CD_ECC_BITMASK		= 0x03,
+};
+
 
 struct _sxsidev;
 typedef struct _sxsidev		_SXSIDEV;
@@ -57,6 +64,8 @@ struct _sxsidev {
 	UINT8	mediatype;
 	UINT8	padding;
 	UINT32	headersize;
+	
+	UINT8	cdflag_ecc;
 
 	OEMCHAR	fname[MAX_PATH];
 	UINT	ftype;
