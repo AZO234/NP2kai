@@ -859,6 +859,7 @@ void retro_set_environment(retro_environment_t cb)
       { "np2kai_PCI_type" , "PCMC Type; Intel 82434LX|Intel 82441FX|VLSI Wildcat" },
       { "np2kai_PCI_bios32" , "Use BIOS32 (not recommended); OFF|ON" },
 #endif	/* defined(SUPPORT_PCI) */
+      { "np2kai_usecdecc" , "Use CD-ROM EDC/ECC Emulation; ON|OFF" },
       { "np2kai_joy2mouse" , "Joypad to Mouse Mapping; OFF|ON" },
       { "np2kai_j2msuratio" , "J2M Cursor Speed up Ratio; x10|x20|up stop|x5" },
       { "np2kai_joy2key" , "Joypad to Keyboard Mapping; OFF|Arrows|Keypad|Manual" },
@@ -1290,6 +1291,17 @@ static void update_variables(void)
          np2cfg.pci_bios32 = 0;
    }
 #endif	/* defined(SUPPORT_PCI) */
+
+   var.key = "np2kai_usecdecc";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "ON") == 0)
+         np2cfg.usecdecc = 1;
+      else
+         np2cfg.usecdecc = 0;
+   }
 
    var.key = "np2kai_joy2mouse";
    var.value = NULL;

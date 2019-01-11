@@ -190,8 +190,6 @@ typedef SINT32	FILELEN;
 
 #define	SUPPORT_STATSAVE
 
-#define SUPPORT_FMGEN
-
 #define SUPPORT_ARC
 #define SUPPORT_ZLIB
 

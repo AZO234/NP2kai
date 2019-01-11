@@ -208,8 +208,6 @@ typedef SINT32	FILELEN;
 
 #define  SUPPORT_ARC
 
-#define  SUPPORT_FMGEN
-
 #define	SUPPORT_NORMALDISP
 
 #define SUPPORT_PX

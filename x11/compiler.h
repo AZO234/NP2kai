@@ -292,8 +292,6 @@ G_END_DECLS
 
 #define	SUPPORT_HRTIMER
 
-#define SUPPORT_FMGEN
-
 #define	SUPPORT_SCREENSIZE
 
 #if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER)
