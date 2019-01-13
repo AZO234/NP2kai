@@ -28,7 +28,7 @@ BRESULT openiso(SXSIDEV sxsi, const OEMCHAR *path) {
 	sector_size = 2048;
 	totals = issec2048(fh);
 	if (totals < 0) {
-		sxsi->read = sec2352_read;
+		sxsi->read = sec2352_read_with_ecc;
 		sector_size = 2352;
 		totals = issec2352(fh);
 	}

@@ -515,7 +515,7 @@ UINT32 MEMCALL memvgaio_rd32(UINT32 address){
 
 	pos = address - 0xe0000 - 0x0100;
 	
-	if(PEGC_REG_PATTERN <= pos){
+	if(address > 0xe0000 + 0x0100 && PEGC_REG_PATTERN <= pos){
 		ret = 0;
 		// vramop.mio2[PEGC_REG_PATTERN + ofs] PATTERN DATA (32bit)
 		//         pix31 pix30 ...                                                                                                          pix1 pix0

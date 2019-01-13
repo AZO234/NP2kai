@@ -417,6 +417,7 @@ void IOOUTCALL cs4231io0_w8(UINT port, REG8 value) {
 // CS4231 I/O READ
 REG8 IOINPCALL cs4231io0_r8(UINT port) {
 
+	static REG8 tmp = 0;
 	switch(port - cs4231.port[0]) {
 		case 0x00: // PCMâπåπÇÃäÑÇËçûÇ›ÉAÉhÉåÉXê›íË
 			return(cs4231.adrs);
