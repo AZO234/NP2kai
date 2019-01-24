@@ -157,8 +157,12 @@ static void IOOUTCALL ymf_o18e(UINT port, REG8 dat)
 
 static REG8 IOINPCALL ymf_i188(UINT port)
 {
-	(void)port;
-	return g_opna[opna_idx].s.status;
+	REG8 ret;
+	ret = g_opna[opna_idx].s.status;
+	if((cs4231.reg.pinctrl & IEN) && (cs4231.reg.featurestatus & (PI|TI|CI))) {
+		ret |= 0x02;
+	}
+	return ret;
 }
 
 static REG8 IOINPCALL ymf_i18a(UINT port)
@@ -476,7 +480,11 @@ void board118_reset(const NP2CFG *pConfig)
 			irqval = 0x10|(1 << 6);
 			break;
 		}
-		opna_timer(&g_opna[opna_idx], irqval, NEVENT_FMTIMERA, NEVENT_FMTIMERB);
+		if(opna_idx == 1){
+			opna_timer(&g_opna[opna_idx], irqval, NEVENT_FMTIMER2A, NEVENT_FMTIMER2B);
+		}else{
+			opna_timer(&g_opna[opna_idx], irqval, NEVENT_FMTIMERA, NEVENT_FMTIMERB);
+		}
 
 		// OPLリセット
 		opl3_reset(&g_opl3, OPL3_HAS_OPL3L|OPL3_HAS_OPL3);

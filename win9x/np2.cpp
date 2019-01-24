@@ -1254,6 +1254,11 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			update |= SYS_UPDATECFG | SYS_UPDATESBOARD;
 			break;
 			
+		case IDM_PC9801_86_118:
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_86_118;
+			update |= SYS_UPDATECFG | SYS_UPDATESBOARD;
+			break;
+			
 		case IDM_MATE_X_PCM:
 			np2cfg.SOUND_SW = SOUNDID_MATE_X_PCM;
 			update |= SYS_UPDATECFG | SYS_UPDATESBOARD;

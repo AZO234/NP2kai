@@ -668,6 +668,10 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 				if(g_nSoundID == SOUNDID_MATE_X_PCM || ((g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_118) && np2cfg.snd118irqf == np2cfg.snd118irqp) || g_nSoundID == SOUNDID_PC_9801_86_WSS){
 					iocore_out8(0x188, 0x27);
 					iocore_out8(0x18a, 0x30);
+					if(g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_118){
+						iocore_out8(cs4231.port[4], 0x27);
+						iocore_out8(cs4231.port[4]+2, 0x30);
+					}
 				}else{
 					iocore_out8(0x188, 0x27);
 					iocore_out8(0x18a, 0x3f);

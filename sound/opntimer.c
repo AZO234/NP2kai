@@ -20,6 +20,12 @@ static const UINT8 s_irqtable[4] = {0x03, 0x0d, 0x0a, 0x0c};
 static void set_fmtimeraevent(POPNA opna, NEVENTPOSITION absolute)
 {
 	SINT32 l;
+	int OPNAidx;
+	int v_NEVENT_FMTIMERA, v_NEVENT_FMTIMERB;
+
+	OPNAidx = (opna == &(g_opna[1])) ? 1 : 0;
+	v_NEVENT_FMTIMERA = (OPNAidx==0) ? NEVENT_FMTIMERA : NEVENT_FMTIMER2A;
+	v_NEVENT_FMTIMERB = (OPNAidx==0) ? NEVENT_FMTIMERB : NEVENT_FMTIMER2B;
 
 	l = 18 * (1024 - ((opna->s.reg[0x24] << 2) | (opna->s.reg[0x25] & 3)));
 	if (pccore.cpumode & CPUMODE_8MHZ)			/* 4MHz */
@@ -32,7 +38,7 @@ static void set_fmtimeraevent(POPNA opna, NEVENTPOSITION absolute)
 	}
 	l *= pccore.multiple;
 //	TRACEOUT(("FMTIMER-A: %08x-%d", l, absolute));
-	nevent_set(NEVENT_FMTIMERA, l, fmport_a, absolute);
+	nevent_set((NEVENTID)v_NEVENT_FMTIMERA, l, fmport_a, absolute);
 }
 
 /**
@@ -43,6 +49,12 @@ static void set_fmtimeraevent(POPNA opna, NEVENTPOSITION absolute)
 static void set_fmtimerbevent(POPNA opna, NEVENTPOSITION absolute)
 {
 	SINT32 l;
+	int OPNAidx;
+	int v_NEVENT_FMTIMERA, v_NEVENT_FMTIMERB;
+
+	OPNAidx = (opna == &(g_opna[1])) ? 1 : 0;
+	v_NEVENT_FMTIMERA = (OPNAidx==0) ? NEVENT_FMTIMERA : NEVENT_FMTIMER2A;
+	v_NEVENT_FMTIMERB = (OPNAidx==0) ? NEVENT_FMTIMERB : NEVENT_FMTIMER2B;
 
 	l = 288 * (256 - opna->s.reg[0x26]);
 	if (pccore.cpumode & CPUMODE_8MHZ)			/* 4MHz */
@@ -55,7 +67,7 @@ static void set_fmtimerbevent(POPNA opna, NEVENTPOSITION absolute)
 	}
 	l *= pccore.multiple;
 //	TRACEOUT(("FMTIMER-B: %08x-%d", l, absolute));
-	nevent_set(NEVENT_FMTIMERB, l, fmport_b, absolute);
+	nevent_set((NEVENTID)v_NEVENT_FMTIMERB, l, fmport_b, absolute);
 }
 
 /**
@@ -146,30 +158,36 @@ void opna_timer(POPNA opna, UINT nIrq, NEVENTID nTimerA, NEVENTID nTimerB)
 void opna_settimer(POPNA opna, REG8 cData)
 {
 //	TRACEOUT(("fm 27 %x [%.4x:%.4x]", cData, CPU_CS, CPU_IP));
+	int OPNAidx;
+	int v_NEVENT_FMTIMERA, v_NEVENT_FMTIMERB;
+
+	OPNAidx = (opna == &(g_opna[1])) ? 1 : 0;
+	v_NEVENT_FMTIMERA = (OPNAidx==0) ? NEVENT_FMTIMERA : NEVENT_FMTIMER2A;
+	v_NEVENT_FMTIMERB = (OPNAidx==0) ? NEVENT_FMTIMERB : NEVENT_FMTIMER2B;
 
 	opna->s.status &= ~((cData & 0x30) >> 4);
 	if (cData & 0x01)
 	{
-		if (!nevent_iswork(NEVENT_FMTIMERA))
+		if (!nevent_iswork((NEVENTID)v_NEVENT_FMTIMERA))
 		{
 			set_fmtimeraevent(opna, NEVENT_ABSOLUTE);
 		}
 	}
 	else
 	{
-		nevent_reset(NEVENT_FMTIMERA);
+		nevent_reset((NEVENTID)v_NEVENT_FMTIMERA);
 	}
 
 	if (cData & 0x02)
 	{
-		if (!nevent_iswork(NEVENT_FMTIMERB))
+		if (!nevent_iswork((NEVENTID)v_NEVENT_FMTIMERB))
 		{
 			set_fmtimerbevent(opna, NEVENT_ABSOLUTE);
 		}
 	}
 	else
 	{
-		nevent_reset(NEVENT_FMTIMERB);
+		nevent_reset((NEVENTID)v_NEVENT_FMTIMERB);
 	}
 
 	if ((!(cData & 0x03)) && (opna->s.irq != 0xff))

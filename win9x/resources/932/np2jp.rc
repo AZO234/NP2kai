@@ -467,7 +467,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "JoyPad"
 FONT 9, "ＭＳ Ｐゴシック"
 BEGIN
-    CONTROL         "ジョイパッド1を使う",IDC_JOYPAD1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,58,10
+    CONTROL         "ジョイパッド1を使う",IDC_JOYPAD1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,78,10
     LTEXT           "トリガ-1",IDC_STATIC,24,27,40,8
     CONTROL         "A",IDC_PAD1_1A,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,64,26,21,10
     CONTROL         "B",IDC_PAD1_1B,"Button",BS_AUTOCHECKBOX,86,26,21,10
@@ -628,7 +628,7 @@ CAPTION "全般"
 FONT 9, "ＭＳ Ｐゴシック", 0, 0, 0x0
 BEGIN
     CONTROL         "有効",IDC_PCIENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,140,10
-    LTEXT           "PCMC種類",IDC_STATIC,8,26,30,8
+    LTEXT           "PCMC",IDC_STATIC,8,26,30,8
     COMBOBOX        IDC_PCIPCMCTYPE,40,24,136,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     CONTROL         "BIOS32を使用する（非推奨）",IDC_PCIBIOS32,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,44,140,10
 END
@@ -1002,6 +1002,7 @@ BEGIN
             MENUITEM "PC-9801-86 + &Chibi-oto",     IDM_PC9801_86_CB
             MENUITEM "PC-9801-11&8",                IDM_PC9801_118
             MENUITEM "PC-9801-86 + Mate-X PCM(&B460)", IDM_PC9801_86_WSS
+            MENUITEM "PC-9801-86 + 118(&B460)",     IDM_PC9801_86_118
             MENUITEM "Mate-&X PCM",                 IDM_MATE_X_PCM
             MENUITEM "S&peak board",                IDM_SPEAKBOARD
             MENUITEM "Sp&ark board",                IDM_SPARKBOARD
@@ -1082,7 +1083,7 @@ BEGIN
         MENUITEM "マウスボタン連打(&M)",        IDM_MSRAPID
         MENUITEM "&ITFエミュレーション",        IDM_ITFWORK
         // MENUITEM "タイマー不具合修正(&T)",      IDM_TIMERFIX
-        MENUITEM "16MB超メモリチェック省略(&S)",IDM_SKIP16MEMCHK
+        // MENUITEM "16MB超メモリチェック省略(&S)",IDM_SKIP16MEMCHK
         MENUITEM "高速メモリチェック(&E)",      IDM_FASTMEMCHK
         MENUITEM SEPARATOR
         MENUITEM "ヘルプ(&H)...",               IDM_HELP

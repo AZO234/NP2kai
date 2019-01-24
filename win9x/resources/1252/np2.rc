@@ -1010,6 +1010,7 @@ BEGIN
             MENUITEM "PC-9801-86 + &Chibi-oto",     IDM_PC9801_86_CB
             MENUITEM "PC-9801-11&8",                IDM_PC9801_118
             MENUITEM "PC-9801-86 + Mate-X PCM(&B460)", IDM_PC9801_86_WSS
+            MENUITEM "PC-9801-86 + 118(&B460)",     IDM_PC9801_86_118
             MENUITEM "Mate-&X PCM",                 IDM_MATE_X_PCM
             MENUITEM "S&peak board",                IDM_SPEAKBOARD
             MENUITEM "Sp&ark board",                IDM_SPARKBOARD
@@ -1088,7 +1089,7 @@ BEGIN
         MENUITEM "&Mouse rapid",                IDM_MSRAPID
         MENUITEM "&ITF work",                   IDM_ITFWORK
         // MENUITEM "Fix &MMTimer",                IDM_TIMERFIX
-        MENUITEM "&Skip over 16MB memcheck",    IDM_SKIP16MEMCHK
+        // MENUITEM "&Skip over 16MB memcheck",    IDM_SKIP16MEMCHK
         MENUITEM "Fast m&emcheck",              IDM_FASTMEMCHK
         MENUITEM SEPARATOR
         MENUITEM "&Help...",                    IDM_HELP

@@ -676,6 +676,7 @@
 #define IDM_PC9801_86_WSS               40657
 #define IDM_MATE_X_PCM                  40658
 #define IDM_SB16                        40659
+#define IDM_PC9801_86_118               49650
 #define IDM_MEM640                      40661
 #define IDM_MEM16                       40662
 #define IDM_MEM36                       40663
