@@ -254,6 +254,13 @@ static void sys_cmd(MENUID id) {
 			update |= SYS_UPDATECFG;
 			break;
 
+#if defined(SUPPORT_ASYNC_CPU)
+		case MID_ASYNCCPU:
+			np2cfg.asynccpu ^= 1;
+			update |= SYS_UPDATECFG;
+			break;
+#endif
+
 		case MID_AUTOFPS:
 			np2oscfg.DRAW_SKIP = 0;
 			update |= SYS_UPDATECFG;
@@ -790,6 +797,9 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 	menusys_setcheck(MID_DISPSYNC, (np2cfg.DISPSYNC & 1));
 	menusys_setcheck(MID_RASTER, (np2cfg.RASTER & 1));
 	menusys_setcheck(MID_NOWAIT, (np2oscfg.NOWAIT & 1));
+#if defined(SUPPORT_ASYNC_CPU)
+	menusys_setcheck(MID_ASYNCCPU, (np2cfg.asynccpu & 1));
+#endif
 	b = np2oscfg.DRAW_SKIP;
 	menusys_setcheck(MID_AUTOFPS, (b == 0));
 	menusys_setcheck(MID_60FPS, (b == 1));

@@ -634,6 +634,7 @@
 #define IDM_15FPS                       40513
 #define IDM_SCREENOPT                   40514
 #define IDM_CPUSTABILIZER               40515
+#define IDM_ASYNCCPU                    40516
 #define IDM_KEY                         40601
 #define IDM_JOY1                        40602
 #define IDM_JOY2                        40603

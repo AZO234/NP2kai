@@ -1,6 +1,6 @@
 #include	"compiler.h"
 
-#if 1
+#if 0
 #undef	TRACEOUT
 #define	TRACEOUT(s)	(void)(s)
 #endif	/* 1 */
@@ -264,7 +264,7 @@ void atapicmd_a0(IDEDRV drv) {
 		break;
 
 	case 0x28:		// read(10)
-		TRACEOUT(("atapicmd: read(10)"));
+		//TRACEOUT(("atapicmd: read(10)"));
 		lba = (drv->buf[2] << 24) + (drv->buf[3] << 16) + (drv->buf[4] << 8) + drv->buf[5];
 		leng = (drv->buf[7] << 8) + drv->buf[8];
 		atapi_cmd_read(drv, lba, leng);
@@ -483,6 +483,7 @@ void atapi_dataread_threadfunc_part(IDEDRV drv) {
 		drv->asc = 0x21;
 		sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
 		senderror(drv);
+		TRACEOUT(("atapicmd: read error at sector %d", drv->sector));
 		return;
 	}
 
@@ -495,6 +496,7 @@ void atapi_dataread_threadfunc_part(IDEDRV drv) {
 		drv->error |= IDEERR_UNC;
 		sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
 		senderror(drv);
+		TRACEOUT(("atapicmd: EDC/ECC error detected at sector %d", drv->sector));
 		return;
 	}
 

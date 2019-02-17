@@ -218,6 +218,7 @@ static void cb_keydisplay(GtkToggleAction *action, gpointer user_data);
 static void cb_mousemode(GtkToggleAction *action, gpointer user_data);
 static void cb_mouserapid(GtkToggleAction *action, gpointer user_data);
 static void cb_nowait(GtkToggleAction *action, gpointer user_data);
+static void cb_asynccpu(GtkToggleAction *action, gpointer user_data);
 static void cb_realpalettes(GtkToggleAction *action, gpointer user_data);
 static void cb_s98logging(GtkToggleAction *action, gpointer user_data);
 static void cb_seeksound(GtkToggleAction *action, gpointer user_data);
@@ -245,6 +246,9 @@ static GtkToggleActionEntry togglemenu_entries[] = {
 { "mousemode",    NULL, "_Mouse mode",        NULL, NULL, G_CALLBACK(cb_mousemode), FALSE },
 { "mouserapid",   NULL, "_Mouse rapid",       NULL, NULL, G_CALLBACK(cb_mouserapid), FALSE },
 { "nowait",       NULL, "_No wait",           NULL, NULL, G_CALLBACK(cb_nowait), FALSE },
+#if defined(SUPPORT_ASYNC_CPU)
+{ "asynccpu",     NULL, "_Async CPU(experimental)", NULL, NULL, G_CALLBACK(cb_asynccpu), FALSE },
+#endif
 { "realpalettes", NULL, "Real _palettes",     NULL, NULL, G_CALLBACK(cb_realpalettes), FALSE },
 { "s98logging",   NULL, "_S98 logging",       NULL, NULL, G_CALLBACK(cb_s98logging), FALSE },
 { "seeksound",    NULL, "_Seek sound",        NULL, NULL, G_CALLBACK(cb_seeksound), FALSE },
@@ -1830,6 +1834,21 @@ cb_nowait(GtkToggleAction *action, gpointer user_data)
 		sysmng_update(SYS_UPDATEOSCFG);
 	}
 }
+
+#if defined(SUPPORT_ASYNC_CPU)
+static void
+cb_asynccpu(GtkToggleAction *action, gpointer user_data)
+{
+	gboolean b = gtk_toggle_action_get_active(action);
+	gboolean f;
+
+	f = (np2cfg.asynccpu ? 1 : 0) ^ (b ? 1 : 0);
+	if (f) {
+		np2cfg.asynccpu = !np2cfg.asynccpu;
+		sysmng_update(SYS_UPDATECFG);
+	}
+}
+#endif
 
 static void
 cb_realpalettes(GtkToggleAction *action, gpointer user_data)

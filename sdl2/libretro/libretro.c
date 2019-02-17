@@ -826,6 +826,9 @@ void retro_set_environment(retro_environment_t cb)
       { "np2kai_model" , "PC Model (Restart); PC-9801VX|PC-286|PC-9801VM" },
       { "np2kai_clk_base" , "CPU Base Clock (Restart); 2.4576 MHz|1.9968 MHz" },
       { "np2kai_clk_mult" , "CPU Clock Multiplier (Restart); 4|5|6|8|10|12|16|20|24|30|36|40|42|1|2" },
+#if defined(SUPPORT_ASYNC_CPU)
+      { "np2kai_async_cpu" , "Async CPU(experimental) (Restart); OFF|ON" },
+#endif
       { "np2kai_ExMemory" , "RAM Size (Restart); 3|7|11|13|16|32|64|120|230|1" },
       { "np2kai_Skip16MC" , "Skip over 16MB memcheck; OFF|ON" },
       { "np2kai_FastMC" , "Fast memcheck; OFF|ON" },
@@ -933,6 +936,19 @@ static void update_variables(void)
    {
       np2cfg.multiple = atoi(var.value);
    }
+
+#if defined(SUPPORT_ASYNC_CPU)
+   var.key = "np2kai_async_cpu";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "OFF") == 0)
+         np2cfg.asynccpu = 0;
+      else
+         np2cfg.asynccpu = 1;
+   }
+#endif
 
    var.key = "np2kai_ExMemory";
    var.value = NULL;

@@ -14,6 +14,7 @@ class TickCounter
 public:
 	TickCounter();
 	DWORD Get();
+	DWORD Get_usec();
 	void SetMode(int mode);
 
 private:

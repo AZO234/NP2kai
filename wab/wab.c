@@ -547,7 +547,7 @@ static void IOOUTCALL np2wab_ofac(UINT port, REG8 dat) {
 	(void)dat;
 }
 static REG8 IOINPCALL np2wab_ifac(UINT port) {
-	TRACEOUT(("WAB: inp FACh get relay %04X", port));
+	//TRACEOUT(("WAB: inp FACh get relay %04X", port));
 	return 0xfc | np2wab.relaystateext;
 }
 

@@ -34,6 +34,12 @@
 #include "trap/steptrap.h"
 #endif
 
+#if defined(SUPPORT_ASYNC_CPU)
+#include "timing.h"
+#include "nevent.h"
+#include "pccore.h"
+#endif
+
 
 sigjmp_buf exec_1step_jmpbuf;
 
@@ -266,8 +272,37 @@ exec_allstep(void)
 	int prefix;
 	UINT32 op;
 	void (*func)(void);
+#if defined(SUPPORT_ASYNC_CPU)
+	int clkstep = 4; // XXX: timing_getcount_baseclockを頻繁に呼ぶと負荷が大きい気がするので間引き
+	int clkcnt = 0;
+#endif
 	
 	do {
+#if defined(SUPPORT_ASYNC_CPU)
+		// 非同期CPU処理
+		if(np2cfg.asynccpu){
+			// 時間が無ければCPU処理をスキップ
+			if(clkcnt == 0){
+				if(CPU_REMCLOCK > 0){
+					if(timing_getcount_baseclock()!=0){
+						CPU_REMCLOCK = 0;
+						break;
+					}
+				}
+			}
+			clkcnt++;
+			if(clkcnt >= clkstep) clkstep -= clkstep;
+			// 時間に余裕があればCPUを動かし続ける
+			if(CPU_REMCLOCK <= 10000 && (g_nevent.item[NEVENT_FLAMES].flag & NEVENT_ENABLE) && g_nevent.item[NEVENT_FLAMES].proc==screendisp && g_nevent.item[NEVENT_FLAMES].clock <= CPU_BASECLOCK){
+				if(timing_getcount_baseclock()==0){
+					CPU_REMCLOCK = 10000;
+					clkstep = 1;
+					clkcnt = 0;
+				}
+			}
+		}
+#endif
+
 		CPU_PREV_EIP = CPU_EIP;
 		CPU_STATSAVE.cpu_inst = CPU_STATSAVE.cpu_inst_default;
 
@@ -495,5 +530,6 @@ exec_allstep(void)
 				}
 			}
 		}
+
 	} while (CPU_REMCLOCK > 0);
 }

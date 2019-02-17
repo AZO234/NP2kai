@@ -56,6 +56,9 @@ static const char str_rightrol[] = "Right Rotated";
 static const char str_dispsync[] = "Disp Vsync";
 static const char str_realpal[] = "Real Palettes";
 static const char str_nowait[] = "No Wait";
+#if defined(SUPPORT_ASYNC_CPU)
+static const char str_asynccpu[] = "Async CPU";
+#endif
 static const char str_autoframe[] = "Auto frame";
 static const char str_60fps[] = "Full frame";
 static const char str_30fps[] = "1/2 frame";
@@ -318,6 +321,9 @@ static const MSYSITEM s_screen[] = {
 		{str_dispsync,		NULL,		MID_DISPSYNC,		0},
 		{str_realpal,		NULL,		MID_RASTER,			0},
 		{str_nowait,		NULL,		MID_NOWAIT,			0},
+#if defined(SUPPORT_ASYNC_CPU)
+		{str_asynccpu,		NULL,		MID_ASYNCCPU,			0},
+#endif
 		{str_autoframe,		NULL,		MID_AUTOFPS,		0},
 		{str_60fps,			NULL,		MID_60FPS,			0},
 		{str_30fps,			NULL,		MID_30FPS,			0},

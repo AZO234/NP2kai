@@ -952,6 +952,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&No wait",                    IDM_NOWAIT
         MENUITEM "&CPU clock stabilizer",       IDM_CPUSTABILIZER
+        MENUITEM "&Async CPU (experimental)",   IDM_ASYNCCPU
         MENUITEM SEPARATOR
         MENUITEM "&Auto frame",                 IDM_AUTOFPS
         MENUITEM "F&ull frame",                 IDM_60FPS

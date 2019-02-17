@@ -3822,7 +3822,7 @@ static uint32_t_ vga_ioport_read(void *opaque, uint32_t_ addr)
 	//　ポート決め打ちなので無理矢理変換
 	addr = vga_convert_ioport(addr);
 	
-	TRACEOUT(("CIRRUS VGA: read %04X", addr));
+	//TRACEOUT(("CIRRUS VGA: read %04X", addr));
 
     /* check port range access depending on color/monochrome mode */
     if ((addr >= 0x3b0 && addr <= 0x3bf && (s->msr & MSR_COLOR_EMULATION))
@@ -3961,7 +3961,7 @@ static void vga_ioport_write(void *opaque, uint32_t_ addr, uint32_t_ val)
 	//　ポート決め打ちなので無理矢理変換
 	addr = vga_convert_ioport(addr);
 	
-	TRACEOUT(("CIRRUS VGA: write %04X %02X", addr, val));
+	//TRACEOUT(("CIRRUS VGA: write %04X %02X", addr, val));
 
     /* check port range access depending on color/monochrome mode */
     if ((addr >= 0x3b0 && addr <= 0x3bf && (s->msr & MSR_COLOR_EMULATION))
@@ -5448,7 +5448,7 @@ void cirrusvga_drawGraphic(){
     if ((cirrusvga->sr[0x12] & CIRRUS_CURSOR_SHOW)){
 		int hwcur_x = cirrusvga->hw_cursor_x + cursot_ofs_x;
 		int hwcur_y = cirrusvga->hw_cursor_y + cursot_ofs_y;
-		// GA-98NB用 CRTC offset 
+		// GA-98NB用 カーソル位置調整
 		if((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC){
 			if(width==320 && height==240){
 				hwcur_y /= 2;

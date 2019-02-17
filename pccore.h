@@ -102,6 +102,10 @@ struct tagNP2Config
 
 	UINT8	timerfix;
 	
+#if defined(SUPPORT_ASYNC_CPU)
+	UINT8	asynccpu; // 非同期CPUモード有効
+#endif
+	
 	// リセット時とかあんまり参照されない奴
 	OEMCHAR	model[8];
 	UINT	baseclock;

@@ -665,6 +665,10 @@ static const PFTBL s_IniItems[] =
 	
 	PFVAL("USECDECC", PFTYPE_BOOL,		&np2cfg.usecdecc), // CD-ROM EDC/ECC エミュレーションサポート
 	
+#if defined(SUPPORT_ASYNC_CPU)
+	PFVAL("ASYNCCPU", PFTYPE_BOOL,		&np2cfg.asynccpu), // 非同期CPUモード有効
+#endif
+	
 
 	// OS依存？
 	PFVAL("keyboard", PFRO_KB,			&np2oscfg.KEYBOARD),

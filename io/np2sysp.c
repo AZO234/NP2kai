@@ -70,6 +70,7 @@ static const OEMCHAR str_mhz[] = OEMTEXT("%uMHz");
 #define NP21W_SWITCH_SOUNDBOARD	2
 #define NP21W_SWITCH_SYNCCLOCK	3
 #define NP21W_SWITCH_PCIENABLE	4
+#define NP21W_SWITCH_ASYNCCPU		5
 
 
 static void setoutstr(const OEMCHAR *str) {
@@ -200,6 +201,11 @@ static void np2sysp_getconfig(const void *arg1, long arg2) {
 		configvalue = pcidev.enable ? 1 : 0;
 #endif
 		return;
+	case NP21W_SWITCH_ASYNCCPU:
+#if defined(SUPPORT_ASYNC_CPU)
+		configvalue = np2cfg.asynccpu ? 1 : 0;
+#endif	/* defined(SUPPORT_ASYNC_CPU) */
+		break;
 	case NP21W_SWITCH_DUMMY:
 	default:
 		break;
@@ -304,6 +310,12 @@ static void np2sysp_cngconfig(const void *arg1, long arg2) {
 		configvalue = pcidev.enable;
 #endif
 		return;
+	case NP21W_SWITCH_ASYNCCPU:
+#if defined(SUPPORT_ASYNC_CPU)
+		np2cfg.asynccpu = configvalue ? 1 : 0;
+		configvalue = np2cfg.asynccpu ? 1 : 0;
+#endif	/* defined(SUPPORT_ASYNC_CPU) */
+		break;
 	case NP21W_SWITCH_DUMMY:
 	default:
 		break;

@@ -241,7 +241,27 @@ void CTraceWnd::AddString(LPCTSTR lpString)
 
 		m_wndView.SendMessage(EM_REPLACESEL, FALSE, reinterpret_cast<LPARAM>(lpString));
 		m_wndView.SendMessage(EM_REPLACESEL, FALSE, reinterpret_cast<LPARAM>(crlf));
+
+		// ‘‚¦‚·‚¬‚½‚çÁ‚·
+		if(nLength>20000){
+			TCHAR temp[1] = {0};
+			int llength = m_wndView.SendMessage(EM_LINELENGTH, static_cast<WPARAM>(1), NULL);
+			m_wndView.SendMessage(EM_SETSEL, static_cast<WPARAM>(0), static_cast<LPARAM>(nLength));
+			m_wndView.SendMessage(EM_REPLACESEL, FALSE, reinterpret_cast<LPARAM>(temp));
+		}
+
 		m_wndView.SendMessage(EM_SETSEL, static_cast<WPARAM>(nStart), static_cast<LPARAM>(nEnd));
+
+		//UINT nStart = 0;
+		//UINT nEnd = 0;
+		//m_wndView.SendMessage(EM_GETSEL, reinterpret_cast<WPARAM>(&nStart), reinterpret_cast<LPARAM>(&nEnd));
+
+		//const UINT nLength = m_wndView.GetWindowTextLength();
+		//m_wndView.SendMessage(EM_SETSEL, static_cast<WPARAM>(nLength), static_cast<LPARAM>(nLength));
+
+		//m_wndView.SendMessage(EM_REPLACESEL, FALSE, reinterpret_cast<LPARAM>(lpString));
+		//m_wndView.SendMessage(EM_REPLACESEL, FALSE, reinterpret_cast<LPARAM>(crlf));
+		//m_wndView.SendMessage(EM_SETSEL, static_cast<WPARAM>(nStart), static_cast<LPARAM>(nEnd));
 	}
 	if (m_tfh != NULL)
 	{

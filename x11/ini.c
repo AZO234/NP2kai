@@ -689,6 +689,9 @@ static INITBL iniitem[] = {
 	{"memckspd", INITYPE_UINT8,	&np2cfg.memcheckspeed,	0},
 #endif
 	{"USERAM_D", INITYPE_BOOL,	&np2cfg.useram_d,	0},
+#if defined(SUPPORT_ASYNC_CPU)
+	{"ASYNCCPU", INITYPE_BOOL,	&np2cfg.asynccpu,	0},
+#endif
 
 	{"keyboard", INITYPE_KB,	&np2oscfg.KEYBOARD,	0},
 	{"F12_COPY", INITYPE_UINT8,	&np2oscfg.F12KEY,	0},

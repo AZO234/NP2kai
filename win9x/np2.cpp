@@ -1038,6 +1038,13 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			}
 			update |= SYS_UPDATECFG;
 			break;
+			
+#if defined(SUPPORT_ASYNC_CPU)
+		case IDM_ASYNCCPU:
+			np2cfg.asynccpu = !np2cfg.asynccpu;
+			update |= SYS_UPDATECFG;
+			break;
+#endif
 
 		case IDM_AUTOFPS:
 			np2oscfg.DRAW_SKIP = 0;
