@@ -482,6 +482,9 @@ static const gchar *ui_info =
 "   <menuitem action='dispvsync'/>\n"
 "   <menuitem action='realpalettes'/>\n"
 "   <menuitem action='nowait'/>\n"
+#if defined(SUPPORT_ASYNC_CPU)
+"   <menuitem action='asynccpu'/>\n"
+#endif
 "   <menuitem action='autoframe'/>\n"
 "   <menuitem action='fullframe'/>\n"
 "   <menuitem action='1/2 frame'/>\n"
