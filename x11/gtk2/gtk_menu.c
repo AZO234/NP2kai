@@ -2503,6 +2503,9 @@ create_menu(void)
 	xmenu_toggle_item(NULL, "keydisplay", np2oscfg.keydisp);
 	xmenu_toggle_item(NULL, "mousemode", np2oscfg.MOUSE_SW);
 	xmenu_toggle_item(NULL, "nowait", np2oscfg.NOWAIT);
+#if defined(SUPPORT_ASYNC_CPU)
+	xmenu_toggle_item(NULL, "asynccpu", np2cfg.asynccpu);
+#endif
 	xmenu_toggle_item(NULL, "softkeyboard", np2oscfg.softkbd);
 	xmenu_toggle_item(NULL, "toolwindow", np2oscfg.toolwin);
 
