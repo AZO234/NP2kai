@@ -19,6 +19,9 @@ extern "C"
 
 DWORD GetTickCounter();
 void SetTickCounterMode(int mode);
+int GetTickCounterMode();
+LARGE_INTEGER GetTickCounter_Clock();
+LARGE_INTEGER GetTickCounter_ClockPerSec();
 
 #ifdef __cplusplus
 }

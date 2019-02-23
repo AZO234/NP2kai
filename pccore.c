@@ -189,6 +189,14 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 	UINT8	enable_fmgen = 0;
 #endif	/* SUPPORT_FMGEN */
 
+#if !defined(__LIBRETRO__) && !defined(NP2_SDL2) && !defined(NP2_X11)
+#ifdef SUPPORT_ASYNC_CPU
+LARGE_INTEGER asynccpu_lastclock = {0};
+LARGE_INTEGER asynccpu_clockpersec = {0};
+LARGE_INTEGER asynccpu_clockcount = {0};
+#endif
+#endif
+
 // ---------------------------------------------------------------------------
 
 void getbiospath(OEMCHAR *path, const OEMCHAR *fname, int maxlen) {
@@ -706,6 +714,18 @@ void pccore_reset(void) {
 
 	timing_reset();
 	soundmng_play();
+
+#if !defined(__LIBRETRO__) && !defined(NP2_SDL2) && !defined(NP2_X11)
+#ifdef SUPPORT_ASYNC_CPU
+	if(GetTickCounterMode()==TCMODE_PERFORMANCECOUNTER){
+		asynccpu_clockpersec = GetTickCounter_ClockPerSec();
+		asynccpu_lastclock = GetTickCounter_Clock();
+		asynccpu_clockcount = GetTickCounter_Clock();
+	}else{
+		asynccpu_clockpersec.QuadPart = 0;
+	}
+#endif
+#endif
 }
 
 static void drawscreen(void) {

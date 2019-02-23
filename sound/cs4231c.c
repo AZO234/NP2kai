@@ -353,13 +353,14 @@ UINT dmac_getdata_(DMACH dmach, UINT8 *buf, UINT offset, UINT size) {
 	UINT32	addr;
 	UINT	i;
 	SINT32	sampleirq = 0; // 割り込みまでに必要なデータ転送数(byte)
-	static UINT	playcount_adjustcounter = 0;
+#define PLAYCOUNT_ADJUST_VALUE	32768
+	static UINT32	playcount_adjustcounter = 0;
 	
 	lengsum = 0;
 	while(size > 0) {
 		leng = np2min(dmach->leng.w, size);
 		if (leng) {
-			int playcount = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)) * cs4231_playcountshift[cs4231.reg.datafmt >> 4]; // PI割り込みを発生させるサンプル数(Playback Base register) * サンプルあたりのバイト数
+			int playcount = ((cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8))) * cs4231_playcountshift[cs4231.reg.datafmt >> 4]; // PI割り込みを発生させるサンプル数(Playback Base register) * サンプルあたりのバイト数
 			if(cs4231.totalsample + (SINT32)leng > playcount){
 				// DMA再生サンプル数カウンタ(Playback DMA count register)がPI割り込みを発生させるサンプル数(Playback Base register)を超えないように調整
 				leng = playcount - cs4231.totalsample;
@@ -376,6 +377,19 @@ UINT dmac_getdata_(DMACH dmach, UINT8 *buf, UINT offset, UINT size) {
 					}
 					offset = (offset+1) & CS4231_BUFMASK; // DMAデータ読み取りバッファの書き込み位置を進める（＆最後に到達したら最初に戻す）
 				}
+
+				// XXX: 再生位置調整（Win9x,Win2000再生ノイズ対策用・とりあえず+方向だけ）
+				playcount_adjustcounter += leng;
+				if(playcount_adjustcounter >= PLAYCOUNT_ADJUST_VALUE){
+					playcount_adjustcounter -= PLAYCOUNT_ADJUST_VALUE;
+					if(!w31play){
+						addr += 4;
+						if(addr > dmach->lastaddr){
+							addr = dmach->startaddr + (addr - dmach->lastaddr - 1); // DMA読み取りアドレスがアドレス範囲の最後に到達したら最初に戻す
+						}
+					}
+				}
+
 				dmach->adrs.d = addr; // DMA読み取りアドレス現在位置を更新
 			}
 			else {									// dir -
@@ -388,6 +402,7 @@ UINT dmac_getdata_(DMACH dmach, UINT8 *buf, UINT offset, UINT size) {
 					}
 					offset = (offset+1) & CS4231_BUFMASK; // DMAデータ読み取りバッファの書き込み位置を進める（＆最後に到達したら最初に戻す）
 				}
+				playcount_adjustcounter = (playcount_adjustcounter+leng) % PLAYCOUNT_ADJUST_VALUE;
 				dmach->adrs.d = addr;
 			}
 

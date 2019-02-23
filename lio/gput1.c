@@ -1,4 +1,5 @@
 #include	"compiler.h"
+#include	"cpumem.h"
 #include	"cpucore.h"
 #include	"pccore.h"
 #include	"iocore.h"

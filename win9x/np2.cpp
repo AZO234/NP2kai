@@ -2761,6 +2761,21 @@ LRESULT CALLBACK LowLevelKeyboardProc(INT nCode, WPARAM wParam, LPARAM lParam)
 						}
 						return 1;
 					}
+#ifdef HOOK_SYSKEY
+					else if ((pkbhs->vkCode == VK_SNAPSHOT) && (np2oscfg.syskhook)) {
+						// PrintScreen -> COPY
+						switch((int)wParam){
+						case WM_KEYDOWN:
+						case WM_SYSKEYDOWN:
+							keystat_keydown(0x61);
+							break;
+						case WM_KEYUP:
+						case WM_SYSKEYUP:
+							keystat_keyup(0x61);
+							break;
+						}
+					}
+#endif
 				}
 				break;
 			}

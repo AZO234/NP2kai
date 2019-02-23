@@ -348,6 +348,14 @@ void pccore_exec(BOOL draw);
 
 void pccore_postevent(UINT32 event);
 
+#if !defined(__LIBRETRO__) && !defined(NP2_SDL2) && !defined(NP2_X11)
+#ifdef SUPPORT_ASYNC_CPU
+extern LARGE_INTEGER asynccpu_lastclock;
+extern LARGE_INTEGER asynccpu_clockpersec;
+extern LARGE_INTEGER asynccpu_clockcount;
+#endif
+#endif
+
 #ifdef __cplusplus
 }
 #endif

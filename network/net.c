@@ -275,8 +275,11 @@ static unsigned int __stdcall np2net_ThreadFuncR(LPVOID vdParam) {
 			}
 		}
 		np2net_updateHighSpeedMode();
-		if(!np2net_highspeedmode) 
+		if(!np2net_highspeedmode) {
 			Sleep(50);
+		}else{
+			Sleep(1);
+		}
 	}
 	CloseHandle(hEvent);
 	hEvent = NULL;

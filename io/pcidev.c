@@ -527,10 +527,10 @@ void pcidev_bind(void) {
 	iocore_attachout(0x63c, pci_o063c);
 	iocore_attachinp(0x63c, pci_i063c);
 	
-	iocore_attachout(0x18f0, pci_o18f0);
-	iocore_attachout(0x18f2, pci_o18f2);
-	iocore_attachinp(0x18f0, pci_i18f0);
-	iocore_attachinp(0x18f2, pci_i18f2);
+	//iocore_attachout(0x18f0, pci_o18f0);
+	//iocore_attachout(0x18f2, pci_o18f2);
+	//iocore_attachinp(0x18f0, pci_i18f0);
+	//iocore_attachinp(0x18f2, pci_i18f2);
 	memset(pcidev.unkreg, 0, sizeof(pcidev.unkreg));
     pcidev.unkreg_bank1 = pcidev.unkreg_bank2 = 0;
 	
