@@ -1,4 +1,4 @@
-/* Copyright  (C) 2010-2017 The RetroArch team
+/* Copyright  (C) 2010-2018 The RetroArch team
  *
  * ---------------------------------------------------------------------------------------
  * The following license statement only applies to this file (archive_file.h).
@@ -35,6 +35,12 @@
 
 #include <retro_miscellaneous.h>
 
+#include <retro_common_api.h>
+
+RETRO_BEGIN_DECLS
+
+struct archive_extract_userdata;
+
 enum file_archive_transfer_type
 {
    ARCHIVE_TRANSFER_NONE = 0,
@@ -56,13 +62,14 @@ typedef struct file_archive_file_data file_archive_file_data_t;
 
 typedef struct file_archive_transfer
 {
+   enum file_archive_transfer_type type;
+   int32_t archive_size;
+   ptrdiff_t start_delta;
    file_archive_file_data_t *handle;
    void *stream;
    const uint8_t *footer;
    const uint8_t *directory;
    const uint8_t *data;
-   int32_t archive_size;
-   enum file_archive_transfer_type type;
    const struct file_archive_file_backend *backend;
 } file_archive_transfer_t;
 
@@ -92,6 +99,7 @@ typedef struct
    char *callback_error;
 
    file_archive_transfer_t archive;
+   struct archive_extract_userdata *userdata;
 } decompress_state_t;
 
 struct archive_extract_userdata
@@ -183,7 +191,7 @@ bool file_archive_perform_mode(const char *name, const char *valid_exts,
 
 int file_archive_compressed_read(
       const char* path, void **buf,
-      const char* optional_filename, ssize_t *length);
+      const char* optional_filename, int64_t *length);
 
 const struct file_archive_file_backend* file_archive_get_zlib_file_backend(void);
 const struct file_archive_file_backend* file_archive_get_7z_file_backend(void);
@@ -203,5 +211,6 @@ uint32_t file_archive_get_file_crc32(const char *path);
 extern const struct file_archive_file_backend zlib_backend;
 extern const struct file_archive_file_backend sevenzip_backend;
 
-#endif
+RETRO_END_DECLS
 
+#endif

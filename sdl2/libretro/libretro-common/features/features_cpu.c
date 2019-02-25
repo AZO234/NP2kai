@@ -1,4 +1,4 @@
-/* Copyright  (C) 2010-2017 The RetroArch team
+/* Copyright  (C) 2010-2018 The RetroArch team
  *
  * ---------------------------------------------------------------------------------------
  * The following license statement only applies to this file (features_cpu.c).
@@ -65,6 +65,11 @@
 #include <psp2/rtc.h>
 #endif
 
+#if defined(PS2)
+#include <kernel.h>
+#include <timer.h>
+#endif
+
 #if defined(__PSL1GHT__)
 #include <sys/time.h>
 #elif defined(__CELLOS_LV2__)
@@ -79,9 +84,17 @@
 #include <wiiu/os/time.h>
 #endif
 
+#if defined(HAVE_LIBNX)
+#include <switch.h>
+#elif defined(SWITCH)
+#include <libtransistor/types.h>
+#include <libtransistor/svc.h>
+#endif
+
 #if defined(_3DS)
 #include <3ds/svc.h>
 #include <3ds/os.h>
+#include <3ds/services/cfgu.h>
 #endif
 
 /* iOS/OSX specific. Lacks clock_gettime(), so implement it. */
@@ -113,7 +126,6 @@ static int ra_clock_gettime(int clk_ik, struct timespec *t)
 #else
 #define ra_clock_gettime clock_gettime
 #endif
-
 
 #ifdef EMSCRIPTEN
 #include <emscripten.h>
@@ -160,9 +172,9 @@ retro_perf_tick_t cpu_features_get_perf_counter(void)
       time_ticks = (retro_perf_tick_t)tv.tv_sec * 1000000000 +
          (retro_perf_tick_t)tv.tv_nsec;
 
-#elif defined(__GNUC__) && defined(__i386__) || defined(__i486__) || defined(__i686__)
+#elif defined(__GNUC__) && defined(__i386__) || defined(__i486__) || defined(__i686__) || defined(_M_X64) || defined(_M_AMD64)
    __asm__ volatile ("rdtsc" : "=A" (time_ticks));
-#elif defined(__GNUC__) && defined(__x86_64__)
+#elif defined(__GNUC__) && defined(__x86_64__) || defined(_M_IX86)
    unsigned a, d;
    __asm__ volatile ("rdtsc" : "=a" (a), "=d" (d));
    time_ticks = (retro_perf_tick_t)a | ((retro_perf_tick_t)d << 32);
@@ -172,10 +184,12 @@ retro_perf_tick_t cpu_features_get_perf_counter(void)
    time_ticks = __mftb();
 #elif defined(GEKKO)
    time_ticks = gettime();
-#elif defined(PSP) 
+#elif defined(PSP)
    sceRtcGetCurrentTick((uint64_t*)&time_ticks);
 #elif defined(VITA)
    sceRtcGetCurrentTick((SceRtcTick*)&time_ticks);
+#elif defined(PS2)
+   time_ticks = clock()*294912; // 294,912MHZ / 1000 msecs
 #elif defined(_3DS)
    time_ticks = svcGetSystemTick();
 #elif defined(WIIU)
@@ -184,6 +198,8 @@ retro_perf_tick_t cpu_features_get_perf_counter(void)
    struct timeval tv;
    gettimeofday(&tv,NULL);
    time_ticks = (1000000 * tv.tv_sec + tv.tv_usec);
+#elif defined(HAVE_LIBNX)
+   time_ticks = armGetSystemTick();
 #endif
 
    return time_ticks;
@@ -213,6 +229,10 @@ retro_time_t cpu_features_get_time_usec(void)
    return sys_time_get_system_time();
 #elif defined(GEKKO)
    return ticks_to_microsecs(gettime());
+#elif defined(WIIU)
+   return ticks_to_us(OSGetSystemTime());
+#elif defined(SWITCH) || defined(HAVE_LIBNX)
+   return (svcGetSystemTick() * 10) / 192;
 #elif defined(_POSIX_MONOTONIC_CLOCK) || defined(__QNX__) || defined(ANDROID) || defined(__MACH__)
    struct timespec tv = {0};
    if (ra_clock_gettime(CLOCK_MONOTONIC, &tv) < 0)
@@ -220,6 +240,8 @@ retro_time_t cpu_features_get_time_usec(void)
    return tv.tv_sec * INT64_C(1000000) + (tv.tv_nsec + 500) / 1000;
 #elif defined(EMSCRIPTEN)
    return emscripten_get_now() * 1000;
+#elif defined(PS2)
+      return clock()*1000;
 #elif defined(__mips__) || defined(DJGPP)
    struct timeval tv;
    gettimeofday(&tv,NULL);
@@ -228,14 +250,12 @@ retro_time_t cpu_features_get_time_usec(void)
    return osGetTime() * 1000;
 #elif defined(VITA)
    return sceKernelGetProcessTimeWide();
-#elif defined(WIIU)
-   return ticks_to_us(OSGetSystemTime());
 #else
 #error "Your platform does not have a timer function implemented in cpu_features_get_time_usec(). Cannot continue."
 #endif
 }
 
-#if defined(__x86_64__) || defined(__i386__) || defined(__i486__) || defined(__i686__)
+#if defined(__x86_64__) || defined(__i386__) || defined(__i486__) || defined(__i686__) || (defined(_M_X64) && _MSC_VER > 1310) || (defined(_M_IX86)  && _MSC_VER > 1310)
 #define CPU_X86
 #endif
 
@@ -320,7 +340,9 @@ static unsigned char check_arm_cpu_feature(const char* feature)
 {
    char line[1024];
    unsigned char status = 0;
-   RFILE *fp = filestream_open("/proc/cpuinfo", RFILE_MODE_READ_TEXT, -1);
+   RFILE *fp = filestream_open("/proc/cpuinfo",
+         RETRO_VFS_FILE_ACCESS_READ,
+         RETRO_VFS_FILE_ACCESS_HINT_NONE);
 
    if (!fp)
       return 0;
@@ -463,15 +485,41 @@ unsigned cpu_features_get_core_amount(void)
 #if defined(_WIN32) && !defined(_XBOX)
    /* Win32 */
    SYSTEM_INFO sysinfo;
+#if defined(__WINRT__) || defined(WINAPI_FAMILY) && WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
+   GetNativeSystemInfo(&sysinfo);
+#else
    GetSystemInfo(&sysinfo);
+#endif
    return sysinfo.dwNumberOfProcessors;
 #elif defined(GEKKO)
    return 1;
-#elif defined(PSP)
+#elif defined(PSP) || defined(PS2)
    return 1;
 #elif defined(VITA)
    return 4;
+#elif defined(HAVE_LIBNX) || defined(SWITCH)
+   return 4;
 #elif defined(_3DS)
+   u8 device_model = 0xFF;
+   CFGU_GetSystemModel(&device_model);/*(0 = O3DS, 1 = O3DSXL, 2 = N3DS, 3 = 2DS, 4 = N3DSXL, 5 = N2DSXL)*/
+   switch (device_model)
+   {
+		case 0:
+		case 1:
+		case 3:
+			/*Old 3/2DS*/
+			return 2;
+
+		case 2:
+		case 4:
+		case 5:
+			/*New 3/2DS*/
+			return 4;
+
+		default:
+			/*Unknown Device Or Check Failed*/
+			break;
+   }
    return 1;
 #elif defined(WIIU)
    return 3;
@@ -619,6 +667,10 @@ uint64_t cpu_features_get(void)
    if (sysctlbyname("hw.optional.neon", NULL, &len, NULL, 0) == 0)
       cpu |= RETRO_SIMD_NEON;
 
+#elif defined(_XBOX1)
+   cpu |= RETRO_SIMD_MMX;
+   cpu |= RETRO_SIMD_SSE;
+   cpu |= RETRO_SIMD_MMXEXT;
 #elif defined(CPU_X86)
    (void)avx_flags;
 
@@ -656,7 +708,6 @@ uint64_t cpu_features_get(void)
       cpu |= RETRO_SIMD_MMXEXT;
    }
 
-
    if (flags[3] & (1 << 26))
       cpu |= RETRO_SIMD_SSE2;
 
@@ -680,7 +731,6 @@ uint64_t cpu_features_get(void)
 
    if (flags[2] & (1 << 25))
       cpu |= RETRO_SIMD_AES;
-
 
    /* Must only perform xgetbv check if we have
     * AVX CPU support (guaranteed to have at least i686). */
@@ -749,7 +799,7 @@ uint64_t cpu_features_get(void)
    cpu |= RETRO_SIMD_VMX;
 #elif defined(XBOX360)
    cpu |= RETRO_SIMD_VMX128;
-#elif defined(PSP)
+#elif defined(PSP) || defined(PS2)
    cpu |= RETRO_SIMD_VFPU;
 #elif defined(GEKKO)
    cpu |= RETRO_SIMD_PS;

@@ -1,4 +1,4 @@
-/* Copyright  (C) 2010-2017 The RetroArch team
+/* Copyright  (C) 2010-2018 The RetroArch team
  *
  * ---------------------------------------------------------------------------------------
  * The following license statement only applies to this file (compat_strcasestr.c).
@@ -23,7 +23,6 @@
 #include <ctype.h>
 
 #include <compat/strcasestr.h>
-#include <retro_assert.h>
 
 /* Pretty much strncasecmp. */
 static int casencmp(const char *a, const char *b, size_t n)
