@@ -18,14 +18,60 @@ INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro \
 		-I$(NP2_PATH)/i386c/ia32/instructions/sse
 
 SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr.c \
-		$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strl.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_fnmatch.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_getopt.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_posix_string.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_snprintf.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strl.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_vscprintf.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/compat/fopen_utf8.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/encodings/encoding_crc32.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/encodings/encoding_utf.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/features/features_cpu.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/file/archive_file.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/file/config_file.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/file/config_file_userdata.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/file/file_path.c \
-		$(NP2_PATH)/sdl2/libretro/libretro-common/file/retro_stat.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/file/retro_dirent.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/file/nbio/nbio_intf.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/file/nbio/nbio_linux.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/file/nbio/nbio_orbis.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/file/nbio/nbio_stdio.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/file/nbio/nbio_unixmmap.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/file/nbio/nbio_windowsmmap.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/bmp/rbmp.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/bmp/rbmp_encode.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/jpeg/rjpeg.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/json/jsonsax.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/json/jsonsax_full.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_bitstream.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_cdrom.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_chd.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_huffman.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_zlib.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/png/rpng.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/png/rpng_encode.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/tga/rtga.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/wav/rwav.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/xml/rxml.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/image_texture.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/image_transfer.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/lists/dir_list.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/lists/file_list.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/lists/string_list.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/lists/vector_list.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rsemaphore.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rthreads.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/chd_stream.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/file_stream.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/file_stream_transforms.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/interface_stream.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/memory_stream.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/stdin_stream.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/trans_stream.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/trans_stream_pipe.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/string/stdstring.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/vfs/vfs_implementation.c \
 		$(NP2_PATH)/sdl2/libretro/libretro.c \
 		$(wildcard $(NP2_PATH)/i386c/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/*.c) \
