@@ -279,8 +279,8 @@ LD   = "$(MSVCBINDIRPREFIX)/lib.exe"
 export INCLUDE := $(XEDK)/include/xbox
 export LIB := $(XEDK)/lib/xbox
 PSS_STYLE :=2
-CFLAGS   += -D_XBOX -D_XBOX360
-CXXFLAGS += -D_XBOX -D_XBOX360
+CFLAGS   += -D_XBOX -D_XBOX360 -D_USE_MATH_DEFINES
+CXXFLAGS += -D_XBOX -D_XBOX360 -D_USE_MATH_DEFINES
 STATIC_LINKING=1
 HAS_GCC := 0
 
@@ -507,7 +507,7 @@ export LIB := $(LIB);$(WindowsSdkDir);$(INETSDK)/Lib
 TARGET := $(TARGET_NAME)_libretro.dll
 PSS_STYLE :=2
 LDFLAGS += -DLL
-CFLAGS += -D_CRT_SECURE_NO_DEPRECATE
+CFLAGS += -D_CRT_SECURE_NO_DEPRECATE -D_USE_MATH_DEFINES
 
 # Windows
 else
@@ -606,13 +606,13 @@ INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro \
 		-I$(NP2_PATH)/i386c/ia32 \
 		-I$(NP2_PATH)/i386c/ia32/instructions \
 		-I$(NP2_PATH)/i386c/ia32/instructions/fpu
-ifneq (,$(filter $(platform),ngc vita))
+ifeq ($(platform), vita)
 INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro/vita
 endif
-ifneq (,$(filter $(platform),ngc wii))
+ifeq ($(platform), wii)
 INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro/gc
 endif
-ifneq (,$(filter $(platform),ngc wiiu))
+ifeq ($(platform), wiiu)
 INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro/wiiu
 endif
 SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr.c \
@@ -701,6 +701,9 @@ ifeq ($(platform), unix)
 SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_ifaddrs.c
 endif
 
+ifeq ($(platform), windows_msvc2003_x86)
+INCFLAGS += -I$(NP2_PATH)/sdl2/libretro/libretro-common/include/compat/msvc
+endif
 ifeq ($(platform), windows_msvc2005_x86)
 INCFLAGS += -I$(NP2_PATH)/sdl2/libretro/libretro-common/include/compat/msvc
 endif
