@@ -690,7 +690,7 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 #		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/trans_stream_zlib.c
 
 ifeq ($(platform), switch)
-SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/switch_pthread.c
+#SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/switch_pthread.c
 endif
 
 ifeq ($(platform), xenon)

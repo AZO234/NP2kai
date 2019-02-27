@@ -31,7 +31,6 @@
 #include <retro_inline.h>
 
 #define THREADVARS_MAGIC 0x21545624 /* !TV$ */
-typedef OSThread* pthread_t;
 int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine)(void *), void *arg);
 void pthread_exit(void *retval);
 
@@ -67,7 +66,7 @@ static INLINE Thread threadGetCurrent(void)
 
 static INLINE pthread_t pthread_self(void)
 {
-   return (pthread_t)threadGetCurrent();
+   return threadGetCurrent();
 }
 
 static INLINE int pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *attr)
