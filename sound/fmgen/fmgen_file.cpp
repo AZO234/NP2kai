@@ -1,6 +1,15 @@
 //	$Id: file.cpp,v 1.6 1999/12/28 11:14:05 cisc Exp $
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
+
+#ifdef __cplusplus
+}
+#endif
+
 #include "fmgen_types.h"
 #include "fmgen_headers.h"
 #include "fmgen_file.h"
