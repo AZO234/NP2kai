@@ -1162,7 +1162,7 @@ static int init_tables(void)
 
 	for (x=0; x<TL_RES_LEN; x++)
 	{
-		m = (1<<16) / pow(2, (x+1) * (ENV_STEP/4.0) / 8.0);
+		m = (1<<16) / pow((double)2, (double)(x+1) * (ENV_STEP/4.0) / 8.0);
 		m = floor(m);
 
 		/* we never reach (1<<16) here due to the (x+1) */
