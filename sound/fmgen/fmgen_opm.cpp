@@ -131,7 +131,7 @@ void OPM::SetVolume(int db)
 {
 	db = Min(db, 20);
 	if (db > -192)
-		fmvolume = int(16384.0 * pow(10, db / 40.0));
+		fmvolume = int(16384.0 * pow((double)10, (double)db / 40.0));
 	else
 		fmvolume = 0;
 }
