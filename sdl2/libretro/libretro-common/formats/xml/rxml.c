@@ -424,10 +424,13 @@ rxml_document_t *rxml_load_document(const char *path)
    RFILE *file             = filestream_open(path,
          RETRO_VFS_FILE_ACCESS_READ,
          RETRO_VFS_FILE_ACCESS_HINT_NONE);
-   if (!file)
-      return NULL;
-
    rxml_document_t *doc = (rxml_document_t*)calloc(1, sizeof(*doc));
+
+   if (!file) {
+      rxml_free_document(doc);
+      return NULL;
+   }
+
    if (!doc)
       goto error;
 

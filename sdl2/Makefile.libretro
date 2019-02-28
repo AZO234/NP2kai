@@ -728,7 +728,7 @@ SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/xenon_sdl_thread
 endif
 
 ifeq ($(platform), unix)
-SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_ifaddrs.c
+#SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_ifaddrs.c
 endif
 
 ifeq ($(platform), windows_msvc2003_x86)
