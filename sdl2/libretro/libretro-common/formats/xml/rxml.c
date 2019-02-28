@@ -168,6 +168,9 @@ static struct rxml_attrib_node *rxml_parse_attrs(const char *str)
    {
       const char *eq = strstr(elem, "=\"");
       const char *end = strrchr(eq + 2, '\"');
+      struct rxml_attrib_node *new_node =
+         (struct rxml_attrib_node*)calloc(1, sizeof(*new_node));
+
       if (!eq)
          goto end;
 
@@ -179,8 +182,6 @@ static struct rxml_attrib_node *rxml_parse_attrs(const char *str)
       if (!attrib || !value)
          goto end;
 
-      struct rxml_attrib_node *new_node =
-         (struct rxml_attrib_node*)calloc(1, sizeof(*new_node));
       if (!new_node)
          goto end;
 
