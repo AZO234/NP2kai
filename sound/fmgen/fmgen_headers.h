@@ -4,8 +4,11 @@
 #define STRICT
 #define WIN32_LEAN_AND_MEAN
 
-//#include <windows.h>
+#if defined(__LIBRETRO__) && defined(_MSC_VER)
+#include <windows.h>
+#else
 #include <stdio.h>
+#endif
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
