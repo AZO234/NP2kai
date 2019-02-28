@@ -5606,6 +5606,9 @@ void cirrusvga_drawGraphic(){
 				color1_b = c6_to_8(palette[0xf * 3 + 2]);
 				if(y2 > height) y2 = height;
 				for(y=y1;y<y2;y++){
+					UINT8 colortmp_r, colortmp_g, colortmp_b;
+					const uint8_t *plane0, *plane1;
+					int b0, b1;
 					src = base;
 					if (cirrusvga->sr[0x12] & CIRRUS_CURSOR_LARGE) {
 						src += (cirrusvga->sr[0x13] & 0x3c) * 256;
@@ -5623,9 +5626,6 @@ void cirrusvga_drawGraphic(){
 							((uint32_t_ *)(src + 128))[0];
 					}
 					/* if nothing to draw, no need to continue */
-					unsigned char colortmp_r, colortmp_g, colortmp_b;
-					const uint8_t *plane0, *plane1;
-					int b0, b1;
 					x1 = hwcur_x;
 					if (x1 < width){
 						x2 = hwcur_x + cursize;
