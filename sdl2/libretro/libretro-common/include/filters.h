@@ -87,7 +87,7 @@ static INLINE double kaiser_window_function(double index, double beta)
 
 static INLINE double lanzcos_window_function(double index)
 {
-   return sinc(M_PI * index);
+   return sinc(3.14159265358979323846264338327 * index);
 }
 
 #endif

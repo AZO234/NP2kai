@@ -26,6 +26,7 @@
 
 #include <boolean.h>
 
+#include <sys/types.h>
 #include <streams/chd_stream.h>
 #include <retro_endianness.h>
 #include <libchdr/chd.h>

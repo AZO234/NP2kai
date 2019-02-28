@@ -9,6 +9,9 @@
 #include "opngencfg.h"
 #include "pccore.h"
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846264338327
+#endif
 
 #define	OPM_ARRATE		 399128L
 #define	OPM_DRRATE		5514396L

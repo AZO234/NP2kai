@@ -35,7 +35,7 @@ TARGET_NAME := np2kai
 ifeq ($(platform), unix)
 	TARGET := $(TARGET_NAME)_libretro.so
 	fpic := -fPIC
-	SHARED := -shared -Wl,-version-script=link.T -Wl,-no-undefined
+	SHARED := -shared -Wl,-version-script=link.T
 ifeq ($(shell uname -s), Haiku)
 	LDFLAGS += -lroot
 endif
@@ -45,10 +45,6 @@ else ifeq ($(platform), osx)
 	TARGET := $(TARGET_NAME)_libretro.dylib
 	fpic := -fPIC
 	SHARED := -dynamiclib
-
-	ifeq ($(arch),ppc)
-		PLATFORM_DEFINES += -DBLARGG_BIG_ENDIAN=1 -D__ppc__
-	endif
 	OSXVER = `sw_vers -productVersion | cut -d. -f 2`
 	OSX_LT_MAVERICKS = `(( $(OSXVER) <= 9)) && echo "YES"`
 	LDFLAGS += -mmacosx-version-min=10.7
@@ -100,7 +96,7 @@ else ifeq ($(platform), theos_ios)
 else ifeq ($(platform), qnx)
 	TARGET := $(TARGET_NAME)_libretro_qnx.so
 	fpic := -fPIC
-	SHARED := -lcpp -lm -shared -Wl,-version-script=link.T -Wl,-no-undefined
+	SHARED := -lcpp -lm -shared -Wl,-version-script=link.T
 	HAS_GCC := 0
 	CC = qcc -Vgcc_ntoarmv7le
 	CXX = QCC -Vgcc_ntoarmv7le_cpp
@@ -188,7 +184,7 @@ else ifeq ($(platform), ctr)
 else ifeq ($(platform), rpi2)
 	TARGET := $(TARGET_NAME)_libretro.so
 	fpic := -fPIC
-	SHARED := -shared -Wl,-version-script=link.T -Wl,-no-undefined
+	SHARED := -shared -Wl,-version-script=link.T
 	PLATFORM_DEFINES += -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -ffast-math
 	PLATFORM_DEFINES += -DARM
 
@@ -196,7 +192,7 @@ else ifeq ($(platform), rpi2)
 else ifeq ($(platform), rpi3)
 	TARGET := $(TARGET_NAME)_libretro.so
 	fpic := -fPIC
-	SHARED := -shared -Wl,-version-script=link.T -Wl,-no-undefined
+	SHARED := -shared -Wl,-version-script=link.T
 	PLATFORM_DEFINES += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -ffast-math
 	PLATFORM_DEFINES += -DARM
 
@@ -416,7 +412,7 @@ else ifeq ($(platform), libnx)
 else ifeq ($(platform), classic_armv7_a7)
 	TARGET := $(TARGET_NAME)_libretro.so
 	fpic := -fPIC
-	SHARED := -shared -Wl,--version-script=link.T -Wl,-no-undefined
+	SHARED := -shared -Wl,--version-script=link.T
 	CFLAGS += -Ofast \
 	-flto=4 -fwhole-program -fuse-linker-plugin \
 	-fdata-sections -ffunction-sections -Wl,--gc-sections \
@@ -442,6 +438,29 @@ else ifeq ($(platform), classic_armv7_a7)
 		endif
 	endif
 #######################################
+
+# ARM
+else ifneq (,$(findstring armv,$(platform)))
+	TARGET := $(TARGET_NAME)_libretro.so
+	fpic := -fPIC
+	SHARED := -shared -Wl,-version-script=link.T
+	ifneq (,$(findstring cortexa5,$(platform)))
+		PLATFORM_DEFINES += -marm -mcpu=cortex-a5
+	else ifneq (,$(findstring cortexa8,$(platform)))
+		PLATFORM_DEFINES += -marm -mcpu=cortex-a8
+	else ifneq (,$(findstring cortexa9,$(platform)))
+		PLATFORM_DEFINES += -marm -mcpu=cortex-a9
+	else ifneq (,$(findstring cortexa15a7,$(platform)))
+		PLATFORM_DEFINES += -marm -mcpu=cortex-a15.cortex-a7
+	else
+		PLATFORM_DEFINES += -marm
+	endif
+	ifneq (,$(findstring softfloat,$(platform)))
+		PLATFORM_DEFINES += -mfloat-abi=softfp
+	else ifneq (,$(findstring hardfloat,$(platform)))
+		PLATFORM_DEFINES += -mfloat-abi=hard
+	endif
+	PLATFORM_DEFINES += -DARM
 
 else ifeq ($(platform), wincross64)
 
@@ -593,7 +612,6 @@ else ifeq ($(platform), windows_msvc2010_x64)
 	TARGET := $(TARGET_NAME)_libretro.dll
 	PSS_STYLE :=2
 	LDFLAGS += -DLL
-	CFLAGS += -D_USE_MATH_DEFINES
 
 # Windows MSVC 2010 x86
 else ifeq ($(platform), windows_msvc2010_x86)
@@ -618,7 +636,6 @@ else ifeq ($(platform), windows_msvc2010_x86)
 	TARGET := $(TARGET_NAME)_libretro.dll
 	PSS_STYLE :=2
 	LDFLAGS += -DLL
-	CFLAGS += -D_USE_MATH_DEFINES
 
 # Windows MSVC 2005 x86
 else ifeq ($(platform), windows_msvc2005_x86)
@@ -639,28 +656,15 @@ else ifeq ($(platform), windows_msvc2005_x86)
 	TARGET := $(TARGET_NAME)_libretro.dll
 	PSS_STYLE :=2
 	LDFLAGS += -DLL
-	CFLAGS += -D_CRT_SECURE_NO_DEPRECATE -D_USE_MATH_DEFINES
+	CFLAGS += -D_CRT_SECURE_NO_DEPRECATE
 
 # Windows
 else
 	TARGET := $(TARGET_NAME)_libretro.dll
 	CC = gcc
 	CXX = g++
-	SHARED := -shared -static-libgcc -static-libstdc++ -Wl,-no-undefined -Wl,-version-script=link.T
+	SHARED := -shared -static-libgcc -static-libstdc++ -Wl,-version-script=link.T
 	DISABLE_GCC_SECURITY_FLAGS = 1
-endif
-
-ifeq ($(HAVE_RUST),1)
-   FLAGS += -DHAVE_RUST
-   LDFLAGS += -ldl -L. -lrsx
-endif
-
-ifeq ($(HAVE_VULKAN),1)
-	FLAGS += -DHAVE_VULKAN
-endif
-
-ifeq ($(HAVE_JIT),1)
-   LDFLAGS += -ljit
 endif
 
 CFLAGS += -DGIT_VERSION=\"$(GIT_VERSION)\"
@@ -854,7 +858,7 @@ endif
 ifeq ($(HAS_GCC), 1)
 	C_VER = -std=c99
 	CFLAGS += -fsigned-char
-	CXXFLAGS += -std=c99
+	CXXFLAGS += -std=c++98
 	CXXFLAGS += -fno-rtti
 	GCC_WARNINGS += --pedantic \
 		-Wall -Wextra \
@@ -871,7 +875,7 @@ ifeq ($(HAS_GCC), 1)
 	endif
 endif
 
-DEFINES := -D__LIBRETRO__ $(PLATFORM_DEFINES) $(GCC_FLAGS) $(GCC_WARNINGS) -DNST_NO_ZLIB $(INCFLAGS) $(INCFLAGS_PLATFORM) -DCPUCORE_IA32 -DSUPPORT_PC9821 -DUSE_FPU -DSUPPORT_LARGE_HDD -DSUPPORT_VPCVHD -DSUPPORT_KAI_IMAGES -DHOOK_SYSKEY -DALLOW_MULTIRUN -DSUPPORT_WAB -DSUPPORT_LARGE_MEMORY -DSUPPORT_CL_GD5430 -DUSE_MAME -DSUPPORT_FMGEN -DSUPPORT_SOUND_SB16 -DSUPPORT_FPU_DOSBOX -DSUPPORT_FPU_DOSBOX2 -DSUPPORT_FPU_SOFTFLOAT -DSUPPORT_FAST_MEMORYCHECK -DSUPPORT_GPIB -DSUPPORT_PEGC -DSUPPORT_ASYNC_CPU -DSUPPORT_PCI -DUSE_MMX -DUSE_3DNOW -DUSE_SSE -DUSE_SSE2 -DUSE_SSE3 -DUSE_TSC -DSUPPORT_NVL_IMAGES -DUSE_FASTPAGING -DUSE_VME -DBIOS_IO_EMULATION
+DEFINES := -D__LIBRETRO__ $(PLATFORM_DEFINES) $(GCC_FLAGS) $(GCC_WARNINGS) $(GCC_SECURITY_FLAGS) -DNST_NO_ZLIB $(INCFLAGS) $(INCFLAGS_PLATFORM) -DCPUCORE_IA32 -DSUPPORT_PC9821 -DUSE_FPU -DSUPPORT_LARGE_HDD -DSUPPORT_VPCVHD -DSUPPORT_KAI_IMAGES -DHOOK_SYSKEY -DALLOW_MULTIRUN -DSUPPORT_WAB -DSUPPORT_LARGE_MEMORY -DSUPPORT_CL_GD5430 -DUSE_MAME -DSUPPORT_FMGEN -DSUPPORT_SOUND_SB16 -DSUPPORT_FPU_DOSBOX -DSUPPORT_FPU_DOSBOX2 -DSUPPORT_FPU_SOFTFLOAT -DSUPPORT_FAST_MEMORYCHECK -DSUPPORT_GPIB -DSUPPORT_PEGC -DSUPPORT_ASYNC_CPU -DSUPPORT_PCI -DUSE_MMX -DUSE_3DNOW -DUSE_SSE -DUSE_SSE2 -DUSE_SSE3 -DUSE_TSC -DSUPPORT_NVL_IMAGES -DUSE_FASTPAGING -DUSE_VME -DBIOS_IO_EMULATION
 
 CFLAGS += $(fpic) $(DEFINES) $(C_VER)
 CXXFLAGS += $(fpic) $(DEFINES)
@@ -930,3 +934,4 @@ uninstall:
 
 .PHONY: clean clean-objs
 endif
+

@@ -37,6 +37,10 @@
 #include <sys/syscall.h>
 #include <linux/aio_abi.h>
 
+#ifndef O_CLOEXEC
+#define O_CLOEXEC FD_CLOEXEC
+#endif
+
 struct nbio_linux_t
 {
    int fd;

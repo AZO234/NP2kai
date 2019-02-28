@@ -8,6 +8,10 @@
 #include <math.h>
 #include "oplgencfg.h"
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846264338327
+#endif
+
 	OPLCFG oplcfg;
 
 #define	OPM_ARRATE		 399128L

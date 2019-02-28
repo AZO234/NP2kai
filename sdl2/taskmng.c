@@ -1,3 +1,4 @@
+#define _POSIX_C_SOURCE 199309L
 #include	"compiler.h"
 #include	"inputmng.h"
 #include	"taskmng.h"
