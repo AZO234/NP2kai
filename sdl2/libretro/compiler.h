@@ -7,6 +7,10 @@
 
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -259,4 +263,8 @@ typedef SINT32	FILELEN;
 
 #include "retro_inline.h"
 #include "common.h"
+
+#ifdef __cplusplus
+}
+#endif
 
