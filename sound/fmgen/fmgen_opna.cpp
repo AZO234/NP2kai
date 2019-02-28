@@ -151,7 +151,7 @@ void OPNBase::SetVolumeFM(int db)
 {
 	db = Min(db, 20);
 	if (db > -192)
-		fmvolume = int(16384.0 * pow(10.0, db / 40.0));
+		fmvolume = int(16384.0 * pow((double)10.0, (double)db / 40.0));
 	else
 		fmvolume = 0;
 }
@@ -479,7 +479,7 @@ void OPNABase::MakeTable2()
 	{
 		for (int i=-FM_TLPOS; i<FM_TLENTS; i++)
 		{
-			tltable[i+FM_TLPOS] = uint(65536. * pow(2.0, i * -16. / FM_TLENTS))-1;
+			tltable[i+FM_TLPOS] = uint(65536. * pow((double)2.0, (double)i * -16. / FM_TLENTS))-1;
 		}
 
 		tablehasmade = true;
@@ -1629,7 +1629,7 @@ void OPNA::SetVolumeADPCM(int db)
 {
 	db = Min(db, 20);
 	if (db > -192)
-		adpcmvol = int(65536.0 * pow(10.0, db / 40.0));
+		adpcmvol = int(65536.0 * pow((double)10.0, (double)db / 40.0));
 	else
 		adpcmvol = 0;
 
@@ -1931,7 +1931,7 @@ void OPNB::InitADPCMATable()
 
 	for (int i=0; i<=48; i++)
 	{
-		int s = int(16.0 * pow (1.1, i) * 3);
+		int s = int(16.0 * pow ((double)1.1, (double)i) * 3);
 		for (int j=0; j<16; j++)
 		{
 			jedi_table[i*16+j] = s * table2[j] / 8;
@@ -2026,7 +2026,7 @@ void OPNB::SetVolumeADPCMB(int db)
 {
 	db = Min(db, 20);
 	if (db > -192)
-		adpcmvol = int(65536.0 * pow(10, db / 40.0));
+		adpcmvol = int(65536.0 * pow((double)10, (double)db / 40.0));
 	else
 		adpcmvol = 0;
 }
