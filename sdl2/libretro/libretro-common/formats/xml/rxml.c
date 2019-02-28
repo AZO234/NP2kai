@@ -147,12 +147,7 @@ static char *strdup_range_escape(const char *begin, const char *end)
 static struct rxml_attrib_node *rxml_parse_attrs(const char *str)
 {
    char *copy = strdup(str);
-   if (!copy)
-      return NULL;
-
    char *last_char = copy + strlen(copy) - 1;
-   if (*last_char == '/')
-      *last_char = '\0';
 
    struct rxml_attrib_node *list = NULL;
    struct rxml_attrib_node *tail = NULL;
@@ -160,14 +155,22 @@ static struct rxml_attrib_node *rxml_parse_attrs(const char *str)
    char *attrib = NULL;
    char *value = NULL;
    char *save;
+
    const char *elem = strtok_r(copy, " \n\t\f\v\r", &save);
+
+   if (!copy)
+      return NULL;
+
+   if (*last_char == '/')
+      *last_char = '\0';
+
    while (elem)
    {
       const char *eq = strstr(elem, "=\"");
+      const char *end = strrchr(eq + 2, '\"');
       if (!eq)
          goto end;
 
-      const char *end = strrchr(eq + 2, '\"');
       if (!end || end != (elem + strlen(elem) - 1))
          goto end;
 
@@ -218,9 +221,10 @@ static char *find_first_space(const char *str)
 static bool rxml_parse_tag(struct rxml_node *node, const char *str)
 {
    const char *str_ptr = str;
+   const char *name_end = find_first_space(str_ptr);
+
    skip_spaces(&str_ptr);
 
-   const char *name_end = find_first_space(str_ptr);
    if (name_end)
    {
       node->name = strdup_range(str_ptr, name_end);
@@ -377,13 +381,14 @@ static char *purge_xml_comments(const char *str)
 {
    size_t len = strlen(str);
    char *new_str = (char*)malloc(len + 1);
+   char *copy_dest       = new_str;
+   const char *copy_src  = str;
+
    if (!new_str)
       return NULL;
 
    new_str[len] = '\0';
 
-   char *copy_dest       = new_str;
-   const char *copy_src  = str;
    for (;;)
    {
       ptrdiff_t copy_len;
