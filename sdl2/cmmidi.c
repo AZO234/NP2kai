@@ -9,7 +9,11 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#if defined(__LIBRETRO__) && defined(_MSC_VER)
+#include <time.h>
+#else
 #include <sys/time.h>
+#endif
 #include <fcntl.h>
 
 #include "sound/vermouth/vermouth.h"
