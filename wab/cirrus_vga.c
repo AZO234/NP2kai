@@ -5623,7 +5623,7 @@ void cirrusvga_drawGraphic(){
 							((uint32_t_ *)(src + 128))[0];
 					}
 					/* if nothing to draw, no need to continue */
-					UINT8 colortmp_r, colortmp_g, colortmp_b;
+					uint8_t colortmp_r, colortmp_g, colortmp_b;
 					const uint8_t *plane0, *plane1;
 					int b0, b1;
 					x1 = hwcur_x;
