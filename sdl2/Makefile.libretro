@@ -858,7 +858,6 @@ ifeq ($(HAS_GCC), 1)
 	CXXFLAGS += -fno-rtti
 	GCC_WARNINGS += --pedantic \
 		-Wall -Wextra \
-		-Werror-implicit-function-declaration \
 		-Wformat \
 		-Wformat-security \
 	# These flags are not compatible with PS3
