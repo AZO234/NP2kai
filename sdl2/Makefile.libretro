@@ -802,10 +802,10 @@ else
 endif
 
 %.o: %.cpp
-	$(CXX) $(CPPFLAGS) -c $(OBJOUT) $@ $< $(CXXFLAGS) $(INCDIRS)
+	$(CXX) $(CPPFLAGS) -c $(OBJOUT)$@ $< $(CXXFLAGS) $(INCDIRS)
 
 %.o: %.c
-	$(CC) $(CPPFLAGS) -c $(OBJOUT) $@ $< $(CFLAGS) $(INCDIRS)
+	$(CC) $(CPPFLAGS) -c $(OBJOUT)$@ $< $(CFLAGS) $(INCDIRS)
 
 clean-objs:
 	rm -f $(OBJECTS)
