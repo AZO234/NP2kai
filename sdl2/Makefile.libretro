@@ -707,11 +707,11 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 #		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_flac_codec.c \
 #		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/trans_stream_zlib.c
 
-#ifeq ($(platform), switch)
-#SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/switch_pthread.c
-#else
+ifeq ($(platform), switch)
+SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/switch_pthread.c
+else
 SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rthreads.c
-#endif
+endif
 
 ifeq ($(platform), xenon)
 SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/xenon_sdl_threads.c
