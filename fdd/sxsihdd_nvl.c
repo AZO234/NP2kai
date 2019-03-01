@@ -2,7 +2,7 @@
 
 #ifdef SUPPORT_NVL_IMAGES
 
-#if !defined(_WIN32) && !defined(HAVE_LIBNX) && !defined(__CELLOS_LV2__)
+#if !defined(_WIN32) && !defined(GEKKO) && !defined(HAVE_LIBNX) && !defined(__CELLOS_LV2__)
 #include	<dlfcn.h>
 #endif
 #include	"strres.h"
@@ -129,7 +129,7 @@ static sxsihdd_nvl *nvl_open(const OEMCHAR *fname)
 #if defined(_WIN32)
 	p->hModule = LoadLibrary(_T("NVL.DLL"));
 #else
-#if !defined(HAVE_LIBNX) && !defined(__CELLOS_LV2__)
+#if !defined(GEKKO) && !defined(HAVE_LIBNX) && !defined(__CELLOS_LV2__)
 	p->hModule = dlopen("libnvl.so", RTLD_LAZY);
 #endif
 #endif
