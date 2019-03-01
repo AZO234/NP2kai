@@ -1622,3 +1622,33 @@ const SFENTRY	*tblterm;
 	return(ret);
 }
 
+int statsave_save_hdd(const OEMCHAR *ext)
+{
+	BRESULT r;
+
+	r = sxsi_state_save(ext);
+	if (r == SUCCESS)
+	{
+		return (STATFLAG_SUCCESS);
+	}
+	else
+	{
+		return (STATFLAG_FAILURE);
+	}
+}
+
+int statsave_load_hdd(const OEMCHAR *ext)
+{
+	BRESULT r;
+
+	r = sxsi_state_load(ext);
+	if (r == SUCCESS)
+	{
+		return (STATFLAG_SUCCESS);
+	}
+	else
+	{
+		return (STATFLAG_FAILURE);
+	}
+}
+

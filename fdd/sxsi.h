@@ -54,6 +54,8 @@ struct _sxsidev {
 	REG8	(*format)(SXSIDEV sxsi, FILEPOS pos);
 	void	(*close)(SXSIDEV sxsi);
 	void	(*destroy)(SXSIDEV sxsi);
+	BRESULT	(*state_save)(SXSIDEV sxsi, const OEMCHAR *sfname);
+	BRESULT	(*state_load)(SXSIDEV sxsi, const OEMCHAR *sfname);
 
 	INTPTR	hdl;
 	FILELEN	totals;
@@ -95,6 +97,8 @@ void sxsi_devclose(REG8 drv);
 REG8 sxsi_read(REG8 drv, FILEPOS pos, UINT8 *buf, UINT size);
 REG8 sxsi_write(REG8 drv, FILEPOS pos, const UINT8 *buf, UINT size);
 REG8 sxsi_format(REG8 drv, FILEPOS pos);
+BRESULT sxsi_state_save(const OEMCHAR *ext);
+BRESULT sxsi_state_load(const OEMCHAR *ext);
 
 BOOL sxsi_issasi(void);
 BOOL sxsi_isscsi(void);
