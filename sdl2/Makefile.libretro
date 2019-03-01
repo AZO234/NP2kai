@@ -692,6 +692,7 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 		$(NP2_PATH)/sdl2/libretro/libretro-common/lists/file_list.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/lists/string_list.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/lists/vector_list.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rsemaphore.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/chd_stream.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/file_stream.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/file_stream_transforms.c \
@@ -720,11 +721,9 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 #		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_flac.c \
 #		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_flac_codec.c \
 #		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/trans_stream_zlib.c
-#		$(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rsemaphore.c
 
-ifneq ($(platform), switch)
-#SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/switch_pthread.c
-#SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rthreads.c
+ifeq ($(platform), switch)
+SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/switch_pthread.c
 else
 SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rthreads.c
 endif
