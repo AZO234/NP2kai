@@ -53,7 +53,7 @@ BOOL nvl_check()
 #else
 	void *hModule = NULL;
 
-#if !defined(HAVE_LIBNX) && !defined(__CELLOS_LV2__)
+#if !defined(GEKKO) && !defined(HAVE_LIBNX) && !defined(__CELLOS_LV2__)
 	hModule = dlopen("libnvl.so", RTLD_LAZY);
 #endif
 #endif
