@@ -7,6 +7,8 @@
 
 #define	MSSHIFT		16
 
+void wabrly_callback(UINT nowtime);
+
 typedef struct {
 	UINT32	tick;
 	UINT32	msstep;
