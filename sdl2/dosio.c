@@ -197,7 +197,9 @@ short file_dircreate(const char *path) {
 
 short file_dirdelete(const char *path) {
 
+#if !(defined(__LIBRETRO__) && defined(VITA))
 	return((short)rmdir(path));
+#endif
 }
 
 /* カレントファイル操作 */
