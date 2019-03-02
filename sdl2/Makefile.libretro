@@ -709,7 +709,7 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 
 ifeq ($(platform), switch)
 SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/switch_pthread.c
-else ifeq (,$(filter $(platform),ngc wii wiiu))
+else
 SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rthreads.c
 endif
 
