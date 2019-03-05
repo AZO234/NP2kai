@@ -878,7 +878,7 @@ static void rename_file(INTRST intrst)
 			}
 
 			TRACEOUT(("renamed: %s -> %s", szPath, hdp.szPath));
-			if (file_rename(szPath, hdp.szPath))
+			if (file_rename(szPath, hdp.szPath) != 0)
 			{
 				nResult = ERR_ACCESSDENIED;
 				break;

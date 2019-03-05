@@ -591,45 +591,6 @@ BRESULT sxsi_state_load(const OEMCHAR *ext)
 			{
 				return(r);
 			}
-/*
-			WIN32_FIND_DATA fd;
-			HANDLE hf;
-			OEMCHAR	top[MAX_PATH];
-			OEMCHAR	sfname[MAX_PATH];
-			BRESULT r;
-
-			file_cpyname(sfname, sxsi->fname, NELEMENTS(sfname));
-			file_catname(sfname, OEMTEXT("_"), NELEMENTS(sfname));
-			file_catname(sfname, ext, NELEMENTS(sfname));
-			file_catname(sfname, OEMTEXT("_*"), NELEMENTS(sfname));
-
-			hf = FindFirstFile(sfname, &fd);
-			if (hf == INVALID_HANDLE_VALUE)
-			{
-				continue;
-			}
-
-			file_cpyname(top, fd.cFileName, NELEMENTS(top));
-
-			while (FindNextFile(hf, &fd))
-			{
-				if (file_cmpname(fd.cFileName, top) > 0)
-				{
-					file_cpyname(top, fd.cFileName, NELEMENTS(top));
-				}
-			}
-
-			FindClose(hf);
-
-			file_cpyname(sfname, sxsi->fname, NELEMENTS(sfname));
-			file_cutname(sfname);
-			file_catname(sfname, top, NELEMENTS(sfname));
-
-			r = (*sxsi->state_load)(sxsi, sfname);
-			if (r != SUCCESS) {
-				return(r);
-			}
-*/
 		}
 
 		sxsi++;
