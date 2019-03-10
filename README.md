@@ -8,15 +8,12 @@ Build SDL2 port
 １． Install SDL2.  
 
 	(Linux)
-	$ sudo apt-get install git gcc make libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev
+	$ sudo apt-get install git build-essential libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev
 
 or
 
 	(Windows + MSYS2 64bit (32bit console))
-	$ pacman -S git gcc make mingw-w64-i686-gcc mingw-w64-i686-SDL2 mingw-w64-i686-SDL2_ttf mingw-w64-i686-SDL2_mixer
-
-	(Windows + MSYS2 64bit (64bit console))
-	$ pacman -S git gcc make mingw-w64-x86_64-gcc mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL2_mixer
+	$ pacman -S git gcc make mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL2_mixer
 
 or
 
