@@ -16,7 +16,15 @@
 #endif
 #include <fcntl.h>
 #include <unistd.h>
+#if defined(__LIBRETRO__)
+#include <retro_dirent.h>
+#else
+#if defined(WIN32) && (!defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR))
+#include <direct.h>
+#else
 #include <dirent.h>
+#endif
+#endif
 
 #include "sound/vermouth/vermouth.h"
 
