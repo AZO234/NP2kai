@@ -32,12 +32,12 @@
 
 #define STACKSIZE (4 * 1024)
 
-typedef Thread     pthread_t;
-typedef LightLock  pthread_mutex_t;
-typedef void*      pthread_mutexattr_t;
-typedef int        pthread_attr_t;
-typedef LightEvent pthread_cond_t;
-typedef int        pthread_condattr_t;
+//typedef Thread     pthread_t;
+//typedef LightLock  pthread_mutex_t;
+//typedef void*      pthread_mutexattr_t;
+//typedef int        pthread_attr_t;
+//typedef LightEvent pthread_cond_t;
+//typedef int        pthread_condattr_t;
 
 /* libctru threads return void but pthreads return void pointer */
 static bool mutex_inited = false;
