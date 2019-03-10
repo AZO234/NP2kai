@@ -112,7 +112,7 @@ else ifeq ($(platform), android)
 	CXX = arm-linux-androideabi-g++
 
 	fpic = -fPIC
-	PLATFORM_DEFINES := -D__BLACKBERRY_QNX__ -marm -mcpu=cortex-a9 -mfpu=neon -mfloat-abi=softfp
+	PLATFORM_DEFINES := -marm -mcpu=cortex-a9 -mfpu=neon -mfloat-abi=softfp
 
 # PS3
 else ifeq ($(platform), ps3)

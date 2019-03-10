@@ -84,9 +84,6 @@
 #include <sys/fcntl.h>
 #include <sys/dirent.h>
 #endif
-#if defined(PSP)
-#include <pspkernel.h>
-#endif
 
 #if defined(PS2)
 #include <fileXio_rpc.h>

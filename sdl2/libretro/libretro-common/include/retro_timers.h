@@ -34,7 +34,7 @@
 #elif defined(WIIU)
 #include <wiiu/os/thread.h>
 #elif defined(PSP)
-#include <pspthreadman.h>
+#include <pthread.h>
 #elif defined(VITA)
 #include <psp2/kernel/threadmgr.h>
 #elif defined(PS2)

@@ -56,9 +56,7 @@
 #endif
 
 #if defined(PSP)
-#include <pspkernel.h>
 #include <sys/time.h>
-#include <psprtc.h>
 #endif
 
 #if defined(VITA)
