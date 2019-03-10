@@ -34,9 +34,7 @@
 
 #include <unistd.h>
 #include <fcntl.h>
-#if !defined(__SWITCH__)
 #include <sys/syscall.h>
-#endif
 #include <linux/aio_abi.h>
 
 #ifndef O_CLOEXEC
