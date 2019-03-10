@@ -197,7 +197,7 @@ short file_dircreate(const char *path) {
 
 short file_dirdelete(const char *path) {
 
-#if !(defined(__LIBRETRO__) && defined(VITA))
+#if !(defined(__LIBRETRO__) && (defined(VITA) || defined(EMSCRIPTEN)))
 	return((short)rmdir(path));
 #endif
 }

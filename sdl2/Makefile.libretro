@@ -467,10 +467,11 @@ LDFLAGS += -lws2_32 -luser32 -lwinmm -ladvapi32 -lshlwapi -lwsock32 -lws2_32 -lp
 
 
 # Emscripten
-else ifeq ($(platform),emscripten)
+else ifeq ($(platform), emscripten)
 	TARGET := $(TARGET_NAME)_libretro_$(platform).bc
 	STATIC_LINKING = 1
-	PLATFORM_DEFINES += -DEMSCRIPTEN
+	PLATFORM_DEFINES += -DEMSCRIPTEN -I$(EMSCRIPTEN)/system/include
+	HAS_GCC = 0
 
 # Windows MSVC 2010 x64
 else ifeq ($(platform), windows_msvc2010_x64)
@@ -788,16 +789,28 @@ all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
 ifeq ($(STATIC_LINKING), 1)
+ifeq ($(platform), emscripten)
+	emcc $(LINKOUT)$@ $(OBJECTS)
+else
 	$(AR) rcs $@ $(OBJECTS)
+endif
 else
 	$(LD) $(LINKOUT)$@ $(SHARED) $(OBJECTS) $(LDFLAGS) $(LIBS)
 endif
 
 %.o: %.cpp
-	$(CXX) $(CPPFLAGS) -c $(OBJOUT)$@ $< $(CXXFLAGS) $(INCDIRS)
+ifeq ($(platform), emscripten)
+	em++ $(CPPFLAGS) -c $(OBJOUT)$@ $< $(CXXFLAGS) $(INCDIRS)
+else
+	$(CXX) $(CFLAGS) -c $(OBJOUT)$@ $< $(CXXFLAGS) $(INCDIRS)
+endif
 
 %.o: %.c
-	$(CC) $(CPPFLAGS) -c $(OBJOUT)$@ $< $(CFLAGS) $(INCDIRS)
+ifeq ($(platform), emscripten)
+	emcc $(CFLAGS) -c $(OBJOUT)$@ $< $(CFLAGS) $(INCDIRS)
+else
+	$(CC) $(CFLAGS) -c $(OBJOUT)$@ $< $(CFLAGS) $(INCDIRS)
+endif
 
 clean-objs:
 	rm -f $(OBJECTS)

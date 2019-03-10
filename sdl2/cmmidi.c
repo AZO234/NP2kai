@@ -15,6 +15,8 @@
 #include <sys/time.h>
 #endif
 #include <fcntl.h>
+#include <unistd.h>
+#include <dirent.h>
 
 #include "sound/vermouth/vermouth.h"
 

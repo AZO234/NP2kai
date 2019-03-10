@@ -57,5 +57,9 @@ typedef struct {
 BRESULT scrnmng_entermenu(SCRNMENU *smenu);
 void scrnmng_leavemenu(void);
 void scrnmng_menudraw(const RECT_T *rct);
+void scrnmng_update(void);
 void scrnmng_updatecursor(void);
 
+void scrnmng_updatefsres(void);
+void scrnmng_blthdc(void);
+void scrnmng_bltwab(void);
