@@ -79,10 +79,6 @@
 #include <ogc/lwp_watchdog.h>
 #endif
 
-#ifdef WIIU
-#include <wiiu/os/time.h>
-#endif
-
 #if defined(HAVE_LIBNX)
 #include <switch.h>
 #elif defined(SWITCH)
