@@ -143,7 +143,7 @@ else ifeq ($(platform), psl1ght)
 	CC = $(PS3DEV)/ppu/bin/ppu-gcc$(EXE_EXT)
 	CXX = $(PS3DEV)/ppu/bin/ppu-g++$(EXE_EXT)
 	AR = $(PS3DEV)/ppu/bin/ppu-ar$(EXE_EXT)
-	PLATFORM_DEFINES := -D__CELLOS_LV2__
+	PLATFORM_DEFINES := -D__CELLOS_LV2__ -I$(PS3DEV)/psl1ght/ppu/include
 	STATIC_LINKING = 1
 	DISABLE_GCC_SECURITY_FLAGS = 1
 
@@ -343,11 +343,11 @@ else ifneq (,$(findstring windows_msvc2017,$(platform)))
 
 # Xbox 360
 else ifeq ($(platform), xenon)
-	TARGET := $(TARGET_NAME)_libretro_xenon360.a
+	TARGET := $(TARGET_NAME)_libretro.a
 	CC = xenon-gcc$(EXE_EXT)
 	CXX = xenon-g++$(EXE_EXT)
 	AR = xenon-ar$(EXE_EXT)
-	PLATFORM_DEFINES := -D__LIBXENON__
+	PLATFORM_DEFINES := -D__LIBXENON__ -D_POSIX_MONOTONIC_CLOCK -D_POSIX_THREADS -I$(DEVKITXENON)/xenon/include
 	STATIC_LINKING = 1
 
 # Nintendo Game Cube / Nintendo Wii
@@ -680,7 +680,6 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/trans_stream.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/trans_stream_pipe.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/string/stdstring.c \
-		$(NP2_PATH)/sdl2/libretro/libretro-common/vfs/vfs_implementation.c \
 		$(NP2_PATH)/sdl2/libretro/libretro.c \
 		$(wildcard $(NP2_PATH)/i386c/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/*.c) \
@@ -703,8 +702,9 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 #ifeq ($(platform), libnx)
 #SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/switch_pthread.c
 #endif
-ifeq ($(platform), xenon)
-SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/xenon_sdl_threads.c
+#SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/xenon_sdl_threads.c
+ifneq ($(platform), xenon)
+SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/vfs/vfs_implementation.c
 endif
 ifeq ($(platform), unix)
 #SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_ifaddrs.c
