@@ -40,7 +40,11 @@
 #endif
 
 #if defined(__CELLOS_LV2__)
+#if defined(__PSL1GHT__)
+#define CELL_FS_MAX_FS_PATH_LENGTH 1024
+#else
 #include <sys/fs_external.h>
+#endif
 #endif
 
 #include <limits.h>

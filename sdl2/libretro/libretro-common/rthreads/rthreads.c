@@ -54,7 +54,11 @@
 #include "ctr_pthread.h"
 #elif defined(__CELLOS_LV2__)
 #include <pthread.h>
+#if defined(__PSL1GHT__)
+#include <sys/systime.h>
+#else
 #include <sys/sys_time.h>
+#endif
 #else
 #include <pthread.h>
 #include <time.h>

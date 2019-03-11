@@ -143,7 +143,7 @@ else ifeq ($(platform), psl1ght)
 	CC = $(PS3DEV)/ppu/bin/ppu-gcc$(EXE_EXT)
 	CXX = $(PS3DEV)/ppu/bin/ppu-g++$(EXE_EXT)
 	AR = $(PS3DEV)/ppu/bin/ppu-ar$(EXE_EXT)
-	PLATFORM_DEFINES := -D__CELLOS_LV2__ -I$(PS3DEV)/psl1ght/ppu/include
+	PLATFORM_DEFINES := -D__CELLOS_LV2__ -D__PSL1GHT__ -I$(PS3DEV)/psl1ght/ppu/include
 	STATIC_LINKING = 1
 	DISABLE_GCC_SECURITY_FLAGS = 1
 
@@ -186,7 +186,8 @@ else ifeq ($(platform), rpi2)
 	fpic := -fPIC
 	SHARED := -shared -Wl,-version-script=link.T
 	PLATFORM_DEFINES += -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -ffast-math
-	PLATFORM_DEFINES += -DARM
+	PLATFORM_DEFINES += -DARM -D_POSIX_MONOTONIC_CLOCK
+	NO_DIRENT = 1
 
 # Raspberry Pi 3 (Raspbian)
 else ifeq ($(platform), rpi3)
@@ -194,7 +195,8 @@ else ifeq ($(platform), rpi3)
 	fpic := -fPIC
 	SHARED := -shared -Wl,-version-script=link.T
 	PLATFORM_DEFINES += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -ffast-math
-	PLATFORM_DEFINES += -DARM
+	PLATFORM_DEFINES += -DARM -D_POSIX_MONOTONIC_CLOCK
+	NO_DIRENT = 1
 
 # Windows MSVC 2003 Xbox 1
 else ifeq ($(platform), xbox1_msvc2003)
@@ -349,6 +351,7 @@ else ifeq ($(platform), xenon)
 	AR = xenon-ar$(EXE_EXT)
 	PLATFORM_DEFINES := -D__LIBXENON__ -D_POSIX_MONOTONIC_CLOCK -D_POSIX_THREADS -I$(DEVKITXENON)/xenon/include
 	STATIC_LINKING = 1
+	NO_DIRENT = 1
 
 # Nintendo Game Cube / Nintendo Wii
 else ifneq (,$(filter $(platform),ngc wii))
@@ -452,6 +455,7 @@ else ifneq (,$(findstring cortex,$(platform)))
 		PLATFORM_DEFINES += -mfloat-abi=hard
 	endif
 	PLATFORM_DEFINES += -DARM
+	NO_DIRENT = 1
 
 else ifeq ($(platform), wincross64)
 
@@ -703,7 +707,7 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 #SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/switch_pthread.c
 #endif
 #SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/xenon_sdl_threads.c
-ifneq ($(platform), xenon)
+ifneq ($(NO_DIRENT), 1)
 SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/vfs/vfs_implementation.c
 endif
 ifeq ($(platform), unix)
