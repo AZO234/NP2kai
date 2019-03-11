@@ -402,8 +402,6 @@ else ifeq ($(platform), libnx)
 # NESC, SNESC, C64 mini 
 else ifeq ($(platform), classic_armv7_a7)
 	TARGET := $(TARGET_NAME)_libretro.so
-	CC = arm-none-eabi-gcc$(EXE_EXT)
-	CXX = arm-none-eabi-g++$(EXE_EXT)
 	fpic := -fPIC
 	SHARED := -shared -Wl,--version-script=link.T
 	CFLAGS += -Ofast \
@@ -435,8 +433,6 @@ else ifeq ($(platform), classic_armv7_a7)
 # ARM
 else ifneq (,$(findstring cortex,$(platform)))
 	TARGET := $(TARGET_NAME)_libretro.so
-	CC = arm-none-eabi-gcc$(EXE_EXT)
-	CXX = arm-none-eabi-g++$(EXE_EXT)
 	fpic := -fPIC
 	SHARED := -shared -Wl,-version-script=link.T
 	ifneq (,$(findstring cortexa5,$(platform)))
