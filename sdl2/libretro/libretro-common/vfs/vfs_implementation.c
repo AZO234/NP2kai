@@ -47,9 +47,6 @@
 #    include <windows.h>
 #  endif
 #else
-#  if defined(PSP)
-#    include <pspiofilemgr.h>
-#  endif
 #  if defined(PS2)
 #    include <fileXio_rpc.h>
 #  endif

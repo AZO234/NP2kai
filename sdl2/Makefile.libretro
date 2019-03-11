@@ -153,7 +153,7 @@ else ifeq ($(platform), psp1)
 	CC = psp-gcc$(EXE_EXT)
 	CXX = psp-g++$(EXE_EXT)
 	AR = psp-ar$(EXE_EXT)
-	PLATFORM_DEFINES := -DPSP -G0
+	PLATFORM_DEFINES := -DPSP -G0 -I$(PSPDEV)/psp/sdk/include
 	STATIC_LINKING = 1
 	DISABLE_GCC_SECURITY_FLAGS = 1
 
@@ -700,9 +700,9 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 #		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_flac_codec.c \
 #		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/trans_stream_zlib.c
 
-ifeq ($(platform), libnx)
-SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/switch_pthread.c
-endif
+#ifeq ($(platform), libnx)
+#SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/switch_pthread.c
+#endif
 ifeq ($(platform), xenon)
 SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/xenon_sdl_threads.c
 endif
@@ -728,7 +728,9 @@ endif
 endif
 
 ifeq ($(HAS_GCC), 1)
+ifneq ($(platform), libnx)
 	C_VER = -std=gnu99
+endif
 	CFLAGS += -fsigned-char
 	CXXFLAGS += -std=c++98
 	CXXFLAGS += -fno-rtti
