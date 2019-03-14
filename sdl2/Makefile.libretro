@@ -47,9 +47,9 @@ else ifeq ($(platform), osx)
 	SHARED := -dynamiclib
 	OSXVER = `sw_vers -productVersion | cut -d. -f 2`
 	OSX_LT_MAVERICKS = `(( $(OSXVER) <= 9)) && echo "YES"`
-	LDFLAGS += -mmacosx-version-min=10.7
+	LDFLAGS += -mmacosx-version-min=10.7 -stdlib=libc++
 	CFLAGS += -mmacosx-version-min=10.7
-	CXXFLAGS += -mmacosx-version-min=10.7
+	CXXFLAGS += -mmacosx-version-min=10.7 -std=libc++
 	ifndef ($(NOUNIVERSAL))
 		CFLAGS  += $(ARCHFLAGS)
 		CXXFLAGS  += $(ARCHFLAGS)
@@ -66,19 +66,21 @@ else ifneq (,$(findstring ios,$(platform)))
 	endif
 	ifeq ($(platform),"ios-arm64")
 	  CC = cc -arch arm64 -isysroot $(IOSSDK)
-	  CCX = c++ -arch arm64 -isysroot $(IOSSDK)
+	  CCX = c++ -arch arm64 -isysroot $(IOSSDK) -stdlib=libc++
+	  LDFLAGS = -stdlib=libc++
 	else
 	  CC = cc -arch armv7 -isysroot $(IOSSDK)
-	  CXX = c++ -arch armv7 -isysroot $(IOSSDK)
+	  CXX = c++ -arch armv7 -isysroot $(IOSSDK) -stdlib=libc++
+	  LDFLAGS = -stdlib=libc++
 	endif
 ifeq ($(platform),$(filter $(platform),ios9 ios-arm64))
 	CC               += -miphoneos-version-min=8.0
-	CXX              += -miphoneos-version-min=8.0
-	PLATFORM_DEFINES += -miphoneos-version-min=8.0
+	CXX              += -miphoneos-version-min=8.0 -std=libc++
+	PLATFORM_DEFINES += -miphoneos-version-min=8.0 -stdlib=libc++
 else
 	CC               += -miphoneos-version-min=5.0
-	CXX              += -miphoneos-version-min=5.0
-	PLATFORM_DEFINES += -miphoneos-version-min=5.0
+	CXX              += -miphoneos-version-min=5.0 -std=libc++
+	PLATFORM_DEFINES += -miphoneos-version-min=5.0 -stdlib=libc++
 endif
 
 # Theos

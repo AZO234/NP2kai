@@ -20,7 +20,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#if !defined(BSD) && !defined(__APPLE__)
 #define _POSIX_C_SOURCE 199309L
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -127,6 +129,7 @@ static int ra_clock_gettime(int clk_ik, struct timespec *t)
 #endif
 
 #if defined(BSD) || defined(__APPLE__)
+#include <sys/types.h>
 #include <sys/sysctl.h>
 #endif
 
