@@ -15,6 +15,11 @@
 #include <sys/time.h>
 #endif
 
+#if defined(_MSC_VER)
+#define strcasecmp _stricmp
+#define strncasecmp _strnicmp
+#endif
+
 	_SXSIDEV	sxsi_dev[SASIHDD_MAX + SCSIHDD_MAX];
 
 #if !defined(_WIN32)

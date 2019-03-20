@@ -276,8 +276,8 @@ else ifneq (,$(findstring windows_msvc2017,$(platform)))
 		LIBS += WindowsApp.lib
 	endif
 
-	CFLAGS += $(MSVC2017CompileFlags)
-	CXXFLAGS += $(MSVC2017CompileFlags)
+	CFLAGS += $(MSVC2017CompileFlags) -source-charset:utf-8
+	CXXFLAGS += $(MSVC2017CompileFlags) -source-charset:utf-8
 
 	TargetArchMoniker = $(subst $(WinPartition)_,,$(PlatformSuffix))
 

@@ -28,6 +28,11 @@
 
 #include "soundmng.h"
 
+#if defined(_MSC_VER)
+#define strcasecmp _stricmp
+#define strncasecmp _strnicmp
+#endif
+
 UINT8
 snddrv_drv2num(const char* cfgstr)
 {
