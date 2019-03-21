@@ -104,7 +104,7 @@ typedef struct {
 
 	UINT8	buf[0x8000];
 
-	// SEEK‚ÆRECALIBRATE‚Ì’Ê’mŠ„‚è‚İ—p
+	// SEEKã¨RECALIBRATEã®é€šçŸ¥å‰²ã‚Šè¾¼ã¿ç”¨
 	UINT8	int_timer[4];
 	UINT8	int_stat[4];
 } _FDC, *FDC;

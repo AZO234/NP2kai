@@ -33,25 +33,25 @@ UINT codecnv_ucs2toutf8(char *lpOutput, UINT cchOutput, const UINT16 *lpInput, U
 
 
 
-// codecnv�d�l
+// codecnv仕様
 //
-//	(dst != NULL) ���̓e�X�g�̂ݍs�Ȃ��B���̏ꍇdcnt=�����ƈ����B
+//	(dst != NULL) 時はテストのみ行なう。この場合dcnt=無限と扱う。
 //
-//	scnt == -1 �̏ꍇ�AString Mode�ƂȂ�B
-//	�ENULL�܂ŕϊ�����
-//	�Edcnt������Ȃ��Ă� dst�͕K��NULL Terminate�ƂȂ�B
+//	scnt == -1 の場合、String Modeとなる。
+//	・NULLまで変換する
+//	・dcntが足りなくても dstは必ずNULL Terminateとなる。
 //
-//	�߂�l: �������݃o�b�t�@�����Ԃ�B(NULL Terminate���܂�)
+//	戻り値: 書き込みバッファ数が返る。(NULL Terminateも含む)
 //
 //	codecnv_AtoB(NULL, 0, "ABC\0DEF", -1) == 4
 //	codecnv_AtoB(buf, 5, "ABC\0DEF", -1) == 4 / Copy(buf, "ABC\0", 4)
 //	codecnv_AtoB(buf, 3, "ABC\0DEF", -1) == 3 / Copy(buf, "AB\0", 3)
 //
 //
-//	scnt != -1 �̏ꍇ�ABinary Mode�ƂȂ�B
-//	�Escnt���ϊ����s�Ȃ�
+//	scnt != -1 の場合、Binary Modeとなる。
+//	・scnt分変換を行なう
 //
-//	�߂�l: �������݃o�b�t�@�����Ԃ�B
+//	戻り値: 書き込みバッファ数が返る。
 //
 //	codecnv_AtoB(NULL, 0, "ABC\0DEF", 7) == 7
 //	codecnv_AtoB(NULL, 0, "ABC\0DEF", 4) == 4

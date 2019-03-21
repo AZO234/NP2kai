@@ -11,7 +11,7 @@
 static const UINT8 nrg_sig_new[4] = {'N','E','R','5'};
 static const UINT8 nrg_sig_old[4] = {'N','E','R','O'};
 
-//	è”²‚«‚ÅÙ‚¢BE->LE•ÏŠ·ƒ}ƒNƒ
+//	æ‰‹æŠœãã§æ‹™ã„BE->LEå¤‰æ›ãƒã‚¯ãƒ­
 #define	UINT8_FROM_BE(val)	\
 	( val <<  4 ) | \
 	( val >>  4 )
@@ -52,7 +52,7 @@ typedef struct {
     UINT8	last_track;
 } __attribute__ ((packed)) NRG_DAO_Header;	/*	length: 22 bytes	*/
 
-//	ƒo[ƒWƒ‡ƒ“‚É‚æ‚Á‚Ä\‘¢‘Ì“à‚Ìƒƒ“ƒo‚ÌƒTƒCƒY‚ª‚¿‚°‚¦
+//	ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã«ã‚ˆã£ã¦æ§‹é€ ä½“å†…ã®ãƒ¡ãƒ³ãƒã®ã‚µã‚¤ã‚ºãŒã¡ã’ãˆ
 typedef struct {
     char	isrc[12];
     UINT16	sector_size;
@@ -102,7 +102,7 @@ typedef struct {
     UINT8	last_track;
 } NRG_DAO_Header;	/*	length: 22 bytes	*/
 
-//	ƒo[ƒWƒ‡ƒ“‚É‚æ‚Á‚Ä\‘¢‘Ì“à‚Ìƒƒ“ƒo‚ÌƒTƒCƒY‚ª‚¿‚°‚¦
+//	ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã«ã‚ˆã£ã¦æ§‹é€ ä½“å†…ã®ãƒ¡ãƒ³ãƒã®ã‚µã‚¤ã‚ºãŒã¡ã’ãˆ
 typedef struct {
     char	isrc[12];
     UINT16	sector_size;
@@ -150,9 +150,9 @@ static NRG_BlockIDs NRGBlockID[] = {
 };
 
 
-//	NRG“Ç‚İ‚İ
-//	¦è”²‚«À‘•‚È‚Ì‚ÅCUExƒuƒƒbƒN‚ÆDAOxƒuƒƒbƒN‚ÌŠÔ(H)‚ÉETNxƒuƒƒbƒN‚ª
-//	@‘¶İ‚µ‚Ä‚¢‚éƒCƒ[ƒW‚Í“Ç‚İ‚İ¸”s‚·‚é
+//	NRGèª­ã¿è¾¼ã¿
+//	â€»æ‰‹æŠœãå®Ÿè£…ãªã®ã§CUExãƒ–ãƒ­ãƒƒã‚¯ã¨DAOxãƒ–ãƒ­ãƒƒã‚¯ã®é–“(ï¼Ÿ)ã«ETNxãƒ–ãƒ­ãƒƒã‚¯ãŒ
+//	ã€€å­˜åœ¨ã—ã¦ã„ã‚‹ã‚¤ãƒ¡ãƒ¼ã‚¸ã¯èª­ã¿è¾¼ã¿å¤±æ•—ã™ã‚‹
 BRESULT opennrg(SXSIDEV sxsi, const OEMCHAR *fname) {
 
 	_CDTRK	trk[99];
@@ -181,7 +181,7 @@ BRESULT opennrg(SXSIDEV sxsi, const OEMCHAR *fname) {
 	}
 
 	filesize = file_getsize(fh);
-    file_seek(fh, -12, FSEEK_END);			//	––”ö‚©‚ç12byteˆÊ’u‚Ö
+    file_seek(fh, -12, FSEEK_END);			//	æœ«å°¾ã‹ã‚‰12byteä½ç½®ã¸
 
 	if (file_read(fh, sig, sizeof(sig)) != sizeof(sig)) {
 		goto opennrg_err1;
@@ -200,7 +200,7 @@ BRESULT opennrg(SXSIDEV sxsi, const OEMCHAR *fname) {
 	}
 	else {
         /*	Try old format, with 32-bit offset	*/
-	    file_seek(fh, -8, FSEEK_END);		//	––”ö‚©‚ç8byteˆÊ’u‚Ö
+	    file_seek(fh, -8, FSEEK_END);		//	æœ«å°¾ã‹ã‚‰8byteä½ç½®ã¸
 		if (file_read(fh, sig, sizeof(sig)) != sizeof(sig)) {
 			goto opennrg_err1;
 		}
@@ -227,7 +227,7 @@ BRESULT opennrg(SXSIDEV sxsi, const OEMCHAR *fname) {
 	if (file_read(fh, sig, sizeof(sig)) != sizeof(sig)) {
 		goto opennrg_err1;
 	}
-	//	CUEXACUESƒuƒƒbƒN“Ç‚İ‚İ
+	//	CUEXã€CUESãƒ–ãƒ­ãƒƒã‚¯èª­ã¿è¾¼ã¿
 	if (!memcmp(sig, NRGBlockID[0].block_id, sizeof(sig)) ||
 		!memcmp(sig, NRGBlockID[1].block_id, sizeof(sig))) {
 
@@ -247,13 +247,13 @@ BRESULT opennrg(SXSIDEV sxsi, const OEMCHAR *fname) {
 			}
 
 			if (NRG_CB.index == 0x00 && NRG_CB.track >= 0x02) {
-				//	ƒ‚ƒm‚É‚æ‚Á‚Äƒgƒ‰ƒbƒN”Ô†‹U‚Á‚Ä‚¢‚éCD-ROM‚ª‚ ‚é‚Á‚Û‚¢H
+				//	ãƒ¢ãƒã«ã‚ˆã£ã¦ãƒˆãƒ©ãƒƒã‚¯ç•ªå·å½ã£ã¦ã„ã‚‹CD-ROMãŒã‚ã‚‹ã£ã½ã„ï¼Ÿ
 //				trk[NRG_CB.track].pos0		= UINT32_FROM_BE(NRG_CB.start_sector);
 				trk[index].pos0		= UINT32_FROM_BE(NRG_CB.start_sector);
 			}
 			if (NRG_CB.index == 0x01 && NRG_CB.track != 0xAA) {
 				trk[index].adr_ctl	= UINT8_FROM_BE(NRG_CB.adr_ctl);
-				//	ƒ‚ƒm‚É‚æ‚Á‚Äƒgƒ‰ƒbƒN”Ô†‹U‚Á‚Ä‚¢‚éCD-ROM‚ª‚ ‚é‚Á‚Û‚¢H
+				//	ãƒ¢ãƒã«ã‚ˆã£ã¦ãƒˆãƒ©ãƒƒã‚¯ç•ªå·å½ã£ã¦ã„ã‚‹CD-ROMãŒã‚ã‚‹ã£ã½ã„ï¼Ÿ
 //				trk[index].point	= NRG_CB.track;
 				trk[index].point	= index+1;
 				trk[index].pos		= UINT32_FROM_BE(NRG_CB.start_sector);
@@ -262,14 +262,14 @@ BRESULT opennrg(SXSIDEV sxsi, const OEMCHAR *fname) {
 		}
 	}
 	else {
-		//	Å‰‚ªCUExƒuƒƒbƒNˆÈŠO‚È‚ç–¢‘Î‰
+		//	æœ€åˆãŒCUExãƒ–ãƒ­ãƒƒã‚¯ä»¥å¤–ãªã‚‰æœªå¯¾å¿œ
 		goto opennrg_err1;
 	}
 
 	if (file_read(fh, sig, sizeof(sig)) != sizeof(sig)) {
 		goto opennrg_err1;
 	}
-	//	DAOXADAOIƒuƒƒbƒN“Ç‚İ‚İ
+	//	DAOXã€DAOIãƒ–ãƒ­ãƒƒã‚¯èª­ã¿è¾¼ã¿
 	if (!memcmp(sig, NRGBlockID[4].block_id, sizeof(sig)) ||
 		!memcmp(sig, NRGBlockID[5].block_id, sizeof(sig))) {
 
@@ -317,7 +317,7 @@ BRESULT opennrg(SXSIDEV sxsi, const OEMCHAR *fname) {
 		}
 	}
 	else {
-		//	‚Q”Ô–Ú‚ª‚ªDAOxƒuƒƒbƒNˆÈŠO‚È‚ç–¢‘Î‰
+		//	ï¼’ç•ªç›®ãŒãŒDAOxãƒ–ãƒ­ãƒƒã‚¯ä»¥å¤–ãªã‚‰æœªå¯¾å¿œ
 		goto opennrg_err1;
 	}
 
@@ -332,7 +332,7 @@ BRESULT opennrg(SXSIDEV sxsi, const OEMCHAR *fname) {
 		goto opennrg_err1;
 	}
 
-	//	ƒŠ[ƒhƒAƒEƒgHƒ|ƒXƒgƒMƒƒƒbƒvH•ª150ƒZƒNƒ^ˆø‚­
+	//	ãƒªãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆï¼Ÿãƒã‚¹ãƒˆã‚®ãƒ£ãƒƒãƒ—ï¼Ÿåˆ†150ã‚»ã‚¯ã‚¿å¼•ã
 	sxsi->totals = total_sec - 150;
 
 	file_close(fh);

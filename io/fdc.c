@@ -1,5 +1,5 @@
 //
-// FDC ƒÊPD765A
+// FDC Î¼PD765A
 //
 
 #include	"compiler.h"
@@ -125,8 +125,8 @@ void fdcsend_success7(void) {
 		fdc.buf[2] = 0;
 	}
 	else {
-		//	FDƒCƒ[ƒWƒtƒ@ƒCƒ‹‚ªFDCƒŠƒUƒ‹ƒgƒR[ƒh‚ğ‚Á‚Ä‚¢‚éê‡‚Í
-		//	(fdc.stat‚Éİ’è‚µ‚Ä‚¢‚é‚Í‚¸‚È‚Ì‚Å)‚»‚¿‚ç‚ğİ’è
+		//	FDã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ•ã‚¡ã‚¤ãƒ«ãŒFDCãƒªã‚¶ãƒ«ãƒˆã‚³ãƒ¼ãƒ‰ã‚’æŒã£ã¦ã„ã‚‹å ´åˆã¯
+		//	(fdc.statã«è¨­å®šã—ã¦ã„ã‚‹ã¯ãšãªã®ã§)ãã¡ã‚‰ã‚’è¨­å®š
 		fdc.buf[0] = (fdc.hd << 2) | fdc.us | (UINT8)(fdc.stat[fdc.us] >>  0);
 		fdc.buf[1] = (UINT8)(fdc.stat[fdc.us] >>  8);
 		fdc.buf[2] = (UINT8)(fdc.stat[fdc.us] >> 16);
@@ -150,7 +150,7 @@ void fdcsend_success7(void) {
 }
 
 #if 0
-// FDC‚Ìƒ^ƒCƒ€ƒAƒEƒg			‚Ü‚Ÿ–{“–‚Í‚±‚ñ‚È‚ñ‚¶‚áƒ_ƒ‚¾‚¯‚Çc	ver0.29
+// FDCã®ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆ			ã¾ãæœ¬å½“ã¯ã“ã‚“ãªã‚“ã˜ã‚ƒãƒ€ãƒ¡ã ã‘ã©â€¦	ver0.29
 void fdctimeoutproc(NEVENTITEM item) {
 
 	if (item->flag & NEVENT_SETEVENT) {
@@ -278,7 +278,7 @@ static void FDC_SenseDeviceStatus(void) {				// cmd: 04
 				if (!fdc.treg[fdc.us]) {
 					fdc.buf[0] |= 0x10;
 				}
-				if (fdd_diskready(fdc.us) || (fdc.ctrlreg & 0x40)) {/* 170107 ”O‚Ì‚½‚ß */
+				if (fdd_diskready(fdc.us) || (fdc.ctrlreg & 0x40)) {/* 170107 å¿µã®ãŸã‚ */
 					fdc.buf[0] |= 0x20;
 				}
 				if (fddfile[fdc.us].protect) {
@@ -496,16 +496,16 @@ static void FDC_Recalibrate(void) {						// cmd: 07
 			if (!(fdc.equip & (1 << fdc.us))) {
 				fdc.int_stat[fdc.us] |= FDCRLT_IC0;
 				if (!(fdc.ctrlreg & 0x40)) {
-					// ‹­§Ready‚Å‚È‚¯‚ê‚ÎNR
+					// å¼·åˆ¶Readyã§ãªã‘ã‚Œã°NR
 					fdc.int_stat[fdc.us] |= FDCRLT_NR;
 				}
 				else {
-					// ‹­§Ready‚È‚ç‚ÎNR‚Í—§‚½‚È‚¢‚ªEC‚ª—§‚Â(sector0‚ªŒ©‚Â‚©‚ç‚È‚¢‚Ì‚Å)
+					// å¼·åˆ¶Readyãªã‚‰ã°NRã¯ç«‹ãŸãªã„ãŒECãŒç«‹ã¤(sector0ãŒè¦‹ã¤ã‹ã‚‰ãªã„ã®ã§)
 					fdc.int_stat[fdc.us] |= FDCRLT_EC;
 				}
 			}
 			else if (!fdd_diskready(fdc.us)) {
-				// Win95, 98—p
+				// Win95, 98ç”¨
 				fdc.ncn = 0;
 				fdc.R = 1;						/* 170107 for Windows95 */
 				fdc.crcn = fdc.R;				/* 170107 for Windows95 */
@@ -598,7 +598,7 @@ static void FDC_SenceintStatus(void) {					// cmd: 08
 	else if ((fdc.ctrlreg & 0x08) == 0) {
 		//fdc.buf[0] |= 0x08;
 		//fdc.bufcnt = 1;
-		fdc.ctrlreg |= 0x08; // ƒAƒNƒZƒX‚³‚ê‚½‚çƒ‚[ƒ^‰ñ‚·¥¥¥ np21w ver0.86 rev39
+		fdc.ctrlreg |= 0x08; // ã‚¢ã‚¯ã‚»ã‚¹ã•ã‚ŒãŸã‚‰ãƒ¢ãƒ¼ã‚¿å›ã™ï½¥ï½¥ï½¥ np21w ver0.86 rev39
 	}
 	/* 170101 ST modified to work on Windows 9x/2000 ... to */
 }
@@ -843,7 +843,7 @@ void DMACCALL fdc_datawrite(REG8 data) {
 			default:
 				fdc.cmd = data;
 				get_mtmfsk();
-				fdc.status |= FDCSTAT_CB;	// ƒRƒ}ƒ“ƒhó‚¯‚½‚çCB‚ğƒZƒbƒg
+				fdc.status |= FDCSTAT_CB;	// ã‚³ãƒãƒ³ãƒ‰å—ã‘ãŸã‚‰CBã‚’ã‚»ãƒƒãƒˆ
 				if (FDCCMD_TABLE[data & 0x1f]) {
 					fdc.event = FDCEVENT_CMDRECV;
 					fdc.cmdp = 0;
@@ -874,7 +874,7 @@ REG8 DMACCALL fdc_dataread(void) {
 					fdc.status &= ~(FDCSTAT_DIO | FDCSTAT_CB);
 					fdc.status |= FDCSTAT_RQM;
 				}
-				// Š„‚è‚İƒNƒŠƒAˆ—
+				// å‰²ã‚Šè¾¼ã¿ã‚¯ãƒªã‚¢å‡¦ç†
 				for (i = 0; i < 4; i++) {
 					if (fdc.stat[i]) {
 						break;
@@ -914,7 +914,7 @@ REG8 DMACCALL fdc_dataread(void) {
 	return(fdc.lastdata);
 }
 
-/* SEEK‚ÆRECALIBRATE‚ÌŠ„‚è‚İ’Ê’mˆ— */
+/* SEEKã¨RECALIBRATEã®å‰²ã‚Šè¾¼ã¿é€šçŸ¥å‡¦ç† */
 void fdc_intdelay(void) {
 
 	int		i;
@@ -971,7 +971,7 @@ static void IOOUTCALL fdc_o94(UINT port, REG8 dat) {
 			fdcstatusreset();
 
 			if(dat & 0x08){ // XXX: Workaround for OSASK
-				// FDCƒŠƒZƒbƒgŒã 1,024msˆÈ“à‚ÉINT‚ªƒAƒNƒeƒBƒu‚É‚È‚é
+				// FDCãƒªã‚»ãƒƒãƒˆå¾Œ 1,024msä»¥å†…ã«INTãŒã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã«ãªã‚‹
 				for (i = 0; i < 4; i++) {
 					fdc.int_stat[i] = fdc.stat[i];
 					fdc.int_timer[i] = FDC_INT_DELAY;
@@ -1037,16 +1037,16 @@ static REG8 IOINPCALL fdc_i94(UINT port) {
 	if (!(port & 0x10))		/* CC */
 	{
 		ret |= 0x20;		/* DMA */
-		ret |= 0x10;		/* ready‚ğ—§‚Ä‚é‚é‚é */
+		ret |= 0x10;		/* readyã‚’ç«‹ã¦ã‚‹ã‚‹ã‚‹ */
 	}
 
 	if (pccore.dipsw[0] & 8)
 	{
-		ret |= 0x04;		/* “à‘ —Dæ */
+		ret |= 0x04;		/* å†…è”µå„ªå…ˆ */
 	}
 	else
 	{
-		ret |= 0x08;		/* ŠO•t‚¯—Dæ */
+		ret |= 0x08;		/* å¤–ä»˜ã‘å„ªå…ˆ */
 	}
 	TRACEOUT(("fdc in %.2x %.2x [%.4x:%.4x]", port, ret,
 														CPU_CS, CPU_IP));

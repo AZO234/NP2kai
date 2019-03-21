@@ -1,262 +1,262 @@
 
-// ---- ��`
+// ---- 定義
 
-  �œK���ׂ̈̃������g�p�ʂ̗}��
-    MEMOPTIMIZE = 0�`2
+  最適化の為のメモリ使用量の抑制
+    MEMOPTIMIZE = 0〜2
 
-    CPU�ɂ��ȉ��̐��l���Z�b�g����邱�Ƃ����҂��Ă���
-      MEMOPTIMIZE����` �c Celeron333A�ȍ~�̃Z�J���h�L���b�V���L���@
-      MEMOPTIMIZE = 0   �c x86
-      MEMOPTIMIZE = 1   �c PowerPC���̃f�X�N�g�b�v�pRISC
-      MEMOPTIMIZE = 2   �c StrongARM���̑g�ݍ��ݗpRISC
-
-
-  �R���p�C���̈������E�߂�l�̍œK��
-    �������E�߂�l��int�^�ȊO���w�肵���ꍇ�ɁA�œK�����L���ɓ����Ȃ�
-    �R���p�C�������̒�`�ł��B
-    �ʏ�� common.h �̕����g�p���܂��B
-      REG8 �c UINT8�^ / (sizeof(REG8) != 1)�̏ꍇ ��ʃr�b�g��0fill���鎖
-      REG16 �c UINT16�^ / (sizeof(REG16) != 2)�̏ꍇ ��ʃr�b�g��0fill���鎖
-�@�@�@��������l���Z�b�g���鑤��0fill���A�Q�Ƒ���0fill�������̂ƌ��Ȃ��܂��B
+    CPUにより以下の数値をセットされることを期待している
+      MEMOPTIMIZE未定義 … Celeron333A以降のセカンドキャッシュ有効機
+      MEMOPTIMIZE = 0   … x86
+      MEMOPTIMIZE = 1   … PowerPC等のデスクトップ用RISC
+      MEMOPTIMIZE = 2   … StrongARM等の組み込み用RISC
 
 
-  OS�̌���̑I��
-    OSLANG_SJIS �c Shift-JIS�̊����R�[�h�����߂���
-    OSLANG_EUC  �c EUC�̊����R�[�h�����߂���
-
-    OSLINEBREAK_CR   �c MacOS   "\r"
-    OSLINEBREAK_LF   �c Unix    "\n"
-    OSLINEBREAK_CRLF �c Windows "\r\n"
-
-      �����݂͈ȉ��̃\�[�X�R�[�h���Ōʂɐݒ肵�Ă��܂��B
-        (Windows�� API�ɂ���� \r\n�̏ꍇ��\n�̏ꍇ������̂Łc)
-        �Ecommon/_memory.c
-        �Edebugsub.c
-        �Estatsave.c
-
-    (milstr.h�I��p)
-    SUPPORT_ANK      �c ANK�����񑀍�֐��������N����
-    SUPPORT_SJIS     �c SJIS�����񑀍�֐��������N����
-    SUPPORT_EUC      �c EUC�����񑀍�֐��������N����
-
-      ������milstr.h�ł��ׂĒ�`���ꂽ�܂܂ɂȂ��Ă��܂��B
-        ver0.73��milstr.h�̒�`���O�� compiler.h�Ŏw�肵�����ƂȂ�܂��B
+  コンパイラの引き数・戻り値の最適化
+    引き数・戻り値でint型以外を指定した場合に、最適化が有効に働かない
+    コンパイラ向けの定義です。
+    通常は common.h の物を使用します。
+      REG8 … UINT8型 / (sizeof(REG8) != 1)の場合 上位ビットを0fillする事
+      REG16 … UINT16型 / (sizeof(REG16) != 2)の場合 上位ビットを0fillする事
+　　　いずれも値をセットする側が0fillし、参照側は0fillしたものと見なします。
 
 
-�@CPUCORE_IA32
-�@�@IA32�A�[�L�e�N�`�����̗p
-�@�@�@i386c���g�p����ꍇ�̒��ӓ_
-�@�@  �ECPU panic ��x���\������ msgbox() �Ƃ��� API ���g�p���܂��B
-�@�@�@�@compiler.h ������œK���ɒ�`���Ă��������B
-�@�@�@�Esigsetjmp(3), siglongjmp(3) �������A�[�L�e�N�`���͈ȉ��� define ��
-�@�@�@�@compiler.h ������ɒǉ����Ă��������B
-�@�@�@�@----------------------------------------------------------------------
+  OSの言語の選択
+    OSLANG_SJIS … Shift-JISの漢字コードを解釈する
+    OSLANG_EUC  … EUCの漢字コードを解釈する
+
+    OSLINEBREAK_CR   … MacOS   "\r"
+    OSLINEBREAK_LF   … Unix    "\n"
+    OSLINEBREAK_CRLF … Windows "\r\n"
+
+      ※現在は以下のソースコード内で個別に設定しています。
+        (Windowsが APIによって \r\nの場合と\nの場合があるので…)
+        ・common/_memory.c
+        ・debugsub.c
+        ・statsave.c
+
+    (milstr.h選択用)
+    SUPPORT_ANK      … ANK文字列操作関数をリンクする
+    SUPPORT_SJIS     … SJIS文字列操作関数をリンクする
+    SUPPORT_EUC      … EUC文字列操作関数をリンクする
+
+      ※現在milstr.hですべて定義されたままになっています。
+        ver0.73でmilstr.hの定義を外し compiler.hで指定した物となります。
+
+
+　CPUCORE_IA32
+　　IA32アーキテクチャを採用
+　　　i386cを使用する場合の注意点
+　　  ・CPU panic や警告表示時に msgbox() という API を使用します。
+　　　　compiler.h あたりで適当に定義してください。
+　　　・sigsetjmp(3), siglongjmp(3) が無いアーキテクチャは以下の define を
+　　　　compiler.h あたりに追加してください。
+　　　　----------------------------------------------------------------------
         #define sigjmp_buf              jmp_buf
         #define sigsetjmp(env, mask)    setjmp(env)
         #define siglongjmp(env, val)    longjmp(env, val)
-�@�@�@�@----------------------------------------------------------------------
+　　　　----------------------------------------------------------------------
 
   CPUSTRUC_MEMWAIT
-�@�@�@cpucore�\���̂Ƀ������E�F�C�g�l���ړ�����(vramop)
+　　　cpucore構造体にメモリウェイト値を移動する(vramop)
 
-�@SUPPORT_CRT15KHZ
-�@�@�@��������15.98kHz���T�|�[�g����(DIPSW1-1)
+　SUPPORT_CRT15KHZ
+　　　水平走査15.98kHzをサポートする(DIPSW1-1)
 
-�@SUPPORT_CRT31KHZ
-�@�@�@��������31.47kHz���T�|�[�g����
-�@�@�@Fellow�^�C�v�͂���
+　SUPPORT_CRT31KHZ
+　　　水平走査31.47kHzをサポートする
+　　　Fellowタイプはこれ
 
-�@SUPPORT_PC9821
-�@�@�@PC-9821�g���̃T�|�[�g
-�@�@�@���R�ł��� 386�K�{�ł��B
-�@�@�@�܂� SUPPORT_CRT31KHZ���K�v�ł�(�n�C���]BIOS���g�p�����)
+　SUPPORT_PC9821
+　　　PC-9821拡張のサポート
+　　　当然ですが 386必須です。
+　　　また SUPPORT_CRT31KHZも必要です(ハイレゾBIOSを使用する為)
 
-�@SUPPORT_PC9861K
-�@�@�@PC-9861K(RS-232C�g��I/F)���T�|�[�g
+　SUPPORT_PC9861K
+　　　PC-9861K(RS-232C拡張I/F)をサポート
 
-�@SUPPORT_IDEIO
-�@�@�@IDE�� I/O���x���ł̃T�|�[�g
-�@�@�@�ł� ATA�̃��[�h���x�����ł��Ȃ��c
+　SUPPORT_IDEIO
+　　　IDEの I/Oレベルでのサポート
+　　　でも ATAのリード程度しかできない…
 
-�@SUPPORT_SASI
-�@�@�@SASI HDD���T�|�[�g
-�@�@�@��`���Ȃ���Ώ펞IDE�Ƃ��č쓮���܂��B
+　SUPPORT_SASI
+　　　SASI HDDをサポート
+　　　定義がなければ常時IDEとして作動します。
 
-�@SUPPORT_SCSI
-�@�@�@SCSI HDD���T�|�[�g�c�S�R�����Ȃ�
+　SUPPORT_SCSI
+　　　SCSI HDDをサポート…全然動かない
 
-�@SUPPORT_S98
-�@�@�@S98���O���擾
+　SUPPORT_S98
+　　　S98ログを取得
 
-�@SUPPORT_WAVEREC
-�@�@Sound���x���� wave�t�@�C���̏����o���֐����T�|�[�g
-�@�@�A�������o������ �T�E���h�o�͂��~�܂�̂Ł@�قڃf�o�O�p
+　SUPPORT_WAVEREC
+　　Soundレベルで waveファイルの書き出し関数をサポート
+　　但し書き出し中は サウンド出力が止まるので　ほぼデバグ用
 
 
 // ---- screen
 
-  PC-9801�V���[�Y�̉�ʃT�C�Y�͕W���� 641x400�B
-  VGA�ł͎��܂�Ȃ��̂� �����I��VGA�Ɏ��߂�ׂ� ��ʉ��T�C�Y�� width + extend
-�Ƃ���B
+  PC-9801シリーズの画面サイズは標準で 641x400。
+  VGAでは収まらないので 強制的にVGAに収める為に 画面横サイズは width + extend
+とする。
   8 < width < 640
   8 < height < 480
   extend = 0 or 1
 
 typedef struct {
-	BYTE	*ptr;		// VRAM�|�C���^
-	int		xalign;		// x�����I�t�Z�b�g
-	int		yalign;		// y�����I�t�Z�b�g
-	int		width;		// ����
-	int		height;		// �c��
-	UINT	bpp;		// �X�N���[���F�r�b�g
-	int		extend;		// ���g��
+	BYTE	*ptr;		// VRAMポインタ
+	int		xalign;		// x方向オフセット
+	int		yalign;		// y方向オフセット
+	int		width;		// 横幅
+	int		height;		// 縦幅
+	UINT	bpp;		// スクリーン色ビット
+	int		extend;		// 幅拡張
 } SCRNSURF;
 
-  �T�[�t�F�X�T�C�Y�� (width + extern) x height�B
+  サーフェスサイズは (width + extern) x height。
 
 
 const SCRNSURF *scrnmng_surflock(void);
-  ��ʕ`��J�n
+  画面描画開始
 
 void scrnmng_surfunlock(const SCRNSURF *surf);
-  ��ʕ`��I��(���̃^�C�~���O�ŕ`��)
+  画面描画終了(このタイミングで描画)
 
 
 void scrnmng_setwidth(int posx, int width)
 void scrnmng_setextend(int extend)
 void scrnmng_setheight(int posy, int height)
-  �`��T�C�Y�̕ύX
-  �E�B���h�E�T�C�Y�̕ύX����
-  �t���X�N���[�����ł���� �\���̈��ύX�B
-  SCRNSURF�ł͂��̒l��Ԃ��悤�ɂ���
-  posx, width�� 8�̔{��
+  描画サイズの変更
+  ウィンドウサイズの変更する
+  フルスクリーン中であれば 表示領域を変更。
+  SCRNSURFではこの値を返すようにする
+  posx, widthは 8の倍数
 
-BOOL scrnmng_isfullscreen(void) �c NP2�R�A�ł͖��g�p
-  �t���X�N���[����Ԃ̎擾
-    return: ��0�Ńt���X�N���[��
+BOOL scrnmng_isfullscreen(void) … NP2コアでは未使用
+  フルスクリーン状態の取得
+    return: 非0でフルスクリーン
 
 BOOL scrnmng_haveextend(void)
-  ������Ԃ̎擾
-    return: ��0�� �����g���T�|�[�g
+  横幅状態の取得
+    return: 非0で 横幅拡張サポート
 
 UINT scrnmng_getbpp(void)
-  �X�N���[���F�r�b�g���̎擾
-    return: �r�b�g��(8/16/24/32)
+  スクリーン色ビット数の取得
+    return: ビット数(8/16/24/32)
 
 void scrnmng_palchanged(void)
-  �p���b�g�X�V�̒ʒm(8bit�X�N���[���T�|�[�g���̂�)
+  パレット更新の通知(8bitスクリーンサポート時のみ)
 
 RGB16 scrnmng_makepal16(RGB32 pal32)
-  RGB32���� 16bit�F���쐬����B(16bit�X�N���[���T�|�[�g���̂�)
+  RGB32から 16bit色を作成する。(16bitスクリーンサポート時のみ)
 
 
 
 // ---- sound
 
-NP2�̃T�E���h�f�[�^�� sound.c�̈ȉ��̊֐����擾
+NP2のサウンドデータは sound.cの以下の関数より取得
   const SINT32 *sound_pcmlock(void)
   void sound_pcmunlock(const SINT32 *hdl)
 
 
-SOUND_CRITICAL  �Z�}�t�H������(see sndcsec.c)
-SOUNDRESERVE    �\��o�b�t�@�̃T�C�Y(�~���b)
-  �T�E���h�����荞�ݏ�������ꍇ�̎w��B
-  ���荞�݂̍ő剄�؎��Ԃ�SOUNDRESERVE�Ŏw��B
-  (Win9x�̏ꍇ�A���O�Ń����O�o�b�t�@��������̂� ���荞�ݖ����E�w�莞�Ԓʂ��
-  �T�E���h���C�g������̂ŁA���̏����͕s�v������)
+SOUND_CRITICAL  セマフォを入れる(see sndcsec.c)
+SOUNDRESERVE    予約バッファのサイズ(ミリ秒)
+  サウンドを割り込み処理する場合の指定。
+  割り込みの最大延滞時間をSOUNDRESERVEで指定。
+  (Win9xの場合、自前でリングバッファを見張るので 割り込み無し・指定時間通りに
+  サウンドライトが来るので、この処理は不要だった)
 
 
 UINT soundmng_create(UINT rate, UINT ms)
-  �T�E���h�X�g���[���̊m��
-    input:  rate    �T���v�����O���[�g(11025/22050/44100)
-            ms      �T���v�����O�o�b�t�@�T�C�Y(�~���b)
-    return: �l�������o�b�t�@�̃T���v�����O��
+  サウンドストリームの確保
+    input:  rate    サンプリングレート(11025/22050/44100)
+            ms      サンプリングバッファサイズ(ミリ秒)
+    return: 獲得したバッファのサンプリング数
 
-            ms�ɏ]���K�v�͂Ȃ�(SDL�Ƃ��o�b�t�@�T�C�Y�����肳���̂�)
-            NP2�̃T�E���h�o�b�t�@����� �Ԃ�l�݂̂𗘗p���Ă��܂��B
+            msに従う必要はない(SDLとかバッファサイズが限定されるので)
+            NP2のサウンドバッファ操作は 返り値のみを利用しています。
 
 
 void soundmng_destroy(void)
-  �T�E���h�X�g���[���̏I��
+  サウンドストリームの終了
 
 void soundmng_reset(void)
-  �T�E���h�X�g���[���̃��Z�b�g
+  サウンドストリームのリセット
 
 void soundmng_play(void)
-  �T�E���h�X�g���[���̍Đ�
+  サウンドストリームの再生
 
 void soundmng_stop(void)
-  �T�E���h�X�g���[���̒�~
+  サウンドストリームの停止
 
 void soundmng_sync(void)
-  �T�E���h�X�g���[���̃R�[���o�b�N
+  サウンドストリームのコールバック
 
 void soundmng_setreverse(BOOL reverse)
-  �T�E���h�X�g���[���̏o�͔��]�ݒ�
-    input:  reverse ��0�ō��E���]
+  サウンドストリームの出力反転設定
+    input:  reverse 非0で左右反転
 
 BOOL soundmng_pcmplay(UINT num, BOOL loop)
-  PCM�Đ�
-    input:  num     PCM�ԍ�
-            loop    ��0�Ń��[�v
+  PCM再生
+    input:  num     PCM番号
+            loop    非0でループ
 
 void soundmng_pcmstop(UINT num)
-  PCM��~
-    input:  num     PCM�ԍ�
+  PCM停止
+    input:  num     PCM番号
 
 
 
 // ---- mouse
 
 BYTE mousemng_getstat(SINT16 *x, SINT16 *y, int clear)
-  �}�E�X�̏�Ԏ擾
-    input:  clear   ��0�� ��Ԃ��擾��ɃJ�E���^�����Z�b�g����
-    output: *x      clear�����x�����J�E���g
-            *y      clear�����y�����J�E���g
-    return: bit7    ���{�^���̏�� (0:����)
-            bit5    �E�{�^���̏�� (0:����)
+  マウスの状態取得
+    input:  clear   非0で 状態を取得後にカウンタをリセットする
+    output: *x      clearからのx方向カウント
+            *y      clearからのy方向カウント
+    return: bit7    左ボタンの状態 (0:押下)
+            bit5    右ボタンの状態 (0:押下)
 
 
 
 // ---- serial/parallel/midi
 
 COMMNG commng_create(UINT device)
-  �V���A���I�[�v��
-    input:  �f�o�C�X�ԍ�
-    return: �n���h�� (���s��NULL)
+  シリアルオープン
+    input:  デバイス番号
+    return: ハンドル (失敗時NULL)
 
 
 void commng_destroy(COMMNG hdl)
-  �V���A���N���[�Y
-    input:  �n���h�� (���s��NULL)
+  シリアルクローズ
+    input:  ハンドル (失敗時NULL)
 
 
 
 // ---- joy stick
 
 BYTE joymng_getstat(void)
-  �W���C�X�e�B�b�N�̏�Ԏ擾
+  ジョイスティックの状態取得
 
-    return: bit0    ��{�^���̏�� (0:����)
-            bit1    ���{�^���̏��
-            bit2    ���{�^���̏��
-            bit3    �E�{�^���̏��
-            bit4    �A�˃{�^���P�̏��
-            bit5    �A�˃{�^���Q�̏��
-            bit6    �{�^���P�̏��
-            bit7    �{�^���Q�̏��
+    return: bit0    上ボタンの状態 (0:押下)
+            bit1    下ボタンの状態
+            bit2    左ボタンの状態
+            bit3    右ボタンの状態
+            bit4    連射ボタン１の状態
+            bit5    連射ボタン２の状態
+            bit6    ボタン１の状態
+            bit7    ボタン２の状態
 
 
 // ----
 
 void sysmng_update(UINT bitmap)
-  ��Ԃ��ω������ꍇ�ɃR�[�������B
+  状態が変化した場合にコールされる。
 
 void sysmng_cpureset(void)
-  ���Z�b�g���ɃR�[�������
+  リセット時にコールされる
 
 
 
 void taskmng_exit(void)
-  �V�X�e�����I������B
+  システムを終了する。
 

@@ -1,12 +1,12 @@
 /**
  * @file	WndBase.h
- * @brief	ƒEƒBƒ“ƒhƒEŠî’êƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦åŸºåº•ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
 
 /**
- * @brief ƒEƒBƒ“ƒhƒEŠî’êƒNƒ‰ƒX
+ * @brief ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦åŸºåº•ã‚¯ãƒ©ã‚¹
  */
 class CWndBase
 {
@@ -86,8 +86,8 @@ public:
 };
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
- * @param[in] hWnd ƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * @param[in] hWnd ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ«
  */
 inline CWndBase::CWndBase(HWND hWnd)
 	: m_hWnd(hWnd)
@@ -95,9 +95,9 @@ inline CWndBase::CWndBase(HWND hWnd)
 }
 
 /**
- * ƒIƒyƒŒ[ƒ^
- * @param[in] hWnd ƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚ªãƒšãƒ¬ãƒ¼ã‚¿
+ * @param[in] hWnd ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ«
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 inline CWndBase& CWndBase::operator=(HWND hWnd)
 {
@@ -106,8 +106,8 @@ inline CWndBase& CWndBase::operator=(HWND hWnd)
 }
 
 /**
- * ƒAƒ^ƒbƒ`
- * @param[in] hWnd ƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹
+ * ã‚¢ã‚¿ãƒƒãƒ
+ * @param[in] hWnd ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ«
  */
 inline void CWndBase::Attach(HWND hWnd)
 {
@@ -115,8 +115,8 @@ inline void CWndBase::Attach(HWND hWnd)
 }
 
 /**
- * ƒfƒ^ƒbƒ`
- * @return ˆÈ‘O‚ÌƒCƒ“ƒXƒ^ƒ“ƒX
+ * ãƒ‡ã‚¿ãƒƒãƒ
+ * @return ä»¥å‰ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 inline HWND CWndBase::Detach()
 {
@@ -126,7 +126,7 @@ inline HWND CWndBase::Detach()
 }
 
 /**
- * HWND ƒIƒyƒŒ[ƒ^
+ * HWND ã‚ªãƒšãƒ¬ãƒ¼ã‚¿
  * @return HWND
  */
 inline CWndBase::operator HWND() const
@@ -135,8 +135,8 @@ inline CWndBase::operator HWND() const
 }
 
 /**
- * Œ»İ‚ÌƒEƒBƒ“ƒhƒE ƒXƒ^ƒCƒ‹‚ğ•Ô‚µ‚Ü‚·
- * @return ƒEƒBƒ“ƒhƒE‚ÌƒXƒ^ƒCƒ‹
+ * ç¾åœ¨ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ã‚¹ã‚¿ã‚¤ãƒ«ã‚’è¿”ã—ã¾ã™
+ * @return ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚¹ã‚¿ã‚¤ãƒ«
  */
 inline DWORD CWndBase::GetStyle() const
 {
@@ -144,12 +144,12 @@ inline DWORD CWndBase::GetStyle() const
 }
 
 /**
- * ƒEƒBƒ“ƒhƒE ƒXƒ^ƒCƒ‹‚ğ•ÏX‚µ‚Ü‚·
- * @param[in] dwRemove ƒXƒ^ƒCƒ‹‚ÌƒŠƒrƒWƒ‡ƒ“’†‚Éíœ‚·‚éƒEƒBƒ“ƒhƒE ƒXƒ^ƒCƒ‹‚ğw’è‚µ‚Ü‚·
- * @param[in] dwAdd ƒXƒ^ƒCƒ‹‚ÌƒŠƒrƒWƒ‡ƒ“’†‚É’Ç‰Á‚·‚éƒEƒBƒ“ƒhƒE ƒXƒ^ƒCƒ‹‚ğw’è‚µ‚Ü‚·
- * @param[in] nFlags SetWindowPos‚É“n‚·ƒtƒ‰ƒO
- * @retval TRUE •ÏX‚³‚ê‚½
- * @retval FALSE •ÏX‚³‚ê‚È‚©‚Á‚½
+ * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ã‚¹ã‚¿ã‚¤ãƒ«ã‚’å¤‰æ›´ã—ã¾ã™
+ * @param[in] dwRemove ã‚¹ã‚¿ã‚¤ãƒ«ã®ãƒªãƒ“ã‚¸ãƒ§ãƒ³ä¸­ã«å‰Šé™¤ã™ã‚‹ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ã‚¹ã‚¿ã‚¤ãƒ«ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] dwAdd ã‚¹ã‚¿ã‚¤ãƒ«ã®ãƒªãƒ“ã‚¸ãƒ§ãƒ³ä¸­ã«è¿½åŠ ã™ã‚‹ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ã‚¹ã‚¿ã‚¤ãƒ«ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] nFlags SetWindowPosã«æ¸¡ã™ãƒ•ãƒ©ã‚°
+ * @retval TRUE å¤‰æ›´ã•ã‚ŒãŸ
+ * @retval FALSE å¤‰æ›´ã•ã‚Œãªã‹ã£ãŸ
  */
 inline BOOL CWndBase::ModifyStyle(DWORD dwRemove, DWORD dwAdd, UINT nFlags)
 {
@@ -168,11 +168,11 @@ inline BOOL CWndBase::ModifyStyle(DWORD dwRemove, DWORD dwAdd, UINT nFlags)
 }
 
 /**
- * ‚±‚ÌƒEƒBƒ“ƒhƒE‚Éw’è‚³‚ê‚½ƒƒbƒZ[ƒW‚ğ‘—M‚µ‚Ü‚·
- * @param[in] message ‘—M‚³‚ê‚éƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
- * @param[in] wParam ’Ç‰Á‚ÌƒƒbƒZ[ƒWˆË‘¶î•ñ‚ğw’è‚µ‚Ü‚·
- * @param[in] lParam ’Ç‰Á‚ÌƒƒbƒZ[ƒWˆË‘¶î•ñ‚ğw’è‚µ‚Ü‚·
- * @return ƒƒbƒZ[ƒW‚Ìˆ—‚ÌŒ‹‰Ê
+ * ã“ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«æŒ‡å®šã•ã‚ŒãŸãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’é€ä¿¡ã—ã¾ã™
+ * @param[in] message é€ä¿¡ã•ã‚Œã‚‹ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] wParam è¿½åŠ ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ä¾å­˜æƒ…å ±ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] lParam è¿½åŠ ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ä¾å­˜æƒ…å ±ã‚’æŒ‡å®šã—ã¾ã™
+ * @return ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã®çµæœ
  */
 inline LRESULT CWndBase::SendMessage(UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -180,12 +180,12 @@ inline LRESULT CWndBase::SendMessage(UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ƒƒbƒZ[ƒW‚ğƒEƒBƒ“ƒhƒE‚ÌƒƒbƒZ[ƒW ƒLƒ…[‚É’u‚«A‘Î‰‚·‚éƒEƒBƒ“ƒhƒE‚ªƒƒbƒZ[ƒW‚ğˆ—‚·‚é‚Ì‚ğ‘Ò‚½‚¸‚É•Ô‚³‚ê‚Ü‚·
- * @param[in] message ƒ|ƒXƒg‚·‚éƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
- * @param[in] wParam ƒƒbƒZ[ƒW‚Ì•t‰Áî•ñ‚ğw’è‚µ‚Ü‚·
- * @param[in] lParam ƒƒbƒZ[ƒW‚Ì•t‰Áî•ñ‚ğw’è‚µ‚Ü‚·
- * @retval TRUE ¬Œ÷
- * @retval FALSE ¸”s
+ * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ã‚­ãƒ¥ãƒ¼ã«ç½®ãã€å¯¾å¿œã™ã‚‹ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡¦ç†ã™ã‚‹ã®ã‚’å¾…ãŸãšã«è¿”ã•ã‚Œã¾ã™
+ * @param[in] message ãƒã‚¹ãƒˆã™ã‚‹ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] wParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®ä»˜åŠ æƒ…å ±ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] lParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®ä»˜åŠ æƒ…å ±ã‚’æŒ‡å®šã—ã¾ã™
+ * @retval TRUE æˆåŠŸ
+ * @retval FALSE å¤±æ•—
  */
 inline BOOL CWndBase::PostMessage(UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -193,10 +193,10 @@ inline BOOL CWndBase::PostMessage(UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * w’è‚³‚ê‚½ƒEƒBƒ“ƒhƒE‚Ìƒ^ƒCƒgƒ‹ƒo[‚ÌƒeƒLƒXƒg‚ğ•ÏX‚µ‚Ü‚·
- * @param[in] lpString V‚µ‚¢ƒEƒBƒ“ƒhƒEƒ^ƒCƒgƒ‹‚Ü‚½‚ÍƒRƒ“ƒgƒ[ƒ‹‚ÌƒeƒLƒXƒg‚Æ‚µ‚Äg‚í‚ê‚éANULL ‚ÅI‚í‚é•¶š—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğw’è‚µ‚Ü‚·
- * @retval TRUE ¬Œ÷
- * @retval FALSE ¸”s
+ * æŒ‡å®šã•ã‚ŒãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚¿ã‚¤ãƒˆãƒ«ãƒãƒ¼ã®ãƒ†ã‚­ã‚¹ãƒˆã‚’å¤‰æ›´ã—ã¾ã™
+ * @param[in] lpString æ–°ã—ã„ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¿ã‚¤ãƒˆãƒ«ã¾ãŸã¯ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®ãƒ†ã‚­ã‚¹ãƒˆã¨ã—ã¦ä½¿ã‚ã‚Œã‚‹ã€NULL ã§çµ‚ã‚ã‚‹æ–‡å­—åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’æŒ‡å®šã—ã¾ã™
+ * @retval TRUE æˆåŠŸ
+ * @retval FALSE å¤±æ•—
  */
 inline BOOL CWndBase::SetWindowText(LPCTSTR lpString)
 {
@@ -204,10 +204,10 @@ inline BOOL CWndBase::SetWindowText(LPCTSTR lpString)
 }
 
 /**
- * w’è‚³‚ê‚½ƒEƒBƒ“ƒhƒE‚Ìƒ^ƒCƒgƒ‹ƒo[‚ÌƒeƒLƒXƒg‚ğƒoƒbƒtƒ@‚ÖƒRƒs[‚µ‚Ü‚·
- * @param[in] lpszStringBuf ƒoƒbƒtƒ@‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğw’è‚µ‚Ü‚·B‚±‚Ìƒoƒbƒtƒ@‚ÉƒeƒLƒXƒg‚ªŠi”[‚³‚ê‚Ü‚·
- * @param[in] nMaxCount ƒoƒbƒtƒ@‚ÉƒRƒs[‚·‚é•¶š‚ÌÅ‘å”‚ğw’è‚µ‚Ü‚·BƒeƒLƒXƒg‚Ì‚±‚ÌƒTƒCƒY‚ğ’´‚¦‚é•”•ª‚ÍAØ‚èÌ‚Ä‚ç‚ê‚Ü‚·BNULL •¶š‚à”‚ÉŠÜ‚ß‚ç‚ê‚Ü‚·
- * @return ƒRƒs[‚³‚ê‚½•¶š—ñ‚Ì•¶š”‚ª•Ô‚è‚Ü‚· (I’[‚Ì NULL •¶š‚ÍŠÜ‚ß‚ç‚ê‚Ü‚¹‚ñ)
+ * æŒ‡å®šã•ã‚ŒãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚¿ã‚¤ãƒˆãƒ«ãƒãƒ¼ã®ãƒ†ã‚­ã‚¹ãƒˆã‚’ãƒãƒƒãƒ•ã‚¡ã¸ã‚³ãƒ”ãƒ¼ã—ã¾ã™
+ * @param[in] lpszStringBuf ãƒãƒƒãƒ•ã‚¡ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’æŒ‡å®šã—ã¾ã™ã€‚ã“ã®ãƒãƒƒãƒ•ã‚¡ã«ãƒ†ã‚­ã‚¹ãƒˆãŒæ ¼ç´ã•ã‚Œã¾ã™
+ * @param[in] nMaxCount ãƒãƒƒãƒ•ã‚¡ã«ã‚³ãƒ”ãƒ¼ã™ã‚‹æ–‡å­—ã®æœ€å¤§æ•°ã‚’æŒ‡å®šã—ã¾ã™ã€‚ãƒ†ã‚­ã‚¹ãƒˆã®ã“ã®ã‚µã‚¤ã‚ºã‚’è¶…ãˆã‚‹éƒ¨åˆ†ã¯ã€åˆ‡ã‚Šæ¨ã¦ã‚‰ã‚Œã¾ã™ã€‚NULL æ–‡å­—ã‚‚æ•°ã«å«ã‚ã‚‰ã‚Œã¾ã™
+ * @return ã‚³ãƒ”ãƒ¼ã•ã‚ŒãŸæ–‡å­—åˆ—ã®æ–‡å­—æ•°ãŒè¿”ã‚Šã¾ã™ (çµ‚ç«¯ã® NULL æ–‡å­—ã¯å«ã‚ã‚‰ã‚Œã¾ã›ã‚“)
  */
 inline int CWndBase::GetWindowText(LPTSTR lpszStringBuf, int nMaxCount) const
 {
@@ -215,8 +215,8 @@ inline int CWndBase::GetWindowText(LPTSTR lpszStringBuf, int nMaxCount) const
 }
 
 /**
- * w’è‚³‚ê‚½ƒEƒBƒ“ƒhƒE‚Ìƒ^ƒCƒgƒ‹ƒo[ƒeƒLƒXƒg‚Ì•¶š”‚ğ•Ô‚µ‚Ü‚·
- * @return ŠÖ”‚ª¬Œ÷‚·‚é‚ÆAƒeƒLƒXƒg‚Ì•¶š”‚ª•Ô‚è‚Ü‚·
+ * æŒ‡å®šã•ã‚ŒãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚¿ã‚¤ãƒˆãƒ«ãƒãƒ¼ãƒ†ã‚­ã‚¹ãƒˆã®æ–‡å­—æ•°ã‚’è¿”ã—ã¾ã™
+ * @return é–¢æ•°ãŒæˆåŠŸã™ã‚‹ã¨ã€ãƒ†ã‚­ã‚¹ãƒˆã®æ–‡å­—æ•°ãŒè¿”ã‚Šã¾ã™
  */
 inline int CWndBase::GetWindowTextLength() const
 {
@@ -224,9 +224,9 @@ inline int CWndBase::GetWindowTextLength() const
 }
 
 /**
- * w’è‚µ‚½ƒtƒHƒ“ƒg‚ğg—p‚µ‚Ü‚·
- * @param[in] hFont ƒtƒHƒ“ƒg ƒnƒ“ƒhƒ‹
- * @param[in] bRedraw ƒƒbƒZ[ƒW‚ğˆ—‚µ‚½’¼Œã‚ÉƒEƒBƒ“ƒhƒE‚ğÄ•`‰æ‚·‚éê‡‚Í TRUE
+ * æŒ‡å®šã—ãŸãƒ•ã‚©ãƒ³ãƒˆã‚’ä½¿ç”¨ã—ã¾ã™
+ * @param[in] hFont ãƒ•ã‚©ãƒ³ãƒˆ ãƒãƒ³ãƒ‰ãƒ«
+ * @param[in] bRedraw ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡¦ç†ã—ãŸç›´å¾Œã«ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’å†æç”»ã™ã‚‹å ´åˆã¯ TRUE
  */
 inline void CWndBase::SetFont(HFONT hFont, BOOL bRedraw)
 {
@@ -234,8 +234,8 @@ inline void CWndBase::SetFont(HFONT hFont, BOOL bRedraw)
 }
 
 /**
- * w’è‚³‚ê‚½ƒEƒBƒ“ƒhƒE‚ÉŠ„‚è“–‚Ä‚ç‚ê‚Ä‚¢‚éƒƒjƒ…[‚Ìƒnƒ“ƒhƒ‹‚ğæ“¾‚µ‚Ü‚·
- * @return ƒƒjƒ…[‚Ìƒnƒ“ƒhƒ‹‚ª•Ô‚è‚Ü‚·
+ * æŒ‡å®šã•ã‚ŒãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«å‰²ã‚Šå½“ã¦ã‚‰ã‚Œã¦ã„ã‚‹ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—ã—ã¾ã™
+ * @return ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ãƒãƒ³ãƒ‰ãƒ«ãŒè¿”ã‚Šã¾ã™
  */
 inline HMENU CWndBase::GetMenu() const
 {
@@ -243,9 +243,9 @@ inline HMENU CWndBase::GetMenu() const
 }
 
 /**
- * w’è‚³‚ê‚½ƒEƒBƒ“ƒhƒE‚Ìƒƒjƒ…[ƒo[‚ğÄ•`‰æ‚µ‚Ü‚·
- * @retval TRUE ¬Œ÷
- * @retval FALSE ¸”s
+ * æŒ‡å®šã•ã‚ŒãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼ã‚’å†æç”»ã—ã¾ã™
+ * @retval TRUE æˆåŠŸ
+ * @retval FALSE å¤±æ•—
  */
 inline BOOL CWndBase::DrawMenuBar()
 {
@@ -253,9 +253,9 @@ inline BOOL CWndBase::DrawMenuBar()
 }
 
 /**
- * w’è‚³‚ê‚½ƒEƒBƒ“ƒhƒE‚ÉŠ„‚è“–‚Ä‚ç‚ê‚Ä‚¢‚éƒVƒXƒeƒ€ ƒƒjƒ…[‚Ìƒnƒ“ƒhƒ‹‚ğæ“¾‚µ‚Ü‚·
- * @param[in] bRevert Às‚³‚ê‚éƒAƒNƒVƒ‡ƒ“‚ğw’è‚µ‚Ü‚·
- * @return ƒƒjƒ…[‚Ìƒnƒ“ƒhƒ‹‚ª•Ô‚è‚Ü‚·
+ * æŒ‡å®šã•ã‚ŒãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«å‰²ã‚Šå½“ã¦ã‚‰ã‚Œã¦ã„ã‚‹ã‚·ã‚¹ãƒ†ãƒ  ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—ã—ã¾ã™
+ * @param[in] bRevert å®Ÿè¡Œã•ã‚Œã‚‹ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ã‚’æŒ‡å®šã—ã¾ã™
+ * @return ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ãƒãƒ³ãƒ‰ãƒ«ãŒè¿”ã‚Šã¾ã™
  */
 inline HMENU CWndBase::GetSystemMenu(BOOL bRevert) const
 {
@@ -263,12 +263,12 @@ inline HMENU CWndBase::GetSystemMenu(BOOL bRevert) const
 }
 
 /**
- * ˆÊ’u‚ÆƒTƒCƒY‚ğ•ÏX‚µ‚Ü‚·
- * @param[in] x ¶‘¤‚ÌV‚µ‚¢ˆÊ’u‚ğw’è‚µ‚Ü‚·
- * @param[in] y ã‘¤‚ÌV‚µ‚¢ˆÊ’u‚ğw’è‚µ‚Ü‚·
- * @param[in] nWidth V‚µ‚¢•‚ğw’è‚µ‚Ü‚·
- * @param[in] nHeight V‚µ‚¢‚‚³‚ğw’è‚µ‚Ü‚·
- * @param[in] bRepaint Ä•`‰æ‚·‚é•K—v‚ª‚ ‚é‚©‚Ç‚¤‚©‚ğw’è‚µ‚Ü‚·
+ * ä½ç½®ã¨ã‚µã‚¤ã‚ºã‚’å¤‰æ›´ã—ã¾ã™
+ * @param[in] x å·¦å´ã®æ–°ã—ã„ä½ç½®ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] y ä¸Šå´ã®æ–°ã—ã„ä½ç½®ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] nWidth æ–°ã—ã„å¹…ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] nHeight æ–°ã—ã„é«˜ã•ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] bRepaint å†æç”»ã™ã‚‹å¿…è¦ãŒã‚ã‚‹ã‹ã©ã†ã‹ã‚’æŒ‡å®šã—ã¾ã™
  * @
  */
 inline void CWndBase::MoveWindow(int x, int y, int nWidth, int nHeight, BOOL bRepaint)
@@ -277,10 +277,10 @@ inline void CWndBase::MoveWindow(int x, int y, int nWidth, int nHeight, BOOL bRe
 }
 
 /**
- * w’è‚³‚ê‚½ƒEƒBƒ“ƒhƒE‚Ì¶ã’[‚Æ‰E‰º’[‚ÌÀ•W‚ğƒXƒNƒŠ[ƒ“À•W‚Åæ“¾‚µ‚Ü‚·
- * @param[out] lpRect \‘¢‘Ì‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğw’è‚µ‚Ü‚·
- * @retval TRUE ¬Œ÷
- * @retval FALSE ¸”s
+ * æŒ‡å®šã•ã‚ŒãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®å·¦ä¸Šç«¯ã¨å³ä¸‹ç«¯ã®åº§æ¨™ã‚’ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ã§å–å¾—ã—ã¾ã™
+ * @param[out] lpRect æ§‹é€ ä½“ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’æŒ‡å®šã—ã¾ã™
+ * @retval TRUE æˆåŠŸ
+ * @retval FALSE å¤±æ•—
  */
 inline BOOL CWndBase::GetWindowRect(LPRECT lpRect) const
 {
@@ -288,10 +288,10 @@ inline BOOL CWndBase::GetWindowRect(LPRECT lpRect) const
 }
 
 /**
- * lpRect‚ªw‚·\‘¢‚É CWnd ‚ÌƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚ÌƒNƒ‰ƒCƒAƒ“ƒgÀ•W‚ğƒRƒs[‚µ‚Ü‚·
- * @param[out] lpRect \‘¢‘Ì‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğw’è‚µ‚Ü‚·
- * @retval TRUE ¬Œ÷
- * @retval FALSE ¸”s
+ * lpRectãŒæŒ‡ã™æ§‹é€ ã« CWnd ã®ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã®ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆåº§æ¨™ã‚’ã‚³ãƒ”ãƒ¼ã—ã¾ã™
+ * @param[out] lpRect æ§‹é€ ä½“ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’æŒ‡å®šã—ã¾ã™
+ * @retval TRUE æˆåŠŸ
+ * @retval FALSE å¤±æ•—
  */
 inline BOOL CWndBase::GetClientRect(LPRECT lpRect) const
 {
@@ -299,10 +299,10 @@ inline BOOL CWndBase::GetClientRect(LPRECT lpRect) const
 }
 
 /**
- * w’è‚³‚ê‚½“_‚ğAƒNƒ‰ƒCƒAƒ“ƒgÀ•W‚©‚çƒXƒNƒŠ[ƒ“À•W‚Ö•ÏŠ·‚µ‚Ü‚·
- * @param[in,out] lpPoint •ÏŠ·‘ÎÛ‚ÌƒNƒ‰ƒCƒAƒ“ƒgÀ•W‚ğ•Û‚µ‚Ä‚¢‚éA1 ŒÂ‚Ì \‘¢‘Ì‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğw’è‚µ‚Ü‚·
- * @retval TRUE ¬Œ÷
- * @retval FALSE ¸”s
+ * æŒ‡å®šã•ã‚ŒãŸç‚¹ã‚’ã€ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆåº§æ¨™ã‹ã‚‰ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ã¸å¤‰æ›ã—ã¾ã™
+ * @param[in,out] lpPoint å¤‰æ›å¯¾è±¡ã®ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆåº§æ¨™ã‚’ä¿æŒã—ã¦ã„ã‚‹ã€1 å€‹ã® æ§‹é€ ä½“ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’æŒ‡å®šã—ã¾ã™
+ * @retval TRUE æˆåŠŸ
+ * @retval FALSE å¤±æ•—
  */
 inline BOOL CWndBase::ClientToScreen(LPPOINT lpPoint) const
 {
@@ -310,11 +310,11 @@ inline BOOL CWndBase::ClientToScreen(LPPOINT lpPoint) const
 }
 
 /**
- * •¡”‚Ì“_‚ğA‚ ‚éƒEƒBƒ“ƒhƒE‚ğŠî€‚Æ‚·‚éÀ•W‹óŠÔ‚©‚çA‘¼‚ÌƒEƒBƒ“ƒhƒE‚ğŠî€‚Æ‚·‚éÀ•W‹óŠÔ‚Ö•ÏŠ·iƒ}ƒbƒvj‚µ‚Ü‚·
- * @param[in] hWndTo •ÏŠ·Œã‚Ì“_‚ğ•Û‚·‚éi•ÏŠ·æjƒEƒBƒ“ƒhƒE‚Ìƒnƒ“ƒhƒ‹‚ğw’è‚µ‚Ü‚·
- * @param[in,out] lpPoint •ÏŠ·‘ÎÛ‚Ì“_‚ÌÀ•W‚ğ•Û‚µ‚Ä‚¢‚é \‘¢‘Ì‚©‚ç‚È‚é 1 ‚Â‚Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğw’è‚µ‚Ü‚·
- * @param[in] nCount lpPoint ƒpƒ‰ƒ[ƒ^‚ÅA•¡”‚Ì POINT \‘¢‘Ì‚©‚ç‚È‚é 1 ‚Â‚Ì”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğw’è‚µ‚½ê‡A”z—ñ“à‚Ì POINT \‘¢‘Ì‚Ì”‚ğw’è‚µ‚Ü‚·
- * @return ŠÖ”‚ª¬Œ÷‚·‚é‚ÆAŠe“_‚ÌˆÚ“®‹——£‚ğ¦‚· 32 ƒrƒbƒg’l‚ª•Ô‚è‚Ü‚·
+ * è¤‡æ•°ã®ç‚¹ã‚’ã€ã‚ã‚‹ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’åŸºæº–ã¨ã™ã‚‹åº§æ¨™ç©ºé–“ã‹ã‚‰ã€ä»–ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’åŸºæº–ã¨ã™ã‚‹åº§æ¨™ç©ºé–“ã¸å¤‰æ›ï¼ˆãƒãƒƒãƒ—ï¼‰ã—ã¾ã™
+ * @param[in] hWndTo å¤‰æ›å¾Œã®ç‚¹ã‚’ä¿æŒã™ã‚‹ï¼ˆå¤‰æ›å…ˆï¼‰ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒãƒ³ãƒ‰ãƒ«ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in,out] lpPoint å¤‰æ›å¯¾è±¡ã®ç‚¹ã®åº§æ¨™ã‚’ä¿æŒã—ã¦ã„ã‚‹ æ§‹é€ ä½“ã‹ã‚‰ãªã‚‹ 1 ã¤ã®é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] nCount lpPoint ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã§ã€è¤‡æ•°ã® POINT æ§‹é€ ä½“ã‹ã‚‰ãªã‚‹ 1 ã¤ã®é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’æŒ‡å®šã—ãŸå ´åˆã€é…åˆ—å†…ã® POINT æ§‹é€ ä½“ã®æ•°ã‚’æŒ‡å®šã—ã¾ã™
+ * @return é–¢æ•°ãŒæˆåŠŸã™ã‚‹ã¨ã€å„ç‚¹ã®ç§»å‹•è·é›¢ã‚’ç¤ºã™ 32 ãƒ“ãƒƒãƒˆå€¤ãŒè¿”ã‚Šã¾ã™
  */
 inline int CWndBase::MapWindowPoints(HWND hWndTo, LPPOINT lpPoint, UINT nCount) const
 {
@@ -322,9 +322,9 @@ inline int CWndBase::MapWindowPoints(HWND hWndTo, LPPOINT lpPoint, UINT nCount) 
 }
 
 /**
- * •`‰æ‚ğŠJn‚µ‚Ü‚·
- * @param[out] lpPaint •`‰æî•ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğw’è‚µ‚Ü‚·
- * @return ƒfƒoƒCƒX ƒRƒ“ƒeƒLƒXƒg
+ * æç”»ã‚’é–‹å§‹ã—ã¾ã™
+ * @param[out] lpPaint æç”»æƒ…å ±ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’æŒ‡å®šã—ã¾ã™
+ * @return ãƒ‡ãƒã‚¤ã‚¹ ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ
  */
 inline HDC CWndBase::BeginPaint(LPPAINTSTRUCT lpPaint)
 {
@@ -332,8 +332,8 @@ inline HDC CWndBase::BeginPaint(LPPAINTSTRUCT lpPaint)
 }
 
 /**
- * •`‰æ‚ÌI—¹‚µ‚Ü‚·
- * @param[in] lpPaint •`‰æî•ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğw’è‚µ‚Ü‚·
+ * æç”»ã®çµ‚äº†ã—ã¾ã™
+ * @param[in] lpPaint æç”»æƒ…å ±ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’æŒ‡å®šã—ã¾ã™
  */
 inline void CWndBase::EndPaint(LPPAINTSTRUCT lpPaint)
 {
@@ -341,9 +341,9 @@ inline void CWndBase::EndPaint(LPPAINTSTRUCT lpPaint)
 }
 
 /**
- * w’è‚³‚ê‚½ƒEƒBƒ“ƒhƒE‚ÌXVƒŠ[ƒWƒ‡ƒ“‚ª‹ó‚Å‚Í‚È‚¢ê‡AƒEƒBƒ“ƒhƒE‚Ö ƒƒbƒZ[ƒW‚ğ‘—M‚µA‚»‚ÌƒEƒBƒ“ƒhƒE‚ÌƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚ğXV‚µ‚Ü‚·
- * @retval TRUE ¬Œ÷
- * @retval FALSE ¸”s
+ * æŒ‡å®šã•ã‚ŒãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®æ›´æ–°ãƒªãƒ¼ã‚¸ãƒ§ãƒ³ãŒç©ºã§ã¯ãªã„å ´åˆã€ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã¸ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’é€ä¿¡ã—ã€ãã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã‚’æ›´æ–°ã—ã¾ã™
+ * @retval TRUE æˆåŠŸ
+ * @retval FALSE å¤±æ•—
  */
 inline BOOL CWndBase::UpdateWindow()
 {
@@ -351,10 +351,10 @@ inline BOOL CWndBase::UpdateWindow()
 }
 
 /**
- * w’è‚³‚ê‚½ƒEƒBƒ“ƒhƒE‚Ì‚·‚×‚Ä‚ğXVƒŠ[ƒWƒ‡ƒ“‚É‚µ‚Ü‚·
- * @param[in] bErase XVƒŠ[ƒWƒ‡ƒ“‚ğˆ—‚·‚é‚Æ‚«‚ÉAXVƒŠ[ƒWƒ‡ƒ““à‚Ì”wŒi‚ğÁ‹‚·‚é‚©‚Ç‚¤‚©‚ğw’è‚µ‚Ü‚·
- * @retval TRUE ¬Œ÷
- * @retval FALSE ¸”s
+ * æŒ‡å®šã•ã‚ŒãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã™ã¹ã¦ã‚’æ›´æ–°ãƒªãƒ¼ã‚¸ãƒ§ãƒ³ã«ã—ã¾ã™
+ * @param[in] bErase æ›´æ–°ãƒªãƒ¼ã‚¸ãƒ§ãƒ³ã‚’å‡¦ç†ã™ã‚‹ã¨ãã«ã€æ›´æ–°ãƒªãƒ¼ã‚¸ãƒ§ãƒ³å†…ã®èƒŒæ™¯ã‚’æ¶ˆå»ã™ã‚‹ã‹ã©ã†ã‹ã‚’æŒ‡å®šã—ã¾ã™
+ * @retval TRUE æˆåŠŸ
+ * @retval FALSE å¤±æ•—
  */
 inline BOOL CWndBase::Invalidate(BOOL bErase)
 {
@@ -362,11 +362,11 @@ inline BOOL CWndBase::Invalidate(BOOL bErase)
 }
 
 /**
- * w’è‚³‚ê‚½ƒEƒBƒ“ƒhƒE‚ÌXVƒŠ[ƒWƒ‡ƒ“‚É1ŒÂ‚Ì’·•ûŒ`‚ğ’Ç‰Á‚µ‚Ü‚·
- * @param[in] lpRect XVƒŠ[ƒWƒ‡ƒ“‚Ö’Ç‰Á‚µ‚½‚¢’·•ûŒ`‚ÌƒNƒ‰ƒCƒAƒ“ƒgÀ•W‚ğ•Û‚·‚é1ŒÂ‚Ì\‘¢‘Ì‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğw’è‚µ‚Ü‚·
- * @param[in] bErase XVƒŠ[ƒWƒ‡ƒ“‚ğˆ—‚·‚é‚Æ‚«‚ÉAXVƒŠ[ƒWƒ‡ƒ““à‚Ì”wŒi‚ğÁ‹‚·‚é‚©‚Ç‚¤‚©‚ğw’è‚µ‚Ü‚·
- * @retval TRUE ¬Œ÷
- * @retval FALSE ¸”s
+ * æŒ‡å®šã•ã‚ŒãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®æ›´æ–°ãƒªãƒ¼ã‚¸ãƒ§ãƒ³ã«1å€‹ã®é•·æ–¹å½¢ã‚’è¿½åŠ ã—ã¾ã™
+ * @param[in] lpRect æ›´æ–°ãƒªãƒ¼ã‚¸ãƒ§ãƒ³ã¸è¿½åŠ ã—ãŸã„é•·æ–¹å½¢ã®ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆåº§æ¨™ã‚’ä¿æŒã™ã‚‹1å€‹ã®æ§‹é€ ä½“ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] bErase æ›´æ–°ãƒªãƒ¼ã‚¸ãƒ§ãƒ³ã‚’å‡¦ç†ã™ã‚‹ã¨ãã«ã€æ›´æ–°ãƒªãƒ¼ã‚¸ãƒ§ãƒ³å†…ã®èƒŒæ™¯ã‚’æ¶ˆå»ã™ã‚‹ã‹ã©ã†ã‹ã‚’æŒ‡å®šã—ã¾ã™
+ * @retval TRUE æˆåŠŸ
+ * @retval FALSE å¤±æ•—
  */
 inline BOOL CWndBase::InvalidateRect(LPCRECT lpRect, BOOL bErase)
 {
@@ -374,10 +374,10 @@ inline BOOL CWndBase::InvalidateRect(LPCRECT lpRect, BOOL bErase)
 }
 
 /**
- * w’è‚³‚ê‚½ƒEƒBƒ“ƒhƒE‚Ì•\¦ó‘Ô‚ğİ’è‚µ‚Ü‚·
- * @param[in] nCmdShow ƒEƒBƒ“ƒhƒE‚Ì•\¦•û–@‚ğw’è‚µ‚Ü‚·
- * @retval TRUE ¬Œ÷
- * @retval FALSE ¸”s
+ * æŒ‡å®šã•ã‚ŒãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®è¡¨ç¤ºçŠ¶æ…‹ã‚’è¨­å®šã—ã¾ã™
+ * @param[in] nCmdShow ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®è¡¨ç¤ºæ–¹æ³•ã‚’æŒ‡å®šã—ã¾ã™
+ * @retval TRUE æˆåŠŸ
+ * @retval FALSE å¤±æ•—
  */
 inline BOOL CWndBase::ShowWindow(int nCmdShow)
 {
@@ -385,10 +385,10 @@ inline BOOL CWndBase::ShowWindow(int nCmdShow)
 }
 
 /**
- * w’è‚³‚ê‚½ƒEƒBƒ“ƒhƒE‚Ü‚½‚ÍƒRƒ“ƒgƒ[ƒ‹‚ÅAƒ}ƒEƒX“ü—Í‚ÆƒL[ƒ{[ƒh“ü—Í‚ğ—LŒø‚Ü‚½‚Í–³Œø‚É‚µ‚Ü‚·
- * @param[in] bEnable ƒEƒBƒ“ƒhƒE‚ğ—LŒø‚É‚·‚é‚©–³Œø‚É‚·‚é‚©‚ğw’è‚µ‚Ü‚·
- * @retval TRUE ƒEƒBƒ“ƒhƒE‚ªŠù‚É–³Œø‚É‚È‚Á‚Ä‚¢‚é
- * @retval FALSE ƒEƒBƒ“ƒhƒE‚ª–³Œø‚É‚È‚Á‚Ä‚¢‚È‚©‚Á‚½
+ * æŒ‡å®šã•ã‚ŒãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã¾ãŸã¯ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã§ã€ãƒã‚¦ã‚¹å…¥åŠ›ã¨ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ã‚’æœ‰åŠ¹ã¾ãŸã¯ç„¡åŠ¹ã«ã—ã¾ã™
+ * @param[in] bEnable ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’æœ‰åŠ¹ã«ã™ã‚‹ã‹ç„¡åŠ¹ã«ã™ã‚‹ã‹ã‚’æŒ‡å®šã—ã¾ã™
+ * @retval TRUE ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒæ—¢ã«ç„¡åŠ¹ã«ãªã£ã¦ã„ã‚‹
+ * @retval FALSE ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒç„¡åŠ¹ã«ãªã£ã¦ã„ãªã‹ã£ãŸ
  */
 inline BOOL CWndBase::EnableWindow(BOOL bEnable)
 {
@@ -396,8 +396,8 @@ inline BOOL CWndBase::EnableWindow(BOOL bEnable)
 }
 
 /**
- * “ü—ÍƒtƒH[ƒJƒX‚ğ—v‹‚µ‚Ü‚·
- * @return ’¼‘O‚É“ü—ÍƒtƒH[ƒJƒX‚ğ‚Á‚Ä‚¢‚½ƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹
+ * å…¥åŠ›ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’è¦æ±‚ã—ã¾ã™
+ * @return ç›´å‰ã«å…¥åŠ›ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’æŒã£ã¦ã„ãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ«
  */
 inline HWND CWndBase::SetFocus()
 {
@@ -405,11 +405,11 @@ inline HWND CWndBase::SetFocus()
 }
 
 /**
- * ƒ{ƒ^ƒ“ƒRƒ“ƒgƒ[ƒ‹‚Ìƒ`ƒFƒbƒNó‘Ô‚ğ•ÏX‚µ‚Ü‚·
- * @param[in] nIDButton ó‘Ô‚ğ•ÏX‚µ‚½‚¢ƒ{ƒ^ƒ“‚Ì¯•Êq‚ğw’è‚µ‚Ü‚·
- * @param[in] nCheck ƒ{ƒ^ƒ“‚Ìƒ`ƒFƒbƒNó‘Ô‚ğw’è‚µ‚Ü‚·
- * @retval TRUE ¬Œ÷
- * @retval FALSE ¸”s
+ * ãƒœã‚¿ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®ãƒã‚§ãƒƒã‚¯çŠ¶æ…‹ã‚’å¤‰æ›´ã—ã¾ã™
+ * @param[in] nIDButton çŠ¶æ…‹ã‚’å¤‰æ›´ã—ãŸã„ãƒœã‚¿ãƒ³ã®è­˜åˆ¥å­ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] nCheck ãƒœã‚¿ãƒ³ã®ãƒã‚§ãƒƒã‚¯çŠ¶æ…‹ã‚’æŒ‡å®šã—ã¾ã™
+ * @retval TRUE æˆåŠŸ
+ * @retval FALSE å¤±æ•—
  */
 inline BOOL CWndBase::CheckDlgButton(int nIDButton, UINT nCheck)
 {
@@ -417,11 +417,11 @@ inline BOOL CWndBase::CheckDlgButton(int nIDButton, UINT nCheck)
 }
 
 /**
- * ƒ_ƒCƒAƒƒOƒ{ƒbƒNƒX“à‚Ìw’è‚³‚ê‚½ƒRƒ“ƒgƒ[ƒ‹‚ÌƒeƒLƒXƒg‚ğA®”’l‚Ö•ÏŠ·‚µ‚Ü‚·
- * @param[in] nID •ÏŠ·‚µ‚½‚¢ƒeƒLƒXƒg‚ğ‚ÂƒRƒ“ƒgƒ[ƒ‹‚Ì¯•Êq‚ğw’è‚µ‚Ü‚·
- * @param[in] lpTrans ¬Œ÷‚©¸”s‚Ì’l‚ğó‚¯æ‚é•Ï”‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğw’è‚µ‚Ü‚·
- * @param[in] bSigned ƒeƒLƒXƒg‚ğ•„†•t‚«‚Æ‚µ‚Äˆµ‚Á‚Ä•„†•t‚«‚Ì’l‚ğ•Ô‚·‚©‚Ç‚¤‚©‚ğw’è‚µ‚Ü‚·
- * @return ƒRƒ“ƒgƒ[ƒ‹ƒeƒLƒXƒg‚É‘Š“–‚·‚é®”’l‚ª•Ô‚è‚Ü‚·
+ * ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹å†…ã®æŒ‡å®šã•ã‚ŒãŸã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®ãƒ†ã‚­ã‚¹ãƒˆã‚’ã€æ•´æ•°å€¤ã¸å¤‰æ›ã—ã¾ã™
+ * @param[in] nID å¤‰æ›ã—ãŸã„ãƒ†ã‚­ã‚¹ãƒˆã‚’æŒã¤ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®è­˜åˆ¥å­ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] lpTrans æˆåŠŸã‹å¤±æ•—ã®å€¤ã‚’å—ã‘å–ã‚‹å¤‰æ•°ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] bSigned ãƒ†ã‚­ã‚¹ãƒˆã‚’ç¬¦å·ä»˜ãã¨ã—ã¦æ‰±ã£ã¦ç¬¦å·ä»˜ãã®å€¤ã‚’è¿”ã™ã‹ã©ã†ã‹ã‚’æŒ‡å®šã—ã¾ã™
+ * @return ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒ†ã‚­ã‚¹ãƒˆã«ç›¸å½“ã™ã‚‹æ•´æ•°å€¤ãŒè¿”ã‚Šã¾ã™
  */
 inline UINT CWndBase::GetDlgItemInt(int nID, BOOL* lpTrans, BOOL bSigned) const
 {
@@ -429,11 +429,11 @@ inline UINT CWndBase::GetDlgItemInt(int nID, BOOL* lpTrans, BOOL bSigned) const
 }
 
 /**
- * ƒ_ƒCƒAƒƒOƒ{ƒbƒNƒX“à‚Ìw’è‚³‚ê‚½ƒRƒ“ƒgƒ[ƒ‹‚ÉŠÖ˜A•t‚¯‚ç‚ê‚Ä‚¢‚éƒ^ƒCƒgƒ‹‚Ü‚½‚ÍƒeƒLƒXƒg‚ğæ“¾‚µ‚Ü‚·
- * @param[in] nID æ“¾‚µ‚½‚¢ƒ^ƒCƒgƒ‹‚Ü‚½‚ÍƒeƒLƒXƒg‚ğ•Û‚µ‚Ä‚¢‚éƒRƒ“ƒgƒ[ƒ‹‚Ì¯•Êq‚ğw’è‚µ‚Ü‚·
- * @param[out] lpStr ƒ^ƒCƒgƒ‹‚Ü‚½‚ÍƒeƒLƒXƒg‚ğó‚¯æ‚éƒoƒbƒtƒ@‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğw’è‚µ‚Ü‚·
- * @param[in] nMaxCount lpStr ƒpƒ‰ƒ[ƒ^‚ªw‚·ƒoƒbƒtƒ@‚ÖƒRƒs[‚³‚ê‚é•¶š—ñ‚ÌÅ‘å‚Ì’·‚³‚ğ TCHAR ’PˆÊ‚Åw’è‚µ‚Ü‚·
- * @return ƒoƒbƒtƒ@‚ÖƒRƒs[‚³‚ê‚½•¶š—ñ‚Ì’·‚³i I’[‚Ì NULL ‚ğŠÜ‚Ü‚È‚¢j‚ª TCHAR ’PˆÊ‚Å•Ô‚è‚Ü‚·
+ * ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹å†…ã®æŒ‡å®šã•ã‚ŒãŸã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã«é–¢é€£ä»˜ã‘ã‚‰ã‚Œã¦ã„ã‚‹ã‚¿ã‚¤ãƒˆãƒ«ã¾ãŸã¯ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—ã—ã¾ã™
+ * @param[in] nID å–å¾—ã—ãŸã„ã‚¿ã‚¤ãƒˆãƒ«ã¾ãŸã¯ãƒ†ã‚­ã‚¹ãƒˆã‚’ä¿æŒã—ã¦ã„ã‚‹ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®è­˜åˆ¥å­ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[out] lpStr ã‚¿ã‚¤ãƒˆãƒ«ã¾ãŸã¯ãƒ†ã‚­ã‚¹ãƒˆã‚’å—ã‘å–ã‚‹ãƒãƒƒãƒ•ã‚¡ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] nMaxCount lpStr ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒæŒ‡ã™ãƒãƒƒãƒ•ã‚¡ã¸ã‚³ãƒ”ãƒ¼ã•ã‚Œã‚‹æ–‡å­—åˆ—ã®æœ€å¤§ã®é•·ã•ã‚’ TCHAR å˜ä½ã§æŒ‡å®šã—ã¾ã™
+ * @return ãƒãƒƒãƒ•ã‚¡ã¸ã‚³ãƒ”ãƒ¼ã•ã‚ŒãŸæ–‡å­—åˆ—ã®é•·ã•ï¼ˆ çµ‚ç«¯ã® NULL ã‚’å«ã¾ãªã„ï¼‰ãŒ TCHAR å˜ä½ã§è¿”ã‚Šã¾ã™
  */
 inline UINT CWndBase::GetDlgItemText(int nID, LPTSTR lpStr, int nMaxCount) const
 {
@@ -441,9 +441,9 @@ inline UINT CWndBase::GetDlgItemText(int nID, LPTSTR lpStr, int nMaxCount) const
 }
 
 /**
- * ƒ{ƒ^ƒ“ƒRƒ“ƒgƒ[ƒ‹‚Ìƒ`ƒFƒbƒNó‘Ô‚ğæ“¾‚µ‚Ü‚·
- * @param[in] nIDButton ƒ{ƒ^ƒ“ƒRƒ“ƒgƒ[ƒ‹‚Ì¯•Êq‚ğw’è‚µ‚Ü‚·
- * @return ƒ`ƒFƒbƒNó‘Ô
+ * ãƒœã‚¿ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®ãƒã‚§ãƒƒã‚¯çŠ¶æ…‹ã‚’å–å¾—ã—ã¾ã™
+ * @param[in] nIDButton ãƒœã‚¿ãƒ³ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®è­˜åˆ¥å­ã‚’æŒ‡å®šã—ã¾ã™
+ * @return ãƒã‚§ãƒƒã‚¯çŠ¶æ…‹
  */
 inline UINT CWndBase::IsDlgButtonChecked(int nIDButton) const
 {
@@ -451,12 +451,12 @@ inline UINT CWndBase::IsDlgButtonChecked(int nIDButton) const
 }
 
 /**
- * ƒ_ƒCƒAƒƒOƒ{ƒbƒNƒX“à‚Ìw’è‚³‚ê‚½ƒRƒ“ƒgƒ[ƒ‹‚ÖƒƒbƒZ[ƒW‚ğ‘—M‚µ‚Ü‚·B
- * @param[in] nID ƒƒbƒZ[ƒW‚ğó‚¯æ‚éƒRƒ“ƒgƒ[ƒ‹‚Ì¯•Êq‚ğw’è‚µ‚Ü‚·
- * @param[in] message ‘—M‚µ‚½‚¢ƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
- * @param[in] wParam ƒƒbƒZ[ƒW‚Ì’Ç‰Áî•ñ‚ğw’è‚µ‚Ü‚·
- * @param[in] lParam ƒƒbƒZ[ƒW‚Ì’Ç‰Áî•ñ‚ğw’è‚µ‚Ü‚·
- * @return ƒƒbƒZ[ƒWˆ—‚ÌŒ‹‰Ê‚ª•Ô‚è‚Ü‚·
+ * ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹å†…ã®æŒ‡å®šã•ã‚ŒãŸã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã¸ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’é€ä¿¡ã—ã¾ã™ã€‚
+ * @param[in] nID ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å—ã‘å–ã‚‹ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®è­˜åˆ¥å­ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] message é€ä¿¡ã—ãŸã„ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] wParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®è¿½åŠ æƒ…å ±ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] lParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®è¿½åŠ æƒ…å ±ã‚’æŒ‡å®šã—ã¾ã™
+ * @return ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡¦ç†ã®çµæœãŒè¿”ã‚Šã¾ã™
  */
 inline LRESULT CWndBase::SendDlgItemMessage(int nID, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -464,12 +464,12 @@ inline LRESULT CWndBase::SendDlgItemMessage(int nID, UINT message, WPARAM wParam
 }
 
 /**
- * w’è‚³‚ê‚½®”’l‚ğ•¶š—ñ‚Ö•ÏŠ·‚µAƒ_ƒCƒAƒƒOƒ{ƒbƒNƒX“à‚ÌƒRƒ“ƒgƒ[ƒ‹‚ÉƒeƒLƒXƒg‚Æ‚µ‚Äİ’è‚µ‚Ü‚·
- * @param[in] nID •ÏX‚ğ‰Á‚¦‚½‚¢ƒRƒ“ƒgƒ[ƒ‹‚Ì¯•Êq‚ğw’è‚µ‚Ü‚·
- * @param[in] nValue ®”’l‚ğw’è‚µ‚Ü‚·
- * @param[in] bSigned nValue ƒpƒ‰ƒ[ƒ^‚Ì’l‚ª•„†•t‚«‚©‚Ç‚¤‚©‚ğw’è‚µ‚Ü‚·
- * @retval TRUE ¬Œ÷
- * @retval FALSE ¸”s
+ * æŒ‡å®šã•ã‚ŒãŸæ•´æ•°å€¤ã‚’æ–‡å­—åˆ—ã¸å¤‰æ›ã—ã€ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹å†…ã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã«ãƒ†ã‚­ã‚¹ãƒˆã¨ã—ã¦è¨­å®šã—ã¾ã™
+ * @param[in] nID å¤‰æ›´ã‚’åŠ ãˆãŸã„ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®è­˜åˆ¥å­ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] nValue æ•´æ•°å€¤ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] bSigned nValue ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ãŒç¬¦å·ä»˜ãã‹ã©ã†ã‹ã‚’æŒ‡å®šã—ã¾ã™
+ * @retval TRUE æˆåŠŸ
+ * @retval FALSE å¤±æ•—
  */
 inline BOOL CWndBase::SetDlgItemInt(int nID, UINT nValue, BOOL bSigned)
 {
@@ -477,11 +477,11 @@ inline BOOL CWndBase::SetDlgItemInt(int nID, UINT nValue, BOOL bSigned)
 }
 
 /**
- * ƒ_ƒCƒAƒƒOƒ{ƒbƒNƒX“à‚ÌƒRƒ“ƒgƒ[ƒ‹‚Ìƒ^ƒCƒgƒ‹‚Ü‚½‚ÍƒeƒLƒXƒg‚ğİ’è‚µ‚Ü‚·
- * @param[in] nID ƒeƒLƒXƒg‚ğİ’è‚µ‚½‚¢ƒRƒ“ƒgƒ[ƒ‹‚Ì¯•Êq‚ğw’è‚µ‚Ü‚·
- * @param[in] lpszString ƒRƒ“ƒgƒ[ƒ‹‚ÖƒRƒs[‚µ‚½‚¢ƒeƒLƒXƒg‚ğ•Û‚·‚éANULL ‚ÅI‚í‚é•¶š—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğw’è‚µ‚Ü‚·
- * @retval TRUE ¬Œ÷
- * @retval FALSE ¸”s
+ * ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹å†…ã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®ã‚¿ã‚¤ãƒˆãƒ«ã¾ãŸã¯ãƒ†ã‚­ã‚¹ãƒˆã‚’è¨­å®šã—ã¾ã™
+ * @param[in] nID ãƒ†ã‚­ã‚¹ãƒˆã‚’è¨­å®šã—ãŸã„ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®è­˜åˆ¥å­ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] lpszString ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã¸ã‚³ãƒ”ãƒ¼ã—ãŸã„ãƒ†ã‚­ã‚¹ãƒˆã‚’ä¿æŒã™ã‚‹ã€NULL ã§çµ‚ã‚ã‚‹æ–‡å­—åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’æŒ‡å®šã—ã¾ã™
+ * @retval TRUE æˆåŠŸ
+ * @retval FALSE å¤±æ•—
  */
 inline BOOL CWndBase::SetDlgItemText(int nID, LPCTSTR lpszString)
 {
@@ -489,8 +489,8 @@ inline BOOL CWndBase::SetDlgItemText(int nID, LPCTSTR lpszString)
 }
 
 /**
- * w’è‚³‚ê‚½qƒEƒBƒ“ƒhƒE‚ÌeƒEƒBƒ“ƒhƒE‚Ü‚½‚ÍƒI[ƒi[ƒEƒBƒ“ƒhƒE‚Ìƒnƒ“ƒhƒ‹‚ğ•Ô‚µ‚Ü‚·
- * @return eƒEƒBƒ“ƒhƒE‚Ìƒnƒ“ƒhƒ‹
+ * æŒ‡å®šã•ã‚ŒãŸå­ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã¾ãŸã¯ã‚ªãƒ¼ãƒŠãƒ¼ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒãƒ³ãƒ‰ãƒ«ã‚’è¿”ã—ã¾ã™
+ * @return è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒãƒ³ãƒ‰ãƒ«
  */
 inline CWndBase CWndBase::GetParent() const
 {
@@ -498,9 +498,9 @@ inline CWndBase CWndBase::GetParent() const
 }
 
 /**
- * w’è‚³‚ê‚½ƒ_ƒCƒAƒƒOƒ{ƒbƒNƒX“à‚ÌƒRƒ“ƒgƒ[ƒ‹‚Ìƒnƒ“ƒhƒ‹‚ğæ“¾‚µ‚Ü‚·
- * @param[in] nID ƒnƒ“ƒhƒ‹‚ğæ“¾‚µ‚½‚¢ƒRƒ“ƒgƒ[ƒ‹‚Ì¯•Êq‚ğw’è‚µ‚Ü‚·
- * @return ƒEƒBƒ“ƒhƒE
+ * æŒ‡å®šã•ã‚ŒãŸãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹å†…ã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—ã—ã¾ã™
+ * @param[in] nID ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—ã—ãŸã„ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®è­˜åˆ¥å­ã‚’æŒ‡å®šã—ã¾ã™
+ * @return ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 inline CWndBase CWndBase::GetDlgItem(int nID) const
 {
@@ -508,11 +508,11 @@ inline CWndBase CWndBase::GetDlgItem(int nID) const
 }
 
 /**
- * ƒXƒNƒ[ƒ‹ƒo[‚Ì‚³‚Ü‚´‚Ü‚Èƒpƒ‰ƒ[ƒ^‚ğİ’è‚µ‚Ü‚·
- * @param[in] nBar ƒpƒ‰ƒ[ƒ^‚ğİ’è‚·‚é‚×‚«ƒXƒNƒ[ƒ‹ƒo[‚Ìƒ^ƒCƒv‚ğw’è‚µ‚Ü‚·
- * @param[in] lpScrollInfo İ’è‚·‚é‚×‚«î•ñ‚ğ•Û‚µ‚Ä‚¢‚éA1ŒÂ‚Ì\‘¢‘Ì‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğw’è‚µ‚Ü‚·
- * @param[in] bRedraw ƒXƒNƒ[ƒ‹ƒo[‚ğÄ•`‰æ‚·‚é‚©‚Ç‚¤‚©‚ğw’è‚µ‚Ü‚·
- * @return ƒXƒNƒ[ƒ‹ƒo[‚ÌŒ»İ‚ÌƒXƒNƒ[ƒ‹ˆÊ’u‚ª•Ô‚è‚Ü‚·
+ * ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼ã®ã•ã¾ã–ã¾ãªãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¨­å®šã—ã¾ã™
+ * @param[in] nBar ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¨­å®šã™ã‚‹ã¹ãã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼ã®ã‚¿ã‚¤ãƒ—ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] lpScrollInfo è¨­å®šã™ã‚‹ã¹ãæƒ…å ±ã‚’ä¿æŒã—ã¦ã„ã‚‹ã€1å€‹ã®æ§‹é€ ä½“ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] bRedraw ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼ã‚’å†æç”»ã™ã‚‹ã‹ã©ã†ã‹ã‚’æŒ‡å®šã—ã¾ã™
+ * @return ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼ã®ç¾åœ¨ã®ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ä½ç½®ãŒè¿”ã‚Šã¾ã™
  */
 inline int CWndBase::SetScrollInfo(int nBar, LPSCROLLINFO lpScrollInfo, BOOL bRedraw)
 {
@@ -520,8 +520,8 @@ inline int CWndBase::SetScrollInfo(int nBar, LPSCROLLINFO lpScrollInfo, BOOL bRe
 }
 
 /**
- * ƒEƒBƒ“ƒhƒE‚ª‘¶İ‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©‚ğ’²‚×‚Ü‚·
- * @return w’è‚µ‚½ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹‚ğ‚ÂƒEƒBƒ“ƒhƒE‚ª‘¶İ‚µ‚Ä‚¢‚éê‡‚ÍA0 ˆÈŠO‚Ì’l‚ª•Ô‚è‚Ü‚·
+ * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒå­˜åœ¨ã—ã¦ã„ã‚‹ã‹ã©ã†ã‹ã‚’èª¿ã¹ã¾ã™
+ * @return æŒ‡å®šã—ãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«ã‚’æŒã¤ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒå­˜åœ¨ã—ã¦ã„ã‚‹å ´åˆã¯ã€0 ä»¥å¤–ã®å€¤ãŒè¿”ã‚Šã¾ã™
  */
 inline BOOL CWndBase::IsWindow() const
 {

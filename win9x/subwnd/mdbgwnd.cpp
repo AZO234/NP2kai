@@ -1,6 +1,6 @@
 /**
  * @file	mdbgwnd.cpp
- * @brief	ƒƒ‚ƒŠ ƒfƒoƒK ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	ãƒ¡ãƒ¢ãƒª ãƒ‡ãƒã‚¬ ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -14,11 +14,11 @@
 
 #if defined(CPUCORE_IA32) && defined(SUPPORT_MEMDBG32)
 
-//! —Bˆê‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Å‚·
+//! å”¯ä¸€ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã§ã™
 CMemDebugWnd CMemDebugWnd::sm_instance;
 
 /**
- * @brief ƒRƒ“ƒtƒBƒO
+ * @brief ã‚³ãƒ³ãƒ•ã‚£ã‚°
  */
 struct MemDebugConfig
 {
@@ -27,14 +27,14 @@ struct MemDebugConfig
 	UINT8	type;
 };
 
-//! ƒRƒ“ƒtƒBƒO
+//! ã‚³ãƒ³ãƒ•ã‚£ã‚°
 static MemDebugConfig s_mdbgcfg;
 
-//! ƒ^ƒCƒgƒ‹
+//! ã‚¿ã‚¤ãƒˆãƒ«
 static const TCHAR s_mdbgapp[] = _T("Memory Map");
 
 /**
- * İ’è
+ * è¨­å®š
  */
 static const PFTBL s_mdbgini[] =
 {
@@ -44,7 +44,7 @@ static const PFTBL s_mdbgini[] =
 };
 
 /**
- * ‰Šú‰»
+ * åˆæœŸåŒ–
  */
 void CMemDebugWnd::Initialize()
 {
@@ -52,14 +52,14 @@ void CMemDebugWnd::Initialize()
 }
 
 /**
- * ‰ğ•ú
+ * è§£æ”¾
  */
 void CMemDebugWnd::Deinitialize()
 {
 }
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CMemDebugWnd::CMemDebugWnd()
 	: m_nWidth(0)
@@ -68,14 +68,14 @@ CMemDebugWnd::CMemDebugWnd()
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CMemDebugWnd::~CMemDebugWnd()
 {
 }
 
 /**
- * ì¬
+ * ä½œæˆ
  */
 void CMemDebugWnd::Create()
 {
@@ -102,7 +102,7 @@ void CMemDebugWnd::Create()
 }
 
 /**
- * ƒAƒCƒhƒ‹ˆ—
+ * ã‚¢ã‚¤ãƒ‰ãƒ«å‡¦ç†
  */
 void CMemDebugWnd::OnIdle()
 {
@@ -113,11 +113,11 @@ void CMemDebugWnd::OnIdle()
 }
 
 /**
- * CWndProc ƒIƒuƒWƒFƒNƒg‚Ì Windows ƒvƒƒV[ƒWƒƒ (WindowProc) ‚ª—pˆÓ‚³‚ê‚Ä‚¢‚Ü‚·
- * @param[in] nMsg ˆ—‚³‚ê‚é Windows ƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
- * @param[in] wParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @param[in] lParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @return ƒƒbƒZ[ƒW‚ÉˆË‘¶‚·‚é’l‚ğ•Ô‚µ‚Ü‚·
+ * CWndProc ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã® Windows ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ (WindowProc) ãŒç”¨æ„ã•ã‚Œã¦ã„ã¾ã™
+ * @param[in] nMsg å‡¦ç†ã•ã‚Œã‚‹ Windows ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] wParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @param[in] lParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @return ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã™ã‚‹å€¤ã‚’è¿”ã—ã¾ã™
  */
 LRESULT CMemDebugWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -168,7 +168,7 @@ LRESULT CMemDebugWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ƒEƒBƒ“ƒhƒE”jŠü‚Ì‚ÉŒÄ‚Î‚ê‚é
+ * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç ´æ£„ã®æ™‚ã«å‘¼ã°ã‚Œã‚‹
  */
 void CMemDebugWnd::OnDestroy()
 {
@@ -177,7 +177,7 @@ void CMemDebugWnd::OnDestroy()
 }
 
 /**
- * •`‰æ‚Ì‚ÉŒÄ‚Î‚ê‚é
+ * æç”»ã®æ™‚ã«å‘¼ã°ã‚Œã‚‹
  */
 void CMemDebugWnd::OnPaint()
 {
@@ -188,8 +188,8 @@ void CMemDebugWnd::OnPaint()
 }
 
 /**
- * •`‰æ
- * @param[in] redraw Ä•`‰æ
+ * æç”»
+ * @param[in] redraw å†æç”»
  */
 void CMemDebugWnd::OnDraw(BOOL redraw)
 {
@@ -211,11 +211,11 @@ void CMemDebugWnd::OnDraw(BOOL redraw)
 }
 
 /**
- * ƒpƒŒƒbƒg•ÏŠ·ƒR[ƒ‹ƒoƒbƒN
- * @param[out] dst o—Íæ
- * @param[in] src ƒpƒŒƒbƒg
- * @param[in] pals ƒpƒŒƒbƒg”
- * @param[in] bpp F”
+ * ãƒ‘ãƒ¬ãƒƒãƒˆå¤‰æ›ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
+ * @param[out] dst å‡ºåŠ›å…ˆ
+ * @param[in] src ãƒ‘ãƒ¬ãƒƒãƒˆ
+ * @param[in] pals ãƒ‘ãƒ¬ãƒƒãƒˆæ•°
+ * @param[in] bpp è‰²æ•°
  */
 void CMemDebugWnd::mdpalcnv(CMNPAL *dst, const RGB32 *src, UINT pals, UINT bpp)
 {
@@ -246,7 +246,7 @@ void CMemDebugWnd::mdpalcnv(CMNPAL *dst, const RGB32 *src, UINT pals, UINT bpp)
 }
 
 /**
- * İ’è“Ç‚İ‚İ
+ * è¨­å®šèª­ã¿è¾¼ã¿
  */
 void mdbgwin_readini()
 {
@@ -259,7 +259,7 @@ void mdbgwin_readini()
 }
 
 /**
- * İ’è‘‚«‚İ
+ * è¨­å®šæ›¸ãè¾¼ã¿
  */
 void mdbgwin_writeini()
 {

@@ -220,17 +220,17 @@ static void IOOUTCALL dmac_o1f(UINT port, REG8 dat) {
 	(void)port;
 }
 
-static void IOOUTCALL dmac_o21(UINT port, REG8 dat) {//ƒoƒ“ƒNİ’è
+static void IOOUTCALL dmac_o21(UINT port, REG8 dat) {//ãƒãƒ³ã‚¯è¨­å®š
 
 	DMACH	dmach;
 	dmach = dmac.dmach + (((port >> 1) + 1) & 3);
 #if defined(CPUCORE_IA32)
 	dmach->adrs.b[DMA32_HIGH + DMA16_LOW] = dat;
 #else
-	// IA16‚Å‚Í ver0.75‚Å–³ŒøAver0.76‚ÅC³
-	dmach->adrs.b[DMA32_HIGH + DMA16_LOW] = dat & 0x0f;//V30‚Í20bit‚Ü‚Å
+	// IA16ã§ã¯ ver0.75ã§ç„¡åŠ¹ã€ver0.76ã§ä¿®æ­£
+	dmach->adrs.b[DMA32_HIGH + DMA16_LOW] = dat & 0x0f;//V30ã¯20bitã¾ã§
 #endif
-	dmach->adrs.b[DMA32_HIGH + DMA16_HIGH] = 0;//25bit‚æ‚èã‚Í‚±‚±‚Å‚Í“]‘—‚Å‚«‚È‚¢¨0E05
+	dmach->adrs.b[DMA32_HIGH + DMA16_HIGH] = 0;//25bitã‚ˆã‚Šä¸Šã¯ã“ã“ã§ã¯è»¢é€ã§ããªã„â†’0E05
 	bank = dat;
 	if (dmach->bound != 3){
 	dmach->startaddr = dmach->adrs.d;
@@ -250,7 +250,7 @@ static void IOOUTCALL dmac_o29(UINT port, REG8 dat) {
 
 	dmach = dmac.dmach + (dat & 3);
 //	dmach = dmac.dmach + (dat & 0xf);
-//	TRACEOUT (("dmach %x",dat));// PC-98‚Í4ch‚µ‚©‚Á‚Ä‚È‚¢
+//	TRACEOUT (("dmach %x",dat));// PC-98ã¯4chã—ã‹æŒã£ã¦ãªã„
 	dmach->bound = (dat >> 2) & 3;
 	(void)port;
 	TRACEOUT(("port =%x ch= %x dma bound =%x\n",port,dat & 03 ,dmach->bound));
@@ -291,7 +291,7 @@ static void IOOUTCALL dmac_oe05(UINT port, REG8 dat) {
 //	dmach = dmac.dmach + ((port >> 1) & 0x07) - 2;//np21/w
 
 	char channel;
-	//switch(port){//ƒVƒtƒgŒvZ‚Í“ª‚ª‚¨‚©‚µ‚­‚È‚é‚Ì‚Åswitch‚Å‚²‚Ü‚©‚µ‚Ü‚µ‚½
+	//switch(port){//ã‚·ãƒ•ãƒˆè¨ˆç®—ã¯é ­ãŒãŠã‹ã—ããªã‚‹ã®ã§switchã§ã”ã¾ã‹ã—ã¾ã—ãŸ
 	//	case 0xe05:channel = 0;break;
 	//	case 0xe07:channel = 1;break;
 	//	case 0xe09:channel = 2;break;
@@ -346,8 +346,8 @@ void dmac_bind(void) {
 	iocore_attachout(0x0e07, dmac_oe05); //DMA ch.1
 	iocore_attachout(0x0e09, dmac_oe05); //DMA ch.2
 	iocore_attachout(0x0e0b, dmac_oe05); //DMA ch.3
-//0x489‚Ínecio.c‚Åg‚Á‚Ä‚é
-//PC-H98??? EMM386.exe‚ğ‘g‚İ‚Ş‚ÆŒ»‚ê‚é
+//0x489ã¯necio.cã§ä½¿ã£ã¦ã‚‹
+//PC-H98??? EMM386.exeã‚’çµ„ã¿è¾¼ã‚€ã¨ç¾ã‚Œã‚‹
 //	iocore_attachout(0x2b,dmac_o11);
 //	iocore_attachinp(0x2d,dmac_i11);//when 0x2b = c8???
 }

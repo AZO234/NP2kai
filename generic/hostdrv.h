@@ -18,7 +18,7 @@ enum {
 };
 
 /**
- * @brief ファイル ハンドル
+ * @brief 繝輔ぃ繧､繝ｫ 繝上Φ繝峨Ν
  */
 struct tagHostDrvHandle
 {

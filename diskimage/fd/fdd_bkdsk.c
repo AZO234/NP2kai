@@ -1,4 +1,4 @@
-//	BKDSK�p�c�Ȃ񂾂��ǎ���HDB��p
+//	BKDSK用…なんだけど実質HDB専用
 
 #include	"compiler.h"
 #include	"dosio.h"
@@ -38,7 +38,7 @@ const _XDFINFO	*xdf;
 	fdsize = (UINT32)file_getsize(fh);
 	file_close(fh);
 
-	//	�C���[�W�t�@�C���T�C�Y�`�F�b�N
+	//	イメージファイルサイズチェック
 //			{0, 154, 26, 1, DISKTYPE_2HD, 0},	//	BKDSK(HDB)	BASIC 2HD
 	xdf = supportbkdsk;
 	size = xdf->tracks;
@@ -55,9 +55,9 @@ const _XDFINFO	*xdf;
 	fdd->protect = ((attr & 0x01) || (ro)) ? TRUE : FALSE;
 	fdd->inf.xdf = *xdf;
 
-	//	�f�B�X�N�A�N�Z�X���p�Ɋe�g���b�N�̃I�t�Z�b�g���Z�o
+	//	ディスクアクセス時用に各トラックのオフセットを算出
 	tracksize = fdd->inf.xdf.sectors * (128 << fdd->inf.xdf.n);
-	//	track 0�p
+	//	track 0用
 	fdd->inf.bkdsk.ptr[0] = 0;
 	trackptr = tracksize / 2;
 	//
@@ -66,8 +66,8 @@ const _XDFINFO	*xdf;
 		trackptr += tracksize;
 	}
 
-	//	�����֐��Q��o�^
-	//	��read�Awrite��dcp�n�A����ȊO�͍\���̂̏��׍H��xdf�n�Ƌ��p
+	//	処理関数群を登録
+	//	※read、writeはdcp系、それ以外は構造体の小細工でxdf系と共用
 	fdd_fn->eject		= fdd_eject_xxx;
 	fdd_fn->diskaccess	= fdd_diskaccess_common;
 	fdd_fn->seek		= fdd_seek_common;

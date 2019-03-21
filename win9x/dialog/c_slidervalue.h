@@ -1,6 +1,6 @@
 /**
  * @file	c_slidervalue.h
- * @brief	’l•t‚«ƒXƒ‰ƒCƒ_[ ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	å€¤ä»˜ãã‚¹ãƒ©ã‚¤ãƒ€ãƒ¼ ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -8,7 +8,7 @@
 #include "misc/DlgProc.h"
 
 /**
- * @brief ƒXƒ‰ƒCƒ_[ ƒNƒ‰ƒX
+ * @brief ã‚¹ãƒ©ã‚¤ãƒ€ãƒ¼ ã‚¯ãƒ©ã‚¹
  */
 class CSliderValue : public CSliderProc
 {
@@ -20,12 +20,12 @@ public:
 	void UpdateValue();
 
 private:
-	UINT m_nStaticId;			/*!< ’lƒRƒ“ƒgƒ[ƒ‹ */
+	UINT m_nStaticId;			/*!< å€¤ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ« */
 };
 
 /**
- * ’lƒRƒ“ƒgƒ[ƒ‹‚Ìw’è
- * @param[in] nId ƒRƒ“ƒgƒ[ƒ‹ ID
+ * å€¤ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®æŒ‡å®š
+ * @param[in] nId ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ« ID
  */
 inline void CSliderValue::SetStaticId(UINT nId)
 {

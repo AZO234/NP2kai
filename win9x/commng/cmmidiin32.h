@@ -1,6 +1,6 @@
 /**
  * @file	cmmidiin32.h
- * @brief	MIDI IN win32 ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	MIDI IN win32 ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -9,7 +9,7 @@
 #include <map>
 
 /**
- * @brief MIDI IN win32 ƒNƒ‰ƒX
+ * @brief MIDI IN win32 ã‚¯ãƒ©ã‚¹
  */
 class CComMidiIn32
 {
@@ -23,12 +23,12 @@ public:
 	static void RecvExcv(HMIDIIN hMidiIn, MIDIHDR* lpMidiHdr);
 
 private:
-	static std::map<HMIDIIN, CComMidiIn32*> sm_midiinMap;	/*!< ƒnƒ“ƒhƒ‹ ƒ}ƒbƒv */
+	static std::map<HMIDIIN, CComMidiIn32*> sm_midiinMap;	/*!< ãƒãƒ³ãƒ‰ãƒ« ãƒãƒƒãƒ— */
 
-	HMIDIIN m_hMidiIn;						/*!< MIDIIN ƒnƒ“ƒhƒ‹ */
+	HMIDIIN m_hMidiIn;						/*!< MIDIIN ãƒãƒ³ãƒ‰ãƒ« */
 	MIDIHDR m_midihdr;						/*!< MIDIHDR */
-	std::deque<char> m_buffer;				/*!< óMƒoƒbƒtƒ@ */
-	char m_midiinBuffer[1024];				/*!< ƒoƒbƒtƒ@ */
+	std::deque<char> m_buffer;				/*!< å—ä¿¡ãƒãƒƒãƒ•ã‚¡ */
+	char m_midiinBuffer[1024];				/*!< ãƒãƒƒãƒ•ã‚¡ */
 
 	static bool GetId(LPCTSTR lpMidiIn, UINT* pId);
 	static CComMidiIn32* GetInstance(HMIDIIN hMidiIn);

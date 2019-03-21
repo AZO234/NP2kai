@@ -25,7 +25,7 @@ typedef struct {
 	UINT	maxy;
 } GDCCLK;
 
-// 31kHz�̎��̓���N���b�N���s���c
+// 31kHzの時の動作クロックが不明…
 static const GDCCLK gdcclk[] = {
 			{14318180 / 8, 112 - 8, 112 + 8, 200, 300},
 			{21052600 / 8, 106 - 6, 106 + 6, 400, 575},
@@ -336,7 +336,7 @@ void gdc_work(int id) {
 	item->cnt = 0;
 }
 
-// BIOS�Ƃ��ŘM�������Ƀ��Z�b�g
+// BIOSとかで弄った時にリセット
 void gdc_forceready(int id) {
 
 	GDCDATA	item;
@@ -387,10 +387,10 @@ const GDCCLK	*clk;
 	}
 	else
 #endif
-	if (!(gdc.crt15khz & 2)) {							// 24.83�}300Hz
+	if (!(gdc.crt15khz & 2)) {							// 24.83±300Hz
 		clk = gdcclk + 1;
 	}
-	else {												// 15.98�}300Hz
+	else {												// 15.98±300Hz
 		clk = gdcclk;
 	}
 
@@ -626,7 +626,7 @@ static REG8 IOINPCALL gdc_i60(UINT port) {
 	else {
 		gdc_work(GDCWORK_MASTER);
 	}
-#ifdef SEARCH_SYNC		// ToDo: �t�F�b�`�L���[���Q�Ƃ���悤�Ɂc
+#ifdef SEARCH_SYNC		// ToDo: フェッチキューを参照するように…
 	if ((CPU_INPADRS) && (CPU_REMCLOCK >= 5)) {
 		UINT32 addr;
 		UINT16 jadr;
@@ -654,7 +654,7 @@ static REG8 IOINPCALL gdc_i60(UINT port) {
 		}
 	}
 #endif
-#ifdef TURE_SYNC				// �N���b�N�C�x���g�̌덷�C��
+#ifdef TURE_SYNC				// クロックイベントの誤差修正
 	if (g_nevent.item[NEVENT_FLAMES].clock < (CPU_BASECLOCK - CPU_REMCLOCK)) {
 		ret ^= 0x20;
 	}
@@ -783,7 +783,7 @@ static REG8 IOINPCALL gdc_ia0(UINT port) {
 		}
 	}
 #endif
-#ifdef TURE_SYNC				// �N���b�N�C�x���g�̌덷�C��
+#ifdef TURE_SYNC				// クロックイベントの誤差修正
 	if (g_nevent.item[NEVENT_FLAMES].clock < (CPU_BASECLOCK - CPU_REMCLOCK)) {
 		ret ^= 0x20;
 	}

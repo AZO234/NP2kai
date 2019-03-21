@@ -3,7 +3,7 @@
  * @brief	Implementation of PC-9801-06/19/29/29K/29N GP-IB(IEEE-488.1) Interface (uPD7210)
  */
 
-// ’ˆÓF‚Ü‚¾‰½‚àÀ‘•‚µ‚Ä‚È‚¢‚Ì‚Åg‚¦‚Ü‚¹‚ñiGP-IBƒ{[ƒh‚à‚»‚ê‚Å“®‚­‹@Ší‚à‚Á‚Ä‚È‚¢‚µ¥¥¥j
+// æ³¨æ„ï¼šã¾ã ä½•ã‚‚å®Ÿè£…ã—ã¦ãªã„ã®ã§ä½¿ãˆã¾ã›ã‚“ï¼ˆGP-IBãƒœãƒ¼ãƒ‰ã‚‚ãã‚Œã§å‹•ãæ©Ÿå™¨ã‚‚æŒã£ã¦ãªã„ã—ï½¥ï½¥ï½¥ï¼‰
 
 #include	"compiler.h"
 
@@ -59,12 +59,12 @@ UINT32 getGPIBinfoAddr(){
 
 // Byte Out 
 static void IOOUTCALL gpib_o1(UINT port, REG8 dat) {
-	// TODO: Windows‘Î‰‚Ì uPD7210ŒİŠ· GP-IBƒ{[ƒh‚ÉŠÛ“Š‚°
+	// TODO: Windowså¯¾å¿œã® uPD7210äº’æ› GP-IBãƒœãƒ¼ãƒ‰ã«ä¸¸æŠ•ã’
 	(void)port;
 }
 // Data In
 static REG8 IOOUTCALL gpib_i1(UINT port) {
-	// TODO: Windows‘Î‰‚Ì uPD7210ŒİŠ· GP-IBƒ{[ƒh‚ÉŠÛ“Š‚°
+	// TODO: Windowså¯¾å¿œã® uPD7210äº’æ› GP-IBãƒœãƒ¼ãƒ‰ã«ä¸¸æŠ•ã’
 #if defined(SUPPORT_GPIB_CONTEC)
 	DWORD reg;
 	GpBoardsts(0x00, &reg);
@@ -76,12 +76,12 @@ static REG8 IOOUTCALL gpib_i1(UINT port) {
 
 // Interrupt Mask 1
 static void IOOUTCALL gpib_o3(UINT port, REG8 dat) {
-	// TODO: Windows‘Î‰‚Ì uPD7210ŒİŠ· GP-IBƒ{[ƒh‚ÉŠÛ“Š‚°
+	// TODO: Windowså¯¾å¿œã® uPD7210äº’æ› GP-IBãƒœãƒ¼ãƒ‰ã«ä¸¸æŠ•ã’
 	(void)port;
 }
 // Interrupt Status 1
 static REG8 IOOUTCALL gpib_i3(UINT port) {
-	// TODO: Windows‘Î‰‚Ì uPD7210ŒİŠ· GP-IBƒ{[ƒh‚ÉŠÛ“Š‚°
+	// TODO: Windowså¯¾å¿œã® uPD7210äº’æ› GP-IBãƒœãƒ¼ãƒ‰ã«ä¸¸æŠ•ã’
 #if defined(SUPPORT_GPIB_CONTEC)
 	DWORD reg;
 	GpBoardsts(0x01, &reg);
@@ -93,12 +93,12 @@ static REG8 IOOUTCALL gpib_i3(UINT port) {
 
 // Interrupt Mask 2
 static void IOOUTCALL gpib_o5(UINT port, REG8 dat) {
-	// TODO: Windows‘Î‰‚Ì uPD7210ŒİŠ· GP-IBƒ{[ƒh‚ÉŠÛ“Š‚°
+	// TODO: Windowså¯¾å¿œã® uPD7210äº’æ› GP-IBãƒœãƒ¼ãƒ‰ã«ä¸¸æŠ•ã’
 	(void)port;
 }
 // Interrupt Status 2
 static REG8 IOOUTCALL gpib_i5(UINT port) {
-	// TODO: Windows‘Î‰‚Ì uPD7210ŒİŠ· GP-IBƒ{[ƒh‚ÉŠÛ“Š‚°
+	// TODO: Windowså¯¾å¿œã® uPD7210äº’æ› GP-IBãƒœãƒ¼ãƒ‰ã«ä¸¸æŠ•ã’
 #if defined(SUPPORT_GPIB_CONTEC)
 	DWORD reg;
 	GpBoardsts(0x02, &reg);
@@ -110,12 +110,12 @@ static REG8 IOOUTCALL gpib_i5(UINT port) {
 
 // Serial Poll Mode
 static void IOOUTCALL gpib_o7(UINT port, REG8 dat) {
-	// TODO: Windows‘Î‰‚Ì uPD7210ŒİŠ· GP-IBƒ{[ƒh‚ÉŠÛ“Š‚°
+	// TODO: Windowså¯¾å¿œã® uPD7210äº’æ› GP-IBãƒœãƒ¼ãƒ‰ã«ä¸¸æŠ•ã’
 	(void)port;
 }
 // Serial Poll Status
 static REG8 IOOUTCALL gpib_i7(UINT port) {
-	// TODO: Windows‘Î‰‚Ì uPD7210ŒİŠ· GP-IBƒ{[ƒh‚ÉŠÛ“Š‚°
+	// TODO: Windowså¯¾å¿œã® uPD7210äº’æ› GP-IBãƒœãƒ¼ãƒ‰ã«ä¸¸æŠ•ã’
 #if defined(SUPPORT_GPIB_CONTEC)
 	DWORD reg;
 	GpBoardsts(0x03, &reg);
@@ -127,12 +127,12 @@ static REG8 IOOUTCALL gpib_i7(UINT port) {
 
 // Address Mode
 static void IOOUTCALL gpib_o9(UINT port, REG8 dat) {
-	// TODO: Windows‘Î‰‚Ì uPD7210ŒİŠ· GP-IBƒ{[ƒh‚ÉŠÛ“Š‚°
+	// TODO: Windowså¯¾å¿œã® uPD7210äº’æ› GP-IBãƒœãƒ¼ãƒ‰ã«ä¸¸æŠ•ã’
 	(void)port;
 }
 // Address Status
 static REG8 IOOUTCALL gpib_i9(UINT port) {
-	// TODO: Windows‘Î‰‚Ì uPD7210ŒİŠ· GP-IBƒ{[ƒh‚ÉŠÛ“Š‚°
+	// TODO: Windowså¯¾å¿œã® uPD7210äº’æ› GP-IBãƒœãƒ¼ãƒ‰ã«ä¸¸æŠ•ã’
 #if defined(SUPPORT_GPIB_CONTEC)
 	DWORD reg;
 	GpBoardsts(0x04, &reg);
@@ -144,7 +144,7 @@ static REG8 IOOUTCALL gpib_i9(UINT port) {
 
 // Auxiliary Mode
 static void IOOUTCALL gpib_ob(UINT port, REG8 dat) {
-	// TODO: Windows‘Î‰‚Ì uPD7210ŒİŠ· GP-IBƒ{[ƒh‚ÉŠÛ“Š‚°
+	// TODO: Windowså¯¾å¿œã® uPD7210äº’æ› GP-IBãƒœãƒ¼ãƒ‰ã«ä¸¸æŠ•ã’
 	static int cmd = 0;
 	if(dat==0x11 && cmd==0){
 		cmd = 1;
@@ -160,7 +160,7 @@ static void IOOUTCALL gpib_ob(UINT port, REG8 dat) {
 }
 // Command Pass Through
 static REG8 IOOUTCALL gpib_ib(UINT port) {
-	// TODO: Windows‘Î‰‚Ì uPD7210ŒİŠ· GP-IBƒ{[ƒh‚ÉŠÛ“Š‚°
+	// TODO: Windowså¯¾å¿œã® uPD7210äº’æ› GP-IBãƒœãƒ¼ãƒ‰ã«ä¸¸æŠ•ã’
 #if defined(SUPPORT_GPIB_CONTEC)
 	DWORD reg;
 	GpBoardsts(0x05, &reg);
@@ -172,12 +172,12 @@ static REG8 IOOUTCALL gpib_ib(UINT port) {
 
 // Address 0/1
 static void IOOUTCALL gpib_od(UINT port, REG8 dat) {
-	// TODO: Windows‘Î‰‚Ì uPD7210ŒİŠ· GP-IBƒ{[ƒh‚ÉŠÛ“Š‚°
+	// TODO: Windowså¯¾å¿œã® uPD7210äº’æ› GP-IBãƒœãƒ¼ãƒ‰ã«ä¸¸æŠ•ã’
 	(void)port;
 }
 // Address 0
 static REG8 IOOUTCALL gpib_id(UINT port) {
-	// TODO: Windows‘Î‰‚Ì uPD7210ŒİŠ· GP-IBƒ{[ƒh‚ÉŠÛ“Š‚°
+	// TODO: Windowså¯¾å¿œã® uPD7210äº’æ› GP-IBãƒœãƒ¼ãƒ‰ã«ä¸¸æŠ•ã’
 #if defined(SUPPORT_GPIB_CONTEC)
 	DWORD reg;
 	GpBoardsts(0x06, &reg);
@@ -189,12 +189,12 @@ static REG8 IOOUTCALL gpib_id(UINT port) {
 
 // End of String
 static void IOOUTCALL gpib_of(UINT port, REG8 dat) {
-	// TODO: Windows‘Î‰‚Ì uPD7210ŒİŠ· GP-IBƒ{[ƒh‚ÉŠÛ“Š‚°
+	// TODO: Windowså¯¾å¿œã® uPD7210äº’æ› GP-IBãƒœãƒ¼ãƒ‰ã«ä¸¸æŠ•ã’
 	(void)port;
 }
 // Address 1
 static REG8 IOOUTCALL gpib_if(UINT port) {
-	// TODO: Windows‘Î‰‚Ì uPD7210ŒİŠ· GP-IBƒ{[ƒh‚ÉŠÛ“Š‚°
+	// TODO: Windowså¯¾å¿œã® uPD7210äº’æ› GP-IBãƒœãƒ¼ãƒ‰ã«ä¸¸æŠ•ã’
 #if defined(SUPPORT_GPIB_CONTEC)
 	DWORD reg;
 	GpBoardsts(0x07, &reg);
@@ -206,7 +206,7 @@ static REG8 IOOUTCALL gpib_if(UINT port) {
 
 // Read Switch
 static REG8 IOOUTCALL gpib_i99(UINT port) {
-	// TODO: Windows‘Î‰‚Ì uPD7210ŒİŠ· GP-IBƒ{[ƒh‚©‚çİ’è‚ğæ‚é
+	// TODO: Windowså¯¾å¿œã® uPD7210äº’æ› GP-IBãƒœãƒ¼ãƒ‰ã‹ã‚‰è¨­å®šã‚’å–ã‚‹
 #if defined(SUPPORT_GPIB_CONTEC)
 	DWORD reg;
 	GpBoardsts(0x8, &reg);
@@ -218,7 +218,7 @@ static REG8 IOOUTCALL gpib_i99(UINT port) {
 }
 // Read IFC
 static REG8 IOOUTCALL gpib_i9b(UINT port) {
-	// TODO: Windows‘Î‰‚Ì uPD7210ŒİŠ· GP-IBƒ{[ƒh‚©‚çIFCƒtƒ‰ƒO‚ğæ‚Á‚Ä‚­‚é
+	// TODO: Windowså¯¾å¿œã® uPD7210äº’æ› GP-IBãƒœãƒ¼ãƒ‰ã‹ã‚‰IFCãƒ•ãƒ©ã‚°ã‚’å–ã£ã¦ãã‚‹
 #if defined(SUPPORT_GPIB_CONTEC)
 	DWORD reg;
 	GpBoardsts(0x17, &reg);
@@ -227,7 +227,7 @@ static REG8 IOOUTCALL gpib_i9b(UINT port) {
 	return (gpib.ifcflag ? 0x00: 0x80)|(gpib_i99(0x99) & ~0x80);
 }
 
-// Šg’£
+// æ‹¡å¼µ
 static void IOOUTCALL gpib_o0(UINT port, REG8 dat) {
 	(void)port;
 }
@@ -291,7 +291,7 @@ static const IOOUT gpib_o[] = {
 static const IOINP gpib_i[] = {
 					gpib_i0, gpib_i1, gpib_i2, gpib_i3, gpib_i4, gpib_i5, gpib_i6, gpib_i7, gpib_i8, gpib_i9, gpib_ia, gpib_ib, gpib_ic, gpib_id, gpib_ie, gpib_if};
 
-// NP2‹N“®‚Ìˆ—
+// NP2èµ·å‹•æ™‚ã®å‡¦ç†
 void gpibio_initialize(void)
 {
 #if defined(SUPPORT_GPIB_CONTEC)
@@ -300,7 +300,7 @@ void gpibio_initialize(void)
 	GpTimeout(10000);
 #endif
 }
-// NP2I—¹‚Ìˆ—
+// NP2çµ‚äº†æ™‚ã®å‡¦ç†
 void gpibio_shutdown(void)
 {
 #if defined(SUPPORT_GPIB_CONTEC)
@@ -328,7 +328,7 @@ void gpibio_reset(const NP2CFG *pConfig) {
 	getbiospath(path, tmpbiosname, NELEMENTS(path));
 	fh = file_open_rb(path);
 
-	// GP-IB BIOS Šg’£ROM(D4000h - D5FFFh) —LŒø?
+	// GP-IB BIOS æ‹¡å¼µROM(D4000h - D5FFFh) æœ‰åŠ¹?
 	if((np2cfg.memsw[3] & 0x20) == 0){
 		gpib.enable = 0;
 		return;
@@ -365,12 +365,12 @@ void gpibio_bind(void) {
 	
 	int i;
 
-	// GP-IB —LŒø?
+	// GP-IB æœ‰åŠ¹?
 	if(!gpib.enable){
 		return;
 	}
 	
-	// •W€I/Oƒ|[ƒgİ’è
+	// æ¨™æº–I/Oãƒãƒ¼ãƒˆè¨­å®š
 	for(i=0;i<16;i++){
 		if(gpib_o[i]){
 			iocore_attachout(0xC0 + i, gpib_o[i]);
@@ -382,7 +382,7 @@ void gpibio_bind(void) {
 	iocore_attachinp(0x99, gpib_i99);
 	iocore_attachinp(0x9b, gpib_i9b);
 	
-	// ƒJƒXƒ^ƒ€I/Oƒ|[ƒgƒx[ƒXƒAƒhƒŒƒX
+	// ã‚«ã‚¹ã‚¿ãƒ I/Oãƒãƒ¼ãƒˆãƒ™ãƒ¼ã‚¹ã‚¢ãƒ‰ãƒ¬ã‚¹
 	if(gpib.exiobase != 0){
 		for(i=0;i<16;i++){
 			if(gpib_o[i]){

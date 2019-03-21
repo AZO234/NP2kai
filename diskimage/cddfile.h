@@ -16,7 +16,7 @@ typedef struct {
 	OEMCHAR	path[MAX_PATH];
 } _CDINFO, *CDINFO;
 
-BOOL isCDImage(const OEMCHAR *fname);	//	’Ç‰Á(kaiA)
+BOOL isCDImage(const OEMCHAR *fname);	//	è¿½åŠ (kaiA)
 long issec2048(FILEH fh);
 long issec2352(FILEH fh);
 long issec2448(FILEH fh);

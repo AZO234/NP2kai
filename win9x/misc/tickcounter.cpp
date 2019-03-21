@@ -1,13 +1,13 @@
 /**
  * @file	tickcounter.cpp
- * @brief	TICK ƒJƒEƒ“ƒ^‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	TICK ã‚«ã‚¦ãƒ³ã‚¿ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
 #include "tickcounter.h"
 
 /**
- * @brief TICK ƒJƒEƒ“ƒ^[ ƒNƒ‰ƒX
+ * @brief TICK ã‚«ã‚¦ãƒ³ã‚¿ãƒ¼ ã‚¯ãƒ©ã‚¹
  */
 class TickCounter
 {
@@ -20,14 +20,14 @@ public:
 	int GetMode();
 
 private:
-	LARGE_INTEGER m_nFreq;		//!< ü”g”
-	LARGE_INTEGER m_nLast;		//!< ÅŒã‚ÌƒJƒEƒ“ƒ^
-	DWORD m_dwLastTick;			//!< ÅŒã‚Ì TICK
-	int m_mode;					//!< ƒJƒEƒ“ƒ^ƒ‚[ƒh
+	LARGE_INTEGER m_nFreq;		//!< å‘¨æ³¢æ•°
+	LARGE_INTEGER m_nLast;		//!< æœ€å¾Œã®ã‚«ã‚¦ãƒ³ã‚¿
+	DWORD m_dwLastTick;			//!< æœ€å¾Œã® TICK
+	int m_mode;					//!< ã‚«ã‚¦ãƒ³ã‚¿ãƒ¢ãƒ¼ãƒ‰
 };
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 TickCounter::TickCounter()
 {
@@ -47,7 +47,7 @@ TickCounter::TickCounter()
 }
 
 /**
- * TICK ‚ğ“¾‚é
+ * TICK ã‚’å¾—ã‚‹
  * @return TICK
  */
 DWORD TickCounter::Get()
@@ -126,7 +126,7 @@ LARGE_INTEGER TickCounter::Get_clockpersec()
 }
 
 /**
- * ƒ‚[ƒh‹­§İ’è
+ * ãƒ¢ãƒ¼ãƒ‰å¼·åˆ¶è¨­å®š
  */
 void TickCounter::SetMode(int mode)
 {
@@ -162,13 +162,13 @@ int TickCounter::GetMode()
 }
 
 
-// ---- C ƒCƒ“ƒ^ƒtƒFƒCƒX
+// ---- C ã‚¤ãƒ³ã‚¿ãƒ•ã‚§ã‚¤ã‚¹
 
-//! ƒJƒEƒ“ƒ^ ƒCƒ“ƒXƒ^ƒ“ƒX
+//! ã‚«ã‚¦ãƒ³ã‚¿ ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
 static TickCounter s_tick;
 
 /**
- * ƒJƒEƒ“ƒ^‚ğ“¾‚é
+ * ã‚«ã‚¦ãƒ³ã‚¿ã‚’å¾—ã‚‹
  * @return TICK
  */
 DWORD GetTickCounter()
@@ -177,7 +177,7 @@ DWORD GetTickCounter()
 }
 
 /**
- * ƒJƒEƒ“ƒ^ƒ‚[ƒhİ’è
+ * ã‚«ã‚¦ãƒ³ã‚¿ãƒ¢ãƒ¼ãƒ‰è¨­å®š
  */
 void SetTickCounterMode(int mode)
 {
@@ -189,7 +189,7 @@ int GetTickCounterMode()
 }
 
 /**
- * ƒNƒƒbƒN‚ğ“¾‚é
+ * ã‚¯ãƒ­ãƒƒã‚¯ã‚’å¾—ã‚‹
  * @return TICK
  */
 LARGE_INTEGER GetTickCounter_Clock()
@@ -198,7 +198,7 @@ LARGE_INTEGER GetTickCounter_Clock()
 }
 
 /**
- * 1•b‚ ‚½‚è‚ÌƒNƒƒbƒN‚ğ“¾‚é
+ * 1ç§’ã‚ãŸã‚Šã®ã‚¯ãƒ­ãƒƒã‚¯ã‚’å¾—ã‚‹
  */
 LARGE_INTEGER GetTickCounter_ClockPerSec()
 {

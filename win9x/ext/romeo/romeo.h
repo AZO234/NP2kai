@@ -1,51 +1,51 @@
 /**
  * @file	romeo.h
- * @brief	ROMEO —p‚Ì PCI ’è‹`‚Å‚·
+ * @brief	ROMEO ç”¨ã® PCI å®šç¾©ã§ã™
  */
 
 #pragma once
 
-#define	ROMEO_VENDORID		0x6809		/*!< ƒxƒ“ƒ_[ ID */
-#define	ROMEO_DEVICEID		0x2151		/*!< ƒfƒoƒCƒX ID */
+#define	ROMEO_VENDORID		0x6809		/*!< ãƒ™ãƒ³ãƒ€ãƒ¼ ID */
+#define	ROMEO_DEVICEID		0x2151		/*!< ãƒ‡ãƒã‚¤ã‚¹ ID */
 #define	ROMEO_DEVICEID2		0x8121		/*!< for Developer version */
 
 /**
- * PCIDEBUG ƒŠƒUƒ‹ƒg ƒR[ƒh
+ * PCIDEBUG ãƒªã‚¶ãƒ«ãƒˆ ã‚³ãƒ¼ãƒ‰
  */
 enum
 {
-	PCIERR_SUCCESS			= 0x00,		/*!< ¬Œ÷ */
-	PCIERR_INVALIDCLASS		= 0x83,		/*!< •s³‚ÈƒfƒoƒCƒX ƒNƒ‰ƒX */
-	PCIERR_DEVNOTFOUND		= 0x86		/*!< ƒfƒoƒCƒX‚ªŒ©‚Â‚©‚ç‚È‚¢ */
+	PCIERR_SUCCESS			= 0x00,		/*!< æˆåŠŸ */
+	PCIERR_INVALIDCLASS		= 0x83,		/*!< ä¸æ­£ãªãƒ‡ãƒã‚¤ã‚¹ ã‚¯ãƒ©ã‚¹ */
+	PCIERR_DEVNOTFOUND		= 0x86		/*!< ãƒ‡ãƒã‚¤ã‚¹ãŒè¦‹ã¤ã‹ã‚‰ãªã„ */
 };
 
 /**
- * ƒRƒ“ƒtƒBƒOƒŒ[ƒVƒ‡ƒ“ ƒŒƒWƒXƒ^
+ * ã‚³ãƒ³ãƒ•ã‚£ã‚°ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ ãƒ¬ã‚¸ã‚¹ã‚¿
  */
 enum
 {
-	ROMEO_DEVICE_VENDOR		= 0x00,		/*!< ƒxƒ“ƒ_/ƒfƒoƒCƒX ID */
-	ROMEO_STATUS_COMMAND	= 0x04,		/*!< ƒRƒ}ƒ“ƒh/ƒXƒe[ƒ^ƒX ƒŒƒWƒXƒ^ */
-	ROMEO_CLASS_REVISON		= 0x08,		/*!< ƒŠƒrƒWƒ‡ƒ“ ID / ƒNƒ‰ƒX ƒR[ƒh */
-	ROMEO_HEADTYPE			= 0x0c,		/*!< ƒLƒƒƒbƒVƒ… ƒ‰ƒCƒ“ ƒTƒCƒY / ƒ}ƒXƒ^ ƒŒƒCƒeƒ“ƒV ƒ^ƒCƒ} / ƒwƒbƒ_ ƒ^ƒCƒv */
-	ROMEO_BASEADDRESS0		= 0x10,		/*!< ƒx[ƒX ƒAƒhƒŒƒX 0 */
-	ROMEO_BASEADDRESS1		= 0x14,		/*!< ƒx[ƒX ƒAƒhƒŒƒX 1 */
-	ROMEO_SUB_DEVICE_VENDOR	= 0x2c,		/*!< ƒTƒu ƒVƒXƒeƒ€ ƒxƒ“ƒ_ID */
-	ROMEO_PCIINTERRUPT		= 0x3c		/*!< ƒCƒ“ƒ^ƒ‰ƒvƒg ƒ‰ƒCƒ“ / ƒCƒ“ƒ^ƒ‰ƒvƒg ƒsƒ“ / Å¬ƒOƒ‰ƒ“ƒg / Å‘åƒŒƒCƒeƒ“ƒV */
+	ROMEO_DEVICE_VENDOR		= 0x00,		/*!< ãƒ™ãƒ³ãƒ€/ãƒ‡ãƒã‚¤ã‚¹ ID */
+	ROMEO_STATUS_COMMAND	= 0x04,		/*!< ã‚³ãƒãƒ³ãƒ‰/ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ ãƒ¬ã‚¸ã‚¹ã‚¿ */
+	ROMEO_CLASS_REVISON		= 0x08,		/*!< ãƒªãƒ“ã‚¸ãƒ§ãƒ³ ID / ã‚¯ãƒ©ã‚¹ ã‚³ãƒ¼ãƒ‰ */
+	ROMEO_HEADTYPE			= 0x0c,		/*!< ã‚­ãƒ£ãƒƒã‚·ãƒ¥ ãƒ©ã‚¤ãƒ³ ã‚µã‚¤ã‚º / ãƒã‚¹ã‚¿ ãƒ¬ã‚¤ãƒ†ãƒ³ã‚· ã‚¿ã‚¤ãƒ / ãƒ˜ãƒƒãƒ€ ã‚¿ã‚¤ãƒ— */
+	ROMEO_BASEADDRESS0		= 0x10,		/*!< ãƒ™ãƒ¼ã‚¹ ã‚¢ãƒ‰ãƒ¬ã‚¹ 0 */
+	ROMEO_BASEADDRESS1		= 0x14,		/*!< ãƒ™ãƒ¼ã‚¹ ã‚¢ãƒ‰ãƒ¬ã‚¹ 1 */
+	ROMEO_SUB_DEVICE_VENDOR	= 0x2c,		/*!< ã‚µãƒ– ã‚·ã‚¹ãƒ†ãƒ  ãƒ™ãƒ³ãƒ€ID */
+	ROMEO_PCIINTERRUPT		= 0x3c		/*!< ã‚¤ãƒ³ã‚¿ãƒ©ãƒ—ãƒˆ ãƒ©ã‚¤ãƒ³ / ã‚¤ãƒ³ã‚¿ãƒ©ãƒ—ãƒˆ ãƒ”ãƒ³ / æœ€å°ã‚°ãƒ©ãƒ³ãƒˆ / æœ€å¤§ãƒ¬ã‚¤ãƒ†ãƒ³ã‚· */
 };
 
 /**
- * ƒAƒhƒŒƒX
+ * ã‚¢ãƒ‰ãƒ¬ã‚¹
  */
 enum
 {
-	ROMEO_YM2151ADDR		= 0x0000,	/*!< YM2151 ƒAƒhƒŒƒX */
-	ROMEO_YM2151DATA		= 0x0004,	/*!< YM2151 ƒf[ƒ^ */
-	ROMEO_CMDQUEUE			= 0x0018,	/*!< ƒRƒ}ƒ“ƒh ƒLƒ…[ */
-	ROMEO_YM2151CTRL		= 0x001c,	/*!< YM2151 ƒRƒ“ƒgƒ[ƒ‹ */
-	ROMEO_YMF288ADDR1		= 0x0100,	/*!< YMF288 ƒAƒhƒŒƒX */
-	ROMEO_YMF288DATA1		= 0x0104,	/*!< YMF288 ƒf[ƒ^ */
-	ROMEO_YMF288ADDR2		= 0x0108,	/*!< YMF288 Šg’£ƒAƒhƒŒƒX */
-	ROMEO_YMF288DATA2		= 0x010c,	/*!< YMF288 Šg’£ƒf[ƒ^ */
-	ROMEO_YMF288CTRL		= 0x011c	/*!< YMF288 ƒRƒ“ƒgƒ[ƒ‹ */
+	ROMEO_YM2151ADDR		= 0x0000,	/*!< YM2151 ã‚¢ãƒ‰ãƒ¬ã‚¹ */
+	ROMEO_YM2151DATA		= 0x0004,	/*!< YM2151 ãƒ‡ãƒ¼ã‚¿ */
+	ROMEO_CMDQUEUE			= 0x0018,	/*!< ã‚³ãƒãƒ³ãƒ‰ ã‚­ãƒ¥ãƒ¼ */
+	ROMEO_YM2151CTRL		= 0x001c,	/*!< YM2151 ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ« */
+	ROMEO_YMF288ADDR1		= 0x0100,	/*!< YMF288 ã‚¢ãƒ‰ãƒ¬ã‚¹ */
+	ROMEO_YMF288DATA1		= 0x0104,	/*!< YMF288 ãƒ‡ãƒ¼ã‚¿ */
+	ROMEO_YMF288ADDR2		= 0x0108,	/*!< YMF288 æ‹¡å¼µã‚¢ãƒ‰ãƒ¬ã‚¹ */
+	ROMEO_YMF288DATA2		= 0x010c,	/*!< YMF288 æ‹¡å¼µãƒ‡ãƒ¼ã‚¿ */
+	ROMEO_YMF288CTRL		= 0x011c	/*!< YMF288 ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ« */
 };

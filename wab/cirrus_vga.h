@@ -141,7 +141,7 @@ typedef struct QEMUFile QEMUFile;
 
 
 
-/// Ç¬Ç≠ÇÁÇÒÇ∆Ç¢Ç©ÇÒÇÀ
+/// „Å§„Åè„Çâ„Çì„Å®„ÅÑ„Åã„Çì„Å≠
 target_phys_addr_t isa_mem_base = 0;
 
 static void cpu_physical_memory_set_dirty(ram_addr_t addr)

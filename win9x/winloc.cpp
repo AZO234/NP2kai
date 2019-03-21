@@ -45,20 +45,20 @@ BOOL winloc_InitDwmFunc() {
 	RECT r = {0};
 
 	if(noDWM){
-		// DWMŠÂ‹«‚Å‚È‚¢
+		// DWMç’°å¢ƒã§ãªã„
 		return FALSE;
 	}else{
 		if(!hDwmModule){
 			hDwmModule = LoadLibrary(_T("dwmapi.dll"));
 			if(!hDwmModule){
-				// DWMŠÂ‹«‚Å‚È‚¢
+				// DWMç’°å¢ƒã§ãªã„
 				noDWM = 1;
 				return FALSE;
 			}
 			F_DwmIsCompositionEnabled = (pfnDwmIsCompositionEnabled)GetProcAddress(hDwmModule, "DwmIsCompositionEnabled");
 			F_DwmGetWindowAttribute = (pfnDwmGetWindowAttribute)GetProcAddress(hDwmModule, "DwmGetWindowAttribute");
 			if(!F_DwmIsCompositionEnabled || !F_DwmGetWindowAttribute){
-				// ‰½ŒÌ‚©DwmGetWindowAttribute‚âDwmIsCompositionEnabled‚ª–³‚¢H
+				// ä½•æ•…ã‹DwmGetWindowAttributeã‚„DwmIsCompositionEnabledãŒç„¡ã„ï¼Ÿ
 				FreeLibrary(hDwmModule);
 				hDwmModule = NULL;
 				F_DwmGetWindowAttribute = NULL;
@@ -66,7 +66,7 @@ BOOL winloc_InitDwmFunc() {
 				return FALSE;
 			}
 		}
-		// DWMŠÂ‹«
+		// DWMç’°å¢ƒ
 		return TRUE;
 	}
 }
@@ -85,7 +85,7 @@ BOOL winloc_GetWindowRect(HWND hwnd, LPRECT lpRect) {
 		BOOL dwmenable = FALSE;
 		hr = F_DwmIsCompositionEnabled(&dwmenable);
 		if(SUCCEEDED(hr) && dwmenable){
-			// DWMŠÂ‹«
+			// DWMç’°å¢ƒ
 			hr = F_DwmGetWindowAttribute(hwnd, DWMWA_EXTENDED_FRAME_BOUNDS, lpRect, sizeof(RECT));
 			if(SUCCEEDED(hr)){
 				return 1;
@@ -93,11 +93,11 @@ BOOL winloc_GetWindowRect(HWND hwnd, LPRECT lpRect) {
 				return GetWindowRect(hwnd, lpRect);
 			}
 		}else{
-			// ƒRƒ“ƒ|ƒWƒVƒ‡ƒ“OFF
+			// ã‚³ãƒ³ãƒã‚¸ã‚·ãƒ§ãƒ³OFF
 			return GetWindowRect(hwnd, lpRect);
 		}
 	}else{
-		// DWMŠÂ‹«‚Å‚È‚¢
+		// DWMç’°å¢ƒã§ãªã„
 		return GetWindowRect(hwnd, lpRect);
 	}
 }
@@ -115,7 +115,7 @@ void winloc_setclientsize(HWND hwnd, int width, int height) {
 	SystemParametersInfo(SPI_GETWORKAREA, 0, &rectDisktop, 0);
 	scx = GetSystemMetrics(SM_CXSCREEN);
 	scy = GetSystemMetrics(SM_CYSCREEN);
-	// ƒ}ƒ‹ƒ`ƒ‚ƒjƒ^Žb’è‘Î‰ž ver0.86 rev30
+	// ãƒžãƒ«ãƒãƒ¢ãƒ‹ã‚¿æš«å®šå¯¾å¿œ ver0.86 rev30
 	rectDisktop.right = GetSystemMetrics(SM_CXVIRTUALSCREEN);
 	rectDisktop.bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
@@ -153,7 +153,7 @@ void winloc_setclientsize(HWND hwnd, int width, int height) {
 			}
 		}
 		if(!noDWM){
-			// DWM•â³
+			// DWMè£œæ­£
 			RECT	rectmp1;
 			RECT	rectmp2;
 			GetWindowRect(hwnd, &rectmp1);
@@ -186,7 +186,7 @@ void winloc_movingproc(WINLOC *wl, RECT *rect) {
 	RECT	rectmp1;
 	RECT	rectmp2;
 	if(!noDWM){
-		// DWM•â³
+		// DWMè£œæ­£
 		GetWindowRect(GetActiveWindow(), &rectmp1);
 		winloc_GetWindowRect(GetActiveWindow(), &rectmp2);
 		rect->left   += rectmp2.left   - rectmp1.left;
@@ -198,14 +198,14 @@ void winloc_movingproc(WINLOC *wl, RECT *rect) {
 	SystemParametersInfo(SPI_GETWORKAREA, 0, &workrc, 0);
 	winlx = rect->right - rect->left;
 	winly = rect->bottom - rect->top;
-	// ƒ}ƒ‹ƒ`ƒ‚ƒjƒ^Žb’è‘Î‰ž ver0.86 rev30
+	// ãƒžãƒ«ãƒãƒ¢ãƒ‹ã‚¿æš«å®šå¯¾å¿œ ver0.86 rev30
 	workrc.right = GetSystemMetrics(SM_CXVIRTUALSCREEN);
 	workrc.bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
 	if ((winlx > (workrc.right - workrc.left)) ||
 		(winly > (workrc.bottom - workrc.top))) {
 		if(!noDWM){
-			// DWM•â³
+			// DWMè£œæ­£
 			rect->left   -= rectmp2.left   - rectmp1.left;
 			rect->top    -= rectmp2.top    - rectmp1.top;
 			rect->right  -= rectmp2.right  - rectmp1.right;
@@ -274,7 +274,7 @@ void winloc_movingproc(WINLOC *wl, RECT *rect) {
 		}
 	}
 	if(!noDWM){
-		// DWM•â³
+		// DWMè£œæ­£
 		rect->left   -= rectmp2.left   - rectmp1.left;
 		rect->top    -= rectmp2.top    - rectmp1.top;
 		rect->right  -= rectmp2.right  - rectmp1.right;
@@ -378,7 +378,7 @@ WINLOCEX winlocex_create(HWND base, const HWND *child, UINT count) {
 	wnd = (WLEXWND *)(ret + 1);
 
 	if (base) {
-		// e‚ÆÚ‘±‚³‚ê‚Ä‚éH
+		// è¦ªã¨æŽ¥ç¶šã•ã‚Œã¦ã‚‹ï¼Ÿ
 		ret->base = base;
 		winloc_GetWindowRect(base, &ret->rect);
 		for (i=0; i<inlist; i++) {
@@ -397,7 +397,7 @@ WINLOCEX winlocex_create(HWND base, const HWND *child, UINT count) {
 				}
 			}
 		}
-		// Žq‚ÆÚ‘±‚³‚ê‚Ä‚éH
+		// å­ã¨æŽ¥ç¶šã•ã‚Œã¦ã‚‹ï¼Ÿ
 		p = (WLEXWND *)(ret + 1);
 		for (i=0; i<ret->count; i++, p++) {
 			for (j=0; j<inlist; j++) {
@@ -455,7 +455,7 @@ void winlocex_setholdwnd(WINLOCEX wle, HWND hold) {
 		return;
 	}
 	SystemParametersInfo(SPI_GETWORKAREA, 0, &workrc, 0);
-	// ƒ}ƒ‹ƒ`ƒ‚ƒjƒ^Žb’è‘Î‰ž ver0.86 rev30
+	// ãƒžãƒ«ãƒãƒ¢ãƒ‹ã‚¿æš«å®šå¯¾å¿œ ver0.86 rev30
 	workrc.right = GetSystemMetrics(SM_CXVIRTUALSCREEN);
 	workrc.bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
@@ -523,7 +523,7 @@ static BOOL gravityx(WINLOCEX wle, RECT *rect) {
 	}
 
 	SystemParametersInfo(SPI_GETWORKAREA, 0, &workrc, 0);
-	// ƒ}ƒ‹ƒ`ƒ‚ƒjƒ^Žb’è‘Î‰ž ver0.86 rev30
+	// ãƒžãƒ«ãƒãƒ¢ãƒ‹ã‚¿æš«å®šå¯¾å¿œ ver0.86 rev30
 	workrc.right = GetSystemMetrics(SM_CXVIRTUALSCREEN);
 	workrc.bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
@@ -611,7 +611,7 @@ static BOOL gravityy(WINLOCEX wle, RECT *rect) {
 	}
 
 	SystemParametersInfo(SPI_GETWORKAREA, 0, &workrc, 0);
-	// ƒ}ƒ‹ƒ`ƒ‚ƒjƒ^Žb’è‘Î‰ž ver0.86 rev30
+	// ãƒžãƒ«ãƒãƒ¢ãƒ‹ã‚¿æš«å®šå¯¾å¿œ ver0.86 rev30
 	workrc.right = GetSystemMetrics(SM_CXVIRTUALSCREEN);
 	workrc.bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
@@ -668,7 +668,7 @@ void winlocex_moving(WINLOCEX wle, RECT *rect) {
 	}
 	
 	if(!noDWM){
-		// DWM•â³
+		// DWMè£œæ­£
 		GetWindowRect(GetActiveWindow(), &rectmp1);
 		winloc_GetWindowRect(GetActiveWindow(), &rectmp2);
 		rect->left   += rectmp2.left   - rectmp1.left;
@@ -677,7 +677,7 @@ void winlocex_moving(WINLOCEX wle, RECT *rect) {
 		rect->bottom += rectmp2.bottom - rectmp1.bottom;
 	}
 
-	// ‚Ð‚Á‚Â‚¢‚Ä‚½Žž
+	// ã²ã£ã¤ã„ã¦ãŸæ™‚
 	if (wle->flagx) {
 		d = rect->left - wle->tx;
 		wle->gx += d;
@@ -703,7 +703,7 @@ void winlocex_moving(WINLOCEX wle, RECT *rect) {
 		}
 	}
 
-	// ƒŠƒŠ[ƒXˆ—
+	// ãƒªãƒªãƒ¼ã‚¹å‡¦ç†
 	num = wle->flagx - 1;
 	if (num < wle->count) {
 		rc = &(((WLEXWND *)(wle + 1))[num].rect);
@@ -727,7 +727,7 @@ void winlocex_moving(WINLOCEX wle, RECT *rect) {
 		}
 	}
 
-	// d—Í
+	// é‡åŠ›
 	do {
 		changes = FALSE;
 		if (!wle->flagx) {
@@ -739,7 +739,7 @@ void winlocex_moving(WINLOCEX wle, RECT *rect) {
 	} while(changes);
 	
 	if(!noDWM){
-		// DWM•â³
+		// DWMè£œæ­£
 		rect->left   -= rectmp2.left   - rectmp1.left;
 		rect->top    -= rectmp2.top    - rectmp1.top;
 		rect->right  -= rectmp2.right  - rectmp1.right;
@@ -773,7 +773,7 @@ void winlocex_move(WINLOCEX wle) {
 	}
 	if ((i >= wle->count) && (wle->holdflag)) {
 		SystemParametersInfo(SPI_GETWORKAREA, 0, &workrc, 0);
-		// ƒ}ƒ‹ƒ`ƒ‚ƒjƒ^Žb’è‘Î‰ž ver0.86 rev30
+		// ãƒžãƒ«ãƒãƒ¢ãƒ‹ã‚¿æš«å®šå¯¾å¿œ ver0.86 rev30
 		workrc.right = GetSystemMetrics(SM_CXVIRTUALSCREEN);
 		workrc.bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
@@ -799,7 +799,7 @@ void winlocex_move(WINLOCEX wle) {
 				break;
 		}
 		if(!noDWM){
-			// DWM•â³
+			// DWMè£œæ­£
 			RECT	rectmp1;
 			RECT	rectmp2;
 			GetWindowRect(wle->hold, &rectmp1);
@@ -867,7 +867,7 @@ void winlocex_move(WINLOCEX wle) {
 					break;
 			}
 			if(!noDWM){
-				// DWM•â³
+				// DWMè£œæ­£
 				RECT	rectmp1;
 				RECT	rectmp2;
 				GetWindowRect(wnd->hwnd, &rectmp1);

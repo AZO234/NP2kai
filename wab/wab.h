@@ -11,7 +11,7 @@
 #include <gtk/gtk.h>
 #endif
 
-// XXX: 1600x1024�ȏ�ɂȂ�Ȃ��̂ō����������Ă͂���ŏ\��
+// XXX: 1600x1024以上にならないので差し当たってはこれで十分
 #define WAB_MAX_WIDTH	1600
 #define WAB_MAX_HEIGHT	1024
 
@@ -31,15 +31,15 @@ typedef struct {
 
 typedef void NP2WAB_DrawFrame();
 typedef struct {
-	REG8 relay; // ��ʏo�̓����[��ԁibit0=�����E�B���h�E�A�N�Z�����[�^, bit1=RGB IN�X���[, ����ȊO�̃r�b�g��Reserved�Bbit0,1��00��98�O���t�B�b�N
-	REG8 paletteChanged; // �p���b�g�v�X�V�t���O
-	int realWidth; // ��ʉ𑜓x(��)
-	int realHeight; // ��ʉ𑜓x(����)
-	int wndWidth; // �`��̈�T�C�Y(��)
-	int wndHeight; // �`��̈�T�C�Y(����)
-	int fps; // ���t���b�V�����[�g�i��̍��킹�Ă���邩������Ȃ�������ǌ����_�ŉ������Ă��Ȃ��j
-	int lastWidth; // �O��̃E�B���h�E�A�N�Z�����[�^�̉��𑜓x�i�f�o�C�X�č쐬����p�j
-	int lastHeight; // �O��̃E�B���h�E�A�N�Z�����[�^�̉��𑜓x�i�f�o�C�X�č쐬����p�j
+	REG8 relay; // 画面出力リレー状態（bit0=内蔵ウィンドウアクセラレータ, bit1=RGB INスルー, それ以外のビットはReserved。bit0,1が00で98グラフィック
+	REG8 paletteChanged; // パレット要更新フラグ
+	int realWidth; // 画面解像度(幅)
+	int realHeight; // 画面解像度(高さ)
+	int wndWidth; // 描画領域サイズ(幅)
+	int wndHeight; // 描画領域サイズ(高さ)
+	int fps; // リフレッシュレート（大体合わせてくれるかもしれない･･･けど現時点で何もしていない）
+	int lastWidth; // 前回のウィンドウアクセラレータの横解像度（デバイス再作成判定用）
+	int lastHeight; // 前回のウィンドウアクセラレータの横解像度（デバイス再作成判定用）
 	
 	int	relaystateint;
 	int	relaystateext;
@@ -48,21 +48,21 @@ typedef struct {
 } NP2WAB;
 
 typedef struct {
-	int multiwindow; // �ʑ����[�h
-	int ready; // 0�ȊO�Ȃ�`���Ă��ǂ���
+	int multiwindow; // 別窓モード
+	int ready; // 0以外なら描いても良いよ
 #if defined(NP2_SDL2) || defined(__LIBRETRO__)
 	unsigned int* pBuffer;
 #elif defined(NP2_X11)
 	GtkWidget *pWABWnd;
 	GdkPixbuf *pPixbuf;
 #else
-	HWND hWndMain; // ���C���E�B���h�E�̃n���h��
-	HWND hWndWAB; // �E�B���h�E�A�N�Z�����[�^�ʑ��̃n���h��
-	HDC hDCWAB; // �E�B���h�E�A�N�Z�����[�^�ʑ���HDC
-	HBITMAP hBmpBuf; // �o�b�t�@�r�b�g�}�b�v�i��ɓ��{�j
-	HDC     hDCBuf; // �o�b�t�@��HDC
+	HWND hWndMain; // メインウィンドウのハンドル
+	HWND hWndWAB; // ウィンドウアクセラレータ別窓のハンドル
+	HDC hDCWAB; // ウィンドウアクセラレータ別窓のHDC
+	HBITMAP hBmpBuf; // バッファビットマップ（常に等倍）
+	HDC     hDCBuf; // バッファのHDC
 #endif
-	NP2WAB_DrawFrame *drawframe; // ��ʕ`��֐��BhDCBuf�ɃA�N�Z�����[�^��ʃf�[�^��]������B
+	NP2WAB_DrawFrame *drawframe; // 画面描画関数。hDCBufにアクセラレータ画面データを転送する。
 } NP2WABWND;
 
 #if defined(NP2_SDL2) || defined(NP2_X11) || defined(__LIBRETRO__)

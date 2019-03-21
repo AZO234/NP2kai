@@ -16,7 +16,7 @@ static SINT32 cs4231_DACvolume_R = 1024;
 static UINT16 cs4231_DACvolumereg_L = 0xff;
 static UINT16 cs4231_DACvolumereg_R = 0xff;
 
-// 8bit ƒ‚ƒmƒ‰ƒ‹
+// 8bit ãƒ¢ãƒŽãƒ©ãƒ«
 static void SOUNDCALL pcm8m(CS4231 cs, SINT32 *pcm, UINT count) {
 
 	UINT32	leng;
@@ -58,7 +58,7 @@ const UINT8	*ptr2;
 	cs->pos12 = pos12 & ((1 << 12) - 1);
 }
 
-// 8bit ƒXƒeƒŒƒI
+// 8bit ã‚¹ãƒ†ãƒ¬ã‚ª
 static void SOUNDCALL pcm8s(CS4231 cs, SINT32 *pcm, UINT count) {
 
 	UINT32	leng;
@@ -103,7 +103,7 @@ const UINT8	*ptr2;
 	cs->pos12 = pos12 & ((1 << 12) - 1);
 }
 
-// 16bit ƒ‚ƒmƒ‰ƒ‹
+// 16bit ãƒ¢ãƒŽãƒ©ãƒ«
 static void SOUNDCALL pcm16m(CS4231 cs, SINT32 *pcm, UINT count) {
 
 	UINT32	leng;
@@ -145,7 +145,7 @@ const UINT8	*ptr2;
 	cs->pos12 = pos12 & ((1 << 12) - 1);
 }
 
-// 16bit ƒXƒeƒŒƒI
+// 16bit ã‚¹ãƒ†ãƒ¬ã‚ª
 static void SOUNDCALL pcm16s(CS4231 cs, SINT32 *pcm, UINT count) {
 
 	UINT32	leng;
@@ -190,7 +190,7 @@ const UINT8	*ptr2;
 	cs->pos12 = pos12 & ((1 << 12) - 1);
 }
 
-// 16bit ƒ‚ƒmƒ‰ƒ‹(little endian)
+// 16bit ãƒ¢ãƒŽãƒ©ãƒ«(little endian)
 static void SOUNDCALL pcm16m_ex(CS4231 cs, SINT32 *pcm, UINT count) {
 
 	UINT32	leng;
@@ -232,7 +232,7 @@ const UINT8	*ptr2;
 	cs->pos12 = pos12 & ((1 << 12) - 1);
 }
 
-// 16bit ƒXƒeƒŒƒI(little endian)
+// 16bit ã‚¹ãƒ†ãƒ¬ã‚ª(little endian)
 static void SOUNDCALL pcm16s_ex(CS4231 cs, SINT32 *pcm, UINT count) {
 
 	UINT32	leng;
@@ -313,13 +313,13 @@ void SOUNDCALL cs4231_getpcm(CS4231 cs, SINT32 *pcm, UINT count) {
 	static int bufdelaycounter = 0;
 
 	if (((cs->reg.iface & 1) || bufdelaycounter > 0) && (count)) {
-		// CS4231“à‘ ƒ{ƒŠƒ…[ƒ€ 
+		// CS4231å†…è”µãƒœãƒªãƒ¥ãƒ¼ãƒ  
 		if(cs4231_DACvolumereg_L != cs->reg.dac_l){
 			cs4231_DACvolumereg_L = cs->reg.dac_l;
 			if(cs->reg.dac_l & 0x80){ // DAC L Mute
 				cs4231_DACvolume_L = 0;
 			}else{
-				cs4231_DACvolume_L = (int)(pow(10, -1.5 * ((cs4231_DACvolumereg_L) & 0x3f) / 20.0) * 1024); // DAC L Volume (1bit–ˆ‚É-1.5dB)
+				cs4231_DACvolume_L = (int)(pow(10, -1.5 * ((cs4231_DACvolumereg_L) & 0x3f) / 20.0) * 1024); // DAC L Volume (1bitæ¯Žã«-1.5dB)
 			}
 		}
 		if(cs4231_DACvolumereg_R != cs->reg.dac_r){
@@ -327,14 +327,14 @@ void SOUNDCALL cs4231_getpcm(CS4231 cs, SINT32 *pcm, UINT count) {
 			if(cs->reg.dac_r & 0x80){ // DAC R Mute
 				cs4231_DACvolume_R = 0;
 			}else{
-				cs4231_DACvolume_R = (int)(pow(10, -1.5 * ((cs4231_DACvolumereg_R) & 0x3f) / 20.0) * 1024); // DAC R Volume (1bit–ˆ‚É-1.5dB)
+				cs4231_DACvolume_R = (int)(pow(10, -1.5 * ((cs4231_DACvolumereg_R) & 0x3f) / 20.0) * 1024); // DAC R Volume (1bitæ¯Žã«-1.5dB)
 			}
 		}
 		
-		// Ä¶—pƒoƒbƒtƒ@‚É‘—‚é
+		// å†ç”Ÿç”¨ãƒãƒƒãƒ•ã‚¡ã«é€ã‚‹
 		(*cs4231fn[cs->reg.datafmt >> 4])(cs, pcm, count);
 
-		//// CS4231ƒ^ƒCƒ}[Š„‚èž‚ÝTIiŽè”²‚«j
+		//// CS4231ã‚¿ã‚¤ãƒžãƒ¼å‰²ã‚Šè¾¼ã¿TIï¼ˆæ‰‹æŠœãï¼‰
 		//if ((cs->reg.pinctrl & 2) && (cs->dmairq != 0xff) && LOADINTELWORD(cs->reg.timer)) {
 		//	static double timercount = 0;
 		//	int decval = 0;
@@ -350,7 +350,7 @@ void SOUNDCALL cs4231_getpcm(CS4231 cs, SINT32 *pcm, UINT count) {
 		//	}
 		//}
 
-		// Playback Enable‚ªƒ[‚É‚È‚Á‚Ä‚àƒoƒbƒtƒ@‚ÌƒfƒBƒŒƒC•ª‚ÍÄ¶‚·‚é
+		// Playback EnableãŒãƒ­ãƒ¼ã«ãªã£ã¦ã‚‚ãƒãƒƒãƒ•ã‚¡ã®ãƒ‡ã‚£ãƒ¬ã‚¤åˆ†ã¯å†ç”Ÿã™ã‚‹
 		if((cs->reg.iface & 1)){
 			bufdelaycounter = cs->bufdatas;
 		}else if(cs->bufdatas == 0){

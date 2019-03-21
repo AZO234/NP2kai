@@ -126,8 +126,8 @@ PUSHFD_Fd(void)
 		}else{
 			UINT32 flags = REAL_EFLAGREG & ~(RF_FLAG|VM_FLAG);
 			flags = (flags & ALL_EFLAG) | 2;
-			flags = (flags & ~I_FLAG) | ((flags & VIF_FLAG) >> 10); // VIF ¨ IF‚ÉƒRƒs[
-			flags |= IOPL_FLAG; // IOPL == 3 ‚ÌU‚è‚ğ‚·‚é
+			flags = (flags & ~I_FLAG) | ((flags & VIF_FLAG) >> 10); // VIF â†’ IFã«ã‚³ãƒ”ãƒ¼
+			flags |= IOPL_FLAG; // IOPL == 3 ã®æŒ¯ã‚Šã‚’ã™ã‚‹
 			PUSH0_32(flags);
 			return;
 		}
@@ -214,8 +214,8 @@ POPFD_Fd(void)
 				mask = 0;
 			}else{
 				POP0_32(flags);
-				flags = (flags & ~VIF_FLAG) | ((flags & I_FLAG) << 10); // IF ¨ VIF‚ÉƒRƒs[
-				mask = I_FLAG | IOPL_FLAG; // IF, IOPL‚Í•ÏX‚³‚¹‚È‚¢
+				flags = (flags & ~VIF_FLAG) | ((flags & I_FLAG) << 10); // IF â†’ VIFã«ã‚³ãƒ”ãƒ¼
+				mask = I_FLAG | IOPL_FLAG; // IF, IOPLã¯å¤‰æ›´ã•ã›ãªã„
 			}
 		}else{
 			EXCEPTION(GP_EXCEPTION, 0);

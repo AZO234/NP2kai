@@ -6,7 +6,7 @@
 #ifndef NP2_SYSMNG_H
 #define NP2_SYSMNG_H
 
-// Ç«Å[Ç≈Ç‡Ç¢Ç¢í ímån
+// „Å©„Éº„Åß„ÇÇ„ÅÑ„ÅÑÈÄöÁü•Á≥ª
 
 enum {
 	SYS_UPDATECFG		= 0x0001,

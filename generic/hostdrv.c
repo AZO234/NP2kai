@@ -3,10 +3,10 @@
 #if defined(SUPPORT_HOSTDRV)
 
 /*
-	ƒQƒXƒgOS(DOS)‚©‚çƒzƒXƒgOS(Win)‚ÉƒAƒNƒZƒX‚·‚é‚Ì`
-	Š®‘S‚ÉDOS(3.1ˆÈã)ˆË‘¶‚¾‚¨(Š¾
-	ƒlƒbƒgƒ[ƒNƒCƒ“ƒ^ƒtƒFƒCƒX“‹Ú‘O‚ÌŒq‚¬‚¾‚¯‚Ç
-	X‚ÉAè”²‚«”Å‚¾‚µ(ƒ}ƒe
+	ã‚²ã‚¹ãƒˆOS(DOS)ã‹ã‚‰ãƒ›ã‚¹ãƒˆOS(Win)ã«ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ã®ã€œ
+	å®Œå…¨ã«DOS(3.1ä»¥ä¸Š)ä¾å­˜ã ãŠ(æ±—
+	ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã‚¤ãƒ³ã‚¿ãƒ•ã‚§ã‚¤ã‚¹æ­è¼‰å‰ã®ç¹‹ãã ã‘ã©
+	æ›´ã«ã€æ‰‹æŠœãç‰ˆã ã—(ãƒãƒ†
 */
 
 #include	"dosio.h"
@@ -144,7 +144,7 @@ static void store_srch(INTRST is) {
 
 	SRCHREC	srchrec;
 
-	// SDA“à‚ÌSRCHREC‚ÉƒZƒbƒg
+	// SDAå†…ã®SRCHRECã«ã‚»ãƒƒãƒˆ
 	srchrec = is->srchrec_ptr;
 	srchrec->drive_no = 0xc0 | hostdrv.stat.drive_no;
 	CopyMemory(srchrec->srch_mask, is->fcbname_ptr, 11);
@@ -159,7 +159,7 @@ static void store_dir(INTRST is, const HDRVFILE *phdf) {
 	UINT8	attr;
 	UINT16	reg;
 
-	// SDA“à‚ÌDIRREC‚ÉƒZƒbƒg
+	// SDAå†…ã®DIRRECã«ã‚»ãƒƒãƒˆ
 	dirrec = is->dirrec_ptr;
 	CopyMemory(dirrec->file_name, phdf->fcbname, 11);
 	attr = (UINT8)(phdf->attr & 0x3f);
@@ -251,7 +251,7 @@ static BOOL is_wildcards(const char *path) {
 }
 
 
-// ‚Û‚¢‚ñ‚½‰Šú‰»
+// ã½ã„ã‚“ãŸåˆæœŸåŒ–
 static void setup_ptrs(INTRST is, SDACDS sc) {
 
 	char	*rootpath;
@@ -399,7 +399,7 @@ static BRESULT find_file(INTRST is)
 static void inst_check(INTRST intrst) {
 
 	intrst->r.b.flag_l &= ~C_FLAG;
-	intrst->r.b.al = 0xff;					// ƒCƒ“ƒXƒg[ƒ‹Ï‚İB’Ç‰ÁOK‚¾‚¨
+	intrst->r.b.al = 0xff;					// ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«æ¸ˆã¿ã€‚è¿½åŠ OKã ãŠ
 }
 
 /* 01 */
@@ -523,7 +523,7 @@ static void change_currdir(INTRST intrst) {
 
 	ptr = intrst->filename_ptr;
 	TRACEOUT(("change_currdir %s", intrst->filename_ptr));
-	if (ptr[0] == '\0') {							// ‚é[‚Æ
+	if (ptr[0] == '\0') {							// ã‚‹ãƒ¼ã¨
 		strcpy(intrst->filename_ptr, "\\");
 		strcpy(intrst->current_path, intrst->filename_ptr);
 		store_sda_currcds(&sc);
@@ -592,7 +592,7 @@ static void commit_file(INTRST intrst) {
 		return;
 	}
 
-	// ‚È‚ñ‚à‚µ‚È‚¢‚æ[
+	// ãªã‚“ã‚‚ã—ãªã„ã‚ˆãƒ¼
 	succeed(intrst);
 }
 
@@ -640,7 +640,7 @@ static void read_file(INTRST intrst) {
 	STOREINTELDWORD(sft.file_pos, file_pos);
 
 	store_sft(intrst, &sft);
-//	store_sda_currcds(&sc);						// ver0.74 Yui / sda‚Í•ÏX–³‚µ
+//	store_sda_currcds(&sc);						// ver0.74 Yui / sdaã¯å¤‰æ›´ç„¡ã—
 	succeed(intrst);
 }
 
@@ -706,7 +706,7 @@ static void lock_file(INTRST intrst) {
 		CPU_FLAG &= ~Z_FLAG;	// chain
 		return;
 	}
-	// –¢À‘•
+	// æœªå®Ÿè£…
 	TRACEOUT(("hostdrv: lock_file"));
 }
 
@@ -723,7 +723,7 @@ static void unlock_file(INTRST intrst) {
 		CPU_FLAG &= ~Z_FLAG;	// chain
 		return;
 	}
-	// –¢À‘•
+	// æœªå®Ÿè£…
 	TRACEOUT(("hostdrv: unlock_file"));
 }
 
@@ -765,7 +765,7 @@ static void set_fileattr(INTRST intrst) {
 	}
 	attr = MEMR_READ16(CPU_SS, CPU_BP + sizeof(IF4INTR)) & 0x37;
 
-	// ¬Œ÷‚µ‚½‚±‚Æ‚É‚·‚é...
+	// æˆåŠŸã—ãŸã“ã¨ã«ã™ã‚‹...
 	succeed(intrst);
 }
 
@@ -781,7 +781,7 @@ static void get_fileattr(INTRST intrst) {
 	}
 
 	TRACEOUT(("get_fileattr: ->%s", intrst->fcbname_ptr));
-	if(strcmp(intrst->fcbname_ptr, "???????????") || intrst->filename_ptr[0]){ // XXX: Win—p“Á—á
+	if(strcmp(intrst->fcbname_ptr, "???????????") || intrst->filename_ptr[0]){ // XXX: Winç”¨ç‰¹ä¾‹
 		if ((is_wildcards(intrst->fcbname_ptr)) ||
 			(hostdrvs_getrealpath(&hdp, intrst->filename_ptr) != ERR_NOERROR)) {
 			fail(intrst, ERR_FILENOTFOUND);
@@ -1220,7 +1220,7 @@ static void find_first(INTRST intrst) {
 		return;
 	}
 
-	if (*intrst->srch_attr_ptr == 0x08)		/* ƒ{ƒŠƒ…[ƒ€ƒ‰ƒxƒ‹ */
+	if (*intrst->srch_attr_ptr == 0x08)		/* ãƒœãƒªãƒ¥ãƒ¼ãƒ ãƒ©ãƒ™ãƒ« */
 	{
 		store_srch(intrst);
 		store_dir(intrst, &hdd_volume);
@@ -1312,7 +1312,7 @@ static void do_redir(INTRST intrst) {
 #endif
 
 /* 21 */
-// dos4ˆÈ~ŒÄ‚Î‚ê‚é‚±‚Æ‚Í‚ ‚ñ‚Ü‚È‚¢EEE
+// dos4ä»¥é™å‘¼ã°ã‚Œã‚‹ã“ã¨ã¯ã‚ã‚“ã¾ãªã„ãƒ»ãƒ»ãƒ»
 static void seek_fromend(INTRST intrst) {
 
 	_SDACDS		sc;
@@ -1417,7 +1417,7 @@ static void ext_openfile(INTRST intrst)
 		create = FALSE;
 
 		nResult = hostdrvs_getrealpath(&hdp, intrst->filename_ptr);
-		if (nResult == ERR_NOERROR)				/* ƒtƒ@ƒCƒ‹‚ª‘¶İ */
+		if (nResult == ERR_NOERROR)				/* ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ */
 		{
 			if (hdp.file.attr & 0x10)
 			{
@@ -1439,7 +1439,7 @@ static void ext_openfile(INTRST intrst)
 					return;
 			}
 		}
-		else if (nResult == ERR_FILENOTFOUND)	/* V‹Kƒtƒ@ƒCƒ‹ */
+		else if (nResult == ERR_FILENOTFOUND)	/* æ–°è¦ãƒ•ã‚¡ã‚¤ãƒ« */
 		{
 			if (act & 0x10)
 			{
@@ -1568,7 +1568,7 @@ static const HDINTRFN intr_func[] = {
 
 // ----
 
-// n‚ß‚Éˆê‰ñ‚¾‚¯ŒÄ‚ñ‚Å‚Ë(‚Í[‚Æ
+// å§‹ã‚ã«ä¸€å›ã ã‘å‘¼ã‚“ã§ã­(ã¯ãƒ¼ã¨
 void hostdrv_initialize(void) {
 
 	ZeroMemory(&hostdrv, sizeof(hostdrv));
@@ -1576,7 +1576,7 @@ void hostdrv_initialize(void) {
 	TRACEOUT(("hostdrv_initialize"));
 }
 
-// I‚í‚è‚Éˆê‰ñ‚¾‚¯ŒÄ‚ñ‚Å‚Ë(‚Í[‚Æ
+// çµ‚ã‚ã‚Šã«ä¸€å›ã ã‘å‘¼ã‚“ã§ã­(ã¯ãƒ¼ã¨
 void hostdrv_deinitialize(void) {
 
 	listarray_destroy(hostdrv.flist);
@@ -1585,7 +1585,7 @@ void hostdrv_deinitialize(void) {
 	TRACEOUT(("hostdrv_deinitialize"));
 }
 
-// ƒŠƒZƒbƒgƒ‹[ƒ`ƒ“‚ÅŒÄ‚Ô‚×‚µ‚×‚µ
+// ãƒªã‚»ãƒƒãƒˆãƒ«ãƒ¼ãƒãƒ³ã§å‘¼ã¶ã¹ã—ã¹ã—
 void hostdrv_reset(void) {
 
 	hostdrv_deinitialize();

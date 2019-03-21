@@ -36,15 +36,15 @@
 
 static INLINE void
 MMX_check_NM_EXCEPTION(){
-	// MMX�Ȃ��Ȃ�UD(�����I�y�R�[�h��O)�𔭐�������
+	// MMXなしならUD(無効オペコード例外)を発生させる
 	if(!(i386cpuid.cpu_feature & CPU_FEATURE_MMX)){
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	// �G�~�����[�V�����Ȃ�UD(�����I�y�R�[�h��O)�𔭐�������
+	// エミュレーションならUD(無効オペコード例外)を発生させる
 	if(CPU_CR0 & CPU_CR0_EM){
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	// �^�X�N�X�C�b�`����NM(�f�o�C�X�g�p�s��O)�𔭐�������
+	// タスクスイッチ時にNM(デバイス使用不可例外)を発生させる
 	if (CPU_CR0 & CPU_CR0_TS) {
 		EXCEPTION(NM_EXCEPTION, 0);
 	}
@@ -79,15 +79,15 @@ MMX_EMMS(void)
 {
 	int i;
 	
-	// MMX�Ȃ��Ȃ�UD(�����I�y�R�[�h��O)�𔭐�������
+	// MMXなしならUD(無効オペコード例外)を発生させる
 	if(!(i386cpuid.cpu_feature & CPU_FEATURE_MMX)){
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	// �G�~�����[�V�����Ȃ�UD(�����I�y�R�[�h��O)�𔭐�������
+	// エミュレーションならUD(無効オペコード例外)を発生させる
 	if(CPU_CR0 & CPU_CR0_EM){
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	// �^�X�N�X�C�b�`����NM(�f�o�C�X�g�p�s��O)�𔭐�������
+	// タスクスイッチ時にNM(デバイス使用不可例外)を発生させる
 	if ((CPU_CR0 & (CPU_CR0_TS)) || (CPU_CR0 & CPU_CR0_EM)) {
 		EXCEPTION(NM_EXCEPTION, 0);
 	}
@@ -1029,18 +1029,18 @@ void MMX_PSLLW(void)
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
 		shift = FPU_STAT.reg[sub].ul.lower;
-		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
 		shift = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr);
-		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	}
 	dstreg = (UINT16*)(&(FPU_STAT.reg[idx]));
 	
 	for(i=0;i<4;i++){
 		//dstreg[i] = (dstreg[i] << shift);
-		dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] << (UINT16)shift)); // XXX: MSB�����c�����̂ł��܂����i���ˑ��H�j
+		dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] << (UINT16)shift)); // XXX: MSBが取り残されるのでごまかし（環境依存？）
 	}
 }
 void MMX_PSLLD(void)
@@ -1059,18 +1059,18 @@ void MMX_PSLLD(void)
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
 		shift = FPU_STAT.reg[sub].ul.lower;
-		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
 		shift = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr);
-		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	}
 	dstreg = (UINT32*)(&(FPU_STAT.reg[idx]));
 	
 	for(i=0;i<2;i++){
 		//dstreg[i] = (dstreg[i] << shift);
-		dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] << (UINT32)shift)); // XXX: MSB�����c�����̂ł��܂����i���ˑ��H�j
+		dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] << (UINT32)shift)); // XXX: MSBが取り残されるのでごまかし（環境依存？）
 	}
 }
 void MMX_PSLLQ(void)
@@ -1088,17 +1088,17 @@ void MMX_PSLLQ(void)
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
 		shift = FPU_STAT.reg[sub].ul.lower;
-		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
 		shift = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr);
-		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	}
 	dstreg = (UINT64*)(&(FPU_STAT.reg[idx]));
 	
 	//dstreg[0] = (dstreg[0] << shift);
-	dstreg[0] = (shift >= 64 ? 0 : (dstreg[0] << (UINT64)shift)); // XXX: MSB�����c�����̂ł��܂����i���ˑ��H�j
+	dstreg[0] = (shift >= 64 ? 0 : (dstreg[0] << (UINT64)shift)); // XXX: MSBが取り残されるのでごまかし（環境依存？）
 }
 
 // *********** PSRA
@@ -1120,16 +1120,16 @@ void MMX_PSRAW(void)
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
 		shift = FPU_STAT.reg[sub].ul.lower;
-		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
 		shift = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr);
-		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	}
 	dstreg = (UINT16*)(&(FPU_STAT.reg[idx]));
 	
-	// �������Z�p�V�t�g�i�������j
+	// 無理やり算術シフト（怪しい）
 	if(16 <= shift){
 		signval = 0xffff;
 	}else{
@@ -1140,7 +1140,7 @@ void MMX_PSRAW(void)
 		if(((INT16*)dstreg)[i] < 0){
 			dstreg[i] = (dstreg[i] >> shift) | signval;
 		}else{
-			dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+			dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 		}
 	}
 }
@@ -1161,16 +1161,16 @@ void MMX_PSRAD(void)
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
 		shift = FPU_STAT.reg[sub].ul.lower;
-		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
 		shift = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr);
-		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	}
 	dstreg = (UINT32*)(&(FPU_STAT.reg[idx]));
 	
-	// �������Z�p�V�t�g�i�������j
+	// 無理やり算術シフト（怪しい）
 	if(32 <= shift){
 		signval = 0xffffffff;
 	}else{
@@ -1181,7 +1181,7 @@ void MMX_PSRAD(void)
 		if(((INT32*)dstreg)[i] < 0){
 			dstreg[i] = (dstreg[i] >> shift) | signval;
 		}else{
-			dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] >> (UINT32)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+			dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] >> (UINT32)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 		}
 	}
 }
@@ -1203,18 +1203,18 @@ void MMX_PSRLW(void)
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
 		shift = FPU_STAT.reg[sub].ul.lower;
-		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
 		shift = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr);
-		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	}
 	dstreg = (UINT16*)(&(FPU_STAT.reg[idx]));
 	
 	for(i=0;i<4;i++){
 		//dstreg[i] = (dstreg[i] >> shift);
-		dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+		dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 	}
 }
 void MMX_PSRLD(void)
@@ -1233,18 +1233,18 @@ void MMX_PSRLD(void)
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
 		shift = FPU_STAT.reg[sub].ul.lower;
-		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
 		shift = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr);
-		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	}
 	dstreg = (UINT32*)(&(FPU_STAT.reg[idx]));
 	
 	for(i=0;i<2;i++){
 		//dstreg[i] = (dstreg[i] >> shift);
-		dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] >> (UINT32)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+		dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] >> (UINT32)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 	}
 }
 void MMX_PSRLQ(void)
@@ -1262,17 +1262,17 @@ void MMX_PSRLQ(void)
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
 		shift = FPU_STAT.reg[sub].ul.lower;
-		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: �V�t�g������
+		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: シフトしすぎ
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
 		shift = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr);
-		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: �V�t�g������
+		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: シフトしすぎ
 	}
 	dstreg = (UINT64*)(&(FPU_STAT.reg[idx]));
 	
 	//dstreg[0] = (dstreg[0] >> shift);
-	dstreg[0] = (shift >= 64 ? 0 : (dstreg[0] >> (UINT64)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+	dstreg[0] = (shift >= 64 ? 0 : (dstreg[0] >> (UINT64)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 }
 
 // *********** PSLL(imm8),PSRL(imm8),PSRA(imm8) 
@@ -1297,11 +1297,11 @@ void MMX_PSxxW_imm8(void)
 	switch(idx){
 	case 2: // PSRLW(imm8)
 		for(i=0;i<4;i++){
-			dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+			dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 		}
 		break;
 	case 4: // PSRAW(imm8)
-		// �������Z�p�V�t�g�i�������j
+		// 無理やり算術シフト（怪しい）
 		if(16 <= shift){
 			signval = 0xffff;
 		}else{
@@ -1312,13 +1312,13 @@ void MMX_PSxxW_imm8(void)
 			if(((INT16*)dstreg)[i] < 0){
 				dstreg[i] = (dstreg[i] >> shift) | signval;
 			}else{
-				dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+				dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 			}
 		}
 		break;
 	case 6: // PSLLW(imm8)
 		for(i=0;i<4;i++){
-			dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] << (UINT16)shift)); // XXX: MSB�����c�����̂ł��܂����i���ˑ��H�j
+			dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] << (UINT16)shift)); // XXX: MSBが取り残されるのでごまかし（環境依存？）
 		}
 		break;
 	default:
@@ -1346,11 +1346,11 @@ void MMX_PSxxD_imm8(void)
 	switch(idx){
 	case 2: // PSRLD(imm8)
 		for(i=0;i<2;i++){
-			dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] >> (UINT32)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+			dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] >> (UINT32)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 		}
 		break;
 	case 4: // PSRAD(imm8)
-		// �������Z�p�V�t�g�i�������j
+		// 無理やり算術シフト（怪しい）
 		if(32 <= shift){
 			signval = 0xffffffff;
 		}else{
@@ -1361,13 +1361,13 @@ void MMX_PSxxD_imm8(void)
 			if(((INT32*)dstreg)[i] < 0){
 				dstreg[i] = (dstreg[i] >> shift) | signval;
 			}else{
-				dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] >> (UINT32)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+				dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] >> (UINT32)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 			}
 		}
 		break;
 	case 6: // PSLLD(imm8)
 		for(i=0;i<2;i++){
-			dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] << (UINT32)shift)); // XXX: MSB�����c�����̂ł��܂����i���ˑ��H�j
+			dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] << (UINT32)shift)); // XXX: MSBが取り残されるのでごまかし（環境依存？）
 		}
 		break;
 	default:
@@ -1392,13 +1392,13 @@ void MMX_PSxxQ_imm8(void)
 	
 	switch(idx){
 	case 2: // PSRLQ(imm8)
-		dstreg[0] = (shift >= 64 ? 0 : (dstreg[0] >> (UINT64)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+		dstreg[0] = (shift >= 64 ? 0 : (dstreg[0] >> (UINT64)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 		break;
 	case 4: // PSRAQ(imm8)
 		EXCEPTION(UD_EXCEPTION, 0);
 		break;
 	case 6: // PSLLQ(imm8)
-		dstreg[0] = (shift >= 64 ? 0 : (dstreg[0] << (UINT64)shift)); // XXX: MSB�����c�����̂ł��܂����i���ˑ��H�j
+		dstreg[0] = (shift >= 64 ? 0 : (dstreg[0] << (UINT64)shift)); // XXX: MSBが取り残されるのでごまかし（環境依存？）
 		break;
 	default:
 		break;

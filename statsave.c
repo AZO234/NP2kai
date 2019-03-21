@@ -374,7 +374,7 @@ void statflag_seterr(STFLAGH sfh, const OEMCHAR *str) {
 
 // ---- function
 
-// ŠÖ”ƒ|ƒCƒ“ƒ^‚ğ int‚É•ÏXB
+// é–¢æ•°ãƒã‚¤ãƒ³ã‚¿ã‚’ intã«å¤‰æ›´ã€‚
 static BRESULT proc2num(void *func, const PROCTBL *tbl, int size) {
 
 	int		i;
@@ -948,7 +948,7 @@ static int flagload_fm(STFLAGH sfh, const SFENTRY *tbl)
 		ret |= opl3_sfload(&g_opl3, sfh, tbl);
 	}
 
-	// •œŒ³B ‚±‚êˆÚ“®‚·‚é‚±‚ÆI
+	// å¾©å…ƒã€‚ ã“ã‚Œç§»å‹•ã™ã‚‹ã“ã¨ï¼
 	pcm86gen_update();
 	if (nSaveFlags & FLAG_PCM86)
 	{
@@ -1050,7 +1050,7 @@ const OEMCHAR	*path;
 	for (i=0; i<NELEMENTS(sds.ide); i++) {
 		if (sds.ide[i] != SXSIDEV_NC) {
 #if defined(SUPPORT_IDEIO)||defined(SUPPORT_PHYSICAL_CDDRV)
-			if(sds.ide[i]==SXSIDEV_CDROM){ // CD-ROM‚Ìê‡Anp2cfg‚ğ—Dæ
+			if(sds.ide[i]==SXSIDEV_CDROM){ // CD-ROMã®å ´åˆã€np2cfgã‚’å„ªå…ˆ
 				path = np2cfg.idecd[i];
 			}else
 #endif
@@ -1470,7 +1470,7 @@ const SFENTRY	*tblterm;
 	fddmtrsnd_bind();
 	wabrlysnd_bind();
 
-	iocore_reset(&np2cfg);							// ƒTƒEƒ“ƒh‚Åpic‚ğŒÄ‚Ô‚Ì‚Åc
+	iocore_reset(&np2cfg);							// ã‚µã‚¦ãƒ³ãƒ‰ã§picã‚’å‘¼ã¶ã®ã§â€¦
 	cbuscore_reset(&np2cfg);
 	fmboard_reset(&np2cfg, pccore.sound);
 
@@ -1564,7 +1564,7 @@ const SFENTRY	*tblterm;
 	}
 	statflag_close(sffh);
 
-	// I/Oì‚è’¼‚µ
+	// I/Oä½œã‚Šç›´ã—
 	MEMM_ARCH((pccore.model & PCMODEL_EPSON)?1:0);
 	iocore_build();
 	iocore_bind();

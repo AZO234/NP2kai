@@ -1,6 +1,6 @@
 /**
  * @file	asiodriverlist.cpp
- * @brief	ASIO ƒhƒ‰ƒCƒo ƒŠƒXƒg ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	ASIO ãƒ‰ãƒ©ã‚¤ãƒ ãƒªã‚¹ãƒˆ ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -12,7 +12,7 @@
 #pragma comment(lib, "shlwapi.lib")
 
 /**
- * ƒhƒ‰ƒCƒo‚ğ—ñ‹“‚·‚é
+ * ãƒ‰ãƒ©ã‚¤ãƒã‚’åˆ—æŒ™ã™ã‚‹
  */
 void AsioDriverList::EnumerateDrivers()
 {
@@ -66,12 +66,12 @@ void AsioDriverList::EnumerateDrivers()
 }
 
 /**
- * ƒfƒoƒCƒX ƒpƒX‚ğæ“¾
- * @param[in] lpClsId ƒNƒ‰ƒX ID
- * @param[out] lpDllPath DLL ƒpƒX
- * @param[in] cchDllPath DLL ƒoƒbƒtƒ@’·‚³
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * ãƒ‡ãƒã‚¤ã‚¹ ãƒ‘ã‚¹ã‚’å–å¾—
+ * @param[in] lpClsId ã‚¯ãƒ©ã‚¹ ID
+ * @param[out] lpDllPath DLL ãƒ‘ã‚¹
+ * @param[in] cchDllPath DLL ãƒãƒƒãƒ•ã‚¡é•·ã•
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool AsioDriverList::FindDrvPath(LPCTSTR lpClsId, LPTSTR lpDllPath, UINT cchDllPath)
 {
@@ -98,9 +98,9 @@ bool AsioDriverList::FindDrvPath(LPCTSTR lpClsId, LPTSTR lpDllPath, UINT cchDllP
 }
 
 /**
- * ƒhƒ‰ƒCƒo‚ğƒ[ƒh
- * @param[in] lpDriverName ƒhƒ‰ƒCƒo–¼
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ãƒ‰ãƒ©ã‚¤ãƒã‚’ãƒ­ãƒ¼ãƒ‰
+ * @param[in] lpDriverName ãƒ‰ãƒ©ã‚¤ãƒå
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 IASIO* AsioDriverList::OpenDriver(LPCTSTR lpDriverName)
 {

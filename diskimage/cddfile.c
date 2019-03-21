@@ -11,8 +11,8 @@
 #include	"diskimage/win9x/img_dosio.h"
 #include	"diskimage/cd/cdd_iso.h"
 
-//	ISO9660‚Ìƒ{ƒŠƒ…[ƒ€‹LqŽq‚É‚æ‚éƒ`ƒFƒbƒN‚ð—LŒø‚É‚·‚éê‡‚ÍƒRƒƒ“ƒg‚ðŠO‚·
-//	¦—LŒø‚É‚µ‚½ê‡ACD-ROMˆÈŠO‚ªƒ}ƒEƒ“ƒg‚Å‚«‚È‚­‚È‚é
+//	ISO9660ã®ãƒœãƒªãƒ¥ãƒ¼ãƒ è¨˜è¿°å­ã«ã‚ˆã‚‹ãƒã‚§ãƒƒã‚¯ã‚’æœ‰åŠ¹ã«ã™ã‚‹å ´åˆã¯ã‚³ãƒ¡ãƒ³ãƒˆã‚’å¤–ã™
+//	â€»æœ‰åŠ¹ã«ã—ãŸå ´åˆã€CD-ROMä»¥å¤–ãŒãƒžã‚¦ãƒ³ãƒˆã§ããªããªã‚‹
 //#define	CHECK_ISO9660
 
 #ifdef	CHECK_ISO9660
@@ -35,7 +35,7 @@ void makeCRCTable( void)
     }
 }
 
-//	’Ç‰Á(kaiA)
+//	è¿½åŠ (kaiA)
 BOOL isCDImage(const OEMCHAR *fname) {
 
 const OEMCHAR	*ext;
@@ -253,11 +253,11 @@ sec_err:
 #endif
 }
 
-//	¦CDTRK\‘¢‘Ì“à‚Ì
+//	â€»CDTRKæ§‹é€ ä½“å†…ã®
 //		UINT32	str_sec;
 //		UINT32	end_sec;
 //		UINT32	sectors;
-//		“™‚Ìƒƒ“ƒo‚ÌÝ’è
+//		ç­‰ã®ãƒ¡ãƒ³ãƒã®è¨­å®š
 long set_trkinfo(FILEH fh, _CDTRK *trk, UINT trks, FILELEN imagesize) {
 
 	UINT	i;
@@ -330,7 +330,7 @@ long set_trkinfo(FILEH fh, _CDTRK *trk, UINT trks, FILELEN imagesize) {
 
 
 //	----
-//	ƒCƒ[ƒWƒtƒ@ƒCƒ‹“à‘Sƒgƒ‰ƒbƒNƒZƒNƒ^’·2048byte—p
+//	ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ•ã‚¡ã‚¤ãƒ«å†…å…¨ãƒˆãƒ©ãƒƒã‚¯ã‚»ã‚¯ã‚¿é•·2048byteç”¨
 REG8 sec2048_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 
 	CDINFO	cdinfo;
@@ -365,7 +365,7 @@ REG8 sec2048_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 }
 
 
-//	ƒCƒ[ƒWƒtƒ@ƒCƒ‹“à‘Sƒgƒ‰ƒbƒNƒZƒNƒ^’·2352byte—p
+//	ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ•ã‚¡ã‚¤ãƒ«å†…å…¨ãƒˆãƒ©ãƒƒã‚¯ã‚»ã‚¯ã‚¿é•·2352byteç”¨
 REG8 sec2352_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 
 	CDINFO	cdinfo;
@@ -411,7 +411,7 @@ UINT32 calcCRC(UINT8 *buf, int len)
     return crc;
 }
 
-//	ƒCƒ[ƒWƒtƒ@ƒCƒ‹“à‘Sƒgƒ‰ƒbƒNƒZƒNƒ^’·2352byte—p(ECCƒ`ƒFƒbƒN—LŒø)
+//	ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ•ã‚¡ã‚¤ãƒ«å†…å…¨ãƒˆãƒ©ãƒƒã‚¯ã‚»ã‚¯ã‚¿é•·2352byteç”¨(ECCãƒã‚§ãƒƒã‚¯æœ‰åŠ¹)
 REG8 sec2352_read_with_ecc(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 	
 	CDINFO	cdinfo;
@@ -463,7 +463,7 @@ REG8 sec2352_read_with_ecc(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 	return(0x00);
 }
 
-//	ƒCƒ[ƒWƒtƒ@ƒCƒ‹“à‘Sƒgƒ‰ƒbƒNƒZƒNƒ^’·2448(2352+96)—p
+//	ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ•ã‚¡ã‚¤ãƒ«å†…å…¨ãƒˆãƒ©ãƒƒã‚¯ã‚»ã‚¯ã‚¿é•·2448(2352+96)ç”¨
 REG8 sec2448_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 
 	CDINFO	cdinfo;
@@ -498,8 +498,8 @@ REG8 sec2448_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 }
 
 
-//	ƒCƒ[ƒWƒtƒ@ƒCƒ‹“àƒZƒNƒ^’·¬Ý—p
-//		”ñRAW(2048byte){Audio(2352byte)“™
+//	ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ•ã‚¡ã‚¤ãƒ«å†…ã‚»ã‚¯ã‚¿é•·æ··åœ¨ç”¨
+//		éžRAW(2048byte)ï¼‹Audio(2352byte)ç­‰
 REG8 sec_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 
 	CDINFO	cdinfo;
@@ -621,7 +621,7 @@ static const OEMCHAR str_logA[] = OEMTEXT("._CDTRK.After.log");
 #endif
 //
 
-//	ƒCƒ[ƒWƒtƒ@ƒCƒ‹‚ÌŽÀ‘Ì‚ðŠJ‚«AŠeŽíî•ñ\’z
+//	ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ•ã‚¡ã‚¤ãƒ«ã®å®Ÿä½“ã‚’é–‹ãã€å„ç¨®æƒ…å ±æ§‹ç¯‰
 BRESULT setsxsidev(SXSIDEV sxsi, const OEMCHAR *path, const _CDTRK *trk, UINT trks) {
 
 	FILEH	fh;
@@ -637,7 +637,7 @@ BRESULT setsxsidev(SXSIDEV sxsi, const OEMCHAR *path, const _CDTRK *trk, UINT tr
 
 	makeCRCTable();
 
-	//	trkAtrks‚Í—LŒø‚È’l‚ªÝ’èÏ‚Ý‚È‚Ì‚ª‘O’ñ
+	//	trkã€trksã¯æœ‰åŠ¹ãªå€¤ãŒè¨­å®šæ¸ˆã¿ãªã®ãŒå‰æ
 	if ((trk == NULL) || (trks == 0)) {
 		goto sxsiope_err1;
 	}
@@ -703,7 +703,7 @@ BRESULT setsxsidev(SXSIDEV sxsi, const OEMCHAR *path, const _CDTRK *trk, UINT tr
 		sxsi->totals = totals;
 	}
 #else
-	totals = issec(fh, cdinfo->trk, trks);	//	‚Æ‚è‚ ‚¦‚¸
+	totals = issec(fh, cdinfo->trk, trks);	//	ã¨ã‚Šã‚ãˆãš
 	sxsi->read = sec2048_read;
 	totals = issec2048(cdinfo->fh);
 	if (totals < 0) {
@@ -733,7 +733,7 @@ BRESULT setsxsidev(SXSIDEV sxsi, const OEMCHAR *path, const _CDTRK *trk, UINT tr
 		}
 	}
 
-	//	ƒŠ[ƒhƒAƒEƒgƒgƒ‰ƒbƒN‚ð¶¬
+	//	ãƒªãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆãƒˆãƒ©ãƒƒã‚¯ã‚’ç”Ÿæˆ
 	cdinfo->trk[trks].adr_ctl	= 0x10;
 	cdinfo->trk[trks].point		= 0xaa;
 //	cdinfo->trk[trks].pos		= totals;

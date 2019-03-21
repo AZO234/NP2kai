@@ -1,6 +1,6 @@
 /**
  * @file	trace.cpp
- * @brief	�g���[�X �N���X�̓���̒�`���s���܂�
+ * @brief	トレース クラスの動作の定義を行います
  */
 
 #include "compiler.h"
@@ -19,11 +19,11 @@
 
 #define	VIEW_FGCOLOR	0x000000
 #define	VIEW_BGCOLOR	0xffffff
-#define	VIEW_TEXT		"�l�r �S�V�b�N"
+#define	VIEW_TEXT		"ＭＳ ゴシック"
 #define	VIEW_SIZE		12
 
 /**
- * @brief �g���[�X �E�B���h�E �N���X
+ * @brief トレース ウィンドウ クラス
  */
 class CTraceWnd : public CWndProc
 {
@@ -47,13 +47,13 @@ protected:
 	void OnEnterMenuLoop(BOOL bIsTrackPopupMenu);
 
 private:
-	static CTraceWnd sm_instance;		/*!< �B��̃C���X�^���X�ł� */
-	UINT8 m_nFlags;						/*!< �t���O */
-	TEXTFILEH m_tfh;					/*!< �e�L�X�g �t�@�C�� �n���h�� */
-	HBRUSH m_hBrush;					/*!< �u���V */
-	HFONT m_hFont;						/*!< �t�H���g */
-	CWndProc m_wndView;					/*!< �e�L�X�g �R���g���[�� */
-	std::string m_lineBuffer;			/*!< ���C�� �o�b�t�@ */
+	static CTraceWnd sm_instance;		/*!< 唯一のインスタンスです */
+	UINT8 m_nFlags;						/*!< フラグ */
+	TEXTFILEH m_tfh;					/*!< テキスト ファイル ハンドル */
+	HBRUSH m_hBrush;					/*!< ブラシ */
+	HFONT m_hFont;						/*!< フォント */
+	CWndProc m_wndView;					/*!< テキスト コントロール */
+	std::string m_lineBuffer;			/*!< ライン バッファ */
 };
 
 struct TRACECFG
@@ -82,12 +82,12 @@ static const PFTBL initbl[4] =
 	PFVAL("height",	PFTYPE_SINT32,	&tracecfg.height)
 };
 
-//! �B��̃C���X�^���X�ł�
+//! 唯一のインスタンスです
 CTraceWnd CTraceWnd::sm_instance;
 
 /**
- * �C���X�^���X�𓾂�
- * @return �C���X�^���X
+ * インスタンスを得る
+ * @return インスタンス
  */
 inline CTraceWnd* CTraceWnd::GetInstance()
 {
@@ -95,7 +95,7 @@ inline CTraceWnd* CTraceWnd::GetInstance()
 }
 
 /**
- * �R���X�g���N�^
+ * コンストラクタ
  */
 CTraceWnd::CTraceWnd()
 	: m_nFlags(0)
@@ -106,7 +106,7 @@ CTraceWnd::CTraceWnd()
 }
 
 /**
- * ������
+ * 初期化
  */
 void CTraceWnd::Initialize()
 {
@@ -145,7 +145,7 @@ void CTraceWnd::Initialize()
 }
 
 /**
- * ���
+ * 解放
  */
 void CTraceWnd::Deinitialize()
 {
@@ -160,9 +160,9 @@ void CTraceWnd::Deinitialize()
 }
 
 /**
- * Trace �͗L��?
- * @retval true �L��
- * @retval false ����
+ * Trace は有効?
+ * @retval true 有効
+ * @retval false 無効
  */
 inline bool CTraceWnd::IsTrace() const
 {
@@ -170,9 +170,9 @@ inline bool CTraceWnd::IsTrace() const
 }
 
 /**
- * Verbose �͗L��?
- * @retval true �L��
- * @retval false ����
+ * Verbose は有効?
+ * @retval true 有効
+ * @retval false 無効
  */
 inline bool CTraceWnd::IsVerbose() const
 {
@@ -180,9 +180,9 @@ inline bool CTraceWnd::IsVerbose() const
 }
 
 /**
- * �L��?
- * @retval true �L��
- * @retval false ����
+ * 有効?
+ * @retval true 有効
+ * @retval false 無効
  */
 inline bool CTraceWnd::IsEnabled() const
 {
@@ -190,8 +190,8 @@ inline bool CTraceWnd::IsEnabled() const
 }
 
 /**
- * ���O�ǉ�
- * @param[in] c ����
+ * ログ追加
+ * @param[in] c 文字
  */
 void CTraceWnd::AddChar(char c)
 {
@@ -211,9 +211,9 @@ void CTraceWnd::AddChar(char c)
 }
 
 /**
- * ���O�ǉ�
- * @param[in] lpFormat �t�H�[�}�b�g
- * @param[in] argptr ����
+ * ログ追加
+ * @param[in] lpFormat フォーマット
+ * @param[in] argptr 引数
  */
 void CTraceWnd::AddFormat(LPCSTR lpFormat, va_list argptr)
 {
@@ -225,8 +225,8 @@ void CTraceWnd::AddFormat(LPCSTR lpFormat, va_list argptr)
 }
 
 /**
- * ���O�ǉ�
- * @param[in] lpString ������
+ * ログ追加
+ * @param[in] lpString 文字列
  */
 void CTraceWnd::AddString(LPCTSTR lpString)
 {
@@ -242,7 +242,7 @@ void CTraceWnd::AddString(LPCTSTR lpString)
 		m_wndView.SendMessage(EM_REPLACESEL, FALSE, reinterpret_cast<LPARAM>(lpString));
 		m_wndView.SendMessage(EM_REPLACESEL, FALSE, reinterpret_cast<LPARAM>(crlf));
 
-		// ���������������
+		// 増えすぎたら消す
 		if(nLength>20000){
 			TCHAR temp[1] = {0};
 			int llength = m_wndView.SendMessage(EM_LINELENGTH, static_cast<WPARAM>(1), NULL);
@@ -271,11 +271,11 @@ void CTraceWnd::AddString(LPCTSTR lpString)
 }
 
 /**
- * Windows �v���V�[�W�� (WindowProc) ��񋟂��܂�
- * @param[in] message ��������� Windows ���b�Z�[�W���w�肵�܂�
- * @param[in] wParam ���b�Z�[�W�̏����Ɏg�p����ǉ�����񋟂��܂�
- * @param[in] lParam ���b�Z�[�W�̏����Ɏg�p����ǉ�����񋟂��܂�
- * @return �߂�l�́A���b�Z�[�W�ɂ���ĈقȂ�܂�
+ * Windows プロシージャ (WindowProc) を提供します
+ * @param[in] message 処理される Windows メッセージを指定します
+ * @param[in] wParam メッセージの処理に使用する追加情報を提供します
+ * @param[in] lParam メッセージの処理に使用する追加情報を提供します
+ * @return 戻り値は、メッセージによって異なります
  */
 LRESULT CTraceWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -357,10 +357,10 @@ LRESULT CTraceWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * �t���[�����[�N�́AWindows �̃E�B���h�E�� [�쐬] �܂��� CreateEx �̃����o�[�֐����Ăяo�����Ƃɂ���č쐬���ꂽ�A�v���P�[�V�������K�v�Ƃ���ƁA���̃����o�[�֐����Ăяo���܂�
- * @param[in] lpCreateStruct �쐬���ꂽ�I�u�W�F�N�g�Ɋւ����񂪊܂܂�Ă��܂��B
- * @retval 0 ����
- * @retval -1 ���s
+ * フレームワークは、Windows のウィンドウは [作成] または CreateEx のメンバー関数を呼び出すことによって作成されたアプリケーションが必要とすると、このメンバー関数を呼び出します
+ * @param[in] lpCreateStruct 作成されたオブジェクトに関する情報が含まれています。
+ * @retval 0 成功
+ * @retval -1 失敗
  */
 int CTraceWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
@@ -385,9 +385,9 @@ int CTraceWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 }
 
 /**
- * �t���[�����[�N�́A���[�U�[���R���g���[�� ���j���[����R�}���h��I�������Ƃ��A�܂��͍ő剻�܂��͍ŏ����{�^����I������ƁA���̃����o�[�֐����Ăяo���܂�
- * @param[in] nID �K�v�ȃV�X�e�� �R�}���h�̎�ނ��w�肵�܂�
- * @param[in] lParam �J�[�\���̍��W
+ * フレームワークは、ユーザーがコントロール メニューからコマンドを選択したとき、または最大化または最小化ボタンを選択すると、このメンバー関数を呼び出します
+ * @param[in] nID 必要なシステム コマンドの種類を指定します
+ * @param[in] lParam カーソルの座標
  */
 void CTraceWnd::OnSysCommand(UINT nID, LPARAM lParam)
 {
@@ -424,8 +424,8 @@ void CTraceWnd::OnSysCommand(UINT nID, LPARAM lParam)
 }
 
 /**
- * �t���[�����[�N�́A���j���[ ���[�v�J�n���ɁA���̃����o�[�֐����Ăяo���܂�
- * @param[in] bIsTrackPopupMenu TrackPopupMenu �֐��𗘗p�����ꍇ TRUE
+ * フレームワークは、メニュー ループ開始時に、このメンバー関数を呼び出します
+ * @param[in] bIsTrackPopupMenu TrackPopupMenu 関数を利用した場合 TRUE
  */
 void CTraceWnd::OnEnterMenuLoop(BOOL bIsTrackPopupMenu)
 {

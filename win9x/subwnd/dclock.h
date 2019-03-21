@@ -1,6 +1,6 @@
 /**
  * @file	dclock.h
- * @brief	•\¦ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	æ™‚åˆ»è¡¨ç¤ºã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -15,7 +15,7 @@ enum
 struct DispClockPattern;
 
 /**
- * @brief •\¦ƒNƒ‰ƒX
+ * @brief æ™‚åˆ»è¡¨ç¤ºã‚¯ãƒ©ã‚¹
  */
 class DispClock
 {
@@ -35,7 +35,7 @@ public:
 	void Draw(UINT nBpp, void* lpBuffer, int nYAlign) const;
 
 private:
-	static DispClock sm_instance;		//!< —Bˆê‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Å‚·
+	static DispClock sm_instance;		//!< å”¯ä¸€ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã§ã™
 
 	/**
 	 * @brief QuadBytes
@@ -46,16 +46,16 @@ private:
 		UINT64 q;			//!< quad
 	};
 
-	const DispClockPattern* m_pPattern;	//!< ƒpƒ^[ƒ“
-	QuadBytes m_nCounter;				//!< ƒJƒEƒ“ƒ^
-	UINT8 m_cTime[8];					//!< Œ»İŠÔ
-	UINT8 m_cLastTime[8];				//!< ÅŒã‚ÌŠÔ
-	UINT8 m_cDirty;						//!< •`‰æƒtƒ‰ƒO drawing;
-	UINT8 m_cCharaters;					//!< •¶š”
-	RGB32 m_pal32[4];					//!< ƒpƒŒƒbƒg
-	RGB16 m_pal16[4];					//!< ƒpƒŒƒbƒg
-	UINT32 m_pal8[4][16];				//!< ƒpƒŒƒbƒg ƒpƒ^[ƒ“
-	UINT8 m_buffer[(DCLOCK_HEIGHT * DCLOCK_YALIGN) + 4];	/*!< ƒoƒbƒtƒ@ */
+	const DispClockPattern* m_pPattern;	//!< ãƒ‘ã‚¿ãƒ¼ãƒ³
+	QuadBytes m_nCounter;				//!< ã‚«ã‚¦ãƒ³ã‚¿
+	UINT8 m_cTime[8];					//!< ç¾åœ¨æ™‚é–“
+	UINT8 m_cLastTime[8];				//!< æœ€å¾Œã®æ™‚é–“
+	UINT8 m_cDirty;						//!< æç”»ãƒ•ãƒ©ã‚° drawing;
+	UINT8 m_cCharaters;					//!< æ–‡å­—æ•°
+	RGB32 m_pal32[4];					//!< ãƒ‘ãƒ¬ãƒƒãƒˆ
+	RGB16 m_pal16[4];					//!< ãƒ‘ãƒ¬ãƒƒãƒˆ
+	UINT32 m_pal8[4][16];				//!< ãƒ‘ãƒ¬ãƒƒãƒˆ ãƒ‘ã‚¿ãƒ¼ãƒ³
+	UINT8 m_buffer[(DCLOCK_HEIGHT * DCLOCK_YALIGN) + 4];	/*!< ãƒãƒƒãƒ•ã‚¡ */
 
 private:
 	void SetPalette8();
@@ -68,8 +68,8 @@ private:
 };
 
 /**
- * ƒCƒ“ƒXƒ^ƒ“ƒX‚ğ“¾‚é
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å¾—ã‚‹
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 inline DispClock* DispClock::GetInstance()
 {
@@ -77,8 +77,8 @@ inline DispClock* DispClock::GetInstance()
 }
 
 /**
- * ƒpƒŒƒbƒg‚ğ“¾‚é
- * @return ƒpƒŒƒbƒg
+ * ãƒ‘ãƒ¬ãƒƒãƒˆã‚’å¾—ã‚‹
+ * @return ãƒ‘ãƒ¬ãƒƒãƒˆ
  */
 inline const RGB32* DispClock::GetPalettes() const
 {

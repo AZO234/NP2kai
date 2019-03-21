@@ -1,5 +1,5 @@
 // 
-// ƒÊPD8253C ƒ^ƒCƒ}LSI
+// Î¼PD8253C ã‚¿ã‚¤ãƒžLSI
 // 
 
 #include	"compiler.h"
@@ -11,7 +11,7 @@
 #include	"board14.h"
 
 
-#define	BEEPCOUNTEREX					// BEEPƒAƒCƒhƒ‹Žž‚ÌƒJƒEƒ“ƒ^‚ðƒ¿”{‚É
+#define	BEEPCOUNTEREX					// BEEPã‚¢ã‚¤ãƒ‰ãƒ«æ™‚ã®ã‚«ã‚¦ãƒ³ã‚¿ã‚’Î±å€ã«
 #if defined(CPUCORE_IA32)
 #define	uPD71054
 #endif
@@ -21,7 +21,7 @@
 
 static void setsystimerevent(UINT32 cnt, NEVENTPOSITION absolute) {
 
-	if (cnt > 8) {									// ª‹’‚È‚µ
+	if (cnt > 8) {									// æ ¹æ‹ ãªã—
 		cnt *= pccore.multiple;
 	}
 	else {
@@ -41,7 +41,7 @@ void systimer(NEVENTITEM item) {
 			pic_setirq(0);
 		}
 		if ((pitch->ctrl & 0x0c) == 0x04) {
-			// ƒŒ[ƒgƒWƒFƒlƒŒ[ƒ^
+			// ãƒ¬ãƒ¼ãƒˆã‚¸ã‚§ãƒãƒ¬ãƒ¼ã‚¿
 			pitch->flag |= PIT_FLAG_I;
 			setsystimerevent(pitch->value, NEVENT_RELATIVE);
 		}
@@ -131,7 +131,7 @@ void rs232ctimer(NEVENTITEM item) {
 			rs232c_callback();
 		}
 		if ((pitch->ctrl & 0x0c) == 0x04) {
-			// ƒŒ[ƒgƒWƒFƒlƒŒ[ƒ^
+			// ãƒ¬ãƒ¼ãƒˆã‚¸ã‚§ãƒãƒ¬ãƒ¼ã‚¿
 			setrs232cevent(pitch->value, NEVENT_RELATIVE);
 		}
 		else {
@@ -411,9 +411,9 @@ static void IOOUTCALL pit_o77(UINT port, REG8 dat) {
 	if (chnum != 3) {
 		pitch = pit.ch + chnum;
 		pit_setflag(pitch, dat);
-		if (chnum == 0) {		// ‘ž‚Ý‚Å itimer‚Ìirr‚ªƒŠƒZƒbƒg‚³‚ê‚éc
+		if (chnum == 0) {		// æ›¸è¾¼ã¿ã§ itimerã®irrãŒãƒªã‚»ãƒƒãƒˆã•ã‚Œã‚‹â€¦
 			pic.pi[0].irr &= (~1);
-			if (dat & 0x30) {	// ˆê‰žƒ‰ƒbƒ`Žž‚ÍŠ„‚èž‚Ý‚ðƒZƒbƒg‚µ‚È‚¢
+			if (dat & 0x30) {	// ä¸€å¿œãƒ©ãƒƒãƒæ™‚ã¯å‰²ã‚Šè¾¼ã¿ã‚’ã‚»ãƒƒãƒˆã—ãªã„
 				pitch->flag |= PIT_FLAG_I;
 			}
 		}

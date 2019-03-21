@@ -1,6 +1,6 @@
 /**
  * @file	cmpara.h
- * @brief	ƒpƒ‰ƒŒƒ‹ ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	ãƒ‘ãƒ©ãƒ¬ãƒ« ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -8,7 +8,7 @@
 #include "cmbase.h"
 
 /**
- * @brief commng ƒpƒ‰ƒŒƒ‹ ƒfƒoƒCƒX ƒNƒ‰ƒX
+ * @brief commng ãƒ‘ãƒ©ãƒ¬ãƒ« ãƒ‡ãƒã‚¤ã‚¹ ã‚¯ãƒ©ã‚¹
  */
 class CComPara : public CComBase
 {
@@ -24,7 +24,7 @@ protected:
 	virtual INTPTR Message(UINT nMessage, INTPTR nParam);
 
 private:
-	HANDLE m_hParallel;			/*!< ƒpƒ‰ƒŒƒ‹ ƒnƒ“ƒhƒ‹ */
+	HANDLE m_hParallel;			/*!< ãƒ‘ãƒ©ãƒ¬ãƒ« ãƒãƒ³ãƒ‰ãƒ« */
 
 	bool Initialize(UINT nPort);
 };

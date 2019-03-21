@@ -1,11 +1,11 @@
 
-// ---- DOS�Ƃ̎󂯓n���p
+// ---- DOSとの受け渡し用
 
 #define IF4DOSPTR_OFF	0x0600
 #define IF4DOSPTR_SEG	0x0000
-		// IF4DOS�̃A�h���X�������Ă���A�h���X
-		// (���荞�݂��~�߂āA�ꎞ�I�Ɏg�p���Ă��邾���Ȃ̂ŁA
-		//  ���ɂ������g�p����BIOS/OS/�A�v���������Ă����v)
+		// IF4DOSのアドレスが入っているアドレス
+		// (割り込みを止めて、一時的に使用しているだけなので、
+		//  仮にここを使用するBIOS/OS/アプリがあっても大丈夫)
 
 typedef struct {
 	UINT8	off[2];
@@ -13,7 +13,7 @@ typedef struct {
 } REALPTR;
 
 typedef struct {
-	UINT8	drive_no;		// �쐬�����h���C�u�ԍ�(A:=0)
+	UINT8	drive_no;		// 作成したドライブ番号(A:=0)
 	UINT8	dosver_major;
 	UINT8	dosver_minor;
 	UINT8	sda_off[2];
@@ -58,7 +58,7 @@ typedef struct {
 } IF4INTR8;
 
 
-// ---- MS-DOS�X�g���N�`���[ (little endian!)
+// ---- MS-DOSストラクチャー (little endian!)
 
 #ifndef	__GNUC__
 #pragma pack(push, 1)

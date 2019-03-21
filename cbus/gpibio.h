@@ -8,10 +8,10 @@ enum {
 
 typedef struct {
 	UINT8 enable;
-	UINT8 irq; // Š„‚è‚İ
-	UINT8 mode; // ƒ}ƒXƒ^=1, ƒXƒŒ[ƒu=0
-	UINT8 gpibaddr; // GP-IBƒAƒhƒŒƒX(0x0`0x1F)
-	UINT8 ifcflag; // IFC# 1=ƒAƒNƒeƒBƒu, 0=”ñƒAƒNƒeƒBƒu
+	UINT8 irq; // å‰²ã‚Šè¾¼ã¿
+	UINT8 mode; // ãƒã‚¹ã‚¿=1, ã‚¹ãƒ¬ãƒ¼ãƒ–=0
+	UINT8 gpibaddr; // GP-IBã‚¢ãƒ‰ãƒ¬ã‚¹(0x0ã€œ0x1F)
+	UINT8 ifcflag; // IFC# 1=ã‚¢ã‚¯ãƒ†ã‚£ãƒ–, 0=éã‚¢ã‚¯ãƒ†ã‚£ãƒ–
 
 	UINT16 exiobase;
 } _GPIB, *GPIB;

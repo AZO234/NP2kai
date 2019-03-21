@@ -1,6 +1,6 @@
 /**
  * @file	d_hostdrv.cpp
- * @brief	HOSTDRV İ’èƒ_ƒCƒAƒƒO
+ * @brief	HOSTDRV è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°
  */
 
 #include "compiler.h"
@@ -42,8 +42,8 @@ int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpDa
 }
 
 /**
- * @brief HOSTDRV İ’èƒ_ƒCƒAƒƒO
- * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * @brief HOSTDRV è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°
+ * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 class CHostdrvDlg : public CDlgProc
 {
@@ -57,9 +57,9 @@ protected:
 	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	UINT8 m_hdrvenable;			//!< —LŒø
-	TCHAR m_hdrvroot[MAX_PATH];	//!< ‹¤—LƒfƒBƒŒƒNƒgƒŠ
-	UINT8 m_hdrvacc;			//!< ƒAƒNƒZƒXŒ ŒÀ
+	UINT8 m_hdrvenable;			//!< æœ‰åŠ¹
+	TCHAR m_hdrvroot[MAX_PATH];	//!< å…±æœ‰ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
+	UINT8 m_hdrvacc;			//!< ã‚¢ã‚¯ã‚»ã‚¹æ¨©é™
 	CWndProc m_chkenabled;		//!< Enabled
 	CComboData m_cmbdir;			//!< Shared Directory
 	CWndProc m_chkread;			//!< Permission: Read
@@ -68,8 +68,8 @@ private:
 };
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
- * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 CHostdrvDlg::CHostdrvDlg(HWND hwndParent)
 	: CDlgProc(IDD_HOSTDRV, hwndParent)
@@ -77,9 +77,9 @@ CHostdrvDlg::CHostdrvDlg(HWND hwndParent)
 }
 
 /**
- * ‚±‚Ìƒƒ\ƒbƒh‚Í WM_INITDIALOG ‚ÌƒƒbƒZ[ƒW‚É‰“š‚µ‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
- * @retval TRUE Å‰‚ÌƒRƒ“ƒgƒ[ƒ‹‚É“ü—ÍƒtƒH[ƒJƒX‚ğİ’è
- * @retval FALSE Šù‚Éİ’èÏ
+ * ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ WM_INITDIALOG ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«å¿œç­”ã—ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * @retval TRUE æœ€åˆã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã«å…¥åŠ›ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’è¨­å®š
+ * @retval FALSE æ—¢ã«è¨­å®šæ¸ˆ
  */
 BOOL CHostdrvDlg::OnInitDialog()
 {
@@ -125,7 +125,7 @@ BOOL CHostdrvDlg::OnInitDialog()
 }
 
 /**
- * ƒ†[ƒU[‚ª OK ‚Ìƒ{ƒ^ƒ“ (IDOK ID ‚ª‚Ìƒ{ƒ^ƒ“) ‚ğƒNƒŠƒbƒN‚·‚é‚ÆŒÄ‚Ño‚³‚ê‚Ü‚·
+ * ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒ OK ã®ãƒœã‚¿ãƒ³ (IDOK ID ãŒã®ãƒœã‚¿ãƒ³) ã‚’ã‚¯ãƒªãƒƒã‚¯ã™ã‚‹ã¨å‘¼ã³å‡ºã•ã‚Œã¾ã™
  */
 void CHostdrvDlg::OnOK()
 {
@@ -148,10 +148,10 @@ void CHostdrvDlg::OnOK()
 }
 
 /**
- * ƒ†[ƒU[‚ªƒƒjƒ…[‚Ì€–Ú‚ğ‘I‘ğ‚µ‚½‚Æ‚«‚ÉAƒtƒŒ[ƒ€ƒ[ƒN‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
- * @param[in] wParam ƒpƒ‰ƒƒ^
- * @param[in] lParam ƒpƒ‰ƒƒ^
- * @retval TRUE ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ª‚±‚ÌƒƒbƒZ[ƒW‚ğˆ—‚µ‚½
+ * ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®é …ç›®ã‚’é¸æŠã—ãŸã¨ãã«ã€ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã«ã‚ˆã£ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * @param[in] wParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @param[in] lParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @retval TRUE ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡¦ç†ã—ãŸ
  */
 BOOL CHostdrvDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -258,11 +258,11 @@ BOOL CHostdrvDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * CWndProc ƒIƒuƒWƒFƒNƒg‚Ì Windows ƒvƒƒV[ƒWƒƒ (WindowProc) ‚ª—pˆÓ‚³‚ê‚Ä‚¢‚Ü‚·
- * @param[in] nMsg ˆ—‚³‚ê‚é Windows ƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
- * @param[in] wParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @param[in] lParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @return ƒƒbƒZ[ƒW‚ÉˆË‘¶‚·‚é’l‚ğ•Ô‚µ‚Ü‚·
+ * CWndProc ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã® Windows ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ (WindowProc) ãŒç”¨æ„ã•ã‚Œã¦ã„ã¾ã™
+ * @param[in] nMsg å‡¦ç†ã•ã‚Œã‚‹ Windows ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] wParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @param[in] lParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @return ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã™ã‚‹å€¤ã‚’è¿”ã—ã¾ã™
  */
 LRESULT CHostdrvDlg::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -270,8 +270,8 @@ LRESULT CHostdrvDlg::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ƒRƒ“ƒtƒBƒO ƒ_ƒCƒAƒƒO
- * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * ã‚³ãƒ³ãƒ•ã‚£ã‚° ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
+ * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 void dialog_hostdrvopt(HWND hwndParent)
 {
@@ -280,11 +280,11 @@ void dialog_hostdrvopt(HWND hwndParent)
 }
 
 
-//! ƒ^ƒCƒgƒ‹
+//! ã‚¿ã‚¤ãƒˆãƒ«
 static const TCHAR s_hostdrvapp[] = TEXT("NP2 hostdrv");
 
 /**
- * İ’è
+ * è¨­å®š
  */
 static const PFTBL s_hostdrvini[] =
 {
@@ -301,7 +301,7 @@ static const PFTBL s_hostdrvini[] =
 };
 
 /**
- * İ’è“Ç‚İ‚İ
+ * è¨­å®šèª­ã¿è¾¼ã¿
  */
 void hostdrv_readini()
 {
@@ -313,7 +313,7 @@ void hostdrv_readini()
 }
 
 /**
- * İ’è‘‚«‚İ
+ * è¨­å®šæ›¸ãè¾¼ã¿
  */
 void hostdrv_writeini()
 {
@@ -325,7 +325,7 @@ void hostdrv_writeini()
 }
 
 /**
- * w’è‚µ‚½ƒpƒX‚ğÅãˆÊ‚É
+ * æŒ‡å®šã—ãŸãƒ‘ã‚¹ã‚’æœ€ä¸Šä½ã«
  */
 void hostdrv_setcurrentpath(const TCHAR* newpath)
 {

@@ -1,6 +1,6 @@
 /**
  * @file	ttyl.cpp
- * @brief	ƒVƒŠƒAƒ‹’ÊMƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	ã‚·ãƒªã‚¢ãƒ«é€šä¿¡ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -12,7 +12,7 @@
 #pragma comment(lib, "setupapi.lib")
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CTty::CTty()
 	: m_hFile(INVALID_HANDLE_VALUE)
@@ -20,7 +20,7 @@ CTty::CTty()
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CTty::~CTty()
 {
@@ -28,12 +28,12 @@ CTty::~CTty()
 }
 
 /**
- * ƒI[ƒvƒ“‚·‚é
- * @param[in] lpDevName ƒfƒoƒCƒX–¼
- * @param[in] nSpeed ƒ{[ƒŒ[ƒg
- * @param[in] lpcszParam ƒpƒ‰ƒƒ^
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * ã‚ªãƒ¼ãƒ—ãƒ³ã™ã‚‹
+ * @param[in] lpDevName ãƒ‡ãƒã‚¤ã‚¹å
+ * @param[in] nSpeed ãƒœãƒ¼ãƒ¬ãƒ¼ãƒˆ
+ * @param[in] lpcszParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CTty::Open(LPCTSTR lpDevName, UINT nSpeed, LPCTSTR lpcszParam)
 {
@@ -72,7 +72,7 @@ bool CTty::Open(LPCTSTR lpDevName, UINT nSpeed, LPCTSTR lpcszParam)
 }
 
 /**
- * ƒNƒ[ƒY‚·‚é
+ * ã‚¯ãƒ­ãƒ¼ã‚ºã™ã‚‹
  */
 void CTty::Close()
 {
@@ -84,10 +84,10 @@ void CTty::Close()
 }
 
 /**
- * ƒf[ƒ^óM
- * @param[in] lpcvData ‘—Mƒf[ƒ^‚Ìƒ|ƒCƒ“ƒ^
- * @param[in] nDataSize ‘—Mƒf[ƒ^‚ÌƒTƒCƒY
- * @return ‘—MƒoƒCƒg”
+ * ãƒ‡ãƒ¼ã‚¿å—ä¿¡
+ * @param[in] lpcvData é€ä¿¡ãƒ‡ãƒ¼ã‚¿ã®ãƒã‚¤ãƒ³ã‚¿
+ * @param[in] nDataSize é€ä¿¡ãƒ‡ãƒ¼ã‚¿ã®ã‚µã‚¤ã‚º
+ * @return é€ä¿¡ãƒã‚¤ãƒˆæ•°
  */
 ssize_t CTty::Read(LPVOID lpcvData, ssize_t nDataSize)
 {
@@ -122,10 +122,10 @@ ssize_t CTty::Read(LPVOID lpcvData, ssize_t nDataSize)
 }
 
 /**
- * ƒf[ƒ^‘—M
- * @param[in] lpcvData ‘—Mƒf[ƒ^‚Ìƒ|ƒCƒ“ƒ^
- * @param[in] nDataSize ‘—Mƒf[ƒ^‚ÌƒTƒCƒY
- * @return ‘—MƒoƒCƒg”
+ * ãƒ‡ãƒ¼ã‚¿é€ä¿¡
+ * @param[in] lpcvData é€ä¿¡ãƒ‡ãƒ¼ã‚¿ã®ãƒã‚¤ãƒ³ã‚¿
+ * @param[in] nDataSize é€ä¿¡ãƒ‡ãƒ¼ã‚¿ã®ã‚µã‚¤ã‚º
+ * @return é€ä¿¡ãƒã‚¤ãƒˆæ•°
  */
 ssize_t CTty::Write(LPCVOID lpcvData, ssize_t nDataSize)
 {
@@ -148,11 +148,11 @@ ssize_t CTty::Write(LPCVOID lpcvData, ssize_t nDataSize)
 }
 
 /**
- * ƒpƒ‰ƒ[ƒ^İ’è
- * @param[in] lpcszParam ƒpƒ‰ƒƒ^
- * @param[in, out] dcb DCB \‘¢‘Ì‚Ìƒ|ƒCƒ“ƒ^
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®š
+ * @param[in] lpcszParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @param[in, out] dcb DCB æ§‹é€ ä½“ã®ãƒã‚¤ãƒ³ã‚¿
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CTty::SetParam(LPCTSTR lpcszParam, DCB* dcb)
 {

@@ -76,8 +76,8 @@ const BPEVENT	*bev;
 					bp->cnt += bp->hz;
 					samp *= vol;
 					samp <<= (10 - 2);
-					if(samp > 32767) samp = 0; // XXX: ˆ——Ž‚¿Žž‚ÌƒmƒCƒY‰ñ”ð np21w ver0.86 rev42
-					if(samp < -32768) samp = 0; // XXX: ˆ——Ž‚¿Žž‚ÌƒmƒCƒY‰ñ”ð np21w ver0.86 rev42
+					if(samp > 32767) samp = 0; // XXX: å‡¦ç†è½ã¡æ™‚ã®ãƒŽã‚¤ã‚ºå›žé¿ np21w ver0.86 rev42
+					if(samp < -32768) samp = 0; // XXX: å‡¦ç†è½ã¡æ™‚ã®ãƒŽã‚¤ã‚ºå›žé¿ np21w ver0.86 rev42
 					pcm[0] += samp;
 					pcm[1] += samp;
 					pcm += 2;
@@ -113,8 +113,8 @@ const BPEVENT	*bev;
 			}
 			samp *= vol;
 			samp >>= (16 - 10);
-			if(samp > 32767) samp = 0; // XXX: ˆ——Ž‚¿Žž‚ÌƒmƒCƒY‰ñ”ð np21w ver0.86 rev42
-			if(samp < -32768) samp = 0; // XXX: ˆ——Ž‚¿Žž‚ÌƒmƒCƒY‰ñ”ð np21w ver0.86 rev42
+			if(samp > 32767) samp = 0; // XXX: å‡¦ç†è½ã¡æ™‚ã®ãƒŽã‚¤ã‚ºå›žé¿ np21w ver0.86 rev42
+			if(samp < -32768) samp = 0; // XXX: å‡¦ç†è½ã¡æ™‚ã®ãƒŽã‚¤ã‚ºå›žé¿ np21w ver0.86 rev42
 			pcm[0] += samp;
 			pcm[1] += samp;
 			pcm += 2;

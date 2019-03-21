@@ -8,21 +8,21 @@
 
 #ifdef SUPPORT_KAI_IMAGES
 
-#include	"diskimage/img_common.h"	//	’Ç‰Á(Kai1)
-#include	"diskimage/img_strres.h"	//	’Ç‰Á(Kai1)
-#include	"diskimage/fd/fdd_xdf.h"	//	’Ç‰Á(Kai1)
-#include	"diskimage/fd/fdd_d88.h"	//	’Ç‰Á(Kai1)
-#include	"diskimage/fd/fdd_dcp.h"	//	’Ç‰Á(Kai1)
-#include	"diskimage/fd/fdd_bkdsk.h"	//	’Ç‰Á(Kai1)
-#include	"diskimage/fd/fdd_nfd.h"	//	’Ç‰Á(Kai1)
-#include	"diskimage/fd/fdd_vfdd.h"	//	’Ç‰Á(Kai1)
+#include	"diskimage/img_common.h"	//	è¿½åŠ (Kai1)
+#include	"diskimage/img_strres.h"	//	è¿½åŠ (Kai1)
+#include	"diskimage/fd/fdd_xdf.h"	//	è¿½åŠ (Kai1)
+#include	"diskimage/fd/fdd_d88.h"	//	è¿½åŠ (Kai1)
+#include	"diskimage/fd/fdd_dcp.h"	//	è¿½åŠ (Kai1)
+#include	"diskimage/fd/fdd_bkdsk.h"	//	è¿½åŠ (Kai1)
+#include	"diskimage/fd/fdd_nfd.h"	//	è¿½åŠ (Kai1)
+#include	"diskimage/fd/fdd_vfdd.h"	//	è¿½åŠ (Kai1)
 
 
 	_FDDFILE	fddfile[MAX_FDDFILE];
-	_FDDFUNC	fddfunc[MAX_FDDFILE];	//	’Ç‰Á(Kai1)
+	_FDDFUNC	fddfunc[MAX_FDDFILE];	//	è¿½åŠ (Kai1)
 	UINT8		fddlasterror;
 
-//	’Ç‰Á(kai9)
+//	è¿½åŠ (kai9)
 void fddfunc_init(FDDFUNC fdd_fn) {
 
 	fdd_fn->eject		= fdd_eject_xxx;
@@ -36,7 +36,7 @@ void fddfunc_init(FDDFUNC fdd_fn) {
 	fdd_fn->formatinit	= fdd_dummy_xxx;
 	fdd_fn->formating	= fdd_formating_xxx;
 	fdd_fn->isformating	= fdd_isformating_xxx;
-	fdd_fn->fdcresult	= FALSE;	//	’Ç‰Á(Kai1)
+	fdd_fn->fdcresult	= FALSE;	//	è¿½åŠ (Kai1)
 }
 //
 
@@ -46,7 +46,7 @@ void fddfile_initialize(void) {
 
 	UINT	i;
 
-	//	‚Æ‚è‚ ‚¦‚¸ƒ_ƒ~[‚Å–„‚ß‚Ä‚¨‚­(Kai1)
+	//	ã¨ã‚Šã‚ãˆãšãƒ€ãƒŸãƒ¼ã§åŸ‹ã‚ã¦ãŠã(Kai1)
 	for (i = 0; i < MAX_FDDFILE; i++) {
 		fddfunc_init(&fddfunc[i]);
 	}
@@ -111,7 +111,7 @@ BOOL fdd_diskprotect(REG8 drv) {
 BRESULT fdd_set(REG8 drv, const OEMCHAR *fname, UINT ftype, int ro) {
 
 	FDDFILE		fdd;
-	FDDFUNC		fdd_fn;	//	’Ç‰Á(Kai1)
+	FDDFUNC		fdd_fn;	//	è¿½åŠ (Kai1)
 	UINT		fddtype;
 const OEMCHAR	*p;
 	BRESULT		r;
@@ -129,12 +129,12 @@ const OEMCHAR	*p;
 		else if (!milstr_cmp(p, str_fdi)) {
 			fddtype = FTYPE_FDI;
 		}
-//	Œµ–§‚È‘Î‰‚Ì‚½‚ß‚ÉFTYPE_BETA‚æ‚è•ª—£(Kai1)
+//	å³å¯†ãªå¯¾å¿œã®ãŸã‚ã«FTYPE_BETAã‚ˆã‚Šåˆ†é›¢(Kai1)
 		else if ((!milstr_cmp(p, str_dcp)) || (!milstr_cmp(p, str_dcu))) {
 			fddtype = FTYPE_DCP;
 		}
 //
-//	’Ç‰Á(Kai1)
+//	è¿½åŠ (Kai1)
 		else if (!milstr_cmp(p, str_nfd)) {
 			fddtype = FTYPE_NFD;
 		}
@@ -147,8 +147,8 @@ const OEMCHAR	*p;
 		}
 	}
 	fdd = fddfile + drv;
-	fdd_fn = fddfunc + drv;	//	’Ç‰Á(Kai1)
-	fdd_fn->eject(fdd);		//	”O‚Ì‚½‚ßƒCƒWƒFƒNƒg(Kai1)
+	fdd_fn = fddfunc + drv;	//	è¿½åŠ (Kai1)
+	fdd_fn->eject(fdd);		//	å¿µã®ãŸã‚ã‚¤ã‚¸ã‚§ã‚¯ãƒˆ(Kai1)
 	switch(fddtype) {
 		case FTYPE_FDI:
 			r = fdd_set_fdi(fdd, fdd_fn, fname, ro);
@@ -159,9 +159,9 @@ const OEMCHAR	*p;
 
 		case FTYPE_BETA:
 			r = fdd_set_xdf(fdd, fdd_fn, fname, ro);
-			//	’Ç‰Á(Kai1)
+			//	è¿½åŠ (Kai1)
 			if (r != SUCCESS) {
-				//	BKDSK(HDB)	BASIC 2HD‚©‚ÈH‚©‚ÈH
+				//	BKDSK(HDB)	BASIC 2HDã‹ãªï¼Ÿã‹ãªï¼Ÿ
 				r = fdd_set_bkdsk(fdd, fdd_fn, fname, ro);
 				break;
 			}
@@ -171,12 +171,12 @@ const OEMCHAR	*p;
 		case FTYPE_D88:
 			r = fdd_set_d88(fdd, fdd_fn, fname, ro);
 			break;
-//	Œµ–§‚È‘Î‰(Kai1)
+//	å³å¯†ãªå¯¾å¿œ(Kai1)
 		case FTYPE_DCP:
 			r = fdd_set_dcp(fdd, fdd_fn, fname, ro);
 			break;
 //
-//	’Ç‰Á(Kai1)
+//	è¿½åŠ (Kai1)
 		case FTYPE_NFD:
 			r = fdd_set_nfd(fdd, fdd_fn, fname, ro);
 			break;
@@ -186,9 +186,9 @@ const OEMCHAR	*p;
 //
 		default:
 			r = fdd_set_xdf(fdd, fdd_fn, fname, ro);
-			//	’Ç‰Á(Kai1)
+			//	è¿½åŠ (Kai1)
 			if (r != SUCCESS) {
-				//	BKDSK(HDB)	BASIC 2HD‚©‚ÈH‚©‚ÈH
+				//	BKDSK(HDB)	BASIC 2HDã‹ãªï¼Ÿã‹ãªï¼Ÿ
 				r = fdd_set_bkdsk(fdd, fdd_fn, fname, ro);
 				break;
 			}
@@ -207,16 +207,16 @@ const OEMCHAR	*p;
 
 BRESULT fdd_eject(REG8 drv) {
 
-	BRESULT		ret;	//	’Ç‰Á(Kai1)
+	BRESULT		ret;	//	è¿½åŠ (Kai1)
 	FDDFILE		fdd;
-	FDDFUNC		fdd_fn;	//	’Ç‰Á(Kai1)
+	FDDFUNC		fdd_fn;	//	è¿½åŠ (Kai1)
 
 	if (drv >= MAX_FDDFILE) {
 		return(FAILURE);
 	}
 	fdd = fddfile + drv;
-	fdd_fn = fddfunc + drv;	//	’Ç‰Á(Kai1)
-#if 1						//	•ÏX(Kai1)
+	fdd_fn = fddfunc + drv;	//	è¿½åŠ (Kai1)
+#if 1						//	å¤‰æ›´(Kai1)
 	ret = fdd_fn->eject(fdd);
 
 	ZeroMemory(fdd, sizeof(_FDDFILE));
@@ -242,7 +242,7 @@ BRESULT fdd_eject(REG8 drv) {
 }
 
 //	----
-//	–¢À‘•A–¢‘Î‰—pƒ_ƒ~[ŠÖ”ŒQ(Kai1)
+//	æœªå®Ÿè£…ã€æœªå¯¾å¿œç”¨ãƒ€ãƒŸãƒ¼é–¢æ•°ç¾¤(Kai1)
 BRESULT fdd_dummy_xxx(FDDFILE fdd) {
 
 	(void)fdd;
@@ -271,7 +271,7 @@ BOOL fdd_isformating_xxx(FDDFILE fdd) {
 	/* 170107 to support format command ... to */
 }
 // ----
-//	ƒxƒ^ŒnƒCƒ[ƒW—p‹¤’Êˆ—ŠÖ”ŒQ(Kai1)
+//	ãƒ™ã‚¿ç³»ã‚¤ãƒ¡ãƒ¼ã‚¸ç”¨å…±é€šå‡¦ç†é–¢æ•°ç¾¤(Kai1)
 BRESULT fdd_diskaccess_common(FDDFILE fdd) {
 
 	if (CTRL_FDMEDIA != fdd->inf.xdf.disktype) {
@@ -352,11 +352,11 @@ BRESULT fdd_readid_common(FDDFILE fdd) {
 BRESULT fdd_diskaccess(void) {
 
 	FDDFILE		fdd;
-	FDDFUNC		fdd_fn;			//	’Ç‰Á(Kai1)
+	FDDFUNC		fdd_fn;			//	è¿½åŠ (Kai1)
 
 	fdd = fddfile + fdc.us;
-	fdd_fn = fddfunc + fdc.us;	//	’Ç‰Á(Kai1)
-#if 1							//	•ÏX(Kai1)
+	fdd_fn = fddfunc + fdc.us;	//	è¿½åŠ (Kai1)
+#if 1							//	å¤‰æ›´(Kai1)
 	return(fdd_fn->diskaccess(fdd));
 #else
 	switch(fdd->type) {
@@ -376,12 +376,12 @@ BRESULT fdd_seek(void) {
 
 	BRESULT		ret;
 	FDDFILE		fdd;
-	FDDFUNC		fdd_fn;			//	’Ç‰Á(Kai1)
+	FDDFUNC		fdd_fn;			//	è¿½åŠ (Kai1)
 
 	ret = FAILURE;
 	fdd = fddfile + fdc.us;
-	fdd_fn = fddfunc + fdc.us;	//	’Ç‰Á(Kai1)
-#if 1							//	•ÏX(Kai1)
+	fdd_fn = fddfunc + fdc.us;	//	è¿½åŠ (Kai1)
+#if 1							//	å¤‰æ›´(Kai1)
 	ret = fdd_fn->seek(fdd);
 #else
 	switch(fdd->type) {
@@ -403,11 +403,11 @@ BRESULT fdd_seek(void) {
 BRESULT fdd_seeksector(void) {
 
 	FDDFILE		fdd;
-	FDDFUNC		fdd_fn;			//	’Ç‰Á(Kai1)
+	FDDFUNC		fdd_fn;			//	è¿½åŠ (Kai1)
 
 	fdd = fddfile + fdc.us;
-	fdd_fn = fddfunc + fdc.us;	//	’Ç‰Á(Kai1)
-#if 1							//	•ÏX(Kai1)
+	fdd_fn = fddfunc + fdc.us;	//	è¿½åŠ (Kai1)
+#if 1							//	å¤‰æ›´(Kai1)
 	return(fdd_fn->seeksector(fdd));
 #else
 	switch(fdd->type) {
@@ -427,12 +427,12 @@ BRESULT fdd_seeksector(void) {
 BRESULT fdd_read(void) {
 
 	FDDFILE		fdd;
-	FDDFUNC		fdd_fn;			//	’Ç‰Á(Kai1)
+	FDDFUNC		fdd_fn;			//	è¿½åŠ (Kai1)
 
 	sysmng_fddaccess(fdc.us);
 	fdd = fddfile + fdc.us;
-	fdd_fn = fddfunc + fdc.us;	//	’Ç‰Á(Kai1)
-#if 1							//	•ÏX(Kai1)
+	fdd_fn = fddfunc + fdc.us;	//	è¿½åŠ (Kai1)
+#if 1							//	å¤‰æ›´(Kai1)
 	return(fdd_fn->read(fdd));
 #else
 	switch(fdd->type) {
@@ -451,12 +451,12 @@ BRESULT fdd_read(void) {
 BRESULT fdd_write(void) {
 
 	FDDFILE		fdd;
-	FDDFUNC		fdd_fn;			//	’Ç‰Á(Kai1)
+	FDDFUNC		fdd_fn;			//	è¿½åŠ (Kai1)
 
 	sysmng_fddaccess(fdc.us);
 	fdd = fddfile + fdc.us;
-	fdd_fn = fddfunc + fdc.us;	//	’Ç‰Á(Kai1)
-#if 1							//	•ÏX(Kai1)
+	fdd_fn = fddfunc + fdc.us;	//	è¿½åŠ (Kai1)
+#if 1							//	å¤‰æ›´(Kai1)
 	return(fdd_fn->write(fdd));
 #else
 	switch(fdd->type) {
@@ -475,12 +475,12 @@ BRESULT fdd_write(void) {
 BRESULT fdd_readid(void) {
 
 	FDDFILE		fdd;
-	FDDFUNC		fdd_fn;			//	’Ç‰Á(Kai1)
+	FDDFUNC		fdd_fn;			//	è¿½åŠ (Kai1)
 
 	sysmng_fddaccess(fdc.us);
 	fdd = fddfile + fdc.us;
-	fdd_fn = fddfunc + fdc.us;	//	’Ç‰Á(Kai1)
-#if 1							//	•ÏX(Kai1)
+	fdd_fn = fddfunc + fdc.us;	//	è¿½åŠ (Kai1)
+#if 1							//	å¤‰æ›´(Kai1)
 	return(fdd_fn->readid(fdd));
 #else
 	switch(fdd->type) {
@@ -498,12 +498,12 @@ BRESULT fdd_readid(void) {
 
 BRESULT fdd_formatinit(void) {
 
-	FDDFILE		fdd;			//	’Ç‰Á(Kai1)
-	FDDFUNC		fdd_fn;			//	’Ç‰Á(Kai1)
+	FDDFILE		fdd;			//	è¿½åŠ (Kai1)
+	FDDFUNC		fdd_fn;			//	è¿½åŠ (Kai1)
 
-	fdd = fddfile + fdc.us;		//	’Ç‰Á(Kai1)
-	fdd_fn = fddfunc + fdc.us;	//	’Ç‰Á(Kai1)
-#if 1							//	•ÏX(Kai1)
+	fdd = fddfile + fdc.us;		//	è¿½åŠ (Kai1)
+	fdd_fn = fddfunc + fdc.us;	//	è¿½åŠ (Kai1)
+#if 1							//	å¤‰æ›´(Kai1)
 	return(fdd_fn->formatinit(fdd));
 #else
 	if (fddfile[fdc.us].type == DISKTYPE_D88) {
@@ -516,13 +516,13 @@ BRESULT fdd_formatinit(void) {
 
 BRESULT fdd_formating(const UINT8 *ID) {
 
-	FDDFILE		fdd;			//	’Ç‰Á(Kai1)
-	FDDFUNC		fdd_fn;			//	’Ç‰Á(Kai1)
+	FDDFILE		fdd;			//	è¿½åŠ (Kai1)
+	FDDFUNC		fdd_fn;			//	è¿½åŠ (Kai1)
 
 	sysmng_fddaccess(fdc.us);
-	fdd = fddfile + fdc.us;		//	’Ç‰Á(Kai1)
-	fdd_fn = fddfunc + fdc.us;	//	’Ç‰Á(Kai1)
-#if 1							//	•ÏX(Kai1)
+	fdd = fddfile + fdc.us;		//	è¿½åŠ (Kai1)
+	fdd_fn = fddfunc + fdc.us;	//	è¿½åŠ (Kai1)
+#if 1							//	å¤‰æ›´(Kai1)
 	return(fdd_fn->formating(fdd, ID));
 #else
 	if (fddfile[fdc.us].type == DISKTYPE_D88) {
@@ -535,12 +535,12 @@ BRESULT fdd_formating(const UINT8 *ID) {
 
 BOOL fdd_isformating(void) {
 
-	FDDFILE		fdd;			//	’Ç‰Á(Kai1)
-	FDDFUNC		fdd_fn;			//	’Ç‰Á(Kai1)
+	FDDFILE		fdd;			//	è¿½åŠ (Kai1)
+	FDDFUNC		fdd_fn;			//	è¿½åŠ (Kai1)
 
-	fdd = fddfile + fdc.us;		//	’Ç‰Á(Kai1)
-	fdd_fn = fddfunc + fdc.us;	//	’Ç‰Á(Kai1)
-#if 1							//	•ÏX(Kai1)
+	fdd = fddfile + fdc.us;		//	è¿½åŠ (Kai1)
+	fdd_fn = fddfunc + fdc.us;	//	è¿½åŠ (Kai1)
+#if 1							//	å¤‰æ›´(Kai1)
 	/* 170107 to support format command form ... */
 	//return(fdd_fn->formatinit(fdd));
 	return(fdd_fn->isformating(fdd));
@@ -554,7 +554,7 @@ BOOL fdd_isformating(void) {
 #endif
 }
 
-//	’Ç‰Á(Kai1)
+//	è¿½åŠ (Kai1)
 BOOL fdd_fdcresult(void) {
 
 	FDDFUNC		fdd_fn;

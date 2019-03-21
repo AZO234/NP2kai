@@ -42,13 +42,13 @@ void mousemng_disable(UINT proc);
 void mousemng_toggle(UINT proc);
 void mousemng_destroy(void);
 
-UINT8 mousemng_supportrawinput(); // 惗僨乕僞擖椡僒億乕僩
-void mousemng_updatespeed(); // 惗僨乕僞擖椡僒億乕僩
+UINT8 mousemng_supportrawinput(); // 鐢熴儑銉笺偪鍏ュ姏銈点儩銉笺儓
+void mousemng_updatespeed(); // 鐢熴儑銉笺偪鍏ュ姏銈点儩銉笺儓
 
 #ifdef __cplusplus
-extern "C" { // XXX: wab.c梡丅傕偭偲僗儅乕僩偵偡傋偒
+extern "C" { // XXX: wab.c鐢ㄣ�傘倐銇ｃ仺銈广優銉笺儓銇仚銇广亶
 #endif
 void mousemng_updateclip();
 #ifdef __cplusplus
-} // XXX: wab.c梡丅傕偭偲僗儅乕僩偵偡傋偒
+} // XXX: wab.c鐢ㄣ�傘倐銇ｃ仺銈广優銉笺儓銇仚銇广亶
 #endif

@@ -178,23 +178,23 @@ void cs4231io_reset(void) {
 
 	cs4231.enable = 1;
 
-/* [cs4231.adrs‚Ì‘‚«•û]
+/* [cs4231.adrsã®æ›¸ãæ–¹]
 		bit	
-		7	–¢g—p
-	R/W	6	•s–¾
-	R/W	5-3	PCM‰¹Œ¹Š„‚è‚İƒAƒhƒŒƒX
-			000b= ƒTƒEƒ“ƒh‹@”\‚ğg—p‚µ‚È‚¢
+		7	æœªä½¿ç”¨
+	R/W	6	ä¸æ˜
+	R/W	5-3	PCMéŸ³æºå‰²ã‚Šè¾¼ã¿ã‚¢ãƒ‰ãƒ¬ã‚¹
+			000b= ã‚µã‚¦ãƒ³ãƒ‰æ©Ÿèƒ½ã‚’ä½¿ç”¨ã—ãªã„
 			001b= INT 0
 			010b= INT 1
 			011b= INT 41
 			100b= INT 5
-	R/W	2-0	DMAƒ`ƒƒƒlƒ‹İ’è
-			000b= DMA‚ğg—p‚µ‚È‚¢
+	R/W	2-0	DMAãƒãƒ£ãƒãƒ«è¨­å®š
+			000b= DMAã‚’ä½¿ç”¨ã—ãªã„
 			001b= DMA #0
-			010b= DMA #1 (PC-9821Np‚ğœ‚­)
+			010b= DMA #1 (PC-9821Npã‚’é™¤ã)
 			011b= DMA #3
-			100b`101b= –¢’è‹`
-			111b= DMA‚ğg—p‚µ‚È‚¢
+			100bã€œ101b= æœªå®šç¾©
+			111b= DMAã‚’ä½¿ç”¨ã—ãªã„
 */		
 	if(g_nSoundID==SOUNDID_PC_9801_86_WSS || g_nSoundID==SOUNDID_MATE_X_PCM){
 		sndirq = np2cfg.sndwssirq;
@@ -249,11 +249,11 @@ void cs4231io_reset(void) {
 	default:
 		break;
 	}
-	cs4231.dmairq = cs4231irq[(cs4231.adrs >> 3) & 7]; // IRQ‚ğƒZƒbƒg
-	cs4231.dmach = cs4231dma[cs4231.adrs & 7]; // DMAƒ`ƒƒƒlƒ‹‚ğƒZƒbƒg
+	cs4231.dmairq = cs4231irq[(cs4231.adrs >> 3) & 7]; // IRQã‚’ã‚»ãƒƒãƒˆ
+	cs4231.dmach = cs4231dma[cs4231.adrs & 7]; // DMAãƒãƒ£ãƒãƒ«ã‚’ã‚»ãƒƒãƒˆ
 	cs4231.port[0] = 0x0f40; //WSS BASE I/O port
 	if(g_nSoundID==SOUNDID_PC_9801_86_WSS||g_nSoundID==SOUNDID_PC_9801_86_118){
-		cs4231.port[1] = 0xb460; // Sound ID I/O port (A460h‚Í86‰¹Œ¹‚ªg‚¤‚Ì‚ÅB460h‚É•ÏX)
+		cs4231.port[1] = 0xb460; // Sound ID I/O port (A460hã¯86éŸ³æºãŒä½¿ã†ã®ã§B460hã«å¤‰æ›´)
 	}else{
 		cs4231.port[1] = 0xa460; // Sound ID I/O port
 	}
@@ -266,7 +266,7 @@ void cs4231io_reset(void) {
 	cs4231.port[10] = 0x148c; // MIDI
 	cs4231.port[11] = 0x0480; //9801-118 control?
 	cs4231.port[14] = 0x148e; //9801-118 config 
-	cs4231.port[15] = 0xa460; //‹ó‚¢‚Ä‚é‚Ì‚Å‚±‚Á‚¿‚ğ—˜—p
+	cs4231.port[15] = 0xa460; //ç©ºã„ã¦ã‚‹ã®ã§ã“ã£ã¡ã‚’åˆ©ç”¨
 
 	TRACEOUT(("CS4231 - IRQ = %d", cs4231.dmairq));
 	TRACEOUT(("CS4231 - DMA channel = %d", cs4231.dmach));
@@ -303,7 +303,7 @@ void cs4231io_reset(void) {
 
 void cs4231io_bind(void) {
 
-	sound_streamregist(&cs4231, (SOUNDCB)cs4231_getpcm); // CS4231—p ƒI[ƒfƒBƒIÄ¶ƒXƒgƒŠ[ƒ€
+	sound_streamregist(&cs4231, (SOUNDCB)cs4231_getpcm); // CS4231ç”¨ ã‚ªãƒ¼ãƒ‡ã‚£ã‚ªå†ç”Ÿã‚¹ãƒˆãƒªãƒ¼ãƒ 
 	iocore_attachout(0xc24, csctrl_oc24);
 	iocore_attachout(0xc2b, csctrl_oc2b);
 	iocore_attachout(0xc2d, csctrl_oc2d);
@@ -311,7 +311,7 @@ void cs4231io_bind(void) {
 	iocore_attachinp(0xc2b, csctrl_ic2b);
 	iocore_attachinp(0xc2d, csctrl_ic2d);
 	if (cs4231.dmach != 0xff) {
-		dmac_attach(DMADEV_CS4231, cs4231.dmach); // CS4231‚ÌDMAƒ`ƒƒƒlƒ‹‚ğŠ„‚è“–‚Ä
+		dmac_attach(DMADEV_CS4231, cs4231.dmach); // CS4231ã®DMAãƒãƒ£ãƒãƒ«ã‚’å‰²ã‚Šå½“ã¦
 	}
 	if(g_nSoundID!=SOUNDID_PC_9801_86_WSS && g_nSoundID!=SOUNDID_MATE_X_PCM){
 		iocore_attachout(0x480, csctrl_o480);
@@ -320,16 +320,16 @@ void cs4231io_bind(void) {
 		iocore_attachinp(0xac6d, csctrl_iac6d);
 		iocore_attachinp(0xac6e, csctrl_iac6e);
 
-/*@•K—v‚È‚¾‚¯—LŒø‚É‚·‚×‚«
+/*ã€€å¿…è¦ãªæ™‚ã ã‘æœ‰åŠ¹ã«ã™ã¹ã
 //WSN-F???
-		iocore_attachinp(0x51ee, srnf_i51ee);//7”Ô‚ß‚É“Ç‚Ü‚ê‚é
-		iocore_attachinp(0x51ef, srnf_i51ef);//1”ÔÅ‰‚ÉC2‚ğ•Ô‚·
-//		iocore_attachinp(0x52ef, srnf_i52ef);//f40“™‚ğ“Ç‚İ‘‚«‚µ‚½‚ ‚Æ‚±‚±‚ğ“Ç‚ñ‚ÅƒGƒ‰[
-		iocore_attachinp(0x56ef, srnf_i56ef);//2”Ô‚ß‚É“Ç‚Ü‚ê‚ÄŠ„‚è‚İ“™‚Ìİ’èH@4”Ô‚ß‚É2‰ñ“Ç‚Ü‚ê’¼‚·
-		iocore_attachinp(0x57ef, srnf_i57ef);//5”Ô‚ß‚É“Ç‚Ü‚ê‚é
-		iocore_attachinp(0x59ef, srnf_i59ef);//3”Ô‚ß‚É“Ç‚Ü‚ê‚Ä‰½‚©’²¸ ‚R‚Æ‚S‚Å‚Æ‚è‚ ‚¦‚¸’Ê‚é
-//		iocore_attachinp(0x5aef, srnf_i5aef);//8”Ô‚ß‚É“Ç‚Ü‚ê‚ÄI‚í‚è
-		iocore_attachinp(0x5bef, srnf_i5bef);//6”Ô‚ß‚É“Ç‚Ü‚ê‚é
+		iocore_attachinp(0x51ee, srnf_i51ee);//7ç•ªã‚ã«èª­ã¾ã‚Œã‚‹
+		iocore_attachinp(0x51ef, srnf_i51ef);//1ç•ªæœ€åˆã«C2ã‚’è¿”ã™
+//		iocore_attachinp(0x52ef, srnf_i52ef);//f40ç­‰ã‚’èª­ã¿æ›¸ãã—ãŸã‚ã¨ã“ã“ã‚’èª­ã‚“ã§ã‚¨ãƒ©ãƒ¼
+		iocore_attachinp(0x56ef, srnf_i56ef);//2ç•ªã‚ã«èª­ã¾ã‚Œã¦å‰²ã‚Šè¾¼ã¿ç­‰ã®è¨­å®šï¼Ÿã€€4ç•ªã‚ã«2å›èª­ã¾ã‚Œç›´ã™
+		iocore_attachinp(0x57ef, srnf_i57ef);//5ç•ªã‚ã«èª­ã¾ã‚Œã‚‹
+		iocore_attachinp(0x59ef, srnf_i59ef);//3ç•ªã‚ã«èª­ã¾ã‚Œã¦ä½•ã‹èª¿æŸ» ï¼“ã¨ï¼”ã§ã¨ã‚Šã‚ãˆãšé€šã‚‹
+//		iocore_attachinp(0x5aef, srnf_i5aef);//8ç•ªã‚ã«èª­ã¾ã‚Œã¦çµ‚ã‚ã‚Š
+		iocore_attachinp(0x5bef, srnf_i5bef);//6ç•ªã‚ã«èª­ã¾ã‚Œã‚‹
 */
 	}
 }
@@ -342,7 +342,7 @@ void cs4231io_unbind(void) {
 	iocore_detachinp(0xc2b);
 	iocore_detachinp(0xc2d);
 	if (cs4231.dmach != 0xff) {
-		dmac_detach(DMADEV_CS4231); // CS4231‚ÌDMAƒ`ƒƒƒlƒ‹‚ğŠ„‚è“–‚Ä
+		dmac_detach(DMADEV_CS4231); // CS4231ã®DMAãƒãƒ£ãƒãƒ«ã‚’å‰²ã‚Šå½“ã¦
 	}
 	if(g_nSoundID!=SOUNDID_PC_9801_86_WSS && g_nSoundID!=SOUNDID_MATE_X_PCM){
 		iocore_detachout(0x480);
@@ -351,16 +351,16 @@ void cs4231io_unbind(void) {
 		iocore_detachinp(0xac6d);
 		iocore_detachinp(0xac6e);
 
-/*@•K—v‚È‚¾‚¯—LŒø‚É‚·‚×‚«
+/*ã€€å¿…è¦ãªæ™‚ã ã‘æœ‰åŠ¹ã«ã™ã¹ã
 //WSN-F???
-		iocore_detachinp(0x51ee);//7”Ô‚ß‚É“Ç‚Ü‚ê‚é
-		iocore_detachinp(0x51ef);//1”ÔÅ‰‚ÉC2‚ğ•Ô‚·
-//		iocore_detachinp(0x52ef);//f40“™‚ğ“Ç‚İ‘‚«‚µ‚½‚ ‚Æ‚±‚±‚ğ“Ç‚ñ‚ÅƒGƒ‰[
-		iocore_detachinp(0x56ef);//2”Ô‚ß‚É“Ç‚Ü‚ê‚ÄŠ„‚è‚İ“™‚Ìİ’èH@4”Ô‚ß‚É2‰ñ“Ç‚Ü‚ê’¼‚·
-		iocore_detachinp(0x57ef);//5”Ô‚ß‚É“Ç‚Ü‚ê‚é
-		iocore_detachinp(0x59ef);//3”Ô‚ß‚É“Ç‚Ü‚ê‚Ä‰½‚©’²¸ ‚R‚Æ‚S‚Å‚Æ‚è‚ ‚¦‚¸’Ê‚é
-//		iocore_detachinp(0x5aef);//8”Ô‚ß‚É“Ç‚Ü‚ê‚ÄI‚í‚è
-		iocore_detachinp(0x5bef);//6”Ô‚ß‚É“Ç‚Ü‚ê‚é
+		iocore_detachinp(0x51ee);//7ç•ªã‚ã«èª­ã¾ã‚Œã‚‹
+		iocore_detachinp(0x51ef);//1ç•ªæœ€åˆã«C2ã‚’è¿”ã™
+//		iocore_detachinp(0x52ef);//f40ç­‰ã‚’èª­ã¿æ›¸ãã—ãŸã‚ã¨ã“ã“ã‚’èª­ã‚“ã§ã‚¨ãƒ©ãƒ¼
+		iocore_detachinp(0x56ef);//2ç•ªã‚ã«èª­ã¾ã‚Œã¦å‰²ã‚Šè¾¼ã¿ç­‰ã®è¨­å®šï¼Ÿã€€4ç•ªã‚ã«2å›èª­ã¾ã‚Œç›´ã™
+		iocore_detachinp(0x57ef);//5ç•ªã‚ã«èª­ã¾ã‚Œã‚‹
+		iocore_detachinp(0x59ef);//3ç•ªã‚ã«èª­ã¾ã‚Œã¦ä½•ã‹èª¿æŸ» ï¼“ã¨ï¼”ã§ã¨ã‚Šã‚ãˆãšé€šã‚‹
+//		iocore_detachinp(0x5aef);//8ç•ªã‚ã«èª­ã¾ã‚Œã¦çµ‚ã‚ã‚Š
+		iocore_detachinp(0x5bef);//6ç•ªã‚ã«èª­ã¾ã‚Œã‚‹
 */
 	}
 }
@@ -370,7 +370,7 @@ int acicounter;
 void IOOUTCALL cs4231io0_w8(UINT port, REG8 value) {
 
 	switch(port - cs4231.port[0]) {
-		case 0x00: // PCM‰¹Œ¹‚ÌŠ„‚è‚İƒAƒhƒŒƒXİ’è
+		case 0x00: // PCMéŸ³æºã®å‰²ã‚Šè¾¼ã¿ã‚¢ãƒ‰ãƒ¬ã‚¹è¨­å®š
 			cs4231.adrs = value &= ~0x40;
 			cs4231.dmairq = cs4231irq[(value >> 3) & 7];
 			cs4231.dmach = cs4231dma[value & 7];
@@ -380,7 +380,7 @@ void IOOUTCALL cs4231io0_w8(UINT port, REG8 value) {
 					if (cs4231.dmach == 0)dmac_attach(DMADEV_NONE, 1);
 					else dmac_attach(DMADEV_NONE, 0);
 				}
-				dmac_attach(DMADEV_CS4231, cs4231.dmach); // CS4231‚ÌDMAƒ`ƒƒƒlƒ‹‚ğŠ„‚è“–‚Ä
+				dmac_attach(DMADEV_CS4231, cs4231.dmach); // CS4231ã®DMAãƒãƒ£ãƒãƒ«ã‚’å‰²ã‚Šå½“ã¦
 #if 0
 				if (cs4231.reg.iface & SDC) {
 					dmac.dmach[cs4231.dmach].ready = 1;
@@ -396,11 +396,11 @@ void IOOUTCALL cs4231io0_w8(UINT port, REG8 value) {
 			cs4231.index = value & ~(INIT|TRD);
 			break;
 		case 0x05: // Indexed Data Register (R1) ID7 ID6 ID5 ID4 ID3 ID2 ID1 ID0
-			cs4231_control(cs4231.index & 0x1f, value); // cs4231c.c“à‚Åˆ—
+			cs4231_control(cs4231.index & 0x1f, value); // cs4231c.cå†…ã§å‡¦ç†
 			break;
 
 		case 0x06: // Status Register (R2, Read Only) CU/L CL/R CRDY SER PU/L PL/R PRDY INT
-			// PI,CI,TIŠ„‚è‚İƒrƒbƒg‚ğ‘S•”ƒNƒŠƒA
+			// PI,CI,TIå‰²ã‚Šè¾¼ã¿ãƒ“ãƒƒãƒˆã‚’å…¨éƒ¨ã‚¯ãƒªã‚¢
 			if (cs4231.intflag & INt) {
 				pic_resetirq(cs4231.dmairq);
 				//nevent_set(NEVENT_CS4231, 0, cs4231_dma, NEVENT_ABSOLUTE);
@@ -418,7 +418,7 @@ void IOOUTCALL cs4231io0_w8(UINT port, REG8 value) {
 REG8 IOINPCALL cs4231io0_r8(UINT port) {
 
 	switch(port - cs4231.port[0]) {
-		case 0x00: // PCM‰¹Œ¹‚ÌŠ„‚è‚İƒAƒhƒŒƒXİ’è
+		case 0x00: // PCMéŸ³æºã®å‰²ã‚Šè¾¼ã¿ã‚¢ãƒ‰ãƒ¬ã‚¹è¨­å®š
 			return(cs4231.adrs);
 		case 0x03: // Windows Sound System ID (Read Only)
 			return(0x04);
@@ -465,8 +465,8 @@ void IOOUTCALL cs4231io5_w8(UINT port, REG8 value) {
 			switch(cs4231.extindex){
 			case 0x02: // MODEM L ?
 			case 0x03: // MODEM R ?
-			case 0x30: // FM‰¹Œ¹ L
-			case 0x31: // FM‰¹Œ¹ R
+			case 0x30: // FMéŸ³æº L
+			case 0x31: // FMéŸ³æº R
 			case 0x32: // CD-DA L
 			case 0x33: // CD-DA R
 			case 0x34: // TV L
@@ -491,8 +491,8 @@ REG8 IOINPCALL cs4231io5_r8(UINT port) {
 				return(0);				// means opna int5 ???
 			case 0x02: // MODEM L ?
 			case 0x03: // MODEM R ?
-			case 0x30: // FM‰¹Œ¹ L
-			case 0x31: // FM‰¹Œ¹ R
+			case 0x30: // FMéŸ³æº L
+			case 0x31: // FMéŸ³æº R
 			case 0x32: // CD-DA L
 			case 0x33: // CD-DA R
 			case 0x34: // TV L

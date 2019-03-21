@@ -1,6 +1,6 @@
 /**
  * @file	viewseg.h
- * @brief	ƒƒ‚ƒŠ ƒŒƒWƒXƒ^•\¦ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	ãƒ¡ãƒ¢ãƒª ãƒ¬ã‚¸ã‚¹ã‚¿è¡¨ç¤ºã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -10,7 +10,7 @@
 #include "viewmem.h"
 
 /**
- * @brief ƒƒ‚ƒŠ ƒŒƒWƒXƒ^•\¦ƒNƒ‰ƒX
+ * @brief ãƒ¡ãƒ¢ãƒª ãƒ¬ã‚¸ã‚¹ã‚¿è¡¨ç¤ºã‚¯ãƒ©ã‚¹
  */
 class CDebugUtySeg : public CDebugUtyItem
 {
@@ -27,8 +27,8 @@ public:
 	virtual void OnPaint(HDC hDC, const RECT& rect);
 
 private:
-	UINT m_nSegment;							//!< ƒZƒOƒƒ“ƒg
-	DebugUtyViewMemory m_mem;					//!< ƒƒ‚ƒŠ
-	std::vector<unsigned char> m_buffer;		//!< ƒoƒbƒtƒ@
+	UINT m_nSegment;							//!< ã‚»ã‚°ãƒ¡ãƒ³ãƒˆ
+	DebugUtyViewMemory m_mem;					//!< ãƒ¡ãƒ¢ãƒª
+	std::vector<unsigned char> m_buffer;		//!< ãƒãƒƒãƒ•ã‚¡
 	void SetSegment(UINT nSegment);
 };

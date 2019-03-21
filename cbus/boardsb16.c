@@ -15,7 +15,7 @@
  * Creative Sound Blaster 16(98)
  * YMF262-M(OPL3) + CT1741(PCM) + CT1745(MIXER) + YM2203(OPN - option)
  *
- * ƒfƒtƒHƒ‹ƒgd—l IO:D2 DMA:3 INT:5 
+ * ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆä»•æ§˜ IO:D2 DMA:3 INT:5 
  */
 
 static void *opl3;
@@ -59,7 +59,7 @@ static void IOOUTCALL sb16_o2000(UINT port, REG8 dat) {
 	g_opl.addr = dat;
 #ifdef USE_MAME
 	YMF262Write(opl3, 0, dat);
-	g_opl3.s.addrl = dat; // Key Display—p
+	g_opl3.s.addrl = dat; // Key Displayç”¨
 #endif
 }
 
@@ -69,7 +69,7 @@ static void IOOUTCALL sb16_o2100(UINT port, REG8 dat) {
 	//S98_put(NORMAL2608, g_opl.addr, dat);
 #ifdef USE_MAME
 	YMF262Write(opl3, 1, dat);
-	opl3_writeRegister(&g_opl3, g_opl3.s.addrl, dat); // Key Display—p
+	opl3_writeRegister(&g_opl3, g_opl3.s.addrl, dat); // Key Displayç”¨
 #endif
 }
 static void IOOUTCALL sb16_o2200(UINT port, REG8 dat) {
@@ -77,7 +77,7 @@ static void IOOUTCALL sb16_o2200(UINT port, REG8 dat) {
 	g_opl.addr2 = dat;
 #ifdef USE_MAME
 	YMF262Write(opl3, 2, dat);
-	g_opl3.s.addrh = dat; // Key Display—p
+	g_opl3.s.addrh = dat; // Key Displayç”¨
 #endif
 }
 
@@ -87,14 +87,14 @@ static void IOOUTCALL sb16_o2300(UINT port, REG8 dat) {
 	//S98_put(EXTEND2608, opl.addr2, dat);
 #ifdef USE_MAME
 	YMF262Write(opl3, 3, dat);
-	opl3_writeExtendedRegister(&g_opl3, g_opl3.s.addrh, dat); // Key Display—p
+	opl3_writeExtendedRegister(&g_opl3, g_opl3.s.addrh, dat); // Key Displayç”¨
 #endif
 }
 
 static void IOOUTCALL sb16_o2800(UINT port, REG8 dat) {
 	/**
-	 * ‚¢‚í‚ä‚éPC/AT‚ÅŒ¾‚¤‚Æ‚±‚ë‚ÌAdlibŒİŠ·ƒ|[ƒg
-	 * UltimaUnderWorld‚Å‚Í‚±‚¿‚ç‚ğ’@‚­
+	 * ã„ã‚ã‚†ã‚‹PC/ATã§è¨€ã†ã¨ã“ã‚ã®Adlibäº’æ›ãƒãƒ¼ãƒˆ
+	 * UltimaUnderWorldã§ã¯ã“ã¡ã‚‰ã‚’å©ã
 	 */
 	port = dat;
 #ifdef USE_MAME
@@ -197,7 +197,7 @@ void boardsb16_reset(const NP2CFG *pConfig) {
 	}
 	ZeroMemory(&g_sb16, sizeof(g_sb16));
 	ZeroMemory(&g_opl, sizeof(g_opl));
-	// ƒ{[ƒhƒfƒtƒHƒ‹ƒg IO:D2 DMA:3 IRQ:5(INT1) 
+	// ãƒœãƒ¼ãƒ‰ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ IO:D2 DMA:3 IRQ:5(INT1) 
 	g_sb16.base = np2cfg.sndsb16io; //0xd2;
 	g_sb16.dmach = np2cfg.sndsb16dma; //0x3;
 	g_sb16.dmairq = np2cfg.sndsb16irq; //0x5;
@@ -243,7 +243,7 @@ void boardsb16_bind(void) {
 		samplerate = np2cfg.samplingrate;
 	}
 	sound_streamregist(opl3, (SOUNDCB)opl3gen_getpcm);
-	opl3_bind(&g_opl3); // MAMEg—p‚Ìê‡Key Display—p
+	opl3_bind(&g_opl3); // MAMEä½¿ç”¨ã®å ´åˆKey Displayç”¨
 }
 void boardsb16_unbind(void) {
 	ct1745io_unbind();

@@ -255,7 +255,7 @@ static void pccore_set(const NP2CFG *pConfig)
 	pccore.multiple = multiple;
 	pccore.realclock = pccore.baseclock * multiple;
 
-	// HDD‚ÌÚ‘± (I/O‚Ìg—pó‘Ô‚ª•Ï‚í‚é‚Ì‚Å..
+	// HDDã®æ¥ç¶š (I/Oã®ä½¿ç”¨çŠ¶æ…‹ãŒå¤‰ã‚ã‚‹ã®ã§..
 	if (pConfig->dipsw[1] & 0x20)
 	{
 		pccore.hddif |= PCHDD_IDE;
@@ -272,7 +272,7 @@ static void pccore_set(const NP2CFG *pConfig)
 		sxsi_setdevtype(0x03, SXSIDEV_NC);
 	}
 
-	// Šg’£ƒƒ‚ƒŠ
+	// æ‹¡å¼µãƒ¡ãƒ¢ãƒª
 	extsize = 0;
 	if (!(pConfig->dipsw[2] & 0x80))
 	{
@@ -286,10 +286,10 @@ static void pccore_set(const NP2CFG *pConfig)
 	pccore.extmem = extsize;
 	CopyMemory(pccore.dipsw, pConfig->dipsw, 3);
 
-	// ƒTƒEƒ“ƒhƒ{[ƒh‚ÌÚ‘±
+	// ã‚µã‚¦ãƒ³ãƒ‰ãƒœãƒ¼ãƒ‰ã®æ¥ç¶š
 	pccore.sound = (SOUNDID)pConfig->SOUND_SW;
 
-	// ‚»‚Ì‘¼CBUS‚ÌÚ‘±
+	// ãã®ä»–CBUSã®æ¥ç¶š
 	pccore.device = 0;
 	if (pConfig->pc9861enable)
 	{
@@ -442,7 +442,7 @@ void pccore_term(void) {
 	
 	pic_deinitialize();
 
-	CPU_SETEXTSIZE(0);	// ƒƒ‚ƒŠ‰ğ•ú
+	CPU_SETEXTSIZE(0);	// ãƒ¡ãƒ¢ãƒªè§£æ”¾
 	CPU_DEINITIALIZE();
 }
 
@@ -500,12 +500,12 @@ void pccore_reset(void) {
 	}
 #endif
 	ZeroMemory(mem, 0x110000);
-	FillMemory(mem + 0xC0000, 0xE8000 - 0xC0000, 0xff); // ‚È‚¼
+	FillMemory(mem + 0xC0000, 0xE8000 - 0xC0000, 0xff); // ãªã
 	ZeroMemory(mem + VRAM1_B, 0x18000);
 	ZeroMemory(mem + VRAM1_E, 0x08000);
 	ZeroMemory(mem + FONT_ADRS, 0x08000);
 
-	//ƒƒ‚ƒŠƒXƒCƒbƒ`
+	//ãƒ¡ãƒ¢ãƒªã‚¹ã‚¤ãƒƒãƒ
 	for (i=0; i<8; i++)
 	{
 		mem[0xa3fe2 + i*4] = np2cfg.memsw[i];
@@ -568,7 +568,7 @@ void pccore_reset(void) {
 #else
 		strcpy(np2cfg.cpu_vendor, np2cfg.cpu_vendor_o);
 #endif
-		// š”‚ª‘«‚è‚È‚¢ƒXƒy[ƒX‚Å–„‚ß‚é
+		// å­—æ•°ãŒè¶³ã‚Šãªã„æ™‚ã‚¹ãƒšãƒ¼ã‚¹ã§åŸ‹ã‚ã‚‹
 		for(i=0;i<12;i++){
 			if(np2cfg.cpu_vendor[i] == '\0'){
 				np2cfg.cpu_vendor[i] = ' ';
@@ -583,13 +583,13 @@ void pccore_reset(void) {
 #else
 		strcpy(np2cfg.cpu_brandstring, np2cfg.cpu_brandstring_o);
 #endif
-		// ÅŒã‚É1•¶šƒXƒy[ƒX‚ğ“ü‚ê‚é
+		// æœ€å¾Œã«1æ–‡å­—ã‚¹ãƒšãƒ¼ã‚¹ã‚’å…¥ã‚Œã‚‹
 		strcat(np2cfg.cpu_brandstring, " ");
 	}
 #endif
 	strcpy(i386cpuid.cpu_vendor, np2cfg.cpu_vendor);
 	if(np2cfg.cpu_family == 0 && np2cfg.cpu_model == 0 && np2cfg.cpu_stepping == 0 && np2cfg.cpu_feature == 0 && np2cfg.cpu_feature_ex == 0){
-		// İ’è‚ÉŠÖŒW‚È‚­‘S•”g‚¦‚é‚æ‚¤‚É‚·‚é
+		// è¨­å®šã«é–¢ä¿‚ãªãå…¨éƒ¨ä½¿ãˆã‚‹ã‚ˆã†ã«ã™ã‚‹
 		i386cpuid.cpu_family = CPU_FAMILY;
 		i386cpuid.cpu_model = CPU_MODEL;
 		i386cpuid.cpu_stepping = CPU_STEPPING;
@@ -608,7 +608,7 @@ void pccore_reset(void) {
 	}
 	strcpy(i386cpuid.cpu_brandstring, np2cfg.cpu_brandstring);
 
-	// BrandID©“®İ’èi‰ß‹ƒo[ƒWƒ‡ƒ“‚Æ‚ÌŒİŠ·ˆÛ—pj
+	// BrandIDè‡ªå‹•è¨­å®šï¼ˆéå»ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã¨ã®äº’æ›ç¶­æŒç”¨ï¼‰
 	if(i386cpuid.cpu_brandid == CPU_BRAND_ID_AUTO){
 		if(strncmp(i386cpuid.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_III, 27)==0){
 			CPU_EBX = 0x2;
@@ -621,7 +621,7 @@ void pccore_reset(void) {
 		}
 	}
 
-	// FPUí—Ş‚ğİ’è
+	// FPUç¨®é¡ã‚’è¨­å®š
 	i386cpuid.fpu_type = np2cfg.fpu_type;
 	fpu_initialize();
 #endif
@@ -633,7 +633,7 @@ void pccore_reset(void) {
 	nevent_allreset();
 
 #if defined(VAEG_FIX)
-	//Œã‚ë‚ÉˆÚ“®
+	//å¾Œã‚ã«ç§»å‹•
 #else
 	CPU_RESET();
 	CPU_SETEXTSIZE((UINT32)pccore.extmem);
@@ -656,9 +656,9 @@ void pccore_reset(void) {
 	}
 	font_setchargraph(epson);
 
-	// HDDƒZƒbƒg
+	// HDDã‚»ãƒƒãƒˆ
 	diskdrv_hddbind();
-	// SASI/IDE‚Ç‚Á‚¿H
+	// SASI/IDEã©ã£ã¡ï¼Ÿ
 #if defined(SUPPORT_SASI)
 	if (sxsi_issasi()) {
 		pccore.hddif &= ~PCHDD_IDE;
@@ -682,7 +682,7 @@ void pccore_reset(void) {
 	fddfile_reset2dmode();
 	bios0x18_16(0x20, 0xe1);
 
-	iocore_reset(&np2cfg);								// ƒTƒEƒ“ƒh‚Åpic‚ğŒÄ‚Ô‚Ì‚Åc
+	iocore_reset(&np2cfg);								// ã‚µã‚¦ãƒ³ãƒ‰ã§picã‚’å‘¼ã¶ã®ã§â€¦
 	cbuscore_reset(&np2cfg);
 	fmboard_reset(&np2cfg, pccore.sound);
 
@@ -903,7 +903,7 @@ void screenvsync(NEVENTITEM item) {
 	}
 	nevent_set(NEVENT_FLAMES, gdc.vsyncclock, screendisp, NEVENT_RELATIVE);
 
-	// drawscreen‚Å pccore.vsyncclock‚ª•ÏX‚³‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·
+	// drawscreenã§ pccore.vsyncclockãŒå¤‰æ›´ã•ã‚Œã‚‹å¯èƒ½æ€§ãŒã‚ã‚Šã¾ã™
 	if (np2cfg.DISPSYNC) {
 		drawscreen();
 	}
@@ -958,17 +958,17 @@ void pccore_exec(BOOL draw) {
 			np2wab_setRelayState(0); // XXX:
 #endif
 #if defined(SUPPORT_CL_GD5430)
-			np2clvga.gd54xxtype = np2clvga.defgd54xxtype; // Auto Select—p
+			np2clvga.gd54xxtype = np2clvga.defgd54xxtype; // Auto Selectç”¨
 			pc98_cirrus_vga_resetresolution();
 #endif
 #if defined(SUPPORT_IDEIO)
-			ideio_basereset(); // XXX: Win9x‚ÌÄ‹N“®‚Å•K—v
+			ideio_basereset(); // XXX: Win9xã®å†èµ·å‹•ã§å¿…è¦
 #endif
 #if defined(SUPPORT_HOSTDRV)
-			hostdrv_reset(); // XXX: Win9x‚ÌÄ‹N“®‚Å•K—v
+			hostdrv_reset(); // XXX: Win9xã®å†èµ·å‹•ã§å¿…è¦
 #endif
 #if defined(SUPPORT_PCI)
-			pcidev_basereset(); // XXX: Win9x‚ÌÄ‹N“®‚Å•K—v
+			pcidev_basereset(); // XXX: Win9xã®å†èµ·å‹•ã§å¿…è¦
 #endif
 			CPU_SHUT();
 		}

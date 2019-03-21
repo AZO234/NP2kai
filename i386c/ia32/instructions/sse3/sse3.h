@@ -40,7 +40,7 @@ void SSE3_HSUBPS(void);
 void SSE3_MONITOR(void);
 void SSE3_MWAIT(void);
 
-//void SSE3_FISTTP(void); // -> FPU–½—ß ESC7
+//void SSE3_FISTTP(void); // -> FPUå‘½ä»¤ ESC7
 void SSE3_LDDQU(void);
 void SSE3_MOVDDUP(void);
 void SSE3_MOVSHDUP(void);

@@ -1,6 +1,6 @@
 /**
  * @file	externalchipmanager.cpp
- * @brief	ŠO•”ƒ`ƒbƒvŠÇ—ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	å¤–éƒ¨ãƒãƒƒãƒ—ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -11,25 +11,25 @@
 #include "externalopm.h"
 #include "externalopna.h"
 
-/*! —Bˆê‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Å‚· */
+/*! å”¯ä¸€ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã§ã™ */
 CExternalChipManager CExternalChipManager::sm_instance;
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CExternalChipManager::CExternalChipManager()
 {
 }
 
 /**
- * ‰Šú‰»
+ * åˆæœŸåŒ–
  */
 void CExternalChipManager::Initialize()
 {
 }
 
 /**
- * ‰ğ•ú
+ * è§£æ”¾
  */
 void CExternalChipManager::Deinitialize()
 {
@@ -49,10 +49,10 @@ void CExternalChipManager::Deinitialize()
 }
 
 /**
- * ƒ`ƒbƒvŠm•Û
- * @param[in] nChipType ƒ`ƒbƒv ƒ^ƒCƒv
- * @param[in] nClock ƒ`ƒbƒv ƒNƒƒbƒN
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ãƒãƒƒãƒ—ç¢ºä¿
+ * @param[in] nChipType ãƒãƒƒãƒ— ã‚¿ã‚¤ãƒ—
+ * @param[in] nClock ãƒãƒƒãƒ— ã‚¯ãƒ­ãƒƒã‚¯
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 IExternalChip* CExternalChipManager::GetInterface(IExternalChip::ChipType nChipType, UINT nClock)
 {
@@ -93,10 +93,10 @@ IExternalChip* CExternalChipManager::GetInterface(IExternalChip::ChipType nChipT
 }
 
 /**
- * ƒ`ƒbƒvŠm•Û (Inner)
- * @param[in] nChipType ƒ`ƒbƒv ƒ^ƒCƒv
- * @param[in] nClock ƒ`ƒbƒv ƒNƒƒbƒN
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ãƒãƒƒãƒ—ç¢ºä¿ (Inner)
+ * @param[in] nChipType ãƒãƒƒãƒ— ã‚¿ã‚¤ãƒ—
+ * @param[in] nClock ãƒãƒƒãƒ— ã‚¯ãƒ­ãƒƒã‚¯
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 IExternalChip* CExternalChipManager::GetInterfaceInner(IExternalChip::ChipType nChipType, UINT nClock)
 {
@@ -123,7 +123,7 @@ IExternalChip* CExternalChipManager::GetInterfaceInner(IExternalChip::ChipType n
 		pChip = m_c86ctl.GetInterface(nChipType, nClock);
 	}
 
-	/* ƒ‰ƒbƒsƒ“ƒO */
+	/* ãƒ©ãƒƒãƒ”ãƒ³ã‚° */
 	if (pChip)
 	{
 		switch (nChipType)
@@ -161,8 +161,8 @@ IExternalChip* CExternalChipManager::GetInterfaceInner(IExternalChip::ChipType n
 }
 
 /**
- * ƒ`ƒbƒv‰ğ•ú
- * @param[in] pChip ƒ`ƒbƒv
+ * ãƒãƒƒãƒ—è§£æ”¾
+ * @param[in] pChip ãƒãƒƒãƒ—
  */
 void CExternalChipManager::Release(IExternalChip* pChip)
 {
@@ -176,7 +176,7 @@ void CExternalChipManager::Release(IExternalChip* pChip)
 }
 
 /**
- * ‰¹Œ¹ƒŠƒZƒbƒg
+ * éŸ³æºãƒªã‚»ãƒƒãƒˆ
  */
 void CExternalChipManager::Reset()
 {
@@ -187,8 +187,8 @@ void CExternalChipManager::Reset()
 }
 
 /**
- * ƒ~ƒ…[ƒg
- * @param[in] bMute ƒ~ƒ…[ƒg
+ * ãƒŸãƒ¥ãƒ¼ãƒˆ
+ * @param[in] bMute ãƒŸãƒ¥ãƒ¼ãƒˆ
  */
 void CExternalChipManager::Mute(bool bMute)
 {

@@ -1,6 +1,6 @@
 /**
  * @file	vsteditwnd.h
- * @brief	VST edit ƒEƒBƒ“ƒhƒE ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	VST edit ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -11,7 +11,7 @@
 class CVstEffect;
 
 /**
- * @brief VST effect ƒEƒBƒ“ƒhƒE ƒNƒ‰ƒX
+ * @brief VST effect ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ã‚¯ãƒ©ã‚¹
  */
 class CVstEditWnd : public IVstEditWnd
 {
@@ -43,8 +43,8 @@ private:
 };
 
 /**
- * ƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹‚ğ“¾‚é
- * @return ƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹
+ * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ«ã‚’å¾—ã‚‹
+ * @return ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ«
  */
 inline HWND CVstEditWnd::GetHWnd()
 {
@@ -52,8 +52,8 @@ inline HWND CVstEditWnd::GetHWnd()
 }
 
 /**
- * ƒGƒtƒFƒNƒg‚ğ“¾‚é
- * @return ƒGƒtƒFƒNƒg
+ * ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å¾—ã‚‹
+ * @return ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
  */
 inline CVstEffect* CVstEditWnd::GetEffect()
 {

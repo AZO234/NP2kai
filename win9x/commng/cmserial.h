@@ -1,6 +1,6 @@
 /**
  * @file	cmserial.h
- * @brief	ƒVƒŠƒAƒ‹ ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	ã‚·ãƒªã‚¢ãƒ« ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -10,7 +10,7 @@
 extern const UINT32 cmserial_speed[10];
 
 /**
- * @brief commng ƒVƒŠƒAƒ‹ ƒfƒoƒCƒX ƒNƒ‰ƒX
+ * @brief commng ã‚·ãƒªã‚¢ãƒ« ãƒ‡ãƒã‚¤ã‚¹ ã‚¯ãƒ©ã‚¹
  */
 class CComSerial : public CComBase
 {
@@ -26,7 +26,7 @@ protected:
 	virtual INTPTR Message(UINT nMessage, INTPTR nParam);
 
 private:
-	HANDLE m_hSerial;		/*!< ƒVƒŠƒAƒ‹ ƒnƒ“ƒhƒ‹ */
+	HANDLE m_hSerial;		/*!< ã‚·ãƒªã‚¢ãƒ« ãƒãƒ³ãƒ‰ãƒ« */
 
 	bool Initialize(UINT nPort, UINT8 cParam, UINT32 nSpeed);
 };

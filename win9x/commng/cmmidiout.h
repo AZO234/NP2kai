@@ -1,35 +1,35 @@
 /**
  * @file	cmmidiout.h
- * @brief	MIDI OUT Šî’êƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	MIDI OUT åŸºåº•ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
 
 /**
- * @brief MIDI OUT Šî’êƒNƒ‰ƒX
+ * @brief MIDI OUT åŸºåº•ã‚¯ãƒ©ã‚¹
  */
 class CComMidiOut
 {
 public:
 	/**
-	 * ƒfƒXƒgƒ‰ƒNƒ^
+	 * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	virtual ~CComMidiOut()
 	{
 	}
 
 	/**
-	 * ƒVƒ‡[ƒg ƒƒbƒZ[ƒW
-	 * @param[in] nMessage ƒƒbƒZ[ƒW
+	 * ã‚·ãƒ§ãƒ¼ãƒˆ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+	 * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
 	 */
 	virtual void Short(UINT32 nMessage)
 	{
 	}
 
 	/**
-	 * ƒƒ“ƒO ƒƒbƒZ[ƒW
-	 * @param[in] lpMessage ƒƒbƒZ[ƒW ƒ|ƒCƒ“ƒ^
-	 * @param[in] cbMessage ƒƒbƒZ[ƒW ƒTƒCƒY
+	 * ãƒ­ãƒ³ã‚° ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+	 * @param[in] lpMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ãƒã‚¤ãƒ³ã‚¿
+	 * @param[in] cbMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ã‚µã‚¤ã‚º
 	 */
 	virtual void Long(const UINT8* lpMessage, UINT cbMessage)
 	{

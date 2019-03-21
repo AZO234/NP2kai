@@ -8,8 +8,8 @@
 
 #ifdef SUPPORT_KAI_IMAGES
 
-//	BKDSK(DD6)�ABKDSK(DDB)����p
-//static const OEMCHAR str_dd6[] = OEMTEXT("dd6");	//	���g�p�Ȃ̂ŃR�����g(kai9)
+//	BKDSK(DD6)、BKDSK(DDB)判定用
+//static const OEMCHAR str_dd6[] = OEMTEXT("dd6");	//	未使用なのでコメント(kai9)
 static const OEMCHAR str_ddb[] = OEMTEXT("ddb");
 //
 
@@ -25,41 +25,41 @@ static const _XDFINFO supportxdf[] = {
 			{0, 160, 15, 2, DISKTYPE_2HD, 0},	//	BKDSK(HD5)	MS-DOS 1.21M(2HC)
 #endif
 			// 1024
-			{0, 154,  8, 3, DISKTYPE_2HD, 0},	//	XDF��2HD�ABIN�AFLP��
+			{0, 154,  8, 3, DISKTYPE_2HD, 0},	//	XDF他2HD、BIN、FLP等
 												//	BKDSK(HDM)	MS-DOS 1.25M(2HD)
 			// 1.44MB
 			{0, 160, 18, 2, DISKTYPE_2HD, 1},	//	BKDSK(HD4)	MS-DOS 1.44M(2HD)
 
-			//	�ǉ��ł�������BKDSK�`���ɑΉ�
+			//	追加でいくつかのBKDSK形式に対応
 			{0, 154, 26, 1, DISKTYPE_2HD, 0},	//	BKDSK(H01)	2HD:256byte*26sec (0-154)track
 			{0, 154,  9, 3, DISKTYPE_2HD, 0},	//	BKDSK(HD9)	MS-DOS 2HD(9sec)
 			{0, 160,  8, 2, DISKTYPE_2DD, 0},	//	BKDSK(DD6)	MS-DOS  640K(2DD)
 			{0, 160,  9, 2, DISKTYPE_2DD, 0},	//	BKDSK(DD9)	MS-DOS  720K(2DD)
-			//	track 0�Ƃ���ȊO�ŃZ�N�^�T�C�Y���Ⴄ���ߖ��Ή�
+			//	track 0とそれ以外でセクタサイズが違うため未対応
 //			{0, 154, 26, 1, DISKTYPE_2HD, 0},	//	BKDSK(HDB)	BASIC 2HD
 			//
 			{0, 160, 16, 1, DISKTYPE_2DD, 0},	//	BKDSK(DDB)	BASIC 2DD
 			//
-			//	�w�b�_�T�C�Y���w�肵�A���莞�ɍl������悤�ɂ����
-			//	DIP��DCP�^DCU(�S�g���b�N�i�[�C���[�W)�Ƃ���������
-			{256, 154,  8, 3, DISKTYPE_2HD, 0},	//	DIP			2HD-8�Z�N�^(1.25MB)
-												//	FIM			2HD-8�Z�N�^(1.25MB)
-			{256, 154, 26, 1, DISKTYPE_2HD, 0},	//	FIM			2HD-26�Z�N�^
-#if 0	//	fdd_dcp.c�ֈړ�(kai9)
-			{162, 154,  8, 3, DISKTYPE_2HD, 0},	//	DCP�^DCU	01h	2HD- 8�Z�N�^(1.25MB)
-			{162, 160, 15, 2, DISKTYPE_2HD, 0},	//	DCP�^DCU	02h	2HD-15�Z�N�^(1.21MB)
-			{162, 160, 18, 2, DISKTYPE_2HD, 1},	//	DCP�^DCU	03h	2HQ-18�Z�N�^(1.44MB)
-			{162, 160,  8, 2, DISKTYPE_2DD, 0},	//	DCP�^DCU	04h	2DD- 8�Z�N�^( 640KB)
-			{162, 160,  9, 2, DISKTYPE_2DD, 0},	//	DCP�^DCU	05h	2DD- 9�Z�N�^( 720KB)
-			{162, 154,  9, 3, DISKTYPE_2HD, 0},	//	DCP�^DCU	08h	2HD- 9�Z�N�^(1.44MB)
-//			{162, 154, 26, 1, DISKTYPE_2HD, 0},	//	DCP�^DCU	11h	BASIC-2HD
-			{162, 160, 16, 1, DISKTYPE_2DD, 0},	//	DCP�^DCU	19h	BASIC-2DD
-			{162, 154, 26, 1, DISKTYPE_2HD, 0},	//	DCP�^DCU	21h	2HD-26�Z�N�^
+			//	ヘッダサイズを指定し、判定時に考慮するようにすれば
+			//	DIPやDCP／DCU(全トラック格納イメージ)とかもいける
+			{256, 154,  8, 3, DISKTYPE_2HD, 0},	//	DIP			2HD-8セクタ(1.25MB)
+												//	FIM			2HD-8セクタ(1.25MB)
+			{256, 154, 26, 1, DISKTYPE_2HD, 0},	//	FIM			2HD-26セクタ
+#if 0	//	fdd_dcp.cへ移動(kai9)
+			{162, 154,  8, 3, DISKTYPE_2HD, 0},	//	DCP／DCU	01h	2HD- 8セクタ(1.25MB)
+			{162, 160, 15, 2, DISKTYPE_2HD, 0},	//	DCP／DCU	02h	2HD-15セクタ(1.21MB)
+			{162, 160, 18, 2, DISKTYPE_2HD, 1},	//	DCP／DCU	03h	2HQ-18セクタ(1.44MB)
+			{162, 160,  8, 2, DISKTYPE_2DD, 0},	//	DCP／DCU	04h	2DD- 8セクタ( 640KB)
+			{162, 160,  9, 2, DISKTYPE_2DD, 0},	//	DCP／DCU	05h	2DD- 9セクタ( 720KB)
+			{162, 154,  9, 3, DISKTYPE_2HD, 0},	//	DCP／DCU	08h	2HD- 9セクタ(1.44MB)
+//			{162, 154, 26, 1, DISKTYPE_2HD, 0},	//	DCP／DCU	11h	BASIC-2HD
+			{162, 160, 16, 1, DISKTYPE_2DD, 0},	//	DCP／DCU	19h	BASIC-2DD
+			{162, 154, 26, 1, DISKTYPE_2HD, 0},	//	DCP／DCU	21h	2HD-26セクタ
 #endif
 			//
 };
 
-//	FDI�w�b�_
+//	FDIヘッダ
 typedef struct {
 	UINT8	dummy[4];
 	UINT8	fddtype[4];
@@ -79,7 +79,7 @@ const _XDFINFO	*xdf;
 	FILEH		fh;
 	UINT32		fdsize;
 	UINT		size;
-const OEMCHAR	*p;			//	BKDSK(DD6) or BKDSK(DDB)����p
+const OEMCHAR	*p;			//	BKDSK(DD6) or BKDSK(DDB)判定用
 
 	attr = file_attr(fname);
 	if (attr & 0x18) {
@@ -92,18 +92,18 @@ const OEMCHAR	*p;			//	BKDSK(DD6) or BKDSK(DDB)����p
 	fdsize = file_getsize(fh);
 	file_close(fh);
 
-	p = file_getext(fname);	//	BKDSK(DD6) or BKDSK(DDB)����p
+	p = file_getext(fname);	//	BKDSK(DD6) or BKDSK(DDB)判定用
 
 	xdf = supportxdf;
 	while(xdf < (supportxdf + NELEMENTS(supportxdf))) {
 		size = xdf->tracks;
 		size *= xdf->sectors;
 		size <<= (7 + xdf->n);
-		//	�w�b�_�T�C�Y���l������悤��
+		//	ヘッダサイズを考慮するように
 		size += xdf->headersize;
 		//
 		if (size == fdsize) {
-			//	BKDSK(DD6)��BKDSK(DDB)������T�C�Y�̂��߁A�g���q�Ŕ���
+			//	BKDSK(DD6)とBKDSK(DDB)が同一サイズのため、拡張子で判定
 			if (!milstr_cmp(p, str_ddb) && xdf->sectors == 8) {
 				xdf++;
 				continue;
@@ -112,7 +112,7 @@ const OEMCHAR	*p;			//	BKDSK(DD6) or BKDSK(DDB)����p
 			fdd->type = DISKTYPE_BETA;
 			fdd->protect = ((attr & 1) || (ro))?TRUE:FALSE;
 			fdd->inf.xdf = *xdf;
-			//	�����֐��Q��o�^(kai9)
+			//	処理関数群を登録(kai9)
 			fdd_fn->eject		= fdd_eject_xxx;
 //			fdd_fn->diskaccess	= fdd_diskaccess_xdf;
 //			fdd_fn->seek		= fdd_seek_xdf;
@@ -136,7 +136,7 @@ const OEMCHAR	*p;			//	BKDSK(DD6) or BKDSK(DDB)����p
 	return(FAILURE);
 }
 
-// ��������Ή������肵��
+// こっそり対応したりして
 //BRESULT fddxdf_setfdi(FDDFILE fdd, const OEMCHAR *fname, int ro) {
 BRESULT fdd_set_fdi(FDDFILE fdd, FDDFUNC fdd_fn, const OEMCHAR *fname, int ro) {
 
@@ -224,7 +224,7 @@ BRESULT fdd_set_fdi(FDDFILE fdd, FDDFUNC fdd_fn, const OEMCHAR *fname, int ro) {
 	fdd->inf.xdf.n = n;
 	fdd->inf.xdf.disktype = disktype;
 	fdd->inf.xdf.rpm = rpm;
-	//	�����֐��Q��o�^(kai9)
+	//	処理関数群を登録(kai9)
 	fdd_fn->eject		= fdd_eject_xxx;
 	fdd_fn->diskaccess	= fdd_diskaccess_common;
 	fdd_fn->seek		= fdd_seek_common;
@@ -240,7 +240,7 @@ BRESULT fdd_set_fdi(FDDFILE fdd, FDDFUNC fdd_fn, const OEMCHAR *fname, int ro) {
 	return(SUCCESS);
 }
 
-#if 0	//	���ʊ֐��������̂Ŕp�~(fddfile.c��)(kai9)
+#if 0	//	共通関数化したので廃止(fddfile.cへ)(kai9)
 //BRESULT fddxdf_eject(FDDFILE fdd) {
 BRESULT fdd_eject_xdf(FDDFILE fdd) {
 
@@ -393,9 +393,9 @@ BRESULT fdd_write_xdf(FDDFILE fdd) {
 }
 
 /* 170107 modified to work on Windows 9x/2000 form ... */
-/* �����⑫ �擪����̃I�t�Z�b�g�l�͒P���Ƀg���b�N����1�g���b�N������̃Z�N�^�����Z�N�^�T�C�Y
-   �ōs���Ă��邽�߁A�g���b�N���ƂɈقȂ�Z�N�^�\�������t�H�[�}�b�g�ɂ͑Ή��ł��܂��� 
-   ���X�t�@�C���̃f�[�^�\���I�ɃT�|�[�g�ł��܂��� */
+/* 実装補足 先頭からのオフセット値は単純にトラック数ｘ1トラック当たりのセクタ数ｘセクタサイズ
+   で行っているため、トラックごとに異なるセクタ構造を持つフォーマットには対応できません 
+   元々ファイルのデータ構造的にサポートできません */
 BRESULT fdd_formatinit_xdf(FDDFILE fdd) {
 	FILEH	hdl;
 	FDIHDR	fdi;
@@ -484,7 +484,7 @@ BRESULT fdd_formatinit_xdf(FDDFILE fdd) {
 }
 /* 170107 modified to work on Windows 9x/2000 ... to */
 
-#if 0	//	���ʊ֐��������̂Ŕp�~(fddfile.c��)(kai9)
+#if 0	//	共通関数化したので廃止(fddfile.cへ)(kai9)
 //BRESULT fddxdf_readid(FDDFILE fdd) {
 BRESULT fdd_readid_xdf(FDDFILE fdd) {
 
@@ -570,7 +570,7 @@ const _XDFINFO	*xdf;
 	return(FAILURE);
 }
 
-// ��������Ή������肵��
+// こっそり対応したりして
 BRESULT fddxdf_setfdi(FDDFILE fdd, const OEMCHAR *fname, int ro) {
 
 	short	attr;

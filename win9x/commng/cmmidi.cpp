@@ -1,6 +1,6 @@
 /**
  * @file	cmmidi.cpp
- * @brief	MIDI ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	MIDI ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -84,9 +84,9 @@ static	UINT8	midictrlindex[128];
 
 
 /**
- * ƒ‚ƒWƒ…[ƒ‹”Ô†‚ğ“¾‚é
- * @param[in] lpModule ƒ‚ƒWƒ…[ƒ‹–¼
- * @return ƒ‚ƒWƒ…[ƒ‹”Ô†
+ * ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ç•ªå·ã‚’å¾—ã‚‹
+ * @param[in] lpModule ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«å
+ * @return ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ç•ªå·
  */
 UINT CComMidi::module2number(LPCTSTR lpModule)
 {
@@ -103,7 +103,7 @@ UINT CComMidi::module2number(LPCTSTR lpModule)
 }
 
 /**
- * ƒI[ƒ‹ ƒm[ƒg ƒIƒt
+ * ã‚ªãƒ¼ãƒ« ãƒãƒ¼ãƒˆ ã‚ªãƒ•
  */
 void CComMidi::midiallnoteoff()
 {
@@ -122,7 +122,7 @@ void CComMidi::midiallnoteoff()
 }
 
 /**
- * MIDI ƒŠƒZƒbƒg
+ * MIDI ãƒªã‚»ãƒƒãƒˆ
  */
 void CComMidi::midireset()
 {
@@ -172,7 +172,7 @@ void CComMidi::midireset()
 }
 
 /**
- * ƒpƒ‰ƒ[ƒ^İ’è
+ * ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®š
  */
 void CComMidi::midisetparam()
 {
@@ -207,7 +207,7 @@ void CComMidi::midisetparam()
 }
 
 /**
- * ‰Šú‰»
+ * åˆæœŸåŒ–
  */
 void cmmidi_initailize(void)
 {
@@ -220,11 +220,11 @@ void cmmidi_initailize(void)
 }
 
 /**
- * ƒCƒ“ƒXƒ^ƒ“ƒXì¬
- * @param[in] lpMidiOut MIDIOUT ƒfƒoƒCƒX
- * @param[in] lpMidiIn MIDIIN ƒfƒoƒCƒX
- * @param[in] lpModule ƒ‚ƒWƒ…[ƒ‹
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ä½œæˆ
+ * @param[in] lpMidiOut MIDIOUT ãƒ‡ãƒã‚¤ã‚¹
+ * @param[in] lpMidiIn MIDIIN ãƒ‡ãƒã‚¤ã‚¹
+ * @param[in] lpModule ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 CComMidi* CComMidi::CreateInstance(LPCTSTR lpMidiOut, LPCTSTR lpMidiIn, LPCTSTR lpModule)
 {
@@ -238,7 +238,7 @@ CComMidi* CComMidi::CreateInstance(LPCTSTR lpMidiOut, LPCTSTR lpMidiIn, LPCTSTR 
 }
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CComMidi::CComMidi()
 	: CComBase(COMCONNECT_MIDI)
@@ -257,7 +257,7 @@ CComMidi::CComMidi()
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CComMidi::~CComMidi()
 {
@@ -273,12 +273,12 @@ CComMidi::~CComMidi()
 }
 
 /**
- * ‰Šú‰»
- * @param[in] lpMidiOut MIDIOUT ƒfƒoƒCƒX
- * @param[in] lpMidiIn MIDIIN ƒfƒoƒCƒX
- * @param[in] lpModule ƒ‚ƒWƒ…[ƒ‹
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * åˆæœŸåŒ–
+ * @param[in] lpMidiOut MIDIOUT ãƒ‡ãƒã‚¤ã‚¹
+ * @param[in] lpMidiIn MIDIIN ãƒ‡ãƒã‚¤ã‚¹
+ * @param[in] lpModule ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CComMidi::Initialize(LPCTSTR lpMidiOut, LPCTSTR lpMidiIn, LPCTSTR lpModule)
 {
@@ -322,9 +322,9 @@ bool CComMidi::Initialize(LPCTSTR lpMidiOut, LPCTSTR lpMidiIn, LPCTSTR lpModule)
 }
 
 /**
- * “Ç‚İ‚İ
- * @param[out] pData ƒoƒbƒtƒ@
- * @return ƒTƒCƒY
+ * èª­ã¿è¾¼ã¿
+ * @param[out] pData ãƒãƒƒãƒ•ã‚¡
+ * @return ã‚µã‚¤ã‚º
  */
 UINT CComMidi::Read(UINT8* pData)
 {
@@ -336,9 +336,9 @@ UINT CComMidi::Read(UINT8* pData)
 }
 
 /**
- * ‘‚«‚İ
- * @param[out] cData ƒf[ƒ^
- * @return ƒTƒCƒY
+ * æ›¸ãè¾¼ã¿
+ * @param[out] cData ãƒ‡ãƒ¼ã‚¿
+ * @return ã‚µã‚¤ã‚º
  */
 UINT CComMidi::Write(UINT8 cData)
 {
@@ -409,7 +409,7 @@ UINT CComMidi::Write(UINT8 cData)
 					break;
 			}
 		}
-		else						// Key-on‚Ì‚İ‚È‹C‚ª‚µ‚½‚ñ‚¾‚¯‚Ç–Y‚ê‚½c
+		else						// Key-onã®ã¿ãªæ°—ãŒã—ãŸã‚“ã ã‘ã©å¿˜ã‚ŒãŸâ€¦
 		{
 			// running status
 			m_sBuffer[0] = m_cLastData;
@@ -504,7 +504,7 @@ UINT CComMidi::Write(UINT8 cData)
 				m_nMidiCtrl = MIDICTRL_READY;
 				return m_nIndex;
 			}
-			else if (m_nIndex >= sizeof(m_sBuffer))		// ‚¨[‚Î[‚Ó‚ë[
+			else if (m_nIndex >= sizeof(m_sBuffer))		// ãŠãƒ¼ã°ãƒ¼ãµã‚ãƒ¼
 			{
 				m_nMidiCtrl = MIDICTRL_READY;
 			}
@@ -515,7 +515,7 @@ UINT CComMidi::Write(UINT8 cData)
 			{
 				if ((cData == 0x7e) || (cData == 0x7f))
 				{
-					// exclusive‚Æ“¯‚¶‚Å‚¢‚¢”¤c
+					// exclusiveã¨åŒã˜ã§ã„ã„ç­ˆâ€¦
 					m_nMidiCtrl = MIDICTRL_EXCLUSIVE;
 				}
 				else
@@ -538,8 +538,8 @@ UINT CComMidi::Write(UINT8 cData)
 }
 
 /**
- * ƒXƒe[ƒ^ƒX‚ğ“¾‚é
- * @return ƒXƒe[ƒ^ƒX
+ * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’å¾—ã‚‹
+ * @return ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
  */
 UINT8 CComMidi::GetStat()
 {
@@ -547,10 +547,10 @@ UINT8 CComMidi::GetStat()
 }
 
 /**
- * ƒƒbƒZ[ƒW
- * @param[in] nMessage ƒƒbƒZ[ƒW
- * @param[in] nParam ƒpƒ‰ƒƒ^
- * @return ƒŠƒUƒ‹ƒg ƒR[ƒh
+ * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @return ãƒªã‚¶ãƒ«ãƒˆ ã‚³ãƒ¼ãƒ‰
  */
 INTPTR CComMidi::Message(UINT nMessage, INTPTR nParam)
 {

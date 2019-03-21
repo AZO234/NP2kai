@@ -43,8 +43,8 @@ enum tagNEventId
 	NEVENT_86PCM		= 25,
 	NEVENT_SASIIO		= 26,
 	NEVENT_SCSIIO		= 27,
-	NEVENT_CDWAIT		= 28, // XXX: Ÿè‚Ég‚Á‚ÄOK?
-	NEVENT_CT1741		= 29, // np2s‚æ‚è 28‚ğg‚Á‚¿‚á‚Á‚½‚Ì‚Å29‚É np21w ver0.86 rev29
+	NEVENT_CDWAIT		= 28, // XXX: å‹æ‰‹ã«ä½¿ã£ã¦OK?
+	NEVENT_CT1741		= 29, // np2sã‚ˆã‚Š 28ã‚’ä½¿ã£ã¡ã‚ƒã£ãŸã®ã§29ã« np21w ver0.86 rev29
 #if defined(VAEG_EXT)
 	NEVENT_FDCTIMER		= 29,
 	NEVENT_FDDMOTOR		= 30,
@@ -106,33 +106,33 @@ extern "C" {
 
 extern	_NEVENT		g_nevent;
 
-// ‰Šú‰»
+// åˆæœŸåŒ–
 void nevent_allreset(void);
 
-// Å’ZƒCƒxƒ“ƒg‚ÌƒZƒbƒg
+// æœ€çŸ­ã‚¤ãƒ™ãƒ³ãƒˆã®ã‚»ãƒƒãƒˆ
 void nevent_get1stevent(void);
 
-// ŠÔ‚ği‚ß‚é
+// æ™‚é–“ã‚’é€²ã‚ã‚‹
 void nevent_progress(void);
 
-// ƒCƒxƒ“ƒg‚ÌÀs
+// ã‚¤ãƒ™ãƒ³ãƒˆã®å®Ÿè¡Œ
 void nevent_execule(void);
 
-// ƒCƒxƒ“ƒg‚Ì’Ç‰Á
+// ã‚¤ãƒ™ãƒ³ãƒˆã®è¿½åŠ 
 void nevent_set(NEVENTID id, SINT32 eventclock, NEVENTCB proc, NEVENTPOSITION absolute);
 void nevent_setbyms(NEVENTID id, SINT32 ms, NEVENTCB proc, NEVENTPOSITION absolute);
 
-// ƒCƒxƒ“ƒg‚Ìíœ
+// ã‚¤ãƒ™ãƒ³ãƒˆã®å‰Šé™¤
 void nevent_reset(NEVENTID id);
 void nevent_waitreset(NEVENTID id);
 
-// ƒCƒxƒ“ƒg‚Ì“®ìó‘Ôæ“¾
+// ã‚¤ãƒ™ãƒ³ãƒˆã®å‹•ä½œçŠ¶æ…‹å–å¾—
 BOOL nevent_iswork(NEVENTID id);
 
-// ƒCƒxƒ“ƒgÀs‚Ü‚Å‚ÌƒNƒƒbƒN”‚Ìæ“¾
+// ã‚¤ãƒ™ãƒ³ãƒˆå®Ÿè¡Œã¾ã§ã®ã‚¯ãƒ­ãƒƒã‚¯æ•°ã®å–å¾—
 SINT32 nevent_getremain(NEVENTID id);
 
-// NEVENT‚Ì‹­§’Eo
+// NEVENTã®å¼·åˆ¶è„±å‡º
 void nevent_forceexit(void);
 
 #ifdef __cplusplus

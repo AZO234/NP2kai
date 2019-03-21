@@ -6,7 +6,7 @@
 
 #include	"diskimage/cddfile.h"
 
-//	Žw’èƒtƒ@ƒCƒ‹‚ðISOƒCƒ[ƒW‚Æ‚Ý‚È‚µ‚ÄŠJ‚­
+//	æŒ‡å®šãƒ•ã‚¡ã‚¤ãƒ«ã‚’ISOã‚¤ãƒ¡ãƒ¼ã‚¸ã¨ã¿ãªã—ã¦é–‹ã
 BRESULT openiso(SXSIDEV sxsi, const OEMCHAR *path) {
 
 	_CDTRK	trk[99];
@@ -23,7 +23,7 @@ BRESULT openiso(SXSIDEV sxsi, const OEMCHAR *path) {
 		goto openiso_err1;
 	}
 
-	//	ƒtƒ@ƒCƒ‹ƒTƒCƒY‚ª2048byteA2352byteA2448byte‚Ì‚Ç‚ê‚©‚ÅŠ„‚èØ‚ê‚é‚©ƒ`ƒFƒbƒN
+	//	ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºãŒ2048byteã€2352byteã€2448byteã®ã©ã‚Œã‹ã§å‰²ã‚Šåˆ‡ã‚Œã‚‹ã‹ãƒã‚§ãƒƒã‚¯
 	sxsi->read = sec2048_read;
 	sector_size = 2048;
 	totals = issec2048(fh);

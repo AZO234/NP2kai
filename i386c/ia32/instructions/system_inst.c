@@ -275,7 +275,7 @@ MOV_CdRd(void)
 			 * 31 = PG (pageing)
 			 */
 
-			/* ‰ºŠª p.182 Š„‚èž‚Ý 13 - ˆê”Ê•ÛŒì—áŠO */
+			/* ä¸‹å·» p.182 å‰²ã‚Šè¾¼ã¿ 13 - ä¸€èˆ¬ä¿è­·ä¾‹å¤– */
 			if ((src & (CPU_CR0_PE|CPU_CR0_PG)) == (UINT32)CPU_CR0_PG) {
 				EXCEPTION(GP_EXCEPTION, 0);
 			}
@@ -1098,7 +1098,7 @@ RDMSR(void)
 	//	break;
 	default:
 		CPU_EDX = CPU_EAX = 0;
-		//EXCEPTION(GP_EXCEPTION, 0); // XXX: ‚Æ‚è‚ ‚¦‚¸’Ê‚·
+		//EXCEPTION(GP_EXCEPTION, 0); // XXX: ã¨ã‚Šã‚ãˆãšé€šã™
 		break;
 	}
 }
@@ -1124,9 +1124,9 @@ WRMSR(void)
 	case 0x176:
 		i386msr.reg.ia32_sysenter_eip = ((UINT64)CPU_EDX << 32) | ((UINT64)CPU_EAX);
 		break;
-		/* MTRR ‚Ö‚Ì‘‚«ž‚ÝŽž tlb_flush_all(); */
+		/* MTRR ã¸ã®æ›¸ãè¾¼ã¿æ™‚ tlb_flush_all(); */
 	default:
-		//EXCEPTION(GP_EXCEPTION, 0); // XXX: ‚Æ‚è‚ ‚¦‚¸’Ê‚·
+		//EXCEPTION(GP_EXCEPTION, 0); // XXX: ã¨ã‚Šã‚ãˆãšé€šã™
 		break;
 	}
 }
@@ -1203,19 +1203,19 @@ MOV_RdTd(void)
 	ia32_panic("MOV_RdTd: not implemented yet!");
 }
 
-// ’†“r”¼’[•ƒm[ƒ`ƒFƒbƒN’ˆÓ
+// ä¸­é€”åŠç«¯ï¼†ãƒŽãƒ¼ãƒã‚§ãƒƒã‚¯æ³¨æ„
 void
 SYSENTER(void)
 {
-	// SEP‚È‚µ‚È‚çUD(–³ŒøƒIƒyƒR[ƒh—áŠO)‚ð”­¶‚³‚¹‚é
+	// SEPãªã—ãªã‚‰UD(ç„¡åŠ¹ã‚ªãƒšã‚³ãƒ¼ãƒ‰ä¾‹å¤–)ã‚’ç™ºç”Ÿã•ã›ã‚‹
 	if(!(i386cpuid.cpu_feature & CPU_FEATURE_SEP)){
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	// ƒvƒƒeƒNƒgƒ‚[ƒhƒ`ƒFƒbƒN
+	// ãƒ—ãƒ­ãƒ†ã‚¯ãƒˆãƒ¢ãƒ¼ãƒ‰ãƒã‚§ãƒƒã‚¯
 	if (!CPU_STAT_PM) {
 		EXCEPTION(GP_EXCEPTION, 0);
 	}
-	// MSRƒŒƒWƒXƒ^ƒ`ƒFƒbƒN
+	// MSRãƒ¬ã‚¸ã‚¹ã‚¿ãƒã‚§ãƒƒã‚¯
 	if (i386msr.reg.ia32_sysenter_cs == 0) {
 		EXCEPTION(GP_EXCEPTION, 0);
 	}
@@ -1232,23 +1232,23 @@ SYSENTER(void)
 	CPU_STAT_USER_MODE = (CPU_STAT_CPL == 3) ? CPU_MODE_USER : CPU_MODE_SUPERVISER;
 }
 
-// ’†“r”¼’[•ƒm[ƒ`ƒFƒbƒN’ˆÓ
+// ä¸­é€”åŠç«¯ï¼†ãƒŽãƒ¼ãƒã‚§ãƒƒã‚¯æ³¨æ„
 void
 SYSEXIT(void)
 {
-	// SEP‚È‚µ‚È‚çUD(–³ŒøƒIƒyƒR[ƒh—áŠO)‚ð”­¶‚³‚¹‚é
+	// SEPãªã—ãªã‚‰UD(ç„¡åŠ¹ã‚ªãƒšã‚³ãƒ¼ãƒ‰ä¾‹å¤–)ã‚’ç™ºç”Ÿã•ã›ã‚‹
 	if(!(i386cpuid.cpu_feature & CPU_FEATURE_SEP)){
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	// ƒvƒƒeƒNƒgƒ‚[ƒhƒ`ƒFƒbƒN
+	// ãƒ—ãƒ­ãƒ†ã‚¯ãƒˆãƒ¢ãƒ¼ãƒ‰ãƒã‚§ãƒƒã‚¯
 	if (!CPU_STAT_PM) {
 		EXCEPTION(GP_EXCEPTION, 0);
 	}
-	// MSRƒŒƒWƒXƒ^ƒ`ƒFƒbƒN
+	// MSRãƒ¬ã‚¸ã‚¹ã‚¿ãƒã‚§ãƒƒã‚¯
 	if (i386msr.reg.ia32_sysenter_cs == 0) {
 		EXCEPTION(GP_EXCEPTION, 0);
 	}
-	// “ÁŒ ƒŒƒxƒ‹ƒ`ƒFƒbƒN
+	// ç‰¹æ¨©ãƒ¬ãƒ™ãƒ«ãƒã‚§ãƒƒã‚¯
 	if (CPU_STAT_CPL != 0) {
 		VERBOSE(("SYSENTER: CPL(%d) != 0", CPU_STAT_CPL));
 		EXCEPTION(GP_EXCEPTION, 0);

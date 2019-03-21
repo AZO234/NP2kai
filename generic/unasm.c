@@ -479,7 +479,7 @@ opeana_ea:
 			break;
 
 		case OP1_FEA:
-			if (ope >= 0xc0) {				// —L‚è“¾‚È‚¢‚¯‚Ç
+			if (ope >= 0xc0) {				// æœ‰ã‚Šå¾—ãªã„ã‘ã©
 				p = set_reg(p, regtype + (ope & 7));
 				break;
 			}

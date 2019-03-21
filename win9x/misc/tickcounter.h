@@ -1,6 +1,6 @@
 /**
  * @file	tickcounter.h
- * @brief	TICK �J�E���^�̐錾����уC���^�[�t�F�C�X�̒�`�����܂�
+ * @brief	TICK カウンタの宣言およびインターフェイスの定義をします
  */
 
 #pragma once

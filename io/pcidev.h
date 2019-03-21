@@ -1,5 +1,5 @@
 
-// PC-9821 PCIƒoƒX
+// PC-9821 PCIãƒã‚¹
 
 #if defined(SUPPORT_PC9821)
 
@@ -23,11 +23,11 @@
 #define PCI_SETCFGREG_W_MASK(reg, ofs, value, mask)	(PCI_GETCFGREG_W(reg, ofs) = (PCI_GETCFGREG_W(reg, ofs) & mask) | (value & ~mask))
 #define PCI_SETCFGREG_D_MASK(reg, ofs, value, mask)	(PCI_GETCFGREG_D(reg, ofs) = (PCI_GETCFGREG_D(reg, ofs) & mask) | (value & ~mask))
 
-// ƒRƒ“ƒtƒBƒMƒ…ƒŒ[ƒVƒ‡ƒ“ƒŒƒWƒXƒ^•ÏX‚ÉŒÄ‚Î‚ê‚éB
+// ã‚³ãƒ³ãƒ•ã‚£ã‚®ãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ãƒ¬ã‚¸ã‚¹ã‚¿å¤‰æ›´æ™‚ã«å‘¼ã°ã‚Œã‚‹ã€‚
 typedef void (*PCIREGWCB)(UINT32 devNumber, UINT8 funcNumber, UINT8 cfgregOffset, UINT8 sizeinbytes, UINT32 value);
 
 #pragma pack(1)
-// PCI IRQ ƒ‹[ƒeƒBƒ“ƒOƒe[ƒuƒ‹ ƒGƒ“ƒgƒŠ
+// PCI IRQ ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ãƒ†ãƒ¼ãƒ–ãƒ« ã‚¨ãƒ³ãƒˆãƒª
 typedef struct {
 	UINT8 busnumber;
 	UINT8 devicenumber;
@@ -44,7 +44,7 @@ typedef struct {
 } _PCIPNP_IRQTBL_ENTRY, *PCIPNP_IRQTBL_ENTRY;
 #pragma pack()
 
-// PCI IRQ ƒ‹[ƒeƒBƒ“ƒOƒe[ƒuƒ‹
+// PCI IRQ ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ãƒ†ãƒ¼ãƒ–ãƒ«
 typedef struct {
 	UINT16 datacount;
 	union{
@@ -79,17 +79,17 @@ typedef struct {
 	UINT8 max_lat;
 } _PCICSH, *PCICSH;
 
-// PCIƒfƒoƒCƒX
+// PCIãƒ‡ãƒã‚¤ã‚¹
 typedef struct {
 	UINT8		enable;
 	PCIREGWCB	regwfn;
-	UINT8		slot; // PCIƒXƒƒbƒg”Ô†iƒIƒ“ƒ{[ƒh‚Í0j
-	UINT8		skipirqtbl; // 0‚Å‚È‚¢ê‡‚Íƒ‹[ƒeƒBƒ“ƒOƒe[ƒuƒ‹‚É“o˜^‚µ‚È‚¢
+	UINT8		slot; // PCIã‚¹ãƒ­ãƒƒãƒˆç•ªå·ï¼ˆã‚ªãƒ³ãƒœãƒ¼ãƒ‰ã¯0ï¼‰
+	UINT8		skipirqtbl; // 0ã§ãªã„å ´åˆã¯ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ãƒ†ãƒ¼ãƒ–ãƒ«ã«ç™»éŒ²ã—ãªã„
 	union{
 		UINT8	cfgreg8[0x100];
 		_PCICSH header; // Type 00h Configuration Space Header
 	};
-	// ƒrƒbƒg‚ğ—§‚Ä‚½‚Æ‚±‚ë‚ÍƒŠ[ƒhƒIƒ“ƒŠ
+	// ãƒ“ãƒƒãƒˆã‚’ç«‹ã¦ãŸã¨ã“ã‚ã¯ãƒªãƒ¼ãƒ‰ã‚ªãƒ³ãƒª
 	union{
 		UINT8	cfgreg8rom[0x100];
 		_PCICSH headerrom; // Type 00h Configuration Space Header
@@ -107,7 +107,7 @@ typedef struct {
 	
 	UINT32	reg32_caddr; // CONFIGURATION ADDRESS REGISTER
 	
-	_PCIDEVICE	devices[PCI_DEVICES_MAX]; // PCIƒfƒoƒCƒX
+	_PCIDEVICE	devices[PCI_DEVICES_MAX]; // PCIãƒ‡ãƒã‚¤ã‚¹
 
 	UINT8	membankd0;
 	UINT8	membankd8;

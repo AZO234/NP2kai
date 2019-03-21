@@ -1,6 +1,6 @@
 /**
  * @file	externalopna.h
- * @brief	ŠO•” OPNA ‰‰‘tƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	å¤–éƒ¨ OPNA æ¼”å¥ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -8,7 +8,7 @@
 #include "externalpsg.h"
 
 /**
- * @brief ŠO•” OPNA ‰‰‘tƒNƒ‰ƒX
+ * @brief å¤–éƒ¨ OPNA æ¼”å¥ã‚¯ãƒ©ã‚¹
  */
 class CExternalOpna : public CExternalPsg
 {
@@ -26,18 +26,18 @@ protected:
 	bool m_bHasExtend;					/*!< Extend */
 	bool m_bHasRhythm;					/*!< Rhythm */
 	bool m_bHasADPCM;					/*!< ADPCM */
-	UINT8 m_cMode;						/*!< ƒ‚[ƒh */
-	UINT8 m_cAlgorithm[8];				/*!< ƒAƒ‹ƒSƒŠƒYƒ€ ƒe[ƒuƒ‹ */
-	UINT8 m_cTtl[8 * 4];				/*!< TTL ƒe[ƒuƒ‹ */
+	UINT8 m_cMode;						/*!< ãƒ¢ãƒ¼ãƒ‰ */
+	UINT8 m_cAlgorithm[8];				/*!< ã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ  ãƒ†ãƒ¼ãƒ–ãƒ« */
+	UINT8 m_cTtl[8 * 4];				/*!< TTL ãƒ†ãƒ¼ãƒ–ãƒ« */
 
 	virtual void Mute(bool bMute) const;
 	void SetVolume(UINT nChannel, int nVolume) const;
 };
 
 /**
- * PSG ‚ğ‚Á‚Ä‚¢‚é?
- * @retval true —LŒø
- * @retval false –³Œø
+ * PSG ã‚’æŒã£ã¦ã„ã‚‹?
+ * @retval true æœ‰åŠ¹
+ * @retval false ç„¡åŠ¹
  */
 inline bool CExternalOpna::HasPsg() const
 {
@@ -45,9 +45,9 @@ inline bool CExternalOpna::HasPsg() const
 }
 
 /**
- * Rhythm ‚ğ‚Á‚Ä‚¢‚é?
- * @retval true —LŒø
- * @retval false –³Œø
+ * Rhythm ã‚’æŒã£ã¦ã„ã‚‹?
+ * @retval true æœ‰åŠ¹
+ * @retval false ç„¡åŠ¹
  */
 inline bool CExternalOpna::HasRhythm() const
 {
@@ -55,9 +55,9 @@ inline bool CExternalOpna::HasRhythm() const
 }
 
 /**
- * ADPCM ‚Ìƒoƒbƒtƒ@‚ğ‚Á‚Ä‚¢‚é?
- * @retval true —LŒø
- * @retval false –³Œø
+ * ADPCM ã®ãƒãƒƒãƒ•ã‚¡ã‚’æŒã£ã¦ã„ã‚‹?
+ * @retval true æœ‰åŠ¹
+ * @retval false ç„¡åŠ¹
  */
 inline bool CExternalOpna::HasADPCM() const
 {

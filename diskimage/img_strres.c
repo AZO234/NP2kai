@@ -8,11 +8,11 @@ const OEMCHAR str_dcu[] = OEMTEXT("dcu");
 const OEMCHAR str_nfd[] = OEMTEXT("nfd");
 const OEMCHAR str_vfdd[] = OEMTEXT("fdd");
 
-const OEMCHAR str_cue[] = OEMTEXT("cue");	//	CUEƒV[ƒg
-const OEMCHAR str_ccd[] = OEMTEXT("ccd");	//	CloneCD‚É‘Î‰‚µ‚Ä‚İ‚é
-const OEMCHAR str_cdm[] = OEMTEXT("cdm");	//	CD Manipulator‚É‘Î‰‚µ‚Ä‚İ‚é
-const OEMCHAR str_mds[] = OEMTEXT("mds");	//	Media Descriptor(Alcohol 52%“™)‚É‘Î‰‚µ‚Ä‚İ‚é
-const OEMCHAR str_nrg[] = OEMTEXT("nrg");	//	Nero‚É‘Î‰‚µ‚Ä‚İ‚é
+const OEMCHAR str_cue[] = OEMTEXT("cue");	//	CUEã‚·ãƒ¼ãƒˆ
+const OEMCHAR str_ccd[] = OEMTEXT("ccd");	//	CloneCDã«å¯¾å¿œã—ã¦ã¿ã‚‹
+const OEMCHAR str_cdm[] = OEMTEXT("cdm");	//	CD Manipulatorã«å¯¾å¿œã—ã¦ã¿ã‚‹
+const OEMCHAR str_mds[] = OEMTEXT("mds");	//	Media Descriptor(Alcohol 52%ç­‰)ã«å¯¾å¿œã—ã¦ã¿ã‚‹
+const OEMCHAR str_nrg[] = OEMTEXT("nrg");	//	Neroã«å¯¾å¿œã—ã¦ã¿ã‚‹
 const OEMCHAR str_iso[] = OEMTEXT("iso");
 
 #endif

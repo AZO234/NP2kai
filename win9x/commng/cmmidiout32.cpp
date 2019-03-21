@@ -1,6 +1,6 @@
 /**
  * @file	cmmidiout32.cpp
- * @brief	MIDI OUT win32 ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	MIDI OUT win32 ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -12,9 +12,9 @@
 #endif	// !defined(__GNUC__)
 
 /**
- * ƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬
- * @param[in] lpMidiOut ƒfƒoƒCƒX–¼
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆ
+ * @param[in] lpMidiOut ãƒ‡ãƒã‚¤ã‚¹å
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 CComMidiOut32* CComMidiOut32::CreateInstance(LPCTSTR lpMidiOut)
 {
@@ -33,8 +33,8 @@ CComMidiOut32* CComMidiOut32::CreateInstance(LPCTSTR lpMidiOut)
 }
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
- * @param[in] hMidiOut ƒnƒ“ƒhƒ‹
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * @param[in] hMidiOut ãƒãƒ³ãƒ‰ãƒ«
  */
 CComMidiOut32::CComMidiOut32(HMIDIOUT hMidiOut)
 	: m_hMidiOut(hMidiOut)
@@ -45,7 +45,7 @@ CComMidiOut32::CComMidiOut32(HMIDIOUT hMidiOut)
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CComMidiOut32::~CComMidiOut32()
 {
@@ -55,7 +55,7 @@ CComMidiOut32::~CComMidiOut32()
 }
 
 /**
- * ƒGƒNƒXƒNƒ‹[ƒVƒu‘—MŠ®—¹‚ğ‘Ò‚Â
+ * ã‚¨ã‚¯ã‚¹ã‚¯ãƒ«ãƒ¼ã‚·ãƒ–é€ä¿¡å®Œäº†ã‚’å¾…ã¤
  */
 void CComMidiOut32::WaitSentExclusive()
 {
@@ -69,8 +69,8 @@ void CComMidiOut32::WaitSentExclusive()
 }
 
 /**
- * ƒVƒ‡[ƒg ƒƒbƒZ[ƒW
- * @param[in] nMessage ƒƒbƒZ[ƒW
+ * ã‚·ãƒ§ãƒ¼ãƒˆ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
  */
 void CComMidiOut32::Short(UINT32 nMessage)
 {
@@ -79,9 +79,9 @@ void CComMidiOut32::Short(UINT32 nMessage)
 }
 
 /**
- * ƒƒ“ƒO ƒƒbƒZ[ƒW
- * @param[in] lpMessage ƒƒbƒZ[ƒW ƒ|ƒCƒ“ƒ^
- * @param[in] cbMessage ƒƒbƒZ[ƒW ƒTƒCƒY
+ * ãƒ­ãƒ³ã‚° ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] lpMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ãƒã‚¤ãƒ³ã‚¿
+ * @param[in] cbMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ã‚µã‚¤ã‚º
  */
 void CComMidiOut32::Long(const UINT8* lpMessage, UINT cbMessage)
 {
@@ -104,11 +104,11 @@ void CComMidiOut32::Long(const UINT8* lpMessage, UINT cbMessage)
 }
 
 /**
- * ID ‚ğ“¾‚é
- * @param[in] lpMidiOut ƒfƒoƒCƒX–¼
+ * ID ã‚’å¾—ã‚‹
+ * @param[in] lpMidiOut ãƒ‡ãƒã‚¤ã‚¹å
  * @param[out] pId ID
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CComMidiOut32::GetId(LPCTSTR lpMidiOut, UINT* pId)
 {

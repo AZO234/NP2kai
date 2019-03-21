@@ -1,14 +1,14 @@
 /**
  * @file	externalpsg.cpp
- * @brief	ŠO•” PSG ‰‰‘tƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	å¤–éƒ¨ PSG æ¼”å¥ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
 #include "externalpsg.h"
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
- * @param[in] pChip ƒ`ƒbƒv
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * @param[in] pChip ãƒãƒƒãƒ—
  */
 CExternalPsg::CExternalPsg(IExternalChip* pChip)
 	: m_pChip(pChip)
@@ -17,7 +17,7 @@ CExternalPsg::CExternalPsg(IExternalChip* pChip)
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CExternalPsg::~CExternalPsg()
 {
@@ -25,8 +25,8 @@ CExternalPsg::~CExternalPsg()
 }
 
 /**
- * ƒ`ƒbƒv ƒ^ƒCƒv‚ğ“¾‚é
- * @return ƒ`ƒbƒv ƒ^ƒCƒv
+ * ãƒãƒƒãƒ— ã‚¿ã‚¤ãƒ—ã‚’å¾—ã‚‹
+ * @return ãƒãƒƒãƒ— ã‚¿ã‚¤ãƒ—
  */
 IExternalChip::ChipType CExternalPsg::GetChipType()
 {
@@ -34,7 +34,7 @@ IExternalChip::ChipType CExternalPsg::GetChipType()
 }
 
 /**
- * ‰¹Œ¹ƒŠƒZƒbƒg
+ * éŸ³æºãƒªã‚»ãƒƒãƒˆ
  */
 void CExternalPsg::Reset()
 {
@@ -43,9 +43,9 @@ void CExternalPsg::Reset()
 }
 
 /**
- * ƒŒƒWƒXƒ^‘‚«‚İ
- * @param[in] nAddr ƒAƒhƒŒƒX
- * @param[in] cData ƒf[ƒ^
+ * ãƒ¬ã‚¸ã‚¹ã‚¿æ›¸ãè¾¼ã¿
+ * @param[in] nAddr ã‚¢ãƒ‰ãƒ¬ã‚¹
+ * @param[in] cData ãƒ‡ãƒ¼ã‚¿
  */
 void CExternalPsg::WriteRegister(UINT nAddr, UINT8 cData)
 {
@@ -66,10 +66,10 @@ void CExternalPsg::WriteRegister(UINT nAddr, UINT8 cData)
 }
 
 /**
- * ƒƒbƒZ[ƒW
- * @param[in] nMessage ƒƒbƒZ[ƒW
- * @param[in] nParameter ƒpƒ‰ƒ[ƒ^
- * @return Œ‹‰Ê
+ * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nParameter ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+ * @return çµæœ
  */
 INTPTR CExternalPsg::Message(UINT nMessage, INTPTR nParameter)
 {
@@ -83,8 +83,8 @@ INTPTR CExternalPsg::Message(UINT nMessage, INTPTR nParameter)
 }
 
 /**
- * ƒ~ƒ…[ƒg
- * @param[in] bMute ƒ~ƒ…[ƒg
+ * ãƒŸãƒ¥ãƒ¼ãƒˆ
+ * @param[in] bMute ãƒŸãƒ¥ãƒ¼ãƒˆ
  */
 void CExternalPsg::Mute(bool bMute) const
 {
@@ -92,9 +92,9 @@ void CExternalPsg::Mute(bool bMute) const
 }
 
 /**
- * ƒŒƒWƒXƒ^‘‚«‚İ(“à•”)
- * @param[in] nAddr ƒAƒhƒŒƒX
- * @param[in] cData ƒf[ƒ^
+ * ãƒ¬ã‚¸ã‚¹ã‚¿æ›¸ãè¾¼ã¿(å†…éƒ¨)
+ * @param[in] nAddr ã‚¢ãƒ‰ãƒ¬ã‚¹
+ * @param[in] cData ãƒ‡ãƒ¼ã‚¿
  */
 void CExternalPsg::WriteRegisterInner(UINT nAddr, UINT8 cData) const
 {

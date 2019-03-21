@@ -1,13 +1,13 @@
 /**
  * @file	c_slidervalue.cpp
- * @brief	’l•t‚«ƒXƒ‰ƒCƒ_[ ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	å€¤ä»˜ãã‚¹ãƒ©ã‚¤ãƒ€ãƒ¼ ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
 #include "c_slidervalue.h"
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CSliderValue::CSliderValue()
 	: m_nStaticId(0)
@@ -15,10 +15,10 @@ CSliderValue::CSliderValue()
 }
 
 /**
- * ”ÍˆÍ‚Ìİ’è
- * @param[in] nMin Å¬’l
- * @param[in] nMax Å‘å’l
- * @param[in] bRedraw Ä•`‰æƒtƒ‰ƒO
+ * ç¯„å›²ã®è¨­å®š
+ * @param[in] nMin æœ€å°å€¤
+ * @param[in] nMax æœ€å¤§å€¤
+ * @param[in] bRedraw å†æç”»ãƒ•ãƒ©ã‚°
  */
 void CSliderValue::SetRange(int nMin, int nMax, BOOL bRedraw)
 {
@@ -27,8 +27,8 @@ void CSliderValue::SetRange(int nMin, int nMax, BOOL bRedraw)
 }
 
 /**
- * ’l‚Ìİ’è
- * @param[in] nPos ’l
+ * å€¤ã®è¨­å®š
+ * @param[in] nPos å€¤
  */
 void CSliderValue::SetPos(int nPos)
 {
@@ -37,7 +37,7 @@ void CSliderValue::SetPos(int nPos)
 }
 
 /**
- * ’l‚ÌXV
+ * å€¤ã®æ›´æ–°
  */
 void CSliderValue::UpdateValue()
 {

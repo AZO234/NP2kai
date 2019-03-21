@@ -108,7 +108,7 @@ static REG8 IOINPCALL sb16_i2500(UINT port) {
 			return ct1741_get_dma_irq();
 		case 0x81:			// Read dma num
 			return ct1741_get_dma_ch();
-		case 0x82:			// Irq pending(98�ɂ͕s�v)
+		case 0x82:			// Irq pending(98には不要)
 		default:
 			break;
 	}

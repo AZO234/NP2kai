@@ -51,7 +51,7 @@ void scrnmng_setwindowsize(HWND hWnd, int width, int height)
 	const int scx = GetSystemMetrics(SM_CXSCREEN);
 	const int scy = GetSystemMetrics(SM_CYSCREEN);
 
-	// ƒ}ƒ‹ƒ`ƒ‚ƒjƒ^b’è‘Î‰ ver0.86 rev30
+	// ãƒãƒ«ãƒãƒ¢ãƒ‹ã‚¿æš«å®šå¯¾å¿œ ver0.86 rev30
 	workrc.right = GetSystemMetrics(SM_CXVIRTUALSCREEN);
 	workrc.bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
@@ -408,7 +408,7 @@ void scrnmng_exitsizing(void)
 	}
 }
 
-// ƒtƒ‹ƒXƒNƒŠ[ƒ“‰ğ‘œ“x’²®
+// ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³è§£åƒåº¦èª¿æ•´
 void scrnmng_updatefsres(void) {
 #ifdef SUPPORT_SCRN_DIRECT3D
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
@@ -420,7 +420,7 @@ void scrnmng_updatefsres(void) {
 	}
 }
 
-// ƒEƒBƒ“ƒhƒEƒAƒNƒZƒ‰ƒŒ[ƒ^‰æ–Ê“]‘—
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ç”»é¢è»¢é€
 void scrnmng_blthdc(HDC hdc) {
 #ifdef SUPPORT_SCRN_DIRECT3D
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){

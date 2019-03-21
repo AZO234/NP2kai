@@ -1,5 +1,5 @@
 
-// PC-9821 PCI-CBusƒuƒŠƒbƒW
+// PC-9821 PCI-CBusãƒ–ãƒªãƒƒã‚¸
 
 #if defined(SUPPORT_PC9821)
 #if defined(SUPPORT_PCI)

@@ -407,7 +407,7 @@ else ifeq ($(platform), libnx)
 	DISABLE_GCC_SECURITY_FLAGS = 1
 
 # Classic Platforms ####################
-# Platform affix = classic_<ISA>_<µARCH>
+# Platform affix = classic_<ISA>_<ﾂｵARCH>
 # Help at https://modmyclassic.com/comp
 
 # (armv7 a7, hard point, neon based) ### 

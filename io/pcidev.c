@@ -1,7 +1,7 @@
 
-// PC-9821 PCIƒoƒX
+// PC-9821 PCIãƒã‚¹
 
-// Œ»ó‚ÍConfiguration Mechanism #1‘Î‰‚ÅƒoƒX”Ô†0‚Ì‚İBbios1a.c‚ÉƒGƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“PCI BIOS‚ª‚ ‚è‚Ü‚·B
+// ç¾çŠ¶ã¯Configuration Mechanism #1å¯¾å¿œã§ãƒã‚¹ç•ªå·0ã®ã¿ã€‚bios1a.cã«ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³PCI BIOSãŒã‚ã‚Šã¾ã™ã€‚
 
 #include	"compiler.h"
 
@@ -40,7 +40,7 @@ int pcidev_pcmc_deviceid = 0;
 //	3,   2,   1,   0, // slot #3
 //};
 
-// ‚±‚ê‚Í‚È‚ñ‚¾‚ë‚¤H
+// ã“ã‚Œã¯ãªã‚“ã ã‚ã†ï¼Ÿ
 static void setRAM_D000(UINT8 dat){
 	//UINT8 dat = *((UINT8*)(pcidev.devices[0].cfgreg8 + 0x64));
 	UINT32	work;
@@ -272,7 +272,7 @@ UINT32 IOOUTCALL pcidev_r32(UINT port) {
 
 static void IOOUTCALL pci_o063c(UINT port, REG8 dat) {
 
-	// ‚Æ‚è‚ ‚¦‚¸ƒoƒ“ƒNØ‚è‘Ö‚¦‚ç‚µ‚«‚ªo—ˆ‚é‚æ‚¤‚É¥¥¥iè”²‚«‚È‚Ì‚Å•p”É‚ÉØ‚è‘Ö‚¦‚ç‚ê‚é‚Æ¢‚éj
+	// ã¨ã‚Šã‚ãˆãšãƒãƒ³ã‚¯åˆ‡ã‚Šæ›¿ãˆã‚‰ã—ããŒå‡ºæ¥ã‚‹ã‚ˆã†ã«ï½¥ï½¥ï½¥ï¼ˆæ‰‹æŠœããªã®ã§é »ç¹ã«åˆ‡ã‚Šæ›¿ãˆã‚‰ã‚Œã‚‹ã¨å›°ã‚‹ï¼‰
 	switch(dat & 0x3) {
 		case 0x01:
 			if((pcidev.membankd8 & 0x3) != 0x01){
@@ -299,7 +299,7 @@ static REG8 IOINPCALL pci_i063c(UINT port) {
 	return pcidev.membankd8;
 }
 
-// “ä‚ÌI/Oƒ|[ƒg
+// è¬ã®I/Oãƒãƒ¼ãƒˆ
 static void IOOUTCALL pci_o18f0(UINT port, REG8 dat) {
 
 	pcidev.unkreg_bank1 = dat;
@@ -320,7 +320,7 @@ static REG8 IOINPCALL pci_i18f2(UINT port) {
 	return pcidev.unkreg[(pcidev.unkreg_bank2++) & 3][pcidev.unkreg_bank1];
 }
 
-// CƒoƒX PnPŠÖ˜A
+// Cãƒã‚¹ PnPé–¢é€£
 static UINT8 pnp_addr = 0;
 static UINT8 pnp_data[0x100] = {0};
 static REG8 IOINPCALL pnp_iReg(UINT port) {
@@ -359,7 +359,7 @@ void pcidev_basereset() {
 	FILEH	fh;
 	OEMCHAR tmpbiosname[16];
 	
-	// À‹@PCI BIOS‚ª‚ ‚ê‚Î”z’u
+	// å®Ÿæ©ŸPCI BIOSãŒã‚ã‚Œã°é…ç½®
 	_tcscpy(pcidev.biosname, OEMTEXT(""));
 	_tcscpy(tmpbiosname, OEMTEXT("pci.rom"));
 	getbiospath(path, tmpbiosname, NELEMENTS(path));
@@ -382,7 +382,7 @@ void pcidev_basereset() {
 		TRACEOUT(("use simulate pci.rom"));
 	}
 	
-	// ƒŒƒWƒXƒ^‰Šú‰»
+	// ãƒ¬ã‚¸ã‚¹ã‚¿åˆæœŸåŒ–
 	pcidev.reg_cse = 0;
 	pcidev.reg_trc = 0;
 	pcidev.reg_fwd = 0;
@@ -399,16 +399,16 @@ void pcidev_reset(const NP2CFG *pConfig) {
 	pcidev.enable = np2cfg.usepci;
 	pcidev.usebios32 = np2cfg.pci_bios32;
 	
-	pcidev.membankd8 = 0xFE; // IDE bank ‚É‚µ‚Ä‚¨‚­
+	pcidev.membankd8 = 0xFE; // IDE bank ã«ã—ã¦ãŠã
 	
 	pcidev_basereset();
 	
 	memset(pcidev.devices, 0xff, sizeof(_PCIDEVICE)*PCI_DEVICES_MAX);
 
 	for(i=0;i<PCI_DEVICES_MAX;i++){
-		pcidev.devices[i].enable = 0; // ƒfƒoƒCƒX—LŒøƒtƒ‰ƒO
-		pcidev.devices[i].regwfn = NULL; // Configuration register‘‚«‚İ‚ÉŒÄ‚Î‚ê‚é
-		pcidev.devices[i].slot = 0; // PCIƒXƒƒbƒg”Ô†i0‚ÍƒIƒ“ƒ{[ƒhj
+		pcidev.devices[i].enable = 0; // ãƒ‡ãƒã‚¤ã‚¹æœ‰åŠ¹ãƒ•ãƒ©ã‚°
+		pcidev.devices[i].regwfn = NULL; // Configuration registeræ›¸ãè¾¼ã¿æ™‚ã«å‘¼ã°ã‚Œã‚‹
+		pcidev.devices[i].slot = 0; // PCIã‚¹ãƒ­ãƒƒãƒˆç•ªå·ï¼ˆ0ã¯ã‚ªãƒ³ãƒœãƒ¼ãƒ‰ï¼‰
 	}
 
 	if(pcidev.enable){
@@ -432,9 +432,9 @@ void pcidev_reset(const NP2CFG *pConfig) {
 		pcidev.devices[devid].header.command = 0x0006;//0x0006;//0x0106;//0x0006;
 		pcidev.devices[devid].header.status = 0x0200;//0x0200;//0x2280;//0x0400;
 		pcidev.devices[devid].header.revisionID = 0x02;//0x03;
-		pcidev.devices[devid].header.classcode[0] = 0x00; // ƒŒƒWƒXƒ^ƒŒƒxƒ‹ƒvƒƒOƒ‰ƒ~ƒ“ƒOƒCƒ“ƒ^ƒtƒF[ƒX
-		pcidev.devices[devid].header.classcode[1] = 0x00; // ƒTƒuƒNƒ‰ƒXƒR[ƒh
-		pcidev.devices[devid].header.classcode[2] = 0x06; // ƒx[ƒXƒNƒ‰ƒXƒR[ƒh
+		pcidev.devices[devid].header.classcode[0] = 0x00; // ãƒ¬ã‚¸ã‚¹ã‚¿ãƒ¬ãƒ™ãƒ«ãƒ—ãƒ­ã‚°ãƒ©ãƒŸãƒ³ã‚°ã‚¤ãƒ³ã‚¿ãƒ•ã‚§ãƒ¼ã‚¹
+		pcidev.devices[devid].header.classcode[1] = 0x00; // ã‚µãƒ–ã‚¯ãƒ©ã‚¹ã‚³ãƒ¼ãƒ‰
+		pcidev.devices[devid].header.classcode[2] = 0x06; // ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã‚³ãƒ¼ãƒ‰
 		pcidev.devices[devid].header.cachelinesize = 0;
 		pcidev.devices[devid].header.latencytimer = 0x00;
 		pcidev.devices[devid].header.headertype = 0;
@@ -443,34 +443,34 @@ void pcidev_reset(const NP2CFG *pConfig) {
 		pcidev.devices[devid].header.interruptpin = 0x01;
 		pcidev.devices[devid].header.subsysID = 0x00;
 		pcidev.devices[devid].header.subsysventorID = 0x00;
-		pcidev.devices[devid].cfgreg8[0x50] = 0x00; // ƒzƒXƒgCPU‘I‘ğ(HCS)
-		pcidev.devices[devid].cfgreg8[0x51] = 0x01; // ƒfƒ^[ƒ{ü”g”§Œä(DFC)
-		pcidev.devices[devid].cfgreg8[0x52] = 0x01; // 2ŸƒLƒƒƒbƒVƒ…§Œä(SCC)
-		pcidev.devices[devid].cfgreg8[0x53] = 0x00; // ƒzƒXƒg“Çæ‚è^‘‚İƒoƒbƒtƒ@§Œä(HBC)
-		pcidev.devices[devid].cfgreg8[0x54] = 0x00; // PCI“Çæ‚è^‘‚İƒoƒbƒtƒ@§Œä(PBC)
-		pcidev.devices[devid].cfgreg8[0x55] = 0x00; // 2ŸƒLƒƒƒbƒVƒ…§ŒäŠg’£ƒŒƒWƒXƒ^(SCCE)
-		pcidev.devices[devid].cfgreg8[0x57] = 0x01; // DRAM§Œä
-		pcidev.devices[devid].cfgreg8[0x58] = 0x00; // DRAMƒ^ƒCƒ~ƒ“ƒO(DT)
-		pcidev.devices[devid].cfgreg8[0x59] = 0x00; // ƒvƒƒOƒ‰ƒ€‰Â”\‘®«ƒ}ƒbƒv(PAM)
-		pcidev.devices[devid].cfgreg8[0x5a] = 0x00; // ƒvƒƒOƒ‰ƒ€‰Â”\‘®«ƒ}ƒbƒv(PAM)
-		pcidev.devices[devid].cfgreg8[0x5b] = 0x00; // ƒvƒƒOƒ‰ƒ€‰Â”\‘®«ƒ}ƒbƒv(PAM)
-		pcidev.devices[devid].cfgreg8[0x5c] = 0x00; // ƒvƒƒOƒ‰ƒ€‰Â”\‘®«ƒ}ƒbƒv(PAM)
-		pcidev.devices[devid].cfgreg8[0x5d] = 0x00; // ƒvƒƒOƒ‰ƒ€‰Â”\‘®«ƒ}ƒbƒv(PAM)
-		pcidev.devices[devid].cfgreg8[0x5e] = 0x00; // ƒvƒƒOƒ‰ƒ€‰Â”\‘®«ƒ}ƒbƒv(PAM)
-		pcidev.devices[devid].cfgreg8[0x5f] = 0x00; // ƒvƒƒOƒ‰ƒ€‰Â”\‘®«ƒ}ƒbƒv(PAM)
-		pcidev.devices[devid].cfgreg8[0x60] = 0x10; // DRAMƒ[‹«ŠEƒŒƒWƒXƒ^(DRB) ROW#0 
+		pcidev.devices[devid].cfgreg8[0x50] = 0x00; // ãƒ›ã‚¹ãƒˆCPUé¸æŠ(HCS)
+		pcidev.devices[devid].cfgreg8[0x51] = 0x01; // ãƒ‡ã‚¿ãƒ¼ãƒœå‘¨æ³¢æ•°åˆ¶å¾¡(DFC)
+		pcidev.devices[devid].cfgreg8[0x52] = 0x01; // 2æ¬¡ã‚­ãƒ£ãƒƒã‚·ãƒ¥åˆ¶å¾¡(SCC)
+		pcidev.devices[devid].cfgreg8[0x53] = 0x00; // ãƒ›ã‚¹ãƒˆèª­å–ã‚Šï¼æ›¸è¾¼ã¿ãƒãƒƒãƒ•ã‚¡åˆ¶å¾¡(HBC)
+		pcidev.devices[devid].cfgreg8[0x54] = 0x00; // PCIèª­å–ã‚Šï¼æ›¸è¾¼ã¿ãƒãƒƒãƒ•ã‚¡åˆ¶å¾¡(PBC)
+		pcidev.devices[devid].cfgreg8[0x55] = 0x00; // 2æ¬¡ã‚­ãƒ£ãƒƒã‚·ãƒ¥åˆ¶å¾¡æ‹¡å¼µãƒ¬ã‚¸ã‚¹ã‚¿(SCCE)
+		pcidev.devices[devid].cfgreg8[0x57] = 0x01; // DRAMåˆ¶å¾¡
+		pcidev.devices[devid].cfgreg8[0x58] = 0x00; // DRAMã‚¿ã‚¤ãƒŸãƒ³ã‚°(DT)
+		pcidev.devices[devid].cfgreg8[0x59] = 0x00; // ãƒ—ãƒ­ã‚°ãƒ©ãƒ å¯èƒ½å±æ€§ãƒãƒƒãƒ—(PAM)
+		pcidev.devices[devid].cfgreg8[0x5a] = 0x00; // ãƒ—ãƒ­ã‚°ãƒ©ãƒ å¯èƒ½å±æ€§ãƒãƒƒãƒ—(PAM)
+		pcidev.devices[devid].cfgreg8[0x5b] = 0x00; // ãƒ—ãƒ­ã‚°ãƒ©ãƒ å¯èƒ½å±æ€§ãƒãƒƒãƒ—(PAM)
+		pcidev.devices[devid].cfgreg8[0x5c] = 0x00; // ãƒ—ãƒ­ã‚°ãƒ©ãƒ å¯èƒ½å±æ€§ãƒãƒƒãƒ—(PAM)
+		pcidev.devices[devid].cfgreg8[0x5d] = 0x00; // ãƒ—ãƒ­ã‚°ãƒ©ãƒ å¯èƒ½å±æ€§ãƒãƒƒãƒ—(PAM)
+		pcidev.devices[devid].cfgreg8[0x5e] = 0x00; // ãƒ—ãƒ­ã‚°ãƒ©ãƒ å¯èƒ½å±æ€§ãƒãƒƒãƒ—(PAM)
+		pcidev.devices[devid].cfgreg8[0x5f] = 0x00; // ãƒ—ãƒ­ã‚°ãƒ©ãƒ å¯èƒ½å±æ€§ãƒãƒƒãƒ—(PAM)
+		pcidev.devices[devid].cfgreg8[0x60] = 0x10; // DRAMãƒ­ãƒ¼å¢ƒç•Œãƒ¬ã‚¸ã‚¹ã‚¿(DRB) ROW#0 
 		pcidev.devices[devid].cfgreg8[0x61] = 0x20; // ROW#0,#1
-		pcidev.devices[devid].cfgreg8[0x62] = 0x20; // ROW#0`2
-		pcidev.devices[devid].cfgreg8[0x63] = 0x20; // ROW#0`3
-		pcidev.devices[devid].cfgreg8[0x64] = 0x20; // ????? pcidev.devices[0].cfgreg8[0x63]; // ROW#0`4
-		pcidev.devices[devid].cfgreg8[0x65] = 0x20; // ????? pcidev.devices[0].cfgreg8[0x65]; // ROW#0`5
-		pcidev.devices[devid].cfgreg8[0x70] = 0x00; // ƒGƒ‰[ƒRƒ}ƒ“ƒh(ERRCMD)
-		pcidev.devices[devid].cfgreg8[0x71] = 0x00; // ƒGƒ‰[ƒXƒe[ƒ^ƒX(ERRSTS)
-		pcidev.devices[devid].cfgreg8[0x72] = 0x00; // SMRAM‹óŠÔ§Œä(SMRS)
-		SETCFGREG_W(pcidev.devices[devid].cfgreg8, 0x78, 0x0000); // ƒƒ‚ƒŠ‹óŠÔƒMƒƒƒbƒv(MSG)
-		SETCFGREG_D(pcidev.devices[devid].cfgreg8, 0x7C, 0x00000000); // ƒtƒŒ[ƒ€ƒoƒbƒtƒ@—Ìˆæ(FBR)
+		pcidev.devices[devid].cfgreg8[0x62] = 0x20; // ROW#0ã€œ2
+		pcidev.devices[devid].cfgreg8[0x63] = 0x20; // ROW#0ã€œ3
+		pcidev.devices[devid].cfgreg8[0x64] = 0x20; // ????? pcidev.devices[0].cfgreg8[0x63]; // ROW#0ã€œ4
+		pcidev.devices[devid].cfgreg8[0x65] = 0x20; // ????? pcidev.devices[0].cfgreg8[0x65]; // ROW#0ã€œ5
+		pcidev.devices[devid].cfgreg8[0x70] = 0x00; // ã‚¨ãƒ©ãƒ¼ã‚³ãƒãƒ³ãƒ‰(ERRCMD)
+		pcidev.devices[devid].cfgreg8[0x71] = 0x00; // ã‚¨ãƒ©ãƒ¼ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹(ERRSTS)
+		pcidev.devices[devid].cfgreg8[0x72] = 0x00; // SMRAMç©ºé–“åˆ¶å¾¡(SMRS)
+		SETCFGREG_W(pcidev.devices[devid].cfgreg8, 0x78, 0x0000); // ãƒ¡ãƒ¢ãƒªç©ºé–“ã‚®ãƒ£ãƒƒãƒ—(MSG)
+		SETCFGREG_D(pcidev.devices[devid].cfgreg8, 0x7C, 0x00000000); // ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡é ˜åŸŸ(FBR)
 
-		// ROM—Ìˆæİ’è
+		// ROMé ˜åŸŸè¨­å®š
 		pcidev.devices[devid].headerrom.vendorID = 0xffff;
 		pcidev.devices[devid].headerrom.deviceID = 0xffff;
 		pcidev.devices[devid].headerrom.status = 0xffff;
@@ -486,11 +486,11 @@ void pcidev_reset(const NP2CFG *pConfig) {
 		pcidev.devices[devid].headerrom.baseaddrregs[5] = 0xffffffff;
 		pcidev.devices[devid].headerrom.expROMbaseaddr = 0xffffffff;
 	
-		// PCI PC-9821•W€ƒfƒoƒCƒXreset
+		// PCI PC-9821æ¨™æº–ãƒ‡ãƒã‚¤ã‚¹reset
 		pcidev_cbusbridge_reset(pConfig);
 		pcidev_98graphbridge_reset(pConfig);
 		
-		// BIOS32 Entry Point‚ÌˆÊ’u–¢Šm’è
+		// BIOS32 Entry Pointã®ä½ç½®æœªç¢ºå®š
 		pcidev.bios32entrypoint = 0;
 
 		TRACEOUT(("PCI: Peripheral Component Interconnect Enabled"));
@@ -508,7 +508,7 @@ void pcidev_bind(void) {
 	//	iocore_attachout(i, pci_o04);
 	//	iocore_attachinp(i, pci_i04);
 	//}
-	// PCI I/Oƒ|[ƒgŠ„‚è“–‚Ä
+	// PCI I/Oãƒãƒ¼ãƒˆå‰²ã‚Šå½“ã¦
 	iocore_attachout(0xcf8, pci_o0cf8);
 	iocore_attachout(0xcf9, pci_o0cf9);
 	iocore_attachout(0xcfa, pci_o0cfa);
@@ -523,7 +523,7 @@ void pcidev_bind(void) {
 		iocore_attachinp(0xcfc+i, pcidev_r8_0xcfc);
 	}
 	
-	// ƒoƒ“ƒNØ‚è‘Ö‚¦
+	// ãƒãƒ³ã‚¯åˆ‡ã‚Šæ›¿ãˆ
 	iocore_attachout(0x63c, pci_o063c);
 	iocore_attachinp(0x63c, pci_i063c);
 	
@@ -545,27 +545,27 @@ void pcidev_bind(void) {
 	//iocore_attachinp(0xA59, pnp_iA59);
 	
 	if(pcidev.enable){
-		// ŠÖ”ƒAƒhƒŒƒX“ü‚ê’¼‚µiƒXƒe[ƒgƒZ[ƒu—pj
+		// é–¢æ•°ã‚¢ãƒ‰ãƒ¬ã‚¹å…¥ã‚Œç›´ã—ï¼ˆã‚¹ãƒ†ãƒ¼ãƒˆã‚»ãƒ¼ãƒ–ç”¨ï¼‰
 		pcidev.devices[pcidev_pcmc_deviceid].regwfn = &pcidev_pcmc_cfgreg_w;
 
-		// PCI PC-9821•W€ƒfƒoƒCƒXbind
+		// PCI PC-9821æ¨™æº–ãƒ‡ãƒã‚¤ã‚¹bind
 		pcidev_cbusbridge_bind();
 		pcidev_98graphbridge_bind();
 		
 		if(pcidev.usebios32){
 			if(pcidev.bios32entrypoint==0){
-				// BIOS32 Entry Point‚ªˆÊ’u–¢Šm’è‚È‚çBIOS32 Entry Point‚ğ’u‚­
-				// XXX: ‘½•ª‚±‚Ì•Ó‚È‚ç‹ó‚¢‚Ä‚é‚¾‚ë[‚Æ‚¢‚¤‚±‚Æ‚Å¥¥¥
+				// BIOS32 Entry PointãŒä½ç½®æœªç¢ºå®šãªã‚‰BIOS32 Entry Pointã‚’ç½®ã
+				// XXX: å¤šåˆ†ã“ã®è¾ºãªã‚‰ç©ºã„ã¦ã‚‹ã ã‚ãƒ¼ã¨ã„ã†ã“ã¨ã§ï½¥ï½¥ï½¥
 				pcidev.bios32entrypoint = 0x000fffe0;
 				emptyflag = 1;
-				// 2byte•ª‹ó‚¢‚Ä‚é‚©ƒ`ƒFƒbƒNi0‚¾‚©‚ç‚Æ‚¢‚Á‚Ä‹ó‚¢‚Ä‚é‚Æ‚ÍŒÀ‚ç‚È‚¢‚¯‚Ç¥¥¥j
+				// 2byteåˆ†ç©ºã„ã¦ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ï¼ˆ0ã ã‹ã‚‰ã¨ã„ã£ã¦ç©ºã„ã¦ã‚‹ã¨ã¯é™ã‚‰ãªã„ã‘ã©ï½¥ï½¥ï½¥ï¼‰
 				for(j=0;j<2;j++){
 					if(mem[pcidev.bios32entrypoint+j] != 0x00){
 						emptyflag = 0;
 					}
 				}
 				if(emptyflag){
-					// ”LBIOS‚Åæ‚Áæ‚é‚½‚ß‚ÉNOP‚ğ’u‚¢‚Ä‚·‚®‚ÉRET
+					// çŒ«BIOSã§ä¹—ã£å–ã‚‹ãŸã‚ã«NOPã‚’ç½®ã„ã¦ã™ãã«RET
 					mem[pcidev.bios32entrypoint] = 0x90;
 					mem[pcidev.bios32entrypoint+1] = 0xCB;
 				}else{
@@ -573,7 +573,7 @@ void pcidev_bind(void) {
 				}
 			}
 		}
-		// BIOS32 Service Directory‚Æƒ‹[ƒeƒBƒ“ƒOƒe[ƒuƒ‹‚ğ¶¬
+		// BIOS32 Service Directoryã¨ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ãƒ†ãƒ¼ãƒ–ãƒ«ã‚’ç”Ÿæˆ
 		pcidev_updateBIOS32data();
 		pcidev_updateRoutingTable();
 	}
@@ -585,41 +585,41 @@ void pcidev_updateRoutingTable(){
 	
 	ZeroMemory(pcidev.biosdata.data, sizeof(pcidev.biosdata.data));
 
-	// PCI IRQ ƒ‹[ƒeƒBƒ“ƒOƒe[ƒuƒ‹‚ğ¶¬‚·‚é
+	// PCI IRQ ãƒ«ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ãƒ†ãƒ¼ãƒ–ãƒ«ã‚’ç”Ÿæˆã™ã‚‹
 	pcidev.biosdata.datacount = 0;
 	pcidev.allirqbitmap = 0;
-	for(i=1;i<PCI_DEVICES_MAX;i++){ // 0‚Íœ‚­
+	for(i=1;i<PCI_DEVICES_MAX;i++){ // 0ã¯é™¤ã
 		if(pcidev.devices[i].enable && !pcidev.devices[i].skipirqtbl){
-			pcidev.biosdata.data[pcidev.biosdata.datacount].busnumber = 0; // ƒoƒX”Ô†
-			pcidev.biosdata.data[pcidev.biosdata.datacount].devicenumber = (i << 3); // ƒfƒoƒCƒX”Ô†
-			pcidev.biosdata.data[pcidev.biosdata.datacount].link4intA = (pcidev.devices[i].header.interruptpin == 1 ? pcidev.devices[i].header.interruptline : 0); // ‚±‚ÌƒfƒoƒCƒX‚ÌINT#A(PCId—lã‚ÍƒfƒoƒCƒX–ˆ‚É“Æ—§)‚ÌÚ‘±æB0=Ú‘±–³‚µ, 1=PIRQ#0, 2=PIRQ#1, 3=PIRQ#2, 4=PIRQ#3, 5ˆÈã:‚»‚Ì‘¼Ú‘±i“¯‚¶”Ô†“¯m‚ªÚ‘±j
-			pcidev.biosdata.data[pcidev.biosdata.datacount].irqmap4intA = allpciirq; // ‚±‚ÌƒfƒoƒCƒX‚ÌINT#A‚Åg—p‚Å‚«‚éIRQ(PIRQ‚Å‚Í‚È‚¢)‚Ìƒ}ƒbƒvBbit0=IRQ0, bit1=IRQ1, ... , bit15=IRQ15‚É‘Î‰ 
-			pcidev.biosdata.data[pcidev.biosdata.datacount].link4intB = (pcidev.devices[i].header.interruptpin == 2 ? pcidev.devices[i].header.interruptline : 0); // ‚±‚ÌƒfƒoƒCƒX‚ÌINT#B(PCId—lã‚ÍƒfƒoƒCƒX–ˆ‚É“Æ—§)‚ÌÚ‘±æB
-			pcidev.biosdata.data[pcidev.biosdata.datacount].irqmap4intB = allpciirq; // ‚±‚ÌƒfƒoƒCƒX‚ÌINT#B‚Åg—p‚Å‚«‚éIRQ(PIRQ‚Å‚Í‚È‚¢)‚Ìƒ}ƒbƒvB
-			pcidev.biosdata.data[pcidev.biosdata.datacount].link4intC = (pcidev.devices[i].header.interruptpin == 3 ? pcidev.devices[i].header.interruptline : 0); // ‚±‚ÌƒfƒoƒCƒX‚ÌINT#C(PCId—lã‚ÍƒfƒoƒCƒX–ˆ‚É“Æ—§)‚ÌÚ‘±æB
-			pcidev.biosdata.data[pcidev.biosdata.datacount].irqmap4intC = allpciirq; // ‚±‚ÌƒfƒoƒCƒX‚ÌINT#C‚Åg—p‚Å‚«‚éIRQ(PIRQ‚Å‚Í‚È‚¢)‚Ìƒ}ƒbƒvB
-			pcidev.biosdata.data[pcidev.biosdata.datacount].link4intD = (pcidev.devices[i].header.interruptpin == 4 ? pcidev.devices[i].header.interruptline : 0); // ‚±‚ÌƒfƒoƒCƒX‚ÌINT#D(PCId—lã‚ÍƒfƒoƒCƒX–ˆ‚É“Æ—§)‚ÌÚ‘±æB
-			pcidev.biosdata.data[pcidev.biosdata.datacount].irqmap4intD = allpciirq; // ‚±‚ÌƒfƒoƒCƒX‚ÌINT#D‚Åg—p‚Å‚«‚éIRQ(PIRQ‚Å‚Í‚È‚¢)‚Ìƒ}ƒbƒvB
-			pcidev.biosdata.data[pcidev.biosdata.datacount].slot = pcidev.devices[i].slot; // PCIƒXƒƒbƒg”Ô†i0‚ÍƒIƒ“ƒ{[ƒhj
+			pcidev.biosdata.data[pcidev.biosdata.datacount].busnumber = 0; // ãƒã‚¹ç•ªå·
+			pcidev.biosdata.data[pcidev.biosdata.datacount].devicenumber = (i << 3); // ãƒ‡ãƒã‚¤ã‚¹ç•ªå·
+			pcidev.biosdata.data[pcidev.biosdata.datacount].link4intA = (pcidev.devices[i].header.interruptpin == 1 ? pcidev.devices[i].header.interruptline : 0); // ã“ã®ãƒ‡ãƒã‚¤ã‚¹ã®INT#A(PCIä»•æ§˜ä¸Šã¯ãƒ‡ãƒã‚¤ã‚¹æ¯ã«ç‹¬ç«‹)ã®æ¥ç¶šå…ˆã€‚0=æ¥ç¶šç„¡ã—, 1=PIRQ#0, 2=PIRQ#1, 3=PIRQ#2, 4=PIRQ#3, 5ä»¥ä¸Š:ãã®ä»–æ¥ç¶šï¼ˆåŒã˜ç•ªå·åŒå£«ãŒæ¥ç¶šï¼‰
+			pcidev.biosdata.data[pcidev.biosdata.datacount].irqmap4intA = allpciirq; // ã“ã®ãƒ‡ãƒã‚¤ã‚¹ã®INT#Aã§ä½¿ç”¨ã§ãã‚‹IRQ(PIRQã§ã¯ãªã„)ã®ãƒãƒƒãƒ—ã€‚bit0=IRQ0, bit1=IRQ1, ... , bit15=IRQ15ã«å¯¾å¿œ 
+			pcidev.biosdata.data[pcidev.biosdata.datacount].link4intB = (pcidev.devices[i].header.interruptpin == 2 ? pcidev.devices[i].header.interruptline : 0); // ã“ã®ãƒ‡ãƒã‚¤ã‚¹ã®INT#B(PCIä»•æ§˜ä¸Šã¯ãƒ‡ãƒã‚¤ã‚¹æ¯ã«ç‹¬ç«‹)ã®æ¥ç¶šå…ˆã€‚
+			pcidev.biosdata.data[pcidev.biosdata.datacount].irqmap4intB = allpciirq; // ã“ã®ãƒ‡ãƒã‚¤ã‚¹ã®INT#Bã§ä½¿ç”¨ã§ãã‚‹IRQ(PIRQã§ã¯ãªã„)ã®ãƒãƒƒãƒ—ã€‚
+			pcidev.biosdata.data[pcidev.biosdata.datacount].link4intC = (pcidev.devices[i].header.interruptpin == 3 ? pcidev.devices[i].header.interruptline : 0); // ã“ã®ãƒ‡ãƒã‚¤ã‚¹ã®INT#C(PCIä»•æ§˜ä¸Šã¯ãƒ‡ãƒã‚¤ã‚¹æ¯ã«ç‹¬ç«‹)ã®æ¥ç¶šå…ˆã€‚
+			pcidev.biosdata.data[pcidev.biosdata.datacount].irqmap4intC = allpciirq; // ã“ã®ãƒ‡ãƒã‚¤ã‚¹ã®INT#Cã§ä½¿ç”¨ã§ãã‚‹IRQ(PIRQã§ã¯ãªã„)ã®ãƒãƒƒãƒ—ã€‚
+			pcidev.biosdata.data[pcidev.biosdata.datacount].link4intD = (pcidev.devices[i].header.interruptpin == 4 ? pcidev.devices[i].header.interruptline : 0); // ã“ã®ãƒ‡ãƒã‚¤ã‚¹ã®INT#D(PCIä»•æ§˜ä¸Šã¯ãƒ‡ãƒã‚¤ã‚¹æ¯ã«ç‹¬ç«‹)ã®æ¥ç¶šå…ˆã€‚
+			pcidev.biosdata.data[pcidev.biosdata.datacount].irqmap4intD = allpciirq; // ã“ã®ãƒ‡ãƒã‚¤ã‚¹ã®INT#Dã§ä½¿ç”¨ã§ãã‚‹IRQ(PIRQã§ã¯ãªã„)ã®ãƒãƒƒãƒ—ã€‚
+			pcidev.biosdata.data[pcidev.biosdata.datacount].slot = pcidev.devices[i].slot; // PCIã‚¹ãƒ­ãƒƒãƒˆç•ªå·ï¼ˆ0ã¯ã‚ªãƒ³ãƒœãƒ¼ãƒ‰ï¼‰
 			pcidev.allirqbitmap |= 
 				pcidev.biosdata.data[pcidev.biosdata.datacount].irqmap4intA | 
 				pcidev.biosdata.data[pcidev.biosdata.datacount].irqmap4intB |
 				pcidev.biosdata.data[pcidev.biosdata.datacount].irqmap4intC |
-				pcidev.biosdata.data[pcidev.biosdata.datacount].irqmap4intD; // PCI‚Åg—p‚Å‚«‚é‘SIRQ‚Ìƒ}ƒbƒvH bit0=IRQ0, bit1=IRQ1, ... , bit15=IRQ15‚É‘Î‰ 
+				pcidev.biosdata.data[pcidev.biosdata.datacount].irqmap4intD; // PCIã§ä½¿ç”¨ã§ãã‚‹å…¨IRQã®ãƒãƒƒãƒ—ï¼Ÿ bit0=IRQ0, bit1=IRQ1, ... , bit15=IRQ15ã«å¯¾å¿œ 
 			pcidev.biosdata.datacount++;
 		}else if(i==12 || i==13 || i==14 || i==15){
-			// 12, 13, 14, 15‚ÍPCIƒXƒƒbƒg‚Æ‚·‚é
-			pcidev.biosdata.data[pcidev.biosdata.datacount].busnumber = 0; // ƒoƒX”Ô†
-			pcidev.biosdata.data[pcidev.biosdata.datacount].devicenumber = (i << 3); // ƒfƒoƒCƒX”Ô†
-			pcidev.biosdata.data[pcidev.biosdata.datacount].link4intA = ((i-12) & 0x3)+1; // ‚±‚ÌƒfƒoƒCƒX‚ÌINT#A(PCId—lã‚ÍƒfƒoƒCƒX–ˆ‚É“Æ—§)‚ÌÚ‘±æB
-			pcidev.biosdata.data[pcidev.biosdata.datacount].irqmap4intA = allpciirq; // ‚±‚ÌƒfƒoƒCƒX‚ÌINT#A‚Åg—p‚Å‚«‚éIRQ(PIRQ‚Å‚Í‚È‚¢)‚Ìƒ}ƒbƒvB
-			pcidev.biosdata.data[pcidev.biosdata.datacount].link4intB = ((i-12+1) & 0x3)+1; // ‚±‚ÌƒfƒoƒCƒX‚ÌINT#B(PCId—lã‚ÍƒfƒoƒCƒX–ˆ‚É“Æ—§)‚ÌÚ‘±æB
-			pcidev.biosdata.data[pcidev.biosdata.datacount].irqmap4intB = allpciirq; // ‚±‚ÌƒfƒoƒCƒX‚ÌINT#B‚Åg—p‚Å‚«‚éIRQ(PIRQ‚Å‚Í‚È‚¢)‚Ìƒ}ƒbƒvB
-			pcidev.biosdata.data[pcidev.biosdata.datacount].link4intC = ((i-12+2) & 0x3)+1; // ‚±‚ÌƒfƒoƒCƒX‚ÌINT#C(PCId—lã‚ÍƒfƒoƒCƒX–ˆ‚É“Æ—§)‚ÌÚ‘±æB
-			pcidev.biosdata.data[pcidev.biosdata.datacount].irqmap4intC = allpciirq; // ‚±‚ÌƒfƒoƒCƒX‚ÌINT#C‚Åg—p‚Å‚«‚éIRQ(PIRQ‚Å‚Í‚È‚¢)‚Ìƒ}ƒbƒvB
-			pcidev.biosdata.data[pcidev.biosdata.datacount].link4intD = ((i-12+3) & 0x3)+1; // ‚±‚ÌƒfƒoƒCƒX‚ÌINT#D(PCId—lã‚ÍƒfƒoƒCƒX–ˆ‚É“Æ—§)‚ÌÚ‘±æB
-			pcidev.biosdata.data[pcidev.biosdata.datacount].irqmap4intD = allpciirq; // ‚±‚ÌƒfƒoƒCƒX‚ÌINT#D‚Åg—p‚Å‚«‚éIRQ(PIRQ‚Å‚Í‚È‚¢)‚Ìƒ}ƒbƒvB
-			pcidev.biosdata.data[pcidev.biosdata.datacount].slot = (i-12)+1; // PCIƒXƒƒbƒg”Ô†i0‚ÍƒIƒ“ƒ{[ƒhj
+			// 12, 13, 14, 15ã¯PCIã‚¹ãƒ­ãƒƒãƒˆã¨ã™ã‚‹
+			pcidev.biosdata.data[pcidev.biosdata.datacount].busnumber = 0; // ãƒã‚¹ç•ªå·
+			pcidev.biosdata.data[pcidev.biosdata.datacount].devicenumber = (i << 3); // ãƒ‡ãƒã‚¤ã‚¹ç•ªå·
+			pcidev.biosdata.data[pcidev.biosdata.datacount].link4intA = ((i-12) & 0x3)+1; // ã“ã®ãƒ‡ãƒã‚¤ã‚¹ã®INT#A(PCIä»•æ§˜ä¸Šã¯ãƒ‡ãƒã‚¤ã‚¹æ¯ã«ç‹¬ç«‹)ã®æ¥ç¶šå…ˆã€‚
+			pcidev.biosdata.data[pcidev.biosdata.datacount].irqmap4intA = allpciirq; // ã“ã®ãƒ‡ãƒã‚¤ã‚¹ã®INT#Aã§ä½¿ç”¨ã§ãã‚‹IRQ(PIRQã§ã¯ãªã„)ã®ãƒãƒƒãƒ—ã€‚
+			pcidev.biosdata.data[pcidev.biosdata.datacount].link4intB = ((i-12+1) & 0x3)+1; // ã“ã®ãƒ‡ãƒã‚¤ã‚¹ã®INT#B(PCIä»•æ§˜ä¸Šã¯ãƒ‡ãƒã‚¤ã‚¹æ¯ã«ç‹¬ç«‹)ã®æ¥ç¶šå…ˆã€‚
+			pcidev.biosdata.data[pcidev.biosdata.datacount].irqmap4intB = allpciirq; // ã“ã®ãƒ‡ãƒã‚¤ã‚¹ã®INT#Bã§ä½¿ç”¨ã§ãã‚‹IRQ(PIRQã§ã¯ãªã„)ã®ãƒãƒƒãƒ—ã€‚
+			pcidev.biosdata.data[pcidev.biosdata.datacount].link4intC = ((i-12+2) & 0x3)+1; // ã“ã®ãƒ‡ãƒã‚¤ã‚¹ã®INT#C(PCIä»•æ§˜ä¸Šã¯ãƒ‡ãƒã‚¤ã‚¹æ¯ã«ç‹¬ç«‹)ã®æ¥ç¶šå…ˆã€‚
+			pcidev.biosdata.data[pcidev.biosdata.datacount].irqmap4intC = allpciirq; // ã“ã®ãƒ‡ãƒã‚¤ã‚¹ã®INT#Cã§ä½¿ç”¨ã§ãã‚‹IRQ(PIRQã§ã¯ãªã„)ã®ãƒãƒƒãƒ—ã€‚
+			pcidev.biosdata.data[pcidev.biosdata.datacount].link4intD = ((i-12+3) & 0x3)+1; // ã“ã®ãƒ‡ãƒã‚¤ã‚¹ã®INT#D(PCIä»•æ§˜ä¸Šã¯ãƒ‡ãƒã‚¤ã‚¹æ¯ã«ç‹¬ç«‹)ã®æ¥ç¶šå…ˆã€‚
+			pcidev.biosdata.data[pcidev.biosdata.datacount].irqmap4intD = allpciirq; // ã“ã®ãƒ‡ãƒã‚¤ã‚¹ã®INT#Dã§ä½¿ç”¨ã§ãã‚‹IRQ(PIRQã§ã¯ãªã„)ã®ãƒãƒƒãƒ—ã€‚
+			pcidev.biosdata.data[pcidev.biosdata.datacount].slot = (i-12)+1; // PCIã‚¹ãƒ­ãƒƒãƒˆç•ªå·ï¼ˆ0ã¯ã‚ªãƒ³ãƒœãƒ¼ãƒ‰ï¼‰
 			pcidev.biosdata.datacount++;
 		}
 	}
@@ -633,24 +633,24 @@ void pcidev_updateBIOS32data(){
 	/*
 	 BIOS32 Service Directory (16byte)
 
-	 ofs=0 4byte ƒVƒOƒlƒ`ƒƒ("_32_")
-	 ofs=4 4byte BIOS32 Entry Point‚Ì32bitƒAƒhƒŒƒX
-	 ofs=8 1byte ƒŠƒrƒWƒ‡ƒ“”Ô†i0‚ğƒZƒbƒg‚·‚éj
-	 ofs=9 1byte BIOS32 Service Directory‚ÌƒTƒCƒYi16byte’PˆÊjB1‚ğw’è‚·‚é
-	 ofs=A 1byte BIOS32 Service Directory‘S‘Ì‚Ìƒ`ƒFƒbƒNƒTƒ€i‘SƒoƒCƒg‚Ì˜a‚ª0‚É‚È‚é‚æ‚¤‚É‚·‚éj
-	 ofs=B 5byte —\–ñi0‚É‚·‚éj
+	 ofs=0 4byte ã‚·ã‚°ãƒãƒãƒ£("_32_")
+	 ofs=4 4byte BIOS32 Entry Pointã®32bitã‚¢ãƒ‰ãƒ¬ã‚¹
+	 ofs=8 1byte ãƒªãƒ“ã‚¸ãƒ§ãƒ³ç•ªå·ï¼ˆ0ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ï¼‰
+	 ofs=9 1byte BIOS32 Service Directoryã®ã‚µã‚¤ã‚ºï¼ˆ16byteå˜ä½ï¼‰ã€‚1ã‚’æŒ‡å®šã™ã‚‹
+	 ofs=A 1byte BIOS32 Service Directoryå…¨ä½“ã®ãƒã‚§ãƒƒã‚¯ã‚µãƒ ï¼ˆå…¨ãƒã‚¤ãƒˆã®å’ŒãŒ0ã«ãªã‚‹ã‚ˆã†ã«ã™ã‚‹ï¼‰
+	 ofs=B 5byte äºˆç´„ï¼ˆ0ã«ã™ã‚‹ï¼‰
 	*/
 	
-	// BIOS32 Service Directory‚ğƒƒ‚ƒŠ‚É‘‚«‚Ş
+	// BIOS32 Service Directoryã‚’ãƒ¡ãƒ¢ãƒªã«æ›¸ãè¾¼ã‚€
 	if(pcidev.bios32svcdir != 0){
 		if(pcidev.bios32entrypoint!=0 && pcidev.usebios32){
-			// ƒAƒhƒŒƒX‚ğƒZƒbƒg
+			// ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ã‚»ãƒƒãƒˆ
 			CopyMemory(pcibios_BIOS32SD + 4, &pcidev.bios32entrypoint, 4);
 	
-			// ƒTƒCƒY‚ğƒZƒbƒg
+			// ã‚µã‚¤ã‚ºã‚’ã‚»ãƒƒãƒˆ
 			pcibios_BIOS32SD[9] = 1;
 		
-			// ƒ`ƒFƒbƒNƒTƒ€‚ğŒvZ
+			// ãƒã‚§ãƒƒã‚¯ã‚µãƒ ã‚’è¨ˆç®—
 			checksum = 0;
 			pcibios_BIOS32SD[10] = 0;
 			for(j=0;j<16;j++){
@@ -658,10 +658,10 @@ void pcidev_updateBIOS32data(){
 			}
 			pcibios_BIOS32SD[10] = (UINT8)(0x100 - checksum);
 		
-			// ƒƒ‚ƒŠ‚É‘‚«‚Ş
+			// ãƒ¡ãƒ¢ãƒªã«æ›¸ãè¾¼ã‚€
 			CopyMemory(mem + pcidev.bios32svcdir, pcibios_BIOS32SD, sizeof(pcibios_BIOS32SD));
 		}else{
-			// BIOS32‚ğ’×‚·
+			// BIOS32ã‚’æ½°ã™
 			ZeroMemory(mem + pcidev.bios32svcdir, sizeof(pcibios_BIOS32SD));
 		}
 	}
@@ -669,7 +669,7 @@ void pcidev_updateBIOS32data(){
 
 #else
 
-// ‚Æ‚è‚ ‚¦‚¸ config #1 type0ŒÅ’è‚Åc
+// ã¨ã‚Šã‚ãˆãš config #1 type0å›ºå®šã§â€¦
 
 static void pcidevset10(UINT32 addr, REG8 dat) {
 

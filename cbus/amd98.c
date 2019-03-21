@@ -21,7 +21,7 @@
 
 	AMD98	g_amd98;
 
-/* ‚È‚¢‚æ‚è‚ ‚Á‚½‚Ù[‚ª—Ç‚¢’ö“x‚ÌƒŠƒYƒ€c */
+/* ãªã„ã‚ˆã‚Šã‚ã£ãŸã»ãƒ¼ãŒè‰¯ã„ç¨‹åº¦ã®ãƒªã‚ºãƒ â€¦ */
 static struct
 {
 	PMIXHDR	hdr;
@@ -58,7 +58,7 @@ REG8 amd98_getjoy(UINT no)
 		ret |= rapids;
 	}
 
-	/* rapid‚Æ”ñrapid‚ð‡¬ */
+	/* rapidã¨éžrapidã‚’åˆæˆ */
 	ret &= ((ret >> 2) | (~0x30));
 
 	if (np2cfg.BTN_MODE)
@@ -258,7 +258,7 @@ static void amd98_rhythm(UINT map)
 
 static void setamd98event(UINT32 cnt, NEVENTPOSITION absolute)
 {
-	if (cnt > 8)								/* ª‹’‚È‚µ*/
+	if (cnt > 8)								/* æ ¹æ‹ ãªã—*/
 	{
 		cnt *= pccore.multiple;
 	}
@@ -286,7 +286,7 @@ void amd98int(NEVENTITEM item)
 		pitch = pit.ch + 4;
 		if ((pitch->ctrl & 0x0c) == 0x04)
 		{
-			/* ƒŒ[ƒgƒWƒFƒlƒŒ[ƒ^ */
+			/* ãƒ¬ãƒ¼ãƒˆã‚¸ã‚§ãƒãƒ¬ãƒ¼ã‚¿ */
 			setamd98event(pitch->value, NEVENT_RELATIVE);
 		}
 	}

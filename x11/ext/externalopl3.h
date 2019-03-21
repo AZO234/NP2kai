@@ -1,6 +1,6 @@
 /**
  * @file	externalopl3.h
- * @brief	ŠO•” OPL3 ‰‰‘tƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	å¤–éƒ¨ OPL3 æ¼”å¥ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -8,7 +8,7 @@
 #include "externalchip.h"
 
 /**
- * @brief ŠO•” OPL3 ‰‰‘tƒNƒ‰ƒX
+ * @brief å¤–éƒ¨ OPL3 æ¼”å¥ã‚¯ãƒ©ã‚¹
  */
 class CExternalOpl3 : public IExternalChip
 {
@@ -21,8 +21,8 @@ public:
 	virtual INTPTR Message(UINT nMessage, INTPTR nParameter);
 
 protected:
-	IExternalChip* m_pChip;				/*!< ƒ`ƒbƒv*/
-	UINT8 m_cKon[2][16];				/*!< KON ƒe[ƒuƒ‹ */
+	IExternalChip* m_pChip;				/*!< ãƒãƒƒãƒ—*/
+	UINT8 m_cKon[2][16];				/*!< KON ãƒ†ãƒ¼ãƒ–ãƒ« */
 
 	void Mute(bool bMute);
 	void WriteRegisterInner(UINT nAddr, UINT8 cData) const;

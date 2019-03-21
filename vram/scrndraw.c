@@ -75,7 +75,7 @@ static UINT8 rasterdraw(SDRAWFN sdrawfn, SDRAW sdraw, int maxy) {
 		if (event >= eventterm) {
 			break;
 		}
-		// ‚¨•Ù“–‚Í‚ ‚Á‚½H
+		// ãŠå¼å½“ã¯ã‚ã£ãŸï¼Ÿ
 		if (clk < event->clock) {
 			if (!(np2cfg.LCD_MODE & 1)) {
 				pal_makeanalog(pal, 0xffff);
@@ -91,7 +91,7 @@ static UINT8 rasterdraw(SDRAWFN sdrawfn, SDRAW sdraw, int maxy) {
 			}
 			(*sdrawfn)(sdraw, y);
 			nextupdate = y;
-			// ‚¨•Ù“–‚ğH‚×‚é
+			// ãŠå¼å½“ã‚’é£Ÿã¹ã‚‹
 			while(clk < event->clock) {
 				((UINT8 *)pal)[event->color] = event->value;
 				event++;
@@ -152,7 +152,7 @@ const SDRAWFN	*sdrawfn;
 	if(np2wab.relay & 0x3){
 		np2wab_drawframe(); 
 		if(!np2wabwnd.multiwindow){
-			// XXX: ƒEƒBƒ“ƒhƒEƒAƒNƒZƒ‰ƒŒ[ƒ^“®ì’†‚Í“à‘ ƒOƒ‰ƒtƒBƒbƒN‚ğ•`‰æ‚µ‚È‚¢
+			// XXX: ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿å‹•ä½œä¸­ã¯å†…è”µã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚’æç”»ã—ãªã„
 			scrnmng_update();
 			ret = 1;
 			return(ret);

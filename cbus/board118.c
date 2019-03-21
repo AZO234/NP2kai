@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file	board118.c
  * @brief	Implementation of PC-9801-118
  */

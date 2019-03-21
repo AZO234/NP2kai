@@ -40,7 +40,7 @@ dosio_term(void)
 	/* nothing to do */
 }
 
-/* ÉtÉ@ÉCÉãëÄçÏ */
+/* „Éï„Ç°„Ç§„É´Êìç‰Ωú */
 FILEH file_open(const char *path) {
 
 #if defined(WIN32) && defined(OSLANG_UTF8)
@@ -205,7 +205,7 @@ short file_dirdelete(const char *path) {
 #endif
 }
 
-/* ÉJÉåÉìÉgÉtÉ@ÉCÉãëÄçÏ */
+/* „Ç´„É¨„É≥„Éà„Éï„Ç°„Ç§„É´Êìç‰Ωú */
 void file_setcd(const char *exepath) {
 
 	file_cpyname(curpath, exepath, sizeof(curpath));
@@ -514,13 +514,13 @@ void file_cutseparator(char *path) {
 	int		pos;
 
 	pos = (int)strlen(path) - 1;
-	if ((pos > 0) &&							// 2ï∂éöà»è„Ç≈Å[
+	if ((pos > 0) &&							// 2ÊñáÂ≠ó‰ª•‰∏ä„Åß„Éº
 #if defined(_WIN32)
-		(path[pos] == '\\') &&					// ÉPÉcÇ™ \ Ç≈Å[
+		(path[pos] == '\\') &&					// „Ç±„ÉÑ„Åå \ „Åß„Éº
 #else	/* _WIN32 */
-		(path[pos] == '/') &&					// ÉPÉcÇ™ \ Ç≈Å[
+		(path[pos] == '/') &&					// „Ç±„ÉÑ„Åå \ „Åß„Éº
 #endif	/* _WIN32 */
-		((pos != 1) || (path[0] != '.'))) {		// './' Ç≈ÇÕÇ»Ç©Ç¡ÇΩÇÁ
+		((pos != 1) || (path[0] != '.'))) {		// './' „Åß„ÅØ„Å™„Åã„Å£„Åü„Çâ
 		path[pos] = '\0';
 	}
 }

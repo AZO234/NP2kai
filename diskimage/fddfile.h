@@ -4,9 +4,9 @@
 #define	MAX_FDDFILE		4							// ver0.31
 
 #include	"diskimage/fd/fdd_head_d88.h"
-#include	"diskimage/fd/fdd_head_dcp.h"	//	’Ç‰Á(Kai1)
-#include	"diskimage/fd/fdd_head_nfd.h"	//	’Ç‰Á(Kai1)
-#include	"diskimage/fd/fdd_head_vfdd.h"	//	’Ç‰Á(Kai1)
+#include	"diskimage/fd/fdd_head_dcp.h"	//	è¿½åŠ (Kai1)
+#include	"diskimage/fd/fdd_head_nfd.h"	//	è¿½åŠ (Kai1)
+#include	"diskimage/fd/fdd_head_vfdd.h"	//	è¿½åŠ (Kai1)
 
 enum {
 	FDDFILE_MF			= 0x80,
@@ -29,10 +29,10 @@ enum {
 	DISKTYPE_NOTREADY	= 0,
 	DISKTYPE_BETA,
 	DISKTYPE_D88,
-	DISKTYPE_DCP,		//	’Ç‰Á(Kai1)
-	DISKTYPE_MAHALITO,	//	–¢À‘•
-	DISKTYPE_NFD,		//	’Ç‰Á(Kai1)
-	DISKTYPE_VFDD		//	’Ç‰Á(Kai1)
+	DISKTYPE_DCP,		//	è¿½åŠ (Kai1)
+	DISKTYPE_MAHALITO,	//	æœªå®Ÿè£…
+	DISKTYPE_NFD,		//	è¿½åŠ (Kai1)
+	DISKTYPE_VFDD		//	è¿½åŠ (Kai1)
 };
 
 enum {
@@ -58,7 +58,7 @@ typedef struct {
 	_D88HEAD	head;
 } _D88INFO, *D88INFO;
 
-//	’Ç‰Á(Kai1)
+//	è¿½åŠ (Kai1)
 typedef struct {
 	_XDFINFO	xdf;
 	UINT32		ptr[DCP_TRACKMAX];
@@ -95,14 +95,14 @@ typedef struct {
 	union {
 		_XDFINFO	xdf;
 		_D88INFO	d88;
-		_DCPINFO	dcp;	//	’Ç‰Á(Kai1)
-		_BKDSKINFO	bkdsk;	//	’Ç‰Á(Kai1)
-		_NFDINFO	nfd;	//	’Ç‰Á(Kai1)
-		_VFDDINFO	vfdd;	//	’Ç‰Á(Kai1)
+		_DCPINFO	dcp;	//	è¿½åŠ (Kai1)
+		_BKDSKINFO	bkdsk;	//	è¿½åŠ (Kai1)
+		_NFDINFO	nfd;	//	è¿½åŠ (Kai1)
+		_VFDDINFO	vfdd;	//	è¿½åŠ (Kai1)
 	} inf;
 } _FDDFILE, *FDDFILE;
 
-//	Šeíˆ—ŠÖ”Ši”[\‘¢‘Ì(Kai1)
+//	å„ç¨®å‡¦ç†é–¢æ•°æ ¼ç´æ§‹é€ ä½“(Kai1)
 typedef struct {
 	BRESULT	(*eject)(FDDFILE fdd);
 
@@ -129,7 +129,7 @@ extern "C" {
 extern	_FDDFILE	fddfile[MAX_FDDFILE];
 extern	UINT8		fddlasterror;
 
-// ‹N“®‚Éˆê‰ñ‚¾‚¯‰Šú‰»
+// èµ·å‹•æ™‚ã«ä¸€å›ã ã‘åˆæœŸåŒ–
 void fddfile_initialize(void);
 
 void fddfile_reset2dmode(void);
@@ -142,13 +142,13 @@ BOOL fdd_diskprotect(REG8 drv);
 BRESULT fdd_set(REG8 drv, const OEMCHAR *fname, UINT ftype, int ro);
 BRESULT fdd_eject(REG8 drv);
 
-//	–¢À‘•A–¢‘Î‰—pƒ_ƒ~[ŠÖ”ŒQ(Kai1)
+//	æœªå®Ÿè£…ã€æœªå¯¾å¿œç”¨ãƒ€ãƒŸãƒ¼é–¢æ•°ç¾¤(Kai1)
 BRESULT fdd_dummy_xxx(FDDFILE fdd);
 BRESULT fdd_eject_xxx(FDDFILE fdd);
 BRESULT fdd_formating_xxx(FDDFILE fdd, const UINT8 *ID);
 BOOL fdd_isformating_xxx(FDDFILE fdd);
 //
-//	ƒxƒ^ŒnƒCƒ[ƒW—p‹¤’Êˆ—ŠÖ”ŒQ(Kai1)
+//	ãƒ™ã‚¿ç³»ã‚¤ãƒ¡ãƒ¼ã‚¸ç”¨å…±é€šå‡¦ç†é–¢æ•°ç¾¤(Kai1)
 BRESULT fdd_diskaccess_common(FDDFILE fdd);
 BRESULT fdd_seek_common(FDDFILE fdd);
 BRESULT fdd_seeksector_common(FDDFILE fdd);
@@ -168,7 +168,7 @@ BRESULT fdd_formatinit(void);
 BRESULT fdd_formating(const UINT8 *ID);
 BOOL fdd_isformating(void);
 
-BOOL fdd_fdcresult(void);	//	’Ç‰Á(Kai1)
+BOOL fdd_fdcresult(void);	//	è¿½åŠ (Kai1)
 
 #ifdef __cplusplus
 }
@@ -246,7 +246,7 @@ extern "C" {
 extern	_FDDFILE	fddfile[MAX_FDDFILE];
 extern	UINT8		fddlasterror;
 
-// ‹N“®‚Éˆê‰ñ‚¾‚¯‰Šú‰»
+// èµ·å‹•æ™‚ã«ä¸€å›ã ã‘åˆæœŸåŒ–
 void fddfile_initialize(void);
 
 void fddfile_reset2dmode(void);

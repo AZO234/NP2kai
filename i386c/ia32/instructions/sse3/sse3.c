@@ -45,15 +45,15 @@
 
 static INLINE void
 SSE3_check_NM_EXCEPTION(){
-	// SSE3‚È‚µ‚È‚çUD(–³ŒøƒIƒyƒR[ƒh—áŠO)‚ð”­¶‚³‚¹‚é
+	// SSE3ãªã—ãªã‚‰UD(ç„¡åŠ¹ã‚ªãƒšã‚³ãƒ¼ãƒ‰ä¾‹å¤–)ã‚’ç™ºç”Ÿã•ã›ã‚‹
 	if(!(i386cpuid.cpu_feature_ecx & CPU_FEATURE_ECX_SSE3)){
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	// ƒGƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚È‚çUD(–³ŒøƒIƒyƒR[ƒh—áŠO)‚ð”­¶‚³‚¹‚é
+	// ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ãªã‚‰UD(ç„¡åŠ¹ã‚ªãƒšã‚³ãƒ¼ãƒ‰ä¾‹å¤–)ã‚’ç™ºç”Ÿã•ã›ã‚‹
 	if(CPU_CR0 & CPU_CR0_EM){
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	// ƒ^ƒXƒNƒXƒCƒbƒ`Žž‚ÉNM(ƒfƒoƒCƒXŽg—p•s‰Â—áŠO)‚ð”­¶‚³‚¹‚é
+	// ã‚¿ã‚¹ã‚¯ã‚¹ã‚¤ãƒƒãƒæ™‚ã«NM(ãƒ‡ãƒã‚¤ã‚¹ä½¿ç”¨ä¸å¯ä¾‹å¤–)ã‚’ç™ºç”Ÿã•ã›ã‚‹
 	if (CPU_CR0 & CPU_CR0_TS) {
 		EXCEPTION(NM_EXCEPTION, 0);
 	}
@@ -64,7 +64,7 @@ SSE3_setTag(void)
 {
 }
 
-// mmx.c‚Ì‚à‚Ì‚Æ“¯‚¶
+// mmx.cã®ã‚‚ã®ã¨åŒã˜
 static INLINE void
 MMX_setTag(void)
 {
@@ -90,7 +90,7 @@ MMX_setTag(void)
  * SSE3 interface
  */
 
-// ƒR[ƒh‚ª’·‚­‚È‚é‚Ì‚Å‚â‚â‹­ˆø‚É‹¤’Ê‰»
+// ã‚³ãƒ¼ãƒ‰ãŒé•·ããªã‚‹ã®ã§ã‚„ã‚„å¼·å¼•ã«å…±é€šåŒ–
 // xmm/m128 -> xmm
 static INLINE void SSE_PART_GETDATA1DATA2_PD(double **data1, double **data2, double *data2buf){
 	UINT32 op;
@@ -177,11 +177,11 @@ void SSE3_HSUBPS(void)
 
 void SSE3_MONITOR(void)
 {
-	EXCEPTION(UD_EXCEPTION, 0); // –¢ŽÀ‘•
+	EXCEPTION(UD_EXCEPTION, 0); // æœªå®Ÿè£…
 }
 void SSE3_MWAIT(void)
 {
-	EXCEPTION(UD_EXCEPTION, 0); // –¢ŽÀ‘•
+	EXCEPTION(UD_EXCEPTION, 0); // æœªå®Ÿè£…
 }
 
 //void SSE3_FISTTP(void)
@@ -190,7 +190,7 @@ void SSE3_MWAIT(void)
 //}
 void SSE3_LDDQU(void)
 {
-	SSE2_MOVDQAmem2xmm(); // ”÷–­‚Éˆá‚¤‚¯‚Ç‚¢‚¢‚©‚ÈEEE
+	SSE2_MOVDQAmem2xmm(); // å¾®å¦™ã«é•ã†ã‘ã©ã„ã„ã‹ãªãƒ»ãƒ»ãƒ»
 }
 void SSE3_MOVDDUP(void)
 {

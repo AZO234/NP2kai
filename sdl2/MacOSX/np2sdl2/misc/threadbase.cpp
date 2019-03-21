@@ -1,13 +1,13 @@
 /**
  * @file	threadbase.cpp
- * @brief	ƒXƒŒƒbƒhŠî’êƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	ã‚¹ãƒ¬ãƒƒãƒ‰åŸºåº•ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
 #include "threadbase.h"
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CThreadBase::CThreadBase()
 	: m_bCreated(false)
@@ -17,7 +17,7 @@ CThreadBase::CThreadBase()
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CThreadBase::~CThreadBase()
 {
@@ -25,8 +25,8 @@ CThreadBase::~CThreadBase()
 }
 
 /**
- * ƒXƒŒƒbƒhŠJn
- * @retval true ¬Œ÷
+ * ã‚¹ãƒ¬ãƒƒãƒ‰é–‹å§‹
+ * @retval true æˆåŠŸ
  */
 bool CThreadBase::Start()
 {
@@ -35,7 +35,7 @@ bool CThreadBase::Start()
 		return false;
 	}
 
-	/* ƒXƒ^ƒbƒN ƒTƒCƒY’²® */
+	/* ã‚¹ã‚¿ãƒƒã‚¯ ã‚µã‚¤ã‚ºèª¿æ•´ */
 	pthread_attr_t tattr;
 	::pthread_attr_init(&tattr);
 	if (m_stack_size != 0)
@@ -54,8 +54,8 @@ bool CThreadBase::Start()
 }
 
 /**
- * ƒXƒŒƒbƒhI—¹
- * @retval true ¬Œ÷
+ * ã‚¹ãƒ¬ãƒƒãƒ‰çµ‚äº†
+ * @retval true æˆåŠŸ
  */
 void CThreadBase::Stop()
 {
@@ -68,9 +68,9 @@ void CThreadBase::Stop()
 }
 
 /**
- * ƒXƒŒƒbƒhˆ—
- * @param[in] arg this ƒ|ƒCƒ“ƒ^
- * @retval 0 í‚É0
+ * ã‚¹ãƒ¬ãƒƒãƒ‰å‡¦ç†
+ * @param[in] arg this ãƒã‚¤ãƒ³ã‚¿
+ * @retval 0 å¸¸ã«0
  */
 void* CThreadBase::StartRoutine(void* arg)
 {

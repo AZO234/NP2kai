@@ -79,7 +79,7 @@ void SSE2_ORPD(void);
 void SSE2_SHUFPD(void);
 void SSE2_SQRTPD(void);
 void SSE2_SQRTSD(void);
-//void SSE2_STMXCSR(UINT32 maddr); // -> SSE_STMXCSRÇ∆ìØÇ∂
+//void SSE2_STMXCSR(UINT32 maddr); // -> SSE_STMXCSR„Å®Âêå„Åò
 void SSE2_SUBPD(void);
 void SSE2_SUBSD(void);
 void SSE2_UCOMISD(void);
@@ -198,13 +198,13 @@ void SSE2_PUNPCKLQDQ(void);
 void SSE2_PXOR(void);
 
 void SSE2_MASKMOVDQU(void);
-//void SSE2_CLFLUSH(UINT32 op); // --> SSE_CLFLUSH(UINT32 op)Ç÷
+//void SSE2_CLFLUSH(UINT32 op); // --> SSE_CLFLUSH(UINT32 op)„Å∏
 void SSE2_MOVNTPD(void);
 void SSE2_MOVNTDQ(void);
 void SSE2_MOVNTI(void);
 void SSE2_PAUSE(void);
-//void SSE2_LFENCE(void); // --> SSE_LFENCE(void)Ç÷
-//void SSE2_MFENCE(void); // --> SSE_MFENCE(void)Ç÷
+//void SSE2_LFENCE(void); // --> SSE_LFENCE(void)„Å∏
+//void SSE2_MFENCE(void); // --> SSE_MFENCE(void)„Å∏
 
 #ifdef __cplusplus
 }

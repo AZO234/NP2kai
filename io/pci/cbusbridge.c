@@ -1,5 +1,5 @@
 
-// PC-9821 PCI-CBusƒuƒŠƒbƒW
+// PC-9821 PCI-CBusãƒ–ãƒªãƒƒã‚¸
 
 #include	"compiler.h"
 
@@ -39,7 +39,7 @@ void pcidev_cbusbridge_reset(const NP2CFG *pConfig) {
 void pcidev_cbusbridge_bind(void) {
 	int devid = pcidev_cbusbridge_deviceid;
 
-	// PCI-CƒoƒXƒuƒŠƒbƒW
+	// PCI-Cãƒã‚¹ãƒ–ãƒªãƒƒã‚¸
 	ZeroMemory(pcidev.devices+devid, sizeof(_PCIDEVICE));
 	pcidev.devices[devid].enable = 1;
 	pcidev.devices[devid].skipirqtbl = 1;
@@ -49,9 +49,9 @@ void pcidev_cbusbridge_bind(void) {
 	pcidev.devices[devid].header.command = 0x010f;//0x010f;//0x0107;
 	pcidev.devices[devid].header.status = 0x0200;//0x0200;//0x0400;
 	pcidev.devices[devid].header.revisionID = 0x01;//0x03;
-	pcidev.devices[devid].header.classcode[0] = 0x00; // ƒŒƒWƒXƒ^ƒŒƒxƒ‹ƒvƒƒOƒ‰ƒ~ƒ“ƒOƒCƒ“ƒ^ƒtƒF[ƒX
-	pcidev.devices[devid].header.classcode[1] = 0x80; // ƒTƒuƒNƒ‰ƒXƒR[ƒh
-	pcidev.devices[devid].header.classcode[2] = 0x06; // ƒx[ƒXƒNƒ‰ƒXƒR[ƒh
+	pcidev.devices[devid].header.classcode[0] = 0x00; // ãƒ¬ã‚¸ã‚¹ã‚¿ãƒ¬ãƒ™ãƒ«ãƒ—ãƒ­ã‚°ãƒ©ãƒŸãƒ³ã‚°ã‚¤ãƒ³ã‚¿ãƒ•ã‚§ãƒ¼ã‚¹
+	pcidev.devices[devid].header.classcode[1] = 0x80; // ã‚µãƒ–ã‚¯ãƒ©ã‚¹ã‚³ãƒ¼ãƒ‰
+	pcidev.devices[devid].header.classcode[2] = 0x06; // ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã‚³ãƒ¼ãƒ‰
 	pcidev.devices[devid].header.cachelinesize = 0;
 	pcidev.devices[devid].header.latencytimer = 0x0;
 	pcidev.devices[devid].header.headertype = 0;
@@ -98,7 +98,7 @@ void pcidev_cbusbridge_bind(void) {
 	pcidev.devices[devid].cfgreg8[0x62] = 0x06;//0x80;//0x06;
 	pcidev.devices[devid].cfgreg8[0x63] = 0x0c;//0x80;//0x0c;
 
-	//// PCI-CƒoƒXƒuƒŠƒbƒWiˆá‚¤ƒo[ƒWƒ‡ƒ“j
+	//// PCI-Cãƒã‚¹ãƒ–ãƒªãƒƒã‚¸ï¼ˆé•ã†ãƒãƒ¼ã‚¸ãƒ§ãƒ³ï¼‰
 	//ZeroMemory(pcidev.devices+devid, sizeof(_PCIDEVICE));
 	//pcidev.devices[devid].enable = 1;
 	//pcidev.devices[devid].regwfn = &pcidev_cbusbridge_cfgreg_w;
@@ -107,9 +107,9 @@ void pcidev_cbusbridge_bind(void) {
 	//pcidev.devices[devid].header.command = 0x010f;//0x0107;
 	//pcidev.devices[devid].header.status = 0x0200;//0x0400;
 	//pcidev.devices[devid].header.revisionID = 0x00;//0x03;
-	//pcidev.devices[devid].header.classcode[0] = 0x00; // ƒŒƒWƒXƒ^ƒŒƒxƒ‹ƒvƒƒOƒ‰ƒ~ƒ“ƒOƒCƒ“ƒ^ƒtƒF[ƒX
-	//pcidev.devices[devid].header.classcode[1] = 0x80; // ƒTƒuƒNƒ‰ƒXƒR[ƒh
-	//pcidev.devices[devid].header.classcode[2] = 0x06; // ƒx[ƒXƒNƒ‰ƒXƒR[ƒh
+	//pcidev.devices[devid].header.classcode[0] = 0x00; // ãƒ¬ã‚¸ã‚¹ã‚¿ãƒ¬ãƒ™ãƒ«ãƒ—ãƒ­ã‚°ãƒ©ãƒŸãƒ³ã‚°ã‚¤ãƒ³ã‚¿ãƒ•ã‚§ãƒ¼ã‚¹
+	//pcidev.devices[devid].header.classcode[1] = 0x80; // ã‚µãƒ–ã‚¯ãƒ©ã‚¹ã‚³ãƒ¼ãƒ‰
+	//pcidev.devices[devid].header.classcode[2] = 0x06; // ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã‚³ãƒ¼ãƒ‰
 	//pcidev.devices[devid].header.cachelinesize = 0;
 	//pcidev.devices[devid].header.latencytimer = 0x0;
 	//pcidev.devices[devid].header.headertype = 0;
@@ -173,7 +173,7 @@ void pcidev_cbusbridge_bind(void) {
 	//pcidev.devices[devid].cfgreg8[0x6A] = 0x00;
 	//pcidev.devices[devid].cfgreg8[0x6B] = 0x0D;
 
-	// ROM—Ìˆæİ’è
+	// ROMé ˜åŸŸè¨­å®š
 	pcidev.devices[devid].headerrom.vendorID = 0xffff;
 	pcidev.devices[devid].headerrom.deviceID = 0xffff;
 	pcidev.devices[devid].headerrom.status = 0xffff;

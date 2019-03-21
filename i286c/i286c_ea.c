@@ -647,7 +647,7 @@ void i286cea_initialize(void) {
 	}
 }
 
-#else								// ARM‚¾‚Æswitch‚É‚µ‚½‚Ù[‚ª‘‚¢‚Í‚¸c
+#else								// ARMã ã¨switchã«ã—ãŸã»ãƒ¼ãŒæ—©ã„ã¯ãšâ€¦
 
 UINT32 calc_ea_dst(UINT op) {
 

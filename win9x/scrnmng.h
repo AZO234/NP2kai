@@ -78,7 +78,7 @@ typedef struct {
 extern "C" {
 #endif
 
-extern	SCRNMNG		scrnmng;			// É}ÉNÉçóp
+extern	SCRNMNG		scrnmng;			// „Éû„ÇØ„É≠Áî®
 extern	SCRNSTAT	scrnstat;
 
 extern UINT8 scrnmng_current_drawtype;

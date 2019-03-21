@@ -1,28 +1,28 @@
 /*!
  * @file	guard.h
- * @brief	ƒNƒŠƒeƒBƒJƒ‹ ƒZƒNƒVƒ‡ƒ“ ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ð‚µ‚Ü‚·
+ * @brief	ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ« ã‚»ã‚¯ã‚·ãƒ§ãƒ³ ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
 
 /*!
- * @brief ƒNƒŠƒeƒBƒJƒ‹ ƒZƒNƒVƒ‡ƒ“ ƒNƒ‰ƒX
+ * @brief ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ« ã‚»ã‚¯ã‚·ãƒ§ãƒ³ ã‚¯ãƒ©ã‚¹
  */
 class CGuard
 {
 public:
-	/*! ƒRƒ“ƒXƒgƒ‰ƒNƒ^ */
+	/*! ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ */
 	CGuard() { ::InitializeCriticalSection(&m_cs); }
 
-	/*! ƒfƒXƒgƒ‰ƒNƒ^ */
+	/*! ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ */
 	~CGuard() { ::DeleteCriticalSection(&m_cs); }
 
-	/*! ƒNƒŠƒeƒBƒJƒ‹ ƒZƒNƒVƒ‡ƒ“ŠJŽn */
+	/*! ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ« ã‚»ã‚¯ã‚·ãƒ§ãƒ³é–‹å§‹ */
 	void Enter() { ::EnterCriticalSection(&m_cs); }
 
-	/*! ƒNƒŠƒeƒBƒJƒ‹ ƒZƒNƒVƒ‡ƒ“I—¹ */
+	/*! ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ« ã‚»ã‚¯ã‚·ãƒ§ãƒ³çµ‚äº† */
 	void Leave() { ::LeaveCriticalSection(&m_cs); }
 
 private:
-	CRITICAL_SECTION m_cs;		//!< ƒNƒŠƒeƒBƒJƒ‹ ƒZƒNƒVƒ‡ƒ“î•ñ
+	CRITICAL_SECTION m_cs;		//!< ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ« ã‚»ã‚¯ã‚·ãƒ§ãƒ³æƒ…å ±
 };

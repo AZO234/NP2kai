@@ -1,6 +1,6 @@
 /**
  * @file	menu.cpp
- * @brief	ƒƒjƒ…[‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #include "compiler.h"
@@ -21,13 +21,13 @@
 #include "mousemng.h"
 
 /**
- * ŒŸõ
- * @param[in] hMenu ƒƒjƒ…[ ƒnƒ“ƒhƒ‹
+ * æ¤œç´¢
+ * @param[in] hMenu ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ãƒãƒ³ãƒ‰ãƒ«
  * @param[in] uID ID
- * @param[out] phmenuRet Œ©‚Â‚©‚Á‚½ƒƒjƒ…[
- * @param[out] pnPos Œ©‚Â‚©‚Á‚½ˆÊ’u
- * @retval true Œ©‚Â‚©‚Á‚½
- * @retval false Œ©‚Â‚©‚ç‚È‚©‚Á‚½
+ * @param[out] phmenuRet è¦‹ã¤ã‹ã£ãŸãƒ¡ãƒ‹ãƒ¥ãƒ¼
+ * @param[out] pnPos è¦‹ã¤ã‹ã£ãŸä½ç½®
+ * @retval true è¦‹ã¤ã‹ã£ãŸ
+ * @retval false è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
  */
 bool menu_searchmenu(HMENU hMenu, UINT uID, HMENU *phmenuRet, int *pnPos)
 {
@@ -62,12 +62,12 @@ bool menu_searchmenu(HMENU hMenu, UINT uID, HMENU *phmenuRet, int *pnPos)
 }
 
 /**
- * ƒƒjƒ…[’Ç‰Á
- * @param[in] hMenu ƒƒjƒ…[ ƒnƒ“ƒhƒ‹
- * @param[in] nPos ’Ç‰Á‚·‚éˆÊ’u
- * @param[in] hmenuAdd ’Ç‰Á‚·‚éƒƒjƒ…[
- * @param[in] bSeparator ƒZƒpƒŒ[ƒ^‚ğ’Ç‰Á‚·‚é
- * @return ’Ç‰Á”
+ * ãƒ¡ãƒ‹ãƒ¥ãƒ¼è¿½åŠ 
+ * @param[in] hMenu ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ãƒãƒ³ãƒ‰ãƒ«
+ * @param[in] nPos è¿½åŠ ã™ã‚‹ä½ç½®
+ * @param[in] hmenuAdd è¿½åŠ ã™ã‚‹ãƒ¡ãƒ‹ãƒ¥ãƒ¼
+ * @param[in] bSeparator ã‚»ãƒ‘ãƒ¬ãƒ¼ã‚¿ã‚’è¿½åŠ ã™ã‚‹
+ * @return è¿½åŠ æ•°
  */
 int menu_addmenu(HMENU hMenu, int nPos, HMENU hmenuAdd, BOOL bSeparator)
 {
@@ -109,12 +109,12 @@ int menu_addmenu(HMENU hMenu, int nPos, HMENU hmenuAdd, BOOL bSeparator)
 }
 
 /**
- * ƒƒjƒ…[’Ç‰Á
- * @param[in] hMenu ƒƒjƒ…[ ƒnƒ“ƒhƒ‹
- * @param[in] nPos ’Ç‰Á‚·‚éˆÊ’u
- * @param[in] uID ƒƒjƒ…[ ID
- * @param[in] bSeparator ƒZƒpƒŒ[ƒ^‚ğ’Ç‰Á‚·‚é
- * @return ’Ç‰Á”
+ * ãƒ¡ãƒ‹ãƒ¥ãƒ¼è¿½åŠ 
+ * @param[in] hMenu ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ãƒãƒ³ãƒ‰ãƒ«
+ * @param[in] nPos è¿½åŠ ã™ã‚‹ä½ç½®
+ * @param[in] uID ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ID
+ * @param[in] bSeparator ã‚»ãƒ‘ãƒ¬ãƒ¼ã‚¿ã‚’è¿½åŠ ã™ã‚‹
+ * @return è¿½åŠ æ•°
  */
 int menu_addmenures(HMENU hMenu, int nPos, UINT uID, BOOL bSeparator)
 {
@@ -130,11 +130,11 @@ int menu_addmenures(HMENU hMenu, int nPos, UINT uID, BOOL bSeparator)
 }
 
 /**
- * ƒƒjƒ…[’Ç‰Á
- * @param[in] hMenu ƒƒjƒ…[ ƒnƒ“ƒhƒ‹
- * @param[in] uByID ƒƒjƒ…[ˆÊ’u
- * @param[in] uID ƒƒjƒ…[ ID
- * @return ’Ç‰Á”
+ * ãƒ¡ãƒ‹ãƒ¥ãƒ¼è¿½åŠ 
+ * @param[in] hMenu ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ãƒãƒ³ãƒ‰ãƒ«
+ * @param[in] uByID ãƒ¡ãƒ‹ãƒ¥ãƒ¼ä½ç½®
+ * @param[in] uID ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ID
+ * @return è¿½åŠ æ•°
  */
 static int menu_addmenubyid(HMENU hMenu, UINT uByID, UINT uID)
 {
@@ -150,13 +150,13 @@ static int menu_addmenubyid(HMENU hMenu, UINT uByID, UINT uID)
 }
 
 /**
- * ƒƒjƒ…[’Ç‰Á
- * @param[in] hMenu ƒƒjƒ…[‚Ìƒnƒ“ƒhƒ‹
- * @param[in] uPosition V‚µ‚¢€–Ú‚Ì’¼‘O‚ÉˆÊ’u‚·‚é€–Ú
- * @param[in] uFlags ƒIƒvƒVƒ‡ƒ“
- * @param[in] uIDNewItem ¯•ÊqAƒƒjƒ…[AƒTƒuƒƒjƒ…[‚Ì‚¢‚¸‚ê‚©
- * @param[in] lpNewItem ƒƒjƒ…[ •¶š—ñ
- * @return ŠÖ”‚ª¬Œ÷‚·‚é‚ÆA0 ˆÈŠO‚Ì’l‚ª•Ô‚è‚Ü‚·
+ * ãƒ¡ãƒ‹ãƒ¥ãƒ¼è¿½åŠ 
+ * @param[in] hMenu ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ãƒãƒ³ãƒ‰ãƒ«
+ * @param[in] uPosition æ–°ã—ã„é …ç›®ã®ç›´å‰ã«ä½ç½®ã™ã‚‹é …ç›®
+ * @param[in] uFlags ã‚ªãƒ—ã‚·ãƒ§ãƒ³
+ * @param[in] uIDNewItem è­˜åˆ¥å­ã€ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã€ã‚µãƒ–ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ã„ãšã‚Œã‹
+ * @param[in] lpNewItem ãƒ¡ãƒ‹ãƒ¥ãƒ¼ æ–‡å­—åˆ—
+ * @return é–¢æ•°ãŒæˆåŠŸã™ã‚‹ã¨ã€0 ä»¥å¤–ã®å€¤ãŒè¿”ã‚Šã¾ã™
  */
 static BOOL InsertMenuString(HMENU hMenu, UINT uPosition, UINT uFlags, UINT_PTR uIDNewItem, UINT uStringID)
 {
@@ -171,9 +171,9 @@ static BOOL InsertMenuString(HMENU hMenu, UINT uPosition, UINT uFlags, UINT_PTR 
 }
 
 /**
- * ƒƒjƒ…[’Ç‰Á (’PƒƒRƒs[)
- * @param[in] popup ƒRƒs[æ
- * @param[in] menubar ƒRƒs[Œ³
+ * ãƒ¡ãƒ‹ãƒ¥ãƒ¼è¿½åŠ  (å˜ç´”ã‚³ãƒ”ãƒ¼)
+ * @param[in] popup ã‚³ãƒ”ãƒ¼å…ˆ
+ * @param[in] menubar ã‚³ãƒ”ãƒ¼å…ƒ
  */
 void menu_addmenubar(HMENU popup, HMENU menubar)
 {
@@ -185,8 +185,8 @@ void menu_addmenubar(HMENU popup, HMENU menubar)
 // ----
 
 /**
- * ƒVƒXƒeƒ€ ƒƒjƒ…[‰Šú‰»
- * @param[in] hMenu ƒƒjƒ…[ ƒnƒ“ƒhƒ‹
+ * ã‚·ã‚¹ãƒ†ãƒ  ãƒ¡ãƒ‹ãƒ¥ãƒ¼åˆæœŸåŒ–
+ * @param[in] hMenu ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ãƒãƒ³ãƒ‰ãƒ«
  */
 void sysmenu_initialize(HMENU hMenu)
 {
@@ -210,8 +210,8 @@ void sysmenu_initialize(HMENU hMenu)
 }
 
 /**
- * ƒVƒXƒeƒ€ ƒƒjƒ…[XV
- * @param[in] hMenu ƒƒjƒ…[ ƒnƒ“ƒhƒ‹
+ * ã‚·ã‚¹ãƒ†ãƒ  ãƒ¡ãƒ‹ãƒ¥ãƒ¼æ›´æ–°
+ * @param[in] hMenu ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ãƒãƒ³ãƒ‰ãƒ«
  */
 void sysmenu_update(HMENU hMenu)
 {
@@ -238,8 +238,8 @@ void sysmenu_update(HMENU hMenu)
 // ----
 
 /**
- * ƒƒjƒ…[‰Šú‰»
- * @param[in] ƒƒjƒ…[ ƒnƒ“ƒhƒ‹
+ * ãƒ¡ãƒ‹ãƒ¥ãƒ¼åˆæœŸåŒ–
+ * @param[in] ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ãƒãƒ³ãƒ‰ãƒ«
  */
 void xmenu_initialize(HMENU hMenu)
 {
@@ -301,8 +301,8 @@ void xmenu_initialize(HMENU hMenu)
 }
 
 /**
- * ƒƒjƒ…[ó‘Ô‚ğXV‚·‚é
- * @param[in] hMenu ƒƒjƒ…[ ƒnƒ“ƒhƒ‹
+ * ãƒ¡ãƒ‹ãƒ¥ãƒ¼çŠ¶æ…‹ã‚’æ›´æ–°ã™ã‚‹
+ * @param[in] hMenu ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ãƒãƒ³ãƒ‰ãƒ«
  */
 void xmenu_update(HMENU hMenu)
 {

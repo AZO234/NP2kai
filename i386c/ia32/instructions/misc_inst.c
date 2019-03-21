@@ -125,7 +125,7 @@ _CPUID(void)
 		
 	case 0x80000000:
 		CPU_EAX = 0x80000004;
-		if(strncmp(i386cpuid.cpu_vendor, CPU_VENDOR_AMD, 12)==0){ // AMD”»’è
+		if(strncmp(i386cpuid.cpu_vendor, CPU_VENDOR_AMD, 12)==0){ // AMDåˆ¤å®š
 			CPU_EBX = LOADINTELDWORD(((UINT8*)(i386cpuid.cpu_vendor+0)));
 			CPU_EDX = LOADINTELDWORD(((UINT8*)(i386cpuid.cpu_vendor+4)));
 			CPU_ECX = LOADINTELDWORD(((UINT8*)(i386cpuid.cpu_vendor+8)));
@@ -137,7 +137,7 @@ _CPUID(void)
 		break;
 
 	case 0x80000001:
-		if(strncmp(i386cpuid.cpu_vendor, CPU_VENDOR_AMD, 12)==0){ // AMD”»’è
+		if(strncmp(i386cpuid.cpu_vendor, CPU_VENDOR_AMD, 12)==0){ // AMDåˆ¤å®š
 			if(i386cpuid.cpu_family >= 6 || (i386cpuid.cpu_family==5 && i386cpuid.cpu_model >= 6)){
 				CPU_EAX = ((i386cpuid.cpu_family+1) << 8) | (i386cpuid.cpu_model << 4) | i386cpuid.cpu_stepping;
 			}else{

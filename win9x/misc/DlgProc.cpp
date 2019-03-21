@@ -1,13 +1,13 @@
 /**
  * @file	DlgProc.cpp
- * @brief	�_�C�A���O �N���X�̓���̒�`���s���܂�
+ * @brief	ダイアログ クラスの動作の定義を行います
  */
 
 #include "compiler.h"
 #include "DlgProc.h"
 
 /**
- * �R���X�g���N�^
+ * コンストラクタ
  */
 CDlgProc::CDlgProc()
 	: m_lpszTemplateName(NULL)
@@ -16,9 +16,9 @@ CDlgProc::CDlgProc()
 }
 
 /**
- * �R���X�g���N�^
- * @param[in] nIDTemplate �_�C�A���O �{�b�N�X �e���v���[�g�̃��\�[�X id �ԍ����w�肵�܂�
- * @param[in] hwndParent �e�E�B���h�E
+ * コンストラクタ
+ * @param[in] nIDTemplate ダイアログ ボックス テンプレートのリソース id 番号を指定します
+ * @param[in] hwndParent 親ウィンドウ
  */
 CDlgProc::CDlgProc(UINT nIDTemplate, HWND hwndParent)
 	: m_lpszTemplateName(MAKEINTRESOURCE(nIDTemplate))
@@ -27,15 +27,15 @@ CDlgProc::CDlgProc(UINT nIDTemplate, HWND hwndParent)
 }
 
 /**
- * �f�X�g���N�^
+ * デストラクタ
  */
 CDlgProc::~CDlgProc()
 {
 }
 
 /**
- * ���[�_��
- * @return �_�C�A���O �{�b�N�X����邽�߂Ɏg�p�����ACDialog::EndDialog �̃����o�[�֐��ɓn���ꂽ nResult �̃p�����[�^�[�l���w�肷�� int �̒l
+ * モーダル
+ * @return ダイアログ ボックスを閉じるために使用される、CDialog::EndDialog のメンバー関数に渡された nResult のパラメーター値を指定する int の値
  */
 INT_PTR CDlgProc::DoModal()
 {
@@ -52,12 +52,12 @@ INT_PTR CDlgProc::DoModal()
 }
 
 /**
- * �_�C�A���O �v���V�[�W��
- * @param[in] hWnd �E�B���h�E �n���h��
- * @param[in] message ��������� Windows ���b�Z�[�W���w�肵�܂�
- * @param[in] wParam ���b�Z�[�W�̏����Ŏg���t������񋟂��܂��B���̃p�����[�^�̒l�̓��b�Z�[�W�Ɉˑ����܂�
- * @param[in] lParam ���b�Z�[�W�̏����Ŏg���t������񋟂��܂��B���̃p�����[�^�̒l�̓��b�Z�[�W�Ɉˑ����܂�
- * @return ���b�Z�[�W�Ɉˑ�����l��Ԃ��܂�
+ * ダイアログ プロシージャ
+ * @param[in] hWnd ウィンドウ ハンドル
+ * @param[in] message 処理される Windows メッセージを指定します
+ * @param[in] wParam メッセージの処理で使う付加情報を提供します。このパラメータの値はメッセージに依存します
+ * @param[in] lParam メッセージの処理で使う付加情報を提供します。このパラメータの値はメッセージに依存します
+ * @return メッセージに依存する値を返します
  */
 #if defined(_WIN64)
 INT_PTR CALLBACK CDlgProc::DlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -81,11 +81,11 @@ BOOL CALLBACK CDlgProc::DlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
 }
 
 /**
- * CDlgProc �I�u�W�F�N�g�� Windows �v���V�[�W��
- * @param[in] nMsg ��������� Windows ���b�Z�[�W���w�肵�܂�
- * @param[in] wParam ���b�Z�[�W�̏����Ŏg���t������񋟂��܂��B���̃p�����[�^�̒l�̓��b�Z�[�W�Ɉˑ����܂�
- * @param[in] lParam ���b�Z�[�W�̏����Ŏg���t������񋟂��܂��B���̃p�����[�^�̒l�̓��b�Z�[�W�Ɉˑ����܂�
- * @return ���b�Z�[�W�Ɉˑ�����l��Ԃ��܂�
+ * CDlgProc オブジェクトの Windows プロシージャ
+ * @param[in] nMsg 処理される Windows メッセージを指定します
+ * @param[in] wParam メッセージの処理で使う付加情報を提供します。このパラメータの値はメッセージに依存します
+ * @param[in] lParam メッセージの処理で使う付加情報を提供します。このパラメータの値はメッセージに依存します
+ * @return メッセージに依存する値を返します
  */
 LRESULT CDlgProc::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -106,9 +106,9 @@ LRESULT CDlgProc::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ���̃��\�b�h�� WM_INITDIALOG �̃��b�Z�[�W�ɉ������ČĂяo����܂�
- * @retval TRUE �ŏ��̃R���g���[���ɓ��̓t�H�[�J�X��ݒ�
- * @retval FALSE ���ɐݒ��
+ * このメソッドは WM_INITDIALOG のメッセージに応答して呼び出されます
+ * @retval TRUE 最初のコントロールに入力フォーカスを設定
+ * @retval FALSE 既に設定済
  */
 BOOL CDlgProc::OnInitDialog()
 {
@@ -116,7 +116,7 @@ BOOL CDlgProc::OnInitDialog()
 }
 
 /**
- * ���[�U�[�� OK �̃{�^�� (IDOK ID ���̃{�^��) ���N���b�N����ƌĂяo����܂�
+ * ユーザーが OK のボタン (IDOK ID がのボタン) をクリックすると呼び出されます
  */
 void CDlgProc::OnOK()
 {
@@ -124,7 +124,7 @@ void CDlgProc::OnOK()
 }
 
 /**
- * �t���[�����[�N�́A���[�U�[�� [�L�����Z��] ���N���b�N���邩�A���[�_���܂��̓��[�h���X �_�C�A���O �{�b�N�X�� Esc �L�[���������Ƃ��ɂ��̃��\�b�h���Ăяo���܂�
+ * フレームワークは、ユーザーが [キャンセル] をクリックするか、モーダルまたはモードレス ダイアログ ボックスの Esc キーを押したときにこのメソッドを呼び出します
  */
 void CDlgProc::OnCancel()
 {
@@ -134,13 +134,13 @@ void CDlgProc::OnCancel()
 
 
 /**
- * �R���X�g���N�^
- * @param[in] bOpenFileDialog �쐬����_�C�A���O �{�b�N�X���w�肷��p�����[�^�[
- * @param[in] lpszDefExt ����̃t�@�C�����̊g���q�ł�
- * @param[in] lpszFileName �{�b�N�X�ɕ\������鏉���t�@�C����
- * @param[in] dwFlags �t���O
- * @param[in] lpszFilter �t�B���^�[
- * @param[in] hParentWnd �e�E�B���h�E
+ * コンストラクタ
+ * @param[in] bOpenFileDialog 作成するダイアログ ボックスを指定するパラメーター
+ * @param[in] lpszDefExt 既定のファイル名の拡張子です
+ * @param[in] lpszFileName ボックスに表示される初期ファイル名
+ * @param[in] dwFlags フラグ
+ * @param[in] lpszFilter フィルター
+ * @param[in] hParentWnd 親ウィンドウ
  */
 CFileDlg::CFileDlg(BOOL bOpenFileDialog, LPCTSTR lpszDefExt, LPCTSTR lpszFileName, DWORD dwFlags, LPCTSTR lpszFilter, HWND hParentWnd)
 	: m_bOpenFileDialog(bOpenFileDialog)
@@ -191,8 +191,8 @@ CFileDlg::CFileDlg(BOOL bOpenFileDialog, LPCTSTR lpszDefExt, LPCTSTR lpszFileNam
 }
 
 /**
- * ���[�_��
- * @return ���U���g �R�[�h
+ * モーダル
+ * @return リザルト コード
  */
 int CFileDlg::DoModal()
 {

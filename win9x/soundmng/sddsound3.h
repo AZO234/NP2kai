@@ -1,6 +1,6 @@
 /**
  * @file	sddsound3.h
- * @brief	DSound3 ƒI[ƒfƒBƒI ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	DSound3 ã‚ªãƒ¼ãƒ‡ã‚£ã‚ª ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -14,21 +14,21 @@
 #define PCMVOLUME_MAXCOUNT	64
 
 /**
- * @brief ƒfƒoƒCƒX
+ * @brief ãƒ‡ãƒã‚¤ã‚¹
  */
 struct DSound3Device
 {
 	GUID guid;							//!< GUID
-	TCHAR szDevice[MAX_PATH];			//!< ƒfƒoƒCƒX
+	TCHAR szDevice[MAX_PATH];			//!< ãƒ‡ãƒã‚¤ã‚¹
 };
 
 /**
- * @brief Direct Sound3 ƒNƒ‰ƒX
+ * @brief Direct Sound3 ã‚¯ãƒ©ã‚¹
  */
 class CSoundDeviceDSound3 : public CSoundDeviceBase, protected CThreadBase
 {
 public:
-	static bool s_mastervol_available;			//!< ƒ}ƒXƒ^ƒ{ƒŠƒ…[ƒ€g—p‰Â”\H
+	static bool s_mastervol_available;			//!< ãƒã‚¹ã‚¿ãƒœãƒªãƒ¥ãƒ¼ãƒ ä½¿ç”¨å¯èƒ½ï¼Ÿ
 
 	static void Initialize();
 	static void EnumerateDevices(std::vector<LPCTSTR>& devices);
@@ -53,17 +53,17 @@ protected:
 	virtual bool Task();
 
 private:
-	static std::vector<DSound3Device> sm_devices;	//!< ƒfƒoƒCƒX ƒŠƒXƒg
+	static std::vector<DSound3Device> sm_devices;	//!< ãƒ‡ãƒã‚¤ã‚¹ ãƒªã‚¹ãƒˆ
 
-	LPDIRECTSOUND m_lpDSound;					//!< Direct Sound ƒCƒ“ƒ^ƒtƒFƒCƒX
-	LPDIRECTSOUNDBUFFER m_lpDSStream;			//!< ƒXƒgƒŠ[ƒ€ ƒoƒbƒtƒ@
-	UINT m_nChannels;							//!< ƒ`ƒƒƒlƒ‹”
-	UINT m_nBufferSize;							//!< ƒoƒbƒtƒ@ ƒTƒCƒY
-	UINT m_dwHalfBufferSize;					//!< ƒoƒbƒtƒ@ ƒoƒCƒg
-	HANDLE m_hEvents[2];						//!< ƒCƒxƒ“ƒg
-	std::map<UINT, LPDIRECTSOUNDBUFFER> m_pcm;	//!< PCM ƒoƒbƒtƒ@
-	int m_mastervolume;							//!< ƒ}ƒXƒ^ƒ{ƒŠƒ…[ƒ€
-	int m_pcmvolume[PCMVOLUME_MAXCOUNT];		//!< PCMƒ{ƒŠƒ…[ƒ€ 
+	LPDIRECTSOUND m_lpDSound;					//!< Direct Sound ã‚¤ãƒ³ã‚¿ãƒ•ã‚§ã‚¤ã‚¹
+	LPDIRECTSOUNDBUFFER m_lpDSStream;			//!< ã‚¹ãƒˆãƒªãƒ¼ãƒ  ãƒãƒƒãƒ•ã‚¡
+	UINT m_nChannels;							//!< ãƒãƒ£ãƒãƒ«æ•°
+	UINT m_nBufferSize;							//!< ãƒãƒƒãƒ•ã‚¡ ã‚µã‚¤ã‚º
+	UINT m_dwHalfBufferSize;					//!< ãƒãƒƒãƒ•ã‚¡ ãƒã‚¤ãƒˆ
+	HANDLE m_hEvents[2];						//!< ã‚¤ãƒ™ãƒ³ãƒˆ
+	std::map<UINT, LPDIRECTSOUNDBUFFER> m_pcm;	//!< PCM ãƒãƒƒãƒ•ã‚¡
+	int m_mastervolume;							//!< ãƒã‚¹ã‚¿ãƒœãƒªãƒ¥ãƒ¼ãƒ 
+	int m_pcmvolume[PCMVOLUME_MAXCOUNT];		//!< PCMãƒœãƒªãƒ¥ãƒ¼ãƒ  
 
 	static BOOL CALLBACK EnumCallback(LPGUID lpGuid, LPCTSTR lpcstrDescription, LPCTSTR lpcstrModule, LPVOID lpContext);
 	void FillStream(DWORD dwPosition);

@@ -1,6 +1,6 @@
 /**
  * @file	d_about.cpp
- * @brief	ƒo[ƒWƒ‡ƒ“î•ñƒ_ƒCƒAƒƒO
+ * @brief	ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
  */
 
 #include "compiler.h"
@@ -13,15 +13,15 @@
 #include "np2ver.h"
 #include "generic/np2info.h"
 
-//! ƒ^ƒCƒgƒ‹
+//! ã‚¿ã‚¤ãƒˆãƒ«
 static const TCHAR s_np2title[] = TEXT(PROJECTNAME) TEXT(PROJECTSUBNAME) TEXT("  ");
 
-//! î•ñ
+//! æƒ…å ±
 static const TCHAR s_np2infostr[] = TEXT("CPU: %CPU% %CLOCK%\nMEM: %MEM1%\nFPU:%FPU%\nSIMD:%SIMD%\nGDC: %GDC%\n     %GDC2%\nTEXT: %TEXT%\nGRPH: %GRPH%\nSOUND: %EXSND%\n\nBIOS: %BIOS%\nRHYTHM: %RHYTHM%\n\nSCREEN: %DISP%");
 
 /**
- * @brief ƒo[ƒWƒ‡ƒ“î•ñƒ_ƒCƒAƒƒO
- * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * @brief ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
+ * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 class CAboutDlg : public CDlgProc
 {
@@ -33,13 +33,13 @@ protected:
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 
 private:
-	SIZE m_szAbout;			//!< ƒEƒBƒ“ƒhƒE‚ÌƒTƒCƒY
+	SIZE m_szAbout;			//!< ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚µã‚¤ã‚º
 	void GetDlgItemRect(UINT nID, RECT& rect);
 };
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
- * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 CAboutDlg::CAboutDlg(HWND hwndParent)
 	: CDlgProc(IDD_ABOUT, hwndParent)
@@ -48,9 +48,9 @@ CAboutDlg::CAboutDlg(HWND hwndParent)
 }
 
 /**
- * ‚±‚Ìƒƒ\ƒbƒh‚Í WM_INITDIALOG ‚ÌƒƒbƒZ[ƒW‚É‰“š‚µ‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
- * @retval TRUE Å‰‚ÌƒRƒ“ƒgƒ[ƒ‹‚É“ü—ÍƒtƒH[ƒJƒX‚ğİ’è
- * @retval FALSE Šù‚Éİ’èÏ
+ * ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ WM_INITDIALOG ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«å¿œç­”ã—ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * @retval TRUE æœ€åˆã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã«å…¥åŠ›ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’è¨­å®š
+ * @retval FALSE æ—¢ã«è¨­å®šæ¸ˆ
  */
 BOOL CAboutDlg::OnInitDialog()
 {
@@ -89,10 +89,10 @@ BOOL CAboutDlg::OnInitDialog()
 }
 
 /**
- * ƒ†[ƒU[‚ªƒƒjƒ…[‚Ì€–Ú‚ğ‘I‘ğ‚µ‚½‚Æ‚«‚ÉAƒtƒŒ[ƒ€ƒ[ƒN‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
- * @param[in] wParam ƒpƒ‰ƒƒ^
- * @param[in] lParam ƒpƒ‰ƒƒ^
- * @retval TRUE ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ª‚±‚ÌƒƒbƒZ[ƒW‚ğˆ—‚µ‚½
+ * ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®é …ç›®ã‚’é¸æŠã—ãŸã¨ãã«ã€ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã«ã‚ˆã£ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * @param[in] wParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @param[in] lParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @retval TRUE ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡¦ç†ã—ãŸ
  */
 BOOL CAboutDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -115,9 +115,9 @@ BOOL CAboutDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ƒAƒCƒeƒ€‚Ì—Ìˆæ‚ğ“¾‚é
+ * ã‚¢ã‚¤ãƒ†ãƒ ã®é ˜åŸŸã‚’å¾—ã‚‹
  * @param[in] nID ID
- * @param[out] rect —Ìˆæ
+ * @param[out] rect é ˜åŸŸ
  */
 void CAboutDlg::GetDlgItemRect(UINT nID, RECT& rect)
 {
@@ -127,8 +127,8 @@ void CAboutDlg::GetDlgItemRect(UINT nID, RECT& rect)
 }
 
 /**
- * ƒo[ƒWƒ‡ƒ“î•ñƒ_ƒCƒAƒƒO
- * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
+ * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 void dialog_about(HWND hwndParent)
 {

@@ -154,14 +154,14 @@ static void fdd_int(int result) {
 		return;
 	}
 	switch(CPU_AH & 0x0f) {
-		case 0x00:								// ƒV[ƒN
-		case 0x01:								// ƒxƒŠƒtƒ@ƒC
-		case 0x02:								// f’f‚Ìˆ×‚Ì“Ç‚İ‚İ
-		case 0x05:								// ƒf[ƒ^‚Ì‘‚«‚İ
-		case 0x06:								// ƒf[ƒ^‚Ì“Ç‚İ‚İ
-//		case 0x07:								// ƒVƒŠƒ“ƒ_‚O‚ÖƒV[ƒN
+		case 0x00:								// ã‚·ãƒ¼ã‚¯
+		case 0x01:								// ãƒ™ãƒªãƒ•ã‚¡ã‚¤
+		case 0x02:								// è¨ºæ–­ã®ç‚ºã®èª­ã¿è¾¼ã¿
+		case 0x05:								// ãƒ‡ãƒ¼ã‚¿ã®æ›¸ãè¾¼ã¿
+		case 0x06:								// ãƒ‡ãƒ¼ã‚¿ã®èª­ã¿è¾¼ã¿
+//		case 0x07:								// ã‚·ãƒªãƒ³ãƒ€ï¼ã¸ã‚·ãƒ¼ã‚¯
 		case 0x0a:								// READ ID
-		case 0x0d:								// ƒtƒH[ƒ}ƒbƒg
+		case 0x0d:								// ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 			break;
 
 		default:
@@ -307,7 +307,7 @@ static REG8 fdd_operate(REG8 type, REG8 rpm, BOOL ndensity) {
 	mtr_c = fdc.ncn;
 	mtr_r = 0;
 
-	// ‚Æ‚è‚ ‚¦‚¸BIOS‚Ì‚Í–³‹‚·‚é
+	// ã¨ã‚Šã‚ãˆãšBIOSã®æ™‚ã¯ç„¡è¦–ã™ã‚‹
 	fdc.mf = 0xff;
 
 //	TRACE_("int 1Bh", CPU_AH);
@@ -343,16 +343,16 @@ static REG8 fdd_operate(REG8 type, REG8 rpm, BOOL ndensity) {
 			fdd_int(FDCBIOS_NONREADY);
 			ret_ah = 0x60;
 			if ((CPU_AX & 0x8f40) == 0x8400) {
-				ret_ah |= 8;					// 1MB/640KB—¼—pƒhƒ‰ƒCƒu
+				ret_ah |= 8;					// 1MB/640KBä¸¡ç”¨ãƒ‰ãƒ©ã‚¤ãƒ–
 				if ((CPU_AH & 0x40) && (fdc.support144)) {
-					ret_ah |= 4;				// 1.44‘Î‰ƒhƒ‰ƒCƒu
+					ret_ah |= 4;				// 1.44å¯¾å¿œãƒ‰ãƒ©ã‚¤ãƒ–
 				}
 			}
 			return(ret_ah);
 		}
 	}
 
-	// ƒ‚[ƒh‘I‘ğ													// ver0.78
+	// ãƒ¢ãƒ¼ãƒ‰é¸æŠ													// ver0.78
 	fmode = (type & 1)?MEMB_F2HD_MODE:MEMB_F2DD_MODE;
 	if (!(CPU_AL & 0x80)) {
 		if (!(mem[fmode] & (0x10 << fdc.us))) {
@@ -361,7 +361,7 @@ static REG8 fdd_operate(REG8 type, REG8 rpm, BOOL ndensity) {
 	}
 
 	switch(CPU_AH & 0x0f) {
-		case 0x00:								// ƒV[ƒN
+		case 0x00:								// ã‚·ãƒ¼ã‚¯
 			if (CPU_AH & 0x10) {
 				if (biosfd_seek(CPU_CL, ndensity) == SUCCESS) {
 					result = FDCBIOS_SEEKSUCCESS;
@@ -373,7 +373,7 @@ static REG8 fdd_operate(REG8 type, REG8 rpm, BOOL ndensity) {
 			ret_ah = 0x00;
 			break;
 
-		case 0x01:								// ƒxƒŠƒtƒ@ƒC
+		case 0x01:								// ãƒ™ãƒªãƒ•ã‚¡ã‚¤
 			if (CPU_AH & 0x10) {
 				if (biosfd_seek(CPU_CL, ndensity) == SUCCESS) {
 					result = FDCBIOS_SEEKSUCCESS;
@@ -429,12 +429,12 @@ static REG8 fdd_operate(REG8 type, REG8 rpm, BOOL ndensity) {
 			}
 			break;
 
-		case 0x03:								// ‰Šú‰»
+		case 0x03:								// åˆæœŸåŒ–
 			fddbios_equip(type, FALSE);
 			ret_ah = 0x00;
 			break;
 
-		case 0x04:								// ƒZƒ“ƒX
+		case 0x04:								// ã‚»ãƒ³ã‚¹
 			ret_ah = 0x00;
 			if (fdd_diskprotect(fdc.us))
 			{
@@ -452,14 +452,14 @@ static REG8 fdd_operate(REG8 type, REG8 rpm, BOOL ndensity) {
 				}
 			}
 			if ((CPU_AX & 0x8f40) == 0x8400) {
-				ret_ah |= 8;					// 1MB/640KB—¼—pƒhƒ‰ƒCƒu
+				ret_ah |= 8;					// 1MB/640KBä¸¡ç”¨ãƒ‰ãƒ©ã‚¤ãƒ–
 				if ((CPU_AH & 0x40) && (fdc.support144)) {
-					ret_ah |= 4;				// 1.44‘Î‰ƒhƒ‰ƒCƒu
+					ret_ah |= 4;				// 1.44å¯¾å¿œãƒ‰ãƒ©ã‚¤ãƒ–
 				}
 			}
 			break;
 
-		case 0x05:								// ƒf[ƒ^‚Ì‘‚«‚İ
+		case 0x05:								// ãƒ‡ãƒ¼ã‚¿ã®æ›¸ãè¾¼ã¿
 			if (CPU_AH & 0x10) {
 				if (biosfd_seek(CPU_CL, ndensity) == SUCCESS) {
 					result = FDCBIOS_SEEKSUCCESS;
@@ -523,8 +523,8 @@ static REG8 fdd_operate(REG8 type, REG8 rpm, BOOL ndensity) {
 			}
 			break;
 
-		case 0x02:								// f’f‚Ìˆ×‚Ì“Ç‚İ‚İ
-		case 0x06:								// ƒf[ƒ^‚Ì“Ç‚İ‚İ
+		case 0x02:								// è¨ºæ–­ã®ç‚ºã®èª­ã¿è¾¼ã¿
+		case 0x06:								// ãƒ‡ãƒ¼ã‚¿ã®èª­ã¿è¾¼ã¿
 			if (CPU_AH & 0x10) {
 				if (biosfd_seek(CPU_CL, ndensity) == SUCCESS) {
 					result = FDCBIOS_SEEKSUCCESS;
@@ -600,7 +600,7 @@ static REG8 fdd_operate(REG8 type, REG8 rpm, BOOL ndensity) {
 #endif
 			}
 #if 1
-			else if ((CPU_AH & 0x0f) == 0x02) {		// ARS‘Îôc
+			else if ((CPU_AH & 0x0f) == 0x02) {		// ARSå¯¾ç­–â€¦
 				ret_ah = 0x00;
 				result = FDCBIOS_READERROR;
 			}
@@ -611,7 +611,7 @@ static REG8 fdd_operate(REG8 type, REG8 rpm, BOOL ndensity) {
 			}
 			break;
 
-		case 0x07:						// ƒVƒŠƒ“ƒ_‚O‚ÖƒV[ƒN
+		case 0x07:						// ã‚·ãƒªãƒ³ãƒ€ï¼ã¸ã‚·ãƒ¼ã‚¯
 			biosfd_seek(0, 0);
 			ret_ah = 0x00;
 			result = FDCBIOS_SEEKSUCCESS;
@@ -657,7 +657,7 @@ static REG8 fdd_operate(REG8 type, REG8 rpm, BOOL ndensity) {
 			TRACEOUT(("\tREAD DELETED DATA not Support"));
 			break;
 
-		case 0x0d:						// ƒtƒH[ƒ}ƒbƒg
+		case 0x0d:						// ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 			if (CPU_AH & 0x10) {
 				biosfd_seek(CPU_CL, ndensity);
 			}
@@ -690,11 +690,11 @@ static REG8 fdd_operate(REG8 type, REG8 rpm, BOOL ndensity) {
 			break;
 
 		case 0x0e:													// ver0.78
-			if (CPU_AH & 0x80) {			// –§“xİ’è
+			if (CPU_AH & 0x80) {			// å¯†åº¦è¨­å®š
 				mem[fmode] &= 0x0f;
 				mem[fmode] |= (UINT8)((CPU_AH & 0x0f) << 4);
 			}
-			else {							// –Êİ’è
+			else {							// é¢è¨­å®š
 				mem[fmode] &= 0xf0;
 				mem[fmode] |= (UINT8)(CPU_AH & 0x0f);
 			}
@@ -725,9 +725,9 @@ static UINT16 boot_fd1(REG8 type, REG8 rpm) {
 		return(0);
 	}
 	fdc.hd = 0;
-	fdc.mf = 0x40;			// ‚Æ‚è‚ ‚¦‚¸ MFMƒ‚[ƒh‚ÅƒŠ[ƒh
+	fdc.mf = 0x40;			// ã¨ã‚Šã‚ãˆãš MFMãƒ¢ãƒ¼ãƒ‰ã§ãƒªãƒ¼ãƒ‰
 	if (fdd_readid()) {
-		fdc.mf = 0x00;		// FMƒ‚[ƒh‚ÅƒŠƒgƒ‰ƒC
+		fdc.mf = 0x00;		// FMãƒ¢ãƒ¼ãƒ‰ã§ãƒªãƒˆãƒ©ã‚¤
 		if (fdd_readid()) {
 			return(0);
 		}
@@ -827,8 +827,8 @@ REG16 bootstrapload(void) {
 
 //	fdmode = 0;
 	bootseg = 0;
-	switch(mem[MEMB_MSW5] & 0xf0) {		// ‚¤‚®‚£c–{“–‚ÍALƒŒƒWƒXƒ^‚Ì’l‚©‚ç
-		case 0x00:					// ƒm[ƒ}ƒ‹
+	switch(mem[MEMB_MSW5] & 0xf0) {		// ã†ãã…â€¦æœ¬å½“ã¯ALãƒ¬ã‚¸ã‚¹ã‚¿ã®å€¤ã‹ã‚‰
+		case 0x00:					// ãƒãƒ¼ãƒãƒ«
 			break;
 
 		case 0x20:					// 640KB FDD
@@ -996,7 +996,7 @@ UINT bios0x1b_wait(void) {
 
 	UINT	addr;
 	REG8	bit;
-	static UINT32 int_timeout = 0; // np21w ver0.86 rev51 Win3.1—p b’è–³ŒÀƒ‹[ƒv‰ñ”ğ
+	static UINT32 int_timeout = 0; // np21w ver0.86 rev51 Win3.1ç”¨ æš«å®šç„¡é™ãƒ«ãƒ¼ãƒ—å›é¿
 
 	if (fddmtr.busy) {
 		CPU_REMCLOCK = -1;
@@ -1019,7 +1019,7 @@ UINT bios0x1b_wait(void) {
 		else {
 			CPU_REMCLOCK -= 1000;
 #if defined(CPUCORE_IA32)
-			// np21w ver0.86 rev51 Win3.1—p b’è–³ŒÀƒ‹[ƒv‰ñ”ğ
+			// np21w ver0.86 rev51 Win3.1ç”¨ æš«å®šç„¡é™ãƒ«ãƒ¼ãƒ—å›é¿
 			if (CPU_STAT_PM && CPU_STAT_VM86) {
 				int_timeout += 1000;
 			}

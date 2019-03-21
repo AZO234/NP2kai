@@ -34,8 +34,8 @@ extern "C"
 #if defined(SUPPORT_WAB)
 
 /**
- * @brief ƒEƒBƒ“ƒhƒEƒAƒNƒZƒ‰ƒŒ[ƒ^Šî–{İ’èƒy[ƒW
- * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * @brief ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿åŸºæœ¬è¨­å®šãƒšãƒ¼ã‚¸
+ * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 class CWABPage : public CPropPageProc
 {
@@ -50,32 +50,32 @@ protected:
 	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	UINT8 m_awitch;				//!< ƒAƒiƒƒOƒXƒCƒbƒ`ƒ‚[ƒh
-	UINT8 m_multiwindow;		//!< •Ê‘‹ƒ‚[ƒh
-	UINT8 m_multithread;		//!< ƒ}ƒ‹ƒ`ƒXƒŒƒbƒhƒ‚[ƒh
+	UINT8 m_awitch;				//!< ã‚¢ãƒŠãƒ­ã‚°ã‚¹ã‚¤ãƒƒãƒãƒ¢ãƒ¼ãƒ‰
+	UINT8 m_multiwindow;		//!< åˆ¥çª“ãƒ¢ãƒ¼ãƒ‰
+	UINT8 m_multithread;		//!< ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ãƒ¢ãƒ¼ãƒ‰
 	CWndProc m_chkawitch;		//!< ANALOG SWITCH IC
 	CWndProc m_chkmultiwindow;	//!< MULTI WINDOW
 	CWndProc m_chkmultithread;	//!< MULTI THREAD
 };
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CWABPage::CWABPage()
 	: CPropPageProc(IDD_WAB)
 {
 }
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CWABPage::~CWABPage()
 {
 }
 
 /**
- * ‚±‚Ìƒƒ\ƒbƒh‚Í WM_INITDIALOG ‚ÌƒƒbƒZ[ƒW‚É‰“š‚µ‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
- * @retval TRUE Å‰‚ÌƒRƒ“ƒgƒ[ƒ‹‚É“ü—ÍƒtƒH[ƒJƒX‚ğİ’è
- * @retval FALSE Šù‚Éİ’èÏ
+ * ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ WM_INITDIALOG ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«å¿œç­”ã—ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * @retval TRUE æœ€åˆã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã«å…¥åŠ›ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’è¨­å®š
+ * @retval FALSE æ—¢ã«è¨­å®šæ¸ˆ
  */
 BOOL CWABPage::OnInitDialog()
 {
@@ -108,7 +108,7 @@ BOOL CWABPage::OnInitDialog()
 }
 
 /**
- * ƒ†[ƒU[‚ª OK ‚Ìƒ{ƒ^ƒ“ (IDOK ID ‚ª‚Ìƒ{ƒ^ƒ“) ‚ğƒNƒŠƒbƒN‚·‚é‚ÆŒÄ‚Ño‚³‚ê‚Ü‚·
+ * ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒ OK ã®ãƒœã‚¿ãƒ³ (IDOK ID ãŒã®ãƒœã‚¿ãƒ³) ã‚’ã‚¯ãƒªãƒƒã‚¯ã™ã‚‹ã¨å‘¼ã³å‡ºã•ã‚Œã¾ã™
  */
 void CWABPage::OnOK()
 {
@@ -125,10 +125,10 @@ void CWABPage::OnOK()
 }
 
 /**
- * ƒ†[ƒU[‚ªƒƒjƒ…[‚Ì€–Ú‚ğ‘I‘ğ‚µ‚½‚Æ‚«‚ÉAƒtƒŒ[ƒ€ƒ[ƒN‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
- * @param[in] wParam ƒpƒ‰ƒƒ^
- * @param[in] lParam ƒpƒ‰ƒƒ^
- * @retval TRUE ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ª‚±‚ÌƒƒbƒZ[ƒW‚ğˆ—‚µ‚½
+ * ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®é …ç›®ã‚’é¸æŠã—ãŸã¨ãã«ã€ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã«ã‚ˆã£ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * @param[in] wParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @param[in] lParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @retval TRUE ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡¦ç†ã—ãŸ
  */
 BOOL CWABPage::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -150,11 +150,11 @@ BOOL CWABPage::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * CWndProc ƒIƒuƒWƒFƒNƒg‚Ì Windows ƒvƒƒV[ƒWƒƒ (WindowProc) ‚ª—pˆÓ‚³‚ê‚Ä‚¢‚Ü‚·
- * @param[in] nMsg ˆ—‚³‚ê‚é Windows ƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
- * @param[in] wParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @param[in] lParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @return ƒƒbƒZ[ƒW‚ÉˆË‘¶‚·‚é’l‚ğ•Ô‚µ‚Ü‚·
+ * CWndProc ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã® Windows ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ (WindowProc) ãŒç”¨æ„ã•ã‚Œã¦ã„ã¾ã™
+ * @param[in] nMsg å‡¦ç†ã•ã‚Œã‚‹ Windows ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] wParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @param[in] lParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @return ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã™ã‚‹å€¤ã‚’è¿”ã—ã¾ã™
  */
 LRESULT CWABPage::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -165,8 +165,8 @@ LRESULT CWABPage::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 #if defined(SUPPORT_CL_GD5430)
 
 /**
- * @brief CL-GD5430 İ’èƒy[ƒW
- * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * @brief CL-GD5430 è¨­å®šãƒšãƒ¼ã‚¸
+ * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 class CGD5430Page : public CPropPageProc
 {
@@ -181,11 +181,11 @@ protected:
 	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	UINT8 m_enabled;			//!< —LŒøƒtƒ‰ƒO
-	UINT16 m_type;				//!< ‹@íİ’è
-	UINT8 m_fakecur;			//!< ‰¼ƒn[ƒhƒEƒFƒAƒJ[ƒ\ƒ‹
+	UINT8 m_enabled;			//!< æœ‰åŠ¹ãƒ•ãƒ©ã‚°
+	UINT16 m_type;				//!< æ©Ÿç¨®è¨­å®š
+	UINT8 m_fakecur;			//!< ä»®ãƒãƒ¼ãƒ‰ã‚¦ã‚§ã‚¢ã‚«ãƒ¼ã‚½ãƒ«
 	CWndProc m_chkenabled;		//!< ENABLED
-	CComboData m_cmbtype;		//!< ‹@í
+	CComboData m_cmbtype;		//!< æ©Ÿç¨®
 	CWndProc m_chkfakecur;		//!< FAKE HARDWARE CURSOR
 	CWndProc m_btnreset;		//!< RESET
 	void SetWABType(UINT16 cValue);
@@ -193,21 +193,21 @@ private:
 };
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CGD5430Page::CGD5430Page()
 	: CPropPageProc(IDD_GD5430)
 {
 }
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CGD5430Page::~CGD5430Page()
 {
 }
 
 /**
- * ‹@íƒŠƒXƒg
+ * æ©Ÿç¨®ãƒªã‚¹ãƒˆ
  */
 static const CComboData::Entry s_type[] =
 {
@@ -242,9 +242,9 @@ static const CComboData::Entry s_type[] =
 };
 
 /**
- * ‚±‚Ìƒƒ\ƒbƒh‚Í WM_INITDIALOG ‚ÌƒƒbƒZ[ƒW‚É‰“š‚µ‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
- * @retval TRUE Å‰‚ÌƒRƒ“ƒgƒ[ƒ‹‚É“ü—ÍƒtƒH[ƒJƒX‚ğİ’è
- * @retval FALSE Šù‚Éİ’èÏ
+ * ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ WM_INITDIALOG ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«å¿œç­”ã—ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * @retval TRUE æœ€åˆã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã«å…¥åŠ›ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’è¨­å®š
+ * @retval FALSE æ—¢ã«è¨­å®šæ¸ˆ
  */
 BOOL CGD5430Page::OnInitDialog()
 {
@@ -274,7 +274,7 @@ BOOL CGD5430Page::OnInitDialog()
 }
 
 /**
- * ƒ†[ƒU[‚ª OK ‚Ìƒ{ƒ^ƒ“ (IDOK ID ‚ª‚Ìƒ{ƒ^ƒ“) ‚ğƒNƒŠƒbƒN‚·‚é‚ÆŒÄ‚Ño‚³‚ê‚Ü‚·
+ * ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒ OK ã®ãƒœã‚¿ãƒ³ (IDOK ID ãŒã®ãƒœã‚¿ãƒ³) ã‚’ã‚¯ãƒªãƒƒã‚¯ã™ã‚‹ã¨å‘¼ã³å‡ºã•ã‚Œã¾ã™
  */
 void CGD5430Page::OnOK()
 {
@@ -293,10 +293,10 @@ void CGD5430Page::OnOK()
 }
 
 /**
- * ƒ†[ƒU[‚ªƒƒjƒ…[‚Ì€–Ú‚ğ‘I‘ğ‚µ‚½‚Æ‚«‚ÉAƒtƒŒ[ƒ€ƒ[ƒN‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
- * @param[in] wParam ƒpƒ‰ƒƒ^
- * @param[in] lParam ƒpƒ‰ƒƒ^
- * @retval TRUE ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ª‚±‚ÌƒƒbƒZ[ƒW‚ğˆ—‚µ‚½
+ * ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®é …ç›®ã‚’é¸æŠã—ãŸã¨ãã«ã€ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã«ã‚ˆã£ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * @param[in] wParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @param[in] lParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @retval TRUE ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡¦ç†ã—ãŸ
  */
 BOOL CGD5430Page::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -323,11 +323,11 @@ BOOL CGD5430Page::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * CWndProc ƒIƒuƒWƒFƒNƒg‚Ì Windows ƒvƒƒV[ƒWƒƒ (WindowProc) ‚ª—pˆÓ‚³‚ê‚Ä‚¢‚Ü‚·
- * @param[in] nMsg ˆ—‚³‚ê‚é Windows ƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
- * @param[in] wParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @param[in] lParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @return ƒƒbƒZ[ƒW‚ÉˆË‘¶‚·‚é’l‚ğ•Ô‚µ‚Ü‚·
+ * CWndProc ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã® Windows ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ (WindowProc) ãŒç”¨æ„ã•ã‚Œã¦ã„ã¾ã™
+ * @param[in] nMsg å‡¦ç†ã•ã‚Œã‚‹ Windows ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] wParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @param[in] lParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @return ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã™ã‚‹å€¤ã‚’è¿”ã—ã¾ã™
  */
 LRESULT CGD5430Page::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -338,8 +338,8 @@ LRESULT CGD5430Page::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ‹@í‚ğİ’è
- * @param[in] cValue İ’è
+ * æ©Ÿç¨®ã‚’è¨­å®š
+ * @param[in] cValue è¨­å®š
  */
 void CGD5430Page::SetWABType(UINT16 cValue)
 {
@@ -347,7 +347,7 @@ void CGD5430Page::SetWABType(UINT16 cValue)
 }
 
 /**
- * ‹@í‚ğæ“¾
+ * æ©Ÿç¨®ã‚’å–å¾—
  * @return I/O
  */
 UINT16 CGD5430Page::GetWABType() const
@@ -359,8 +359,8 @@ UINT16 CGD5430Page::GetWABType() const
 
 
 /**
- * ƒRƒ“ƒtƒBƒO ƒ_ƒCƒAƒƒO
- * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * ã‚³ãƒ³ãƒ•ã‚£ã‚° ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
+ * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 void dialog_wabopt(HWND hwndParent)
 {

@@ -1,6 +1,6 @@
 /**
  * @file	usbdev.h
- * @brief	USB ƒAƒNƒZƒX ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	USB ã‚¢ã‚¯ã‚»ã‚¹ ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -10,7 +10,7 @@
 #include <WinUsb.h>
 
 /**
- * @brief USB ƒAƒNƒZƒX ƒNƒ‰ƒX
+ * @brief USB ã‚¢ã‚¯ã‚»ã‚¹ ã‚¯ãƒ©ã‚¹
  */
 class CUsbDev
 {
@@ -25,19 +25,19 @@ public:
 	bool IsOpened() const;
 
 private:
-	HANDLE m_hDev;						/*!< ƒfƒoƒCƒX ƒnƒ“ƒhƒ‹ */
+	HANDLE m_hDev;						/*!< ãƒ‡ãƒã‚¤ã‚¹ ãƒãƒ³ãƒ‰ãƒ« */
 	WINUSB_INTERFACE_HANDLE m_hWinUsb;	/*!< WinUSB */
-	UCHAR m_cOutPipeId;					/*!< ƒpƒCƒv ID */
-	UCHAR m_cInPipeId;					/*!< ƒpƒCƒv id */
+	UCHAR m_cOutPipeId;					/*!< ãƒ‘ã‚¤ãƒ— ID */
+	UCHAR m_cInPipeId;					/*!< ãƒ‘ã‚¤ãƒ— id */
 	static LPTSTR GetDevicePath(const GUID& InterfaceGuid, LPTSTR lpDevicePath, int cchDevicePath);
 	bool Open(const GUID& InterfaceGuid);
 	bool OpenDevice(LPCTSTR lpDevicePath);
 };
 
 /**
- * ƒI[ƒvƒ“Ï?
- * @retval true ƒI[ƒvƒ“Ï
- * @retval false –¢ƒI[ƒvƒ“
+ * ã‚ªãƒ¼ãƒ—ãƒ³æ¸ˆ?
+ * @retval true ã‚ªãƒ¼ãƒ—ãƒ³æ¸ˆ
+ * @retval false æœªã‚ªãƒ¼ãƒ—ãƒ³
  */
 inline bool CUsbDev::IsOpened() const
 {

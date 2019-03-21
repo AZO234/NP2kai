@@ -44,15 +44,15 @@
 
 static INLINE void
 SSE2_check_NM_EXCEPTION(){
-	// SSE2�Ȃ��Ȃ�UD(�����I�y�R�[�h��O)�𔭐�������
+	// SSE2なしならUD(無効オペコード例外)を発生させる
 	if(!(i386cpuid.cpu_feature & CPU_FEATURE_SSE2)){
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	// �G�~�����[�V�����Ȃ�UD(�����I�y�R�[�h��O)�𔭐�������
+	// エミュレーションならUD(無効オペコード例外)を発生させる
 	if(CPU_CR0 & CPU_CR0_EM){
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	// �^�X�N�X�C�b�`����NM(�f�o�C�X�g�p�s��O)�𔭐�������
+	// タスクスイッチ時にNM(デバイス使用不可例外)を発生させる
 	if (CPU_CR0 & CPU_CR0_TS) {
 		EXCEPTION(NM_EXCEPTION, 0);
 	}
@@ -63,7 +63,7 @@ SSE2_setTag(void)
 {
 }
 
-// mmx.c�̂��̂Ɠ���
+// mmx.cのものと同じ
 static INLINE void
 MMX_setTag(void)
 {
@@ -95,14 +95,14 @@ double SSE2_ROUND_DOUBLE(double val){
 	case 0:	
 		floorval = floor(val);
 		if (val - floorval > 0.5){
-			return (floorval + 1); // �؂�グ
+			return (floorval + 1); // 切り上げ
 		}else if (val - floorval < 0.5){
-			return (floorval); // �؂�̂�
+			return (floorval); // 切り捨て
 		}else{
 			if(floor(floorval / 2) == floorval/2){
-				return (floorval); // ����
+				return (floorval); // 偶数
 			}else{
-				return (floorval+1); // �
+				return (floorval+1); // 奇数
 			}
 		}
 		break;
@@ -112,9 +112,9 @@ double SSE2_ROUND_DOUBLE(double val){
 		return ceil(val);
 	case 3:
 		if(val < 0){
-			return ceil(val); // �[�������ւ̐؂�̂�
+			return ceil(val); // ゼロ方向への切り捨て
 		}else{
-			return floor(val); // �[�������ւ̐؂�̂�
+			return floor(val); // ゼロ方向への切り捨て
 		}
 		break;
 	default:
@@ -126,7 +126,7 @@ double SSE2_ROUND_DOUBLE(double val){
  * SSE2 interface
  */
 
-// �R�[�h�������Ȃ�̂ł�⋭���ɋ��ʉ�
+// コードが長くなるのでやや強引に共通化
 // xmm/m128 -> xmm
 static INLINE void SSE_PART_GETDATA1DATA2_PD(double **data1, double **data2, double *data2buf){
 	UINT32 op;
@@ -850,11 +850,11 @@ void SSE2_MOVSDxmm2mem(void)
 }
 void SSE2_MOVUPDmem2xmm(void)
 {
-	SSE2_MOVAPDmem2xmm(); // �G�~�����[�V�����ł̓A���C�����g�������Ȃ��̂�MOVAPD�Ɠ���
+	SSE2_MOVAPDmem2xmm(); // エミュレーションではアライメント制限がないのでMOVAPDと同じ
 }
 void SSE2_MOVUPDxmm2mem(void)
 {
-	SSE2_MOVAPDxmm2mem(); // �G�~�����[�V�����ł̓A���C�����g�������Ȃ��̂�MOVAPD�Ɠ���
+	SSE2_MOVAPDxmm2mem(); // エミュレーションではアライメント制限がないのでMOVAPDと同じ
 }
 void SSE2_MULPD(void)
 {
@@ -942,7 +942,7 @@ void SSE2_SUBSD(void)
 }
 void SSE2_UCOMISD(void)
 {
-	SSE_COMISS(); // XXX: �Ƃ肠������O�͍l���Ȃ��̂�COMISS�Ɠ���
+	SSE_COMISS(); // XXX: とりあえず例外は考えないのでCOMISSと同じ
 }
 void SSE2_UNPCKHPD(void)
 {
@@ -1027,11 +1027,11 @@ void SSE2_MOVDQAxmm2mem(void)
 }
 void SSE2_MOVDQUmem2xmm(void)
 {
-	SSE2_MOVDQAmem2xmm(); // �G�~�����[�V�����ł̓A���C�����g�������Ȃ��̂�MOVDQA�Ɠ���
+	SSE2_MOVDQAmem2xmm(); // エミュレーションではアライメント制限がないのでMOVDQAと同じ
 }
 void SSE2_MOVDQUxmm2mem(void)
 {
-	SSE2_MOVDQAxmm2mem(); // �G�~�����[�V�����ł̓A���C�����g�������Ȃ��̂�MOVDQA�Ɠ���
+	SSE2_MOVDQAxmm2mem(); // エミュレーションではアライメント制限がないのでMOVDQAと同じ
 }
 void SSE2_MOVQ2DQ(void)
 {
@@ -1046,7 +1046,7 @@ void SSE2_MOVQ2DQ(void)
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
-		FPU_STAT.xmm_reg[idx].ul64[0] = FPU_STAT.reg[sub].ll; // idx��sub���t�����B�v����
+		FPU_STAT.xmm_reg[idx].ul64[0] = FPU_STAT.reg[sub].ll; // idxとsubが逆かも。要検証
 		FPU_STAT.xmm_reg[idx].ul64[1] = 0;
 	} else {
 		EXCEPTION(UD_EXCEPTION, 0);
@@ -1065,7 +1065,7 @@ void SSE2_MOVDQ2Q(void)
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
-		FPU_STAT.reg[idx].ll = FPU_STAT.xmm_reg[sub].ul64[0]; // idx��sub���t�����B�v����
+		FPU_STAT.reg[idx].ll = FPU_STAT.xmm_reg[sub].ul64[0]; // idxとsubが逆かも。要検証
 	} else {
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
@@ -1901,10 +1901,10 @@ void SSE2_PSLLW(void)
 	
 	SSE_PART_GETDATA1DATA2_PD_UINT64((UINT64**)(&data1), (UINT64**)(&data2), (UINT64*)data2buf);
 	shift = data2[0];
-	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	
 	for(i=0;i<8;i++){
-		data1[i] = (shift >= 16 ? 0 : (data1[i] << (UINT16)shift)); // XXX: MSB�����c�����̂ł��܂����i���ˑ��H�j
+		data1[i] = (shift >= 16 ? 0 : (data1[i] << (UINT16)shift)); // XXX: MSBが取り残されるのでごまかし（環境依存？）
 	}
 }
 void SSE2_PSLLD(void)
@@ -1917,10 +1917,10 @@ void SSE2_PSLLD(void)
 	
 	SSE_PART_GETDATA1DATA2_PD_UINT64((UINT64**)(&data1), (UINT64**)(&data2), (UINT64*)data2buf);
 	shift = data2[0];
-	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	
 	for(i=0;i<4;i++){
-		data1[i] = (shift >= 32 ? 0 : (data1[i] << (UINT32)shift)); // XXX: MSB�����c�����̂ł��܂����i���ˑ��H�j
+		data1[i] = (shift >= 32 ? 0 : (data1[i] << (UINT32)shift)); // XXX: MSBが取り残されるのでごまかし（環境依存？）
 	}
 }
 void SSE2_PSLLQ(void)
@@ -1933,10 +1933,10 @@ void SSE2_PSLLQ(void)
 	
 	SSE_PART_GETDATA1DATA2_PD_UINT64((UINT64**)(&data1), (UINT64**)(&data2), (UINT64*)data2buf);
 	shift = data2[0];
-	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	
 	for(i=0;i<2;i++){
-		data1[i] = (shift >= 64 ? 0 : (data1[i] << (UINT64)shift)); // XXX: MSB�����c�����̂ł��܂����i���ˑ��H�j
+		data1[i] = (shift >= 64 ? 0 : (data1[i] << (UINT64)shift)); // XXX: MSBが取り残されるのでごまかし（環境依存？）
 	}
 }
 //void SSE2_PSLLBimm(void)
@@ -1970,9 +1970,9 @@ void SSE2_PSRAW(void)
 	
 	SSE_PART_GETDATA1DATA2_PD_UINT64((UINT64**)(&data1), (UINT64**)(&data2), (UINT64*)data2buf);
 	shift = data2[0];
-	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	
-	// �������Z�p�V�t�g�i�������j
+	// 無理やり算術シフト（怪しい）
 	if(16 <= shift){
 		signval = 0xffff;
 	}else{
@@ -1983,7 +1983,7 @@ void SSE2_PSRAW(void)
 		if(((INT16*)data1)[i] < 0){
 			data1[i] = (data1[i] >> shift) | signval;
 		}else{
-			data1[i] = (shift >= 16 ? 0 : (data1[i] >> (UINT16)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+			data1[i] = (shift >= 16 ? 0 : (data1[i] >> (UINT16)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 		}
 	}
 }
@@ -1998,9 +1998,9 @@ void SSE2_PSRAD(void)
 	
 	SSE_PART_GETDATA1DATA2_PD_UINT64((UINT64**)(&data1), (UINT64**)(&data2), (UINT64*)data2buf);
 	shift = data2[0];
-	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	
-	// �������Z�p�V�t�g�i�������j
+	// 無理やり算術シフト（怪しい）
 	if(32 <= shift){
 		signval = 0xffffffff;
 	}else{
@@ -2011,7 +2011,7 @@ void SSE2_PSRAD(void)
 		if(((INT32*)data1)[i] < 0){
 			data1[i] = (data1[i] >> shift) | signval;
 		}else{
-			data1[i] = (shift >= 32 ? 0 : (data1[i] >> (UINT32)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+			data1[i] = (shift >= 32 ? 0 : (data1[i] >> (UINT32)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 		}
 	}
 }
@@ -2053,10 +2053,10 @@ void SSE2_PSRLW(void)
 	
 	SSE_PART_GETDATA1DATA2_PD_UINT64((UINT64**)(&data1), (UINT64**)(&data2), (UINT64*)data2buf);
 	shift = data2[0];
-	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	
 	for(i=0;i<8;i++){
-		data1[i] = (shift >= 16 ? 0 : (data1[i] >> (UINT16)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+		data1[i] = (shift >= 16 ? 0 : (data1[i] >> (UINT16)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 	}
 }
 void SSE2_PSRLD(void)
@@ -2069,10 +2069,10 @@ void SSE2_PSRLD(void)
 	
 	SSE_PART_GETDATA1DATA2_PD_UINT64((UINT64**)(&data1), (UINT64**)(&data2), (UINT64*)data2buf);
 	shift = data2[0];
-	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	
 	for(i=0;i<4;i++){
-		data1[i] = (shift >= 32 ? 0 : (data1[i] >> (UINT32)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+		data1[i] = (shift >= 32 ? 0 : (data1[i] >> (UINT32)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 	}
 }
 void SSE2_PSRLQ(void)
@@ -2085,10 +2085,10 @@ void SSE2_PSRLQ(void)
 	
 	SSE_PART_GETDATA1DATA2_PD_UINT64((UINT64**)(&data1), (UINT64**)(&data2), (UINT64*)data2buf);
 	shift = data2[0];
-	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	
 	for(i=0;i<2;i++){
-		data1[i] = (shift >= 64 ? 0 : (data1[i] >> (UINT64)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+		data1[i] = (shift >= 64 ? 0 : (data1[i] >> (UINT64)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 	}
 }
 //void SSE2_PSRLBimm(void)
@@ -2128,11 +2128,11 @@ void SSE2_PSxxWimm(void)
 	switch(idx){
 	case 2: // PSRLW(imm8)
 		for(i=0;i<8;i++){
-			dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+			dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 		}
 		break;
 	case 4: // PSRAW(imm8)
-		// �������Z�p�V�t�g�i�������j
+		// 無理やり算術シフト（怪しい）
 		if(16 <= shift){
 			signval = 0xffff;
 		}else{
@@ -2143,13 +2143,13 @@ void SSE2_PSxxWimm(void)
 			if(((INT16*)dstreg)[i] < 0){
 				dstreg[i] = (dstreg[i] >> shift) | signval;
 			}else{
-				dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+				dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 			}
 		}
 		break;
 	case 6: // PSLLW(imm8)
 		for(i=0;i<8;i++){
-			dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] << (UINT16)shift)); // XXX: MSB�����c�����̂ł��܂����i���ˑ��H�j
+			dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] << (UINT16)shift)); // XXX: MSBが取り残されるのでごまかし（環境依存？）
 		}
 		break;
 	default:
@@ -2177,11 +2177,11 @@ void SSE2_PSxxDimm(void)
 	switch(idx){
 	case 2: // PSRLD(imm8)
 		for(i=0;i<4;i++){
-			dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] >> (UINT32)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+			dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] >> (UINT32)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 		}
 		break;
 	case 4: // PSRAD(imm8)
-		// �������Z�p�V�t�g�i�������j
+		// 無理やり算術シフト（怪しい）
 		if(32 <= shift){
 			signval = 0xffffffff;
 		}else{
@@ -2192,13 +2192,13 @@ void SSE2_PSxxDimm(void)
 			if(((INT32*)dstreg)[i] < 0){
 				dstreg[i] = (dstreg[i] >> shift) | signval;
 			}else{
-				dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+				dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 			}
 		}
 		break;
 	case 6: // PSLLD(imm8)
 		for(i=0;i<4;i++){
-			dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] << (UINT32)shift)); // XXX: MSB�����c�����̂ł��܂����i���ˑ��H�j
+			dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] << (UINT32)shift)); // XXX: MSBが取り残されるのでごまかし（環境依存？）
 		}
 		break;
 	default:
@@ -2225,23 +2225,23 @@ void SSE2_PSxxQimm(void)
 	switch(idx){
 	case 2: // PSRLQ(imm8)
 		for(i=0;i<2;i++){
-			dstreg[i] = (shift >= 64 ? 0 : (dstreg[i] >> (UINT64)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+			dstreg[i] = (shift >= 64 ? 0 : (dstreg[i] >> (UINT64)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 		}
 		break;
 	case 3: // PSRLDQ
-		// �������128bit�E�V�t�g �������̂ŗv����
+		// 無理やり128bit右シフト 怪しいので要検証
 		if(shift == 0){
-			// �V�t�g�����Ȃ牽�����Ȃ�
+			// シフト無しなら何もしない
 		}else if(shift >= 128){
-			// �V�t�g��128�ȏ�̎�
+			// シフトが128以上の時
 			dstreg[0] = dstreg[1] = 0;
 		}else if(shift >= 64){
-			// �V�t�g��64�ȏ�̎�
+			// シフトが64以上の時
 			dstreg[0] = dstreg[1] >> (shift - 64);
 			dstreg[1] = 0;
 		}else{
-			// �V�t�g��64��菬������
-			dstreg[0] = (dstreg[0] >> shift) | (dstreg[1] << (64-shift)); // ����QWORD�E�V�t�g���ォ��~��Ă����r�b�g��OR
+			// シフトが64より小さい時
+			dstreg[0] = (dstreg[0] >> shift) | (dstreg[1] << (64-shift)); // 下位QWORD右シフト＆上から降りてきたビットをOR
 			dstreg[1] = (dstreg[1] >> shift);
 		}
 		break;
@@ -2250,23 +2250,23 @@ void SSE2_PSxxQimm(void)
 		break;
 	case 6: // PSLLQ(imm8)
 		for(i=0;i<2;i++){
-			dstreg[i] = (shift >= 64 ? 0 : (dstreg[i] << (UINT64)shift)); // XXX: MSB�����c�����̂ł��܂����i���ˑ��H�j
+			dstreg[i] = (shift >= 64 ? 0 : (dstreg[i] << (UINT64)shift)); // XXX: MSBが取り残されるのでごまかし（環境依存？）
 		}
 		break;
 	case 7: // PSLLDQ
-		// �������128bit���V�t�g �������̂ŗv����
+		// 無理やり128bit左シフト 怪しいので要検証
 		if(shift == 0){
-			// �V�t�g�����Ȃ牽�����Ȃ�
+			// シフト無しなら何もしない
 		}else if(shift >= 128){
-			// �V�t�g��128�ȏ�̎�
+			// シフトが128以上の時
 			dstreg[0] = dstreg[1] = 0;
 		}else if(shift >= 64){
-			// �V�t�g��64�ȏ�̎�
+			// シフトが64以上の時
 			dstreg[1] = dstreg[0] << (shift - 64);
 			dstreg[0] = 0;
 		}else{
-			// �V�t�g��64��菬������
-			dstreg[1] = (dstreg[1] << shift) | (dstreg[0] >> (64-shift)); // ���QWORD���V�t�g��������オ���Ă����r�b�g��OR
+			// シフトが64より小さい時
+			dstreg[1] = (dstreg[1] << shift) | (dstreg[0] >> (64-shift)); // 上位QWORD左シフト＆下から上がってきたビットをOR
 			dstreg[0] = (dstreg[0] << shift);
 		}
 		break;
@@ -2591,7 +2591,7 @@ void SSE2_MASKMOVDQU(void)
 			CPU_EDI += 1;
 		}
 	}
-	// �߂�
+	// 戻す
 	if (!CPU_INST_AS32) {
 		CPU_DI -= 16;
 	} else {
@@ -2622,7 +2622,7 @@ void SSE2_MOVNTI(void)
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
-	data1 = reg32_b53[(op)]; // ���ꍇ���Ă�H
+	data1 = reg32_b53[(op)]; // これ合ってる？
 	if ((op) >= 0xc0) {
 		EXCEPTION(UD_EXCEPTION, 0);
 	} else {

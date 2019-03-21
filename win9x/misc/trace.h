@@ -1,6 +1,6 @@
 /**
  * @file	trace.h
- * @brief	�g���[�X �N���X�̐錾����уC���^�[�t�F�C�X�̒�`�����܂�
+ * @brief	トレース クラスの宣言およびインターフェイスの定義をします
  */
 
 #pragma once

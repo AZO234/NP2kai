@@ -1,6 +1,6 @@
 /**
  * @file	PropProc.cpp
- * @brief	�v���p�e�B �V�[�g �N���X�̓���̒�`���s���܂�
+ * @brief	プロパティ シート クラスの動作の定義を行います
  */
 
 #include "compiler.h"
@@ -10,12 +10,12 @@
 #pragma comment(lib, "comctl32.lib")
 #endif	// !defined(__GNUC__)
 
-// ---- �v���p�e�B �y�[�W
+// ---- プロパティ ページ
 
 /**
- * �R���X�g���N�^
- * @param[in] nIDTemplate ���̃y�[�W�Ɏg�p����e���v���[�g�� ID
- * @param[in] nIDCaption ���̃y�[�W�̃^�u�ɐݒ肳��閼�O�� ID
+ * コンストラクタ
+ * @param[in] nIDTemplate このページに使用するテンプレートの ID
+ * @param[in] nIDCaption このページのタブに設定される名前の ID
  */
 CPropPageProc::CPropPageProc(UINT nIDTemplate, UINT nIDCaption)
 {
@@ -23,9 +23,9 @@ CPropPageProc::CPropPageProc(UINT nIDTemplate, UINT nIDCaption)
 }
 
 /**
- * �R���X�g���N�^
- * @param[in] lpszTemplateName ���̃y�[�W�̃e���v���[�g�̖��O���܂ޕ�����ւ̃|�C���^�[
- * @param[in] nIDCaption ���̃y�[�W�̃^�u�ɐݒ肳��閼�O�� ID
+ * コンストラクタ
+ * @param[in] lpszTemplateName このページのテンプレートの名前を含む文字列へのポインター
+ * @param[in] nIDCaption このページのタブに設定される名前の ID
  */
 CPropPageProc::CPropPageProc(LPCTSTR lpszTemplateName, UINT nIDCaption)
 {
@@ -33,7 +33,7 @@ CPropPageProc::CPropPageProc(LPCTSTR lpszTemplateName, UINT nIDCaption)
 }
 
 /**
- * �f�X�g���N�^
+ * デストラクタ
  */
 CPropPageProc::~CPropPageProc()
 {
@@ -44,9 +44,9 @@ CPropPageProc::~CPropPageProc()
 }
 
 /**
- * �R���X�g���N�g
- * @param[in] nIDTemplate ���̃y�[�W�Ɏg�p����e���v���[�g�� ID
- * @param[in] nIDCaption ���̃y�[�W�̃^�u�ɐݒ肳��閼�O�� ID
+ * コンストラクト
+ * @param[in] nIDTemplate このページに使用するテンプレートの ID
+ * @param[in] nIDCaption このページのタブに設定される名前の ID
  */
 void CPropPageProc::Construct(UINT nIDTemplate, UINT nIDCaption)
 {
@@ -54,9 +54,9 @@ void CPropPageProc::Construct(UINT nIDTemplate, UINT nIDCaption)
 }
 
 /**
- * �R���X�g���N�g
- * @param[in] lpszTemplateName ���̃y�[�W�̃e���v���[�g�̖��O���܂ޕ�����ւ̃|�C���^�[
- * @param[in] nIDCaption ���̃y�[�W�̃^�u�ɐݒ肳��閼�O�� ID
+ * コンストラクト
+ * @param[in] lpszTemplateName このページのテンプレートの名前を含む文字列へのポインター
+ * @param[in] nIDCaption このページのタブに設定される名前の ID
  */
 void CPropPageProc::Construct(LPCTSTR lpszTemplateName, UINT nIDCaption)
 {
@@ -80,10 +80,10 @@ void CPropPageProc::Construct(LPCTSTR lpszTemplateName, UINT nIDCaption)
 }
 
 /**
- * �v���p�e�B �y�[�W �v���V�[�W��
- * @param[in] hWnd �E�B���h�E �n���h��
- * @param[in] message ���b�Z�[�W
- * @param[in] pPropPage ���̃v���p�e�B �V�[�g �y�[�W�̃|�C���^
+ * プロパティ ページ プロシージャ
+ * @param[in] hWnd ウィンドウ ハンドル
+ * @param[in] message メッセージ
+ * @param[in] pPropPage このプロパティ シート ページのポインタ
  * @return 0
  */
 UINT CALLBACK CPropPageProc::PropPageCallback(HWND hWnd, UINT message, LPPROPSHEETPAGE pPropPage)
@@ -102,12 +102,12 @@ UINT CALLBACK CPropPageProc::PropPageCallback(HWND hWnd, UINT message, LPPROPSHE
 }
 
 /**
- * �t���[�����[�N�́A�C�x���g���R���g���[���ɔ�������ꍇ��A�R���g���[�����ꕔ�̎�ނ̏���v������R���g���[����e�E�B���h�E�ɒʒm���邽�߂ɁA���̃����o�[�֐����Ăяo���܂�
- * @param[in] wParam ���b�Z�[�W���R���g���[�����炻�̃��b�Z�[�W�𑗐M����R���g���[�������ʂ��܂�
- * @param[in] lParam �ʒm�R�[�h�ƒǉ������܂ޒʒm���b�Z�[�W (NMHDR) �̍\���̂ւ̃|�C���^�[
- * @param[out] pResult ���b�Z�[�W���������ꂽ�Ƃ����ʂ��i�[����R�[�h���� LRESULT �̕ϐ��ւ̃|�C���^�[
- * @retval TRUE ���b�Z�[�W����������
- * @retval FALSE ���b�Z�[�W���������Ȃ�����
+ * フレームワークは、イベントがコントロールに発生する場合や、コントロールが一部の種類の情報を要求するコントロールを親ウィンドウに通知するために、このメンバー関数を呼び出します
+ * @param[in] wParam メッセージがコントロールからそのメッセージを送信するコントロールを識別します
+ * @param[in] lParam 通知コードと追加情報を含む通知メッセージ (NMHDR) の構造体へのポインター
+ * @param[out] pResult メッセージが処理されたとき結果を格納するコードする LRESULT の変数へのポインター
+ * @retval TRUE メッセージを処理した
+ * @retval FALSE メッセージを処理しなかった
  */
 BOOL CPropPageProc::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 {
@@ -144,9 +144,9 @@ BOOL CPropPageProc::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 }
 
 /**
- * ���̃����o�[�֐��́A�t���[�����[�N�ɂ���� OnKillActive�t���[�����[�N�����Ăяo��������Ƀ��[�U�[��[OK]��I�����邩�A�X�V���ɌĂяo����܂�
- * @retval TRUE �ύX�����F���ꂽ
- * @retval FALSE �ύX�����F����Ȃ�����
+ * このメンバー関数は、フレームワークによって OnKillActiveフレームワークがを呼び出した直後にユーザーが[OK]を選択するか、更新時に呼び出されます
+ * @retval TRUE 変更が承認された
+ * @retval FALSE 変更が承認されなかった
  */
 BOOL CPropPageProc::OnApply()
 {
@@ -155,7 +155,7 @@ BOOL CPropPageProc::OnApply()
 }
 
 /**
- * ���̃����o�[�֐��́A�t���[�����[�N�ɂ���ă��[�U�[��[�L�����Z��]��I������Ƃ��ɌĂяo����܂��B
+ * このメンバー関数は、フレームワークによってユーザーが[キャンセル]を選択するときに呼び出されます。
  */
 void CPropPageProc::OnReset()
 {
@@ -163,23 +163,23 @@ void CPropPageProc::OnReset()
 }
 
 /**
- * ���̃����o�[�֐��́A�t���[�����[�N�ɂ���� OnKillActive�t���[�����[�N�����Ăяo��������Ƀ��[�U�[��[OK]��I�����邩�A�X�V���ɌĂяo����܂�
+ * このメンバー関数は、フレームワークによって OnKillActiveフレームワークがを呼び出した直後にユーザーが[OK]を選択するか、更新時に呼び出されます
  */
 void CPropPageProc::OnOK()
 {
 }
 
 /**
- * ���̃����o�[�֐��́A�t���[�����[�N��[�L�����Z��]�{�^�����I�����ꂽ�Ƃ��ɌĂяo����܂�
+ * このメンバー関数は、フレームワークで[キャンセル]ボタンが選択されたときに呼び出されます
  */
 void CPropPageProc::OnCancel()
 {
 }
 
-// ---- �v���p�e�B �V�[�g
+// ---- プロパティ シート
 
 /**
- * �R���X�g���N�^
+ * コンストラクタ
  */
 CPropSheetProc::CPropSheetProc()
 {
@@ -187,10 +187,10 @@ CPropSheetProc::CPropSheetProc()
 }
 
 /**
- * �R���X�g���N�^
- * @param[in] nIDCaption �L���v�V����
- * @param[in] hwndParent �e�E�B���h�E
- * @param[in] iSelectPage �X�^�[�g �y�[�W
+ * コンストラクタ
+ * @param[in] nIDCaption キャプション
+ * @param[in] hwndParent 親ウィンドウ
+ * @param[in] iSelectPage スタート ページ
  */
 CPropSheetProc::CPropSheetProc(UINT nIDCaption, HWND hwndParent, UINT iSelectPage)
 {
@@ -199,10 +199,10 @@ CPropSheetProc::CPropSheetProc(UINT nIDCaption, HWND hwndParent, UINT iSelectPag
 }
 
 /**
- * �R���X�g���N�^
- * @param[in] pszCaption �L���v�V����
- * @param[in] hwndParent �e�E�B���h�E
- * @param[in] iSelectPage �X�^�[�g �y�[�W
+ * コンストラクタ
+ * @param[in] pszCaption キャプション
+ * @param[in] hwndParent 親ウィンドウ
+ * @param[in] iSelectPage スタート ページ
  */
 CPropSheetProc::CPropSheetProc(LPCTSTR pszCaption, HWND hwndParent, UINT iSelectPage)
 {
@@ -211,9 +211,9 @@ CPropSheetProc::CPropSheetProc(LPCTSTR pszCaption, HWND hwndParent, UINT iSelect
 }
 
 /**
- * �R���X�g���N�g
- * @param[in] hwndParent �e�E�B���h�E
- * @param[in] iSelectPage �X�^�[�g �y�[�W
+ * コンストラクト
+ * @param[in] hwndParent 親ウィンドウ
+ * @param[in] iSelectPage スタート ページ
  */
 void CPropSheetProc::CommonConstruct(HWND hwndParent, UINT iSelectPage)
 {
@@ -225,8 +225,8 @@ void CPropSheetProc::CommonConstruct(HWND hwndParent, UINT iSelectPage)
 }
 
 /**
- * ���[�_��
- * @return ���U���g �R�[�h
+ * モーダル
+ * @return リザルト コード
  */
 INT_PTR CPropSheetProc::DoModal()
 {
@@ -247,8 +247,8 @@ INT_PTR CPropSheetProc::DoModal()
 }
 
 /**
- * �y�[�W�̒ǉ�
- * @param[in] pPage �y�[�W
+ * ページの追加
+ * @param[in] pPage ページ
  */
 void CPropSheetProc::AddPage(CPropPageProc* pPage)
 {

@@ -76,7 +76,7 @@ enum {
  */
 struct tagNP2Config
 {
-	// ƒGƒ~ƒ…ƒŒ[ƒg’†‚É‚æ‚­QÆ‚³‚ê‚é“z
+	// ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ãƒˆä¸­ã«ã‚ˆãå‚ç…§ã•ã‚Œã‚‹å¥´
 	UINT8	uPD72020;
 	UINT8	DISPSYNC;
 	UINT8	RASTER;
@@ -103,10 +103,10 @@ struct tagNP2Config
 	UINT8	timerfix;
 	
 #if defined(SUPPORT_ASYNC_CPU)
-	UINT8	asynccpu; // ”ñ“¯ŠúCPUƒ‚[ƒh—LŒø
+	UINT8	asynccpu; // éåŒæœŸCPUãƒ¢ãƒ¼ãƒ‰æœ‰åŠ¹
 #endif
 	
-	// ƒŠƒZƒbƒg‚Æ‚©‚ ‚ñ‚Ü‚èQÆ‚³‚ê‚È‚¢“z
+	// ãƒªã‚»ãƒƒãƒˆæ™‚ã¨ã‹ã‚ã‚“ã¾ã‚Šå‚ç…§ã•ã‚Œãªã„å¥´
 	OEMCHAR	model[8];
 	UINT	baseclock;
 	UINT	multiple;
@@ -193,9 +193,9 @@ struct tagNP2Config
 	OEMCHAR	idecd[4][MAX_PATH];										// ver0.85w
 	UINT8	idebios;												// ver0.86w rev20
 	UINT8	autoidebios;												// ver0.86w rev36
-	UINT32	iderwait; // IDE“Ç‚İæ‚è‚ÌŠ„‚è‚İ’x‰„ŠÔ(clock)B  np21w ver0.86 rev19
-	UINT32	idewwait; // IDE‘‚«‚İ‚ÌŠ„‚è‚İ’x‰„ŠÔ(clock)B  np21w ver0.86 rev18
-	UINT32	idemwait; // IDE BIOS‚ª‚ ‚éê‡‚ÌŠ„‚è‚İ’x‰„Å¬’l  np21w ver0.86 rev26 ”p~
+	UINT32	iderwait; // IDEèª­ã¿å–ã‚Šã®å‰²ã‚Šè¾¼ã¿é…å»¶æ™‚é–“(clock)ã€‚  np21w ver0.86 rev19
+	UINT32	idewwait; // IDEæ›¸ãè¾¼ã¿ã®å‰²ã‚Šè¾¼ã¿é…å»¶æ™‚é–“(clock)ã€‚  np21w ver0.86 rev18
+	UINT32	idemwait; // IDE BIOSãŒã‚ã‚‹å ´åˆã®å‰²ã‚Šè¾¼ã¿é…å»¶æœ€å°å€¤  np21w ver0.86 rev26 å»ƒæ­¢
 	UINT8	savecdfile;	
 	UINT8	useasynccd;
 	UINT8	allowcdtraycmd;	
@@ -231,16 +231,16 @@ struct tagNP2Config
 	UINT8	ga98nb_bigscrn_ex;
 #endif
 #if defined(SUPPORT_GPIB)
-	UINT8	usegpib; // GPIBg—p
+	UINT8	usegpib; // GPIBä½¿ç”¨
 	UINT8	gpibirq; // GPIB IRQ
 	UINT8	gpibmode; // GPIB Master/Slave
 	UINT8	gpibaddr; // GPIB Address
 	UINT8	gpibexio; // GPIB custom I/O port base
 #endif
 #if defined(SUPPORT_PCI)
-	UINT8	usepci; // PCI Busg—p
-	UINT8	pci_bios32; // BIOS32g—p
-	UINT8	pci_pcmc; // PCMC‘I‘ğ
+	UINT8	usepci; // PCI Busä½¿ç”¨
+	UINT8	pci_bios32; // BIOS32ä½¿ç”¨
+	UINT8	pci_pcmc; // PCMCé¸æŠ
 #endif
 
 #if defined(SUPPORT_STATSAVE)
@@ -258,28 +258,28 @@ struct tagNP2Config
 	
 	UINT8	biosioemu;
 
-	char	cpu_vendor[16]; // ƒxƒ“ƒ_[i12bytej
-	UINT32	cpu_family; // ƒtƒ@ƒ~ƒŠ
-	UINT32	cpu_model; // ƒ‚ƒfƒ‹
-	UINT32	cpu_stepping; // ƒXƒeƒbƒsƒ“ƒO
-	UINT32	cpu_feature; // ‹@”\ƒtƒ‰ƒO
-	UINT32	cpu_feature_ex; // Šg’£‹@”\ƒtƒ‰ƒO
-	char	cpu_brandstring[64]; // ƒuƒ‰ƒ“ƒh–¼i48bytej
-	OEMCHAR	cpu_vendor_o[16]; // ƒxƒ“ƒ_[i12bytejOEMCHAR
-	OEMCHAR	cpu_brandstring_o[64]; // ƒuƒ‰ƒ“ƒh–¼i48bytejOEMCHAR
-	UINT32	cpu_brandid; // ƒuƒ‰ƒ“ƒhID
-	UINT32  cpu_feature_ecx; // ECX‹@”\ƒtƒ‰ƒO
+	char	cpu_vendor[16]; // ãƒ™ãƒ³ãƒ€ãƒ¼ï¼ˆ12byteï¼‰
+	UINT32	cpu_family; // ãƒ•ã‚¡ãƒŸãƒª
+	UINT32	cpu_model; // ãƒ¢ãƒ‡ãƒ«
+	UINT32	cpu_stepping; // ã‚¹ãƒ†ãƒƒãƒ”ãƒ³ã‚°
+	UINT32	cpu_feature; // æ©Ÿèƒ½ãƒ•ãƒ©ã‚°
+	UINT32	cpu_feature_ex; // æ‹¡å¼µæ©Ÿèƒ½ãƒ•ãƒ©ã‚°
+	char	cpu_brandstring[64]; // ãƒ–ãƒ©ãƒ³ãƒ‰åï¼ˆ48byteï¼‰
+	OEMCHAR	cpu_vendor_o[16]; // ãƒ™ãƒ³ãƒ€ãƒ¼ï¼ˆ12byteï¼‰OEMCHAR
+	OEMCHAR	cpu_brandstring_o[64]; // ãƒ–ãƒ©ãƒ³ãƒ‰åï¼ˆ48byteï¼‰OEMCHAR
+	UINT32	cpu_brandid; // ãƒ–ãƒ©ãƒ³ãƒ‰ID
+	UINT32  cpu_feature_ecx; // ECXæ©Ÿèƒ½ãƒ•ãƒ©ã‚°
 	
-	UINT8	fpu_type; // FPUí—Şi0=Berkeley SoftFloat, 1=DOSBox FPU, 2=DOSBox FPU+INT64j
+	UINT8	fpu_type; // FPUç¨®é¡ï¼ˆ0=Berkeley SoftFloat, 1=DOSBox FPU, 2=DOSBox FPU+INT64ï¼‰
 	
 #if defined(SUPPORT_FAST_MEMORYCHECK)
-	UINT8	memcheckspeed; // ƒƒ‚ƒŠƒ`ƒFƒbƒN‘¬“x
+	UINT8	memcheckspeed; // ãƒ¡ãƒ¢ãƒªãƒã‚§ãƒƒã‚¯é€Ÿåº¦
 #endif
 	
-	UINT8	useram_d; // EPSON‚Å‚È‚­‚Ä‚àD0000h-DFFFFh‚ğRAM‚Éi‚½‚¾‚µIDE BIOS D8000h-DBFFFh‚Í‘Ê–Új
-	UINT8	usepegcplane; // PEGC ƒvƒŒ[ƒ“ƒ‚[ƒhƒTƒ|[ƒg
+	UINT8	useram_d; // EPSONã§ãªãã¦ã‚‚D0000h-DFFFFhã‚’RAMã«ï¼ˆãŸã ã—IDE BIOS D8000h-DBFFFhã¯é§„ç›®ï¼‰
+	UINT8	usepegcplane; // PEGC ãƒ—ãƒ¬ãƒ¼ãƒ³ãƒ¢ãƒ¼ãƒ‰ã‚µãƒãƒ¼ãƒˆ
 	
-	UINT8	usecdecc; // CD-ROM EDC/ECC ƒGƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“ƒTƒ|[ƒg
+	UINT8	usecdecc; // CD-ROM EDC/ECC ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã‚µãƒãƒ¼ãƒˆ
 };
 typedef struct tagNP2Config  NP2CFG;		/*!< The define of config */
 
@@ -295,7 +295,7 @@ typedef struct {
 #else
 	UINT8	extmem;
 #endif
-	UINT8	dipsw[3];		// ƒŠƒZƒbƒg‚ÌDIPSW
+	UINT8	dipsw[3];		// ãƒªã‚»ãƒƒãƒˆæ™‚ã®DIPSW
 	UINT8	rom;
 
 	SOUNDID sound;

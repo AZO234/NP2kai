@@ -11,7 +11,7 @@
 static const UINT8 vfdd_verID_100[8] =
 						{'V','F','D','1','.','0','0', 0x00};
 static const UINT8 vfdd_verID_101[8] =
-						{'V','F','D','1','.','0','1', 0x00};	//	1.01‚à‚Æ‚è‚ ‚¦‚¸‘ÎÛ‚É(kaiF)
+						{'V','F','D','1','.','0','1', 0x00};	//	1.01ã‚‚ã¨ã‚Šã‚ãˆãšå¯¾è±¡ã«(kaiF)
 
 BRESULT fdd_set_vfdd(FDDFILE fdd, FDDFUNC fdd_fn, const OEMCHAR *fname, int ro) {
 
@@ -29,15 +29,15 @@ const _VFDD_ID	*sec_vfdd;
 	if (fh == FILEH_INVALID) {
 		return(FAILURE);
 	}
-	rsize = file_read(fh, &fdd->inf.vfdd.head, VFDD_HEADERSIZE);	//	VFDDƒwƒbƒ_“Ç
+	rsize = file_read(fh, &fdd->inf.vfdd.head, VFDD_HEADERSIZE);	//	VFDDãƒ˜ãƒƒãƒ€èª­è¾¼
 	file_close(fh);
 	if (rsize != VFDD_HEADERSIZE) {
 		return(FAILURE);
 	}
 
-	//	ƒo[ƒWƒ‡ƒ“‚h‚cƒ`ƒFƒbƒN
+	//	ãƒãƒ¼ã‚¸ãƒ§ãƒ³ï¼©ï¼¤ãƒã‚§ãƒƒã‚¯
 	if (memcmp(fdd->inf.vfdd.head.verID, vfdd_verID_100, 8)) {
-		if (memcmp(fdd->inf.vfdd.head.verID, vfdd_verID_101, 8)) {	//	1.01‚à‚Æ‚è‚ ‚¦‚¸‘ÎÛ‚É(kaiF)
+		if (memcmp(fdd->inf.vfdd.head.verID, vfdd_verID_101, 8)) {	//	1.01ã‚‚ã¨ã‚Šã‚ãˆãšå¯¾è±¡ã«(kaiF)
 			return(FAILURE);
 		}
 	}
@@ -48,12 +48,12 @@ const _VFDD_ID	*sec_vfdd;
 		fdd->protect = TRUE;
 	}
 
-	//	Å‘å’l“ü‚ê‚Ä•½‹CH
+	//	æœ€å¤§å€¤å…¥ã‚Œã¦å¹³æ°—ï¼Ÿ
 	fdd->inf.xdf.tracks		= VFDD_TRKMAX;
 	fdd->inf.xdf.sectors	= VFDD_SECMAX;
 
 	sec_vfdd = &fdd->inf.vfdd.id[0][0];
-	//	ƒfƒBƒXƒNƒAƒNƒZƒX—p‚ÉŠeƒZƒNƒ^‚ÌƒIƒtƒZƒbƒg‚ğZo
+	//	ãƒ‡ã‚£ã‚¹ã‚¯ã‚¢ã‚¯ã‚»ã‚¹æ™‚ç”¨ã«å„ã‚»ã‚¯ã‚¿ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’ç®—å‡º
 	for (i = 0; i < VFDD_TRKMAX * VFDD_SECMAX; i++) {
 		if (sec_vfdd->C != 0xff) {
 			fdd->inf.vfdd.ptr[(sec_vfdd->C << 1) + sec_vfdd->H][sec_vfdd->R - 1] = LOADINTELDWORD(&sec_vfdd->dataPoint);
@@ -61,8 +61,8 @@ const _VFDD_ID	*sec_vfdd;
 		sec_vfdd++;
 	}
 
-	//	æ“ªŠi”[ƒZƒNƒ^‚ğŒ©‚ÄŒˆ‚ß‘Å‚¿
-	//	c2DD/2HD¬İƒtƒH[ƒ}ƒbƒg‚Å‚Ü‚¸‚¢‹C‚ª‚·‚é
+	//	å…ˆé ­æ ¼ç´ã‚»ã‚¯ã‚¿ã‚’è¦‹ã¦æ±ºã‚æ‰“ã¡
+	//	â€¦2DD/2HDæ··åœ¨ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã§ã¾ãšã„æ°—ãŒã™ã‚‹
 	sec_vfdd = &fdd->inf.vfdd.id[0][0];
 	if (sec_vfdd->flHD) {
 		/* 1.2M */
@@ -70,7 +70,7 @@ const _VFDD_ID	*sec_vfdd;
 		fdd->inf.xdf.rpm = 0;
 		sec_vfdd = &fdd->inf.vfdd.id[0][17];
 		if (sec_vfdd->flMF == 0x01 && sec_vfdd->flHD == 0x01) {
-			/* 1.44M(b’è) */
+			/* 1.44M(æš«å®š) */
 			fdd->inf.xdf.rpm = 1;
 		}
 	}
@@ -80,7 +80,7 @@ const _VFDD_ID	*sec_vfdd;
 		fdd->inf.xdf.rpm = 0;
 	}
 
-	//	ˆ—ŠÖ”ŒQ‚ğ“o˜^
+	//	å‡¦ç†é–¢æ•°ç¾¤ã‚’ç™»éŒ²
 	fdd_fn->eject		= fdd_eject_xxx;
 	fdd_fn->diskaccess	= fdd_diskaccess_common;
 	fdd_fn->seek		= fdd_seek_common;

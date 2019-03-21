@@ -20,11 +20,11 @@
 #define PEGC_REG_PATTERN		0x020 // mio2 E0120h
 
 typedef struct {
-	UINT8 enable; // PEGCƒvƒŒ[ƒ“ƒ‚[ƒhŽg—p‰Â”\
+	UINT8 enable; // PEGCãƒ—ãƒ¬ãƒ¼ãƒ³ãƒ¢ãƒ¼ãƒ‰ä½¿ç”¨å¯èƒ½
 	
-	UINT8 lastdata[64]; // PEGCƒvƒŒ[ƒ“ƒ‚[ƒh ÅŒã‚ÉVRAM‚©‚ç“Ç‚ÝŽæ‚Á‚½ƒf[ƒ^
-	SINT32 lastdatalen; // PEGCƒvƒŒ[ƒ“ƒ‚[ƒh “Ç‚ÝŽæ‚èÏ‚Ýƒf[ƒ^’·‚³
-	UINT32 remain; // PEGCƒvƒŒ[ƒ“ƒ‚[ƒh “]‘—ƒf[ƒ^Žc‚èH
+	UINT8 lastdata[64]; // PEGCãƒ—ãƒ¬ãƒ¼ãƒ³ãƒ¢ãƒ¼ãƒ‰ æœ€å¾Œã«VRAMã‹ã‚‰èª­ã¿å–ã£ãŸãƒ‡ãƒ¼ã‚¿
+	SINT32 lastdatalen; // PEGCãƒ—ãƒ¬ãƒ¼ãƒ³ãƒ¢ãƒ¼ãƒ‰ èª­ã¿å–ã‚Šæ¸ˆã¿ãƒ‡ãƒ¼ã‚¿é•·ã•
+	UINT32 remain; // PEGCãƒ—ãƒ¬ãƒ¼ãƒ³ãƒ¢ãƒ¼ãƒ‰ è»¢é€ãƒ‡ãƒ¼ã‚¿æ®‹ã‚Šï¼Ÿ
 } _PEGC, *PEGC;
 
 

@@ -143,7 +143,7 @@ static void hdd_close(SXSIDEV sxsi) {
 
 // ----
 
-// SASI規格HDDかチェック
+// SASI隕乗ｼHDD縺九メ繧ｧ繝�繧ｯ
 static UINT8 gethddtype(SXSIDEV sxsi) {
 
 const SASIHDD	*sasi;
@@ -268,7 +268,7 @@ const OEMCHAR	*ext;
 		goto sxsiope_err2;
 	}
 
-	// フォーマット確認～
+	// 繝輔か繝ｼ繝槭ャ繝育｢ｺ隱阪�
 	if ((surfaces == 0) || (surfaces >= 256) ||
 		(cylinders == 0) || (cylinders >= 65536) ||
 		(sectors == 0) || (sectors >= 256) ||

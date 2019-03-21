@@ -14,17 +14,17 @@ typedef struct {
 	_XDFINFO	xdf;
 } __DCPINFO;
 
-//	‘Sƒgƒ‰ƒbƒNŠi”[ƒCƒ[ƒWƒ`ƒFƒbƒN—p
+//	å…¨ãƒˆãƒ©ãƒƒã‚¯æ ¼ç´ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒã‚§ãƒƒã‚¯ç”¨
 static const __DCPINFO supportdcp[] = {
-	{0x01, {162, 154,  8, 3, DISKTYPE_2HD, 0}},	//	01h	2HD- 8ƒZƒNƒ^(1.25MB)
-	{0x02, {162, 160, 15, 2, DISKTYPE_2HD, 0}},	//	02h	2HD-15ƒZƒNƒ^(1.21MB)
-	{0x03, {162, 160, 18, 2, DISKTYPE_2HD, 1}},	//	03h	2HQ-18ƒZƒNƒ^(1.44MB)
-	{0x04, {162, 160,  8, 2, DISKTYPE_2DD, 0}},	//	04h	2DD- 8ƒZƒNƒ^( 640KB)
-	{0x05, {162, 160,  9, 2, DISKTYPE_2DD, 0}},	//	05h	2DD- 9ƒZƒNƒ^( 720KB)
-	{0x08, {162, 154,  9, 3, DISKTYPE_2HD, 0}},	//	08h	2HD- 9ƒZƒNƒ^(1.44MB)
+	{0x01, {162, 154,  8, 3, DISKTYPE_2HD, 0}},	//	01h	2HD- 8ã‚»ã‚¯ã‚¿(1.25MB)
+	{0x02, {162, 160, 15, 2, DISKTYPE_2HD, 0}},	//	02h	2HD-15ã‚»ã‚¯ã‚¿(1.21MB)
+	{0x03, {162, 160, 18, 2, DISKTYPE_2HD, 1}},	//	03h	2HQ-18ã‚»ã‚¯ã‚¿(1.44MB)
+	{0x04, {162, 160,  8, 2, DISKTYPE_2DD, 0}},	//	04h	2DD- 8ã‚»ã‚¯ã‚¿( 640KB)
+	{0x05, {162, 160,  9, 2, DISKTYPE_2DD, 0}},	//	05h	2DD- 9ã‚»ã‚¯ã‚¿( 720KB)
+	{0x08, {162, 154,  9, 3, DISKTYPE_2HD, 0}},	//	08h	2HD- 9ã‚»ã‚¯ã‚¿(1.44MB)
 	{0x11, {162, 154, 26, 1, DISKTYPE_2HD, 0}},	//	11h	BASIC-2HD
 	{0x19, {162, 160, 16, 1, DISKTYPE_2DD, 0}},	//	19h	BASIC-2DD
-	{0x21, {162, 154, 26, 1, DISKTYPE_2HD, 0}},	//	21h	2HD-26ƒZƒNƒ^
+	{0x21, {162, 154, 26, 1, DISKTYPE_2HD, 0}},	//	21h	2HD-26ã‚»ã‚¯ã‚¿
 };
 
 BRESULT fdd_set_dcp(FDDFILE fdd, FDDFUNC fdd_fn, const OEMCHAR *fname, int ro) {
@@ -48,18 +48,18 @@ const __DCPINFO	*dcp;
 		return(FAILURE);
 	}
 	fdsize = (UINT32)file_getsize(fh);
-	rsize = file_read(fh, &fdd->inf.dcp.head, DCP_HEADERSIZE);	//	DCPƒwƒbƒ_“Ç
+	rsize = file_read(fh, &fdd->inf.dcp.head, DCP_HEADERSIZE);	//	DCPãƒ˜ãƒƒãƒ€èª­è¾¼
 	file_close(fh);
 	if (rsize != DCP_HEADERSIZE) {
 		return(FAILURE);
 	}
 
-	//	‘Sƒgƒ‰ƒbƒNŠi”[ƒCƒ[ƒWƒ`ƒFƒbƒN
+	//	å…¨ãƒˆãƒ©ãƒƒã‚¯æ ¼ç´ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒã‚§ãƒƒã‚¯
 	dcp = supportdcp;
 	while(dcp < (supportdcp + NELEMENTS(supportdcp))) {
 		if (fdd->inf.dcp.head.mediatype == dcp->mediatype) {
 			if (fdd->inf.dcp.head.alltrackflg == 0x01) {
-				//	‘Sƒgƒ‰ƒbƒNŠi”[ƒtƒ‰ƒO‚ª0x01‚Ìê‡Aƒtƒ@ƒCƒ‹ƒTƒCƒYƒ`ƒFƒbƒN
+				//	å…¨ãƒˆãƒ©ãƒƒã‚¯æ ¼ç´ãƒ•ãƒ©ã‚°ãŒ0x01ã®å ´åˆã€ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºãƒã‚§ãƒƒã‚¯
 				size = dcp->xdf.tracks;
 				size *= dcp->xdf.sectors;
 				size <<= (7 + dcp->xdf.n);
@@ -72,30 +72,30 @@ const __DCPINFO	*dcp;
 			fdd->protect = ((attr & 0x01) || (ro)) ? TRUE : FALSE;
 			fdd->inf.xdf = dcp->xdf;
 
-			//	ƒfƒBƒXƒNƒAƒNƒZƒX—p‚ÉŠeƒgƒ‰ƒbƒN‚ÌƒIƒtƒZƒbƒg‚ğZo
+			//	ãƒ‡ã‚£ã‚¹ã‚¯ã‚¢ã‚¯ã‚»ã‚¹æ™‚ç”¨ã«å„ãƒˆãƒ©ãƒƒã‚¯ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’ç®—å‡º
 			tracksize = fdd->inf.xdf.sectors * (128 << fdd->inf.xdf.n);
 //			trackptr = 0;
 			trackptr = DCP_HEADERSIZE;
 			for(i = 0; i < fdd->inf.xdf.tracks; i++) {
 				if (fdd->inf.dcp.head.trackmap[i] == 0x01 || fdd->inf.dcp.head.alltrackflg == 0x01) {
-					//	ƒgƒ‰ƒbƒNƒf[ƒ^‚ª‘¶İ‚·‚é(trackmap[i] = 0x01)
-					//	or ‘Sƒgƒ‰ƒbƒNŠi”[ƒtƒ‰ƒO‚ª0x01
+					//	ãƒˆãƒ©ãƒƒã‚¯ãƒ‡ãƒ¼ã‚¿ãŒå­˜åœ¨ã™ã‚‹(trackmap[i] = 0x01)
+					//	or å…¨ãƒˆãƒ©ãƒƒã‚¯æ ¼ç´ãƒ•ãƒ©ã‚°ãŒ0x01
 					fdd->inf.dcp.ptr[i] = trackptr;
 					if (i == 0 && fdd->inf.dcp.head.mediatype == DCP_DISK_2HD_BAS) {
-						trackptr += tracksize / 2;	//	BASIC-2HDAtrack 0—p¬×H
+						trackptr += tracksize / 2;	//	BASIC-2HDã€track 0ç”¨å°ç´°å·¥
 					}
 					else {
 						trackptr += tracksize;
 					}
 				}
 				else {
-					//	ƒCƒ[ƒWƒtƒ@ƒCƒ‹ã‚É‘¶İ‚µ‚È‚¢ƒgƒ‰ƒbƒN
+					//	ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ•ã‚¡ã‚¤ãƒ«ä¸Šã«å­˜åœ¨ã—ãªã„ãƒˆãƒ©ãƒƒã‚¯
 					fdd->inf.dcp.ptr[i] = 0;
 				}
 			}
 
-			//	ˆ—ŠÖ”ŒQ‚ğ“o˜^
-			//	¦readAwriteˆÈŠO‚Í\‘¢‘Ì‚Ì¬×H‚ÅxdfŒn‚Æ‹¤—p
+			//	å‡¦ç†é–¢æ•°ç¾¤ã‚’ç™»éŒ²
+			//	â€»readã€writeä»¥å¤–ã¯æ§‹é€ ä½“ã®å°ç´°å·¥ã§xdfç³»ã¨å…±ç”¨
 			fdd_fn->eject		= fdd_eject_xxx;
 			fdd_fn->diskaccess	= fdd_diskaccess_common;
 			fdd_fn->seek		= fdd_seek_common;
@@ -141,7 +141,7 @@ BRESULT fdd_read_dcp(FDDFILE fdd) {
 	track = (fdc.treg[fdc.us] << 1) + fdc.hd;
 	secsize = 128 << fdd->inf.xdf.n;
 	if (fdd->inf.dcp.head.mediatype == DCP_DISK_2HD_BAS && track == 0) {
-		//	BASIC-2HDAtrack 0—p¬×H
+		//	BASIC-2HDã€track 0ç”¨å°ç´°å·¥
 		secsize /= 2;
 	}
 	if ((fdd->type == DISKTYPE_BETA) ||
@@ -151,7 +151,7 @@ BRESULT fdd_read_dcp(FDDFILE fdd) {
 		seekp = fdc.R - 1;
 		seekp <<= (7 + fdd->inf.xdf.n);
 		if (fdd->inf.dcp.head.mediatype == DCP_DISK_2HD_BAS && track == 0) {
-			//	BASIC-2HDAtrack 0—p¬×H
+			//	BASIC-2HDã€track 0ç”¨å°ç´°å·¥
 			seekp /= 2;
 		}
 		seekp += fdd->inf.dcp.ptr[track];
@@ -171,22 +171,22 @@ BRESULT fdd_read_dcp(FDDFILE fdd) {
 		file_close(hdl);
 	}
 	else {
-		//	ƒtƒ@ƒCƒ‹ã‚Éƒf[ƒ^‚Ì‘¶İ‚µ‚È‚¢ƒZƒNƒ^‚Í0xE5‚Å–„‚ß‚Ä•Ô‚·
-		//	¦DCU‚¾‚Æˆá‚¤H
+		//	ãƒ•ã‚¡ã‚¤ãƒ«ä¸Šã«ãƒ‡ãƒ¼ã‚¿ã®å­˜åœ¨ã—ãªã„ã‚»ã‚¯ã‚¿ã¯0xE5ã§åŸ‹ã‚ã¦è¿”ã™
+		//	â€»DCUã ã¨é•ã†ï¼Ÿ
 		FillMemory(fdc.buf, secsize, 0xe5);
 	}
 #if 0
 	if (fdd->inf.dcp.head.trackmap[track] != 0x01) {
 //	if (fdd->inf.dcp.ptr[track] == 0) {
-		//	ƒtƒ@ƒCƒ‹ã‚Éƒf[ƒ^‚Ì‘¶İ‚µ‚È‚¢ƒZƒNƒ^‚Í0xE5‚Å–„‚ß‚Ä•Ô‚·
-		//	¦DCU‚¾‚Æˆá‚¤H
+		//	ãƒ•ã‚¡ã‚¤ãƒ«ä¸Šã«ãƒ‡ãƒ¼ã‚¿ã®å­˜åœ¨ã—ãªã„ã‚»ã‚¯ã‚¿ã¯0xE5ã§åŸ‹ã‚ã¦è¿”ã™
+		//	â€»DCUã ã¨é•ã†ï¼Ÿ
 		FillMemory(fdc.buf, secsize, 0xe5);
 	}
 	else {
 		seekp = fdc.R - 1;
 		seekp <<= (7 + fdd->inf.xdf.n);
 		if (fdd->inf.dcp.head.mediatype == DCP_DISK_2HD_BAS && track == 0) {
-			//	BASIC-2HDAtrack 0—p¬×H
+			//	BASIC-2HDã€track 0ç”¨å°ç´°å·¥
 			seekp /= 2;
 		}
 		seekp += fdd->inf.dcp.ptr[track];
@@ -243,7 +243,7 @@ BRESULT makenewtrack_dcp(FDDFILE fdd) {
 	if (fdd->inf.dcp.head.mediatype == DCP_DISK_2HD_BAS && newtrack == 0) {
 		tracksize /= 2;
 	}
-	//	‚¸‚ç‚µn‚ß‚éƒIƒtƒZƒbƒgæ“¾
+	//	ãšã‚‰ã—å§‹ã‚ã‚‹ã‚ªãƒ•ã‚»ãƒƒãƒˆå–å¾—
 	ptr = 0;
 	for (i = newtrack; i < DCP_TRACKMAX; i++) {
 		if (fdd->inf.dcp.ptr[i] != 0) {
@@ -269,7 +269,7 @@ BRESULT makenewtrack_dcp(FDDFILE fdd) {
 			file_write(hdl, tmp, rsize);
 		}
 
-		//	Šeƒgƒ‰ƒbƒN‚ÌƒIƒtƒZƒbƒgÄŒvZ
+		//	å„ãƒˆãƒ©ãƒƒã‚¯ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆå†è¨ˆç®—
 		fdd->inf.dcp.ptr[newtrack] = ptr;
 		ptr += tracksize;
 		for (i = newtrack+1; i < DCP_TRACKMAX; i++) {
@@ -345,7 +345,7 @@ BRESULT fdd_write_dcp(FDDFILE fdd) {
 		seekp = fdc.R - 1;
 		seekp <<= (7 + fdd->inf.xdf.n);
 		if (fdd->inf.dcp.head.mediatype == DCP_DISK_2HD_BAS && track == 0) {
-			//	BASIC-2HDAtrack 0—p¬×H
+			//	BASIC-2HDã€track 0ç”¨å°ç´°å·¥
 			secsize /= 2;
 			seekp /= 2;
 		}
@@ -366,7 +366,7 @@ BRESULT fdd_write_dcp(FDDFILE fdd) {
 		file_close(hdl);
 	}
 	else {
-		//	V‹Kƒgƒ‰ƒbƒN‘}“üŒãAÄ‹AŒÄ‚Ño‚µ
+		//	æ–°è¦ãƒˆãƒ©ãƒƒã‚¯æŒ¿å…¥å¾Œã€å†å¸°å‘¼ã³å‡ºã—
 		BRESULT	r;
 		r = makenewtrack_dcp(fdd);
 		if (r != SUCCESS) {
@@ -382,11 +382,11 @@ BRESULT fdd_write_dcp(FDDFILE fdd) {
 #if 0
 	if (fdd->inf.dcp.head.trackmap[track] != 0x01) {
 //	if (fdd->inf.dcp.ptr[track] == 0) {
-		//	ƒf[ƒ^‚Ì‘¶İ‚µ‚È‚¢ƒgƒ‰ƒbƒN‚ÍƒGƒ‰[‚É‚µ‚Æ‚­
+		//	ãƒ‡ãƒ¼ã‚¿ã®å­˜åœ¨ã—ãªã„ãƒˆãƒ©ãƒƒã‚¯ã¯ã‚¨ãƒ©ãƒ¼ã«ã—ã¨ã
 //		fddlasterror = 0xc0;
 //		return(FAILURE);
-		//	V‹Kƒgƒ‰ƒbƒN‘}“ü•ƒwƒbƒ_•”XVŒãA
-		//	Ä‹AŒÄ‚Ño‚µ
+		//	æ–°è¦ãƒˆãƒ©ãƒƒã‚¯æŒ¿å…¥ï¼†ãƒ˜ãƒƒãƒ€éƒ¨æ›´æ–°å¾Œã€
+		//	å†å¸°å‘¼ã³å‡ºã—
 		BRESULT	r;
 		r = makenewtrack_dcp(fdd);
 		if (r != SUCCESS) {
@@ -403,7 +403,7 @@ BRESULT fdd_write_dcp(FDDFILE fdd) {
 	seekp = fdc.R - 1;
 	seekp <<= (7 + fdd->inf.xdf.n);
 	if (fdd->inf.dcp.head.mediatype == DCP_DISK_2HD_BAS && track == 0) {
-		//	BASIC-2HDAtrack 0—p¬×H
+		//	BASIC-2HDã€track 0ç”¨å°ç´°å·¥
 		secsize /= 2;
 		seekp /= 2;
 	}

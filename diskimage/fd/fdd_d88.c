@@ -273,7 +273,7 @@ BRESULT fdd_set_d88(FDDFILE fdd, FDDFUNC fdd_fn, const OEMCHAR *fname, int ro) {
 	UINT	rsize;
 	int		i;
 
-//	fddd88_eject(fdd);	//	íœ(kai9)
+//	fddd88_eject(fdd);	//	å‰Šé™¤(kai9)
 	attr = file_attr(fname);
 	if (attr & 0x18) {
 		goto fdst_err;
@@ -296,7 +296,7 @@ BRESULT fdd_set_d88(FDDFILE fdd, FDDFUNC fdd_fn, const OEMCHAR *fname, int ro) {
 	for (i=0; i<164; i++) {
 		fdd->inf.d88.ptr[i] = LOADINTELDWORD(fdd->inf.d88.head.trackp[i]);
 	}
-	//	ˆ—ŠÖ”ŒQ‚ğ“o˜^(kai9)
+	//	å‡¦ç†é–¢æ•°ç¾¤ã‚’ç™»éŒ²(kai9)
 	fdd_fn->eject = fdd_eject_d88;
 	fdd_fn->diskaccess = fdd_diskaccess_d88;
 	fdd_fn->seek = fdd_seek_d88;
@@ -319,7 +319,7 @@ fdst_err:
 BRESULT fdd_eject_d88(FDDFILE fdd) {
 
 	drvflush(fdd);
-//	‹¤’ÊŠÖ”•”‚ÖˆÚ“®(kai9)
+//	å…±é€šé–¢æ•°éƒ¨ã¸ç§»å‹•(kai9)
 //	fdd->fname[0] = '\0';
 //	fdd->type = DISKTYPE_NOTREADY;
 //	ZeroMemory(&fdd->inf.d88.head, sizeof(fdd->inf.d88.head));
@@ -531,7 +531,7 @@ BRESULT fdd_readid_d88(FDDFILE fdd) {
 
 // --------------------------------------------------------------------------
 
-// ‚¦[‚Æc‚±‚ñ‚È‚Æ‚±‚ë‚É‚ ‚Á‚Ä‘åä•vH
+// ãˆãƒ¼ã¨â€¦ã“ã‚“ãªã¨ã“ã‚ã«ã‚ã£ã¦å¤§ä¸ˆå¤«ï¼Ÿ
 static BOOL formating = FALSE;
 static UINT8 formatsec = 0;
 static UINT8 formatwrt = 0;
@@ -547,7 +547,7 @@ static int fileappend(FILEH hdl, FDDFILE fdd,
 	UINT8	tmp[0x400];							// Stack 0x1000->0x400
 	UINT32	cur;
 
-	if ((length = last - ptr) <= 0) {			// ‘‚«Š·‚¦‚é•K—v‚È‚µ
+	if ((length = last - ptr) <= 0) {			// æ›¸ãæ›ãˆã‚‹å¿…è¦ãªã—
 		return(0);
 	}
 	while(length) {
@@ -608,13 +608,13 @@ static void endoftrack(UINT fmtsize, UINT8 sectors) {
 	lastpointer = (long)file_getsize(hdl);	/*	lastpointer = file_seek(hdl, 0, FSEEK_END);	*/
 	fpointer = fdd->inf.d88.ptr[trk];
 	if (fpointer == 0) {
-		for (i=trk; i>=0; i--) {					// V‹Kƒgƒ‰ƒbƒN
+		for (i=trk; i>=0; i--) {					// æ–°è¦ãƒˆãƒ©ãƒƒã‚¯
 			fpointer = fdd->inf.d88.ptr[i];
 			if (fpointer) {
 				break;
 			}
 		}
-		if (fpointer) {								// ƒqƒbƒg‚µ‚½
+		if (fpointer) {								// ãƒ’ãƒƒãƒˆã—ãŸ
 			fpointer = nexttrackptr(fdd, fpointer, lastpointer);
 		}
 		else {
@@ -622,12 +622,12 @@ static void endoftrack(UINT fmtsize, UINT8 sectors) {
 		}
 		endpointer = fpointer;
 	}
-	else {										// ƒgƒ‰ƒbƒNƒf[ƒ^‚ÍŠù‚É‚ ‚é
+	else {										// ãƒˆãƒ©ãƒƒã‚¯ãƒ‡ãƒ¼ã‚¿ã¯æ—¢ã«ã‚ã‚‹
 		endpointer = nexttrackptr(fdd, fpointer, lastpointer);
 	}
 	trksize = endpointer - fpointer;
 	if ((apsize = (long)fmtsize - trksize) > 0) {
-								// ‘‚«‚Şƒf[ƒ^‚Ì‚Ù[‚ª‘å‚«‚¢
+								// æ›¸ãè¾¼ã‚€ãƒ‡ãƒ¼ã‚¿ã®ã»ãƒ¼ãŒå¤§ãã„
 		fileappend(hdl, fdd, endpointer, lastpointer, apsize);
 		fdd->inf.d88.fd_size += apsize;
 		STOREINTELDWORD(fdd->inf.d88.head.fd_size, fdd->inf.d88.fd_size);
@@ -657,7 +657,7 @@ BRESULT fdd_formatinit_d88(FDDFILE fdd) {
 	return(FAILURE);
 }
 
-	// todo ƒAƒ“ƒtƒH[ƒ}ƒbƒg‚Æ‚© ƒfƒBƒXƒN‚Pü‚µ‚½‚ÌØ‚èÌ‚Ä‚Æ‚©c
+	// todo ã‚¢ãƒ³ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã¨ã‹ ãƒ‡ã‚£ã‚¹ã‚¯ï¼‘å‘¨ã—ãŸæ™‚ã®åˆ‡ã‚Šæ¨ã¦ã¨ã‹â€¦
 //BRESULT fdd_formating_d88(const UINT8 *ID) {
 BRESULT fdd_formating_d88(FDDFILE fdd, const UINT8 *ID) {
 
@@ -1182,7 +1182,7 @@ BRESULT fdd_readid_d88(void) {
 
 // --------------------------------------------------------------------------
 
-// ‚¦[‚Æc‚±‚ñ‚È‚Æ‚±‚ë‚É‚ ‚Á‚Ä‘åä•vH
+// ãˆãƒ¼ã¨â€¦ã“ã‚“ãªã¨ã“ã‚ã«ã‚ã£ã¦å¤§ä¸ˆå¤«ï¼Ÿ
 static BOOL formating = FALSE;
 static UINT8 formatsec = 0;
 static UINT8 formatwrt = 0;
@@ -1197,7 +1197,7 @@ static int fileappend(FILEH hdl, FDDFILE fdd, UINT ptr, UINT last, int apsize) {
 	UINT8	tmp[0x400];							// Stack 0x1000->0x400
 	UINT	cur;
 
-	if ((length = last - ptr) <= 0) {			// ‘‚«Š·‚¦‚é•K—v‚È‚µ
+	if ((length = last - ptr) <= 0) {			// æ›¸ãæ›ãˆã‚‹å¿…è¦ãªã—
 		return(0);
 	}
 	while(length) {
@@ -1258,13 +1258,13 @@ static void endoftrack(UINT fmtsize, UINT8 sectors) {
 	lastpointer = file_getsize(hdl);
 	fpointer = fdd->inf.d88.ptr[trk];
 	if (fpointer == 0) {
-		for (i=trk; i>=0; i--) {					// V‹Kƒgƒ‰ƒbƒN
+		for (i=trk; i>=0; i--) {					// æ–°è¦ãƒˆãƒ©ãƒƒã‚¯
 			fpointer = fdd->inf.d88.ptr[i];
 			if (fpointer) {
 				break;
 			}
 		}
-		if (fpointer) {								// ƒqƒbƒg‚µ‚½
+		if (fpointer) {								// ãƒ’ãƒƒãƒˆã—ãŸ
 			fpointer = nexttrackptr(fdd, fpointer, lastpointer);
 		}
 		else {
@@ -1272,12 +1272,12 @@ static void endoftrack(UINT fmtsize, UINT8 sectors) {
 		}
 		endpointer = fpointer;
 	}
-	else {										// ƒgƒ‰ƒbƒNƒf[ƒ^‚ÍŠù‚É‚ ‚é
+	else {										// ãƒˆãƒ©ãƒƒã‚¯ãƒ‡ãƒ¼ã‚¿ã¯æ—¢ã«ã‚ã‚‹
 		endpointer = nexttrackptr(fdd, fpointer, lastpointer);
 	}
 	trksize = endpointer - fpointer;
 	if ((apsize = fmtsize - trksize) > 0) {
-								// ‘‚«‚Şƒf[ƒ^‚Ì‚Ù[‚ª‘å‚«‚¢
+								// æ›¸ãè¾¼ã‚€ãƒ‡ãƒ¼ã‚¿ã®ã»ãƒ¼ãŒå¤§ãã„
 		fileappend(hdl, fdd, endpointer, lastpointer, apsize);
 		fdd->inf.d88.fd_size += apsize;
 		STOREINTELDWORD(fdd->inf.d88.head.fd_size, fdd->inf.d88.fd_size);
@@ -1306,7 +1306,7 @@ BRESULT fdd_formatinit_d88(void) {
 	return(FAILURE);
 }
 
-	// todo ƒAƒ“ƒtƒH[ƒ}ƒbƒg‚Æ‚© ƒfƒBƒXƒN‚Pü‚µ‚½‚ÌØ‚èÌ‚Ä‚Æ‚©c
+	// todo ã‚¢ãƒ³ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã¨ã‹ ãƒ‡ã‚£ã‚¹ã‚¯ï¼‘å‘¨ã—ãŸæ™‚ã®åˆ‡ã‚Šæ¨ã¦ã¨ã‹â€¦
 BRESULT fdd_formating_d88(const UINT8 *ID) {
 
 	FDDFILE	fdd = fddfile + fdc.us;

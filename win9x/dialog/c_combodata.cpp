@@ -1,15 +1,15 @@
 /**
  * @file	c_combodata.cpp
- * @brief	ƒRƒ“ƒ{ ƒf[ƒ^ ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	ã‚³ãƒ³ãƒœ ãƒ‡ãƒ¼ã‚¿ ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
 #include "c_combodata.h"
 
 /**
- * ’Ç‰Á
- * @param[in] lpValues ’l‚Ì”z—ñ
- * @param[in] cchValues ’l‚Ì”
+ * è¿½åŠ 
+ * @param[in] lpValues å€¤ã®é…åˆ—
+ * @param[in] cchValues å€¤ã®æ•°
  */
 void CComboData::Add(const UINT32* lpValues, UINT cchValues)
 {
@@ -20,9 +20,9 @@ void CComboData::Add(const UINT32* lpValues, UINT cchValues)
 }
 
 /**
- * ’Ç‰Á
- * @param[in] lpValues ’l‚Ì”z—ñ
- * @param[in] cchValues ’l‚Ì”
+ * è¿½åŠ 
+ * @param[in] lpValues å€¤ã®é…åˆ—
+ * @param[in] cchValues å€¤ã®æ•°
  */
 void CComboData::Add(const Value* lpValues, UINT cchValues)
 {
@@ -33,9 +33,9 @@ void CComboData::Add(const Value* lpValues, UINT cchValues)
 }
 
 /**
- * ’Ç‰Á
- * @param[in] lpEntries ƒGƒ“ƒgƒŠ‚Ì”z—ñ
- * @param[in] cchEntries ƒGƒ“ƒgƒŠ‚Ì”
+ * è¿½åŠ 
+ * @param[in] lpEntries ã‚¨ãƒ³ãƒˆãƒªã®é…åˆ—
+ * @param[in] cchEntries ã‚¨ãƒ³ãƒˆãƒªã®æ•°
  */
 void CComboData::Add(const Entry* lpEntries, UINT cchEntries)
 {
@@ -47,9 +47,9 @@ void CComboData::Add(const Entry* lpEntries, UINT cchEntries)
 }
 
 /**
- * ’Ç‰Á
- * @param[in] nValue ’l
- * @return ƒCƒ“ƒfƒbƒNƒX
+ * è¿½åŠ 
+ * @param[in] nValue å€¤
+ * @return ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
  */
 int CComboData::Add(UINT32 nValue)
 {
@@ -57,10 +57,10 @@ int CComboData::Add(UINT32 nValue)
 }
 
 /**
- * ’Ç‰Á
- * @param[in] nValue ’l
- * @param[in] nItemData ƒf[ƒ^
- * @return ƒCƒ“ƒfƒbƒNƒX
+ * è¿½åŠ 
+ * @param[in] nValue å€¤
+ * @param[in] nItemData ãƒ‡ãƒ¼ã‚¿
+ * @return ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
  */
 int CComboData::Add(UINT32 nValue, UINT32 nItemData)
 {
@@ -70,10 +70,10 @@ int CComboData::Add(UINT32 nValue, UINT32 nItemData)
 }
 
 /**
- * ’Ç‰Á
- * @param[in] lpString •\¦–¼
- * @param[in] nItemData ƒf[ƒ^
- * @return ƒCƒ“ƒfƒbƒNƒX
+ * è¿½åŠ 
+ * @param[in] lpString è¡¨ç¤ºå
+ * @param[in] nItemData ãƒ‡ãƒ¼ã‚¿
+ * @return ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
  */
 int CComboData::Add(LPCTSTR lpString, UINT32 nItemData)
 {
@@ -86,9 +86,9 @@ int CComboData::Add(LPCTSTR lpString, UINT32 nItemData)
 }
 
 /**
- * ƒAƒCƒeƒ€ŒŸõ
- * @param[in] nValue ’l
- * @return ƒCƒ“ƒfƒbƒNƒX
+ * ã‚¢ã‚¤ãƒ†ãƒ æ¤œç´¢
+ * @param[in] nValue å€¤
+ * @return ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
  */
 int CComboData::FindItemData(UINT32 nValue) const
 {
@@ -104,10 +104,10 @@ int CComboData::FindItemData(UINT32 nValue) const
 }
 
 /**
- * ƒJ[ƒ\ƒ‹İ’è
- * @param[in] nValue ’l
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * ã‚«ãƒ¼ã‚½ãƒ«è¨­å®š
+ * @param[in] nValue å€¤
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CComboData::SetCurItemData(UINT32 nValue)
 {
@@ -121,9 +121,9 @@ bool CComboData::SetCurItemData(UINT32 nValue)
 }
 
 /**
- * ƒJ[ƒ\ƒ‹‚Ì’l‚ğæ“¾
- * @param[in] nDefault ƒfƒtƒHƒ‹ƒg’l
- * @return ’l
+ * ã‚«ãƒ¼ã‚½ãƒ«ã®å€¤ã‚’å–å¾—
+ * @param[in] nDefault ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤
+ * @return å€¤
  */
 UINT32 CComboData::GetCurItemData(UINT32 nDefault) const
 {

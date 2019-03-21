@@ -1,6 +1,6 @@
 /**
  * @file	mt32snd.h
- * @brief	MT32Sound ƒAƒNƒZƒX ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	MT32Sound ã‚¢ã‚¯ã‚»ã‚¹ ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -8,7 +8,7 @@
 #if defined(MT32SOUND_DLL)
 
 /**
- * @brief MT32Sound ƒAƒNƒZƒX ƒNƒ‰ƒX
+ * @brief MT32Sound ã‚¢ã‚¯ã‚»ã‚¹ ã‚¯ãƒ©ã‚¹
  */
 class MT32Sound
 {
@@ -29,33 +29,33 @@ public:
 	UINT Mix(SINT32* lpBuffer, UINT cchBuffer);
 
 private:
-	static MT32Sound sm_instance;	//!< —Bˆê‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Å‚·
+	static MT32Sound sm_instance;	//!< å”¯ä¸€ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã§ã™
 
-	//! @brief ƒ[ƒhŠÖ”
+	//! @brief ãƒ­ãƒ¼ãƒ‰é–¢æ•°
 	struct ProcItem
 	{
-		LPCSTR lpSymbol;			//!< ŠÖ”–¼
-		size_t nOffset;				//!< ƒIƒtƒZƒbƒg
+		LPCSTR lpSymbol;			//!< é–¢æ•°å
+		size_t nOffset;				//!< ã‚ªãƒ•ã‚»ãƒƒãƒˆ
 	};
 
-	// ’è‹`
-	typedef int (*FnOpen)(int rate, int reverb, int def, int revtype, int revtime, int revlvl); 	/*!< ƒI[ƒvƒ“ */
-	typedef int (*FnClose)(void);																	/*!< ƒNƒ[ƒY */
-	typedef int (*FnWrite)(unsigned char data);														/*!< ƒ‰ƒCƒg */
-	typedef int (*FnMix)(void *buff, unsigned long size);											/*!< ƒ~ƒbƒNƒX */
+	// å®šç¾©
+	typedef int (*FnOpen)(int rate, int reverb, int def, int revtype, int revtime, int revlvl); 	/*!< ã‚ªãƒ¼ãƒ—ãƒ³ */
+	typedef int (*FnClose)(void);																	/*!< ã‚¯ãƒ­ãƒ¼ã‚º */
+	typedef int (*FnWrite)(unsigned char data);														/*!< ãƒ©ã‚¤ãƒˆ */
+	typedef int (*FnMix)(void *buff, unsigned long size);											/*!< ãƒŸãƒƒã‚¯ã‚¹ */
 
-	HMODULE m_hModule;	/*!< ƒ‚ƒWƒ…[ƒ‹ */
-	bool m_bOpened;		/*!< ƒI[ƒvƒ“ ƒtƒ‰ƒO */
-	UINT m_nRate;		/*!< ƒTƒ“ƒvƒŠƒ“ƒO ƒŒ[ƒg */
-	FnOpen m_fnOpen;	/*!< ƒI[ƒvƒ“ŠÖ” */
-	FnClose m_fnClose;	/*!< ƒNƒ[ƒYŠÖ” */
-	FnWrite m_fnWrite;	/*!< ƒ‰ƒCƒgŠÖ” */
-	FnMix m_fnMix;		/*!< ƒ~ƒbƒNƒXŠÖ” */
+	HMODULE m_hModule;	/*!< ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ« */
+	bool m_bOpened;		/*!< ã‚ªãƒ¼ãƒ—ãƒ³ ãƒ•ãƒ©ã‚° */
+	UINT m_nRate;		/*!< ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚° ãƒ¬ãƒ¼ãƒˆ */
+	FnOpen m_fnOpen;	/*!< ã‚ªãƒ¼ãƒ—ãƒ³é–¢æ•° */
+	FnClose m_fnClose;	/*!< ã‚¯ãƒ­ãƒ¼ã‚ºé–¢æ•° */
+	FnWrite m_fnWrite;	/*!< ãƒ©ã‚¤ãƒˆé–¢æ•° */
+	FnMix m_fnMix;		/*!< ãƒŸãƒƒã‚¯ã‚¹é–¢æ•° */
 };
 
 /**
- * ƒCƒ“ƒXƒ^ƒ“ƒX‚ğæ“¾
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å–å¾—
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 inline MT32Sound* MT32Sound::GetInstance()
 {
@@ -63,9 +63,9 @@ inline MT32Sound* MT32Sound::GetInstance()
 }
 
 /**
- * —LŒø?
- * @retval true —LŒø
- * @retval false –³Œø
+ * æœ‰åŠ¹?
+ * @retval true æœ‰åŠ¹
+ * @retval false ç„¡åŠ¹
  */
 inline bool MT32Sound::IsEnabled() const
 {
@@ -73,8 +73,8 @@ inline bool MT32Sound::IsEnabled() const
 }
 
 /**
- * ƒTƒ“ƒvƒŠƒ“ƒO ƒŒ[ƒg‚ğİ’è
- * @param[in] nRate ƒŒ[ƒg
+ * ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚° ãƒ¬ãƒ¼ãƒˆã‚’è¨­å®š
+ * @param[in] nRate ãƒ¬ãƒ¼ãƒˆ
  */
 inline void MT32Sound::SetRate(UINT nRate)
 {

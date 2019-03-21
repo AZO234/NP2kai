@@ -67,11 +67,11 @@ static const DISKACC diskacc[3] = {
 					{IDC_TOOLFDD2ACC,	&toolwin.m_fddaccess[1]},
 					{IDC_TOOLHDDACC,	&toolwin.m_hddaccess}};
 
-static int fdlistlen = FDDLIST_DEFAULT; // FDƒtƒ@ƒCƒ‹—š—ğ”
+static int fdlistlen = FDDLIST_DEFAULT; // FDãƒ•ã‚¡ã‚¤ãƒ«å±¥æ­´æ•°
 
 /**
- * ƒCƒ“ƒXƒ^ƒ“ƒX‚ğ•Ô‚·
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’è¿”ã™
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 CToolWnd* CToolWnd::GetInstance()
 {
@@ -79,14 +79,14 @@ CToolWnd* CToolWnd::GetInstance()
 }
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CToolWnd::CToolWnd()
 {
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CToolWnd::~CToolWnd()
 {
@@ -821,7 +821,7 @@ LRESULT CToolWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 			break;
 
 #if 0
-		case WM_KEYDOWN:						// TAB‚ğ‰Ÿ‚µ‚½‚É•œ‹A
+		case WM_KEYDOWN:						// TABã‚’æŠ¼ã—ãŸæ™‚ã«å¾©å¸°
 			if ((short)wParam == VK_TAB)
 			{
 				UINT idc = (UINT)GetWindowLongPtr(m_hWnd, GTWLP_FOCUS);
@@ -927,7 +927,7 @@ LRESULT CToolWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ì¬
+ * ä½œæˆ
  */
 void CToolWnd::Create()
 {
@@ -1081,11 +1081,11 @@ const DISKACC	*accterm;
 
 // ----
 
-//! ƒ^ƒCƒgƒ‹
+//! ã‚¿ã‚¤ãƒˆãƒ«
 static const TCHAR s_toolwndapp[] = TEXT("NP2 tool");
 
 /**
- * İ’è
+ * è¨­å®š
  */
 static const PFTBL s_toolwndini[] =
 {
@@ -1143,7 +1143,7 @@ int gettoolwndini(PFTBL **ptoolwndini)
 }
 
 /**
- * İ’è“Ç‚İ‚İ
+ * è¨­å®šèª­ã¿è¾¼ã¿
  */
 void toolwin_readini()
 {
@@ -1165,7 +1165,7 @@ void toolwin_readini()
 }
 
 /**
- * İ’è‘‚«‚İ
+ * è¨­å®šæ›¸ãè¾¼ã¿
  */
 void toolwin_writeini()
 {

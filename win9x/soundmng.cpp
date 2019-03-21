@@ -1,6 +1,6 @@
 /**
  * @file	soundmng.cpp
- * @brief	ƒTƒEƒ“ƒh ƒ}ƒl[ƒWƒƒ ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	ã‚µã‚¦ãƒ³ãƒ‰ ãƒãƒãƒ¼ã‚¸ãƒ£ ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -32,9 +32,9 @@ extern "C"
 #endif
 /**
  * satuation
- * @param[out] dst o—Íƒoƒbƒtƒ@
- * @param[in] src “ü—Íƒoƒbƒtƒ@
- * @param[in] size ƒTƒCƒY
+ * @param[out] dst å‡ºåŠ›ãƒãƒƒãƒ•ã‚¡
+ * @param[in] src å…¥åŠ›ãƒãƒƒãƒ•ã‚¡
+ * @param[in] size ã‚µã‚¤ã‚º
  */
 void __fastcall satuation_s16mmx(SINT16 *dst, const SINT32 *src, UINT size);
 #ifdef __cplusplus
@@ -46,11 +46,11 @@ void __fastcall satuation_s16mmx(SINT16 *dst, const SINT32 *src, UINT size);
 	MIDIMOD		vermouth_module = NULL;
 #endif
 
-//! —Bˆê‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Å‚·
+//! å”¯ä¸€ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã§ã™
 CSoundMng CSoundMng::sm_instance;
 
 /**
- * ‰Šú‰»
+ * åˆæœŸåŒ–
  */
 void CSoundMng::Initialize()
 {
@@ -74,7 +74,7 @@ void CSoundMng::Initialize()
 }
 
 /**
- * ‰ğ•ú
+ * è§£æ”¾
  */
 void CSoundMng::Deinitialize()
 {
@@ -92,7 +92,7 @@ void CSoundMng::Deinitialize()
 }
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CSoundMng::CSoundMng()
 	: m_pSoundDevice(NULL)
@@ -102,12 +102,12 @@ CSoundMng::CSoundMng()
 }
 
 /**
- * ƒI[ƒvƒ“
- * @param[in] nType ƒfƒoƒCƒX ƒ^ƒCƒv
- * @param[in] lpName ƒfƒoƒCƒX–¼
- * @param[in] hWnd ƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * ã‚ªãƒ¼ãƒ—ãƒ³
+ * @param[in] nType ãƒ‡ãƒã‚¤ã‚¹ ã‚¿ã‚¤ãƒ—
+ * @param[in] lpName ãƒ‡ãƒã‚¤ã‚¹å
+ * @param[in] hWnd ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ«
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CSoundMng::Open(DeviceType nType, LPCTSTR lpName, HWND hWnd)
 {
@@ -162,7 +162,7 @@ bool CSoundMng::Open(DeviceType nType, LPCTSTR lpName, HWND hWnd)
 }
 
 /**
- * ƒNƒ[ƒY
+ * ã‚¯ãƒ­ãƒ¼ã‚º
  */
 void CSoundMng::Close()
 {
@@ -179,8 +179,8 @@ void CSoundMng::Close()
 }
 
 /**
- * ƒTƒEƒ“ƒh—LŒø
- * @param[in] nProc ƒvƒƒV[ƒWƒƒ
+ * ã‚µã‚¦ãƒ³ãƒ‰æœ‰åŠ¹
+ * @param[in] nProc ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 void CSoundMng::Enable(SoundProc nProc)
 {
@@ -203,8 +203,8 @@ void CSoundMng::Enable(SoundProc nProc)
 }
 
 /**
- * ƒTƒEƒ“ƒh–³Œø
- * @param[in] nProc ƒvƒƒV[ƒWƒƒ
+ * ã‚µã‚¦ãƒ³ãƒ‰ç„¡åŠ¹
+ * @param[in] nProc ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 void CSoundMng::Disable(SoundProc nProc)
 {
@@ -223,10 +223,10 @@ void CSoundMng::Disable(SoundProc nProc)
 }
 
 /**
- * ƒXƒgƒŠ[ƒ€‚ğì¬
- * @param[in] nSamplingRate ƒTƒ“ƒvƒŠƒ“ƒO ƒŒ[ƒg
- * @param[in] ms ƒoƒbƒtƒ@’·(ƒ~ƒŠ•b)
- * @return ƒoƒbƒtƒ@”
+ * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’ä½œæˆ
+ * @param[in] nSamplingRate ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚° ãƒ¬ãƒ¼ãƒˆ
+ * @param[in] ms ãƒãƒƒãƒ•ã‚¡é•·(ãƒŸãƒªç§’)
+ * @return ãƒãƒƒãƒ•ã‚¡æ•°
  */
 UINT CSoundMng::CreateStream(UINT nSamplingRate, UINT ms)
 {
@@ -266,7 +266,7 @@ UINT CSoundMng::CreateStream(UINT nSamplingRate, UINT ms)
 }
 
 /**
- * ƒXƒgƒŠ[ƒ€‚ğ”jŠü
+ * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’ç ´æ£„
  */
 inline void CSoundMng::DestroyStream()
 {
@@ -285,7 +285,7 @@ inline void CSoundMng::DestroyStream()
 }
 
 /**
- * ƒXƒgƒŠ[ƒ€‚ÌƒŠƒZƒbƒg
+ * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®ãƒªã‚»ãƒƒãƒˆ
  */
 inline void CSoundMng::ResetStream()
 {
@@ -296,7 +296,7 @@ inline void CSoundMng::ResetStream()
 }
 
 /**
- * ƒXƒgƒŠ[ƒ€‚ÌÄ¶
+ * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®å†ç”Ÿ
  */
 inline void CSoundMng::PlayStream()
 {
@@ -310,7 +310,7 @@ inline void CSoundMng::PlayStream()
 }
 
 /**
- * ƒXƒgƒŠ[ƒ€‚Ì’â~
+ * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®åœæ­¢
  */
 inline void CSoundMng::StopStream()
 {
@@ -324,10 +324,10 @@ inline void CSoundMng::StopStream()
 }
 
 /**
- * ƒXƒgƒŠ[ƒ€‚ğ“¾‚é
- * @param[out] lpBuffer ƒoƒbƒtƒ@
- * @param[in] nBufferCount ƒoƒbƒtƒ@ ƒJƒEƒ“ƒg
- * @return ƒTƒ“ƒvƒ‹”
+ * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’å¾—ã‚‹
+ * @param[out] lpBuffer ãƒãƒƒãƒ•ã‚¡
+ * @param[in] nBufferCount ãƒãƒƒãƒ•ã‚¡ ã‚«ã‚¦ãƒ³ãƒˆ
+ * @return ã‚µãƒ³ãƒ—ãƒ«æ•°
  */
 UINT CSoundMng::Get16(SINT16* lpBuffer, UINT nBufferCount)
 {
@@ -345,8 +345,8 @@ UINT CSoundMng::Get16(SINT16* lpBuffer, UINT nBufferCount)
 }
 
 /**
- * ƒpƒ“”½“]‚ğİ’è‚·‚é
- * @param[in] bReverse ”½“]ƒtƒ‰ƒO
+ * ãƒ‘ãƒ³åè»¢ã‚’è¨­å®šã™ã‚‹
+ * @param[in] bReverse åè»¢ãƒ•ãƒ©ã‚°
  */
 inline void CSoundMng::SetReverse(bool bReverse)
 {
@@ -371,8 +371,8 @@ inline void CSoundMng::SetReverse(bool bReverse)
 }
 
 /**
- * ƒ}ƒXƒ^[ ƒ”ƒHƒŠƒ…[ƒ€İ’è
- * @param[in] nVolume ƒ”ƒHƒŠƒ…[ƒ€
+ * ãƒã‚¹ã‚¿ãƒ¼ ãƒ´ã‚©ãƒªãƒ¥ãƒ¼ãƒ è¨­å®š
+ * @param[in] nVolume ãƒ´ã‚©ãƒªãƒ¥ãƒ¼ãƒ 
  */
 void CSoundMng::SetMasterVolume(int nVolume)
 {
@@ -383,9 +383,9 @@ void CSoundMng::SetMasterVolume(int nVolume)
 }
 
 /**
- * PCM ƒf[ƒ^“Ç‚İ‚İ
- * @param[in] nNum PCM ”Ô†
- * @param[in] lpFilename ƒtƒ@ƒCƒ‹–¼
+ * PCM ãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿
+ * @param[in] nNum PCM ç•ªå·
+ * @param[in] lpFilename ãƒ•ã‚¡ã‚¤ãƒ«å
  */
 void CSoundMng::LoadPCM(SoundPCMNumber nNum, LPCTSTR lpFilename)
 {
@@ -396,9 +396,9 @@ void CSoundMng::LoadPCM(SoundPCMNumber nNum, LPCTSTR lpFilename)
 }
 
 /**
- * PCM ƒ”ƒHƒŠƒ…[ƒ€İ’è
- * @param[in] nNum PCM ”Ô†
- * @param[in] nVolume ƒ”ƒHƒŠƒ…[ƒ€
+ * PCM ãƒ´ã‚©ãƒªãƒ¥ãƒ¼ãƒ è¨­å®š
+ * @param[in] nNum PCM ç•ªå·
+ * @param[in] nVolume ãƒ´ã‚©ãƒªãƒ¥ãƒ¼ãƒ 
  */
 void CSoundMng::SetPCMVolume(SoundPCMNumber nNum, int nVolume)
 {
@@ -409,11 +409,11 @@ void CSoundMng::SetPCMVolume(SoundPCMNumber nNum, int nVolume)
 }
 
 /**
- * PCM Ä¶
- * @param[in] nNum PCM ”Ô†
- * @param[in] bLoop ƒ‹[ƒv ƒtƒ‰ƒO
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * PCM å†ç”Ÿ
+ * @param[in] nNum PCM ç•ªå·
+ * @param[in] bLoop ãƒ«ãƒ¼ãƒ— ãƒ•ãƒ©ã‚°
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 inline bool CSoundMng::PlayPCM(SoundPCMNumber nNum, BOOL bLoop)
 {
@@ -428,8 +428,8 @@ inline bool CSoundMng::PlayPCM(SoundPCMNumber nNum, BOOL bLoop)
 }
 
 /**
- * PCM ’â~
- * @param[in] nNum PCM ”Ô†
+ * PCM åœæ­¢
+ * @param[in] nNum PCM ç•ªå·
  */
 inline void CSoundMng::StopPCM(SoundPCMNumber nNum)
 {
@@ -439,13 +439,13 @@ inline void CSoundMng::StopPCM(SoundPCMNumber nNum)
 	}
 }
 
-// ---- C ƒ‰ƒbƒp[
+// ---- C ãƒ©ãƒƒãƒ‘ãƒ¼
 
 /**
- * ƒXƒgƒŠ[ƒ€ì¬
- * @param[in] rate ƒTƒ“ƒvƒŠƒ“ƒO ƒŒ[ƒg
- * @param[in] ms ƒoƒbƒtƒ@’·(ƒ~ƒŠ•b)
- * @return ƒoƒbƒtƒ@ ƒTƒCƒY
+ * ã‚¹ãƒˆãƒªãƒ¼ãƒ ä½œæˆ
+ * @param[in] rate ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚° ãƒ¬ãƒ¼ãƒˆ
+ * @param[in] ms ãƒãƒƒãƒ•ã‚¡é•·(ãƒŸãƒªç§’)
+ * @return ãƒãƒƒãƒ•ã‚¡ ã‚µã‚¤ã‚º
  */
 UINT soundmng_create(UINT rate, UINT ms)
 {
@@ -453,7 +453,7 @@ UINT soundmng_create(UINT rate, UINT ms)
 }
 
 /**
- * ƒXƒgƒŠ[ƒ€”jŠü
+ * ã‚¹ãƒˆãƒªãƒ¼ãƒ ç ´æ£„
  */
 void soundmng_destroy(void)
 {
@@ -461,7 +461,7 @@ void soundmng_destroy(void)
 }
 
 /**
- * ƒXƒgƒŠ[ƒ€ ƒŠƒZƒbƒg
+ * ã‚¹ãƒˆãƒªãƒ¼ãƒ  ãƒªã‚»ãƒƒãƒˆ
  */
 void soundmng_reset(void)
 {
@@ -469,7 +469,7 @@ void soundmng_reset(void)
 }
 
 /**
- * ƒXƒgƒŠ[ƒ€ŠJn
+ * ã‚¹ãƒˆãƒªãƒ¼ãƒ é–‹å§‹
  */
 void soundmng_play(void)
 {
@@ -477,7 +477,7 @@ void soundmng_play(void)
 }
 
 /**
- * ƒXƒgƒŠ[ƒ€’â~
+ * ã‚¹ãƒˆãƒªãƒ¼ãƒ åœæ­¢
  */
 void soundmng_stop(void)
 {
@@ -485,8 +485,8 @@ void soundmng_stop(void)
 }
 
 /**
- * ƒXƒgƒŠ[ƒ€ ƒpƒ“”½“]İ’è
- * @param[in] bReverse ”½“]
+ * ã‚¹ãƒˆãƒªãƒ¼ãƒ  ãƒ‘ãƒ³åè»¢è¨­å®š
+ * @param[in] bReverse åè»¢
  */
 void soundmng_setreverse(BOOL bReverse)
 {
@@ -494,8 +494,8 @@ void soundmng_setreverse(BOOL bReverse)
 }
 
 /**
- * ƒ{ƒŠƒ…[ƒ€İ’è
- * @param[in] nVolume ƒ{ƒŠƒ…[ƒ€(Å¬ 0 ` 100 Å‘å)
+ * ãƒœãƒªãƒ¥ãƒ¼ãƒ è¨­å®š
+ * @param[in] nVolume ãƒœãƒªãƒ¥ãƒ¼ãƒ (æœ€å° 0 ã€œ 100 æœ€å¤§)
  */
 void soundmng_setvolume(int nVolume)
 {
@@ -503,11 +503,11 @@ void soundmng_setvolume(int nVolume)
 }
 
 /**
- * PCM Ä¶
- * @param[in] nNum PCM ”Ô†
- * @param[in] bLoop ƒ‹[ƒv
- * @retval SUCCESS ¬Œ÷
- * @retval FAILURE ¸”s
+ * PCM å†ç”Ÿ
+ * @param[in] nNum PCM ç•ªå·
+ * @param[in] bLoop ãƒ«ãƒ¼ãƒ—
+ * @retval SUCCESS æˆåŠŸ
+ * @retval FAILURE å¤±æ•—
  */
 BRESULT soundmng_pcmplay(enum SoundPCMNumber nNum, BOOL bLoop)
 {
@@ -515,8 +515,8 @@ BRESULT soundmng_pcmplay(enum SoundPCMNumber nNum, BOOL bLoop)
 }
 
 /**
- * PCM ’â~
- * @param[in] nNum PCM ”Ô†
+ * PCM åœæ­¢
+ * @param[in] nNum PCM ç•ªå·
  */
 void soundmng_pcmstop(enum SoundPCMNumber nNum)
 {

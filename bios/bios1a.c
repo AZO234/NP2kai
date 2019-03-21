@@ -120,7 +120,7 @@ void bios0x1a_pci_part(int is32bit) {
 			break;
 
 		case 0x02: // FIND PCI DEVICE
-			// ƒfƒoƒCƒX‚ğ’T‚·
+			// ãƒ‡ãƒã‚¤ã‚¹ã‚’æ¢ã™
 			for(i=0;i<PCI_DEVICES_MAX;i++){
 				if(pcidev.devices[i].enable){
 					if(pcidev.devices[i].header.deviceID == CPU_CX && pcidev.devices[i].header.vendorID == CPU_DX){
@@ -129,21 +129,21 @@ void bios0x1a_pci_part(int is32bit) {
 				}
 			}
 			if(i < PCI_DEVICES_MAX){
-				// ”­Œ©
+				// ç™ºè¦‹
 				CPU_AH = PCIBIOS_STATUS_SUCCESSFUL;
 				CPU_FLAGL &= ~C_FLAG;
 				CPU_BH = 0x0; // bus number
 				CPU_BL = (i << 3)|(0); // device/function number (bits 7-3 device, bits 2-0 func)
 			}else{
-				// ”­Œ©‚Å‚«‚¸
+				// ç™ºè¦‹ã§ããš
 				CPU_AH = PCIBIOS_STATUS_DEVICE_NOT_FOUND;
 				CPU_FLAGL |= C_FLAG;
 			}
 			break;
 
 		case 0x03: // FIND PCI CLASS CODE
-			// ƒfƒoƒCƒX‚ğ’T‚·
-			idx = CPU_SI; // “¯‚¶ƒNƒ‰ƒX‚ğ‚ÂƒfƒoƒCƒX‚Ì‚¤‚¿Aidx”Ô–Ú‚ÉŒ©‚Â‚¯‚½‚à‚Ì‚ğ•Ô‚·
+			// ãƒ‡ãƒã‚¤ã‚¹ã‚’æ¢ã™
+			idx = CPU_SI; // åŒã˜ã‚¯ãƒ©ã‚¹ã‚’æŒã¤ãƒ‡ãƒã‚¤ã‚¹ã®ã†ã¡ã€idxç•ªç›®ã«è¦‹ã¤ã‘ãŸã‚‚ã®ã‚’è¿”ã™
 			for(i=0;i<PCI_DEVICES_MAX;i++){
 				if(pcidev.devices[i].enable){
 					if((*((UINT32*)pcidev.devices[i].header.classcode) & 0xffffff) == (CPU_ECX & 0xffffff)){
@@ -154,13 +154,13 @@ void bios0x1a_pci_part(int is32bit) {
 				}
 			}
 			if(i < PCI_DEVICES_MAX){
-				// ”­Œ©
+				// ç™ºè¦‹
 				CPU_AH = PCIBIOS_STATUS_SUCCESSFUL;
 				CPU_FLAGL &= ~C_FLAG;
 				CPU_BH = 0x0; // bus number
 				CPU_BL = (i << 3)|(0); // device/function number (bits 7-3 device, bits 2-0 func)
 			}else{
-				// ”­Œ©‚Å‚«‚¸
+				// ç™ºè¦‹ã§ããš
 				CPU_AH = PCIBIOS_STATUS_DEVICE_NOT_FOUND;
 				CPU_FLAGL |= C_FLAG;
 			}
@@ -201,7 +201,7 @@ void bios0x1a_pci_part(int is32bit) {
 				if(CPU_DI <= 0xff){
 					CPU_AH = PCIBIOS_STATUS_SUCCESSFUL;
 					CPU_FLAGL &= ~C_FLAG;
-					CPU_CX = *((UINT16*)(pcidev.devices[devnum].cfgreg8 + CPU_DI)); // XXX: 2‚Ì”{”‚ÌƒŒƒWƒXƒ^”Ô†‚Å‚È‚­‚Ä‚à“Ç‚ß‚¿‚á‚¤‚¯‚Ç‚Ü‚ ‚¢‚¢‚©[
+					CPU_CX = *((UINT16*)(pcidev.devices[devnum].cfgreg8 + CPU_DI)); // XXX: 2ã®å€æ•°ã®ãƒ¬ã‚¸ã‚¹ã‚¿ç•ªå·ã§ãªãã¦ã‚‚èª­ã‚ã¡ã‚ƒã†ã‘ã©ã¾ã‚ã„ã„ã‹ãƒ¼
 				}else{
 					CPU_AH = PCIBIOS_STATUS_BAD_PCI_REG_NUMBER;
 					CPU_FLAGL |= C_FLAG;
@@ -222,7 +222,7 @@ void bios0x1a_pci_part(int is32bit) {
 				if(CPU_DI <= 0xff){
 					CPU_AH = PCIBIOS_STATUS_SUCCESSFUL;
 					CPU_FLAGL &= ~C_FLAG;
-					CPU_ECX = *((UINT32*)(pcidev.devices[devnum].cfgreg8 + CPU_DI)); // XXX: 4‚Ì”{”‚ÌƒŒƒWƒXƒ^”Ô†‚Å‚È‚­‚Ä‚à“Ç‚ß‚¿‚á‚¤‚¯‚Ç‚Ü‚ ‚¢‚¢‚©[
+					CPU_ECX = *((UINT32*)(pcidev.devices[devnum].cfgreg8 + CPU_DI)); // XXX: 4ã®å€æ•°ã®ãƒ¬ã‚¸ã‚¹ã‚¿ç•ªå·ã§ãªãã¦ã‚‚èª­ã‚ã¡ã‚ƒã†ã‘ã©ã¾ã‚ã„ã„ã‹ãƒ¼
 				}else{
 					CPU_AH = PCIBIOS_STATUS_BAD_PCI_REG_NUMBER;
 					CPU_FLAGL |= C_FLAG;
@@ -261,7 +261,7 @@ void bios0x1a_pci_part(int is32bit) {
 				if(CPU_DI <= 0xff){
 					CPU_AH = PCIBIOS_STATUS_SUCCESSFUL;
 					CPU_FLAGL &= ~C_FLAG;
-					*((UINT16*)(pcidev.devices[devnum].cfgreg8 + CPU_DI)) = CPU_CX; // XXX: 2‚Ì”{”‚ÌƒŒƒWƒXƒ^”Ô†‚Å‚È‚­‚Ä‚à‘‚¯‚¿‚á‚¤‚¯‚Ç‚Ü‚ ‚¢‚¢‚©[
+					*((UINT16*)(pcidev.devices[devnum].cfgreg8 + CPU_DI)) = CPU_CX; // XXX: 2ã®å€æ•°ã®ãƒ¬ã‚¸ã‚¹ã‚¿ç•ªå·ã§ãªãã¦ã‚‚æ›¸ã‘ã¡ã‚ƒã†ã‘ã©ã¾ã‚ã„ã„ã‹ãƒ¼
 				}else{
 					CPU_AH = PCIBIOS_STATUS_BAD_PCI_REG_NUMBER;
 					CPU_FLAGL |= C_FLAG;
@@ -278,7 +278,7 @@ void bios0x1a_pci_part(int is32bit) {
 				if(CPU_DI <= 0xff){
 					CPU_AH = PCIBIOS_STATUS_SUCCESSFUL;
 					CPU_FLAGL &= ~C_FLAG;
-					*((UINT32*)(pcidev.devices[devnum].cfgreg8 + CPU_DI)) = CPU_ECX; // XXX: 4‚Ì”{”‚ÌƒŒƒWƒXƒ^”Ô†‚Å‚È‚­‚Ä‚à‘‚¯‚¿‚á‚¤‚¯‚Ç‚Ü‚ ‚¢‚¢‚©[
+					*((UINT32*)(pcidev.devices[devnum].cfgreg8 + CPU_DI)) = CPU_ECX; // XXX: 4ã®å€æ•°ã®ãƒ¬ã‚¸ã‚¹ã‚¿ç•ªå·ã§ãªãã¦ã‚‚æ›¸ã‘ã¡ã‚ƒã†ã‘ã©ã¾ã‚ã„ã„ã‹ãƒ¼
 				}else{
 					CPU_AH = PCIBIOS_STATUS_BAD_PCI_REG_NUMBER;
 					CPU_FLAGL |= C_FLAG;
@@ -368,16 +368,16 @@ void bios0x1a_pci(void) {
 	oldDX = CPU_DX;
 	
 	if(pcidev.enable){
-		// XXX: np2 BIOS‚ªDXƒŒƒWƒXƒ^‚ğPUSH/POP‚µ‚Ä‚µ‚Ü‚¤‚Ì‚ÅADXƒŒƒWƒXƒ^‚Ì“à—e‚ğƒXƒ^ƒbƒN‚©‚ç‹­ˆø‚ÉE‚Á‚Ä‚­‚é
+		// XXX: np2 BIOSãŒDXãƒ¬ã‚¸ã‚¹ã‚¿ã‚’PUSH/POPã—ã¦ã—ã¾ã†ã®ã§ã€DXãƒ¬ã‚¸ã‚¹ã‚¿ã®å†…å®¹ã‚’ã‚¹ã‚¿ãƒƒã‚¯ã‹ã‚‰å¼·å¼•ã«æ‹¾ã£ã¦ãã‚‹
 		CPU_DX = cpu_vmemoryread_w(CPU_SS_INDEX, CPU_SP + 2);
 
-		// 16bit PCI BIOSˆ—
+		// 16bit PCI BIOSå‡¦ç†
 		bios0x1a_pci_part(0);
 
-		// XXX: np2 BIOS‚ªDXƒŒƒWƒXƒ^‚ğPUSH/POP‚µ‚Ä‚µ‚Ü‚¤‚Ì‚ÅADXƒŒƒWƒXƒ^‚Ì“à—e‚ğƒXƒ^ƒbƒN‚É‹­ˆø‚É‘‚«‚Ş
+		// XXX: np2 BIOSãŒDXãƒ¬ã‚¸ã‚¹ã‚¿ã‚’PUSH/POPã—ã¦ã—ã¾ã†ã®ã§ã€DXãƒ¬ã‚¸ã‚¹ã‚¿ã®å†…å®¹ã‚’ã‚¹ã‚¿ãƒƒã‚¯ã«å¼·å¼•ã«æ›¸ãè¾¼ã‚€
 		cpu_vmemorywrite_w(CPU_SS_INDEX, CPU_SP + 2, (UINT16)CPU_DX);
 	
-		// DXƒŒƒWƒXƒ^‚Ì’l‚ğŒ³‚É–ß‚·
+		// DXãƒ¬ã‚¸ã‚¹ã‚¿ã®å€¤ã‚’å…ƒã«æˆ»ã™
 		CPU_DX = oldDX;
 	}
 }
@@ -387,7 +387,7 @@ void bios0x1a_pcipnp(void) {
 	oldDX = CPU_DX;
 	
 	if(pcidev.enable){
-		// XXX: np2 BIOS‚ªDXƒŒƒWƒXƒ^‚ğPUSH/POP‚µ‚Ä‚µ‚Ü‚¤‚Ì‚ÅADXƒŒƒWƒXƒ^‚Ì“à—e‚ğƒXƒ^ƒbƒN‚©‚ç‹­ˆø‚ÉE‚Á‚Ä‚­‚é
+		// XXX: np2 BIOSãŒDXãƒ¬ã‚¸ã‚¹ã‚¿ã‚’PUSH/POPã—ã¦ã—ã¾ã†ã®ã§ã€DXãƒ¬ã‚¸ã‚¹ã‚¿ã®å†…å®¹ã‚’ã‚¹ã‚¿ãƒƒã‚¯ã‹ã‚‰å¼·å¼•ã«æ‹¾ã£ã¦ãã‚‹
 		CPU_DX = cpu_vmemoryread_w(CPU_SS_INDEX, CPU_SP + 2);
 		
 		switch(CPU_AL & 0x7f) {
@@ -453,10 +453,10 @@ void bios0x1a_pcipnp(void) {
 				break;
 		}
 
-		// XXX: np2 BIOS‚ªDXƒŒƒWƒXƒ^‚ğPUSH/POP‚µ‚Ä‚µ‚Ü‚¤‚Ì‚ÅADXƒŒƒWƒXƒ^‚Ì“à—e‚ğƒXƒ^ƒbƒN‚É‹­ˆø‚É‘‚«‚Ş
+		// XXX: np2 BIOSãŒDXãƒ¬ã‚¸ã‚¹ã‚¿ã‚’PUSH/POPã—ã¦ã—ã¾ã†ã®ã§ã€DXãƒ¬ã‚¸ã‚¹ã‚¿ã®å†…å®¹ã‚’ã‚¹ã‚¿ãƒƒã‚¯ã«å¼·å¼•ã«æ›¸ãè¾¼ã‚€
 		cpu_vmemorywrite_w(CPU_SS_INDEX, CPU_SP + 2, (UINT16)CPU_DX);
 	
-		// DXƒŒƒWƒXƒ^‚Ì’l‚ğŒ³‚É–ß‚·
+		// DXãƒ¬ã‚¸ã‚¹ã‚¿ã®å€¤ã‚’å…ƒã«æˆ»ã™
 		CPU_DX = oldDX;
 	}
 }

@@ -20,12 +20,12 @@
 static void writeRegister(POPNA opna, UINT nAddress, REG8 cData);
 static void writeExtendedRegister(POPNA opna, UINT nAddress, REG8 cData);
 
-// dB = 20 log10( (‰¹—Ê0`1) * (pow(10, Å‘ådB’l/20) - pow(10, Å¬dB’l/20)) + pow(10, Å¬dB’l/20) )
+// dB = 20 log10( (éŸ³é‡0ã€œ1) * (pow(10, æœ€å¤§dBå€¤/20) - pow(10, æœ€å°dBå€¤/20)) + pow(10, æœ€å°dBå€¤/20) )
 //#define LINEAR2DB(a)	(20 * log10((a) * (pow(10.0, 20/20) - pow(10.0, -192/20)) + pow(10.0, -192/20)))
-#define LINEAR2DB(a)	(pow(a,0.12)*(20+192) - 192)	// XXX: fmgen‰¹—Ê‚Æ”L‰¹Œ¹‰¹—Ê‚ğˆê’v‚³‚¹‚é‚½‚ß‚ÌÀŒ±®¥¥¥
+#define LINEAR2DB(a)	(pow(a,0.12)*(20+192) - 192)	// XXX: fmgenéŸ³é‡ã¨çŒ«éŸ³æºéŸ³é‡ã‚’ä¸€è‡´ã•ã›ã‚‹ãŸã‚ã®å®Ÿé¨“å¼ï½¥ï½¥ï½¥
 
 #if defined(SUPPORT_FMGEN)
-// XXX: ‰¹—Ê’²®‚ğo—ˆ‚é‚æ‚¤‚É‚·‚é‚½‚ß‚É‚Æ‚è‚ ‚¦‚¸¥¥¥
+// XXX: éŸ³é‡èª¿æ•´ã‚’å‡ºæ¥ã‚‹ã‚ˆã†ã«ã™ã‚‹ãŸã‚ã«ã¨ã‚Šã‚ãˆãšï½¥ï½¥ï½¥
 POPNA opnalist[OPNA_MAX] = {0}; 
 int opnalistconunt = 0;
 void opnalist_push(POPNA opna)
@@ -141,7 +141,7 @@ void opna_reset(POPNA opna, REG8 cCaps)
 		OEMCHAR path[MAX_PATH];
 		char strbuf[MAX_PATH];
 
-		OPNA_Init(opna->fmgen, OPNA_CLOCK*2, np2cfg.samplingrate, false, ""); // ƒTƒ“ƒvƒŠƒ“ƒOƒŒ[ƒg‹­§•ÏX¥¥¥
+		OPNA_Init(opna->fmgen, OPNA_CLOCK*2, np2cfg.samplingrate, false, ""); // ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ãƒ¬ãƒ¼ãƒˆå¼·åˆ¶å¤‰æ›´ï½¥ï½¥ï½¥
 		getbiospath(path, OEMTEXT(""), NELEMENTS(path));
 #ifdef UNICODE
 		wcstombs(strbuf, path, MAX_PATH);
@@ -169,7 +169,7 @@ void opna_reset(POPNA opna, REG8 cCaps)
 		}
 		opna->usefmgen = 1;
 	}else{
-		opna->usefmgen = 0; // fmgen‚ğg‚í‚È‚¢
+		opna->usefmgen = 0; // fmgenã‚’ä½¿ã‚ãªã„
 	}
 #endif	/* SUPPORT_FMGEN */
 

@@ -1,13 +1,13 @@
 /**
  * @file	cmnull.h
- * @brief	commng NULL ƒfƒoƒCƒX ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	commng NULL ãƒ‡ãƒã‚¤ã‚¹ ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
 #include "cmnull.h"
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CComNull::CComNull()
 	: CComBase(COMCONNECT_OFF)
@@ -35,8 +35,8 @@ UINT CComNull::Write(UINT8 cData)
 }
 
 /**
- * ƒXƒe[ƒ^ƒX‚ğ“¾‚é
- * @return ƒXƒe[ƒ^ƒX
+ * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’å¾—ã‚‹
+ * @return ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
  */
 UINT8 CComNull::GetStat()
 {
@@ -44,10 +44,10 @@ UINT8 CComNull::GetStat()
 }
 
 /**
- * ƒƒbƒZ[ƒW
- * @param[in] nMessage ƒƒbƒZ[ƒW
- * @param[in] nParam ƒpƒ‰ƒƒ^
- * @return ƒŠƒUƒ‹ƒg ƒR[ƒh
+ * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @return ãƒªã‚¶ãƒ«ãƒˆ ã‚³ãƒ¼ãƒ‰
  */
 INTPTR CComNull::Message(UINT nMessage, INTPTR nParam)
 {

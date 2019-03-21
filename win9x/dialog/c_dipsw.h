@@ -1,6 +1,6 @@
 /**
  * @file	c_dipsw.h
- * @brief	DIPSW ƒRƒ“ƒgƒ[ƒ‹ ƒNƒ‰ƒXŒQ‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ð‚µ‚Ü‚·
+ * @brief	DIPSW ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ« ã‚¯ãƒ©ã‚¹ç¾¤ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -8,7 +8,7 @@
 #include "misc\WndProc.h"
 
 /**
- * @brief MIDI ƒfƒoƒCƒX ƒNƒ‰ƒX
+ * @brief MIDI ãƒ‡ãƒã‚¤ã‚¹ ã‚¯ãƒ©ã‚¹
  */
 class CStaticDipSw : public CWndProc
 {

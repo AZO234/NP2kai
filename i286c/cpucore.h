@@ -24,7 +24,7 @@ enum {
 	I286_MEMWRITEMAX	= 0xa0000
 };
 #endif
-#else									// ダイレクトアクセス範囲を狭める
+#else									// 繝繧､繝ｬ繧ｯ繝医い繧ｯ繧ｻ繧ｹ遽�蝗ｲ繧堤強繧√ｋ
 enum {
 	I286_MEMREADMAX		= 0x00400,
 	I286_MEMWRITEMAX	= 0x00400
@@ -199,7 +199,7 @@ typedef struct {							// for ver0.73
 } I286EXT;
 
 typedef struct {
-	I286STAT	s;							// STATsaveされる奴
+	I286STAT	s;							// STATsave縺輔ｌ繧句･ｴ
 	I286EXT		e;
 } I286CORE;
 

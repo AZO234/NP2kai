@@ -1,6 +1,6 @@
 /**
  * @file	dialog.h
- * @breif	ƒ_ƒCƒAƒƒO‚ÌéŒ¾
+ * @breif	ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®å®£è¨€
  */
 
 #pragma once
@@ -75,8 +75,8 @@ void dialog_ideopt(HWND hwndParent);
 // d_hostdrv.cpp
 #if defined(SUPPORT_HOSTDRV)
 void dialog_hostdrvopt(HWND hwndParent);
-void hostdrv_readini(); // b’è hostdrv.c‚ ‚½‚è‚ÉˆÚ“®‚·‚×‚«H
-void hostdrv_writeini(); // b’è hostdrv.c‚ ‚½‚è‚ÉˆÚ“®‚·‚×‚«H
+void hostdrv_readini(); // æš«å®š hostdrv.cã‚ãŸã‚Šã«ç§»å‹•ã™ã¹ãï¼Ÿ
+void hostdrv_writeini(); // æš«å®š hostdrv.cã‚ãŸã‚Šã«ç§»å‹•ã™ã¹ãï¼Ÿ
 #endif
 
 // d_pci.cpp

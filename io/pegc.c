@@ -5,11 +5,11 @@
 #include	"memegc.h"
 #include	"vram.h"
 
-// PEGC ƒvƒŒ[ƒ“ƒ‚[ƒh
-// ŠÖ˜A: vram.c, vram.h, memvga.c, memvga.h
+// PEGC ãƒ—ãƒ¬ãƒ¼ãƒ³ãƒ¢ãƒ¼ãƒ‰
+// é–¢é€£: vram.c, vram.h, memvga.c, memvga.h
 
-// Ú‚µ‚­‚à‚È‚¢‚Ì‚Éì‚Á‚½‚Ì‚Å‚©‚È‚è‚¢‚¢‰ÁŒ¸‚Å‚·B
-// ‰ü—Ç‚·‚é‚Ì‚Å‚ ‚ê‚Î‘S•”Ì‚Ä‚Äì‚è’¼‚µ‚½•û‚ª—Ç‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñ
+// è©³ã—ãã‚‚ãªã„ã®ã«ä½œã£ãŸã®ã§ã‹ãªã‚Šã„ã„åŠ æ¸›ã§ã™ã€‚
+// æ”¹è‰¯ã™ã‚‹ã®ã§ã‚ã‚Œã°å…¨éƒ¨æ¨ã¦ã¦ä½œã‚Šç›´ã—ãŸæ–¹ãŒè‰¯ã„ã‹ã‚‚ã—ã‚Œã¾ã›ã‚“
 
 #ifdef SUPPORT_PEGC
 
@@ -20,20 +20,20 @@ REG16 MEMCALL pegc_memvgaplane_rd16(UINT32 address){
 	UINT16 ret = 0;
 	UINT8 bit;
 
-	UINT32 addr; // ‰æ‘f’PˆÊ‚Ì“Ç‚İ‚İŒ³ƒAƒhƒŒƒX
+	UINT32 addr; // ç”»ç´ å˜ä½ã®èª­ã¿è¾¼ã¿å…ƒã‚¢ãƒ‰ãƒ¬ã‚¹
 
-	UINT8 src, dst, pat1, pat2; // ƒ\[ƒXƒf[ƒ^AƒfƒBƒXƒeƒBƒl[ƒVƒ‡ƒ“ƒf[ƒ^Aƒpƒ^[ƒ“ƒf[ƒ^1&2
-	UINT8 ropcode = 0; // ƒ‰ƒXƒ^ƒIƒyƒŒ[ƒVƒ‡ƒ“İ’è E0108h bit0`bit7
-	UINT8 ropmethod = 0; // ˜_—‰‰Z‚Ì•û–@‚ğw’èiƒpƒ^[ƒ“ƒŒƒWƒXƒ^‚Ü‚½‚ÍƒJƒ‰[ƒpƒŒƒbƒgj E0108h bit11,10
-	UINT8 ropupdmode = 0; // 1‚È‚çƒ‰ƒXƒ^ƒIƒyƒŒ[ƒVƒ‡ƒ“‚ğg—p E0108h bit12
-	UINT8 planemask = 0; // ƒvƒŒ[ƒ“‘‚«‚İ‹Ö~(0=‹–‰Â, 1=‹Ö~)@E0104h
-	UINT32 pixelmask = 0; // ƒrƒbƒgi‰æ‘fj‚Ö‚Ì‘‚«‚İ‹Ö~(0=‹Ö~, 1=‹–‰Â) E010Ch
-	UINT32 bitlength = 0; // ƒuƒƒbƒN“]‘—ƒrƒbƒg’·(“]‘—ƒTƒCƒY-1) E0110h
-	UINT32 srcbitshift = 0; // ƒŠ[ƒh‚ÌƒrƒbƒgƒVƒtƒg” E0112h
-	UINT8 shiftdir = 1; // ƒVƒtƒg•ûŒüi0:inc, 1:decjE0108h bit9
-	UINT8 srccpu = 1; // ’¼‘O‚É“Ç‚İæ‚Á‚½VRAMƒf[ƒ^‚Å‚Í‚È‚­CPUƒf[ƒ^‚ğg—p‚·‚é‚© E0108h bit8
+	UINT8 src, dst, pat1, pat2; // ã‚½ãƒ¼ã‚¹ãƒ‡ãƒ¼ã‚¿ã€ãƒ‡ã‚£ã‚¹ãƒ†ã‚£ãƒãƒ¼ã‚·ãƒ§ãƒ³ãƒ‡ãƒ¼ã‚¿ã€ãƒ‘ã‚¿ãƒ¼ãƒ³ãƒ‡ãƒ¼ã‚¿1&2
+	UINT8 ropcode = 0; // ãƒ©ã‚¹ã‚¿ã‚ªãƒšãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³è¨­å®š E0108h bit0ã€œbit7
+	UINT8 ropmethod = 0; // è«–ç†æ¼”ç®—ã®æ–¹æ³•ã‚’æŒ‡å®šï¼ˆãƒ‘ã‚¿ãƒ¼ãƒ³ãƒ¬ã‚¸ã‚¹ã‚¿ã¾ãŸã¯ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆï¼‰ E0108h bit11,10
+	UINT8 ropupdmode = 0; // 1ãªã‚‰ãƒ©ã‚¹ã‚¿ã‚ªãƒšãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã‚’ä½¿ç”¨ E0108h bit12
+	UINT8 planemask = 0; // ãƒ—ãƒ¬ãƒ¼ãƒ³æ›¸ãè¾¼ã¿ç¦æ­¢(0=è¨±å¯, 1=ç¦æ­¢)ã€€E0104h
+	UINT32 pixelmask = 0; // ãƒ“ãƒƒãƒˆï¼ˆç”»ç´ ï¼‰ã¸ã®æ›¸ãè¾¼ã¿ç¦æ­¢(0=ç¦æ­¢, 1=è¨±å¯) E010Ch
+	UINT32 bitlength = 0; // ãƒ–ãƒ­ãƒƒã‚¯è»¢é€ãƒ“ãƒƒãƒˆé•·(è»¢é€ã‚µã‚¤ã‚º-1) E0110h
+	UINT32 srcbitshift = 0; // ãƒªãƒ¼ãƒ‰æ™‚ã®ãƒ“ãƒƒãƒˆã‚·ãƒ•ãƒˆæ•° E0112h
+	UINT8 shiftdir = 1; // ã‚·ãƒ•ãƒˆæ–¹å‘ï¼ˆ0:inc, 1:decï¼‰E0108h bit9
+	UINT8 srccpu = 1; // ç›´å‰ã«èª­ã¿å–ã£ãŸVRAMãƒ‡ãƒ¼ã‚¿ã§ã¯ãªãCPUãƒ‡ãƒ¼ã‚¿ã‚’ä½¿ç”¨ã™ã‚‹ã‹ E0108h bit8
 
-	// PEGCƒŒƒWƒXƒ^“Ç‚İ‚¾‚µ
+	// PEGCãƒ¬ã‚¸ã‚¹ã‚¿èª­ã¿ã ã—
 	ropcode = LOADINTELWORD(vramop.mio2+PEGC_REG_PLANE_ROP) & 0xff;
 	ropmethod = (LOADINTELWORD(vramop.mio2+PEGC_REG_PLANE_ROP) >> 10) & 0x3;
 	ropupdmode = (LOADINTELWORD(vramop.mio2+PEGC_REG_PLANE_ROP) >> 12) & 0x1;
@@ -44,16 +44,16 @@ REG16 MEMCALL pegc_memvgaplane_rd16(UINT32 address){
 	shiftdir = (LOADINTELWORD(vramop.mio2+PEGC_REG_PLANE_ROP) >> 9) & 0x1;
 	srccpu = (LOADINTELWORD(vramop.mio2+PEGC_REG_PLANE_ROP) >> 8) & 0x1;
 	
-	// ‰æ‘f’PˆÊ‚ÌƒAƒhƒŒƒXŒvZ
+	// ç”»ç´ å˜ä½ã®ã‚¢ãƒ‰ãƒ¬ã‚¹è¨ˆç®—
 	addr = (address - 0xa8000) * 8;
 	addr += srcbitshift;
-	addr &= 0x80000-1; // ˆÀ‘S‚Ì‚½‚ß
+	addr &= 0x80000-1; // å®‰å…¨ã®ãŸã‚
 
 	if(!srccpu){
 		if(!shiftdir){
 			for(i=0;i<16;i++){
-				UINT32 addrtmp = (addr + i) & (0x80000-1); // “Ç‚İæ‚èˆÊ’u
-				UINT32 pixmaskpos = (1 << ((15-i+8)&0xf)); // Œ»İ‚Ì‰æ‘f‚É‘Î‰‚·‚épixelmask‚ÌƒrƒbƒgˆÊ’u
+				UINT32 addrtmp = (addr + i) & (0x80000-1); // èª­ã¿å–ã‚Šä½ç½®
+				UINT32 pixmaskpos = (1 << ((15-i+8)&0xf)); // ç¾åœ¨ã®ç”»ç´ ã«å¯¾å¿œã™ã‚‹pixelmaskã®ãƒ“ãƒƒãƒˆä½ç½®
 				UINT8 data = vramex[addrtmp];
 
 				// compare data
@@ -75,8 +75,8 @@ REG16 MEMCALL pegc_memvgaplane_rd16(UINT32 address){
 			}
 		}else{
 			for(i=0;i<16;i++){
-				UINT32 addrtmp = (addr - i) & (0x80000-1); // “Ç‚İæ‚èˆÊ’u
-				UINT32 pixmaskpos = (1 << ((i/8)*8 + (7-(i&0x7)))); // Œ»İ‚Ì‰æ‘f‚É‘Î‰‚·‚évalue‚âpixelmask‚ÌƒrƒbƒgˆÊ’u
+				UINT32 addrtmp = (addr - i) & (0x80000-1); // èª­ã¿å–ã‚Šä½ç½®
+				UINT32 pixmaskpos = (1 << ((i/8)*8 + (7-(i&0x7)))); // ç¾åœ¨ã®ç”»ç´ ã«å¯¾å¿œã™ã‚‹valueã‚„pixelmaskã®ãƒ“ãƒƒãƒˆä½ç½®
 				UINT8 data = vramex[addrtmp];
 
 				// compare data
@@ -106,20 +106,20 @@ void MEMCALL pegc_memvgaplane_wr16(UINT32 address, REG16 value){
 	int i,j;
 	UINT8 bit;
 
-	UINT32 addr; // ‰æ‘f’PˆÊ‚Ì‘‚«‚İæƒAƒhƒŒƒX
+	UINT32 addr; // ç”»ç´ å˜ä½ã®æ›¸ãè¾¼ã¿å…ˆã‚¢ãƒ‰ãƒ¬ã‚¹
 
-	UINT8 src, dst, pat1, pat2; // ƒ\[ƒXƒf[ƒ^AƒfƒBƒXƒeƒBƒl[ƒVƒ‡ƒ“ƒf[ƒ^Aƒpƒ^[ƒ“ƒf[ƒ^1&2
-	UINT8 ropcode = 0; // ƒ‰ƒXƒ^ƒIƒyƒŒ[ƒVƒ‡ƒ“İ’è E0108h bit0`bit7
-	UINT8 ropmethod = 0; // ˜_—‰‰Z‚Ì•û–@‚ğw’èiƒpƒ^[ƒ“ƒŒƒWƒXƒ^‚Ü‚½‚ÍƒJƒ‰[ƒpƒŒƒbƒgj E0108h bit11,10
-	UINT8 ropupdmode = 0; // 1‚È‚çƒ‰ƒXƒ^ƒIƒyƒŒ[ƒVƒ‡ƒ“‚ğg—p E0108h bit12
-	UINT8 planemask = 0; // ƒvƒŒ[ƒ“‘‚«‚İ‹Ö~(0=‹–‰Â, 1=‹Ö~)@E0104h
-	UINT32 pixelmask = 0; // ƒrƒbƒgi‰æ‘fj‚Ö‚Ì‘‚«‚İ‹Ö~(0=‹Ö~, 1=‹–‰Â) E010Ch
-	UINT32 bitlength = 0; // ƒuƒƒbƒN“]‘—ƒrƒbƒg’·(“]‘—ƒTƒCƒY-1) E0110h
-	UINT32 dstbitshift = 0; // ƒ‰ƒCƒg‚ÌƒrƒbƒgƒVƒtƒg” E0112h
-	UINT8 shiftdir = 1; // ƒVƒtƒg•ûŒüi0:inc, 1:decjE0108h bit9
-	UINT8 srccpu = 1; // ’¼‘O‚É“Ç‚İæ‚Á‚½VRAMƒf[ƒ^‚Å‚Í‚È‚­CPUƒf[ƒ^‚ğg—p‚·‚é‚© E0108h bit8
+	UINT8 src, dst, pat1, pat2; // ã‚½ãƒ¼ã‚¹ãƒ‡ãƒ¼ã‚¿ã€ãƒ‡ã‚£ã‚¹ãƒ†ã‚£ãƒãƒ¼ã‚·ãƒ§ãƒ³ãƒ‡ãƒ¼ã‚¿ã€ãƒ‘ã‚¿ãƒ¼ãƒ³ãƒ‡ãƒ¼ã‚¿1&2
+	UINT8 ropcode = 0; // ãƒ©ã‚¹ã‚¿ã‚ªãƒšãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³è¨­å®š E0108h bit0ã€œbit7
+	UINT8 ropmethod = 0; // è«–ç†æ¼”ç®—ã®æ–¹æ³•ã‚’æŒ‡å®šï¼ˆãƒ‘ã‚¿ãƒ¼ãƒ³ãƒ¬ã‚¸ã‚¹ã‚¿ã¾ãŸã¯ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆï¼‰ E0108h bit11,10
+	UINT8 ropupdmode = 0; // 1ãªã‚‰ãƒ©ã‚¹ã‚¿ã‚ªãƒšãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã‚’ä½¿ç”¨ E0108h bit12
+	UINT8 planemask = 0; // ãƒ—ãƒ¬ãƒ¼ãƒ³æ›¸ãè¾¼ã¿ç¦æ­¢(0=è¨±å¯, 1=ç¦æ­¢)ã€€E0104h
+	UINT32 pixelmask = 0; // ãƒ“ãƒƒãƒˆï¼ˆç”»ç´ ï¼‰ã¸ã®æ›¸ãè¾¼ã¿ç¦æ­¢(0=ç¦æ­¢, 1=è¨±å¯) E010Ch
+	UINT32 bitlength = 0; // ãƒ–ãƒ­ãƒƒã‚¯è»¢é€ãƒ“ãƒƒãƒˆé•·(è»¢é€ã‚µã‚¤ã‚º-1) E0110h
+	UINT32 dstbitshift = 0; // ãƒ©ã‚¤ãƒˆæ™‚ã®ãƒ“ãƒƒãƒˆã‚·ãƒ•ãƒˆæ•° E0112h
+	UINT8 shiftdir = 1; // ã‚·ãƒ•ãƒˆæ–¹å‘ï¼ˆ0:inc, 1:decï¼‰E0108h bit9
+	UINT8 srccpu = 1; // ç›´å‰ã«èª­ã¿å–ã£ãŸVRAMãƒ‡ãƒ¼ã‚¿ã§ã¯ãªãCPUãƒ‡ãƒ¼ã‚¿ã‚’ä½¿ç”¨ã™ã‚‹ã‹ E0108h bit8
 
-	// PEGCƒŒƒWƒXƒ^“Ç‚İ‚¾‚µ
+	// PEGCãƒ¬ã‚¸ã‚¹ã‚¿èª­ã¿ã ã—
 	ropcode = LOADINTELWORD(vramop.mio2+PEGC_REG_PLANE_ROP) & 0xff;
 	ropmethod = (LOADINTELWORD(vramop.mio2+PEGC_REG_PLANE_ROP) >> 10) & 0x3;
 	ropupdmode = (LOADINTELWORD(vramop.mio2+PEGC_REG_PLANE_ROP) >> 12) & 0x1;
@@ -130,32 +130,32 @@ void MEMCALL pegc_memvgaplane_wr16(UINT32 address, REG16 value){
 	shiftdir = (LOADINTELWORD(vramop.mio2+PEGC_REG_PLANE_ROP) >> 9) & 0x1;
 	srccpu = (LOADINTELWORD(vramop.mio2+PEGC_REG_PLANE_ROP) >> 8) & 0x1;
 	
-	// ‰æ‘f’PˆÊ‚ÌƒAƒhƒŒƒXŒvZ
+	// ç”»ç´ å˜ä½ã®ã‚¢ãƒ‰ãƒ¬ã‚¹è¨ˆç®—
 	addr = (address - 0xa8000) * 8;
 	addr += dstbitshift;
-	addr &= 0x80000-1; // ˆÀ‘S‚Ì‚½‚ß
+	addr &= 0x80000-1; // å®‰å…¨ã®ãŸã‚
 
 	// ???
 	bit = (addr & 0x40000)?2:1;
 	
 	//if(!srccpu && pegc.remain!=0 && pegc.lastdatalen < 16){
-	//	return; // ‘‚«‚İ–³‹
+	//	return; // æ›¸ãè¾¼ã¿ç„¡è¦–
 	//}
 	
 	if(pegc.remain == 0){
-		// ƒf[ƒ^”–ß‚·?
+		// ãƒ‡ãƒ¼ã‚¿æ•°æˆ»ã™?
 		pegc.remain = (LOADINTELDWORD(vramop.mio2 + PEGC_REG_LENGTH) & 0x0fff) + 1;
 	}
 	
 	if(!shiftdir){
-		// ‚Æ‚è‚ ‚¦‚¸ƒCƒ“ƒNƒŠƒƒ“ƒ^ƒ‹
-		// ƒƒ‚ i‚È‚ñ‚©‚¨‚©‚µ‚¢j
+		// ã¨ã‚Šã‚ãˆãšã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ã‚¿ãƒ«
+		// ãƒ¡ãƒ¢ ï¼ˆãªã‚“ã‹ãŠã‹ã—ã„ï¼‰
 		//            +----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+
 		//    i       |  0 |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 | 11 | 12 | 13 | 14 | 15 |
 		//            +----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+
-		// value    ¨ bit7 bit6 bit5 bit4 bit3 bit2 bit1 bit0 bitF bitE bitD bitC bitB bitA bit9 bit8  
-		// pixelmask¨ bit7 bit6 bit5 bit4 bit3 bit2 bit1 bit0 bitF bitE bitD bitC bitB bitA bit9 bit8  planemask  SRC,DST,PAT
-		//                                                                                                  «          «
+		// value    â†’ bit7 bit6 bit5 bit4 bit3 bit2 bit1 bit0 bitF bitE bitD bitC bitB bitA bit9 bit8  
+		// pixelmaskâ†’ bit7 bit6 bit5 bit4 bit3 bit2 bit1 bit0 bitF bitE bitD bitC bitB bitA bit9 bit8  planemask  SRC,DST,PAT
+		//                                                                                                  â†“          â†“
 		// plane0 vramex[0]  [1]  [2]  [3]  [4]  [5]  [6]  [7]  [8]  [9] [10] [11] [12] [13] [14] [15]    bit0        bit0
 		// plane1 vramex[0]  [1]  [2]  [3]  [4]  [5]  [6]  [7]  [8]  [9] [10] [11] [12] [13] [14] [15]    bit1        bit1
 		// plane2 vramex[0]  [1]  [2]  [3]  [4]  [5]  [6]  [7]  [8]  [9] [10] [11] [12] [13] [14] [15]    bit2        bit2
@@ -166,28 +166,28 @@ void MEMCALL pegc_memvgaplane_wr16(UINT32 address, REG16 value){
 		// plane7 vramex[0]  [1]  [2]  [3]  [4]  [5]  [6]  [7]  [8]  [9] [10] [11] [12] [13] [14] [15]    bit7        bit7
 
 		for(i=0;i<16;i++){
-			UINT32 addrtmp = (addr + i) & (0x80000-1); // ‘‚«‚İˆÊ’u
-			UINT32 pixmaskpos = (1 << ((i/8)*8 + (7-(i&0x7)))); // Œ»İ‚Ì‰æ‘f‚É‘Î‰‚·‚évalue‚âpixelmask‚ÌƒrƒbƒgˆÊ’u
-			if(pixelmask & pixmaskpos){ // ‘‚«‚İ‹Ö~ƒ`ƒFƒbƒN
-				// SRC‚Ìİ’è
+			UINT32 addrtmp = (addr + i) & (0x80000-1); // æ›¸ãè¾¼ã¿ä½ç½®
+			UINT32 pixmaskpos = (1 << ((i/8)*8 + (7-(i&0x7)))); // ç¾åœ¨ã®ç”»ç´ ã«å¯¾å¿œã™ã‚‹valueã‚„pixelmaskã®ãƒ“ãƒƒãƒˆä½ç½®
+			if(pixelmask & pixmaskpos){ // æ›¸ãè¾¼ã¿ç¦æ­¢ãƒã‚§ãƒƒã‚¯
+				// SRCã®è¨­å®š
 				if(srccpu){
-					// CPUƒf[ƒ^‚ğg‚¤
+					// CPUãƒ‡ãƒ¼ã‚¿ã‚’ä½¿ã†
 					src = (value & pixmaskpos) ? 0xff : 0x00;
 				}else{
-					// ’¼‘O‚É“Ç‚İæ‚Á‚½VRAMƒf[ƒ^‚ğg‚¤
+					// ç›´å‰ã«èª­ã¿å–ã£ãŸVRAMãƒ‡ãƒ¼ã‚¿ã‚’ä½¿ã†
 					src = pegc.lastdata[i];
 				}
 
-				// DST‚Ìİ’è Œ»İ‚ÌVRAMƒf[ƒ^æ“¾
+				// DSTã®è¨­å®š ç¾åœ¨ã®VRAMãƒ‡ãƒ¼ã‚¿å–å¾—
 				dst = vramex[addrtmp];
 
 				if(ropupdmode){
-					// ROPg—p
-					vramex[addrtmp] = (vramex[addrtmp] & planemask); // ‘‚«Š·‚¦‚³‚ê‚é—\’è‚Ìƒrƒbƒg‚ğ0‚É‚µ‚Ä‚¨‚­
+					// ROPä½¿ç”¨
+					vramex[addrtmp] = (vramex[addrtmp] & planemask); // æ›¸ãæ›ãˆã•ã‚Œã‚‹äºˆå®šã®ãƒ“ãƒƒãƒˆã‚’0ã«ã—ã¦ãŠã
 					
-					// PAT‚Ìİ’è
+					// PATã®è¨­å®š
 					if(ropmethod==0){
-						// ƒpƒ^[ƒ“ƒŒƒWƒXƒ^‚ğg—p
+						// ãƒ‘ã‚¿ãƒ¼ãƒ³ãƒ¬ã‚¸ã‚¹ã‚¿ã‚’ä½¿ç”¨
 						int col = 0;
 						for(j=7;j>=0;j--){
 							col |= (LOADINTELWORD(vramop.mio2 + PEGC_REG_PATTERN + j*4) >> i) & 0x1;
@@ -195,17 +195,17 @@ void MEMCALL pegc_memvgaplane_wr16(UINT32 address, REG16 value){
 						}
 						pat1 = pat2 = col;
 					}else if(ropmethod==1){
-						// ƒpƒŒƒbƒg2‚ğg—p
+						// ãƒ‘ãƒ¬ãƒƒãƒˆ2ã‚’ä½¿ç”¨
 						pat1 = pat2 = vramop.mio2[PEGC_REG_PALETTE2];
 					}else if(ropmethod==2){
-						// ƒpƒŒƒbƒg1‚ğg—p
+						// ãƒ‘ãƒ¬ãƒƒãƒˆ1ã‚’ä½¿ç”¨
 						pat1 = pat2 = vramop.mio2[PEGC_REG_PALETTE1];
 					}else if(ropmethod==3){
-						// ƒpƒŒƒbƒg1‚Æ2‚ğg—p
+						// ãƒ‘ãƒ¬ãƒƒãƒˆ1ã¨2ã‚’ä½¿ç”¨
 						pat1 = vramop.mio2[PEGC_REG_PALETTE1];
 						pat2 = vramop.mio2[PEGC_REG_PALETTE2];
 					}
-					// ROPÀs
+					// ROPå®Ÿè¡Œ
 					if(vramop.mio2[PEGC_REG_PLANE_ROP] & (1<<7)) vramex[addrtmp] |= (src & dst & pat1) & (~planemask);
 					if(vramop.mio2[PEGC_REG_PLANE_ROP] & (1<<6)) vramex[addrtmp] |= (src & dst & ~pat1) & (~planemask);
 					if(vramop.mio2[PEGC_REG_PLANE_ROP] & (1<<5)) vramex[addrtmp] |= (src & ~dst & pat1) & (~planemask);
@@ -215,7 +215,7 @@ void MEMCALL pegc_memvgaplane_wr16(UINT32 address, REG16 value){
 					if(vramop.mio2[PEGC_REG_PLANE_ROP] & (1<<1)) vramex[addrtmp] |= (~src & ~dst & pat2) & (~planemask);
 					if(vramop.mio2[PEGC_REG_PLANE_ROP] & (1<<0)) vramex[addrtmp] |= (~src & ~dst & ~pat2) & (~planemask);
 				}else{
-					// SRC‚Ì0‚É‘Î‚µ‚Äplanemask&DST, 1‚É‘Î‚µ‚Ä~planemask|DST
+					// SRCã®0ã«å¯¾ã—ã¦planemask&DST, 1ã«å¯¾ã—ã¦~planemask|DST
 					vramex[addrtmp] = 0;
 					for(j=0;j<8;j++){
 						if(src & (1<<j)){
@@ -230,35 +230,35 @@ void MEMCALL pegc_memvgaplane_wr16(UINT32 address, REG16 value){
 			}
 
 			pegc.remain--;
-			// “]‘—ƒTƒCƒYƒ`ƒFƒbƒN
+			// è»¢é€ã‚µã‚¤ã‚ºãƒã‚§ãƒƒã‚¯
 			if(pegc.remain == 0){
-				goto endloop; // ”²‚¯‚é
+				goto endloop; // æŠœã‘ã‚‹
 			}
 		}
 	}else{
 		for(i=0;i<16;i++){
-			UINT32 addrtmp = (addr - i) & (0x80000-1); // ‘‚«‚İˆÊ’u
-			UINT32 pixmaskpos = (1 << ((i/8)*8 + (7-(i&0x7)))); // Œ»İ‚Ì‰æ‘f‚É‘Î‰‚·‚évalue‚âpixelmask‚ÌƒrƒbƒgˆÊ’u
-			if(pixelmask & pixmaskpos){ // ‘‚«‚İ‹Ö~ƒ`ƒFƒbƒN
-				// SRC‚Ìİ’è
+			UINT32 addrtmp = (addr - i) & (0x80000-1); // æ›¸ãè¾¼ã¿ä½ç½®
+			UINT32 pixmaskpos = (1 << ((i/8)*8 + (7-(i&0x7)))); // ç¾åœ¨ã®ç”»ç´ ã«å¯¾å¿œã™ã‚‹valueã‚„pixelmaskã®ãƒ“ãƒƒãƒˆä½ç½®
+			if(pixelmask & pixmaskpos){ // æ›¸ãè¾¼ã¿ç¦æ­¢ãƒã‚§ãƒƒã‚¯
+				// SRCã®è¨­å®š
 				if(srccpu){
-					// CPUƒf[ƒ^‚ğg‚¤
+					// CPUãƒ‡ãƒ¼ã‚¿ã‚’ä½¿ã†
 					src = (value & pixmaskpos) ? 0xff : 0x00;
 				}else{
-					// ’¼‘O‚É“Ç‚İæ‚Á‚½VRAMƒf[ƒ^‚ğg‚¤
+					// ç›´å‰ã«èª­ã¿å–ã£ãŸVRAMãƒ‡ãƒ¼ã‚¿ã‚’ä½¿ã†
 					src = pegc.lastdata[i];
 				}
 
-				// DST‚Ìİ’è Œ»İ‚ÌVRAMƒf[ƒ^æ“¾
+				// DSTã®è¨­å®š ç¾åœ¨ã®VRAMãƒ‡ãƒ¼ã‚¿å–å¾—
 				dst = vramex[addrtmp];
 
 				if(ropupdmode){
-					// ROPg—p
-					vramex[addrtmp] = (vramex[addrtmp] & planemask); // ‘‚«Š·‚¦‚³‚ê‚é—\’è‚Ìƒrƒbƒg‚ğ0‚É‚µ‚Ä‚¨‚­
+					// ROPä½¿ç”¨
+					vramex[addrtmp] = (vramex[addrtmp] & planemask); // æ›¸ãæ›ãˆã•ã‚Œã‚‹äºˆå®šã®ãƒ“ãƒƒãƒˆã‚’0ã«ã—ã¦ãŠã
 					
-					// PAT‚Ìİ’è
+					// PATã®è¨­å®š
 					if(ropmethod==0){
-						// ƒpƒ^[ƒ“ƒŒƒWƒXƒ^‚ğg—p
+						// ãƒ‘ã‚¿ãƒ¼ãƒ³ãƒ¬ã‚¸ã‚¹ã‚¿ã‚’ä½¿ç”¨
 						int col = 0;
 						for(j=7;j>=0;j--){
 							col |= (LOADINTELWORD(vramop.mio2 + PEGC_REG_PATTERN + j*4) >> i) & 0x1;
@@ -266,17 +266,17 @@ void MEMCALL pegc_memvgaplane_wr16(UINT32 address, REG16 value){
 						}
 						pat1 = pat2 = col;
 					}else if(ropmethod==1){
-						// ƒpƒŒƒbƒg2‚ğg—p
+						// ãƒ‘ãƒ¬ãƒƒãƒˆ2ã‚’ä½¿ç”¨
 						pat1 = pat2 = vramop.mio2[PEGC_REG_PALETTE2];
 					}else if(ropmethod==2){
-						// ƒpƒŒƒbƒg1‚ğg—p
+						// ãƒ‘ãƒ¬ãƒƒãƒˆ1ã‚’ä½¿ç”¨
 						pat1 = pat2 = vramop.mio2[PEGC_REG_PALETTE1];
 					}else if(ropmethod==3){
-						// ƒpƒŒƒbƒg1‚Æ2‚ğg—p
+						// ãƒ‘ãƒ¬ãƒƒãƒˆ1ã¨2ã‚’ä½¿ç”¨
 						pat1 = vramop.mio2[PEGC_REG_PALETTE1];
 						pat2 = vramop.mio2[PEGC_REG_PALETTE2];
 					}
-					// ROPÀs
+					// ROPå®Ÿè¡Œ
 					if(vramop.mio2[PEGC_REG_PLANE_ROP] & (1<<7)) vramex[addrtmp] |= (src & dst & pat1) & (~planemask);
 					if(vramop.mio2[PEGC_REG_PLANE_ROP] & (1<<6)) vramex[addrtmp] |= (src & dst & ~pat1) & (~planemask);
 					if(vramop.mio2[PEGC_REG_PLANE_ROP] & (1<<5)) vramex[addrtmp] |= (src & ~dst & pat1) & (~planemask);
@@ -286,7 +286,7 @@ void MEMCALL pegc_memvgaplane_wr16(UINT32 address, REG16 value){
 					if(vramop.mio2[PEGC_REG_PLANE_ROP] & (1<<1)) vramex[addrtmp] |= (~src & ~dst & pat2) & (~planemask);
 					if(vramop.mio2[PEGC_REG_PLANE_ROP] & (1<<0)) vramex[addrtmp] |= (~src & ~dst & ~pat2) & (~planemask);
 				}else{
-					// SRC‚Ì0‚É‘Î‚µ‚Äplanemask&DST, 1‚É‘Î‚µ‚Ä~planemask|DST
+					// SRCã®0ã«å¯¾ã—ã¦planemask&DST, 1ã«å¯¾ã—ã¦~planemask|DST
 					vramex[addrtmp] = 0;
 					for(j=0;j<8;j++){
 						if(src & (1<<j)){
@@ -301,9 +301,9 @@ void MEMCALL pegc_memvgaplane_wr16(UINT32 address, REG16 value){
 			}
 
 			pegc.remain--;
-			// “]‘—ƒTƒCƒYƒ`ƒFƒbƒN
+			// è»¢é€ã‚µã‚¤ã‚ºãƒã‚§ãƒƒã‚¯
 			if(pegc.remain == 0){
-				goto endloop; // ”²‚¯‚é
+				goto endloop; // æŠœã‘ã‚‹
 			}
 		}
 	}
@@ -312,11 +312,11 @@ endloop:
 	pegc.lastdatalen -= 16;
 }
 UINT32 MEMCALL pegc_memvgaplane_rd32(UINT32 address){
-	// TODO: ì‚é
+	// TODO: ä½œã‚‹
 	return 0;
 }
 void MEMCALL pegc_memvgaplane_wr32(UINT32 address, UINT32 value){
-	// TODO: ì‚é
+	// TODO: ä½œã‚‹
 }
 
 void pegc_reset(const NP2CFG *pConfig) {

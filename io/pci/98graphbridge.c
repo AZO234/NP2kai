@@ -1,5 +1,5 @@
 
-// PC-9821 PCI-CBusƒuƒŠƒbƒW
+// PC-9821 PCI-CBusãƒ–ãƒªãƒƒã‚¸
 
 #include	"compiler.h"
 
@@ -40,7 +40,7 @@ void pcidev_98graphbridge_bind(void) {
 	
 	int devid = pcidev_98graphbridge_deviceid;
 
-	// 98ƒOƒ‰ƒtƒBƒbƒNƒoƒXƒuƒŠƒbƒW
+	// 98ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒã‚¹ãƒ–ãƒªãƒƒã‚¸
 	ZeroMemory(pcidev.devices+devid, sizeof(_PCIDEVICE));
 	pcidev.devices[devid].enable = 1;
 	pcidev.devices[devid].skipirqtbl = 1;
@@ -50,9 +50,9 @@ void pcidev_98graphbridge_bind(void) {
 	pcidev.devices[devid].header.command = 0x0003;//0x0006;//0x0003;
 	pcidev.devices[devid].header.status = 0x0280;//0x0000;//0x0280;
 	pcidev.devices[devid].header.revisionID = 0x01;
-	pcidev.devices[devid].header.classcode[0] = 0x00; // ƒŒƒWƒXƒ^ƒŒƒxƒ‹ƒvƒƒOƒ‰ƒ~ƒ“ƒOƒCƒ“ƒ^ƒtƒF[ƒX
-	pcidev.devices[devid].header.classcode[1] = 0x80; // ƒTƒuƒNƒ‰ƒXƒR[ƒh
-	pcidev.devices[devid].header.classcode[2] = 0x03; // ƒx[ƒXƒNƒ‰ƒXƒR[ƒh
+	pcidev.devices[devid].header.classcode[0] = 0x00; // ãƒ¬ã‚¸ã‚¹ã‚¿ãƒ¬ãƒ™ãƒ«ãƒ—ãƒ­ã‚°ãƒ©ãƒŸãƒ³ã‚°ã‚¤ãƒ³ã‚¿ãƒ•ã‚§ãƒ¼ã‚¹
+	pcidev.devices[devid].header.classcode[1] = 0x80; // ã‚µãƒ–ã‚¯ãƒ©ã‚¹ã‚³ãƒ¼ãƒ‰
+	pcidev.devices[devid].header.classcode[2] = 0x03; // ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã‚³ãƒ¼ãƒ‰
 	pcidev.devices[devid].header.cachelinesize = 0;
 	pcidev.devices[devid].header.latencytimer = 0x0;
 	pcidev.devices[devid].header.headertype = 0;
@@ -60,7 +60,7 @@ void pcidev_98graphbridge_bind(void) {
 	pcidev.devices[devid].header.interruptline = 0x00;
 	pcidev.devices[devid].header.interruptpin = 0x00;
 	
-	// ROM—Ìˆæİ’è
+	// ROMé ˜åŸŸè¨­å®š
 	pcidev.devices[devid].headerrom.vendorID = 0xffff;
 	pcidev.devices[devid].headerrom.deviceID = 0xffff;
 	pcidev.devices[devid].headerrom.status = 0xffff;

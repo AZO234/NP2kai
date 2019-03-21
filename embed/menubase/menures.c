@@ -6,48 +6,48 @@
 #if defined(OSLANG_SJIS) && !defined(RESOURCE_US)
 const OEMCHAR mstr_fontcheck[] = " ";
 const OEMCHAR mstr_ok[] = "OK";
-			// ÉLÉÉÉìÉZÉã
+			// „Ç≠„É£„É≥„Çª„É´
 const OEMCHAR mstr_cancel[] = "\267\254\335\276\331";
-			// íÜé~
+			// ‰∏≠Ê≠¢
 const OEMCHAR mstr_abort[] = "\222\206\216\176";
-			// çƒééçs
+			// ÂÜçË©¶Ë°å
 const OEMCHAR mstr_retry[] = "\215\304\216\216\215\163";
-			// ñ≥éã
+			// ÁÑ°Ë¶ñ
 const OEMCHAR mstr_ignore[] = "\226\263\216\213";
-			// ÇÕÇ¢
+			// „ÅØ„ÅÑ
 const OEMCHAR mstr_yes[] = "\202\315\202\242";
-			// Ç¢Ç¢Ç¶
+			// „ÅÑ„ÅÑ„Åà
 const OEMCHAR mstr_no[] = "\202\242\202\242\202\246";
 #elif defined(OSLANG_EUC) && !defined(RESOURCE_US)
 const OEMCHAR mstr_fontcheck[] = " ";
 const OEMCHAR mstr_ok[] = "OK";
-			// ÉLÉÉÉìÉZÉã
+			// „Ç≠„É£„É≥„Çª„É´
 const OEMCHAR mstr_cancel[] = "\216\267\216\254\216\335\216\276\216\331";
-			// íÜé~
+			// ‰∏≠Ê≠¢
 const OEMCHAR mstr_abort[] = "\303\346\273\337";
-			// çƒééçs
+			// ÂÜçË©¶Ë°å
 const OEMCHAR mstr_retry[] = "\272\306\273\356\271\324";
-			// ñ≥éã
+			// ÁÑ°Ë¶ñ
 const OEMCHAR mstr_ignore[] = "\314\265\273\353";
-			// ÇÕÇ¢
+			// „ÅØ„ÅÑ
 const OEMCHAR mstr_yes[] = "\244\317\244\244";
-			// Ç¢Ç¢Ç¶
+			// „ÅÑ„ÅÑ„Åà
 const OEMCHAR mstr_no[] = "\244\244\244\244\244\250";
 #elif defined(OSLANG_UTF8) && !defined(RESOURCE_US)
 const OEMCHAR mstr_fontcheck[] = " ";
 const OEMCHAR mstr_ok[] = "OK";
-			// ÉLÉÉÉìÉZÉã
+			// „Ç≠„É£„É≥„Çª„É´
 const OEMCHAR mstr_cancel[] = "\357\275\267\357\275\254\357\276\235" \
 							"\357\275\276\357\276\231";
-			// íÜé~
+			// ‰∏≠Ê≠¢
 const OEMCHAR mstr_abort[] = "\344\270\255\346\255\242";
-			// çƒééçs
+			// ÂÜçË©¶Ë°å
 const OEMCHAR mstr_retry[] = "\345\206\215\350\251\246\350\241\214";
-			// ñ≥éã
+			// ÁÑ°Ë¶ñ
 const OEMCHAR mstr_ignore[] = "\347\204\241\350\246\226";
-			// ÇÕÇ¢
+			// „ÅØ„ÅÑ
 const OEMCHAR mstr_yes[] = "\343\201\257\343\201\204";
-			// Ç¢Ç¢Ç¶
+			// „ÅÑ„ÅÑ„Åà
 const OEMCHAR mstr_no[] = "\343\201\204\343\201\204\343\201\210";
 #else
 const OEMCHAR mstr_fontcheck[] = OEMTEXT(" ");

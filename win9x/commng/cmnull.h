@@ -1,6 +1,6 @@
 /**
  * @file	cmnull.h
- * @brief	commng NULL ƒfƒoƒCƒX ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	commng NULL ãƒ‡ãƒã‚¤ã‚¹ ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -8,7 +8,7 @@
 #include "cmbase.h"
 
 /**
- * @brief commng NULL ƒfƒoƒCƒX ƒNƒ‰ƒX
+ * @brief commng NULL ãƒ‡ãƒã‚¤ã‚¹ ã‚¯ãƒ©ã‚¹
  */
 class CComNull : public CComBase
 {

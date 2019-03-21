@@ -1,33 +1,33 @@
 /**
  * @file	sdbase.h
- * @brief	ƒTƒEƒ“ƒh ƒfƒoƒCƒXŠî’êƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	ã‚µã‚¦ãƒ³ãƒ‰ ãƒ‡ãƒã‚¤ã‚¹åŸºåº•ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
 
 /**
- * @brief ƒTƒEƒ“ƒh ƒf[ƒ^æ“¾ƒCƒ“ƒ^ƒtƒFƒCƒX
+ * @brief ã‚µã‚¦ãƒ³ãƒ‰ ãƒ‡ãƒ¼ã‚¿å–å¾—ã‚¤ãƒ³ã‚¿ãƒ•ã‚§ã‚¤ã‚¹
  */
 class ISoundData
 {
 public:
 	/**
-	 * ƒXƒgƒŠ[ƒ€ ƒf[ƒ^‚ğ“¾‚é
-	 * @param[out] lpBuffer ƒoƒbƒtƒ@
-	 * @param[in] nBufferCount ƒoƒbƒtƒ@ ƒJƒEƒ“ƒg
-	 * @return ƒTƒ“ƒvƒ‹”
+	 * ã‚¹ãƒˆãƒªãƒ¼ãƒ  ãƒ‡ãƒ¼ã‚¿ã‚’å¾—ã‚‹
+	 * @param[out] lpBuffer ãƒãƒƒãƒ•ã‚¡
+	 * @param[in] nBufferCount ãƒãƒƒãƒ•ã‚¡ ã‚«ã‚¦ãƒ³ãƒˆ
+	 * @return ã‚µãƒ³ãƒ—ãƒ«æ•°
 	 */
 	virtual UINT Get16(SINT16* lpBuffer, UINT nBufferCount) = 0;
 };
 
 /**
- * @brief ƒTƒEƒ“ƒh ƒfƒoƒCƒXŠî’êƒNƒ‰ƒX
+ * @brief ã‚µã‚¦ãƒ³ãƒ‰ ãƒ‡ãƒã‚¤ã‚¹åŸºåº•ã‚¯ãƒ©ã‚¹
  */
 class CSoundDeviceBase
 {
 public:
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	CSoundDeviceBase()
 		: m_pSoundData(NULL)
@@ -35,15 +35,15 @@ public:
 	}
 
 	/**
-	 * ƒfƒXƒgƒ‰ƒNƒ^
+	 * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 */
 	virtual ~CSoundDeviceBase()
 	{
 	}
 
 	/**
-	 * ƒXƒgƒŠ[ƒ€ ƒf[ƒ^‚Ìİ’è
-	 * @param[in] pSoundData ƒTƒEƒ“ƒh ƒf[ƒ^
+	 * ã‚¹ãƒˆãƒªãƒ¼ãƒ  ãƒ‡ãƒ¼ã‚¿ã®è¨­å®š
+	 * @param[in] pSoundData ã‚µã‚¦ãƒ³ãƒ‰ ãƒ‡ãƒ¼ã‚¿
 	 */
 	void SetStreamData(ISoundData* pSoundData)
 	{
@@ -51,66 +51,66 @@ public:
 	}
 
 	/**
-	 * ƒI[ƒvƒ“
-	 * @param[in] lpDevice ƒfƒoƒCƒX–¼
-	 * @param[in] hWnd ƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹
-	 * @retval true ¬Œ÷
-	 * @retval false ¸”s
+	 * ã‚ªãƒ¼ãƒ—ãƒ³
+	 * @param[in] lpDevice ãƒ‡ãƒã‚¤ã‚¹å
+	 * @param[in] hWnd ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ«
+	 * @retval true æˆåŠŸ
+	 * @retval false å¤±æ•—
 	 */
 	virtual bool Open(LPCTSTR lpDevice = NULL, HWND hWnd = NULL) = 0;
 
 	/**
-	 * ƒNƒ[ƒY
+	 * ã‚¯ãƒ­ãƒ¼ã‚º
 	 */
 	virtual void Close() = 0;
 
 	/**
-	 * ƒXƒgƒŠ[ƒ€‚Ìì¬
-	 * @param[in] nSamplingRate ƒTƒ“ƒvƒŠƒ“ƒO ƒŒ[ƒg
-	 * @param[in] nChannels ƒ`ƒƒƒlƒ‹”
-	 * @param[in] nBufferSize ƒoƒbƒtƒ@ ƒTƒCƒY
-	 * @return ƒoƒbƒtƒ@ ƒTƒCƒY
+	 * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®ä½œæˆ
+	 * @param[in] nSamplingRate ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚° ãƒ¬ãƒ¼ãƒˆ
+	 * @param[in] nChannels ãƒãƒ£ãƒãƒ«æ•°
+	 * @param[in] nBufferSize ãƒãƒƒãƒ•ã‚¡ ã‚µã‚¤ã‚º
+	 * @return ãƒãƒƒãƒ•ã‚¡ ã‚µã‚¤ã‚º
 	 */
 	virtual UINT CreateStream(UINT nSamplingRate, UINT nChannels, UINT nBufferSize = 0) = 0;
 
 	/**
-	 * ƒXƒgƒŠ[ƒ€‚ğ”jŠü
+	 * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’ç ´æ£„
 	 */
 	virtual void DestroyStream() = 0;
 
 	/**
-	 * ƒXƒgƒŠ[ƒ€‚ğƒŠƒZƒbƒg
+	 * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’ãƒªã‚»ãƒƒãƒˆ
 	 */
 	virtual void ResetStream()
 	{
 	}
 
 	/**
-	 * ƒXƒgƒŠ[ƒ€‚ÌÄ¶
-	 * @retval true ¬Œ÷
-	 * @retval false ¸”s
+	 * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®å†ç”Ÿ
+	 * @retval true æˆåŠŸ
+	 * @retval false å¤±æ•—
 	 */
 	virtual bool PlayStream() = 0;
 
 	/**
-	 * ƒXƒgƒŠ[ƒ€‚Ì’â~
+	 * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®åœæ­¢
 	 */
 	virtual void StopStream() = 0;
 	
 	/**
-	 * ƒXƒgƒŠ[ƒ€ ƒ”ƒHƒŠƒ…[ƒ€İ’è
-	 * @param[in] nVolume ƒ”ƒHƒŠƒ…[ƒ€(max 100)
+	 * ã‚¹ãƒˆãƒªãƒ¼ãƒ  ãƒ´ã‚©ãƒªãƒ¥ãƒ¼ãƒ è¨­å®š
+	 * @param[in] nVolume ãƒ´ã‚©ãƒªãƒ¥ãƒ¼ãƒ (max 100)
 	 */
 	virtual void SetMasterVolume(int nVolume)
 	{
 	}
 
 	/**
-	 * PCM ƒf[ƒ^“Ç‚İ‚İ
-	 * @param[in] nNum PCM ”Ô†
-	 * @param[in] lpFilename ƒtƒ@ƒCƒ‹–¼
-	 * @retval true ¬Œ÷
-	 * @retval false ¸”s
+	 * PCM ãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿
+	 * @param[in] nNum PCM ç•ªå·
+	 * @param[in] lpFilename ãƒ•ã‚¡ã‚¤ãƒ«å
+	 * @retval true æˆåŠŸ
+	 * @retval false å¤±æ•—
 	 */
 	virtual bool LoadPCM(UINT nNum, LPCTSTR lpFilename)
 	{
@@ -118,28 +118,28 @@ public:
 	}
 
 	/**
-	 * PCM ‚ğƒAƒ“ƒ[ƒh
-	 * @param[in] nNum PCM ”Ô†
+	 * PCM ã‚’ã‚¢ãƒ³ãƒ­ãƒ¼ãƒ‰
+	 * @param[in] nNum PCM ç•ªå·
 	 */
 	virtual void UnloadPCM(UINT nNum)
 	{
 	}
 
 	/**
-	 * PCM ƒ”ƒHƒŠƒ…[ƒ€İ’è
-	 * @param[in] nNum PCM ”Ô†
-	 * @param[in] nVolume ƒ”ƒHƒŠƒ…[ƒ€
+	 * PCM ãƒ´ã‚©ãƒªãƒ¥ãƒ¼ãƒ è¨­å®š
+	 * @param[in] nNum PCM ç•ªå·
+	 * @param[in] nVolume ãƒ´ã‚©ãƒªãƒ¥ãƒ¼ãƒ 
 	 */
 	virtual void SetPCMVolume(UINT nNum, int nVolume)
 	{
 	}
 
 	/**
-	 * PCM Ä¶
-	 * @param[in] nNum PCM ”Ô†
-	 * @param[in] bLoop ƒ‹[ƒv ƒtƒ‰ƒO
-	 * @retval true ¬Œ÷
-	 * @retval false ¸”s
+	 * PCM å†ç”Ÿ
+	 * @param[in] nNum PCM ç•ªå·
+	 * @param[in] bLoop ãƒ«ãƒ¼ãƒ— ãƒ•ãƒ©ã‚°
+	 * @retval true æˆåŠŸ
+	 * @retval false å¤±æ•—
 	 */
 	virtual bool PlayPCM(UINT nNum, BOOL bLoop)
 	{
@@ -147,20 +147,20 @@ public:
 	}
 
 	/**
-	 * PCM ’â~
-	 * @param[in] nNum PCM ”Ô†
+	 * PCM åœæ­¢
+	 * @param[in] nNum PCM ç•ªå·
 	 */
 	virtual void StopPCM(UINT nNum)
 	{
 	}
 
 	/**
-	 * PCM ‚ğƒXƒgƒbƒv
+	 * PCM ã‚’ã‚¹ãƒˆãƒƒãƒ—
 	 */
 	virtual void StopAllPCM()
 	{
 	}
 
 protected:
-	ISoundData* m_pSoundData;		/*!< ƒTƒEƒ“ƒh ƒf[ƒ^ ƒCƒ“ƒXƒ^ƒ“ƒX */
+	ISoundData* m_pSoundData;		/*!< ã‚µã‚¦ãƒ³ãƒ‰ ãƒ‡ãƒ¼ã‚¿ ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ */
 };

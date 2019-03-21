@@ -15,17 +15,17 @@
 #include "iocore.h"
 #include "common/strres.h"
 
-/** ƒtƒBƒ‹ƒ^[ */
+/** ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼ */
 static const UINT s_nFilter[1] =
 {
 	IDS_TXTFILTER
 };
 
 /**
- * ƒfƒtƒHƒ‹ƒg ƒtƒ@ƒCƒ‹‚ğ“¾‚é
- * @param[in] lpExt Šg’£q
- * @param[out] lpFilename ƒtƒ@ƒCƒ‹–¼
- * @param[in] cchFilename ƒtƒ@ƒCƒ‹–¼’·
+ * ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å¾—ã‚‹
+ * @param[in] lpExt æ‹¡å¼µå­
+ * @param[out] lpFilename ãƒ•ã‚¡ã‚¤ãƒ«å
+ * @param[in] cchFilename ãƒ•ã‚¡ã‚¤ãƒ«åé•·
  */
 static void GetDefaultFilename(LPCTSTR lpExt, LPTSTR lpFilename, UINT cchFilename)
 {
@@ -70,13 +70,13 @@ void writetxt(const OEMCHAR *filename) {
 	int i;
 	int lpos = 0;
 	int cpos = 0;
-	//int kanjiMode = 0; // JIS‚Ì‚Ü‚Ü‚Å•Û‘¶‚·‚éê‡—p
+	//int kanjiMode = 0; // JISã®ã¾ã¾ã§ä¿å­˜ã™ã‚‹å ´åˆç”¨
 	UINT8 buf[5];
 	FILEH	fh;
 	if((fh = file_create(filename)) != FILEH_INVALID){
 		for(i=0x0A0000;i<0x0A3FFF;i+=2){
 			if(mem[i+1]){
-				// •W€Š¿š
+				// æ¨™æº–æ¼¢å­—
 				//if(!kanjiMode){
 				//	buf[0] = 0x1b;
 				//	buf[1] = 0x24;
@@ -99,7 +99,7 @@ void writetxt(const OEMCHAR *filename) {
 				//	file_write(fh, buf, 3);
 				//}
 				if(mem[i]<0x20 || (0x7F<=mem[i] && mem[i]<0xA0) || (0xE0<=mem[i] && mem[i]<0xFF)){
-					// ‹ó”’‚É•ÏŠ·
+					// ç©ºç™½ã«å¤‰æ›
 					buf[0] = ' ';
 				}else{
 					buf[0] = mem[i];
@@ -121,17 +121,17 @@ void writetxt(const OEMCHAR *filename) {
 		file_close(fh);
 	}
 }
-// XXX: ‚à‚Á‚Æ“KØ‚ÈêŠ‚ÉˆÚ‚·‚×‚«
+// XXX: ã‚‚ã£ã¨é©åˆ‡ãªå ´æ‰€ã«ç§»ã™ã¹ã
 void dialog_getTVRAM(OEMCHAR *buffer) {
 	int i;
 	int lpos = 0;
 	int cpos = 0;
-	//int kanjiMode = 0; // JIS‚Ì‚Ü‚Ü‚Å•Û‘¶‚·‚éê‡—p
+	//int kanjiMode = 0; // JISã®ã¾ã¾ã§ä¿å­˜ã™ã‚‹å ´åˆç”¨
 	UINT8 buf[5];
 	char *dstbuf = (char*)buffer;
 	for(i=0x0A0000;i<0x0A3FFF;i+=2){
 		if(mem[i+1]){
-			// •W€Š¿š
+			// æ¨™æº–æ¼¢å­—
 			//if(!kanjiMode){
 			//	buf[0] = 0x1b;
 			//	buf[1] = 0x24;
@@ -155,7 +155,7 @@ void dialog_getTVRAM(OEMCHAR *buffer) {
 			//	file_write(fh, buf, 3);
 			//}
 			if(mem[i]<0x20 || (0x7F<=mem[i] && mem[i]<0xA0) || (0xE0<=mem[i] && mem[i]<0xFF)){
-				// ‹ó”’‚É•ÏŠ·
+				// ç©ºç™½ã«å¤‰æ›
 				buf[0] = ' ';
 			}else{
 				buf[0] = mem[i];
@@ -179,8 +179,8 @@ void dialog_getTVRAM(OEMCHAR *buffer) {
 }
 
 /**
- * TXT o—Í
- * @param[in] hWnd eƒEƒBƒ“ƒhƒE
+ * TXT å‡ºåŠ›
+ * @param[in] hWnd è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 void dialog_writetxt(HWND hWnd)
 {

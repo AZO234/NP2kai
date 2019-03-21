@@ -1,6 +1,6 @@
 /**
  * @file	viewmem.cpp
- * @brief	DebugUty —pƒƒ‚ƒŠ“Ç‚İ‚İƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	DebugUty ç”¨ãƒ¡ãƒ¢ãƒªèª­ã¿è¾¼ã¿ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -14,7 +14,7 @@
 static void viewmem_read(const DebugUtyViewMemory* cfg, UINT32 adrs, UINT8 *buf, UINT32 size);
 
 /**
- * ‰Šú‰»
+ * åˆæœŸåŒ–
  */
 DebugUtyViewMemory::DebugUtyViewMemory()
 {
@@ -22,7 +22,7 @@ DebugUtyViewMemory::DebugUtyViewMemory()
 }
 
 /**
- * ó‘Ô‚ğXV‚·‚é
+ * çŠ¶æ…‹ã‚’æ›´æ–°ã™ã‚‹
  */
 void DebugUtyViewMemory::Update()
 {
@@ -32,10 +32,10 @@ void DebugUtyViewMemory::Update()
 }
 
 /**
- * ƒƒ‚ƒŠ ƒŠ[ƒh
- * @param[in] nAddress ƒAƒhƒŒƒX
- * @param[in] lpBuffer ƒoƒbƒtƒ@
- * @param[in] cbBuffer ƒoƒbƒtƒ@’·
+ * ãƒ¡ãƒ¢ãƒª ãƒªãƒ¼ãƒ‰
+ * @param[in] nAddress ã‚¢ãƒ‰ãƒ¬ã‚¹
+ * @param[in] lpBuffer ãƒãƒƒãƒ•ã‚¡
+ * @param[in] cbBuffer ãƒãƒƒãƒ•ã‚¡é•·
  */
 void DebugUtyViewMemory::Read(UINT32 nAddress, LPVOID lpBuffer, UINT32 cbBuffer) const
 {
@@ -43,11 +43,11 @@ void DebugUtyViewMemory::Read(UINT32 nAddress, LPVOID lpBuffer, UINT32 cbBuffer)
 }
 
 /**
- * ƒƒ‚ƒŠ ƒŠ[ƒh
- * @param[in] cfg İ’è
- * @param[in] adrs ƒAƒhƒŒƒX
- * @param[in] buf ƒoƒbƒtƒ@
- * @param[in] size ƒoƒbƒtƒ@’·
+ * ãƒ¡ãƒ¢ãƒª ãƒªãƒ¼ãƒ‰
+ * @param[in] cfg è¨­å®š
+ * @param[in] adrs ã‚¢ãƒ‰ãƒ¬ã‚¹
+ * @param[in] buf ãƒãƒƒãƒ•ã‚¡
+ * @param[in] size ãƒãƒƒãƒ•ã‚¡é•·
  */
 static void viewmem_read(const DebugUtyViewMemory* cfg, UINT32 adrs, UINT8 *buf, UINT32 size) {
 
@@ -71,7 +71,7 @@ static void viewmem_read(const DebugUtyViewMemory* cfg, UINT32 adrs, UINT8 *buf,
 		}
 	}
 
-	// CG-Window‚Í–³‹
+	// CG-Windowã¯ç„¡è¦–
 	if (adrs < 0xa5000) {
 		if ((adrs + size) <= 0xa5000) {
 			ZeroMemory(buf, size);

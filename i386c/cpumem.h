@@ -1,7 +1,7 @@
 #ifndef	NP2_I386C_CPUMEM_H__
 #define	NP2_I386C_CPUMEM_H__
 
-#ifdef NP2_MEMORY_ASM			// アセンブラ版は 必ずfastcallで
+#ifdef NP2_MEMORY_ASM			// 繧｢繧ｻ繝ｳ繝悶Λ迚医�ｯ 蠢�縺喃astcall縺ｧ
 #undef	MEMCALL
 #define	MEMCALL	FASTCALL
 #endif
@@ -10,7 +10,7 @@
 #define	MEMCALL
 #endif
 
-// 000000-0fffff メインメモリ
+// 000000-0fffff 繝｡繧､繝ｳ繝｡繝｢繝ｪ
 // 100000-10ffef HMA
 // 110000-193fff FONT-ROM/RAM
 // 1a8000-1bffff VRAM1

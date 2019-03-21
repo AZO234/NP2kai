@@ -110,7 +110,7 @@ JMPfar_pm_code_segment(const selector_t *cs_sel, UINT32 new_ip)
 	/* check privilege level */
 	if (!SEG_IS_CONFORMING_CODE(&cs_sel->desc)) {
 		VERBOSE(("JMPfar_pm: NON-CONFORMING-CODE-SEGMENT"));
-		/* ‰ºŠª p.119 4.8.1.1. */
+		/* ä¸‹å·» p.119 4.8.1.1. */
 		if (cs_sel->rpl > CPU_STAT_CPL) {
 			VERBOSE(("JMPfar_pm: RPL(%d) > CPL(%d)", cs_sel->rpl, CPU_STAT_CPL));
 			EXCEPTION(GP_EXCEPTION, cs_sel->idx);
@@ -121,7 +121,7 @@ JMPfar_pm_code_segment(const selector_t *cs_sel, UINT32 new_ip)
 		}
 	} else {
 		VERBOSE(("JMPfar_pm: CONFORMING-CODE-SEGMENT"));
-		/* ‰ºŠª p.120 4.8.1.2. */
+		/* ä¸‹å·» p.120 4.8.1.2. */
 		if (cs_sel->desc.dpl > CPU_STAT_CPL) {
 			VERBOSE(("JMPfar_pm: DPL(%d) > CPL(%d)", cs_sel->desc.dpl, CPU_STAT_CPL));
 			EXCEPTION(GP_EXCEPTION, cs_sel->idx);
@@ -190,7 +190,7 @@ JMPfar_pm_call_gate(const selector_t *callgate_sel)
 
 	/* check privilege level */
 	if (!SEG_IS_CONFORMING_CODE(&cs_sel.desc)) {
-		/* ‰ºŠª p.119 4.8.1.1. */
+		/* ä¸‹å·» p.119 4.8.1.1. */
 		if (cs_sel.rpl > CPU_STAT_CPL) {
 			VERBOSE(("JMPfar_pm: RPL(%d) > CPL(%d)", cs_sel.rpl, CPU_STAT_CPL));
 			EXCEPTION(GP_EXCEPTION, cs_sel.idx);
@@ -200,7 +200,7 @@ JMPfar_pm_call_gate(const selector_t *callgate_sel)
 			EXCEPTION(GP_EXCEPTION, cs_sel.idx);
 		}
 	} else {
-		/* ‰ºŠª p.120 4.8.1.2. */
+		/* ä¸‹å·» p.120 4.8.1.2. */
 		if (cs_sel.desc.dpl > CPU_STAT_CPL) {
 			VERBOSE(("JMPfar_pm: DPL(%d) > CPL(%d)", cs_sel.desc.dpl, CPU_STAT_CPL));
 			EXCEPTION(GP_EXCEPTION, cs_sel.idx);
@@ -404,7 +404,7 @@ CALLfar_pm_code_segment(const selector_t *cs_sel, UINT32 new_ip)
 	/* check privilege level */
 	if (!SEG_IS_CONFORMING_CODE(&cs_sel->desc)) {
 		VERBOSE(("CALLfar_pm: NON-CONFORMING-CODE-SEGMENT"));
-		/* ‰ºŠª p.119 4.8.1.1. */
+		/* ä¸‹å·» p.119 4.8.1.1. */
 		if (cs_sel->rpl > CPU_STAT_CPL) {
 			VERBOSE(("CALLfar_pm: RPL(%d) > CPL(%d)", cs_sel->rpl, CPU_STAT_CPL));
 			EXCEPTION(GP_EXCEPTION, cs_sel->idx);
@@ -415,7 +415,7 @@ CALLfar_pm_code_segment(const selector_t *cs_sel, UINT32 new_ip)
 		}
 	} else {
 		VERBOSE(("CALLfar_pm: CONFORMING-CODE-SEGMENT"));
-		/* ‰ºŠª p.120 4.8.1.2. */
+		/* ä¸‹å·» p.120 4.8.1.2. */
 		if (cs_sel->desc.dpl > CPU_STAT_CPL) {
 			VERBOSE(("CALLfar_pm: DPL(%d) > CPL(%d)", cs_sel->desc.dpl, CPU_STAT_CPL));
 			EXCEPTION(GP_EXCEPTION, cs_sel->idx);
@@ -1422,14 +1422,14 @@ IRET_pm_return_from_vm86(UINT16 new_cs, UINT32 new_ip, UINT32 new_flags)
 	//	if((CPU_EFLAG & VIP_FLAG) || (CPU_EFLAG & T_FLAG)){
 	//		EXCEPTION(GP_EXCEPTION, 0);
 	//	}else{
-	//		new_flags = (new_flags & ~VIF_FLAG) | ((new_flags & I_FLAG) << 10); // IF ¨ VIF‚ÉƒRƒs[
-	//		new_flags = (new_flags & ~(IOPL_FLAG|I_FLAG)) | (CPU_EFLAG & (IOPL_FLAG|I_FLAG)); // IF, IOPL‚Í•ÏX‚³‚¹‚È‚¢
+	//		new_flags = (new_flags & ~VIF_FLAG) | ((new_flags & I_FLAG) << 10); // IF â†’ VIFã«ã‚³ãƒ”ãƒ¼
+	//		new_flags = (new_flags & ~(IOPL_FLAG|I_FLAG)) | (CPU_EFLAG & (IOPL_FLAG|I_FLAG)); // IF, IOPLã¯å¤‰æ›´ã•ã›ãªã„
 	//		goto vme_emulate;
 	//	}
 	//}else{
 	//	EXCEPTION(GP_EXCEPTION, 0);
 	//}
-	EXCEPTION(GP_EXCEPTION, 0); // XXX: ˆê‰ž“®‚¢‚Ä‚é‚¯‚ÇŽÀ‘•‚µ‚È‚¢‚Æ‚Ü‚¸‚¢¥¥¥H
+	EXCEPTION(GP_EXCEPTION, 0); // XXX: ä¸€å¿œå‹•ã„ã¦ã‚‹ã‘ã©å®Ÿè£…ã—ãªã„ã¨ã¾ãšã„ï½¥ï½¥ï½¥ï¼Ÿ
 #else
 	EXCEPTION(GP_EXCEPTION, 0);
 #endif

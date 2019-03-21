@@ -100,7 +100,7 @@ void calendar_inc(void) {
 
 	cal.realchg = 1;
 
-	// 56.4Hz‚¾‚©‚çc
+	// 56.4Hzã ã‹ã‚‰â€¦
 	cal.steps += 10;
 	if (cal.steps < 564) {
 		return;

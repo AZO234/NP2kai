@@ -140,7 +140,7 @@ const UINT8	*p;
 		return(0);
 	}
 
-	// ŠOš: font[??560-??57f], font[??d60-??d7f] ‚Íí‚ç‚È‚¢‚æ‚¤‚Éc
+	// å¤–å­—: font[??560-??57f], font[??d60-??d7f] ã¯å‰Šã‚‰ãªã„ã‚ˆã†ã«â€¦
 	for (i=0; i<0x80; i++) {
 		q = fontrom + (i << 12);
 		ZeroMemory(q + 0x000, 0x0560 - 0x000);

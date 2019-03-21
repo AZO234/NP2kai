@@ -1,6 +1,6 @@
 //Microsoft Developer Studio generated resource script.
 //
-#include "..\..\resource.h"
+#include "..¥..¥resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -495,7 +495,7 @@ END
 IDD_SNDFMGEN DIALOG 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "fmgen"
-FONT 9, "�l�r �o�S�V�b�N"
+FONT 9, "ＭＳ Ｐゴシック"
 BEGIN
     CONTROL         "Use fmgen",IDC_USEFMGEN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,58,10
 END
@@ -861,19 +861,19 @@ END
 
 1 TEXTINCLUDE 
 BEGIN
-    "..\\..\\resource.h\0"
+    "..¥¥..¥¥resource.h¥0"
 END
 
 2 TEXTINCLUDE 
 BEGIN
-    "#include ""afxres.h""\r\n"
-    "\0"
+    "#include ""afxres.h""¥r¥n"
+    "¥0"
 END
 
 3 TEXTINCLUDE 
 BEGIN
-    "#include ""np2.rc2""\r\n"
-    "\0"
+    "#include ""np2.rc2""¥r¥n"
+    "¥0"
 END
 
 #endif    // APSTUDIO_INVOKED
@@ -1363,9 +1363,9 @@ END
 // Bitmap
 //
 
-NP2BMP                  BITMAP                  "..\\nekop2.bmp"
-NP2TOOL                 BITMAP                  "..\\np2tool.bmp"
-NP21TOOL                BITMAP                  "..\\np21tool.bmp"
+NP2BMP                  BITMAP                  "..¥¥nekop2.bmp"
+NP2TOOL                 BITMAP                  "..¥¥np2tool.bmp"
+NP21TOOL                BITMAP                  "..¥¥np21tool.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1374,17 +1374,17 @@ NP21TOOL                BITMAP                  "..\\np21tool.bmp"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON1               ICON                    "..\\np2.ico"
-IDI_ICON2               ICON                    "..\\np2debug.ico"
+IDI_ICON1               ICON                    "..¥¥np2.ico"
+IDI_ICON2               ICON                    "..¥¥np2debug.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // EXTROM
 //
 
-SEEKWAV                 EXTROM                  "..\\fddseek.wav"
-SEEK1WAV                EXTROM                  "..\\fddseek1.wav"
-RELAY1WAV               EXTROM                  "..\\relay1.wav"
+SEEKWAV                 EXTROM                  "..¥¥fddseek.wav"
+SEEK1WAV                EXTROM                  "..¥¥fddseek1.wav"
+RELAY1WAV               EXTROM                  "..¥¥relay1.wav"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1396,9 +1396,9 @@ BEGIN
     IDS_APP_NAME2           "Neko Project II/W"
     IDS_APP_NAME21          "Neko Project 21/W"
     IDS_FILENAME_HELP       "np2.chm"
-    IDS_FONTFACE            "�l�r �S�V�b�N"
+    IDS_FONTFACE            "ＭＳ ゴシック"
     IDS_PFONTFACE           "MS Sans Serif"
-    IDS_FONTFACE_PRIMARY    "�l�r �S�V�b�N"
+    IDS_FONTFACE_PRIMARY    "ＭＳ ゴシック"
     IDS_PFONTFACE_PRIMARY   "MS Sans Serif"
     IDS_FONTFACE_SECONDARY  "MS Gothic"
 END
@@ -1438,7 +1438,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_CONFIRM_RESUME      "Conflict!\n\n%s\nContinue?"
+    IDS_CONFIRM_RESUME      "Conflict!¥n¥n%s¥nContinue?"
     IDS_ERROR_RESUME        "Couldn't restart"
 END
 

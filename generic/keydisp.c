@@ -148,7 +148,7 @@ static void keyon(KEYDISP *keydisp, UINT ch, UINT8 note)
 	{
 		if (kdch->k[i] == note)
 		{
-			/* ƒqƒbƒg‚µ‚½ */
+			/* ãƒ’ãƒƒãƒˆã—ãŸ */
 			for (; i < (kdch->remain - 1); i++)
 			{
 				kdch->k[i] = kdch->k[i + 1];
@@ -180,7 +180,7 @@ static void keyoff(KEYDISP *keydisp, UINT ch, UINT8 note)
 	{
 		if (kdch->k[i] == note)
 		{
-			/* ƒqƒbƒg‚µ‚½ */
+			/* ãƒ’ãƒƒãƒˆã—ãŸ */
 			kdch->r[i] = (KEYDISP_LEVEL_MAX - 1);
 			kdch->flag |= 1;
 			break;

@@ -2214,7 +2214,7 @@ I286FN _enter(void) {						// C8:	enter	DATA16, DATA8
 			bp = I286_BP;
 			I286_BP = I286_SP;
 			while(level--) {
-#if 1											// ‚È‚É‚â‚Á‚Ä‚ñ‚¾ƒ’ƒŒ
+#if 1											// ãªã«ã‚„ã£ã¦ã‚“ã ãƒ²ãƒ¬
 				REG16 val;
 				bp -= 2;
 				I286_SP -= 2;
@@ -2681,7 +2681,7 @@ I286FN _sti(void) {							// FB:	sti
 #if defined(INTR_FAST)
 	if (I286_FLAG & I_FLAG) {
 		NEXT_OPCODE;
-		return;									// XV‚ÌˆÓ–¡‚È‚µ
+		return;									// æ›´æ–°ã®æ„å‘³ãªã—
 	}
 #endif
 	I286_FLAG |= I_FLAG;

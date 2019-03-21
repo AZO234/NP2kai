@@ -449,7 +449,7 @@ static void dlgbtn_rel(MENUDLG dlg, DLGHDL hdl, int focus) {
 // ---- list
 
 static void *dlglist_setfont(DLGHDL hdl, void *font) {
-										// Œã‚ÅƒXƒNƒ[ƒ‹ƒo[‚Ì’²®‚ğ‚·‚×‚µ
+										// å¾Œã§ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼ã®èª¿æ•´ã‚’ã™ã¹ã—
 	void	*ret;
 	POINT_T	pt;
 

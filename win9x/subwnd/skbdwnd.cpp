@@ -1,6 +1,6 @@
 /**
  * @file	skbdwnd.cpp
- * @brief	ƒ\ƒtƒgƒEƒFƒA ƒL[ƒ{[ƒh ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢ ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -14,27 +14,27 @@
 
 #if defined(SUPPORT_SOFTKBD)
 
-//! —Bˆê‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Å‚·
+//! å”¯ä¸€ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã§ã™
 CSoftKeyboardWnd CSoftKeyboardWnd::sm_instance;
 
 /**
- * @brief ƒRƒ“ƒtƒBƒO
+ * @brief ã‚³ãƒ³ãƒ•ã‚£ã‚°
  */
 struct SoftKeyboardConfig
 {
 	int		posx;		//!< X
 	int		posy;		//!< Y
-	UINT8	type;		//!< ƒEƒBƒ“ƒhƒE ƒ^ƒCƒv
+	UINT8	type;		//!< ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ã‚¿ã‚¤ãƒ—
 };
 
-//! ƒRƒ“ƒtƒBƒO
+//! ã‚³ãƒ³ãƒ•ã‚£ã‚°
 static SoftKeyboardConfig s_skbdcfg;
 
-//! ƒ^ƒCƒgƒ‹
+//! ã‚¿ã‚¤ãƒˆãƒ«
 static const TCHAR s_skbdapp[] = TEXT("Soft Keyboard");
 
 /**
- * İ’è
+ * è¨­å®š
  */
 static const PFTBL s_skbdini[] =
 {
@@ -44,7 +44,7 @@ static const PFTBL s_skbdini[] =
 };
 
 /**
- * ‰Šú‰»
+ * åˆæœŸåŒ–
  */
 void CSoftKeyboardWnd::Initialize()
 {
@@ -52,7 +52,7 @@ void CSoftKeyboardWnd::Initialize()
 }
 
 /**
- * ‰ğ•ú
+ * è§£æ”¾
  */
 void CSoftKeyboardWnd::Deinitialize()
 {
@@ -60,7 +60,7 @@ void CSoftKeyboardWnd::Deinitialize()
 }
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CSoftKeyboardWnd::CSoftKeyboardWnd()
 	: m_nWidth(0)
@@ -69,14 +69,14 @@ CSoftKeyboardWnd::CSoftKeyboardWnd()
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CSoftKeyboardWnd::~CSoftKeyboardWnd()
 {
 }
 
 /**
- * ì¬
+ * ä½œæˆ
  */
 void CSoftKeyboardWnd::Create()
 {
@@ -107,7 +107,7 @@ void CSoftKeyboardWnd::Create()
 }
 
 /**
- * ƒAƒCƒhƒ‹ˆ—
+ * ã‚¢ã‚¤ãƒ‰ãƒ«å‡¦ç†
  */
 void CSoftKeyboardWnd::OnIdle()
 {
@@ -118,11 +118,11 @@ void CSoftKeyboardWnd::OnIdle()
 }
 
 /**
- * CWndProc ƒIƒuƒWƒFƒNƒg‚Ì Windows ƒvƒƒV[ƒWƒƒ (WindowProc) ‚ª—pˆÓ‚³‚ê‚Ä‚¢‚Ü‚·
- * @param[in] nMsg ˆ—‚³‚ê‚é Windows ƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
- * @param[in] wParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @param[in] lParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @return ƒƒbƒZ[ƒW‚ÉˆË‘¶‚·‚é’l‚ğ•Ô‚µ‚Ü‚·
+ * CWndProc ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã® Windows ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ (WindowProc) ãŒç”¨æ„ã•ã‚Œã¦ã„ã¾ã™
+ * @param[in] nMsg å‡¦ç†ã•ã‚Œã‚‹ Windows ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] wParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @param[in] lParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @return ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã™ã‚‹å€¤ã‚’è¿”ã—ã¾ã™
  */
 LRESULT CSoftKeyboardWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -186,7 +186,7 @@ LRESULT CSoftKeyboardWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ƒEƒBƒ“ƒhƒE”jŠü‚Ì‚ÉŒÄ‚Î‚ê‚é
+ * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç ´æ£„ã®æ™‚ã«å‘¼ã°ã‚Œã‚‹
  */
 void CSoftKeyboardWnd::OnDestroy()
 {
@@ -195,7 +195,7 @@ void CSoftKeyboardWnd::OnDestroy()
 }
 
 /**
- * •`‰æ‚Ì‚ÉŒÄ‚Î‚ê‚é
+ * æç”»ã®æ™‚ã«å‘¼ã°ã‚Œã‚‹
  */
 void CSoftKeyboardWnd::OnPaint()
 {
@@ -206,8 +206,8 @@ void CSoftKeyboardWnd::OnPaint()
 }
 
 /**
- * •`‰æ
- * @param[in] redraw Ä•`‰æ
+ * æç”»
+ * @param[in] redraw å†æç”»
  */
 void CSoftKeyboardWnd::OnDraw(BOOL redraw)
 {
@@ -229,11 +229,11 @@ void CSoftKeyboardWnd::OnDraw(BOOL redraw)
 }
 
 /**
- * ƒpƒŒƒbƒg•ÏŠ·ƒR[ƒ‹ƒoƒbƒN
- * @param[out] dst o—Íæ
- * @param[in] src ƒpƒŒƒbƒg
- * @param[in] pals ƒpƒŒƒbƒg”
- * @param[in] bpp F”
+ * ãƒ‘ãƒ¬ãƒƒãƒˆå¤‰æ›ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
+ * @param[out] dst å‡ºåŠ›å…ˆ
+ * @param[in] src ãƒ‘ãƒ¬ãƒƒãƒˆ
+ * @param[in] pals ãƒ‘ãƒ¬ãƒƒãƒˆæ•°
+ * @param[in] bpp è‰²æ•°
  */
 void CSoftKeyboardWnd::skpalcnv(CMNPAL *dst, const RGB32 *src, UINT pals, UINT bpp)
 {
@@ -264,7 +264,7 @@ void CSoftKeyboardWnd::skpalcnv(CMNPAL *dst, const RGB32 *src, UINT pals, UINT b
 }
 
 /**
- * İ’è“Ç‚İ‚İ
+ * è¨­å®šèª­ã¿è¾¼ã¿
  */
 void skbdwin_readini()
 {
@@ -277,7 +277,7 @@ void skbdwin_readini()
 }
 
 /**
- * İ’è‘‚«‚İ
+ * è¨­å®šæ›¸ãè¾¼ã¿
  */
 void skbdwin_writeini()
 {

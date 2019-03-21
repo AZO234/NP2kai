@@ -44,9 +44,9 @@ typedef struct {
 	UINT8	sk;		// sense key
 	UINT16	asc;	// additional sense code (LSB) & qualifer (MSB)
 
-	UINT32	sector;		// アクセスセクタ (LBA)
-	UINT32	nsectors;	// 総セクタ数
-	UINT16	secsize;	// セクタサイズ
+	UINT32	sector;		// 繧｢繧ｯ繧ｻ繧ｹ繧ｻ繧ｯ繧ｿ (LBA)
+	UINT32	nsectors;	// 邱上そ繧ｯ繧ｿ謨ｰ
+	UINT16	secsize;	// 繧ｻ繧ｯ繧ｿ繧ｵ繧､繧ｺ
 	UINT16	dmy;
 
 	// buffer management

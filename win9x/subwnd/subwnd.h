@@ -1,6 +1,6 @@
 /**
  * @file	subwnd.h
- * @brief	�T�u �E�B���h�E�̊��N���X�̐錾����уC���^�[�t�F�C�X�̒�`�����܂�
+ * @brief	サブ ウィンドウの基底クラスの宣言およびインターフェイスの定義をします
  */
 
 #pragma once
@@ -9,7 +9,7 @@
 #include "misc\WndProc.h"
 
 /**
- * @brief �T�u �E�B���h�E�̊��N���X
+ * @brief サブ ウィンドウの基底クラス
  */
 class CSubWndBase : public CWndProc
 {
@@ -26,5 +26,5 @@ protected:
 	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	WINLOCEX m_wlex;		/*!< �E�B���h�E ���P�[�^ */
+	WINLOCEX m_wlex;		/*!< ウィンドウ ロケータ */
 };

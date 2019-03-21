@@ -1,18 +1,18 @@
 /**
  * @file	soundmng.h
- * @brief	ƒTƒEƒ“ƒh ƒ}ƒl[ƒWƒƒ ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ð‚µ‚Ü‚·
+ * @brief	ã‚µã‚¦ãƒ³ãƒ‰ ãƒžãƒãƒ¼ã‚¸ãƒ£ ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
 
 /**
- * PCM ”Ô†
+ * PCM ç•ªå·
  */
 enum SoundPCMNumber
 {
-	SOUND_PCMSEEK		= 0,		/*!< ƒwƒbƒhˆÚ“® */
-	SOUND_PCMSEEK1,					/*!< 1ƒNƒ‰ƒXƒ^ˆÚ“® */
-	SOUND_RELAY1					/*!< ƒŠƒŒ[ */
+	SOUND_PCMSEEK		= 0,		/*!< ãƒ˜ãƒƒãƒ‰ç§»å‹• */
+	SOUND_PCMSEEK1,					/*!< 1ã‚¯ãƒ©ã‚¹ã‚¿ç§»å‹• */
+	SOUND_RELAY1					/*!< ãƒªãƒ¬ãƒ¼ */
 };
 
 #ifdef __cplusplus
@@ -38,7 +38,7 @@ void soundmng_pcmstop(enum SoundPCMNumber nNum);
 #include "soundmng\sdbase.h"
 
 /**
- * ƒTƒEƒ“ƒh ƒvƒƒV[ƒWƒƒ
+ * ã‚µã‚¦ãƒ³ãƒ‰ ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
  */
 enum SoundProc
 {
@@ -49,13 +49,13 @@ enum SoundProc
 };
 
 /**
- * @brief ƒTƒEƒ“ƒh ƒ}ƒl[ƒWƒƒ ƒNƒ‰ƒX
+ * @brief ã‚µã‚¦ãƒ³ãƒ‰ ãƒžãƒãƒ¼ã‚¸ãƒ£ ã‚¯ãƒ©ã‚¹
  */
 class CSoundMng : public ISoundData
 {
 public:
 	/**
-	 * ƒfƒoƒCƒX ƒ^ƒCƒv
+	 * ãƒ‡ãƒã‚¤ã‚¹ ã‚¿ã‚¤ãƒ—
 	 */
 	enum DeviceType
 	{
@@ -88,21 +88,21 @@ public:
 	virtual UINT Get16(SINT16* lpBuffer, UINT nBufferCount);
 
 private:
-	static CSoundMng sm_instance;		//!< —Bˆê‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Å‚·
+	static CSoundMng sm_instance;		//!< å”¯ä¸€ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã§ã™
 
 	/**
-	 * satuationŠÖ”Œ^éŒ¾
+	 * satuationé–¢æ•°åž‹å®£è¨€
 	 */
 	typedef void (PARTSCALL * FNMIX)(SINT16*, const SINT32*, UINT);
 
-	CSoundDeviceBase* m_pSoundDevice;	//!< ƒTƒEƒ“ƒh ƒfƒoƒCƒX
-	UINT m_nMute;						//!< ƒ~ƒ…[ƒg ƒtƒ‰ƒO
-	FNMIX m_fnMix;						//!< satuationŠÖ”ƒ|ƒCƒ“ƒ^
+	CSoundDeviceBase* m_pSoundDevice;	//!< ã‚µã‚¦ãƒ³ãƒ‰ ãƒ‡ãƒã‚¤ã‚¹
+	UINT m_nMute;						//!< ãƒŸãƒ¥ãƒ¼ãƒˆ ãƒ•ãƒ©ã‚°
+	FNMIX m_fnMix;						//!< satuationé–¢æ•°ãƒã‚¤ãƒ³ã‚¿
 };
 
 /**
- * ƒCƒ“ƒXƒ^ƒ“ƒX‚ð“¾‚é
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å¾—ã‚‹
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 inline CSoundMng* CSoundMng::GetInstance()
 {

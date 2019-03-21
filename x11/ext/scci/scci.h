@@ -32,8 +32,8 @@ struct SCCI_SOUND_CHIP_INFO
 	UINT dClock;							/*!< Sound Chip clock */
 	UINT dCompatibleClock[2];				/*!< Sound Chip clock */
 	bool bIsUsed;							/*!< Sound Chip Used Check */
-	UINT dBusID;							/*!< 接続バスID */
-	SC_CHIP_LOCATION dSoundLocation;		/*!< サウンドロケーション */
+	UINT dBusID;							/*!< 謗･邯壹ヰ繧ｹID */
+	SC_CHIP_LOCATION dSoundLocation;		/*!< 繧ｵ繧ｦ繝ｳ繝峨Ο繧ｱ繝ｼ繧ｷ繝ｧ繝ｳ */
 };
 
 class SoundInterface;

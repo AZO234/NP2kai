@@ -1,5 +1,5 @@
 
-// �˂���p�w�b�_
+// ねこ専用ヘッダ
 
 enum {
 	MPU98_EXCVBUFS		= 512,

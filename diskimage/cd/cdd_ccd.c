@@ -30,7 +30,7 @@ static const OEMCHAR str__mode0[] = OEMTEXT("MODE=0");
 "PLBA"
 #endif
 
-//	CCD(&CDM)“Ç‚İ‚İ
+//	CCD(&CDM)èª­ã¿è¾¼ã¿
 BRESULT openccd(SXSIDEV sxsi, const OEMCHAR *fname) {
 
 	_CDTRK		trk[99];
@@ -48,12 +48,12 @@ BRESULT openccd(SXSIDEV sxsi, const OEMCHAR *fname) {
 	ZeroMemory(trk, sizeof(trk));
 	path[0] = '\0';
 	index = 0;
-	curssize = 2352;	//	ƒZƒNƒ^ƒTƒCƒY‚Í2352byteŒÅ’èc‚Å‚¢‚¢‚Ì‚©‚ÈH
+	curssize = 2352;	//	ã‚»ã‚¯ã‚¿ã‚µã‚¤ã‚ºã¯2352byteå›ºå®šâ€¦ã§ã„ã„ã®ã‹ãªï¼Ÿ
 	curtrk = 1;
 	curtype = 0x14;
 	curpos0 = 0;
 
-	//	ƒCƒ[ƒWƒtƒ@ƒCƒ‹‚ÌÀ‘Ì‚Í"*.img"ŒÅ’èc‚Å‚¢‚¢‚Ì‚©‚ÈH
+	//	ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ•ã‚¡ã‚¤ãƒ«ã®å®Ÿä½“ã¯"*.img"å›ºå®šâ€¦ã§ã„ã„ã®ã‹ãªï¼Ÿ
 	file_cpyname(path, fname, NELEMENTS(path));
 	file_cutext(path);
 	file_catname(path, str_img, NELEMENTS(path));
@@ -75,7 +75,7 @@ BRESULT openccd(SXSIDEV sxsi, const OEMCHAR *fname) {
 		}
 		else if ((argc >= 2) && (!milstr_cmp(argv[0], str_index))) {
 			if (index < NELEMENTS(trk)) {
-				//	"INDEX 0"AƒZƒNƒ^‚ğ‹L˜^
+				//	"INDEX 0"ã€ã‚»ã‚¯ã‚¿ã‚’è¨˜éŒ²
 				if ((UINT8)milstr_solveINT(argv[1]) == 0) {
 					curpos0 = (UINT32)milstr_solveINT(argv[1] + 2);
 					continue;
@@ -112,7 +112,7 @@ openccd_err2:
 	return(FAILURE);
 }
 
-//	QÆ•”•ª‚Ì‹Lq“à—e‚ªCloneCD(*.ccd)‚Æ“¯‚¶‚½‚ßA‚Æ‚è‚ ‚¦‚¸••ˆó
+//	å‚ç…§éƒ¨åˆ†ã®è¨˜è¿°å†…å®¹ãŒCloneCD(*.ccd)ã¨åŒã˜ãŸã‚ã€ã¨ã‚Šã‚ãˆãšå°å°
 #if 0
 static BRESULT opencdm(SXSIDEV sxsi, const OEMCHAR *fname) {
 

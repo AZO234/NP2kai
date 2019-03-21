@@ -112,7 +112,7 @@ static void MEMCALL memnc_wr8(UINT32 address, REG8 value) {
 
 static void MEMCALL memnc_wr16(UINT32 address, REG16 value) {
 
-// ‹­§RAM‰»
+// å¼·åˆ¶RAMåŒ–
 //	(void)address;
 //	(void)value;
 
@@ -946,7 +946,7 @@ void MEMCALL memp_write8(UINT32 address, REG8 value) {
 	//		TRACEOUT(("BDA (write8): %x ret %x", address, mem[address]));
 	//	}
 	//}
-	if (address==0x0457) return; // XXX: IDE‚Ìƒf[ƒ^”j‰ó‰ñ”ğ‚Ì‚½‚ß‚Ìb’è
+	if (address==0x0457) return; // XXX: IDEã®ãƒ‡ãƒ¼ã‚¿ç ´å£Šå›é¿ã®ãŸã‚ã®æš«å®š
 	if (address < I286_MEMWRITEMAX) {
 		mem[address] = (UINT8)value;
 	}
@@ -1013,7 +1013,7 @@ void MEMCALL memp_write8(UINT32 address, REG8 value) {
 			}
 		}
 #endif
-// ‹­§RAM‰»
+// å¼·åˆ¶RAMåŒ–
 			if ((address >= 0xa5000) && (address < 0xa7fff)) {
 				if (CPU_RAM_D000 & (1 << ((address >> 12) & 15))) {
 					mem[address] = (UINT8)value;
@@ -1126,7 +1126,7 @@ void MEMCALL memp_write16(UINT32 address, REG16 value) {
 				}
 			}
 #endif
-// ‹­§RAM‰»
+// å¼·åˆ¶RAMåŒ–
 			if ((address >= 0xa5000) && (address < 0xa7fff)) {
 
 				UINT8	*ptr;
@@ -1304,7 +1304,7 @@ void MEMCALL memp_write32(UINT32 address, UINT32 value) {
 
 void MEMCALL memp_write8_paging(UINT32 address, REG8 value) {
 	
-	if (address==0x0457) return; // XXX: IDE‚Ìƒf[ƒ^”j‰ó‰ñ”ğ‚Ì‚½‚ß‚Ìb’è
+	if (address==0x0457) return; // XXX: IDEã®ãƒ‡ãƒ¼ã‚¿ç ´å£Šå›é¿ã®ãŸã‚ã®æš«å®š
 	if (address < I286_MEMWRITEMAX) {
 		mem[address] = (UINT8)value;
 	}

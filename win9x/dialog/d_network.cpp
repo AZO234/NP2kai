@@ -23,8 +23,8 @@
 #if defined(SUPPORT_NET)
 
 /**
- * @brief ƒlƒbƒgƒ[ƒNŠî–{İ’èƒy[ƒW
- * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * @brief ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯åŸºæœ¬è¨­å®šãƒšãƒ¼ã‚¸
+ * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 class CNetworkPage : public CPropPageProc
 {
@@ -39,31 +39,31 @@ protected:
 	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	TCHAR m_tap[300];			//!< TAP–¼
-	UINT8 m_pmmenabled;			//!< •‰‰×’áŒ¸—LŒøƒtƒ‰ƒO
+	TCHAR m_tap[300];			//!< TAPå
+	UINT8 m_pmmenabled;			//!< è² è·ä½æ¸›æœ‰åŠ¹ãƒ•ãƒ©ã‚°
 	CComboData m_cmbtap;		//!< TAP NAME
 	CWndProc m_chkpmmenabled;	//!< POWER MANAGEMENT ENABLED
 	void SetNetWorkDeviceNames();
 };
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CNetworkPage::CNetworkPage()
 	: CPropPageProc(IDD_NETWORK)
 {
 }
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CNetworkPage::~CNetworkPage()
 {
 }
 
 /**
- * ‚±‚Ìƒƒ\ƒbƒh‚Í WM_INITDIALOG ‚ÌƒƒbƒZ[ƒW‚É‰“š‚µ‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
- * @retval TRUE Å‰‚ÌƒRƒ“ƒgƒ[ƒ‹‚É“ü—ÍƒtƒH[ƒJƒX‚ğİ’è
- * @retval FALSE Šù‚Éİ’èÏ
+ * ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ WM_INITDIALOG ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«å¿œç­”ã—ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * @retval TRUE æœ€åˆã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã«å…¥åŠ›ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’è¨­å®š
+ * @retval FALSE æ—¢ã«è¨­å®šæ¸ˆ
  */
 BOOL CNetworkPage::OnInitDialog()
 {
@@ -85,7 +85,7 @@ BOOL CNetworkPage::OnInitDialog()
 }
 
 /**
- * ƒ†[ƒU[‚ª OK ‚Ìƒ{ƒ^ƒ“ (IDOK ID ‚ª‚Ìƒ{ƒ^ƒ“) ‚ğƒNƒŠƒbƒN‚·‚é‚ÆŒÄ‚Ño‚³‚ê‚Ü‚·
+ * ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒ OK ã®ãƒœã‚¿ãƒ³ (IDOK ID ãŒã®ãƒœã‚¿ãƒ³) ã‚’ã‚¯ãƒªãƒƒã‚¯ã™ã‚‹ã¨å‘¼ã³å‡ºã•ã‚Œã¾ã™
  */
 void CNetworkPage::OnOK()
 {
@@ -101,10 +101,10 @@ void CNetworkPage::OnOK()
 }
 
 /**
- * ƒ†[ƒU[‚ªƒƒjƒ…[‚Ì€–Ú‚ğ‘I‘ğ‚µ‚½‚Æ‚«‚ÉAƒtƒŒ[ƒ€ƒ[ƒN‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
- * @param[in] wParam ƒpƒ‰ƒƒ^
- * @param[in] lParam ƒpƒ‰ƒƒ^
- * @retval TRUE ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ª‚±‚ÌƒƒbƒZ[ƒW‚ğˆ—‚µ‚½
+ * ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®é …ç›®ã‚’é¸æŠã—ãŸã¨ãã«ã€ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã«ã‚ˆã£ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * @param[in] wParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @param[in] lParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @retval TRUE ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡¦ç†ã—ãŸ
  */
 BOOL CNetworkPage::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -122,11 +122,11 @@ BOOL CNetworkPage::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * CWndProc ƒIƒuƒWƒFƒNƒg‚Ì Windows ƒvƒƒV[ƒWƒƒ (WindowProc) ‚ª—pˆÓ‚³‚ê‚Ä‚¢‚Ü‚·
- * @param[in] nMsg ˆ—‚³‚ê‚é Windows ƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
- * @param[in] wParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @param[in] lParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @return ƒƒbƒZ[ƒW‚ÉˆË‘¶‚·‚é’l‚ğ•Ô‚µ‚Ü‚·
+ * CWndProc ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã® Windows ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ (WindowProc) ãŒç”¨æ„ã•ã‚Œã¦ã„ã¾ã™
+ * @param[in] nMsg å‡¦ç†ã•ã‚Œã‚‹ Windows ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] wParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @param[in] lParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @return ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã™ã‚‹å€¤ã‚’è¿”ã—ã¾ã™
  */
 LRESULT CNetworkPage::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -137,8 +137,8 @@ LRESULT CNetworkPage::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ƒlƒbƒgƒ[ƒNƒfƒoƒCƒX•\¦–¼‚ğƒRƒ“ƒ{ƒ{ƒbƒNƒXƒf[ƒ^‚É•ú‚è‚Ş
- * Ql•¶Œ£: http://dsas.blog.klab.org/archives/51012690.html
+ * ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ãƒ‡ãƒã‚¤ã‚¹è¡¨ç¤ºåã‚’ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿ã«æ”¾ã‚Šè¾¼ã‚€
+ * å‚è€ƒæ–‡çŒ®: http://dsas.blog.klab.org/archives/51012690.html
  */
 void CNetworkPage::SetNetWorkDeviceNames()
 {
@@ -158,7 +158,7 @@ void CNetworkPage::SetNetWorkDeviceNames()
 	hKey1 = hKey2 = hKey3 = NULL;
 	pKeyName1 = pKeyName2 = pKeyName3 = pKeyName4 = NULL;
  
-	// åƒL[‚ÌƒI[ƒvƒ“
+	// ä¸»ã‚­ãƒ¼ã®ã‚ªãƒ¼ãƒ—ãƒ³
 	nResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, SUBKEY, 0, KEY_READ, &hKey1);
 	if (nResult != ERROR_SUCCESS) {
 		return;
@@ -169,7 +169,7 @@ void CNetworkPage::SetNetWorkDeviceNames()
 	pKeyName4 = (TCHAR*)malloc(sizeof(TCHAR)*BUFSZ);
  
 	dwIdx1 = 0;
-	while (bDone != TRUE) { // {id1} ‚ğ—ñ‹“‚·‚éƒ‹[ƒv
+	while (bDone != TRUE) { // {id1} ã‚’åˆ—æŒ™ã™ã‚‹ãƒ«ãƒ¼ãƒ—
  
 	dwSize = BUFSZ;
 	nResult = RegEnumKeyEx(hKey1, dwIdx1++, pKeyName1,
@@ -178,7 +178,7 @@ void CNetworkPage::SetNetWorkDeviceNames()
 		break;
 	}
  
-	// SUBKEY\{id1} ƒL[‚ğƒI[ƒvƒ“
+	// SUBKEY\{id1} ã‚­ãƒ¼ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
 	_stprintf(pKeyName2, _T("%s\\%s"), SUBKEY, pKeyName1);
 	nResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, pKeyName2,
 							0, KEY_READ, &hKey2);
@@ -186,7 +186,7 @@ void CNetworkPage::SetNetWorkDeviceNames()
 		continue;
 	}
 		dwIdx2 = 0;
-		while (1) { // {id2} ‚ğ—ñ‹“‚·‚éƒ‹[ƒv
+		while (1) { // {id2} ã‚’åˆ—æŒ™ã™ã‚‹ãƒ«ãƒ¼ãƒ—
 			dwSize = BUFSZ;
 			nResult = RegEnumKeyEx(hKey2, dwIdx2++, pKeyName3,
 								&dwSize, NULL, NULL, NULL, &ft);
@@ -198,7 +198,7 @@ void CNetworkPage::SetNetWorkDeviceNames()
 				continue;
 			}
  
-			// SUBKEY\{id1}\{id2]\Connection ƒL[‚ğƒI[ƒvƒ“
+			// SUBKEY\{id1}\{id2]\Connection ã‚­ãƒ¼ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
 			_stprintf(pKeyName4, _T("%s\\%s\\%s"),
 							pKeyName2, pKeyName3, _T("Connection"));
 			nResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE,
@@ -207,14 +207,14 @@ void CNetworkPage::SetNetWorkDeviceNames()
 				continue;
 			}
  
-			// SUBKEY\{id1}\{id2]\Connection\PnpInstanceID ’l‚ğæ“¾
+			// SUBKEY\{id1}\{id2]\Connection\PnpInstanceID å€¤ã‚’å–å¾—
 			dwSize = sizeof(szData);
 			nResult = RegQueryValueEx(hKey3, _T("PnpInstanceID"),
 							0, &dwType, (LPBYTE)szData, &dwSize);
  
 			if (nResult == ERROR_SUCCESS) {
 				if(_tcslen(szData)>0){
-					// SUBKEY\{id1}\{id2]\Connection\Name ’l‚ğæ“¾
+					// SUBKEY\{id1}\{id2]\Connection\Name å€¤ã‚’å–å¾—
 					dwSize = sizeof(szData);
 					nResult = RegQueryValueEx(hKey3, _T("Name"),
 									0, &dwType, (LPBYTE)szData, &dwSize);
@@ -248,7 +248,7 @@ void CNetworkPage::SetNetWorkDeviceNames()
 	if (pKeyName4) { free(pKeyName4); }
 
 	if(indexsel == -1){
-		// ƒJƒXƒ^ƒ€Ú‘±–¼
+		// ã‚«ã‚¹ã‚¿ãƒ æ¥ç¶šå
 		m_cmbtap.SetWindowText(m_tap);
 	}
  
@@ -258,8 +258,8 @@ void CNetworkPage::SetNetWorkDeviceNames()
 #if defined(SUPPORT_LGY98)
 
 /**
- * @brief LGY-98 İ’èƒy[ƒW
- * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * @brief LGY-98 è¨­å®šãƒšãƒ¼ã‚¸
+ * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 class CLgy98Page : public CPropPageProc
 {
@@ -274,9 +274,9 @@ protected:
 	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	UINT8 m_enabled;			//!< —LŒøƒtƒ‰ƒO
-	UINT8 m_port;				//!< PORTİ’è’l
-	UINT8 m_int;				//!< INTİ’è’l
+	UINT8 m_enabled;			//!< æœ‰åŠ¹ãƒ•ãƒ©ã‚°
+	UINT8 m_port;				//!< PORTè¨­å®šå€¤
+	UINT8 m_int;				//!< INTè¨­å®šå€¤
 	CWndProc m_chkenabled;		//!< ENABLED
 	CComboData m_cmbport;		//!< IO
 	CComboData m_cmbint;		//!< INT
@@ -290,7 +290,7 @@ private:
 };
 
 /**
- * ƒ|[ƒgƒŠƒXƒg
+ * ãƒãƒ¼ãƒˆãƒªã‚¹ãƒˆ
  */
 static const CComboData::Entry s_port[] =
 {
@@ -305,7 +305,7 @@ static const CComboData::Entry s_port[] =
 };
 
 /**
- * Š„‚è‚İƒŠƒXƒg
+ * å‰²ã‚Šè¾¼ã¿ãƒªã‚¹ãƒˆ
  */
 static const CComboData::Entry s_int[] =
 {
@@ -316,7 +316,7 @@ static const CComboData::Entry s_int[] =
 };
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CLgy98Page::CLgy98Page()
 	: CPropPageProc(IDD_LGY98)
@@ -324,16 +324,16 @@ CLgy98Page::CLgy98Page()
 {
 }
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CLgy98Page::~CLgy98Page()
 {
 }
 
 /**
- * ‚±‚Ìƒƒ\ƒbƒh‚Í WM_INITDIALOG ‚ÌƒƒbƒZ[ƒW‚É‰“š‚µ‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
- * @retval TRUE Å‰‚ÌƒRƒ“ƒgƒ[ƒ‹‚É“ü—ÍƒtƒH[ƒJƒX‚ğİ’è
- * @retval FALSE Šù‚Éİ’èÏ
+ * ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ WM_INITDIALOG ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«å¿œç­”ã—ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * @retval TRUE æœ€åˆã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã«å…¥åŠ›ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’è¨­å®š
+ * @retval FALSE æ—¢ã«è¨­å®šæ¸ˆ
  */
 BOOL CLgy98Page::OnInitDialog()
 {
@@ -361,7 +361,7 @@ BOOL CLgy98Page::OnInitDialog()
 }
 
 /**
- * ƒ†[ƒU[‚ª OK ‚Ìƒ{ƒ^ƒ“ (IDOK ID ‚ª‚Ìƒ{ƒ^ƒ“) ‚ğƒNƒŠƒbƒN‚·‚é‚ÆŒÄ‚Ño‚³‚ê‚Ü‚·
+ * ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒ OK ã®ãƒœã‚¿ãƒ³ (IDOK ID ãŒã®ãƒœã‚¿ãƒ³) ã‚’ã‚¯ãƒªãƒƒã‚¯ã™ã‚‹ã¨å‘¼ã³å‡ºã•ã‚Œã¾ã™
  */
 void CLgy98Page::OnOK()
 {
@@ -380,10 +380,10 @@ void CLgy98Page::OnOK()
 }
 
 /**
- * ƒ†[ƒU[‚ªƒƒjƒ…[‚Ì€–Ú‚ğ‘I‘ğ‚µ‚½‚Æ‚«‚ÉAƒtƒŒ[ƒ€ƒ[ƒN‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
- * @param[in] wParam ƒpƒ‰ƒƒ^
- * @param[in] lParam ƒpƒ‰ƒƒ^
- * @retval TRUE ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ª‚±‚ÌƒƒbƒZ[ƒW‚ğˆ—‚µ‚½
+ * ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®é …ç›®ã‚’é¸æŠã—ãŸã¨ãã«ã€ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã«ã‚ˆã£ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * @param[in] wParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @param[in] lParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @retval TRUE ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡¦ç†ã—ãŸ
  */
 BOOL CLgy98Page::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -412,11 +412,11 @@ BOOL CLgy98Page::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * CWndProc ƒIƒuƒWƒFƒNƒg‚Ì Windows ƒvƒƒV[ƒWƒƒ (WindowProc) ‚ª—pˆÓ‚³‚ê‚Ä‚¢‚Ü‚·
- * @param[in] nMsg ˆ—‚³‚ê‚é Windows ƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
- * @param[in] wParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @param[in] lParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @return ƒƒbƒZ[ƒW‚ÉˆË‘¶‚·‚é’l‚ğ•Ô‚µ‚Ü‚·
+ * CWndProc ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã® Windows ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ (WindowProc) ãŒç”¨æ„ã•ã‚Œã¦ã„ã¾ã™
+ * @param[in] nMsg å‡¦ç†ã•ã‚Œã‚‹ Windows ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] wParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @param[in] lParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @return ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã™ã‚‹å€¤ã‚’è¿”ã—ã¾ã™
  */
 LRESULT CLgy98Page::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -427,7 +427,7 @@ LRESULT CLgy98Page::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * IRQ -> INT•ÏŠ·
+ * IRQ -> INTå¤‰æ›
  * @return INT
  */
 UINT8 CLgy98Page::ConvertIrq2Int(UINT8 cValue) 
@@ -445,7 +445,7 @@ UINT8 CLgy98Page::ConvertIrq2Int(UINT8 cValue)
 	return 0;
 }
 /**
- * INT -> IRQ•ÏŠ·
+ * INT -> IRQå¤‰æ›
  * @return IRQ
  */
 UINT8 CLgy98Page::ConvertInt2Irq(UINT8 cValue) 
@@ -464,8 +464,8 @@ UINT8 CLgy98Page::ConvertInt2Irq(UINT8 cValue)
 }
 
 /**
- * I/O ‚ğİ’è
- * @param[in] cValue İ’è
+ * I/O ã‚’è¨­å®š
+ * @param[in] cValue è¨­å®š
  */
 void CLgy98Page::SetPort(UINT8 cValue)
 {
@@ -473,7 +473,7 @@ void CLgy98Page::SetPort(UINT8 cValue)
 }
 
 /**
- * I/O ‚ğæ“¾
+ * I/O ã‚’å–å¾—
  * @return I/O
  */
 UINT8 CLgy98Page::GetPort() const
@@ -482,8 +482,8 @@ UINT8 CLgy98Page::GetPort() const
 }
 
 /**
- * INT ‚ğİ’è
- * @param[in] cValue İ’è
+ * INT ã‚’è¨­å®š
+ * @param[in] cValue è¨­å®š
  */
 void CLgy98Page::SetInt(UINT8 cValue)
 {
@@ -491,7 +491,7 @@ void CLgy98Page::SetInt(UINT8 cValue)
 }
 
 /**
- * INT ‚ğæ“¾
+ * INT ã‚’å–å¾—
  * @return INT
  */
 UINT8 CLgy98Page::GetInt() const
@@ -502,8 +502,8 @@ UINT8 CLgy98Page::GetInt() const
 #endif
 
 /**
- * ƒRƒ“ƒtƒBƒO ƒ_ƒCƒAƒƒO
- * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * ã‚³ãƒ³ãƒ•ã‚£ã‚° ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
+ * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 void dialog_netopt(HWND hwndParent)
 {

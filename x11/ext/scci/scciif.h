@@ -1,6 +1,6 @@
 /**
  * @file	scciif.h
- * @brief	SCCI ƒAƒNƒZƒX ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	SCCI ã‚¢ã‚¯ã‚»ã‚¹ ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -14,7 +14,7 @@ namespace scci
 }
 
 /**
- * @brief SCCI ƒAƒNƒZƒX ƒNƒ‰ƒX
+ * @brief SCCI ã‚¢ã‚¯ã‚»ã‚¹ ã‚¯ãƒ©ã‚¹
  */
 class CScciIf
 {
@@ -27,10 +27,10 @@ public:
 	IExternalChip* GetInterface(IExternalChip::ChipType nChipType, UINT nClock);
 
 private:
-	scci::SoundInterfaceManager* m_pManager;	/*!< ƒ}ƒl[ƒWƒƒ */
+	scci::SoundInterfaceManager* m_pManager;	/*!< ãƒãƒãƒ¼ã‚¸ãƒ£ */
 
 	/**
-	 * @brief ƒ`ƒbƒv ƒNƒ‰ƒX
+	 * @brief ãƒãƒƒãƒ— ã‚¯ãƒ©ã‚¹
 	 */
 	class Chip : public IExternalChip
 	{
@@ -44,8 +44,8 @@ private:
 		virtual INTPTR Message(UINT nMessage, INTPTR nParameter = 0);
 
 	private:
-		CScciIf* m_pScciIf;				/*!< eƒCƒ“ƒXƒ^ƒ“ƒX */
-		scci::SoundChip* m_pSoundChip;	/*!< ƒ`ƒbƒv ƒCƒ“ƒXƒ^ƒ“ƒX */
+		CScciIf* m_pScciIf;				/*!< è¦ªã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ */
+		scci::SoundChip* m_pSoundChip;	/*!< ãƒãƒƒãƒ— ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ */
 	};
 
 	void Detach(Chip* pChip);

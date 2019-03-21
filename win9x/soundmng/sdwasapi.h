@@ -1,6 +1,6 @@
 /**
  * @file	sdwasapi.h
- * @brief	WASAPI ƒI[ƒfƒBƒI ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	WASAPI ã‚ªãƒ¼ãƒ‡ã‚£ã‚ª ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -13,16 +13,16 @@
 #include "misc\threadbase.h"
 
 /**
- * @brief ƒfƒoƒCƒX
+ * @brief ãƒ‡ãƒã‚¤ã‚¹
  */
 struct WasapiDevice
 {
 	LPWSTR id;							//!< ID
-	TCHAR szDevice[MAX_PATH];			//!< ƒfƒoƒCƒX
+	TCHAR szDevice[MAX_PATH];			//!< ãƒ‡ãƒã‚¤ã‚¹
 };
 
 /**
- * @brief WASAPI ƒNƒ‰ƒX
+ * @brief WASAPI ã‚¯ãƒ©ã‚¹
  */
 class CSoundDeviceWasapi : public CSoundDeviceBase, protected CThreadBase
 {
@@ -45,16 +45,16 @@ protected:
 	virtual bool Task();
 
 private:
-	static std::vector<WasapiDevice> sm_devices;	//!< ƒfƒoƒCƒX ƒŠƒXƒg
-	int m_mastervolume;								//!< ƒ}ƒXƒ^ƒ{ƒŠƒ…[ƒ€
+	static std::vector<WasapiDevice> sm_devices;	//!< ãƒ‡ãƒã‚¤ã‚¹ ãƒªã‚¹ãƒˆ
+	int m_mastervolume;								//!< ãƒã‚¹ã‚¿ãƒœãƒªãƒ¥ãƒ¼ãƒ 
 
-	IMMDeviceEnumerator* m_pEnumerator;			//!< ƒfƒoƒCƒX—ñ‹“ƒCƒ“ƒXƒ^ƒ“ƒX
-	IMMDevice* m_pDevice;						//!< ƒfƒoƒCƒX ƒCƒ“ƒXƒ^ƒ“ƒX
-	IAudioClient* m_pAudioClient;				//!< ƒI[ƒfƒBƒI ƒNƒ‰ƒCƒAƒ“ƒg ƒCƒ“ƒXƒ^ƒ“ƒX
-	WAVEFORMATEX* m_pwfx;						//!< ƒtƒH[ƒ}ƒbƒg
-	IAudioRenderClient* m_pRenderClient;		//!< ƒI[ƒfƒBƒI ƒŒƒ“ƒ_ƒ‰[ ƒNƒ‰ƒCƒAƒ“ƒg ƒCƒ“ƒXƒ^ƒ“ƒX
-	UINT32 m_nBufferSize;						//!< ƒoƒbƒtƒ@ ƒTƒCƒY
-	HANDLE m_hEvents[2];						//!< ƒCƒxƒ“ƒg
+	IMMDeviceEnumerator* m_pEnumerator;			//!< ãƒ‡ãƒã‚¤ã‚¹åˆ—æŒ™ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+	IMMDevice* m_pDevice;						//!< ãƒ‡ãƒã‚¤ã‚¹ ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+	IAudioClient* m_pAudioClient;				//!< ã‚ªãƒ¼ãƒ‡ã‚£ã‚ª ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆ ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+	WAVEFORMATEX* m_pwfx;						//!< ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+	IAudioRenderClient* m_pRenderClient;		//!< ã‚ªãƒ¼ãƒ‡ã‚£ã‚ª ãƒ¬ãƒ³ãƒ€ãƒ©ãƒ¼ ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆ ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+	UINT32 m_nBufferSize;						//!< ãƒãƒƒãƒ•ã‚¡ ã‚µã‚¤ã‚º
+	HANDLE m_hEvents[2];						//!< ã‚¤ãƒ™ãƒ³ãƒˆ
 	void ResetStream();
 	void FillStream();
 };

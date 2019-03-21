@@ -4,7 +4,7 @@
 extern "C" {
 #endif
 
-#if 1	//	ŠÖ”–¼•ÏX•ˆø”’Ç‰Á(k9)
+#if 1	//	é–¢æ•°åå¤‰æ›´ï¼†å¼•æ•°è¿½åŠ (k9)
 BRESULT	fdd_set_d88(FDDFILE fdd, FDDFUNC fdd_fn, const OEMCHAR *fname, int ro);
 BRESULT	fdd_eject_d88(FDDFILE fdd);
 
@@ -15,7 +15,7 @@ BRESULT	fdd_read_d88(FDDFILE fdd);
 BRESULT	fdd_write_d88(FDDFILE fdd);
 BRESULT	fdd_diagread_d88(FDDFILE fdd);
 BRESULT	fdd_readid_d88(FDDFILE fdd);
-BRESULT	fdd_writeid_d88(FDDFILE fdd);	//	–¢À‘•
+BRESULT	fdd_writeid_d88(FDDFILE fdd);	//	æœªå®Ÿè£…
 
 BRESULT	fdd_formatinit_d88(FDDFILE fdd);
 BRESULT	fdd_formating_d88(FDDFILE fdd, const UINT8 *ID);

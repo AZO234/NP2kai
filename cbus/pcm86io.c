@@ -44,9 +44,9 @@ static void IOOUTCALL pcm86_oa468(UINT port, REG8 val) {
 //	TRACEOUT(("86pcm out %.4x %.2x", port, val));
 	sound_sync();
 	xchgbit = g_pcm86.fifo ^ val;
-	// ƒoƒbƒtƒ@ƒŠƒZƒbƒg”»’è
+	// ãƒãƒƒãƒ•ã‚¡ãƒªã‚»ãƒƒãƒˆåˆ¤å®š
 	if ((xchgbit & 8) && (val & 8)) {
-		g_pcm86.readpos = 0;				// ƒoƒbƒtƒ@ƒŠƒZƒbƒg
+		g_pcm86.readpos = 0;				// ãƒãƒƒãƒ•ã‚¡ãƒªã‚»ãƒƒãƒˆ
 		g_pcm86.wrtpos = 0;
 		g_pcm86.realbuf = 0;
 		g_pcm86.virbuf = 0;
@@ -58,12 +58,12 @@ static void IOOUTCALL pcm86_oa468(UINT port, REG8 val) {
 //		g_pcm86.write = 0;
 //		g_pcm86.reqirq = 0;
 	}
-	// ƒTƒ“ƒvƒŠƒ“ƒOƒŒ[ƒg•ÏX
+	// ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ãƒ¬ãƒ¼ãƒˆå¤‰æ›´
 	if (xchgbit & 7) {
 		g_pcm86.rescue = pcm86rescue[val & 7] << g_pcm86.stepbit;
 		pcm86_setpcmrate(val);
 	}
-#if 1	// ‚±‚êd‘å‚ÈƒoƒO....
+#if 1	// ã“ã‚Œé‡å¤§ãªãƒã‚°....
 	g_pcm86.fifo = val;
 #else
 	g_pcm86.fifo = val & (~0x10);
@@ -115,13 +115,13 @@ static void IOOUTCALL pcm86_oa46c(UINT port, REG8 val) {
 	g_pcm86.buffer[g_pcm86.wrtpos] = val;
 	g_pcm86.wrtpos = (g_pcm86.wrtpos + 1) & PCM86_BUFMSK;
 	g_pcm86.realbuf++;
-	// ƒoƒbƒtƒ@ƒI[ƒo[ƒtƒ[‚ÌŠÄ‹
+	// ãƒãƒƒãƒ•ã‚¡ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼ã®ç›£è¦–
 	if (g_pcm86.realbuf >= PCM86_REALBUFSIZE) {
 #if 1
 		g_pcm86.realbuf -= 4;
 		g_pcm86.readpos = (g_pcm86.readpos + 4) & PCM86_BUFMSK;
 #else
-		g_pcm86.realbuf &= 3;				// align4Œˆ‚ßƒEƒ`
+		g_pcm86.realbuf &= 3;				// align4æ±ºã‚ã‚¦ãƒ
 		g_pcm86.realbuf += PCM86_REALBUFSIZE - 4;
 #endif
 	}
@@ -133,9 +133,9 @@ static void IOOUTCALL pcm86_oa46c(UINT port, REG8 val) {
 		g_pcm86.buffer[g_pcm86.wrtpos] = val;
 		g_pcm86.wrtpos = (g_pcm86.wrtpos + 1) & PCM86_BUFMSK;
 		g_pcm86.realbuf++;
-		// ƒoƒbƒtƒ@ƒI[ƒo[ƒtƒ[‚ÌŠÄ‹
+		// ãƒãƒƒãƒ•ã‚¡ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼ã®ç›£è¦–
 		if (g_pcm86.realbuf >= PCM86_REALBUFSIZE) {
-			g_pcm86.realbuf &= 3;				// align4Œˆ‚ßƒEƒ`
+			g_pcm86.realbuf &= 3;				// align4æ±ºã‚ã‚¦ãƒ
 			g_pcm86.realbuf += PCM86_REALBUFSIZE - 4;
 		}
 //		g_pcm86.write = 1;
@@ -172,11 +172,11 @@ static REG8 IOINPCALL pcm86_ia466(UINT port) {
 		}
 	}
 	ret = ((past << 1) >= stepclock)?1:0;
-	if (g_pcm86.virbuf >= PCM86_LOGICALBUF) {			// ƒoƒbƒtƒ@ƒtƒ‹
+	if (g_pcm86.virbuf >= PCM86_LOGICALBUF) {			// ãƒãƒƒãƒ•ã‚¡ãƒ•ãƒ«
 		ret |= 0x80;
 	}
-	else if (!g_pcm86.virbuf) {						// ƒoƒbƒtƒ@‚O
-		ret |= 0x40;								// ‚¿‚Æ•Ïc
+	else if (!g_pcm86.virbuf) {						// ãƒãƒƒãƒ•ã‚¡ï¼
+		ret |= 0x40;								// ã¡ã¨å¤‰â€¦
 	}
 	(void)port;
 //	TRACEOUT(("86pcm in %.4x %.2x", port, ret));
@@ -192,7 +192,7 @@ static REG8 IOINPCALL pcm86_ia468(UINT port) {
 	if (pcm86gen_intrq()) {
 		ret |= 0x10;
 	}
-#elif 1		// ‚Ş‚µ‚ë‚±‚¤H
+#elif 1		// ã‚€ã—ã‚ã“ã†ï¼Ÿ
 	if (g_pcm86.fifo & 0x20) {
 		sound_sync();
 		if (g_pcm86.virbuf <= g_pcm86.fifosize) {

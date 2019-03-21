@@ -63,17 +63,17 @@
 #define CIRRUS_98ID_AUTO_XE10_WSN2	0xFFFE
 #define CIRRUS_98ID_AUTO_XE10_WSN4	0xFFFF
 
-#define VRAMWINDOW_SIZE	0x200000UL  // VRAM ƒ}ƒbƒsƒ“ƒOƒTƒCƒY
-#define EXT_WINDOW_SIZE	0x200000UL  // “ä
-#define EXT_WINDOW_SHFT	0x000000UL  // “ä
+#define VRAMWINDOW_SIZE	0x200000UL  // VRAM ãƒãƒƒãƒ”ãƒ³ã‚°ã‚µã‚¤ã‚º
+#define EXT_WINDOW_SIZE	0x200000UL  // è¬
+#define EXT_WINDOW_SHFT	0x000000UL  // è¬
 #define BBLTWINDOW_ADSH	0x200000UL // VRAM BITBLT
-#define BBLTWINDOW_SIZE	0x000000UL  // VRAM BITBLT ƒ}ƒbƒsƒ“ƒOƒTƒCƒY
-#define MMIOWINDOW_ADDR	0xF80000UL  // MMIO ƒ}ƒbƒsƒ“ƒOƒAƒhƒŒƒXiêŠ•s–¾j
-#define MMIOWINDOW_SIZE	0x000000UL   // MMIO ƒ}ƒbƒsƒ“ƒOƒTƒCƒYiƒTƒCƒY•s–¾j
-#define VRA2WINDOW_ADDR	0x0F2000UL  // VRAMƒEƒBƒ“ƒhƒE ƒ}ƒbƒsƒ“ƒOƒAƒhƒŒƒXiêŠ•s–¾j
-#define VRA2WINDOW_SIZE	0x000000UL   // VRAMƒEƒBƒ“ƒhƒE ƒ}ƒbƒsƒ“ƒOƒTƒCƒYiƒTƒCƒY•s–¾j
-#define VRA2WINDOW_SIZEX  0x8000UL   // VRAMƒEƒBƒ“ƒhƒE ƒ}ƒbƒsƒ“ƒOƒTƒCƒYiƒTƒCƒY•s–¾j
-#define VRA3WINDOW_SIZEX  0x10000UL  // VRAMƒEƒBƒ“ƒhƒE F00000
+#define BBLTWINDOW_SIZE	0x000000UL  // VRAM BITBLT ãƒãƒƒãƒ”ãƒ³ã‚°ã‚µã‚¤ã‚º
+#define MMIOWINDOW_ADDR	0xF80000UL  // MMIO ãƒãƒƒãƒ”ãƒ³ã‚°ã‚¢ãƒ‰ãƒ¬ã‚¹ï¼ˆå ´æ‰€ä¸æ˜ï¼‰
+#define MMIOWINDOW_SIZE	0x000000UL   // MMIO ãƒãƒƒãƒ”ãƒ³ã‚°ã‚µã‚¤ã‚ºï¼ˆã‚µã‚¤ã‚ºä¸æ˜ï¼‰
+#define VRA2WINDOW_ADDR	0x0F2000UL  // VRAMã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒƒãƒ”ãƒ³ã‚°ã‚¢ãƒ‰ãƒ¬ã‚¹ï¼ˆå ´æ‰€ä¸æ˜ï¼‰
+#define VRA2WINDOW_SIZE	0x000000UL   // VRAMã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒƒãƒ”ãƒ³ã‚°ã‚µã‚¤ã‚ºï¼ˆã‚µã‚¤ã‚ºä¸æ˜ï¼‰
+#define VRA2WINDOW_SIZEX  0x8000UL   // VRAMã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒƒãƒ”ãƒ³ã‚°ã‚µã‚¤ã‚ºï¼ˆã‚µã‚¤ã‚ºä¸æ˜ï¼‰
+#define VRA3WINDOW_SIZEX  0x10000UL  // VRAMã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ F00000
 #define CIRRUS_VRAMWND2_FUNC_rb(a,b)	cirrus_linear_memwnd_readb(a,b)
 #define CIRRUS_VRAMWND2_FUNC_rw(a,b)	cirrus_linear_memwnd_readw(a,b)
 #define CIRRUS_VRAMWND2_FUNC_rl(a,b)	cirrus_linear_memwnd_readl(a,b)
@@ -211,7 +211,7 @@ extern NP2CLVGA		np2clvga;
 	
 void cirrusvga_drawGraphic();
 
-// –³—–î—ŠO‚©‚çŒÄ‚×‚é‚æ‚¤‚É
+// ç„¡ç†çŸ¢ç†å¤–ã‹ã‚‰å‘¼ã¹ã‚‹ã‚ˆã†ã«
 void pc98_cirrus_vga_init(void);
 void pc98_cirrus_vga_reset(const NP2CFG *pConfig);
 void pc98_cirrus_vga_bind(void);

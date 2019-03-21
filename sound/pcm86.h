@@ -19,7 +19,7 @@ enum {
 	PCM86_RESCUE		= 20
 };
 
-#define	PCM86_EXTBUF		g_pcm86.rescue					/* ‹~Ï‰„‘Øc */
+#define	PCM86_EXTBUF		g_pcm86.rescue					/* æ•‘æ¸ˆå»¶æ»â€¦ */
 #define	PCM86_REALBUFSIZE	(PCM86_LOGICALBUF + PCM86_EXTBUF)
 
 #define RECALC_NOWCLKWAIT(cnt)											\
@@ -43,10 +43,10 @@ typedef struct {
 	SINT32	smp_r;
 	SINT32	lastsmp_r;
 
-	UINT32	readpos;			/* DSOUNDÄ¶ˆÊ’u */
-	UINT32	wrtpos;				/* ‘‚İˆÊ’u */
-	SINT32	realbuf;			/* DSOUND—p‚Ìƒf[ƒ^” */
-	SINT32	virbuf;				/* 86PCM(bufsize:0x8000)‚Ìƒf[ƒ^” */
+	UINT32	readpos;			/* DSOUNDå†ç”Ÿä½ç½® */
+	UINT32	wrtpos;				/* æ›¸è¾¼ã¿ä½ç½® */
+	SINT32	realbuf;			/* DSOUNDç”¨ã®ãƒ‡ãƒ¼ã‚¿æ•° */
+	SINT32	virbuf;				/* 86PCM(bufsize:0x8000)ã®ãƒ‡ãƒ¼ã‚¿æ•° */
 	SINT32	rescue;
 
 	SINT32	fifosize;
@@ -58,7 +58,7 @@ typedef struct {
 	UINT	stepmask;
 
 	UINT8	fifo;
-	UINT8	soundflags;			/*!< ƒTƒEƒ“ƒh ƒtƒ‰ƒO (A460) */
+	UINT8	soundflags;			/*!< ã‚µã‚¦ãƒ³ãƒ‰ ãƒ•ãƒ©ã‚° (A460) */
 	UINT8	dactrl;
 	UINT8	_write;
 	UINT8	stepbit;

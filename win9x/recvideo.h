@@ -1,6 +1,6 @@
 /**
  * @file	recvideo.h
- * @brief	˜^‰æƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ð‚µ‚Ü‚·
+ * @brief	éŒ²ç”»ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -9,10 +9,10 @@
 
 #include <vfw.h>
 
-// #define AVI_SPLIT_SIZE		(1024 * 1024 * 1024)		/**< •ªŠ„ƒTƒCƒY */
+// #define AVI_SPLIT_SIZE		(1024 * 1024 * 1024)		/**< åˆ†å‰²ã‚µã‚¤ã‚º */
 
 /**
- * @brief ˜^‰æƒNƒ‰ƒX
+ * @brief éŒ²ç”»ã‚¯ãƒ©ã‚¹
  */
 class RecodeVideo
 {
@@ -28,27 +28,27 @@ public:
 	bool IsEnabled() const;
 
 private:
-	static RecodeVideo sm_instance;		/**< —Bˆê‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Å‚· */
+	static RecodeVideo sm_instance;		/**< å”¯ä¸€ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã§ã™ */
 
-	bool m_bEnabled;					/**< —LŒøƒtƒ‰ƒO */
-	bool m_bDirty;						/**< ƒ_[ƒeƒB ƒtƒ‰ƒO */
+	bool m_bEnabled;					/**< æœ‰åŠ¹ãƒ•ãƒ©ã‚° */
+	bool m_bDirty;						/**< ãƒ€ãƒ¼ãƒ†ã‚£ ãƒ•ãƒ©ã‚° */
 
-	int m_nStep;						/**< ƒNƒƒbƒN */
-	UINT8* m_pWork8;					/**< ƒ[ƒN */
-	UINT8* m_pWork24;					/**< ƒ[ƒN */
+	int m_nStep;						/**< ã‚¯ãƒ­ãƒƒã‚¯ */
+	UINT8* m_pWork8;					/**< ãƒ¯ãƒ¼ã‚¯ */
+	UINT8* m_pWork24;					/**< ãƒ¯ãƒ¼ã‚¯ */
 
 	PAVIFILE m_pAvi;					/**< AVIFILE */
 	PAVISTREAM m_pStm;					/**< AVISTREAM */
 	PAVISTREAM m_pStmTmp;				/**< AVISTREAM */
-	UINT m_nFrame;						/**< ƒtƒŒ[ƒ€” */
+	UINT m_nFrame;						/**< ãƒ•ãƒ¬ãƒ¼ãƒ æ•° */
 
 	BITMAPINFOHEADER m_bmih;			/**< BITMAPINFOHEADER */
 	COMPVARS m_cv;						/**< COMPVARS */
 
 #if defined(AVI_SPLIT_SIZE)
-	int m_nNumber;						/**< ƒtƒ@ƒCƒ‹”Ô† */
-	DWORD m_dwSize;						/**< ƒTƒCƒY */
-	TCHAR m_szPath[MAX_PATH];			/**< ƒx[ƒX ƒpƒX */
+	int m_nNumber;						/**< ãƒ•ã‚¡ã‚¤ãƒ«ç•ªå· */
+	DWORD m_dwSize;						/**< ã‚µã‚¤ã‚º */
+	TCHAR m_szPath[MAX_PATH];			/**< ãƒ™ãƒ¼ã‚¹ ãƒ‘ã‚¹ */
 #endif	// defined(AVI_SPLIT_SIZE)
 
 	bool OpenFile(LPCTSTR lpFilename);
@@ -56,8 +56,8 @@ private:
 };
 
 /**
- * ƒCƒ“ƒXƒ^ƒ“ƒX‚ð“¾‚é
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å¾—ã‚‹
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 inline RecodeVideo& RecodeVideo::GetInstance()
 {
@@ -65,9 +65,9 @@ inline RecodeVideo& RecodeVideo::GetInstance()
 }
 
 /**
- * —LŒø?
- * @retval true —LŒø
- * @retval false –³Œø
+ * æœ‰åŠ¹?
+ * @retval true æœ‰åŠ¹
+ * @retval false ç„¡åŠ¹
  */
 inline bool RecodeVideo::IsEnabled() const
 {

@@ -1,4 +1,4 @@
-// word�͂��Ȃ�m�[�`�F�b�N
+// wordはかなりノーチェック
 
 
 #define	BYTE_ROL1(d, s)	{											\
@@ -332,7 +332,7 @@
 			I286_FLAGL |= WORDSZPF(s);								\
 		}															\
 		(d) = (s);
-#else	// eVC�`
+#else	// eVC〜
 #define	WORD_SARCL(d, s, c)											\
 		(c) &= 0x1f;												\
 		if (c) {													\

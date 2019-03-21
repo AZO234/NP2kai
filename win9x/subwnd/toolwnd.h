@@ -1,13 +1,13 @@
 /**
  * @file	toolwnd.h
- * @brief	ƒc[ƒ‹ ƒEƒBƒ“ƒhƒE ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ð‚µ‚Ü‚·
+ * @brief	ãƒ„ãƒ¼ãƒ« ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
 
 #include "subwnd.h"
 
-#define FDDLIST_DEFAULT	8 // ƒfƒtƒHƒ‹ƒg‚Í8Œ‹L‰¯
+#define FDDLIST_DEFAULT	8 // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯8ä»¶è¨˜æ†¶
 
 enum {
 	SKINMRU_MAX			= 4,
@@ -48,7 +48,7 @@ enum
 };
 
 /**
- * @brief ƒc[ƒ‹ ƒEƒBƒ“ƒhƒE ƒNƒ‰ƒX
+ * @brief ãƒ„ãƒ¼ãƒ« ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ã‚¯ãƒ©ã‚¹
  */
 class CToolWnd : public CSubWndBase
 {

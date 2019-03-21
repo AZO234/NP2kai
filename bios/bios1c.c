@@ -64,7 +64,7 @@ void bios0x1c(void) {
 			
 #if defined(SUPPORT_HRTIMER)
 		case 0x80:					// hrtimer read
-			CPU_AL = ((mem[0x04F3] >> 6) - 1) & 0x3; // Œo‰ß“ú”
+			CPU_AL = ((mem[0x04F3] >> 6) - 1) & 0x3; // çµŒéæ—¥æ•°
 			{
 				UINT32 hrtimertimeuint;
 				hrtimertimeuint = LOADINTELDWORD(mem+0x04F1) & 0x3fffff;

@@ -210,7 +210,7 @@ void debugsub_memorydumpall(void) {
 }
 
 
-#if 0	// 俺用デバグ
+#if 0	// 菫ｺ逕ｨ繝�繝舌げ
 
 void debugpageptr(UINT32 addr) {
 
