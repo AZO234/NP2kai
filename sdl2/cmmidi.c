@@ -31,7 +31,14 @@
 #if defined(_MSC_VER) || defined(_MSC_EXTENSIONS)
 #include <time.h>
 #define DELTA_EPOCH_IN_MICROSECS  11644473600000000Ui64
- 
+
+#if WINAPI_FAMILY == WINAPI_FAMILY_APP
+struct timeval {
+	long tv_sec;
+	long tv_usec;
+};
+#endif
+
 struct timezone
 {
 	int tz_minuteswest;	/* minutes W of Greenwich */

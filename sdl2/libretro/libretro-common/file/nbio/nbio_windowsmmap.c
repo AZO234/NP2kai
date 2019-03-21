@@ -69,7 +69,7 @@ static void *nbio_mmap_win32_open(const char * filename, unsigned mode)
    HANDLE file                       = CreateFile(filename, access, FILE_SHARE_ALL, NULL, dispositions[mode], FILE_ATTRIBUTE_NORMAL, NULL);
 #else
    wchar_t *filename_wide            = utf8_to_utf16_string_alloc(filename);
-#ifdef __WINRT__
+#if defined(__WINRT__) || WINAPI_FAMILY == WINAPI_FAMILY_APP
    HANDLE file                       = CreateFile2(filename_wide, access, FILE_SHARE_ALL, dispositions[mode], NULL);
 #else
    HANDLE file                       = CreateFileW(filename_wide, access, FILE_SHARE_ALL, NULL, dispositions[mode], FILE_ATTRIBUTE_NORMAL, NULL);
