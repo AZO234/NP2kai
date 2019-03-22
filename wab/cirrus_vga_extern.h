@@ -98,7 +98,9 @@ typedef	signed char		int8_t;
 typedef	unsigned char	uint8_t;
 typedef	signed short	int16_t;
 typedef	unsigned short	uint16_t_;
+#if !defined(_3DS)
 typedef	signed int		int32_t;
+#endif
 typedef	unsigned int	uint32_t_;
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 typedef	signed __int64	int64_t;
