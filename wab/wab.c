@@ -507,8 +507,8 @@ void np2wab_drawframe()
 	}
 #endif
 }
+
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
-}
 /**
  * 非同期描画（ga_threadmodeが真）
  */

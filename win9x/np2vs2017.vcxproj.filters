@@ -235,9 +235,6 @@
     <Filter Include="ソース ファイル\network">
       <UniqueIdentifier>{355c185c-0473-45fe-a779-d70d341f4ee7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\network">
-      <UniqueIdentifier>{851cf1df-2a92-4676-9f39-c8030611fa29}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\wab">
       <UniqueIdentifier>{1cca2f75-8c68-4850-86c3-c7c498ea5fcd}</UniqueIdentifier>
     </Filter>
@@ -2020,15 +2017,6 @@
     </ClInclude>
     <ClInclude Include="..\diskimage\fd\fdd_xdf.h">
       <Filter>ヘッダー ファイル\diskimage\fd</Filter>
-    </ClInclude>
-    <ClInclude Include="..\network\net.h">
-      <Filter>ヘッダー ファイル\network</Filter>
-    </ClInclude>
-    <ClInclude Include="..\network\lgy98.h">
-      <Filter>ヘッダー ファイル\network</Filter>
-    </ClInclude>
-    <ClInclude Include="..\network\lgy98dev.h">
-      <Filter>ヘッダー ファイル\network</Filter>
     </ClInclude>
     <ClInclude Include="..\i286x\dmap.h">
       <Filter>ヘッダー ファイル\i286x</Filter>

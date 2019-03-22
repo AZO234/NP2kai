@@ -4,7 +4,6 @@
 #include	"np2.h"
 #include	"sysmng.h"
 #include	"dialog.h"
-#include	"dialogs.h"
 
 #include	"bmsio.h"
 

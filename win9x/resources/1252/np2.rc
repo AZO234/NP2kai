@@ -1,6 +1,6 @@
 //Microsoft Developer Studio generated resource script.
 //
-#include "..¥..¥resource.h"
+#include "..\\..\\resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -1363,9 +1363,9 @@ END
 // Bitmap
 //
 
-NP2BMP                  BITMAP                  "..¥¥nekop2.bmp"
-NP2TOOL                 BITMAP                  "..¥¥np2tool.bmp"
-NP21TOOL                BITMAP                  "..¥¥np21tool.bmp"
+NP2BMP                  BITMAP                  "..\\nekop2.bmp"
+NP2TOOL                 BITMAP                  "..\\np2tool.bmp"
+NP21TOOL                BITMAP                  "..\\np21tool.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1374,17 +1374,17 @@ NP21TOOL                BITMAP                  "..¥¥np21tool.bmp"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON1               ICON                    "..¥¥np2.ico"
-IDI_ICON2               ICON                    "..¥¥np2debug.ico"
+IDI_ICON1               ICON                    "..\\np2.ico"
+IDI_ICON2               ICON                    "..\\np2debug.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // EXTROM
 //
 
-SEEKWAV                 EXTROM                  "..¥¥fddseek.wav"
-SEEK1WAV                EXTROM                  "..¥¥fddseek1.wav"
-RELAY1WAV               EXTROM                  "..¥¥relay1.wav"
+SEEKWAV                 EXTROM                  "..\\fddseek.wav"
+SEEK1WAV                EXTROM                  "..\\fddseek1.wav"
+RELAY1WAV               EXTROM                  "..\\relay1.wav"
 
 /////////////////////////////////////////////////////////////////////////////
 //
