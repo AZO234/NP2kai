@@ -98,7 +98,7 @@ typedef	signed char		int8_t;
 typedef	unsigned char	uint8_t;
 typedef	signed short	int16_t;
 typedef	unsigned short	uint16_t_;
-#if !defined(_3DS)
+#if !defined(_3DS) && !defined(VITA)
 typedef	signed int		int32_t;
 #endif
 typedef	unsigned int	uint32_t_;
