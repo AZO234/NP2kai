@@ -214,9 +214,9 @@ else ifeq ($(platform), xbox1_msvc2003)
 	CXX = CL.exe
 	LD  = lib.exe
 
-	export INCLUDE := $(XDK)/xbox/include
-	export LIB := $(XDK)/xbox/lib
-	PATH := $(call unixcygpath,$(XDK)/xbox/bin/vc71):$(PATH)
+	export INCLUDE := "$(XDK)\xbox\include"
+	export LIB := "$(XDK)\xbox\lib"
+	PATH := $(shell IFS=$$'\n'; cygpath -w "$(XDK)\xbox\bin\vc71"):$(PATH)
 	PSS_STYLE :=2
 	CFLAGS   += -D_XBOX -D_XBOX1
 	CXXFLAGS += -D_XBOX -D_XBOX1
@@ -226,13 +226,13 @@ else ifeq ($(platform), xbox1_msvc2003)
 # Windows MSVC 2010 Xbox 360
 else ifeq ($(platform), xbox360_msvc2010)
 	TARGET := $(TARGET_NAME)_libretro_xdk360.lib
-	MSVCBINDIRPREFIX = $(XEDK)/bin/win32
-	CC  = "$(MSVCBINDIRPREFIX)/cl.exe"
-	CXX = "$(MSVCBINDIRPREFIX)/cl.exe"
-	LD  = "$(MSVCBINDIRPREFIX)/lib.exe"
+	CC  = cl.exe
+	CXX = cl.exe
+	LD  = lib.exe
 
-	export INCLUDE := $(XEDK)/include/xbox
-	export LIB := $(XEDK)/lib/xbox
+	export INCLUDE := "$(XEDK)\include\xbox"
+	export LIB := "$(XEDK)\lib\xbox"
+	PATH := $(shell IFS=$$'\n'; cygpath -w "$(XEDK)\bin\win32"):$(PATH)
 	PSS_STYLE :=2
 	CFLAGS   += -D_XBOX -D_XBOX360
 	CXXFLAGS += -D_XBOX -D_XBOX360
