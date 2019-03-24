@@ -159,7 +159,7 @@ static void streamfilewrite(UINT nSamples)
 			{
 				nSample = -32768;
 			}
-			// little endian�Ȃ̂� satuation_s16�͎g���Ȃ�
+			// little endianなので satuation_s16は使えない
 			buf[i][0] = (UINT8)nSample;
 			buf[i][1] = (UINT8)(nSample >> 8);
 		}
@@ -297,11 +297,11 @@ void sound_changeclock(void) {
 		return;
 	}
 
-	// �Ƃ肠���� 25�Ŋ���؂��B
+	// とりあえず 25で割り切れる。
 	clk = pccore.realclock / 25;
 	hz = soundcfg.rate / 25;
 
-	// �ŁA�N���b�N���ɍ����Ē����B(64bit���Z�����ȓI)
+	// で、クロック数に合せて調整。(64bit演算しろよな的)
 	hzmax = (1 << (32 - 8)) / (clk >> 8);
 	while(hzmax < hz) {
 		clk = (clk + 1) >> 1;

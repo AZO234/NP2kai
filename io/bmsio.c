@@ -62,8 +62,8 @@ static REG8 IOINPCALL bmsio_i00ec(UINT port) {
 // ---- I/F
 
 /*
-�_�C�A���O�Őݒ肵�����e�𓮍���ɔ��f����
-	NP2���Z�b�g���ɌĂ΂��(STATSAVE�̃��[�h���͌Ă΂�Ȃ�)
+ダイアログで設定した内容を動作環境に反映する
+	NP2リセット時に呼ばれる(STATSAVEのロード時は呼ばれない)
 */
 void bmsio_set(void) {
 	bmsio.cfg = bmsiocfg;

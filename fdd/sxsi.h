@@ -27,6 +27,13 @@ enum {
 	SXSIFLAG_FILEOPENED	= 0x02
 };
 
+enum {
+	CD_ECC_NOERROR		= 0,
+	CD_ECC_RECOVERED	= 1,
+	CD_ECC_ERROR		= 2,
+	CD_ECC_BITMASK		= 0x03,
+};
+
 
 struct _sxsidev;
 typedef struct _sxsidev		_SXSIDEV;
@@ -47,6 +54,8 @@ struct _sxsidev {
 	REG8	(*format)(SXSIDEV sxsi, FILEPOS pos);
 	void	(*close)(SXSIDEV sxsi);
 	void	(*destroy)(SXSIDEV sxsi);
+	BRESULT	(*state_save)(SXSIDEV sxsi, const OEMCHAR *sfname);
+	BRESULT	(*state_load)(SXSIDEV sxsi, const OEMCHAR *sfname);
 
 	INTPTR	hdl;
 	FILELEN	totals;
@@ -57,6 +66,8 @@ struct _sxsidev {
 	UINT8	mediatype;
 	UINT8	padding;
 	UINT32	headersize;
+	
+	UINT8	cdflag_ecc;
 
 	OEMCHAR	fname[MAX_PATH];
 	UINT	ftype;
@@ -86,6 +97,8 @@ void sxsi_devclose(REG8 drv);
 REG8 sxsi_read(REG8 drv, FILEPOS pos, UINT8 *buf, UINT size);
 REG8 sxsi_write(REG8 drv, FILEPOS pos, const UINT8 *buf, UINT size);
 REG8 sxsi_format(REG8 drv, FILEPOS pos);
+BRESULT sxsi_state_save(const OEMCHAR *ext);
+BRESULT sxsi_state_load(const OEMCHAR *ext);
 
 BOOL sxsi_issasi(void);
 BOOL sxsi_isscsi(void);

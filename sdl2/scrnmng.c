@@ -830,7 +830,7 @@ void scrnmng_updatefsres(void) {
 }
 
 // transmit WAB display
-void scrnmng_blthdc() {
+void scrnmng_blthdc(void) {
 #if defined(SUPPORT_WAB)
 	if (np2wabwnd.multiwindow) return;
 	if (mt_wabpausedrawing) return;
@@ -853,7 +853,7 @@ void scrnmng_blthdc() {
 #endif
 }
 
-void scrnmng_bltwab() {
+void scrnmng_bltwab(void) {
 #if defined(SUPPORT_WAB)
 	if (np2wabwnd.multiwindow) return;
 #if defined(NP2_SDL2)

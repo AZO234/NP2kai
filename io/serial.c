@@ -96,7 +96,7 @@ void keyboard_reset(const NP2CFG *pConfig) {
 void keyboard_bind(void) {
 
 	keystat_ctrlreset();
-	keybrd.xferclock = pccore.realclock / 1920;
+	keyboard_changeclock();
 	iocore_attachsysoutex(0x0041, 0x0cf1, keybrdo41, 2);
 	iocore_attachsysinpex(0x0041, 0x0cf1, keybrdi41, 2);
 }
@@ -140,6 +140,11 @@ void keyboard_send(REG8 data) {
 	else {
 		keybrd.status |= 0x10;
 	}
+}
+
+void keyboard_changeclock(void) {
+
+	keybrd.xferclock = pccore.realclock / 1920;
 }
 
 

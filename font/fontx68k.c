@@ -15,25 +15,25 @@ const UINT8	*p;
 		q = dst + 0x21000 + (i << 4);
 		for (j=0x21; j<0x7f; j++) {
 			p = NULL;
-			// Š¿Žš‚Ìƒ|ƒCƒ“ƒ^‚ð‹‚ß‚é
-			if ((i >= 0x01) && (i < 0x08)) {			// 2121`277e
+			// æ¼¢å­—ã®ãƒã‚¤ãƒ³ã‚¿ã‚’æ±‚ã‚ã‚‹
+			if ((i >= 0x01) && (i < 0x08)) {			// 2121ã€œ277e
 				p = src + 0x00000
 					+ ((((i - 0x01) * 0x5e) + (j - 0x21)) * 0x20);
 			}
-			else if ((i >= 0x10) && (i < 0x30)) {		// 3021`5f7e
+			else if ((i >= 0x10) && (i < 0x30)) {		// 3021ã€œ5f7e
 				p = src + 0x05e00
 					+ ((((i - 0x10) * 0x5e) + (j - 0x21)) * 0x20);
 			}
-			else if ((i >= 0x30) && (i < 0x54)) {		// 5021`737e
+			else if ((i >= 0x30) && (i < 0x54)) {		// 5021ã€œ737e
 				p = src + 0x1d600
 					+ ((((i - 0x30) * 0x5e) + (j - 0x21)) * 0x20);
 			}
-			else if ((i == 0x54) && (j < 0x25)) {		// 7421`7424
+			else if ((i == 0x54) && (j < 0x25)) {		// 7421ã€œ7424
 				p = src + 0x1d600
 					+ ((((0x54 - 0x30) * 0x5e) + (j - 0x21)) * 0x20);
 			}
-			if (p) {							// ‹KŠi“àƒR[ƒh‚È‚ç‚Î
-				// ƒRƒs[‚·‚é
+			if (p) {							// è¦æ ¼å†…ã‚³ãƒ¼ãƒ‰ãªã‚‰ã°
+				// ã‚³ãƒ”ãƒ¼ã™ã‚‹
 				for (k=0; k<16; k++) {
 					*(q+k) = *p++;
 					*(q+k+0x800) = *p++;
@@ -49,52 +49,52 @@ UINT8 fontx68k_read(const OEMCHAR *filename, UINT8 loading) {
 	FILEH	fh;
 	UINT8	*work;
 
-	// ƒtƒ@ƒCƒ‹‚ðƒI[ƒvƒ“
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
 	fh = file_open_rb(filename);
 	if (fh == FILEH_INVALID) {
 		goto fr68_err1;
 	}
 
-	// ƒƒ‚ƒŠƒAƒƒP[ƒg
+	// ãƒ¡ãƒ¢ãƒªã‚¢ãƒ­ã‚±ãƒ¼ãƒˆ
 	work = (UINT8 *)_MALLOC(0x3b800, "x68kfont");
 	if (work == NULL) {
 		goto fr68_err2;
 	}
 
-	// CGROM.DAT ‚Ì“Ç‚Ýž‚Ý
+	// CGROM.DAT ã®èª­ã¿è¾¼ã¿
 	if (file_read(fh, work, 0x3b800) != 0x3b800) {
 		goto fr68_err3;
 	}
 
-	// 8dot ANK‚ð“Ç‚Þ•K—v‚ª‚ ‚é‚©
+	// 8dot ANKã‚’èª­ã‚€å¿…è¦ãŒã‚ã‚‹ã‹
 	if (loading & FONT_ANK8) {
 		loading &= ~FONT_ANK8;
 		fontdata_ank8store(work + 0x3a100, 0x20, 0x60);
 		fontdata_ank8store(work + 0x3a500, 0xa0, 0x40);
 	}
 
-	// 16dot ASCII‚ð“Ç‚Þ•K—v‚ª‚ ‚é‚©
+	// 16dot ASCIIã‚’èª­ã‚€å¿…è¦ãŒã‚ã‚‹ã‹
 	if (loading & FONT_ANK16a) {
 		loading &= ~FONT_ANK16a;
 		CopyMemory(fontrom + 0x80200, work + 0x3aa00, 0x60*16);
 		fontdata_patch16a();
 	}
 
-	// 16dot ANK(0x80`)‚ð“Ç‚Þ•K—v‚ª‚ ‚é‚©
+	// 16dot ANK(0x80ã€œ)ã‚’èª­ã‚€å¿…è¦ãŒã‚ã‚‹ã‹
 	if (loading & FONT_ANK16b) {
 		loading &= ~FONT_ANK16b;
 		CopyMemory(fontrom + 0x80a00, work + 0x3b200, 0x40*16);
 		fontdata_patch16b();
 	}
 
-	// ‘æˆê…€Š¿Žš‚ð“Ç‚Ýž‚ÞH
+	// ç¬¬ä¸€æ°´æº–æ¼¢å­—ã‚’èª­ã¿è¾¼ã‚€ï¼Ÿ
 	if (loading & FONT_KNJ1) {
 		loading &= ~FONT_KNJ1;
 		x68kknjcpy(fontrom, work, 0x01, 0x30);
 		fontdata_patchjis();
 	}
 
-	// ‘æ“ñ…€‚ð“Ç‚Þ•K—v‚Í‚ ‚éH
+	// ç¬¬äºŒæ°´æº–ã‚’èª­ã‚€å¿…è¦ã¯ã‚ã‚‹ï¼Ÿ
 	if (loading & FONT_KNJ2) {
 		loading &= ~FONT_KNJ2;
 		x68kknjcpy(fontrom, work, 0x30, 0x60);

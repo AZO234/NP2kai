@@ -1,6 +1,6 @@
 /**
  * @file	viewreg.h
- * @brief	ƒŒƒWƒXƒ^•\¦ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	ãƒ¬ã‚¸ã‚¹ã‚¿è¡¨ç¤ºã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -9,7 +9,7 @@
 #include "viewitem.h"
 
 /**
- * @brief ƒŒƒWƒXƒ^•\¦ƒNƒ‰ƒX
+ * @brief ãƒ¬ã‚¸ã‚¹ã‚¿è¡¨ç¤ºã‚¯ãƒ©ã‚¹
  */
 class CDebugUtyReg : public CDebugUtyItem
 {
@@ -25,5 +25,5 @@ public:
 	virtual void OnPaint(HDC hDC, const RECT& rect);
 
 private:
-	std::vector<unsigned char> m_buffer;		//!< ƒoƒbƒtƒ@
+	std::vector<unsigned char> m_buffer;		//!< ãƒãƒƒãƒ•ã‚¡
 };

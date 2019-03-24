@@ -1,6 +1,6 @@
 /**
  * @file	scciif.cpp
- * @brief	SCCI ƒAƒNƒZƒX ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	SCCI ã‚¢ã‚¯ã‚»ã‚¹ ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -10,7 +10,7 @@
 using namespace scci;
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CScciIf::CScciIf()
 	: m_pManager(NULL)
@@ -18,7 +18,7 @@ CScciIf::CScciIf()
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CScciIf::~CScciIf()
 {
@@ -26,9 +26,9 @@ CScciIf::~CScciIf()
 }
 
 /**
- * ‰Šú‰»
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * åˆæœŸåŒ–
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CScciIf::Initialize()
 {
@@ -39,21 +39,21 @@ bool CScciIf::Initialize()
 
 	do
 	{
-		/* ƒTƒEƒ“ƒhƒCƒ“ƒ^[ƒtƒF[ƒXƒ}ƒl[ƒWƒƒ[æ“¾ */
+		/* ã‚µã‚¦ãƒ³ãƒ‰ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼å–å¾— */
 		m_pManager = GetSoundInterfaceManager();
 		if (m_pManager == NULL)
 		{
 			break;
 		}
 
-		/* ƒTƒEƒ“ƒhƒCƒ“ƒ^[ƒtƒF[ƒXƒ}ƒl[ƒWƒƒ[ƒCƒ“ƒXƒ^ƒ“ƒX‰Šú‰» */
-		/* •K‚¸Å‰‚ÉÀs‚µ‚Ä‚­‚¾‚³‚¢ */
+		/* ã‚µã‚¦ãƒ³ãƒ‰ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åˆæœŸåŒ– */
+		/* å¿…ãšæœ€åˆã«å®Ÿè¡Œã—ã¦ãã ã•ã„ */
 		if (!m_pManager->initializeInstance())
 		{
 			break;
 		}
 
-		/* ƒŠƒZƒbƒg‚ğs‚¤ */
+		/* ãƒªã‚»ãƒƒãƒˆã‚’è¡Œã† */
 		Reset();
 		return true;
 	} while (false /*CONSTCOND*/);
@@ -63,17 +63,17 @@ bool CScciIf::Initialize()
 }
 
 /**
- * ‰ğ•ú
+ * è§£æ”¾
  */
 void CScciIf::Deinitialize()
 {
 	if (m_pManager)
 	{
-		/* ˆêŠ‡ŠJ•ú‚·‚éê‡iƒ`ƒbƒvˆêŠ‡ŠJ•ú‚Ìê‡j */
+		/* ä¸€æ‹¬é–‹æ”¾ã™ã‚‹å ´åˆï¼ˆãƒãƒƒãƒ—ä¸€æ‹¬é–‹æ”¾ã®å ´åˆï¼‰ */
 		m_pManager->releaseAllSoundChip();
 
-		/* ƒTƒEƒ“ƒhƒCƒ“ƒ^[ƒtƒF[ƒXƒ}ƒl[ƒWƒƒ[ƒCƒ“ƒXƒ^ƒ“ƒXŠJ•ú */
-		/* FreeLibrary‚ğs‚¤‘O‚É•K‚¸ŒÄ‚Ño‚µ‚µ‚Ä‚­‚¾‚³‚¢ */
+		/* ã‚µã‚¦ãƒ³ãƒ‰ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹é–‹æ”¾ */
+		/* FreeLibraryã‚’è¡Œã†å‰ã«å¿…ãšå‘¼ã³å‡ºã—ã—ã¦ãã ã•ã„ */
 		m_pManager->releaseInstance();
 
 		m_pManager = NULL;
@@ -81,22 +81,22 @@ void CScciIf::Deinitialize()
 }
 
 /**
- * ‰¹Œ¹ƒŠƒZƒbƒg
+ * éŸ³æºãƒªã‚»ãƒƒãƒˆ
  */
 void CScciIf::Reset()
 {
 	if (m_pManager)
 	{
-		/* ƒŠƒZƒbƒg‚ğs‚¤ */
+		/* ãƒªã‚»ãƒƒãƒˆã‚’è¡Œã† */
 		m_pManager->reset();
 	}
 }
 
 /**
- * ƒCƒ“ƒ^[ƒtƒFƒCƒXæ“¾
- * @param[in] nChipType ƒ^ƒCƒv
- * @param[in] nClock ƒNƒƒbƒN
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹å–å¾—
+ * @param[in] nChipType ã‚¿ã‚¤ãƒ—
+ * @param[in] nClock ã‚¯ãƒ­ãƒƒã‚¯
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 IExternalChip* CScciIf::GetInterface(IExternalChip::ChipType nChipType, UINT nClock)
 {
@@ -155,7 +155,7 @@ IExternalChip* CScciIf::GetInterface(IExternalChip::ChipType nChipType, UINT nCl
 		SoundChip* pSoundChip = m_pManager->getSoundChip(iSoundChipType, nClock);
 		if (pSoundChip != NULL)
 		{
-			/* ƒTƒEƒ“ƒhƒ`ƒbƒvæ“¾‚Å‚«‚½ */
+			/* ã‚µã‚¦ãƒ³ãƒ‰ãƒãƒƒãƒ—å–å¾—ã§ããŸ */
 			return new Chip(this, pSoundChip);
 		}
 	} while (false /*CONSTCOND*/);
@@ -168,24 +168,24 @@ IExternalChip* CScciIf::GetInterface(IExternalChip::ChipType nChipType, UINT nCl
 }
 
 /**
- * ‰ğ•ú
- * @param[in] pChip ƒ`ƒbƒv
+ * è§£æ”¾
+ * @param[in] pChip ãƒãƒƒãƒ—
  */
 void CScciIf::Detach(CScciIf::Chip* pChip)
 {
-	/* ƒ`ƒbƒv‚ÌŠJ•úiƒ`ƒbƒv’PˆÊ‚ÅŠJ•ú‚Ìê‡j */
+	/* ãƒãƒƒãƒ—ã®é–‹æ”¾ï¼ˆãƒãƒƒãƒ—å˜ä½ã§é–‹æ”¾ã®å ´åˆï¼‰ */
 	if (m_pManager)
 	{
 		m_pManager->releaseSoundChip(*pChip);
 	}
 }
 
-/* ---- ƒ`ƒbƒv */
+/* ---- ãƒãƒƒãƒ— */
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
- * @param[in] pScciIf eƒCƒ“ƒXƒ^ƒ“ƒX
- * @param[in] pSoundChip ƒ`ƒbƒv ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * @param[in] pScciIf è¦ªã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+ * @param[in] pSoundChip ãƒãƒƒãƒ— ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 CScciIf::Chip::Chip(CScciIf* pScciIf, SoundChip* pSoundChip)
 	: m_pScciIf(pScciIf)
@@ -194,7 +194,7 @@ CScciIf::Chip::Chip(CScciIf* pScciIf, SoundChip* pSoundChip)
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CScciIf::Chip::~Chip()
 {
@@ -202,7 +202,7 @@ CScciIf::Chip::~Chip()
 }
 
 /**
- * ƒIƒyƒŒ[ƒ^
+ * ã‚ªãƒšãƒ¬ãƒ¼ã‚¿
  */
 CScciIf::Chip::operator SoundChip*()
 {
@@ -259,16 +259,16 @@ IExternalChip::ChipType CScciIf::Chip::GetChipType()
 }
 
 /**
- * ƒŠƒZƒbƒg
+ * ãƒªã‚»ãƒƒãƒˆ
  */
 void CScciIf::Chip::Reset()
 {
 }
 
 /**
- * ƒŒƒWƒXƒ^‘‚«‚İ
- * @param[in] nAddr ƒAƒhƒŒƒX
- * @param[in] cData ƒf[ƒ^
+ * ãƒ¬ã‚¸ã‚¹ã‚¿æ›¸ãè¾¼ã¿
+ * @param[in] nAddr ã‚¢ãƒ‰ãƒ¬ã‚¹
+ * @param[in] cData ãƒ‡ãƒ¼ã‚¿
  */
 void CScciIf::Chip::WriteRegister(UINT nAddr, UINT8 cData)
 {
@@ -276,10 +276,10 @@ void CScciIf::Chip::WriteRegister(UINT nAddr, UINT8 cData)
 }
 
 /**
- * ƒƒbƒZ[ƒW
- * @param[in] nMessage ƒƒbƒZ[ƒW
- * @param[in] nParameter ƒpƒ‰ƒ[ƒ^
- * @return ƒŠƒUƒ‹ƒg
+ * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nParameter ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+ * @return ãƒªã‚¶ãƒ«ãƒˆ
  */
 INTPTR CScciIf::Chip::Message(UINT nMessage, INTPTR nParameter)
 {

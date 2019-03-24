@@ -1,9 +1,16 @@
 /**
  * @file	tickcounter.h
- * @brief	TICK ƒJƒEƒ“ƒ^‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	TICK ã‚«ã‚¦ãƒ³ã‚¿ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
+
+enum {
+	TCMODE_DEFAULT = 0,
+	TCMODE_GETTICKCOUNT = 1,
+	TCMODE_TIMEGETTIME = 2,
+	TCMODE_PERFORMANCECOUNTER = 3,
+};
 
 #ifdef __cplusplus
 extern "C"
@@ -11,6 +18,10 @@ extern "C"
 #endif	// __cplusplus
 
 DWORD GetTickCounter();
+void SetTickCounterMode(int mode);
+int GetTickCounterMode();
+LARGE_INTEGER GetTickCounter_Clock();
+LARGE_INTEGER GetTickCounter_ClockPerSec();
 
 #ifdef __cplusplus
 }

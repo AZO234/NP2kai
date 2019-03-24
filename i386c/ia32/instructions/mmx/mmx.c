@@ -32,19 +32,19 @@
 
 #if defined(USE_MMX) && defined(USE_FPU)
 
-#define CPU_MMXWORKCLOCK(a)	CPU_WORKCLOCK(6)
+#define CPU_MMXWORKCLOCK	CPU_WORKCLOCK(6)
 
 static INLINE void
 MMX_check_NM_EXCEPTION(){
-	// MMX�Ȃ��Ȃ�UD(�����I�y�R�[�h��O)�𔭐�������
+	// MMXなしならUD(無効オペコード例外)を発生させる
 	if(!(i386cpuid.cpu_feature & CPU_FEATURE_MMX)){
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	// �G�~�����[�V�����Ȃ�UD(�����I�y�R�[�h��O)�𔭐�������
+	// エミュレーションならUD(無効オペコード例外)を発生させる
 	if(CPU_CR0 & CPU_CR0_EM){
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	// �^�X�N�X�C�b�`����NM(�f�o�C�X�g�p�s��O)�𔭐�������
+	// タスクスイッチ時にNM(デバイス使用不可例外)を発生させる
 	if (CPU_CR0 & CPU_CR0_TS) {
 		EXCEPTION(NM_EXCEPTION, 0);
 	}
@@ -79,15 +79,15 @@ MMX_EMMS(void)
 {
 	int i;
 	
-	// MMX�Ȃ��Ȃ�UD(�����I�y�R�[�h��O)�𔭐�������
+	// MMXなしならUD(無効オペコード例外)を発生させる
 	if(!(i386cpuid.cpu_feature & CPU_FEATURE_MMX)){
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	// �G�~�����[�V�����Ȃ�UD(�����I�y�R�[�h��O)�𔭐�������
+	// エミュレーションならUD(無効オペコード例外)を発生させる
 	if(CPU_CR0 & CPU_CR0_EM){
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	// �^�X�N�X�C�b�`����NM(�f�o�C�X�g�p�s��O)�𔭐�������
+	// タスクスイッチ時にNM(デバイス使用不可例外)を発生させる
 	if ((CPU_CR0 & (CPU_CR0_TS)) || (CPU_CR0 & CPU_CR0_EM)) {
 		EXCEPTION(NM_EXCEPTION, 0);
 	}
@@ -111,7 +111,7 @@ void MMX_MOVD_mm_rm32(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -132,7 +132,7 @@ void MMX_MOVD_rm32_mm(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -152,7 +152,7 @@ void MMX_MOVQ_mm_mmm64(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -173,7 +173,7 @@ void MMX_MOVQ_mmm64_mm(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -204,7 +204,7 @@ void MMX_PACKSSWB(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -256,7 +256,7 @@ void MMX_PACKSSDW(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -309,7 +309,7 @@ void MMX_PACKUSWB(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -362,7 +362,7 @@ void MMX_PADDB(void)
 
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -392,7 +392,7 @@ void MMX_PADDW(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -422,7 +422,7 @@ void MMX_PADDD(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -453,7 +453,7 @@ void MMX_PADDSB(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -490,7 +490,7 @@ void MMX_PADDSW(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -528,7 +528,7 @@ void MMX_PADDUSB(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -563,7 +563,7 @@ void MMX_PADDUSW(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -600,7 +600,7 @@ void MMX_PAND(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -628,7 +628,7 @@ void MMX_PANDN(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -658,7 +658,7 @@ void MMX_POR(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -686,7 +686,7 @@ void MMX_PXOR(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -718,7 +718,7 @@ void MMX_PCMPEQB(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -752,7 +752,7 @@ void MMX_PCMPEQW(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -786,7 +786,7 @@ void MMX_PCMPEQD(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -823,7 +823,7 @@ void MMX_PCMPGTB(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -857,7 +857,7 @@ void MMX_PCMPGTW(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -891,7 +891,7 @@ void MMX_PCMPGTD(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -928,7 +928,7 @@ void MMX_PMADDWD(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -962,7 +962,7 @@ void MMX_PMULHW(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -992,7 +992,7 @@ void MMX_PMULLW(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -1023,24 +1023,24 @@ void MMX_PSLLW(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
 		shift = FPU_STAT.reg[sub].ul.lower;
-		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
 		shift = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr);
-		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	}
 	dstreg = (UINT16*)(&(FPU_STAT.reg[idx]));
 	
 	for(i=0;i<4;i++){
 		//dstreg[i] = (dstreg[i] << shift);
-		dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] << (UINT16)shift)); // XXX: MSB�����c�����̂ł��܂����i���ˑ��H�j
+		dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] << (UINT16)shift)); // XXX: MSBが取り残されるのでごまかし（環境依存？）
 	}
 }
 void MMX_PSLLD(void)
@@ -1053,24 +1053,24 @@ void MMX_PSLLD(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
 		shift = FPU_STAT.reg[sub].ul.lower;
-		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
 		shift = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr);
-		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	}
 	dstreg = (UINT32*)(&(FPU_STAT.reg[idx]));
 	
 	for(i=0;i<2;i++){
 		//dstreg[i] = (dstreg[i] << shift);
-		dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] << (UINT32)shift)); // XXX: MSB�����c�����̂ł��܂����i���ˑ��H�j
+		dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] << (UINT32)shift)); // XXX: MSBが取り残されるのでごまかし（環境依存？）
 	}
 }
 void MMX_PSLLQ(void)
@@ -1082,23 +1082,23 @@ void MMX_PSLLQ(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
 		shift = FPU_STAT.reg[sub].ul.lower;
-		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
 		shift = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr);
-		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	}
 	dstreg = (UINT64*)(&(FPU_STAT.reg[idx]));
 	
 	//dstreg[0] = (dstreg[0] << shift);
-	dstreg[0] = (shift >= 64 ? 0 : (dstreg[0] << (UINT64)shift)); // XXX: MSB�����c�����̂ł��܂����i���ˑ��H�j
+	dstreg[0] = (shift >= 64 ? 0 : (dstreg[0] << (UINT64)shift)); // XXX: MSBが取り残されるのでごまかし（環境依存？）
 }
 
 // *********** PSRA
@@ -1114,22 +1114,22 @@ void MMX_PSRAW(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
 		shift = FPU_STAT.reg[sub].ul.lower;
-		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
 		shift = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr);
-		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	}
 	dstreg = (UINT16*)(&(FPU_STAT.reg[idx]));
 	
-	// �������Z�p�V�t�g�i�������j
+	// 無理やり算術シフト（怪しい）
 	if(16 <= shift){
 		signval = 0xffff;
 	}else{
@@ -1140,7 +1140,7 @@ void MMX_PSRAW(void)
 		if(((INT16*)dstreg)[i] < 0){
 			dstreg[i] = (dstreg[i] >> shift) | signval;
 		}else{
-			dstreg[i] = (dstreg[i] >> shift);
+			dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 		}
 	}
 }
@@ -1155,22 +1155,22 @@ void MMX_PSRAD(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
 		shift = FPU_STAT.reg[sub].ul.lower;
-		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
 		shift = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr);
-		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	}
 	dstreg = (UINT32*)(&(FPU_STAT.reg[idx]));
 	
-	// �������Z�p�V�t�g�i�������j
+	// 無理やり算術シフト（怪しい）
 	if(32 <= shift){
 		signval = 0xffffffff;
 	}else{
@@ -1181,7 +1181,7 @@ void MMX_PSRAD(void)
 		if(((INT32*)dstreg)[i] < 0){
 			dstreg[i] = (dstreg[i] >> shift) | signval;
 		}else{
-			dstreg[i] = (dstreg[i] >> shift);
+			dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] >> (UINT32)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 		}
 	}
 }
@@ -1197,24 +1197,24 @@ void MMX_PSRLW(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
 		shift = FPU_STAT.reg[sub].ul.lower;
-		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
 		shift = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr);
-		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	}
 	dstreg = (UINT16*)(&(FPU_STAT.reg[idx]));
 	
 	for(i=0;i<4;i++){
 		//dstreg[i] = (dstreg[i] >> shift);
-		dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+		dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 	}
 }
 void MMX_PSRLD(void)
@@ -1227,24 +1227,24 @@ void MMX_PSRLD(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
 		shift = FPU_STAT.reg[sub].ul.lower;
-		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
 		shift = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr);
-		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: �Ƃ肠�������W�X�^���e�������邭�炢�傫�ȃV�t�g�ʂɂ��Ă���
+		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: とりあえずレジスタ内容が消えるくらい大きなシフト量にしておく
 	}
 	dstreg = (UINT32*)(&(FPU_STAT.reg[idx]));
 	
 	for(i=0;i<2;i++){
 		//dstreg[i] = (dstreg[i] >> shift);
-		dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] >> (UINT32)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+		dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] >> (UINT32)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 	}
 }
 void MMX_PSRLQ(void)
@@ -1256,23 +1256,23 @@ void MMX_PSRLQ(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
 		shift = FPU_STAT.reg[sub].ul.lower;
-		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: �V�t�g������
+		if(FPU_STAT.reg[sub].ul.upper) shift = 0xffffffff; // XXX: シフトしすぎ
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
 		shift = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr);
-		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: �V�t�g������
+		if(cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4)) shift = 0xffffffff; // XXX: シフトしすぎ
 	}
 	dstreg = (UINT64*)(&(FPU_STAT.reg[idx]));
 	
 	//dstreg[0] = (dstreg[0] >> shift);
-	dstreg[0] = (shift >= 64 ? 0 : (dstreg[0] >> (UINT64)shift)); // XXX: LSB�����c�����̂ł��܂����i���ˑ��H�j
+	dstreg[0] = (shift >= 64 ? 0 : (dstreg[0] >> (UINT64)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 }
 
 // *********** PSLL(imm8),PSRL(imm8),PSRA(imm8) 
@@ -1287,7 +1287,7 @@ void MMX_PSxxW_imm8(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -1297,11 +1297,11 @@ void MMX_PSxxW_imm8(void)
 	switch(idx){
 	case 2: // PSRLW(imm8)
 		for(i=0;i<4;i++){
-			dstreg[i] = (dstreg[i] >> shift);
+			dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 		}
 		break;
 	case 4: // PSRAW(imm8)
-		// �������Z�p�V�t�g�i�������j
+		// 無理やり算術シフト（怪しい）
 		if(16 <= shift){
 			signval = 0xffff;
 		}else{
@@ -1312,13 +1312,13 @@ void MMX_PSxxW_imm8(void)
 			if(((INT16*)dstreg)[i] < 0){
 				dstreg[i] = (dstreg[i] >> shift) | signval;
 			}else{
-				dstreg[i] = (dstreg[i] >> shift);
+				dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 			}
 		}
 		break;
 	case 6: // PSLLW(imm8)
 		for(i=0;i<4;i++){
-			dstreg[i] = (dstreg[i] << shift);
+			dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] << (UINT16)shift)); // XXX: MSBが取り残されるのでごまかし（環境依存？）
 		}
 		break;
 	default:
@@ -1336,7 +1336,7 @@ void MMX_PSxxD_imm8(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -1346,11 +1346,11 @@ void MMX_PSxxD_imm8(void)
 	switch(idx){
 	case 2: // PSRLD(imm8)
 		for(i=0;i<2;i++){
-			dstreg[i] = (dstreg[i] >> shift);
+			dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] >> (UINT32)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 		}
 		break;
 	case 4: // PSRAD(imm8)
-		// �������Z�p�V�t�g�i�������j
+		// 無理やり算術シフト（怪しい）
 		if(32 <= shift){
 			signval = 0xffffffff;
 		}else{
@@ -1361,13 +1361,13 @@ void MMX_PSxxD_imm8(void)
 			if(((INT32*)dstreg)[i] < 0){
 				dstreg[i] = (dstreg[i] >> shift) | signval;
 			}else{
-				dstreg[i] = (dstreg[i] >> shift);
+				dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] >> (UINT32)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 			}
 		}
 		break;
 	case 6: // PSLLD(imm8)
 		for(i=0;i<2;i++){
-			dstreg[i] = (dstreg[i] << shift);
+			dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] << (UINT32)shift)); // XXX: MSBが取り残されるのでごまかし（環境依存？）
 		}
 		break;
 	default:
@@ -1383,7 +1383,7 @@ void MMX_PSxxQ_imm8(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -1392,12 +1392,13 @@ void MMX_PSxxQ_imm8(void)
 	
 	switch(idx){
 	case 2: // PSRLQ(imm8)
-		dstreg[0] = (dstreg[0] >> shift);
+		dstreg[0] = (shift >= 64 ? 0 : (dstreg[0] >> (UINT64)shift)); // XXX: LSBが取り残されるのでごまかし（環境依存？）
 		break;
 	case 4: // PSRAQ(imm8)
+		EXCEPTION(UD_EXCEPTION, 0);
 		break;
 	case 6: // PSLLQ(imm8)
-		dstreg[0] = (dstreg[0] << shift);
+		dstreg[0] = (shift >= 64 ? 0 : (dstreg[0] << (UINT64)shift)); // XXX: MSBが取り残されるのでごまかし（環境依存？）
 		break;
 	default:
 		break;
@@ -1417,7 +1418,7 @@ void MMX_PSUBB(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -1447,7 +1448,7 @@ void MMX_PSUBW(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -1477,7 +1478,7 @@ void MMX_PSUBD(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -1508,7 +1509,7 @@ void MMX_PSUBSB(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -1545,7 +1546,7 @@ void MMX_PSUBSW(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -1583,7 +1584,7 @@ void MMX_PSUBUSB(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -1620,7 +1621,7 @@ void MMX_PSUBUSW(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -1661,7 +1662,7 @@ void MMX_PUNPCKHBW(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -1696,7 +1697,7 @@ void MMX_PUNPCKHWD(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -1730,7 +1731,7 @@ void MMX_PUNPCKHDQ(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -1762,7 +1763,7 @@ void MMX_PUNPCKLBW(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -1797,7 +1798,7 @@ void MMX_PUNPCKLWD(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -1831,7 +1832,7 @@ void MMX_PUNPCKLDQ(void)
 	
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
-	CPU_MMXWORKCLOCK(a);
+	CPU_MMXWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);

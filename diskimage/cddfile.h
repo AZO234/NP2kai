@@ -16,7 +16,7 @@ typedef struct {
 	OEMCHAR	path[MAX_PATH];
 } _CDINFO, *CDINFO;
 
-BOOL isCDImage(const OEMCHAR *fname);	//	’Ç‰Á(kaiA)
+BOOL isCDImage(const OEMCHAR *fname);	//	è¿½åŠ (kaiA)
 long issec2048(FILEH fh);
 long issec2352(FILEH fh);
 long issec2448(FILEH fh);
@@ -26,6 +26,7 @@ long set_trkinfo(FILEH fh, _CDTRK *trk, UINT trks, FILELEN imagesize);
 
 REG8 sec2048_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size);
 REG8 sec2352_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size);
+REG8 sec2352_read_with_ecc(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size);
 REG8 sec2448_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size);
 REG8 sec_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size);
 

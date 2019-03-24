@@ -6,7 +6,7 @@
 
 MT32Sound MT32Sound::sm_instance;
 
-// DLL–¼
+// DLLå
 static const TCHAR s_szMT32SoundDll[] = TEXT("mt32sound.dll");
 
 static const char fn_mt32soundopen[] = "MT32Sound_Open";
@@ -15,7 +15,7 @@ static const char fn_mt32soundwrite[] = "MT32Sound_Write";
 static const char fn_mt32soundmix[] = "MT32Sound_Mix";
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 MT32Sound::MT32Sound()
 	: m_hModule(NULL)
@@ -29,7 +29,7 @@ MT32Sound::MT32Sound()
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 MT32Sound::~MT32Sound()
 {
@@ -37,9 +37,9 @@ MT32Sound::~MT32Sound()
 }
 
 /**
- * ‰Šú‰»
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * åˆæœŸåŒ–
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool MT32Sound::Initialize()
 {
@@ -51,7 +51,7 @@ bool MT32Sound::Initialize()
 		return false;
 	}
 
-	//! ƒ[ƒhŠÖ”ƒŠƒXƒg
+	//! ãƒ­ãƒ¼ãƒ‰é–¢æ•°ãƒªã‚¹ãƒˆ
 	static const ProcItem s_dllProc[] =
 	{
 		{fn_mt32soundopen,	offsetof(MT32Sound, m_fnOpen)},
@@ -74,7 +74,7 @@ bool MT32Sound::Initialize()
 }
 
 /**
- * ‰ğ•ú
+ * è§£æ”¾
  */
 void MT32Sound::Deinitialize()
 {
@@ -91,9 +91,9 @@ void MT32Sound::Deinitialize()
 }
 
 /**
- * ƒI[ƒvƒ“
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * ã‚ªãƒ¼ãƒ—ãƒ³
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool MT32Sound::Open()
 {
@@ -110,7 +110,7 @@ bool MT32Sound::Open()
 }
 
 /**
- * ƒNƒ[ƒY
+ * ã‚¯ãƒ­ãƒ¼ã‚º
  */
 void MT32Sound::Close()
 {
@@ -125,8 +125,8 @@ void MT32Sound::Close()
 }
 
 /**
- * ƒVƒ‡[ƒg ƒƒbƒZ[ƒW
- * @param[in] msg ƒƒbƒZ[ƒW
+ * ã‚·ãƒ§ãƒ¼ãƒˆ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] msg ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
  */
 void MT32Sound::ShortMsg(UINT32 msg)
 {
@@ -157,9 +157,9 @@ void MT32Sound::ShortMsg(UINT32 msg)
 }
 
 /**
- * ƒƒ“ƒO ƒƒbƒZ[ƒW
- * @param[in] lpBuffer ƒoƒbƒtƒ@
- * @param[in] cchBuffer ƒoƒbƒtƒ@’·
+ * ãƒ­ãƒ³ã‚° ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] lpBuffer ãƒãƒƒãƒ•ã‚¡
+ * @param[in] cchBuffer ãƒãƒƒãƒ•ã‚¡é•·
  */
 void MT32Sound::LongMsg(const UINT8* lpBuffer, UINT cchBuffer)
 {
@@ -181,10 +181,10 @@ void MT32Sound::LongMsg(const UINT8* lpBuffer, UINT cchBuffer)
 }
 
 /**
- * ƒ~ƒbƒNƒX
- * @param[in,out] lpBuffer ƒoƒbƒtƒ@
- * @param[in] cchBuffer ƒTƒ“ƒvƒ‹”
- * @return o—ÍƒTƒ“ƒvƒ‹”
+ * ãƒŸãƒƒã‚¯ã‚¹
+ * @param[in,out] lpBuffer ãƒãƒƒãƒ•ã‚¡
+ * @param[in] cchBuffer ã‚µãƒ³ãƒ—ãƒ«æ•°
+ * @return å‡ºåŠ›ã‚µãƒ³ãƒ—ãƒ«æ•°
  */
 UINT MT32Sound::Mix(SINT32* lpBuffer, UINT cchBuffer)
 {

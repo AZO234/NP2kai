@@ -1,6 +1,6 @@
 /**
  * @file	viewitem.h
- * @brief	DebugUty —pƒrƒ…[Šî’êƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	DebugUty ç”¨ãƒ“ãƒ¥ãƒ¼åŸºåº•ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -8,7 +8,7 @@
 class CDebugUtyView;
 
 /**
- * @brief ƒfƒoƒO•\¦ƒAƒCƒeƒ€‚ÌŠî’êƒNƒ‰ƒX
+ * @brief ãƒ‡ãƒã‚°è¡¨ç¤ºã‚¢ã‚¤ãƒ†ãƒ ã®åŸºåº•ã‚¯ãƒ©ã‚¹
  */
 class CDebugUtyItem
 {
@@ -28,12 +28,12 @@ public:
 	virtual void OnPaint(HDC hDC, const RECT& rect);
 
 protected:
-	CDebugUtyView* m_lpView;	//!< ƒrƒ…[ ƒNƒ‰ƒX
+	CDebugUtyView* m_lpView;	//!< ãƒ“ãƒ¥ãƒ¼ ã‚¯ãƒ©ã‚¹
 	UINT m_nID;					//!< ID
 };
 
 /**
- * ID ‚ğ•Ô‚·
+ * ID ã‚’è¿”ã™
  * @return ID
  */
 inline UINT CDebugUtyItem::GetID() const

@@ -90,9 +90,9 @@ void crtc_reset(const NP2CFG *pConfig) {
 	ZeroMemory(&grcg, sizeof(grcg));
 	ZeroMemory(&crtc, sizeof(crtc));
 #if defined(SUPPORT_PC9821)
-	grcg.chip = 3;							// PC-9821‚Í EGC•K{
+	grcg.chip = 3;							// PC-9821ã¯ EGCå¿…é ˆ
 #else
-	grcg.chip = pConfig->grcg & 3;			// GRCG“®ì‚ÌƒRƒs[
+	grcg.chip = pConfig->grcg & 3;			// GRCGå‹•ä½œã®ã‚³ãƒ”ãƒ¼
 #endif
 	crtc_biosreset();
 }

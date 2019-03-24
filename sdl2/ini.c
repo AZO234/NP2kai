@@ -665,6 +665,8 @@ static const INITBL iniitem[] = {
 	{"USE_CLGD", INITYPE_BOOL,	&np2cfg.usegd5430,	0},
 	{"CLGDTYPE", INITYPE_UINT16,	&np2cfg.gd5430type,	0},
 	{"CLGDFCUR", INITYPE_BOOL,	&np2cfg.gd5430fakecur,	0},
+	{"GDMELOFS", INITYPE_UINT8,	&np2cfg.gd5430melofs,	0},
+	{"GANBBSEX", INITYPE_BOOL,	&np2cfg.ga98nb_bigscrn_ex,	0},
 #endif
 	{"TIMERFIX", INITYPE_BOOL,	&np2cfg.timerfix,	0},
 
@@ -685,6 +687,13 @@ static const INITBL iniitem[] = {
 	{"cpu_bran", INIRO_STR,		np2cfg.cpu_brandstring_o, 63},
 
 	{"FPU_TYPE", INITYPE_UINT8,	&np2cfg.fpu_type,	0},
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+	{"memckspd", INITYPE_UINT8,	&np2cfg.memcheckspeed,	0},
+#endif
+	{"USERAM_D", INITYPE_BOOL,	&np2cfg.useram_d,	0},
+#if defined(SUPPORT_ASYNC_CPU)
+	{"ASYNCCPU", INITYPE_BOOL,	&np2cfg.asynccpu,	0},
+#endif
 
 	{"keyboard", INITYPE_KB,	&np2oscfg.KEYBOARD,	0},
 #if !defined(__LIBRETRO__)
@@ -697,6 +706,39 @@ static const INITBL iniitem[] = {
 	{"lrjoybtn", INITYPE_ARGH8,	np2oscfg.lrjoybtn,	24},
 #endif	/* __LIBRETRO__ */
 
+	{"mpu98port", INIMAX_UINT8,	&np2oscfg.mpu.port,	COMPORT_MIDI},
+	{"mpu98dir",  INITYPE_BOOL,	&np2oscfg.mpu.direct,	0},
+	{"mpu98map", INITYPE_STR,	np2oscfg.mpu.mout,	MAX_PATH},
+	{"mpu98min", INITYPE_STR,	np2oscfg.mpu.min,	MAX_PATH},
+	{"mpu98mdl", INITYPE_STR,	np2oscfg.mpu.mdl,	64},
+	{"mpu98def", INITYPE_STR,	np2oscfg.mpu.def,	MAX_PATH},
+
+#if !defined(__LIBRETRO__)
+	{"com1port", INIMAX_UINT8,	&np2oscfg.com[0].port,	COMPORT_NONE},
+	{"com1dir",  INITYPE_BOOL,	&np2oscfg.com[0].direct,	1},
+	{"com1para", INITYPE_UINT8,	&np2oscfg.com[0].param,	0},
+	{"com1_bps", INITYPE_UINT32,	&np2oscfg.com[0].speed,	0},
+	{"com1mmap", INITYPE_STR,	np2oscfg.com[0].mout,	MAX_PATH},
+	{"com1mmdl", INITYPE_STR,	np2oscfg.com[0].mdl,	64},
+	{"com1mdef", INITYPE_STR,	np2oscfg.com[0].def,	MAX_PATH},
+
+	{"com2port", INIMAX_UINT8,	&np2oscfg.com[1].port,	COMPORT_NONE},
+	{"com2dir",  INITYPE_BOOL,	&np2oscfg.com[1].direct,	1},
+	{"com2para", INITYPE_UINT8,	&np2oscfg.com[1].param,	0},
+	{"com2_bps", INITYPE_UINT32,	&np2oscfg.com[1].speed,	0},
+	{"com2mmap", INITYPE_STR,	np2oscfg.com[1].mout,	MAX_PATH},
+	{"com2mmdl", INITYPE_STR,	np2oscfg.com[1].mdl,	64},
+	{"com2mdef", INITYPE_STR,	np2oscfg.com[1].def,	MAX_PATH},
+
+	{"com3port", INIMAX_UINT8,	&np2oscfg.com[2].port,	COMPORT_NONE},
+	{"com3dir",  INITYPE_BOOL,	&np2oscfg.com[2].direct,	1},
+	{"com3para", INITYPE_UINT8,	&np2oscfg.com[2].param,	0},
+	{"com3_bps", INITYPE_UINT32,	&np2oscfg.com[2].speed,	0},
+	{"com3mmap", INITYPE_STR,	np2oscfg.com[2].mout,	MAX_PATH},
+	{"com3mmdl", INITYPE_STR,	np2oscfg.com[2].mdl,	64},
+	{"com3mdef", INITYPE_STR,	np2oscfg.com[2].def,	MAX_PATH},
+#endif	/* __LIBRETRO__ */
+
 #if defined(SUPPORT_RESUME)
 	{"e_resume", INITYPE_BOOL,	&np2oscfg.resume,	0},
 #endif
@@ -705,11 +747,13 @@ static const INITBL iniitem[] = {
 #endif
 
 	{"sounddrv", INITYPE_SNDDRV,	&np2oscfg.snddrv,	0},
+#if !defined(__LIBRETRO__)
 #if defined(_WIN32)
 	{"MIDIOUTd", INITYPE_STR,	&np2oscfg.MIDIDEV[0],	MAX_PATH},
 	{"MIDIIN_d", INITYPE_STR,	&np2oscfg.MIDIDEV[1],	MAX_PATH},
 	{"MIDIWAIT", INITYPE_UINT32,	&np2oscfg.MIDIWAIT,	0},
 #endif	/* _WIN32 */
+#endif	/* __LIBRETRO__ */
 
 	{"s_NOWAIT", INITYPE_BOOL,		&np2oscfg.NOWAIT,		0},
 	{"SkpFrame", INITYPE_UINT8,		&np2oscfg.DRAW_SKIP,	0},

@@ -18,8 +18,8 @@ typedef struct {
 	DWORD	dColock;					// Sound Chip clock
 	DWORD	dCompatibleColock[2];		// Sound Chip clock
 	BOOL	bIsUsed;					// Sound Chip Used Check
-	DWORD	dBusID;						// 接続バスID
-	DWORD	dSoundLocation;				// サウンドロケーション
+	DWORD	dBusID;						// 謗･邯壹ヰ繧ｹID
+	DWORD	dSoundLocation;				// 繧ｵ繧ｦ繝ｳ繝峨Ο繧ｱ繝ｼ繧ｷ繝ｧ繝ｳ
 } SCCI_SOUND_CHIP_INFO;
 
 class	SoundInterfaceManager;

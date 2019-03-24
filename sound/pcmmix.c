@@ -69,7 +69,7 @@ BRESULT pcmmix_regfile(PMIXDAT *dat, const OEMCHAR *fname, UINT rate) {
 	if (fh == FILEH_INVALID) {
 		goto pmrf_err1;
 	}
-	size = file_getsize(fh);
+	size = (UINT)file_getsize(fh);
 	if (size == 0) {
 		goto pmrf_err2;
 	}

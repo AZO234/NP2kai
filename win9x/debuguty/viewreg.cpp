@@ -1,6 +1,6 @@
 /**
  * @file	viewreg.cpp
- * @brief	ƒŒƒWƒXƒ^•\¦ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	ãƒ¬ã‚¸ã‚¹ã‚¿è¡¨ç¤ºã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -12,8 +12,8 @@
 #include "cpucore.h"
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
- * @param[in] lpView ƒrƒ…[ƒ ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * @param[in] lpView ãƒ“ãƒ¥ãƒ¼ãƒ¯ ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 CDebugUtyReg::CDebugUtyReg(CDebugUtyView* lpView)
 	: CDebugUtyItem(lpView, IDM_VIEWMODEREG)
@@ -21,15 +21,15 @@ CDebugUtyReg::CDebugUtyReg(CDebugUtyView* lpView)
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CDebugUtyReg::~CDebugUtyReg()
 {
 }
 
 /**
- * ‰Šú‰»
- * @param[in] lpItem Šî€‚Æ‚È‚éƒAƒCƒeƒ€
+ * åˆæœŸåŒ–
+ * @param[in] lpItem åŸºæº–ã¨ãªã‚‹ã‚¢ã‚¤ãƒ†ãƒ 
  */
 void CDebugUtyReg::Initialize(const CDebugUtyItem* lpItem)
 {
@@ -37,9 +37,9 @@ void CDebugUtyReg::Initialize(const CDebugUtyItem* lpItem)
 }
 
 /**
- * XV
- * @retval true XV‚ ‚è
- * @retval false XV‚È‚µ
+ * æ›´æ–°
+ * @retval true æ›´æ–°ã‚ã‚Š
+ * @retval false æ›´æ–°ãªã—
  */
 bool CDebugUtyReg::Update()
 {
@@ -47,9 +47,9 @@ bool CDebugUtyReg::Update()
 }
 
 /**
- * ƒƒbƒN
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * ãƒ­ãƒƒã‚¯
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CDebugUtyReg::Lock()
 {
@@ -67,7 +67,7 @@ bool CDebugUtyReg::Lock()
 }
 
 /**
- * ƒAƒ“ƒƒbƒN
+ * ã‚¢ãƒ³ãƒ­ãƒƒã‚¯
  */
 void CDebugUtyReg::Unlock()
 {
@@ -75,9 +75,9 @@ void CDebugUtyReg::Unlock()
 }
 
 /**
- * ƒƒbƒN’†?
- * @retval true ƒƒbƒN’†‚Å‚ ‚é
- * @retval false ƒƒbƒN’†‚Å‚È‚¢
+ * ãƒ­ãƒƒã‚¯ä¸­?
+ * @retval true ãƒ­ãƒƒã‚¯ä¸­ã§ã‚ã‚‹
+ * @retval false ãƒ­ãƒƒã‚¯ä¸­ã§ãªã„
  */
 bool CDebugUtyReg::IsLocked()
 {
@@ -85,9 +85,9 @@ bool CDebugUtyReg::IsLocked()
 }
 
 /**
- * •`‰æ
- * @param[in] hDC ƒfƒoƒCƒX ƒRƒ“ƒeƒLƒXƒg
- * @param[in] rect —Ìˆæ
+ * æç”»
+ * @param[in] hDC ãƒ‡ãƒã‚¤ã‚¹ ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ
+ * @param[in] rect é ˜åŸŸ
  */
 void CDebugUtyReg::OnPaint(HDC hDC, const RECT& rect)
 {

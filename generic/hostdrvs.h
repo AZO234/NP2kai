@@ -29,39 +29,39 @@ enum
 };
 
 /**
- * @brief DOS ƒtƒ@ƒCƒ‹î•ñ
+ * @brief DOS ãƒ•ã‚¡ã‚¤ãƒ«æƒ…å ±
  */
 struct tagHostDrvFile
 {
-	char	fcbname[11];	/*!< FCB –¼ */
-	UINT	caps;			/*!< î•ñƒtƒ‰ƒO */
-	UINT32	size;			/*!< ƒTƒCƒY */
-	UINT32	attr;			/*!< ‘®« */
-	DOSDATE	date;			/*!< “ú•t */
-	DOSTIME	time;			/*!< ŠÔ */
+	char	fcbname[11];	/*!< FCB å */
+	UINT	caps;			/*!< æƒ…å ±ãƒ•ãƒ©ã‚° */
+	UINT32	size;			/*!< ã‚µã‚¤ã‚º */
+	UINT32	attr;			/*!< å±æ€§ */
+	DOSDATE	date;			/*!< æ—¥ä»˜ */
+	DOSTIME	time;			/*!< æ™‚é–“ */
 };
-typedef struct tagHostDrvFile HDRVFILE;		/*!< ’è‹` */
+typedef struct tagHostDrvFile HDRVFILE;		/*!< å®šç¾© */
 
 /**
- * @brief ƒtƒ@ƒCƒ‹ ƒŠƒXƒgî•ñ
+ * @brief ãƒ•ã‚¡ã‚¤ãƒ« ãƒªã‚¹ãƒˆæƒ…å ±
  */
 struct tagHostDrvList
 {
-	HDRVFILE file;					/*!< DOS ƒtƒ@ƒCƒ‹î•ñ */
-	OEMCHAR szFilename[MAX_PATH];	/*!< ƒtƒ@ƒCƒ‹–¼ */
+	HDRVFILE file;					/*!< DOS ãƒ•ã‚¡ã‚¤ãƒ«æƒ…å ± */
+	OEMCHAR szFilename[MAX_PATH];	/*!< ãƒ•ã‚¡ã‚¤ãƒ«å */
 };
-typedef struct tagHostDrvList _HDRVLST;		/*!< ’è‹` */
-typedef struct tagHostDrvList *HDRVLST;		/*!< ’è‹` */
+typedef struct tagHostDrvList _HDRVLST;		/*!< å®šç¾© */
+typedef struct tagHostDrvList *HDRVLST;		/*!< å®šç¾© */
 
 /**
- * @brief ƒpƒXî•ñ
+ * @brief ãƒ‘ã‚¹æƒ…å ±
  */
 struct tagHostDrvPath
 {
-	HDRVFILE file;				/*!< DOS ƒtƒ@ƒCƒ‹î•ñ */
-	OEMCHAR szPath[MAX_PATH];	/*!< ƒpƒX */
+	HDRVFILE file;				/*!< DOS ãƒ•ã‚¡ã‚¤ãƒ«æƒ…å ± */
+	OEMCHAR szPath[MAX_PATH];	/*!< ãƒ‘ã‚¹ */
 };
-typedef struct tagHostDrvPath HDRVPATH;		/*!< ’è‹` */
+typedef struct tagHostDrvPath HDRVPATH;		/*!< å®šç¾© */
 
 LISTARRAY hostdrvs_getpathlist(const HDRVPATH *phdp, const char *lpMask, UINT nAttr);
 UINT hostdrvs_getrealdir(HDRVPATH *phdp, char *lpFcbname, const char *lpDosPath);

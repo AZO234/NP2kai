@@ -1,6 +1,6 @@
 /**
  * @file	cmmidioutvermouth.h
- * @brief	MIDI OUT Vermouth ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	MIDI OUT Vermouth ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -12,7 +12,7 @@
 #include "sound\vermouth\vermouth.h"
 
 /**
- * @brief MIDI OUT VermouthƒNƒ‰ƒX
+ * @brief MIDI OUT Vermouthã‚¯ãƒ©ã‚¹
  */
 class CComMidiOutVermouth : public CComMidiOut
 {

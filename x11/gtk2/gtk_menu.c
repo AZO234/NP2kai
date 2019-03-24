@@ -173,6 +173,9 @@ static GtkActionEntry menu_entries[] = {
 #if defined(SUPPORT_WAB)
 { "wabopt",      NULL, "Window Accelerator option...", NULL, NULL, G_CALLBACK(cb_dialog) },
 #endif	/* SUPPORT_WAB */
+#if defined(SUPPORT_PCI)
+{ "pciopt",      NULL, "PCI option...",     NULL, NULL, G_CALLBACK(cb_dialog) },
+#endif	/* SUPPORT_PCI */
 #if defined(SUPPORT_HOSTDRV)
 { "hostdrvopt",  NULL, "Hostdrv option...", NULL, NULL, G_CALLBACK(cb_dialog) },
 #endif	/* SUPPORT_HOSTDRV */
@@ -215,6 +218,7 @@ static void cb_keydisplay(GtkToggleAction *action, gpointer user_data);
 static void cb_mousemode(GtkToggleAction *action, gpointer user_data);
 static void cb_mouserapid(GtkToggleAction *action, gpointer user_data);
 static void cb_nowait(GtkToggleAction *action, gpointer user_data);
+static void cb_asynccpu(GtkToggleAction *action, gpointer user_data);
 static void cb_realpalettes(GtkToggleAction *action, gpointer user_data);
 static void cb_s98logging(GtkToggleAction *action, gpointer user_data);
 static void cb_seeksound(GtkToggleAction *action, gpointer user_data);
@@ -226,6 +230,9 @@ static void cb_xshiftkey(GtkToggleAction *action, gpointer user_data);
 static void cb_itfwork(GtkToggleAction *action, gpointer user_data);
 static void cb_fixmmtimer(GtkToggleAction *action, gpointer user_data);
 static void cb_16mbmemchk(GtkToggleAction *action, gpointer user_data);
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+static void cb_fastmemchk(GtkToggleAction *action, gpointer user_data);
+#endif
 static void cb_fmgen(GtkToggleAction *action, gpointer user_data);
 
 static GtkToggleActionEntry togglemenu_entries[] = {
@@ -239,6 +246,9 @@ static GtkToggleActionEntry togglemenu_entries[] = {
 { "mousemode",    NULL, "_Mouse mode",        NULL, NULL, G_CALLBACK(cb_mousemode), FALSE },
 { "mouserapid",   NULL, "_Mouse rapid",       NULL, NULL, G_CALLBACK(cb_mouserapid), FALSE },
 { "nowait",       NULL, "_No wait",           NULL, NULL, G_CALLBACK(cb_nowait), FALSE },
+#if defined(SUPPORT_ASYNC_CPU)
+{ "asynccpu",     NULL, "_Async CPU(experimental)", NULL, NULL, G_CALLBACK(cb_asynccpu), FALSE },
+#endif
 { "realpalettes", NULL, "Real _palettes",     NULL, NULL, G_CALLBACK(cb_realpalettes), FALSE },
 { "s98logging",   NULL, "_S98 logging",       NULL, NULL, G_CALLBACK(cb_s98logging), FALSE },
 { "seeksound",    NULL, "_Seek sound",        NULL, NULL, G_CALLBACK(cb_seeksound), FALSE },
@@ -250,6 +260,9 @@ static GtkToggleActionEntry togglemenu_entries[] = {
 { "itfwork",      NULL, "ITF work",           NULL, NULL, G_CALLBACK(cb_itfwork), FALSE },
 { "fixmmtimer",   NULL, "Fix MMTimer",        NULL, NULL, G_CALLBACK(cb_fixmmtimer), FALSE },
 { "16mbmemchk",   NULL, "Skip over 16MB memcheck", NULL, NULL, G_CALLBACK(cb_16mbmemchk), FALSE },
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+{ "fastmemchk",   NULL, "Fast memcheck", NULL, NULL, G_CALLBACK(cb_fastmemchk), FALSE },
+#endif
 #if defined(SUPPORT_FMGEN)
 { "fmgen",        NULL, "fmgen",              NULL, NULL, G_CALLBACK(cb_fmgen), FALSE },
 #endif	/* SUPPORT_FMGEN */
@@ -313,6 +326,7 @@ static GtkRadioActionEntry soundboard_entries[] = {
 { "pc-9801-86-cb",  NULL, "PC-9801-86 + _Chibi-oto", NULL, NULL, 0x14 },
 { "pc-9801-118",    NULL, "PC-9801-11_8",            NULL, NULL, 0x08 },
 { "pc-9801-86-mx",  NULL, "PC-9801-86 + Mate-X PCM(B460)", NULL, NULL, 0x64 },
+{ "pc-9801-86-118", NULL, "PC-9801-86 + 118",        NULL, NULL, 0x68 },
 { "pc-9801-mx",     NULL, "Mate-X PCM(B460)",        NULL, NULL, 0x60 },
 { "speakboard",     NULL, "S_peak board",            NULL, NULL, 0x20 },
 { "sparkboard",     NULL, "Sp_ark board",            NULL, NULL, 0x40 },
@@ -468,6 +482,9 @@ static const gchar *ui_info =
 "   <menuitem action='dispvsync'/>\n"
 "   <menuitem action='realpalettes'/>\n"
 "   <menuitem action='nowait'/>\n"
+#if defined(SUPPORT_ASYNC_CPU)
+"   <menuitem action='asynccpu'/>\n"
+#endif
 "   <menuitem action='autoframe'/>\n"
 "   <menuitem action='fullframe'/>\n"
 "   <menuitem action='1/2 frame'/>\n"
@@ -585,6 +602,10 @@ static const gchar *ui_info =
 "   <separator/>\n"
 "   <menuitem action='wabopt'/>\n"
 #endif	/* SUPPORT_WAB */
+#if defined(SUPPORT_PCI)
+"   <separator/>\n"
+"   <menuitem action='pciopt'/>\n"
+#endif	/* SUPPORT_PCI */
 #if defined(SUPPORT_HOSTDRV)
 "   <separator/>\n"
 "   <menuitem action='hostdrvopt'/>\n"
@@ -600,8 +621,11 @@ static const gchar *ui_info =
 "   <menuitem action='joyrapid'/>\n"
 "   <menuitem action='mouserapid'/>\n"
 "   <menuitem action='itfwork'/>\n"
-"   <menuitem action='fixmmtimer'/>\n"
-"   <menuitem action='16mbmemchk'/>\n"
+//"   <menuitem action='fixmmtimer'/>\n"
+//"   <menuitem action='16mbmemchk'/>\n"
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+"   <menuitem action='fastmemchk'/>\n"
+#endif
 "   <separator/>\n"
 "   <menuitem action='toolwindow'/>\n"
 "   <menuitem action='keydisplay'/>\n"
@@ -1649,6 +1673,10 @@ cb_dialog(GtkAction *action, gpointer user_data)
 	} else if (g_ascii_strcasecmp(name, "wabopt") == 0) {
 		create_wab_dialog();
 #endif	/* SUPPORT_WAB */
+#if defined(SUPPORT_PCI)
+	} else if (g_ascii_strcasecmp(name, "pciopt") == 0) {
+		create_pci_dialog();
+#endif	/* SUPPORT_PCI */
 #if defined(SUPPORT_NET)
 	} else if (g_ascii_strcasecmp(name, "networkopt") == 0) {
 		create_network_dialog();
@@ -1810,6 +1838,21 @@ cb_nowait(GtkToggleAction *action, gpointer user_data)
 	}
 }
 
+#if defined(SUPPORT_ASYNC_CPU)
+static void
+cb_asynccpu(GtkToggleAction *action, gpointer user_data)
+{
+	gboolean b = gtk_toggle_action_get_active(action);
+	gboolean f;
+
+	f = (np2cfg.asynccpu ? 1 : 0) ^ (b ? 1 : 0);
+	if (f) {
+		np2cfg.asynccpu = !np2cfg.asynccpu;
+		sysmng_update(SYS_UPDATECFG);
+	}
+}
+#endif
+
 static void
 cb_realpalettes(GtkToggleAction *action, gpointer user_data)
 {
@@ -1961,6 +2004,21 @@ cb_16mbmemchk(GtkToggleAction *action, gpointer user_data)
 		sysmng_update(SYS_UPDATECFG);
 	}
 }
+
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+static void
+cb_fastmemchk(GtkToggleAction *action, gpointer user_data)
+{
+	gboolean b = gtk_toggle_action_get_active(action);
+	gboolean f;
+
+	f = (np2cfg.memcheckspeed > 1) ^ (b ? 1 : 0);
+	if (f) {
+		np2cfg.memcheckspeed = (b ? 8 : 1);
+		sysmng_update(SYS_UPDATECFG);
+	}
+}
+#endif
 
 static void
 cb_itfwork(GtkToggleAction *action, gpointer user_data)
@@ -2445,6 +2503,9 @@ create_menu(void)
 	xmenu_toggle_item(NULL, "keydisplay", np2oscfg.keydisp);
 	xmenu_toggle_item(NULL, "mousemode", np2oscfg.MOUSE_SW);
 	xmenu_toggle_item(NULL, "nowait", np2oscfg.NOWAIT);
+#if defined(SUPPORT_ASYNC_CPU)
+	xmenu_toggle_item(NULL, "asynccpu", np2cfg.asynccpu);
+#endif
 	xmenu_toggle_item(NULL, "softkeyboard", np2oscfg.softkbd);
 	xmenu_toggle_item(NULL, "toolwindow", np2oscfg.toolwin);
 

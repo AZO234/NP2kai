@@ -1,6 +1,6 @@
 /**
  * @file	c_midi.h
- * @brief	MIDI ƒRƒ“ƒgƒ[ƒ‹ ƒNƒ‰ƒXŒQ‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	MIDI ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ« ã‚¯ãƒ©ã‚¹ç¾¤ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -8,7 +8,7 @@
 #include "misc\DlgProc.h"
 
 /**
- * @brief MIDI ƒfƒoƒCƒX ƒNƒ‰ƒX
+ * @brief MIDI ãƒ‡ãƒã‚¤ã‚¹ ã‚¯ãƒ©ã‚¹
  */
 class CComboMidiDevice : public CComboBoxProc
 {
@@ -20,7 +20,7 @@ public:
 };
 
 /**
- * @brief MIDI ƒ‚ƒWƒ…[ƒ‹ ƒNƒ‰ƒX
+ * @brief MIDI ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ« ã‚¯ãƒ©ã‚¹
  */
 class CComboMidiModule : public CComboBoxProc
 {
@@ -29,7 +29,7 @@ public:
 };
 
 /**
- * @brief MIMPI ƒtƒ@ƒCƒ‹
+ * @brief MIMPI ãƒ•ã‚¡ã‚¤ãƒ«
  */
 class CEditMimpiFile : public CWndProc
 {

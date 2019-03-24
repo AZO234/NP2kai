@@ -1,6 +1,6 @@
 /**
  * @file	cmmidioutmt32sound.h
- * @brief	MIDI OUT MT32Sound ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	MIDI OUT MT32Sound ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -13,7 +13,7 @@
 class MT32Sound;
 
 /**
- * @brief MIDI OUT MT32Sound ƒNƒ‰ƒX
+ * @brief MIDI OUT MT32Sound ã‚¯ãƒ©ã‚¹
  */
 class CComMidiOutMT32Sound : public CComMidiOut
 {

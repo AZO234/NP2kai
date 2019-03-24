@@ -1,6 +1,6 @@
 /**
  * @file	c_combodata.h
- * @brief	ƒRƒ“ƒ{ ƒf[ƒ^ ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	ã‚³ãƒ³ãƒœ ãƒ‡ãƒ¼ã‚¿ ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -8,27 +8,27 @@
 #include "misc/DlgProc.h"
 
 /**
- * @brief ƒRƒ“ƒ{ ƒf[ƒ^ ƒNƒ‰ƒX
+ * @brief ã‚³ãƒ³ãƒœ ãƒ‡ãƒ¼ã‚¿ ã‚¯ãƒ©ã‚¹
  */
 class CComboData : public CComboBoxProc
 {
 public:
 	/**
-	 * @brief ƒGƒ“ƒgƒŠ[
+	 * @brief ã‚¨ãƒ³ãƒˆãƒªãƒ¼
 	 */
 	struct Value
 	{
-		UINT32 nNumber;				/*!< ”’l */
-		UINT32 nItemData;			/*!< ’l */
+		UINT32 nNumber;				/*!< æ•°å€¤ */
+		UINT32 nItemData;			/*!< å€¤ */
 	};
 
 	/**
-	 * @brief ƒGƒ“ƒgƒŠ[
+	 * @brief ã‚¨ãƒ³ãƒˆãƒªãƒ¼
 	 */
 	struct Entry
 	{
-		LPCTSTR lpcszString;		/*!< •¶š—ñ */
-		UINT32 nItemData;			/*!< ’l */
+		LPCTSTR lpcszString;		/*!< æ–‡å­—åˆ— */
+		UINT32 nItemData;			/*!< å€¤ */
 	};
 
 	void Add(const UINT32* lpValues, UINT cchValues);

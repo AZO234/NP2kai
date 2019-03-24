@@ -28,7 +28,7 @@
 #include <math.h>
 #include <float.h>
 
-#ifndef isnan
+#if defined(_WIN32) && !defined(__LIBRETRO__)
 #define isnan(x) (_isnan(x))
 #endif
 
@@ -39,19 +39,19 @@
 
 #if defined(USE_SSE) && defined(USE_FPU)
 
-#define CPU_SSEWORKCLOCK(a)	CPU_WORKCLOCK(8)
+#define CPU_SSEWORKCLOCK	CPU_WORKCLOCK(8)
 
 static INLINE void
 SSE_check_NM_EXCEPTION(){
-	// SSE�Ȃ��Ȃ�UD(�����I�y�R�[�h��O)�𔭐�������
-	if(!(i386cpuid.cpu_feature & CPU_FEATURE_SSE) && !(i386cpuid.cpu_feature_ex & CPU_FEATURE_EX_E3DNOW)){ // XXX: SSE���߂�Enhanced 3DNow!���߂��ꕔ����̂ŗ�O�I�ɔF�߂�
+	// SSEなしならUD(無効オペコード例外)を発生させる
+	if(!(i386cpuid.cpu_feature & CPU_FEATURE_SSE) && !(i386cpuid.cpu_feature_ex & CPU_FEATURE_EX_E3DNOW)){ // XXX: SSE命令にEnhanced 3DNow!命令が一部あるので例外的に認める
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	// �G�~�����[�V�����Ȃ�UD(�����I�y�R�[�h��O)�𔭐�������
+	// エミュレーションならUD(無効オペコード例外)を発生させる
 	if(CPU_CR0 & CPU_CR0_EM){
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	// �^�X�N�X�C�b�`����NM(�f�o�C�X�g�p�s��O)�𔭐�������
+	// タスクスイッチ時にNM(デバイス使用不可例外)を発生させる
 	if (CPU_CR0 & CPU_CR0_TS) {
 		EXCEPTION(NM_EXCEPTION, 0);
 	}
@@ -78,7 +78,7 @@ SSE_setTag(void)
 //	FPU_STATUSWORD |= (FPU_STAT_TOP&7)<<11;
 }
 
-// mmx.c�̂��̂Ɠ���
+// mmx.cのものと同じ
 static INLINE void
 MMX_setTag(void)
 {
@@ -100,40 +100,37 @@ MMX_setTag(void)
 	FPU_STATUSWORD |= (FPU_STAT_TOP&7)<<11;
 }
 
-static float SSE_ROUND(float val){
+float SSE_ROUND(float val){
 	float floorval;
 	int rndbit = (SSE_MXCSR >> 13) & 0x3;
 	switch(rndbit){
 	case 0:	
 		floorval = (float)floor(val);
 		if (val - floorval > 0.5){
-			return (floorval + 1); // �؂�グ
+			return (floorval + 1); // 切り上げ
 		}else if (val - floorval < 0.5){
-			return (floorval); // �؂�̂�
+			return (floorval); // 切り捨て
 		}else{
 			if(floor(floorval / 2) == floorval/2){
-				return (floorval); // ����
+				return (floorval); // 偶数
 			}else{
-				return (floorval+1); // �
+				return (floorval+1); // 奇数
 			}
 		}
 		break;
 	case 1:
 		return (float)floor(val);
-		break;
 	case 2:
 		return (float)ceil(val);
-		break;
 	case 3:
 		if(val < 0){
-			return (float)ceil(val); // �[�������ւ̐؂�̂�
+			return (float)ceil(val); // ゼロ方向への切り捨て
 		}else{
-			return (float)floor(val); // �[�������ւ̐؂�̂�
+			return (float)floor(val); // ゼロ方向への切り捨て
 		}
 		break;
 	default:
 		return val;
-		break;
 	}
 }
 
@@ -141,7 +138,7 @@ static float SSE_ROUND(float val){
  * SSE interface
  */
 
-// �R�[�h�������Ȃ�̂ł�⋭���ɋ��ʉ�
+// コードが長くなるのでやや強引に共通化
 // xmm/m128 -> xmm
 static INLINE void SSE_PART_GETDATA1DATA2_P(float **data1, float **data2, float *data2buf){
 	UINT32 op;
@@ -149,7 +146,7 @@ static INLINE void SSE_PART_GETDATA1DATA2_P(float **data1, float **data2, float 
 
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -175,7 +172,7 @@ static INLINE void SSE_PART_GETDATA1DATA2_S(float **data1, float **data2, float 
 
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -201,7 +198,7 @@ static INLINE void SSE_PART_GETDATA1DATA2_P_MMX2XMM(float **data1, SINT32 **data
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
 	MMX_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -223,7 +220,7 @@ static INLINE void SSE_PART_GETDATA1DATA2_S_MMX2XMM(float **data1, SINT32 **data
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
 	MMX_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -245,7 +242,7 @@ static INLINE void SSE_PART_GETDATA1DATA2_P_XMM2MMX(SINT32 **data1, float **data
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
 	MMX_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -267,7 +264,7 @@ static INLINE void SSE_PART_GETDATA1DATA2_S_XMM2MMX(SINT32 **data1, float **data
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
 	MMX_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -289,7 +286,7 @@ static INLINE void SSE_PART_GETDATA1DATA2_S_REG2XMM(float **data1, SINT32 **data
 
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -309,7 +306,7 @@ static INLINE void SSE_PART_GETDATA1DATA2_S_XMM2REG(SINT32 **data1, float **data
 
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -332,7 +329,7 @@ static INLINE void SSE_PART_GETDATA1DATA2_P_MMX2MMX_SB(SINT8 **data1, SINT8 **da
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
 	MMX_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -364,7 +361,7 @@ static INLINE void SSE_PART_GETDATA1DATA2_P_MMX2MMX_UD(UINT32 **data1, UINT32 **
 }
 
 
-// ���ۂ̖��ߌQ
+// 実際の命令群
 
 void SSE_ADDPS(void)
 {
@@ -667,7 +664,7 @@ void SSE_MINSS(void)
 		data1[0] = (data1[0] < data2[0] ? data1[0] : data2[0]);
 	}
 }
-void SSE_MOVAPSmem2reg(void)
+void SSE_MOVAPSmem2xmm(void)
 {
 	UINT32 op;
 	UINT idx, sub;
@@ -677,7 +674,7 @@ void SSE_MOVAPSmem2reg(void)
 	
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -697,7 +694,7 @@ void SSE_MOVAPSmem2reg(void)
 		data1[i] = data2[i];
 	}
 }
-void SSE_MOVAPSreg2mem(void)
+void SSE_MOVAPSxmm2mem(void)
 {
 	UINT32 op;
 	UINT idx, sub;
@@ -706,7 +703,7 @@ void SSE_MOVAPSreg2mem(void)
 	
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -730,7 +727,7 @@ void SSE_MOVHLPS(float *data1, float *data2)
 	data1[0] = data2[2];
 	data1[1] = data2[3];
 }
-void SSE_MOVHPSmem2reg(void)
+void SSE_MOVHPSmem2xmm(void)
 {
 	UINT32 op;
 	UINT idx, sub;
@@ -740,7 +737,7 @@ void SSE_MOVHPSmem2reg(void)
 	
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -759,7 +756,7 @@ void SSE_MOVHPSmem2reg(void)
 		}
 	}
 }
-void SSE_MOVHPSreg2mem(void)
+void SSE_MOVHPSxmm2mem(void)
 {
 	UINT32 op;
 	UINT idx, sub;
@@ -767,7 +764,7 @@ void SSE_MOVHPSreg2mem(void)
 	
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -786,7 +783,7 @@ void SSE_MOVLHPS(float *data1, float *data2)
 	data1[2] = data2[0];
 	data1[3] = data2[1];
 }
-void SSE_MOVLPSmem2reg(void)
+void SSE_MOVLPSmem2xmm(void)
 {
 	UINT32 op;
 	UINT idx, sub;
@@ -796,7 +793,7 @@ void SSE_MOVLPSmem2reg(void)
 	
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -815,7 +812,7 @@ void SSE_MOVLPSmem2reg(void)
 		}
 	}
 }
-void SSE_MOVLPSreg2mem(void)
+void SSE_MOVLPSxmm2mem(void)
 {
 	UINT32 op;
 	UINT idx, sub;
@@ -823,7 +820,7 @@ void SSE_MOVLPSreg2mem(void)
 	
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -846,8 +843,7 @@ void SSE_MOVMSKPS(void)
 
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
-	MMX_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -862,7 +858,7 @@ void SSE_MOVMSKPS(void)
 			 ((data2[2] >> 29) & 0x4)|
 			 ((data2[3] >> 28) & 0x8);
 }
-void SSE_MOVSSmem2reg(void)
+void SSE_MOVSSmem2xmm(void)
 {
 	UINT32 op;
 	UINT idx, sub;
@@ -871,7 +867,7 @@ void SSE_MOVSSmem2reg(void)
 	
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -883,11 +879,11 @@ void SSE_MOVSSmem2reg(void)
 		maddr = calc_ea_dst((op));
 		*((UINT32*)(data2buf+ 0)) = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+ 0);
 		data2 = data2buf;
-		*(UINT32*)(data1+1) = *(UINT32*)(data1+2) = *(UINT32*)(data1+3) = 0;
 	}
 	data1[0] = data2[0];
+	*(UINT32*)(data1+1) = *(UINT32*)(data1+2) = *(UINT32*)(data1+3) = 0;
 }
-void SSE_MOVSSreg2mem(void)
+void SSE_MOVSSxmm2mem(void)
 {
 	UINT32 op;
 	UINT idx, sub;
@@ -895,7 +891,7 @@ void SSE_MOVSSreg2mem(void)
 	
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -909,13 +905,13 @@ void SSE_MOVSSreg2mem(void)
 		cpu_vmemorywrite_d(CPU_INST_SEGREG_INDEX, madr+ 0, *((UINT32*)(data1+ 0)));
 	}
 }
-void SSE_MOVUPSmem2reg(void)
+void SSE_MOVUPSmem2xmm(void)
 {
-	SSE_MOVAPSmem2reg(); // �G�~�����[�V�����ł̓A���C�����g�������Ȃ��̂�MOVAPS�Ɠ���
+	SSE_MOVAPSmem2xmm(); // エミュレーションではアライメント制限がないのでMOVAPSと同じ
 }
-void SSE_MOVUPSreg2mem(void)
+void SSE_MOVUPSxmm2mem(void)
 {
-	SSE_MOVAPSreg2mem(); // �G�~�����[�V�����ł̓A���C�����g�������Ȃ��̂�MOVAPS�Ɠ���
+	SSE_MOVAPSxmm2mem(); // エミュレーションではアライメント制限がないのでMOVAPSと同じ
 }
 void SSE_MULPS(void)
 {
@@ -983,7 +979,7 @@ void SSE_RSQRTSS(void)
 	float *data1, *data2;
 	
 	SSE_PART_GETDATA1DATA2_S(&data1, &data2, data2buf);
-	data1[0] = 1.0f / sqrt(data2[0]);
+	data1[0] = (float)(1.0f / sqrt(data2[0]));
 }
 void SSE_SHUFPS(void)
 {
@@ -997,16 +993,16 @@ void SSE_SHUFPS(void)
 
 	GET_PCBYTE((imm8));
 
-	for(i=0;i<4;i++){
-		data1buf[i] = data1[i];
-	}
 	for(i=0;i<2;i++){
-		data1[i] = data1buf[imm8 & 0x3];
+		data1buf[i] = data1[imm8 & 0x3];
 		imm8 = (imm8 >> 2);
 	}
 	for(i=2;i<4;i++){
-		data1[i] = data2[imm8 & 0x3];
+		data1buf[i] = data2[imm8 & 0x3];
 		imm8 = (imm8 >> 2);
+	}
+	for(i=0;i<4;i++){
+		data1[i] = data1buf[i];
 	}
 }
 void SSE_SQRTPS(void)
@@ -1053,7 +1049,7 @@ void SSE_SUBSS(void)
 }
 void SSE_UCOMISS(void)
 {
-	SSE_COMISS(); // XXX: �Ƃ肠������O�͍l���Ȃ��̂�COMISS�Ɠ���
+	SSE_COMISS(); // XXX: とりあえず例外は考えないのでCOMISSと同じ
 }
 void SSE_UNPCKHPS(void)
 {
@@ -1131,7 +1127,7 @@ void SSE_PEXTRW(void)
 
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -1154,7 +1150,7 @@ void SSE_PINSRW(void)
 
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -1222,7 +1218,7 @@ void SSE_PMOVMSKB(void)
 
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -1251,7 +1247,7 @@ void SSE_PMULHUW(void)
 	
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
@@ -1262,7 +1258,7 @@ void SSE_PMULHUW(void)
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
 		*((UINT32*)(data2buf+0)) = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr);
-		*((UINT32*)(data2buf+2)) = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr);
+		*((UINT32*)(data2buf+2)) = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+4);
 		data2 = data2buf;
 	}
 	for(i=0;i<4;i++){
@@ -1323,7 +1319,7 @@ void SSE_MASKMOVQ(void)
 			CPU_EDI += 1;
 		}
 	}
-	// �߂�
+	// 戻す
 	if (!CPU_INST_AS32) {
 		CPU_DI -= 8;
 	} else {
@@ -1340,13 +1336,13 @@ void SSE_MOVNTPS(void)
 	
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	data1 = (float*)(&(FPU_STAT.xmm_reg[idx]));
 	if ((op) >= 0xc0) {
-		// XXX: �����͂ǂ�����?
+		// XXX: ここはどう扱う?
 		EXCEPTION(UD_EXCEPTION, 0);
 		//data2 = (float*)(&(FPU_STAT.xmm_reg[sub]));
 		//for(i=0;i<4;i++){
@@ -1372,13 +1368,13 @@ void SSE_MOVNTQ(void)
 	SSE_check_NM_EXCEPTION();
 	SSE_setTag();
 	MMX_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	data1 = (UINT32*)(&(FPU_STAT.reg[idx]));
 	if ((op) >= 0xc0) {
-		// XXX: �����͂ǂ�����?
+		// XXX: ここはどう扱う?
 		EXCEPTION(UD_EXCEPTION, 0);
 		//data2 = (float*)(&(FPU_STAT.xmm_reg[sub]));
 		//for(i=0;i<4;i++){
@@ -1398,12 +1394,12 @@ void SSE_PREFETCHTx(void)
 	
 	//SSE_check_NM_EXCEPTION();
 	//SSE_setTag();
-	CPU_SSEWORKCLOCK(a);
+	CPU_SSEWORKCLOCK;
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
-		// XXX: �����͂ǂ�����?
+		// XXX: ここはどう扱う?
 		//EXCEPTION(UD_EXCEPTION, 0);
 	} else {
 		UINT32 maddr;
@@ -1425,7 +1421,7 @@ void SSE_PREFETCHTx(void)
 			//EXCEPTION(UD_EXCEPTION, 0);
 			break;
 		}
-		// XXX: �������Ȃ�
+		// XXX: 何もしない
 	}
 }
 void SSE_SFENCE(void)
@@ -1447,12 +1443,12 @@ void SSE_CLFLUSH(UINT32 op)
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
-		// XXX: �����͂ǂ�����?
+		// XXX: ここはどう扱う?
 		//EXCEPTION(UD_EXCEPTION, 0);
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
-		// XXX: �������Ȃ�
+		// XXX: 何もしない
 	}
 }
 
@@ -1543,11 +1539,11 @@ void SSE_MINSS(void)
 {
 	EXCEPTION(UD_EXCEPTION, 0);
 }
-void SSE_MOVAPSmem2reg(void)
+void SSE_MOVAPSmem2xmm(void)
 {
 	EXCEPTION(UD_EXCEPTION, 0);
 }
-void SSE_MOVAPSreg2mem(void)
+void SSE_MOVAPSxmm2mem(void)
 {
 	EXCEPTION(UD_EXCEPTION, 0);
 }
@@ -1555,11 +1551,11 @@ void SSE_MOVHLPS(float *data1, float *data2)
 {
 	EXCEPTION(UD_EXCEPTION, 0);
 }
-void SSE_MOVHPSmem2reg(void)
+void SSE_MOVHPSmem2xmm(void)
 {
 	EXCEPTION(UD_EXCEPTION, 0);
 }
-void SSE_MOVHPSreg2mem(void)
+void SSE_MOVHPSxmm2mem(void)
 {
 	EXCEPTION(UD_EXCEPTION, 0);
 }
@@ -1567,11 +1563,11 @@ void SSE_MOVLHPS(float *data1, float *data2)
 {
 	EXCEPTION(UD_EXCEPTION, 0);
 }
-void SSE_MOVLPSmem2reg(void)
+void SSE_MOVLPSmem2xmm(void)
 {
 	EXCEPTION(UD_EXCEPTION, 0);
 }
-void SSE_MOVLPSreg2mem(void)
+void SSE_MOVLPSxmm2mem(void)
 {
 	EXCEPTION(UD_EXCEPTION, 0);
 }
@@ -1579,19 +1575,19 @@ void SSE_MOVMSKPS(void)
 {
 	EXCEPTION(UD_EXCEPTION, 0);
 }
-void SSE_MOVSSmem2reg(void)
+void SSE_MOVSSmem2xmm(void)
 {
 	EXCEPTION(UD_EXCEPTION, 0);
 }
-void SSE_MOVSSreg2mem(void)
+void SSE_MOVSSxmm2mem(void)
 {
 	EXCEPTION(UD_EXCEPTION, 0);
 }
-void SSE_MOVUPSmem2reg(void)
+void SSE_MOVUPSmem2xmm(void)
 {
 	EXCEPTION(UD_EXCEPTION, 0);
 }
-void SSE_MOVUPSreg2mem(void)
+void SSE_MOVUPSxmm2mem(void)
 {
 	EXCEPTION(UD_EXCEPTION, 0);
 }

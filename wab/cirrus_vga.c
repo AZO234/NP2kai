@@ -29,14 +29,14 @@
  */
 
 /*
-	Neko Project 21/W äJî≠é“ÇÃÉRÉÅÉìÉg:
-	ÅEå≥ÇÕQEMU/9821ÇÃÉRÅ[ÉhÇ≈Ç∑Ç™ã≠à¯Ç…à⁄êAÇ∑ÇÈÇΩÇﬂÇ…Ç†ÇøÇ±ÇøçÌÇ¡ÇΩÇËÇµÇƒÇ¢Ç‹Ç∑
-	ÅEÇ±ÇÃÉtÉ@ÉCÉãÇ…ä÷ÇµÇƒÇÕOSàÀë∂ê´ÇÕè≠Ç»Ç¢ÇÕÇ∏ÅiâÊñ ì]ëóïîï™cirrusvga_drawGraphicÇæÇØOSàÀë∂ÅEëºÇÃOSàÀë∂Ç¡Ç€Ç¢Ç∆Ç±ÇÎÇÕè¡ÇµÇƒÇ‡ÇΩÇ‘ÇÒäQñ≥ÇµÅj
-	ÅEMMIOÇ∆Ç©VRAMÉEÉBÉìÉhÉEÇ∆Ç©ÉäÉjÉAVRAMÇ∆Ç©ÇÕcpumem.cÇ≈èÊÇ¡éÊÇ¡ÇƒÇ¢ÇÈÇÃÇ≈ÇªÇøÇÁÇéQè∆
-	ÅE16bit/32bit I/OÇÕiocore.cÇ≈èÊÇ¡éÊÇ¡ÇƒÇ¢ÇÈÇÃÇ≈ÇªÇøÇÁÇéQè∆
-	ÅEVRAMâÊñ ÇÕcirrusvga->vram_ptrÇ…ÅAÉpÉåÉbÉgÇÕcirrusvga->paletteÇ…ì¸Ç¡ÇƒÇ‹Ç∑
-	ÅEì]ëóÇÃédï˚ÇÕcirrusvga_drawGraphicÇéQçlÇ…Åié©ï™Ç‡ÇÊÇ≠ï™Ç©Ç¡ÇƒÇ»Ç¢ÇØÇ«Åj
-	ÅEç◊Ç©Ç¢Ç∆Ç±ÇÎÇÕQEMU/9821ÇÃìØñºÉtÉ@ÉCÉãÇéQè∆
+	Neko Project 21/W ÈñãÁô∫ËÄÖ„ÅÆ„Ç≥„É°„É≥„Éà:
+	„ÉªÂÖÉ„ÅØQEMU/9821„ÅÆ„Ç≥„Éº„Éâ„Åß„Åô„ÅåÂº∑Âºï„Å´ÁßªÊ§ç„Åô„Çã„Åü„ÇÅ„Å´„ÅÇ„Å°„Åì„Å°Ââä„Å£„Åü„Çä„Åó„Å¶„ÅÑ„Åæ„Åô
+	„Éª„Åì„ÅÆ„Éï„Ç°„Ç§„É´„Å´Èñ¢„Åó„Å¶„ÅØOS‰æùÂ≠òÊÄß„ÅØÂ∞ë„Å™„ÅÑ„ÅØ„ÅöÔºàÁîªÈù¢Ëª¢ÈÄÅÈÉ®ÂàÜcirrusvga_drawGraphic„Å†„ÅëOS‰æùÂ≠ò„Éª‰ªñ„ÅÆOS‰æùÂ≠ò„Å£„ÅΩ„ÅÑ„Å®„Åì„Çç„ÅØÊ∂à„Åó„Å¶„ÇÇ„Åü„Å∂„ÇìÂÆ≥ÁÑ°„ÅóÔºâ
+	„ÉªMMIO„Å®„ÅãVRAM„Ç¶„Ç£„É≥„Éâ„Ç¶„Å®„Åã„É™„Éã„Ç¢VRAM„Å®„Åã„ÅØcpumem.c„Åß‰πó„Å£Âèñ„Å£„Å¶„ÅÑ„Çã„ÅÆ„Åß„Åù„Å°„Çâ„ÇíÂèÇÁÖß
+	„Éª16bit/32bit I/O„ÅØiocore.c„Åß‰πó„Å£Âèñ„Å£„Å¶„ÅÑ„Çã„ÅÆ„Åß„Åù„Å°„Çâ„ÇíÂèÇÁÖß
+	„ÉªVRAMÁîªÈù¢„ÅØcirrusvga->vram_ptr„Å´„ÄÅ„Éë„É¨„ÉÉ„Éà„ÅØcirrusvga->palette„Å´ÂÖ•„Å£„Å¶„Åæ„Åô
+	„ÉªËª¢ÈÄÅ„ÅÆ‰ªïÊñπ„ÅØcirrusvga_drawGraphic„ÇíÂèÇËÄÉ„Å´ÔºàËá™ÂàÜ„ÇÇ„Çà„ÅèÂàÜ„Åã„Å£„Å¶„Å™„ÅÑ„Åë„Å©Ôºâ
+	„ÉªÁ¥∞„Åã„ÅÑ„Å®„Åì„Çç„ÅØQEMU/9821„ÅÆÂêåÂêç„Éï„Ç°„Ç§„É´„ÇíÂèÇÁÖß
 */
 
 #include	"compiler.h"
@@ -68,7 +68,7 @@
 const uint8_t sr_mask[8] = {
     (uint8_t)~0xfc,
     (uint8_t)~0xc2,
-    (uint8_t)~0x00, // np21w ver0.86 rev29  (uint8_t)~0xf0, è„à ÉrÉbÉgÇ‡écÇ≥Ç»Ç¢Ç∆Win9xÇ≈ï∂éöï\é¶Ç™Ç®Ç©ÇµÇ≠Ç»ÇÈ
+    (uint8_t)~0x00, // np21w ver0.86 rev29  (uint8_t)~0xf0, ‰∏ä‰Ωç„Éì„ÉÉ„Éà„ÇÇÊÆã„Åï„Å™„ÅÑ„Å®Win9x„ÅßÊñáÂ≠óË°®Á§∫„Åå„Åä„Åã„Åó„Åè„Å™„Çã
     (uint8_t)~0xc0,
     (uint8_t)~0xf1,
     (uint8_t)~0xff,
@@ -95,32 +95,47 @@ const uint8_t gr_mask[16] = {
     (uint8_t)~0xff, /* 0x0f */
 };
 
+int pcidev_cirrus_deviceid = 10;
 
-REG8 cirrusvga_regindexA2 = 0; // I/OÉ|Å[ÉgFA2hÇ≈éwíËÇ≥ÇÍÇƒÇ¢ÇÈÉåÉWÉXÉ^î‘çÜ
-REG8 cirrusvga_regindex = 0; // I/OÉ|Å[ÉgFAAhÇ≈éwíËÇ≥ÇÍÇƒÇ¢ÇÈÉåÉWÉXÉ^î‘çÜ
+// ÂÜÖËîµ„Ç¢„ÇØ„Çª„É©„É¨„Éº„ÇøÁî®
+REG8 cirrusvga_regindexA2 = 0; // I/O„Éù„Éº„ÉàFA2h„ÅßÊåáÂÆö„Åï„Çå„Å¶„ÅÑ„Çã„É¨„Ç∏„Çπ„ÇøÁï™Âè∑
+REG8 cirrusvga_regindex = 0; // I/O„Éù„Éº„ÉàFAAh„ÅßÊåáÂÆö„Åï„Çå„Å¶„ÅÑ„Çã„É¨„Ç∏„Çπ„ÇøÁï™Âè∑
+
+// WAB, WSNÁî®
+int cirrusvga_wab_59e1 = 0x06;	// „Åì„ÅÆÂÄ§„Åò„ÇÉ„Å™„ÅÑ„Å®WSN Win95„Éâ„É©„Ç§„Éê„ÅåNG„ÇíËøî„Åô
+int cirrusvga_wab_51e1 = 0xC2;	// WSN CHECK IO RETURN VALUE
+int cirrusvga_wab_5be1 = 0xf7;	// bit3:0=4M,1=2M ??????
+int cirrusvga_wab_40e1 = 0x7b;
+int cirrusvga_wab_42e1 = 0x00;
+//int cirrusvga_wab_0fe1 = 0xC2;
+int cirrusvga_wab_46e8 = 0x18;
+int cirrusvga_melcowab_ofs = CIRRUS_MELCOWAB_OFS_DEFAULT;
 
 NP2CLVGA	np2clvga = {0};
-void *cirrusvga_opaque = NULL; // CIRRUS VGAÇÃïœêîÇÉOÉçÅ[ÉoÉãÉAÉNÉZÉXèoóàÇÈÇÊÇ§Ç…ÇµÇƒÇ®Ç≠•••Åió«Ç≠Ç»Ç¢é¿ëïÅj
-UINT8	cirrusvga_statsavebuf[CIRRUS_VRAM_SIZE + 1024 * 1024]; // ÉXÉeÅ[ÉgÉZÅ[ÉuópÇÃÉoÉbÉtÉ@Åiñ≥ë Ç™ëΩÇ¢ÇØÇ«å›ä∑ê´ÇÕï€ÇøÇ‚Ç∑Ç¢ÇÕÇ∏Åj
+void *cirrusvga_opaque = NULL; // CIRRUS VGA„ÅÆÂ§âÊï∞„Çí„Ç∞„É≠„Éº„Éê„É´„Ç¢„ÇØ„Çª„ÇπÂá∫Êù•„Çã„Çà„ÅÜ„Å´„Åó„Å¶„Åä„ÅèÔΩ•ÔΩ•ÔΩ•ÔºàËâØ„Åè„Å™„ÅÑÂÆüË£ÖÔºâ
+UINT8	cirrusvga_statsavebuf[CIRRUS_VRAM_SIZE_4MB + 1024 * 1024]; // „Çπ„ÉÜ„Éº„Éà„Çª„Éº„ÉñÁî®„ÅÆ„Éê„ÉÉ„Éï„Ç°ÔºàÁÑ°ÈßÑ„ÅåÂ§ö„ÅÑ„Åë„Å©‰∫íÊèõÊÄß„ÅØ‰øù„Å°„ÇÑ„Åô„ÅÑ„ÅØ„ÅöÔºâ
 
-int g_cirrus_linear_map_enabled = 0; // CIRRUS VGAÇÃïœêîÇÃÉäÉjÉAÉÅÉÇÉäÉAÉNÉZÉX(cpumem.cÇÃmemp_*)óLå¯ÉtÉâÉO
-CPUWriteMemoryFunc *g_cirrus_linear_write[3] = {0}; // CIRRUS VGAÇÃïœêîÇÃÉäÉjÉAÉÅÉÇÉäÉAÉNÉZÉXWRITEÇ≈åƒÇŒÇÍÇÈä÷êîÅi[0]=8bit, [0]=16bit, [0]=32bitÅj
+int g_cirrus_linear_map_enabled = 0; // CIRRUS VGA„ÅÆÂ§âÊï∞„ÅÆ„É™„Éã„Ç¢„É°„É¢„É™„Ç¢„ÇØ„Çª„Çπ(cpumem.c„ÅÆmemp_*)ÊúâÂäπ„Éï„É©„Ç∞
+CPUWriteMemoryFunc *g_cirrus_linear_write[3] = {0}; // CIRRUS VGA„ÅÆÂ§âÊï∞„ÅÆ„É™„Éã„Ç¢„É°„É¢„É™„Ç¢„ÇØ„Çª„ÇπWRITE„ÅßÂëº„Å∞„Çå„ÇãÈñ¢Êï∞Ôºà[0]=8bit, [0]=16bit, [0]=32bitÔºâ
 
-uint8_t* vramptr; // CIRRUS VGAÇÃVRAMÇ÷ÇÃÉ|ÉCÉìÉ^ÅiÉÅÉÇÉäÉTÉCÉYÇÕCIRRUS_VRAM_SIZEÇ≈è\ï™ÇÃÇÕÇ∏ÇæÇ™îOÇÃÇΩÇﬂ2î{ämï€Ç≥ÇÍÇƒÇ¢ÇÈÅj
-uint8_t* cursorptr; // CIRRUS VGAÇÃÉJÅ[É\ÉãâÊëúÉoÉbÉtÉ@Ç÷ÇÃÉ|ÉCÉìÉ^
+uint8_t* vramptr; // CIRRUS VGA„ÅÆVRAM„Å∏„ÅÆ„Éù„Ç§„É≥„ÇøÔºà„É°„É¢„É™„Çµ„Ç§„Ç∫„ÅØCIRRUS_VRAM_SIZE„ÅßÂçÅÂàÜ„ÅÆ„ÅØ„Åö„Å†„ÅåÂøµ„ÅÆ„Åü„ÇÅ2ÂÄçÁ¢∫‰øù„Åï„Çå„Å¶„ÅÑ„ÇãÔºâ
+uint8_t* cursorptr; // CIRRUS VGA„ÅÆ„Ç´„Éº„ÇΩ„É´ÁîªÂÉè„Éê„ÉÉ„Éï„Ç°„Å∏„ÅÆ„Éù„Ç§„É≥„Çø
 
-DisplayState ds = {0}; // np21/wÇ≈ÇÕé¿éøìIÇ…égÇÌÇÍÇ»Ç¢
+DisplayState ds = {0}; // np21/w„Åß„ÅØÂÆüË≥™ÁöÑ„Å´‰Ωø„Çè„Çå„Å™„ÅÑ
 
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
-BITMAPINFO *ga_bmpInfo; // CIRRUS VGAÇÃVRAMâfëúÇì]ëóÇ∑ÇÈéûÇ…égÇ§BITMAPINFOç\ë¢ëÃ
-BITMAPINFO *ga_bmpInfo_cursor; // CIRRUS VGAÇÃÉJÅ[É\ÉãâÊëúÇì]ëóÇ∑ÇÈéûÇ…égÇ§BITMAPINFOç\ë¢ëÃ
-HBITMAP		ga_hbmp_cursor; // CIRRUS VGAÇÃÉJÅ[É\ÉãÇÃHBITMAP
-HDC			ga_hdc_cursor; // CIRRUS VGAÇÃÉJÅ[É\ÉãâÊëúÇÃHDC
+BITMAPINFO *ga_bmpInfo; // CIRRUS VGA„ÅÆVRAMÊò†ÂÉè„ÇíËª¢ÈÄÅ„Åô„ÇãÊôÇ„Å´‰Ωø„ÅÜBITMAPINFOÊßãÈÄ†‰Ωì
+BITMAPINFO *ga_bmpInfo_cursor; // CIRRUS VGA„ÅÆ„Ç´„Éº„ÇΩ„É´ÁîªÂÉè„ÇíËª¢ÈÄÅ„Åô„ÇãÊôÇ„Å´‰Ωø„ÅÜBITMAPINFOÊßãÈÄ†‰Ωì
+HBITMAP		ga_hbmp_cursor; // CIRRUS VGA„ÅÆ„Ç´„Éº„ÇΩ„É´„ÅÆHBITMAP
+HDC			ga_hdc_cursor; // CIRRUS VGA„ÅÆ„Ç´„Éº„ÇΩ„É´ÁîªÂÉè„ÅÆHDC
 
-static HCURSOR ga_hFakeCursor = NULL; // ÉnÅ[ÉhÉEÉFÉAÉJÅ[É\ÉãÅiâºÅjCIRRUS VGAÇÃÉJÅ[É\ÉãâÊëúÇ™è„éËÇ≠ï\é¶èoóàÇ»Ç¢èÍçáóp
+static HCURSOR ga_hFakeCursor = NULL; // „Éè„Éº„Éâ„Ç¶„Çß„Ç¢„Ç´„Éº„ÇΩ„É´Ôºà‰ªÆÔºâCIRRUS VGA„ÅÆ„Ç´„Éº„ÇΩ„É´ÁîªÂÉè„Åå‰∏äÊâã„ÅèË°®Á§∫Âá∫Êù•„Å™„ÅÑÂ†¥ÂêàÁî®
 #endif
 
-// QEMUÇ≈égÇÌÇÍÇƒÇ¢ÇÈÇØÇ«ÇÊÇ≠ï™Ç©ÇÁÇ»Ç©Ç¡ÇΩÇÃÇ≈ñ≥éãÇ≥ÇÍÇƒÇ¢ÇÈä÷êîÇ‚ïœêîíB(´®
+void pcidev_cirrus_cfgreg_w(UINT32 devNumber, UINT8 funcNumber, UINT8 cfgregOffset, UINT8 sizeinbytes, UINT32 value);
+void pc98_cirrus_setWABreg(void);
+
+// QEMU„Åß‰Ωø„Çè„Çå„Å¶„ÅÑ„Çã„Åë„Å©„Çà„ÅèÂàÜ„Åã„Çâ„Å™„Åã„Å£„Åü„ÅÆ„ÅßÁÑ°Ë¶ñ„Åï„Çå„Å¶„ÅÑ„ÇãÈñ¢Êï∞„ÇÑÂ§âÊï∞ÈÅî(ÔΩ´ÔΩ®
 static void cpu_register_physical_memory(target_phys_addr_t start_addr, ram_addr_t size, ram_addr_t phys_offset){
 }
 void np2vga_ds_dpy_update(struct DisplayState *s, int x, int y, int w, int h)
@@ -200,7 +215,8 @@ DisplayState *graphic_console_init(vga_hw_update_ptr update,
 #define CIRRUS_SR7_BPP_24             0x04
 #define CIRRUS_SR7_BPP_16             0x06
 #define CIRRUS_SR7_BPP_32             0x08
-#define CIRRUS_SR7_ISAADDR_MASK       0xe0
+//#define CIRRUS_SR7_ISAADDR_MASK       0xe0
+#define CIRRUS_SR7_ISAADDR_MASK       0xf0
 
 // sequencer 0x0f
 #define CIRRUS_MEMSIZE_512k        0x08
@@ -268,6 +284,8 @@ DisplayState *graphic_console_init(vga_hw_update_ptr update,
 #define CIRRUS_ROP_SRC_INDEX 5
 
 // control 0x33
+#define CIRRUS_BLTMODEEXT_BLTSYNCDISP      0x10
+#define CIRRUS_BLTMODEEXT_BGNDONLYCLIP     0x08
 #define CIRRUS_BLTMODEEXT_SOLIDFILL        0x04
 #define CIRRUS_BLTMODEEXT_COLOREXPINV      0x02
 #define CIRRUS_BLTMODEEXT_DWORDGRANULARITY 0x01
@@ -352,19 +370,27 @@ DisplayState *graphic_console_init(vga_hw_update_ptr update,
 
 #define ABS(a) ((signed)(a) > 0 ? a : -a)
 
-// XXX: WABånÇÇ∆ÇËÇ†Ç¶Ç∏égÇ¶ÇÈÇÊÇ§Ç…Ç∑ÇÈÇΩÇﬂÇ…ñ{óàÇÃVRAMÉTÉCÉYÇÃ2î{Ç‹Ç≈èëÇ´çûÇ›ãñâ¬
-#define BLTUNSAFE(s) \
-    ( \
+// XXX: WABÁ≥ª„Çí„Å®„Çä„ÅÇ„Åà„Åö‰Ωø„Åà„Çã„Çà„ÅÜ„Å´„Åô„Çã„Åü„ÇÅ„Å´4MB VRAM„Çµ„Ç§„Ç∫„Åæ„ÅßÊõ∏„ÅçËæº„ÅøË®±ÂèØ
+#define BLTUNSAFE_DST(s) \
         ( /* check dst is within bounds */ \
             (s)->cirrus_blt_height * ABS((s)->cirrus_blt_dstpitch) \
                 + ((s)->cirrus_blt_dstaddr & (s)->cirrus_addr_mask) > \
-                    CIRRUS_VRAM_SIZE*2 \
-        ) || \
+                    CIRRUS_VRAM_SIZE_4MB \
+        )
+#define BLTUNSAFE_SRC(s) \
         ( /* check src is within bounds */ \
             (s)->cirrus_blt_height * ABS((s)->cirrus_blt_srcpitch) \
                 + ((s)->cirrus_blt_srcaddr & (s)->cirrus_addr_mask) > \
-                    CIRRUS_VRAM_SIZE*2 \
-        ) \
+                    CIRRUS_VRAM_SIZE_4MB \
+        )
+#define BLTUNSAFE(s) \
+    ( \
+        BLTUNSAFE_DST(s) || BLTUNSAFE_SRC(s) \
+    )
+// SRCÊú™‰ΩøÁî®„Å™„Çâ1
+#define BLTUNSAFE_NOSRC(s) \
+    ( \
+        rop_to_index[(s)->gr[0x32]]==0 || rop_to_index[(s)->gr[0x32]]==6 \
     )
 //#define BLTUNSAFE(s) \
 //    ( \
@@ -432,6 +458,8 @@ typedef struct CirrusVGAState {
     //CPUWriteMemoryFunc **cirrus_linear_write;
     int device_id;
     int bustype;
+    uint8_t videowindow_dblbuf_index;
+    uint8_t graphics_dblbuf_index;
 } CirrusVGAState;
 
 CirrusVGAState *cirrusvga = NULL;
@@ -639,7 +667,7 @@ static rgb_to_pixel_dup_func *rgb_to_pixel_dup_table[NB_DEPTHS] = {
  *
  ***************************************/
 
-
+static void cirrus_bitblt_dblbufferswitch();
 static void cirrus_bitblt_reset(CirrusVGAState *s);
 static void cirrus_update_memory_access(CirrusVGAState *s);
 
@@ -1010,8 +1038,9 @@ static int cirrus_bitblt_common_patterncopy(CirrusVGAState * s,
 
     dst = s->vram_ptr + (s->cirrus_blt_dstaddr & s->cirrus_addr_mask);
 
-    if (BLTUNSAFE(s))
-        return 0;
+	if(BLTUNSAFE_DST(s)){
+		return 0;
+	}
 
     (*s->cirrus_rop) (s, dst, src,
                       s->cirrus_blt_dstpitch, 0,
@@ -1027,9 +1056,11 @@ static int cirrus_bitblt_common_patterncopy(CirrusVGAState * s,
 static int cirrus_bitblt_solidfill(CirrusVGAState *s, int blt_rop)
 {
     cirrus_fill_t rop_func;
+	
+	if(BLTUNSAFE_DST(s)){
+		return 0;
+	}
 
-    if (BLTUNSAFE(s))
-        return 0;
     rop_func = cirrus_fill[rop_to_index[blt_rop]][s->cirrus_blt_pixelwidth - 1];
     rop_func(s, s->vram_ptr + (s->cirrus_blt_dstaddr & s->cirrus_addr_mask),
              s->cirrus_blt_dstpitch,
@@ -1128,8 +1159,9 @@ static void cirrus_do_copy(CirrusVGAState *s, int dst, int src, int w, int h)
 
 static int cirrus_bitblt_videotovideo_copy(CirrusVGAState * s)
 {
-    if (BLTUNSAFE(s))
-        return 0;
+	if(BLTUNSAFE_DST(s) || (!BLTUNSAFE_NOSRC(s) && BLTUNSAFE_SRC(s))){ // XXX: „ÇΩ„Éº„Çπ„Çí‰ΩøÁî®„Åó„Å™„ÅÑ„Å™„Çâ„ÇΩ„Éº„Çπ„ÅÆÁØÑÂõ≤Â§ñ„ÉÅ„Çß„ÉÉ„ÇØ‰∏çË¶Å„ÄÇÊäúÊú¨Ëß£Ê±∫ÂøÖË¶Å
+		return 0;
+	}
 
     cirrus_do_copy(s, s->cirrus_blt_dstaddr - s->start_addr,
             s->cirrus_blt_srcaddr - s->start_addr,
@@ -1154,6 +1186,7 @@ static void cirrus_bitblt_cputovideo_next(CirrusVGAState * s)
 			cirrus_bitblt_common_patterncopy(s, s->cirrus_bltbuf);
         the_end:
             s->cirrus_srccounter = 0;
+			cirrus_bitblt_dblbufferswitch();
             cirrus_bitblt_reset(s);
         } else {
             /* at least one scan line */
@@ -1172,7 +1205,8 @@ static void cirrus_bitblt_cputovideo_next(CirrusVGAState * s)
                 /* XXX: keep alignment to speed up transfer */
                 end_ptr = s->cirrus_bltbuf + s->cirrus_blt_srcpitch;
                 copy_count = (int)(s->cirrus_srcptr_end - end_ptr);
-                memmove(s->cirrus_bltbuf, end_ptr, copy_count);
+				if(copy_count >= 0 && s->cirrus_blt_srcpitch + copy_count <= sizeof(s->cirrus_bltbuf)) // ÁØÑÂõ≤Â§ñ„Å´„Å™„Å£„Å¶„ÅÑ„Å™„ÅÑ„Åã„ÉÅ„Çß„ÉÉ„ÇØ
+					memmove(s->cirrus_bltbuf, end_ptr, copy_count);
                 s->cirrus_srcptr = s->cirrus_bltbuf + copy_count;
                 s->cirrus_srcptr_end = s->cirrus_bltbuf + s->cirrus_blt_srcpitch;
             } while (s->cirrus_srcptr >= s->cirrus_srcptr_end);
@@ -1194,6 +1228,7 @@ static void cirrus_bitblt_videotocpu_next(CirrusVGAState * s)
 			//cirrus_bitblt_common_patterncopy(s, s->cirrus_bltbuf);
         the_end:
             s->cirrus_srccounter = 0;
+			cirrus_bitblt_dblbufferswitch();
             cirrus_bitblt_reset(s);
         } else {
             s->cirrus_blt_srcaddr += s->cirrus_blt_srcpitch;
@@ -1268,7 +1303,7 @@ static int cirrus_bitblt_cputovideo(CirrusVGAState * s)
 
 static int cirrus_bitblt_videotocpu(CirrusVGAState * s)
 {
-	// np21/w  bitblt (video to cpu) ébíËÉvÉçÉOÉâÉÄÅicputovideoÇ©ÇÁÇÃêÑë™ÅEê≥ÇµÇ¢Ç©ÇÕïsñæÅj
+	// np21/w  bitblt (video to cpu) Êö´ÂÆö„Éó„É≠„Ç∞„É©„É†Ôºàcputovideo„Åã„Çâ„ÅÆÊé®Ê∏¨„ÉªÊ≠£„Åó„ÅÑ„Åã„ÅØ‰∏çÊòéÔºâ
     int w;
 	
     s->cirrus_blt_mode &= ~CIRRUS_BLTMODE_MEMSYSSRC;
@@ -1323,6 +1358,9 @@ static int cirrus_bitblt_videotovideo(CirrusVGAState * s)
     }
     if (ret)
 		cirrus_bitblt_reset(s);
+
+	cirrus_bitblt_dblbufferswitch();
+
     return ret;
 }
 
@@ -1340,7 +1378,11 @@ static void cirrus_bitblt_start(CirrusVGAState * s)
     s->cirrus_blt_srcaddr = (s->gr[0x2c] | (s->gr[0x2d] << 8) | (s->gr[0x2e] << 16));
     s->cirrus_blt_mode = s->gr[0x30];
     blt_rop = s->gr[0x32];
-	s->cirrus_blt_modeext = 0; //s->gr[0x33];  // ver0.86 rev8
+	if(s->device_id == CIRRUS_ID_CLGD5446){
+		s->cirrus_blt_modeext = s->gr[0x33];
+	}else{
+		s->cirrus_blt_modeext = 0;  // ver0.86 rev8
+	}
 
 #ifdef DEBUG_BITBLT
     printf("rop=0x%02x mode=0x%02x modeext=0x%02x w=%d h=%d dpitch=%d spitch=%d daddr=0x%08x saddr=0x%08x writemask=0x%02x\n",
@@ -1471,15 +1513,40 @@ static void cirrus_write_bitblt(CirrusVGAState * s, unsigned reg_value)
     unsigned old_value;
 
     old_value = s->gr[0x31];
-    s->gr[0x31] = reg_value;
+    s->gr[0x31] = reg_value & 0xee;
 
     if (((old_value & CIRRUS_BLT_RESET) != 0) &&
 		((reg_value & CIRRUS_BLT_RESET) == 0)) {
-		cirrus_bitblt_start(s);// XXX: Win2000ÇÃÉnÅ[ÉhÉEÉFÉAÉAÉNÉZÉâÉåÅ[ÉVÉáÉìÇê≥èÌÇ…ìÆÇ©Ç∑ÇÃÇ…ïKóvÅBç™ãíñ≥ÇµÅB
-		cirrus_bitblt_reset(s);
+		if(s->device_id == CIRRUS_ID_CLGD5446){
+			cirrus_bitblt_reset(s);
+		}else{
+			cirrus_bitblt_start(s);// XXX: Win2000„ÅÆ„Éè„Éº„Éâ„Ç¶„Çß„Ç¢„Ç¢„ÇØ„Çª„É©„É¨„Éº„Ç∑„Éß„É≥„ÇíÊ≠£Â∏∏„Å´Âãï„Åã„Åô„ÅÆ„Å´ÂøÖË¶Å„ÄÇÊ†πÊã†ÁÑ°„Åó„ÄÇ
+			if(np2clvga.gd54xxtype == CIRRUS_98ID_WAB || np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F){
+				// XXX: Win3.1„ÅÆÊúÄÂàù„ÅÆBitBlt„ÅåÁÑ°Ë¶ñ„Åï„Çå„ÇãÂïèÈ°å„ÅÆÂõûÈÅøÁ≠ñ
+				if(!(old_value & 0x04)){
+					cirrus_bitblt_reset(s);
+				}
+			}else{
+				cirrus_bitblt_reset(s);
+			}
+		}
     } else if (((old_value & CIRRUS_BLT_START) == 0) &&
 			   ((reg_value & CIRRUS_BLT_START) != 0)) {
 		cirrus_bitblt_start(s);
+	}
+}
+
+static void cirrus_bitblt_dblbufferswitch(){
+	CirrusVGAState *s = cirrusvga;
+	if(s->device_id == CIRRUS_ID_CLGD5446){
+		if(s->cirrus_blt_modeext & CIRRUS_BLTMODEEXT_BLTSYNCDISP){
+			if((s->cr[0x5e] & 0x7) == 0x7){
+				s->graphics_dblbuf_index = (s->graphics_dblbuf_index + 1) & 0x1;
+			}
+			if((s->cr[0x5e] & 0x30) == 0x30){
+				s->videowindow_dblbuf_index = (s->videowindow_dblbuf_index + 1) & 0x1;
+			}
+		}
 	}
 }
 
@@ -1542,7 +1609,7 @@ static int cirrus_get_bpp(VGAState *s1)
 {
     CirrusVGAState * s = (CirrusVGAState *)s1;
     uint32_t_ ret = 8;
-
+	
     if ((s->sr[0x07] & 0x01) != 0) {
 		/* Cirrus SVGA */
 		switch (s->sr[0x07] & CIRRUS_SR7_BPP_MASK) {
@@ -1573,7 +1640,7 @@ static int cirrus_get_bpp(VGAState *s1)
 		/* VGA */
 		ret = 0;
     }
-
+	
     return ret;
 }
 
@@ -1589,9 +1656,17 @@ static void cirrus_get_resolution(VGAState *s, int *pwidth, int *pheight)
     /* interlace support */
     if (s->cr[0x1a] & 0x01)
         height = height * 2;
-	if(width==320) height /= 2; // XXX: Win98Ç≈ï\é¶Ç™Ç®Ç©ÇµÇ≠Ç»ÇÈÇÃÇ≈Ç∆ÇËÇ†Ç¶Ç∏âº
-	if(width==400) height = 300; // XXX: Win98Ç≈ï\é¶Ç™Ç®Ç©ÇµÇ≠Ç»ÇÈÇÃÇ≈Ç∆ÇËÇ†Ç¶Ç∏âº
-	if(width==512) height = 384; // XXX: Win98Ç≈ï\é¶Ç™Ç®Ç©ÇµÇ≠Ç»ÇÈÇÃÇ≈Ç∆ÇËÇ†Ç¶Ç∏âº
+	if(width==320) height /= 2; // XXX: Win98„ÅßË°®Á§∫„Åå„Åä„Åã„Åó„Åè„Å™„Çã„ÅÆ„Åß„Å®„Çä„ÅÇ„Åà„Åö‰ªÆ
+	if(width==400) height = 300; // XXX: Win98„ÅßË°®Á§∫„Åå„Åä„Åã„Åó„Åè„Å™„Çã„ÅÆ„Åß„Å®„Çä„ÅÇ„Åà„Åö‰ªÆ
+	if(width==512) height = 384; // XXX: Win98„ÅßË°®Á§∫„Åå„Åä„Åã„Åó„Åè„Å™„Çã„ÅÆ„Åß„Å®„Çä„ÅÇ„Åà„Åö‰ªÆ
+	
+	// WSN 1280x1024
+	if(np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WAB || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F){
+		// XXX: WSNÁî®„ÇÑ„Å£„Å§„Åë‰øÆÊ≠£
+		if(width==1280){
+			height = 1024;
+		}
+	}
 
     *pwidth = width;
     *pheight = height;
@@ -1689,8 +1764,20 @@ cirrus_hook_read_sr(CirrusVGAState * s, unsigned reg_index, int *reg_value)
 		break;
     case 0x05:			// ???
     case 0x07:			// Extended Sequencer Mode
-		cirrus_update_memory_access(s);
+//		cirrus_update_memory_access(s);
+#ifdef DEBUG_CIRRUS
+		printf("cirrus: handled inport sr_index %02x\n", reg_index);
+#endif
+		*reg_value = s->sr[reg_index];
+		break;
     case 0x08:			// EEPROM Control
+#if defined(SUPPORT_PCI)
+		// XXX: Win2000„ÅßPnP„Éá„Éê„Ç§„ÇπÊ§úÂá∫„ÇíÂãï„Åã„Åô„ÅÆ„Å´ÂøÖË¶Å„ÄÇÁêÜÁî±„ÅØË¨é
+		if(pcidev.enable && np2clvga.gd54xxtype == CIRRUS_98ID_PCI){
+			*reg_value = cirrusvga->sr[0x08] = 0xFE;
+			break;
+		}
+#endif
     case 0x09:			// Scratch Register 0
     case 0x0a:			// Scratch Register 1
     case 0x0b:			// VCLK 0
@@ -1769,7 +1856,7 @@ cirrus_hook_write_sr(CirrusVGAState * s, unsigned reg_index, int reg_value)
 		s->hw_cursor_y = (reg_value << 3) | (reg_index >> 5);
 	break;
 	case 0x07:			// Extended Sequencer Mode
-		cirrus_update_memory_access(s);
+//		cirrus_update_memory_access(s);
     case 0x08:			// EEPROM Control
     case 0x09:			// Scratch Register 0
     case 0x0a:			// Scratch Register 1
@@ -1792,6 +1879,7 @@ cirrus_hook_write_sr(CirrusVGAState * s, unsigned reg_index, int reg_value)
     case 0x1e:			// VCLK 3 Denominator & Post
     case 0x1f:			// BIOS Write Enable and MCLK select
 		s->sr[reg_index] = reg_value;
+		cirrus_update_memory_access(s);
 #ifdef DEBUG_CIRRUS
 		printf("cirrus: handled outport sr_index %02x, sr_value %02x\n",
 			   reg_index, reg_value);
@@ -1892,7 +1980,10 @@ cirrus_hook_read_gr(CirrusVGAState * s, unsigned reg_index, int *reg_value)
     case 0x02:			// Standard VGA
     case 0x03:			// Standard VGA
     case 0x04:			// Standard VGA
+		return CIRRUS_HOOK_HANDLED;
     case 0x06:			// Standard VGA
+		*reg_value = s->gr[0x06];
+		return CIRRUS_HOOK_HANDLED;
     case 0x07:			// Standard VGA
     case 0x08:			// Standard VGA
 		return CIRRUS_HOOK_NOT_HANDLED;
@@ -1929,7 +2020,11 @@ cirrus_hook_write_gr(CirrusVGAState * s, unsigned reg_index, int reg_value)
     case 0x02:			// Standard VGA
     case 0x03:			// Standard VGA
     case 0x04:			// Standard VGA
-    case 0x06:			// Standard VGA
+		return CIRRUS_HOOK_NOT_HANDLED;
+	case 0x06:			// Standard VGA
+		s->gr[reg_index] = reg_value & 0x0f;
+		cirrus_update_memory_access(s);
+		break;
     case 0x07:			// Standard VGA
     case 0x08:			// Standard VGA
 		return CIRRUS_HOOK_NOT_HANDLED;
@@ -1950,6 +2045,7 @@ cirrus_hook_write_gr(CirrusVGAState * s, unsigned reg_index, int reg_value)
 		cirrus_update_bank_ptr(s, 1);
         cirrus_update_memory_access(s);
 		break;
+    case 0x0e:			// Power Management (CL-GD5446)
     case 0x10:			// BGCOLOR 0x0000ff00
     case 0x11:			// FGCOLOR 0x0000ff00
     case 0x12:			// BGCOLOR 0x00ff0000
@@ -1967,7 +2063,6 @@ cirrus_hook_write_gr(CirrusVGAState * s, unsigned reg_index, int reg_value)
     case 0x2f:          // BLT WRITEMASK
     case 0x30:			// BLT MODE
     case 0x32:			// RASTER OP
-    case 0x33:			// BLT MODEEXT
     case 0x34:			// BLT TRANSPARENT COLOR 0x00ff
     case 0x35:			// BLT TRANSPARENT COLOR 0xff00
     case 0x38:			// BLT TRANSPARENT COLOR MASK 0x00ff
@@ -1993,6 +2088,13 @@ cirrus_hook_write_gr(CirrusVGAState * s, unsigned reg_index, int reg_value)
     case 0x31:			// BLT STATUS/START
 		cirrus_write_bitblt(s, reg_value);
 		//cirrus_write_bitblt(s, reg_value);
+		break;
+    case 0x33:			// BLT MODEEXT
+		if(s->device_id != CIRRUS_ID_CLGD5446 ||
+		   ((s->gr[0x0e] & 0x20) || (s->gr[0x31] & 0x80)) && (s->cr[0x5e] & 0x20)) {
+			s->gr[reg_index] = reg_value;
+		}
+		
 		break;
 	default:
 #ifdef DEBUG_CIRRUS
@@ -2059,23 +2161,31 @@ cirrus_hook_read_cr(CirrusVGAState * s, unsigned reg_index, int *reg_value)
 		if(np2clvga.gd54xxtype <= 0xff){
 			*reg_value = s->cr[reg_index];
 		}else if(np2clvga.gd54xxtype == CIRRUS_98ID_WAB){
-			*reg_value = 0x98;
+			*reg_value = CIRRUS_ID_CLGD5428;
 		}else if(np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F){
-			*reg_value = 0xA8; // XXX
-		}else if(np2clvga.gd54xxtype == CIRRUS_98ID_GA98NB){
-			*reg_value = 0xA8; // XXX
+			*reg_value = CIRRUS_ID_CLGD5434;
+		}else if((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC){
+			*reg_value = CIRRUS_ID_CLGD5434;
 		}else{
 			*reg_value = s->cr[reg_index];
 		}
+		s->cr[0x5e] |= 0x20; // XXX: Part ID„ÇíË™≠„Çì„Å†„ÇâGR33„ÇíÊõ∏„ÅçËæº„ÅøÂèØËÉΩ„Å´„Åô„ÇãÔºàWinNT4Â∞ÇÁî®„ÅÆ‰∏çÂÖ∑ÂêàÂõûÈÅøÔºâ
         break;
     case 0x28:			// Class ID Register
 		if(np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F){
 			*reg_value = 0x03;
+		}else if ((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC) {
+ 			*reg_value = 0x03;
 		}
 		break;
     case 0x26:			// Attribute Controller Index Readback (R)
 		*reg_value = s->ar_index & 0x3f;
 		break;
+    case 0x5e:			// Double Buffer Control (CL-GD5446)
+		if(s->device_id == CIRRUS_ID_CLGD5446){
+			*reg_value = s->cr[reg_index];
+		}
+        break;
     default:
 #ifdef DEBUG_CIRRUS
 	printf("cirrus: inport cr_index %02x\n", reg_index);
@@ -2122,24 +2232,50 @@ cirrus_hook_write_cr(CirrusVGAState * s, unsigned reg_index, int reg_value)
     case 0x1b:			// Extended Display Control
     case 0x1c:			// Sync Adjust and Genlock
     case 0x1d:			// Overlay Extended Control
-	s->cr[reg_index] = reg_value;
+		s->cr[reg_index] = reg_value;
 #ifdef DEBUG_CIRRUS
-	printf("cirrus: handled outport cr_index %02x, cr_value %02x\n",
-	       reg_index, reg_value);
+		printf("cirrus: handled outport cr_index %02x, cr_value %02x\n",
+		       reg_index, reg_value);
 #endif
-	break;
+		break;
     case 0x22:			// Graphics Data Latches Readback (R)
     case 0x24:			// Attribute Controller Toggle Readback (R)
     case 0x26:			// Attribute Controller Index Readback (R)
     case 0x27:			// Part ID (R)
-	break;
+		break;
+    case 0x5e:			// Double Buffer Control (CL-GD5446)
+		if(s->device_id == CIRRUS_ID_CLGD5446){
+			s->cr[reg_index] = reg_value;
+			switch(reg_value & 0x7){
+			case 0: // Compatible VGA display address control
+				s->graphics_dblbuf_index = 0;
+				break;
+			case 1: // VSYNC switching
+				break;
+			case 2: // Forces graphics buffer 1 as display
+				s->graphics_dblbuf_index = 0;
+				break;
+			case 3: // Forces graphics buffer 2 as display
+				s->graphics_dblbuf_index = 1;
+				break;
+			case 4: // A18 controls switching
+				break;
+			case 5: // A19 controls switching
+				break;
+			case 6: // Reserved
+				break;
+			case 7: // Bitblt switches
+				break;
+			}
+		}
+        break;
     case 0x25:			// Part Status
     default:
 #ifdef DEBUG_CIRRUS
-	printf("cirrus: outport cr_index %02x, cr_value %02x\n", reg_index,
-	       reg_value);
+		printf("cirrus: outport cr_index %02x, cr_value %02x\n", reg_index,
+		       reg_value);
 #endif
-	break;
+		break;
     }
 
     return CIRRUS_HOOK_HANDLED;
@@ -2898,7 +3034,7 @@ static CPUWriteMemoryFunc *cirrus_linear_write[3] = {
     cirrus_linear_writel,
 };
 
-static void cirrus_linear_mem_writeb(void *opaque, target_phys_addr_t addr,
+void cirrus_linear_mem_writeb(void *opaque, target_phys_addr_t addr,
                                      uint32_t_ val)
 {
     CirrusVGAState *s = (CirrusVGAState *) opaque;
@@ -2908,7 +3044,7 @@ static void cirrus_linear_mem_writeb(void *opaque, target_phys_addr_t addr,
     cpu_physical_memory_set_dirty(s->vram_offset + addr);
 }
 
-static void cirrus_linear_mem_writew(void *opaque, target_phys_addr_t addr,
+void cirrus_linear_mem_writew(void *opaque, target_phys_addr_t addr,
                                      uint32_t_ val)
 {
     CirrusVGAState *s = (CirrusVGAState *) opaque;
@@ -2918,7 +3054,7 @@ static void cirrus_linear_mem_writew(void *opaque, target_phys_addr_t addr,
     cpu_physical_memory_set_dirty(s->vram_offset + addr);
 }
 
-static void cirrus_linear_mem_writel(void *opaque, target_phys_addr_t addr,
+void cirrus_linear_mem_writel(void *opaque, target_phys_addr_t addr,
                                      uint32_t_ val)
 {
     CirrusVGAState *s = (CirrusVGAState *) opaque;
@@ -2962,28 +3098,6 @@ void cirrus_linear_memwnd_addr_convert(void *opaque, target_phys_addr_t *addrval
 			offset <<= 12;
 
 		addr += (offset);
-		addr &= s->cirrus_addr_mask;
-	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_GA98NB){
-		addr &= 0x7fff;
-		if ((s->gr[0x0b] & 0x01) != 0){
-			/* dual bank */
-			if(addr < 0x4000){
-				offset = s->gr[0x09];
-			}else{
-				addr -= 0x4000;
-				offset = s->gr[0x0a];
-			}
-		}else{
-			/* single bank */
-			offset = s->gr[0x09];
-		}
-		if ((s->gr[0x0b] & 0x20) != 0)
-			offset <<= 14;
-		else
-			offset <<= 12;
-
-		addr += (offset);
-		addr &= s->cirrus_addr_mask;
 	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F){
 		addr &= 0x7fff;
 		if ((s->gr[0x0b] & 0x01) != 0){
@@ -3004,7 +3118,6 @@ void cirrus_linear_memwnd_addr_convert(void *opaque, target_phys_addr_t *addrval
 			offset <<= 12;
 
 		addr += (offset);
-		addr &= s->cirrus_addr_mask;
 	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_WAB){
 		addr &= 0x7fff;
 		if ((s->gr[0x0b] & 0x01) != 0){
@@ -3036,9 +3149,53 @@ void cirrus_linear_memwnd_addr_convert(void *opaque, target_phys_addr_t *addrval
 			addr += (offset) << 14L;
 		else
 			addr += (offset) << 12L;
-		addr &= s->cirrus_addr_mask;
 	}
+	addr &= s->cirrus_addr_mask;
 	*addrval = addr;
+}
+// I-O DATAÁî®
+int cirrus_linear_memwnd_addr_convert_iodata(void *opaque, target_phys_addr_t *addrval){
+    CirrusVGAState *s = (CirrusVGAState *) opaque;
+	int offset;
+	target_phys_addr_t addr = *addrval;
+	int ret = 0;
+	
+	// MMIOÂà§ÂÆö
+	// Êú¨ÂΩì„ÅØ...
+	// SR17[2]=1„ÅßMMIO„Ç§„Éç„Éº„Éñ„É´ If this bit is set to '1', the BlT source will be system memory rather than display memory.
+	// Êú¨ÂΩì„ÅØ„Åù„Çå„Å´Âä†„ÅàGR6[3-2]=01„Åò„ÇÉ„Å™„ÅÑ„Å®MMIO„É¢„Éº„Éâ„Å´„Å™„Çâ„Å™„ÅÑ
+	// MMIO„Ç¢„Éâ„É¨„Çπ„ÅØSR17[6]=0:0xb8000„Å´Ââ≤„ÇäÂΩì„Å¶„ÄÅ1:„É™„Éã„Ç¢„É°„É¢„É™„ÅÆÊúÄÂæå256byte„Å´Ââ≤„ÇäÂΩì„Å¶(CL-GD5430/'36/'40 only)
+	if ((s->sr[0x17] & CIRRUS_MMIO_ENABLE) != 0 && ((addr & 0xff000) == 0xb8000)) {
+		ret = 1;	// MMIO
+	}
+
+	addr &= 0x7fff;
+	if ((s->gr[0x0b] & 0x01) != 0){
+		/* dual bank */
+		if(addr < 0x4000){
+			offset = s->gr[0x09];
+		}else{
+			addr -= 0x4000;
+			offset = s->gr[0x0a];
+		}
+	}else{
+		/* single bank */
+		offset = s->gr[0x09];
+		if(addr >= 0x4000){
+			ret = 1; // XXX: ÂÖâÊ†ÑË£Ω„Ç≤„Éº„É†Áî®??? 
+		}
+	}
+	if ((s->gr[0x0b] & 0x20) != 0)
+		offset <<= 14;
+	else
+		offset <<= 12;
+	
+	addr += (offset);
+	addr &= s->cirrus_addr_mask;
+
+	*addrval = addr;
+
+	return ret;
 }
 
 void cirrus_linear_memwnd_writeb(void *opaque, target_phys_addr_t addr,
@@ -3046,11 +3203,19 @@ void cirrus_linear_memwnd_writeb(void *opaque, target_phys_addr_t addr,
 {
     CirrusVGAState *s = (CirrusVGAState *) opaque;
 
-	cirrus_linear_memwnd_addr_convert(opaque, &addr);
-
-	g_cirrus_linear_write[0](opaque, addr, val);
-	//cirrus_linear_mem_writeb(opaque, addr, val);
-	//cirrus_linear_writeb(opaque, addr, val);
+	if((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) != CIRRUS_98ID_GA98NBIC){
+		cirrus_linear_memwnd_addr_convert(opaque, &addr);
+		g_cirrus_linear_write[0](opaque, addr, val);
+		//cirrus_linear_mem_writeb(opaque, addr, val);
+		//cirrus_linear_writeb(opaque, addr, val);
+	}else{
+		int r = cirrus_linear_memwnd_addr_convert_iodata(opaque, &addr);
+		if(r==0){
+			g_cirrus_linear_write[0](opaque, addr, val);
+		}else{
+			cirrus_mmio_writeb_iodata(opaque, addr, val);
+		}
+	}
 }
 
 void cirrus_linear_memwnd_writew(void *opaque, target_phys_addr_t addr,
@@ -3058,11 +3223,19 @@ void cirrus_linear_memwnd_writew(void *opaque, target_phys_addr_t addr,
 {
     CirrusVGAState *s = (CirrusVGAState *) opaque;
 	
-	cirrus_linear_memwnd_addr_convert(opaque, &addr);
-	
-	g_cirrus_linear_write[1](opaque, addr, val);
-	//cirrus_linear_mem_writew(opaque, addr, val);
-	//cirrus_linear_writew(opaque, addr, val);
+	if((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) != CIRRUS_98ID_GA98NBIC){
+		cirrus_linear_memwnd_addr_convert(opaque, &addr);
+		g_cirrus_linear_write[1](opaque, addr, val);
+		//cirrus_linear_mem_writew(opaque, addr, val);
+		//cirrus_linear_writew(opaque, addr, val);
+	}else{
+		int r = cirrus_linear_memwnd_addr_convert_iodata(opaque, &addr);
+		if(r==0){
+			g_cirrus_linear_write[1](opaque, addr, val);
+		}else{
+			cirrus_mmio_writew_iodata(opaque, addr, val);
+		}
+	}
 }
 
 void cirrus_linear_memwnd_writel(void *opaque, target_phys_addr_t addr,
@@ -3070,38 +3243,82 @@ void cirrus_linear_memwnd_writel(void *opaque, target_phys_addr_t addr,
 {
     CirrusVGAState *s = (CirrusVGAState *) opaque;
 	
-	cirrus_linear_memwnd_addr_convert(opaque, &addr);
-	
-	g_cirrus_linear_write[2](opaque, addr, val);
-	//cirrus_linear_mem_writel(opaque, addr, val);
-	//cirrus_linear_writel(opaque, addr, val);
+	if((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) != CIRRUS_98ID_GA98NBIC){
+		cirrus_linear_memwnd_addr_convert(opaque, &addr);
+		g_cirrus_linear_write[2](opaque, addr, val);
+		//cirrus_linear_mem_writel(opaque, addr, val);
+		//cirrus_linear_writel(opaque, addr, val);
+	}else{
+		int r = cirrus_linear_memwnd_addr_convert_iodata(opaque, &addr);
+		if(r==0){
+			g_cirrus_linear_write[2](opaque, addr, val);
+		}else{
+			cirrus_mmio_writel_iodata(opaque, addr, val);
+		}
+	}
 }
 
 uint32_t_ cirrus_linear_memwnd_readb(void *opaque, target_phys_addr_t addr)
 {
     CirrusVGAState *s = (CirrusVGAState *) opaque;
 	
-	cirrus_linear_memwnd_addr_convert(opaque, &addr);
-
-	return cirrus_linear_readb(opaque, addr);
+	if((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) != CIRRUS_98ID_GA98NBIC){
+		cirrus_linear_memwnd_addr_convert(opaque, &addr);
+		return cirrus_linear_readb(opaque, addr);
+	}else{
+		int r = cirrus_linear_memwnd_addr_convert_iodata(opaque, &addr);
+		//if (r == 0 && (s->gr[0x31] & CIRRUS_BLT_RESET)!=0 || (s->cirrus_blt_mode & CIRRUS_BLTMODE_MEMSYSDEST)!=0) { // XXX: Êòé„Çâ„Åã„Å´Ê≠£„Åó„Åè„Å™„ÅÑ„Åë„Å©„Å®„Çä„ÅÇ„Åà„ÅöÂãï„Åè„Çà„ÅÜ„Å´Ë™øÊï¥
+		if ((cirrusvga_wab_40e1 & 0x02) == 0 ) { 
+			return 0xff;	//DRAM REFRESH Mode
+		}else if(r == 0) {
+			return cirrus_linear_readb(opaque, addr);
+		}else{
+			return cirrus_mmio_readb_iodata(opaque, addr);
+			//return cirrus_linear_readb(opaque, addr);
+		}
+	}
 }
 
 uint32_t_ cirrus_linear_memwnd_readw(void *opaque, target_phys_addr_t addr)
 {
     CirrusVGAState *s = (CirrusVGAState *) opaque;
 	
-	cirrus_linear_memwnd_addr_convert(opaque, &addr);
-
-	return cirrus_linear_readw(opaque, addr);
+	if((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) != CIRRUS_98ID_GA98NBIC){
+		cirrus_linear_memwnd_addr_convert(opaque, &addr);
+		return cirrus_linear_readw(opaque, addr);
+	}else{
+		int r = cirrus_linear_memwnd_addr_convert_iodata(opaque, &addr);
+		//if (r == 0 && (s->gr[0x31] & CIRRUS_BLT_RESET)!=0 || (s->cirrus_blt_mode & CIRRUS_BLTMODE_MEMSYSDEST)!=0) { // XXX: Êòé„Çâ„Åã„Å´Ê≠£„Åó„Åè„Å™„ÅÑ„Åë„Å©„Å®„Çä„ÅÇ„Åà„ÅöÂãï„Åè„Çà„ÅÜ„Å´Ë™øÊï¥
+		if ((cirrusvga_wab_40e1 & 0x02) == 0 ) { 
+			return 0xff;	//DRAM REFRESH Mode
+		}else if (r == 0) {
+			return cirrus_linear_readw(opaque, addr);
+		}else{
+			return cirrus_mmio_readw_iodata(opaque, addr);
+			//return cirrus_linear_readw(opaque, addr);
+		}
+	}
 }
 
 uint32_t_ cirrus_linear_memwnd_readl(void *opaque, target_phys_addr_t addr)
 {
     CirrusVGAState *s = (CirrusVGAState *) opaque;
 	
-	cirrus_linear_memwnd_addr_convert(opaque, &addr);
-
-	return cirrus_linear_readl(opaque, addr);
+	if((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) != CIRRUS_98ID_GA98NBIC){
+		cirrus_linear_memwnd_addr_convert(opaque, &addr);
+		return cirrus_linear_readl(opaque, addr);
+	}else{
+		int r = cirrus_linear_memwnd_addr_convert_iodata(opaque, &addr);
+		//if (r == 0 && (s->gr[0x31] & CIRRUS_BLT_RESET)!=0 || (s->cirrus_blt_mode & CIRRUS_BLTMODE_MEMSYSDEST)!=0) { // XXX: Êòé„Çâ„Åã„Å´Ê≠£„Åó„Åè„Å™„ÅÑ„Åë„Å©„Å®„Çä„ÅÇ„Åà„ÅöÂãï„Åè„Çà„ÅÜ„Å´Ë™øÊï¥
+		if ((cirrusvga_wab_40e1 & 0x02) == 0 ) { 
+			return 0xff;	//DRAM REFRESH Mode
+		}else if (r == 0) {
+			return cirrus_linear_readl(opaque, addr);
+		}else{
+			return cirrus_mmio_readl_iodata(opaque, addr);
+			//return cirrus_linear_readl(opaque, addr);
+		}
+	}
 }
 
 /***************************************
@@ -3110,55 +3327,102 @@ uint32_t_ cirrus_linear_memwnd_readl(void *opaque, target_phys_addr_t addr)
  *
  ***************************************/
 
-// XXX: convert F00000 VRAM window address to linear addressÅiÇ«Ç§ÇµÇΩÇÁó«Ç¢Ç©ï™Ç©ÇÁÇÒÅj
+// XXX: convert F00000 VRAM window address to linear addressÔºà„Å©„ÅÜ„Åó„Åü„ÇâËâØ„ÅÑ„ÅãÂàÜ„Åã„Çâ„ÇìÔºâ
 void cirrus_linear_memwnd3_addr_convert(void *opaque, target_phys_addr_t *addrval){
     CirrusVGAState *s = (CirrusVGAState *) opaque;
 	int offset;
 	target_phys_addr_t addr = *addrval;
 	
 	addr -= np2clvga.VRAMWindowAddr3;
-	if(np2clvga.gd54xxtype == CIRRUS_98ID_GA98NB){
-		offset = s->gr[0x09];
-		offset *= 0x20000;
-	}else{
-		if ((s->gr[0x0b] & 0x01) != 0){
-			/* dual bank */
-			if(addr < 0x8000){
-				offset = s->gr[0x09];
-			//}else if(addr < 0x8000){
-			//	addr -= 0x4000;
-			//	offset = s->gr[0x0a];
-			}else{
-				addr -= 0x8000;
-				offset = s->gr[0x0a];
-			}
-		}else{
-			/* single bank ? */
+	addr &= 0xffff;
+	if ((s->gr[0x0b] & 0x01) != 0){
+		/* dual bank */
+		if(addr < 0x8000){
 			offset = s->gr[0x09];
+		}else{
+			addr -= 0x8000;
+			offset = s->gr[0x0a];
 		}
-		if ((s->gr[0x0b] & 0x20) != 0)
-			offset <<= 14;
-		else
-			offset <<= 12;
+	}else{
+		/* single bank */
+		offset = s->gr[0x09];
 	}
+	if ((s->gr[0x0b] & 0x20) != 0)
+		offset <<= 14;
+	else
+		offset <<= 12;
 
 	addr += (offset);
 
 	addr &= s->cirrus_addr_mask;
 	*addrval = addr;
 }
+// I-O DATAÁî®
+int cirrus_linear_memwnd3_addr_convert_iodata(void *opaque, target_phys_addr_t *addrval){
+    CirrusVGAState *s = (CirrusVGAState *) opaque;
+	int offset;
+	target_phys_addr_t addr = *addrval;
+	int ret = 0;
+
+	// MMIOÂà§ÂÆö
+	// Êú¨ÂΩì„ÅØ...
+	// SR17[2]=1„ÅßMMIO„Ç§„Éç„Éº„Éñ„É´ If this bit is set to '1', the BlT source will be system memory rather than display memory.
+	// Êú¨ÂΩì„ÅØ„Åù„Çå„Å´Âä†„ÅàGR6[3-2]=01„Åò„ÇÉ„Å™„ÅÑ„Å®MMIO„É¢„Éº„Éâ„Å´„Å™„Çâ„Å™„ÅÑ
+	// MMIO„Ç¢„Éâ„É¨„Çπ„ÅØSR17[6]=0:0xb8000„Å´Ââ≤„ÇäÂΩì„Å¶„ÄÅ1:„É™„Éã„Ç¢„É°„É¢„É™„ÅÆÊúÄÂæå256byte„Å´Ââ≤„ÇäÂΩì„Å¶(CL-GD5430/'36/'40 only)
+	if ((s->sr[0x17] & CIRRUS_MMIO_ENABLE) != 0 && ((addr & 0xff000) == 0xb8000)) {
+		ret = 1;	// MMIO
+	}
+
+	addr -= np2clvga.VRAMWindowAddr3;
+
+	if ((s->gr[0x0b] & 0x01) != 0){
+		/* dual bank */
+		if(addr < 0x8000){
+			offset = s->gr[0x09];
+		}else{
+			addr -= 0x8000;
+			offset = s->gr[0x0a];
+		}
+	}else{
+		/* single bank */
+		offset = s->gr[0x09];
+	//	if(addr >= 0x8000){
+	//		ret = 1;
+	//	}
+	}
+	if ((s->gr[0x0b] & 0x20) != 0)
+		offset <<= 14;
+	else
+		offset <<= 12;
+	
+	addr += (offset);
+	addr &= s->cirrus_addr_mask;
+
+	*addrval = addr;
+
+	return ret;
+}
 
 void cirrus_linear_memwnd3_writeb(void *opaque, target_phys_addr_t addr,
                                      uint32_t_ val)
 {
     CirrusVGAState *s = (CirrusVGAState *) opaque;
+	
+	if((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) != CIRRUS_98ID_GA98NBIC){
+		cirrus_linear_memwnd3_addr_convert(opaque, &addr);
 
-	cirrus_linear_memwnd3_addr_convert(opaque, &addr);
-
-	//cirrus_linear_bitblt_writeb(opaque, addr, val);
-	g_cirrus_linear_write[0](opaque, addr, val);
-	//cirrus_linear_mem_writeb(opaque, addr, val);
-	//cirrus_linear_writeb(opaque, addr, val);
+		//cirrus_linear_bitblt_writeb(opaque, addr, val);
+		g_cirrus_linear_write[0](opaque, addr, val);
+		//cirrus_linear_mem_writeb(opaque, addr, val);
+		//cirrus_linear_writeb(opaque, addr, val);
+	}else{
+		int r = cirrus_linear_memwnd3_addr_convert_iodata(opaque, &addr);
+		if(r==0){
+			g_cirrus_linear_write[0](opaque, addr, val);
+		}else{
+			cirrus_mmio_writeb_iodata(opaque, addr, val);
+		}
+	}
 }
 
 void cirrus_linear_memwnd3_writew(void *opaque, target_phys_addr_t addr,
@@ -3166,12 +3430,21 @@ void cirrus_linear_memwnd3_writew(void *opaque, target_phys_addr_t addr,
 {
     CirrusVGAState *s = (CirrusVGAState *) opaque;
 	
-	cirrus_linear_memwnd3_addr_convert(opaque, &addr);
+	if((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) != CIRRUS_98ID_GA98NBIC){
+		cirrus_linear_memwnd3_addr_convert(opaque, &addr);
 	
-	//cirrus_linear_bitblt_writew(opaque, addr, val);
-	g_cirrus_linear_write[1](opaque, addr, val);
-	//cirrus_linear_mem_writew(opaque, addr, val);
-	//cirrus_linear_writew(opaque, addr, val);
+		//cirrus_linear_bitblt_writew(opaque, addr, val);
+		g_cirrus_linear_write[1](opaque, addr, val);
+		//cirrus_linear_mem_writew(opaque, addr, val);
+		//cirrus_linear_writew(opaque, addr, val);
+	}else{
+		int r = cirrus_linear_memwnd3_addr_convert_iodata(opaque, &addr);
+		if(r==0){
+			g_cirrus_linear_write[1](opaque, addr, val);
+		}else{
+			cirrus_mmio_writew_iodata(opaque, addr, val);
+		}
+	}
 }
 
 void cirrus_linear_memwnd3_writel(void *opaque, target_phys_addr_t addr,
@@ -3179,39 +3452,84 @@ void cirrus_linear_memwnd3_writel(void *opaque, target_phys_addr_t addr,
 {
     CirrusVGAState *s = (CirrusVGAState *) opaque;
 	
-	cirrus_linear_memwnd3_addr_convert(opaque, &addr);
+	if((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) != CIRRUS_98ID_GA98NBIC){
+		cirrus_linear_memwnd3_addr_convert(opaque, &addr);
 	
-	//cirrus_linear_bitblt_writel(opaque, addr, val);
-	g_cirrus_linear_write[2](opaque, addr, val);
-	//cirrus_linear_mem_writel(opaque, addr, val);
-	//cirrus_linear_writel(opaque, addr, val);
+		//cirrus_linear_bitblt_writel(opaque, addr, val);
+		g_cirrus_linear_write[2](opaque, addr, val);
+		//cirrus_linear_mem_writel(opaque, addr, val);
+		//cirrus_linear_writel(opaque, addr, val);
+	}else{
+		int r = cirrus_linear_memwnd3_addr_convert_iodata(opaque, &addr);
+		if(r==0){
+			g_cirrus_linear_write[2](opaque, addr, val);
+		}else{
+			cirrus_mmio_writel_iodata(opaque, addr, val);
+		}
+	}
 }
 
 uint32_t_ cirrus_linear_memwnd3_readb(void *opaque, target_phys_addr_t addr)
 {
     CirrusVGAState *s = (CirrusVGAState *) opaque;
 	
-	cirrus_linear_memwnd3_addr_convert(opaque, &addr);
+	if((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) != CIRRUS_98ID_GA98NBIC){
+		cirrus_linear_memwnd3_addr_convert(opaque, &addr);
 
-	return cirrus_linear_readb(opaque, addr);
+		return cirrus_linear_readb(opaque, addr);
+	}else{
+		int r = cirrus_linear_memwnd3_addr_convert_iodata(opaque, &addr);
+	//	if (r == 0 && (s->gr[0x31] & CIRRUS_BLT_RESET)!=0 || (s->cirrus_blt_mode & CIRRUS_BLTMODE_MEMSYSDEST)!=0) { // XXX: Êòé„Çâ„Åã„Å´Ê≠£„Åó„Åè„Å™„ÅÑ„Åë„Å©„Å®„Çä„ÅÇ„Åà„ÅöÂãï„Åè„Çà„ÅÜ„Å´Ë™øÊï¥
+		if ((cirrusvga_wab_40e1 & 0x02) == 0 ) { 
+			return 0xff;	//DRAM REFRESH Mode
+		}else if(r == 0) {
+			return cirrus_linear_readb(opaque, addr);
+		}else{
+			return cirrus_mmio_readb_iodata(opaque, addr);
+		}
+	}
 }
 
 uint32_t_ cirrus_linear_memwnd3_readw(void *opaque, target_phys_addr_t addr)
 {
     CirrusVGAState *s = (CirrusVGAState *) opaque;
 	
-	cirrus_linear_memwnd3_addr_convert(opaque, &addr);
+	if((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) != CIRRUS_98ID_GA98NBIC){
+		cirrus_linear_memwnd3_addr_convert(opaque, &addr);
 
-	return cirrus_linear_readw(opaque, addr);
+		return cirrus_linear_readw(opaque, addr);
+	}else{
+		int r = cirrus_linear_memwnd3_addr_convert_iodata(opaque, &addr);
+	//	if (r == 0 && (s->gr[0x31] & CIRRUS_BLT_RESET)!=0 || (s->cirrus_blt_mode & CIRRUS_BLTMODE_MEMSYSDEST)!=0) { // XXX: Êòé„Çâ„Åã„Å´Ê≠£„Åó„Åè„Å™„ÅÑ„Åë„Å©„Å®„Çä„ÅÇ„Åà„ÅöÂãï„Åè„Çà„ÅÜ„Å´Ë™øÊï¥
+		if ((cirrusvga_wab_40e1 & 0x02) == 0) {
+			return 0xffff;	//DRAM REFRESH Mode
+		}else if (r == 0) {
+			return cirrus_linear_readw(opaque, addr);
+		}else{
+			return cirrus_mmio_readw_iodata(opaque, addr);
+		}
+	}
 }
 
 uint32_t_ cirrus_linear_memwnd3_readl(void *opaque, target_phys_addr_t addr)
 {
     CirrusVGAState *s = (CirrusVGAState *) opaque;
 	
-	cirrus_linear_memwnd3_addr_convert(opaque, &addr);
+	if((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) != CIRRUS_98ID_GA98NBIC){
+		cirrus_linear_memwnd3_addr_convert(opaque, &addr);
 
-	return cirrus_linear_readl(opaque, addr);
+		return cirrus_linear_readl(opaque, addr);
+	}else{
+		int r = cirrus_linear_memwnd3_addr_convert_iodata(opaque, &addr);
+	//	if (r == 0 && (s->gr[0x31] & CIRRUS_BLT_RESET)!=0 || (s->cirrus_blt_mode & CIRRUS_BLTMODE_MEMSYSDEST)!=0) { // XXX: Êòé„Çâ„Åã„Å´Ê≠£„Åó„Åè„Å™„ÅÑ„Åë„Å©„Å®„Çä„ÅÇ„Åà„ÅöÂãï„Åè„Çà„ÅÜ„Å´Ë™øÊï¥
+		if ((cirrusvga_wab_40e1 & 0x02) == 0) {
+			return 0xffffffff;	//DRAM REFRESH Mode
+		}else if (r == 0) {
+			return cirrus_linear_readl(opaque, addr);
+		}else{
+			return cirrus_mmio_readl_iodata(opaque, addr);
+		}
+	}
 }
 
 
@@ -3225,7 +3543,7 @@ uint32_t_ cirrus_linear_memwnd3_readl(void *opaque, target_phys_addr_t addr)
 uint32_t_ cirrus_linear_bitblt_readb(void *opaque, target_phys_addr_t addr)
 {
     CirrusVGAState *s = (CirrusVGAState *) opaque;
-    uint32_t_ ret;
+    uint32_t_ ret = 0;
 
     /* handle bitblt */
     if (s->cirrus_srcptr != s->cirrus_srcptr_end) {
@@ -3340,7 +3658,7 @@ static void map_linear_vram(CirrusVGAState *s)
 
     s->lfb_vram_mapped = 0;
 	
-	//Å@Ç±ÇÃcpu_register_physical_memoryÇÃè⁄ç◊Ç™Ç≥Ç¡ÇœÇËï™Ç©ÇÁÇ»Ç¢•••
+	//„ÄÄ„Åì„ÅÆcpu_register_physical_memory„ÅÆË©≥Á¥∞„Åå„Åï„Å£„Å±„ÇäÂàÜ„Åã„Çâ„Å™„ÅÑÔΩ•ÔΩ•ÔΩ•
     cpu_register_physical_memory(isa_mem_base + 0xF80000, 0x8000,
                                 (s->vram_offset + s->cirrus_bank_base[0]) | IO_MEM_UNASSIGNED);
     cpu_register_physical_memory(isa_mem_base + 0xF88000, 0x8000,
@@ -3351,7 +3669,7 @@ static void map_linear_vram(CirrusVGAState *s)
         && !(s->gr[0x0B] & 0x02)) {
 
         vga_dirty_log_stop((VGAState *)s);
-		//Å@Ç±Ç±Ç‡
+		//„ÄÄ„Åì„Åì„ÇÇ
         cpu_register_physical_memory(isa_mem_base + 0xF80000, 0x8000,
                                     (s->vram_offset + s->cirrus_bank_base[0]) | IO_MEM_RAM);
         cpu_register_physical_memory(isa_mem_base + 0xF88000, 0x8000,
@@ -3376,7 +3694,7 @@ static void unmap_linear_vram(CirrusVGAState *s)
     if (s->map_addr && s->lfb_addr && s->lfb_end)
         s->map_addr = s->map_end = 0;
 	
-	//Å@Ç±Ç±Ç‡
+	//„ÄÄ„Åì„Åì„ÇÇ
     cpu_register_physical_memory(isa_mem_base + 0xF80000, 0x20000,
                                  s->vga_io_memory);
 
@@ -3387,6 +3705,28 @@ static void unmap_linear_vram(CirrusVGAState *s)
 static void cirrus_update_memory_access(CirrusVGAState *s)
 {
     unsigned mode;
+
+	// „É°„É¢„É™Ââ≤„Çä‰ªò„Åë„Ç¢„Éâ„É¨„ÇπÊõ¥Êñ∞
+
+	// inear address
+	// sr7[7-4]<>0:sr7[7-4]„Çíaddress23-20„Å´Ââ≤„ÇäÂΩì„Å¶„ÄÅ„Åü„Å†„Åógrb[5]=1„ÅÆÊôÇsr7[4]„ÅØd.c.
+	// sr7[7-4] =0:gr6[3-2]=00,01:A0000„Å´Ââ≤„ÇäÂΩì„Å¶ 10,11:B0000„Å´Ââ≤„ÇäÂΩì„Å¶
+	// WSN„ÅØ42e1h„Åå„Åã„Åã„Çè„Å£„Å¶„ÅÑ„Çã„Åã„ÇÇ?????
+
+	////if ((s->sr[0x07] & CIRRUS_SR7_ISAADDR_MASK) != 0) {
+	////	np2clvga.VRAMWindowAddr3 = (s->sr[0x07] & CIRRUS_SR7_ISAADDR_MASK) << 20;
+	if ((cirrusvga_wab_42e1 & 0x18) == 0x18){
+		np2clvga.VRAMWindowAddr3 = 0xf00000;
+	}
+	else {
+		// „Ç¢„ÇØ„Çª„Çπ‰∏çÂèØ„Å´„Åó„Å¶„Åä„Åè
+		//if (s->gr[0x06] & 0x08) {
+		//	np2clvga.VRAMWindowAddr3 = 0xb0000;
+		//}
+		//else {
+		//	np2clvga.VRAMWindowAddr3 = 0xa0000;
+		//}
+	}
 
     if ((s->sr[0x17] & 0x44) == 0x44) {
         goto generic_io;
@@ -3417,10 +3757,31 @@ static void cirrus_update_memory_access(CirrusVGAState *s)
 
 
 /* I/O ports */
-// PC-98ópI/OÉ|Å[Ég -> CL-GD54xxÉlÉCÉeÉBÉuÉ|Å[Égïœä∑
+// PC-98Áî®I/O„Éù„Éº„Éà -> CL-GD54xx„Éç„Ç§„ÉÜ„Ç£„Éñ„Éù„Éº„ÉàÂ§âÊèõ
 uint32_t_ vga_convert_ioport(uint32_t_ addr){
+#if defined(SUPPORT_PCI)
+	// PCIÁâà„ÅØ„Éù„Éº„ÉàÁï™Âè∑„Åù„ÅÆ„Åæ„Åæ
+	if(pcidev.enable && 
+	   (np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_WS_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_W4_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_WA_PCI ||
+	   np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_G1_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_G2_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_G4_PCI)){
+		if((addr & 0xFF0) == 0x3C0 || (addr & 0xFF0) == 0x3B0 || (addr & 0xFF0) == 0x3D0){
+			np2clvga.gd54xxtype = CIRRUS_98ID_PCI;
+			cirrusvga->sr[0x1F] = 0x2d;		// MemClock
+			cirrusvga->gr[0x18] = 0x0f;             // fastest memory configuration
+			cirrusvga->sr[0x0f] = CIRRUS_MEMSIZE_2M;
+			cirrusvga->sr[0x17] = 0x20;
+			cirrusvga->sr[0x15] = 0x03; /* memory size, 3=2MB, 4=4MB */
+			cirrusvga->device_id = CIRRUS_ID_CLGD5446;
+			cirrusvga->cr[0x27] = cirrusvga->device_id;
+			cirrusvga->bustype = CIRRUS_BUSTYPE_PCI;
+			cirrus_update_memory_access(cirrusvga);
+			pc98_cirrus_vga_setvramsize();
+			pc98_cirrus_vga_initVRAMWindowAddr();
+		}
+	}
+#endif
 	if(np2clvga.gd54xxtype <= 0xff){
-		// ì‡ë†ÅEèÉê≥É{Å[Éhóp
+		// ÂÜÖËîµ„ÉªÁ¥îÊ≠£„Éú„Éº„ÉâÁî®
 		if((addr & 0xFF0) == 0xCA0 || (addr & 0xFF0) == 0xC50){
 			addr = 0x3C0 | (addr & 0xf);
 		}else{
@@ -3432,16 +3793,22 @@ uint32_t_ vga_convert_ioport(uint32_t_ addr){
 			if(addr==0xDAA || addr==0xD5A) addr = 0x3DA;
 		}
 	}else{
-		// WABóp
-		if((addr & 0xF0FF) == (0x40E0 | CIRRUS_MELCOWAB_OFS)){
+		// WABÁî®
+		if((addr & 0xF0FF) == (0x40E0 | cirrusvga_melcowab_ofs)){
 			addr = 0x3C0 | ((addr >> 8) & 0xf);
 		}else{
-			if(addr==0x51E1+CIRRUS_MELCOWAB_OFS) addr = 0x3B4; // ???
-			if(addr==0x57E1+CIRRUS_MELCOWAB_OFS) addr = 0x3B5; // ???
-			if(addr==0x54E0+CIRRUS_MELCOWAB_OFS) addr = 0x3D4;
-			if(addr==0x55E0+CIRRUS_MELCOWAB_OFS) addr = 0x3D5;
-			if(addr==0x5BE1+CIRRUS_MELCOWAB_OFS) addr = 0x3BA; // ???
-			if(addr==0x5AE0+CIRRUS_MELCOWAB_OFS) addr = 0x3DA;
+			//if(addr==0x51E1+cirrusvga_melcowab_ofs) addr = 0x3B4; // ???
+			//if(addr==0x57E1+cirrusvga_melcowab_ofs) addr = 0x3B5; // ???
+			//if(addr==0x54E0+cirrusvga_melcowab_ofs) addr = 0x3D4;
+			//if(addr==0x55E0+cirrusvga_melcowab_ofs) addr = 0x3D5;
+			//if(addr==0x5BE1+cirrusvga_melcowab_ofs) addr = 0x3BA; // ???
+			//if(addr==0x5AE0+cirrusvga_melcowab_ofs) addr = 0x3DA;
+			if (addr == 0x58E0 + cirrusvga_melcowab_ofs) addr = 0x3B4;
+ 			if (addr == 0x59E0 + cirrusvga_melcowab_ofs) addr = 0x3B5;
+ 			////if (addr == 0x3AE0 + cirrusvga_melcowab_ofs) addr = 0x3BA;
+ 			if (addr == 0x54E0 + cirrusvga_melcowab_ofs) addr = 0x3D4;
+ 			if (addr == 0x55E0 + cirrusvga_melcowab_ofs) addr = 0x3D5;
+ 			if (addr == 0x5AE0 + cirrusvga_melcowab_ofs) addr = 0x3DA;
 		}
 	}
 	return addr;
@@ -3452,10 +3819,10 @@ static uint32_t_ vga_ioport_read(void *opaque, uint32_t_ addr)
     CirrusVGAState *s = (CirrusVGAState *)opaque;
     int val, index;
 	
-	//Å@É|Å[ÉgåàÇﬂë≈ÇøÇ»ÇÃÇ≈ñ≥óùñÓóùïœä∑
+	//„ÄÄ„Éù„Éº„ÉàÊ±∫„ÇÅÊâì„Å°„Å™„ÅÆ„ÅßÁÑ°ÁêÜÁü¢ÁêÜÂ§âÊèõ
 	addr = vga_convert_ioport(addr);
 	
-	TRACEOUT(("CIRRUS VGA: read %04X", addr));
+	//TRACEOUT(("CIRRUS VGA: read %04X", addr));
 
     /* check port range access depending on color/monochrome mode */
     if ((addr >= 0x3b0 && addr <= 0x3bf && (s->msr & MSR_COLOR_EMULATION))
@@ -3591,10 +3958,10 @@ static void vga_ioport_write(void *opaque, uint32_t_ addr, uint32_t_ val)
     CirrusVGAState *s = (CirrusVGAState *)opaque;
     int index;
 	
-	//Å@É|Å[ÉgåàÇﬂë≈ÇøÇ»ÇÃÇ≈ñ≥óùñÓóùïœä∑
+	//„ÄÄ„Éù„Éº„ÉàÊ±∫„ÇÅÊâì„Å°„Å™„ÅÆ„ÅßÁÑ°ÁêÜÁü¢ÁêÜÂ§âÊèõ
 	addr = vga_convert_ioport(addr);
 	
-	TRACEOUT(("CIRRUS VGA: write %04X %02X", addr, val));
+	//TRACEOUT(("CIRRUS VGA: write %04X %02X", addr, val));
 
     /* check port range access depending on color/monochrome mode */
     if ((addr >= 0x3b0 && addr <= 0x3bf && (s->msr & MSR_COLOR_EMULATION))
@@ -3690,9 +4057,12 @@ static void vga_ioport_write(void *opaque, uint32_t_ addr, uint32_t_ val)
 			memcpy(&s->palette[s->dac_write_index * 3], s->dac_cache, 3);
 			s->dac_sub_index = 0;
 			s->dac_write_index++;
-			np2wab.paletteChanged = 1; // ÉpÉåÉbÉgïœÇ¶Ç‹ÇµÇΩ
+			np2wab.paletteChanged = 1; // „Éë„É¨„ÉÉ„ÉàÂ§â„Åà„Åæ„Åó„Åü
 		}
 		break;
+	//case 0x3cc:
+	//	s->msr = val;
+	//	break;
     case 0x3ce:
 		s->gr_index = val;
 		break;
@@ -3891,6 +4261,177 @@ void cirrus_mmio_writel(void *opaque, target_phys_addr_t addr,
 #endif
 }
 
+uint32_t_ cirrus_mmio_readb_wab(void *opaque, target_phys_addr_t addr)
+{
+    CirrusVGAState *s = (CirrusVGAState *) opaque;
+	
+	addr &= ~np2clvga.pciMMIO_Mask;
+    if (addr >= 0x8000) {
+        return cirrus_mmio_blt_read(s, (addr - 0x8000) & 0x7fff);
+    } else {
+        return vga_ioport_read(s, addr & 0x7fff);
+    }
+}
+
+uint32_t_ cirrus_mmio_readw_wab(void *opaque, target_phys_addr_t addr)
+{
+    uint32_t_ v;
+#ifdef TARGET_WORDS_BIGENDIAN
+    v = cirrus_mmio_readb_wab(opaque, addr) << 8;
+    v |= cirrus_mmio_readb_wab(opaque, addr + 1);
+#else
+    v = cirrus_mmio_readb_wab(opaque, addr);
+    v |= cirrus_mmio_readb_wab(opaque, addr + 1) << 8;
+#endif
+    return v;
+}
+
+uint32_t_ cirrus_mmio_readl_wab(void *opaque, target_phys_addr_t addr)
+{
+    uint32_t_ v;
+#ifdef TARGET_WORDS_BIGENDIAN
+    v = cirrus_mmio_readb_wab(opaque, addr) << 24;
+    v |= cirrus_mmio_readb_wab(opaque, addr + 1) << 16;
+    v |= cirrus_mmio_readb_wab(opaque, addr + 2) << 8;
+    v |= cirrus_mmio_readb_wab(opaque, addr + 3);
+#else
+    v = cirrus_mmio_readb_wab(opaque, addr);
+    v |= cirrus_mmio_readb_wab(opaque, addr + 1) << 8;
+    v |= cirrus_mmio_readb_wab(opaque, addr + 2) << 16;
+    v |= cirrus_mmio_readb_wab(opaque, addr + 3) << 24;
+#endif
+    return v;
+}
+
+void cirrus_mmio_writeb_wab(void *opaque, target_phys_addr_t addr,
+			       uint32_t_ val)
+{
+    CirrusVGAState *s = (CirrusVGAState *) opaque;
+
+	addr &= ~np2clvga.pciMMIO_Mask;
+    if (addr >= 0x8000) {
+		//addr = (addr - 0x8000) & 0x7fff;
+		cirrus_mmio_blt_write(s, (addr - 0x8000) & 0x7fff, val);
+    } else {
+		//addr = addr & 0x7fff;
+		//if(addr > CIRRUS_PNPMMIO_SIZE) return;
+        vga_ioport_write(s, addr & 0x7fff, val);
+    }
+}
+
+void cirrus_mmio_writew_wab(void *opaque, target_phys_addr_t addr,
+			       uint32_t_ val)
+{
+#ifdef TARGET_WORDS_BIGENDIAN
+    cirrus_mmio_writeb_wab(opaque, addr, (val >> 8) & 0xff);
+    cirrus_mmio_writeb_wab(opaque, addr + 1, val & 0xff);
+#else
+    cirrus_mmio_writeb_wab(opaque, addr, val & 0xff);
+    cirrus_mmio_writeb_wab(opaque, addr + 1, (val >> 8) & 0xff);
+#endif
+}
+
+void cirrus_mmio_writel_wab(void *opaque, target_phys_addr_t addr,
+			       uint32_t_ val)
+{
+#ifdef TARGET_WORDS_BIGENDIAN
+    cirrus_mmio_writeb_wab(opaque, addr, (val >> 24) & 0xff);
+    cirrus_mmio_writeb_wab(opaque, addr + 1, (val >> 16) & 0xff);
+    cirrus_mmio_writeb_wab(opaque, addr + 2, (val >> 8) & 0xff);
+    cirrus_mmio_writeb_wab(opaque, addr + 3, val & 0xff);
+#else
+    cirrus_mmio_writeb_wab(opaque, addr, val & 0xff);
+    cirrus_mmio_writeb_wab(opaque, addr + 1, (val >> 8) & 0xff);
+    cirrus_mmio_writeb_wab(opaque, addr + 2, (val >> 16) & 0xff);
+    cirrus_mmio_writeb_wab(opaque, addr + 3, (val >> 24) & 0xff);
+#endif
+}
+
+uint32_t_ cirrus_mmio_readb_iodata(void *opaque, target_phys_addr_t addr)
+{
+    CirrusVGAState *s = (CirrusVGAState *) opaque;
+
+	addr &= ~np2clvga.pciMMIO_Mask;
+	addr = (addr - 0x8000) & 0x7fff;
+	return cirrus_mmio_blt_read(s, (addr/* - 0x8000*/) & (CIRRUS_PNPMMIO_SIZE-1));
+}
+
+uint32_t_ cirrus_mmio_readw_iodata(void *opaque, target_phys_addr_t addr)
+{
+    uint32_t_ v;
+#ifdef TARGET_WORDS_BIGENDIAN
+    v = cirrus_mmio_readb_iodata(opaque, addr) << 8;
+    v |= cirrus_mmio_readb_iodata(opaque, addr + 1);
+#else
+    v = cirrus_mmio_readb_iodata(opaque, addr);
+    v |= cirrus_mmio_readb_iodata(opaque, addr + 1) << 8;
+#endif
+    return v;
+}
+
+uint32_t_ cirrus_mmio_readl_iodata(void *opaque, target_phys_addr_t addr)
+{
+    uint32_t_ v;
+#ifdef TARGET_WORDS_BIGENDIAN
+    v = cirrus_mmio_readb_iodata(opaque, addr) << 24;
+    v |= cirrus_mmio_readb_iodata(opaque, addr + 1) << 16;
+    v |= cirrus_mmio_readb_iodata(opaque, addr + 2) << 8;
+    v |= cirrus_mmio_readb_iodata(opaque, addr + 3);
+#else
+    v = cirrus_mmio_readb_iodata(opaque, addr);
+    v |= cirrus_mmio_readb_iodata(opaque, addr + 1) << 8;
+    v |= cirrus_mmio_readb_iodata(opaque, addr + 2) << 16;
+    v |= cirrus_mmio_readb_iodata(opaque, addr + 3) << 24;
+#endif
+    return v;
+}
+
+void cirrus_mmio_writeb_iodata(void *opaque, target_phys_addr_t addr,
+			       uint32_t_ val)
+{
+    CirrusVGAState *s = (CirrusVGAState *) opaque;
+
+	addr &= ~np2clvga.pciMMIO_Mask;
+    if ((s->gr[0x31] & CIRRUS_BLT_BUSY)==0) {
+		addr = (addr - 0x8000) & 0x7fff;
+		cirrus_mmio_blt_write(s, (addr/* - 0x8000*/) & (CIRRUS_PNPMMIO_SIZE-1), val);
+	}
+	/*}*/
+  //  } else {
+		////addr = addr & 0x7fff;
+		////if(addr > CIRRUS_PNPMMIO_SIZE) return;
+  //      //vga_ioport_write(s, addr & 0x7fff, val);
+  //  }
+}
+
+void cirrus_mmio_writew_iodata(void *opaque, target_phys_addr_t addr,
+			       uint32_t_ val)
+{
+#ifdef TARGET_WORDS_BIGENDIAN
+    cirrus_mmio_writeb_iodata(opaque, addr, (val >> 8) & 0xff);
+    cirrus_mmio_writeb_iodata(opaque, addr + 1, val & 0xff);
+#else
+    cirrus_mmio_writeb_iodata(opaque, addr, val & 0xff);
+    cirrus_mmio_writeb_iodata(opaque, addr + 1, (val >> 8) & 0xff);
+#endif
+}
+
+void cirrus_mmio_writel_iodata(void *opaque, target_phys_addr_t addr,
+			       uint32_t_ val)
+{
+#ifdef TARGET_WORDS_BIGENDIAN
+    cirrus_mmio_writeb_iodata(opaque, addr, (val >> 24) & 0xff);
+    cirrus_mmio_writeb_iodata(opaque, addr + 1, (val >> 16) & 0xff);
+    cirrus_mmio_writeb_iodata(opaque, addr + 2, (val >> 8) & 0xff);
+    cirrus_mmio_writeb_iodata(opaque, addr + 3, val & 0xff);
+#else
+    cirrus_mmio_writeb_iodata(opaque, addr, val & 0xff);
+    cirrus_mmio_writeb_iodata(opaque, addr + 1, (val >> 8) & 0xff);
+    cirrus_mmio_writeb_iodata(opaque, addr + 2, (val >> 16) & 0xff);
+    cirrus_mmio_writeb_iodata(opaque, addr + 3, (val >> 24) & 0xff);
+#endif
+}
+
 
 CPUReadMemoryFunc *cirrus_mmio_read[3] = {
     cirrus_mmio_readb,
@@ -3920,11 +4461,11 @@ void pc98_cirrus_vga_save()
     int pos = 0;
 	UINT8 *f = cirrusvga_statsavebuf; 
 	//char test[500] = {0};
-	uint32_t_ state_ver = 3;
+	uint32_t_ state_ver = 6;
 	uint32_t_ intbuf;
 	char en[3] = "en";
-
-    array_write(f, pos, &state_ver, sizeof(state_ver)); // ÉXÉeÅ[ÉgÉZÅ[Éu ÉoÅ[ÉWÉáÉìî‘çÜ
+	
+    array_write(f, pos, &state_ver, sizeof(state_ver)); // „Çπ„ÉÜ„Éº„Éà„Çª„Éº„Éñ „Éê„Éº„Ç∏„Éß„É≥Áï™Âè∑
 	
 	if(vramptr == NULL || s == NULL) {
 		strcpy(en, "di");
@@ -3933,7 +4474,7 @@ void pc98_cirrus_vga_save()
 	}
 	array_write(f, pos, en, 2);
 
-	// Ç±ÇÃç€ëSïîï€ë∂
+	// „Åì„ÅÆÈöõÂÖ®ÈÉ®‰øùÂ≠ò
 	array_write(f, pos, vramptr, CIRRUS_VRAM_SIZE);
 	array_write(f, pos, &s->vram_offset, sizeof(s->vram_offset));
 	array_write(f, pos, &s->vram_size, sizeof(s->vram_size));
@@ -4025,9 +4566,9 @@ void pc98_cirrus_vga_save()
 	array_write(f, pos, &s->cirrus_blt_mode, sizeof(s->cirrus_blt_mode));
 	array_write(f, pos, &s->cirrus_blt_modeext, sizeof(s->cirrus_blt_modeext));
 	array_write(f, pos, s->cirrus_bltbuf, sizeof(s->cirrus_bltbuf));
-	intbuf = s->cirrus_srcptr - s->cirrus_bltbuf;
+	intbuf = (UINT32)(s->cirrus_srcptr - s->cirrus_bltbuf);
 	array_write(f, pos, &intbuf, sizeof(intbuf));
-	intbuf = s->cirrus_srcptr_end - s->cirrus_bltbuf;
+	intbuf = (UINT32)(s->cirrus_srcptr_end - s->cirrus_bltbuf);
 	array_write(f, pos, &intbuf, sizeof(intbuf));
 	array_write(f, pos, &s->cirrus_srccounter, sizeof(s->cirrus_srccounter));
 	array_write(f, pos, &s->last_hw_cursor_size, sizeof(s->last_hw_cursor_size));
@@ -4040,8 +4581,27 @@ void pc98_cirrus_vga_save()
 	array_write(f, pos, &s->bustype, sizeof(s->bustype));
 	
 	array_write(f, pos, &np2clvga.VRAMWindowAddr3, sizeof(np2clvga.VRAMWindowAddr3));
-
-	TRACEOUT(("CIRRUS VGA datalen=%d", pos));
+	
+	array_write(f, pos, &s->videowindow_dblbuf_index, sizeof(s->videowindow_dblbuf_index));
+	array_write(f, pos, &s->graphics_dblbuf_index, sizeof(s->graphics_dblbuf_index));
+	
+	array_write(f, pos, &cirrusvga_wab_59e1, sizeof(cirrusvga_wab_59e1))
+	array_write(f, pos, &cirrusvga_wab_51e1, sizeof(cirrusvga_wab_51e1));
+	array_write(f, pos, &cirrusvga_wab_5be1, sizeof(cirrusvga_wab_5be1));
+	array_write(f, pos, &cirrusvga_wab_40e1, sizeof(cirrusvga_wab_40e1));
+	array_write(f, pos, &cirrusvga_wab_46e8, sizeof(cirrusvga_wab_46e8));
+	
+	array_write(f, pos, &cirrusvga_melcowab_ofs, sizeof(cirrusvga_melcowab_ofs));
+	
+	array_write(f, pos, &cirrusvga_wab_42e1, sizeof(cirrusvga_wab_42e1));
+	
+	TRACEOUT(("CIRRUS VGA datalen=%d, (max %d bytes)", pos, sizeof(cirrusvga_statsavebuf)));
+#if defined(_WIN32)
+	// „ÉÜ„Çπ„ÉàÁî®
+	if(pos > sizeof(cirrusvga_statsavebuf)){
+		MessageBox(NULL, _T("State save: Buffer Full"), _T("Warning"), 0);
+	}
+#endif
 }
 
 void pc98_cirrus_vga_load()
@@ -4054,10 +4614,10 @@ void pc98_cirrus_vga_load()
 	int width, height;
 	char en[3];
 	
-	array_read(f, pos, &state_ver, sizeof(state_ver)); // ÉoÅ[ÉWÉáÉìî‘çÜ
+	array_read(f, pos, &state_ver, sizeof(state_ver)); // „Éê„Éº„Ç∏„Éß„É≥Áï™Âè∑
 	switch(state_ver){
 	case 0:
-		s->latch = state_ver; // ver0.86 rev22à»ëOÇÕlatchÇÕèÌÇ…É[ÉçÅiÇÃÇÕÇ∏Åj
+		s->latch = state_ver; // ver0.86 rev22‰ª•Ââç„ÅØlatch„ÅØÂ∏∏„Å´„Çº„É≠Ôºà„ÅÆ„ÅØ„ÅöÔºâ
 		array_read(f, pos, &s->sr_index, sizeof(s->sr_index));
 		array_read(f, pos, s->sr, 256);
 		array_read(f, pos, &s->gr_index, sizeof(s->gr_index));
@@ -4095,13 +4655,16 @@ void pc98_cirrus_vga_load()
 
 		break;
 	case 3:
+	case 4:
+	case 5:
+	case 6:
 		array_read(f, pos, en, 2);
 		if(en[0] != 'e' || en[0] != 'n')
 			break;
 
 	case 1:
 	case 2:
-		// Ç±ÇÃç€ëSïîï€ë∂
+		// „Åì„ÅÆÈöõÂÖ®ÈÉ®‰øùÂ≠ò
 		array_read(f, pos, vramptr, CIRRUS_VRAM_SIZE);
 		array_read(f, pos, &s->vram_offset, sizeof(s->vram_offset));
 		array_read(f, pos, &s->vram_size, sizeof(s->vram_size));
@@ -4210,11 +4773,36 @@ void pc98_cirrus_vga_load()
 		if(state_ver >= 2){
 			array_read(f, pos, &np2clvga.VRAMWindowAddr3, sizeof(np2clvga.VRAMWindowAddr3));
 		}
+		if(state_ver >= 4){
+			array_read(f, pos, &s->videowindow_dblbuf_index, sizeof(s->videowindow_dblbuf_index));
+			array_read(f, pos, &s->graphics_dblbuf_index, sizeof(s->graphics_dblbuf_index));
+		}
+		if(state_ver >= 5){
+			array_read(f, pos, &cirrusvga_wab_59e1, sizeof(cirrusvga_wab_59e1));
+			array_read(f, pos, &cirrusvga_wab_51e1, sizeof(cirrusvga_wab_51e1));
+			array_read(f, pos, &cirrusvga_wab_5be1, sizeof(cirrusvga_wab_5be1));
+			array_read(f, pos, &cirrusvga_wab_40e1, sizeof(cirrusvga_wab_40e1));
+			array_read(f, pos, &cirrusvga_wab_46e8, sizeof(cirrusvga_wab_46e8));
+			array_read(f, pos, &cirrusvga_melcowab_ofs, sizeof(cirrusvga_melcowab_ofs));
+		}
+		if(state_ver >= 6){
+			array_read(f, pos, &cirrusvga_wab_42e1, sizeof(cirrusvga_wab_42e1));
+		}
+		//
 
 		break;
 	default:
 		break;
 	}
+	
+	s->cirrus_rop = cirrus_bitblt_rop_nop; // XXX: Êú¨ÂΩì„ÅØ„Çπ„ÉÜ„Éº„Éà„Çª„Éº„Éñ„Åß‰øùÂ≠ò„Åó„Å™„ÅÑ„Å®ÈßÑÁõÆ
+	
+#ifdef SUPPORT_PCI
+	// Èñ¢Êï∞„Ç¢„Éâ„É¨„ÇπÂÖ•„ÇåÁõ¥„Åó
+	pcidev.devices[pcidev_cirrus_deviceid].regwfn = &pcidev_cirrus_cfgreg_w;
+#endif
+		
+	pc98_cirrus_vga_updatePCIaddr();
 
     cirrus_update_memory_access(s);
     
@@ -4222,13 +4810,11 @@ void pc98_cirrus_vga_load()
     cirrus_update_bank_ptr(s, 0);
     cirrus_update_bank_ptr(s, 1);
 	
-	// WABâÊñ ÉTÉCÉYçXêV
-	if(cirrusvga->get_resolution){
-		cirrusvga->get_resolution((VGAState*)cirrusvga, &width, &height);
-		np2wab_setScreenSize(width, height);
-	}
+	// WABÁîªÈù¢„Çµ„Ç§„Ç∫Âº∑Âà∂Êõ¥Êñ∞
+	np2wab.realWidth = 0;
+	np2wab.realHeight = 0;
 
-	np2wab.paletteChanged = 1; // ÉpÉåÉbÉgïœÇ¶Ç‹ÇµÇΩ
+	np2wab.paletteChanged = 1; // „Éë„É¨„ÉÉ„ÉàÂ§â„Åà„Åæ„Åó„Åü
 }
 
 /***************************************
@@ -4251,9 +4837,9 @@ void cirrus_reset(void *opaque)
         /* 4MB 64 bit memory config, always PCI */
         s->sr[0x1F] = 0x2d;		// MemClock
         s->gr[0x18] = 0x0f;             // fastest memory configuration
-        s->sr[0x0f] = 0x98;
+        s->sr[0x0f] = CIRRUS_MEMSIZE_2M; //0x98;
         s->sr[0x17] = 0x20;
-        s->sr[0x15] = 0x04; /* memory size, 3=2MB, 4=4MB */
+        s->sr[0x15] = 0x03; /* memory size, 3=2MB, 4=4MB */
     } else {
         s->sr[0x1F] = 0x22;		// MemClock
         s->sr[0x0F] = CIRRUS_MEMSIZE_2M;
@@ -4265,25 +4851,12 @@ void cirrus_reset(void *opaque)
         s->sr[0x0F] = CIRRUS_MEMSIZE_1M;
         s->sr[0x15] = 0x02;
 	}
-	if (np2clvga.gd54xxtype == CIRRUS_98ID_WSN) {
-        //s->sr[0x1F] = 0x2d;		// MemClock
-        //s->gr[0x18] = 0x0f;             // fastest memory configuration
-        s->sr[0x0f] = 0x98;
-        //s->sr[0x17] = 0x20;
-        s->sr[0x15] = 0x04; /* memory size, 3=2MB, 4=4MB */
-        //s->sr[0x0F] = 0x20;
-	}
-	if (np2clvga.gd54xxtype == CIRRUS_98ID_GA98NB) {
-        //s->sr[0x1F] = 0x2d;		// MemClock
-        //s->gr[0x18] = 0x0f;             // fastest memory configuration
-        //s->sr[0x0f] = 0x98;
-        //s->sr[0x17] = 0x20;
-        //s->sr[0x15] = 0x04; /* memory size, 3=2MB, 4=4MB */
-        s->sr[0x0F] = 0x98;
-        s->sr[0x15] = 0x04;
-	}
-
-	if (np2clvga.gd54xxtype == CIRRUS_98ID_GA98NB || np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F) {
+	pc98_cirrus_setWABreg();
+	
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+	BitBlt(np2wabwnd.hDCBuf, 0, 0, WAB_MAX_WIDTH, WAB_MAX_HEIGHT, NULL, 0, 0, BLACKNESS);
+#endif
+	if ((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC || np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F) {
 		memset(s->vram_ptr, 0x00, s->real_vram_size);
 	}else{
 		/* Win2K seems to assume that the pattern buffer is at 0xff
@@ -4299,10 +4872,22 @@ void cirrus_reset(void *opaque)
 	// XXX: for WinNT4.0
 	s->cirrus_hidden_dac_data = 1;
 	
-	// XXX: Win2000ÇÃÉnÅ[ÉhÉEÉFÉAÉAÉNÉZÉâÉåÅ[ÉVÉáÉìÇìÆÇ©Ç∑ÇÃÇ…ïKóvÅBóùóRÇÕì‰
+	// XXX: Win2000„ÅÆ„Éè„Éº„Éâ„Ç¶„Çß„Ç¢„Ç¢„ÇØ„Çª„É©„É¨„Éº„Ç∑„Éß„É≥„ÇíÂãï„Åã„Åô„ÅÆ„Å´ÂøÖË¶Å„ÄÇÁêÜÁî±„ÅØË¨é
 	s->gr[0x25] = 0x06;
 	s->gr[0x26] = 0x20;
 	
+	// XXX: Win2000„ÅßÂãï„Åã„Åô„ÅÆ„Å´ÂøÖË¶Å„ÄÇÁêÜÁî±„ÅØË¨é
+#if defined(SUPPORT_PCI)
+	if(pcidev.enable && (np2clvga.gd54xxtype == CIRRUS_98ID_PCI || 
+	   np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_WS_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_W4_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_WA_PCI ||
+	   np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_G1_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_G2_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_G4_PCI)){
+		s->msr = 0x03;
+		s->sr[0x08] = 0xFE;
+		s->gr[0x0e] &= ~0x20; // XXX: for WinNT4.0
+		s->gr[0x33] = 0x04; // XXX: for WinNT4.0
+		s->cr[0x5e] &= ~0x20;//s->cr[0x5e] |= 0x20; // XXX: Part ID„ÇíË™≠„ÇÄ„Åæ„ÅßGR33„ÇíÊõ∏„ÅçËæº„ÅøÁ¶ÅÊ≠¢„Å´„Åô„ÇãÔºàWinNT4Â∞ÇÁî®„ÅÆ‰∏çÂÖ∑ÂêàÂõûÈÅøÔºâ
+	}
+#endif
 	//fh = fopen("vgadump.bin", "w+");
 	//if (fh != FILEH_INVALID) {
 	//	fwrite(s, sizeof(CirrusVGAState), 1, fh);
@@ -4328,11 +4913,12 @@ LOGPALETTE * NewLogPal(const uint8_t *pCirrusPalette , int iSize) {
 	return lpPalette;
 }
 #endif
-//Å@âÊñ ï\é¶(âº)Å@ñ{ìñÇÕQEMUÇÃÉIÉäÉWÉiÉãÇÃÉRÅ[ÉhÇà⁄êAÇ∑Ç◊Ç´Ç»ÇÒÇæÇØÇ«•••
+//„ÄÄÁîªÈù¢Ë°®Á§∫(‰ªÆ)„ÄÄÊú¨ÂΩì„ÅØQEMU„ÅÆ„Ç™„É™„Ç∏„Éä„É´„ÅÆ„Ç≥„Éº„Éâ„ÇíÁßªÊ§ç„Åô„Åπ„Åç„Å™„Çì„Å†„Åë„Å©ÔΩ•ÔΩ•ÔΩ•
+//  Cirrus VRAM (screen & cursor) -> GDI Device Independent Bitmap
 void cirrusvga_drawGraphic(){
 	//static UINT32 kdown = 0;
 	//static UINT32 kdownc = 0;
-	//static INT32 memshift = 0;
+	//static INT32 memshift = 0; // DEBUG 
 	int i, j, width, height, bpp;
 	uint32_t_ line_offset = 0;
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
@@ -4342,8 +4928,8 @@ void cirrusvga_drawGraphic(){
 #endif
 	static int waitscreenchange = 0;
 	int r;
-	int scanW = 0; // VRAMè„ÇÃ1ÉâÉCÉìÇÃÉfÅ[É^ïù(byte)
-	int scanpixW = 0; // é¿ç€Ç…ì]ëóÇ∑Ç◊Ç´1ÉâÉCÉìÇÃÉsÉNÉZÉãêî(pixel)
+	int scanW = 0; // VRAM‰∏ä„ÅÆ1„É©„Ç§„É≥„ÅÆ„Éá„Éº„ÇøÂπÖ(byte)
+	int scanpixW = 0; // ÂÆüÈöõ„Å´Ëª¢ÈÄÅ„Åô„Åπ„Åç1„É©„Ç§„É≥„ÅÆ„Éî„ÇØ„Çª„É´Êï∞(pixel)
 	int scanshift = 0;
 	uint8_t *scanptr;
 	uint8_t *vram_ptr;
@@ -4356,14 +4942,38 @@ void cirrusvga_drawGraphic(){
 	char* p;
 #endif
 
+	int cursot_ofs_x = 0;
+	int cursot_ofs_y = 0;
+	
+	int realWidth = 0;
+	int realHeight = 0;
 
-	// VRAMè„Ç≈ÇÃ1ÉâÉCÉìÇÃÉTÉCÉYÅiï\é¶ïùÇ∆ìôÇµÇ≠Ç»Ç¢èÍçáóLÇËÅj
+	// VRAM‰∏ä„Åß„ÅÆ1„É©„Ç§„É≥„ÅÆ„Çµ„Ç§„Ç∫ÔºàË°®Á§∫ÂπÖ„Å®Á≠â„Åó„Åè„Å™„ÅÑÂ†¥ÂêàÊúâ„ÇäÔºâ
 	line_offset = cirrusvga->cr[0x13] | ((cirrusvga->cr[0x1b] & 0x10) << 4);
-    line_offset <<= 3;
+	line_offset <<= 3;
 
 	vram_ptr = cirrusvga->vram_ptr + np2wab.vramoffs;
 	
-	//	vram_ptr = mem + 640*16*memshift;
+	//if(cirrusvga->device_id == CIRRUS_ID_CLGD5446 || (np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC || (np2clvga.gd54xxtype & CIRRUS_98ID_WABMASK) == CIRRUS_98ID_WAB){
+		//if((cirrusvga->cr[0x5e] & 0x7) == 0x1){
+		//	cirrusvga->graphics_dblbuf_index = (cirrusvga->graphics_dblbuf_index + 1) & 0x1;
+		//}
+		//if(cirrusvga->graphics_dblbuf_index != 0 || (cirrusvga->cr[0x1a] & 0x2) || (np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC || (np2clvga.gd54xxtype & CIRRUS_98ID_WABMASK) == CIRRUS_98ID_WAB)
+		{
+			// Screen Start A
+			int addroffset = 
+				(((int)(cirrusvga->cr[0x1d] >> 7) & 0x01) << 19)|
+				(((int)(cirrusvga->cr[0x1b] >> 2) & 0x03) << 17)|
+				(((int)(cirrusvga->cr[0x1b] >> 0) & 0x01) << 16)|
+				(((int)(cirrusvga->cr[0x0c] >> 0) & 0xff) << 8)|
+				(((int)(cirrusvga->cr[0x0d] >> 0) & 0xff) << 0);
+			vram_ptr += addroffset * 4; // ???
+		}
+	//}
+	
+	//// DEBUG 
+	////////	vram_ptr = mem + 640*16*memshift;
+	////vram_ptr += 640*16*memshift;
 	//if(GetKeyState(VK_SHIFT)<0){
 	//	memshift++;
 	////	kdown = 1;
@@ -4373,6 +4983,7 @@ void cirrusvga_drawGraphic(){
 	//}
 	//if(GetKeyState(VK_CONTROL)<0){
 	//	memshift--;
+	//	if(memshift<0) memshift = 0;
 	//	//vram_ptr = mem + 1024*768*memshift;
 	////	kdownc = 1;
 	////}else if(kdownc){
@@ -4382,32 +4993,55 @@ void cirrusvga_drawGraphic(){
 	////if(GetKeyState(VK_CONTROL)<0){
 	////	vram_ptr = vram_ptr + 1024*768*2;
 	////}
+	//// DEBUG (END)
 
+	// Cirrus„ÅÆËâ≤Êï∞„Å®Ëß£ÂÉèÂ∫¶„ÇíÂèñÂæó
     bpp = cirrusvga->get_bpp((VGAState*)cirrusvga);
-	//bpp = cirrusvga->cirrus_blt_pixelwidth*8;
     cirrusvga->get_resolution((VGAState*)cirrusvga, &width, &height);
-	np2wab.realWidth = width;
-	np2wab.realHeight = height;
-    
-	//Å@ì‰ÇÃï\é¶ïùí≤êÆÅi2^nÇ…ÉpÉfÉBÉìÉOÇ≥ÇÍÇÈÇ±Ç∆Ç™Ç†ÇÈÇÁÇµÇ¢ÇØÇ«èåèÇ™ï™Ç©ÇÁÇ»Ç¢ÇÃÇ≈ñ≥óùñÓóùÅj
-	scanW = width*bpp/8;
-	scanpixW = width;
-	if(bpp && line_offset){
-		scanW = line_offset;
-		if(bpp==8)
-			scanpixW = scanW*8/bpp;
+
+	if(bpp==0) return; 
+
+	// Palette mode > 85MHz (1280x1024)
+	if((cirrusvga->cirrus_hidden_dac_data & 0xCF) == 0x4A){
+		bpp = 8;
+		width *= 2;
+		height *= 2;
 	}
-	if(np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WAB || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F){
-		// XXX: WSNópÇ‚Ç¡Ç¬ÇØèCê≥
-		if((width==1024 || width==800 || width==640) && bpp==32){
-			scanW = width*bpp/8;
-			scanpixW = width;
+
+	// GA-98NBÁî® 1280x1024
+	if((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC){
+		// XXX: Win3.1Áî® „ÇÑ„Å£„Å§„Åë‰øÆÊ≠£
+		if(width==640 && height==512 && bpp==15/* && 
+		   cirrusvga->cr[0x00]==0x63 && cirrusvga->cr[0x04]==0x53 && cirrusvga->cr[0x05]==0x1e && 
+		   cirrusvga->cr[0x06]==0x15 && cirrusvga->cr[0x10]==0x04 && cirrusvga->cr[0x11]==0x88*/){
+			bpp = 8;
+			width *= 2;
+			height *= 2;
 		}
 	}
+	
+	// WABËß£ÂÉèÂ∫¶Ë®≠ÂÆö
+	realWidth = width;
+	realHeight = height;
+	
+	// CRTC offset Ë®≠ÂÆö
+	scanW = width*(bpp/8);
+	scanpixW = width;
+	if(bpp && line_offset){
+		// 32bit colorÁî®„ÇÑ„Å£„Å§„Åë‰øÆÊ≠£ for GA-98NB & WSN-A2F/A4F
+		if(bpp==32){
+			if((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC || (np2clvga.gd54xxtype & CIRRUS_98ID_WABMASK) == CIRRUS_98ID_WAB){
+				line_offset <<= 1;
+			}
+		}
+		scanW = line_offset;
+	}
+
+	// Ëâ≤Êï∞Âà§ÂÆö
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 	if(bpp==16){
+		// „Éì„ÉÉ„Éà„Éï„Ç£„Éº„É´„Éâ„ÅßRGB565„ÇíÊåáÂÆö
 		uint32_t_* bitfleld = (uint32_t_*)(ga_bmpInfo->bmiColors);
-		scanW = width*2;
 		bitfleld[0] = 0x0000F800;
 		bitfleld[1] = 0x000007E0;
 		bitfleld[2] = 0x0000001F;
@@ -4415,32 +5049,46 @@ void cirrusvga_drawGraphic(){
 	}else{
 		ga_bmpInfo->bmiHeader.biCompression = BI_RGB;
 	}
-#else
-	if(bpp==16){
-		scanW = width*2;
-	}
-#endif
+	// Windows„ÅÆ16bit„Ç´„É©„Éº„ÅØÊ®ôÊ∫ñ„ÅßRGB555„Å™„ÅÆ„Åß„Åù„ÅÆ„Åæ„Åæbpp=16„Å´Â§âÊõ¥
 	if(bpp==15){
 		bpp = 16;
-		scanW = width*2;
 	}
+#endif
 	
-	if(np2clvga.gd54xxtype == CIRRUS_98ID_WAB){
-		// XXX: âÊñ ï\é¶äJénà íuÉVÉtÉg ñ{óàÇÕÇÕÇ›èoÇµÇΩï™Ç™îΩëŒë§Ç…ì]ëóÇ≥ÇÍÇÈÅHÅHÅH
-		scanshift = ((((int)cirrusvga->cr[0x0c])<<8)|(((int)cirrusvga->cr[0x0d])));
-		if(scanshift){
-			scanshift = ((scanshift)/* % (height)*/);//;
+	// GA-98NBÁî®
+	if((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC){
+		if(np2cfg.ga98nb_bigscrn_ex && (bpp==8 || bpp==16) && (width==1024 || width==1280) && scanW*8/bpp==1600){
+			// 1600x1024 Big Screen Extension
+			int addroffset = 
+				(((int)(cirrusvga->cr[0x1d] >> 7) & 0x01) << 19)|
+				(((int)(cirrusvga->cr[0x1b] >> 2) & 0x03) << 17)|
+				(((int)(cirrusvga->cr[0x1b] >> 0) & 0x01) << 16)|
+				(((int)(cirrusvga->cr[0x0c] >> 0) & 0xff) << 8)|
+				(((int)(cirrusvga->cr[0x0d] >> 0) & 0xff) << 0);
+			addroffset *= 4;
+			realWidth = 1600;
+			realHeight = 1024;
+			width = 1600;
+			height = 1024;
+			scanpixW = 1600;
+			vram_ptr = cirrusvga->vram_ptr + np2wab.vramoffs;
+			cursot_ofs_x = (addroffset*8/bpp) % 1600;
+			cursot_ofs_y = (addroffset*8/bpp) / 1600;
 		}
 	}
-
+	
+	// WABËß£ÂÉèÂ∫¶Êõ¥Êñ∞
+	np2wab.realWidth = realWidth;
+	np2wab.realHeight = realHeight;
+    
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 	if(ga_bmpInfo->bmiHeader.biBitCount!=8 && bpp==8){
 		np2wab.paletteChanged = 1;
 	}
 
 	ga_bmpInfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	ga_bmpInfo->bmiHeader.biWidth = width; // âºÉZÉbÉg
-	ga_bmpInfo->bmiHeader.biHeight = 1; // âºÉZÉbÉg
+	ga_bmpInfo->bmiHeader.biWidth = width; // ‰ªÆ„Çª„ÉÉ„Éà
+	ga_bmpInfo->bmiHeader.biHeight = 1; // ‰ªÆ„Çª„ÉÉ„Éà
 	ga_bmpInfo->bmiHeader.biPlanes = 1;
 	ga_bmpInfo->bmiHeader.biBitCount = bpp;
 #endif
@@ -4461,61 +5109,113 @@ void cirrusvga_drawGraphic(){
 #endif
 			np2wab.paletteChanged = 0;
 		}
-		// 256ÉÇÅ[ÉhÇ»ÇÁëfíºÇ…ì]ëóÇµÇƒó«Çµ
-		if(scanshift){
-			// XXX: WABÇÃÉXÉLÉÉÉìà íuÉVÉtÉgñ≥éãÇµÇƒÇÈÇØÇ«•••
-#if defined(NP2_SDL2) || defined(__LIBRETRO__)
-			scanptr = vram_ptr;
-			VRAMBuf = (unsigned int*)malloc(width * height * sizeof(unsigned int));
-			p = (unsigned char*)VRAMBuf;
-			for(j = 0; j < height; j++) {
-				for(i = 0; i < width; i++) {
-					p[(j * width + i) * 4 + 2] = cirrusvga->palette[vram_ptr[j * width + i] * 3    ] << 2;
-					p[(j * width + i) * 4 + 1] = cirrusvga->palette[vram_ptr[j * width + i] * 3 + 1] << 2;
-					p[(j * width + i) * 4    ] = cirrusvga->palette[vram_ptr[j * width + i] * 3 + 2] << 2;
-				}
-			}
-#elif defined(NP2_X11)
-			scanptr = vram_ptr;
-			if(np2wabwnd.pPixbuf) {
-				VRAMBuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
-				p = gdk_pixbuf_get_pixels(VRAMBuf);
+		// 256„É¢„Éº„Éâ„Å™„ÇâÁ¥†Áõ¥„Å´Ëª¢ÈÄÅ„Åó„Å¶ËâØ„Åó
+		if(scanpixW*bpp/8==scanW){
+			if(scanshift){
+				// XXX: WAB„ÅÆ„Çπ„Ç≠„É£„É≥‰ΩçÁΩÆ„Ç∑„Éï„ÉàÁÑ°Ë¶ñ„Åó„Å¶„Çã„Åë„Å©ÔΩ•ÔΩ•ÔΩ•
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+				ga_bmpInfo->bmiHeader.biWidth = scanpixW;
+				ga_bmpInfo->bmiHeader.biHeight = -height;
+				scanptr = vram_ptr;
+				SetDIBitsToDevice(
+					hdc , 0 , 0 ,
+					ga_bmpInfo->bmiHeader.biWidth , -ga_bmpInfo->bmiHeader.biHeight ,
+					0 , 0 , 0 , -ga_bmpInfo->bmiHeader.biHeight ,
+					vram_ptr+scanshift*bpp/8 , ga_bmpInfo , DIB_PAL_COLORS
+				);
+				//int scanshiftY = scanshift/scanpixW;
+				//ga_bmpInfo->bmiHeader.biWidth = scanpixW;
+				//ga_bmpInfo->bmiHeader.biHeight = -height;
+				//SetDIBitsToDevice(
+				//	hdc , 0 , 0 ,
+				//	ga_bmpInfo->bmiHeader.biWidth , -ga_bmpInfo->bmiHeader.biHeight ,
+				//	0 , 0 , scanshiftY , -ga_bmpInfo->bmiHeader.biHeight ,
+				//	vram_ptr , ga_bmpInfo , DIB_PAL_COLORS
+				//);
+				//SetDIBitsToDevice(
+				//	hdc , 0 , 0 ,
+				//	ga_bmpInfo->bmiHeader.biWidth , -ga_bmpInfo->bmiHeader.biHeight ,
+				//	0 , 0 , 0 , scanshiftY ,
+				//	vram_ptr , ga_bmpInfo , DIB_PAL_COLORS
+				//);
+#elif defined(NP2_SDL2) || defined(__LIBRETRO__)
+				scanptr = vram_ptr;
+				VRAMBuf = (unsigned int*)malloc(width * height * sizeof(unsigned int));
+				p = (unsigned char*)VRAMBuf;
 				for(j = 0; j < height; j++) {
 					for(i = 0; i < width; i++) {
-						p[(j * width + i) * 3    ] = cirrusvga->palette[vram_ptr[j * width + i] * 3    ] << 2;
-						p[(j * width + i) * 3 + 1] = cirrusvga->palette[vram_ptr[j * width + i] * 3 + 1] << 2;
-						p[(j * width + i) * 3 + 2] = cirrusvga->palette[vram_ptr[j * width + i] * 3 + 2] << 2;
+						p[(j * width + i) * 4 + 2] = cirrusvga->palette[vram_ptr[j * width + i] * 3    ] << 2;
+						p[(j * width + i) * 4 + 1] = cirrusvga->palette[vram_ptr[j * width + i] * 3 + 1] << 2;
+						p[(j * width + i) * 4    ] = cirrusvga->palette[vram_ptr[j * width + i] * 3 + 2] << 2;
 					}
 				}
-			}
-#else
-			ga_bmpInfo->bmiHeader.biWidth = scanpixW;
-			ga_bmpInfo->bmiHeader.biHeight = -height;
-			scanptr = vram_ptr;
-			SetDIBitsToDevice(
-				hdc , 0 , 0 ,
-				ga_bmpInfo->bmiHeader.biWidth , -ga_bmpInfo->bmiHeader.biHeight ,
-				0 , 0 , 0 , -ga_bmpInfo->bmiHeader.biHeight ,
-				vram_ptr+scanshift*bpp/8 , ga_bmpInfo , DIB_PAL_COLORS
-			);
-			//int scanshiftY = scanshift/scanpixW;
-			//ga_bmpInfo->bmiHeader.biWidth = scanpixW;
-			//ga_bmpInfo->bmiHeader.biHeight = -height;
-			//SetDIBitsToDevice(
-			//	hdc , 0 , 0 ,
-			//	ga_bmpInfo->bmiHeader.biWidth , -ga_bmpInfo->bmiHeader.biHeight ,
-			//	0 , 0 , scanshiftY , -ga_bmpInfo->bmiHeader.biHeight ,
-			//	vram_ptr , ga_bmpInfo , DIB_PAL_COLORS
-			//);
-			//SetDIBitsToDevice(
-			//	hdc , 0 , 0 ,
-			//	ga_bmpInfo->bmiHeader.biWidth , -ga_bmpInfo->bmiHeader.biHeight ,
-			//	0 , 0 , 0 , scanshiftY ,
-			//	vram_ptr , ga_bmpInfo , DIB_PAL_COLORS
-			//);
+#elif defined(NP2_X11)
+				scanptr = vram_ptr;
+				if(np2wabwnd.pPixbuf) {
+					VRAMBuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
+					p = gdk_pixbuf_get_pixels(VRAMBuf);
+					for(j = 0; j < height; j++) {
+						for(i = 0; i < width; i++) {
+							p[(j * width + i) * 3    ] = cirrusvga->palette[vram_ptr[j * width + i] * 3    ] << 2;
+							p[(j * width + i) * 3 + 1] = cirrusvga->palette[vram_ptr[j * width + i] * 3 + 1] << 2;
+							p[(j * width + i) * 3 + 2] = cirrusvga->palette[vram_ptr[j * width + i] * 3 + 2] << 2;
+						}
+					}
+				}
 #endif
+			}else{
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+				ga_bmpInfo->bmiHeader.biWidth = scanpixW;
+				ga_bmpInfo->bmiHeader.biHeight = -height;
+				scanptr = vram_ptr;
+				SetDIBitsToDevice(
+					hdc , 0 , 0 ,
+					ga_bmpInfo->bmiHeader.biWidth , -ga_bmpInfo->bmiHeader.biHeight ,
+					0 , 0 , 0 , -ga_bmpInfo->bmiHeader.biHeight ,
+					vram_ptr , ga_bmpInfo , DIB_PAL_COLORS
+				);
+#elif defined(NP2_SDL2) || defined(__LIBRETRO__)
+				scanptr = vram_ptr;
+				VRAMBuf = (unsigned int*)malloc(width * height * sizeof(unsigned int));
+				p = (unsigned char*)VRAMBuf;
+				for(j = 0; j < height; j++) {
+					for(i = 0; i < width; i++) {
+						p[(j * width + i) * 4 + 2] = cirrusvga->palette[vram_ptr[j * width + i] * 3    ] << 2;
+						p[(j * width + i) * 4 + 1] = cirrusvga->palette[vram_ptr[j * width + i] * 3 + 1] << 2;
+						p[(j * width + i) * 4    ] = cirrusvga->palette[vram_ptr[j * width + i] * 3 + 2] << 2;
+					}
+				}
+#elif defined(NP2_X11)
+				scanptr = vram_ptr;
+				if(np2wabwnd.pPixbuf) {
+					VRAMBuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
+					p = gdk_pixbuf_get_pixels(VRAMBuf);
+					for(j = 0; j < height; j++) {
+						for(i = 0; i < width; i++) {
+							p[(j * width + i) * 3    ] = cirrusvga->palette[vram_ptr[j * width + i] * 3    ] << 2;
+							p[(j * width + i) * 3 + 1] = cirrusvga->palette[vram_ptr[j * width + i] * 3 + 1] << 2;
+							p[(j * width + i) * 3 + 2] = cirrusvga->palette[vram_ptr[j * width + i] * 3 + 2] << 2;
+						}
+					}
+				}
+#endif
+			}
 		}else{
-#if defined(NP2_SDL2) || defined(__LIBRETRO__)
+			// „Ç∫„É¨„Åå„ÅÇ„Çã„Å™„Çâ1„É©„Ç§„É≥„Åö„Å§Ëª¢ÈÄÅ
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+			scanptr = vram_ptr;
+			for(i=0;i<height;i++){
+				ga_bmpInfo->bmiHeader.biWidth = width;
+				ga_bmpInfo->bmiHeader.biHeight = 1;
+				r = SetDIBitsToDevice(
+					hdc , 0 , i ,
+					width , 1 ,
+					0 , 0 , 0 , 1 ,
+					scanptr , ga_bmpInfo , DIB_PAL_COLORS
+				);
+				scanptr += scanW;
+			}
+#elif defined(NP2_SDL2) || defined(__LIBRETRO__)
 			scanptr = vram_ptr;
 			VRAMBuf = (unsigned int*)malloc(width * height * sizeof(unsigned int));
 			p = (unsigned char*)VRAMBuf;
@@ -4529,33 +5229,26 @@ void cirrusvga_drawGraphic(){
 #elif defined(NP2_X11)
 			scanptr = vram_ptr;
 			if(np2wabwnd.pPixbuf) {
-				VRAMBuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
-				p = gdk_pixbuf_get_pixels(VRAMBuf);
-				for(j = 0; j < height; j++) {
-					for(i = 0; i < width; i++) {
-						p[(j * width + i) * 3    ] = cirrusvga->palette[vram_ptr[j * width + i] * 3    ] << 2;
-						p[(j * width + i) * 3 + 1] = cirrusvga->palette[vram_ptr[j * width + i] * 3 + 1] << 2;
-						p[(j * width + i) * 3 + 2] = cirrusvga->palette[vram_ptr[j * width + i] * 3 + 2] << 2;
-					}
-				}
+				GdkPixbuf *VRAMBuf;
+				VRAMBuf = gdk_pixbuf_new_from_data(vram_ptr, GDK_COLORSPACE_RGB, FALSE, 8, width, height, width*bpp/8, NULL,NULL);
 			}
-#else
-			ga_bmpInfo->bmiHeader.biWidth = scanpixW;
-			ga_bmpInfo->bmiHeader.biHeight = -height;
-			scanptr = vram_ptr;
-			SetDIBitsToDevice(
-				hdc , 0 , 0 ,
-				ga_bmpInfo->bmiHeader.biWidth , -ga_bmpInfo->bmiHeader.biHeight ,
-				0 , 0 , 0 , -ga_bmpInfo->bmiHeader.biHeight ,
-				vram_ptr , ga_bmpInfo , DIB_PAL_COLORS
-			);
 #endif
 		}
 	}else{
 		if(scanpixW*bpp/8==scanW){
 			if(scanshift){
-				// XXX: ÉXÉLÉÉÉìà íuÉVÉtÉg
-#if defined(NP2_SDL2) || defined(__LIBRETRO__)
+				// XXX: „Çπ„Ç≠„É£„É≥‰ΩçÁΩÆ„Ç∑„Éï„Éà
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+				ga_bmpInfo->bmiHeader.biWidth = scanpixW;
+				ga_bmpInfo->bmiHeader.biHeight = -height;
+				scanptr = vram_ptr;
+				SetDIBitsToDevice(
+					hdc , 0 , 0 ,
+					ga_bmpInfo->bmiHeader.biWidth , -ga_bmpInfo->bmiHeader.biHeight ,
+					0 , 0 , 0 , -ga_bmpInfo->bmiHeader.biHeight ,
+					vram_ptr+scanshift*bpp/8 , ga_bmpInfo , DIB_RGB_COLORS
+				);
+#elif defined(NP2_SDL2) || defined(__LIBRETRO__)
 				scanptr = vram_ptr;
 				VRAMBuf = (unsigned int*)malloc(width * height * sizeof(unsigned int));
 				p = (unsigned char*)VRAMBuf;
@@ -4572,7 +5265,9 @@ void cirrusvga_drawGraphic(){
 					VRAMBuf = gdk_pixbuf_new_from_data(vram_ptr, GDK_COLORSPACE_RGB, FALSE, 8, width, height, width*bpp/8, NULL,NULL);
 					p = gdk_pixbuf_get_pixels(VRAMBuf);
 				}
-#else
+#endif
+			}else{
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 				ga_bmpInfo->bmiHeader.biWidth = scanpixW;
 				ga_bmpInfo->bmiHeader.biHeight = -height;
 				scanptr = vram_ptr;
@@ -4580,11 +5275,9 @@ void cirrusvga_drawGraphic(){
 					hdc , 0 , 0 ,
 					ga_bmpInfo->bmiHeader.biWidth , -ga_bmpInfo->bmiHeader.biHeight ,
 					0 , 0 , 0 , -ga_bmpInfo->bmiHeader.biHeight ,
-					vram_ptr+scanshift*bpp/8 , ga_bmpInfo , DIB_RGB_COLORS
+					vram_ptr , ga_bmpInfo , DIB_RGB_COLORS
 				);
-#endif
-			}else{
-#if defined(NP2_SDL2) || defined(__LIBRETRO__)
+#elif defined(NP2_SDL2) || defined(__LIBRETRO__)
 				scanptr = vram_ptr;
 				VRAMBuf = (unsigned int*)malloc(width * height * sizeof(unsigned int));
 				p = (unsigned char*)VRAMBuf;
@@ -4604,6 +5297,14 @@ void cirrusvga_drawGraphic(){
 							p[(j * width + i) * 4    ] = (((((UINT16*)vram_ptr)[j * width + i]) & 0x001F) << 3) & 0xFF;
 						}
 					}
+				} else if(bpp == 32) {
+					for(j = 0; j < height; j++) {
+						for(i = 0; i < width; i++) {
+							p[(j * width + i) * 4 + 2] = (((((UINT32*)vram_ptr)[j * width + i]) & 0x00FF0000) >> 16) & 0xFF;
+							p[(j * width + i) * 4 + 1] = (((((UINT32*)vram_ptr)[j * width + i]) & 0x0000FF00) >>  8) & 0xFF;
+							p[(j * width + i) * 4    ] = (((((UINT32*)vram_ptr)[j * width + i]) & 0x000000FF)      ) & 0xFF;
+						}
+					}
 				}
 #elif defined(NP2_X11)
 				scanptr = vram_ptr;
@@ -4620,40 +5321,23 @@ void cirrusvga_drawGraphic(){
 								p[(j * width + i) * 3 + 2] = (((((UINT16*)vram_ptr)[j * width + i]) & 0x001F) << 3) & 0xFF;
 							}
 						}
+					} else if(bpp == 32) {
+						VRAMBuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
+						p = gdk_pixbuf_get_pixels(VRAMBuf);
+						for(j = 0; j < height; j++) {
+							for(i = 0; i < width; i++) {
+								p[(j * width + i) * 3    ] = (((((UINT32*)vram_ptr)[j * width + i]) & 0x00FF0000) >> 16) & 0xFF;
+								p[(j * width + i) * 3 + 1] = (((((UINT32*)vram_ptr)[j * width + i]) & 0x0000FF00) >>  8) & 0xFF;
+								p[(j * width + i) * 3 + 2] = (((((UINT32*)vram_ptr)[j * width + i]) & 0x000000FF)      ) & 0xFF;
+							}
+						}
 					}
 				}
-#else
-				ga_bmpInfo->bmiHeader.biWidth = scanpixW;
-				ga_bmpInfo->bmiHeader.biHeight = -height;
-				scanptr = vram_ptr;
-				SetDIBitsToDevice(
-					hdc , 0 , 0 ,
-					ga_bmpInfo->bmiHeader.biWidth , -ga_bmpInfo->bmiHeader.biHeight ,
-					0 , 0 , 0 , -ga_bmpInfo->bmiHeader.biHeight ,
-					vram_ptr , ga_bmpInfo , DIB_RGB_COLORS
-				);
 #endif
 			}
 		}else{
-			// ÉYÉåÇ™Ç†ÇÈÇ»ÇÁ1ÉâÉCÉìÇ∏Ç¬ì]ëó
-#if defined(NP2_SDL2) || defined(__LIBRETRO__)
-			scanptr = vram_ptr;
-			VRAMBuf = (unsigned int*)malloc(width * height * sizeof(unsigned int));
-			p = (unsigned char*)VRAMBuf;
-			for(j = 0; j < height; j++) {
-				for(i = 0; i < width; i++) {
-					p[(j * width + i) * 4    ] = vram_ptr[(j * width + i) * 3    ];
-					p[(j * width + i) * 4 + 1] = vram_ptr[(j * width + i) * 3 + 1];
-					p[(j * width + i) * 4 + 2] = vram_ptr[(j * width + i) * 3 + 2];
-				}
-			}
-#elif defined(NP2_X11)
-			scanptr = vram_ptr;
-			if(np2wabwnd.pPixbuf) {
-				GdkPixbuf *VRAMBuf;
-				VRAMBuf = gdk_pixbuf_new_from_data(vram_ptr, GDK_COLORSPACE_RGB, FALSE, 8, width, height, width*bpp/8, NULL,NULL);
-			}
-#else
+			// „Ç∫„É¨„Åå„ÅÇ„Çã„Å™„Çâ1„É©„Ç§„É≥„Åö„Å§Ëª¢ÈÄÅ
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 			scanptr = vram_ptr;
 			for(i=0;i<height;i++){
 				ga_bmpInfo->bmiHeader.biWidth = width;
@@ -4666,15 +5350,115 @@ void cirrusvga_drawGraphic(){
 				);
 				scanptr += scanW;
 			}
+#elif defined(NP2_SDL2) || defined(__LIBRETRO__)
+			scanptr = vram_ptr;
+			VRAMBuf = (unsigned int*)malloc(width * height * sizeof(unsigned int));
+			p = (unsigned char*)VRAMBuf;
+			if(bpp == 15) {
+				for(j = 0; j < height; j++) {
+					for(i = 0; i < width; i++) {
+						p[(j * width + i) * 4 + 2] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0x7C00) >> 7) & 0xFF;
+						p[(j * width + i) * 4 + 1] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0x03E0) >> 2) & 0xFF;
+						p[(j * width + i) * 4    ] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0x001F) << 3) & 0xFF;
+					}
+				}
+			} else if(bpp == 16) {
+				for(j = 0; j < height; j++) {
+					for(i = 0; i < width; i++) {
+						p[(j * width + i) * 4    ] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0xF800) >> 8) & 0xFF;
+						p[(j * width + i) * 4 + 1] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0x07C0) >> 3) & 0xFF;
+						p[(j * width + i) * 4 + 2] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0x001F) << 3) & 0xFF;
+					}
+				}
+			} else if(bpp == 24) {
+				for(j = 0; j < height; j++) {
+					for(i = 0; i < width; i++) {
+						p[(j * width + i) * 4    ] = vram_ptr[j * scanW + i * 3    ];
+						p[(j * width + i) * 4 + 1] = vram_ptr[j * scanW + i * 3 + 1];
+						p[(j * width + i) * 4 + 2] = vram_ptr[j * scanW + i * 3 + 2];
+					}
+				}
+			} else if(bpp == 32) {
+				for(j = 0; j < height; j++) {
+					for(i = 0; i < width; i++) {
+						p[(j * width + i) * 4 + 2] = ((*(UINT32*)(vram_ptr + j * scanW + i * 4) & 0x00FF0000) >> 16) & 0xFF;
+						p[(j * width + i) * 4 + 1] = ((*(UINT32*)(vram_ptr + j * scanW + i * 4) & 0x0000FF00) >>  8) & 0xFF;
+						p[(j * width + i) * 4    ] = ((*(UINT32*)(vram_ptr + j * scanW + i * 4) & 0x000000FF)      ) & 0xFF;
+					}
+				}
+			} else {
+				for(j = 0; j < height; j++) {
+					for(i = 0; i < width; i++) {
+						p[(j * width + i) * 4    ] = vram_ptr[j * scanW + i * 3    ];
+						p[(j * width + i) * 4 + 1] = vram_ptr[j * scanW + i * 3 + 1];
+						p[(j * width + i) * 4 + 2] = vram_ptr[j * scanW + i * 3 + 2];
+					}
+				}
+			}
+#elif defined(NP2_X11)
+			scanptr = vram_ptr;
+			if(np2wabwnd.pPixbuf) {
+				if(bpp == 15) {
+					VRAMBuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
+					p = gdk_pixbuf_get_pixels(VRAMBuf);
+					for(j = 0; j < height; j++) {
+						for(i = 0; i < width; i++) {
+							p[(j * width + i) * 3    ] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0x7C00) >> 7) & 0xFF;
+							p[(j * width + i) * 3 + 1] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0x03E0) >> 2) & 0xFF;
+							p[(j * width + i) * 3 + 2] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0x001F) << 3) & 0xFF;
+						}
+					}
+				} else if(bpp == 16) {
+					VRAMBuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
+					p = gdk_pixbuf_get_pixels(VRAMBuf);
+					for(j = 0; j < height; j++) {
+						for(i = 0; i < width; i++) {
+							p[(j * width + i) * 3    ] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0xF800) >> 8) & 0xFF;
+							p[(j * width + i) * 3 + 1] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0x07C0) >> 3) & 0xFF;
+							p[(j * width + i) * 3 + 2] = ((*(UINT16*)(vram_ptr + j * scanW + i * 2) & 0x001F) << 3) & 0xFF;
+						}
+					}
+				} else if(bpp == 24) {
+					VRAMBuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
+					p = gdk_pixbuf_get_pixels(VRAMBuf);
+					for(j = 0; j < height; j++) {
+						for(i = 0; i < width; i++) {
+							p[(j * width + i) * 3    ] = vram_ptr[(j * scanW) + i * 3    ];
+							p[(j * width + i) * 3 + 1] = vram_ptr[(j * scanW) + i * 3 + 1];
+							p[(j * width + i) * 3 + 2] = vram_ptr[(j * scanW) + i * 3 + 2];
+						}
+					}
+				} else if(bpp == 32) {
+					VRAMBuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
+					p = gdk_pixbuf_get_pixels(VRAMBuf);
+					for(j = 0; j < height; j++) {
+						for(i = 0; i < width; i++) {
+							p[(j * width + i) * 3    ] = vram_ptr[(j * scanW) + i * 4    ];
+							p[(j * width + i) * 3 + 1] = vram_ptr[(j * scanW) + i * 4 + 1];
+							p[(j * width + i) * 3 + 2] = vram_ptr[(j * scanW) + i * 4 + 2];
+						}
+					}
+				} else {
+					VRAMBuf = gdk_pixbuf_new_from_data(vram_ptr, GDK_COLORSPACE_RGB, FALSE, 8, width, height, width*(bpp/8), NULL,NULL);
+				}
+			}
 #endif
 		}
 	}
     if ((cirrusvga->sr[0x12] & CIRRUS_CURSOR_SHOW)){
-		int hwcur_x = cirrusvga->hw_cursor_x;
-		int hwcur_y = cirrusvga->hw_cursor_y;
+		int hwcur_x = cirrusvga->hw_cursor_x + cursot_ofs_x;
+		int hwcur_y = cirrusvga->hw_cursor_y + cursot_ofs_y;
+		// GA-98NBÁî® „Ç´„Éº„ÇΩ„É´‰ΩçÁΩÆË™øÊï¥
+		if((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC){
+			if(width==320 && height==240){
+				hwcur_y /= 2;
+			}
+		}
 		if(np2cfg.gd5430fakecur){
-			// ÉnÅ[ÉhÉEÉFÉAÉJÅ[É\ÉãÇ™è„éËÇ≠ï\é¶Ç≈Ç´Ç»Ç¢èÍçáóp
-#if defined(NP2_SDL2) || defined(__LIBRETRO__)
+			// „Éè„Éº„Éâ„Ç¶„Çß„Ç¢„Ç´„Éº„ÇΩ„É´„Åå‰∏äÊâã„ÅèË°®Á§∫„Åß„Åç„Å™„ÅÑÂ†¥ÂêàÁî®
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+			DrawIcon(hdc, hwcur_x, hwcur_y, ga_hFakeCursor);
+#elif defined(NP2_SDL2) || defined(__LIBRETRO__)
 			int fcx, fcy;
 			UINT8 col;
 			for(fcy = 0; fcy < CIRRUS_FMC_H; fcy++) {
@@ -4703,8 +5487,6 @@ void cirrusvga_drawGraphic(){
 					}
 				}
 			}
-#else
-			DrawIcon(hdc, hwcur_x, hwcur_y, ga_hFakeCursor);
 #endif
 		}else{
 			//HPALETTE oldCurPalette;
@@ -4717,32 +5499,38 @@ void cirrusvga_drawGraphic(){
 			uint8_t *palette, *src, *base;
 			uint32_t_ *dst;
 			uint32_t_ content;
+			uint32_t_ colortmp;
+			const uint8_t *plane0, *plane1;
+			int b0, b1;
 			int poffset;
 			if (cirrusvga->sr[0x12] & CIRRUS_CURSOR_LARGE) {
 				cursize = 64;
 			}
-#if defined(NP2_SDL2) || defined(__LIBRETRO__)
-			if(np2clvga.gd54xxtype <= 0xff){
-				base = cirrusvga->vram_ptr + 1024 * 1024 - 16 * 1024; // ??? 1MBëOíÒÅH
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+			BitBlt(ga_hdc_cursor , 0 , 0 , cursize , cursize , hdc , hwcur_x , hwcur_y , SRCCOPY);
+		
+			if(np2clvga.gd54xxtype == CIRRUS_98ID_PCI){
+				base = cirrusvga->vram_ptr + cirrusvga->real_vram_size - 16 * 1024;
+			}else if(np2clvga.gd54xxtype <= 0xff){
+				base = cirrusvga->vram_ptr + 1024 * 1024 - 16 * 1024; // ??? 1MBÂâçÊèêÔºü
 			}else{
 				base = cirrusvga->vram_ptr + cirrusvga->real_vram_size - 16 * 1024;
 			}
 			if (height >= hwcur_y && 0 <= (hwcur_y + cursize)){
-				UINT8 color0_r, color0_g, color0_b;
-				UINT8 color1_r, color1_g, color1_b;
 				int y1, y2;
 				y1 = hwcur_y; 
 				y2 = hwcur_y+cursize; 
 				h = cursize;
-				p += (cirrusvga->hw_cursor_y * width + cirrusvga->hw_cursor_x) * 4; // ÉJÅ[É\Éãà íuÇÃÉ|ÉCÉìÉ^
+				dst = (uint32_t_ *)cursorptr;
+				dst += 64*64;
+				dst -= 64;
 				palette = cirrusvga->cirrus_hidden_palette;
-				color0_r = c6_to_8(palette[0x0 * 3]);
-				color0_g = c6_to_8(palette[0x0 * 3 + 1]);
-				color0_b = c6_to_8(palette[0x0 * 3 + 2]);
-				color1_r = c6_to_8(palette[0xf * 3]);
-				color1_g = c6_to_8(palette[0xf * 3 + 1]);
-				color1_b = c6_to_8(palette[0xf * 3 + 2]);
-				if(y2 > height) y2 = height;
+				color0 = rgb_to_pixel32(c6_to_8(palette[0x0 * 3]),
+											c6_to_8(palette[0x0 * 3 + 1]),
+											c6_to_8(palette[0x0 * 3 + 2]));
+				color1 = rgb_to_pixel32(c6_to_8(palette[0xf * 3]),
+											c6_to_8(palette[0xf * 3 + 1]),
+											c6_to_8(palette[0xf * 3 + 2]));
 				for(y=y1;y<y2;y++){
 					src = base;
 					if (cirrusvga->sr[0x12] & CIRRUS_CURSOR_LARGE) {
@@ -4761,9 +5549,83 @@ void cirrusvga_drawGraphic(){
 							((uint32_t_ *)(src + 128))[0];
 					}
 					/* if nothing to draw, no need to continue */
+					x1 = hwcur_x;
+					if (x1 < width){
+						x2 = hwcur_x + cursize;
+						w = x2 - x1;
+						for(x=0;x<w;x++){
+							colortmp = *dst;
+							plane0 = src;
+							plane1 = src + poffset;
+							b0 = (plane0[(x) >> 3] >> (7 - ((x) & 7))) & 1;
+							b1 = (plane1[(x) >> 3] >> (7 - ((x) & 7))) & 1;
+							switch(b0 | (b1 << 1)) {
+							case 0:
+								break;
+							case 1:
+								colortmp ^= 0xffffff;
+								break;
+							case 2:
+								colortmp = color0;
+								break;
+							case 3:
+								colortmp = color1;
+								break;
+							}
+							*dst = colortmp;
+							dst++;
+						}
+						dst += (64 - w);
+					}
+					dst -= 64*2;
+				}
+			}
+			BitBlt(hdc , hwcur_x , hwcur_y , cursize , cursize , ga_hdc_cursor , 0 , 0 , SRCCOPY);
+#elif defined(NP2_SDL2) || defined(__LIBRETRO__)
+			if(np2clvga.gd54xxtype == CIRRUS_98ID_PCI){
+				base = cirrusvga->vram_ptr + cirrusvga->real_vram_size - 16 * 1024;
+			}else if(np2clvga.gd54xxtype <= 0xff){
+				base = cirrusvga->vram_ptr + 1024 * 1024 - 16 * 1024; // ??? 1MBÂâçÊèêÔºü
+			}else{
+				base = cirrusvga->vram_ptr + cirrusvga->real_vram_size - 16 * 1024;
+			}
+			if (height >= hwcur_y && 0 <= (hwcur_y + cursize)){
+				UINT8 color0_r, color0_g, color0_b;
+				UINT8 color1_r, color1_g, color1_b;
+				int y1, y2;
+				y1 = hwcur_y; 
+				y2 = hwcur_y+cursize; 
+				h = cursize;
+				p += (cirrusvga->hw_cursor_y * width + cirrusvga->hw_cursor_x) * 4; // „Ç´„Éº„ÇΩ„É´‰ΩçÁΩÆ„ÅÆ„Éù„Ç§„É≥„Çø
+				palette = cirrusvga->cirrus_hidden_palette;
+				color0_r = c6_to_8(palette[0x0 * 3]);
+				color0_g = c6_to_8(palette[0x0 * 3 + 1]);
+				color0_b = c6_to_8(palette[0x0 * 3 + 2]);
+				color1_r = c6_to_8(palette[0xf * 3]);
+				color1_g = c6_to_8(palette[0xf * 3 + 1]);
+				color1_b = c6_to_8(palette[0xf * 3 + 2]);
+				if(y2 > height) y2 = height;
+				for(y=y1;y<y2;y++){
 					UINT8 colortmp_r, colortmp_g, colortmp_b;
 					const uint8_t *plane0, *plane1;
 					int b0, b1;
+					src = base;
+					if (cirrusvga->sr[0x12] & CIRRUS_CURSOR_LARGE) {
+						src += (cirrusvga->sr[0x13] & 0x3c) * 256;
+						src += (y - (int)hwcur_y) * 16;
+						poffset = 8;
+						content = ((uint32_t_ *)src)[0] |
+							((uint32_t_ *)src)[1] |
+							((uint32_t_ *)src)[2] |
+							((uint32_t_ *)src)[3];
+					} else {
+						src += (cirrusvga->sr[0x13] & 0x3f) * 256;
+						src += (y - (int)hwcur_y) * 4;
+						poffset = 128;
+						content = ((uint32_t_ *)src)[0] |
+							((uint32_t_ *)(src + 128))[0];
+					}
+					/* if nothing to draw, no need to continue */
 					x1 = hwcur_x;
 					if (x1 < width){
 						x2 = hwcur_x + cursize;
@@ -4807,8 +5669,10 @@ void cirrusvga_drawGraphic(){
 				}
 			}
 #elif defined(NP2_X11)
-			if(np2clvga.gd54xxtype <= 0xff){
-				base = cirrusvga->vram_ptr + 1024 * 1024 - 16 * 1024; // ??? 1MBëOíÒÅH
+			if(np2clvga.gd54xxtype == CIRRUS_98ID_PCI){
+				base = cirrusvga->vram_ptr + cirrusvga->real_vram_size - 16 * 1024;
+			}else if(np2clvga.gd54xxtype <= 0xff){
+				base = cirrusvga->vram_ptr + 1024 * 1024 - 16 * 1024; // ??? 1MBÂâçÊèêÔºü
 			}else{
 				base = cirrusvga->vram_ptr + cirrusvga->real_vram_size - 16 * 1024;
 			}
@@ -4820,7 +5684,7 @@ void cirrusvga_drawGraphic(){
 				y2 = hwcur_y+cursize; 
 				h = cursize;
 				p = gdk_pixbuf_get_pixels(VRAMBuf);
-				p += (cirrusvga->hw_cursor_y * width + cirrusvga->hw_cursor_x) * 3; // ÉJÅ[É\Éãà íuÇÃÉ|ÉCÉìÉ^
+				p += (cirrusvga->hw_cursor_y * width + cirrusvga->hw_cursor_x) * 3; // „Ç´„Éº„ÇΩ„É´‰ΩçÁΩÆ„ÅÆ„Éù„Ç§„É≥„Çø
 				palette = cirrusvga->cirrus_hidden_palette;
 				color0_r = c6_to_8(palette[0x0 * 3]);
 				color0_g = c6_to_8(palette[0x0 * 3 + 1]);
@@ -4892,83 +5756,6 @@ void cirrusvga_drawGraphic(){
 					}
 				}
 			}
-#else
-			BitBlt(ga_hdc_cursor , 0 , 0 , cursize , cursize , hdc , hwcur_x , hwcur_y , SRCCOPY);
-		
-			if(np2clvga.gd54xxtype <= 0xff){
-				base = cirrusvga->vram_ptr + 1024 * 1024 - 16 * 1024; // ??? 1MBëOíÒÅH
-			}else{
-				base = cirrusvga->vram_ptr + cirrusvga->real_vram_size - 16 * 1024;
-			}
-			if (height >= hwcur_y && 0 <= (hwcur_y + cursize)){
-				int y1, y2;
-				uint32_t_ colortmp;
-				const uint8_t *plane0, *plane1;
-				int b0, b1;
-				src = base;
-				y1 = hwcur_y; 
-				y2 = hwcur_y+cursize; 
-				h = cursize;
-				dst = (uint32_t_ *)cursorptr;
-				dst += 64*64;
-				dst -= 64;
-				if(y2 > height) y2 = height;
-				for(y=y1;y<y2;y++){
-					if (cirrusvga->sr[0x12] & CIRRUS_CURSOR_LARGE) {
-						src += (cirrusvga->sr[0x13] & 0x3c) * 256;
-						src += (y - (int)hwcur_y) * 16;
-						poffset = 8;
-						content = ((uint32_t_ *)src)[0] |
-							((uint32_t_ *)src)[1] |
-							((uint32_t_ *)src)[2] |
-							((uint32_t_ *)src)[3];
-					} else {
-						src += (cirrusvga->sr[0x13] & 0x3f) * 256;
-						src += (y - (int)hwcur_y) * 4;
-						poffset = 128;
-						content = ((uint32_t_ *)src)[0] |
-							((uint32_t_ *)(src + 128))[0];
-					}
-					/* if nothing to draw, no need to continue */
-					x1 = hwcur_x;
-					if (x1 < width){
-						x2 = hwcur_x + cursize;
-						w = x2 - x1;
-						palette = cirrusvga->cirrus_hidden_palette;
-						color0 = rgb_to_pixel32(c6_to_8(palette[0x0 * 3]),
-													c6_to_8(palette[0x0 * 3 + 1]),
-													c6_to_8(palette[0x0 * 3 + 2]));
-						color1 = rgb_to_pixel32(c6_to_8(palette[0xf * 3]),
-													c6_to_8(palette[0xf * 3 + 1]),
-													c6_to_8(palette[0xf * 3 + 2]));
-						for(x=0;x<w;x++){
-							colortmp = *dst;
-							plane0 = src;
-							plane1 = src + poffset;
-							b0 = (plane0[(x) >> 3] >> (7 - ((x) & 7))) & 1;
-							b1 = (plane1[(x) >> 3] >> (7 - ((x) & 7))) & 1;
-							switch(b0 | (b1 << 1)) {
-							case 0:
-								break;
-							case 1:
-								colortmp ^= 0xffffff;
-								break;
-							case 2:
-								colortmp = color0;
-								break;
-							case 3:
-								colortmp = color1;
-								break;
-							}
-							*dst = colortmp;
-							dst++;
-						}
-						dst += (64 - w);
-					}
-					dst -= 64*2;
-				}
-			}
-			BitBlt(hdc , hwcur_x , hwcur_y , cursize , cursize , ga_hdc_cursor , 0 , 0 , SRCCOPY);
 #endif
 		}
 	}
@@ -4993,8 +5780,8 @@ void cirrusvga_drawGraphic(){
 	}
 #endif
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
-	ga_bmpInfo->bmiHeader.biWidth = width; // ëOâÒÇÃâëúìxÇï€ë∂
-	ga_bmpInfo->bmiHeader.biHeight = height; // ëOâÒÇÃâëúìxÇï€ë∂
+	ga_bmpInfo->bmiHeader.biWidth = width; // ÂâçÂõû„ÅÆËß£ÂÉèÂ∫¶„Çí‰øùÂ≠ò
+	ga_bmpInfo->bmiHeader.biHeight = height; // ÂâçÂõû„ÅÆËß£ÂÉèÂ∫¶„Çí‰øùÂ≠ò
 #endif
 }
 
@@ -5032,10 +5819,10 @@ static void IOOUTCALL cirrusvga_ofa3(UINT port, REG8 dat) {
 	}
 	switch(cirrusvga_regindexA2){
 	case 0x00:
-		// ã@éÌîªíËÅH
+		// Ê©üÁ®ÆÂà§ÂÆöÔºü
 		break;
 	case 0x01:
-		// VRAMÉEÉBÉìÉhÉEÉAÉhÉåÉXê›íË
+		// VRAM„Ç¶„Ç£„É≥„Éâ„Ç¶„Ç¢„Éâ„É¨„ÇπË®≠ÂÆö
 		switch(dat){
 		case 0x10:
 			np2clvga.VRAMWindowAddr2 = 0x0b0000;
@@ -5055,16 +5842,18 @@ static void IOOUTCALL cirrusvga_ofa3(UINT port, REG8 dat) {
 		}
 		break;
 	case 0x02:
-		// ÉäÉjÉAVRAMÉAÉNÉZÉXópÉAÉhÉåÉXê›íË
-		if(np2clvga.gd54xxtype <= 0xff){
-			if(dat!=0x00 && dat!=0xff) np2clvga.VRAMWindowAddr = (dat<<24);
+		// „É™„Éã„Ç¢VRAM„Ç¢„ÇØ„Çª„ÇπÁî®„Ç¢„Éâ„É¨„ÇπË®≠ÂÆö
+		if(np2clvga.gd54xxtype != CIRRUS_98ID_PCI){
+			if(np2clvga.gd54xxtype <= 0xff){
+				if(dat!=0x00 && dat!=0xff) np2clvga.VRAMWindowAddr = (dat<<24);
+			}
 		}
 		break;
 	case 0x03:
-		// èoóÕêÿë÷ÉäÉåÅ[êßå‰
+		// Âá∫ÂäõÂàáÊõø„É™„É¨„ÉºÂà∂Âæ°
 		if((!!np2wab.relaystateint) != (!!(dat&0x2))){
 			np2wab.relaystateint = dat & 0x2;
-			np2wab_setRelayState(np2wab.relaystateint|np2wab.relaystateext); // ÉäÉåÅ[ÇÕORÇ≈•••ÅiébíËÇ‚Ç¡Ç¬ÇØèCê≥Åj
+			np2wab_setRelayState(np2wab.relaystateint|np2wab.relaystateext); // „É™„É¨„Éº„ÅØOR„ÅßÔΩ•ÔΩ•ÔΩ•ÔºàÊö´ÂÆö„ÇÑ„Å£„Å§„Åë‰øÆÊ≠£Ôºâ
 		}
 		np2clvga.mmioenable = (dat&0x1);
 		break;
@@ -5074,6 +5863,7 @@ static void IOOUTCALL cirrusvga_ofa3(UINT port, REG8 dat) {
 }
 static REG8 IOINPCALL cirrusvga_ifa3(UINT port) {
 	REG8 ret = 0xff;
+
 	TRACEOUT(("CIRRUS VGA: inp %04X", port));
 	if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK){
 		np2clvga.gd54xxtype = CIRRUS_98ID_Xe10;
@@ -5082,16 +5872,18 @@ static REG8 IOINPCALL cirrusvga_ifa3(UINT port) {
 	}
 	switch(cirrusvga_regindexA2){
 	case 0x00:
-		// ã@éÌîªíËÅH
-		if(np2clvga.gd54xxtype == CIRRUS_98ID_96){
+		// Ê©üÁ®ÆÂà§ÂÆöÔºü
+		if(np2clvga.gd54xxtype == CIRRUS_98ID_PCI){
+			ret = 0xff;
+		}else if(np2clvga.gd54xxtype == CIRRUS_98ID_96){
 			ret = (REG8)np2clvga.gd54xxtype;
 		}else{
 			ret = 0xff;
 		}
 		break;
 	case 0x01:
-		// VRAMÉEÉBÉìÉhÉEÉAÉhÉåÉXê›íË
-		if(np2clvga.gd54xxtype <= 0xff){
+		// VRAM„Ç¶„Ç£„É≥„Éâ„Ç¶„Ç¢„Éâ„É¨„ÇπË®≠ÂÆö
+		//if(np2clvga.gd54xxtype <= 0xff){
 			switch(np2clvga.VRAMWindowAddr2){
 			case 0x0b0000:
 				ret = 0x10;
@@ -5109,12 +5901,12 @@ static REG8 IOINPCALL cirrusvga_ifa3(UINT port) {
 				ret = 0xE0;
 				break;
 			}
-		}else{
-			ret = 0xff;
-		}
+		//}else{
+		//	ret = 0xff;
+		//}
 		break;
 	case 0x02:
-		// ÉäÉjÉAVRAMÉAÉNÉZÉXópÉAÉhÉåÉXê›íË
+		// „É™„Éã„Ç¢VRAM„Ç¢„ÇØ„Çª„ÇπÁî®„Ç¢„Éâ„É¨„ÇπË®≠ÂÆö
 		if(np2clvga.gd54xxtype <= 0xff){
 			ret = (np2clvga.VRAMWindowAddr>>24)&0xff;
 		}else{
@@ -5122,11 +5914,11 @@ static REG8 IOINPCALL cirrusvga_ifa3(UINT port) {
 		}
 		break;
 	case 0x03:
-		// èoóÕêÿë÷ÉäÉåÅ[êßå‰
+		// Âá∫ÂäõÂàáÊõø„É™„É¨„ÉºÂà∂Âæ°
 		ret = ((np2wab.relaystateint&0x2) ? 0x2 : 0x0) | np2clvga.mmioenable;
 		break;
 	case 0x04:
-		// ÅH
+		// Ôºü
 		ret = 0x00;
 		break;
 	}
@@ -5162,10 +5954,10 @@ static void IOOUTCALL cirrusvga_ofab(UINT port, REG8 dat) {
 	}
 	switch(cirrusvga_regindex){
 	case 0x00:
-		// ã@éÌîªíË
+		// Ê©üÁ®ÆÂà§ÂÆö
 		break;
 	case 0x01:
-		// VRAMÉEÉBÉìÉhÉEÉAÉhÉåÉXê›íË
+		// VRAM„Ç¶„Ç£„É≥„Éâ„Ç¶„Ç¢„Éâ„É¨„ÇπË®≠ÂÆö
 		switch(dat){
 		case 0x10:
 			np2clvga.VRAMWindowAddr2 = 0x0b0000;
@@ -5185,16 +5977,16 @@ static void IOOUTCALL cirrusvga_ofab(UINT port, REG8 dat) {
 		}
 		break;
 	case 0x02:
-		// ÉäÉjÉAVRAMÉAÉNÉZÉXópÉAÉhÉåÉXê›íË
+		// „É™„Éã„Ç¢VRAM„Ç¢„ÇØ„Çª„ÇπÁî®„Ç¢„Éâ„É¨„ÇπË®≠ÂÆö
 		if(dat!=0x00 && dat!=0xff) np2clvga.VRAMWindowAddr = (dat<<24);
 		//cirrusvga->vram_offset = np2clvga.VRAMWindowAddr;
 		break;
 	case 0x03:
-		// èoóÕêÿë÷ÉäÉåÅ[êßå‰
+		// Âá∫ÂäõÂàáÊõø„É™„É¨„ÉºÂà∂Âæ°
 		if((!!np2wab.relaystateint) != (!!(dat&0x2))){
 			np2wab.relaystateint = dat & 0x2;
-			np2wab.relaystateext = dat & 0x2; // ÅiÅPÅÕÅP;Åj
-			np2wab_setRelayState(np2wab.relaystateint|np2wab.relaystateext); // ÉäÉåÅ[ÇÕORÇ≈•••ÅiébíËÇ‚Ç¡Ç¬ÇØèCê≥Åj
+			np2wab.relaystateext = dat & 0x2; // ÔºàÔø£‚àÄÔø£;Ôºâ
+			np2wab_setRelayState(np2wab.relaystateint|np2wab.relaystateext); // „É™„É¨„Éº„ÅØOR„ÅßÔΩ•ÔΩ•ÔΩ•ÔºàÊö´ÂÆö„ÇÑ„Å£„Å§„Åë‰øÆÊ≠£Ôºâ
 		}
 		np2clvga.mmioenable = (dat&0x1);
 		break;
@@ -5212,39 +6004,45 @@ static REG8 IOINPCALL cirrusvga_ifab(UINT port) {
 	}
 	switch(cirrusvga_regindex){
 	case 0x00:
-		// ã@éÌîªíË
-		if(np2clvga.gd54xxtype <= 0xff){
+		// Ê©üÁ®ÆÂà§ÂÆö
+		if(np2clvga.gd54xxtype == CIRRUS_98ID_PCI){
+			ret = 0xff;
+		}else if(np2clvga.gd54xxtype <= 0xff){
 			ret = (REG8)np2clvga.gd54xxtype;//0x5B;
 		}else{
 			ret = 0xff;
 		}
 		break;
 	case 0x01:
-		// VRAMÉEÉBÉìÉhÉEÉAÉhÉåÉXê›íË
-		if(np2clvga.gd54xxtype <= 0xff){
-			switch(np2clvga.VRAMWindowAddr2){
-			case 0x0b0000:
-				ret = 0x10;
-				break;
-			case 0xf20000:
-				ret = 0x80;
-				break;
-			case 0xf00000:
-				ret = 0xA0;
-				break;
-			case 0xf40000:
-				ret = 0xC0;
-				break;
-			case 0xf60000:
-				ret = 0xE0;
-				break;
-			}
+		// VRAM„Ç¶„Ç£„É≥„Éâ„Ç¶„Ç¢„Éâ„É¨„ÇπË®≠ÂÆö
+		if(np2clvga.gd54xxtype == CIRRUS_98ID_PCI){
+			ret = 0x80;
 		}else{
-			ret = 0xff;
+			if(np2clvga.gd54xxtype <= 0xff){
+				switch(np2clvga.VRAMWindowAddr2){
+				case 0x0b0000:
+					ret = 0x10;
+					break;
+				case 0xf20000:
+					ret = 0x80;
+					break;
+				case 0xf00000:
+					ret = 0xA0;
+					break;
+				case 0xf40000:
+					ret = 0xC0;
+					break;
+				case 0xf60000:
+					ret = 0xE0;
+					break;
+				}
+			}else{
+				ret = 0xff;
+			}
 		}
 		break;
 	case 0x02:
-		// ÉäÉjÉAVRAMÉAÉNÉZÉXópÉAÉhÉåÉXê›íË
+		// „É™„Éã„Ç¢VRAM„Ç¢„ÇØ„Çª„ÇπÁî®„Ç¢„Éâ„É¨„ÇπË®≠ÂÆö
 		if(np2clvga.gd54xxtype <= 0xff){
 			ret = (np2clvga.VRAMWindowAddr>>24)&0xff;
 		}else{
@@ -5252,7 +6050,7 @@ static REG8 IOINPCALL cirrusvga_ifab(UINT port) {
 		}
 		break;
 	case 0x03:
-		// èoóÕêÿë÷ÉäÉåÅ[êßå‰
+		// Âá∫ÂäõÂàáÊõø„É™„É¨„ÉºÂà∂Âæ°
 		ret = (np2wab.relay ? 0x2 : 0x0) | np2clvga.mmioenable;
 		break;
 	}
@@ -5281,106 +6079,106 @@ static REG8 IOINPCALL cirrusvga_iff82(UINT port) {
 	return cirrusvga_videoenable;
 }
 
-// WAB, WSNóp
-int cirrusvga_wab_51e1 = 0xC2;
-int cirrusvga_wab_40e1 = 0x7b;
-//int cirrusvga_wab_0fe1 = 0xC2;
-int cirrusvga_wab_46e8 = 0x18;
+// WAB, WSNÁî®
+static void cirrusvga_setAutoWABID() {
+	switch(np2clvga.gd54xxtype){
+	case CIRRUS_98ID_AUTO_XE_G1_PCI:
+		np2clvga.gd54xxtype = CIRRUS_98ID_GA98NBIC;
+		memset(cirrusvga->vram_ptr, 0x00, cirrusvga->real_vram_size);
+		cirrusvga_wab_59e1 = 0x06;	// d.c.
+		cirrusvga_wab_51e1 = 0xC2;	// d.c.
+		cirrusvga_wab_5be1 = 0xf7;	// d.c.
+		cirrusvga_wab_40e1 = 0xC2;	// bit1=0:DRAM REFRESH MODE?? „Å®„Çä„ÅÇ„Åà„ÅöÂàùÊúüÂÄ§„ÅØC2h„Åò„ÇÉ„Å™„ÅÑ„Å®Win95„Éâ„É©„Ç§„Éê„ÅØ„Éú„Éº„Éâ„ÇíË™çË≠ò„Åó„Å™„ÅÑ
+		cirrusvga_wab_42e1 = 0x18;  // Â≠òÂú®„Åó„Å™„ÅÑ
+		cirrusvga_wab_46e8 = 0x18;
+		break;
+	case CIRRUS_98ID_AUTO_XE_G2_PCI:
+		np2clvga.gd54xxtype = CIRRUS_98ID_GA98NBII;
+		memset(cirrusvga->vram_ptr, 0x00, cirrusvga->real_vram_size);
+		cirrusvga_wab_59e1 = 0x06;	// d.c.
+		cirrusvga_wab_51e1 = 0xC2;	// d.c.
+		cirrusvga_wab_5be1 = 0xf7;	// d.c.
+		cirrusvga_wab_40e1 = 0xC2;	// bit1=0:DRAM REFRESH MODE?? „Å®„Çä„ÅÇ„Åà„ÅöÂàùÊúüÂÄ§„ÅØC2h„Åò„ÇÉ„Å™„ÅÑ„Å®Win95„Éâ„É©„Ç§„Éê„ÅØ„Éú„Éº„Éâ„ÇíË™çË≠ò„Åó„Å™„ÅÑ
+		cirrusvga_wab_42e1 = 0x18;  // Â≠òÂú®„Åó„Å™„ÅÑ
+		cirrusvga_wab_46e8 = 0x18;
+		break;
+	case CIRRUS_98ID_AUTO_XE_G4_PCI:
+		np2clvga.gd54xxtype = CIRRUS_98ID_GA98NBIV;
+		memset(cirrusvga->vram_ptr, 0x00, cirrusvga->real_vram_size);
+		cirrusvga_wab_59e1 = 0x06;	// d.c.
+		cirrusvga_wab_51e1 = 0xC2;	// d.c.
+		cirrusvga_wab_5be1 = 0xf7;	// d.c.
+		cirrusvga_wab_40e1 = 0xC2;	// bit1=0:DRAM REFRESH MODE?? „Å®„Çä„ÅÇ„Åà„ÅöÂàùÊúüÂÄ§„ÅØC2h„Åò„ÇÉ„Å™„ÅÑ„Å®Win95„Éâ„É©„Ç§„Éê„ÅØ„Éú„Éº„Éâ„ÇíË™çË≠ò„Åó„Å™„ÅÑ
+		cirrusvga_wab_42e1 = 0x18;  // Â≠òÂú®„Åó„Å™„ÅÑ
+		cirrusvga_wab_46e8 = 0x18;
+		break;
+	case CIRRUS_98ID_AUTO_XE10_WABS:
+	case CIRRUS_98ID_AUTO_XE_WA_PCI:
+		np2clvga.gd54xxtype = CIRRUS_98ID_WAB;
+		break;
+	case CIRRUS_98ID_AUTO_XE10_WSN4:
+	case CIRRUS_98ID_AUTO_XE_W4_PCI:
+		np2clvga.gd54xxtype = CIRRUS_98ID_WSN;
+		break;
+	default:
+		np2clvga.gd54xxtype = CIRRUS_98ID_WSN_A2F;
+		break;
+	}
+	pc98_cirrus_setWABreg();
+	pc98_cirrus_vga_setvramsize();
+	pc98_cirrus_vga_initVRAMWindowAddr();
+}
+
+static REG8 IOINPCALL cirrusvga_i59e1(UINT port) {
+	if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK){
+		cirrusvga_setAutoWABID();
+	}
+	return cirrusvga_wab_59e1;
+}
 static REG8 IOINPCALL cirrusvga_i51e1(UINT port) {
 	REG8 ret = cirrusvga_wab_51e1;
 	if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK){
-		switch(np2clvga.gd54xxtype){
-		case CIRRUS_98ID_AUTO_XE10_WABS:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WAB;
-			break;
-		case CIRRUS_98ID_AUTO_XE10_WSN4:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WSN;
-			break;
-		default:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WSN_A2F;
-			break;
-		}
-		pc98_cirrus_vga_setvramsize();
-		pc98_cirrus_vga_initVRAMWindowAddr();
+		cirrusvga_setAutoWABID();
 	}
 	//if(np2clvga.gd54xxtype == CIRRUS_98ID_WSN){
 	//	ret = 0xC2;
 	//}
-	return ret;
+	if (port == 0x51e1) {
+ 		return 0xff;
+ 	}
+ 	else {
+ 		return ret;
+ 	}
 }
 static void IOOUTCALL cirrusvga_o51e1(UINT port, REG8 dat) {
 	if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK){
-		switch(np2clvga.gd54xxtype){
-		case CIRRUS_98ID_AUTO_XE10_WABS:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WAB;
-			break;
-		case CIRRUS_98ID_AUTO_XE10_WSN4:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WSN;
-			break;
-		default:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WSN_A2F;
-			break;
-		}
-		pc98_cirrus_vga_setvramsize();
-		pc98_cirrus_vga_initVRAMWindowAddr();
+		cirrusvga_setAutoWABID();
 	}
 	cirrusvga_wab_51e1 = dat;
 	(void)port;
 	(void)dat;
 }
-static REG8 IOINPCALL cirrusvga_i5be3(UINT port) {
+static REG8 IOINPCALL cirrusvga_i5be1(UINT port) {
 	if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK){
-		switch(np2clvga.gd54xxtype){
-		case CIRRUS_98ID_AUTO_XE10_WABS:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WAB;
-			break;
-		case CIRRUS_98ID_AUTO_XE10_WSN4:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WSN;
-			break;
-		default:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WSN_A2F;
-			break;
-		}
-		pc98_cirrus_vga_setvramsize();
-		pc98_cirrus_vga_initVRAMWindowAddr();
+		cirrusvga_setAutoWABID();
 	}
-	return 0xf7; // XXX: 0x08 is VRAM 4M flag?
-}
-static void IOOUTCALL cirrusvga_o5be3(UINT port, REG8 dat) {
-	if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK){
-		switch(np2clvga.gd54xxtype){
-		case CIRRUS_98ID_AUTO_XE10_WABS:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WAB;
-			break;
-		case CIRRUS_98ID_AUTO_XE10_WSN4:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WSN;
-			break;
-		default:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WSN_A2F;
-			break;
-		}
-		pc98_cirrus_vga_setvramsize();
-		pc98_cirrus_vga_initVRAMWindowAddr();
+//	return 0xf7; // XXX: 0x08 is VRAM 4M flag?
+	if (np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F) {
+		cirrusvga_wab_5be1 |= 0x08;
 	}
-	(void)port;
-	(void)dat;
+	return cirrusvga_wab_5be1;
 }
+//static void IOOUTCALL cirrusvga_o5be3(UINT port, REG8 dat) {
+//	if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK){
+//		cirrusvga_setAutoWABID();
+//	}
+//	(void)port;
+//	(void)dat;
+//}
 
 static REG8 IOINPCALL cirrusvga_i40e1(UINT port) {
 	if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK){
-		switch(np2clvga.gd54xxtype){
-		case CIRRUS_98ID_AUTO_XE10_WABS:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WAB;
-			break;
-		case CIRRUS_98ID_AUTO_XE10_WSN4:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WSN;
-			break;
-		default:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WSN_A2F;
-			break;
-		}
-		pc98_cirrus_vga_setvramsize();
-		pc98_cirrus_vga_initVRAMWindowAddr();
+		cirrusvga_setAutoWABID();
 	}
 	//cirrusvga_wab_40e1--;
 	//TRACEOUT(("CIRRUS VGA: out %04X d=%02X", port, cirrusvga_wab_40e1));
@@ -5388,62 +6186,42 @@ static REG8 IOINPCALL cirrusvga_i40e1(UINT port) {
 }
 static void IOOUTCALL cirrusvga_o40e1(UINT port, REG8 dat) {
 	if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK){
-		switch(np2clvga.gd54xxtype){
-		case CIRRUS_98ID_AUTO_XE10_WABS:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WAB;
-			break;
-		case CIRRUS_98ID_AUTO_XE10_WSN4:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WSN;
-			break;
-		default:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WSN_A2F;
-			break;
-		}
-		pc98_cirrus_vga_setvramsize();
-		pc98_cirrus_vga_initVRAMWindowAddr();
+		cirrusvga_setAutoWABID();
 	}
 	cirrusvga_wab_40e1 = dat;
+
 	np2wab.relaystateint = (np2wab.relaystateint & ~0x1) | (cirrusvga_wab_40e1 & 0x1);
-	np2wab_setRelayState(np2wab.relaystateint|np2wab.relaystateext); // ÉäÉåÅ[ÇÕORÇ≈•••ÅiébíËÇ‚Ç¡Ç¬ÇØèCê≥Åj
+	np2wab_setRelayState(np2wab.relaystateint|np2wab.relaystateext); // „É™„É¨„Éº„ÅØOR„ÅßÔΩ•ÔΩ•ÔΩ•ÔºàÊö´ÂÆö„ÇÑ„Å£„Å§„Åë‰øÆÊ≠£Ôºâ
+	(void)port;
+	(void)dat;
+}
+static REG8 IOINPCALL cirrusvga_i42e1(UINT port) {
+	if ((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK) {
+		cirrusvga_setAutoWABID();
+	}
+	return cirrusvga_wab_42e1;
+}
+static void IOOUTCALL cirrusvga_o42e1(UINT port, REG8 dat) {
+	if ((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK) {
+		cirrusvga_setAutoWABID();
+	}
+	cirrusvga_wab_42e1 = dat;
+	cirrus_update_memory_access(cirrusvga);
 	(void)port;
 	(void)dat;
 }
 static REG8 IOINPCALL cirrusvga_i46e8(UINT port) {
 	REG8 ret = cirrusvga_wab_46e8;
 	if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK){
-		switch(np2clvga.gd54xxtype){
-		case CIRRUS_98ID_AUTO_XE10_WABS:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WAB;
-			break;
-		case CIRRUS_98ID_AUTO_XE10_WSN4:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WSN;
-			break;
-		default:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WSN_A2F;
-			break;
-		}
-		pc98_cirrus_vga_setvramsize();
-		pc98_cirrus_vga_initVRAMWindowAddr();
+		cirrusvga_setAutoWABID();
 	}
 	//np2wab.relaystateint = (np2wab.relaystateint & ~0x1) | (cirrusvga_wab_40e1 & 0x1);
-	//np2wab_setRelayState(np2wab.relaystateint|np2wab.relaystateext); // ÉäÉåÅ[ÇÕORÇ≈•••ÅiébíËÇ‚Ç¡Ç¬ÇØèCê≥Åj
+	//np2wab_setRelayState(np2wab.relaystateint|np2wab.relaystateext); // „É™„É¨„Éº„ÅØOR„ÅßÔΩ•ÔΩ•ÔΩ•ÔºàÊö´ÂÆö„ÇÑ„Å£„Å§„Åë‰øÆÊ≠£Ôºâ
 	return ret;
 }
 static void IOOUTCALL cirrusvga_o46e8(UINT port, REG8 dat) {
 	if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK){
-		switch(np2clvga.gd54xxtype){
-		case CIRRUS_98ID_AUTO_XE10_WABS:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WAB;
-			break;
-		case CIRRUS_98ID_AUTO_XE10_WSN4:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WSN;
-			break;
-		default:
-			np2clvga.gd54xxtype = CIRRUS_98ID_WSN_A2F;
-			break;
-		}
-		pc98_cirrus_vga_setvramsize();
-		pc98_cirrus_vga_initVRAMWindowAddr();
+		cirrusvga_setAutoWABID();
 	}
 	cirrusvga_wab_46e8 = dat;
 	(void)port;
@@ -5496,27 +6274,120 @@ static void vga_dumb_update_retrace_info(VGAState *s)
     (void) s;
 }
 
-// VRAMÉEÉBÉìÉhÉEÉAÉhÉåÉXÇÉfÉtÉHÉãÉgílÇ…ê›íËÇ∑ÇÈ
+// MMIO„Ç¶„Ç£„É≥„Éâ„Ç¶„ÇíË®≠ÂÆö„Åô„Çã
+void pc98_cirrus_setMMIOWindowAddr(){
+	if(np2clvga.gd54xxtype == CIRRUS_98ID_WAB || np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F){
+		cirrus_mmio_read[0] = cirrus_mmio_readb_wab;
+		cirrus_mmio_read[1] = cirrus_mmio_readw_wab;
+		cirrus_mmio_read[2] = cirrus_mmio_readl_wab;
+		cirrus_mmio_write[0] = cirrus_mmio_writeb_wab;
+		cirrus_mmio_write[1] = cirrus_mmio_writew_wab;
+		cirrus_mmio_write[2] = cirrus_mmio_writel_wab;
+	}else if ((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC) {
+		cirrus_mmio_read[0] = cirrus_mmio_readb_wab;
+		cirrus_mmio_read[1] = cirrus_mmio_readw_wab;
+		cirrus_mmio_read[2] = cirrus_mmio_readl_wab;
+		cirrus_mmio_write[0] = cirrus_mmio_writeb_wab;
+		cirrus_mmio_write[1] = cirrus_mmio_writew_wab;
+		cirrus_mmio_write[2] = cirrus_mmio_writel_wab;
+	}else{
+		cirrus_mmio_read[0] = cirrus_mmio_readb;
+		cirrus_mmio_read[1] = cirrus_mmio_readw;
+		cirrus_mmio_read[2] = cirrus_mmio_readl;
+		cirrus_mmio_write[0] = cirrus_mmio_writeb;
+		cirrus_mmio_write[1] = cirrus_mmio_writew;
+		cirrus_mmio_write[2] = cirrus_mmio_writel;
+	}
+}
+
+void pc98_cirrus_vga_updatePCIaddr(){
+	if((np2clvga.gd54xxtype & CIRRUS_98ID_WABMASK) == CIRRUS_98ID_WAB || (np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC){
+		pc98_cirrus_setMMIOWindowAddr();
+		return;
+	}
+#if defined(SUPPORT_PCI)
+	if((pcidev.devices[pcidev_cirrus_deviceid].header.baseaddrregs[0] & 0xfffffff0) != ~pcidev.devices[pcidev_cirrus_deviceid].headerrom.baseaddrregs[0]){
+		np2clvga.pciLFB_Addr = pcidev.devices[pcidev_cirrus_deviceid].header.baseaddrregs[0] & 0xfffffff0;
+		np2clvga.pciLFB_Mask = ~pcidev.devices[pcidev_cirrus_deviceid].headerrom.baseaddrregs[0];
+
+		cirrusvga->map_addr = cirrusvga->map_end = 0;
+		cirrusvga->lfb_addr = np2clvga.pciLFB_Addr & TARGET_PAGE_MASK;
+		cirrusvga->lfb_end = ((np2clvga.pciLFB_Addr + cirrusvga->real_vram_size) + TARGET_PAGE_SIZE - 1) & TARGET_PAGE_MASK;
+		/* account for overflow */
+		if (cirrusvga->lfb_end < np2clvga.pciLFB_Addr + cirrusvga->real_vram_size)
+			cirrusvga->lfb_end = np2clvga.pciLFB_Addr + cirrusvga->real_vram_size;
+	}else{
+		np2clvga.pciLFB_Addr = 0;
+	}
+	if((pcidev.devices[pcidev_cirrus_deviceid].header.baseaddrregs[1] & 0xfffffff0) != ~pcidev.devices[pcidev_cirrus_deviceid].headerrom.baseaddrregs[1]){
+		np2clvga.pciMMIO_Addr = pcidev.devices[pcidev_cirrus_deviceid].header.baseaddrregs[1] & 0xfffffff0;
+		np2clvga.pciMMIO_Mask = ~pcidev.devices[pcidev_cirrus_deviceid].headerrom.baseaddrregs[1];
+	}else{
+		np2clvga.pciMMIO_Addr = 0;
+	}
+
+	pc98_cirrus_setMMIOWindowAddr();
+	cirrus_update_memory_access(cirrusvga);
+#endif
+}
+
+// VRAM„Ç¶„Ç£„É≥„Éâ„Ç¶„Ç¢„Éâ„É¨„Çπ„Çí„Éá„Éï„Ç©„É´„ÉàÂÄ§„Å´Ë®≠ÂÆö„Åô„Çã
 void pc98_cirrus_vga_initVRAMWindowAddr(){
+	np2clvga.pciLFB_Addr = 0;
+	np2clvga.pciLFB_Mask = 0;
+	np2clvga.pciMMIO_Addr = 0;
+	np2clvga.pciMMIO_Mask = 0;
+#if defined(SUPPORT_PCI)
+	pcidev.devices[pcidev_cirrus_deviceid].enable = 0;
+#endif
 	if(np2clvga.gd54xxtype == CIRRUS_98ID_Be){
 		np2clvga.VRAMWindowAddr = 0;
 		np2clvga.VRAMWindowAddr2 = 0xf00000;
+		np2clvga.VRAMWindowAddr3 = 0;
 	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_96){
 		np2clvga.VRAMWindowAddr = 0;
 		np2clvga.VRAMWindowAddr2 = 0xf00000;
+		np2clvga.VRAMWindowAddr3 = 0;
+	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_PCI){
+		np2clvga.VRAMWindowAddr = 0;
+		np2clvga.VRAMWindowAddr2 = 0;
+		np2clvga.VRAMWindowAddr3 = 0;
+#if defined(SUPPORT_PCI)
+		pcidev.devices[pcidev_cirrus_deviceid].enable = 1;
+#endif
+		pc98_cirrus_vga_updatePCIaddr();
 	}else if(np2clvga.gd54xxtype <= 0xff){
 		np2clvga.VRAMWindowAddr = 0;
 		np2clvga.VRAMWindowAddr2 = 0xf60000;
-	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_WAB || np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F || np2clvga.gd54xxtype == CIRRUS_98ID_GA98NB){
+		np2clvga.VRAMWindowAddr3 = 0;
+	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_WAB || np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F){
 		np2clvga.VRAMWindowAddr = 0;
 		np2clvga.VRAMWindowAddr2 = 0xE0000;
+		np2clvga.VRAMWindowAddr3 = 0xF00000;
+		np2clvga.pciMMIO_Addr = 0xf10000;
+		np2clvga.pciMMIO_Mask = ~(0x10000-1);
+	}else if ((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC) {
+		np2clvga.VRAMWindowAddr = 0;
+		np2clvga.VRAMWindowAddr2 = 0xE0000;
+		np2clvga.VRAMWindowAddr3 = 0xF00000;
+		np2clvga.pciMMIO_Addr = 0xf10000;
+		np2clvga.pciMMIO_Mask = ~(0x10000-1);
 	}else{
 		np2clvga.VRAMWindowAddr = 0;
 		np2clvga.VRAMWindowAddr2 = 0;
+		np2clvga.VRAMWindowAddr3 = 0;
+		if(np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_WS_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_W4_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_WA_PCI ||
+		   np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_G1_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_G2_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_G4_PCI){
+#if defined(SUPPORT_PCI)
+			pcidev.devices[pcidev_cirrus_deviceid].enable = 1;
+#endif
+			pc98_cirrus_vga_updatePCIaddr();
+		}
 	}
-
+	pc98_cirrus_setMMIOWindowAddr();
 }
-// É{Å[ÉhéÌóﬁÇ©ÇÁVRAMÉTÉCÉYÇåàíËÇ∑ÇÈ
+
+// „Éú„Éº„ÉâÁ®ÆÈ°û„Åã„ÇâVRAM„Çµ„Ç§„Ç∫„ÇíÊ±∫ÂÆö„Åô„Çã
 void pc98_cirrus_vga_setvramsize(){
 	if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK){
 		cirrusvga->real_vram_size = CIRRUS_VRAM_SIZE;
@@ -5524,6 +6395,8 @@ void pc98_cirrus_vga_setvramsize(){
 		cirrusvga->real_vram_size = CIRRUS_VRAM_SIZE_1MB; //(cirrusvga->device_id == CIRRUS_ID_CLGD5446) ? CIRRUS_VRAM_SIZE : CIRRUS_VRAM_SIZE;
 	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_Be){
 		cirrusvga->real_vram_size = CIRRUS_VRAM_SIZE_1MB; //(cirrusvga->device_id == CIRRUS_ID_CLGD5446) ? CIRRUS_VRAM_SIZE : CIRRUS_VRAM_SIZE;
+	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_PCI){
+		cirrusvga->real_vram_size = CIRRUS_VRAM_SIZE_2MB;
 	}else if(np2clvga.gd54xxtype <= 0xff){
 		cirrusvga->real_vram_size = CIRRUS_VRAM_SIZE; //(cirrusvga->device_id == CIRRUS_ID_CLGD5446) ? CIRRUS_VRAM_SIZE : CIRRUS_VRAM_SIZE;
 	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_WAB){
@@ -5532,8 +6405,12 @@ void pc98_cirrus_vga_setvramsize(){
 		cirrusvga->real_vram_size = CIRRUS_VRAM_SIZE_2MB;
 	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_WSN){
 		cirrusvga->real_vram_size = CIRRUS_VRAM_SIZE_4MB;
-	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_GA98NB){
-		cirrusvga->real_vram_size = CIRRUS_VRAM_SIZE;
+	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_GA98NBIC){
+		cirrusvga->real_vram_size = CIRRUS_VRAM_SIZE_1MB;
+	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_GA98NBII){
+		cirrusvga->real_vram_size = CIRRUS_VRAM_SIZE_2MB;
+	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_GA98NBIV){
+		cirrusvga->real_vram_size = CIRRUS_VRAM_SIZE_4MB;
 	}else{
 		cirrusvga->real_vram_size = (cirrusvga->device_id == CIRRUS_ID_CLGD5446) ? CIRRUS_VRAM_SIZE : CIRRUS_VRAM_SIZE;
 	}
@@ -5555,15 +6432,22 @@ static void pc98_cirrus_reset(CirrusVGAState * s, int device_id, int is_pci)
 	np2clvga.VRAMWindowAddr3 = 0;
 	
 	pc98_cirrus_vga_initVRAMWindowAddr();
-
+	
+	s->cirrus_rop = cirrus_bitblt_rop_nop;
+	
 	np2wab.relaystateext = 0;
 	np2wab_setRelayState(np2wab.relaystateint|np2wab.relaystateext);
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
-	ShowWindow(np2wabwnd.hWndWAB, SW_HIDE); // ê›íËïœçXëŒçÙ
+	ShowWindow(np2wabwnd.hWndWAB, SW_HIDE); // Ë®≠ÂÆöÂ§âÊõ¥ÂØæÁ≠ñ
 #endif
 
 	np2clvga.mmioenable = 0;
 	np2wab.paletteChanged = 1;
+}
+void pcidev_cirrus_cfgreg_w(UINT32 devNumber, UINT8 funcNumber, UINT8 cfgregOffset, UINT8 sizeinbytes, UINT32 value){
+	if(0x10 <= cfgregOffset && cfgregOffset < 0x28){
+		pc98_cirrus_vga_initVRAMWindowAddr();
+	}
 }
 static void pc98_cirrus_init_common(CirrusVGAState * s, int device_id, int is_pci)
 {
@@ -5589,122 +6473,245 @@ static void pc98_cirrus_init_common(CirrusVGAState * s, int device_id, int is_pc
     rop_to_index[CIRRUS_ROP_NOTSRC_AND_NOTDST] = 15;
     s->device_id = device_id;
     s->bustype = CIRRUS_BUSTYPE_ISA;
+
+	cirrusvga_wab_46e8 = 0x18; // „Éá„Éï„Ç©„É´„Éà„ÅßÊúâÂäπ
 	
 	if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK || np2clvga.gd54xxtype <= 0xff){
 		// ONBOARD
-		iocore_attachout(0xfa2, cirrusvga_ofa2);
-		iocore_attachinp(0xfa2, cirrusvga_ifa2);
+#if defined(SUPPORT_PCI)
+		if(pcidev.enable && (np2clvga.gd54xxtype == CIRRUS_98ID_PCI || 
+		   np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_WS_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_W4_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_WA_PCI || 
+		   np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_G1_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_G2_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_G4_PCI)){
+			// Cirrus CL-GD5446 PCI
+			ZeroMemory(pcidev.devices+pcidev_cirrus_deviceid, sizeof(_PCIDEVICE));
+			pcidev.devices[pcidev_cirrus_deviceid].enable = 1;
+			pcidev.devices[pcidev_cirrus_deviceid].skipirqtbl = 1;
+			pcidev.devices[pcidev_cirrus_deviceid].regwfn = &pcidev_cirrus_cfgreg_w;
+			pcidev.devices[pcidev_cirrus_deviceid].header.vendorID = 0x1013;
+			pcidev.devices[pcidev_cirrus_deviceid].header.deviceID = CIRRUS_ID_CLGD5446;
+			pcidev.devices[pcidev_cirrus_deviceid].header.command = 0x0003;//0x0006;//;0x0003;
+			pcidev.devices[pcidev_cirrus_deviceid].header.status = 0x0000;//0x0000;//0x0280;
+			pcidev.devices[pcidev_cirrus_deviceid].header.revisionID = 0x00;
+			pcidev.devices[pcidev_cirrus_deviceid].header.classcode[0] = 0x00; // „É¨„Ç∏„Çπ„Çø„É¨„Éô„É´„Éó„É≠„Ç∞„É©„Éü„É≥„Ç∞„Ç§„É≥„Çø„Éï„Çß„Éº„Çπ
+			pcidev.devices[pcidev_cirrus_deviceid].header.classcode[1] = 0x00; // „Çµ„Éñ„ÇØ„É©„Çπ„Ç≥„Éº„Éâ
+			pcidev.devices[pcidev_cirrus_deviceid].header.classcode[2] = 0x03; // „Éô„Éº„Çπ„ÇØ„É©„Çπ„Ç≥„Éº„Éâ
+			pcidev.devices[pcidev_cirrus_deviceid].header.cachelinesize = 0;
+			pcidev.devices[pcidev_cirrus_deviceid].header.latencytimer = 0x00;
+			pcidev.devices[pcidev_cirrus_deviceid].header.headertype = 0;
+			pcidev.devices[pcidev_cirrus_deviceid].header.BIST = 0x00;
+			pcidev.devices[pcidev_cirrus_deviceid].header.subsysID = 0x0000;
+			pcidev.devices[pcidev_cirrus_deviceid].header.subsysventorID = 0x0000;
+			pcidev.devices[pcidev_cirrus_deviceid].header.interruptpin = 0xff;
+			pcidev.devices[pcidev_cirrus_deviceid].header.interruptline = 0x00;
+			pcidev.devices[pcidev_cirrus_deviceid].header.baseaddrregs[0] = 0xF0000000;
+			pcidev.devices[pcidev_cirrus_deviceid].header.baseaddrregs[1] = 0xF2000000;
+			pcidev.devices[pcidev_cirrus_deviceid].headerrom.baseaddrregs[0] = 0x02000000-1;
+			pcidev.devices[pcidev_cirrus_deviceid].headerrom.baseaddrregs[1] = CIRRUS_PNPMMIO_SIZE-1;
+			pcidev.devices[pcidev_cirrus_deviceid].headerrom.baseaddrregs[2] = 0xffffffff;
+			pcidev.devices[pcidev_cirrus_deviceid].headerrom.baseaddrregs[3] = 0xffffffff;
+			pcidev.devices[pcidev_cirrus_deviceid].headerrom.baseaddrregs[4] = 0xffffffff;
+			pcidev.devices[pcidev_cirrus_deviceid].headerrom.baseaddrregs[5] = 0xffffffff;
+			pcidev.devices[pcidev_cirrus_deviceid].headerrom.expROMbaseaddr = 0xffffffff;
+			pc98_cirrus_vga_initVRAMWindowAddr();
+            s->bustype = CIRRUS_BUSTYPE_PCI;
+			
+			// ROMÈ†òÂüüË®≠ÂÆö
+			pcidev.devices[pcidev_cirrus_deviceid].headerrom.vendorID = 0xffff;
+			pcidev.devices[pcidev_cirrus_deviceid].headerrom.deviceID = 0xffff;
+			pcidev.devices[pcidev_cirrus_deviceid].headerrom.status = 0xffff;
+			pcidev.devices[pcidev_cirrus_deviceid].headerrom.command = 0xffdd;
+			pcidev.devices[pcidev_cirrus_deviceid].headerrom.revisionID = 0xff;
+			pcidev.devices[pcidev_cirrus_deviceid].headerrom.classcode[0] = 0xff;
+			pcidev.devices[pcidev_cirrus_deviceid].headerrom.classcode[1] = 0xff;
+			pcidev.devices[pcidev_cirrus_deviceid].headerrom.classcode[2] = 0xff;
+			pcidev.devices[pcidev_cirrus_deviceid].headerrom.subsysID = 0xffff;
+			pcidev.devices[pcidev_cirrus_deviceid].headerrom.subsysventorID = 0xffff;
 	
-		iocore_attachout(0xfa3, cirrusvga_ofa3);
-		iocore_attachinp(0xfa3, cirrusvga_ifa3);
-	
-		iocore_attachout(0xfaa, cirrusvga_ofaa);
-		iocore_attachinp(0xfaa, cirrusvga_ifaa);
-	
-		iocore_attachout(0xfab, cirrusvga_ofab);
-		iocore_attachinp(0xfab, cirrusvga_ifab);
-	
-		if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK || np2clvga.gd54xxtype == CIRRUS_98ID_96){
-			iocore_attachout(0x0902, cirrusvga_off82);
-			iocore_attachinp(0x0902, cirrusvga_iff82);
-
-			// XXX: 102Access Control Register 0904h ÇÕñ≥éã
-
 			for(i=0;i<16;i++){
-				iocore_attachout(0xc50 + i, vga_ioport_write_wrap);	// 0x3C0 to 0x3CF
-				iocore_attachinp(0xc50 + i, vga_ioport_read_wrap);	// 0x3C0 to 0x3CF
+				iocore_attachout(0x3c0 + i, vga_ioport_write_wrap);
+				iocore_attachinp(0x3c0 + i, vga_ioport_read_wrap);
 			}
 	
-			//Å@Ç±ÇÃï”ÇÃÉ}ÉbÉsÉìÉOñ{ìñÇ…Ç†Ç¡ÇƒÇÈÅH
-			iocore_attachout(0xb54, vga_ioport_write_wrap);	// 0x3B4
-			iocore_attachinp(0xb54, vga_ioport_read_wrap);	// 0x3B4
-			iocore_attachout(0xb55, vga_ioport_write_wrap);	// 0x3B5
-			iocore_attachinp(0xb55, vga_ioport_read_wrap);	// 0x3B5
-
-			iocore_attachout(0xd54, vga_ioport_write_wrap);	// 0x3D4
-			iocore_attachinp(0xd54, vga_ioport_read_wrap);	// 0x3D4
-			iocore_attachout(0xd55, vga_ioport_write_wrap);	// 0x3D5
-			iocore_attachinp(0xd55, vga_ioport_read_wrap);	// 0x3D5
+			iocore_attachout(0x3b4, vga_ioport_write_wrap);
+			iocore_attachinp(0x3b4, vga_ioport_read_wrap);
+			iocore_attachout(0x3ba, vga_ioport_write_wrap);
+			iocore_attachinp(0x3ba, vga_ioport_read_wrap);
+			iocore_attachout(0x3d4, vga_ioport_write_wrap);
+			iocore_attachinp(0x3d4, vga_ioport_read_wrap);
+			iocore_attachout(0x3da, vga_ioport_write_wrap);
+			iocore_attachinp(0x3da, vga_ioport_read_wrap);
+			
+			pcidev_updateRoutingTable();
+		} 
+		if(np2clvga.gd54xxtype != CIRRUS_98ID_PCI)
+#endif
+		{
+			iocore_attachout(0xfa2, cirrusvga_ofa2);
+			iocore_attachinp(0xfa2, cirrusvga_ifa2);
 	
-			iocore_attachout(0xb5a, vga_ioport_write_wrap);	// 0x3BA
-			iocore_attachinp(0xb5a, vga_ioport_read_wrap);	// 0x3BA
+			iocore_attachout(0xfa3, cirrusvga_ofa3);
+			iocore_attachinp(0xfa3, cirrusvga_ifa3);
+	
+			iocore_attachout(0xfaa, cirrusvga_ofaa);
+			iocore_attachinp(0xfaa, cirrusvga_ifaa);
+	
+			iocore_attachout(0xfab, cirrusvga_ofab);
+			iocore_attachinp(0xfab, cirrusvga_ifab);
+	
+			if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK || np2clvga.gd54xxtype == CIRRUS_98ID_96){
+				iocore_attachout(0x0902, cirrusvga_off82);
+				iocore_attachinp(0x0902, cirrusvga_iff82);
 
-			iocore_attachout(0xd5a, vga_ioport_write_wrap);	// 0x3DA
-			iocore_attachinp(0xd5a, vga_ioport_read_wrap);	// 0x3DA
+				// XXX: 102Access Control Register 0904h „ÅØÁÑ°Ë¶ñ
 
-			//iocore_attachout(0x46E8, cirrusvga_o46e8);
-			//iocore_attachinp(0x46E8, cirrusvga_i46e8);
-		}
-		if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK || np2clvga.gd54xxtype != CIRRUS_98ID_96){
-			iocore_attachout(0xff82, cirrusvga_off82);
-			iocore_attachinp(0xff82, cirrusvga_iff82);
+				for(i=0;i<16;i++){
+					iocore_attachout(0xc50 + i, vga_ioport_write_wrap);	// 0x3C0 to 0x3CF
+					iocore_attachinp(0xc50 + i, vga_ioport_read_wrap);	// 0x3C0 to 0x3CF
+				}
+	
+				//„ÄÄ„Åì„ÅÆËæ∫„ÅÆ„Éû„ÉÉ„Éî„É≥„Ç∞Êú¨ÂΩì„Å´„ÅÇ„Å£„Å¶„ÇãÔºü
+				iocore_attachout(0xb54, vga_ioport_write_wrap);	// 0x3B4
+				iocore_attachinp(0xb54, vga_ioport_read_wrap);	// 0x3B4
+				iocore_attachout(0xb55, vga_ioport_write_wrap);	// 0x3B5
+				iocore_attachinp(0xb55, vga_ioport_read_wrap);	// 0x3B5
 
-			for(i=0;i<16;i++){
-				iocore_attachout(0xca0 + i, vga_ioport_write_wrap);	// 0x3C0 to 0x3CF
-				iocore_attachinp(0xca0 + i, vga_ioport_read_wrap);	// 0x3C0 to 0x3CF
+				iocore_attachout(0xd54, vga_ioport_write_wrap);	// 0x3D4
+				iocore_attachinp(0xd54, vga_ioport_read_wrap);	// 0x3D4
+				iocore_attachout(0xd55, vga_ioport_write_wrap);	// 0x3D5
+				iocore_attachinp(0xd55, vga_ioport_read_wrap);	// 0x3D5
+	
+				iocore_attachout(0xb5a, vga_ioport_write_wrap);	// 0x3BA
+				iocore_attachinp(0xb5a, vga_ioport_read_wrap);	// 0x3BA
+
+				iocore_attachout(0xd5a, vga_ioport_write_wrap);	// 0x3DA
+				iocore_attachinp(0xd5a, vga_ioport_read_wrap);	// 0x3DA
+
+				//iocore_attachout(0x46E8, cirrusvga_o46e8);
+				//iocore_attachinp(0x46E8, cirrusvga_i46e8);
 			}
-	
-			//Å@Ç±ÇÃï”ÇÃÉ}ÉbÉsÉìÉOñ{ìñÇ…Ç†Ç¡ÇƒÇÈÅH
-			iocore_attachout(0xba4, vga_ioport_write_wrap);	// 0x3B4
-			iocore_attachinp(0xba4, vga_ioport_read_wrap);	// 0x3B4
-			iocore_attachout(0xba5, vga_ioport_write_wrap);	// 0x3B5
-			iocore_attachinp(0xba5, vga_ioport_read_wrap);	// 0x3B5
+			if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK || np2clvga.gd54xxtype != CIRRUS_98ID_96){
+				iocore_attachout(0xff82, cirrusvga_off82);
+				iocore_attachinp(0xff82, cirrusvga_iff82);
 
-			iocore_attachout(0xda4, vga_ioport_write_wrap);	// 0x3D4
-			iocore_attachinp(0xda4, vga_ioport_read_wrap);	// 0x3D4
-			iocore_attachout(0xda5, vga_ioport_write_wrap);	// 0x3D5
-			iocore_attachinp(0xda5, vga_ioport_read_wrap);	// 0x3D5
+				for(i=0;i<16;i++){
+					iocore_attachout(0xca0 + i, vga_ioport_write_wrap);	// 0x3C0 to 0x3CF
+					iocore_attachinp(0xca0 + i, vga_ioport_read_wrap);	// 0x3C0 to 0x3CF
+				}
 	
-			iocore_attachout(0xbaa, vga_ioport_write_wrap);	// 0x3BA
-			iocore_attachinp(0xbaa, vga_ioport_read_wrap);	// 0x3BA
+				//„ÄÄ„Åì„ÅÆËæ∫„ÅÆ„Éû„ÉÉ„Éî„É≥„Ç∞Êú¨ÂΩì„Å´„ÅÇ„Å£„Å¶„ÇãÔºü
+				iocore_attachout(0xba4, vga_ioport_write_wrap);	// 0x3B4
+				iocore_attachinp(0xba4, vga_ioport_read_wrap);	// 0x3B4
+				iocore_attachout(0xba5, vga_ioport_write_wrap);	// 0x3B5
+				iocore_attachinp(0xba5, vga_ioport_read_wrap);	// 0x3B5
 
-			iocore_attachout(0xdaa, vga_ioport_write_wrap);	// 0x3DA
-			iocore_attachinp(0xdaa, vga_ioport_read_wrap);	// 0x3DA
+				iocore_attachout(0xda4, vga_ioport_write_wrap);	// 0x3D4
+				iocore_attachinp(0xda4, vga_ioport_read_wrap);	// 0x3D4
+				iocore_attachout(0xda5, vga_ioport_write_wrap);	// 0x3D5
+				iocore_attachinp(0xda5, vga_ioport_read_wrap);	// 0x3D5
+	
+				iocore_attachout(0xbaa, vga_ioport_write_wrap);	// 0x3BA
+				iocore_attachinp(0xbaa, vga_ioport_read_wrap);	// 0x3BA
+
+				iocore_attachout(0xdaa, vga_ioport_write_wrap);	// 0x3DA
+				iocore_attachinp(0xdaa, vga_ioport_read_wrap);	// 0x3DA
+			}
 		}
 	}
 	if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK || np2clvga.gd54xxtype > 0xff){
 		// WAB, WSN, GA-98NB
 		for(i=0;i<0x1000;i+=0x100){
-			iocore_attachout(0x40E0 + CIRRUS_MELCOWAB_OFS + i, vga_ioport_write_wrap);	// 0x3C0 to 0x3CF
-			iocore_attachinp(0x40E0 + CIRRUS_MELCOWAB_OFS + i, vga_ioport_read_wrap);	// 0x3C0 to 0x3CF
+			iocore_attachout(0x40E0 + cirrusvga_melcowab_ofs + i, vga_ioport_write_wrap);	// 0x3C0 to 0x3CF
+			iocore_attachinp(0x40E0 + cirrusvga_melcowab_ofs + i, vga_ioport_read_wrap);	// 0x3C0 to 0x3CF
 		}
 	
-		//Å@Ç±ÇÃï”ÇÃÉ}ÉbÉsÉìÉOñ{ìñÇ…Ç†Ç¡ÇƒÇÈÅH
-		iocore_attachout(0x5AE0 + CIRRUS_MELCOWAB_OFS, vga_ioport_write_wrap);	// 0x3B4
-		iocore_attachinp(0x5AE0 + CIRRUS_MELCOWAB_OFS, vga_ioport_read_wrap);		// 0x3B4
-		iocore_attachout(0x5BE1 + CIRRUS_MELCOWAB_OFS, vga_ioport_write_wrap);	// 0x3B5
-		iocore_attachinp(0x5BE1 + CIRRUS_MELCOWAB_OFS, vga_ioport_read_wrap);		// 0x3B5
+		//„ÄÄ„Åì„ÅÆËæ∫„ÅÆ„Éû„ÉÉ„Éî„É≥„Ç∞Êú¨ÂΩì„Å´„ÅÇ„Å£„Å¶„ÇãÔºü
+		//				|
+		//				V
+		// Odd Address:„Éú„Éº„ÉâÂà∂Âæ°ÔºåFMÈü≥Ê∫êÔºåPCMÈü≥Ê∫ê(Melco)
+		// Even Address:CIRRUS (Melco,IO-Data)
+		// „É¢„Éé„ÇØ„É≠„ÅØËá™‰ø°ÁÑ°„Åó,WSN Win95„Éâ„É©„Ç§„Éê„ÅØ58e2h,59e2h„Çí„Ç¢„ÇØ„Çª„Çπ„Åó„Å¶„É¨„Ç∏„Çπ„Çø„Åå
+		// ffh„Å´„Å™„Å£„Å¶„ÅÑ„Çã(„Ç´„É©„Éº„É¢„Éº„Éâ„Å™„ÅÆ„Åß)„Åì„Å®„ÇíÁ¢∫Ë™ç„Åó„Å¶„ÅÑ„Çã
+		//******************************************************
+		//	port <<= 8;
+		//	port &= 0x7f00; /* Mask 0111 1111 0000 0000 */
+		//	port |= 0xE0;
+		//******************************************************
 
-		iocore_attachout(0x54E0 + CIRRUS_MELCOWAB_OFS, vga_ioport_write_wrap);	// 0x3D4
-		iocore_attachinp(0x54E0 + CIRRUS_MELCOWAB_OFS, vga_ioport_read_wrap);		// 0x3D4
-		iocore_attachout(0x55E0 + CIRRUS_MELCOWAB_OFS, vga_ioport_write_wrap);	// 0x3D5
-		iocore_attachinp(0x55E0 + CIRRUS_MELCOWAB_OFS, vga_ioport_read_wrap);		// 0x3D5
-	
-		iocore_attachout(0x5BE1 + CIRRUS_MELCOWAB_OFS, vga_ioport_write_wrap);	// 0x3BA
-		iocore_attachinp(0x5BE1 + CIRRUS_MELCOWAB_OFS, vga_ioport_read_wrap);		// 0x3BA
+		iocore_attachout(0x58E0 + cirrusvga_melcowab_ofs, vga_ioport_write_wrap);	// 0x3B4	„Åì„Çå„ÅØ‰Ωø„Å£„Å¶„ÅÑ„Çã
+		iocore_attachinp(0x58E0 + cirrusvga_melcowab_ofs, vga_ioport_read_wrap);	// 0x3B4	„Åì„Çå„ÅØ‰Ωø„Å£„Å¶„ÅÑ„Çã
+		iocore_attachout(0x59E0 + cirrusvga_melcowab_ofs, vga_ioport_write_wrap);	// 0x3B5	„Åì„Çå„ÅØ‰Ωø„Å£„Å¶„ÅÑ„Çã
+		iocore_attachinp(0x59E0 + cirrusvga_melcowab_ofs, vga_ioport_read_wrap);	// 0x3B5	„Åì„Çå„ÅØ‰Ωø„Å£„Å¶„ÅÑ„Çã
+		////iocore_attachout(0x3AE0 + cirrusvga_melcowab_ofs, vga_ioport_write_wrap);	// 0x3BA	‰Ωø„Å£„Å¶„Å™„ÅÑ„Åã„Çâ„ÅÑ„ÅÑ„ÇÑ
+		////iocore_attachinp(0x3AE0 + cirrusvga_melcowab_ofs, vga_ioport_read_wrap);	// 0x3BA	‰Ωø„Å£„Å¶„Å™„ÅÑ„Åã„Çâ„ÅÑ„ÅÑ„ÇÑ
+
+		iocore_attachout(0x54E0 + cirrusvga_melcowab_ofs, vga_ioport_write_wrap);	// 0x3D4
+		iocore_attachinp(0x54E0 + cirrusvga_melcowab_ofs, vga_ioport_read_wrap);	// 0x3D4
+		iocore_attachout(0x55E0 + cirrusvga_melcowab_ofs, vga_ioport_write_wrap);	// 0x3D5
+		iocore_attachinp(0x55E0 + cirrusvga_melcowab_ofs, vga_ioport_read_wrap);	// 0x3D5
+		iocore_attachout(0x5AE0 + cirrusvga_melcowab_ofs, vga_ioport_write_wrap);	// 0x3DA
+		iocore_attachinp(0x5AE0 + cirrusvga_melcowab_ofs, vga_ioport_read_wrap);	// 0x3DA
+		
 		//if(np2clvga.gd54xxtype == CIRRUS_98ID_WSN){
 		//	iocore_attachout(0x5BE3, cirrusvga_o5be3);
 		//	iocore_attachinp(0x5BE3, cirrusvga_i5be3);
 		//}
 
-		iocore_attachout(0x5AE0 + CIRRUS_MELCOWAB_OFS, vga_ioport_write_wrap);	// 0x3DA
-		iocore_attachinp(0x5AE0 + CIRRUS_MELCOWAB_OFS, vga_ioport_read_wrap);		// 0x3DA
+//		iocore_attachout(0x51E1 + cirrusvga_melcowab_ofs, vga_ioport_write_wrap);	// 0x3BA
+//		iocore_attachinp(0x51E1 + cirrusvga_melcowab_ofs, vga_ioport_read_wrap);		// 0x3BA
 
-		iocore_attachout(0x51E1 + CIRRUS_MELCOWAB_OFS, vga_ioport_write_wrap);	// 0x3BA
-		iocore_attachinp(0x51E1 + CIRRUS_MELCOWAB_OFS, vga_ioport_read_wrap);		// 0x3BA
+//		iocore_attachout(0x57E1 + cirrusvga_melcowab_ofs, vga_ioport_write_wrap);	// 0x3DA
+//		iocore_attachinp(0x57E1 + cirrusvga_melcowab_ofs, vga_ioport_read_wrap);		// 0x3DA
+	
+		iocore_attachout(0x40E1 + cirrusvga_melcowab_ofs, cirrusvga_o40e1);
+		iocore_attachinp(0x40E1 + cirrusvga_melcowab_ofs, cirrusvga_i40e1);
 
-		iocore_attachout(0x57E1 + CIRRUS_MELCOWAB_OFS, vga_ioport_write_wrap);	// 0x3DA
-		iocore_attachinp(0x57E1 + CIRRUS_MELCOWAB_OFS, vga_ioport_read_wrap);		// 0x3DA
-	
-		iocore_attachout(0x40E1 + CIRRUS_MELCOWAB_OFS, cirrusvga_o40e1);
-		iocore_attachinp(0x40E1 + CIRRUS_MELCOWAB_OFS, cirrusvga_i40e1);
-	
 		iocore_attachout(0x46E8, cirrusvga_o46e8);
 		iocore_attachinp(0x46E8, cirrusvga_i46e8);
-		
+
+		// WSN
+		if ((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK || np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F) {
+			iocore_attachout(0x51E1, cirrusvga_o51e1); // CHECK IO Á©∫ÊåØ„ÇäÁî®
+			iocore_attachinp(0x51E1, cirrusvga_i51e1);
+			iocore_attachout(0x51E3, cirrusvga_o51e1); // CHECK IO
+			iocore_attachinp(0x51E3, cirrusvga_i51e1);
+
+			////iocore_attachinp(0x59E0 + cirrusvga_melcowab_ofs, cirrusvga_i59e0);
+			iocore_attachinp(0x59E1 + cirrusvga_melcowab_ofs, cirrusvga_i59e1);	// „Åì„Çå„Åå„Å™„ÅÑ„Å®„Éâ„É©„Ç§„Éê„ÅåNG„ÇíËøî„Åô
+			iocore_attachinp(0x5BE1 + cirrusvga_melcowab_ofs, cirrusvga_i5be1);
+
+			iocore_attachout(0x42E1 + cirrusvga_melcowab_ofs, cirrusvga_o42e1);
+			iocore_attachinp(0x42E1 + cirrusvga_melcowab_ofs, cirrusvga_i42e1);
+		}
+
 		if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) != CIRRUS_98ID_AUTOMSK){
 			np2clvga.VRAMWindowAddr2 = 0xE0000;
 		}
+
+		//// GA-98NB
+		//if (np2clvga.gd54xxtype == CIRRUS_98ID_GA98NB) {
+		//	np2clvga.VRAMWindowAddr2 = 0xf00000;
+		//}
+
+		if (np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F ||
+			np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE10_WSN2 || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE10_WSN4 || 
+			np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_WS_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_W4_PCI) {
+			cirrusvga_wab_59e1 = 0x06;	// „Åì„ÅÆÂÄ§„Åò„ÇÉ„Å™„ÅÑ„Å®WSN Win95„Éâ„É©„Ç§„Éê„ÅåNG„ÇíËøî„Åô
+			cirrusvga_wab_51e1 = 0xC2;	// WSN CHECK IO RETURN VALUE
+			cirrusvga_wab_5be1 = 0xf7;	// bit3:0=4M,1=2M ??????
+			cirrusvga_wab_40e1 = 0x7b;
+			cirrusvga_wab_42e1 = 0x00;
+			cirrusvga_wab_46e8 = 0x18; // ÊúÄÂàù„Åã„ÇâON
+		}else if ((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC ||
+			np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_G1_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_G2_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_G4_PCI) {
+			memset(cirrusvga->vram_ptr, 0x00, cirrusvga->real_vram_size);
+			cirrusvga_wab_59e1 = 0x06;	// d.c.
+			cirrusvga_wab_51e1 = 0xC2;	// d.c.
+			cirrusvga_wab_5be1 = 0xf7;	// d.c.
+			cirrusvga_wab_40e1 = 0xC2;	// bit1=0:DRAM REFRESH MODE?? „Å®„Çä„ÅÇ„Åà„ÅöÂàùÊúüÂÄ§„ÅØC2h„Åò„ÇÉ„Å™„ÅÑ„Å®Win95„Éâ„É©„Ç§„Éê„ÅØ„Éú„Éº„Éâ„ÇíË™çË≠ò„Åó„Å™„ÅÑ
+			cirrusvga_wab_42e1 = 0x18;  // Â≠òÂú®„Åó„Å™„ÅÑ
+			cirrusvga_wab_46e8 = 0x10;
+		}
+		
 		//np2clvga.VRAMWindowAddr3 = 0xF00000; // XXX
 		//np2clvga.VRAMWindowAddr3size = 256*1024;
 		
@@ -5746,6 +6753,149 @@ static void pc98_cirrus_init_common(CirrusVGAState * s, int device_id, int is_pc
 	//	//s->sr[0x06] = 0x12; // Unlock Cirrus extensions by default
 	//}
 }
+static void pc98_cirrus_deinit_common(CirrusVGAState * s, int device_id, int is_pci)
+{
+    int i;
+
+	if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK || np2clvga.gd54xxtype <= 0xff){
+		// ONBOARD
+#if defined(SUPPORT_PCI)
+		if(pcidev.enable && (np2clvga.gd54xxtype == CIRRUS_98ID_PCI || 
+		   np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_WS_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_W4_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_WA_PCI || 
+		   np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_G1_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_G2_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_G4_PCI)){
+			// Cirrus CL-GD5446 PCI
+			pcidev.devices[pcidev_cirrus_deviceid].enable = 0;
+			for(i=0;i<16;i++){
+				iocore_detachout(0x3c0 + i);
+				iocore_detachinp(0x3c0 + i);
+			}
+			iocore_detachout(0x3b4);
+			iocore_detachinp(0x3b4);
+			iocore_detachout(0x3ba);
+			iocore_detachinp(0x3ba);
+			iocore_detachout(0x3d4);
+			iocore_detachinp(0x3d4);
+			iocore_detachout(0x3da);
+			iocore_detachinp(0x3da);
+		}
+		if(np2clvga.gd54xxtype != CIRRUS_98ID_PCI)
+#endif
+		{
+			iocore_detachout(0xfa2);
+			iocore_detachinp(0xfa2);
+	
+			iocore_detachout(0xfa3);
+			iocore_detachinp(0xfa3);
+	
+			iocore_detachout(0xfaa);
+			iocore_detachinp(0xfaa);
+	
+			iocore_detachout(0xfab);
+			iocore_detachinp(0xfab);
+	
+			if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK || np2clvga.gd54xxtype == CIRRUS_98ID_96){
+				iocore_detachout(0x0902);
+				iocore_detachinp(0x0902);
+
+				// XXX: 102Access Control Register 0904h „ÅØÁÑ°Ë¶ñ
+
+				for(i=0;i<16;i++){
+					iocore_detachout(0xc50 + i);	// 0x3C0 to 0x3CF
+					iocore_detachinp(0xc50 + i);	// 0x3C0 to 0x3CF
+				}
+	
+				//„ÄÄ„Åì„ÅÆËæ∫„ÅÆ„Éû„ÉÉ„Éî„É≥„Ç∞Êú¨ÂΩì„Å´„ÅÇ„Å£„Å¶„ÇãÔºü
+				iocore_detachout(0xb54);	// 0x3B4
+				iocore_detachinp(0xb54);	// 0x3B4
+				iocore_detachout(0xb55);	// 0x3B5
+				iocore_detachinp(0xb55);	// 0x3B5
+
+				iocore_detachout(0xd54);	// 0x3D4
+				iocore_detachinp(0xd54);	// 0x3D4
+				iocore_detachout(0xd55);	// 0x3D5
+				iocore_detachinp(0xd55);	// 0x3D5
+	
+				iocore_detachout(0xb5a);	// 0x3BA
+				iocore_detachinp(0xb5a);	// 0x3BA
+
+				iocore_detachout(0xd5a);	// 0x3DA
+				iocore_detachinp(0xd5a);	// 0x3DA
+			}
+			if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK || np2clvga.gd54xxtype != CIRRUS_98ID_96){
+				iocore_detachout(0xff82);
+				iocore_detachinp(0xff82);
+
+				for(i=0;i<16;i++){
+					iocore_detachout(0xca0 + i);	// 0x3C0 to 0x3CF
+					iocore_detachinp(0xca0 + i);	// 0x3C0 to 0x3CF
+				}
+	
+				//„ÄÄ„Åì„ÅÆËæ∫„ÅÆ„Éû„ÉÉ„Éî„É≥„Ç∞Êú¨ÂΩì„Å´„ÅÇ„Å£„Å¶„ÇãÔºü
+				iocore_detachout(0xba4);	// 0x3B4
+				iocore_detachinp(0xba4);	// 0x3B4
+				iocore_detachout(0xba5);	// 0x3B5
+				iocore_detachinp(0xba5);	// 0x3B5
+
+				iocore_detachout(0xda4);	// 0x3D4
+				iocore_detachinp(0xda4);	// 0x3D4
+				iocore_detachout(0xda5);	// 0x3D5
+				iocore_detachinp(0xda5);	// 0x3D5
+	
+				iocore_detachout(0xbaa);	// 0x3BA
+				iocore_detachinp(0xbaa);	// 0x3BA
+
+				iocore_detachout(0xdaa);	// 0x3DA
+				iocore_detachinp(0xdaa);	// 0x3DA
+			}
+		}
+	}
+	if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK || np2clvga.gd54xxtype > 0xff){
+		// WAB, WSN, GA-98NB
+		for(i=0;i<0x1000;i+=0x100){
+			iocore_detachout(0x40E0 + cirrusvga_melcowab_ofs + i);	// 0x3C0 to 0x3CF
+			iocore_detachinp(0x40E0 + cirrusvga_melcowab_ofs + i);	// 0x3C0 to 0x3CF
+		}
+	
+		//„ÄÄ„Åì„ÅÆËæ∫„ÅÆ„Éû„ÉÉ„Éî„É≥„Ç∞Êú¨ÂΩì„Å´„ÅÇ„Å£„Å¶„ÇãÔºü
+		iocore_detachout(0x58E0 + cirrusvga_melcowab_ofs);	// 0x3B4
+		iocore_detachinp(0x58E0 + cirrusvga_melcowab_ofs);		// 0x3B4
+		iocore_detachout(0x59E0 + cirrusvga_melcowab_ofs);	// 0x3B5
+		iocore_detachinp(0x59E0 + cirrusvga_melcowab_ofs);		// 0x3B5
+		////iocore_detachout(0x3AE0 + cirrusvga_melcowab_ofs);	// 0x3BA
+		////iocore_detachinp(0x3AE0 + cirrusvga_melcowab_ofs);		// 0x3BA
+
+		iocore_detachout(0x54E0 + cirrusvga_melcowab_ofs);	// 0x3D4
+		iocore_detachinp(0x54E0 + cirrusvga_melcowab_ofs);		// 0x3D4
+		iocore_detachout(0x55E0 + cirrusvga_melcowab_ofs);	// 0x3D5
+		iocore_detachinp(0x55E0 + cirrusvga_melcowab_ofs);		// 0x3D5
+		iocore_detachout(0x5AE0 + cirrusvga_melcowab_ofs);	// 0x3DA
+		iocore_detachinp(0x5AE0 + cirrusvga_melcowab_ofs);		// 0x3DA
+
+//		iocore_detachout(0x51E1 + cirrusvga_melcowab_ofs);	// 0x3BA
+//		iocore_detachinp(0x51E1 + cirrusvga_melcowab_ofs);		// 0x3BA
+
+//		iocore_detachout(0x57E1 + cirrusvga_melcowab_ofs);	// 0x3DA
+//		iocore_detachinp(0x57E1 + cirrusvga_melcowab_ofs);		// 0x3DA
+	
+		iocore_detachout(0x40E1 + cirrusvga_melcowab_ofs);
+		iocore_detachinp(0x40E1 + cirrusvga_melcowab_ofs);
+	
+		iocore_detachout(0x46E8);
+		iocore_detachinp(0x46E8);
+
+		iocore_detachout(0x51E1);
+		iocore_detachinp(0x51E1);
+		iocore_detachout(0x51E3);
+		iocore_detachinp(0x51E3);
+
+		////iocore_detachinp(0x59E0 + cirrusvga_melcowab_ofs);
+		iocore_detachinp(0x59E1 + cirrusvga_melcowab_ofs);
+		iocore_detachinp(0x5BE1 + cirrusvga_melcowab_ofs);
+
+		iocore_detachinp(0x42E1 + cirrusvga_melcowab_ofs);
+		iocore_detachout(0x42E1 + cirrusvga_melcowab_ofs);
+	}
+}
 
 
 void pc98_cirrus_vga_init(void)
@@ -5764,7 +6914,7 @@ void pc98_cirrus_vga_init(void)
 	
 	ga_bmpInfo_cursor = (BITMAPINFO*)calloc(1, sizeof(BITMAPINFO));	
 
-	vramptr = (uint8_t*)malloc(CIRRUS_VRAM_SIZE*2); // 2î{éÊÇ¡ÇƒÇ®Ç≠
+	vramptr = (uint8_t*)malloc(CIRRUS_VRAM_SIZE*2); // 2ÂÄçÂèñ„Å£„Å¶„Åä„Åè
 	
 	ga_bmpInfo_cursor->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	ga_bmpInfo_cursor->bmiHeader.biPlanes = 1;
@@ -5788,7 +6938,7 @@ void pc98_cirrus_vga_init(void)
 
 	cirrusvga_opaque = cirrusvga = s = (CirrusVGAState*)calloc(1, sizeof(CirrusVGAState));
 #else
-	vramptr = (uint8_t*)malloc(CIRRUS_VRAM_SIZE*2); // 2î{éÊÇ¡ÇƒÇ®Ç≠
+	vramptr = (uint8_t*)malloc(CIRRUS_VRAM_SIZE*2); // 2ÂÄçÂèñ„Å£„Å¶„Åä„Åè
 
 	ds.surface = &np2vga_ds_surface;
 	ds.listeners = &np2vga_ds_listeners;
@@ -5811,6 +6961,8 @@ void pc98_cirrus_vga_reset(const NP2CFG *pConfig)
 	
 	np2clvga.defgd54xxtype = np2cfg.gd5430type;
 	np2clvga.gd54xxtype = np2cfg.gd5430type;
+	//np2clvga.defgd54xxtype = CIRRUS_98ID_PCI;
+	//np2clvga.gd54xxtype = CIRRUS_98ID_PCI;
 	
 	s = cirrusvga;
 	//memset(s, 0, sizeof(CirrusVGAState));
@@ -5818,13 +6970,15 @@ void pc98_cirrus_vga_reset(const NP2CFG *pConfig)
 		pc98_cirrus_reset(s, CIRRUS_ID_CLGD5428, 0);
 	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_96){
 		pc98_cirrus_reset(s, CIRRUS_ID_CLGD5428, 0);
+	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_PCI){
+		pc98_cirrus_reset(s, CIRRUS_ID_CLGD5446, 0);
 	}else if(np2clvga.gd54xxtype <= 0xff){
 		pc98_cirrus_reset(s, CIRRUS_ID_CLGD5434, 0);
 	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_WAB){
 		pc98_cirrus_reset(s, CIRRUS_ID_CLGD5426, 0);
 	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F){
 		pc98_cirrus_reset(s, CIRRUS_ID_CLGD5434, 0);
-	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_GA98NB){
+	}else if((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC){
 		pc98_cirrus_reset(s, CIRRUS_ID_CLGD5434, 0);
 	}else{
 		pc98_cirrus_reset(s, CIRRUS_ID_CLGD5430, 0);
@@ -5837,7 +6991,14 @@ void pc98_cirrus_vga_bind(void)
 		TRACEOUT(("CL-GD54xx: Window Accelerator Disabled"));
 		return;
 	}
-	//np2clvga.defgd54xxtype = np2cfg.gd5430type;
+	if (np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F || 
+		np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE10_WSN2 || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE10_WSN4 || 
+		np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_WS_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_W4_PCI) {
+		cirrusvga_melcowab_ofs = 0x2; // WSN„Å†„Åë2„ÅßÂõ∫ÂÆö
+	}
+	else {
+		cirrusvga_melcowab_ofs = np2cfg.gd5430melofs;	// WSN‰ª•Â§ñ„ÅØËá™Áî±ÈÅ∏ÊäûÂèØ
+	}
 	
 	s = cirrusvga;
 	//memset(s, 0, sizeof(CirrusVGAState));
@@ -5845,13 +7006,15 @@ void pc98_cirrus_vga_bind(void)
 		pc98_cirrus_init_common(s, CIRRUS_ID_CLGD5428, 0);
 	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_96){
 		pc98_cirrus_init_common(s, CIRRUS_ID_CLGD5428, 0);
+	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_PCI){
+		pc98_cirrus_init_common(s, CIRRUS_ID_CLGD5446, 0);
 	}else if(np2clvga.gd54xxtype <= 0xff){
 		pc98_cirrus_init_common(s, CIRRUS_ID_CLGD5430, 0);
 	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_WAB){
 		pc98_cirrus_init_common(s, CIRRUS_ID_CLGD5426, 0);
 	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F){
 		pc98_cirrus_init_common(s, CIRRUS_ID_CLGD5434, 0);
-	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_GA98NB){
+	}else if((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC){
 		pc98_cirrus_init_common(s, CIRRUS_ID_CLGD5434, 0);
 	}else{
 		pc98_cirrus_init_common(s, CIRRUS_ID_CLGD5430, 0);
@@ -5867,6 +7030,30 @@ void pc98_cirrus_vga_bind(void)
 
 	TRACEOUT(("CL-GD54xx: Window Accelerator Enabled"));
 }
+void pc98_cirrus_vga_unbind(void)
+{
+    CirrusVGAState *s;
+
+	s = cirrusvga;
+	if(np2clvga.gd54xxtype <= 0x57){
+		pc98_cirrus_deinit_common(s, CIRRUS_ID_CLGD5428, 0);
+	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_96){
+		pc98_cirrus_deinit_common(s, CIRRUS_ID_CLGD5428, 0);
+	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_PCI){
+		pc98_cirrus_deinit_common(s, CIRRUS_ID_CLGD5446, 0);
+	}else if(np2clvga.gd54xxtype <= 0xff){
+		pc98_cirrus_deinit_common(s, CIRRUS_ID_CLGD5430, 0);
+	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_WAB){
+		pc98_cirrus_deinit_common(s, CIRRUS_ID_CLGD5426, 0);
+	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F){
+		pc98_cirrus_deinit_common(s, CIRRUS_ID_CLGD5434, 0);
+	}else if((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC){
+		pc98_cirrus_deinit_common(s, CIRRUS_ID_CLGD5434, 0);
+	}else{
+		pc98_cirrus_deinit_common(s, CIRRUS_ID_CLGD5430, 0);
+	}
+}
+
 void pc98_cirrus_vga_shutdown(void)
 {
 	np2wabwnd.drawframe = NULL;
@@ -5882,16 +7069,116 @@ void pc98_cirrus_vga_shutdown(void)
 	//free(cursorptr);
 }
 
-// MELCO WABånÉ|Å[ÉgÇ»ÇÁTRUE
+void pc98_cirrus_vga_resetresolution(void)
+{
+	if(!np2clvga.enabled) return;
+
+	cirrusvga->cr[0x01] = 0;
+	cirrusvga->cr[0x12] = 0;
+	cirrusvga->cr[0x07] &= ~0x42;
+	// „Å§„ÅÑ„Åß„Å´VRAM„ÇÇ„ÇØ„É™„Ç¢
+//	if ((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC || np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F) {
+	if (np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F) {
+		memset(cirrusvga->vram_ptr, 0x00, cirrusvga->real_vram_size);
+		cirrusvga_wab_59e1 = 0x06;	// „Åì„ÅÆÂÄ§„Åò„ÇÉ„Å™„ÅÑ„Å®WSN Win95„Éâ„É©„Ç§„Éê„ÅåNG„ÇíËøî„Åô
+		cirrusvga_wab_51e1 = 0xC2;	// WSN CHECK IO RETURN VALUE
+		cirrusvga_wab_5be1 = 0xf7;	// bit3:0=4M,1=2M ??????
+		cirrusvga_wab_40e1 = 0x7b;
+		cirrusvga_wab_42e1 = 0x00;
+		cirrusvga_wab_46e8 = 0x18; // ÊúÄÂàù„Åã„ÇâON
+	}else if ((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC) {
+		memset(cirrusvga->vram_ptr, 0x00, cirrusvga->real_vram_size);
+		cirrusvga_wab_59e1 = 0x06;	// d.c.
+		cirrusvga_wab_51e1 = 0xC2;	// d.c.
+		cirrusvga_wab_5be1 = 0xf7;	// d.c.
+		cirrusvga_wab_40e1 = 0xC2;	// bit1=0:DRAM REFRESH MODE?? „Å®„Çä„ÅÇ„Åà„ÅöÂàùÊúüÂÄ§„ÅØC2h„Åò„ÇÉ„Å™„ÅÑ„Å®Win95„Éâ„É©„Ç§„Éê„ÅØ„Éú„Éº„Éâ„ÇíË™çË≠ò„Åó„Å™„ÅÑ
+		cirrusvga_wab_42e1 = 0x18;  // Â≠òÂú®„Åó„Å™„ÅÑ
+		cirrusvga_wab_46e8 = 0x10;
+	}else{
+		memset(cirrusvga->vram_ptr, 0xff, cirrusvga->real_vram_size);
+		cirrusvga_wab_46e8 = 0x18;
+	}
+#if defined(SUPPORT_PCI)
+	// XXX: Win2000„ÅßÂãï„Åã„Åô„ÅÆ„Å´ÂøÖË¶Å„ÄÇÁêÜÁî±„ÅØË¨é
+	if(pcidev.enable && (np2clvga.gd54xxtype == CIRRUS_98ID_PCI || 
+	   np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_WS_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_W4_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_WA_PCI || 
+	   np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_G1_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_G2_PCI || np2clvga.gd54xxtype == CIRRUS_98ID_AUTO_XE_G4_PCI)){
+		cirrusvga->msr = 0x03;
+		cirrusvga->sr[0x08] = 0xFE;
+	}
+#endif
+}
+
+// MELCO WABÁ≥ª„Éù„Éº„Éà„Å™„ÇâTRUE
 int pc98_cirrus_isWABport(UINT port){
-	if((port & 0xF0FF) == (0x40E0 + CIRRUS_MELCOWAB_OFS)) return 1;
-	if(port == 0x5AE0 + CIRRUS_MELCOWAB_OFS) return 1;
-	if(port == 0x5BE1 + CIRRUS_MELCOWAB_OFS) return 1;
-	if(port == 0x54E0 + CIRRUS_MELCOWAB_OFS) return 1;
-	if(port == 0x55E0 + CIRRUS_MELCOWAB_OFS) return 1;
-	if(port == 0x51E1 + CIRRUS_MELCOWAB_OFS) return 1;
-	if(port == 0x57E1 + CIRRUS_MELCOWAB_OFS) return 1;
+	if((port & 0xF0FF) == (0x40E0 + cirrusvga_melcowab_ofs)) return 1;
+ 	if (port == 0x58E0 + cirrusvga_melcowab_ofs) return 1;
+ 	if (port == 0x59E0 + cirrusvga_melcowab_ofs) return 1;
+ 	////if (port == 0x3AE0 + cirrusvga_melcowab_ofs) return 1;
+ 	if (port == 0x54E0 + cirrusvga_melcowab_ofs) return 1;
+ 	if (port == 0x55E0 + cirrusvga_melcowab_ofs) return 1;
+ 	if (port == 0x5AE0 + cirrusvga_melcowab_ofs) return 1;
 	return 0;
+}
+
+// MELCO WAB / I-O DATA GA-98NB„ÄÄËá™ÂãïÈÅ∏Êäû„ÄÄ„É¨„Ç∏„Çπ„ÇøË®≠ÂÆö
+void pc98_cirrus_setWABreg(){
+    CirrusVGAState *s;
+
+	s = cirrusvga;
+	switch(np2clvga.gd54xxtype){
+	case CIRRUS_98ID_WAB:
+		s->device_id = CIRRUS_ID_CLGD5426;
+		s->bustype = CIRRUS_BUSTYPE_ISA;
+		s->cr[0x27] = s->device_id;
+        s->sr[0x0F] = CIRRUS_MEMSIZE_1M;
+        s->sr[0x15] = 0x02;
+		break;
+	case CIRRUS_98ID_WSN_A2F:
+		s->device_id = CIRRUS_ID_CLGD5434;
+		s->bustype = CIRRUS_BUSTYPE_ISA;
+		s->cr[0x27] = s->device_id;
+		//s->sr[0x1F] = 0x2d;		// MemClock
+		//s->gr[0x18] = 0x0f;             // fastest memory configuration
+		s->sr[0x0f] = CIRRUS_MEMSIZE_2M;
+		//s->sr[0x17] = 0x20;
+		s->sr[0x15] = 0x03; /* memory size, 3=2MB, 4=4MB */
+		//s->sr[0x0F] = 0x20;
+		break;
+	case CIRRUS_98ID_WSN: // WSN-A4F
+		s->device_id = CIRRUS_ID_CLGD5434;
+		s->bustype = CIRRUS_BUSTYPE_ISA;
+		s->cr[0x27] = s->device_id;
+        //s->sr[0x1F] = 0x2d;		// MemClock
+        //s->gr[0x18] = 0x0f;             // fastest memory configuration
+        s->sr[0x0f] = CIRRUS_MEMSIZE_2M | CIRRUS_MEMFLAGS_BANKSWITCH;
+        //s->sr[0x17] = 0x20;
+        s->sr[0x15] = 0x04; /* memory size, 3=2MB, 4=4MB */
+        //s->sr[0x0F] = 0x20;
+		break;
+
+	case CIRRUS_98ID_GA98NBIC:
+		s->device_id = CIRRUS_ID_CLGD5434;
+		s->bustype = CIRRUS_BUSTYPE_ISA;
+		s->cr[0x27] = s->device_id;
+        s->sr[0x0f] = CIRRUS_MEMSIZE_1M;
+        s->sr[0x15] = 0x02;
+		break;
+	case CIRRUS_98ID_GA98NBII:
+		s->device_id = CIRRUS_ID_CLGD5434;
+		s->bustype = CIRRUS_BUSTYPE_ISA;
+		s->cr[0x27] = s->device_id;
+        s->sr[0x0f] = CIRRUS_MEMSIZE_2M;
+        s->sr[0x15] = 0x03; /* memory size, 3=2MB, 4=4MB */
+		break;
+	case CIRRUS_98ID_GA98NBIV:
+		s->device_id = CIRRUS_ID_CLGD5434;
+		s->bustype = CIRRUS_BUSTYPE_ISA;
+		s->cr[0x27] = s->device_id;
+        s->sr[0x0f] = CIRRUS_MEMSIZE_2M | CIRRUS_MEMFLAGS_BANKSWITCH;
+        s->sr[0x15] = 0x04; /* memory size, 3=2MB, 4=4MB */
+		break;
+	}
 }
 
 #endif

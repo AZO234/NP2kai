@@ -6,18 +6,18 @@
 #include	"keystat.h"
 
 
-// ƒ}ƒEƒX ver0.28
-// ˆê•”‚ÌƒQ[ƒ€‚Åƒ}ƒEƒXƒf[ƒ^‚ğØ‚èÌ‚Ä‚é‚Ì‚Å³í‚È“®‚©‚È‚­‚È‚é–‚ª‚ ‚é
-// ‚»‚ê‚ğ‹~‚¤ˆ×‚É ‹Ï“™‚ÉˆÚ“®ƒf[ƒ^‚ª“`‚í‚é‚æ‚¤‚É‚µ‚È‚¯‚ê‚Î‚È‚ç‚È‚¢
+// ãƒã‚¦ã‚¹ ver0.28
+// ä¸€éƒ¨ã®ã‚²ãƒ¼ãƒ ã§ãƒã‚¦ã‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åˆ‡ã‚Šæ¨ã¦ã‚‹ã®ã§æ­£å¸¸ãªå‹•ã‹ãªããªã‚‹äº‹ãŒã‚ã‚‹
+// ãã‚Œã‚’æ•‘ã†ç‚ºã« å‡ç­‰ã«ç§»å‹•ãƒ‡ãƒ¼ã‚¿ãŒä¼ã‚ã‚‹ã‚ˆã†ã«ã—ãªã‘ã‚Œã°ãªã‚‰ãªã„
 
 
 void mouseif_sync(void) {
 
-	// ‘O‰ñ‚Ì•ª‚ğ•â³
+	// å‰å›ã®åˆ†ã‚’è£œæ­£
 	mouseif.x += mouseif.rx;
 	mouseif.y += mouseif.ry;
 
-	// ¡‰ñ‚ÌˆÚ“®—Ê‚ğæ“¾
+	// ä»Šå›ã®ç§»å‹•é‡ã‚’å–å¾—
 	mouseif.b = mousemng_getstat(&mouseif.sx, &mouseif.sy, 1);
 	if (np2cfg.KEY_MODE == 3) {
 		mouseif.b &= keystat_getmouse(&mouseif.sx, &mouseif.sy);
@@ -136,8 +136,8 @@ static void setportc(REG8 value) {
 	if ((value ^ mouseif.upd8255.portc) & 0x10) {
 		if (!(value & 0x10)) {
 			if (!nevent_iswork(NEVENT_MOUSE)) {
-				// Š„‚è‚İ‚ğ“ü‚ê‚Æ‚­
-				pic_setirq(0x0d);
+				// å‰²ã‚Šè¾¼ã¿ã‚’å…¥ã‚Œã¨ã â†’ å‰²ã‚Šè¾¼ã¿ã¯ã‚„ã‚ã¨ã ver0.86 rev51
+				//pic_setirq(0x0d);
 				nevent_set(NEVENT_MOUSE, mouseif.intrclock << mouseif.timing,
 												mouseint, NEVENT_ABSOLUTE);
 			}
@@ -283,11 +283,11 @@ void mouseif_reset(const NP2CFG *pConfig) {
 	mouseif.upd8255.portb = 0x00;
 	mouseif.upd8255.portc = 0xf0;									// ver0.82
 	mouseif.upd8255.mode = 0x93;
-	mouseif.intrclock = pccore.realclock / 120;
-	mouseif.moveclock = pccore.realclock / 56400;
+	mouseif_changeclock();
 	mouseif.latch_x = -1;
 	mouseif.latch_y = -1;
-
+	
+	//mouseif.timing = 2;
 	(void)pConfig;
 }
 
@@ -301,5 +301,11 @@ void mouseif_bind(void) {
 	iocore_attachinp(0x7fdb, mouseif_i7fdb);
 	iocore_attachinp(0x7fdd, mouseif_i7fdd);
 	iocore_attachout(0xbfdb, mouseif_obfdb);
+}
+
+void mouseif_changeclock(void) {
+	
+	mouseif.intrclock = pccore.realclock / 120;
+	mouseif.moveclock = pccore.realclock / 56400;
 }
 

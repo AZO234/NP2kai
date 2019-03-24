@@ -4,6 +4,10 @@
 #define STRICT
 #define WIN32_LEAN_AND_MEAN
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 //#include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,6 +20,10 @@
 	#define max _MAX
 	#undef min
 	#define min _MIN
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif	// WIN_HEADERS_H

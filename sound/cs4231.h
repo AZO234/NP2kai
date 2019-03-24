@@ -46,34 +46,34 @@ typedef struct {
 } CS4231REG;
 
 typedef struct {
-	UINT		bufsize; // �T�E���h�Đ��p�̏z�o�b�t�@�T�C�Y�B�f�[�^��read/write��4byte�P�ʁi16bit�X�e���I��1�T���v���P�ʁj�ōs������
+	UINT		bufsize; // サウンド再生用の循環バッファサイズ。データのread/writeは4byte単位（16bitステレオの1サンプル単位）で行うこと
 	UINT		bufdatas; // = (bufwpos-bufpos)&CS4231_BUFMASK
-	UINT		bufpos; // �o�b�t�@�̓ǂݎ��ʒu�Bbufwpos�ƈ�v���Ă��悢���ǂ��z���Ă͂����Ȃ�
-	UINT		bufwpos; // �o�b�t�@�̏������݈ʒu�B����x���bufpos�ɒǂ����Ă͂����Ȃ��i��v���s�j
+	UINT		bufpos; // バッファの読み取り位置。bufwposと一致してもよいが追い越してはいけない
+	UINT		bufwpos; // バッファの書き込み位置。周回遅れのbufposに追いついてはいけない（一致も不可）
 	UINT32		pos12;
 	UINT32		step12;
 
-	UINT8		enable; // CS4231�L���t���O
+	UINT8		enable; // CS4231有効フラグ
 	UINT8		portctrl;
 	UINT8		dmairq; // CS4231 IRQ
-	UINT8		dmach; // CS4231 DMA�`���l��
-	UINT16		port[16]; // I/O�|�[�g�A�h���X�i�Ĕz�u�\�j
-	UINT8		adrs; // DMA�ǂݎ��A�h���X
+	UINT8		dmach; // CS4231 DMAチャネル
+	UINT16		port[16]; // I/Oポートアドレス（再配置可能）
+	UINT8		adrs; // DMA読み取りアドレス
 	UINT8		index; // Index Address Register
 	UINT8		intflag; // Status Register
 	UINT8		outenable;
 	UINT8		extfunc;
 	UINT8		extindex;
 	
-	UINT16		timer; // �p�~
-	SINT32		timercounter; // TI���荞�ݗp�̃_�E���J�E���^�i�̗\��j
+	UINT16		timer; // 廃止
+	SINT32		timercounter; // TI割り込み用のダウンカウンタ（の予定）
 
 	CS4231REG	reg;
-	UINT8		buffer[CS4231_BUFFERS]; // DMA�ǂݎ��A�h���X
+	UINT8		buffer[CS4231_BUFFERS]; // DMA読み取りアドレス
 
-	UINT8		devvolume[0x100]; // CS4231�����{�����[��
+	UINT8		devvolume[0x100]; // CS4231内蔵ボリューム
 
-	SINT32		totalsample; // PI���荞�ݗp�̃f�[�^���J�E���^
+	SINT32		totalsample; // PI割り込み用のデータ数カウンタ
 } _CS4231, *CS4231;
 
 typedef struct {
@@ -103,7 +103,7 @@ extern "C"
 //cs4231.reg.iface(9) Interface Configuration (I9)
 #define PEN (1 << 0) //bit0 Playback Enable set and reset without MCE
 #define CEN (1 << 1) //bit1 Capture Enable
-#define SDC (1 << 2) //bit2 Single DMA Channel 0 Dual 1 Single �t�Ǝv���Ă��̂ŏC�����ׂ�
+#define SDC (1 << 2) //bit2 Single DMA Channel 0 Dual 1 Single 逆と思ってたので修正すべし
 #define CAL0 (1 << 3) //bit3 Calibration 0 No Calibration 1 Converter calibration
 #define CAL1 (1 << 4) //bit4 2 DAC calibration 3 Full Calibration
 #define PPIO (1 << 6) //bit6 Playback PIO Enable 0 DMA 1 PIO

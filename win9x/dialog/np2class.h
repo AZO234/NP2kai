@@ -1,5 +1,5 @@
 
-// ”L—pAŠg’£ƒNƒ‰ƒXB
+// çŒ«ç”¨ã€æ‹¡å¼µã‚¯ãƒ©ã‚¹ã€‚
 
 
 extern const TCHAR np2dlgclass[];

@@ -1,6 +1,6 @@
 /**
  * @file	viewsnd.cpp
- * @brief	ƒTƒEƒ“ƒh ƒŒƒWƒXƒ^•\¦ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	ã‚µã‚¦ãƒ³ãƒ‰ ãƒ¬ã‚¸ã‚¹ã‚¿è¡¨ç¤ºã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -15,16 +15,16 @@
 #include "fmboard.h"
 
 /**
- * @brief •\¦ƒAƒCƒeƒ€
+ * @brief è¡¨ç¤ºã‚¢ã‚¤ãƒ†ãƒ 
  */
 struct SoundRegisterTable
 {
-	LPCTSTR lpString;		//!< •¶š—ñ
-	UINT16 wAddress;		//!< ƒAƒhƒŒƒX
-	UINT16 wMask;			//!< •\¦ƒ}ƒXƒN
+	LPCTSTR lpString;		//!< æ–‡å­—åˆ—
+	UINT16 wAddress;		//!< ã‚¢ãƒ‰ãƒ¬ã‚¹
+	UINT16 wMask;			//!< è¡¨ç¤ºãƒã‚¹ã‚¯
 };
 
-//! ƒe[ƒuƒ‹
+//! ãƒ†ãƒ¼ãƒ–ãƒ«
 static const SoundRegisterTable s_table[] =
 {
 	{TEXT("Sound-Board I"), 0, 0},
@@ -80,8 +80,8 @@ static const SoundRegisterTable s_table[] =
 };
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
- * @param[in] lpView ƒrƒ…[ƒ ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * @param[in] lpView ãƒ“ãƒ¥ãƒ¼ãƒ¯ ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 CDebugUtySnd::CDebugUtySnd(CDebugUtyView* lpView)
 	: CDebugUtyItem(lpView, IDM_VIEWMODESND)
@@ -89,15 +89,15 @@ CDebugUtySnd::CDebugUtySnd(CDebugUtyView* lpView)
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CDebugUtySnd::~CDebugUtySnd()
 {
 }
 
 /**
- * ‰Šú‰»
- * @param[in] lpItem Šî€‚Æ‚È‚éƒAƒCƒeƒ€
+ * åˆæœŸåŒ–
+ * @param[in] lpItem åŸºæº–ã¨ãªã‚‹ã‚¢ã‚¤ãƒ†ãƒ 
  */
 void CDebugUtySnd::Initialize(const CDebugUtyItem* lpItem)
 {
@@ -105,9 +105,9 @@ void CDebugUtySnd::Initialize(const CDebugUtyItem* lpItem)
 }
 
 /**
- * XV
- * @retval true XV‚ ‚è
- * @retval false XV‚È‚µ
+ * æ›´æ–°
+ * @retval true æ›´æ–°ã‚ã‚Š
+ * @retval false æ›´æ–°ãªã—
  */
 bool CDebugUtySnd::Update()
 {
@@ -115,9 +115,9 @@ bool CDebugUtySnd::Update()
 }
 
 /**
- * ƒƒbƒN
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * ãƒ­ãƒƒã‚¯
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CDebugUtySnd::Lock()
 {
@@ -127,7 +127,7 @@ bool CDebugUtySnd::Lock()
 }
 
 /**
- * ƒAƒ“ƒƒbƒN
+ * ã‚¢ãƒ³ãƒ­ãƒƒã‚¯
  */
 void CDebugUtySnd::Unlock()
 {
@@ -135,9 +135,9 @@ void CDebugUtySnd::Unlock()
 }
 
 /**
- * ƒƒbƒN’†?
- * @retval true ƒƒbƒN’†‚Å‚ ‚é
- * @retval false ƒƒbƒN’†‚Å‚È‚¢
+ * ãƒ­ãƒƒã‚¯ä¸­?
+ * @retval true ãƒ­ãƒƒã‚¯ä¸­ã§ã‚ã‚‹
+ * @retval false ãƒ­ãƒƒã‚¯ä¸­ã§ãªã„
  */
 bool CDebugUtySnd::IsLocked()
 {
@@ -145,9 +145,9 @@ bool CDebugUtySnd::IsLocked()
 }
 
 /**
- * •`‰æ
- * @param[in] hDC ƒfƒoƒCƒX ƒRƒ“ƒeƒLƒXƒg
- * @param[in] rect —Ìˆæ
+ * æç”»
+ * @param[in] hDC ãƒ‡ãƒã‚¤ã‚¹ ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ
+ * @param[in] rect é ˜åŸŸ
  */
 void CDebugUtySnd::OnPaint(HDC hDC, const RECT& rect)
 {

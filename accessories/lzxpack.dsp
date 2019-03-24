@@ -1,23 +1,23 @@
 # Microsoft Developer Studio Project File - Name="lzxpack" - Package Owner=<4>
 # Microsoft Developer Studio Generated Build File, Format Version 6.00
-# ** •ÒW‚µ‚È‚¢‚Å‚­‚¾‚³‚¢ **
+# ** ç·¨é›†ã—ãªã„ã§ãã ã•ã„ **
 
 # TARGTYPE "Win32 (x86) Console Application" 0x0103
 
 CFG=lzxpack - Win32 Release
-!MESSAGE ‚±‚ê‚Í—LŒø‚ÈÒ²¸Ì§²Ù‚Å‚Í‚ ‚è‚Ü‚¹‚ñB ‚±‚ÌÌßÛ¼Şª¸Ä‚ğËŞÙÄŞ‚·‚é‚½‚ß‚É‚Í NMAKE ‚ğg—p‚µ‚Ä‚­‚¾‚³‚¢B
-!MESSAGE [Ò²¸Ì§²Ù‚Ì´¸½Îß°Ä] ºÏİÄŞ‚ğg—p‚µ‚ÄÀs‚µ‚Ä‚­‚¾‚³‚¢
+!MESSAGE ã“ã‚Œã¯æœ‰åŠ¹ãªï¾’ï½²ï½¸ï¾Œï½§ï½²ï¾™ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚ ã“ã®ï¾Œï¾Ÿï¾›ï½¼ï¾ï½ªï½¸ï¾„ã‚’ï¾‹ï¾ï¾™ï¾„ï¾ã™ã‚‹ãŸã‚ã«ã¯ NMAKE ã‚’ä½¿ç”¨ã—ã¦ãã ã•ã„ã€‚
+!MESSAGE [ï¾’ï½²ï½¸ï¾Œï½§ï½²ï¾™ã®ï½´ï½¸ï½½ï¾ï¾Ÿï½°ï¾„] ï½ºï¾ï¾ï¾„ï¾ã‚’ä½¿ç”¨ã—ã¦å®Ÿè¡Œã—ã¦ãã ã•ã„
 !MESSAGE 
 !MESSAGE NMAKE /f "lzxpack.mak".
 !MESSAGE 
-!MESSAGE NMAKE ‚ÌÀs‚É\¬‚ğw’è‚Å‚«‚Ü‚·
-!MESSAGE ºÏİÄŞ ×²İã‚ÅÏ¸Û‚Ìİ’è‚ğ’è‹`‚µ‚Ü‚·B—á:
+!MESSAGE NMAKE ã®å®Ÿè¡Œæ™‚ã«æ§‹æˆã‚’æŒ‡å®šã§ãã¾ã™
+!MESSAGE ï½ºï¾ï¾ï¾„ï¾ ï¾—ï½²ï¾ä¸Šã§ï¾ï½¸ï¾›ã®è¨­å®šã‚’å®šç¾©ã—ã¾ã™ã€‚ä¾‹:
 !MESSAGE 
 !MESSAGE NMAKE /f "lzxpack.mak" CFG="lzxpack - Win32 Release"
 !MESSAGE 
-!MESSAGE ‘I‘ğ‰Â”\‚ÈËŞÙÄŞ Ó°ÄŞ:
+!MESSAGE é¸æŠå¯èƒ½ãªï¾‹ï¾ï¾™ï¾„ï¾ ï¾“ï½°ï¾„ï¾:
 !MESSAGE 
-!MESSAGE "lzxpack - Win32 Release" ("Win32 (x86) Console Application" —p)
+!MESSAGE "lzxpack - Win32 Release" ("Win32 (x86) Console Application" ç”¨)
 !MESSAGE 
 
 # Begin Project
@@ -33,12 +33,12 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "..\bin"
-# PROP Intermediate_Dir "..\obj\accessories"
+# PROP Output_Dir "..Â¥bin"
+# PROP Intermediate_Dir "..Â¥objÂ¥accessories"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /W3 /GX /O2 /I ".\\" /I "..\\" /I "..\win9x" /I "..\common" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
+# ADD CPP /nologo /W3 /GX /O2 /I ".Â¥Â¥" /I "..Â¥Â¥" /I "..Â¥win9x" /I "..Â¥common" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
 # ADD BASE RSC /l 0x411 /d "NDEBUG"
 # ADD RSC /l 0x411 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -58,7 +58,7 @@ LINK32=link.exe
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\COMMON\MILSTR.C
+SOURCE=..Â¥COMMONÂ¥MILSTR.C
 # End Source File
 # End Group
 # Begin Group "win9x"
@@ -66,16 +66,16 @@ SOURCE=..\COMMON\MILSTR.C
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\Win9x\DOSIO.CPP
+SOURCE=..Â¥Win9xÂ¥DOSIO.CPP
 # End Source File
 # End Group
 # Begin Source File
 
-SOURCE=.\LZXPACK.C
+SOURCE=.Â¥LZXPACK.C
 # End Source File
 # Begin Source File
 
-SOURCE=.\TEXTOUT.C
+SOURCE=.Â¥TEXTOUT.C
 # End Source File
 # End Group
 # Begin Group "Header Files"

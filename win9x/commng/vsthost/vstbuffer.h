@@ -1,12 +1,12 @@
 /**
  * @file	vstbuffer.h
- * @brief	VST ƒoƒbƒtƒ@ ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	VST ãƒãƒƒãƒ•ã‚¡ ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
 
 /**
- * @brief VST ƒoƒbƒtƒ@ ƒNƒ‰ƒX
+ * @brief VST ãƒãƒƒãƒ•ã‚¡ ã‚¯ãƒ©ã‚¹
  */
 class CVstBuffer
 {
@@ -21,14 +21,14 @@ public:
 	void GetShort(short* lpBuffer) const;
 
 private:
-	UINT m_nChannels;		/*!< ƒ`ƒƒƒ“ƒlƒ‹” */
-	UINT m_nSamples;		/*!< ƒTƒ“ƒvƒ‹” */
-	float** m_pBuffers;		/*!< ƒoƒbƒtƒ@ */
+	UINT m_nChannels;		/*!< ãƒãƒ£ãƒ³ãƒãƒ«æ•° */
+	UINT m_nSamples;		/*!< ã‚µãƒ³ãƒ—ãƒ«æ•° */
+	float** m_pBuffers;		/*!< ãƒãƒƒãƒ•ã‚¡ */
 };
 
 /**
- * ƒoƒbƒtƒ@‚ğ“¾‚é
- * @return ƒoƒbƒtƒ@
+ * ãƒãƒƒãƒ•ã‚¡ã‚’å¾—ã‚‹
+ * @return ãƒãƒƒãƒ•ã‚¡
  */
 inline float** CVstBuffer::GetBuffer()
 {

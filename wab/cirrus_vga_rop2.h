@@ -240,7 +240,7 @@ glue(glue(glue(cirrus_colorexpand_pattern_, ROP_NAME), _),DEPTH)
     pattern_y = s->cirrus_blt_srcaddr & 7;
 
 	if(np2clvga.gd54xxtype == CIRRUS_98ID_WSN){
-		// XXX: WSN/WAB���ƃr�b�g�p�^�[����������������H�i�b��ΏǗÖ@�j
+		// XXX: WSN/WABだとビットパターンがおかしい･･･？（暫定対症療法）
 		bits = 0xff;
 		for(y = 0; y < bltheight; y++) {
 			bitpos = 7 - srcskipleft;

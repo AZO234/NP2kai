@@ -1,6 +1,6 @@
 /**
  * @file	tstring.h
- * @brief	•¶š—ñƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	æ–‡å­—åˆ—ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -10,9 +10,9 @@
 namespace std
 {
 #ifdef _UNICODE
-typedef wstring			tstring;				//!< tchar string Œ^’è‹`
+typedef wstring			tstring;				//!< tchar string å‹å®šç¾©
 #else	// _UNICODE
-typedef string			tstring;				//!< tchar stringŒ^’è‹`
+typedef string			tstring;				//!< tchar stringå‹å®šç¾©
 #endif	// _UNICODE
 }
 

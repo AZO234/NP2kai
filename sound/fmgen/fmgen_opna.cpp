@@ -16,13 +16,13 @@
 
 
 //	TOFIX:
-//	 OPN ch3 �����Prepare�̑ΏۂƂȂ��Ă��܂���Q
+//	 OPN ch3 が常にPrepareの対象となってしまう障害
 
 
 // ---------------------------------------------------------------------------
-//	OPNA: ADPCM �f�[�^�̊i�[�����̈Ⴂ (8bit/1bit) ���G�~�����[�g���Ȃ�
-//	���̃I�v�V������L���ɂ���� ADPCM �������ւ̃A�N�Z�X(���� 8bit ���[�h)��
-//	�����y���Ȃ邩��
+//	OPNA: ADPCM データの格納方式の違い (8bit/1bit) をエミュレートしない
+//	このオプションを有効にすると ADPCM メモリへのアクセス(特に 8bit モード)が
+//	多少軽くなるかも
 //
 //#define NO_BITTYPE_EMULATION
 
@@ -38,14 +38,14 @@ namespace FM
 
 #if defined(BUILD_OPN) || defined(BUILD_OPNA) || defined (BUILD_OPNB)
 
-uint32	OPNBase::lfotable[8];			// OPNA/B �p
+uint32	OPNBase::lfotable[8];			// OPNA/B 用
 
 OPNBase::OPNBase()
 {
 	prescale = 0;
 }
 
-//	�p�����[�^�Z�b�g
+//	パラメータセット
 void OPNBase::SetParameter(Channel4* ch, uint addr, uint data)
 {
 	const static uint slottable[4] = { 0, 2, 1, 3 };
@@ -97,7 +97,7 @@ void OPNBase::SetParameter(Channel4* ch, uint addr, uint data)
 	}
 }
 
-//	���Z�b�g
+//	リセット
 void OPNBase::Reset()
 {
 	status = 0;
@@ -106,7 +106,7 @@ void OPNBase::Reset()
 	psg.Reset();
 }
 
-//	�v���X�P�[���ݒ�
+//	プリスケーラ設定
 void OPNBase::SetPrescaler(uint p)
 {
 	static const char table[3][2] = { { 6, 4 }, { 3, 2 }, { 2, 1 } };
@@ -121,7 +121,7 @@ void OPNBase::SetPrescaler(uint p)
 		
 		rate = psgrate;
 		
-		// �������g���Əo�͎��g���̔�
+		// 合成周波数と出力周波数の比
 		assert(fmclock < (0x80000000 >> FM_RATIOBITS));
 		uint ratio = ((fmclock << FM_RATIOBITS) + rate/2) / rate;
 
@@ -137,7 +137,7 @@ void OPNBase::SetPrescaler(uint p)
 	}
 }
 
-//	������
+//	初期化
 bool OPNBase::Init(uint c, uint r)
 {
 	clock = c;
@@ -146,17 +146,17 @@ bool OPNBase::Init(uint c, uint r)
 	return true;
 }
 
-//	���ʐݒ�
+//	音量設定
 void OPNBase::SetVolumeFM(int db)
 {
 	db = Min(db, 20);
 	if (db > -192)
-		fmvolume = int(16384.0 * pow(10.0, db / 40.0));
+		fmvolume = int(16384.0 * pow((double)10.0, (double)db / 40.0));
 	else
 		fmvolume = 0;
 }
 
-//	�^�C�}�[���ԏ���
+//	タイマー時間処理
 void OPNBase::TimerA()
 {
 	if (regtc & 0x80)
@@ -211,7 +211,7 @@ OPN::OPN()
 	}
 }
 
-//	������
+//	初期化
 bool OPN::Init(uint c, uint r, bool ip, const char*)
 {
 	if (!SetRate(c, r, ip))
@@ -225,7 +225,7 @@ bool OPN::Init(uint c, uint r, bool ip, const char*)
 	return true;
 }
 
-//	�T���v�����O���[�g�ύX
+//	サンプリングレート変更
 bool OPN::SetRate(uint c, uint r, bool)
 {
 	OPNBase::Init(c, r);
@@ -234,7 +234,7 @@ bool OPN::SetRate(uint c, uint r, bool)
 }
 
 
-//	���Z�b�g
+//	リセット
 void OPN::Reset()
 {
 	int i;
@@ -247,7 +247,7 @@ void OPN::Reset()
 }
 
 
-//	���W�X�^�ǂݍ���
+//	レジスタ読み込み
 uint OPN::GetReg(uint addr)
 {
 	if (addr < 0x10)
@@ -257,7 +257,7 @@ uint OPN::GetReg(uint addr)
 }
 
 
-//	���W�X�^�A���C�Ƀf�[�^��ݒ�
+//	レジスタアレイにデータを設定
 void OPN::SetReg(uint addr, uint data)
 {
 //	LOG2("reg[%.2x] <- %.2x\n", addr, data);
@@ -326,7 +326,7 @@ void OPN::SetReg(uint addr, uint data)
 	}
 }
 
-//	�X�e�[�^�X�t���O�ݒ�
+//	ステータスフラグ設定
 void OPN::SetStatus(uint bits)
 {
 	if (!(status & bits))
@@ -343,7 +343,7 @@ void OPN::ResetStatus(uint bit)
 		Intr(false);
 }
 
-//	�}�X�N�ݒ�
+//	マスク設定
 void OPN::SetChannelMask(uint mask)
 {
 	for (int i=0; i<3; i++)
@@ -377,10 +377,9 @@ void OPN::DataLoad(struct OPNData* data) {
 	}
 }
 
-//	����(2ch)
+//	合成(2ch)
 void OPN::Mix(Sample* buffer, int nsamples)
 {
-//printf("M:%d\n",nsamples);
 #define IStoSample(s)	((Limit(s, 0x7fff, -0x8000) * fmvolume) >> 14)
 	
 	psg.Mix(buffer, nsamples);
@@ -391,7 +390,7 @@ void OPN::Mix(Sample* buffer, int nsamples)
 	if (!(regtc & 0xc0))
 		ch[2].SetFNum(fnum[2]);
 	else
-	{	// ���ʉ�
+	{	// 効果音
 		ch[2].op[0].SetFNum(fnum3[1]);
 		ch[2].op[1].SetFNum(fnum3[2]);
 		ch[2].op[2].SetFNum(fnum3[0]);
@@ -399,7 +398,6 @@ void OPN::Mix(Sample* buffer, int nsamples)
 	}
 	
 	int actch = (((ch[2].Prepare() << 2) | ch[1].Prepare()) << 2) | ch[0].Prepare();
-//printf("a %X\n",actch);
 	if (actch & 0x15)
 	{
 		Sample* limit = buffer + nsamples * 2;
@@ -412,7 +410,6 @@ void OPN::Mix(Sample* buffer, int nsamples)
 			s = IStoSample(s);
 			StoreSample(dest[0], s);
 			StoreSample(dest[1], s);
-//printf("%08X,%08X\n",dest[0],dest[1]);
 		}
 	}
 #undef IStoSample
@@ -456,7 +453,7 @@ OPNABase::~OPNABase()
 }
 
 // ---------------------------------------------------------------------------
-//	������
+//	初期化
 //
 bool OPNABase::Init(uint c, uint r, bool)
 {
@@ -471,7 +468,7 @@ bool OPNABase::Init(uint c, uint r, bool)
 }
 
 // ---------------------------------------------------------------------------
-//	�e�[�u���쐬
+//	テーブル作成
 //
 void OPNABase::MakeTable2()
 {
@@ -479,7 +476,7 @@ void OPNABase::MakeTable2()
 	{
 		for (int i=-FM_TLPOS; i<FM_TLENTS; i++)
 		{
-			tltable[i+FM_TLPOS] = uint(65536. * pow(2.0, i * -16. / FM_TLENTS))-1;
+			tltable[i+FM_TLPOS] = uint(65536. * pow((double)2.0, (double)i * -16. / FM_TLENTS))-1;
 		}
 
 		tablehasmade = true;
@@ -487,7 +484,7 @@ void OPNABase::MakeTable2()
 }
 
 // ---------------------------------------------------------------------------
-//	���Z�b�g
+//	リセット
 //
 void OPNABase::Reset()
 {
@@ -519,11 +516,11 @@ void OPNABase::Reset()
 }
 
 // ---------------------------------------------------------------------------
-//	�T���v�����O���[�g�ύX
+//	サンプリングレート変更
 //
 bool OPNABase::SetRate(uint c, uint r, bool)
 {
-	c /= 2;		// �]���łƂ̌݊������d�����������R�����g�A�E�g���悤
+	c /= 2;		// 従来版との互換性を重視したけりゃコメントアウトしよう
 	
 	OPNBase::Init(c, r);
 
@@ -538,7 +535,7 @@ bool OPNABase::SetRate(uint c, uint r, bool)
 
 
 // ---------------------------------------------------------------------------
-//	�`�����l���}�X�N�̐ݒ�
+//	チャンネルマスクの設定
 //
 void OPNABase::SetChannelMask(uint mask)
 {
@@ -647,7 +644,7 @@ void OPNABase::DataLoad(struct OPNABaseData* data) {
 }
 
 // ---------------------------------------------------------------------------
-//	���W�X�^�A���C�Ƀf�[�^��ݒ�
+//	レジスタアレイにデータを設定
 //
 void OPNABase::SetReg(uint addr, uint data)
 {
@@ -742,7 +739,7 @@ void OPNABase::SetReg(uint addr, uint data)
 		psg.SetReg(addr, data);
 		break;
 
-	// ���F ------------------------------------------------------------------
+	// 音色 ------------------------------------------------------------------
 	default:
 		if (c < 3)
 		{
@@ -841,7 +838,7 @@ void OPNABase::SetADPCMBReg(uint addr, uint data)
 
 
 // ---------------------------------------------------------------------------
-//	���W�X�^�擾
+//	レジスタ取得
 //
 uint OPNA::GetReg(uint addr)
 {
@@ -873,7 +870,7 @@ uint OPNA::GetReg(uint addr)
 
 
 // ---------------------------------------------------------------------------
-//	�X�e�[�^�X�t���O�ݒ�
+//	ステータスフラグ設定
 //
 void OPNABase::SetStatus(uint bits)
 {
@@ -901,7 +898,7 @@ inline void OPNABase::UpdateStatus()
 }
 
 // ---------------------------------------------------------------------------
-//	ADPCM RAM �ւ̏����ݑ���
+//	ADPCM RAM への書込み操作
 //
 void OPNABase::WriteRAM(uint data)
 {
@@ -950,7 +947,7 @@ void OPNABase::WriteRAM(uint data)
 }
 
 // ---------------------------------------------------------------------------
-//	ADPCM RAM ����̓ǂݍ��ݑ���
+//	ADPCM RAM からの読み込み操作
 //
 uint OPNABase::ReadRAM()
 {
@@ -1020,7 +1017,7 @@ inline int OPNABase::DecodeADPCMBSample(uint data)
 
 
 // ---------------------------------------------------------------------------
-//	ADPCM RAM ����� nibble �ǂݍ��݋y�� ADPCM �W�J
+//	ADPCM RAM からの nibble 読み込み及び ADPCM 展開
 //
 int OPNABase::ReadRAMN()
 {
@@ -1095,7 +1092,7 @@ int OPNABase::ReadRAMN()
 }
 
 // ---------------------------------------------------------------------------
-//	�g���X�e�[�^�X��ǂ݂���
+//	拡張ステータスを読みこむ
 //
 uint OPNABase::ReadStatusEx()
 {
@@ -1106,7 +1103,7 @@ uint OPNABase::ReadStatusEx()
 }
 
 // ---------------------------------------------------------------------------
-//	ADPCM �W�J
+//	ADPCM 展開
 //
 inline void OPNABase::DecodeADPCMB()
 {
@@ -1117,7 +1114,7 @@ inline void OPNABase::DecodeADPCMB()
 }
 
 // ---------------------------------------------------------------------------
-//	ADPCM ����
+//	ADPCM 合成
 //	
 void OPNABase::ADPCMBMix(Sample* dest, uint count)
 {
@@ -1194,21 +1191,21 @@ stop:
 }
 
 // ---------------------------------------------------------------------------
-//	����
-//	in:		buffer		������
-//			nsamples	�����T���v����
+//	合成
+//	in:		buffer		合成先
+//			nsamples	合成サンプル数
 //
 void OPNABase::FMMix(Sample* buffer, int nsamples)
 {
 	if (fmvolume > 0)
 	{
-		// ����
+		// 準備
 		// Set F-Number
 		if (!(regtc & 0xc0))
 			csmch->SetFNum(fnum[csmch-ch]);
 		else
 		{
-			// ���ʉ����[�h
+			// 効果音モード
 			csmch->op[0].SetFNum(fnum3[1]);	csmch->op[1].SetFNum(fnum3[2]);
 			csmch->op[2].SetFNum(fnum3[0]);	csmch->op[3].SetFNum(fnum[2]);
 		}
@@ -1283,7 +1280,7 @@ inline void OPNABase::LFO()
 }
 
 // ---------------------------------------------------------------------------
-//	����
+//	合成
 //
 #define IStoSample(s)	((Limit(s, 0x7fff, -0x8000) * fmvolume) >> 14)
 
@@ -1321,7 +1318,7 @@ void OPNABase::Mix6(Sample* buffer, int nsamples, int activech)
 #ifdef BUILD_OPNA
 
 // ---------------------------------------------------------------------------
-//	�\�z
+//	構築
 //
 OPNA::OPNA()
 {
@@ -1350,7 +1347,7 @@ OPNA::~OPNA()
 
 
 // ---------------------------------------------------------------------------
-//	������
+//	初期化
 //
 bool OPNA::Init(uint c, uint r, bool ipflag, const char* path)
 {
@@ -1377,7 +1374,7 @@ bool OPNA::Init(uint c, uint r, bool ipflag, const char* path)
 }
 
 // ---------------------------------------------------------------------------
-//	���Z�b�g
+//	リセット
 //
 void OPNA::Reset()
 {
@@ -1388,7 +1385,7 @@ void OPNA::Reset()
 }
 
 // ---------------------------------------------------------------------------
-//	�T���v�����O���[�g�ύX
+//	サンプリングレート変更
 //
 bool OPNA::SetRate(uint c, uint r, bool ipflag)
 {
@@ -1404,13 +1401,13 @@ bool OPNA::SetRate(uint c, uint r, bool ipflag)
 
 
 // ---------------------------------------------------------------------------
-//	���Y������ǂ݂���
+//	リズム音を読みこむ
 //
 bool OPNA::LoadRhythmSample(const char* path)
 {
 	static const char* rhythmname[6] =
 	{
-		"bd", "sd", "top", "hh", "tom", "rim",
+		"BD", "SD", "TOP", "HH", "TOM", "RIM",
 	};
 
 	int i;
@@ -1426,7 +1423,7 @@ bool OPNA::LoadRhythmSample(const char* path)
 			strncpy(buf, path, MAX_PATH);
 		strncat(buf, "2608_", MAX_PATH);
 		strncat(buf, rhythmname[i], MAX_PATH);
-		strncat(buf, ".wav", MAX_PATH);
+		strncat(buf, ".WAV", MAX_PATH);
 
 		if (!file.Open(buf, FileIO::readonly))
 		{
@@ -1434,7 +1431,7 @@ bool OPNA::LoadRhythmSample(const char* path)
 				break;
 			if (path)
 				strncpy(buf, path, MAX_PATH);
-			strncpy(buf, "2608_rym.wav", MAX_PATH);
+			strncpy(buf, "2608_RYM.WAV", MAX_PATH);
 			if (!file.Open(buf, FileIO::readonly))
 				break;
 		}
@@ -1468,8 +1465,7 @@ bool OPNA::LoadRhythmSample(const char* path)
 			break;
 		fsize = Max(fsize, (1<<31)/1024);
 		
-		if(!rhythm[i].sample)
-			delete rhythm[i].sample;
+		delete rhythm[i].sample;
 		rhythm[i].sample = new int16[fsize];
 		if (!rhythm[i].sample)
 			break;
@@ -1495,7 +1491,7 @@ bool OPNA::LoadRhythmSample(const char* path)
 
 
 // ---------------------------------------------------------------------------
-//	���W�X�^�A���C�Ƀf�[�^��ݒ�
+//	レジスタアレイにデータを設定
 //
 void OPNA::SetReg(uint addr, uint data)
 {
@@ -1576,7 +1572,7 @@ void OPNA::DataLoad(struct OPNAData* data) {
 }
 
 // ---------------------------------------------------------------------------
-//	���Y������
+//	リズム合成
 //
 void OPNA::RhythmMix(Sample* buffer, uint count)
 {
@@ -1611,7 +1607,7 @@ void OPNA::RhythmMix(Sample* buffer, uint count)
 }
 
 // ---------------------------------------------------------------------------
-//	���ʐݒ�
+//	音量設定
 //
 void OPNA::SetVolumeRhythmTotal(int db)
 {
@@ -1629,7 +1625,7 @@ void OPNA::SetVolumeADPCM(int db)
 {
 	db = Min(db, 20);
 	if (db > -192)
-		adpcmvol = int(65536.0 * pow(10.0, db / 40.0));
+		adpcmvol = int(65536.0 * pow((double)10.0, (double)db / 40.0));
 	else
 		adpcmvol = 0;
 
@@ -1637,9 +1633,9 @@ void OPNA::SetVolumeADPCM(int db)
 }
 
 // ---------------------------------------------------------------------------
-//	����
-//	in:		buffer		������
-//			nsamples	�����T���v����
+//	合成
+//	in:		buffer		合成先
+//			nsamples	合成サンプル数
 //
 void OPNA::Mix(Sample* buffer, int nsamples)
 {
@@ -1658,7 +1654,7 @@ void OPNA::Mix(Sample* buffer, int nsamples)
 #ifdef BUILD_OPNB
 
 // ---------------------------------------------------------------------------
-//	�\�z
+//	構築
 //
 OPNB::OPNB()
 {
@@ -1693,7 +1689,7 @@ OPNB::~OPNB()
 }
 
 // ---------------------------------------------------------------------------
-//	������
+//	初期化
 //
 bool OPNB::Init(uint c, uint r, bool ipflag,
 				uint8 *_adpcma, int _adpcma_size,
@@ -1734,7 +1730,7 @@ bool OPNB::Init(uint c, uint r, bool ipflag,
 }
 
 // ---------------------------------------------------------------------------
-//	���Z�b�g
+//	リセット
 //
 void OPNB::Reset()
 {
@@ -1760,7 +1756,7 @@ void OPNB::Reset()
 }
 
 // ---------------------------------------------------------------------------
-//	�T���v�����O���[�g�ύX
+//	サンプリングレート変更
 //
 bool OPNB::SetRate(uint c, uint r, bool ipflag)
 {
@@ -1772,7 +1768,7 @@ bool OPNB::SetRate(uint c, uint r, bool ipflag)
 }
 
 // ---------------------------------------------------------------------------
-//	���W�X�^�A���C�Ƀf�[�^��ݒ�
+//	レジスタアレイにデータを設定
 //
 void OPNB::SetReg(uint addr, uint data)
 {
@@ -1898,7 +1894,7 @@ void OPNB::SetReg(uint addr, uint data)
 }
 
 // ---------------------------------------------------------------------------
-//	���W�X�^�擾
+//	レジスタ取得
 //
 uint OPNB::GetReg(uint addr)
 {
@@ -1909,7 +1905,7 @@ uint OPNB::GetReg(uint addr)
 }
 
 // ---------------------------------------------------------------------------
-//	�g���X�e�[�^�X��ǂ݂���
+//	拡張ステータスを読みこむ
 //
 uint OPNB::ReadStatusEx()
 {
@@ -1931,7 +1927,7 @@ void OPNB::InitADPCMATable()
 
 	for (int i=0; i<=48; i++)
 	{
-		int s = int(16.0 * pow (1.1, i) * 3);
+		int s = int(16.0 * pow ((double)1.1, (double)i) * 3);
 		for (int j=0; j<16; j++)
 		{
 			jedi_table[i*16+j] = s * table2[j] / 8;
@@ -1940,7 +1936,7 @@ void OPNB::InitADPCMATable()
 }
 
 // ---------------------------------------------------------------------------
-//	ADPCMA ����
+//	ADPCMA 合成
 //
 void OPNB::ADPCMAMix(Sample* buffer, uint count)
 {
@@ -2008,7 +2004,7 @@ void OPNB::ADPCMAMix(Sample* buffer, uint count)
 }
 
 // ---------------------------------------------------------------------------
-//	���ʐݒ�
+//	音量設定
 //
 void OPNB::SetVolumeADPCMATotal(int db)
 {
@@ -2026,7 +2022,7 @@ void OPNB::SetVolumeADPCMB(int db)
 {
 	db = Min(db, 20);
 	if (db > -192)
-		adpcmvol = int(65536.0 * pow(10, db / 40.0));
+		adpcmvol = int(65536.0 * pow((double)10, (double)db / 40.0));
 	else
 		adpcmvol = 0;
 }
@@ -2052,7 +2048,7 @@ void OPNB::DataSave(struct OPNBData* data, void* adpcmadata) {
 
 // ---------------------------------------------------------------------------
 void OPNB::DataLoad(struct OPNBData* data, void* adpcmadata) {
-	OPNABase::DataSave(&data->opnabase);
+	OPNABase::DataLoad(&data->opnabase);
 	if(data->adpcmasize) {
 		adpcmabuf = (uint8*)malloc(data->adpcmasize);
 		memcpy(adpcmabuf, adpcmadata, data->adpcmasize);
@@ -2071,9 +2067,9 @@ void OPNB::DataLoad(struct OPNBData* data, void* adpcmadata) {
 }
 
 // ---------------------------------------------------------------------------
-//	����
-//	in:		buffer		������
-//			nsamples	�����T���v����
+//	合成
+//	in:		buffer		合成先
+//			nsamples	合成サンプル数
 //
 void OPNB::Mix(Sample* buffer, int nsamples)
 {
@@ -2084,5 +2080,6 @@ void OPNB::Mix(Sample* buffer, int nsamples)
 }
 
 #endif // BUILD_OPNB
+
 
 }	// namespace FM

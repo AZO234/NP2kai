@@ -5,7 +5,7 @@
 #define	TRACEOUT(s)	(void)(s)
 #endif	/* 1 */
 
-// win‚Åidentify‚Ü‚Å‚Íæ“¾‚És‚­‚ñ‚¾‚¯‚Ç‚Èc‚Á‚ÄAnex86‚à“¯‚¶‚©
+// winã§identifyã¾ã§ã¯å–å¾—ã«è¡Œãã‚“ã ã‘ã©ãªâ€¦ã£ã¦Anex86ã‚‚åŒã˜ã‹
 
 #if defined(SUPPORT_IDEIO)
 
@@ -37,21 +37,21 @@ static HANDLE ideio_threadR = NULL;
 static HANDLE ideio_threadW = NULL;
 static IDEDRV ideio_thread_drv = NULL;
 #else
-	// TODO: ”ñWindows—pƒR[ƒh‚ğ‘‚­
+	// TODO: éWindowsç”¨ã‚³ãƒ¼ãƒ‰ã‚’æ›¸ã
 #endif
 
 //static void ideio_enter_criticalsection(void){
 //#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 //	EnterCriticalSection(&ideio_cs);
 //#else
-//	// TODO: ”ñWindows—pƒR[ƒh‚ğ‘‚­
+//	// TODO: éWindowsç”¨ã‚³ãƒ¼ãƒ‰ã‚’æ›¸ã
 //#endif
 //}
 //static void ideio_leave_criticalsection(void){
 //#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 //	LeaveCriticalSection(&ideio_cs);
 //#else
-//	// TODO: ”ñWindows—pƒR[ƒh‚ğ‘‚­
+//	// TODO: éWindowsç”¨ã‚³ãƒ¼ãƒ‰ã‚’æ›¸ã
 //#endif
 //}
 
@@ -105,7 +105,7 @@ static BRESULT setidentify(IDEDRV drv) {
 	}
 
 	ZeroMemory(tmp, sizeof(tmp));
-	// ‚Æ‚è‚ ‚¦‚¸g‚Á‚Ä‚é•”•ª‚¾‚¯
+	// ã¨ã‚Šã‚ãˆãšä½¿ã£ã¦ã‚‹éƒ¨åˆ†ã ã‘
 	if (drv->device == IDETYPE_HDD) {
 		tmp[0] = 0x0040;		// non removable device
 		tmp[1] = sxsi->cylinders;
@@ -115,7 +115,7 @@ static BRESULT setidentify(IDEDRV drv) {
 		for (i=0; i<10; i++) {
 			tmp[10+i] = (serial[i*2] << 8) + serial[i*2+1];
 		}
-		tmp[10+2] = '0'+drv->sxsidrv; // ƒVƒŠƒAƒ‹”Ô†‚Íƒ†ƒj[ƒN‚É‚µ‚Ä‚¨‚©‚È‚¢‚Æ‘Ê–Ú‚Á‚Û‚¢
+		tmp[10+2] = '0'+drv->sxsidrv; // ã‚·ãƒªã‚¢ãƒ«ç•ªå·ã¯ãƒ¦ãƒ‹ãƒ¼ã‚¯ã«ã—ã¦ãŠã‹ãªã„ã¨é§„ç›®ã£ã½ã„
 		tmp[22] = 4;
 		for (i=0; i<4; i++) {
 			tmp[23+i] = (firm[i*2] << 8) + firm[i*2+1];
@@ -152,7 +152,7 @@ static BRESULT setidentify(IDEDRV drv) {
 		for (i=0; i<10; i++) {
 			tmp[10+i] = (cdrom_serial[i*2] << 8) + cdrom_serial[i*2+1];
 		}
-		tmp[10+2] = '0'+drv->sxsidrv; // ƒVƒŠƒAƒ‹”Ô†‚Íƒ†ƒj[ƒN‚É‚µ‚Ä‚¨‚©‚È‚¢‚Æ‘Ê–Ú‚Á‚Û‚¢
+		tmp[10+2] = '0'+drv->sxsidrv; // ã‚·ãƒªã‚¢ãƒ«ç•ªå·ã¯ãƒ¦ãƒ‹ãƒ¼ã‚¯ã«ã—ã¦ãŠã‹ãªã„ã¨é§„ç›®ã£ã½ã„
 		for (i=0; i<4; i++) {
 			tmp[23+i] = (cdrom_firm[i*2] << 8) + cdrom_firm[i*2+1];
 		}
@@ -202,7 +202,7 @@ void ideioint(NEVENTITEM item) {
 	IDEDRV	drv;
 	IDEDEV  dev;
 
-	//ƒhƒ‰ƒCƒu‚ª‚ ‚é‚©
+	//ãƒ‰ãƒ©ã‚¤ãƒ–ãŒã‚ã‚‹ã‹
 	dev = getidedev();
 	if (dev == NULL) {
 		return;
@@ -213,7 +213,7 @@ void ideioint(NEVENTITEM item) {
 		return;
 	}
 
-	//BUSY‰ğœ
+	//BUSYè§£é™¤
 	if(dev->drv[0].status != 0xFF){
 		dev->drv[0].status |= IDESTAT_DRQ;
 		dev->drv[0].status &= ~IDESTAT_BSY;
@@ -223,7 +223,7 @@ void ideioint(NEVENTITEM item) {
 		dev->drv[1].status &= ~IDESTAT_BSY;
 	}
 
-	//Š„‚è‚İÀs//(Š„‚è‚İ‚Íƒhƒ‰ƒCƒu–ˆ‚É‚Íw’è‚Å‚«‚È‚¢d—l)
+	//å‰²ã‚Šè¾¼ã¿å®Ÿè¡Œ//(å‰²ã‚Šè¾¼ã¿ã¯ãƒ‰ãƒ©ã‚¤ãƒ–æ¯ã«ã¯æŒ‡å®šã§ããªã„ä»•æ§˜)
 	if(!(dev->drv[0].ctrl & IDECTRL_NIEN) || !(dev->drv[1].ctrl & IDECTRL_NIEN)){
 		TRACEOUT(("ideio: run setdintr()"));
 		pic_setirq(IDE_IRQ);
@@ -236,7 +236,7 @@ void ideioint2(NEVENTITEM item) {
 	IDEDRV	drv;
 	IDEDEV  dev;
 
-	//ƒhƒ‰ƒCƒu‚ª‚ ‚é‚©
+	//ãƒ‰ãƒ©ã‚¤ãƒ–ãŒã‚ã‚‹ã‹
 	dev = getidedev();
 	if (dev == NULL) {
 		return;
@@ -247,7 +247,7 @@ void ideioint2(NEVENTITEM item) {
 		return;
 	}
 
-	//BUSY‰ğœ
+	//BUSYè§£é™¤
 	if(dev->drv[0].status != 0xFF){
 		dev->drv[0].status &= ~IDESTAT_BSY;
 	}
@@ -255,7 +255,7 @@ void ideioint2(NEVENTITEM item) {
 		dev->drv[1].status &= ~IDESTAT_BSY;
 	}
 
-	//Š„‚è‚İÀs//(Š„‚è‚İ‚Íƒhƒ‰ƒCƒu–ˆ‚É‚Íw’è‚Å‚«‚È‚¢d—l)
+	//å‰²ã‚Šè¾¼ã¿å®Ÿè¡Œ//(å‰²ã‚Šè¾¼ã¿ã¯ãƒ‰ãƒ©ã‚¤ãƒ–æ¯ã«ã¯æŒ‡å®šã§ããªã„ä»•æ§˜)
 	if(!(dev->drv[0].ctrl & IDECTRL_NIEN) || !(dev->drv[1].ctrl & IDECTRL_NIEN)){
 		TRACEOUT(("ideio: run setdintr()"));
 		pic_setirq(IDE_IRQ);
@@ -264,7 +264,7 @@ void ideioint2(NEVENTITEM item) {
    (void)item;
 }
 
-// ’x‰„•t‚«Š„‚è‚İ
+// é…å»¶ä»˜ãå‰²ã‚Šè¾¼ã¿
 static void setdintr(IDEDRV drv, UINT8 errno, UINT8 status, UINT32 delay) {
 
 	if (!(drv->ctrl & IDECTRL_NIEN)) {
@@ -272,10 +272,10 @@ static void setdintr(IDEDRV drv, UINT8 errno, UINT8 status, UINT32 delay) {
 		ideio.bank[0] = ideio.bank[1] | 0x80;           // ????
 		TRACEOUT(("ideio: reg setdintr()"));
 
-		//// w’è‚µ‚½ŠÔ’x‰„iƒ}ƒCƒNƒ•bj
+		//// æŒ‡å®šã—ãŸæ™‚é–“é…å»¶ï¼ˆãƒã‚¤ã‚¯ãƒ­ç§’ï¼‰
 		//nevent_set(NEVENT_SASIIO, (pccore.realclock / 1000 / 1000) * delay, ideioint, NEVENT_ABSOLUTE);
 
-		// w’è‚µ‚½ŠÔ’x‰„iƒNƒƒbƒN”j
+		// æŒ‡å®šã—ãŸæ™‚é–“é…å»¶ï¼ˆã‚¯ãƒ­ãƒƒã‚¯æ•°ï¼‰
 		nevent_set(NEVENT_SASIIO, delay, ideioint, NEVENT_ABSOLUTE);
 	}
 }
@@ -286,10 +286,10 @@ static void setdintr2(IDEDRV drv, UINT8 errno, UINT8 status, UINT32 delay) {
 		ideio.bank[0] = ideio.bank[1] | 0x80;           // ????
 		TRACEOUT(("ideio: reg setdintr()"));
 
-		//// w’è‚µ‚½ŠÔ’x‰„iƒ}ƒCƒNƒ•bj
+		//// æŒ‡å®šã—ãŸæ™‚é–“é…å»¶ï¼ˆãƒã‚¤ã‚¯ãƒ­ç§’ï¼‰
 		//nevent_set(NEVENT_SASIIO, (pccore.realclock / 1000 / 1000) * delay, ideioint, NEVENT_ABSOLUTE);
 
-		// w’è‚µ‚½ŠÔ’x‰„iƒNƒƒbƒN”j
+		// æŒ‡å®šã—ãŸæ™‚é–“é…å»¶ï¼ˆã‚¯ãƒ­ãƒƒã‚¯æ•°ï¼‰
 		nevent_set(NEVENT_SASIIO, delay, ideioint2, NEVENT_ABSOLUTE);
 	}
 }
@@ -564,11 +564,48 @@ static REG8 IOINPCALL ideio_i430(UINT port) {
 
 	bank = (port >> 1) & 1;
 	ret = ideio.bank[bank];
+	if ((port >> 1) & 1) {
+		// 432h
+	}
+	else {
+		// 430h
+		IDEDEV	dev;
+		dev = getidedev();
+		//
+		// Win2000ã¯bit6ãŒ1ã®æ™‚ã‚¹ãƒ¬ãƒ¼ãƒ–ãƒ‡ãƒã‚¤ã‚¹ã‚’è¦‹ã«è¡Œã
+		//
+		if (dev->drv[1].device != IDETYPE_NONE) {
+			ret |= 0x40;
+		}
+	}
 	ideio.bank[bank] = ret & (~0x80);
 	TRACEOUT(("ideio getbank%d %.2x [%.4x:%.8x]",
 									(port >> 1) & 1, ret, CPU_CS, CPU_EIP));
-	return(ret & 0x01);
+	return(ret & 0x7f);
 }
+
+
+
+// ----
+
+static void IOOUTCALL ideio_o433(UINT port, REG8 dat) {
+
+}
+
+static REG8 IOINPCALL ideio_i433(UINT port) {
+
+	return(0x00);
+}
+
+static void IOOUTCALL ideio_o435(UINT port, REG8 dat) {
+
+}
+
+static REG8 IOINPCALL ideio_i435(UINT port) {
+
+	return(0x00);
+}
+
 
 
 // ----
@@ -671,6 +708,7 @@ static void IOOUTCALL ideio_o64e(UINT port, REG8 dat) {
 	IDEDRV	drv, d;
 	IDEDEV	dev;
 	int		i;
+	FILEPOS	sec;
 
 	// execute device diagnostic
 	if (dat == 0x90) {
@@ -880,7 +918,7 @@ static void IOOUTCALL ideio_o64e(UINT port, REG8 dat) {
 
 		case 0xe1:		// idle immediate
 			TRACEOUT(("ideio: idle immediate dr = %.2x", drv->dr));
-			//•K‚¸¬Œ÷‚·‚é‚Í‚¸
+			//å¿…ãšæˆåŠŸã™ã‚‹ã¯ãš
 			if(drv->status & IDESTAT_DRDY){
 				drv->status = IDESTAT_DRDY | IDESTAT_DSC;
 				drv->error = 0;
@@ -1243,7 +1281,7 @@ void ideio_threadfuncW_part(IDEDRV drv) {
 	if (drv->sc) {
 		writesec(drv);
 	}else{
-		// 1ƒZƒNƒ^‘‚«‚İŠ®—¹
+		// 1ã‚»ã‚¯ã‚¿æ›¸ãè¾¼ã¿å®Œäº†
 		if(!np2cfg.useasynchd && ideio.wwait > 0){
 			drv->status |= IDESTAT_BSY;
 			setdintr2(drv, 0, 0, ideio.rwait);
@@ -1255,7 +1293,6 @@ void ideio_threadfuncW_part(IDEDRV drv) {
 }
 unsigned int __stdcall ideio_threadfuncW(void* vdParam) {
 	IDEDRV drv = NULL;
-	FILEPOS	sec;
 
 	while(ideio_thread_initialized){
 		drv = ideio_thread_drv;
@@ -1289,7 +1326,7 @@ void IOOUTCALL ideio_w16(UINT port, REG16 value) {
 		if (drv->bufpos >= drv->bufsize) {
 			drv->status &= ~IDESTAT_DRQ;
 			//if((ideio.bios == IDETC_BIOS && ideio.mwait > 0) || ideio.wwait > 0){
-			//	//Š„‚è‚İ‘O‚Éƒ|[ƒŠƒ“ƒO‚³‚ê‚é–â‘è‚Ì‘Îô
+			//	//å‰²ã‚Šè¾¼ã¿å‰ã«ãƒãƒ¼ãƒªãƒ³ã‚°ã•ã‚Œã‚‹å•é¡Œã®å¯¾ç­–
 			//	dev->drv[0].status |= IDESTAT_BSY;
 			//	dev->drv[1].status |= IDESTAT_BSY;
 			//}
@@ -1324,7 +1361,7 @@ void IOOUTCALL ideio_w16(UINT port, REG16 value) {
 					if (drv->sc) {
 						writesec(drv);
 					}else{
-						// 1ƒZƒNƒ^‘‚«‚İŠ®—¹
+						// 1ã‚»ã‚¯ã‚¿æ›¸ãè¾¼ã¿å®Œäº†
 						//if((ideio.bios == IDETC_BIOS && ideio.mwait > 0) || ideio.wwait > 0){
 						//	drv->status |= IDESTAT_BSY;
 						//	setdintr(drv, 0, 0, ideio.rwait);
@@ -1335,7 +1372,7 @@ void IOOUTCALL ideio_w16(UINT port, REG16 value) {
 					//drv->mulcnt++;
 					//drv->sc--;
 					//if (!drv->sc) {
-					//	//ƒJƒEƒ“ƒg‚ªI‚í‚Á‚½‚çDRQ‚ğÁ‚·
+					//	//ã‚«ã‚¦ãƒ³ãƒˆãŒçµ‚ã‚ã£ãŸã‚‰DRQã‚’æ¶ˆã™
 					//	drv->bufpos = 0;
 					//	drv->error = 0;
 					//	if((ideio.bios == IDETC_BIOS && ideio.mwait > 0) || ideio.wwait > 0){
@@ -1347,7 +1384,7 @@ void IOOUTCALL ideio_w16(UINT port, REG16 value) {
 					//	break;
 					//}
 
-					////ŸƒZƒNƒ^‘‚«‚İ€”õ
+					////æ¬¡ã‚»ã‚¯ã‚¿æ›¸ãè¾¼ã¿æº–å‚™
 					//incsec(drv);
 					//writesec(drv);
 #endif
@@ -1393,7 +1430,7 @@ REG16 IOINPCALL ideio_r16(UINT port) {
 					if (drv->sc) {
 						readsec(drv);
 					}else{
-						// “Ç‚İæ‚èI‚í‚è
+						// èª­ã¿å–ã‚Šçµ‚ã‚ã‚Š
 					}
 					break;
 
@@ -1440,7 +1477,7 @@ static SINT32	sampcount2_n = 0;
 	samplen_n = soundcfg.rate;
 	samplen_d = 44100;
 	//if(samplen_n > samplen_d){
-	//	// XXX: ƒTƒ“ƒvƒŠƒ“ƒOƒŒ[ƒg‚ª‘å‚«‚¢ê‡‚ÌƒI[ƒo[ƒtƒ[‘Îô¥¥¥
+	//	// XXX: ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ãƒ¬ãƒ¼ãƒˆãŒå¤§ãã„å ´åˆã®ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼å¯¾ç­–ï½¥ï½¥ï½¥
 	//	samplen_n /= 100;
 	//	samplen_d /= 100;
 	//}
@@ -1754,7 +1791,7 @@ void ideio_initialize(void) {
 		ideio_threadW = (HANDLE)_beginthreadex(NULL, 0, ideio_threadfuncW, NULL, CREATE_SUSPENDED, &dwID);
 	}
 #else
-	// TODO: ”ñWindows—pƒR[ƒh‚ğ‘‚­
+	// TODO: éWindowsç”¨ã‚³ãƒ¼ãƒ‰ã‚’æ›¸ã
 #endif
 	atapi_initialize();
 }
@@ -1766,32 +1803,42 @@ void ideio_deinitialize(void) {
 		ideio_thread_initialized = 0;
 		while(((int)ResumeThread(ideio_threadR))>0);
 		while(((int)ResumeThread(ideio_threadW))>0);
-		WaitForSingleObject(ideio_threadR,  INFINITE);
-		WaitForSingleObject(ideio_threadW,  INFINITE);
+		if(WaitForSingleObject(ideio_threadR, 5000) == WAIT_TIMEOUT){
+			TerminateThread(ideio_threadR, 0);
+		}
+		if(WaitForSingleObject(ideio_threadW, 1000) == WAIT_TIMEOUT){
+			TerminateThread(ideio_threadW, 0);
+		}
 		CloseHandle(ideio_threadR);
 		CloseHandle(ideio_threadW);
 		ideio_threadR = NULL;
 		ideio_threadW = NULL;
 	}
 #else
-	// TODO: ”ñWindows—pƒR[ƒh‚ğ‘‚­
+	// TODO: éWindowsç”¨ã‚³ãƒ¼ãƒ‰ã‚’æ›¸ã
 #endif
 }
 
-void ideio_reset(const NP2CFG *pConfig) {
-	
-	OEMCHAR	path[MAX_PATH];
-	FILEH	fh;
+void ideio_basereset() {
 	REG8	i;
 	IDEDRV	drv;
-	OEMCHAR tmpbiosname[16];
-	UINT8 useidebios;
 
-	ZeroMemory(&ideio, sizeof(ideio));
 	for (i=0; i<4; i++) {
 		drv = ideio.dev[i >> 1].drv + (i & 1);
 		devinit(drv, i);
 	}
+}
+void ideio_reset(const NP2CFG *pConfig) {
+	REG8	i;
+	
+	OEMCHAR	path[MAX_PATH];
+	FILEH	fh;
+	OEMCHAR tmpbiosname[16];
+	UINT8 useidebios;
+
+	ZeroMemory(&ideio, sizeof(ideio));
+
+	ideio_basereset();
 	
 	ideio.rwait = np2cfg.iderwait;
 	ideio.wwait = np2cfg.idewwait;
@@ -1848,16 +1895,55 @@ void ideio_reset(const NP2CFG *pConfig) {
 		CopyMemory(mem + 0xd8000, idebios, sizeof(idebios));
 		TRACEOUT(("use simulate ide.rom"));
 	}
+	CPU_RAM_D000 &= ~(0x3 << 8);
+
+	//if(ideio.bios==IDETC_NOBIOS){
+	//	UINT16 param_2[] = {0x0598, 0x05b1, 0x058c, 0x058e};
+	//	UINT16 param_4[] = {0x045d, 0x045d, 0x045e, 0x045e};
+	//	UINT8 param_19[] = {0x08, 0x10, 0x20, 0x40};
+	//	int paramofs = 0;
+	//	for (i=0; i<4; i++) {
+	//		drv = ideio.dev[i >> 1].drv + (i & 1);
+	//		if (drv != NULL) {
+	//			SXSIDEV sxsi;
+	//			UINT32	size;
+	//			sxsi = sxsi_getptr(drv->sxsidrv);
+	//			size = sxsi->cylinders * sxsi->surfaces * sxsi->sectors;
+	//			if (drv->device == IDETYPE_HDD) {
+	//				STOREINTELWORD(mem + 0xda100 + paramofs, (size / drv->surfaces / drv->sectors) & 0xffff);
+	//				STOREINTELWORD(mem + 0xda100 + paramofs + 2, param_2[i]);
+	//				STOREINTELWORD(mem + 0xda100 + paramofs + 4, param_4[i]);
+	//				*(mem + 0xda100 + paramofs + 7) = drv->sectors;
+	//				STOREINTELWORD(mem + 0xda100 + paramofs + 8, (drv->surfaces * drv->sectors) & 0xffff);
+	//				*(mem + 0xda100 + paramofs + 10) = drv->surfaces;
+	//				STOREINTELWORD(mem + 0xda100 + paramofs + 1, (drv->surfaces * drv->sectors) & 0xffff);
+	//				*(mem + 0xda100 + paramofs + 16) = 0;
+	//				*(mem + 0xda100 + paramofs + 19) = param_19[i];
+	//			}else{
+	//				STOREINTELWORD(mem + 0xda100 + paramofs + 2, param_2[i]);
+	//				STOREINTELWORD(mem + 0xda100 + paramofs + 4, param_4[i]);
+	//				*(mem + 0xda100 + paramofs + 16) = 0x02;
+	//				*(mem + 0xda100 + paramofs + 19) = param_19[i];
+	//			}
+	//		}
+	//		paramofs += 32;
+	//	}
+	//}
 
 	(void)pConfig;
+}
+
+void ideio_bindCDDA(void) {
+	if (pccore.hddif & PCHDD_IDE) {
+		sound_streamregist(NULL, (SOUNDCB)playaudio);
+	}
 }
 
 void ideio_bind(void) {
 
 	if (pccore.hddif & PCHDD_IDE) {
-#if 1
-		sound_streamregist(NULL, (SOUNDCB)playaudio);
-#endif
+		ideio_bindCDDA();
+
 		iocore_attachout(0x0430, ideio_o430);
 		iocore_attachout(0x0432, ideio_o430);
 		iocore_attachinp(0x0430, ideio_i430);
@@ -1883,8 +1969,13 @@ void ideio_bind(void) {
 		iocore_attachinp(0x074c, ideio_i74c);
 		iocore_attachinp(0x074e, ideio_i74e);
 
-		iocore_attachout(0x1e8e, ideio_o1e8e); // ˆê•”IDE BIOS‚Í‚±‚ê‚ª‚È‚¢‚Æ‹N“®‚ÉƒtƒŠ[ƒY‚µ‚½‚èƒVƒŠƒ“ƒ_”‚ª0‚É‚È‚é
-		iocore_attachinp(0x1e8e, ideio_i1e8e); // ˆê•”IDE BIOS‚Í‚±‚ê‚ª‚È‚¢‚Æ‹N“®‚ÉƒtƒŠ[ƒY‚µ‚½‚èƒVƒŠƒ“ƒ_”‚ª0‚É‚È‚é
+		iocore_attachout(0x1e8e, ideio_o1e8e); // ä¸€éƒ¨IDE BIOSã¯ã“ã‚ŒãŒãªã„ã¨èµ·å‹•æ™‚ã«ãƒ•ãƒªãƒ¼ã‚ºã—ãŸã‚Šã‚·ãƒªãƒ³ãƒ€æ•°ãŒ0ã«ãªã‚‹
+		iocore_attachinp(0x1e8e, ideio_i1e8e); // ä¸€éƒ¨IDE BIOSã¯ã“ã‚ŒãŒãªã„ã¨èµ·å‹•æ™‚ã«ãƒ•ãƒªãƒ¼ã‚ºã—ãŸã‚Šã‚·ãƒªãƒ³ãƒ€æ•°ãŒ0ã«ãªã‚‹
+		
+		iocore_attachout(0x0433, ideio_o433);
+		iocore_attachinp(0x0433, ideio_i433);
+		iocore_attachout(0x0435, ideio_o435);
+		iocore_attachinp(0x0435, ideio_i435);
 	}
 }
 

@@ -12,24 +12,24 @@
 
 void nevent_allreset(void)
 {
-	/* ‚·‚×‚Ä‚ğƒŠƒZƒbƒg */
+	/* ã™ã¹ã¦ã‚’ãƒªã‚»ãƒƒãƒˆ */
 	memset(&g_nevent, 0, sizeof(g_nevent));
 }
 
 void nevent_get1stevent(void)
 {
-	/* Å’Z‚ÌƒCƒxƒ“ƒg‚ÌƒNƒƒbƒN”‚ğƒZƒbƒg */
+	/* æœ€çŸ­ã®ã‚¤ãƒ™ãƒ³ãƒˆã®ã‚¯ãƒ­ãƒƒã‚¯æ•°ã‚’ã‚»ãƒƒãƒˆ */
 	if (g_nevent.readyevents)
 	{
 		CPU_BASECLOCK = g_nevent.item[g_nevent.level[0]].clock;
 	}
 	else
 	{
-		/* ƒCƒxƒ“ƒg‚ª‚È‚¢ê‡‚ÌƒNƒƒbƒN”‚ğƒZƒbƒg */
+		/* ã‚¤ãƒ™ãƒ³ãƒˆãŒãªã„å ´åˆã®ã‚¯ãƒ­ãƒƒã‚¯æ•°ã‚’ã‚»ãƒƒãƒˆ */
 		CPU_BASECLOCK = NEVENT_MAXCLOCK;
 	}
 
-	/* ƒJƒEƒ“ƒ^‚ÖƒZƒbƒg */
+	/* ã‚«ã‚¦ãƒ³ã‚¿ã¸ã‚»ãƒƒãƒˆ */
 	CPU_REMCLOCK = CPU_BASECLOCK;
 }
 
@@ -46,12 +46,12 @@ static void nevent_execute(void)
 		id = g_nevent.waitevent[i];
 		item = &g_nevent.item[id];
 
-		/* ƒR[ƒ‹ƒoƒbƒN‚ÌÀs */
+		/* ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã®å®Ÿè¡Œ */
 		if (item->proc != NULL)
 		{
 			item->proc(item);
 
-			/* Ÿ‰ñ‚É‚¿‰z‚µ‚ÌƒCƒxƒ“ƒg‚Ìƒ`ƒFƒbƒN */
+			/* æ¬¡å›ã«æŒã¡è¶Šã—ã®ã‚¤ãƒ™ãƒ³ãƒˆã®ãƒã‚§ãƒƒã‚¯ */
 			if (item->flag & NEVENT_WAIT)
 			{
 				g_nevent.waitevent[nEvents++] = id;
@@ -72,6 +72,7 @@ void nevent_progress(void)
 	UINT i;
 	NEVENTID id;
 	NEVENTITEM item;
+	UINT8 fevtchk = 0;
 
 	CPU_CLOCK += CPU_BASECLOCK;
 	nEvents = 0;
@@ -83,7 +84,7 @@ void nevent_progress(void)
 		item->clock -= CPU_BASECLOCK;
 		if (item->clock > 0)
 		{
-			/* ƒCƒxƒ“ƒg‘Ò‚¿’† */
+			/* ã‚¤ãƒ™ãƒ³ãƒˆå¾…ã¡ä¸­ */
 			g_nevent.level[nEvents++] = id;
 			if (nextbase >= item->clock)
 			{
@@ -92,7 +93,7 @@ void nevent_progress(void)
 		}
 		else
 		{
-			/* ƒCƒxƒ“ƒg”­¶ */
+			/* ã‚¤ãƒ™ãƒ³ãƒˆç™ºç”Ÿ */
 			if (!(item->flag & (NEVENT_SETEVENT | NEVENT_WAIT)))
 			{
 				g_nevent.waitevent[g_nevent.waitevents++] = id;
@@ -101,11 +102,18 @@ void nevent_progress(void)
 			item->flag &= ~(NEVENT_ENABLE);
 //			TRACEOUT(("event = %x", id));
 		}
+		fevtchk |= (id==NEVENT_FLAMES ? 1 : 0);
 	}
 	g_nevent.readyevents = nEvents;
 	CPU_BASECLOCK = nextbase;
 	CPU_REMCLOCK += nextbase;
 	nevent_execute();
+
+	// NEVENT_FLAMESãŒæ¶ˆãˆã‚‹å•é¡Œã«æš«å®šå¯¾å‡¦
+	if(!fevtchk){
+		printf("NEVENT_FLAMES is missing!!\n");
+		pcstat.screendispflag = 0;
+	}
 //	TRACEOUT(("nextbase = %d (%d)", nextbase, CPU_REMCLOCK));
 }
 
@@ -114,7 +122,7 @@ void nevent_reset(NEVENTID id)
 {
 	UINT i;
 
-	/* Œ»İis‚µ‚Ä‚éƒCƒxƒ“ƒg‚ğŒŸõ */
+	/* ç¾åœ¨é€²è¡Œã—ã¦ã‚‹ã‚¤ãƒ™ãƒ³ãƒˆã‚’æ¤œç´¢ */
 	for (i = 0; i < g_nevent.readyevents; i++)
 	{
 		if (g_nevent.level[i] == id)
@@ -122,10 +130,10 @@ void nevent_reset(NEVENTID id)
 			break;
 		}
 	}
-	/* ƒCƒxƒ“ƒg‚Í‘¶İ‚µ‚½H */
+	/* ã‚¤ãƒ™ãƒ³ãƒˆã¯å­˜åœ¨ã—ãŸï¼Ÿ */
 	if (i < g_nevent.readyevents)
 	{
-		/* ‘¶İ‚µ‚Ä‚¢‚½‚çí‚é */
+		/* å­˜åœ¨ã—ã¦ã„ãŸã‚‰å‰Šã‚‹ */
 		g_nevent.readyevents--;
 		for (; i < g_nevent.readyevents; i++)
 		{
@@ -138,7 +146,7 @@ void nevent_waitreset(NEVENTID id)
 {
 	UINT i;
 
-	/* Œ»İis‚µ‚Ä‚éƒCƒxƒ“ƒg‚ğŒŸõ */
+	/* ç¾åœ¨é€²è¡Œã—ã¦ã‚‹ã‚¤ãƒ™ãƒ³ãƒˆã‚’æ¤œç´¢ */
 	for (i = 0; i < g_nevent.waitevents; i++)
 	{
 		if (g_nevent.waitevent[i] == id)
@@ -146,10 +154,10 @@ void nevent_waitreset(NEVENTID id)
 			break;
 		}
 	}
-	/* ƒCƒxƒ“ƒg‚Í‘¶İ‚µ‚½H */
+	/* ã‚¤ãƒ™ãƒ³ãƒˆã¯å­˜åœ¨ã—ãŸï¼Ÿ */
 	if (i < g_nevent.waitevents)
 	{
-		/* ‘¶İ‚µ‚Ä‚¢‚½‚çí‚é */
+		/* å­˜åœ¨ã—ã¦ã„ãŸã‚‰å‰Šã‚‹ */
 		g_nevent.waitevents--;
 		for (; i < g_nevent.waitevents; i++)
 		{
@@ -185,10 +193,10 @@ void nevent_set(NEVENTID id, SINT32 eventclock, NEVENTCB proc, NEVENTPOSITION ab
 		item->clock = clk;
 	}
 #endif
-	/* ƒCƒxƒ“ƒg‚Ìíœ */
+	/* ã‚¤ãƒ™ãƒ³ãƒˆã®å‰Šé™¤ */
 	nevent_reset(id);
 
-	/* ƒCƒxƒ“ƒg‚Ì‘}“üˆÊ’u‚ÌŒŸõ */
+	/* ã‚¤ãƒ™ãƒ³ãƒˆã®æŒ¿å…¥ä½ç½®ã®æ¤œç´¢ */
 	for (eventId = 0; eventId < g_nevent.readyevents; eventId++)
 	{
 		if (item->clock < g_nevent.item[g_nevent.level[eventId]].clock)
@@ -197,7 +205,7 @@ void nevent_set(NEVENTID id, SINT32 eventclock, NEVENTCB proc, NEVENTPOSITION ab
 		}
 	}
 
-	/* ƒCƒxƒ“ƒg‚Ì‘}“ü */
+	/* ã‚¤ãƒ™ãƒ³ãƒˆã®æŒ¿å…¥ */
 	for (i = g_nevent.readyevents; i > eventId; i--)
 	{
 		g_nevent.level[i] = g_nevent.level[i - 1];
@@ -205,7 +213,7 @@ void nevent_set(NEVENTID id, SINT32 eventclock, NEVENTCB proc, NEVENTPOSITION ab
 	g_nevent.level[eventId] = id;
 	g_nevent.readyevents++;
 
-	/* ‚à‚µÅ’ZƒCƒxƒ“ƒg‚¾‚Á‚½‚ç... */
+	/* ã‚‚ã—æœ€çŸ­ã‚¤ãƒ™ãƒ³ãƒˆã ã£ãŸã‚‰... */
 	if (eventId == 0)
 	{
 		clk = CPU_BASECLOCK - item->clock;
@@ -224,7 +232,7 @@ BOOL nevent_iswork(NEVENTID id)
 {
 	UINT i;
 
-	/* Œ»İis‚µ‚Ä‚éƒCƒxƒ“ƒg‚ğŒŸõ */
+	/* ç¾åœ¨é€²è¡Œã—ã¦ã‚‹ã‚¤ãƒ™ãƒ³ãƒˆã‚’æ¤œç´¢ */
 	for (i = 0; i < g_nevent.readyevents; i++)
 	{
 		if (g_nevent.level[i] == id)
@@ -239,7 +247,7 @@ SINT32 nevent_getremain(NEVENTID id)
 {
 	UINT i;
 
-	/* Œ»İis‚µ‚Ä‚éƒCƒxƒ“ƒg‚ğŒŸõ */
+	/* ç¾åœ¨é€²è¡Œã—ã¦ã‚‹ã‚¤ãƒ™ãƒ³ãƒˆã‚’æ¤œç´¢ */
 	for (i = 0; i < g_nevent.readyevents; i++)
 	{
 		if (g_nevent.level[i] == id)

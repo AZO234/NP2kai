@@ -1,4 +1,4 @@
-/* Copyright  (C) 2010-2017 The RetroArch team
+/* Copyright  (C) 2010-2018 The RetroArch team
  *
  * ---------------------------------------------------------------------------------------
  * The following license statement only applies to this file (archive_file.c).
@@ -19,7 +19,6 @@
  * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,7 +41,6 @@
 #include <file/archive_file.h>
 #include <file/file_path.h>
 #include <streams/file_stream.h>
-#include <retro_stat.h>
 #include <retro_miscellaneous.h>
 #include <lists/string_list.h>
 #include <string/stdstring.h>
@@ -56,6 +54,20 @@ struct file_archive_file_data
    size_t size;
 };
 
+static size_t file_archive_size(file_archive_file_data_t *data)
+{
+   if (!data)
+      return 0;
+   return data->size;
+}
+
+static const uint8_t *file_archive_data(file_archive_file_data_t *data)
+{
+   if (!data)
+      return NULL;
+   return (const uint8_t*)data->data;
+}
+
 #ifdef HAVE_MMAP
 /* Closes, unmaps and frees. */
 static void file_archive_free(file_archive_file_data_t *data)
@@ -68,20 +80,6 @@ static void file_archive_free(file_archive_file_data_t *data)
    if (data->fd >= 0)
       close(data->fd);
    free(data);
-}
-
-static const uint8_t *file_archive_data(file_archive_file_data_t *data)
-{
-   if (!data)
-      return NULL;
-   return (const uint8_t*)data->data;
-}
-
-static size_t file_archive_size(file_archive_file_data_t *data)
-{
-   if (!data)
-      return 0;
-   return data->size;
 }
 
 static file_archive_file_data_t* file_archive_open(const char *path)
@@ -128,23 +126,9 @@ static void file_archive_free(file_archive_file_data_t *data)
    free(data);
 }
 
-static const uint8_t *file_archive_data(file_archive_file_data_t *data)
-{
-   if (!data)
-      return NULL;
-   return (const uint8_t*)data->data;
-}
-
-static size_t file_archive_size(file_archive_file_data_t *data)
-{
-   if (!data)
-      return 0;
-   return data->size;
-}
-
 static file_archive_file_data_t* file_archive_open(const char *path)
 {
-   ssize_t ret            = -1;
+   int64_t ret            = -1;
    bool read_from_file    = false;
    file_archive_file_data_t *data = (file_archive_file_data_t*)
       calloc(1, sizeof(*data));
@@ -210,7 +194,7 @@ static int file_archive_get_file_list_cb(
 
       if (!file_ext)
          goto error;
-      
+
       if (!string_list_find_elem_prefix(ext_list, ".", file_ext))
       {
          /* keep iterating */
@@ -301,7 +285,7 @@ static int file_archive_parse_file_init(file_archive_transfer_t *state,
    if (!state->handle)
       return -1;
 
-   state->archive_size = file_archive_size(state->handle);
+   state->archive_size = (int32_t)file_archive_size(state->handle);
    state->data         = file_archive_data(state->handle);
    state->footer       = 0;
    state->directory    = 0;
@@ -363,11 +347,20 @@ end:
       if (handle->backend)
       {
          if (handle->backend->stream_free)
-            handle->backend->stream_free(handle->stream);
-      }
+         {
+#ifdef HAVE_7ZIP
+            if (handle->backend != &sevenzip_backend)
+            {
+               handle->backend->stream_free(handle->stream);
 
-      if (handle->data)
-         free(handle->data);
+               if (handle->data)
+                  free(handle->data);
+            }
+#else
+            handle->backend->stream_free(handle->stream);
+#endif
+         }
+      }
    }
 
    return ret;
@@ -416,12 +409,14 @@ int file_archive_parse_file_iterate(
          {
             const struct file_archive_file_backend *backend =
                file_archive_get_file_backend(file);
-            int ret                                         = 
+            int ret                                         =
                backend->archive_parse_file_iterate_step(state,
                   valid_exts, userdata, file_cb);
 
             if (ret != 1)
+            {
                state->type = ARCHIVE_TRANSFER_DEINIT;
+            }
             if (ret == -1)
                state->type = ARCHIVE_TRANSFER_DEINIT_ERROR;
 
@@ -501,7 +496,6 @@ static bool file_archive_walk(const char *file, const char *valid_exts,
 
 int file_archive_parse_file_progress(file_archive_transfer_t *state)
 {
-   /* FIXME: this estimate is worse than before */
    ptrdiff_t delta = 0;
 
    if (!state || state->archive_size == 0)
@@ -509,7 +503,10 @@ int file_archive_parse_file_progress(file_archive_transfer_t *state)
 
    delta = state->directory - state->data;
 
-   return delta * 100 / state->archive_size;
+   if (!state->start_delta)
+      state->start_delta = delta;
+
+   return (int)(((delta - state->start_delta) * 100) / (state->archive_size - state->start_delta));
 }
 
 /**
@@ -536,30 +533,30 @@ bool file_archive_extract_file(
    bool ret                                 = true;
    struct string_list *list                 = string_split(valid_exts, "|");
 
+   userdata.archive_path[0]                 = '\0';
+   userdata.first_extracted_file_path       = NULL;
+   userdata.extracted_file_path             = NULL;
+   userdata.extraction_directory            = extraction_directory;
+   userdata.archive_path_size               = archive_path_size;
+   userdata.ext                             = list;
+   userdata.list                            = NULL;
+   userdata.found_file                      = false;
+   userdata.list_only                       = false;
+   userdata.context                         = NULL;
+   userdata.archive_name[0]                 = '\0';
+   userdata.crc                             = 0;
+   userdata.dec                             = NULL;
+
+   userdata.decomp_state.opt_file           = NULL;
+   userdata.decomp_state.needle             = NULL;
+   userdata.decomp_state.size               = 0;
+   userdata.decomp_state.found              = false;
+
    if (!list)
    {
       ret = false;
       goto end;
    }
-
-   userdata.archive_path[0]           = '\0';
-   userdata.first_extracted_file_path = NULL;
-   userdata.extracted_file_path       = NULL;
-   userdata.extraction_directory      = extraction_directory;
-   userdata.archive_path_size         = archive_path_size;
-   userdata.ext                       = list;
-   userdata.list                      = NULL;
-   userdata.found_file                = false;
-   userdata.list_only                 = false;
-   userdata.context                   = NULL;
-   userdata.archive_name[0]           = '\0';
-   userdata.crc                       = 0;
-   userdata.dec                       = NULL;
-
-   userdata.decomp_state.opt_file     = NULL;
-   userdata.decomp_state.needle       = NULL;
-   userdata.decomp_state.size         = 0;
-   userdata.decomp_state.found        = NULL;
 
    if (!file_archive_walk(archive_path, valid_exts,
             file_archive_extract_cb, &userdata))
@@ -617,7 +614,7 @@ struct string_list *file_archive_get_file_list(const char *path,
    userdata.decomp_state.opt_file           = NULL;
    userdata.decomp_state.needle             = NULL;
    userdata.decomp_state.size               = 0;
-   userdata.decomp_state.found              = NULL;
+   userdata.decomp_state.found              = false;
 
    if (!userdata.list)
       goto error;
@@ -708,7 +705,7 @@ static struct string_list *file_archive_filename_split(const char *path)
    if (delim)
    {
       /* add archive path to list first */
-      if (!string_list_append_n(list, path, delim - path, attr))
+      if (!string_list_append_n(list, path, (unsigned)(delim - path), attr))
          goto error;
 
       /* now add the path within the archive */
@@ -737,7 +734,7 @@ error:
  */
 int file_archive_compressed_read(
       const char * path, void **buf,
-      const char* optional_filename, ssize_t *length)
+      const char* optional_filename, int64_t *length)
 {
    const struct file_archive_file_backend *backend = NULL;
    int ret                            = 0;
@@ -749,7 +746,7 @@ int file_archive_compressed_read(
     * hoping that optional_filename is the
     * same as requested.
     */
-   if (optional_filename && path_file_exists(optional_filename))
+   if (optional_filename && filestream_exists(optional_filename))
    {
       *length = 0;
       string_list_free(str_list);

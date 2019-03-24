@@ -8,6 +8,7 @@
 #include	"cpumem.h"
 #endif	/* SUPPORT_HRTIMER */
 
+
 // ---- I/O
 
 static void IOOUTCALL upd4990_o20(UINT port, REG8 dat) {
@@ -167,7 +168,7 @@ void uPD4990_bind(void) {
 	iocore_attachinp(0x0128, upd4990_i128);
 
 	hrtimerdiv = 32;
-	hrtimerclock = pccore.realclock/hrtimerdiv;
+	hrtimerclock = pccore.baseclock/hrtimerdiv;
 #endif	/* SUPPORT_HRTIMER */
 }
 

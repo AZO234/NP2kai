@@ -1,52 +1,52 @@
 
 
-�@����ł͖��ɂȂ��Ă��Ȃ����A�������ɂȂ�_�B
+　現状では問題になっていないが、将来問題になる点。
 
 
 
-�E���ǂ̂Ƃ���c
-�@�@����������ԃX�s�[�h�Ɋւ�A���߃t�F�b�`�Ŗ���ǂޖ󂾂��B
+・結局のところ…
+　　メモリが一番スピードに関る、命令フェッチで毎回読む訳だし。
 
-�@�@�E������ int crw �� int user_mode���ǂ��ɂ���{�ɏo���Ȃ����H
-�@�@�@�@crw + (user_mode << 3) �̌`�Ŏ��H
+　　・引き数 int crw と int user_modeをどうにか一本に出来ないか？
+　　　　crw + (user_mode << 3) の形で持つ？
 
-      ������Ă݂܂����B�ǂ�Ȃ���ł���B
-
-
-�E���G�ȃX�^�b�N�����̖��
-�@�@pusha�� esp==7,9,11,13,15�� GPF(���C���Ȃ�
+      →やってみました。どんなもんでしょ。
 
 
-
-�Erepe/ne string����
-�@�@����Astring���ߒ��ɊO�����荞�݂��󂯕t���Ȃ��B
-�@�@�h���b�P���݂����� rep�̃J�E���^���������A���� ����^�C�~���O�Ŋ��荞�݂�
-�@�@�K�v�Ƃ���\�t�g�ŕs�s����������B
+・複雑なスタック処理の問題
+　　pushaの esp==7,9,11,13,15の GPF(やる気しない
 
 
 
-�E�f�o�O���W�X�^�̃u���[�N
-�@�@���݂�DR�̃u���[�N���g�p����A�v���͑��݂��Ȃ��悤���B
-�@�@�����Ή�����̂ł���� ���݂̌`�ł͂Ȃ� exec_1step()���d�����A
-�@�@�V���O���X�e�b�v���荞�݂̂悤�� ia32()�ŐU�蕪���������s�Ȃ��Ƃ悢�B
+・repe/ne string命令
+　　現状、string命令中に外部割り込みを受け付けない。
+　　ドラッケンみたいな repのカウンタ数が長く、かつ 特定タイミングで割り込みを
+　　必要とするソフトで不都合が生じる。
 
 
 
-�E�V�t�g�}�N��
+・デバグレジスタのブレーク
+　　現在はDRのブレークを使用するアプリは存在しないようだ。
+　　もし対応するのであれば 現在の形ではなく exec_1step()を二重化し、
+　　シングルステップ割り込みのように ia32()で振り分け処理を行なうとよい。
+
+
+
+・シフトマクロ
 	if ((s) == 0) CPU_FLAGL |= Z_FLAG;
 	if ((s) & (1 << (SIZE - 1))) CPU_FLAGL |= S_FLAG;
 
 	if ((s) == 0) CPU_FLAGL |= Z_FLAG;
 	else if ((s) & (1 << (SIZE - 1))) CPU_FLAGL |= S_FLAG;
 
-�@�@�ǂ����������H(else�ŃW�����v�����܂��c)
+　　どっちが高速？(elseでジャンプが生まれる…)
 
-�@�@(���FCPU�ɂ���ĕς�邪) �ނ���c
+　　(所詮CPUによって変わるが) むしろ…
 
 	if ((s) == 0) CPU_FLAGL |= Z_FLAG;
 	CPU_FLAGL |= ((s) >> (SIZE - 8)) & S_FLAG;
 
-�@�@�̕����ʔ����H
+　　の方が面白い？
 
 
 	x86								ARM

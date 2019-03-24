@@ -185,6 +185,9 @@ flagsave(const char* ext)
 	if (ret) {
 		file_delete(path);
 	}
+	else {
+		ret = statsave_save_hdd(ext);
+	}
 	soundmng_play();
 
 	return ret;
@@ -221,6 +224,7 @@ flagload(const char* ext, const char* title, BOOL force)
 		}
 	}
 	if (rv == 0) {
+		statsave_load_hdd(ext);
 		statsave_load(path);
 		toolwin_setfdd(0, fdd_diskname(0));
 		toolwin_setfdd(1, fdd_diskname(1));

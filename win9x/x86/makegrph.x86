@@ -135,7 +135,7 @@ grphputlines:		movzx	eax, byte [GDC_S_PITCH]
 					test	ecx, 4000h
 					jne		short .storewidth
 					add		eax, eax
-.storewidth:		and		eax, 0000feh				; uPD72020Ç≈ämîFÅc
+.storewidth:		and		eax, 0000feh				; uPD72020„ÅßÁ¢∫Ë™ç‚Ä¶
 					mov		[esp+12+8], eax				; LINE_WIDTH
 
 					and		esi, 3fffh

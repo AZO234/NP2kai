@@ -1,6 +1,6 @@
 /**
  * @file	menu.h
- * @brief	���j���[�̐錾����уC���^�[�t�F�C�X�̒�`�����܂�
+ * @brief	メニューの宣言およびインターフェイスの定義をします
  */
 
 #pragma once

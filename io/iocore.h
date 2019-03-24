@@ -42,6 +42,10 @@ typedef	REG8 (IOINPCALL *IOINP)(UINT port);
 #if defined(SUPPORT_PC9821)
 #include	"pcidev.h"
 #endif
+#if defined(SUPPORT_PEGC)
+#include	"pegc.h"
+extern	_PEGC		pegc;
+#endif
 
 
 #ifdef __cplusplus
@@ -84,7 +88,7 @@ void iocore_attachcmnoutex(UINT port, UINT mask,
 void iocore_attachcmninpex(UINT port, UINT mask,
 											const IOINP *func, UINT funcs);
 
-// システムI/O - 10bit decode
+// 繧ｷ繧ｹ繝�繝I/O - 10bit decode
 void iocore_attachsysout(UINT port, IOOUT func);
 void iocore_attachsysinp(UINT port, IOINP func);
 void iocore_attachsysoutex(UINT port, UINT mask,
@@ -92,13 +96,17 @@ void iocore_attachsysoutex(UINT port, UINT mask,
 void iocore_attachsysinpex(UINT port, UINT mask,
 											const IOINP *func, UINT funcs);
 
-// サウンドI/O - 12bit decode
+// 繧ｵ繧ｦ繝ｳ繝迂/O - 12bit decode
 BRESULT iocore_attachsndout(UINT port, IOOUT func);
+BRESULT iocore_detachsndout(UINT port);
 BRESULT iocore_attachsndinp(UINT port, IOINP func);
+BRESULT iocore_detachsndinp(UINT port);
 
-// 拡張I/O - 16bit decode
+// 諡｡蠑ｵI/O - 16bit decode
 BRESULT iocore_attachout(UINT port, IOOUT func);
+BRESULT iocore_detachout(UINT port);
 BRESULT iocore_attachinp(UINT port, IOINP func);
+BRESULT iocore_detachinp(UINT port);
 
 void iocore_create(void);
 void iocore_destroy(void);

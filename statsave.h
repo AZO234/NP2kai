@@ -46,6 +46,8 @@ void statflag_seterr(STFLAGH sfh, const OEMCHAR *str);
 int statsave_save(const OEMCHAR *filename);
 int statsave_check(const OEMCHAR *filename, OEMCHAR *buf, int size);
 int statsave_load(const OEMCHAR *filename);
+int statsave_save_hdd(const OEMCHAR *ext);
+int statsave_load_hdd(const OEMCHAR *ext);
 
 #ifdef __cplusplus
 }

@@ -1,6 +1,6 @@
 /**
  * @file	c86ctlif.h
- * @brief	G.I.M.I.C ƒAƒNƒZƒX ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	G.I.M.I.C ã‚¢ã‚¯ã‚»ã‚¹ ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -16,7 +16,7 @@ namespace c86ctl
 }
 
 /**
- * @brief G.I.M.I.C ƒAƒNƒZƒX ƒNƒ‰ƒX
+ * @brief G.I.M.I.C ã‚¢ã‚¯ã‚»ã‚¹ ã‚¯ãƒ©ã‚¹
  */
 class C86CtlIf
 {
@@ -29,10 +29,10 @@ public:
 	IExternalChip* GetInterface(IExternalChip::ChipType nChipType, UINT nClock);
 
 private:
-	c86ctl::IRealChipBase* m_pChipBase;	/*!< ƒ`ƒbƒv ƒx[ƒX ƒCƒ“ƒXƒ^ƒ“ƒX */
+	c86ctl::IRealChipBase* m_pChipBase;	/*!< ãƒãƒƒãƒ— ãƒ™ãƒ¼ã‚¹ ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ */
 
 	/**
-	 * @brief ƒ`ƒbƒv ƒNƒ‰ƒX
+	 * @brief ãƒãƒƒãƒ— ã‚¯ãƒ©ã‚¹
 	 */
 	class Chip : public IExternalChip
 	{
@@ -45,14 +45,14 @@ private:
 		virtual INTPTR Message(UINT nMessage, INTPTR nParameter = 0);
 
 	private:
-		C86CtlIf* m_pC86CtlIf;				/*!< C86Ctl ƒCƒ“ƒXƒ^ƒ“ƒX */
-		c86ctl::IRealChip* m_pRealChip;		/*!< ƒ`ƒbƒv ƒCƒ“ƒXƒ^ƒ“ƒX */
-		c86ctl::IGimic* m_pGimic;			/*!< G.I.M.I.C ƒCƒ“ƒXƒ^ƒ“ƒX */
-		ChipType m_nChipType;				/*!< ƒ`ƒbƒv ƒ^ƒCƒv */
-		UINT m_nClock;						/*!< ƒ`ƒbƒv ƒNƒƒbƒN */
+		C86CtlIf* m_pC86CtlIf;				/*!< C86Ctl ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ */
+		c86ctl::IRealChip* m_pRealChip;		/*!< ãƒãƒƒãƒ— ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ */
+		c86ctl::IGimic* m_pGimic;			/*!< G.I.M.I.C ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ */
+		ChipType m_nChipType;				/*!< ãƒãƒƒãƒ— ã‚¿ã‚¤ãƒ— */
+		UINT m_nClock;						/*!< ãƒãƒƒãƒ— ã‚¯ãƒ­ãƒƒã‚¯ */
 	};
 
-	std::map<int, Chip*> m_chips;			/*!< ƒ`ƒbƒv */
+	std::map<int, Chip*> m_chips;			/*!< ãƒãƒƒãƒ— */
 	void Detach(Chip* pChip);
 	friend class Chip;
 };

@@ -1,15 +1,15 @@
 /**
  * @file	cmpara.cpp
- * @brief	ƒpƒ‰ƒŒƒ‹ ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	ãƒ‘ãƒ©ãƒ¬ãƒ« ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
 #include "cmpara.h"
 
 /**
- * ƒCƒ“ƒXƒ^ƒ“ƒXì¬
- * @param[in] nPort ƒ|[ƒg”Ô†
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ä½œæˆ
+ * @param[in] nPort ãƒãƒ¼ãƒˆç•ªå·
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 CComPara* CComPara::CreateInstance(UINT nPort)
 {
@@ -23,7 +23,7 @@ CComPara* CComPara::CreateInstance(UINT nPort)
 }
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CComPara::CComPara()
 	: CComBase(COMCONNECT_PARALLEL)
@@ -32,7 +32,7 @@ CComPara::CComPara()
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CComPara::~CComPara()
 {
@@ -43,10 +43,10 @@ CComPara::~CComPara()
 }
 
 /**
- * ‰Šú‰»
- * @param[in] nPort ƒ|[ƒg”Ô†
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * åˆæœŸåŒ–
+ * @param[in] nPort ãƒãƒ¼ãƒˆç•ªå·
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CComPara::Initialize(UINT nPort)
 {
@@ -57,9 +57,9 @@ bool CComPara::Initialize(UINT nPort)
 }
 
 /**
- * “Ç‚İ‚İ
- * @param[out] pData ƒoƒbƒtƒ@
- * @return ƒTƒCƒY
+ * èª­ã¿è¾¼ã¿
+ * @param[out] pData ãƒãƒƒãƒ•ã‚¡
+ * @return ã‚µã‚¤ã‚º
  */
 UINT CComPara::Read(UINT8* pData)
 {
@@ -67,9 +67,9 @@ UINT CComPara::Read(UINT8* pData)
 }
 
 /**
- * ‘‚«‚İ
- * @param[out] cData ƒf[ƒ^
- * @return ƒTƒCƒY
+ * æ›¸ãè¾¼ã¿
+ * @param[out] cData ãƒ‡ãƒ¼ã‚¿
+ * @return ã‚µã‚¤ã‚º
  */
 UINT CComPara::Write(UINT8 cData)
 {
@@ -78,8 +78,8 @@ UINT CComPara::Write(UINT8 cData)
 }
 
 /**
- * ƒXƒe[ƒ^ƒX‚ğ“¾‚é
- * @return ƒXƒe[ƒ^ƒX
+ * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’å¾—ã‚‹
+ * @return ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
  */
 UINT8 CComPara::GetStat()
 {
@@ -87,10 +87,10 @@ UINT8 CComPara::GetStat()
 }
 
 /**
- * ƒƒbƒZ[ƒW
- * @param[in] nMessage ƒƒbƒZ[ƒW
- * @param[in] nParam ƒpƒ‰ƒƒ^
- * @return ƒŠƒUƒ‹ƒg ƒR[ƒh
+ * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @return ãƒªã‚¶ãƒ«ãƒˆ ã‚³ãƒ¼ãƒ‰
  */
 INTPTR CComPara::Message(UINT nMessage, INTPTR nParam)
 {

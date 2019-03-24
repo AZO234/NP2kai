@@ -66,8 +66,20 @@ NP2OSCFG np2oscfg = {
 	0,			/* I286SAVE */
 
 	SNDDRV_SDL,		/* snddrv */
+#if !defined(__LIBRETRO__)
 	{ "", "" }, 		/* MIDIDEV */
+#endif	/* __LIBRETRO__ */
 	0,			/* MIDIWAIT */
+
+	{ TRUE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", "" },	/* mpu */
+#if !defined(__LIBRETRO__)
+	{
+		{ TRUE, COMPORT_NONE, 0, 0x3e, 19200, "", "", "", "" },/* com1 */
+		{ TRUE, COMPORT_NONE, 0, 0x3e, 19200, "", "", "", "" },/* com2 */
+		{ TRUE, COMPORT_NONE, 0, 0x3e, 19200, "", "", "", "" },/* com3 */
+	},
+#endif	/* __LIBRETRO__ */
+
 	0,			/* readonly */
 };
 static	UINT		framecnt;

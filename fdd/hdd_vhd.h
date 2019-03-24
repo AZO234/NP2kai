@@ -104,7 +104,7 @@ BRESULT sxsihdd_vpcvhd_mount(SXSIDEV sxsi, FILEH fh)
 	vhdlen = file_seek(fh, 0, FSEEK_END);
 	if (vhdlen == (VPCVHD_FPOS)-1 || (vhdlen >= 0 && vhdlen < (VPCVHD_FPOS)footerlen))
 		return(FAILURE);
-	file_seek(fh, vhdlen - footerlen, FSEEK_SET);
+	file_seek(fh, (FILEPOS)(vhdlen - footerlen), FSEEK_SET);
 	readlen = file_read(fh, &footer, sizeof(footer.Cookie));
 	if (memcmp(footer.Cookie, CookieVPCVHDFooter, sizeof(footer.Cookie)) != 0) {
 		CopyMemory(&(footer.Cookie[0]), &(footer.Cookie[1]), sizeof(footer.Cookie)-1);

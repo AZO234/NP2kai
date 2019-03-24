@@ -276,7 +276,7 @@ const UINT8	*ptr;
 	if (op == 0xf4) {							// hlt
 		I286_IP++;
 	}
-	REGPUSH0(REAL_FLAGREG)						// ‚±‚±V30‚Ε’Òελ‚ª‡‚ν‚Θ‚Ά
+	REGPUSH0(REAL_FLAGREG)						// γ“γ“V30γ§θΎ»θ¤„γεγ‚γªγ„
 	REGPUSH0(I286_CS)
 	REGPUSH0(I286_IP)
 

@@ -50,8 +50,11 @@ static const FNIORESET resetfn[] = {
 #if defined(SUPPORT_PC9861K)
 			pc9861k_reset,
 #endif
-#ifdef SUPPORT_GPIB
+#if defined(SUPPORT_GPIB)
 			gpibio_reset,
+#endif
+#if defined(SUPPORT_PEGC)
+			pegc_reset,
 #endif
 			mpu98ii_reset,
 #if defined(SUPPORT_BMS)
@@ -84,8 +87,11 @@ static const FNIOBIND bindfn[] = {
 #if defined(SUPPORT_PC9861K)
 			pc9861k_bind,
 #endif
-#ifdef SUPPORT_GPIB
+#if defined(SUPPORT_GPIB)
 			gpibio_bind,
+#endif
+#if defined(SUPPORT_PEGC)
+			pegc_bind,
 #endif
 			mpu98ii_bind,
 #if defined(SUPPORT_BMS)
@@ -120,6 +126,16 @@ void cbuscore_attachsndex(UINT port, const IOOUT *out, const IOINP *inp) {
 		if (inpfn) {
 			iocore_attachsndinp(port, inpfn);
 		}
+		port += 2;
+	}
+}
+void cbuscore_detachsndex(UINT port) {
+
+	UINT	i;
+
+	for (i=0; i<4; i++) {
+		iocore_detachsndout(port);
+		iocore_detachsndinp(port);
 		port += 2;
 	}
 }

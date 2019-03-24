@@ -108,7 +108,7 @@ static REG8 IOINPCALL sb16_i2500(UINT port) {
 			return ct1741_get_dma_irq();
 		case 0x81:			// Read dma num
 			return ct1741_get_dma_ch();
-		case 0x82:			// Irq pending(98�ɂ͕s�v)
+		case 0x82:			// Irq pending(98には不要)
 		default:
 			break;
 	}
@@ -126,6 +126,13 @@ void ct1745io_bind(void)
 	iocore_attachout(0x2500 + g_sb16.base, sb16_o2500);	/* Mixer Chip Data Port */
 	iocore_attachinp(0x2400 + g_sb16.base, sb16_i2400);	/* Mixer Chip Register Address Port */
 	iocore_attachinp(0x2500 + g_sb16.base, sb16_i2500);	/* Mixer Chip Data Port */
+}
+void ct1745io_unbind(void)
+{
+	iocore_detachout(0x2400 + g_sb16.base);	/* Mixer Chip Register Address Port */
+	iocore_detachout(0x2500 + g_sb16.base);	/* Mixer Chip Data Port */
+	iocore_detachinp(0x2400 + g_sb16.base);	/* Mixer Chip Register Address Port */
+	iocore_detachinp(0x2500 + g_sb16.base);	/* Mixer Chip Data Port */
 }
 
 #endif

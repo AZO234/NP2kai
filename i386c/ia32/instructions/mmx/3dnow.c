@@ -113,15 +113,15 @@ void AMD3DNOW_PSWAPD_MEM(UINT8 reg1, UINT32 memaddr);
 
 static INLINE void
 AMD3DNOW_check_NM_EXCEPTION(){
-	// 3DNow!‚È‚µ‚È‚çUD(–³ŒøƒIƒyƒR[ƒh—áŠO)‚ğ”­¶‚³‚¹‚é
+	// 3DNow!ãªã—ãªã‚‰UD(ç„¡åŠ¹ã‚ªãƒšã‚³ãƒ¼ãƒ‰ä¾‹å¤–)ã‚’ç™ºç”Ÿã•ã›ã‚‹
 	if(!(i386cpuid.cpu_feature & CPU_FEATURE_MMX) || !(i386cpuid.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	// ƒGƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚È‚çUD(–³ŒøƒIƒyƒR[ƒh—áŠO)‚ğ”­¶‚³‚¹‚é
+	// ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ãªã‚‰UD(ç„¡åŠ¹ã‚ªãƒšã‚³ãƒ¼ãƒ‰ä¾‹å¤–)ã‚’ç™ºç”Ÿã•ã›ã‚‹
 	if(CPU_CR0 & CPU_CR0_EM){
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	// ƒ^ƒXƒNƒXƒCƒbƒ`‚ÉNM(ƒfƒoƒCƒXg—p•s‰Â—áŠO)‚ğ”­¶‚³‚¹‚é
+	// ã‚¿ã‚¹ã‚¯ã‚¹ã‚¤ãƒƒãƒæ™‚ã«NM(ãƒ‡ãƒã‚¤ã‚¹ä½¿ç”¨ä¸å¯ä¾‹å¤–)ã‚’ç™ºç”Ÿã•ã›ã‚‹
 	if (CPU_CR0 & CPU_CR0_TS) {
 		EXCEPTION(NM_EXCEPTION, 0);
 	}
@@ -156,15 +156,15 @@ AMD3DNOW_FEMMS(void)
 {
 	int i;
 	
-	// MMX‚È‚µ‚È‚çUD(–³ŒøƒIƒyƒR[ƒh—áŠO)‚ğ”­¶‚³‚¹‚é
+	// MMXãªã—ãªã‚‰UD(ç„¡åŠ¹ã‚ªãƒšã‚³ãƒ¼ãƒ‰ä¾‹å¤–)ã‚’ç™ºç”Ÿã•ã›ã‚‹
 	if(!(i386cpuid.cpu_feature & CPU_FEATURE_MMX)){
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	// ƒGƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚È‚çUD(–³ŒøƒIƒyƒR[ƒh—áŠO)‚ğ”­¶‚³‚¹‚é
+	// ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ãªã‚‰UD(ç„¡åŠ¹ã‚ªãƒšã‚³ãƒ¼ãƒ‰ä¾‹å¤–)ã‚’ç™ºç”Ÿã•ã›ã‚‹
 	if(CPU_CR0 & CPU_CR0_EM){
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	// ƒ^ƒXƒNƒXƒCƒbƒ`‚ÉNM(ƒfƒoƒCƒXg—p•s‰Â—áŠO)‚ğ”­¶‚³‚¹‚é
+	// ã‚¿ã‚¹ã‚¯ã‚¹ã‚¤ãƒƒãƒæ™‚ã«NM(ãƒ‡ãƒã‚¤ã‚¹ä½¿ç”¨ä¸å¯ä¾‹å¤–)ã‚’ç™ºç”Ÿã•ã›ã‚‹
 	if ((CPU_CR0 & (CPU_CR0_TS)) || (CPU_CR0 & CPU_CR0_EM)) {
 		EXCEPTION(NM_EXCEPTION, 0);
 	}
@@ -182,7 +182,7 @@ AMD3DNOW_FEMMS(void)
 void
 AMD3DNOW_PREFETCH(void)
 {
-	UINT32 op, src;
+	UINT32 op;
 	UINT idx, sub;
 	
 	AMD3DNOW_check_NM_EXCEPTION();
@@ -207,14 +207,14 @@ AMD3DNOW_PREFETCH(void)
 			// Reserved(=PREFETCH)
 			break;
 		}
-		// XXX: ‰½‚à‚µ‚È‚¢
+		// XXX: ä½•ã‚‚ã—ãªã„
 	}
 }
 
 void
 AMD3DNOW_F0(void)
 {
-	UINT32 op, src;
+	UINT32 op;
 	UINT idx, sub;
 	UINT8 suffix;
 	UINT8 reg1;
@@ -579,7 +579,7 @@ void AMD3DNOW_PFMUL_MEM(UINT8 reg1, UINT32 memaddr){
 
 // PFRCP
 void AMD3DNOW_PFRCP(float *data1, float *data2){
-	// XXX: ‚½‚¾‚ÌƒRƒs[
+	// XXX: ãŸã ã®ã‚³ãƒ”ãƒ¼
 	data1[0] = 1.0f / data2[0];
 	data1[1] = 1.0f / data2[1];
 }
@@ -597,7 +597,7 @@ void AMD3DNOW_PFRCP_MEM(UINT8 reg1, UINT32 memaddr){
 
 // PFRCPIT1
 void AMD3DNOW_PFRCPIT1(float *data1, float *data2){
-	// XXX: ‚½‚¾‚ÌƒRƒs[‚Å‘ã‘Ö
+	// XXX: ãŸã ã®ã‚³ãƒ”ãƒ¼ã§ä»£æ›¿
 	data1[0] = data2[0];
 	data1[1] = data2[1];
 }
@@ -615,7 +615,7 @@ void AMD3DNOW_PFRCPIT1_MEM(UINT8 reg1, UINT32 memaddr){
 
 // PFRCPIT2
 void AMD3DNOW_PFRCPIT2(float *data1, float *data2){
-	// XXX: ‚½‚¾‚ÌƒRƒs[‚Å‘ã‘Ö
+	// XXX: ãŸã ã®ã‚³ãƒ”ãƒ¼ã§ä»£æ›¿
 	data1[0] = data2[0];
 	data1[1] = data2[1];
 }
@@ -633,7 +633,7 @@ void AMD3DNOW_PFRCPIT2_MEM(UINT8 reg1, UINT32 memaddr){
 
 // PFRSQIT1
 void AMD3DNOW_PFRSQIT1(float *data1, float *data2){
-	// XXX: ‚½‚¾‚ÌƒRƒs[‚Å‘ã‘Ö
+	// XXX: ãŸã ã®ã‚³ãƒ”ãƒ¼ã§ä»£æ›¿
 	data1[0] = data2[0];
 	data1[1] = data2[1];
 }
@@ -651,8 +651,8 @@ void AMD3DNOW_PFRSQIT1_MEM(UINT8 reg1, UINT32 memaddr){
 
 // PFRSQRT
 void AMD3DNOW_PFRSQRT(float *data1, float *data2){
-	data1[0] = 1.0f / sqrt(data2[0]);
-	data1[1] = 1.0f / sqrt(data2[1]);
+	data1[0] = (float)(1.0f / sqrt(data2[0]));
+	data1[1] = (float)(1.0f / sqrt(data2[1]));
 }
 void AMD3DNOW_PFRSQRT_REG(UINT8 reg1, UINT8 reg2){
 	float *data1 = (float*)(&(FPU_STAT.reg[reg1]));

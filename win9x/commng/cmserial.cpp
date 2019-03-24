@@ -1,23 +1,23 @@
 /**
  * @file	cmserial.cpp
- * @brief	ƒVƒŠƒAƒ‹ ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	ã‚·ãƒªã‚¢ãƒ« ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
 #include "cmserial.h"
 
 /**
- * ‘¬“xƒe[ƒuƒ‹
+ * é€Ÿåº¦ãƒ†ãƒ¼ãƒ–ãƒ«
  */
 const UINT32 cmserial_speed[10] = {110, 300, 1200, 2400, 4800,
 							9600, 19200, 38400, 57600, 115200};
 
 /**
- * ƒCƒ“ƒXƒ^ƒ“ƒXì¬
- * @param[in] nPort ƒ|[ƒg”Ô†
- * @param[in] cParam ƒpƒ‰ƒƒ^
- * @param[in] nSpeed ƒXƒs[ƒh
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ä½œæˆ
+ * @param[in] nPort ãƒãƒ¼ãƒˆç•ªå·
+ * @param[in] cParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @param[in] nSpeed ã‚¹ãƒ”ãƒ¼ãƒ‰
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 CComSerial* CComSerial::CreateInstance(UINT nPort, UINT8 cParam, UINT32 nSpeed)
 {
@@ -31,7 +31,7 @@ CComSerial* CComSerial::CreateInstance(UINT nPort, UINT8 cParam, UINT32 nSpeed)
 }
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CComSerial::CComSerial()
 	: CComBase(COMCONNECT_SERIAL)
@@ -40,7 +40,7 @@ CComSerial::CComSerial()
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CComSerial::~CComSerial()
 {
@@ -51,12 +51,12 @@ CComSerial::~CComSerial()
 }
 
 /**
- * ‰Šú‰»
- * @param[in] nPort ƒ|[ƒg”Ô†
- * @param[in] cParam ƒpƒ‰ƒƒ^
- * @param[in] nSpeed ƒXƒs[ƒh
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * åˆæœŸåŒ–
+ * @param[in] nPort ãƒãƒ¼ãƒˆç•ªå·
+ * @param[in] cParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @param[in] nSpeed ã‚¹ãƒ”ãƒ¼ãƒ‰
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CComSerial::Initialize(UINT nPort, UINT8 cParam, UINT32 nSpeed)
 {
@@ -112,9 +112,9 @@ bool CComSerial::Initialize(UINT nPort, UINT8 cParam, UINT32 nSpeed)
 }
 
 /**
- * “Ç‚İ‚İ
- * @param[out] pData ƒoƒbƒtƒ@
- * @return ƒTƒCƒY
+ * èª­ã¿è¾¼ã¿
+ * @param[out] pData ãƒãƒƒãƒ•ã‚¡
+ * @return ã‚µã‚¤ã‚º
  */
 UINT CComSerial::Read(UINT8* pData)
 {
@@ -133,9 +133,9 @@ UINT CComSerial::Read(UINT8* pData)
 }
 
 /**
- * ‘‚«‚İ
- * @param[out] cData ƒf[ƒ^
- * @return ƒTƒCƒY
+ * æ›¸ãè¾¼ã¿
+ * @param[out] cData ãƒ‡ãƒ¼ã‚¿
+ * @return ã‚µã‚¤ã‚º
  */
 UINT CComSerial::Write(UINT8 cData)
 {
@@ -144,8 +144,8 @@ UINT CComSerial::Write(UINT8 cData)
 }
 
 /**
- * ƒXƒe[ƒ^ƒX‚ğ“¾‚é
- * @return ƒXƒe[ƒ^ƒX
+ * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’å¾—ã‚‹
+ * @return ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
  */
 UINT8 CComSerial::GetStat()
 {
@@ -162,10 +162,10 @@ UINT8 CComSerial::GetStat()
 }
 
 /**
- * ƒƒbƒZ[ƒW
- * @param[in] nMessage ƒƒbƒZ[ƒW
- * @param[in] nParam ƒpƒ‰ƒƒ^
- * @return ƒŠƒUƒ‹ƒg ƒR[ƒh
+ * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @return ãƒªã‚¶ãƒ«ãƒˆ ã‚³ãƒ¼ãƒ‰
  */
 INTPTR CComSerial::Message(UINT nMessage, INTPTR nParam)
 {

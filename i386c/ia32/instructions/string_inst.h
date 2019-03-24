@@ -38,11 +38,17 @@ extern "C" {
 void MOVSB_XbYb(void);
 void MOVSW_XwYw(void);
 void MOVSD_XdYd(void);
+void MOVSB_XbYb_rep(int reptype);
+void MOVSW_XwYw_rep(int reptype);
+void MOVSD_XdYd_rep(int reptype);
 
 /* cmps */
 void CMPSB_XbYb(void);
 void CMPSW_XwYw(void);
 void CMPSD_XdYd(void);
+void CMPSB_XbYb_rep(int reptype);
+void CMPSW_XwYw_rep(int reptype);
+void CMPSD_XdYd_rep(int reptype);
 
 /* scas */
 void SCASB_ALXb(void);
@@ -58,6 +64,9 @@ void LODSD_EAXXd(void);
 void STOSB_YbAL(void);
 void STOSW_YwAX(void);
 void STOSD_YdEAX(void);
+void STOSB_YbAL_rep(int reptype);
+void STOSW_YwAX_rep(int reptype);
+void STOSD_YdEAX_rep(int reptype);
 
 /* repeat */
 void _REPNE(void);

@@ -1,14 +1,14 @@
 /**
  * @file	externalopl3.cpp
- * @brief	ŠO•” OPL3 ‰‰‘tƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	å¤–éƒ¨ OPL3 æ¼”å¥ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
 #include "externalopl3.h"
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
- * @param[in] pChip ƒ`ƒbƒv
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * @param[in] pChip ãƒãƒƒãƒ—
  */
 CExternalOpl3::CExternalOpl3(IExternalChip* pChip)
 	: m_pChip(pChip)
@@ -17,7 +17,7 @@ CExternalOpl3::CExternalOpl3(IExternalChip* pChip)
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CExternalOpl3::~CExternalOpl3()
 {
@@ -25,8 +25,8 @@ CExternalOpl3::~CExternalOpl3()
 }
 
 /**
- * ƒ`ƒbƒv ƒ^ƒCƒv‚ğ“¾‚é
- * @return ƒ`ƒbƒv ƒ^ƒCƒv
+ * ãƒãƒƒãƒ— ã‚¿ã‚¤ãƒ—ã‚’å¾—ã‚‹
+ * @return ãƒãƒƒãƒ— ã‚¿ã‚¤ãƒ—
  */
 IExternalChip::ChipType CExternalOpl3::GetChipType()
 {
@@ -34,7 +34,7 @@ IExternalChip::ChipType CExternalOpl3::GetChipType()
 }
 
 /**
- * ‰¹Œ¹ƒŠƒZƒbƒg
+ * éŸ³æºãƒªã‚»ãƒƒãƒˆ
  */
 void CExternalOpl3::Reset()
 {
@@ -42,9 +42,9 @@ void CExternalOpl3::Reset()
 }
 
 /**
- * ƒŒƒWƒXƒ^‘‚«‚İ
- * @param[in] nAddr ƒAƒhƒŒƒX
- * @param[in] cData ƒf[ƒ^
+ * ãƒ¬ã‚¸ã‚¹ã‚¿æ›¸ãè¾¼ã¿
+ * @param[in] nAddr ã‚¢ãƒ‰ãƒ¬ã‚¹
+ * @param[in] cData ãƒ‡ãƒ¼ã‚¿
  */
 void CExternalOpl3::WriteRegister(UINT nAddr, UINT8 cData)
 {
@@ -56,10 +56,10 @@ void CExternalOpl3::WriteRegister(UINT nAddr, UINT8 cData)
 }
 
 /**
- * ƒƒbƒZ[ƒW
- * @param[in] nMessage ƒƒbƒZ[ƒW
- * @param[in] nParameter ƒpƒ‰ƒ[ƒ^
- * @return Œ‹‰Ê
+ * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nParameter ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+ * @return çµæœ
  */
 INTPTR CExternalOpl3::Message(UINT nMessage, INTPTR nParameter)
 {
@@ -73,8 +73,8 @@ INTPTR CExternalOpl3::Message(UINT nMessage, INTPTR nParameter)
 }
 
 /**
- * ƒ~ƒ…[ƒg
- * @param[in] bMute ƒ~ƒ…[ƒg
+ * ãƒŸãƒ¥ãƒ¼ãƒˆ
+ * @param[in] bMute ãƒŸãƒ¥ãƒ¼ãƒˆ
  */
 void CExternalOpl3::Mute(bool bMute)
 {
@@ -95,9 +95,9 @@ void CExternalOpl3::Mute(bool bMute)
 }
 
 /**
- * ƒŒƒWƒXƒ^‘‚«‚İ(“à•”)
- * @param[in] nAddr ƒAƒhƒŒƒX
- * @param[in] cData ƒf[ƒ^
+ * ãƒ¬ã‚¸ã‚¹ã‚¿æ›¸ãè¾¼ã¿(å†…éƒ¨)
+ * @param[in] nAddr ã‚¢ãƒ‰ãƒ¬ã‚¹
+ * @param[in] cData ãƒ‡ãƒ¼ã‚¿
  */
 void CExternalOpl3::WriteRegisterInner(UINT nAddr, UINT8 cData) const
 {

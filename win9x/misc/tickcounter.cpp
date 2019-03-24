@@ -1,28 +1,33 @@
 /**
  * @file	tickcounter.cpp
- * @brief	TICK ÉJÉEÉìÉ^ÇÃìÆçÏÇÃíËã`ÇçsÇ¢Ç‹Ç∑
+ * @brief	TICK „Ç´„Ç¶„É≥„Çø„ÅÆÂãï‰Ωú„ÅÆÂÆöÁæ©„ÇíË°å„ÅÑ„Åæ„Åô
  */
 
 #include "compiler.h"
 #include "tickcounter.h"
 
 /**
- * @brief TICK ÉJÉEÉìÉ^Å[ ÉNÉâÉX
+ * @brief TICK „Ç´„Ç¶„É≥„Çø„Éº „ÇØ„É©„Çπ
  */
 class TickCounter
 {
 public:
 	TickCounter();
 	DWORD Get();
+	LARGE_INTEGER Get_rawclock();
+	LARGE_INTEGER Get_clockpersec();
+	void SetMode(int mode);
+	int GetMode();
 
 private:
-	LARGE_INTEGER m_nFreq;		//!< é¸îgêî
-	LARGE_INTEGER m_nLast;		//!< ç≈å„ÇÃÉJÉEÉìÉ^
-	DWORD m_dwLastTick;			//!< ç≈å„ÇÃ TICK
+	LARGE_INTEGER m_nFreq;		//!< Âë®Ê≥¢Êï∞
+	LARGE_INTEGER m_nLast;		//!< ÊúÄÂæå„ÅÆ„Ç´„Ç¶„É≥„Çø
+	DWORD m_dwLastTick;			//!< ÊúÄÂæå„ÅÆ TICK
+	int m_mode;					//!< „Ç´„Ç¶„É≥„Çø„É¢„Éº„Éâ
 };
 
 /**
- * ÉRÉìÉXÉgÉâÉNÉ^
+ * „Ç≥„É≥„Çπ„Éà„É©„ÇØ„Çø
  */
 TickCounter::TickCounter()
 {
@@ -30,50 +35,172 @@ TickCounter::TickCounter()
 	::QueryPerformanceFrequency(&m_nFreq);
 	if (m_nFreq.QuadPart)
 	{
-		m_dwLastTick = ::GetTickCount();
 		::QueryPerformanceCounter(&m_nLast);
+		m_mode = TCMODE_PERFORMANCECOUNTER;
 	}
+	else
+	{
+		m_mode = TCMODE_TIMEGETTIME;
+	}
+	m_dwLastTick = ::timeGetTime();
+	//m_dwLastTick = ::GetTickCount();
 }
 
 /**
- * TICK ÇìæÇÈ
+ * TICK „ÇíÂæó„Çã
  * @return TICK
  */
 DWORD TickCounter::Get()
 {
-	if (m_nFreq.QuadPart)
+	switch(m_mode)
 	{
-		LARGE_INTEGER nNow;
-		::QueryPerformanceCounter(&nNow);
-		const ULONGLONG nPast = nNow.QuadPart - m_nLast.QuadPart;
-
-		const DWORD dwTick = static_cast<DWORD>((nPast * 1000U) / m_nFreq.QuadPart);
-		const DWORD dwRet = m_dwLastTick + dwTick;
-		if (dwTick >= 1000)
-		{
-			const DWORD dwSeconds = dwTick / 1000;
-			m_nLast.QuadPart += m_nFreq.QuadPart * dwSeconds;
-			m_dwLastTick += dwSeconds * 1000;
-		}
-		return dwRet;
-	}
-	else
-	{
+	case TCMODE_GETTICKCOUNT:
 		return ::GetTickCount();
+
+	case TCMODE_TIMEGETTIME:
+		return ::timeGetTime();
+
+	case TCMODE_PERFORMANCECOUNTER:
+		{
+			LARGE_INTEGER nNow;
+			::QueryPerformanceCounter(&nNow);
+			const ULONGLONG nPast = nNow.QuadPart - m_nLast.QuadPart;
+
+			const DWORD dwTick = static_cast<DWORD>((nPast * 1000U) / m_nFreq.QuadPart);
+			const DWORD dwRet = m_dwLastTick + dwTick;
+			if (dwTick >= 1000)
+			{
+				const DWORD dwSeconds = dwTick / 1000;
+				m_nLast.QuadPart += m_nFreq.QuadPart * dwSeconds;
+				m_dwLastTick += dwSeconds * 1000;
+			}
+			return dwRet;
+		}
 	}
+	return ::GetTickCount();
+}
+
+LARGE_INTEGER TickCounter::Get_rawclock()
+{
+	LARGE_INTEGER nNow = {0};
+	switch(m_mode)
+	{
+	case TCMODE_GETTICKCOUNT:
+		nNow.LowPart = ::GetTickCount();
+		return nNow;
+
+	case TCMODE_TIMEGETTIME:
+		nNow.LowPart = ::timeGetTime();
+		return nNow;
+
+	case TCMODE_PERFORMANCECOUNTER:
+		{
+			::QueryPerformanceCounter(&nNow);
+			return nNow;
+		}
+	}
+	nNow.LowPart = ::GetTickCount();
+	return nNow;
+}
+LARGE_INTEGER TickCounter::Get_clockpersec()
+{
+	LARGE_INTEGER nClk = {0};
+	switch(m_mode)
+	{
+	case TCMODE_GETTICKCOUNT:
+		nClk.LowPart = 1000;
+		return nClk;
+
+	case TCMODE_TIMEGETTIME:
+		nClk.LowPart = 1000;
+		return nClk;
+
+	case TCMODE_PERFORMANCECOUNTER:
+		{
+			::QueryPerformanceFrequency(&nClk);
+			return nClk;
+		}
+	}
+	nClk.LowPart = 1000;
+	return nClk;
+}
+
+/**
+ * „É¢„Éº„ÉâÂº∑Âà∂Ë®≠ÂÆö
+ */
+void TickCounter::SetMode(int mode)
+{
+	if (mode==TCMODE_DEFAULT)
+	{
+		mode = TCMODE_PERFORMANCECOUNTER;
+	}
+	if (mode==TCMODE_PERFORMANCECOUNTER && m_nFreq.QuadPart==0)
+	{
+		mode = TCMODE_TIMEGETTIME;
+	}
+	switch(mode)
+	{
+	case TCMODE_GETTICKCOUNT:
+		m_mode = mode;
+		m_dwLastTick = ::GetTickCount();
+		break;
+
+	case TCMODE_TIMEGETTIME:
+		m_mode = mode;
+		m_dwLastTick = ::timeGetTime();
+		break;
+
+	case TCMODE_PERFORMANCECOUNTER:
+		m_mode = mode;
+		::QueryPerformanceCounter(&m_nLast);
+		break;
+	}
+}
+int TickCounter::GetMode()
+{
+	return m_mode;
 }
 
 
-// ---- C ÉCÉìÉ^ÉtÉFÉCÉX
+// ---- C „Ç§„É≥„Çø„Éï„Çß„Ç§„Çπ
 
-//! ÉJÉEÉìÉ^ ÉCÉìÉXÉ^ÉìÉX
+//! „Ç´„Ç¶„É≥„Çø „Ç§„É≥„Çπ„Çø„É≥„Çπ
 static TickCounter s_tick;
 
 /**
- * ÉJÉEÉìÉ^ÇìæÇÈ
+ * „Ç´„Ç¶„É≥„Çø„ÇíÂæó„Çã
  * @return TICK
  */
 DWORD GetTickCounter()
 {
 	return s_tick.Get();
+}
+
+/**
+ * „Ç´„Ç¶„É≥„Çø„É¢„Éº„ÉâË®≠ÂÆö
+ */
+void SetTickCounterMode(int mode)
+{
+	s_tick.SetMode(mode);
+}
+int GetTickCounterMode()
+{
+	return s_tick.GetMode();
+}
+
+/**
+ * „ÇØ„É≠„ÉÉ„ÇØ„ÇíÂæó„Çã
+ * @return TICK
+ */
+LARGE_INTEGER GetTickCounter_Clock()
+{
+	return s_tick.Get_rawclock();
+}
+
+/**
+ * 1Áßí„ÅÇ„Åü„Çä„ÅÆ„ÇØ„É≠„ÉÉ„ÇØ„ÇíÂæó„Çã
+ */
+LARGE_INTEGER GetTickCounter_ClockPerSec()
+{
+	return s_tick.Get_clockpersec();
 }

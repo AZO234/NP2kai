@@ -1,6 +1,6 @@
 /**
  * @file	c_dipsw.cpp
- * @brief	DIPSW ƒRƒ“ƒgƒ[ƒ‹ ƒNƒ‰ƒXŒQ‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	DIPSW ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ« ã‚¯ãƒ©ã‚¹ç¾¤ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -8,7 +8,7 @@
 #include "common/bmpdata.h"
 
 /**
- * ‰Šú‰»
+ * åˆæœŸåŒ–
  */
 void CStaticDipSw::PreSubclassWindow()
 {
@@ -16,9 +16,9 @@ void CStaticDipSw::PreSubclassWindow()
 }
 
 /**
- * •`‰æ
- * @param[in] hdc ƒfƒoƒCƒX ƒRƒ“ƒeƒLƒXƒg
- * @param[in] lpBitmap ƒrƒbƒgƒ}ƒbƒv
+ * æç”»
+ * @param[in] hdc ãƒ‡ãƒã‚¤ã‚¹ ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ
+ * @param[in] lpBitmap ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—
  */
 void CStaticDipSw::Draw(HDC hdc, const void* lpBitmap)
 {

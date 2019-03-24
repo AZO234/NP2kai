@@ -1,6 +1,6 @@
 /*!
  * @file	guard.h
- * @brief	ƒNƒŠƒeƒBƒJƒ‹ ƒZƒNƒVƒ‡ƒ“ ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ« ã‚»ã‚¯ã‚·ãƒ§ãƒ³ ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -8,23 +8,23 @@
 #include <pthread.h>
 
 /*!
- * @brief ƒNƒŠƒeƒBƒJƒ‹ ƒZƒNƒVƒ‡ƒ“ ƒNƒ‰ƒX
+ * @brief ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ« ã‚»ã‚¯ã‚·ãƒ§ãƒ³ ã‚¯ãƒ©ã‚¹
  */
 class CGuard
 {
 public:
-	/*! ƒRƒ“ƒXƒgƒ‰ƒNƒ^ */
+	/*! ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ */
 	CGuard() { ::pthread_mutex_init(&m_cs, NULL); }
 
-	/*! ƒfƒXƒgƒ‰ƒNƒ^ */
+	/*! ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ */
 	~CGuard() { ::pthread_mutex_destroy(&m_cs); }
 
-	/*! ƒNƒŠƒeƒBƒJƒ‹ ƒZƒNƒVƒ‡ƒ“ŠJn */
+	/*! ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ« ã‚»ã‚¯ã‚·ãƒ§ãƒ³é–‹å§‹ */
 	void Enter() { ::pthread_mutex_lock(&m_cs); }
 
-	/*! ƒNƒŠƒeƒBƒJƒ‹ ƒZƒNƒVƒ‡ƒ“I—¹ */
+	/*! ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ« ã‚»ã‚¯ã‚·ãƒ§ãƒ³çµ‚äº† */
 	void Leave() { ::pthread_mutex_unlock(&m_cs); }
 
 private:
-	pthread_mutex_t m_cs;		//!< ƒNƒŠƒeƒBƒJƒ‹ ƒZƒNƒVƒ‡ƒ“î•ñ
+	pthread_mutex_t m_cs;		//!< ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ« ã‚»ã‚¯ã‚·ãƒ§ãƒ³æƒ…å ±
 };

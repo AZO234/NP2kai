@@ -20,17 +20,61 @@ typedef struct {
 static	MOUSEMNG	mousemng;
 static  int mousecaptureflg = 0;
 
-static  int mouseMul = 1; // É}ÉEÉXÉXÉsÅ[Éhî{ó¶Åiï™éqÅj
-static  int mouseDiv = 1; // É}ÉEÉXÉXÉsÅ[Éhî{ó¶Åiï™ïÍÅj
+static  int mouseMul = 1; // „Éû„Ç¶„Çπ„Çπ„Éî„Éº„ÉâÂÄçÁéáÔºàÂàÜÂ≠êÔºâ
+static  int mouseDiv = 1; // „Éû„Ç¶„Çπ„Çπ„Éî„Éº„ÉâÂÄçÁéáÔºàÂàÜÊØçÔºâ
 
-static  int mousebufX = 0; // É}ÉEÉXà⁄ìÆÉoÉbÉtÉ@(X)
-static  int mousebufY = 0; // É}ÉEÉXà⁄ìÆÉoÉbÉtÉ@(Y)
+static  int mousebufX = 0; // „Éû„Ç¶„ÇπÁßªÂãï„Éê„ÉÉ„Éï„Ç°(X)
+static  int mousebufY = 0; // „Éû„Ç¶„ÇπÁßªÂãï„Éê„ÉÉ„Éï„Ç°(Y)
 
-// RAWÉ}ÉEÉXì¸óÕëŒâû np21w ver0.86 rev13
+// RAW„Éû„Ç¶„ÇπÂÖ•ÂäõÂØæÂøú np21w ver0.86 rev13
 static  LPDIRECTINPUT8 dinput = NULL; 
 static  LPDIRECTINPUTDEVICE8 diRawMouse = NULL; 
 static  int mouseRawDeltaX = 0;
 static  int mouseRawDeltaY = 0;
+
+static  int dinput8available = 0;
+typedef HRESULT (WINAPI *TEST_DIRECTINPUT8CREATE)(HINSTANCE hinst, DWORD dwVersion, REFIID riidltf, LPVOID *ppvOut, LPUNKNOWN punkOuter);
+
+BRESULT mousemng_checkdinput8(){
+	// DirectInput8„Åå‰ΩøÁî®„Åß„Åç„Çã„Åã„ÉÅ„Çß„ÉÉ„ÇØ
+	HMODULE hModule;
+	TEST_DIRECTINPUT8CREATE fndi8create;
+	LPDIRECTINPUT8 test_dinput = NULL; 
+	LPDIRECTINPUTDEVICE8 test_didevice = NULL;
+
+	if(dinput8available) return(SUCCESS);
+
+	hModule = LoadLibrary(_T("dinput8.dll"));
+	if(!hModule){
+		goto scre_err;
+	}
+	
+	fndi8create = (TEST_DIRECTINPUT8CREATE)GetProcAddress(hModule, "DirectInput8Create");
+	if(!fndi8create){
+		goto scre_err2;
+	}
+	if(FAILED(fndi8create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (LPVOID*)&test_dinput, NULL))){
+		goto scre_err2;
+	}
+	if(FAILED(test_dinput->CreateDevice(GUID_SysMouse, &test_didevice, NULL))){
+		goto scre_err3;
+	}
+
+	// „Éá„Éê„Ç§„Çπ‰ΩúÊàê„Åæ„ÅßÂá∫Êù•„Åù„ÅÜ„Å™„ÇâOK„Å®„Åô„Çã
+	test_didevice->Release();
+	test_dinput->Release();
+	FreeLibrary(hModule);
+
+	dinput8available = 1;
+
+	return(SUCCESS);
+scre_err3:
+	test_dinput->Release();
+scre_err2:
+	FreeLibrary(hModule);
+scre_err:
+	return(FAILURE);
+}
 
 UINT8 mousemng_getstat(SINT16 *x, SINT16 *y, int clear) {
 	*x = mousemng.x;
@@ -53,6 +97,11 @@ UINT8 mousemng_supportrawinput() {
 	return(dinput && diRawMouse);
 }
 
+void mousemng_updatespeed() {
+	mouseMul = np2oscfg.mousemul != 0 ? np2oscfg.mousemul : 1;
+	mouseDiv = np2oscfg.mousediv != 0 ? np2oscfg.mousediv : 1;
+}
+
 // ----
 
 static void getmaincenter(POINT *cp) {
@@ -70,44 +119,44 @@ static void initDirectInput(){
 
 	if(!dinput){
 		//hr = DirectInputCreateEx(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput7, (void**)&dinput, NULL);
-		hr = DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (LPVOID*)&dinput, NULL); // ä÷êîñºïœÇ¶ÇƒÇ‚Ç™Ç¡ÇΩ( ﬂÑtﬂ)
+		hr = DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (LPVOID*)&dinput, NULL); // Èñ¢Êï∞ÂêçÂ§â„Åà„Å¶„ÇÑ„Åå„Å£„Åü( Ôæü–¥Ôæü)
 		if (!FAILED(hr)){
 			hr = dinput->CreateDevice(GUID_SysMouse, &diRawMouse, NULL);
 			if (!FAILED(hr)){
-				// ÉfÅ[É^ÉtÉHÅ[É}ÉbÉgê›íË
+				// „Éá„Éº„Çø„Éï„Ç©„Éº„Éû„ÉÉ„ÉàË®≠ÂÆö
 				hr = diRawMouse->SetDataFormat(&c_dfDIMouse);
 				if (!FAILED(hr)){
-					// ã¶í≤ÉåÉxÉãê›íË
+					// ÂçîË™ø„É¨„Éô„É´Ë®≠ÂÆö
 					hr = diRawMouse->SetCooperativeLevel(g_hWndMain, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
 				}
 				if (!FAILED(hr)){
-					// ÉfÉoÉCÉXê›íË
+					// „Éá„Éê„Ç§„ÇπË®≠ÂÆö
 					DIPROPDWORD		diprop;
 					diprop.diph.dwSize = sizeof(diprop);
 					diprop.diph.dwHeaderSize = sizeof(diprop.diph);
 					diprop.diph.dwObj = 0;
 					diprop.diph.dwHow = DIPH_DEVICE;
-					diprop.dwData = DIPROPAXISMODE_REL;	// ëäëŒílÉÇÅ[Éh
+					diprop.dwData = DIPROPAXISMODE_REL;	// Áõ∏ÂØæÂÄ§„É¢„Éº„Éâ
 					hr = diRawMouse->SetProperty(DIPROP_AXISMODE, &diprop.diph);
 				}
 				if (!FAILED(hr)) {
-					// ì¸óÕäJén
+					// ÂÖ•ÂäõÈñãÂßã
 					hr = diRawMouse->Acquire();
 				}else{
-					// é∏îs•••
+					// Â§±ÊïóÔΩ•ÔΩ•ÔΩ•
 					diRawMouse->Release();
 					diRawMouse = NULL;
 					dinput->Release();
 					dinput = NULL;
 				}
 			}else{
-				// é∏îs•••
+				// Â§±ÊïóÔΩ•ÔΩ•ÔΩ•
 				diRawMouse = NULL;
 				dinput->Release();
 				dinput = NULL;
 			}
 		}else{
-			// é∏îs•••
+			// Â§±ÊïóÔΩ•ÔΩ•ÔΩ•
 			diRawMouse = NULL;
 			dinput = NULL;
 		}
@@ -132,8 +181,14 @@ static void mousecapture(BOOL capture) {
 	POINT	cp;
 	RECT	rct;
 
-	mouseMul = np2oscfg.mousemul != 0 ? np2oscfg.mousemul : 1;
-	mouseDiv = np2oscfg.mousediv != 0 ? np2oscfg.mousediv : 1;
+	if(np2oscfg.rawmouse){
+		if(mousemng_checkdinput8()!=SUCCESS){
+			np2oscfg.rawmouse = 0;
+			MessageBox(g_hWndMain, _T("Failed to initialize DirectInput8."), _T("DirectInput Error"), MB_OK|MB_ICONEXCLAMATION);
+		}
+	}
+
+	mousemng_updatespeed();
 
 	style = GetClassLong(g_hWndMain, GCL_STYLE);
 	if (capture) {
@@ -147,7 +202,7 @@ static void mousecapture(BOOL capture) {
 		ClipCursor(&rct);
 		style &= ~(CS_DBLCLKS);
 		mousecaptureflg = 1;
-		if(np2oscfg.rawmouse){
+		if(np2oscfg.rawmouse && dinput8available){
 			initDirectInput();
 		}
 	}
@@ -156,7 +211,7 @@ static void mousecapture(BOOL capture) {
 		ClipCursor(NULL);
 		style |= CS_DBLCLKS;
 		mousecaptureflg = 0;
-		if(np2oscfg.rawmouse){
+		if(np2oscfg.rawmouse && dinput8available){
 			diRawMouse->Unacquire();
 			//destroyDirectInput();
 		}
@@ -169,7 +224,8 @@ void mousemng_initialize(void) {
 	ZeroMemory(&mousemng, sizeof(mousemng));
 	mousemng.btn = uPD8255A_LEFTBIT | uPD8255A_RIGHTBIT;
 	mousemng.flag = (1 << MOUSEPROC_SYSTEM);
-
+	
+	mousemng_updatespeed();
 }
 
 void mousemng_destroy(void) {
@@ -183,9 +239,9 @@ void mousemng_sync(void) {
 
 	if ((!mousemng.flag) && (GetCursorPos(&p))) {
 		getmaincenter(&cp);
-		if(np2oscfg.rawmouse && dinput==NULL)
+		if(np2oscfg.rawmouse && dinput8available && dinput==NULL)
 			initDirectInput();
-		if(np2oscfg.rawmouse && mousemng_supportrawinput()){
+		if(np2oscfg.rawmouse && dinput8available && mousemng_supportrawinput()){
 			DIMOUSESTATE diMouseState = {0};
 			HRESULT hr;
 			hr = diRawMouse->GetDeviceState(sizeof(DIMOUSESTATE), &diMouseState);
@@ -228,7 +284,7 @@ void mousemng_sync(void) {
 
 BOOL mousemng_buttonevent(UINT event) {
 
-	if (!mousemng.flag || (np2oscfg.mouse_nc && !scrnmng_isfullscreen() && mousemng.flag)) {
+	if (!mousemng.flag || (np2oscfg.mouse_nc/* && !scrnmng_isfullscreen()*/ && mousemng.flag)) {
 		switch(event) {
 			case MOUSEMNG_LEFTDOWN:
 				mousemng.btn &= ~(uPD8255A_LEFTBIT);
@@ -288,6 +344,6 @@ void mousemng_toggle(UINT proc) {
 void mousemng_updateclip(){
 	if(mousecaptureflg){
 		mousecapture(FALSE);
-		mousecapture(TRUE); // ÉLÉÉÉvÉ`ÉÉÇµíºÇµ
+		mousecapture(TRUE); // „Ç≠„É£„Éó„ÉÅ„É£„ÅóÁõ¥„Åó
 	}
 }

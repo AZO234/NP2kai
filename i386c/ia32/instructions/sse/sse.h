@@ -29,6 +29,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+float SSE_ROUND(float val);
 	
 void SSE_ADDPS(void);
 void SSE_ADDSS(void);
@@ -50,19 +52,19 @@ void SSE_MAXPS(void);
 void SSE_MAXSS(void);
 void SSE_MINPS(void);
 void SSE_MINSS(void);
-void SSE_MOVAPSmem2reg(void);
-void SSE_MOVAPSreg2mem(void);
+void SSE_MOVAPSmem2xmm(void);
+void SSE_MOVAPSxmm2mem(void);
 void SSE_MOVHLPS(float *data1, float *data2);
-void SSE_MOVHPSmem2reg(void);
-void SSE_MOVHPSreg2mem(void);
+void SSE_MOVHPSmem2xmm(void);
+void SSE_MOVHPSxmm2mem(void);
 void SSE_MOVLHPS(float *data1, float *data2);
-void SSE_MOVLPSmem2reg(void);
-void SSE_MOVLPSreg2mem(void);
+void SSE_MOVLPSmem2xmm(void);
+void SSE_MOVLPSxmm2mem(void);
 void SSE_MOVMSKPS(void);
-void SSE_MOVSSmem2reg(void);
-void SSE_MOVSSreg2mem(void);
-void SSE_MOVUPSmem2reg(void);
-void SSE_MOVUPSreg2mem(void);
+void SSE_MOVSSmem2xmm(void);
+void SSE_MOVSSxmm2mem(void);
+void SSE_MOVUPSmem2xmm(void);
+void SSE_MOVUPSxmm2mem(void);
 void SSE_MULPS(void);
 void SSE_MULSS(void);
 void SSE_ORPS(void);
@@ -108,4 +110,4 @@ void SSE_CLFLUSH(UINT32 op);
 }
 #endif
 
-#endif	/* IA32_CPU_INSTRUCTION_MMX_MMX_H__ */
+#endif	/* IA32_CPU_INSTRUCTION_SSE_SSE_H__ */

@@ -1,12 +1,12 @@
 /*!
  * @file	threadbase.h
- * @brief	ƒXƒŒƒbƒhŠî’êƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	ã‚¹ãƒ¬ãƒƒãƒ‰åŸºåº•ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
 
 /*!
- * @brief ƒXƒŒƒbƒhŠî’êƒNƒ‰ƒX
+ * @brief ã‚¹ãƒ¬ãƒƒãƒ‰åŸºåº•ã‚¯ãƒ©ã‚¹
  */
 class CThreadBase
 {
@@ -21,20 +21,20 @@ public:
 	static void Delay(unsigned int usec);
 
 protected:
-	virtual bool Task() = 0;	//!< ƒXƒŒƒbƒh ƒ^ƒXƒN
+	virtual bool Task() = 0;	//!< ã‚¹ãƒ¬ãƒƒãƒ‰ ã‚¿ã‚¹ã‚¯
 
 private:
-	HANDLE m_hThread;			//!< ƒXƒŒƒbƒh ƒnƒ“ƒhƒ‹
-	DWORD m_dwThreadId;			//!< ƒXƒŒƒbƒh ID
-	bool m_bAbort;				//!< ’†’fƒtƒ‰ƒO
-	bool m_bDone;				//!< Š®—¹ƒtƒ‰ƒO
-	size_t m_nStackSize;		//!< ƒXƒ^ƒbƒN ƒTƒCƒY
+	HANDLE m_hThread;			//!< ã‚¹ãƒ¬ãƒƒãƒ‰ ãƒãƒ³ãƒ‰ãƒ«
+	DWORD m_dwThreadId;			//!< ã‚¹ãƒ¬ãƒƒãƒ‰ ID
+	bool m_bAbort;				//!< ä¸­æ–­ãƒ•ãƒ©ã‚°
+	bool m_bDone;				//!< å®Œäº†ãƒ•ãƒ©ã‚°
+	size_t m_nStackSize;		//!< ã‚¹ã‚¿ãƒƒã‚¯ ã‚µã‚¤ã‚º
 	static unsigned __stdcall ThreadProc(LPVOID pParam);
 };
 
 /**
- * ƒXƒ^ƒbƒN ƒTƒCƒY‚Ìİ’è
- * @param[in] nStackSize ƒXƒ^ƒbƒN ƒTƒCƒY
+ * ã‚¹ã‚¿ãƒƒã‚¯ ã‚µã‚¤ã‚ºã®è¨­å®š
+ * @param[in] nStackSize ã‚¹ã‚¿ãƒƒã‚¯ ã‚µã‚¤ã‚º
  */
 inline void CThreadBase::SetStackSize(size_t nStackSize)
 {
@@ -42,8 +42,8 @@ inline void CThreadBase::SetStackSize(size_t nStackSize)
 }
 
 /**
- * ƒXƒŠ[ƒv
- * @param[in] usec ƒ}ƒCƒNƒ•b
+ * ã‚¹ãƒªãƒ¼ãƒ—
+ * @param[in] usec ãƒã‚¤ã‚¯ãƒ­ç§’
  */
 inline void CThreadBase::Delay(unsigned int usec)
 {

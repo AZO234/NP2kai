@@ -1,35 +1,35 @@
 /**
  *	@file	dosio.cpp
- *	@brief	ƒtƒ@ƒCƒ‹ ƒAƒNƒZƒXŠÖ”ŒQ‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ *	@brief	ãƒ•ã‚¡ã‚¤ãƒ« ã‚¢ã‚¯ã‚»ã‚¹é–¢æ•°ç¾¤ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
 #include "dosio.h"
 
-//! ƒJƒŒƒ“ƒg ƒpƒX ƒoƒbƒtƒ@
+//! ã‚«ãƒ¬ãƒ³ãƒˆ ãƒ‘ã‚¹ ãƒãƒƒãƒ•ã‚¡
 static OEMCHAR curpath[MAX_PATH];
 
-//! ƒtƒ@ƒCƒ‹–¼ƒ|ƒCƒ“ƒ^
+//! ãƒ•ã‚¡ã‚¤ãƒ«åãƒã‚¤ãƒ³ã‚¿
 static OEMCHAR *curfilep = curpath;
 
 /**
- * ‰Šú‰»
+ * åˆæœŸåŒ–
  */
 void dosio_init(void)
 {
 }
 
 /**
- * ‰ğ•ú
+ * è§£æ”¾
  */
 void dosio_term(void)
 {
 }
 
 /**
- * ƒtƒ@ƒCƒ‹‚ğŠJ‚«‚Ü‚·
- * @param[in] lpPathName ƒtƒ@ƒCƒ‹–¼
- * @return ƒtƒ@ƒCƒ‹ ƒnƒ“ƒhƒ‹
+ * ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ãã¾ã™
+ * @param[in] lpPathName ãƒ•ã‚¡ã‚¤ãƒ«å
+ * @return ãƒ•ã‚¡ã‚¤ãƒ« ãƒãƒ³ãƒ‰ãƒ«
  */
 FILEH DOSIOCALL file_open(const OEMCHAR* lpPathName)
 {
@@ -42,9 +42,9 @@ FILEH DOSIOCALL file_open(const OEMCHAR* lpPathName)
 }
 
 /**
- * ƒŠ[ƒh ƒIƒ“ƒŠ[‚Åƒtƒ@ƒCƒ‹‚ğŠJ‚«‚Ü‚·
- * @param[in] lpPathName ƒtƒ@ƒCƒ‹–¼
- * @return ƒtƒ@ƒCƒ‹ ƒnƒ“ƒhƒ‹
+ * ãƒªãƒ¼ãƒ‰ ã‚ªãƒ³ãƒªãƒ¼ã§ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ãã¾ã™
+ * @param[in] lpPathName ãƒ•ã‚¡ã‚¤ãƒ«å
+ * @return ãƒ•ã‚¡ã‚¤ãƒ« ãƒãƒ³ãƒ‰ãƒ«
  */
 FILEH DOSIOCALL file_open_rb(const OEMCHAR* lpPathName)
 {
@@ -52,9 +52,9 @@ FILEH DOSIOCALL file_open_rb(const OEMCHAR* lpPathName)
 }
 
 /**
- * ƒtƒ@ƒCƒ‹‚ğì¬‚µ‚Ü‚·
- * @param[in] lpPathName ƒtƒ@ƒCƒ‹–¼
- * @return ƒtƒ@ƒCƒ‹ ƒnƒ“ƒhƒ‹
+ * ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæˆã—ã¾ã™
+ * @param[in] lpPathName ãƒ•ã‚¡ã‚¤ãƒ«å
+ * @return ãƒ•ã‚¡ã‚¤ãƒ« ãƒãƒ³ãƒ‰ãƒ«
  */
 FILEH DOSIOCALL file_create(const OEMCHAR* lpPathName)
 {
@@ -62,11 +62,11 @@ FILEH DOSIOCALL file_create(const OEMCHAR* lpPathName)
 }
 
 /**
- * ƒtƒ@ƒCƒ‹‚ÌƒV[ƒN
- * @param[in] hFile ƒtƒ@ƒCƒ‹ ƒnƒ“ƒhƒ‹
- * @param[in] pointer ˆÚ“®‚·‚×‚«ƒoƒCƒg”
- * @param[in] method ŠJn“_
- * @return ƒtƒ@ƒCƒ‹‚ÌˆÊ’u
+ * ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚·ãƒ¼ã‚¯
+ * @param[in] hFile ãƒ•ã‚¡ã‚¤ãƒ« ãƒãƒ³ãƒ‰ãƒ«
+ * @param[in] pointer ç§»å‹•ã™ã¹ããƒã‚¤ãƒˆæ•°
+ * @param[in] method é–‹å§‹ç‚¹
+ * @return ãƒ•ã‚¡ã‚¤ãƒ«ã®ä½ç½®
  */
 FILEPOS DOSIOCALL file_seek(FILEH hFile, FILEPOS pointer, int method)
 {
@@ -81,11 +81,11 @@ FILEPOS DOSIOCALL file_seek(FILEH hFile, FILEPOS pointer, int method)
 }
 
 /**
- * ƒtƒ@ƒCƒ‹“Ç‚İ‚İ
- * @param[in] hFile ƒtƒ@ƒCƒ‹ ƒnƒ“ƒhƒ‹
- * @param[out] lpBuffer ƒoƒbƒtƒ@
- * @param[in] cbBuffer ƒoƒbƒtƒ@ ƒTƒCƒY
- * @return “Ç‚İ‚İƒTƒCƒY
+ * ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
+ * @param[in] hFile ãƒ•ã‚¡ã‚¤ãƒ« ãƒãƒ³ãƒ‰ãƒ«
+ * @param[out] lpBuffer ãƒãƒƒãƒ•ã‚¡
+ * @param[in] cbBuffer ãƒãƒƒãƒ•ã‚¡ ã‚µã‚¤ã‚º
+ * @return èª­ã¿è¾¼ã¿ã‚µã‚¤ã‚º
  */
 UINT DOSIOCALL file_read(FILEH hFile, void* lpBuffer, UINT cbBuffer)
 {
@@ -98,11 +98,11 @@ UINT DOSIOCALL file_read(FILEH hFile, void* lpBuffer, UINT cbBuffer)
 }
 
 /**
- * ƒtƒ@ƒCƒ‹‘‚«‚İ
- * @param[in] hFile ƒtƒ@ƒCƒ‹ ƒnƒ“ƒhƒ‹
- * @param[in] lpBuffer ƒoƒbƒtƒ@
- * @param[in] cbBuffer ƒoƒbƒtƒ@ ƒTƒCƒY
- * @return ‘‚«‚İƒTƒCƒY
+ * ãƒ•ã‚¡ã‚¤ãƒ«æ›¸ãè¾¼ã¿
+ * @param[in] hFile ãƒ•ã‚¡ã‚¤ãƒ« ãƒãƒ³ãƒ‰ãƒ«
+ * @param[in] lpBuffer ãƒãƒƒãƒ•ã‚¡
+ * @param[in] cbBuffer ãƒãƒƒãƒ•ã‚¡ ã‚µã‚¤ã‚º
+ * @return æ›¸ãè¾¼ã¿ã‚µã‚¤ã‚º
  */
 UINT DOSIOCALL file_write(FILEH hFile, const void* lpBuffer, UINT cbBuffer)
 {
@@ -122,9 +122,9 @@ UINT DOSIOCALL file_write(FILEH hFile, const void* lpBuffer, UINT cbBuffer)
 }
 
 /**
- * ƒtƒ@ƒCƒ‹ ƒnƒ“ƒhƒ‹‚ğ•Â‚¶‚é
- * @param[in] hFile ƒtƒ@ƒCƒ‹ ƒnƒ“ƒhƒ‹
- * @retval 0 ¬Œ÷
+ * ãƒ•ã‚¡ã‚¤ãƒ« ãƒãƒ³ãƒ‰ãƒ«ã‚’é–‰ã˜ã‚‹
+ * @param[in] hFile ãƒ•ã‚¡ã‚¤ãƒ« ãƒãƒ³ãƒ‰ãƒ«
+ * @retval 0 æˆåŠŸ
  */
 short DOSIOCALL file_close(FILEH hFile)
 {
@@ -133,9 +133,9 @@ short DOSIOCALL file_close(FILEH hFile)
 }
 
 /**
- * ƒtƒ@ƒCƒ‹ ƒTƒCƒY‚ğ“¾‚é
- * @param[in] hFile ƒtƒ@ƒCƒ‹ ƒnƒ“ƒhƒ‹
- * @return ƒtƒ@ƒCƒ‹ ƒTƒCƒY
+ * ãƒ•ã‚¡ã‚¤ãƒ« ã‚µã‚¤ã‚ºã‚’å¾—ã‚‹
+ * @param[in] hFile ãƒ•ã‚¡ã‚¤ãƒ« ãƒãƒ³ãƒ‰ãƒ«
+ * @return ãƒ•ã‚¡ã‚¤ãƒ« ã‚µã‚¤ã‚º
  */
 FILELEN DOSIOCALL file_getsize(FILEH hFile)
 {
@@ -149,12 +149,12 @@ FILELEN DOSIOCALL file_getsize(FILEH hFile)
 }
 
 /**
- * FILETIME ‚ğ DOSDATE/DOSTIME ‚É•ÏŠ·
- * @param[in] ft ƒtƒ@ƒCƒ‹ ƒ^ƒCƒ€
+ * FILETIME ã‚’ DOSDATE/DOSTIME ã«å¤‰æ›
+ * @param[in] ft ãƒ•ã‚¡ã‚¤ãƒ« ã‚¿ã‚¤ãƒ 
  * @param[out] dosdate DOSDATE
  * @param[out] dostime DOSTIME
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 static bool convertDateTime(const FILETIME& ft, DOSDATE* dosdate, DOSTIME* dostime)
 {
@@ -186,12 +186,12 @@ static bool convertDateTime(const FILETIME& ft, DOSDATE* dosdate, DOSTIME* dosti
 }
 
 /**
- * ƒtƒ@ƒCƒ‹‚Ìƒ^ƒCƒ€ ƒXƒ^ƒ“ƒv‚ğ“¾‚é
- * @param[in] hFile ƒtƒ@ƒCƒ‹ ƒnƒ“ƒhƒ‹
+ * ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚¿ã‚¤ãƒ  ã‚¹ã‚¿ãƒ³ãƒ—ã‚’å¾—ã‚‹
+ * @param[in] hFile ãƒ•ã‚¡ã‚¤ãƒ« ãƒãƒ³ãƒ‰ãƒ«
  * @param[out] dosdate DOSDATE
  * @param[out] dostime DOSTIME
- * @retval 0 ¬Œ÷
- * @retval -1 ¸”s
+ * @retval 0 æˆåŠŸ
+ * @retval -1 å¤±æ•—
  */
 short DOSIOCALL file_getdatetime(FILEH hFile, DOSDATE* dosdate, DOSTIME* dostime)
 {
@@ -204,10 +204,10 @@ short DOSIOCALL file_getdatetime(FILEH hFile, DOSDATE* dosdate, DOSTIME* dostime
 }
 
 /**
- * ƒtƒ@ƒCƒ‹‚Ìíœ
- * @param[in] lpPathName ƒtƒ@ƒCƒ‹–¼
- * @retval 0 ¬Œ÷
- * @retval -1 ¸”s
+ * ãƒ•ã‚¡ã‚¤ãƒ«ã®å‰Šé™¤
+ * @param[in] lpPathName ãƒ•ã‚¡ã‚¤ãƒ«å
+ * @retval 0 æˆåŠŸ
+ * @retval -1 å¤±æ•—
  */
 short DOSIOCALL file_delete(const OEMCHAR* lpPathName)
 {
@@ -215,9 +215,9 @@ short DOSIOCALL file_delete(const OEMCHAR* lpPathName)
 }
 
 /**
- * ƒtƒ@ƒCƒ‹‚Ì‘®«‚ğ“¾‚é
- * @param[in] lpPathName ƒtƒ@ƒCƒ‹–¼
- * @return ƒtƒ@ƒCƒ‹‘®«
+ * ãƒ•ã‚¡ã‚¤ãƒ«ã®å±æ€§ã‚’å¾—ã‚‹
+ * @param[in] lpPathName ãƒ•ã‚¡ã‚¤ãƒ«å
+ * @return ãƒ•ã‚¡ã‚¤ãƒ«å±æ€§
  */
 short DOSIOCALL file_attr(const OEMCHAR* lpPathName)
 {
@@ -225,11 +225,11 @@ short DOSIOCALL file_attr(const OEMCHAR* lpPathName)
 }
 
 /**
- * ƒtƒ@ƒCƒ‹‚ÌˆÚ“®
- * @param[in] lpExistFile ƒtƒ@ƒCƒ‹–¼
- * @param[in] lpNewFile ƒtƒ@ƒCƒ‹–¼
- * @retval 0 ¬Œ÷
- * @retval -1 ¸”s
+ * ãƒ•ã‚¡ã‚¤ãƒ«ã®ç§»å‹•
+ * @param[in] lpExistFile ãƒ•ã‚¡ã‚¤ãƒ«å
+ * @param[in] lpNewFile ãƒ•ã‚¡ã‚¤ãƒ«å
+ * @retval 0 æˆåŠŸ
+ * @retval -1 å¤±æ•—
  */
 short DOSIOCALL file_rename(const OEMCHAR* lpExistFile, const OEMCHAR* lpNewFile)
 {
@@ -237,10 +237,10 @@ short DOSIOCALL file_rename(const OEMCHAR* lpExistFile, const OEMCHAR* lpNewFile
 }
 
 /**
- * ƒfƒBƒŒƒNƒgƒŠì¬
- * @param[in] lpPathName ƒpƒX
- * @retval 0 ¬Œ÷
- * @retval -1 ¸”s
+ * ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªä½œæˆ
+ * @param[in] lpPathName ãƒ‘ã‚¹
+ * @retval 0 æˆåŠŸ
+ * @retval -1 å¤±æ•—
  */
 short DOSIOCALL file_dircreate(const OEMCHAR* lpPathName)
 {
@@ -248,10 +248,10 @@ short DOSIOCALL file_dircreate(const OEMCHAR* lpPathName)
 }
 
 /**
- * ƒfƒBƒŒƒNƒgƒŠíœ
- * @param[in] lpPathName ƒpƒX
- * @retval 0 ¬Œ÷
- * @retval -1 ¸”s
+ * ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªå‰Šé™¤
+ * @param[in] lpPathName ãƒ‘ã‚¹
+ * @retval 0 æˆåŠŸ
+ * @retval -1 å¤±æ•—
  */
 short DOSIOCALL file_dirdelete(const OEMCHAR* lpPathName)
 {
@@ -260,11 +260,11 @@ short DOSIOCALL file_dirdelete(const OEMCHAR* lpPathName)
 
 
 
-// ---- ƒJƒŒƒ“ƒgƒtƒ@ƒCƒ‹‘€ì
+// ---- ã‚«ãƒ¬ãƒ³ãƒˆãƒ•ã‚¡ã‚¤ãƒ«æ“ä½œ
 
 /**
- * ƒJƒŒƒ“ƒg ƒpƒXİ’è
- * @param[in] lpPathName ƒJƒŒƒ“ƒg ƒtƒ@ƒCƒ‹–¼
+ * ã‚«ãƒ¬ãƒ³ãƒˆ ãƒ‘ã‚¹è¨­å®š
+ * @param[in] lpPathName ã‚«ãƒ¬ãƒ³ãƒˆ ãƒ•ã‚¡ã‚¤ãƒ«å
  */
 void DOSIOCALL file_setcd(const OEMCHAR* lpPathName)
 {
@@ -274,9 +274,9 @@ void DOSIOCALL file_setcd(const OEMCHAR* lpPathName)
 }
 
 /**
- * ƒJƒŒƒ“ƒg ƒpƒXæ“¾
- * @param[in] lpFilename ƒtƒ@ƒCƒ‹–¼
- * @return ƒpƒX
+ * ã‚«ãƒ¬ãƒ³ãƒˆ ãƒ‘ã‚¹å–å¾—
+ * @param[in] lpFilename ãƒ•ã‚¡ã‚¤ãƒ«å
+ * @return ãƒ‘ã‚¹
  */
 OEMCHAR* DOSIOCALL file_getcd(const OEMCHAR* lpFilename)
 {
@@ -285,9 +285,9 @@ OEMCHAR* DOSIOCALL file_getcd(const OEMCHAR* lpFilename)
 }
 
 /**
- * ƒJƒŒƒ“ƒg ƒtƒ@ƒCƒ‹‚ğŠJ‚«‚Ü‚·
- * @param[in] lpFilename ƒtƒ@ƒCƒ‹–¼
- * @return ƒtƒ@ƒCƒ‹ ƒnƒ“ƒhƒ‹
+ * ã‚«ãƒ¬ãƒ³ãƒˆ ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ãã¾ã™
+ * @param[in] lpFilename ãƒ•ã‚¡ã‚¤ãƒ«å
+ * @return ãƒ•ã‚¡ã‚¤ãƒ« ãƒãƒ³ãƒ‰ãƒ«
  */
 FILEH DOSIOCALL file_open_c(const OEMCHAR* lpFilename)
 {
@@ -295,9 +295,9 @@ FILEH DOSIOCALL file_open_c(const OEMCHAR* lpFilename)
 }
 
 /**
- * ƒŠ[ƒh ƒIƒ“ƒŠ[‚ÅƒJƒŒƒ“ƒg ƒtƒ@ƒCƒ‹‚ğŠJ‚«‚Ü‚·
- * @param[in] lpFilename ƒtƒ@ƒCƒ‹–¼
- * @return ƒtƒ@ƒCƒ‹ ƒnƒ“ƒhƒ‹
+ * ãƒªãƒ¼ãƒ‰ ã‚ªãƒ³ãƒªãƒ¼ã§ã‚«ãƒ¬ãƒ³ãƒˆ ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ãã¾ã™
+ * @param[in] lpFilename ãƒ•ã‚¡ã‚¤ãƒ«å
+ * @return ãƒ•ã‚¡ã‚¤ãƒ« ãƒãƒ³ãƒ‰ãƒ«
  */
 
 FILEH DOSIOCALL file_open_rb_c(const OEMCHAR* lpFilename)
@@ -306,9 +306,9 @@ FILEH DOSIOCALL file_open_rb_c(const OEMCHAR* lpFilename)
 }
 
 /**
- * ƒJƒŒƒ“ƒg ƒtƒ@ƒCƒ‹‚ğì¬‚µ‚Ü‚·
- * @param[in] lpFilename ƒtƒ@ƒCƒ‹–¼
- * @return ƒtƒ@ƒCƒ‹ ƒnƒ“ƒhƒ‹
+ * ã‚«ãƒ¬ãƒ³ãƒˆ ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæˆã—ã¾ã™
+ * @param[in] lpFilename ãƒ•ã‚¡ã‚¤ãƒ«å
+ * @return ãƒ•ã‚¡ã‚¤ãƒ« ãƒãƒ³ãƒ‰ãƒ«
  */
 FILEH DOSIOCALL file_create_c(const OEMCHAR* lpFilename)
 {
@@ -316,10 +316,10 @@ FILEH DOSIOCALL file_create_c(const OEMCHAR* lpFilename)
 }
 
 /**
- * ƒJƒŒƒ“ƒg ƒtƒ@ƒCƒ‹‚Ìíœ
- * @param[in] lpFilename ƒtƒ@ƒCƒ‹–¼
- * @retval 0 ¬Œ÷
- * @retval -1 ¸”s
+ * ã‚«ãƒ¬ãƒ³ãƒˆ ãƒ•ã‚¡ã‚¤ãƒ«ã®å‰Šé™¤
+ * @param[in] lpFilename ãƒ•ã‚¡ã‚¤ãƒ«å
+ * @retval 0 æˆåŠŸ
+ * @retval -1 å¤±æ•—
  */
 short DOSIOCALL file_delete_c(const OEMCHAR* lpFilename)
 {
@@ -327,9 +327,9 @@ short DOSIOCALL file_delete_c(const OEMCHAR* lpFilename)
 }
 
 /**
- * ƒJƒŒƒ“ƒg ƒtƒ@ƒCƒ‹‚Ì‘®«‚ğ“¾‚é
- * @param[in] lpFilename ƒtƒ@ƒCƒ‹–¼
- * @return ƒtƒ@ƒCƒ‹‘®«
+ * ã‚«ãƒ¬ãƒ³ãƒˆ ãƒ•ã‚¡ã‚¤ãƒ«ã®å±æ€§ã‚’å¾—ã‚‹
+ * @param[in] lpFilename ãƒ•ã‚¡ã‚¤ãƒ«å
+ * @return ãƒ•ã‚¡ã‚¤ãƒ«å±æ€§
  */
 short DOSIOCALL file_attr_c(const OEMCHAR* lpFilename)
 {
@@ -338,14 +338,14 @@ short DOSIOCALL file_attr_c(const OEMCHAR* lpFilename)
 
 
 
-// ---- ƒtƒ@ƒCƒ‹ŒŸõ
+// ---- ãƒ•ã‚¡ã‚¤ãƒ«æ¤œç´¢
 
 /**
- * WIN32_FIND_DATA ‚ğ FLINFO ‚É•ÏŠ·
+ * WIN32_FIND_DATA ã‚’ FLINFO ã«å¤‰æ›
  * @param[in] w32fd WIN32_FIND_DATA
  * @param[out] fli FLINFO
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 static bool DOSIOCALL setFLInfo(const WIN32_FIND_DATA& w32fd, FLINFO *fli)
 {
@@ -368,10 +368,10 @@ static bool DOSIOCALL setFLInfo(const WIN32_FIND_DATA& w32fd, FLINFO *fli)
 }
 
 /**
- * ƒtƒ@ƒCƒ‹‚ÌŒŸõ
- * @param[in] lpPathName ƒpƒX
- * @param[out] fli ŒŸõŒ‹‰Ê
- * @return ƒtƒ@ƒCƒ‹ŒŸõƒnƒ“ƒhƒ‹
+ * ãƒ•ã‚¡ã‚¤ãƒ«ã®æ¤œç´¢
+ * @param[in] lpPathName ãƒ‘ã‚¹
+ * @param[out] fli æ¤œç´¢çµæœ
+ * @return ãƒ•ã‚¡ã‚¤ãƒ«æ¤œç´¢ãƒãƒ³ãƒ‰ãƒ«
  */
 FLISTH DOSIOCALL file_list1st(const OEMCHAR* lpPathName, FLINFO* fli)
 {
@@ -399,11 +399,11 @@ FLISTH DOSIOCALL file_list1st(const OEMCHAR* lpPathName, FLINFO* fli)
 }
 
 /**
- * ƒtƒ@ƒCƒ‹‚ÌŒŸõ
- * @param[in] hList ƒtƒ@ƒCƒ‹ŒŸõƒnƒ“ƒhƒ‹
- * @param[out] fli ŒŸõŒ‹‰Ê
- * @retval SUCCESS ¬Œ÷
- * @retval FAILURE ¸”s
+ * ãƒ•ã‚¡ã‚¤ãƒ«ã®æ¤œç´¢
+ * @param[in] hList ãƒ•ã‚¡ã‚¤ãƒ«æ¤œç´¢ãƒãƒ³ãƒ‰ãƒ«
+ * @param[out] fli æ¤œç´¢çµæœ
+ * @retval SUCCESS æˆåŠŸ
+ * @retval FAILURE å¤±æ•—
  */
 BRESULT DOSIOCALL file_listnext(FLISTH hList, FLINFO* fli)
 {
@@ -419,8 +419,8 @@ BRESULT DOSIOCALL file_listnext(FLISTH hList, FLINFO* fli)
 }
 
 /**
- * ƒtƒ@ƒCƒ‹ŒŸõƒnƒ“ƒhƒ‹‚ğ•Â‚¶‚é
- * @param[in] hList ƒtƒ@ƒCƒ‹ŒŸõƒnƒ“ƒhƒ‹
+ * ãƒ•ã‚¡ã‚¤ãƒ«æ¤œç´¢ãƒãƒ³ãƒ‰ãƒ«ã‚’é–‰ã˜ã‚‹
+ * @param[in] hList ãƒ•ã‚¡ã‚¤ãƒ«æ¤œç´¢ãƒãƒ³ãƒ‰ãƒ«
  */
 void DOSIOCALL file_listclose(FLISTH hList)
 {
@@ -429,12 +429,12 @@ void DOSIOCALL file_listclose(FLISTH hList)
 
 
 
-// ---- ƒtƒ@ƒCƒ‹–¼‘€ì
+// ---- ãƒ•ã‚¡ã‚¤ãƒ«åæ“ä½œ
 
 /**
- * ƒtƒ@ƒCƒ‹–¼‚Ìƒ|ƒCƒ“ƒ^‚ğ“¾‚é
- * @param[in] lpPathName ƒpƒX
- * @return ƒ|ƒCƒ“ƒ^
+ * ãƒ•ã‚¡ã‚¤ãƒ«åã®ãƒã‚¤ãƒ³ã‚¿ã‚’å¾—ã‚‹
+ * @param[in] lpPathName ãƒ‘ã‚¹
+ * @return ãƒã‚¤ãƒ³ã‚¿
  */
 OEMCHAR* DOSIOCALL file_getname(const OEMCHAR* lpPathName)
 {
@@ -456,8 +456,8 @@ OEMCHAR* DOSIOCALL file_getname(const OEMCHAR* lpPathName)
 }
 
 /**
- * ƒtƒ@ƒCƒ‹–¼‚ğíœ
- * @param[in,out] lpPathName ƒpƒX
+ * ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å‰Šé™¤
+ * @param[in,out] lpPathName ãƒ‘ã‚¹
  */
 void DOSIOCALL file_cutname(OEMCHAR* lpPathName)
 {
@@ -466,9 +466,9 @@ void DOSIOCALL file_cutname(OEMCHAR* lpPathName)
 }
 
 /**
- * Šg’£q‚Ìƒ|ƒCƒ“ƒ^‚ğ“¾‚é
- * @param[in] lpPathName ƒpƒX
- * @return ƒ|ƒCƒ“ƒ^
+ * æ‹¡å¼µå­ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å¾—ã‚‹
+ * @param[in] lpPathName ãƒ‘ã‚¹
+ * @return ãƒã‚¤ãƒ³ã‚¿
  */
 OEMCHAR* DOSIOCALL file_getext(const OEMCHAR* lpPathName)
 {
@@ -495,8 +495,8 @@ OEMCHAR* DOSIOCALL file_getext(const OEMCHAR* lpPathName)
 }
 
 /**
- * Šg’£q‚ğíœ
- * @param[in,out] lpPathName ƒpƒX
+ * æ‹¡å¼µå­ã‚’å‰Šé™¤
+ * @param[in,out] lpPathName ãƒ‘ã‚¹
  */
 void DOSIOCALL file_cutext(OEMCHAR* lpPathName)
 {
@@ -522,26 +522,26 @@ void DOSIOCALL file_cutext(OEMCHAR* lpPathName)
 }
 
 /**
- * ƒpƒX ƒZƒpƒŒ[ƒ^‚ğíœ
- * @param[in,out] lpPathName ƒpƒX
+ * ãƒ‘ã‚¹ ã‚»ãƒ‘ãƒ¬ãƒ¼ã‚¿ã‚’å‰Šé™¤
+ * @param[in,out] lpPathName ãƒ‘ã‚¹
  */
 void DOSIOCALL file_cutseparator(OEMCHAR* lpPathName)
 {
 	const int pos = OEMSTRLEN(lpPathName) - 1;
-	if ((pos > 0) &&								// 2•¶šˆÈã‚Å[
-		(lpPathName[pos] == '\\') &&				// ƒPƒc‚ª \ ‚Å[
-		(!milstr_kanji2nd(lpPathName, pos)) &&		// Š¿š‚Ì2ƒoƒCƒg–Ú‚À‚á‚È‚­‚Ä[
-		((pos != 1) || (lpPathName[0] != '\\')) &&	// '\\' ‚Å‚Í‚È‚­‚Ä[
-		((pos != 2) || (lpPathName[1] != ':')))		// '?:\' ‚Å‚Í‚È‚©‚Á‚½‚ç
+	if ((pos > 0) &&								// 2æ–‡å­—ä»¥ä¸Šã§ãƒ¼
+		(lpPathName[pos] == '\\') &&				// ã‚±ãƒ„ãŒ \ ã§ãƒ¼
+		(!milstr_kanji2nd(lpPathName, pos)) &&		// æ¼¢å­—ã®2ãƒã‚¤ãƒˆç›®ã¢ã‚ƒãªãã¦ãƒ¼
+		((pos != 1) || (lpPathName[0] != '\\')) &&	// '\\' ã§ã¯ãªãã¦ãƒ¼
+		((pos != 2) || (lpPathName[1] != ':')))		// '?:\' ã§ã¯ãªã‹ã£ãŸã‚‰
 	{
 		lpPathName[pos] = '\0';
 	}
 }
 
 /**
- * ƒpƒX ƒZƒpƒŒ[ƒ^‚ğ’Ç‰Á
- * @param[in,out] lpPathName ƒpƒX
- * @param[in] cchPathName ƒoƒbƒtƒ@’·
+ * ãƒ‘ã‚¹ ã‚»ãƒ‘ãƒ¬ãƒ¼ã‚¿ã‚’è¿½åŠ 
+ * @param[in,out] lpPathName ãƒ‘ã‚¹
+ * @param[in] cchPathName ãƒãƒƒãƒ•ã‚¡é•·
  */
 void DOSIOCALL file_setseparator(OEMCHAR* lpPathName, int cchPathName)
 {

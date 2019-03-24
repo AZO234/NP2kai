@@ -12,7 +12,7 @@ const UINT8	*p;
 	int		ank;
 
 	for (ank=from; ank<to; ank++) {
-		// ANKƒtƒHƒ“ƒg‚ÌƒXƒ^[ƒgˆÊ’u
+		// ANKãƒ•ã‚©ãƒ³ãƒˆã®ã‚¹ã‚¿ãƒ¼ãƒˆä½ç½®
 		p = src + 0x6000 + ((ank & 0x1f) * 0x20)
 								+ (((ank / 0x20) - 1) * 0x400);
 		for (y=0; y<16; y++) {
@@ -32,8 +32,8 @@ const UINT8	*p;
 		q = dst + 0x21000 + (i << 4);
 		for (j=0x21; j<0x7f; j++) {
 			p = NULL;
-			// Š¿Žš‚Ìƒ|ƒCƒ“ƒ^‚ð‹‚ß‚é
-			if ((i >= 0x01) && (i < 0x08)) {			// 2121`277e
+			// æ¼¢å­—ã®ãƒã‚¤ãƒ³ã‚¿ã‚’æ±‚ã‚ã‚‹
+			if ((i >= 0x01) && (i < 0x08)) {			// 2121ã€œ277e
 				p = src + ((j & 0x1f) * 0x20) + (i * 0x400);
 
 				if (j >= 0x60) {
@@ -43,18 +43,18 @@ const UINT8	*p;
 					p += 0x4000;
 				}
 			}
-			else if ((i >= 0x10) && (i < 0x20)) {		// 3021`3f7e
+			else if ((i >= 0x10) && (i < 0x20)) {		// 3021ã€œ3f7e
 				p = src + 0x08000 + ((j & 0x1f) * 0x20)
 							+ ((i - 0x10) * 0x400)
 							+ (((j / 0x20) - 1) * 0x4000);
 			}
-			else if ((i >= 0x20) && (i < 0x50)) {		// 4021`4f7e
+			else if ((i >= 0x20) && (i < 0x50)) {		// 4021ã€œ4f7e
 				p = src + 0x14000 + ((j & 0x1f) * 0x20)
 							+ ((i - 0x20) * 0x400)
 							+ (((j / 0x20) - 1) * 0x4000);
 			}
-			if (p) {							// ‹KŠi“àƒR[ƒh‚È‚ç‚Î
-				// ƒRƒs[‚·‚é
+			if (p) {							// è¦æ ¼å†…ã‚³ãƒ¼ãƒ‰ãªã‚‰ã°
+				// ã‚³ãƒ”ãƒ¼ã™ã‚‹
 				for (k=0; k<16; k++) {
 					*(q+k+0x000) = p[0];
 					*(q+k+0x800) = p[1];
@@ -78,7 +78,7 @@ UINT8 fontfm7_read(const OEMCHAR *filename, UINT8 loading) {
 	}
 	file_cpyname(fname, filename, NELEMENTS(fname));
 
-	// 8dot ANK‚ð“Ç‚Ýž‚Þ•K—v‚Í‚ ‚éH
+	// 8dot ANKã‚’èª­ã¿è¾¼ã‚€å¿…è¦ã¯ã‚ã‚‹ï¼Ÿ
 	if (loading & FONT_ANK8) {
 		file_cutname(fname);
 		file_catname(fname, fm7ankname, NELEMENTS(fname));
@@ -93,7 +93,7 @@ UINT8 fontfm7_read(const OEMCHAR *filename, UINT8 loading) {
 		}
 	}
 
-	// 16dot ASCII ‹y‚Ñ Š¿Žš‚ð“Ç‚Ýž‚Þ•K—v‚Í‚ ‚é‚©H
+	// 16dot ASCII åŠã³ æ¼¢å­—ã‚’èª­ã¿è¾¼ã‚€å¿…è¦ã¯ã‚ã‚‹ã‹ï¼Ÿ
 	if (loading & (FONT_ANK16a | FONT_KNJ1)) {
 		file_cutname(fname);
 		file_catname(fname, fm7knjname, NELEMENTS(fname));
@@ -101,14 +101,14 @@ UINT8 fontfm7_read(const OEMCHAR *filename, UINT8 loading) {
 		if (fh != FILEH_INVALID) {
 			if (file_read(fh, work, 0x20000) == 0x20000) {
 
-				// 16dot ASCII‚ð“Ç‚Ýž‚ÞH
+				// 16dot ASCIIã‚’èª­ã¿è¾¼ã‚€ï¼Ÿ
 				if (loading & FONT_ANK16a) {
 					loading &= ~FONT_ANK16a;
 					fm7ankcpy(fontrom + 0x80200, work, 0x20, 0x7f);
 					fontdata_patch16a();
 				}
 
-				// ‘æˆê…€Š¿Žš‚ð“Ç‚Ýž‚ÞH
+				// ç¬¬ä¸€æ°´æº–æ¼¢å­—ã‚’èª­ã¿è¾¼ã‚€ï¼Ÿ
 				if (loading & FONT_KNJ1) {
 					loading &= ~FONT_KNJ1;
 					fm7knjcpy(fontrom, work, 0x01, 0x30);

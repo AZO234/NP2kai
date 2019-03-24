@@ -1,5 +1,5 @@
 
-static const OEMCHAR str_deffont[] = OEMTEXT("‚l‚r ‚oƒSƒVƒbƒN");
+static const OEMCHAR str_deffont[] = OEMTEXT("ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯");
 static const OEMCHAR str_browse[] = OEMTEXT("...");
 static const OEMCHAR str_eject[] = OEMTEXT("Eject");
 static const OEMCHAR str_reset[] = OEMTEXT("Reset");

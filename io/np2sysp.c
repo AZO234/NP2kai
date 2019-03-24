@@ -11,25 +11,41 @@
 #if defined(SUPPORT_HOSTDRV)
 #include	"hostdrv.h"
 #endif
+#include	"sound/sound.h"
+#include	"sound/beep.h"
+#include	"sound/fmboard.h"
+#include	"sound/soundrom.h"
+#include	"cbus/mpu98ii.h"
+#if defined(SUPPORT_IDEIO)
+#include	"cbus/ideio.h"
+#endif
+#if defined(SUPPORT_WAB) && defined(SUPPORT_CL_GD5430)
+#include	"wab/cirrus_vga_extern.h"
+#include	"wab/wab.h"
+#endif
+#include	"np2.h"
+#if defined(SUPPORT_HRTIMER)
+#include	"timemng.h"
+#endif
 
 
 #define		NP2SYSP_VER			"C"
-// #define	NP2SYSP_CREDIT		""					// óvÇÈÇ»ÇÁÅEÅEÅE
+// #define	NP2SYSP_CREDIT		""					// Ë¶Å„Çã„Å™„Çâ„Éª„Éª„Éª
 
-// NP2àÀë∂É|Å[Ég
+// NP2‰æùÂ≠ò„Éù„Éº„Éà
 // port:07edh	np2 value comm
 // port:07efh	np2 string comm
 
-// äÓñ{ìIÇ… STRINGÇ≈Ç‚ÇËéÊÇËÇ∑ÇÈ
-// É|Å[Ég 7efh Ç… 'NP2' Ç∆èoóÕÇ≈ "NP2"Ç™ï‘Ç¡ÇƒÇ´ÇΩÇÁ NP2Ç≈Ç†ÇÈ
+// Âü∫Êú¨ÁöÑ„Å´ STRING„Åß„ÇÑ„ÇäÂèñ„Çä„Åô„Çã
+// „Éù„Éº„Éà 7efh „Å´ 'NP2' „Å®Âá∫Âäõ„Åß "NP2"„ÅåËøî„Å£„Å¶„Åç„Åü„Çâ NP2„Åß„ÅÇ„Çã
 
 // verA
-//		out->str: 'ver'				in->str:	verî‘çÜ AÅ`
-//		out->str: 'poweroff'		NP2ÇèIóπ
+//		out->str: 'ver'				in->str:	verÁï™Âè∑ A„Äú
+//		out->str: 'poweroff'		NP2„ÇíÁµÇ‰∫Ü
 
 // verB
-//		out->str: 'cpu'				in->str:	CPUå^î‘
-//		out->str: 'clock'			in->str:	ìÆçÏÉNÉçÉbÉNêî
+//		out->str: 'cpu'				in->str:	CPUÂûãÁï™
+//		out->str: 'clock'			in->str:	Âãï‰Ωú„ÇØ„É≠„ÉÉ„ÇØÊï∞
 
 
 // ----
@@ -43,10 +59,18 @@ const void	*arg1;
 
 static const OEMCHAR str_80286[] = OEMTEXT("80286");
 static const OEMCHAR str_v30[] = OEMTEXT("V30");
-#if 0
+#if defined(CPUCORE_IA32)
 static const OEMCHAR str_pentium[] = OEMTEXT("PENTIUM");
 #endif	/* 0 */
 static const OEMCHAR str_mhz[] = OEMTEXT("%uMHz");
+
+// np21/w dynamic config
+#define NP21W_SWITCH_DUMMY		0
+#define NP21W_SWITCH_GD54XXTYPE	1
+#define NP21W_SWITCH_SOUNDBOARD	2
+#define NP21W_SWITCH_SYNCCLOCK	3
+#define NP21W_SWITCH_PCIENABLE	4
+#define NP21W_SWITCH_ASYNCCPU		5
 
 
 static void setoutstr(const OEMCHAR *str) {
@@ -74,8 +98,8 @@ static void np2sysp_poweroff(const void *arg1, long arg2) {
 
 static void np2sysp_cpu(const void *arg1, long arg2) {
 
-	// CPUÇï‘Ç∑
-#if 1											// 80286 or V30
+	// CPU„ÇíËøî„Åô
+#if !defined(CPUCORE_IA32)							// 80286 or V30
 	if (!(CPU_TYPE & CPUTYPE_V30)) {
 		setoutstr(str_80286);
 	}
@@ -83,7 +107,7 @@ static void np2sysp_cpu(const void *arg1, long arg2) {
 		setoutstr(str_v30);
 	}
 #else
-	// 386ã@à»ç~ÇÃèÍçá V30ÉÇÅ[ÉhÇÕÉGÉ~ÉÖÉåÅ[ÉVÉáÉìÇæÇ©ÇÁå≈íË(?)
+	// 386Ê©ü‰ª•Èôç„ÅÆÂ†¥Âêà V30„É¢„Éº„Éâ„ÅØ„Ç®„Éü„É•„É¨„Éº„Ç∑„Éß„É≥„Å†„Åã„ÇâÂõ∫ÂÆö(?)
 	setoutstr(str_pentium);
 #endif
 	(void)arg1;
@@ -117,6 +141,192 @@ static void np2sysp_hwreset(const void *arg1, long arg2) {
 	(void)arg2;
 }
 
+static void np2sysp_changeclock(const void *arg1, long arg2) {
+
+	OEMCHAR	str[16];
+
+	OEMSPRINTF(str, str_mhz, (pccore.realclock + 500000) / 1000000);
+	setoutstr(str);
+	(void)arg1;
+	(void)arg2;
+}
+
+// np21/w extensions
+static void np2sysp_cngclkmul(const void *arg1, long arg2) {
+
+	OEMCHAR	str[16];
+	UINT8 oldclockmul = pccore.multiple;
+	UINT8 newclockmul = (np2sysp.outval >> 24);
+	
+	if(newclockmul > 0) {
+		np2sysp.outval = (oldclockmul << 24) + (np2sysp.outval >> 8);
+
+		pccore.multiple = newclockmul;
+		pccore.realclock = pccore.baseclock * pccore.multiple;
+		
+		sound_changeclock();
+		beep_changeclock();
+		mpu98ii_changeclock();
+		keyboard_changeclock();
+		mouseif_changeclock();
+		gdc_updateclock();
+	}
+
+	OEMSPRINTF(str, OEMTEXT("%d"), pccore.multiple);
+	setoutstr(str);
+	(void)arg1;
+	(void)arg2;
+}
+
+static void np2sysp_getconfig(const void *arg1, long arg2) {
+
+	OEMCHAR	str[16];
+	UINT8 configid = (np2sysp.outval >> 24) & 0xff;
+	UINT8 configvalue = 0;
+	UINT16 configvalue16 = 0;
+	
+	switch(configid){
+	case NP21W_SWITCH_SOUNDBOARD:
+		configvalue = g_nSoundID;
+		break;
+	case NP21W_SWITCH_GD54XXTYPE:
+#if defined(SUPPORT_WAB) && defined(SUPPORT_CL_GD5430)
+		configvalue16 = np2clvga.gd54xxtype;
+#endif
+		OEMSPRINTF(str, OEMTEXT("%d"), configvalue16);
+		setoutstr(str);
+		return;
+	case NP21W_SWITCH_PCIENABLE:
+#if defined(SUPPORT_PCI)
+		configvalue = pcidev.enable ? 1 : 0;
+#endif
+		return;
+	case NP21W_SWITCH_ASYNCCPU:
+#if defined(SUPPORT_ASYNC_CPU)
+		configvalue = np2cfg.asynccpu ? 1 : 0;
+#endif	/* defined(SUPPORT_ASYNC_CPU) */
+		break;
+	case NP21W_SWITCH_DUMMY:
+	default:
+		break;
+	}
+
+	OEMSPRINTF(str, OEMTEXT("%d"), configvalue);
+	setoutstr(str);
+	(void)arg1;
+	(void)arg2;
+}
+static void np2sysp_cngconfig(const void *arg1, long arg2) {
+
+	OEMCHAR	str[16];
+	UINT8 configid = (np2sysp.outval >> 24) & 0xff;
+	UINT8 configvalue = (np2sysp.outval >> 16) & 0xff;
+	UINT16 configvalue16 = 0;
+	
+	switch(configid){
+	case NP21W_SWITCH_SYNCCLOCK:
+#if defined(SUPPORT_HRTIMER)
+		if(configvalue == 1){
+			_SYSTIME hrtimertime;
+			UINT32 hrtimertimeuint;
+
+			timemng_gettime(&hrtimertime);
+			hrtimertimeuint = (((UINT32)hrtimertime.hour*60 + (UINT32)hrtimertime.minute)*60 + (UINT32)hrtimertime.second)*32 + ((UINT32)hrtimertime.milli*32)/1000;
+			hrtimertimeuint |= 0x400000; // „Åì„ÅÜ„Åó„Å™„ÅÑ„Å®Win98„ÅÆÊôÇË®à„Åå1Êó•„Åö„Çå„Çã?
+			STOREINTELDWORD(mem+0x04F1, hrtimertimeuint); // XXX: 04F4„Å´„ÇÇÊõ∏„ÅÑ„Å°„ÇÉ„Å£„Å¶„Çã„Åë„Å©Â∑Æ„ÅóÂΩì„Åü„Å£„Å¶„ÅØÂïèÈ°å„Å™„Åï„Åù„ÅÜ„Å™„ÅÆ„ÅßÔΩ•ÔΩ•ÔΩ•
+		}
+#endif	/* defined(SUPPORT_HRTIMER) */
+		break;
+	case NP21W_SWITCH_SOUNDBOARD:
+		if(configvalue != (UINT8)g_nSoundID){
+			sound_reset();
+			fmboard_unbind();
+			if(g_nSoundID == SOUNDID_PC_9801_118){
+				iocore_detachout(cs4231.port[10]);
+				iocore_detachinp(cs4231.port[10]);
+				iocore_detachout(cs4231.port[10]+1);
+				iocore_detachinp(cs4231.port[10]+1);
+			}
+			soundrom_reset();
+			fmboard_reset(&np2cfg, (SOUNDID)configvalue);
+			fmboard_bind();
+			if (((pccore.model & PCMODELMASK) >= PCMODEL_VX) &&
+				(pccore.sound & 0x7e)) {
+				if(g_nSoundID == SOUNDID_MATE_X_PCM || ((g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_118) && np2cfg.snd118irqf == np2cfg.snd118irqp) || g_nSoundID == SOUNDID_PC_9801_86_WSS){
+					iocore_out8(0x188, 0x27);
+					iocore_out8(0x18a, 0x30);
+					if(g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_118){
+						iocore_out8(cs4231.port[4], 0x27);
+						iocore_out8(cs4231.port[4]+2, 0x30);
+					}
+				}else{
+					iocore_out8(0x188, 0x27);
+					iocore_out8(0x18a, 0x3f);
+				}
+			}
+			if(g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_118){
+				iocore_attachout(cs4231.port[10], mpu98ii_o0);
+				iocore_attachinp(cs4231.port[10], mpu98ii_i0);
+				iocore_attachout(cs4231.port[10]+1, mpu98ii_o2);
+				iocore_attachinp(cs4231.port[10]+1, mpu98ii_i2);
+				switch(np2cfg.snd118irqm){
+				case 10:
+					mpu98.irqnum = 10;
+					break;
+				}
+			}
+#if defined(SUPPORT_IDEIO)
+			ideio_bindCDDA();
+#endif	/* defined(SUPPORT_IDEIO) */
+		}
+		break;
+	case NP21W_SWITCH_GD54XXTYPE:
+#if defined(SUPPORT_WAB) && defined(SUPPORT_CL_GD5430)
+		pc98_cirrus_vga_unbind();
+		configvalue16 = (np2sysp.outval >> 8) & 0xffff;
+		if(configvalue16 != 0){
+			np2clvga.gd54xxtype = configvalue16;
+		}else{
+			np2clvga.gd54xxtype = np2clvga.defgd54xxtype;
+		}
+		pc98_cirrus_vga_bind();
+		np2clvga.VRAMWindowAddr2 = 0;
+		np2clvga.VRAMWindowAddr3 = 0;
+		pc98_cirrus_vga_initVRAMWindowAddr();
+		np2clvga.mmioenable = 0;
+		np2wab.paletteChanged = 1;
+		pc98_cirrus_vga_resetresolution();
+#endif
+		OEMSPRINTF(str, OEMTEXT("%d"), configvalue16);
+		setoutstr(str);
+		return;
+	case NP21W_SWITCH_PCIENABLE:
+#if defined(SUPPORT_PCI)
+		if(configvalue==0){
+			pcidev.enable = configvalue;
+		}else{
+			// TODO: ÁÑ°Âäπ‚ÜíÊúâÂäπ„Å´„Åô„ÇãÂ†¥Âêà„ÅÆ„Ç≥„Éº„Éâ„ÇíÊõ∏„Åè
+		}
+		configvalue = pcidev.enable;
+#endif
+		return;
+	case NP21W_SWITCH_ASYNCCPU:
+#if defined(SUPPORT_ASYNC_CPU)
+		np2cfg.asynccpu = configvalue ? 1 : 0;
+		configvalue = np2cfg.asynccpu ? 1 : 0;
+#endif	/* defined(SUPPORT_ASYNC_CPU) */
+		break;
+	case NP21W_SWITCH_DUMMY:
+	default:
+		break;
+	}
+
+	OEMSPRINTF(str, OEMTEXT("%d"), configvalue);
+	setoutstr(str);
+	(void)arg1;
+	(void)arg2;
+}
+
 
 // ----
 
@@ -144,6 +354,11 @@ static const char cmd_hdrvclose[] = "close_hostdrv";
 static const char cmd_hdrvintr[] = "intr_hostdrv";
 static const OEMCHAR rep_hdrvcheck[] = OEMTEXT("0.74");
 #endif
+
+// np21/w extensions
+static const char cmd_cngclkmul[] = "changeclockmul"; // np21w ver0.86 rev44
+static const char cmd_cngconfig[] = "changeconfig"; // np21w ver0.86 rev44
+static const char cmd_getconfig[] = "getconfig"; // np21w ver0.86 rev44
 
 #if defined(NP2SYSP_VER)
 static const OEMCHAR str_syspver[] = OEMTEXT(NP2SYSP_VER);
@@ -189,6 +404,9 @@ static const SYSPCMD np2spcmd[] = {
 			{cmd_hdrvclose,	hostdrv_unmount,	NULL,			0},
 			{cmd_hdrvintr,	hostdrv_intr,		NULL,			0},
 #endif
+			{cmd_cngclkmul,	np2sysp_cngclkmul,	NULL,			0},
+			{cmd_getconfig,	np2sysp_getconfig,	NULL,			0},
+			{cmd_cngconfig,	np2sysp_cngconfig,	NULL,			0},
 };
 
 
@@ -214,7 +432,7 @@ static BRESULT np2syspcmp(const char *p) {
 
 static void IOOUTCALL np2sysp_o7ed(UINT port, REG8 dat) {
 
-	np2sysp.outval = (dat << 24) + (np2sysp.outval >> 8);
+	np2sysp.outval = (dat << 24) | (np2sysp.outval >> 8);
 	(void)port;
 }
 
@@ -243,7 +461,7 @@ static REG8 IOINPCALL np2sysp_i7ed(UINT port) {
 	REG8	ret;
 
 	ret = (REG8)(np2sysp.inpval & 0xff);
-	np2sysp.inpval = (ret << 24) + (np2sysp.inpval >> 8);
+	np2sysp.inpval = (ret << 24) | (np2sysp.inpval >> 8);
 	(void)port;
 	return(ret);
 }
@@ -286,9 +504,9 @@ void np2sysp_reset(const NP2CFG *pConfig) {
 
 void np2sysp_bind(void) {
 
-	iocore_attachout(0x07ef, np2sysp_o7ed);
+	iocore_attachout(0x07ed, np2sysp_o7ed);
 	iocore_attachout(0x07ef, np2sysp_o7ef);
-	iocore_attachinp(0x07ef, np2sysp_i7ed);
+	iocore_attachinp(0x07ed, np2sysp_i7ed);
 	iocore_attachinp(0x07ef, np2sysp_i7ef);
 
 #if defined(NP2APPDEV)

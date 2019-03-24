@@ -1,6 +1,6 @@
 /**
  * @file	dd2.cpp
- * @brief	DirectDraw2 •`‰æƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	DirectDraw2 æç”»ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -12,7 +12,7 @@
 #endif	// !defined(__GNUC__)
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 DD2Surface::DD2Surface()
 	: m_hWnd(NULL)
@@ -32,7 +32,7 @@ DD2Surface::DD2Surface()
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 DD2Surface::~DD2Surface()
 {
@@ -40,12 +40,12 @@ DD2Surface::~DD2Surface()
 }
 
 /**
- * ì¬
- * @param[in] hWnd ƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹
- * @param[in] nWidth •
- * @param[in] nHeight ‚‚³
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * ä½œæˆ
+ * @param[in] hWnd ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ«
+ * @param[in] nWidth å¹…
+ * @param[in] nHeight é«˜ã•
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool DD2Surface::Create(HWND hWnd, int nWidth, int nHeight)
 {
@@ -158,7 +158,7 @@ bool DD2Surface::Create(HWND hWnd, int nWidth, int nHeight)
 }
 
 /**
- * ‰ğ•ú
+ * è§£æ”¾
  */
 void DD2Surface::Release()
 {
@@ -195,8 +195,8 @@ void DD2Surface::Release()
 }
 
 /**
- * ƒoƒbƒtƒ@ ƒƒbƒN
- * @return ƒoƒbƒtƒ@
+ * ãƒãƒƒãƒ•ã‚¡ ãƒ­ãƒƒã‚¯
+ * @return ãƒãƒƒãƒ•ã‚¡
  */
 CMNVRAM* DD2Surface::Lock()
 {
@@ -223,7 +223,7 @@ CMNVRAM* DD2Surface::Lock()
 }
 
 /**
- * ƒoƒbƒtƒ@ ƒAƒ“ƒƒbƒN
+ * ãƒãƒƒãƒ•ã‚¡ ã‚¢ãƒ³ãƒ­ãƒƒã‚¯
  */
 void DD2Surface::Unlock()
 {
@@ -235,8 +235,8 @@ void DD2Surface::Unlock()
 
 /**
  * blt
- * @param[in] pt ˆÊ’u
- * @param[in] lpRect —Ìˆæ
+ * @param[in] pt ä½ç½®
+ * @param[in] lpRect é ˜åŸŸ
  */
 void DD2Surface::Blt(const POINT* pt, const RECT* lpRect)
 {
@@ -267,9 +267,9 @@ void DD2Surface::Blt(const POINT* pt, const RECT* lpRect)
 }
 
 /**
- * 16BPP F‚ğ“¾‚é
- * @param[in] pal F
- * @return 16BPPF
+ * 16BPP è‰²ã‚’å¾—ã‚‹
+ * @param[in] pal è‰²
+ * @return 16BPPè‰²
  */
 UINT16 DD2Surface::GetPalette16(RGB32 pal) const
 {

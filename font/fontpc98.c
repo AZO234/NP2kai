@@ -11,7 +11,7 @@
 #define	BMPWIDTH		2048L
 #define	BMPHEIGHT		2048L
 
-#define	BMPLINESIZE		(BMPWIDTH / 8)			// äÑÇËêÿÇÍÇÈ^^;
+#define	BMPLINESIZE		(BMPWIDTH / 8)			// Ââ≤„ÇäÂàá„Çå„Çã^^;
 
 #define	BMPDATASIZE		(BMPLINESIZE * BMPHEIGHT)
 
@@ -24,10 +24,10 @@ const UINT8	*p;
 
 	for (ank=from; ank<to; ank++) {
 
-		// ANKÉtÉHÉìÉgÇÃÉXÉ^Å[Égà íu
+		// ANK„Éï„Ç©„É≥„Éà„ÅÆ„Çπ„Çø„Éº„Éà‰ΩçÁΩÆ
 		p = src + BMPDATASIZE + ank + (0 * FONTYSIZE * BMPLINESIZE);
 		for (y=0; y<FONTYSIZE; y++) {
-			p -= BMPLINESIZE;				// BMPÇ»ÇÃÇ≈É|ÉCÉìÉ^ÇÕà¯Ç©ÇÍÇÈ
+			p -= BMPLINESIZE;				// BMP„Å™„ÅÆ„Åß„Éù„Ç§„É≥„Çø„ÅØÂºï„Åã„Çå„Çã
 			*dst++ = ~(*p);
 		}
 	}
@@ -66,19 +66,19 @@ UINT8 fontpc98_read(const OEMCHAR *filename, UINT8 loading) {
 		goto fr98_err1;
 	}
 
-	// ÉtÉ@ÉCÉãÇÉIÅ[ÉvÉì
+	// „Éï„Ç°„Ç§„É´„Çí„Ç™„Éº„Éó„É≥
 	fh = file_open_rb(filename);
 	if (fh == FILEH_INVALID) {
 		goto fr98_err1;
 	}
 
-	// BITMAPFILEHEADER ÇÃì«Ç›çûÇ›
+	// BITMAPFILEHEADER „ÅÆË™≠„ÅøËæº„Åø
 	if ((file_read(fh, &bf, sizeof(bf)) != sizeof(bf)) ||
 		(bf.bfType[0] != 'B') || (bf.bfType[1] != 'M')) {
 		goto fr98_err2;
 	}
 
-	// BITMAPINFOHEADER ÇÃì«Ç›çûÇ›
+	// BITMAPINFOHEADER „ÅÆË™≠„ÅøËæº„Åø
 	if ((file_read(fh, &bi, sizeof(bi)) != sizeof(bi)) ||
 		(bmpdata_getinfo(&bi, &bd) != SUCCESS) ||
 		(bd.width != BMPWIDTH) || (bd.height != BMPHEIGHT) || (bd.bpp != 1) ||
@@ -86,45 +86,45 @@ UINT8 fontpc98_read(const OEMCHAR *filename, UINT8 loading) {
 		goto fr98_err2;
 	}
 
-	// BITMAPÉfÅ[É^ì™ÇæÇµ
+	// BITMAP„Éá„Éº„ÇøÈ†≠„Å†„Åó
 	fptr = LOADINTELDWORD(bf.bfOffBits);
 	if (file_seek(fh, fptr, FSEEK_SET) != fptr) {
 		goto fr98_err2;
 	}
 
-	// ÉÅÉÇÉäÉAÉçÉPÅ[Ég
+	// „É°„É¢„É™„Ç¢„É≠„Ç±„Éº„Éà
 	bmpdata = (UINT8 *)_MALLOC(BMPDATASIZE, "pc98font");
 	if (bmpdata == NULL) {
 		goto fr98_err2;
 	}
 
-	// BITMAPÉfÅ[É^ÇÃì«Ç›ÇæÇµ
+	// BITMAP„Éá„Éº„Çø„ÅÆË™≠„Åø„Å†„Åó
 	if (file_read(fh, bmpdata, BMPDATASIZE) != BMPDATASIZE) {
 		goto fr98_err3;
 	}
 
-	// 8x16 ÉtÉHÉìÉg(Å`0x7f)Çì«ÇﬁïKóvÇ™Ç†ÇÈÅH
+	// 8x16 „Éï„Ç©„É≥„Éà(„Äú0x7f)„ÇíË™≠„ÇÄÂøÖË¶Å„Åå„ÅÇ„ÇãÔºü
 	if (loading & FONT_ANK16a) {
 		loading &= ~FONT_ANK16a;
 		pc98ankcpy(fontrom + 0x80000, bmpdata, 0x000, 0x080);
 	}
-	// 8x16 ÉtÉHÉìÉg(0x80Å`)Çì«ÇﬁïKóvÇ™Ç†ÇÈÅH
+	// 8x16 „Éï„Ç©„É≥„Éà(0x80„Äú)„ÇíË™≠„ÇÄÂøÖË¶Å„Åå„ÅÇ„ÇãÔºü
 	if (loading & FONT_ANK16b) {
 		loading &= ~FONT_ANK16b;
 		pc98ankcpy(fontrom + 0x80800, bmpdata, 0x080, 0x100);
 	}
 
-	// ëÊàÍêÖèÄäøéöÇì«ÇﬁïKóvÇ™Ç†ÇÈÅH
+	// Á¨¨‰∏ÄÊ∞¥Ê∫ñÊº¢Â≠ó„ÇíË™≠„ÇÄÂøÖË¶Å„Åå„ÅÇ„ÇãÔºü
 	if (loading & FONT_KNJ1) {
 		loading &= ~FONT_KNJ1;
 		pc98knjcpy(fontrom, bmpdata, 0x01, 0x30);
 	}
-	// ëÊìÒêÖèÄäøéöÇì«ÇﬁïKóvÇ™Ç†ÇÈÅH
+	// Á¨¨‰∫åÊ∞¥Ê∫ñÊº¢Â≠ó„ÇíË™≠„ÇÄÂøÖË¶Å„Åå„ÅÇ„ÇãÔºü
 	if (loading & FONT_KNJ2) {
 		loading &= ~FONT_KNJ2;
 		pc98knjcpy(fontrom, bmpdata, 0x30, 0x56);
 	}
-	// ägí£äøéöÇì«ÇﬁïKóvÇ™Ç†ÇÈÅH
+	// Êã°ÂºµÊº¢Â≠ó„ÇíË™≠„ÇÄÂøÖË¶Å„Åå„ÅÇ„ÇãÔºü
 	if (loading & FONT_KNJ3) {
 		loading &= ~FONT_KNJ3;
 		pc98knjcpy(fontrom, bmpdata, 0x58, 0x60);

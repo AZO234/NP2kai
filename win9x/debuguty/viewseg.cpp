@@ -1,6 +1,6 @@
 /**
  * @file	viewreg.cpp
- * @brief	ƒƒ‚ƒŠ•\¦ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	ãƒ¡ãƒ¢ãƒªè¡¨ç¤ºã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -11,8 +11,8 @@
 #include "cpucore.h"
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
- * @param[in] lpView ƒrƒ…[ƒ ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * @param[in] lpView ãƒ“ãƒ¥ãƒ¼ãƒ¯ ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 CDebugUtySeg::CDebugUtySeg(CDebugUtyView* lpView)
 	: CDebugUtyItem(lpView, IDM_VIEWMODESEG)
@@ -21,15 +21,15 @@ CDebugUtySeg::CDebugUtySeg(CDebugUtyView* lpView)
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CDebugUtySeg::~CDebugUtySeg()
 {
 }
 
 /**
- * ‰Šú‰»
- * @param[in] lpItem Šî€‚Æ‚È‚éƒAƒCƒeƒ€
+ * åˆæœŸåŒ–
+ * @param[in] lpItem åŸºæº–ã¨ãªã‚‹ã‚¢ã‚¤ãƒ†ãƒ 
  */
 void CDebugUtySeg::Initialize(const CDebugUtyItem* lpItem)
 {
@@ -37,9 +37,9 @@ void CDebugUtySeg::Initialize(const CDebugUtyItem* lpItem)
 }
 
 /**
- * XV
- * @retval true XV‚ ‚è
- * @retval false XV‚È‚µ
+ * æ›´æ–°
+ * @retval true æ›´æ–°ã‚ã‚Š
+ * @retval false æ›´æ–°ãªã—
  */
 bool CDebugUtySeg::Update()
 {
@@ -52,9 +52,9 @@ bool CDebugUtySeg::Update()
 }
 
 /**
- * ƒƒbƒN
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * ãƒ­ãƒƒã‚¯
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CDebugUtySeg::Lock()
 {
@@ -66,7 +66,7 @@ bool CDebugUtySeg::Lock()
 }
 
 /**
- * ƒAƒ“ƒƒbƒN
+ * ã‚¢ãƒ³ãƒ­ãƒƒã‚¯
  */
 void CDebugUtySeg::Unlock()
 {
@@ -74,9 +74,9 @@ void CDebugUtySeg::Unlock()
 }
 
 /**
- * ƒƒbƒN’†?
- * @retval true ƒƒbƒN’†‚Å‚ ‚é
- * @retval false ƒƒbƒN’†‚Å‚È‚¢
+ * ãƒ­ãƒƒã‚¯ä¸­?
+ * @retval true ãƒ­ãƒƒã‚¯ä¸­ã§ã‚ã‚‹
+ * @retval false ãƒ­ãƒƒã‚¯ä¸­ã§ãªã„
  */
 bool CDebugUtySeg::IsLocked()
 {
@@ -84,11 +84,11 @@ bool CDebugUtySeg::IsLocked()
 }
 
 /**
- * ƒ†[ƒU[‚ªƒƒjƒ…[‚Ì€–Ú‚ğ‘I‘ğ‚µ‚½‚Æ‚«‚ÉAƒtƒŒ[ƒ€ƒ[ƒN‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
- * @param[in] wParam ƒpƒ‰ƒƒ^
- * @param[in] lParam ƒpƒ‰ƒƒ^
- * @retval TRUE ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ª‚±‚ÌƒƒbƒZ[ƒW‚ğˆ—‚µ‚½
- * @retval FALSE ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ª‚±‚ÌƒƒbƒZ[ƒW‚ğˆ—‚µ‚È‚©‚Á‚½
+ * ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®é …ç›®ã‚’é¸æŠã—ãŸã¨ãã«ã€ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã«ã‚ˆã£ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * @param[in] wParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @param[in] lParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @retval TRUE ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡¦ç†ã—ãŸ
+ * @retval FALSE ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡¦ç†ã—ãªã‹ã£ãŸ
  */
 BOOL CDebugUtySeg::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -122,8 +122,8 @@ BOOL CDebugUtySeg::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ƒZƒOƒƒ“ƒg•ÏX
- * @param[in] nSegment ƒZƒOƒƒ“ƒg
+ * ã‚»ã‚°ãƒ¡ãƒ³ãƒˆå¤‰æ›´
+ * @param[in] nSegment ã‚»ã‚°ãƒ¡ãƒ³ãƒˆ
  */
 void CDebugUtySeg::SetSegment(UINT nSegment)
 {
@@ -135,9 +135,9 @@ void CDebugUtySeg::SetSegment(UINT nSegment)
 }
 
 /**
- * •`‰æ
- * @param[in] hDC ƒfƒoƒCƒX ƒRƒ“ƒeƒLƒXƒg
- * @param[in] rect —Ìˆæ
+ * æç”»
+ * @param[in] hDC ãƒ‡ãƒã‚¤ã‚¹ ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ
+ * @param[in] rect é ˜åŸŸ
  */
 void CDebugUtySeg::OnPaint(HDC hDC, const RECT& rect)
 {

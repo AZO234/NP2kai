@@ -6,7 +6,7 @@ enum {
 
 
 #if defined(__GNUC__)
-// D88ƒwƒbƒ_ (size: 2b0h bytes)
+// D88ãƒ˜ãƒƒãƒ€ (size: 2b0h bytes)
 typedef struct {
 	UINT8	fd_name[17];		// Disk Name
 	UINT8	reserved1[9]; 		// Reserved
@@ -16,7 +16,7 @@ typedef struct {
 	UINT8	trackp[D88_TRACKMAX][4];
 } __attribute__ ((packed)) _D88HEAD, *D88HEAD;
 
-// D88ƒZƒNƒ^ (size: 16bytes)
+// D88ã‚»ã‚¯ã‚¿ (size: 16bytes)
 typedef struct {
 	UINT8	c;
 	UINT8	h;
@@ -33,7 +33,7 @@ typedef struct {
 } __attribute__ ((packed)) _D88SEC, *D88SEC;
 #else
 #pragma pack(push, 1)
-// D88ƒwƒbƒ_ (size: 2b0h bytes)
+// D88ãƒ˜ãƒƒãƒ€ (size: 2b0h bytes)
 typedef struct {
 	UINT8	fd_name[17];		// Disk Name
 	UINT8	reserved1[9]; 		// Reserved
@@ -43,7 +43,7 @@ typedef struct {
 	UINT8	trackp[D88_TRACKMAX][4];
 } _D88HEAD, *D88HEAD;
 
-// D88ƒZƒNƒ^ (size: 16bytes)
+// D88ã‚»ã‚¯ã‚¿ (size: 16bytes)
 typedef struct {
 	UINT8	c;
 	UINT8	h;

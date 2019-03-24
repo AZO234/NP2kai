@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file	pccore.c
  * @brief	emluration core
  *
@@ -62,6 +62,9 @@
 #if defined(SUPPORT_IDEIO)
 #include	"ideio.h"
 #endif
+#if defined(SUPPORT_GPIB)
+#include	"cbus/gpibio.h"
+#endif
 #if defined(CPUCORE_IA32)
 #include	"ia32/cpu.h"
 #include	"ia32/instructions/fpu/fp.h"
@@ -73,6 +76,8 @@
 #define	CPU_FEATURES		(0)
 #define	CPU_FEATURES_EX		(0)
 #define	CPU_BRAND_STRING	"Intel(R) 80286 Processor "
+#define	CPU_FEATURES_ECX	(0)
+#define	CPU_BRAND_ID_AUTO	(0xffffffff)
 #endif
 
 
@@ -88,12 +93,15 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 	NP2CFG	np2cfg = {
 				0, 1, 0, 32, 0, 0, 0x40,
 				0, 0, 0, 0,
-				{0x3e, 0xf3, 0x7b}, 0,
+				{0x3e, 0xe3, 0x7b}, 0,
 				0, 0, {1, 1, 6, 1, 8, 1},
 				128, 0x00, 1, 
+#if defined(SUPPORT_ASYNC_CPU)
+				0,
+#endif
 
 				OEMTEXT("VX"), PCBASECLOCK25, PCBASEMULTIPLE, 1,
-				{0x48, 0x05, 0x04, 0x00, 0x01, 0x00, 0x00, 0x6e},
+				{0x48, 0x05, 0x04, 0x08, 0x01, 0x00, 0x00, 0x6e},
 				1, 13, 2, 1, 0x000000, 0xffffff,
 				44100, 150, 4, 0,
 				{0, 0, 0}, 0xd1, 0x7f, 0xd1, 0, 0, 1, 
@@ -106,7 +114,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 				0xd2, 3, 5,
 #endif	/* SUPPORT_SOUND_SB16 */
 
-				3, {0x0c, 0x0c, 0x08, 0x06, 0x03, 0x0c}, 64, 64, 64, 64, 64,
+				3, {0x0c, 0x0c, 0x08, 0x06, 0x03, 0x0c}, 100, 64, 64, 64, 64, 64,
 				1, 0x82, 0,
 				0, {0x17, 0x04, 0x17}, {0x0c, 0x0c, 0x02, 0x10, 0x3f, 0x3f},
 #if defined(SUPPORT_FMGEN)
@@ -141,10 +149,13 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 #endif
 #endif
 #if defined(SUPPORT_CL_GD5430)
-				0, 0x5B, 0,
+				0, 0x5B, 0, CIRRUS_MELCOWAB_OFS_DEFAULT, 0,
 #endif
 #if defined(SUPPORT_GPIB)
-				0, 12, 1, 0, 
+				0, 12, 1, 0, 0, 
+#endif
+#if defined(SUPPORT_PCI)
+				0, 0, 0,
 #endif
 #if defined(SUPPORT_STATSAVE)
 				0,			/* statsave */
@@ -152,8 +163,14 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 				0, 0,
 				0, 0xff00, 
 				0, 0, 0,
-				CPU_VENDOR, CPU_FAMILY, CPU_MODEL, CPU_STEPPING, CPU_FEATURES, CPU_FEATURES_EX, CPU_BRAND_STRING, OEMTEXT(""), OEMTEXT(""),
-				FPU_TYPE_SOFTFLOAT
+				1,
+				CPU_VENDOR, CPU_FAMILY, CPU_MODEL, CPU_STEPPING, CPU_FEATURES, CPU_FEATURES_EX, CPU_BRAND_STRING, OEMTEXT(""), OEMTEXT(""), CPU_BRAND_ID_AUTO, CPU_FEATURES_ECX,
+				FPU_TYPE_SOFTFLOAT,
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+				1,
+#endif
+				0, 0,
+				1,
 	};
 
 	PCCORE	pccore = {	PCBASECLOCK25, PCBASEMULTIPLE,
@@ -171,6 +188,14 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 #if defined(SUPPORT_FMGEN)
 	UINT8	enable_fmgen = 0;
 #endif	/* SUPPORT_FMGEN */
+
+#if !defined(__LIBRETRO__) && !defined(NP2_SDL2) && !defined(NP2_X11)
+#ifdef SUPPORT_ASYNC_CPU
+LARGE_INTEGER asynccpu_lastclock = {0};
+LARGE_INTEGER asynccpu_clockpersec = {0};
+LARGE_INTEGER asynccpu_clockcount = {0};
+#endif
+#endif
 
 // ---------------------------------------------------------------------------
 
@@ -196,7 +221,7 @@ static void pccore_set(const NP2CFG *pConfig)
 {
 	UINT8	model;
 	UINT32	multiple;
-	UINT8	extsize;
+	UINT16	extsize;
 
 	ZeroMemory(&pccore, sizeof(pccore));
 	model = PCMODEL_VX;
@@ -253,7 +278,7 @@ static void pccore_set(const NP2CFG *pConfig)
 	{
 		extsize = np2cfg.EXTMEM;
 #if defined(CPUCORE_IA32)
-		extsize = np2min(extsize, 230);
+		extsize = np2min(extsize, MEMORY_MAXSIZE);
 #else
 		extsize = np2min(extsize, 13);
 #endif
@@ -326,6 +351,8 @@ static void sound_term(void) {
 void pccore_init(void) {
 
 	CPU_INITIALIZE();
+	
+	pic_initialize();
 
 	pal_initlcdtable();
 	pal_makelcdpal();
@@ -360,6 +387,10 @@ void pccore_init(void) {
 
 	iocore_create();
 
+#if defined(SUPPORT_IDEIO)
+	ideio_initialize();
+#endif
+
 #if defined(SUPPORT_HOSTDRV)
 	hostdrv_initialize();
 #endif
@@ -367,9 +398,17 @@ void pccore_init(void) {
 #if defined(SUPPORT_HRTIMER)
 	upd4990_hrtimer_start();
 #endif	/* SUPPORT_HRTIMER */
+
+#if defined(SUPPORT_GPIB)
+	gpibio_initialize();
+#endif
 }
 
 void pccore_term(void) {
+	
+#if defined(SUPPORT_GPIB)
+	gpibio_shutdown();
+#endif
 
 #if defined(SUPPORT_HRTIMER)
 	upd4990_hrtimer_stop();
@@ -388,6 +427,10 @@ void pccore_term(void) {
 	fdd_eject(1);
 	fdd_eject(2);
 	fdd_eject(3);
+	
+#if defined(SUPPORT_IDEIO)
+	ideio_deinitialize();
+#endif
 
 	iocore_destroy();
 
@@ -396,7 +439,10 @@ void pccore_term(void) {
 	rs232c_destruct();
 
 	sxsi_alltrash();
+	
+	pic_deinitialize();
 
+	CPU_SETEXTSIZE(0);	// メモリ解放
 	CPU_DEINITIALIZE();
 }
 
@@ -487,6 +533,13 @@ void pccore_reset(void) {
 	}else if(np2cfg.cpu_family == CPU_PENTIUM_III_FAMILY && np2cfg.cpu_model == CPU_PENTIUM_III_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_III);
+	}else if(np2cfg.cpu_family == CPU_PENTIUM_M_FAMILY && np2cfg.cpu_model == CPU_PENTIUM_M_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
+		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_M);
+	}else if(np2cfg.cpu_family == CPU_PENTIUM_4_FAMILY && np2cfg.cpu_model == CPU_PENTIUM_4_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
+		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_4);
+
 	}else if(np2cfg.cpu_family == CPU_AMD_K6_2_FAMILY && np2cfg.cpu_model == CPU_AMD_K6_2_MODEL){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K6_2);
@@ -499,6 +552,7 @@ void pccore_reset(void) {
 	}else if(np2cfg.cpu_family == CPU_AMD_K7_ATHLON_XP_FAMILY && np2cfg.cpu_model == CPU_AMD_K7_ATHLON_XP_MODEL){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K7_ATHLON_XP);
+
 	}else if(np2cfg.cpu_family == 0 && np2cfg.cpu_model == 0 && np2cfg.cpu_stepping == 0 && np2cfg.cpu_feature == 0){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_NEKOPRO);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_NEKOPRO2);
@@ -541,14 +595,31 @@ void pccore_reset(void) {
 		i386cpuid.cpu_stepping = CPU_STEPPING;
 		i386cpuid.cpu_feature = CPU_FEATURES_ALL;
 		i386cpuid.cpu_feature_ex = CPU_FEATURES_EX_ALL;
+		i386cpuid.cpu_feature_ecx = CPU_FEATURES_ALL;
+		i386cpuid.cpu_brandid = 0;
 	}else{
 		i386cpuid.cpu_family = np2cfg.cpu_family;
 		i386cpuid.cpu_model = np2cfg.cpu_model;
 		i386cpuid.cpu_stepping = np2cfg.cpu_stepping;
 		i386cpuid.cpu_feature = CPU_FEATURES_ALL & np2cfg.cpu_feature;
 		i386cpuid.cpu_feature_ex = CPU_FEATURES_EX_ALL & np2cfg.cpu_feature_ex;
+		i386cpuid.cpu_feature_ecx = CPU_FEATURES_ECX_ALL & np2cfg.cpu_feature_ecx;
+		i386cpuid.cpu_brandid = np2cfg.cpu_brandid;
 	}
 	strcpy(i386cpuid.cpu_brandstring, np2cfg.cpu_brandstring);
+
+	// BrandID自動設定（過去バージョンとの互換維持用）
+	if(i386cpuid.cpu_brandid == CPU_BRAND_ID_AUTO){
+		if(strncmp(i386cpuid.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_III, 27)==0){
+			CPU_EBX = 0x2;
+		}else if(strncmp(i386cpuid.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_M, 27)==0){
+			CPU_EBX = 0x16;
+		}else if(strncmp(i386cpuid.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_4, 27)==0){
+			CPU_EBX = 0x9;
+		}else{
+			CPU_EBX = 0;
+		}
+	}
 
 	// FPU種類を設定
 	i386cpuid.fpu_type = np2cfg.fpu_type;
@@ -579,7 +650,7 @@ void pccore_reset(void) {
 #endif
 
 	epson = (pccore.model & PCMODEL_EPSON) ? TRUE : FALSE;
-	if (epson) {
+	if (epson || np2cfg.useram_d) {
 		/* enable RAM (D0000-DFFFF) */
 		CPU_RAM_D000 = 0xffff;
 	}
@@ -643,6 +714,18 @@ void pccore_reset(void) {
 
 	timing_reset();
 	soundmng_play();
+
+#if !defined(__LIBRETRO__) && !defined(NP2_SDL2) && !defined(NP2_X11)
+#ifdef SUPPORT_ASYNC_CPU
+	if(GetTickCounterMode()==TCMODE_PERFORMANCECOUNTER){
+		asynccpu_clockpersec = GetTickCounter_ClockPerSec();
+		asynccpu_lastclock = GetTickCounter_Clock();
+		asynccpu_clockcount = GetTickCounter_Clock();
+	}else{
+		asynccpu_clockpersec.QuadPart = 0;
+	}
+#endif
+#endif
 }
 
 static void drawscreen(void) {
@@ -838,7 +921,6 @@ static int execcnt = 0;
 int piccnt = 0;
 #endif
 
-
 void pccore_postevent(UINT32 event) {	// yet!
 
 	(void)event;
@@ -863,7 +945,7 @@ void pccore_exec(BOOL draw) {
 	nevent_set(NEVENT_FLAMES, gdc.dispclock, screenvsync, NEVENT_RELATIVE);
 
 //	nevent_get1stevent();
-
+	
 	while(pcstat.screendispflag) {
 #if defined(TRACE)
 		resetcnt++;
@@ -877,12 +959,16 @@ void pccore_exec(BOOL draw) {
 #endif
 #if defined(SUPPORT_CL_GD5430)
 			np2clvga.gd54xxtype = np2clvga.defgd54xxtype; // Auto Select用
+			pc98_cirrus_vga_resetresolution();
 #endif
 #if defined(SUPPORT_IDEIO)
-			ideio_reset(&np2cfg); // XXX: Win9xの再起動で必要
+			ideio_basereset(); // XXX: Win9xの再起動で必要
 #endif
 #if defined(SUPPORT_HOSTDRV)
 			hostdrv_reset(); // XXX: Win9xの再起動で必要
+#endif
+#if defined(SUPPORT_PCI)
+			pcidev_basereset(); // XXX: Win9xの再起動で必要
 #endif
 			CPU_SHUT();
 		}
@@ -916,6 +1002,7 @@ void pccore_exec(BOOL draw) {
 	calendar_inc();
 	S98_sync();
 	sound_sync();
+	fdc_intdelay();	// FDC SEEK & RECALIBRATE, etc. np21w ver0.86 rev46
 
 	if (pcstat.hardwarereset) {
 		pcstat.hardwarereset = FALSE;

@@ -30,15 +30,15 @@ BRESULT fdd_set_nfd(FDDFILE fdd, FDDFUNC fdd_fn, const OEMCHAR *fname, int ro) {
 	if (fh == FILEH_INVALID) {
 		return(FAILURE);
 	}
-	rsize = file_read(fh, &fdd->inf.nfd.head, NFD_HEADERSIZE);	//	nfdƒwƒbƒ_“Ç(‚Æ‚è‚ ‚¦‚¸r0‚Å)
+	rsize = file_read(fh, &fdd->inf.nfd.head, NFD_HEADERSIZE);	//	nfdãƒ˜ãƒƒãƒ€èª­è¾¼(ã¨ã‚Šã‚ãˆãšr0ã§)
 	file_close(fh);
 	if (rsize != NFD_HEADERSIZE) {
 		return(FAILURE);
 	}
 
-	//	¯•ÊIDƒ`ƒFƒbƒN
+	//	è­˜åˆ¥IDãƒã‚§ãƒƒã‚¯
 	if (memcmp(fdd->inf.nfd.head.r0.szFileID, nfd_FileID_r0, 15) == 0) {
-		//	NFD r0Œ`®
+		//	NFD r0å½¢å¼
 		const	NFD_SECT_ID	*sec_nfd;
 
 		fdd->type = DISKTYPE_NFD;
@@ -48,17 +48,17 @@ BRESULT fdd_set_nfd(FDDFILE fdd, FDDFUNC fdd_fn, const OEMCHAR *fname, int ro) {
 		}
 
 		/* 170101 ST modified to work on Windows 9x/2000 from ... */
-		//	Å‘å’l“ü‚ê‚Ä•½‹CH
+		//	æœ€å¤§å€¤å…¥ã‚Œã¦å¹³æ°—ï¼Ÿ
 		// fdd->inf.xdf.tracks		= NFD_TRKMAX;
 		// fdd->inf.xdf.sectors	= NFD_SECMAX;
 		/* 170101 ST modified to work on Windows 9x/2000 ... to */
 			
-		//	Šú‘Ò‚µ‚½’l‚ª“ü‚Á‚Ä‚È‚¢‚±‚Æ‚ªcorz
+		//	æœŸå¾…ã—ãŸå€¤ãŒå…¥ã£ã¦ãªã„ã“ã¨ãŒâ€¦orz
 		ptr = LOADINTELDWORD(&fdd->inf.nfd.head.r0.dwHeadSize);
 //		ptr = NFD_HEADERSIZE;
 //TRACEOUT(("NFD(r0) TopSec Offset[%08x]", ptr));
-		//	æ“ªŠi”[ƒZƒNƒ^‚ğŒ©‚ÄŒˆ‚ß‘Å‚¿
-		//	c2DD/2HD¬İƒtƒH[ƒ}ƒbƒg‚Å‚Ü‚¸‚¢‹C‚ª‚·‚é
+		//	å…ˆé ­æ ¼ç´ã‚»ã‚¯ã‚¿ã‚’è¦‹ã¦æ±ºã‚æ‰“ã¡
+		//	â€¦2DD/2HDæ··åœ¨ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã§ã¾ãšã„æ°—ãŒã™ã‚‹
 		sec_nfd = &fdd->inf.nfd.head.r0.si[0][0];
 //TRACEOUT(("NFD(r0) TopSec PDA[%02x]", sec_nfd->byPDA));
 		switch (sec_nfd->byPDA) {
@@ -84,7 +84,7 @@ BRESULT fdd_set_nfd(FDDFILE fdd, FDDFUNC fdd_fn, const OEMCHAR *fname, int ro) {
 		ZeroMemory(fdd->inf.nfd.ptr, sizeof(fdd->inf.nfd.ptr));
 		fdd->inf.xdf.headersize = ptr;
 		/* 170101 ST modified to work on Windows 9x/2000 ... to */
-		//	ƒfƒBƒXƒNƒAƒNƒZƒX—p‚ÉŠeƒZƒNƒ^‚ÌƒIƒtƒZƒbƒg‚ğZo‚µŠi”[
+		//	ãƒ‡ã‚£ã‚¹ã‚¯ã‚¢ã‚¯ã‚»ã‚¹æ™‚ç”¨ã«å„ã‚»ã‚¯ã‚¿ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’ç®—å‡ºã—æ ¼ç´
 		for (i = 0; i < NFD_TRKMAX; i++) {
 			for (j = 0; j < NFD_SECMAX; j++) {
 TRACEOUT(("NFD(r0) C[%02x]:H[%02x]:R[%02x]:N[%02x]",
@@ -108,11 +108,11 @@ TRACEOUT(("\tSetOffset Trk[%03d]Sec[%02x] = Offset[%08x]", i, j, ptr));
 		fdd->inf.xdf.sectors++;
 		/* 170101 ST modified to work on Windows 9x/2000 ... to */
 
-		//	ˆ—ŠÖ”ŒQ‚ğ“o˜^
+		//	å‡¦ç†é–¢æ•°ç¾¤ã‚’ç™»éŒ²
 		fdd_fn->eject		= fdd_eject_xxx;
 		fdd_fn->diskaccess	= fdd_diskaccess_common;
 		fdd_fn->seek		= fdd_seek_common;
-		fdd_fn->seeksector	= fdd_seeksector_nfd;	//	•ÏX(kaiE)
+		fdd_fn->seeksector	= fdd_seeksector_nfd;	//	å¤‰æ›´(kaiE)
 		fdd_fn->read		= fdd_read_nfd;
 		fdd_fn->write		= fdd_write_nfd;
 		fdd_fn->readid		= fdd_readid_nfd;
@@ -123,14 +123,14 @@ TRACEOUT(("\tSetOffset Trk[%03d]Sec[%02x] = Offset[%08x]", i, j, ptr));
 		fdd_fn->fdcresult	= TRUE;
 	}
 	else if (memcmp(fdd->inf.nfd.head.r1.szFileID, nfd_FileID_r1, 15) == 0) {
-		//	NFD r1Œ`®
+		//	NFD r1å½¢å¼
 		NFD_TRACK_ID1	trk_id;
 		NFD_SECT_ID1	sec_id;
 		NFD_DIAG_ID1	dia_id;
 		UINT32			trksize;
 
 TRACEOUT(("This is NFD(r1) IMAGE!"));
-		//	ƒwƒbƒ_Ä“Ç
+		//	ãƒ˜ãƒƒãƒ€å†èª­è¾¼
 		fh = file_open(fname);
 		if (fh == FILEH_INVALID) {
 			return(FAILURE);
@@ -144,7 +144,7 @@ TRACEOUT(("This is NFD(r1) IMAGE!"));
 		}
 
 		/* 170101 ST modified to work on Windows 9x/2000 from ... */
-		//	Å‘å’l“ü‚ê‚Ä•½‹CH
+		//	æœ€å¤§å€¤å…¥ã‚Œã¦å¹³æ°—ï¼Ÿ
 		//fdd->inf.xdf.tracks		= NFD_TRKMAX;
 		//fdd->inf.xdf.sectors	= NFD_SECMAX;
 		/* 170101 modified to work on Windows 9x/2000 ... to */
@@ -157,7 +157,7 @@ TRACEOUT(("This is NFD(r1) IMAGE!"));
 		fdd->inf.xdf.headersize = ptr;
 		/* 170107 modified to work on Windows 9x/2000 ... to */
 		for (i = 0; i < NFD_TRKMAX1; i++) {
-			//	ƒgƒ‰ƒbƒNî•ñƒwƒbƒ_“Ç
+			//	ãƒˆãƒ©ãƒƒã‚¯æƒ…å ±ãƒ˜ãƒƒãƒ€èª­è¾¼
 			/* 170107 modified to work on Windows 9x/2000 from ... */
 			if (LOADINTELDWORD(&(fdd->inf.nfd.head.r1.dwTrackHead[i])) == 0) {
 				continue;
@@ -169,7 +169,7 @@ TRACEOUT(("This is NFD(r1) IMAGE!"));
 				return(FAILURE);
 			}
 			trksize = 0;
-			//	ƒZƒNƒ^î•ñƒwƒbƒ_“Ç
+			//	ã‚»ã‚¯ã‚¿æƒ…å ±ãƒ˜ãƒƒãƒ€èª­è¾¼
 			for (j = 0; j < LOADINTELWORD(&(trk_id.wSector)); j++) {
 				file_read(fh, &sec_id, sizeof(NFD_SECT_ID1));
 //				if (sec_id.R < NFD_SECMAX) {
@@ -183,8 +183,8 @@ TRACEOUT(("This is NFD(r1) IMAGE!"));
 					trksize += (128 << sec_id.N) * sec_id.byRetry;
 				}
 				if (i == 0 && j == 0) {
-					//	æ“ªŠi”[ƒZƒNƒ^‚ğŒ©‚ÄŒˆ‚ß‘Å‚¿
-					//	c2DD/2HD¬İƒtƒH[ƒ}ƒbƒg‚Å‚Ü‚¸‚¢‹C‚ª‚·‚é
+					//	å…ˆé ­æ ¼ç´ã‚»ã‚¯ã‚¿ã‚’è¦‹ã¦æ±ºã‚æ‰“ã¡
+					//	â€¦2DD/2HDæ··åœ¨ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã§ã¾ãšã„æ°—ãŒã™ã‚‹
 TRACEOUT(("NFD(r1) TopSec PDA[%02x]", sec_id.byPDA));
 					switch (sec_id.byPDA) {
 						case	0x10:	//	640K
@@ -195,7 +195,7 @@ TRACEOUT(("NFD(r1) TopSec PDA[%02x]", sec_id.byPDA));
 							fdd->inf.xdf.disktype = DISKTYPE_2HD;
 							fdd->inf.xdf.rpm = 1;
 							break;
-						case	0x00:	//	1.2McH
+						case	0x00:	//	1.2Mâ€¦ï¼Ÿ
 						case	0x90:	//	1.2M
 							fdd->inf.xdf.disktype = DISKTYPE_2HD;
 							fdd->inf.xdf.rpm = 0;
@@ -208,7 +208,7 @@ TRACEOUT(("NFD(r1) TopSec PDA[%02x]", sec_id.byPDA));
 				}
 			}
 			fdd->inf.nfd.trksize[i] = trksize;
-			//	“Áê“Ç‚İ‚İî•ñƒwƒbƒ_“Ç
+			//	ç‰¹æ®Šèª­ã¿è¾¼ã¿æƒ…å ±ãƒ˜ãƒƒãƒ€èª­è¾¼
 			for (j = 0; j < LOADINTELWORD(&(trk_id.wDiag)); j++) {
 				file_read(fh, &dia_id, sizeof(NFD_DIAG_ID1));
 				ptr += LOADINTELDWORD(&dia_id.dwDataLen);
@@ -226,7 +226,7 @@ TRACEOUT(("NFD(r1) TopSec PDA[%02x]", sec_id.byPDA));
 
 		file_close(fh);
 
-		//	ˆ—ŠÖ”ŒQ‚ğ“o˜^
+		//	å‡¦ç†é–¢æ•°ç¾¤ã‚’ç™»éŒ²
 		fdd_fn->eject		= fdd_eject_xxx;
 		fdd_fn->diskaccess	= fdd_diskaccess_common;
 		fdd_fn->seek		= fdd_seek_common;
@@ -248,7 +248,7 @@ TRACEOUT(("Build ImageAccess Info OK ... maybe"));
 	return(SUCCESS);
 }
 
-//	’Ç‰Á(kaiE)
+//	è¿½åŠ (kaiE)
 BRESULT fdd_seeksector_nfd(FDDFILE fdd) {
 
 	UINT	trk;
@@ -306,7 +306,7 @@ BRESULT fdd_read_nfd(FDDFILE fdd) {
 	UINT	i;
 
 	fddlasterror = 0x00;
-//	•ÏX(kaiE)
+//	å¤‰æ›´(kaiE)
 //	if (fdd_seeksector_common(fdd)) {
 	if (fdd_seeksector_nfd(fdd)) {
 		TRACEOUT(("NFD(r0) read FAILURE seeksector"));
@@ -338,7 +338,7 @@ BRESULT fdd_read_nfd(FDDFILE fdd) {
 	}
 	if (secR == 0xff) {
 		TRACEOUT(("NFD(r0) read FAILURE R[%02x] not found", fdc.R));
-		fddlasterror = 0xc0;	//	”²‚¯‚Ä‚½c’Ç‰Á(kaiE)
+		fddlasterror = 0xc0;	//	æŠœã‘ã¦ãŸâ€¦è¿½åŠ (kaiE)
 		return(FAILURE);
 	}
 	if (fdc.N != fdd->inf.nfd.head.r0.si[trk][secR].N) {
@@ -367,9 +367,9 @@ BRESULT fdd_read_nfd(FDDFILE fdd) {
 	}
 
 	fdc.bufcnt = secsize;
-//	•ÏX(kaiD)
+//	å¤‰æ›´(kaiD)
 //	fddlasterror = 0x00;
-	//	ƒCƒ[ƒW“àî•ñ‚ÌREAD DATA(FDDBIOS)‚ÌŒ‹‰Ê‚ğ”½‰f
+	//	ã‚¤ãƒ¡ãƒ¼ã‚¸å†…æƒ…å ±ã®READ DATA(FDDBIOS)ã®çµæœã‚’åæ˜ 
 	fdc.stat[fdc.us] = fdd->inf.nfd.head.r0.si[trk][secR].byST0 + (fdd->inf.nfd.head.r0.si[trk][secR].byST1 *256) + (fdd->inf.nfd.head.r0.si[trk][secR].byST2 * 256 * 256);
 	fddlasterror = fdd->inf.nfd.head.r0.si[trk][secR].byStatus;
 	TRACEOUT(("NFD(r0) read FDC Result Status[%02x],STS0[%02x],STS1[%02x],STS2[%02x]",
@@ -396,7 +396,7 @@ BRESULT fdd_write_nfd(FDDFILE fdd) {
 	UINT	i;
 
 	fddlasterror = 0x00;
-//	•ÏX(kaiE)
+//	å¤‰æ›´(kaiE)
 //	if (fdd_seeksector_common(fdd)) {
 	if (fdd_seeksector_nfd(fdd)) {
 		fddlasterror = 0xe0;
@@ -501,7 +501,7 @@ BRESULT fdd_readid_nfd(FDDFILE fdd) {
 }
 
 /* 170107 to supprt format command form ... */
-/* ƒwƒbƒ_‚ÌXV•p“x‚ª‘½‚¢‚Ì‚ª‹C‚É‚È‚è‚Ü‚· */
+/* ãƒ˜ãƒƒãƒ€ã®æ›´æ–°é »åº¦ãŒå¤šã„ã®ãŒæ°—ã«ãªã‚Šã¾ã™ */
 BRESULT fdd_formatinit_nfd(FDDFILE fdd) {
 	FILEH	hdl;
 	UINT32	fddtype;
@@ -625,7 +625,7 @@ BRESULT fdd_formatinit_nfd(FDDFILE fdd) {
 }
 /* 170107 to supprt format command ... to */
 
-//	’Ç‰Á(kaiD)
+//	è¿½åŠ (kaiD)
 BRESULT fdd_seeksector_nfd1(FDDFILE fdd) {
 
 	FILEH	hdl;
@@ -683,7 +683,7 @@ BRESULT fdd_seeksector_nfd1(FDDFILE fdd) {
 	return(SUCCESS);
 }
 
-//	RetryData—L‚Ì‘Î‰c‚¢‚¢‚Ì‚©H‚±‚ê‚Å
+//	RetryDataæœ‰ã®å¯¾å¿œâ€¦ã„ã„ã®ã‹ï¼Ÿã“ã‚Œã§
 static	UINT8	rcnt = 0;
 
 BRESULT fdd_read_nfd1(FDDFILE fdd) {
@@ -703,7 +703,7 @@ BRESULT fdd_read_nfd1(FDDFILE fdd) {
 	NFD_SECT_ID1	sec_idx;
 	NFD_DIAG_ID1	dia_id;
 
-	//	RetryData—L‚Ì‘Î‰c‚¢‚¢‚Ì‚©H‚±‚ê‚Å
+	//	RetryDataæœ‰ã®å¯¾å¿œâ€¦ã„ã„ã®ã‹ï¼Ÿã“ã‚Œã§
 	rcnt++;
 
 	fddlasterror = 0x00;
@@ -777,7 +777,7 @@ BRESULT fdd_read_nfd1(FDDFILE fdd) {
 		if (fdc.N == sec_id.N) {
 			secsize = 128 << sec_id.N;
 			seekp = fdd->inf.nfd.ptr[trk][sec];
-			//	RetryData—L‚Ì‘Î‰c‚¢‚¢‚Ì‚©H‚±‚ê‚Å
+			//	RetryDataæœ‰ã®å¯¾å¿œâ€¦ã„ã„ã®ã‹ï¼Ÿã“ã‚Œã§
 			seekp += secsize * (MaxRetry ? (rcnt % MaxRetry) : 0);
 		}
 		else {
@@ -796,7 +796,7 @@ BRESULT fdd_read_nfd1(FDDFILE fdd) {
 	}
 	file_close(hdl);
 
-	//	ƒCƒ[ƒW“àî•ñ‚ÌREAD DATA RESULT‚ğ”½‰f
+	//	ã‚¤ãƒ¡ãƒ¼ã‚¸å†…æƒ…å ±ã®READ DATA RESULTã‚’åæ˜ 
 	fdc.stat[fdc.us] = sec_id.bySTS0 | (sec_id.bySTS1 << 8) | (sec_id.bySTS2 << 16);
 	fddlasterror = sec_id.byStatus;
 	fdc.bufcnt = secsize;

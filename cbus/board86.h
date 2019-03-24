@@ -14,6 +14,7 @@ extern "C"
 
 void board86_reset(const NP2CFG *pConfig, BOOL adpcm);
 void board86_bind(void);
+void board86_unbind(void);
 
 #ifdef __cplusplus
 }

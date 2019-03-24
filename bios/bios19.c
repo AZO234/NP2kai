@@ -28,7 +28,7 @@ void bios0x19(void) {
 	UINT8	flag;
 
 	if (CPU_AH < 2) {
-		// ’ÊM‘¬“xc
+		// é€šä¿¡é€Ÿåº¦â€¦
 		mode = CPU_CH | 0x02;
 		speed = CPU_AL;
 		if (speed >= 8) {
@@ -38,7 +38,7 @@ void bios0x19(void) {
 			speed += 12;
 		}
 
-#if 1	// NP2‚Å‚Í–¢ƒTƒ|[ƒg‚Ìˆ×@‹­s(Š¾
+#if 1	// NP2ã§ã¯æœªã‚µãƒãƒ¼ãƒˆã®ç‚ºã€€å¼·è¡Œ(æ±—
 		mode &= ~1;
 #else
 		if (mode & 1) {
@@ -49,7 +49,7 @@ void bios0x19(void) {
 				mode &= ~1;
 			}
 		}
-		// ƒVƒŠƒAƒ‹ƒŠƒZƒbƒg
+		// ã‚·ãƒªã‚¢ãƒ«ãƒªã‚»ãƒƒãƒˆ
 		iocore_out8(0x32, 0x00);		// dummy instruction
 		iocore_out8(0x32, 0x00);		// dummy instruction
 		iocore_out8(0x32, 0x00);		// dummy instruction
@@ -92,7 +92,7 @@ void bios0x19(void) {
 		cnt += CPU_DX >> 2;
 		STOREINTELWORD(rsb.XON, cnt);
 
-		// ƒ|ƒCƒ“ƒ^`
+		// ãƒã‚¤ãƒ³ã‚¿ã€œ
 		SETBIOSMEM16(MEMW_RS_CH0_OFST, CPU_DI);
 		SETBIOSMEM16(MEMW_RS_CH0_SEG, CPU_ES);
 		MEMR_WRITES(CPU_ES, CPU_DI, &rsb, sizeof(rsb));
@@ -125,22 +125,22 @@ void bios0x19(void) {
 				if (cnt) {
 					UINT16	pos;
 
-					// ƒf[ƒ^ˆø‚«Žæ‚è
+					// ãƒ‡ãƒ¼ã‚¿å¼•ãå–ã‚Š
 					pos = MEMR_READ16(dseg, doff + R_GETP);
 					CPU_CX = MEMR_READ16(dseg, pos);
 
-					// ŽŸ‚Ìƒ|ƒCƒ“ƒ^‚ðƒXƒgƒA
+					// æ¬¡ã®ãƒã‚¤ãƒ³ã‚¿ã‚’ã‚¹ãƒˆã‚¢
 					pos += 2;
 					if (pos >= MEMR_READ16(dseg, doff + R_TAILP)) {
 						pos = MEMR_READ16(dseg, doff + R_HEADP);
 					}
 					MEMR_WRITE16(dseg, doff + R_GETP, pos);
 
-					// ƒJƒEƒ“ƒ^‚ðƒfƒNƒŠƒƒ“ƒg
+					// ã‚«ã‚¦ãƒ³ã‚¿ã‚’ãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
 					cnt--;
 					MEMR_WRITE16(dseg, doff + R_CNT, cnt);
 
-					// XON‚ð‘—MH
+					// XONã‚’é€ä¿¡ï¼Ÿ
 					if ((flag & RFLAG_XOFF) && 
 						(cnt < MEMR_READ16(dseg, doff + R_XOFF))) {
 						iocore_out8(0x30, RSCODE_XON);

@@ -1,6 +1,6 @@
 /**
  * @file	cmmidi.h
- * @brief	MIDI ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	MIDI ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -24,7 +24,7 @@ class CComMidiIn32;
 class CComMidiOut;
 
 /**
- * @brief commng MIDI ƒfƒoƒCƒX ƒNƒ‰ƒX
+ * @brief commng MIDI ãƒ‡ãƒã‚¤ã‚¹ ã‚¯ãƒ©ã‚¹
  */
 class CComMidi : public CComBase
 {
@@ -46,7 +46,7 @@ private:
 	};
 
 	/**
-	 * ƒtƒFƒCƒY
+	 * ãƒ•ã‚§ã‚¤ã‚º
 	 */
 	enum tagMidiCtrl
 	{
@@ -71,15 +71,15 @@ private:
 
 	CComMidiIn32* m_pMidiIn;		/*!< MIDI IN */
 	CComMidiOut* m_pMidiOut;		/*!< MIDI OUT */
-	UINT m_nModule;					/*!< ƒ‚ƒWƒ…[ƒ‹”Ô† */
-	tagMidiCtrl m_nMidiCtrl;		/*!< ƒtƒF[ƒY */
-	UINT m_nIndex;					/*!< ƒoƒbƒtƒ@ˆÊ’u */
-	UINT m_nRecvSize;				/*!< óMƒTƒCƒY */
-	UINT8 m_cLastData;				/*!< ÅŒã‚Ìƒf[ƒ^ */
-	bool m_bMimpiDef;				/*!< MIMPIDEF —LŒø */
+	UINT m_nModule;					/*!< ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ç•ªå· */
+	tagMidiCtrl m_nMidiCtrl;		/*!< ãƒ•ã‚§ãƒ¼ã‚º */
+	UINT m_nIndex;					/*!< ãƒãƒƒãƒ•ã‚¡ä½ç½® */
+	UINT m_nRecvSize;				/*!< å—ä¿¡ã‚µã‚¤ã‚º */
+	UINT8 m_cLastData;				/*!< æœ€å¾Œã®ãƒ‡ãƒ¼ã‚¿ */
+	bool m_bMimpiDef;				/*!< MIMPIDEF æœ‰åŠ¹ */
 	MIMPIDEF m_mimpiDef;			/*!< MIMPIDEF */
 	MIDICH m_midich[16];			/*!< MIDI CH */
-	UINT8 m_sBuffer[MIDI_BUFFER];	/*!< ƒoƒbƒtƒ@ */
+	UINT8 m_sBuffer[MIDI_BUFFER];	/*!< ãƒãƒƒãƒ•ã‚¡ */
 
 	bool Initialize(LPCTSTR lpMidiOut, LPCTSTR lpMidiIn, LPCTSTR lpModule);
 	static UINT module2number(LPCTSTR lpModule);

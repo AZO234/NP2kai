@@ -1,19 +1,19 @@
 /**
  * @file	sdasio.cpp
- * @brief	ASIO ƒI[ƒfƒBƒI ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	ASIO ã‚ªãƒ¼ãƒ‡ã‚£ã‚ª ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
 #include "sdasio.h"
 
-/*! —Bˆê‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Å‚· */
+/*! å”¯ä¸€ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã§ã™ */
 CSoundDeviceAsio* CSoundDeviceAsio::sm_pInstance;
 
-/*! ƒhƒ‰ƒCƒo ƒŠƒXƒg */
+/*! ãƒ‰ãƒ©ã‚¤ãƒ ãƒªã‚¹ãƒˆ */
 AsioDriverList CSoundDeviceAsio::sm_asioDriverList;
 
 /**
- * ‰Šú‰»
+ * åˆæœŸåŒ–
  */
 void CSoundDeviceAsio::Initialize()
 {
@@ -21,8 +21,8 @@ void CSoundDeviceAsio::Initialize()
 }
 
 /**
- * —ñ‹“
- * @param[out] devices ƒfƒoƒCƒX ƒŠƒXƒg
+ * åˆ—æŒ™
+ * @param[out] devices ãƒ‡ãƒã‚¤ã‚¹ ãƒªã‚¹ãƒˆ
  */
 void CSoundDeviceAsio::EnumerateDevices(std::vector<LPCTSTR>& devices)
 {
@@ -33,7 +33,7 @@ void CSoundDeviceAsio::EnumerateDevices(std::vector<LPCTSTR>& devices)
 }
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CSoundDeviceAsio::CSoundDeviceAsio()
 	: m_pAsioDriver(NULL)
@@ -42,7 +42,7 @@ CSoundDeviceAsio::CSoundDeviceAsio()
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CSoundDeviceAsio::~CSoundDeviceAsio()
 {
@@ -50,11 +50,11 @@ CSoundDeviceAsio::~CSoundDeviceAsio()
 }
 
 /**
- * ‰Šú‰»
- * @param[in] lpDevice ƒfƒoƒCƒX–¼
- * @param[in] hWnd ƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * åˆæœŸåŒ–
+ * @param[in] lpDevice ãƒ‡ãƒã‚¤ã‚¹å
+ * @param[in] hWnd ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ«
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CSoundDeviceAsio::Open(LPCTSTR lpDevice, HWND hWnd)
 {
@@ -83,7 +83,7 @@ bool CSoundDeviceAsio::Open(LPCTSTR lpDevice, HWND hWnd)
 }
 
 /**
- * ‰ğ•ú
+ * è§£æ”¾
  */
 void CSoundDeviceAsio::Close()
 {
@@ -96,11 +96,11 @@ void CSoundDeviceAsio::Close()
 }
 
 /**
- * ƒI[ƒvƒ“
- * @param[in] nSamplingRate ƒTƒ“ƒvƒŠƒ“ƒO ƒŒ[ƒg
- * @param[in] nChannels ƒ`ƒƒƒlƒ‹”
- * @param[in] nBufferSize ƒoƒbƒtƒ@ ƒTƒCƒY
- * @return ƒoƒbƒtƒ@ ƒTƒCƒY
+ * ã‚ªãƒ¼ãƒ—ãƒ³
+ * @param[in] nSamplingRate ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚° ãƒ¬ãƒ¼ãƒˆ
+ * @param[in] nChannels ãƒãƒ£ãƒãƒ«æ•°
+ * @param[in] nBufferSize ãƒãƒƒãƒ•ã‚¡ ã‚µã‚¤ã‚º
+ * @return ãƒãƒƒãƒ•ã‚¡ ã‚µã‚¤ã‚º
  */
 UINT CSoundDeviceAsio::CreateStream(UINT nSamplingRate, UINT nChannels, UINT nBufferSize)
 {
@@ -139,7 +139,7 @@ UINT CSoundDeviceAsio::CreateStream(UINT nSamplingRate, UINT nChannels, UINT nBu
 		m_nBufferLength = preferredSize;
 		m_pAsioDriver->createBuffers(&m_bufferInfo.at(0), static_cast<long>(m_bufferInfo.size()), preferredSize, &m_callback);
 
-		//! ƒTƒ“ƒvƒ‹ƒŒ[ƒg‚ğİ’è‚·‚é.
+		//! ã‚µãƒ³ãƒ—ãƒ«ãƒ¬ãƒ¼ãƒˆã‚’è¨­å®šã™ã‚‹.
 		m_pAsioDriver->setSampleRate(nSamplingRate);
 
 		sm_pInstance = this;
@@ -151,7 +151,7 @@ UINT CSoundDeviceAsio::CreateStream(UINT nSamplingRate, UINT nChannels, UINT nBu
 }
 
 /**
- * ”jŠü
+ * ç ´æ£„
  */
 void CSoundDeviceAsio::DestroyStream()
 {
@@ -171,9 +171,9 @@ void CSoundDeviceAsio::DestroyStream()
 }
 
 /**
- * Ä¶
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * å†ç”Ÿ
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CSoundDeviceAsio::PlayStream()
 {
@@ -181,7 +181,7 @@ bool CSoundDeviceAsio::PlayStream()
 }
 
 /**
- * ’â~
+ * åœæ­¢
  */
 void CSoundDeviceAsio::StopStream()
 {

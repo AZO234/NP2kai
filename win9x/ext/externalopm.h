@@ -1,6 +1,6 @@
 /**
  * @file	externalopm.h
- * @brief	ŠO•” OPM ‰‰‘tƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	å¤–éƒ¨ OPM æ¼”å¥ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -8,7 +8,7 @@
 #include "externalchip.h"
 
 /**
- * @brief ŠO•” OPM ‰‰‘tƒNƒ‰ƒX
+ * @brief å¤–éƒ¨ OPM æ¼”å¥ã‚¯ãƒ©ã‚¹
  */
 class CExternalOpm : public IExternalChip
 {
@@ -21,9 +21,9 @@ public:
 	virtual INTPTR Message(UINT nMessage, INTPTR nParameter);
 
 protected:
-	IExternalChip* m_pChip;				/*!< ƒ`ƒbƒv */
-	UINT8 m_cAlgorithm[8];				/*!< ƒAƒ‹ƒSƒŠƒYƒ€ ƒe[ƒuƒ‹ */
-	UINT8 m_cTtl[8 * 4];				/*!< TTL ƒe[ƒuƒ‹ */
+	IExternalChip* m_pChip;				/*!< ãƒãƒƒãƒ— */
+	UINT8 m_cAlgorithm[8];				/*!< ã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ  ãƒ†ãƒ¼ãƒ–ãƒ« */
+	UINT8 m_cTtl[8 * 4];				/*!< TTL ãƒ†ãƒ¼ãƒ–ãƒ« */
 
 	void Mute(bool bMute) const;
 	void WriteRegisterInner(UINT nAddr, UINT8 cData) const;

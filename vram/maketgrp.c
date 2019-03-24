@@ -108,7 +108,7 @@ void maketextgrph(int plane, int text_renewal, int grph_renewal) {
 	GRPH_LR = gdc.s.para[GDC_CSRFORM] & 0x1f;
 	GRPH_LRcnt = GRPH_LR;
 
-	// グラフのほーが上…
+	// 繧ｰ繝ｩ繝輔�ｮ縺ｻ繝ｼ縺御ｸ岩ｦ
 	if (dsync.text_vbp > dsync.grph_vbp) {
 		UINT remain;
 		remain = dsync.text_vbp - dsync.grph_vbp;
@@ -366,7 +366,7 @@ void maketextgrph40(int plane, int text_renewal, int grph_renewal) {
 	GRPH_LR = gdc.s.para[GDC_CSRFORM] & 0x1f;
 	GRPH_LRcnt = GRPH_LR;
 
-	// グラフのほーが上…
+	// 繧ｰ繝ｩ繝輔�ｮ縺ｻ繝ｼ縺御ｸ岩ｦ
 	if (dsync.text_vbp > dsync.grph_vbp) {
 		UINT remain;
 		remain = dsync.text_vbp - dsync.grph_vbp;

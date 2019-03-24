@@ -190,8 +190,6 @@ typedef SINT32	FILELEN;
 
 #define	SUPPORT_STATSAVE
 
-#define SUPPORT_FMGEN
-
 #define SUPPORT_ARC
 #define SUPPORT_ZLIB
 
@@ -212,6 +210,12 @@ typedef SINT32	FILELEN;
 #define	SCRNCALL
 #define	VERMOUTHCL
 #define	INLINE inline
+
+#if defined(SUPPORT_LARGE_MEMORY)
+#define	MEMORY_MAXSIZE		4000
+#else
+#define	MEMORY_MAXSIZE		230
+#endif
 
 #include	"common.h"
 

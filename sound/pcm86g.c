@@ -26,7 +26,7 @@
 
 static void pcm86mono16(PCM86 pcm86, SINT32 *lpBuffer, UINT nCount)
 {
-	if (pcm86->div < PCM86_DIVENV)					/* ƒAƒbƒv‚³‚ñ‚Õ‚é */
+	if (pcm86->div < PCM86_DIVENV)					/* ã‚¢ãƒƒãƒ—ã•ã‚“ã·ã‚‹ */
 	{
 		do
 		{
@@ -95,7 +95,7 @@ pm16_bufempty:
 
 static void pcm86stereo16(PCM86 pcm86, SINT32 *lpBuffer, UINT nCount)
 {
-	if (pcm86->div < PCM86_DIVENV)					/* ƒAƒbƒv‚³‚ñ‚Õ‚é */
+	if (pcm86->div < PCM86_DIVENV)					/* ã‚¢ãƒƒãƒ—ã•ã‚“ã·ã‚‹ */
 	{
 		do
 		{
@@ -179,7 +179,7 @@ ps16_bufempty:
 
 static void pcm86mono8(PCM86 pcm86, SINT32 *lpBuffer, UINT nCount)
 {
-	if (pcm86->div < PCM86_DIVENV)					/* ƒAƒbƒv‚³‚ñ‚Õ‚é */
+	if (pcm86->div < PCM86_DIVENV)					/* ã‚¢ãƒƒãƒ—ã•ã‚“ã·ã‚‹ */
 	{
 		do
 		{
@@ -248,7 +248,7 @@ pm8_bufempty:
 
 static void pcm86stereo8(PCM86 pcm86, SINT32 *lpBuffer, UINT nCount)
 {
-	if (pcm86->div < PCM86_DIVENV)					/* ƒAƒbƒv‚³‚ñ‚Õ‚é */
+	if (pcm86->div < PCM86_DIVENV)					/* ã‚¢ãƒƒãƒ—ã•ã‚“ã·ã‚‹ */
 	{
 		do
 		{

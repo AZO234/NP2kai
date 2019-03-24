@@ -25,32 +25,32 @@ BRESULT sxsicd_open(SXSIDEV sxsi, const OEMCHAR *fname) {
 	const OEMCHAR	*ext;
 	
 #ifdef SUPPORT_PHYSICAL_CDDRV
-	// XXX: è”²‚«”»’è’ˆÓiÀCDƒhƒ‰ƒCƒuj
+	// XXX: æ‰‹æŠœãåˆ¤å®šæ³¨æ„ï¼ˆå®ŸCDãƒ‰ãƒ©ã‚¤ãƒ–ï¼‰
 	if(_tcsnicmp(fname, OEMTEXT("\\\\.\\"), 4)==0){
 		return(openrealcdd(sxsi, fname));
 	}
 #endif
 
-	//	‚Æ‚è‚ ‚¦‚¸Šg’£q‚Å”»’f
+	//	ã¨ã‚Šã‚ãˆãšæ‹¡å¼µå­ã§åˆ¤æ–­
 	ext = file_getext(fname);
-	if (!file_cmpname(ext, str_cue)) {			//	CUEƒV[ƒg(*.cue)
+	if (!file_cmpname(ext, str_cue)) {			//	CUEã‚·ãƒ¼ãƒˆ(*.cue)
 		return(opencue(sxsi, fname));
 	}
-	else if (!file_cmpname(ext, str_ccd)) {		//	CloneCD(*.ccd)‚É‘Î‰
+	else if (!file_cmpname(ext, str_ccd)) {		//	CloneCD(*.ccd)ã«å¯¾å¿œ
 		return(openccd(sxsi, fname));
 	}
-	else if (!file_cmpname(ext, str_cdm)) {		//	CD Manipulator(*.cdm)‚É‘Î‰(“Ç‚İ•û‚ÍCloneCD‚Æˆê)
+	else if (!file_cmpname(ext, str_cdm)) {		//	CD Manipulator(*.cdm)ã«å¯¾å¿œ(èª­ã¿æ–¹ã¯CloneCDã¨ä¸€ç·’)
 		return(openccd(sxsi, fname));
 //		return(opencdm(sxsi, fname));
 	}
-	else if (!file_cmpname(ext, str_mds)) {		//	Media Descriptor(*.mds)‚É‘Î‰
+	else if (!file_cmpname(ext, str_mds)) {		//	Media Descriptor(*.mds)ã«å¯¾å¿œ
 		return(openmds(sxsi, fname));
 	}
-	else if (!file_cmpname(ext, str_nrg)) {		//	Nero(*.nrg)‚É‘Î‰
+	else if (!file_cmpname(ext, str_nrg)) {		//	Nero(*.nrg)ã«å¯¾å¿œ
 		return(opennrg(sxsi, fname));
 	}
 
-	return(openiso(sxsi, fname));				//	’m‚ç‚È‚¢Šg’£q‚È‚çA‚Æ‚è‚ ‚¦‚¸ISO‚Æ‚µ‚ÄŠJ‚¢‚Ä‚İ‚é
+	return(openiso(sxsi, fname));				//	çŸ¥ã‚‰ãªã„æ‹¡å¼µå­ãªã‚‰ã€ã¨ã‚Šã‚ãˆãšISOã¨ã—ã¦é–‹ã„ã¦ã¿ã‚‹
 }
 
 CDTRK sxsicd_gettrk(SXSIDEV sxsi, UINT *tracks) {
@@ -76,7 +76,7 @@ BRESULT sxsicd_readraw(SXSIDEV sxsi, FILEPOS pos, void *buf) {
 	
 	int isPhysicalCD = 0;
 
-	//	”ÍˆÍŠO‚Í¸”s
+	//	ç¯„å›²å¤–ã¯å¤±æ•—
 	if ((pos < 0) || (sxsi->totals < pos)) {
 		return(FAILURE);
 	}
@@ -85,14 +85,14 @@ BRESULT sxsicd_readraw(SXSIDEV sxsi, FILEPOS pos, void *buf) {
 	
 #ifdef SUPPORT_PHYSICAL_CDDRV
 
-	// XXX: –‘O‚É”»’è‚µ‚Ä‹L˜^‚µ‚Ä‚¨‚­‚×‚«¥¥¥
+	// XXX: äº‹å‰ã«åˆ¤å®šã—ã¦è¨˜éŒ²ã—ã¦ãŠãã¹ãï½¥ï½¥ï½¥
 	isPhysicalCD = (cdinfo->path[0] == '\\' && cdinfo->path[1] == '\\' && cdinfo->path[2] == '.' && cdinfo->path[3] == '\\'); 
 
 #endif
 
-	//	posˆÊ’u‚ÌƒZƒNƒ^ƒTƒCƒY‚ğæ“¾
+	//	posä½ç½®ã®ã‚»ã‚¯ã‚¿ã‚µã‚¤ã‚ºã‚’å–å¾—
 	for (i = cdinfo->trks - 1; i >= 0; i--) {
-		if (cdinfo->trk[i].pos <= pos) {
+		if (cdinfo->trk[i].pos <= (UINT32)pos) {
 			secsize = cdinfo->trk[i].sector_size;
 			break;
 		}
@@ -109,14 +109,14 @@ BRESULT sxsicd_readraw(SXSIDEV sxsi, FILEPOS pos, void *buf) {
 	fpos = 0;
 	secs = 0;
 	for (i = 0; i < cdinfo->trks; i++) {
-		if (cdinfo->trk[i].str_sec <= pos && pos <= cdinfo->trk[i].end_sec) {
+		if (cdinfo->trk[i].str_sec <= (UINT32)pos && (UINT32)pos <= cdinfo->trk[i].end_sec) {
 			fpos += (pos - secs) * cdinfo->trk[i].sector_size;
 			break;
 		}
 		fpos += cdinfo->trk[i].sectors * cdinfo->trk[i].sector_size;
 		secs += cdinfo->trk[i].sectors;
 	}
-	fpos += cdinfo->trk[0].start_offset;
+	fpos += (FILEPOS)(cdinfo->trk[0].start_offset);
 #ifdef SUPPORT_PHYSICAL_CDDRV
 	if(isPhysicalCD){
 		DWORD BytesReturned;
@@ -145,7 +145,7 @@ BRESULT sxsicd_readraw(SXSIDEV sxsi, FILEPOS pos, void *buf) {
 
 
 #else /* SUPPORT_KAI_IMAGES */
-// ‹Œˆ—‚à‚Æ‚è‚ ‚¦‚¸c‚µ‚Ä‚¨‚­
+// æ—§å‡¦ç†ã‚‚ã¨ã‚Šã‚ãˆãšæ®‹ã—ã¦ãŠã
 #include	"cpucore.h"
 #include	"pccore.h"
 
@@ -160,7 +160,7 @@ typedef struct {
 } _CDINFO, *CDINFO;
 
 
-// ---- ƒZƒNƒ^2048
+// ---- ã‚»ã‚¯ã‚¿2048
 
 static int issec2048(FILEH fh) {
 
@@ -222,7 +222,7 @@ static REG8 sec2048_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 }
 
 
-// ---- ƒZƒNƒ^2352
+// ---- ã‚»ã‚¯ã‚¿2352
 
 static int issec2352(FILEH fh) {
 

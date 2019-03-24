@@ -39,10 +39,6 @@
 #include "xnp2.h"
 #endif
 
-// XXX: 1280x1024ˆÈã‚É‚È‚ç‚È‚¢‚Ì‚Å·‚µ“–‚½‚Á‚Ä‚Í‚±‚ê‚Å\•ª
-#define WAB_MAX_WIDTH	1280
-#define WAB_MAX_HEIGHT	1024
-
 #if !defined(_countof)
 #define _countof(a)	(sizeof(a)/sizeof(a[0]))
 #endif
@@ -72,12 +68,14 @@ static int		ga_lastwabheight = 480;
 static int		ga_reqChangeWindowSize = 0;
 static int		ga_reqChangeWindowSize_w = 0;
 static int		ga_reqChangeWindowSize_h = 0;
-//
-//int		np2wab.relaystateint = 0;
-//int		np2wab.relaystateext = 0;
+
+static int		ga_lastscalemode = 0;
+static int		ga_lastrealwidth = 0;
+static int		ga_lastrealheight = 0;
+static int		ga_screenupdated = 0;
 
 /**
- * İ’è
+ * è¨­å®š
  */
 #if defined(NP2_X11) || defined(NP2_SDL2) || defined(__LIBRETRO__)
 static const INITBL s_wabwndini[] =
@@ -100,7 +98,7 @@ static const PFTBL s_wabwndini[] =
 #endif
 
 /**
- * İ’è“Ç‚İ‚İ
+ * è¨­å®šèª­ã¿è¾¼ã¿
  */
 void wabwin_readini()
 {
@@ -129,7 +127,7 @@ void wabwin_readini()
 }
 
 /**
- * İ’è‘‚«‚İ
+ * è¨­å®šæ›¸ãè¾¼ã¿
  */
 void wabwin_writeini()
 {
@@ -149,7 +147,7 @@ void wabwin_writeini()
 }
 
 /**
- * ‰æ–ÊƒTƒCƒYİ’è
+ * ç”»é¢ã‚µã‚¤ã‚ºè¨­å®š
  */
 void np2wab_setScreenSize(int width, int height)
 {
@@ -160,7 +158,7 @@ void np2wab_setScreenSize(int width, int height)
 		np2wab.wndHeight = height;
 		gtk_widget_set_size_request(np2wabwnd.pWABWnd, width, height);
 #else
-		// •Ê‘‹ƒ‚[ƒh‚È‚ç•Ê‘‹ƒTƒCƒY‚ğXV‚·‚é
+		// åˆ¥çª“ãƒ¢ãƒ¼ãƒ‰ãªã‚‰åˆ¥çª“ã‚µã‚¤ã‚ºã‚’æ›´æ–°ã™ã‚‹
 		RECT rect = { 0, 0, width, height };
 		np2wab.wndWidth = width;
 		np2wab.wndHeight = height;
@@ -168,40 +166,55 @@ void np2wab_setScreenSize(int width, int height)
 		SetWindowPos( np2wabwnd.hWndWAB, NULL, 0, 0, rect.right-rect.left, rect.bottom-rect.top, SWP_NOMOVE|SWP_NOZORDER );
 #endif
 	}else{
-		// “‡ƒ‚[ƒh‚È‚çƒGƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“—ÌˆæƒTƒCƒY‚ğXV‚·‚é
+		// çµ±åˆãƒ¢ãƒ¼ãƒ‰ãªã‚‰ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³é ˜åŸŸã‚µã‚¤ã‚ºã‚’æ›´æ–°ã™ã‚‹
 		np2wab.wndWidth = ga_lastwabwidth = width;
 		np2wab.wndHeight = ga_lastwabheight = height;
 		if(np2wab.relay & 0x3){
-			scrnmng_setwidth(0, width);
-			scrnmng_setheight(0, height);
-			scrnmng_updatefsres(); // ƒtƒ‹ƒXƒNƒŠ[ƒ“‰ğ‘œ“xXV
+			if(width < 32 || height < 32){
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
-			mousemng_updateclip(); // ƒ}ƒEƒXƒLƒƒƒvƒ`ƒƒ‚ÌƒNƒŠƒbƒv”ÍˆÍ‚ğC³
+				scrnmng_setsize(0, 0, 640, 480);
+#else
+				scrnmng_setwidth(0, 640);
+				scrnmng_setheight(0, 480);
+#endif
+			}else{
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+				scrnmng_setsize(0, 0, width, height);
+#else
+				scrnmng_setwidth(0, width);
+				scrnmng_setheight(0, height);
+#endif
+			}
+			scrnmng_updatefsres(); // ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³è§£åƒåº¦æ›´æ–°
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+			mousemng_updateclip(); // ãƒã‚¦ã‚¹ã‚­ãƒ£ãƒ—ãƒãƒ£ã®ã‚¯ãƒªãƒƒãƒ—ç¯„å›²ã‚’ä¿®æ­£
 #endif
 		}
 	}
-	// ‚Æ‚è‚ ‚¦‚¸ƒpƒŒƒbƒg‚ÍXV‚µ‚Ä‚¨‚­
+	// ã¨ã‚Šã‚ãˆãšãƒ‘ãƒ¬ãƒƒãƒˆã¯æ›´æ–°ã—ã¦ãŠã
 	np2wab.paletteChanged = 1;
 }
 /**
- * ‰æ–ÊƒTƒCƒYİ’èƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‘Î‰”Åi‚·‚®‚ÉXV‚Å‚«‚È‚¢ê‡‚Ínp2wab.ready=0‚Éj
+ * ç”»é¢ã‚µã‚¤ã‚ºè¨­å®šãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰å¯¾å¿œç‰ˆï¼ˆã™ãã«æ›´æ–°ã§ããªã„å ´åˆã¯np2wab.ready=0ã«ï¼‰
  */
 void np2wab_setScreenSizeMT(int width, int height)
 {
 	if(!ga_threadmode){
-		// ƒ}ƒ‹ƒ`ƒXƒŒƒbƒhƒ‚[ƒh‚Å‚È‚¯‚ê‚Î’¼ÚŒÄ‚Ño‚µ
+		// ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ãƒ¢ãƒ¼ãƒ‰ã§ãªã‘ã‚Œã°ç›´æ¥å‘¼ã³å‡ºã—
 		np2wab_setScreenSize(width, height);
+		ga_lastrealwidth = width;
+		ga_lastrealheight = height;
 	}else{
-		// ƒ}ƒ‹ƒ`ƒXƒŒƒbƒhƒ‚[ƒh‚È‚ç‰æ–ÊƒTƒCƒY•ÏX—v‹‚ğo‚·
+		// ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ãƒ¢ãƒ¼ãƒ‰ãªã‚‰ç”»é¢ã‚µã‚¤ã‚ºå¤‰æ›´è¦æ±‚ã‚’å‡ºã™
 		ga_reqChangeWindowSize_w = width;
 		ga_reqChangeWindowSize_h = height;
 		ga_reqChangeWindowSize = 1;
-		np2wabwnd.ready = 0; // XV‘Ò‚¿
+		np2wabwnd.ready = 0; // æ›´æ–°å¾…ã¡
 	}
 }
 
 /**
- * ƒEƒBƒ“ƒhƒEƒAƒNƒZƒ‰ƒŒ[ƒ^•Ê‘‹‚ğ“™”{ƒTƒCƒY‚É–ß‚·
+ * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿åˆ¥çª“ã‚’ç­‰å€ã‚µã‚¤ã‚ºã«æˆ»ã™
  */
 void np2wab_resetscreensize()
 {
@@ -223,7 +236,7 @@ void np2wab_resetscreensize()
 
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 /**
- * ƒEƒBƒ“ƒhƒEƒAƒNƒZƒ‰ƒŒ[ƒ^•Ê‘‹WndProc
+ * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿åˆ¥çª“WndProc
  */
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){
 	RECT		rc;
@@ -299,52 +312,52 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){
 			break;
 
 		case WM_KEYDOWN:
-			SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // •KEŠÛ“Š‚°
+			SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // å¿…æ®ºä¸¸æŠ•ã’
 			break;
 
 		case WM_KEYUP:
-			SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // •KEŠÛ“Š‚°
+			SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // å¿…æ®ºä¸¸æŠ•ã’
 			break;
 
 		case WM_SYSKEYDOWN:
-			SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // •KEŠÛ“Š‚°
+			SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // å¿…æ®ºä¸¸æŠ•ã’
 			break;
 
 		case WM_SYSKEYUP:
-			SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // •KEŠÛ“Š‚°
+			SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // å¿…æ®ºä¸¸æŠ•ã’
 			break;
 
 		case WM_MOUSEMOVE:
-			SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // •KEŠÛ“Š‚°
+			SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // å¿…æ®ºä¸¸æŠ•ã’
 			break;
 
 		case WM_LBUTTONDOWN:
-			if(!np2wabwnd.multiwindow){
-				SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // ‚â‚Í‚èŠÛ“Š‚°
+			if(np2wabwnd.multiwindow){
+				SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // ã‚„ã¯ã‚Šä¸¸æŠ•ã’
 			}
 			break;
 
 		case WM_LBUTTONUP:
-			if(!np2wabwnd.multiwindow){
-				SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // ‚±‚±‚àŠÛ“Š‚°
+			if(np2wabwnd.multiwindow){
+				SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // ã“ã“ã‚‚ä¸¸æŠ•ã’
 			}
 			break;
 
 		case WM_RBUTTONDOWN:
-			if(!np2wabwnd.multiwindow){
-				SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // ‚»‚Ì‚Ü‚ÜŠÛ“Š‚°
+			if(np2wabwnd.multiwindow){
+				SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // ãã®ã¾ã¾ä¸¸æŠ•ã’
 			}
 			break;
 
 		case WM_RBUTTONUP:
-			if(!np2wabwnd.multiwindow){
-				SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // ‚È‚ñ‚Å‚àŠÛ“Š‚°
+			if(np2wabwnd.multiwindow){
+				SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // ãªã‚“ã§ã‚‚ä¸¸æŠ•ã’
 			}
 			break;
 
 		case WM_MBUTTONDOWN:
 			SetForegroundWindow(np2wabwnd.hWndMain);
-			SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // ‚Æ‚è‚ ‚¦‚¸ŠÛ“Š‚°
+			SendMessage(np2wabwnd.hWndMain, msg, wParam, lParam); // ã¨ã‚Šã‚ãˆãšä¸¸æŠ•ã’
 			break;
 
 		case WM_CLOSE:
@@ -361,12 +374,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){
 #endif
 
 /**
- * ƒEƒBƒ“ƒhƒEƒAƒNƒZƒ‰ƒŒ[ƒ^‰æ–Ê“]‘—
+ * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ç”»é¢è»¢é€
+ *  åˆ¥çª“ãƒ¢ãƒ¼ãƒ‰: GDI Device Independent Bitmap -> GDI Window
+ *  çµ±åˆãƒ¢ãƒ¼ãƒ‰: GDI Device Independent Bitmap -> Direct3D/DirectDraw WAB surface ( call scrnmng_blthdc() )
  */
-static int ga_lastscalemode = 0;
-static int ga_lastrealwidth = 0;
-static int ga_lastrealheight = 0;
-static int ga_screenupdated = 0;
 #if defined(NP2_X11) || defined(NP2_SDL2) || defined(__LIBRETRO__)
 void np2wab_drawWABWindow(void)
 #else
@@ -377,18 +388,18 @@ void np2wab_drawWABWindow(HDC hdc)
 	int srcwidth = np2wab.realWidth;
 	int srcheight = np2wab.realHeight;
 	if(ga_lastrealwidth != srcwidth || ga_lastrealheight != srcheight){
-		// ‰ğ‘œ“x‚ª•Ï‚í‚Á‚Ä‚¢‚½‚çƒEƒBƒ“ƒhƒEƒTƒCƒY‚à•Ï‚¦‚é
-		np2wab.paletteChanged = 1;
-		np2wab_setScreenSizeMT(srcwidth, srcheight);
-		ga_lastrealwidth = srcwidth;
-		ga_lastrealheight = srcheight;
+		// è§£åƒåº¦ãŒå¤‰ã‚ã£ã¦ã„ãŸã‚‰ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºã‚‚å¤‰ãˆã‚‹
+		if(!ga_reqChangeWindowSize){
+			np2wab.paletteChanged = 1;
+			np2wab_setScreenSizeMT(srcwidth, srcheight);
+		}
 		if(!np2wabwnd.ready) return;
 	}
-	if(np2wabwnd.multiwindow){ // •Ê‘‹ƒ‚[ƒh”»’è
+	if(np2wabwnd.multiwindow){ // åˆ¥çª“ãƒ¢ãƒ¼ãƒ‰åˆ¤å®š
 		scalemode = np2wab.wndWidth!=srcwidth || np2wab.wndHeight!=srcheight;
-		if(ga_lastscalemode!=scalemode){ // ‰æ–ÊƒXƒP[ƒ‹‚ª•Ï‚í‚è‚Ü‚µ‚½
+		if(ga_lastscalemode!=scalemode){ // ç”»é¢ã‚¹ã‚±ãƒ¼ãƒ«ãŒå¤‰ã‚ã‚Šã¾ã—ãŸ
 			if(scalemode){
-				// ’Êí‚ÍCOLORONCOLORBHALFTONE‚É‚àİ’è‚Å‚«‚é‚¯‚ÇŠg‘å‚Ì•âŠÔ‚ª”÷–­¥¥¥
+				// é€šå¸¸ã¯COLORONCOLORã€‚HALFTONEã«ã‚‚è¨­å®šã§ãã‚‹ã‘ã©æ‹¡å¤§ã®è£œé–“ãŒå¾®å¦™ï½¥ï½¥ï½¥
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 				SetStretchBltMode(np2wabwnd.hDCWAB, np2wabcfg.halftone ? HALFTONE : COLORONCOLOR);
 				SetBrushOrgEx(np2wabwnd.hDCWAB , 0 , 0 , NULL);
@@ -402,9 +413,9 @@ void np2wab_drawWABWindow(HDC hdc)
 			np2wab.paletteChanged = 1;
 		}
 		if(scalemode){
-			// Šg‘åk¬“]‘—B‚Æ‚è‚ ‚¦‚¸‰æ–Ê”ä‚ÍˆÛ
+			// æ‹¡å¤§ç¸®å°è»¢é€ã€‚ã¨ã‚Šã‚ãˆãšç”»é¢æ¯”ã¯ç¶­æŒ
 			if(np2wab.wndWidth * srcheight > srcwidth * np2wab.wndHeight){
-				// ‰¡’·
+				// æ¨ªé•·
 				int dstw = srcwidth * np2wab.wndHeight / srcheight;
 				int dsth = np2wab.wndHeight;
 				int mgnw = (np2wab.wndWidth - dstw);
@@ -417,7 +428,7 @@ void np2wab_drawWABWindow(HDC hdc)
 				StretchBlt(np2wabwnd.hDCWAB, mgnw, 0, dstw, dsth, np2wabwnd.hDCBuf, 0, 0, srcwidth, srcheight, SRCCOPY);
 #endif
 			}else if(np2wab.wndWidth * srcheight < srcwidth * np2wab.wndHeight){
-				// c’·
+				// ç¸¦é•·
 				int dstw = np2wab.wndWidth;
 				int dsth = srcheight * np2wab.wndWidth / srcwidth;
 				int mgnh = (np2wab.wndHeight - dsth);
@@ -435,15 +446,15 @@ void np2wab_drawWABWindow(HDC hdc)
 #endif
 			}
 		}else{
-			// “™”{“]‘—
+			// ç­‰å€è»¢é€
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 			BitBlt(np2wabwnd.hDCWAB, 0, 0, srcwidth, srcheight, np2wabwnd.hDCBuf, 0, 0, SRCCOPY);
 #endif
 		}
 	}else{
-		// DirectDraw‚É•`‚©‚¹‚é
+		// DirectDrawã«æã‹ã›ã‚‹
 		//scrnmng_blthdc(np2wabwnd.hDCBuf);
-		// DirectDraw Surface‚É“]‘—
+		// DirectDraw Surfaceã«è»¢é€
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 		scrnmng_blthdc(np2wabwnd.hDCBuf);
 #else
@@ -453,7 +464,7 @@ void np2wab_drawWABWindow(HDC hdc)
 }
 
 /**
- * “¯Šú•`‰æiga_threadmode‚ª‹Uj
+ * åŒæœŸæç”»ï¼ˆga_threadmodeãŒå½ï¼‰
  */
 void np2wab_drawframe()
 {
@@ -461,7 +472,7 @@ void np2wab_drawframe()
 	if(!ga_threadmode){
 		if(np2wabwnd.ready && np2wabwnd.hWndWAB!=NULL && (np2wab.relay&0x3)!=0){
 #endif
-			// ƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‚¶‚á‚È‚¢ê‡‚Í‚±‚±‚Å•`‰æˆ—
+			// ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ã˜ã‚ƒãªã„å ´åˆã¯ã“ã“ã§æç”»å‡¦ç†
 			np2wabwnd.drawframe();
 #if defined(NP2_X11) || defined(NP2_SDL2) || defined(__LIBRETRO__)
 			np2wab_drawWABWindow();
@@ -475,29 +486,31 @@ void np2wab_drawframe()
 	}else{
 		if(np2wabwnd.hWndWAB!=NULL){
 			if(ga_reqChangeWindowSize){
-				// ‰æ–ÊƒTƒCƒY•ÏX—v‹‚ª—ˆ‚Ä‚¢‚½‚ç‰æ–ÊƒTƒCƒY‚ğ•Ï‚¦‚é
-				ga_reqChangeWindowSize = 0;
+				// ç”»é¢ã‚µã‚¤ã‚ºå¤‰æ›´è¦æ±‚ãŒæ¥ã¦ã„ãŸã‚‰ç”»é¢ã‚µã‚¤ã‚ºã‚’å¤‰ãˆã‚‹
 				np2wab_setScreenSize(ga_reqChangeWindowSize_w, ga_reqChangeWindowSize_h);
+				ga_lastrealwidth = ga_reqChangeWindowSize_w;
+				ga_lastrealheight = ga_reqChangeWindowSize_h;
+				ga_reqChangeWindowSize = 0;
 				np2wabwnd.ready = 1;
 			}
 			if(np2wabwnd.ready && (np2wab.relay&0x3)!=0){
 				if(ga_screenupdated){
 					if(!np2wabwnd.multiwindow){
-						// ‰æ–Ê“]‘—‚¾‚¯ƒƒCƒ“ƒXƒŒƒbƒh‚Å
-						//np2wab_drawWABWindow(np2wabwnd.hDCBuf);
+						//np2wab_drawWABWindow(np2wabwnd.hDCBuf); // ga_ThreadFuncã§ã‚„ã‚‹
 						scrnmng_bltwab();
 					}
 					ga_screenupdated = 0;
-					ResumeThread(ga_hThread);
+					if(ga_hThread) ResumeThread(ga_hThread);
 				}
 			}
 		}
 	}
 #endif
 }
+
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 /**
- * ”ñ“¯Šú•`‰æiga_threadmode‚ª^j
+ * éåŒæœŸæç”»ï¼ˆga_threadmodeãŒçœŸï¼‰
  */
 unsigned int __stdcall ga_ThreadFunc(LPVOID vdParam) {
 	DWORD time = GetTickCount();
@@ -505,13 +518,12 @@ unsigned int __stdcall ga_ThreadFunc(LPVOID vdParam) {
 	while (!ga_exitThread && ga_threadmode) {
 		if(np2wabwnd.ready && np2wabwnd.hWndWAB!=NULL && np2wabwnd.drawframe!=NULL && (np2wab.relay&0x3)!=0){
 			np2wabwnd.drawframe();
-			// ‰æ–Ê“]‘—‚à•ÊƒXƒŒƒbƒh‚Å
 			np2wab_drawWABWindow(np2wabwnd.hDCBuf); 
-			// ‰æ–Ê“]‘—‘Ò‚¿
+			// ç”»é¢è»¢é€å¾…ã¡
 			ga_screenupdated = 1;
 			if(!ga_exitThread) SuspendThread(ga_hThread);
 		}else{
-			// •`‰æ‚µ‚È‚¢‚Ì‚É‚‘¬‚Å‚®‚é‚®‚é‰ñ‚µ‚Ä‚àd•û‚È‚¢‚Ì‚ÅƒXƒŠ[ƒv
+			// æç”»ã—ãªã„ã®ã«é«˜é€Ÿã§ãã‚‹ãã‚‹å›ã—ã¦ã‚‚ä»•æ–¹ãªã„ã®ã§ã‚¹ãƒªãƒ¼ãƒ—
 			ga_screenupdated = 1;
 			if(!ga_exitThread) SuspendThread(ga_hThread);
 		}
@@ -522,24 +534,24 @@ unsigned int __stdcall ga_ThreadFunc(LPVOID vdParam) {
 #endif
 
 /**
- * ‰æ–Êo—ÍƒŠƒŒ[§Œä
+ * ç”»é¢å‡ºåŠ›ãƒªãƒ¬ãƒ¼åˆ¶å¾¡
  */
 static void IOOUTCALL np2wab_ofac(UINT port, REG8 dat) {
 	TRACEOUT(("WAB: out FACh set relay %04X d=%02X", port, dat));
 	dat = dat & ~0xfc;
 	if(np2wab.relaystateext != dat){
 		np2wab.relaystateext = dat & 0x3;
-		np2wab_setRelayState(np2wab.relaystateint|np2wab.relaystateext); // ƒŠƒŒ[‚ÍOR‚Å¥¥¥ib’è‚â‚Á‚Â‚¯C³j
+		np2wab_setRelayState(np2wab.relaystateint|np2wab.relaystateext); // ãƒªãƒ¬ãƒ¼ã¯ORã§ï½¥ï½¥ï½¥ï¼ˆæš«å®šã‚„ã£ã¤ã‘ä¿®æ­£ï¼‰
 	}
 	(void)port;
 	(void)dat;
 }
 static REG8 IOINPCALL np2wab_ifac(UINT port) {
-	TRACEOUT(("WAB: inp FACh get relay %04X", port));
+	//TRACEOUT(("WAB: inp FACh get relay %04X", port));
 	return 0xfc | np2wab.relaystateext;
 }
 
-// NP2‹N“®‚Ìˆ—
+// NP2èµ·å‹•æ™‚ã®å‡¦ç†
 #if defined(NP2_SDL2) || defined(NP2_X11) || defined(__LIBRETRO__)
 void np2wab_init(void)
 #else
@@ -551,7 +563,7 @@ void np2wab_init(HINSTANCE hInstance, HWND hWndMain)
 	HDC hdc;
 #endif
 
-	//// ê—pINIƒZƒNƒVƒ‡ƒ““Ç‚İæ‚è
+	//// å°‚ç”¨INIã‚»ã‚¯ã‚·ãƒ§ãƒ³èª­ã¿å–ã‚Š
 	//wabwin_readini();
 	
 #if defined(NP2_SDL2) || defined(__LIBRETRO__)
@@ -559,11 +571,11 @@ void np2wab_init(HINSTANCE hInstance, HWND hWndMain)
 #elif defined(NP2_X11)
 	np2wabwnd.pPixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, WAB_MAX_WIDTH, WAB_MAX_HEIGHT);
 #else
-	// ŒãX—v‚é•¨‚ğ•Û‘¶‚µ‚Ä‚¨‚­
+	// å¾Œã€…è¦ã‚‹ç‰©ã‚’ä¿å­˜ã—ã¦ãŠã
 	ga_hInstance = hInstance;
 	np2wabwnd.hWndMain = hWndMain;
 	
-	// ƒEƒBƒ“ƒhƒEƒAƒNƒZƒ‰ƒŒ[ƒ^•Ê‘‹‚ğì‚é
+	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿åˆ¥çª“ã‚’ä½œã‚‹
 	wcex.cbSize = sizeof(WNDCLASSEX);
     wcex.style = CS_HREDRAW | CS_VREDRAW | (np2wabwnd.multiwindow ? CS_DBLCLKS : 0);
     wcex.lpfnWndProc = WndProc;
@@ -584,7 +596,7 @@ void np2wab_init(HINSTANCE hInstance, HWND hWndMain)
 		);
 	if(!np2wabwnd.hWndWAB) return;
 
-	// HWND‚Æ‚©HDC‚Æ‚©ƒoƒbƒtƒ@—pƒrƒbƒgƒ}ƒbƒv‚Æ‚©‚ğæ‚Éì‚Á‚Ä‚¨‚­
+	// HWNDã¨ã‹HDCã¨ã‹ãƒãƒƒãƒ•ã‚¡ç”¨ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã¨ã‹ã‚’å…ˆã«ä½œã£ã¦ãŠã
 	np2wabwnd.hDCWAB = GetDC(np2wabwnd.hWndWAB);
 	hdc = np2wabwnd.multiwindow ? GetDC(NULL) : np2wabwnd.hDCWAB;
 	np2wabwnd.hBmpBuf = CreateCompatibleBitmap(hdc, WAB_MAX_WIDTH, WAB_MAX_HEIGHT);
@@ -593,23 +605,24 @@ void np2wab_init(HINSTANCE hInstance, HWND hWndMain)
 #endif
 
 }
-// ƒŠƒZƒbƒg‚ÉŒÄ‚Î‚ê‚éH
+// ãƒªã‚»ãƒƒãƒˆæ™‚ã«å‘¼ã°ã‚Œã‚‹ï¼Ÿ
 void np2wab_reset(const NP2CFG *pConfig)
 {
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
-	// ƒ}ƒ‹ƒ`ƒXƒŒƒbƒhƒ‚[ƒh‚È‚çæ‚ÉƒXƒŒƒbƒhˆ—‚ğI—¹‚³‚¹‚é
+	// ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ãƒ¢ãƒ¼ãƒ‰ãªã‚‰å…ˆã«ã‚¹ãƒ¬ãƒƒãƒ‰å‡¦ç†ã‚’çµ‚äº†ã•ã›ã‚‹
 	if(ga_threadmode && ga_hThread){
 		ga_exitThread = 1;
-		ResumeThread(ga_hThread);
+		while(((int)ResumeThread(ga_hThread))>0);
 		while(WaitForSingleObject(ga_hThread, 200)==WAIT_TIMEOUT){
 			ResumeThread(ga_hThread);
 		}
+		CloseHandle(ga_hThread);
 		ga_hThread = NULL;
 		ga_exitThread = 0;
 	}
 #endif
 
-	// •`‰æ‚ğ’â~‚µ‚Äİ’è‰Šú‰»
+	// æç”»ã‚’åœæ­¢ã—ã¦è¨­å®šåˆæœŸåŒ–
 	np2wabwnd.ready = 0;
 	ga_lastscalemode = 0;
 	ga_lastrealwidth = 0;
@@ -617,10 +630,12 @@ void np2wab_reset(const NP2CFG *pConfig)
 	ga_screenupdated = 0;
 	np2wab.lastWidth = 0;
 	np2wab.lastHeight = 0;
+	np2wab.realWidth = 0;
+	np2wab.realHeight = 0;
 	np2wab.relaystateint = 0;
 	np2wab_setRelayState(np2wab.relaystateint|np2wab.relaystateext);
 
-	// İ’è’lXV‚Æ‚©
+	// è¨­å®šå€¤æ›´æ–°ã¨ã‹
 	np2wab.wndWidth = 640;
 	np2wab.wndHeight = 480;
 	np2wab.fps = 60;
@@ -628,53 +643,59 @@ void np2wab_reset(const NP2CFG *pConfig)
 	ga_lastwabheight = 480;
 	ga_reqChangeWindowSize = 0;
 	
-	// ƒpƒŒƒbƒg‚ğXV‚³‚¹‚é
+	// ãƒ‘ãƒ¬ãƒƒãƒˆã‚’æ›´æ–°ã•ã›ã‚‹
 	np2wab.paletteChanged = 1;
 }
-// ƒŠƒZƒbƒg‚ÉŒÄ‚Î‚ê‚éHinp2net_reset‚æ‚èŒãEiocore_attach`‚ªg‚¦‚éj
+// ãƒªã‚»ãƒƒãƒˆæ™‚ã«å‘¼ã°ã‚Œã‚‹ï¼Ÿï¼ˆnp2net_resetã‚ˆã‚Šå¾Œãƒ»iocore_attachã€œãŒä½¿ãˆã‚‹ï¼‰
 void np2wab_bind(void)
 {
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 	DWORD dwID;
 
-	// ƒ}ƒ‹ƒ`ƒXƒŒƒbƒhƒ‚[ƒh‚È‚çæ‚ÉƒXƒŒƒbƒhˆ—‚ğI—¹‚³‚¹‚é
+	// ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ãƒ¢ãƒ¼ãƒ‰ãªã‚‰å…ˆã«ã‚¹ãƒ¬ãƒƒãƒ‰å‡¦ç†ã‚’çµ‚äº†ã•ã›ã‚‹
 	if(ga_threadmode && ga_hThread){
 		ga_exitThread = 1;
-		ResumeThread(ga_hThread);
+		while(((int)ResumeThread(ga_hThread))>0);
 		while(WaitForSingleObject(ga_hThread, 200)==WAIT_TIMEOUT){
 			ResumeThread(ga_hThread);
 		}
+		CloseHandle(ga_hThread);
 		ga_hThread = NULL;
 		ga_exitThread = 0;
 	}
 #endif
 	
-	// I/Oƒ|[ƒgƒ}ƒbƒsƒ“ƒOiFACh‚Í“à‘ ƒŠƒŒ[Ø‚è‘Ö‚¦j
+	// I/Oãƒãƒ¼ãƒˆãƒãƒƒãƒ”ãƒ³ã‚°ï¼ˆFAChã¯å†…è”µãƒªãƒ¬ãƒ¼åˆ‡ã‚Šæ›¿ãˆï¼‰
 	iocore_attachout(0xfac, np2wab_ofac);
 	iocore_attachinp(0xfac, np2wab_ifac);
 	
-	// İ’è’lXV‚Æ‚©
+	// è¨­å®šå€¤æ›´æ–°ã¨ã‹
 	np2wabwnd.multiwindow = np2wabcfg.multiwindow;
 	ga_threadmode = np2wabcfg.multithread;
 	
-	//// ‰æ–ÊÁ‹
+	//// ç”»é¢æ¶ˆå»
 	//BitBlt(np2wabwnd.hDCBuf , 0 , 0 , WAB_MAX_WIDTH , WAB_MAX_HEIGHT , NULL , 0 , 0 , BLACKNESS);
 	//scrnmng_blthdc(np2wabwnd.hDCBuf);
 	
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
-	// ƒ}ƒ‹ƒ`ƒXƒŒƒbƒhƒ‚[ƒh‚È‚çƒXƒŒƒbƒhŠJn
+	// ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ãƒ¢ãƒ¼ãƒ‰ãªã‚‰ã‚¹ãƒ¬ãƒƒãƒ‰é–‹å§‹
 	if(ga_threadmode){
 		ga_hThread  = (HANDLE)_beginthreadex(NULL , 0 , ga_ThreadFunc  , NULL , 0 , &dwID);
 	}
 #endif
 	
-	// ƒpƒŒƒbƒg‚ğXV‚³‚¹‚é
+	// ãƒ‘ãƒ¬ãƒƒãƒˆã‚’æ›´æ–°ã•ã›ã‚‹
 	np2wab.paletteChanged = 1;
 
-	// •`‰æÄŠJ
+	// æç”»å†é–‹
 	np2wabwnd.ready = 1;
 }
-// NP2I—¹‚Ìˆ—
+void np2wab_unbind(void)
+{
+	iocore_detachout(0xfac);
+	iocore_detachinp(0xfac);
+}
+// NP2çµ‚äº†æ™‚ã®å‡¦ç†
 void np2wab_shutdown()
 {
 #if defined(NP2_SDL2) || defined(__LIBRETRO__)
@@ -682,15 +703,19 @@ void np2wab_shutdown()
 #elif defined(NP2_X11)
 	g_object_unref(np2wabwnd.pPixbuf);
 #else
-	// ƒ}ƒ‹ƒ`ƒXƒŒƒbƒhƒ‚[ƒh‚È‚çæ‚ÉƒXƒŒƒbƒhˆ—‚ğI—¹‚³‚¹‚é
+	// ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ãƒ¢ãƒ¼ãƒ‰ãªã‚‰å…ˆã«ã‚¹ãƒ¬ãƒƒãƒ‰å‡¦ç†ã‚’çµ‚äº†ã•ã›ã‚‹
 	ga_exitThread = 1;
-	ResumeThread(ga_hThread);
-	while(WaitForSingleObject(ga_hThread, 500)==WAIT_TIMEOUT){
+	while(((int)ResumeThread(ga_hThread))>0);
+	if(WaitForSingleObject(ga_hThread, 1000)==WAIT_TIMEOUT){
 		ResumeThread(ga_hThread);
 	}
+	if(WaitForSingleObject(ga_hThread, 4000)==WAIT_TIMEOUT){
+		TerminateThread(ga_hThread, 0); // è«¦ã‚ã¦å¼·åˆ¶çµ‚äº†
+	}
+	CloseHandle(ga_hThread);
 	ga_hThread = NULL;
 
-	// ‚¢‚ë‚¢‚ë‰ğ•ú
+	// ã„ã‚ã„ã‚è§£æ”¾
 	DeleteDC(np2wabwnd.hDCBuf);
 	DeleteObject(np2wabwnd.hBmpBuf);
 	ReleaseDC(np2wabwnd.hWndWAB, np2wabwnd.hDCWAB);
@@ -699,57 +724,61 @@ void np2wab_shutdown()
 	np2wabwnd.hWndWAB = NULL;
 #endif
 
-	//// ê—pINIƒZƒNƒVƒ‡ƒ“‘‚«‚İ
+	//// å°‚ç”¨INIã‚»ã‚¯ã‚·ãƒ§ãƒ³æ›¸ãè¾¼ã¿
 	//wabwin_writeini();
 }
 
-// “à‘ ƒfƒBƒXƒvƒŒƒCØ‚è‘Ö‚¦ƒŠƒŒ[ó‘Ô‚ğİ’è‚·‚éBstate‚Ìbit0‚ÍŠO•”±¸¾×(=1)/“à‘ ±¸¾×(=0)Ø‘ÖAbit1‚Í“à‘ ±¸¾×(=1)/98¸Ş×Ì(=0)Ø‘ÖB‘¼‚Í0B
-// ŠO•”E“à•”‚Ì‹æ•Ê‚ğ‚µ‚Ä‚¢‚È‚¢‚Ì‚Å–Àã‚Ç‚¿‚ç‚©‚Ìƒrƒbƒg‚ª1‚È‚çƒAƒNƒZƒ‰ƒŒ[ƒ^•\¦‚É‚È‚é
+// å†…è”µãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ã‚¤åˆ‡ã‚Šæ›¿ãˆãƒªãƒ¬ãƒ¼çŠ¶æ…‹ã‚’è¨­å®šã™ã‚‹ã€‚stateã®bit0ã¯å¤–éƒ¨ï½±ï½¸ï½¾ï¾—(=1)/å†…è”µï½±ï½¸ï½¾ï¾—(=0)åˆ‡æ›¿ã€bit1ã¯å†…è”µï½±ï½¸ï½¾ï¾—(=1)/98ï½¸ï¾ï¾—ï¾Œ(=0)åˆ‡æ›¿ã€‚ä»–ã¯0ã€‚
+// å¤–éƒ¨ãƒ»å†…éƒ¨ã®åŒºåˆ¥ã‚’ã—ã¦ã„ãªã„ã®ã§äº‹å®Ÿä¸Šã©ã¡ã‚‰ã‹ã®ãƒ“ãƒƒãƒˆãŒ1ãªã‚‰ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿è¡¨ç¤ºã«ãªã‚‹
 void np2wab_setRelayState(REG8 state)
 {
-	// bit0,1‚ª•Ï‰»‚µ‚Ä‚¢‚é‚©Šm”F
+	// bit0,1ãŒå¤‰åŒ–ã—ã¦ã„ã‚‹ã‹ç¢ºèª
 	if((np2wab.relay & 0x3) != (state & 0x3)){
 		np2wab.relay = state & 0x3;
 		if(state&0x3){
-			// ƒŠƒŒ[‚ªON
+			// ãƒªãƒ¬ãƒ¼ãŒON
 #if defined(NP2_SDL2) || defined(__LIBRETRO__)
-			if(!np2cfg.wabasw) wabrly_switch(); // ƒJƒ`ƒb
+			if(!np2cfg.wabasw) wabrly_switch(); // ã‚«ãƒãƒƒ
 #else
-			if(!np2cfg.wabasw) soundmng_pcmplay(SOUND_RELAY1, FALSE); // ƒJƒ`ƒb
+			if(!np2cfg.wabasw) soundmng_pcmplay(SOUND_RELAY1, FALSE); // ã‚«ãƒãƒƒ
 #endif
 			if(np2wabwnd.multiwindow){
-				// •Ê‘‹ƒ‚[ƒh‚È‚ç•Ê‘‹‚ğo‚·
+				// åˆ¥çª“ãƒ¢ãƒ¼ãƒ‰ãªã‚‰åˆ¥çª“ã‚’å‡ºã™
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 				ShowWindow(np2wabwnd.hWndWAB, SW_SHOWNOACTIVATE);
 				SetWindowPos(np2wabwnd.hWndWAB, HWND_TOP, np2wabcfg.posx, np2wabcfg.posy, 0, 0, SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOSENDCHANGING | SWP_SHOWWINDOW);
 #endif
 			}else{
-				// “‡ƒ‚[ƒh‚È‚ç‰æ–Ê‚ğæ‚Áæ‚é
+				// çµ±åˆãƒ¢ãƒ¼ãƒ‰ãªã‚‰ç”»é¢ã‚’ä¹—ã£å–ã‚‹
 				np2wab_setScreenSize(ga_lastwabwidth, ga_lastwabheight);
 			}
 		}else{
-			// ƒŠƒŒ[‚ªOFF
+			// ãƒªãƒ¬ãƒ¼ãŒOFF
 #if defined(NP2_SDL2) || defined(__LIBRETRO__)
-			if(!np2cfg.wabasw) wabrly_switch(); // ƒJƒ`ƒb
+			if(!np2cfg.wabasw) wabrly_switch(); // ã‚«ãƒãƒƒ
 #else
-			if(!np2cfg.wabasw) soundmng_pcmplay(SOUND_RELAY1, FALSE); // ƒJƒ`ƒb
+			if(!np2cfg.wabasw) soundmng_pcmplay(SOUND_RELAY1, FALSE); // ã‚«ãƒãƒƒ
 #endif
 			if(np2wabwnd.multiwindow){
-				// •Ê‘‹ƒ‚[ƒh‚È‚ç•Ê‘‹‚ğÁ‚·
+				// åˆ¥çª“ãƒ¢ãƒ¼ãƒ‰ãªã‚‰åˆ¥çª“ã‚’æ¶ˆã™
 				np2wab.lastWidth = 0;
 				np2wab.lastHeight = 0;
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 				ShowWindow(np2wabwnd.hWndWAB, SW_HIDE);
 #endif
 			}else{
-				// “‡ƒ‚[ƒh‚È‚ç‰æ–Ê‚ğ–ß‚·
+				// çµ±åˆãƒ¢ãƒ¼ãƒ‰ãªã‚‰ç”»é¢ã‚’æˆ»ã™
 				np2wab.lastWidth = 0;
 				np2wab.lastHeight = 0;
-				scrnmng_setwidth(dsync.scrnxpos, dsync.scrnxmax); // XXX: ‰æ–Ê•‚ğæ‚Áæ‚é‘O‚É–ß‚·
-				scrnmng_setheight(0, dsync.scrnymax); // XXX: ‰æ–Ê‚‚³‚ğæ‚Áæ‚é‘O‚É–ß‚·
-				scrnmng_updatefsres(); // ƒtƒ‹ƒXƒNƒŠ[ƒ“‰ğ‘œ“xXV
 #if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
-				mousemng_updateclip(); // ƒ}ƒEƒXƒLƒƒƒvƒ`ƒƒ‚ÌƒNƒŠƒbƒv”ÍˆÍ‚ğC³
+				scrnmng_setsize(dsync.scrnxpos, 0, dsync.scrnxmax, dsync.scrnymax);// XXX: ç”»é¢ã‚µã‚¤ã‚ºã‚’ä¹—ã£å–ã‚‹å‰ã«æˆ»ã™
+#else
+				scrnmng_setwidth(dsync.scrnxpos, dsync.scrnxmax); // XXX: ç”»é¢å¹…ã‚’ä¹—ã£å–ã‚‹å‰ã«æˆ»ã™
+				scrnmng_setheight(0, dsync.scrnymax); // XXX: ç”»é¢é«˜ã•ã‚’ä¹—ã£å–ã‚‹å‰ã«æˆ»ã™
+#endif
+				scrnmng_updatefsres(); // ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³è§£åƒåº¦æ›´æ–°
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+				mousemng_updateclip(); // ãƒã‚¦ã‚¹ã‚­ãƒ£ãƒ—ãƒãƒ£ã®ã‚¯ãƒªãƒƒãƒ—ç¯„å›²ã‚’ä¿®æ­£
 #endif
 			}
 		}
@@ -757,7 +786,7 @@ void np2wab_setRelayState(REG8 state)
 }
 
 /**
- * ƒEƒBƒ“ƒhƒEƒAƒNƒZƒ‰ƒŒ[ƒ^‰æ–Ê‚ğBMP‚Åæ“¾
+ * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ç”»é¢ã‚’BMPã§å–å¾—
  */
 BRESULT np2wab_getbmp(BMPFILE *lpbf, BMPINFO *lpbi, UINT8 **lplppal, UINT8 **lplppixels) {
 
@@ -780,7 +809,7 @@ BRESULT np2wab_getbmp(BMPFILE *lpbf, BMPINFO *lpbi, UINT8 **lplppal, UINT8 **lpl
 	HBITMAP     hBmpTmp;
 #endif
 
-	// 24bitŒÅ’è
+	// 24bitå›ºå®š
 	bd.width = np2wab.wndWidth;
 	bd.height = np2wab.wndHeight;
 	bd.bpp = 24;
@@ -798,7 +827,7 @@ BRESULT np2wab_getbmp(BMPFILE *lpbf, BMPINFO *lpbi, UINT8 **lplppal, UINT8 **lpl
 	STOREINTELDWORD(bi.biClrImportant, 0);
 	align = bmpdata_getalign(&bi);
 	CopyMemory(lpbi, &bi, sizeof(bi));
-	*lplppal = (UINT8*)malloc(0); // free‚Å‰ğ•ú‚³‚ê‚Ä‚à‘åä•v‚È‚æ‚¤‚Éi‘å’ïNULL‚ª“ü‚éj
+	*lplppal = (UINT8*)malloc(0); // freeã§è§£æ”¾ã•ã‚Œã¦ã‚‚å¤§ä¸ˆå¤«ãªã‚ˆã†ã«ï¼ˆå¤§æŠµNULLãŒå…¥ã‚‹ï¼‰
 
 	*lplppixels = (UINT8*)malloc(bmpdata_getalign(&bi) * bd.height);
 	dstpix = *lplppixels;
@@ -858,7 +887,7 @@ BRESULT np2wab_getbmp(BMPFILE *lpbf, BMPINFO *lpbi, UINT8 **lplppal, UINT8 **lpl
 }
 
 /**
- * ƒEƒBƒ“ƒhƒEƒAƒNƒZƒ‰ƒŒ[ƒ^‰æ–Ê‚ğBMP‚Å•Û‘¶
+ * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ç”»é¢ã‚’BMPã§ä¿å­˜
  */
 BRESULT np2wab_writebmp(const OEMCHAR *filename) {
 	
@@ -881,7 +910,7 @@ BRESULT np2wab_writebmp(const OEMCHAR *filename) {
 		goto sswb_err3;
 	}
 
-	// Bitmap Info (ƒpƒŒƒbƒg•s—v)
+	// Bitmap Info (ãƒ‘ãƒ¬ãƒƒãƒˆä¸è¦)
 	if (file_write(fh, &bi, sizeof(bi)) != sizeof(bi)) {
 		goto sswb_err3;
 	}

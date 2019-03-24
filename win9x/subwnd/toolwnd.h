@@ -1,16 +1,18 @@
 /**
  * @file	toolwnd.h
- * @brief	�c�[�� �E�B���h�E �N���X�̐錾����уC���^�[�t�F�C�X�̒�`�����܂�
+ * @brief	ツール ウィンドウ クラスの宣言およびインターフェイスの定義をします
  */
 
 #pragma once
 
 #include "subwnd.h"
 
+#define FDDLIST_DEFAULT	8 // デフォルトは8件記憶
+
 enum {
 	SKINMRU_MAX			= 4,
 	FDDLIST_DRV			= 2,
-	FDDLIST_MAX			= 8
+	FDDLIST_MAX			= 64
 };
 
 typedef struct {
@@ -46,7 +48,7 @@ enum
 };
 
 /**
- * @brief �c�[�� �E�B���h�E �N���X
+ * @brief ツール ウィンドウ クラス
  */
 class CToolWnd : public CSubWndBase
 {

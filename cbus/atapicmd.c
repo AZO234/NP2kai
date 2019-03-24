@@ -1,11 +1,11 @@
 #include	"compiler.h"
 
-#if 1
+#if 0
 #undef	TRACEOUT
 #define	TRACEOUT(s)	(void)(s)
 #endif	/* 1 */
 
-// ‚±‚êAscsicmd‚Æ‚Ç‚¤“‡‚·‚é‚Ì‚æH
+// ã“ã‚Œã€scsicmdã¨ã©ã†çµ±åˆã™ã‚‹ã®ã‚ˆï¼Ÿ
 
 #if defined(SUPPORT_IDEIO)
 #if defined(_WINDOWS) && !defined(__LIBRETRO__)
@@ -32,13 +32,13 @@ static int atapi_thread_initialized = 0;
 static HANDLE atapi_thread = NULL;
 static IDEDRV atapi_thread_drv = NULL;
 #else
-	// TODO: ”ñWindows—pƒR[ƒh‚ğ‘‚­
+	// TODO: éWindowsç”¨ã‚³ãƒ¼ãƒ‰ã‚’æ›¸ã
 #endif
 
 // INQUIRY
 static const UINT8 cdrom_inquiry[] = {
 #ifdef YUIDEBUG
-	// ‚¤‚¿‚Ìƒhƒ‰ƒCƒu‚Ì“z NECCD‚Í Product Level 3.00ˆÈã‚Å modesense10‚ÌƒR[ƒh‚ª‚¿‚°[
+	// ã†ã¡ã®ãƒ‰ãƒ©ã‚¤ãƒ–ã®å¥´ NECCDã¯ Product Level 3.00ä»¥ä¸Šã§ modesense10ã®ã‚³ãƒ¼ãƒ‰ãŒã¡ã’ãƒ¼
 	0x05,	// CD-ROM
 	0x80,	// bit7: Removable Medium Bit, other: Reserved
 	0x00,	// version [7-6: ISO, ECMA: 5-3, 2-0: ANSI(00)]
@@ -264,7 +264,7 @@ void atapicmd_a0(IDEDRV drv) {
 		break;
 
 	case 0x28:		// read(10)
-		TRACEOUT(("atapicmd: read(10)"));
+		//TRACEOUT(("atapicmd: read(10)"));
 		lba = (drv->buf[2] << 24) + (drv->buf[3] << 16) + (drv->buf[4] << 8) + drv->buf[5];
 		leng = (drv->buf[7] << 8) + drv->buf[8];
 		atapi_cmd_read(drv, lba, leng);
@@ -341,7 +341,7 @@ void atapi_cmd_traycmd_eject_threadfunc(void* vdParam) {
 		CloseHandle(handle);
 	}
 #else
-	// TODO: WindowsˆÈŠO‚ÌƒR[ƒh‚ğ‘‚­
+	// TODO: Windowsä»¥å¤–ã®ã‚³ãƒ¼ãƒ‰ã‚’æ›¸ã
 #endif
 }
 void atapi_cmd_traycmd_close_threadfunc(void* vdParam) {
@@ -354,7 +354,7 @@ void atapi_cmd_traycmd_close_threadfunc(void* vdParam) {
 		CloseHandle(handle);
 	}
 #else
-	// TODO: WindowsˆÈŠO‚ÌƒR[ƒh‚ğ‘‚­
+	// TODO: Windowsä»¥å¤–ã®ã‚³ãƒ¼ãƒ‰ã‚’æ›¸ã
 #endif
 }
 #endif
@@ -389,7 +389,7 @@ static void atapi_cmd_start_stop_unit(IDEDRV drv) {
 #if defined(_WINDOWS) && !defined(__LIBRETRO__)
 			_beginthread(atapi_cmd_traycmd_eject_threadfunc, 0, (void*)sxsi->drv);
 #else
-			// TODO: WindowsˆÈŠO‚ÌƒR[ƒh‚ğ‘‚­
+			// TODO: Windowsä»¥å¤–ã®ã‚³ãƒ¼ãƒ‰ã‚’æ›¸ã
 #endif
 		}else
 #endif
@@ -405,7 +405,7 @@ static void atapi_cmd_start_stop_unit(IDEDRV drv) {
 #if defined(_WINDOWS) && !defined(__LIBRETRO__)
 			_beginthread(atapi_cmd_traycmd_close_threadfunc, 0, (void*)sxsi->drv);
 #else
-			// TODO: WindowsˆÈŠO‚ÌƒR[ƒh‚ğ‘‚­
+			// TODO: Windowsä»¥å¤–ã®ã‚³ãƒ¼ãƒ‰ã‚’æ›¸ã
 #endif
 		}else
 #endif
@@ -473,12 +473,33 @@ static void atapi_cmd_read_capacity(IDEDRV drv) {
 // 0x28: READ(10)
 #if defined(_WINDOWS) && !defined(__LIBRETRO__)
 void atapi_dataread_threadfunc_part(IDEDRV drv) {
+
+	SXSIDEV	sxsi;
+	sxsi = sxsi_getptr(drv->sxsidrv);
+	sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
+
 	if (sxsi_read(drv->sxsidrv, drv->sector, drv->buf, 2048) != 0) {
 		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_ILLEGAL_REQUEST);
 		drv->asc = 0x21;
+		sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
 		senderror(drv);
+		TRACEOUT(("atapicmd: read error at sector %d", drv->sector));
 		return;
 	}
+
+	// EDC/ECC check
+	if(np2cfg.usecdecc && (sxsi->cdflag_ecc & CD_ECC_BITMASK)==CD_ECC_ERROR){
+		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_MEDIUM_ERROR);
+		drv->sk = 0x03;
+		drv->asc = 0x11;
+		drv->status |= IDESTAT_ERR;
+		drv->error |= IDEERR_UNC;
+		sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
+		senderror(drv);
+		TRACEOUT(("atapicmd: EDC/ECC error detected at sector %d", drv->sector));
+		return;
+	}
+
 	drv->sector++;
 	drv->nsectors--;
 
@@ -493,8 +514,15 @@ void atapi_dataread_threadfunc_part(IDEDRV drv) {
 	drv->buftc = (drv->nsectors)?IDETC_ATAPIREAD:IDETC_TRANSFEREND;
 	drv->bufpos = 0;
 	drv->bufsize = 2048;
+	
+	if(np2cfg.usecdecc && (sxsi->cdflag_ecc & CD_ECC_BITMASK)==CD_ECC_RECOVERED){
+		drv->status |= IDESTAT_CORR;
+		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_RECOVERED_ERROR);
+		drv->asc = 0x18;
+	}
+	sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
 
-	drv->status &= ~(IDESTAT_BSY); // ”O‚Ì‚½‚ß’¼‘O‚Å‰ğœ
+	drv->status &= ~(IDESTAT_BSY); // å¿µã®ãŸã‚ç›´å‰ã§è§£é™¤
 	if (!(drv->ctrl & IDECTRL_NIEN)) {
 		//TRACEOUT(("atapicmd: senddata()"));
 		ideio.bank[0] = ideio.bank[1] | 0x80;			// ????
@@ -521,7 +549,7 @@ void atapi_dataread(IDEDRV drv) {
 		return;
 	}
 
-	// ƒGƒ‰[ˆ—–Ú’ƒ‹ê’ƒ`
+	// ã‚¨ãƒ©ãƒ¼å‡¦ç†ç›®èŒ¶è‹¦èŒ¶ã€œ
 	if (drv->nsectors == 0) {
 		sendabort(drv);
 		return;
@@ -547,18 +575,37 @@ void atapi_dataread(IDEDRV drv) {
 #else
 void atapi_dataread(IDEDRV drv) {
 
-	// ƒGƒ‰[ˆ—–Ú’ƒ‹ê’ƒ`
+	SXSIDEV	sxsi;
+	sxsi = sxsi_getptr(drv->sxsidrv);
+
+	// ã‚¨ãƒ©ãƒ¼å‡¦ç†ç›®èŒ¶è‹¦èŒ¶ã€œ
 	if (drv->nsectors == 0) {
 		sendabort(drv);
 		return;
 	}
+	
+	sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
 
 	if (sxsi_read(drv->sxsidrv, drv->sector, drv->buf, 2048) != 0) {
 		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_ILLEGAL_REQUEST);
 		drv->asc = 0x21;
 		senderror(drv);
+		sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
 		return;
 	}
+
+	// EDC/ECC check
+	if(np2cfg.usecdecc && (sxsi->cdflag_ecc & CD_ECC_BITMASK)==CD_ECC_ERROR){
+		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_MEDIUM_ERROR);
+		drv->sk = 0x03;
+		drv->asc = 0x11;
+		drv->status |= IDESTAT_ERR;
+		drv->error |= IDEERR_UNC;
+		sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
+		senderror(drv);
+		return;
+	}
+
 	drv->sector++;
 	drv->nsectors--;
 
@@ -573,6 +620,13 @@ void atapi_dataread(IDEDRV drv) {
 	drv->buftc = (drv->nsectors)?IDETC_ATAPIREAD:IDETC_TRANSFEREND;
 	drv->bufpos = 0;
 	drv->bufsize = 2048;
+	
+	if(np2cfg.usecdecc && (sxsi->cdflag_ecc & CD_ECC_BITMASK)==CD_ECC_RECOVERED){
+		drv->status |= IDESTAT_CORR;
+		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_RECOVERED_ERROR);
+		drv->asc = 0x18;
+	}
+	sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
 
 	if (!(drv->ctrl & IDECTRL_NIEN)) {
 		//TRACEOUT(("atapicmd: senddata()"));
@@ -746,7 +800,7 @@ static void atapi_cmd_mode_sense(IDEDRV drv) {
 		if (cnt > leng) {
 			goto length_exceeded;
 		}
-		drv->damsfbcd = 1; // XXX: NEC CD-ROMƒRƒ}ƒ“ƒh‚ğ”ò‚Î‚µ‚Ä‚«‚½‚çBCDƒ‚[ƒh‚É‚·‚é¥¥¥ib’èneccdd.sys”»’èj
+		drv->damsfbcd = 1; // XXX: NEC CD-ROMã‚³ãƒãƒ³ãƒ‰ã‚’é£›ã°ã—ã¦ããŸã‚‰BCDãƒ¢ãƒ¼ãƒ‰ã«ã™ã‚‹ï½¥ï½¥ï½¥ï¼ˆæš«å®šneccdd.sysåˆ¤å®šï¼‰
 		break;
 #endif
 	case 0x3f:
@@ -972,7 +1026,7 @@ static void atapi_cmd_readtoc(IDEDRV drv) {
 	UINT8	*ptr;
 	UINT	i;
 #ifdef SUPPORT_KAI_IMAGES
-	UINT8	time;	//	’Ç‰Á(kaiD)
+	UINT8	time;	//	è¿½åŠ (kaiD)
 #endif
 	UINT8	strack;
 
@@ -986,13 +1040,13 @@ static void atapi_cmd_readtoc(IDEDRV drv) {
 	
 #ifdef SUPPORT_KAI_IMAGES
 
-#if 0	//	C³(kaiD)
+#if 0	//	ä¿®æ­£(kaiD)
 	leng = (drv->buf[7] << 8) + drv->buf[8];
 	format = (drv->buf[9] >> 6);
 	TRACEOUT(("atapi_cmd_readtoc fmt=%d leng=%d", format, leng));
 #else
 #if 0
-	//	‚±‚Á‚¿‚ª³‚µ‚¢‚Æv‚¤‚ñ‚¾‚¯‚Çcƒhƒ‰ƒCƒo‚Ìˆá‚¢H
+	//	ã“ã£ã¡ãŒæ­£ã—ã„ã¨æ€ã†ã‚“ã ã‘ã©â€¦ãƒ‰ãƒ©ã‚¤ãƒã®é•ã„ï¼Ÿ
 	time = (drv->buf[1] & 0x02) >> 0x01;
 	format = (drv->buf[2] & 0x0f);
 	leng = (drv->buf[6] << 8) + drv->buf[7];
@@ -1186,7 +1240,7 @@ static void atapi_cmd_mechanismstatus(IDEDRV drv) {
 	//drv->buf[5] = 0x01;
 	//drv->buf[6] = 0x00;
 	//drv->buf[7] = 0x04;
-	//drv->buf[8] = (sxsi->flag & SXSIFLAG_READY) ? 0x80 : 0x00; // XXX: CD‘}“üó‘Ô‚Æ‚©“ü‚ê‚Ä‚â‚é‚×‚«H
+	//drv->buf[8] = (sxsi->flag & SXSIFLAG_READY) ? 0x80 : 0x00; // XXX: CDæŒ¿å…¥çŠ¶æ…‹ã¨ã‹å…¥ã‚Œã¦ã‚„ã‚‹ã¹ãï¼Ÿ
 	//drv->buf[9] = 0x00;
 	//drv->buf[10] = 0x00;
 	//drv->buf[11] = 0x00;
@@ -1207,7 +1261,7 @@ void atapi_initialize(void) {
 		atapi_thread = (HANDLE)_beginthreadex(NULL, 0, atapi_dataread_threadfunc, NULL, CREATE_SUSPENDED, &dwID);
 	}
 #else
-	// TODO: ”ñWindows—pƒR[ƒh‚ğ‘‚­
+	// TODO: éWindowsç”¨ã‚³ãƒ¼ãƒ‰ã‚’æ›¸ã
 #endif
 }
 
@@ -1216,12 +1270,14 @@ void atapi_deinitialize(void) {
 	if(atapi_thread_initialized){
 		atapi_thread_initialized = 0;
 		while(((int)ResumeThread(atapi_thread)) > 0);
-		WaitForSingleObject(atapi_thread,  INFINITE);
+		if(WaitForSingleObject(atapi_thread, 5000) == WAIT_TIMEOUT){
+			TerminateThread(atapi_thread, 0);
+		}
 		CloseHandle(atapi_thread);
 		atapi_thread = NULL;
 	}
 #else
-	// TODO: ”ñWindows—pƒR[ƒh‚ğ‘‚­
+	// TODO: éWindowsç”¨ã‚³ãƒ¼ãƒ‰ã‚’æ›¸ã
 #endif
 }
 #endif	/* SUPPORT_IDEIO */

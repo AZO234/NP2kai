@@ -1752,7 +1752,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/SDL2/lib\"",
+					"¥"$(SRCROOT)/SDL2/lib¥"",
 				);
 				PRODUCT_NAME = np2sdl2;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1788,7 +1788,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/SDL2/lib\"",
+					"¥"$(SRCROOT)/SDL2/lib¥"",
 				);
 				PRODUCT_NAME = np2sdl2;
 				TARGETED_DEVICE_FAMILY = "1,2";

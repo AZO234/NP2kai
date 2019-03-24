@@ -69,44 +69,50 @@ unsigned GetTickCount()
 }
 */
 
+#if defined(__APPLE__)
+#include <sys/kern_control.h>
+#include <net/if.h>
+#include <net/if_utun.h>
+#else
 #include <linux/if.h>
 #include <linux/if_tun.h>
 #include <linux/if_ether.h>	/* struct ethhdr */
+#endif
 
 #endif // defined(_WINDOWS)
  
-#define NET_BUFLEN (10*1024) // ƒoƒbƒtƒ@1‚Â‚Ì’·‚³iXXX: ƒpƒPƒbƒgƒTƒCƒY‚ÌÅ‘å’l‚É‚µ‚È‚¢‚Æ–³‘ÊB‚à‚Á‚ÆŒ¾‚¦‚Î‰Â•Ï’·‚Å‘å‚«‚È1‚Â‚Ìƒoƒbƒtƒ@‚É“ü‚ê‚é‚×‚«Hj
-#define NET_ARYLEN (128) // ƒoƒbƒtƒ@‚Ì”
+#define NET_BUFLEN (10*1024) // ãƒãƒƒãƒ•ã‚¡1ã¤ã®é•·ã•ï¼ˆXXX: ãƒ‘ã‚±ãƒƒãƒˆã‚µã‚¤ã‚ºã®æœ€å¤§å€¤ã«ã—ãªã„ã¨ç„¡é§„ã€‚ã‚‚ã£ã¨è¨€ãˆã°å¯å¤‰é•·ã§å¤§ããª1ã¤ã®ãƒãƒƒãƒ•ã‚¡ã«å…¥ã‚Œã‚‹ã¹ãï¼Ÿï¼‰
+#define NET_ARYLEN (128) // ãƒãƒƒãƒ•ã‚¡ã®æ•°
 
 	NP2NET	np2net;
 	
-static OEMCHAR np2net_tapName[MAX_PATH]; // TAPƒfƒoƒCƒX–¼
+static OEMCHAR np2net_tapName[MAX_PATH]; // TAPãƒ‡ãƒã‚¤ã‚¹å
 
-static int		np2net_hThreadexit = 0; // ƒXƒŒƒbƒhI—¹ƒtƒ‰ƒO
+static int		np2net_hThreadexit = 0; // ã‚¹ãƒ¬ãƒƒãƒ‰çµ‚äº†ãƒ•ãƒ©ã‚°
 
 #if defined(_WINDOWS)
-static TCHAR *GetNetWorkDeviceGuid(CONST TCHAR *, TCHAR *, DWORD); // TAPƒfƒoƒCƒX–¼‚©‚çGUID‚ğæ“¾‚·‚é
+static TCHAR *GetNetWorkDeviceGuid(CONST TCHAR *, TCHAR *, DWORD); // TAPãƒ‡ãƒã‚¤ã‚¹åã‹ã‚‰GUIDã‚’å–å¾—ã™ã‚‹
 
-static HANDLE	np2net_hTap = NULL; // TAPƒfƒoƒCƒX‚Ì“Ç‚İ‘‚«ƒnƒ“ƒhƒ‹
-static HANDLE	np2net_hThreadR = NULL; // Read—pƒXƒŒƒbƒh
-static HANDLE	np2net_hThreadW = NULL; // Write—pƒXƒŒƒbƒh
+static HANDLE	np2net_hTap = NULL; // TAPãƒ‡ãƒã‚¤ã‚¹ã®èª­ã¿æ›¸ããƒãƒ³ãƒ‰ãƒ«
+static HANDLE	np2net_hThreadR = NULL; // Readç”¨ã‚¹ãƒ¬ãƒƒãƒ‰
+static HANDLE	np2net_hThreadW = NULL; // Writeç”¨ã‚¹ãƒ¬ãƒƒãƒ‰
 #else
 
 // for Linux
-static int	np2net_hTap = -1; // TAPƒfƒoƒCƒX‚Ì“Ç‚İ‘‚«ƒnƒ“ƒhƒ‹
+static int	np2net_hTap = -1; // TAPãƒ‡ãƒã‚¤ã‚¹ã®èª­ã¿æ›¸ããƒãƒ³ãƒ‰ãƒ«
 static int			np2net_hThreadE = 0; // Thread Running Flag
-static pthread_t	np2net_hThreadR = NULL; // Read—pƒXƒŒƒbƒh
-static pthread_t	np2net_hThreadW = NULL; // Write—pƒXƒŒƒbƒh
+static pthread_t	np2net_hThreadR = NULL; // Readç”¨ã‚¹ãƒ¬ãƒƒãƒ‰
+static pthread_t	np2net_hThreadW = NULL; // Writeç”¨ã‚¹ãƒ¬ãƒƒãƒ‰
 #endif // defined(_WINDOWS)
 
-static UINT8	np2net_membuf[NET_ARYLEN][NET_BUFLEN]; // ‘—M—pƒoƒbƒtƒ@
-static int		np2net_membuflen[NET_ARYLEN]; // ‘—M—pƒoƒbƒtƒ@‚É‚ ‚éƒf[ƒ^‚Ì’·‚³
-static int		np2net_membuf_readpos = 0; // ƒoƒbƒtƒ@“Ç‚İæ‚èˆÊ’u
-static int		np2net_membuf_writepos = 0; // ƒoƒbƒtƒ@‘‚«‚İˆÊ’u
+static UINT8	np2net_membuf[NET_ARYLEN][NET_BUFLEN]; // é€ä¿¡ç”¨ãƒãƒƒãƒ•ã‚¡
+static int		np2net_membuflen[NET_ARYLEN]; // é€ä¿¡ç”¨ãƒãƒƒãƒ•ã‚¡ã«ã‚ã‚‹ãƒ‡ãƒ¼ã‚¿ã®é•·ã•
+static int		np2net_membuf_readpos = 0; // ãƒãƒƒãƒ•ã‚¡èª­ã¿å–ã‚Šä½ç½®
+static int		np2net_membuf_writepos = 0; // ãƒãƒƒãƒ•ã‚¡æ›¸ãè¾¼ã¿ä½ç½®
 
-static int		np2net_pmm = 0; // CPU•‰‰×’áŒ¸ƒ‚[ƒhi’ÊM‚ÍáŠ±’x‚­‚È‚é‚Æv‚í‚ê‚éj
-static int		np2net_highspeedmode = 0; // ‚‘¬‘—óMƒ‚[ƒh
-static UINT32		np2net_highspeeddatacount = 0; // ‘—óMƒf[ƒ^”ƒJƒEƒ“ƒ^
+static int		np2net_pmm = 0; // CPUè² è·ä½æ¸›ãƒ¢ãƒ¼ãƒ‰ï¼ˆé€šä¿¡ã¯è‹¥å¹²é…ããªã‚‹ã¨æ€ã‚ã‚Œã‚‹ï¼‰
+static int		np2net_highspeedmode = 0; // é«˜é€Ÿé€å—ä¿¡ãƒ¢ãƒ¼ãƒ‰
+static UINT32		np2net_highspeeddatacount = 0; // é€å—ä¿¡ãƒ‡ãƒ¼ã‚¿æ•°ã‚«ã‚¦ãƒ³ã‚¿
 
 #if defined(_WINDOWS)
 static HANDLE		np2net_write_hEvent;
@@ -114,7 +120,7 @@ static OVERLAPPED	np2net_write_ovl;
 #endif // defined(_WINDOWS)
 
 #if defined(_WINDOWS)
-// ƒpƒPƒbƒgƒf[ƒ^‚ğ TAP ‚Ö‘‚«o‚·
+// ãƒ‘ã‚±ãƒƒãƒˆãƒ‡ãƒ¼ã‚¿ã‚’ TAP ã¸æ›¸ãå‡ºã™
 static int doWriteTap(HANDLE hTap, const UINT8 *pSendBuf, UINT32 len)
 {
 	#define ETHERDATALEN_MIN 46
@@ -123,8 +129,9 @@ static int doWriteTap(HANDLE hTap, const UINT8 *pSendBuf, UINT32 len)
 	if (!WriteFile(hTap, pSendBuf, len, &dwWriteLen, &np2net_write_ovl)) {
 		DWORD err = GetLastError();
 		if (err == ERROR_IO_PENDING) {
-			WaitForSingleObject(np2net_write_hEvent, INFINITE); // Š®—¹‘Ò‚¿
-			GetOverlappedResult(hTap, &np2net_write_ovl, &dwWriteLen, FALSE);
+			if(WaitForSingleObject(np2net_write_hEvent, 3000)!=WAIT_TIMEOUT){ // å®Œäº†å¾…ã¡
+				GetOverlappedResult(hTap, &np2net_write_ovl, &dwWriteLen, FALSE);
+			} 
 		} else {
 			TRACEOUT(("LGY-98: WriteFile err=0x%08X\n", err));
 			return -1;
@@ -136,7 +143,7 @@ static int doWriteTap(HANDLE hTap, const UINT8 *pSendBuf, UINT32 len)
 #else
 
 // for Linux
-// ƒpƒPƒbƒgƒf[ƒ^‚ğ TAP ‚Ö‘‚«o‚·
+// ãƒ‘ã‚±ãƒƒãƒˆãƒ‡ãƒ¼ã‚¿ã‚’ TAP ã¸æ›¸ãå‡ºã™
 static int doWriteTap(int hTap, const UINT8 *pSendBuf, UINT32 len)
 {
 	#define ETHERDATALEN_MIN 46
@@ -152,7 +159,7 @@ static int doWriteTap(int hTap, const UINT8 *pSendBuf, UINT32 len)
 
 #endif // defined(_WINDOWS)
 
-// ƒpƒPƒbƒgƒf[ƒ^‚ğƒoƒbƒtƒ@‚É‘—‚éiÀÛ‚Ì‘—M‚Ínp2net_ThreadFuncW“à‚Ås‚í‚ê‚éj
+// ãƒ‘ã‚±ãƒƒãƒˆãƒ‡ãƒ¼ã‚¿ã‚’ãƒãƒƒãƒ•ã‚¡ã«é€ã‚‹ï¼ˆå®Ÿéš›ã®é€ä¿¡ã¯np2net_ThreadFuncWå†…ã§è¡Œã‚ã‚Œã‚‹ï¼‰
 static int sendDataToBuffer(const UINT8 *pSendBuf, UINT32 len){
 	if(len > NET_BUFLEN){
 		TRACEOUT(("LGY-98: too large packet!! %d bytes", len));
@@ -162,8 +169,8 @@ static int sendDataToBuffer(const UINT8 *pSendBuf, UINT32 len){
 		np2net_highspeedmode = 1;
 		TRACEOUT(("LGY-98: buffer full"));
 		while(np2net_membuf_readpos==(np2net_membuf_writepos+1)%NET_ARYLEN){
-			//Sleep(0); // ƒoƒbƒtƒ@‚ª‚¢‚Á‚Ï‚¢‚È‚Ì‚Å‘Ò‚Â
-			return 1; // ƒoƒbƒtƒ@‚ª‚¢‚Á‚Ï‚¢‚È‚Ì‚ÅÌ‚Ä‚é
+			//Sleep(0); // ãƒãƒƒãƒ•ã‚¡ãŒã„ã£ã±ã„ãªã®ã§å¾…ã¤
+			return 1; // ãƒãƒƒãƒ•ã‚¡ãŒã„ã£ã±ã„ãªã®ã§æ¨ã¦ã‚‹
 		}
 	}
 	memcpy(np2net_membuf[np2net_membuf_writepos], pSendBuf, len);
@@ -173,20 +180,20 @@ static int sendDataToBuffer(const UINT8 *pSendBuf, UINT32 len){
 	return 0;
 }
 
-// ƒpƒPƒbƒg‘—M‚ÉŒÄ‚Î‚ê‚éiƒfƒtƒHƒ‹ƒgˆ—j
+// ãƒ‘ã‚±ãƒƒãƒˆé€ä¿¡æ™‚ã«å‘¼ã°ã‚Œã‚‹ï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå‡¦ç†ï¼‰
 static void np2net_default_send_packet(const UINT8 *buf, int size)
 {
 	sendDataToBuffer(buf, size);
 }
-// ƒpƒPƒbƒgóM‚ÉŒÄ‚Î‚ê‚éiƒfƒtƒHƒ‹ƒgˆ—j
+// ãƒ‘ã‚±ãƒƒãƒˆå—ä¿¡æ™‚ã«å‘¼ã°ã‚Œã‚‹ï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå‡¦ç†ï¼‰
 static void np2net_default_recieve_packet(const UINT8 *buf, int size)
 {
-	// ‰½‚à‚µ‚È‚¢
+	// ä½•ã‚‚ã—ãªã„
 }
 
 static void np2net_updateHighSpeedMode(){
-	static UINT32	np2net_highspeedtimer = 0; // ‘—óMƒf[ƒ^ƒJƒEƒ“ƒgŠî€
-	static UINT32	np2net_highspeeddataspeed = 0; // 1•b“–‚½‚è‚Ì‘—óMƒf[ƒ^”
+	static UINT32	np2net_highspeedtimer = 0; // é€å—ä¿¡ãƒ‡ãƒ¼ã‚¿ã‚«ã‚¦ãƒ³ãƒˆåŸºæº–æ™‚åˆ»
+	static UINT32	np2net_highspeeddataspeed = 0; // 1ç§’å½“ãŸã‚Šã®é€å—ä¿¡ãƒ‡ãƒ¼ã‚¿æ•°
 	//HDC hdc;
 	//RECT r = {0, 0, 100, 100};
 	int timediff;
@@ -210,7 +217,7 @@ static void np2net_updateHighSpeedMode(){
 }
 
 #if defined(_WINDOWS)
-//  ”ñ“¯Šú‚Å’ÊM‚µ‚Ä‚İ‚éiWritej
+//  éåŒæœŸã§é€šä¿¡ã—ã¦ã¿ã‚‹ï¼ˆWriteï¼‰
 static unsigned int __stdcall np2net_ThreadFuncW(LPVOID vdParam) {
 	while (!np2net_hThreadexit) {
 		if(np2net.recieve_packet != np2net_default_recieve_packet){
@@ -229,7 +236,7 @@ static unsigned int __stdcall np2net_ThreadFuncW(LPVOID vdParam) {
 	}
 	return 0;
 }
-//  ”ñ“¯Šú‚Å’ÊM‚µ‚Ä‚İ‚éiReadj
+//  éåŒæœŸã§é€šä¿¡ã—ã¦ã¿ã‚‹ï¼ˆReadï¼‰
 static unsigned int __stdcall np2net_ThreadFuncR(LPVOID vdParam) {
 	HANDLE hEvent = NULL;
 	DWORD dwLen;
@@ -239,7 +246,7 @@ static unsigned int __stdcall np2net_ThreadFuncR(LPVOID vdParam) {
 	int timediff = 0;
 	CHAR np2net_Buf[NET_BUFLEN];
 
-	// OVERLAPPED”ñ“¯Šú“Ç‚İæ‚è€”õ
+	// OVERLAPPEDéåŒæœŸèª­ã¿å–ã‚Šæº–å‚™
 	memset(&ovl, 0, sizeof(OVERLAPPED));
 	ovl.hEvent = hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 	ovl.Offset = 0;
@@ -249,34 +256,38 @@ static unsigned int __stdcall np2net_ThreadFuncR(LPVOID vdParam) {
 		if (!ReadFile(np2net_hTap, np2net_Buf, sizeof(np2net_Buf), &dwLen, &ovl)) {
 			DWORD err = GetLastError();
 			if (err == ERROR_IO_PENDING) {
-				// “Ç‚İæ‚è‘Ò‚¿
-				WaitForSingleObject(hEvent, INFINITE); // óMŠ®—¹‘Ò‚¿
-				GetOverlappedResult(np2net_hTap, &ovl, &dwLen, FALSE);
-				if(dwLen>0){
-					//TRACEOUT(("LGY-98: recieve %u bytes\n", dwLen));
-					np2net.recieve_packet((UINT8*)np2net_Buf, dwLen); // óM‚Å‚«‚½‚Ì‚Å’Ê’m‚·‚é
-					np2net_highspeeddatacount += dwLen;
-				}
+				// èª­ã¿å–ã‚Šå¾…ã¡
+				if(WaitForSingleObject(hEvent, 3000)!=WAIT_TIMEOUT){ // å—ä¿¡å®Œäº†å¾…ã¡
+					GetOverlappedResult(np2net_hTap, &ovl, &dwLen, FALSE);
+					if(dwLen>0){
+						//TRACEOUT(("LGY-98: recieve %u bytesÂ¥n", dwLen));
+						np2net.recieve_packet((UINT8*)np2net_Buf, dwLen); // å—ä¿¡ã§ããŸã®ã§é€šçŸ¥ã™ã‚‹
+						np2net_highspeeddatacount += dwLen;
+					}
+				} 
 			} else {
-				// “Ç‚İæ‚èƒGƒ‰[
+				// èª­ã¿å–ã‚Šã‚¨ãƒ©ãƒ¼
 				printf("TAP-Win32: ReadFile err=0x%08X\n", err);
 				//CloseHandle(hTap);
 				//return -1;
 				Sleep(1);
 			}
 		} else {
-			// “Ç‚İæ‚è¬Œ÷
+			// èª­ã¿å–ã‚ŠæˆåŠŸ
 			if(dwLen>0){
 				//TRACEOUT(("LGY-98: recieve %u bytes\n", dwLen));
-				np2net.recieve_packet((UINT8*)np2net_Buf, dwLen); // óM‚Å‚«‚½‚Ì‚Å’Ê’m‚·‚é
+				np2net.recieve_packet((UINT8*)np2net_Buf, dwLen); // å—ä¿¡ã§ããŸã®ã§é€šçŸ¥ã™ã‚‹
 				np2net_highspeeddatacount += dwLen;
 			}else{
 				Sleep(1);
 			}
 		}
 		np2net_updateHighSpeedMode();
-		if(!np2net_highspeedmode) 
+		if(!np2net_highspeedmode) {
 			Sleep(50);
+		}else{
+			Sleep(1);
+		}
 	}
 	CloseHandle(hEvent);
 	hEvent = NULL;
@@ -285,7 +296,7 @@ static unsigned int __stdcall np2net_ThreadFuncR(LPVOID vdParam) {
 #else
 
 // for Linux
-//  ”ñ“¯Šú‚Å’ÊM‚µ‚Ä‚İ‚éiWritej
+//  éåŒæœŸã§é€šä¿¡ã—ã¦ã¿ã‚‹ï¼ˆWriteï¼‰
 static void* np2net_ThreadFuncW(void *thdata) {
 	while (!np2net_hThreadexit) {
 		if(np2net.recieve_packet != np2net_default_recieve_packet){
@@ -304,21 +315,21 @@ static void* np2net_ThreadFuncW(void *thdata) {
 	}
 	return (void*) NULL;
 }
-//  ”ñ“¯Šú‚Å’ÊM‚µ‚Ä‚İ‚éiReadj
+//  éåŒæœŸã§é€šä¿¡ã—ã¦ã¿ã‚‹ï¼ˆReadï¼‰
 static void* np2net_ThreadFuncR(void *thdata) {
 	UINT32 dwLen;
 	UINT8 np2net_Buf[NET_BUFLEN];
 
 	while (!np2net_hThreadexit) {
 		if ((dwLen = read(np2net_hTap, np2net_Buf, sizeof(np2net_Buf))) < 0) {
-			// “Ç‚İæ‚èƒGƒ‰[
+			// èª­ã¿å–ã‚Šã‚¨ãƒ©ãƒ¼
 			printf("TAP-Win32: ReadFile err");
 			sched_yield();
 		} else {
-			// “Ç‚İæ‚è¬Œ÷
+			// èª­ã¿å–ã‚ŠæˆåŠŸ
 			if(dwLen>0){
 				//TRACEOUT(("LGY-98: recieve %u bytes\n", dwLen));
-				np2net.recieve_packet((UINT8*)np2net_Buf, dwLen); // óM‚Å‚«‚½‚Ì‚Å’Ê’m‚·‚é
+				np2net.recieve_packet((UINT8*)np2net_Buf, dwLen); // å—ä¿¡ã§ããŸã®ã§é€šçŸ¥ã™ã‚‹
 				np2net_highspeeddatacount += dwLen;
 			}else{
 				sched_yield();
@@ -333,17 +344,24 @@ static void* np2net_ThreadFuncR(void *thdata) {
 
 #endif // defined(_WINDOWS)
 
-//  TAPƒfƒoƒCƒX‚ğ•Â‚¶‚é
+//  TAPãƒ‡ãƒã‚¤ã‚¹ã‚’é–‰ã˜ã‚‹
 static void np2net_closeTAP(){
 #if defined(_WINDOWS)
     if (np2net_hTap != NULL) {
 		if(np2net_hThreadR){
 			np2net_hThreadexit = 1;
-			WaitForSingleObject(np2net_hThreadR,  INFINITE);
-			WaitForSingleObject(np2net_hThreadW, INFINITE);
+			if(WaitForSingleObject(np2net_hThreadR, 5000) == WAIT_TIMEOUT){
+				TerminateThread(np2net_hThreadR, 0);
+			}
+			if(WaitForSingleObject(np2net_hThreadW, 1000) == WAIT_TIMEOUT){
+				TerminateThread(np2net_hThreadW, 0);
+			}
 			np2net_membuf_readpos = np2net_membuf_writepos;
 			np2net_hThreadexit = 0;
+			CloseHandle(np2net_hThreadR);
+			CloseHandle(np2net_hThreadW);
 			np2net_hThreadR = NULL;
+			np2net_hThreadW = NULL;
 		}
 		CloseHandle(np2net_hTap);
 		TRACEOUT(("LGY-98: TAP is closed"));
@@ -367,7 +385,7 @@ static void np2net_closeTAP(){
     }
 #endif // defined(_WINDOWS)
 }
-//  TAPƒfƒoƒCƒX‚ğŠJ‚­
+//  TAPãƒ‡ãƒã‚¤ã‚¹ã‚’é–‹ã
 static int np2net_openTAP(const OEMCHAR* tapname){
 #if defined(_WINDOWS)
 	DWORD dwID;
@@ -383,7 +401,7 @@ static int np2net_openTAP(const OEMCHAR* tapname){
 
 	np2net_closeTAP();
 
-	// w’è‚³‚ê‚½•\¦–¼‚©‚ç TAP ‚Ì GUID ‚ğ“¾‚é
+	// æŒ‡å®šã•ã‚ŒãŸè¡¨ç¤ºåã‹ã‚‰ TAP ã® GUID ã‚’å¾—ã‚‹
 	if (!GetNetWorkDeviceGuid(szTAPname, Buf, 2048)) {
 		TRACEOUT(("LGY-98: [%s] GUID is not found\n", szTAPname));
 		return 1;
@@ -391,7 +409,7 @@ static int np2net_openTAP(const OEMCHAR* tapname){
 	TRACEOUT(("LGY-98: [%s] GUID = %s\n", szTAPname, Buf));
 	_stprintf(szDevicePath, DEVICE_PATH_FMT, Buf);
  
-	// TAP ƒfƒoƒCƒX‚ğŠJ‚­
+	// TAP ãƒ‡ãƒã‚¤ã‚¹ã‚’é–‹ã
 	np2net_hTap = CreateFile (szDevicePath, GENERIC_READ | GENERIC_WRITE,
 		0, 0, OPEN_EXISTING,
 		FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
@@ -403,7 +421,7 @@ static int np2net_openTAP(const OEMCHAR* tapname){
 
 	TRACEOUT(("LGY-98: TAP is opened"));
 	
-	// TAP ƒfƒoƒCƒX‚ğƒAƒNƒeƒBƒu‚É
+	// TAP ãƒ‡ãƒã‚¤ã‚¹ã‚’ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã«
 	status = TRUE;
 	if (!DeviceIoControl(np2net_hTap,TAP_IOCTL_SET_MEDIA_STATUS,
 				&status, sizeof(status), &status, sizeof(status),
@@ -417,13 +435,24 @@ static int np2net_openTAP(const OEMCHAR* tapname){
 	np2net_hThreadW = (HANDLE)_beginthreadex(NULL , 0 , np2net_ThreadFuncW , NULL , 0 , &dwID);
 #else
 	struct ifreq ifr;
+#if defined(__APPLE__)
+	np2net_hTap = open("/dev/tap0", O_RDWR);
+#else
 	np2net_hTap = open("/dev/net/tun", O_RDWR);
+#endif
 	if(np2net_hTap < 0){
+#if defined(__APPLE__)
+		TRACEOUT(("LGY-98: Failed to open [%s]", "/dev/tap0"));
+#else
 		TRACEOUT(("LGY-98: Failed to open [%s]", "/dev/net/tun"));
+#endif
 		return 2;
 	}
 	memset(&ifr, 0, sizeof(ifr));
 
+#if defined(__APPLE__)
+	strcpy(ifr.ifr_name, "tap%d");
+#else
 	ifr.ifr_flags = IFF_TAP | IFF_NO_PI;
 	strcpy(ifr.ifr_name, "tap%d");
 	
@@ -432,7 +461,7 @@ static int np2net_openTAP(const OEMCHAR* tapname){
 		np2net_closeTAP();
 		return 3;
 	}
-
+#endif
 	if(pthread_create(&np2net_hThreadR , NULL , np2net_ThreadFuncR , NULL) != 0){
 		TRACEOUT(("LGY-98: thread_create(READ) err"));
 		np2net_closeTAP();
@@ -449,7 +478,7 @@ static int np2net_openTAP(const OEMCHAR* tapname){
 	return 0;
 }
 
-// NP2‹N“®‚Ìˆ—
+// NP2èµ·å‹•æ™‚ã®å‡¦ç†
 void np2net_init(void)
 {
 #if defined(_WINDOWS)
@@ -463,7 +492,7 @@ void np2net_init(void)
 	np2net.send_packet = np2net_default_send_packet;
 	np2net.recieve_packet = np2net_default_recieve_packet;
 }
-// ƒŠƒZƒbƒg‚ÉŒÄ‚Î‚ê‚éH
+// ãƒªã‚»ãƒƒãƒˆæ™‚ã«å‘¼ã°ã‚Œã‚‹ï¼Ÿ
 void np2net_reset(const NP2CFG *pConfig){
 #if defined(_WINDOWS)
 	_tcscpy(np2net_tapName, pConfig->np2nettap);
@@ -471,14 +500,14 @@ void np2net_reset(const NP2CFG *pConfig){
 	strcpy(np2net_tapName, pConfig->np2nettap);
 #endif // defined(_WINDOWS)
 	np2net_pmm = pConfig->np2netpmm;
-	if(pConfig->uselgy98){ // XXX: g‚í‚ê‚Ä‚¢‚È‚¢‚È‚çTAPƒfƒoƒCƒX‚ÍƒI[ƒvƒ“‚µ‚È‚¢
+	if(pConfig->uselgy98){ // XXX: ä½¿ã‚ã‚Œã¦ã„ãªã„ãªã‚‰TAPãƒ‡ãƒã‚¤ã‚¹ã¯ã‚ªãƒ¼ãƒ—ãƒ³ã—ãªã„
 		np2net_openTAP(np2net_tapName);
 	}
 }
-// ƒŠƒZƒbƒg‚ÉŒÄ‚Î‚ê‚éHinp2net_reset‚æ‚èŒãEiocore_attach`‚ªg‚¦‚éj
+// ãƒªã‚»ãƒƒãƒˆæ™‚ã«å‘¼ã°ã‚Œã‚‹ï¼Ÿï¼ˆnp2net_resetã‚ˆã‚Šå¾Œãƒ»iocore_attachã€œãŒä½¿ãˆã‚‹ï¼‰
 void np2net_bind(void){
 }
-// NP2I—¹‚Ìˆ—
+// NP2çµ‚äº†æ™‚ã®å‡¦ç†
 void np2net_shutdown(void)
 {
 	np2net_hThreadexit = 1;
@@ -486,17 +515,17 @@ void np2net_shutdown(void)
 }
 
 #if defined(_WINDOWS)
-// Ql•¶Œ£: http://dsas.blog.klab.org/archives/51012690.html
+// å‚è€ƒæ–‡çŒ®: http://dsas.blog.klab.org/archives/51012690.html
 
-// ƒlƒbƒgƒ[ƒNƒfƒoƒCƒX•\¦–¼‚©‚çƒfƒoƒCƒX GUID •¶š—ñ‚ğŒŸõ
+// ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ãƒ‡ãƒã‚¤ã‚¹è¡¨ç¤ºåã‹ã‚‰ãƒ‡ãƒã‚¤ã‚¹ GUID æ–‡å­—åˆ—ã‚’æ¤œç´¢
 static TCHAR *GetNetWorkDeviceGuid(CONST TCHAR *pDisplayName, TCHAR *pszBuf, DWORD cbBuf)
 {
   CONST TCHAR *SUBKEY = _T("SYSTEM\\CurrentControlSet\\Control\\Network");
  
 #define BUFSZ 256
-  // HKLM\SYSTEM\\CurrentControlSet\\Control\\Network\{id1]\{id2}\Connection\Name ‚ª
-  // ƒlƒbƒgƒ[ƒNƒfƒoƒCƒX–¼iƒ†ƒj[ƒNj‚ÌŠi”[‚³‚ê‚½ƒGƒ“ƒgƒŠ‚Å‚ ‚èA
-  // {id2} ‚ª‚±‚ÌƒfƒoƒCƒX‚Ì GUID ‚Å‚ ‚é
+  // HKLM\SYSTEM\\CurrentControlSet\\Control\\Network\{id1]\{id2}\Connection\Name ãŒ
+  // ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ãƒ‡ãƒã‚¤ã‚¹åï¼ˆãƒ¦ãƒ‹ãƒ¼ã‚¯ï¼‰ã®æ ¼ç´ã•ã‚ŒãŸã‚¨ãƒ³ãƒˆãƒªã§ã‚ã‚Šã€
+  // {id2} ãŒã“ã®ãƒ‡ãƒã‚¤ã‚¹ã® GUID ã§ã‚ã‚‹
  
   HKEY hKey1, hKey2, hKey3;
   LONG nResult;
@@ -509,7 +538,7 @@ static TCHAR *GetNetWorkDeviceGuid(CONST TCHAR *pDisplayName, TCHAR *pszBuf, DWO
   hKey1 = hKey2 = hKey3 = NULL;
   pKeyName1 = pKeyName2 = pKeyName3 = pKeyName4 = NULL;
  
-  // åƒL[‚ÌƒI[ƒvƒ“
+  // ä¸»ã‚­ãƒ¼ã®ã‚ªãƒ¼ãƒ—ãƒ³
   nResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, SUBKEY, 0, KEY_READ, &hKey1);
   if (nResult != ERROR_SUCCESS) {
     return NULL;
@@ -520,7 +549,7 @@ static TCHAR *GetNetWorkDeviceGuid(CONST TCHAR *pDisplayName, TCHAR *pszBuf, DWO
   pKeyName4 = (TCHAR*)malloc(sizeof(TCHAR)*BUFSZ);
  
   dwIdx1 = 0;
-  while (bDone != TRUE) { // {id1} ‚ğ—ñ‹“‚·‚éƒ‹[ƒv
+  while (bDone != TRUE) { // {id1} ã‚’åˆ—æŒ™ã™ã‚‹ãƒ«ãƒ¼ãƒ—
  
     dwSize = BUFSZ;
     nResult = RegEnumKeyEx(hKey1, dwIdx1++, pKeyName1,
@@ -529,7 +558,7 @@ static TCHAR *GetNetWorkDeviceGuid(CONST TCHAR *pDisplayName, TCHAR *pszBuf, DWO
       break;
     }
  
-    // SUBKEY\{id1} ƒL[‚ğƒI[ƒvƒ“
+    // SUBKEY\{id1} ã‚­ãƒ¼ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
     _stprintf(pKeyName2, _T("%s\\%s"), SUBKEY, pKeyName1);
     nResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, pKeyName2,
                           0, KEY_READ, &hKey2);
@@ -537,7 +566,7 @@ static TCHAR *GetNetWorkDeviceGuid(CONST TCHAR *pDisplayName, TCHAR *pszBuf, DWO
       continue;
     }
     dwIdx2 = 0;
-    while (1) { // {id2} ‚ğ—ñ‹“‚·‚éƒ‹[ƒv
+    while (1) { // {id2} ã‚’åˆ—æŒ™ã™ã‚‹ãƒ«ãƒ¼ãƒ—
       dwSize = BUFSZ;
       nResult = RegEnumKeyEx(hKey2, dwIdx2++, pKeyName3,
                           &dwSize, NULL, NULL, NULL, &ft);
@@ -549,7 +578,7 @@ static TCHAR *GetNetWorkDeviceGuid(CONST TCHAR *pDisplayName, TCHAR *pszBuf, DWO
         continue;
       }
  
-      // SUBKEY\{id1}\{id2]\Connection ƒL[‚ğƒI[ƒvƒ“
+      // SUBKEY\{id1}\{id2]\Connection ã‚­ãƒ¼ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
       _stprintf(pKeyName4, _T("%s\\%s\\%s"),
                       pKeyName2, pKeyName3, _T("Connection"));
       nResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE,
@@ -558,7 +587,7 @@ static TCHAR *GetNetWorkDeviceGuid(CONST TCHAR *pDisplayName, TCHAR *pszBuf, DWO
         continue;
       }
  
-      // SUBKEY\{id1}\{id2]\Connection\Name ’l‚ğæ“¾
+      // SUBKEY\{id1}\{id2]\Connection\Name å€¤ã‚’å–å¾—
       dwSize = sizeof(szData);
       nResult = RegQueryValueEx(hKey3, _T("Name"),
                       0, &dwType, (LPBYTE)szData, &dwSize);
@@ -586,7 +615,7 @@ static TCHAR *GetNetWorkDeviceGuid(CONST TCHAR *pDisplayName, TCHAR *pszBuf, DWO
   if (pKeyName3) { free(pKeyName3); }
   if (pKeyName4) { free(pKeyName4); }
  
-  // GUID ‚ğ”­Œ©‚Å‚«‚¸
+  // GUID ã‚’ç™ºè¦‹ã§ããš
   if (bDone != TRUE) {
     return NULL;
   }

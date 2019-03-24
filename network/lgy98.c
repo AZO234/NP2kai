@@ -23,7 +23,7 @@
  */
 
 /*
- * ’ˆÓF‚±‚Ìƒtƒ@ƒCƒ‹‚ÌƒIƒŠƒWƒiƒ‹‚ÍQEMU‚Ìne2000.c‚Å‚·‚ªA‘å•‚È‰ü•Ï‚ªs‚í‚ê‚Ä‚¢‚Ü‚·B
+ * æ³¨æ„ï¼šã“ã®ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ªãƒªã‚¸ãƒŠãƒ«ã¯QEMUã®ne2000.cã§ã™ãŒã€å¤§å¹…ãªæ”¹å¤‰ãŒè¡Œã‚ã‚Œã¦ã„ã¾ã™ã€‚
  */
 
 #include	"compiler.h"
@@ -239,7 +239,7 @@ static void ne2000_dma_update(LGY98 *s, int len)
         s->rcnt = 0;
         /* signal end of transfer */
         s->isr |= ENISR_RDC;
-		s->cmd |= E8390_NODMA; /* ƒRƒ}ƒ“ƒhƒŒƒWƒXƒ^‚ÉDMAŠ®—¹ƒrƒbƒg‚ğ—§‚Ä‚é */ 
+		s->cmd |= E8390_NODMA; /* ã‚³ãƒãƒ³ãƒ‰ãƒ¬ã‚¸ã‚¹ã‚¿ã«DMAå®Œäº†ãƒ“ãƒƒãƒˆã‚’ç«‹ã¦ã‚‹ */ 
         ne2000_update_irq(s);
 		//		TRACEOUT(("LGY-98: DMA_IRQ"));
     } else {
@@ -708,11 +708,11 @@ REG16 IOINPCALL lgy98_ib200_16(UINT addr) {
     return (REG16)ret;
 }
 
-// XXX: À‹@‚©‚çE‚Á‚½“ä‚ÌƒV[ƒPƒ“ƒX
-REG8 lgy98seq_base[] = {0xA,0x4,0xC,0x6,0xE,0x6,0xE,0x4}; // ƒV[ƒPƒ“ƒX‹¤’Ê•”•ªH
-REG8 lgy98seq_mbase = 0; // ƒV[ƒPƒ“ƒXˆê’v”(‹¤’Ê•”•ª)
-REG8 lgy98seq_mbuf[64] = {0}; // ƒV[ƒPƒ“ƒXˆê’v”
-REG8 lgy98seq_list[64][7] = { // ƒV[ƒPƒ“ƒXƒŠƒXƒg
+// XXX: å®Ÿæ©Ÿã‹ã‚‰æ‹¾ã£ãŸè¬ã®ã‚·ãƒ¼ã‚±ãƒ³ã‚¹
+REG8 lgy98seq_base[] = {0xA,0x4,0xC,0x6,0xE,0x6,0xE,0x4}; // ã‚·ãƒ¼ã‚±ãƒ³ã‚¹å…±é€šéƒ¨åˆ†ï¼Ÿ
+REG8 lgy98seq_mbase = 0; // ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ä¸€è‡´æ•°(å…±é€šéƒ¨åˆ†)
+REG8 lgy98seq_mbuf[64] = {0}; // ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ä¸€è‡´æ•°
+REG8 lgy98seq_list[64][7] = { // ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ãƒªã‚¹ãƒˆ
 	{0,0,0,0,0,0,1}, {0,0,0,0,0,1,3}, {0,0,0,0,1,2,1}, {0,0,0,0,1,3,3},
 	{0,0,0,1,2,0,1}, {0,0,0,1,2,1,3}, {0,0,0,1,3,2,1}, {0,0,0,1,3,3,3},
 	{0,0,1,2,0,0,1}, {0,0,1,2,0,1,3}, {0,0,1,2,1,2,1}, {0,0,1,2,1,3,3},
@@ -730,21 +730,21 @@ REG8 lgy98seq_list[64][7] = { // ƒV[ƒPƒ“ƒXƒŠƒXƒg
 	{1,3,3,2,0,0,1}, {1,3,3,2,0,1,3}, {1,3,3,2,1,2,1}, {1,3,3,2,1,3,3},
 	{1,3,3,3,2,0,1}, {1,3,3,3,2,1,3}, {1,3,3,3,3,2,1}, {1,3,3,3,3,3,3},
 };
-// IRQ -> 7oŒ»INDEX
-/* 7oŒ»ˆÊ’uƒƒ‚
+// IRQ -> 7å‡ºç¾INDEX
+/* 7å‡ºç¾ä½ç½®ãƒ¡ãƒ¢
 17 -> INT0(IRQ3)
 16 -> INT1(IRQ5)
-15 -> INT2(IRQ6) w’è•s‰Â
-14 -> INT3(IRQ9) w’è•s‰Â
-13 -> INT4(IRQ10,11) w’è•s‰Â
+15 -> INT2(IRQ6) æŒ‡å®šä¸å¯
+14 -> INT3(IRQ9) æŒ‡å®šä¸å¯
+13 -> INT4(IRQ10,11) æŒ‡å®šä¸å¯
 12 -> INT5(IRQ12)
-11 -> INT6(IRQ13) w’è•s‰Â
+11 -> INT6(IRQ13) æŒ‡å®šä¸å¯
 */
 //                 IRQ   0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15
 REG8 lgy98_IRQ2IDX[] = { 0,  0,  0, 16,  0, 15, 14,  0,  0,  0,  0,  0, 11,  0,  0,  0};
 #define LGY98_MAKERETCODE(a) ((a) ? 0x07 : 0x06)
-REG8 lgy98seq_retseq[17] = {0}; // –ß‚è’l
-REG8 lgy98seq_retlist[64][17] = { // –ß‚è’lƒŠƒXƒgiROM“à—eHHj
+REG8 lgy98seq_retseq[17] = {0}; // æˆ»ã‚Šå€¤
+REG8 lgy98seq_retlist[64][17] = { // æˆ»ã‚Šå€¤ãƒªã‚¹ãƒˆï¼ˆROMå†…å®¹ï¼Ÿï¼Ÿï¼‰
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -823,16 +823,16 @@ REG8 lgy98_code2num(REG8 code1,REG8 code2){
     }
 	return 0xff;
 }
-int lgy98seq_retidx = -1; // –ß‚è’lƒŠƒXƒg”Ô†
-int lgy98seq_retpos = 0; // –ß‚è’lƒŠƒXƒg‚Ì“Ç‚İæ‚èˆÊ’u
+int lgy98seq_retidx = -1; // æˆ»ã‚Šå€¤ãƒªã‚¹ãƒˆç•ªå·
+int lgy98seq_retpos = 0; // æˆ»ã‚Šå€¤ãƒªã‚¹ãƒˆã®èª­ã¿å–ã‚Šä½ç½®
 
 void lgy98_setromdata(){
-	// INTİ’è
+	// INTè¨­å®š
     memset(lgy98seq_retlist[6], 0, _countof(lgy98seq_retlist[0])); 
 	lgy98seq_retlist[6][lgy98_IRQ2IDX[lgy98.irq]] = 1;
 }
 void lgy98_setretseq(int index){
-	// –ß‚è’lİ’è
+	// æˆ»ã‚Šå€¤è¨­å®š
 	lgy98seq_retidx = index;
 	lgy98seq_retpos = 0;
 	memcpy(lgy98seq_retseq, &(lgy98seq_retlist[lgy98seq_retidx]), _countof(lgy98seq_retseq));
@@ -851,7 +851,7 @@ static void IOOUTCALL lgy98_ob300_16(UINT port, REG8 dat) {
 				if(lgy98seq_mbase ==_countof(lgy98seq_base)){
 					int i;
 					for(i=0;i<_countof(lgy98seq_mbuf);i++){
-						lgy98seq_mbuf[i] = 0; // ˆê’v”ƒJƒEƒ“ƒ^‰Šú‰»
+						lgy98seq_mbuf[i] = 0; // ä¸€è‡´æ•°ã‚«ã‚¦ãƒ³ã‚¿åˆæœŸåŒ–
 					}
 					codebufpos = 0;
 				}
@@ -885,7 +885,7 @@ static void IOOUTCALL lgy98_ob300_16(UINT port, REG8 dat) {
 					}
 				}
 				if(!mflag){
-					// Š®‘Sˆê’v‚Ü‚½‚Íˆê’v–³‚µ
+					// å®Œå…¨ä¸€è‡´ã¾ãŸã¯ä¸€è‡´ç„¡ã—
 					if(dat == lgy98seq_base[0]){
 						lgy98seq_mbase = 1;
 					}else{
@@ -994,13 +994,13 @@ VLANClientState *np2net_new_vlan_client(VLANState *vlan,
     return vc;
 }
 
-// ƒpƒPƒbƒgóM‚ÉŒÄ‚Î‚ê‚éiƒfƒtƒHƒ‹ƒgˆ—j
+// ãƒ‘ã‚±ãƒƒãƒˆå—ä¿¡æ™‚ã«å‘¼ã°ã‚Œã‚‹ï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå‡¦ç†ï¼‰
 static void np2net_lgy98_default_recieve_packet(const UINT8 *buf, int size)
 {
-	// ‰½‚à‚µ‚È‚¢
+	// ä½•ã‚‚ã—ãªã„
 }
 
-// ƒpƒPƒbƒgóM‚ÉŒÄ‚Î‚ê‚é
+// ãƒ‘ã‚±ãƒƒãƒˆå—ä¿¡æ™‚ã«å‘¼ã°ã‚Œã‚‹
 static void lgy98_recieve_packet(const UINT8 *buf, int size)
 {
 	lgy98.vc->fd_read(&lgy98, buf, size);
@@ -1012,10 +1012,10 @@ void lgy98_reset(const NP2CFG *pConfig){
 	
 	lgy98cfg.enabled = np2cfg.uselgy98;
 
-	// ‰Šú‰»
+	// åˆæœŸåŒ–
 	memset(&lgy98, 0, sizeof(lgy98));
 
-	// MACƒAƒhƒŒƒX
+	// MACã‚¢ãƒ‰ãƒ¬ã‚¹
 	memcpy(lgy98.macaddr, np2cfg.lgy98mac, 6);
 
 	np2net.recieve_packet = np2net_lgy98_default_recieve_packet;

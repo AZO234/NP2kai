@@ -275,7 +275,7 @@ MOV_CdRd(void)
 			 * 31 = PG (pageing)
 			 */
 
-			/* ���� p.182 ���荞�� 13 - ��ʕی��O */
+			/* 下巻 p.182 割り込み 13 - 一般保護例外 */
 			if ((src & (CPU_CR0_PE|CPU_CR0_PG)) == (UINT32)CPU_CR0_PG) {
 				EXCEPTION(GP_EXCEPTION, 0);
 			}
@@ -359,6 +359,9 @@ MOV_CdRd(void)
 #if (CPU_FEATURES & CPU_FEATURE_PGE) == CPU_FEATURE_PGE
 			    | CPU_CR4_PGE
 #endif
+#if (CPU_FEATURES & CPU_FEATURE_VME) == CPU_FEATURE_VME
+			    | CPU_CR4_PVI | CPU_CR4_VME
+#endif
 #if (CPU_FEATURES & CPU_FEATURE_FXSR) == CPU_FEATURE_FXSR
 			    | CPU_CR4_OSFXSR
 #endif
@@ -378,7 +381,7 @@ MOV_CdRd(void)
 			CPU_CR4 = src;
 			VERBOSE(("MOV_CdRd: %04x:%08x: cr4: 0x%08x <- 0x%08x(%s)", CPU_CS, CPU_PREV_EIP, reg, CPU_CR4, reg32_str[op & 7]));
 
-			if ((reg ^ CPU_CR4) & (CPU_CR4_PSE|CPU_CR4_PGE|CPU_CR4_PAE|CPU_CR4_OSFXSR)) {
+			if ((reg ^ CPU_CR4) & (CPU_CR4_PSE|CPU_CR4_PGE|CPU_CR4_PAE|CPU_CR4_PVI|CPU_CR4_VME|CPU_CR4_OSFXSR|CPU_CR4_OSXMMEXCPT)) {
 				tlb_flush_all();
 			}
 			break;
@@ -1070,6 +1073,18 @@ RDMSR(void)
 
 	idx = CPU_ECX;
 	switch (idx) {
+	case 0x174:
+		CPU_EDX = (UINT32)((i386msr.reg.ia32_sysenter_cs >> 32) & 0xffffffff);
+		CPU_EAX = (UINT32)((i386msr.reg.ia32_sysenter_cs      ) & 0xffffffff);
+		break;
+	case 0x175:
+		CPU_EDX = (UINT32)((i386msr.reg.ia32_sysenter_esp >> 32) & 0xffffffff);
+		CPU_EAX = (UINT32)((i386msr.reg.ia32_sysenter_esp      ) & 0xffffffff);
+		break;
+	case 0x176:
+		CPU_EDX = (UINT32)((i386msr.reg.ia32_sysenter_eip >> 32) & 0xffffffff);
+		CPU_EAX = (UINT32)((i386msr.reg.ia32_sysenter_eip      ) & 0xffffffff);
+		break;
 	case 0x10:
 		RDTSC();
 		break;
@@ -1083,7 +1098,7 @@ RDMSR(void)
 	//	break;
 	default:
 		CPU_EDX = CPU_EAX = 0;
-		//EXCEPTION(GP_EXCEPTION, 0); // XXX: �Ƃ肠�����ʂ�
+		//EXCEPTION(GP_EXCEPTION, 0); // XXX: とりあえず通す
 		break;
 	}
 }
@@ -1100,10 +1115,18 @@ WRMSR(void)
 
 	idx = CPU_ECX;
 	switch (idx) {
-		/* MTRR �ւ̏������ݎ� tlb_flush_all(); */
-
+	case 0x174:
+		i386msr.reg.ia32_sysenter_cs = ((UINT64)CPU_EDX << 32) | ((UINT64)CPU_EAX);
+		break;
+	case 0x175:
+		i386msr.reg.ia32_sysenter_esp = ((UINT64)CPU_EDX << 32) | ((UINT64)CPU_EAX);
+		break;
+	case 0x176:
+		i386msr.reg.ia32_sysenter_eip = ((UINT64)CPU_EDX << 32) | ((UINT64)CPU_EAX);
+		break;
+		/* MTRR への書き込み時 tlb_flush_all(); */
 	default:
-		//EXCEPTION(GP_EXCEPTION, 0); // XXX: �Ƃ肠�����ʂ�
+		//EXCEPTION(GP_EXCEPTION, 0); // XXX: とりあえず通す
 		break;
 	}
 }
@@ -1161,6 +1184,7 @@ RDPMC(void)
 
 	idx = CPU_ECX;
 	switch (idx) {
+	default:
 		CPU_EDX = CPU_EAX = 0;
 	}
 }
@@ -1177,4 +1201,66 @@ MOV_RdTd(void)
 {
 
 	ia32_panic("MOV_RdTd: not implemented yet!");
+}
+
+// 中途半端＆ノーチェック注意
+void
+SYSENTER(void)
+{
+	// SEPなしならUD(無効オペコード例外)を発生させる
+	if(!(i386cpuid.cpu_feature & CPU_FEATURE_SEP)){
+		EXCEPTION(UD_EXCEPTION, 0);
+	}
+	// プロテクトモードチェック
+	if (!CPU_STAT_PM) {
+		EXCEPTION(GP_EXCEPTION, 0);
+	}
+	// MSRレジスタチェック
+	if (i386msr.reg.ia32_sysenter_cs == 0) {
+		EXCEPTION(GP_EXCEPTION, 0);
+	}
+
+	CPU_EFLAG = CPU_EFLAG & ~(VM_FLAG|I_FLAG|RF_FLAG);
+	CPU_CS = (UINT32)i386msr.reg.ia32_sysenter_cs;
+
+	CPU_SS = CPU_CS + 8;
+	
+	CPU_ESP = (UINT32)i386msr.reg.ia32_sysenter_esp;
+	CPU_EIP = (UINT32)i386msr.reg.ia32_sysenter_eip;
+
+	CPU_STAT_CPL = 0;
+	CPU_STAT_USER_MODE = (CPU_STAT_CPL == 3) ? CPU_MODE_USER : CPU_MODE_SUPERVISER;
+}
+
+// 中途半端＆ノーチェック注意
+void
+SYSEXIT(void)
+{
+	// SEPなしならUD(無効オペコード例外)を発生させる
+	if(!(i386cpuid.cpu_feature & CPU_FEATURE_SEP)){
+		EXCEPTION(UD_EXCEPTION, 0);
+	}
+	// プロテクトモードチェック
+	if (!CPU_STAT_PM) {
+		EXCEPTION(GP_EXCEPTION, 0);
+	}
+	// MSRレジスタチェック
+	if (i386msr.reg.ia32_sysenter_cs == 0) {
+		EXCEPTION(GP_EXCEPTION, 0);
+	}
+	// 特権レベルチェック
+	if (CPU_STAT_CPL != 0) {
+		VERBOSE(("SYSENTER: CPL(%d) != 0", CPU_STAT_CPL));
+		EXCEPTION(GP_EXCEPTION, 0);
+	}
+
+	CPU_CS = (UINT32)i386msr.reg.ia32_sysenter_cs + 16;
+
+	CPU_SS = (UINT32)i386msr.reg.ia32_sysenter_cs + 24;
+	
+	CPU_ESP = CPU_ECX;
+	CPU_EIP = CPU_EDX;
+
+	CPU_STAT_CPL = 3;
+	CPU_STAT_USER_MODE = (CPU_STAT_CPL == 3) ? CPU_MODE_USER : CPU_MODE_SUPERVISER;
 }

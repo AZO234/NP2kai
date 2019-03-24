@@ -442,7 +442,7 @@ static PFILEH registfile(FILEH fh)
 	}
 #endif
 
-	nFileSize = file_getsize(fh);
+	nFileSize = (UINT)file_getsize(fh);
 	if (nFileSize < cbHeader)
 	{
 		goto rf_err1;

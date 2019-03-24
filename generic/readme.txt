@@ -1,7 +1,7 @@
 
-@ˆê”Ê“I‚È“zB
+ã€€ä¸€èˆ¬çš„ãªå¥´ã€‚
 
-@keydisp‚Æ‚©
-@hostdrv‚Æ‚©‚à‚±‚±H
-@ƒWƒƒƒXƒgƒTƒEƒ“ƒhH(Š¾;
+ã€€keydispã¨ã‹
+ã€€hostdrvã¨ã‹ã‚‚ã“ã“ï¼Ÿ
+ã€€ã‚¸ãƒ£ã‚¹ãƒˆã‚µã‚¦ãƒ³ãƒ‰ï¼Ÿ(æ±—;
 

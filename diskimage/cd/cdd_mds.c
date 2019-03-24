@@ -163,7 +163,7 @@ typedef struct {
 #pragma pack(pop)
 #endif
 
-//	MDS“Ç‚İ‚İ
+//	MDSèª­ã¿è¾¼ã¿
 BRESULT openmds(SXSIDEV sxsi, const OEMCHAR *fname) {
 
 	_CDTRK	trk[99];
@@ -184,7 +184,7 @@ BRESULT openmds(SXSIDEV sxsi, const OEMCHAR *fname) {
 	path[0] = '\0';
 	index = 0;
 
-	//	ƒCƒ[ƒWƒtƒ@ƒCƒ‹‚ÌÀ‘Ì‚Íè”²‚«‚Å’Pˆê"*.mdf"ŒÅ’è
+	//	ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ•ã‚¡ã‚¤ãƒ«ã®å®Ÿä½“ã¯æ‰‹æŠœãã§å˜ä¸€"*.mdf"å›ºå®š
 	file_cpyname(path, fname, NELEMENTS(path));
 	file_cutext(path);
 	file_catname(path, str_mdf, NELEMENTS(path));
@@ -194,7 +194,7 @@ BRESULT openmds(SXSIDEV sxsi, const OEMCHAR *fname) {
 		goto openmds_err2;
 	}
 
-	//	Header“Ç‚İ‚İ
+	//	Headerèª­ã¿è¾¼ã¿
 	if (file_read(fh, &MDS_H, sizeof(MDS_H)) != sizeof(MDS_H)) {
 		goto openmds_err1;
 	}
@@ -202,7 +202,7 @@ BRESULT openmds(SXSIDEV sxsi, const OEMCHAR *fname) {
 		goto openmds_err1;
     }
 
-	//	SessionBlock‚ÖƒV[ƒNŒãASessionBlock“Ç‚İ‚İ
+	//	SessionBlockã¸ã‚·ãƒ¼ã‚¯å¾Œã€SessionBlockèª­ã¿è¾¼ã¿
 	fpos = LOADINTELDWORD(&MDS_H.sessions_blocks_offset);
 	if (file_seek(fh, fpos, FSEEK_SET) != fpos) {
 		goto openmds_err1;
@@ -211,8 +211,8 @@ BRESULT openmds(SXSIDEV sxsi, const OEMCHAR *fname) {
 		goto openmds_err1;
 	}
 
-	//	‚»‚Ì‚·‚®Œã‚ÉTrackBlock‚ª‘±‚¢‚Ä‚¢‚é‘O’ñ‚Å•K—v”•ªTrackBlock“Ç‚İ‚İ
-	//	¦MDS_SB.tracks_blocks_offset‚ÉŠú‘Ò‚µ‚½’l‚ª“ü‚Á‚Ä‚È‚¢c
+	//	ãã®ã™ãå¾Œã«TrackBlockãŒç¶šã„ã¦ã„ã‚‹å‰æã§å¿…è¦æ•°åˆ†TrackBlockèª­ã¿è¾¼ã¿
+	//	â€»MDS_SB.tracks_blocks_offsetã«æœŸå¾…ã—ãŸå€¤ãŒå…¥ã£ã¦ãªã„â€¦
 	for (i = 0; i < MDS_SB.num_all_blocks; i++) {
 		if (file_read(fh, &MDS_TB, sizeof(MDS_TB)) != sizeof(MDS_TB)) {
 			goto openmds_err1;
@@ -220,7 +220,7 @@ BRESULT openmds(SXSIDEV sxsi, const OEMCHAR *fname) {
 
 		//	MDS_TRACKMODE_AUDIO
 		//	MDS_TRACKMODE_MODE1
-		//	‚Ì‚İA”F¯‘ÎÛ
+		//	ã®ã¿ã€èªè­˜å¯¾è±¡
 		if (MDS_TB.mode == MDS_TRACKMODE_AUDIO || MDS_TB.mode == MDS_TRACKMODE_MODE1) {
 			trk[index].adr_ctl		= MDS_TB.adr_ctl;
 			trk[index].point		= MDS_TB.point;
@@ -238,7 +238,7 @@ BRESULT openmds(SXSIDEV sxsi, const OEMCHAR *fname) {
 		}
 	}
 
-	//	TrackExtraBlock‚ğ“Ç‚İ‚ñ‚ÅPREGAP•ª‚Ì•â³
+	//	TrackExtraBlockã‚’èª­ã¿è¾¼ã‚“ã§PREGAPåˆ†ã®è£œæ­£
 	total_pregap = 0;
 	for (i = 0; i < index; i++) {
 		if (ex_offset[i] != 0) {

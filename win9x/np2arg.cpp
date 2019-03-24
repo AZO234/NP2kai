@@ -1,20 +1,20 @@
 /**
  *	@file	np2arg.cpp
- *	@brief	ˆø”î•ñƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ *	@brief	å¼•æ•°æƒ…å ±ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
 #include "np2arg.h"
 #include "dosio.h"
 
-#define	MAXARG		32				//!< Å‘åˆø”ƒGƒ“ƒgƒŠ”
-#define	ARG_BASE	1				//!< win32 ‚Ì lpszCmdLine ‚Ìê‡‚ÌŠJnƒGƒ“ƒgƒŠ
+#define	MAXARG		32				//!< æœ€å¤§å¼•æ•°ã‚¨ãƒ³ãƒˆãƒªæ•°
+#define	ARG_BASE	1				//!< win32 ã® lpszCmdLine ã®å ´åˆã®é–‹å§‹ã‚¨ãƒ³ãƒˆãƒª
 
-//! —Bˆê‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Å‚·
+//! å”¯ä¸€ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã§ã™
 Np2Arg Np2Arg::sm_instance;
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 Np2Arg::Np2Arg()
 {
@@ -22,7 +22,7 @@ Np2Arg::Np2Arg()
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 Np2Arg::~Np2Arg()
 {
@@ -31,11 +31,11 @@ Np2Arg::~Np2Arg()
 }
 
 /**
- * ƒp[ƒX
+ * ãƒ‘ãƒ¼ã‚¹
  */
 void Np2Arg::Parse()
 {
-	// ˆø”“Ç‚İo‚µ
+	// å¼•æ•°èª­ã¿å‡ºã—
 	free(m_lpArg);
 	m_lpArg = _tcsdup(::GetCommandLine());
 
@@ -77,11 +77,11 @@ void Np2Arg::Parse()
 		LPTSTR strbuf;
 		strbuf = (LPTSTR)calloc(500, sizeof(TCHAR));
 		if(!(_tcsstr(m_lpIniFile,_T(":"))!=NULL || (m_lpIniFile[0]=='\\'))){
-			// ƒtƒ@ƒCƒ‹–¼‚Ì‚İ‚Ìw’è‚Á‚Û‚©‚Á‚½‚çŒ»İ‚ÌƒfƒBƒŒƒNƒgƒŠ‚ğŒ‹‡
+			// ãƒ•ã‚¡ã‚¤ãƒ«åã®ã¿ã®æŒ‡å®šã£ã½ã‹ã£ãŸã‚‰ç¾åœ¨ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’çµåˆ
 			//getcwd(pathname, 300);
 			GetCurrentDirectory(500, strbuf);
 			if(strbuf[_tcslen(strbuf)-1]!='\\'){
-				_tcscat(strbuf, _T("\\")); // XXX: Linux‚Æ‚©‚¾‚Á‚½‚çƒXƒ‰ƒbƒVƒ…‚¶‚á‚È‚¢‚Æ‘Ê–Ú‚¾‚æ‚ËH
+				_tcscat(strbuf, _T("\\")); // XXX: Linuxã¨ã‹ã ã£ãŸã‚‰ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ã˜ã‚ƒãªã„ã¨é§„ç›®ã ã‚ˆã­ï¼Ÿ
 			}
 		}
 		_tcscat(strbuf, m_lpIniFile);
@@ -90,7 +90,7 @@ void Np2Arg::Parse()
 }
 
 /**
- * ƒfƒBƒXƒNî•ñ‚ğƒNƒŠƒA
+ * ãƒ‡ã‚£ã‚¹ã‚¯æƒ…å ±ã‚’ã‚¯ãƒªã‚¢
  */
 void Np2Arg::ClearDisk()
 {

@@ -21,10 +21,10 @@
 #endif	// defined(SUPPORT_S98)
 
 /**
- * ƒfƒtƒHƒ‹ƒg ƒtƒ@ƒCƒ‹‚ğ“¾‚é
- * @param[in] lpExt Šg’£q
- * @param[out] lpFilename ƒtƒ@ƒCƒ‹–¼
- * @param[in] cchFilename ƒtƒ@ƒCƒ‹–¼’·
+ * ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å¾—ã‚‹
+ * @param[in] lpExt æ‹¡å¼µå­
+ * @param[out] lpFilename ãƒ•ã‚¡ã‚¤ãƒ«å
+ * @param[in] cchFilename ãƒ•ã‚¡ã‚¤ãƒ«åé•·
  */
 static void GetDefaultFilename(LPCTSTR lpExt, LPTSTR lpFilename, UINT cchFilename)
 {
@@ -45,8 +45,8 @@ static void GetDefaultFilename(LPCTSTR lpExt, LPTSTR lpFilename, UINT cchFilenam
 }
 
 /**
- * ƒTƒEƒ“ƒh ƒƒO
- * @param[in] hWnd eƒEƒBƒ“ƒhƒE
+ * ã‚µã‚¦ãƒ³ãƒ‰ ãƒ­ã‚°
+ * @param[in] hWnd è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 void dialog_soundlog(HWND hWnd)
 {

@@ -21,7 +21,7 @@ static const KEYBIND keybind[] = {
 					{SDL_SCANCODE_RIGHT,	NP2_KEY_RIGHT},
 					{SDL_SCANCODE_RETURN,	KEY_ENTER},
 					{SDL_SCANCODE_ESCAPE,	KEY_MENU},
-					{SDL_SCANCODE_TAB,		KEY_SKIP}};		/* Ç∆ÇËÇ†Ç¶Ç∏ÇÀÅc */
+					{SDL_SCANCODE_TAB,		KEY_SKIP}};		/* „Å®„Çä„ÅÇ„Åà„Åö„Å≠‚Ä¶ */
 
 
 // ----

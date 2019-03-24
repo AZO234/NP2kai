@@ -1,6 +1,6 @@
 /**
  * @file	kdispwnd.cpp
- * @brief	ƒL[ƒ{[ƒh ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -17,11 +17,11 @@ extern WINLOCEX np2_winlocexallwin(HWND base);
 
 #if defined(SUPPORT_KEYDISP)
 
-//! —Bˆê‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Å‚·
+//! å”¯ä¸€ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã§ã™
 CKeyDisplayWnd CKeyDisplayWnd::sm_instance;
 
 /**
- * ƒ‚[ƒh
+ * ãƒ¢ãƒ¼ãƒ‰
  */
 enum
 {
@@ -30,24 +30,24 @@ enum
 };
 
 /**
- * @brief ƒRƒ“ƒtƒBƒO
+ * @brief ã‚³ãƒ³ãƒ•ã‚£ã‚°
  */
 struct KeyDisplayConfig
 {
 	int		posx;		//!< X
 	int		posy;		//!< Y
-	UINT8	mode;		//!< ƒ‚[ƒh
-	UINT8	type;		//!< ƒEƒBƒ“ƒhƒE ƒ^ƒCƒv
+	UINT8	mode;		//!< ãƒ¢ãƒ¼ãƒ‰
+	UINT8	type;		//!< ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ã‚¿ã‚¤ãƒ—
 };
 
-//! ƒRƒ“ƒtƒBƒO
+//! ã‚³ãƒ³ãƒ•ã‚£ã‚°
 static KeyDisplayConfig s_kdispcfg;
 
-//! ƒ^ƒCƒgƒ‹
+//! ã‚¿ã‚¤ãƒˆãƒ«
 static const TCHAR s_kdispapp[] = TEXT("Key Display");
 
 /**
- * İ’è
+ * è¨­å®š
  */
 static const PFTBL s_kdispini[] =
 {
@@ -57,11 +57,11 @@ static const PFTBL s_kdispini[] =
 	PFVAL("windtype", PFTYPE_BOOL,		&s_kdispcfg.type)
 };
 
-//! ƒpƒŒƒbƒg
+//! ãƒ‘ãƒ¬ãƒƒãƒˆ
 static const UINT32 s_kdisppal[KEYDISP_PALS] = {0x00000000, 0xffffffff, 0xf9ff0000};
 
 /**
- * ‰Šú‰»
+ * åˆæœŸåŒ–
  */
 void CKeyDisplayWnd::Initialize()
 {
@@ -69,31 +69,31 @@ void CKeyDisplayWnd::Initialize()
 }
 
 /**
- * ‰ğ•ú
+ * è§£æ”¾
  */
 void CKeyDisplayWnd::Deinitialize()
 {
 }
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CKeyDisplayWnd::CKeyDisplayWnd()
 {
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CKeyDisplayWnd::~CKeyDisplayWnd()
 {
 }
 
 /**
- * 8bppF‚ğ•Ô‚·
- * @param[in] self ƒCƒ“ƒXƒ^ƒ“ƒX
- * @param[in] num ƒpƒŒƒbƒg”Ô†
- * @return F
+ * 8bppè‰²ã‚’è¿”ã™
+ * @param[in] self ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+ * @param[in] num ãƒ‘ãƒ¬ãƒƒãƒˆç•ªå·
+ * @return è‰²
  */
 static UINT8 kdgetpal8(CMNPALFN* self, UINT num)
 {
@@ -105,10 +105,10 @@ static UINT8 kdgetpal8(CMNPALFN* self, UINT num)
 }
 
 /**
- * 16bppF‚ğ•Ô‚·
- * @param[in] self ƒCƒ“ƒXƒ^ƒ“ƒX
- * @param[in] pal32 ƒpƒŒƒbƒg
- * @return F
+ * 16bppè‰²ã‚’è¿”ã™
+ * @param[in] self ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+ * @param[in] pal32 ãƒ‘ãƒ¬ãƒƒãƒˆ
+ * @return è‰²
  */
 static UINT16 kdcnvpal16(CMNPALFN* self, RGB32 pal32)
 {
@@ -116,10 +116,10 @@ static UINT16 kdcnvpal16(CMNPALFN* self, RGB32 pal32)
 }
 
 /**
- * 32bppF‚ğ•Ô‚·
- * @param[in] self ƒCƒ“ƒXƒ^ƒ“ƒX
- * @param[in] num ƒpƒŒƒbƒg”Ô†
- * @return F
+ * 32bppè‰²ã‚’è¿”ã™
+ * @param[in] self ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+ * @param[in] num ãƒ‘ãƒ¬ãƒƒãƒˆç•ªå·
+ * @return è‰²
  */
 static UINT32 kdgetpal32(CMNPALFN* self, UINT num)
 {
@@ -131,7 +131,7 @@ static UINT32 kdgetpal32(CMNPALFN* self, UINT num)
 }
 
 /**
- * ì¬
+ * ä½œæˆ
  */
 void CKeyDisplayWnd::Create()
 {
@@ -182,8 +182,8 @@ void CKeyDisplayWnd::Create()
 }
 
 /**
- * •`‰æ‚·‚é
- * @param[in] cnt i‚ñ‚¾ƒtƒŒ[ƒ€
+ * æç”»ã™ã‚‹
+ * @param[in] cnt é€²ã‚“ã ãƒ•ãƒ¬ãƒ¼ãƒ 
  */
 void CKeyDisplayWnd::Draw(UINT8 cnt)
 {
@@ -203,11 +203,11 @@ void CKeyDisplayWnd::Draw(UINT8 cnt)
 }
 
 /**
- * CWndProc ƒIƒuƒWƒFƒNƒg‚Ì Windows ƒvƒƒV[ƒWƒƒ (WindowProc) ‚ª—pˆÓ‚³‚ê‚Ä‚¢‚Ü‚·
- * @param[in] nMsg ˆ—‚³‚ê‚é Windows ƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
- * @param[in] wParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @param[in] lParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @return ƒƒbƒZ[ƒW‚ÉˆË‘¶‚·‚é’l‚ğ•Ô‚µ‚Ü‚·
+ * CWndProc ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã® Windows ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ (WindowProc) ãŒç”¨æ„ã•ã‚Œã¦ã„ã¾ã™
+ * @param[in] nMsg å‡¦ç†ã•ã‚Œã‚‹ Windows ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] wParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @param[in] lParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @return ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã™ã‚‹å€¤ã‚’è¿”ã—ã¾ã™
  */
 LRESULT CKeyDisplayWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -292,7 +292,7 @@ LRESULT CKeyDisplayWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ƒEƒBƒ“ƒhƒE”jŠü‚Ì‚ÉŒÄ‚Î‚ê‚é
+ * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç ´æ£„ã®æ™‚ã«å‘¼ã°ã‚Œã‚‹
  */
 void CKeyDisplayWnd::OnDestroy()
 {
@@ -302,9 +302,9 @@ void CKeyDisplayWnd::OnDestroy()
 }
 
 /**
- * ƒtƒŒ[ƒ€ƒ[ƒN‚ÍAƒ†[ƒU[‚ªƒ}ƒEƒX‚Ì‰Eƒ{ƒ^ƒ“‚ğ‰Ÿ‚·‚ÆA‚±‚Ìƒƒ“ƒo[ŠÖ”‚ğŒÄ‚Ño‚µ‚Ü‚·
- * @param[in] nFlags ‰¼‘zƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚é‚©‚Ç‚¤‚©‚ğ¦‚µ‚Ü‚·
- * @param[in] point ƒJ[ƒ\ƒ‹‚Ì x À•W‚Æ y À•W‚ğw’è‚µ‚Ü‚·
+ * ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã¯ã€ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒãƒã‚¦ã‚¹ã®å³ãƒœã‚¿ãƒ³ã‚’æŠ¼ã™ã¨ã€ã“ã®ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¾ã™
+ * @param[in] nFlags ä»®æƒ³ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹ã‹ã©ã†ã‹ã‚’ç¤ºã—ã¾ã™
+ * @param[in] point ã‚«ãƒ¼ã‚½ãƒ«ã® x åº§æ¨™ã¨ y åº§æ¨™ã‚’æŒ‡å®šã—ã¾ã™
  */
 void CKeyDisplayWnd::OnRButtonDown(UINT nFlags, POINT point)
 {
@@ -318,7 +318,7 @@ void CKeyDisplayWnd::OnRButtonDown(UINT nFlags, POINT point)
 }
 
 /**
- * •`‰æ‚Ì‚ÉŒÄ‚Î‚ê‚é
+ * æç”»ã®æ™‚ã«å‘¼ã°ã‚Œã‚‹
  */
 void CKeyDisplayWnd::OnPaint()
 {
@@ -329,8 +329,8 @@ void CKeyDisplayWnd::OnPaint()
 }
 
 /**
- * •`‰æ
- * @param[in] redraw Ä•`‰æ
+ * æç”»
+ * @param[in] redraw å†æç”»
  */
 void CKeyDisplayWnd::OnDraw(BOOL redraw)
 {
@@ -356,7 +356,7 @@ void CKeyDisplayWnd::OnDraw(BOOL redraw)
 }
 
 /**
- * ƒŠƒTƒCƒY
+ * ãƒªã‚µã‚¤ã‚º
  */
 void CKeyDisplayWnd::OnResize()
 {
@@ -372,8 +372,8 @@ void CKeyDisplayWnd::OnResize()
 }
 
 /**
- * ƒ‚[ƒh ƒ`ƒFƒ“ƒW
- * @param[in] mode ƒ‚[ƒh
+ * ãƒ¢ãƒ¼ãƒ‰ ãƒã‚§ãƒ³ã‚¸
+ * @param[in] mode ãƒ¢ãƒ¼ãƒ‰
  */
 void CKeyDisplayWnd::SetDispMode(UINT8 mode)
 {
@@ -385,7 +385,7 @@ void CKeyDisplayWnd::SetDispMode(UINT8 mode)
 }
 
 /**
- * İ’è“Ç‚İ‚İ
+ * è¨­å®šèª­ã¿è¾¼ã¿
  */
 void kdispwin_readini()
 {
@@ -399,7 +399,7 @@ void kdispwin_readini()
 }
 
 /**
- * İ’è‘‚«‚İ
+ * è¨­å®šæ›¸ãè¾¼ã¿
  */
 void kdispwin_writeini()
 {

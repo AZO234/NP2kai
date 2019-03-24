@@ -171,6 +171,10 @@ void boardspb_bind(void)
 	opna_bind(&g_opna[0]);
 	cbuscore_attachsndex(0x188 - g_opna[0].s.base, spb_o, spb_i);
 }
+void boardspb_unbind(void)
+{
+	cbuscore_detachsndex(0x188 - g_opna[0].s.base);
+}
 
 
 // ----
@@ -205,4 +209,10 @@ void boardspr_bind(void)
 	opna_bind(&g_opna[0]);
 	cbuscore_attachsndex(0x188 - g_opna[0].s.base, spb_o, spb_i);
 	cbuscore_attachsndex(0x588 - g_opna[0].s.base, spr_o, spr_i);
+}
+void boardspr_unbind(void)
+{
+	opna_bind(&g_opna[0]);
+	cbuscore_detachsndex(0x188 - g_opna[0].s.base);
+	cbuscore_detachsndex(0x588 - g_opna[0].s.base);
 }

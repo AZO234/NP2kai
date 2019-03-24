@@ -38,7 +38,7 @@ check_io(UINT port, UINT len)
 	UINT off;
 	UINT16 map;
 	UINT16 mask;
-
+	
 	if (CPU_STAT_IOLIMIT == 0) {
 		VERBOSE(("check_io: CPU_STAT_IOLIMIT == 0 (port = %04x, len = %d)", port, len));
 		EXCEPTION(GP_EXCEPTION, 0);
