@@ -95,7 +95,7 @@ ifeq ($(platform), theos_ios)
 	HAS_GCC := 0
 	DEPLOYMENT_IOSVERSION = 5.0
 	TARGET = iphone:latest:$(DEPLOYMENT_IOSVERSION)
-	ARCHS = armv7 armv7s
+	ARCHS = armv7 armv7s arm64
 	TARGET_IPHONEOS_DEPLOYMENT_VERSION=$(DEPLOYMENT_IOSVERSION)
 	THEOS_BUILD_DIR := objs
 	include $(THEOS)/makefiles/common.mk
