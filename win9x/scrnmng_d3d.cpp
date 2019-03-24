@@ -93,12 +93,15 @@ static int d3d_cs_initialized = 0;
 static CRITICAL_SECTION d3d_cs;
 
 static BOOL d3d_tryenter_criticalsection(void){
+	if(!d3d_cs_initialized) return TRUE;
 	return TryEnterCriticalSection(&d3d_cs);
 }
 static void d3d_enter_criticalsection(void){
+	if(!d3d_cs_initialized) return;
 	EnterCriticalSection(&d3d_cs);
 }
 static void d3d_leave_criticalsection(void){
+	if(!d3d_cs_initialized) return;
 	LeaveCriticalSection(&d3d_cs);
 }
 
@@ -1016,11 +1019,14 @@ void scrnmngD3D_destroy(void) {
 	}
 	ZeroMemory(&d3d, sizeof(d3d));
 	d3d_leave_criticalsection();
+}
+
+void scrnmngD3D_shutdown(void) {
 	
-	//if(d3d_cs_initialized){
-	//	DeleteCriticalSection(&d3d_cs);
-	//	d3d_cs_initialized = 0;
-	//}
+	if(d3d_cs_initialized){
+		DeleteCriticalSection(&d3d_cs);
+		d3d_cs_initialized = 0;
+	}
 }
 
 void scrnmngD3D_querypalette(void) {

@@ -1803,8 +1803,12 @@ void ideio_deinitialize(void) {
 		ideio_thread_initialized = 0;
 		while(((int)ResumeThread(ideio_threadR))>0);
 		while(((int)ResumeThread(ideio_threadW))>0);
-		WaitForSingleObject(ideio_threadR,  INFINITE);
-		WaitForSingleObject(ideio_threadW,  INFINITE);
+		if(WaitForSingleObject(ideio_threadR, 5000) == WAIT_TIMEOUT){
+			TerminateThread(ideio_threadR, 0);
+		}
+		if(WaitForSingleObject(ideio_threadW, 1000) == WAIT_TIMEOUT){
+			TerminateThread(ideio_threadW, 0);
+		}
 		CloseHandle(ideio_threadR);
 		CloseHandle(ideio_threadW);
 		ideio_threadR = NULL;

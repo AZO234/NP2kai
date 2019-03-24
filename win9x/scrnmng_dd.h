@@ -5,6 +5,7 @@ extern "C" {
 
 BRESULT scrnmngDD_create(UINT8 scrnmode);
 void scrnmngDD_destroy(void);
+void scrnmngDD_shutdown(void);
 
 void scrnmngDD_setwidth(int posx, int width);
 void scrnmngDD_setextend(int extend);

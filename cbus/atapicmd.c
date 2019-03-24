@@ -1270,7 +1270,9 @@ void atapi_deinitialize(void) {
 	if(atapi_thread_initialized){
 		atapi_thread_initialized = 0;
 		while(((int)ResumeThread(atapi_thread)) > 0);
-		WaitForSingleObject(atapi_thread,  INFINITE);
+		if(WaitForSingleObject(atapi_thread, 5000) == WAIT_TIMEOUT){
+			TerminateThread(atapi_thread, 0);
+		}
 		CloseHandle(atapi_thread);
 		atapi_thread = NULL;
 	}

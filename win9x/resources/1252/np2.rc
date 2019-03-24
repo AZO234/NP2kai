@@ -1,6 +1,6 @@
 //Microsoft Developer Studio generated resource script.
 //
-#include "..\\..\\resource.h"
+#include "..\..\resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -495,7 +495,7 @@ END
 IDD_SNDFMGEN DIALOG 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "fmgen"
-FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
+FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
 BEGIN
     CONTROL         "Use fmgen",IDC_USEFMGEN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,58,10
 END
@@ -542,7 +542,7 @@ CAPTION "General"
 FONT 9, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     LTEXT           "TAP device name",IDC_STATIC,8,8,76,8
-    COMBOBOX        IDC_NETTAP,8,18,168,12,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_NETTAP,8,18,168,12,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP | CBS_AUTOHSCROLL
     CONTROL         "Enable Power Management",IDC_NETPMM,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,36,140,10
 END
 
@@ -620,7 +620,7 @@ FONT 9, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     CONTROL         "Enable",IDC_HOSTDRVENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,140,10
     LTEXT           "Shared Directory",IDC_STATIC,8,23,76,8
-    COMBOBOX        IDC_HOSTDRVDIR,8,33,130,12, CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_HOSTDRVDIR,8,33,130,12, CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP | CBS_AUTOHSCROLL
     PUSHBUTTON      "Browse...",IDC_HOSTDRVBROWSE,140,32,44,14
     LTEXT           "Permission",IDC_STATIC,8,51,76,8
     CONTROL         "Read",IDC_HOSTDRVREAD,"Button",BS_AUTOCHECKBOX | WS_TABSTOP | WS_DISABLED,16,65,140,10
@@ -861,19 +861,19 @@ END
 
 1 TEXTINCLUDE 
 BEGIN
-    "..Â¥Â¥..Â¥Â¥resource.hÂ¥0"
+    "..\\..\\resource.h\0"
 END
 
 2 TEXTINCLUDE 
 BEGIN
-    "#include ""afxres.h""Â¥rÂ¥n"
-    "Â¥0"
+    "#include ""afxres.h""\r\n"
+    "\0"
 END
 
 3 TEXTINCLUDE 
 BEGIN
-    "#include ""np2.rc2""Â¥rÂ¥n"
-    "Â¥0"
+    "#include ""np2.rc2""\r\n"
+    "\0"
 END
 
 #endif    // APSTUDIO_INVOKED
@@ -1396,9 +1396,9 @@ BEGIN
     IDS_APP_NAME2           "Neko Project II/W"
     IDS_APP_NAME21          "Neko Project 21/W"
     IDS_FILENAME_HELP       "np2.chm"
-    IDS_FONTFACE            "ï¼­ï¼³ ã‚´ã‚·ãƒƒã‚¯"
+    IDS_FONTFACE            "‚l‚r ƒSƒVƒbƒN"
     IDS_PFONTFACE           "MS Sans Serif"
-    IDS_FONTFACE_PRIMARY    "ï¼­ï¼³ ã‚´ã‚·ãƒƒã‚¯"
+    IDS_FONTFACE_PRIMARY    "‚l‚r ƒSƒVƒbƒN"
     IDS_PFONTFACE_PRIMARY   "MS Sans Serif"
     IDS_FONTFACE_SECONDARY  "MS Gothic"
 END
@@ -1438,7 +1438,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_CONFIRM_RESUME      "Conflict!Â¥nÂ¥n%sÂ¥nContinue?"
+    IDS_CONFIRM_RESUME      "Conflict!\n\n%s\nContinue?"
     IDS_ERROR_RESUME        "Couldn't restart"
 END
 

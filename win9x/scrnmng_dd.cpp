@@ -84,6 +84,22 @@ static	int mt_wabdrawing = 0;
 static	int mt_wabpausedrawing = 0;
 #endif
 
+static int dd_cs_initialized = 0;
+static CRITICAL_SECTION dd_cs;
+
+static BOOL dd_tryenter_criticalsection(void){
+	if(!dd_cs_initialized) return TRUE;
+	return TryEnterCriticalSection(&dd_cs);
+}
+static void dd_enter_criticalsection(void){
+	if(!dd_cs_initialized) return;
+	EnterCriticalSection(&dd_cs);
+}
+static void dd_leave_criticalsection(void){
+	if(!dd_cs_initialized) return;
+	LeaveCriticalSection(&dd_cs);
+}
+
 // プライマリサーフェイスのDirectDraw DDBLT_COLORFILLで例外が出る環境があるようなので代替
 //#define DDBLT_COLORFILL_FIX
 
@@ -284,9 +300,12 @@ static void clearoutofrect(const RECT *target, const RECT *base) {
 	LPDIRECTDRAWSURFACE	primsurf;
 	DDBLTFX				ddbf;
 	RECT				rect;
+	
+	dd_enter_criticalsection();
 
 	primsurf = ddraw.primsurf;
 	if (primsurf == NULL) {
+		dd_leave_criticalsection();
 		return;
 	}
 	ZeroMemory(&ddbf, sizeof(ddbf));
@@ -324,6 +343,8 @@ static void clearoutofrect(const RECT *target, const RECT *base) {
 			DDBlt_ColorFill(primsurf, &rect, &ddbf, ddraw.backsurf);
 		}
 	}
+
+	dd_leave_criticalsection();
 }
 
 static void clearoutscreen(void) {
@@ -373,6 +394,7 @@ const RECT	*scrn;
 static void paletteinit()
 {
 	HDC hdc = GetDC(g_hWndMain);
+	dd_enter_criticalsection();
 	GetSystemPaletteEntries(hdc, 0, 256, ddraw.pal);
 	ReleaseDC(g_hWndMain, hdc);
 #if defined(SUPPORT_DCLOCK)
@@ -391,10 +413,12 @@ static void paletteinit()
 	}
 	ddraw.ddraw2->CreatePalette(DDPCAPS_8BIT, ddraw.pal, &ddraw.palette, 0);
 	ddraw.primsurf->SetPalette(ddraw.palette);
+	dd_leave_criticalsection();
 }
 
 static void paletteset()
 {
+	dd_enter_criticalsection();
 	if (ddraw.palette != NULL)
 	{
 		for (UINT i = 0; i < PALLETES_8BPP; i++)
@@ -405,12 +429,14 @@ static void paletteset()
 		}
 		ddraw.palette->SetEntries(0, START_PAL, PALLETES_8BPP, &ddraw.pal[START_PAL]);
 	}
+	dd_leave_criticalsection();
 }
 
 static void make16mask(DWORD bmask, DWORD rmask, DWORD gmask) {
 
 	UINT8	sft;
-
+	
+	dd_enter_criticalsection();
 	sft = 0;
 	while((!(bmask & 0x80)) && (sft < 32)) {
 		bmask <<= 1;
@@ -434,15 +460,18 @@ static void make16mask(DWORD bmask, DWORD rmask, DWORD gmask) {
 	}
 	ddraw.pal16mask.p.g = (UINT8)gmask;
 	ddraw.l16g = sft;
+	dd_leave_criticalsection();
 }
 
 static void restoresurfaces() {
+	dd_enter_criticalsection();
 	ddraw.backsurf->Restore();
 	ddraw.primsurf->Restore();
 #if defined(SUPPORT_WAB)
 	ddraw.wabsurf->Restore();
 #endif
 	scrndraw_updateallline();
+	dd_leave_criticalsection();
 }
 
 
@@ -484,7 +513,14 @@ BRESULT scrnmngDD_create(UINT8 scrnmode) {
 
 	static UINT8 lastscrnmode = 0;
 	static WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
-
+	
+	if(!dd_cs_initialized){
+		memset(&dd_cs, 0, sizeof(dd_cs));
+		InitializeCriticalSection(&dd_cs);
+		dd_cs_initialized = 1;
+	}
+	
+	dd_enter_criticalsection();
 	ZeroMemory(&scrnmng, sizeof(scrnmng));
 	winstyle = GetWindowLong(g_hWndMain, GWL_STYLE);
 	winstyleex = GetWindowLong(g_hWndMain, GWL_EXSTYLE);
@@ -812,15 +848,18 @@ BRESULT scrnmngDD_create(UINT8 scrnmode) {
 #if defined(SUPPORT_WAB)
 	mt_wabpausedrawing = 0; // MultiThread対策
 #endif
+	dd_leave_criticalsection();
 	return(SUCCESS);
 
 scre_err:
+	dd_leave_criticalsection();
 	scrnmngDD_destroy();
 	return(FAILURE);
 }
 
 void scrnmngDD_destroy(void) {
-
+	
+	dd_enter_criticalsection();
 	if (scrnmng.flag & SCRNFLAG_FULLSCREEN) {
 		np2class_enablemenu(g_hWndMain, (!np2oscfg.wintype));
 	}
@@ -867,13 +906,24 @@ void scrnmngDD_destroy(void) {
 		ddraw.ddraw1 = NULL;
 	}
 	ZeroMemory(&ddraw, sizeof(ddraw));
+	dd_leave_criticalsection();
+}
+
+void scrnmngDD_shutdown(void) {
+	
+	if(dd_cs_initialized){
+		DeleteCriticalSection(&dd_cs);
+		dd_cs_initialized = 0;
+	}
 }
 
 void scrnmngDD_querypalette(void) {
-
+	
+	dd_enter_criticalsection();
 	if (ddraw.palette) {
 		ddraw.primsurf->SetPalette(ddraw.palette);
 	}
+	dd_leave_criticalsection();
 }
 
 RGB16 scrnmngDD_makepal16(RGB32 pal32) {
@@ -888,7 +938,8 @@ RGB16 scrnmngDD_makepal16(RGB32 pal32) {
 void scrnmngDD_fullscrnmenu(int y) {
 
 	UINT8	menudisp;
-
+	
+	dd_enter_criticalsection();
 	if (scrnmng.flag & SCRNFLAG_FULLSCREEN) {
 		menudisp = ((y >= 0) && (y < ddraw.menusize))?1:0;
 		if (ddraw.menudisp != menudisp) {
@@ -902,11 +953,13 @@ void scrnmngDD_fullscrnmenu(int y) {
 			}
 		}
 	}
+	dd_leave_criticalsection();
 }
 
 void scrnmngDD_topwinui(void) {
 
 	mousemng_disable(MOUSEPROC_WINUI);
+	dd_enter_criticalsection();
 	if (!ddraw.cliping++) {											// ver0.28
 		if (scrnmng.flag & SCRNFLAG_FULLSCREEN) {
 			ddraw.primsurf->SetClipper(ddraw.clipper);
@@ -915,10 +968,12 @@ void scrnmngDD_topwinui(void) {
 		WINNLSEnableIME(g_hWndMain, TRUE);
 #endif
 	}
+	dd_leave_criticalsection();
 }
 
 void scrnmngDD_clearwinui(void) {
-
+	
+	dd_enter_criticalsection();
 	if ((ddraw.cliping > 0) && (!(--ddraw.cliping))) {
 #ifndef __GNUC__
 		WINNLSEnableIME(g_hWndMain, FALSE);
@@ -945,12 +1000,14 @@ void scrnmngDD_clearwinui(void) {
 		if (scrnmng_create(g_scrnmode) != SUCCESS) {
 			g_scrnmode &= ~SCRNMODE_FULLSCREEN;
 			if (scrnmng_create(g_scrnmode) != SUCCESS) {
+				dd_leave_criticalsection();
 				PostQuitMessage(0);
 				return;
 			}
 		}
 		scrnmng.forcereset = 0;
 	}
+	dd_leave_criticalsection();
 }
 
 void scrnmngDD_setwidth(int posx, int width) {
@@ -989,14 +1046,17 @@ const SCRNSURF *scrnmngDD_surflock(void) {
 	if (ddraw.backsurf == NULL) {
 		return(NULL);
 	}
+	dd_enter_criticalsection();
 	r = ddraw.backsurf->Lock(NULL, &destscrn, DDLOCK_WAIT, NULL);
 	if (r == DDERR_SURFACELOST) {
 		restoresurfaces();
+		dd_leave_criticalsection();
 		return(NULL);
 		//r = ddraw.backsurf->Lock(NULL, &destscrn, DDLOCK_WAIT, NULL);
 	}
 	if (r != DD_OK) {
 //		TRACEOUT(("backsurf lock error: %d (%d)", r));
+		dd_leave_criticalsection();
 		return(NULL);
 	}
 	if (!(ddraw.scrnmode & SCRNMODE_ROTATE)) {
@@ -1024,6 +1084,7 @@ void scrnmngDD_surfunlock(const SCRNSURF *surf) {
 	ddraw.backsurf->Unlock(NULL);
 	scrnmngDD_update();
 	recvideo_update();
+	dd_leave_criticalsection();
 }
 
 void scrnmngDD_update(void) {
@@ -1033,7 +1094,8 @@ void scrnmngDD_update(void) {
 	RECT	*rect;
 	RECT	*scrn;
 	HRESULT	r;
-
+	
+	dd_enter_criticalsection();
 	if (scrnmng.palchanged) {
 		scrnmng.palchanged = FALSE;
 		paletteset();
@@ -1056,6 +1118,7 @@ void scrnmngDD_update(void) {
 															DDBLT_WAIT, NULL);
 			if (r == DDERR_SURFACELOST) {
 				restoresurfaces();
+				dd_leave_criticalsection();
 				return;
 				//ddraw.primsurf->Blt(scrn, ddraw.backsurf, rect,
 				//											DDBLT_WAIT, NULL);
@@ -1077,12 +1140,14 @@ void scrnmngDD_update(void) {
 									DDBLT_WAIT, NULL);
 			if (r == DDERR_SURFACELOST) {
 				restoresurfaces();
+				dd_leave_criticalsection();
 				return;
 				//ddraw.primsurf->Blt(&dst, ddraw.backsurf, &ddraw.rect,
 				//										DDBLT_WAIT, NULL);
 			}
 		}
 	}
+	dd_leave_criticalsection();
 }
 
 
@@ -1144,7 +1209,8 @@ void scrnmngDD_dispclock(void)
 		return;
 	}
 	DispClock::GetInstance()->Make();
-
+	
+	dd_enter_criticalsection();
 	DDSURFACEDESC dest;
 	ZeroMemory(&dest, sizeof(dest));
 	dest.dwSize = sizeof(dest);
@@ -1162,6 +1228,7 @@ void scrnmngDD_dispclock(void)
 		ddraw.clocksurf->Restore();
 	}
 	DispClock::GetInstance()->CountDown(np2oscfg.DRAW_SKIP);
+	dd_leave_criticalsection();
 }
 #endif
 
@@ -1299,21 +1366,26 @@ void scrnmngDD_updatefsres(void) {
 	ddbf.dwFillColor = 0;
 
 	if((np2oscfg.fscrnmod & FSCRNMOD_SAMERES) && (g_scrnmode & SCRNMODE_FULLSCREEN)){
+		dd_enter_criticalsection();
 		ddraw.wabsurf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbf);
 		ddraw.backsurf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbf);
 		clearoutscreen();
 		np2wab.lastWidth = 0;
 		np2wab.lastHeight = 0;
+		dd_leave_criticalsection();
 		return;
 	}
 	if(scrnstat.width<100 || scrnstat.height<100){
+		dd_enter_criticalsection();
 		ddraw.wabsurf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbf);
 		ddraw.backsurf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbf);
 		clearoutscreen();
+		dd_leave_criticalsection();
 		return;
 	}
 	
 	if(np2wab.lastWidth!=width || np2wab.lastHeight!=height){
+		dd_enter_criticalsection();
 		np2wab.lastWidth = width;
 		np2wab.lastHeight = height;
 		if((g_scrnmode & SCRNMODE_FULLSCREEN)!=0){
@@ -1341,6 +1413,7 @@ void scrnmngDD_updatefsres(void) {
 		clearoutscreen();
 		ddraw.wabsurf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbf);
 		ddraw.backsurf->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbf);
+		dd_leave_criticalsection();
 	}
 #endif
 }
@@ -1356,6 +1429,7 @@ void scrnmngDD_blthdc(HDC hdc) {
 	if (np2wab.wndWidth < 32 || np2wab.wndHeight < 32) return;
 	if (mt_wabpausedrawing) return;
 	if (ddraw.wabsurf != NULL) {
+		dd_enter_criticalsection();
 		mt_wabdrawing = 1;
 		r = ddraw.wabsurf->GetDC(&hDCDD);
 		if (r == DD_OK){
@@ -1363,6 +1437,7 @@ void scrnmngDD_blthdc(HDC hdc) {
 			ddraw.wabsurf->ReleaseDC(hDCDD);
 		}
 		mt_wabdrawing = 0;
+		dd_leave_criticalsection();
 	}
 #endif
 }
@@ -1393,10 +1468,12 @@ void scrnmngDD_bltwab() {
 		dstmp = *dst;
 		dstmp.left += exmgn;
 		dstmp.right = dstmp.left + scrnstat.width;
+		dd_enter_criticalsection();
 		r = ddraw.backsurf->Blt(&dstmp, ddraw.wabsurf, &src, DDBLT_WAIT, NULL);
 		if (r == DDERR_SURFACELOST) {
 			restoresurfaces();
 		}
+		dd_leave_criticalsection();
 	}
 #endif
 }

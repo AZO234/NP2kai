@@ -252,7 +252,8 @@ static void stop_hook_systemkey()
 	if(np2_hThreadKeyHook && np2_hThreadKeyHookhWnd){
 		np2_hThreadKeyHookexit = 1;
 		SendMessage(np2_hThreadKeyHookhWnd , WM_CLOSE , 0 , 0);
-		WaitForSingleObject(np2_hThreadKeyHook,  INFINITE);
+		WaitForSingleObject(np2_hThreadKeyHook, INFINITE);
+		CloseHandle(np2_hThreadKeyHook);
 		np2_hThreadKeyHook = NULL;
 		np2_hThreadKeyHookexit = 0;
 	}
@@ -2151,6 +2152,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				}
 			}
 #endif
+#ifdef HOOK_SYSKEY
+			else if ((wParam == VK_SNAPSHOT) && (np2oscfg.syskhook)) {
+				// nothing to do
+			}
+#endif
 			else {
 				winkbd_keydown(wParam, lParam);
 			}
@@ -3040,6 +3046,23 @@ void loadNP2INI(const OEMCHAR *fname){
 			return;
 		}
 	}
+	/*
+	// XXX: Direct3D絡みのエラー対策
+	{
+		MSG msg;
+		while(PeekMessage(&msg, 0, 0, 0, PM_NOREMOVE))
+		{
+			if (!GetMessage(&msg, NULL, 0, 0)) {
+				break;
+			}
+			if ((msg.hwnd != hWnd) ||
+				((msg.message != WM_SYSKEYDOWN) &&
+				(msg.message != WM_SYSKEYUP))) {
+				TranslateMessage(&msg);
+			}
+			DispatchMessage(&msg);
+		}
+	}*/
 
 	CSoundMng::Initialize();
 	OpenSoundDevice(hWnd);
@@ -3617,9 +3640,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 #endif
 
 	pccore_term();
-
+	
 	CSoundMng::GetInstance()->Close();
 	CSoundMng::Deinitialize();
+	scrnmng_shutdown();
 	scrnmng_destroy();
 	recvideo_close();
 

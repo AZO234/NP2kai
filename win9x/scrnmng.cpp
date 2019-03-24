@@ -152,6 +152,14 @@ void scrnmng_destroy(void) {
 	scrnmng_current_drawtype = DRAWTYPE_INVALID;
 }
 
+void scrnmng_shutdown(void) {
+	
+#ifdef SUPPORT_SCRN_DIRECT3D
+	scrnmngD3D_shutdown();
+#endif
+	scrnmngDD_shutdown();
+}
+
 void scrnmng_querypalette(void) {
 	
 #ifdef SUPPORT_SCRN_DIRECT3D

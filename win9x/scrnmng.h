@@ -88,6 +88,7 @@ void scrnmng_setwindowsize(HWND hWnd, int width, int height);
 void scrnmng_initialize(void);
 BRESULT scrnmng_create(UINT8 scrnmode);
 void scrnmng_destroy(void);
+void scrnmng_shutdown(void);
 
 void scrnmng_setwidth(int posx, int width);
 void scrnmng_setextend(int extend);

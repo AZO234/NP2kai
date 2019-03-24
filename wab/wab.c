@@ -500,7 +500,7 @@ void np2wab_drawframe()
 						scrnmng_bltwab();
 					}
 					ga_screenupdated = 0;
-					ResumeThread(ga_hThread);
+					if(ga_hThread) ResumeThread(ga_hThread);
 				}
 			}
 		}
@@ -612,10 +612,11 @@ void np2wab_reset(const NP2CFG *pConfig)
 	// マルチスレッドモードなら先にスレッド処理を終了させる
 	if(ga_threadmode && ga_hThread){
 		ga_exitThread = 1;
-		ResumeThread(ga_hThread);
+		while(((int)ResumeThread(ga_hThread))>0);
 		while(WaitForSingleObject(ga_hThread, 200)==WAIT_TIMEOUT){
 			ResumeThread(ga_hThread);
 		}
+		CloseHandle(ga_hThread);
 		ga_hThread = NULL;
 		ga_exitThread = 0;
 	}
@@ -654,10 +655,11 @@ void np2wab_bind(void)
 	// マルチスレッドモードなら先にスレッド処理を終了させる
 	if(ga_threadmode && ga_hThread){
 		ga_exitThread = 1;
-		ResumeThread(ga_hThread);
+		while(((int)ResumeThread(ga_hThread))>0);
 		while(WaitForSingleObject(ga_hThread, 200)==WAIT_TIMEOUT){
 			ResumeThread(ga_hThread);
 		}
+		CloseHandle(ga_hThread);
 		ga_hThread = NULL;
 		ga_exitThread = 0;
 	}
@@ -703,10 +705,14 @@ void np2wab_shutdown()
 #else
 	// マルチスレッドモードなら先にスレッド処理を終了させる
 	ga_exitThread = 1;
-	ResumeThread(ga_hThread);
-	while(WaitForSingleObject(ga_hThread, 500)==WAIT_TIMEOUT){
+	while(((int)ResumeThread(ga_hThread))>0);
+	if(WaitForSingleObject(ga_hThread, 1000)==WAIT_TIMEOUT){
 		ResumeThread(ga_hThread);
 	}
+	if(WaitForSingleObject(ga_hThread, 4000)==WAIT_TIMEOUT){
+		TerminateThread(ga_hThread, 0); // 諦めて強制終了
+	}
+	CloseHandle(ga_hThread);
 	ga_hThread = NULL;
 
 	// いろいろ解放

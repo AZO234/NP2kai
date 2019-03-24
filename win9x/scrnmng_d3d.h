@@ -7,6 +7,7 @@ BRESULT scrnmngD3D_check(void);
 
 BRESULT scrnmngD3D_create(UINT8 scrnmode);
 void scrnmngD3D_destroy(void);
+void scrnmngD3D_shutdown(void);
 
 void scrnmngD3D_setwidth(int posx, int width);
 void scrnmngD3D_setextend(int extend);
