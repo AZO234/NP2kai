@@ -32,6 +32,10 @@
 
 #include "pccore.h"
 
+#ifdef USE_SSE2
+#include "ia32/instructions/sse2/sse2.h"
+#endif
+
 void
 LEA_GwM(void)
 {
@@ -105,14 +109,10 @@ _CPUID(void)
 		break;
 
 	case 1:
-		//CPU_EAX = (2 << 16) | (i386cpuid.cpu_family << 8) | (i386cpuid.cpu_model << 4) | i386cpuid.cpu_stepping; // Šg’£ƒ‚ƒfƒ‹
-		CPU_EAX = (i386cpuid.cpu_family << 8) | (i386cpuid.cpu_model << 4) | i386cpuid.cpu_stepping;
-		if(strncmp(i386cpuid.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_III, 27)==0){
-			CPU_EBX = 2;
-		}else{
-			CPU_EBX = 0;
-		}
-		CPU_ECX = 0;
+		CPU_EAX = (((i386cpuid.cpu_family >> 4) & 0xff) << 20) | (((i386cpuid.cpu_model >> 4) & 0xf) << 16) | 
+			((i386cpuid.cpu_family & 0xf) << 8) | ((i386cpuid.cpu_model & 0xf) << 4) | (i386cpuid.cpu_stepping & 0xf);
+		CPU_EBX = i386cpuid.cpu_brandid;
+		CPU_ECX = i386cpuid.cpu_feature_ecx & CPU_FEATURES_ECX_ALL;
 		CPU_EDX = i386cpuid.cpu_feature & CPU_FEATURES_ALL;
 		break;
 
@@ -125,7 +125,7 @@ _CPUID(void)
 		
 	case 0x80000000:
 		CPU_EAX = 0x80000004;
-		if(strncmp(i386cpuid.cpu_vendor, CPU_VENDOR_AMD, 12)==0){ // AMD”»’è
+		if(strncmp(i386cpuid.cpu_vendor, CPU_VENDOR_AMD, 12)==0){ // AMDåˆ¤å®š
 			CPU_EBX = LOADINTELDWORD(((UINT8*)(i386cpuid.cpu_vendor+0)));
 			CPU_EDX = LOADINTELDWORD(((UINT8*)(i386cpuid.cpu_vendor+4)));
 			CPU_ECX = LOADINTELDWORD(((UINT8*)(i386cpuid.cpu_vendor+8)));
@@ -137,7 +137,7 @@ _CPUID(void)
 		break;
 
 	case 0x80000001:
-		if(strncmp(i386cpuid.cpu_vendor, CPU_VENDOR_AMD, 12)==0){ // AMD”»’è
+		if(strncmp(i386cpuid.cpu_vendor, CPU_VENDOR_AMD, 12)==0){ // AMDåˆ¤å®š
 			if(i386cpuid.cpu_family >= 6 || (i386cpuid.cpu_family==5 && i386cpuid.cpu_model >= 6)){
 				CPU_EAX = ((i386cpuid.cpu_family+1) << 8) | (i386cpuid.cpu_model << 4) | i386cpuid.cpu_stepping;
 			}else{
@@ -215,6 +215,18 @@ _2byte_ESC16(void)
 	UINT32 op;
 
 	GET_PCBYTE(op);
+#ifdef USE_SSE
+	if(insttable_2byte660F_32[op] && CPU_INST_OP32 == !CPU_STATSAVE.cpu_inst_default.op_32){
+		(*insttable_2byte660F_32[op])();
+		return;
+	}else if(insttable_2byteF20F_32[op] && CPU_INST_REPUSE == 0xf2){
+		(*insttable_2byteF20F_32[op])();
+		return;
+	}else if(insttable_2byteF30F_32[op] && CPU_INST_REPUSE == 0xf3){
+		(*insttable_2byteF30F_32[op])();
+		return;
+	}
+#endif
 	(*insttable_2byte[0][op])();
 }
 
@@ -224,6 +236,18 @@ _2byte_ESC32(void)
 	UINT32 op;
 
 	GET_PCBYTE(op);
+#ifdef USE_SSE
+	if(insttable_2byte660F_32[op] && CPU_INST_OP32 == !CPU_STATSAVE.cpu_inst_default.op_32){
+		(*insttable_2byte660F_32[op])();
+		return;
+	}else if(insttable_2byteF20F_32[op] && CPU_INST_REPUSE == 0xf2){
+		(*insttable_2byteF20F_32[op])();
+		return;
+	}else if(insttable_2byteF30F_32[op] && CPU_INST_REPUSE == 0xf3){
+		(*insttable_2byteF30F_32[op])();
+		return;
+	}
+#endif
 	(*insttable_2byte[1][op])();
 }
 
@@ -274,55 +298,59 @@ Prefix_GS(void)
 	CPU_INST_SEGUSE = 1;
 	CPU_INST_SEGREG_INDEX = CPU_GS_INDEX;
 }
-
-void
-_2byte_Prefix660F_32(void)
-{
-#ifdef USE_SSE2
-	UINT32 op;
-
-	GET_PCBYTE(op);
-	if(op==0x0f){
-		GET_PCBYTE(op);
-		(*insttable_2byte660F_32[op])();
-	}else{
-		EXCEPTION(UD_EXCEPTION, 0);
-	}
-#else
-	EXCEPTION(UD_EXCEPTION, 0);
-#endif
-}
-void
-_2byte_PrefixF20F_32(void)
-{
-#ifdef USE_SSE2
-	UINT32 op;
-
-	GET_PCBYTE(op);
-	if(op==0x0f){
-		GET_PCBYTE(op);
-		(*insttable_2byteF20F_32[op])();
-	}else{
-		EXCEPTION(UD_EXCEPTION, 0);
-	}
-#else
-	EXCEPTION(UD_EXCEPTION, 0);
-#endif
-}
-void
-_2byte_PrefixF30F_32(void)
-{
-#ifdef USE_SSE
-	UINT32 op;
-
-	GET_PCBYTE(op);
-	if(op==0x0f){
-		GET_PCBYTE(op);
-		(*insttable_2byteF30F_32[op])();
-	}else{
-		EXCEPTION(UD_EXCEPTION, 0);
-	}
-#else
-	EXCEPTION(UD_EXCEPTION, 0);
-#endif
-}
+//
+//void
+//_2byte_Prefix660F_32(void)
+//{
+//#ifdef USE_SSE2
+//	UINT32 op;
+//
+//	GET_PCBYTE(op);
+//	if(op==0x0f){
+//		GET_PCBYTE(op);
+//		(*insttable_2byte660F_32[op])();
+//	}else{
+//		EXCEPTION(UD_EXCEPTION, 0);
+//	}
+//#else
+//	EXCEPTION(UD_EXCEPTION, 0);
+//#endif
+//}
+//void
+//_2byte_PrefixF20F_32(void)
+//{
+//#ifdef USE_SSE2
+//	UINT32 op;
+//
+//	GET_PCBYTE(op);
+//	if(op==0x0f){
+//		GET_PCBYTE(op);
+//		(*insttable_2byteF20F_32[op])();
+//	}else{
+//		EXCEPTION(UD_EXCEPTION, 0);
+//	}
+//#else
+//	EXCEPTION(UD_EXCEPTION, 0);
+//#endif
+//}
+//void
+//_2byte_PrefixF30F_32(void)
+//{
+//#ifdef USE_SSE
+//	UINT32 op;
+//
+//	GET_PCBYTE(op);
+//	if(op==0x0f){
+//		GET_PCBYTE(op);
+//		(*insttable_2byteF30F_32[op])();
+//#ifdef USE_SSE2
+//	}else if(op==0x90){
+//		SSE2_PAUSE();
+//#endif
+//	}else{
+//		EXCEPTION(UD_EXCEPTION, 0);
+//	}
+//#else
+//	EXCEPTION(UD_EXCEPTION, 0);
+//#endif
+//}

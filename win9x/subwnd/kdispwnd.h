@@ -1,6 +1,6 @@
 /**
  * @file	kdispwnd.h
- * @brief	ƒL[ƒ{[ƒh ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -11,7 +11,7 @@
 #include "subwnd.h"
 
 /**
- * @brief ƒL[ƒ{[ƒh
+ * @brief ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰
  */
 class CKeyDisplayWnd : public CSubWndBase
 {
@@ -31,16 +31,16 @@ protected:
 	void OnPaint();
 
 private:
-	static CKeyDisplayWnd sm_instance;		//!< ƒCƒ“ƒXƒ^ƒ“ƒX
-	DD2Surface m_dd2;						//!< DirectDraw2 ƒCƒ“ƒXƒ^ƒ“ƒX
+	static CKeyDisplayWnd sm_instance;		//!< ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+	DD2Surface m_dd2;						//!< DirectDraw2 ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
 	void OnDraw(BOOL redraw);
 	void OnResize();
 	void SetDispMode(UINT8 mode);
 };
 
 /**
- * ƒCƒ“ƒXƒ^ƒ“ƒX‚ğ•Ô‚·
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’è¿”ã™
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 inline CKeyDisplayWnd* CKeyDisplayWnd::GetInstance()
 {

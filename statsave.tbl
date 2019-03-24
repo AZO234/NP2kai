@@ -89,6 +89,7 @@ static const SFENTRY np2tbl[] = {
 	{"CPU286",		0,	STATFLAG_BIN,	&CPU_STATSAVE,	sizeof(CPU_STATSAVE)},
 #if defined(CPUCORE_IA32)
 	{"CPUID",		0,	STATFLAG_BIN,	&i386cpuid,		sizeof(i386cpuid)},
+	{"CPUMSR",		0,	STATFLAG_BIN,	&i386msr,		sizeof(i386msr)},
 #endif
 	{"MEMORY",		0,	STATFLAG_MEM,	NULL,			0x130000},
 	{"EXTMEM",		0,	STATFLAG_EXT,	NULL,			0},
@@ -117,6 +118,9 @@ static const SFENTRY np2tbl[] = {
 	{"RS232C",		0,	STATFLAG_BIN,	&rs232c,		sizeof(rs232c)},
 	{"SYSTEMPORT",	0,	STATFLAG_BIN,	&sysport,		sizeof(sysport)},
 	{"uPD4990",		0,	STATFLAG_BIN,	&uPD4990,		sizeof(uPD4990)},
+#if defined(SUPPORT_PC9821)&&defined(SUPPORT_PCI)
+	{"PCI",			0,	STATFLAG_BIN,	&pcidev,		sizeof(pcidev)},
+#endif
 	{"VRAMCTRL",	0,	STATFLAG_BIN,	&vramop,		sizeof(vramop)},
 	{"TEXTRAM",		0,	STATFLAG_BIN,	&tramflag,		sizeof(tramflag)},
 	{"GAIJI",		0,	STATFLAG_GIJ,	NULL,			0},
@@ -159,6 +163,12 @@ static const SFENTRY np2tbl[] = {
 #endif
 #if defined(SUPPORT_HOSTDRV)
 	{"HOSTDRV",		0,	STATFLAG_HDRV,	NULL,			0},
+#endif
+#if defined(BIOS_IO_EMULATION)
+	{"BIOSIOEMU",	0,	STATFLAG_BIN,	&biosioemu,		sizeof(biosioemu)},
+#endif
+#if defined(SUPPORT_PC9821)&&defined(SUPPORT_PCI)
+	{"PEGC",		0,	STATFLAG_BIN,	&pegc,			sizeof(pegc)},
 #endif
 	{"TERMINATE",	0,	STATFLAG_TERM,	NULL,			0}};
 

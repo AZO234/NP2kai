@@ -25,7 +25,7 @@
 #include "wab/wab.h"
 #endif
 
-/** フィルター */
+/** 繝輔ぅ繝ｫ繧ｿ繝ｼ */
 static const UINT s_nFilter[1] =
 {
 	IDS_CFGFILTER_L
@@ -40,8 +40,8 @@ static int messagebox(HWND hWnd, LPCTSTR lpcszText, UINT uType)
 }
 
 /**
- * VM configuration 読み込み
- * @param[in] hWnd 親ウィンドウ
+ * VM configuration 隱ｭ縺ｿ霎ｼ縺ｿ
+ * @param[in] hWnd 隕ｪ繧ｦ繧｣繝ｳ繝峨え
  */
 int dialog_readnpcfg(HWND hWnd)
 {

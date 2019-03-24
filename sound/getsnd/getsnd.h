@@ -21,8 +21,8 @@ BOOL getogg_open(GETSND snd, UINT8 *ptr, UINT size);
 BRESULT getsnd_setmixproc(GETSND snd, UINT samprate, UINT channles);
 
 struct _getsnd {
-	UINT8		*work;					// data load—pƒoƒbƒtƒ@
-	UINT8		*buffer;				// ƒfƒR[ƒhÏ‚İƒoƒbƒtƒ@
+	UINT8		*work;					// data loadç”¨ãƒãƒƒãƒ•ã‚¡
+	UINT8		*buffer;				// ãƒ‡ã‚³ãƒ¼ãƒ‰æ¸ˆã¿ãƒãƒƒãƒ•ã‚¡
 
 	void		*buf;
 	UINT		remain;
@@ -42,8 +42,8 @@ struct _getsnd {
 	UINT		samplingrate;
 	UINT		channels;
 	UINT		bit;
-	UINT		blocksamples;			// ƒuƒƒbƒNƒTƒ“ƒvƒ‹”
-	UINT		blocksize;				// ‚PƒuƒƒbƒN‚Ìƒ[ƒNƒTƒCƒY
+	UINT		blocksamples;			// ãƒ–ãƒ­ãƒƒã‚¯ã‚µãƒ³ãƒ—ãƒ«æ•°
+	UINT		blocksize;				// ï¼‘ãƒ–ãƒ­ãƒƒã‚¯ã®ãƒ¯ãƒ¼ã‚¯ã‚µã‚¤ã‚º
 };
 
 GETSND getsnd_create(void *datptr, UINT datsize);

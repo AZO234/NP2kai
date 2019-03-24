@@ -9,10 +9,10 @@
 #define	UPMIXBASE	(1 << UPBASEBITS)
 
 
-// ‹U•¨‚Ä‚ñ‚Õ‚ê[‚Æ
-// ƒ}ƒCƒNƒƒ\ƒtƒg‚Íƒ}ƒNƒ“WŠJ‰ºŽè‚¾‚©‚ç“®ìƒ`ƒFƒL‚·‚é‚æ‚¤‚ÉB
+// å½ç‰©ã¦ã‚“ã·ã‚Œãƒ¼ã¨
+// ãƒžã‚¤ã‚¯ãƒ­ã‚½ãƒ•ãƒˆã¯ãƒžã‚¯ãƒ­å±•é–‹ä¸‹æ‰‹ã ã‹ã‚‰å‹•ä½œãƒã‚§ã‚­ã™ã‚‹ã‚ˆã†ã«ã€‚
 
-// ---- ƒ‚ƒmƒ‰ƒ‹o—Í
+// ---- ãƒ¢ãƒŽãƒ©ãƒ«å‡ºåŠ›
 
 #define	MIX_INPUTBIT	8
 #define	MIX_OUTPUTBIT	16
@@ -47,7 +47,7 @@
 #include "getsndmn.mcr"
 
 
-// ---- ƒXƒeƒŒƒIo—Í
+// ---- ã‚¹ãƒ†ãƒ¬ã‚ªå‡ºåŠ›
 
 #define	MIX_INPUTBIT	8
 #define	MIX_OUTPUTBIT	16

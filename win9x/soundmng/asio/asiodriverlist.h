@@ -1,6 +1,6 @@
 /**
  * @file	asiodriverlist.h
- * @brief	ASIO ƒhƒ‰ƒCƒo ƒŠƒXƒg ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ð‚µ‚Ü‚·
+ * @brief	ASIO ãƒ‰ãƒ©ã‚¤ãƒ ãƒªã‚¹ãƒˆ ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -10,17 +10,17 @@
 interface IASIO;
 
 /**
- * ASIO ƒhƒ‰ƒCƒoî•ñ
+ * ASIO ãƒ‰ãƒ©ã‚¤ãƒæƒ…å ±
  */
 struct AsioDriverInfo
 {
-	CLSID clsid;					/*!< ƒNƒ‰ƒX ID */
-	TCHAR szDllPath[MAX_PATH];		/*!< DLL ƒpƒX */
-	TCHAR szDriverName[128];		/*!< ƒhƒ‰ƒCƒo–¼ */
+	CLSID clsid;					/*!< ã‚¯ãƒ©ã‚¹ ID */
+	TCHAR szDllPath[MAX_PATH];		/*!< DLL ãƒ‘ã‚¹ */
+	TCHAR szDriverName[128];		/*!< ãƒ‰ãƒ©ã‚¤ãƒå */
 };
 
 /**
- * @brief ASIO ƒhƒ‰ƒCƒo ƒŠƒXƒg ƒNƒ‰ƒX
+ * @brief ASIO ãƒ‰ãƒ©ã‚¤ãƒ ãƒªã‚¹ãƒˆ ã‚¯ãƒ©ã‚¹
  */
 class AsioDriverList : public std::vector<AsioDriverInfo>
 {

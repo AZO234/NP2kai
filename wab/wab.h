@@ -11,6 +11,10 @@
 #include <gtk/gtk.h>
 #endif
 
+// XXX: 1600x1024ä»¥ä¸Šã«ãªã‚‰ãªã„ã®ã§å·®ã—å½“ãŸã£ã¦ã¯ã“ã‚Œã§ååˆ†
+#define WAB_MAX_WIDTH	1600
+#define WAB_MAX_HEIGHT	1024
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -27,15 +31,15 @@ typedef struct {
 
 typedef void NP2WAB_DrawFrame();
 typedef struct {
-	REG8 relay; // ‰æ–Êo—ÍƒŠƒŒ[ó‘Ôibit0=“à‘ ƒEƒBƒ“ƒhƒEƒAƒNƒZƒ‰ƒŒ[ƒ^, bit1=RGB INƒXƒ‹[, ‚»‚êˆÈŠO‚Ìƒrƒbƒg‚ÍReservedBbit0,1‚ª00‚Å98ƒOƒ‰ƒtƒBƒbƒN
-	REG8 paletteChanged; // ƒpƒŒƒbƒg—vXVƒtƒ‰ƒO
-	int realWidth; // ‰æ–Ê‰ğ‘œ“x(•)
-	int realHeight; // ‰æ–Ê‰ğ‘œ“x(‚‚³)
-	int wndWidth; // •`‰æ—ÌˆæƒTƒCƒY(•)
-	int wndHeight; // •`‰æ—ÌˆæƒTƒCƒY(‚‚³)
-	int fps; // ƒŠƒtƒŒƒbƒVƒ…ƒŒ[ƒgi‘å‘Ì‡‚í‚¹‚Ä‚­‚ê‚é‚©‚à‚µ‚ê‚È‚¢¥¥¥‚¯‚ÇŒ»“_‚Å‰½‚à‚µ‚Ä‚¢‚È‚¢j
-	int lastWidth; // ‘O‰ñ‚ÌƒEƒBƒ“ƒhƒEƒAƒNƒZƒ‰ƒŒ[ƒ^‚Ì‰¡‰ğ‘œ“xiƒfƒoƒCƒXÄì¬”»’è—pj
-	int lastHeight; // ‘O‰ñ‚ÌƒEƒBƒ“ƒhƒEƒAƒNƒZƒ‰ƒŒ[ƒ^‚Ì‰¡‰ğ‘œ“xiƒfƒoƒCƒXÄì¬”»’è—pj
+	REG8 relay; // ç”»é¢å‡ºåŠ›ãƒªãƒ¬ãƒ¼çŠ¶æ…‹ï¼ˆbit0=å†…è”µã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿, bit1=RGB INã‚¹ãƒ«ãƒ¼, ãã‚Œä»¥å¤–ã®ãƒ“ãƒƒãƒˆã¯Reservedã€‚bit0,1ãŒ00ã§98ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯
+	REG8 paletteChanged; // ãƒ‘ãƒ¬ãƒƒãƒˆè¦æ›´æ–°ãƒ•ãƒ©ã‚°
+	int realWidth; // ç”»é¢è§£åƒåº¦(å¹…)
+	int realHeight; // ç”»é¢è§£åƒåº¦(é«˜ã•)
+	int wndWidth; // æç”»é ˜åŸŸã‚µã‚¤ã‚º(å¹…)
+	int wndHeight; // æç”»é ˜åŸŸã‚µã‚¤ã‚º(é«˜ã•)
+	int fps; // ãƒªãƒ•ãƒ¬ãƒƒã‚·ãƒ¥ãƒ¬ãƒ¼ãƒˆï¼ˆå¤§ä½“åˆã‚ã›ã¦ãã‚Œã‚‹ã‹ã‚‚ã—ã‚Œãªã„ï½¥ï½¥ï½¥ã‘ã©ç¾æ™‚ç‚¹ã§ä½•ã‚‚ã—ã¦ã„ãªã„ï¼‰
+	int lastWidth; // å‰å›ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ã®æ¨ªè§£åƒåº¦ï¼ˆãƒ‡ãƒã‚¤ã‚¹å†ä½œæˆåˆ¤å®šç”¨ï¼‰
+	int lastHeight; // å‰å›ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ã®æ¨ªè§£åƒåº¦ï¼ˆãƒ‡ãƒã‚¤ã‚¹å†ä½œæˆåˆ¤å®šç”¨ï¼‰
 	
 	int	relaystateint;
 	int	relaystateext;
@@ -44,21 +48,21 @@ typedef struct {
 } NP2WAB;
 
 typedef struct {
-	int multiwindow; // •Ê‘‹ƒ‚[ƒh
-	int ready; // 0ˆÈŠO‚È‚ç•`‚¢‚Ä‚à—Ç‚¢‚æ
+	int multiwindow; // åˆ¥çª“ãƒ¢ãƒ¼ãƒ‰
+	int ready; // 0ä»¥å¤–ãªã‚‰æã„ã¦ã‚‚è‰¯ã„ã‚ˆ
 #if defined(NP2_SDL2) || defined(__LIBRETRO__)
 	unsigned int* pBuffer;
 #elif defined(NP2_X11)
 	GtkWidget *pWABWnd;
 	GdkPixbuf *pPixbuf;
 #else
-	HWND hWndMain; // ƒƒCƒ“ƒEƒBƒ“ƒhƒE‚Ìƒnƒ“ƒhƒ‹
-	HWND hWndWAB; // ƒEƒBƒ“ƒhƒEƒAƒNƒZƒ‰ƒŒ[ƒ^•Ê‘‹‚Ìƒnƒ“ƒhƒ‹
-	HDC hDCWAB; // ƒEƒBƒ“ƒhƒEƒAƒNƒZƒ‰ƒŒ[ƒ^•Ê‘‹‚ÌHDC
-	HBITMAP hBmpBuf; // ƒoƒbƒtƒ@ƒrƒbƒgƒ}ƒbƒvií‚É“™”{j
-	HDC     hDCBuf; // ƒoƒbƒtƒ@‚ÌHDC
+	HWND hWndMain; // ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒãƒ³ãƒ‰ãƒ«
+	HWND hWndWAB; // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿åˆ¥çª“ã®ãƒãƒ³ãƒ‰ãƒ«
+	HDC hDCWAB; // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿åˆ¥çª“ã®HDC
+	HBITMAP hBmpBuf; // ãƒãƒƒãƒ•ã‚¡ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ï¼ˆå¸¸ã«ç­‰å€ï¼‰
+	HDC     hDCBuf; // ãƒãƒƒãƒ•ã‚¡ã®HDC
 #endif
-	NP2WAB_DrawFrame *drawframe; // ‰æ–Ê•`‰æŠÖ”BhDCBuf‚ÉƒAƒNƒZƒ‰ƒŒ[ƒ^‰æ–Êƒf[ƒ^‚ğ“]‘—‚·‚éB
+	NP2WAB_DrawFrame *drawframe; // ç”»é¢æç”»é–¢æ•°ã€‚hDCBufã«ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ç”»é¢ãƒ‡ãƒ¼ã‚¿ã‚’è»¢é€ã™ã‚‹ã€‚
 } NP2WABWND;
 
 #if defined(NP2_SDL2) || defined(NP2_X11) || defined(__LIBRETRO__)
@@ -68,8 +72,8 @@ void np2wab_init(HINSTANCE hInstance, HWND g_hWndMain);
 #endif
 void np2wab_reset(const NP2CFG *pConfig);
 void np2wab_bind(void);
-void np2wab_drawframe();
-void np2wab_shutdown();
+void np2wab_drawframe(void);
+void np2wab_shutdown(void);
 
 void np2wab_setRelayState(REG8 state);
 void np2wab_setScreenSize(int width, int height);

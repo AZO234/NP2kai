@@ -1,6 +1,6 @@
 /**
  * @file	d_ide.cpp
- * @brief	IDE İ’èƒ_ƒCƒAƒƒO
+ * @brief	IDE è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°
  */
 
 #include "compiler.h"
@@ -25,8 +25,8 @@ extern "C"
 
 
 /**
- * @brief IDE İ’èƒ_ƒCƒAƒƒO
- * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * @brief IDE è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°
+ * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 class CIdeDlg : public CDlgProc
 {
@@ -40,20 +40,21 @@ protected:
 	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	CComboData m_cmbpm;			//!< ƒvƒ‰ƒCƒ}ƒŠ ƒ}ƒXƒ^
-	CComboData m_cmbps;			//!< ƒvƒ‰ƒCƒ}ƒŠ ƒXƒŒ[ƒu
-	CComboData m_cmbsm;			//!< ƒZƒJƒ“ƒ_ƒŠ ƒ}ƒXƒ^
-	CComboData m_cmbss;			//!< ƒZƒJƒ“ƒ_ƒŠ ƒXƒŒ[ƒu
+	CComboData m_cmbpm;			//!< ãƒ—ãƒ©ã‚¤ãƒãƒª ãƒã‚¹ã‚¿
+	CComboData m_cmbps;			//!< ãƒ—ãƒ©ã‚¤ãƒãƒª ã‚¹ãƒ¬ãƒ¼ãƒ–
+	CComboData m_cmbsm;			//!< ã‚»ã‚«ãƒ³ãƒ€ãƒª ãƒã‚¹ã‚¿
+	CComboData m_cmbss;			//!< ã‚»ã‚«ãƒ³ãƒ€ãƒª ã‚¹ãƒ¬ãƒ¼ãƒ–
 	CWndProc m_chkasynccd;		//!< Use Async CD-ROM Access
+	CWndProc m_chkuseecc;		//!< Use CD-ROM EDC/ECC Emulation
 	CWndProc m_chkallowtraycmd;	//!< Allow CD Tray Open/Close Command
 	CWndProc m_chkidebios;		//!< Use IDE BIOS
 	CWndProc m_chkautoidebios;	//!< Auto IDE BIOS
-	CWndProc m_nudrwait;		//!< Š„‚è‚İi‘‚«‚İjƒfƒBƒŒƒC
-	CWndProc m_nudwwait;		//!< Š„‚è‚İi‘‚«‚İjƒfƒBƒŒƒC
+	CWndProc m_nudrwait;		//!< å‰²ã‚Šè¾¼ã¿ï¼ˆæ›¸ãè¾¼ã¿ï¼‰ãƒ‡ã‚£ãƒ¬ã‚¤
+	CWndProc m_nudwwait;		//!< å‰²ã‚Šè¾¼ã¿ï¼ˆæ›¸ãè¾¼ã¿ï¼‰ãƒ‡ã‚£ãƒ¬ã‚¤
 };
 
 /**
- * Š„‚è‚İƒŠƒXƒg
+ * å‰²ã‚Šè¾¼ã¿ãƒªã‚¹ãƒˆ
  */
 static const CComboData::Entry s_type[] =
 {
@@ -63,8 +64,8 @@ static const CComboData::Entry s_type[] =
 };
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
- * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 CIdeDlg::CIdeDlg(HWND hwndParent)
 	: CDlgProc(IDD_IDE, hwndParent)
@@ -72,9 +73,9 @@ CIdeDlg::CIdeDlg(HWND hwndParent)
 }
 
 /**
- * ‚±‚Ìƒƒ\ƒbƒh‚Í WM_INITDIALOG ‚ÌƒƒbƒZ[ƒW‚É‰“š‚µ‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
- * @retval TRUE Å‰‚ÌƒRƒ“ƒgƒ[ƒ‹‚É“ü—ÍƒtƒH[ƒJƒX‚ğİ’è
- * @retval FALSE Šù‚Éİ’èÏ
+ * ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ WM_INITDIALOG ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«å¿œç­”ã—ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * @retval TRUE æœ€åˆã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã«å…¥åŠ›ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’è¨­å®š
+ * @retval FALSE æ—¢ã«è¨­å®šæ¸ˆ
  */
 BOOL CIdeDlg::OnInitDialog()
 {
@@ -101,6 +102,13 @@ BOOL CIdeDlg::OnInitDialog()
 		m_chkasynccd.SendMessage(BM_SETCHECK , BST_CHECKED , 0);
 	}else{
 		m_chkasynccd.SendMessage(BM_SETCHECK , BST_UNCHECKED , 0);
+	}
+	
+	m_chkuseecc.SubclassDlgItem(IDC_USECDECC, this);
+	if(np2cfg.usecdecc){
+		m_chkuseecc.SendMessage(BM_SETCHECK , BST_CHECKED , 0);
+	}else{
+		m_chkuseecc.SendMessage(BM_SETCHECK , BST_UNCHECKED , 0);
 	}
 	
 	m_chkallowtraycmd.SubclassDlgItem(IDC_ALLOWCDTRAYOP, this);
@@ -140,7 +148,7 @@ BOOL CIdeDlg::OnInitDialog()
 }
 
 /**
- * ƒ†[ƒU[‚ª OK ‚Ìƒ{ƒ^ƒ“ (IDOK ID ‚ª‚Ìƒ{ƒ^ƒ“) ‚ğƒNƒŠƒbƒN‚·‚é‚ÆŒÄ‚Ño‚³‚ê‚Ü‚·
+ * ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒ OK ã®ãƒœã‚¿ãƒ³ (IDOK ID ãŒã®ãƒœã‚¿ãƒ³) ã‚’ã‚¯ãƒªãƒƒã‚¯ã™ã‚‹ã¨å‘¼ã³å‡ºã•ã‚Œã¾ã™
  */
 void CIdeDlg::OnOK()
 {
@@ -171,6 +179,11 @@ void CIdeDlg::OnOK()
 	if (np2cfg.useasynccd != (m_chkasynccd.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0))
 	{
 		np2cfg.useasynccd = (m_chkasynccd.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0);
+		update |= SYS_UPDATECFG;
+	}
+	if (np2cfg.usecdecc != (m_chkuseecc.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0))
+	{
+		np2cfg.usecdecc = (m_chkuseecc.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0);
 		update |= SYS_UPDATECFG;
 	}
 	if (np2cfg.allowcdtraycmd != (m_chkallowtraycmd.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0))
@@ -213,10 +226,10 @@ void CIdeDlg::OnOK()
 }
 
 /**
- * ƒ†[ƒU[‚ªƒƒjƒ…[‚Ì€–Ú‚ğ‘I‘ğ‚µ‚½‚Æ‚«‚ÉAƒtƒŒ[ƒ€ƒ[ƒN‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
- * @param[in] wParam ƒpƒ‰ƒƒ^
- * @param[in] lParam ƒpƒ‰ƒƒ^
- * @retval TRUE ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ª‚±‚ÌƒƒbƒZ[ƒW‚ğˆ—‚µ‚½
+ * ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®é …ç›®ã‚’é¸æŠã—ãŸã¨ãã«ã€ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã«ã‚ˆã£ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * @param[in] wParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @param[in] lParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @retval TRUE ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡¦ç†ã—ãŸ
  */
 BOOL CIdeDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -235,11 +248,11 @@ BOOL CIdeDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * CWndProc ƒIƒuƒWƒFƒNƒg‚Ì Windows ƒvƒƒV[ƒWƒƒ (WindowProc) ‚ª—pˆÓ‚³‚ê‚Ä‚¢‚Ü‚·
- * @param[in] nMsg ˆ—‚³‚ê‚é Windows ƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
- * @param[in] wParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @param[in] lParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @return ƒƒbƒZ[ƒW‚ÉˆË‘¶‚·‚é’l‚ğ•Ô‚µ‚Ü‚·
+ * CWndProc ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã® Windows ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ (WindowProc) ãŒç”¨æ„ã•ã‚Œã¦ã„ã¾ã™
+ * @param[in] nMsg å‡¦ç†ã•ã‚Œã‚‹ Windows ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] wParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @param[in] lParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @return ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã™ã‚‹å€¤ã‚’è¿”ã—ã¾ã™
  */
 LRESULT CIdeDlg::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -294,8 +307,8 @@ LRESULT CIdeDlg::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ƒRƒ“ƒtƒBƒO ƒ_ƒCƒAƒƒO
- * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * ã‚³ãƒ³ãƒ•ã‚£ã‚° ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
+ * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 void dialog_ideopt(HWND hwndParent)
 {

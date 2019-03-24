@@ -77,7 +77,7 @@ REG8 scsicmd_select(REG8 id) {
 	sxsi = sxsi_getptr((REG8)(0x20 + id));
 	if ((sxsi) && (sxsi->flag & SXSIFLAG_READY)) {
 		scsiio.phase = SCSIPH_COMMAND;
-		return(0x8a);			// Transfer CommandóvãÅ
+		return(0x8a);			// Transfer CommandË¶ÅÊ±Ç
 	}
 	return(0x42);				// Timeout
 }
@@ -132,12 +132,12 @@ static REG8 scsicmd_cmd(REG8 id) {
 	}
 	switch(scsiio.cmd[0]) {
 		case 0x00:
-			return(0x8b);		// Transfer StatusóvãÅ
+			return(0x8b);		// Transfer StatusË¶ÅÊ±Ç
 
 		case 0x12:				// inquiry
 			scsicmd_datain(sxsi, scsiio.cmd);
 			scsiio.phase = SCSIPH_DATAIN;
-			return(0x89);		// Transfer DataóvãÅ
+			return(0x89);		// Transfer DataË¶ÅÊ±Ç
 	}
 
 	SCSICMD_ERR
@@ -155,7 +155,7 @@ BRESULT scsicmd_send(void) {
 }
 
 
-// ---- BIOS Ç©ÇÁ
+// ---- BIOS „Åã„Çâ
 
 static const UINT8 stat2ret[16] = {
 				0x40, 0x00, 0x10, 0x00,
@@ -190,7 +190,7 @@ void scsicmd_bios(void) {
 
 	TRACEOUT(("BIOS 1B-C* CPU_AH %.2x", CPU_AH));
 
-	if (CPU_AH & 0x80) {		// ÉGÉâÅ[Ç€
+	if (CPU_AH & 0x80) {		// „Ç®„É©„Éº„ÅΩ
 		return;
 	}
 

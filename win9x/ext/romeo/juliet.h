@@ -1,6 +1,6 @@
 /**
  * @file	juliet.h
- * @brief	ROMEO ƒAƒNƒZƒX ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	ROMEO ã‚¢ã‚¯ã‚»ã‚¹ ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -10,7 +10,7 @@
 #include "misc\threadbase.h"
 
 /**
- * @brief ROMEO ƒAƒNƒZƒX ƒNƒ‰ƒX
+ * @brief ROMEO ã‚¢ã‚¯ã‚»ã‚¹ ã‚¯ãƒ©ã‚¹
  */
 class CJuliet : protected CThreadBase
 {
@@ -27,25 +27,25 @@ protected:
 	virtual bool Task();
 
 private:
-	//! @brief ƒ[ƒhŠÖ”
+	//! @brief ãƒ­ãƒ¼ãƒ‰é–¢æ•°
 	struct ProcItem
 	{
-		LPCSTR lpSymbol;		//!< ŠÖ”–¼
-		size_t nOffset;			//!< ƒIƒtƒZƒbƒg
+		LPCSTR lpSymbol;		//!< é–¢æ•°å
+		size_t nOffset;			//!< ã‚ªãƒ•ã‚»ãƒƒãƒˆ
 	};
 
-	// ’è‹`
-	typedef ULONG (WINAPI * FnRead32)(ULONG ulPciAddress, ULONG ulRegAddress);	//!< ƒRƒ“ƒtƒBƒOƒŒ[ƒVƒ‡ƒ““Ç‚İæ‚èŠÖ”’è‹`
-	typedef VOID (WINAPI * FnOut8)(ULONG ulAddress, UCHAR ucParam);				//!< outp ŠÖ”’è‹`
-	typedef VOID (WINAPI * FnOut32)(ULONG ulAddress, ULONG ulParam);			//!< outpd ŠÖ”’è‹`
-	typedef UCHAR (WINAPI * FnIn8)(ULONG ulAddress);							//!< inp ŠÖ”’è‹`
+	// å®šç¾©
+	typedef ULONG (WINAPI * FnRead32)(ULONG ulPciAddress, ULONG ulRegAddress);	//!< ã‚³ãƒ³ãƒ•ã‚£ã‚°ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³èª­ã¿å–ã‚Šé–¢æ•°å®šç¾©
+	typedef VOID (WINAPI * FnOut8)(ULONG ulAddress, UCHAR ucParam);				//!< outp é–¢æ•°å®šç¾©
+	typedef VOID (WINAPI * FnOut32)(ULONG ulAddress, ULONG ulParam);			//!< outpd é–¢æ•°å®šç¾©
+	typedef UCHAR (WINAPI * FnIn8)(ULONG ulAddress);							//!< inp é–¢æ•°å®šç¾©
 
-	HMODULE m_hModule;			//!< ƒ‚ƒWƒ…[ƒ‹
-	FnRead32 m_fnRead32;		//!< ƒRƒ“ƒtƒBƒOƒŒ[ƒVƒ‡ƒ““Ç‚İæ‚èŠÖ”
-	FnOut8 m_fnOut8;			//!< outp ŠÖ”
-	FnOut32 m_fnOut32;			//!< outpd ŠÖ”
-	FnIn8 m_fnIn8;				//!< inp ŠÖ”
-	ULONG m_ulAddress;			//!< ROMEO ƒx[ƒX ƒAƒhƒŒƒX
+	HMODULE m_hModule;			//!< ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«
+	FnRead32 m_fnRead32;		//!< ã‚³ãƒ³ãƒ•ã‚£ã‚°ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³èª­ã¿å–ã‚Šé–¢æ•°
+	FnOut8 m_fnOut8;			//!< outp é–¢æ•°
+	FnOut32 m_fnOut32;			//!< outpd é–¢æ•°
+	FnIn8 m_fnIn8;				//!< inp é–¢æ•°
+	ULONG m_ulAddress;			//!< ROMEO ãƒ™ãƒ¼ã‚¹ ã‚¢ãƒ‰ãƒ¬ã‚¹
 	UCHAR m_ucIrq;				//!< ROMEO IRQ
 	CGuard m_pciGuard;			/*!< The guard of PCI */
 	CGuard m_queGuard;			/*!< The guard of que */
@@ -57,7 +57,7 @@ private:
 	void Write288(UINT nAddr, UINT8 cData);
 
 	/**
-	 * @brief ƒ`ƒbƒv ƒNƒ‰ƒX
+	 * @brief ãƒãƒƒãƒ— ã‚¯ãƒ©ã‚¹
 	 */
 	class Chip288 : public IExternalChip
 	{
@@ -70,18 +70,18 @@ private:
 			virtual INTPTR Message(UINT nMessage, INTPTR nParameter = 0);
 
 		private:
-			CJuliet* m_pJuliet;			//!< eƒCƒ“ƒXƒ^ƒ“ƒX
+			CJuliet* m_pJuliet;			//!< è¦ªã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
 	};
-	IExternalChip* m_pChip288;		//!< YMF288 ƒCƒ“ƒXƒ^ƒ“ƒX
+	IExternalChip* m_pChip288;		//!< YMF288 ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
 
 	void Detach(IExternalChip* pChip);
 	friend class Chip288;
 };
 
 /**
- * ROMEO ‚Í—LŒø?
- * @retval true —LŒø
- * @retval false –³Œø
+ * ROMEO ã¯æœ‰åŠ¹?
+ * @retval true æœ‰åŠ¹
+ * @retval false ç„¡åŠ¹
  */
 inline bool CJuliet::IsEnabled() const
 {

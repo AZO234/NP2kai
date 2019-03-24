@@ -125,17 +125,17 @@ BRESULT S98_open(const OEMCHAR *filename) {
 	UINT	i;
 	S98HDR	hdr;
 
-	// ƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ªãƒ¼ãƒ—ãƒ³
 	s98log.fh = file_create(filename);
 	if (s98log.fh == FILEH_INVALID) {
 		return(FAILURE);
 	}
 
-	// ‰Šú‰»
+	// åˆæœŸåŒ–
 	s98log.clock = pccore.realclock / 1000;
 	s98log.p = 0;
 
-	// ƒwƒbƒ_‚Ì•Û‘¶
+	// ãƒ˜ãƒƒãƒ€ã®ä¿å­˜
 	ZeroMemory(&hdr, sizeof(hdr));
 	hdr.magic[0] = 'S';
 	hdr.magic[1] = '9';
@@ -214,7 +214,7 @@ BRESULT S98_open(const OEMCHAR *filename) {
 		S98_putc(*(((UINT8 *)&hdr) + i));
 	}
 
-	// ˆê‰ƒpƒfƒBƒ“ƒO
+	// ä¸€å¿œãƒ‘ãƒ‡ã‚£ãƒ³ã‚°
 	s98log.intcount = 10;
 
 	sets98event(NEVENT_ABSOLUTE);

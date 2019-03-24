@@ -21,8 +21,8 @@ void bios0x0c(void) {
 	dseg = GETBIOSMEM16(MEMW_RS_CH0_SEG);
 
 	flag = MEMR_READ8(dseg, doff + R_FLAG);
-	data = iocore_inp8(0x30);							// ƒf[ƒ^ˆø‚«æ‚è
-	status = iocore_inp8(0x32) & 0xfc;					// ƒXƒe[ƒ^ƒX
+	data = iocore_inp8(0x30);							// ãƒ‡ãƒ¼ã‚¿å¼•ãå–ã‚Š
+	status = iocore_inp8(0x32) & 0xfc;					// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
 	status |= (iocore_inp8(0x33) & 3);
 
 #if 0
@@ -32,7 +32,7 @@ void bios0x0c(void) {
 #endif
 
 	if (!(flag & RFLAG_BFULL)) {
-		// SI/SO•ÏŠ·
+		// SI/SOå¤‰æ›
 		if (mem[MEMB_RS_S_FLAG] & 0x80) {
 			if (data >= 0x20) {
 				if (mem[MEMB_RS_S_FLAG] & 0x10) {
@@ -54,33 +54,33 @@ void bios0x0c(void) {
 			}
 		}
 
-		// DELƒR[ƒh‚Ìˆµ‚¢
+		// DELã‚³ãƒ¼ãƒ‰ã®æ‰±ã„
 		if (mem[MEMB_RS_D_FLAG] & 0x01) {					// CH0 -> bit0
 			if (((data & 0x7f) == 0x7f) && (mem[MEMB_MSW3] & 0x80)) {
 				data = 0;
 			}
 		}
-		// ƒf[ƒ^“ŠŠü
+		// ãƒ‡ãƒ¼ã‚¿æŠ•æ£„
 		pos = MEMR_READ16(dseg, doff + R_PUTP);
 		MEMR_WRITE16(dseg, pos, (UINT16)((data << 8) | status));
 
-		// Ÿ‚Ìƒ|ƒCƒ“ƒ^‚ğƒXƒgƒA
+		// æ¬¡ã®ãƒã‚¤ãƒ³ã‚¿ã‚’ã‚¹ãƒˆã‚¢
 		pos = (UINT16)(pos + 2);
 		if (pos >= MEMR_READ16(dseg, doff + R_TAILP)) {
 			pos = MEMR_READ16(dseg, doff + R_HEADP);
 		}
 		MEMR_WRITE16(dseg, doff + R_PUTP, pos);
 
-		// ƒJƒEƒ“ƒ^‚ÌƒCƒ“ƒNƒŠƒƒ“ƒg
+		// ã‚«ã‚¦ãƒ³ã‚¿ã®ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
 		cnt = (UINT16)(MEMR_READ16(dseg, doff + R_CNT) + 1);
 		MEMR_WRITE16(dseg, doff + R_CNT, cnt);
 
-		// ƒI[ƒo[ƒtƒ[‚ğŒ©’£‚é
+		// ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼ã‚’è¦‹å¼µã‚‹
 		if (pos == MEMR_READ16(dseg, doff + R_GETP)) {
 			flag |= RFLAG_BFULL;
 		}
 
-		// XOFF‚ğ‘—MH
+		// XOFFã‚’é€ä¿¡ï¼Ÿ
 		if (((flag & (RFLAG_XON | RFLAG_XOFF)) == RFLAG_XON) &&
 			(cnt >= MEMR_READ16(dseg, doff + R_XON))) {
 			iocore_out8(0x30, RSCODE_XOFF);

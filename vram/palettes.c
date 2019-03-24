@@ -466,7 +466,7 @@ void pal_eventclear(void) {
 	palevent.anabit = 0;
 	palevent.events = 0;
 	if ((!pcstat.drawframe) || (!np2cfg.RASTER) || (scrnmng_getbpp() == 8)) {
-		palevent.events--;					// 0xffffffff Ç…Ç∑ÇÈ...
+		palevent.events--;					// 0xffffffff „Å´„Åô„Çã...
 	}
 	else {
 		CopyMemory(palevent.pal, gdc.anapal, sizeof(gdc.anapal));

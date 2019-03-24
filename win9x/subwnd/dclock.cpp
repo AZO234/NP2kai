@@ -1,6 +1,6 @@
 /**
  * @file	dclock.cpp
- * @brief	•\¦ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	æ™‚åˆ»è¡¨ç¤ºã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -12,25 +12,25 @@
 #include "scrndraw.h"
 #include "palettes.h"
 
-//! —Bˆê‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Å‚·
+//! å”¯ä¸€ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã§ã™
 DispClock DispClock::sm_instance;
 
 /**
- * @brief ƒpƒ^[ƒ“\‘¢‘Ì
+ * @brief ãƒ‘ã‚¿ãƒ¼ãƒ³æ§‹é€ ä½“
  */
 struct DispClockPattern
 {
-	UINT8 cWidth;											/*!< ƒtƒHƒ“ƒg ƒTƒCƒY */
-	UINT8 cMask;											/*!< ƒ}ƒXƒN */
-	UINT8 cPosition[6];										/*!< ˆÊ’u */
-	void (*fnInitialize)(UINT8* lpBuffer, UINT8 nDegits);	/*!< ‰Šú‰»ŠÖ” */
-	UINT8 font[11][16];										/*!< ƒtƒHƒ“ƒg */
+	UINT8 cWidth;											/*!< ãƒ•ã‚©ãƒ³ãƒˆ ã‚µã‚¤ã‚º */
+	UINT8 cMask;											/*!< ãƒã‚¹ã‚¯ */
+	UINT8 cPosition[6];										/*!< ä½ç½® */
+	void (*fnInitialize)(UINT8* lpBuffer, UINT8 nDegits);	/*!< åˆæœŸåŒ–é–¢æ•° */
+	UINT8 font[11][16];										/*!< ãƒ•ã‚©ãƒ³ãƒˆ */
 };
 
 /**
- * ‰Šú‰»-1
- * @param[out] lpBuffer ƒoƒbƒtƒ@
- * @param[in] nDegits Œ…”
+ * åˆæœŸåŒ–-1
+ * @param[out] lpBuffer ãƒãƒƒãƒ•ã‚¡
+ * @param[in] nDegits æ¡æ•°
  */
 static void InitializeFont1(UINT8* lpBuffer, UINT8 nDegits)
 {
@@ -45,9 +45,9 @@ static void InitializeFont1(UINT8* lpBuffer, UINT8 nDegits)
 }
 
 /**
- * ‰Šú‰»-2
- * @param[out] lpBuffer ƒoƒbƒtƒ@
- * @param[in] nDegits Œ…”
+ * åˆæœŸåŒ–-2
+ * @param[out] lpBuffer ãƒãƒƒãƒ•ã‚¡
+ * @param[in] nDegits æ¡æ•°
  */
 static void InitializeFont2(UINT8* lpBuffer, UINT8 nDegits)
 {
@@ -63,9 +63,9 @@ static void InitializeFont2(UINT8* lpBuffer, UINT8 nDegits)
 }
 
 /**
- * ‰Šú‰»-3
- * @param[out] lpBuffer ƒoƒbƒtƒ@
- * @param[in] nDegits Œ…”
+ * åˆæœŸåŒ–-3
+ * @param[out] lpBuffer ãƒãƒƒãƒ•ã‚¡
+ * @param[in] nDegits æ¡æ•°
  */
 static void InitializeFont3(UINT8* lpBuffer, UINT8 nDegits)
 {
@@ -80,9 +80,9 @@ static void InitializeFont3(UINT8* lpBuffer, UINT8 nDegits)
 }
 
 /**
- * ‰Šú‰»-4
- * @param[out] lpBuffer ƒoƒbƒtƒ@
- * @param[in] nDegits Œ…”
+ * åˆæœŸåŒ–-4
+ * @param[out] lpBuffer ãƒãƒƒãƒ•ã‚¡
+ * @param[in] nDegits æ¡æ•°
  */
 static void InitializeFont4(UINT8* lpBuffer, UINT8 nDegits)
 {
@@ -97,9 +97,9 @@ static void InitializeFont4(UINT8* lpBuffer, UINT8 nDegits)
 }
 
 /**
- * ‰Šú‰»-5
- * @param[out] lpBuffer ƒoƒbƒtƒ@
- * @param[in] nDegits Œ…”
+ * åˆæœŸåŒ–-5
+ * @param[out] lpBuffer ãƒãƒƒãƒ•ã‚¡
+ * @param[in] nDegits æ¡æ•°
  */
 static void InitializeFont5(UINT8* lpBuffer, UINT8 nDegits)
 {
@@ -114,9 +114,9 @@ static void InitializeFont5(UINT8* lpBuffer, UINT8 nDegits)
 }
 
 /**
- * ‰Šú‰»-6
- * @param[out] lpBuffer ƒoƒbƒtƒ@
- * @param[in] nDegits Œ…”
+ * åˆæœŸåŒ–-6
+ * @param[out] lpBuffer ãƒãƒƒãƒ•ã‚¡
+ * @param[in] nDegits æ¡æ•°
  */
 static void InitializeFont6(UINT8* lpBuffer, UINT8 nDegits)
 {
@@ -129,7 +129,7 @@ static void InitializeFont6(UINT8* lpBuffer, UINT8 nDegits)
 }
 
 /**
- * ƒpƒ^[ƒ“
+ * ãƒ‘ã‚¿ãƒ¼ãƒ³
  */
 static const DispClockPattern s_pattern[6] =
 {
@@ -255,7 +255,7 @@ static const DispClockPattern s_pattern[6] =
 };
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 DispClock::DispClock()
 {
@@ -263,7 +263,7 @@ DispClock::DispClock()
 }
 
 /**
- * ‰Šú‰»
+ * åˆæœŸåŒ–
  */
 void DispClock::Initialize()
 {
@@ -271,8 +271,8 @@ void DispClock::Initialize()
 }
 
 /**
- * ƒpƒŒƒbƒgİ’è
- * @param[in] bpp F
+ * ãƒ‘ãƒ¬ãƒƒãƒˆè¨­å®š
+ * @param[in] bpp è‰²
  */
 void DispClock::SetPalettes(UINT bpp)
 {
@@ -289,7 +289,7 @@ void DispClock::SetPalettes(UINT bpp)
 }
 
 /**
- * 8bpp ƒpƒŒƒbƒgİ’è
+ * 8bpp ãƒ‘ãƒ¬ãƒƒãƒˆè¨­å®š
  */
 void DispClock::SetPalette8()
 {
@@ -312,7 +312,7 @@ void DispClock::SetPalette8()
 }
 
 /**
- * 16bpp ƒpƒŒƒbƒgİ’è
+ * 16bpp ãƒ‘ãƒ¬ãƒƒãƒˆè¨­å®š
  */
 void DispClock::SetPalette16()
 {
@@ -323,7 +323,7 @@ void DispClock::SetPalette16()
 }
 
 /**
- * ƒŠƒZƒbƒg
+ * ãƒªã‚»ãƒƒãƒˆ
  */
 void DispClock::Reset()
 {
@@ -358,7 +358,7 @@ void DispClock::Reset()
 }
 
 /**
- * XV
+ * æ›´æ–°
  */
 void DispClock::Update()
 {
@@ -393,7 +393,7 @@ void DispClock::Update()
 }
 
 /**
- * Ä•`‰æ
+ * å†æç”»
  */
 void DispClock::Redraw()
 {
@@ -401,22 +401,22 @@ void DispClock::Redraw()
 }
 
 /**
- * •`‰æ‚ª•K—v?
- * @retval true •`‰æ’†
- * @retval false ”ñ•`‰æ
+ * æç”»ãŒå¿…è¦?
+ * @retval true æç”»ä¸­
+ * @retval false éæç”»
  */
 bool DispClock::IsDisplayed() const
 {
 	return ((m_cDirty != 0) || (m_nCounter.q != 0));
 }
 
-//! ƒIƒtƒZƒbƒg ƒe[ƒuƒ‹
+//! ã‚ªãƒ•ã‚»ãƒƒãƒˆ ãƒ†ãƒ¼ãƒ–ãƒ«
 static const UINT8 s_dclocky[13] = {0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3};
 
 /**
- * ˆÊ’uŒvZ
- * @param[in] nCount ƒJƒEƒ“ƒg’l
- * @return ƒIƒtƒZƒbƒg
+ * ä½ç½®è¨ˆç®—
+ * @param[in] nCount ã‚«ã‚¦ãƒ³ãƒˆå€¤
+ * @return ã‚ªãƒ•ã‚»ãƒƒãƒˆ
  */
 UINT8 DispClock::CountPos(UINT nCount)
 {
@@ -431,8 +431,8 @@ UINT8 DispClock::CountPos(UINT nCount)
 }
 
 /**
- * ƒJƒEƒ“ƒgƒ_ƒEƒ“ˆ—
- * @param[in] nFrames ƒtƒŒ[ƒ€”
+ * ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³å‡¦ç†
+ * @param[in] nFrames ãƒ•ãƒ¬ãƒ¼ãƒ æ•°
  */
 void DispClock::CountDown(UINT nFrames)
 {
@@ -472,9 +472,9 @@ void DispClock::CountDown(UINT nFrames)
 }
 
 /**
- * ƒoƒbƒtƒ@‚É•`‰æ
- * @retval true XV‚ ‚è
- * @retval false XV‚È‚µ
+ * ãƒãƒƒãƒ•ã‚¡ã«æç”»
+ * @retval true æ›´æ–°ã‚ã‚Š
+ * @retval false æ›´æ–°ãªã—
  */
 bool DispClock::Make()
 {
@@ -531,10 +531,10 @@ bool DispClock::Make()
 }
 
 /**
- * •`‰æ
- * @param[in] nBpp F”
- * @param[out] lpBuffer •`‰æƒ|ƒCƒ“ƒ^
- * @param[in] nYAlign ƒAƒ‰ƒCƒƒ“ƒg
+ * æç”»
+ * @param[in] nBpp è‰²æ•°
+ * @param[out] lpBuffer æç”»ãƒã‚¤ãƒ³ã‚¿
+ * @param[in] nYAlign ã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆ
  */
 void DispClock::Draw(UINT nBpp, void* lpBuffer, int nYAlign) const
 {
@@ -559,9 +559,9 @@ void DispClock::Draw(UINT nBpp, void* lpBuffer, int nYAlign) const
 }
 
 /**
- * •`‰æ(8bpp)
- * @param[out] lpBuffer •`‰æƒ|ƒCƒ“ƒ^
- * @param[in] nYAlign ƒAƒ‰ƒCƒƒ“ƒg
+ * æç”»(8bpp)
+ * @param[out] lpBuffer æç”»ãƒã‚¤ãƒ³ã‚¿
+ * @param[in] nYAlign ã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆ
  */
 void DispClock::Draw8(void* lpBuffer, int nYAlign) const
 {
@@ -584,9 +584,9 @@ void DispClock::Draw8(void* lpBuffer, int nYAlign) const
 }
 
 /**
- * •`‰æ(16bpp)
- * @param[out] lpBuffer •`‰æƒ|ƒCƒ“ƒ^
- * @param[in] nYAlign ƒAƒ‰ƒCƒƒ“ƒg
+ * æç”»(16bpp)
+ * @param[out] lpBuffer æç”»ãƒã‚¤ãƒ³ã‚¿
+ * @param[in] nYAlign ã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆ
  */
 void DispClock::Draw16(void* lpBuffer, int nYAlign) const
 {
@@ -608,9 +608,9 @@ void DispClock::Draw16(void* lpBuffer, int nYAlign) const
 }
 
 /**
- * •`‰æ(24bpp)
- * @param[out] lpBuffer •`‰æƒ|ƒCƒ“ƒ^
- * @param[in] nYAlign ƒAƒ‰ƒCƒƒ“ƒg
+ * æç”»(24bpp)
+ * @param[out] lpBuffer æç”»ãƒã‚¤ãƒ³ã‚¿
+ * @param[in] nYAlign ã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆ
  */
 void DispClock::Draw24(void* lpBuffer, int nYAlign) const
 {
@@ -645,9 +645,9 @@ void DispClock::Draw24(void* lpBuffer, int nYAlign) const
 }
 
 /**
- * •`‰æ(32bpp)
- * @param[out] lpBuffer •`‰æƒ|ƒCƒ“ƒ^
- * @param[in] nYAlign ƒAƒ‰ƒCƒƒ“ƒg
+ * æç”»(32bpp)
+ * @param[out] lpBuffer æç”»ãƒã‚¤ãƒ³ã‚¿
+ * @param[in] nYAlign ã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆ
  */
 void DispClock::Draw32(void* lpBuffer, int nYAlign) const
 {

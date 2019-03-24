@@ -1,6 +1,6 @@
-Neko Project II 0.86 kai rev.17
+Neko Project II 0.86 kai rev.19
 ===
-Jun 27, 2018  
+Mar 24, 2019  
 
 Build SDL2 port
 ---
@@ -8,11 +8,11 @@ Build SDL2 port
 １． Install SDL2.  
 
 	(Linux)
-	$ sudo apt-get install git gcc make libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev
+	$ sudo apt-get install git build-essential libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev
 
 or
 
-	(Windows + MSYS2)
+	(Windows + MSYS2 64bit (32bit console))
 	$ pacman -S git gcc make mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL2_mixer
 
 or
@@ -27,43 +27,40 @@ or
 	(Linux)
 	$ cd NP2kai/sdl2
 	$ make -j4 -f Makefile.unix
+	or
+	$ make -j4 -f Makefile21.unix
 
 or
-
-	$ make -j4 -f Makefile21.unix
 
 	(Windows + MSYS2)
 	$ cd NP2kai/sdl2
 	$ make -j4 -f Makefile.win
+	or
+	$ make -j4 -f Makefile21.win
 
 or
-
-	$ make -j4 -f Makefile21.win
 
 	(Mac)
 	$ cd NP2kai/sdl2
 	$ make -j4 -f Makefile.mac
+	or
+	$ make -j4 -f Makefile21.mac
 
 or
 
-	$ make -j4 -f Makefile21.mac
-
-or for GCW Zero (GCW0) game device only
-
+	GCW Zero (GCW0) game device only
 	$ make -j4 -f Makefile21.gcw0
-
-
 
 ３． Install NP2kai.  
 
-	$ sudo -f Makefile.unix install
+	$ sudo make -f Makefile.unix install
 
 or
 
-	$ sudo -f Makefile21.unix install
+	$ sudo make -f Makefile21.unix install
 
-or for GCW Zero (GCW0) game device only
-
+or
+	GCW Zero (GCW0) game device only
 	$ make -j4 -f Makefile21.gcw0 buildopk
 
 	then transfer np2kai.opk to /media/apps/
@@ -601,9 +598,45 @@ WAB Type normally uses 'PC-9821Xe10,Xa7e,Xb10 built-in'.
 
 **NOTE:** Do not run MS-DOS prompt with fullscreen mode, or your screen will get garbled when switching back to Windows environment.
 
+You can use WAB Type 'WAB-S', 'WSN', 'GA-98NB'.
+
+* WAB-S driver
+http://buffalo.jp/download/driver/multi/wab.html
+
+* WSN driver
+http://buffalo.jp/download/driver/multi/wgna_95.html
+
+* GA-98NB driver
+https://www.iodata.jp/lib/product/g/175_win95.htm
 
 Release
 ---
+* Jan 24, 2019
+	- Merge NP21/W 0.86 rev.56
+* Jan 13, 2019
+	- Merge NP21/W 0.86 rev.55
+* Jan 9, 2019
+	- Merge NP21/W 0.86 rev.53,54
+* Dec 22, 2018
+	- Merge NP21/W 0.86 rev.52
+* Dec 19, 2018
+	- Merge NP21/W 0.86 rev.51
+* Dec 16, 2018
+	- Fix WAB
+* Dec 14, 2018
+	- Merge NP21/W 0.86 rev.50
+* Dec 10, 2018 (rev.18)
+	- Merge NP21/W 0.86 rev.48,49
+* Nov 29, 2018
+	- Add MIDI support
+* Nov 25, 2018
+	- Merge NP21/W 0.86 rev.47
+* Oct 28, 2018
+	- Merge NP21/W 0.86 rev.46
+* Oct 14, 2018
+	- Merge NP21/W 0.86 rev.45
+* Sep 27, 2018
+	- Merge NP21/W 0.86 rev.44
 * Aug 22, 2018
 	- Apply for libnvl.so
 	- Merge NP21/W 0.86 rev.43

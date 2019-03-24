@@ -21,21 +21,21 @@ enum {
 static int pic_cs_initialized = 0;
 static CRITICAL_SECTION pic_cs;
 #else
-	// TODO: ”ñWindows—pƒR[ƒh‚ğ‘‚­
+	// TODO: éWindowsç”¨ã‚³ãƒ¼ãƒ‰ã‚’æ›¸ã
 #endif
 
 static void pic_enter_criticalsection(void){
 #if defined(_WINDOWS) && !defined(__LIBRETRO__)
 	EnterCriticalSection(&pic_cs);
 #else
-	// TODO: ”ñWindows—pƒR[ƒh‚ğ‘‚­
+	// TODO: éWindowsç”¨ã‚³ãƒ¼ãƒ‰ã‚’æ›¸ã
 #endif
 }
 static void pic_leave_criticalsection(void){
 #if defined(_WINDOWS) && !defined(__LIBRETRO__)
 	LeaveCriticalSection(&pic_cs);
 #else
-	// TODO: ”ñWindows—pƒR[ƒh‚ğ‘‚­
+	// TODO: éWindowsç”¨ã‚³ãƒ¼ãƒ‰ã‚’æ›¸ã
 #endif
 }
 
@@ -50,7 +50,7 @@ static const _PICITEM def_slave = {
 
 // ----
 
-#if 0	// ƒXƒŒ[ƒu‚ª‚¨‚©‚µ‚¢c
+#if 0	// ã‚¹ãƒ¬ãƒ¼ãƒ–ãŒãŠã‹ã—ã„â€¦
 void pic_irq(void) {
 
 	PIC		p;
@@ -61,7 +61,7 @@ void pic_irq(void) {
 	REG8	bit;
 	REG8	slave;
 
-	// Š„‚İ‹–‰ÂH
+	// å‰²è¾¼ã¿è¨±å¯ï¼Ÿ
 	if (!CPU_isEI) {
 		return;
 	}
@@ -87,7 +87,7 @@ void pic_irq(void) {
 		num = (num + 1) & 7;
 		bit = 1 << num;
 	}
-	if (p->pi[0].icw[2] & bit) {					// ƒXƒŒ[ƒ”
+	if (p->pi[0].icw[2] & bit) {					// ã‚¹ãƒ¬ãƒ¼ãƒ´
 		dat = sir;
 		if (!(p->pi[1].ocw3 & PIC_OCW3_SMM)) {
 			dat |= p->pi[1].isr;
@@ -107,7 +107,7 @@ void pic_irq(void) {
 			CPU_INTERRUPT((REG8)((p->pi[1].icw[1] & 0xf8) | num), 0);
 		}
 	}
-	else if (!(p->pi[0].isr & bit)) {				// ƒ}ƒXƒ^[
+	else if (!(p->pi[0].isr & bit)) {				// ãƒã‚¹ã‚¿ãƒ¼
 		p->pi[0].isr |= bit;
 		p->pi[0].irr &= ~bit;
 		if (num == 0) {
@@ -127,7 +127,7 @@ void pic_irq(void) {												// ver0.78
 	REG8	bit;
 	REG8	slave;
 
-	// Š„‚İ‹–‰ÂH
+	// å‰²è¾¼ã¿è¨±å¯ï¼Ÿ
 	if (!CPU_isEI) {
 		return;
 	}
@@ -154,7 +154,7 @@ void pic_irq(void) {												// ver0.78
 		num = (num + 1) & 7;
 		bit = 1 << num;
 	}
-	if (p->pi[0].icw[2] & bit) {					// ƒXƒŒ[ƒ”
+	if (p->pi[0].icw[2] & bit) {					// ã‚¹ãƒ¬ãƒ¼ãƒ´
 		if (sir == 0) {
 			pic_leave_criticalsection();
 			return;
@@ -177,7 +177,7 @@ void pic_irq(void) {												// ver0.78
 			CPU_INTERRUPT((REG8)((p->pi[1].icw[1] & 0xf8) | num), 0);
 		}
 	}
-	else if (!(p->pi[0].isr & bit)) {				// ƒ}ƒXƒ^[
+	else if (!(p->pi[0].isr & bit)) {				// ãƒã‚¹ã‚¿ãƒ¼
 		p->pi[0].isr |= bit;
 		p->pi[0].irr &= ~bit;
 		if (num == 0) {
@@ -191,7 +191,7 @@ void pic_irq(void) {												// ver0.78
 #endif
 
 
-// ŠÈˆÕƒ‚[ƒh(SYSTEM TIMER‚¾‚¯)
+// ç°¡æ˜“ãƒ¢ãƒ¼ãƒ‰(SYSTEM TIMERã ã‘)
 void picmask(NEVENTITEM item) {
 
 	PICITEM		pi;
@@ -328,7 +328,7 @@ static void IOOUTCALL pic_o02(UINT port, REG8 dat) {
 #if 1
 		UINT8	set;
 		set = picp->imr & (~dat);
-		// ƒŠƒZƒbƒg‚³‚ê‚½ƒrƒbƒg‚ÍŠ„‚è‚İ‚ ‚éH
+		// ãƒªã‚»ãƒƒãƒˆã•ã‚ŒãŸãƒ“ãƒƒãƒˆã¯å‰²ã‚Šè¾¼ã¿ã‚ã‚‹ï¼Ÿ
 		if ((CPU_isDI) || (!(picp->irr & set))) {
 			picp->imr = dat;
 			pic_leave_criticalsection();
@@ -394,7 +394,7 @@ void pic_initialize(void) {
 		pic_cs_initialized = 1;
 	}
 #else
-	// TODO: ”ñWindows—pƒR[ƒh‚ğ‘‚­
+	// TODO: éWindowsç”¨ã‚³ãƒ¼ãƒ‰ã‚’æ›¸ã
 #endif
 }
 
@@ -405,7 +405,7 @@ void pic_deinitialize(void) {
 		pic_cs_initialized = 0;
 	}
 #else
-	// TODO: ”ñWindows—pƒR[ƒh‚ğ‘‚­
+	// TODO: éWindowsç”¨ã‚³ãƒ¼ãƒ‰ã‚’æ›¸ã
 #endif
 }
 

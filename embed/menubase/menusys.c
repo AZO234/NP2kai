@@ -45,46 +45,46 @@ typedef struct {
 static MENUSYS	menusys;
 
 #if defined(OSLANG_SJIS) && !defined(RESOURCE_US)
-static const OEMCHAR str_sysr[] = 			// Œ³‚ÌƒTƒCƒY‚É–ß‚·
+static const OEMCHAR str_sysr[] = 			// å…ƒã®ã‚µã‚¤ã‚ºã«æˆ»ã™
 			"\214\263\202\314\203\124\203\103\203\131\202\311" \
 			"\226\337\202\267";
-static const OEMCHAR str_sysm[] =			// ˆÚ“®
+static const OEMCHAR str_sysm[] =			// ç§»å‹•
 			"\210\332\223\256";
-static const OEMCHAR str_syss[] =			// ƒTƒCƒY•ÏX
+static const OEMCHAR str_syss[] =			// ã‚µã‚¤ã‚ºå¤‰æ›´
 			"\203\124\203\103\203\131\225\317\215\130";
-static const OEMCHAR str_sysn[] =			// Å¬‰»
+static const OEMCHAR str_sysn[] =			// æœ€å°åŒ–
 			"\215\305\217\254\211\273";
-static const OEMCHAR str_sysx[] =			// Å‘å‰»
+static const OEMCHAR str_sysx[] =			// æœ€å¤§åŒ–
 			"\215\305\221\345\211\273";
-static const OEMCHAR str_sysc[] =			// •Â‚¶‚é
+static const OEMCHAR str_sysc[] =			// é–‰ã˜ã‚‹
 			"\225\302\202\266\202\351";
 #elif defined(OSLANG_EUC) && !defined(RESOURCE_US)
-static const OEMCHAR str_sysr[] = 			// Œ³‚ÌƒTƒCƒY‚É–ß‚·
+static const OEMCHAR str_sysr[] = 			// å…ƒã®ã‚µã‚¤ã‚ºã«æˆ»ã™
 			"\270\265\244\316\245\265\245\244\245\272\244\313" \
 			"\314\341\244\271";
-static const OEMCHAR str_sysm[] =			// ˆÚ“®
+static const OEMCHAR str_sysm[] =			// ç§»å‹•
 			"\260\334\306\260";
-static const OEMCHAR str_syss[] =			// ƒTƒCƒY•ÏX
+static const OEMCHAR str_syss[] =			// ã‚µã‚¤ã‚ºå¤‰æ›´
 			"\245\265\245\244\245\272\312\321\271\271";
-static const OEMCHAR str_sysn[] =			// Å¬‰»
+static const OEMCHAR str_sysn[] =			// æœ€å°åŒ–
 			"\272\307\276\256\262\275";
-static const OEMCHAR str_sysx[] =			// Å‘å‰»
+static const OEMCHAR str_sysx[] =			// æœ€å¤§åŒ–
 			"\272\307\302\347\262\275";
-static const OEMCHAR str_sysc[] =			// •Â‚¶‚é
+static const OEMCHAR str_sysc[] =			// é–‰ã˜ã‚‹
 			"\312\304\244\270\244\353";
 #elif defined(OSLANG_UTF8) && !defined(RESOURCE_US)
-static const OEMCHAR str_sysr[] = 			// Œ³‚ÌƒTƒCƒY‚É–ß‚·
+static const OEMCHAR str_sysr[] = 			// å…ƒã®ã‚µã‚¤ã‚ºã«æˆ»ã™
 			"\345\205\203\343\201\256\343\202\265\343\202\244\343\202\272" \
 			"\343\201\253\346\210\273\343\201\231";
-static const OEMCHAR str_sysm[] =			// ˆÚ“®
+static const OEMCHAR str_sysm[] =			// ç§»å‹•
 			"\347\247\273\345\213\225";
-static const OEMCHAR str_syss[] =			// ƒTƒCƒY•ÏX
+static const OEMCHAR str_syss[] =			// ã‚µã‚¤ã‚ºå¤‰æ›´
 			"\343\202\265\343\202\244\343\202\272\345\244\211\346\233\264";
-static const OEMCHAR str_sysn[] =			// Å¬‰»
+static const OEMCHAR str_sysn[] =			// æœ€å°åŒ–
 			"\346\234\200\345\260\217\345\214\226";
-static const OEMCHAR str_sysx[] =			// Å‘å‰»
+static const OEMCHAR str_sysx[] =			// æœ€å¤§åŒ–
 			"\346\234\200\345\244\247\345\214\226";
-static const OEMCHAR str_sysc[] =			// •Â‚¶‚é
+static const OEMCHAR str_sysc[] =			// é–‰ã˜ã‚‹
 			"\351\226\211\343\201\230\343\202\213";
 #else
 static const OEMCHAR str_sysr[] = OEMTEXT("Restore");
@@ -307,7 +307,7 @@ static BRESULT wndopenbase(MENUSYS *sys) {
 
 	rootflg = 0;
 	menu = sys->root;
-	while(menu) {					// ƒƒjƒ…[“à—e‚ğ’²‚×‚éB
+	while(menu) {					// ãƒ¡ãƒ‹ãƒ¥ãƒ¼å†…å®¹ã‚’èª¿ã¹ã‚‹ã€‚
 		if (!(menu->flag & (MENU_DISABLE | MENU_SEPARATOR))) {
 			switch(menu->flag & MENUS_CTRLMASK) {
 				case MENUS_POPUP:
@@ -801,7 +801,7 @@ void menusys_moving(int x, int y, int btn) {
 	sys = &menusys;
 	getposinfo(sys, &cur, x, y);
 
-	// ƒƒjƒ…[‚ğ•Â‚¶‚é`
+	// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’é–‰ã˜ã‚‹ã€œ
 	if (cur.depth < 0) {
 		if (btn == 2) {
 			menubase_close();
@@ -1045,7 +1045,7 @@ static void menusys_setflag(MENUID id, MENUFLG flag, MENUFLG mask) {
 	}
 	itm->flag ^= flag;
 
-	// ƒŠƒhƒ[‚ª•K—vH
+	// ãƒªãƒ‰ãƒ­ãƒ¼ãŒå¿…è¦ï¼Ÿ
 	depth = 0;
 	while(depth < sys->depth) {
 		itm = sys->wnd[depth].menu;
@@ -1093,7 +1093,7 @@ static void menusys_settxt(MENUID id, const OEMCHAR *arg) {
 		itm->string[0] = '\0';
 	}
 
-	// ƒŠƒhƒ[‚ª•K—vH (ToDo: ÄƒI[ƒvƒ“‚·‚×‚µ)
+	// ãƒªãƒ‰ãƒ­ãƒ¼ãŒå¿…è¦ï¼Ÿ (ToDo: å†ã‚ªãƒ¼ãƒ—ãƒ³ã™ã¹ã—)
 	depth = 0;
 	while(depth < sys->depth) {
 		itm = sys->wnd[depth].menu;

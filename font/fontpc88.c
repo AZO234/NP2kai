@@ -17,20 +17,20 @@ const UINT8	*p;
 		q = dst + 0x21000 + (i << 4);
 		for (j=0x21; j<0x7f; j++) {
 			p = NULL;
-			// BITMAPã‚ÌŠ¿Žš‚Ìƒ|ƒCƒ“ƒ^‚ð‹‚ß‚é
-								// 2121`277e
+			// BITMAPä¸Šã®æ¼¢å­—ã®ãƒã‚¤ãƒ³ã‚¿ã‚’æ±‚ã‚ã‚‹
+								// 2121ã€œ277e
 			if ((i >= 0x01) && (i <= 0x07)) {
 				p = src + ((j & 0x1f) * 0x20) + (i * 0x400)
 													+ ((j & 0x60) * 0x100);
 			}
-								// 3021`4f7e
+								// 3021ã€œ4f7e
 			else if ((i >= 0x10) && (i <= 0x2f)) {
 				p = src + ((j & 0x1f) * 0x20) + ((i & 0x7) * 0x400)
 						+ ((((i - 0x10) / 0x8) ^ 2) * 0x2000)
 						+ (((j & 0x60) / 0x20) * 0x8000);
 			}
-			if (p) {							// ‹KŠi“àƒR[ƒh‚È‚ç‚Î
-				// ƒRƒs[‚·‚é
+			if (p) {							// è¦æ ¼å†…ã‚³ãƒ¼ãƒ‰ãªã‚‰ã°
+				// ã‚³ãƒ”ãƒ¼ã™ã‚‹
 				for (k=0; k<16; k++) {
 					*(q+k+0x000) = p[0];
 					*(q+k+0x800) = p[1];
@@ -52,22 +52,22 @@ const UINT8	*p;
 		q = dst + 0x21000 + (i << 4);
 		for (j=0x21; j<0x7f; j++) {
 			p = NULL;
-			// Š¿Žš‚Ìƒ|ƒCƒ“ƒ^‚ð‹‚ß‚é
-								// 7021`737e
+			// æ¼¢å­—ã®ãƒã‚¤ãƒ³ã‚¿ã‚’æ±‚ã‚ã‚‹
+								// 7021ã€œ737e
 			if ((i >= 0x50) && (i <= 0x53)) {
 				p = src + ((j & 0x1f) * 0x20)
 							+ ((i - 0x50) * 0x400)
 							+ ((j & 0x60) * 0x100);
 			}
-								// 5021`6f7e
+								// 5021ã€œ6f7e
 			else if ((i >= 0x30) && (i <= 0x4f)) {
 				p = src + ((j & 0x1f) * 0x20)
 					+ ((i & 0x7) * 0x400)
 					+ (((i - 0x30) / 0x8) * 0x2000)
 					+ (((j & 0x60) / 0x20) * 0x8000);
 			}
-			if (p) {							// ‹KŠi“àƒR[ƒh‚È‚ç‚Î
-				// ƒRƒs[‚·‚é
+			if (p) {							// è¦æ ¼å†…ã‚³ãƒ¼ãƒ‰ãªã‚‰ã°
+				// ã‚³ãƒ”ãƒ¼ã™ã‚‹
 				for (k=0; k<16; k++) {
 					*(q+k) = *p++;
 					*(q+k+0x800) = *p++;
@@ -90,35 +90,35 @@ UINT8 fontpc88_read(const OEMCHAR *filename, UINT8 loading) {
 	}
 	file_cpyname(fname, filename, NELEMENTS(fname));
 
-	// ‘æ‚Q…€ˆÈŠO‚ð“Ç‚Þ•K—v‚Í‚ ‚éH
+	// ç¬¬ï¼’æ°´æº–ä»¥å¤–ã‚’èª­ã‚€å¿…è¦ã¯ã‚ã‚‹ï¼Ÿ
 	if (loading & (FONT_ANK8 | FONTLOAD_ANK | FONT_KNJ1)) {
 
-		// ‚ ‚Á‚½‚ç“Ç‚Ýž‚ñ‚Å‚Ý‚é
+		// ã‚ã£ãŸã‚‰èª­ã¿è¾¼ã‚“ã§ã¿ã‚‹
 		file_cutname(fname);
 		file_catname(fname, pc88knj1name, NELEMENTS(fname));
 		fh = file_open_rb(fname);
 		if (fh != FILEH_INVALID) {
 			if (file_read(fh, work, 0x20000) == 0x20000) {
 
-				// 8dot ANK‚ð“Ç‚Þ•K—v‚ª‚ ‚é‚©
+				// 8dot ANKã‚’èª­ã‚€å¿…è¦ãŒã‚ã‚‹ã‹
 				if (loading & FONT_ANK8) {
 					loading &= ~FONT_ANK8;
 					fontdata_ank8store(work + 0x1000, 0, 256);
 				}
 
-				// 16dot ASCII‚ð“Ç‚Þ•K—v‚ª‚ ‚é‚©
+				// 16dot ASCIIã‚’èª­ã‚€å¿…è¦ãŒã‚ã‚‹ã‹
 				if (loading & FONT_ANK16a) {
 					loading &= ~FONT_ANK16a;
 					CopyMemory(fontrom + 0x80000, work + 0x0000, 16*128);
 				}
 
-				// 16dot ANK(0x80`)‚ð“Ç‚Þ•K—v‚ª‚ ‚é‚©
+				// 16dot ANK(0x80ã€œ)ã‚’èª­ã‚€å¿…è¦ãŒã‚ã‚‹ã‹
 				if (loading & FONT_ANK16b) {
 					loading &= ~FONT_ANK16b;
 					CopyMemory(fontrom + 0x80800, work + 0x0800, 16*128);
 				}
 
-				// ‘æˆê…€Š¿Žš‚ð“Ç‚Ýž‚ÞH
+				// ç¬¬ä¸€æ°´æº–æ¼¢å­—ã‚’èª­ã¿è¾¼ã‚€ï¼Ÿ
 				if (loading & FONT_KNJ1) {
 					loading &= ~FONT_KNJ1;
 					pc88knjcpy1(fontrom, work, 0x01, 0x30);
@@ -126,15 +126,15 @@ UINT8 fontpc88_read(const OEMCHAR *filename, UINT8 loading) {
 				}
 			}
 
-			// ƒNƒ[ƒY‚µ‚Ä ƒZƒNƒVƒ‡ƒ“I‚í‚è
+			// ã‚¯ãƒ­ãƒ¼ã‚ºã—ã¦ ã‚»ã‚¯ã‚·ãƒ§ãƒ³çµ‚ã‚ã‚Š
 			file_close(fh);
 		}
 	}
 
-	// ‘æ‚Q…€‚ð“Ç‚Þ•K—v‚Í‚ ‚éH
+	// ç¬¬ï¼’æ°´æº–ã‚’èª­ã‚€å¿…è¦ã¯ã‚ã‚‹ï¼Ÿ
 	if (loading & FONT_KNJ2) {
 
-		// ‚ ‚Á‚½‚ç“Ç‚Ýž‚ñ‚Å‚Ý‚é
+		// ã‚ã£ãŸã‚‰èª­ã¿è¾¼ã‚“ã§ã¿ã‚‹
 		file_cutname(fname);
 		file_catname(fname, pc88knj2name, NELEMENTS(fname));
 		fh = file_open_rb(fname);
@@ -145,43 +145,43 @@ UINT8 fontpc88_read(const OEMCHAR *filename, UINT8 loading) {
 				pc88knjcpy2(fontrom, work, 0x31, 0x56);
 			}
 
-			// ƒNƒ[ƒY‚µ‚Ä ƒZƒNƒVƒ‡ƒ“I‚í‚è
+			// ã‚¯ãƒ­ãƒ¼ã‚ºã—ã¦ ã‚»ã‚¯ã‚·ãƒ§ãƒ³çµ‚ã‚ã‚Š
 			file_close(fh);
 		}
 	}
 
-	// ANK‚ð“Ç‚Ýž‚Þ•K—v‚Í‚ ‚éH
+	// ANKã‚’èª­ã¿è¾¼ã‚€å¿…è¦ã¯ã‚ã‚‹ï¼Ÿ
 	if (loading & (FONT_ANK8 | FONTLOAD_ANK)) {
 
-		// ‚ ‚Á‚½‚ç“Ç‚Ýž‚ñ‚Å‚Ý‚é
+		// ã‚ã£ãŸã‚‰èª­ã¿è¾¼ã‚“ã§ã¿ã‚‹
 		file_cutname(fname);
 		file_catname(fname, pc88ankname, NELEMENTS(fname));
 		fh = file_open_rb(fname);
 		if (fh != FILEH_INVALID) {
 
-			// “Ç‚Ýž‚ñ‚Å‚Ý‚é
+			// èª­ã¿è¾¼ã‚“ã§ã¿ã‚‹
 			if (file_read(fh, work, 0x1800) == 0x1800) {
 
-				// 8dot ANK‚ð“Ç‚Þ•K—v‚ª‚ ‚é‚©
+				// 8dot ANKã‚’èª­ã‚€å¿…è¦ãŒã‚ã‚‹ã‹
 				if (loading & FONT_ANK8) {
 					loading &= ~FONT_ANK8;
 					fontdata_ank8store(work + 0x0000, 0, 256);
 				}
 
-				// 16dot ASCII‚ð“Ç‚Þ•K—v‚ª‚ ‚é‚©
+				// 16dot ASCIIã‚’èª­ã‚€å¿…è¦ãŒã‚ã‚‹ã‹
 				if (loading & FONT_ANK16a) {
 					loading &= ~FONT_ANK16a;
 					CopyMemory(fontrom + 0x80000, work + 0x0800, 16*128);
 				}
 
-				// 16dot ANK(0x80`)‚ð“Ç‚Þ•K—v‚ª‚ ‚é‚©
+				// 16dot ANK(0x80ã€œ)ã‚’èª­ã‚€å¿…è¦ãŒã‚ã‚‹ã‹
 				if (loading & FONT_ANK16b) {
 					loading &= ~FONT_ANK16b;
 					CopyMemory(fontrom + 0x80800, work + 0x1000, 16*128);
 				}
 			}
 
-			// ƒNƒ[ƒY‚µ‚Ä ANK‚ÍI‚í‚è
+			// ã‚¯ãƒ­ãƒ¼ã‚ºã—ã¦ ANKã¯çµ‚ã‚ã‚Š
 			file_close(fh);
 		}
 	}

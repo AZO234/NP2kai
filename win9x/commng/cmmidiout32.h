@@ -1,6 +1,6 @@
 /**
  * @file	cmmidiout32.h
- * @brief	MIDI OUT win32 ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	MIDI OUT win32 ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -9,7 +9,7 @@
 #include "cmmidiout.h"
 
 /**
- * @brief MIDI OUT win32 ƒNƒ‰ƒX
+ * @brief MIDI OUT win32 ã‚¯ãƒ©ã‚¹
  */
 class CComMidiOut32 : public CComMidiOut
 {
@@ -23,10 +23,10 @@ public:
 	static bool GetId(LPCTSTR lpMidiOut, UINT* pId);
 
 private:
-	HMIDIOUT m_hMidiOut;					/*!< MIDIOUT ƒnƒ“ƒhƒ‹ */
+	HMIDIOUT m_hMidiOut;					/*!< MIDIOUT ãƒãƒ³ãƒ‰ãƒ« */
 	MIDIHDR m_midihdr;						/*!< MIDIHDR */
-	bool m_bWaitingSentExclusive;			/*!< ƒGƒNƒXƒNƒ‹[ƒVƒ”‘—M’† */
-	std::vector<char> m_excvbuf;			/*!< ƒGƒNƒXƒNƒ‹[ƒVƒ” ƒoƒbƒtƒ@ */
+	bool m_bWaitingSentExclusive;			/*!< ã‚¨ã‚¯ã‚¹ã‚¯ãƒ«ãƒ¼ã‚·ãƒ´é€ä¿¡ä¸­ */
+	std::vector<char> m_excvbuf;			/*!< ã‚¨ã‚¯ã‚¹ã‚¯ãƒ«ãƒ¼ã‚·ãƒ´ ãƒãƒƒãƒ•ã‚¡ */
 
 	void WaitSentExclusive();
 };

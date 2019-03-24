@@ -128,7 +128,7 @@ static BRESULT pcm_open(GETSND snd) {
 	if (snd->blocksize != align) {
 		goto pcmopn_err;
 	}
-	snd->blocksamples = 0x800;					// �K���ɁB
+	snd->blocksamples = 0x800;					// 適当に。
 	snd->blocksize *= snd->blocksamples;
 	snd->snd = (void *)(INTPTR)abits[align - 1];
 	snd->dec = (GSDEC)pcm_dec;
@@ -163,7 +163,7 @@ static UINT msa_dec(GETSND snd, SINT16 *dst) {
 	UINT		ch;
 	SINT32		outdata;
 
-	buf = snd->datptr;						// ���[�N�g���Ă܂���B
+	buf = snd->datptr;						// ワーク使ってません。
 	size = np2min(snd->datsize, snd->blocksize);
 	snd->datptr += size;
 	snd->datsize -= size;
@@ -347,7 +347,7 @@ static UINT ima_dec(GETSND snd, SINT16 *dst) {
 	if (snd->blocksize > snd->datsize) {
 		goto imadec_err;
 	}
-	src = snd->datptr;						// ���[�N�g���Ă܂���B
+	src = snd->datptr;						// ワーク使ってません。
 	snd->datptr += snd->blocksize;
 	snd->datsize -= snd->blocksize;
 
@@ -459,7 +459,7 @@ BRESULT getwave_open(GETSND snd, UINT8 *ptr, UINT size) {
 
 	info = NULL;		// for gcc
 
-	// RIFF�̃`�F�b�N
+	// RIFFのチェック
 	riff = (RIFF_HEADER *)ptr;
 	pos = sizeof(RIFF_HEADER);
 	if (size < pos) {
@@ -471,7 +471,7 @@ BRESULT getwave_open(GETSND snd, UINT8 *ptr, UINT size) {
 		goto gwopn_err;
 	}
 	if (!memcmp(riff->fmt, fmt_wave, 4)) {
-		// �t�H�[�}�b�g�w�b�_�`�F�b�N
+		// フォーマットヘッダチェック
 		head = (WAVE_HEADER *)(ptr + pos);
 		pos += sizeof(WAVE_HEADER);
 		if (size < pos) {
@@ -488,7 +488,7 @@ BRESULT getwave_open(GETSND snd, UINT8 *ptr, UINT size) {
 			goto gwopn_err;
 		}
 
-		// �t�H�[�}�b�g�`�F�b�N
+		// フォーマットチェック
 		info = (WAVE_INFOS *)(ptr + pos);
 		pos += headsize;
 		if (size < pos) {
@@ -515,7 +515,7 @@ BRESULT getwave_open(GETSND snd, UINT8 *ptr, UINT size) {
 		goto gwopn_err;
 	}
 
-	// data�܂ňړ��B
+	// dataまで移動。
 	while(1) {
 		head = (WAVE_HEADER *)(ptr + pos);
 		pos += sizeof(WAVE_HEADER);
@@ -565,7 +565,7 @@ BRESULT getwave_open(GETSND snd, UINT8 *ptr, UINT size) {
 		goto gwopn_err;
 	}
 
-	// �o�^�`
+	// 登録〜
 	snd->datptr = ptr;
 	snd->datsize = size;
 	return(SUCCESS);

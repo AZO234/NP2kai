@@ -1,6 +1,6 @@
 /**
  * @file	viewer.h
- * @brief	DebugUty —pƒrƒ…[ƒ ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	DebugUty ç”¨ãƒ“ãƒ¥ãƒ¼ãƒ¯ ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -9,11 +9,11 @@
 
 class CDebugUtyItem;
 
-//! ƒrƒ…[Å‘å”
+//! ãƒ“ãƒ¥ãƒ¼æœ€å¤§æ•°
 #define NP2VIEW_MAX		8
 
 /**
- * @brief ƒrƒ…[ ƒNƒ‰ƒX
+ * @brief ãƒ“ãƒ¥ãƒ¼ ã‚¯ãƒ©ã‚¹
  */
 class CDebugUtyView : public CWndProc
 {
@@ -43,13 +43,13 @@ protected:
 	virtual void PostNcDestroy();
 
 private:
-	bool m_bActive;				//!< ƒAƒNƒeƒBƒu ƒtƒ‰ƒO
-	UINT m_nVPos;				//!< ˆÊ’u
-	UINT m_nVLines;				//!< ƒ‰ƒCƒ“”
-	UINT m_nVPage;				//!< 1ƒy[ƒW‚Ì•\¦”
-	UINT m_nVMultiple;			//!< ”{—¦
-	CDebugUtyItem* m_lpItem;	//!< •\¦ƒAƒCƒeƒ€
-	static DWORD sm_dwLastTick;	//!< ÅŒã‚ÌTick
+	bool m_bActive;				//!< ã‚¢ã‚¯ãƒ†ã‚£ãƒ– ãƒ•ãƒ©ã‚°
+	UINT m_nVPos;				//!< ä½ç½®
+	UINT m_nVLines;				//!< ãƒ©ã‚¤ãƒ³æ•°
+	UINT m_nVPage;				//!< 1ãƒšãƒ¼ã‚¸ã®è¡¨ç¤ºæ•°
+	UINT m_nVMultiple;			//!< å€ç‡
+	CDebugUtyItem* m_lpItem;	//!< è¡¨ç¤ºã‚¢ã‚¤ãƒ†ãƒ 
+	static DWORD sm_dwLastTick;	//!< æœ€å¾Œã®Tick
 	void SetMode(UINT nID);
 	void SetSegmentItem(HMENU hMenu, int nId, LPCTSTR lpSegment, UINT nSegment);
 	void UpdateView();
@@ -57,8 +57,8 @@ private:
 };
 
 /**
- * Œ»İ‚ÌˆÊ’u‚ğ•Ô‚·
- * @return ˆÊ’u
+ * ç¾åœ¨ã®ä½ç½®ã‚’è¿”ã™
+ * @return ä½ç½®
  */
 inline UINT32 CDebugUtyView::GetVScrollPos() const
 {

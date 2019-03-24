@@ -1,6 +1,6 @@
 /**
  * @file	d_config.cpp
- * @brief	ê›íËÉ_ÉCÉAÉçÉO
+ * @brief	Ë®≠ÂÆö„ÉÄ„Ç§„Ç¢„É≠„Ç∞
  */
 
 #include "compiler.h"
@@ -25,8 +25,8 @@
 #endif
 
 /**
- * @brief ê›íËÉ_ÉCÉAÉçÉO
- * @param[in] hwndParent êeÉEÉBÉìÉhÉE
+ * @brief Ë®≠ÂÆö„ÉÄ„Ç§„Ç¢„É≠„Ç∞
+ * @param[in] hwndParent Ë¶™„Ç¶„Ç£„É≥„Éâ„Ç¶
  */
 class CConfigureDlg : public CDlgProc
 {
@@ -39,13 +39,13 @@ protected:
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 
 private:
-	CComboData m_baseClock;			//!< ÉxÅ[ÉX ÉNÉçÉbÉN
-	CComboData m_multiple;			//!< î{ó¶
-	CComboData m_cputype;			//!< CPUéÌóﬁ
-	CComboData m_type;				//!< É^ÉCÉv
-	CComboData m_name;				//!< ÉfÉoÉCÉXñº
-	CComboData m_rate;				//!< ÉåÅ[Ég
-	CWndProc   m_chk21port;			//!< PC-9821É|Å[ÉgÉ}ÉbÉv
+	CComboData m_baseClock;			//!< „Éô„Éº„Çπ „ÇØ„É≠„ÉÉ„ÇØ
+	CComboData m_multiple;			//!< ÂÄçÁéá
+	CComboData m_cputype;			//!< CPUÁ®ÆÈ°û
+	CComboData m_type;				//!< „Çø„Ç§„Éó
+	CComboData m_name;				//!< „Éá„Éê„Ç§„ÇπÂêç
+	CComboData m_rate;				//!< „É¨„Éº„Éà
+	CWndProc   m_chk21port;			//!< PC-9821„Éù„Éº„Éà„Éû„ÉÉ„Éó
 	std::vector<LPCTSTR> m_dsound3;	//!< DSound3
 	std::vector<LPCTSTR> m_wasapi;	//!< WASAPI
 	std::vector<LPCTSTR> m_asio;	//!< ASIO
@@ -56,14 +56,14 @@ private:
 	int SetCpuTypeIndex(UINT index);
 };
 
-//! ÉRÉìÉ{ É{ÉbÉNÉX ÉAÉCÉeÉÄ
+//! „Ç≥„É≥„Éú „Éú„ÉÉ„ÇØ„Çπ „Ç¢„Ç§„ÉÜ„É†
 static const CComboData::Entry s_baseclock[] =
 {
 	{MAKEINTRESOURCE(IDS_2_0MHZ),	PCBASECLOCK20},
 	{MAKEINTRESOURCE(IDS_2_5MHZ),	PCBASECLOCK25},
 };
 
-//! CPUéÌóﬁ ÉRÉìÉ{ É{ÉbÉNÉX ÉAÉCÉeÉÄ
+//! CPUÁ®ÆÈ°û „Ç≥„É≥„Éú „Éú„ÉÉ„ÇØ„Çπ „Ç¢„Ç§„ÉÜ„É†
 static const CComboData::Entry s_cputype[] =
 {
 	{MAKEINTRESOURCE(IDS_CPU_CUSTOM),	0},
@@ -74,6 +74,8 @@ static const CComboData::Entry s_cputype[] =
 	{MAKEINTRESOURCE(IDS_CPU_PENTIUMPRO),	5},
 	{MAKEINTRESOURCE(IDS_CPU_PENTIUMII),	6},
 	{MAKEINTRESOURCE(IDS_CPU_PENTIUMIII),	7},
+	{MAKEINTRESOURCE(IDS_CPU_PENTIUMM),		8},
+	{MAKEINTRESOURCE(IDS_CPU_PENTIUM4),		9},
 	{MAKEINTRESOURCE(IDS_CPU_AMD_K6_2),		15},
 	{MAKEINTRESOURCE(IDS_CPU_AMD_K6_III),	16},
 	{MAKEINTRESOURCE(IDS_CPU_AMD_K7_ATHLON),	17},
@@ -85,18 +87,18 @@ static const CComboData::Entry s_cputype_286[] =
 	{MAKEINTRESOURCE(IDS_CPU_80286),	0},
 };
 
-//! î{ó¶ÉäÉXÉg
+//! ÂÄçÁéá„É™„Çπ„Éà
 static const UINT32 s_mulval[] = {1, 2, 4, 5, 6, 8, 10, 12, 16, 20, 24, 30, 32, 34, 36, 40, 42};
 
-//! ÉNÉçÉbÉN ÉtÉHÅ[É}ÉbÉg
+//! „ÇØ„É≠„ÉÉ„ÇØ „Éï„Ç©„Éº„Éû„ÉÉ„Éà
 static const TCHAR str_clockfmt[] = _T("%2u.%.4u");
 
-//! ÉTÉìÉvÉäÉìÉO ÉåÅ[Ég
+//! „Çµ„É≥„Éó„É™„É≥„Ç∞ „É¨„Éº„Éà
 static const UINT32 s_nSamplingRate[] = {11025, 22050, 44100, 48000, 88200, 96000};
 
 /**
- * ÉRÉìÉXÉgÉâÉNÉ^
- * @param[in] hwndParent êeÉEÉBÉìÉhÉE
+ * „Ç≥„É≥„Çπ„Éà„É©„ÇØ„Çø
+ * @param[in] hwndParent Ë¶™„Ç¶„Ç£„É≥„Éâ„Ç¶
  */
 CConfigureDlg::CConfigureDlg(HWND hwndParent)
 	: CDlgProc(IDD_CONFIG, hwndParent)
@@ -104,13 +106,12 @@ CConfigureDlg::CConfigureDlg(HWND hwndParent)
 }
 
 /**
- * Ç±ÇÃÉÅÉ\ÉbÉhÇÕ WM_INITDIALOG ÇÃÉÅÉbÉZÅ[ÉWÇ…âûìöÇµÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
- * @retval TRUE ç≈èâÇÃÉRÉìÉgÉçÅ[ÉãÇ…ì¸óÕÉtÉHÅ[ÉJÉXÇê›íË
- * @retval FALSE ä˘Ç…ê›íËçœ
+ * „Åì„ÅÆ„É°„ÇΩ„ÉÉ„Éâ„ÅØ WM_INITDIALOG „ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„Å´ÂøúÁ≠î„Åó„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
+ * @retval TRUE ÊúÄÂàù„ÅÆ„Ç≥„É≥„Éà„É≠„Éº„É´„Å´ÂÖ•Âäõ„Éï„Ç©„Éº„Ç´„Çπ„ÇíË®≠ÂÆö
+ * @retval FALSE Êó¢„Å´Ë®≠ÂÆöÊ∏à
  */
 BOOL CConfigureDlg::OnInitDialog()
 {
-	int i;
 
 	m_baseClock.SubclassDlgItem(IDC_BASECLOCK, this);
 	m_baseClock.Add(s_baseclock, _countof(s_baseclock));
@@ -164,7 +165,7 @@ BOOL CConfigureDlg::OnInitDialog()
 	m_chk21port.EnableWindow(FALSE);
 #endif
 
-	// ÉTÉEÉìÉhä÷åW
+	// „Çµ„Ç¶„É≥„ÉâÈñ¢‰øÇ
 	m_type.SubclassDlgItem(IDC_SOUND_DEVICE_TYPE, this);
 
 	CSoundDeviceDSound3::EnumerateDevices(m_dsound3);
@@ -261,7 +262,7 @@ BOOL CConfigureDlg::OnInitDialog()
 }
 
 /**
- * ÉäÉXÉgçXêV
+ * „É™„Çπ„ÉàÊõ¥Êñ∞
  */
 void CConfigureDlg::UpdateDeviceList()
 {
@@ -305,64 +306,89 @@ void CConfigureDlg::UpdateDeviceList()
 }
 
 /**
- * np2cfg CPUID -> CPU type index ëäå›ïœä∑
+ * np2cfg CPUID -> CPU type index Áõ∏‰∫íÂ§âÊèõ
  */
 int CConfigureDlg::GetCpuTypeIndex(){
 #if defined(CPUCORE_IA32)
 	if(np2cfg.cpu_family == CPU_I486SX_FAMILY && 
 	   np2cfg.cpu_model == CPU_I486SX_MODEL &&
 	   np2cfg.cpu_stepping == CPU_I486SX_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_I486SX &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_I486SX){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_I486SX &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_I486SX &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_I486SX){
 		return 1;
 	}
 	if((CPU_FEATURES_ALL & CPU_FEATURES_I486DX) != CPU_FEATURES_I486DX) goto AMDCPUCheck;
 	if(np2cfg.cpu_family == CPU_I486DX_FAMILY && 
 	   np2cfg.cpu_model == CPU_I486DX_MODEL &&
 	   np2cfg.cpu_stepping == CPU_I486DX_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_I486DX &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_I486DX){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_I486DX &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_I486DX &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_I486DX){
 		return 2;
 	}
 	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM) != CPU_FEATURES_PENTIUM) goto AMDCPUCheck;
 	if(np2cfg.cpu_family == CPU_PENTIUM_FAMILY && 
 	   np2cfg.cpu_model == CPU_PENTIUM_MODEL &&
 	   np2cfg.cpu_stepping == CPU_PENTIUM_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_PENTIUM &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_PENTIUM){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_PENTIUM &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_PENTIUM){
 		return 3;
 	}
 	if((CPU_FEATURES_ALL & CPU_FEATURES_MMX_PENTIUM) != CPU_FEATURES_MMX_PENTIUM) goto AMDCPUCheck;
 	if(np2cfg.cpu_family == CPU_MMX_PENTIUM_FAMILY && 
 	   np2cfg.cpu_model == CPU_MMX_PENTIUM_MODEL &&
 	   np2cfg.cpu_stepping == CPU_MMX_PENTIUM_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_MMX_PENTIUM &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_MMX_PENTIUM){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_MMX_PENTIUM &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_MMX_PENTIUM &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_MMX_PENTIUM){
 		return 4;
 	}
 	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_PRO) != CPU_FEATURES_PENTIUM_PRO) goto AMDCPUCheck;
 	if(np2cfg.cpu_family == CPU_PENTIUM_PRO_FAMILY && 
 	   np2cfg.cpu_model == CPU_PENTIUM_PRO_MODEL &&
 	   np2cfg.cpu_stepping == CPU_PENTIUM_PRO_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_PENTIUM_PRO &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_PENTIUM_PRO){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM_PRO &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_PENTIUM_PRO &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_PENTIUM_PRO){
 		return 5;
 	}
 	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_II) != CPU_FEATURES_PENTIUM_II) goto AMDCPUCheck;
 	if(np2cfg.cpu_family == CPU_PENTIUM_II_FAMILY && 
 	   np2cfg.cpu_model == CPU_PENTIUM_II_MODEL &&
 	   np2cfg.cpu_stepping == CPU_PENTIUM_II_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_PENTIUM_II &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_PENTIUM_II){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM_II &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_PENTIUM_II &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_PENTIUM_II){
 		return 6;
 	}
 	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_III) != CPU_FEATURES_PENTIUM_III) goto AMDCPUCheck;
 	if(np2cfg.cpu_family == CPU_PENTIUM_III_FAMILY && 
 	   np2cfg.cpu_model == CPU_PENTIUM_III_MODEL &&
 	   np2cfg.cpu_stepping == CPU_PENTIUM_III_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_PENTIUM_III &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_PENTIUM_III){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM_III &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_PENTIUM_III &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_PENTIUM_III){
 		return 7;
+	}
+	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_M) != CPU_FEATURES_PENTIUM_M) goto AMDCPUCheck;
+	if(np2cfg.cpu_family == CPU_PENTIUM_M_FAMILY && 
+	   np2cfg.cpu_model == CPU_PENTIUM_M_MODEL &&
+	   np2cfg.cpu_stepping == CPU_PENTIUM_M_STEPPING &&
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM_M &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_PENTIUM_M &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_PENTIUM_M){
+		return 8;
+	}
+	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_4) != CPU_FEATURES_PENTIUM_4) goto AMDCPUCheck;
+	if(np2cfg.cpu_family == CPU_PENTIUM_4_FAMILY && 
+	   np2cfg.cpu_model == CPU_PENTIUM_4_MODEL &&
+	   np2cfg.cpu_stepping == CPU_PENTIUM_4_STEPPING &&
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM_4 &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_PENTIUM_4 &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_PENTIUM_4){
+		return 9;
 	}
 
 AMDCPUCheck:
@@ -371,8 +397,9 @@ AMDCPUCheck:
 	if(np2cfg.cpu_family == CPU_AMD_K6_2_FAMILY && 
 	   np2cfg.cpu_model == CPU_AMD_K6_2_MODEL &&
 	   np2cfg.cpu_stepping == CPU_AMD_K6_2_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_AMD_K6_2 &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_AMD_K6_2){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_AMD_K6_2 &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_AMD_K6_2 &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_AMD_K6_2){
 		return 15;
 	}
 	if((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K6_III) != CPU_FEATURES_AMD_K6_III ||
@@ -380,8 +407,9 @@ AMDCPUCheck:
 	if(np2cfg.cpu_family == CPU_AMD_K6_III_FAMILY && 
 	   np2cfg.cpu_model == CPU_AMD_K6_III_MODEL &&
 	   np2cfg.cpu_stepping == CPU_AMD_K6_III_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_AMD_K6_III &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_AMD_K6_III){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_AMD_K6_III &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_AMD_K6_III &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_AMD_K6_III){
 		return 16;
 	}
 	if((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K7_ATHLON) != CPU_FEATURES_AMD_K7_ATHLON ||
@@ -389,8 +417,9 @@ AMDCPUCheck:
 	if(np2cfg.cpu_family == CPU_AMD_K7_ATHLON_FAMILY && 
 	   np2cfg.cpu_model == CPU_AMD_K7_ATHLON_MODEL &&
 	   np2cfg.cpu_stepping == CPU_AMD_K7_ATHLON_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_AMD_K7_ATHLON &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_AMD_K7_ATHLON){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_AMD_K7_ATHLON &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_AMD_K7_ATHLON &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_AMD_K7_ATHLON){
 		return 17;
 	}
 	if((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K7_ATHLON_XP) != CPU_FEATURES_AMD_K7_ATHLON_XP ||
@@ -398,8 +427,9 @@ AMDCPUCheck:
 	if(np2cfg.cpu_family == CPU_AMD_K7_ATHLON_XP_FAMILY && 
 	   np2cfg.cpu_model == CPU_AMD_K7_ATHLON_XP_MODEL &&
 	   np2cfg.cpu_stepping == CPU_AMD_K7_ATHLON_XP_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_AMD_K7_ATHLON_XP &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_AMD_K7_ATHLON_XP){
+	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_AMD_K7_ATHLON_XP &&
+	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_AMD_K7_ATHLON_XP &&
+	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_AMD_K7_ATHLON_XP){
 		return 18;
 	}
 	
@@ -408,6 +438,7 @@ NekoCPUCheck:
 	   np2cfg.cpu_model == 0 &&
 	   np2cfg.cpu_stepping == 0 &&
 	   np2cfg.cpu_feature == 0 &&
+	   np2cfg.cpu_feature_ecx == 0 &&
 	   np2cfg.cpu_feature_ex == 0){
 		return 255;
 	}
@@ -422,108 +453,154 @@ int CConfigureDlg::SetCpuTypeIndex(UINT index){
 		np2cfg.cpu_model = CPU_I486SX_MODEL;
 		np2cfg.cpu_stepping = CPU_I486SX_STEPPING;
 		np2cfg.cpu_feature = CPU_FEATURES_I486SX;
+		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_I486SX;
 		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_I486SX;
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_I486SX);
+		np2cfg.cpu_brandid = CPU_BRAND_ID_I486SX;
 		break;
 	case 2:
 		np2cfg.cpu_family = CPU_I486DX_FAMILY;
 		np2cfg.cpu_model = CPU_I486DX_MODEL;
 		np2cfg.cpu_stepping = CPU_I486DX_STEPPING;
 		np2cfg.cpu_feature = CPU_FEATURES_I486DX;
+		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_I486DX;
 		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_I486DX;
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_I486DX);
+		np2cfg.cpu_brandid = CPU_BRAND_ID_I486DX;
 		break;
 	case 3:
 		np2cfg.cpu_family = CPU_PENTIUM_FAMILY;
 		np2cfg.cpu_model = CPU_PENTIUM_MODEL;
 		np2cfg.cpu_stepping = CPU_PENTIUM_STEPPING;
 		np2cfg.cpu_feature = CPU_FEATURES_PENTIUM;
+		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_PENTIUM;
 		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM;
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM);
+		np2cfg.cpu_brandid = CPU_BRAND_ID_PENTIUM;
 		break;
 	case 4:
 		np2cfg.cpu_family = CPU_MMX_PENTIUM_FAMILY;
 		np2cfg.cpu_model = CPU_MMX_PENTIUM_MODEL;
 		np2cfg.cpu_stepping = CPU_MMX_PENTIUM_STEPPING;
 		np2cfg.cpu_feature = CPU_FEATURES_MMX_PENTIUM;
+		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_MMX_PENTIUM;
 		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_MMX_PENTIUM;
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_MMX_PENTIUM);
+		np2cfg.cpu_brandid = CPU_BRAND_ID_MMX_PENTIUM;
 		break;
 	case 5:
 		np2cfg.cpu_family = CPU_PENTIUM_PRO_FAMILY;
 		np2cfg.cpu_model = CPU_PENTIUM_PRO_MODEL;
 		np2cfg.cpu_stepping = CPU_PENTIUM_PRO_STEPPING;
 		np2cfg.cpu_feature = CPU_FEATURES_PENTIUM_PRO;
+		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_PENTIUM_PRO;
 		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM_PRO;
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_PRO);
+		np2cfg.cpu_brandid = CPU_BRAND_ID_PENTIUM_PRO;
 		break;
 	case 6:
 		np2cfg.cpu_family = CPU_PENTIUM_II_FAMILY;
 		np2cfg.cpu_model = CPU_PENTIUM_II_MODEL;
 		np2cfg.cpu_stepping = CPU_PENTIUM_II_STEPPING;
 		np2cfg.cpu_feature = CPU_FEATURES_PENTIUM_II;
+		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_PENTIUM_II;
 		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM_II;
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_II);
+		np2cfg.cpu_brandid = CPU_BRAND_ID_PENTIUM_II;
 		break;
 	case 7:
 		np2cfg.cpu_family = CPU_PENTIUM_III_FAMILY;
 		np2cfg.cpu_model = CPU_PENTIUM_III_MODEL;
 		np2cfg.cpu_stepping = CPU_PENTIUM_III_STEPPING;
 		np2cfg.cpu_feature = CPU_FEATURES_PENTIUM_III;
+		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_PENTIUM_III;
 		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM_III;
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_III);
+		np2cfg.cpu_brandid = CPU_BRAND_ID_PENTIUM_III;
+		break;
+	case 8:
+		np2cfg.cpu_family = CPU_PENTIUM_M_FAMILY;
+		np2cfg.cpu_model = CPU_PENTIUM_M_MODEL;
+		np2cfg.cpu_stepping = CPU_PENTIUM_M_STEPPING;
+		np2cfg.cpu_feature = CPU_FEATURES_PENTIUM_M;
+		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_PENTIUM_M;
+		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM_M;
+		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_M);
+		np2cfg.cpu_brandid = CPU_BRAND_ID_PENTIUM_M;
+		break;
+	case 9:
+		np2cfg.cpu_family = CPU_PENTIUM_4_FAMILY;
+		np2cfg.cpu_model = CPU_PENTIUM_4_MODEL;
+		np2cfg.cpu_stepping = CPU_PENTIUM_4_STEPPING;
+		np2cfg.cpu_feature = CPU_FEATURES_PENTIUM_4;
+		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_PENTIUM_4;
+		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM_4;
+		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_4);
+		np2cfg.cpu_brandid = CPU_BRAND_ID_PENTIUM_4;
 		break;
 	case 15:
 		np2cfg.cpu_family = CPU_AMD_K6_2_FAMILY;
 		np2cfg.cpu_model = CPU_AMD_K6_2_MODEL;
 		np2cfg.cpu_stepping = CPU_AMD_K6_2_STEPPING;
 		np2cfg.cpu_feature = CPU_FEATURES_AMD_K6_2;
+		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_AMD_K6_2;
 		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_AMD_K6_2;
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K6_2);
+		np2cfg.cpu_brandid = CPU_BRAND_ID_AMD_K6_2;
 		break;
 	case 16:
 		np2cfg.cpu_family = CPU_AMD_K6_III_FAMILY;
 		np2cfg.cpu_model = CPU_AMD_K6_III_MODEL;
 		np2cfg.cpu_stepping = CPU_AMD_K6_III_STEPPING;
 		np2cfg.cpu_feature = CPU_FEATURES_AMD_K6_III;
+		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_AMD_K6_III;
 		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_AMD_K6_III;
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K6_III);
+		np2cfg.cpu_brandid = CPU_BRAND_ID_AMD_K6_III;
 		break;
 	case 17:
 		np2cfg.cpu_family = CPU_AMD_K7_ATHLON_FAMILY;
 		np2cfg.cpu_model = CPU_AMD_K7_ATHLON_MODEL;
 		np2cfg.cpu_stepping = CPU_AMD_K7_ATHLON_STEPPING;
 		np2cfg.cpu_feature = CPU_FEATURES_AMD_K7_ATHLON;
+		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_AMD_K7_ATHLON;
 		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_AMD_K7_ATHLON;
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K7_ATHLON);
+		np2cfg.cpu_brandid = CPU_BRAND_ID_AMD_K7_ATHLON;
 		break;
 	case 18:
 		np2cfg.cpu_family = CPU_AMD_K7_ATHLON_XP_FAMILY;
 		np2cfg.cpu_model = CPU_AMD_K7_ATHLON_XP_MODEL;
 		np2cfg.cpu_stepping = CPU_AMD_K7_ATHLON_XP_STEPPING;
 		np2cfg.cpu_feature = CPU_FEATURES_AMD_K7_ATHLON_XP;
+		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_AMD_K7_ATHLON_XP;
 		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_AMD_K7_ATHLON_XP;
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K7_ATHLON_XP);
+		np2cfg.cpu_brandid = CPU_BRAND_ID_AMD_K7_ATHLON_XP;
 		break;
-	case 255: // ëSã@î\égópâ¬î\
+	case 255: // ÂÖ®Ê©üËÉΩ‰ΩøÁî®ÂèØËÉΩ
 		np2cfg.cpu_family = 0;
 		np2cfg.cpu_model = 0;
 		np2cfg.cpu_stepping = 0;
 		np2cfg.cpu_feature = 0;
+		np2cfg.cpu_feature_ecx = 0;
 		np2cfg.cpu_feature_ex = 0;
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_NEKOPRO);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_NEKOPRO);
+		np2cfg.cpu_brandid = 0;
 		break;
 #endif
 	default:
@@ -540,7 +617,7 @@ int CConfigureDlg::SetCpuTypeIndex(UINT index){
 }
 
 /**
- * ÉÜÅ[ÉUÅ[Ç™ OK ÇÃÉ{É^Éì (IDOK ID Ç™ÇÃÉ{É^Éì) ÇÉNÉäÉbÉNÇ∑ÇÈÇ∆åƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * „É¶„Éº„Ç∂„Éº„Åå OK „ÅÆ„Éú„Çø„É≥ (IDOK ID „Åå„ÅÆ„Éú„Çø„É≥) „Çí„ÇØ„É™„ÉÉ„ÇØ„Åô„Çã„Å®Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
  */
 void CConfigureDlg::OnOK()
 {
@@ -674,10 +751,10 @@ void CConfigureDlg::OnOK()
 }
 
 /**
- * ÉÜÅ[ÉUÅ[Ç™ÉÅÉjÉÖÅ[ÇÃçÄñ⁄ÇëIëÇµÇΩÇ∆Ç´Ç…ÅAÉtÉåÅ[ÉÄÉèÅ[ÉNÇ…ÇÊÇ¡ÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
- * @param[in] wParam ÉpÉâÉÅÉ^
- * @param[in] lParam ÉpÉâÉÅÉ^
- * @retval TRUE ÉAÉvÉäÉPÅ[ÉVÉáÉìÇ™Ç±ÇÃÉÅÉbÉZÅ[ÉWÇèàóùÇµÇΩ
+ * „É¶„Éº„Ç∂„Éº„Åå„É°„Éã„É•„Éº„ÅÆÈ†ÖÁõÆ„ÇíÈÅ∏Êäû„Åó„Åü„Å®„Åç„Å´„ÄÅ„Éï„É¨„Éº„É†„ÉØ„Éº„ÇØ„Å´„Çà„Å£„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
+ * @param[in] wParam „Éë„É©„É°„Çø
+ * @param[in] lParam „Éë„É©„É°„Çø
+ * @retval TRUE „Ç¢„Éó„É™„Ç±„Éº„Ç∑„Éß„É≥„Åå„Åì„ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„ÇíÂá¶ÁêÜ„Åó„Åü
  */
 BOOL CConfigureDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -714,8 +791,8 @@ BOOL CConfigureDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ÉNÉçÉbÉNÇê›íËÇ∑ÇÈ
- * @param[in] nMultiple î{ó¶
+ * „ÇØ„É≠„ÉÉ„ÇØ„ÇíË®≠ÂÆö„Åô„Çã
+ * @param[in] nMultiple ÂÄçÁéá
  */
 void CConfigureDlg::SetClock(UINT nMultiple)
 {
@@ -735,8 +812,8 @@ void CConfigureDlg::SetClock(UINT nMultiple)
 }
 
 /**
- * ê›íËÉ_ÉCÉAÉçÉO
- * @param[in] hwndParent êeÉEÉBÉìÉhÉE
+ * Ë®≠ÂÆö„ÉÄ„Ç§„Ç¢„É≠„Ç∞
+ * @param[in] hwndParent Ë¶™„Ç¶„Ç£„É≥„Éâ„Ç¶
  */
 void dialog_configure(HWND hwndParent)
 {

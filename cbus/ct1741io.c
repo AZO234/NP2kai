@@ -478,7 +478,7 @@ static REG8 IOINPCALL ct1741_read_wstatus(UINT port)
 /* DSP read read status */
 static REG8 IOINPCALL ct1741_read_rstatus(UINT port)
 {	
-	// bit7‚ª0‚È‚çDSPƒoƒbƒtƒ@‚Í‹ó
+	// bit7ãŒ0ãªã‚‰DSPãƒãƒƒãƒ•ã‚¡ã¯ç©º
 	if (dsp_info.out.used)
 		return 0xff;
 	else
@@ -497,14 +497,14 @@ void ct1741_dma(NEVENTITEM item)
 		if (g_sb16.dmach != 0xff) {
 			sound_sync();
 //			if (dsp_info.mode == DSP_MODE_DMA) {
-				// “]‘—`
+				// è»¢é€ã€œ
 				rem = cs4231.bufsize - cs4231.bufdatas;
 				pos = (cs4231.bufpos + cs4231.bufdatas) & (DMA_BUFSIZE -1);
 				size = np2min(rem, DMA_BUFSIZE - pos);
 				r = dmac_getdatas(dsp_info.dma.chan, (UINT8*)(dsp_info.dma.buf.b16 + pos), size);
 //			}
 			if ((dsp_info.dma.chan->leng.w) && (dsp_info.freq)) {
-				// Ä“xƒCƒxƒ“ƒgİ’è
+				// å†åº¦ã‚¤ãƒ™ãƒ³ãƒˆè¨­å®š
 				cnt = pccore.realclock * 16 / dsp_info.freq;
 				nevent_set(NEVENT_CT1741, cnt, ct1741_dma, NEVENT_RELATIVE);
 			}
@@ -554,6 +554,16 @@ void ct1741io_bind(void)
 	iocore_attachinp(0x2a00 + g_sb16.base, ct1741_read_data);		/* DSP Read Data Port */
 	iocore_attachinp(0x2c00 + g_sb16.base, ct1741_read_wstatus);	/* DSP Write Buffer Status (Bit 7) */
 	iocore_attachinp(0x2e00 + g_sb16.base, ct1741_read_rstatus);	/* DSP Read Buffer Status (Bit 7) */
+}
+void ct1741io_unbind(void)
+{
+	iocore_detachout(0x2600 + g_sb16.base);	/* DSP Reset */
+	iocore_detachout(0x2C00 + g_sb16.base);	/* DSP Write Command/Data */
+
+	iocore_detachinp(0x2600 + g_sb16.base);	/* DSP Reset */
+	iocore_detachinp(0x2a00 + g_sb16.base);		/* DSP Read Data Port */
+	iocore_detachinp(0x2c00 + g_sb16.base);	/* DSP Write Buffer Status (Bit 7) */
+	iocore_detachinp(0x2e00 + g_sb16.base);	/* DSP Read Buffer Status (Bit 7) */
 }
 
 #endif

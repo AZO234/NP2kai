@@ -1,6 +1,6 @@
 /**
  * @file	usbdev.cpp
- * @brief	USB ƒAƒNƒZƒX ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	USB ã‚¢ã‚¯ã‚»ã‚¹ ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -10,20 +10,20 @@
 #pragma comment(lib, "setupapi.lib")
 #pragma comment(lib, "winusb.lib")
 
-// ƒfƒoƒCƒXƒhƒ‰ƒCƒo‚Ìinf“à‚Å’è‹`‚µ‚½GUID
-// (WinUSB.sysg—pƒfƒoƒCƒX‚É‘Î‚·‚é¯•Êqj
+// ãƒ‡ãƒã‚¤ã‚¹ãƒ‰ãƒ©ã‚¤ãƒã®infå†…ã§å®šç¾©ã—ãŸGUID
+// (WinUSB.sysä½¿ç”¨ãƒ‡ãƒã‚¤ã‚¹ã«å¯¾ã™ã‚‹è­˜åˆ¥å­ï¼‰
 // {63275336-530B-4069-92B6-5F8AE3465462}
 DEFINE_GUID(GUID_DEVINTERFACE_WINUSB_GIMIC,
 0x63275336, 0x530b, 0x4069, 0x92, 0xb6, 0x5f, 0x8a, 0xe3, 0x46, 0x54, 0x62);
 
-// ƒfƒoƒCƒXƒhƒ‰ƒCƒo‚Ìinf“à‚Å’è‹`‚µ‚½GUID
-// (WinUSB.sysg—pƒfƒoƒCƒX‚É‘Î‚·‚é¯•Êqj
+// ãƒ‡ãƒã‚¤ã‚¹ãƒ‰ãƒ©ã‚¤ãƒã®infå†…ã§å®šç¾©ã—ãŸGUID
+// (WinUSB.sysä½¿ç”¨ãƒ‡ãƒã‚¤ã‚¹ã«å¯¾ã™ã‚‹è­˜åˆ¥å­ï¼‰
 // {b0320d09-0791-4c3f-a741-9ef97c8885d6}
 DEFINE_GUID(GUID_DEVINTERFACE_WINUSB_C86BOX,
 0xb0320d09, 0x0791, 0x4c3f, 0xa7, 0x41, 0x9e, 0xf9, 0x7c, 0x88, 0x85, 0xd6);
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CUsbDev::CUsbDev()
 	: m_hDev(INVALID_HANDLE_VALUE)
@@ -34,7 +34,7 @@ CUsbDev::CUsbDev()
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CUsbDev::~CUsbDev()
 {
@@ -42,12 +42,12 @@ CUsbDev::~CUsbDev()
 }
 
 /**
- * USB ƒI[ƒvƒ“
- * @param[in] vid ƒxƒ“ƒ_[ ID
- * @param[in] pid ƒvƒƒ_ƒNƒg ID
- * @param[in] nIndex ƒCƒ“ƒfƒbƒNƒX
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * USB ã‚ªãƒ¼ãƒ—ãƒ³
+ * @param[in] vid ãƒ™ãƒ³ãƒ€ãƒ¼ ID
+ * @param[in] pid ãƒ—ãƒ­ãƒ€ã‚¯ãƒˆ ID
+ * @param[in] nIndex ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CUsbDev::Open(unsigned int vid, unsigned int pid, unsigned int nIndex)
 {
@@ -71,10 +71,10 @@ bool CUsbDev::Open(unsigned int vid, unsigned int pid, unsigned int nIndex)
 }
 
 /**
- * USB ƒI[ƒvƒ“
- * @param[in] InterfaceGuid ƒCƒ“ƒ^ƒtƒFƒCƒX
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * USB ã‚ªãƒ¼ãƒ—ãƒ³
+ * @param[in] InterfaceGuid ã‚¤ãƒ³ã‚¿ãƒ•ã‚§ã‚¤ã‚¹
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CUsbDev::Open(const GUID& InterfaceGuid)
 {
@@ -84,11 +84,11 @@ bool CUsbDev::Open(const GUID& InterfaceGuid)
 }
 
 /**
- * ƒfƒoƒCƒX ƒpƒXæ“¾
+ * ãƒ‡ãƒã‚¤ã‚¹ ãƒ‘ã‚¹å–å¾—
  * @param[in] InterfaceGuid GUID
- * @param[out] lpDevicePath ƒfƒoƒCƒX ƒpƒX ƒoƒbƒtƒ@
- * @param[in] cchDevicePath ƒfƒoƒCƒX ƒpƒX ƒoƒbƒtƒ@’·
- * @return ƒpƒX
+ * @param[out] lpDevicePath ãƒ‡ãƒã‚¤ã‚¹ ãƒ‘ã‚¹ ãƒãƒƒãƒ•ã‚¡
+ * @param[in] cchDevicePath ãƒ‡ãƒã‚¤ã‚¹ ãƒ‘ã‚¹ ãƒãƒƒãƒ•ã‚¡é•·
+ * @return ãƒ‘ã‚¹
  */
 LPTSTR CUsbDev::GetDevicePath(const GUID& InterfaceGuid, LPTSTR lpDevicePath, int cchDevicePath)
 {
@@ -132,10 +132,10 @@ LPTSTR CUsbDev::GetDevicePath(const GUID& InterfaceGuid, LPTSTR lpDevicePath, in
 }
 
 /**
- * ƒfƒoƒCƒX ƒI[ƒvƒ“
- * @param[in] lpDevicePath ƒfƒoƒCƒX–¼
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * ãƒ‡ãƒã‚¤ã‚¹ ã‚ªãƒ¼ãƒ—ãƒ³
+ * @param[in] lpDevicePath ãƒ‡ãƒã‚¤ã‚¹å
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CUsbDev::OpenDevice(LPCTSTR lpDevicePath)
 {
@@ -205,7 +205,7 @@ bool CUsbDev::OpenDevice(LPCTSTR lpDevicePath)
 }
 
 /**
- * USB ƒNƒ[ƒY
+ * USB ã‚¯ãƒ­ãƒ¼ã‚º
  */
 void CUsbDev::Close()
 {
@@ -222,14 +222,14 @@ void CUsbDev::Close()
 }
 
 /**
- * ƒRƒ“ƒgƒ[ƒ‹
- * @param[in] nType ƒ^ƒCƒv
- * @param[in] nRequest ƒŠƒNƒGƒXƒg
- * @param[in] nValue ’l
- * @param[in] nIndex ƒCƒ“ƒfƒbƒNƒX
- * @param[out] lpBuffer ƒoƒbƒtƒ@
- * @param[in] cbBuffer ƒoƒbƒtƒ@’·
- * @return ƒTƒCƒY
+ * ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«
+ * @param[in] nType ã‚¿ã‚¤ãƒ—
+ * @param[in] nRequest ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
+ * @param[in] nValue å€¤
+ * @param[in] nIndex ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+ * @param[out] lpBuffer ãƒãƒƒãƒ•ã‚¡
+ * @param[in] cbBuffer ãƒãƒƒãƒ•ã‚¡é•·
+ * @return ã‚µã‚¤ã‚º
  */
 int CUsbDev::CtrlXfer(int nType, int nRequest, int nValue, int nIndex, void* lpBuffer, int cbBuffer)
 {
@@ -254,10 +254,10 @@ int CUsbDev::CtrlXfer(int nType, int nRequest, int nValue, int nIndex, void* lpB
 }
 
 /**
- * ƒf[ƒ^‘—M
- * @param[in] lpBuffer ƒoƒbƒtƒ@
- * @param[in] cbBuffer ƒoƒbƒtƒ@’·
- * @return ƒTƒCƒY
+ * ãƒ‡ãƒ¼ã‚¿é€ä¿¡
+ * @param[in] lpBuffer ãƒãƒƒãƒ•ã‚¡
+ * @param[in] cbBuffer ãƒãƒƒãƒ•ã‚¡é•·
+ * @return ã‚µã‚¤ã‚º
  */
 int CUsbDev::WriteBulk(const void* lpBuffer, int cbBuffer)
 {
@@ -282,10 +282,10 @@ int CUsbDev::WriteBulk(const void* lpBuffer, int cbBuffer)
 }
 
 /**
- * ƒf[ƒ^óM
- * @param[out] lpBuffer ƒoƒbƒtƒ@
- * @param[in] cbBuffer ƒoƒbƒtƒ@’·
- * @return ƒTƒCƒY
+ * ãƒ‡ãƒ¼ã‚¿å—ä¿¡
+ * @param[out] lpBuffer ãƒãƒƒãƒ•ã‚¡
+ * @param[in] cbBuffer ãƒãƒƒãƒ•ã‚¡é•·
+ * @return ã‚µã‚¤ã‚º
  */
 int CUsbDev::ReadBulk(void* lpBuffer, int cbBuffer)
 {

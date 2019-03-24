@@ -16,12 +16,12 @@
 
 	CS4231CFG	cs4231cfg;
 
-	int calpenflag = 0; // XXX: CAL0‚¾‚¯(0x04)¨CAL0‚ÆPEN‚ª“¯‚É—§‚Âó‘Ô(0x05)‚É‘JˆÚ‚µ‚½‚¾‚¯‹““®‚ğ•Ï‚¦‚é¥¥¥ Win3.1+necpcm.drv—p‚Ì‚»‚Ìê‚µ‚Ì‚¬
-	int w31play = 0; // XXX: CAL0‚¾‚¯(0x04)¨CAL0‚ÆPEN‚ª“¯‚É—§‚Âó‘Ô(0x05)‚É‘JˆÚ‚µ‚½‚¾‚¯‹““®‚ğ•Ï‚¦‚é¥¥¥ Win3.1+necpcm.drv—p‚Ì‚»‚Ìê‚µ‚Ì‚¬
+	int calpenflag = 0; // XXX: CAL0ã ã‘(0x04)â†’CAL0ã¨PENãŒåŒæ™‚ã«ç«‹ã¤çŠ¶æ…‹(0x05)ã«é·ç§»ã—ãŸæ™‚ã ã‘æŒ™å‹•ã‚’å¤‰ãˆã‚‹ï½¥ï½¥ï½¥ Win3.1+necpcm.drvç”¨ã®ãã®å ´ã—ã®ã
+	int w31play = 0; // XXX: CAL0ã ã‘(0x04)â†’CAL0ã¨PENãŒåŒæ™‚ã«ç«‹ã¤çŠ¶æ…‹(0x05)ã«é·ç§»ã—ãŸæ™‚ã ã‘æŒ™å‹•ã‚’å¤‰ãˆã‚‹ï½¥ï½¥ï½¥ Win3.1+necpcm.drvç”¨ã®ãã®å ´ã—ã®ã
 	
-	static int playcountsmp_Ictl = CS4231_BUFREADSMP; // Ï•ª§Œä‚Å–³—‚â‚èˆê’èƒTƒ“ƒvƒ‹‚¸‚Â“Ç‚Ş‚æ‚¤‚É‚·‚é¥¥¥
+	static int playcountsmp_Ictl = CS4231_BUFREADSMP; // ç©åˆ†åˆ¶å¾¡ã§ç„¡ç†ã‚„ã‚Šä¸€å®šã‚µãƒ³ãƒ—ãƒ«ãšã¤èª­ã‚€ã‚ˆã†ã«ã™ã‚‹ï½¥ï½¥ï½¥
 	
-// 1ƒTƒ“ƒvƒ‹‚ ‚½‚è‚ÌƒoƒCƒg”iƒ‚ƒmƒ‰ƒ‹, ƒXƒeƒŒƒI‚Ì‡j
+// 1ã‚µãƒ³ãƒ—ãƒ«ã‚ãŸã‚Šã®ãƒã‚¤ãƒˆæ•°ï¼ˆãƒ¢ãƒãƒ©ãƒ«, ã‚¹ãƒ†ãƒ¬ã‚ªã®é †ï¼‰
 static const SINT32 cs4231_playcountshift[16] = {
 			1  ,		// 0: 8bit PCM
 			1*2,
@@ -112,43 +112,43 @@ void cs4231_reset(void) {
 void cs4231_update(void) {
 }
 
-// ”p~Fcs4231g.c‚Å’²®
+// å»ƒæ­¢ï¼šcs4231g.cã§èª¿æ•´
 void cs4231_setvol(UINT vol) {
 
 	(void)vol;
 }
 
-// CS4231 DMAˆ—
+// CS4231 DMAå‡¦ç†
 void cs4231_dma(NEVENTITEM item) {
 
 	DMACH	dmach;
 	UINT	rem;
 	UINT	pos;
 	UINT	size;
-	UINT	r;
-	SINT32	cnt;
+	UINT	r = 0;
+	//SINT32	cnt;
 	if (item->flag & NEVENT_SETEVENT) {
 		if (cs4231.dmach != 0xff) {
 			dmach = dmac.dmach + cs4231.dmach;
 
-			// ƒTƒEƒ“ƒhÄ¶—pƒoƒbƒtƒ@‚É‘—‚éH(cs4231g.c)
+			// ã‚µã‚¦ãƒ³ãƒ‰å†ç”Ÿç”¨ãƒãƒƒãƒ•ã‚¡ã«é€ã‚‹ï¼Ÿ(cs4231g.c)
 			sound_sync();
 
-			// ƒoƒbƒtƒ@‚É‹ó‚«‚ª‚ ‚ê‚Îƒf[ƒ^‚ğ“Ç‚İo‚·
+			// ãƒãƒƒãƒ•ã‚¡ã«ç©ºããŒã‚ã‚Œã°ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿å‡ºã™
 			if(!w31play || !(cs4231.reg.featurestatus & (PI|TI|CI))){
 				if (cs4231.bufsize * cs4231_playcountshift[cs4231.reg.datafmt >> 4] / 4 - 4 > cs4231.bufdatas) {
-					rem = np2min(cs4231.bufsize - 4 - cs4231.bufdatas, CS4231_MAXDMAREADBYTES); //“Ç‚İæ‚è’PˆÊ‚Í16bitƒXƒeƒŒƒI‚Ì1ƒTƒ“ƒvƒ‹•ª(4byte)‚É‚µ‚Ä‚¨‚©‚È‚¢‚ÆG‰¹‰»‚·‚é
-					pos = cs4231.bufwpos & CS4231_BUFMASK; // ƒoƒbƒtƒ@‘‚«‚İˆÊ’u
-					size = np2min(rem, dmach->startcount); // ƒoƒbƒtƒ@‘‚«‚İƒTƒCƒY
-					r = dmac_getdata_(dmach, cs4231.buffer, pos, size); // DMA“Ç‚İæ‚èÀs
-					cs4231.bufwpos = (cs4231.bufwpos + r) & CS4231_BUFMASK; // ƒoƒbƒtƒ@‘‚«‚İˆÊ’u‚ğXV
-					cs4231.bufdatas += r; // ƒoƒbƒtƒ@“à‚Ì—LŒø‚Èƒf[ƒ^”‚ğXV = (bufwpos-bufpos)&CS4231_BUFMASK
+					rem = np2min(cs4231.bufsize - 4 - cs4231.bufdatas, CS4231_MAXDMAREADBYTES); //èª­ã¿å–ã‚Šå˜ä½ã¯16bitã‚¹ãƒ†ãƒ¬ã‚ªã®1ã‚µãƒ³ãƒ—ãƒ«åˆ†(4byte)ã«ã—ã¦ãŠã‹ãªã„ã¨é›‘éŸ³åŒ–ã™ã‚‹
+					pos = cs4231.bufwpos & CS4231_BUFMASK; // ãƒãƒƒãƒ•ã‚¡æ›¸ãè¾¼ã¿ä½ç½®
+					size = np2min(rem, dmach->startcount); // ãƒãƒƒãƒ•ã‚¡æ›¸ãè¾¼ã¿ã‚µã‚¤ã‚º
+					r = dmac_getdata_(dmach, cs4231.buffer, pos, size); // DMAèª­ã¿å–ã‚Šå®Ÿè¡Œ
+					cs4231.bufwpos = (cs4231.bufwpos + r) & CS4231_BUFMASK; // ãƒãƒƒãƒ•ã‚¡æ›¸ãè¾¼ã¿ä½ç½®ã‚’æ›´æ–°
+					cs4231.bufdatas += r; // ãƒãƒƒãƒ•ã‚¡å†…ã®æœ‰åŠ¹ãªãƒ‡ãƒ¼ã‚¿æ•°ã‚’æ›´æ–° = (bufwpos-bufpos)&CS4231_BUFMASK
 				}
 			}
-			// NEVENT‚ğƒZƒbƒg
+			// NEVENTã‚’ã‚»ãƒƒãƒˆ
 			if (cs4231cfg.rate) {
-				SINT32 neventms;
-				//int playcountsmpmax = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)); // PIŠ„‚è‚İ‚ğ”­¶‚³‚¹‚éƒTƒ“ƒvƒ‹”(Playback Base register)
+				//SINT32 neventms;
+				//int playcountsmpmax = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)); // PIå‰²ã‚Šè¾¼ã¿ã‚’ç™ºç”Ÿã•ã›ã‚‹ã‚µãƒ³ãƒ—ãƒ«æ•°(Playback Base register)
 				playcountsmp_Ictl += ((CS4231_BUFREADSMP - (int)r) / cs4231_playcountshift[cs4231.reg.datafmt >> 4])/2;
 				if(playcountsmp_Ictl < 1)
 					playcountsmp_Ictl = 1;
@@ -168,11 +168,11 @@ void cs4231_dma(NEVENTITEM item) {
 				nevent_set(NEVENT_CS4231, pccore.realclock / cs4231cfg.rate * playcountsmp_Ictl, cs4231_dma, NEVENT_RELATIVE);
 			}
 
-			//// NEVENT‚ğƒZƒbƒg
+			//// NEVENTã‚’ã‚»ãƒƒãƒˆ
 			//if (cs4231cfg.rate) {
 			//	SINT32 neventms;
-			//	int playcountsmp;// = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)); // PIŠ„‚è‚İ‚ğ”­¶‚³‚¹‚éƒTƒ“ƒvƒ‹”(Playback Base register)
-			//	playcountsmp = 32 / cs4231_playcountshift[cs4231.reg.datafmt >> 4];//max(r, 32) / cs4231_playcountshift[cs4231.reg.datafmt >> 4];//min(max(r, 64) / cs4231_playcountshift[cs4231.reg.datafmt >> 4], playcountsmp) / 2; // “ä
+			//	int playcountsmp;// = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)); // PIå‰²ã‚Šè¾¼ã¿ã‚’ç™ºç”Ÿã•ã›ã‚‹ã‚µãƒ³ãƒ—ãƒ«æ•°(Playback Base register)
+			//	playcountsmp = 32 / cs4231_playcountshift[cs4231.reg.datafmt >> 4];//max(r, 32) / cs4231_playcountshift[cs4231.reg.datafmt >> 4];//min(max(r, 64) / cs4231_playcountshift[cs4231.reg.datafmt >> 4], playcountsmp) / 2; // è¬
 			//	//neventms = playcountsmp * 1000 / cs4231cfg.rate;
 			//	//if(neventms <= 0) neventms = 1;
 			//	//cnt = pccore.realclock / cs4231cfg.rate * 32;
@@ -186,7 +186,7 @@ void cs4231_dma(NEVENTITEM item) {
 	(void)item;
 }
 
-// PIOÄ¶—p
+// PIOå†ç”Ÿç”¨
 void cs4231_datasend(REG8 dat) {
 	UINT	pos;
 	if (cs4231.reg.iface & PPIO) {		// PIO play enable
@@ -202,17 +202,17 @@ void cs4231_datasend(REG8 dat) {
 	}
 }
 
-// DMAÄ¶ŠJnEI—¹E’†’f‚ÉŒÄ‚Î‚ê‚éi‚Â‚à‚èj
+// DMAå†ç”Ÿé–‹å§‹ãƒ»çµ‚äº†ãƒ»ä¸­æ–­æ™‚ã«å‘¼ã°ã‚Œã‚‹ï¼ˆã¤ã‚‚ã‚Šï¼‰
 REG8 DMACCALL cs4231dmafunc(REG8 func) {
 	SINT32	cnt;
 	switch(func) {
 		case DMAEXT_START:
 			if (cs4231cfg.rate) {
-				int playcount = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)) * cs4231_playcountshift[cs4231.reg.datafmt >> 4]; // PIŠ„‚è‚İ‚ğ”­¶‚³‚¹‚éƒTƒ“ƒvƒ‹”(Playback Base register) * ƒTƒ“ƒvƒ‹‚ ‚½‚è‚ÌƒoƒCƒg”
-				// DMA“Ç‚İæ‚è”ƒJƒEƒ“ƒ^‚ğ‰Šú‰»
+				int playcount = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)) * cs4231_playcountshift[cs4231.reg.datafmt >> 4]; // PIå‰²ã‚Šè¾¼ã¿ã‚’ç™ºç”Ÿã•ã›ã‚‹ã‚µãƒ³ãƒ—ãƒ«æ•°(Playback Base register) * ã‚µãƒ³ãƒ—ãƒ«ã‚ãŸã‚Šã®ãƒã‚¤ãƒˆæ•°
+				// DMAèª­ã¿å–ã‚Šæ•°ã‚«ã‚¦ãƒ³ã‚¿ã‚’åˆæœŸåŒ–
 				cs4231.totalsample = 0; 
 
-				// DMA“Ç‚İæ‚èˆ—ŠJn(NEVENTƒZƒbƒg)
+				// DMAèª­ã¿å–ã‚Šå‡¦ç†é–‹å§‹(NEVENTã‚»ãƒƒãƒˆ)
 				//nevent_setbyms(NEVENT_CS4231, CS4231_MAXDMAREADBYTES * 1000 / cs4231cfg.rate, cs4231_dma, NEVENT_ABSOLUTE);
 				//cnt = pccore.realclock / cs4231cfg.rate * 512;
 				//nevent_set(NEVENT_CS4231, cnt, cs4231_dma, NEVENT_ABSOLUTE);
@@ -222,7 +222,7 @@ REG8 DMACCALL cs4231dmafunc(REG8 func) {
 			}
 			break;
 		case DMAEXT_END:
-			// ‚±‚±‚Å‚ÌŠ„‚è‚İ‚Í—v‚ç‚È‚¢H
+			// ã“ã“ã§ã®å‰²ã‚Šè¾¼ã¿ã¯è¦ã‚‰ãªã„ï¼Ÿ
 			//if ((cs4231.reg.pinctrl & IEN) && (cs4231.dmairq != 0xff)) {
 			//	cs4231.intflag |= INt;
 			//	cs4231.reg.featurestatus |= PI;
@@ -231,7 +231,7 @@ REG8 DMACCALL cs4231dmafunc(REG8 func) {
 			break;
 
 		case DMAEXT_BREAK:
-			// DMA“Ç‚İæ‚èˆ—I—¹(NEVENT‰ğœ)
+			// DMAèª­ã¿å–ã‚Šå‡¦ç†çµ‚äº†(NEVENTè§£é™¤)
 			nevent_reset(NEVENT_CS4231);
 			break;
 
@@ -239,12 +239,12 @@ REG8 DMACCALL cs4231dmafunc(REG8 func) {
 	return(0);
 }
 
-// ƒoƒbƒtƒ@ˆÊ’u‚ÌƒYƒŒC³—piG‰¹‰»–h~j
+// ãƒãƒƒãƒ•ã‚¡ä½ç½®ã®ã‚ºãƒ¬ä¿®æ­£ç”¨ï¼ˆé›‘éŸ³åŒ–é˜²æ­¢ï¼‰
 static void setdataalign(void) {
 
 	UINT	step;
 	
-	// ƒoƒbƒtƒ@ˆÊ’u‚ªƒYƒŒ‚Ä‚¢‚½‚çC³i4byte’PˆÊ‚Éj
+	// ãƒãƒƒãƒ•ã‚¡ä½ç½®ãŒã‚ºãƒ¬ã¦ã„ãŸã‚‰ä¿®æ­£ï¼ˆ4byteå˜ä½ã«ï¼‰
 	step = (0 - cs4231.bufpos) & 3;
 	if (step) {
 		cs4231.bufpos += step;
@@ -257,7 +257,7 @@ static void setdataalign(void) {
 	}
 }
 
-// CS4231 Indexed Data register‚ÌWRITEˆ—
+// CS4231 Indexed Data registerã®WRITEå‡¦ç†
 void cs4231_control(UINT idx, REG8 dat) {
 	UINT8	modify;
 	DMACH	dmach;
@@ -273,28 +273,28 @@ void cs4231_control(UINT idx, REG8 dat) {
 	case 0x19://Version ID
 		return;
 	case CS4231REG_IRQSTAT:
-		// ƒoƒbƒtƒ@ƒI[ƒo[ƒ‰ƒ“EƒAƒ“ƒ_[ƒ‰ƒ“‚âŠ„‚è‚İ‚Ìó‘Ô‚ğ•\‚·ƒŒƒWƒXƒ^@Alternate Feature Status (I24)
-		// 0‚ğƒZƒbƒg‚µ‚½ƒrƒbƒg‚¾‚¯Á‚·i1‚Ìê‡‚Í‚»‚Ì‚Ü‚Üj
+		// ãƒãƒƒãƒ•ã‚¡ã‚ªãƒ¼ãƒãƒ¼ãƒ©ãƒ³ãƒ»ã‚¢ãƒ³ãƒ€ãƒ¼ãƒ©ãƒ³ã‚„å‰²ã‚Šè¾¼ã¿ã®çŠ¶æ…‹ã‚’è¡¨ã™ãƒ¬ã‚¸ã‚¹ã‚¿ã€€Alternate Feature Status (I24)
+		// 0ã‚’ã‚»ãƒƒãƒˆã—ãŸãƒ“ãƒƒãƒˆã ã‘æ¶ˆã™ï¼ˆ1ã®å ´åˆã¯ãã®ã¾ã¾ï¼‰
 		modify = ((UINT8 *)&cs4231.reg)[idx] & (~(dat|0x0f));
 		((UINT8 *)&cs4231.reg)[idx] &= dat|0x0f;
 		if (modify & (PI|TI|CI)) {
-			// PI,TI,CIƒrƒbƒg‚ª‘S‚ÄÁ‹‚³‚ê‚Ä‚¢‚½‚çŠ„‚è‚İ‰ğœ
+			// PI,TI,CIãƒ“ãƒƒãƒˆãŒå…¨ã¦æ¶ˆå»ã•ã‚Œã¦ã„ãŸã‚‰å‰²ã‚Šè¾¼ã¿è§£é™¤
 			if(((((UINT8 *)&cs4231.reg)[idx]) & (PI|TI|CI)) == 0){
 				pic_resetirq(cs4231.dmairq);
 				cs4231.intflag &= ~INt;
 			}
 		}
-        return; // ‘¼‚Æ‚Íˆ—‚ªˆá‚¤‚Ì‚Å”²‚¯‚é
+        return; // ä»–ã¨ã¯å‡¦ç†ãŒé•ã†ã®ã§æŠœã‘ã‚‹
 	default:
 		break;
 
 	}
 	dmach = dmac.dmach + cs4231.dmach;
-	modify = ((UINT8 *)&cs4231.reg)[idx] ^ dat; // •ÏX‚³‚ê‚½ƒrƒbƒg‚ğæ“¾
-	((UINT8 *)&cs4231.reg)[idx] = dat; // ƒŒƒWƒXƒ^’l‚ğV‚µ‚¢’l‚É•ÏX
+	modify = ((UINT8 *)&cs4231.reg)[idx] ^ dat; // å¤‰æ›´ã•ã‚ŒãŸãƒ“ãƒƒãƒˆã‚’å–å¾—
+	((UINT8 *)&cs4231.reg)[idx] = dat; // ãƒ¬ã‚¸ã‚¹ã‚¿å€¤ã‚’æ–°ã—ã„å€¤ã«å¤‰æ›´
 	switch(idx) {
 	case CS4231REG_PLAYFMT:
-		// Ä¶ƒtƒH[ƒ}ƒbƒgİ’è‚Æ‚©@Fs and Playback Data Format (I8)
+		// å†ç”Ÿãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆè¨­å®šã¨ã‹ã€€Fs and Playback Data Format (I8)
 		if (modify & 0xf0) {
 			//dmach->adrs.d = dmach->startaddr;
 			cs4231.bufpos = cs4231.bufwpos;
@@ -315,7 +315,7 @@ void cs4231_control(UINT idx, REG8 dat) {
 		}
 		break;
 	case CS4231REG_INTERFACE:
-		// Ä¶˜^‰¹‚Ì—LŒø–³Œø‚Æ‚©DMA‚Æ‚©‚Ìİ’è@Interface Configuration (I9)
+		// å†ç”ŸéŒ²éŸ³ã®æœ‰åŠ¹ç„¡åŠ¹ã¨ã‹DMAã¨ã‹ã®è¨­å®šã€€Interface Configuration (I9)
 		if (modify & PEN ) {
 			if (cs4231.dmach != 0xff) {
 				dmach = dmac.dmach + cs4231.dmach;
@@ -331,7 +331,7 @@ void cs4231_control(UINT idx, REG8 dat) {
 				cs4231.pos12 = 0; 
 			}
 		}
-		// XXX: CAL0‚¾‚¯(0x04)¨CAL0‚ÆPEN‚ª“¯‚É—§‚Âó‘Ô(0x05)‚É‘JˆÚ‚µ‚½‚¾‚¯‹““®‚ğ•Ï‚¦‚é¥¥¥ Win3.1+necpcm.drv—p‚Ì‚»‚Ìê‚µ‚Ì‚¬
+		// XXX: CAL0ã ã‘(0x04)â†’CAL0ã¨PENãŒåŒæ™‚ã«ç«‹ã¤çŠ¶æ…‹(0x05)ã«é·ç§»ã—ãŸæ™‚ã ã‘æŒ™å‹•ã‚’å¤‰ãˆã‚‹ï½¥ï½¥ï½¥ Win3.1+necpcm.drvç”¨ã®ãã®å ´ã—ã®ã
 		if(((UINT8 *)&cs4231.reg)[idx] == 0x05 && calpenflag == 1){
 			calpenflag = 2;
 			w31play = 1;
@@ -346,76 +346,91 @@ void cs4231_control(UINT idx, REG8 dat) {
 	}
 }
 
-// CS4231 DMAƒf[ƒ^“Ç‚İæ‚è
+// CS4231 DMAãƒ‡ãƒ¼ã‚¿èª­ã¿å–ã‚Š
 UINT dmac_getdata_(DMACH dmach, UINT8 *buf, UINT offset, UINT size) {
-	UINT	leng; // “Ç‚İæ‚è”
-	UINT	lengsum; // ‡Œv“Ç‚İæ‚è”
+	UINT	leng; // èª­ã¿å–ã‚Šæ•°
+	UINT	lengsum; // åˆè¨ˆèª­ã¿å–ã‚Šæ•°
 	UINT32	addr;
 	UINT	i;
-	SINT32	sampleirq = 0; // Š„‚è‚İ‚Ü‚Å‚É•K—v‚Èƒf[ƒ^“]‘—”(byte)
-	static UINT	playcount_adjustcounter = 0;
+	SINT32	sampleirq = 0; // å‰²ã‚Šè¾¼ã¿ã¾ã§ã«å¿…è¦ãªãƒ‡ãƒ¼ã‚¿è»¢é€æ•°(byte)
+#define PLAYCOUNT_ADJUST_VALUE	32768
+	static UINT32	playcount_adjustcounter = 0;
 	
 	lengsum = 0;
 	while(size > 0) {
 		leng = np2min(dmach->leng.w, size);
 		if (leng) {
-			int playcount = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)) * cs4231_playcountshift[cs4231.reg.datafmt >> 4]; // PIŠ„‚è‚İ‚ğ”­¶‚³‚¹‚éƒTƒ“ƒvƒ‹”(Playback Base register) * ƒTƒ“ƒvƒ‹‚ ‚½‚è‚ÌƒoƒCƒg”
-			if(cs4231.totalsample + leng > playcount){
-				// DMAÄ¶ƒTƒ“ƒvƒ‹”ƒJƒEƒ“ƒ^(Playback DMA count register)‚ªPIŠ„‚è‚İ‚ğ”­¶‚³‚¹‚éƒTƒ“ƒvƒ‹”(Playback Base register)‚ğ’´‚¦‚È‚¢‚æ‚¤‚É’²®
+			int playcount = ((cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8))) * cs4231_playcountshift[cs4231.reg.datafmt >> 4]; // PIå‰²ã‚Šè¾¼ã¿ã‚’ç™ºç”Ÿã•ã›ã‚‹ã‚µãƒ³ãƒ—ãƒ«æ•°(Playback Base register) * ã‚µãƒ³ãƒ—ãƒ«ã‚ãŸã‚Šã®ãƒã‚¤ãƒˆæ•°
+			if(cs4231.totalsample + (SINT32)leng > playcount){
+				// DMAå†ç”Ÿã‚µãƒ³ãƒ—ãƒ«æ•°ã‚«ã‚¦ãƒ³ã‚¿(Playback DMA count register)ãŒPIå‰²ã‚Šè¾¼ã¿ã‚’ç™ºç”Ÿã•ã›ã‚‹ã‚µãƒ³ãƒ—ãƒ«æ•°(Playback Base register)ã‚’è¶…ãˆãªã„ã‚ˆã†ã«èª¿æ•´
 				leng = playcount - cs4231.totalsample;
 			}
 
-			addr = dmach->adrs.d; // Œ»İ‚Ìƒƒ‚ƒŠ“Ç‚İæ‚èˆÊ’u
+			addr = dmach->adrs.d; // ç¾åœ¨ã®ãƒ¡ãƒ¢ãƒªèª­ã¿å–ã‚Šä½ç½®
 			if (!(dmach->mode & 0x20)) {			// dir +
-				// +•ûŒü‚ÉDMA“]‘—
+				// +æ–¹å‘ã«DMAè»¢é€
 				for (i=0; i<leng ; i++) {
 					buf[offset] = MEMP_READ8(addr); // DMA MEM -> CS4231 BUFFER
 					addr++;
 					if(addr > dmach->lastaddr){
-						addr = dmach->startaddr; // DMA“Ç‚İæ‚èƒAƒhƒŒƒX‚ªƒAƒhƒŒƒX”ÍˆÍ‚ÌÅŒã‚É“’B‚µ‚½‚çÅ‰‚É–ß‚·
+						addr = dmach->startaddr; // DMAèª­ã¿å–ã‚Šã‚¢ãƒ‰ãƒ¬ã‚¹ãŒã‚¢ãƒ‰ãƒ¬ã‚¹ç¯„å›²ã®æœ€å¾Œã«åˆ°é”ã—ãŸã‚‰æœ€åˆã«æˆ»ã™
 					}
-					offset = (offset+1) & CS4231_BUFMASK; // DMAƒf[ƒ^“Ç‚İæ‚èƒoƒbƒtƒ@‚Ì‘‚«‚İˆÊ’u‚ği‚ß‚éi•ÅŒã‚É“’B‚µ‚½‚çÅ‰‚É–ß‚·j
+					offset = (offset+1) & CS4231_BUFMASK; // DMAãƒ‡ãƒ¼ã‚¿èª­ã¿å–ã‚Šãƒãƒƒãƒ•ã‚¡ã®æ›¸ãè¾¼ã¿ä½ç½®ã‚’é€²ã‚ã‚‹ï¼ˆï¼†æœ€å¾Œã«åˆ°é”ã—ãŸã‚‰æœ€åˆã«æˆ»ã™ï¼‰
 				}
-				dmach->adrs.d = addr; // DMA“Ç‚İæ‚èƒAƒhƒŒƒXŒ»İˆÊ’u‚ğXV
+
+				// XXX: å†ç”Ÿä½ç½®èª¿æ•´ï¼ˆWin9x,Win2000å†ç”Ÿãƒã‚¤ã‚ºå¯¾ç­–ç”¨ãƒ»ã¨ã‚Šã‚ãˆãš+æ–¹å‘ã ã‘ï¼‰
+				playcount_adjustcounter += leng;
+				if(playcount_adjustcounter >= PLAYCOUNT_ADJUST_VALUE){
+					playcount_adjustcounter -= PLAYCOUNT_ADJUST_VALUE;
+					if(!w31play){
+						addr += 4;
+						if(addr > dmach->lastaddr){
+							addr = dmach->startaddr + (addr - dmach->lastaddr - 1); // DMAèª­ã¿å–ã‚Šã‚¢ãƒ‰ãƒ¬ã‚¹ãŒã‚¢ãƒ‰ãƒ¬ã‚¹ç¯„å›²ã®æœ€å¾Œã«åˆ°é”ã—ãŸã‚‰æœ€åˆã«æˆ»ã™
+						}
+					}
+				}
+
+				dmach->adrs.d = addr; // DMAèª­ã¿å–ã‚Šã‚¢ãƒ‰ãƒ¬ã‚¹ç¾åœ¨ä½ç½®ã‚’æ›´æ–°
 			}
 			else {									// dir -
-				// -•ûŒü‚ÉDMA“]‘—
+				// -æ–¹å‘ã«DMAè»¢é€
 				for (i=0; i<leng; i++) {
 					buf[offset] = MEMP_READ8(addr); // DMA MEM -> CS4231 BUFFER
 					addr--;
 					if(addr < dmach->startaddr){
-						addr = dmach->lastaddr; // DMA“Ç‚İæ‚èƒAƒhƒŒƒX‚ªƒAƒhƒŒƒX”ÍˆÍ‚ÌÅ‰‚É“’B‚µ‚½‚çÅŒã‚É–ß‚·
+						addr = dmach->lastaddr; // DMAèª­ã¿å–ã‚Šã‚¢ãƒ‰ãƒ¬ã‚¹ãŒã‚¢ãƒ‰ãƒ¬ã‚¹ç¯„å›²ã®æœ€åˆã«åˆ°é”ã—ãŸã‚‰æœ€å¾Œã«æˆ»ã™
 					}
-					offset = (offset+1) & CS4231_BUFMASK; // DMAƒf[ƒ^“Ç‚İæ‚èƒoƒbƒtƒ@‚Ì‘‚«‚İˆÊ’u‚ği‚ß‚éi•ÅŒã‚É“’B‚µ‚½‚çÅ‰‚É–ß‚·j
+					offset = (offset+1) & CS4231_BUFMASK; // DMAãƒ‡ãƒ¼ã‚¿èª­ã¿å–ã‚Šãƒãƒƒãƒ•ã‚¡ã®æ›¸ãè¾¼ã¿ä½ç½®ã‚’é€²ã‚ã‚‹ï¼ˆï¼†æœ€å¾Œã«åˆ°é”ã—ãŸã‚‰æœ€åˆã«æˆ»ã™ï¼‰
 				}
+				playcount_adjustcounter = (playcount_adjustcounter+leng) % PLAYCOUNT_ADJUST_VALUE;
 				dmach->adrs.d = addr;
 			}
 
-			// “Ç‚İæ‚èƒoƒCƒg”‚¾‚¯dmach->leng.w‚ğŒ¸‚ç‚·i0ˆÈ‰º‚É‚È‚Á‚½‚çdmach->startcount‚É–ß‚·j
+			// èª­ã¿å–ã‚Šãƒã‚¤ãƒˆæ•°ã ã‘dmach->leng.wã‚’æ¸›ã‚‰ã™ï¼ˆ0ä»¥ä¸‹ã«ãªã£ãŸã‚‰dmach->startcountã«æˆ»ã™ï¼‰
 			if (dmach->leng.w <= leng) {
-				dmach->leng.w = dmach->leng.w + dmach->startcount - leng; // –ß‚·
+				dmach->leng.w = dmach->leng.w + dmach->startcount - leng; // æˆ»ã™
 				dmach->proc.extproc(DMAEXT_END);
 			}else{
 				dmach->leng.w -= leng;
 			}
 
-			// “Ç‚İæ‚è”‚Æc‚è”XV
+			// èª­ã¿å–ã‚Šæ•°ã¨æ®‹ã‚Šæ•°æ›´æ–°
 			lengsum += leng;
 			size -= leng;
 			
-			// “Ç‚İæ‚è”ƒJƒEƒ“ƒg
+			// èª­ã¿å–ã‚Šæ•°ã‚«ã‚¦ãƒ³ãƒˆ
 			cs4231.totalsample += leng;
 			
-			// DMAÄ¶ƒoƒCƒg”ƒJƒEƒ“ƒ^(Playback DMA count register)‚ªPIŠ„‚è‚İ‚ğ”­¶‚³‚¹‚éƒoƒCƒg”‚É‚È‚Á‚½‚çPIŠ„‚è‚İ‚ğ”­¶‚³‚¹‚é
+			// DMAå†ç”Ÿãƒã‚¤ãƒˆæ•°ã‚«ã‚¦ãƒ³ã‚¿(Playback DMA count register)ãŒPIå‰²ã‚Šè¾¼ã¿ã‚’ç™ºç”Ÿã•ã›ã‚‹ãƒã‚¤ãƒˆæ•°ã«ãªã£ãŸã‚‰PIå‰²ã‚Šè¾¼ã¿ã‚’ç™ºç”Ÿã•ã›ã‚‹
 			if(cs4231.totalsample >= playcount){
 				cs4231.totalsample -= playcount;
-				// Š„‚è‚İ‚ª—LŒø‚Èê‡Š„‚è‚İ‚ğ”­¶‚³‚¹‚é
+				// å‰²ã‚Šè¾¼ã¿ãŒæœ‰åŠ¹ãªå ´åˆå‰²ã‚Šè¾¼ã¿ã‚’ç™ºç”Ÿã•ã›ã‚‹
 				if ((cs4231.reg.pinctrl & IEN) && (cs4231.dmairq != 0xff)) {
-					// XXX: CAL0‚¾‚¯(0x04)¨CAL0‚ÆPEN‚ª“¯‚É—§‚Âó‘Ô(0x05)‚É‘JˆÚ‚µ‚½‚¾‚¯‹““®‚ğ•Ï‚¦‚é¥¥¥ Win3.1+necpcm.drv—p‚Ì‚»‚Ìê‚µ‚Ì‚¬
+					// XXX: CAL0ã ã‘(0x04)â†’CAL0ã¨PENãŒåŒæ™‚ã«ç«‹ã¤çŠ¶æ…‹(0x05)ã«é·ç§»ã—ãŸæ™‚ã ã‘æŒ™å‹•ã‚’å¤‰ãˆã‚‹ï½¥ï½¥ï½¥ Win3.1+necpcm.drvç”¨ã®ãã®å ´ã—ã®ã
 					if(calpenflag != 2){
-						cs4231.intflag |= INt; // Š„‚è‚İ’†(Interrupt Status)ƒrƒbƒg‚ğƒZƒbƒg
-						cs4231.reg.featurestatus |= PI; // PI(Playback Interrupt)ƒrƒbƒg‚ğƒZƒbƒg
-						pic_setirq(cs4231.dmairq); // Š„‚è‚İ‚ğ”­¶‚³‚¹‚é
+						cs4231.intflag |= INt; // å‰²ã‚Šè¾¼ã¿ä¸­(Interrupt Status)ãƒ“ãƒƒãƒˆã‚’ã‚»ãƒƒãƒˆ
+						cs4231.reg.featurestatus |= PI; // PI(Playback Interrupt)ãƒ“ãƒƒãƒˆã‚’ã‚»ãƒƒãƒˆ
+						pic_setirq(cs4231.dmairq); // å‰²ã‚Šè¾¼ã¿ã‚’ç™ºç”Ÿã•ã›ã‚‹
 					}
 					calpenflag = 0;
 				}

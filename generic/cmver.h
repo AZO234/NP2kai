@@ -1,6 +1,6 @@
 
-// vermouth�̂ݎg�p��COMMNG-MIDI
-// ���܂�Ɉꏏ�������� �֐����ς��Ă�������
+// vermouthのみ使用のCOMMNG-MIDI
+// あまりに一緒すぎるんで 関数名変えてこっちへ
 
 #include "commng.h"
 

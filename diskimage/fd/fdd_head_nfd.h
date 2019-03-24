@@ -7,59 +7,59 @@ enum {
 };
 
 #if defined(__GNUC__)
-//	ƒZƒNƒ^ID
+//	ã‚»ã‚¯ã‚¿ID
 typedef struct {
-	BYTE	C;									//	Ci0xFF‚ÌƒZƒNƒ^–³‚µj
+	BYTE	C;									//	Cï¼ˆ0xFFã®æ™‚ã‚»ã‚¯ã‚¿ç„¡ã—ï¼‰
 	BYTE	H;									//	H
 	BYTE	R;									//	R
 	BYTE	N;									//	N
 	BYTE	flMFM;								//	0:FM / 1:MFM
 	BYTE	flDDAM;								//	0:DAM / 1:DDAM
-	BYTE	byStatus;							//	READ DATA(FDDBIOS)‚ÌŒ‹‰Ê
-	BYTE	byST0;								//	READ DATA(FDDBIOS)‚ÌŒ‹‰Ê ST0
-	BYTE	byST1;								//	READ DATA(FDDBIOS)‚ÌŒ‹‰Ê ST1
-	BYTE	byST2;								//	READ DATA(FDDBIOS)‚ÌŒ‹‰Ê ST2
-	BYTE	byPDA;								//	FDDBIOS‚Åg—p‚·‚éƒAƒhƒŒƒX
-	char	Reserve1[5];						//	—\–ñ
+	BYTE	byStatus;							//	READ DATA(FDDBIOS)ã®çµæœ
+	BYTE	byST0;								//	READ DATA(FDDBIOS)ã®çµæœ ST0
+	BYTE	byST1;								//	READ DATA(FDDBIOS)ã®çµæœ ST1
+	BYTE	byST2;								//	READ DATA(FDDBIOS)ã®çµæœ ST2
+	BYTE	byPDA;								//	FDDBIOSã§ä½¿ç”¨ã™ã‚‹ã‚¢ãƒ‰ãƒ¬ã‚¹
+	char	Reserve1[5];						//	äºˆç´„
 } __attribute__ ((packed)) NFD_SECT_ID, *LP_NFD_SECT_ID;
 
-//	nfdƒwƒbƒ_(r0)
+//	nfdãƒ˜ãƒƒãƒ€(r0)
 typedef struct {
-	char		szFileID[15];					//	¯•ÊID "T98FDDIMAGE.R0"
-	char		Reserve1[1];					//	—\–ñ
-	char		szComment[0x100];				//	ƒCƒ[ƒWƒRƒƒ“ƒg(ASCIIz)
-	DWORD		dwHeadSize;						//	ƒwƒbƒ_•”‚ÌƒTƒCƒY
-	BYTE		flProtect;						//	0ˆÈŠO : ƒ‰ƒCƒgƒvƒƒeƒNƒg
-	BYTE		byHead;							//	ƒwƒbƒh”
-	char		Reserve2[10];					//	—\–ñ
-	NFD_SECT_ID	si[NFD_TRKMAX][NFD_SECMAX];		//	ƒZƒNƒ^ID
-	char		Reserve3[0x10];					//	—\–ñ
+	char		szFileID[15];					//	è­˜åˆ¥ID "T98FDDIMAGE.R0"
+	char		Reserve1[1];					//	äºˆç´„
+	char		szComment[0x100];				//	ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚³ãƒ¡ãƒ³ãƒˆ(ASCIIz)
+	DWORD		dwHeadSize;						//	ãƒ˜ãƒƒãƒ€éƒ¨ã®ã‚µã‚¤ã‚º
+	BYTE		flProtect;						//	0ä»¥å¤– : ãƒ©ã‚¤ãƒˆãƒ—ãƒ­ãƒ†ã‚¯ãƒˆ
+	BYTE		byHead;							//	ãƒ˜ãƒƒãƒ‰æ•°
+	char		Reserve2[10];					//	äºˆç´„
+	NFD_SECT_ID	si[NFD_TRKMAX][NFD_SECMAX];		//	ã‚»ã‚¯ã‚¿ID
+	char		Reserve3[0x10];					//	äºˆç´„
 } __attribute__ ((packed)) NFD_FILE_HEAD, *LP_NFD_FILE_HEAD;
 
-//	nfdƒwƒbƒ_(r1)
+//	nfdãƒ˜ãƒƒãƒ€(r1)
 typedef struct {
-//	char	szFileID[sizeof(NFD_FILE_ID1)];		//	¯•ÊID	"T98FDDIMAGE.R1"
-//	char	Reserv1[0x10-sizeof(NFD_FILE_ID1)];	//	—\”õ
-	char	szFileID[15];						//	¯•ÊID	"T98FDDIMAGE.R1"
-	char	Reserv1[1];							//	—\”õ
-	char	szComment[0x100];					//	ƒRƒƒ“ƒg
-	DWORD	dwHeadSize;							//	ƒwƒbƒ_‚ÌƒTƒCƒY
-	BYTE	flProtect;							//	ƒ‰ƒCƒgƒvƒƒeƒNƒg0ˆÈŠO
-	BYTE	byHead;								//	ƒwƒbƒh”	1-2
-	char	Reserv2[0x10-4-1-1];				//	—\”õ
-	DWORD	dwTrackHead[NFD_TRKMAX1];			//	ƒgƒ‰ƒbƒNIDˆÊ’u
-	DWORD	dwAddInfo;							//	’Ç‰Áî•ñƒwƒbƒ_‚ÌƒAƒhƒŒƒX
-	char	Reserv3[0x10-4];					//	—\”õ
+//	char	szFileID[sizeof(NFD_FILE_ID1)];		//	è­˜åˆ¥ID	"T98FDDIMAGE.R1"
+//	char	Reserv1[0x10-sizeof(NFD_FILE_ID1)];	//	äºˆå‚™
+	char	szFileID[15];						//	è­˜åˆ¥ID	"T98FDDIMAGE.R1"
+	char	Reserv1[1];							//	äºˆå‚™
+	char	szComment[0x100];					//	ã‚³ãƒ¡ãƒ³ãƒˆ
+	DWORD	dwHeadSize;							//	ãƒ˜ãƒƒãƒ€ã®ã‚µã‚¤ã‚º
+	BYTE	flProtect;							//	ãƒ©ã‚¤ãƒˆãƒ—ãƒ­ãƒ†ã‚¯ãƒˆ0ä»¥å¤–
+	BYTE	byHead;								//	ãƒ˜ãƒƒãƒ‰æ•°	1-2
+	char	Reserv2[0x10-4-1-1];				//	äºˆå‚™
+	DWORD	dwTrackHead[NFD_TRKMAX1];			//	ãƒˆãƒ©ãƒƒã‚¯IDä½ç½®
+	DWORD	dwAddInfo;							//	è¿½åŠ æƒ…å ±ãƒ˜ãƒƒãƒ€ã®ã‚¢ãƒ‰ãƒ¬ã‚¹
+	char	Reserv3[0x10-4];					//	äºˆå‚™
 } __attribute__ ((packed)) NFD_FILE_HEAD1, *LP_NFD_FILE_HEAD1;
 
-//	ƒgƒ‰ƒbƒNID
+//	ãƒˆãƒ©ãƒƒã‚¯ID
 typedef struct {
-	WORD	wSector;							//	ƒZƒNƒ^ID”
-	WORD	wDiag;								//	“Á@êID”
-	char	Reserv1[0x10-4];					//	—\”õ
+	WORD	wSector;							//	ã‚»ã‚¯ã‚¿IDæ•°
+	WORD	wDiag;								//	ç‰¹ã€€æ®ŠIDæ•°
+	char	Reserv1[0x10-4];					//	äºˆå‚™
 } __attribute__ ((packed)) NFD_TRACK_ID1, *LP_NFD_TRACK_ID1;
 
-//	ƒZƒNƒ^î•ñƒwƒbƒ_
+//	ã‚»ã‚¯ã‚¿æƒ…å ±ãƒ˜ãƒƒãƒ€
 typedef struct {
 	BYTE	C;									//	C
 	BYTE	H;									//	H
@@ -71,12 +71,12 @@ typedef struct {
 	BYTE	bySTS0;								//	ST0
 	BYTE	bySTS1;								//	ST1
 	BYTE	bySTS2;								//	ST2
-	BYTE	byRetry;							//	RetryData‚È‚µ(0)‚ ‚è(1-)
+	BYTE	byRetry;							//	RetryDataãªã—(0)ã‚ã‚Š(1-)
 	BYTE	byPDA;								//	PDA
-	char	Reserv1[0x10-12];					//	—\”õ
+	char	Reserv1[0x10-12];					//	äºˆå‚™
 } __attribute__ ((packed)) NFD_SECT_ID1, *LP_NFD_SECT_ID1;
 
-//	“Áê“Ç‚İ‚İî•ñƒwƒbƒ_
+//	ç‰¹æ®Šèª­ã¿è¾¼ã¿æƒ…å ±ãƒ˜ãƒƒãƒ€
 typedef struct {
 	BYTE	Cmd;								//	Command
 	BYTE	C;									//	C
@@ -87,66 +87,66 @@ typedef struct {
 	BYTE	bySTS0;								//	ST0
 	BYTE	bySTS1;								//	ST1
 	BYTE	bySTS2;								//	ST2
-	BYTE	byRetry;							//	RetryData‚È‚µ(0)‚ ‚è(1-)
-	DWORD	dwDataLen;							//	“]‘—‚ğs‚¤ƒf[ƒ^ƒTƒCƒY
+	BYTE	byRetry;							//	RetryDataãªã—(0)ã‚ã‚Š(1-)
+	DWORD	dwDataLen;							//	è»¢é€ã‚’è¡Œã†ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚º
 	BYTE	byPDA;								//	PDA
-	char	Reserv1[0x10-15];					//	—\”õ
+	char	Reserv1[0x10-15];					//	äºˆå‚™
 } __attribute__ ((packed)) NFD_DIAG_ID1, *LP_NFD_DIAG_ID1;
 #else
 #pragma pack(push, 1)
-//	ƒZƒNƒ^ID
+//	ã‚»ã‚¯ã‚¿ID
 typedef struct {
-	BYTE	C;									//	Ci0xFF‚ÌƒZƒNƒ^–³‚µj
+	BYTE	C;									//	Cï¼ˆ0xFFã®æ™‚ã‚»ã‚¯ã‚¿ç„¡ã—ï¼‰
 	BYTE	H;									//	H
 	BYTE	R;									//	R
 	BYTE	N;									//	N
 	BYTE	flMFM;								//	0:FM / 1:MFM
 	BYTE	flDDAM;								//	0:DAM / 1:DDAM
-	BYTE	byStatus;							//	READ DATA(FDDBIOS)‚ÌŒ‹‰Ê
-	BYTE	byST0;								//	READ DATA(FDDBIOS)‚ÌŒ‹‰Ê ST0
-	BYTE	byST1;								//	READ DATA(FDDBIOS)‚ÌŒ‹‰Ê ST1
-	BYTE	byST2;								//	READ DATA(FDDBIOS)‚ÌŒ‹‰Ê ST2
-	BYTE	byPDA;								//	FDDBIOS‚Åg—p‚·‚éƒAƒhƒŒƒX
-	char	Reserve1[5];						//	—\–ñ
+	BYTE	byStatus;							//	READ DATA(FDDBIOS)ã®çµæœ
+	BYTE	byST0;								//	READ DATA(FDDBIOS)ã®çµæœ ST0
+	BYTE	byST1;								//	READ DATA(FDDBIOS)ã®çµæœ ST1
+	BYTE	byST2;								//	READ DATA(FDDBIOS)ã®çµæœ ST2
+	BYTE	byPDA;								//	FDDBIOSã§ä½¿ç”¨ã™ã‚‹ã‚¢ãƒ‰ãƒ¬ã‚¹
+	char	Reserve1[5];						//	äºˆç´„
 } NFD_SECT_ID, *LP_NFD_SECT_ID;
 
-//	nfdƒwƒbƒ_(r0)
+//	nfdãƒ˜ãƒƒãƒ€(r0)
 typedef struct {
-	char		szFileID[15];					//	¯•ÊID	"T98FDDIMAGE.R0"
-	char		Reserve1[1];					//	—\–ñ
-	char		szComment[0x100];				//	ƒCƒ[ƒWƒRƒƒ“ƒg(ASCIIz)
-	DWORD		dwHeadSize;						//	ƒwƒbƒ_•”‚ÌƒTƒCƒY
-	BYTE		flProtect;						//	0ˆÈŠO : ƒ‰ƒCƒgƒvƒƒeƒNƒg
-	BYTE		byHead;							//	ƒwƒbƒh”
-	char		Reserve2[10];					//	—\–ñ
-	NFD_SECT_ID	si[NFD_TRKMAX][NFD_SECMAX];		//	ƒZƒNƒ^ID
-	char		Reserve3[0x10];					//	—\–ñ
+	char		szFileID[15];					//	è­˜åˆ¥ID	"T98FDDIMAGE.R0"
+	char		Reserve1[1];					//	äºˆç´„
+	char		szComment[0x100];				//	ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚³ãƒ¡ãƒ³ãƒˆ(ASCIIz)
+	DWORD		dwHeadSize;						//	ãƒ˜ãƒƒãƒ€éƒ¨ã®ã‚µã‚¤ã‚º
+	BYTE		flProtect;						//	0ä»¥å¤– : ãƒ©ã‚¤ãƒˆãƒ—ãƒ­ãƒ†ã‚¯ãƒˆ
+	BYTE		byHead;							//	ãƒ˜ãƒƒãƒ‰æ•°
+	char		Reserve2[10];					//	äºˆç´„
+	NFD_SECT_ID	si[NFD_TRKMAX][NFD_SECMAX];		//	ã‚»ã‚¯ã‚¿ID
+	char		Reserve3[0x10];					//	äºˆç´„
 } NFD_FILE_HEAD, *LP_NFD_FILE_HEAD;
 
-//	nfdƒwƒbƒ_(r1)
+//	nfdãƒ˜ãƒƒãƒ€(r1)
 typedef struct {
-//	char	szFileID[sizeof(NFD_FILE_ID1)];		//	¯•ÊID	"T98FDDIMAGE.R1"
-//	char	Reserv1[0x10-sizeof(NFD_FILE_ID1)];	//	—\”õ
-	char	szFileID[15];						//	¯•ÊID	"T98FDDIMAGE.R1"
-	char	Reserv1[1];							//	—\”õ
-	char	szComment[0x100];					//	ƒRƒƒ“ƒg
-	DWORD	dwHeadSize;							//	ƒwƒbƒ_‚ÌƒTƒCƒY
-	BYTE	flProtect;							//	ƒ‰ƒCƒgƒvƒƒeƒNƒg0ˆÈŠO
-	BYTE	byHead;								//	ƒwƒbƒh”	1-2
-	char	Reserv2[0x10-4-1-1];				//	—\”õ
-	DWORD	dwTrackHead[NFD_TRKMAX1];			//	ƒgƒ‰ƒbƒNIDˆÊ’u
-	DWORD	dwAddInfo;							//	’Ç‰Áî•ñƒwƒbƒ_‚ÌƒAƒhƒŒƒX
-	char	Reserv3[0x10-4];					//	—\”õ
+//	char	szFileID[sizeof(NFD_FILE_ID1)];		//	è­˜åˆ¥ID	"T98FDDIMAGE.R1"
+//	char	Reserv1[0x10-sizeof(NFD_FILE_ID1)];	//	äºˆå‚™
+	char	szFileID[15];						//	è­˜åˆ¥ID	"T98FDDIMAGE.R1"
+	char	Reserv1[1];							//	äºˆå‚™
+	char	szComment[0x100];					//	ã‚³ãƒ¡ãƒ³ãƒˆ
+	DWORD	dwHeadSize;							//	ãƒ˜ãƒƒãƒ€ã®ã‚µã‚¤ã‚º
+	BYTE	flProtect;							//	ãƒ©ã‚¤ãƒˆãƒ—ãƒ­ãƒ†ã‚¯ãƒˆ0ä»¥å¤–
+	BYTE	byHead;								//	ãƒ˜ãƒƒãƒ‰æ•°	1-2
+	char	Reserv2[0x10-4-1-1];				//	äºˆå‚™
+	DWORD	dwTrackHead[NFD_TRKMAX1];			//	ãƒˆãƒ©ãƒƒã‚¯IDä½ç½®
+	DWORD	dwAddInfo;							//	è¿½åŠ æƒ…å ±ãƒ˜ãƒƒãƒ€ã®ã‚¢ãƒ‰ãƒ¬ã‚¹
+	char	Reserv3[0x10-4];					//	äºˆå‚™
 } NFD_FILE_HEAD1, *LP_NFD_FILE_HEAD1;
 
-//	ƒgƒ‰ƒbƒNID
+//	ãƒˆãƒ©ãƒƒã‚¯ID
 typedef struct {
-	WORD	wSector;							//	ƒZƒNƒ^ID”
-	WORD	wDiag;								//	“Á@êID”
-	char	Reserv1[0x10-4];					//	—\”õ
+	WORD	wSector;							//	ã‚»ã‚¯ã‚¿IDæ•°
+	WORD	wDiag;								//	ç‰¹ã€€æ®ŠIDæ•°
+	char	Reserv1[0x10-4];					//	äºˆå‚™
 } NFD_TRACK_ID1, *LP_NFD_TRACK_ID1;
 
-//	ƒZƒNƒ^î•ñƒwƒbƒ_
+//	ã‚»ã‚¯ã‚¿æƒ…å ±ãƒ˜ãƒƒãƒ€
 typedef struct {
 	BYTE	C;									//	C
 	BYTE	H;									//	H
@@ -158,12 +158,12 @@ typedef struct {
 	BYTE	bySTS0;								//	ST0
 	BYTE	bySTS1;								//	ST1
 	BYTE	bySTS2;								//	ST2
-	BYTE	byRetry;							//	RetryData‚È‚µ(0)‚ ‚è(1-)
+	BYTE	byRetry;							//	RetryDataãªã—(0)ã‚ã‚Š(1-)
 	BYTE	byPDA;								//	PDA
-	char	Reserv1[0x10-12];					//	—\”õ
+	char	Reserv1[0x10-12];					//	äºˆå‚™
 } NFD_SECT_ID1, *LP_NFD_SECT_ID1;
 
-//	“Áê“Ç‚İ‚İî•ñƒwƒbƒ_
+//	ç‰¹æ®Šèª­ã¿è¾¼ã¿æƒ…å ±ãƒ˜ãƒƒãƒ€
 typedef struct {
 	BYTE	Cmd;								//	Command
 	BYTE	C;									//	C
@@ -174,10 +174,10 @@ typedef struct {
 	BYTE	bySTS0;								//	ST0
 	BYTE	bySTS1;								//	ST1
 	BYTE	bySTS2;								//	ST2
-	BYTE	byRetry;							//	RetryData‚È‚µ(0)‚ ‚è(1-)
-	DWORD	dwDataLen;							//	“]‘—‚ğs‚¤ƒf[ƒ^ƒTƒCƒY
+	BYTE	byRetry;							//	RetryDataãªã—(0)ã‚ã‚Š(1-)
+	DWORD	dwDataLen;							//	è»¢é€ã‚’è¡Œã†ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚º
 	BYTE	byPDA;								//	PDA
-	char	Reserv1[0x10-15];					//	—\”õ
+	char	Reserv1[0x10-15];					//	äºˆå‚™
 } NFD_DIAG_ID1, *LP_NFD_DIAG_ID1;
 #pragma pack(pop)
 #endif

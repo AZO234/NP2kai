@@ -38,7 +38,7 @@ static void SCRNCALL qvga16p_0(SDRAW sdraw, int maxy) {
 	sdraw->y = y;
 }
 
-// text or grph 1プレーン
+// text or grph 1繝励Ξ繝ｼ繝ｳ
 static void SCRNCALL qvga16p_1(SDRAW sdraw, int maxy) {
 
 	int		xbytes;
@@ -209,7 +209,7 @@ const UINT8	*q;
 }
 
 #if defined(SUPPORT_CRT15KHZ)
-// text or grph 1プレーン (15kHz)
+// text or grph 1繝励Ξ繝ｼ繝ｳ (15kHz)
 static void SCRNCALL qvga16p_1d(SDRAW sdraw, int maxy) {
 
 	int		xbytes;

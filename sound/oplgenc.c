@@ -8,6 +8,10 @@
 #include <math.h>
 #include "oplgencfg.h"
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846264338327
+#endif
+
 	OPLCFG oplcfg;
 
 #define	OPM_ARRATE		 399128L
@@ -158,7 +162,7 @@ void oplgen_initialize(UINT rate)
 	}
 	for (i = 0; i < EVC_ENT; i++)
 	{
-		pom = pow(((double)(EVC_ENT - 1 - i) / EVC_ENT), 8) * EVC_ENT;
+		pom = pow(((double)(EVC_ENT - 1 - i) / EVC_ENT), (double)8) * EVC_ENT;
 		oplcfg.envcurve[i] = (SINT32)pom;
 		oplcfg.envcurve[EVC_ENT + i] = i;
 	}

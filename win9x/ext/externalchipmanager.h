@@ -1,6 +1,6 @@
 /**
  * @file	externalchipmanager.h
- * @brief	ŠO•”ƒ`ƒbƒvŠÇ—ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	å¤–éƒ¨ãƒãƒƒãƒ—ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -12,7 +12,7 @@
 #include "scci/scciif.h"
 
 /**
- * @brief ŠO•”ƒ`ƒbƒvŠÇ—ƒNƒ‰ƒX
+ * @brief å¤–éƒ¨ãƒãƒƒãƒ—ç®¡ç†ã‚¯ãƒ©ã‚¹
  */
 class CExternalChipManager
 {
@@ -28,18 +28,18 @@ public:
 	void Mute(bool bMute);
 
 private:
-	static CExternalChipManager sm_instance;	/*!< —Bˆê‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Å‚· */
-	std::vector<IExternalChip*> m_chips;		/*!< ƒ‚ƒWƒ…[ƒ‹ */
+	static CExternalChipManager sm_instance;	/*!< å”¯ä¸€ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã§ã™ */
+	std::vector<IExternalChip*> m_chips;		/*!< ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ« */
 
-	C86CtlIf m_c86ctl;							/*!< C86Ctl ƒCƒ“ƒXƒ^ƒ“ƒX */
-	CJuliet m_juliet;							/*!< ROMEO ƒCƒ“ƒXƒ^ƒ“ƒX */
-	CScciIf m_scci;								/*!< SCCI ƒCƒ“ƒXƒ^ƒ“ƒX */
+	C86CtlIf m_c86ctl;							/*!< C86Ctl ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ */
+	CJuliet m_juliet;							/*!< ROMEO ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ */
+	CScciIf m_scci;								/*!< SCCI ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ */
 	IExternalChip* GetInterfaceInner(IExternalChip::ChipType nChipType, UINT nClock);
 };
 
 /**
- * ƒCƒ“ƒXƒ^ƒ“ƒX‚ğ“¾‚é
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å¾—ã‚‹
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 inline CExternalChipManager* CExternalChipManager::GetInstance()
 {

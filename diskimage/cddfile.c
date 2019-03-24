@@ -11,15 +11,31 @@
 #include	"diskimage/win9x/img_dosio.h"
 #include	"diskimage/cd/cdd_iso.h"
 
-//	ISO9660‚Ìƒ{ƒŠƒ…[ƒ€‹Lqq‚É‚æ‚éƒ`ƒFƒbƒN‚ğ—LŒø‚É‚·‚éê‡‚ÍƒRƒƒ“ƒg‚ğŠO‚·
-//	¦—LŒø‚É‚µ‚½ê‡ACD-ROMˆÈŠO‚ªƒ}ƒEƒ“ƒg‚Å‚«‚È‚­‚È‚é
+//	ISO9660ã®ãƒœãƒªãƒ¥ãƒ¼ãƒ è¨˜è¿°å­ã«ã‚ˆã‚‹ãƒã‚§ãƒƒã‚¯ã‚’æœ‰åŠ¹ã«ã™ã‚‹å ´åˆã¯ã‚³ãƒ¡ãƒ³ãƒˆã‚’å¤–ã™
+//	â€»æœ‰åŠ¹ã«ã—ãŸå ´åˆã€CD-ROMä»¥å¤–ãŒãƒã‚¦ãƒ³ãƒˆã§ããªããªã‚‹
 //#define	CHECK_ISO9660
 
 #ifdef	CHECK_ISO9660
 static const UINT8 cd001[7] = {0x01,'C','D','0','0','1',0x01};
 #endif
 
-//	’Ç‰Á(kaiA)
+#define CD_EDC_POLYNOMIAL	0xD8018001 // Reverse 0x8001801B
+
+UINT32 crcTable[256];
+
+void makeCRCTable( void)
+{
+	UINT32 i, j;
+    for( i=0; i<256; i++){
+        UINT32 crc = i;
+        for( j=0; j<8; j++){
+            crc = ( crc >> 1) ^ ( ( crc & 0x1) ? CD_EDC_POLYNOMIAL : 0);
+        }
+        crcTable[i] = crc;
+    }
+}
+
+//	è¿½åŠ (kaiA)
 BOOL isCDImage(const OEMCHAR *fname) {
 
 const OEMCHAR	*ext;
@@ -66,7 +82,7 @@ long issec2048(FILEH fh) {
 	if ((fsize % 2048) != 0) {
 		goto sec2048_err;
 	}
-	return(fsize / 2048);
+	return((long)(fsize / 2048));
 
 sec2048_err:
 	return(-1);
@@ -101,7 +117,7 @@ long issec2352(FILEH fh) {
 	if ((fsize % 2352) != 0) {
 		goto sec2352_err;
 	}
-	return(fsize / 2352);
+	return((long)(fsize / 2352));
 
 sec2352_err:
 	return(-1);
@@ -136,7 +152,7 @@ long issec2448(FILEH fh) {
 	if ((fsize % 2448) != 0) {
 		goto sec2448_err;
 	}
-	return(fsize / 2448);
+	return((long)(fsize / 2448));
 
 sec2448_err:
 	return(-1);
@@ -225,7 +241,7 @@ long issec(FILEH fh, _CDTRK *trk, UINT trks) {
 	else {
 		trk[trks-1].str_sec = trk[trks-1].pos0;
 	}
-	trk[trks-1].end_sec = trk[trks-1].str_sec + (fsize / trk[trks-1].sector_size);
+	trk[trks-1].end_sec = (UINT32)(trk[trks-1].str_sec + (fsize / trk[trks-1].sector_size));
 	trk[trks-1].sectors = trk[trks-1].end_sec - trk[trks-1].str_sec + 1;
 	total += trk[trks-1].sectors;
 
@@ -237,11 +253,11 @@ sec_err:
 #endif
 }
 
-//	¦CDTRK\‘¢‘Ì“à‚Ì
+//	â€»CDTRKæ§‹é€ ä½“å†…ã®
 //		UINT32	str_sec;
 //		UINT32	end_sec;
 //		UINT32	sectors;
-//		“™‚Ìƒƒ“ƒo‚Ìİ’è
+//		ç­‰ã®ãƒ¡ãƒ³ãƒã®è¨­å®š
 long set_trkinfo(FILEH fh, _CDTRK *trk, UINT trks, FILELEN imagesize) {
 
 	UINT	i;
@@ -305,7 +321,7 @@ long set_trkinfo(FILEH fh, _CDTRK *trk, UINT trks, FILELEN imagesize) {
 	else {
 		trk[trks-1].str_sec = trk[trks-1].pos0;
 	}
-	trk[trks-1].end_sec = trk[trks-1].str_sec + (fsize / trk[trks-1].sector_size);
+	trk[trks-1].end_sec = (UINT32)(trk[trks-1].str_sec + (fsize / trk[trks-1].sector_size));
 	trk[trks-1].sectors = trk[trks-1].end_sec - trk[trks-1].str_sec + 1;
 	total += trk[trks-1].sectors;
 
@@ -314,7 +330,7 @@ long set_trkinfo(FILEH fh, _CDTRK *trk, UINT trks, FILELEN imagesize) {
 
 
 //	----
-//	ƒCƒ[ƒWƒtƒ@ƒCƒ‹“à‘Sƒgƒ‰ƒbƒNƒZƒNƒ^’·2048byte—p
+//	ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ•ã‚¡ã‚¤ãƒ«å†…å…¨ãƒˆãƒ©ãƒƒã‚¯ã‚»ã‚¯ã‚¿é•·2048byteç”¨
 REG8 sec2048_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 
 	CDINFO	cdinfo;
@@ -331,7 +347,7 @@ REG8 sec2048_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 	cdinfo = (CDINFO)sxsi->hdl;
 	fh = cdinfo->fh;
 
-	pos = pos * 2048 + cdinfo->trk[0].start_offset;
+	pos = (FILEPOS)(pos * 2048 + cdinfo->trk[0].start_offset);
 	if (file_seek(fh, pos, FSEEK_SET) != pos) {
 		return(0xd0);
 	}
@@ -349,7 +365,7 @@ REG8 sec2048_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 }
 
 
-//	ƒCƒ[ƒWƒtƒ@ƒCƒ‹“à‘Sƒgƒ‰ƒbƒNƒZƒNƒ^’·2352byte—p
+//	ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ•ã‚¡ã‚¤ãƒ«å†…å…¨ãƒˆãƒ©ãƒƒã‚¯ã‚»ã‚¯ã‚¿é•·2352byteç”¨
 REG8 sec2352_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 
 	CDINFO	cdinfo;
@@ -368,7 +384,7 @@ REG8 sec2352_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 	fh = cdinfo->fh;
 
 	while(size) {
-		fpos = (pos * 2352) + 16 + cdinfo->trk[0].start_offset;
+		fpos = (FILEPOS)((pos * 2352) + 16 + cdinfo->trk[0].start_offset);
 		if (file_seek(fh, fpos, FSEEK_SET) != fpos) {
 			return(0xd0);
 		}
@@ -385,7 +401,69 @@ REG8 sec2352_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 }
 
 
-//	ƒCƒ[ƒWƒtƒ@ƒCƒ‹“à‘Sƒgƒ‰ƒbƒNƒZƒNƒ^’·2448(2352+96)—p
+UINT32 calcCRC(UINT8 *buf, int len)
+{
+	int i;
+    UINT32 crc = 0x00000000;
+    for( i=0; i<len; i++){
+        crc = (crc >> 8) ^ crcTable[(crc^buf[i]) & 0xff];
+    }
+    return crc;
+}
+
+//	ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ•ã‚¡ã‚¤ãƒ«å†…å…¨ãƒˆãƒ©ãƒƒã‚¯ã‚»ã‚¯ã‚¿é•·2352byteç”¨(ECCãƒã‚§ãƒƒã‚¯æœ‰åŠ¹)
+REG8 sec2352_read_with_ecc(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
+	
+	CDINFO	cdinfo;
+	FILEH	fh;
+	FILEPOS	fpos;
+	UINT	rsize;
+	UINT8	bufedc[4];
+	UINT8	bufecc[276];
+	UINT8	bufdata[2352];
+
+	if (sxsi_prepare(sxsi) != SUCCESS) {
+		return(0x60);
+	}
+	if ((pos < 0) || (pos >= sxsi->totals)) {
+		return(0x40);
+	}
+
+	cdinfo = (CDINFO)sxsi->hdl;
+	fh = cdinfo->fh;
+
+	while(size) {
+		fpos = (FILEPOS)((pos * 2352) + cdinfo->trk[0].start_offset);
+		if (file_seek(fh, fpos, FSEEK_SET) != fpos) {
+			return(0xd0);
+		}
+		rsize = 2352;
+		CPU_REMCLOCK -= rsize;
+		if (file_read(fh, bufdata, rsize) != rsize) {
+			return(0xd0);
+		}
+		memcpy(buf, bufdata+16, 2048);
+		memcpy(bufedc, bufdata+16+2048, 4);
+		memcpy(bufecc, bufdata+16+2048+4+8, 276);
+
+		// Check EDC
+		if(calcCRC(bufdata, 2064) != LOADINTELDWORD(bufedc)){
+			// EDC Error
+			// TODO: Check ECC
+			//sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_RECOVERED; // ECC recovered
+			sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_ERROR; // ECC error
+			//return(0xd0);
+		}
+
+		rsize = np2min(size, 2048);
+		buf += rsize;
+		size -= rsize;
+		pos++;
+	}
+	return(0x00);
+}
+
+//	ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ•ã‚¡ã‚¤ãƒ«å†…å…¨ãƒˆãƒ©ãƒƒã‚¯ã‚»ã‚¯ã‚¿é•·2448(2352+96)ç”¨
 REG8 sec2448_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 
 	CDINFO	cdinfo;
@@ -403,7 +481,7 @@ REG8 sec2448_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 	cdinfo = (CDINFO)sxsi->hdl;
 	fh = cdinfo->fh;
 	while(size) {
-		fpos = (pos * 2448) + 16 + cdinfo->trk[0].start_offset;
+		fpos = (FILEPOS)((pos * 2448) + 16 + cdinfo->trk[0].start_offset);
 		if (file_seek(fh, fpos, FSEEK_SET) != fpos) {
 			return(0xd0);
 		}
@@ -420,8 +498,8 @@ REG8 sec2448_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 }
 
 
-//	ƒCƒ[ƒWƒtƒ@ƒCƒ‹“àƒZƒNƒ^’·¬İ—p
-//		”ñRAW(2048byte){Audio(2352byte)“™
+//	ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ•ã‚¡ã‚¤ãƒ«å†…ã‚»ã‚¯ã‚¿é•·æ··åœ¨ç”¨
+//		éRAW(2048byte)ï¼‹Audio(2352byte)ç­‰
 REG8 sec_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 
 	CDINFO	cdinfo;
@@ -445,7 +523,7 @@ REG8 sec_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 		fpos = 0;
 		secs = 0;
 		for (i = 0; i < cdinfo->trks; i++) {
-			if (cdinfo->trk[i].str_sec <= pos && pos <= cdinfo->trk[i].end_sec) {
+			if (cdinfo->trk[i].str_sec <= (UINT32)pos && (UINT32)pos <= cdinfo->trk[i].end_sec) {
 				fpos += (pos - secs) * cdinfo->trk[i].sector_size;
 				if (cdinfo->trk[i].sector_size != 2048) {
 					fpos += 16;
@@ -455,7 +533,7 @@ REG8 sec_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 			fpos += cdinfo->trk[i].sectors * cdinfo->trk[i].sector_size;
 			secs += cdinfo->trk[i].sectors;
 		}
-		fpos += cdinfo->trk[0].start_offset;
+		fpos += (FILEPOS)cdinfo->trk[0].start_offset;
 		if (file_seek(fh, fpos, FSEEK_SET) != fpos) {
 			return(0xd0);
 		}
@@ -520,7 +598,7 @@ void set_secread(SXSIDEV sxsi, const _CDTRK *trk, UINT trks) {
 				sxsi->read = sec2048_read;
 				break;
 			case	2352:
-				sxsi->read = sec2352_read;
+				sxsi->read = sec2352_read_with_ecc; // sec2352_read;
 				break;
 			case	2448:
 				sxsi->read = sec2448_read;
@@ -543,7 +621,7 @@ static const OEMCHAR str_logA[] = OEMTEXT("._CDTRK.After.log");
 #endif
 //
 
-//	ƒCƒ[ƒWƒtƒ@ƒCƒ‹‚ÌÀ‘Ì‚ğŠJ‚«AŠeíî•ñ\’z
+//	ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ•ã‚¡ã‚¤ãƒ«ã®å®Ÿä½“ã‚’é–‹ãã€å„ç¨®æƒ…å ±æ§‹ç¯‰
 BRESULT setsxsidev(SXSIDEV sxsi, const OEMCHAR *path, const _CDTRK *trk, UINT trks) {
 
 	FILEH	fh;
@@ -557,7 +635,9 @@ BRESULT setsxsidev(SXSIDEV sxsi, const OEMCHAR *path, const _CDTRK *trk, UINT tr
 	TEXTFILEH	tfh;
 #endif
 
-	//	trkAtrks‚Í—LŒø‚È’l‚ªİ’èÏ‚İ‚È‚Ì‚ª‘O’ñ
+	makeCRCTable();
+
+	//	trkã€trksã¯æœ‰åŠ¹ãªå€¤ãŒè¨­å®šæ¸ˆã¿ãªã®ãŒå‰æ
 	if ((trk == NULL) || (trks == 0)) {
 		goto sxsiope_err1;
 	}
@@ -623,7 +703,7 @@ BRESULT setsxsidev(SXSIDEV sxsi, const OEMCHAR *path, const _CDTRK *trk, UINT tr
 		sxsi->totals = totals;
 	}
 #else
-	totals = issec(fh, cdinfo->trk, trks);	//	‚Æ‚è‚ ‚¦‚¸
+	totals = issec(fh, cdinfo->trk, trks);	//	ã¨ã‚Šã‚ãˆãš
 	sxsi->read = sec2048_read;
 	totals = issec2048(cdinfo->fh);
 	if (totals < 0) {
@@ -653,11 +733,11 @@ BRESULT setsxsidev(SXSIDEV sxsi, const OEMCHAR *path, const _CDTRK *trk, UINT tr
 		}
 	}
 
-	//	ƒŠ[ƒhƒAƒEƒgƒgƒ‰ƒbƒN‚ğ¶¬
+	//	ãƒªãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆãƒˆãƒ©ãƒƒã‚¯ã‚’ç”Ÿæˆ
 	cdinfo->trk[trks].adr_ctl	= 0x10;
 	cdinfo->trk[trks].point		= 0xaa;
 //	cdinfo->trk[trks].pos		= totals;
-	cdinfo->trk[trks].pos		= sxsi->totals;
+	cdinfo->trk[trks].pos		= (UINT32)sxsi->totals;
 
 	cdinfo->trks = trks;
 	file_cpyname(cdinfo->path, path, NELEMENTS(cdinfo->path));

@@ -1,6 +1,6 @@
 /**
  * @file	cmmidioutmt32sound.cpp
- * @brief	MIDI OUT MT32Sound ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	MIDI OUT MT32Sound ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -11,8 +11,8 @@
 #include "ext\mt32snd.h"
 
 /**
- * ƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆ
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 CComMidiOutMT32Sound* CComMidiOutMT32Sound::CreateInstance()
 {
@@ -25,8 +25,8 @@ CComMidiOutMT32Sound* CComMidiOutMT32Sound::CreateInstance()
 }
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
- * @param[in] pMT32Sound ƒnƒ“ƒhƒ‹
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * @param[in] pMT32Sound ãƒãƒ³ãƒ‰ãƒ«
  */
 CComMidiOutMT32Sound::CComMidiOutMT32Sound(MT32Sound* pMT32Sound)
 	: m_pMT32Sound(pMT32Sound)
@@ -35,7 +35,7 @@ CComMidiOutMT32Sound::CComMidiOutMT32Sound(MT32Sound* pMT32Sound)
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CComMidiOutMT32Sound::~CComMidiOutMT32Sound()
 {
@@ -43,8 +43,8 @@ CComMidiOutMT32Sound::~CComMidiOutMT32Sound()
 }
 
 /**
- * ƒVƒ‡[ƒg ƒƒbƒZ[ƒW
- * @param[in] nMessage ƒƒbƒZ[ƒW
+ * ã‚·ãƒ§ãƒ¼ãƒˆ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
  */
 void CComMidiOutMT32Sound::Short(UINT32 nMessage)
 {
@@ -53,9 +53,9 @@ void CComMidiOutMT32Sound::Short(UINT32 nMessage)
 }
 
 /**
- * ƒƒ“ƒO ƒƒbƒZ[ƒW
- * @param[in] lpMessage ƒƒbƒZ[ƒW ƒ|ƒCƒ“ƒ^
- * @param[in] cbMessage ƒƒbƒZ[ƒW ƒTƒCƒY
+ * ãƒ­ãƒ³ã‚° ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] lpMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ãƒã‚¤ãƒ³ã‚¿
+ * @param[in] cbMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ã‚µã‚¤ã‚º
  */
 void CComMidiOutMT32Sound::Long(const UINT8* lpMessage, UINT cbMessage)
 {
@@ -64,10 +64,10 @@ void CComMidiOutMT32Sound::Long(const UINT8* lpMessage, UINT cbMessage)
 }
 
 /**
- * ƒvƒƒZƒX
- * @param[in] pMT32Sound ƒnƒ“ƒhƒ‹
- * @param[out] lpBuffer ƒoƒbƒtƒ@
- * @param[in] nBufferCount ƒTƒ“ƒvƒ‹”
+ * ãƒ—ãƒ­ã‚»ã‚¹
+ * @param[in] pMT32Sound ãƒãƒ³ãƒ‰ãƒ«
+ * @param[out] lpBuffer ãƒãƒƒãƒ•ã‚¡
+ * @param[in] nBufferCount ã‚µãƒ³ãƒ—ãƒ«æ•°
  */
 void SOUNDCALL CComMidiOutMT32Sound::GetPcm(MT32Sound* pMT32Sound, SINT32* lpBuffer, UINT nBufferCount)
 {

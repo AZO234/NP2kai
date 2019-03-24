@@ -108,13 +108,6 @@ typedef	signed __int64		SINT64;
 #include "misc\trace.h"
 #include "misc\vc6macros.h"
 
-#ifndef	np2max
-#define	np2max(a,b)	(((a) > (b)) ? (a) : (b))
-#endif
-#ifndef	np2min
-#define	np2min(a,b)	(((a) < (b)) ? (a) : (b))
-#endif
-
 #define	GETTICK()			GetTickCounter()
 #if defined(TRACE)
 #define	__ASSERT(s)			assert(s)
@@ -186,9 +179,6 @@ typedef	signed __int64		SINT64;
 /* #define	SUPPORT_IDEIO */
 #define SUPPORT_ARC
 #define SUPPORT_ZLIB
-#if !defined(SUPPORT_PC9821)
-#define SUPPORT_BMS
-#endif
 #if !defined(_WIN64)
 #define	SUPPORT_DCLOCK
 #endif
@@ -207,6 +197,7 @@ typedef	signed __int64		SINT64;
 
 #define	SUPPORT_TEXTCNV
 
+#define SUPPORT_WIN2000HOST
 
 #if defined(CPUCORE_IA32)
 #pragma warning(disable: 4819)
@@ -224,6 +215,12 @@ typedef long	FILELEN;
 #define	NHD_MAXSIZE2	2000
 #endif
 
+#if defined(SUPPORT_LARGE_MEMORY)
+#define	MEMORY_MAXSIZE		4000
+#else
+#define	MEMORY_MAXSIZE		230
+#endif
+
 
 #if (_MSC_VER >= 1400)
 #if defined _M_IX86
@@ -236,3 +233,10 @@ typedef long	FILELEN;
 #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #endif
 #endif	/* (_MSC_VER >= 1400) */
+
+#ifndef	np2max
+#define	np2max(a,b)	(((a) > (b)) ? (a) : (b))
+#endif
+#ifndef	np2min
+#define	np2min(a,b)	(((a) < (b)) ? (a) : (b))
+#endif

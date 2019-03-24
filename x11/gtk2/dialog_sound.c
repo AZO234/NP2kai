@@ -53,6 +53,7 @@ static const struct {
 	gfloat		min;
 	gfloat		max;
 } mixer_vol_tbl[] = {
+	{ "Master", &np2cfg.vol_master, 0.0, 100.0 },
 	{ "FM",     &np2cfg.vol_fm,     0.0, 128.0 },
 	{ "PSG",    &np2cfg.vol_ssg,    0.0, 128.0 },
 	{ "ADPCM",  &np2cfg.vol_adpcm,  0.0, 128.0 },
@@ -451,16 +452,16 @@ ok_button_clicked(GtkButton *b, gpointer d)
 			*mixer_vol_tbl[i].valp = mixer_vol[i];
 #if defined(SUPPORT_FMGEN)
 			switch(i) {
-			case 0:
+			case 1:
 				OPNA_SetVolumeFM(g_opna[0].fmgen, pow((double)np2cfg.vol_fm / 128, 0.12) * (20 + 192) - 192);
 				break;
-			case 1:
+			case 2:
 				OPNA_SetVolumePSG(g_opna[0].fmgen, pow((double)np2cfg.vol_ssg / 128, 0.12) * (20 + 192) - 192);
 				break;
-			case 3:
+			case 4:
 				OPNA_SetVolumeADPCM(g_opna[0].fmgen, pow((double)np2cfg.vol_pcm / 128, 0.12) * (20 + 192) - 192);
 				break;
-			case 4:
+			case 5:
 				OPNA_SetVolumeRhythmTotal(g_opna[0].fmgen, pow((double)np2cfg.vol_rhythm / 128, 0.12) * (20 + 192) - 192);
 				break;
 			}
@@ -1012,10 +1013,11 @@ mixer_default_button_clicked(GtkButton *b, gpointer d)
 {
 	int i;
 
-	for (i = 0; i < NELEMENTS(mixer_vol_tbl) - 1; i++) {
+	gtk_adjustment_set_value(GTK_ADJUSTMENT(mixer_adj[0]), 100.0);
+	for (i = 1; i <= NELEMENTS(mixer_vol_tbl) - 1; i++) {
 		gtk_adjustment_set_value(GTK_ADJUSTMENT(mixer_adj[i]), 64.0);
 	}
-	gtk_adjustment_set_value(GTK_ADJUSTMENT(mixer_adj[5]), 128.0);
+	gtk_adjustment_set_value(GTK_ADJUSTMENT(mixer_adj[6]), 128.0);
 #if defined(SUPPORT_FMGEN)
 	OPNA_SetVolumeFM(g_opna[0].fmgen, pow((double)np2cfg.vol_fm / 128, 0.12) * (20 + 192) - 192);
 	OPNA_SetVolumePSG(g_opna[0].fmgen, pow((double)np2cfg.vol_ssg / 128, 0.12) * (20 + 192) - 192);

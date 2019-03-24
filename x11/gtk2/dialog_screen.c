@@ -50,6 +50,9 @@ static GObject *video_skipline_ratio_adj;
 /*
  * Chip
  */
+#if defined(SUPPORT_PEGC)
+static GtkWidget *chip_enable_pegc_plane_mode;
+#endif
 static GtkWidget *chip_enable_color16_checkbutton;
 static gint chip_uPD72020;
 static gint chip_gc_kind;
@@ -76,6 +79,7 @@ ok_button_clicked(GtkButton *b, gpointer d)
 
 	/* Chip */
 	gint chip_color16;
+	gint pegc_plane_mode;
 
 	/* Timing */
 	guint timing_waitclock[NELEMENTS(timing_waitclock_str)];
@@ -141,6 +145,15 @@ ok_button_clicked(GtkButton *b, gpointer d)
 		np2cfg.color16 = chip_color16;
 		renewal = TRUE;
 	}
+
+#if defined(SUPPORT_PEGC)
+	pegc_plane_mode = gtk_toggle_button_get_active(
+	    GTK_TOGGLE_BUTTON(chip_enable_pegc_plane_mode));
+	if (np2cfg.usepegcplane != pegc_plane_mode) {
+		np2cfg.usepegcplane = pegc_plane_mode;
+		renewal = TRUE;
+	}
+#endif
 
 	if (renewal) {
 		sysmng_update(SYS_UPDATECFG);
@@ -343,6 +356,18 @@ create_chip_note(void)
 	}
 	g_signal_emit_by_name(G_OBJECT(gc_radiobutton[np2cfg.grcg & 3]),
 	    "clicked");
+
+#if defined(SUPPORT_PEGC)
+	chip_enable_pegc_plane_mode =
+	    gtk_check_button_new_with_label("Enable PEGC plane mode");
+	gtk_widget_show(chip_enable_pegc_plane_mode);
+	gtk_box_pack_start(GTK_BOX(main_widget), chip_enable_pegc_plane_mode,
+	    FALSE, FALSE, 0);
+	if (np2cfg.usepegcplane & 1) {
+		g_signal_emit_by_name(G_OBJECT(chip_enable_pegc_plane_mode),
+		    "clicked");
+	}
+#endif
 
 	/*
 	 * Use 16 colors

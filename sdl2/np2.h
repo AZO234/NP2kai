@@ -1,3 +1,17 @@
+#include "commng.h"
+
+typedef struct {
+	UINT8	direct;
+	UINT8	port;
+	UINT8	def_en;
+	UINT8	param;
+	UINT32	speed;
+	char	mout[MAX_PATH];
+	char	min[MAX_PATH];
+	char	mdl[64];
+	char	def[MAX_PATH];
+} COMCFG;
+
 enum {
 	MMXFLAG_DISABLE		= 1,
 	MMXFLAG_NOTSUPPORT	= 2
@@ -39,8 +53,9 @@ typedef struct {
 	UINT8	I286SAVE;
 
 	UINT8	snddrv;
-	char	MIDIDEV[2][MAX_PATH];
 	UINT32	MIDIWAIT;
+
+	COMCFG	mpu;
 
 	UINT8	readonly; // No save changed settings
 } NP2OSCFG;
@@ -83,6 +98,9 @@ typedef struct {
 	UINT8	snddrv;
 	char	MIDIDEV[2][MAX_PATH];
 	UINT32	MIDIWAIT;
+
+	COMCFG	mpu;
+	COMCFG	com[3];
 
 	UINT8	readonly; // No save changed settings
 } NP2OSCFG;

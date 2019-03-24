@@ -16,16 +16,16 @@
 
 //#include <shlwapi.h>
 
-/*! ƒ‹[ƒgî•ñ */
+/*! ãƒ«ãƒ¼ãƒˆæƒ…å ± */
 static const HDRVFILE s_hddroot = {{' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '}, 0, 0, 0x10, {0}, {0}};
 
-/*! ©•ª */
+/*! è‡ªåˆ† */
 static const char s_self[11] = {'.',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '};
 
-/*! e */
+/*! è¦ª */
 static const char s_parent[11] = {'.','.',' ',' ',' ',' ',' ',' ',' ',' ',' '};
 
-/*! DOS‚Å‹–‰Â‚³‚ê‚éƒLƒƒƒ‰ƒNƒ^ */
+/*! DOSã§è¨±å¯ã•ã‚Œã‚‹ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ */
 static const UINT8 s_cDosCharacters[] =
 {
 	0xfa, 0x23,		/* '&%$#"!  /.-,+*)( */
@@ -37,10 +37,10 @@ static const UINT8 s_cDosCharacters[] =
 };
 
 /**
- * ƒpƒX‚ğ FCB ‚É•ÏŠ·
+ * ãƒ‘ã‚¹ã‚’ FCB ã«å¤‰æ›
  * @param[out] lpFcbname FCB
- * @param[in] cchFcbname FCB ƒoƒbƒtƒ@ ƒTƒCƒY
- * @param[in] lpPath ƒpƒX
+ * @param[in] cchFcbname FCB ãƒãƒƒãƒ•ã‚¡ ã‚µã‚¤ã‚º
+ * @param[in] lpPath ãƒ‘ã‚¹
  */
 static void RealPath2FcbSub(char *lpFcbname, UINT cchFcbname, const char *lpPath)
 {
@@ -109,9 +109,9 @@ static void RealPath2FcbSub(char *lpFcbname, UINT cchFcbname, const char *lpPath
 }
 
 /**
- * ƒpƒX‚ğ FCB ‚É•ÏŠ·
+ * ãƒ‘ã‚¹ã‚’ FCB ã«å¤‰æ›
  * @param[out] lpFcbname FCB
- * @param[in] lpPath ƒpƒX
+ * @param[in] lpPath ãƒ‘ã‚¹
  */
 static void RealName2Fcb(char *lpFcbname, const OEMCHAR *lpPath)
 {
@@ -142,12 +142,12 @@ static void RealName2Fcb(char *lpFcbname, const OEMCHAR *lpPath)
 }
 
 /**
- * FCB –¼‚ªˆê’v‚·‚é‚©?
- * @param[in] phdf ƒtƒ@ƒCƒ‹î•ñ
- * @param[in] lpMask ƒ}ƒXƒN
- * @param[in] nAttr ƒAƒgƒŠƒrƒ…[ƒg ƒ}ƒXƒN
- * @retval TRUE ˆê’v
- * @retval FALSE •sˆê’v
+ * FCB åãŒä¸€è‡´ã™ã‚‹ã‹?
+ * @param[in] phdf ãƒ•ã‚¡ã‚¤ãƒ«æƒ…å ±
+ * @param[in] lpMask ãƒã‚¹ã‚¯
+ * @param[in] nAttr ã‚¢ãƒˆãƒªãƒ“ãƒ¥ãƒ¼ãƒˆ ãƒã‚¹ã‚¯
+ * @retval TRUE ä¸€è‡´
+ * @retval FALSE ä¸ä¸€è‡´
  */
 static BOOL IsMatchFcb(const HDRVFILE *phdf, const char *lpMask, UINT nAttr)
 {
@@ -171,11 +171,11 @@ static BOOL IsMatchFcb(const HDRVFILE *phdf, const char *lpMask, UINT nAttr)
 }
 
 /**
- * FCB –¼‚ªˆê’v‚·‚é‚©
- * @param[in] vpItem ƒAƒCƒeƒ€
- * @param[in] vpArg ƒ†[ƒUˆø”
- * @retval TRUE ˆê’v
- * @retval FALSE •sˆê’v
+ * FCB åãŒä¸€è‡´ã™ã‚‹ã‹
+ * @param[in] vpItem ã‚¢ã‚¤ãƒ†ãƒ 
+ * @param[in] vpArg ãƒ¦ãƒ¼ã‚¶å¼•æ•°
+ * @retval TRUE ä¸€è‡´
+ * @retval FALSE ä¸ä¸€è‡´
  */
 static BOOL IsMatchName(void *vpItem, void *vpArg)
 {
@@ -183,11 +183,11 @@ static BOOL IsMatchName(void *vpItem, void *vpArg)
 }
 
 /**
- * ƒtƒ@ƒCƒ‹ˆê——‚ğæ“¾
- * @param[in] phdp ƒpƒX
- * @param[in] lpMask ƒ}ƒXƒN
- * @param[in] nAttr ƒAƒgƒŠƒrƒ…[ƒg
- * @return ƒtƒ@ƒCƒ‹ˆê——
+ * ãƒ•ã‚¡ã‚¤ãƒ«ä¸€è¦§ã‚’å–å¾—
+ * @param[in] phdp ãƒ‘ã‚¹
+ * @param[in] lpMask ãƒã‚¹ã‚¯
+ * @param[in] nAttr ã‚¢ãƒˆãƒªãƒ“ãƒ¥ãƒ¼ãƒˆ
+ * @return ãƒ•ã‚¡ã‚¤ãƒ«ä¸€è¦§
  */
 LISTARRAY hostdrvs_getpathlist(const HDRVPATH *phdp, const char *lpMask, UINT nAttr)
 {
@@ -274,11 +274,11 @@ LISTARRAY hostdrvs_getpathlist(const HDRVPATH *phdp, const char *lpMask, UINT nA
 /* ---- */
 
 /**
- * DOS –¼‚ğ FCB ‚É•ÏŠ·
+ * DOS åã‚’ FCB ã«å¤‰æ›
  * @param[out] lpFcbname FCB
- * @param[in] cchFcbname FCB ƒoƒbƒtƒ@ ƒTƒCƒY
- * @param[in] lpDosPath DOS ƒpƒX
- * @return Ÿ‚Ì DOS ƒpƒX
+ * @param[in] cchFcbname FCB ãƒãƒƒãƒ•ã‚¡ ã‚µã‚¤ã‚º
+ * @param[in] lpDosPath DOS ãƒ‘ã‚¹
+ * @return æ¬¡ã® DOS ãƒ‘ã‚¹
  */
 static const char *DosPath2FcbSub(char *lpFcbname, UINT cchFcbname, const char *lpDosPath)
 {
@@ -322,10 +322,10 @@ static const char *DosPath2FcbSub(char *lpFcbname, UINT cchFcbname, const char *
 }
 
 /**
- * DOS –¼‚ğ FCB ‚É•ÏŠ·
+ * DOS åã‚’ FCB ã«å¤‰æ›
  * @param[out] lpFcbname FCB
- * @param[in] lpDosPath DOS ƒpƒX
- * @return Ÿ‚Ì DOS ƒpƒX
+ * @param[in] lpDosPath DOS ãƒ‘ã‚¹
+ * @return æ¬¡ã® DOS ãƒ‘ã‚¹
  */
 static const char *DosPath2Fcb(char *lpFcbname, const char *lpDosPath)
 {
@@ -339,11 +339,11 @@ static const char *DosPath2Fcb(char *lpFcbname, const char *lpDosPath)
 }
 
 /**
- * ƒpƒXŒŸõ
- * @param[in,out] phdp HostDrv ƒpƒX
- * @param[in] lpFcbname FCB –¼
- * @retval SUCCESS ¬Œ÷
- * @retval FAILURE ¸”s
+ * ãƒ‘ã‚¹æ¤œç´¢
+ * @param[in,out] phdp HostDrv ãƒ‘ã‚¹
+ * @param[in] lpFcbname FCB å
+ * @retval SUCCESS æˆåŠŸ
+ * @retval FAILURE å¤±æ•—
  */
 static BRESULT FindSinglePath(HDRVPATH *phdp, const char *lpFcbname)
 {
@@ -379,11 +379,11 @@ static BRESULT FindSinglePath(HDRVPATH *phdp, const char *lpFcbname)
 }
 
 /**
- * ƒfƒBƒŒƒNƒgƒŠ‚ğ“¾‚é
- * @param[out] phdp HostDrv ƒpƒX
- * @param[out] lpFcbname FCB –¼
- * @param[in] lpDosPath DOS ƒpƒX
- * @return DOS ƒGƒ‰[ ƒR[ƒh
+ * ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’å¾—ã‚‹
+ * @param[out] phdp HostDrv ãƒ‘ã‚¹
+ * @param[out] lpFcbname FCB å
+ * @param[in] lpDosPath DOS ãƒ‘ã‚¹
+ * @return DOS ã‚¨ãƒ©ãƒ¼ ã‚³ãƒ¼ãƒ‰
  */
 BOOL PathIsRelative(char *path) {
 	if(path[0] == '/') {
@@ -442,10 +442,10 @@ UINT hostdrvs_getrealdir(HDRVPATH *phdp, char *lpFcbname, const char *lpDosPath)
 }
 
 /**
- * ƒpƒX‚ğŒ‹‡‚·‚é
- * @param[in,out] phdp HostDrv ƒpƒX
- * @param[in] lpFcbname FCB –¼
- * @return DOS ƒGƒ‰[ ƒR[ƒh
+ * ãƒ‘ã‚¹ã‚’çµåˆã™ã‚‹
+ * @param[in,out] phdp HostDrv ãƒ‘ã‚¹
+ * @param[in] lpFcbname FCB å
+ * @return DOS ã‚¨ãƒ©ãƒ¼ ã‚³ãƒ¼ãƒ‰
  */
 UINT hostdrvs_appendname(HDRVPATH *phdp, const char *lpFcbname)
 {
@@ -495,10 +495,10 @@ UINT hostdrvs_appendname(HDRVPATH *phdp, const char *lpFcbname)
 }
 
 /**
- * ƒpƒX‚ğ“¾‚é
- * @param[out] phdp HostDrv ƒpƒX
- * @param[in] lpDosPath DOS ƒpƒX
- * @return DOS ƒGƒ‰[ ƒR[ƒh
+ * ãƒ‘ã‚¹ã‚’å¾—ã‚‹
+ * @param[out] phdp HostDrv ãƒ‘ã‚¹
+ * @param[in] lpDosPath DOS ãƒ‘ã‚¹
+ * @return DOS ã‚¨ãƒ©ãƒ¼ ã‚³ãƒ¼ãƒ‰
  */
 UINT hostdrvs_getrealpath(HDRVPATH *phdp, const char *lpDosPath)
 {
@@ -520,10 +520,10 @@ UINT hostdrvs_getrealpath(HDRVPATH *phdp, const char *lpDosPath)
 /* ---- */
 
 /**
- * ƒtƒ@ƒCƒ‹ƒnƒ“ƒhƒ‹‚ğƒNƒ[ƒY‚·‚é
- * @param[in] vpItem ƒAƒCƒeƒ€
- * @param[in] vpArg ƒ†[ƒUˆø”
- * @retval FALSE Œp‘±
+ * ãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒ³ãƒ‰ãƒ«ã‚’ã‚¯ãƒ­ãƒ¼ã‚ºã™ã‚‹
+ * @param[in] vpItem ã‚¢ã‚¤ãƒ†ãƒ 
+ * @param[in] vpArg ãƒ¦ãƒ¼ã‚¶å¼•æ•°
+ * @retval FALSE ç¶™ç¶š
  */
 static BOOL CloseFileHandle(void *vpItem, void *vpArg)
 {
@@ -540,8 +540,8 @@ static BOOL CloseFileHandle(void *vpItem, void *vpArg)
 }
 
 /**
- * ‚·‚×‚ÄƒNƒ[ƒY
- * @param[in] fileArray ƒtƒ@ƒCƒ‹ ƒŠƒXƒg ƒnƒ“ƒhƒ‹
+ * ã™ã¹ã¦ã‚¯ãƒ­ãƒ¼ã‚º
+ * @param[in] fileArray ãƒ•ã‚¡ã‚¤ãƒ« ãƒªã‚¹ãƒˆ ãƒãƒ³ãƒ‰ãƒ«
  */
 void hostdrvs_fhdlallclose(LISTARRAY fileArray)
 {
@@ -549,11 +549,11 @@ void hostdrvs_fhdlallclose(LISTARRAY fileArray)
 }
 
 /**
- * ‹óƒnƒ“ƒhƒ‹‚ğŒ©‚Â‚¯‚éƒR[ƒ‹ƒoƒbƒN
- * @param[in] vpItem ƒAƒCƒeƒ€
- * @param[in] vpArg ƒ†[ƒUˆø”
- * @retval TRUE Œ©‚Â‚©‚Á‚½
- * @retval FALSE Œ©‚Â‚©‚ç‚È‚©‚Á‚½
+ * ç©ºãƒãƒ³ãƒ‰ãƒ«ã‚’è¦‹ã¤ã‘ã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
+ * @param[in] vpItem ã‚¢ã‚¤ãƒ†ãƒ 
+ * @param[in] vpArg ãƒ¦ãƒ¼ã‚¶å¼•æ•°
+ * @retval TRUE è¦‹ã¤ã‹ã£ãŸ
+ * @retval FALSE è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
  */
 static BOOL IsHandleInvalid(void *vpItem, void *vpArg)
 {
@@ -566,9 +566,9 @@ static BOOL IsHandleInvalid(void *vpItem, void *vpArg)
 }
 
 /**
- * V‚µ‚¢ƒnƒ“ƒhƒ‹‚ğ“¾‚é
- * @param[in] fileArray ƒtƒ@ƒCƒ‹ ƒŠƒXƒg ƒnƒ“ƒhƒ‹
- * @return V‚µ‚¢ƒnƒ“ƒhƒ‹
+ * æ–°ã—ã„ãƒãƒ³ãƒ‰ãƒ«ã‚’å¾—ã‚‹
+ * @param[in] fileArray ãƒ•ã‚¡ã‚¤ãƒ« ãƒªã‚¹ãƒˆ ãƒãƒ³ãƒ‰ãƒ«
+ * @return æ–°ã—ã„ãƒãƒ³ãƒ‰ãƒ«
  */
 HDRVHANDLE hostdrvs_fhdlsea(LISTARRAY fileArray)
 {

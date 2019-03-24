@@ -1,13 +1,13 @@
 /**
  * @file	vstmidievent.cpp
- * @brief	VST MIDI ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	VST MIDI ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
 #include "vstmidievent.h"
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CVstMidiEvent::CVstMidiEvent()
 	: m_nEvents(0)
@@ -15,14 +15,14 @@ CVstMidiEvent::CVstMidiEvent()
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CVstMidiEvent::~CVstMidiEvent()
 {
 }
 
 /**
- * ƒNƒŠƒA
+ * ã‚¯ãƒªã‚¢
  */
 void CVstMidiEvent::Clear()
 {
@@ -32,9 +32,9 @@ void CVstMidiEvent::Clear()
 }
 
 /**
- * ƒVƒ‡[ƒg ƒƒbƒZ[ƒW
- * @param[in] nTick ƒeƒBƒbƒN
- * @param[in] nMessage ƒƒbƒZ[ƒW
+ * ã‚·ãƒ§ãƒ¼ãƒˆ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nTick ãƒ†ã‚£ãƒƒã‚¯
+ * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
  */
 void CVstMidiEvent::ShortMessage(UINT nTick, UINT nMessage)
 {
@@ -51,10 +51,10 @@ void CVstMidiEvent::ShortMessage(UINT nTick, UINT nMessage)
 }
 
 /**
- * ƒƒ“ƒO ƒƒbƒZ[ƒW
- * @param[in] nTick ƒeƒBƒbƒN
- * @param[in] lpMessage ƒƒbƒZ[ƒW
- * @param[in] cbMessage ƒƒbƒZ[ƒW ƒTƒCƒY
+ * ãƒ­ãƒ³ã‚° ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nTick ãƒ†ã‚£ãƒƒã‚¯
+ * @param[in] lpMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] cbMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ã‚µã‚¤ã‚º
  */
 void CVstMidiEvent::LongMessage(UINT nTick, const void* lpMessage, UINT cbMessage)
 {
@@ -69,10 +69,10 @@ void CVstMidiEvent::LongMessage(UINT nTick, const void* lpMessage, UINT cbMessag
 }
 
 /**
- * ƒCƒxƒ“ƒg’Ç‰Á
- * @param[in] pEvent ƒCƒxƒ“ƒg
- * @param[in] lpMessage ’Ç‰ÁƒƒbƒZ[ƒW
- * @param[in] cbMessage ’Ç‰ÁƒƒbƒZ[ƒW ƒTƒCƒY
+ * ã‚¤ãƒ™ãƒ³ãƒˆè¿½åŠ 
+ * @param[in] pEvent ã‚¤ãƒ™ãƒ³ãƒˆ
+ * @param[in] lpMessage è¿½åŠ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] cbMessage è¿½åŠ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ã‚µã‚¤ã‚º
  */
 void CVstMidiEvent::Add(const VstEvent* pEvent, const void* lpMessage, UINT cbMessage)
 {
@@ -86,8 +86,8 @@ void CVstMidiEvent::Add(const VstEvent* pEvent, const void* lpMessage, UINT cbMe
 }
 
 /**
- * ƒCƒxƒ“ƒg‚Ìì¬
- * @return ƒCƒxƒ“ƒg
+ * ã‚¤ãƒ™ãƒ³ãƒˆã®ä½œæˆ
+ * @return ã‚¤ãƒ™ãƒ³ãƒˆ
  */
 const VstEvents* CVstMidiEvent::GetEvents()
 {

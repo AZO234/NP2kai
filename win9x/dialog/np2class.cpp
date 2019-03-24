@@ -3,6 +3,7 @@
 #include	"resource.h"
 #include	"winloc.h"
 #include	"np2class.h"
+#include	"np2.h"
 
 
 const TCHAR np2dlgclass[] = _T("np2dialog");
@@ -39,7 +40,7 @@ void np2class_move(HWND hWnd, int posx, int posy, int cx, int cy) {
 	RECT	workrc;
 
 	SystemParametersInfo(SPI_GETWORKAREA, 0, &workrc, 0);
-	// ƒ}ƒ‹ƒ`ƒ‚ƒjƒ^b’è‘Î‰ ver0.86 rev30
+	// ãƒãƒ«ãƒãƒ¢ãƒ‹ã‚¿æš«å®šå¯¾å¿œ ver0.86 rev30
 	workrc.right = GetSystemMetrics(SM_CXVIRTUALSCREEN);
 	workrc.bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN);
 

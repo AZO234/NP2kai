@@ -2,25 +2,25 @@
  * BMSIO.H: I-O Bank Memory
  */
 
-// \¬Ý’è
+// æ§‹æˆè¨­å®š
 typedef struct {
-	BOOL	enabled;		// IOƒoƒ“ƒNƒƒ‚ƒŠ‚ðŽg—p‚·‚é
-	UINT16	port;			// ƒ|[ƒg”Ô†
-	UINT16	portmask;		// (—\–ñ)
-	UINT8	numbanks;		// ƒoƒ“ƒN”
+	BOOL	enabled;		// IOãƒãƒ³ã‚¯ãƒ¡ãƒ¢ãƒªã‚’ä½¿ç”¨ã™ã‚‹
+	UINT16	port;			// ãƒãƒ¼ãƒˆç•ªå·
+	UINT16	portmask;		// (äºˆç´„)
+	UINT8	numbanks;		// ãƒãƒ³ã‚¯æ•°
 } _BMSIOCFG;
 
-// “®ìŽž‚Ì\¬‚Æó‘Ô (STATSAVE‚Ì‘ÎÛ)
-typedef struct {			// MEMORY.X86“à‚Ì\‘¢‘Ì‚É‰e‹¿
-							// ó‘Ô
-	UINT8	nomem;			// Œ»Ý‘I‘ð‚³‚ê‚Ä‚¢‚éƒoƒ“ƒN‚Éƒƒ‚ƒŠ‚ª‚ ‚é
-	UINT8	bank;			// Œ»Ý‘I‘ð‚³‚ê‚Ä‚¢‚éƒoƒ“ƒN
+// å‹•ä½œæ™‚ã®æ§‹æˆã¨çŠ¶æ…‹ (STATSAVEã®å¯¾è±¡)
+typedef struct {			// MEMORY.X86å†…ã®æ§‹é€ ä½“ã«å½±éŸ¿
+							// çŠ¶æ…‹
+	UINT8	nomem;			// ç¾åœ¨é¸æŠžã•ã‚Œã¦ã„ã‚‹ãƒãƒ³ã‚¯ã«ãƒ¡ãƒ¢ãƒªãŒã‚ã‚‹
+	UINT8	bank;			// ç¾åœ¨é¸æŠžã•ã‚Œã¦ã„ã‚‹ãƒãƒ³ã‚¯
 
-	_BMSIOCFG	cfg;		// \¬
+	_BMSIOCFG	cfg;		// æ§‹æˆ
 } _BMSIO, *BMSIO;
 
-// ƒ[ƒN
-typedef struct {			// MEMORY.X86“à‚Ì\‘¢‘Ì‚É‰e‹¿
+// ãƒ¯ãƒ¼ã‚¯
+typedef struct {			// MEMORY.X86å†…ã®æ§‹é€ ä½“ã«å½±éŸ¿
 	BYTE	*bmsmem;
 	UINT32	bmsmemsize;
 } _BMSIOWORK;

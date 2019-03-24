@@ -1,6 +1,6 @@
 /**
  * @file	sdwasapi.cpp
- * @brief	WASAPI ƒI[ƒfƒBƒI ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	WASAPI ã‚ªãƒ¼ãƒ‡ã‚£ã‚ª ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -8,7 +8,7 @@
 #include <atlbase.h>
 #include <Functiondiscoverykeys_devpkey.h>
 
-//! ƒfƒoƒCƒX ƒŠƒXƒg
+//! ãƒ‡ãƒã‚¤ã‚¹ ãƒªã‚¹ãƒˆ
 std::vector<WasapiDevice> CSoundDeviceWasapi::sm_devices;
 
 //! MMDeviceEnumerator
@@ -24,7 +24,7 @@ const IID IID_IAudioClient = __uuidof(IAudioClient);
 const IID IID_IAudioRenderClient = __uuidof(IAudioRenderClient);
 
 /**
- * ‰Šú‰»
+ * åˆæœŸåŒ–
  */
 void CSoundDeviceWasapi::Initialize()
 {
@@ -77,7 +77,7 @@ void CSoundDeviceWasapi::Initialize()
 }
 
 /**
- * ‰ğ•ú
+ * è§£æ”¾
  */
 void CSoundDeviceWasapi::Deinitialize()
 {
@@ -92,8 +92,8 @@ void CSoundDeviceWasapi::Deinitialize()
 }
 
 /**
- * —ñ‹“
- * @param[out] devices ƒfƒoƒCƒX ƒŠƒXƒg
+ * åˆ—æŒ™
+ * @param[out] devices ãƒ‡ãƒã‚¤ã‚¹ ãƒªã‚¹ãƒˆ
  */
 void CSoundDeviceWasapi::EnumerateDevices(std::vector<LPCTSTR>& devices)
 {
@@ -104,7 +104,7 @@ void CSoundDeviceWasapi::EnumerateDevices(std::vector<LPCTSTR>& devices)
 }
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CSoundDeviceWasapi::CSoundDeviceWasapi()
 	: m_pEnumerator(NULL)
@@ -113,12 +113,13 @@ CSoundDeviceWasapi::CSoundDeviceWasapi()
 	, m_pwfx(NULL)
 	, m_pRenderClient(NULL)
 	, m_nBufferSize(0)
+	, m_mastervolume(100)
 {
 	ZeroMemory(m_hEvents, sizeof(m_hEvents));
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CSoundDeviceWasapi::~CSoundDeviceWasapi()
 {
@@ -126,11 +127,11 @@ CSoundDeviceWasapi::~CSoundDeviceWasapi()
 }
 
 /**
- * ƒI[ƒvƒ“
- * @param[in] lpDevice ƒfƒoƒCƒX–¼
- * @param[in] hWnd ƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * ã‚ªãƒ¼ãƒ—ãƒ³
+ * @param[in] lpDevice ãƒ‡ãƒã‚¤ã‚¹å
+ * @param[in] hWnd ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ«
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CSoundDeviceWasapi::Open(LPCTSTR lpDevice, HWND hWnd)
 {
@@ -165,7 +166,7 @@ bool CSoundDeviceWasapi::Open(LPCTSTR lpDevice, HWND hWnd)
 }
 
 /**
- * ƒNƒ[ƒY
+ * ã‚¯ãƒ­ãƒ¼ã‚º
  */
 void CSoundDeviceWasapi::Close()
 {
@@ -184,11 +185,11 @@ void CSoundDeviceWasapi::Close()
 }
 
 /**
- * ƒXƒgƒŠ[ƒ€‚Ìì¬
- * @param[in] nSamplingRate ƒTƒ“ƒvƒŠƒ“ƒO ƒŒ[ƒg
- * @param[in] nChannels ƒ`ƒƒƒlƒ‹”
- * @param[in] nBufferSize ƒoƒbƒtƒ@ ƒTƒCƒY
- * @return ƒoƒbƒtƒ@ ƒTƒCƒY
+ * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®ä½œæˆ
+ * @param[in] nSamplingRate ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚° ãƒ¬ãƒ¼ãƒˆ
+ * @param[in] nChannels ãƒãƒ£ãƒãƒ«æ•°
+ * @param[in] nBufferSize ãƒãƒƒãƒ•ã‚¡ ã‚µã‚¤ã‚º
+ * @return ãƒãƒƒãƒ•ã‚¡ ã‚µã‚¤ã‚º
  */
 UINT CSoundDeviceWasapi::CreateStream(UINT nSamplingRate, UINT nChannels, UINT nBufferSize)
 {
@@ -266,6 +267,8 @@ UINT CSoundDeviceWasapi::CreateStream(UINT nSamplingRate, UINT nChannels, UINT n
 			break;
 		}
 
+		SetMasterVolume(m_mastervolume);
+
 		ResetStream();
 
 		m_hEvents[1] = ::CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -280,7 +283,7 @@ UINT CSoundDeviceWasapi::CreateStream(UINT nSamplingRate, UINT nChannels, UINT n
 }
 
 /**
- * ƒXƒgƒŠ[ƒ€‚ğ”jŠü
+ * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’ç ´æ£„
  */
 void CSoundDeviceWasapi::DestroyStream()
 {
@@ -320,7 +323,7 @@ void CSoundDeviceWasapi::DestroyStream()
 }
 
 /**
- * ƒXƒgƒŠ[ƒ€‚ğƒŠƒZƒbƒg
+ * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’ãƒªã‚»ãƒƒãƒˆ
  */
 void CSoundDeviceWasapi::ResetStream()
 {
@@ -338,9 +341,9 @@ void CSoundDeviceWasapi::ResetStream()
 }
 
 /**
- * ƒXƒgƒŠ[ƒ€‚ÌÄ¶
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®å†ç”Ÿ
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CSoundDeviceWasapi::PlayStream()
 {
@@ -355,7 +358,7 @@ bool CSoundDeviceWasapi::PlayStream()
 }
 
 /**
- * ƒXƒgƒŠ[ƒ€‚Ì’â~
+ * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®åœæ­¢
  */
 void CSoundDeviceWasapi::StopStream()
 {
@@ -366,9 +369,22 @@ void CSoundDeviceWasapi::StopStream()
 }
 
 /**
- * “¯Šú
- * @retval true Œp‘±
- * @retval false I—¹
+ * ã‚¹ãƒˆãƒªãƒ¼ãƒ  ãƒ´ã‚©ãƒªãƒ¥ãƒ¼ãƒ è¨­å®š
+ * @param[in] nVolume ãƒ´ã‚©ãƒªãƒ¥ãƒ¼ãƒ (max 100)
+ */
+void CSoundDeviceWasapi::SetMasterVolume(int nVolume)
+{
+	m_mastervolume = nVolume;
+	if (m_pAudioClient)
+	{
+		// TODO: ãƒã‚¹ã‚¿ãƒœãƒªãƒ¥ãƒ¼ãƒ è¨­å®š
+	}
+}
+
+/**
+ * åŒæœŸ
+ * @retval true ç¶™ç¶š
+ * @retval false çµ‚äº†
  */
 bool CSoundDeviceWasapi::Task()
 {
@@ -388,7 +404,7 @@ bool CSoundDeviceWasapi::Task()
 }
 
 /**
- * ƒXƒgƒŠ[ƒ€‚ğXV‚·‚é
+ * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’æ›´æ–°ã™ã‚‹
  */
 void CSoundDeviceWasapi::FillStream()
 {

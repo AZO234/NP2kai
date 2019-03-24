@@ -1,4 +1,4 @@
-/* Copyright  (C) 2010-2017 The RetroArch team
+/* Copyright  (C) 2010-2018 The RetroArch team
  *
  * ---------------------------------------------------------------------------------------
  * The following license statement only applies to this file (retro_assert.h).
@@ -26,6 +26,7 @@
 #include <assert.h>
 
 #ifdef RARCH_INTERNAL
+#include <stdio.h>
 #define retro_assert(cond) do { \
    if (!(cond)) { printf("Assertion failed at %s:%d.\n", __FILE__, __LINE__); abort(); } \
 } while(0)

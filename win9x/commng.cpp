@@ -1,6 +1,6 @@
 /**
  * @file	commng.cpp
- * @brief	COM ƒ}ƒl[ƒWƒƒ‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	COM ãƒãƒãƒ¼ã‚¸ãƒ£ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -13,7 +13,7 @@
 #include "generic/cmjasts.h"
 
 /**
- * ‰Šú‰»
+ * åˆæœŸåŒ–
  */
 void commng_initialize(void)
 {
@@ -21,9 +21,9 @@ void commng_initialize(void)
 }
 
 /**
- * ì¬
- * @param[in] nDevice ƒfƒoƒCƒX
- * @return ƒnƒ“ƒhƒ‹
+ * ä½œæˆ
+ * @param[in] nDevice ãƒ‡ãƒã‚¤ã‚¹
+ * @return ãƒãƒ³ãƒ‰ãƒ«
  */
 COMMNG commng_create(UINT nDevice)
 {
@@ -84,8 +84,8 @@ COMMNG commng_create(UINT nDevice)
 }
 
 /**
- * ”jŠü
- * @param[in] hdl ƒnƒ“ƒhƒ‹
+ * ç ´æ£„
+ * @param[in] hdl ãƒãƒ³ãƒ‰ãƒ«
  */
 void commng_destroy(COMMNG hdl)
 {

@@ -21,6 +21,7 @@ static GtkWidget *interruptdelay_r_entry;
 static GtkWidget *interruptdelay_w_entry;
 static GtkWidget *useidebios_checkbutton;
 static GtkWidget *autoidebios_checkbutton;
+static GtkWidget *usecdecc_checkbutton;
 
 
 static void
@@ -36,6 +37,8 @@ ok_button_clicked(GtkButton *b, gpointer d)
 	    GTK_TOGGLE_BUTTON(useidebios_checkbutton));
 	gint autoidebios = gtk_toggle_button_get_active(
 	    GTK_TOGGLE_BUTTON(autoidebios_checkbutton));
+	gint usecdecc = gtk_toggle_button_get_active(
+	    GTK_TOGGLE_BUTTON(usecdecc_checkbutton));
 	int temp;
 	int i;
 	BOOL renewal = FALSE;
@@ -98,6 +101,10 @@ ok_button_clicked(GtkButton *b, gpointer d)
 	}
 	if (np2cfg.autoidebios != autoidebios) {
 		np2cfg.autoidebios = autoidebios;
+		renewal = TRUE;
+	}
+	if (np2cfg.usecdecc != usecdecc) {
+		np2cfg.usecdecc = usecdecc;
 		renewal = TRUE;
 	}
 
@@ -295,13 +302,9 @@ create_ide_dialog(void)
 	gtk_misc_set_padding(GTK_MISC(interruptdelay_w_clock_label), 5, 0);
 
 	/* Check & Confirm */
-	check_confirm_hbox = gtk_hbox_new(FALSE, 0);
-	gtk_widget_show(check_confirm_hbox);
-	gtk_box_pack_start(GTK_BOX(main_widget), check_confirm_hbox, TRUE, TRUE, 0);
-
 	check_vbox = gtk_vbox_new(FALSE, 0);
 	gtk_widget_show(check_vbox);
-	gtk_container_add(GTK_CONTAINER(check_confirm_hbox), check_vbox);
+	gtk_container_add(GTK_CONTAINER(main_widget), check_vbox);
 
 	useidebios_checkbutton = gtk_check_button_new_with_label("Use IDE BIOS");
 	gtk_widget_show(useidebios_checkbutton);
@@ -317,9 +320,20 @@ create_ide_dialog(void)
 		g_signal_emit_by_name(G_OBJECT(autoidebios_checkbutton), "clicked");
 	}
 
+	usecdecc_checkbutton = gtk_check_button_new_with_label("Use CD-ROM EDC/ECC Emulation");
+	gtk_widget_show(usecdecc_checkbutton);
+	gtk_box_pack_start(GTK_BOX(check_vbox), usecdecc_checkbutton, FALSE, FALSE, 1);
+	if (np2cfg.usecdecc) {
+		g_signal_emit_by_name(G_OBJECT(usecdecc_checkbutton), "clicked");
+	}
+
 	/*
 	 * OK, Cancel button
 	 */
+	check_confirm_hbox = gtk_hbox_new(FALSE, 0);
+	gtk_widget_show(check_confirm_hbox);
+	gtk_box_pack_start(GTK_BOX(main_widget), check_confirm_hbox, TRUE, TRUE, 0);
+
 	ok_button = gtk_button_new_from_stock(GTK_STOCK_OK);
 	gtk_widget_show(ok_button);
 	gtk_container_add(GTK_CONTAINER(check_confirm_hbox), ok_button);

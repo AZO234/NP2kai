@@ -43,7 +43,7 @@
 
 /*
  * modified by SimK
- *   ®”’l‚Ìƒ[ƒhEƒXƒgƒAŒÀ’è‚ÅŠg’£”{¸“x•‚“®¬”“_‘Š“–‚Ì¸“x‚ª‚ ‚è‚Ü‚·
+ *   æ•´æ•°å€¤ã®ãƒ­ãƒ¼ãƒ‰ãƒ»ã‚¹ãƒˆã‚¢é™å®šã§æ‹¡å¼µå€ç²¾åº¦æµ®å‹•å°æ•°ç‚¹ç›¸å½“ã®ç²¾åº¦ãŒã‚ã‚Šã¾ã™
  */
 
 #include "compiler.h"
@@ -78,14 +78,14 @@ static void FPU_FINIT(void);
 
 static void
 fpu_check_NM_EXCEPTION(){
-	// ƒ^ƒXƒNƒXƒCƒbƒ`‚Ü‚½‚ÍƒGƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚ÉNM(ƒfƒoƒCƒXg—p•s‰Â—áŠO)‚ğ”­¶‚³‚¹‚é
+	// ã‚¿ã‚¹ã‚¯ã‚¹ã‚¤ãƒƒãƒã¾ãŸã¯ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³æ™‚ã«NM(ãƒ‡ãƒã‚¤ã‚¹ä½¿ç”¨ä¸å¯ä¾‹å¤–)ã‚’ç™ºç”Ÿã•ã›ã‚‹
 	if ((CPU_CR0 & (CPU_CR0_TS)) || (CPU_CR0 & CPU_CR0_EM)) {
 		EXCEPTION(NM_EXCEPTION, 0);
 	}
 }
 static void
 fpu_check_NM_EXCEPTION2(){
-	// ƒ^ƒXƒNƒXƒCƒbƒ`‚Ü‚½‚ÍƒGƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚ÉNM(ƒfƒoƒCƒXg—p•s‰Â—áŠO)‚ğ”­¶‚³‚¹‚é
+	// ã‚¿ã‚¹ã‚¯ã‚¹ã‚¤ãƒƒãƒã¾ãŸã¯ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³æ™‚ã«NM(ãƒ‡ãƒã‚¤ã‚¹ä½¿ç”¨ä¸å¯ä¾‹å¤–)ã‚’ç™ºç”Ÿã•ã›ã‚‹
 	if ((CPU_CR0 & (CPU_CR0_TS)) || (CPU_CR0 & CPU_CR0_EM)) {
 		EXCEPTION(NM_EXCEPTION, 0);
 	}
@@ -271,23 +271,23 @@ static void FPU_FLD80(UINT32 addr, UINT reg)
 	{
 		UINT64 tmp;
 		unsigned int shift;
-		shift = (63-exp64);
-		// 1.xxx‚ğ64bit®”•\Œ»‚Å‚«‚é‚©ƒ`ƒFƒbƒN
-		if(exp64 >= 0 && // 1–¢–‚È‚Á‚½‚çƒAƒEƒg
-			exp64 <= 63 && // ’l‚ª64bit®”‚Å•\Œ»‚Å‚«‚È‚¢ê‡‚àƒAƒEƒgi‚Æ‚è‚ ‚¦‚¸•„†–³‚µ‚Å”»’èj
-			((test.eind.ll >> shift) << shift)==test.eind.ll){ // ¬”“_ˆÈ‰º‚Ì”‚ª‚ ‚éê‡‚àƒAƒEƒg
+		shift = (unsigned int)(63-exp64);
+		// 1.xxxã‚’64bitæ•´æ•°è¡¨ç¾ã§ãã‚‹ã‹ãƒã‚§ãƒƒã‚¯
+		if(exp64 >= 0 && // 1æœªæº€ãªã£ãŸã‚‰ã‚¢ã‚¦ãƒˆ
+			exp64 <= 63 && // å€¤ãŒ64bitæ•´æ•°ã§è¡¨ç¾ã§ããªã„å ´åˆã‚‚ã‚¢ã‚¦ãƒˆï¼ˆã¨ã‚Šã‚ãˆãšç¬¦å·ç„¡ã—ã§åˆ¤å®šï¼‰
+			((test.eind.ll >> shift) << shift)==test.eind.ll){ // å°æ•°ç‚¹ä»¥ä¸‹ã®æ•°ãŒã‚ã‚‹å ´åˆã‚‚ã‚¢ã‚¦ãƒˆ
 			//tmp = ((((UINT64)test.eind.ll) >> 1) | QWORD_CONST(0x8000000000000000)) >> shift;
 			tmp = ((UINT64)test.eind.ll) >> shift;
-			if(sign==0 && tmp < QWORD_CONST(0x8000000000000000)){ // •„†•t‚«i³j‚Å•\Œ»‚Å‚«‚é‚©
+			if(sign==0 && tmp < QWORD_CONST(0x8000000000000000)){ // ç¬¦å·ä»˜ãï¼ˆæ­£ï¼‰ã§è¡¨ç¾ã§ãã‚‹ã‹
 				FPU_STAT.int_reg[reg].ul64.m12 = tmp;
 				FPU_STAT.int_regvalid[reg] = 1;
-			}else if(sign==1 && tmp <= QWORD_CONST(0x8000000000000000)){ // •„†•t‚«i•‰j‚Å•\Œ»‚Å‚«‚é‚©
+			}else if(sign==1 && tmp <= QWORD_CONST(0x8000000000000000)){ // ç¬¦å·ä»˜ãï¼ˆè² ï¼‰ã§è¡¨ç¾ã§ãã‚‹ã‹
 				FPU_STAT.int_reg[reg].ul64.m12 = ((~tmp) + 1);
 				FPU_STAT.int_regvalid[reg] = 1;
 			}else{
 				FPU_STAT.int_regvalid[reg] = 0;
 			}
-		}else if((test.begin&0x7fff) == 0 && test.eind.ll == 0){ // 0‚Ìê‡
+		}else if((test.begin&0x7fff) == 0 && test.eind.ll == 0){ // 0ã®å ´åˆ
 			FPU_STAT.int_reg[reg].ul64.m12 = 0;
 			FPU_STAT.int_regvalid[reg] = 1;
 		}else{
@@ -524,7 +524,11 @@ static void FPU_FBST(UINT32 addr)
 	fpu_memorywrite_b(addr+9,p);
 }
 
+#if defined(_WIN32) && !defined(__LIBRETRO__)
 #define isinf(x) (!(_finite(x) || _isnan(x)))
+#else
+#define isinf(x) (!(_finite(x) || isnan(x)))
+#endif
 #define isdenormal(x) (_fpclass(x) == _FPCLASS_ND || _fpclass(x) == _FPCLASS_PD)
 
 static void FPU_FADD(UINT op1, UINT op2){
@@ -541,11 +545,11 @@ static void FPU_FADD(UINT op1, UINT op2){
 	//	SINT64 v1 = (SINT64)FPU_STAT.int_reg[op1].ul64.m12;
 	//	SINT64 v2 = (SINT64)FPU_STAT.int_reg[op2].ul64.m12;
 	//	SINT64 v12 = v1+v2;
-	//	if((v1>=0 && v2<=0) || (v1<=0 && v2>=0)){ // •„†‚ªˆÙ‚È‚ê‚ÎƒI[ƒo[ƒtƒ[‚µ‚È‚¢
+	//	if((v1>=0 && v2<=0) || (v1<=0 && v2>=0)){ // ç¬¦å·ãŒç•°ãªã‚Œã°ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼ã—ãªã„
 	//		FPU_STAT.int_reg[op1].ul64.m12 = (UINT64)v12;
-	//	}else if((v1>0 && v2>0) && v12 > 0){ // XXX: ³+³¨³@‘½•ªˆ—ŒnˆË‘¶
+	//	}else if((v1>0 && v2>0) && v12 > 0){ // XXX: æ­£+æ­£â†’æ­£ã€€å¤šåˆ†å‡¦ç†ç³»ä¾å­˜
 	//		FPU_STAT.int_reg[op1].ul64.m12 = (UINT64)v12;
-	//	}else if((v1<0 && v2<0) && v12 < 0){ // XXX: •‰+•‰¨•‰@‘½•ªˆ—ŒnˆË‘¶
+	//	}else if((v1<0 && v2<0) && v12 < 0){ // XXX: è² +è² â†’è² ã€€å¤šåˆ†å‡¦ç†ç³»ä¾å­˜
 	//		FPU_STAT.int_reg[op1].ul64.m12 = (UINT64)v12;
 	//	}else{
 	//		FPU_STAT.int_regvalid[op1] = 0;
@@ -642,11 +646,11 @@ static void FPU_FSUB(UINT st, UINT other){
 	//	SINT64 v1 = (SINT64)FPU_STAT.int_reg[st].ul64.m12;
 	//	SINT64 v2 = (SINT64)FPU_STAT.int_reg[other].ul64.m12;
 	//	SINT64 v12 = v1-v2;
-	//	if((v1>=0 && v2>=0) || (v1<=0 && v2<=0)){ // •„†‚ªˆÙ‚È‚ê‚ÎƒI[ƒo[ƒtƒ[‚µ‚È‚¢
+	//	if((v1>=0 && v2>=0) || (v1<=0 && v2<=0)){ // ç¬¦å·ãŒç•°ãªã‚Œã°ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼ã—ãªã„
 	//		FPU_STAT.int_reg[st].ul64.m12 = (UINT64)v12;
-	//	}else if((v1>0 && v2<0) && v12 > 0){ // XXX: ³+³¨³@‘½•ªˆ—ŒnˆË‘¶
+	//	}else if((v1>0 && v2<0) && v12 > 0){ // XXX: æ­£+æ­£â†’æ­£ã€€å¤šåˆ†å‡¦ç†ç³»ä¾å­˜
 	//		FPU_STAT.int_reg[st].ul64.m12 = (UINT64)v12;
-	//	}else if((v1<0 && v2>0) && v12 < 0){ // XXX: •‰+•‰¨•‰@‘½•ªˆ—ŒnˆË‘¶
+	//	}else if((v1<0 && v2>0) && v12 < 0){ // XXX: è² +è² â†’è² ã€€å¤šåˆ†å‡¦ç†ç³»ä¾å­˜
 	//		FPU_STAT.int_reg[st].ul64.m12 = (UINT64)v12;
 	//	}else{
 	//		FPU_STAT.int_regvalid[st] = 0;
@@ -664,11 +668,11 @@ static void FPU_FSUBR(UINT st, UINT other){
 	//	SINT64 v1 = (SINT64)FPU_STAT.int_reg[other].ul64.m12;
 	//	SINT64 v2 = (SINT64)FPU_STAT.int_reg[st].ul64.m12;
 	//	SINT64 v12 = v1-v2;
-	//	if((v1>=0 && v2>=0) || (v1<=0 && v2<=0)){ // •„†‚ªˆÙ‚È‚ê‚ÎƒI[ƒo[ƒtƒ[‚µ‚È‚¢
+	//	if((v1>=0 && v2>=0) || (v1<=0 && v2<=0)){ // ç¬¦å·ãŒç•°ãªã‚Œã°ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼ã—ãªã„
 	//		FPU_STAT.int_reg[st].ul64.m12 = (UINT64)v12;
-	//	}else if((v1>0 && v2<0) && v12 > 0){ // ³+³¨³@‘½•ªˆ—ŒnˆË‘¶
+	//	}else if((v1>0 && v2<0) && v12 > 0){ // æ­£+æ­£â†’æ­£ã€€å¤šåˆ†å‡¦ç†ç³»ä¾å­˜
 	//		FPU_STAT.int_reg[st].ul64.m12 = (UINT64)v12;
-	//	}else if((v1<0 && v2>0) && v12 < 0){ // •‰+•‰¨•‰@‘½•ªˆ—ŒnˆË‘¶
+	//	}else if((v1<0 && v2>0) && v12 < 0){ // è² +è² â†’è² ã€€å¤šåˆ†å‡¦ç†ç³»ä¾å­˜
 	//		FPU_STAT.int_reg[st].ul64.m12 = (UINT64)v12;
 	//	}else{
 	//		FPU_STAT.int_regvalid[st] = 0;
@@ -846,7 +850,7 @@ static void FPU_FRNDINT(void){
 		FPU_STAT.int_reg[FPU_STAT_TOP].l64.m12 = temp;
 		FPU_STAT.int_regvalid[FPU_STAT_TOP] = 1;
 	}else{
-		// Šù‚É®”
+		// æ—¢ã«æ•´æ•°
 	}
 }
 
@@ -1102,7 +1106,7 @@ void DB2_FPU_FXSAVERSTOR(void){
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	
-	fpu_check_NM_EXCEPTION2(); // XXX: ª‹’–³‚µ
+	fpu_check_NM_EXCEPTION2(); // XXX: æ ¹æ‹ ç„¡ã—
 	switch(idx){
 	case 0: // FXSAVE
 		maddr = calc_ea_dst(op);
@@ -1161,7 +1165,7 @@ static void FPU_FCHS(void){
 	FPU_STAT.reg[FPU_STAT_TOP].d64 = -1.0*(FPU_STAT.reg[FPU_STAT_TOP].d64);
 	if(FPU_STAT.int_regvalid[FPU_STAT_TOP]){
 		if(FPU_STAT.int_reg[FPU_STAT_TOP].ul64.m12 != QWORD_CONST(0x8000000000000000)){
-			FPU_STAT.int_reg[FPU_STAT_TOP].ul64.m12 = (~FPU_STAT.int_reg[FPU_STAT_TOP].ul64.m12) + 1; // •„†”½“]
+			FPU_STAT.int_reg[FPU_STAT_TOP].ul64.m12 = (~FPU_STAT.int_reg[FPU_STAT_TOP].ul64.m12) + 1; // ç¬¦å·åè»¢
 		}else{
 			FPU_STAT.int_regvalid[FPU_STAT_TOP] = 0;
 		}
@@ -1173,7 +1177,7 @@ static void FPU_FABS(void){
 	if(FPU_STAT.int_regvalid[FPU_STAT_TOP]){
 		if((QWORD_CONST(0x8000000000000000) & FPU_STAT.int_reg[FPU_STAT_TOP].ul64.m12)!=0 && 
 			    (FPU_STAT.int_reg[FPU_STAT_TOP].ul64.m12 != QWORD_CONST(0x8000000000000000))){
-			FPU_STAT.int_reg[FPU_STAT_TOP].ul64.m12 = (~FPU_STAT.int_reg[FPU_STAT_TOP].ul64.m12) + 1; // •„†”½“]
+			FPU_STAT.int_reg[FPU_STAT_TOP].ul64.m12 = (~FPU_STAT.int_reg[FPU_STAT_TOP].ul64.m12) + 1; // ç¬¦å·åè»¢
 		}else{
 			FPU_STAT.int_regvalid[FPU_STAT_TOP] = 0;
 		}
@@ -1266,7 +1270,7 @@ FPU_FINIT(void)
 	for(i=0;i<8;i++){
 		FPU_STAT.tag[i] = TAG_Empty;
 		FPU_STAT.int_regvalid[i] = 0;
-		// ƒŒƒWƒXƒ^‚Ì“à—e‚ÍÁ‚µ‚Ä‚Í‚¢‚¯‚È‚¢ ver0.86 rev40
+		// ãƒ¬ã‚¸ã‚¹ã‚¿ã®å†…å®¹ã¯æ¶ˆã—ã¦ã¯ã„ã‘ãªã„ ver0.86 rev40
 		//FPU_STAT.reg[i].d64 = 0;
 		//FPU_STAT.reg[i].l.lower = 0;
 		//FPU_STAT.reg[i].l.upper = 0;
@@ -1309,36 +1313,36 @@ static void EA_TREE(UINT op)
 	idx = (op >> 3) & 7;
 	
 		switch (idx) {
-		case 0:	/* FADD (’P¸“xÀ”) */
+		case 0:	/* FADD (å˜ç²¾åº¦å®Ÿæ•°) */
 			TRACEOUT(("FADD EA"));
 			FPU_FADD_EA(FPU_STAT_TOP);
 			break;
-		case 1:	/* FMUL (’P¸“xÀ”) */
+		case 1:	/* FMUL (å˜ç²¾åº¦å®Ÿæ•°) */
 			TRACEOUT(("FMUL EA"));
 			FPU_FMUL_EA(FPU_STAT_TOP);
 			break;
-		case 2:	/* FCOM (’P¸“xÀ”) */
+		case 2:	/* FCOM (å˜ç²¾åº¦å®Ÿæ•°) */
 			TRACEOUT(("FCOM EA"));
 			FPU_FCOM_EA(FPU_STAT_TOP);
 			break;
-		case 3:	/* FCOMP (’P¸“xÀ”) */
+		case 3:	/* FCOMP (å˜ç²¾åº¦å®Ÿæ•°) */
 			TRACEOUT(("FCOMP EA"));
 			FPU_FCOM_EA(FPU_STAT_TOP);
 			FPU_FPOP();
 			break;
-		case 4:	/* FSUB (’P¸“xÀ”) */
+		case 4:	/* FSUB (å˜ç²¾åº¦å®Ÿæ•°) */
 			TRACEOUT(("FSUB EA"));
 			FPU_FSUB_EA(FPU_STAT_TOP);
 			break;
-		case 5:	/* FSUBR (’P¸“xÀ”) */
+		case 5:	/* FSUBR (å˜ç²¾åº¦å®Ÿæ•°) */
 			TRACEOUT(("FSUBR EA"));
 			FPU_FSUBR_EA(FPU_STAT_TOP);
 			break;
-		case 6:	/* FDIV (’P¸“xÀ”) */
+		case 6:	/* FDIV (å˜ç²¾åº¦å®Ÿæ•°) */
 			TRACEOUT(("FDIV EA"));
 			FPU_FDIV_EA(FPU_STAT_TOP);
 			break;
-		case 7:	/* FDIVR (’P¸“xÀ”) */
+		case 7:	/* FDIVR (å˜ç²¾åº¦å®Ÿæ•°) */
 			TRACEOUT(("FDIVR EA"));
 			FPU_FDIVR_EA(FPU_STAT_TOP);
 			break;
@@ -1622,7 +1626,7 @@ DB2_ESC1(void)
 	} else {
 		madr = calc_ea_dst(op);
 		switch (idx) {
-		case 0:	/* FLD (’P¸“xÀ”) */
+		case 0:	/* FLD (å˜ç²¾åº¦å®Ÿæ•°) */
 			TRACEOUT(("FLD float"));
 			FPU_PREP_PUSH();
 			FPU_FLD_F32(madr,FPU_STAT_TOP);
@@ -1631,12 +1635,12 @@ DB2_ESC1(void)
 		case 1:	/* UNKNOWN */
 			break;
 
-		case 2:	/* FST (’P¸“xÀ”) */
+		case 2:	/* FST (å˜ç²¾åº¦å®Ÿæ•°) */
 			TRACEOUT(("FST float"));
 			FPU_FST_F32(madr);			
 			break;
 
-		case 3:	/* FSTP (’P¸“xÀ”) */
+		case 3:	/* FSTP (å˜ç²¾åº¦å®Ÿæ•°) */
 			TRACEOUT(("FSTP float"));
 			FPU_FST_F32(madr);
 			FPU_FPOP();
@@ -1829,13 +1833,13 @@ DB2_ESC3(void)
 			FPU_FPOP();
 			break;
 			
-		case 5:	/* FLD (Šg’£À”) */
+		case 5:	/* FLD (æ‹¡å¼µå®Ÿæ•°) */
 			TRACEOUT(("FLD 80 Bits Real"));
 			FPU_PREP_PUSH();
 			FPU_FLD_F80(madr);
 			break;
 			
-		case 7:	/* FSTP (Šg’£À”) */
+		case 7:	/* FSTP (æ‹¡å¼µå®Ÿæ•°) */
 			TRACEOUT(("FSTP 80 Bits Real"));
 			FPU_FST_F80(madr);
 			FPU_FPOP();
@@ -1922,11 +1926,11 @@ DB2_ESC5(void)
 	sub = (op & 7);
 	fpu_check_NM_EXCEPTION();
 	//if(op < 0xc0 && (idx==6 || idx==4)){
-	//	_ADD_EIP(-1); // XXX: –³—‚â‚è–ß‚·
+	//	_ADD_EIP(-1); // XXX: ç„¡ç†ã‚„ã‚Šæˆ»ã™
 	//	fpu_check_NM_EXCEPTION2();
 	//	_ADD_EIP(1);
 	//}else{
-	//	_ADD_EIP(-1); // XXX: –³—‚â‚è–ß‚·
+	//	_ADD_EIP(-1); // XXX: ç„¡ç†ã‚„ã‚Šæˆ»ã™
 	//	fpu_check_NM_EXCEPTION();
 	//	_ADD_EIP(1);
 	//}
@@ -1970,16 +1974,25 @@ DB2_ESC5(void)
 	} else {
 		madr = calc_ea_dst(op);
 		switch (idx) {
-		case 0:	/* FLD (”{¸“xÀ”) */
+		case 0:	/* FLD (å€ç²¾åº¦å®Ÿæ•°) */
 			TRACEOUT(("FLD double real"));
 			FPU_PREP_PUSH();
 			FPU_FLD_F64(madr,FPU_STAT_TOP);
 			break;
-		case 2:	/* FST (”{¸“xÀ”) */
+		case 1:	/* FISTTP (QWORD) */
+			{
+				FP_RND oldrnd = FPU_STAT.round;
+				FPU_STAT.round = ROUND_Down;
+				FPU_FST_I64(madr);
+				FPU_STAT.round = oldrnd;
+			}
+			FPU_FPOP();
+			break;
+		case 2:	/* FST (å€ç²¾åº¦å®Ÿæ•°) */
 			TRACEOUT(("FST double real"));
 			FPU_FST_F64(madr);
 			break;
-		case 3:	/* FSTP (”{¸“xÀ”) */
+		case 3:	/* FSTP (å€ç²¾åº¦å®Ÿæ•°) */
 			TRACEOUT(("FSTP double real"));
 			FPU_FST_F64(madr);
 			FPU_FPOP();
@@ -2055,14 +2068,14 @@ DB2_ESC6(void)
 			TRACEOUT(("FDIVRP"));
 			FPU_FDIVR(FPU_ST(sub),FPU_STAT_TOP);
 			if((FPU_STATUSWORD & ~FPU_CTRLWORD) & FP_ZE_FLAG){
-				return; // POP‚µ‚È‚¢‚æ‚¤‚É‚·‚é
+				return; // POPã—ãªã„ã‚ˆã†ã«ã™ã‚‹
 			}
 			break;
 		case 7:	/* FDIVP */
 			TRACEOUT(("FDIVP"));
 			FPU_FDIV(FPU_ST(sub),FPU_STAT_TOP);
 			if((FPU_STATUSWORD & ~FPU_CTRLWORD) & FP_ZE_FLAG){
-				return; // POP‚µ‚È‚¢‚æ‚¤‚É‚·‚é
+				return; // POPã—ãªã„ã‚ˆã†ã«ã™ã‚‹
 			}
 			break;
 			/*FALLTHROUGH*/
@@ -2147,6 +2160,15 @@ DB2_ESC7(void)
 			TRACEOUT(("FILD SINT16"));
 			FPU_PREP_PUSH();
 			FPU_FLD_I16(madr,FPU_STAT_TOP);
+			break;
+		case 1:	/* FISTTP (WORD) */
+			{
+				FP_RND oldrnd = FPU_STAT.round;
+				FPU_STAT.round = ROUND_Down;
+				FPU_FST_I16(madr);
+				FPU_STAT.round = oldrnd;
+			}
+			FPU_FPOP();
 			break;
 		case 2:	/* FIST (WORD) */
 			TRACEOUT(("FIST SINT16"));

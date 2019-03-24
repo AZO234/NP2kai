@@ -60,6 +60,7 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/x11/gtk2/dialog_midi.c \
 		$(real_topsrcdir)/x11/gtk2/dialog_network.c \
 		$(real_topsrcdir)/x11/gtk2/dialog_newdisk.c \
+		$(real_topsrcdir)/x11/gtk2/dialog_pci.c \
 		$(real_topsrcdir)/x11/gtk2/dialog_screen.c \
 		$(real_topsrcdir)/x11/gtk2/dialog_serial.c \
 		$(real_topsrcdir)/x11/gtk2/dialog_sound.c \
@@ -203,6 +204,9 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/io/necio.c \
 		$(real_topsrcdir)/io/epsonio.c \
 		$(real_topsrcdir)/io/pcidev.c \
+		$(real_topsrcdir)/io/pegc.c \
+		$(real_topsrcdir)/io/pci/98graphbridge.c \
+		$(real_topsrcdir)/io/pci/cbusbridge.c \
 		\
 		$(real_topsrcdir)/lio/lio.c \
 		$(real_topsrcdir)/lio/gscreen.c \
@@ -309,6 +313,7 @@ AM_CPPFLAGS=	-I$(real_topsrcdir) \
 		-I$(real_topsrcdir)/fdd \
 		-I$(real_topsrcdir)/generic \
 		-I$(real_topsrcdir)/io \
+		-I$(real_topsrcdir)/io/pci \
 		-I$(real_topsrcdir)/mem \
 		-I$(real_topsrcdir)/network \
 		-I$(real_topsrcdir)/sound \
@@ -317,7 +322,7 @@ AM_CPPFLAGS=	-I$(real_topsrcdir) \
 		-I$(real_topsrcdir)/wab \
 		$(GTK_CFLAGS) $(GDK_CFLAGS) $(GDK_PIXBUF_CFLAGS) $(SDL_CFLAGS) $(LIBUSB1_CFLAGS) \
 		$(X11_CFLAGS) $(XEXT_CFLAGS) \
-		-DNP2_X11 -DSUPPORT_LARGE_HDD -DSUPPORT_VPCVHD -DSUPPORT_KAI_IMAGES -DHOOK_SYSKEY -DALLOW_MULTIRUN -DSUPPORT_NET -DSUPPORT_LGY98 -DSUPPORT_WAB -DSUPPORT_CL_GD5430 -DUSE_MAME -DSUPPORT_SOUND_SB16 -DSUPPORT_NVL_IMAGES
+		-DNP2_X11 -DSUPPORT_LARGE_HDD -DSUPPORT_VPCVHD -DSUPPORT_KAI_IMAGES -DHOOK_SYSKEY -DALLOW_MULTIRUN -DSUPPORT_NET -DSUPPORT_LGY98 -DUSE_MAME -DSUPPORT_SOUND_SB16 -DSUPPORT_NVL_IMAGES -DSUPPORT_FMGEN -DSUPPORT_GPIB -DSUPPORT_FAST_MEMORYCHECK -DSUPPORT_STATSAVE
 if BUILD_ALL
 AM_CPPFLAGS+=	-DX11_BUILD_ALL
 endif
@@ -332,7 +337,7 @@ endif
 
 LDADD=		$(GTK_LIBS) $(GDK_LIBS) $(GDK_PIXBUF_LIBS) $(SDL_LIBS) $(LIBUSB1_LIBS) \
 		$(X11_LIBS) $(XEXT_LIBS) \
-		$(X_LIBS) $(X_PRE_LIBS) $(XLIB) $(X_EXTRA_LIBS) -ldl
+		$(X_LIBS) $(X_PRE_LIBS) $(XLIB) $(X_EXTRA_LIBS) -ldl -lpthread
 
 DEFS=		@DEFS@ -DSYSRESPATH=\""$(pkgdatadir)"\"
 
@@ -389,6 +394,8 @@ IA32_SOURCES=	$(real_topsrcdir)/i386c/cpucore.c \
 		$(real_topsrcdir)/i386c/ia32/instructions/mmx/3dnow.c \
 		$(real_topsrcdir)/i386c/ia32/instructions/mmx/mmx.c \
 		$(real_topsrcdir)/i386c/ia32/instructions/sse/sse.c \
+		$(real_topsrcdir)/i386c/ia32/instructions/sse2/sse2.c \
+		$(real_topsrcdir)/i386c/ia32/instructions/sse3/sse3.c \
 		$(real_topsrcdir)/debugsub386.c
 
 IA32_CPPFLAGS=	-I$(real_topsrcdir)/i386c \
@@ -398,7 +405,9 @@ IA32_CPPFLAGS=	-I$(real_topsrcdir)/i386c \
 		-I$(real_topsrcdir)/i386c/ia32/instructions/fpu/softfloat \
 		-I$(real_topsrcdir)/i386c/ia32/instructions/mmx \
 		-I$(real_topsrcdir)/i386c/ia32/instructions/sse \
-		-DCPUCORE_IA32 -DUSE_FPU -DSUPPORT_FPU_DOSBOX -DSUPPORT_FPU_DOSBOX2 -DSUPPORT_FPU_SOFTFLOAT -DSUPPORT_GPIB -DUSE_MMX -DUSE_3DNOW -DUSE_SSE -DUSE_TSC
+		-I$(real_topsrcdir)/i386c/ia32/instructions/sse2 \
+		-I$(real_topsrcdir)/i386c/ia32/instructions/sse3 \
+		-DCPUCORE_IA32 -DUSE_FPU -DSUPPORT_FPU_DOSBOX -DSUPPORT_FPU_DOSBOX2 -DSUPPORT_FPU_SOFTFLOAT -DSUPPORT_LARGE_MEMORY -DSUPPORT_PCI -DUSE_MMX -DUSE_3DNOW -DUSE_SSE -DUSE_SSE2 -DUSE_SSE3 -DUSE_TSC -DUSE_FASTPAGING -DSUPPORT_PEGC -DSUPPORT_ASYNC_CPU -DUSE_VME -DSUPPORT_WAB -DSUPPORT_CL_GD5430 -DBIOS_IO_EMULATION
 
 if CPUCORE_IA32
 if BUILD_ALL

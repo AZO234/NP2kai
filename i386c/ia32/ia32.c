@@ -28,7 +28,8 @@
 #include "ia32.mcr"
 
 I386CORE	i386core;
-I386CPUID	i386cpuid = {CPU_VENDOR, CPU_FAMILY, CPU_MODEL, CPU_STEPPING, CPU_FEATURES, CPU_FEATURES_EX, CPU_BRAND_STRING};
+I386CPUID	i386cpuid = {I386CPUID_VERSION, CPU_VENDOR, CPU_FAMILY, CPU_MODEL, CPU_STEPPING, CPU_FEATURES, CPU_FEATURES_EX, CPU_BRAND_STRING, CPU_BRAND_ID, CPU_FEATURES_ECX};
+I386MSR		i386msr = {0};
 
 UINT8	*reg8_b20[0x100];
 UINT8	*reg8_b53[0x100];
@@ -42,8 +43,12 @@ ia32_init(void)
 {
 	int i;
 
+	i386msr.version = I386MSR_VERSION;
+	i386cpuid.version = I386CPUID_VERSION;
+
 	memset(&i386core.s, 0, sizeof(i386core.s));
 	ia32_initreg();
+	memset(&i386msr.regs, 0, sizeof(i386msr.regs));
 
 	for (i = 0; i < 0x100; ++i) {
 		/* 8bit */
@@ -78,16 +83,47 @@ ia32_init(void)
 void
 ia32_setextsize(UINT32 size)
 {
+//#if defined(SUPPORT_LARGE_MEMORY)&&defined(_WIN32) && !defined(MEMTRACE) && !defined(MEMCHECK)
+//	static int vallocflag = 0;
+//	static int vallocsize = 0;
+//	static LPVOID memblock = NULL;
+//#endif
 
 	if (CPU_EXTMEMSIZE != size) {
 		UINT8 *extmem;
 		extmem = CPU_EXTMEM;
 		if (extmem != NULL) {
-			_MFREE(extmem);
+//#if defined(SUPPORT_LARGE_MEMORY) && defined(_WIN32) && !defined(MEMTRACE) && !defined(MEMCHECK)
+//			if(vallocflag){
+//				VirtualFree((LPVOID)extmem, vallocsize, MEM_DECOMMIT);
+//				VirtualFree(memblock, 0, MEM_RELEASE);
+//				vallocflag = 0;
+//			}else
+//#endif
+			{
+				_MFREE(extmem);
+			}
 			extmem = NULL;
 		}
 		if (size != 0) {
-			extmem = (UINT8 *)_MALLOC(size + 16, "EXTMEM");
+//#if defined(SUPPORT_LARGE_MEMORY) && defined(_WIN32) && !defined(MEMTRACE) && !defined(MEMCHECK)
+//			if(size > (255 << 20)){
+//				HANDLE hp = OpenProcess(PROCESS_ALL_ACCESS, TRUE, GetCurrentProcessId());
+//				vallocsize = size + 16;
+//				SetProcessWorkingSetSize(hp, vallocsize + 50*1024*1024, vallocsize + 50*1024*1024);
+//				CloseHandle(hp);
+//				memblock = VirtualAlloc(NULL, vallocsize, MEM_RESERVE, PAGE_READWRITE);
+//				extmem = (UINT8 *)VirtualAlloc(memblock, vallocsize, MEM_COMMIT, PAGE_READWRITE);
+//				if(!extmem){
+//					extmem = (UINT8 *)_MALLOC(size + 16, "EXTMEM");
+//				}else{
+//					vallocflag = 1;
+//				}
+//			}else
+//#endif
+			{
+				extmem = (UINT8 *)_MALLOC(size + 16, "EXTMEM");
+			}
 		}
 		if (extmem != NULL) {
 			ZeroMemory(extmem, size + 16);
@@ -98,6 +134,11 @@ ia32_setextsize(UINT32 size)
 			CPU_EXTLIMIT = size + 0x100000;
 		}
 		else {
+#if defined(SUPPORT_LARGE_MEMORY)
+			if(size != 0){
+				msgbox("Error", "Cannot allocate extended memory.");
+			}
+#endif
 			CPU_EXTMEM = NULL;
 			CPU_EXTMEMSIZE = 0;
 			CPU_EXTMEMBASE = NULL;
@@ -131,7 +172,7 @@ ia32_setemm(UINT frame, UINT32 addr) {
 
 
 /*
- * ƒ‚[ƒh‘JˆÚ
+ * ãƒ¢ãƒ¼ãƒ‰é·ç§»
  */
 void CPUCALL
 change_pm(BOOL onoff)

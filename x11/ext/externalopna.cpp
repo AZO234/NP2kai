@@ -1,14 +1,14 @@
 /**
  * @file	externalopna.cpp
- * @brief	ŠO•” OPNA ‰‰‘tƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	å¤–éƒ¨ OPNA æ¼”å¥ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
 #include "externalopna.h"
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
- * @param[in] pChip ƒ`ƒbƒv
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * @param[in] pChip ãƒãƒƒãƒ—
  */
 CExternalOpna::CExternalOpna(IExternalChip* pChip)
 	: CExternalPsg(pChip)
@@ -50,14 +50,14 @@ CExternalOpna::CExternalOpna(IExternalChip* pChip)
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CExternalOpna::~CExternalOpna()
 {
 }
 
 /**
- * ‰¹Œ¹ƒŠƒZƒbƒg
+ * éŸ³æºãƒªã‚»ãƒƒãƒˆ
  */
 void CExternalOpna::Reset()
 {
@@ -75,9 +75,9 @@ void CExternalOpna::Reset()
 }
 
 /**
- * ƒŒƒWƒXƒ^‘‚«‚İ
- * @param[in] nAddr ƒAƒhƒŒƒX
- * @param[in] cData ƒf[ƒ^
+ * ãƒ¬ã‚¸ã‚¹ã‚¿æ›¸ãè¾¼ã¿
+ * @param[in] nAddr ã‚¢ãƒ‰ãƒ¬ã‚¹
+ * @param[in] cData ãƒ‡ãƒ¼ã‚¿
  */
 void CExternalOpna::WriteRegister(UINT nAddr, UINT8 cData)
 {
@@ -114,8 +114,8 @@ void CExternalOpna::WriteRegister(UINT nAddr, UINT8 cData)
 }
 
 /**
- * ƒ~ƒ…[ƒg
- * @param[in] bMute ƒ~ƒ…[ƒg
+ * ãƒŸãƒ¥ãƒ¼ãƒˆ
+ * @param[in] bMute ãƒŸãƒ¥ãƒ¼ãƒˆ
  */
 void CExternalOpna::Mute(bool bMute) const
 {
@@ -136,15 +136,15 @@ void CExternalOpna::Mute(bool bMute) const
 }
 
 /**
- * ƒ”ƒHƒŠƒ…[ƒ€İ’è
- * @param[in] nChannel ƒ`ƒƒƒ“ƒlƒ‹
- * @param[in] nVolume ƒ”ƒHƒŠƒ…[ƒ€’l
+ * ãƒ´ã‚©ãƒªãƒ¥ãƒ¼ãƒ è¨­å®š
+ * @param[in] nChannel ãƒãƒ£ãƒ³ãƒãƒ«
+ * @param[in] nVolume ãƒ´ã‚©ãƒªãƒ¥ãƒ¼ãƒ å€¤
  */
 void CExternalOpna::SetVolume(UINT nChannel, int nVolume) const
 {
 	const UINT nBaseReg = (nChannel & 4) ? 0x140 : 0x40;
 
-	/*! ƒAƒ‹ƒSƒŠƒYƒ€ ƒXƒƒbƒg ƒ}ƒXƒN */
+	/*! ã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ  ã‚¹ãƒ­ãƒƒãƒˆ ãƒã‚¹ã‚¯ */
 	static const UINT8 s_opmask[] = {0x08, 0x08, 0x08, 0x08, 0x0c, 0x0e, 0x0e, 0x0f};
 	UINT8 cMask = s_opmask[m_cAlgorithm[nChannel & 7] & 7];
 	const UINT8* pTtl = m_cTtl + ((nChannel & 4) << 2);

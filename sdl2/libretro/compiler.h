@@ -7,6 +7,10 @@
 
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -208,8 +212,6 @@ typedef SINT32	FILELEN;
 
 #define  SUPPORT_ARC
 
-#define  SUPPORT_FMGEN
-
 #define	SUPPORT_NORMALDISP
 
 #define SUPPORT_PX
@@ -253,6 +255,16 @@ typedef SINT32	FILELEN;
 #define	SCRNCALL
 #define	VERMOUTHCL
 
+#if defined(SUPPORT_LARGE_MEMORY)
+#define	MEMORY_MAXSIZE		4000
+#else
+#define	MEMORY_MAXSIZE		230
+#endif
+
 #include "retro_inline.h"
 #include "common.h"
+
+#ifdef __cplusplus
+}
+#endif
 

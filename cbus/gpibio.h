@@ -1,13 +1,19 @@
 
 #if defined(SUPPORT_GPIB)
 
+enum {
+	GPIB_MODE_MASTER	= 1,
+	GPIB_MODE_SLAVE		= 0,
+};
+
 typedef struct {
 	UINT8 enable;
-	UINT8 irq; // äÑÇËçûÇ›
-	UINT8 mode; // É}ÉXÉ^=1, ÉXÉåÅ[Éu=0
-	UINT8 gpibaddr; // GP-IBÉAÉhÉåÉX(0x0Å`0x1F)
-	UINT8 ifcflag; // IFC# 1=ÉAÉNÉeÉBÉu, 0=îÒÉAÉNÉeÉBÉu
+	UINT8 irq; // Ââ≤„ÇäËæº„Åø
+	UINT8 mode; // „Éû„Çπ„Çø=1, „Çπ„É¨„Éº„Éñ=0
+	UINT8 gpibaddr; // GP-IB„Ç¢„Éâ„É¨„Çπ(0x0„Äú0x1F)
+	UINT8 ifcflag; // IFC# 1=„Ç¢„ÇØ„ÉÜ„Ç£„Éñ, 0=Èùû„Ç¢„ÇØ„ÉÜ„Ç£„Éñ
 
+	UINT16 exiobase;
 } _GPIB, *GPIB;
 
 #ifdef __cplusplus
@@ -17,6 +23,9 @@ extern "C" {
 extern	_GPIB		gpib;
 
 void gpibint(NEVENTITEM item);
+
+void gpibio_initialize(void);
+void gpibio_shutdown(void);
 
 void gpibio_reset(const NP2CFG *pConfig);
 void gpibio_bind(void);

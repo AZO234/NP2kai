@@ -55,7 +55,7 @@ static void scsicmd(REG8 cmd) {
 			ret = scsicmd_select(id);
 			if (ret & 0x80) {
 				scsiintr(0x11);
-				// ‚Å ret‚Í‚Ç[‚â‚Á‚ÄŠ„‚è‚İ‚³‚¹‚é‚ÌH
+				// ã§ retã¯ã©ãƒ¼ã‚„ã£ã¦å‰²ã‚Šè¾¼ã¿ã•ã›ã‚‹ã®ï¼Ÿ
 			}
 			else {
 				scsiintr(ret);
@@ -172,7 +172,7 @@ static REG8 IOINPCALL scsiio_icc2(UINT port) {
 			return(scsiio.resent);
 
 		case 0x36:
-			return(0);					// ‚Q–‡h‚µ‚Æ‚©c
+			return(0);					// ï¼’æšåˆºã—ã¨ã‹â€¦
 	}
 	if (scsiio.port <= 0x19) {
 		ret = scsiio.reg[scsiio.port];
@@ -215,7 +215,7 @@ void scsiio_reset(const NP2CFG *pConfig) {
 		scsiio.memwnd = (0xd200 & 0x0e00) >> 9;
 		scsiio.resent = (3 << 3) + (7 << 0);
 
-		CPU_RAM_D000 |= (3 << 2);				// ram‚É‚·‚é
+		CPU_RAM_D000 |= (3 << 2);				// ramã«ã™ã‚‹
 		fh = file_open_rb_c(OEMTEXT("scsi.rom"));
 		r = 0;
 		if (fh != FILEH_INVALID) {

@@ -1,4 +1,4 @@
-/* Copyright  (C) 2010-2017 The RetroArch team
+/* Copyright  (C) 2010-2018 The RetroArch team
  *
  * ---------------------------------------------------------------------------------------
  * The following license statement only applies to this file (config_file_userdata.c).
@@ -80,16 +80,16 @@ int config_userdata_get_float_array(void *userdata, const char *key_str,
       *values = (float*)calloc(list->size, sizeof(float));
       for (i = 0; i < list->size; i++)
          (*values)[i] = (float)strtod(list->elems[i].data, NULL);
-      *out_num_values = list->size;
+      *out_num_values = (unsigned)list->size;
       string_list_free(list);
       free(str);
       return true;
    }
 
    *values = (float*)calloc(num_default_values, sizeof(float));
-   memcpy(*values, default_values, sizeof(float) * num_default_values); 
-   *out_num_values = num_default_values; 
-   return false; 
+   memcpy(*values, default_values, sizeof(float) * num_default_values);
+   *out_num_values = num_default_values;
+   return false;
 }
 
 int config_userdata_get_int_array(void *userdata, const char *key_str,
@@ -110,7 +110,7 @@ int config_userdata_get_int_array(void *userdata, const char *key_str,
       *values = (int*)calloc(list->size, sizeof(int));
       for (i = 0; i < list->size; i++)
          (*values)[i] = (int)strtod(list->elems[i].data, NULL);
-      *out_num_values = list->size;
+      *out_num_values = (unsigned)list->size;
       string_list_free(list);
       free(str);
       return true;
@@ -135,7 +135,7 @@ int config_userdata_get_string(void *userdata, const char *key_str,
          config_get_string(usr->conf, key[1], &str))
    {
       *output = str;
-      return true; 
+      return true;
    }
 
    *output = strdup(default_output);

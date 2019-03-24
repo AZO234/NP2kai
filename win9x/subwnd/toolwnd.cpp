@@ -67,10 +67,11 @@ static const DISKACC diskacc[3] = {
 					{IDC_TOOLFDD2ACC,	&toolwin.m_fddaccess[1]},
 					{IDC_TOOLHDDACC,	&toolwin.m_hddaccess}};
 
+static int fdlistlen = FDDLIST_DEFAULT; // FDãƒ•ã‚¡ã‚¤ãƒ«å±¥æ­´æ•°
 
 /**
- * ƒCƒ“ƒXƒ^ƒ“ƒX‚ð•Ô‚·
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’è¿”ã™
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 CToolWnd* CToolWnd::GetInstance()
 {
@@ -78,14 +79,14 @@ CToolWnd* CToolWnd::GetInstance()
 }
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CToolWnd::CToolWnd()
 {
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CToolWnd::~CToolWnd()
 {
@@ -261,7 +262,7 @@ static void remakefddlist(HWND hwnd, TOOLFDD *fdd) {
 	UINT	sel;
 
 	p = fdd->name[0];
-	for (cnt=0; cnt<FDDLIST_MAX; cnt++) {
+	for (cnt=0; cnt<fdlistlen; cnt++) {
 		if (p[0] == '\0') {
 			break;
 		}
@@ -393,7 +394,7 @@ void CToolWnd::CreateSubItems()
 	{
 		HWND sub = NULL;
 		const TCHAR *cls = NULL;
-		DWORD style;
+		DWORD style = 0;
 
 		const SUBITEM *p = &subitem[i];
 		switch (p->tctl)
@@ -820,7 +821,7 @@ LRESULT CToolWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 			break;
 
 #if 0
-		case WM_KEYDOWN:						// TAB‚ð‰Ÿ‚µ‚½Žž‚É•œ‹A
+		case WM_KEYDOWN:						// TABã‚’æŠ¼ã—ãŸæ™‚ã«å¾©å¸°
 			if ((short)wParam == VK_TAB)
 			{
 				UINT idc = (UINT)GetWindowLongPtr(m_hWnd, GTWLP_FOCUS);
@@ -926,7 +927,7 @@ LRESULT CToolWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ì¬
+ * ä½œæˆ
  */
 void CToolWnd::Create()
 {
@@ -985,7 +986,7 @@ void toolwin_setfdd(UINT8 drv, const OEMCHAR *name) {
 	else {
 		fdd->insert = 1;
 		q = fdd->name[0];
-		for (i=0; i<(FDDLIST_MAX - 1); i++) {
+		for (i=0; i<(fdlistlen - 1); i++) {
 			if (!file_cmpname(q, name)) {
 				break;
 			}
@@ -1080,11 +1081,11 @@ const DISKACC	*accterm;
 
 // ----
 
-//! ƒ^ƒCƒgƒ‹
+//! ã‚¿ã‚¤ãƒˆãƒ«
 static const TCHAR s_toolwndapp[] = TEXT("NP2 tool");
 
 /**
- * Ý’è
+ * è¨­å®š
  */
 static const PFTBL s_toolwndini[] =
 {
@@ -1096,29 +1097,61 @@ static const PFTBL s_toolwndini[] =
 	PFSTR("SkinMRU1", PFTYPE_STR,		s_toolwndcfg.skinmru[1]),
 	PFSTR("SkinMRU2", PFTYPE_STR,		s_toolwndcfg.skinmru[2]),
 	PFSTR("SkinMRU3", PFTYPE_STR,		s_toolwndcfg.skinmru[3]),
-	PFSTR("FD1NAME0", PFTYPE_STR,		s_toolwndcfg.fdd[0].name[0]),
-	PFSTR("FD1NAME1", PFTYPE_STR,		s_toolwndcfg.fdd[0].name[1]),
-	PFSTR("FD1NAME2", PFTYPE_STR,		s_toolwndcfg.fdd[0].name[2]),
-	PFSTR("FD1NAME3", PFTYPE_STR,		s_toolwndcfg.fdd[0].name[3]),
-	PFSTR("FD1NAME4", PFTYPE_STR,		s_toolwndcfg.fdd[0].name[4]),
-	PFSTR("FD1NAME5", PFTYPE_STR,		s_toolwndcfg.fdd[0].name[5]),
-	PFSTR("FD1NAME6", PFTYPE_STR,		s_toolwndcfg.fdd[0].name[6]),
-	PFSTR("FD1NAME7", PFTYPE_STR,		s_toolwndcfg.fdd[0].name[7]),
-	PFSTR("FD2NAME0", PFTYPE_STR,		s_toolwndcfg.fdd[1].name[0]),
-	PFSTR("FD2NAME1", PFTYPE_STR,		s_toolwndcfg.fdd[1].name[1]),
-	PFSTR("FD2NAME2", PFTYPE_STR,		s_toolwndcfg.fdd[1].name[2]),
-	PFSTR("FD2NAME3", PFTYPE_STR,		s_toolwndcfg.fdd[1].name[3]),
-	PFSTR("FD2NAME4", PFTYPE_STR,		s_toolwndcfg.fdd[1].name[4]),
-	PFSTR("FD2NAME5", PFTYPE_STR,		s_toolwndcfg.fdd[1].name[5]),
-	PFSTR("FD2NAME6", PFTYPE_STR,		s_toolwndcfg.fdd[1].name[6]),
-	PFSTR("FD2NAME7", PFTYPE_STR,		s_toolwndcfg.fdd[1].name[7])
+	//PFSTR("FD1NAME0", PFTYPE_STR,		s_toolwndcfg.fdd[0].name[0]),
+	//PFSTR("FD1NAME1", PFTYPE_STR,		s_toolwndcfg.fdd[0].name[1]),
+	//PFSTR("FD1NAME2", PFTYPE_STR,		s_toolwndcfg.fdd[0].name[2]),
+	//PFSTR("FD1NAME3", PFTYPE_STR,		s_toolwndcfg.fdd[0].name[3]),
+	//PFSTR("FD1NAME4", PFTYPE_STR,		s_toolwndcfg.fdd[0].name[4]),
+	//PFSTR("FD1NAME5", PFTYPE_STR,		s_toolwndcfg.fdd[0].name[5]),
+	//PFSTR("FD1NAME6", PFTYPE_STR,		s_toolwndcfg.fdd[0].name[6]),
+	//PFSTR("FD1NAME7", PFTYPE_STR,		s_toolwndcfg.fdd[0].name[7]),
+	//PFSTR("FD2NAME0", PFTYPE_STR,		s_toolwndcfg.fdd[1].name[0]),
+	//PFSTR("FD2NAME1", PFTYPE_STR,		s_toolwndcfg.fdd[1].name[1]),
+	//PFSTR("FD2NAME2", PFTYPE_STR,		s_toolwndcfg.fdd[1].name[2]),
+	//PFSTR("FD2NAME3", PFTYPE_STR,		s_toolwndcfg.fdd[1].name[3]),
+	//PFSTR("FD2NAME4", PFTYPE_STR,		s_toolwndcfg.fdd[1].name[4]),
+	//PFSTR("FD2NAME5", PFTYPE_STR,		s_toolwndcfg.fdd[1].name[5]),
+	//PFSTR("FD2NAME6", PFTYPE_STR,		s_toolwndcfg.fdd[1].name[6]),
+	//PFSTR("FD2NAME7", PFTYPE_STR,		s_toolwndcfg.fdd[1].name[7])
 };
 
+int gettoolwndini(PFTBL **ptoolwndini)
+{
+	PFTBL *toolwndini;
+	int slistlen;
+
+	fdlistlen = np2oscfg.tollwndhistory;
+	if(fdlistlen == 0) fdlistlen = FDDLIST_DEFAULT;
+	if(fdlistlen > FDDLIST_MAX) fdlistlen = FDDLIST_MAX;
+
+	toolwndini = (PFTBL*)malloc(sizeof(s_toolwndini) + 2*fdlistlen*sizeof(PFTBL));
+	
+	slistlen = _countof(s_toolwndini);
+	memcpy(toolwndini, s_toolwndini, sizeof(s_toolwndini));
+	for(int j=0;j<2;j++){
+		for(int i=0;i<fdlistlen;i++){
+			OEMSPRINTF(toolwndini[slistlen + j*fdlistlen + i].item, OEMTEXT("FD%dNAME%X"), j+1, i);
+			toolwndini[slistlen + j*fdlistlen + i].itemtype = PFTYPE_STR;
+			toolwndini[slistlen + j*fdlistlen + i].value = s_toolwndcfg.fdd[j].name[i];
+			toolwndini[slistlen + j*fdlistlen + i].arg = MAX_PATH;
+		}
+	}
+
+	*ptoolwndini = toolwndini;
+
+	return 2*fdlistlen + slistlen;
+}
+
 /**
- * Ý’è“Ç‚Ýž‚Ý
+ * è¨­å®šèª­ã¿è¾¼ã¿
  */
 void toolwin_readini()
 {
+	PFTBL *toolwndini;
+	int listlen;
+
+	listlen = gettoolwndini(&toolwndini);
+
 	ZeroMemory(&s_toolwndcfg, sizeof(s_toolwndcfg));
 	s_toolwndcfg.posx = CW_USEDEFAULT;
 	s_toolwndcfg.posy = CW_USEDEFAULT;
@@ -1126,17 +1159,26 @@ void toolwin_readini()
 
 	OEMCHAR szPath[MAX_PATH];
 	initgetfile(szPath, _countof(szPath));
-	ini_read(szPath, s_toolwndapp, s_toolwndini, _countof(s_toolwndini));
+	ini_read(szPath, s_toolwndapp, toolwndini, listlen);
+
+	free(toolwndini);
 }
 
 /**
- * Ý’è‘‚«ž‚Ý
+ * è¨­å®šæ›¸ãè¾¼ã¿
  */
 void toolwin_writeini()
 {
 	if(!np2oscfg.readonly){
+		PFTBL *toolwndini;
+		int listlen;
+
+		listlen = gettoolwndini(&toolwndini);
+
 		TCHAR szPath[MAX_PATH];
 		initgetfile(szPath, _countof(szPath));
-		ini_write(szPath, s_toolwndapp, s_toolwndini, _countof(s_toolwndini));
+		ini_write(szPath, s_toolwndapp, toolwndini, listlen);
+
+		free(toolwndini);
 	}
 }

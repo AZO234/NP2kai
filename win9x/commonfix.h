@@ -154,7 +154,7 @@ NO3DNOW:
 			and FP,eax
 		}
 		if((GetVersion()&0xf)<5){
-	//Windows 95 ‚Å SSE2 –½—ß‚ðŽÀs‚·‚é‚Æ—Ž‚¿‚é‚Ì‚Å”O‚Ì‚½‚ß
+	//Windows 95 ã§ SSE2 å‘½ä»¤ã‚’å®Ÿè¡Œã™ã‚‹ã¨è½ã¡ã‚‹ã®ã§å¿µã®ãŸã‚
 			FP&=~(1<<PF_SSE3_INSTRUCTIONS_AVAILABLE);
 			FP&=~(1<<PF_XMMI64_INSTRUCTIONS_AVAILABLE);
 			FP&=~(1<<PF_COMPARE_EXCHANGE128);
@@ -451,7 +451,7 @@ void WinMainCRTStartup2()
 {
 	initialize_findacx();
 #ifdef _UNICODE
-	WinMainCRTStartup(); // Unicode‚¾‚¯‚Çw•s—v
+	WinMainCRTStartup(); // Unicodeã ã‘ã©wä¸è¦
 #else
 	WinMainCRTStartup();
 #endif

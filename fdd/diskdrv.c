@@ -202,8 +202,11 @@ void diskdrv_readyfddex(REG8 drv, const OEMCHAR *fname, UINT ftype, int readonly
 		if ((fname != NULL) && (fname[0] != '\0'))
 		{
 			fdd_set(drv, fname, ftype, readonly);
-			fdc.stat[drv] = FDCRLT_AI | drv;
-			fdc_interrupt();
+			if ((!(fdc.chgreg & 4)) || (fdc.ctrlreg & 0x08)){
+				fdc.stat[drv] = FDCRLT_AI | drv;
+				fdc.us = drv;
+				fdc_interrupt();
+			}
 			sysmng_update(SYS_UPDATEFDD);
 		}
 	}
@@ -225,6 +228,7 @@ void diskdrv_setfddex(REG8 drv, const OEMCHAR *fname, UINT ftype, int readonly)
 		diskdrv_fname[drv][0] = '\0';
 		np2cfg.fddfile[drv][0] = '\0';
 		fdc.stat[drv] = FDCRLT_AI | FDCRLT_NR | drv;
+		fdc.us = drv;
 		fdc_interrupt();
 
 		if (fname)

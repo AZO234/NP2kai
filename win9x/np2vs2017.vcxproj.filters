@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="ソース ファイル">
@@ -25,12 +25,6 @@
     </Filter>
     <Filter Include="ソース ファイル\generic">
       <UniqueIdentifier>{ddd41d04-af6a-4e3f-afc0-637b76a22b31}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\i286c">
-      <UniqueIdentifier>{e5b27007-849a-4a45-bdfa-4765e2b38b84}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\i286x">
-      <UniqueIdentifier>{58c74657-242f-4792-b014-5e8f6a538e4f}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\io">
       <UniqueIdentifier>{9d73e98b-7a0a-4020-bc6c-7aaa04a461b6}</UniqueIdentifier>
@@ -128,9 +122,6 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\generic">
       <UniqueIdentifier>{09e56662-4cd1-4232-b414-9b0f90c1e145}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\i286c">
-      <UniqueIdentifier>{6626a5ee-5600-41b6-be1f-217e4eaf53e4}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\i286x">
       <UniqueIdentifier>{9e6219f1-0b53-4089-aa53-22a1be26ba5f}</UniqueIdentifier>
@@ -235,9 +226,6 @@
     <Filter Include="ソース ファイル\network">
       <UniqueIdentifier>{355c185c-0473-45fe-a779-d70d341f4ee7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\network">
-      <UniqueIdentifier>{851cf1df-2a92-4676-9f39-c8030611fa29}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\wab">
       <UniqueIdentifier>{1cca2f75-8c68-4850-86c3-c7c498ea5fcd}</UniqueIdentifier>
     </Filter>
@@ -246,6 +234,18 @@
     </Filter>
     <Filter Include="ソース ファイル\sound\mame">
       <UniqueIdentifier>{6733dfde-dbb2-424e-971c-aa456d15000c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\sound\fmgen">
+      <UniqueIdentifier>{1fbae04d-6163-4fc0-99e3-af4a99fad012}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\sound\mame">
+      <UniqueIdentifier>{69e55071-1b40-4cc2-928d-d45bc986a5af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\i286x">
+      <UniqueIdentifier>{a98b60df-cc2b-4313-96f0-37db98949566}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\i286c">
+      <UniqueIdentifier>{f073fb96-07c9-4c40-bbcf-f55dad2396f4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -485,57 +485,6 @@
     </ClCompile>
     <ClCompile Include="..\generic\unasm.c">
       <Filter>ソース ファイル\generic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\i286c\cpumem.c">
-      <Filter>ソース ファイル\i286c</Filter>
-    </ClCompile>
-    <ClCompile Include="..\i286c\i286c.c">
-      <Filter>ソース ファイル\i286c</Filter>
-    </ClCompile>
-    <ClCompile Include="..\i286c\i286c_0f.c">
-      <Filter>ソース ファイル\i286c</Filter>
-    </ClCompile>
-    <ClCompile Include="..\i286c\i286c_8x.c">
-      <Filter>ソース ファイル\i286c</Filter>
-    </ClCompile>
-    <ClCompile Include="..\i286c\i286c_ea.c">
-      <Filter>ソース ファイル\i286c</Filter>
-    </ClCompile>
-    <ClCompile Include="..\i286c\i286c_f6.c">
-      <Filter>ソース ファイル\i286c</Filter>
-    </ClCompile>
-    <ClCompile Include="..\i286c\i286c_fe.c">
-      <Filter>ソース ファイル\i286c</Filter>
-    </ClCompile>
-    <ClCompile Include="..\i286c\i286c_mn.c">
-      <Filter>ソース ファイル\i286c</Filter>
-    </ClCompile>
-    <ClCompile Include="..\i286c\i286c_rp.c">
-      <Filter>ソース ファイル\i286c</Filter>
-    </ClCompile>
-    <ClCompile Include="..\i286c\i286c_sf.c">
-      <Filter>ソース ファイル\i286c</Filter>
-    </ClCompile>
-    <ClCompile Include="..\i286c\v30patch.c">
-      <Filter>ソース ファイル\i286c</Filter>
-    </ClCompile>
-    <ClCompile Include="..\i286x\i286x.cpp">
-      <Filter>ソース ファイル\i286x</Filter>
-    </ClCompile>
-    <ClCompile Include="..\i286x\i286xadr.cpp">
-      <Filter>ソース ファイル\i286x</Filter>
-    </ClCompile>
-    <ClCompile Include="..\i286x\i286xcts.cpp">
-      <Filter>ソース ファイル\i286x</Filter>
-    </ClCompile>
-    <ClCompile Include="..\i286x\i286xrep.cpp">
-      <Filter>ソース ファイル\i286x</Filter>
-    </ClCompile>
-    <ClCompile Include="..\i286x\i286xs.cpp">
-      <Filter>ソース ファイル\i286x</Filter>
-    </ClCompile>
-    <ClCompile Include="..\i286x\v30patch.cpp">
-      <Filter>ソース ファイル\i286x</Filter>
     </ClCompile>
     <ClCompile Include="..\io\artic.c">
       <Filter>ソース ファイル\io</Filter>
@@ -1176,6 +1125,75 @@
     <ClCompile Include="..\sound\mame\ymf262.c">
       <Filter>ソース ファイル\sound\mame</Filter>
     </ClCompile>
+    <ClCompile Include="scrnmng_dd.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
+    <ClCompile Include="scrnmng_d3d.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fdd\sxsihdd_nvl.c">
+      <Filter>ソース ファイル\fdd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cbus\boardsb16.c">
+      <Filter>ソース ファイル\cbus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cbus\ct1741io.c">
+      <Filter>ソース ファイル\cbus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cbus\ct1745io.c">
+      <Filter>ソース ファイル\cbus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i286x\i286x.cpp">
+      <Filter>ソース ファイル\i286x</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i286x\i286xadr.cpp">
+      <Filter>ソース ファイル\i286x</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i286x\i286xcts.cpp">
+      <Filter>ソース ファイル\i286x</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i286x\i286xrep.cpp">
+      <Filter>ソース ファイル\i286x</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i286x\i286xs.cpp">
+      <Filter>ソース ファイル\i286x</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i286x\v30patch.cpp">
+      <Filter>ソース ファイル\i286x</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i286c\i286c.c">
+      <Filter>ソース ファイル\i286c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i286c\i286c_0f.c">
+      <Filter>ソース ファイル\i286c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i286c\i286c_8x.c">
+      <Filter>ソース ファイル\i286c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i286c\i286c_ea.c">
+      <Filter>ソース ファイル\i286c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i286c\i286c_f6.c">
+      <Filter>ソース ファイル\i286c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i286c\i286c_fe.c">
+      <Filter>ソース ファイル\i286c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i286c\i286c_mn.c">
+      <Filter>ソース ファイル\i286c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i286c\i286c_rp.c">
+      <Filter>ソース ファイル\i286c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i286c\i286c_sf.c">
+      <Filter>ソース ファイル\i286c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i286c\v30patch.c">
+      <Filter>ソース ファイル\i286c</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i286c\cpumem.c">
+      <Filter>ソース ファイル\i286c</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\calendar.h">
@@ -1402,18 +1420,6 @@
     </ClInclude>
     <ClInclude Include="..\i286x\v30patch.h">
       <Filter>ヘッダー ファイル\i286x</Filter>
-    </ClInclude>
-    <ClInclude Include="..\i286c\cpucore.h">
-      <Filter>ヘッダー ファイル\i286c</Filter>
-    </ClInclude>
-    <ClInclude Include="..\i286c\cpumem.h">
-      <Filter>ヘッダー ファイル\i286c</Filter>
-    </ClInclude>
-    <ClInclude Include="..\i286c\i286c.h">
-      <Filter>ヘッダー ファイル\i286c</Filter>
-    </ClInclude>
-    <ClInclude Include="..\i286c\v30patch.h">
-      <Filter>ヘッダー ファイル\i286c</Filter>
     </ClInclude>
     <ClInclude Include="..\io\artic.h">
       <Filter>ヘッダー ファイル\io</Filter>
@@ -1997,23 +2003,77 @@
     <ClInclude Include="..\diskimage\fd\fdd_xdf.h">
       <Filter>ヘッダー ファイル\diskimage\fd</Filter>
     </ClInclude>
-    <ClInclude Include="..\network\net.h">
-      <Filter>ヘッダー ファイル\network</Filter>
-    </ClInclude>
-    <ClInclude Include="..\network\lgy98.h">
-      <Filter>ヘッダー ファイル\network</Filter>
-    </ClInclude>
-    <ClInclude Include="..\network\lgy98dev.h">
-      <Filter>ヘッダー ファイル\network</Filter>
-    </ClInclude>
     <ClInclude Include="..\i286x\dmap.h">
       <Filter>ヘッダー ファイル\i286x</Filter>
     </ClInclude>
+    <ClInclude Include="scrnmng_dd.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="scrnmng_d3d.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\mame\driver.h">
+      <Filter>ヘッダー ファイル\sound\mame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\mame\fm.h">
+      <Filter>ヘッダー ファイル\sound\mame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\mame\fmopl.h">
+      <Filter>ヘッダー ファイル\sound\mame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\mame\ymdeltat.h">
+      <Filter>ヘッダー ファイル\sound\mame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\mame\ymf262.h">
+      <Filter>ヘッダー ファイル\sound\mame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_diag.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_file.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_fmgen.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_fmgeninl.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_fmgwrap.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_fmtimer.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_headers.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_misc.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_opm.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_opna.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_psg.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\fmgen\fmgen_types.h">
+      <Filter>ヘッダー ファイル\sound\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cbus\boardsb16.h">
+      <Filter>ヘッダー ファイル\cbus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cbus\ct1741io.h">
+      <Filter>ヘッダー ファイル\cbus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cbus\ct1745io.h">
+      <Filter>ヘッダー ファイル\cbus</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <NASM Include="..\i286x\cpumem.x86">
-      <Filter>ソース ファイル\i286x</Filter>
-    </NASM>
     <NASM Include="..\mem\x86\dmax86.x86">
       <Filter>ソース ファイル\mem\x86</Filter>
     </NASM>
@@ -2031,6 +2091,9 @@
     </NASM>
     <NASM Include="x86\makegrph.x86">
       <Filter>ソース ファイル\win9x\x86</Filter>
+    </NASM>
+    <NASM Include="..\i286x\cpumem.x86">
+      <Filter>ソース ファイル\i286x</Filter>
     </NASM>
     <NASM Include="..\i286x\dmap.x86">
       <Filter>ソース ファイル\i286x</Filter>

@@ -208,16 +208,16 @@ typedef struct {
 } FPU_PTR;
 
 typedef struct {
-	UINT16		control; // êßå‰ÉåÉWÉXÉ^Å[
+	UINT16		control; // Âà∂Âæ°„É¨„Ç∏„Çπ„Çø„Éº
 #ifdef USE_FPU_ASM
-	UINT16		cw_mask_all; // êßå‰ÉåÉWÉXÉ^Å[mask
+	UINT16		cw_mask_all; // Âà∂Âæ°„É¨„Ç∏„Çπ„Çø„Éºmask
 #endif
-	UINT16		status; // ÉXÉeÅ[É^ÉXÉåÉWÉXÉ^Å[
-	UINT16		op; // ÉIÉyÉRÅ[ÉhÉåÉWÉXÉ^Å[
-	UINT16		tag; // É^ÉOÉèÅ[ÉhÉåÉWÉXÉ^Å[
+	UINT16		status; // „Çπ„ÉÜ„Éº„Çø„Çπ„É¨„Ç∏„Çπ„Çø„Éº
+	UINT16		op; // „Ç™„Éö„Ç≥„Éº„Éâ„É¨„Ç∏„Çπ„Çø„Éº
+	UINT16		tag; // „Çø„Ç∞„ÉØ„Éº„Éâ„É¨„Ç∏„Çπ„Çø„Éº
 
-	FPU_PTR		inst; // ÉâÉXÉgñΩóﬂÉ|ÉCÉìÉ^ÉåÉWÉXÉ^Å[
-	FPU_PTR		data; // ÉâÉXÉgÉfÅ[É^É|ÉCÉìÉ^ÉåÉWÉXÉ^Å[
+	FPU_PTR		inst; // „É©„Çπ„ÉàÂëΩ‰ª§„Éù„Ç§„É≥„Çø„É¨„Ç∏„Çπ„Çø„Éº
+	FPU_PTR		data; // „É©„Çπ„Éà„Éá„Éº„Çø„Éù„Ç§„É≥„Çø„É¨„Ç∏„Çπ„Çø„Éº
 } FPU_REGS;
 
 #if 0
@@ -334,7 +334,7 @@ typedef struct {
 //#endif
 	FP_TAG		tag[FPU_REG_NUM+1]; // R0 to R7
 	FP_RND		round;
-#ifdef SUPPORT_FPU_DOSBOX2 // XXX: êÆêîä‘ÇæÇØê≥ämÇ…Ç∑ÇÈÇΩÇﬂóp
+#ifdef SUPPORT_FPU_DOSBOX2 // XXX: Êï¥Êï∞Èñì„Å†„ÅëÊ≠£Á¢∫„Å´„Åô„Çã„Åü„ÇÅÁî®
 	FP_INT_REG	int_reg[FPU_REG_NUM+1];
 	UINT8		int_regvalid[FPU_REG_NUM+1];
 #endif
@@ -388,20 +388,40 @@ typedef struct {
 	I386EXT		e;
 } I386CORE;
 
+#define I386CPUID_VERSION	1
 typedef struct {
-	char cpu_vendor[16]; // ÉxÉìÉ_Å[Åi12byteÅj
-	UINT32 cpu_family; // ÉtÉ@É~Éä
-	UINT32 cpu_model; // ÉÇÉfÉã
-	UINT32 cpu_stepping; // ÉXÉeÉbÉsÉìÉO
-	UINT32 cpu_feature; // ã@î\ÉtÉâÉO
-	UINT32 cpu_feature_ex; // ägí£ã@î\ÉtÉâÉO
-	char cpu_brandstring[64]; // ÉuÉâÉìÉhñºÅi48byteÅj
+	UINT32 version; // CPUID„Éê„Éº„Ç∏„Éß„É≥Ôºà„Çπ„ÉÜ„Éº„Éà„Çª„Éº„Éñ‰∫íÊèõÊÄß„ÇíÁ∂≠ÊåÅ„Åô„Çã„Åü„ÇÅÁî®ÔºâI386CPUID_VERSION„ÅåÊúÄÊñ∞
+	char cpu_vendor[16]; // „Éô„É≥„ÉÄ„ÉºÔºà12byteÔºâ
+	UINT32 cpu_family; // „Éï„Ç°„Éü„É™
+	UINT32 cpu_model; // „É¢„Éá„É´
+	UINT32 cpu_stepping; // „Çπ„ÉÜ„ÉÉ„Éî„É≥„Ç∞
+	UINT32 cpu_feature; // Ê©üËÉΩ„Éï„É©„Ç∞
+	UINT32 cpu_feature_ex; // Êã°ÂºµÊ©üËÉΩ„Éï„É©„Ç∞
+	char cpu_brandstring[64]; // „Éñ„É©„É≥„ÉâÂêçÔºà48byteÔºâ
+	UINT32 cpu_brandid; // „Éñ„É©„É≥„ÉâID
+	UINT32 cpu_feature_ecx; // ECXÊ©üËÉΩ„Éï„É©„Ç∞
+	UINT32 reserved[32]; // Â∞ÜÊù•„ÅÆÊã°Âºµ„ÅÆ„Åü„ÇÅ„Å´„Å®„Çä„ÅÇ„Åà„Åö32bit*32ÂÄãÁî®ÊÑè„Åó„Å¶„Åä„Åè
 	
-	UINT8 fpu_type; // FPUéÌóﬁ
+	UINT8 fpu_type; // FPUÁ®ÆÈ°û
 } I386CPUID;
+
+#define I386MSR_VERSION	1
+typedef struct {
+	UINT64 ia32_sysenter_cs; // SYSENTER CS„É¨„Ç∏„Çπ„Çø
+	UINT64 ia32_sysenter_esp; // SYSENTER ESP„É¨„Ç∏„Çπ„Çø
+	UINT64 ia32_sysenter_eip; // SYSENTER EIP„É¨„Ç∏„Çπ„Çø
+} I386MSR_REG;
+typedef struct {
+	UINT32 version; // MSR„Éê„Éº„Ç∏„Éß„É≥Ôºà„Çπ„ÉÜ„Éº„Éà„Çª„Éº„Éñ‰∫íÊèõÊÄß„ÇíÁ∂≠ÊåÅ„Åô„Çã„Åü„ÇÅÁî®ÔºâI386MSR_VERSION„ÅåÊúÄÊñ∞
+	union{
+		UINT64 regs[32]; // Â∞ÜÊù•„ÅÆÊã°Âºµ„ÅÆ„Åü„ÇÅ„Å´„Å®„Çä„ÅÇ„Åà„Åö64bit*32ÂÄãÁî®ÊÑè„Åó„Å¶„Åä„Åè
+		I386MSR_REG reg;
+	};
+} I386MSR;
 
 extern I386CORE		i386core;
 extern I386CPUID	i386cpuid;
+extern I386MSR		i386msr;
 
 #define	CPU_STATSAVE	i386core.s
 
@@ -446,10 +466,18 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 #define	CPU_VENDOR_VIA			"VIA VIA VIA "
 #define	CPU_VENDOR_NEKOPRO		"Neko Project"
 
-// ÉfÉtÉHÉãÉgê›íË
+// „Éá„Éï„Ç©„É´„ÉàË®≠ÂÆö
 #define	CPU_VENDOR		CPU_VENDOR_INTEL
 
 /*** version ***/
+#define	CPU_PENTIUM_4_FAMILY		15
+#define	CPU_PENTIUM_4_MODEL			2	/* Pentium 4 */
+#define	CPU_PENTIUM_4_STEPPING		4
+
+#define	CPU_PENTIUM_M_FAMILY		6
+#define	CPU_PENTIUM_M_MODEL			9	/* Pentium M */
+#define	CPU_PENTIUM_M_STEPPING		5
+
 #define	CPU_PENTIUM_III_FAMILY		6
 #define	CPU_PENTIUM_III_MODEL		7	/* Pentium III */
 #define	CPU_PENTIUM_III_STEPPING	2
@@ -548,6 +576,12 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 #define	CPU_FEATURE_TSC_FLAG	0
 #endif
 
+#if defined(USE_VME)
+#define	CPU_FEATURE_VME_FLAG	CPU_FEATURE_VME
+#else
+#define	CPU_FEATURE_VME_FLAG	0
+#endif
+
 #if defined(USE_MMX)&&defined(USE_FPU)
 #define	CPU_FEATURE_MMX_FLAG	CPU_FEATURE_MMX|CPU_FEATURE_FXSR
 #else
@@ -560,22 +594,30 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 #define	CPU_FEATURE_SSE_FLAG	0
 #endif
 
-/* égópÇ≈Ç´ÇÈã@î\ëSïî */
-#define	CPU_FEATURES_ALL	(CPU_FEATURE_FPU_FLAG|CPU_FEATURE_TSC_FLAG|CPU_FEATURE_CMOV|CPU_FEATURE_MMX_FLAG|CPU_FEATURE_SSE_FLAG)
+#if defined(USE_MMX)&&defined(USE_FPU)&&defined(USE_SSE)&&defined(USE_SSE2)
+#define	CPU_FEATURE_SSE2_FLAG	CPU_FEATURE_SSE2
+#else
+#define	CPU_FEATURE_SSE2_FLAG	0
+#endif
 
-#define	CPU_FEATURES_PENTIUM_III		(CPU_FEATURE_FPU|CPU_FEATURE_TSC|CPU_FEATURE_CMOV|CPU_FEATURE_FXSR|CPU_FEATURE_MMX|CPU_FEATURE_CLFSH|CPU_FEATURE_SSE)
-#define	CPU_FEATURES_PENTIUM_II			(CPU_FEATURE_FPU|CPU_FEATURE_TSC|CPU_FEATURE_CMOV|CPU_FEATURE_FXSR|CPU_FEATURE_MMX)
-#define	CPU_FEATURES_PENTIUM_PRO		(CPU_FEATURE_FPU|CPU_FEATURE_TSC|CPU_FEATURE_CMOV|CPU_FEATURE_FXSR)
-#define	CPU_FEATURES_MMX_PENTIUM		(CPU_FEATURE_FPU|CPU_FEATURE_TSC|CPU_FEATURE_MMX)
-#define	CPU_FEATURES_PENTIUM			(CPU_FEATURE_FPU|CPU_FEATURE_TSC)
+/* ‰ΩøÁî®„Åß„Åç„ÇãÊ©üËÉΩÂÖ®ÈÉ® */
+#define	CPU_FEATURES_ALL	(CPU_FEATURE_FPU_FLAG|CPU_FEATURE_TSC_FLAG|CPU_FEATURE_VME_FLAG|CPU_FEATURE_CMOV|CPU_FEATURE_MMX_FLAG|CPU_FEATURE_SSE_FLAG|CPU_FEATURE_SSE2_FLAG|CPU_FEATURE_SEP)
+
+#define	CPU_FEATURES_PENTIUM_4			(CPU_FEATURE_FPU|CPU_FEATURE_TSC|CPU_FEATURE_VME_FLAG|CPU_FEATURE_CMOV|CPU_FEATURE_FXSR|CPU_FEATURE_MMX|CPU_FEATURE_CLFSH|CPU_FEATURE_SSE|CPU_FEATURE_SSE2)
+#define	CPU_FEATURES_PENTIUM_M			(CPU_FEATURE_FPU|CPU_FEATURE_TSC|CPU_FEATURE_VME_FLAG|CPU_FEATURE_CMOV|CPU_FEATURE_FXSR|CPU_FEATURE_MMX|CPU_FEATURE_CLFSH|CPU_FEATURE_SSE|CPU_FEATURE_SSE2)
+#define	CPU_FEATURES_PENTIUM_III		(CPU_FEATURE_FPU|CPU_FEATURE_TSC|CPU_FEATURE_VME_FLAG|CPU_FEATURE_CMOV|CPU_FEATURE_FXSR|CPU_FEATURE_MMX|CPU_FEATURE_CLFSH|CPU_FEATURE_SSE)
+#define	CPU_FEATURES_PENTIUM_II			(CPU_FEATURE_FPU|CPU_FEATURE_TSC|CPU_FEATURE_VME_FLAG|CPU_FEATURE_CMOV|CPU_FEATURE_FXSR|CPU_FEATURE_MMX)
+#define	CPU_FEATURES_PENTIUM_PRO		(CPU_FEATURE_FPU|CPU_FEATURE_TSC|CPU_FEATURE_VME_FLAG|CPU_FEATURE_CMOV|CPU_FEATURE_FXSR)
+#define	CPU_FEATURES_MMX_PENTIUM		(CPU_FEATURE_FPU|CPU_FEATURE_TSC|CPU_FEATURE_VME_FLAG|CPU_FEATURE_MMX)
+#define	CPU_FEATURES_PENTIUM			(CPU_FEATURE_FPU|CPU_FEATURE_TSC|CPU_FEATURE_VME_FLAG)
 #define	CPU_FEATURES_I486DX				(CPU_FEATURE_FPU)
 #define	CPU_FEATURES_I486SX				(0)
 #define	CPU_FEATURES_80286				(0)
 
-#define	CPU_FEATURES_AMD_K7_ATHLON_XP	(CPU_FEATURE_FPU|CPU_FEATURE_TSC|CPU_FEATURE_CMOV|CPU_FEATURE_FXSR|CPU_FEATURE_MMX|CPU_FEATURE_CLFSH|CPU_FEATURE_SSE)
-#define	CPU_FEATURES_AMD_K7_ATHLON		(CPU_FEATURE_FPU|CPU_FEATURE_TSC|CPU_FEATURE_CMOV|CPU_FEATURE_MMX)
-#define	CPU_FEATURES_AMD_K6_III			(CPU_FEATURE_FPU|CPU_FEATURE_TSC|CPU_FEATURE_MMX)
-#define	CPU_FEATURES_AMD_K6_2			(CPU_FEATURE_FPU|CPU_FEATURE_TSC|CPU_FEATURE_MMX)
+#define	CPU_FEATURES_AMD_K7_ATHLON_XP	(CPU_FEATURE_FPU|CPU_FEATURE_TSC|CPU_FEATURE_VME_FLAG|CPU_FEATURE_CMOV|CPU_FEATURE_FXSR|CPU_FEATURE_MMX|CPU_FEATURE_CLFSH|CPU_FEATURE_SSE)
+#define	CPU_FEATURES_AMD_K7_ATHLON		(CPU_FEATURE_FPU|CPU_FEATURE_TSC|CPU_FEATURE_VME_FLAG|CPU_FEATURE_CMOV|CPU_FEATURE_MMX)
+#define	CPU_FEATURES_AMD_K6_III			(CPU_FEATURE_FPU|CPU_FEATURE_TSC|CPU_FEATURE_VME_FLAG|CPU_FEATURE_MMX)
+#define	CPU_FEATURES_AMD_K6_2			(CPU_FEATURE_FPU|CPU_FEATURE_TSC|CPU_FEATURE_VME_FLAG|CPU_FEATURE_MMX)
 
 /*** extended feature ***/
 #define	CPU_FEATURE_EX_SYSCALL		(1 << 11)
@@ -596,9 +638,11 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 #define	CPU_FEATURE_EX_E3DNOW_FLAG	0
 #endif
 
-/* égópÇ≈Ç´ÇÈã@î\ëSïî */
+/* ‰ΩøÁî®„Åß„Åç„ÇãÊ©üËÉΩÂÖ®ÈÉ® */
 #define	CPU_FEATURES_EX_ALL		(CPU_FEATURE_EX_3DNOW_FLAG|CPU_FEATURE_EX_E3DNOW_FLAG)
 
+#define	CPU_FEATURES_EX_PENTIUM_4	(0)
+#define	CPU_FEATURES_EX_PENTIUM_M	(0)
 #define	CPU_FEATURES_EX_PENTIUM_III	(0)
 #define	CPU_FEATURES_EX_PENTIUM_II	(0)
 #define	CPU_FEATURES_EX_PENTIUM_PRO	(0)
@@ -613,7 +657,69 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 #define	CPU_FEATURES_EX_AMD_K7_ATHLON		(CPU_FEATURE_EX_3DNOW|CPU_FEATURE_EX_E3DNOW)
 #define	CPU_FEATURES_EX_AMD_K7_ATHLON_XP	(CPU_FEATURE_EX_3DNOW|CPU_FEATURE_EX_E3DNOW)
 
+/*** ECX feature ***/
+#define	CPU_FEATURE_ECX_SSE3		(1 << 0)
+#define	CPU_FEATURE_ECX_PCLMULDQ	(1 << 1)
+#define	CPU_FEATURE_ECX_DTES64		(1 << 2)
+#define	CPU_FEATURE_ECX_MONITOR		(1 << 3)
+#define	CPU_FEATURE_ECX_DSCPL		(1 << 4)
+#define	CPU_FEATURE_ECX_VMX			(1 << 5)
+#define	CPU_FEATURE_ECX_SMX			(1 << 6)
+#define	CPU_FEATURE_ECX_EST			(1 << 7)
+#define	CPU_FEATURE_ECX_TM2			(1 << 8)
+#define	CPU_FEATURE_ECX_SSSE3		(1 << 9)
+#define	CPU_FEATURE_ECX_CNXT1D		(1 << 10)
+/*				(1 << 11) */
+/*				(1 << 12) */
+#define	CPU_FEATURE_ECX_CX16		(1 << 13)
+#define	CPU_FEATURE_ECX_xTPR		(1 << 14)
+#define	CPU_FEATURE_ECX_PDCM		(1 << 15)
+/*				(1 << 16) */
+/*				(1 << 17) */
+#define	CPU_FEATURE_ECX_DCA			(1 << 18)
+#define	CPU_FEATURE_ECX_SSE4_1		(1 << 19)
+#define	CPU_FEATURE_ECX_SSE4_2		(1 << 20)
+#define	CPU_FEATURE_ECX_x2APIC		(1 << 21)
+#define	CPU_FEATURE_ECX_MOVBE		(1 << 22)
+#define	CPU_FEATURE_ECX_POPCNT		(1 << 23)
+/*				(1 << 24) */
+#define	CPU_FEATURE_ECX_AES			(1 << 25)
+#define	CPU_FEATURE_ECX_XSAVE		(1 << 26)
+#define	CPU_FEATURE_ECX_OSXSAVE		(1 << 27)
+/*				(1 << 28) */
+/*				(1 << 29) */
+/*				(1 << 30) */
+/*				(1 << 31) */
+
+#if defined(USE_MMX)&&defined(USE_FPU)&&defined(USE_SSE)&&defined(USE_SSE2)&&defined(USE_SSE3)
+#define	CPU_FEATURE_ECX_SSE3_FLAG	CPU_FEATURE_ECX_SSE3
+#else
+#define	CPU_FEATURE_ECX_SSE3_FLAG	0
+#endif
+
+/* ‰ΩøÁî®„Åß„Åç„ÇãÊ©üËÉΩÂÖ®ÈÉ® */
+#define	CPU_FEATURES_ECX_ALL	(CPU_FEATURE_ECX_SSE3_FLAG)
+
+#define	CPU_FEATURES_ECX_PENTIUM_4		(CPU_FEATURE_ECX_SSE3)
+#define	CPU_FEATURES_ECX_PENTIUM_M		(0)
+#define	CPU_FEATURES_ECX_PENTIUM_III	(0)
+#define	CPU_FEATURES_ECX_PENTIUM_II		(0)
+#define	CPU_FEATURES_ECX_PENTIUM_PRO	(0)
+#define	CPU_FEATURES_ECX_MMX_PENTIUM	(0)
+#define	CPU_FEATURES_ECX_PENTIUM		(0)
+#define	CPU_FEATURES_ECX_I486DX			(0)
+#define	CPU_FEATURES_ECX_I486SX			(0)
+#define	CPU_FEATURES_ECX_80286			(0)
+
+#define	CPU_FEATURES_ECX_AMD_K6_2			(0)
+#define	CPU_FEATURES_ECX_AMD_K6_III			(0)
+#define	CPU_FEATURES_ECX_AMD_K7_ATHLON		(0)
+#define	CPU_FEATURES_ECX_AMD_K7_ATHLON_XP	(0)
+
+
 /* brand string */
+#define	CPU_BRAND_STRING_PENTIUM_4			"Intel(R) Pentium(R) 4 CPU "
+#define	CPU_BRAND_STRING_PENTIUM_M			"Intel(R) Pentium(R) M processor "
 #define	CPU_BRAND_STRING_PENTIUM_III		"Intel(R) Pentium(R) III CPU "
 #define	CPU_BRAND_STRING_PENTIUM_II			"Intel(R) Pentium(R) II CPU "
 #define	CPU_BRAND_STRING_PENTIUM_PRO		"Intel(R) Pentium(R) Pro CPU "
@@ -626,32 +732,93 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 #define	CPU_BRAND_STRING_AMD_K6_III			"AMD-K6(tm) 3D+ Processor "
 #define	CPU_BRAND_STRING_AMD_K7_ATHLON		"AMD-K7(tm) Processor "
 #define	CPU_BRAND_STRING_AMD_K7_ATHLON_XP	"AMD Athlon(tm) XP "
-#define	CPU_BRAND_STRING_NEKOPRO			"Neko Processor " // ÉJÉXÉ^ÉÄê›íË
-#define	CPU_BRAND_STRING_NEKOPRO2			"Neko Processor II " // ëSã@î\égópâ¬î\
+#define	CPU_BRAND_STRING_NEKOPRO			"Neko Processor " // „Ç´„Çπ„Çø„É†Ë®≠ÂÆö
+#define	CPU_BRAND_STRING_NEKOPRO2			"Neko Processor II " // ÂÖ®Ê©üËÉΩ‰ΩøÁî®ÂèØËÉΩ
 
-// CPUID ÉfÉtÉHÉãÉgê›íË
+
+/* brand id */
+#define	CPU_BRAND_ID_PENTIUM_4			0x9
+#define	CPU_BRAND_ID_PENTIUM_M			0x16
+#define	CPU_BRAND_ID_PENTIUM_III		0x2
+#define	CPU_BRAND_ID_PENTIUM_II			0
+#define	CPU_BRAND_ID_PENTIUM_PRO		0
+#define	CPU_BRAND_ID_MMX_PENTIUM		0
+#define	CPU_BRAND_ID_PENTIUM			0
+#define	CPU_BRAND_ID_I486DX				0
+#define	CPU_BRAND_ID_I486SX				0
+#define	CPU_BRAND_ID_80286				0
+#define	CPU_BRAND_ID_AMD_K6_2			0
+#define	CPU_BRAND_ID_AMD_K6_III			0
+#define	CPU_BRAND_ID_AMD_K7_ATHLON		0
+#define	CPU_BRAND_ID_AMD_K7_ATHLON_XP	0
+#define	CPU_BRAND_ID_NEKOPRO			0 // „Ç´„Çπ„Çø„É†Ë®≠ÂÆö
+#define	CPU_BRAND_ID_NEKOPRO2			0 // ÂÖ®Ê©üËÉΩ‰ΩøÁî®ÂèØËÉΩ
+
+#define	CPU_BRAND_ID_AUTO				0xffffffff // BrandIDËá™ÂãïË®≠ÂÆöÔºàÈÅéÂéª„Éê„Éº„Ç∏„Éß„É≥„Å®„ÅÆ‰∫íÊèõÁ∂≠ÊåÅÁî®Ôºâ
+
+// CPUID „Éá„Éï„Ç©„É´„ÉàË®≠ÂÆö
 #if defined(USE_FPU)
-#if defined(USE_SSE)
+#if defined(USE_SSE3)
 #define	CPU_FAMILY			CPU_PENTIUM_III_FAMILY
 #define	CPU_MODEL			CPU_PENTIUM_III_MODEL	/* Pentium III */
 #define	CPU_STEPPING		CPU_PENTIUM_III_STEPPING
 #define	CPU_FEATURES		CPU_FEATURES_PENTIUM_III
 #define	CPU_FEATURES_EX		CPU_FEATURES_EX_PENTIUM_III
+#define	CPU_FEATURES_ECX	CPU_FEATURES_ECX_PENTIUM_III
 #define	CPU_BRAND_STRING	CPU_BRAND_STRING_PENTIUM_III
+#define	CPU_BRAND_ID		CPU_BRAND_ID_PENTIUM_III
+//#define	CPU_FAMILY			CPU_PENTIUM_4_FAMILY
+//#define	CPU_MODEL			CPU_PENTIUM_4_MODEL	/* Pentium 4 */
+//#define	CPU_STEPPING		CPU_PENTIUM_4_STEPPING
+//#define	CPU_FEATURES		CPU_FEATURES_PENTIUM_4
+//#define	CPU_FEATURES_EX		CPU_FEATURES_EX_PENTIUM_4
+//#define	CPU_FEATURES_ECX	CPU_FEATURES_ECX_PENTIUM_4
+//#define	CPU_BRAND_STRING	CPU_BRAND_STRING_PENTIUM_4
+//#define	CPU_BRAND_ID		CPU_BRAND_ID_PENTIUM_4
+#elif defined(USE_SSE2)
+#define	CPU_FAMILY			CPU_PENTIUM_III_FAMILY
+#define	CPU_MODEL			CPU_PENTIUM_III_MODEL	/* Pentium III */
+#define	CPU_STEPPING		CPU_PENTIUM_III_STEPPING
+#define	CPU_FEATURES		CPU_FEATURES_PENTIUM_III
+#define	CPU_FEATURES_EX		CPU_FEATURES_EX_PENTIUM_III
+#define	CPU_FEATURES_ECX	CPU_FEATURES_ECX_PENTIUM_III
+#define	CPU_BRAND_STRING	CPU_BRAND_STRING_PENTIUM_III
+#define	CPU_BRAND_ID		CPU_BRAND_ID_PENTIUM_III
+//#define	CPU_FAMILY			CPU_PENTIUM_M_FAMILY
+//#define	CPU_MODEL			CPU_PENTIUM_M_MODEL	/* Pentium M */
+//#define	CPU_STEPPING		CPU_PENTIUM_M_STEPPING
+//#define	CPU_FEATURES		CPU_FEATURES_PENTIUM_M
+//#define	CPU_FEATURES_EX		CPU_FEATURES_EX_PENTIUM_M
+//#define	CPU_FEATURES_ECX	CPU_FEATURES_ECX_PENTIUM_M
+//#define	CPU_BRAND_STRING	CPU_BRAND_STRING_PENTIUM_M
+//#define	CPU_BRAND_ID		CPU_BRAND_ID_PENTIUM_M
+#elif defined(USE_SSE)
+#define	CPU_FAMILY			CPU_PENTIUM_III_FAMILY
+#define	CPU_MODEL			CPU_PENTIUM_III_MODEL	/* Pentium III */
+#define	CPU_STEPPING		CPU_PENTIUM_III_STEPPING
+#define	CPU_FEATURES		CPU_FEATURES_PENTIUM_III
+#define	CPU_FEATURES_EX		CPU_FEATURES_EX_PENTIUM_III
+#define	CPU_FEATURES_ECX	CPU_FEATURES_ECX_PENTIUM_III
+#define	CPU_BRAND_STRING	CPU_BRAND_STRING_PENTIUM_III
+#define	CPU_BRAND_ID		CPU_BRAND_ID_PENTIUM_III
 #elif defined(USE_MMX)
 #define	CPU_FAMILY			CPU_PENTIUM_II_FAMILY
 #define	CPU_MODEL			CPU_PENTIUM_II_MODEL	/* Pentium II */
 #define	CPU_STEPPING		CPU_PENTIUM_II_STEPPING
 #define	CPU_FEATURES		CPU_FEATURES_PENTIUM_II
 #define	CPU_FEATURES_EX		CPU_FEATURES_EX_PENTIUM_II
+#define	CPU_FEATURES_ECX	CPU_FEATURES_ECX_PENTIUM_II
 #define	CPU_BRAND_STRING	CPU_BRAND_STRING_PENTIUM_II
+#define	CPU_BRAND_ID		CPU_BRAND_ID_PENTIUM_II
 #else
 #define	CPU_FAMILY			CPU_PENTIUM_FAMILY
 #define	CPU_MODEL			CPU_PENTIUM_MODEL	/* Pentium */
 #define	CPU_STEPPING		CPU_PENTIUM_STEPPING
 #define	CPU_FEATURES		CPU_FEATURES_PENTIUM
 #define	CPU_FEATURES_EX		CPU_FEATURES_EX_PENTIUM
+#define	CPU_FEATURES_ECX	CPU_FEATURES_ECX_PENTIUM
 #define	CPU_BRAND_STRING	CPU_BRAND_STRING_PENTIUM
+#define	CPU_BRAND_ID		CPU_BRAND_ID_PENTIUM
 #endif
 #else
 #define	CPU_FAMILY			CPU_I486SX_FAMILY
@@ -659,7 +826,9 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 #define	CPU_STEPPING		CPU_I486SX_STEPPING
 #define	CPU_FEATURES		CPU_FEATURES_I486SX
 #define	CPU_FEATURES_EX		CPU_FEATURES_EX_I486SX
+#define	CPU_FEATURES_ECX	CPU_FEATURES_ECX_I486SX
 #define	CPU_BRAND_STRING	CPU_BRAND_STRING_I486SX
+#define	CPU_BRAND_ID		CPU_BRAND_ID_I486SX
 #endif
 
 
@@ -937,6 +1106,7 @@ void ia32_step(void);
 void CPUCALL ia32_interrupt(int vect, int soft);
 
 void exec_1step(void);
+void exec_allstep(void);
 #define	INST_PREFIX	(1 << 0)
 #define	INST_STRING	(1 << 1)
 #define	REP_CHECKZF	(1 << 7)
@@ -1014,20 +1184,20 @@ void dbg_printf(const char *str, ...);
 #define	FPU_REG(i)		FPU_STAT.reg[i]
 
 /* FPU status register */
-#define	FP_IE_FLAG	(1 << 0)	/* ñ≥å¯Ç»ìÆçÏ */
-#define	FP_DE_FLAG	(1 << 1)	/* ÉfÉmÅ[É}ÉâÉCÉYÉhÅEÉIÉyÉâÉìÉh */
-#define	FP_ZE_FLAG	(1 << 2)	/* É[ÉçÇ…ÇÊÇÈèúéZ */
-#define	FP_OE_FLAG	(1 << 3)	/* ÉIÅ[ÉoÅ[ÉtÉçÅ[ */
-#define	FP_UE_FLAG	(1 << 4)	/* ÉAÉìÉ_Å[ÉtÉçÅ[ */
-#define	FP_PE_FLAG	(1 << 5)	/* ê∏ìx */
-#define	FP_SF_FLAG	(1 << 6)	/* ÉXÉ^ÉbÉNÉtÉHÉãÉg */
-#define	FP_ES_FLAG	(1 << 7)	/* ÉGÉâÅ[ÉTÉ}ÉäÉXÉeÅ[É^ÉX */
-#define	FP_C0_FLAG	(1 << 8)	/* èåèÉRÅ[Éh */
-#define	FP_C1_FLAG	(1 << 9)	/* èåèÉRÅ[Éh */
-#define	FP_C2_FLAG	(1 << 10)	/* èåèÉRÅ[Éh */
-#define	FP_TOP_FLAG	(7 << 11)	/* ÉXÉ^ÉbÉNÉ|ÉCÉìÉgÇÃÉgÉbÉv */
-#define	FP_C3_FLAG	(1 << 14)	/* èåèÉRÅ[Éh */
-#define	FP_B_FLAG	(1 << 15)	/* FPU ÉrÉWÅ[ */
+#define	FP_IE_FLAG	(1 << 0)	/* ÁÑ°Âäπ„Å™Âãï‰Ωú */
+#define	FP_DE_FLAG	(1 << 1)	/* „Éá„Éé„Éº„Éû„É©„Ç§„Ç∫„Éâ„Éª„Ç™„Éö„É©„É≥„Éâ */
+#define	FP_ZE_FLAG	(1 << 2)	/* „Çº„É≠„Å´„Çà„ÇãÈô§ÁÆó */
+#define	FP_OE_FLAG	(1 << 3)	/* „Ç™„Éº„Éê„Éº„Éï„É≠„Éº */
+#define	FP_UE_FLAG	(1 << 4)	/* „Ç¢„É≥„ÉÄ„Éº„Éï„É≠„Éº */
+#define	FP_PE_FLAG	(1 << 5)	/* Á≤æÂ∫¶ */
+#define	FP_SF_FLAG	(1 << 6)	/* „Çπ„Çø„ÉÉ„ÇØ„Éï„Ç©„É´„Éà */
+#define	FP_ES_FLAG	(1 << 7)	/* „Ç®„É©„Éº„Çµ„Éû„É™„Çπ„ÉÜ„Éº„Çø„Çπ */
+#define	FP_C0_FLAG	(1 << 8)	/* Êù°‰ª∂„Ç≥„Éº„Éâ */
+#define	FP_C1_FLAG	(1 << 9)	/* Êù°‰ª∂„Ç≥„Éº„Éâ */
+#define	FP_C2_FLAG	(1 << 10)	/* Êù°‰ª∂„Ç≥„Éº„Éâ */
+#define	FP_TOP_FLAG	(7 << 11)	/* „Çπ„Çø„ÉÉ„ÇØ„Éù„Ç§„É≥„Éà„ÅÆ„Éà„ÉÉ„Éó */
+#define	FP_C3_FLAG	(1 << 14)	/* Êù°‰ª∂„Ç≥„Éº„Éâ */
+#define	FP_B_FLAG	(1 << 15)	/* FPU „Éì„Ç∏„Éº */
 
 #define	FP_TOP_SHIFT	11
 #define	FP_TOP_GET()	((FPU_STATUSWORD & FP_TOP_FLAG) >> FP_TOP_SHIFT)
@@ -1043,12 +1213,12 @@ do { \
 } while (/*CONSTCOND*/0)
 
 /* FPU control register */
-#define	FP_CTRL_PC_SHIFT	8	/* ê∏ìxêßå‰ */
-#define	FP_CTRL_RC_SHIFT	10	/* ä€Çﬂêßå‰ */
+#define	FP_CTRL_PC_SHIFT	8	/* Á≤æÂ∫¶Âà∂Âæ° */
+#define	FP_CTRL_RC_SHIFT	10	/* ‰∏∏„ÇÅÂà∂Âæ° */
 
-#define	FP_CTRL_PC_24		0	/* íPê∏ìx */
-#define	FP_CTRL_PC_53		1	/* î{ê∏ìx */
-#define	FP_CTRL_PC_64		3	/* ägí£ê∏ìx */
+#define	FP_CTRL_PC_24		0	/* ÂçòÁ≤æÂ∫¶ */
+#define	FP_CTRL_PC_53		1	/* ÂÄçÁ≤æÂ∫¶ */
+#define	FP_CTRL_PC_64		3	/* Êã°ÂºµÁ≤æÂ∫¶ */
 
 #define	FP_CTRL_RC_NEAREST_EVEN	0
 #define	FP_CTRL_RC_DOWN		1

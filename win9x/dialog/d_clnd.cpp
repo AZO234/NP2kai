@@ -1,6 +1,6 @@
 /**
  * @file	d_clnd.cpp
- * @brief	ƒJƒŒƒ“ƒ_İ’èƒ_ƒCƒAƒƒO
+ * @brief	ã‚«ãƒ¬ãƒ³ãƒ€è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°
  */
 
 #include "compiler.h"
@@ -15,8 +15,8 @@
 #include "common/strres.h"
 
 /**
- * @brief ƒJƒŒƒ“ƒ_İ’èƒ_ƒCƒAƒƒO
- * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * @brief ã‚«ãƒ¬ãƒ³ãƒ€è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°
+ * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 class CCalendarDlg : public CDlgProc
 {
@@ -35,17 +35,17 @@ private:
 };
 
 /**
- * @brief ƒ_ƒCƒAƒƒO ƒAƒCƒeƒ€
+ * @brief ãƒ€ã‚¤ã‚¢ãƒ­ã‚° ã‚¢ã‚¤ãƒ†ãƒ 
  */
 struct Item
 {
 	UINT16	res;		//!< ID
-	UINT8	min;		//!< Å¬’l
-	UINT8	max;		//!< Å‘å’l
+	UINT8	min;		//!< æœ€å°å€¤
+	UINT8	max;		//!< æœ€å¤§å€¤
 };
 
 /**
- * ƒAƒCƒeƒ€
+ * ã‚¢ã‚¤ãƒ†ãƒ 
  */
 static const Item s_vircal[6] =
 {
@@ -58,8 +58,8 @@ static const Item s_vircal[6] =
 };
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
- * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 CCalendarDlg::CCalendarDlg(HWND hwndParent)
 	: CDlgProc(IDD_CALENDAR, hwndParent)
@@ -67,13 +67,13 @@ CCalendarDlg::CCalendarDlg(HWND hwndParent)
 }
 
 /**
- * ‚±‚Ìƒƒ\ƒbƒh‚Í WM_INITDIALOG ‚ÌƒƒbƒZ[ƒW‚É‰“š‚µ‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
- * @retval TRUE Å‰‚ÌƒRƒ“ƒgƒ[ƒ‹‚É“ü—ÍƒtƒH[ƒJƒX‚ğİ’è
- * @retval FALSE Šù‚Éİ’èÏ
+ * ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ WM_INITDIALOG ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«å¿œç­”ã—ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * @retval TRUE æœ€åˆã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã«å…¥åŠ›ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’è¨­å®š
+ * @retval FALSE æ—¢ã«è¨­å®šæ¸ˆ
  */
 BOOL CCalendarDlg::OnInitDialog()
 {
-	// ŠÔ‚ğƒZƒbƒgB
+	// æ™‚é–“ã‚’ã‚»ãƒƒãƒˆã€‚
 	UINT8 cbuf[6];
 	calendar_getvir(cbuf);
 	SetTime(cbuf);
@@ -86,7 +86,7 @@ BOOL CCalendarDlg::OnInitDialog()
 }
 
 /**
- * ƒ†[ƒU[‚ª OK ‚Ìƒ{ƒ^ƒ“ (IDOK ID ‚ª‚Ìƒ{ƒ^ƒ“) ‚ğƒNƒŠƒbƒN‚·‚é‚ÆŒÄ‚Ño‚³‚ê‚Ü‚·
+ * ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒ OK ã®ãƒœã‚¿ãƒ³ (IDOK ID ãŒã®ãƒœã‚¿ãƒ³) ã‚’ã‚¯ãƒªãƒƒã‚¯ã™ã‚‹ã¨å‘¼ã³å‡ºã•ã‚Œã¾ã™
  */
 void CCalendarDlg::OnOK()
 {
@@ -118,10 +118,10 @@ void CCalendarDlg::OnOK()
 }
 
 /**
- * ƒ†[ƒU[‚ªƒƒjƒ…[‚Ì€–Ú‚ğ‘I‘ğ‚µ‚½‚Æ‚«‚ÉAƒtƒŒ[ƒ€ƒ[ƒN‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
- * @param[in] wParam ƒpƒ‰ƒƒ^
- * @param[in] lParam ƒpƒ‰ƒƒ^
- * @retval TRUE ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ª‚±‚ÌƒƒbƒZ[ƒW‚ğˆ—‚µ‚½
+ * ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®é …ç›®ã‚’é¸æŠã—ãŸã¨ãã«ã€ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã«ã‚ˆã£ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * @param[in] wParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @param[in] lParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @retval TRUE ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡¦ç†ã—ãŸ
  */
 BOOL CCalendarDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -147,8 +147,8 @@ BOOL CCalendarDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ŠÔ‚ğİ’è‚·‚é
- * @param[in] cbuf ƒJƒŒƒ“ƒ_î•ñ
+ * æ™‚é–“ã‚’è¨­å®šã™ã‚‹
+ * @param[in] cbuf ã‚«ãƒ¬ãƒ³ãƒ€æƒ…å ±
  */
 void CCalendarDlg::SetTime(const UINT8* cbuf)
 {
@@ -168,8 +168,8 @@ void CCalendarDlg::SetTime(const UINT8* cbuf)
 }
 
 /**
- * ‰¼‘zƒJƒŒƒ“ƒ_ ƒAƒCƒeƒ€‚ÌˆêŠ‡İ’è
- * @param[in] bEnabled —LŒøƒtƒ‰ƒO
+ * ä»®æƒ³ã‚«ãƒ¬ãƒ³ãƒ€ ã‚¢ã‚¤ãƒ†ãƒ ã®ä¸€æ‹¬è¨­å®š
+ * @param[in] bEnabled æœ‰åŠ¹ãƒ•ãƒ©ã‚°
  */
 void CCalendarDlg::EnableVirtualCalendar(BOOL bEnabled)
 {
@@ -181,10 +181,10 @@ void CCalendarDlg::EnableVirtualCalendar(BOOL bEnabled)
 }
 
 /**
- * BCD ‚ğ“¾‚é
- * @param[in] str •¶š—ñ
- * @param[in] len ’·‚³
- * @return ’l
+ * BCD ã‚’å¾—ã‚‹
+ * @param[in] str æ–‡å­—åˆ—
+ * @param[in] len é•·ã•
+ * @return å€¤
  */
 UINT8 CCalendarDlg::getbcd(LPCTSTR str, int len)
 {
@@ -207,8 +207,8 @@ UINT8 CCalendarDlg::getbcd(LPCTSTR str, int len)
 }
 
 /**
- * ƒJƒŒƒ“ƒ_İ’èƒ_ƒCƒAƒƒO
- * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * ã‚«ãƒ¬ãƒ³ãƒ€è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°
+ * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 void dialog_calendar(HWND hwndParent)
 {

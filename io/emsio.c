@@ -48,7 +48,7 @@ void emsio_reset(const NP2CFG *pConfig) {
 
 	ZeroMemory(&emsio, sizeof(emsio));
 #if 1 || !defined(CPUCORE_IA32)
-	emsio.maxmem = pccore.extmem;
+	emsio.maxmem = (pccore.extmem > 255 ? 255 : pccore.extmem); // XXX: 256MB以上のときどうなる？
 #endif
 	emsio.addr[0] = 0xc0000;
 	emsio.addr[1] = 0xc4000;

@@ -7,6 +7,8 @@
 
 #define	MSSHIFT		16
 
+void wabrly_callback(UINT nowtime);
+
 typedef struct {
 	UINT32	tick;
 	UINT32	msstep;
@@ -59,3 +61,21 @@ UINT timing_getcount(void) {
 	return(timing.cnt);
 }
 
+UINT timing_getcount_baseclock(void) {
+
+	UINT32	ticknow;
+	UINT32	span;
+	UINT32	fraction;
+	UINT32	ret = 0;
+
+	ticknow = GETTICK();
+	span = ticknow - timing.tick;
+	if (span) {
+		if (span >= 1000) {
+			span = 1000;
+		}
+		fraction = timing.fraction + (span * timing.msstep);
+		ret = timing.cnt + (fraction >> MSSHIFT);
+	}
+	return(ret);
+}

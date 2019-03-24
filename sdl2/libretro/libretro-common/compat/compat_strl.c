@@ -1,4 +1,4 @@
-/* Copyright  (C) 2010-2017 The RetroArch team
+/* Copyright  (C) 2010-2018 The RetroArch team
  *
  * ---------------------------------------------------------------------------------------
  * The following license statement only applies to this file (compat_strl.c).
@@ -20,12 +20,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <stdlib.h>
 #include <ctype.h>
 
 #include <compat/strl.h>
-#include <compat/posix_string.h>
-
-#include <retro_assert.h>
 
 /* Implementation of strlcpy()/strlcat() based on OpenBSD. */
 
@@ -62,3 +60,10 @@ size_t strlcat(char *dest, const char *source, size_t size)
    return len + strlcpy(dest, source, size);
 }
 #endif
+
+char *strldup(const char *s, size_t n)
+{
+   char *dst = (char*)malloc(sizeof(char) * (n + 1));
+   strlcpy(dst, s, n);
+   return dst;
+}

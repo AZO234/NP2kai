@@ -35,6 +35,7 @@ void board14_allkeymake(void);
 
 void board14_reset(const NP2CFG *pConfig, BOOL bEnable);
 void board14_bind(void);
+void board14_unbind(void);
 
 #ifdef __cplusplus
 }

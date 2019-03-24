@@ -1017,7 +1017,7 @@ void i286xadr_init(void) {
 			p_get_ea[i] = pgetea_tbl[j];
 		}
 		else {
-			// —ˆ‚é–‚Í‚È‚¢”¤‚¾‚ªc
+			// æ¥ã‚‹äº‹ã¯ãªã„ç­ˆã ãŒâ€¦
 			p_ea_dst[i] = p2ea_nop;
 			p_lea[i] = p2ea_nop;
 			p_get_ea[i] = p2ea_nop;

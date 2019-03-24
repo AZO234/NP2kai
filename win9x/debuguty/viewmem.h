@@ -1,18 +1,18 @@
 /**
  * @file	viewmem.h
- * @brief	DebugUty �p�������ǂݍ��݃N���X�̐錾����уC���^�[�t�F�C�X�̒�`�����܂�
+ * @brief	DebugUty 用メモリ読み込みクラスの宣言およびインターフェイスの定義をします
  */
 
 #pragma once
 
 /**
- * @brief �������ǂݍ���
+ * @brief メモリ読み込み
  */
 struct DebugUtyViewMemory
 {
-	UINT8	vram;		//!< VRAM �o���N
-	UINT8	itf;		//!< ITF �o���N
-	UINT8	A20;		//!< A20 ���C��
+	UINT8	vram;		//!< VRAM バンク
+	UINT8	itf;		//!< ITF バンク
+	UINT8	A20;		//!< A20 ライン
 
 	DebugUtyViewMemory();
 	void Update();

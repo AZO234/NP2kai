@@ -1,26 +1,26 @@
 /**
  * @file	vsteditwnd.cpp
- * @brief	VST edit ƒEƒBƒ“ƒhƒE ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	VST edit ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
 #include "vsteditwnd.h"
 #include "vsteffect.h"
 
-//! ƒEƒBƒ“ƒhƒE ƒNƒ‰ƒX–¼
+//! ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ã‚¯ãƒ©ã‚¹å
 static const TCHAR s_szClassName[] = TEXT("VstEffectWnd");
 
-//! ƒCƒ“ƒXƒ^ƒ“ƒX
+//! ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
 HINSTANCE CVstEditWnd::sm_hInstance;
 
-//! ƒEƒBƒ“ƒhƒE ƒ}ƒbƒv
+//! ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒƒãƒ—
 std::map<HWND, CVstEditWnd*> CVstEditWnd::sm_wndMap;
 
 /**
- * ‰Šú‰»
- * @param[in] hInstance ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌŒ»İ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Ìƒnƒ“ƒhƒ‹
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * åˆæœŸåŒ–
+ * @param[in] hInstance ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ç¾åœ¨ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®ãƒãƒ³ãƒ‰ãƒ«
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CVstEditWnd::Initialize(HINSTANCE hInstance)
 {
@@ -43,7 +43,7 @@ bool CVstEditWnd::Initialize(HINSTANCE hInstance)
 }
 
 /**
- * ƒAƒCƒhƒŠƒ“ƒO
+ * ã‚¢ã‚¤ãƒ‰ãƒªãƒ³ã‚°
  */
 void CVstEditWnd::OnIdle()
 {
@@ -54,7 +54,7 @@ void CVstEditWnd::OnIdle()
 }
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CVstEditWnd::CVstEditWnd()
 	: m_hWnd(NULL)
@@ -63,21 +63,21 @@ CVstEditWnd::CVstEditWnd()
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CVstEditWnd::~CVstEditWnd()
 {
 }
 
 /**
- * ì¬
- * @param[in] pEffect ƒGƒtƒFƒNƒg
- * @param[in] lpszWindowName ƒ^ƒCƒgƒ‹
- * @param[in] dwStyle ƒXƒ^ƒCƒ‹
- * @param[in] x ˆÊ’u
- * @param[in] y ˆÊ’u
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * ä½œæˆ
+ * @param[in] pEffect ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
+ * @param[in] lpszWindowName ã‚¿ã‚¤ãƒˆãƒ«
+ * @param[in] dwStyle ã‚¹ã‚¿ã‚¤ãƒ«
+ * @param[in] x ä½ç½®
+ * @param[in] y ä½ç½®
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CVstEditWnd::Create(CVstEffect* pEffect, LPCTSTR lpszWindowName, DWORD dwStyle, LONG x, LONG y)
 {
@@ -113,7 +113,7 @@ bool CVstEditWnd::Create(CVstEffect* pEffect, LPCTSTR lpszWindowName, DWORD dwSt
 }
 
 /**
- * ”jŠü
+ * ç ´æ£„
  */
 void CVstEditWnd::Destroy()
 {
@@ -130,12 +130,12 @@ void CVstEditWnd::Destroy()
 }
 
 /**
- * ƒEƒBƒ“ƒhƒE ƒvƒƒV[ƒWƒƒ
- * @param[in] hWnd ƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹
- * @param[in] message ˆ—‚³‚ê‚é Windows ƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
- * @param[in] wParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @param[in] lParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @return ƒƒbƒZ[ƒW‚ÉˆË‘¶‚·‚é’l‚ğ•Ô‚µ‚Ü‚·
+ * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
+ * @param[in] hWnd ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ«
+ * @param[in] message å‡¦ç†ã•ã‚Œã‚‹ Windows ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] wParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @param[in] lParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @return ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã™ã‚‹å€¤ã‚’è¿”ã—ã¾ã™
  */
 LRESULT CALLBACK CVstEditWnd::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -171,11 +171,11 @@ LRESULT CALLBACK CVstEditWnd::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 }
 
 /**
- * CMainWnd ƒIƒuƒWƒFƒNƒg‚Ì Windows ƒvƒƒV[ƒWƒƒ (WindowProc) ‚ª—pˆÓ‚³‚ê‚Ä‚¢‚Ü‚·
- * @param[in] message ˆ—‚³‚ê‚é Windows ƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
- * @param[in] wParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @param[in] lParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @return ƒƒbƒZ[ƒW‚ÉˆË‘¶‚·‚é’l‚ğ•Ô‚µ‚Ü‚·
+ * CMainWnd ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã® Windows ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ (WindowProc) ãŒç”¨æ„ã•ã‚Œã¦ã„ã¾ã™
+ * @param[in] message å‡¦ç†ã•ã‚Œã‚‹ Windows ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] wParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @param[in] lParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @return ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã™ã‚‹å€¤ã‚’è¿”ã—ã¾ã™
  */
 LRESULT CVstEditWnd::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -192,10 +192,10 @@ LRESULT CVstEditWnd::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ƒtƒŒ[ƒ€ƒ[ƒN‚ÍAWindows ‚ÌƒEƒBƒ“ƒhƒE‚Í [ì¬] ‚Ü‚½‚Í CreateEx ‚Ìƒƒ“ƒo[ŠÖ”‚ğŒÄ‚Ño‚·‚±‚Æ‚É‚æ‚Á‚Äì¬‚³‚ê‚½ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ª•K—v‚Æ‚·‚é‚ÆA‚±‚Ìƒƒ“ƒo[ŠÖ”‚ğŒÄ‚Ño‚µ‚Ü‚·
+ * ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã¯ã€Windows ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã¯ [ä½œæˆ] ã¾ãŸã¯ CreateEx ã®ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ã‚’å‘¼ã³å‡ºã™ã“ã¨ã«ã‚ˆã£ã¦ä½œæˆã•ã‚ŒãŸã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒå¿…è¦ã¨ã™ã‚‹ã¨ã€ã“ã®ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¾ã™
  * @param[in] lpCreateStruct CREATESTRUCT
- * @retval 0 Œp‘±
- * @retval -1 ”jŠü
+ * @retval 0 ç¶™ç¶š
+ * @retval -1 ç ´æ£„
  */
 int CVstEditWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
@@ -208,11 +208,11 @@ int CVstEditWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 }
 
 /**
- * ƒŠƒTƒCƒY
- * @param[in] nWidth •
- * @param[in] nHeight ‚‚³
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * ãƒªã‚µã‚¤ã‚º
+ * @param[in] nWidth å¹…
+ * @param[in] nHeight é«˜ã•
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CVstEditWnd::OnResize(int nWidth, int nHeight)
 {
@@ -238,9 +238,9 @@ bool CVstEditWnd::OnResize(int nWidth, int nHeight)
 }
 
 /**
- * Ä•`‰æ—v‹
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * å†æç”»è¦æ±‚
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CVstEditWnd::OnUpdateDisplay()
 {

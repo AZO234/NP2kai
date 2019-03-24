@@ -10,11 +10,11 @@
 #include "iocore.h"
 #include "fmboard.h"
 
-/* �T���v�����O���[�g��8�|������ */
+/* サンプリングレートに8掛けた物 */
 const UINT pcm86rate8[] = {352800, 264600, 176400, 132300,
 							88200,  66150,  44010,  33075};
 
-/* 32,24,16,12, 8, 6, 4, 3 - �ŏ����{��: 96 */
+/* 32,24,16,12, 8, 6, 4, 3 - 最少公倍数: 96 */
 /*  3, 4, 6, 8,12,16,24,32 */
 
 static const UINT clk25_128[] = {
@@ -118,8 +118,8 @@ void pcm86_setnextintr(void) {
 		{
 			cnt += pcm86->stepmask;
 			cnt >>= pcm86->stepbit;
-//			cnt += 4;								/* ������Ɖ��؂����� */
-			/* ������ clk = pccore.realclock * cnt / 86pcm_rate */
+//			cnt += 4;								/* ちょっと延滞させる */
+			/* ここで clk = pccore.realclock * cnt / 86pcm_rate */
 			/* clk = ((pccore.baseclock / 86pcm_rate) * cnt) * pccore.multiple */
 			if (pccore.cpumode & CPUMODE_8MHZ) {
 				clk = clk20_128[pcm86->fifo & 7];
@@ -127,7 +127,7 @@ void pcm86_setnextintr(void) {
 			else {
 				clk = clk25_128[pcm86->fifo & 7];
 			}
-			/* cnt�͍ő� 8000h �� 32bit�Ŏ��܂�悤�Ɂc */
+			/* cntは最大 8000h で 32bitで収まるように… */
 			clk *= cnt;
 			clk >>= 7;
 //			clk++;						/* roundup */
@@ -154,12 +154,12 @@ void SOUNDCALL pcm86gen_checkbuf(PCM86 pcm86)
 		RECALC_NOWCLKWAIT(past);
 	}
 	
-	// XXX: Windows�Ńt���[�Y������̎b��ΏǗÖ@�i������x���Ԃ��o�����������o�b�t�@���̂Ă�j
+	// XXX: Windowsでフリーズする問題の暫定対症療法（ある程度時間が経った小さいバッファを捨てる）
 	if(0 < pcm86->virbuf && pcm86->virbuf < 128){
 		if(pcm86->virbuf == lastvirbuf){
 			lastvirbufcnt++;
 			if(lastvirbufcnt > 500){
-				// 500��Ă΂�Ă��l���ω����Ȃ�������̂Ă�
+				// 500回呼ばれても値が変化しなかったら捨てる
 				pcm86->virbuf = 0;
 				lastvirbufcnt = 0;
 			}
@@ -172,7 +172,7 @@ void SOUNDCALL pcm86gen_checkbuf(PCM86 pcm86)
 	}
 
 	bufs = pcm86->realbuf - pcm86->virbuf;
-	if (bufs < 0)									/* ���������Ă�c */
+	if (bufs < 0)									/* 処理落ちてる… */
 	{
 		bufs &= ~3;
 		pcm86->virbuf += bufs;

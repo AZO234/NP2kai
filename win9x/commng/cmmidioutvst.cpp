@@ -1,6 +1,6 @@
 /**
  * @file	cmmidioutvst.cpp
- * @brief	MIDI OUT VST ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	MIDI OUT VST ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -15,9 +15,9 @@
 #pragma comment(lib, "shlwapi.lib")
 
 /**
- * VSTi ƒ‚ƒWƒ…[ƒ‹ ƒtƒ@ƒCƒ‹–¼‚ğ“¾‚é
- * @param[out] lpModule VSTi ƒ‚ƒWƒ…[ƒ‹ ƒtƒ@ƒCƒ‹–¼
- * @param[in] cchModule VSTi ƒ‚ƒWƒ…[ƒ‹ ƒtƒ@ƒCƒ‹–¼‚Ìƒoƒbƒtƒ@‚Ì’·‚³
+ * VSTi ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ« ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å¾—ã‚‹
+ * @param[out] lpModule VSTi ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ« ãƒ•ã‚¡ã‚¤ãƒ«å
+ * @param[in] cchModule VSTi ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ« ãƒ•ã‚¡ã‚¤ãƒ«åã®ãƒãƒƒãƒ•ã‚¡ã®é•·ã•
  */
 static void GetPath(LPTSTR lpModule, UINT cchModule)
 {
@@ -25,9 +25,9 @@ static void GetPath(LPTSTR lpModule, UINT cchModule)
 }
 
 /**
- * VSTi ‚Í—LŒø‚©?
- * @retval true —LŒø
- * @retval false –³Œø
+ * VSTi ã¯æœ‰åŠ¹ã‹?
+ * @retval true æœ‰åŠ¹
+ * @retval false ç„¡åŠ¹
  */
 bool CComMidiOutVst::IsEnabled()
 {
@@ -37,8 +37,8 @@ bool CComMidiOutVst::IsEnabled()
 }
 
 /**
- * ƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆ
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 CComMidiOutVst* CComMidiOutVst::CreateInstance()
 {
@@ -55,7 +55,7 @@ CComMidiOutVst* CComMidiOutVst::CreateInstance()
 }
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CComMidiOutVst::CComMidiOutVst()
 	: m_nBlockSize(128)
@@ -64,7 +64,7 @@ CComMidiOutVst::CComMidiOutVst()
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CComMidiOutVst::~CComMidiOutVst()
 {
@@ -73,10 +73,10 @@ CComMidiOutVst::~CComMidiOutVst()
 }
 
 /**
- * ‰Šú‰»
- * @param[in] lpPath ƒpƒX
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * åˆæœŸåŒ–
+ * @param[in] lpPath ãƒ‘ã‚¹
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CComMidiOutVst::Initialize(LPCTSTR lpPath)
 {
@@ -91,13 +91,13 @@ bool CComMidiOutVst::Initialize(LPCTSTR lpPath)
 		return false;
 	}
 
-	// Effect ‚ğƒI[ƒvƒ“
+	// Effect ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
 	m_effect.open();
 
-	// ƒTƒ“ƒvƒŠƒ“ƒO ƒŒ[ƒg‚ğİ’è
+	// ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚° ãƒ¬ãƒ¼ãƒˆã‚’è¨­å®š
 	m_effect.setSampleRate(static_cast<float>(soundcfg.rate));
 
-	// ƒuƒƒbƒNƒTƒCƒY‚ğİ’è
+	// ãƒ–ãƒ­ãƒƒã‚¯ã‚µã‚¤ã‚ºã‚’è¨­å®š
 	m_effect.setBlockSize(m_nBlockSize);
 	m_effect.resume();
 
@@ -116,8 +116,8 @@ bool CComMidiOutVst::Initialize(LPCTSTR lpPath)
 }
 
 /**
- * ƒVƒ‡[ƒg ƒƒbƒZ[ƒW
- * @param[in] nMessage ƒƒbƒZ[ƒW
+ * ã‚·ãƒ§ãƒ¼ãƒˆ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
  */
 void CComMidiOutVst::Short(UINT32 nMessage)
 {
@@ -126,9 +126,9 @@ void CComMidiOutVst::Short(UINT32 nMessage)
 }
 
 /**
- * ƒƒ“ƒO ƒƒbƒZ[ƒW
- * @param[in] lpMessage ƒƒbƒZ[ƒW ƒ|ƒCƒ“ƒ^
- * @param[in] cbMessage ƒƒbƒZ[ƒW ƒTƒCƒY
+ * ãƒ­ãƒ³ã‚° ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] lpMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ãƒã‚¤ãƒ³ã‚¿
+ * @param[in] cbMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ã‚µã‚¤ã‚º
  */
 void CComMidiOutVst::Long(const UINT8* lpMessage, UINT cbMessage)
 {
@@ -137,10 +137,10 @@ void CComMidiOutVst::Long(const UINT8* lpMessage, UINT cbMessage)
 }
 
 /**
- * ƒvƒƒZƒX
- * @param[in] pVst ƒnƒ“ƒhƒ‹
- * @param[out] lpBuffer ƒoƒbƒtƒ@
- * @param[in] nBufferCount ƒTƒ“ƒvƒ‹”
+ * ãƒ—ãƒ­ã‚»ã‚¹
+ * @param[in] pVst ãƒãƒ³ãƒ‰ãƒ«
+ * @param[out] lpBuffer ãƒãƒƒãƒ•ã‚¡
+ * @param[in] nBufferCount ã‚µãƒ³ãƒ—ãƒ«æ•°
  */
 void SOUNDCALL CComMidiOutVst::GetPcm(CComMidiOutVst* pVst, SINT32* lpBuffer, UINT nBufferCount)
 {
@@ -148,9 +148,9 @@ void SOUNDCALL CComMidiOutVst::GetPcm(CComMidiOutVst* pVst, SINT32* lpBuffer, UI
 }
 
 /**
- * ƒvƒƒZƒX (32bit)
- * @param[out] lpBuffer ƒoƒbƒtƒ@
- * @param[in] nBufferCount ƒTƒ“ƒvƒ‹”
+ * ãƒ—ãƒ­ã‚»ã‚¹ (32bit)
+ * @param[out] lpBuffer ãƒãƒƒãƒ•ã‚¡
+ * @param[in] nBufferCount ã‚µãƒ³ãƒ—ãƒ«æ•°
  */
 void CComMidiOutVst::Process32(SINT32* lpBuffer, UINT nBufferCount)
 {

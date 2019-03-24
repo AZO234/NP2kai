@@ -27,7 +27,7 @@ static void SCRNCALL SDSYM(pex_0)(SDRAW sdraw, int maxy) {
 	sdraw->y = y;
 }
 
-// text 1プレーン
+// text 1繝励Ξ繝ｼ繝ｳ
 static void SCRNCALL SDSYM(pex_t)(SDRAW sdraw, int maxy) {
 
 const UINT8	*p;
@@ -55,7 +55,7 @@ const UINT8	*p;
 	sdraw->y = y;
 }
 
-// grph 1プレーン
+// grph 1繝励Ξ繝ｼ繝ｳ
 static void SCRNCALL SDSYM(pex_g)(SDRAW sdraw, int maxy) {
 
 const UINT8	*p;
@@ -158,7 +158,7 @@ static void SCRNCALL SDSYM(nex_0)(SDRAW sdraw, int maxy) {
 	sdraw->y = y;
 }
 
-// text 1プレーン
+// text 1繝励Ξ繝ｼ繝ｳ
 static void SCRNCALL SDSYM(nex_t)(SDRAW sdraw, int maxy) {
 
 const UINT8	*p;
@@ -189,7 +189,7 @@ const UINT8	*p;
 	sdraw->y = y;
 }
 
-// grph 1プレーン
+// grph 1繝励Ξ繝ｼ繝ｳ
 static void SCRNCALL SDSYM(nex_g)(SDRAW sdraw, int maxy) {
 
 const UINT8	*p;

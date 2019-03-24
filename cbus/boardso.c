@@ -104,3 +104,7 @@ void boardso_bind(void)
 	opl3_bind(&g_opl3);
 	cbuscore_attachsndex(0x188 - g_opna[0].s.base, opn_o, opn_i);
 }
+void boardso_unbind(void)
+{
+	cbuscore_detachsndex(0x188 - g_opna[0].s.base);
+}

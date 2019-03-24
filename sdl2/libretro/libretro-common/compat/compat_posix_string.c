@@ -1,4 +1,4 @@
-/* Copyright  (C) 2010-2017 The RetroArch team
+/* Copyright  (C) 2010-2018 The RetroArch team
  *
  * ---------------------------------------------------------------------------------------
  * The following license statement only applies to this file (compat_posix_string.c).
@@ -23,8 +23,6 @@
 #include <ctype.h>
 
 #include <compat/posix_string.h>
-
-#include <retro_assert.h>
 
 #ifdef _WIN32
 

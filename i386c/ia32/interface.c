@@ -108,13 +108,50 @@ ia32a20enable(BOOL enable)
 	CPU_ADRSMASK = (enable)?0xffffffff:0x00ffffff;
 }
 
+//#pragma optimize("", off)
 void
 ia32(void)
 {
-	int rv;
+	switch (sigsetjmp(exec_1step_jmpbuf, 1)) {
+	case 0:
+		break;
 
-	rv = sigsetjmp(exec_1step_jmpbuf, 1);
-	switch (rv) {
+	case 1:
+		VERBOSE(("ia32: return from exception"));
+		break;
+
+	case 2:
+		VERBOSE(("ia32: return from panic"));
+		return;
+
+	default:
+		VERBOSE(("ia32: return from unknown cause"));
+		break;
+	}
+	if (!CPU_TRAP && !dmac.working) {
+		exec_allstep();
+	}else if (!CPU_TRAP) {
+		do {
+			exec_1step();
+			dmax86();
+		} while (CPU_REMCLOCK > 0);
+	}else{
+		do {
+			exec_1step();
+			if (CPU_TRAP) {
+				CPU_DR6 |= CPU_DR6_BS;
+				INTERRUPT(1, INTR_TYPE_EXCEPTION);
+			}
+			dmax86();
+		} while (CPU_REMCLOCK > 0);
+	}
+
+}
+
+void
+ia32_step(void)
+{
+	switch (sigsetjmp(exec_1step_jmpbuf, 1)) {
 	case 0:
 		break;
 
@@ -131,50 +168,6 @@ ia32(void)
 		break;
 	}
 
-	if (CPU_TRAP) {
-		do {
-			exec_1step();
-			if (CPU_TRAP) {
-				CPU_DR6 |= CPU_DR6_BS;
-				INTERRUPT(1, INTR_TYPE_EXCEPTION);
-			}
-			dmax86();
-		} while (CPU_REMCLOCK > 0);
-	} else if (dmac.working) {
-		do {
-			exec_1step();
-			dmax86();
-		} while (CPU_REMCLOCK > 0);
-	} else {
-		do {
-			exec_1step();
-		} while (CPU_REMCLOCK > 0);
-	}
-}
-
-void
-ia32_step(void)
-{
-	int rv;
-
-	rv = sigsetjmp(exec_1step_jmpbuf, 1);
-	switch (rv) {
-	case 0:
-		break;
-
-	case 1:
-		VERBOSE(("ia32_step: return from exception"));
-		break;
-
-	case 2:
-		VERBOSE(("ia32_step: return from panic"));
-		return;
-
-	default:
-		VERBOSE(("ia32_step: return from unknown cause"));
-		break;
-	}
-
 	do {
 		exec_1step();
 		if (CPU_TRAP) {
@@ -186,6 +179,7 @@ ia32_step(void)
 		}
 	} while (CPU_REMCLOCK > 0);
 }
+//#pragma optimize("", on)
 
 void CPUCALL
 ia32_interrupt(int vect, int soft)
@@ -226,6 +220,7 @@ ia32_panic(const char *str, ...)
 #if defined(IA32_REBOOT_ON_PANIC)
 	VERBOSE(("ia32_panic: reboot"));
 	pccore_reset();
+	pcstat.screendispflag = 0;
 	siglongjmp(exec_1step_jmpbuf, 2);
 #else
 	__ASSERT(0);
@@ -283,5 +278,12 @@ ia32_bioscall(void)
 			LOAD_SEGREG(CPU_SS_INDEX, CPU_SS);
 			LOAD_SEGREG(CPU_DS_INDEX, CPU_DS);
 		}
+	}else{
+#ifdef SUPPORT_PCI
+		adrs = CPU_EIP;
+		if (bios32func(adrs)) {
+			/* Nothing to do */
+		}
+#endif
 	}
 }

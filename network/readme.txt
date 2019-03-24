@@ -1,8 +1,8 @@
-Neko Project 21/W��LGY-98��xnp2�ɈڐA���Ă݂����̂ł��B
-�K�v�ŏ����̃\�[�X�R�[�h�iWindows�ˑ��R�[�h�̏C�������j�݂̂̒񋟂ƂȂ�܂��̂ŁA�ʂŃ_�E�����[�h����xnp2��K���ɕύX���Ă���Ă�������
+Neko Project 21/WのLGY-98をxnp2に移植してみたものです。
+必要最小限のソースコード（Windows依存コードの修正部分）のみの提供となりますので、別でダウンロードしたxnp2を適当に変更してやってください
 
-1�Cnp21w Win�ł��Q�l�ɕt���\�[�X�ȊO�̏ꏊ���ύX���K�v�ł��iSUPPORT_NET�܂���SUPPORT_LGY98�ň͂܂�Ă���Ƃ���j 
-2�CLinux��TAP���g�����߂ɂ�root�������v�邩��
-3�Cxnp21���N�������tap0�݂����Ȃ��̂��쐬����܂����A�����ɂ��Ȃ����Ă��Ȃ��̂Ńz�X�g���Ńu���b�W�Ɍq���Ȃ肵�Ă��Ȃ��ƃ_�����ۂ�
+1，np21w Win版を参考に付属ソース以外の場所も変更が必要です（SUPPORT_NETまたはSUPPORT_LGY98で囲まれているところ） 
+2，LinuxのTAPを使うためにはroot権限が要るかも
+3，xnp21を起動するとtap0みたいなものが作成されますが、何処にもつながっていないのでホスト側でブリッジに繋ぐなりしてやらないとダメっぽい
 
-���ɂ��������C�����܂����Y��܂������
+他にもあった気がしますが忘れました･･･

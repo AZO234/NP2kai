@@ -55,6 +55,7 @@ void fmboard_construct(void);
 void fmboard_destruct(void);
 void fmboard_reset(const NP2CFG *pConfig, SOUNDID nSoundID);
 void fmboard_bind(void);
+void fmboard_unbind(void);
 
 #ifdef __cplusplus
 }

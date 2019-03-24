@@ -14,6 +14,7 @@ extern "C"
 
 void board26k_reset(const NP2CFG *pConfig);
 void board26k_bind(void);
+void board26k_unbind(void);
 
 #ifdef __cplusplus
 }

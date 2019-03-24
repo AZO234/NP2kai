@@ -1,4 +1,4 @@
-/* Copyright  (C) 2010-2017 The RetroArch team
+/* Copyright  (C) 2010-2018 The RetroArch team
  *
  * ---------------------------------------------------------------------------------------
  * The following license statement only applies to this file (retro_timers.h).
@@ -34,9 +34,11 @@
 #elif defined(WIIU)
 #include <wiiu/os/thread.h>
 #elif defined(PSP)
-#include <pspthreadman.h>
+#include <pthread.h>
 #elif defined(VITA)
 #include <psp2/kernel/threadmgr.h>
+#elif defined(PS2)
+#include <SDL/SDL_timer.h>
 #elif defined(_3DS)
 #include <3ds.h>
 #else
@@ -89,8 +91,12 @@ static INLINE void retro_sleep(unsigned msec)
    sys_timer_usleep(1000 * msec);
 #elif defined(PSP) || defined(VITA)
    sceKernelDelayThread(1000 * msec);
+#elif defined(PS2)
+   SDL_Delay(msec);
 #elif defined(_3DS)
    svcSleepThread(1000000 * (s64)msec);
+#elif defined(__WINRT__) || defined(WINAPI_FAMILY) && WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
+   SleepEx(msec, FALSE);
 #elif defined(_WIN32)
    Sleep(msec);
 #elif defined(XENON)

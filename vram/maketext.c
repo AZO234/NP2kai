@@ -177,7 +177,7 @@ void maketext(int text_renewal) {
 		topline = TEXT_PL;
 		lines = TEXT_BL - topline;
 		if (lines <= 0) {
-			lines += 32;											// •â³
+			lines += 32;											// è£œæ­£
 		}
 	}
 	nowline = topline;
@@ -369,7 +369,7 @@ void maketext(int text_renewal) {
 					}
 				}
 				if ((line_effect & TXTATR_UL) &&
-					((nowline + 1) == lines)) {			// ƒAƒ“ƒ_[ƒ‰ƒCƒ“ˆÊ’u
+					((nowline + 1) == lines)) {			// ã‚¢ãƒ³ãƒ€ãƒ¼ãƒ©ã‚¤ãƒ³ä½ç½®
 					// width80
 					q -= TEXTXMAX * 8;
 					q += 4;
@@ -393,15 +393,15 @@ void maketext(int text_renewal) {
 					q -= TEXTXMAX * 8;
 					for (x=0; x<TEXTXMAX; x++) {
 						if (curx[x] & TXTATR_VL) {
-							// text_table[] ‚ð Žg‚Á‚Ä‚È‚¢‚Ì‚Å’ˆÓ
+							// text_table[] ã‚’ ä½¿ã£ã¦ãªã„ã®ã§æ³¨æ„
 							*(q+4) |= (color[x] & 0x70) + 0x10;
 						}
 						q += 8;
 					}
 				}
-				// *(q+4) |= (color[x] & 0x70) + 0x10; ‚Íc
+				// *(q+4) |= (color[x] & 0x70) + 0x10; ã¯â€¦
 				// *(DWORD *)(q+4) |= text_table[(color[x] & 0x70) + 8];
-				// ‚Å“™‰¿‚É‚È‚é”¤EEE
+				// ã§ç­‰ä¾¡ã«ãªã‚‹ç­ˆãƒ»ãƒ»ãƒ»
 			}
 			else {
 				q += TEXTXMAX * 8;
@@ -486,7 +486,7 @@ void maketext40(int text_renewal) {
 		topline = TEXT_PL;
 		lines = TEXT_BL - topline;
 		if (lines <= 0) {
-			lines += 32;											// •â³
+			lines += 32;											// è£œæ­£
 		}
 	}
 	nowline = topline;
@@ -686,7 +686,7 @@ void maketext40(int text_renewal) {
 					}
 				}
 				if ((line_effect & TXTATR_UL) &&
-					((nowline + 1) == lines)) {			// ƒAƒ“ƒ_[ƒ‰ƒCƒ“ˆÊ’u
+					((nowline + 1) == lines)) {			// ã‚¢ãƒ³ãƒ€ãƒ¼ãƒ©ã‚¤ãƒ³ä½ç½®
 					// width40
 					q -= TEXTXMAX * 8;
 					q += 4;
@@ -718,7 +718,7 @@ void maketext40(int text_renewal) {
 					q -= TEXTXMAX * 8;
 					for (x=0; x<(TEXTXMAX/2); x++) {
 						if (curx[x] & TXTATR_VL) {
-							// text_table[] ‚ð Žg‚Á‚Ä‚È‚¢‚Ì‚Å’ˆÓ
+							// text_table[] ã‚’ ä½¿ã£ã¦ãªã„ã®ã§æ³¨æ„
 							*(q+ 4) |= (color[x] & 0x70) + 0x10;
 							*(q+12) |= (color[x] & 0x70) + 0x10;
 						}

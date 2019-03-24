@@ -7,11 +7,17 @@
 #include	"pccore.h"
 #include	"iocore.h"
 #include	"sxsi.h"
+#include	"timemng.h"
 #if defined(SUPPORT_IDEIO)
 #include	"ideio.h"
 #endif
 #if !defined(_MSC_VER)
 #include <sys/time.h>
+#endif
+
+#if defined(_MSC_VER)
+#define strcasecmp _stricmp
+#define strncasecmp _strnicmp
 #endif
 
 	_SXSIDEV	sxsi_dev[SASIHDD_MAX + SCSIHDD_MAX];
@@ -241,7 +247,7 @@ UINT8 sxsi_getdevtype(REG8 drv) {
 	}
 }
 
-// CDì¸ÇÍë÷Ç¶ÇÃÉ^ÉCÉÄÉAÉEÉgÅiìäÇ∞Ç‚ÇËÅj
+// CDÂÖ•„ÇåÊõø„Åà„ÅÆ„Çø„Ç§„É†„Ç¢„Ç¶„ÉàÔºàÊäï„Åí„ÇÑ„ÇäÔºâ
 char cdchange_flag = 0;
 DWORD cdchange_reqtime = 0;
 REG8 cdchange_drv;
@@ -254,7 +260,7 @@ void cdchange_timeoutproc(NEVENTITEM item) {
 #if defined(SUPPORT_IDEIO)
 	ideio_mediachange(cdchange_drv);
 #endif
-	sysmng_updatecaption(1);
+	sysmng_updatecaption(1); // SYS_UPDATECAPTION_FDD
 }
 static void cdchange_timeoutset(void) {
 
@@ -291,25 +297,27 @@ BRESULT sxsi_devopen(REG8 drv, const OEMCHAR *fname) {
 		case SXSIDEV_CDROM:
 #if defined(SUPPORT_IDEIO)
 			if (cdchange_flag) {
-				// CDåä∑íÜ
+				// CD‰∫§Êèõ‰∏≠
 				if(GetTickCount()-cdchange_reqtime>5000){
-					// ã≠êßåä∑
+					// Âº∑Âà∂‰∫§Êèõ
 					cdchange_timeoutproc(NULL);
 				}
 				return(FAILURE);
 			}
 			if ((fname == NULL) || (fname[0] == '\0')) {
 				int num = drv & 0x0f;
+				sxsi->close(sxsi);
 				ideio_notify(sxsi->drv, 0);
 				file_cpyname(sxsi->fname, _T("\0\0\0\0"), 1);
 				sxsi->flag = 0;
 				file_cpyname(np2cfg.idecd[num], _T("\0\0\0\0"), 1);
-				sysmng_updatecaption(1);
+				sysmng_updatecaption(1); // SYS_UPDATECAPTION_FDD
 				return(SUCCESS);
 			}
 			else {
 				if((sxsi->flag & SXSIFLAG_READY) && (_tcsnicmp(sxsi->fname, OEMTEXT("\\\\.\\"), 4)!=0 || _tcsicmp(sxsi->fname, np2cfg.idecd[drv & 0x0f])==0) ){
-					// Ç¢Ç¡ÇΩÇÒéÊÇËèoÇ∑
+					// „ÅÑ„Å£„Åü„ÇìÂèñ„ÇäÂá∫„Åô
+					sxsi->close(sxsi);
 					ideio_notify(sxsi->drv, 0);
 					sxsi->flag = 0;
 					cdchange_drv = drv;
@@ -319,7 +327,7 @@ BRESULT sxsi_devopen(REG8 drv, const OEMCHAR *fname) {
 					cdchange_flag = 1;
 					cdchange_timeoutset();
 					cdchange_reqtime = GetTickCount();
-					return(FAILURE); // XXX: Ç±Ç±Ç≈é∏îsï‘ÇµÇƒÇ¶Ç¶ÇÃÅH
+					return(FAILURE); // XXX: „Åì„Åì„ÅßÂ§±ÊïóËøî„Åó„Å¶„Åà„Åà„ÅÆÔºü
 				}
 				r = sxsicd_open(sxsi, fname);
 				if (r == SUCCESS || _tcsnicmp(fname, OEMTEXT("\\\\.\\"), 4)==0) {
@@ -332,7 +340,7 @@ BRESULT sxsi_devopen(REG8 drv, const OEMCHAR *fname) {
 					int num = drv & 0x0f;
 					file_cpyname(np2cfg.idecd[num], _T("\0\0\0\0"), 1);
 				}
-				sysmng_updatecaption(1);
+				sysmng_updatecaption(1); // SYS_UPDATECAPTION_FDD
 				ideio_mediachange(cdchange_drv);
 			}
 #endif
@@ -456,6 +464,143 @@ REG8 sxsi_format(REG8 drv, FILEPOS pos) {
 	}
 	else {
 		return(0x60);
+	}
+}
+
+BRESULT sxsi_state_save(const OEMCHAR *ext) {
+	SXSIDEV	sxsi;
+	SXSIDEV	sxsiterm;
+
+	sxsi = sxsi_dev;
+	sxsiterm = sxsi + NELEMENTS(sxsi_dev);
+	while(sxsi < sxsiterm) {
+		if (sxsi->state_save != NULL) {
+			_SYSTIME st;
+			OEMCHAR dt[32];
+			OEMCHAR	sfname[MAX_PATH];
+			BRESULT r;
+
+			timemng_gettime(&st);
+			OEMSPRINTF(
+				dt, _T("%04d%02d%02d%02d%02d%02d%03d"),
+				st.year, st.month, st.day,
+				st.hour, st.minute, st.second,
+				st.milli);
+
+			file_cpyname(sfname, sxsi->fname, NELEMENTS(sfname));
+			file_catname(sfname, OEMTEXT("_"), NELEMENTS(sfname));
+			file_catname(sfname, ext, NELEMENTS(sfname));
+			file_catname(sfname, OEMTEXT("_"), NELEMENTS(sfname));
+			file_catname(sfname, dt, NELEMENTS(sfname));
+
+			r = (*sxsi->state_save)(sxsi, sfname);
+			if (r != SUCCESS) {
+				return(r);
+			}
+		}
+
+		sxsi++;
+	}
+}
+
+static int str_get_mem_size(const OEMCHAR *str)
+{
+#ifdef SUPPORT_ANK
+	return ((int)(milank_chr(str, 0) - str));
+#else
+	return ((int)(milutf8_chr(str, 0) - str));
+#endif
+}
+
+static BRESULT state_load(SXSIDEV sxsi, const OEMCHAR *ext)
+{
+	OEMCHAR	dir[MAX_PATH];
+	FLINFO fli;
+	FLISTH flh;
+	OEMCHAR rname[MAX_PATH];
+	int rnamesize;
+	OEMCHAR	tname[MAX_PATH];
+
+	file_cpyname(dir, sxsi->fname, NELEMENTS(dir));
+	file_cutname(dir);
+	file_cutseparator(dir);
+
+	flh = file_list1st(dir, &fli);
+	if (flh == FLISTH_INVALID)
+	{
+		return (SUCCESS);
+	}
+
+	file_cpyname(rname, file_getname(sxsi->fname), NELEMENTS(rname));
+	file_catname(rname, OEMTEXT("_"), NELEMENTS(rname));
+	file_catname(rname, ext, NELEMENTS(rname));
+	file_catname(rname, OEMTEXT("_"), NELEMENTS(rname));
+	rnamesize = str_get_mem_size(rname);
+
+	ZeroMemory(tname, sizeof(OEMCHAR) * MAX_PATH);
+
+	do
+	{
+		int namesize;
+
+		if ((fli.attr & FILEATTR_VOLUME) ||
+			(fli.attr & FILEATTR_DIRECTORY))
+		{
+			continue;
+		}
+
+		namesize = str_get_mem_size(fli.path);
+
+		if (namesize <= rnamesize)
+		{
+			continue;
+		}
+
+#ifdef SUPPORT_ANK
+		if (milank_memcmp(fli.path, rname) != 0)
+#else
+		if (milutf8_memcmp(fli.path, rname) != 0)
+#endif
+		{
+			continue;
+		}
+
+		if (file_cmpname(fli.path, tname) > 0)
+		{
+			file_cpyname(tname, fli.path, NELEMENTS(tname));
+		}
+	} while (file_listnext(flh, &fli) == SUCCESS);
+
+	if (OEMSTRLEN(tname) == 0)
+	{
+		return (SUCCESS);
+	}
+
+	file_setseparator(dir, NELEMENTS(dir));
+	file_catname(dir, tname, NELEMENTS(dir));
+
+	return ((*sxsi->state_load)(sxsi, dir));
+}
+
+BRESULT sxsi_state_load(const OEMCHAR *ext)
+{
+	SXSIDEV	sxsi;
+	SXSIDEV	sxsiterm;
+
+	sxsi = sxsi_dev;
+	sxsiterm = sxsi + NELEMENTS(sxsi_dev);
+	while (sxsi < sxsiterm) {
+		if (sxsi->state_load != NULL) {
+			BRESULT r;
+
+			r = state_load(sxsi, ext);
+			if (r != SUCCESS)
+			{
+				return(r);
+			}
+		}
+
+		sxsi++;
 	}
 }
 

@@ -450,7 +450,7 @@ estb_dnrs_cal:
 %%dstbitover0:	sub		byte [_egc + egc_t.dstbit], 8
 				mov		word [_egc + egc_t.srcmask], 0
 				ret
-%%dstbitover1:	add		[_egc + egc_t.stack], eax		; 戻して…
+%%dstbitover1:	add		[_egc + egc_t.stack], eax		; 謌ｻ縺励※窶ｦ
 				mov		word [_egc + egc_t.srcmask], 0
 				ret
 %endmacro
@@ -656,7 +656,7 @@ eow_setdat:		mov		ecx, _egc_data
 
 
 
-				; !!! あとでスタックを使用すること
+				; !!! 縺ゅ→縺ｧ繧ｹ繧ｿ繝�繧ｯ繧剃ｽｿ逕ｨ縺吶ｋ縺薙→
 				; make pattern...
 egc_opesub:		mov		al, [_egc + egc_t.fgbg + 1]
 				and		al, 60h

@@ -1,6 +1,6 @@
 /**
  * @file	d_mpu98.cpp
- * @brief	MPU-PC98 İ’èƒ_ƒCƒAƒƒO
+ * @brief	MPU-PC98 è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°
  */
 
 #include "compiler.h"
@@ -30,8 +30,8 @@ extern	COMMNG	cm_mpu98;
 
 
 /**
- * @brief MPU-PC98 İ’èƒ_ƒCƒAƒƒO
- * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * @brief MPU-PC98 è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°
+ * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 class CMpu98Dlg : public CDlgProc
 {
@@ -45,7 +45,7 @@ protected:
 	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	UINT8 m_mpu;				//!< İ’è’l
+	UINT8 m_mpu;				//!< è¨­å®šå€¤
 	CComboData m_port;			//!< IO
 	CComboData m_int;			//!< INT
 	CStaticDipSw m_dipsw;		//!< DIPSW
@@ -62,7 +62,7 @@ private:
 };
 
 /**
- * Š„‚è‚İƒŠƒXƒg
+ * å‰²ã‚Šè¾¼ã¿ãƒªã‚¹ãƒˆ
  */
 static const CComboData::Entry s_int[] =
 {
@@ -73,8 +73,8 @@ static const CComboData::Entry s_int[] =
 };
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
- * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 CMpu98Dlg::CMpu98Dlg(HWND hwndParent)
 	: CDlgProc(IDD_MPUPC98, hwndParent)
@@ -83,9 +83,9 @@ CMpu98Dlg::CMpu98Dlg(HWND hwndParent)
 }
 
 /**
- * ‚±‚Ìƒƒ\ƒbƒh‚Í WM_INITDIALOG ‚ÌƒƒbƒZ[ƒW‚É‰“š‚µ‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
- * @retval TRUE Å‰‚ÌƒRƒ“ƒgƒ[ƒ‹‚É“ü—ÍƒtƒH[ƒJƒX‚ğİ’è
- * @retval FALSE Šù‚Éİ’èÏ
+ * ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ WM_INITDIALOG ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«å¿œç­”ã—ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * @retval TRUE æœ€åˆã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã«å…¥åŠ›ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’è¨­å®š
+ * @retval FALSE æ—¢ã«è¨­å®šæ¸ˆ
  */
 BOOL CMpu98Dlg::OnInitDialog()
 {
@@ -127,7 +127,7 @@ BOOL CMpu98Dlg::OnInitDialog()
 }
 
 /**
- * ƒ†[ƒU[‚ª OK ‚Ìƒ{ƒ^ƒ“ (IDOK ID ‚ª‚Ìƒ{ƒ^ƒ“) ‚ğƒNƒŠƒbƒN‚·‚é‚ÆŒÄ‚Ño‚³‚ê‚Ü‚·
+ * ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒ OK ã®ãƒœã‚¿ãƒ³ (IDOK ID ãŒã®ãƒœã‚¿ãƒ³) ã‚’ã‚¯ãƒªãƒƒã‚¯ã™ã‚‹ã¨å‘¼ã³å‡ºã•ã‚Œã¾ã™
  */
 void CMpu98Dlg::OnOK()
 {
@@ -186,10 +186,10 @@ void CMpu98Dlg::OnOK()
 }
 
 /**
- * ƒ†[ƒU[‚ªƒƒjƒ…[‚Ì€–Ú‚ğ‘I‘ğ‚µ‚½‚Æ‚«‚ÉAƒtƒŒ[ƒ€ƒ[ƒN‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
- * @param[in] wParam ƒpƒ‰ƒƒ^
- * @param[in] lParam ƒpƒ‰ƒƒ^
- * @retval TRUE ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ª‚±‚ÌƒƒbƒZ[ƒW‚ğˆ—‚µ‚½
+ * ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®é …ç›®ã‚’é¸æŠã—ãŸã¨ãã«ã€ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã«ã‚ˆã£ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * @param[in] wParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @param[in] lParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @retval TRUE ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡¦ç†ã—ãŸ
  */
 BOOL CMpu98Dlg::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -222,11 +222,11 @@ BOOL CMpu98Dlg::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * CWndProc ƒIƒuƒWƒFƒNƒg‚Ì Windows ƒvƒƒV[ƒWƒƒ (WindowProc) ‚ª—pˆÓ‚³‚ê‚Ä‚¢‚Ü‚·
- * @param[in] nMsg ˆ—‚³‚ê‚é Windows ƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
- * @param[in] wParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @param[in] lParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @return ƒƒbƒZ[ƒW‚ÉˆË‘¶‚·‚é’l‚ğ•Ô‚µ‚Ü‚·
+ * CWndProc ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã® Windows ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ (WindowProc) ãŒç”¨æ„ã•ã‚Œã¦ã„ã¾ã™
+ * @param[in] nMsg å‡¦ç†ã•ã‚Œã‚‹ Windows ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] wParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @param[in] lParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @return ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã™ã‚‹å€¤ã‚’è¿”ã—ã¾ã™
  */
 LRESULT CMpu98Dlg::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -245,7 +245,7 @@ LRESULT CMpu98Dlg::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ƒfƒBƒbƒv ƒXƒCƒbƒ`‚ğƒNƒŠƒbƒN‚µ‚½
+ * ãƒ‡ã‚£ãƒƒãƒ— ã‚¹ã‚¤ãƒƒãƒã‚’ã‚¯ãƒªãƒƒã‚¯ã—ãŸ
  */
 void CMpu98Dlg::OnDipSw()
 {
@@ -291,9 +291,9 @@ void CMpu98Dlg::OnDipSw()
 }
 
 /**
- * ƒWƒƒƒ“ƒp[‚Ì’l‚ğİ’è
- * @param[in] cValue ’l
- * @param[in] cBit ƒ}ƒXƒN
+ * ã‚¸ãƒ£ãƒ³ãƒ‘ãƒ¼ã®å€¤ã‚’è¨­å®š
+ * @param[in] cValue å€¤
+ * @param[in] cBit ãƒã‚¹ã‚¯
  */
 void CMpu98Dlg::SetJumper(UINT8 cValue, UINT8 cBit)
 {
@@ -306,8 +306,8 @@ void CMpu98Dlg::SetJumper(UINT8 cValue, UINT8 cBit)
 }
 
 /**
- * I/O ‚ğİ’è
- * @param[in] cValue İ’è
+ * I/O ã‚’è¨­å®š
+ * @param[in] cValue è¨­å®š
  */
 void CMpu98Dlg::SetPort(UINT8 cValue)
 {
@@ -315,7 +315,7 @@ void CMpu98Dlg::SetPort(UINT8 cValue)
 }
 
 /**
- * I/O ‚ğæ“¾
+ * I/O ã‚’å–å¾—
  * @return I/O
  */
 UINT8 CMpu98Dlg::GetPort() const
@@ -324,8 +324,8 @@ UINT8 CMpu98Dlg::GetPort() const
 }
 
 /**
- * INT ‚ğİ’è
- * @param[in] cValue İ’è
+ * INT ã‚’è¨­å®š
+ * @param[in] cValue è¨­å®š
  */
 void CMpu98Dlg::SetInt(UINT8 cValue)
 {
@@ -333,7 +333,7 @@ void CMpu98Dlg::SetInt(UINT8 cValue)
 }
 
 /**
- * INT ‚ğæ“¾
+ * INT ã‚’å–å¾—
  * @return INT
  */
 UINT8 CMpu98Dlg::GetInt() const
@@ -342,8 +342,8 @@ UINT8 CMpu98Dlg::GetInt() const
 }
 
 /**
- * ƒRƒ“ƒtƒBƒO ƒ_ƒCƒAƒƒO
- * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * ã‚³ãƒ³ãƒ•ã‚£ã‚° ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
+ * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 void dialog_mpu98(HWND hwndParent)
 {

@@ -1,6 +1,6 @@
 /**
  * @file	WndProc.h
- * @brief	ƒvƒƒV[ƒWƒƒ ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -9,7 +9,7 @@
 #include "WndBase.h"
 
 /**
- * @brief ƒvƒƒV[ƒWƒƒ ƒNƒ‰ƒX
+ * @brief ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ ã‚¯ãƒ©ã‚¹
  */
 class CWndProc : public CWndBase
 {
@@ -48,25 +48,25 @@ protected:
 	virtual void PostNcDestroy();
 
 protected:
-	static HINSTANCE sm_hInstance;		//!< ƒCƒ“ƒXƒ^ƒ“ƒX ƒnƒ“ƒhƒ‹
-	static HINSTANCE sm_hResource;		//!< ƒŠƒ\[ƒX ƒnƒ“ƒhƒ‹
+	static HINSTANCE sm_hInstance;		//!< ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ ãƒãƒ³ãƒ‰ãƒ«
+	static HINSTANCE sm_hResource;		//!< ãƒªã‚½ãƒ¼ã‚¹ ãƒãƒ³ãƒ‰ãƒ«
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 	static void HookWindowCreate(CWndProc* pWnd);
 	static bool UnhookWindowCreate();
 
 private:
-	static DWORD sm_dwThreadId;						//!< ©•ª‚ÌƒXƒŒƒbƒh ID
-	static HHOOK sm_hHookOldCbtFilter;				//!< ƒtƒbƒN ƒtƒBƒ‹ƒ^[
-	static CWndProc* sm_pWndInit;					//!< ‰Šú‰»’†‚ÌƒCƒ“ƒXƒ^ƒ“ƒX
-	static std::map<HWND, CWndProc*>* sm_pWndMap;	//!< ƒEƒBƒ“ƒhƒE ƒ}ƒbƒv
-	WNDPROC m_pfnSuper;								//!< ‰ºˆÊƒvƒƒV[ƒWƒƒ
+	static DWORD sm_dwThreadId;						//!< è‡ªåˆ†ã®ã‚¹ãƒ¬ãƒƒãƒ‰ ID
+	static HHOOK sm_hHookOldCbtFilter;				//!< ãƒ•ãƒƒã‚¯ ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼
+	static CWndProc* sm_pWndInit;					//!< åˆæœŸåŒ–ä¸­ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+	static std::map<HWND, CWndProc*>* sm_pWndMap;	//!< ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒƒãƒ—
+	WNDPROC m_pfnSuper;								//!< ä¸‹ä½ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 	static LRESULT CALLBACK CbtFilterHook(int nCode, WPARAM wParam, LPARAM lParam);
 };
 
 /**
- * ƒCƒ“ƒXƒ^ƒ“ƒX ƒnƒ“ƒhƒ‹‚ğæ“¾
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX ƒnƒ“ƒhƒ‹
+ * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ ãƒãƒ³ãƒ‰ãƒ«
  */
 inline HINSTANCE CWndProc::GetInstanceHandle()
 {
@@ -74,8 +74,8 @@ inline HINSTANCE CWndProc::GetInstanceHandle()
 }
 
 /**
- * ƒŠƒ\[ƒX ƒnƒ“ƒhƒ‹‚ğİ’è
- * @param[in] hInstance ƒŠƒ\[ƒX ƒnƒ“ƒhƒ‹
+ * ãƒªã‚½ãƒ¼ã‚¹ ãƒãƒ³ãƒ‰ãƒ«ã‚’è¨­å®š
+ * @param[in] hInstance ãƒªã‚½ãƒ¼ã‚¹ ãƒãƒ³ãƒ‰ãƒ«
  */
 inline void CWndProc::SetResourceHandle(HINSTANCE hInstance)
 {
@@ -83,8 +83,8 @@ inline void CWndProc::SetResourceHandle(HINSTANCE hInstance)
 }
 
 /**
- * ƒŠƒ\[ƒX ƒnƒ“ƒhƒ‹‚ğæ“¾
- * @return ƒŠƒ\[ƒX ƒnƒ“ƒhƒ‹
+ * ãƒªã‚½ãƒ¼ã‚¹ ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—
+ * @return ãƒªã‚½ãƒ¼ã‚¹ ãƒãƒ³ãƒ‰ãƒ«
  */
 inline HINSTANCE CWndProc::GetResourceHandle()
 {
@@ -92,7 +92,7 @@ inline HINSTANCE CWndProc::GetResourceHandle()
 }
 
 /**
- * HWND ƒIƒyƒŒ[ƒ^
+ * HWND ã‚ªãƒšãƒ¬ãƒ¼ã‚¿
  * @return HWND
  */
 inline CWndProc::operator HWND() const
@@ -101,8 +101,8 @@ inline CWndProc::operator HWND() const
 }
 
 /**
- * ƒEƒBƒ“ƒhƒE‚ÌƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹‚ğ•Ô‚µ‚Ü‚·
- * @return ƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹
+ * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ«ã‚’è¿”ã—ã¾ã™
+ * @return ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ«
  */
 inline HWND CWndProc::GetSafeHwnd() const
 {

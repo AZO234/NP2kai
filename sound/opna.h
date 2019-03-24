@@ -93,14 +93,12 @@ REG8 opna_read3438ExtRegister(POPNA opna, UINT nAddress);
 int opna_sfsave(PCOPNA opna, STFLAGH sfh, const SFENTRY *tbl);
 int opna_sfload(POPNA opna, STFLAGH sfh, const SFENTRY *tbl);
 
-#if !defined(_MSC_VER)
 #if defined(SUPPORT_FMGEN)
 void opna_fmgen_setallvolumeFM_linear(int lvol);
 void opna_fmgen_setallvolumePSG_linear(int lvol);
 void opna_fmgen_setallvolumeADPCM_linear(int lvol);
 void opna_fmgen_setallvolumeRhythmTotal_linear(int lvol);
 #endif	/* SUPPORT_FMGEN */
-#endif	/* _MSC_VER */
 
 #ifdef __cplusplus
 }

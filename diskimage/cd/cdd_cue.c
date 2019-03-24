@@ -7,9 +7,9 @@
 
 #include	"diskimage/cddfile.h"
 
-//const OEMCHAR str_cue[] = OEMTEXT("cue");	//	CUEƒV[ƒg
+//const OEMCHAR str_cue[] = OEMTEXT("cue");	//	CUEã‚·ãƒ¼ãƒˆ
 
-//	CDD_CCD.C‚Å‹¤—L‚·‚é‚½‚ß‚Ìb’èˆ’u
+//	CDD_CCD.Cã§å…±æœ‰ã™ã‚‹ãŸã‚ã®æš«å®šå‡¦ç½®
 const OEMCHAR str_track[] = OEMTEXT("TRACK");
 const OEMCHAR str_index[] = OEMTEXT("INDEX");
 //
@@ -21,7 +21,7 @@ static const OEMCHAR str_wave[] = OEMTEXT("WAVE");
 static const OEMCHAR str_pregap[] = OEMTEXT("PREGAP");
 //static const OEMCHAR str_index[] = OEMTEXT("INDEX");
 static const OEMCHAR str_mode1[] = OEMTEXT("MODE1");
-static const OEMCHAR str_mode2[] = OEMTEXT("MODE2");	//	b’è‘Î‰
+static const OEMCHAR str_mode2[] = OEMTEXT("MODE2");	//	æš«å®šå¯¾å¿œ
 static const OEMCHAR str_audio[] = OEMTEXT("AUDIO");
 
 //static BRESULT getint2(const OEMCHAR *str, UINT *val) {
@@ -42,30 +42,30 @@ static UINT32 getpos(const OEMCHAR *str) {
 	UINT	s = 0;
 	UINT	f = 0;
 	
-	int idx = 0; // •¶šˆÊ’u
-	UINT sdata[3] = {0}; // ”’lƒoƒbƒtƒ@
-	UINT sdatapos = 0; // ”’lƒoƒbƒtƒ@‚ÌŠi”[ˆÊ’u
-	int numdig = 0; // ’Ê’m‚ÌŒ…”
+	int idx = 0; // æ–‡å­—ä½ç½®
+	UINT sdata[3] = {0}; // æ•°å€¤ãƒãƒƒãƒ•ã‚¡
+	UINT sdatapos = 0; // æ•°å€¤ãƒãƒƒãƒ•ã‚¡ã®æ ¼ç´ä½ç½®
+	int numdig = 0; // é€šçŸ¥ã®æ¡æ•°
 
-	while(str[idx]){ // NULL•¶š‚Ü‚Å‘±‚¯‚é
-		if('0' <= str[idx] && str[idx] <= '9'){ // 0‚©‚ç9‚Ì”š‚È‚çƒoƒbƒtƒ@‚É“ü‚ê‚é
-			sdata[sdatapos] *= 10; // Œ…ã‚°
+	while(str[idx]){ // NULLæ–‡å­—ã¾ã§ç¶šã‘ã‚‹
+		if('0' <= str[idx] && str[idx] <= '9'){ // 0ã‹ã‚‰9ã®æ•°å­—ãªã‚‰ãƒãƒƒãƒ•ã‚¡ã«å…¥ã‚Œã‚‹
+			sdata[sdatapos] *= 10; // æ¡ä¸Šã’
 			sdata[sdatapos] += (str[idx] - '0');
-			numdig++; // Œ…”ƒJƒEƒ“ƒg
-		}else if(str[idx] == ':' && numdig >= 1){ // u:v‚È‚ç‹æØ‚è•¶ši‚½‚¾‚µA”š‚ªˆêŒ…‚à–³‚¢ê‡‚Í•s³ˆµ‚¢j
+			numdig++; // æ¡æ•°ã‚«ã‚¦ãƒ³ãƒˆ
+		}else if(str[idx] == ':' && numdig >= 1){ // ã€Œ:ã€ãªã‚‰åŒºåˆ‡ã‚Šæ–‡å­—ï¼ˆãŸã ã—ã€æ•°å­—ãŒä¸€æ¡ã‚‚ç„¡ã„å ´åˆã¯ä¸æ­£æ‰±ã„ï¼‰
 			if(sdatapos == 2){
-				break; // 3ŒÂ–Ú‚Ìƒf[ƒ^‚È‚çƒ‹[ƒv‚ğ”²‚¯‚éi”z—ñ‚ğ3‚Â•ª‚µ‚©Šm•Û‚µ‚Ä‚¢‚È‚¢•‚»‚à‚»‚à4‚ÂˆÈã‚ª‚ ‚è“¾‚È‚¢‚Ì‚Åj
+				break; // 3å€‹ç›®ã®ãƒ‡ãƒ¼ã‚¿ãªã‚‰ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹ï¼ˆé…åˆ—ã‚’3ã¤åˆ†ã—ã‹ç¢ºä¿ã—ã¦ã„ãªã„ï¼†ãã‚‚ãã‚‚4ã¤ä»¥ä¸ŠãŒã‚ã‚Šå¾—ãªã„ã®ã§ï¼‰
 			}
-			sdatapos++; // Ši”[ˆÊ’u•ÏX
-			numdig = 0; // Œ…”ƒJƒEƒ“ƒgƒŠƒZƒbƒg
+			sdatapos++; // æ ¼ç´ä½ç½®å¤‰æ›´
+			numdig = 0; // æ¡æ•°ã‚«ã‚¦ãƒ³ãƒˆãƒªã‚»ãƒƒãƒˆ
 		}else{
-			return(0); // •s³‚È•¶š
+			return(0); // ä¸æ­£ãªæ–‡å­—
 		}
 		idx++;
 	}
-	sdatapos++; // ƒf[ƒ^”‚É‚·‚é‚½‚ß‚É1‚ğ‘«‚·
+	sdatapos++; // ãƒ‡ãƒ¼ã‚¿æ•°ã«ã™ã‚‹ãŸã‚ã«1ã‚’è¶³ã™
 	if(sdatapos!=3){
-		return(0); // ƒf[ƒ^”‚ª•Ïi3ŒÂ‚Å‚Í‚È‚¢j
+		return(0); // ãƒ‡ãƒ¼ã‚¿æ•°ãŒå¤‰ï¼ˆ3å€‹ã§ã¯ãªã„ï¼‰
 	}
 	m = sdata[0];
 	s = sdata[1];
@@ -73,7 +73,7 @@ static UINT32 getpos(const OEMCHAR *str) {
 	return((((m * 60) + s) * 75) + f);
 }
 
-//	CUEƒV[ƒg“Ç‚İ‚İ
+//	CUEã‚·ãƒ¼ãƒˆèª­ã¿è¾¼ã¿
 BRESULT opencue(SXSIDEV sxsi, const OEMCHAR *fname) {
 
 	_CDTRK		trk[99];
@@ -87,7 +87,7 @@ BRESULT opencue(SXSIDEV sxsi, const OEMCHAR *fname) {
 	OEMCHAR		*argv[8];
 	int			argc;
 //	--------
-	UINT16		curssize;
+	UINT16		curssize = 0;
 	UINT32		curpos0;
 	UINT32		curpregap;
 
@@ -139,7 +139,7 @@ BRESULT opencue(SXSIDEV sxsi, const OEMCHAR *fname) {
 					curpos0 = getpos(argv[2]);
 					continue;
 				}
-				if ((UINT8)milstr_solveINT(argv[1]) != 1) {					//	INDEX 01ˆÈŠO
+				if ((UINT8)milstr_solveINT(argv[1]) != 1) {					//	INDEX 01ä»¥å¤–
 					continue;
 				}
 

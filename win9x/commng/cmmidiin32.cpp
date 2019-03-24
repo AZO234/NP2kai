@@ -1,6 +1,6 @@
 /**
  * @file	cmmidiin32.cpp
- * @brief	MIDI IN win32 ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	MIDI IN win32 ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -11,13 +11,13 @@
 #pragma comment(lib, "winmm.lib")
 #endif	// !defined(__GNUC__)
 
-/*!< ƒnƒ“ƒhƒ‹ ƒ}ƒbƒv */
+/*!< ãƒãƒ³ãƒ‰ãƒ« ãƒãƒƒãƒ— */
 std::map<HMIDIIN, CComMidiIn32*> CComMidiIn32::sm_midiinMap;
 
 /**
- * ƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬
- * @param[in] lpMidiIn ƒfƒoƒCƒX–¼
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆ
+ * @param[in] lpMidiIn ãƒ‡ãƒã‚¤ã‚¹å
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 CComMidiIn32* CComMidiIn32::CreateInstance(LPCTSTR lpMidiIn)
 {
@@ -36,8 +36,8 @@ CComMidiIn32* CComMidiIn32::CreateInstance(LPCTSTR lpMidiIn)
 }
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
- * @param[in] hMidiIn ƒnƒ“ƒhƒ‹
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * @param[in] hMidiIn ãƒãƒ³ãƒ‰ãƒ«
  */
 CComMidiIn32::CComMidiIn32(HMIDIIN hMidiIn)
 	: m_hMidiIn(hMidiIn)
@@ -57,7 +57,7 @@ CComMidiIn32::CComMidiIn32(HMIDIIN hMidiIn)
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CComMidiIn32::~CComMidiIn32()
 {
@@ -70,9 +70,9 @@ CComMidiIn32::~CComMidiIn32()
 }
 
 /**
- * “Ç‚İ‚İ
- * @param[out] pData ƒoƒbƒtƒ@
- * @return ƒTƒCƒY
+ * èª­ã¿è¾¼ã¿
+ * @param[out] pData ãƒãƒƒãƒ•ã‚¡
+ * @return ã‚µã‚¤ã‚º
  */
 UINT CComMidiIn32::Read(UINT8* pData)
 {
@@ -89,11 +89,11 @@ UINT CComMidiIn32::Read(UINT8* pData)
 }
 
 /**
- * ID ‚ğ“¾‚é
- * @param[in] lpMidiIn ƒfƒoƒCƒX–¼
+ * ID ã‚’å¾—ã‚‹
+ * @param[in] lpMidiIn ãƒ‡ãƒã‚¤ã‚¹å
  * @param[out] pId ID
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CComMidiIn32::GetId(LPCTSTR lpMidiIn, UINT* pId)
 {
@@ -115,9 +115,9 @@ bool CComMidiIn32::GetId(LPCTSTR lpMidiIn, UINT* pId)
 }
 
 /**
- * ƒCƒ“ƒXƒ^ƒ“ƒX‚ğŒŸõ
- * @param[in] hMidiIn ƒnƒ“ƒhƒ‹
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’æ¤œç´¢
+ * @param[in] hMidiIn ãƒãƒ³ãƒ‰ãƒ«
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 CComMidiIn32* CComMidiIn32::GetInstance(HMIDIIN hMidiIn)
 {
@@ -130,9 +130,9 @@ CComMidiIn32* CComMidiIn32::GetInstance(HMIDIIN hMidiIn)
 }
 
 /**
- * ƒƒbƒZ[ƒWóM
- * @param[in] hMidiIn ƒnƒ“ƒhƒ‹
- * @param[in] nMessage ƒƒbƒZ[ƒW
+ * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å—ä¿¡
+ * @param[in] hMidiIn ãƒãƒ³ãƒ‰ãƒ«
+ * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
  */
 void CComMidiIn32::RecvData(HMIDIIN hMidiIn, UINT nMessage)
 {
@@ -144,8 +144,8 @@ void CComMidiIn32::RecvData(HMIDIIN hMidiIn, UINT nMessage)
 }
 
 /**
- * ƒƒbƒZ[ƒWóM
- * @param[in] nMessage ƒƒbƒZ[ƒW
+ * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å—ä¿¡
+ * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
  */
 void CComMidiIn32::OnRecvData(UINT nMessage)
 {
@@ -170,9 +170,9 @@ void CComMidiIn32::OnRecvData(UINT nMessage)
 }
 
 /**
- * ƒƒbƒZ[ƒWóM
- * @param[in] hMidiIn ƒnƒ“ƒhƒ‹
- * @param[in] lpMidiHdr ƒƒbƒZ[ƒW
+ * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å—ä¿¡
+ * @param[in] hMidiIn ãƒãƒ³ãƒ‰ãƒ«
+ * @param[in] lpMidiHdr ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
  */
 void CComMidiIn32::RecvExcv(HMIDIIN hMidiIn, MIDIHDR* lpMidiHdr)
 {
@@ -184,8 +184,8 @@ void CComMidiIn32::RecvExcv(HMIDIIN hMidiIn, MIDIHDR* lpMidiHdr)
 }
 
 /**
- * ƒƒbƒZ[ƒWóM
- * @param[in] lpMidiHdr ƒƒbƒZ[ƒW
+ * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å—ä¿¡
+ * @param[in] lpMidiHdr ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
  */
 void CComMidiIn32::OnRecvExcv(MIDIHDR* lpMidiHdr)
 {

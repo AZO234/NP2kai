@@ -4,7 +4,7 @@ extern "C"{
 #endif
 
 
-// ‚»‚ê‚¼‚ê 4bit BMP‚ª•Ô‚é (ƒƒ‚ƒŠ‰ð•ú‚ðs‚È‚¤‚±‚Æ)
+// ãã‚Œãžã‚Œ 4bit BMPãŒè¿”ã‚‹ (ãƒ¡ãƒ¢ãƒªè§£æ”¾ã‚’è¡Œãªã†ã“ã¨)
 
 UINT8 *dipswbmp_get9861(const UINT8 *s, const UINT8 *j);
 

@@ -1,6 +1,6 @@
 /**
  * @file	dd2.h
- * @brief	DirectDraw2 •`‰æƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	DirectDraw2 æç”»ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -25,17 +25,17 @@ public:
 	UINT16 GetPalette16(RGB32 pal) const;
 
 protected:
-	HWND					m_hWnd;				/*!< ƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹ */
-	LPDIRECTDRAW			m_pDDraw;			/*!< DirectDraw ƒCƒ“ƒXƒ^ƒ“ƒX */
-	LPDIRECTDRAW2			m_pDDraw2;			/*!< DirectDraw2 ƒCƒ“ƒXƒ^ƒ“ƒX */
-	LPDIRECTDRAWSURFACE		m_pPrimarySurface;	/*!< ƒvƒ‰ƒCƒ}ƒŠ ƒT[ƒtƒFƒX */
-	LPDIRECTDRAWSURFACE		m_pBackSurface;		/*!< ƒoƒbƒN ƒT[ƒtƒFƒX */
-	LPDIRECTDRAWCLIPPER		m_pClipper;			/*!< ƒNƒŠƒbƒp[ */
-	LPDIRECTDRAWPALETTE		m_pPalette;			/*!< ƒpƒŒƒbƒg */
-	RGB32					m_pal16;			/*!< 16BPPƒ}ƒXƒN */
-	UINT8					m_r16b;				/*!< B ƒVƒtƒg—Ê */
-	UINT8					m_l16r;				/*!< R ƒVƒtƒg—Ê */
-	UINT8					m_l16g;				/*!< G ƒVƒtƒg—Ê */
+	HWND					m_hWnd;				/*!< ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ« */
+	LPDIRECTDRAW			m_pDDraw;			/*!< DirectDraw ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ */
+	LPDIRECTDRAW2			m_pDDraw2;			/*!< DirectDraw2 ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ */
+	LPDIRECTDRAWSURFACE		m_pPrimarySurface;	/*!< ãƒ—ãƒ©ã‚¤ãƒãƒª ã‚µãƒ¼ãƒ•ã‚§ã‚¹ */
+	LPDIRECTDRAWSURFACE		m_pBackSurface;		/*!< ãƒãƒƒã‚¯ ã‚µãƒ¼ãƒ•ã‚§ã‚¹ */
+	LPDIRECTDRAWCLIPPER		m_pClipper;			/*!< ã‚¯ãƒªãƒƒãƒ‘ãƒ¼ */
+	LPDIRECTDRAWPALETTE		m_pPalette;			/*!< ãƒ‘ãƒ¬ãƒƒãƒˆ */
+	RGB32					m_pal16;			/*!< 16BPPãƒã‚¹ã‚¯ */
+	UINT8					m_r16b;				/*!< B ã‚·ãƒ•ãƒˆé‡ */
+	UINT8					m_l16r;				/*!< R ã‚·ãƒ•ãƒˆé‡ */
+	UINT8					m_l16g;				/*!< G ã‚·ãƒ•ãƒˆé‡ */
 	CMNVRAM					m_vram;				/*!< VRAM */
-	PALETTEENTRY			m_pal[256];			/*!< ƒpƒŒƒbƒg */
+	PALETTEENTRY			m_pal[256];			/*!< ãƒ‘ãƒ¬ãƒƒãƒˆ */
 };

@@ -3,7 +3,7 @@
 
 G_BEGIN_DECLS
 
-// Win32 SYSTEMTIME ストラクチャ
+// Win32 SYSTEMTIME 繧ｹ繝医Λ繧ｯ繝√Ε
 
 typedef struct {
 	UINT16	year;

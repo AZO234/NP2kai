@@ -379,9 +379,9 @@ loadall286:		I286CLOCK(195)
 				I286IRQCHECKTERM
 
 				align	4
-expint6:		mov		si, di					// ver0.27 ‚±‚Ìƒ^ƒCƒvEEE
-				I286CLOCK(20)					// ‘S•”C³‚µ‚È‚«‚á(Š¾
-				INT_NUM(6)						// i286‚Æi386‚Å‹““®‚ªˆá‚¤‚©‚ç
-		}										// ‚¢‚â‚ç‚µ‚¢‚Ëc
+expint6:		mov		si, di					// ver0.27 ã“ã®ã‚¿ã‚¤ãƒ—ãƒ»ãƒ»ãƒ»
+				I286CLOCK(20)					// å…¨éƒ¨ä¿®æ­£ã—ãªãã‚ƒ(æ±—
+				INT_NUM(6)						// i286ã¨i386ã§æŒ™å‹•ãŒé•ã†ã‹ã‚‰
+		}										// ã„ã‚„ã‚‰ã—ã„ã­â€¦
 }
 

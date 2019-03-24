@@ -1,6 +1,6 @@
 /**
  * @file	trace.cpp
- * @brief	ƒgƒŒ[ƒX ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	ãƒˆãƒ¬ãƒ¼ã‚¹ ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -19,11 +19,11 @@
 
 #define	VIEW_FGCOLOR	0x000000
 #define	VIEW_BGCOLOR	0xffffff
-#define	VIEW_TEXT		"‚l‚r ƒSƒVƒbƒN"
+#define	VIEW_TEXT		"ï¼­ï¼³ ã‚´ã‚·ãƒƒã‚¯"
 #define	VIEW_SIZE		12
 
 /**
- * @brief ƒgƒŒ[ƒX ƒEƒBƒ“ƒhƒE ƒNƒ‰ƒX
+ * @brief ãƒˆãƒ¬ãƒ¼ã‚¹ ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ã‚¯ãƒ©ã‚¹
  */
 class CTraceWnd : public CWndProc
 {
@@ -47,13 +47,13 @@ protected:
 	void OnEnterMenuLoop(BOOL bIsTrackPopupMenu);
 
 private:
-	static CTraceWnd sm_instance;		/*!< —Bˆê‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Å‚· */
-	UINT8 m_nFlags;						/*!< ƒtƒ‰ƒO */
-	TEXTFILEH m_tfh;					/*!< ƒeƒLƒXƒg ƒtƒ@ƒCƒ‹ ƒnƒ“ƒhƒ‹ */
-	HBRUSH m_hBrush;					/*!< ƒuƒ‰ƒV */
-	HFONT m_hFont;						/*!< ƒtƒHƒ“ƒg */
-	CWndProc m_wndView;					/*!< ƒeƒLƒXƒg ƒRƒ“ƒgƒ[ƒ‹ */
-	std::string m_lineBuffer;			/*!< ƒ‰ƒCƒ“ ƒoƒbƒtƒ@ */
+	static CTraceWnd sm_instance;		/*!< å”¯ä¸€ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã§ã™ */
+	UINT8 m_nFlags;						/*!< ãƒ•ãƒ©ã‚° */
+	TEXTFILEH m_tfh;					/*!< ãƒ†ã‚­ã‚¹ãƒˆ ãƒ•ã‚¡ã‚¤ãƒ« ãƒãƒ³ãƒ‰ãƒ« */
+	HBRUSH m_hBrush;					/*!< ãƒ–ãƒ©ã‚· */
+	HFONT m_hFont;						/*!< ãƒ•ã‚©ãƒ³ãƒˆ */
+	CWndProc m_wndView;					/*!< ãƒ†ã‚­ã‚¹ãƒˆ ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ« */
+	std::string m_lineBuffer;			/*!< ãƒ©ã‚¤ãƒ³ ãƒãƒƒãƒ•ã‚¡ */
 };
 
 struct TRACECFG
@@ -82,12 +82,12 @@ static const PFTBL initbl[4] =
 	PFVAL("height",	PFTYPE_SINT32,	&tracecfg.height)
 };
 
-//! —Bˆê‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Å‚·
+//! å”¯ä¸€ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã§ã™
 CTraceWnd CTraceWnd::sm_instance;
 
 /**
- * ƒCƒ“ƒXƒ^ƒ“ƒX‚ğ“¾‚é
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å¾—ã‚‹
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 inline CTraceWnd* CTraceWnd::GetInstance()
 {
@@ -95,7 +95,7 @@ inline CTraceWnd* CTraceWnd::GetInstance()
 }
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CTraceWnd::CTraceWnd()
 	: m_nFlags(0)
@@ -106,7 +106,7 @@ CTraceWnd::CTraceWnd()
 }
 
 /**
- * ‰Šú‰»
+ * åˆæœŸåŒ–
  */
 void CTraceWnd::Initialize()
 {
@@ -145,7 +145,7 @@ void CTraceWnd::Initialize()
 }
 
 /**
- * ‰ğ•ú
+ * è§£æ”¾
  */
 void CTraceWnd::Deinitialize()
 {
@@ -160,9 +160,9 @@ void CTraceWnd::Deinitialize()
 }
 
 /**
- * Trace ‚Í—LŒø?
- * @retval true —LŒø
- * @retval false –³Œø
+ * Trace ã¯æœ‰åŠ¹?
+ * @retval true æœ‰åŠ¹
+ * @retval false ç„¡åŠ¹
  */
 inline bool CTraceWnd::IsTrace() const
 {
@@ -170,9 +170,9 @@ inline bool CTraceWnd::IsTrace() const
 }
 
 /**
- * Verbose ‚Í—LŒø?
- * @retval true —LŒø
- * @retval false –³Œø
+ * Verbose ã¯æœ‰åŠ¹?
+ * @retval true æœ‰åŠ¹
+ * @retval false ç„¡åŠ¹
  */
 inline bool CTraceWnd::IsVerbose() const
 {
@@ -180,9 +180,9 @@ inline bool CTraceWnd::IsVerbose() const
 }
 
 /**
- * —LŒø?
- * @retval true —LŒø
- * @retval false –³Œø
+ * æœ‰åŠ¹?
+ * @retval true æœ‰åŠ¹
+ * @retval false ç„¡åŠ¹
  */
 inline bool CTraceWnd::IsEnabled() const
 {
@@ -190,8 +190,8 @@ inline bool CTraceWnd::IsEnabled() const
 }
 
 /**
- * ƒƒO’Ç‰Á
- * @param[in] c •¶š
+ * ãƒ­ã‚°è¿½åŠ 
+ * @param[in] c æ–‡å­—
  */
 void CTraceWnd::AddChar(char c)
 {
@@ -211,9 +211,9 @@ void CTraceWnd::AddChar(char c)
 }
 
 /**
- * ƒƒO’Ç‰Á
- * @param[in] lpFormat ƒtƒH[ƒ}ƒbƒg
- * @param[in] argptr ˆø”
+ * ãƒ­ã‚°è¿½åŠ 
+ * @param[in] lpFormat ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+ * @param[in] argptr å¼•æ•°
  */
 void CTraceWnd::AddFormat(LPCSTR lpFormat, va_list argptr)
 {
@@ -225,8 +225,8 @@ void CTraceWnd::AddFormat(LPCSTR lpFormat, va_list argptr)
 }
 
 /**
- * ƒƒO’Ç‰Á
- * @param[in] lpString •¶š—ñ
+ * ãƒ­ã‚°è¿½åŠ 
+ * @param[in] lpString æ–‡å­—åˆ—
  */
 void CTraceWnd::AddString(LPCTSTR lpString)
 {
@@ -241,7 +241,27 @@ void CTraceWnd::AddString(LPCTSTR lpString)
 
 		m_wndView.SendMessage(EM_REPLACESEL, FALSE, reinterpret_cast<LPARAM>(lpString));
 		m_wndView.SendMessage(EM_REPLACESEL, FALSE, reinterpret_cast<LPARAM>(crlf));
+
+		// å¢—ãˆã™ããŸã‚‰æ¶ˆã™
+		if(nLength>20000){
+			TCHAR temp[1] = {0};
+			int llength = m_wndView.SendMessage(EM_LINELENGTH, static_cast<WPARAM>(1), NULL);
+			m_wndView.SendMessage(EM_SETSEL, static_cast<WPARAM>(0), static_cast<LPARAM>(nLength));
+			m_wndView.SendMessage(EM_REPLACESEL, FALSE, reinterpret_cast<LPARAM>(temp));
+		}
+
 		m_wndView.SendMessage(EM_SETSEL, static_cast<WPARAM>(nStart), static_cast<LPARAM>(nEnd));
+
+		//UINT nStart = 0;
+		//UINT nEnd = 0;
+		//m_wndView.SendMessage(EM_GETSEL, reinterpret_cast<WPARAM>(&nStart), reinterpret_cast<LPARAM>(&nEnd));
+
+		//const UINT nLength = m_wndView.GetWindowTextLength();
+		//m_wndView.SendMessage(EM_SETSEL, static_cast<WPARAM>(nLength), static_cast<LPARAM>(nLength));
+
+		//m_wndView.SendMessage(EM_REPLACESEL, FALSE, reinterpret_cast<LPARAM>(lpString));
+		//m_wndView.SendMessage(EM_REPLACESEL, FALSE, reinterpret_cast<LPARAM>(crlf));
+		//m_wndView.SendMessage(EM_SETSEL, static_cast<WPARAM>(nStart), static_cast<LPARAM>(nEnd));
 	}
 	if (m_tfh != NULL)
 	{
@@ -251,11 +271,11 @@ void CTraceWnd::AddString(LPCTSTR lpString)
 }
 
 /**
- * Windows ƒvƒƒV[ƒWƒƒ (WindowProc) ‚ğ’ñ‹Ÿ‚µ‚Ü‚·
- * @param[in] message ˆ—‚³‚ê‚é Windows ƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
- * @param[in] wParam ƒƒbƒZ[ƒW‚Ìˆ—‚Ég—p‚·‚é’Ç‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·
- * @param[in] lParam ƒƒbƒZ[ƒW‚Ìˆ—‚Ég—p‚·‚é’Ç‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·
- * @return –ß‚è’l‚ÍAƒƒbƒZ[ƒW‚É‚æ‚Á‚ÄˆÙ‚È‚è‚Ü‚·
+ * Windows ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ (WindowProc) ã‚’æä¾›ã—ã¾ã™
+ * @param[in] message å‡¦ç†ã•ã‚Œã‚‹ Windows ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] wParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã«ä½¿ç”¨ã™ã‚‹è¿½åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™
+ * @param[in] lParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã«ä½¿ç”¨ã™ã‚‹è¿½åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™
+ * @return æˆ»ã‚Šå€¤ã¯ã€ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ã‚ˆã£ã¦ç•°ãªã‚Šã¾ã™
  */
 LRESULT CTraceWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -337,10 +357,10 @@ LRESULT CTraceWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ƒtƒŒ[ƒ€ƒ[ƒN‚ÍAWindows ‚ÌƒEƒBƒ“ƒhƒE‚Í [ì¬] ‚Ü‚½‚Í CreateEx ‚Ìƒƒ“ƒo[ŠÖ”‚ğŒÄ‚Ño‚·‚±‚Æ‚É‚æ‚Á‚Äì¬‚³‚ê‚½ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ª•K—v‚Æ‚·‚é‚ÆA‚±‚Ìƒƒ“ƒo[ŠÖ”‚ğŒÄ‚Ño‚µ‚Ü‚·
- * @param[in] lpCreateStruct ì¬‚³‚ê‚½ƒIƒuƒWƒFƒNƒg‚ÉŠÖ‚·‚éî•ñ‚ªŠÜ‚Ü‚ê‚Ä‚¢‚Ü‚·B
- * @retval 0 ¬Œ÷
- * @retval -1 ¸”s
+ * ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã¯ã€Windows ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã¯ [ä½œæˆ] ã¾ãŸã¯ CreateEx ã®ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ã‚’å‘¼ã³å‡ºã™ã“ã¨ã«ã‚ˆã£ã¦ä½œæˆã•ã‚ŒãŸã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒå¿…è¦ã¨ã™ã‚‹ã¨ã€ã“ã®ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¾ã™
+ * @param[in] lpCreateStruct ä½œæˆã•ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«é–¢ã™ã‚‹æƒ…å ±ãŒå«ã¾ã‚Œã¦ã„ã¾ã™ã€‚
+ * @retval 0 æˆåŠŸ
+ * @retval -1 å¤±æ•—
  */
 int CTraceWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
@@ -365,9 +385,9 @@ int CTraceWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 }
 
 /**
- * ƒtƒŒ[ƒ€ƒ[ƒN‚ÍAƒ†[ƒU[‚ªƒRƒ“ƒgƒ[ƒ‹ ƒƒjƒ…[‚©‚çƒRƒ}ƒ“ƒh‚ğ‘I‘ğ‚µ‚½‚Æ‚«A‚Ü‚½‚ÍÅ‘å‰»‚Ü‚½‚ÍÅ¬‰»ƒ{ƒ^ƒ“‚ğ‘I‘ğ‚·‚é‚ÆA‚±‚Ìƒƒ“ƒo[ŠÖ”‚ğŒÄ‚Ño‚µ‚Ü‚·
- * @param[in] nID •K—v‚ÈƒVƒXƒeƒ€ ƒRƒ}ƒ“ƒh‚Ìí—Ş‚ğw’è‚µ‚Ü‚·
- * @param[in] lParam ƒJ[ƒ\ƒ‹‚ÌÀ•W
+ * ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã¯ã€ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ« ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‹ã‚‰ã‚³ãƒãƒ³ãƒ‰ã‚’é¸æŠã—ãŸã¨ãã€ã¾ãŸã¯æœ€å¤§åŒ–ã¾ãŸã¯æœ€å°åŒ–ãƒœã‚¿ãƒ³ã‚’é¸æŠã™ã‚‹ã¨ã€ã“ã®ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¾ã™
+ * @param[in] nID å¿…è¦ãªã‚·ã‚¹ãƒ†ãƒ  ã‚³ãƒãƒ³ãƒ‰ã®ç¨®é¡ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] lParam ã‚«ãƒ¼ã‚½ãƒ«ã®åº§æ¨™
  */
 void CTraceWnd::OnSysCommand(UINT nID, LPARAM lParam)
 {
@@ -404,8 +424,8 @@ void CTraceWnd::OnSysCommand(UINT nID, LPARAM lParam)
 }
 
 /**
- * ƒtƒŒ[ƒ€ƒ[ƒN‚ÍAƒƒjƒ…[ ƒ‹[ƒvŠJn‚ÉA‚±‚Ìƒƒ“ƒo[ŠÖ”‚ğŒÄ‚Ño‚µ‚Ü‚·
- * @param[in] bIsTrackPopupMenu TrackPopupMenu ŠÖ”‚ğ—˜—p‚µ‚½ê‡ TRUE
+ * ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã¯ã€ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ãƒ«ãƒ¼ãƒ—é–‹å§‹æ™‚ã«ã€ã“ã®ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¾ã™
+ * @param[in] bIsTrackPopupMenu TrackPopupMenu é–¢æ•°ã‚’åˆ©ç”¨ã—ãŸå ´åˆ TRUE
  */
 void CTraceWnd::OnEnterMenuLoop(BOOL bIsTrackPopupMenu)
 {

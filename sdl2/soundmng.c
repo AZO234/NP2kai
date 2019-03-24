@@ -28,6 +28,11 @@
 
 #include "soundmng.h"
 
+#if defined(_MSC_VER)
+#define strcasecmp _stricmp
+#define strncasecmp _strnicmp
+#endif
+
 UINT8
 snddrv_drv2num(const char* cfgstr)
 {
@@ -1284,7 +1289,7 @@ sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 	}
 
 	SDL_MixAudioFormat(stream, sndbuf->buf + (sndbuf->size - sndbuf->remain), AUDIO_S16LSB,
-	    len, SDL_MIX_MAXVOLUME);
+	    len, (int)(((float)SDL_MIX_MAXVOLUME / 100) * np2cfg.vol_master));
 	sndbuf->remain -= len;
 
 	if (sndbuf->remain == 0) {

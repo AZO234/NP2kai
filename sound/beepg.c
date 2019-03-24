@@ -28,7 +28,7 @@ static void oneshot(BEEP bp, SINT32 *pcm, UINT count) {
 			samp = beep_data[bp->beep_data_curr_loc - 1];
 		else
 			samp = beep_data[BEEPDATACOUNT - 1];
-		samp = (double)samp / 0x100 * (0x3000 * beepcfg.vol) - (0x1500 * beepcfg.vol);
+		samp = (SINT32)((double)samp / 0x100 * (0x3000 * beepcfg.vol) - (0x1500 * beepcfg.vol));
 		pcm[0] += samp;
 		pcm[1] += samp;
 		pcm += 2;

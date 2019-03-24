@@ -1,4 +1,5 @@
 #include	"compiler.h"
+#include	"cpumem.h"
 #include	"cpucore.h"
 #include	"pccore.h"
 #include	"iocore.h"
@@ -362,7 +363,7 @@ static REG8 putsub(GLIO lio, const LIOPUT *lput) {
 	flag |= (lput->fg & 15) << 4;
 	flag |= (lput->bg & 15) << 8;
 
-	// ‚³‚Ä•\Ž¦B
+	// ã•ã¦è¡¨ç¤ºã€‚
 	writecnt = 0;
 	height = lput->height;
 	do {

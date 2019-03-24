@@ -1,6 +1,6 @@
 /**
  * @file	PropProc.h
- * @brief	ƒvƒƒpƒeƒB ƒV[ƒg ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ð‚µ‚Ü‚·
+ * @brief	ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ ã‚·ãƒ¼ãƒˆ ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -10,12 +10,12 @@
 #include "tstring.h"
 
 /**
- * @brief ƒvƒƒpƒeƒB ƒV[ƒg ƒy[ƒW
+ * @brief ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ ã‚·ãƒ¼ãƒˆ ãƒšãƒ¼ã‚¸
  */
 class CPropPageProc : public CDlgProc
 {
 public:
-	PROPSHEETPAGE m_psp;			//!< ƒvƒƒpƒeƒB ƒV[ƒg ƒy[ƒW\‘¢‘Ì
+	PROPSHEETPAGE m_psp;			//!< ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ ã‚·ãƒ¼ãƒˆ ãƒšãƒ¼ã‚¸æ§‹é€ ä½“
 
 public:
 	CPropPageProc(UINT nIDTemplate, UINT nIDCaption = 0);
@@ -32,17 +32,17 @@ protected:
 	virtual void OnCancel();
 
 private:
-	LPTSTR m_lpCaption;				//!< ƒLƒƒƒvƒVƒ‡ƒ“
+	LPTSTR m_lpCaption;				//!< ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³
 	static UINT CALLBACK PropPageCallback(HWND hWnd, UINT message, LPPROPSHEETPAGE pPropPage);
 };
 
 /**
- * @brief ƒvƒƒpƒeƒB ƒV[ƒg
+ * @brief ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ ã‚·ãƒ¼ãƒˆ
  */
 class CPropSheetProc /* : public CWnd */
 {
 public:
-	PROPSHEETHEADER m_psh;					//!< ƒvƒƒpƒeƒB ƒV[ƒg ƒwƒbƒ_\‘¢‘Ì
+	PROPSHEETHEADER m_psh;					//!< ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ ã‚·ãƒ¼ãƒˆ ãƒ˜ãƒƒãƒ€æ§‹é€ ä½“
 
 public:
 	CPropSheetProc();

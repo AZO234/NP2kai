@@ -1,6 +1,6 @@
 /**
  * @file	cmmidioutvst.h
- * @brief	MIDI OUT VST ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	MIDI OUT VST ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -15,7 +15,7 @@
 #include "vsthost\vstmidievent.h"
 
 /**
- * @brief MIDI OUT VST ƒNƒ‰ƒX
+ * @brief MIDI OUT VST ã‚¯ãƒ©ã‚¹
  */
 class CComMidiOutVst : public CComMidiOut
 {
@@ -29,13 +29,13 @@ public:
 	virtual void Long(const UINT8* lpMessage, UINT cbMessage);
 
 private:
-	UINT m_nBlockSize;			/*!< ƒuƒƒbƒN ƒTƒCƒY */
-	UINT m_nIndex;				/*!< “Ç‚İæ‚èƒCƒ“ƒfƒbƒNƒX */
-	CVstEffect m_effect;		/*!< ƒGƒtƒFƒNƒg */
-	CVstEditWnd m_wnd;			/*!< ƒEƒBƒ“ƒhƒE */
-	CVstMidiEvent m_event;		/*!< ƒCƒxƒ“ƒg */
-	CVstBuffer m_input;			/*!< “ü—Íƒoƒbƒtƒ@ */
-	CVstBuffer m_output;		/*!< o—Íƒoƒbƒtƒ@ */
+	UINT m_nBlockSize;			/*!< ãƒ–ãƒ­ãƒƒã‚¯ ã‚µã‚¤ã‚º */
+	UINT m_nIndex;				/*!< èª­ã¿å–ã‚Šã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ */
+	CVstEffect m_effect;		/*!< ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ */
+	CVstEditWnd m_wnd;			/*!< ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ */
+	CVstMidiEvent m_event;		/*!< ã‚¤ãƒ™ãƒ³ãƒˆ */
+	CVstBuffer m_input;			/*!< å…¥åŠ›ãƒãƒƒãƒ•ã‚¡ */
+	CVstBuffer m_output;		/*!< å‡ºåŠ›ãƒãƒƒãƒ•ã‚¡ */
 
 	bool Initialize(LPCTSTR lpPath);
 	static void SOUNDCALL GetPcm(CComMidiOutVst*, SINT32* lpBuffer, UINT nBufferCount);

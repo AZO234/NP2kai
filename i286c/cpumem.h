@@ -6,7 +6,7 @@
 #endif
 
 
-// 000000-0fffff ÉÅÉCÉìÉÅÉÇÉä
+// 000000-0fffff „É°„Ç§„É≥„É°„É¢„É™
 // 100000-10ffef HMA
 // 10fff0-10ffff HIMEM
 // 110000-193fff FONT-ROM/RAM
@@ -82,6 +82,8 @@ void MEMCALL memr_writes(UINT seg, UINT off, const void *dat, UINT leng);
 
 #define	MEMP_READ8(addr)					\
 			memp_read8((addr))
+#define	MEMP_READ16(addr)					\
+			memp_read16((addr))
 #define	MEMP_WRITE8(addr, dat)				\
 			memp_write8((addr), (dat))
 

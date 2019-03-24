@@ -1,6 +1,6 @@
 /**
  * @file	sdasio.h
- * @brief	ASIO ƒI[ƒfƒBƒI ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	ASIO ã‚ªãƒ¼ãƒ‡ã‚£ã‚ª ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -10,7 +10,7 @@
 #include "sdbase.h"
 
 /**
- * @brief ASIO ƒI[ƒfƒBƒI ƒNƒ‰ƒX
+ * @brief ASIO ã‚ªãƒ¼ãƒ‡ã‚£ã‚ª ã‚¯ãƒ©ã‚¹
  */
 class CSoundDeviceAsio : public CSoundDeviceBase
 {
@@ -28,12 +28,12 @@ public:
 	virtual void StopStream();
 
 private:
-	static CSoundDeviceAsio* sm_pInstance;			/*!< Œ»İ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX */
-	IASIO* m_pAsioDriver;							/*!< ASIO ƒhƒ‰ƒCƒo */
-	UINT m_nBufferLength;							/*!< ƒoƒbƒtƒ@ ƒTƒCƒY */
-	std::vector<ASIOBufferInfo> m_bufferInfo;		/*!< ƒoƒbƒtƒ@ */
-	ASIOCallbacks m_callback;						/*!< ƒR[ƒ‹ƒoƒbƒN */
-	static AsioDriverList sm_asioDriverList;		/*!< ƒhƒ‰ƒCƒo ƒŠƒXƒg */
+	static CSoundDeviceAsio* sm_pInstance;			/*!< ç¾åœ¨ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ */
+	IASIO* m_pAsioDriver;							/*!< ASIO ãƒ‰ãƒ©ã‚¤ãƒ */
+	UINT m_nBufferLength;							/*!< ãƒãƒƒãƒ•ã‚¡ ã‚µã‚¤ã‚º */
+	std::vector<ASIOBufferInfo> m_bufferInfo;		/*!< ãƒãƒƒãƒ•ã‚¡ */
+	ASIOCallbacks m_callback;						/*!< ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ */
+	static AsioDriverList sm_asioDriverList;		/*!< ãƒ‰ãƒ©ã‚¤ãƒ ãƒªã‚¹ãƒˆ */
 	static void cBufferSwitch(long doubleBufferIndex, ASIOBool directProcess);
 	static void cSampleRateDidChange(ASIOSampleRate sRate);
 	static long cAsioMessage(long selector, long value, void* message, double* opt);

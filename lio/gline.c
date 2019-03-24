@@ -49,7 +49,7 @@ static void gline(const _GLIO *lio, const LINEPT *lp, UINT16 pat) {
 	x2 = lp->x2;
 	y2 = lp->y2;
 
-	// ‚Ñ‚ã[‚Û‚¢‚ñ‚Æ
+	// ã³ã‚…ãƒ¼ã½ã„ã‚“ã¨
 	swap = 0;
 	if (x1 > x2) {
 		tmp = x1;
@@ -117,7 +117,7 @@ static void gline(const _GLIO *lio, const LINEPT *lp, UINT16 pat) {
 		y2 = tmp;
 	}
 
-	// i‚ñ‚¾‹——£ŒvŽZ
+	// é€²ã‚“ã è·é›¢è¨ˆç®—
 	d1 = x1 - lp->x1;
 	if (d1 < 0) {
 		d1 = 0 - d1;

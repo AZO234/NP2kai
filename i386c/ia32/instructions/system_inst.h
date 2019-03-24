@@ -93,6 +93,10 @@ void RDPMC(void);
 void MOV_TdRd(void);
 void MOV_RdTd(void);
 
+/* fast system call */
+void SYSENTER(void);
+void SYSEXIT(void);
+
 
 #ifdef __cplusplus
 }

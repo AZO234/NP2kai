@@ -8,6 +8,9 @@
 #include	"vram.h"
 #include	"palettes.h"
 #include	"timing.h"
+#if defined(BIOS_IO_EMULATION)
+#include	"bios/bios.h"
+#endif
 
 #if !defined(CPUCORE_IA32)
 #define	SEARCH_SYNC
@@ -22,7 +25,7 @@ typedef struct {
 	UINT	maxy;
 } GDCCLK;
 
-// 31kHz�̎��̓���N���b�N���s���c
+// 31kHzの時の動作クロックが不明…
 static const GDCCLK gdcclk[] = {
 			{14318180 / 8, 112 - 8, 112 + 8, 200, 300},
 			{21052600 / 8, 106 - 6, 106 + 6, 400, 575},
@@ -333,7 +336,7 @@ void gdc_work(int id) {
 	item->cnt = 0;
 }
 
-// BIOS�Ƃ��ŘM�������Ƀ��Z�b�g
+// BIOSとかで弄った時にリセット
 void gdc_forceready(int id) {
 
 	GDCDATA	item;
@@ -384,10 +387,10 @@ const GDCCLK	*clk;
 	}
 	else
 #endif
-	if (!(gdc.crt15khz & 2)) {							// 24.83�}300Hz
+	if (!(gdc.crt15khz & 2)) {							// 24.83±300Hz
 		clk = gdcclk + 1;
 	}
-	else {												// 15.98�}300Hz
+	else {												// 15.98±300Hz
 		clk = gdcclk;
 	}
 
@@ -442,7 +445,7 @@ static void IOOUTCALL gdc_o60(UINT port, REG8 dat) {
 }
 
 static void IOOUTCALL gdc_o62(UINT port, REG8 dat) {
-
+	
 	if (gdc.m.cnt < GDCCMD_MAX) {
 		gdc.m.fifo[gdc.m.cnt++] = 0x100 | dat;
 	}
@@ -460,7 +463,7 @@ static void IOOUTCALL gdc_o64(UINT port, REG8 dat) {
 static void IOOUTCALL gdc_o68(UINT port, REG8 dat) {
 
 	REG8	bit;
-
+	
 	if (!(dat & 0xf0)) {
 		bit = 1 << ((dat >> 1) & 7);
 		if (dat & 1) {
@@ -623,7 +626,7 @@ static REG8 IOINPCALL gdc_i60(UINT port) {
 	else {
 		gdc_work(GDCWORK_MASTER);
 	}
-#ifdef SEARCH_SYNC		// ToDo: �t�F�b�`�L���[���Q�Ƃ���悤�Ɂc
+#ifdef SEARCH_SYNC		// ToDo: フェッチキューを参照するように…
 	if ((CPU_INPADRS) && (CPU_REMCLOCK >= 5)) {
 		UINT32 addr;
 		UINT16 jadr;
@@ -651,7 +654,7 @@ static REG8 IOINPCALL gdc_i60(UINT port) {
 		}
 	}
 #endif
-#ifdef TURE_SYNC				// �N���b�N�C�x���g�̌덷�C��
+#ifdef TURE_SYNC				// クロックイベントの誤差修正
 	if (g_nevent.item[NEVENT_FLAMES].clock < (CPU_BASECLOCK - CPU_REMCLOCK)) {
 		ret ^= 0x20;
 	}
@@ -698,7 +701,7 @@ static void IOOUTCALL gdc_oa0(UINT port, REG8 dat) {
 }
 
 static void IOOUTCALL gdc_oa2(UINT port, REG8 dat) {
-
+	
 	if (gdc.s.cnt < GDCCMD_MAX) {
 		gdc.s.fifo[gdc.s.cnt++] = 0x100 | dat;
 	}
@@ -780,7 +783,7 @@ static REG8 IOINPCALL gdc_ia0(UINT port) {
 		}
 	}
 #endif
-#ifdef TURE_SYNC				// �N���b�N�C�x���g�̌덷�C��
+#ifdef TURE_SYNC				// クロックイベントの誤差修正
 	if (g_nevent.item[NEVENT_FLAMES].clock < (CPU_BASECLOCK - CPU_REMCLOCK)) {
 		ret ^= 0x20;
 	}

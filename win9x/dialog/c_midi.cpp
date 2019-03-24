@@ -1,6 +1,6 @@
 /**
  * @file	c_midi.cpp
- * @brief	MIDI ƒRƒ“ƒgƒ[ƒ‹ ƒNƒ‰ƒXŒQ‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	MIDI ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ« ã‚¯ãƒ©ã‚¹ç¾¤ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -15,7 +15,7 @@
 #endif	// defined(MT32SOUND_DLL)
 
 /**
- * MIDI ƒfƒoƒCƒX‚Ì‰Šú‰»
+ * MIDI ãƒ‡ãƒã‚¤ã‚¹ã®åˆæœŸåŒ–
  */
 void CComboMidiDevice::PreSubclassWindow()
 {
@@ -25,7 +25,7 @@ void CComboMidiDevice::PreSubclassWindow()
 }
 
 /**
- * MIDI IN ƒfƒoƒCƒX‚Ì—ñ‹“
+ * MIDI IN ãƒ‡ãƒã‚¤ã‚¹ã®åˆ—æŒ™
  */
 void CComboMidiDevice::EnumerateMidiIn()
 {
@@ -41,7 +41,7 @@ void CComboMidiDevice::EnumerateMidiIn()
 }
 
 /**
- * MIDI OUT ƒfƒoƒCƒX‚Ì—ñ‹“
+ * MIDI OUT ãƒ‡ãƒã‚¤ã‚¹ã®åˆ—æŒ™
  */
 void CComboMidiDevice::EnumerateMidiOut()
 {
@@ -80,8 +80,8 @@ void CComboMidiDevice::EnumerateMidiOut()
 }
 
 /**
- * ƒJ[ƒ\ƒ‹İ’è
- * @param[in] lpDevice ƒfƒoƒCƒX–¼
+ * ã‚«ãƒ¼ã‚½ãƒ«è¨­å®š
+ * @param[in] lpDevice ãƒ‡ãƒã‚¤ã‚¹å
  */
 void CComboMidiDevice::SetCurString(LPCTSTR lpDevice)
 {
@@ -94,7 +94,7 @@ void CComboMidiDevice::SetCurString(LPCTSTR lpDevice)
 }
 
 /**
- * MIDI ƒ‚ƒWƒ…[ƒ‹—ñ‹“
+ * MIDI ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«åˆ—æŒ™
  */
 void CComboMidiModule::PreSubclassWindow()
 {
@@ -105,7 +105,7 @@ void CComboMidiModule::PreSubclassWindow()
 }
 
 /**
- * ƒtƒ@ƒCƒ‹‘I‘ğ
+ * ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠ
  */
 void CEditMimpiFile::Browse()
 {

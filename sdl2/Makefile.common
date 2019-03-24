@@ -46,6 +46,7 @@ SOURCES_C := 		$(NP2_PATH)/calendar.c \
 		$(wildcard $(NP2_PATH)/font/*.c) \
 		$(wildcard $(NP2_PATH)/generic/*.c) \
 		$(wildcard $(NP2_PATH)/io/*.c) \
+		$(wildcard $(NP2_PATH)/io/pci/*.c) \
 		$(wildcard $(NP2_PATH)/lio/*.c) \
 		$(wildcard $(NP2_PATH)/mem/*.c) \
 		$(wildcard $(NP2_PATH)/sdl2/*.c) \

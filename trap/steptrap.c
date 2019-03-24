@@ -33,7 +33,7 @@ void CPUCALL steptrap(UINT cs, UINT32 eip) {
 #endif
 
 
-// ---- ‚±‚±‚Éƒgƒ‰ƒbƒvðŒƒR[ƒh‚ð‘‚«‚Ü‚·
+// ---- ã“ã“ã«ãƒˆãƒ©ãƒƒãƒ—æ¡ä»¶ã‚³ãƒ¼ãƒ‰ã‚’æ›¸ãã¾ã™
 {
 	static UINT32 x;
 	UINT32 tmp;
@@ -76,7 +76,7 @@ void CPUCALL steptrap(UINT cs, UINT32 eip) {
 #endif
 
 
-	// IDEƒeƒXƒg—p
+	// IDEãƒ†ã‚¹ãƒˆç”¨
 #if 0
 	if ((cs == 0x1300) && (eip == 0x1E97)) {
 		TRACEOUT(("-------- NECCD: function: %.2x", CPU_AL));
@@ -178,7 +178,7 @@ void CPUCALL steptrap(UINT cs, UINT32 eip) {
 		}
 	}
 #endif
-#if 0	// —…j”Õ
+#if 0	// ç¾…é‡ç›¤
 	if (cs == 0x60) {
 		if (eip == 0xADF9) {
 			TRACEOUT(("%.4x:%.4x -> %.4x:%.4x:%.4x", cs, eip, CPU_BX, CPU_SI, CPU_AX));

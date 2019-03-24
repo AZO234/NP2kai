@@ -4,7 +4,7 @@
 #include	"iocore.h"
 
 
-// EPSONê—pƒ|[ƒg 0c00`
+// EPSONå°‚ç”¨ãƒãƒ¼ãƒˆ 0c00ã€œ
 
 static void bankselect(void) {
 

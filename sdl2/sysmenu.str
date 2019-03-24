@@ -56,6 +56,9 @@ static const char str_rightrol[] = "Right Rotated";
 static const char str_dispsync[] = "Disp Vsync";
 static const char str_realpal[] = "Real Palettes";
 static const char str_nowait[] = "No Wait";
+#if defined(SUPPORT_ASYNC_CPU)
+static const char str_asynccpu[] = "Async CPU";
+#endif
 static const char str_autoframe[] = "Auto frame";
 static const char str_60fps[] = "Full frame";
 static const char str_30fps[] = "1/2 frame";
@@ -102,6 +105,7 @@ static const char str_pc980126k86[] = "PC-9801-26K + 86";
 static const char str_pc980186cb[] = "PC-9801-86 + Chibi-oto";
 static const char str_pc9801118[] = "PC-9801-118";
 static const char str_pc980186mx[] = "PC-9801-86 + Mate-X PCM(B460)";
+static const char str_pc980186118[] = "PC-9801-86 + 118";
 static const char str_pc9801mx[] = "Mate-X PCM(B460)";
 static const char str_spreakboard[] = "Speak board";
 static const char str_sparkboard[] = "Spark board";
@@ -154,6 +158,9 @@ static const char str_mouserapid[] = "Mouse Rapid";
 static const char str_itfwork[] = "ITF work";
 static const char str_fixmmtimer[] = "Fix MMTimer";
 static const char str_skip16mbmemchk[] = "Skip over 16MB memcheck";
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+static const char str_fastmemchk[] = "Fast memcheck";
+#endif
 static const char str_about[] = "About...";
 
 static const MSYSITEM s_emu[] = {
@@ -314,6 +321,9 @@ static const MSYSITEM s_screen[] = {
 		{str_dispsync,		NULL,		MID_DISPSYNC,		0},
 		{str_realpal,		NULL,		MID_RASTER,			0},
 		{str_nowait,		NULL,		MID_NOWAIT,			0},
+#if defined(SUPPORT_ASYNC_CPU)
+		{str_asynccpu,		NULL,		MID_ASYNCCPU,			0},
+#endif
 		{str_autoframe,		NULL,		MID_AUTOFPS,		0},
 		{str_60fps,			NULL,		MID_60FPS,			0},
 		{str_30fps,			NULL,		MID_30FPS,			0},
@@ -373,6 +383,7 @@ static const MSYSITEM s_snd[] = {
 		{str_pc980186cb,	NULL,		MID_PC9801_86_CB,	0},
 		{str_pc9801118,		NULL,		MID_PC9801_118,		0},
 		{str_pc980186mx,	NULL,		MID_PC9801_86_MX,	0},
+		{str_pc980186118,	NULL,		MID_PC9801_86_118,	0},
 		{str_pc9801mx,		NULL,		MID_PC9801_MX,		0},
 		{str_spreakboard,	NULL,		MID_SPEAKBOARD,		0},
 		{str_sparkboard,	NULL,		MID_SPARKBOARD,		0},
@@ -440,8 +451,11 @@ static const MSYSITEM s_other[] = {
 		{str_joyrapid,		NULL,		MID_RAPID,			0},
 		{str_mouserapid,	NULL,		MID_MSRAPID,		MENU_GRAY},
 		{str_itfwork,		NULL,		MID_ITFWORK,			0},
-		{str_fixmmtimer,	NULL,		MID_FIXMMTIMER,			0},
-		{str_skip16mbmemchk,	NULL,		MID_SKIP16MBMEMCHK,		0},
+//		{str_fixmmtimer,	NULL,		MID_FIXMMTIMER,			0},
+//		{str_skip16mbmemchk,	NULL,		MID_SKIP16MBMEMCHK,		0},
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+		{str_fastmemchk,	NULL,		MID_FASTMEMCHK,			0},
+#endif
 #endif
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_about,			NULL,		MID_ABOUT,			MENU_DELETED}};

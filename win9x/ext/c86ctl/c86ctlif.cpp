@@ -1,6 +1,6 @@
 /**
  * @file	c86ctlif.cpp
- * @brief	G.I.M.I.C ƒAƒNƒZƒX ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	G.I.M.I.C ã‚¢ã‚¯ã‚»ã‚¹ ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -9,11 +9,11 @@
 
 using namespace c86ctl;
 
-/*! ƒCƒ“ƒ^ƒtƒFƒCƒX */
+/*! ã‚¤ãƒ³ã‚¿ãƒ•ã‚§ã‚¤ã‚¹ */
 typedef HRESULT (WINAPI * FnCreateInstance)(REFIID riid, LPVOID* ppi);
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 C86CtlIf::C86CtlIf()
 	: m_hModule(NULL)
@@ -22,7 +22,7 @@ C86CtlIf::C86CtlIf()
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 C86CtlIf::~C86CtlIf()
 {
@@ -30,9 +30,9 @@ C86CtlIf::~C86CtlIf()
 }
 
 /**
- * ‰Šú‰»
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * åˆæœŸåŒ–
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool C86CtlIf::Initialize()
 {
@@ -43,7 +43,7 @@ bool C86CtlIf::Initialize()
 
 	do
 	{
-		/* DLL “Ç‚İ‚İ */
+		/* DLL èª­ã¿è¾¼ã¿ */
 		m_hModule = ::LoadLibrary(TEXT("c86ctl.dll"));
 		if (m_hModule == NULL)
 		{
@@ -55,14 +55,14 @@ bool C86CtlIf::Initialize()
 			break;
 		}
 
-		/* ƒCƒ“ƒXƒ^ƒ“ƒXì¬ */
+		/* ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ä½œæˆ */
 		(*CreateInstance)(IID_IRealChipBase, reinterpret_cast<LPVOID*>(&m_pChipBase));
 		if (m_pChipBase == NULL)
 		{
 			break;
 		}
 
-		/* ‰Šú‰» */
+		/* åˆæœŸåŒ– */
 		if (m_pChipBase->initialize() != C86CTL_ERR_NONE)
 		{
 			break;
@@ -76,7 +76,7 @@ bool C86CtlIf::Initialize()
 }
 
 /**
- * ‰ğ•ú
+ * è§£æ”¾
  */
 void C86CtlIf::Deinitialize()
 {
@@ -100,17 +100,17 @@ void C86CtlIf::Deinitialize()
 }
 
 /**
- * ‰¹Œ¹ƒŠƒZƒbƒg
+ * éŸ³æºãƒªã‚»ãƒƒãƒˆ
  */
 void C86CtlIf::Reset()
 {
 }
 
 /**
- * ƒCƒ“ƒ^[ƒtƒFƒCƒXæ“¾
- * @param[in] nChipType ƒ^ƒCƒv
- * @param[in] nClock ƒNƒƒbƒN
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹å–å¾—
+ * @param[in] nChipType ã‚¿ã‚¤ãƒ—
+ * @param[in] nClock ã‚¯ãƒ­ãƒƒã‚¯
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 IExternalChip* C86CtlIf::GetInterface(IExternalChip::ChipType nChipType, UINT nClock)
 {
@@ -123,17 +123,17 @@ IExternalChip* C86CtlIf::GetInterface(IExternalChip::ChipType nChipType, UINT nC
 			break;
 		}
 
-		/* ‰¹Œ¹‚ğ’T‚· */
+		/* éŸ³æºã‚’æ¢ã™ */
 		const int nDeviceCount = m_pChipBase->getNumberOfChip();
 		for (int i = 0; i < nDeviceCount; i++)
 		{
-			/* g—p’†? */
+			/* ä½¿ç”¨ä¸­? */
 			if (m_chips.find(i) != m_chips.end())
 			{
 				continue;
 			}
 
-			/* ƒ`ƒbƒv‚ğ’T‚· */
+			/* ãƒãƒƒãƒ—ã‚’æ¢ã™ */
 			IRealChip* pRealChip = NULL;
 			m_pChipBase->getChipInterface(i, IID_IRealChip, reinterpret_cast<LPVOID*>(&pRealChip));
 			if (pRealChip == NULL)
@@ -141,7 +141,7 @@ IExternalChip* C86CtlIf::GetInterface(IExternalChip::ChipType nChipType, UINT nC
 				continue;
 			}
 
-			/* G.I.M.I.C ”»’è */
+			/* G.I.M.I.C åˆ¤å®š */
 			IGimic* pGimic = NULL;
 			m_pChipBase->getChipInterface(i, IID_IGimic, reinterpret_cast<LPVOID*>(&pGimic));
 			if (pGimic)
@@ -169,7 +169,7 @@ IExternalChip* C86CtlIf::GetInterface(IExternalChip::ChipType nChipType, UINT nC
 
 					if (nChipType == nRealChipType)
 					{
-						/* ƒTƒEƒ“ƒhƒ`ƒbƒvæ“¾‚Å‚«‚½ */
+						/* ã‚µã‚¦ãƒ³ãƒ‰ãƒãƒƒãƒ—å–å¾—ã§ããŸ */
 						Chip* pChip = new Chip(this, pRealChip, pGimic, nRealChipType, nClock);
 						m_chips[i] = pChip;
 						return pChip;
@@ -177,7 +177,7 @@ IExternalChip* C86CtlIf::GetInterface(IExternalChip::ChipType nChipType, UINT nC
 				}
 			}
 
-			/* ‚»‚Ì‘¼‚Ì”»’è */
+			/* ãã®ä»–ã®åˆ¤å®š */
 			IRealChip3* pChip3 = NULL;
 			m_pChipBase->getChipInterface(i, IID_IRealChip3, reinterpret_cast<LPVOID*>(&pChip3));
 			if (pChip3 != NULL)
@@ -204,7 +204,7 @@ IExternalChip* C86CtlIf::GetInterface(IExternalChip::ChipType nChipType, UINT nC
 				}
 				if (nChipType == nRealChipType)
 				{
-					/* ƒTƒEƒ“ƒhƒ`ƒbƒvæ“¾‚Å‚«‚½ */
+					/* ã‚µã‚¦ãƒ³ãƒ‰ãƒãƒƒãƒ—å–å¾—ã§ããŸ */
 					Chip* pChip = new Chip(this, pChip3, NULL, nRealChipType, nClock);
 					m_chips[i] = pChip;
 					return pChip;
@@ -221,8 +221,8 @@ IExternalChip* C86CtlIf::GetInterface(IExternalChip::ChipType nChipType, UINT nC
 }
 
 /**
- * ‰ğ•ú
- * @param[in] pChip ƒ`ƒbƒv
+ * è§£æ”¾
+ * @param[in] pChip ãƒãƒƒãƒ—
  */
 void C86CtlIf::Detach(C86CtlIf::Chip* pChip)
 {
@@ -240,15 +240,15 @@ void C86CtlIf::Detach(C86CtlIf::Chip* pChip)
 	}
 }
 
-/* ---- ƒ`ƒbƒv */
+/* ---- ãƒãƒƒãƒ— */
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
- * @param[in] pC86CtlIf C86CtlIf ƒCƒ“ƒXƒ^ƒ“ƒX
- * @param[in] pRealChip ƒ`ƒbƒv ƒCƒ“ƒXƒ^ƒ“ƒX
- * @param[in] pGimic G.I.M.I.C ƒCƒ“ƒXƒ^ƒ“ƒX
- * @param[in] nChipType ƒ`ƒbƒv ƒ^ƒCƒv
- * @param[in] nClock ƒNƒƒbƒN
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * @param[in] pC86CtlIf C86CtlIf ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+ * @param[in] pRealChip ãƒãƒƒãƒ— ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+ * @param[in] pGimic G.I.M.I.C ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+ * @param[in] nChipType ãƒãƒƒãƒ— ã‚¿ã‚¤ãƒ—
+ * @param[in] nClock ã‚¯ãƒ­ãƒƒã‚¯
  */
 C86CtlIf::Chip::Chip(C86CtlIf* pC86CtlIf, c86ctl::IRealChip* pRealChip, c86ctl::IGimic* pGimic, ChipType nChipType, UINT nClock)
 	: m_pC86CtlIf(pC86CtlIf)
@@ -260,7 +260,7 @@ C86CtlIf::Chip::Chip(C86CtlIf* pC86CtlIf, c86ctl::IRealChip* pRealChip, c86ctl::
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 C86CtlIf::Chip::~Chip()
 {
@@ -277,7 +277,7 @@ IExternalChip::ChipType C86CtlIf::Chip::GetChipType()
 }
 
 /**
- * ƒŠƒZƒbƒg
+ * ãƒªã‚»ãƒƒãƒˆ
  */
 void C86CtlIf::Chip::Reset()
 {
@@ -290,9 +290,9 @@ void C86CtlIf::Chip::Reset()
 }
 
 /**
- * ƒŒƒWƒXƒ^‘‚«‚İ
- * @param[in] nAddr ƒAƒhƒŒƒX
- * @param[in] cData ƒf[ƒ^
+ * ãƒ¬ã‚¸ã‚¹ã‚¿æ›¸ãè¾¼ã¿
+ * @param[in] nAddr ã‚¢ãƒ‰ãƒ¬ã‚¹
+ * @param[in] cData ãƒ‡ãƒ¼ã‚¿
  */
 void C86CtlIf::Chip::WriteRegister(UINT nAddr, UINT8 cData)
 {
@@ -300,10 +300,10 @@ void C86CtlIf::Chip::WriteRegister(UINT nAddr, UINT8 cData)
 }
 
 /**
- * ƒƒbƒZ[ƒW
- * @param[in] nMessage ƒƒbƒZ[ƒW
- * @param[in] nParameter ƒpƒ‰ƒ[ƒ^
- * @return ƒŠƒUƒ‹ƒg
+ * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nParameter ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+ * @return ãƒªã‚¶ãƒ«ãƒˆ
  */
 INTPTR C86CtlIf::Chip::Message(UINT nMessage, INTPTR nParameter)
 {

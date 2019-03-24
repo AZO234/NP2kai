@@ -44,7 +44,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\;.\;..\..\;..\..\cbus;..\..\common;..\..\embed;..\..\embed\menu;..\..\embed\menubase;..\..\generic;..\..\i286c;..\..\io;..\..\mem;..\..\sound;..\..\vram"
+				AdditionalIncludeDirectories="..¥;.¥;..¥..¥;..¥..¥cbus;..¥..¥common;..¥..¥embed;..¥..¥embed¥menu;..¥..¥embed¥menubase;..¥..¥generic;..¥..¥i286c;..¥..¥io;..¥..¥mem;..¥..¥sound;..¥..¥vram"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -95,8 +95,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)$(PlatformName)¥$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)¥$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="2"
 			>
@@ -119,7 +119,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\;.\;..\..\;..\..\cbus;..\..\common;..\..\embed;..\..\embed\menu;..\..\embed\menubase;..\..\generic;..\..\i286c;..\..\io;..\..\mem;..\..\sound;..\..\vram"
+				AdditionalIncludeDirectories="..¥;.¥;..¥..¥;..¥..¥cbus;..¥..¥common;..¥..¥embed;..¥..¥embed¥menu;..¥..¥embed¥menubase;..¥..¥generic;..¥..¥i286c;..¥..¥io;..¥..¥mem;..¥..¥sound;..¥..¥vram"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -195,7 +195,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\;.\;..\..\;..\..\cbus;..\..\common;..\..\embed;..\..\embed\menu;..\..\embed\menubase;..\..\generic;..\..\i286c;..\..\io;..\..\mem;..\..\sound;..\..\vram"
+				AdditionalIncludeDirectories="..¥;.¥;..¥..¥;..¥..¥cbus;..¥..¥common;..¥..¥embed;..¥..¥embed¥menu;..¥..¥embed¥menubase;..¥..¥generic;..¥..¥i286c;..¥..¥io;..¥..¥mem;..¥..¥sound;..¥..¥vram"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -247,8 +247,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)$(PlatformName)¥$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)¥$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
@@ -273,7 +273,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\;.\;..\..\;..\..\cbus;..\..\common;..\..\embed;..\..\embed\menu;..\..\embed\menubase;..\..\generic;..\..\i286c;..\..\io;..\..\mem;..\..\sound;..\..\vram"
+				AdditionalIncludeDirectories="..¥;.¥;..¥..¥;..¥..¥cbus;..¥..¥common;..¥..¥embed;..¥..¥embed¥menu;..¥..¥embed¥menubase;..¥..¥generic;..¥..¥i286c;..¥..¥io;..¥..¥mem;..¥..¥sound;..¥..¥vram"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -328,87 +328,87 @@
 	</References>
 	<Files>
 		<Filter
-			Name="�\�[�X �t�@�C��"
+			Name="ソース ファイル"
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\calendar.c"
+				RelativePath="..¥..¥calendar.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\debugsub.c"
+				RelativePath="..¥..¥debugsub.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\keystat.c"
+				RelativePath="..¥..¥keystat.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\nevent.c"
+				RelativePath="..¥..¥nevent.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\pccore.c"
+				RelativePath="..¥..¥pccore.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\statsave.c"
+				RelativePath="..¥..¥statsave.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\timing.c"
+				RelativePath="..¥..¥timing.c"
 				>
 			</File>
 			<Filter
 				Name="bios"
 				>
 				<File
-					RelativePath="..\..\bios\bios.c"
+					RelativePath="..¥..¥bios¥bios.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\bios\bios09.c"
+					RelativePath="..¥..¥bios¥bios09.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\bios\bios0c.c"
+					RelativePath="..¥..¥bios¥bios0c.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\bios\bios12.c"
+					RelativePath="..¥..¥bios¥bios12.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\bios\bios13.c"
+					RelativePath="..¥..¥bios¥bios13.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\bios\bios18.c"
+					RelativePath="..¥..¥bios¥bios18.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\bios\bios19.c"
+					RelativePath="..¥..¥bios¥bios19.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\bios\bios1a.c"
+					RelativePath="..¥..¥bios¥bios1a.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\bios\bios1b.c"
+					RelativePath="..¥..¥bios¥bios1b.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\bios\bios1c.c"
+					RelativePath="..¥..¥bios¥bios1c.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\bios\bios1f.c"
+					RelativePath="..¥..¥bios¥bios1f.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\bios\sxsibios.c"
+					RelativePath="..¥..¥bios¥sxsibios.c"
 					>
 				</File>
 			</Filter>
@@ -416,79 +416,79 @@
 				Name="cbus"
 				>
 				<File
-					RelativePath="..\..\cbus\amd98.c"
+					RelativePath="..¥..¥cbus¥amd98.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\atapicmd.c"
+					RelativePath="..¥..¥cbus¥atapicmd.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\board118.c"
+					RelativePath="..¥..¥cbus¥board118.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\board14.c"
+					RelativePath="..¥..¥cbus¥board14.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\board26k.c"
+					RelativePath="..¥..¥cbus¥board26k.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\board86.c"
+					RelativePath="..¥..¥cbus¥board86.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\boardpx.c"
+					RelativePath="..¥..¥cbus¥boardpx.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\boardso.c"
+					RelativePath="..¥..¥cbus¥boardso.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\boardspb.c"
+					RelativePath="..¥..¥cbus¥boardspb.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\boardx2.c"
+					RelativePath="..¥..¥cbus¥boardx2.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\cbuscore.c"
+					RelativePath="..¥..¥cbus¥cbuscore.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\cs4231io.c"
+					RelativePath="..¥..¥cbus¥cs4231io.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\ideio.c"
+					RelativePath="..¥..¥cbus¥ideio.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\mpu98ii.c"
+					RelativePath="..¥..¥cbus¥mpu98ii.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\pc9861k.c"
+					RelativePath="..¥..¥cbus¥pc9861k.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\pcm86io.c"
+					RelativePath="..¥..¥cbus¥pcm86io.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\sasiio.c"
+					RelativePath="..¥..¥cbus¥sasiio.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\scsicmd.c"
+					RelativePath="..¥..¥cbus¥scsicmd.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\scsiio.c"
+					RelativePath="..¥..¥cbus¥scsiio.c"
 					>
 				</File>
 			</Filter>
@@ -496,31 +496,31 @@
 				Name="codecnv"
 				>
 				<File
-					RelativePath="..\..\codecnv\sjisucs2.c"
+					RelativePath="..¥..¥codecnv¥sjisucs2.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\codecnv\tcswap16.c"
+					RelativePath="..¥..¥codecnv¥tcswap16.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\codecnv\tcswap32.c"
+					RelativePath="..¥..¥codecnv¥tcswap32.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\codecnv\textcnv.c"
+					RelativePath="..¥..¥codecnv¥textcnv.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\codecnv\ucs2sjis.c"
+					RelativePath="..¥..¥codecnv¥ucs2sjis.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\codecnv\ucs2utf8.c"
+					RelativePath="..¥..¥codecnv¥ucs2utf8.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\codecnv\utf8ucs2.c"
+					RelativePath="..¥..¥codecnv¥utf8ucs2.c"
 					>
 				</File>
 			</Filter>
@@ -528,59 +528,59 @@
 				Name="common"
 				>
 				<File
-					RelativePath="..\..\common\_memory.c"
+					RelativePath="..¥..¥common¥_memory.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\arc.c"
+					RelativePath="..¥..¥common¥arc.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\arcunzip.c"
+					RelativePath="..¥..¥common¥arcunzip.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\bmpdata.c"
+					RelativePath="..¥..¥common¥bmpdata.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\lstarray.c"
+					RelativePath="..¥..¥common¥lstarray.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\milstr.c"
+					RelativePath="..¥..¥common¥milstr.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\mimpidef.c"
+					RelativePath="..¥..¥common¥mimpidef.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\parts.c"
+					RelativePath="..¥..¥common¥parts.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\profile.c"
+					RelativePath="..¥..¥common¥profile.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\rect.c"
+					RelativePath="..¥..¥common¥rect.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\resize.c"
+					RelativePath="..¥..¥common¥resize.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\strres.c"
+					RelativePath="..¥..¥common¥strres.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\textfile.c"
+					RelativePath="..¥..¥common¥textfile.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\wavefile.c"
+					RelativePath="..¥..¥common¥wavefile.c"
 					>
 				</File>
 			</Filter>
@@ -588,34 +588,34 @@
 				Name="embed"
 				>
 				<File
-					RelativePath="..\..\embed\vramhdl.c"
+					RelativePath="..¥..¥embed¥vramhdl.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\embed\vrammix.c"
+					RelativePath="..¥..¥embed¥vrammix.c"
 					>
 				</File>
 				<Filter
 					Name="menu"
 					>
 					<File
-						RelativePath="..\..\embed\menu\dlgabout.c"
+						RelativePath="..¥..¥embed¥menu¥dlgabout.c"
 						>
 					</File>
 					<File
-						RelativePath="..\..\embed\menu\dlgcfg.c"
+						RelativePath="..¥..¥embed¥menu¥dlgcfg.c"
 						>
 					</File>
 					<File
-						RelativePath="..\..\embed\menu\dlgscr.c"
+						RelativePath="..¥..¥embed¥menu¥dlgscr.c"
 						>
 					</File>
 					<File
-						RelativePath="..\..\embed\menu\filesel.c"
+						RelativePath="..¥..¥embed¥menu¥filesel.c"
 						>
 					</File>
 					<File
-						RelativePath="..\..\embed\menu\menustr.c"
+						RelativePath="..¥..¥embed¥menu¥menustr.c"
 						>
 					</File>
 				</Filter>
@@ -623,31 +623,31 @@
 					Name="menubase"
 					>
 					<File
-						RelativePath="..\..\embed\menubase\menubase.c"
+						RelativePath="..¥..¥embed¥menubase¥menubase.c"
 						>
 					</File>
 					<File
-						RelativePath="..\..\embed\menubase\menudlg.c"
+						RelativePath="..¥..¥embed¥menubase¥menudlg.c"
 						>
 					</File>
 					<File
-						RelativePath="..\..\embed\menubase\menuicon.c"
+						RelativePath="..¥..¥embed¥menubase¥menuicon.c"
 						>
 					</File>
 					<File
-						RelativePath="..\..\embed\menubase\menumbox.c"
+						RelativePath="..¥..¥embed¥menubase¥menumbox.c"
 						>
 					</File>
 					<File
-						RelativePath="..\..\embed\menubase\menures.c"
+						RelativePath="..¥..¥embed¥menubase¥menures.c"
 						>
 					</File>
 					<File
-						RelativePath="..\..\embed\menubase\menusys.c"
+						RelativePath="..¥..¥embed¥menubase¥menusys.c"
 						>
 					</File>
 					<File
-						RelativePath="..\..\embed\menubase\menuvram.c"
+						RelativePath="..¥..¥embed¥menubase¥menuvram.c"
 						>
 					</File>
 				</Filter>
@@ -656,39 +656,39 @@
 				Name="fdd"
 				>
 				<File
-					RelativePath="..\..\fdd\diskdrv.c"
+					RelativePath="..¥..¥fdd¥diskdrv.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\fdd\fdd_d88.c"
+					RelativePath="..¥..¥fdd¥fdd_d88.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\fdd\fdd_mtr.c"
+					RelativePath="..¥..¥fdd¥fdd_mtr.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\fdd\fdd_xdf.c"
+					RelativePath="..¥..¥fdd¥fdd_xdf.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\fdd\fddfile.c"
+					RelativePath="..¥..¥fdd¥fddfile.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\fdd\newdisk.c"
+					RelativePath="..¥..¥fdd¥newdisk.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\fdd\sxsi.c"
+					RelativePath="..¥..¥fdd¥sxsi.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\fdd\sxsicd.c"
+					RelativePath="..¥..¥fdd¥sxsicd.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\fdd\sxsihdd.c"
+					RelativePath="..¥..¥fdd¥sxsihdd.c"
 					>
 				</File>
 			</Filter>
@@ -696,39 +696,39 @@
 				Name="font"
 				>
 				<File
-					RelativePath="..\..\font\font.c"
+					RelativePath="..¥..¥font¥font.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\font\fontdata.c"
+					RelativePath="..¥..¥font¥fontdata.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\font\fontfm7.c"
+					RelativePath="..¥..¥font¥fontfm7.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\font\fontmake.c"
+					RelativePath="..¥..¥font¥fontmake.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\font\fontpc88.c"
+					RelativePath="..¥..¥font¥fontpc88.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\font\fontpc98.c"
+					RelativePath="..¥..¥font¥fontpc98.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\font\fontv98.c"
+					RelativePath="..¥..¥font¥fontv98.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\font\fontx1.c"
+					RelativePath="..¥..¥font¥fontx1.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\font\fontx68k.c"
+					RelativePath="..¥..¥font¥fontx68k.c"
 					>
 				</File>
 			</Filter>
@@ -736,43 +736,43 @@
 				Name="generic"
 				>
 				<File
-					RelativePath="..\..\generic\cmjasts.c"
+					RelativePath="..¥..¥generic¥cmjasts.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\generic\cmndraw.c"
+					RelativePath="..¥..¥generic¥cmndraw.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\generic\cmver.c"
+					RelativePath="..¥..¥generic¥cmver.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\generic\dipswbmp.c"
+					RelativePath="..¥..¥generic¥dipswbmp.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\generic\hostdrv.c"
+					RelativePath="..¥..¥generic¥hostdrv.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\generic\hostdrvs.c"
+					RelativePath="..¥..¥generic¥hostdrvs.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\generic\keydisp.c"
+					RelativePath="..¥..¥generic¥keydisp.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\generic\np2info.c"
+					RelativePath="..¥..¥generic¥np2info.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\generic\softkbd.c"
+					RelativePath="..¥..¥generic¥softkbd.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\generic\unasm.c"
+					RelativePath="..¥..¥generic¥unasm.c"
 					>
 				</File>
 			</Filter>
@@ -780,47 +780,47 @@
 				Name="i286c"
 				>
 				<File
-					RelativePath="..\..\i286c\cpumem.c"
+					RelativePath="..¥..¥i286c¥cpumem.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\i286c\i286c.c"
+					RelativePath="..¥..¥i286c¥i286c.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\i286c\i286c_0f.c"
+					RelativePath="..¥..¥i286c¥i286c_0f.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\i286c\i286c_8x.c"
+					RelativePath="..¥..¥i286c¥i286c_8x.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\i286c\i286c_ea.c"
+					RelativePath="..¥..¥i286c¥i286c_ea.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\i286c\i286c_f6.c"
+					RelativePath="..¥..¥i286c¥i286c_f6.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\i286c\i286c_fe.c"
+					RelativePath="..¥..¥i286c¥i286c_fe.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\i286c\i286c_mn.c"
+					RelativePath="..¥..¥i286c¥i286c_mn.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\i286c\i286c_rp.c"
+					RelativePath="..¥..¥i286c¥i286c_rp.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\i286c\i286c_sf.c"
+					RelativePath="..¥..¥i286c¥i286c_sf.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\i286c\v30patch.c"
+					RelativePath="..¥..¥i286c¥v30patch.c"
 					>
 				</File>
 			</Filter>
@@ -828,107 +828,107 @@
 				Name="io"
 				>
 				<File
-					RelativePath="..\..\io\artic.c"
+					RelativePath="..¥..¥io¥artic.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\cgrom.c"
+					RelativePath="..¥..¥io¥cgrom.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\cpuio.c"
+					RelativePath="..¥..¥io¥cpuio.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\crtc.c"
+					RelativePath="..¥..¥io¥crtc.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\dipsw.c"
+					RelativePath="..¥..¥io¥dipsw.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\dmac.c"
+					RelativePath="..¥..¥io¥dmac.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\egc.c"
+					RelativePath="..¥..¥io¥egc.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\emsio.c"
+					RelativePath="..¥..¥io¥emsio.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\epsonio.c"
+					RelativePath="..¥..¥io¥epsonio.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\fdc.c"
+					RelativePath="..¥..¥io¥fdc.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\fdd320.c"
+					RelativePath="..¥..¥io¥fdd320.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\gdc.c"
+					RelativePath="..¥..¥io¥gdc.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\gdc_pset.c"
+					RelativePath="..¥..¥io¥gdc_pset.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\gdc_sub.c"
+					RelativePath="..¥..¥io¥gdc_sub.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\iocore.c"
+					RelativePath="..¥..¥io¥iocore.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\mouseif.c"
+					RelativePath="..¥..¥io¥mouseif.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\necio.c"
+					RelativePath="..¥..¥io¥necio.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\nmiio.c"
+					RelativePath="..¥..¥io¥nmiio.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\np2sysp.c"
+					RelativePath="..¥..¥io¥np2sysp.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\pcidev.c"
+					RelativePath="..¥..¥io¥pcidev.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\pic.c"
+					RelativePath="..¥..¥io¥pic.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\pit.c"
+					RelativePath="..¥..¥io¥pit.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\printif.c"
+					RelativePath="..¥..¥io¥printif.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\serial.c"
+					RelativePath="..¥..¥io¥serial.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\sysport.c"
+					RelativePath="..¥..¥io¥sysport.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\upd4990.c"
+					RelativePath="..¥..¥io¥upd4990.c"
 					>
 				</File>
 			</Filter>
@@ -936,27 +936,27 @@
 				Name="lio"
 				>
 				<File
-					RelativePath="..\..\lio\gcircle.c"
+					RelativePath="..¥..¥lio¥gcircle.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\lio\gline.c"
+					RelativePath="..¥..¥lio¥gline.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\lio\gpset.c"
+					RelativePath="..¥..¥lio¥gpset.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\lio\gput1.c"
+					RelativePath="..¥..¥lio¥gput1.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\lio\gscreen.c"
+					RelativePath="..¥..¥lio¥gscreen.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\lio\lio.c"
+					RelativePath="..¥..¥lio¥lio.c"
 					>
 				</File>
 			</Filter>
@@ -964,35 +964,35 @@
 				Name="mem"
 				>
 				<File
-					RelativePath="..\..\mem\dmav30.c"
+					RelativePath="..¥..¥mem¥dmav30.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\mem\dmax86.c"
+					RelativePath="..¥..¥mem¥dmax86.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\mem\memegc.c"
+					RelativePath="..¥..¥mem¥memegc.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\mem\memems.c"
+					RelativePath="..¥..¥mem¥memems.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\mem\memepp.c"
+					RelativePath="..¥..¥mem¥memepp.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\mem\memtram.c"
+					RelativePath="..¥..¥mem¥memtram.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\mem\memvga.c"
+					RelativePath="..¥..¥mem¥memvga.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\mem\memvram.c"
+					RelativePath="..¥..¥mem¥memvram.c"
 					>
 				</File>
 			</Filter>
@@ -1000,109 +1000,109 @@
 				Name="sdl2"
 				>
 				<File
-					RelativePath="..\commng.c"
+					RelativePath="..¥commng.c"
 					>
 				</File>
 				<File
-					RelativePath="..\dosio.c"
+					RelativePath="..¥dosio.c"
 					>
 				</File>
 				<File
-					RelativePath="..\fontmng.c"
+					RelativePath="..¥fontmng.c"
 					>
 				</File>
 				<File
-					RelativePath="..\ini.c"
+					RelativePath="..¥ini.c"
 					>
 				</File>
 				<File
-					RelativePath="..\inputmng.c"
+					RelativePath="..¥inputmng.c"
 					>
 				</File>
 				<File
-					RelativePath="..\joymng.c"
+					RelativePath="..¥joymng.c"
 					>
 				</File>
 				<File
-					RelativePath="..\mousemng.c"
+					RelativePath="..¥mousemng.c"
 					>
 				</File>
 				<File
-					RelativePath="..\np2.c"
+					RelativePath="..¥np2.c"
 					>
 				</File>
 				<File
-					RelativePath="..\scrnmng.c"
+					RelativePath="..¥scrnmng.c"
 					>
 				</File>
 				<File
-					RelativePath="..\sdlkbd.c"
+					RelativePath="..¥sdlkbd.c"
 					>
 				</File>
 				<File
-					RelativePath="..\soundmng.cpp"
+					RelativePath="..¥soundmng.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\sysmenu.c"
+					RelativePath="..¥sysmenu.c"
 					>
 				</File>
 				<File
-					RelativePath="..\sysmng.c"
+					RelativePath="..¥sysmng.c"
 					>
 				</File>
 				<File
-					RelativePath="..\taskmng.c"
+					RelativePath="..¥taskmng.c"
 					>
 				</File>
 				<File
-					RelativePath="..\timemng.c"
+					RelativePath="..¥timemng.c"
 					>
 				</File>
 				<File
-					RelativePath="..\trace.c"
+					RelativePath="..¥trace.c"
 					>
 				</File>
 				<Filter
 					Name="ext"
 					>
 					<File
-						RelativePath="..\ext\externalchipmanager.cpp"
+						RelativePath="..¥ext¥externalchipmanager.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\ext\externalopl3.cpp"
+						RelativePath="..¥ext¥externalopl3.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\ext\externalopm.cpp"
+						RelativePath="..¥ext¥externalopm.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\ext\externalopna.cpp"
+						RelativePath="..¥ext¥externalopna.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\ext\externalpsg.cpp"
+						RelativePath="..¥ext¥externalpsg.cpp"
 						>
 					</File>
 					<Filter
 						Name="c86ctl"
 						>
 						<File
-							RelativePath="..\ext\c86ctl\c86ctlc86box.cpp"
+							RelativePath="..¥ext¥c86ctl¥c86ctlc86box.cpp"
 							>
 						</File>
 						<File
-							RelativePath="..\ext\c86ctl\c86ctlgimic.cpp"
+							RelativePath="..¥ext¥c86ctl¥c86ctlgimic.cpp"
 							>
 						</File>
 						<File
-							RelativePath="..\ext\c86ctl\c86ctlif.cpp"
+							RelativePath="..¥ext¥c86ctl¥c86ctlif.cpp"
 							>
 						</File>
 						<File
-							RelativePath="..\ext\c86ctl\c86ctlrealchipbase.cpp"
+							RelativePath="..¥ext¥c86ctl¥c86ctlrealchipbase.cpp"
 							>
 						</File>
 					</Filter>
@@ -1110,23 +1110,23 @@
 						Name="scci"
 						>
 						<File
-							RelativePath="..\ext\scci\scciif.cpp"
+							RelativePath="..¥ext¥scci¥scciif.cpp"
 							>
 						</File>
 						<File
-							RelativePath="..\ext\scci\sccisoundchip.cpp"
+							RelativePath="..¥ext¥scci¥sccisoundchip.cpp"
 							>
 						</File>
 						<File
-							RelativePath="..\ext\scci\sccisoundinterface.cpp"
+							RelativePath="..¥ext¥scci¥sccisoundinterface.cpp"
 							>
 						</File>
 						<File
-							RelativePath="..\ext\scci\sccisoundinterfacemanager.cpp"
+							RelativePath="..¥ext¥scci¥sccisoundinterfacemanager.cpp"
 							>
 						</File>
 						<File
-							RelativePath="..\ext\scci\sccispfmlight.cpp"
+							RelativePath="..¥ext¥scci¥sccispfmlight.cpp"
 							>
 						</File>
 					</Filter>
@@ -1135,7 +1135,7 @@
 					Name="win32"
 					>
 					<File
-						RelativePath=".\compiler.c"
+						RelativePath=".¥compiler.c"
 						>
 						<FileConfiguration
 							Name="Debug|Win32"
@@ -1171,22 +1171,22 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath=".\main.c"
+						RelativePath=".¥main.c"
 						>
 					</File>
 					<Filter
 						Name="misc"
 						>
 						<File
-							RelativePath=".\misc\threadbase.cpp"
+							RelativePath=".¥misc¥threadbase.cpp"
 							>
 						</File>
 						<File
-							RelativePath=".\misc\tty.cpp"
+							RelativePath=".¥misc¥tty.cpp"
 							>
 						</File>
 						<File
-							RelativePath=".\misc\usbdev.cpp"
+							RelativePath=".¥misc¥usbdev.cpp"
 							>
 						</File>
 					</Filter>
@@ -1196,130 +1196,130 @@
 				Name="sound"
 				>
 				<File
-					RelativePath="..\..\sound\adpcmc.c"
+					RelativePath="..¥..¥sound¥adpcmc.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\adpcmg.c"
+					RelativePath="..¥..¥sound¥adpcmg.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\beepc.c"
+					RelativePath="..¥..¥sound¥beepc.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\beepg.c"
+					RelativePath="..¥..¥sound¥beepg.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\cs4231c.c"
+					RelativePath="..¥..¥sound¥cs4231c.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\cs4231g.c"
+					RelativePath="..¥..¥sound¥cs4231g.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\fmboard.c"
+					RelativePath="..¥..¥sound¥fmboard.c"
 					>
 				</File>
 				<File
-					RelativePath="..\ext\opl3.cpp"
+					RelativePath="..¥ext¥opl3.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\oplgenc.c"
+					RelativePath="..¥..¥sound¥oplgenc.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\oplgeng.c"
+					RelativePath="..¥..¥sound¥oplgeng.c"
 					>
 				</File>
 				<File
-					RelativePath="..\ext\opna.cpp"
+					RelativePath="..¥ext¥opna.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\opngenc.c"
+					RelativePath="..¥..¥sound¥opngenc.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\opngeng.c"
+					RelativePath="..¥..¥sound¥opngeng.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\opntimer.c"
+					RelativePath="..¥..¥sound¥opntimer.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\pcm86c.c"
+					RelativePath="..¥..¥sound¥pcm86c.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\pcm86g.c"
+					RelativePath="..¥..¥sound¥pcm86g.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\pcmmix.c"
+					RelativePath="..¥..¥sound¥pcmmix.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\psggenc.c"
+					RelativePath="..¥..¥sound¥psggenc.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\psggeng.c"
+					RelativePath="..¥..¥sound¥psggeng.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\rhythmc.c"
+					RelativePath="..¥..¥sound¥rhythmc.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\s98.c"
+					RelativePath="..¥..¥sound¥s98.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\sndcsec.c"
+					RelativePath="..¥..¥sound¥sndcsec.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\sound.c"
+					RelativePath="..¥..¥sound¥sound.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\soundrom.c"
+					RelativePath="..¥..¥sound¥soundrom.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\tms3631c.c"
+					RelativePath="..¥..¥sound¥tms3631c.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\tms3631g.c"
+					RelativePath="..¥..¥sound¥tms3631g.c"
 					>
 				</File>
 				<Filter
 					Name="getsnd"
 					>
 					<File
-						RelativePath="..\..\sound\getsnd\getmp3.c"
+						RelativePath="..¥..¥sound¥getsnd¥getmp3.c"
 						>
 					</File>
 					<File
-						RelativePath="..\..\sound\getsnd\getogg.c"
+						RelativePath="..¥..¥sound¥getsnd¥getogg.c"
 						>
 					</File>
 					<File
-						RelativePath="..\..\sound\getsnd\getsmix.c"
+						RelativePath="..¥..¥sound¥getsnd¥getsmix.c"
 						>
 					</File>
 					<File
-						RelativePath="..\..\sound\getsnd\getsnd.c"
+						RelativePath="..¥..¥sound¥getsnd¥getsnd.c"
 						>
 					</File>
 					<File
-						RelativePath="..\..\sound\getsnd\getwave.c"
+						RelativePath="..¥..¥sound¥getsnd¥getwave.c"
 						>
 					</File>
 				</Filter>
@@ -1327,23 +1327,23 @@
 					Name="vermouth"
 					>
 					<File
-						RelativePath="..\..\sound\vermouth\midimod.c"
+						RelativePath="..¥..¥sound¥vermouth¥midimod.c"
 						>
 					</File>
 					<File
-						RelativePath="..\..\sound\vermouth\midinst.c"
+						RelativePath="..¥..¥sound¥vermouth¥midinst.c"
 						>
 					</File>
 					<File
-						RelativePath="..\..\sound\vermouth\midiout.c"
+						RelativePath="..¥..¥sound¥vermouth¥midiout.c"
 						>
 					</File>
 					<File
-						RelativePath="..\..\sound\vermouth\midtable.c"
+						RelativePath="..¥..¥sound¥vermouth¥midtable.c"
 						>
 					</File>
 					<File
-						RelativePath="..\..\sound\vermouth\midvoice.c"
+						RelativePath="..¥..¥sound¥vermouth¥midvoice.c"
 						>
 					</File>
 				</Filter>
@@ -1356,113 +1356,113 @@
 				Name="vram"
 				>
 				<File
-					RelativePath="..\..\vram\dispsync.c"
+					RelativePath="..¥..¥vram¥dispsync.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\vram\makegrex.c"
+					RelativePath="..¥..¥vram¥makegrex.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\vram\makegrph.c"
+					RelativePath="..¥..¥vram¥makegrph.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\vram\maketext.c"
+					RelativePath="..¥..¥vram¥maketext.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\vram\maketgrp.c"
+					RelativePath="..¥..¥vram¥maketgrp.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\vram\palettes.c"
+					RelativePath="..¥..¥vram¥palettes.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\vram\scrndraw.c"
+					RelativePath="..¥..¥vram¥scrndraw.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\vram\scrnsave.c"
+					RelativePath="..¥..¥vram¥scrnsave.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\vram\sdraw.c"
+					RelativePath="..¥..¥vram¥sdraw.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\vram\sdrawq16.c"
+					RelativePath="..¥..¥vram¥sdrawq16.c"
 					>
 				</File>
 				<File
-					RelativePath="..\..\vram\vram.c"
+					RelativePath="..¥..¥vram¥vram.c"
 					>
 				</File>
 			</Filter>
 		</Filter>
 		<Filter
-			Name="�w�b�_�[ �t�@�C��"
+			Name="ヘッダー ファイル"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\calendar.h"
+				RelativePath="..¥..¥calendar.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\common.h"
+				RelativePath="..¥..¥common.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\debugsub.h"
+				RelativePath="..¥..¥debugsub.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\keystat.h"
+				RelativePath="..¥..¥keystat.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\nevent.h"
+				RelativePath="..¥..¥nevent.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\np2ver.h"
+				RelativePath="..¥..¥np2ver.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\pccore.h"
+				RelativePath="..¥..¥pccore.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\statsave.h"
+				RelativePath="..¥..¥statsave.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\timing.h"
+				RelativePath="..¥..¥timing.h"
 				>
 			</File>
 			<Filter
 				Name="bios"
 				>
 				<File
-					RelativePath="..\..\bios\bios.h"
+					RelativePath="..¥..¥bios¥bios.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\bios\biosmem.h"
+					RelativePath="..¥..¥bios¥biosmem.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\bios\fdfmt.h"
+					RelativePath="..¥..¥bios¥fdfmt.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\bios\rsbios.h"
+					RelativePath="..¥..¥bios¥rsbios.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\bios\sxsibios.h"
+					RelativePath="..¥..¥bios¥sxsibios.h"
 					>
 				</File>
 			</Filter>
@@ -1470,79 +1470,79 @@
 				Name="cbus"
 				>
 				<File
-					RelativePath="..\..\cbus\amd98.h"
+					RelativePath="..¥..¥cbus¥amd98.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\atapicmd.h"
+					RelativePath="..¥..¥cbus¥atapicmd.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\board118.h"
+					RelativePath="..¥..¥cbus¥board118.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\board14.h"
+					RelativePath="..¥..¥cbus¥board14.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\board26k.h"
+					RelativePath="..¥..¥cbus¥board26k.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\board86.h"
+					RelativePath="..¥..¥cbus¥board86.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\boardpx.h"
+					RelativePath="..¥..¥cbus¥boardpx.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\boardso.h"
+					RelativePath="..¥..¥cbus¥boardso.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\boardspb.h"
+					RelativePath="..¥..¥cbus¥boardspb.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\boardx2.h"
+					RelativePath="..¥..¥cbus¥boardx2.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\cbuscore.h"
+					RelativePath="..¥..¥cbus¥cbuscore.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\cs4231io.h"
+					RelativePath="..¥..¥cbus¥cs4231io.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\ideio.h"
+					RelativePath="..¥..¥cbus¥ideio.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\mpu98ii.h"
+					RelativePath="..¥..¥cbus¥mpu98ii.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\pc9861k.h"
+					RelativePath="..¥..¥cbus¥pc9861k.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\pcm86io.h"
+					RelativePath="..¥..¥cbus¥pcm86io.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\sasiio.h"
+					RelativePath="..¥..¥cbus¥sasiio.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\scsicmd.h"
+					RelativePath="..¥..¥cbus¥scsicmd.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\cbus\scsiio.h"
+					RelativePath="..¥..¥cbus¥scsiio.h"
 					>
 				</File>
 			</Filter>
@@ -1550,11 +1550,11 @@
 				Name="codecnv"
 				>
 				<File
-					RelativePath="..\..\codecnv\codecnv.h"
+					RelativePath="..¥..¥codecnv¥codecnv.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\codecnv\textcnv.h"
+					RelativePath="..¥..¥codecnv¥textcnv.h"
 					>
 				</File>
 			</Filter>
@@ -1562,59 +1562,59 @@
 				Name="common"
 				>
 				<File
-					RelativePath="..\..\common\_memory.h"
+					RelativePath="..¥..¥common¥_memory.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\arc.h"
+					RelativePath="..¥..¥common¥arc.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\arcunzip.h"
+					RelativePath="..¥..¥common¥arcunzip.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\bmpdata.h"
+					RelativePath="..¥..¥common¥bmpdata.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\lstarray.h"
+					RelativePath="..¥..¥common¥lstarray.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\milstr.h"
+					RelativePath="..¥..¥common¥milstr.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\mimpidef.h"
+					RelativePath="..¥..¥common¥mimpidef.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\parts.h"
+					RelativePath="..¥..¥common¥parts.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\profile.h"
+					RelativePath="..¥..¥common¥profile.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\rect.h"
+					RelativePath="..¥..¥common¥rect.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\resize.h"
+					RelativePath="..¥..¥common¥resize.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\strres.h"
+					RelativePath="..¥..¥common¥strres.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\textfile.h"
+					RelativePath="..¥..¥common¥textfile.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\common\wavefile.h"
+					RelativePath="..¥..¥common¥wavefile.h"
 					>
 				</File>
 			</Filter>
@@ -1622,34 +1622,34 @@
 				Name="embed"
 				>
 				<File
-					RelativePath="..\..\embed\vramhdl.h"
+					RelativePath="..¥..¥embed¥vramhdl.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\embed\vrammix.h"
+					RelativePath="..¥..¥embed¥vrammix.h"
 					>
 				</File>
 				<Filter
 					Name="menu"
 					>
 					<File
-						RelativePath="..\..\embed\menu\dlgabout.h"
+						RelativePath="..¥..¥embed¥menu¥dlgabout.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\embed\menu\dlgcfg.h"
+						RelativePath="..¥..¥embed¥menu¥dlgcfg.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\embed\menu\dlgscr.h"
+						RelativePath="..¥..¥embed¥menu¥dlgscr.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\embed\menu\filesel.h"
+						RelativePath="..¥..¥embed¥menu¥filesel.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\embed\menu\menustr.h"
+						RelativePath="..¥..¥embed¥menu¥menustr.h"
 						>
 					</File>
 				</Filter>
@@ -1657,31 +1657,31 @@
 					Name="menubase"
 					>
 					<File
-						RelativePath="..\..\embed\menubase\menubase.h"
+						RelativePath="..¥..¥embed¥menubase¥menubase.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\embed\menubase\menudlg.h"
+						RelativePath="..¥..¥embed¥menubase¥menudlg.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\embed\menubase\menuicon.h"
+						RelativePath="..¥..¥embed¥menubase¥menuicon.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\embed\menubase\menumbox.h"
+						RelativePath="..¥..¥embed¥menubase¥menumbox.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\embed\menubase\menures.h"
+						RelativePath="..¥..¥embed¥menubase¥menures.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\embed\menubase\menusys.h"
+						RelativePath="..¥..¥embed¥menubase¥menusys.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\embed\menubase\menuvram.h"
+						RelativePath="..¥..¥embed¥menubase¥menuvram.h"
 						>
 					</File>
 				</Filter>
@@ -1690,43 +1690,43 @@
 				Name="fdd"
 				>
 				<File
-					RelativePath="..\..\fdd\d88head.h"
+					RelativePath="..¥..¥fdd¥d88head.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\fdd\diskdrv.h"
+					RelativePath="..¥..¥fdd¥diskdrv.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\fdd\fdd_d88.h"
+					RelativePath="..¥..¥fdd¥fdd_d88.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\fdd\fdd_mtr.h"
+					RelativePath="..¥..¥fdd¥fdd_mtr.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\fdd\fdd_xdf.h"
+					RelativePath="..¥..¥fdd¥fdd_xdf.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\fdd\fddfile.h"
+					RelativePath="..¥..¥fdd¥fddfile.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\fdd\newdisk.h"
+					RelativePath="..¥..¥fdd¥newdisk.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\fdd\sxsi.h"
+					RelativePath="..¥..¥fdd¥sxsi.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\fdd\sxsicd.h"
+					RelativePath="..¥..¥fdd¥sxsicd.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\fdd\sxsihdd.h"
+					RelativePath="..¥..¥fdd¥sxsihdd.h"
 					>
 				</File>
 			</Filter>
@@ -1734,15 +1734,15 @@
 				Name="font"
 				>
 				<File
-					RelativePath="..\..\font\font.h"
+					RelativePath="..¥..¥font¥font.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\font\fontdata.h"
+					RelativePath="..¥..¥font¥fontdata.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\font\fontmake.h"
+					RelativePath="..¥..¥font¥fontmake.h"
 					>
 				</File>
 			</Filter>
@@ -1750,43 +1750,43 @@
 				Name="generic"
 				>
 				<File
-					RelativePath="..\..\generic\cmjasts.h"
+					RelativePath="..¥..¥generic¥cmjasts.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\generic\cmndraw.h"
+					RelativePath="..¥..¥generic¥cmndraw.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\generic\cmver.h"
+					RelativePath="..¥..¥generic¥cmver.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\generic\dipswbmp.h"
+					RelativePath="..¥..¥generic¥dipswbmp.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\generic\hostdrv.h"
+					RelativePath="..¥..¥generic¥hostdrv.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\generic\hostdrvs.h"
+					RelativePath="..¥..¥generic¥hostdrvs.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\generic\keydisp.h"
+					RelativePath="..¥..¥generic¥keydisp.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\generic\np2info.h"
+					RelativePath="..¥..¥generic¥np2info.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\generic\softkbd.h"
+					RelativePath="..¥..¥generic¥softkbd.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\generic\unasm.h"
+					RelativePath="..¥..¥generic¥unasm.h"
 					>
 				</File>
 			</Filter>
@@ -1794,19 +1794,19 @@
 				Name="i286c"
 				>
 				<File
-					RelativePath="..\..\i286c\cpucore.h"
+					RelativePath="..¥..¥i286c¥cpucore.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\i286c\cpumem.h"
+					RelativePath="..¥..¥i286c¥cpumem.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\i286c\i286c.h"
+					RelativePath="..¥..¥i286c¥i286c.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\i286c\v30patch.h"
+					RelativePath="..¥..¥i286c¥v30patch.h"
 					>
 				</File>
 			</Filter>
@@ -1814,115 +1814,115 @@
 				Name="io"
 				>
 				<File
-					RelativePath="..\..\io\artic.h"
+					RelativePath="..¥..¥io¥artic.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\cgrom.h"
+					RelativePath="..¥..¥io¥cgrom.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\cpuio.h"
+					RelativePath="..¥..¥io¥cpuio.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\crtc.h"
+					RelativePath="..¥..¥io¥crtc.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\dipsw.h"
+					RelativePath="..¥..¥io¥dipsw.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\dmac.h"
+					RelativePath="..¥..¥io¥dmac.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\egc.h"
+					RelativePath="..¥..¥io¥egc.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\emsio.h"
+					RelativePath="..¥..¥io¥emsio.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\epsonio.h"
+					RelativePath="..¥..¥io¥epsonio.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\fdc.h"
+					RelativePath="..¥..¥io¥fdc.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\fdd320.h"
+					RelativePath="..¥..¥io¥fdd320.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\gdc.h"
+					RelativePath="..¥..¥io¥gdc.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\gdc_cmd.h"
+					RelativePath="..¥..¥io¥gdc_cmd.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\gdc_pset.h"
+					RelativePath="..¥..¥io¥gdc_pset.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\gdc_sub.h"
+					RelativePath="..¥..¥io¥gdc_sub.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\iocore.h"
+					RelativePath="..¥..¥io¥iocore.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\lsidef.h"
+					RelativePath="..¥..¥io¥lsidef.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\mouseif.h"
+					RelativePath="..¥..¥io¥mouseif.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\necio.h"
+					RelativePath="..¥..¥io¥necio.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\nmiio.h"
+					RelativePath="..¥..¥io¥nmiio.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\np2sysp.h"
+					RelativePath="..¥..¥io¥np2sysp.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\pcidev.h"
+					RelativePath="..¥..¥io¥pcidev.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\pic.h"
+					RelativePath="..¥..¥io¥pic.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\pit.h"
+					RelativePath="..¥..¥io¥pit.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\printif.h"
+					RelativePath="..¥..¥io¥printif.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\serial.h"
+					RelativePath="..¥..¥io¥serial.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\sysport.h"
+					RelativePath="..¥..¥io¥sysport.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\io\upd4990.h"
+					RelativePath="..¥..¥io¥upd4990.h"
 					>
 				</File>
 			</Filter>
@@ -1930,7 +1930,7 @@
 				Name="lio"
 				>
 				<File
-					RelativePath="..\..\lio\lio.h"
+					RelativePath="..¥..¥lio¥lio.h"
 					>
 				</File>
 			</Filter>
@@ -1938,35 +1938,35 @@
 				Name="mem"
 				>
 				<File
-					RelativePath="..\..\mem\dmav30.h"
+					RelativePath="..¥..¥mem¥dmav30.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\mem\dmax86.h"
+					RelativePath="..¥..¥mem¥dmax86.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\mem\memegc.h"
+					RelativePath="..¥..¥mem¥memegc.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\mem\memems.h"
+					RelativePath="..¥..¥mem¥memems.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\mem\memepp.h"
+					RelativePath="..¥..¥mem¥memepp.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\mem\memtram.h"
+					RelativePath="..¥..¥mem¥memtram.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\mem\memvga.h"
+					RelativePath="..¥..¥mem¥memvga.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\mem\memvram.h"
+					RelativePath="..¥..¥mem¥memvram.h"
 					>
 				</File>
 			</Filter>
@@ -1974,121 +1974,121 @@
 				Name="sdl2"
 				>
 				<File
-					RelativePath="..\commng.h"
+					RelativePath="..¥commng.h"
 					>
 				</File>
 				<File
-					RelativePath="..\dosio.h"
+					RelativePath="..¥dosio.h"
 					>
 				</File>
 				<File
-					RelativePath="..\fontmng.h"
+					RelativePath="..¥fontmng.h"
 					>
 				</File>
 				<File
-					RelativePath="..\ini.h"
+					RelativePath="..¥ini.h"
 					>
 				</File>
 				<File
-					RelativePath="..\inputmng.h"
+					RelativePath="..¥inputmng.h"
 					>
 				</File>
 				<File
-					RelativePath="..\joymng.h"
+					RelativePath="..¥joymng.h"
 					>
 				</File>
 				<File
-					RelativePath="..\mousemng.h"
+					RelativePath="..¥mousemng.h"
 					>
 				</File>
 				<File
-					RelativePath="..\np2.h"
+					RelativePath="..¥np2.h"
 					>
 				</File>
 				<File
-					RelativePath="..\oemtext.h"
+					RelativePath="..¥oemtext.h"
 					>
 				</File>
 				<File
-					RelativePath="..\scrnmng.h"
+					RelativePath="..¥scrnmng.h"
 					>
 				</File>
 				<File
-					RelativePath="..\sdlkbd.h"
+					RelativePath="..¥sdlkbd.h"
 					>
 				</File>
 				<File
-					RelativePath="..\soundmng.h"
+					RelativePath="..¥soundmng.h"
 					>
 				</File>
 				<File
-					RelativePath="..\sysmenu.h"
+					RelativePath="..¥sysmenu.h"
 					>
 				</File>
 				<File
-					RelativePath="..\sysmng.h"
+					RelativePath="..¥sysmng.h"
 					>
 				</File>
 				<File
-					RelativePath="..\taskmng.h"
+					RelativePath="..¥taskmng.h"
 					>
 				</File>
 				<File
-					RelativePath="..\timemng.h"
+					RelativePath="..¥timemng.h"
 					>
 				</File>
 				<File
-					RelativePath="..\trace.h"
+					RelativePath="..¥trace.h"
 					>
 				</File>
 				<Filter
 					Name="ext"
 					>
 					<File
-						RelativePath="..\ext\externalchip.h"
+						RelativePath="..¥ext¥externalchip.h"
 						>
 					</File>
 					<File
-						RelativePath="..\ext\externalchipmanager.h"
+						RelativePath="..¥ext¥externalchipmanager.h"
 						>
 					</File>
 					<File
-						RelativePath="..\ext\externalopl3.h"
+						RelativePath="..¥ext¥externalopl3.h"
 						>
 					</File>
 					<File
-						RelativePath="..\ext\externalopm.h"
+						RelativePath="..¥ext¥externalopm.h"
 						>
 					</File>
 					<File
-						RelativePath="..\ext\externalopna.h"
+						RelativePath="..¥ext¥externalopna.h"
 						>
 					</File>
 					<File
-						RelativePath="..\ext\externalpsg.h"
+						RelativePath="..¥ext¥externalpsg.h"
 						>
 					</File>
 					<Filter
 						Name="c86ctl"
 						>
 						<File
-							RelativePath="..\ext\c86ctl\c86ctl.h"
+							RelativePath="..¥ext¥c86ctl¥c86ctl.h"
 							>
 						</File>
 						<File
-							RelativePath="..\ext\c86ctl\c86ctlc86box.h"
+							RelativePath="..¥ext¥c86ctl¥c86ctlc86box.h"
 							>
 						</File>
 						<File
-							RelativePath="..\ext\c86ctl\c86ctlgimic.h"
+							RelativePath="..¥ext¥c86ctl¥c86ctlgimic.h"
 							>
 						</File>
 						<File
-							RelativePath="..\ext\c86ctl\c86ctlif.h"
+							RelativePath="..¥ext¥c86ctl¥c86ctlif.h"
 							>
 						</File>
 						<File
-							RelativePath="..\ext\c86ctl\c86ctlrealchipbase.h"
+							RelativePath="..¥ext¥c86ctl¥c86ctlrealchipbase.h"
 							>
 						</File>
 					</Filter>
@@ -2096,31 +2096,31 @@
 						Name="scci"
 						>
 						<File
-							RelativePath="..\ext\scci\scci.h"
+							RelativePath="..¥ext¥scci¥scci.h"
 							>
 						</File>
 						<File
-							RelativePath="..\ext\scci\SCCIDefines.h"
+							RelativePath="..¥ext¥scci¥SCCIDefines.h"
 							>
 						</File>
 						<File
-							RelativePath="..\ext\scci\scciif.h"
+							RelativePath="..¥ext¥scci¥scciif.h"
 							>
 						</File>
 						<File
-							RelativePath="..\ext\scci\sccisoundchip.h"
+							RelativePath="..¥ext¥scci¥sccisoundchip.h"
 							>
 						</File>
 						<File
-							RelativePath="..\ext\scci\sccisoundinterface.h"
+							RelativePath="..¥ext¥scci¥sccisoundinterface.h"
 							>
 						</File>
 						<File
-							RelativePath="..\ext\scci\sccisoundinterfacemanager.h"
+							RelativePath="..¥ext¥scci¥sccisoundinterfacemanager.h"
 							>
 						</File>
 						<File
-							RelativePath="..\ext\scci\sccispfmlight.h"
+							RelativePath="..¥ext¥scci¥sccispfmlight.h"
 							>
 						</File>
 					</Filter>
@@ -2129,26 +2129,26 @@
 					Name="win32"
 					>
 					<File
-						RelativePath=".\compiler.h"
+						RelativePath=".¥compiler.h"
 						>
 					</File>
 					<Filter
 						Name="misc"
 						>
 						<File
-							RelativePath=".\misc\guard.h"
+							RelativePath=".¥misc¥guard.h"
 							>
 						</File>
 						<File
-							RelativePath=".\misc\threadbase.h"
+							RelativePath=".¥misc¥threadbase.h"
 							>
 						</File>
 						<File
-							RelativePath=".\misc\tty.h"
+							RelativePath=".¥misc¥tty.h"
 							>
 						</File>
 						<File
-							RelativePath=".\misc\usbdev.h"
+							RelativePath=".¥misc¥usbdev.h"
 							>
 						</File>
 					</Filter>
@@ -2158,90 +2158,90 @@
 				Name="sound"
 				>
 				<File
-					RelativePath="..\..\sound\adpcm.h"
+					RelativePath="..¥..¥sound¥adpcm.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\beep.h"
+					RelativePath="..¥..¥sound¥beep.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\cs4231.h"
+					RelativePath="..¥..¥sound¥cs4231.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\fmboard.h"
+					RelativePath="..¥..¥sound¥fmboard.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\opl3.h"
+					RelativePath="..¥..¥sound¥opl3.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\oplgen.h"
+					RelativePath="..¥..¥sound¥oplgen.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\oplgencfg.h"
+					RelativePath="..¥..¥sound¥oplgencfg.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\opna.h"
+					RelativePath="..¥..¥sound¥opna.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\opngen.h"
+					RelativePath="..¥..¥sound¥opngen.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\opngencfg.h"
+					RelativePath="..¥..¥sound¥opngencfg.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\opntimer.h"
+					RelativePath="..¥..¥sound¥opntimer.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\pcm86.h"
+					RelativePath="..¥..¥sound¥pcm86.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\pcmmix.h"
+					RelativePath="..¥..¥sound¥pcmmix.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\psggen.h"
+					RelativePath="..¥..¥sound¥psggen.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\rhythm.h"
+					RelativePath="..¥..¥sound¥rhythm.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\s98.h"
+					RelativePath="..¥..¥sound¥s98.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\sndcsec.h"
+					RelativePath="..¥..¥sound¥sndcsec.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\sound.h"
+					RelativePath="..¥..¥sound¥sound.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\soundrom.h"
+					RelativePath="..¥..¥sound¥soundrom.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\sound\tms3631.h"
+					RelativePath="..¥..¥sound¥tms3631.h"
 					>
 				</File>
 				<Filter
 					Name="getsnd"
 					>
 					<File
-						RelativePath="..\..\sound\getsnd\getsnd.h"
+						RelativePath="..¥..¥sound¥getsnd¥getsnd.h"
 						>
 					</File>
 				</Filter>
@@ -2249,27 +2249,27 @@
 					Name="vermouth"
 					>
 					<File
-						RelativePath="..\..\sound\vermouth\midimod.h"
+						RelativePath="..¥..¥sound¥vermouth¥midimod.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\sound\vermouth\midinst.h"
+						RelativePath="..¥..¥sound¥vermouth¥midinst.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\sound\vermouth\midiout.h"
+						RelativePath="..¥..¥sound¥vermouth¥midiout.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\sound\vermouth\midtable.h"
+						RelativePath="..¥..¥sound¥vermouth¥midtable.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\sound\vermouth\midvoice.h"
+						RelativePath="..¥..¥sound¥vermouth¥midvoice.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\sound\vermouth\vermouth.h"
+						RelativePath="..¥..¥sound¥vermouth¥vermouth.h"
 						>
 					</File>
 				</Filter>
@@ -2282,49 +2282,49 @@
 				Name="vram"
 				>
 				<File
-					RelativePath="..\..\vram\dispsync.h"
+					RelativePath="..¥..¥vram¥dispsync.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\vram\makegrex.h"
+					RelativePath="..¥..¥vram¥makegrex.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\vram\makegrph.h"
+					RelativePath="..¥..¥vram¥makegrph.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\vram\maketext.h"
+					RelativePath="..¥..¥vram¥maketext.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\vram\maketgrp.h"
+					RelativePath="..¥..¥vram¥maketgrp.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\vram\palettes.h"
+					RelativePath="..¥..¥vram¥palettes.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\vram\scrndraw.h"
+					RelativePath="..¥..¥vram¥scrndraw.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\vram\scrnsave.h"
+					RelativePath="..¥..¥vram¥scrnsave.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\vram\sdraw.h"
+					RelativePath="..¥..¥vram¥sdraw.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\vram\vram.h"
+					RelativePath="..¥..¥vram¥vram.h"
 					>
 				</File>
 			</Filter>
 		</Filter>
 		<Filter
-			Name="���\�[�X �t�@�C��"
+			Name="リソース ファイル"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>

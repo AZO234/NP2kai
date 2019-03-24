@@ -1,6 +1,6 @@
 /**
  * @file	juliet.cpp
- * @brief	ROMEO ƒAƒNƒZƒX ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	ROMEO ã‚¢ã‚¯ã‚»ã‚¹ ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -8,17 +8,17 @@
 #include <stddef.h>
 #include "romeo.h"
 
-//! DLL –¼
+//! DLL å
 #define	PCIDEBUG_DLL			TEXT("pcidebug.dll")
 
-//! PCI ƒfƒoƒCƒX ƒAƒhƒŒƒX‚ğì¬
+//! PCI ãƒ‡ãƒã‚¤ã‚¹ ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ä½œæˆ
 #define PCIBUSDEVFUNC(b, d, f)	(((b) << 8) | ((d) << 3) | (f))
 
-//! ƒxƒ“ƒ_/ƒfƒoƒCƒX‚ğì¬
+//! ãƒ™ãƒ³ãƒ€/ãƒ‡ãƒã‚¤ã‚¹ã‚’ä½œæˆ
 #define	DEVVEND(v, d)			((ULONG)((v) | ((d) << 16)))
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CJuliet::CJuliet()
 	: m_hModule(NULL)
@@ -35,16 +35,16 @@ CJuliet::CJuliet()
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CJuliet::~CJuliet()
 {
 }
 
 /**
- * ‰Šú‰»
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * åˆæœŸåŒ–
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CJuliet::Initialize()
 {
@@ -59,7 +59,7 @@ bool CJuliet::Initialize()
 		return false;
 	}
 
-	//! ƒ[ƒhŠÖ”ƒŠƒXƒg
+	//! ãƒ­ãƒ¼ãƒ‰é–¢æ•°ãƒªã‚¹ãƒˆ
 	static const ProcItem s_dllProc[] =
 	{
 		{"_pciConfigReadLong",	offsetof(CJuliet, m_fnRead32)},
@@ -100,7 +100,7 @@ bool CJuliet::Initialize()
 }
 
 /**
- * ‰ğ•ú
+ * è§£æ”¾
  */
 void CJuliet::Deinitialize()
 {
@@ -127,9 +127,9 @@ void CJuliet::Deinitialize()
 }
 
 /**
- * ROMEO ‚ğ’T‚·
- * @note pciFindPciDeviceg‚¤‚ÆAOS‹N“®Œãˆê”­–Ú‚ÉŒ©‚Â‚¯‚ç‚ê‚È‚¢‚±‚Æ‚ª‘½‚¢‚Ì‚ÅA©‘O‚ÅŒŸõ‚·‚éi–î–ì‚³‚ñ•û®j
- * @return ƒoƒX ƒAƒhƒŒƒX
+ * ROMEO ã‚’æ¢ã™
+ * @note pciFindPciDeviceä½¿ã†ã¨ã€OSèµ·å‹•å¾Œä¸€ç™ºç›®ã«è¦‹ã¤ã‘ã‚‰ã‚Œãªã„ã“ã¨ãŒå¤šã„ã®ã§ã€è‡ªå‰ã§æ¤œç´¢ã™ã‚‹ï¼ˆçŸ¢é‡ã•ã‚“æ–¹å¼ï¼‰
+ * @return ãƒã‚¹ ã‚¢ãƒ‰ãƒ¬ã‚¹
  */
 ULONG CJuliet::SearchRomeo() const
 {
@@ -152,7 +152,7 @@ ULONG CJuliet::SearchRomeo() const
 }
 
 /**
- * ‰¹Œ¹ƒŠƒZƒbƒg
+ * éŸ³æºãƒªã‚»ãƒƒãƒˆ
  */
 void CJuliet::Reset()
 {
@@ -174,10 +174,10 @@ void CJuliet::Reset()
 }
 
 /**
- * ƒCƒ“ƒ^[ƒtƒFƒCƒXæ“¾
- * @param[in] nChipType ƒ^ƒCƒv
- * @param[in] nClock ƒNƒƒbƒN
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹å–å¾—
+ * @param[in] nChipType ã‚¿ã‚¤ãƒ—
+ * @param[in] nClock ã‚¯ãƒ­ãƒƒã‚¯
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 IExternalChip* CJuliet::GetInterface(IExternalChip::ChipType nChipType, UINT nClock)
 {
@@ -206,8 +206,8 @@ IExternalChip* CJuliet::GetInterface(IExternalChip::ChipType nChipType, UINT nCl
 }
 
 /**
- * ‰ğ•ú
- * @param[in] pChip ƒ`ƒbƒv
+ * è§£æ”¾
+ * @param[in] pChip ãƒãƒƒãƒ—
  */
 void CJuliet::Detach(IExternalChip* pChip)
 {
@@ -282,11 +282,11 @@ bool CJuliet::Task()
 
 
 
-// ---- ƒ`ƒbƒv
+// ---- ãƒãƒƒãƒ—
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
- * @param[in] pJuliet eƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * @param[in] pJuliet è¦ªã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 CJuliet::Chip288::Chip288(CJuliet* pJuliet)
 	: m_pJuliet(pJuliet)
@@ -294,7 +294,7 @@ CJuliet::Chip288::Chip288(CJuliet* pJuliet)
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CJuliet::Chip288::~Chip288()
 {
@@ -311,16 +311,16 @@ IExternalChip::ChipType CJuliet::Chip288::GetChipType()
 }
 
 /**
- * ƒŠƒZƒbƒg
+ * ãƒªã‚»ãƒƒãƒˆ
  */
 void CJuliet::Chip288::Reset()
 {
 }
 
 /**
- * ƒŒƒWƒXƒ^‘‚«‚İ
- * @param[in] nAddr ƒAƒhƒŒƒX
- * @param[in] cData ƒf[ƒ^
+ * ãƒ¬ã‚¸ã‚¹ã‚¿æ›¸ãè¾¼ã¿
+ * @param[in] nAddr ã‚¢ãƒ‰ãƒ¬ã‚¹
+ * @param[in] cData ãƒ‡ãƒ¼ã‚¿
  */
 void CJuliet::Chip288::WriteRegister(UINT nAddr, UINT8 cData)
 {
@@ -328,10 +328,10 @@ void CJuliet::Chip288::WriteRegister(UINT nAddr, UINT8 cData)
 }
 
 /**
- * ƒƒbƒZ[ƒW
- * @param[in] nMessage ƒƒbƒZ[ƒW
- * @param[in] nParameter ƒpƒ‰ƒ[ƒ^
- * @return ƒŠƒUƒ‹ƒg
+ * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nParameter ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+ * @return ãƒªã‚¶ãƒ«ãƒˆ
  */
 INTPTR CJuliet::Chip288::Message(UINT nMessage, INTPTR nParameter)
 {

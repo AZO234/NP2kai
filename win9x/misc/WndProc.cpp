@@ -1,6 +1,6 @@
 /**
  * @file	WndProc.cpp
- * @brief	ƒvƒƒV[ƒWƒƒ ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -8,22 +8,22 @@
 #include <assert.h>
 #define ASSERT assert	/*!< assert */
 
-//! Šî’êƒNƒ‰ƒX–¼
+//! åŸºåº•ã‚¯ãƒ©ã‚¹å
 // static const TCHAR s_szClassName[] = TEXT("WndProcBase");
 
-//! ƒCƒ“ƒXƒ^ƒ“ƒX
+//! ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
 HINSTANCE CWndProc::sm_hInstance;
-//! ƒŠƒ\[ƒX
+//! ãƒªã‚½ãƒ¼ã‚¹
 HINSTANCE CWndProc::sm_hResource;
 
-DWORD CWndProc::sm_dwThreadId;						//!< ©•ª‚ÌƒXƒŒƒbƒh ID
-HHOOK CWndProc::sm_hHookOldCbtFilter;				//!< ƒtƒbƒN ƒtƒBƒ‹ƒ^[
-CWndProc* CWndProc::sm_pWndInit;					//!< ‰Šú‰»’†‚ÌƒCƒ“ƒXƒ^ƒ“ƒX
-std::map<HWND, CWndProc*>* CWndProc::sm_pWndMap;	//!< ƒEƒBƒ“ƒhƒE ƒ}ƒbƒv
+DWORD CWndProc::sm_dwThreadId;						//!< è‡ªåˆ†ã®ã‚¹ãƒ¬ãƒƒãƒ‰ ID
+HHOOK CWndProc::sm_hHookOldCbtFilter;				//!< ãƒ•ãƒƒã‚¯ ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼
+CWndProc* CWndProc::sm_pWndInit;					//!< åˆæœŸåŒ–ä¸­ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+std::map<HWND, CWndProc*>* CWndProc::sm_pWndMap;	//!< ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒƒãƒ—
 
 /**
- * ‰Šú‰»
- * @param[in] hInstance ƒCƒ“ƒXƒ^ƒ“ƒX
+ * åˆæœŸåŒ–
+ * @param[in] hInstance ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 void CWndProc::Initialize(HINSTANCE hInstance)
 {
@@ -50,7 +50,7 @@ void CWndProc::Initialize(HINSTANCE hInstance)
 }
 
 /**
- * ‰ğ•ú
+ * è§£æ”¾
  */
 void CWndProc::Deinitialize()
 {
@@ -62,10 +62,10 @@ void CWndProc::Deinitialize()
 }
 
 /**
- * ƒŠƒ\[ƒX‚ÌŒŸõ
- * @param[in] lpszName ƒŠƒ\[ƒX ID
- * @param[in] lpszType ƒŠƒ\[ƒX‚ÌŒ^‚Ö‚Ìƒ|ƒCƒ“ƒ^
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ãƒªã‚½ãƒ¼ã‚¹ã®æ¤œç´¢
+ * @param[in] lpszName ãƒªã‚½ãƒ¼ã‚¹ ID
+ * @param[in] lpszType ãƒªã‚½ãƒ¼ã‚¹ã®å‹ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 HINSTANCE CWndProc::FindResourceHandle(LPCTSTR lpszName, LPCTSTR lpszType)
 {
@@ -78,7 +78,7 @@ HINSTANCE CWndProc::FindResourceHandle(LPCTSTR lpszName, LPCTSTR lpszType)
 }
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CWndProc::CWndProc()
 	: CWndBase(NULL)
@@ -87,7 +87,7 @@ CWndProc::CWndProc()
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CWndProc::~CWndProc()
 {
@@ -95,9 +95,9 @@ CWndProc::~CWndProc()
 }
 
 /**
- * ƒEƒBƒ“ƒhƒE‚Ìƒnƒ“ƒhƒ‹‚ªw’è‚³‚ê‚Ä‚¢‚éê‡ACWndProc ƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^[‚ğ•Ô‚µ‚Ü‚·
- * @param[in] hWnd ƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹
- * @return ƒ|ƒCƒ“ƒ^
+ * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒãƒ³ãƒ‰ãƒ«ãŒæŒ‡å®šã•ã‚Œã¦ã„ã‚‹å ´åˆã€CWndProc ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿ãƒ¼ã‚’è¿”ã—ã¾ã™
+ * @param[in] hWnd ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ«
+ * @return ãƒã‚¤ãƒ³ã‚¿
  */
 CWndProc* CWndProc::FromHandlePermanent(HWND hWnd)
 {
@@ -114,10 +114,10 @@ CWndProc* CWndProc::FromHandlePermanent(HWND hWnd)
 }
 
 /**
- * Windows ‚ÌƒEƒBƒ“ƒhƒE‚ğƒAƒ^ƒbƒ`‚µ‚Ü‚·
- * @param[in] hWndNew ƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹
- * @retval TRUE ¬Œ÷
- * @retval FALSE ¸”s
+ * Windows ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ã‚¢ã‚¿ãƒƒãƒã—ã¾ã™
+ * @param[in] hWndNew ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ«
+ * @retval TRUE æˆåŠŸ
+ * @retval FALSE å¤±æ•—
  */
 BOOL CWndProc::Attach(HWND hWndNew)
 {
@@ -135,8 +135,8 @@ BOOL CWndProc::Attach(HWND hWndNew)
 }
 
 /**
- * Windows ‚Ìƒnƒ“ƒhƒ‹‚ğØ‚è—£‚µA‚»‚Ìƒnƒ“ƒhƒ‹‚ğ•Ô‚µ‚Ü‚·
- * @return ƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹
+ * Windows ã®ãƒãƒ³ãƒ‰ãƒ«ã‚’åˆ‡ã‚Šé›¢ã—ã€ãã®ãƒãƒ³ãƒ‰ãƒ«ã‚’è¿”ã—ã¾ã™
+ * @return ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ«
  */
 HWND CWndProc::Detach()
 {
@@ -158,7 +158,7 @@ HWND CWndProc::Detach()
 }
 
 /**
- * ‚±‚Ìƒƒ“ƒo[ŠÖ”‚ÍƒEƒBƒ“ƒhƒE‚ªƒTƒuƒNƒ‰ƒX‰»‚·‚é‘O‚ÉA‚Ù‚©‚ÌƒTƒuƒNƒ‰ƒX‰»‚É•K—v‚È‘€ì‚ğ‹–‰Â‚·‚é‚½‚ß‚ÉƒtƒŒ[ƒ€ƒ[ƒN‚©‚çŒÄ‚Î‚ê‚Ü‚·
+ * ã“ã®ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ã¯ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒã‚µãƒ–ã‚¯ãƒ©ã‚¹åŒ–ã™ã‚‹å‰ã«ã€ã»ã‹ã®ã‚µãƒ–ã‚¯ãƒ©ã‚¹åŒ–ã«å¿…è¦ãªæ“ä½œã‚’è¨±å¯ã™ã‚‹ãŸã‚ã«ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã‹ã‚‰å‘¼ã°ã‚Œã¾ã™
  */
 void CWndProc::PreSubclassWindow()
 {
@@ -166,10 +166,10 @@ void CWndProc::PreSubclassWindow()
 }
 
 /**
- * ƒEƒBƒ“ƒhƒE‚ğ“®“IƒTƒuƒNƒ‰ƒX‰»‚µACWnd ƒIƒuƒWƒFƒNƒg‚ÉŒ‹‚Ñ•t‚¯‚é‚½‚ß‚É‚±‚Ìƒƒ“ƒo[ŠÖ”‚ğŒÄ‚Ño‚µ‚Ü‚·
- * @param[in] hWnd ƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹
- * @retval TRUE ¬Œ÷
- * @retval FALSE ¸”s
+ * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’å‹•çš„ã‚µãƒ–ã‚¯ãƒ©ã‚¹åŒ–ã—ã€CWnd ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«çµã³ä»˜ã‘ã‚‹ãŸã‚ã«ã“ã®ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¾ã™
+ * @param[in] hWnd ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ«
+ * @retval TRUE æˆåŠŸ
+ * @retval FALSE å¤±æ•—
  */
 BOOL CWndProc::SubclassWindow(HWND hWnd)
 {
@@ -190,11 +190,11 @@ BOOL CWndProc::SubclassWindow(HWND hWnd)
 }
 
 /**
- * ƒRƒ“ƒgƒ[ƒ‹‚ğ“®“IƒTƒuƒNƒ‰ƒX‰»‚µACWnd ƒIƒuƒWƒFƒNƒg‚ÉŒ‹‚Ñ•t‚¯‚é‚½‚ß‚É‚±‚Ìƒƒ“ƒo[ŠÖ”‚ğŒÄ‚Ño‚µ‚Ü‚·
- * @param[in] nID ƒRƒ“ƒgƒ[ƒ‹ ID
- * @param[in] pParent ƒRƒ“ƒgƒ[ƒ‹‚Ìe
- * @retval TRUE ¬Œ÷
- * @retval FALSE ¸”s
+ * ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚’å‹•çš„ã‚µãƒ–ã‚¯ãƒ©ã‚¹åŒ–ã—ã€CWnd ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«çµã³ä»˜ã‘ã‚‹ãŸã‚ã«ã“ã®ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¾ã™
+ * @param[in] nID ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ« ID
+ * @param[in] pParent ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®è¦ª
+ * @retval TRUE æˆåŠŸ
+ * @retval FALSE å¤±æ•—
  */
 BOOL CWndProc::SubclassDlgItem(UINT nID, CWndProc* pParent)
 {
@@ -207,8 +207,8 @@ BOOL CWndProc::SubclassDlgItem(UINT nID, CWndProc* pParent)
 }
 
 /**
- * WndProc ‚ÉŒ³‚Ì’l‚ğİ’è‚µ‚Ä CWnd ƒIƒuƒWƒFƒNƒg‚©‚ç HWND ‚Å¯•Ê‚³‚ê‚éƒEƒBƒ“ƒhƒE‚ğØ‚è—£‚·‚½‚ß‚ÉA‚±‚Ìƒƒ“ƒo[ŠÖ”‚ğŒÄ‚Ño‚µ‚Ü‚·
- * @return ”ñƒTƒuƒNƒ‰ƒX‰»‚³‚ê‚½ƒEƒBƒ“ƒhƒE‚Ö‚Ìƒnƒ“ƒhƒ‹
+ * WndProc ã«å…ƒã®å€¤ã‚’è¨­å®šã—ã¦ CWnd ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‹ã‚‰ HWND ã§è­˜åˆ¥ã•ã‚Œã‚‹ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’åˆ‡ã‚Šé›¢ã™ãŸã‚ã«ã€ã“ã®ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¾ã™
+ * @return éã‚µãƒ–ã‚¯ãƒ©ã‚¹åŒ–ã•ã‚ŒãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã¸ã®ãƒãƒ³ãƒ‰ãƒ«
  */
 HWND CWndProc::UnsubclassWindow()
 {
@@ -221,24 +221,24 @@ HWND CWndProc::UnsubclassWindow()
 }
 
 /**
- * w’è‚³‚ê‚½ƒEƒBƒ“ƒhƒE‚ğì¬‚µA‚»‚ê‚ğ CWndProc ƒIƒuƒWƒFƒNƒg‚ÉƒAƒ^ƒbƒ`‚µ‚Ü‚·
- * @param[in] dwExStyle Šg’£ƒEƒBƒ“ƒhƒE ƒXƒ^ƒCƒ‹
- * @param[in] lpszClassName “o˜^‚³‚ê‚Ä‚¢‚éƒVƒXƒeƒ€ ƒEƒBƒ“ƒhƒE ƒNƒ‰ƒX‚Ì–¼‘O
- * @param[in] lpszWindowName ƒEƒBƒ“ƒhƒE‚Ì•\¦–¼
- * @param[in] dwStyle ƒEƒBƒ“ƒhƒE ƒXƒ^ƒCƒ‹
- * @param[in] x ‰æ–Ê‚Ü‚½‚ÍeƒEƒBƒ“ƒhƒE‚Ì¶’[‚©‚çƒEƒBƒ“ƒhƒE‚Ì‰ŠúˆÊ’u‚Ü‚Å‚Ì…•½•ûŒü‚Ì‹——£
- * @param[in] y ‰æ–Ê‚Ü‚½‚ÍeƒEƒBƒ“ƒhƒE‚Ìã’[‚©‚çƒEƒBƒ“ƒhƒE‚Ì‰ŠúˆÊ’u‚Ü‚Å‚Ì‚’¼•ûŒü‚Ì‹——£
- * @param[in] nWidth ƒEƒBƒ“ƒhƒE‚Ì• (ƒsƒNƒZƒ‹’PˆÊ)
- * @param[in] nHeight ƒEƒBƒ“ƒhƒE‚Ì‚‚³ (ƒsƒNƒZƒ‹’PˆÊ)
- * @param[in] hwndParent eƒEƒBƒ“ƒhƒE‚Ö‚Ìƒnƒ“ƒhƒ‹
- * @param[in] nIDorHMenu ƒEƒBƒ“ƒhƒE ID
- * @param[in] lpParam ƒ†[ƒU[ ƒf[ƒ^
- * @retval TRUE ¬Œ÷
- * @retval FALSE ¸”s
+ * æŒ‡å®šã•ã‚ŒãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ä½œæˆã—ã€ãã‚Œã‚’ CWndProc ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«ã‚¢ã‚¿ãƒƒãƒã—ã¾ã™
+ * @param[in] dwExStyle æ‹¡å¼µã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ã‚¹ã‚¿ã‚¤ãƒ«
+ * @param[in] lpszClassName ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ã‚·ã‚¹ãƒ†ãƒ  ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ã‚¯ãƒ©ã‚¹ã®åå‰
+ * @param[in] lpszWindowName ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®è¡¨ç¤ºå
+ * @param[in] dwStyle ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ã‚¹ã‚¿ã‚¤ãƒ«
+ * @param[in] x ç”»é¢ã¾ãŸã¯è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®å·¦ç«¯ã‹ã‚‰ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®åˆæœŸä½ç½®ã¾ã§ã®æ°´å¹³æ–¹å‘ã®è·é›¢
+ * @param[in] y ç”»é¢ã¾ãŸã¯è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä¸Šç«¯ã‹ã‚‰ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®åˆæœŸä½ç½®ã¾ã§ã®å‚ç›´æ–¹å‘ã®è·é›¢
+ * @param[in] nWidth ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®å¹… (ãƒ”ã‚¯ã‚»ãƒ«å˜ä½)
+ * @param[in] nHeight ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®é«˜ã• (ãƒ”ã‚¯ã‚»ãƒ«å˜ä½)
+ * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã¸ã®ãƒãƒ³ãƒ‰ãƒ«
+ * @param[in] nIDorHMenu ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ID
+ * @param[in] lpParam ãƒ¦ãƒ¼ã‚¶ãƒ¼ ãƒ‡ãƒ¼ã‚¿
+ * @retval TRUE æˆåŠŸ
+ * @retval FALSE å¤±æ•—
  */
 BOOL CWndProc::CreateEx(DWORD dwExStyle, LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, int x, int y, int nWidth, int nHeight, HWND hwndParent, HMENU nIDorHMenu, LPVOID lpParam)
 {
-	// “¯‚¶ƒXƒŒƒbƒh‚Ì‚İ‹–‚·
+	// åŒã˜ã‚¹ãƒ¬ãƒƒãƒ‰ã®ã¿è¨±ã™
 	if (sm_dwThreadId != ::GetCurrentThreadId())
 	{
 		PostNcDestroy();
@@ -276,9 +276,9 @@ BOOL CWndProc::CreateEx(DWORD dwExStyle, LPCTSTR lpszClassName, LPCTSTR lpszWind
 }
 
 /**
- * CWnd ƒIƒuƒWƒFƒNƒg‚ÉŒ‹‚Ñ•t‚¯‚ç‚ê‚½ Windows ‚ÌƒEƒBƒ“ƒhƒE‚ªì¬‚³‚ê‚é‘O‚ÉAƒtƒŒ[ƒ€ƒ[ƒN‚©‚çŒÄ‚Ño‚³‚ê‚Ü‚·
- * @param[in,out] cs CREATESTRUCT ‚Ì\‘¢
- * @retval TRUE Œp‘±
+ * CWnd ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«çµã³ä»˜ã‘ã‚‰ã‚ŒãŸ Windows ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒä½œæˆã•ã‚Œã‚‹å‰ã«ã€ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã‹ã‚‰å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * @param[in,out] cs CREATESTRUCT ã®æ§‹é€ 
+ * @retval TRUE ç¶™ç¶š
  */
 BOOL CWndProc::PreCreateWindow(CREATESTRUCT& cs)
 {
@@ -286,12 +286,12 @@ BOOL CWndProc::PreCreateWindow(CREATESTRUCT& cs)
 }
 
 /**
- * ƒEƒBƒ“ƒhƒEì¬‚ğƒtƒbƒN
- * @param[in] pWnd ƒEƒBƒ“ƒhƒE
+ * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½œæˆã‚’ãƒ•ãƒƒã‚¯
+ * @param[in] pWnd ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 void CWndProc::HookWindowCreate(CWndProc* pWnd)
 {
-	// “¯‚¶ƒXƒŒƒbƒh‚Ì‚İ‹–‚·
+	// åŒã˜ã‚¹ãƒ¬ãƒƒãƒ‰ã®ã¿è¨±ã™
 	ASSERT(sm_dwThreadId == ::GetCurrentThreadId());
 
 	if (sm_pWndInit == pWnd)
@@ -307,9 +307,9 @@ void CWndProc::HookWindowCreate(CWndProc* pWnd)
 }
 
 /**
- * ƒEƒBƒ“ƒhƒEì¬‚ğƒAƒ“ƒtƒbƒN
- * @retval true ƒtƒbƒN‚µ‚½
- * @retval false ƒtƒbƒN‚µ‚È‚©‚Á‚½
+ * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½œæˆã‚’ã‚¢ãƒ³ãƒ•ãƒƒã‚¯
+ * @retval true ãƒ•ãƒƒã‚¯ã—ãŸ
+ * @retval false ãƒ•ãƒƒã‚¯ã—ãªã‹ã£ãŸ
  */
 bool CWndProc::UnhookWindowCreate()
 {
@@ -322,11 +322,11 @@ bool CWndProc::UnhookWindowCreate()
 }
 
 /**
- * ƒtƒbƒN ƒtƒBƒ‹ƒ^
- * @param[in] nCode ƒR[ƒh
- * @param[in] wParam ƒpƒ‰ƒƒ^
- * @param[in] lParam ƒpƒ‰ƒƒ^
- * @return ƒŠƒUƒ‹ƒg ƒR[ƒh
+ * ãƒ•ãƒƒã‚¯ ãƒ•ã‚£ãƒ«ã‚¿
+ * @param[in] nCode ã‚³ãƒ¼ãƒ‰
+ * @param[in] wParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @param[in] lParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @return ãƒªã‚¶ãƒ«ãƒˆ ã‚³ãƒ¼ãƒ‰
  */
 LRESULT CALLBACK CWndProc::CbtFilterHook(int nCode, WPARAM wParam, LPARAM lParam)
 {
@@ -354,8 +354,8 @@ LRESULT CALLBACK CWndProc::CbtFilterHook(int nCode, WPARAM wParam, LPARAM lParam
 }
 
 /**
- * CWndProc ƒIƒuƒWƒFƒNƒg‚ÉŠÖ˜A•t‚¯‚ç‚ê‚½ Windows ‚ÌƒEƒBƒ“ƒhƒE‚ğ”jŠü‚µ‚Ü‚·
- * @return ƒEƒBƒ“ƒhƒE‚ª”jŠü‚³‚ê‚½ê‡‚Í 0 ˆÈŠO‚ğ•Ô‚µ‚Ü‚·B‚»‚êˆÈŠO‚Ìê‡‚Í 0 ‚ğ•Ô‚µ‚Ü‚·
+ * CWndProc ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«é–¢é€£ä»˜ã‘ã‚‰ã‚ŒãŸ Windows ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç ´æ£„ã—ã¾ã™
+ * @return ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒç ´æ£„ã•ã‚ŒãŸå ´åˆã¯ 0 ä»¥å¤–ã‚’è¿”ã—ã¾ã™ã€‚ãã‚Œä»¥å¤–ã®å ´åˆã¯ 0 ã‚’è¿”ã—ã¾ã™
  */
 BOOL CWndProc::DestroyWindow()
 {
@@ -377,12 +377,12 @@ BOOL CWndProc::DestroyWindow()
 }
 
 /**
- * ƒEƒBƒ“ƒhƒE ƒvƒƒV[ƒWƒƒ
- * @param[in] hWnd ƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹
- * @param[in] message ˆ—‚³‚ê‚é Windows ƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
- * @param[in] wParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @param[in] lParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @return ƒƒbƒZ[ƒW‚ÉˆË‘¶‚·‚é’l‚ğ•Ô‚µ‚Ü‚·
+ * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
+ * @param[in] hWnd ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ«
+ * @param[in] message å‡¦ç†ã•ã‚Œã‚‹ Windows ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] wParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @param[in] lParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @return ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã™ã‚‹å€¤ã‚’è¿”ã—ã¾ã™
  */
 LRESULT CALLBACK CWndProc::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -398,11 +398,11 @@ LRESULT CALLBACK CWndProc::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARA
 }
 
 /**
- * CWndProc ƒIƒuƒWƒFƒNƒg‚Ì Windows ƒvƒƒV[ƒWƒƒ (WindowProc) ‚ª—pˆÓ‚³‚ê‚Ä‚¢‚Ü‚·
- * @param[in] nMsg ˆ—‚³‚ê‚é Windows ƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
- * @param[in] wParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @param[in] lParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
- * @return ƒƒbƒZ[ƒW‚ÉˆË‘¶‚·‚é’l‚ğ•Ô‚µ‚Ü‚·
+ * CWndProc ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã® Windows ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ (WindowProc) ãŒç”¨æ„ã•ã‚Œã¦ã„ã¾ã™
+ * @param[in] nMsg å‡¦ç†ã•ã‚Œã‚‹ Windows ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] wParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @param[in] lParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
+ * @return ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã™ã‚‹å€¤ã‚’è¿”ã—ã¾ã™
  */
 LRESULT CWndProc::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -434,10 +434,10 @@ LRESULT CWndProc::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ƒ†[ƒU[‚ªƒƒjƒ…[‚Ì€–Ú‚ğ‘I‘ğ‚µ‚½‚Æ‚«‚ÉAƒtƒŒ[ƒ€ƒ[ƒN‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
- * @param[in] wParam ƒpƒ‰ƒƒ^
- * @param[in] lParam ƒpƒ‰ƒƒ^
- * @retval TRUE ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ª‚±‚ÌƒƒbƒZ[ƒW‚ğˆ—‚µ‚½
+ * ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®é …ç›®ã‚’é¸æŠã—ãŸã¨ãã«ã€ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã«ã‚ˆã£ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * @param[in] wParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @param[in] lParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @retval TRUE ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡¦ç†ã—ãŸ
  */
 BOOL CWndProc::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -445,12 +445,12 @@ BOOL CWndProc::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ƒtƒŒ[ƒ€ƒ[ƒN‚ÍAƒCƒxƒ“ƒg‚ªƒRƒ“ƒgƒ[ƒ‹‚É”­¶‚·‚éê‡‚âAƒRƒ“ƒgƒ[ƒ‹‚ªˆê•”‚Ìí—Ş‚Ìî•ñ‚ğ—v‹‚·‚éƒRƒ“ƒgƒ[ƒ‹‚ğeƒEƒBƒ“ƒhƒE‚É’Ê’m‚·‚é‚½‚ß‚ÉA‚±‚Ìƒƒ“ƒo[ŠÖ”‚ğŒÄ‚Ño‚µ‚Ü‚·
- * @param[in] wParam ƒƒbƒZ[ƒW‚ªƒRƒ“ƒgƒ[ƒ‹‚©‚ç‚»‚ÌƒƒbƒZ[ƒW‚ğ‘—M‚·‚éƒRƒ“ƒgƒ[ƒ‹‚ğ¯•Ê‚µ‚Ü‚·
- * @param[in] lParam ’Ê’mƒR[ƒh‚Æ’Ç‰Áî•ñ‚ğŠÜ‚Ş’Ê’mƒƒbƒZ[ƒW (NMHDR) ‚Ì\‘¢‘Ì‚Ö‚Ìƒ|ƒCƒ“ƒ^[
- * @param[out] pResult ƒƒbƒZ[ƒW‚ªˆ—‚³‚ê‚½‚Æ‚«Œ‹‰Ê‚ğŠi”[‚·‚éƒR[ƒh‚·‚é LRESULT ‚Ì•Ï”‚Ö‚Ìƒ|ƒCƒ“ƒ^[
- * @retval TRUE ƒƒbƒZ[ƒW‚ğˆ—‚µ‚½
- * @retval FALSE ƒƒbƒZ[ƒW‚ğˆ—‚µ‚È‚©‚Á‚½
+ * ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã¯ã€ã‚¤ãƒ™ãƒ³ãƒˆãŒã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã«ç™ºç”Ÿã™ã‚‹å ´åˆã‚„ã€ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãŒä¸€éƒ¨ã®ç¨®é¡ã®æƒ…å ±ã‚’è¦æ±‚ã™ã‚‹ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚’è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«é€šçŸ¥ã™ã‚‹ãŸã‚ã«ã€ã“ã®ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¾ã™
+ * @param[in] wParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãŒã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‹ã‚‰ãã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’é€ä¿¡ã™ã‚‹ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚’è­˜åˆ¥ã—ã¾ã™
+ * @param[in] lParam é€šçŸ¥ã‚³ãƒ¼ãƒ‰ã¨è¿½åŠ æƒ…å ±ã‚’å«ã‚€é€šçŸ¥ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ (NMHDR) ã®æ§‹é€ ä½“ã¸ã®ãƒã‚¤ãƒ³ã‚¿ãƒ¼
+ * @param[out] pResult ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãŒå‡¦ç†ã•ã‚ŒãŸã¨ãçµæœã‚’æ ¼ç´ã™ã‚‹ã‚³ãƒ¼ãƒ‰ã™ã‚‹ LRESULT ã®å¤‰æ•°ã¸ã®ãƒã‚¤ãƒ³ã‚¿ãƒ¼
+ * @retval TRUE ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡¦ç†ã—ãŸ
+ * @retval FALSE ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡¦ç†ã—ãªã‹ã£ãŸ
  */
 BOOL CWndProc::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 {
@@ -458,9 +458,9 @@ BOOL CWndProc::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 }
 
 /**
- * Windows ‚ÌƒEƒBƒ“ƒhƒE‚ª”jŠü‚³‚ê‚é‚Æ‚«‚É”ñƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚ª”jŠü‚³‚ê‚é‚ÆAÅŒã‚ÉŒÄ‚Ño‚³‚ê‚½ƒƒ“ƒo[ŠÖ”‚ÍAƒtƒŒ[ƒ€ƒ[ƒN‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
- * @param[in] wParam ƒpƒ‰ƒƒ^
- * @param[in] lParam ƒpƒ‰ƒƒ^
+ * Windows ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒç ´æ£„ã•ã‚Œã‚‹ã¨ãã«éã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸãŒç ´æ£„ã•ã‚Œã‚‹ã¨ã€æœ€å¾Œã«å‘¼ã³å‡ºã•ã‚ŒãŸãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ã¯ã€ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã«ã‚ˆã£ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * @param[in] wParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @param[in] lParam ãƒ‘ãƒ©ãƒ¡ã‚¿
  */
 void CWndProc::OnNcDestroy(WPARAM wParam, LPARAM lParam)
 {
@@ -481,18 +481,18 @@ void CWndProc::OnNcDestroy(WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ƒEƒBƒ“ƒhƒE‚ª”jŠü‚³‚ê‚½Œã‚ÉŠù’è‚Ì OnNcDestroy ‚Ìƒƒ“ƒo[ŠÖ”‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
+ * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒç ´æ£„ã•ã‚ŒãŸå¾Œã«æ—¢å®šã® OnNcDestroy ã®ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ã«ã‚ˆã£ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
  */
 void CWndProc::PostNcDestroy()
 {
 }
 
 /**
- * Šù’è‚ÌƒEƒBƒ“ƒhƒE ƒvƒƒV[ƒWƒƒ‚ğŒÄ‚Ño‚µ‚Ü‚·
- * @param[in] nMsg ˆ—‚³‚ê‚é Windows ƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
- * @param[in] wParam ƒƒbƒZ[ƒWˆË‘¶‚Ì’Ç‰Áî•ñ‚ğw’è‚µ‚Ü‚·
- * @param[in] lParam ƒƒbƒZ[ƒWˆË‘¶‚Ì’Ç‰Áî•ñ‚ğw’è‚µ‚Ü‚·
- * @return ‘—‚ç‚ê‚½ƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
+ * æ—¢å®šã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã‚’å‘¼ã³å‡ºã—ã¾ã™
+ * @param[in] nMsg å‡¦ç†ã•ã‚Œã‚‹ Windows ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] wParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ä¾å­˜ã®è¿½åŠ æƒ…å ±ã‚’æŒ‡å®šã—ã¾ã™
+ * @param[in] lParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ä¾å­˜ã®è¿½åŠ æƒ…å ±ã‚’æŒ‡å®šã—ã¾ã™
+ * @return é€ã‚‰ã‚ŒãŸãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
  */
 LRESULT CWndProc::DefWindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {

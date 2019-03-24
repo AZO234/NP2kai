@@ -1,14 +1,14 @@
 /**
  * @file	externalopm.cpp
- * @brief	ŠO•” OPM ‰‰‘tƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	å¤–éƒ¨ OPM æ¼”å¥ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
 #include "externalopm.h"
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
- * @param[in] pChip ƒ`ƒbƒv
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * @param[in] pChip ãƒãƒƒãƒ—
  */
 CExternalOpm::CExternalOpm(IExternalChip* pChip)
 	: m_pChip(pChip)
@@ -18,7 +18,7 @@ CExternalOpm::CExternalOpm(IExternalChip* pChip)
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CExternalOpm::~CExternalOpm()
 {
@@ -26,8 +26,8 @@ CExternalOpm::~CExternalOpm()
 }
 
 /**
- * ƒ`ƒbƒv ƒ^ƒCƒv‚ğ“¾‚é
- * @return ƒ`ƒbƒv ƒ^ƒCƒv
+ * ãƒãƒƒãƒ— ã‚¿ã‚¤ãƒ—ã‚’å¾—ã‚‹
+ * @return ãƒãƒƒãƒ— ã‚¿ã‚¤ãƒ—
  */
 IExternalChip::ChipType CExternalOpm::GetChipType()
 {
@@ -35,7 +35,7 @@ IExternalChip::ChipType CExternalOpm::GetChipType()
 }
 
 /**
- * ‰¹Œ¹ƒŠƒZƒbƒg
+ * éŸ³æºãƒªã‚»ãƒƒãƒˆ
  */
 void CExternalOpm::Reset()
 {
@@ -45,9 +45,9 @@ void CExternalOpm::Reset()
 }
 
 /**
- * ƒŒƒWƒXƒ^‘‚«‚İ
- * @param[in] nAddr ƒAƒhƒŒƒX
- * @param[in] cData ƒf[ƒ^
+ * ãƒ¬ã‚¸ã‚¹ã‚¿æ›¸ãè¾¼ã¿
+ * @param[in] nAddr ã‚¢ãƒ‰ãƒ¬ã‚¹
+ * @param[in] cData ãƒ‡ãƒ¼ã‚¿
  */
 void CExternalOpm::WriteRegister(UINT nAddr, UINT8 cData)
 {
@@ -63,10 +63,10 @@ void CExternalOpm::WriteRegister(UINT nAddr, UINT8 cData)
 }
 
 /**
- * ƒƒbƒZ[ƒW
- * @param[in] nMessage ƒƒbƒZ[ƒW
- * @param[in] nParameter ƒpƒ‰ƒ[ƒ^
- * @return Œ‹‰Ê
+ * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nParameter ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+ * @return çµæœ
  */
 INTPTR CExternalOpm::Message(UINT nMessage, INTPTR nParameter)
 {
@@ -80,8 +80,8 @@ INTPTR CExternalOpm::Message(UINT nMessage, INTPTR nParameter)
 }
 
 /**
- * ƒ~ƒ…[ƒg
- * @param[in] bMute ƒ~ƒ…[ƒg
+ * ãƒŸãƒ¥ãƒ¼ãƒˆ
+ * @param[in] bMute ãƒŸãƒ¥ãƒ¼ãƒˆ
  */
 void CExternalOpm::Mute(bool bMute) const
 {
@@ -93,9 +93,9 @@ void CExternalOpm::Mute(bool bMute) const
 }
 
 /**
- * ƒŒƒWƒXƒ^‘‚«‚İ(“à•”)
- * @param[in] nAddr ƒAƒhƒŒƒX
- * @param[in] cData ƒf[ƒ^
+ * ãƒ¬ã‚¸ã‚¹ã‚¿æ›¸ãè¾¼ã¿(å†…éƒ¨)
+ * @param[in] nAddr ã‚¢ãƒ‰ãƒ¬ã‚¹
+ * @param[in] cData ãƒ‡ãƒ¼ã‚¿
  */
 void CExternalOpm::WriteRegisterInner(UINT nAddr, UINT8 cData) const
 {
@@ -103,13 +103,13 @@ void CExternalOpm::WriteRegisterInner(UINT nAddr, UINT8 cData) const
 }
 
 /**
- * ƒ”ƒHƒŠƒ…[ƒ€İ’è
- * @param[in] nChannel ƒ`ƒƒƒ“ƒlƒ‹
- * @param[in] nVolume ƒ”ƒHƒŠƒ…[ƒ€’l
+ * ãƒ´ã‚©ãƒªãƒ¥ãƒ¼ãƒ è¨­å®š
+ * @param[in] nChannel ãƒãƒ£ãƒ³ãƒãƒ«
+ * @param[in] nVolume ãƒ´ã‚©ãƒªãƒ¥ãƒ¼ãƒ å€¤
  */
 void CExternalOpm::SetVolume(UINT nChannel, int nVolume) const
 {
-	/*! ƒAƒ‹ƒSƒŠƒYƒ€ ƒXƒƒbƒg ƒ}ƒXƒN */
+	/*! ã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ  ã‚¹ãƒ­ãƒƒãƒˆ ãƒã‚¹ã‚¯ */
 	static const UINT8 s_opmask[] = {0x08, 0x08, 0x08, 0x08, 0x0c, 0x0e, 0x0e, 0x0f};
 	UINT8 cMask = s_opmask[m_cAlgorithm[nChannel] & 7];
 

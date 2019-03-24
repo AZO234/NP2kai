@@ -65,6 +65,7 @@ static retro_video_refresh_t video_cb = NULL;
 static retro_input_poll_t poll_cb = NULL;
 retro_input_state_t input_cb = NULL;
 retro_environment_t environ_cb = NULL;
+extern struct retro_midi_interface *retro_midi_interface;
 
 uint32_t   FrameBuffer[LR_SCREENWIDTH * LR_SCREENHEIGHT];
 uint32_t   GuiBuffer[LR_SCREENWIDTH * LR_SCREENHEIGHT]; //menu surf
@@ -837,14 +838,20 @@ void retro_set_environment(retro_environment_t cb)
       { "np2kai_model" , "PC Model (Restart); PC-9801VX|PC-286|PC-9801VM" },
       { "np2kai_clk_base" , "CPU Base Clock (Restart); 2.4576 MHz|1.9968 MHz" },
       { "np2kai_clk_mult" , "CPU Clock Multiplier (Restart); 4|5|6|8|10|12|16|20|24|30|36|40|42|1|2" },
+#if defined(SUPPORT_ASYNC_CPU)
+      { "np2kai_async_cpu" , "Async CPU(experimental) (Restart); OFF|ON" },
+#endif
       { "np2kai_ExMemory" , "RAM Size (Restart); 3|7|11|13|16|32|64|120|230|1" },
+      { "np2kai_Skip16MC" , "Skip over 16MB memcheck; OFF|ON" },
+      { "np2kai_FastMC" , "Fast memcheck; OFF|ON" },
       { "np2kai_gdc" , "GDC; uPD7220|uPD72020" },
       { "np2kai_skipline" , "Skipline Revisions; Full 255 lines|ON|OFF" },
       { "np2kai_realpal" , "Real Palettes; OFF|ON" },
       { "np2kai_lcd" , "LCD; OFF|ON" },
-      { "np2kai_SNDboard" , "Sound Board (Restart); PC9801-86|PC9801-26K + 86|PC9801-86 + Chibi-oto|PC9801-118|PC9801-86 + Mate-X PCM(B460)|Mate-X PCM(B460)|Chibi-oto|Speak Board|Spark Board|Sound Orchestra|Sound Orchestra-V|Sound Blaster 16|AMD-98|Otomi-chanx2|Otomi-chanx2 + 86|None|PC9801-14|PC9801-26K" },
+      { "np2kai_SNDboard" , "Sound Board (Restart); PC9801-86|PC9801-26K + 86|PC9801-86 + Chibi-oto|PC9801-118|PC9801-86 + Mate-X PCM(B460)|PC9801-86 + 118|Mate-X PCM(B460)|Chibi-oto|Speak Board|Spark Board|Sound Orchestra|Sound Orchestra-V|Sound Blaster 16|AMD-98|Otomi-chanx2|Otomi-chanx2 + 86|None|PC9801-14|PC9801-26K" },
       { "np2kai_jast_snd" , "JastSound; OFF|ON" },
       { "np2kai_usefmgen" , "Sound Generator; fmgen|Default" },
+      { "np2kai_volume_M" , "Volume Master; 100|0|5|10|15|20|25|30|35|40|45|50|55|60|65|70|75|80|85|90|95" },
       { "np2kai_volume_F" , "Volume FM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
       { "np2kai_volume_S" , "Volume SSG; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
       { "np2kai_volume_A" , "Volume ADPCM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
@@ -856,9 +863,18 @@ void retro_set_environment(retro_environment_t cb)
       { "np2kai_BEEP_vol" , "Volume Beep; 3|0|1|2" },
 #if defined(SUPPORT_WAB)
       { "np2kai_CLGD_en" , "Enable WAB (Restart App); OFF|ON" },
-      { "np2kai_CLGD_type" , "WAB Type; PC-9821Xe10,Xa7e,Xb10 built-in|PC-9821Bp,Bs,Be,Bf built-in|PC-9821Xe built-in|PC-9821Cb built-in|PC-9821Cf built-in|PC-9821Cb2 built-in|PC-9821Cx2 built-in|MELCO WAB-S|MELCO WSN-A2F|MELCO WSN-A4F|I-O DATA GA-98NBI/C,II,IV|PC-9801-96(PC-9801B3-E02)|Auto Select(Xe10, WAB-S)|Auto Select(Xe10, WSN-A2F)|Auto Select(Xe10, WSN-A4F)" },
+      { "np2kai_CLGD_type" , "WAB Type; PC-9821Xe10,Xa7e,Xb10 built-in|PC-9821Bp,Bs,Be,Bf built-in|PC-9821Xe built-in|PC-9821Cb built-in|PC-9821Cf built-in|PC-9821Cb2 built-in|PC-9821Cx2 built-in|PC-9821 PCI CL-GD5446 built-in|MELCO WAB-S|MELCO WSN-A2F|MELCO WSN-A4F|I-O DATA GA-98NBI/C|I-O DATA GA-98NBII|I-O DATA GA-98NBIV|PC-9801-96(PC-9801B3-E02)|Auto Select(Xe10, GA-98NBI/C), PCI|Auto Select(Xe10, GA-98NBII), PCI|Auto Select(Xe10, GA-98NBIV), PCI|Auto Select(Xe10, WAB-S), PCI|Auto Select(Xe10, WSN-A2F), PCI|Auto Select(Xe10, WSN-A4F), PCI|Auto Select(Xe10, WAB-S)|Auto Select(Xe10, WSN-A2F)|Auto Select(Xe10, WSN-A4F)" },
       { "np2kai_CLGD_fc" , "Use Fake Hardware Cursor; OFF|ON" },
 #endif	/* defined(SUPPORT_WAB) */
+#if defined(SUPPORT_PEGC)
+       { "np2kai_PEGC" , "Enable PEGC plane mode; ON|OFF" },
+#endif
+#if defined(SUPPORT_PCI)
+      { "np2kai_PCI_en" , "Enable PCI (Restart App); OFF|ON" },
+      { "np2kai_PCI_type" , "PCMC Type; Intel 82434LX|Intel 82441FX|VLSI Wildcat" },
+      { "np2kai_PCI_bios32" , "Use BIOS32 (not recommended); OFF|ON" },
+#endif	/* defined(SUPPORT_PCI) */
+      { "np2kai_usecdecc" , "Use CD-ROM EDC/ECC Emulation; ON|OFF" },
       { "np2kai_joy2mouse" , "Joypad to Mouse Mapping; OFF|ON" },
       { "np2kai_j2msuratio" , "J2M Cursor Speed up Ratio; x10|x20|up stop|x5" },
       { "np2kai_joy2key" , "Joypad to Keyboard Mapping; OFF|Arrows|Keypad|Manual" },
@@ -933,12 +949,47 @@ static void update_variables(void)
       np2cfg.multiple = atoi(var.value);
    }
 
+#if defined(SUPPORT_ASYNC_CPU)
+   var.key = "np2kai_async_cpu";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "OFF") == 0)
+         np2cfg.asynccpu = 0;
+      else
+         np2cfg.asynccpu = 1;
+   }
+#endif
+
    var.key = "np2kai_ExMemory";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
       np2cfg.EXTMEM = atoi(var.value);
+   }
+
+   var.key = "np2kai_Skip16MC";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "OFF") == 0)
+         np2cfg.memchkmx = 0;
+      else
+         np2cfg.memchkmx = 15;
+   }
+
+   var.key = "np2kai_FastMC";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "OFF") == 0)
+         np2cfg.memcheckspeed = 1;
+      else
+         np2cfg.memcheckspeed = 8;
    }
 
    var.key = "np2kai_skipline";
@@ -983,6 +1034,8 @@ static void update_variables(void)
          np2cfg.SOUND_SW = 0x08;
       else if (strcmp(var.value, "PC9801-86 + Mate-X PCM(B460)") == 0)
          np2cfg.SOUND_SW = 0x64;
+      else if (strcmp(var.value, "PC9801-86 + 118") == 0)
+         np2cfg.SOUND_SW = 0x68;
       else if (strcmp(var.value, "Mate-X PCM(B460)") == 0)
          np2cfg.SOUND_SW = 0x60;
       else if (strcmp(var.value, "Speak Board") == 0)
@@ -1029,6 +1082,14 @@ static void update_variables(void)
          np2cfg.usefmgen = 0x00;
       else if (strcmp(var.value, "fmgen") == 0)
          np2cfg.usefmgen = 0x01;
+   }
+
+   var.key = "np2kai_volume_M";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      np2cfg.vol_master = atoi(var.value);
    }
 
    var.key = "np2kai_volume_F";
@@ -1161,16 +1222,34 @@ static void update_variables(void)
          np2cfg.gd5430type = CIRRUS_98ID_Cb2;
       else if (strcmp(var.value, "PC-9821Cx2 built-in") == 0)
          np2cfg.gd5430type = CIRRUS_98ID_Cx2;
+      else if (strcmp(var.value, "PC-9821 PCI CL-GD5446 built-in") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_PCI;
       else if (strcmp(var.value, "MELCO WAB-S") == 0)
          np2cfg.gd5430type = CIRRUS_98ID_WAB;
       else if (strcmp(var.value, "MELCO WSN-A2F") == 0)
          np2cfg.gd5430type = CIRRUS_98ID_WSN_A2F;
       else if (strcmp(var.value, "MELCO WSN-A4F") == 0)
          np2cfg.gd5430type = CIRRUS_98ID_WSN;
-      else if (strcmp(var.value, "I-O DATA GA-98NBI/C,II,IV") == 0)
-         np2cfg.gd5430type = CIRRUS_98ID_GA98NB;
+      else if (strcmp(var.value, "I-O DATA GA-98NBI/C") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_GA98NBIC;
+      else if (strcmp(var.value, "I-O DATA GA-98NBII") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_GA98NBII;
+      else if (strcmp(var.value, "I-O DATA GA-98NBIV") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_GA98NBIV;
       else if (strcmp(var.value, "PC-9801-96(PC-9801B3-E02)") == 0)
          np2cfg.gd5430type = CIRRUS_98ID_96;
+      else if (strcmp(var.value, "Auto Select(Xe10, GA-98NBI/C), PCI") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_AUTO_XE_G1_PCI;
+      else if (strcmp(var.value, "Auto Select(Xe10, GA-98NBII), PCI") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_AUTO_XE_G2_PCI;
+      else if (strcmp(var.value, "Auto Select(Xe10, GA-98NBIV), PCI") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_AUTO_XE_G4_PCI;
+      else if (strcmp(var.value, "Auto Select(Xe10, WAB-S), PCI") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_AUTO_XE_WA_PCI;
+      else if (strcmp(var.value, "Auto Select(Xe10, WSN-A2F), PCI") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_AUTO_XE_WS_PCI;
+      else if (strcmp(var.value, "Auto Select(Xe10, WSN-A4F), PCI") == 0)
+         np2cfg.gd5430type = CIRRUS_98ID_AUTO_XE_W4_PCI;
       else if (strcmp(var.value, "Auto Select(Xe10, WAB-S)") == 0)
          np2cfg.gd5430type = CIRRUS_98ID_AUTO_XE10_WABS;
       else if (strcmp(var.value, "Auto Select(Xe10, WSN-A2F)") == 0)
@@ -1190,6 +1269,67 @@ static void update_variables(void)
          np2cfg.gd5430fakecur = 0;
    }
 #endif	/* defined(SUPPORT_WAB) */
+
+#if defined(SUPPORT_PEGC)
+   var.key = "np2kai_PEGC";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "ON") == 0)
+         np2cfg.usepegcplane = 1;
+      else
+         np2cfg.usepegcplane = 0;
+   }
+#endif
+
+#if defined(SUPPORT_PCI)
+   var.key = "np2kai_PCI_en";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "ON") == 0)
+         np2cfg.usepci = 1;
+      else
+         np2cfg.usepci = 0;
+   }
+
+   var.key = "np2kai_PCI_type";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "Intel 82434LX") == 0)
+         np2cfg.pci_pcmc = PCI_PCMC_82434LX;
+      else if (strcmp(var.value, "Intel 82441FX") == 0)
+         np2cfg.pci_pcmc = PCI_PCMC_82441FX;
+      else if (strcmp(var.value, "VLSI Wildcat") == 0)
+         np2cfg.pci_pcmc = PCI_PCMC_WILDCAT;
+   }
+
+   var.key = "np2kai_PCI_bios32";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "ON") == 0)
+         np2cfg.pci_bios32 = 1;
+      else
+         np2cfg.pci_bios32 = 0;
+   }
+#endif	/* defined(SUPPORT_PCI) */
+
+   var.key = "np2kai_usecdecc";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "ON") == 0)
+         np2cfg.usecdecc = 1;
+      else
+         np2cfg.usecdecc = 0;
+   }
 
    var.key = "np2kai_joy2mouse";
    var.value = NULL;
@@ -1302,6 +1442,25 @@ void retro_init (void)
 
    update_variables();
 
+	struct retro_log_callback log;
+	if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log))
+		log_cb = log.log;
+	else
+		log_cb = NULL;
+
+	if (log_cb)
+		log_cb(RETRO_LOG_INFO, "Logger interface initialized\n");
+
+	static struct retro_midi_interface midi_interface;
+	if(environ_cb(RETRO_ENVIRONMENT_GET_MIDI_INTERFACE, &midi_interface))
+		retro_midi_interface = &midi_interface;
+	else
+		retro_midi_interface = NULL;
+
+	if (log_cb)
+		log_cb(RETRO_LOG_INFO, "MIDI interface %s.\n",
+			retro_midi_interface ? "initialized" : "unavailable\n");
+
 #if defined(SUPPORT_CL_GD5430)
    draw32bit = np2cfg.usegd5430;
 #endif
@@ -1377,6 +1536,9 @@ void retro_run (void)
    } else {
       video_cb(FrameBuffer, scrnsurf.width, scrnsurf.height, scrnsurf.width * 2/*Pitch*/);
    }
+
+    if (retro_midi_interface && retro_midi_interface->output_enabled())
+        retro_midi_interface->flush();
 }
 
 void retro_cheat_reset(void)

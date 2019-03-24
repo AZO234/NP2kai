@@ -11,7 +11,7 @@
 
 void CPUCALL softinttrap(UINT cs, UINT32 eip, UINT vect) {
 
-// ---- ‚±‚±‚Éƒgƒ‰ƒbƒvðŒƒR[ƒh‚ð‘‚«‚Ü‚·
+// ---- ã“ã“ã«ãƒˆãƒ©ãƒƒãƒ—æ¡ä»¶ã‚³ãƒ¼ãƒ‰ã‚’æ›¸ãã¾ã™
 	if (vect == 0x7f) {
 		switch(CPU_AH) {
 			case 0:

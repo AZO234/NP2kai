@@ -446,24 +446,53 @@ REG8 MEMCALL memp_read8(UINT32 address) {
 	}
 	else {
 #if defined(SUPPORT_CL_GD5430)
-		if(np2cfg.usegd5430 && cirrusvga_opaque){
-			if(np2clvga.VRAMWindowAddr){
-				if(np2clvga.VRAMWindowAddr <= address){
-					if(address < np2clvga.VRAMWindowAddr + VRAMWINDOW_SIZE){
-						return cirrus_linear_readb(cirrusvga_opaque, address);
-					}else if(address < np2clvga.VRAMWindowAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SIZE){
-						if(address < np2clvga.VRAMWindowAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SHFT) return 0;
-						return cirrus_linear_readb(cirrusvga_opaque, address);
-					}
+		if(np2clvga.enabled && cirrusvga_opaque && (cirrusvga_wab_46e8 & 0x08)){
+			UINT32 vramWndAddr = np2clvga.VRAMWindowAddr;
+			UINT32 vramWndAddr2 = np2clvga.VRAMWindowAddr2;
+			UINT32 vramWndAddr3 = np2clvga.VRAMWindowAddr3;
+			if(np2clvga.pciLFB_Addr && (address & np2clvga.pciLFB_Mask) == np2clvga.pciLFB_Addr){
+				UINT32 addrofs = address - np2clvga.pciLFB_Addr;
+				if(addrofs < 0x1000000){
+					return cirrus_linear_readb(cirrusvga_opaque, address);
+				}else if( addrofs < 0x1000000 + 0x400000){
+					return cirrus_linear_bitblt_readb(cirrusvga_opaque, address);
+				}else{
+					return 0xff;
 				}
-				if(np2clvga.VRAMWindowAddr + BBLTWINDOW_ADSH <= address){
-					if(address < np2clvga.VRAMWindowAddr + BBLTWINDOW_ADSH + BBLTWINDOW_SIZE){
-						return cirrus_linear_bitblt_readb(cirrusvga_opaque, address);
-					}
-				}
+			}else if(np2clvga.pciMMIO_Addr && (address & np2clvga.pciMMIO_Mask) == np2clvga.pciMMIO_Addr){
+				if(np2clvga.gd54xxtype==CIRRUS_98ID_PCI || ((np2clvga.pciMMIO_Addr & 0xfff00000) != 0xf00000 || !(gdc.analog & ((1 << GDCANALOG_256) | (1 << GDCANALOG_256E)))))
+					return cirrus_mmio_read[0](cirrusvga_opaque, address);
 			}
-			if(np2clvga.VRAMWindowAddr2 && np2clvga.VRAMWindowAddr2 <= address && address < np2clvga.VRAMWindowAddr2 + 0x10000){
-				return CIRRUS_VRAMWND2_FUNC_rb(cirrusvga_opaque, address);
+			if(np2clvga.gd54xxtype!=CIRRUS_98ID_PCI){
+				if(vramWndAddr){
+					if(vramWndAddr <= address){
+						if(address < vramWndAddr + VRAMWINDOW_SIZE){
+							return cirrus_linear_readb(cirrusvga_opaque, address);
+						}else if(address < vramWndAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SIZE){
+							if(address >= vramWndAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SHFT)
+								return cirrus_linear_readb(cirrusvga_opaque, address);
+						}
+					}
+				}
+				if(vramWndAddr3){
+					UINT32 addr3 = address;
+					if(vramWndAddr3 <= addr3 && addr3 < vramWndAddr3 + VRA3WINDOW_SIZEX && !(gdc.analog & ((1 << GDCANALOG_256) | (1 << GDCANALOG_256E)))){
+						return CIRRUS_VRAMWND3_FUNC_rb(cirrusvga_opaque, addr3);
+					}
+				}
+				if(vramWndAddr2 && (vramWndAddr2 != 0xE0000 || !(gdc.analog & ((1 << GDCANALOG_16) | (1 << GDCANALOG_256) | (1 << GDCANALOG_256E))))){
+					UINT32 addr2 = address;
+					if((vramWndAddr2 & 0xfff00000UL) == 0){
+						UINT32 addrtmp = addr2 & 0xfff80000UL;
+						if(addrtmp == 0xfff80000UL || addrtmp == 0x00f80000UL){
+							// XXX: 0xFFFA0000 - 0xFFFFFFFF or 0xFA0000 - 0xFFFFFF
+							addr2 = addr2 & 0xfffff;
+						}
+					}
+					if((addr2 & CIRRUS_VRAMWINDOW2MASK) == vramWndAddr2){
+						return CIRRUS_VRAMWND2_FUNC_rb(cirrusvga_opaque, addr2);
+					}
+				}
 			}
 		}
 #endif
@@ -506,24 +535,53 @@ REG16 MEMCALL memp_read16(UINT32 address) {
 	}
 	else if ((address + 1) & 0x7fff) {			// non 32kb boundary
 #if defined(SUPPORT_CL_GD5430)
-		if(np2cfg.usegd5430 && cirrusvga_opaque){
-			if(np2clvga.VRAMWindowAddr){
-				if(np2clvga.VRAMWindowAddr <= address){
-					if(address < np2clvga.VRAMWindowAddr + VRAMWINDOW_SIZE){
-						return cirrus_linear_readw(cirrusvga_opaque, address);
-					}else if(address < np2clvga.VRAMWindowAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SIZE){
-						if(address < np2clvga.VRAMWindowAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SHFT) return 0;
-						return cirrus_linear_readw(cirrusvga_opaque, address);
-					}
+		if(np2clvga.enabled && cirrusvga_opaque && (cirrusvga_wab_46e8 & 0x08)){
+			UINT32 vramWndAddr = np2clvga.VRAMWindowAddr;
+			UINT32 vramWndAddr2 = np2clvga.VRAMWindowAddr2;
+			UINT32 vramWndAddr3 = np2clvga.VRAMWindowAddr3;
+			if(np2clvga.pciLFB_Addr && (address & np2clvga.pciLFB_Mask) == np2clvga.pciLFB_Addr){
+				UINT32 addrofs = address - np2clvga.pciLFB_Addr;
+				if(addrofs < 0x1000000){
+					return cirrus_linear_readw(cirrusvga_opaque, address);
+				}else if( addrofs < 0x1000000 + 0x400000){
+					return cirrus_linear_bitblt_readw(cirrusvga_opaque, address);
+				}else{
+					return 0xffff;
 				}
-				if(np2clvga.VRAMWindowAddr + BBLTWINDOW_ADSH <= address){
-					if(address < np2clvga.VRAMWindowAddr + BBLTWINDOW_ADSH + BBLTWINDOW_SIZE){
-						return cirrus_linear_bitblt_readw(cirrusvga_opaque, address);
-					}
-				}
+			}else if(np2clvga.pciMMIO_Addr && (address & np2clvga.pciMMIO_Mask) == np2clvga.pciMMIO_Addr){
+				if(np2clvga.gd54xxtype==CIRRUS_98ID_PCI || ((np2clvga.pciMMIO_Addr & 0xfff00000) != 0xf00000 || !(gdc.analog & ((1 << GDCANALOG_256) | (1 << GDCANALOG_256E)))))
+					return cirrus_mmio_read[1](cirrusvga_opaque, address);
 			}
-			if(np2clvga.VRAMWindowAddr2 && np2clvga.VRAMWindowAddr2 <= address && address < np2clvga.VRAMWindowAddr2 + 0x10000){
-				return CIRRUS_VRAMWND2_FUNC_rw(cirrusvga_opaque, address);
+			if(np2clvga.gd54xxtype!=CIRRUS_98ID_PCI){
+				if(vramWndAddr){
+					if(vramWndAddr <= address){
+						if(address < vramWndAddr + VRAMWINDOW_SIZE){
+							return cirrus_linear_readw(cirrusvga_opaque, address);
+						}else if(address < vramWndAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SIZE){
+							if(address >= vramWndAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SHFT)
+								return cirrus_linear_readw(cirrusvga_opaque, address);
+						}
+					}
+				}
+				if(vramWndAddr3){
+					UINT32 addr3 = address;
+					if(vramWndAddr3 <= addr3 && addr3 < vramWndAddr3 + VRA3WINDOW_SIZEX && !(gdc.analog & ((1 << GDCANALOG_256) | (1 << GDCANALOG_256E)))){
+						return CIRRUS_VRAMWND3_FUNC_rw(cirrusvga_opaque, addr3);
+					}
+				}
+				if(vramWndAddr2 && (vramWndAddr2 != 0xE0000 || !(gdc.analog & ((1 << GDCANALOG_16) | (1 << GDCANALOG_256) | (1 << GDCANALOG_256E))))){
+					UINT32 addr2 = address;
+					if((vramWndAddr2 & 0xfff00000UL) == 0){
+						UINT32 addrtmp = addr2 & 0xfff80000UL;
+						if(addrtmp == 0xfff80000UL || addrtmp == 0x00f80000UL){
+							// XXX: 0xFFFA0000 - 0xFFFFFFFF or 0xFA0000 - 0xFFFFFF
+							addr2 = addr2 & 0xfffff;
+						}
+					}
+					if((addr2 & CIRRUS_VRAMWINDOW2MASK) == vramWndAddr2){
+						return CIRRUS_VRAMWND2_FUNC_rw(cirrusvga_opaque, addr2);
+					}
+				}
 			}
 		}
 #endif
@@ -567,35 +625,66 @@ UINT32 MEMCALL memp_read32(UINT32 address) {
 	UINT32	pos;
 	UINT32	ret;
 	
-#if defined(SUPPORT_CL_GD5430)
-		if(np2cfg.usegd5430 && cirrusvga_opaque){
-			if(np2clvga.VRAMWindowAddr){
-				if(np2clvga.VRAMWindowAddr <= address){
-					if(address < np2clvga.VRAMWindowAddr + VRAMWINDOW_SIZE){
-						return cirrus_linear_readl(cirrusvga_opaque, address);
-					}else if(address < np2clvga.VRAMWindowAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SIZE){
-						if(address < np2clvga.VRAMWindowAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SHFT) return 0;
-						return cirrus_linear_readl(cirrusvga_opaque, address);
-					}
-				}
-				if(np2clvga.VRAMWindowAddr + BBLTWINDOW_ADSH <= address){
-					if(address < np2clvga.VRAMWindowAddr + BBLTWINDOW_ADSH + BBLTWINDOW_SIZE){
-						return cirrus_linear_bitblt_readl(cirrusvga_opaque, address);
-					}
-				}
-			}
-			if(np2clvga.VRAMWindowAddr2 && np2clvga.VRAMWindowAddr2 <= address && address < np2clvga.VRAMWindowAddr2 + 0x10000){
-				return CIRRUS_VRAMWND2_FUNC_rl(cirrusvga_opaque, address);
-			}
-		}
-#endif
 	if (address < (I286_MEMREADMAX - 3)) {
 		return(LOADINTELDWORD(mem + address));
 	}
-	else if (address >= USE_HIMEM) {
-		pos = address & CPU_ADRSMASK;
-		if ((pos >= USE_HIMEM) && ((pos + 3) < CPU_EXTLIMIT16)) {
-			return(LOADINTELDWORD(CPU_EXTMEMBASE + pos));
+	else{
+#if defined(SUPPORT_CL_GD5430)
+		if(np2clvga.enabled && cirrusvga_opaque && (cirrusvga_wab_46e8 & 0x08)){
+			UINT32 vramWndAddr = np2clvga.VRAMWindowAddr;
+			UINT32 vramWndAddr2 = np2clvga.VRAMWindowAddr2;
+			UINT32 vramWndAddr3 = np2clvga.VRAMWindowAddr3;
+			if(np2clvga.pciLFB_Addr && (address & np2clvga.pciLFB_Mask) == np2clvga.pciLFB_Addr){
+				UINT32 addrofs = address - np2clvga.pciLFB_Addr;
+				if(addrofs < 0x1000000){
+					return cirrus_linear_readl(cirrusvga_opaque, address);
+				}else if( addrofs < 0x1000000 + 0x400000){
+					return cirrus_linear_bitblt_readl(cirrusvga_opaque, address);
+				}else{
+					return 0xffffffff;
+				}
+			}else if(np2clvga.pciMMIO_Addr && (address & np2clvga.pciMMIO_Mask) == np2clvga.pciMMIO_Addr){
+				if(np2clvga.gd54xxtype==CIRRUS_98ID_PCI || ((np2clvga.pciMMIO_Addr & 0xfff00000) != 0xf00000 || !(gdc.analog & ((1 << GDCANALOG_256) | (1 << GDCANALOG_256E)))))
+					return cirrus_mmio_read[2](cirrusvga_opaque, address);
+			}
+			if(np2clvga.gd54xxtype!=CIRRUS_98ID_PCI){
+				if(vramWndAddr){
+					if(vramWndAddr <= address){
+						if(address < vramWndAddr + VRAMWINDOW_SIZE){
+							return cirrus_linear_readl(cirrusvga_opaque, address);
+						}else if(address < vramWndAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SIZE){
+							if(address >= vramWndAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SHFT)
+								return cirrus_linear_readl(cirrusvga_opaque, address);
+						}
+					}
+				}
+				if(vramWndAddr3){
+					UINT32 addr3 = address;
+					if(vramWndAddr3 <= addr3 && addr3 < vramWndAddr3 + VRA3WINDOW_SIZEX && !(gdc.analog & ((1 << GDCANALOG_256) | (1 << GDCANALOG_256E)))){
+						return CIRRUS_VRAMWND3_FUNC_rl(cirrusvga_opaque, addr3);
+					}
+				}
+				if(vramWndAddr2 && (vramWndAddr2 != 0xE0000 || !(gdc.analog & ((1 << GDCANALOG_16) | (1 << GDCANALOG_256) | (1 << GDCANALOG_256E))))){
+					UINT32 addr2 = address;
+					if((vramWndAddr2 & 0xfff00000UL) == 0){
+						UINT32 addrtmp = addr2 & 0xfff80000UL;
+						if(addrtmp == 0xfff80000UL || addrtmp == 0x00f80000UL){
+							// XXX: 0xFFFA0000 - 0xFFFFFFFF or 0xFA0000 - 0xFFFFFF
+							addr2 = addr2 & 0xfffff;
+						}
+					}
+					if((addr2 & CIRRUS_VRAMWINDOW2MASK) == vramWndAddr2){
+						return CIRRUS_VRAMWND2_FUNC_rl(cirrusvga_opaque, addr2);
+					}
+				}
+			}
+		}
+#endif
+		if (address >= USE_HIMEM) {
+			pos = address & CPU_ADRSMASK;
+			if ((pos >= USE_HIMEM) && ((pos + 3) < CPU_EXTLIMIT16)) {
+				return(LOADINTELDWORD(CPU_EXTMEMBASE + pos));
+			}
 		}
 	}
 	if (!(address & 1)) {
@@ -617,28 +706,64 @@ void MEMCALL memp_write8(UINT32 address, REG8 value) {
 	}
 	else {
 #if defined(SUPPORT_CL_GD5430)
-		if(np2cfg.usegd5430 && cirrusvga_opaque){
-			if(np2clvga.VRAMWindowAddr){
-				if(np2clvga.VRAMWindowAddr <= address){
-					if(address < np2clvga.VRAMWindowAddr + VRAMWINDOW_SIZE){
-						g_cirrus_linear_write[0](cirrusvga_opaque, address, value);
-						return;
-					}else if(address < np2clvga.VRAMWindowAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SIZE){
-						if(address < np2clvga.VRAMWindowAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SHFT);
-						g_cirrus_linear_write[0](cirrusvga_opaque, address, value);
-						return;
-					}
+		if(np2clvga.enabled && cirrusvga_opaque && (cirrusvga_wab_46e8 & 0x08)){
+			UINT32 vramWndAddr = np2clvga.VRAMWindowAddr;
+			UINT32 vramWndAddr2 = np2clvga.VRAMWindowAddr2;
+			UINT32 vramWndAddr3 = np2clvga.VRAMWindowAddr3;
+			if(np2clvga.pciLFB_Addr && (address & np2clvga.pciLFB_Mask) == np2clvga.pciLFB_Addr){
+				UINT32 addrofs = address - np2clvga.pciLFB_Addr;
+				if(addrofs < 0x1000000){
+					cirrus_linear_writeb(cirrusvga_opaque, address, value);
+				}else if( addrofs < 0x1000000 + 0x400000){
+					cirrus_linear_bitblt_writeb(cirrusvga_opaque, address, value);
 				}
-				if(np2clvga.VRAMWindowAddr + BBLTWINDOW_ADSH <= address){
-					if(address < np2clvga.VRAMWindowAddr + BBLTWINDOW_ADSH + BBLTWINDOW_SIZE){
-						cirrus_linear_bitblt_writeb(cirrusvga_opaque, address, value);
-						return;
-					}
-				}
-			}
-			if(np2clvga.VRAMWindowAddr2 && np2clvga.VRAMWindowAddr2 <= address && address < np2clvga.VRAMWindowAddr2 + 0x10000){
-				CIRRUS_VRAMWND2_FUNC_wb(cirrusvga_opaque, address, value);
 				return;
+			}else if(np2clvga.pciMMIO_Addr && (address & np2clvga.pciMMIO_Mask) == np2clvga.pciMMIO_Addr){
+				cirrus_mmio_write[0](cirrusvga_opaque, address, value);
+				if(np2clvga.gd54xxtype==CIRRUS_98ID_PCI)
+					return;
+			}
+			//if(TEST_START_ADDR < address && address <= TEST_END_ADDR){
+			//	printf("%d: %d\n", address, value);
+			//}
+			if(np2clvga.gd54xxtype!=CIRRUS_98ID_PCI){
+				if(vramWndAddr){
+					if(vramWndAddr <= address){
+						if(address < vramWndAddr + VRAMWINDOW_SIZE){
+							g_cirrus_linear_write[0](cirrusvga_opaque, address, value);
+							return;
+						}else if(address < vramWndAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SIZE){
+							if(address >= vramWndAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SHFT){
+								g_cirrus_linear_write[0](cirrusvga_opaque, address, value);
+								return;
+							}
+						}
+					}
+				}
+				if(vramWndAddr3){
+					UINT32 addr3 = address;
+					if(vramWndAddr3 <= addr3 && addr3 < vramWndAddr3 + VRA3WINDOW_SIZEX){
+						CIRRUS_VRAMWND3_FUNC_wb(cirrusvga_opaque, addr3, value);
+						TRACEOUT(("mem (write8): %x", address));
+						//if(!(gdc.analog & ((1 << GDCANALOG_256) | (1 << GDCANALOG_256E))))
+						//	return;
+					}
+				}
+				if(vramWndAddr2 && (vramWndAddr2 != 0xE0000 || !(gdc.analog & ((1 << GDCANALOG_16) | (1 << GDCANALOG_256) | (1 << GDCANALOG_256E))))){
+					UINT32 addr2 = address;
+					if((vramWndAddr2 & 0xfff00000UL) == 0){
+						UINT32 addrtmp = addr2 & 0xfff80000UL;
+						if(addrtmp == 0xfff80000UL || addrtmp == 0x00f80000UL){
+							// XXX: 0xFFFA0000 - 0xFFFFFFFF or 0xFA0000 - 0xFFFFFF
+							addr2 = addr2 & 0xfffff;
+						}
+					}
+					if((addr2 & CIRRUS_VRAMWINDOW2MASK) == vramWndAddr2){
+						CIRRUS_VRAMWND2_FUNC_wb(cirrusvga_opaque, addr2, value);
+						//if((vramWndAddr2 != 0xE0000 || !(gdc.analog & ((1 << GDCANALOG_16) | (1 << GDCANALOG_256) | (1 << GDCANALOG_256E)))) && !(gdc.display & (1 << GDCDISP_31))) 
+						//	return;
+					}
+				}
 			}
 		}
 #endif	
@@ -684,28 +809,64 @@ void MEMCALL memp_write16(UINT32 address, REG16 value) {
 	}
 	else if ((address + 1) & 0x7fff) {			// non 32kb boundary
 #if defined(SUPPORT_CL_GD5430)
-		if(np2cfg.usegd5430 && cirrusvga_opaque){
-			if(np2clvga.VRAMWindowAddr){
-				if(np2clvga.VRAMWindowAddr <= address){
-					if(address < np2clvga.VRAMWindowAddr + VRAMWINDOW_SIZE){
-						g_cirrus_linear_write[1](cirrusvga_opaque, address, value);
-						return;
-					}else if(address < np2clvga.VRAMWindowAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SIZE){
-						if(address < np2clvga.VRAMWindowAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SHFT);
-						g_cirrus_linear_write[1](cirrusvga_opaque, address, value);
-						return;
-					}
+		if(np2clvga.enabled && cirrusvga_opaque && (cirrusvga_wab_46e8 & 0x08)){
+			UINT32 vramWndAddr = np2clvga.VRAMWindowAddr;
+			UINT32 vramWndAddr2 = np2clvga.VRAMWindowAddr2;
+			UINT32 vramWndAddr3 = np2clvga.VRAMWindowAddr3;
+			if(np2clvga.pciLFB_Addr && (address & np2clvga.pciLFB_Mask) == np2clvga.pciLFB_Addr){
+				UINT32 addrofs = address - np2clvga.pciLFB_Addr;
+				if(addrofs < 0x1000000){
+					cirrus_linear_writew(cirrusvga_opaque, address, value);
+				}else if( addrofs < 0x1000000 + 0x400000){
+					cirrus_linear_bitblt_writew(cirrusvga_opaque, address, value);
 				}
-				if(np2clvga.VRAMWindowAddr + BBLTWINDOW_ADSH <= address){
-					if(address < np2clvga.VRAMWindowAddr + BBLTWINDOW_ADSH + BBLTWINDOW_SIZE){
-						cirrus_linear_bitblt_writew(cirrusvga_opaque, address, value);
-						return;
-					}
-				}
-			}
-			if(np2clvga.VRAMWindowAddr2 && np2clvga.VRAMWindowAddr2 <= address && address < np2clvga.VRAMWindowAddr2 + 0x10000){
-				CIRRUS_VRAMWND2_FUNC_ww(cirrusvga_opaque, address, value);
 				return;
+			}else if(np2clvga.pciMMIO_Addr && (address & np2clvga.pciMMIO_Mask) == np2clvga.pciMMIO_Addr){
+				cirrus_mmio_write[1](cirrusvga_opaque, address, value);
+				if(np2clvga.gd54xxtype==CIRRUS_98ID_PCI)
+					return;
+			}
+			//if(TEST_START_ADDR < address && address <= TEST_END_ADDR){
+			//	printf("%d: %d\n", address, value);
+			//}
+			if(np2clvga.gd54xxtype!=CIRRUS_98ID_PCI){
+				if(vramWndAddr){
+					if(vramWndAddr <= address){
+						if(address < vramWndAddr + VRAMWINDOW_SIZE){
+							g_cirrus_linear_write[1](cirrusvga_opaque, address, value);
+							return;
+						}else if(address < vramWndAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SIZE){
+							if(address >= vramWndAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SHFT){
+								g_cirrus_linear_write[1](cirrusvga_opaque, address, value);
+								return;
+							}
+						}
+					}
+				}
+				if(vramWndAddr3){
+					UINT32 addr3 = address;
+					if(vramWndAddr3 <= addr3 && addr3 < vramWndAddr3 + VRA3WINDOW_SIZEX){
+						CIRRUS_VRAMWND3_FUNC_ww(cirrusvga_opaque, addr3, value);
+						TRACEOUT(("mem (write16): %x", address));
+						//if(!(gdc.analog & ((1 << GDCANALOG_256) | (1 << GDCANALOG_256E))))
+						//	return;
+					}
+				}
+				if(vramWndAddr2 && (vramWndAddr2 != 0xE0000 || !(gdc.analog & ((1 << GDCANALOG_16) | (1 << GDCANALOG_256) | (1 << GDCANALOG_256E))))){
+					UINT32 addr2 = address;
+					if((vramWndAddr2 & 0xfff00000UL) == 0){
+						UINT32 addrtmp = addr2 & 0xfff80000UL;
+						if(addrtmp == 0xfff80000UL || addrtmp == 0x00f80000UL){
+							// XXX: 0xFFFA0000 - 0xFFFFFFFF or 0xFA0000 - 0xFFFFFF
+							addr2 = addr2 & 0xfffff;
+						}
+					}
+					if((addr2 & CIRRUS_VRAMWINDOW2MASK) == vramWndAddr2){
+						CIRRUS_VRAMWND2_FUNC_ww(cirrusvga_opaque, addr2, value);
+						//if((vramWndAddr2 != 0xE0000 || !(gdc.analog & ((1 << GDCANALOG_16) | (1 << GDCANALOG_256) | (1 << GDCANALOG_256E)))) && !(gdc.display & (1 << GDCDISP_31))) 
+						//	return;
+					}
+				}
 			}
 		}
 #endif
@@ -768,41 +929,79 @@ void MEMCALL memp_write32(UINT32 address, UINT32 value) {
 
 	UINT32	pos;
 	
-#if defined(SUPPORT_CL_GD5430)
-		if(np2cfg.usegd5430 && cirrusvga_opaque){
-			if(np2clvga.VRAMWindowAddr){
-				if(np2clvga.VRAMWindowAddr <= address){
-					if(address < np2clvga.VRAMWindowAddr + VRAMWINDOW_SIZE){
-						g_cirrus_linear_write[2](cirrusvga_opaque, address, value);
-						return;
-					}else if(address < np2clvga.VRAMWindowAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SIZE){
-						if(address < np2clvga.VRAMWindowAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SHFT);
-						g_cirrus_linear_write[2](cirrusvga_opaque, address, value);
-						return;
-					}
-				}
-				if(np2clvga.VRAMWindowAddr + BBLTWINDOW_ADSH <= address){
-					if(address < np2clvga.VRAMWindowAddr + BBLTWINDOW_ADSH + BBLTWINDOW_SIZE){
-						cirrus_linear_bitblt_writel(cirrusvga_opaque, address, value);
-						return;
-					}
-				}
-			}
-			if(np2clvga.VRAMWindowAddr2 && np2clvga.VRAMWindowAddr2 <= address && address < np2clvga.VRAMWindowAddr2 + 0x10000){
-				CIRRUS_VRAMWND2_FUNC_wl(cirrusvga_opaque, address, value);
-				return;
-			}
-		}
-#endif
 	if (address < (I286_MEMWRITEMAX - 3)) {
 		STOREINTELDWORD(mem + address, value);
 		return;
 	}
-	else if (address >= USE_HIMEM) {
-		pos = address & CPU_ADRSMASK;
-		if ((pos >= USE_HIMEM) && ((pos + 3) < CPU_EXTLIMIT16)) {
-			STOREINTELDWORD(CPU_EXTMEMBASE + pos, value);
-			return;
+	else{
+#if defined(SUPPORT_CL_GD5430)
+		if(np2clvga.enabled && cirrusvga_opaque && (cirrusvga_wab_46e8 & 0x08)){
+			UINT32 vramWndAddr = np2clvga.VRAMWindowAddr;
+			UINT32 vramWndAddr2 = np2clvga.VRAMWindowAddr2;
+			UINT32 vramWndAddr3 = np2clvga.VRAMWindowAddr3;
+			if(np2clvga.pciLFB_Addr && (address & np2clvga.pciLFB_Mask) == np2clvga.pciLFB_Addr){
+				UINT32 addrofs = address - np2clvga.pciLFB_Addr;
+				if(addrofs < 0x1000000){
+					cirrus_linear_writel(cirrusvga_opaque, address, value);
+				}else if( addrofs < 0x1000000 + 0x400000){
+					cirrus_linear_bitblt_writel(cirrusvga_opaque, address, value);
+				}
+				return;
+			}else if(np2clvga.pciMMIO_Addr && (address & np2clvga.pciMMIO_Mask) == np2clvga.pciMMIO_Addr){
+				cirrus_mmio_write[2](cirrusvga_opaque, address, value);
+				if(np2clvga.gd54xxtype==CIRRUS_98ID_PCI)
+					return;
+			}
+			//if(TEST_START_ADDR < address && address <= TEST_END_ADDR){
+			//	printf("%d: %d\n", address, value);
+			//}
+			if(np2clvga.gd54xxtype!=CIRRUS_98ID_PCI){
+				if(vramWndAddr){
+					if(vramWndAddr <= address){
+						if(address < vramWndAddr + VRAMWINDOW_SIZE){
+							g_cirrus_linear_write[2](cirrusvga_opaque, address, value);
+							return;
+						}else if(address < vramWndAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SIZE){
+							if(address >= vramWndAddr + VRAMWINDOW_SIZE + EXT_WINDOW_SHFT){
+								g_cirrus_linear_write[2](cirrusvga_opaque, address, value);
+								return;
+							}
+						}
+					}
+				}
+				if(vramWndAddr3){
+					UINT32 addr3 = address;
+					if(vramWndAddr3 <= addr3 && addr3 < vramWndAddr3 + VRA3WINDOW_SIZEX){
+						CIRRUS_VRAMWND3_FUNC_wl(cirrusvga_opaque, addr3, value);
+						TRACEOUT(("mem (write32): %x", address));
+						//if(!(gdc.analog & ((1 << GDCANALOG_256) | (1 << GDCANALOG_256E))))
+						//	return;
+					}
+				}
+				if(vramWndAddr2 && (vramWndAddr2 != 0xE0000 || !(gdc.analog & ((1 << GDCANALOG_16) | (1 << GDCANALOG_256) | (1 << GDCANALOG_256E))))){
+					UINT32 addr2 = address;
+					if((vramWndAddr2 & 0xfff00000UL) == 0){
+						UINT32 addrtmp = addr2 & 0xfff80000UL;
+						if(addrtmp == 0xfff80000UL || addrtmp == 0x00f80000UL){
+							// XXX: 0xFFFA0000 - 0xFFFFFFFF or 0xFA0000 - 0xFFFFFF
+							addr2 = addr2 & 0xfffff;
+						}
+					}
+					if((addr2 & CIRRUS_VRAMWINDOW2MASK) == vramWndAddr2){
+						CIRRUS_VRAMWND2_FUNC_wl(cirrusvga_opaque, addr2, value);
+						//if((vramWndAddr2 != 0xE0000 || !(gdc.analog & ((1 << GDCANALOG_16) | (1 << GDCANALOG_256) | (1 << GDCANALOG_256E)))) && !(gdc.display & (1 << GDCDISP_31))) 
+						//	return;
+					}
+				}
+			}
+		}
+#endif
+		if (address >= USE_HIMEM) {
+			pos = address & CPU_ADRSMASK;
+			if ((pos >= USE_HIMEM) && ((pos + 3) < CPU_EXTLIMIT16)) {
+				STOREINTELDWORD(CPU_EXTMEMBASE + pos, value);
+				return;
+			}
 		}
 	}
 	if (!(address & 1)) {

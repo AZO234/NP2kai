@@ -41,6 +41,7 @@ typedef struct {
 	UINT8	DISPCLK;
 	UINT8	KEYBOARD;
 	UINT8	F12COPY;
+	UINT8	USENUMLOCK;
 
 	UINT8	MOUSE_SW;
 	UINT8	JOYPAD1;
@@ -78,6 +79,10 @@ typedef struct {
 	UINT8	fscrnbpp;
 	UINT8	fscrnmod;
 
+#if defined(SUPPORT_SCRN_DIRECT3D)
+	UINT8	d3d_imode; // Direct3D interpolation mode
+#endif
+
 	UINT8	cSoundDeviceType;
 	TCHAR	szSoundDeviceName[MAX_PATH];
 
@@ -86,6 +91,7 @@ typedef struct {
 #endif	// defined(SUPPORT_VSTi)
 
 	UINT8	emuddraw; // DirectDraw Emulation Only
+	UINT8	drawtype; // Screen renderer type (0: DirectDraw, 1: reserved(DirecrDraw), 2: Direct3D)
 	UINT8	dragdrop; // Drag and drop support
 	UINT8	makelhdd; // Large HDD creation support
 	UINT8	syskhook; // Low-level keyboard hook support
@@ -97,13 +103,16 @@ typedef struct {
 	UINT8	savescrn; // Save ScreenMode
 	
 	UINT8	svscrmul; // Save Screen Size Multiplying Value 
-	UINT8	scrn_mul; // Screen Size Multiplying Value
+	UINT8	scrn_mul; // Screen Size Multiplying Value (8: default)
 	
 	UINT8	mouse_nc; // Always notify mouse event
-	
 	UINT16	cpustabf; // CPU clock stabilizer frame
-	
 	UINT8	readonly; // No save changed settings
+	UINT8	usewheel; // Use mouse wheel
+	UINT8	tickmode; // Force Set Tick Counter Mode
+	UINT8	usemastervolume; // Use MAster Volume
+	
+	UINT8	tollwndhistory; // Number of data of recently opened FD image list in Tool Window
 } NP2OSCFG;
 
 

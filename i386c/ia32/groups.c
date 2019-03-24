@@ -29,6 +29,9 @@
 #include "groups.h"
 #include "inst_table.h"
 
+#if defined(USE_SSE3)
+#include "ia32/instructions/sse3/sse3.h"
+#endif
 
 /* group 1 */
 void
@@ -440,6 +443,16 @@ Grp7(void)
 	UINT32 op;
 
 	GET_PCBYTE(op);
+#if defined(USE_SSE3)
+	if(op==0xC8){
+		SSE3_MONITOR();
+		return;
+	}
+	if(op==0xC9){
+		SSE3_MWAIT();
+		return;
+	}
+#endif
 	(*insttable_G7[(op >> 3) & 7])(op);
 }
 

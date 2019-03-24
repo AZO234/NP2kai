@@ -5,85 +5,85 @@ enum {
 };
 
 #if defined(__GNUC__)
-//	���z�e�c�c�w�b�_�[��
+//	仮想ＦＤＤヘッダー部
 typedef struct {
-	SINT8	verID[8];		//	�o�[�W������\���h�c
-	SINT8	memo[128];		//	�f�B�X�N����
-	SINT16	write_protect;	//	�������݋֎~
-	SINT16	spdrv;			//	����ǂݍ��݃h���C�u
-	SINT8	dmy[80];		//	�\��̈�
+	SINT8	verID[8];		//	バージョンを表すＩＤ
+	SINT8	memo[128];		//	ディスクメモ
+	SINT16	write_protect;	//	書き込み禁止
+	SINT16	spdrv;			//	特殊読み込みドライブ
+	SINT8	dmy[80];		//	予約領域
 } __attribute__ ((packed)) _VFDD_HEAD, *VFDD_HEAD;
 
-//	���z�e�c�c�̂h�c�f�[�^
+//	仮想ＦＤＤのＩＤデータ
 typedef struct {
-	UINT8	C;			//	�b �V�����_�ԍ�
-	UINT8	H;			//	�g �T�[�t�F�[�X�ԍ�
-	UINT8	R;			//	�q �Z�N�^�ԍ�
-	UINT8	N;			//	�m �Z�N�^��
-	UINT8	D;			//	�c �f�[�^�p�^�[��
-	UINT8	DDAM;		//	�c�c�`�l �f���[�e�b�h�f�[�^�t���O
-	UINT8	flMF;		//	�l�e �{���x�t���O
-	UINT8	flHD;		//	�Q�g�c�t���O
-	SINT32	dataPoint;	//	�f�[�^�ւ̃t�@�C���|�C���^
+	UINT8	C;			//	Ｃ シリンダ番号
+	UINT8	H;			//	Ｈ サーフェース番号
+	UINT8	R;			//	Ｒ セクタ番号
+	UINT8	N;			//	Ｎ セクタ長
+	UINT8	D;			//	Ｄ データパターン
+	UINT8	DDAM;		//	ＤＤＡＭ デリーテッドデータフラグ
+	UINT8	flMF;		//	ＭＦ 倍密度フラグ
+	UINT8	flHD;		//	２ＨＤフラグ
+	SINT32	dataPoint;	//	データへのファイルポインタ
 } __attribute__ ((packed)) _VFDD_ID, *VFDD_ID;
 
-/*	����ǂݍ��ݎ��̃f�[�^	*/
+/*	特殊読み込み時のデータ	*/
 typedef struct {
-	SINT16	trk;		//	���݂̃g���b�N�ʒu
-	UINT16	iax;		//	���̓��W�X�^�̒l
+	SINT16	trk;		//	現在のトラック位置
+	UINT16	iax;		//	入力レジスタの値
 	UINT16	ibx;
 	UINT16	icx;
 	UINT16	idx;
-	UINT16	oax;		//	�o�̓��W�X�^�̒l
+	UINT16	oax;		//	出力レジスタの値
 	UINT16	obx;
 	UINT16	ocx;
 	UINT16	odx;
 	UINT16	ofl;
-	SINT32	dataPoint;	//	�f�[�^�ւ̃t�@�C���|�C���^
-	SINT32	nextPoint;	//	���̃f�[�^�ւ̃t�@�C���|�C���^
-	SINT16	count;		//	����ǂݍ��݃J�E���^
-	SINT16	neg_count;	//	�J�E���g�����t���O
+	SINT32	dataPoint;	//	データへのファイルポインタ
+	SINT32	nextPoint;	//	次のデータへのファイルポインタ
+	SINT16	count;		//	特殊読み込みカウンタ
+	SINT16	neg_count;	//	カウント無視フラグ
 } __attribute__ ((packed)) _VFDD_SP, *VFDD_SP;
 #else
 #pragma pack(push, 1)
-//	���z�e�c�c�w�b�_�[��
+//	仮想ＦＤＤヘッダー部
 typedef struct {
-	SINT8	verID[8];		//	�o�[�W������\���h�c
-	SINT8	memo[128];		//	�f�B�X�N����
-	SINT16	write_protect;	//	�������݋֎~
-	SINT16	spdrv;			//	����ǂݍ��݃h���C�u
-	SINT8	dmy[80];		//	�\��̈�
+	SINT8	verID[8];		//	バージョンを表すＩＤ
+	SINT8	memo[128];		//	ディスクメモ
+	SINT16	write_protect;	//	書き込み禁止
+	SINT16	spdrv;			//	特殊読み込みドライブ
+	SINT8	dmy[80];		//	予約領域
 } _VFDD_HEAD, *VFDD_HEAD;
 
-//	���z�e�c�c�̂h�c�f�[�^
+//	仮想ＦＤＤのＩＤデータ
 typedef struct {
-	UINT8	C;			//	�b �V�����_�ԍ�
-	UINT8	H;			//	�g �T�[�t�F�[�X�ԍ�
-	UINT8	R;			//	�q �Z�N�^�ԍ�
-	UINT8	N;			//	�m �Z�N�^��
-	UINT8	D;			//	�c �f�[�^�p�^�[��
-	UINT8	DDAM;		//	�c�c�`�l �f���[�e�b�h�f�[�^�t���O
-	UINT8	flMF;		//	�l�e �{���x�t���O
-	UINT8	flHD;		//	�Q�g�c�t���O
-	SINT32	dataPoint;	//	�f�[�^�ւ̃t�@�C���|�C���^
+	UINT8	C;			//	Ｃ シリンダ番号
+	UINT8	H;			//	Ｈ サーフェース番号
+	UINT8	R;			//	Ｒ セクタ番号
+	UINT8	N;			//	Ｎ セクタ長
+	UINT8	D;			//	Ｄ データパターン
+	UINT8	DDAM;		//	ＤＤＡＭ デリーテッドデータフラグ
+	UINT8	flMF;		//	ＭＦ 倍密度フラグ
+	UINT8	flHD;		//	２ＨＤフラグ
+	SINT32	dataPoint;	//	データへのファイルポインタ
 } _VFDD_ID, *VFDD_ID;
 
-/*	����ǂݍ��ݎ��̃f�[�^	*/
+/*	特殊読み込み時のデータ	*/
 typedef struct {
-	SINT16	trk;		//	���݂̃g���b�N�ʒu
-	UINT16	iax;		//	���̓��W�X�^�̒l
+	SINT16	trk;		//	現在のトラック位置
+	UINT16	iax;		//	入力レジスタの値
 	UINT16	ibx;
 	UINT16	icx;
 	UINT16	idx;
-	UINT16	oax;		//	�o�̓��W�X�^�̒l
+	UINT16	oax;		//	出力レジスタの値
 	UINT16	obx;
 	UINT16	ocx;
 	UINT16	odx;
 	UINT16	ofl;
-	SINT32	dataPoint;	//	�f�[�^�ւ̃t�@�C���|�C���^
-	SINT32	nextPoint;	//	���̃f�[�^�ւ̃t�@�C���|�C���^
-	SINT16	count;		//	����ǂݍ��݃J�E���^
-	SINT16	neg_count;	//	�J�E���g�����t���O
+	SINT32	dataPoint;	//	データへのファイルポインタ
+	SINT32	nextPoint;	//	次のデータへのファイルポインタ
+	SINT16	count;		//	特殊読み込みカウンタ
+	SINT16	neg_count;	//	カウント無視フラグ
 } _VFDD_SP, *VFDD_SP;
 #pragma pack(pop)
 #endif

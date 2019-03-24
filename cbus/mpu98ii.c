@@ -1082,8 +1082,8 @@ void mpu98ii_bind(void) {
 
 	UINT	port;
 
-	mpu98.xferclock = pccore.realclock / 3125;
-	makeintclock();
+	mpu98ii_changeclock();
+
 	port = mpu98.port;
 	iocore_attachout(port, mpu98ii_o0);
 	iocore_attachinp(port, mpu98ii_i0);
@@ -1101,7 +1101,7 @@ void mpu98ii_bind(void) {
 		iocore_attachinp(0x331, mpu98ii_i2);
 	}
 	// PC-9801-118
-	if(g_nSoundID == SOUNDID_PC_9801_118){
+	if(g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_118){
 		iocore_attachout(cs4231.port[10], mpu98ii_o0);
 		iocore_attachinp(cs4231.port[10], mpu98ii_i0);
 		iocore_attachout(cs4231.port[10]+1, mpu98ii_o2);
@@ -1135,4 +1135,11 @@ void mpu98ii_midipanic(void) {
 		cm_mpu98->msg(cm_mpu98, COMMSG_MIDIRESET, 0);
 	}
 }
+
+void mpu98ii_changeclock(void) {
+	
+	mpu98.xferclock = pccore.realclock / 3125;
+	makeintclock();
+}
+
 

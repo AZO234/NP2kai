@@ -1,6 +1,6 @@
 /**
  * @file	extrom.cpp
- * @brief	EXTROM ƒŠƒ\[ƒX ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	EXTROM ãƒªã‚½ãƒ¼ã‚¹ ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -11,11 +11,11 @@
 #include "pccore.h"
 
 
-//! ƒŠƒ\[ƒX–¼
+//! ãƒªã‚½ãƒ¼ã‚¹å
 static const TCHAR s_szExtRom[] = TEXT("EXTROM");
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CExtRom::CExtRom()
 	: m_hGlobal(NULL)
@@ -26,7 +26,7 @@ CExtRom::CExtRom()
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CExtRom::~CExtRom()
 {
@@ -34,10 +34,10 @@ CExtRom::~CExtRom()
 }
 
 /**
- * ƒI[ƒvƒ“
- * @param[in] lpFilename ƒtƒ@ƒCƒ‹–¼
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * ã‚ªãƒ¼ãƒ—ãƒ³
+ * @param[in] lpFilename ãƒ•ã‚¡ã‚¤ãƒ«å
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CExtRom::Open(LPCTSTR lpFilename)
 {
@@ -58,11 +58,11 @@ bool CExtRom::Open(LPCTSTR lpFilename)
 }
 
 /**
- * ƒI[ƒvƒ“
- * @param[in] lpFilename ƒtƒ@ƒCƒ‹–¼
- * @param[in] extlen ƒtƒ@ƒCƒ‹–¼‚ÌŒã‚ë‰½•¶š‚ğŠg’£qˆµ‚¢‚·‚é‚©
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * ã‚ªãƒ¼ãƒ—ãƒ³
+ * @param[in] lpFilename ãƒ•ã‚¡ã‚¤ãƒ«å
+ * @param[in] extlen ãƒ•ã‚¡ã‚¤ãƒ«åã®å¾Œã‚ä½•æ–‡å­—ã‚’æ‹¡å¼µå­æ‰±ã„ã™ã‚‹ã‹
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CExtRom::Open(LPCTSTR lpFilename, DWORD extlen)
 {
@@ -73,8 +73,8 @@ bool CExtRom::Open(LPCTSTR lpFilename, DWORD extlen)
 	Close();
 	
 	_tcscpy(tmpfilesname, lpFilename);
-	int fnamelen = _tcslen(tmpfilesname);
-	for (int i=0; i<extlen+1; i++)
+	int fnamelen = (int)_tcslen(tmpfilesname);
+	for (int i=0; i<(int)extlen+1; i++)
 	{
 		tmpfilesname[fnamelen+1-i] = tmpfilesname[fnamelen+1-i-1];
 	}
@@ -83,7 +83,7 @@ bool CExtRom::Open(LPCTSTR lpFilename, DWORD extlen)
 	fh = file_open_rb(tmpfilesname2);
 	if (fh != FILEH_INVALID)
 	{
-		m_nSize = file_getsize(fh);
+		m_nSize = (UINT)file_getsize(fh);
 		m_lpRes = malloc(m_nSize);
 		file_read(fh, m_lpRes, m_nSize);
 		m_hGlobal = NULL;
@@ -110,11 +110,11 @@ bool CExtRom::Open(LPCTSTR lpFilename, DWORD extlen)
 }
 
 /**
- * ƒI[ƒvƒ“
- * @param[in] lpFilename ƒtƒ@ƒCƒ‹–¼
- * @param[in] lpExt ŠO•”ƒtƒ@ƒCƒ‹‚Ìê‡‚ÌŠg’£q
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * ã‚ªãƒ¼ãƒ—ãƒ³
+ * @param[in] lpFilename ãƒ•ã‚¡ã‚¤ãƒ«å
+ * @param[in] lpExt å¤–éƒ¨ãƒ•ã‚¡ã‚¤ãƒ«ã®å ´åˆã®æ‹¡å¼µå­
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CExtRom::Open(LPCTSTR lpFilename, LPCTSTR lpExt)
 {
@@ -130,7 +130,7 @@ bool CExtRom::Open(LPCTSTR lpFilename, LPCTSTR lpExt)
 	fh = file_open_rb(tmpfilesname2);
 	if (fh != FILEH_INVALID)
 	{
-		m_nSize = file_getsize(fh);
+		m_nSize = (UINT)file_getsize(fh);
 		m_lpRes = malloc(m_nSize);
 		file_read(fh, m_lpRes, m_nSize);
 		m_hGlobal = NULL;
@@ -157,7 +157,7 @@ bool CExtRom::Open(LPCTSTR lpFilename, LPCTSTR lpExt)
 }
 
 /**
- * ƒNƒ[ƒY
+ * ã‚¯ãƒ­ãƒ¼ã‚º
  */
 void CExtRom::Close()
 {
@@ -183,15 +183,15 @@ void CExtRom::Close()
 }
 
 /**
- * “Ç‚İ‚İ
- * @param[out] lpBuffer ƒoƒbƒtƒ@
- * @param[out] cbBuffer ƒoƒbƒtƒ@’·
- * @return ƒTƒCƒY
+ * èª­ã¿è¾¼ã¿
+ * @param[out] lpBuffer ãƒãƒƒãƒ•ã‚¡
+ * @param[out] cbBuffer ãƒãƒƒãƒ•ã‚¡é•·
+ * @return ã‚µã‚¤ã‚º
  */
 UINT CExtRom::Read(LPVOID lpBuffer, UINT cbBuffer)
 {
 	UINT nLength = m_nSize - m_nPointer;
-	nLength = np2min(nLength, cbBuffer);
+	nLength = min(nLength, cbBuffer);
 	if (nLength)
 	{
 		if (lpBuffer)
@@ -204,10 +204,10 @@ UINT CExtRom::Read(LPVOID lpBuffer, UINT cbBuffer)
 }
 
 /**
- * ƒV[ƒN
- * @param[in] lDistanceToMove ƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ÌˆÚ“®ƒoƒCƒg”
- * @param[in] dwMoveMethod ƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ğˆÚ“®‚·‚é‚½‚ß‚ÌŠJn“_iŠî€“_j‚ğw’è‚µ‚Ü‚·
- * @return Œ»İ‚ÌˆÊ’u
+ * ã‚·ãƒ¼ã‚¯
+ * @param[in] lDistanceToMove ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿ã®ç§»å‹•ãƒã‚¤ãƒˆæ•°
+ * @param[in] dwMoveMethod ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿ã‚’ç§»å‹•ã™ã‚‹ãŸã‚ã®é–‹å§‹ç‚¹ï¼ˆåŸºæº–ç‚¹ï¼‰ã‚’æŒ‡å®šã—ã¾ã™
+ * @return ç¾åœ¨ã®ä½ç½®
  */
 LONG CExtRom::Seek(LONG lDistanceToMove, DWORD dwMoveMethod)
 {
