@@ -90,8 +90,8 @@ else
 	PLATFORM_DEFINES += -miphoneos-version-min=5.0 -stdlib=libc++
 endif
 
-# Theos
-else ifeq ($(platform), theos_ios)
+# Theos iOS
+ifeq ($(platform), theos_ios)
 	HAS_GCC := 0
 	DEPLOYMENT_IOSVERSION = 5.0
 	TARGET = iphone:latest:$(DEPLOYMENT_IOSVERSION)
@@ -100,6 +100,7 @@ else ifeq ($(platform), theos_ios)
 	THEOS_BUILD_DIR := objs
 	include $(THEOS)/makefiles/common.mk
 	LIBRARY_NAME = $(TARGET_NAME)_libretro_ios
+endif
 
 # QNX
 else ifeq ($(platform), qnx)
@@ -766,7 +767,10 @@ DEFINES := -D__LIBRETRO__ $(PLATFORM_DEFINES) $(GCC_FLAGS) $(GCC_WARNINGS) $(GCC
 
 CFLAGS += $(fpic) $(DEFINES) $(C_VER)
 CXXFLAGS += $(fpic) $(DEFINES)
-LDFLAGS  += $(fpic) -lm -lpthread
+LDFLAGS  += $(fpic)
+ifeq ($(HAS_GCC), 1)
+LDFLAGS  += -lm -lpthread -v
+endif
 
 OBJOUT   = -o
 LINKOUT  = -o 

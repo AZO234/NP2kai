@@ -69,9 +69,15 @@ unsigned GetTickCount()
 }
 */
 
+#if defined(__APPLE__)
+#include <sys/kern_control.h>
+#include <net/if.h>
+#include <net/if_utun.h>
+#else
 #include <linux/if.h>
 #include <linux/if_tun.h>
 #include <linux/if_ether.h>	/* struct ethhdr */
+#endif
 
 #endif // defined(_WINDOWS)
  
@@ -429,13 +435,24 @@ static int np2net_openTAP(const OEMCHAR* tapname){
 	np2net_hThreadW = (HANDLE)_beginthreadex(NULL , 0 , np2net_ThreadFuncW , NULL , 0 , &dwID);
 #else
 	struct ifreq ifr;
+#if defined(__APPLE__)
+	np2net_hTap = open("/dev/tap0", O_RDWR);
+#else
 	np2net_hTap = open("/dev/net/tun", O_RDWR);
+#endif
 	if(np2net_hTap < 0){
+#if defined(__APPLE__)
+		TRACEOUT(("LGY-98: Failed to open [%s]", "/dev/tap0"));
+#else
 		TRACEOUT(("LGY-98: Failed to open [%s]", "/dev/net/tun"));
+#endif
 		return 2;
 	}
 	memset(&ifr, 0, sizeof(ifr));
 
+#if defined(__APPLE__)
+	strcpy(ifr.ifr_name, "tap%d");
+#else
 	ifr.ifr_flags = IFF_TAP | IFF_NO_PI;
 	strcpy(ifr.ifr_name, "tap%d");
 	
@@ -444,7 +461,7 @@ static int np2net_openTAP(const OEMCHAR* tapname){
 		np2net_closeTAP();
 		return 3;
 	}
-
+#endif
 	if(pthread_create(&np2net_hThreadR , NULL , np2net_ThreadFuncR , NULL) != 0){
 		TRACEOUT(("LGY-98: thread_create(READ) err"));
 		np2net_closeTAP();
