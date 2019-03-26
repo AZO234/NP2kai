@@ -46,12 +46,6 @@
 #include <windows.h>
 #include <mmsystem.h>
 #endif
-#elif defined(GEKKO)
-#include "gx_pthread.h"
-//#elif defined(HAVE_LIBNX)
-//#include "switch_pthread.h"
-#elif defined(_3DS)
-#include "ctr_pthread.h"
 #elif defined(__CELLOS_LV2__)
 #include <pthread.h>
 #if defined(__PSL1GHT__)
