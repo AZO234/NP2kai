@@ -190,21 +190,11 @@ else ifeq ($(platform), ctr)
 	STATIC_LINKING = 1
 	DISABLE_GCC_SECURITY_FLAGS = 1
 
-# Raspberry Pi 2 (Raspbian)
-else ifeq ($(platform), rpi2)
+# Raspberry Pi (Raspbian)
+else ifneq (,$(findstring rpi,$(platform)))
 	TARGET := $(TARGET_NAME)_libretro.so
-	fpic := -fPIC
+	fpic = -fPIC
 	SHARED := -shared -Wl,-version-script=link.T
-	PLATFORM_DEFINES += -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -ffast-math
-	PLATFORM_DEFINES += -DARM -D_POSIX_MONOTONIC_CLOCK
-	NO_DIRENT = 1
-
-# Raspberry Pi 3 (Raspbian)
-else ifeq ($(platform), rpi3)
-	TARGET := $(TARGET_NAME)_libretro.so
-	fpic := -fPIC
-	SHARED := -shared -Wl,-version-script=link.T
-	PLATFORM_DEFINES += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -ffast-math
 	PLATFORM_DEFINES += -DARM -D_POSIX_MONOTONIC_CLOCK
 	NO_DIRENT = 1
 
