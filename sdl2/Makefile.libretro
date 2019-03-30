@@ -476,6 +476,7 @@ else ifeq ($(platform), emscripten)
 	CXX = em++
 	TARGET := $(TARGET_NAME)_libretro_$(platform).bc
 	PLATFORM_DEFINES += -DEMSCRIPTEN -I$(EMSCRIPTEN)/system/include
+	STATIC_LINKING = 1
 
 # Windows MSVC 2010 x64
 else ifeq ($(platform), windows_msvc2010_x64)
@@ -631,6 +632,26 @@ INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro \
 		-I$(NP2_PATH)/i386c/ia32/instructions \
 		-I$(NP2_PATH)/i386c/ia32/instructions/fpu
 
+SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro.c \
+		$(wildcard $(NP2_PATH)/i386c/*.c) \
+		$(wildcard $(NP2_PATH)/i386c/ia32/*.c) \
+		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/*.c) \
+		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpdummy.c \
+		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox.c \
+		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox2.c \
+		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_softfloat.c \
+		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/fpu/softfloat/*.c) \
+		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/mmx/*.c) \
+		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse/*.c) \
+		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse2/*.c) \
+		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse3/*.c)
+
+#		$(NP2_PATH)/sdl2/libretro/libretro-common/file/archive_file_zlib.c \
+#		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_flac.c \
+#		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_flac_codec.c \
+#		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/trans_stream_zlib.c
+
+ifneq ($(STATIC_LINKING), 1)
 SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_fnmatch.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_getopt.c \
@@ -669,6 +690,7 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/xml/rxml.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/image_texture.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/image_transfer.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/hash/rhash.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/lists/dir_list.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/lists/file_list.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/lists/string_list.c \
@@ -684,35 +706,18 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/trans_stream.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/trans_stream_pipe.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/string/stdstring.c \
-		$(NP2_PATH)/sdl2/libretro/libretro.c \
-		$(wildcard $(NP2_PATH)/i386c/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/*.c) \
-		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpdummy.c \
-		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox.c \
-		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox2.c \
-		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_softfloat.c \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/fpu/softfloat/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/mmx/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse2/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse3/*.c)
 
-#		$(NP2_PATH)/sdl2/libretro/libretro-common/file/archive_file_zlib.c \
-#		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_flac.c \
-#		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_flac_codec.c \
-#		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/trans_stream_zlib.c
-
-#ifeq ($(platform), libnx)
-#SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/switch_pthread.c
-#endif
-#SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/xenon_sdl_threads.c
-ifneq ($(NO_DIRENT), 1)
-SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/vfs/vfs_implementation.c
-endif
-ifeq ($(platform), unix)
-#SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_ifaddrs.c
-SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/file/nbio/nbio_linux.c
+#	ifeq ($(platform), libnx)
+#		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/switch_pthread.c
+#	endif
+#	SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/xenon_sdl_threads.c
+	ifneq ($(NO_DIRENT), 1)
+		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/vfs/vfs_implementation.c
+	endif
+	ifeq ($(platform), unix)
+#		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_ifaddrs.c
+		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/file/nbio/nbio_linux.c
+	endif
 endif
 
 ifeq ($(platform), windows_msvc2003_x86)
