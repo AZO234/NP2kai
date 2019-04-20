@@ -100,6 +100,7 @@ void SSE_MASKMOVQ(void);
 void SSE_MOVNTPS(void);
 void SSE_MOVNTQ(void);
 void SSE_PREFETCHTx(void);
+void SSE_NOPPREFETCH(void);
 //void SSE_PREFETCHNTA(void); // -> SSE_PREFETCHTx
 void SSE_SFENCE(void);
 void SSE_LFENCE(void);

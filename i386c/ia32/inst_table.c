@@ -1475,13 +1475,13 @@ void (*insttable_2byte[2][256])(void) = {
 		SSE_MOVHPSmem2xmm, // + MOVLHPS
 		SSE_MOVHPSxmm2mem,
 		SSE_PREFETCHTx,		/* 18 */
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
+		SSE_NOPPREFETCH,
+		SSE_NOPPREFETCH,
+		SSE_NOPPREFETCH,
+		SSE_NOPPREFETCH,
+		SSE_NOPPREFETCH,
+		SSE_NOPPREFETCH,
+		SSE_NOPPREFETCH,
 
 		MOV_RdCd,		/* 20 */
 		MOV_RdDd,
@@ -1750,13 +1750,13 @@ void (*insttable_2byte[2][256])(void) = {
 		SSE_MOVHPSmem2xmm, // + MOVLHPS
 		SSE_MOVHPSxmm2mem,
 		SSE_PREFETCHTx,		/* 18 */
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
-		undef_op,
+		SSE_NOPPREFETCH,
+		SSE_NOPPREFETCH,
+		SSE_NOPPREFETCH,
+		SSE_NOPPREFETCH,
+		SSE_NOPPREFETCH,
+		SSE_NOPPREFETCH,
+		SSE_NOPPREFETCH,
 
 		MOV_RdCd,		/* 20 */
 		MOV_RdDd,
