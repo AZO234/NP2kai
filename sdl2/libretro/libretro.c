@@ -837,7 +837,7 @@ void retro_set_environment(retro_environment_t cb)
       { "np2kai_keyboard" , "Keyboard (Restart); Ja|Us" },
       { "np2kai_model" , "PC Model (Restart); PC-9801VX|PC-286|PC-9801VM" },
       { "np2kai_clk_base" , "CPU Base Clock (Restart); 2.4576 MHz|1.9968 MHz" },
-      { "np2kai_clk_mult" , "CPU Clock Multiplier (Restart); 4|5|6|8|10|12|16|20|24|30|36|40|42|1|2" },
+      { "np2kai_clk_mult" , "CPU Clock Multiplier (Restart); 4|5|6|8|10|12|16|20|24|30|36|40|42|52|64|76|88|100|2" },
 #if defined(SUPPORT_ASYNC_CPU)
       { "np2kai_async_cpu" , "Async CPU(experimental) (Restart); OFF|ON" },
 #endif
