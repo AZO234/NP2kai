@@ -1,9 +1,9 @@
 
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "np2", "np2vs2017.vcxproj", "{D0AC326F-CEFF-492D-839A-27D6CDA7EF64}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "np2kai", "np2vs2017.vcxproj", "{D0AC326F-CEFF-492D-839A-27D6CDA7EF64}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "np21w", "np21vs2017.vcxproj", "{CA040333-3357-4598-A480-57C957DA24B5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "np21kaiw", "np21vs2017.vcxproj", "{CA040333-3357-4598-A480-57C957DA24B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
