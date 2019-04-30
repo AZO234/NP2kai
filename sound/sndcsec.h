@@ -12,7 +12,7 @@ extern "C"
 {
 #endif
 
-#if defined(SOUND_CRITICAL)
+#if defined(SOUND_CRITICAL) && defined(SUPPORT_NP2_THREAD)
 
 extern NP2_Semaphore_t semSoundCritical;
 
@@ -20,6 +20,13 @@ extern NP2_Semaphore_t semSoundCritical;
 #define	SNDCSEC_TERM	NP2_Semaphore_Destroy(&semSoundCritical)
 #define	SNDCSEC_ENTER	NP2_Semaphore_Wait(&semSoundCritical)
 #define	SNDCSEC_LEAVE	NP2_Semaphore_Release(&semSoundCritical)
+
+#else
+
+#define	SNDCSEC_INIT
+#define	SNDCSEC_TERM
+#define	SNDCSEC_ENTER
+#define	SNDCSEC_LEAVE
 
 #endif	/* defined(SOUND_CRITICAL) */
 
