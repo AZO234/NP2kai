@@ -40,13 +40,13 @@ typedef sthread_t* NP2_Thread_t;
 /* --- thread --- */
 
 /* for caller */
-void NP2_Thread_Create(NP2_Thread_t* pth, void *(*thread) (void *), void* param);
+void NP2_Thread_Create(NP2_Thread_t* pth, void*(*thread)(void*), void* param);
 /* for caller */
 void NP2_Thread_Destroy(NP2_Thread_t* pth);
 /* for callee */
 int NP2_Thread_Exit(void* retval);
 /* for caller */
-void NP2_Thread_Wait(NP2_Thread_t* pth, void **retval);
+void NP2_Thread_Wait(NP2_Thread_t* pth, void** retval);
 /* for caller */
 void NP2_Thread_Detach(NP2_Thread_t* pth);
 
@@ -71,28 +71,54 @@ void NP2_Semaphore_Wait(NP2_Semaphore_t* psem);
 /* for caller/callee */
 void NP2_Semaphore_Release(NP2_Semaphore_t* psem);
 
-/* --- queue --- */
+/* --- wait queue --- */
 
-typedef struct NP2_Queue_Item_t_ {
-  struct NP2_Queue_Item_t_* next;
+typedef enum {
+	NP2_WAITQUEUE_TYPE_RING = 0,
+	NP2_WAITQUEUE_TYPE_LIST,
+} NP2_WaitQueue_Type_t;
+
+typedef void* NP2_WaitQueue_Ring_Item_t;
+
+typedef struct NP2_WaitQueue_List_Item_t_ {
+  struct NP2_WaitQueue_List_Item_t_* next;
   void* param;
-} NP2_Queue_Item_t;
+} NP2_WaitQueue_List_Item_t;
 
-typedef struct NP2_Queue_t_ {
-  NP2_Queue_Item_t* first;
-  NP2_Queue_Item_t* last;
-} NP2_Queue_t;
+typedef struct NP2_WaitQueue_Ring_t_ {
+  NP2_WaitQueue_Type_t type;
+  void* items;
+  unsigned int maxcount;
+  unsigned int itemsize;
+  unsigned int current;
+  unsigned int queued;
+} NP2_WaitQueue_Ring_t;
+
+typedef struct NP2_WaitQueue_List_t_ {
+  NP2_WaitQueue_Type_t type;
+  NP2_WaitQueue_List_Item_t* first;
+  NP2_WaitQueue_List_Item_t* last;
+} NP2_WaitQueue_List_t;
+
+typedef union NP2_WaitQueue_t_ {
+  NP2_WaitQueue_Ring_t ring;
+  NP2_WaitQueue_List_t list;
+} NP2_WaitQueue_t;
 
 /* for caller */
-void NP2_Queue_Create(NP2_Queue_t* pque);
+void NP2_WaitQueue_Ring_Create(NP2_WaitQueue_t* pque, unsigned int itemsize, unsigned int maxcount);
 /* for caller */
-void NP2_Queue_Destroy(NP2_Queue_t* pque);
+void NP2_WaitQueue_List_Create(NP2_WaitQueue_t* pque);
 /* for caller */
-void NP2_Queue_Append(NP2_Queue_t* pque, NP2_Semaphore_t* psem, void* param);
+void NP2_WaitQueue_Destroy(NP2_WaitQueue_t* pque);
+/* for caller */
+void* NP2_WaitQueue_Ring_GetMemory(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem);
+/* for caller */
+void NP2_WaitQueue_Append(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, void* param);
 /* for callee */
-void NP2_Queue_Shift(NP2_Queue_t* pque, NP2_Semaphore_t* psem, void** param);
+void NP2_WaitQueue_Shift(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, void** param);
 /* for callee */
-void NP2_Queue_Shift_Wait(NP2_Queue_t* pque, NP2_Semaphore_t* psem, void** param);
+void NP2_WaitQueue_Shift_Wait(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, void** param);
 
 /* --- sleep ms --- */
 

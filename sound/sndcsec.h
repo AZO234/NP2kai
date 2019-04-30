@@ -28,7 +28,7 @@ extern NP2_Semaphore_t semSoundCritical;
 #define	SNDCSEC_ENTER
 #define	SNDCSEC_LEAVE
 
-#endif	/* defined(SOUND_CRITICAL) */
+#endif	/* defined(SOUND_CRITICAL) defined(SUPPORT_NP2_THREAD) */
 
 #ifdef __cplusplus
 }
