@@ -5,7 +5,6 @@
 
 #ifdef SUPPORT_NP2_THREAD
 
-#include "compiler.h"
 #include <stdlib.h>
 
 #if defined(NP2_THREAD_WIN)
@@ -19,7 +18,7 @@
 #if defined(USE_SDL_CONFIG)
 #include "SDL.h"
 #else
-#include <SDL2\SDL.h>
+#include <SDL.h>
 #endif
 #elif defined(NP2_THREAD_LR)
 #include <rthreads/rthreads.h>
@@ -35,6 +34,10 @@ typedef pthread_t NP2_Thread_t;
 typedef SDL_Thread* NP2_Thread_t;
 #elif defined(NP2_THREAD_LR)
 typedef sthread_t* NP2_Thread_t;
+#endif
+
+#ifndef TRACEOUT
+#define TRACEOUT(s)
 #endif
 
 /* --- thread --- */
@@ -75,10 +78,9 @@ void NP2_Semaphore_Release(NP2_Semaphore_t* psem);
 
 typedef enum {
 	NP2_WAITQUEUE_TYPE_RING = 0,
+	NP2_WAITQUEUE_TYPE_RINGINT,
 	NP2_WAITQUEUE_TYPE_LIST,
 } NP2_WaitQueue_Type_t;
-
-typedef void* NP2_WaitQueue_Ring_Item_t;
 
 typedef struct NP2_WaitQueue_List_Item_t_ {
   struct NP2_WaitQueue_List_Item_t_* next;
@@ -87,9 +89,8 @@ typedef struct NP2_WaitQueue_List_Item_t_ {
 
 typedef struct NP2_WaitQueue_Ring_t_ {
   NP2_WaitQueue_Type_t type;
-  void* items;
+  void* params;
   unsigned int maxcount;
-  unsigned int itemsize;
   unsigned int current;
   unsigned int queued;
 } NP2_WaitQueue_Ring_t;
@@ -105,19 +106,25 @@ typedef union NP2_WaitQueue_t_ {
   NP2_WaitQueue_List_t list;
 } NP2_WaitQueue_t;
 
-/* for caller */
-void NP2_WaitQueue_Ring_Create(NP2_WaitQueue_t* pque, unsigned int itemsize, unsigned int maxcount);
-/* for caller */
+/* for caller (ring) */
+void NP2_WaitQueue_Ring_Create(NP2_WaitQueue_t* pque, unsigned int maxcount);
+/* for caller (ringint) */
+void NP2_WaitQueue_RingInt_Create(NP2_WaitQueue_t* pque, unsigned int maxcount);
+/* for caller (list) */
 void NP2_WaitQueue_List_Create(NP2_WaitQueue_t* pque);
-/* for caller */
+/* for caller (ring,ringint,list) */
 void NP2_WaitQueue_Destroy(NP2_WaitQueue_t* pque);
-/* for caller */
-void* NP2_WaitQueue_Ring_GetMemory(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem);
-/* for caller */
+/* for caller (ringint) */
+void NP2_WaitQueue_RingInt_Append(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, const int param);
+/* for caller (ring,list) */
 void NP2_WaitQueue_Append(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, void* param);
-/* for callee */
+/* for callee (ringint) */
+void NP2_WaitQueue_RingInt_Shift(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, int* param);
+/* for callee (ring,list) */
 void NP2_WaitQueue_Shift(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, void** param);
-/* for callee */
+/* for callee (ringint) */
+void NP2_WaitQueue_RingInt_Shift_Wait(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, int* param);
+/* for callee (ring,list) */
 void NP2_WaitQueue_Shift_Wait(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, void** param);
 
 /* --- sleep ms --- */

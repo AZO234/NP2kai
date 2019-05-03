@@ -17,12 +17,15 @@
 #include "../np2_thread.h"
 
 NP2_Semaphore_t sem;
-NP2_Queue_t que;
+NP2_WaitQueue_t que;
 
 void* child_wait_que(void* param) {
+  void* wait_param;
+
   while(1) {
-    NP2_Queue_Shift_Wait(&que, &sem, NULL);
+    NP2_WaitQueue_Shift_Wait(&que, &sem, &wait_param);
     printf("called parent!\n");
+    free(wait_param);
   }
 
 /* not run */
@@ -35,8 +38,11 @@ void main(void) {
 	int i;
 
   NP2_Thread_t thread;
+  void* wait_param;
 
-  memset(&que, 0, sizeof(NP2_Queue_t));
+  memset(&que, 0, sizeof(NP2_WaitQueue_t));
+  NP2_WaitQueue_Ring_Create(&que, 10);
+//  NP2_WaitQueue_List_Create(&que);
   NP2_Semaphore_Create(&sem, 1);
 
   NP2_Thread_Create(&thread, &child_wait_que, NULL);
@@ -46,13 +52,12 @@ void main(void) {
     printf("sleep %dms\n", i);
     NP2_Sleep_ms(i);
     printf("call child...\n");
-    NP2_Queue_Append(&que, &sem, NULL);
+    wait_param = malloc(256);
+    NP2_WaitQueue_Append(&que, &sem, wait_param);
   }
 
 /* not run */
   NP2_Thread_Wait(&thread, NULL);
-
   NP2_Thread_Destroy(&thread);
-
   NP2_Semaphore_Destroy(&sem);
 }

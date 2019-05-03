@@ -3,6 +3,7 @@
 #ifdef SUPPORT_NP2_THREAD
 
 #include "np2_thread.h"
+#include <string.h>
 
 /* --- thread --- */
 
@@ -157,20 +158,31 @@ void NP2_Semaphore_Release(NP2_Semaphore_t* psem) {
 
 /* --- wait queue --- */
 
-/* for caller */
-void NP2_WaitQueue_Ring_Create(NP2_WaitQueue_t* pque, unsigned int itemsize, unsigned int maxcount) {
-  if(!pque || itemsize == 0 || maxcount == 0) {
+/* for caller (ring) */
+void NP2_WaitQueue_Ring_Create(NP2_WaitQueue_t* pque, unsigned int maxcount) {
+  if(!pque || maxcount == 0) {
     return;
   }
 
   memset(pque, 0, sizeof(NP2_WaitQueue_t));
-  pque->ring.type     = NP2_WAITQUEUE_TYPE_RING;
-  pque->ring.items    = malloc(itemsize * maxcount);
+  pque->ring.type = NP2_WAITQUEUE_TYPE_RING;
+  pque->ring.params = malloc(sizeof(void*) * maxcount);
   pque->ring.maxcount = maxcount;
-  pque->ring.itemsize = itemsize;
 }
 
-/* for caller */
+/* for caller (ringint) */
+void NP2_WaitQueue_RingInt_Create(NP2_WaitQueue_t* pque, unsigned int maxcount) {
+  if(!pque || maxcount == 0) {
+    return;
+  }
+
+  memset(pque, 0, sizeof(NP2_WaitQueue_t));
+  pque->ring.type = NP2_WAITQUEUE_TYPE_RINGINT;
+  pque->ring.params = malloc(sizeof(int) * maxcount);
+  pque->ring.maxcount = maxcount;
+}
+
+/* for caller (list) */
 void NP2_WaitQueue_List_Create(NP2_WaitQueue_t* pque) {
   if(pque != NULL) {
     memset(pque, 0, sizeof(NP2_WaitQueue_t));
@@ -178,46 +190,43 @@ void NP2_WaitQueue_List_Create(NP2_WaitQueue_t* pque) {
   }
 }
 
-/* for caller */
+/* for caller (ring,ringint,list) */
 void NP2_WaitQueue_Destroy(NP2_WaitQueue_t* pque) {
   NP2_WaitQueue_List_Item_t* item;
+  unsigned int i;
 
   if(pque) {
-    if(pque->ring.type == NP2_WAITQUEUE_TYPE_RING) {
-      free(pque->ring.items);
-    } else {
+    switch(pque->ring.type) {
+    case NP2_WAITQUEUE_TYPE_RING:
+      for(i = 0; i < pque->ring.maxcount; i++) {
+        if(((void**)(pque->ring.params))[i])
+          free(((void**)(pque->ring.params))[i]);
+      }
+    case NP2_WAITQUEUE_TYPE_RINGINT:
+      free(pque->ring.params);
+      break;
+    case NP2_WAITQUEUE_TYPE_LIST:
       while(pque->list.first) {
         item = pque->list.first;
+        if(item->param)
+          free(item->param);
         pque->list.first = pque->list.first->next;
         free(item);
       }
+      break;
     }
     memset(pque, 0, sizeof(NP2_WaitQueue_t));
   }
 }
 
-/* for caller */
-void* NP2_WaitQueue_Ring_GetMemory(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem) {
-  void* mem = NULL;
-
-  if(pque) {
-    if(pque->ring.type == NP2_WAITQUEUE_TYPE_RING) {
-      NP2_Semaphore_Wait(psem);
-      mem = &((unsigned char*)pque->ring.items)[pque->ring.queued * pque->ring.itemsize];
-      NP2_Semaphore_Release(psem);
-    }
-  }
-
-  return mem;
-}
-
-/* for caller */
-void NP2_WaitQueue_Append(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, void* param) {
+/* for caller (ringint) */
+void NP2_WaitQueue_RingInt_Append(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, const int param) {
   NP2_WaitQueue_List_Item_t* item;
 
-  if(pque && psem && param) {
-    if(pque->ring.type == NP2_WAITQUEUE_TYPE_RING) {
+  if(pque && psem) {
+    if(pque->ring.type == NP2_WAITQUEUE_TYPE_RINGINT) {
       NP2_Semaphore_Wait(psem);
+      ((int*)(pque->ring.params))[pque->ring.queued] = param;
       if(pque->ring.queued + 1 >= pque->ring.maxcount) {
         pque->ring.queued = 0;
       } else {
@@ -225,7 +234,28 @@ void NP2_WaitQueue_Append(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, void* pa
       }
       NP2_Semaphore_Release(psem);
       if(pque->ring.queued == pque->ring.current) {
-        TRACEOUT("NP2_WaitQueue_Append: Queue is full.\n");
+        TRACEOUT("NP2_WaitQueue_Append: Error Queue is overlow.\n");
+      }
+    }
+  }
+}
+
+/* for caller (ring,list) */
+void NP2_WaitQueue_Append(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, void* param) {
+  NP2_WaitQueue_List_Item_t* item;
+
+  if(pque && psem) {
+    if(pque->ring.type == NP2_WAITQUEUE_TYPE_RING) {
+      NP2_Semaphore_Wait(psem);
+      ((void**)(pque->ring.params))[pque->ring.queued] = param;
+      if(pque->ring.queued + 1 >= pque->ring.maxcount) {
+        pque->ring.queued = 0;
+      } else {
+        pque->ring.queued++;
+      }
+      NP2_Semaphore_Release(psem);
+      if(pque->ring.queued == pque->ring.current) {
+        TRACEOUT("NP2_WaitQueue_Append: Error Queue is overlow.\n");
       }
     } else {
       item = (NP2_WaitQueue_List_Item_t*)malloc(sizeof(NP2_WaitQueue_List_t));
@@ -243,22 +273,45 @@ void NP2_WaitQueue_Append(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, void* pa
   }
 }
 
-/* for callee */
+/* for callee (ringint) */
+void NP2_WaitQueue_RingInt_Shift(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, int* param) {
+  NP2_WaitQueue_List_Item_t* item;
+
+  if(pque && psem && param) {
+    if(pque->ring.type == NP2_WAITQUEUE_TYPE_RINGINT) {
+      NP2_Semaphore_Wait(psem);
+      if(pque->ring.queued == pque->ring.current) {
+        *param = 0;
+      } else {
+        *param = ((int*)(pque->ring.params))[pque->ring.current];
+        if(pque->ring.current + 1 >= pque->ring.maxcount) {
+          pque->ring.current = 0;
+        } else {
+          pque->ring.current++;
+        }
+      }
+      NP2_Semaphore_Release(psem);
+    }
+  }
+}
+
+/* for callee (ring,list) */
 void NP2_WaitQueue_Shift(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, void** param) {
   NP2_WaitQueue_List_Item_t* item;
 
   if(pque && psem && param) {
     if(pque->ring.type == NP2_WAITQUEUE_TYPE_RING) {
+      NP2_Semaphore_Wait(psem);
       if(pque->ring.queued == pque->ring.current) {
         *param = NULL;
-        return;
-      }
-      NP2_Semaphore_Wait(psem);
-      *param = &((unsigned char*)pque->ring.items)[pque->ring.current * pque->ring.itemsize];
-      if(pque->ring.current + 1 >= pque->ring.maxcount) {
-        pque->ring.current = 0;
       } else {
-        pque->ring.current++;
+        *param = ((void**)(pque->ring.params))[pque->ring.current];
+        ((void**)(pque->ring.params))[pque->ring.current] = NULL;
+        if(pque->ring.current + 1 >= pque->ring.maxcount) {
+          pque->ring.current = 0;
+        } else {
+          pque->ring.current++;
+        }
       }
       NP2_Semaphore_Release(psem);
     } else {
@@ -272,7 +325,29 @@ void NP2_WaitQueue_Shift(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, void** pa
   }
 }
 
-/* for callee */
+/* for callee (ringint) */
+void NP2_WaitQueue_RingInt_Shift_Wait(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, int* param) {
+  void* item;
+
+  if(pque && psem && param) {
+    do {
+      NP2_Semaphore_Wait(psem);
+      if(pque->ring.type == NP2_WAITQUEUE_TYPE_RINGINT) {
+        if(pque->ring.queued == pque->ring.current) {
+          item = NULL;
+        } else {
+          item = (void*)1;
+        }
+      }
+      NP2_Semaphore_Release(psem);
+      if(!item)
+        NP2_Sleep_ms(1);
+    } while(!item);
+    NP2_WaitQueue_RingInt_Shift(pque, psem, param);
+  }
+}
+
+/* for callee (ring,list) */
 void NP2_WaitQueue_Shift_Wait(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, void** param) {
   void* item;
 
@@ -283,7 +358,7 @@ void NP2_WaitQueue_Shift_Wait(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, void
         if(pque->ring.queued == pque->ring.current) {
           item = NULL;
         } else {
-          item = &((unsigned char*)pque->ring.items)[pque->ring.current * pque->ring.itemsize];
+          item = (void*)1;
         }
       } else {
         item = pque->list.first;
