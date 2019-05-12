@@ -3,17 +3,17 @@
 
 /* --- Windows --- */
 /* > cl /Fecatch_sem.exe -DSUPPORT_NP2_THREAD -DNP2_THREAD_WIN \ */
-/*   catch_sem.c ../np2_thread.c */
+/*   catch_sem.c ../../np2_thread.c */
 /* --- POSIX --- */
 /* $ gcc -o catch_sem -DSUPPORT_NP2_THREAD -DNP2_THREAD_POSIX \ */
-/*   catch_sem.c ../np2_thread.c -lpthread */
+/*   catch_sem.c ../../np2_thread.c -lpthread */
 /* --- SDL2 --- */
 /* $ gcc -o catch_sem -DSUPPORT_NP2_THREAD -DNP2_THREAD_SDL2 \ */
-/*   catch_sem.c ../np2_thread.c `sdl2-config --cflags --libs` */
+/*   catch_sem.c ../../np2_thread.c `sdl2-config --cflags --libs` */
 
 #include <stdio.h>
 
-#include "../np2_thread.h"
+#include "../../np2_thread.h"
 
 #define THREAD_NUM 4
 

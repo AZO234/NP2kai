@@ -3,18 +3,18 @@
 
 /* --- Windows --- */
 /* > cl /Fechild_wait_que.exe -DSUPPORT_NP2_THREAD -DNP2_THREAD_WIN \ */
-/*   child_wait_que.c ../np2_thread.c */
+/*   child_wait_que.c ../../np2_thread.c */
 /* --- POSIX --- */
 /* $ gcc -o child_wait_que -DSUPPORT_NP2_THREAD -DNP2_THREAD_POSIX \ */
-/*   child_wait_que.c ../np2_thread.c -lpthread */
+/*   child_wait_que.c ../../np2_thread.c -lpthread */
 /* --- SDL2 --- */
 /* $ gcc -o child_wait_que -DSUPPORT_NP2_THREAD -DNP2_THREAD_SDL2 \ */
-/*   child_wait_que.c ../np2_thread.c  `sdl2-config --cflags --libs` */
+/*   child_wait_que.c ../../np2_thread.c  `sdl2-config --cflags --libs` */
 
 #include <stdio.h>
 #include <string.h>
 
-#include "../np2_thread.h"
+#include "../../np2_thread.h"
 
 NP2_Semaphore_t sem;
 NP2_WaitQueue_t que;
