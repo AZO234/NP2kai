@@ -725,7 +725,7 @@ static const PFTBL s_IniItems[] =
 	PFVAL("jast_snd", PFTYPE_BOOL,		&np2oscfg.jastsnd),
 	PFVAL("useromeo", PFTYPE_BOOL,		&np2oscfg.useromeo),
 	PFVAL("thickfrm", PFTYPE_BOOL,		&np2oscfg.thickframe),
-	PFVAL("xrollkey", PFRO_BOOL,		&np2oscfg.xrollkey),
+	PFVAL("xrollkey", PFTYPE_BOOL,		&np2oscfg.xrollkey),
 	PFVAL("fscrn_cx", PFRO_SINT32,		&np2oscfg.fscrn_cx),
 	PFVAL("fscrn_cy", PFRO_SINT32,		&np2oscfg.fscrn_cy),
 	PFVAL("fscrnbpp", PFRO_UINT8,		&np2oscfg.fscrnbpp),

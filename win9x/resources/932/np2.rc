@@ -988,6 +988,7 @@ BEGIN
             MENUITEM "F12 = WAB relay SW",          IDM_F12WABRELAY
             MENUITEM SEPARATOR
             MENUITEM "Use &NumLock key",            IDM_USENUMLOCK
+            MENUITEM "Swap PageUp/PageDown",        IDM_SWAPPAGEUPDOWN
             MENUITEM SEPARATOR
             MENUITEM "&System Key Hook",            IDM_SYSKHOOK
         END

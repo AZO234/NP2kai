@@ -227,6 +227,7 @@ static void cb_toolwindow(GtkToggleAction *action, gpointer user_data);
 static void cb_xctrlkey(GtkToggleAction *action, gpointer user_data);
 static void cb_xgrphkey(GtkToggleAction *action, gpointer user_data);
 static void cb_xshiftkey(GtkToggleAction *action, gpointer user_data);
+static void cb_xrollkey(GtkToggleAction *action, gpointer user_data);
 static void cb_itfwork(GtkToggleAction *action, gpointer user_data);
 static void cb_fixmmtimer(GtkToggleAction *action, gpointer user_data);
 static void cb_16mbmemchk(GtkToggleAction *action, gpointer user_data);
@@ -257,6 +258,7 @@ static GtkToggleActionEntry togglemenu_entries[] = {
 { "xctrlkey",     NULL, "mechanical _CTRL",   NULL, NULL, G_CALLBACK(cb_xctrlkey), FALSE },
 { "xgrphkey",     NULL, "mechanical _GRPH",   NULL, NULL, G_CALLBACK(cb_xgrphkey), FALSE },
 { "xshiftkey",    NULL, "mechanical _SHIFT",  NULL, NULL, G_CALLBACK(cb_xshiftkey), FALSE },
+{ "xrollkey",     NULL, "Swap PageUp/PageDown", NULL, NULL, G_CALLBACK(cb_xrollkey), FALSE },
 { "itfwork",      NULL, "ITF work",           NULL, NULL, G_CALLBACK(cb_itfwork), FALSE },
 { "fixmmtimer",   NULL, "Fix MMTimer",        NULL, NULL, G_CALLBACK(cb_fixmmtimer), FALSE },
 { "16mbmemchk",   NULL, "Skip over 16MB memcheck", NULL, NULL, G_CALLBACK(cb_16mbmemchk), FALSE },
@@ -516,6 +518,7 @@ static const gchar *ui_info =
 "    <menuitem action='xshiftkey'/>\n"
 "    <menuitem action='xctrlkey'/>\n"
 "    <menuitem action='xgrphkey'/>\n"
+"    <menuitem action='xrollkey'/>\n"
 "    <separator/>\n"
 "    <menuitem action='f11none'/>\n"
 "    <menuitem action='f11menu'/>\n"
@@ -1972,10 +1975,23 @@ cb_xshiftkey(GtkToggleAction *action, gpointer user_data)
 	gboolean b = gtk_toggle_action_get_active(action);
 	gboolean f;
 
-	f = (np2cfg.ITF_WORK & 1) ^ (b ? 1 : 0);
+	f = (np2cfg.XSHIFT & 1) ^ (b ? 1 : 0);
 	if (f) {
-		np2cfg.ITF_WORK ^= 1;
+		np2cfg.XSHIFT ^= 1;
 		sysmng_update(SYS_UPDATECFG);
+	}
+}
+
+static void
+cb_xrollkey(GtkToggleAction *action, gpointer user_data)
+{
+	gboolean b = gtk_toggle_action_get_active(action);
+	gboolean f;
+
+	f = (np2oscfg.xrollkey ? 1 : 0) ^ (b ? 1 : 0);
+	if (f) {
+		np2oscfg.xrollkey = !np2oscfg.xrollkey;
+		sysmng_update(SYS_UPDATEOSCFG);
 	}
 }
 
@@ -2490,6 +2506,7 @@ create_menu(void)
 	xmenu_toggle_item(NULL, "xctrlkey", np2cfg.XSHIFT & 2);
 	xmenu_toggle_item(NULL, "xgrphkey", np2cfg.XSHIFT & 4);
 	xmenu_toggle_item(NULL, "xshiftkey", np2cfg.XSHIFT & 1);
+	xmenu_toggle_item(NULL, "xrollkey", np2oscfg.xrollkey);
 	xmenu_toggle_item(NULL, "itfwork", np2cfg.ITF_WORK);
 	xmenu_toggle_item(NULL, "fixmmtimer", np2cfg.timerfix);
 	xmenu_toggle_item(NULL, "16mbmemchk", np2cfg.memchkmx == 15);

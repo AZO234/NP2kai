@@ -850,6 +850,7 @@ void retro_set_environment(retro_environment_t cb)
       { "np2kai_lcd" , "LCD; OFF|ON" },
       { "np2kai_SNDboard" , "Sound Board (Restart); PC9801-86|PC9801-26K + 86|PC9801-86 + Chibi-oto|PC9801-118|PC9801-86 + Mate-X PCM(B460)|PC9801-86 + 118|Mate-X PCM(B460)|Chibi-oto|Speak Board|Spark Board|Sound Orchestra|Sound Orchestra-V|Sound Blaster 16|AMD-98|Otomi-chanx2|Otomi-chanx2 + 86|None|PC9801-14|PC9801-26K" },
       { "np2kai_jast_snd" , "JastSound; OFF|ON" },
+      { "np2kai_xroll" , "Swap PageUp/PageDown; ON|OFF" },
       { "np2kai_usefmgen" , "Sound Generator; fmgen|Default" },
       { "np2kai_volume_M" , "Volume Master; 100|0|5|10|15|20|25|30|35|40|45|50|55|60|65|70|75|80|85|90|95" },
       { "np2kai_volume_F" , "Volume FM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
@@ -1082,6 +1083,17 @@ static void update_variables(void)
          np2cfg.usefmgen = 0x00;
       else if (strcmp(var.value, "fmgen") == 0)
          np2cfg.usefmgen = 0x01;
+   }
+
+   var.key = "np2kai_xroll";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "OFF") == 0)
+         np2oscfg.xrollkey = 0;
+      else if (strcmp(var.value, "ON") == 0)
+         np2oscfg.xrollkey = 1;
    }
 
    var.key = "np2kai_volume_M";

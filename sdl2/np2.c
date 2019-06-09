@@ -64,6 +64,7 @@ NP2OSCFG np2oscfg = {
 	0,			/* resume */
 	0,			/* jastsnd */
 	0,			/* I286SAVE */
+	1,			/* xrollkey */
 
 	SNDDRV_SDL,		/* snddrv */
 #if !defined(__LIBRETRO__)

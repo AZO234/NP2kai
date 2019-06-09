@@ -289,6 +289,13 @@ void init_lr_key_to_pc98(){
 void send_libretro_key_down(uint16_t key) {
 	size_t i;
 
+	if(np2oscfg.xrollkey) {
+		if(key == RETROK_PAGEUP)
+			key = RETROK_PAGEDOWN;
+		else if(key == RETROK_PAGEDOWN)
+			key = RETROK_PAGEUP;
+	}
+
 	if(np2oscfg.KEYBOARD == KEY_KEY101) {
 		for (i = 0; i < SDL_arraysize(lrcnv101); i++) {
 			if(lrcnv101[i].keycode != NC && !key_states[key]) {
@@ -312,6 +319,13 @@ void send_libretro_key_down(uint16_t key) {
 
 void send_libretro_key_up(uint16_t key) {
 	size_t i;
+
+	if(np2oscfg.xrollkey) {
+		if(key == RETROK_PAGEUP)
+			key = RETROK_PAGEDOWN;
+		else if(key == RETROK_PAGEDOWN)
+			key = RETROK_PAGEUP;
+	}
 
 	if(np2oscfg.KEYBOARD == KEY_KEY101) {
 		for (i = 0; i < SDL_arraysize(lrcnv101); i++) {
@@ -585,6 +599,13 @@ static const SDLKCNV sdlcnv106[] =
 static UINT8 getKey(SDL_Scancode key)
 {
 	size_t i;
+
+	if(np2oscfg.xrollkey) {
+		if(key == SDL_SCANCODE_PAGEUP)
+			return key = SDL_SCANCODE_PAGEDOWN;
+		else if(key == SDL_SCANCODE_PAGEDOWN)
+			return key = SDL_SCANCODE_PAGEUP;
+	}
 
 	if(np2oscfg.KEYBOARD == KEY_KEY101) {
 		for (i = 0; i < SDL_arraysize(sdlcnv101); i++) {

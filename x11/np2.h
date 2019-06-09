@@ -55,6 +55,7 @@ typedef struct {
 	UINT8	hostdrv_write;
 	UINT8	jastsnd;
 	UINT8	I286SAVE;
+	UINT8	xrollkey;
 
 	UINT8	snddrv;
 	char	MIDIDEV[2][MAX_PATH];

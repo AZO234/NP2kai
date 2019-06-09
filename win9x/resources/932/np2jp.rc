@@ -985,6 +985,7 @@ BEGIN
             MENUITEM "F12 = CPUウェイト無し(切替)", IDM_F12NOWAIT2
             MENUITEM SEPARATOR
             MENUITEM "NumLockキー有効(&N)",         IDM_USENUMLOCK
+            MENUITEM "PageUpとPageDownを入替",      IDM_SWAPPAGEUPDOWN
             MENUITEM SEPARATOR
             MENUITEM "システムキーフック有効(&S)",  IDM_SYSKHOOK
         END

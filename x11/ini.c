@@ -745,6 +745,7 @@ static INITBL iniitem[] = {
 	{"keydispl", INITYPE_BOOL,	&np2oscfg.keydisp,	0},
 	{"soft_kbd", INITYPE_BOOL,	&np2oscfg.softkbd,	0},
 	{"jast_snd", INITYPE_BOOL,	&np2oscfg.jastsnd,	0},
+	{"xrollkey", INITYPE_BOOL,	&np2oscfg.xrollkey,	0},
 
 	{"sounddrv", INITYPE_SNDDRV,	&np2oscfg.snddrv,	0},
 	{"MIDIOUTd", INITYPE_STR,	&np2oscfg.MIDIDEV[0],	MAX_PATH},

@@ -340,6 +340,13 @@ static void sys_cmd(MENUID id) {
 			update |= SYS_UPDATECFG;
 			break;
 
+		case MID_XROLL:
+			np2oscfg.xrollkey ^= 1;
+			keystat_forcerelease(0x36);
+			keystat_forcerelease(0x37);
+			update |= SYS_UPDATEOSCFG;
+			break;
+
 		case MID_KEYBOARD_106:
 			np2oscfg.KEYBOARD = KEY_KEY106;
 			update |= SYS_UPDATEOSCFG;
@@ -818,6 +825,7 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 	menusys_setcheck(MID_XSHIFT, (b & 1));
 	menusys_setcheck(MID_XCTRL, (b & 2));
 	menusys_setcheck(MID_XGRPH, (b & 4));
+	menusys_setcheck(MID_XROLL, (np2oscfg.xrollkey & 1));
 	b = np2cfg.BEEP_VOL & 3;
 	menusys_setcheck(MID_BEEPOFF, (b == 0));
 	menusys_setcheck(MID_BEEPLOW, (b == 1));

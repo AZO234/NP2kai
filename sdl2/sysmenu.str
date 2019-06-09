@@ -75,6 +75,7 @@ static const char str_mousekey[] = "Mouse-Key";
 static const char str_mecshift[] = "mechanical SHIFT";
 static const char str_mecctrl[] = "mechanical CTRL";
 static const char str_mecgrph[] = "mechanical GRPH";
+static const char str_xroll[] = "Swap PageUp/PageDown";
 
 static const char str_keyboard_106[] = "JP Keyboard 106";
 static const char str_keyboard_101[] = "US Keyboard 101";
@@ -351,6 +352,7 @@ static const MSYSITEM s_keybd[] = {
 		{str_mecshift,		NULL,		MID_XSHIFT,			0},
 		{str_mecctrl,		NULL,		MID_XCTRL,			0},
 		{str_mecgrph,		NULL,		MID_XGRPH,			0},
+		{str_xroll,		NULL,		MID_XROLL,			0},
 		{NULL,			NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_sndcad,		NULL,		MID_SNDCAD,			MENU_DELETED}};
 #else

@@ -132,7 +132,7 @@ static	TCHAR		szClassName[] = _T("NP2-MainWindow");
 #if !defined(_WIN64)
 						0,
 #endif
-						0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+						0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0,
 						FSCRNMOD_SAMEBPP | FSCRNMOD_SAMERES | FSCRNMOD_ASPECTFIX8,
 
 #if defined(SUPPORT_SCRN_DIRECT3D)
@@ -1125,6 +1125,12 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			
 		case IDM_USENUMLOCK:
 			np2oscfg.USENUMLOCK = !np2oscfg.USENUMLOCK;
+			update |= SYS_UPDATEOSCFG;
+			break;
+
+		case IDM_SWAPPAGEUPDOWN:
+			np2oscfg.xrollkey = !np2oscfg.xrollkey;
+			winkbd_roll(np2oscfg.KEYBOARD==KEY_PC98 ? np2oscfg.xrollkey : !np2oscfg.xrollkey);
 			update |= SYS_UPDATEOSCFG;
 			break;
 

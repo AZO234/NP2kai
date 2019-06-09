@@ -644,6 +644,7 @@
 #define IDM_XGRPH                       40613
 #define IDM_SENDCAD                     40614
 #define IDM_USENUMLOCK                  40615
+#define IDM_SWAPPAGEUPDOWN              40616
 #define IDM_F12MOUSE                    40621
 #define IDM_F12COPY                     40622
 #define IDM_F12STOP                     40623

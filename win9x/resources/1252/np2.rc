@@ -992,6 +992,7 @@ BEGIN
             MENUITEM "F12 = No wait(toggle)",       IDM_F12NOWAIT2
             MENUITEM SEPARATOR
             MENUITEM "Use &NumLock key",            IDM_USENUMLOCK
+            MENUITEM "Swap PageUp/PageDown",        IDM_SWAPPAGEUPDOWN
             MENUITEM SEPARATOR
             MENUITEM "&System Key Hook",            IDM_SYSKHOOK
         END

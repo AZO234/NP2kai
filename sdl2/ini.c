@@ -746,6 +746,8 @@ static const INITBL iniitem[] = {
 	{"STATSAVE", INITYPE_BOOL,	&np2cfg.statsave,	0},
 #endif
 
+	{"xrollkey", INITYPE_BOOL,	&np2oscfg.xrollkey,	0},
+
 	{"sounddrv", INITYPE_SNDDRV,	&np2oscfg.snddrv,	0},
 #if !defined(__LIBRETRO__)
 #if defined(_WIN32)
