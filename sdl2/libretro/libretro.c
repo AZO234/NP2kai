@@ -486,6 +486,10 @@ static bool joymouse;
 static double joymouseaxel = 1.0;
 static int joymousemovebtn = 0;
 static int joymouseaxelratio = 10;
+static bool joyNP2menu;
+static int joyNP2menubtn;
+static bool joyNP2menu_oldjoymouse;
+static bool joyNP2menu_oldjoymouse;
 
 bool mapkey_down[12];
 
@@ -573,12 +577,17 @@ void updateInput(){
    }
 
    if ((input_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_F12) ||
-      input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2) ||
+      (joyNP2menu && input_cb(0, RETRO_DEVICE_JOYPAD, 0, joyNP2menubtn)) ||
       input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_MIDDLE)) && menukey==0){
 
       menukey=1;
 
+
       if (menuvram == NULL) {
+         if (joyNP2menu && input_cb(0, RETRO_DEVICE_JOYPAD, 0, joyNP2menubtn)) {
+            joyNP2menu_oldjoymouse = joymouse;
+            joymouse = true;
+         }
          if(draw32bit) {
             memcpy(GuiBuffer,FrameBuffer,scrnsurf.width*scrnsurf.height*4);
          } else {
@@ -589,12 +598,15 @@ void updateInput(){
          lastx=0;lasty=0;
          menu_active=1;
       } else {
+         if (joyNP2menu && input_cb(0, RETRO_DEVICE_JOYPAD, 0, joyNP2menubtn)) {
+            joymouse = joyNP2menu_oldjoymouse;
+         }
          menubase_close();
          scrndraw_redraw();
          menu_active=0;
       }
    } else if ( !(input_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_F12) ||
-      input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2) ||
+      (joyNP2menu && input_cb(0, RETRO_DEVICE_JOYPAD, 0, joyNP2menubtn)) ||
       input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_MIDDLE)) && menukey==1)
       menukey=0;
 
@@ -842,7 +854,6 @@ void retro_set_environment(retro_environment_t cb)
       { "np2kai_async_cpu" , "Async CPU(experimental) (Restart); OFF|ON" },
 #endif
       { "np2kai_ExMemory" , "RAM Size (Restart); 3|7|11|13|16|32|64|120|230|1" },
-      { "np2kai_Skip16MC" , "Skip over 16MB memcheck; OFF|ON" },
       { "np2kai_FastMC" , "Fast memcheck; OFF|ON" },
       { "np2kai_gdc" , "GDC; uPD7220|uPD72020" },
       { "np2kai_skipline" , "Skipline Revisions; Full 255 lines|ON|OFF" },
@@ -876,9 +887,9 @@ void retro_set_environment(retro_environment_t cb)
       { "np2kai_PCI_bios32" , "Use BIOS32 (not recommended); OFF|ON" },
 #endif	/* defined(SUPPORT_PCI) */
       { "np2kai_usecdecc" , "Use CD-ROM EDC/ECC Emulation; ON|OFF" },
-      { "np2kai_joy2mouse" , "Joypad to Mouse Mapping; OFF|ON" },
       { "np2kai_j2msuratio" , "J2M Cursor Speed up Ratio; x10|x20|up stop|x5" },
-      { "np2kai_joy2key" , "Joypad to Keyboard Mapping; OFF|Arrows|Keypad|Manual" },
+      { "np2kai_joy2mousekey" , "Joypad to Mouse/Keyboard Mapping; OFF|Mouse|Arrows|Keypad|Manual" },
+      { "np2kai_joynp2menu" , "Joypad to NP2 menu Mapping; L2|R|R2|L3|R3|A|B|X|Y|Start|Select|OFF|L" },
       { NULL, NULL },
    };
 
@@ -969,17 +980,6 @@ static void update_variables(void)
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
       np2cfg.EXTMEM = atoi(var.value);
-   }
-
-   var.key = "np2kai_Skip16MC";
-   var.value = NULL;
-
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
-   {
-      if (strcmp(var.value, "OFF") == 0)
-         np2cfg.memchkmx = 0;
-      else
-         np2cfg.memchkmx = 15;
    }
 
    var.key = "np2kai_FastMC";
@@ -1343,18 +1343,7 @@ static void update_variables(void)
          np2cfg.usecdecc = 0;
    }
 
-   var.key = "np2kai_joy2mouse";
-   var.value = NULL;
-
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
-   {
-      if (strcmp(var.value, "ON") == 0)
-         joymouse = true;
-      else
-         joymouse = false;
-   }
-
-    var.key = "np2kai_j2msuratio";
+   var.key = "np2kai_j2msuratio";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -1369,28 +1358,108 @@ static void update_variables(void)
          joymouseaxelratio = 10;
    }
 
-  var.key = "np2kai_joy2key";
-   var.value = NULL;
+  var.key = "np2kai_joy2mousekey";
+  var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
-      if (strcmp(var.value, "Arrows") == 0)
+      if (strcmp(var.value, "Mouse") == 0)
       {
+         joymouse = true;
+         joy2key = false;
+      }
+      else if (strcmp(var.value, "Arrows") == 0)
+      {
+         joymouse = false;
          joy2key = true;
          memcpy(np2oscfg.lrjoybtn, joy2key_map_arr, sizeof(uint16_t) * 12);
       }
       else if (strcmp(var.value, "Keypad") == 0)
       {
+         joymouse = false;
          joy2key = true;
          memcpy(np2oscfg.lrjoybtn, joy2key_map_kpad, sizeof(uint16_t) * 12);
       }
       else if (strcmp(var.value, "Manual") == 0)
       {
+         joymouse = false;
          joy2key = true;
       }
       else
       {
+         joymouse = false;
          joy2key = false;
+      }
+   }
+
+   var.key = "np2kai_joynp2menu";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "A") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_A;
+      }
+      else if (strcmp(var.value, "B") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_B;
+      }
+      else if (strcmp(var.value, "X") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_X;
+      }
+      else if (strcmp(var.value, "Y") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_Y;
+      }
+      else if (strcmp(var.value, "L") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_L;
+      }
+      else if (strcmp(var.value, "L2") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_L2;
+      }
+      else if (strcmp(var.value, "R") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_R;
+      }
+      else if (strcmp(var.value, "R2") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_R2;
+      }
+      else if (strcmp(var.value, "L3") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_L3;
+      }
+      else if (strcmp(var.value, "R3") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_R3;
+      }
+      else if (strcmp(var.value, "Start") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_START;
+      }
+      else if (strcmp(var.value, "Select") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_SELECT;
+      }
+      else
+      {
+         joyNP2menu = false;
       }
    }
 
