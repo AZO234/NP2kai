@@ -239,6 +239,18 @@ static void sys_cmd(MENUID id) {
 			diskdrv_setsxsi(0x23, NULL);
 			break;
 #endif
+		case MID_ROLNORMAL:
+			changescreen((scrnmode & ~SCRNMODE_ROTATEMASK) | 0);
+			break;
+
+		case MID_ROLLEFT:
+			changescreen((scrnmode & ~SCRNMODE_ROTATEMASK) | SCRNMODE_ROTATELEFT);
+			break;
+
+		case MID_ROLRIGHT:
+			changescreen((scrnmode & ~SCRNMODE_ROTATEMASK) | SCRNMODE_ROTATERIGHT);
+			break;
+
 		case MID_DISPSYNC:
 			np2cfg.DISPSYNC ^= 1;
 			update |= SYS_UPDATECFG;
@@ -807,6 +819,9 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 #if defined(SUPPORT_ASYNC_CPU)
 	menusys_setcheck(MID_ASYNCCPU, (np2cfg.asynccpu & 1));
 #endif
+	menusys_setcheck(MID_ROLNORMAL, ((scrnmode & SCRNMODE_ROTATEMASK) == 0));
+	menusys_setcheck(MID_ROLLEFT,   ((scrnmode & SCRNMODE_ROTATEMASK) == SCRNMODE_ROTATELEFT));
+	menusys_setcheck(MID_ROLRIGHT,  ((scrnmode & SCRNMODE_ROTATEMASK) == SCRNMODE_ROTATERIGHT));
 	b = np2oscfg.DRAW_SKIP;
 	menusys_setcheck(MID_AUTOFPS, (b == 0));
 	menusys_setcheck(MID_60FPS, (b == 1));

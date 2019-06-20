@@ -30,6 +30,7 @@ extern char bmpfilefolder[MAX_PATH];
 extern UINT bmpfilenumber;
 extern char modulefile[MAX_PATH];
 extern char draw32bit;
+extern UINT8 scrnmode;
 
 enum {
 	IMAGETYPE_UNKNOWN	= 0,
@@ -129,6 +130,8 @@ extern int np2_end();
 
 extern int mmxflag;
 int havemmx(void);
+
+extern UINT8 changescreeninit;
 
 #endif	/* __LIBRETRO__ */
 

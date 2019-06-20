@@ -1,8 +1,28 @@
+#ifndef NP2_SDL_SCRNMNG_H
+#define NP2_SDL_SCRNMNG_H
+
+#include	"vramhdl.h"
 
 enum {
 	RGB24_B	= 2,
 	RGB24_G	= 1,
 	RGB24_R	= 0
+};
+
+enum {
+	SCRNMODE_FULLSCREEN	= 0x01,
+	SCRNMODE_HIGHCOLOR	= 0x02,
+	SCRNMODE_ROTATE		= 0x10,
+	SCRNMODE_ROTATEDIR	= 0x20,
+	SCRNMODE_ROTATELEFT	= (SCRNMODE_ROTATE + 0),
+	SCRNMODE_ROTATERIGHT	= (SCRNMODE_ROTATE + SCRNMODE_ROTATEDIR),
+	SCRNMODE_ROTATEMASK	= 0x30,
+};
+
+enum {
+	SCRNFLAG_FULLSCREEN	= 0x01,
+	SCRNFLAG_HAVEEXTEND	= 0x02,
+	SCRNFLAG_ENABLE		= 0x80
 };
 
 typedef struct {
@@ -15,10 +35,24 @@ typedef struct {
 	int		extend;
 } SCRNSURF;
 
+#if !defined(__LIBRETRO__)
+typedef struct {
+	BOOL		enable;
+	int			width;
+	int			height;
+	int			bpp;
+	SDL_Surface	*surface;
+	VRAMHDL		vram;
+} SCRNMNG;
+#endif	/* __LIBRETRO__ */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#if !defined(__LIBRETRO__)
+extern SCRNMNG		scrnmng;
+#endif	/* __LIBRETRO__ */
 
 void scrnmng_setwidth(int posx, int width);
 #define scrnmng_setextend(e)
@@ -42,7 +76,7 @@ RGB16 scrnmng_makepal16(RGB32 pal32);
 // ---- for SDL
 
 void scrnmng_initialize(void);
-BRESULT scrnmng_create(int width, int height);
+BRESULT scrnmng_create(UINT8 mode);
 void scrnmng_destroy(void);
 
 
@@ -63,3 +97,6 @@ void scrnmng_updatecursor(void);
 void scrnmng_updatefsres(void);
 void scrnmng_blthdc(void);
 void scrnmng_bltwab(void);
+
+#endif	/* NP2_SDL_SCRNMNG_H */
+

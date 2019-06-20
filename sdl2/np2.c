@@ -104,6 +104,9 @@ UINT bmpfilenumber;
 char modulefile[MAX_PATH];
 char draw32bit;
 
+UINT8 scrnmode = 0;
+UINT8 changescreeninit = 0;
+
 static void usage(const char *progname) {
 
 	printf("Usage: %s [options]\n", progname);
@@ -168,6 +171,44 @@ int flagload(const char *ext, const char *title, BOOL force) {
 	return(id);
 }
 
+void
+changescreen(UINT8 newmode)
+{
+	UINT8 change;
+	UINT8 renewal;
+	UINT8 res;
+
+	change = scrnmode ^ newmode;
+	renewal = (change & SCRNMODE_FULLSCREEN);
+	if (newmode & SCRNMODE_FULLSCREEN) {
+		renewal |= (change & SCRNMODE_HIGHCOLOR);
+	} else {
+		renewal |= (change & SCRNMODE_ROTATEMASK);
+	}
+	if (renewal) {
+		if(menuvram) {
+			menubase_close();
+		}
+		changescreeninit = 1;
+		soundmng_stop();
+		scrnmng_destroy();
+		sysmenu_destroy();
+
+		if(scrnmng_create(newmode) == SUCCESS) {
+			scrnmode = newmode;
+		} else {
+			if(scrnmng_create(scrnmode) != SUCCESS) {
+				return;
+			}
+		}
+		sysmenu_create();
+		changescreeninit = 0;
+		scrndraw_redraw();
+		soundmng_play();
+	} else {
+		scrnmode = newmode;
+	}
+}
 
 // ---- proc
 
@@ -333,7 +374,7 @@ int np2_main(int argc, char *argv[]) {
 	mousemng_initialize();
 
 	scrnmng_initialize();
-	if (scrnmng_create(FULLSCREEN_WIDTH, 400) != SUCCESS) {
+	if (scrnmng_create(0) != SUCCESS) {
 		goto np2main_err4;
 	}
 
