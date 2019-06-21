@@ -77,7 +77,7 @@ serialread(COMMNG self, UINT8 *data)
 	rv = ClearCommError(serial->hdl, &errors, &status);
 	if (rv && status.cbInQue > 0) {
 #else
-	rv = ioctl(serial->hdl, TIOCINQ, &bytes);
+	rv = ioctl(serial->hdl, FIONREAD, &bytes);
 	if (rv == 0 && bytes > 0) {
 #endif
 		VERBOSE(("serialread: bytes = %d", bytes));
