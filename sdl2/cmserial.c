@@ -31,19 +31,26 @@
 #include "np2.h"
 #include "commng.h"
 
+#if defined(_WIN32)
+#include <windows.h>
+#else
 #include <sys/ioctl.h>
+#include <termios.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <termios.h>
 
 
 typedef struct {
+#if defined(_WIN32)
+	HANDLE	hdl;
+#else
 	int		hdl;
-
 	struct termios	tio;
+#endif
 } _CMSER, *CMSER;
 
 const UINT32 cmserial_speed[10] = {
@@ -55,14 +62,30 @@ static UINT
 serialread(COMMNG self, UINT8 *data)
 {
 	CMSER serial = (CMSER)(self + 1);
+#if defined(_WIN32)
+	COMSTAT status;
+	DWORD errors;
+	BOOLEAN rv;
+	DWORD size;
+#else
 	size_t size;
 	int bytes;
 	int rv;
+#endif
 
+#if defined(_WIN32)
+	rv = ClearCommError(serial->hdl, &errors, &status);
+	if (rv && status.cbInQue > 0) {
+#else
 	rv = ioctl(serial->hdl, TIOCINQ, &bytes);
 	if (rv == 0 && bytes > 0) {
+#endif
 		VERBOSE(("serialread: bytes = %d", bytes));
+#if defined(_WIN32)
+		ReadFile(serial->hdl, data, 1, &size, NULL);
+#else
 		size = read(serial->hdl, data, 1);
+#endif
 		if (size == 1) {
 			VERBOSE(("serialread: data = %02x", *data));
 			return 1;
@@ -76,9 +99,17 @@ static UINT
 serialwrite(COMMNG self, UINT8 data)
 {
 	CMSER serial = (CMSER)(self + 1);
+#if defined(_WIN32)
+	DWORD size;
+#else
 	size_t size;
+#endif
 
+#if defined(_WIN32)
+	WriteFile(serial->hdl, &data, 1, &size, NULL);
+#else
 	size = write(serial->hdl, &data, 1);
+#endif
 	if (size == 1) {
 		VERBOSE(("serialwrite: data = %02x", data));
 		return 1;
@@ -91,15 +122,29 @@ static UINT8
 serialgetstat(COMMNG self)
 {
 	CMSER serial = (CMSER)(self + 1);
+#if defined(_WIN32)
+	DCB status;
+	BOOLEAN rv;
+#else
 	int status;
 	int rv;
+#endif
 
+#if defined(_WIN32)
+	rv = GetCommState(serial->hdl, &status);
+	if (!rv) {
+#else
 	rv = ioctl(serial->hdl, TIOCMGET, &status);
 	if (rv < 0) {
+#endif
 		VERBOSE(("serialgetstat: ioctl: %s", strerror(errno)));
 		return 0x20;
 	}
+#if defined(_WIN32)
+	if (!(status.fOutxDsrFlow)) {
+#else
 	if (!(status & TIOCM_DSR)) {
+#endif
 		VERBOSE(("serialgetstat: DSR is disable"));
 		return 0x20;
 	}
@@ -123,8 +168,12 @@ serialrelease(COMMNG self)
 {
 	CMSER serial = (CMSER)(self + 1);
 
+#if defined(_WIN32)
+	CloseHandle(serial->hdl);
+#else
 	tcsetattr(serial->hdl, TCSANOW, &serial->tio);
 	close(serial->hdl);
+#endif
 	_MFREE(self);
 }
 
@@ -235,7 +284,7 @@ print_status(const struct termios *tio)
 }
 #endif
 
-convert_np2tocm(UINT port, UINT8* param, UINT32* speed) {
+void convert_np2tocm(UINT port, UINT8* param, UINT32* speed) {
 	static const int cmserial_pc98_ch1_speed[] = {
 		0, 75, 150, 300, 600, 1200, 2400, 4800, 9600
 	};
@@ -298,22 +347,32 @@ convert_np2tocm(UINT port, UINT8* param, UINT32* speed) {
 COMMNG
 cmserial_create(UINT port, UINT8 param, UINT32 speed)
 {
+#if defined(_WIN32)
+	static const int cmserial_cflag[] = {
+		0/*CBR_B75*/, CBR_110, CBR_300, CBR_600, CBR_1200, CBR_2400, CBR_4800,
+		CBR_9600, CBR_19200, CBR_38400, CBR_57600, CBR_115200
+	};
+#else
 	static const int cmserial_cflag[] = {
 		B75, B110, B300, B600, B1200, B2400, B4800,
 		B9600, B19200, B38400, B57600, B115200
 	};
 	static const int csize[] = { CS5, CS6, CS7, CS8 };
 	struct termios options, origopt;
+#endif
 	COMMNG ret;
 	CMSER serial;
+#if defined(_WIN32)
+	HANDLE hdl;
+	DCB dcb = {0};
+#else
 	int hdl;
+#endif
 	UINT i;
 
-#if !defined(__LIBRETRO__)
 	if(np2oscfg.com[port].direct) {
 		convert_np2tocm(port, &param, &speed);
 	}
-#endif	/* __LIBRETRO__ */
 
 	VERBOSE(("cmserial_create: port = %d, param = %02x, speed = %d", port, param, speed));
 
@@ -323,19 +382,23 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 	}
 
 	port--;
-#if !defined(__LIBRETRO__)
 	if (np2oscfg.com[port].mout[0] == '\0') {
 		VERBOSE(("cmserial_create: com device file is disable"));
 		goto cscre_failure;
 	}
 
+#if defined(_WIN32)
+	hdl = CreateFile(np2oscfg.com[port].mout, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	if (hdl == INVALID_HANDLE_VALUE) {
+#else
 	hdl = open(np2oscfg.com[port].mout, O_RDWR | O_NOCTTY | O_NDELAY);
 	if (hdl == -1) {
+#endif
 		VERBOSE(("cmserial_create: open failure %s, %s", np2oscfg.com[port].mout, strerror(errno)));
 		goto cscre_failure;
 	}
-#endif	/* __LIBRETRO__ */
 
+#if !defined(_WIN32)
 	if (!isatty(hdl)) {
 		VERBOSE(("cmserial_create: not terminal file descriptor (%s)", strerror(errno)));
 		goto cscre_close;
@@ -344,6 +407,7 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 	/* get current options for the port */
 	tcgetattr(hdl, &options);
 	origopt = options;
+#endif
 
 	/* baud rates */
 	for (i = 0; i < NELEMENTS(cmserial_speed); i++) {
@@ -356,33 +420,56 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 		VERBOSE(("cmserial_create: speed is invaild"));
 		goto cscre_close;
 	}
+#if defined(_WIN32)
+	dcb.BaudRate = cmserial_cflag[i];
+#else
 	cfsetispeed(&options, cmserial_cflag[i]);
 	cfsetospeed(&options, cmserial_cflag[i]);
+#endif
 
 	/* character size bits */
+#if defined(_WIN32)
+	dcb.ByteSize = ((param >> 2) & 3) + 5;
+	VERBOSE(("cmserial_create: charactor size = %d", ((param >> 2) & 3) + 5));
+#else
 	options.c_cflag &= ~CSIZE;
 	options.c_cflag |= csize[(param >> 2) & 3];
 	VERBOSE(("cmserial_create: charactor size = %d", csize[(param >> 2) & 3]));
+#endif
 
 	/* parity check */
 	switch (param & 0x30) {
 	case 0x10:
 		VERBOSE(("cmserial_create: odd parity"));
+#if defined(_WIN32)
+		dcb.fParity = 1;
+		dcb.Parity = ODDPARITY;
+#else
 		options.c_cflag |= PARENB | PARODD;
 		options.c_iflag |= INPCK | ISTRIP;
+#endif
 		break;
 
 	case 0x30:
 		VERBOSE(("cmserial_create: even parity"));
+#if defined(_WIN32)
+		dcb.fParity = 1;
+		dcb.Parity = EVENPARITY;
+#else
 		options.c_cflag |= PARENB;
 		options.c_cflag &= ~PARODD;
 		options.c_iflag |= INPCK | ISTRIP;
+#endif
 		break;
 
 	default:
 		VERBOSE(("cmserial_create: non parity"));
+#if defined(_WIN32)
+		dcb.fParity = 0;
+#else
 		options.c_cflag &= ~PARENB;
 		options.c_iflag &= ~(INPCK | ISTRIP);
+#endif
 		break;
 	}
 
@@ -390,23 +477,36 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 	switch (param & 0xc0) {
 	case 0x80:
 		VERBOSE(("cmserial_create: stop bits: 1.5"));
+#if defined(_WIN32)
+		dcb.StopBits = ONE5STOPBITS;
+#endif
 		break;
 
 	case 0xc0:
 		VERBOSE(("cmserial_create: stop bits: 2"));
+#if defined(_WIN32)
+		dcb.StopBits = TWOSTOPBITS;
+#else
 		options.c_cflag |= CSTOPB;
+#endif
 		break;
 
 	default:
 		VERBOSE(("cmserial_create: stop bits: 1"));
+#if defined(_WIN32)
+		dcb.StopBits = ONESTOPBIT;
+#else
 		options.c_cflag &= ~CSTOPB;
+#endif
 		break;
 	}
 
+#if !defined(_WIN32)
 	/* set misc flag */
 	cfmakeraw(&options);
 	options.c_cflag |= CLOCAL | CREAD;
 	options.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
+#endif
 
 #if defined(SERIAL_DEBUG)
 	print_status(&options);
@@ -419,7 +519,11 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 	}
 
 	/* set the new options for the port */
+#if defined(_WIN32)
+	SetCommState(hdl, &dcb);
+#else
 	tcsetattr(hdl, TCSANOW, &options);
+#endif
 
 #if 1
 	ret->connect = COMCONNECT_MIDI;
@@ -433,11 +537,17 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 	ret->release = serialrelease;
 	serial = (CMSER)(ret + 1);
 	serial->hdl = hdl;
+#if !defined(_WIN32)
 	serial->tio = origopt;
+#endif
 	return ret;
 
 cscre_close:
+#if defined(_WIN32)
+	CloseHandle(hdl);
+#else
 	close(hdl);
+#endif
 cscre_failure:
 	return NULL;
 }

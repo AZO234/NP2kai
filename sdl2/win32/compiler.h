@@ -68,11 +68,6 @@ typedef	unsigned int		UINT;
 #define	REG8		UINT8
 #define REG16		UINT16
 
-#ifndef _SSIZE_T_DEFINED
-#define _SSIZE_T_DEFINED
-typedef LONG_PTR ssize_t;
-#endif
-
 #define	BRESULT				UINT
 #define	OEMCHAR				char
 #define	OEMTEXT(string)		string

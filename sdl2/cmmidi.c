@@ -21,7 +21,8 @@
 #if defined(__LIBRETRO__)
 #include <retro_dirent.h>
 #else
-#if defined(WIN32) && (!defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR))
+#if defined(_WIN32)
+#include <windows.h>
 #include <direct.h>
 #else
 #include <dirent.h>
@@ -210,17 +211,32 @@ static UINT8 midictrlindex[128];
 
 // ----
 
+#if defined(_WIN32) && !defined(__LIBRETRO__)
+static HMIDIOUT
+#else
 static int
+#endif
 getmidiout(const char *midiout)
 {
+#if defined(_WIN32) && !defined(__LIBRETRO__)
+	MMRESULT ret;
+	HMIDIOUT hmidiout = NULL;
+	UINT device_num = MIDI_MAPPER;
+#else
 	int hmidiout = -1;
+#endif
 
 #if !defined(__LIBRETRO__)
 	if (midiout && midiout[0] != '\0') {
 		if ((!milstr_cmp(midiout, cmmidi_midiout_device))
 		 && (np2oscfg.MIDIDEV[0][0] != '\0')) {
+#if defined(_WIN32)
+			ret = midiOutOpen(&hmidiout, device_num, NULL, NULL, CALLBACK_NULL);
+			if (ret != MMSYSERR_NOERROR) {
+#else
 			hmidiout = open(np2oscfg.MIDIDEV[0], O_WRONLY | O_NONBLOCK);
 			if (hmidiout < 0) {
+#endif
 				perror("getmidiout");
 			}
 		}
@@ -232,17 +248,32 @@ getmidiout(const char *midiout)
 	return hmidiout;
 }
 
+#if defined(_WIN32) && !defined(__LIBRETRO__)
+static HMIDIIN
+#else
 static int
+#endif
 getmidiin(const char *midiin)
 {
+#if defined(_WIN32) && !defined(__LIBRETRO__)
+	MMRESULT ret;
+	HMIDIIN hmidiin = NULL;
+	UINT device_num = MIDI_MAPPER;
+#else
 	int hmidiin = -1;
+#endif
 
 	if (midiin && midiin[0] != '\0') {
 #if !defined(__LIBRETRO__)
 		if ((!milstr_cmp(midiin, cmmidi_midiin_device))
 		 && (np2oscfg.MIDIDEV[1][0] != '\0')) {
+#if defined(_WIN32)
+			ret = midiInOpen(&hmidiin, device_num, NULL, NULL, CALLBACK_NULL);
+			if (ret != MMSYSERR_NOERROR) {
+#else
 			hmidiin = open(np2oscfg.MIDIDEV[1], O_RDONLY | O_NONBLOCK);
 			if (hmidiin < 0) {
+#endif
 				perror("getmidiin");
 			}
 		}
@@ -780,8 +811,13 @@ cmmidi_create(const char *midiout, const char *midiin, const char *module)
 	COMMNG ret;
 	CMMIDI midi;
 	void (*outfn)(CMMIDI midi, UINT32 msg, UINT cnt);
+#if defined(_WIN32) && !defined(__LIBRETRO__)
+	HMIDIOUT hmidiout;
+	HMIDIIN  hmidiin;
+#else
 	int hmidiout;
 	int hmidiin;
+#endif
 #if defined(VERMOUTH_LIB)
 	MIDIHDL vermouth = NULL;
 #endif
@@ -789,14 +825,22 @@ cmmidi_create(const char *midiout, const char *midiin, const char *module)
 
 	/* MIDI-IN */
 	hmidiin = getmidiin(midiin);
+#if defined(_WIN32) && !defined(__LIBRETRO__)
+	if (hmidiin != NULL) {
+#else
 	if (hmidiin >= 0) {
+#endif
 		opened |= CMMIDI_MIDIIN;
 	}
 
 	/* MIDI-OUT */
 	outfn = midiout_none;
 	hmidiout = getmidiout(midiout);
+#if defined(_WIN32) && !defined(__LIBRETRO__)
+	if (hmidiout != NULL) {
+#else
 	if (hmidiout >= 0) {
+#endif
 		outfn = midiout_device;
 		opened |= CMMIDI_MIDIOUT;
 	}
@@ -846,12 +890,22 @@ cmmidi_create(const char *midiout, const char *midiin, const char *module)
 cmcre_err2:
 	if (opened & CMMIDI_MIDIIN) {
 		if (hmidiin >= 0) {
+#if defined(_WIN32) && !defined(__LIBRETRO__)
+			midiInReset(hmidiin);
+			midiInClose(hmidiin);
+#else
 			close(hmidiin);
+#endif
 		}
 	}
 	if (opened & CMMIDI_MIDIOUT) {
 		if (hmidiout >= 0) {
+#if defined(_WIN32) && !defined(__LIBRETRO__)
+			midiOutReset(hmidiout);
+			midiOutClose(hmidiout);
+#else
 			close(hmidiout);
+#endif
 		}
 	}
 #if defined(VERMOUTH_LIB)
