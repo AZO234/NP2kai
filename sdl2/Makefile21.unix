@@ -78,6 +78,8 @@ clean:
 
 
 install:
+	mkdir -p /home/$(SUDO_USER)/.config/np2kai
+	chown $(SUDO_USER): /home/$(SUDO_USER)/.config/np2kai
 	strip $(TARGET)
 	cp $(TARGET) /usr/local/bin/
 
