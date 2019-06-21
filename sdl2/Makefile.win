@@ -63,6 +63,11 @@ clean:
 
 
 install:
+	ifeq ("$(shell test -d /home/$(USER)/.config && echo ex)","ex")
+		mkdir /home/$(USER)/.config/np2kai
+	else
+		mkdir -p /home/$(USER)/.config/np2kai
+	endif
 	strip $(TARGET)
 	cp $(TARGET) /usr/local/bin/
 

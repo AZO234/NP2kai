@@ -87,14 +87,11 @@ AC_ARG_ENABLE(gtk3,
   AC_HELP_STRING([--enable-gtk3],[Use GTK+-3 library [default=no]]),,
   [enable_gtk3="no"])
 
-AC_ARG_ENABLE(sdl,
-  AC_HELP_STRING([--enable-sdl],[Use SDL 1.2 library [default=yes]]),,
-  [enable_sdl="yes"])
 AC_ARG_ENABLE(sdl2,
-  AC_HELP_STRING([--enable-sdl2],[Use SDL 2.0 library [default=yes]]),,
+  AC_HELP_STRING([--enable-sdl2],[Use SDL2 library [default=yes]]),,
   [enable_sdl2="yes"])
-AC_ARG_ENABLE(sdlmixer,
-  AC_HELP_STRING([--enable-sdlmixer],[Use SDL_mixer library [default=yes]]),,
+AC_ARG_ENABLE(sdl2mixer,
+  AC_HELP_STRING([--enable-sdl2mixer],[Use SDL2_mixer library [default=yes]]),,
   [enable_sdlmixer="yes"])
 AC_ARG_ENABLE(libusb1,
   AC_HELP_STRING([--enable-libusb1],[Use libusb-1.0 library [default=yes]]),,
@@ -103,7 +100,7 @@ AC_ARG_ENABLE(xf86vidmode,
   AC_HELP_STRING([--enable-xf86vidmode],[Use XF86VidMode extension [default=yes]]),,
   [enable_xf86vidmode="yes"])
 AC_ARG_ENABLE(ia32,
-  AC_HELP_STRING([--enable-ia32],[Use IA-32 emulation [default=no]]),,
+  AC_HELP_STRING([--enable-ia32],[Build xnp21kai(IA-32 emulation) [default=no]]),,
   [enable_ia32="no"])
 AC_ARG_ENABLE(build-all,
   AC_HELP_STRING([--enable-build-all],[Build xnp2kai(i286 emulation) and xnp21kai(IA-32 emulation) programs [default=no]]),,
@@ -159,22 +156,11 @@ no_sdl=yes
 if test x"$enable_sdl2" = "xyes"; then
   AM_PATH_SDL2(2.0.0)
   if test x"$no_sdl" != "xyes"; then
-    AC_DEFINE(USE_SDLAUDIO,,[Define if you have the SDL 1.2/2.0 library.])
+    AC_DEFINE(USE_SDLAUDIO,,[Define if you have the SDL2 library.])
     if test x"$enable_sdlmixer" = "xyes"; then
       AC_CHECK_LIB(SDL2_mixer,Mix_OpenAudio,
-        AC_DEFINE(USE_SDLMIXER,,[Define if you have the SDL_mixer library.])
+        AC_DEFINE(USE_SDLMIXER,,[Define if you have the SDL2_mixer library.])
         SDL_LIBS="$SDL_LIBS -lSDL2_mixer",,$SDL_LIBS)
-    fi
-  fi
-fi
-if test x"$no_sdl" = "xyes" -a x"$enable_sdl" = "xyes"; then
-  AM_PATH_SDL(1.2.0)
-  if test x"$no_sdl" != "xyes"; then
-    AC_DEFINE(USE_SDLAUDIO,,[Define if you have the SDL 1.2/2.0 library.])
-    if test x"$enable_sdlmixer" = "xyes"; then
-      AC_CHECK_LIB(SDL_mixer,Mix_OpenAudio,
-        AC_DEFINE(USE_SDLMIXER,,[Define if you have the SDL_mixer library.])
-        SDL_LIBS="$SDL_LIBS -lSDL_mixer",,$SDL_LIBS)
     fi
   fi
 fi

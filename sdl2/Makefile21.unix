@@ -78,8 +78,13 @@ clean:
 
 
 install:
-	mkdir -p /home/$(SUDO_USER)/.config/np2kai
-	chown $(SUDO_USER): /home/$(SUDO_USER)/.config/np2kai
+	ifeq ("$(shell test -d /home/$(SUDO_USER)/.config && echo ex)","ex")
+		mkdir /home/$(SUDO_USER)/.config/np2kai
+		chown $(SUDO_USER): /home/$(SUDO_USER)/.config/np2kai
+	else
+		mkdir -p /home/$(SUDO_USER)/.config/np2kai
+		chown -R $(SUDO_USER): /home/$(SUDO_USER)/.config
+	endif
 	strip $(TARGET)
 	cp $(TARGET) /usr/local/bin/
 
