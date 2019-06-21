@@ -504,7 +504,7 @@ const SCRNSURF *scrnmng_surflock(void) {
 #else	/* __LIBRETRO__ */
 	SDL_Surface	*surface;
 
-	if(changescreeninit) return;
+	if(changescreeninit) return s_surface;
 	if (scrnmng.vram == NULL) {
 		surface = s_surface;
 		if (surface == NULL) {
