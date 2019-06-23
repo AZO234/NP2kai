@@ -406,20 +406,20 @@ IA32_CPPFLAGS=	-I$(real_topsrcdir)/i386c \
 if CPUCORE_IA32
 if BUILD_ALL
 bin_PROGRAMS=	xnp2kai xnp21kai
-nodist_man1_MANS= xnp21.1 xnp21.1j xnp21.1 xnp21.1j
+nodist_man1_MANS= xnp2kai.1 xnp2kai.1j xnp21kai.1 xnp21kai.1j
 xnp21kai_SOURCES=	$(COMMON_SOURCES) $(IA32_SOURCES)
 xnp21kai_CPPFLAGS=	$(AM_CPPFLAGS) $(IA32_CPPFLAGS)
 xnp2kai_SOURCES=	$(COMMON_SOURCES) $(I286C_SOURCES)
 xnp2kai_CPPFLAGS=	$(AM_CPPFLAGS) $(I286C_CPPFLAGS)
 else	# !BUILD_ALL
 bin_PROGRAMS=	xnp21kai
-nodist_man1_MANS= xnp21.1 xnp21.1j
+nodist_man1_MANS= xnp21kai.1 xnp21kai.1j
 xnp21kai_SOURCES=	$(COMMON_SOURCES) $(IA32_SOURCES)
 xnp21kai_CPPFLAGS=	$(AM_CPPFLAGS) $(IA32_CPPFLAGS)
 endif	# BUILD_ALL
 else	# !CPUCORE_IA32
 bin_PROGRAMS=	xnp2kai
-nodist_man1_MANS= xnp2.1 xnp2.1j
+nodist_man1_MANS= xnp2kai.1 xnp2kai.1j
 xnp2kai_SOURCES=	$(COMMON_SOURCES) $(I286C_SOURCES)
 xnp2kai_CPPFLAGS=	$(AM_CPPFLAGS) $(I286C_CPPFLAGS)
 endif	# CPUCORE_IA32

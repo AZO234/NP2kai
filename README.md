@@ -1,6 +1,6 @@
 Neko Project II 0.86 kai rev.19
 ===
-Jun 21, 2019  
+Jun 23, 2019  
 
 Build SDL2 port
 ---
@@ -76,15 +76,15 @@ or
 	$ np21kai
 
 BIOS files locate in 
-(Linux) /home/(user)/.config/np2kai .
-(Mac) /Users/(user)/.config/np2kai .
+(Linux) /home/(user)/.config/np2kai or /home/(user)/.config/np21kai.
+(Mac) /Users/(user)/.config/np2kai or /Users/(user)/.config/np21kai.
 
 Build Linux X11 port
 ---
 
 １． Install SDL2.  
 
-	$ sudo apt-get install libsdl2-dev libsdl2-ttf-dev
+	$ sudo apt-get install libsdl2-dev libsdl2-mixer-dev libsdl2-ttf-dev
 
 ２． Build.  
 
@@ -106,7 +106,11 @@ or
 
 	$ xnp2kai
 
-BIOS files locate in ~/.config/xnp2kai .
+or
+
+	$ xnp21kai
+
+BIOS files locate in ~/.config/xnp2kai or ~/.config/xnp21kai.
 
 NP2 menu is opened when F11 key or mouse middle button.  
 NP2 menu can swap FDD/HDD diskimages.
@@ -187,7 +191,7 @@ https://developer.android.com/studio/index.html
 About libretro port
 ---
 BIOS files locate in "np2kai" directory at BIOS directory (configured by RetroArch).  
-Configure file (np2.cfg) is made in "np2kai" BIOS directory.
+Configure file (np2kai.cfg) is made in "np2kai" BIOS directory.
 
 NP2 menu is opened when F12 key or mouse middle button or joypad L2 button.  
 NP2 menu can swap FDD/HDD diskimages.  
@@ -614,6 +618,8 @@ https://www.iodata.jp/lib/product/g/175_win95.htm
 
 Release
 ---
+* Jun 23, 2019
+	- modify default cfg/BIOS location (np2kai or 'np21kai')
 * Jun 21, 2019
 	- Fix SDL2 build and install
 	- Merge NP21/W 0.86 rev.57-61

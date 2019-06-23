@@ -503,8 +503,13 @@ ini_write(const char *path, const char *title, const INITBL *tbl, UINT count)
 	file_close(fh);
 }
 
+#if defined(CPUCORE_IA32) && !defined(__LIBRETRO__)
+static const char ini_title[] = "NekoProject21kai";
+static const char inifile[] = "np21kai.cfg";
+#else
 static const char ini_title[] = "NekoProjectIIkai";
 static const char inifile[] = "np2kai.cfg";
+#endif
 
 enum {
 	INIRO_STR	= INIFLAG_RO | INITYPE_STR,

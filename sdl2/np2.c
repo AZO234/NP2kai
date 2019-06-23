@@ -37,6 +37,13 @@
 #include	"cirrus_vga_extern.h"
 #endif
 
+static const char appname[] =
+#if defined(CPUCORE_IA32)
+    "np21kai"
+#else
+    "np2kai"
+#endif
+;
 
 NP2OSCFG np2oscfg = {
 	0,			/* NOWAIT */
@@ -213,11 +220,15 @@ int np2_main(int argc, char *argv[]) {
 	if (config_home && config_home[0] == '/') {
 		/* base dir */
 		milstr_ncpy(np2cfg.biospath, config_home, sizeof(np2cfg.biospath));
-		milstr_ncat(np2cfg.biospath, "/np2kai/", sizeof(np2cfg.biospath));
+		milstr_ncat(np2cfg.biospath, "/", sizeof(np2cfg.biospath));
+		milstr_ncat(np2cfg.biospath, appname, sizeof(np2cfg.biospath));
+		milstr_ncat(np2cfg.biospath, "/", sizeof(np2cfg.biospath));
 	} else if (home) {
 		/* base dir */
 		milstr_ncpy(np2cfg.biospath, home, sizeof(np2cfg.biospath));
-		milstr_ncat(np2cfg.biospath, "/.config/np2kai/", sizeof(np2cfg.biospath));
+		milstr_ncat(np2cfg.biospath, "/.config/", sizeof(np2cfg.biospath));
+		milstr_ncat(np2cfg.biospath, appname, sizeof(np2cfg.biospath));
+		milstr_ncat(np2cfg.biospath, "/", sizeof(np2cfg.biospath));
 	} else {
 		printf("$HOME isn't defined.\n");
 		goto np2main_err1;
