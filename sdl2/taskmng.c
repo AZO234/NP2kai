@@ -90,14 +90,13 @@ void taskmng_rol(void) {
 		case SDL_MOUSEMOTION:
 			if (menuvram == NULL) {
 				mousemng_onmove(&e.motion);
-			}
-			else {
+			} else {
 				if((scrnmode & SCRNMODE_ROTATEMASK) == SCRNMODE_ROTATELEFT) {
-					mx = (scrnmng.width - 1) - e.motion.y;
+					mx = (menuvram->width - 1) - e.motion.y;
 					my = e.motion.x;
 				} else if((scrnmode & SCRNMODE_ROTATEMASK) == SCRNMODE_ROTATERIGHT) {
 					mx = e.motion.y;
-					my = (scrnmng.height - 1) - e.motion.x;
+					my = (menuvram->height - 1) - e.motion.x;
 				} else {
 					mx = e.motion.x;
 					my = e.motion.y;

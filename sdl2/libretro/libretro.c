@@ -68,8 +68,6 @@ retro_environment_t environ_cb = NULL;
 extern struct retro_midi_interface *retro_midi_interface;
 
 uint32_t   FrameBuffer[LR_SCREENWIDTH * LR_SCREENHEIGHT];
-uint32_t   GuiBuffer[LR_SCREENWIDTH * LR_SCREENHEIGHT]; //menu surf
-extern SCRNSURF	scrnsurf;
 
 retro_audio_sample_batch_t audio_batch_cb = NULL;
 
@@ -449,9 +447,12 @@ static const char *cross[] = {
 void DrawPointBmp(unsigned int *buffer,int x, int y, unsigned int color)
 {
    int idx;
+   int w, h;
 
-   if(x>=0&&y>=0&&x<scrnsurf.width&&y<scrnsurf.height) {
-      idx=x+y*scrnsurf.width;
+   scrnmng_getsize(&w, &h);
+
+   if(x>=0&&y>=0&&x<w&&y<h) {
+      idx=x+y*w;
       if(draw32bit) {
          buffer[idx]=color;
       } else {
@@ -541,6 +542,9 @@ static uint16_t joy2key_map_kpad[12] = {
 void updateInput(){
 
    static int mposx=320,mposy=240;
+   int w, h;
+
+   scrnmng_getsize(&w, &h);
 
    poll_cb();
 
@@ -588,11 +592,6 @@ void updateInput(){
             joyNP2menu_oldjoymouse = joymouse;
             joymouse = true;
          }
-         if(draw32bit) {
-            memcpy(GuiBuffer,FrameBuffer,scrnsurf.width*scrnsurf.height*4);
-         } else {
-            memcpy(GuiBuffer,FrameBuffer,scrnsurf.width*scrnsurf.height*2);
-         }
          sysmenu_menuopen(0, 0, 0);
          mposx=0;mposy=0;
          lastx=0;lasty=0;
@@ -617,8 +616,8 @@ void updateInput(){
       if (menuvram == NULL)
          mousemng_sync(mouse_x,mouse_y);
 
-      mposx+=mouse_x;if(mposx<0)mposx=0;if(mposx>=scrnsurf.width)mposx=scrnsurf.width-1;
-      mposy+=mouse_y;if(mposy<0)mposy=0;if(mposy>=scrnsurf.height)mposy=scrnsurf.height-1;
+      mposx+=mouse_x;if(mposx<0)mposx=0;if(mposx>=w)mposx=w-1;
+      mposy+=mouse_y;if(mposy<0)mposy=0;if(mposy>=h)mposy=h-1;
 
       if(lastx!=mposx || lasty!=mposy)
          if (menuvram != NULL)
@@ -729,14 +728,14 @@ void updateInput(){
       mposx += mouse_x;
       if(mposx < 0)
          mposx = 0;
-      if(mposx >= scrnsurf.width)
-         mposx = scrnsurf.width - 1;
+      if(mposx >= w)
+         mposx = w - 1;
 
       mposy += mouse_y;
       if(mposy < 0)
          mposy = 0;
-      if(mposy >= scrnsurf.height)
-         mposy = scrnsurf.height - 1;
+      if(mposy >= h)
+         mposy = h - 1;
 
       if(lastx!=mposx || lasty!=mposy)
          if (menuvram != NULL)
@@ -1505,11 +1504,15 @@ void retro_get_system_info(struct retro_system_info *info)
 
 void retro_get_system_av_info(struct retro_system_av_info *info)
 {
-   info->geometry.base_width   = scrnsurf.width;
-   info->geometry.base_height  = scrnsurf.height;
-   info->geometry.max_width    = scrnsurf.width;
-   info->geometry.max_height   = scrnsurf.height;
-   info->geometry.aspect_ratio = (double)scrnsurf.width / scrnsurf.height;
+   int w, h;
+
+   scrnmng_getsize(&w, &h);
+
+   info->geometry.base_width   = w;
+   info->geometry.base_height  = h;
+   info->geometry.max_width    = w;
+   info->geometry.max_height   = h;
+   info->geometry.aspect_ratio = (double)w / h;
    info->timing.fps            = LR_SCREENFPS;
    info->timing.sample_rate    = LR_SOUNDRATE;
 }
@@ -1518,8 +1521,7 @@ void retro_init (void)
 {
    enum retro_pixel_format rgb;
 
-   scrnsurf.width = 640;
-   scrnsurf.height = 400;
+   scrnmng_initialize();
 
    update_variables();
 
@@ -1584,6 +1586,9 @@ void retro_run (void)
    }
 
    bool updated = false;
+   int w, h;
+
+   scrnmng_getsize(&w, &h);
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
    {
@@ -1599,11 +1604,7 @@ void retro_run (void)
    updateInput();
 
    if (menuvram != NULL){
-      if(draw32bit) {
-         memcpy(FrameBuffer,GuiBuffer,scrnsurf.width*scrnsurf.height*4);
-      } else {
-         memcpy(FrameBuffer,GuiBuffer,scrnsurf.width*scrnsurf.height*2);
-      }
+      scrnmng_update();
       draw_cross(lastx,lasty);
    }
    else {
@@ -1613,9 +1614,9 @@ void retro_run (void)
    }
 
    if(draw32bit) {
-      video_cb(FrameBuffer, scrnsurf.width, scrnsurf.height, scrnsurf.width * 4/*Pitch*/);
+      video_cb(FrameBuffer, w, h, w * 4/*Pitch*/);
    } else {
-      video_cb(FrameBuffer, scrnsurf.width, scrnsurf.height, scrnsurf.width * 2/*Pitch*/);
+      video_cb(FrameBuffer, w, h, w * 2/*Pitch*/);
    }
 
     if (retro_midi_interface && retro_midi_interface->output_enabled())
