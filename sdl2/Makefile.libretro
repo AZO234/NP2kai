@@ -1,6 +1,6 @@
 DEBUG=0
 SUPPORT_NET?=1
-GIT_VERSION := " $(shell git rev-parse --short HEAD)"
+GIT_VERSION := "$(shell git rev-parse --short HEAD)"
 HAS_GCC = 1
 
 SPACE :=

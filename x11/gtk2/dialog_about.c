@@ -76,6 +76,8 @@ create_about_dialog(void)
 
 	milstr_ncpy(work, "Neko Project II kai\n", sizeof(work));
 	milstr_ncat(work, NP2VER_CORE, sizeof(work));
+	milstr_ncat(work, "\n", sizeof(work));
+	milstr_ncat(work, NP2VER_GIT, sizeof(work));
 #if defined(NP2VER_X11)
 	milstr_ncat(work, NP2VER_X11, sizeof(work));
 #endif

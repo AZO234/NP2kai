@@ -81,7 +81,7 @@
 #endif
 
 
-const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
+const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE " " NP2VER_GIT);
 
 #if defined(_WIN32_WCE)
 #define	PCBASEMULTIPLE	2

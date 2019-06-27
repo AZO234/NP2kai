@@ -1,6 +1,6 @@
 DEBUG=0
 SUPPORT_NET?=0
-GIT_VERSION := " $(shell git rev-parse --short HEAD)"
+GIT_VERSION := "$(shell git rev-parse --short HEAD)"
 SDL_CONFIG ?= sdl2-config
 SDL_CFLAGS := $(shell $(SDL_CONFIG) --cflags) -DUSE_SDL_CONFIG
 SDL_LIBS := $(shell $(SDL_CONFIG) --libs)
