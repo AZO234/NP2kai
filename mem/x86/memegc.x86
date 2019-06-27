@@ -30,7 +30,7 @@ section .bss
 	_egc_dst	resd	2
 	_egc_pat	resd	2
 
-VIDEOMEMORY		equ		_mem
+%define	VIDEOMEMORY		_mem
 
 section .rdata
 

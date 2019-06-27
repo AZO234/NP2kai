@@ -17,18 +17,18 @@ section .bss
 _grph_table		resd	4*256*2
 
 
-GDC_S_SYNC		equ		_gdc + gdc_t.s + gdcd_t.para
-GDC_S_ZOOM		equ		(GDC_S_SYNC+8)
-GDC_S_CSRFORM	equ		(GDC_S_ZOOM+1)
-GDC_S_SCROLL	equ		(GDC_S_CSRFORM+3)
-GDC_S_TEXTW		equ		(GDC_S_SCROLL+8)
-GDC_S_PITCH		equ		(GDC_S_TEXTW+8)
-GDC_S_LPEN		equ		(GDC_S_PITCH+1)
-GDC_S_VECTW		equ		(GDC_S_LPEN+3)
-GDC_S_CSRW		equ		(GDC_S_VECTW+11)
-GDC_S_MASK		equ		(GDC_S_CSRW+3)
-GDC_S_CSRR		equ		(GDC_S_MASK+2)
-GDC_S_WRITE		equ		(GDC_S_CSRR+5)
+%define	GDC_S_SYNC		_gdc + gdc_t.s + gdcd_t.para
+%define	GDC_S_ZOOM		(GDC_S_SYNC+8)
+%define	GDC_S_CSRFORM	(GDC_S_ZOOM+1)
+%define	GDC_S_SCROLL	(GDC_S_CSRFORM+3)
+%define	GDC_S_TEXTW		(GDC_S_SCROLL+8)
+%define	GDC_S_PITCH		(GDC_S_TEXTW+8)
+%define	GDC_S_LPEN		(GDC_S_PITCH+1)
+%define	GDC_S_VECTW		(GDC_S_LPEN+3)
+%define	GDC_S_CSRW		(GDC_S_VECTW+11)
+%define	GDC_S_MASK		(GDC_S_CSRW+3)
+%define	GDC_S_CSRR		(GDC_S_MASK+2)
+%define	GDC_S_WRITE		(GDC_S_CSRR+5)
 
 
 
