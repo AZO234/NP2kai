@@ -11,9 +11,9 @@
 #include <gtk/gtk.h>
 #endif
 
-// XXX: 1600x1024以上にならないので差し当たってはこれで十分
+// XXX: 回転させても1600x1600以上にならないので差し当たってはこれで十分
 #define WAB_MAX_WIDTH	1600
-#define WAB_MAX_HEIGHT	1024
+#define WAB_MAX_HEIGHT	1600
 
 #ifdef __cplusplus
 extern "C" {

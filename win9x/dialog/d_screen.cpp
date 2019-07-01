@@ -487,7 +487,7 @@ ScrOptFullscreenPage::~ScrOptFullscreenPage()
  */
 BOOL ScrOptFullscreenPage::OnInitDialog()
 {
-	const UINT8 c = np2oscfg.fscrnmod;
+	const UINT8 c = FSCRNCFG_fscrnmod;
 	CheckDlgButton(IDC_FULLSCREEN_SAMEBPP, (c & FSCRNMOD_SAMEBPP) ? BST_CHECKED : BST_UNCHECKED);
 	CheckDlgButton(IDC_FULLSCREEN_SAMERES, (c & FSCRNMOD_SAMERES) ? BST_CHECKED : BST_UNCHECKED);
 
@@ -513,10 +513,16 @@ void ScrOptFullscreenPage::OnOK()
 	{
 		c |= FSCRNMOD_SAMERES;
 	}
-	c |= m_zoom.GetCurItemData(np2oscfg.fscrnmod & FSCRNMOD_ASPECTMASK);
-	if (np2oscfg.fscrnmod != c)
+	c |= m_zoom.GetCurItemData(FSCRNCFG_fscrnmod & FSCRNMOD_ASPECTMASK);
+	if (FSCRNCFG_fscrnmod != c)
 	{
-		np2oscfg.fscrnmod = c;
+		if(np2oscfg.fsrescfg){
+			scrnrescfg.fscrnmod = c;
+			scrnrescfg.hasfscfg = 1;
+			scrnres_writeini();
+		}else{
+			np2oscfg.fscrnmod = c;
+		}
 		::sysmng_update(SYS_UPDATEOSCFG);
 		resetScreen = 1;
 	}
@@ -606,7 +612,7 @@ BOOL ScrOptRendererPage::OnInitDialog()
 	
 	m_mode.SubclassDlgItem(IDC_RENDERER_IMODE, this);
 	m_mode.Add(s_renderer_mode, _countof(s_renderer_mode));
-	m_mode.SetCurItemData(np2oscfg.d3d_imode);
+	m_mode.SetCurItemData(FSCRNCFG_d3d_imode);
 	m_mode.EnableWindow(np2oscfg.drawtype==DRAWTYPE_DIRECT3D ? TRUE : FALSE);
 
 	return TRUE;
@@ -631,10 +637,16 @@ void ScrOptRendererPage::OnOK()
 		::sysmng_update(SYS_UPDATEOSCFG);
 		resetScreen = 1;
 	}
-	tmp = m_mode.GetCurItemData(np2oscfg.d3d_imode);
-	if (tmp != np2oscfg.d3d_imode)
+	tmp = m_mode.GetCurItemData(FSCRNCFG_d3d_imode);
+	if (tmp != FSCRNCFG_d3d_imode)
 	{
-		np2oscfg.d3d_imode = tmp;
+		if(np2oscfg.fsrescfg){
+			scrnrescfg.d3d_imode = tmp;
+			scrnrescfg.hasfscfg = 1;
+			scrnres_writeini();
+		}else{
+			np2oscfg.d3d_imode = tmp;
+		}
 		::sysmng_update(SYS_UPDATEOSCFG);
 		resetScreen = 1;
 	}

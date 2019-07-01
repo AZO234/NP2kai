@@ -730,6 +730,7 @@ static const PFTBL s_IniItems[] =
 	PFVAL("fscrn_cy", PFRO_SINT32,		&np2oscfg.fscrn_cy),
 	PFVAL("fscrnbpp", PFRO_UINT8,		&np2oscfg.fscrnbpp),
 	PFVAL("fscrnmod", PFTYPE_HEX8,		&np2oscfg.fscrnmod),
+	PFVAL("fsrescfg", PFTYPE_BOOL,		&np2oscfg.fsrescfg), // 解像度毎に設定保存する
 
 #if defined(SUPPORT_SCRN_DIRECT3D)
 	PFVAL("D3D_IMODE", PFTYPE_UINT8,	&np2oscfg.d3d_imode), // Direct3D 拡大縮小補間モード

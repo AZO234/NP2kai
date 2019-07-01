@@ -78,6 +78,7 @@ typedef struct {
 	UINT8	xrollkey;
 	UINT8	fscrnbpp;
 	UINT8	fscrnmod;
+	UINT8	fsrescfg;
 
 #if defined(SUPPORT_SCRN_DIRECT3D)
 	UINT8	d3d_imode; // Direct3D interpolation mode

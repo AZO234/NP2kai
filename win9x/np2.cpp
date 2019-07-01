@@ -132,8 +132,7 @@ static	TCHAR		szClassName[] = _T("NP2-MainWindow");
 #if !defined(_WIN64)
 						0,
 #endif
-						0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0,
-						FSCRNMOD_SAMEBPP | FSCRNMOD_SAMERES | FSCRNMOD_ASPECTFIX8,
+						0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, FSCRNMOD_SAMEBPP | FSCRNMOD_SAMERES | FSCRNMOD_ASPECTFIX8, 0,
 
 #if defined(SUPPORT_SCRN_DIRECT3D)
 						0, 

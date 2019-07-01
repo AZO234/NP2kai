@@ -396,9 +396,12 @@ static void info_rhythm(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 static void info_display(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
 	UINT	bpp;
+	OEMCHAR buf[64] = {0};
 
 	bpp = scrnmng_getbpp();
 	milstr_ncpy(str, milstr_list(str_winclr, ((bpp >> 3) - 1) & 3), maxlen);
+	OEMSPRINTF(buf, OEMTEXT(" %dx%d"), scrnstat.width, scrnstat.height);
+	milstr_ncat(str, buf, maxlen);
 	milstr_ncat(str, milstr_list(str_winmode, (scrnmng_isfullscreen())?1:0),
 																	maxlen);
 	(void)ex;

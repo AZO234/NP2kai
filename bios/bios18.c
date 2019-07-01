@@ -134,6 +134,31 @@ const CRTDATA	*crt;
 	crtc.reg.ssl = 0;
 	gdc_restorekacmode();
 	bios0x18_10(0);
+//#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
+//	// np21w ver0.86 rev62 BIOS I/O emulation
+//	if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
+//		if (!(pccore.dipsw[0] & 1)) {
+//			biosioemu_enq8(0x68, 0x08|0x01);
+//		}else{
+//			biosioemu_enq8(0x68, 0x08|0x00);
+//		}
+//		if (mode & 0x02) {
+//			biosioemu_enq8(0x68, 0x04|0x01);
+//		}else{
+//			biosioemu_enq8(0x68, 0x04|0x00);
+//		}
+//		if (mode & 0x04) {
+//			biosioemu_enq8(0x68, 0x00|0x01);
+//		}else{
+//			biosioemu_enq8(0x68, 0x00|0x00);
+//		}
+//		if (mode & 0x08) {
+//			biosioemu_enq8(0x68, 0x20|0x01);
+//		}else{
+//			biosioemu_enq8(0x68, 0x20|0x00);
+//		}
+//	}
+//#endif
 }
 
 void bios0x18_0c(void) {
@@ -355,12 +380,12 @@ const CRTDATA	*p;
 		}
 #if defined(SUPPORT_PC9821)
 		else {
-//#if defined(BIOS_IO_EMULATION)
-//			// XXX: Windows3.1 DOSプロンプト用 無理やり
-//			if (CPU_STAT_PM && CPU_STAT_VM86) {
-//				biosioemu_enq8(0x6a, 0x20);
-//			}else
-//#endif	
+#if defined(BIOS_IO_EMULATION)
+			// XXX: Windows3.1 DOSプロンプト用 無理やり
+			if (CPU_STAT_PM && CPU_STAT_VM86) {
+				biosioemu_enq8(0x6a, 0x20);
+			}else
+#endif	
 			{
 				gdc_analogext(FALSE);
 			}
@@ -604,6 +629,12 @@ void bios0x18_42(REG8 mode) {
 #endif
 	if (crtmode != 3) {
 		gdcs.disp = (mode >> 4) & 1;
+//#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
+//		// np21w ver0.86 rev62 BIOS I/O emulation
+//		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
+//			biosioemu_enq8(0xa4, (mode >> 4));
+//		}
+//#endif
 	}
 	if (!(mode & 0x20)) {
 		gdc.mode2 &= ~0x04;
