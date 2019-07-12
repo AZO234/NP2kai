@@ -1,225 +1,281 @@
-Neko Project II 0.86 kai rev.19
-===
-Jun 23, 2019  
-
-Build SDL2 port
----
-
-１． Install SDL2.  
-
-	(Linux)
-	$ sudo apt-get install git build-essential libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev
-
-or
-
-	(Windows + MSYS2 64bit (32bit console))
-	$ pacman -S git gcc make mingw-w64-i686-SDL2 mingw-w64-i686-SDL2_ttf mingw-w64-i686-SDL2_mixer
-
-or
-
-	(Mac)
-	1. Install XCode
-	2. Install brew
-	3. Execute follow command
-	$ brew install sdl2 sdl2_mixier sdl2_ttf
-
-２． Build.  
-
-	(Linux)
-	$ cd NP2kai/sdl2
-	$ make -j4 -f Makefile.unix
-	or
-	$ make -j4 -f Makefile21.unix
-
-or
-
-	(Windows + MSYS2)
-	$ cd NP2kai/sdl2
-	$ make -j4 -f Makefile.win
-	or
-	$ make -j4 -f Makefile21.win
-
-or
-
-	(Mac)
-	$ cd NP2kai/sdl2
-	$ make -j4 -f Makefile.mac
-	or
-	$ make -j4 -f Makefile21.mac
-
-or
-
-	GCW Zero (GCW0) game device only
-	$ make -j4 -f Makefile21.gcw0
-
-３． Install NP2kai.  
-
-	$ sudo make -f Makefile.unix install
-
-or
-
-	$ sudo make -f Makefile21.unix install
-
-or
-	GCW Zero (GCW0) game device only
-	$ make -j4 -f Makefile21.gcw0 buildopk
-
-	then transfer np2kai.opk to /media/apps/
-	BIOS files should locate in ~/.config/np2kai
-
-４． Run NP2kai.  
-
-	$ np2kai
-
-or
-
-	$ np21kai
-
-BIOS files locate in 
-(Linux) /home/(user)/.config/np2kai or /home/(user)/.config/np21kai.
-(Mac) /Users/(user)/.config/np2kai or /Users/(user)/.config/np21kai.
-
-Build Linux X11 port
----
-
-１． Install SDL2.  
-
-	$ sudo apt-get install libsdl2-dev libsdl2-mixer-dev libsdl2-ttf-dev
-
-２． Build.  
-
-	$ cd NP2kai/x11
-	$ ./autogen.sh
-	$ ./configure
-	$ make
-
-or
-
-	$ ./configure --enable-ia32
-	$ make -j4
-
-３． Install NP2kai.  
-
-	$ sudo make install
-
-４． Run NP2kai.  
-
-	$ xnp2kai
-
-or
-
-	$ xnp21kai
-
-BIOS files locate in ~/.config/xnp2kai or ~/.config/xnp21kai.
-
-NP2 menu is opened when F11 key or mouse middle button.  
-NP2 menu can swap FDD/HDD diskimages.
-
-Build libretro port (Linux)
----
-
-１． Build.  
-
-	$ cd NP2kai/sdl2
-	$ make -j4
-
-２． 'np2kai_libretro.so' binary is outputed in NP2kai/sdl2  
-
-Build libretro port (Windows)
----
-
-１． Build by MSYS2 x86_64. (Reference follow URL)  
-
-https://docs.libretro.com/compilation/windows/
-
-	$ cd NP2kai/sdl2
-	$ make -j4
-
-２． 'np2kai_libretro.dll' binary is outputed in NP2kai/sdl2  
-
-Build libretro port (Mac)  * No confirmation to drive
----
-
-１． Open terminal.
-
-２． First 'git' to install XCode.
-
-	$ git
-
-３． Clone this repository
-
-	$ git clone https://github.com/AZO234/NP2kai
-
-４． Build.
-
-	$ cd NP2kai/sdl2
-	$ make -j4
-
-５． 'np2kai_libretro.dylib' binary is outputed in NP2kai/sdl2  
-
-Build with libretro-super  * No confirmation to drive
----
-
-１． Open terminal.
-
-２． Clone libretro-super repository.
-
-	$ git clone --depth 1 https://github.com/libretro/libretro-super.git
-
-３． CD to libretro-super, and clone this repository.
-
-	$ cd libretro-super
-	$ git clone --depth 1 https://github.com/AZO234/NP2kai libretro-np2kai
-
-４． Build. (e.g. Android)
-
-To build needs Android Studio, and NDK.  
-https://developer.android.com/studio/index.html
-
-	$ export PATH=~/Android/Sdk/ndk-bundle:$PATH
-	$ chmod +x ./libretro-build-android-mk.sh
-	$ ./libretro-build-android-mk.sh np2kai
-
-'libnp2kai.so' binary is outputed in libretro-np2kai/libs  
-
-４． Build. (e.g. iOS)
-
-	$ ./libretro-build-ios.sh np2kai
-
-'np2kai_libretro_ios.dylib' binary is outputed in libretro-np2kai  
-
-About libretro port
----
-BIOS files locate in "np2kai" directory at BIOS directory (configured by RetroArch).  
-Configure file (np2kai.cfg) is made in "np2kai" BIOS directory.
-
-NP2 menu is opened when F12 key or mouse middle button or joypad L2 button.  
-NP2 menu can swap FDD/HDD diskimages.  
-
-If you run libretro by .m3u file include floppy disk images,  
-F1 key menu durling play game, you can swap disk.  
+# Neko Project II 0.86 kai
+Jul 12, 2019  
+
+NP2kai is PC-9801 series emulator  
+
+![](https://img.shields.io/github/tag/AZO234/NP2kai.svg)
+
+**Table of Contents**
+
+[TOC]
+
+## Build and Install
+
+### Windows
+
+#### VS2019 port
+##### Install tools
+1. Install VisualStudio 2019.
+2. Install NASM and PATH it.
+3. Locate VST SDK to C:\VST_SDK and run copy_vst2_to_vst3_sdk.bat.
+
+##### Build
+1. Open win9x/np2vs2019.
+2. Set Release/x64.
+3. Build projects.
+4. Output np2kai.exe(i286) and np21kai.exe(i386).
+
+##### Install binary
+1. Locate .exe file anywhere.
+2. Locate BIOS files to .exe same filder.
+- F11 key or mouse middle button, to capture mouse.
+
+#### SDL2 port
+##### Install tools
+1. Install MSYS2 64bit.
+2. Run MSYS2 64bit console
+3. Run follow command.
+```
+$ pacman -S git gcc make mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL2_mixer
+```
+
+##### Build
+1. Change directory to sdl2.
+```
+$ cd NP2kai/sdl2
+```
+2. Make.
+(i286)
+```
+$ make -f Makefile.win
+```
+(i386)
+```
+$ make -f Makefile21.win
+```
+
+
+##### Install binary
+1. Install.
+```
+$ make install
+```
+2. Locate BIOS files to ~/.config/np2kai(i286) or ~/.config/np21kai(i386).
+3. Run np2kai(i286) or np21kai(i386).
+- NP2's menu is shown F11 or mouse middle button, to swap FDD/HDD diskimages.
+
+### Linux
+
+#### X11 port
+##### Install tools
+1. Install SDL2, etc.
+```
+$ sudo apt-get install git build-essential libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev
+```
+
+##### Build
+1. Change directory to x11.
+```
+$ cd NP2kai/x11
+```
+2. Run autotools script.
+```
+$ ./autogen.sh
+```
+3. Run configure.
+(i286)
+```
+$ ./configure
+```
+(i386)
+```
+$ ./configure --enable-ia32
+```
+4. Make.
+```
+$ make
+```
+
+
+##### Install binary
+1. Install.
+```
+$ sudo make install
+```
+2. Locate BIOS files to ~/.config/xnp2kai(i286) or ~/.config/xnp21kai(i386).
+3. Run xnp2kai(i286) or xnp21kai(i386).
+- F11 or mouse middle button, to capture mouse.
+
+#### SDL2 port
+##### Install tools
+1. Install SDL2, etc.
+```
+$ sudo apt-get install git build-essential libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev
+```
+
+##### Build
+1. Change directory to sdl2.
+```
+$ cd NP2kai/sdl2
+```
+2. Make.
+(i286)
+```
+$ make -f Makefile.unix
+```
+(i386)
+```
+$ make -f Makefile21.unix
+```
+
+
+##### Install binary
+1. Install.
+`$ sudo make install`
+2. Locate BIOS files to ~/.config/np2kai(i286) or ~/.config/np21kai(i386).
+3. Run np2kai(i286) or np21kai(i386).
+- NP2's menu is shown F11 key or mouse middle button, to swap FDD/HDD diskimages.
+
+### macOS
+
+#### SDL2 port
+##### Install tools
+1. Install XCode.
+2. Install brew.
+3. Execute follow command.
+```
+$ brew install sdl2 sdl2_mixier sdl2_ttf
+```
+
+##### Build
+1. Change directory to sdl2.
+```
+$ cd NP2kai/sdl2
+```
+2. Make.
+(i286)
+```
+$ make -f Makefile.mac
+```
+(i386)
+```
+$ make -f Makefile21.mac
+```
+
+##### Install binary
+1. Install.
+```
+$ make install
+```
+2. Locate BIOS files to ~/.config/np2kai(i286) or ~/.config/np21kai(i386).
+3. Run np2kai(i286) or np21kai(i386).
+- NP2's menu is shown F11 key or mouse middle button, to swap FDD/HDD diskimages.
+
+### GCW Zero (GCW0) 
+
+##### Build
+1. Change directory to sdl2.
+```
+$ cd NP2kai/sdl2
+```
+2. Make.
+```
+$ make -f Makefile21.gcw0 buildopk
+```
+
+##### Install binary
+1. Transfer np2kai.opk to /media/apps/ .
+2. BIOS files should locate in ~/.config/np2kai .
+
+#### libretro port (Windows/Linux/macOS)
+
+##### Install tools
+1. MSYS2 64bit + 64bit console(Windows).
+2. Install compiler, etc.
+
+##### Build
+1. Change directory to sdl2.
+```
+$ cd NP2kai/sdl2
+```
+2. Make.
+```
+$ make
+```
+
+##### Install binary
+1. Install shared library(.dll or .so or .dylib) to libretro's core directory.
+2. Locate BIOS files to np2kai in libretro's BIOS directory (libretro/BIOS/np2kai).
+- NP2's menu is shown F12 or mouse middle button or L2, to swap FDD/HDD diskimages.
+
+#### libretro port (Android/iOS)
+
+##### Install tools
+1. MSYS2 64bit + 64bit console(Windows).
+2. Install Android Studio, and NDK.
+3. Clone libretro-super.
+```
+$ git clone --depth 1 https://github.com/libretro/libretro-super.git
+```
+
+##### Build
+1. Change directory to libretro-super.
+```
+$ cd libretro-super
+```
+2. Fetch np2kai.
+```
+$ ./libretro-fetsh.sh np2kai
+```
+2. Build.
+(Android)
+```
+$ ./libretro-build-android-mk.sh np2kai
+```
+(iOS)
+```
+$ ./libretro-build-ios.sh np2kai
+```
+
+##### Install binary
+1. Install shared library(.so or .dylib) to libretro's core directory.
+2. Locate BIOS files to np2kai in libretro's BIOS directory (libretro/BIOS/np2kai).
+- NP2's menu is shown F12 or mouse middle button or L2, to swap FDD/HDD diskimages.
+
+## About libretro port
+BIOS files locate in 'np2kai' directory at BIOS directory (configured by RetroArch).  
+Configure file (np2kai.cfg) is made in 'np2kai' BIOS directory.
+
+NP2 menu is shown F12 or mouse middle button or L2.  
+NP2 menu can swap FDD/HDD diskimages.(Swapping HDD need reset.)  
+
+You can libretro with .m3u file listed floppy disk images,  
+1st image is mouted to FDD1, 2nd image is mouted to FDD2.
+(Not suitable when using only one FDD1 drive. Use NP2 menu.)
+To swap FDD2 imagefile, libretro menu durling play game,  
 [Disk Control] -> [Disk Cycle Tray Status] (eject) -> [Disk Index] -> [Disk Cycle Tray Status] (disk set)
+So, to swap FDD1 imagefile, libretro [Option] menu -> [Swap Disks on Drive] set [FDD1]
 
 Mouse is cuptured (hidden/show toggle) by F11 key.
 
 Mouse cursor is able to move with joypad.  
 Switch Joy2Mouse/Keyboard mode in config to 'Mouse'.  
-D-UP/DOWN/LEFT/RIGHT: mouse move  
-B button: left click  
-A button: right click
-R button: mouse speed up durling hold  
+- D-UP/DOWN/LEFT/RIGHT: mouse move  
+- B button: left click  
+- A button: right click
+- R button: mouse speed up durling hold  
 
 Keyboard is able to control with joypad.  
 Switch Joy2Mouse/Keyboard mode in config to 'Arrows' or 'Keypad' (or 'Manual').  
-D-UP/DOWN/LEFT/RIGHT: Arrow key or Keypad(2468) key
-B button: Z key  
-A button: X key  
-X button: Space key  
-Y button: left Ctrl key  
-L button: Backspace key  
-R button: right Shift key  
-Select button: Escape key  
-Start button: Return key
+- D-UP/DOWN/LEFT/RIGHT: Arrow key or Keypad(2468) key
+- B button: Z key  
+- A button: X key  
+- X button: Space key  
+- Y button: left Ctrl key  
+- L button: Backspace key  
+- R button: right Shift key  
+- Select button: Escape key  
+- Start button: Return key
 
 By setting Joy2Mouse/Keyboard mode to 'Manual', you can custom keycode for button.  
 Change 'lrjoybtn' value in system/np2kai/np2kai.cfg.  
@@ -227,9 +283,8 @@ This value is little endian and 12 values ​​of 16bits(2Bytes) are arranged.
 Write the key code of RETROK (see libretro.h) to this value.  
 The order is D-UP/DOWN/LEFT/RIGHT/A/B/X/Y/L/R/Select/Start.
 
-[libretro] Keyboard
----
-Common
+## Keyboard (libretro)
+### Common
 
 |PC-98key|key|problem|menu|
 |:---:|:---:|:---:|:---:|
@@ -249,27 +304,26 @@ Common
 |KP=|KP=|can't push|implemented|
 |KP.|KP.|don't come event|implemented|
 
-JP106 keyboard(default)
+### JP106 keyboard(default)
 
 |PC-98key|key|info|menu|
 |:---:|:---:|:---:|:---:|
-|￥ \||￥ \||don't come event|implemented|
+|￥ \|￥ \|don't come event|implemented|
 |_ _||L2? Menu has open?|implemented|
 
-US101 keyboard
+### US101 keyboard
 
 |PC-98key|key|info|menu|
 |:---:|:---:|:---:|:---:|
-|2 "|2 @|two event 0x02,0x2A|
-|￥ \||\\ \||||
+|2 "|2 @|two event 0x02,0x2A||
+|￥ \|\\ \|||
 |@ `|` ~|don't come event|implemented|
 |; +|; :|||
 |: *|' "|||
 |_ _||can't push|implemented|
 
-[X11] Keyboard
----
-Common
+## Keyboard (X11)
+### Common
 
 |PC-98key|key|problem|menu|
 |:---:|:---:|:---:|:---:|
@@ -288,11 +342,11 @@ Common
 |HELP|End|||
 |KP=|KP=|can't push||
 
-JP106 keyboard(default)
+### JP106 keyboard(default)
 
-All keys OK.
+All keys are OK.
 
-US101 keyboard
+### US101 keyboard
 
 |PC-98key|key|info|menu|
 |:---:|:---:|:---:|:---:|
@@ -304,7 +358,7 @@ US101 keyboard
 |0  |0 )|||
 |- =|- _|||
 |^ ~|= +|||
-|￥ \||\\ \||||
+|￥ \|\\ \|||
 |@ `|[ {|||
 |[ {|] }|||
 |; +|; :|||
@@ -312,65 +366,61 @@ US101 keyboard
 |] }|` ~|||
 |_ _||can't push|implemented|
 
-BIOS files
----
-* bios.rom
-* font.rom or font.bmp
-* itf.rom
-* sound.rom
-* (bios9821.rom or d8000.rom  But I never see good dump file.)
-* 2608_bd.wav
-* 2608_sd.wav
-* 2608_top.wav
-* 2608_hh.wav
-* 2608_tom.wav
-* 2608_rim.wav
+## BIOS files
+- bios.rom
+- font.rom or font.bmp
+- itf.rom
+- sound.rom
+- (bios9821.rom or d8000.rom  But I never see good dump file.)
+- 2608_bd.wav
+- 2608_sd.wav
+- 2608_top.wav
+- 2608_hh.wav
+- 2608_tom.wav
+- 2608_rim.wav
 
-Setting to RetroPie
----
+## Setting to RetroPie
 
-１．Install Japanese font. (umefont need SDL2 port only)
+1. Install Japanese font. (umefont need SDL2 port only)
+```
+$ sudo apt-get install fonts-droid fonts-horai-umefont
+```
 
-    $ sudo apt-get install fonts-droid fonts-horai-umefont
-
-２．Locate libretro & SDL2 port files.
-
-    $ sudo mkdir /opt/retropie/libretrocores/lr-np2
-    $ sudo cp np2_libretro.so /opt/retropie/libretrocores/lr-np2/
-    $ sudo mkdir /opt/retropie/emulators/np2
-    $ sudo cp np2_libretro.so /opt/retropie/emulators/np2/
-    $ sudo touch /opt/retropie/emulators/np2/np2.cfg
-    $ sudo chmod 666 /opt/retropie/emulators/np2/np2.cfg
-
-３．Write & locate retroarch.cfg.
-
-    $ sudo vi /opt/retropie/configs/pc98/retroarch.cfg
-
-    # Settings made here will only override settings in the global retroarch.cfg if placed above the #include line
-
-    input_remapping_directory = "/opt/retropie/configs/pc98/"
-
-    #include "/opt/retropie/configs/all/retroarch.cfg"
-
-４．Locate BIOS files.
-
-BIOS files locate in "&tilde;/RetroPie/BIOS/np2/" directory.  
-and "/opt/retropie/emulators/np2/" too.
-
-５．Make shortcut to Japanese font. (SDL2 port only)
-
-    $ sudo ln -s /usr/share/fonts/truetype/horai-umefont/ume-ugo4.ttf /opt/retropie/emulators/np2/default.ttf
-
-６．Add "carbon-mod". (Japanese nize)
-
-    $ git clone https://github.com/eagle0wl/es-theme-carbon.git
-    $ sudo cp -r ./es-theme-carbon /etc/emulationstation/themes/carbon-mod
-
-７．Add to "/etc/emulationstation/es_systems.cfg" writing.
-
-    $ sudo nano /etc/emulationstation/es_systems.cfg
-
-    ...
+2. Locate libretro & SDL2 port files.
+```
+$ sudo mkdir /opt/retropie/libretrocores/lr-np2
+$ sudo cp np2_libretro.so /opt/retropie/libretrocores/lr-np2/
+$ sudo mkdir /opt/retropie/emulators/np2
+$ sudo cp np2_libretro.so /opt/retropie/emulators/np2/
+$ sudo touch /opt/retropie/emulators/np2/np2.cfg
+$ sudo chmod 666 /opt/retropie/emulators/np2/np2.cfg
+```
+3. Write & locate retroarch.cfg.
+```
+$ sudo vi /opt/retropie/configs/pc98/retroarch.cfg`
+```
+Settings made here will only override settings in the global retroarch.cfg if placed above the #include line
+```
+input_remapping_directory = "/opt/retropie/configs/pc98/"
+#include "/opt/retropie/configs/all/retroarch.cfg"
+```
+4. Locate BIOS files.
+BIOS files locate in "&tilde;/RetroPie/BIOS/np2kai/" directory.  
+and "/opt/retropie/emulators/np2kai/" too.
+5. Make shortcut to Japanese font. (SDL2 port only)
+```
+$ sudo ln -s /usr/share/fonts/truetype/horai-umefont/ume-ugo4.ttf /opt/retropie/emulators/np2/default.ttf
+```
+6. Add "carbon-mod". (Japanese nize)
+```
+$ git clone https://github.com/eagle0wl/es-theme-carbon.git`
+$ sudo cp -r ./es-theme-carbon /etc/emulationstation/themes/carbon-mod
+```
+7. Add to "/etc/emulationstation/es_systems.cfg" writing.
+```
+$ sudo nano /etc/emulationstation/es_systems.cfg`
+```
+```
       </system>
       <system>
         <name>pc98</name>
@@ -383,81 +433,58 @@ and "/opt/retropie/emulators/np2/" too.
         <directlaunch/>
       </system>
       <system>
-    ...
-
-８．Add to "/opt/retropie/configs/pc98/emulators.cfg" writing.
-
-    $ cd /opt/retropie/configs
-    $ sudo mkdir pc98
-    $ cd pc98
-    $ sudo nano emulators.cfg
-
-    np2="/opt/retropie/emulators/np2/np21 %ROM%"
-    lr-np2="/opt/retropie/emulators/retroarch/bin/retroarch -L /opt/retropie/libretrocores/lr-np2/np2_libretro.so --config /opt/retropie/configs/pc98/retroarch.cfg %ROM%"
+```
+8. Add to "/opt/retropie/configs/pc98/emulators.cfg" writing.
+```
+$ cd /opt/retropie/configs
+$ sudo mkdir pc98
+$ cd pc98
+$ sudo nano emulators.cfg
+```
+```
+np2="/opt/retropie/emulators/np2/np21 %ROM%"
+lr-np2="/opt/retropie/emulators/retroarch/bin/retroarch -L /opt/retropie/libretrocores/lr-np2/np2_libretro.so --config /opt/retropie/configs/pc98/retroarch.cfg %ROM%"
     default="lr-np2"
+```
+9. Launch ES and set "CARBON-MOD" to "THEME-SET".
 
-９．Launch ES and set "CARBON-MOD" to "THEME-SET".
-
-Point of tuning performance NP2kai
----
+## Point of tuning performance
 * CPU clock  
-
 Change "CPU Clock Multiplyer".
-
 * Memory size  
-
 Change "RAM Size".
-
 * Sound device  
-
 26K: for old games.  
 86: for newer games.
-
-* Sound Generator  
-
+* Sound Generator (to change need reset)  
 fmgen: fmgen sound generator.
 Default: NP2's default sound generator.  
-
-Don't forget restart core.
-
 * How to set GDC 2.5MHz/5MHz?  
-
-1.Press End key(assigned Help key) + reset  
-2.Select 'ディップスイッチ２'(DIP switch 2)
-
+1. Press End key(assigned Help key) + reset  
+2. Select 'ディップスイッチ２'(DIP switch 2)
 * How to key typing?  
-
 There are two ways:
-
 1. map the 'enable hotkeys' hotkey in settings > input > input hotkey binds and RetroArch will stop listening for hotkeys unless/until you hold that button/key
-
 2. enable the "game focus mode" (mapped to scroll_lock by default) and it will send all of your inputs to the core instead of the frontend. However, some people have reported having trouble getting out of game focus mode.
-
 (Thanks hasenbanck)
-
 * How to use CD drive with MS-DOS 6.2?  
-
 Write follow to CONFIG.SYS.
-
-    LASTDRIVE=Z
-    DEVICE=A:￥DOS￥NECCDD.SYS /D:CD_101
-
+```
+LASTDRIVE=Z
+DEVICE=A:￥DOS￥NECCDD.SYS /D:CD_101
+```
 And write follow to AUTOEXEC.BAT.
-
-    A:￥DOS￥MSCDEX.EXE /D:CD_101 /L:Q
-
+```
+A:￥DOS￥MSCDEX.EXE /D:CD_101 /L:Q
+```
 Then, you'll can use CD drive as Q drive.
-
 * How many files(0-15)?
-
 This screen is boot as PC-98 ROM BASIC mode.  
 Your floppy/harddisk image isn't mount correctry.
-
 Check selecting image files and restart.
-
 * Floppy disk image
-
 NP2 is made according to PC-98 specifications.  
+
 Floppy disk types are 720KB(2DD) and 1.23MB(2HD).  
 The floppy drive differs from the one of the PC/AT on the hardware level.  
 (There are a few floppies formatted to 1.44MB(2HD) using MS-DOS 6.2.)
@@ -489,8 +516,7 @@ Only FAT is supported, NTFS does not correspond.
 DiskExplorer  
 https://hp.vector.co.jp/authors/VA013937/editdisk/index.html
 
-[X11][SDL2] To use libnvl.so functions
----
+## To use libnvl.so functions
 http://euee.web.fc2.com/tool/nvl/np2kainvl.html  
 Locate libnvl.so to /usr/local/lib/.  
 Then we can use follow types HDD image files.  
@@ -503,9 +529,8 @@ Then we can use follow types HDD image files.
 * qcow2
 * hdd
 
-About network
----
-From rev.7 we can use network.
+## About network
+NP2kai can use network.
 
 NIC is follow spec.  
 
@@ -513,9 +538,8 @@ MELCO LGY-98
 IRQ:6  
 I/O:0x00D0
 
-[X11] To use external MIDI sound generator
----
-We can use external MIDI sound generator with UM-1.
+## To use external MIDI sound generator (X11)
+NP2kai can use external MIDI sound generator with UM-1.
 
 1. Connect UM-1 to USB
 2. Check you can see 'C4D0' by '$ ls /dev/snd' command
@@ -526,70 +550,66 @@ We can use external MIDI sound generator with UM-1.
 * Press 'OK'
 4. I tried with Touhou 2 (set MIDI option), I can listen MIDI sound.
 
-[X11] To use software synthesizer timidity as Virtual MIDI
----
-We can software synthesizer timidity as Virtual MIDI.
+## To use software synthesizer timidity as Virtual MIDI (X11)
+NP2kai can software synthesizer timidity as Virtual MIDI.
 
 It seems that timidity is incompatible with PulseAudio.  
 By changing to ALSA output, I was able to play sound.
 
-１． Install timidity and fluid-soundfont-gm  
-
-    $ sudo apt-get install timidity fluid-soundfont-gm
-
-２． Edit timidity.cfg  
-
-    $ sudo nano /etc/timidity  
-
-    #source /etc/timidity/freepats.cfg  
-    source /etc/timidity/fluidr3_gm.cfg
-
-３． restart timidity  
-
-    $ sudo service timidity restart
-
-４．
-
-    $ aconnect -o  
+1. Install timidity and fluid-soundfont-gm  
+```
+$ sudo apt-get install timidity fluid-soundfont-gm
+```
+2. Edit timidity.cfg  
+```
+$ sudo nano /etc/timidity
+```
+```
+#source /etc/timidity/freepats.cfg  
+source /etc/timidity/fluidr3_gm.cfg
+```
+3. restart timidity  
+```
+$ sudo service timidity restart
+```
+4. 
+```
+$ aconnect -o
+```
 This time, you can see like Timidity port 128:0 to 128:3.
-
-５．
-
-    $ timidity -iA -B2,8 -Os &  
-
-Drive timidity daemon output to ALSA.  
-
-    $ aconnect -o  
-
+5.
+```
+$ timidity -iA -B2,8 -Os &
+```
+Run timidity daemon output to ALSA.  
+```
+$ aconnect -o
+```
 This time, you can see like ALSAed Timidity port 129:0 to 129:3.
-
-６．
-
-    $ sudo modprobe snd-virmidi  
-
+6.
+```
+$ sudo modprobe snd-virmidi
+```
 Add virtual MIDI port module.  
-
-    $ aconnect -o  
-
+```
+$ aconnect -o
+```
 This time, you can see like VirMIDI 3-0 to 3-3 at 28:0 to 31:0.
-
-７．
-
-    $ ls /dev/snd  
-
+7.
+```
+$ ls /dev/snd
+```
 You can also see VirMIDI 3-0 to 3-3 at midiC3D0 to midiC3D3.
-
-８． Connect VirMIDI 3-0 and ALSAed Timidity port 0.  
-
-    $ aconnect 28:0 129:0  
-
-９． Finally set '/dev/snd/midiC3D0' to XNP2.
+8. Connect VirMIDI 3-0 and ALSAed Timidity port 0.  
+```
+$ aconnect 28:0 129:0
+```
+9. Finally set '/dev/snd/midiC3D0' to xnp2kai.
 
 Next boot computer, you command from 4.
 
-WAB
----
-From rev.16 we can use WAB (Window Accelerator Boards).
+## About WAB
+NP2kai can use WAB (Window Accelerator Boards).
 
 To use WAB, enable WAB and restart.
 
@@ -597,11 +617,11 @@ WAB Type normally uses 'PC-9821Xe10,Xa7e,Xb10 built-in'.
 
 **640x480 256 color support for Windows 3.1**
 
-1. Switch to directory `A:￥WINDOWS`, then run `SETUP` command.
-2. Select display mode `640x480 256色 16ﾄﾞｯﾄ(9821ｼﾘｰｽﾞ対応)`, or `640x480 256色 12ﾄﾞｯﾄ(9821ｼﾘｰｽﾞ対応)` for smaller system font, then complete the changes. You may need Windows 3.1 installation disks when applying changes for the display driver.
-3. Extract `EGCN4.DRV` and `PEGCV8.DRV` from `MINI3.CAB` in Windows 98 CD.
-4. Copy extracted `EGCN4.DRV` and `PEGCV8.DRV` to `A:￥WINDOWS￥SYSTEM` directory, so as to replace the original driver files from Windows 3.1 installation disk.
-5. Type `win` command to check if the driver works well.
+1. Switch to directory 'A:￥WINDOWS', then run 'SETUP' command.
+2. Select display mode '640x480 256色 16ﾄﾞｯﾄ(9821ｼﾘｰｽﾞ対応)', or '640x480 256色 12ﾄﾞｯﾄ(9821ｼﾘｰｽﾞ対応)' for smaller system font, then complete the changes. You may need Windows 3.1 installation disks when applying changes for the display driver.
+3. Extract 'EGCN4.DRV' and 'PEGCV8.DRV' from 'MINI3.CAB' in Windows 98 CD.
+4. Copy extracted 'EGCN4.DRV' and 'PEGCV8.DRV' to 'A:￥WINDOWS￥SYSTEM' directory, so as to replace the original driver files from Windows 3.1 installation disk.
+5. Type 'win' command to check if the driver works well.
 
 **NOTE:** Do not run MS-DOS prompt with fullscreen mode, or your screen will get garbled when switching back to Windows environment.
 
@@ -616,8 +636,7 @@ http://buffalo.jp/download/driver/multi/wgna_95.html
 * GA-98NB driver
 https://www.iodata.jp/lib/product/g/175_win95.htm
 
-Release
----
+## Release
 * Jun 23, 2019
 	- modify default cfg/BIOS location (np2kai or 'np21kai')
 * Jun 21, 2019
@@ -778,8 +797,7 @@ Release
 * Jun 1, 2017  
 	- First release
 
-Reference
----
+## Reference
 * http://www.yui.ne.jp/np2
 * https://github.com/irori/np2pi/wiki/NP2-for-Raspberry-Pi
 * http://eagle0wl.hatenadiary.jp/entry/2016/10/07/213830
