@@ -6,7 +6,9 @@
 #include	"vramhdl.h"
 #include	"menubase.h"
 #include	"sysmenu.h"
+#include	"scrnmng.h"
 #include	"mousemng.h"
+#include	"np2.h"
 
 #if defined(__LIBRETRO__)
 #include <retro_miscellaneous.h>
@@ -88,11 +90,18 @@ void taskmng_rol(void) {
 		case SDL_MOUSEMOTION:
 			if (menuvram == NULL) {
 				mousemng_onmove(&e.motion);
-			}
-			else {
-				menubase_moving(e.motion.x, e.motion.y, 0);
-				mx = e.motion.x;
-				my = e.motion.y;
+			} else {
+				if((scrnmode & SCRNMODE_ROTATEMASK) == SCRNMODE_ROTATELEFT) {
+					mx = (menuvram->width - 1) - e.motion.y;
+					my = e.motion.x;
+				} else if((scrnmode & SCRNMODE_ROTATEMASK) == SCRNMODE_ROTATERIGHT) {
+					mx = e.motion.y;
+					my = (menuvram->height - 1) - e.motion.x;
+				} else {
+					mx = e.motion.x;
+					my = e.motion.y;
+				}
+				menubase_moving(mx, my, 0);
 			}
 			break;
 

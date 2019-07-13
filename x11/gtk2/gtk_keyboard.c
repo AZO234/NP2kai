@@ -190,7 +190,7 @@ static const UINT8 xkeyconv_misc[256] = {
 		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
 	/*	    ,    ,    ,    ,    ,    ,    ,   		; 0x48 */
 		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-	/*	HOME,  ←,  ↑,  →,  ↓,RLUP,RLDN, END		; 0x50 */
+	/*	HOME,  ←,  ↑,  →,  ↓,PGUP,PGDN, END		; 0x50 */
 		0x3e,0x3b,0x3a,0x3c,0x3d,0x36,0x37,0x3f,
 	/*	    ,    ,    ,    ,    ,    ,    ,   		; 0x58 */
 		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
@@ -256,6 +256,13 @@ static UINT8
 get_data(guint keysym, UINT8 down)
 {
 	UINT8 data;
+
+	if(np2oscfg.xrollkey) {
+		if(keysym == GDK_KEY_Page_Up)
+			keysym = GDK_KEY_Page_Down;
+		else if(keysym == GDK_KEY_Page_Down)
+			keysym = GDK_KEY_Page_Up;
+	}
 
 	if (keysym & ~0xff) {
 		if (keysym == GDK_VoidSymbol) {

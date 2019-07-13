@@ -28,8 +28,8 @@ extern "C" BOOL nvl_check();
 
 
 // 進捗表示用（実装酷すぎ･･･）
-static int _mt_progressvalue = 0;
-static int _mt_progressmax = 100;
+static int mt_progressvalue = 0;
+static int mt_progressmax = 100;
 
 /**
  * FDD 選択ダイアログ
@@ -442,8 +442,14 @@ protected:
 	 */
 	virtual BOOL OnInitDialog()
 	{
+		int hddsizetblcount = 0;
+		
+		while(hddsizetblcount<_countof(s_hddsizetbl) && s_hddsizetbl[hddsizetblcount] <= m_nHddMaxSize){
+			hddsizetblcount++;
+		}
+
 		m_hddsize.SubclassDlgItem(IDC_HDDSIZE, this);
-		m_hddsize.Add(s_hddsizetbl, _countof(s_hddsizetbl));
+		m_hddsize.Add(s_hddsizetbl, hddsizetblcount);
 		
 		m_cmbhddC.SubclassDlgItem(IDC_HDDADVANCED_C, this);
 		m_cmbhddC.Add(s_hddCtbl, _countof(s_hddCtbl));
@@ -890,9 +896,9 @@ protected:
 			KillTimer(this->m_hWnd, 1);
 			break;
 		case WM_TIMER:
-			SetProgressValue(_mt_progressvalue);
-			SetProgressMax(_mt_progressmax);
-			if(_mt_progressvalue >= _mt_progressmax){
+			SetProgressValue(mt_progressvalue);
+			SetProgressMax(mt_progressmax);
+			if(mt_progressvalue >= mt_progressmax){
 				// 処理終わり
 				CDlgProc::OnOK();
 			}
@@ -926,10 +932,10 @@ static unsigned int __stdcall newdisk_ThreadFunc(LPVOID vdParam)
 	{
 		if(_mt_diskSize){
 			// 全容量指定モード
-			newdisk_nhd_ex(lpPath, _mt_diskSize, _mt_blank, &_mt_progressvalue, &_mt_cancel);
+			newdisk_nhd_ex(lpPath, _mt_diskSize, _mt_blank, &mt_progressvalue, &_mt_cancel);
 		}else{
 			// CHS指定モード
-			newdisk_nhd_ex_CHS(lpPath, _mt_diskC, _mt_diskH, _mt_diskS, _mt_diskSS, _mt_blank, &_mt_progressvalue, &_mt_cancel);
+			newdisk_nhd_ex_CHS(lpPath, _mt_diskC, _mt_diskH, _mt_diskS, _mt_diskSS, _mt_blank, &mt_progressvalue, &_mt_cancel);
 		}
 	}
 	else if (!file_cmpname(ext, str_hdi))
@@ -951,14 +957,14 @@ static unsigned int __stdcall newdisk_ThreadFunc(LPVOID vdParam)
 	{
 		if(_mt_diskSize){
 			// 全容量指定モード
-			newdisk_vpcvhd_ex(lpPath, _mt_diskSize, _mt_dyndisk, _mt_blank, &_mt_progressvalue, &_mt_cancel);
+			newdisk_vpcvhd_ex(lpPath, _mt_diskSize, _mt_dyndisk, _mt_blank, &mt_progressvalue, &_mt_cancel);
 		}else{
 			// CHS指定モード
-			newdisk_vpcvhd_ex_CHS(lpPath, _mt_diskC, _mt_diskH, _mt_diskS, _mt_diskSS, _mt_dyndisk, _mt_blank, &_mt_progressvalue, &_mt_cancel);
+			newdisk_vpcvhd_ex_CHS(lpPath, _mt_diskC, _mt_diskH, _mt_diskS, _mt_diskSS, _mt_dyndisk, _mt_blank, &mt_progressvalue, &_mt_cancel);
 		}
 	}
 #endif
-	_mt_progressvalue = _mt_progressmax;
+	mt_progressvalue = mt_progressmax;
 	return 0;
 }
 
@@ -1040,11 +1046,11 @@ void dialog_newdisk_ex(HWND hWnd, int mode)
 			_mt_blank = dlg.IsBlankDisk();
 			_mt_dyndisk = 0;
 			_mt_cancel = 0;
-			_mt_progressvalue = 0;
-			_mt_progressmax = 100;
+			mt_progressvalue = 0;
+			mt_progressmax = 100;
 			_tcscpy(_mt_lpPath, lpPath);
 			newdisk_hThread = (HANDLE)_beginthreadex(NULL , 0 , newdisk_ThreadFunc  , NULL , 0 , &dwID);
-			CNewHddDlgProg dlg2(hWnd, _mt_progressmax, _mt_progressvalue);
+			CNewHddDlgProg dlg2(hWnd, mt_progressmax, mt_progressvalue);
 			if (dlg2.DoModal() != IDOK)
 			{
 				_mt_cancel = 1;
@@ -1073,7 +1079,7 @@ void dialog_newdisk_ex(HWND hWnd, int mode)
 	}
 	else if (!file_cmpname(ext, str_hdn))
 	{
-		CNewHddDlg dlg(hWnd, 2, 399);
+		CNewHddDlg dlg(hWnd, 2, 6399);
 		if (dlg.DoModal() == IDOK)
 		{
 			newdisk_hdn(lpPath, dlg.GetSize());
@@ -1100,11 +1106,11 @@ void dialog_newdisk_ex(HWND hWnd, int mode)
 			_mt_blank = dlg.IsBlankDisk();
 			_mt_dyndisk = dlg.IsDynamicDisk();
 			_mt_cancel = 0;
-			_mt_progressvalue = 0;
-			_mt_progressmax = 100;
+			mt_progressvalue = 0;
+			mt_progressmax = 100;
 			_tcscpy(_mt_lpPath, lpPath);
 			newdisk_hThread = (HANDLE)_beginthreadex(NULL , 0 , newdisk_ThreadFunc  , NULL , 0 , &dwID);
-			CNewHddDlgProg dlg2(hWnd, _mt_progressmax, _mt_progressvalue);
+			CNewHddDlgProg dlg2(hWnd, mt_progressmax, mt_progressvalue);
 			if (dlg2.DoModal() != IDOK)
 			{
 				_mt_cancel = 1;

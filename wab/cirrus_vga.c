@@ -3165,7 +3165,7 @@ int cirrus_linear_memwnd_addr_convert_iodata(void *opaque, target_phys_addr_t *a
 	// SR17[2]=1でMMIOイネーブル If this bit is set to '1', the BlT source will be system memory rather than display memory.
 	// 本当はそれに加えGR6[3-2]=01じゃないとMMIOモードにならない
 	// MMIOアドレスはSR17[6]=0:0xb8000に割り当て、1:リニアメモリの最後256byteに割り当て(CL-GD5430/'36/'40 only)
-	if ((s->sr[0x17] & CIRRUS_MMIO_ENABLE) != 0 && ((addr & 0xff000) == 0xb8000)) {
+	if ((s->sr[0x17] & CIRRUS_MMIO_ENABLE) != 0 && /*(s->gr[0x06] & 0x0c)==0x04 &&*/ ((addr & 0xff000) == 0xb8000)) {
 		ret = 1;	// MMIO
 	}
 
@@ -3369,7 +3369,7 @@ int cirrus_linear_memwnd3_addr_convert_iodata(void *opaque, target_phys_addr_t *
 	// SR17[2]=1でMMIOイネーブル If this bit is set to '1', the BlT source will be system memory rather than display memory.
 	// 本当はそれに加えGR6[3-2]=01じゃないとMMIOモードにならない
 	// MMIOアドレスはSR17[6]=0:0xb8000に割り当て、1:リニアメモリの最後256byteに割り当て(CL-GD5430/'36/'40 only)
-	if ((s->sr[0x17] & CIRRUS_MMIO_ENABLE) != 0 && ((addr & 0xff000) == 0xb8000)) {
+	if ((s->sr[0x17] & CIRRUS_MMIO_ENABLE) != 0 /*&& (s->gr[0x06] & 0x0c)==0x04*/ && ((addr & 0xff000) == 0xb8000)) {
 		ret = 1;	// MMIO
 	}
 
@@ -3720,12 +3720,12 @@ static void cirrus_update_memory_access(CirrusVGAState *s)
 	}
 	else {
 		// アクセス不可にしておく
-		//if (s->gr[0x06] & 0x08) {
-		//	np2clvga.VRAMWindowAddr3 = 0xb0000;
-		//}
-		//else {
-		//	np2clvga.VRAMWindowAddr3 = 0xa0000;
-		//}
+		if (s->gr[0x06] & 0x08) {
+			np2clvga.VRAMWindowAddr3 = 0;//0xb0000;
+		}
+		else {
+			np2clvga.VRAMWindowAddr3 = 0;//0xa0000;
+		}
 	}
 
     if ((s->sr[0x17] & 0x44) == 0x44) {

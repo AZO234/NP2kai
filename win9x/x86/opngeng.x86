@@ -1,43 +1,43 @@
 
 %define OPNGENX86
 
-FMDIV_BITS		equ		10
-FMDIV_ENT		equ		(1 << FMDIV_BITS)
-FMVOL_SFTBIT	equ		4
+%define	FMDIV_BITS		10
+%define	FMDIV_ENT			(1 << FMDIV_BITS)
+%define	FMVOL_SFTBIT	4
 
 %ifdef OPNGENX86
-SIN_BITS		equ		11
-EVC_BITS		equ		10
-ENV_BITS		equ		16
-KF_BITS			equ		6
-FREQ_BITS		equ		21
-ENVTBL_BIT		equ		14
-SINTBL_BIT		equ		14
+%define	SIN_BITS		11
+%define	EVC_BITS		10
+%define	ENV_BITS		16
+%define	KF_BITS			6
+%define	FREQ_BITS		21
+%define	ENVTBL_BIT	14
+%define	SINTBL_BIT	14
 %else
-SIN_BITS		equ		10
-EVC_BITS		equ		10
-ENV_BITS		equ		16
-KF_BITS			equ		6
-FREQ_BITS		equ		21
-ENVTBL_BIT		equ		14
-SINTBL_BIT		equ		15
+%define	SIN_BITS		10
+%define	EVC_BITS		10
+%define	ENV_BITS		16
+%define	KF_BITS			6
+%define	FREQ_BITS		21
+%define	ENVTBL_BIT	14
+%define	SINTBL_BIT	15
 %endif
 
-TL_BITS			equ		(FREQ_BITS+2)
-OPM_OUTSB		equ		(TL_BITS + 2 - 16)
+%define	TL_BITS			(FREQ_BITS+2)
+%define	OPM_OUTSB		(TL_BITS + 2 - 16)
 
-SIN_ENT			equ		(1 << SIN_BITS)
-EVC_ENT			equ		(1 << EVC_BITS)
+%define	SIN_ENT			(1 << SIN_BITS)
+%define	EVC_ENT			(1 << EVC_BITS)
 
-EC_ATTACK		equ		0
-EC_DECAY		equ		(EVC_ENT << ENV_BITS)
-EC_OFF			equ		((2 * EVC_ENT) << ENV_BITS)
+%define	EC_ATTACK		0
+%define	EC_DECAY		(EVC_ENT << ENV_BITS)
+%define	EC_OFF			((2 * EVC_ENT) << ENV_BITS)
 
-EM_ATTACK		equ		4
-EM_DECAY1		equ		3
-EM_DECAY2		equ		2
-EM_RELEASE		equ		1
-EM_OFF			equ		0
+%define	EM_ATTACK		4
+%define	EM_DECAY1		3
+%define	EM_DECAY2		2
+%define	EM_RELEASE	1
+%define	EM_OFF			0
 
 
 				struc	slot_t
@@ -121,9 +121,9 @@ section .text
 	extern	_envshift
 %endif
 
-ENVCURVE	equ		(_opncfg + opncfg_t.envcurve)
-SINTABLE	equ		(_opncfg + opncfg_t.sintable)
-ENVTABLE	equ		(_opncfg + opncfg_t.envtable)
+%define	ENVCURVE	(_opncfg + opncfg_t.envcurve)
+%define	SINTABLE	(_opncfg + opncfg_t.sintable)
+%define	ENVTABLE	(_opncfg + opncfg_t.envtable)
 
 
 	global	@opngen_getpcm@12
@@ -206,9 +206,9 @@ ENVTABLE	equ		(_opncfg + opncfg_t.envtable)
 				push	ebp
 				sub		esp, byte 8
 
-OPN_SAMPL		equ		0
-OPN_SAMPR		equ		4
-OPN_LENG		equ		16 + 8 + 4
+%define	OPN_SAMPL		0
+%define	OPN_SAMPR		4
+%define	OPN_LENG		16 + 8 + 4
 
 				mov		esi, ecx
 				mov		ebp, edx
@@ -356,9 +356,9 @@ og_noupdate:	ret		4
 				push	ebp
 				sub		esp, byte 8
 
-OPNV_SAMPL		equ		0
-OPNV_SAMPR		equ		4
-OPNV_LENG		equ		16 + 8 + 4
+OPNV_SAMPL	equ	0
+OPNV_SAMPR	equ	4
+OPNV_LENG		equ	16 + 8 + 4
 
 				mov		esi, ecx
 				mov		ebp, edx

@@ -132,8 +132,7 @@ static	TCHAR		szClassName[] = _T("NP2-MainWindow");
 #if !defined(_WIN64)
 						0,
 #endif
-						0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
-						FSCRNMOD_SAMEBPP | FSCRNMOD_SAMERES | FSCRNMOD_ASPECTFIX8,
+						0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, FSCRNMOD_SAMEBPP | FSCRNMOD_SAMERES | FSCRNMOD_ASPECTFIX8, 0,
 
 #if defined(SUPPORT_SCRN_DIRECT3D)
 						0, 
@@ -1128,6 +1127,12 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			update |= SYS_UPDATEOSCFG;
 			break;
 
+		case IDM_SWAPPAGEUPDOWN:
+			np2oscfg.xrollkey = !np2oscfg.xrollkey;
+			winkbd_roll(np2oscfg.KEYBOARD==KEY_PC98 ? np2oscfg.xrollkey : !np2oscfg.xrollkey);
+			update |= SYS_UPDATEOSCFG;
+			break;
+
 		case IDM_F12MOUSE:
 			np2oscfg.F12COPY = 0;
 			winkbd_resetf12();
@@ -1273,7 +1278,12 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			break;
 
 		case IDM_SPEAKBOARD:
-			np2cfg.SOUND_SW = 0x20;
+			np2cfg.SOUND_SW = SOUNDID_SPEAKBOARD;
+			update |= SYS_UPDATECFG | SYS_UPDATESBOARD;
+			break;
+			
+		case IDM_86SPEAKBOARD:
+			np2cfg.SOUND_SW = SOUNDID_86_SPEAKBOARD;
 			update |= SYS_UPDATECFG | SYS_UPDATESBOARD;
 			break;
 
@@ -2135,6 +2145,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			if ((wParam == VK_F12) && (!np2oscfg.F12COPY)) {
 				mousemng_toggle(MOUSEPROC_SYSTEM);
 				np2oscfg.MOUSE_SW = !np2oscfg.MOUSE_SW;
+				if(!np2oscfg.mouse_nc){
+					SetClassLong(g_hWndMain, GCL_STYLE, GetClassLong(g_hWndMain, GCL_STYLE) | CS_DBLCLKS);
+				}else/* if (!scrnmng_isfullscreen())*/ {
+					SetClassLong(g_hWndMain, GCL_STYLE, GetClassLong(g_hWndMain, GCL_STYLE) & ‾CS_DBLCLKS);
+					if (np2oscfg.wintype != 0) {
+						// XXX: メニューが出せなくなって詰むのを回避（暫定）
+						if (!scrnmng_isfullscreen()) {
+							WINLOCEX	wlex;
+							np2oscfg.wintype = 0;
+							wlex = np2_winlocexallwin(hWnd);
+							winlocex_setholdwnd(wlex, hWnd);
+							np2class_windowtype(hWnd, np2oscfg.wintype);
+							winlocex_move(wlex);
+							winlocex_destroy(wlex);
+							sysmng_update(SYS_UPDATEOSCFG);
+						}
+					}
+				}
 				sysmng_update(SYS_UPDATECFG);
 			}
 			else if ((wParam == VK_F12) && (np2oscfg.F12COPY==7)) {

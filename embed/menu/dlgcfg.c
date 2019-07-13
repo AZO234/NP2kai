@@ -158,8 +158,8 @@ static void setmulstr(void) {
 	if (multiple < 1) {
 		multiple = 1;
 	}
-	else if (multiple > 42) {
-		multiple = 42;
+	else if (multiple > 100) {
+		multiple = 100;
 	}
 	OEMSPRINTF(work, str_mulfmt, multiple);
 	menudlg_settext(DID_MULSTR, work);
@@ -181,8 +181,8 @@ static void setclockstr(void) {
 	if (multiple < 1) {
 		multiple = 1;
 	}
-	else if (multiple > 42) {
-		multiple = 42;
+	else if (multiple > 100) {
+		multiple = 100;
 	}
 	clock *= multiple;
 	OEMSPRINTF(work, str_clockfmt, clock / 10000, clock % 10000);

@@ -693,6 +693,8 @@ void scrnmng_bltwab() {
 	GdkRectangle	src;
 	GdkRectangle	dstmp;
 	int exmgn = 0;
+	GdkPixbuf* partbuf;
+	GdkPixbuf* rotatebuf;
 	if (np2wabwnd.multiwindow) return;
 	if (drawmng.backsurf != NULL) {
 		dst = &drawmng.rect;
@@ -705,10 +707,32 @@ void scrnmng_bltwab() {
 		memcpy(&dstmp, dst, sizeof(GdkRectangle));
 		dstmp.x += exmgn;
 		dstmp.width = scrnstat.width;
-		gdk_pixbuf_scale(np2wabwnd.pPixbuf, drawmng.backsurf,
-			0, 0, dstmp.width, dstmp.height,
-			0, 0, 1, 1,
-			GDK_INTERP_NEAREST);
+		dstmp.height = scrnstat.height;
+		if (!(drawmng.scrnmode & SCRNMODE_ROTATE)) {
+			gdk_pixbuf_scale(np2wabwnd.pPixbuf, drawmng.backsurf,
+				0, 0, dstmp.width, dstmp.height,
+				0, 0, 1, 1,
+				GDK_INTERP_NEAREST);
+		} else {
+			partbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, dstmp.width, dstmp.height);
+			gdk_pixbuf_scale(np2wabwnd.pPixbuf, partbuf,
+				0, 0, dstmp.width, dstmp.height,
+				0, 0, 1, 1,
+				GDK_INTERP_NEAREST);
+			if (!(drawmng.scrnmode & SCRNMODE_ROTATEDIR)) {
+				/* rotate left */
+				rotatebuf = gdk_pixbuf_rotate_simple(partbuf, GDK_PIXBUF_ROTATE_COUNTERCLOCKWISE);
+			} else {
+				/* rotate right */
+				rotatebuf = gdk_pixbuf_rotate_simple(partbuf, GDK_PIXBUF_ROTATE_CLOCKWISE);
+			}
+			gdk_pixbuf_unref(partbuf);
+			gdk_pixbuf_scale(rotatebuf, drawmng.backsurf,
+				0, 0, dstmp.height, dstmp.width,
+				0, 0, 1, 1,
+				GDK_INTERP_NEAREST);
+			gdk_pixbuf_unref(rotatebuf);
+		}
 	}
 #endif
 }

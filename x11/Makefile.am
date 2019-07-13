@@ -1,9 +1,6 @@
+GIT_VERSION := "$(shell git rev-parse --short HEAD)"
 real_topsrcdir=	$(top_srcdir)/..
 
-bin_PROGRAMS=	xnp2kai
-
-nodist_man1_MANS=	xnp2.1 xnp2.1j
-CLEANFILES=		$(nodist_man1_MANS)
 dist_pkgdata_DATA=	$(real_topsrcdir)/x11/resources/fddseek.wav \
 			$(real_topsrcdir)/x11/resources/fddseek1.wav \
 			$(real_topsrcdir)/x11/resources/relay1.wav
@@ -88,6 +85,7 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/timing.c \
 		$(real_topsrcdir)/statsave.c \
 		$(real_topsrcdir)/keystat.c \
+		$(real_topsrcdir)/np2_thread.c \
 		\
 		$(real_topsrcdir)/common/strres.c \
 		$(real_topsrcdir)/common/milstr.c \
@@ -302,8 +300,6 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/wab/wab_rly.c \
 		$(real_topsrcdir)/wab/wab.c
 
-xnp2kai_SOURCES=	$(COMMON_SOURCES)
-
 AM_CPPFLAGS=	-I$(real_topsrcdir) \
 		-I$(real_topsrcdir)/x11 \
 		-I$(real_topsrcdir)/x11/gtk2 \
@@ -322,11 +318,10 @@ AM_CPPFLAGS=	-I$(real_topsrcdir) \
 		-I$(real_topsrcdir)/wab \
 		$(GTK_CFLAGS) $(GDK_CFLAGS) $(GDK_PIXBUF_CFLAGS) $(SDL_CFLAGS) $(LIBUSB1_CFLAGS) \
 		$(X11_CFLAGS) $(XEXT_CFLAGS) \
-		-DNP2_X11 -DSUPPORT_LARGE_HDD -DSUPPORT_VPCVHD -DSUPPORT_KAI_IMAGES -DHOOK_SYSKEY -DALLOW_MULTIRUN -DSUPPORT_NET -DSUPPORT_LGY98 -DUSE_MAME -DSUPPORT_SOUND_SB16 -DSUPPORT_NVL_IMAGES -DSUPPORT_FMGEN -DSUPPORT_GPIB -DSUPPORT_FAST_MEMORYCHECK -DSUPPORT_STATSAVE
+		 -DGIT_VERSION=\"$(GIT_VERSION)\" -DNP2_X11 -DSUPPORT_LARGE_HDD -DSUPPORT_VPCVHD -DSUPPORT_KAI_IMAGES -DHOOK_SYSKEY -DALLOW_MULTIRUN -DSUPPORT_NET -DSUPPORT_LGY98 -DUSE_MAME -DSUPPORT_SOUND_SB16 -DSUPPORT_NVL_IMAGES -DSUPPORT_FMGEN -DSUPPORT_GPIB -DSUPPORT_FAST_MEMORYCHECK -DSUPPORT_STATSAVE -DSUPPORT_NP2_THREAD -DNP2_THREAD_POSIX
 if BUILD_ALL
 AM_CPPFLAGS+=	-DX11_BUILD_ALL
 endif
-xnp2kai_CPPFLAGS=	$(AM_CPPFLAGS)
 
 if HAVE_GCC
 AM_CFLAGS=	-fsigned-char
@@ -411,22 +406,26 @@ IA32_CPPFLAGS=	-I$(real_topsrcdir)/i386c \
 
 if CPUCORE_IA32
 if BUILD_ALL
-bin_PROGRAMS+=	xnp21kai
-nodist_man1_MANS+= xnp21.1 xnp21.1j
+bin_PROGRAMS=	xnp2kai xnp21kai
+nodist_man1_MANS= xnp2kai.1 xnp2kai.1j xnp21kai.1 xnp21kai.1j
 xnp21kai_SOURCES=	$(COMMON_SOURCES) $(IA32_SOURCES)
 xnp21kai_CPPFLAGS=	$(AM_CPPFLAGS) $(IA32_CPPFLAGS)
-xnp2kai_SOURCES+=	$(I286C_SOURCES)
-xnp2kai_CPPFLAGS+=	$(I286C_CPPFLAGS)
+xnp2kai_SOURCES=	$(COMMON_SOURCES) $(I286C_SOURCES)
+xnp2kai_CPPFLAGS=	$(AM_CPPFLAGS) $(I286C_CPPFLAGS)
 else	# !BUILD_ALL
-xnp2kai_SOURCES+=	$(IA32_SOURCES)
-xnp2kai_CPPFLAGS+=	$(IA32_CPPFLAGS)
+bin_PROGRAMS=	xnp21kai
+nodist_man1_MANS= xnp21kai.1 xnp21kai.1j
+xnp21kai_SOURCES=	$(COMMON_SOURCES) $(IA32_SOURCES)
+xnp21kai_CPPFLAGS=	$(AM_CPPFLAGS) $(IA32_CPPFLAGS)
 endif	# BUILD_ALL
 else	# !CPUCORE_IA32
-xnp2kai_SOURCES+=	$(I286C_SOURCES)
-xnp2kai_CPPFLAGS+=	$(I286C_CPPFLAGS)
+bin_PROGRAMS=	xnp2kai
+nodist_man1_MANS= xnp2kai.1 xnp2kai.1j
+xnp2kai_SOURCES=	$(COMMON_SOURCES) $(I286C_SOURCES)
+xnp2kai_CPPFLAGS=	$(AM_CPPFLAGS) $(I286C_CPPFLAGS)
 endif	# CPUCORE_IA32
 
-CLEANFILES+=	make.log
+CLEANFILES=	$(nodist_man1_MANS) make.log
 
 cleandir:: distclean
 

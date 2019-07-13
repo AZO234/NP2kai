@@ -23,6 +23,7 @@
 #include "pccore.h"
 #include "scrndraw.h"
 #include "palettes.h"
+#include "ini.h"
 
 #if defined(SUPPORT_DCLOCK)
 #include "subwnd\dclock.h"
@@ -37,12 +38,66 @@
 
 SCRNMNG		scrnmng;
 SCRNSTAT	scrnstat;
+SCRNRESCFG	scrnrescfg = {0};
 
 int d3davailable = 0;
 
 // ----
 
 UINT8 scrnmng_current_drawtype = DRAWTYPE_INVALID;
+
+/**
+ * ê›íË
+ */
+static const PFTBL s_scrnresini[] =
+{
+	PFVAL("hasfscfg", PFTYPE_BOOL,	&scrnrescfg.hasfscfg),
+	PFVAL("fscrnmod", PFTYPE_HEX8,	&scrnrescfg.fscrnmod),
+	PFVAL("SCRN_MUL", PFTYPE_UINT8,	&scrnrescfg.scrn_mul),
+	PFVAL("D3D_IMODE", PFTYPE_UINT8,&scrnrescfg.d3d_imode),
+};
+
+/**
+ * ê›íËì«Ç›çûÇ›
+ */
+void scrnres_readini()
+{
+	scrnres_readini_res(scrnstat.width, scrnstat.height);
+}
+void scrnres_readini_res(int width, int height)
+{
+	static int lastWidth = 0;
+	static int lastHeight = 0;
+
+	if(lastWidth!=width || lastHeight!=height){
+		OEMCHAR szSectionName[200] = {0};
+		OEMCHAR szPath[MAX_PATH];
+
+		OEMSPRINTF(szSectionName, OEMTEXT("Resolution%dx%d"), width, height);
+
+		initgetfile(szPath, _countof(szPath));
+		ini_read(szPath, szSectionName, s_scrnresini, _countof(s_scrnresini));
+
+		lastWidth = width;
+		lastHeight = height;
+	}
+}
+
+/**
+ * ê›íËèëÇ´çûÇ›
+ */
+void scrnres_writeini()
+{
+	if(!np2oscfg.readonly){
+		OEMCHAR szSectionName[200] = {0};
+		TCHAR szPath[MAX_PATH];
+		
+		OEMSPRINTF(szSectionName, OEMTEXT("Resolution%dx%d"), scrnstat.width, scrnstat.height);
+
+		initgetfile(szPath, _countof(szPath));
+		ini_write(szPath, szSectionName, s_scrnresini, _countof(s_scrnresini));
+	}
+}
 
 void scrnmng_setwindowsize(HWND hWnd, int width, int height)
 {
@@ -51,7 +106,7 @@ void scrnmng_setwindowsize(HWND hWnd, int width, int height)
 	const int scx = GetSystemMetrics(SM_CXSCREEN);
 	const int scy = GetSystemMetrics(SM_CYSCREEN);
 
-	// „Éû„É´„ÉÅ„É¢„Éã„ÇøÊö´ÂÆöÂØæÂøú ver0.86 rev30
+	// É}ÉãÉ`ÉÇÉjÉ^ébíËëŒâû ver0.86 rev30
 	workrc.right = GetSystemMetrics(SM_CXVIRTUALSCREEN);
 	workrc.bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
@@ -115,6 +170,8 @@ void scrnmng_initialize(void) {
 	scrnstat.extend = 1;
 	scrnstat.multiple = 8;
 	scrnmng_setwindowsize(g_hWndMain, 640, 400);
+	
+	if(np2oscfg.fsrescfg) scrnres_readini_res(640, 400);
 }
 
 BRESULT scrnmng_create(UINT8 scrnmode) {
@@ -227,6 +284,11 @@ void scrnmng_clearwinui(void) {
 
 void scrnmng_setwidth(int posx, int width) {
 	
+	if(np2oscfg.fsrescfg){
+		scrnres_readini_res(width, scrnstat.height);
+		scrnstat.multiple = scrnrescfg.scrn_mul;
+	}
+
 #ifdef SUPPORT_SCRN_DIRECT3D
 	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) return;
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
@@ -253,6 +315,11 @@ void scrnmng_setextend(int extend) {
 
 void scrnmng_setheight(int posy, int height) {
 	
+	if(np2oscfg.fsrescfg){
+		scrnres_readini_res(scrnstat.width, height);
+		scrnstat.multiple = scrnrescfg.scrn_mul;
+	}
+
 #ifdef SUPPORT_SCRN_DIRECT3D
 	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) return;
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
@@ -266,6 +333,11 @@ void scrnmng_setheight(int posy, int height) {
 
 void scrnmng_setsize(int posx, int posy, int width, int height) {
 	
+	if(np2oscfg.fsrescfg){
+		scrnres_readini_res(width, height);
+		scrnstat.multiple = scrnrescfg.scrn_mul;
+	}
+
 #ifdef SUPPORT_SCRN_DIRECT3D
 	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) return;
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
@@ -321,6 +393,16 @@ void scrnmng_update(void) {
 
 void scrnmng_setmultiple(int multiple)
 {
+	if(np2oscfg.fsrescfg && scrnrescfg.scrn_mul!=multiple){
+		scrnrescfg.hasfscfg = 1;
+		scrnrescfg.fscrnmod = np2oscfg.fscrnmod;
+		scrnrescfg.scrn_mul = multiple;
+#ifdef SUPPORT_SCRN_DIRECT3D
+		scrnrescfg.d3d_imode = np2oscfg.d3d_imode;
+#endif
+		scrnres_writeini();
+	}
+
 #ifdef SUPPORT_SCRN_DIRECT3D
 	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) return;
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
@@ -416,7 +498,7 @@ void scrnmng_exitsizing(void)
 	}
 }
 
-// „Éï„É´„Çπ„ÇØ„É™„Éº„É≥Ëß£ÂÉèÂ∫¶Ë™øÊï¥
+// ÉtÉãÉXÉNÉäÅ[Éìâëúìxí≤êÆ
 void scrnmng_updatefsres(void) {
 #ifdef SUPPORT_SCRN_DIRECT3D
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
@@ -428,7 +510,7 @@ void scrnmng_updatefsres(void) {
 	}
 }
 
-// „Ç¶„Ç£„É≥„Éâ„Ç¶„Ç¢„ÇØ„Çª„É©„É¨„Éº„ÇøÁîªÈù¢Ëª¢ÈÄÅ
+// ÉEÉBÉìÉhÉEÉAÉNÉZÉâÉåÅ[É^âÊñ ì]ëó
 void scrnmng_blthdc(HDC hdc) {
 #ifdef SUPPORT_SCRN_DIRECT3D
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){

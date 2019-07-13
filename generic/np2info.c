@@ -280,6 +280,10 @@ static void info_sound(OEMCHAR *str, int maxlen, const NP2INFOEX *ex)
 			lpBoard = OEMTEXT("Spark board");
 			break;
 
+		case SOUNDID_86_SPEAKBOARD:
+			lpBoard = OEMTEXT("PC-9801-86 + Speak board");
+			break;
+
 		case SOUNDID_AMD98:
 			lpBoard = OEMTEXT("AMD-98");
 			break;
@@ -396,9 +400,14 @@ static void info_rhythm(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 static void info_display(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
 	UINT	bpp;
+	OEMCHAR buf[64] = {0};
 
 	bpp = scrnmng_getbpp();
 	milstr_ncpy(str, milstr_list(str_winclr, ((bpp >> 3) - 1) & 3), maxlen);
+#if defined(NP2_WIN)
+	OEMSPRINTF(buf, OEMTEXT(" %dx%d"), scrnmngp->width, scrnmngp->height);
+	milstr_ncat(str, buf, maxlen);
+#endif	/* NP2_WIN */
 	milstr_ncat(str, milstr_list(str_winmode, (scrnmng_isfullscreen())?1:0),
 																	maxlen);
 	(void)ex;

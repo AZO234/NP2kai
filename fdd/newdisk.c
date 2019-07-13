@@ -343,7 +343,7 @@ void newdisk_hdn(const OEMCHAR *fname, UINT hddsize) {
 	// heads         :  8 (fixed)
 	// cylinders     : up to 4095 (12bits) (for old BIOS) =  399MiB
 	//                      65535 (16bits)                = 6399MiB
-	if ((fname == NULL) || (hddsize < 2) || (hddsize > 399)) {
+	if ((fname == NULL) || (hddsize < 2) || (hddsize > 6399)) {
 		goto ndhdn_err;
 	}
 	fh = file_create(fname);

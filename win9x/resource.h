@@ -219,6 +219,7 @@
 #define IDC_SND118INTP                  15555
 #define IDC_SND118INTM                  15556
 #define IDC_SND118DEF                   15557
+#define IDC_SND118ROM                   15558
 #define IDC_SPBIO                       15601
 #define IDC_SPBINT                      15602
 #define IDC_SPBROM                      15603
@@ -644,6 +645,7 @@
 #define IDM_XGRPH                       40613
 #define IDM_SENDCAD                     40614
 #define IDM_USENUMLOCK                  40615
+#define IDM_SWAPPAGEUPDOWN              40616
 #define IDM_F12MOUSE                    40621
 #define IDM_F12COPY                     40622
 #define IDM_F12STOP                     40623
@@ -678,6 +680,7 @@
 #define IDM_MATE_X_PCM                  40658
 #define IDM_SB16                        40659
 #define IDM_PC9801_86_118               49650
+#define IDM_86SPEAKBOARD                49651
 #define IDM_MEM640                      40661
 #define IDM_MEM16                       40662
 #define IDM_MEM36                       40663

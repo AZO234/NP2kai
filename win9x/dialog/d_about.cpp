@@ -98,7 +98,7 @@ BOOL CAboutDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 {
 	if (LOWORD(wParam) == IDC_MORE)
 	{
-		TCHAR szInfo[2048];
+		TCHAR szInfo[4096];
 		np2info(szInfo, s_np2infostr, _countof(szInfo), NULL);
 
 		SetDlgItemText(IDC_NP2INFO, szInfo);

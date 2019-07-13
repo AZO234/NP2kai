@@ -503,8 +503,13 @@ ini_write(const char *path, const char *title, const INITBL *tbl, UINT count)
 	file_close(fh);
 }
 
+#if defined(CPUCORE_IA32) && !defined(__LIBRETRO__)
+static const char ini_title[] = "NekoProject21kai";
+static const char inifile[] = "np21kai.cfg";
+#else
 static const char ini_title[] = "NekoProjectIIkai";
 static const char inifile[] = "np2kai.cfg";
+#endif
 
 enum {
 	INIRO_STR	= INIFLAG_RO | INITYPE_STR,
@@ -589,6 +594,7 @@ static const INITBL iniitem[] = {
 	{"opt118if", INITYPE_UINT8,	&np2cfg.snd118irqf,	0},
 	{"opt118ip", INITYPE_UINT8,	&np2cfg.snd118irqp,	0},
 	{"opt118im", INITYPE_UINT8,	&np2cfg.snd118irqm,	0},
+	{"opt118ro", INITYPE_UINT8,	&np2cfg.snd118rom,	0},
 
 	{"optwssid", INITYPE_HEX8,	&np2cfg.sndwssid,	0},
 	{"optwssdm", INITYPE_UINT8,	&np2cfg.sndwssdma,	0},
@@ -745,6 +751,8 @@ static const INITBL iniitem[] = {
 #if defined(SUPPORT_STATSAVE)
 	{"STATSAVE", INITYPE_BOOL,	&np2cfg.statsave,	0},
 #endif
+
+	{"xrollkey", INITYPE_BOOL,	&np2oscfg.xrollkey,	0},
 
 	{"sounddrv", INITYPE_SNDDRV,	&np2oscfg.snddrv,	0},
 #if !defined(__LIBRETRO__)

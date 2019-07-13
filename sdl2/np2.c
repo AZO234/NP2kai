@@ -37,6 +37,13 @@
 #include	"cirrus_vga_extern.h"
 #endif
 
+static const char appname[] =
+#if defined(CPUCORE_IA32)
+    "np21kai"
+#else
+    "np2kai"
+#endif
+;
 
 NP2OSCFG np2oscfg = {
 	0,			/* NOWAIT */
@@ -64,6 +71,7 @@ NP2OSCFG np2oscfg = {
 	0,			/* resume */
 	0,			/* jastsnd */
 	0,			/* I286SAVE */
+	1,			/* xrollkey */
 
 	SNDDRV_SDL,		/* snddrv */
 #if !defined(__LIBRETRO__)
@@ -95,6 +103,9 @@ char bmpfilefolder[MAX_PATH];
 UINT bmpfilenumber;
 char modulefile[MAX_PATH];
 char draw32bit;
+
+UINT8 scrnmode = 0;
+UINT8 changescreeninit = 0;
 
 static void usage(const char *progname) {
 
@@ -160,6 +171,44 @@ int flagload(const char *ext, const char *title, BOOL force) {
 	return(id);
 }
 
+void
+changescreen(UINT8 newmode)
+{
+	UINT8 change;
+	UINT8 renewal;
+	UINT8 res;
+
+	change = scrnmode ^ newmode;
+	renewal = (change & SCRNMODE_FULLSCREEN);
+	if (newmode & SCRNMODE_FULLSCREEN) {
+		renewal |= (change & SCRNMODE_HIGHCOLOR);
+	} else {
+		renewal |= (change & SCRNMODE_ROTATEMASK);
+	}
+	if (renewal) {
+		if(menuvram) {
+			menubase_close();
+		}
+		changescreeninit = 1;
+		soundmng_stop();
+		scrnmng_destroy();
+		sysmenu_destroy();
+
+		if(scrnmng_create(newmode) == SUCCESS) {
+			scrnmode = newmode;
+		} else {
+			if(scrnmng_create(scrnmode) != SUCCESS) {
+				return;
+			}
+		}
+		sysmenu_create();
+		changescreeninit = 0;
+		scrndraw_redraw();
+		soundmng_play();
+	} else {
+		scrnmode = newmode;
+	}
+}
 
 // ---- proc
 
@@ -212,11 +261,15 @@ int np2_main(int argc, char *argv[]) {
 	if (config_home && config_home[0] == '/') {
 		/* base dir */
 		milstr_ncpy(np2cfg.biospath, config_home, sizeof(np2cfg.biospath));
-		milstr_ncat(np2cfg.biospath, "/np2kai/", sizeof(np2cfg.biospath));
+		milstr_ncat(np2cfg.biospath, "/", sizeof(np2cfg.biospath));
+		milstr_ncat(np2cfg.biospath, appname, sizeof(np2cfg.biospath));
+		milstr_ncat(np2cfg.biospath, "/", sizeof(np2cfg.biospath));
 	} else if (home) {
 		/* base dir */
 		milstr_ncpy(np2cfg.biospath, home, sizeof(np2cfg.biospath));
-		milstr_ncat(np2cfg.biospath, "/.config/np2kai/", sizeof(np2cfg.biospath));
+		milstr_ncat(np2cfg.biospath, "/.config/", sizeof(np2cfg.biospath));
+		milstr_ncat(np2cfg.biospath, appname, sizeof(np2cfg.biospath));
+		milstr_ncat(np2cfg.biospath, "/", sizeof(np2cfg.biospath));
 	} else {
 		printf("$HOME isn't defined.\n");
 		goto np2main_err1;
@@ -321,7 +374,7 @@ int np2_main(int argc, char *argv[]) {
 	mousemng_initialize();
 
 	scrnmng_initialize();
-	if (scrnmng_create(FULLSCREEN_WIDTH, 400) != SUCCESS) {
+	if (scrnmng_create(0) != SUCCESS) {
 		goto np2main_err4;
 	}
 

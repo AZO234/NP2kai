@@ -223,7 +223,7 @@ typedef SINT32	FILELEN;
 //unused paramaters
 
 //this is only used for threading
-//#define  SOUND_CRITICAL
+#define  SOUND_CRITICAL
 //#define	SOUNDRESERVE	100
 
 //this is not a debug build

@@ -1302,9 +1302,6 @@
     <ClCompile Include="dialog\d_pci.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\msys64\home\AZO\NP2kai\win9x\ext\opna.cpp">
-      <Filter>ソース ファイル\win9x\ext</Filter>
-    </ClCompile>
     <ClCompile Include="..\io\bmsio.c">
       <Filter>ソース ファイル\io</Filter>
     </ClCompile>
@@ -1325,6 +1322,9 @@
     </ClCompile>
     <ClCompile Include="dialog\d_wab.cpp">
       <Filter>ソース ファイル\win9x\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\np2_thread.c">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2323,6 +2323,9 @@
     </ClInclude>
     <ClInclude Include="..\wab\wabbmpsave.h">
       <Filter>ヘッダー ファイル\wab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\np2_thread.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

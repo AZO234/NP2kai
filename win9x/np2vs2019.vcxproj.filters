@@ -1194,6 +1194,9 @@
     <ClCompile Include="..\i286c\cpumem.c">
       <Filter>ソース ファイル\i286c</Filter>
     </ClCompile>
+    <ClCompile Include="..\np2_thread.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\calendar.h">
@@ -2071,6 +2074,9 @@
     </ClInclude>
     <ClInclude Include="..\cbus\ct1745io.h">
       <Filter>ヘッダー ファイル\cbus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\np2_thread.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

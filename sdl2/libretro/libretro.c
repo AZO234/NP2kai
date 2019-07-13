@@ -68,8 +68,6 @@ retro_environment_t environ_cb = NULL;
 extern struct retro_midi_interface *retro_midi_interface;
 
 uint32_t   FrameBuffer[LR_SCREENWIDTH * LR_SCREENHEIGHT];
-uint32_t   GuiBuffer[LR_SCREENWIDTH * LR_SCREENHEIGHT]; //menu surf
-extern SCRNSURF	scrnsurf;
 
 retro_audio_sample_batch_t audio_batch_cb = NULL;
 
@@ -449,9 +447,12 @@ static const char *cross[] = {
 void DrawPointBmp(unsigned int *buffer,int x, int y, unsigned int color)
 {
    int idx;
+   int w, h;
 
-   if(x>=0&&y>=0&&x<scrnsurf.width&&y<scrnsurf.height) {
-      idx=x+y*scrnsurf.width;
+   scrnmng_getsize(&w, &h);
+
+   if(x>=0&&y>=0&&x<w&&y<h) {
+      idx=x+y*w;
       if(draw32bit) {
          buffer[idx]=color;
       } else {
@@ -486,6 +487,10 @@ static bool joymouse;
 static double joymouseaxel = 1.0;
 static int joymousemovebtn = 0;
 static int joymouseaxelratio = 10;
+static bool joyNP2menu;
+static int joyNP2menubtn;
+static bool joyNP2menu_oldjoymouse;
+static bool joyNP2menu_oldjoymouse;
 
 bool mapkey_down[12];
 
@@ -537,6 +542,9 @@ static uint16_t joy2key_map_kpad[12] = {
 void updateInput(){
 
    static int mposx=320,mposy=240;
+   int w, h;
+
+   scrnmng_getsize(&w, &h);
 
    poll_cb();
 
@@ -573,28 +581,31 @@ void updateInput(){
    }
 
    if ((input_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_F12) ||
-      input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2) ||
+      (joyNP2menu && input_cb(0, RETRO_DEVICE_JOYPAD, 0, joyNP2menubtn)) ||
       input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_MIDDLE)) && menukey==0){
 
       menukey=1;
 
+
       if (menuvram == NULL) {
-         if(draw32bit) {
-            memcpy(GuiBuffer,FrameBuffer,scrnsurf.width*scrnsurf.height*4);
-         } else {
-            memcpy(GuiBuffer,FrameBuffer,scrnsurf.width*scrnsurf.height*2);
+         if (joyNP2menu && input_cb(0, RETRO_DEVICE_JOYPAD, 0, joyNP2menubtn)) {
+            joyNP2menu_oldjoymouse = joymouse;
+            joymouse = true;
          }
          sysmenu_menuopen(0, 0, 0);
          mposx=0;mposy=0;
          lastx=0;lasty=0;
          menu_active=1;
       } else {
+         if (joyNP2menu && input_cb(0, RETRO_DEVICE_JOYPAD, 0, joyNP2menubtn)) {
+            joymouse = joyNP2menu_oldjoymouse;
+         }
          menubase_close();
          scrndraw_redraw();
          menu_active=0;
       }
    } else if ( !(input_cb(0, RETRO_DEVICE_KEYBOARD, 0, RETROK_F12) ||
-      input_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2) ||
+      (joyNP2menu && input_cb(0, RETRO_DEVICE_JOYPAD, 0, joyNP2menubtn)) ||
       input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_MIDDLE)) && menukey==1)
       menukey=0;
 
@@ -605,8 +616,8 @@ void updateInput(){
       if (menuvram == NULL)
          mousemng_sync(mouse_x,mouse_y);
 
-      mposx+=mouse_x;if(mposx<0)mposx=0;if(mposx>=scrnsurf.width)mposx=scrnsurf.width-1;
-      mposy+=mouse_y;if(mposy<0)mposy=0;if(mposy>=scrnsurf.height)mposy=scrnsurf.height-1;
+      mposx+=mouse_x;if(mposx<0)mposx=0;if(mposx>=w)mposx=w-1;
+      mposy+=mouse_y;if(mposy<0)mposy=0;if(mposy>=h)mposy=h-1;
 
       if(lastx!=mposx || lasty!=mposy)
          if (menuvram != NULL)
@@ -717,14 +728,14 @@ void updateInput(){
       mposx += mouse_x;
       if(mposx < 0)
          mposx = 0;
-      if(mposx >= scrnsurf.width)
-         mposx = scrnsurf.width - 1;
+      if(mposx >= w)
+         mposx = w - 1;
 
       mposy += mouse_y;
       if(mposy < 0)
          mposy = 0;
-      if(mposy >= scrnsurf.height)
-         mposy = scrnsurf.height - 1;
+      if(mposy >= h)
+         mposy = h - 1;
 
       if(lastx!=mposx || lasty!=mposy)
          if (menuvram != NULL)
@@ -837,19 +848,20 @@ void retro_set_environment(retro_environment_t cb)
       { "np2kai_keyboard" , "Keyboard (Restart); Ja|Us" },
       { "np2kai_model" , "PC Model (Restart); PC-9801VX|PC-286|PC-9801VM" },
       { "np2kai_clk_base" , "CPU Base Clock (Restart); 2.4576 MHz|1.9968 MHz" },
-      { "np2kai_clk_mult" , "CPU Clock Multiplier (Restart); 4|5|6|8|10|12|16|20|24|30|36|40|42|1|2" },
+      { "np2kai_clk_mult" , "CPU Clock Multiplier (Restart); 4|5|6|8|10|12|16|20|24|30|36|40|42|52|64|76|88|100|2" },
 #if defined(SUPPORT_ASYNC_CPU)
       { "np2kai_async_cpu" , "Async CPU(experimental) (Restart); OFF|ON" },
 #endif
       { "np2kai_ExMemory" , "RAM Size (Restart); 3|7|11|13|16|32|64|120|230|1" },
-      { "np2kai_Skip16MC" , "Skip over 16MB memcheck; OFF|ON" },
       { "np2kai_FastMC" , "Fast memcheck; OFF|ON" },
       { "np2kai_gdc" , "GDC; uPD7220|uPD72020" },
       { "np2kai_skipline" , "Skipline Revisions; Full 255 lines|ON|OFF" },
       { "np2kai_realpal" , "Real Palettes; OFF|ON" },
       { "np2kai_lcd" , "LCD; OFF|ON" },
-      { "np2kai_SNDboard" , "Sound Board (Restart); PC9801-86|PC9801-26K + 86|PC9801-86 + Chibi-oto|PC9801-118|PC9801-86 + Mate-X PCM(B460)|PC9801-86 + 118|Mate-X PCM(B460)|Chibi-oto|Speak Board|Spark Board|Sound Orchestra|Sound Orchestra-V|Sound Blaster 16|AMD-98|Otomi-chanx2|Otomi-chanx2 + 86|None|PC9801-14|PC9801-26K" },
+      { "np2kai_SNDboard" , "Sound Board (Restart); PC9801-86|PC9801-26K + 86|PC9801-86 + Chibi-oto|PC9801-118|PC9801-86 + Mate-X PCM(B460)|PC9801-86 + 118|Mate-X PCM(B460)|Chibi-oto|Speak Board|PC9801-86 + Speak Board|Spark Board|Sound Orchestra|Sound Orchestra-V|Sound Blaster 16|AMD-98|Otomi-chanx2|Otomi-chanx2 + 86|None|PC9801-14|PC9801-26K" },
+      { "np2kai_118ROM" , "enable 118 ROM; ON|OFF" },
       { "np2kai_jast_snd" , "JastSound; OFF|ON" },
+      { "np2kai_xroll" , "Swap PageUp/PageDown; ON|OFF" },
       { "np2kai_usefmgen" , "Sound Generator; fmgen|Default" },
       { "np2kai_volume_M" , "Volume Master; 100|0|5|10|15|20|25|30|35|40|45|50|55|60|65|70|75|80|85|90|95" },
       { "np2kai_volume_F" , "Volume FM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
@@ -875,9 +887,9 @@ void retro_set_environment(retro_environment_t cb)
       { "np2kai_PCI_bios32" , "Use BIOS32 (not recommended); OFF|ON" },
 #endif	/* defined(SUPPORT_PCI) */
       { "np2kai_usecdecc" , "Use CD-ROM EDC/ECC Emulation; ON|OFF" },
-      { "np2kai_joy2mouse" , "Joypad to Mouse Mapping; OFF|ON" },
       { "np2kai_j2msuratio" , "J2M Cursor Speed up Ratio; x10|x20|up stop|x5" },
-      { "np2kai_joy2key" , "Joypad to Keyboard Mapping; OFF|Arrows|Keypad|Manual" },
+      { "np2kai_joy2mousekey" , "Joypad to Mouse/Keyboard Mapping; OFF|Mouse|Arrows|Keypad|Manual" },
+      { "np2kai_joynp2menu" , "Joypad to NP2 menu Mapping; L2|R|R2|L3|R3|A|B|X|Y|Start|Select|OFF|L" },
       { NULL, NULL },
    };
 
@@ -970,17 +982,6 @@ static void update_variables(void)
       np2cfg.EXTMEM = atoi(var.value);
    }
 
-   var.key = "np2kai_Skip16MC";
-   var.value = NULL;
-
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
-   {
-      if (strcmp(var.value, "OFF") == 0)
-         np2cfg.memchkmx = 0;
-      else
-         np2cfg.memchkmx = 15;
-   }
-
    var.key = "np2kai_FastMC";
    var.value = NULL;
 
@@ -1040,6 +1041,8 @@ static void update_variables(void)
          np2cfg.SOUND_SW = 0x60;
       else if (strcmp(var.value, "Speak Board") == 0)
          np2cfg.SOUND_SW = 0x20;
+      else if (strcmp(var.value, "PC9801-86 + Speak Board") == 0)
+         np2cfg.SOUND_SW = 0x24;
       else if (strcmp(var.value, "Spark Board") == 0)
          np2cfg.SOUND_SW = 0x40;
       else if (strcmp(var.value, "Sound Orchestra") == 0)
@@ -1062,6 +1065,17 @@ static void update_variables(void)
          np2cfg.SOUND_SW = 0x02;
    }
 
+   var.key = "np2kai_118ROM";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "OFF") == 0)
+         np2cfg.snd118rom = 0;
+      else if (strcmp(var.value, "ON") == 0)
+         np2cfg.snd118rom = 1;
+   }
+
    var.key = "np2kai_jast_snd";
    var.value = NULL;
 
@@ -1082,6 +1096,17 @@ static void update_variables(void)
          np2cfg.usefmgen = 0x00;
       else if (strcmp(var.value, "fmgen") == 0)
          np2cfg.usefmgen = 0x01;
+   }
+
+   var.key = "np2kai_xroll";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "OFF") == 0)
+         np2oscfg.xrollkey = 0;
+      else if (strcmp(var.value, "ON") == 0)
+         np2oscfg.xrollkey = 1;
    }
 
    var.key = "np2kai_volume_M";
@@ -1331,18 +1356,7 @@ static void update_variables(void)
          np2cfg.usecdecc = 0;
    }
 
-   var.key = "np2kai_joy2mouse";
-   var.value = NULL;
-
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
-   {
-      if (strcmp(var.value, "ON") == 0)
-         joymouse = true;
-      else
-         joymouse = false;
-   }
-
-    var.key = "np2kai_j2msuratio";
+   var.key = "np2kai_j2msuratio";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -1357,28 +1371,108 @@ static void update_variables(void)
          joymouseaxelratio = 10;
    }
 
-  var.key = "np2kai_joy2key";
-   var.value = NULL;
+  var.key = "np2kai_joy2mousekey";
+  var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
-      if (strcmp(var.value, "Arrows") == 0)
+      if (strcmp(var.value, "Mouse") == 0)
       {
+         joymouse = true;
+         joy2key = false;
+      }
+      else if (strcmp(var.value, "Arrows") == 0)
+      {
+         joymouse = false;
          joy2key = true;
          memcpy(np2oscfg.lrjoybtn, joy2key_map_arr, sizeof(uint16_t) * 12);
       }
       else if (strcmp(var.value, "Keypad") == 0)
       {
+         joymouse = false;
          joy2key = true;
          memcpy(np2oscfg.lrjoybtn, joy2key_map_kpad, sizeof(uint16_t) * 12);
       }
       else if (strcmp(var.value, "Manual") == 0)
       {
+         joymouse = false;
          joy2key = true;
       }
       else
       {
+         joymouse = false;
          joy2key = false;
+      }
+   }
+
+   var.key = "np2kai_joynp2menu";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "A") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_A;
+      }
+      else if (strcmp(var.value, "B") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_B;
+      }
+      else if (strcmp(var.value, "X") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_X;
+      }
+      else if (strcmp(var.value, "Y") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_Y;
+      }
+      else if (strcmp(var.value, "L") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_L;
+      }
+      else if (strcmp(var.value, "L2") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_L2;
+      }
+      else if (strcmp(var.value, "R") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_R;
+      }
+      else if (strcmp(var.value, "R2") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_R2;
+      }
+      else if (strcmp(var.value, "L3") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_L3;
+      }
+      else if (strcmp(var.value, "R3") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_R3;
+      }
+      else if (strcmp(var.value, "Start") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_START;
+      }
+      else if (strcmp(var.value, "Select") == 0)
+      {
+         joyNP2menu = true;
+         joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_SELECT;
+      }
+      else
+      {
+         joyNP2menu = false;
       }
    }
 
@@ -1424,11 +1518,15 @@ void retro_get_system_info(struct retro_system_info *info)
 
 void retro_get_system_av_info(struct retro_system_av_info *info)
 {
-   info->geometry.base_width   = scrnsurf.width;
-   info->geometry.base_height  = scrnsurf.height;
-   info->geometry.max_width    = scrnsurf.width;
-   info->geometry.max_height   = scrnsurf.height;
-   info->geometry.aspect_ratio = (double)scrnsurf.width / scrnsurf.height;
+   int w, h;
+
+   scrnmng_getsize(&w, &h);
+
+   info->geometry.base_width   = w;
+   info->geometry.base_height  = h;
+   info->geometry.max_width    = w;
+   info->geometry.max_height   = h;
+   info->geometry.aspect_ratio = (double)w / h;
    info->timing.fps            = LR_SCREENFPS;
    info->timing.sample_rate    = LR_SOUNDRATE;
 }
@@ -1437,8 +1535,7 @@ void retro_init (void)
 {
    enum retro_pixel_format rgb;
 
-   scrnsurf.width = 640;
-   scrnsurf.height = 400;
+   scrnmng_initialize();
 
    update_variables();
 
@@ -1503,6 +1600,9 @@ void retro_run (void)
    }
 
    bool updated = false;
+   int w, h;
+
+   scrnmng_getsize(&w, &h);
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
    {
@@ -1518,11 +1618,7 @@ void retro_run (void)
    updateInput();
 
    if (menuvram != NULL){
-      if(draw32bit) {
-         memcpy(FrameBuffer,GuiBuffer,scrnsurf.width*scrnsurf.height*4);
-      } else {
-         memcpy(FrameBuffer,GuiBuffer,scrnsurf.width*scrnsurf.height*2);
-      }
+      scrnmng_update();
       draw_cross(lastx,lasty);
    }
    else {
@@ -1532,9 +1628,9 @@ void retro_run (void)
    }
 
    if(draw32bit) {
-      video_cb(FrameBuffer, scrnsurf.width, scrnsurf.height, scrnsurf.width * 4/*Pitch*/);
+      video_cb(FrameBuffer, w, h, w * 4/*Pitch*/);
    } else {
-      video_cb(FrameBuffer, scrnsurf.width, scrnsurf.height, scrnsurf.width * 2/*Pitch*/);
+      video_cb(FrameBuffer, w, h, w * 2/*Pitch*/);
    }
 
     if (retro_midi_interface && retro_midi_interface->output_enabled())

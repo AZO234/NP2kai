@@ -30,6 +30,7 @@ extern char bmpfilefolder[MAX_PATH];
 extern UINT bmpfilenumber;
 extern char modulefile[MAX_PATH];
 extern char draw32bit;
+extern UINT8 scrnmode;
 
 enum {
 	IMAGETYPE_UNKNOWN	= 0,
@@ -51,6 +52,7 @@ typedef struct {
 	UINT8	resume;
 	UINT8	jastsnd;
 	UINT8	I286SAVE;
+	UINT8	xrollkey;
 
 	UINT8	snddrv;
 	UINT32	MIDIWAIT;
@@ -94,6 +96,7 @@ typedef struct {
 	UINT8	resume;
 	UINT8	jastsnd;
 	UINT8	I286SAVE;
+	UINT8	xrollkey;
 
 	UINT8	snddrv;
 	char	MIDIDEV[2][MAX_PATH];
@@ -127,6 +130,8 @@ extern int np2_end();
 
 extern int mmxflag;
 int havemmx(void);
+
+extern UINT8 changescreeninit;
 
 #endif	/* __LIBRETRO__ */
 

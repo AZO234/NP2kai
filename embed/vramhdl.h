@@ -1,3 +1,5 @@
+#ifndef NP2_VRAMHDL_H
+#define NP2_VRAMHDL_H
 
 #define	DEFAULT_BPP		0
 
@@ -84,4 +86,6 @@ BRESULT vram_cliprectex(RECT_T *clip, const VRAMHDL vram, const RECT_T *rct);
 // ---- macros
 
 #define	VRAM_RELEASE(a) { VRAMHDL v; v = (a); (a) = NULL; vram_destroy(v); }
+
+#endif	/* NP2_VRAMHDL_H */
 

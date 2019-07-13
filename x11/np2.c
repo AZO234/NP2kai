@@ -100,6 +100,7 @@ NP2OSCFG np2oscfg = {
 	0,			/* hostdrv_write */
 	0,			/* jastsnd */
 	0,			/* I286SAVE */
+	1,			/* xrollkey */
 
 	SNDDRV_SDL,		/* snddrv */
 	{ "", "" }, 		/* MIDIDEV */

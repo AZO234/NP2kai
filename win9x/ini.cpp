@@ -538,6 +538,7 @@ static const PFTBL s_IniItems[] =
 	PFVAL("opt118if", PFTYPE_UINT8,		&np2cfg.snd118irqf),
 	PFVAL("opt118ip", PFTYPE_UINT8,		&np2cfg.snd118irqp),
 	PFVAL("opt118im", PFTYPE_UINT8,		&np2cfg.snd118irqm),
+	PFVAL("opt118ro", PFTYPE_UINT8,		&np2cfg.snd118rom),
 	
 	PFVAL("optwssid", PFTYPE_HEX8,		&np2cfg.sndwssid),
 	PFVAL("optwssdm", PFTYPE_UINT8,		&np2cfg.sndwssdma),
@@ -725,11 +726,12 @@ static const PFTBL s_IniItems[] =
 	PFVAL("jast_snd", PFTYPE_BOOL,		&np2oscfg.jastsnd),
 	PFVAL("useromeo", PFTYPE_BOOL,		&np2oscfg.useromeo),
 	PFVAL("thickfrm", PFTYPE_BOOL,		&np2oscfg.thickframe),
-	PFVAL("xrollkey", PFRO_BOOL,		&np2oscfg.xrollkey),
+	PFVAL("xrollkey", PFTYPE_BOOL,		&np2oscfg.xrollkey),
 	PFVAL("fscrn_cx", PFRO_SINT32,		&np2oscfg.fscrn_cx),
 	PFVAL("fscrn_cy", PFRO_SINT32,		&np2oscfg.fscrn_cy),
 	PFVAL("fscrnbpp", PFRO_UINT8,		&np2oscfg.fscrnbpp),
 	PFVAL("fscrnmod", PFTYPE_HEX8,		&np2oscfg.fscrnmod),
+	PFVAL("fsrescfg", PFTYPE_BOOL,		&np2oscfg.fsrescfg), // 解像度毎に設定保存する
 
 #if defined(SUPPORT_SCRN_DIRECT3D)
 	PFVAL("D3D_IMODE", PFTYPE_UINT8,	&np2oscfg.d3d_imode), // Direct3D 拡大縮小補間モード

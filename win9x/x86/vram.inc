@@ -1,5 +1,5 @@
 
-SCRN_BUFSIZE	equ		0x4b000
+%define	SCRN_BUFSIZE	0x4b000
 
 
 				struc	vramop_t

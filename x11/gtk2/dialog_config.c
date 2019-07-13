@@ -42,7 +42,7 @@ static const char *baseclock_str[] = {
 };
 
 static const char *clockmult_str[] = {
-	"1", "2", "4", "5", "6", "8", "10", "12", "16", "20", "24", "30", "32", "34", "36", "40", "42"
+	"1", "2", "4", "5", "6", "8", "10", "12", "16", "20", "24", "30", "32", "34", "36", "40", "42", "52", "64", "76", "88", "100"
 };
 
 static const char *cputype_str[] = {
@@ -353,6 +353,7 @@ ok_button_clicked(GtkButton *b, gpointer d)
 	switch (mult) {
 	case 1: case 2: case 4: case 5: case 6: case 8: case 10: case 12:
 	case 16: case 20: case 24: case 30: case 32: case 34: case 36: case 40: case 42:
+	case 52: case 64: case 76: case 88: case 100:
 		if (mult != np2cfg.multiple) {
 			np2cfg.multiple = mult;
 			renewal |= SYS_UPDATECFG|SYS_UPDATECLOCK;
@@ -627,6 +628,7 @@ create_configure_dialog(void)
 	switch (np2cfg.multiple) {
 	case 1: case 2: case 4: case 5: case 6: case 8: case 10: case 12:
 	case 16: case 20: case 24: case 30: case 36: case 40: case 42:
+	case 52: case 64: case 76: case 88: case 100:
 		g_snprintf(buf, sizeof(buf), "%d", np2cfg.multiple);
 		gtk_entry_set_text(GTK_ENTRY(clockmult_entry), buf);
 		break;

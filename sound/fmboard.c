@@ -148,21 +148,11 @@ void fmboard_reset(const NP2CFG *pConfig, SOUNDID nSoundID)
 	soundrom_reset();
 	beep_reset();												// ver0.27a
 
-	if (g_nSoundID != nSoundID)
-	{
-		for (i = 0; i < NELEMENTS(g_opna); i++)
-		{
-			opna_reset(&g_opna[i], 0);
-		}
-		opl3_reset(&g_opl3, 0);
-	}
-
 	extfn = NULL;
 	pcm86_reset();
 	cs4231_reset();
 
 	board14_reset(pConfig, (nSoundID == SOUNDID_PC_9801_14) ? TRUE : FALSE);
-	amd98_reset(pConfig);
 
 	switch (nSoundID)
 	{
@@ -208,7 +198,12 @@ void fmboard_reset(const NP2CFG *pConfig, SOUNDID nSoundID)
 			break;
 
 		case SOUNDID_SPEAKBOARD:
-			boardspb_reset(pConfig);
+			boardspb_reset(pConfig, 0);
+			break;
+
+		case SOUNDID_86_SPEAKBOARD:
+			boardspb_reset(pConfig, 1);
+			board86_reset(pConfig, FALSE);
 			break;
 
 		case SOUNDID_SPARKBOARD:
@@ -216,6 +211,7 @@ void fmboard_reset(const NP2CFG *pConfig, SOUNDID nSoundID)
 			break;
 
 		case SOUNDID_AMD98:
+			amd98_reset(pConfig);
 			break;
 
 		case SOUNDID_SOUNDORCHESTRA:
@@ -297,6 +293,11 @@ void fmboard_bind(void) {
 		case SOUNDID_SPEAKBOARD:
 			boardspb_bind();
 			break;
+			
+		case SOUNDID_86_SPEAKBOARD:
+			boardspb_bind();
+			board86_bind();
+			break;
 
 		case SOUNDID_SPARKBOARD:
 			boardspr_bind();
@@ -372,6 +373,11 @@ void fmboard_unbind(void) {
 			break;
 			
 		case SOUNDID_SPEAKBOARD:
+			boardspb_unbind();
+			break;
+			
+		case SOUNDID_86_SPEAKBOARD:
+			board86_unbind();
 			boardspb_unbind();
 			break;
 

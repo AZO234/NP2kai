@@ -29,6 +29,7 @@
 #include <getopt.h>
 #include <locale.h>
 #include <signal.h>
+#include <unistd.h>
 
 #if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER)
 #include <SDL.h>
@@ -74,10 +75,10 @@
 
 
 static const char appname[] =
-#if defined(CPUCORE_IA32) && defined(X11_BUILD_ALL)
-    "np21"
+#if defined(CPUCORE_IA32)
+    "xnp21kai"
 #else
-    "np2"
+    "xnp2kai"
 #endif
 ;
 
@@ -147,9 +148,9 @@ main(int argc, char *argv[])
 	progname = argv[0];
 
 	setlocale(LC_ALL, "");
-	(void) bindtextdomain("np2", NP2LOCALEDIR);
-	(void) bind_textdomain_codeset("np2", "UTF-8");
-	(void) textdomain("np2");
+	(void) bindtextdomain(appname, NP2LOCALEDIR);
+	(void) bind_textdomain_codeset(appname, "UTF-8");
+	(void) textdomain(appname);
 
 	toolkit_initialize();
 	toolkit_arginit(&argc, &argv);
@@ -157,17 +158,27 @@ main(int argc, char *argv[])
 	while ((ch = getopt_long(argc, argv, "c:C:t:vh", longopts, NULL)) != -1) {
 		switch (ch) {
 		case 'c':
-			if (stat(optarg, &sb) < 0 || !S_ISREG(sb.st_mode)) {
+			if (stat(optarg, &sb) < 0) {
 				g_printerr("Can't access %s.\n", optarg);
 				exit(1);
+			} else {
+				if (!S_ISREG(sb.st_mode)) {
+					g_printerr("%s isn't regular file.\n", optarg);
+					exit(1);
+				}
 			}
 			milstr_ncpy(modulefile, optarg, sizeof(modulefile));
 			break;
 
 		case 'C':
-			if (stat(optarg, &sb) < 0 || !S_ISREG(sb.st_mode)) {
+			if (stat(optarg, &sb) < 0) {
 				g_printerr("Can't access %s.\n", optarg);
 				exit(1);
+			} else {
+				if (!S_ISREG(sb.st_mode)) {
+					g_printerr("%s.isn't regular file.\n", optarg);
+					exit(1);
+				}
 			}
 			milstr_ncpy(timidity_cfgfile_path, optarg,
 			    sizeof(timidity_cfgfile_path));
@@ -188,38 +199,63 @@ main(int argc, char *argv[])
 	argv += optind;
 
 	if (modulefile[0] == '\0') {
-		char *config_home = getenv("XDG_CONFIG_HOME");
-		char *home = getenv("HOME");
-		if (config_home && config_home[0] == '/') {
-			/* base dir */
-			g_snprintf(modulefile, sizeof(modulefile),
-			    "%s/xnp2kai/", config_home);
-		} else if (home) {
-			/* base dir */
-			g_snprintf(modulefile, sizeof(modulefile),
-			    "%s/.config/xnp2kai/", home);
-		} else {
-			g_printerr("$HOME isn't defined.\n");
-			exit(1);
-		}
-		if (stat(modulefile, &sb) < 0) {
-			if (mkdir(modulefile, 0700) < 0) {
-				perror(modulefile);
+		char* locate;	/* Don't free() */
+
+		/* same dir ()*/
+		locate = dirname(argv[0]);
+
+		/* default dir */
+		if (modulefile[0] == '\0') {
+			char *config_home = getenv("XDG_CONFIG_HOME");
+			char *home = getenv("HOME");
+
+			if (config_home) {
+				/* XDG_CONFIG_HOME dir */
+				g_snprintf(modulefile, sizeof(modulefile),
+					  "%s/%s", config_home, appname);
+			} else if (home) {
+				/* HOME dir */
+				g_snprintf(modulefile, sizeof(modulefile),
+					  "%s/.config/%s", home, appname);
+			} else {
+				g_printerr("$XDG_CONFIG_HOME or $HOME isn't defined.\n");
 				exit(1);
 			}
-		} else if (!S_ISDIR(sb.st_mode)) {
-			g_printerr("%s isn't directory.\n",
-			    modulefile);
-			exit(1);
+			if (stat(modulefile, &sb) < 0) {
+				if (mkdir(modulefile, 0700) < 0) {
+					g_printerr("Can't mkdir. %s\n",
+						  modulefile);
+					exit(1);
+				}
+			} else {
+				if (!S_ISDIR(sb.st_mode)) {
+					g_printerr("%s isn't directory.\n",
+						  modulefile);
+					exit(1);
+				}
+				if (access(modulefile, R_OK | W_OK) < 0) {
+					g_printerr("Can't RW access. %s\n",
+						  modulefile);
+					exit(1);
+				}
+			}
 		}
 
-		/* config file */
+		/* default config file */
+		milstr_ncat(modulefile, "/", sizeof(modulefile));
 		milstr_ncat(modulefile, appname, sizeof(modulefile));
 		milstr_ncat(modulefile, "rc", sizeof(modulefile));
-		if ((stat(modulefile, &sb) >= 0)
-		 && !S_ISREG(sb.st_mode)) {
-			g_printerr("%s isn't regular file.\n",
-			    modulefile);
+		if (stat(modulefile, &sb) >= 0) {
+			if (!S_ISREG(sb.st_mode)) {
+				g_printerr("%s isn't regular file.\n",
+				    modulefile);
+				exit(1);
+			}
+			if(access(modulefile, R_OK | W_OK) < 0) {
+				g_printerr("Can't RW access. %s\n",
+				    modulefile);
+				exit(1);
+			}
 		}
 	}
 	if (modulefile[0] != '\0') {

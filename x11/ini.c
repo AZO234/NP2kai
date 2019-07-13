@@ -583,6 +583,7 @@ static INITBL iniitem[] = {
 	{"opt118if", INITYPE_UINT8,	&np2cfg.snd118irqf,	0},
 	{"opt118ip", INITYPE_UINT8,	&np2cfg.snd118irqp,	0},
 	{"opt118im", INITYPE_UINT8,	&np2cfg.snd118irqm,	0},
+	{"opt118ro", INITYPE_UINT8,	&np2cfg.snd118rom,	0},
 
 	{"optwssid", INITYPE_HEX8,	&np2cfg.sndwssid,	0},
 	{"optwssdm", INITYPE_UINT8,	&np2cfg.sndwssdma,	0},
@@ -745,6 +746,7 @@ static INITBL iniitem[] = {
 	{"keydispl", INITYPE_BOOL,	&np2oscfg.keydisp,	0},
 	{"soft_kbd", INITYPE_BOOL,	&np2oscfg.softkbd,	0},
 	{"jast_snd", INITYPE_BOOL,	&np2oscfg.jastsnd,	0},
+	{"xrollkey", INITYPE_BOOL,	&np2oscfg.xrollkey,	0},
 
 	{"sounddrv", INITYPE_SNDDRV,	&np2oscfg.snddrv,	0},
 	{"MIDIOUTd", INITYPE_STR,	&np2oscfg.MIDIDEV[0],	MAX_PATH},

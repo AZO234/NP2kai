@@ -1,4 +1,4 @@
-.TH XNP2KAI 1 "Feb 5, 2018"
+.TH Xnp2kai 1 "Feb 5, 2018"
 .SH NAME
 Xnp2kai \- PC-9801 series emulator
 .SH SYNOPSIS
@@ -27,16 +27,16 @@ Xnp2kai \- PC-9801 series emulator
 .TP
 .B \--config
 Indicate Xnp2kai configuration file.
-[Default: $(HOME)/.config/xnp2kai/np2rc]
+[Default: $(HOME)/.config/xnp2kai/xnp2kairc]
 .TP
 .B \--timidity-config
 Indicate Xnp2kai included software MIDI configuration file.
 [Default: $(HOME)/.config/xnp2kai/timidity.cfg]
 .SH EXAMPLES
 .nf
-Indicate Xnp2kai configuration file "np2.cfg".
+Indicate Xnp2kai configuration file "xnp2kai.cfg".
 .ft B
-xnp2kai --config np2.cfg
+xnp2kai --config xnp2kai.cfg
 .ft R
 
 Indicate software MIDI configuration file "/usr/local/lib/timidity/timidity.cfg".
@@ -44,7 +44,7 @@ Indicate software MIDI configuration file "/usr/local/lib/timidity/timidity.cfg"
 xnp2kai --timidity-config /usr/local/lib/timidity/timidity.cfg
 .ft R
 
-Insert system.d88 disk image in floppy disk drive1, insert data.d88 disk image in floopy disk drive2. And Xnp2 is started.
+Insert system.d88 disk image in floppy disk drive1, insert data.d88 disk image in floopy disk drive2. And Xnp2kai is started.
 .ft B
 xnp2kai system.d88 data.d88
 .ft R
@@ -55,7 +55,7 @@ xnp2kai system.d88 data.d88
 Change mouse operation between X and Xnp2kai.
 .SH FILES
 .TP
-.B $(HOME)/.config/xnp2kai/np2rc
+.B $(HOME)/.config/xnp2kai/xnp2kairc
 Xnp2kai configuration file
 .TP
 .B $(HOME)/.config/xnp2kai/font.tmp
@@ -124,5 +124,13 @@ tk800 <tk_np2x@yahoo.co.jp>, who ported
 .B Neko Project II
 to MacOS X.
 .SH "SEE ALSO"
-.B Xnp2kai
+.B Xnp2
 Web site: http://www.nonakap.org/np2/ (japanese)
+.br
+AZO234 <typesylph@gmail.com>,
+.B Neko Project II
+to improvement.
+..SH "SEE ALSO"
+.B Xnp2kai
+Web site: http://domisan.sakura.ne.jp/article/np2kai/np2kai.html (japanese)
+
