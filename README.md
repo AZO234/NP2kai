@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Jul 12, 2019  
+Jul 14, 2019  
 
 NP2kai is PC-9801 series emulator  
 
@@ -637,6 +637,8 @@ http://buffalo.jp/download/driver/multi/wgna_95.html
 https://www.iodata.jp/lib/product/g/175_win95.htm  
 
 ## Release
+* Jul 14, 2019  
+	- Merge NP21/W 0.86 rev.62-63 (rev.20)  
 * Jun 23, 2019  
 	- modify default cfg/BIOS location (np2kai or 'np21kai')  
 * Jun 21, 2019  
