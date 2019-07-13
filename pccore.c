@@ -106,7 +106,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE " " NP2VER_GIT);
 				44100, 150, 4, 0,
 				{0, 0, 0}, 0xd1, 0x7f, 0xd1, 0, 0, 1, 
 				
-				0x0188, 0x80, 3, 12, 12, 0xff, // 118
+				0x0188, 0x80, 3, 12, 12, 0xff, 1, // 118
 
 				0x70, 1, 3, // Mate-X PCM
 

@@ -49,6 +49,7 @@ enum tagSoundId
 	SOUNDID_PC_9801_118			= 0x08,		/*!< PC-9801-118 */
 	SOUNDID_PC_9801_86_ADPCM	= 0x14,		/*!< PC-9801-86 with ADPCM */
 	SOUNDID_SPEAKBOARD			= 0x20,		/*!< Speak board */
+	SOUNDID_86_SPEAKBOARD		= 0x24,		/*!< PC-9801-86 + Speak board */
 	SOUNDID_SPARKBOARD			= 0x40,		/*!< Spark board */
 	SOUNDID_SB16				= 0x41,		/*!< Sound Blaster 16 */
 	SOUNDID_MATE_X_PCM			= 0x60,		/*!< Mate-X PCM */
@@ -145,6 +146,7 @@ struct tagNP2Config
 	UINT8	snd118irqf;
 	UINT8	snd118irqp;
 	UINT8	snd118irqm;
+	UINT8	snd118rom;
 	
 	UINT8	sndwssid;
 	UINT8	sndwssdma;

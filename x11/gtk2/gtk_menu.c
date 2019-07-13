@@ -331,6 +331,7 @@ static GtkRadioActionEntry soundboard_entries[] = {
 { "pc-9801-86-118", NULL, "PC-9801-86 + 118",        NULL, NULL, 0x68 },
 { "pc-9801-mx",     NULL, "Mate-X PCM(B460)",        NULL, NULL, 0x60 },
 { "speakboard",     NULL, "S_peak board",            NULL, NULL, 0x20 },
+{ "speakboard86",   NULL, "PC-9801-86 + Speak board", NULL, NULL, 0x24 },
 { "sparkboard",     NULL, "Sp_ark board",            NULL, NULL, 0x40 },
 { "sndorchestra",   NULL, "Sound Orchestra",         NULL, NULL, 0x32 },
 { "sndorchestrav",  NULL, "Sound Orchestra-V",       NULL, NULL, 0x82 },
@@ -550,6 +551,7 @@ static const gchar *ui_info =
 "    <menuitem action='pc-9801-86-mx'/>\n"
 "    <menuitem action='pc-9801-mx'/>\n"
 "    <menuitem action='speakboard'/>\n"
+"    <menuitem action='speakboard86'/>\n"
 "    <menuitem action='sparkboard'/>\n"
 "    <menuitem action='sndorchestra'/>\n"
 "    <menuitem action='sndorchestrav'/>\n"

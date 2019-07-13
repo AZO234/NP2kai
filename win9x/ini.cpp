@@ -538,6 +538,7 @@ static const PFTBL s_IniItems[] =
 	PFVAL("opt118if", PFTYPE_UINT8,		&np2cfg.snd118irqf),
 	PFVAL("opt118ip", PFTYPE_UINT8,		&np2cfg.snd118irqp),
 	PFVAL("opt118im", PFTYPE_UINT8,		&np2cfg.snd118irqm),
+	PFVAL("opt118ro", PFTYPE_UINT8,		&np2cfg.snd118rom),
 	
 	PFVAL("optwssid", PFTYPE_HEX8,		&np2cfg.sndwssid),
 	PFVAL("optwssdm", PFTYPE_UINT8,		&np2cfg.sndwssdma),

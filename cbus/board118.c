@@ -502,10 +502,16 @@ void board118_reset(const NP2CFG *pConfig)
 		}
 	}
 	
+	// 86音源+118音源の場合、118側をはじめからFM6音にする
+	if(g_nSoundID==SOUNDID_PC_9801_86_118){
+		cs4231.extfunc |= 1;
+		extendchannel(1);
+	}
+	
 	// 色々設定
 	if(g_nSoundID==SOUNDID_PC_9801_86_WSS || g_nSoundID==SOUNDID_MATE_X_PCM){
 	}else{
-		if(g_nSoundID!=SOUNDID_PC_9801_86_118){
+		if(pConfig->snd118rom && g_nSoundID!=SOUNDID_PC_9801_86_118){
 			soundrom_load(0xcc000, OEMTEXT("118"));
 		}
 		fmboard_extreg(extendchannel);

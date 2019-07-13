@@ -198,7 +198,12 @@ void fmboard_reset(const NP2CFG *pConfig, SOUNDID nSoundID)
 			break;
 
 		case SOUNDID_SPEAKBOARD:
-			boardspb_reset(pConfig);
+			boardspb_reset(pConfig, 0);
+			break;
+
+		case SOUNDID_86_SPEAKBOARD:
+			boardspb_reset(pConfig, 1);
+			board86_reset(pConfig, FALSE);
 			break;
 
 		case SOUNDID_SPARKBOARD:
@@ -288,6 +293,11 @@ void fmboard_bind(void) {
 		case SOUNDID_SPEAKBOARD:
 			boardspb_bind();
 			break;
+			
+		case SOUNDID_86_SPEAKBOARD:
+			boardspb_bind();
+			board86_bind();
+			break;
 
 		case SOUNDID_SPARKBOARD:
 			boardspr_bind();
@@ -363,6 +373,11 @@ void fmboard_unbind(void) {
 			break;
 			
 		case SOUNDID_SPEAKBOARD:
+			boardspb_unbind();
+			break;
+			
+		case SOUNDID_86_SPEAKBOARD:
+			board86_unbind();
 			boardspb_unbind();
 			break;
 

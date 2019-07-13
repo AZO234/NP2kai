@@ -858,7 +858,8 @@ void retro_set_environment(retro_environment_t cb)
       { "np2kai_skipline" , "Skipline Revisions; Full 255 lines|ON|OFF" },
       { "np2kai_realpal" , "Real Palettes; OFF|ON" },
       { "np2kai_lcd" , "LCD; OFF|ON" },
-      { "np2kai_SNDboard" , "Sound Board (Restart); PC9801-86|PC9801-26K + 86|PC9801-86 + Chibi-oto|PC9801-118|PC9801-86 + Mate-X PCM(B460)|PC9801-86 + 118|Mate-X PCM(B460)|Chibi-oto|Speak Board|Spark Board|Sound Orchestra|Sound Orchestra-V|Sound Blaster 16|AMD-98|Otomi-chanx2|Otomi-chanx2 + 86|None|PC9801-14|PC9801-26K" },
+      { "np2kai_SNDboard" , "Sound Board (Restart); PC9801-86|PC9801-26K + 86|PC9801-86 + Chibi-oto|PC9801-118|PC9801-86 + Mate-X PCM(B460)|PC9801-86 + 118|Mate-X PCM(B460)|Chibi-oto|Speak Board|PC9801-86 + Speak Board|Spark Board|Sound Orchestra|Sound Orchestra-V|Sound Blaster 16|AMD-98|Otomi-chanx2|Otomi-chanx2 + 86|None|PC9801-14|PC9801-26K" },
+      { "np2kai_118ROM" , "enable 118 ROM; ON|OFF" },
       { "np2kai_jast_snd" , "JastSound; OFF|ON" },
       { "np2kai_xroll" , "Swap PageUp/PageDown; ON|OFF" },
       { "np2kai_usefmgen" , "Sound Generator; fmgen|Default" },
@@ -1040,6 +1041,8 @@ static void update_variables(void)
          np2cfg.SOUND_SW = 0x60;
       else if (strcmp(var.value, "Speak Board") == 0)
          np2cfg.SOUND_SW = 0x20;
+      else if (strcmp(var.value, "PC9801-86 + Speak Board") == 0)
+         np2cfg.SOUND_SW = 0x24;
       else if (strcmp(var.value, "Spark Board") == 0)
          np2cfg.SOUND_SW = 0x40;
       else if (strcmp(var.value, "Sound Orchestra") == 0)
@@ -1060,6 +1063,17 @@ static void update_variables(void)
          np2cfg.SOUND_SW = 0x01;
       else if (strcmp(var.value, "PC9801-26K") == 0)
          np2cfg.SOUND_SW = 0x02;
+   }
+
+   var.key = "np2kai_118ROM";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "OFF") == 0)
+         np2cfg.snd118rom = 0;
+      else if (strcmp(var.value, "ON") == 0)
+         np2cfg.snd118rom = 1;
    }
 
    var.key = "np2kai_jast_snd";

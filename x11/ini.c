@@ -583,6 +583,7 @@ static INITBL iniitem[] = {
 	{"opt118if", INITYPE_UINT8,	&np2cfg.snd118irqf,	0},
 	{"opt118ip", INITYPE_UINT8,	&np2cfg.snd118irqp,	0},
 	{"opt118im", INITYPE_UINT8,	&np2cfg.snd118irqm,	0},
+	{"opt118ro", INITYPE_UINT8,	&np2cfg.snd118rom,	0},
 
 	{"optwssid", INITYPE_HEX8,	&np2cfg.sndwssid,	0},
 	{"optwssdm", INITYPE_UINT8,	&np2cfg.sndwssdma,	0},

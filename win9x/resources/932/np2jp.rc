@@ -409,6 +409,7 @@ BEGIN
     COMBOBOX        IDC_SND118INTP,146,26,60,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "äÑÇËçûÇ›(MIDI)",IDC_STATIC,94,46,50,10
     COMBOBOX        IDC_SND118INTM,146,44,60,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "ROM",IDC_SND118ROM,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,94,64,40,10
     PUSHBUTTON      "ä˘íËíl",IDC_SND118DEF,136,102,40,14
 END
 
@@ -1007,6 +1008,7 @@ BEGIN
             MENUITEM "PC-9801-86 + 118(&B460)",     IDM_PC9801_86_118
             MENUITEM "Mate-&X PCM",                 IDM_MATE_X_PCM
             MENUITEM "S&peak board",                IDM_SPEAKBOARD
+            MENUITEM "PC-9801-86 + S&peak board",   IDM_86SPEAKBOARD
             MENUITEM "Sp&ark board",                IDM_SPARKBOARD
             MENUITEM "Sound &Orchestra",            IDM_SOUNDORCHESTRA
             MENUITEM "Sound Orchestra-&V",          IDM_SOUNDORCHESTRAV

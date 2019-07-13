@@ -65,12 +65,13 @@ static const OEMCHAR str_pentium[] = OEMTEXT("PENTIUM");
 static const OEMCHAR str_mhz[] = OEMTEXT("%uMHz");
 
 // np21/w dynamic config
-#define NP21W_SWITCH_DUMMY		0
-#define NP21W_SWITCH_GD54XXTYPE	1
-#define NP21W_SWITCH_SOUNDBOARD	2
-#define NP21W_SWITCH_SYNCCLOCK	3
-#define NP21W_SWITCH_PCIENABLE	4
-#define NP21W_SWITCH_ASYNCCPU		5
+#define NP21W_SWITCH_DUMMY				0
+#define NP21W_SWITCH_GD54XXTYPE			1
+#define NP21W_SWITCH_SOUNDBOARD			2
+#define NP21W_SWITCH_SYNCCLOCK			3
+#define NP21W_SWITCH_PCIENABLE			4
+#define NP21W_SWITCH_ASYNCCPU			5
+#define NP21W_SWITCH_DISABLESOUNDROM	6
 
 
 static void setoutstr(const OEMCHAR *str) {
@@ -206,6 +207,9 @@ static void np2sysp_getconfig(const void *arg1, long arg2) {
 		configvalue = np2cfg.asynccpu ? 1 : 0;
 #endif	/* defined(SUPPORT_ASYNC_CPU) */
 		break;
+	case NP21W_SWITCH_DISABLESOUNDROM:
+		configvalue = 0; // 常時0
+		break;
 	case NP21W_SWITCH_DUMMY:
 	default:
 		break;
@@ -315,6 +319,11 @@ static void np2sysp_cngconfig(const void *arg1, long arg2) {
 		np2cfg.asynccpu = configvalue ? 1 : 0;
 		configvalue = np2cfg.asynccpu ? 1 : 0;
 #endif	/* defined(SUPPORT_ASYNC_CPU) */
+		break;
+	case NP21W_SWITCH_DISABLESOUNDROM:
+		if(configvalue == 1){
+			soundrom_reset(); // サウンドROMを消す
+		}
 		break;
 	case NP21W_SWITCH_DUMMY:
 	default:

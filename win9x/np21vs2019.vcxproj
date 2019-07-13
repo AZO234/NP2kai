@@ -316,7 +316,9 @@
     <ClCompile Include="..\generic\dipswbmp.c" />
     <ClCompile Include="..\generic\hostdrv.c" />
     <ClCompile Include="..\generic\hostdrvs.c" />
-    <ClCompile Include="..\generic\keydisp.c" />
+    <ClCompile Include="..\generic\keydisp.c">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>
+    </ClCompile>
     <ClCompile Include="..\generic\memdbg32.c" />
     <ClCompile Include="..\generic\np2info.c" />
     <ClCompile Include="..\generic\softkbd.c" />
@@ -489,7 +491,9 @@
     <ClCompile Include="..\vram\sdraw.c" />
     <ClCompile Include="..\vram\sdrawq16.c" />
     <ClCompile Include="..\vram\vram.c" />
-    <ClCompile Include="..\wab\cirrus_vga.c" />
+    <ClCompile Include="..\wab\cirrus_vga.c">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>
+    </ClCompile>
     <ClCompile Include="..\wab\wab.c" />
     <ClCompile Include="..\wab\wab_rly.c" />
     <ClCompile Include="..\zlib\adler32.c" />

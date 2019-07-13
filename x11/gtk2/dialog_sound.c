@@ -232,6 +232,7 @@ static GtkWidget *snd118_int_pcm_entry;
 static GtkWidget *snd118_int_midi_entry;
 static GtkWidget *snd118_soundid_entry;
 static GtkWidget *snd118_dma_entry;
+static GtkWidget *snd118_rom_checkbutton;
 
 
 /*
@@ -411,6 +412,7 @@ ok_button_clicked(GtkButton *b, gpointer d)
 	const gchar *snd118_soundid;
 	const gchar *snd118_dma;
 	UINT16 snd118_ioport_temp;
+	gint snd118_rom;
 
 	/* Mate-X PCM */
 	const gchar *matex_pcm_intr;
@@ -716,6 +718,12 @@ ok_button_clicked(GtkButton *b, gpointer d)
 			break;
 		}
 	}
+	if(np2cfg.snd118rom != gtk_toggle_button_get_active(
+	    GTK_TOGGLE_BUTTON(snd118_rom_checkbutton))) {
+	  np2cfg.snd118rom = gtk_toggle_button_get_active(
+	    GTK_TOGGLE_BUTTON(snd118_rom_checkbutton));
+		renewal = TRUE;
+	} 
 
 	if (renewal) {
 		sysmng_update(SYS_UPDATECFG);
@@ -1076,6 +1084,10 @@ snd118_default_button_clicked(GtkButton *b, gpointer d)
 	gtk_entry_set_text(GTK_ENTRY(snd118_int_midi_entry), "Disable");
 	gtk_entry_set_text(GTK_ENTRY(snd118_soundid_entry), "8x");
 	gtk_entry_set_text(GTK_ENTRY(snd118_dma_entry), "DMA #3");
+	if (!gtk_toggle_button_get_active(
+	    GTK_TOGGLE_BUTTON(snd118_rom_checkbutton)))
+		g_signal_emit_by_name(G_OBJECT(snd118_rom_checkbutton),
+		    "clicked");
 }
 
 static void
@@ -1442,7 +1454,7 @@ create_pc9801_118_note(void)
 	gtk_container_set_border_width(GTK_CONTAINER(root_widget), 5);
 	gtk_widget_show(root_widget);
 
-	table = gtk_table_new(4, 3, FALSE);
+	table = gtk_table_new(4, 4, FALSE);
 	gtk_table_set_row_spacings(GTK_TABLE(table), 5);
 	gtk_table_set_col_spacings(GTK_TABLE(table), 5);
 	gtk_box_pack_start(GTK_BOX(root_widget), table, FALSE, FALSE, 0);
@@ -1604,6 +1616,13 @@ create_pc9801_118_note(void)
 		break;
 	}
 	gtk_entry_set_text(GTK_ENTRY(snd118_int_midi_entry), temp);
+
+	/* ROM */
+	snd118_rom_checkbutton = gtk_check_button_new_with_label("ROM");
+	gtk_widget_show(snd118_rom_checkbutton);
+	gtk_table_attach_defaults(GTK_TABLE(table), snd118_rom_checkbutton, 2, 3, 3, 4);
+	if (np2cfg.snd118rom)
+		g_signal_emit_by_name(G_OBJECT(snd118_rom_checkbutton), "clicked");
 
 	/* "Default" button */
 	hbox = gtk_hbox_new(FALSE, 0);

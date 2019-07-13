@@ -508,6 +508,11 @@ static void sys_cmd(MENUID id) {
 			update |= SYS_UPDATECFG;
 			break;
 
+		case MID_SPEAKBOARD86:
+			np2cfg.SOUND_SW = 0x24;
+			update |= SYS_UPDATECFG;
+			break;
+
 		case MID_SPARKBOARD:
 			np2cfg.SOUND_SW = 0x40;
 			update |= SYS_UPDATECFG;
@@ -546,6 +551,11 @@ static void sys_cmd(MENUID id) {
 			update |= SYS_UPDATECFG;
 			break;
 #endif	/* defined(SUPPORT_PX) */
+
+		case MID_PC9801_118_ROM:
+			np2cfg.snd118rom ^= 1;
+			update |= SYS_UPDATECFG;
+			break;
 
 #if defined(SUPPORT_FMGEN)
 		case MID_FMGEN:
@@ -855,6 +865,7 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 	menusys_setcheck(MID_PC9801_86_CB, (b == 0x14));
 	menusys_setcheck(MID_PC9801_118, (b == 0x08));
 	menusys_setcheck(MID_SPEAKBOARD, (b == 0x20));
+	menusys_setcheck(MID_SPEAKBOARD86, (b == 0x24));
 	menusys_setcheck(MID_SPARKBOARD, (b == 0x40));
 	menusys_setcheck(MID_SOUNDORCHESTRA, (b == 0x32));
 	menusys_setcheck(MID_SOUNDORCHESTRAV, (b == 0x82));
@@ -866,6 +877,7 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 	menusys_setcheck(MID_PX1, (b == 0x30));
 	menusys_setcheck(MID_PX2, (b == 0x50));
 #endif	/* defined(SUPPORT_PX) */
+	menusys_setcheck(MID_PC9801_118_ROM, (np2cfg.snd118rom & 1));
 #if defined(SUPPORT_FMGEN)
 	menusys_setcheck(MID_FMGEN, (np2cfg.usefmgen & 1));
 #endif	/* SUPPORT_FMGEN */
