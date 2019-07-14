@@ -31,6 +31,7 @@ extern UINT bmpfilenumber;
 extern char modulefile[MAX_PATH];
 extern char draw32bit;
 extern UINT8 scrnmode;
+extern void changescreen(UINT8 newmode);
 
 enum {
 	IMAGETYPE_UNKNOWN	= 0,
