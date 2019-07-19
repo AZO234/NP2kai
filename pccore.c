@@ -79,6 +79,7 @@
 #define	CPU_FEATURES_ECX	(0)
 #define	CPU_BRAND_ID_AUTO	(0xffffffff)
 #endif
+#include <time.h>
 
 
 const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE " " NP2VER_GIT);
@@ -189,11 +190,15 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE " " NP2VER_GIT);
 	UINT8	enable_fmgen = 0;
 #endif	/* SUPPORT_FMGEN */
 
-#if !defined(__LIBRETRO__) && !defined(NP2_SDL2) && !defined(NP2_X11)
 #ifdef SUPPORT_ASYNC_CPU
+#if !defined(__LIBRETRO__) && !defined(NP2_SDL2) && !defined(NP2_X11)
 LARGE_INTEGER asynccpu_lastclock = {0};
 LARGE_INTEGER asynccpu_clockpersec = {0};
 LARGE_INTEGER asynccpu_clockcount = {0};
+#else
+UINT64 asynccpu_lastclock = 0;
+UINT64 asynccpu_clockpersec = 0;
+UINT64 asynccpu_clockcount = 0;
 #endif
 #endif
 
@@ -715,14 +720,24 @@ void pccore_reset(void) {
 	timing_reset();
 	soundmng_play();
 
-#if !defined(__LIBRETRO__) && !defined(NP2_SDL2) && !defined(NP2_X11)
 #ifdef SUPPORT_ASYNC_CPU
+#if !defined(__LIBRETRO__) && !defined(NP2_SDL2) && !defined(NP2_X11)
 	if(GetTickCounterMode()==TCMODE_PERFORMANCECOUNTER){
 		asynccpu_clockpersec = GetTickCounter_ClockPerSec();
 		asynccpu_lastclock = GetTickCounter_Clock();
 		asynccpu_clockcount = GetTickCounter_Clock();
 	}else{
 		asynccpu_clockpersec.QuadPart = 0;
+	}
+#elif defined(NP2_X11) || defined(__LIBRETRO__)
+	{
+		asynccpu_lastclock = asynccpu_clockcount = (UINT64)clock();
+		asynccpu_clockpersec = CLOCKS_PER_SEC;
+	}
+#elif defined(NP2_SDL2)
+	{
+		asynccpu_lastclock = asynccpu_clockcount = SDL_GetPerformanceCounter();
+		asynccpu_clockpersec = SDL_GetPerformanceFrequency();
 	}
 #endif
 #endif
