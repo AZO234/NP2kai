@@ -39,7 +39,7 @@
 #include "nevent.h"
 #include "pccore.h"
 #endif
-
+#include <time.h>
 
 sigjmp_buf exec_1step_jmpbuf;
 
@@ -281,42 +281,64 @@ exec_allstep(void)
 #if defined(SUPPORT_ASYNC_CPU)
 		// 非同期CPU処理
 		if(np2cfg.asynccpu){
-			//if(asynccpu_clockpersec.QuadPart){
-			//	// 厳密っぽい時間にする
-			//	if(clkcnt==0){
-			//		asynccpu_clockcount = GetTickCounter_Clock();
-			//		if(!((asynccpu_clockcount.QuadPart - asynccpu_lastclock.QuadPart) * pccore.realclock / asynccpu_clockpersec.QuadPart < CPU_BASECLOCK)){
-			//			if(CPU_REMCLOCK > 0){
-			//				CPU_REMCLOCK -= CPU_BASECLOCK;
-			//			}
-			//			asynccpu_lastclock = GetTickCounter_Clock();
-			//			break;
-			//		}
-			//	}
-			//	clkcnt++;
-			//	if(clkcnt >= clkstep) clkstep -= clkstep;
-			//}else{
-				// 雑なタイミングにする
-				// 時間が無ければCPU処理をスキップ
-				if(clkcnt == 0){
-					if(CPU_REMCLOCK > 0){
-						if(timing_getcount_baseclock()!=0){
-							CPU_REMCLOCK = 0;
-							break;
+#if !defined(__LIBRETRO__) && !defined(NP2_SDL2) && !defined(NP2_X11)
+			if(asynccpu_clockpersec.QuadPart){
+				// 厳密っぽい時間にする
+				if(clkcnt==0){
+					asynccpu_clockcount = GetTickCounter_Clock();
+					if(!((asynccpu_clockcount.QuadPart - asynccpu_lastclock.QuadPart) * pccore.realclock / asynccpu_clockpersec.QuadPart < CPU_BASECLOCK)){
+						if(CPU_REMCLOCK > 0){
+							CPU_REMCLOCK -= CPU_BASECLOCK;
 						}
+						asynccpu_lastclock = GetTickCounter_Clock();
+						break;
 					}
 				}
 				clkcnt++;
 				if(clkcnt >= clkstep) clkstep -= clkstep;
-				// 時間に余裕があればCPUを動かし続ける
-				if(CPU_REMCLOCK <= 10000 && (g_nevent.item[NEVENT_FLAMES].flag & NEVENT_ENABLE) && g_nevent.item[NEVENT_FLAMES].proc==screendisp && g_nevent.item[NEVENT_FLAMES].clock <= CPU_BASECLOCK){
-					if(timing_getcount_baseclock()==0){
-						CPU_REMCLOCK = 10000;
-						clkstep = 1;
-						clkcnt = 0;
+			}
+#elif defined(NP2_X11) || defined(__LIBRETRO__)
+			if(asynccpu_clockpersec){
+				if(clkcnt==0){
+					struct timespec t;
+					clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t);
+					asynccpu_clockcount = (UINT64)t.tv_sec * 1000000000 + t.tv_nsec;
+					if(!((asynccpu_clockcount - asynccpu_lastclock) * pccore.realclock / asynccpu_clockpersec < CPU_BASECLOCK)){
+						if(CPU_REMCLOCK > 0){
+							CPU_REMCLOCK -= CPU_BASECLOCK;
+						}
+						clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t);
+						asynccpu_lastclock = (UINT64)t.tv_sec * 1000000000 + t.tv_nsec;
+						break;
 					}
 				}
-			//}
+				clkcnt++;
+				if(clkcnt >= clkstep) clkstep -= clkstep;
+			}
+#elif defined(NP2_SDL2)
+			if(asynccpu_clockpersec){
+				if(clkcnt==0){
+					asynccpu_clockcount = SDL_GetPerformanceCounter();
+					if(!((asynccpu_clockcount - asynccpu_lastclock) * pccore.realclock / asynccpu_clockpersec < CPU_BASECLOCK)){
+						if(CPU_REMCLOCK > 0){
+							CPU_REMCLOCK -= CPU_BASECLOCK;
+						}
+						asynccpu_lastclock = SDL_GetPerformanceCounter();
+						break;
+					}
+				}
+				clkcnt++;
+				if(clkcnt >= clkstep) clkstep -= clkstep;
+			}
+#endif
+			// 時間に余裕があればCPUを動かし続ける
+			if(CPU_REMCLOCK <= 10000 && (g_nevent.item[NEVENT_FLAMES].flag & NEVENT_ENABLE) && g_nevent.item[NEVENT_FLAMES].proc==screendisp && g_nevent.item[NEVENT_FLAMES].clock <= CPU_BASECLOCK){
+				if(timing_getcount_baseclock()==0){
+					CPU_REMCLOCK = 10000;
+					clkstep = 1;
+					clkcnt = 0;
+				}
+			}
 		}
 #endif
 
