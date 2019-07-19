@@ -351,8 +351,7 @@ void pccore_exec(BOOL draw);
 void pccore_postevent(UINT32 event);
 
 #ifdef SUPPORT_ASYNC_CPU
-#if defined(__LIBRETRO__) || defined(NP2_SDL2) || defined(NP2_X11)
-#if !defined(__MINGW32__) && !defined(_MSC_VER)
+#if !defined(__LIBRETRO__) && !defined(NP2_SDL2) && !defined(NP2_X11)
 typedef union {
     struct {
         UINT32 LowPart;
@@ -360,11 +359,14 @@ typedef union {
     } u;
     SINT64 QuadPart;
 } LARGE_INTEGER;
-#endif
-#endif
 extern LARGE_INTEGER asynccpu_lastclock;
 extern LARGE_INTEGER asynccpu_clockpersec;
 extern LARGE_INTEGER asynccpu_clockcount;
+#else
+extern UINT64 asynccpu_lastclock;
+extern UINT64 asynccpu_clockpersec;
+extern UINT64 asynccpu_clockcount;
+#endif
 #endif
 
 #ifdef __cplusplus
