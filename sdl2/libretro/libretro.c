@@ -1004,6 +1004,8 @@ static void update_variables(void)
          np2cfg.SOUND_SW = 0x41;
       else if (strcmp(var.value, "AMD-98") == 0)
          np2cfg.SOUND_SW = 0x80;
+      else if (strcmp(var.value, "WaveStar") == 0)
+         np2cfg.SOUND_SW = 0x70;
       else if (strcmp(var.value, "Otomi-chanx2") == 0)
          np2cfg.SOUND_SW = 0x30;
       else if (strcmp(var.value, "Otomi-chanx2 + 86") == 0)

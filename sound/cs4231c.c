@@ -262,6 +262,32 @@ void cs4231_control(UINT idx, REG8 dat) {
 	UINT8	modify;
 	DMACH	dmach;
 	switch(idx){
+	case 0x2: // Left Auxiliary #1 Input Control
+		if(g_nSoundID==SOUNDID_WAVESTAR){
+			UINT i;
+			if(dat >= 0x10) dat = 15;
+			cs4231.devvolume[0xff] = (~dat) & 15;
+			opngen_setvol(np2cfg.vol_fm * cs4231.devvolume[0xff] / 15);
+			psggen_setvol(np2cfg.vol_ssg * cs4231.devvolume[0xff] / 15);
+			rhythm_setvol(np2cfg.vol_rhythm * cs4231.devvolume[0xff] / 15);
+#if defined(SUPPORT_FMGEN)
+			if(np2cfg.usefmgen) {
+				opna_fmgen_setallvolumeFM_linear(np2cfg.vol_fm * cs4231.devvolume[0xff] / 15);
+				opna_fmgen_setallvolumePSG_linear(np2cfg.vol_ssg * cs4231.devvolume[0xff] / 15);
+				opna_fmgen_setallvolumeRhythmTotal_linear(np2cfg.vol_rhythm * cs4231.devvolume[0xff] / 15);
+			}
+#endif
+			for (i = 0; i < NELEMENTS(g_opna); i++)
+			{
+				rhythm_update(&g_opna[i].rhythm);
+			}
+		}
+		break;
+	case 0x3: // Right Auxiliary #1 Input Control
+		if(g_nSoundID==SOUNDID_WAVESTAR){
+			// XXX: 本当は左右のボリューム調整が必要
+		}
+		break;
 	case 0xd:
 		break;
 	case 0xc:

@@ -172,7 +172,7 @@ void SOUNDCALL pcm86gen_checkbuf(PCM86 pcm86)
 	}
 
 	bufs = pcm86->realbuf - pcm86->virbuf;
-	if (bufs < 0)									/* 処理落ちてる… */
+	if (bufs <= 0)									/* 処理落ちてる… */
 	{
 		bufs &= ~3;
 		pcm86->virbuf += bufs;

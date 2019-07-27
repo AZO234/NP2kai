@@ -20,12 +20,12 @@
 static void writeRegister(POPNA opna, UINT nAddress, REG8 cData);
 static void writeExtendedRegister(POPNA opna, UINT nAddress, REG8 cData);
 
-// dB = 20 log10( (Èü≥Èáè0„Äú1) * (pow(10, ÊúÄÂ§ßdBÂÄ§/20) - pow(10, ÊúÄÂ∞èdBÂÄ§/20)) + pow(10, ÊúÄÂ∞èdBÂÄ§/20) )
+// dB = 20 log10( (âπó 0Å`1) * (pow(10, ç≈ëÂdBíl/20) - pow(10, ç≈è¨dBíl/20)) + pow(10, ç≈è¨dBíl/20) )
 //#define LINEAR2DB(a)	(20 * log10((a) * (pow(10.0, 20/20) - pow(10.0, -192/20)) + pow(10.0, -192/20)))
-#define LINEAR2DB(a)	(pow(a,0.12)*(20+192) - 192)	// XXX: fmgenÈü≥Èáè„Å®Áå´Èü≥Ê∫êÈü≥Èáè„Çí‰∏ÄËá¥„Åï„Åõ„Çã„Åü„ÇÅ„ÅÆÂÆüÈ®ìÂºèÔΩ•ÔΩ•ÔΩ•
+#define LINEAR2DB(a)	(pow(a,0.12)*(20+192) - 192)	// XXX: fmgenâπó Ç∆îLâπåπâπó ÇàÍívÇ≥ÇπÇÈÇΩÇﬂÇÃé¿å±éÆ•••
 
 #if defined(SUPPORT_FMGEN)
-// XXX: Èü≥ÈáèË™øÊï¥„ÇíÂá∫Êù•„Çã„Çà„ÅÜ„Å´„Åô„Çã„Åü„ÇÅ„Å´„Å®„Çä„ÅÇ„Åà„ÅöÔΩ•ÔΩ•ÔΩ•
+// XXX: âπó í≤êÆÇèoóàÇÈÇÊÇ§Ç…Ç∑ÇÈÇΩÇﬂÇ…Ç∆ÇËÇ†Ç¶Ç∏•••
 POPNA opnalist[OPNA_MAX] = {0}; 
 int opnalistconunt = 0;
 void opnalist_push(POPNA opna)
@@ -141,7 +141,7 @@ void opna_reset(POPNA opna, REG8 cCaps)
 		OEMCHAR path[MAX_PATH];
 		char strbuf[MAX_PATH];
 
-		OPNA_Init(opna->fmgen, OPNA_CLOCK*2, np2cfg.samplingrate, false, ""); // „Çµ„É≥„Éó„É™„É≥„Ç∞„É¨„Éº„ÉàÂº∑Âà∂Â§âÊõ¥ÔΩ•ÔΩ•ÔΩ•
+		OPNA_Init(opna->fmgen, OPNA_CLOCK*2, np2cfg.samplingrate, false, ""); // ÉTÉìÉvÉäÉìÉOÉåÅ[Égã≠êßïœçX•••
 		getbiospath(path, OEMTEXT(""), NELEMENTS(path));
 #ifdef UNICODE
 		wcstombs(strbuf, path, MAX_PATH);
@@ -169,7 +169,7 @@ void opna_reset(POPNA opna, REG8 cCaps)
 		}
 		opna->usefmgen = 1;
 	}else{
-		opna->usefmgen = 0; // fmgen„Çí‰Ωø„Çè„Å™„ÅÑ
+		opna->usefmgen = 0; // fmgenÇégÇÌÇ»Ç¢
 	}
 #endif	/* SUPPORT_FMGEN */
 
@@ -186,6 +186,22 @@ void opna_reset(POPNA opna, REG8 cCaps)
 			CExternalChipManager::GetInstance()->Release(pExt);
 			opna->userdata = NULL;
 		}
+	}
+	
+	// âπó èâä˙âª
+	opngen_setvol(np2cfg.vol_fm);
+	psggen_setvol(np2cfg.vol_ssg);
+	rhythm_setvol(np2cfg.vol_rhythm);
+#if defined(SUPPORT_FMGEN)
+	if(np2cfg.usefmgen) {
+		opna_fmgen_setallvolumeFM_linear(np2cfg.vol_fm);
+		opna_fmgen_setallvolumePSG_linear(np2cfg.vol_ssg);
+		opna_fmgen_setallvolumeRhythmTotal_linear(np2cfg.vol_rhythm);
+	}
+#endif	/* SUPPORT_FMGEN */
+	for (UINT i = 0; i < _countof(g_opna); i++)
+	{
+		rhythm_update(&g_opna[i].rhythm);
 	}
 }
 

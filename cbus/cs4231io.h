@@ -10,6 +10,8 @@ void cs4231io_unbind(void);
 
 void IOOUTCALL cs4231io0_w8(UINT port, REG8 value);
 REG8 IOINPCALL cs4231io0_r8(UINT port);
+void IOOUTCALL cs4231io0_w8_wavestar(UINT port, REG8 value);
+REG8 IOINPCALL cs4231io0_r8_wavestar(UINT port);
 void IOOUTCALL cs4231io2_w8(UINT port, REG8 value);
 REG8 IOINPCALL cs4231io2_r8(UINT port);
 void IOOUTCALL cs4231io5_w8(UINT port, REG8 value);

@@ -21,6 +21,65 @@
 static void writeRegister(POPNA opna, UINT nAddress, REG8 cData);
 static void writeExtendedRegister(POPNA opna, UINT nAddress, REG8 cData);
 
+#if defined(SUPPORT_FMGEN)
+// dB = 20 log10( (音量0〜1) * (pow(10, 最大dB値/20) - pow(10, 最小dB値/20)) + pow(10, 最小dB値/20) )
+//#define LINEAR2DB(a)	(20 * log10((a) * (pow(10.0, 20/20) - pow(10.0, -192/20)) + pow(10.0, -192/20)))
+#define LINEAR2DB(a)	(pow(a,0.12)*(20+192) - 192)	// XXX: fmgen音量と猫音源音量を一致させるための実験式･･･
+
+// XXX: 音量調整を出来るようにするためにとりあえず･･･
+POPNA opnalist[OPNA_MAX] = {0}; 
+int opnalistconunt = 0;
+void opnalist_push(POPNA opna)
+{
+	int i;
+	for(i=0;i<opnalistconunt;i++){
+		if(opnalist[i] == opna) return;
+	}
+	opnalist[opnalistconunt] = opna;
+	opnalistconunt++;
+}
+void opnalist_remove(POPNA opna)
+{
+	int i;
+	for(i=0;i<opnalistconunt;i++){
+		if(opnalist[i] == opna) break;
+	}
+	if(i == opnalistconunt) return;
+	opnalistconunt--;
+	for(;i<opnalistconunt;i++){
+		opnalist[i] = opnalist[i+1];
+	}
+}
+void opnalist_clear()
+{
+	opnalistconunt = 0;
+}
+void opna_fmgen_setallvolumeFM_linear(int lvol)
+{
+	for(int i=0;i<opnalistconunt;i++){
+		OPNA_SetVolumeFM(opnalist[i]->fmgen, (int)LINEAR2DB((double)lvol / 128));
+	}
+}
+void opna_fmgen_setallvolumePSG_linear(int lvol)
+{
+	for(int i=0;i<opnalistconunt;i++){
+		OPNA_SetVolumePSG(opnalist[i]->fmgen, (int)LINEAR2DB((double)lvol / 128));
+	}
+}
+void opna_fmgen_setallvolumeADPCM_linear(int lvol)
+{
+	for(int i=0;i<opnalistconunt;i++){
+		OPNA_SetVolumeADPCM(opnalist[i]->fmgen, (int)LINEAR2DB((double)lvol / 128));
+	}
+}
+void opna_fmgen_setallvolumeRhythmTotal_linear(int lvol)
+{
+	for(int i=0;i<opnalistconunt;i++){
+		OPNA_SetVolumeRhythmTotal(opnalist[i]->fmgen, (int)LINEAR2DB((double)lvol / 128));
+	}
+}
+#endif	/* SUPPORT_FMGEN */
+
 /**
  * Initialize instance
  * @param[in] opna The instance

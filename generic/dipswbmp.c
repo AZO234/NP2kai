@@ -43,6 +43,55 @@ gb_err1:
 	return(NULL);
 }
 
+static UINT8 *getbmpres(const OEMCHAR* resname, DIPBMP *dipbmp) {
+	
+#if defined(_WIN32)
+	BMPFILE	*ret;
+    HRSRC hRsrc;
+	HANDLE hRes;
+	LPVOID hBmpRes;
+	int ressize;
+
+	hRsrc = FindResource(NULL, resname, OEMTEXT("RAWBMP"));
+	hRes = LoadResource(NULL, hRsrc);
+	if (hRes == NULL) {
+		goto gb_err1;
+	}
+	hBmpRes = LockResource(hRes);
+	if (hBmpRes == NULL) {
+		goto gb_err1;
+	}
+	ressize = SizeofResource(NULL, hRsrc);
+	ret = (BMPFILE*)_MALLOC(ressize, "res");
+	if (ret == NULL) {
+		goto gb_err1;
+	}
+	memcpy(ret, hBmpRes, ressize);
+	if ((ret->bfType[0] != 'B') || (ret->bfType[1] != 'M')) {
+		goto gb_err2;
+	}
+	if (bmpdata_getinfo((BMPINFO *)(ret + 1), &dipbmp->inf) != SUCCESS) {
+		goto gb_err2;
+	}
+	dipbmp->yalign = bmpdata_getalign((BMPINFO *)(ret + 1));
+	dipbmp->ptr = ((UINT8 *)ret) + (LOADINTELDWORD(ret->bfOffBits));
+	if (dipbmp->inf.height < 0) {
+		dipbmp->inf.height *= -1;
+	}
+	else {
+		dipbmp->ptr += (dipbmp->inf.height - 1) * dipbmp->yalign;
+		dipbmp->yalign *= -1;
+	}
+	return((UINT8 *)ret);
+
+gb_err2:
+	_MFREE(ret);
+
+gb_err1:
+#endif
+	return(NULL);
+}
+
 static void line4x(const DIPBMP *dipbmp, int x, int y, int l, UINT8 c) {
 
 	UINT8	*ptr;
@@ -109,6 +158,38 @@ static void setjumpery(const DIPBMP *dipbmp, int x, int y) {
 		line4x(dipbmp, x, y+17+i, 9, 0);
 		line4y(dipbmp, x+0+i, y, 19, 0);
 		line4y(dipbmp, x+8+i, y, 19, 0);
+	}
+}
+
+static void setjumperxex(const DIPBMP *dipbmp, int ofsx, int ofsy, int x, int y, UINT8 c) {
+
+	int		i;
+
+	x *= 9;
+	y *= 9;
+	x += ofsx;
+	y += ofsy;
+	for (i=0; i<2; i++) {
+		line4x(dipbmp, x, y+0+i, 19, c);
+		line4x(dipbmp, x, y+8+i, 19, c);
+		line4y(dipbmp, x+ 0+i, y, 9, c);
+		line4y(dipbmp, x+17+i, y, 9, c);
+	}
+}
+
+static void setjumperyex(const DIPBMP *dipbmp, int ofsx, int ofsy, int x, int y, UINT8 c) {
+
+	int		i;
+
+	x *= 9;
+	y *= 9;
+	x += ofsx;
+	y += ofsy;
+	for (i=0; i<2; i++) {
+		line4x(dipbmp, x, y+ 0+i, 9, c);
+		line4x(dipbmp, x, y+17+i, 9, c);
+		line4y(dipbmp, x+0+i, y, 19, c);
+		line4y(dipbmp, x+8+i, y, 19, c);
 	}
 }
 
@@ -270,6 +351,77 @@ UINT8 *dipswbmp_getmpu(UINT8 cfg) {
 			} while(++l < 3);
 		}
 		setjumpery(&dipbmp, 9 + 3 - (cfg & 3), 1);
+	}
+	return(ret);
+}
+
+UINT8 *dipswbmp_getsnd118(UINT8 snd118io, UINT8 snd118dma, UINT8 snd118irqf, UINT8 snd118irqp, UINT8 snd118irqm, UINT8 snd118rom) {
+
+	UINT8	*ret;
+	DIPBMP	dipbmp;
+	int		i;
+	int		x;
+	int		y;
+	int		l;
+
+	ret = getbmpres(OEMTEXT("JUMPER118"), &dipbmp);
+	if (ret) {
+		int jmpflag[2];
+		setjumperyex(&dipbmp, 18, 9, 0, 0, 15); // #12 常時OFF どこにも影響しない？
+		setjumperyex(&dipbmp, 18, 9, 1, 0, 15); // #11 YMF297の制御？
+		setjumperyex(&dipbmp, 18, 9, 2, snd118irqm==0xff ? 1 : 0, 15); // #10
+		
+		// PCM INT (#8,#9)=(OFF,OFF):INT5(IRQ12), (OFF,ON):INT1(IRQ5), (ON,OFF):INT41(IRQ10), (ON,ON):INT0(IRQ3)
+		switch(snd118irqp){
+		case 12:
+			jmpflag[0] = 0; jmpflag[1] = 0;
+			break;
+		case 5:
+			jmpflag[0] = 0; jmpflag[1] = 1;
+			break;
+		case 10:
+			jmpflag[0] = 1; jmpflag[1] = 0;
+			break;
+		case 3:
+			jmpflag[0] = 1; jmpflag[1] = 1;
+			break;
+		default:
+			jmpflag[0] = jmpflag[1] = 0;
+			break;
+		}
+		setjumperyex(&dipbmp, 18, 9, 3, jmpflag[1], 15); // #9
+		setjumperyex(&dipbmp, 18, 9, 4, jmpflag[0], 15); // #8
+
+		setjumperyex(&dipbmp, 18, 9, 5, 0, 15); // #7  ON:DMA 2ch, OFF:DMA 1ch
+
+		// FM INT (#5,#6)=(OFF,OFF):INT5(IRQ12), (OFF,ON):INT41(IRQ10), (ON,OFF):INT6(IRQ13), (ON,ON):INT0(IRQ3)
+		switch(snd118irqf){
+		case 12:
+			jmpflag[0] = 0; jmpflag[1] = 0;
+			break;
+		case 10:
+			jmpflag[0] = 0; jmpflag[1] = 1;
+			break;
+		case 13:
+			jmpflag[0] = 1; jmpflag[1] = 0;
+			break;
+		case 3:
+			jmpflag[0] = 1; jmpflag[1] = 1;
+			break;
+		default:
+			jmpflag[0] = jmpflag[1] = 0;
+			break;
+		}
+		setjumperyex(&dipbmp, 18, 9, 6, jmpflag[1], 15); // #6
+		setjumperyex(&dipbmp, 18, 9, 7, jmpflag[0], 15); // #5
+
+		setjumperyex(&dipbmp, 18, 9, 8,  snd118rom ? 0 : 1, 15); // #4  ON:Sound BIOS Disable, OFF:Sound BIOS Enable
+		
+		// (#2,#3)=(OFF,OFF):Normal, (OFF,ON):CS4231&OPNA Disable, (ON,OFF):CS4231 Disable, (ON,ON):禁止
+		setjumperyex(&dipbmp, 18, 9, 9,  0, 15); // #3
+		setjumperyex(&dipbmp, 18, 9, 10, 0, 15); // #2
+
+		setjumperyex(&dipbmp, 18, 9, 11, 0, 15); // #1  ON:PnP Enable, OFF:PnP Disable
 	}
 	return(ret);
 }

@@ -112,6 +112,7 @@ enum {
 	MID_SB16,
 #endif	/* SUPPORT_SOUND_SB16 */
 	MID_AMD98,
+	MID_WAVESTAR,
 #if defined(SUPPORT_PX)
 	MID_PX1,
 	MID_PX2,

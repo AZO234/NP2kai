@@ -842,7 +842,10 @@ static UINT GetSoundFlags(SOUNDID nSoundID)
 			
 		case SOUNDID_PC_9801_86_ADPCM:
 			return FLAG_OPNA1 | FLAG_PCM86;
-
+			
+		case SOUNDID_WAVESTAR:
+			return FLAG_OPNA1 | FLAG_PCM86 | FLAG_CS4231;
+			
 		case SOUNDID_SPEAKBOARD:
 			return FLAG_OPNA1;
 

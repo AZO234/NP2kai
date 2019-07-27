@@ -12,6 +12,7 @@ UINT8 *dipswbmp_getsnd26(UINT8 cfg);
 UINT8 *dipswbmp_getsnd86(UINT8 cfg);
 UINT8 *dipswbmp_getsndspb(UINT8 cfg, UINT8 vrc);
 UINT8 *dipswbmp_getmpu(UINT8 cfg);
+UINT8 *dipswbmp_getsnd118(UINT8 snd118io, UINT8 snd118dma, UINT8 snd118irqf, UINT8 snd118irqp, UINT8 snd118irqm, UINT8 snd118rom);
 
 #ifdef __cplusplus
 }
