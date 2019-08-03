@@ -20,11 +20,11 @@
 #endif
 
 #if defined(_WIN32)
-static	char	curpath[MAX_PATH] = ".\\";
+static	OEMCHAR	curpath[MAX_PATH] = ".\\";
 #else	/* _WIN32 */
-static	char	curpath[MAX_PATH] = "./";
+static	OEMCHAR	curpath[MAX_PATH] = "./";
 #endif	/* _WIN32 */
-static	char	*curfilep = curpath + 2;
+static	OEMCHAR	*curfilep = curpath + 2;
 
 void
 dosio_init(void)
@@ -41,10 +41,10 @@ dosio_term(void)
 }
 
 /* ファイル操作 */
-FILEH file_open(const char *path) {
+FILEH file_open(const OEMCHAR *path) {
 
 #if defined(WIN32) && defined(OSLANG_UTF8)
-	char	sjis[MAX_PATH];
+	OEMCHAR	sjis[MAX_PATH];
 	codecnv_utf8tosjis(sjis, sizeof(sjis), path, (UINT)-1);
 	return(fopen(sjis, "rb+"));
 #else
@@ -52,10 +52,10 @@ FILEH file_open(const char *path) {
 #endif
 }
 
-FILEH file_open_rb(const char *path) {
+FILEH file_open_rb(const OEMCHAR *path) {
 
 #if defined(WIN32) && defined(OSLANG_UTF8)
-	char	sjis[MAX_PATH];
+	OEMCHAR	sjis[MAX_PATH];
 	codecnv_utf8tosjis(sjis, sizeof(sjis), path, (UINT)-1);
 	return(fopen(sjis, "rb"));
 #else
@@ -63,10 +63,10 @@ FILEH file_open_rb(const char *path) {
 #endif
 }
 
-FILEH file_create(const char *path) {
+FILEH file_create(const OEMCHAR *path) {
 
 #if defined(WIN32) && defined(OSLANG_UTF8)
-	char	sjis[MAX_PATH];
+	OEMCHAR	sjis[MAX_PATH];
 	codecnv_utf8tosjis(sjis, sizeof(sjis), path, (UINT)-1);
 	return(fopen(sjis, "wb+"));
 #else
@@ -107,13 +107,13 @@ UINT file_getsize(FILEH handle) {
 	return(0);
 }
 
-short file_attr(const char *path) {
+short file_attr(const OEMCHAR *path) {
 
 struct stat	sb;
 	short	attr;
 
 #if defined(WIN32) && defined(OSLANG_UTF8)
-	char	sjis[MAX_PATH];
+	OEMCHAR	sjis[MAX_PATH];
 	codecnv_utf8tosjis(sjis, sizeof(sjis), path, (UINT)-1);
 	if (stat(sjis, &sb) == 0)
 #else
@@ -177,17 +177,17 @@ struct stat sb;
 	return(-1);
 }
 
-short file_delete(const char *path) {
+short file_delete(const OEMCHAR *path) {
 
 	return(remove(path));
 }
 
-short file_rename(const char *existpath, const char *newpath) {
+short file_rename(const OEMCHAR *existpath, const OEMCHAR *newpath) {
 
 	return((short)rename(existpath, newpath));
 }
 
-short file_dircreate(const char *path) {
+short file_dircreate(const OEMCHAR *path) {
 
 #if !(defined(__LIBRETRO__) && defined(VITA))
 #if defined(_WIN32)
@@ -198,7 +198,7 @@ short file_dircreate(const char *path) {
 #endif
 }
 
-short file_dirdelete(const char *path) {
+short file_dirdelete(const OEMCHAR *path) {
 
 #if !(defined(__LIBRETRO__) && (defined(VITA) || defined(EMSCRIPTEN)))
 	return((short)rmdir(path));
@@ -206,50 +206,50 @@ short file_dirdelete(const char *path) {
 }
 
 /* カレントファイル操作 */
-void file_setcd(const char *exepath) {
+void file_setcd(const OEMCHAR *exepath) {
 
 	file_cpyname(curpath, exepath, sizeof(curpath));
 	curfilep = file_getname(curpath);
 	*curfilep = '\0';
 }
 
-char *file_getcd(const char *path) {
+OEMCHAR *file_getcd(const OEMCHAR *path) {
 
 	file_cpyname(curfilep, path, NELEMENTS(curpath) - (UINT)(curfilep - curpath));
 	return(curpath);
 }
 
-FILEH file_open_c(const char *path) {
+FILEH file_open_c(const OEMCHAR *path) {
 
 	file_cpyname(curfilep, path, NELEMENTS(curpath) - (UINT)(curfilep - curpath));
 	return(file_open(curpath));
 }
 
-FILEH file_open_rb_c(const char *path) {
+FILEH file_open_rb_c(const OEMCHAR *path) {
 
 	file_cpyname(curfilep, path, NELEMENTS(curpath) - (UINT)(curfilep - curpath));
 	return(file_open_rb(curpath));
 }
 
-FILEH file_create_c(const char *path) {
+FILEH file_create_c(const OEMCHAR *path) {
 
 	file_cpyname(curfilep, path, NELEMENTS(curpath) - (UINT)(curfilep - curpath));
 	return(file_create(curpath));
 }
 
-short file_delete_c(const char *path) {
+short file_delete_c(const OEMCHAR *path) {
 
 	file_cpyname(curfilep, path, NELEMENTS(curpath) - (UINT)(curfilep - curpath));
 	return(file_delete(curpath));
 }
 
-short file_attr_c(const char *path) {
+short file_attr_c(const OEMCHAR *path) {
 
 	file_cpyname(curfilep, path, NELEMENTS(curpath) - (UINT)(curfilep - curpath));
 	return(file_attr_c(curpath));
 }
 
-#if defined(WIN32)
+#if !defined(__LIBRETRO__) && defined(WIN32)
 static BRESULT cnvdatetime(FILETIME *file, DOSDATE *dosdate, DOSTIME *dostime) {
 
 	FILETIME	localtime;
@@ -295,9 +295,9 @@ static BRESULT setflist(WIN32_FIND_DATA *w32fd, FLINFO *fli) {
 	return(SUCCESS);
 }
 
-FLISTH file_list1st(const char *dir, FLINFO *fli) {
+FLISTH file_list1st(const OEMCHAR *dir, FLINFO *fli) {
 
-	char			path[MAX_PATH];
+	OEMCHAR			path[MAX_PATH];
 	HANDLE			hdl;
 	WIN32_FIND_DATA	w32fd;
 
@@ -333,7 +333,7 @@ void file_listclose(FLISTH hdl) {
 	FindClose(hdl);
 }
 #else
-FLISTH file_list1st(const char *dir, FLINFO *fli) {
+FLISTH file_list1st(const OEMCHAR *dir, FLINFO *fli) {
 
 #if defined(__LIBRETRO__)
 	struct RDIR	*ret;
@@ -419,7 +419,7 @@ void file_listclose(FLISTH hdl) {
 }
 #endif
 
-void file_catname(char *path, const char *name, int maxlen) {
+void file_catname(OEMCHAR *path, const OEMCHAR *name, int maxlen) {
 
 	int		csize;
 
@@ -445,9 +445,9 @@ void file_catname(char *path, const char *name, int maxlen) {
 	}
 }
 
-char *file_getname(const char *path) {
+OEMCHAR *file_getname(const OEMCHAR *path) {
 
-const char	*ret;
+const OEMCHAR	*ret;
 	int		csize;
 
 	ret = path;
@@ -461,21 +461,21 @@ const char	*ret;
 		}
 		path += csize;
 	}
-	return((char *)ret);
+	return((OEMCHAR *)ret);
 }
 
-void file_cutname(char *path) {
+void file_cutname(OEMCHAR *path) {
 
-	char	*p;
+	OEMCHAR	*p;
 
 	p = file_getname(path);
 	*p = '\0';
 }
 
-char *file_getext(const char *path) {
+OEMCHAR *file_getext(const OEMCHAR *path) {
 
-const char	*p;
-const char	*q;
+const OEMCHAR	*p;
+const OEMCHAR	*q;
 
 	p = file_getname(path);
 	q = NULL;
@@ -488,13 +488,13 @@ const char	*q;
 	if (q == NULL) {
 		q = p;
 	}
-	return((char *)q);
+	return((OEMCHAR *)q);
 }
 
-void file_cutext(char *path) {
+void file_cutext(OEMCHAR *path) {
 
-	char	*p;
-	char	*q;
+	OEMCHAR	*p;
+	OEMCHAR	*q;
 
 	p = file_getname(path);
 	q = NULL;
@@ -509,7 +509,7 @@ void file_cutext(char *path) {
 	}
 }
 
-void file_cutseparator(char *path) {
+void file_cutseparator(OEMCHAR *path) {
 
 	int		pos;
 
@@ -525,7 +525,7 @@ void file_cutseparator(char *path) {
 	}
 }
 
-void file_setseparator(char *path, int maxlen) {
+void file_setseparator(OEMCHAR *path, int maxlen) {
 
 	int		pos;
 
