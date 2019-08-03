@@ -22,8 +22,8 @@
 #endif
 #elif defined(NP2_THREAD_LR)
 #include <rthreads/rthreads.h>
-#include <rthreads/rsemaphore.h>
 #include <retro_timers.h>
+#include "sdl2/libretro/rsemaphore.h"
 #endif
 
 #if defined(NP2_THREAD_WIN)

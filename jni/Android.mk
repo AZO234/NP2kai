@@ -76,7 +76,7 @@ ifneq ($(STATIC_LINKING), 1)
 			$(NP2_PATH)/sdl2/libretro/libretro-common/lists/file_list.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/lists/string_list.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/lists/vector_list.c \
-			$(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rsemaphore.c \
+			$(NP2_PATH)/sdl2/libretro/rsemaphore.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rthreads.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/streams/chd_stream.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/streams/file_stream.c \

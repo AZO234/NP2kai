@@ -731,7 +731,13 @@ void pccore_reset(void) {
 	}
 #elif defined(NP2_X11) || defined(__LIBRETRO__)
 	{
+<<<<<<< HEAD
 		asynccpu_lastclock = asynccpu_clockcount = (UINT64)clock();
+=======
+		struct timespec t;
+		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t);
+		asynccpu_lastclock = asynccpu_clockcount = (UINT64)t.tv_sec * 1000000000 + t.tv_nsec;
+>>>>>>> 6d2b0a232f47d9f3f0fff3496e1ec2a606564962
 		asynccpu_clockpersec = CLOCKS_PER_SEC;
 	}
 #elif defined(NP2_SDL2)
