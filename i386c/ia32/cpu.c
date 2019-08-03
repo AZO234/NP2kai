@@ -300,15 +300,12 @@ exec_allstep(void)
 #elif defined(NP2_X11) || defined(__LIBRETRO__)
 			if(asynccpu_clockpersec){
 				if(clkcnt==0){
-					struct timespec t;
-					clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t);
-					asynccpu_clockcount = (UINT64)t.tv_sec * 1000000000 + t.tv_nsec;
+					asynccpu_clockcount = (UINT64)clock();
 					if(!((asynccpu_clockcount - asynccpu_lastclock) * pccore.realclock / asynccpu_clockpersec < CPU_BASECLOCK)){
 						if(CPU_REMCLOCK > 0){
 							CPU_REMCLOCK -= CPU_BASECLOCK;
 						}
-						clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t);
-						asynccpu_lastclock = (UINT64)t.tv_sec * 1000000000 + t.tv_nsec;
+						asynccpu_lastclock = (UINT64)clock();
 						break;
 					}
 				}

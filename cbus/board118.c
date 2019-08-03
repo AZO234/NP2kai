@@ -243,6 +243,21 @@ static REG8 IOINPCALL srnf_ia460(UINT port)
 	return (srnf);
 }
 
+/*********** WaveStar I/O ***********/
+
+REG8 wavestar_4d2 = 0xff;
+static void IOOUTCALL wavestar_o4d2(UINT port, REG8 dat)
+{
+	wavestar_4d2 = dat;
+	(void)port;
+}
+
+static REG8 IOINPCALL wavestar_i4d2(UINT port)
+{
+	(void)port;
+	return (wavestar_4d2);
+}
+
 /*********** ソフトウェアディップスイッチ I/O ***********/
 
 static REG8 IOINPCALL wss_i881e(UINT port)
@@ -452,7 +467,7 @@ void board118_reset(const NP2CFG *pConfig)
 {
 
 	// 86音源と共存させる場合、使用するNP2 OPNA番号を変える
-	if(g_nSoundID==SOUNDID_PC_9801_86_WSS ||g_nSoundID==SOUNDID_PC_9801_86_118){
+	if(g_nSoundID==SOUNDID_PC_9801_86_WSS || g_nSoundID==SOUNDID_PC_9801_86_118 || g_nSoundID==SOUNDID_WAVESTAR){
 		opna_idx = 1;
 	}else{
 		opna_idx = 0;
@@ -466,7 +481,21 @@ void board118_reset(const NP2CFG *pConfig)
 	}else{
 		// OPNAタイマーをセット
 		UINT irqval = 0x00;
-		switch(np2cfg.snd118irqf){
+		UINT8 irqf = np2cfg.snd118irqf;
+		if(g_nSoundID==SOUNDID_PC_9801_86_118){
+			UINT8 irq86table[4] = {0x03, 0x0d, 0x0a, 0x0c};
+			UINT8 nIrq86 = (np2cfg.snd86opt & 0x10) | ((np2cfg.snd86opt & 0x4) << 5) | ((np2cfg.snd86opt & 0x8) << 3);
+			UINT8 irq86 = irq86table[nIrq86 >> 6];
+			irqf = np2cfg.snd118irqp;
+			if(irqf == irq86){
+				if(irq86!=3){
+					irqf = 0x3;
+				}else{
+					irqf = 0xC;
+				}
+			}
+		}
+		switch(irqf){
 		case 3:
 			irqval = 0x10|(0 << 6);
 			break;
@@ -537,6 +566,22 @@ void board118_reset(const NP2CFG *pConfig)
 		//cs4231.extfunc = 0x01;
 		//extendchannel((REG8)(cs4231.extfunc & 1));
 	}
+
+	// WaveStarの場合、ボリューム初期化
+	if(g_nSoundID==SOUNDID_WAVESTAR){
+		// FM音量
+		cs4231.devvolume[0xff] = 0xf;
+		opngen_setvol(np2cfg.vol_fm * cs4231.devvolume[0xff] / 15);
+		psggen_setvol(np2cfg.vol_ssg * cs4231.devvolume[0xff] / 15);
+		rhythm_setvol(np2cfg.vol_rhythm * cs4231.devvolume[0xff] / 15);
+#if defined(SUPPORT_FMGEN)
+		if(np2cfg.usefmgen) {
+			opna_fmgen_setallvolumeFM_linear(np2cfg.vol_fm * cs4231.devvolume[0xff] / 15);
+			opna_fmgen_setallvolumePSG_linear(np2cfg.vol_ssg * cs4231.devvolume[0xff] / 15);
+			opna_fmgen_setallvolumeRhythmTotal_linear(np2cfg.vol_rhythm * cs4231.devvolume[0xff] / 15);
+		}
+#endif
+	}
 	(void)pConfig;
 }
 
@@ -549,7 +594,7 @@ void board118_bind(void)
 	cs4231io_bind();
 	
 	// 86音源と共存させる場合、使用するNP2 OPNA番号を変える
-	if(g_nSoundID==SOUNDID_PC_9801_86_WSS||g_nSoundID==SOUNDID_PC_9801_86_118){
+	if(g_nSoundID==SOUNDID_PC_9801_86_WSS || g_nSoundID==SOUNDID_PC_9801_86_118 || g_nSoundID==SOUNDID_WAVESTAR){
 		opna_idx = 1;
 	}else{
 		opna_idx = 0;
@@ -557,15 +602,19 @@ void board118_bind(void)
 
 	if(g_nSoundID==SOUNDID_MATE_X_PCM || g_nSoundID==SOUNDID_PC_9801_86_WSS){
 		a460_soundid = np2cfg.sndwssid;//0x70;
+	}else if(g_nSoundID==SOUNDID_WAVESTAR){
+		a460_soundid = 0x41;
 	}else{
 		a460_soundid = np2cfg.snd118id;//0x80;
 	}
-	
-	if(g_nSoundID==SOUNDID_PC_9801_86_WSS || g_nSoundID==SOUNDID_MATE_X_PCM){
+
+	if(g_nSoundID==SOUNDID_PC_9801_86_WSS || g_nSoundID==SOUNDID_MATE_X_PCM || g_nSoundID==SOUNDID_WAVESTAR){
 		// Mate-X PCMの場合、CS4231だけ
-		iocore_attachout(cs4231.port[1], ymf_oa460);
-		iocore_attachinp(cs4231.port[1], ymf_ia460);
-		iocore_attachinp(0x881e, wss_i881e);
+		if(g_nSoundID!=SOUNDID_WAVESTAR){
+			iocore_attachout(cs4231.port[1], ymf_oa460);
+			iocore_attachinp(cs4231.port[1], ymf_ia460);
+			iocore_attachinp(0x881e, wss_i881e);
+		}
 	}else{
 		// 118音源の場合、色々割り当て
 
@@ -606,6 +655,12 @@ void board118_bind(void)
 		//iocore_attachinp(cs4231.port[15],srnf_ia460);
 		//srnf = 0x81;
 		
+		// WaveStar I/O port割り当て
+		if(g_nSoundID==SOUNDID_WAVESTAR){
+			iocore_attachout(0x4d2 ,wavestar_o4d2);
+			iocore_attachinp(0x4d2 ,wavestar_i4d2);
+		}
+		
 		// PC-9801-118 config I/O port割り当て
 		iocore_attachout(cs4231.port[14],csctrl_o148e);
 		iocore_attachinp(cs4231.port[14],csctrl_i148e);
@@ -634,7 +689,7 @@ void board118_unbind(void)
 {
 	cs4231io_unbind();
 	
-	if(g_nSoundID==SOUNDID_PC_9801_86_WSS || g_nSoundID==SOUNDID_MATE_X_PCM){
+	if(g_nSoundID==SOUNDID_PC_9801_86_WSS || g_nSoundID==SOUNDID_MATE_X_PCM || g_nSoundID==SOUNDID_WAVESTAR){
 		// Mate-X PCMの場合、CS4231だけ
 		iocore_detachout(cs4231.port[1]);
 		iocore_detachinp(cs4231.port[1]);

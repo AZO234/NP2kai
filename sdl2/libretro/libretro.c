@@ -14,6 +14,7 @@
 
 #include "libretro.h"
 #include "libretro_params.h"
+#include "libretro_core_options.h"
 
 #include "compiler.h"//required to prevent missing type errors
 #include "beep.h"
@@ -843,56 +844,6 @@ void retro_set_environment(retro_environment_t cb)
    //bool no_rom = !LR_REQUIRESROM;
    //environ_cb(RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME, &no_rom);
 
-   struct retro_variable variables[] = {
-      { "np2kai_drive" , "Swap Disks on Drive; FDD2|FDD1" },
-      { "np2kai_keyboard" , "Keyboard (Restart); Ja|Us" },
-      { "np2kai_model" , "PC Model (Restart); PC-9801VX|PC-286|PC-9801VM" },
-      { "np2kai_clk_base" , "CPU Base Clock (Restart); 2.4576 MHz|1.9968 MHz" },
-      { "np2kai_clk_mult" , "CPU Clock Multiplier (Restart); 4|5|6|8|10|12|16|20|24|30|36|40|42|52|64|76|88|100|2" },
-#if defined(SUPPORT_ASYNC_CPU)
-      { "np2kai_async_cpu" , "Async CPU(experimental) (Restart); OFF|ON" },
-#endif
-      { "np2kai_ExMemory" , "RAM Size (Restart); 3|7|11|13|16|32|64|120|230|1" },
-      { "np2kai_FastMC" , "Fast memcheck; OFF|ON" },
-      { "np2kai_gdc" , "GDC; uPD7220|uPD72020" },
-      { "np2kai_skipline" , "Skipline Revisions; Full 255 lines|ON|OFF" },
-      { "np2kai_realpal" , "Real Palettes; OFF|ON" },
-      { "np2kai_lcd" , "LCD; OFF|ON" },
-      { "np2kai_SNDboard" , "Sound Board (Restart); PC9801-86|PC9801-26K + 86|PC9801-86 + Chibi-oto|PC9801-118|PC9801-86 + Mate-X PCM(B460)|PC9801-86 + 118|Mate-X PCM(B460)|Chibi-oto|Speak Board|PC9801-86 + Speak Board|Spark Board|Sound Orchestra|Sound Orchestra-V|Sound Blaster 16|AMD-98|Otomi-chanx2|Otomi-chanx2 + 86|None|PC9801-14|PC9801-26K" },
-      { "np2kai_118ROM" , "enable 118 ROM; ON|OFF" },
-      { "np2kai_jast_snd" , "JastSound; OFF|ON" },
-      { "np2kai_xroll" , "Swap PageUp/PageDown; ON|OFF" },
-      { "np2kai_usefmgen" , "Sound Generator; fmgen|Default" },
-      { "np2kai_volume_M" , "Volume Master; 100|0|5|10|15|20|25|30|35|40|45|50|55|60|65|70|75|80|85|90|95" },
-      { "np2kai_volume_F" , "Volume FM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
-      { "np2kai_volume_S" , "Volume SSG; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
-      { "np2kai_volume_A" , "Volume ADPCM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
-      { "np2kai_volume_P" , "Volume PCM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
-      { "np2kai_volume_R" , "Volume RHYTHM; 64|68|72|76|80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60" },
-      { "np2kai_volume_C" , "Volume CD-DA; 128|136|144|154|160|168|196|184|192|200|208|216|224|232|240|248|255|0|8|16|24|32|40|48|56|64|72|80|88|96|104|112|120" },
-      { "np2kai_Seek_Snd" , "Floppy Seek Sound; OFF|ON" },
-      { "np2kai_Seek_Vol" , "Volume Floppy Seek; 80|84|88|92|96|100|104|108|112|116|120|124|128|0|4|8|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76" },
-      { "np2kai_BEEP_vol" , "Volume Beep; 3|0|1|2" },
-#if defined(SUPPORT_WAB)
-      { "np2kai_CLGD_en" , "Enable WAB (Restart App); OFF|ON" },
-      { "np2kai_CLGD_type" , "WAB Type; PC-9821Xe10,Xa7e,Xb10 built-in|PC-9821Bp,Bs,Be,Bf built-in|PC-9821Xe built-in|PC-9821Cb built-in|PC-9821Cf built-in|PC-9821Cb2 built-in|PC-9821Cx2 built-in|PC-9821 PCI CL-GD5446 built-in|MELCO WAB-S|MELCO WSN-A2F|MELCO WSN-A4F|I-O DATA GA-98NBI/C|I-O DATA GA-98NBII|I-O DATA GA-98NBIV|PC-9801-96(PC-9801B3-E02)|Auto Select(Xe10, GA-98NBI/C), PCI|Auto Select(Xe10, GA-98NBII), PCI|Auto Select(Xe10, GA-98NBIV), PCI|Auto Select(Xe10, WAB-S), PCI|Auto Select(Xe10, WSN-A2F), PCI|Auto Select(Xe10, WSN-A4F), PCI|Auto Select(Xe10, WAB-S)|Auto Select(Xe10, WSN-A2F)|Auto Select(Xe10, WSN-A4F)" },
-      { "np2kai_CLGD_fc" , "Use Fake Hardware Cursor; OFF|ON" },
-#endif	/* defined(SUPPORT_WAB) */
-#if defined(SUPPORT_PEGC)
-       { "np2kai_PEGC" , "Enable PEGC plane mode; ON|OFF" },
-#endif
-#if defined(SUPPORT_PCI)
-      { "np2kai_PCI_en" , "Enable PCI (Restart App); OFF|ON" },
-      { "np2kai_PCI_type" , "PCMC Type; Intel 82434LX|Intel 82441FX|VLSI Wildcat" },
-      { "np2kai_PCI_bios32" , "Use BIOS32 (not recommended); OFF|ON" },
-#endif	/* defined(SUPPORT_PCI) */
-      { "np2kai_usecdecc" , "Use CD-ROM EDC/ECC Emulation; ON|OFF" },
-      { "np2kai_j2msuratio" , "J2M Cursor Speed up Ratio; x10|x20|up stop|x5" },
-      { "np2kai_joy2mousekey" , "Joypad to Mouse/Keyboard Mapping; OFF|Mouse|Arrows|Keypad|Manual" },
-      { "np2kai_joynp2menu" , "Joypad to NP2 menu Mapping; L2|R|R2|L3|R3|A|B|X|Y|Start|Select|OFF|L" },
-      { NULL, NULL },
-   };
-
    environ_cb(RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME, &allow_no_game);
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &logging))
@@ -900,7 +851,7 @@ void retro_set_environment(retro_environment_t cb)
    else
       log_cb = NULL;
 
-   cb(RETRO_ENVIRONMENT_SET_VARIABLES, variables);
+   libretro_set_core_options(environ_cb);
 }
 
 static void update_variables(void)
@@ -1053,6 +1004,8 @@ static void update_variables(void)
          np2cfg.SOUND_SW = 0x41;
       else if (strcmp(var.value, "AMD-98") == 0)
          np2cfg.SOUND_SW = 0x80;
+      else if (strcmp(var.value, "WaveStar") == 0)
+         np2cfg.SOUND_SW = 0x70;
       else if (strcmp(var.value, "Otomi-chanx2") == 0)
          np2cfg.SOUND_SW = 0x30;
       else if (strcmp(var.value, "Otomi-chanx2 + 86") == 0)

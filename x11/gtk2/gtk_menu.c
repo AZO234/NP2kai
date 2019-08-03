@@ -339,6 +339,7 @@ static GtkRadioActionEntry soundboard_entries[] = {
 { "sb16",	    NULL, "Sound Blaster 16",        NULL, NULL, 0x41 },
 #endif	/* SUPPORT_SOUND_SB16 */
 { "amd98",          NULL, "_AMD98",                  NULL, NULL, 0x80 },
+{ "wavestar",       NULL, "_WaveStar",               NULL, NULL, 0x70 },
 #if defined(SUPPORT_PX)
 { "px1",            NULL, "Otomi-chanx2",            NULL, NULL, 0x30 },
 { "px2",            NULL, "Otomi-chanx2 + 86",       NULL, NULL, 0x50 },
@@ -559,6 +560,7 @@ static const gchar *ui_info =
 "    <menuitem action='sb16'/>\n"
 #endif	/* SUPPORT_SOUND_SB16 */
 "    <menuitem action='amd98'/>\n"
+"    <menuitem action='wavestar'/>\n"
 #if defined(SUPPORT_PX)
 "    <menuitem action='px1'/>\n"
 "    <menuitem action='px2'/>\n"

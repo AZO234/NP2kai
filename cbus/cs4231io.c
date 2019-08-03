@@ -214,6 +214,12 @@ void cs4231io_reset(void) {
 				sndirq = 0xC;
 			}
 		}
+	}else if(g_nSoundID==SOUNDID_WAVESTAR){
+		//UINT8 irq86table[4] = {0x03, 0x0d, 0x0a, 0x0c};
+		//UINT8 nIrq86 = (np2cfg.snd86opt & 0x10) | ((np2cfg.snd86opt & 0x4) << 5) | ((np2cfg.snd86opt & 0x8) << 3);
+		//UINT8 irq86 = irq86table[nIrq86 >> 6];
+		sndirq = 12;// IRQ12固定　irq86;
+		snddma = 3;// DMA#3固定 np2cfg.snd118dma; 
 	}else{
 		sndirq = np2cfg.snd118irqp;
 		snddma = np2cfg.snd118dma;
@@ -252,7 +258,7 @@ void cs4231io_reset(void) {
 	cs4231.dmairq = cs4231irq[(cs4231.adrs >> 3) & 7]; // IRQをセット
 	cs4231.dmach = cs4231dma[cs4231.adrs & 7]; // DMAチャネルをセット
 	cs4231.port[0] = 0x0f40; //WSS BASE I/O port
-	if(g_nSoundID==SOUNDID_PC_9801_86_WSS||g_nSoundID==SOUNDID_PC_9801_86_118){
+	if(g_nSoundID==SOUNDID_PC_9801_86_WSS || g_nSoundID==SOUNDID_PC_9801_86_118){
 		cs4231.port[1] = 0xb460; // Sound ID I/O port (A460hは86音源が使うのでB460hに変更)
 	}else{
 		cs4231.port[1] = 0xa460; // Sound ID I/O port
@@ -304,16 +310,18 @@ void cs4231io_reset(void) {
 void cs4231io_bind(void) {
 
 	sound_streamregist(&cs4231, (SOUNDCB)cs4231_getpcm); // CS4231用 オーディオ再生ストリーム
-	iocore_attachout(0xc24, csctrl_oc24);
-	iocore_attachout(0xc2b, csctrl_oc2b);
-	iocore_attachout(0xc2d, csctrl_oc2d);
-	iocore_attachinp(0xc24, csctrl_ic24);
-	iocore_attachinp(0xc2b, csctrl_ic2b);
-	iocore_attachinp(0xc2d, csctrl_ic2d);
+	if(g_nSoundID!=SOUNDID_WAVESTAR){
+		iocore_attachout(0xc24, csctrl_oc24);
+		iocore_attachout(0xc2b, csctrl_oc2b);
+		iocore_attachout(0xc2d, csctrl_oc2d);
+		iocore_attachinp(0xc24, csctrl_ic24);
+		iocore_attachinp(0xc2b, csctrl_ic2b);
+		iocore_attachinp(0xc2d, csctrl_ic2d);
+	}
 	if (cs4231.dmach != 0xff) {
 		dmac_attach(DMADEV_CS4231, cs4231.dmach); // CS4231のDMAチャネルを割り当て
 	}
-	if(g_nSoundID!=SOUNDID_PC_9801_86_WSS && g_nSoundID!=SOUNDID_MATE_X_PCM){
+	if(!(g_nSoundID==SOUNDID_PC_9801_86_WSS || g_nSoundID==SOUNDID_MATE_X_PCM)){
 		iocore_attachout(0x480, csctrl_o480);
 		iocore_attachinp(0x480, csctrl_i480);
 		iocore_attachinp(0x481, csctrl_i481);
@@ -344,7 +352,7 @@ void cs4231io_unbind(void) {
 	if (cs4231.dmach != 0xff) {
 		dmac_detach(DMADEV_CS4231); // CS4231のDMAチャネルを割り当て
 	}
-	if(g_nSoundID!=SOUNDID_PC_9801_86_WSS && g_nSoundID!=SOUNDID_MATE_X_PCM){
+	if(!(g_nSoundID==SOUNDID_PC_9801_86_WSS || g_nSoundID==SOUNDID_MATE_X_PCM || g_nSoundID==SOUNDID_WAVESTAR)){
 		iocore_detachout(0x480);
 		iocore_detachinp(0x480);
 		iocore_detachinp(0x481);
@@ -414,6 +422,9 @@ void IOOUTCALL cs4231io0_w8(UINT port, REG8 value) {
 			break;
 	}
 }
+void IOOUTCALL cs4231io0_w8_wavestar(UINT port, REG8 value) {
+	cs4231io0_w8(((port - 0xA460) >> 1) + cs4231.port[0] + 1, value);
+}
 // CS4231 I/O READ
 REG8 IOINPCALL cs4231io0_r8(UINT port) {
 
@@ -451,6 +462,9 @@ REG8 IOINPCALL cs4231io0_r8(UINT port) {
 			return (0x80);
 	}
 	return(0);
+}
+REG8 IOINPCALL cs4231io0_r8_wavestar(UINT port) {
+	return cs4231io0_r8(((port - 0xA460) >> 1) + cs4231.port[0] + 1);
 }
 
 // canbe mixer i/o port? WRITE

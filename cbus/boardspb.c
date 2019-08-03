@@ -160,7 +160,11 @@ void boardspb_reset(const NP2CFG *pConfig, int opnaidx)
 	opna_idx = opnaidx;
 
 	opna_reset(&g_opna[opna_idx], OPNA_MODE_2608 | OPNA_HAS_TIMER | OPNA_HAS_ADPCM | OPNA_HAS_VR | OPNA_S98);
-	opna_timer(&g_opna[opna_idx], (pConfig->spbopt & 0xc0) | 0x10, NEVENT_FMTIMERA, NEVENT_FMTIMERB);
+	if(opna_idx == 1){
+		opna_timer(&g_opna[opna_idx], (pConfig->spbopt & 0xc0) | 0x10, NEVENT_FMTIMER2A, NEVENT_FMTIMER2B);
+	}else{
+		opna_timer(&g_opna[opna_idx], (pConfig->spbopt & 0xc0) | 0x10, NEVENT_FMTIMERA, NEVENT_FMTIMERB);
+	}
 
 	g_opna[opna_idx].s.extend = 1; // はじめからFM6音
 

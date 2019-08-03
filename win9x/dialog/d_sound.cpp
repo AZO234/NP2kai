@@ -29,7 +29,7 @@
 // ---- mixer
 
 /**
- * @brief Mixer „Éö„Éº„Ç∏
+ * @brief Mixer ÉyÅ[ÉW
  */
 class SndOptMixerPage : public CPropPageProc
 {
@@ -44,17 +44,17 @@ protected:
 	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	CSliderValue m_master;		//!< „Éû„Çπ„Çø„Éº „É¥„Ç©„É™„É•„Éº„É†
-	CSliderValue m_fm;			//!< FM „É¥„Ç©„É™„É•„Éº„É†
-	CSliderValue m_psg;			//!< PSG „É¥„Ç©„É™„É•„Éº„É†
-	CSliderValue m_adpcm;		//!< ADPCM „É¥„Ç©„É™„É•„Éº„É†
-	CSliderValue m_pcm;			//!< PCM „É¥„Ç©„É™„É•„Éº„É†
-	CSliderValue m_rhythm;		//!< RHYTHM „É¥„Ç©„É™„É•„Éº„É†
-	CSliderValue m_cdda;		//!< CD-DA „É¥„Ç©„É™„É•„Éº„É†
+	CSliderValue m_master;		//!< É}ÉXÉ^Å[ ÉîÉHÉäÉÖÅ[ÉÄ
+	CSliderValue m_fm;			//!< FM ÉîÉHÉäÉÖÅ[ÉÄ
+	CSliderValue m_psg;			//!< PSG ÉîÉHÉäÉÖÅ[ÉÄ
+	CSliderValue m_adpcm;		//!< ADPCM ÉîÉHÉäÉÖÅ[ÉÄ
+	CSliderValue m_pcm;			//!< PCM ÉîÉHÉäÉÖÅ[ÉÄ
+	CSliderValue m_rhythm;		//!< RHYTHM ÉîÉHÉäÉÖÅ[ÉÄ
+	CSliderValue m_cdda;		//!< CD-DA ÉîÉHÉäÉÖÅ[ÉÄ
 };
 
 /**
- * „Ç≥„É≥„Çπ„Éà„É©„ÇØ„Çø
+ * ÉRÉìÉXÉgÉâÉNÉ^
  */
 SndOptMixerPage::SndOptMixerPage()
 	: CPropPageProc(IDD_SNDMIX)
@@ -62,16 +62,16 @@ SndOptMixerPage::SndOptMixerPage()
 }
 
 /**
- * „Éá„Çπ„Éà„É©„ÇØ„Çø
+ * ÉfÉXÉgÉâÉNÉ^
  */
 SndOptMixerPage::~SndOptMixerPage()
 {
 }
 
 /**
- * „Åì„ÅÆ„É°„ÇΩ„ÉÉ„Éâ„ÅØ WM_INITDIALOG „ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„Å´ÂøúÁ≠î„Åó„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @retval TRUE ÊúÄÂàù„ÅÆ„Ç≥„É≥„Éà„É≠„Éº„É´„Å´ÂÖ•Âäõ„Éï„Ç©„Éº„Ç´„Çπ„ÇíË®≠ÂÆö
- * @retval FALSE Êó¢„Å´Ë®≠ÂÆöÊ∏à
+ * Ç±ÇÃÉÅÉ\ÉbÉhÇÕ WM_INITDIALOG ÇÃÉÅÉbÉZÅ[ÉWÇ…âûìöÇµÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @retval TRUE ç≈èâÇÃÉRÉìÉgÉçÅ[ÉãÇ…ì¸óÕÉtÉHÅ[ÉJÉXÇê›íË
+ * @retval FALSE ä˘Ç…ê›íËçœ
  */
 BOOL SndOptMixerPage::OnInitDialog()
 {
@@ -118,7 +118,7 @@ BOOL SndOptMixerPage::OnInitDialog()
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå OK „ÅÆ„Éú„Çø„É≥ (IDOK ID „Åå„ÅÆ„Éú„Çø„É≥) „Çí„ÇØ„É™„ÉÉ„ÇØ„Åô„Çã„Å®Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
+ * ÉÜÅ[ÉUÅ[Ç™ OK ÇÃÉ{É^Éì (IDOK ID Ç™ÇÃÉ{É^Éì) ÇÉNÉäÉbÉNÇ∑ÇÈÇ∆åƒÇ—èoÇ≥ÇÍÇ‹Ç∑
  */
 void SndOptMixerPage::OnOK()
 {
@@ -134,13 +134,17 @@ void SndOptMixerPage::OnOK()
 		}
 	}
 
+	UINT volex = 15;
+	if(g_nSoundID==SOUNDID_WAVESTAR){
+		volex = cs4231.devvolume[0xff];
+	}
 	const UINT8 cFM = static_cast<UINT8>(m_fm.GetPos());
 	if (np2cfg.vol_fm != cFM)
 	{
 		np2cfg.vol_fm = cFM;
-		opngen_setvol(cFM);
+		opngen_setvol(cFM * volex / 15);
 #if defined(SUPPORT_FMGEN)
-		opna_fmgen_setallvolumeFM_linear(cFM);
+		opna_fmgen_setallvolumeFM_linear(cFM * volex / 15);
 #endif	/* SUPPORT_FMGEN */
 		bUpdated = true;
 	}
@@ -149,9 +153,9 @@ void SndOptMixerPage::OnOK()
 	if (np2cfg.vol_ssg != cPSG)
 	{
 		np2cfg.vol_ssg = cPSG;
-		psggen_setvol(cPSG);
+		psggen_setvol(cPSG * volex / 15);
 #if defined(SUPPORT_FMGEN)
-		opna_fmgen_setallvolumePSG_linear(cPSG);
+		opna_fmgen_setallvolumePSG_linear(cPSG * volex / 15);
 #endif	/* SUPPORT_FMGEN */
 		bUpdated = true;
 	}
@@ -184,9 +188,9 @@ void SndOptMixerPage::OnOK()
 	if (np2cfg.vol_rhythm != cRhythm)
 	{
 		np2cfg.vol_rhythm = cRhythm;
-		rhythm_setvol(cRhythm);
+		rhythm_setvol(cRhythm * volex / 15);
 #if defined(SUPPORT_FMGEN)
-		opna_fmgen_setallvolumeRhythmTotal_linear(cRhythm);
+		opna_fmgen_setallvolumeRhythmTotal_linear(cRhythm * volex / 15);
 #endif	/* SUPPORT_FMGEN */
 		for (UINT i = 0; i < _countof(g_opna); i++)
 		{
@@ -210,10 +214,10 @@ void SndOptMixerPage::OnOK()
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå„É°„Éã„É•„Éº„ÅÆÈ†ÖÁõÆ„ÇíÈÅ∏Êäû„Åó„Åü„Å®„Åç„Å´„ÄÅ„Éï„É¨„Éº„É†„ÉØ„Éº„ÇØ„Å´„Çà„Å£„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @param[in] wParam „Éë„É©„É°„Çø
- * @param[in] lParam „Éë„É©„É°„Çø
- * @retval TRUE „Ç¢„Éó„É™„Ç±„Éº„Ç∑„Éß„É≥„Åå„Åì„ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„ÇíÂá¶ÁêÜ„Åó„Åü
+ * ÉÜÅ[ÉUÅ[Ç™ÉÅÉjÉÖÅ[ÇÃçÄñ⁄ÇëIëÇµÇΩÇ∆Ç´Ç…ÅAÉtÉåÅ[ÉÄÉèÅ[ÉNÇ…ÇÊÇ¡ÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @param[in] wParam ÉpÉâÉÅÉ^
+ * @param[in] lParam ÉpÉâÉÅÉ^
+ * @retval TRUE ÉAÉvÉäÉPÅ[ÉVÉáÉìÇ™Ç±ÇÃÉÅÉbÉZÅ[ÉWÇèàóùÇµÇΩ
  */
 BOOL SndOptMixerPage::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -231,11 +235,11 @@ BOOL SndOptMixerPage::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * CWndProc „Ç™„Éñ„Ç∏„Çß„ÇØ„Éà„ÅÆ Windows „Éó„É≠„Ç∑„Éº„Ç∏„É£ (WindowProc) „ÅåÁî®ÊÑè„Åï„Çå„Å¶„ÅÑ„Åæ„Åô
- * @param[in] nMsg Âá¶ÁêÜ„Åï„Çå„Çã Windows „É°„ÉÉ„Çª„Éº„Ç∏„ÇíÊåáÂÆö„Åó„Åæ„Åô
- * @param[in] wParam „É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÂá¶ÁêÜ„Åß‰Ωø„ÅÜ‰ªòÂä†ÊÉÖÂ†±„ÇíÊèê‰æõ„Åó„Åæ„Åô„ÄÇ„Åì„ÅÆ„Éë„É©„É°„Éº„Çø„ÅÆÂÄ§„ÅØ„É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åó„Åæ„Åô
- * @param[in] lParam „É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÂá¶ÁêÜ„Åß‰Ωø„ÅÜ‰ªòÂä†ÊÉÖÂ†±„ÇíÊèê‰æõ„Åó„Åæ„Åô„ÄÇ„Åì„ÅÆ„Éë„É©„É°„Éº„Çø„ÅÆÂÄ§„ÅØ„É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åó„Åæ„Åô
- * @return „É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åô„ÇãÂÄ§„ÇíËøî„Åó„Åæ„Åô
+ * CWndProc ÉIÉuÉWÉFÉNÉgÇÃ Windows ÉvÉçÉVÅ[ÉWÉÉ (WindowProc) Ç™ópà”Ç≥ÇÍÇƒÇ¢Ç‹Ç∑
+ * @param[in] nMsg èàóùÇ≥ÇÍÇÈ Windows ÉÅÉbÉZÅ[ÉWÇéwíËÇµÇ‹Ç∑
+ * @param[in] wParam ÉÅÉbÉZÅ[ÉWÇÃèàóùÇ≈égÇ§ïtâ¡èÓïÒÇíÒãüÇµÇ‹Ç∑ÅBÇ±ÇÃÉpÉâÉÅÅ[É^ÇÃílÇÕÉÅÉbÉZÅ[ÉWÇ…àÀë∂ÇµÇ‹Ç∑
+ * @param[in] lParam ÉÅÉbÉZÅ[ÉWÇÃèàóùÇ≈égÇ§ïtâ¡èÓïÒÇíÒãüÇµÇ‹Ç∑ÅBÇ±ÇÃÉpÉâÉÅÅ[É^ÇÃílÇÕÉÅÉbÉZÅ[ÉWÇ…àÀë∂ÇµÇ‹Ç∑
+ * @return ÉÅÉbÉZÅ[ÉWÇ…àÀë∂Ç∑ÇÈílÇï‘ÇµÇ‹Ç∑
  */
 LRESULT SndOptMixerPage::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -283,7 +287,7 @@ LRESULT SndOptMixerPage::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 // ---- PC-9801-14
 
 /**
- * @brief 14 „Éö„Éº„Ç∏
+ * @brief 14 ÉyÅ[ÉW
  */
 class SndOpt14Page : public CPropPageProc
 {
@@ -298,19 +302,19 @@ protected:
 
 private:
 	/**
-	 * @brief „Ç¢„Ç§„ÉÜ„É†
+	 * @brief ÉAÉCÉeÉÄ
 	 */
 	struct Item
 	{
-		UINT nSlider;		//!< „Çπ„É©„Ç§„ÉÄ„Éº
-		UINT nStatic;		//!< „Çπ„Çø„ÉÜ„Ç£„ÉÉ„ÇØ
+		UINT nSlider;		//!< ÉXÉâÉCÉ_Å[
+		UINT nStatic;		//!< ÉXÉ^ÉeÉBÉbÉN
 	};
 
-	CSliderValue m_vol[6];	//!< „É¥„Ç©„É™„É•„Éº„É†
+	CSliderValue m_vol[6];	//!< ÉîÉHÉäÉÖÅ[ÉÄ
 };
 
 /**
- * „Ç≥„É≥„Çπ„Éà„É©„ÇØ„Çø
+ * ÉRÉìÉXÉgÉâÉNÉ^
  */
 SndOpt14Page::SndOpt14Page()
 	: CPropPageProc(IDD_SND14)
@@ -318,16 +322,16 @@ SndOpt14Page::SndOpt14Page()
 }
 
 /**
- * „Éá„Çπ„Éà„É©„ÇØ„Çø
+ * ÉfÉXÉgÉâÉNÉ^
  */
 SndOpt14Page::~SndOpt14Page()
 {
 }
 
 /**
- * „Åì„ÅÆ„É°„ÇΩ„ÉÉ„Éâ„ÅØ WM_INITDIALOG „ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„Å´ÂøúÁ≠î„Åó„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @retval TRUE ÊúÄÂàù„ÅÆ„Ç≥„É≥„Éà„É≠„Éº„É´„Å´ÂÖ•Âäõ„Éï„Ç©„Éº„Ç´„Çπ„ÇíË®≠ÂÆö
- * @retval FALSE Êó¢„Å´Ë®≠ÂÆöÊ∏à
+ * Ç±ÇÃÉÅÉ\ÉbÉhÇÕ WM_INITDIALOG ÇÃÉÅÉbÉZÅ[ÉWÇ…âûìöÇµÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @retval TRUE ç≈èâÇÃÉRÉìÉgÉçÅ[ÉãÇ…ì¸óÕÉtÉHÅ[ÉJÉXÇê›íË
+ * @retval FALSE ä˘Ç…ê›íËçœ
  */
 BOOL SndOpt14Page::OnInitDialog()
 {
@@ -353,7 +357,7 @@ BOOL SndOpt14Page::OnInitDialog()
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå OK „ÅÆ„Éú„Çø„É≥ (IDOK ID „Åå„ÅÆ„Éú„Çø„É≥) „Çí„ÇØ„É™„ÉÉ„ÇØ„Åô„Çã„Å®Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
+ * ÉÜÅ[ÉUÅ[Ç™ OK ÇÃÉ{É^Éì (IDOK ID Ç™ÇÃÉ{É^Éì) ÇÉNÉäÉbÉNÇ∑ÇÈÇ∆åƒÇ—èoÇ≥ÇÍÇ‹Ç∑
  */
 void SndOpt14Page::OnOK()
 {
@@ -377,11 +381,11 @@ void SndOpt14Page::OnOK()
 }
 
 /**
- * CWndProc „Ç™„Éñ„Ç∏„Çß„ÇØ„Éà„ÅÆ Windows „Éó„É≠„Ç∑„Éº„Ç∏„É£ (WindowProc) „ÅåÁî®ÊÑè„Åï„Çå„Å¶„ÅÑ„Åæ„Åô
- * @param[in] nMsg Âá¶ÁêÜ„Åï„Çå„Çã Windows „É°„ÉÉ„Çª„Éº„Ç∏„ÇíÊåáÂÆö„Åó„Åæ„Åô
- * @param[in] wParam „É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÂá¶ÁêÜ„Åß‰Ωø„ÅÜ‰ªòÂä†ÊÉÖÂ†±„ÇíÊèê‰æõ„Åó„Åæ„Åô„ÄÇ„Åì„ÅÆ„Éë„É©„É°„Éº„Çø„ÅÆÂÄ§„ÅØ„É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åó„Åæ„Åô
- * @param[in] lParam „É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÂá¶ÁêÜ„Åß‰Ωø„ÅÜ‰ªòÂä†ÊÉÖÂ†±„ÇíÊèê‰æõ„Åó„Åæ„Åô„ÄÇ„Åì„ÅÆ„Éë„É©„É°„Éº„Çø„ÅÆÂÄ§„ÅØ„É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åó„Åæ„Åô
- * @return „É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åô„ÇãÂÄ§„ÇíËøî„Åó„Åæ„Åô
+ * CWndProc ÉIÉuÉWÉFÉNÉgÇÃ Windows ÉvÉçÉVÅ[ÉWÉÉ (WindowProc) Ç™ópà”Ç≥ÇÍÇƒÇ¢Ç‹Ç∑
+ * @param[in] nMsg èàóùÇ≥ÇÍÇÈ Windows ÉÅÉbÉZÅ[ÉWÇéwíËÇµÇ‹Ç∑
+ * @param[in] wParam ÉÅÉbÉZÅ[ÉWÇÃèàóùÇ≈égÇ§ïtâ¡èÓïÒÇíÒãüÇµÇ‹Ç∑ÅBÇ±ÇÃÉpÉâÉÅÅ[É^ÇÃílÇÕÉÅÉbÉZÅ[ÉWÇ…àÀë∂ÇµÇ‹Ç∑
+ * @param[in] lParam ÉÅÉbÉZÅ[ÉWÇÃèàóùÇ≈égÇ§ïtâ¡èÓïÒÇíÒãüÇµÇ‹Ç∑ÅBÇ±ÇÃÉpÉâÉÅÅ[É^ÇÃílÇÕÉÅÉbÉZÅ[ÉWÇ…àÀë∂ÇµÇ‹Ç∑
+ * @return ÉÅÉbÉZÅ[ÉWÇ…àÀë∂Ç∑ÇÈílÇï‘ÇµÇ‹Ç∑
  */
 LRESULT SndOpt14Page::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -404,7 +408,7 @@ LRESULT SndOpt14Page::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 // ---- PC-9801-26
 
 /**
- * @brief 26 „Éö„Éº„Ç∏
+ * @brief 26 ÉyÅ[ÉW
  */
 class SndOpt26Page : public CPropPageProc
 {
@@ -419,7 +423,7 @@ protected:
 	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	UINT8 m_snd26;				//!< Ë®≠ÂÆöÂÄ§
+	UINT8 m_snd26;				//!< ê›íËíl
 	CComboData m_io;			//!< IO
 	CComboData m_int;			//!< INT
 	CComboData m_rom;			//!< ROM
@@ -456,7 +460,7 @@ static const CComboData::Entry s_rom26[] =
 };
 
 /**
- * „Ç≥„É≥„Çπ„Éà„É©„ÇØ„Çø
+ * ÉRÉìÉXÉgÉâÉNÉ^
  */
 SndOpt26Page::SndOpt26Page()
 	: CPropPageProc(IDD_SND26)
@@ -465,16 +469,16 @@ SndOpt26Page::SndOpt26Page()
 }
 
 /**
- * „Éá„Çπ„Éà„É©„ÇØ„Çø
+ * ÉfÉXÉgÉâÉNÉ^
  */
 SndOpt26Page::~SndOpt26Page()
 {
 }
 
 /**
- * „Åì„ÅÆ„É°„ÇΩ„ÉÉ„Éâ„ÅØ WM_INITDIALOG „ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„Å´ÂøúÁ≠î„Åó„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @retval TRUE ÊúÄÂàù„ÅÆ„Ç≥„É≥„Éà„É≠„Éº„É´„Å´ÂÖ•Âäõ„Éï„Ç©„Éº„Ç´„Çπ„ÇíË®≠ÂÆö
- * @retval FALSE Êó¢„Å´Ë®≠ÂÆöÊ∏à
+ * Ç±ÇÃÉÅÉ\ÉbÉhÇÕ WM_INITDIALOG ÇÃÉÅÉbÉZÅ[ÉWÇ…âûìöÇµÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @retval TRUE ç≈èâÇÃÉRÉìÉgÉçÅ[ÉãÇ…ì¸óÕÉtÉHÅ[ÉJÉXÇê›íË
+ * @retval FALSE ä˘Ç…ê›íËçœ
  */
 BOOL SndOpt26Page::OnInitDialog()
 {
@@ -496,7 +500,7 @@ BOOL SndOpt26Page::OnInitDialog()
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå OK „ÅÆ„Éú„Çø„É≥ (IDOK ID „Åå„ÅÆ„Éú„Çø„É≥) „Çí„ÇØ„É™„ÉÉ„ÇØ„Åô„Çã„Å®Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
+ * ÉÜÅ[ÉUÅ[Ç™ OK ÇÃÉ{É^Éì (IDOK ID Ç™ÇÃÉ{É^Éì) ÇÉNÉäÉbÉNÇ∑ÇÈÇ∆åƒÇ—èoÇ≥ÇÍÇ‹Ç∑
  */
 void SndOpt26Page::OnOK()
 {
@@ -508,10 +512,10 @@ void SndOpt26Page::OnOK()
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå„É°„Éã„É•„Éº„ÅÆÈ†ÖÁõÆ„ÇíÈÅ∏Êäû„Åó„Åü„Å®„Åç„Å´„ÄÅ„Éï„É¨„Éº„É†„ÉØ„Éº„ÇØ„Å´„Çà„Å£„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @param[in] wParam „Éë„É©„É°„Çø
- * @param[in] lParam „Éë„É©„É°„Çø
- * @retval TRUE „Ç¢„Éó„É™„Ç±„Éº„Ç∑„Éß„É≥„Åå„Åì„ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„ÇíÂá¶ÁêÜ„Åó„Åü
+ * ÉÜÅ[ÉUÅ[Ç™ÉÅÉjÉÖÅ[ÇÃçÄñ⁄ÇëIëÇµÇΩÇ∆Ç´Ç…ÅAÉtÉåÅ[ÉÄÉèÅ[ÉNÇ…ÇÊÇ¡ÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @param[in] wParam ÉpÉâÉÅÉ^
+ * @param[in] lParam ÉpÉâÉÅÉ^
+ * @retval TRUE ÉAÉvÉäÉPÅ[ÉVÉáÉìÇ™Ç±ÇÃÉÅÉbÉZÅ[ÉWÇèàóùÇµÇΩ
  */
 BOOL SndOpt26Page::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -542,11 +546,11 @@ BOOL SndOpt26Page::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * CWndProc „Ç™„Éñ„Ç∏„Çß„ÇØ„Éà„ÅÆ Windows „Éó„É≠„Ç∑„Éº„Ç∏„É£ (WindowProc) „ÅåÁî®ÊÑè„Åï„Çå„Å¶„ÅÑ„Åæ„Åô
- * @param[in] nMsg Âá¶ÁêÜ„Åï„Çå„Çã Windows „É°„ÉÉ„Çª„Éº„Ç∏„ÇíÊåáÂÆö„Åó„Åæ„Åô
- * @param[in] wParam „É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÂá¶ÁêÜ„Åß‰Ωø„ÅÜ‰ªòÂä†ÊÉÖÂ†±„ÇíÊèê‰æõ„Åó„Åæ„Åô„ÄÇ„Åì„ÅÆ„Éë„É©„É°„Éº„Çø„ÅÆÂÄ§„ÅØ„É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åó„Åæ„Åô
- * @param[in] lParam „É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÂá¶ÁêÜ„Åß‰Ωø„ÅÜ‰ªòÂä†ÊÉÖÂ†±„ÇíÊèê‰æõ„Åó„Åæ„Åô„ÄÇ„Åì„ÅÆ„Éë„É©„É°„Éº„Çø„ÅÆÂÄ§„ÅØ„É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åó„Åæ„Åô
- * @return „É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åô„ÇãÂÄ§„ÇíËøî„Åó„Åæ„Åô
+ * CWndProc ÉIÉuÉWÉFÉNÉgÇÃ Windows ÉvÉçÉVÅ[ÉWÉÉ (WindowProc) Ç™ópà”Ç≥ÇÍÇƒÇ¢Ç‹Ç∑
+ * @param[in] nMsg èàóùÇ≥ÇÍÇÈ Windows ÉÅÉbÉZÅ[ÉWÇéwíËÇµÇ‹Ç∑
+ * @param[in] wParam ÉÅÉbÉZÅ[ÉWÇÃèàóùÇ≈égÇ§ïtâ¡èÓïÒÇíÒãüÇµÇ‹Ç∑ÅBÇ±ÇÃÉpÉâÉÅÅ[É^ÇÃílÇÕÉÅÉbÉZÅ[ÉWÇ…àÀë∂ÇµÇ‹Ç∑
+ * @param[in] lParam ÉÅÉbÉZÅ[ÉWÇÃèàóùÇ≈égÇ§ïtâ¡èÓïÒÇíÒãüÇµÇ‹Ç∑ÅBÇ±ÇÃÉpÉâÉÅÅ[É^ÇÃílÇÕÉÅÉbÉZÅ[ÉWÇ…àÀë∂ÇµÇ‹Ç∑
+ * @return ÉÅÉbÉZÅ[ÉWÇ…àÀë∂Ç∑ÇÈílÇï‘ÇµÇ‹Ç∑
  */
 LRESULT SndOpt26Page::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -565,8 +569,8 @@ LRESULT SndOpt26Page::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * „Ç≥„É≥„Éà„É≠„Éº„É´Ë®≠ÂÆö
- * @param[in] cValue Ë®≠ÂÆöÂÄ§
+ * ÉRÉìÉgÉçÅ[Éãê›íË
+ * @param[in] cValue ê›íËíl
  */
 void SndOpt26Page::Set(UINT8 cValue)
 {
@@ -580,9 +584,9 @@ void SndOpt26Page::Set(UINT8 cValue)
 }
 
 /**
- * Ë®≠ÂÆö
- * @param[in] nAdd ËøΩÂä†„Éì„ÉÉ„Éà
- * @param[in] nRemove ÂâäÈô§„Éì„ÉÉ„Éà
+ * ê›íË
+ * @param[in] nAdd í«â¡ÉrÉbÉg
+ * @param[in] nRemove çÌèúÉrÉbÉg
  */
 void SndOpt26Page::SetJumper(UINT nAdd, UINT nRemove)
 {
@@ -595,7 +599,7 @@ void SndOpt26Page::SetJumper(UINT nAdd, UINT nRemove)
 }
 
 /**
- * DIPSW „Çí„Çø„ÉÉ„Éó„Åó„Åü
+ * DIPSW ÇÉ^ÉbÉvÇµÇΩ
  */
 void SndOpt26Page::OnDipSw()
 {
@@ -656,7 +660,7 @@ void SndOpt26Page::OnDipSw()
 // ---- PC-9801-86
 
 /**
- * @brief 86 „Éö„Éº„Ç∏
+ * @brief 86 ÉyÅ[ÉW
  */
 class SndOpt86Page : public CPropPageProc
 {
@@ -671,7 +675,7 @@ protected:
 	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	UINT8 m_snd86;				//!< Ë®≠ÂÆöÂÄ§
+	UINT8 m_snd86;				//!< ê›íËíl
 	CComboData m_io;			//!< IO
 	CComboData m_int;			//!< INT
 	CComboData m_id;			//!< ID
@@ -711,7 +715,7 @@ static const CComboData::Entry s_id86[] =
 };
 
 /**
- * „Ç≥„É≥„Çπ„Éà„É©„ÇØ„Çø
+ * ÉRÉìÉXÉgÉâÉNÉ^
  */
 SndOpt86Page::SndOpt86Page()
 	: CPropPageProc(IDD_SND86)
@@ -720,16 +724,16 @@ SndOpt86Page::SndOpt86Page()
 }
 
 /**
- * „Éá„Çπ„Éà„É©„ÇØ„Çø
+ * ÉfÉXÉgÉâÉNÉ^
  */
 SndOpt86Page::~SndOpt86Page()
 {
 }
 
 /**
- * „Åì„ÅÆ„É°„ÇΩ„ÉÉ„Éâ„ÅØ WM_INITDIALOG „ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„Å´ÂøúÁ≠î„Åó„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @retval TRUE ÊúÄÂàù„ÅÆ„Ç≥„É≥„Éà„É≠„Éº„É´„Å´ÂÖ•Âäõ„Éï„Ç©„Éº„Ç´„Çπ„ÇíË®≠ÂÆö
- * @retval FALSE Êó¢„Å´Ë®≠ÂÆöÊ∏à
+ * Ç±ÇÃÉÅÉ\ÉbÉhÇÕ WM_INITDIALOG ÇÃÉÅÉbÉZÅ[ÉWÇ…âûìöÇµÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @retval TRUE ç≈èâÇÃÉRÉìÉgÉçÅ[ÉãÇ…ì¸óÕÉtÉHÅ[ÉJÉXÇê›íË
+ * @retval FALSE ä˘Ç…ê›íËçœ
  */
 BOOL SndOpt86Page::OnInitDialog()
 {
@@ -751,7 +755,7 @@ BOOL SndOpt86Page::OnInitDialog()
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå OK „ÅÆ„Éú„Çø„É≥ (IDOK ID „Åå„ÅÆ„Éú„Çø„É≥) „Çí„ÇØ„É™„ÉÉ„ÇØ„Åô„Çã„Å®Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
+ * ÉÜÅ[ÉUÅ[Ç™ OK ÇÃÉ{É^Éì (IDOK ID Ç™ÇÃÉ{É^Éì) ÇÉNÉäÉbÉNÇ∑ÇÈÇ∆åƒÇ—èoÇ≥ÇÍÇ‹Ç∑
  */
 void SndOpt86Page::OnOK()
 {
@@ -763,10 +767,10 @@ void SndOpt86Page::OnOK()
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå„É°„Éã„É•„Éº„ÅÆÈ†ÖÁõÆ„ÇíÈÅ∏Êäû„Åó„Åü„Å®„Åç„Å´„ÄÅ„Éï„É¨„Éº„É†„ÉØ„Éº„ÇØ„Å´„Çà„Å£„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @param[in] wParam „Éë„É©„É°„Çø
- * @param[in] lParam „Éë„É©„É°„Çø
- * @retval TRUE „Ç¢„Éó„É™„Ç±„Éº„Ç∑„Éß„É≥„Åå„Åì„ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„ÇíÂá¶ÁêÜ„Åó„Åü
+ * ÉÜÅ[ÉUÅ[Ç™ÉÅÉjÉÖÅ[ÇÃçÄñ⁄ÇëIëÇµÇΩÇ∆Ç´Ç…ÅAÉtÉåÅ[ÉÄÉèÅ[ÉNÇ…ÇÊÇ¡ÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @param[in] wParam ÉpÉâÉÅÉ^
+ * @param[in] lParam ÉpÉâÉÅÉ^
+ * @retval TRUE ÉAÉvÉäÉPÅ[ÉVÉáÉìÇ™Ç±ÇÃÉÅÉbÉZÅ[ÉWÇèàóùÇµÇΩ
  */
 BOOL SndOpt86Page::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -805,11 +809,11 @@ BOOL SndOpt86Page::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * CWndProc „Ç™„Éñ„Ç∏„Çß„ÇØ„Éà„ÅÆ Windows „Éó„É≠„Ç∑„Éº„Ç∏„É£ (WindowProc) „ÅåÁî®ÊÑè„Åï„Çå„Å¶„ÅÑ„Åæ„Åô
- * @param[in] nMsg Âá¶ÁêÜ„Åï„Çå„Çã Windows „É°„ÉÉ„Çª„Éº„Ç∏„ÇíÊåáÂÆö„Åó„Åæ„Åô
- * @param[in] wParam „É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÂá¶ÁêÜ„Åß‰Ωø„ÅÜ‰ªòÂä†ÊÉÖÂ†±„ÇíÊèê‰æõ„Åó„Åæ„Åô„ÄÇ„Åì„ÅÆ„Éë„É©„É°„Éº„Çø„ÅÆÂÄ§„ÅØ„É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åó„Åæ„Åô
- * @param[in] lParam „É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÂá¶ÁêÜ„Åß‰Ωø„ÅÜ‰ªòÂä†ÊÉÖÂ†±„ÇíÊèê‰æõ„Åó„Åæ„Åô„ÄÇ„Åì„ÅÆ„Éë„É©„É°„Éº„Çø„ÅÆÂÄ§„ÅØ„É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åó„Åæ„Åô
- * @return „É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åô„ÇãÂÄ§„ÇíËøî„Åó„Åæ„Åô
+ * CWndProc ÉIÉuÉWÉFÉNÉgÇÃ Windows ÉvÉçÉVÅ[ÉWÉÉ (WindowProc) Ç™ópà”Ç≥ÇÍÇƒÇ¢Ç‹Ç∑
+ * @param[in] nMsg èàóùÇ≥ÇÍÇÈ Windows ÉÅÉbÉZÅ[ÉWÇéwíËÇµÇ‹Ç∑
+ * @param[in] wParam ÉÅÉbÉZÅ[ÉWÇÃèàóùÇ≈égÇ§ïtâ¡èÓïÒÇíÒãüÇµÇ‹Ç∑ÅBÇ±ÇÃÉpÉâÉÅÅ[É^ÇÃílÇÕÉÅÉbÉZÅ[ÉWÇ…àÀë∂ÇµÇ‹Ç∑
+ * @param[in] lParam ÉÅÉbÉZÅ[ÉWÇÃèàóùÇ≈égÇ§ïtâ¡èÓïÒÇíÒãüÇµÇ‹Ç∑ÅBÇ±ÇÃÉpÉâÉÅÅ[É^ÇÃílÇÕÉÅÉbÉZÅ[ÉWÇ…àÀë∂ÇµÇ‹Ç∑
+ * @return ÉÅÉbÉZÅ[ÉWÇ…àÀë∂Ç∑ÇÈílÇï‘ÇµÇ‹Ç∑
  */
 LRESULT SndOpt86Page::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -828,8 +832,8 @@ LRESULT SndOpt86Page::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * „Ç≥„É≥„Éà„É≠„Éº„É´Ë®≠ÂÆö
- * @param[in] cValue Ë®≠ÂÆöÂÄ§
+ * ÉRÉìÉgÉçÅ[Éãê›íË
+ * @param[in] cValue ê›íËíl
  */
 void SndOpt86Page::Set(UINT8 cValue)
 {
@@ -842,9 +846,9 @@ void SndOpt86Page::Set(UINT8 cValue)
 }
 
 /**
- * Ë®≠ÂÆö
- * @param[in] nAdd ËøΩÂä†„Éì„ÉÉ„Éà
- * @param[in] nRemove ÂâäÈô§„Éì„ÉÉ„Éà
+ * ê›íË
+ * @param[in] nAdd í«â¡ÉrÉbÉg
+ * @param[in] nRemove çÌèúÉrÉbÉg
  */
 void SndOpt86Page::SetJumper(UINT nAdd, UINT nRemove)
 {
@@ -857,7 +861,7 @@ void SndOpt86Page::SetJumper(UINT nAdd, UINT nRemove)
 }
 
 /**
- * DIPSW „Çí„Çø„ÉÉ„Éó„Åó„Åü
+ * DIPSW ÇÉ^ÉbÉvÇµÇΩ
  */
 void SndOpt86Page::OnDipSw()
 {
@@ -887,7 +891,7 @@ void SndOpt86Page::OnDipSw()
 // ---- PC-9801-118
 
 /**
- * @brief 118 „Éö„Éº„Ç∏
+ * @brief 118 ÉyÅ[ÉW
  */
 class SndOpt118Page : public CPropPageProc
 {
@@ -902,18 +906,24 @@ protected:
 	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	UINT16 m_snd118io;				//!< IOË®≠ÂÆöÂÄ§
-	UINT8 m_snd118id;				//!< IDË®≠ÂÆöÂÄ§
-	UINT8 m_snd118dma;				//!< DMAË®≠ÂÆöÂÄ§
-	UINT8 m_snd118irqf;				//!< IRQ(FM)Ë®≠ÂÆöÂÄ§
-	UINT8 m_snd118irqp;				//!< IRQ(PCM)Ë®≠ÂÆöÂÄ§
-	UINT8 m_snd118irqm;				//!< IRQ(MIDI)Ë®≠ÂÆöÂÄ§
+	UINT16 m_snd118io;				//!< IOê›íËíl
+	UINT8 m_snd118id;				//!< IDê›íËíl
+	UINT8 m_snd118dma;				//!< DMAê›íËíl
+	UINT8 m_snd118irqf;				//!< IRQ(FM)ê›íËíl
+	UINT8 m_snd118irqp;				//!< IRQ(PCM)ê›íËíl
+	UINT8 m_snd118irqm;				//!< IRQ(MIDI)ê›íËíl
+	UINT8 m_snd118rom;				//!< ROMê›íËíl
 	CComboData m_cmbio;				//!< IO
 	CComboData m_cmbid;				//!< ID
 	CComboData m_cmbdma;			//!< DMA
 	CComboData m_cmbirqf;			//!< IRQ(FM)
 	CComboData m_cmbirqp;			//!< IRQ(PCM)
 	CComboData m_cmbirqm;			//!< IRQ(MIDI)
+	CWndProc m_chkrom;				//!< ROM
+	CStaticDipSw m_jumper;			//!< Jumper
+	void Set(UINT8 cValue);
+	void SetJumper(UINT cAdd, UINT cRemove);
+	void OnDipSw();
 };
 
 //! 118 I/O
@@ -973,7 +983,7 @@ static const CComboData::Entry s_int118m[] =
 };
 
 /**
- * „Ç≥„É≥„Çπ„Éà„É©„ÇØ„Çø
+ * ÉRÉìÉXÉgÉâÉNÉ^
  */
 SndOpt118Page::SndOpt118Page()
 	: CPropPageProc(IDD_SND118)
@@ -983,20 +993,21 @@ SndOpt118Page::SndOpt118Page()
 	, m_snd118irqf(0)
 	, m_snd118irqp(0)
 	, m_snd118irqm(0)
+	, m_snd118rom(0)
 {
 }
 
 /**
- * „Éá„Çπ„Éà„É©„ÇØ„Çø
+ * ÉfÉXÉgÉâÉNÉ^
  */
 SndOpt118Page::~SndOpt118Page()
 {
 }
 
 /**
- * „Åì„ÅÆ„É°„ÇΩ„ÉÉ„Éâ„ÅØ WM_INITDIALOG „ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„Å´ÂøúÁ≠î„Åó„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @retval TRUE ÊúÄÂàù„ÅÆ„Ç≥„É≥„Éà„É≠„Éº„É´„Å´ÂÖ•Âäõ„Éï„Ç©„Éº„Ç´„Çπ„ÇíË®≠ÂÆö
- * @retval FALSE Êó¢„Å´Ë®≠ÂÆöÊ∏à
+ * Ç±ÇÃÉÅÉ\ÉbÉhÇÕ WM_INITDIALOG ÇÃÉÅÉbÉZÅ[ÉWÇ…âûìöÇµÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @retval TRUE ç≈èâÇÃÉRÉìÉgÉçÅ[ÉãÇ…ì¸óÕÉtÉHÅ[ÉJÉXÇê›íË
+ * @retval FALSE ä˘Ç…ê›íËçœ
  */
 BOOL SndOpt118Page::OnInitDialog()
 {
@@ -1006,6 +1017,7 @@ BOOL SndOpt118Page::OnInitDialog()
 	m_snd118irqf = np2cfg.snd118irqf;
 	m_snd118irqp = np2cfg.snd118irqp;
 	m_snd118irqm = np2cfg.snd118irqm;
+	m_snd118rom = np2cfg.snd118rom;
 	
 	m_cmbio.SubclassDlgItem(IDC_SND118IO, this);
 	m_cmbio.Add(s_io118, _countof(s_io118));
@@ -1031,6 +1043,14 @@ BOOL SndOpt118Page::OnInitDialog()
 	m_cmbirqf.SetCurItemData(m_snd118irqf);
 	m_cmbirqp.SetCurItemData(m_snd118irqp);
 	m_cmbirqm.SetCurItemData(m_snd118irqm);
+	
+	m_chkrom.SubclassDlgItem(IDC_SND118ROM, this);
+	if(m_snd118rom)
+		m_chkrom.SendMessage(BM_SETCHECK , BST_CHECKED , 0);
+	else
+		m_chkrom.SendMessage(BM_SETCHECK , BST_UNCHECKED , 0);
+	
+	m_jumper.SubclassDlgItem(IDC_SND118JMP, this);
 
 	m_cmbio.SetFocus();
 
@@ -1038,7 +1058,7 @@ BOOL SndOpt118Page::OnInitDialog()
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå OK „ÅÆ„Éú„Çø„É≥ (IDOK ID „Åå„ÅÆ„Éú„Çø„É≥) „Çí„ÇØ„É™„ÉÉ„ÇØ„Åô„Çã„Å®Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
+ * ÉÜÅ[ÉUÅ[Ç™ OK ÇÃÉ{É^Éì (IDOK ID Ç™ÇÃÉ{É^Éì) ÇÉNÉäÉbÉNÇ∑ÇÈÇ∆åƒÇ—èoÇ≥ÇÍÇ‹Ç∑
  */
 void SndOpt118Page::OnOK()
 {
@@ -1072,13 +1092,18 @@ void SndOpt118Page::OnOK()
 		np2cfg.snd118irqm = m_snd118irqm;
 		::sysmng_update(SYS_UPDATECFG);
 	}
+	if (m_snd118rom!=np2cfg.snd118rom)
+	{
+		np2cfg.snd118rom = m_snd118rom;
+		::sysmng_update(SYS_UPDATECFG);
+	}
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå„É°„Éã„É•„Éº„ÅÆÈ†ÖÁõÆ„ÇíÈÅ∏Êäû„Åó„Åü„Å®„Åç„Å´„ÄÅ„Éï„É¨„Éº„É†„ÉØ„Éº„ÇØ„Å´„Çà„Å£„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @param[in] wParam „Éë„É©„É°„Çø
- * @param[in] lParam „Éë„É©„É°„Çø
- * @retval TRUE „Ç¢„Éó„É™„Ç±„Éº„Ç∑„Éß„É≥„Åå„Åì„ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„ÇíÂá¶ÁêÜ„Åó„Åü
+ * ÉÜÅ[ÉUÅ[Ç™ÉÅÉjÉÖÅ[ÇÃçÄñ⁄ÇëIëÇµÇΩÇ∆Ç´Ç…ÅAÉtÉåÅ[ÉÄÉèÅ[ÉNÇ…ÇÊÇ¡ÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @param[in] wParam ÉpÉâÉÅÉ^
+ * @param[in] lParam ÉpÉâÉÅÉ^
+ * @retval TRUE ÉAÉvÉäÉPÅ[ÉVÉáÉìÇ™Ç±ÇÃÉÅÉbÉZÅ[ÉWÇèàóùÇµÇΩ
  */
 BOOL SndOpt118Page::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -1086,26 +1111,37 @@ BOOL SndOpt118Page::OnCommand(WPARAM wParam, LPARAM lParam)
 	{
 		case IDC_SND118IO:
 			m_snd118io = m_cmbio.GetCurItemData(0x0188);
+			m_jumper.Invalidate();
 			return TRUE;
 			
 		case IDC_SND118ID:
 			m_snd118id = m_cmbid.GetCurItemData(0x80);
+			m_jumper.Invalidate();
 			return TRUE;
 
 		case IDC_SND118DMA:
 			m_snd118dma = m_cmbdma.GetCurItemData(3);
+			m_jumper.Invalidate();
 			return TRUE;
 
 		case IDC_SND118INTF:
 			m_snd118irqf = m_cmbirqf.GetCurItemData(12);
+			m_jumper.Invalidate();
 			return TRUE;
 
 		case IDC_SND118INTP:
 			m_snd118irqp = m_cmbirqp.GetCurItemData(12);
+			m_jumper.Invalidate();
 			return TRUE;
 
 		case IDC_SND118INTM:
 			m_snd118irqm = m_cmbirqm.GetCurItemData(0xff);
+			m_jumper.Invalidate();
+			return TRUE;
+			
+		case IDC_SND118ROM:
+			m_snd118rom = (m_chkrom.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0);
+			m_jumper.Invalidate();
 			return TRUE;
 
 		case IDC_SND118DEF:
@@ -1115,32 +1151,57 @@ BOOL SndOpt118Page::OnCommand(WPARAM wParam, LPARAM lParam)
 			m_snd118irqf = 12;
 			m_snd118irqp = 12;
 			m_snd118irqm = 0xff;
+			m_snd118rom = 0;
 			m_cmbio.SetCurItemData(m_snd118io);
 			m_cmbid.SetCurItemData(m_snd118id);
 			m_cmbdma.SetCurItemData(m_snd118dma);
 			m_cmbirqf.SetCurItemData(m_snd118irqf);
 			m_cmbirqp.SetCurItemData(m_snd118irqp);
 			m_cmbirqm.SetCurItemData(m_snd118irqm);
+			if(m_snd118rom)
+				m_chkrom.SendMessage(BM_SETCHECK , BST_CHECKED , 0);
+			else
+				m_chkrom.SendMessage(BM_SETCHECK , BST_UNCHECKED , 0);
+			m_jumper.Invalidate();
+			return TRUE;
+
+		case IDC_SND86DIP:
+			OnDipSw();
 			return TRUE;
 	}
 	return FALSE;
 }
 
 /**
- * CWndProc „Ç™„Éñ„Ç∏„Çß„ÇØ„Éà„ÅÆ Windows „Éó„É≠„Ç∑„Éº„Ç∏„É£ (WindowProc) „ÅåÁî®ÊÑè„Åï„Çå„Å¶„ÅÑ„Åæ„Åô
- * @param[in] nMsg Âá¶ÁêÜ„Åï„Çå„Çã Windows „É°„ÉÉ„Çª„Éº„Ç∏„ÇíÊåáÂÆö„Åó„Åæ„Åô
- * @param[in] wParam „É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÂá¶ÁêÜ„Åß‰Ωø„ÅÜ‰ªòÂä†ÊÉÖÂ†±„ÇíÊèê‰æõ„Åó„Åæ„Åô„ÄÇ„Åì„ÅÆ„Éë„É©„É°„Éº„Çø„ÅÆÂÄ§„ÅØ„É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åó„Åæ„Åô
- * @param[in] lParam „É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÂá¶ÁêÜ„Åß‰Ωø„ÅÜ‰ªòÂä†ÊÉÖÂ†±„ÇíÊèê‰æõ„Åó„Åæ„Åô„ÄÇ„Åì„ÅÆ„Éë„É©„É°„Éº„Çø„ÅÆÂÄ§„ÅØ„É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åó„Åæ„Åô
- * @return „É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åô„ÇãÂÄ§„ÇíËøî„Åó„Åæ„Åô
+ * CWndProc ÉIÉuÉWÉFÉNÉgÇÃ Windows ÉvÉçÉVÅ[ÉWÉÉ (WindowProc) Ç™ópà”Ç≥ÇÍÇƒÇ¢Ç‹Ç∑
+ * @param[in] nMsg èàóùÇ≥ÇÍÇÈ Windows ÉÅÉbÉZÅ[ÉWÇéwíËÇµÇ‹Ç∑
+ * @param[in] wParam ÉÅÉbÉZÅ[ÉWÇÃèàóùÇ≈égÇ§ïtâ¡èÓïÒÇíÒãüÇµÇ‹Ç∑ÅBÇ±ÇÃÉpÉâÉÅÅ[É^ÇÃílÇÕÉÅÉbÉZÅ[ÉWÇ…àÀë∂ÇµÇ‹Ç∑
+ * @param[in] lParam ÉÅÉbÉZÅ[ÉWÇÃèàóùÇ≈égÇ§ïtâ¡èÓïÒÇíÒãüÇµÇ‹Ç∑ÅBÇ±ÇÃÉpÉâÉÅÅ[É^ÇÃílÇÕÉÅÉbÉZÅ[ÉWÇ…àÀë∂ÇµÇ‹Ç∑
+ * @return ÉÅÉbÉZÅ[ÉWÇ…àÀë∂Ç∑ÇÈílÇï‘ÇµÇ‹Ç∑
  */
 LRESULT SndOpt118Page::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (nMsg)
 	{
 		case WM_DRAWITEM:
+			if (LOWORD(wParam) == IDC_SND118JMP)
+			{
+				UINT8* pBitmap = dipswbmp_getsnd118(m_snd118io, m_snd118dma, m_snd118irqf, m_snd118irqp, m_snd118irqm, m_snd118rom);
+				m_jumper.Draw((reinterpret_cast<LPDRAWITEMSTRUCT>(lParam))->hDC, pBitmap);
+				_MFREE(pBitmap);
+			}
 			return FALSE;
 	}
 	return CDlgProc::WindowProc(nMsg, wParam, lParam);
+}
+
+/**
+ * DIPSW ÇÉ^ÉbÉvÇµÇΩ
+ */
+void SndOpt118Page::OnDipSw()
+{
+	// TODO: JumperÇÉNÉäÉbÉNÇµÇΩÇ∆Ç´ÇÃìÆçÏÇé¿ëïÇ∑ÇÈ
+	m_jumper.Invalidate();
 }
 
 
@@ -1148,7 +1209,7 @@ LRESULT SndOpt118Page::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 // ---- Mate-X PCM
 
 /**
- * @brief Mate-X PCM(WSS) „Éö„Éº„Ç∏
+ * @brief Mate-X PCM(WSS) ÉyÅ[ÉW
  */
 class SndOptWSSPage : public CPropPageProc
 {
@@ -1163,16 +1224,16 @@ protected:
 	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	UINT8 m_snd118id;				//!< IDË®≠ÂÆöÂÄ§
-	UINT8 m_snd118dma;				//!< DMAË®≠ÂÆöÂÄ§
-	UINT8 m_snd118irqp;				//!< IRQË®≠ÂÆöÂÄ§
+	UINT8 m_snd118id;				//!< IDê›íËíl
+	UINT8 m_snd118dma;				//!< DMAê›íËíl
+	UINT8 m_snd118irqp;				//!< IRQê›íËíl
 	CComboData m_cmbid;				//!< ID
 	CComboData m_cmbdma;			//!< DMA
 	CComboData m_cmbirqp;			//!< IRQ
 };
 
 /**
- * „Ç≥„É≥„Çπ„Éà„É©„ÇØ„Çø
+ * ÉRÉìÉXÉgÉâÉNÉ^
  */
 SndOptWSSPage::SndOptWSSPage()
 	: CPropPageProc(IDD_SNDWSS)
@@ -1183,16 +1244,16 @@ SndOptWSSPage::SndOptWSSPage()
 }
 
 /**
- * „Éá„Çπ„Éà„É©„ÇØ„Çø
+ * ÉfÉXÉgÉâÉNÉ^
  */
 SndOptWSSPage::~SndOptWSSPage()
 {
 }
 
 /**
- * „Åì„ÅÆ„É°„ÇΩ„ÉÉ„Éâ„ÅØ WM_INITDIALOG „ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„Å´ÂøúÁ≠î„Åó„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @retval TRUE ÊúÄÂàù„ÅÆ„Ç≥„É≥„Éà„É≠„Éº„É´„Å´ÂÖ•Âäõ„Éï„Ç©„Éº„Ç´„Çπ„ÇíË®≠ÂÆö
- * @retval FALSE Êó¢„Å´Ë®≠ÂÆöÊ∏à
+ * Ç±ÇÃÉÅÉ\ÉbÉhÇÕ WM_INITDIALOG ÇÃÉÅÉbÉZÅ[ÉWÇ…âûìöÇµÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @retval TRUE ç≈èâÇÃÉRÉìÉgÉçÅ[ÉãÇ…ì¸óÕÉtÉHÅ[ÉJÉXÇê›íË
+ * @retval FALSE ä˘Ç…ê›íËçœ
  */
 BOOL SndOptWSSPage::OnInitDialog()
 {
@@ -1219,7 +1280,7 @@ BOOL SndOptWSSPage::OnInitDialog()
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå OK „ÅÆ„Éú„Çø„É≥ (IDOK ID „Åå„ÅÆ„Éú„Çø„É≥) „Çí„ÇØ„É™„ÉÉ„ÇØ„Åô„Çã„Å®Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
+ * ÉÜÅ[ÉUÅ[Ç™ OK ÇÃÉ{É^Éì (IDOK ID Ç™ÇÃÉ{É^Éì) ÇÉNÉäÉbÉNÇ∑ÇÈÇ∆åƒÇ—èoÇ≥ÇÍÇ‹Ç∑
  */
 void SndOptWSSPage::OnOK()
 {
@@ -1241,10 +1302,10 @@ void SndOptWSSPage::OnOK()
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå„É°„Éã„É•„Éº„ÅÆÈ†ÖÁõÆ„ÇíÈÅ∏Êäû„Åó„Åü„Å®„Åç„Å´„ÄÅ„Éï„É¨„Éº„É†„ÉØ„Éº„ÇØ„Å´„Çà„Å£„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @param[in] wParam „Éë„É©„É°„Çø
- * @param[in] lParam „Éë„É©„É°„Çø
- * @retval TRUE „Ç¢„Éó„É™„Ç±„Éº„Ç∑„Éß„É≥„Åå„Åì„ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„ÇíÂá¶ÁêÜ„Åó„Åü
+ * ÉÜÅ[ÉUÅ[Ç™ÉÅÉjÉÖÅ[ÇÃçÄñ⁄ÇëIëÇµÇΩÇ∆Ç´Ç…ÅAÉtÉåÅ[ÉÄÉèÅ[ÉNÇ…ÇÊÇ¡ÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @param[in] wParam ÉpÉâÉÅÉ^
+ * @param[in] lParam ÉpÉâÉÅÉ^
+ * @retval TRUE ÉAÉvÉäÉPÅ[ÉVÉáÉìÇ™Ç±ÇÃÉÅÉbÉZÅ[ÉWÇèàóùÇµÇΩ
  */
 BOOL SndOptWSSPage::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -1275,11 +1336,11 @@ BOOL SndOptWSSPage::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * CWndProc „Ç™„Éñ„Ç∏„Çß„ÇØ„Éà„ÅÆ Windows „Éó„É≠„Ç∑„Éº„Ç∏„É£ (WindowProc) „ÅåÁî®ÊÑè„Åï„Çå„Å¶„ÅÑ„Åæ„Åô
- * @param[in] nMsg Âá¶ÁêÜ„Åï„Çå„Çã Windows „É°„ÉÉ„Çª„Éº„Ç∏„ÇíÊåáÂÆö„Åó„Åæ„Åô
- * @param[in] wParam „É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÂá¶ÁêÜ„Åß‰Ωø„ÅÜ‰ªòÂä†ÊÉÖÂ†±„ÇíÊèê‰æõ„Åó„Åæ„Åô„ÄÇ„Åì„ÅÆ„Éë„É©„É°„Éº„Çø„ÅÆÂÄ§„ÅØ„É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åó„Åæ„Åô
- * @param[in] lParam „É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÂá¶ÁêÜ„Åß‰Ωø„ÅÜ‰ªòÂä†ÊÉÖÂ†±„ÇíÊèê‰æõ„Åó„Åæ„Åô„ÄÇ„Åì„ÅÆ„Éë„É©„É°„Éº„Çø„ÅÆÂÄ§„ÅØ„É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åó„Åæ„Åô
- * @return „É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åô„ÇãÂÄ§„ÇíËøî„Åó„Åæ„Åô
+ * CWndProc ÉIÉuÉWÉFÉNÉgÇÃ Windows ÉvÉçÉVÅ[ÉWÉÉ (WindowProc) Ç™ópà”Ç≥ÇÍÇƒÇ¢Ç‹Ç∑
+ * @param[in] nMsg èàóùÇ≥ÇÍÇÈ Windows ÉÅÉbÉZÅ[ÉWÇéwíËÇµÇ‹Ç∑
+ * @param[in] wParam ÉÅÉbÉZÅ[ÉWÇÃèàóùÇ≈égÇ§ïtâ¡èÓïÒÇíÒãüÇµÇ‹Ç∑ÅBÇ±ÇÃÉpÉâÉÅÅ[É^ÇÃílÇÕÉÅÉbÉZÅ[ÉWÇ…àÀë∂ÇµÇ‹Ç∑
+ * @param[in] lParam ÉÅÉbÉZÅ[ÉWÇÃèàóùÇ≈égÇ§ïtâ¡èÓïÒÇíÒãüÇµÇ‹Ç∑ÅBÇ±ÇÃÉpÉâÉÅÅ[É^ÇÃílÇÕÉÅÉbÉZÅ[ÉWÇ…àÀë∂ÇµÇ‹Ç∑
+ * @return ÉÅÉbÉZÅ[ÉWÇ…àÀë∂Ç∑ÇÈílÇï‘ÇµÇ‹Ç∑
  */
 LRESULT SndOptWSSPage::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -1298,7 +1359,7 @@ LRESULT SndOptWSSPage::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 // ---- Sound Blaster 16(98)
 
 /**
- * @brief SB16 „Éö„Éº„Ç∏
+ * @brief SB16 ÉyÅ[ÉW
  */
 class SndOptSB16Page : public CPropPageProc
 {
@@ -1313,9 +1374,9 @@ protected:
 	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	UINT8 m_snd118io;				//!< IOË®≠ÂÆöÂÄ§
-	UINT8 m_snd118dma;				//!< DMAË®≠ÂÆöÂÄ§
-	UINT8 m_snd118irqf;				//!< IRQË®≠ÂÆöÂÄ§
+	UINT8 m_snd118io;				//!< IOê›íËíl
+	UINT8 m_snd118dma;				//!< DMAê›íËíl
+	UINT8 m_snd118irqf;				//!< IRQê›íËíl
 	CComboData m_cmbio;				//!< IO
 	CComboData m_cmbdma;			//!< DMA
 	CComboData m_cmbirqf;			//!< IRQ
@@ -1350,7 +1411,7 @@ static const CComboData::Entry s_intsb16[] =
 };
 
 /**
- * „Ç≥„É≥„Çπ„Éà„É©„ÇØ„Çø
+ * ÉRÉìÉXÉgÉâÉNÉ^
  */
 SndOptSB16Page::SndOptSB16Page()
 	: CPropPageProc(IDD_SNDSB16)
@@ -1361,16 +1422,16 @@ SndOptSB16Page::SndOptSB16Page()
 }
 
 /**
- * „Éá„Çπ„Éà„É©„ÇØ„Çø
+ * ÉfÉXÉgÉâÉNÉ^
  */
 SndOptSB16Page::~SndOptSB16Page()
 {
 }
 
 /**
- * „Åì„ÅÆ„É°„ÇΩ„ÉÉ„Éâ„ÅØ WM_INITDIALOG „ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„Å´ÂøúÁ≠î„Åó„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @retval TRUE ÊúÄÂàù„ÅÆ„Ç≥„É≥„Éà„É≠„Éº„É´„Å´ÂÖ•Âäõ„Éï„Ç©„Éº„Ç´„Çπ„ÇíË®≠ÂÆö
- * @retval FALSE Êó¢„Å´Ë®≠ÂÆöÊ∏à
+ * Ç±ÇÃÉÅÉ\ÉbÉhÇÕ WM_INITDIALOG ÇÃÉÅÉbÉZÅ[ÉWÇ…âûìöÇµÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @retval TRUE ç≈èâÇÃÉRÉìÉgÉçÅ[ÉãÇ…ì¸óÕÉtÉHÅ[ÉJÉXÇê›íË
+ * @retval FALSE ä˘Ç…ê›íËçœ
  */
 BOOL SndOptSB16Page::OnInitDialog()
 {
@@ -1397,7 +1458,7 @@ BOOL SndOptSB16Page::OnInitDialog()
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå OK „ÅÆ„Éú„Çø„É≥ (IDOK ID „Åå„ÅÆ„Éú„Çø„É≥) „Çí„ÇØ„É™„ÉÉ„ÇØ„Åô„Çã„Å®Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
+ * ÉÜÅ[ÉUÅ[Ç™ OK ÇÃÉ{É^Éì (IDOK ID Ç™ÇÃÉ{É^Éì) ÇÉNÉäÉbÉNÇ∑ÇÈÇ∆åƒÇ—èoÇ≥ÇÍÇ‹Ç∑
  */
 void SndOptSB16Page::OnOK()
 {
@@ -1419,10 +1480,10 @@ void SndOptSB16Page::OnOK()
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå„É°„Éã„É•„Éº„ÅÆÈ†ÖÁõÆ„ÇíÈÅ∏Êäû„Åó„Åü„Å®„Åç„Å´„ÄÅ„Éï„É¨„Éº„É†„ÉØ„Éº„ÇØ„Å´„Çà„Å£„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @param[in] wParam „Éë„É©„É°„Çø
- * @param[in] lParam „Éë„É©„É°„Çø
- * @retval TRUE „Ç¢„Éó„É™„Ç±„Éº„Ç∑„Éß„É≥„Åå„Åì„ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„ÇíÂá¶ÁêÜ„Åó„Åü
+ * ÉÜÅ[ÉUÅ[Ç™ÉÅÉjÉÖÅ[ÇÃçÄñ⁄ÇëIëÇµÇΩÇ∆Ç´Ç…ÅAÉtÉåÅ[ÉÄÉèÅ[ÉNÇ…ÇÊÇ¡ÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @param[in] wParam ÉpÉâÉÅÉ^
+ * @param[in] lParam ÉpÉâÉÅÉ^
+ * @retval TRUE ÉAÉvÉäÉPÅ[ÉVÉáÉìÇ™Ç±ÇÃÉÅÉbÉZÅ[ÉWÇèàóùÇµÇΩ
  */
 BOOL SndOptSB16Page::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -1441,7 +1502,7 @@ BOOL SndOptSB16Page::OnCommand(WPARAM wParam, LPARAM lParam)
 			return TRUE;
 
 		case IDC_SND118DEF:
-			// „Éú„Éº„Éâ„Éá„Éï„Ç©„É´„Éà IO:D2 DMA:3 IRQ:5(INT1) 
+			// É{Å[ÉhÉfÉtÉHÉãÉg IO:D2 DMA:3 IRQ:5(INT1) 
 			m_snd118io = 0xd2;
 			m_snd118dma = 3;
 			m_snd118irqf = 5;
@@ -1454,11 +1515,11 @@ BOOL SndOptSB16Page::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * CWndProc „Ç™„Éñ„Ç∏„Çß„ÇØ„Éà„ÅÆ Windows „Éó„É≠„Ç∑„Éº„Ç∏„É£ (WindowProc) „ÅåÁî®ÊÑè„Åï„Çå„Å¶„ÅÑ„Åæ„Åô
- * @param[in] nMsg Âá¶ÁêÜ„Åï„Çå„Çã Windows „É°„ÉÉ„Çª„Éº„Ç∏„ÇíÊåáÂÆö„Åó„Åæ„Åô
- * @param[in] wParam „É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÂá¶ÁêÜ„Åß‰Ωø„ÅÜ‰ªòÂä†ÊÉÖÂ†±„ÇíÊèê‰æõ„Åó„Åæ„Åô„ÄÇ„Åì„ÅÆ„Éë„É©„É°„Éº„Çø„ÅÆÂÄ§„ÅØ„É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åó„Åæ„Åô
- * @param[in] lParam „É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÂá¶ÁêÜ„Åß‰Ωø„ÅÜ‰ªòÂä†ÊÉÖÂ†±„ÇíÊèê‰æõ„Åó„Åæ„Åô„ÄÇ„Åì„ÅÆ„Éë„É©„É°„Éº„Çø„ÅÆÂÄ§„ÅØ„É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åó„Åæ„Åô
- * @return „É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åô„ÇãÂÄ§„ÇíËøî„Åó„Åæ„Åô
+ * CWndProc ÉIÉuÉWÉFÉNÉgÇÃ Windows ÉvÉçÉVÅ[ÉWÉÉ (WindowProc) Ç™ópà”Ç≥ÇÍÇƒÇ¢Ç‹Ç∑
+ * @param[in] nMsg èàóùÇ≥ÇÍÇÈ Windows ÉÅÉbÉZÅ[ÉWÇéwíËÇµÇ‹Ç∑
+ * @param[in] wParam ÉÅÉbÉZÅ[ÉWÇÃèàóùÇ≈égÇ§ïtâ¡èÓïÒÇíÒãüÇµÇ‹Ç∑ÅBÇ±ÇÃÉpÉâÉÅÅ[É^ÇÃílÇÕÉÅÉbÉZÅ[ÉWÇ…àÀë∂ÇµÇ‹Ç∑
+ * @param[in] lParam ÉÅÉbÉZÅ[ÉWÇÃèàóùÇ≈égÇ§ïtâ¡èÓïÒÇíÒãüÇµÇ‹Ç∑ÅBÇ±ÇÃÉpÉâÉÅÅ[É^ÇÃílÇÕÉÅÉbÉZÅ[ÉWÇ…àÀë∂ÇµÇ‹Ç∑
+ * @return ÉÅÉbÉZÅ[ÉWÇ…àÀë∂Ç∑ÇÈílÇï‘ÇµÇ‹Ç∑
  */
 LRESULT SndOptSB16Page::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -1477,7 +1538,7 @@ LRESULT SndOptSB16Page::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 // ---- Speak board
 
 /**
- * @brief Speak board „Éö„Éº„Ç∏
+ * @brief Speak board ÉyÅ[ÉW
  */
 class SndOptSpbPage : public CPropPageProc
 {
@@ -1492,8 +1553,8 @@ protected:
 	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	UINT8 m_spb;				//!< Ë®≠ÂÆöÂÄ§
-	UINT8 m_vr;					//!< VRË®≠ÂÆöÂÄ§
+	UINT8 m_spb;				//!< ê›íËíl
+	UINT8 m_vr;					//!< VRê›íËíl
 	CComboData m_io;			//!< IO
 	CComboData m_int;			//!< INT
 	CComboData m_rom;			//!< ROM
@@ -1505,7 +1566,7 @@ private:
 };
 
 /**
- * „Ç≥„É≥„Çπ„Éà„É©„ÇØ„Çø
+ * ÉRÉìÉXÉgÉâÉNÉ^
  */
 SndOptSpbPage::SndOptSpbPage()
 	: CPropPageProc(IDD_SNDSPB)
@@ -1515,16 +1576,16 @@ SndOptSpbPage::SndOptSpbPage()
 }
 
 /**
- * „Éá„Çπ„Éà„É©„ÇØ„Çø
+ * ÉfÉXÉgÉâÉNÉ^
  */
 SndOptSpbPage::~SndOptSpbPage()
 {
 }
 
 /**
- * „Åì„ÅÆ„É°„ÇΩ„ÉÉ„Éâ„ÅØ WM_INITDIALOG „ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„Å´ÂøúÁ≠î„Åó„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @retval TRUE ÊúÄÂàù„ÅÆ„Ç≥„É≥„Éà„É≠„Éº„É´„Å´ÂÖ•Âäõ„Éï„Ç©„Éº„Ç´„Çπ„ÇíË®≠ÂÆö
- * @retval FALSE Êó¢„Å´Ë®≠ÂÆöÊ∏à
+ * Ç±ÇÃÉÅÉ\ÉbÉhÇÕ WM_INITDIALOG ÇÃÉÅÉbÉZÅ[ÉWÇ…âûìöÇµÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @retval TRUE ç≈èâÇÃÉRÉìÉgÉçÅ[ÉãÇ…ì¸óÕÉtÉHÅ[ÉJÉXÇê›íË
+ * @retval FALSE ä˘Ç…ê›íËçœ
  */
 BOOL SndOptSpbPage::OnInitDialog()
 {
@@ -1553,7 +1614,7 @@ BOOL SndOptSpbPage::OnInitDialog()
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå OK „ÅÆ„Éú„Çø„É≥ (IDOK ID „Åå„ÅÆ„Éú„Çø„É≥) „Çí„ÇØ„É™„ÉÉ„ÇØ„Åô„Çã„Å®Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
+ * ÉÜÅ[ÉUÅ[Ç™ OK ÇÃÉ{É^Éì (IDOK ID Ç™ÇÃÉ{É^Éì) ÇÉNÉäÉbÉNÇ∑ÇÈÇ∆åƒÇ—èoÇ≥ÇÍÇ‹Ç∑
  */
 void SndOptSpbPage::OnOK()
 {
@@ -1591,10 +1652,10 @@ void SndOptSpbPage::OnOK()
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå„É°„Éã„É•„Éº„ÅÆÈ†ÖÁõÆ„ÇíÈÅ∏Êäû„Åó„Åü„Å®„Åç„Å´„ÄÅ„Éï„É¨„Éº„É†„ÉØ„Éº„ÇØ„Å´„Çà„Å£„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @param[in] wParam „Éë„É©„É°„Çø
- * @param[in] lParam „Éë„É©„É°„Çø
- * @retval TRUE „Ç¢„Éó„É™„Ç±„Éº„Ç∑„Éß„É≥„Åå„Åì„ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„ÇíÂá¶ÁêÜ„Åó„Åü
+ * ÉÜÅ[ÉUÅ[Ç™ÉÅÉjÉÖÅ[ÇÃçÄñ⁄ÇëIëÇµÇΩÇ∆Ç´Ç…ÅAÉtÉåÅ[ÉÄÉèÅ[ÉNÇ…ÇÊÇ¡ÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @param[in] wParam ÉpÉâÉÅÉ^
+ * @param[in] lParam ÉpÉâÉÅÉ^
+ * @retval TRUE ÉAÉvÉäÉPÅ[ÉVÉáÉìÇ™Ç±ÇÃÉÅÉbÉZÅ[ÉWÇèàóùÇµÇΩ
  */
 BOOL SndOptSpbPage::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -1639,11 +1700,11 @@ BOOL SndOptSpbPage::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * CWndProc „Ç™„Éñ„Ç∏„Çß„ÇØ„Éà„ÅÆ Windows „Éó„É≠„Ç∑„Éº„Ç∏„É£ (WindowProc) „ÅåÁî®ÊÑè„Åï„Çå„Å¶„ÅÑ„Åæ„Åô
- * @param[in] nMsg Âá¶ÁêÜ„Åï„Çå„Çã Windows „É°„ÉÉ„Çª„Éº„Ç∏„ÇíÊåáÂÆö„Åó„Åæ„Åô
- * @param[in] wParam „É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÂá¶ÁêÜ„Åß‰Ωø„ÅÜ‰ªòÂä†ÊÉÖÂ†±„ÇíÊèê‰æõ„Åó„Åæ„Åô„ÄÇ„Åì„ÅÆ„Éë„É©„É°„Éº„Çø„ÅÆÂÄ§„ÅØ„É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åó„Åæ„Åô
- * @param[in] lParam „É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÂá¶ÁêÜ„Åß‰Ωø„ÅÜ‰ªòÂä†ÊÉÖÂ†±„ÇíÊèê‰æõ„Åó„Åæ„Åô„ÄÇ„Åì„ÅÆ„Éë„É©„É°„Éº„Çø„ÅÆÂÄ§„ÅØ„É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åó„Åæ„Åô
- * @return „É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åô„ÇãÂÄ§„ÇíËøî„Åó„Åæ„Åô
+ * CWndProc ÉIÉuÉWÉFÉNÉgÇÃ Windows ÉvÉçÉVÅ[ÉWÉÉ (WindowProc) Ç™ópà”Ç≥ÇÍÇƒÇ¢Ç‹Ç∑
+ * @param[in] nMsg èàóùÇ≥ÇÍÇÈ Windows ÉÅÉbÉZÅ[ÉWÇéwíËÇµÇ‹Ç∑
+ * @param[in] wParam ÉÅÉbÉZÅ[ÉWÇÃèàóùÇ≈égÇ§ïtâ¡èÓïÒÇíÒãüÇµÇ‹Ç∑ÅBÇ±ÇÃÉpÉâÉÅÅ[É^ÇÃílÇÕÉÅÉbÉZÅ[ÉWÇ…àÀë∂ÇµÇ‹Ç∑
+ * @param[in] lParam ÉÅÉbÉZÅ[ÉWÇÃèàóùÇ≈égÇ§ïtâ¡èÓïÒÇíÒãüÇµÇ‹Ç∑ÅBÇ±ÇÃÉpÉâÉÅÅ[É^ÇÃílÇÕÉÅÉbÉZÅ[ÉWÇ…àÀë∂ÇµÇ‹Ç∑
+ * @return ÉÅÉbÉZÅ[ÉWÇ…àÀë∂Ç∑ÇÈílÇï‘ÇµÇ‹Ç∑
  */
 LRESULT SndOptSpbPage::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -1662,9 +1723,9 @@ LRESULT SndOptSpbPage::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * „Ç≥„É≥„Éà„É≠„Éº„É´Ë®≠ÂÆö
- * @param[in] cValue Ë®≠ÂÆöÂÄ§
- * @param[in] cVR VR Ë®≠ÂÆöÂÄ§
+ * ÉRÉìÉgÉçÅ[Éãê›íË
+ * @param[in] cValue ê›íËíl
+ * @param[in] cVR VR ê›íËíl
  */
 void SndOptSpbPage::Set(UINT8 cValue, UINT8 cVR)
 {
@@ -1682,9 +1743,9 @@ void SndOptSpbPage::Set(UINT8 cValue, UINT8 cVR)
 }
 
 /**
- * Ë®≠ÂÆö
- * @param[in] nAdd ËøΩÂä†„Éì„ÉÉ„Éà
- * @param[in] nRemove ÂâäÈô§„Éì„ÉÉ„Éà
+ * ê›íË
+ * @param[in] nAdd í«â¡ÉrÉbÉg
+ * @param[in] nRemove çÌèúÉrÉbÉg
  */
 void SndOptSpbPage::SetJumper(UINT nAdd, UINT nRemove)
 {
@@ -1697,7 +1758,7 @@ void SndOptSpbPage::SetJumper(UINT nAdd, UINT nRemove)
 }
 
 /**
- * DIPSW „Çí„Çø„ÉÉ„Éó„Åó„Åü
+ * DIPSW ÇÉ^ÉbÉvÇµÇΩ
  */
 void SndOptSpbPage::OnDipSw()
 {
@@ -1767,7 +1828,7 @@ void SndOptSpbPage::OnDipSw()
 // ---- JOYPAD
 
 /**
- * @brief PAD „Éö„Éº„Ç∏
+ * @brief PAD ÉyÅ[ÉW
  */
 class SndOptPadPage : public CPropPageProc
 {
@@ -1779,7 +1840,7 @@ protected:
 	virtual void OnOK();
 };
 
-//! „Éú„Çø„É≥
+//! É{É^Éì
 static const UINT s_pad[4][3] =
 {
 	{IDC_PAD1_1A, IDC_PAD1_2A, IDC_PAD1_RA},
@@ -1789,7 +1850,7 @@ static const UINT s_pad[4][3] =
 };
 
 /**
- * „Ç≥„É≥„Çπ„Éà„É©„ÇØ„Çø
+ * ÉRÉìÉXÉgÉâÉNÉ^
  */
 SndOptPadPage::SndOptPadPage()
 	: CPropPageProc(IDD_SNDPAD1)
@@ -1797,9 +1858,9 @@ SndOptPadPage::SndOptPadPage()
 }
 
 /**
- * „Åì„ÅÆ„É°„ÇΩ„ÉÉ„Éâ„ÅØ WM_INITDIALOG „ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„Å´ÂøúÁ≠î„Åó„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @retval TRUE ÊúÄÂàù„ÅÆ„Ç≥„É≥„Éà„É≠„Éº„É´„Å´ÂÖ•Âäõ„Éï„Ç©„Éº„Ç´„Çπ„ÇíË®≠ÂÆö
- * @retval FALSE Êó¢„Å´Ë®≠ÂÆöÊ∏à
+ * Ç±ÇÃÉÅÉ\ÉbÉhÇÕ WM_INITDIALOG ÇÃÉÅÉbÉZÅ[ÉWÇ…âûìöÇµÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @retval TRUE ç≈èâÇÃÉRÉìÉgÉçÅ[ÉãÇ…ì¸óÕÉtÉHÅ[ÉJÉXÇê›íË
+ * @retval FALSE ä˘Ç…ê›íËçœ
  */
 BOOL SndOptPadPage::OnInitDialog()
 {
@@ -1817,7 +1878,7 @@ BOOL SndOptPadPage::OnInitDialog()
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå OK „ÅÆ„Éú„Çø„É≥ (IDOK ID „Åå„ÅÆ„Éú„Çø„É≥) „Çí„ÇØ„É™„ÉÉ„ÇØ„Åô„Çã„Å®Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
+ * ÉÜÅ[ÉUÅ[Ç™ OK ÇÃÉ{É^Éì (IDOK ID Ç™ÇÃÉ{É^Éì) ÇÉNÉäÉbÉNÇ∑ÇÈÇ∆åƒÇ—èoÇ≥ÇÍÇ‹Ç∑
  */
 void SndOptPadPage::OnOK()
 {
@@ -1859,7 +1920,7 @@ void SndOptPadPage::OnOK()
 // ---- fmgen
 
 /**
- * @brief fmgen „Éö„Éº„Ç∏
+ * @brief fmgen ÉyÅ[ÉW
  */
 class SndOptFMGenPage : public CPropPageProc
 {
@@ -1872,12 +1933,12 @@ protected:
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 
 private:
-	UINT8 m_enable;				//!< fmgen„Çí‰Ωø„ÅÜ„Åã
+	UINT8 m_enable;				//!< fmgenÇégÇ§Ç©
 	CWndProc m_chkenable;		//!< USE FMGEN
 };
 
 /**
- * „Ç≥„É≥„Çπ„Éà„É©„ÇØ„Çø
+ * ÉRÉìÉXÉgÉâÉNÉ^
  */
 SndOptFMGenPage::SndOptFMGenPage()
 	: CPropPageProc(IDD_SNDFMGEN)
@@ -1885,9 +1946,9 @@ SndOptFMGenPage::SndOptFMGenPage()
 }
 
 /**
- * „Åì„ÅÆ„É°„ÇΩ„ÉÉ„Éâ„ÅØ WM_INITDIALOG „ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„Å´ÂøúÁ≠î„Åó„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @retval TRUE ÊúÄÂàù„ÅÆ„Ç≥„É≥„Éà„É≠„Éº„É´„Å´ÂÖ•Âäõ„Éï„Ç©„Éº„Ç´„Çπ„ÇíË®≠ÂÆö
- * @retval FALSE Êó¢„Å´Ë®≠ÂÆöÊ∏à
+ * Ç±ÇÃÉÅÉ\ÉbÉhÇÕ WM_INITDIALOG ÇÃÉÅÉbÉZÅ[ÉWÇ…âûìöÇµÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @retval TRUE ç≈èâÇÃÉRÉìÉgÉçÅ[ÉãÇ…ì¸óÕÉtÉHÅ[ÉJÉXÇê›íË
+ * @retval FALSE ä˘Ç…ê›íËçœ
  */
 BOOL SndOptFMGenPage::OnInitDialog()
 {
@@ -1903,7 +1964,7 @@ BOOL SndOptFMGenPage::OnInitDialog()
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå OK „ÅÆ„Éú„Çø„É≥ (IDOK ID „Åå„ÅÆ„Éú„Çø„É≥) „Çí„ÇØ„É™„ÉÉ„ÇØ„Åô„Çã„Å®Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
+ * ÉÜÅ[ÉUÅ[Ç™ OK ÇÃÉ{É^Éì (IDOK ID Ç™ÇÃÉ{É^Éì) ÇÉNÉäÉbÉNÇ∑ÇÈÇ∆åƒÇ—èoÇ≥ÇÍÇ‹Ç∑
  */
 void SndOptFMGenPage::OnOK()
 {
@@ -1918,10 +1979,10 @@ void SndOptFMGenPage::OnOK()
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå„É°„Éã„É•„Éº„ÅÆÈ†ÖÁõÆ„ÇíÈÅ∏Êäû„Åó„Åü„Å®„Åç„Å´„ÄÅ„Éï„É¨„Éº„É†„ÉØ„Éº„ÇØ„Å´„Çà„Å£„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @param[in] wParam „Éë„É©„É°„Çø
- * @param[in] lParam „Éë„É©„É°„Çø
- * @retval TRUE „Ç¢„Éó„É™„Ç±„Éº„Ç∑„Éß„É≥„Åå„Åì„ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„ÇíÂá¶ÁêÜ„Åó„Åü
+ * ÉÜÅ[ÉUÅ[Ç™ÉÅÉjÉÖÅ[ÇÃçÄñ⁄ÇëIëÇµÇΩÇ∆Ç´Ç…ÅAÉtÉåÅ[ÉÄÉèÅ[ÉNÇ…ÇÊÇ¡ÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @param[in] wParam ÉpÉâÉÅÉ^
+ * @param[in] lParam ÉpÉâÉÅÉ^
+ * @retval TRUE ÉAÉvÉäÉPÅ[ÉVÉáÉìÇ™Ç±ÇÃÉÅÉbÉZÅ[ÉWÇèàóùÇµÇΩ
  */
 BOOL SndOptFMGenPage::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -1940,8 +2001,8 @@ BOOL SndOptFMGenPage::OnCommand(WPARAM wParam, LPARAM lParam)
 // ----
 
 /**
- * „Çµ„Ç¶„É≥„ÉâË®≠ÂÆö
- * @param[in] hwndParent Ë¶™„Ç¶„Ç£„É≥„Éâ„Ç¶
+ * ÉTÉEÉìÉhê›íË
+ * @param[in] hwndParent êeÉEÉBÉìÉhÉE
  */
 void dialog_sndopt(HWND hwndParent)
 {

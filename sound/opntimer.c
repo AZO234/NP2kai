@@ -79,6 +79,8 @@ void fmport_a(NEVENTITEM item)
 	POPNA opna = (POPNA)item->userData;
 	BOOL intreq = FALSE;
 
+	if(!opna) return;
+
 	if (item->flag & NEVENT_SETEVENT)
 	{
 		intreq = pcm86gen_intrq();
@@ -110,6 +112,8 @@ void fmport_b(NEVENTITEM item)
 {
 	POPNA opna = (POPNA)item->userData;
 	BOOL intreq = FALSE;
+
+	if(!opna) return;
 
 	if (item->flag & NEVENT_SETEVENT)
 	{

@@ -153,7 +153,8 @@ void fmboard_reset(const NP2CFG *pConfig, SOUNDID nSoundID)
 	cs4231_reset();
 
 	board14_reset(pConfig, (nSoundID == SOUNDID_PC_9801_14) ? TRUE : FALSE);
-
+	
+	g_nSoundID = nSoundID; // XXX: 先に設定
 	switch (nSoundID)
 	{
 		case SOUNDID_PC_9801_14:
@@ -172,29 +173,30 @@ void fmboard_reset(const NP2CFG *pConfig, SOUNDID nSoundID)
 			break;
 
 		case SOUNDID_PC_9801_118:
-			g_nSoundID = nSoundID; // XXX: 先に設定
 			board118_reset(pConfig);
 			break;
 			
 		case SOUNDID_PC_9801_86_WSS:
-			g_nSoundID = nSoundID; // XXX: 先に設定
 			board118_reset(pConfig);
 			board86_reset(pConfig, FALSE);
 			break;
 			
 		case SOUNDID_PC_9801_86_118:
-			g_nSoundID = nSoundID; // XXX: 先に設定
 			board118_reset(pConfig);
 			board86_reset(pConfig, FALSE);
 			break;
 			
 		case SOUNDID_MATE_X_PCM:
-			g_nSoundID = nSoundID; // XXX: 先に設定
 			board118_reset(pConfig);
 			break;
 			
 		case SOUNDID_PC_9801_86_ADPCM:
 			board86_reset(pConfig, TRUE);
+			break;
+
+		case SOUNDID_WAVESTAR:
+			board118_reset(pConfig);
+			board86_reset(pConfig, FALSE);
 			break;
 
 		case SOUNDID_SPEAKBOARD:
@@ -239,10 +241,9 @@ void fmboard_reset(const NP2CFG *pConfig, SOUNDID nSoundID)
 #endif	// defined(SUPPORT_PX)
 
 		default:
-			nSoundID = SOUNDID_NONE;
+			g_nSoundID = SOUNDID_NONE;
 			break;
 	}
-	g_nSoundID = nSoundID;
 	soundmng_setreverse(pConfig->snd_x);
 	opngen_setVR(pConfig->spb_vrc, pConfig->spb_vrl);
 }
@@ -287,6 +288,11 @@ void fmboard_bind(void) {
 			break;
 			
 		case SOUNDID_PC_9801_86_ADPCM:
+			board86_bind();
+			break;
+			
+		case SOUNDID_WAVESTAR:
+			board118_bind();
 			board86_bind();
 			break;
 			
@@ -369,6 +375,11 @@ void fmboard_unbind(void) {
 			break;
 			
 		case SOUNDID_PC_9801_86_ADPCM:
+			board86_unbind();
+			break;
+			
+		case SOUNDID_WAVESTAR:
+			board118_unbind();
 			board86_unbind();
 			break;
 			

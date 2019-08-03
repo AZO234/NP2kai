@@ -1112,6 +1112,14 @@ void mpu98ii_bind(void) {
 			break;
 		}
 	}
+	// WaveStar
+	if(g_nSoundID == SOUNDID_WAVESTAR){
+		//iocore_attachout(cs4231.port[10], mpu98ii_o0);
+		//iocore_attachinp(cs4231.port[10], mpu98ii_i0);
+		//iocore_attachout(cs4231.port[10]+1, mpu98ii_o2);
+		//iocore_attachinp(cs4231.port[10]+1, mpu98ii_i2);
+		mpu98.irqnum = 10;
+	}
 }
 
 void mpu98ii_callback(void) {

@@ -665,7 +665,7 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 			bios_screeninit();
 			if (((pccore.model & PCMODELMASK) >= PCMODEL_VX) &&
 				(pccore.sound & 0x7e)) {
-				if(g_nSoundID == SOUNDID_MATE_X_PCM || ((g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_118) && np2cfg.snd118irqf == np2cfg.snd118irqp) || g_nSoundID == SOUNDID_PC_9801_86_WSS){
+				if(g_nSoundID == SOUNDID_MATE_X_PCM || ((g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_118) && np2cfg.snd118irqf == np2cfg.snd118irqp) || g_nSoundID == SOUNDID_PC_9801_86_WSS || g_nSoundID == SOUNDID_WAVESTAR){
 					iocore_out8(0x188, 0x27);
 					iocore_out8(0x18a, 0x30);
 					if(g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_118){

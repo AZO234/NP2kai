@@ -1481,7 +1481,7 @@ static SINT32	sampcount2_n = 0;
 	//	samplen_n /= 100;
 	//	samplen_d /= 100;
 	//}
-	//if(g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_MATE_X_PCM || g_nSoundID == SOUNDID_PC_9801_86_WSS){
+	//if(g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_MATE_X_PCM || g_nSoundID == SOUNDID_PC_9801_86_WSS || g_nSoundID == SOUNDID_WAVESTAR){
 	//	if(cdda_softvolumereg_L != cs4231.devvolume[0x32]){
 	//		cdda_softvolumereg_L = cs4231.devvolume[0x32];
 	//		if(cdda_softvolumereg_L & 0x80){ // FM L Mute

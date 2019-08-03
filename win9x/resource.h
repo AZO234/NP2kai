@@ -220,6 +220,7 @@
 #define IDC_SND118INTM                  15556
 #define IDC_SND118DEF                   15557
 #define IDC_SND118ROM                   15558
+#define IDC_SND118JMP                   15559
 #define IDC_SPBIO                       15601
 #define IDC_SPBINT                      15602
 #define IDC_SPBROM                      15603
@@ -681,6 +682,7 @@
 #define IDM_SB16                        40659
 #define IDM_PC9801_86_118               49650
 #define IDM_86SPEAKBOARD                49651
+#define IDM_WAVESTAR                    49652
 #define IDM_MEM640                      40661
 #define IDM_MEM16                       40662
 #define IDM_MEM36                       40663

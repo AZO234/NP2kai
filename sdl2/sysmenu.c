@@ -543,6 +543,11 @@ static void sys_cmd(MENUID id) {
 			update |= SYS_UPDATECFG;
 			break;
 
+		case MID_WAVESTAR:
+			np2cfg.SOUND_SW = 0x70;
+			update |= SYS_UPDATECFG;
+			break;
+
 #if defined(SUPPORT_PX)
 		case MID_PX1:
 			np2cfg.SOUND_SW = 0x30;
@@ -873,6 +878,7 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 	menusys_setcheck(MID_SOUNDORCHESTRA, (b == 0x32));
 	menusys_setcheck(MID_SOUNDORCHESTRAV, (b == 0x82));
 	menusys_setcheck(MID_AMD98, (b == 0x80));
+	menusys_setcheck(MID_WAVESTAR, (b == 0x70));
 #if defined(SUPPORT_SOUND_SB16)
 	menusys_setcheck(MID_SB16, (b == 0x41));
 #endif	/* SUPPORT_SOUND_SB16 */

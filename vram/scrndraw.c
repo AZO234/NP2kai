@@ -153,7 +153,6 @@ const SDRAWFN	*sdrawfn;
 		np2wab_drawframe(); 
 		if(!np2wabwnd.multiwindow){
 			// XXX: ウィンドウアクセラレータ動作中は内蔵グラフィックを描画しない
-			scrnmng_update();
 			ret = 1;
 			return(ret);
 		}
