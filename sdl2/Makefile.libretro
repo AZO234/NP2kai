@@ -71,9 +71,9 @@ else ifneq (,$(findstring ios,$(platform)))
 	ifeq ($(IOSSDK),)
 		IOSSDK := $(shell xcodebuild -version -sdk iphoneos Path)
 	endif
-	ifeq ($(platform),"ios-arm64")
+	ifeq ($(platform), ios-arm64)
 	  CC = cc -arch arm64 -isysroot $(IOSSDK)
-	  CCX = c++ -arch arm64 -isysroot $(IOSSDK) -stdlib=libc++
+	  CXX = c++ -arch arm64 -isysroot $(IOSSDK) -stdlib=libc++
 	  LDFLAGS = -stdlib=libc++
 	else
 	  CC = cc -arch armv7 -isysroot $(IOSSDK)
