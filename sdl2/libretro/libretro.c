@@ -175,14 +175,36 @@ void setpredskindex(void){
 }
 /* end media swap support */
 
+#if defined(_WINDOWS)
+#define LR_NP2_FILEPATH_LENGTH 4096
+static char strSJIS[LR_NP2_FILEPATH_LENGTH];
+static char strUni[LR_NP2_FILEPATH_LENGTH];
+#endif /* _WINDOWS */
+
+FILE* fopen_jp(const char * restrict filename, const char * restrict mode) {
+#if defined(_WINDOWS)
+  int iUniLen;
+  if(GetACP() == 932) {
+    iUniLen = MultiByteToWideChar(CP_UTF8, 0, filename, strlen(filename) + 1, strUni, LR_NP2_FILEPATH_LENGTH);
+    WideCharToMultiByte(CP_ACP, 0, strUni, iUniLen, strSJIS, LR_NP2_FILEPATH_LENGTH, NULL, NULL);
+  } else {
+    strcpy(strSJIS, filename);
+  }
+  return fopen(strSJIS, mode);
+#else /* _WINDOWS */
+  return fopen(filename, mode);
+#endif /* _WINDOWS */
+}
+
 int loadcmdfile(char *argv)
 {
    int res=0;
 
-   FILE *fp = fopen(argv,"r");
-
+   FILE *fp = fopen_jp(argv,"r");
+printf("lcmd:ready\n");
    if( fp != NULL )
    {
+printf("lcmd:open\n");
       if ( fgets (CMDFILE , 512 , fp) != NULL )
          res=1;
       fclose (fp);
@@ -240,7 +262,7 @@ static bool read_m3u(const char *file)
 {
    char line[MAX_PATH];
    char name[MAX_PATH];
-   FILE *f = fopen(file, "r");
+   FILE *f = fopen_jp(file, "r");
 
    if (!f)
       return false;
