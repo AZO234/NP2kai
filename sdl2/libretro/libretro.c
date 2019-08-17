@@ -187,7 +187,7 @@ printf("lcmd:ready\n");
 printf("lcmd:open\n");
       if ( filestream_gets (fp, CMDFILE , 512) != NULL )
          res=1;
-      fclose (fp);
+      filestream_close (fp);
    }
 
    return res;
@@ -275,7 +275,7 @@ static bool read_m3u(const char *file)
       }
    }
 
-   fclose(f);
+   filestream_close(f);
    return (disk_images != 0);
 }
 
