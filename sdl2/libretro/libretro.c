@@ -15,6 +15,7 @@
 #include "libretro.h"
 #include "libretro_params.h"
 #include "libretro_core_options.h"
+#include "file_stream.h"
 
 #include "compiler.h"//required to prevent missing type errors
 #include "beep.h"
@@ -179,13 +180,14 @@ int loadcmdfile(char *argv)
 {
    int res=0;
 
-   FILE *fp = fopen(argv,"r");
-
+   RFILE *fp = filestream_open(argv, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
+printf("lcmd:ready\n");
    if( fp != NULL )
    {
-      if ( fgets (CMDFILE , 512 , fp) != NULL )
+printf("lcmd:open\n");
+      if ( filestream_gets (fp, CMDFILE , 512) != NULL )
          res=1;
-      fclose (fp);
+      filestream_close (fp);
    }
 
    return res;
@@ -240,12 +242,12 @@ static bool read_m3u(const char *file)
 {
    char line[MAX_PATH];
    char name[MAX_PATH];
-   FILE *f = fopen(file, "r");
+   RFILE *f = filestream_open(file, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
 
    if (!f)
       return false;
 
-   while (fgets(line, sizeof(line), f) && disk_images < sizeof(disk_paths) / sizeof(disk_paths[0]))
+   while (filestream_gets(f, line, sizeof(line)) && disk_images < sizeof(disk_paths) / sizeof(disk_paths[0]))
    {
       if (line[0] == '#')
          continue;
@@ -273,7 +275,7 @@ static bool read_m3u(const char *file)
       }
    }
 
-   fclose(f);
+   filestream_close(f);
    return (disk_images != 0);
 }
 

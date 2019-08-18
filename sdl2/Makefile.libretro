@@ -46,6 +46,49 @@ ifeq ($(platform), unix)
 ifeq ($(shell uname -s), Haiku)
 	LDFLAGS += -lroot
 endif
+else ifneq (,$(findstring embedded,$(platform)))
+	AR = ${CC_PREFIX}ar
+	CC = ${CC_PREFIX}gcc
+	CXX= ${CC_PREFIX}g++
+
+	TARGET := $(TARGET_NAME)_libretro.so
+    
+	#SHARED := -lpthread -lm -shared -Wl,--no-undefined -Wl,--version-script=link.T
+	LDFLAGS += -dynamiclib -ldl -lpthread -lm -shared -Wl,--no-undefined -Wl,--version-script=link.T
+	COMMONFLAGS += -DDISABLE_EXCEPTIONS -DHAVE_MKDIR
+
+	fpic = -fPIC
+   
+	# Raspberry Pi
+	ifneq (,$(findstring rpi,$(platform)))
+		CFLAGS += -fomit-frame-pointer -ffast-math -DARM -marm -mfloat-abi=hard
+
+	# Pi (original)
+	ifneq (,$(findstring rpi1,$(platform)))
+		CFLAGS += -mcpu=cortex-a6j
+	# Pi2
+	else ifneq (,$(findstring rpi2,$(platform)))
+		CFLAGS += -mcpu=cortex-a7
+	# Pi3
+	else ifneq (,$(findstring rpi3,$(platform)))
+		CFLAGS += -mcpu=cortex-a53 -mfpu=neon-vfpv4 -fdata-sections -ffunction-sections -Wl,--gc-sections -fmerge-all-constants
+	endif
+
+	# ODROIDs
+	else ifneq (,$(findstring odroid,$(platform)))
+		CFLAGS += -fomit-frame-pointer -ffast-math -DARM -marm -mfloat-abi=hard
+
+	# ODROID-C1
+	ifneq (,$(findstring odroidc,$(platform)))
+		CFLAGS += -mtune=cortex-a5
+	# ODROID-XU3 & ODROID-XU4
+	else ifneq (,$(findstring odroidxu,$(platform)))
+		CFLAGS += -march=armv7ve -mtune=cortex-a15.cortex-a7
+	# ODROID-U2, -U3, -X & -X2
+	else
+		CFLAGS += -mtune=cortex-a9
+	endif
+endif
 
 # OS X
 else ifeq ($(platform), osx)

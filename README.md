@@ -36,7 +36,7 @@ NP2kai is PC-9801 series emulator
 2. Run MSYS2 64bit console  
 3. Run follow command.  
 ```
-$ pacman -S git gcc make mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL2_mixer
+$ pacman -S git make mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL2_mixer
 ```
 
 ##### Build
@@ -251,11 +251,16 @@ NP2 menu is shown F12 or mouse middle button or L2.
 NP2 menu can swap FDD/HDD diskimages.(Swapping HDD need reset.)  
 
 You can libretro with .m3u file listed floppy disk images,  
+(This file must be wiritten in UTF-8.)  
 1st image is mouted to FDD1, 2nd image is mouted to FDD2.  
 (Not suitable when using only one FDD1 drive. Use NP2 menu.)  
 To swap FDD2 imagefile, libretro menu durling play game,  
 [Disk Control] -> [Disk Cycle Tray Status] (eject) -> [Disk Index] -> [Disk Cycle Tray Status] (disk set)  
 So, to swap FDD1 imagefile, libretro [Option] menu -> [Swap Disks on Drive] set [FDD1]  
+
+You can libretro with .cmd file commandline,  
+(This file must be wiritten in UTF-8.)  
+FDD/HDD/CD are mounted and start.  
 
 Mouse is cuptured (hidden/show toggle) by F11 key.  
 
