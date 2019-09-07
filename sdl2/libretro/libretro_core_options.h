@@ -124,7 +124,7 @@ struct retro_core_option_definition option_defs_us[] = {
          { "7", NULL },
          { "11", NULL },
          { "13", NULL },
-#if !defined(CPUCORE_IA32)
+#if defined(CPUCORE_IA32)
          { "16", NULL },
          { "32", NULL },
          { "64", NULL },
@@ -882,7 +882,7 @@ struct retro_core_option_definition option_defs_ja[] = {
          { "7", NULL },
          { "11", NULL },
          { "13", NULL },
-#if !defined(CPUCORE_IA32)
+#if defined(CPUCORE_IA32)
          { "16", NULL },
          { "32", NULL },
          { "64", NULL },
