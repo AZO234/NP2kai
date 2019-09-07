@@ -872,8 +872,16 @@ REG16 bootstrapload(void) {
 			bootseg = boot_fd(i, 3);
 		}
 	}
-	for (i=0; (i<2) && (!bootseg); i++) {
-		bootseg = boot_hd((REG8)(0x80 + i));
+	if(pccore.hddif & PCHDD_IDE){
+		for (i=0; (i<4) && (!bootseg); i++) {
+			if(sxsi_getptr(i)->devtype == SXSIDEV_HDD){
+				bootseg = boot_hd((REG8)(0x80 + i));
+			}
+		}
+	}else if(pccore.hddif & PCHDD_SASI){
+		for (i=0; (i<2) && (!bootseg); i++) {
+			bootseg = boot_hd((REG8)(0x80 + i));
+		}
 	}
 	for (i=0; (i<4) && (!bootseg); i++) {
 		bootseg = boot_hd((REG8)(0xa0 + i));

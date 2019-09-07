@@ -26,6 +26,7 @@ static CRITICAL_SECTION pic_cs;
 
 static void pic_enter_criticalsection(void){
 #if defined(_WINDOWS) && !defined(__LIBRETRO__)
+	if(!pic_cs_initialized) return;
 	EnterCriticalSection(&pic_cs);
 #else
 	// TODO: 非Windows用コードを書く
@@ -33,6 +34,7 @@ static void pic_enter_criticalsection(void){
 }
 static void pic_leave_criticalsection(void){
 #if defined(_WINDOWS) && !defined(__LIBRETRO__)
+	if(!pic_cs_initialized) return;
 	LeaveCriticalSection(&pic_cs);
 #else
 	// TODO: 非Windows用コードを書く

@@ -416,11 +416,19 @@ static const MSYSITEM s_mem[] = {
 		{str_mem76,			NULL,		MID_MEM76,			0},
 		{str_mem96,			NULL,		MID_MEM96,			0},
 		{str_mem136,			NULL,		MID_MEM136,			0},
+#if defined(CPUCORE_IA32)
 		{str_mem166,			NULL,		MID_MEM166,			0},
 		{str_mem326,			NULL,		MID_MEM326,			0},
 		{str_mem646,			NULL,		MID_MEM646,			0},
 		{str_mem1206,			NULL,		MID_MEM1206,			0},
 		{str_mem2306,			NULL,		MID_MEM2306,			MENU_DELETED}};
+#else
+		{str_mem166,			NULL,		MID_MEM166,			MENU_GRAY},
+		{str_mem326,			NULL,		MID_MEM326,			MENU_GRAY},
+		{str_mem646,			NULL,		MID_MEM646,			MENU_GRAY},
+		{str_mem1206,			NULL,		MID_MEM1206,			MENU_GRAY},
+		{str_mem2306,			NULL,		MID_MEM2306,			MENU_GRAY | MENU_DELETED}};
+#endif
 
 static const MSYSITEM s_device[] = {
 #if !defined(__LIBRETRO__)

@@ -1052,7 +1052,7 @@ const OEMCHAR	*path;
 	ret = statflag_write(sfh, &sds, sizeof(sds));
 	for (i=0; i<NELEMENTS(sds.ide); i++) {
 		if (sds.ide[i] != SXSIDEV_NC) {
-#if defined(SUPPORT_IDEIO)||defined(SUPPORT_PHYSICAL_CDDRV)
+#if defined(SUPPORT_IDEIO)&&defined(SUPPORT_PHYSICAL_CDDRV)
 			if(sds.ide[i]==SXSIDEV_CDROM){ // CD-ROMの場合、np2cfgを優先
 				path = np2cfg.idecd[i];
 			}else

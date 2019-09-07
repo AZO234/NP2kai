@@ -62,8 +62,6 @@ static void info_ver(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
 static void info_cpu(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
-	UINT	family;
-
 #if defined(CPUCORE_IA32)
 #ifdef UNICODE
 	MultiByteToWideChar(CP_ACP, 0, i386cpuid.cpu_brandstring, -1, str, maxlen);
@@ -71,6 +69,7 @@ static void info_cpu(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 	milstr_ncpy(str, i386cpuid.cpu_brandstring, maxlen);
 #endif
 #else
+	UINT	family;
 #if defined(CPU_FAMILY)
 	family = np2min(CPU_FAMILY, 6);
 #else

@@ -137,7 +137,8 @@ static void pcm86stereo16(PCM86 pcm86, SINT32 *lpBuffer, UINT nCount)
 			{
 				SINT32 dat;
 				pcm86->realbuf -= 4;
-				if (pcm86->realbuf < 4)
+				//if (pcm86->realbuf < 4) // ???
+				if (pcm86->realbuf < 0)
 				{
 					goto ps16_bufempty;
 				}

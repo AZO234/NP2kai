@@ -182,21 +182,25 @@ static void bios_reinitbyswitch(void) {
 	mem[0x45c] = 0x40;
 	
 #if defined(SUPPORT_IDEIO)
-	mem[0xF8E80+0x0010] = (sxsi_getdevtype(3)!=SXSIDEV_NC ? 0x8 : 0x0)|(sxsi_getdevtype(2)!=SXSIDEV_NC ? 0x4 : 0x0)|
-						  (sxsi_getdevtype(1)!=SXSIDEV_NC ? 0x2 : 0x0)|(sxsi_getdevtype(0)!=SXSIDEV_NC ? 0x1 : 0x0);
+	if (pccore.hddif & PCHDD_IDE) {
+		mem[0xF8E80+0x0010] = (sxsi_getdevtype(3)!=SXSIDEV_NC ? 0x8 : 0x0)|(sxsi_getdevtype(2)!=SXSIDEV_NC ? 0x4 : 0x0)|
+							  (sxsi_getdevtype(1)!=SXSIDEV_NC ? 0x2 : 0x0)|(sxsi_getdevtype(0)!=SXSIDEV_NC ? 0x1 : 0x0);
 
-	if(np2cfg.winntfix){
-		// WinNT4.0でHDDが認識するようになる（ただしWin9xではHDD認識失敗の巻き添えになってCDが認識しなくなる）
-		mem[0x05ba] = (sxsi_getdevtype(3)==SXSIDEV_HDD ? 0x8 : 0x0)|(sxsi_getdevtype(2)==SXSIDEV_HDD ? 0x4 : 0x0)|
-					  (sxsi_getdevtype(1)==SXSIDEV_HDD ? 0x2 : 0x0)|(sxsi_getdevtype(0)==SXSIDEV_HDD ? 0x1 : 0x0);
+		if(np2cfg.winntfix){
+			// WinNT4.0でHDDが認識するようになる（ただしWin9xではHDD認識失敗の巻き添えになってCDが認識しなくなる）
+			mem[0x05ba] = (sxsi_getdevtype(3)==SXSIDEV_HDD ? 0x8 : 0x0)|(sxsi_getdevtype(2)==SXSIDEV_HDD ? 0x4 : 0x0)|
+						  (sxsi_getdevtype(1)==SXSIDEV_HDD ? 0x2 : 0x0)|(sxsi_getdevtype(0)==SXSIDEV_HDD ? 0x1 : 0x0);
+		}
+	}else{
+		mem[0xF8E80+0x0010] &= ~0x0f;
+		mem[0x05ba] &= ~0x0f;
 	}
-	
-	mem[0x45B] |= 0x80; // XXX: TEST OUT 5Fh,AL wait
 #endif
 	mem[0xF8E80+0x0011] = mem[0xF8E80+0x0011] & ~0x20; // 0x20のビットがONだとWin2000でマウスがカクカクする？
 	if(np2cfg.modelnum) mem[0xF8E80+0x003F] = np2cfg.modelnum; // PC-9821 Model Number
 	
 #endif
+	mem[0x45B] |= 0x80; // XXX: TEST OUT 5Fh,AL wait
 	
 #if defined(SUPPORT_PCI)
 	mem[0xF8E80+0x0004] |= 0x2c;
@@ -605,7 +609,6 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 	// 高速メモリチェック
 	if (CPU_ITFBANK && adrs == 0xf9724) {
 		UINT16 subvalue = LOADINTELWORD((mem + ITF_ADRS + 5886)) / 128;
-		UINT16 memaddr = MEMP_READ16(CPU_EIP);
 		UINT16 counter = MEMR_READ16(CPU_SS, CPU_EBP + 6);
 		if(subvalue == 0) subvalue = 1;
 		if(counter >= subvalue){

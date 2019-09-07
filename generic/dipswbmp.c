@@ -355,14 +355,10 @@ UINT8 *dipswbmp_getmpu(UINT8 cfg) {
 	return(ret);
 }
 
-UINT8 *dipswbmp_getsnd118(UINT8 snd118io, UINT8 snd118dma, UINT8 snd118irqf, UINT8 snd118irqp, UINT8 snd118irqm, UINT8 snd118rom) {
+UINT8 *dipswbmp_getsnd118(UINT16 snd118io, UINT8 snd118dma, UINT8 snd118irqf, UINT8 snd118irqp, UINT8 snd118irqm, UINT8 snd118rom) {
 
 	UINT8	*ret;
 	DIPBMP	dipbmp;
-	int		i;
-	int		x;
-	int		y;
-	int		l;
 
 	ret = getbmpres(OEMTEXT("JUMPER118"), &dipbmp);
 	if (ret) {

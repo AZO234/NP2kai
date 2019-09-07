@@ -582,11 +582,13 @@ static const gchar *ui_info =
 "    <menuitem action='7.6mb'/>\n"
 "    <menuitem action='9.6mb'/>\n"
 "    <menuitem action='13.6mb'/>\n"
+#if !defined(CPUCORE_IA32)
 "    <menuitem action='16.6mb'/>\n"
 "    <menuitem action='32.6mb'/>\n"
 "    <menuitem action='64.6mb'/>\n"
 "    <menuitem action='120.6mb'/>\n"
 "    <menuitem action='230.6mb'/>\n"
+#endif
 "   </menu>\n"
 "   <menu name='FPU' action='FPUMenu'>\n"
 "    <menuitem action='fpu80'/>\n"

@@ -4611,7 +4611,7 @@ void pc98_cirrus_vga_load()
     int pos = 0;
 	uint32_t_ state_ver = 0;
 	uint32_t_ intbuf;
-	int width, height;
+	//int width, height;
 	char en[3];
 	
 	array_read(f, pos, &state_ver, sizeof(state_ver)); // バージョン番号

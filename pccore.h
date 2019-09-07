@@ -107,6 +107,9 @@ struct tagNP2Config
 #if defined(SUPPORT_ASYNC_CPU)
 	UINT8	asynccpu; // 非同期CPUモード有効
 #endif
+#if defined(SUPPORT_IDEIO)
+	UINT8	idebaddr; // IDE BIOD アドレス（デフォルト：D8h(D8000h)）
+#endif
 	
 	// リセット時とかあんまり参照されない奴
 	OEMCHAR	model[8];
@@ -352,6 +355,8 @@ void pccore_exec(BOOL draw);
 void pccore_postevent(UINT32 event);
 
 #ifdef SUPPORT_ASYNC_CPU
+extern int asynccpu_lateflag;
+extern int asynccpu_fastflag;
 #if !defined(__LIBRETRO__) && !defined(NP2_SDL2) && !defined(NP2_X11)
 typedef union {
     struct {

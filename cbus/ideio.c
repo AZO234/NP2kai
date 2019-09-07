@@ -1835,6 +1835,7 @@ void ideio_reset(const NP2CFG *pConfig) {
 	FILEH	fh;
 	OEMCHAR tmpbiosname[16];
 	UINT8 useidebios;
+	UINT32 biosaddr;
 
 	ZeroMemory(&ideio, sizeof(ideio));
 
@@ -1844,91 +1845,63 @@ void ideio_reset(const NP2CFG *pConfig) {
 	ideio.wwait = np2cfg.idewwait;
 	ideio.bios = IDETC_NOBIOS;
 
-	useidebios = np2cfg.idebios && np2cfg.usebios;
-	if(useidebios && np2cfg.autoidebios){
-		SXSIDEV	sxsi;
-		for (i=0; i<4; i++) {
-			sxsi = sxsi_getptr(i);
-			if ((sxsi != NULL) && (np2cfg.idetype[i] == SXSIDEV_HDD) && 
-					(sxsi->devtype == SXSIDEV_HDD) && (sxsi->flag & SXSIFLAG_READY)) {
-				if(sxsi->surfaces != 8 || sxsi->sectors != 17){
-					TRACEOUT(("Incompatible CHS parameter detected. IDE BIOS automatically disabled."));
-					useidebios = 0;
+	if(pccore.hddif & PCHDD_IDE){
+		if(pConfig->idebaddr){
+			biosaddr = (UINT32)pConfig->idebaddr << 12;
+			useidebios = np2cfg.idebios && np2cfg.usebios;
+			if(useidebios && np2cfg.autoidebios){
+				SXSIDEV	sxsi;
+				for (i=0; i<4; i++) {
+					sxsi = sxsi_getptr(i);
+					if ((sxsi != NULL) && (np2cfg.idetype[i] == SXSIDEV_HDD) && 
+							(sxsi->devtype == SXSIDEV_HDD) && (sxsi->flag & SXSIFLAG_READY)) {
+						if(sxsi->surfaces != 8 || sxsi->sectors != 17){
+							TRACEOUT(("Incompatible CHS parameter detected. IDE BIOS automatically disabled."));
+							useidebios = 0;
+						}
+					}
 				}
 			}
+			if(useidebios){
+				_tcscpy(tmpbiosname, OEMTEXT("ide.rom"));
+				getbiospath(path, tmpbiosname, NELEMENTS(path));
+				fh = file_open_rb(path);
+				if (fh == FILEH_INVALID) {
+					_tcscpy(tmpbiosname, OEMTEXT("d8000.rom"));
+					getbiospath(path, tmpbiosname, NELEMENTS(path));
+					fh = file_open_rb(path);
+				}
+				if (fh == FILEH_INVALID) {
+					_tcscpy(tmpbiosname, OEMTEXT("bank3.bin"));
+					getbiospath(path, tmpbiosname, NELEMENTS(path));
+					fh = file_open_rb(path);
+				}
+				if (fh == FILEH_INVALID) {
+					_tcscpy(tmpbiosname, OEMTEXT("bios9821.rom"));
+					getbiospath(path, tmpbiosname, NELEMENTS(path));
+					fh = file_open_rb(path);
+				}
+			}else{
+				fh = FILEH_INVALID;
+			}
+			if (fh != FILEH_INVALID) {
+				// IDE BIOS
+				if (file_read(fh, mem + biosaddr, 0x2000) == 0x2000) {
+					ideio.bios = IDETC_BIOS;
+					TRACEOUT(("load ide.rom"));
+					_tcscpy(ideio.biosname, tmpbiosname);
+				}else{
+					CopyMemory(mem + biosaddr, idebios, sizeof(idebios));
+					TRACEOUT(("use simulate ide.rom"));
+				}
+				file_close(fh);
+			}else{
+				CopyMemory(mem + biosaddr, idebios, sizeof(idebios));
+				TRACEOUT(("use simulate ide.rom"));
+			}
+			CPU_RAM_D000 &= ~(0x3 << 8);
 		}
 	}
-	if(useidebios){
-		_tcscpy(tmpbiosname, OEMTEXT("ide.rom"));
-		getbiospath(path, tmpbiosname, NELEMENTS(path));
-		fh = file_open_rb(path);
-		if (fh == FILEH_INVALID) {
-			_tcscpy(tmpbiosname, OEMTEXT("d8000.rom"));
-			getbiospath(path, tmpbiosname, NELEMENTS(path));
-			fh = file_open_rb(path);
-		}
-		if (fh == FILEH_INVALID) {
-			_tcscpy(tmpbiosname, OEMTEXT("bank3.bin"));
-			getbiospath(path, tmpbiosname, NELEMENTS(path));
-			fh = file_open_rb(path);
-		}
-		if (fh == FILEH_INVALID) {
-			_tcscpy(tmpbiosname, OEMTEXT("bios9821.rom"));
-			getbiospath(path, tmpbiosname, NELEMENTS(path));
-			fh = file_open_rb(path);
-		}
-	}else{
-		fh = FILEH_INVALID;
-	}
-	if (fh != FILEH_INVALID) {
-		// IDE BIOS
-		if (file_read(fh, mem + 0x0d8000, 0x2000) == 0x2000) {
-			ideio.bios = IDETC_BIOS;
-			TRACEOUT(("load ide.rom"));
-			_tcscpy(ideio.biosname, tmpbiosname);
-		}else{
-			CopyMemory(mem + 0xd8000, idebios, sizeof(idebios));
-			TRACEOUT(("use simulate ide.rom"));
-		}
-		file_close(fh);
-	}else{
-		CopyMemory(mem + 0xd8000, idebios, sizeof(idebios));
-		TRACEOUT(("use simulate ide.rom"));
-	}
-	CPU_RAM_D000 &= ~(0x3 << 8);
-
-	//if(ideio.bios==IDETC_NOBIOS){
-	//	UINT16 param_2[] = {0x0598, 0x05b1, 0x058c, 0x058e};
-	//	UINT16 param_4[] = {0x045d, 0x045d, 0x045e, 0x045e};
-	//	UINT8 param_19[] = {0x08, 0x10, 0x20, 0x40};
-	//	int paramofs = 0;
-	//	for (i=0; i<4; i++) {
-	//		drv = ideio.dev[i >> 1].drv + (i & 1);
-	//		if (drv != NULL) {
-	//			SXSIDEV sxsi;
-	//			UINT32	size;
-	//			sxsi = sxsi_getptr(drv->sxsidrv);
-	//			size = sxsi->cylinders * sxsi->surfaces * sxsi->sectors;
-	//			if (drv->device == IDETYPE_HDD) {
-	//				STOREINTELWORD(mem + 0xda100 + paramofs, (size / drv->surfaces / drv->sectors) & 0xffff);
-	//				STOREINTELWORD(mem + 0xda100 + paramofs + 2, param_2[i]);
-	//				STOREINTELWORD(mem + 0xda100 + paramofs + 4, param_4[i]);
-	//				*(mem + 0xda100 + paramofs + 7) = drv->sectors;
-	//				STOREINTELWORD(mem + 0xda100 + paramofs + 8, (drv->surfaces * drv->sectors) & 0xffff);
-	//				*(mem + 0xda100 + paramofs + 10) = drv->surfaces;
-	//				STOREINTELWORD(mem + 0xda100 + paramofs + 1, (drv->surfaces * drv->sectors) & 0xffff);
-	//				*(mem + 0xda100 + paramofs + 16) = 0;
-	//				*(mem + 0xda100 + paramofs + 19) = param_19[i];
-	//			}else{
-	//				STOREINTELWORD(mem + 0xda100 + paramofs + 2, param_2[i]);
-	//				STOREINTELWORD(mem + 0xda100 + paramofs + 4, param_4[i]);
-	//				*(mem + 0xda100 + paramofs + 16) = 0x02;
-	//				*(mem + 0xda100 + paramofs + 19) = param_19[i];
-	//			}
-	//		}
-	//		paramofs += 32;
-	//	}
-	//}
 
 	(void)pConfig;
 }

@@ -199,7 +199,7 @@ void opna_reset(POPNA opna, REG8 cCaps)
 		opna_fmgen_setallvolumeRhythmTotal_linear(np2cfg.vol_rhythm);
 	}
 #endif	/* SUPPORT_FMGEN */
-	for (UINT i = 0; i < _countof(g_opna); i++)
+	for (UINT i = 0; i < NELEMENTS(g_opna); i++)
 	{
 		rhythm_update(&g_opna[i].rhythm);
 	}
@@ -376,7 +376,10 @@ void opna_bind(POPNA opna)
 	
 #if defined(SUPPORT_FMGEN)
 	if(opna->usefmgen) {
-		sound_streamregist(opna->fmgen, (SOUNDCB)OPNA_Mix);
+		if (!pExt)
+		{
+			sound_streamregist(opna->fmgen, (SOUNDCB)OPNA_Mix);
+		}
 	} else {
 #endif	/* SUPPORT_FMGEN */
 		if (pExt)

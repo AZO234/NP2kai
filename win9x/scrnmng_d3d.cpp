@@ -1067,9 +1067,9 @@ void scrnmngD3D_fullscrnmenu(int y) {
 			if (menudisp == 1) {
 				np2class_enablemenu(g_hWndMain, TRUE);
 				d3d.d3ddev->SetDialogBoxMode(TRUE);
-				d3d.d3ddev->Present(NULL, NULL, NULL, NULL);
-				InvalidateRect(g_hWndMain, NULL, TRUE);
-				DrawMenuBar(g_hWndMain);
+				//d3d.d3ddev->Present(NULL, NULL, NULL, NULL);
+				//InvalidateRect(g_hWndMain, NULL, TRUE);
+				//DrawMenuBar(g_hWndMain);
 			}
 			else {
 				d3d.d3ddev->SetDialogBoxMode(FALSE);
@@ -1430,6 +1430,9 @@ void scrnmngD3D_update(void) {
 					r = d3d.d3ddev->StretchRect(d3d.backsurf, &d3d.rect, d3d.d3dbacksurf, &dst, D3DTEXF_LINEAR);
 				}
 			}
+			if((d3d.scrnmode & SCRNMODE_FULLSCREEN) && d3d.menudisp){
+				DrawMenuBar(g_hWndMain);
+			}
 			if(d3d.d3ddev->Present(NULL, NULL, NULL, NULL)==D3DERR_DEVICELOST){
 				restoresurfaces();
 			}
@@ -1463,6 +1466,9 @@ void scrnmngD3D_update(void) {
 				dst.right = clip.x + d3d.scrn.right;
 				dst.bottom = clip.y + d3d.scrn.bottom;
 				r = d3d.d3ddev->StretchRect(d3d.backsurf, &d3d.rect, d3d.d3dbacksurf, &dst, d3dtexf);
+			}
+			if((d3d.scrnmode & SCRNMODE_FULLSCREEN) && d3d.menudisp){
+				DrawMenuBar(g_hWndMain);
 			}
 			if(d3d.d3ddev->Present(NULL, NULL, NULL, NULL)==D3DERR_DEVICELOST){
 				restoresurfaces();
@@ -1782,37 +1788,35 @@ void scrnmngD3D_blthdc(HDC hdc) {
 			Sleep(1);
 		}
 		d3d_enter_criticalsection();
-		if (d3d.menudisp != 1 && d3d.cliping == 0){
-			mt_wabdrawing = 1;
-			r = d3d.wabsurf->GetDC(&hDCDD);
-			if (r == D3D_OK){
-				POINT pt[3];
-				switch(d3d.scrnmode & SCRNMODE_ROTATEMASK){
-				case SCRNMODE_ROTATELEFT:
-					pt[0].x = 0;
-					pt[0].y = scrnstat.width;
-					pt[1].x = 0;
-					pt[1].y = 0;
-					pt[2].x = scrnstat.height;
-					pt[2].y = scrnstat.width;
-					r = PlgBlt(hDCDD, pt, hdc, 0, 0, np2wab.realWidth, np2wab.realHeight, NULL, 0, 0);
-					break;
-				case SCRNMODE_ROTATERIGHT:
-					pt[0].x = scrnstat.height;
-					pt[0].y = 0;
-					pt[1].x = scrnstat.height;
-					pt[1].y = scrnstat.width;
-					pt[2].x = 0;
-					pt[2].y = 0;
-					r = PlgBlt(hDCDD, pt, hdc, 0, 0, np2wab.realWidth, np2wab.realHeight, NULL, 0, 0);
-					break;
-				default:
-					r = BitBlt(hDCDD, 0, 0, scrnstat.width, scrnstat.height, hdc, 0, 0, SRCCOPY);
-				}
-				d3d.wabsurf->ReleaseDC(hDCDD);
+		mt_wabdrawing = 1;
+		r = d3d.wabsurf->GetDC(&hDCDD);
+		if (r == D3D_OK){
+			POINT pt[3];
+			switch(d3d.scrnmode & SCRNMODE_ROTATEMASK){
+			case SCRNMODE_ROTATELEFT:
+				pt[0].x = 0;
+				pt[0].y = scrnstat.width;
+				pt[1].x = 0;
+				pt[1].y = 0;
+				pt[2].x = scrnstat.height;
+				pt[2].y = scrnstat.width;
+				r = PlgBlt(hDCDD, pt, hdc, 0, 0, np2wab.realWidth, np2wab.realHeight, NULL, 0, 0);
+				break;
+			case SCRNMODE_ROTATERIGHT:
+				pt[0].x = scrnstat.height;
+				pt[0].y = 0;
+				pt[1].x = scrnstat.height;
+				pt[1].y = scrnstat.width;
+				pt[2].x = 0;
+				pt[2].y = 0;
+				r = PlgBlt(hDCDD, pt, hdc, 0, 0, np2wab.realWidth, np2wab.realHeight, NULL, 0, 0);
+				break;
+			default:
+				r = BitBlt(hDCDD, 0, 0, scrnstat.width, scrnstat.height, hdc, 0, 0, SRCCOPY);
 			}
-			mt_wabdrawing = 0;
+			d3d.wabsurf->ReleaseDC(hDCDD);
 		}
+		mt_wabdrawing = 0;
 		d3d_leave_criticalsection();
 	}
 #endif
@@ -1831,12 +1835,7 @@ void scrnmngD3D_bltwab() {
 	if (np2wabwnd.multiwindow) return;
 	if (d3d.backsurf != NULL) {
 		if (d3d.scrnmode & SCRNMODE_FULLSCREEN) {
-			if (GetWindowLongPtr(g_hWndMain, NP2GWLP_HMENU)) {
-				dst = &d3d.rect;
-			}
-			else {
-				dst = &d3d.rectclip;
-			}
+			dst = &d3d.rect;
 		}else{
 			dst = &d3d.rect;
 			exmgn = scrnstat.extend;

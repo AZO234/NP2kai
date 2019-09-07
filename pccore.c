@@ -100,6 +100,9 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE " " NP2VER_GIT);
 #if defined(SUPPORT_ASYNC_CPU)
 				0,
 #endif
+#if defined(SUPPORT_IDEIO)
+				0xD8,
+#endif
 
 				OEMTEXT("VX"), PCBASECLOCK25, PCBASEMULTIPLE, 1,
 				{0x48, 0x05, 0x04, 0x08, 0x01, 0x00, 0x00, 0x6e},
@@ -191,6 +194,8 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE " " NP2VER_GIT);
 #endif	/* SUPPORT_FMGEN */
 
 #ifdef SUPPORT_ASYNC_CPU
+int asynccpu_lateflag = 0;
+int asynccpu_fastflag = 0;
 #if !defined(__LIBRETRO__) && !defined(NP2_SDL2) && !defined(NP2_X11)
 LARGE_INTEGER asynccpu_lastclock = {0};
 LARGE_INTEGER asynccpu_clockpersec = {0};
@@ -226,7 +231,11 @@ static void pccore_set(const NP2CFG *pConfig)
 {
 	UINT8	model;
 	UINT32	multiple;
+#if defined(SUPPORT_LARGE_MEMORY)
 	UINT16	extsize;
+#else
+	UINT8	extsize;
+#endif
 
 	ZeroMemory(&pccore, sizeof(pccore));
 	model = PCMODEL_VX;
@@ -1011,6 +1020,10 @@ void pccore_exec(BOOL draw) {
 #endif	/* SUPPORT_HRTIMER */
 		nevent_progress();
 	}
+#if defined(SUPPORT_ASYNC_CPU)
+	asynccpu_lateflag = 0;
+	asynccpu_fastflag = 0;
+#endif
 	artic_callback();
 	mpu98ii_callback();
 	diskdrv_callback();

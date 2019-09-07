@@ -55,16 +55,17 @@ void
 sysmng_updatecaption(UINT8 flag)
 {
 	char work[512];
+	int i;
+	OEMCHAR	fddtext[16] = {0};
 
 	if (flag & 1) {
 		titlestr[0] = '\0';
-		if (fdd_diskready(0)) {
-			milstr_ncat(titlestr, "  FDD1:", sizeof(titlestr));
-			milstr_ncat(titlestr, file_getname((char *)fdd_diskname(0)), sizeof(titlestr));
-		}
-		if (fdd_diskready(1)) {
-			milstr_ncat(titlestr, "  FDD2:", sizeof(titlestr));
-			milstr_ncat(titlestr, file_getname((char *)fdd_diskname(1)), sizeof(titlestr));
+		for(i = 0; i < 4; i++) {
+			if (fdd_diskready(i)) {
+				OEMSPRINTF(fddtext, OEMTEXT("  FDD%d:"), i + 1);
+				milstr_ncat(titlestr, fddtext, sizeof(titlestr));
+				milstr_ncat(titlestr, file_getname((char *)fdd_diskname(i)), sizeof(titlestr));
+			}
 		}
 #if defined(SUPPORT_IDEIO)
 		if (sxsi_getfilename(0x02)) {

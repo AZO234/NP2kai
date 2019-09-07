@@ -1120,7 +1120,7 @@ int gettoolwndini(PFTBL **ptoolwndini)
 	PFTBL *toolwndini;
 	int slistlen;
 
-	fdlistlen = np2oscfg.tollwndhistory;
+	fdlistlen = np2oscfg.toolwndhistory;
 	if(fdlistlen == 0) fdlistlen = FDDLIST_DEFAULT;
 	if(fdlistlen > FDDLIST_MAX) fdlistlen = FDDLIST_MAX;
 

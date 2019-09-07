@@ -446,8 +446,8 @@ NekoCPUCheck:
 	return 0;
 }
 int CConfigureDlg::SetCpuTypeIndex(UINT index){
-	switch(index){
 #if defined(CPUCORE_IA32)
+	switch(index){
 	case 1:
 		np2cfg.cpu_family = CPU_I486SX_FAMILY;
 		np2cfg.cpu_model = CPU_I486SX_MODEL;
@@ -602,7 +602,6 @@ int CConfigureDlg::SetCpuTypeIndex(UINT index){
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_NEKOPRO);
 		np2cfg.cpu_brandid = 0;
 		break;
-#endif
 	default:
 		return 0;
 	}
@@ -614,6 +613,9 @@ int CConfigureDlg::SetCpuTypeIndex(UINT index){
 //	strcpy(np2cfg.cpu_brandstring_o, np2cfg.cpu_brandstring);
 //#endif
 	return SYS_UPDATECFG;
+#else
+	return 0;
+#endif
 }
 
 /**

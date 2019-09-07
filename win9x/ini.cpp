@@ -669,6 +669,9 @@ static const PFTBL s_IniItems[] =
 #if defined(SUPPORT_ASYNC_CPU)
 	PFVAL("ASYNCCPU", PFTYPE_BOOL,		&np2cfg.asynccpu), // 非同期CPUモード有効
 #endif
+#if defined(SUPPORT_IDEIO)
+	PFVAL("IDEBADDR", PFRO_HEX8,		&np2cfg.idebaddr), // IDE BIOD アドレス（デフォルト：D8h(D8000h)）
+#endif
 	
 
 	// OS依存？
@@ -767,7 +770,7 @@ static const PFTBL s_IniItems[] =
 	PFVAL("USEWHEEL", PFRO_BOOL,		&np2oscfg.usewheel), // マウスホイールによる音量・マウス速度設定を使用する
 	PFVAL("USE_MVOL", PFRO_BOOL,		&np2oscfg.usemastervolume), // マスタボリューム設定を使用する
 	
-	PFVAL("TWNDHIST", PFRO_UINT8,		&np2oscfg.tollwndhistory), // ツールウィンドウのFDファイル履歴の記憶数
+	PFVAL("TWNDHIST", PFRO_UINT8,		&np2oscfg.toolwndhistory), // ツールウィンドウのFDファイル履歴の記憶数
 };
 
 //! .ini 拡張子

@@ -1211,12 +1211,16 @@ BEGIN
         MENUITEM "&Open...",                    IDM_IDE0OPEN
         MENUITEM SEPARATOR
         MENUITEM "&Remove",                     IDM_IDE0EJECT
+        MENUITEM SEPARATOR
+        MENUITEM " ",							IDM_IDE0STATE
     END
     POPUP "SASI #1"
     BEGIN
         MENUITEM "&Open...",                    IDM_IDE1OPEN
         MENUITEM SEPARATOR
         MENUITEM "&Remove",                     IDM_IDE1EJECT
+        MENUITEM SEPARATOR
+        MENUITEM " ",							IDM_IDE1STATE
     END
 END
 
