@@ -433,6 +433,7 @@ midiwrite(COMMNG self, UINT8 data)
 			case 0xc0:
 			case 0xd0:
 				midi->midictrl = MIDICTRL_2BYTES;
+				midi->midilast = data;
 				break;
 
 			case 0x80:
@@ -481,7 +482,23 @@ midiwrite(COMMNG self, UINT8 data)
 			/* running status */
 			midi->buffer[0] = midi->midilast;
 			midi->mpos = 1;
-			midi->midictrl = MIDICTRL_3BYTES;
+			switch (midi->midilast & 0xf0)
+			{
+				case 0xc0:
+				case 0xd0:
+				midi->midictrl = MIDICTRL_2BYTES;
+					break;
+
+				case 0x80:
+				case 0x90:
+				case 0xa0:
+				case 0xb0:
+				case 0xe0:
+				midi->midictrl = MIDICTRL_3BYTES;
+					break;
+				default:
+					return 1;
+			}
 		}
 	}
 	midi->buffer[midi->mpos] = data;
