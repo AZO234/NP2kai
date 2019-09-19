@@ -7,6 +7,9 @@
 #include	"scsiio.h"
 #include	"pc9861k.h"
 #include	"mpu98ii.h"
+#ifdef SUPPORT_SMPU98
+#include	"smpu98.h"
+#endif
 #include	"bmsio.h"
 #ifdef SUPPORT_NET
 #include	"net.h"
@@ -23,7 +26,6 @@
 #ifdef SUPPORT_GPIB
 #include	"gpibio.h"
 #endif
-
 
 static const FNIORESET resetfn[] = {
 #if defined(SUPPORT_IDEIO)
@@ -57,6 +59,9 @@ static const FNIORESET resetfn[] = {
 			pegc_reset,
 #endif
 			mpu98ii_reset,
+#if defined(SUPPORT_SMPU98)
+			smpu98_reset,
+#endif
 #if defined(SUPPORT_BMS)
 			bmsio_reset,
 #endif
@@ -94,6 +99,9 @@ static const FNIOBIND bindfn[] = {
 			pegc_bind,
 #endif
 			mpu98ii_bind,
+#if defined(SUPPORT_SMPU98)
+			smpu98_bind,
+#endif
 #if defined(SUPPORT_BMS)
 			bmsio_bind,
 #endif

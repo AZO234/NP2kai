@@ -35,6 +35,8 @@ typedef struct {
 } MPURECV;
 
 typedef struct {
+	UINT8	enable;
+
 	UINT16	port;
 	UINT8	irqnum;
 	UINT8	data;

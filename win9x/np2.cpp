@@ -54,6 +54,9 @@
 #include "iocore.h"
 #include "pc9861k.h"
 #include "mpu98ii.h"
+#if defined(SUPPORT_SMPU98)
+#include "smpu98.h"
+#endif
 #include "scrndraw.h"
 #include "sound.h"
 #include "beep.h"
@@ -120,6 +123,12 @@ static	TCHAR		szClassName[] = _T("NP2-MainWindow");
 						0, 0, 0, {1, 2, 2, 1},
 						{5, 0, 0x3e, 19200,
 						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
+#if defined(SUPPORT_SMPU98)
+						{5, 0, 0x3e, 19200,
+						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
+						{5, 0, 0x3e, 19200,
+						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
+#endif
 						{0, 0, 0x3e, 19200,
 						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
 						{0, 0, 0x3e, 19200,
@@ -1501,6 +1510,9 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 		case IDM_MIDIPANIC:
 			rs232c_midipanic();
 			mpu98ii_midipanic();
+#if defined(SUPPORT_SMPU98)
+			smpu98_midipanic();
+#endif
 			pc9861k_midipanic();
 			break;
 

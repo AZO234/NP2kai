@@ -30,8 +30,9 @@
 #define IDD_SNDFMGEN                    158
 #define IDD_SND118                      159
 #define IDD_SNDWSS                      160
-#define IDD_SNDSB16                     162
 #define IDD_CALENDAR                    161
+#define IDD_SNDSB16                     162
+#define IDD_SMPU98                      163
 #define IDD_ABOUT                       171
 #define IDD_LGY98                       180
 #define IDD_NETWORK                     181
@@ -173,6 +174,14 @@
 #define IDC_MPU98DEFF                   15108
 #define IDC_MPU98DEFB                   15109
 #define IDC_MPU98MDIN                   15110
+#define IDC_MPU98MMDL_B                 15111
+#define IDC_MPU98MMAP_B                 15112
+#define IDC_MPU98DEFE_B                 15113
+#define IDC_MPU98DEFF_B                 15114
+#define IDC_MPU98DEFB_B                 15115
+#define IDC_MPU98MDIN_B                 15116
+#define IDC_MPUENABLE                   15117
+#define IDC_MPUMUTEB                    15118
 #define IDC_VOLFM                       15201
 #define IDC_VOLFMSTR                    15202
 #define IDC_VOLPSG                      15203
@@ -323,6 +332,7 @@
 #define IDS_NETWORKOPTION               30044
 #define IDS_WABOPTION                   30045
 #define IDS_PCIOPTION                   30046
+#define IDS_MIDIOPTION                  30047
 #define IDS_CAPTION_FDD1                30051
 #define IDS_CAPTION_FDD2                30052
 #define IDS_CAPTION_FDD3                30053

@@ -396,6 +396,9 @@
     <ClCompile Include="..\cbus\scsiio.c">
       <Filter>ソース ファイル\cbus</Filter>
     </ClCompile>
+    <ClCompile Include="..\cbus\smpu98.c">
+      <Filter>ソース ファイル\cbus</Filter>
+    </ClCompile>
     <ClCompile Include="..\codecnv\tcswap16.c">
       <Filter>ソース ファイル\codecnv</Filter>
     </ClCompile>
@@ -1425,6 +1428,9 @@
       <Filter>ヘッダー ファイル\cbus</Filter>
     </ClInclude>
     <ClInclude Include="..\cbus\scsiio.h">
+      <Filter>ヘッダー ファイル\cbus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cbus\smpu98.h">
       <Filter>ヘッダー ファイル\cbus</Filter>
     </ClInclude>
     <ClInclude Include="..\codecnv\codecnv.h">

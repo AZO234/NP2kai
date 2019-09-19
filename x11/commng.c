@@ -81,6 +81,16 @@ commng_create(UINT device)
 		cfg = &np2oscfg.mpu;
 		break;
 
+#if defined(SUPPORT_SMPU98)
+	case COMCREATE_SMPU98_A:
+		cfg = &np2oscfg.smpuA;
+		break;
+
+	case COMCREATE_SMPU98_B:
+		cfg = &np2oscfg.smpuB;
+		break;
+#endif
+
 	case COMCREATE_PRINTER:
 		cfg = NULL;
 		if (np2oscfg.jastsnd) {
@@ -97,7 +107,7 @@ commng_create(UINT device)
 		 && (cfg->port <= COMPORT_COM4)) {
 			ret = cmserial_create(cfg->port - COMPORT_COM1 + 1, cfg->param, cfg->speed);
 		} else if (cfg->port == COMPORT_MIDI) {
-			ret = cmmidi_create(cfg->mout, cfg->min, cfg->mdl);
+			ret = cmmidi_create(device, cfg->mout, cfg->min, cfg->mdl);
 			if (ret) {
 				(*ret->msg)(ret, COMMSG_MIMPIDEFFILE, (INTPTR)cfg->def);
 				(*ret->msg)(ret, COMMSG_MIMPIDEFEN, (INTPTR)cfg->def_en);

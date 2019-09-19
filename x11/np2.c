@@ -83,6 +83,10 @@ NP2OSCFG np2oscfg = {
 	{ "", "" },		/* JOYDEV */
 
 	{ FALSE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", "" },	/* mpu */
+#if defined(SUPPORT_SMPU98)
+	{ FALSE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", "" },	/* s-mpu */
+	{ FALSE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", "" },	/* s-mpu */
+#endif
 	{
 		{ TRUE, COMPORT_NONE, 0, 0x3e, 19200, "", "", "", "" },/* com1 */
 		{ TRUE, COMPORT_NONE, 0, 0x3e, 19200, "", "", "", "" },/* com2 */
@@ -104,6 +108,10 @@ NP2OSCFG np2oscfg = {
 
 	SNDDRV_SDL,		/* snddrv */
 	{ "", "" }, 		/* MIDIDEV */
+#if defined(SUPPORT_SMPU98)
+	{ "", "" }, 		/* MIDIDEVA */
+	{ "", "" }, 		/* MIDIDEVB */
+#endif
 	0,			/* MIDIWAIT */
 
 	MOUSE_RATIO_100,	/* mouse_move_ratio */

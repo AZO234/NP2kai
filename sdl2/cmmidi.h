@@ -30,6 +30,6 @@ extern const char cmmidi_midiin_device[];
 extern const char *cmmidi_mdlname[];
 
 void cmmidi_initailize(void);
-COMMNG cmmidi_create(const char *midiout, const char *midiin, const char *module);
+COMMNG cmmidi_create(const UINT device, const char *midiout, const char *midiin, const char *module);
 
 #endif	/* NP2_X11_CMMIDI_H__ */

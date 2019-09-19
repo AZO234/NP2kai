@@ -76,10 +76,18 @@ NP2OSCFG np2oscfg = {
 	SNDDRV_SDL,		/* snddrv */
 #if !defined(__LIBRETRO__)
 	{ "", "" }, 		/* MIDIDEV */
+#if defined(SUPPORT_SMPU98)
+	{ "", "" }, 		/* MIDIDEVA */
+	{ "", "" }, 		/* MIDIDEVB */
+#endif
 #endif	/* __LIBRETRO__ */
 	0,			/* MIDIWAIT */
 
 	{ TRUE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", "" },	/* mpu */
+#if defined(SUPPORT_SMPU98)
+	{ TRUE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", "" },	/* s-mpu */
+	{ TRUE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", "" },	/* s-mpu */
+#endif
 #if !defined(__LIBRETRO__)
 	{
 		{ TRUE, COMPORT_NONE, 0, 0x3e, 19200, "", "", "", "" },/* com1 */

@@ -33,7 +33,8 @@ enum {
 	PCROM_BIOS9821		= 0x10,
 
 	PCCBUS_PC9861K		= 0x0001,
-	PCCBUS_MPU98		= 0x0002
+	PCCBUS_MPU98		= 0x0002,
+	PCCBUS_SMPU98		= 0x0004
 };
 
 /**
@@ -174,6 +175,12 @@ struct tagNP2Config
 	UINT8	mpuenable;
 	UINT8	mpuopt;
 	UINT8	mpu_at;
+	
+#if defined(SUPPORT_SMPU98)
+	UINT8	smpuenable;
+	UINT8	smpuopt;
+	UINT8	smpumuteB;
+#endif	/* SUPPORT_SMPU98 */
 
 	UINT8	pc9861enable;
 	UINT8	pc9861sw[3];

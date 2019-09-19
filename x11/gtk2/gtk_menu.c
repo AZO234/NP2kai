@@ -53,6 +53,10 @@
 #include "scrnmng.h"
 #include "sysmng.h"
 
+#if defined(SUPPORT_SMPU98)
+#include "smpu98.h"
+#endif
+
 #include "gtk2/xnp2.h"
 #include "gtk2/gtk_menu.h"
 #include "gtk2/gtk_keyboard.h"
@@ -1223,6 +1227,9 @@ cb_midipanic(GtkAction *action, gpointer user_data)
 
 	rs232c_midipanic();
 	mpu98ii_midipanic();
+#if defined(SUPPORT_SMPU98)
+	smpu98_midipanic();
+#endif
 	pc9861k_midipanic();
 }
 

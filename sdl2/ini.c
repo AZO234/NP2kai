@@ -587,8 +587,14 @@ static const INITBL iniitem[] = {
 	{"optSPBVR", INITYPE_HEX8,	&np2cfg.spb_vrc,	0},
 	{"optSPBVL", INIMAX_UINT8,	&np2cfg.spb_vrl,	24},
 	{"optSPB_X", INITYPE_BOOL,	&np2cfg.spb_x,		0},
+	{"USEMPU98", INITYPE_BOOL,	&np2cfg.mpuenable,		0},
 	{"optMPU98", INITYPE_HEX8,	&np2cfg.mpuopt,		0},
 	{"optMPUAT", INITYPE_BOOL,	&np2cfg.mpu_at,		0},
+#if defined(SUPPORT_SMPU98)
+	{"USE_SMPU", INITYPE_BOOL,	&np2cfg.smpuenable,		0},
+	{"opt_SMPU", INITYPE_HEX8,	&np2cfg.smpuopt,		0},
+	{"SMPUMUTB", INITYPE_BOOL,	&np2cfg.smpumuteB,		0},
+#endif
 	{"opt118io", INITYPE_HEX16,	&np2cfg.snd118io,	0},
 	{"opt118id", INITYPE_HEX8,	&np2cfg.snd118id,	0},
 	{"opt118dm", INITYPE_UINT8,	&np2cfg.snd118dma,	0},
@@ -723,6 +729,17 @@ static const INITBL iniitem[] = {
 	{"mpu98mdl", INITYPE_STR,	np2oscfg.mpu.mdl,	64},
 	{"mpu98def", INITYPE_STR,	np2oscfg.mpu.def,	MAX_PATH},
 
+#if defined(SUPPORT_SMPU98)
+	{"smpuAmap", INITYPE_STR,	np2oscfg.smpuA.mout,	MAX_PATH},
+	{"smpuAmin", INITYPE_STR,	np2oscfg.smpuA.min,	MAX_PATH},
+	{"smpuAmdl", INITYPE_STR,	np2oscfg.smpuA.mdl,	64},
+	{"smpuAdef", INITYPE_STR,	np2oscfg.smpuA.def,	MAX_PATH},
+	{"smpuBmap", INITYPE_STR,	np2oscfg.smpuB.mout,	MAX_PATH},
+	{"smpuBmin", INITYPE_STR,	np2oscfg.smpuB.min,	MAX_PATH},
+	{"smpuBmdl", INITYPE_STR,	np2oscfg.smpuB.mdl,	64},
+	{"smpuBdef", INITYPE_STR,	np2oscfg.smpuB.def,	MAX_PATH},
+#endif
+
 #if !defined(__LIBRETRO__)
 	{"com1port", INIMAX_UINT8,	&np2oscfg.com[0].port,	COMPORT_NONE},
 	{"com1dir",  INITYPE_BOOL,	&np2oscfg.com[0].direct,	1},
@@ -763,6 +780,12 @@ static const INITBL iniitem[] = {
 #if defined(_WIN32)
 	{"MIDIOUTd", INITYPE_STR,	&np2oscfg.MIDIDEV[0],	MAX_PATH},
 	{"MIDIIN_d", INITYPE_STR,	&np2oscfg.MIDIDEV[1],	MAX_PATH},
+#if defined(SUPPORT_SMPU98)
+	{"MIDIOUAd", INITYPE_STR,	&np2oscfg.MIDIDEVA[0],	MAX_PATH},
+	{"MIDIINAd", INITYPE_STR,	&np2oscfg.MIDIDEVA[1],	MAX_PATH},
+	{"MIDIOUBd", INITYPE_STR,	&np2oscfg.MIDIDEVB[0],	MAX_PATH},
+	{"MIDIINBd", INITYPE_STR,	&np2oscfg.MIDIDEVB[1],	MAX_PATH},
+#endif
 	{"MIDIWAIT", INITYPE_UINT32,	&np2oscfg.MIDIWAIT,	0},
 #endif	/* _WIN32 */
 #endif	/* __LIBRETRO__ */

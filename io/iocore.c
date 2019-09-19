@@ -17,6 +17,10 @@
 #ifdef SUPPORT_CL_GD5430
 #include	"cirrus_vga_extern.h"
 #endif
+#ifdef SUPPORT_SMPU98
+#include	"cbus/mpu98ii.h"
+#include	"cbus/smpu98.h"
+#endif
 
 
 	_ARTIC		artic;
@@ -643,6 +647,14 @@ void IOOUTCALL iocore_out16(UINT port, REG16 dat) {
 		return;
 	}
 #endif
+#if defined(SUPPORT_SMPU98)
+	if (smpu98.enable && smpu98.port <= port && port <= smpu98.port + 0xf) {
+		if(smpu98_io16outfunc[port - smpu98.port]){
+			(*smpu98_io16outfunc[port - smpu98.port])(port, dat);
+			return;
+		}
+	}
+#endif
 #if defined(SUPPORT_CL_GD5430)
 	if(np2clvga.enabled && cirrusvga_opaque){
 		if((np2clvga.gd54xxtype & CIRRUS_98ID_WABMASK) == CIRRUS_98ID_WAB || (np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC){
@@ -706,6 +718,13 @@ REG16 IOINPCALL iocore_inp16(UINT port) {
 #if defined(SUPPORT_LGY98)
 	if (lgy98cfg.enabled && port == lgy98cfg.baseaddr + 0x200) {
 		return(lgy98_ib200_16(port));
+	}
+#endif
+#if defined(SUPPORT_SMPU98)
+	if (smpu98.enable && smpu98.port <= port && port <= smpu98.port + 0xf) {
+		if(smpu98_io16inpfunc[port - smpu98.port]){
+			return (*smpu98_io16inpfunc[port - smpu98.port])(port);
+		}
 	}
 #endif
 #if defined(SUPPORT_CL_GD5430)

@@ -1,6 +1,6 @@
 /**
  * @file	d_mpu98.cpp
- * @brief	MPU-PC98 è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°
+ * @brief	MIDI İ’èƒ_ƒCƒAƒƒO
  */
 
 #include "compiler.h"
@@ -9,10 +9,11 @@
 #include "c_combodata.h"
 #include "c_dipsw.h"
 #include "c_midi.h"
+#include "np2class.h"
 #include "np2.h"
 #include "commng.h"
 #include "sysmng.h"
-#include "misc/DlgProc.h"
+#include "misc/PropProc.h"
 #include "pccore.h"
 #include "common/strres.h"
 #include "generic/dipswbmp.h"
@@ -23,20 +24,32 @@ extern "C"
 #endif
 
 extern	COMMNG	cm_mpu98;
+extern	COMMNG	cm_smpu98[];
 
 #ifdef __cplusplus
 }
 #endif
 
+/**
+ * Š„‚è‚İƒŠƒXƒg
+ */
+static const CComboData::Entry s_int[] =
+{
+	{MAKEINTRESOURCE(IDS_INT0),		0},
+	{MAKEINTRESOURCE(IDS_INT1),		1},
+	{MAKEINTRESOURCE(IDS_INT2),		2},
+	{MAKEINTRESOURCE(IDS_INT5),		3},
+};
+
 
 /**
- * @brief MPU-PC98 è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°
- * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
+ * @brief MPU-PC98 İ’èƒy[ƒW
  */
-class CMpu98Dlg : public CDlgProc
+class CMpu98Page : public CPropPageProc
 {
 public:
-	CMpu98Dlg(HWND hwndParent);
+	CMpu98Page();
+	virtual ~CMpu98Page();
 
 protected:
 	virtual BOOL OnInitDialog();
@@ -45,7 +58,9 @@ protected:
 	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	UINT8 m_mpu;				//!< è¨­å®šå€¤
+	UINT8 m_mpuenable;			//!< —LŒø
+	UINT8 m_mpu;				//!< İ’è’l
+	CWndProc m_chkenable;		//!< ENABLE
 	CComboData m_port;			//!< IO
 	CComboData m_int;			//!< INT
 	CStaticDipSw m_dipsw;		//!< DIPSW
@@ -62,34 +77,37 @@ private:
 };
 
 /**
- * å‰²ã‚Šè¾¼ã¿ãƒªã‚¹ãƒˆ
+ * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
  */
-static const CComboData::Entry s_int[] =
-{
-	{MAKEINTRESOURCE(IDS_INT0),		0},
-	{MAKEINTRESOURCE(IDS_INT1),		1},
-	{MAKEINTRESOURCE(IDS_INT2),		2},
-	{MAKEINTRESOURCE(IDS_INT5),		3},
-};
-
-/**
- * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
- * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
- */
-CMpu98Dlg::CMpu98Dlg(HWND hwndParent)
-	: CDlgProc(IDD_MPUPC98, hwndParent)
+CMpu98Page::CMpu98Page()
+	: CPropPageProc(IDD_MPUPC98)
 	, m_mpu(0)
 {
 }
 
+
 /**
- * ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ WM_INITDIALOG ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«å¿œç­”ã—ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
- * @retval TRUE æœ€åˆã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã«å…¥åŠ›ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’è¨­å®š
- * @retval FALSE æ—¢ã«è¨­å®šæ¸ˆ
+ * ƒfƒXƒgƒ‰ƒNƒ^
  */
-BOOL CMpu98Dlg::OnInitDialog()
+CMpu98Page::~CMpu98Page()
 {
+}
+
+/**
+ * ‚±‚Ìƒƒ\ƒbƒh‚Í WM_INITDIALOG ‚ÌƒƒbƒZ[ƒW‚É‰“š‚µ‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
+ * @retval TRUE Å‰‚ÌƒRƒ“ƒgƒ[ƒ‹‚É“ü—ÍƒtƒH[ƒJƒX‚ğİ’è
+ * @retval FALSE Šù‚Éİ’èÏ
+ */
+BOOL CMpu98Page::OnInitDialog()
+{
+	m_mpuenable = np2cfg.mpuenable;
 	m_mpu = np2cfg.mpuopt;
+	
+	m_chkenable.SubclassDlgItem(IDC_MPUENABLE, this);
+	if(m_mpuenable)
+		m_chkenable.SendMessage(BM_SETCHECK , BST_CHECKED , 0);
+	else
+		m_chkenable.SendMessage(BM_SETCHECK , BST_UNCHECKED , 0);
 
 	m_port.SubclassDlgItem(IDC_MPUIO, this);
 	for (UINT i = 0; i < 16; i++)
@@ -127,11 +145,17 @@ BOOL CMpu98Dlg::OnInitDialog()
 }
 
 /**
- * ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒ OK ã®ãƒœã‚¿ãƒ³ (IDOK ID ãŒã®ãƒœã‚¿ãƒ³) ã‚’ã‚¯ãƒªãƒƒã‚¯ã™ã‚‹ã¨å‘¼ã³å‡ºã•ã‚Œã¾ã™
+ * ƒ†[ƒU[‚ª OK ‚Ìƒ{ƒ^ƒ“ (IDOK ID ‚ª‚Ìƒ{ƒ^ƒ“) ‚ğƒNƒŠƒbƒN‚·‚é‚ÆŒÄ‚Ño‚³‚ê‚Ü‚·
  */
-void CMpu98Dlg::OnOK()
+void CMpu98Page::OnOK()
 {
 	UINT update = 0;
+	
+	if (np2cfg.mpuenable != m_mpuenable)
+	{
+		np2cfg.mpuenable = m_mpuenable;
+		update |= SYS_UPDATECFG;
+	}
 
 	if (np2cfg.mpuopt != m_mpu)
 	{
@@ -181,20 +205,22 @@ void CMpu98Dlg::OnOK()
 		update |= SYS_UPDATEOSCFG;
 	}
 	sysmng_update(update);
-
-	CDlgProc::OnOK();
 }
 
 /**
- * ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®é …ç›®ã‚’é¸æŠã—ãŸã¨ãã«ã€ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã«ã‚ˆã£ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
- * @param[in] wParam ãƒ‘ãƒ©ãƒ¡ã‚¿
- * @param[in] lParam ãƒ‘ãƒ©ãƒ¡ã‚¿
- * @retval TRUE ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡¦ç†ã—ãŸ
+ * ƒ†[ƒU[‚ªƒƒjƒ…[‚Ì€–Ú‚ğ‘I‘ğ‚µ‚½‚Æ‚«‚ÉAƒtƒŒ[ƒ€ƒ[ƒN‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
+ * @param[in] wParam ƒpƒ‰ƒƒ^
+ * @param[in] lParam ƒpƒ‰ƒƒ^
+ * @retval TRUE ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ª‚±‚ÌƒƒbƒZ[ƒW‚ğˆ—‚µ‚½
  */
-BOOL CMpu98Dlg::OnCommand(WPARAM wParam, LPARAM lParam)
+BOOL CMpu98Page::OnCommand(WPARAM wParam, LPARAM lParam)
 {
 	switch (LOWORD(wParam))
 	{
+		case IDC_MPUENABLE:
+			m_mpuenable = (m_chkenable.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0);
+			return TRUE;
+
 		case IDC_MPUIO:
 			SetJumper(GetPort(), 0xf0);
 			return TRUE;
@@ -222,13 +248,13 @@ BOOL CMpu98Dlg::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * CWndProc ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã® Windows ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ (WindowProc) ãŒç”¨æ„ã•ã‚Œã¦ã„ã¾ã™
- * @param[in] nMsg å‡¦ç†ã•ã‚Œã‚‹ Windows ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æŒ‡å®šã—ã¾ã™
- * @param[in] wParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
- * @param[in] lParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
- * @return ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã™ã‚‹å€¤ã‚’è¿”ã—ã¾ã™
+ * CWndProc ƒIƒuƒWƒFƒNƒg‚Ì Windows ƒvƒƒV[ƒWƒƒ (WindowProc) ‚ª—pˆÓ‚³‚ê‚Ä‚¢‚Ü‚·
+ * @param[in] nMsg ˆ—‚³‚ê‚é Windows ƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
+ * @param[in] wParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
+ * @param[in] lParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
+ * @return ƒƒbƒZ[ƒW‚ÉˆË‘¶‚·‚é’l‚ğ•Ô‚µ‚Ü‚·
  */
-LRESULT CMpu98Dlg::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CMpu98Page::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (nMsg)
 	{
@@ -245,9 +271,9 @@ LRESULT CMpu98Dlg::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ãƒ‡ã‚£ãƒƒãƒ— ã‚¹ã‚¤ãƒƒãƒã‚’ã‚¯ãƒªãƒƒã‚¯ã—ãŸ
+ * ƒfƒBƒbƒv ƒXƒCƒbƒ`‚ğƒNƒŠƒbƒN‚µ‚½
  */
-void CMpu98Dlg::OnDipSw()
+void CMpu98Page::OnDipSw()
 {
 	RECT rect1;
 	m_dipsw.GetWindowRect(&rect1);
@@ -291,11 +317,11 @@ void CMpu98Dlg::OnDipSw()
 }
 
 /**
- * ã‚¸ãƒ£ãƒ³ãƒ‘ãƒ¼ã®å€¤ã‚’è¨­å®š
- * @param[in] cValue å€¤
- * @param[in] cBit ãƒã‚¹ã‚¯
+ * ƒWƒƒƒ“ƒp[‚Ì’l‚ğİ’è
+ * @param[in] cValue ’l
+ * @param[in] cBit ƒ}ƒXƒN
  */
-void CMpu98Dlg::SetJumper(UINT8 cValue, UINT8 cBit)
+void CMpu98Page::SetJumper(UINT8 cValue, UINT8 cBit)
 {
 	if ((m_mpu ^ cValue) & cBit)
 	{
@@ -306,47 +332,484 @@ void CMpu98Dlg::SetJumper(UINT8 cValue, UINT8 cBit)
 }
 
 /**
- * I/O ã‚’è¨­å®š
- * @param[in] cValue è¨­å®š
+ * I/O ‚ğİ’è
+ * @param[in] cValue İ’è
  */
-void CMpu98Dlg::SetPort(UINT8 cValue)
+void CMpu98Page::SetPort(UINT8 cValue)
 {
 	m_port.SetCurItemData(cValue & 0xf0);
 }
 
 /**
- * I/O ã‚’å–å¾—
+ * I/O ‚ğæ“¾
  * @return I/O
  */
-UINT8 CMpu98Dlg::GetPort() const
+UINT8 CMpu98Page::GetPort() const
 {
 	return m_port.GetCurItemData(0x00);
 }
 
 /**
- * INT ã‚’è¨­å®š
- * @param[in] cValue è¨­å®š
+ * INT ‚ğİ’è
+ * @param[in] cValue İ’è
  */
-void CMpu98Dlg::SetInt(UINT8 cValue)
+void CMpu98Page::SetInt(UINT8 cValue)
 {
 	m_int.SetCurItemData(cValue & 0x03);
 }
 
 /**
- * INT ã‚’å–å¾—
+ * INT ‚ğæ“¾
  * @return INT
  */
-UINT8 CMpu98Dlg::GetInt() const
+UINT8 CMpu98Page::GetInt() const
 {
 	return m_int.GetCurItemData(0x00);
 }
 
+
+#if defined(SUPPORT_SMPU98)
+
 /**
- * ã‚³ãƒ³ãƒ•ã‚£ã‚° ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
- * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
+ * @brief S-MPU İ’èƒy[ƒW
+ */
+class CSMpu98Page : public CPropPageProc
+{
+public:
+	CSMpu98Page();
+	virtual ~CSMpu98Page();
+
+protected:
+	virtual BOOL OnInitDialog();
+	virtual void OnOK();
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
+
+private:
+	UINT8 m_smpuenable;			//!< —LŒø
+	UINT8 m_smpumuteB;			//!< MPU-PC98ƒGƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“ƒ‚[ƒh‚Ìƒ|[ƒgB‚Éo—Í‚µ‚È‚¢
+	UINT8 m_smpu;				//!< İ’è’l
+	CWndProc m_chkenable;		//!< ENABLE
+	CWndProc m_chkmuteB;		//!< MUTE PORT B during MPU-PC98 emulation mode
+	CComboData m_port;			//!< IO
+	CComboData m_int;			//!< INT
+	CStaticDipSw m_dipsw;		//!< DIPSW
+	CComboMidiDevice m_midiinA;	//!< MIDI IN A
+	CComboMidiDevice m_midioutA;//!< MIDI OUT A
+	CComboMidiModule m_moduleA;	//!< MIDI Module A
+	CEditMimpiFile m_mimpifileA;//!< MIMPI A
+	CComboMidiDevice m_midiinB;	//!< MIDI IN B
+	CComboMidiDevice m_midioutB;//!< MIDI OUT B
+	CComboMidiModule m_moduleB;	//!< MIDI Module B
+	CEditMimpiFile m_mimpifileB;//!< MIMPI B
+	void OnDipSw();
+	void SetJumper(UINT8 cValue, UINT8 cBit);
+	void SetPort(UINT8 cValue);
+	UINT8 GetPort() const;
+	void SetInt(UINT8 cValue);
+	UINT8 GetInt() const;
+};
+
+/**
+ * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ */
+CSMpu98Page::CSMpu98Page()
+	: CPropPageProc(IDD_SMPU98)
+	, m_smpu(0)
+{
+}
+
+
+/**
+ * ƒfƒXƒgƒ‰ƒNƒ^
+ */
+CSMpu98Page::~CSMpu98Page()
+{
+}
+
+/**
+ * ‚±‚Ìƒƒ\ƒbƒh‚Í WM_INITDIALOG ‚ÌƒƒbƒZ[ƒW‚É‰“š‚µ‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
+ * @retval TRUE Å‰‚ÌƒRƒ“ƒgƒ[ƒ‹‚É“ü—ÍƒtƒH[ƒJƒX‚ğİ’è
+ * @retval FALSE Šù‚Éİ’èÏ
+ */
+BOOL CSMpu98Page::OnInitDialog()
+{
+	m_smpuenable = np2cfg.smpuenable;
+	m_smpumuteB = np2cfg.smpumuteB;
+	m_smpu = np2cfg.smpuopt;
+	
+	m_chkenable.SubclassDlgItem(IDC_MPUENABLE, this);
+	if(m_smpuenable)
+		m_chkenable.SendMessage(BM_SETCHECK , BST_CHECKED , 0);
+	else
+		m_chkenable.SendMessage(BM_SETCHECK , BST_UNCHECKED , 0);
+	
+	m_chkmuteB.SubclassDlgItem(IDC_MPUMUTEB, this);
+	if(m_smpumuteB)
+		m_chkmuteB.SendMessage(BM_SETCHECK , BST_CHECKED , 0);
+	else
+		m_chkmuteB.SendMessage(BM_SETCHECK , BST_UNCHECKED , 0);
+
+	m_port.SubclassDlgItem(IDC_MPUIO, this);
+	for (UINT i = 0; i < 16; i++)
+	{
+		TCHAR szBuf[8];
+		wsprintf(szBuf, str_4X, 0xC0D0 + (i << 10));
+		m_port.Add(szBuf, i << 4);
+	}
+	SetPort(m_smpu);
+
+	m_int.SubclassDlgItem(IDC_MPUINT, this);
+	m_int.Add(s_int, _countof(s_int));
+	SetInt(m_smpu);
+
+	m_dipsw.SubclassDlgItem(IDC_MPUDIP, this);
+	
+	// Port A
+	m_midioutA.SubclassDlgItem(IDC_MPU98MMAP, this);
+	m_midioutA.EnumerateMidiOut();
+	m_midioutA.SetCurString(np2oscfg.smpuA.mout);
+
+	m_midiinA.SubclassDlgItem(IDC_MPU98MDIN, this);
+	m_midiinA.EnumerateMidiIn();
+	m_midiinA.SetCurString(np2oscfg.smpuA.min);
+
+	m_moduleA.SubclassDlgItem(IDC_MPU98MMDL, this);
+	m_moduleA.SetWindowText(np2oscfg.smpuA.mdl);
+	CheckDlgButton(IDC_MPU98DEFE, (np2oscfg.smpuA.def_en) ? BST_CHECKED : BST_UNCHECKED);
+
+	m_mimpifileA.SubclassDlgItem(IDC_MPU98DEFF, this);
+	m_mimpifileA.SetWindowText(np2oscfg.smpuA.def);
+	
+	// Port B
+	m_midioutB.SubclassDlgItem(IDC_MPU98MMAP_B, this);
+	m_midioutB.EnumerateMidiOut();
+	m_midioutB.SetCurString(np2oscfg.smpuB.mout);
+
+	m_midiinB.SubclassDlgItem(IDC_MPU98MDIN_B, this);
+	m_midiinB.EnumerateMidiIn();
+	m_midiinB.SetCurString(np2oscfg.smpuB.min);
+
+	m_moduleB.SubclassDlgItem(IDC_MPU98MMDL_B, this);
+	m_moduleB.SetWindowText(np2oscfg.smpuB.mdl);
+	CheckDlgButton(IDC_MPU98DEFE_B, (np2oscfg.smpuB.def_en) ? BST_CHECKED : BST_UNCHECKED);
+
+	m_mimpifileB.SubclassDlgItem(IDC_MPU98DEFF_B, this);
+	m_mimpifileB.SetWindowText(np2oscfg.smpuB.def);
+
+	m_port.SetFocus();
+
+	return FALSE;
+}
+
+/**
+ * ƒ†[ƒU[‚ª OK ‚Ìƒ{ƒ^ƒ“ (IDOK ID ‚ª‚Ìƒ{ƒ^ƒ“) ‚ğƒNƒŠƒbƒN‚·‚é‚ÆŒÄ‚Ño‚³‚ê‚Ü‚·
+ */
+void CSMpu98Page::OnOK()
+{
+	UINT update = 0;
+	
+	if (np2cfg.smpuenable != m_smpuenable)
+	{
+		np2cfg.smpuenable = m_smpuenable;
+		update |= SYS_UPDATECFG;
+	}
+	
+	if (np2cfg.smpumuteB != m_smpumuteB)
+	{
+		np2cfg.smpumuteB = m_smpumuteB;
+		update |= SYS_UPDATECFG;
+	}
+
+	if (np2cfg.smpuopt != m_smpu)
+	{
+		np2cfg.smpuopt = m_smpu;
+		update |= SYS_UPDATECFG | SYS_UPDATEMIDI;
+	}
+
+	// Port A
+	{
+		TCHAR mmap[MAXPNAMELEN];
+		GetDlgItemText(IDC_MPU98MMAP, mmap, _countof(mmap));
+		if (milstr_cmp(np2oscfg.smpuA.mout, mmap)) {
+			milstr_ncpy(np2oscfg.smpuA.mout, mmap, NELEMENTS(np2oscfg.smpuA.mout));
+			update |= SYS_UPDATEOSCFG | SYS_UPDATEMIDI;
+		}
+
+		TCHAR mdin[MAXPNAMELEN];
+		GetDlgItemText(IDC_MPU98MDIN, mdin, _countof(mdin));
+		if (milstr_cmp(np2oscfg.smpuA.min, mdin))
+		{
+			milstr_ncpy(np2oscfg.smpuA.min, mdin, NELEMENTS(np2oscfg.smpuA.min));
+			update |= SYS_UPDATEOSCFG | SYS_UPDATEMIDI;
+		}
+
+		TCHAR mmdl[64];
+		GetDlgItemText(IDC_MPU98MMDL, mmdl, _countof(mmdl));
+		if (milstr_cmp(np2oscfg.smpuA.mdl, mmdl))
+		{
+			milstr_ncpy(np2oscfg.smpuA.mdl, mmdl, NELEMENTS(np2oscfg.smpuA.mdl));
+			update |= SYS_UPDATEOSCFG | SYS_UPDATEMIDI;
+		}
+
+		np2oscfg.smpuA.def_en = (IsDlgButtonChecked(IDC_MPU98DEFE) != BST_UNCHECKED) ? 1 : 0;
+
+		if (cm_smpu98[0])
+		{
+			cm_smpu98[0]->msg(cm_smpu98[0], COMMSG_MIMPIDEFEN, np2oscfg.smpuA.def_en);
+		}
+
+		TCHAR mdef[MAX_PATH];
+		GetDlgItemText(IDC_MPU98DEFF, mdef, _countof(mdef));
+		if (milstr_cmp(np2oscfg.smpuA.def, mdef))
+		{
+			milstr_ncpy(np2oscfg.smpuA.def, mdef, NELEMENTS(np2oscfg.smpuA.def));
+			if (cm_smpu98[0])
+			{
+				cm_smpu98[0]->msg(cm_smpu98[0], COMMSG_MIMPIDEFFILE, reinterpret_cast<INTPTR>(mdef));
+			}
+			update |= SYS_UPDATEOSCFG;
+		}
+	}
+	
+	// Port B
+	{
+		TCHAR mmap[MAXPNAMELEN];
+		GetDlgItemText(IDC_MPU98MMAP_B, mmap, _countof(mmap));
+		if (milstr_cmp(np2oscfg.smpuB.mout, mmap)) {
+			milstr_ncpy(np2oscfg.smpuB.mout, mmap, NELEMENTS(np2oscfg.smpuB.mout));
+			update |= SYS_UPDATEOSCFG | SYS_UPDATEMIDI;
+		}
+
+		TCHAR mdin[MAXPNAMELEN];
+		GetDlgItemText(IDC_MPU98MDIN_B, mdin, _countof(mdin));
+		if (milstr_cmp(np2oscfg.smpuB.min, mdin))
+		{
+			milstr_ncpy(np2oscfg.smpuB.min, mdin, NELEMENTS(np2oscfg.smpuB.min));
+			update |= SYS_UPDATEOSCFG | SYS_UPDATEMIDI;
+		}
+
+		TCHAR mmdl[64];
+		GetDlgItemText(IDC_MPU98MMDL_B, mmdl, _countof(mmdl));
+		if (milstr_cmp(np2oscfg.smpuB.mdl, mmdl))
+		{
+			milstr_ncpy(np2oscfg.smpuB.mdl, mmdl, NELEMENTS(np2oscfg.smpuB.mdl));
+			update |= SYS_UPDATEOSCFG | SYS_UPDATEMIDI;
+		}
+
+		np2oscfg.smpuB.def_en = (IsDlgButtonChecked(IDC_MPU98DEFE_B) != BST_UNCHECKED) ? 1 : 0;
+
+		if (cm_smpu98[1])
+		{
+			cm_smpu98[1]->msg(cm_smpu98[1], COMMSG_MIMPIDEFEN, np2oscfg.smpuB.def_en);
+		}
+
+		TCHAR mdef[MAX_PATH];
+		GetDlgItemText(IDC_MPU98DEFF_B, mdef, _countof(mdef));
+		if (milstr_cmp(np2oscfg.smpuB.def, mdef))
+		{
+			milstr_ncpy(np2oscfg.smpuB.def, mdef, NELEMENTS(np2oscfg.smpuB.def));
+			if (cm_smpu98[1])
+			{
+				cm_smpu98[1]->msg(cm_smpu98[1], COMMSG_MIMPIDEFFILE, reinterpret_cast<INTPTR>(mdef));
+			}
+			update |= SYS_UPDATEOSCFG;
+		}
+	}
+
+	sysmng_update(update);
+}
+
+/**
+ * ƒ†[ƒU[‚ªƒƒjƒ…[‚Ì€–Ú‚ğ‘I‘ğ‚µ‚½‚Æ‚«‚ÉAƒtƒŒ[ƒ€ƒ[ƒN‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
+ * @param[in] wParam ƒpƒ‰ƒƒ^
+ * @param[in] lParam ƒpƒ‰ƒƒ^
+ * @retval TRUE ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ª‚±‚ÌƒƒbƒZ[ƒW‚ğˆ—‚µ‚½
+ */
+BOOL CSMpu98Page::OnCommand(WPARAM wParam, LPARAM lParam)
+{
+	switch (LOWORD(wParam))
+	{
+		case IDC_MPUENABLE:
+			m_smpuenable = (m_chkenable.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0);
+			return TRUE;
+			
+		case IDC_MPUMUTEB:
+			m_smpumuteB = (m_chkmuteB.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0);
+			return TRUE;
+
+		case IDC_MPUIO:
+			SetJumper(GetPort(), 0xf0);
+			return TRUE;
+
+		case IDC_MPUINT:
+			SetJumper(GetInt(), 0x03);
+			return TRUE;
+
+		case IDC_MPUDEF:
+			m_smpu = 0x82;
+			SetPort(m_smpu);
+			SetInt(m_smpu);
+			m_dipsw.Invalidate();
+			return TRUE;
+
+		case IDC_MPUDIP:
+			OnDipSw();
+			return TRUE;
+
+		case IDC_MPU98DEFB:
+			m_mimpifileA.Browse();
+			return TRUE;
+
+		case IDC_MPU98DEFB_B:
+			m_mimpifileB.Browse();
+			return TRUE;
+	}
+	return FALSE;
+}
+
+/**
+ * CWndProc ƒIƒuƒWƒFƒNƒg‚Ì Windows ƒvƒƒV[ƒWƒƒ (WindowProc) ‚ª—pˆÓ‚³‚ê‚Ä‚¢‚Ü‚·
+ * @param[in] nMsg ˆ—‚³‚ê‚é Windows ƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
+ * @param[in] wParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
+ * @param[in] lParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
+ * @return ƒƒbƒZ[ƒW‚ÉˆË‘¶‚·‚é’l‚ğ•Ô‚µ‚Ü‚·
+ */
+LRESULT CSMpu98Page::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMsg)
+	{
+		case WM_DRAWITEM:
+			if (LOWORD(wParam) == IDC_MPUDIP)
+			{
+				UINT8* pBitmap = dipswbmp_getsmpu(m_smpu);
+				m_dipsw.Draw((reinterpret_cast<LPDRAWITEMSTRUCT>(lParam))->hDC, pBitmap);
+				_MFREE(pBitmap);
+			}
+			return FALSE;
+	}
+	return CDlgProc::WindowProc(nMsg, wParam, lParam);
+}
+
+/**
+ * ƒfƒBƒbƒv ƒXƒCƒbƒ`‚ğƒNƒŠƒbƒN‚µ‚½
+ */
+void CSMpu98Page::OnDipSw()
+{
+	RECT rect1;
+	m_dipsw.GetWindowRect(&rect1);
+	RECT rect2;
+	m_dipsw.GetClientRect(&rect2);
+	POINT p;
+	GetCursorPos(&p);
+
+	p.x += rect2.left - rect1.left;
+	p.y += rect2.top - rect1.top;
+	p.x /= 9;
+	p.y /= 9;
+	if ((p.y < 1) || (p.y >= 3))
+	{
+		return;
+	}
+
+	bool bRedraw = false;
+	if ((p.x >= 2) && (p.x < 6))
+	{
+		UINT8 bit = 0x10 << (p.x - 2);
+		m_smpu ^= bit;
+		SetPort(m_smpu);
+		bRedraw = true;
+	}
+	else if ((p.x >= 9) && (p.x < 13))
+	{
+		UINT8 bit = (UINT8)(12 - p.x);
+		if ((m_smpu ^ bit) & 3)
+		{
+			m_smpu &= ~0x3;
+			m_smpu |= bit;
+			SetInt(m_smpu);
+			bRedraw = true;
+		}
+	}
+	if (bRedraw)
+	{
+		m_dipsw.Invalidate();
+	}
+}
+
+/**
+ * ƒWƒƒƒ“ƒp[‚Ì’l‚ğİ’è
+ * @param[in] cValue ’l
+ * @param[in] cBit ƒ}ƒXƒN
+ */
+void CSMpu98Page::SetJumper(UINT8 cValue, UINT8 cBit)
+{
+	if ((m_smpu ^ cValue) & cBit)
+	{
+		m_smpu &= ~cBit;
+		m_smpu |= cValue;
+		m_dipsw.Invalidate();
+	}
+}
+
+/**
+ * I/O ‚ğİ’è
+ * @param[in] cValue İ’è
+ */
+void CSMpu98Page::SetPort(UINT8 cValue)
+{
+	m_port.SetCurItemData(cValue & 0xf0);
+}
+
+/**
+ * I/O ‚ğæ“¾
+ * @return I/O
+ */
+UINT8 CSMpu98Page::GetPort() const
+{
+	return m_port.GetCurItemData(0x00);
+}
+
+/**
+ * INT ‚ğİ’è
+ * @param[in] cValue İ’è
+ */
+void CSMpu98Page::SetInt(UINT8 cValue)
+{
+	m_int.SetCurItemData(cValue & 0x03);
+}
+
+/**
+ * INT ‚ğæ“¾
+ * @return INT
+ */
+UINT8 CSMpu98Page::GetInt() const
+{
+	return m_int.GetCurItemData(0x00);
+}
+
+#endif	/* SUPPORT_SMPU98 */
+
+/**
+ * ƒRƒ“ƒtƒBƒO ƒ_ƒCƒAƒƒO
+ * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
  */
 void dialog_mpu98(HWND hwndParent)
 {
-	CMpu98Dlg dlg(hwndParent);
-	dlg.DoModal();
+	CPropSheetProc prop(IDS_MIDIOPTION, hwndParent);
+
+	CMpu98Page mpu98;
+	prop.AddPage(&mpu98);
+	
+#if defined(SUPPORT_SMPU98)
+	CSMpu98Page smpu98;
+	prop.AddPage(&smpu98);
+#endif	/* SUPPORT_SMPU98 */
+
+	prop.m_psh.dwFlags |= PSH_NOAPPLYNOW | PSH_USEHICON | PSH_USECALLBACK;
+	prop.m_psh.hIcon = LoadIcon(CWndProc::GetResourceHandle(), MAKEINTRESOURCE(IDI_ICON2));
+	prop.m_psh.pfnCallback = np2class_propetysheet;
+	prop.DoModal();
+
+	InvalidateRect(hwndParent, NULL, TRUE);
 }

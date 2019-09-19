@@ -11,6 +11,9 @@
 #include	"iocore.h"
 #include	"pc9861k.h"
 #include	"mpu98ii.h"
+#if defined(SUPPORT_SMPU98)
+#include	"smpu98.h"
+#endif
 #include	"sound.h"
 #include	"beep.h"
 #include	"fdd/diskdrv.h"
@@ -659,6 +662,9 @@ static void sys_cmd(MENUID id) {
 		case MID_MIDIPANIC:
 			rs232c_midipanic();
 			mpu98ii_midipanic();
+#if defined(SUPPORT_SMPU98)
+			smpu98_midipanic();
+#endif
 			pc9861k_midipanic();
 			break;
 

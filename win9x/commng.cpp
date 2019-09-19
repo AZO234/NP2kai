@@ -1,6 +1,6 @@
 /**
  * @file	commng.cpp
- * @brief	COM ãƒãƒãƒ¼ã‚¸ãƒ£ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
+ * @brief	COM ƒ}ƒl[ƒWƒƒ‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
  */
 
 #include "compiler.h"
@@ -13,7 +13,7 @@
 #include "generic/cmjasts.h"
 
 /**
- * åˆæœŸåŒ–
+ * ‰Šú‰»
  */
 void commng_initialize(void)
 {
@@ -21,9 +21,9 @@ void commng_initialize(void)
 }
 
 /**
- * ä½œæˆ
- * @param[in] nDevice ãƒ‡ãƒã‚¤ã‚¹
- * @return ãƒãƒ³ãƒ‰ãƒ«
+ * ì¬
+ * @param[in] nDevice ƒfƒoƒCƒX
+ * @return ƒnƒ“ƒhƒ‹
  */
 COMMNG commng_create(UINT nDevice)
 {
@@ -54,6 +54,16 @@ COMMNG commng_create(UINT nDevice)
 		case COMCREATE_MPU98II:
 			pComCfg = &np2oscfg.mpu;
 			break;
+			
+#if defined(SUPPORT_SMPU98)
+		case COMCREATE_SMPU98_A:
+			pComCfg = &np2oscfg.smpuA;
+			break;
+
+		case COMCREATE_SMPU98_B:
+			pComCfg = &np2oscfg.smpuB;
+			break;
+#endif
 
 		default:
 			break;
@@ -84,8 +94,8 @@ COMMNG commng_create(UINT nDevice)
 }
 
 /**
- * ç ´æ£„
- * @param[in] hdl ãƒãƒ³ãƒ‰ãƒ«
+ * ”jŠü
+ * @param[in] hdl ƒnƒ“ƒhƒ‹
  */
 void commng_destroy(COMMNG hdl)
 {

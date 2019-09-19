@@ -1,6 +1,6 @@
 /**
  * @file	commng.h
- * @brief	COM マネージャの宣言およびインターフェイスの定義をします
+ * @brief	COM �}�l�[�W���̐錾����уC���^�[�t�F�C�X�̒�`�����܂�
  */
 
 #pragma once
@@ -12,7 +12,11 @@ enum {
 	COMCREATE_PC9861K1,
 	COMCREATE_PC9861K2,
 	COMCREATE_PRINTER,
-	COMCREATE_MPU98II
+	COMCREATE_MPU98II,
+#if defined(SUPPORT_SMPU98)
+	COMCREATE_SMPU98_A,
+	COMCREATE_SMPU98_B
+#endif
 };
 
 enum {

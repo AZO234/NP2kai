@@ -1069,6 +1069,7 @@ void mpu98ii_reset(const NP2CFG *pConfig) {
 	cm_mpu98 = NULL;
 
 	ZeroMemory(&mpu98, sizeof(mpu98));
+	mpu98.enable = (pConfig->mpuenable ? 1 : 0);
 	mpu98.data = MPUMSG_ACK;
 	mpu98.port = 0xc0d0 | ((pConfig->mpuopt & 0xf0) << 6);
 	mpu98.irqnum = mpuirqnum[pConfig->mpuopt & 3];
@@ -1082,43 +1083,46 @@ void mpu98ii_bind(void) {
 
 	UINT	port;
 
-	mpu98ii_changeclock();
-
-	port = mpu98.port;
-	iocore_attachout(port, mpu98ii_o0);
-	iocore_attachinp(port, mpu98ii_i0);
-	//iocore_attachout(port+1, mpu98ii_o2);
-	//iocore_attachinp(port+1, mpu98ii_i2);
-	port |= 2;
-	iocore_attachout(port, mpu98ii_o2);
-	iocore_attachinp(port, mpu98ii_i2);
 	
-	// PC/AT MPU-401
-	if(np2cfg.mpu_at){
-		iocore_attachout(0x330, mpu98ii_o0);
-		iocore_attachinp(0x330, mpu98ii_i0);
-		iocore_attachout(0x331, mpu98ii_o2);
-		iocore_attachinp(0x331, mpu98ii_i2);
-	}
-	// PC-9801-118
-	if(g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_118){
-		iocore_attachout(cs4231.port[10], mpu98ii_o0);
-		iocore_attachinp(cs4231.port[10], mpu98ii_i0);
-		iocore_attachout(cs4231.port[10]+1, mpu98ii_o2);
-		iocore_attachinp(cs4231.port[10]+1, mpu98ii_i2);
-		switch(np2cfg.snd118irqm){
-		case 10:
-			mpu98.irqnum = 10;
-			break;
+	if(mpu98.enable){
+		mpu98ii_changeclock();
+
+		port = mpu98.port;
+		iocore_attachout(port, mpu98ii_o0);
+		iocore_attachinp(port, mpu98ii_i0);
+		//iocore_attachout(port+1, mpu98ii_o2);
+		//iocore_attachinp(port+1, mpu98ii_i2);
+		port |= 2;
+		iocore_attachout(port, mpu98ii_o2);
+		iocore_attachinp(port, mpu98ii_i2);
+	
+		// PC/AT MPU-401
+		if(np2cfg.mpu_at){
+			iocore_attachout(0x330, mpu98ii_o0);
+			iocore_attachinp(0x330, mpu98ii_i0);
+			iocore_attachout(0x331, mpu98ii_o2);
+			iocore_attachinp(0x331, mpu98ii_i2);
 		}
-	}
-	// WaveStar
-	if(g_nSoundID == SOUNDID_WAVESTAR){
-		//iocore_attachout(cs4231.port[10], mpu98ii_o0);
-		//iocore_attachinp(cs4231.port[10], mpu98ii_i0);
-		//iocore_attachout(cs4231.port[10]+1, mpu98ii_o2);
-		//iocore_attachinp(cs4231.port[10]+1, mpu98ii_i2);
-		mpu98.irqnum = 10;
+		// PC-9801-118
+		if(g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_118){
+			iocore_attachout(cs4231.port[10], mpu98ii_o0);
+			iocore_attachinp(cs4231.port[10], mpu98ii_i0);
+			iocore_attachout(cs4231.port[10]+1, mpu98ii_o2);
+			iocore_attachinp(cs4231.port[10]+1, mpu98ii_i2);
+			switch(np2cfg.snd118irqm){
+			case 10:
+				mpu98.irqnum = 10;
+				break;
+			}
+		}
+		// WaveStar
+		if(g_nSoundID == SOUNDID_WAVESTAR){
+			//iocore_attachout(cs4231.port[10], mpu98ii_o0);
+			//iocore_attachinp(cs4231.port[10], mpu98ii_i0);
+			//iocore_attachout(cs4231.port[10]+1, mpu98ii_o2);
+			//iocore_attachinp(cs4231.port[10]+1, mpu98ii_i2);
+			mpu98.irqnum = 10;
+		}
 	}
 }
 
@@ -1146,8 +1150,10 @@ void mpu98ii_midipanic(void) {
 
 void mpu98ii_changeclock(void) {
 	
-	mpu98.xferclock = pccore.realclock / 3125;
-	makeintclock();
+	if(mpu98.enable){
+		mpu98.xferclock = pccore.realclock / 3125;
+		makeintclock();
+	}
 }
 
 
