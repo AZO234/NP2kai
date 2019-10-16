@@ -207,6 +207,12 @@ static void bios_reinitbyswitch(void) {
 	//mem[0x5B7] = (0x277 >> 2); // READ_DATA port address
 	mem[0x5B8] = 0x00; // No C-Bus PnP boards
 #endif
+	mem[0xF8E80+0x0002] |= 0x04; // set 19200bps support flag
+#if defined(SUPPORT_RS232C_FIFO)
+	mem[0xF8E80+0x0011] |= 0x10; // set 115200bps support flag
+#else
+	mem[0xF8E80+0x0011] &= ~0x10; // clear 115200bps support flag
+#endif
 	
 #if defined(SUPPORT_HRTIMER)
 	{

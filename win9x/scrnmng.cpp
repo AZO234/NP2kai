@@ -393,6 +393,7 @@ void scrnmng_update(void) {
 
 void scrnmng_setmultiple(int multiple)
 {
+	if(multiple < 1) multiple = 8;
 	if(np2oscfg.fsrescfg && scrnrescfg.scrn_mul!=multiple){
 		scrnrescfg.hasfscfg = 1;
 		scrnrescfg.fscrnmod = np2oscfg.fscrnmod;
@@ -529,5 +530,16 @@ void scrnmng_bltwab() {
 #endif
 	{
 		scrnmngDD_bltwab();
+	}
+}
+
+void scrnmng_getrect(RECT *lpRect){
+#ifdef SUPPORT_SCRN_DIRECT3D
+	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
+		scrnmngD3D_getrect(lpRect);
+	}else
+#endif
+	{
+		scrnmngDD_getrect(lpRect);
 	}
 }

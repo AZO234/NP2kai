@@ -41,6 +41,8 @@ void scrnmngD3D_updatefsres(void);
 void scrnmngD3D_blthdc(HDC hdc);
 void scrnmngD3D_bltwab(void);
 
+void scrnmngD3D_getrect(RECT *lpRect);
+
 #if defined(SUPPORT_DCLOCK)
 BOOL scrnmngD3D_isdispclockclick(const POINT *pt);
 void scrnmngD3D_dispclock(void);

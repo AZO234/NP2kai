@@ -48,7 +48,7 @@ inline CKeyDisplayWnd* CKeyDisplayWnd::GetInstance()
 }
 
 #define kdispwin_initialize		CKeyDisplayWnd::Initialize
-#define kdispwin_create			CKeyDisplayWnd::GetInstance()->Create
+void kdispwin_create();
 #define kdispwin_destroy		CKeyDisplayWnd::GetInstance()->DestroyWindow
 #define kdispwin_gethwnd		CKeyDisplayWnd::GetInstance()->GetSafeHwnd
 #define kdispwin_draw			CKeyDisplayWnd::GetInstance()->Draw

@@ -93,6 +93,7 @@
     <OutDir>..\bin\$(SolutionName)\$(PlatformName)\$(Configuration)\</OutDir>
     <IntDir>..\obj\$(SolutionName)\$(PlatformName)\$(Configuration)\$(ProjectName)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -100,7 +101,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>NP2_WIN;WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LARGE_MEMORY;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_SMPU98;SUPPORT_GPIB;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;TRACE;SUPPORT_NP2_THREAD;NP2_THREAD_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NP2_WIN;WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LARGE_MEMORY;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;SUPPORT_GPIB;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;TRACE;SUPPORT_NP2_THREAD;NP2_THREAD_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;.\x86;..\;..\common;..\fdd;..\i386c;..\mem;..\io;..\io\pci;..\cbus;..\network;..\vram;..\sound;..\wab;..\generic;..\zlib;\VST_SDK</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
@@ -125,7 +126,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>NP2_WIN;WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LARGE_MEMORY;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_GPIB;SUPPORT_SMPU98;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;TRACE;SUPPORT_NP2_THREAD;NP2_THREAD_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NP2_WIN;WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LARGE_MEMORY;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_GPIB;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;TRACE;SUPPORT_NP2_THREAD;NP2_THREAD_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;.\x64;..\;..\common;..\fdd;..\i386c;..\mem;..\io;..\io\pci;..\cbus;..\network;..\vram;..\sound;..\wab;..\generic;..\zlib;\VST_SDK</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
@@ -155,7 +156,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NP2_WIN;WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LARGE_MEMORY;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_GPIB;SUPPORT_SMPU98;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;SUPPORT_NP2_THREAD;NP2_THREAD_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NP2_WIN;WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LARGE_MEMORY;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_GPIB;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;SUPPORT_NP2_THREAD;NP2_THREAD_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;.\x86;..\;..\common;..\fdd;..\i386c;..\mem;..\io;..\io\pci;..\cbus;..\network;..\vram;..\sound;..\wab;..\generic;..\zlib;\VST_SDK</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -188,7 +189,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NP2_WIN;WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LARGE_MEMORY;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_GPIB;SUPPORT_SMPU98;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;SUPPORT_NP2_THREAD;NP2_THREAD_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NP2_WIN;WIN32;NDEBUG;_CRTDBG_MAP_ALLOC;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LARGE_MEMORY;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_GPIB;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;SUPPORT_NP2_THREAD;NP2_THREAD_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;.\x64;..\;..\common;..\fdd;..\i386c;..\mem;..\io;..\io\pci;..\cbus;..\network;..\vram;..\sound;..\wab;..\generic;..\zlib;\VST_SDK</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -206,7 +207,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <LargeAddressAware>false</LargeAddressAware>
-      <DelayLoadDLLs>d3d9.dll;dinput8.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>d3d9.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <NASM>
       <AdditionalOptions>-I.\x86\ -I..\i386c\x86\ -I..\io\x86\ %(AdditionalOptions)</AdditionalOptions>
@@ -513,11 +515,14 @@
     <ClCompile Include="commng\cmmidioutvst.cpp" />
     <ClCompile Include="commng\cmnull.cpp" />
     <ClCompile Include="commng\cmpara.cpp" />
+    <ClCompile Include="commng\cmpipe.cpp" />
     <ClCompile Include="commng\cmserial.cpp" />
+    <ClCompile Include="commng\cmwacom.cpp" />
     <ClCompile Include="commng\vsthost\vstbuffer.cpp" />
     <ClCompile Include="commng\vsthost\vsteditwnd.cpp" />
     <ClCompile Include="commng\vsthost\vsteffect.cpp" />
     <ClCompile Include="commng\vsthost\vstmidievent.cpp" />
+    <ClCompile Include="commng\wintab\Utils.cpp" />
     <ClCompile Include="compiler.cpp" />
     <ClCompile Include="debuguty\view1mb.cpp" />
     <ClCompile Include="debuguty\viewasm.cpp" />
@@ -855,12 +860,18 @@
     <ClInclude Include="commng\cmmidioutvst.h" />
     <ClInclude Include="commng\cmnull.h" />
     <ClInclude Include="commng\cmpara.h" />
+    <ClInclude Include="commng\cmpipe.h" />
     <ClInclude Include="commng\cmserial.h" />
+    <ClInclude Include="commng\cmwacom.h" />
     <ClInclude Include="commng\vsthost\vstbuffer.h" />
     <ClInclude Include="commng\vsthost\vsteditwnd.h" />
     <ClInclude Include="commng\vsthost\vsteditwndbase.h" />
     <ClInclude Include="commng\vsthost\vsteffect.h" />
     <ClInclude Include="commng\vsthost\vstmidievent.h" />
+    <ClInclude Include="commng\wintab\MSGPACK.H" />
+    <ClInclude Include="commng\wintab\PKTDEF.H" />
+    <ClInclude Include="commng\wintab\Utils.h" />
+    <ClInclude Include="commng\wintab\WINTAB.H" />
     <ClInclude Include="compiler.h" />
     <ClInclude Include="debuguty\view1mb.h" />
     <ClInclude Include="debuguty\viewasm.h" />

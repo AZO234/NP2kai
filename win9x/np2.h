@@ -20,6 +20,11 @@ typedef struct {
 	OEMCHAR	min[MAXPNAMELEN];
 	OEMCHAR	mdl[64];
 	OEMCHAR	def[MAX_PATH];
+	UINT8	fixedspeed;
+#if defined(SUPPORT_NAMED_PIPE)
+	OEMCHAR	pipename[MAX_PATH]; // The name of the named-pipe
+	OEMCHAR	pipeserv[MAX_PATH]; // The server name of the named-pipe
+#endif
 } COMCFG;
 
 typedef struct {
@@ -82,6 +87,7 @@ typedef struct {
 
 #if defined(SUPPORT_SCRN_DIRECT3D)
 	UINT8	d3d_imode; // Direct3D interpolation mode
+	UINT8	d3d_exclusive; // Direct3D fullscreen exclusive mode
 #endif
 
 	UINT8	cSoundDeviceType;
@@ -111,9 +117,13 @@ typedef struct {
 	UINT8	readonly; // No save changed settings
 	UINT8	usewheel; // Use mouse wheel
 	UINT8	tickmode; // Force Set Tick Counter Mode
-	UINT8	usemastervolume; // Use MAster Volume
+	UINT8	usemastervolume; // Use Master Volume
 	
 	UINT8	toolwndhistory; // Number of data of recently opened FD image list in Tool Window
+	
+#ifdef SUPPORT_WACOM_TABLET
+	UINT8	pentabfa; // Pen tablet fixed aspect mode
+#endif	// defined(SUPPORT_WACOM_TABLET)
 } NP2OSCFG;
 
 

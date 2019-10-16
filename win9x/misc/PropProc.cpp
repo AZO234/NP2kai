@@ -40,6 +40,7 @@ CPropPageProc::~CPropPageProc()
 	if (m_lpCaption)
 	{
 		free(m_lpCaption);
+		m_lpCaption = NULL;
 	}
 }
 

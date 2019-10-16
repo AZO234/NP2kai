@@ -1308,4 +1308,11 @@ BOOL keydisp_paint(CMNVRAM *vram, BOOL redraw)
 kdpnt_exit:
 	return draw;
 }
+/**
+ * Set Resize Flag
+ */
+void keydisp_setresizeflag(void)
+{
+	s_keydisp.dispflag |= KEYDISP_FLAGSIZING;
+}
 #endif

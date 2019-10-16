@@ -121,7 +121,11 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE " " NP2VER_GIT);
 				0xd2, 3, 5,
 #endif	/* SUPPORT_SOUND_SB16 */
 
+#if defined(SUPPORT_FMGEN)
+				3, {0x0c, 0x0c, 0x08, 0x06, 0x03, 0x0c}, 100, 64, 25, 64, 90, 64,
+#else	/* SUPPORT_FMGEN */
 				3, {0x0c, 0x0c, 0x08, 0x06, 0x03, 0x0c}, 100, 64, 64, 64, 64, 64,
+#endif	/* SUPPORT_FMGEN */
 				1, 0x82, 0,
 #if defined(SUPPORT_SMPU98)
 				0, 0x82, 0,
@@ -470,6 +474,8 @@ void pccore_term(void) {
 #endif
 	mpu98ii_destruct();
 	rs232c_destruct();
+	
+	printif_finalize();
 
 	sxsi_alltrash();
 	

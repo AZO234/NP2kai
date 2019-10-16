@@ -71,8 +71,6 @@ BOOL ScrOptVideoPage::OnInitDialog()
 
 	CheckDlgButton(IDC_SKIPLINE, (np2cfg.skipline) ? BST_CHECKED : BST_UNCHECKED);
 	
-	CheckDlgButton(IDC_SOFTWARERENDERING, (np2oscfg.emuddraw) ? BST_CHECKED : BST_UNCHECKED);
-
 	m_skiplight.SubclassDlgItem(IDC_SKIPLIGHT, this);
 	m_skiplight.SetStaticId(IDC_LIGHTSTR);
 	m_skiplight.SetRange(0, 255);
@@ -117,14 +115,6 @@ void ScrOptVideoPage::OnOK()
 	{
 		np2cfg.LCD_MODE = cMode;
 		pal_makelcdpal();
-		bUpdated = true;
-	}
-	cMode = (IsDlgButtonChecked(IDC_SOFTWARERENDERING) != BST_UNCHECKED);
-	if (!!cMode == !np2oscfg.emuddraw)
-	{
-		np2oscfg.emuddraw = cMode;
-		scrnmng_destroy();
-		scrnmng_create(g_scrnmode);
 		bUpdated = true;
 	}
 	if (bUpdated)
@@ -505,6 +495,7 @@ BOOL ScrOptFullscreenPage::OnInitDialog()
 void ScrOptFullscreenPage::OnOK()
 {
 	UINT8 c = 0;
+	UINT8 c2 = 0;
 	if (IsDlgButtonChecked(IDC_FULLSCREEN_SAMEBPP) != BST_UNCHECKED)
 	{
 		c |= FSCRNMOD_SAMEBPP;
@@ -513,18 +504,21 @@ void ScrOptFullscreenPage::OnOK()
 	{
 		c |= FSCRNMOD_SAMERES;
 	}
+	c2 = c;
 	c |= m_zoom.GetCurItemData(FSCRNCFG_fscrnmod & FSCRNMOD_ASPECTMASK);
-	if (FSCRNCFG_fscrnmod != c)
+	c2 |= m_zoom.GetCurItemData(np2oscfg.fscrnmod & FSCRNMOD_ASPECTMASK);
+	if ((np2oscfg.fsrescfg && (!scrnrescfg.hasfscfg || scrnrescfg.fscrnmod != c)) || np2oscfg.fscrnmod != c2)
 	{
+		if((np2oscfg.fsrescfg && (!scrnrescfg.hasfscfg || scrnrescfg.fscrnmod != c)) || (!np2oscfg.fsrescfg && np2oscfg.fscrnmod != c2)){
+			resetScreen = 1;
+		}
 		if(np2oscfg.fsrescfg){
 			scrnrescfg.fscrnmod = c;
 			scrnrescfg.hasfscfg = 1;
 			scrnres_writeini();
-		}else{
-			np2oscfg.fscrnmod = c;
 		}
+		np2oscfg.fscrnmod = c;
 		::sysmng_update(SYS_UPDATEOSCFG);
-		resetScreen = 1;
 	}
 }
 
@@ -566,6 +560,8 @@ protected:
 private:
 	CComboData m_type;				//!< 種類
 	CComboData m_mode;				//!< 補間モード
+	CWndProc m_chksoftrender;		//!< USE DIRECTDRAW SOFTWARE RENDERING
+	CWndProc m_chkexclusive;		//!< USE DIRECT3D FULLSCREEN EXCLUSIVE MODE
 };
 
 //! 種類 リスト
@@ -614,7 +610,15 @@ BOOL ScrOptRendererPage::OnInitDialog()
 	m_mode.Add(s_renderer_mode, _countof(s_renderer_mode));
 	m_mode.SetCurItemData(FSCRNCFG_d3d_imode);
 	m_mode.EnableWindow(np2oscfg.drawtype==DRAWTYPE_DIRECT3D ? TRUE : FALSE);
-
+	
+	CheckDlgButton(IDC_SOFTWARERENDERING, (np2oscfg.emuddraw) ? BST_CHECKED : BST_UNCHECKED);
+	
+	m_chksoftrender.SubclassDlgItem(IDC_SOFTWARERENDERING, this);
+	m_chksoftrender.SendMessage(BM_SETCHECK , (np2oscfg.emuddraw) ? BST_CHECKED : BST_UNCHECKED , 0);
+	
+	m_chkexclusive.SubclassDlgItem(IDC_RENDERER_EXCLUSIVE, this);
+	m_chkexclusive.SendMessage(BM_SETCHECK , (np2oscfg.d3d_exclusive) ? BST_CHECKED : BST_UNCHECKED , 0);
+	
 	return TRUE;
 }
 
@@ -623,7 +627,9 @@ BOOL ScrOptRendererPage::OnInitDialog()
  */
 void ScrOptRendererPage::OnOK()
 {
-	UINT32 tmp;
+	bool bUpdated = false;
+	UINT8 cMode = 0;
+	UINT32 tmp, tmp2;
 	tmp = m_type.GetCurItemData(np2oscfg.drawtype);
 	if (tmp != np2oscfg.drawtype)
 	{
@@ -634,21 +640,46 @@ void ScrOptRendererPage::OnOK()
 			}
 		}
 		np2oscfg.drawtype = tmp;
-		::sysmng_update(SYS_UPDATEOSCFG);
 		resetScreen = 1;
+		bUpdated = true;
 	}
-	tmp = m_mode.GetCurItemData(FSCRNCFG_d3d_imode);
-	if (tmp != FSCRNCFG_d3d_imode)
+	tmp = m_mode.GetCurItemData(scrnrescfg.d3d_imode);
+	tmp2 = m_mode.GetCurItemData(np2oscfg.d3d_imode);
+	if ((np2oscfg.fsrescfg && (!scrnrescfg.hasfscfg || scrnrescfg.d3d_imode != tmp)) || np2oscfg.d3d_imode != tmp2)
 	{
+		if((np2oscfg.fsrescfg && (!scrnrescfg.hasfscfg || scrnrescfg.d3d_imode != tmp)) || (!np2oscfg.fsrescfg && np2oscfg.d3d_imode != tmp2)){
+			resetScreen = 1;
+		}
 		if(np2oscfg.fsrescfg){
 			scrnrescfg.d3d_imode = tmp;
 			scrnrescfg.hasfscfg = 1;
 			scrnres_writeini();
-		}else{
-			np2oscfg.d3d_imode = tmp;
 		}
-		::sysmng_update(SYS_UPDATEOSCFG);
+		np2oscfg.d3d_imode = tmp;
+		bUpdated = true;
+	}
+	cMode = (IsDlgButtonChecked(IDC_RENDERER_EXCLUSIVE) != BST_UNCHECKED);
+	if (!!cMode == !np2oscfg.d3d_exclusive)
+	{
+		np2oscfg.d3d_exclusive = cMode;
+		scrnmng_destroy();
+		scrnmng_create(g_scrnmode);
 		resetScreen = 1;
+		bUpdated = true;
+	}
+	cMode = (IsDlgButtonChecked(IDC_SOFTWARERENDERING) != BST_UNCHECKED);
+	if (!!cMode == !np2oscfg.emuddraw)
+	{
+		np2oscfg.emuddraw = cMode;
+		scrnmng_destroy();
+		scrnmng_create(g_scrnmode);
+		resetScreen = 1;
+		bUpdated = true;
+	}
+	if (bUpdated)
+	{
+		::scrndraw_redraw();
+		::sysmng_update(SYS_UPDATEOSCFG);
 	}
 }
 
@@ -662,7 +693,10 @@ BOOL ScrOptRendererPage::OnCommand(WPARAM wParam, LPARAM lParam)
 {
 	if (LOWORD(wParam) == IDC_RENDERER_TYPE)
 	{
-		m_mode.EnableWindow(m_type.GetCurItemData(np2oscfg.drawtype)==DRAWTYPE_DIRECT3D ? TRUE : FALSE);
+		UINT8 drawtype =  (UINT8)m_type.GetCurItemData(np2oscfg.drawtype);
+		m_mode.EnableWindow(drawtype==DRAWTYPE_DIRECT3D ? TRUE : FALSE);
+		m_chkexclusive.EnableWindow(drawtype==DRAWTYPE_DIRECT3D ? TRUE : FALSE);
+		m_chksoftrender.EnableWindow((drawtype==DRAWTYPE_DIRECTDRAW_HW || drawtype==DRAWTYPE_DIRECTDRAW_SW) ? TRUE : FALSE);
 		return TRUE;
 	}
 	return FALSE;

@@ -48,6 +48,7 @@ REG16 IOOUTCALL lgy98_ib200_16(UINT addr);
 
 void lgy98_reset(const NP2CFG *pConfig);
 void lgy98_bind(void);
+void lgy98_shutdown(void);
 
 #ifdef __cplusplus
 }

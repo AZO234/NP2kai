@@ -39,6 +39,8 @@ void scrnmngDD_updatefsres(void);
 void scrnmngDD_blthdc(HDC hdc);
 void scrnmngDD_bltwab(void);
 
+void scrnmngDD_getrect(RECT *lpRect);
+
 #if defined(SUPPORT_DCLOCK)
 BOOL scrnmngDD_isdispclockclick(const POINT *pt);
 void scrnmngDD_dispclock(void);

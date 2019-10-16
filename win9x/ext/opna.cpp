@@ -104,6 +104,7 @@ void opna_destruct(POPNA opna)
 #if defined(SUPPORT_FMGEN)
 	if(opna->fmgen) {
 		if(opna->fmgen) OPNA_Destruct(opna->fmgen);
+		opna->fmgen = NULL;
 		opnalist_remove(opna);
 	}
 #endif	/* SUPPORT_FMGEN */

@@ -32,8 +32,8 @@
 	OPL3 g_opl3;
 	OPNA g_opna[OPNA_MAX];
 	
-#if defined(SUPPORT_SOUND_SB16)
 	OPL			g_opl;
+#if defined(SUPPORT_SOUND_SB16)
 	SB16		g_sb16;
 #endif	// defined(SUPPORT_SOUND_SB16)
 
@@ -134,6 +134,11 @@ void fmboard_destruct(void)
 		opna_destruct(&g_opna[i]);
 	}
 	opl3_destruct(&g_opl3);
+
+	board118_finalize();
+#ifdef SUPPORT_SOUND_SB16
+	boardsb16_finalize();
+#endif
 }
 
 /**

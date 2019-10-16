@@ -314,7 +314,10 @@ static void cd_close(SXSIDEV sxsi) {
 
 static void cd_destroy(SXSIDEV sxsi) {
 
-	_MFREE((CDINFO)sxsi->hdl);
+	if(sxsi->hdl){
+		_MFREE((CDINFO)sxsi->hdl);
+		sxsi->hdl = NULL;
+	}
 }
 
 

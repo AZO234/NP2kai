@@ -377,7 +377,7 @@ struct retro_core_option_definition option_defs_us[] = {
          { "128", NULL },
          { NULL, NULL},
       },
-      "64"
+      "28"
    },
    {
       "np2kai_volume_A",
@@ -461,7 +461,7 @@ struct retro_core_option_definition option_defs_us[] = {
          { "128", NULL },
          { NULL, NULL},
       },
-      "64"
+      "92"
    },
    {
       "np2kai_volume_R",
@@ -1135,7 +1135,7 @@ struct retro_core_option_definition option_defs_ja[] = {
          { "128", NULL },
          { NULL, NULL},
       },
-      "64"
+      "28"
    },
    {
       "np2kai_volume_A",
@@ -1219,7 +1219,7 @@ struct retro_core_option_definition option_defs_ja[] = {
          { "128", NULL },
          { NULL, NULL},
       },
-      "64"
+      "90"
    },
    {
       "np2kai_volume_R",

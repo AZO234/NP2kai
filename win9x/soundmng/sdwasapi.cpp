@@ -388,8 +388,11 @@ void CSoundDeviceWasapi::SetMasterVolume(int nVolume)
  */
 bool CSoundDeviceWasapi::Task()
 {
-	 switch (::WaitForMultipleObjects(_countof(m_hEvents), m_hEvents, 0, INFINITE))
-	 {
+	if(!m_hEvents[0] || !m_hEvents[1]){
+		return false;
+	}
+	switch (::WaitForMultipleObjects(_countof(m_hEvents), m_hEvents, 0, INFINITE))
+	{
 		case WAIT_OBJECT_0 + 0:
 			FillStream();
 			break;

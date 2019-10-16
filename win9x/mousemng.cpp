@@ -1,11 +1,19 @@
+#define DIRECTINPUT_VERSION 0x0800
+
 #include	"compiler.h"
 #include	"np2.h"
 #include	"mousemng.h"
 #include    "scrnmng.h"
 
-#define DIRECTINPUT_VERSION 0x0800
 #include	<dinput.h>
-#pragma comment(lib, "dinput8.lib")
+//#pragma comment(lib, "dinput8.lib")
+
+#define DIDFT_OPTIONAL	0x80000000
+
+#ifdef SUPPORT_WACOM_TABLET
+bool cmwacom_skipMouseEvent(void);
+void cmwacom_setExclusiveMode(bool enable);
+#endif
 
 #define	MOUSEMNG_RANGE		128
 
@@ -32,24 +40,24 @@ static  LPDIRECTINPUTDEVICE8 diRawMouse = NULL;
 static  int mouseRawDeltaX = 0;
 static  int mouseRawDeltaY = 0;
 
-static  int dinput8available = 0;
-typedef HRESULT (WINAPI *TEST_DIRECTINPUT8CREATE)(HINSTANCE hinst, DWORD dwVersion, REFIID riidltf, LPVOID *ppvOut, LPUNKNOWN punkOuter);
+typedef HRESULT (WINAPI *FN_DIRECTINPUT8CREATE)(HINSTANCE hinst, DWORD dwVersion, REFIID riidltf, LPVOID *ppvOut, LPUNKNOWN punkOuter);
+
+static  HMODULE hModuleDI8 = NULL;
+static  FN_DIRECTINPUT8CREATE fndi8create = NULL;
 
 BRESULT mousemng_checkdinput8(){
 	// DirectInput8が使用できるかチェック
-	HMODULE hModule;
-	TEST_DIRECTINPUT8CREATE fndi8create;
 	LPDIRECTINPUT8 test_dinput = NULL; 
 	LPDIRECTINPUTDEVICE8 test_didevice = NULL;
 
-	if(dinput8available) return(SUCCESS);
+	if(fndi8create) return(SUCCESS);
 
-	hModule = LoadLibrary(_T("dinput8.dll"));
-	if(!hModule){
+	hModuleDI8 = LoadLibrary(_T("dinput8.dll"));
+	if(!hModuleDI8){
 		goto scre_err;
 	}
 	
-	fndi8create = (TEST_DIRECTINPUT8CREATE)GetProcAddress(hModule, "DirectInput8Create");
+	fndi8create = (FN_DIRECTINPUT8CREATE)GetProcAddress(hModuleDI8, "DirectInput8Create");
 	if(!fndi8create){
 		goto scre_err2;
 	}
@@ -63,20 +71,25 @@ BRESULT mousemng_checkdinput8(){
 	// デバイス作成まで出来そうならOKとする
 	test_didevice->Release();
 	test_dinput->Release();
-	FreeLibrary(hModule);
-
-	dinput8available = 1;
 
 	return(SUCCESS);
 scre_err3:
 	test_dinput->Release();
 scre_err2:
-	FreeLibrary(hModule);
+	FreeLibrary(hModuleDI8);
 scre_err:
+	hModuleDI8 = NULL;
+	fndi8create = NULL;
 	return(FAILURE);
 }
 
 UINT8 mousemng_getstat(SINT16 *x, SINT16 *y, int clear) {
+#ifdef SUPPORT_WACOM_TABLET
+	if(cmwacom_skipMouseEvent()){
+		mousemng.x = 0;
+		mousemng.y = 0;
+	}
+#endif
 	*x = mousemng.x;
 	*y = mousemng.y;
 	if (clear) {
@@ -116,15 +129,52 @@ static void getmaincenter(POINT *cp) {
 static void initDirectInput(){
 	
 	HRESULT		hr;
+	DIOBJECTDATAFORMAT obj[7];
+	DIDATAFORMAT dimouse_format;
+    dimouse_format.dwSize       = sizeof(DIDATAFORMAT);
+    dimouse_format.dwObjSize    = sizeof(DIOBJECTDATAFORMAT);
+    dimouse_format.dwFlags      = DIDF_RELAXIS;
+    dimouse_format.dwDataSize   = 16;
+    dimouse_format.dwNumObjs    = 7;
+    dimouse_format.rgodf        = obj;
+    obj[0].dwOfs        = 0;
+    obj[0].pguid        = &GUID_XAxis;
+    obj[0].dwType       = DIDFT_ANYINSTANCE | DIDFT_AXIS;
+    obj[0].dwFlags      = 0;
+    obj[1].dwOfs        = 4;
+    obj[1].pguid        = &GUID_YAxis;
+    obj[1].dwType       = DIDFT_ANYINSTANCE | DIDFT_AXIS;
+    obj[1].dwFlags      = 0;
+    obj[2].dwOfs        = 8;
+    obj[2].pguid        = &GUID_ZAxis;
+    obj[2].dwType       = DIDFT_ANYINSTANCE | DIDFT_OPTIONAL | DIDFT_AXIS;
+    obj[2].dwFlags      = 0;
+    obj[3].dwOfs        = 12;
+    obj[3].pguid        = NULL;
+    obj[3].dwType       = DIDFT_ANYINSTANCE | DIDFT_BUTTON;
+    obj[3].dwFlags      = 0;
+    obj[4].dwOfs        = 13;
+    obj[4].pguid        = NULL;
+    obj[4].dwType       = DIDFT_ANYINSTANCE | DIDFT_BUTTON;
+    obj[4].dwFlags      = 0;
+    obj[5].dwOfs        = 14;
+    obj[5].pguid        = NULL;
+    obj[5].dwType       = DIDFT_ANYINSTANCE | DIDFT_OPTIONAL | DIDFT_BUTTON;
+    obj[5].dwFlags      = 0;
+    obj[6].dwOfs        = 15;
+    obj[6].pguid        = NULL;
+    obj[6].dwType       = DIDFT_ANYINSTANCE | DIDFT_OPTIONAL | DIDFT_BUTTON;
+    obj[6].dwFlags      = 0;
 
-	if(!dinput){
+	if(fndi8create && !dinput){
 		//hr = DirectInputCreateEx(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput7, (void**)&dinput, NULL);
-		hr = DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (LPVOID*)&dinput, NULL); // 関数名変えてやがった( ﾟдﾟ)
+		//hr = DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (LPVOID*)&dinput, NULL); // 関数名変えてやがった( ﾟдﾟ)
+		hr = fndi8create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (LPVOID*)&dinput, NULL);
 		if (!FAILED(hr)){
 			hr = dinput->CreateDevice(GUID_SysMouse, &diRawMouse, NULL);
 			if (!FAILED(hr)){
 				// データフォーマット設定
-				hr = diRawMouse->SetDataFormat(&c_dfDIMouse);
+				hr = diRawMouse->SetDataFormat(&dimouse_format);
 				if (!FAILED(hr)){
 					// 協調レベル設定
 					hr = diRawMouse->SetCooperativeLevel(g_hWndMain, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
@@ -173,6 +223,11 @@ static void destroyDirectInput(){
 		dinput->Release();
 		dinput = NULL;
 	}
+	if(hModuleDI8){
+		FreeLibrary(hModuleDI8);
+		hModuleDI8 = NULL;
+		fndi8create = NULL;
+	}
 }
 
 static void mousecapture(BOOL capture) {
@@ -180,6 +235,10 @@ static void mousecapture(BOOL capture) {
 	LONG	style;
 	POINT	cp;
 	RECT	rct;
+	
+#ifdef SUPPORT_WACOM_TABLET
+	cmwacom_setExclusiveMode(capture ? true : false);
+#endif
 
 	if(np2oscfg.rawmouse){
 		if(mousemng_checkdinput8()!=SUCCESS){
@@ -202,7 +261,7 @@ static void mousecapture(BOOL capture) {
 		ClipCursor(&rct);
 		style &= ~(CS_DBLCLKS);
 		mousecaptureflg = 1;
-		if(np2oscfg.rawmouse && dinput8available){
+		if(np2oscfg.rawmouse && fndi8create){
 			initDirectInput();
 		}
 	}
@@ -211,7 +270,7 @@ static void mousecapture(BOOL capture) {
 		ClipCursor(NULL);
 		style |= CS_DBLCLKS;
 		mousecaptureflg = 0;
-		if(np2oscfg.rawmouse && dinput8available){
+		if(np2oscfg.rawmouse && fndi8create){
 			diRawMouse->Unacquire();
 			//destroyDirectInput();
 		}
@@ -239,9 +298,9 @@ void mousemng_sync(void) {
 
 	if ((!mousemng.flag) && (GetCursorPos(&p))) {
 		getmaincenter(&cp);
-		if(np2oscfg.rawmouse && dinput8available && dinput==NULL)
+		if(np2oscfg.rawmouse && fndi8create && dinput==NULL)
 			initDirectInput();
-		if(np2oscfg.rawmouse && dinput8available && mousemng_supportrawinput()){
+		if(np2oscfg.rawmouse && fndi8create && mousemng_supportrawinput()){
 			DIMOUSESTATE diMouseState = {0};
 			HRESULT hr;
 			hr = diRawMouse->GetDeviceState(sizeof(DIMOUSESTATE), &diMouseState);

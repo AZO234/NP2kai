@@ -16,10 +16,10 @@ HINSTANCE CWndProc::sm_hInstance;
 //! リソース
 HINSTANCE CWndProc::sm_hResource;
 
-DWORD CWndProc::sm_dwThreadId;						//!< 自分のスレッド ID
-HHOOK CWndProc::sm_hHookOldCbtFilter;				//!< フック フィルター
-CWndProc* CWndProc::sm_pWndInit;					//!< 初期化中のインスタンス
-std::map<HWND, CWndProc*>* CWndProc::sm_pWndMap;	//!< ウィンドウ マップ
+DWORD CWndProc::sm_dwThreadId;							//!< 自分のスレッド ID
+HHOOK CWndProc::sm_hHookOldCbtFilter = NULL;			//!< フック フィルター
+CWndProc* CWndProc::sm_pWndInit = NULL;					//!< 初期化中のインスタンス
+std::map<HWND, CWndProc*>* CWndProc::sm_pWndMap = NULL;	//!< ウィンドウ マップ
 
 /**
  * 初期化
@@ -58,6 +58,10 @@ void CWndProc::Deinitialize()
 	{
 		::UnhookWindowsHookEx(sm_hHookOldCbtFilter);
 		sm_hHookOldCbtFilter = NULL;
+	}
+	if(sm_pWndMap != NULL){
+		delete sm_pWndMap;
+		sm_pWndMap = NULL;
 	}
 }
 
@@ -366,12 +370,13 @@ BOOL CWndProc::DestroyWindow()
 
 	CWndProc* pWnd = FromHandlePermanent(m_hWnd);
 
-	const BOOL bResult = ::DestroyWindow(m_hWnd);
-
-	if (pWnd == NULL)
+	HWND oldhWnd = m_hWnd;
+	if (pWnd != NULL)
 	{
-		Detach();
+		UnsubclassWindow(); // 兼 Detach();
 	}
+
+	const BOOL bResult = ::DestroyWindow(oldhWnd);
 
 	return bResult;
 }

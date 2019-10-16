@@ -75,3 +75,9 @@ void printif_bind(void) {
 	iocore_attachsysinpex(0x0040, 0x0cf1, prti40, 4);
 }
 
+void printif_finalize(void) {
+
+	commng_destroy(cm_prt);
+	cm_prt = NULL;
+}
+

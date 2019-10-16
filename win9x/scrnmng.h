@@ -143,6 +143,8 @@ void scrnmng_updatefsres(void);
 void scrnmng_blthdc(HDC hdc);
 void scrnmng_bltwab(void);
 
+void scrnmng_getrect(RECT *lpRect);
+
 #if defined(SUPPORT_DCLOCK)
 BOOL scrnmng_isdispclockclick(const POINT *pt);
 void scrnmng_dispclock(void);

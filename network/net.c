@@ -20,6 +20,9 @@
 
 #include	"pccore.h"
 #include	"net.h"
+#ifdef SUPPORT_LGY98
+#include	"lgy98.h"
+#endif
 #include	"sxsi.h"
 
 #if defined(_WINDOWS)
@@ -512,6 +515,10 @@ void np2net_shutdown(void)
 {
 	np2net_hThreadexit = 1;
 	np2net_closeTAP();
+#ifdef SUPPORT_LGY98
+	lgy98_shutdown();
+#endif
+
 }
 
 #if defined(_WINDOWS)

@@ -6,6 +6,8 @@
 #include "compiler.h"
 #include "DlgProc.h"
 
+BOOL winloc_GetWindowRect(HWND hwnd, LPRECT lpRect);
+
 /**
  * コンストラクタ
  */
@@ -101,6 +103,20 @@ LRESULT CDlgProc::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 				OnCancel();
 				return TRUE;
 		}
+	}else if(nMsg == WM_INITDIALOG){
+		RECT rect, rect2, rectparent;
+		GetWindowRect(&rect);
+		if(!winloc_GetWindowRect(m_hWnd,&rect2)){
+			rect2 = rect;
+		}
+
+		CWndBase wndParent = GetParent();
+		wndParent.GetWindowRect(&rectparent);
+
+		POINT pt;
+		pt.x = rectparent.left - (rect2.left - rect.left);//((rectparent.right - rectparent.left) - (rect.right - rect.left)) / 2;
+		pt.y = rectparent.top - (rect2.top - rect.top);//((rectparent.bottom - rectparent.top) - (rect.bottom - rect.top)) / 2;
+		MoveWindow(pt.x, pt.y, (rect.right - rect.left), (rect.bottom - rect.top), TRUE);
 	}
 	return CWndProc::WindowProc(nMsg, wParam, lParam);
 }

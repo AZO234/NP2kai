@@ -9,7 +9,7 @@
 /**
  * 速度テーブル
  */
-const UINT32 cmserial_speed[10] = {110, 300, 1200, 2400, 4800,
+const UINT32 cmserial_speed[11] = {110, 300, 600, 1200, 2400, 4800,
 							9600, 19200, 38400, 57600, 115200};
 
 /**
@@ -19,10 +19,10 @@ const UINT32 cmserial_speed[10] = {110, 300, 1200, 2400, 4800,
  * @param[in] nSpeed スピード
  * @return インスタンス
  */
-CComSerial* CComSerial::CreateInstance(UINT nPort, UINT8 cParam, UINT32 nSpeed)
+CComSerial* CComSerial::CreateInstance(UINT nPort, UINT8 cParam, UINT32 nSpeed, UINT8 fixedspeed)
 {
 	CComSerial* pSerial = new CComSerial;
-	if (!pSerial->Initialize(nPort, cParam, nSpeed))
+	if (!pSerial->Initialize(nPort, cParam, nSpeed, fixedspeed))
 	{
 		delete pSerial;
 		pSerial = NULL;
@@ -47,6 +47,7 @@ CComSerial::~CComSerial()
 	if (m_hSerial != INVALID_HANDLE_VALUE)
 	{
 		::CloseHandle(m_hSerial);
+		m_hSerial = INVALID_HANDLE_VALUE;
 	}
 }
 
@@ -58,7 +59,7 @@ CComSerial::~CComSerial()
  * @retval true 成功
  * @retval false 失敗
  */
-bool CComSerial::Initialize(UINT nPort, UINT8 cParam, UINT32 nSpeed)
+bool CComSerial::Initialize(UINT nPort, UINT8 cParam, UINT32 nSpeed, UINT8 fixedspeed)
 {
 	TCHAR szName[16];
 	wsprintf(szName, TEXT("COM%u"), nPort);
@@ -67,6 +68,10 @@ bool CComSerial::Initialize(UINT nPort, UINT8 cParam, UINT32 nSpeed)
 	{
 		return false;
 	}
+
+	m_fixedspeed = !!fixedspeed;
+
+	PurgeComm(m_hSerial, PURGE_TXABORT | PURGE_RXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR);
 
 	DCB dcb;
 	::GetCommState(m_hSerial, &dcb);
@@ -107,6 +112,8 @@ bool CComSerial::Initialize(UINT nPort, UINT8 cParam, UINT32 nSpeed)
 			dcb.StopBits = ONESTOPBIT;
 			break;
 	}
+	dcb.fOutX = FALSE;
+	dcb.fInX = FALSE;
 	::SetCommState(m_hSerial, &dcb);
 	return true;
 }
@@ -169,5 +176,84 @@ UINT8 CComSerial::GetStat()
  */
 INTPTR CComSerial::Message(UINT nMessage, INTPTR nParam)
 {
+	switch (nMessage)
+	{
+		case COMMSG_CHANGESPEED:
+			if(!m_fixedspeed){
+				int newspeed = *(reinterpret_cast<int*>(nParam));
+				for (UINT i = 0; i < NELEMENTS(cmserial_speed); i++)
+				{
+					if (cmserial_speed[i] >= newspeed)
+					{
+						DCB dcb;
+						::GetCommState(m_hSerial, &dcb);
+						if(cmserial_speed[i] != dcb.BaudRate){
+							dcb.BaudRate = cmserial_speed[i];
+							::SetCommState(m_hSerial, &dcb);
+						}
+						break;
+					}
+				}
+			}
+			break;
+			
+		case COMMSG_CHANGEMODE:
+			if(!m_fixedspeed){
+				bool changed = false;
+				UINT8 newmode = *(reinterpret_cast<UINT8*>(nParam)); // I/O 32h モードセットのデータ
+				BYTE stopbits_value[] = {ONESTOPBIT, ONESTOPBIT, ONE5STOPBITS, TWOSTOPBITS};
+				BYTE parity_value[] = {NOPARITY, ODDPARITY, NOPARITY, EVENPARITY};
+				BYTE bytesize_value[] = {5, 6, 7, 8};
+				DCB dcb;
+				::GetCommState(m_hSerial, &dcb);
+				if(dcb.StopBits != stopbits_value[(newmode >> 6) & 0x3]){
+					dcb.StopBits = stopbits_value[(newmode >> 6) & 0x3];
+					changed = true;
+				}
+				if(dcb.Parity != parity_value[(newmode >> 4) & 0x3]){
+					dcb.Parity = parity_value[(newmode >> 4) & 0x3];
+					changed = true;
+				}
+				if(dcb.ByteSize != bytesize_value[(newmode >> 2) & 0x3]){
+					dcb.ByteSize = bytesize_value[(newmode >> 2) & 0x3];
+					changed = true;
+				}
+				if(changed){
+					::PurgeComm(m_hSerial, PURGE_TXABORT | PURGE_RXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR);
+					::SetCommState(m_hSerial, &dcb);
+				}
+				break;
+			}
+			break;
+			
+
+		case COMMSG_SETFLAG:
+			{
+				COMFLAG flag = reinterpret_cast<COMFLAG>(nParam);
+				if ((flag) && (flag->size == sizeof(_COMFLAG)))
+				{
+					return 1;
+				}
+			}
+			break;
+
+		case COMMSG_GETFLAG:
+			{
+				// dummy data
+				COMFLAG flag = (COMFLAG)_MALLOC(sizeof(_COMFLAG), "RS232C FLAG");
+				if (flag)
+				{
+					flag->size = sizeof(_COMFLAG);
+					flag->sig = COMSIG_COM1;
+					flag->ver = 0;
+					flag->param = 0;
+					return reinterpret_cast<INTPTR>(flag);
+				}
+			}
+			break;
+
+		default:
+			break;
+	}
 	return 0;
 }

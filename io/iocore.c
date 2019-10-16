@@ -43,6 +43,9 @@
 	_PIC		pic;
 	_PIT		pit;
 	_RS232C		rs232c;
+#if defined(SUPPORT_RS232C_FIFO)
+	_RS232CFIFO	rs232cfifo;
+#endif
 	_SYSPORT	sysport;
 	_UPD4990	uPD4990;
 

@@ -265,10 +265,12 @@ CComMidi::~CComMidi()
 	if (m_pMidiOut)
 	{
 		delete m_pMidiOut;
+		m_pMidiOut = NULL;
 	}
 	if (m_pMidiIn)
 	{
 		delete m_pMidiIn;
+		m_pMidiIn = NULL;
 	}
 }
 

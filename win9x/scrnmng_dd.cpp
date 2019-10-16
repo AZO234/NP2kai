@@ -1016,7 +1016,8 @@ void scrnmngDD_clearwinui(void) {
 }
 
 void scrnmngDD_setwidth(int posx, int width) {
-
+	
+	if(scrnstat.multiple < 1) scrnstat.multiple = 8;
 	scrnstat.width = width;
 	renewalclientsize(TRUE);
 }
@@ -1029,13 +1030,15 @@ void scrnmngDD_setextend(int extend) {
 }
 
 void scrnmngDD_setheight(int posy, int height) {
-
+	
+	if(scrnstat.multiple < 1) scrnstat.multiple = 8;
 	scrnstat.height = height;
 	renewalclientsize(TRUE);
 }
 
 void scrnmngDD_setsize(int posx, int posy, int width, int height) {
-
+	
+	if(scrnstat.multiple < 1) scrnstat.multiple = 8;
 	scrnstat.width = width;
 	scrnstat.height = height;
 	renewalclientsize(TRUE);
@@ -1495,7 +1498,7 @@ void scrnmngDD_bltwab() {
 			}
 		}else{
 			dst = &ddraw.rect;
-			exmgn = scrnstat.extend;
+			exmgn = (scrnstat.multiple == 8 ? scrnstat.extend : 0);
 		}
 		src.left = src.top = 0;
 
@@ -1520,4 +1523,19 @@ void scrnmngDD_bltwab() {
 		dd_leave_criticalsection();
 	}
 #endif
+}
+
+// 描画領域の範囲をクライアント座標で取得
+void scrnmngDD_getrect(RECT *lpRect) {
+	if (ddraw.scrnmode & SCRNMODE_FULLSCREEN) {
+		if (GetWindowLongPtr(g_hWndMain, NP2GWLP_HMENU)) {
+			*lpRect = ddraw.scrn;
+		}
+		else {
+			*lpRect = ddraw.scrnclip;
+		}
+	}
+	else {
+		*lpRect = ddraw.scrn;
+	}
 }

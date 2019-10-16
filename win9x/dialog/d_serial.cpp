@@ -49,6 +49,9 @@ protected:
 private:
 	COMMNG m_cm;				//!< パラメタ
 	COMCFG& m_cfg;				//!< コンフィグ
+	UINT8 m_pentabfa;
+	CWndProc m_chkpentabfa;		//!< Pen tablet fixed aspect mode
+	CWndProc m_chkfixedspeed;	//!< Fixed speed mode
 	CComboData m_port;			//!< Port
 	CComboData m_speed;			//!< Speed
 	CComboData m_chars;			//!< Chars
@@ -57,6 +60,8 @@ private:
 	CComboMidiDevice m_midiout;	//!< MIDI OUT
 	CComboMidiModule m_module;	//!< MIDI Module
 	CEditMimpiFile m_mimpifile;	//!< MIMPI
+	CWndProc m_pipename;		//!< Pipe name
+	CWndProc m_pipeserv;		//!< Pipe server
 	void UpdateControls();
 };
 
@@ -69,6 +74,12 @@ static const CComboData::Entry s_port[] =
 	{MAKEINTRESOURCE(IDS_COM3),			COMPORT_COM3},
 	{MAKEINTRESOURCE(IDS_COM4),			COMPORT_COM4},
 	{MAKEINTRESOURCE(IDS_MIDI),			COMPORT_MIDI},
+#if defined(SUPPORT_WACOM_TABLET)
+	{MAKEINTRESOURCE(IDS_TABLET),		COMPORT_TABLET},
+#endif
+#if defined(SUPPORT_NAMED_PIPE)
+	{MAKEINTRESOURCE(IDS_PIPE),			COMPORT_PIPE},
+#endif
 };
 
 //! キャラクタ サイズ
@@ -155,6 +166,32 @@ BOOL SerialOptComPage::OnInitDialog()
 
 	m_mimpifile.SubclassDlgItem(IDC_COM1DEFF, this);
 	m_mimpifile.SetWindowText(m_cfg.def);
+	
+#if defined(SUPPORT_WACOM_TABLET)
+	m_pentabfa = np2oscfg.pentabfa;
+#else
+	m_pentabfa = 0;
+#endif
+	m_chkpentabfa.SubclassDlgItem(IDC_COM1PENTABFA, this);
+	if(m_pentabfa)
+		m_chkpentabfa.SendMessage(BM_SETCHECK , BST_CHECKED , 0);
+	else
+		m_chkpentabfa.SendMessage(BM_SETCHECK , BST_UNCHECKED , 0);
+	
+	m_chkfixedspeed.SubclassDlgItem(IDC_COM1FSPEED, this);
+	if(m_cm != cm_rs232c){
+		m_chkfixedspeed.EnableWindow(FALSE);
+		m_chkfixedspeed.SendMessage(BM_SETCHECK , BST_CHECKED , 0);
+	}else{
+		m_chkfixedspeed.SendMessage(BM_SETCHECK , m_cfg.fixedspeed ? BST_CHECKED : BST_UNCHECKED , 0);
+	}
+	
+#if defined(SUPPORT_NAMED_PIPE)
+	m_pipename.SubclassDlgItem(IDC_COM1PIPENAME, this);
+	m_pipename.SetWindowText(m_cfg.pipename);
+	m_pipeserv.SubclassDlgItem(IDC_COM1PIPESERV, this);
+	m_pipeserv.SetWindowText(m_cfg.pipeserv);
+#endif
 
 	UpdateControls();
 
@@ -181,6 +218,13 @@ void SerialOptComPage::OnOK()
 	{
 		m_cfg.speed = nSpeed;
 		nUpdated |= SYS_UPDATEOSCFG | SYS_UPDATESERIAL1;
+	}
+	
+	const UINT8 cFSpeedEnable = (IsDlgButtonChecked(IDC_COM1FSPEED) != BST_UNCHECKED) ? 1 : 0;
+	if (m_cfg.fixedspeed != cFSpeedEnable)
+	{
+		m_cfg.fixedspeed = cFSpeedEnable;
+		nUpdated |= SYS_UPDATEOSCFG;
 	}
 
 	UINT8 cParam = 0;
@@ -231,6 +275,31 @@ void SerialOptComPage::OnOK()
 		}
 		nUpdated |= SYS_UPDATEOSCFG;
 	}
+	
+#if defined(SUPPORT_WACOM_TABLET)
+	if (np2oscfg.pentabfa != m_pentabfa)
+	{
+		np2oscfg.pentabfa = m_pentabfa;
+		nUpdated |= SYS_UPDATEOSCFG;
+	}
+#endif
+	
+#if defined(SUPPORT_NAMED_PIPE)
+	TCHAR pipename[MAX_PATH];
+	TCHAR pipeserv[MAX_PATH];
+	GetDlgItemText(IDC_COM1PIPENAME, pipename, _countof(pipename));
+	GetDlgItemText(IDC_COM1PIPESERV, pipeserv, _countof(pipeserv));
+	if (milstr_cmp(m_cfg.pipename, pipename))
+	{
+		milstr_ncpy(m_cfg.pipename, pipename, _countof(m_cfg.pipename));
+		nUpdated |= SYS_UPDATEOSCFG;
+	}
+	if (milstr_cmp(m_cfg.pipeserv, pipeserv))
+	{
+		milstr_ncpy(m_cfg.pipeserv, pipeserv, _countof(m_cfg.pipeserv));
+		nUpdated |= SYS_UPDATEOSCFG;
+	}
+#endif
 
 	sysmng_update(nUpdated);
 }
@@ -252,6 +321,10 @@ BOOL SerialOptComPage::OnCommand(WPARAM wParam, LPARAM lParam)
 		case IDC_COM1DEFB:
 			m_mimpifile.Browse();
 			return TRUE;
+			
+		case IDC_COM1PENTABFA:
+			m_pentabfa = (m_chkpentabfa.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0);
+			return TRUE;
 	}
 	return FALSE;
 }
@@ -264,7 +337,18 @@ void SerialOptComPage::UpdateControls()
 	const UINT nPort = m_port.GetCurItemData(m_cfg.port);
 	const bool bSerialShow = ((nPort >= COMPORT_COM1) && (nPort <= COMPORT_COM4));
 	const bool bMidiShow = (nPort == COMPORT_MIDI);
+#if defined(SUPPORT_WACOM_TABLET)
+	const bool bPentabShow = (nPort == COMPORT_TABLET);
+#else
+	const bool bPentabShow = false;
+#endif
+#if defined(SUPPORT_NAMED_PIPE)
+	const bool bPipeShow = (nPort == COMPORT_PIPE);
+#else
+	const bool bPipeShow = false;
+#endif
 
+	// Physical serial port
 	static const UINT serial[] =
 	{
 		IDC_COM1SPEED, IDC_COM1CHARSIZE, IDC_COM1PARITY, IDC_COM1STOPBIT,
@@ -277,7 +361,14 @@ void SerialOptComPage::UpdateControls()
 		wnd.EnableWindow(bSerialShow ? TRUE : FALSE);
 		wnd.ShowWindow(bSerialShow ? SW_SHOW : SW_HIDE);
 	}
-
+	if(m_cm != cm_rs232c){
+		m_chkfixedspeed.EnableWindow(FALSE);
+	}else{
+		m_chkfixedspeed.EnableWindow(bSerialShow ? TRUE : FALSE);
+	}
+	m_chkfixedspeed.ShowWindow(bSerialShow ? SW_SHOW : SW_HIDE);
+	
+	// Serial MIDI emulation
 	static const UINT midi[] =
 	{
 		IDC_COM1MMAP, IDC_COM1MMDL, IDC_COM1DEFE, IDC_COM1DEFF, IDC_COM1DEFB,
@@ -288,6 +379,23 @@ void SerialOptComPage::UpdateControls()
 		CWndBase wnd = GetDlgItem(midi[i]);
 		wnd.EnableWindow(bMidiShow ? TRUE : FALSE);
 		wnd.ShowWindow(bMidiShow ? SW_SHOW : SW_HIDE);
+	}
+	
+	// Serial pen tablet emulation
+	m_chkpentabfa.EnableWindow(bPentabShow ? TRUE : FALSE);
+	m_chkpentabfa.ShowWindow(bPentabShow ? SW_SHOW : SW_HIDE);
+	
+	// Named-pipe
+	static const UINT pipe[] =
+	{
+		IDC_COM1PIPENAME, IDC_COM1PIPESERV,
+		IDC_COM1STR30, IDC_COM1STR31
+	};
+	for (UINT i = 0; i < _countof(pipe); i++)
+	{
+		CWndBase wnd = GetDlgItem(pipe[i]);
+		wnd.EnableWindow(bPipeShow ? TRUE : FALSE);
+		wnd.ShowWindow(bPipeShow ? SW_SHOW : SW_HIDE);
 	}
 }
 

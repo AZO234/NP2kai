@@ -116,6 +116,9 @@ static const SFENTRY np2tbl[] = {
 	{"NP2SYSPORT",	0,	STATFLAG_BIN,	&np2sysp,		sizeof(np2sysp)},
 	{"PIC",			0,	STATFLAG_BIN,	&pic,			sizeof(pic)},
 	{"RS232C",		0,	STATFLAG_BIN,	&rs232c,		sizeof(rs232c)},
+#if defined(SUPPORT_RS232C_FIFO)
+	{"RS232CFIFO",	0,	STATFLAG_BIN,	&rs232cfifo,	sizeof(rs232cfifo)},
+#endif
 	{"SYSTEMPORT",	0,	STATFLAG_BIN,	&sysport,		sizeof(sysport)},
 	{"uPD4990",		0,	STATFLAG_BIN,	&uPD4990,		sizeof(uPD4990)},
 #if defined(SUPPORT_PC9821)&&defined(SUPPORT_PCI)

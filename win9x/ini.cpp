@@ -676,7 +676,7 @@ static const PFTBL s_IniItems[] =
 	PFVAL("ASYNCCPU", PFTYPE_BOOL,		&np2cfg.asynccpu), // 非同期CPUモード有効
 #endif
 #if defined(SUPPORT_IDEIO)
-	PFVAL("IDEBADDR", PFRO_HEX8,		&np2cfg.idebaddr), // IDE BIOD アドレス（デフォルト：D8h(D8000h)）
+	PFVAL("IDEBADDR", PFRO_HEX8,		&np2cfg.idebaddr), // IDE BIOS アドレス（デフォルト：D8h(D8000h)）
 #endif
 	
 
@@ -714,23 +714,38 @@ static const PFTBL s_IniItems[] =
 	PFMAX("com1port", PFTYPE_UINT8,		&np2oscfg.com1.port,	5),
 	PFVAL("com1para", PFTYPE_UINT8,		&np2oscfg.com1.param),
 	PFVAL("com1_bps", PFTYPE_UINT32,	&np2oscfg.com1.speed),
+	PFVAL("com1fbps", PFTYPE_BOOL,		&np2oscfg.com1.fixedspeed),
 	PFSTR("com1mmap", PFTYPE_STR,		np2oscfg.com1.mout),
 	PFSTR("com1mmdl", PFTYPE_STR,		np2oscfg.com1.mdl),
 	PFSTR("com1mdef", PFTYPE_STR,		np2oscfg.com1.def),
+#if defined(SUPPORT_NAMED_PIPE)
+	PFSTR("com1pnam", PFTYPE_STR,		np2oscfg.com1.pipename),
+	PFSTR("com1psrv", PFTYPE_STR,		np2oscfg.com1.pipeserv),
+#endif
 
 	PFMAX("com2port", PFTYPE_UINT8,		&np2oscfg.com2.port,	5),
 	PFVAL("com2para", PFTYPE_UINT8,		&np2oscfg.com2.param),
 	PFVAL("com2_bps", PFTYPE_UINT32,	&np2oscfg.com2.speed),
+	PFVAL("com2fbps", PFTYPE_BOOL,		&np2oscfg.com2.fixedspeed),
 	PFSTR("com2mmap", PFTYPE_STR,		np2oscfg.com2.mout),
 	PFSTR("com2mmdl", PFTYPE_STR,		np2oscfg.com2.mdl),
 	PFSTR("com2mdef", PFTYPE_STR,		np2oscfg.com2.def),
+#if defined(SUPPORT_NAMED_PIPE)
+	PFSTR("com2pnam", PFTYPE_STR,		np2oscfg.com2.pipename),
+	PFSTR("com2psrv", PFTYPE_STR,		np2oscfg.com2.pipeserv),
+#endif
 
 	PFMAX("com3port", PFTYPE_UINT8,		&np2oscfg.com3.port,	5),
 	PFVAL("com3para", PFTYPE_UINT8,		&np2oscfg.com3.param),
 	PFVAL("com3_bps", PFTYPE_UINT32,	&np2oscfg.com3.speed),
+	PFVAL("com3fbps", PFTYPE_BOOL,		&np2oscfg.com3.fixedspeed),
 	PFSTR("com3mmap", PFTYPE_STR,		np2oscfg.com3.mout),
 	PFSTR("com3mmdl", PFTYPE_STR,		np2oscfg.com3.mdl),
 	PFSTR("com3mdef", PFTYPE_STR,		np2oscfg.com3.def),
+#if defined(SUPPORT_NAMED_PIPE)
+	PFSTR("com3pnam", PFTYPE_STR,		np2oscfg.com3.pipename),
+	PFSTR("com3psrv", PFTYPE_STR,		np2oscfg.com3.pipeserv),
+#endif
 
 	PFVAL("force400", PFRO_BOOL,		&np2oscfg.force400),
 	PFVAL("e_resume", PFTYPE_BOOL,		&np2oscfg.resume),
@@ -755,6 +770,7 @@ static const PFTBL s_IniItems[] =
 
 #if defined(SUPPORT_SCRN_DIRECT3D)
 	PFVAL("D3D_IMODE", PFTYPE_UINT8,	&np2oscfg.d3d_imode), // Direct3D 拡大縮小補間モード
+	PFVAL("D3D_EXCLU", PFTYPE_BOOL,		&np2oscfg.d3d_exclusive), // Direct3D 排他モード使用
 #endif
 
 	PFVAL("snddev_t", PFTYPE_UINT8,		&np2oscfg.cSoundDeviceType),
@@ -788,6 +804,10 @@ static const PFTBL s_IniItems[] =
 	PFVAL("USE_MVOL", PFRO_BOOL,		&np2oscfg.usemastervolume), // マスタボリューム設定を使用する
 	
 	PFVAL("TWNDHIST", PFRO_UINT8,		&np2oscfg.toolwndhistory), // ツールウィンドウのFDファイル履歴の記憶数
+	
+#if defined(SUPPORT_WACOM_TABLET)
+	PFVAL("PENTABFA", PFTYPE_BOOL,		&np2oscfg.pentabfa), // ペンタブレット アスペクト比固定モード
+#endif
 };
 
 //! .ini 拡張子

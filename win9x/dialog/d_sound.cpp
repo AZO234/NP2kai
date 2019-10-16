@@ -231,6 +231,17 @@ BOOL SndOptMixerPage::OnCommand(WPARAM wParam, LPARAM lParam)
 		m_cdda.SetPos(128);
 		return TRUE;
 	}
+	else if (LOWORD(wParam) == IDC_SNDMIXDEF2)
+	{
+		m_fm.SetPos(64);
+		m_psg.SetPos(25);
+		m_adpcm.SetPos(64);
+		m_pcm.SetPos(90);
+		m_rhythm.SetPos(64);
+		m_cdda.SetPos(128);
+		return TRUE;
+	}
+
 	return FALSE;
 }
 

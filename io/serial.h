@@ -33,7 +33,17 @@ typedef struct {
 	UINT	pos;
 	UINT	dummyinst;
 	UINT	mul;
+	UINT8	rawmode;
 } _RS232C, *RS232C;
+
+#if defined(SUPPORT_RS232C_FIFO)
+typedef struct {
+	UINT8 irqflag; // FIFOモード 割り込みの原因  0:なし, 1:送信可能になった, 2:受信すべきデータがある
+	UINT8 port136;
+	UINT8 port138;
+	UINT8 vfast;
+} _RS232CFIFO, *RS232CFIFO;
+#endif
 
 
 
@@ -62,6 +72,10 @@ void rs232c_callback(void);
 
 UINT8 rs232c_stat(void);
 void rs232c_midipanic(void);
+
+#if defined(SUPPORT_RS232C_FIFO)
+void rs232c_vfast_setrs232cspeed(UINT8 value);
+#endif
 
 #ifdef __cplusplus
 }

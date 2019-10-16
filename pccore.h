@@ -109,7 +109,7 @@ struct tagNP2Config
 	UINT8	asynccpu; // 非同期CPUモード有効
 #endif
 #if defined(SUPPORT_IDEIO)
-	UINT8	idebaddr; // IDE BIOD アドレス（デフォルト：D8h(D8000h)）
+	UINT8	idebaddr; // IDE BIOS アドレス（デフォルト：D8h(D8000h)）
 #endif
 	
 	// リセット時とかあんまり参照されない奴

@@ -113,11 +113,13 @@
 #define IDC_SKIPLIGHT                   13104
 #define IDC_LIGHTSTR                    13105
 #define IDC_SOFTWARERENDERING           13106
+#define IDC_1DOTTEXTSCRSHIFT            13107
 #define IDC_FULLSCREEN_SAMEBPP          13201
 #define IDC_FULLSCREEN_SAMERES          13202
 #define IDC_FULLSCREEN_ZOOM             13203
 #define IDC_RENDERER_TYPE               13210
 #define IDC_RENDERER_IMODE              13211
+#define IDC_RENDERER_EXCLUSIVE          13212
 #define IDC_GDC7220                     13301
 #define IDC_GDC72020                    13302
 #define IDC_GCBOX                       13303
@@ -156,6 +158,12 @@
 #define IDC_COM1DEFE                    14119
 #define IDC_COM1DEFF                    14120
 #define IDC_COM1DEFB                    14121
+#define IDC_COM1PENTABFA                14122
+#define IDC_COM1FSPEED                  14123
+#define IDC_COM1STR30                   14124
+#define IDC_COM1STR31                   14125
+#define IDC_COM1PIPENAME                14126
+#define IDC_COM1PIPESERV                14127
 #define IDC_PC9861E                     14201
 #define IDC_CH1SPEED                    14202
 #define IDC_CH1INT                      14203
@@ -193,6 +201,7 @@
 #define IDC_VOLRHYTHM                   15209
 #define IDC_VOLRHYTHMSTR                15210
 #define IDC_SNDMIXDEF                   15211
+#define IDC_SNDMIXDEF2                  15212
 #define IDC_VOLMASTER                   15213
 #define IDC_VOLMASTERSTR                15214
 #define IDC_VOLCDDA                     15220
@@ -369,6 +378,8 @@
 #define IDS_COM3                        30193
 #define IDS_COM4                        30194
 #define IDS_MIDI                        30195
+#define IDS_TABLET                      30196
+#define IDS_PIPE                        30197
 #define IDS_2_0MHZ                      30201
 #define IDS_2_5MHZ                      30202
 #define IDS_CLOCKFORMAT                 30203

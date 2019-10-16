@@ -131,8 +131,11 @@
 #define ENTSR_OWC 0x80  /* There was an out-of-window collision. */
 
 
-	LGY98		lgy98;
-	LGY98CFG	lgy98cfg;
+	LGY98		lgy98 = {0};
+	LGY98CFG	lgy98cfg = {0};
+	
+    VLANClientState *lgy98vc = NULL;
+
 
 //UINT lgy98_baseaddr = 0x10D0;
 //UINT ne2000_baseaddr = 0x0200;
@@ -454,7 +457,7 @@ static void IOOUTCALL lgy98_ob000(UINT addr, REG8 dat) {
                     index -= NE2000_PMEM_SIZE;
                 /* fail safe: check range on the transmitted length  */
                 if (index + s->tcnt <= NE2000_PMEM_END) {
-                    ne2000_send_packet(s->vc, s->mem + index, s->tcnt);
+                    ne2000_send_packet(lgy98vc, s->mem + index, s->tcnt);
                 }
                 /* signal end of transfer */
                 s->tsr = ENTSR_PTX;
@@ -956,12 +959,13 @@ static REG8 IOINPCALL lgy98_ib018(UINT port) {
     return ret;
 }
 
-static VLANState np2net_vlan;
+static VLANState np2net_vlan = {0};
 /* find or alloc a new VLAN */
 VLANState *np2net_find_vlan(int id)
 {
     np2net_vlan.id = id;
     np2net_vlan.next = NULL;
+    np2net_vlan.first_client = NULL;
     return &np2net_vlan;
 }
 
@@ -1003,7 +1007,9 @@ static void np2net_lgy98_default_recieve_packet(const UINT8 *buf, int size)
 // パケット受信時に呼ばれる
 static void lgy98_recieve_packet(const UINT8 *buf, int size)
 {
-	lgy98.vc->fd_read(&lgy98, buf, size);
+	if(lgy98vc){
+		lgy98vc->fd_read(&lgy98, buf, size);
+	}
 }
 
 void lgy98_reset(const NP2CFG *pConfig){
@@ -1078,9 +1084,11 @@ void lgy98_bind(void){
 	
 	ne2000_reset(&lgy98);
 	
-    lgy98.vc = np2net_new_vlan_client(vlan, "ne2k_isa", "ne2k_isa.1",
+	if(!lgy98vc){
+		lgy98vc = np2net_new_vlan_client(vlan, "ne2k_isa", "ne2k_isa.1",
                                           ne2000_receive, ne2000_can_receive,
                                           pc98_ne2000_cleanup, &lgy98);
+	}
 
 	np2net.recieve_packet = lgy98_recieve_packet;
 	
@@ -1088,6 +1096,17 @@ void lgy98_bind(void){
 	lgy98seq_retidx = -1;
 
 	lgy98_setromdata();
+}
+void lgy98_shutdown(void){
+	
+	// メモリ解放
+	if(lgy98vc){
+		free(lgy98vc->model);
+		free(lgy98vc->name);
+		free(lgy98vc);
+		lgy98vc = NULL;
+	}
+
 }
 
 #endif	/* SUPPORT_LGY98 */

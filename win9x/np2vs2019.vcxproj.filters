@@ -247,6 +247,12 @@
     <Filter Include="ソース ファイル\i286c">
       <UniqueIdentifier>{f073fb96-07c9-4c40-bbcf-f55dad2396f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\win9x\commng\wintab">
+      <UniqueIdentifier>{36c6723d-0d87-4d99-b9f6-e3fdd7d18aaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\win9x\commng\wintab">
+      <UniqueIdentifier>{cecb7d12-c948-41ed-8e3b-9849e2b3b50a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\calendar.c">
@@ -1200,6 +1206,15 @@
     <ClCompile Include="..\np2_thread.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="commng\wintab\Utils.cpp">
+      <Filter>ソース ファイル\win9x\commng\wintab</Filter>
+    </ClCompile>
+    <ClCompile Include="commng\cmwacom.cpp">
+      <Filter>ソース ファイル\win9x\commng</Filter>
+    </ClCompile>
+    <ClCompile Include="commng\cmpipe.cpp">
+      <Filter>ソース ファイル\win9x\commng</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\calendar.h">
@@ -2083,6 +2098,24 @@
     </ClInclude>
     <ClInclude Include="..\np2_thread.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="commng\wintab\MSGPACK.H">
+      <Filter>ヘッダー ファイル\win9x\commng\wintab</Filter>
+    </ClInclude>
+    <ClInclude Include="commng\wintab\PKTDEF.H">
+      <Filter>ヘッダー ファイル\win9x\commng\wintab</Filter>
+    </ClInclude>
+    <ClInclude Include="commng\wintab\Utils.h">
+      <Filter>ヘッダー ファイル\win9x\commng\wintab</Filter>
+    </ClInclude>
+    <ClInclude Include="commng\wintab\WINTAB.H">
+      <Filter>ヘッダー ファイル\win9x\commng\wintab</Filter>
+    </ClInclude>
+    <ClInclude Include="commng\cmwacom.h">
+      <Filter>ヘッダー ファイル\win9x\commng</Filter>
+    </ClInclude>
+    <ClInclude Include="commng\cmpipe.h">
+      <Filter>ヘッダー ファイル\win9x\commng</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
