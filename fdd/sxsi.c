@@ -486,7 +486,7 @@ BRESULT sxsi_state_save(const OEMCHAR *ext) {
 	while(sxsi < sxsiterm) {
 		if (sxsi->state_save != NULL) {
 			_SYSTIME st;
-			OEMCHAR dt[32];
+			OEMCHAR dt[64];
 			OEMCHAR	sfname[MAX_PATH];
 			BRESULT r;
 
