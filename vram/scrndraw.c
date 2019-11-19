@@ -131,6 +131,10 @@ static UINT8 rasterdraw(SDRAWFN sdrawfn, SDRAW sdraw, int maxy) {
 	}
 }
 
+#ifdef SUPPORT_WAB
+void scrnmng_update(void);
+#endif
+
 UINT8 scrndraw_draw(UINT8 redraw) {
 
 	UINT8		ret;

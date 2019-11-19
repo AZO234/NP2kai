@@ -365,6 +365,7 @@ void pccore_postevent(UINT32 event);
 extern int asynccpu_lateflag;
 extern int asynccpu_fastflag;
 #if !defined(__LIBRETRO__) && !defined(NP2_SDL2) && !defined(NP2_X11)
+#if !defined (_WINDOWS) 
 typedef union {
     struct {
         UINT32 LowPart;
@@ -372,6 +373,7 @@ typedef union {
     } u;
     SINT64 QuadPart;
 } LARGE_INTEGER;
+#endif
 extern LARGE_INTEGER asynccpu_lastclock;
 extern LARGE_INTEGER asynccpu_clockpersec;
 extern LARGE_INTEGER asynccpu_clockcount;

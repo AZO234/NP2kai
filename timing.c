@@ -36,6 +36,10 @@ void timing_setcount(UINT value) {
 	timing.cnt = value;
 }
 
+#ifdef SUPPORT_WAB
+void wabrly_callback(UINT nowtime);
+#endif
+
 UINT timing_getcount(void) {
 
 	UINT32	ticknow;

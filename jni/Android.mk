@@ -7,17 +7,40 @@ SUPPORT_NET := 1
 include $(CORE_DIR)/sdl2/Makefile.common
 
 INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro \
-		-I$(NP2_PATH)/sdl2/libretro/libretro-common \
 		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/array \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/audio \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/audio/conversion \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/compat \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/dynamic \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/encodings \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/features \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/file \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/formats \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/gfx \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/gfx/math \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/gfx/scaler \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/glsm \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/glsym \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/glsym/switch \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/libchdr \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/lists \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/math \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/net \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/queues \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/rthreads \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/streams \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/string \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/utils \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/vfs \
+		-I$(NP2_PATH)/sdl2/libretro/libretro-common/include/vulkan \
 		-I$(NP2_PATH)/i386c \
 		-I$(NP2_PATH)/i386c/ia32 \
 		-I$(NP2_PATH)/i386c/ia32/instructions \
-		-I$(NP2_PATH)/i386c/ia32/instructions/fpu \
-		-I$(NP2_PATH)/i386c/ia32/instructions/fpu/softfloat \
-		-I$(NP2_PATH)/i386c/ia32/instructions/mmx \
-		-I$(NP2_PATH)/i386c/ia32/instructions/sse
+		-I$(NP2_PATH)/i386c/ia32/instructions/fpu
 
 SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro.c \
+	     	$(NP2_PATH)/sdl2/libretro/rsemaphore.c \
 		$(wildcard $(NP2_PATH)/i386c/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/*.c) \
@@ -30,6 +53,11 @@ SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro.c \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse2/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse3/*.c)
+
+#		$(NP2_PATH)/sdl2/libretro/libretro-common/file/archive_file_zlib.c \
+#		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_flac.c \
+#		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_flac_codec.c \
+#		$(NP2_PATH)/sdl2/libretro/libretro-common/streams/trans_stream_zlib.c
 
 ifneq ($(STATIC_LINKING), 1)
 	SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr.c \
@@ -49,7 +77,6 @@ ifneq ($(STATIC_LINKING), 1)
 			$(NP2_PATH)/sdl2/libretro/libretro-common/file/file_path.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/file/retro_dirent.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/file/nbio/nbio_intf.c \
-			$(NP2_PATH)/sdl2/libretro/libretro-common/file/nbio/nbio_linux.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/file/nbio/nbio_orbis.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/file/nbio/nbio_stdio.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/file/nbio/nbio_unixmmap.c \
@@ -76,7 +103,6 @@ ifneq ($(STATIC_LINKING), 1)
 			$(NP2_PATH)/sdl2/libretro/libretro-common/lists/file_list.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/lists/string_list.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/lists/vector_list.c \
-			$(NP2_PATH)/sdl2/libretro/rsemaphore.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rthreads.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/streams/chd_stream.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/streams/file_stream.c \
@@ -90,7 +116,8 @@ ifneq ($(STATIC_LINKING), 1)
 			$(NP2_PATH)/sdl2/libretro/libretro-common/vfs/vfs_implementation.c
 endif
 
-COREFLAGS := -D__LIBRETRO__ $(INCFLAGS) -DCPUCORE_IA32 -DSUPPORT_PC9821 -DUSE_FPU -DSUPPORT_LARGE_HDD -DSUPPORT_VPCVHD -DSUPPORT_KAI_IMAGES -DHOOK_SYSKEY -DALLOW_MULTIRUN -DSUPPORT_WAB -DSUPPORT_LARGE_MEMORY -DSUPPORT_CL_GD5430 -DUSE_MAME -DSUPPORT_FMGEN -DSUPPORT_SOUND_SB16 -DSUPPORT_FPU_DOSBOX -DSUPPORT_FPU_DOSBOX2 -DSUPPORT_FPU_SOFTFLOAT -DSUPPORT_FAST_MEMORYCHECK -DSUPPORT_PEGC -DSUPPORT_ASYNC_CPU -DSUPPORT_GPIB -DSUPPORT_PCI -DUSE_MMX -DUSE_3DNOW -DUSE_SSE -DUSE_SSE2 -DUSE_SSE3 -DUSE_TSC -DUSE_FASTPAGING -DUSE_VME -DBIOS_IO_EMULATION -DSUPPORT_NP2_THREAD -DNP2_THREAD_LR
+COREFLAGS := -D__LIBRETRO__ $(INCFLAGS) -DCPUCORE_IA32 -DSUPPORT_PC9821 -DUSE_FPU -DSUPPORT_LARGE_HDD -DSUPPORT_VPCVHD -DSUPPORT_KAI_IMAGES -DHOOK_SYSKEY -DALLOW_MULTIRUN -DSUPPORT_WAB -DSUPPORT_LARGE_MEMORY -DSUPPORT_CL_GD5430 -DUSE_MAME -DSUPPORT_FMGEN -DSUPPORT_SOUND_SB16 -DSUPPORT_FPU_DOSBOX -DSUPPORT_FPU_DOSBOX2 -DSUPPORT_FPU_SOFTFLOAT -DSUPPORT_FAST_MEMORYCHECK -DSUPPORT_ASYNC_CPU -DSUPPORT_RS232C_FIFO -DSUPPORT_PEGC -DSUPPORT_GPIB -DSUPPORT_PCI -DUSE_MMX -DUSE_3DNOW -DUSE_SSE -DUSE_SSE2 -DUSE_SSE3 -DUSE_TSC -DSUPPORT_NVL_IMAGES -DUSE_FASTPAGING -DUSE_VME -DBIOS_IO_EMULATION -DSUPPORT_NP2_THREAD -DNP2_THREAD_LR
+# -DSUPPORT_SMPU98
 
 GIT_VERSION := " $(shell git rev-parse --short HEAD || echo unknown)"
 ifneq ($(GIT_VERSION)," unknown")

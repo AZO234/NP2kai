@@ -68,10 +68,13 @@ else ifneq (,$(findstring embedded,$(platform)))
 		CFLAGS += -mcpu=cortex-a6j
 	# Pi2
 	else ifneq (,$(findstring rpi2,$(platform)))
-		CFLAGS += -mcpu=cortex-a7
+		CFLAGS += -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
 	# Pi3
 	else ifneq (,$(findstring rpi3,$(platform)))
-		CFLAGS += -mcpu=cortex-a53 -mfpu=neon-vfpv4 -fdata-sections -ffunction-sections -Wl,--gc-sections -fmerge-all-constants
+		CFLAGS += -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -fdata-sections -ffunction-sections -Wl,--gc-sections -fmerge-all-constants
+	# Pi4
+	else ifneq (,$(findstring rpi4,$(platform)))
+		CFLAGS += -mcpu=cortex-a72 -mfpu=neon-fp-armv8 -mfloat-abi=hard -fdata-sections -ffunction-sections -Wl,--gc-sections -fmerge-all-constants
 	endif
 
 	# ODROIDs
@@ -133,6 +136,16 @@ else
 	PLATFORM_DEFINES += -miphoneos-version-min=5.0 -stdlib=libc++
 endif
 
+# tvOS
+else ifeq ($(platform), tvos-arm64)
+	TARGET := $(TARGET_NAME)_libretro_tvos.dylib
+	fpic = -fPIC
+	SHARED := -dynamiclib
+	LDFLAGS = -stdlib=libc++
+	ifeq ($(IOSSDK),)
+		IOSSDK := $(shell xcodebuild -version -sdk appletvos Path)
+	endif
+
 # Theos iOS
 ifeq ($(platform), theos_ios)
 	HAS_GCC := 0
@@ -154,18 +167,7 @@ else ifeq ($(platform), qnx)
 	CC = qcc -Vgcc_ntoarmv7le
 	CXX = QCC -Vgcc_ntoarmv7le_cpp
 	AR = QCC -Vgcc_ntoarmv7le
-	PLATFORM_DEFINES := -D__BLACKBERRY_QNX__ -marm -mcpu=cortex-a9 -mfpu=neon -mfloat-abi=softfp
-
-else ifeq ($(platform), android)
-	TARGET := $(TARGET_NAME)_libretro.so
-	PLATFORM_DEFINES += -fpermissive
-	LDFLAGS += -shared -Wl,--version-script=link.T
-
-	CC = arm-linux-androideabi-gcc
-	CXX = arm-linux-androideabi-g++
-
-	fpic = -fPIC
-	PLATFORM_DEFINES := -marm -mcpu=cortex-a9 -mfpu=neon -mfloat-abi=softfp
+	PLATFORM_DEFINES := -D__BLACKBERRY_QNX__ -marm -mcpu=cortex-a9 -mfpu=neon -mfloat-abi=hard
 
 # PS3
 else ifeq ($(platform), ps3)
@@ -593,8 +595,8 @@ else ifeq ($(platform), windows_msvc2005_x86)
 # Windows
 else
 	TARGET := $(TARGET_NAME)_libretro.dll
-	CC = gcc
-	CXX = g++
+	CC ?= gcc
+	CXX ?= g++
 	SHARED := -shared -static-libgcc -static-libstdc++ -Wl,-version-script=link.T
 	DISABLE_GCC_SECURITY_FLAGS = 1
 endif
@@ -801,7 +803,7 @@ endif
 	endif
 endif
 
-DEFINES := -D__LIBRETRO__ $(PLATFORM_DEFINES) $(GCC_FLAGS) $(GCC_WARNINGS) $(GCC_SECURITY_FLAGS) -DNST_NO_ZLIB $(INCFLAGS) $(INCFLAGS_PLATFORM) -DCPUCORE_IA32 -DSUPPORT_PC9821 -DUSE_FPU -DSUPPORT_LARGE_HDD -DSUPPORT_VPCVHD -DSUPPORT_KAI_IMAGES -DHOOK_SYSKEY -DALLOW_MULTIRUN -DSUPPORT_WAB -DSUPPORT_LARGE_MEMORY -DSUPPORT_CL_GD5430 -DUSE_MAME -DSUPPORT_FMGEN -DSUPPORT_SOUND_SB16 -DSUPPORT_FPU_DOSBOX -DSUPPORT_FPU_DOSBOX2 -DSUPPORT_FPU_SOFTFLOAT -DSUPPORT_FAST_MEMORYCHECK -DSUPPORT_ASYNC_CPU -DSUPPORT_RS232C_FIFO -DSUPPORT_GPIB -DSUPPORT_PEGC -DSUPPORT_PCI -DUSE_MMX -DUSE_3DNOW -DUSE_SSE -DUSE_SSE2 -DUSE_SSE3 -DUSE_TSC -DUSE_FASTPAGING -DUSE_VME -DBIOS_IO_EMULATION -DSUPPORT_NP2_THREAD -DNP2_THREAD_LR
+DEFINES := -D__LIBRETRO__ $(PLATFORM_DEFINES) $(GCC_FLAGS) $(GCC_WARNINGS) $(GCC_SECURITY_FLAGS) -DNST_NO_ZLIB $(INCFLAGS) $(INCFLAGS_PLATFORM) -DCPUCORE_IA32 -DSUPPORT_PC9821 -DUSE_FPU -DSUPPORT_LARGE_HDD -DSUPPORT_VPCVHD -DSUPPORT_KAI_IMAGES -DHOOK_SYSKEY -DALLOW_MULTIRUN -DSUPPORT_WAB -DSUPPORT_LARGE_MEMORY -DSUPPORT_CL_GD5430 -DUSE_MAME -DSUPPORT_FMGEN -DSUPPORT_SOUND_SB16 -DSUPPORT_FPU_DOSBOX -DSUPPORT_FPU_DOSBOX2 -DSUPPORT_FPU_SOFTFLOAT -DSUPPORT_FAST_MEMORYCHECK -DSUPPORT_ASYNC_CPU -DSUPPORT_RS232C_FIFO -DSUPPORT_PEGC -DSUPPORT_GPIB -DSUPPORT_PCI -DUSE_MMX -DUSE_3DNOW -DUSE_SSE -DUSE_SSE2 -DUSE_SSE3 -DUSE_TSC -DSUPPORT_NVL_IMAGES -DUSE_FASTPAGING -DUSE_VME -DBIOS_IO_EMULATION -DSUPPORT_NP2_THREAD -DNP2_THREAD_LR
 # -DSUPPORT_SMPU98
 
 CFLAGS += $(fpic) $(DEFINES) $(C_VER)
@@ -837,11 +839,13 @@ else
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
+	@echo "** BUILDING $(TARGET) FOR PLATFORM $(platform) **"
 ifeq ($(STATIC_LINKING), 1)
 	$(AR) rcs $@ $(OBJECTS)
 else
 	$(LD) $(LINKOUT)$@ $(SHARED) $(OBJECTS) $(LDFLAGS) $(LIBS)
 endif
+	@echo "** BUILD SUCCESSFUL! GG NO RE **"
 
 %.o: %.cpp
 	$(CXX) -c $(OBJOUT)$@ $< $(CXXFLAGS) $(INCDIRS)

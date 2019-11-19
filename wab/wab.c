@@ -185,6 +185,9 @@ void wabwin_writeini()
 	}
 }
 
+void scrnmng_updatefsres(void);
+void scrnmng_bltwab(void);
+
 /**
  * 画面サイズ設定
  */

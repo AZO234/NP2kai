@@ -518,7 +518,11 @@ static int str_get_mem_size(const OEMCHAR *str)
 #ifdef SUPPORT_ANK
 	return ((int)(milank_chr(str, 0) - str));
 #else
+#ifdef OSLANG_UTF8
 	return ((int)(milutf8_chr(str, 0) - str));
+#else
+	return ((int)(milstr_chr(str, 0) - str));
+#endif
 #endif
 }
 
@@ -569,7 +573,11 @@ static BRESULT state_load(SXSIDEV sxsi, const OEMCHAR *ext)
 #ifdef SUPPORT_ANK
 		if (milank_memcmp(fli.path, rname) != 0)
 #else
+#ifdef OSLANG_UTF8
 		if (milutf8_memcmp(fli.path, rname) != 0)
+#else
+		if (milstr_memcmp(fli.path, rname) != 0)
+#endif
 #endif
 		{
 			continue;

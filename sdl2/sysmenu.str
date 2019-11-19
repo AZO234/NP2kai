@@ -161,6 +161,7 @@ static const char str_joyrapid[] = "Joy Rapid";
 static const char str_mouserapid[] = "Mouse Rapid";
 static const char str_itfwork[] = "ITF work";
 static const char str_fixmmtimer[] = "Fix MMTimer";
+static const char str_winntfix[] = "WinNT4/2000 IDE Fix";
 static const char str_skip16mbmemchk[] = "Skip over 16MB memcheck";
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 static const char str_fastmemchk[] = "Fast memcheck";
@@ -467,8 +468,9 @@ static const MSYSITEM s_other[] = {
 		{str_joyrapid,		NULL,		MID_RAPID,			0},
 		{str_mouserapid,	NULL,		MID_MSRAPID,		MENU_GRAY},
 		{str_itfwork,		NULL,		MID_ITFWORK,			0},
-//		{str_fixmmtimer,	NULL,		MID_FIXMMTIMER,			0},
-//		{str_skip16mbmemchk,	NULL,		MID_SKIP16MBMEMCHK,		0},
+		{str_fixmmtimer,	NULL,		MID_FIXMMTIMER,			0},
+		{str_winntfix,		NULL,		MID_WINNTIDEFIX,	 	0},		
+		{str_skip16mbmemchk,	NULL,		MID_SKIP16MBMEMCHK,		0},
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 		{str_fastmemchk,	NULL,		MID_FASTMEMCHK,			0},
 #endif
