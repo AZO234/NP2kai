@@ -119,21 +119,12 @@ FILELEN file_getsize(FILEH handle) {
 		return (FILELEN)sb.st_size;
 	}
 #else
-#if defined(__APPLE__)
-	struct stat64 sb;
-
-	if (fstat64(fileno(handle), &sb) == 0)
-	{
-		return (FILELEN)sb.st_size;
-	}
-#else
 	struct stat sb;
 
 	if (fstat(fileno(handle), &sb) == 0)
 	{
 		return (FILELEN)sb.st_size;
 	}
-#endif
 #endif
 #else
 	struct stat sb;
