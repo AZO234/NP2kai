@@ -643,7 +643,7 @@ https://www.iodata.jp/lib/product/g/175_win95.htm
 
 ## Release
 * Dec 10, 2019  
-	- Merge NP21/W 0.86 rev.69  
+	- Merge NP21/W 0.86 rev.69 (rev.21)  
 		- HAXM
 * Nov 19, 2019  
 	- fix Android makefile
