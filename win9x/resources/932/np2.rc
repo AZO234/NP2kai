@@ -1432,7 +1432,11 @@ NP21TOOL                BITMAP                  "..\\np21tool.bmp"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
+#ifdef SUPPORT_IA32_HAXM
+IDI_ICON1               ICON                    "..\\haxmnp2.ico"
+#else
 IDI_ICON1               ICON                    "..\\np2.ico"
+#endif
 IDI_ICON2               ICON                    "..\\np2debug.ico"
 IDI_ICON3               ICON                    "..\\np2vm.ico"
 

@@ -196,6 +196,8 @@ void ideio_notify(REG8 sxsidrv, UINT action);
 void ideioint(NEVENTITEM item);
 void ideio_mediachange(REG8 sxsidrv);
 
+void ideio_setcursec(FILEPOS pos);
+
 #ifdef __cplusplus
 }
 #endif

@@ -8,20 +8,9 @@
 #include	"softkbd.h"
 
 
-typedef struct {
-	UINT8	ref[0x80];
-	UINT8	extkey;
-	UINT8	mouselast;
-	UINT8	padding;
-	UINT8	d_up;
-	UINT8	d_dn;
-	UINT8	d_lt;
-	UINT8	d_rt;
-} KEYSTAT;
-
 		NKEYTBL		nkeytbl;
 		KEYCTRL		keyctrl;
-static	KEYSTAT		keystat;
+		KEYSTAT		keystat;
 
 
 void keystat_initialize(void) {

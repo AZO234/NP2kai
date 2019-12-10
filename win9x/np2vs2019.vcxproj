@@ -9,6 +9,14 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseHAXM|Win32">
+      <Configuration>ReleaseHAXM</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseHAXM|x64">
+      <Configuration>ReleaseHAXM</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -52,6 +60,18 @@
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
     <Import Project="x86\vs2019\x86.props" />
@@ -67,6 +87,12 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -86,6 +112,16 @@
     <IntDir>..\obj\$(SolutionName)\$(PlatformName)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\$(SolutionName)\$(PlatformName)\$(Configuration)\</OutDir>
+    <IntDir>..\obj\$(SolutionName)\$(PlatformName)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\$(SolutionName)\$(PlatformName)\$(Configuration)\</OutDir>
+    <IntDir>..\obj\$(SolutionName)\$(PlatformName)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\bin\$(SolutionName)\$(PlatformName)\$(Configuration)\</OutDir>
     <IntDir>..\obj\$(SolutionName)\$(PlatformName)\$(Configuration)\$(ProjectName)\</IntDir>
@@ -191,6 +227,59 @@
       <PreprocessorDefinitions>_WIN64;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_GPIB;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_ASYNC_CPU;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_MAME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\;.\x86;..\;..\common;..\i286x;..\mem;..\io;..\cbus;..\vram;..\sound;..\generic;..\zlib</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <NASM>
+      <AdditionalOptions>-I.\x86\ -I..\i286x\ -I..\io\x86\ %(AdditionalOptions)</AdditionalOptions>
+    </NASM>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_GPIB;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_ASYNC_CPU;SUPPORT_SMPU98;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_MAME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\;.\x64;..\;..\common;..\i286c;..\mem;..\io;..\cbus;..\vram;..\sound;..\generic;..\zlib</AdditionalIncludeDirectories>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <LargeAddressAware>false</LargeAddressAware>
+    </Link>
+    <NASM>
+      <AdditionalOptions>-I.\x86\ -I..\i286x\ -I..\io\x86\ %(AdditionalOptions)</AdditionalOptions>
+    </NASM>
+    <YASM>
+      <AdditionalOptions>-I.\x64 -I..\i286c\x64 -I..\io\x64 %(AdditionalOptions)</AdditionalOptions>
+    </YASM>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WIN64;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\bios\bios.c" />
     <ClCompile Include="..\bios\bios09.c" />
@@ -241,7 +330,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\common\profile.c" />
     <ClCompile Include="..\common\rect.c" />
@@ -293,70 +384,87 @@
     <ClCompile Include="..\i286c\cpumem.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\i286c\i286c.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\i286c\i286c_0f.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\i286c\i286c_8x.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\i286c\i286c_ea.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\i286c\i286c_f6.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\i286c\i286c_fe.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\i286c\i286c_mn.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\i286c\i286c_rp.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\i286c\i286c_sf.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\i286c\v30patch.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\i286x\i286x.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\i286x\i286xadr.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\i286x\i286xcts.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\i286x\i286xrep.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\i286x\i286xs.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\i286x\v30patch.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\io\artic.c" />
     <ClCompile Include="..\io\bmsio.c" />
@@ -398,39 +506,48 @@
     <ClCompile Include="..\mem\dmav30.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\mem\dmax86.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\mem\memegc.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\mem\memems.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\mem\memepp.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\mem\memtram.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\mem\memvga.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\mem\memvram.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\network\lgy98.c" />
     <ClCompile Include="..\network\net.c" />
     <ClCompile Include="..\nevent.c" />
     <ClCompile Include="..\np2_thread.c" />
+    <ClCompile Include="..\np2_tickcount.c" />
     <ClCompile Include="..\pccore.c" />
     <ClCompile Include="..\sound\adpcmc.c" />
     <ClCompile Include="..\sound\adpcmg.c" />
@@ -458,6 +575,7 @@
     <ClCompile Include="..\sound\opngeng.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\sound\opntimer.c" />
     <ClCompile Include="..\sound\pcm86c.c" />
@@ -487,7 +605,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\vram\maketext.c" />
     <ClCompile Include="..\vram\maketgrp.c" />
@@ -741,6 +861,7 @@
     <ClInclude Include="..\mem\memvram.h" />
     <ClInclude Include="..\nevent.h" />
     <ClInclude Include="..\np2_thread.h" />
+    <ClInclude Include="..\np2_tickcount.h" />
     <ClInclude Include="..\np2ver.h" />
     <ClInclude Include="..\pccore.h" />
     <ClInclude Include="..\sound\adpcm.h" />
@@ -913,38 +1034,46 @@
     <NASM Include="..\i286x\cpumem.x86">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
     </NASM>
     <NASM Include="..\i286x\dmap.x86">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
     </NASM>
     <NASM Include="..\mem\x86\dmax86.x86">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
     </NASM>
     <NASM Include="..\mem\x86\memegc.x86">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
     </NASM>
     <NASM Include="x86\cputype.x86">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
     </NASM>
     <NASM Include="x86\makegrph.x86">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
     </NASM>
     <NASM Include="x86\opngeng.x86">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
     </NASM>
     <NASM Include="x86\parts.x86">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
     </NASM>
   </ItemGroup>
   <ItemGroup>
@@ -954,10 +1083,12 @@
     <YASM Include="x64\makegrph.x64">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </YASM>
     <YASM Include="x64\parts.x64">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </YASM>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

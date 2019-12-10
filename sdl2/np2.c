@@ -36,6 +36,10 @@
 #if defined(SUPPORT_CL_GD5430)
 #include	"cirrus_vga_extern.h"
 #endif
+#if defined(SUPPORT_IA32_HAXM)
+#include	"i386hax/haxfunc.h"
+#include	"i386hax/haxcore.h"
+#endif
 
 static const char appname[] =
 #if defined(CPUCORE_IA32)
@@ -101,6 +105,7 @@ NP2OSCFG np2oscfg = {
 static	UINT		framecnt;
 static	UINT		waitcnt;
 static	UINT		framemax = 1;
+static  UINT		lateframecount; // フレーム遅れ数
 
 BOOL s98logging = FALSE;
 int s98log_count = 0;
@@ -225,10 +230,28 @@ changescreen(UINT8 newmode)
 static void processwait(UINT cnt) {
 
 	if (timing_getcount() >= cnt) {
+#if defined(SUPPORT_IA32_HAXM)
+		if (np2hax.enable) {
+			np2haxcore.hltflag = 0;
+			if(lateframecount > 0 && np2haxcore.I_ratio < 254){
+				np2haxcore.I_ratio++;
+			}else if(np2haxcore.I_ratio > 1){
+				//np2haxcore.I_ratio--;
+			}
+			lateframecount = 0;
+		}
+#endif
 		timing_setcount(0);
 		framereset(cnt);
 	}
 	else {
+#if defined(SUPPORT_IA32_HAXM)
+		if (np2hax.enable) {
+			if(np2haxcore.I_ratio > 1){
+				np2haxcore.I_ratio--;
+			}
+		}
+#endif
 		taskmng_sleep(1);
 	}
 }

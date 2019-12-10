@@ -1,11 +1,16 @@
-DEBUG=0
-SUPPORT_NET?=0
+DEBUG ?= 0
+SUPPORT_HAXM ?= 0
+SUPPORT_NET ?= 0
 GIT_VERSION := "$(shell git rev-parse --short HEAD)"
 SDL_CONFIG ?= sdl2-config
 SDL_CFLAGS := $(shell $(SDL_CONFIG) --cflags) -DUSE_SDL_CONFIG
 SDL_LIBS := $(shell $(SDL_CONFIG) --libs)
 
+ifeq ($(SUPPORT_HAXM), 1)
+TARGET_NAME := np21kai_haxm
+else
 TARGET_NAME := np21kai
+endif
 
 TARGET := $(TARGET_NAME)
 LDFLAGS :=
@@ -55,6 +60,12 @@ LDFLAGS  += $(fpic) -lm -lpthread $(SDL_LIBS) `sdl2-config --libs` -lSDL2_ttf -l
 ifeq ($(SUPPORT_NET), 1)
 CXXFLAGS += -DSUPPORT_NET -DSUPPORT_LGY98
 CFLAGS   += -DSUPPORT_NET -DSUPPORT_LGY98
+endif
+ifeq ($(SUPPORT_HAXM), 1)
+INCFLAGS += -I$(NP2_PATH)/i386hax
+SOURCES_C += $(wildcard $(NP2_PATH)/i386hax/*.c)
+CXXFLAGS += -DSUPPORT_IA32_HAXM -DUSE_CUSTOM_HOOKINST
+CFLAGS   += -DSUPPORT_IA32_HAXM -DUSE_CUSTOM_HOOKINST
 endif
 
 

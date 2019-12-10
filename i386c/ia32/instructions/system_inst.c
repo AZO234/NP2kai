@@ -368,6 +368,7 @@ MOV_CdRd(void)
 #if (CPU_FEATURES & CPU_FEATURE_SSE) == CPU_FEATURE_SSE
 			    | CPU_CR4_OSXMMEXCPT
 #endif
+			    | CPU_CR4_PCE
 			;
 			if (src & ~reg) {
 				//if (src & 0xfffffc00) {
@@ -1177,9 +1178,11 @@ RDPMC(void)
 {
 	int idx;
 
-	if (CPU_STAT_PM && (CPU_STAT_VM86 || CPU_STAT_CPL != 0)) {
-		VERBOSE(("RDPMC: VM86(%s) or CPL(%d) != 0", CPU_STAT_VM86 ? "true" : "false", CPU_STAT_CPL));
-		EXCEPTION(GP_EXCEPTION, 0);
+	if(!(CPU_CR4 & CPU_CR4_PCE)){
+		if (CPU_STAT_PM && (CPU_STAT_VM86 || CPU_STAT_CPL != 0)) {
+			VERBOSE(("RDPMC: VM86(%s) or CPL(%d) != 0", CPU_STAT_VM86 ? "true" : "false", CPU_STAT_CPL));
+			EXCEPTION(GP_EXCEPTION, 0);
+		}
 	}
 
 	idx = CPU_ECX;

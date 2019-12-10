@@ -51,7 +51,12 @@ extern	_VRAMOP	vramop;
 extern	UINT8	tramupdate[0x1000];
 extern	UINT8	vramupdate[0x8000];
 #if defined(SUPPORT_PC9821)
+#if defined(SUPPORT_IA32_HAXM)
+extern	UINT8	vramex_base[0x80000];
+extern	UINT8	*vramex; // PEGC VRAM  Alloc in pccore_mem_malloc()
+#else
 extern	UINT8	vramex[0x80000];
+#endif
 #endif
 
 void vram_initialize(void);

@@ -34,6 +34,11 @@
 
 #include "ia32/instructions/fpu/fp.h"
 
+#if defined(SUPPORT_IA32_HAXM)
+#include "i386hax/haxfunc.h"
+#include "i386hax/haxcore.h"
+#endif
+
 void
 ia32_initreg(void)
 {
@@ -186,14 +191,30 @@ ia32_interrupt(int vect, int soft)
 {
 
 //	TRACEOUT(("int (%x, %x) PE=%d VM=%d",  vect, soft, CPU_STAT_PM, CPU_STAT_VM86));
-	if (!soft) {
-		INTERRUPT(vect, INTR_TYPE_EXTINTR);
-	} else {
-		if (CPU_STAT_PM && CPU_STAT_VM86 && CPU_STAT_IOPL < CPU_IOPL3) {
-			VERBOSE(("ia32_interrupt: VM86 && IOPL < 3 && INTn"));
-			EXCEPTION(GP_EXCEPTION, 0);
+#if defined(SUPPORT_IA32_HAXM)
+	if(np2hax.enable&&np2hax.hVCPUDevice){
+		np2haxcore.hltflag = 0;
+		if(!soft){
+			HAX_TUNNEL *tunnel;
+			tunnel = (HAX_TUNNEL*)np2hax.tunnel.va;
+			if(np2haxstat.irq_reqidx_end - np2haxstat.irq_reqidx_cur < 250){
+				np2haxstat.irq_req[np2haxstat.irq_reqidx_end] = vect;
+				np2haxstat.irq_reqidx_end++;
+			}
+			//i386haxfunc_vcpu_interrupt(vect);
 		}
-		INTERRUPT(vect, INTR_TYPE_SOFTINTR);
+	}else
+#endif
+	{
+		if (!soft) {
+			INTERRUPT(vect, INTR_TYPE_EXTINTR);
+		} else {
+			if (CPU_STAT_PM && CPU_STAT_VM86 && CPU_STAT_IOPL < CPU_IOPL3) {
+				VERBOSE(("ia32_interrupt: VM86 && IOPL < 3 && INTn"));
+				EXCEPTION(GP_EXCEPTION, 0);
+			}
+			INTERRUPT(vect, INTR_TYPE_SOFTINTR);
+		}
 	}
 }
 

@@ -27,6 +27,11 @@
 #include "cpu.h"
 #include "ia32.mcr"
 
+#if defined(SUPPORT_IA32_HAXM)
+#include "i386hax/haxfunc.h"
+#include "i386hax/haxcore.h"
+#endif
+
 I386CORE	i386core;
 I386CPUID	i386cpuid = {I386CPUID_VERSION, CPU_VENDOR, CPU_FAMILY, CPU_MODEL, CPU_STEPPING, CPU_FEATURES, CPU_FEATURES_EX, CPU_BRAND_STRING, CPU_BRAND_ID, CPU_FEATURES_ECX};
 I386MSR		i386msr = {0};
@@ -101,7 +106,15 @@ ia32_setextsize(UINT32 size)
 //			}else
 //#endif
 			{
+#if defined(SUPPORT_IA32_HAXM)
+#if defined(NP2_WIN)
+				_aligned_free(extmem);
+#else
+				free(extmem);
+#endif
+#else
 				_MFREE(extmem);
+#endif
 			}
 			extmem = NULL;
 		}
@@ -122,7 +135,15 @@ ia32_setextsize(UINT32 size)
 //			}else
 //#endif
 			{
+#if defined(SUPPORT_IA32_HAXM)
+#if defined(NP2_WIN)
+				extmem = (UINT8*)_aligned_malloc(size + 4096, 4096);
+#else
+				posix_memalign(&extmem, 4096, size + 4096);
+#endif
+#else
 				extmem = (UINT8 *)_MALLOC(size + 16, "EXTMEM");
+#endif
 			}
 		}
 		if (extmem != NULL) {

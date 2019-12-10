@@ -193,6 +193,12 @@ void rs232c_callback(void) {
 #if defined(SUPPORT_RS232C_FIFO)
 	if(rs232cfifo.port138 & 0x1){
 		rs232c_removecounter = 0; // FIFOモードでは消さない
+		if(bufused == RS232C_BUFFER-1){
+			return; // バッファがいっぱいなら待機
+		}
+		if(rs232cfifo.irqflag){
+			return; // 割り込み原因フラグが立っていれば待機
+		}
 	}
 #endif
 	//if(rs232c.result & 2) {
@@ -212,13 +218,16 @@ void rs232c_callback(void) {
 	}
 	if (rs232c_buf_rpos != rs232c_buf_wpos) {
 		rs232c.data = rs232c_buf[rs232c_buf_rpos]; // データを1つ取り出し
-
 		//if(!(rs232c.result & 2) || bufused == RS232C_BUFFER-1) {
 			rs232c.result |= 2;
-			if (sysport.c & 1) {
 #if defined(SUPPORT_RS232C_FIFO)
+			if(rs232cfifo.port138 & 0x1){
 				rs232cfifo.irqflag = 2;
+				//OutputDebugString(_T("READ INT!¥n"));
+				intr = TRUE;
+			}else
 #endif
+			if (sysport.c & 1) {
 				intr = TRUE;
 			}
 		//}
@@ -371,12 +380,18 @@ static REG8 IOINPCALL rs232c_i30(UINT port) {
 	if(port==0x130){
 		if (rs232c_buf_rpos != rs232c_buf_wpos) { // 送信すべきデータがあるか確認
 			rs232c.data = rs232c_buf[rs232c_buf_rpos]; // 次のデータを取り出し
-			if (sysport.c & 1) {
-				rs232cfifo.irqflag = 2;
-				pic_setirq(4);
-			}
+			//if (sysport.c & 1) {
+			//	rs232cfifo.irqflag = 2;
+			//	pic_setirq(4);
+			//}
+			//OutputDebugString(_T("READ!¥n"));
 		}else{
 			rs232c.result &= ~0x2;
+			rs232cfifo.irqflag = 3;
+			pic_setirq(4);
+			//rs232c.data = 0xff;
+			//pic_resetirq(4);
+			//OutputDebugString(_T("READ END!¥n"));
 		}
 	}else
 #endif
@@ -404,7 +419,7 @@ static REG8 IOINPCALL rs232c_i132(UINT port) {
 
 	UINT8 ret = rs232c.result;
 
-	ret = (ret & ~0x7) | ((rs232c.result << 1) & 0x6) | ((rs232c.result >> 2) & 0x1);
+	ret = (ret & ~0xf7) | ((rs232c.result << 1) & 0x6) | ((rs232c.result >> 2) & 0x1);
 
 	if (!(rs232c_stat() & 0x20)) {
 		return(ret | 0x80);
@@ -428,20 +443,23 @@ static REG8 IOINPCALL rs232c_i136(UINT port) {
 	rs232cfifo.port136 ^= 0x40;
 	
 	if(rs232cfifo.irqflag){
-		rs232cfifo.port136 &= ~0x1;
-		if(rs232cfifo.irqflag == 2){
+		rs232cfifo.port136 &= ~0xf;
+		if(rs232cfifo.irqflag == 3){
+			rs232cfifo.port136 |= 0x6;
+			rs232cfifo.irqflag = 0;
+			//OutputDebugString(_T("CHECK READ END INT!¥n"));
+		}else if(rs232cfifo.irqflag == 2){
 			rs232cfifo.port136 |= 0x4;
-		}else{
-			rs232cfifo.port136 &= ~0x4;
-		}
-		if(rs232cfifo.irqflag == 1){
+			//OutputDebugString(_T("CHECK READ INT!¥n"));
+		}else if(rs232cfifo.irqflag == 1){
 			rs232cfifo.port136 |= 0x2;
-		}else{
-			rs232cfifo.port136 &= ~0x2;
+			rs232cfifo.irqflag = 0;
+			//OutputDebugString(_T("CHECK WRITE INT!¥n"));
 		}
-		rs232cfifo.irqflag = 0;
 	}else{
 		rs232cfifo.port136 |= 0x1;
+		pic_resetirq(4);
+		//OutputDebugString(_T("NULL INT!¥n"));
 	}
 
 	return(rs232cfifo.port136);
@@ -450,8 +468,8 @@ static REG8 IOINPCALL rs232c_i136(UINT port) {
 static void IOOUTCALL rs232c_o138(UINT port, REG8 dat) {
 
 	if(dat & 0x2){
-		int i;
-		// 受信FIFOリセット
+		//int i;
+		//// 受信FIFOリセット
 		//rs232c_buf_rpos = rs232c_buf_wpos;
 		//if(rs232cfifo.irqflag==2) rs232cfifo.irqflag = 0;
 		//if(cm_rs232c){
@@ -544,7 +562,7 @@ void rs232c_bind(void) {
 #if defined(SUPPORT_RS232C_FIFO)
 	iocore_attachout(0x130, rs232c_o30);
 	iocore_attachinp(0x130, rs232c_i30);
-	//iocore_attachout(0x132, rs232c_o32);
+	iocore_attachout(0x132, rs232c_o32);
 	iocore_attachinp(0x132, rs232c_i132);
 	//iocore_attachout(0x134, rs232c_o134);
 	iocore_attachinp(0x134, rs232c_i134);

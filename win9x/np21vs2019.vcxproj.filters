@@ -292,6 +292,12 @@
     <Filter Include="ソース ファイル\wab">
       <UniqueIdentifier>{99fcc4fd-088e-4c7e-98b3-37fc6a4b2922}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\i386hax">
+      <UniqueIdentifier>{ff93fb03-a306-4d66-b26b-c7e6ca189a3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\i386hax">
+      <UniqueIdentifier>{180393b3-ead6-4f49-a004-d8d3f11d9f1b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\calendar.c">
@@ -1338,6 +1344,9 @@
     <ClCompile Include="..\np2_thread.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="..\np2_tickcount.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
     <ClCompile Include="commng\cmwacom.cpp">
       <Filter>ソース ファイル\win9x\commng</Filter>
     </ClCompile>
@@ -1349,6 +1358,12 @@
     </ClCompile>
     <ClCompile Include="commng\cmpipe.cpp">
       <Filter>ソース ファイル\win9x\commng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386hax\haxcore.c">
+      <Filter>ソース ファイル\i386hax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386hax\haxfunc.c">
+      <Filter>ソース ファイル\i386hax</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2342,6 +2357,9 @@
     <ClInclude Include="..\np2_thread.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="..\np2_tickcount.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
     <ClInclude Include="commng\cmwacom.h">
       <Filter>ヘッダー ファイル\win9x\commng</Filter>
     </ClInclude>
@@ -2371,6 +2389,12 @@
     </ClInclude>
     <ClInclude Include="commng\cmpipe.h">
       <Filter>ヘッダー ファイル\win9x\commng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\i386hax\haxcore.h">
+      <Filter>ヘッダー ファイル\i386hax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\i386hax\haxfunc.h">
+      <Filter>ヘッダー ファイル\i386hax</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

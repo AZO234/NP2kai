@@ -82,6 +82,12 @@
 #define	CPU_FEATURES_ECX	(0)
 #define	CPU_BRAND_ID_AUTO	(0xffffffff)
 #endif
+#if defined(SUPPORT_IA32_HAXM)
+#include	"np2_tickcount.h"
+#include	"i386hax/haxfunc.h"
+#include	"i386hax/haxcore.h"
+#include	"dmax86.h"
+#endif
 #include <time.h>
 
 
@@ -379,7 +385,56 @@ static void sound_term(void) {
 }
 #endif
 
+#if defined(SUPPORT_IA32_HAXM)
+int pccore_mem_malloc_virtualalloc = 0;
+void pccore_mem_malloc(void) {
+	if(!mem){
+#if defined(_WINDOWS)
+		mem = (UINT8*)_aligned_malloc(0x200000, 4096);
+#else
+		mem = (UINT8*)aligned_alloc(4096, 0x200000);
+#endif
+	}
+	if(!vramex || vramex==vramex_base){
+#if defined(_WINDOWS)
+		vramex = (UINT8*)_aligned_malloc(0x80000, 4096);
+#else
+		vramex = (UINT8*)aligned_alloc(4096, 0x80000);
+#endif
+		memset(vramex, 0, 0x80000);
+	}
+}
+void pccore_mem_free(void) {
+	if(mem){
+#if defined(_WINDOWS)
+		_aligned_free(mem);
+#else
+		free(mem);
+#endif
+		mem = NULL;
+	}
+	if(vramex && vramex!=vramex_base){
+#if defined(_WINDOWS)
+		_aligned_free(vramex);
+#else
+		free(vramex);
+#endif
+		vramex = vramex_base;
+	}
+}
+#endif
+	
 void pccore_init(void) {
+	
+#if defined(SUPPORT_IA32_HAXM)
+	i386hax_check();
+	np2hax.enable = 1;
+	i386hax_initialize();
+#endif
+	
+#if defined(SUPPORT_IA32_HAXM)
+	pccore_mem_malloc();
+#endif
 
 	CPU_INITIALIZE();
 	
@@ -483,6 +538,15 @@ void pccore_term(void) {
 
 	CPU_SETEXTSIZE(0);	// メモリ解放
 	CPU_DEINITIALIZE();
+	
+#if defined(SUPPORT_IA32_HAXM)
+	i386hax_deinitialize();
+#endif
+	
+#if defined(SUPPORT_IA32_HAXM)
+	pccore_mem_free();
+#endif
+
 }
 
 
@@ -520,6 +584,13 @@ void pccore_reset(void) {
 
 	int		i;
 	BOOL	epson;
+	
+#if defined(SUPPORT_IA32_HAXM)
+	if(np2hax.enable){
+		i386hax_createVM();
+		i386hax_resetVMCPU();
+	}
+#endif
 
 	soundmng_stop();
 #if !defined(DISABLE_SOUND)
@@ -694,6 +765,12 @@ void pccore_reset(void) {
 		CPU_RAM_D000 = 0xffff;
 	}
 	font_setchargraph(epson);
+	
+#if defined(SUPPORT_IA32_HAXM)
+	if(np2hax.hVMDevice){
+		i386hax_vm_allocmemory();
+	}
+#endif
 
 	// HDDセット
 	diskdrv_hddbind();
@@ -753,7 +830,25 @@ void pccore_reset(void) {
 
 	timing_reset();
 	soundmng_play();
+	
+#if defined(SUPPORT_IA32_HAXM)
+	if(np2hax.enable){
+		if(np2hax.hVMDevice){
+			i386hax_vm_setmemory();
+			i386hax_vm_setbankmemory();
+			i386hax_vm_setextmemory();
+		
+			i386hax_resetVMMem();
 
+			np2haxcore.clockpersec = NP2_TickCount_GetFrequency();
+			np2haxcore.lastclock = NP2_TickCount_GetCount();
+			np2haxcore.clockcount = NP2_TickCount_GetCount();
+			np2haxcore.I_ratio = 0;
+		}else{
+			np2hax.enable = 1;
+		}
+	}
+#endif
 #ifdef SUPPORT_ASYNC_CPU
 #if !defined(__LIBRETRO__) && !defined(NP2_SDL2) && !defined(NP2_X11)
 	if(GetTickCounterMode()==TCMODE_PERFORMANCECOUNTER){
@@ -928,9 +1023,11 @@ void screendisp(NEVENTITEM item) {
 	gdc_work(GDCWORK_SLAVE);
 	gdc.vsync = 0;
 	pcstat.screendispflag = 0;
+#if !defined(SUPPORT_IA32_HAXM)
 	if (!np2cfg.DISPSYNC) {
 		drawscreen();
 	}
+#endif
 	pi = &pic.pi[0];
 	if (pi->irr & PIC_CRTV) {
 		pi->irr &= ~PIC_CRTV;
@@ -984,6 +1081,13 @@ void pccore_exec(BOOL draw) {
 	soundmng_sync();
 	mouseif_sync();
 	pal_eventclear();
+	
+#if defined(SUPPORT_IA32_HAXM)
+	// HAXMの場合、先に描画
+	if (!np2cfg.DISPSYNC) {
+		drawscreen();
+	}
+#endif
 
 	gdc.vsync = 0;
 	pcstat.screendispflag = 1;
@@ -1000,7 +1104,11 @@ void pccore_exec(BOOL draw) {
 		resetcnt++;
 #endif
 		pic_irq();
+#if defined(SUPPORT_IA32_HAXM)
+		if (CPU_RESETREQ && (!np2hax.enable || np2haxcore.ready_for_reset)) {
+#else
 		if (CPU_RESETREQ) {
+#endif
 			CPU_RESETREQ = 0;
 #if defined(SUPPORT_WAB)
 			np2wab.relaystateint = np2wab.relaystateext = 0;
@@ -1019,6 +1127,18 @@ void pccore_exec(BOOL draw) {
 #if defined(SUPPORT_PCI)
 			pcidev_basereset(); // XXX: Win9xの再起動で必要
 #endif
+#if defined(SUPPORT_IA32_HAXM)
+			if (np2hax.enable) {
+				//i386hax_resetVMCPU();
+				//i386haxfunc_vcpu_setREGs(&np2haxstat.state);
+				//i386haxfunc_vcpu_setFPU(&np2haxstat.fpustate);
+				//ia32hax_copyregHAXtoNP2();
+				//CPU_SHUT();
+				np2haxstat.update_regs = np2haxstat.update_fpu = 1;
+				np2haxstat.irq_reqidx_cur = np2haxstat.irq_reqidx_end = 0;
+				pic_reset(&np2cfg);
+			}
+#endif
 			CPU_SHUT();
 		}
 #if defined(USE_TSC)
@@ -1026,20 +1146,27 @@ void pccore_exec(BOOL draw) {
 		CPU_MSR_TSC += CPU_BASECLOCK;//CPU_REMCLOCK;
 #endif
 #endif
-#if !defined(SINGLESTEPONLY)
-		if (CPU_REMCLOCK > 0) {
-			if (!(CPU_TYPE & CPUTYPE_V30)) {
-				CPU_EXEC();
-			}
-			else {
-				CPU_EXECV30();
-			}
-		}
-#else
-		while(CPU_REMCLOCK > 0) {
-			CPU_STEPEXEC();
-		}
+#if defined(SUPPORT_IA32_HAXM)
+		if (np2hax.enable) {
+			i386hax_vm_exec();
+		}else
 #endif
+		{
+#if !defined(SINGLESTEPONLY)
+			if (CPU_REMCLOCK > 0) {
+				if (!(CPU_TYPE & CPUTYPE_V30)) {
+					CPU_EXEC();
+				}
+				else {
+					CPU_EXECV30();
+				}
+			}
+#else
+			while(CPU_REMCLOCK > 0) {
+				CPU_STEPEXEC();
+			}
+#endif
+		}
 #if defined(SUPPORT_HRTIMER)
 	upd4990_hrtimer_count();
 #endif	/* SUPPORT_HRTIMER */

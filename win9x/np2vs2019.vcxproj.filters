@@ -1206,6 +1206,9 @@
     <ClCompile Include="..\np2_thread.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="..\np2_tickcount.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
     <ClCompile Include="commng\wintab\Utils.cpp">
       <Filter>ソース ファイル\win9x\commng\wintab</Filter>
     </ClCompile>
@@ -2097,6 +2100,9 @@
       <Filter>ヘッダー ファイル\cbus</Filter>
     </ClInclude>
     <ClInclude Include="..\np2_thread.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\np2_tickcount.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="commng\wintab\MSGPACK.H">

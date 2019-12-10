@@ -102,8 +102,11 @@ AC_ARG_ENABLE(xf86vidmode,
 AC_ARG_ENABLE(ia32,
   AC_HELP_STRING([--enable-ia32],[Build xnp21kai(IA-32 emulation) [default=no]]),,
   [enable_ia32="no"])
+AC_ARG_ENABLE(haxm,
+  AC_HELP_STRING([--enable-haxm],[Build xnp21kai_haxm(IA-32 emulation + HAXM) [default=no]]),,
+  [enable_haxm="no"])
 AC_ARG_ENABLE(build-all,
-  AC_HELP_STRING([--enable-build-all],[Build xnp2kai(i286 emulation) and xnp21kai(IA-32 emulation) programs [default=no]]),,
+  AC_HELP_STRING([--enable-build-all],[Build xnp2kai(i286 emulation) and xnp21kai(IA-32 emulation) and xnp21kai_haxm programs [default=no]]),,
   [enable_build_all="no"])
 AC_ARG_ENABLE(debug,
   AC_HELP_STRING([--enable-debug],[Enable debugging [default=no]]),,
@@ -208,8 +211,21 @@ if test x"$enable_build_all" = "xyes"; then
   if test x"$enable_ia32" != "xyes"; then
     enable_ia32="yes"
   fi
+  if test x"$enable_haxm" != "xyes"; then
+    enable_haxm="yes"
+  fi
 fi
 AC_MSG_RESULT($enable_build_all)
+
+dnl
+dnl Checks for HAXM programs
+dnl
+AC_MSG_CHECKING([whether to build HAXM programs])
+AM_CONDITIONAL(HAXM,test x"$enable_haxm" = "xyes")
+if test x"$enable_haxm" != "xyes"; then
+  enable_ia32="yes"
+fi
+AC_MSG_RESULT($enable_haxm)
 
 dnl
 dnl Checks for IA-32 CPU emulation

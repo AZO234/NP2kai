@@ -3,6 +3,10 @@
 #include	"pccore.h"
 #include	"iocore.h"
 
+#if defined(SUPPORT_IA32_HAXM)
+#include	"i386hax/haxfunc.h"
+#include	"i386hax/haxcore.h"
+#endif
 
 enum {
 	PIC_OCW2_L		= 0x07,
@@ -130,6 +134,11 @@ void pic_irq(void) {												// ver0.78
 	REG8	slave;
 
 	// 割込み許可？
+#if defined(SUPPORT_IA32_HAXM)
+	if (np2hax.enable) {
+
+	}else
+#endif
 	if (!CPU_isEI) {
 		return;
 	}

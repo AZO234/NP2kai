@@ -11,6 +11,8 @@ Global
 		Debug|x64 = Debug|x64
 		Release|Win32 = Release|Win32
 		Release|x64 = Release|x64
+		ReleaseHAXM|Win32 = ReleaseHAXM|Win32
+		ReleaseHAXM|x64 = ReleaseHAXM|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{D0AC326F-CEFF-492D-839A-27D6CDA7EF64}.Debug|Win32.ActiveCfg = Debug|Win32
@@ -21,6 +23,8 @@ Global
 		{D0AC326F-CEFF-492D-839A-27D6CDA7EF64}.Release|Win32.Build.0 = Release|Win32
 		{D0AC326F-CEFF-492D-839A-27D6CDA7EF64}.Release|x64.ActiveCfg = Release|x64
 		{D0AC326F-CEFF-492D-839A-27D6CDA7EF64}.Release|x64.Build.0 = Release|x64
+		{D0AC326F-CEFF-492D-839A-27D6CDA7EF64}.ReleaseHAXM|Win32.ActiveCfg = ReleaseHAXM|Win32
+		{D0AC326F-CEFF-492D-839A-27D6CDA7EF64}.ReleaseHAXM|x64.ActiveCfg = ReleaseHAXM|x64
 		{CA040333-3357-4598-A480-57C957DA24B5}.Debug|Win32.ActiveCfg = Debug|Win32
 		{CA040333-3357-4598-A480-57C957DA24B5}.Debug|Win32.Build.0 = Debug|Win32
 		{CA040333-3357-4598-A480-57C957DA24B5}.Debug|x64.ActiveCfg = Debug|x64
@@ -29,6 +33,10 @@ Global
 		{CA040333-3357-4598-A480-57C957DA24B5}.Release|Win32.Build.0 = Release|Win32
 		{CA040333-3357-4598-A480-57C957DA24B5}.Release|x64.ActiveCfg = Release|x64
 		{CA040333-3357-4598-A480-57C957DA24B5}.Release|x64.Build.0 = Release|x64
+		{CA040333-3357-4598-A480-57C957DA24B5}.ReleaseHAXM|Win32.ActiveCfg = ReleaseHAXM|Win32
+		{CA040333-3357-4598-A480-57C957DA24B5}.ReleaseHAXM|Win32.Build.0 = ReleaseHAXM|Win32
+		{CA040333-3357-4598-A480-57C957DA24B5}.ReleaseHAXM|x64.ActiveCfg = ReleaseHAXM|x64
+		{CA040333-3357-4598-A480-57C957DA24B5}.ReleaseHAXM|x64.Build.0 = ReleaseHAXM|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -132,6 +132,20 @@ void rs232ctimer(NEVENTITEM item) {
 			//pitch->flag &= ‾PIT_FLAG_I;
 			rs232c_callback();
 		}
+#if defined(SUPPORT_RS232C_FIFO)
+		if (rs232cfifo.vfast & 0x80) {
+			// V FASTモード
+			int speedtbl[16] = {
+				0, 115200, 57600, 38400,
+				28800, 0, 19200, 0,
+				14400, 0, 0, 0,
+				9600, 0, 0, 0,
+			};
+			int speed;
+			speed = speedtbl[rs232cfifo.vfast & 0xf];
+			nevent_set(NEVENT_RS232C, pccore.realclock * 8 / speed, rs232ctimer, NEVENT_RELATIVE);
+		}else
+#endif
 		if ((pitch->ctrl & 0x0c) == 0x04) {
 			// レートジェネレータ
 			setrs232cevent(pitch->value, NEVENT_RELATIVE);
@@ -234,23 +248,27 @@ void pit_setflag(PITCH pitch, REG8 value) {
 }
 
 void pit_setrs232cspeed(UINT16 value) {
-	if(value == 0) return;
-#if defined(SUPPORT_RS232C_FIFO)
-	if(rs232cfifo.vfast & 0x80) return; // V FASTモードでは何もしない
-#endif
 	if (cm_rs232c) {
-		if ((pccore.dipsw[0] & 0x30)==0x30) { // とりあえず調歩同期だけ
-			int newvalue;
-			int mul[] = {1, 1, 16, 64};
-			if (pccore.cpumode & CPUMODE_8MHZ) {
-				newvalue = 9600 * 208 / mul[rs232c.rawmode & 0x3] / value;
-			}else{
-				newvalue = 9600 * 256 / mul[rs232c.rawmode & 0x3] / value;
-			}
-			if(newvalue <= 38400){ // XXX: 大きすぎるのは無視
-				cm_rs232c->msg(cm_rs232c, COMMSG_CHANGESPEED, (INTPTR)&newvalue);
+#if defined(SUPPORT_RS232C_FIFO)
+		if(!(rs232cfifo.vfast & 0x80)) // V FASTモードでは通信速度変更しない
+#endif
+		{
+			if(value > 0){
+				if ((pccore.dipsw[0] & 0x30)==0x30) { // とりあえず調歩同期だけ
+					int newvalue;
+					int mul[] = {1, 1, 16, 64};
+					if (pccore.cpumode & CPUMODE_8MHZ) {
+						newvalue = 9600 * 208 / mul[rs232c.rawmode & 0x3] / value;
+					}else{
+						newvalue = 9600 * 256 / mul[rs232c.rawmode & 0x3] / value;
+					}
+					if(newvalue <= 38400){ // XXX: 大きすぎるのは無視
+						cm_rs232c->msg(cm_rs232c, COMMSG_CHANGESPEED, (INTPTR)&newvalue);
+					}
+				}
 			}
 		}
+		cm_rs232c->msg(cm_rs232c, COMMSG_CHANGEMODE, (INTPTR)&rs232c.rawmode);
 	}
 }
 

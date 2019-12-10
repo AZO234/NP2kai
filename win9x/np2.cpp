@@ -99,6 +99,11 @@
 #include "Dbt.h"
 #endif
 
+#if defined(SUPPORT_IA32_HAXM)
+#include	"i386hax/haxfunc.h"
+#include	"i386hax/haxcore.h"
+#endif
+
 #include	<process.h>
 
 #ifdef SUPPORT_WACOM_TABLET
@@ -2934,6 +2939,12 @@ static void processwait(UINT cnt) {
 	UINT count = timing_getcount();
 	if (count+lateframecount >= cnt) {
 		lateframecount = lateframecount + count - cnt;
+#if defined(SUPPORT_IA32_HAXM)
+		if (np2hax.enable) {
+			np2haxcore.hurryup = 0;
+			lateframecount = 0;
+		}
+#endif
 		if(lateframecount > np2oscfg.cpustabf) lateframecount = np2oscfg.cpustabf;
 		timing_setcount(0);
 		framereset(cnt);

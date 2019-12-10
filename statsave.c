@@ -62,6 +62,12 @@
 #if defined(BIOS_IO_EMULATION)
 #include "bios/bios.h"
 #endif
+#if defined(SUPPORT_IA32_HAXM)
+#include	"i386hax/haxfunc.h"
+#include	"i386hax/haxcore.h"
+#endif
+
+extern int sxsi_unittbl[];
 
 #if defined(MACOS)
 #define	CRCONST		str_cr
@@ -1089,15 +1095,25 @@ static int flagcheck_sxsi(STFLAGH sfh, const SFENTRY *tbl) {
 	sxsi_allflash();
 	ret = statflag_read(sfh, &sds, sizeof(sds));
 	for (i=0; i<NELEMENTS(sds.ide); i++) {
-		if (sds.ide[i] != SXSIDEV_NC && sds.ide[i] != SXSIDEV_CDROM) {
-			OEMSPRINTF(buf, str_sasix, i+1);
-			ret |= statflag_checkpath(sfh, buf);
+		if (sds.ide[i] != SXSIDEV_NC) {
+			if(sds.ide[i] != SXSIDEV_CDROM) {
+				OEMSPRINTF(buf, str_sasix, i+1);
+				ret |= statflag_checkpath(sfh, buf);
+			}else{
+				OEMSPRINTF(buf, str_sasix, i+1);
+				statflag_checkpath(sfh, buf); // CDの時、フラグには影響させない
+			}
 		}
 	}
 	for (i=0; i<NELEMENTS(sds.scsi); i++) {
-		if (sds.scsi[i] != SXSIDEV_NC && sds.ide[i] != SXSIDEV_CDROM) {
-			OEMSPRINTF(buf, str_scsix, i);
-			ret |= statflag_checkpath(sfh, buf);
+		if (sds.scsi[i] != SXSIDEV_NC) {
+			if(sds.ide[i] != SXSIDEV_CDROM) {
+				OEMSPRINTF(buf, str_scsix, i);
+				ret |= statflag_checkpath(sfh, buf);
+			}else{
+				OEMSPRINTF(buf, str_scsix, i);
+				statflag_checkpath(sfh, buf); // CDの時、フラグには影響させない
+			}
 		}
 	}
 	(void)tbl;
@@ -1111,7 +1127,7 @@ static int flagload_sxsi(STFLAGH sfh, const SFENTRY *tbl) {
 	UINT		i;
 	REG8		drv;
 	STATPATH	sp;
-
+	
 	ret = statflag_read(sfh, &sds, sizeof(sds));
 	if (ret != STATFLAG_SUCCESS) {
 		return(ret);
@@ -1315,6 +1331,11 @@ const SFENTRY	*tblterm;
 #if defined(SUPPORT_CL_GD5430)
 	pc98_cirrus_vga_save();
 #endif
+	
+#if defined(SUPPORT_IA32_HAXM)
+	memcpy(vramex_base, vramex, sizeof(vramex_base));
+	i386haxfunc_vcpu_getMSRs(&np2haxstat.msrstate);
+#endif
 
 	ret = STATFLAG_SUCCESS;
 	tbl = np2tbl;
@@ -1471,6 +1492,7 @@ int statsave_load(const OEMCHAR *filename) {
 	BOOL		done;
 const SFENTRY	*tbl;
 const SFENTRY	*tblterm;
+	UINT		i;
 
 	sffh = statflag_open(filename, NULL, 0);
 	if (sffh == NULL) {
@@ -1599,6 +1621,23 @@ const SFENTRY	*tblterm;
 		}
 	}
 	statflag_close(sffh);
+	
+#if defined(SUPPORT_IA32_HAXM)
+	memcpy(vramex, vramex_base, sizeof(vramex_base));
+	i386haxfunc_vcpu_setREGs(&np2haxstat.state);
+	i386haxfunc_vcpu_setFPU(&np2haxstat.fpustate);
+	{
+		HAX_MSR_DATA	msrstate_set = {0};
+		i386haxfunc_vcpu_setMSRs(&np2haxstat.msrstate, &msrstate_set);
+	}
+	i386hax_vm_sethmemory(CPU_ADRSMASK != 0x000fffff);
+	i386hax_vm_setitfmemory(CPU_ITFBANK);
+	i386hax_vm_setvga256linearmemory();
+	np2haxcore.clockpersec = NP2_TickCount_GetFrequency();
+	np2haxcore.lastclock = NP2_TickCount_GetCount();
+	np2haxcore.clockcount = NP2_TickCount_GetCount();
+	np2haxcore.I_ratio = 0;
+#endif
 
 	// I/O作り直し
 	MEMM_ARCH((pccore.model & PCMODEL_EPSON)?1:0);
@@ -1606,6 +1645,29 @@ const SFENTRY	*tblterm;
 	iocore_bind();
 	cbuscore_bind();
 	fmboard_bind();
+	
+	// DA/UAと要素番号の対応関係を初期化
+	for(i=0;i<4;i++){
+		sxsi_unittbl[i] = i;
+	}
+#if defined(SUPPORT_IDEIO)
+	if (pccore.hddif & PCHDD_IDE) {
+		int i, idx, ncidx;
+		// 未接続のものを無視して接続順にDA/UAを割り当てる
+		ncidx = idx = 0;
+		for(i=0;i<4;i++){
+			if(sxsi_getdevtype(i)==SXSIDEV_HDD){
+				sxsi_unittbl[idx] = i;
+				idx++;
+			}else{
+				ncidx = i;
+			}
+		}
+		for(;idx<4;idx++){
+			sxsi_unittbl[idx] = ncidx; // XXX: 余ったDA/UAはとりあえず未接続の番号に設定
+		}
+	}
+#endif
 
 #if defined(SUPPORT_PC9821)&&defined(SUPPORT_PCI)
 	pcidev_bind();

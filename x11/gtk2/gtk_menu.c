@@ -2055,9 +2055,9 @@ cb_itfwork(GtkToggleAction *action, gpointer user_data)
 	gboolean b = gtk_toggle_action_get_active(action);
 	gboolean f;
 
-	f = (np2cfg.XSHIFT & 1) ^ (b ? 1 : 0);
+	f = (np2cfg.ITF_WORK & 1) ^ (b ? 1 : 0);
 	if (f) {
-		np2cfg.XSHIFT ^= 1;
+		np2cfg.ITF_WORK ^= 1;
 		sysmng_update(SYS_UPDATECFG);
 	}
 }

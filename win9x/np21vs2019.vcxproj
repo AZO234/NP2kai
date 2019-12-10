@@ -9,6 +9,14 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseHAXM|Win32">
+      <Configuration>ReleaseHAXM</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseHAXM|x64">
+      <Configuration>ReleaseHAXM</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -45,12 +53,24 @@
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -60,6 +80,9 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -67,6 +90,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -93,6 +119,19 @@
     <OutDir>..\bin\$(SolutionName)\$(PlatformName)\$(Configuration)\</OutDir>
     <IntDir>..\obj\$(SolutionName)\$(PlatformName)\$(Configuration)\$(ProjectName)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\$(SolutionName)\$(PlatformName)\$(Configuration)\</OutDir>
+    <IntDir>..\obj\$(SolutionName)\$(PlatformName)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>H:\WinDDK\7600.16385.1\inc;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">
+    <OutDir>..\bin\$(SolutionName)\$(PlatformName)\$(Configuration)\</OutDir>
+    <IntDir>..\obj\$(SolutionName)\$(PlatformName)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>H:\WinDDK\7600.16385.1\inc;$(IncludePath)</IncludePath>
+    <LinkIncremental>false</LinkIncremental>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -223,6 +262,81 @@
       <EnableDPIAwareness>true</EnableDPIAwareness>
     </Manifest>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_LARGE_MEMORY;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_PHYSICAL_CDDRV;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;SUPPORT_IA32_HAXM;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\;.\x86;..\;..\common;..\i386c;..\mem;..\io;..\cbus;..\vram;..\sound;..\generic;..\zlib</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <WarningLevel>Level3</WarningLevel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <DelayLoadDLLs>d3d9.dll;dinput8.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <LargeAddressAware>true</LargeAddressAware>
+    </Link>
+    <NASM>
+      <AdditionalOptions>-I.\x86\ -I..\i386c\x86\ -I..\io\x86\ %(AdditionalOptions)</AdditionalOptions>
+    </NASM>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_LARGE_MEMORY;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_PHYSICAL_CDDRV;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;SUPPORT_IA32_HAXM;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CRTDBG_MAP_ALLOC;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_LARGE_MEMORY;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_PHYSICAL_CDDRV;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;SUPPORT_IA32_HAXM;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\;.\x64;..\;..\common;..\i386c;..\mem;..\io;..\cbus;..\vram;..\sound;..\generic;..\zlib</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <LargeAddressAware>true</LargeAddressAware>
+      <DelayLoadDLLs>d3d9.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+    </Link>
+    <NASM>
+      <AdditionalOptions>-I.\x86\ -I..\i386c\x86\ -I..\io\x86\ %(AdditionalOptions)</AdditionalOptions>
+    </NASM>
+    <YASM>
+      <AdditionalOptions>-I.\x64\ -I..\i386c\x64\ -I..\io\x64\ %(AdditionalOptions)</AdditionalOptions>
+    </YASM>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WIN64;_UNICODE;UNICODE;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_LARGE_MEMORY;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_PHYSICAL_CDDRV;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;SUPPORT_IA32_HAXM;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Manifest>
+      <EnableDPIAwareness>true</EnableDPIAwareness>
+    </Manifest>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\bios\bios.c" />
     <ClCompile Include="..\bios\bios09.c" />
@@ -275,6 +389,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\common\profile.c" />
     <ClCompile Include="..\common\rect.c" />
@@ -350,16 +465,23 @@
     </ClCompile>
     <ClCompile Include="..\i386c\ia32\instructions\fpu\fpemul_dosbox.c">
       <FloatingPointModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Precise</FloatingPointModel>
+      <FloatingPointModel Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">Precise</FloatingPointModel>
       <FloatingPointModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Precise</FloatingPointModel>
+      <FloatingPointModel Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">Precise</FloatingPointModel>
       <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotSet</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">NotSet</EnableEnhancedInstructionSet>
     </ClCompile>
     <ClCompile Include="..\i386c\ia32\instructions\fpu\fpemul_dosbox2.c">
       <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotSet</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Precise</FloatingPointModel>
+      <FloatingPointModel Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">Precise</FloatingPointModel>
     </ClCompile>
     <ClCompile Include="..\i386c\ia32\instructions\fpu\fpemul_softfloat.c">
       <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotSet</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Precise</FloatingPointModel>
+      <FloatingPointModel Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">Precise</FloatingPointModel>
     </ClCompile>
     <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\softfloat.c" />
     <ClCompile Include="..\i386c\ia32\instructions\logic_arith.c" />
@@ -379,6 +501,8 @@
     <ClCompile Include="..\i386c\ia32\resolve.c" />
     <ClCompile Include="..\i386c\ia32\segments.c" />
     <ClCompile Include="..\i386c\ia32\task.c" />
+    <ClCompile Include="..\i386hax\haxcore.c" />
+    <ClCompile Include="..\i386hax\haxfunc.c" />
     <ClCompile Include="..\io\artic.c" />
     <ClCompile Include="..\io\bmsio.c" />
     <ClCompile Include="..\io\cgrom.c" />
@@ -427,6 +551,7 @@
     <ClCompile Include="..\network\net.c" />
     <ClCompile Include="..\nevent.c" />
     <ClCompile Include="..\np2_thread.c" />
+    <ClCompile Include="..\np2_tickcount.c" />
     <ClCompile Include="..\pccore.c" />
     <ClCompile Include="..\sound\adpcmc.c" />
     <ClCompile Include="..\sound\adpcmg.c" />
@@ -448,13 +573,19 @@
     <ClCompile Include="..\sound\mame\fmopl.c" />
     <ClCompile Include="..\sound\mame\ymdeltat.c" />
     <ClCompile Include="..\sound\mame\ymf262.c" />
-    <ClCompile Include="..\sound\opl3.c" />
+    <ClCompile Include="..\sound\opl3.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\sound\oplgenc.c" />
     <ClCompile Include="..\sound\oplgeng.c" />
     <ClCompile Include="..\sound\opngenc.c" />
     <ClCompile Include="..\sound\opngeng.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\sound\opntimer.c" />
     <ClCompile Include="..\sound\pcm86c.c" />
@@ -733,6 +864,8 @@
     <ClInclude Include="..\i386c\ia32\resolve.h" />
     <ClInclude Include="..\i386c\ia32\segments.h" />
     <ClInclude Include="..\i386c\ia32\task.h" />
+    <ClInclude Include="..\i386hax\haxcore.h" />
+    <ClInclude Include="..\i386hax\haxfunc.h" />
     <ClInclude Include="..\io\artic.h" />
     <ClInclude Include="..\io\cgrom.h" />
     <ClInclude Include="..\io\cpuio.h" />
@@ -778,6 +911,7 @@
     <ClInclude Include="..\network\net.h" />
     <ClInclude Include="..\nevent.h" />
     <ClInclude Include="..\np2_thread.h" />
+    <ClInclude Include="..\np2_tickcount.h" />
     <ClInclude Include="..\np2ver.h" />
     <ClInclude Include="..\pccore.h" />
     <ClInclude Include="..\sound\adpcm.h" />
@@ -954,31 +1088,40 @@
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
     </NASM>
     <NASM Include="x86\makegrph.x86">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
     </NASM>
     <NASM Include="x86\opngeng.x86">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
     </NASM>
     <NASM Include="x86\parts.x86">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
     </NASM>
   </ItemGroup>
   <ItemGroup>
     <YASM Include="x64\makegrph.x64">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
     </YASM>
     <YASM Include="x64\parts.x64">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
     </YASM>
   </ItemGroup>
   <ItemGroup>

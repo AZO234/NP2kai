@@ -16,6 +16,8 @@ enum {
 	CACHE_BUFFER	= 32768
 };
 
+extern int sxsi_unittbl[];
+
 
 // ---- FDD
 
@@ -811,8 +813,12 @@ static UINT16 boot_fd(REG8 drv, REG8 type) {
 static REG16 boot_hd(REG8 drv) {
 
 	REG8	ret;
-
-	ret = sxsi_read(drv, 0, mem + 0x1fc00, 0x400);
+	
+	if(pccore.hddif & PCHDD_IDE){
+		ret = sxsi_read((drv & 0xf0)==0x80 ? (0x80 | sxsi_unittbl[drv & 0x3]) : drv, 0, mem + 0x1fc00, 0x400);
+	}else{
+		ret = sxsi_read(drv, 0, mem + 0x1fc00, 0x400);
+	}
 	if (ret < 0x20) {
 		mem[MEMB_DISK_BOOT] = drv;
 		return(0x1fc0);
@@ -874,7 +880,7 @@ REG16 bootstrapload(void) {
 	}
 	if(pccore.hddif & PCHDD_IDE){
 		for (i=0; (i<4) && (!bootseg); i++) {
-			if(sxsi_getptr(i)->devtype == SXSIDEV_HDD){
+			if(sxsi_getptr(sxsi_unittbl[i])->devtype == SXSIDEV_HDD){
 				bootseg = boot_hd((REG8)(0x80 + i));
 			}
 		}

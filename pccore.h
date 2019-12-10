@@ -354,6 +354,10 @@ void screenvsync(NEVENTITEM item);
 
 void pccore_cfgupdate(void);
 
+#if defined(SUPPORT_IA32_HAXM)
+void pccore_mem_malloc(void);
+void pccore_mem_free(void);
+#endif
 void pccore_init(void);
 void pccore_term(void);
 void pccore_reset(void);
