@@ -5,10 +5,12 @@ CXX=/opt/gcw0-toolchain/usr/bin/mipsel-linux-g++
 DEBUG=0
 SUPPORT_NET?=1
 GIT_VERSION := " $(shell git rev-parse --short HEAD)"
-SDL_CONFIG ?= sdl2-config
+
+#Change to your toolchain location here
+SDL_CONFIG ?= /opt/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/bin/sdl2-config
 SDL_CFLAGS := $(shell $(SDL_CONFIG) --cflags) -DUSE_SDL_CONFIG
-#SDL_LIBS := $(shell $(SDL_CONFIG) --libs)
-SDL_LIBS := -lSDL2
+SDL_LIBS := $(shell $(SDL_CONFIG) --libs)
+#SDL_LIBS := -lSDL2
 
 TARGET_NAME := np2kai
 
