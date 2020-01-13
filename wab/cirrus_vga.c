@@ -60,11 +60,7 @@
 #endif
 
 #if defined(NP2_SDL2)
-#if defined(__MINGW32__) || defined(__MINGW64_VERSION_MAJOR)
 #include <SDL.h>
-#else
-#include <SDL2/SDL.h>
-#endif
 #elif defined(NP2_X11)
 #include <gdk/gdk.h>
 #endif

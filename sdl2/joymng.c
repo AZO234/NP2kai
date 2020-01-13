@@ -209,8 +209,8 @@ joymng_getstat(void)
 
 #if defined(USE_SDL_JOYSTICK)
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_joystick.h>
+#include <SDL.h>
+#include <SDL_joystick.h>
 
 typedef struct {
 	joymng_devinfo_t	dev;

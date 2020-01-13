@@ -74,6 +74,8 @@
 #include <setjmp.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <string.h>
@@ -116,12 +118,12 @@ typedef	guint16		WORD;
 #define PTR_TO_UINT32(p)	((UINT32)GPOINTER_TO_UINT(p))
 #define UINT32_TO_PTR(v)	GUINT_TO_POINTER((UINT32)(v))
 
-#ifndef	FALSE
-#define	FALSE	0
+#ifndef	TRUE
+#define	TRUE	true
 #endif
 
-#ifndef	TRUE
-#define	TRUE	(!FALSE)
+#ifndef	FALSE
+#define	FALSE	false
 #endif
 
 #ifndef	MAX_PATH

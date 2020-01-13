@@ -1,6 +1,8 @@
 #include	<sys/param.h>
 #include	<stdio.h>
 #include	<stdlib.h>
+#include	<stdint.h>
+#include	<stdbool.h>
 #include	<setjmp.h>
 #include	<stdarg.h>
 #include	<stddef.h>
@@ -72,13 +74,11 @@ typedef	unsigned short	WORD;
 
 
 #ifndef	TRUE
-#define	TRUE	1
-#define true TRUE
+#define	TRUE	true
 #endif
 
 #ifndef	FALSE
-#define	FALSE	0
-#define false FALSE
+#define	FALSE	false
 #endif
 
 #ifndef	MAX_PATH

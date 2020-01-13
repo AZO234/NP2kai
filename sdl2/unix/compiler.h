@@ -1,6 +1,8 @@
 #include	<sys/param.h>
 #include	<stdio.h>
 #include	<stdlib.h>
+#include	<stdint.h>
+#include	<stdbool.h>
 #include	<setjmp.h>
 #include	<stdarg.h>
 #include	<stddef.h>
@@ -61,8 +63,7 @@ __extension__
 typedef unsigned long long int  UINT64;
 #endif
 
-typedef	int				BOOL;
-#define bool BOOL
+typedef	bool				BOOL;
 typedef	signed char		CHAR;
 typedef	signed char		TCHAR;
 typedef	unsigned char	BYTE;
@@ -71,13 +72,11 @@ typedef	unsigned short	WORD;
 
 
 #ifndef	TRUE
-#define	TRUE	1
-#define true TRUE
+#define	TRUE	true
 #endif
 
 #ifndef	FALSE
-#define	FALSE	0
-#define false FALSE
+#define	FALSE	false
 #endif
 
 #ifndef	MAX_PATH
