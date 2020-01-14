@@ -30,6 +30,7 @@ NP2kai is PC-9801 series emulator
 2. Locate BIOS files to .exe same filder.  
 - F11 key or mouse middle button, to capture mouse.  
 
+
 #### SDL2 port
 ##### Install tools
 1. Install MSYS2 64bit.  
@@ -54,6 +55,41 @@ $ make -f Makefile.win
 $ make -f Makefile21.win
 ```
 
+##### Install binary
+1. Install.  
+```
+$ make install
+```
+2. Locate BIOS files to ~/.config/np2kai(i286) or ~/.config/np21kai(i386).  
+3. Run np2kai(i286) or np21kai(i386).  
+- NP2's menu is shown F11 or mouse middle button, to swap FDD/HDD diskimages.  
+
+
+#### SDL1 port
+##### Install tools
+1. Install MSYS2 64bit.  
+2. Run MSYS2 64bit console  
+3. Run follow command.  
+```
+$ pacman -S git make mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd mingw-w64-x86_64-SDL mingw-w64-x86_64-SDL_ttf mingw-w64-x86_64-SDL_mixer
+```
+
+##### Build
+1. Change directory to sdl2.  
+```
+$ cd NP2kai/sdl2
+```
+2. Make.  
+(i286)  
+Edit 'SDL_VERSION' in Makefile.win from 2 to 1.
+```
+$ make -f Makefile.win
+```
+(i386)  
+Edit 'SDL_VERSION' in Makefile21.win from 2 to 1.
+```
+$ make -f Makefile21.win
+```
 
 ##### Install binary
 1. Install.  
@@ -63,6 +99,7 @@ $ make install
 2. Locate BIOS files to ~/.config/np2kai(i286) or ~/.config/np21kai(i386).  
 3. Run np2kai(i286) or np21kai(i386).  
 - NP2's menu is shown F11 or mouse middle button, to swap FDD/HDD diskimages.  
+
 
 ### Linux
 
@@ -105,6 +142,7 @@ $ sudo make install
 3. Run xnp2kai(i286) or xnp21kai(i386).  
 - F11 or mouse middle button, to capture mouse.  
 
+
 #### SDL2 port
 ##### Install tools
 1. Install SDL2, etc.  
@@ -127,6 +165,39 @@ $ make -f Makefile.unix
 $ make -f Makefile21.unix
 ```
 
+##### Install binary
+1. Install.  
+```
+$ sudo make install
+```
+2. Locate BIOS files to ~/.config/np2kai(i286) or ~/.config/np21kai(i386).  
+3. Run np2kai(i286) or np21kai(i386).  
+- NP2's menu is shown F11 key or mouse middle button, to swap FDD/HDD diskimages.  
+
+
+#### SDL1 port
+##### Install tools
+1. Install SDL2, etc.  
+```
+$ sudo apt-get install git build-essential libsdl1.2-dev libsdl-ttf2.0-dev libsdl-mixer1.2-dev
+```
+
+##### Build
+1. Change directory to sdl2.  
+```
+$ cd NP2kai/sdl2
+```
+2. Make.  
+(i286)  
+Edit 'SDL_VERSION' in Makefile.unix from 2 to 1.
+```
+$ make -f Makefile.unix
+```
+(i386)  
+Edit 'SDL_VERSION' in Makefile21.unix from 2 to 1.
+```
+$ make -f Makefile21.unix
+```
 
 ##### Install binary
 1. Install.  
@@ -136,6 +207,7 @@ $ sudo make install
 2. Locate BIOS files to ~/.config/np2kai(i286) or ~/.config/np21kai(i386).  
 3. Run np2kai(i286) or np21kai(i386).  
 - NP2's menu is shown F11 key or mouse middle button, to swap FDD/HDD diskimages.  
+
 
 ### macOS
 
@@ -171,6 +243,43 @@ $ make install
 2. Locate BIOS files to ~/.config/np2kai(i286) or ~/.config/np21kai(i386).  
 3. Run np2kai(i286) or np21kai(i386).  
 - NP2's menu is shown F11 key or mouse middle button, to swap FDD/HDD diskimages.  
+
+
+#### SDL1 port
+##### Install tools
+1. Install XCode.  
+2. Install brew.  
+3. Execute follow command.  
+```
+$ brew install sdl sdl_mixier sdl_ttf
+```
+
+##### Build
+1. Change directory to sdl2.  
+```
+$ cd NP2kai/sdl2
+```
+2. Make.  
+(i286)  
+Edit 'SDL_VERSION' in Makefile.mac from 2 to 1.
+```
+$ make -f Makefile.mac
+```
+(i386)  
+Edit 'SDL_VERSION' in Makefile21.mac from 2 to 1.
+```
+$ make -f Makefile21.mac
+```
+
+##### Install binary
+1. Install.  
+```
+$ make install
+```
+2. Locate BIOS files to ~/.config/np2kai(i286) or ~/.config/np21kai(i386).  
+3. Run np2kai(i286) or np21kai(i386).  
+- NP2's menu is shown F11 key or mouse middle button, to swap FDD/HDD diskimages.  
+
 
 ### GCW Zero (GCW0) 
 
@@ -642,6 +751,9 @@ http://buffalo.jp/download/driver/multi/wgna_95.html
 https://www.iodata.jp/lib/product/g/175_win95.htm  
 
 ## Release
+* JanDec 15, 2019  
+	- Support again SDL1  
+	- fix bool
 * Dec 10, 2019  
 	- Merge NP21/W 0.86 rev.69 (rev.21)  
 		- HAXM

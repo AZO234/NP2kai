@@ -175,7 +175,11 @@ void taskmng_rol(void) {
         return;
       }
 #endif //GCW0
+#if SDL_MAJOR_VERSION == 1
+			if (e.key.keysym.sym == SDLK_F11) {
+#else
 			if (e.key.keysym.scancode == SDL_SCANCODE_F11) {
+#endif
 				if (menuvram == NULL) {
 					sysmenu_menuopen(0, 0, 0);
 				}
@@ -184,19 +188,31 @@ void taskmng_rol(void) {
 				}
 			}
 			else {
+#if SDL_MAJOR_VERSION == 1
+				sdlkbd_keydown(e.key.keysym.sym);
+#else
 				sdlkbd_keydown(e.key.keysym.scancode);
+#endif
 			}
 			break;
 
 		case SDL_KEYUP:
 #if defined(GCW0)
+#if SDL_MAJOR_VERSION == 1
+      e.key.keysym.scancode=convertKeyMap(e.key.keysym.sym);
+#else
       e.key.keysym.scancode=convertKeyMap(e.key.keysym.scancode);
+#endif
       if(e.key.keysym.scancode==SDL_SCANCODE_UNKNOWN || e.key.keysym.scancode ==999){
         return;
       }
 #endif //GCW0
 
+#if SDL_MAJOR_VERSION == 1
+      sdlkbd_keyup(e.key.keysym.sym);
+#else
       sdlkbd_keyup(e.key.keysym.scancode);
+#endif
 			break;
 
 		case SDL_QUIT:

@@ -319,9 +319,15 @@ static const MSYSITEM s_screen[] = {
 		{str_window,		NULL,		MID_WINDOW,			MENU_GRAY},
 		{str_fullscrn,		NULL,		MID_FULLSCREEN,		MENU_GRAY},
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+#if SDL_MAJOR_VERSION == 1
+		{str_normal,		NULL,		MID_ROLNORMAL,		MENU_GRAY},
+		{str_leftrol,		NULL,		MID_ROLLEFT,		MENU_GRAY},
+		{str_rightrol,		NULL,		MID_ROLRIGHT,		MENU_GRAY},
+#else
 		{str_normal,		NULL,		MID_ROLNORMAL,		0},
 		{str_leftrol,		NULL,		MID_ROLLEFT,		0},
 		{str_rightrol,		NULL,		MID_ROLRIGHT,		0},
+#endif
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_dispsync,		NULL,		MID_DISPSYNC,		0},
 		{str_realpal,		NULL,		MID_RASTER,			0},

@@ -14,7 +14,11 @@ int64_t NP2_TickCount_GetCount(void) {
   QueryPerformanceCounter(&count);
   return count.QuadPart;
 #elif defined(NP2_SDL2)
+#if SDL_MAJOR_VERSION == 1
+  return SDL_GetTicks();
+#else
   return SDL_GetPerformanceCounter();
+#endif
 #else
   struct timespec ts;
   clock_gettime(CLOCK_MONOTONIC, &ts);
@@ -28,7 +32,11 @@ int64_t NP2_TickCount_GetFrequency(void) {
   QueryPerformanceFrequency(&freq);
   return freq.QuadPart;
 #elif defined(NP2_SDL2)
+#if SDL_MAJOR_VERSION == 1
+  return 100000000;
+#else
   return SDL_GetPerformanceFrequency();
+#endif
 #else
   struct timespec res;
   clock_getres(CLOCK_MONOTONIC, &res);

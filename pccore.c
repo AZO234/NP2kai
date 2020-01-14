@@ -865,7 +865,11 @@ void pccore_reset(void) {
 	}
 #elif defined(NP2_SDL2)
 	{
+#if SDL_MAJOR_VERSION == 1
+		asynccpu_lastclock = asynccpu_clockcount = SDL_GetTicks();
+#else
 		asynccpu_lastclock = asynccpu_clockcount = SDL_GetPerformanceCounter();
+#endif
 		asynccpu_clockpersec = SDL_GetPerformanceFrequency();
 	}
 #endif
