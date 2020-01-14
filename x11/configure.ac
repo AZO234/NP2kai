@@ -87,12 +87,24 @@ AC_ARG_ENABLE(gtk3,
   AC_HELP_STRING([--enable-gtk3],[Use GTK+-3 library [default=no]]),,
   [enable_gtk3="no"])
 
+AC_ARG_ENABLE(sdl,
+  AC_HELP_STRING([--enable-sdl],[Use SDL library [default=no]]),,
+  [enable_sdl="no"])
+AC_ARG_ENABLE(sdlmixer,
+  AC_HELP_STRING([--enable-sdlmixer],[Use SDL_mixer library [default=no]]),,
+  [enable_sdlmixer="no"])
+AC_ARG_ENABLE(sdlttf,
+  AC_HELP_STRING([--enable-sdlttf],[Use SDL_ttf library [default=no]]),,
+  [enable_sdlttf="no"])
 AC_ARG_ENABLE(sdl2,
   AC_HELP_STRING([--enable-sdl2],[Use SDL2 library [default=yes]]),,
   [enable_sdl2="yes"])
+AC_ARG_ENABLE(sdl2ttf,
+  AC_HELP_STRING([--enable-sdl2ttf],[Use SDL2_ttf library [default=yes]]),,
+  [enable_sdl2ttf="yes"])
 AC_ARG_ENABLE(sdl2mixer,
   AC_HELP_STRING([--enable-sdl2mixer],[Use SDL2_mixer library [default=yes]]),,
-  [enable_sdlmixer="yes"])
+  [enable_sdl2mixer="yes"])
 AC_ARG_ENABLE(libusb1,
   AC_HELP_STRING([--enable-libusb1],[Use libusb-1.0 library [default=yes]]),,
   [enable_libusb1="yes"])
@@ -153,17 +165,39 @@ AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
 dnl
-dnl Checks for SDL and SDL_mixer
+dnl Checks for SDL and SDL_mixer and SDL_ttf
 dnl
 no_sdl=yes
-if test x"$enable_sdl2" = "xyes"; then
-  AM_PATH_SDL2(2.0.0)
+if test x"$enable_sdl" = "xyes"; then
+  AM_PATH_SDL(1.2.0)
   if test x"$no_sdl" != "xyes"; then
-    AC_DEFINE(USE_SDLAUDIO,,[Define if you have the SDL2 library.])
+    AC_DEFINE(USE_SDLAUDIO,,[Define if you have the SDL library.])
     if test x"$enable_sdlmixer" = "xyes"; then
-      AC_CHECK_LIB(SDL2_mixer,Mix_OpenAudio,
-        AC_DEFINE(USE_SDLMIXER,,[Define if you have the SDL2_mixer library.])
-        SDL_LIBS="$SDL_LIBS -lSDL2_mixer",,$SDL_LIBS)
+      AC_CHECK_LIB(SDL_mixer,Mix_OpenAudio,
+        AC_DEFINE(USE_SDLMIXER,,[Define if you have the SDL_mixer library.])
+        SDL_LIBS="$SDL_LIBS -lSDL_mixer",,$SDL_LIBS)
+    fi
+    if test x"$enable_sdlttf" = "xyes"; then
+      AC_CHECK_LIB(SDL_ttf,TTF_Quit,
+        AC_DEFINE(USE_SDLTTF,,[Define if you have the SDL_ttf library.])
+        SDL_LIBS="$SDL_LIBS -lSDL_ttf",,$SDL_LIBS)
+    fi
+  fi
+else
+  if test x"$enable_sdl2" = "xyes"; then
+    AM_PATH_SDL2(2.0.0)
+    if test x"$no_sdl" != "xyes"; then
+      AC_DEFINE(USE_SDL2AUDIO,,[Define if you have the SDL2 library.])
+      if test x"$enable_sdl2mixer" = "xyes"; then
+        AC_CHECK_LIB(SDL2_mixer,Mix_OpenAudio,
+          AC_DEFINE(USE_SDL2MIXER,,[Define if you have the SDL2_mixer library.])
+          SDL_LIBS="$SDL_LIBS -lSDL2_mixer",,$SDL_LIBS)
+      fi
+      if test x"$enable_sdl2ttf" = "xyes"; then
+        AC_CHECK_LIB(SDL2_ttf,TTF_Quit,
+          AC_DEFINE(USE_SDL2TTF,,[Define if you have the SDL2_ttf library.])
+          SDL_LIBS="$SDL_LIBS -lSDL2_ttf",,$SDL_LIBS)
+      fi
     fi
   fi
 fi
@@ -222,7 +256,7 @@ dnl Checks for HAXM programs
 dnl
 AC_MSG_CHECKING([whether to build HAXM programs])
 AM_CONDITIONAL(HAXM,test x"$enable_haxm" = "xyes")
-if test x"$enable_haxm" != "xyes"; then
+if test x"$enable_haxm" = "xyes"; then
   enable_ia32="yes"
 fi
 AC_MSG_RESULT($enable_haxm)

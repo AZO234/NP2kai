@@ -103,7 +103,7 @@ $ make install
 
 ### Linux
 
-#### X11 port
+#### X11 port SDL2
 ##### Install tools
 1. Install SDL2, etc.  
 ```
@@ -127,6 +127,46 @@ $ ./configure
 (i386)  
 ```
 $ ./configure --enable-ia32
+```
+4. Make.  
+```
+$ make
+```
+
+##### Install binary
+1. Install.  
+```
+$ sudo make install
+```
+2. Locate BIOS files to ~/.config/xnp2kai(i286) or ~/.config/xnp21kai(i386).  
+3. Run xnp2kai(i286) or xnp21kai(i386).  
+- F11 or mouse middle button, to capture mouse.  
+
+
+#### X11 port SDL1
+##### Install tools
+1. Install SDL, etc.  
+```
+$ sudo apt-get install automake git gtk+-2 build-essential libsdl1.2-dev libsdl-ttf2.0-dev libsdl-mixer1.2-dev libusb-1.0-0-dev
+```
+
+##### Build
+1. Change directory to x11.  
+```
+$ cd NP2kai/x11
+```
+2. Run autotools script.  
+```
+$ ./autogen.sh
+```
+3. Run configure.  
+(i286)  
+```
+$ ./configure --enable-sdl --enable-sdlmixer --enable-sdlttf --enable-sdl2=no --enable-sdl2mixer=no --enable-sdl2ttf=no
+```
+(i386)  
+```
+$ ./configure --enable-sdl --enable-sdlmixer --enable-sdlttf --enable-sdl2=no --enable-sdl2mixer=no --enable-sdl2ttf=no --enable-ia32
 ```
 4. Make.  
 ```
