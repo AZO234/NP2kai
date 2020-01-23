@@ -42,6 +42,7 @@ void taskmng_exit(void) {
 
 int ENABLE_MOUSE=0; //0--disable
 
+#if SDL_MAJOR_VERSION != 1
 int convertKeyMap(int scancode){
   switch(scancode){
     case 82: //up
@@ -72,6 +73,7 @@ int convertKeyMap(int scancode){
       return 	999;
   }
 }
+#endif
 
 #endif //GCW0
 
@@ -170,10 +172,12 @@ void taskmng_rol(void) {
 		case SDL_KEYDOWN:
 
 #if defined(GCW0)
+#if SDL_MAJOR_VERSION != 1
       e.key.keysym.scancode=convertKeyMap(e.key.keysym.scancode);
       if(e.key.keysym.scancode==SDL_SCANCODE_UNKNOWN || e.key.keysym.scancode ==999){
         return;
       }
+#endif
 #endif //GCW0
 #if SDL_MAJOR_VERSION == 1
 			if (e.key.keysym.sym == SDLK_F11) {
@@ -198,14 +202,12 @@ void taskmng_rol(void) {
 
 		case SDL_KEYUP:
 #if defined(GCW0)
-#if SDL_MAJOR_VERSION == 1
-      e.key.keysym.scancode=convertKeyMap(e.key.keysym.sym);
-#else
+#if SDL_MAJOR_VERSION != 1
       e.key.keysym.scancode=convertKeyMap(e.key.keysym.scancode);
-#endif
       if(e.key.keysym.scancode==SDL_SCANCODE_UNKNOWN || e.key.keysym.scancode ==999){
         return;
       }
+#endif
 #endif //GCW0
 
 #if SDL_MAJOR_VERSION == 1
