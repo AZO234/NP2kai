@@ -1,13 +1,9 @@
 # Neko Project II 0.86 kai
-Dec 10, 2019  
+Jan 26, 2019  
 
 NP2kai is PC-9801 series emulator  
 
 ![](https://img.shields.io/github/tag/AZO234/NP2kai.svg)
-
-**Table of Contents**
-
-[TOC]
 
 ## Build and Install
 
@@ -411,13 +407,19 @@ You can libretro with .cmd file commandline,
 (This file must be wiritten in UTF-8.)  
 FDD/HDD/CD are mounted and start.  
 
-Mouse is cuptured (hidden/show toggle) by F11 key.  
+Mouse cursor moving is always enable with mouse.  
 
-Mouse cursor is able to move with joypad.  
+Mouse cursor moving and left-button be able to controled with joypad stick.  
+Switch Stick2Mouse mode in config to 'L-stick' or 'R-stick(default)'.  
+- Stick: mouse move  
+- Thumb: mouse left button  
+(if you need right-button, enable to J2M and use A button.)
+
+Mouse cursor is able to move with joypad's digital button.  
 Switch Joy2Mouse/Keyboard mode in config to 'Mouse'.  
 - D-UP/DOWN/LEFT/RIGHT: mouse move  
-- B button: left click  
-- A button: right click  
+- B button: mouse left button  
+- A button: mouse right button  
 - R button: mouse speed up durling hold  
 
 Keyboard is able to control with joypad.  
@@ -791,7 +793,9 @@ http://buffalo.jp/download/driver/multi/wgna_95.html
 https://www.iodata.jp/lib/product/g/175_win95.htm  
 
 ## Release
-* JanDec 15, 2019  
+* Jan 26, 2019  
+  - mod mouse cursor moving.  
+* Jan 15, 2019  
 	- Support again SDL1  
 	- fix bool
 * Dec 10, 2019  

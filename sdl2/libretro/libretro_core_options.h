@@ -731,21 +731,20 @@ struct retro_core_option_definition option_defs_us[] = {
       "ON"
    },
    {
-      "np2kai_j2msuratio",
-      "J2M Cursor Speed up Ratio",
-      NULL,
+      "np2kai_stick2mouse",
+      "Joypad(Analog Stick) to Mouse Mapping",
+      "Emulate a mouse on your gamepad's analog stick.",
       {
-         { "x5", NULL },
-         { "x10", NULL },
-         { "x20", NULL },
-         { "up stop", NULL },
+         { "OFF", NULL },
+         { "L-stick", NULL },
+         { "R-stick", NULL },
          { NULL, NULL},
       },
-      "x10"
+      "R-stick"
    },
    {
       "np2kai_joy2mousekey",
-      "Joypad to Mouse/Keyboard Mapping",
+      "Joypad(D-pad) to Mouse/Keyboard Mapping",
       "Emulate a keyboard or mouse on your gamepad. Map keyboard 'Arrows' or 'Keypad' on the D-pad.",
       {
          { "OFF", NULL },
@@ -756,6 +755,19 @@ struct retro_core_option_definition option_defs_us[] = {
          { NULL, NULL},
       },
       "OFF"
+   },
+   {
+      "np2kai_j2msuratio",
+      "J2M Mouse Cursor Speed up Ratio",
+      "(Mouse cursor accelerates faster by holding down a direction key.)",
+      {
+         { "x5", NULL },
+         { "x10", NULL },
+         { "x20", NULL },
+         { "up stop", NULL },
+         { NULL, NULL},
+      },
+      "x10"
    },
    {
       "np2kai_joynp2menu",
@@ -1489,22 +1501,21 @@ struct retro_core_option_definition option_defs_ja[] = {
       "ON"
    },
    {
-      "np2kai_j2msuratio",
-      "J2M カーソルスピード上昇率",
-      NULL,
+      "np2kai_stick2mouse",
+      "Joypad（アナログスティック）->マウス マッピング",
+      "ジョイパッドのアナログスティックをマウスに割り当てる。",
       {
-         { "x5", NULL },
-         { "x10", NULL },
-         { "x20", NULL },
-         { "up stop", NULL },
+         { "OFF", NULL },
+         { "L-stick", NULL },
+         { "R-stick", NULL },
          { NULL, NULL},
       },
-      "x10"
+      "R-stick"
    },
    {
       "np2kai_joy2mousekey",
-      "Joypad->Mouse/Keyboardマッピング",
-      "Emulate a keyboard or mouse on your gamepad. Map keyboard 'Arrows' or 'Keypad' on the D-pad.",
+      "Joypad（デジタルボタン）->マウス/キーボード マッピング",
+      "ジョイパッドのデジタルボタンをキーボードやマウスの操作に割り当てる。",
       {
          { "OFF", NULL },
          { "Mouse", NULL },
@@ -1516,9 +1527,22 @@ struct retro_core_option_definition option_defs_ja[] = {
       "OFF"
    },
    {
+      "np2kai_j2msuratio",
+      "J2M時のマウスカーソルスピード上昇率",
+      "（マウスカーソルは方向ボタンを押し続けることで加速度的に速くなる。）",
+      {
+         { "x5", NULL },
+         { "x10", NULL },
+         { "x20", NULL },
+         { "up stop", NULL },
+         { NULL, NULL},
+      },
+      "x10"
+   },
+   {
       "np2kai_joynp2menu",
       "NP2メニュー表示ボタン設定",
-      "Select a gamepad button to open NP2 Menu.",
+      NULL,
       {
          { "OFF", NULL },
          { "L", NULL },
