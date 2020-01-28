@@ -44,17 +44,17 @@
 #include "keystat.h"
 #include "bmsio.h"
 #if defined(SUPPORT_WAB)
-#include "wab.h"
+#include "wab/wab.h"
 #endif
 #if defined(SUPPORT_CL_GD5430)
-#include "cirrus_vga_extern.h"
+#include "wab/cirrus_vga_extern.h"
 #endif
 #if defined(SUPPORT_NET)
-#include "net.h"
+#include "network/net.h"
 #endif
 #if defined(SUPPORT_LGY98)
-#include "lgy98.h"
-#include "lgy98dev.h"
+#include "network/lgy98.h"
+#include "network/lgy98dev.h"
 #endif
 #if defined(CPUCORE_IA32)
 #include "ia32/instructions/fpu/fp.h"

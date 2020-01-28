@@ -1218,6 +1218,21 @@
     <ClCompile Include="commng\cmpipe.cpp">
       <Filter>ソース ファイル\win9x\commng</Filter>
     </ClCompile>
+    <ClCompile Include="..\io\pci\98graphbridge.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\io\pci\cbusbridge.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\io\pegc.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cbus\gpibio.c">
+      <Filter>ソース ファイル\cbus</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\d_wab.cpp">
+      <Filter>ソース ファイル\win9x\dialog</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\calendar.h">
@@ -2122,6 +2137,18 @@
     </ClInclude>
     <ClInclude Include="commng\cmpipe.h">
       <Filter>ヘッダー ファイル\win9x\commng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\io\pci\98graphbridge.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\io\pci\cbusbridge.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\io\pegc.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cbus\gpibio.h">
+      <Filter>ヘッダー ファイル\cbus</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

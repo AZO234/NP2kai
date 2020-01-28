@@ -1353,9 +1353,6 @@
     <ClCompile Include="commng\wintab\Utils.cpp">
       <Filter>ソース ファイル\win9x\commng\wintab</Filter>
     </ClCompile>
-    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\softfloat.c">
-      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
-    </ClCompile>
     <ClCompile Include="commng\cmpipe.cpp">
       <Filter>ソース ファイル\win9x\commng</Filter>
     </ClCompile>
@@ -1364,6 +1361,912 @@
     </ClCompile>
     <ClCompile Include="..\i386hax\haxfunc.c">
       <Filter>ソース ファイル\i386hax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\ui32_to_extF80M.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\ui32_to_f16.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\ui32_to_f32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\ui32_to_f64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\ui32_to_f128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\ui32_to_f128M.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\ui64_to_extF80.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\ui64_to_extF80M.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\ui64_to_f16.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\ui64_to_f32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\ui64_to_f64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\ui64_to_f128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\ui64_to_f128M.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_add.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_div.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_eq.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_eq_signaling.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_isSignalingNaN.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_le.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_le_quiet.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_lt.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_lt_quiet.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_mul.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_rem.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_roundToInt.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_sqrt.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_sub.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_to_f16.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_to_f32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_to_f64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_to_f128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_to_i32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_to_i32_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_to_i64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_to_i64_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_to_ui32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_to_ui32_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_to_ui64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80_to_ui64_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_add.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_div.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_eq.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_eq_signaling.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_isSignalingNaN.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_le.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_le_quiet.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_lt.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_lt_quiet.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_mul.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_rem.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_roundToInt.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_sqrt.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_sub.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_to_f16.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_to_f32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_to_f64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_to_f128M.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_to_i32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_to_i32_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_to_i64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_to_i64_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_to_ui32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_to_ui32_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_to_ui64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\extF80M_to_ui64_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_add.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_div.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_eq.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_eq_signaling.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_isSignalingNaN.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_le.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_le_quiet.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_lt.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_lt_quiet.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_mul.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_mulAdd.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_rem.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_roundToInt.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_sqrt.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_sub.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_to_extF80.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_to_extF80M.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_to_f32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_to_f64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_to_f128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_to_f128M.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_to_i32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_to_i32_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_to_i64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_to_i64_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_to_ui32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_to_ui32_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_to_ui64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f16_to_ui64_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_add.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_div.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_eq.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_eq_signaling.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_isSignalingNaN.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_le.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_le_quiet.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_lt.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_lt_quiet.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_mul.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_mulAdd.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_rem.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_roundToInt.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_sqrt.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_sub.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_to_extF80.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_to_extF80M.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_to_f16.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_to_f64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_to_f128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_to_f128M.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_to_i32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_to_i32_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_to_i64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_to_i64_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_to_ui32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_to_ui32_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_to_ui64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f32_to_ui64_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_add.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_div.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_eq.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_eq_signaling.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_isSignalingNaN.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_le.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_le_quiet.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_lt.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_lt_quiet.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_mul.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_mulAdd.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_rem.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_roundToInt.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_sqrt.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_sub.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_to_extF80.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_to_extF80M.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_to_f16.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_to_f32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_to_f128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_to_f128M.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_to_i32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_to_i32_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_to_i64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_to_i64_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_to_ui32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_to_ui32_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_to_ui64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f64_to_ui64_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_add.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_div.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_eq.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_eq_signaling.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_isSignalingNaN.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_le.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_le_quiet.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_lt.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_lt_quiet.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_mul.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_mulAdd.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_rem.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_roundToInt.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_sqrt.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_sub.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_to_extF80.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_to_f16.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_to_f32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_to_f64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_to_i32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_to_i32_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_to_i64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_to_i64_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_to_ui32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_to_ui32_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_to_ui64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128_to_ui64_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_add.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_div.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_eq.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_eq_signaling.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_isSignalingNaN.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_le.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_le_quiet.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_lt.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_lt_quiet.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_mul.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_mulAdd.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_rem.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_roundToInt.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_sqrt.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_sub.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_to_extF80M.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_to_f16.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_to_f32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_to_f64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_to_i32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_to_i32_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_to_i64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_to_i64_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_to_ui32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_to_ui32_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_to_ui64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\f128M_to_ui64_r_minMag.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\i32_to_extF80.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\i32_to_extF80M.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\i32_to_f16.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\i32_to_f32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\i32_to_f64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\i32_to_f128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\i32_to_f128M.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\i64_to_extF80.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\i64_to_extF80M.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\i64_to_f16.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\i64_to_f32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\i64_to_f64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\i64_to_f128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\i64_to_f128M.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_add128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_add256M.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_addMagsExtF80.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_addMagsF16.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_addMagsF32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_addMagsF64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_addMagsF128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_approxRecip_1Ks.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_approxRecip32_1.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_approxRecipSqrt_1Ks.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_approxRecipSqrt32_1.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_commonNaNToExtF80UI.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_commonNaNToF16UI.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_commonNaNToF32UI.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_commonNaNToF64UI.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_commonNaNToF128UI.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_countLeadingZeros8.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_countLeadingZeros16.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_countLeadingZeros32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_countLeadingZeros64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_eq128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_extF80UIToCommonNaN.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_f16UIToCommonNaN.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_f32UIToCommonNaN.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_f64UIToCommonNaN.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_f128UIToCommonNaN.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_le128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_lt128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_mul64ByShifted32To128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_mul64To128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_mul128By32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_mul128To256M.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_mulAddF16.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_mulAddF32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_mulAddF64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_mulAddF128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_normRoundPackToExtF80.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_normRoundPackToF16.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_normRoundPackToF32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_normRoundPackToF64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_normRoundPackToF128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_normSubnormalExtF80Sig.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_normSubnormalF16Sig.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_normSubnormalF32Sig.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_normSubnormalF64Sig.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_normSubnormalF128Sig.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_propagateNaNExtF80UI.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_propagateNaNF16UI.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_propagateNaNF32UI.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_propagateNaNF64UI.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_propagateNaNF128UI.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_roundPackToExtF80.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_roundPackToF16.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_roundPackToF32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_roundPackToF64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_roundPackToF128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_roundToI32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_roundToI64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_roundToUI32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_roundToUI64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_shiftRightJam32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_shiftRightJam64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_shiftRightJam64Extra.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_shiftRightJam128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_shiftRightJam128Extra.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_shiftRightJam256M.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_shortShiftLeft128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_shortShiftRight128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_shortShiftRightJam64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_shortShiftRightJam64Extra.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_shortShiftRightJam128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_shortShiftRightJam128Extra.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_sub128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_sub256M.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_subMagsExtF80.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_subMagsF16.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_subMagsF32.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_subMagsF64.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\s_subMagsF128.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\softfloat_raiseFlags.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\softfloat_state.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\ui32_to_extF80.c">
+      <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2378,15 +3281,6 @@
     <ClInclude Include="..\i386c\ia32\instructions\fpu\softfloat\softfloat.h">
       <Filter>ヘッダー ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
     </ClInclude>
-    <ClInclude Include="..\i386c\ia32\instructions\fpu\softfloat\softfloatdef.h">
-      <Filter>ヘッダー ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
-    </ClInclude>
-    <ClInclude Include="..\i386c\ia32\instructions\fpu\softfloat\softfloat-macros.h">
-      <Filter>ヘッダー ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
-    </ClInclude>
-    <ClInclude Include="..\i386c\ia32\instructions\fpu\softfloat\softfloat-specialize.h">
-      <Filter>ヘッダー ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
-    </ClInclude>
     <ClInclude Include="commng\cmpipe.h">
       <Filter>ヘッダー ファイル\win9x\commng</Filter>
     </ClInclude>
@@ -2395,6 +3289,21 @@
     </ClInclude>
     <ClInclude Include="..\i386hax\haxfunc.h">
       <Filter>ヘッダー ファイル\i386hax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\i386c\ia32\instructions\fpu\softfloat\internals.h">
+      <Filter>ヘッダー ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\i386c\ia32\instructions\fpu\softfloat\opts-GCC.h">
+      <Filter>ヘッダー ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\i386c\ia32\instructions\fpu\softfloat\platform.h">
+      <Filter>ヘッダー ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\i386c\ia32\instructions\fpu\softfloat\primitives.h">
+      <Filter>ヘッダー ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\i386c\ia32\instructions\fpu\softfloat\primitiveTypes.h">
+      <Filter>ヘッダー ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

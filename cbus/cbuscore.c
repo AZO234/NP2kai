@@ -12,16 +12,16 @@
 #endif
 #include	"bmsio.h"
 #ifdef SUPPORT_NET
-#include	"net.h"
+#include	"network/net.h"
 #endif
 #ifdef SUPPORT_LGY98
-#include	"lgy98.h"
+#include	"network/lgy98.h"
 #endif
 #ifdef SUPPORT_WAB
-#include	"wab.h"
+#include	"wab/wab.h"
 #endif
 #ifdef SUPPORT_CL_GD5430
-#include	"cirrus_vga_extern.h"
+#include	"wab/cirrus_vga_extern.h"
 #endif
 #ifdef SUPPORT_GPIB
 #include	"gpibio.h"

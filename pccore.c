@@ -54,10 +54,10 @@
 #include	"keystat.h"
 #include	"debugsub.h"
 #if defined(SUPPORT_WAB)
-#include	"wab.h"
+#include	"wab/wab.h"
 #endif
 #if defined(SUPPORT_CL_GD5430)
-#include	"cirrus_vga_extern.h"
+#include	"wab/cirrus_vga_extern.h"
 #endif
 #if defined(SUPPORT_HRTIMER)
 #include	"upd4990.h"
@@ -91,7 +91,11 @@
 #include <time.h>
 
 
+#ifndef NP2_WIN
 const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE " " NP2VER_GIT);
+#else
+const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
+#endif
 
 #if defined(_WIN32_WCE)
 #define	PCBASEMULTIPLE	2

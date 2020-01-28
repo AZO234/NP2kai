@@ -407,10 +407,8 @@ static void info_display(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
 	bpp = scrnmng_getbpp();
 	milstr_ncpy(str, milstr_list(str_winclr, ((bpp >> 3) - 1) & 3), maxlen);
-#if defined(NP2_WIN)
-	OEMSPRINTF(buf, OEMTEXT(" %dx%d"), scrnmngp->width, scrnmngp->height);
-	milstr_ncat(str, buf, maxlen);
-#endif	/* NP2_WIN */
+//	OEMSPRINTF(buf, OEMTEXT(" %dx%d"), scrnmngp->width, scrnmngp->height);
+//	milstr_ncat(str, buf, maxlen);
 	milstr_ncat(str, milstr_list(str_winmode, (scrnmng_isfullscreen())?1:0),
 																	maxlen);
 	(void)ex;

@@ -189,7 +189,7 @@ typedef	signed __int64		SINT64;
 
 #define SOUND_CRITICAL
 #define	SOUNDRESERVE	20
-#define SUPPORT_VSTi
+//#define SUPPORT_VSTi
 #define SUPPORT_ASIO
 #if (_MSC_VER >= 1500)
 #define SUPPORT_WASAPI
@@ -198,6 +198,9 @@ typedef	signed __int64		SINT64;
 #define	SUPPORT_TEXTCNV
 
 #define SUPPORT_WIN2000HOST
+
+#define np2max max
+#define np2min min
 
 #if defined(SUPPORT_IA32_HAXM)
 #define USE_CUSTOM_HOOKINST

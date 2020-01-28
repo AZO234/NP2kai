@@ -54,6 +54,10 @@ typedef struct {
 	UINT8	JOY1BTN[4];
 
 	COMCFG	mpu;
+#if defined(SUPPORT_SMPU98)
+	COMCFG	smpuA;
+	COMCFG	smpuB;
+#endif
 	COMCFG	com1;
 	COMCFG	com2;
 	COMCFG	com3;

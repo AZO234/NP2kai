@@ -9,13 +9,13 @@
 #include	"cs4231io.h"
 #include	"iocore16.tbl"
 #ifdef SUPPORT_LGY98
-#include	"lgy98.h"
+#include	"network/lgy98.h"
 #endif
 #ifdef SUPPORT_WAB
-#include	"wab.h"
+#include	"wab/wab.h"
 #endif
 #ifdef SUPPORT_CL_GD5430
-#include	"cirrus_vga_extern.h"
+#include	"wab/cirrus_vga_extern.h"
 #endif
 #ifdef SUPPORT_SMPU98
 #include	"cbus/mpu98ii.h"

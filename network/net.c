@@ -23,7 +23,6 @@
 #ifdef SUPPORT_LGY98
 #include	"lgy98.h"
 #endif
-#include	"sxsi.h"
 
 #if defined(_WINDOWS)
 #include <winioctl.h>
