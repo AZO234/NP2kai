@@ -25,7 +25,7 @@
 #define	siglongjmp(env, val)	longjmp(env, val)
 #endif
 
-typedef	bool				BOOL;
+//typedef	bool				BOOL;
 #ifndef __GNUC__
 typedef	signed int			SINT;
 typedef	signed char			SINT8;
