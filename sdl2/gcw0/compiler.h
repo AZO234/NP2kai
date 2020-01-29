@@ -64,8 +64,7 @@ __extension__
 typedef unsigned long long int  UINT64;
 #endif
 
-typedef	int				BOOL;
-#define bool BOOL
+typedef	bool				BOOL;
 typedef	signed char		CHAR;
 typedef	signed char		TCHAR;
 typedef	unsigned char	BYTE;
@@ -219,8 +218,6 @@ typedef SINT32	FILELEN;
 #define SUPPORT_ARC
 #define SUPPORT_ZLIB
 
-#define	SUPPORT_FMGEN
-
 #define SUPPORT_PX
 #define SUPPORT_V30ORIGINAL
 #define SUPPORT_V30EXT
@@ -238,5 +235,11 @@ typedef SINT32	FILELEN;
 #define	SCRNCALL
 #define	VERMOUTHCL
 #define	INLINE inline
+
+#if defined(SUPPORT_LARGE_MEMORY)
+#define	MEMORY_MAXSIZE		4000
+#else
+#define	MEMORY_MAXSIZE		230
+#endif
 
 #include	"common.h"
