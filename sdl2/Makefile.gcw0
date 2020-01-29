@@ -59,7 +59,7 @@ CFLAGS   += -DSUPPORT_NET -DSUPPORT_LGY98
 endif
 
 
-all: $(TARGET)
+all: buildopk
 $(TARGET): $(OBJECTS)
 ifeq ($(STATIC_LINKING), 1)
 	$(AR) rcs $@ $(OBJECTS)
@@ -77,12 +77,14 @@ endif
 clean:
 	rm -f $(OBJECTS) $(TARGET)
 	rm -f *.opk
+	rm -f opk/$(TARGET)
+	rm -f opk/default.gcw0.desktop
 
 
-
-buildopk:
+buildopk: $(TARGET)
 	cp -f $(TARGET) ./opk
-	mksquashfs ./opk np2kai.opk -all-root -noappend -no-exports
+	cp ./opk/default_gcw0_$(TARGET)_desktop ./opk/default.gcw0.desktop
+	mksquashfs ./opk $(TARGET).opk -all-root -noappend -no-exports
 
 
 uninstall:

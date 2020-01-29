@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=NP2Kai PC98
+Name=NP2kai PC98
 Comment=PC9801 emulator
 Exec=np2kai %f
 Terminal=false
