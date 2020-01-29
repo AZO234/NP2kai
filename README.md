@@ -175,18 +175,22 @@ $ make install
 ### GCW Zero (GCW0) 
 
 ##### Build
-1. Change directory to sdl2.  
+1. Change directory into sdl2.  
 ```
 $ cd NP2kai/sdl2
 ```
 2. Make.  
 ```
-$ make -f Makefile21.gcw0 buildopk
+$ make -f Makefile.gcw0
+```
+or
+```
+$ make -f Makefile21.gcw0
 ```
 
 ##### Install binary
-1. Transfer np2kai.opk to /media/apps/ .  
-2. BIOS files should locate in ~/.config/np2kai .  
+1. Transfer np2kai.opk or np21kai.opk to /media/apps/ .  
+2. BIOS files should locate in ~/.config/np2kai (or np21kai).  
 
 #### libretro port (Windows/Linux/macOS)
 
