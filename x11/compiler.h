@@ -55,15 +55,15 @@
 #define	BYTESEX_LITTLE
 #endif	/* WORDS_BIGENDIAN */
 
-#if !defined(USE_SDLAUDIO) && !defined(USE_SDLMIXER)
+#if !defined(USE_SDLAUDIO) && !defined(USE_SDLMIXER) && !defined(USE_SDL2AUDIO) && !defined(USE_SDL2MIXER)
 #ifndef	NOSOUND
 #define	NOSOUND
 #undef	VERMOUTH_LIB
 #endif	/* !NOSOUND */
-#else	/* USE_SDLAUDIO || USE_SDLMIXER */
+#else	/* USE_SDLAUDIO || USE_SDLMIXER  || USE_SDL2AUDIO || USE_SDL2MIXER */
 #undef	NOSOUND
 #define	VERMOUTH_LIB
-#endif	/* !USE_SDLAUDIO && !USE_SDLMIXER */
+#endif	/* !USE_SDLAUDIO && !USE_SDLMIXER && !USE_SDL2AUDIO && !USE_SDL2MIXER */
 
 #include <sys/param.h>
 #include <sys/time.h>
@@ -296,10 +296,10 @@ G_END_DECLS
 
 #define	SUPPORT_SCREENSIZE
 
-#if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER)
+#if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER) || defined(USE_SDL2AUDIO) || defined(USE_SDL2MIXER)
 #define	SUPPORT_JOYSTICK
 #define	USE_SDL_JOYSTICK
-#endif	/* USE_SDLAUDIO || USE_SDLMIXER */
+#endif	/* USE_SDLAUDIO || USE_SDLMIXER || USE_SDL2AUDIO || USE_SDL2MIXER */
 
 #define SUPPORT_PX
 #define SUPPORT_V30ORIGINAL

@@ -813,6 +813,10 @@ http://buffalo.jp/download/driver/multi/wgna_95.html
 https://www.iodata.jp/lib/product/g/175_win95.htm  
 
 ## Release
+* Jan 29, 2019  
+  - fix X11 no sound (please check 'sounddrv = SDL' in .config/xnp2kai/xnp2kairc)  
+  - fix for GKD350H  
+  - fix for GCW0  
 * Jan 26, 2019  
   - mod mouse cursor moving.  
 * Jan 15, 2019  

@@ -193,6 +193,11 @@ else
           AC_DEFINE(USE_SDL2MIXER,,[Define if you have the SDL2_mixer library.])
           SDL_LIBS="$SDL_LIBS -lSDL2_mixer",,$SDL_LIBS)
       fi
+dnl      if test x"$enable_sdlmixer" = "xyes"; then
+dnl        AC_CHECK_LIB(SDL_mixer,Mix_OpenAudio,
+dnl          AC_DEFINE(USE_SDLMIXER,,[Define if you have the SDL_mixer library.])
+dnl          SDL_LIBS="$SDL_LIBS -lSDL_mixer",,$SDL_LIBS)
+dnl      fi
       if test x"$enable_sdl2ttf" = "xyes"; then
         AC_CHECK_LIB(SDL2_ttf,TTF_Quit,
           AC_DEFINE(USE_SDL2TTF,,[Define if you have the SDL2_ttf library.])
