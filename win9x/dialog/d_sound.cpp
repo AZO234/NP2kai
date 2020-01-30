@@ -14,14 +14,14 @@
 #include "joymng.h"
 #include "np2.h"
 #include "sysmng.h"
-#include "misc\PropProc.h"
+#include "misc/PropProc.h"
 #include "pccore.h"
 #include "iocore.h"
 #include "soundmng.h"
-#include "generic\dipswbmp.h"
-#include "sound\sound.h"
-#include "sound\fmboard.h"
-#include "sound\tms3631.h"
+#include "generic/dipswbmp.h"
+#include "sound/sound.h"
+#include "sound/fmboard.h"
+#include "sound/tms3631.h"
 #if defined(SUPPORT_FMGEN)
 #include "sound/opna.h"
 #endif	/* SUPPORT_FMGEN */
@@ -231,6 +231,17 @@ BOOL SndOptMixerPage::OnCommand(WPARAM wParam, LPARAM lParam)
 		m_cdda.SetPos(128);
 		return TRUE;
 	}
+	else if (LOWORD(wParam) == IDC_SNDMIXDEF2)
+	{
+		m_fm.SetPos(64);
+		m_psg.SetPos(25);
+		m_adpcm.SetPos(64);
+		m_pcm.SetPos(90);
+		m_rhythm.SetPos(64);
+		m_cdda.SetPos(128);
+		return TRUE;
+	}
+
 	return FALSE;
 }
 

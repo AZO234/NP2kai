@@ -54,6 +54,9 @@
 #include "iocore.h"
 #include "pc9861k.h"
 #include "mpu98ii.h"
+#if defined(SUPPORT_SMPU98)
+#include "smpu98.h"
+#endif
 #include "scrndraw.h"
 #include "sound.h"
 #include "beep.h"
@@ -96,7 +99,16 @@
 #include "Dbt.h"
 #endif
 
+#if defined(SUPPORT_IA32_HAXM)
+#include	"i386hax/haxfunc.h"
+#include	"i386hax/haxcore.h"
+#endif
+
 #include	<process.h>
+
+#ifdef SUPPORT_WACOM_TABLET
+void cmwacom_setNCControl(bool enable);
+#endif
 
 #ifdef BETA_RELEASE
 #define		OPENING_WAIT		1500
@@ -119,13 +131,43 @@ static	TCHAR		szClassName[] = _T("NP2-MainWindow");
 						0, 0, KEY_UNKNOWN, 0, 0,
 						0, 0, 0, {1, 2, 2, 1},
 						{5, 0, 0x3e, 19200,
-						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
+						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), 0, 
+#if defined(SUPPORT_NAMED_PIPE)
+						 OEMTEXT("NP2-NamedPipe"), OEMTEXT("."),
+#endif
+						},
+#if defined(SUPPORT_SMPU98)
+						{5, 0, 0x3e, 19200,
+						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), 0, 
+#if defined(SUPPORT_NAMED_PIPE)
+						 OEMTEXT("NP2-NamedPipe"), OEMTEXT("."),
+#endif
+						},
+						{5, 0, 0x3e, 19200,
+						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), 0, 
+#if defined(SUPPORT_NAMED_PIPE)
+						 OEMTEXT("NP2-NamedPipe"), OEMTEXT("."),
+#endif
+						},
+#endif
 						{0, 0, 0x3e, 19200,
-						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
+						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), 0, 
+#if defined(SUPPORT_NAMED_PIPE)
+						 OEMTEXT("NP2-NamedPipe"), OEMTEXT("."),
+#endif
+						},
 						{0, 0, 0x3e, 19200,
-						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
+						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), 0, 
+#if defined(SUPPORT_NAMED_PIPE)
+						 OEMTEXT("NP2-NamedPipe"), OEMTEXT("."),
+#endif
+						},
 						{0, 0, 0x3e, 19200,
-						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
+						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), 0, 
+#if defined(SUPPORT_NAMED_PIPE)
+						 OEMTEXT("NP2-NamedPipe"), OEMTEXT("."),
+#endif
+						},
 						0xffffff, 0xffbf6a, 0, 0,
 						0, 1,
 						0, 0,
@@ -135,7 +177,7 @@ static	TCHAR		szClassName[] = _T("NP2-MainWindow");
 						0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, FSCRNMOD_SAMEBPP | FSCRNMOD_SAMERES | FSCRNMOD_ASPECTFIX8, 0,
 
 #if defined(SUPPORT_SCRN_DIRECT3D)
-						0, 
+						0, 0,
 #endif
 
 						CSoundMng::kDSound3, TEXT(""),
@@ -148,7 +190,10 @@ static	TCHAR		szClassName[] = _T("NP2-MainWindow");
 						0, 0, 
 						0, 8, 
 						0, 0, 0, TCMODE_DEFAULT, 0, 1, 
-						0
+						0,
+#if defined(SUPPORT_WACOM_TABLET)
+						0,
+#endif	// defined(SUPPORT_WACOM_TABLET)
 					};
 
 		OEMCHAR		fddfolder[MAX_PATH];
@@ -1437,6 +1482,9 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			}else{
 				SetClassLong(g_hWndMain, GCL_STYLE, GetClassLong(g_hWndMain, GCL_STYLE) | CS_DBLCLKS);
 			}
+#ifdef SUPPORT_WACOM_TABLET
+			cmwacom_setNCControl(!!np2oscfg.mouse_nc);
+#endif
 			break;
 
 		case IDM_MOUSERAW:
@@ -1501,6 +1549,9 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 		case IDM_MIDIPANIC:
 			rs232c_midipanic();
 			mpu98ii_midipanic();
+#if defined(SUPPORT_SMPU98)
+			smpu98_midipanic();
+#endif
 			pc9861k_midipanic();
 			break;
 
@@ -1722,9 +1773,9 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 					hBmp = CreateDIBitmap(hDC, &(lpbinfo->bmiHeader), CBM_INIT, lppixels, lpbinfo, DIB_RGB_COLORS);
 				}
 				ReleaseDC(NULL, hDC);
-				_MFREE(lppal);
-				_MFREE(lppixels);
-				_MFREE(lpbinfo);
+				free(lppal);
+				free(lppixels);
+				free(lpbinfo);
 				if(OpenClipboard(hWnd)){
 					// クリップボード奪取成功
 					EmptyClipboard();
@@ -2517,6 +2568,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				}
 			}
 			break;
+			
+#if defined(SUPPORT_SCRN_DIRECT3D)
+		case WM_SETFOCUS:
+			if (scrnmng_isfullscreen() && scrnmng_current_drawtype==DRAWTYPE_DIRECT3D && !np2oscfg.d3d_exclusive && !winui_en) {
+				ShowWindow( hWnd, SW_RESTORE );
+			}
+			break;
+
+		case WM_KILLFOCUS:
+			if (scrnmng_isfullscreen() && scrnmng_current_drawtype==DRAWTYPE_DIRECT3D && !np2oscfg.d3d_exclusive && !winui_en) {
+				ShowWindow( hWnd, SW_MINIMIZE );
+			}
+			break;
+#endif
 
 		case WM_CLOSE:
 			b = FALSE;
@@ -2535,6 +2600,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			}
 			if (b) {
 				CDebugUtyView::AllClose();
+				CDebugUtyView::DisposeAllClosedWindow();
 				DestroyWindow(hWnd);
 			}
 			break;
@@ -2873,6 +2939,12 @@ static void processwait(UINT cnt) {
 	UINT count = timing_getcount();
 	if (count+lateframecount >= cnt) {
 		lateframecount = lateframecount + count - cnt;
+#if defined(SUPPORT_IA32_HAXM)
+		if (np2hax.enable) {
+			np2haxcore.hurryup = 0;
+			lateframecount = 0;
+		}
+#endif
 		if(lateframecount > np2oscfg.cpustabf) lateframecount = np2oscfg.cpustabf;
 		timing_setcount(0);
 		framereset(cnt);
@@ -2922,7 +2994,7 @@ void unloadNP2INI(){
 #endif
 	
 	sxsi_alltrash();
-	//pccore_term();
+	pccore_term();
 
 	CSoundMng::GetInstance()->Close();
 	CSoundMng::Deinitialize();
@@ -3231,6 +3303,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 #endif
 	BOOL		xrollkey;
 	
+#ifdef _DEBUG
+	// 使うときはstdlib.hとcrtdbg.hをインクルードする
+	_CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	//_CrtSetBreakAlloc(499);
+#endif
+
 #if defined(SUPPORT_WIN2000HOST)
 #ifdef _WINDOWS
 #ifndef _WIN64
@@ -3673,15 +3751,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 #endif
 
 	pccore_term();
-	
+
 	CSoundMng::GetInstance()->Close();
 	CSoundMng::Deinitialize();
 	scrnmng_shutdown();
 	scrnmng_destroy();
+	commng_finalize();
 	recvideo_close();
-
 	mousemng_destroy();
-
+	
 	if (sys_updates	& (SYS_UPDATECFG | SYS_UPDATEOSCFG)) {
 		initsave();
 		toolwin_writeini();
@@ -3697,6 +3775,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 #endif	// defined(SUPPORT_WAB)
 	skbdwin_deinitialize();
 	
+	CSubWndBase::Deinitialize();
+	CWndProc::Deinitialize();
+	
 	winloc_DisposeDwmFunc();
 
 	UnloadExternalResource();
@@ -3704,6 +3785,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	TRACETERM();
 	_MEM_USED(TEXT("report.txt"));
 	dosio_term();
+
+	Np2Arg::Release();
+
+	//_CrtDumpMemoryLeaks();
 
 	return((int)msg.wParam);
 }

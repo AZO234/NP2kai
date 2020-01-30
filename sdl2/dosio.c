@@ -74,10 +74,22 @@ FILEH file_create(const OEMCHAR *path) {
 #endif
 }
 
-long file_seek(FILEH handle, long pointer, int method) {
-
+FILEPOS file_seek(FILEH handle, FILEPOS pointer, int method) {
+#if defined(SUPPORT_LARGE_HDD)
+#if defined (__MINGW32__) 
+	fseeko64(handle, pointer, method);
+	return(ftello64(handle));
+#elif defined (_MSC_VER)
+	_fseeki64(handle, pointer, method);
+	return(_ftelli64(handle));
+#else
+	fseeko(handle, pointer, method);
+	return(ftello(handle));
+#endif
+#else
 	fseek(handle, pointer, method);
 	return(ftell(handle));
+#endif
 }
 
 UINT file_read(FILEH handle, void *data, UINT length) {
@@ -96,14 +108,32 @@ short file_close(FILEH handle) {
 	return(0);
 }
 
-UINT file_getsize(FILEH handle) {
+FILELEN file_getsize(FILEH handle) {
 
+#if defined(SUPPORT_LARGE_HDD)
+#if defined (__MINGW32__) || defined (_MSC_VER)
+	struct _stati64 sb;
+
+	if (_fstati64(fileno(handle), &sb) == 0)
+	{
+		return (FILELEN)sb.st_size;
+	}
+#else
 	struct stat sb;
 
 	if (fstat(fileno(handle), &sb) == 0)
 	{
-		return (UINT)sb.st_size;
+		return (FILELEN)sb.st_size;
 	}
+#endif
+#else
+	struct stat sb;
+
+	if (fstat(fileno(handle), &sb) == 0)
+	{
+		return (FILELEN)sb.st_size;
+	}
+#endif
 	return(0);
 }
 

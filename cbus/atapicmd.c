@@ -374,7 +374,7 @@ static void atapi_cmd_start_stop_unit(IDEDRV drv) {
 		drv->asc = ATAPI_ASC_INVALID_FIELD_IN_CDB;
 		goto send_error;
 	}
-	switch(drv->buf[4] & 2){
+	switch(drv->buf[4] & 3){
 	case 0: // Stop the Disc
 		break;
 	case 1: // Start the Disc and read the TOC

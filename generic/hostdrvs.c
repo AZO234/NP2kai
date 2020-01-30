@@ -266,7 +266,7 @@ LISTARRAY hostdrvs_getpathlist(const HDRVPATH *phdp, const char *lpMask, UINT nA
 			listarray_destroy(ret);
 			ret = NULL;
 		}
-		listarray_getitems(lst);
+		listarray_destroy(lst);
 	}
 	return ret;
 }

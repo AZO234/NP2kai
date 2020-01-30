@@ -516,6 +516,7 @@ enum {
 	INIRO_BOOL	= INIFLAG_RO | INITYPE_BOOL,
 	INIRO_BITMAP	= INIFLAG_RO | INITYPE_BITMAP,
 	INIRO_UINT8	= INIFLAG_RO | INITYPE_UINT8,
+	INIRO_HEX8	= INIFLAG_RO | INITYPE_HEX8,
 	INIMAX_UINT8	= INIFLAG_MAX | INITYPE_UINT8,
 	INIAND_UINT8	= INIFLAG_AND | INITYPE_UINT8,
 	INIROMAX_SINT32	= INIFLAG_RO | INIFLAG_MAX | INITYPE_SINT32,
@@ -586,8 +587,14 @@ static const INITBL iniitem[] = {
 	{"optSPBVR", INITYPE_HEX8,	&np2cfg.spb_vrc,	0},
 	{"optSPBVL", INIMAX_UINT8,	&np2cfg.spb_vrl,	24},
 	{"optSPB_X", INITYPE_BOOL,	&np2cfg.spb_x,		0},
+	{"USEMPU98", INITYPE_BOOL,	&np2cfg.mpuenable,		0},
 	{"optMPU98", INITYPE_HEX8,	&np2cfg.mpuopt,		0},
 	{"optMPUAT", INITYPE_BOOL,	&np2cfg.mpu_at,		0},
+#if defined(SUPPORT_SMPU98)
+	{"USE_SMPU", INITYPE_BOOL,	&np2cfg.smpuenable,		0},
+	{"opt_SMPU", INITYPE_HEX8,	&np2cfg.smpuopt,		0},
+	{"SMPUMUTB", INITYPE_BOOL,	&np2cfg.smpumuteB,		0},
+#endif
 	{"opt118io", INITYPE_HEX16,	&np2cfg.snd118io,	0},
 	{"opt118id", INITYPE_HEX8,	&np2cfg.snd118id,	0},
 	{"opt118dm", INITYPE_UINT8,	&np2cfg.snd118dma,	0},
@@ -674,6 +681,11 @@ static const INITBL iniitem[] = {
 	{"GDMELOFS", INITYPE_UINT8,	&np2cfg.gd5430melofs,	0},
 	{"GANBBSEX", INITYPE_BOOL,	&np2cfg.ga98nb_bigscrn_ex,	0},
 #endif
+#if defined(SUPPORT_PCI)
+	{"USE98PCI", INITYPE_BOOL,	&np2cfg.usepci,	0},
+	{"PCI_PCMC", INITYPE_UINT8,	&np2cfg.pci_pcmc,	0},
+	{"P_BIOS32", INITYPE_BOOL,	&np2cfg.pci_bios32,	0},
+#endif
 	{"TIMERFIX", INITYPE_BOOL,	&np2cfg.timerfix,	0},
 
 	{"WINNTFIX", INITYPE_BOOL,	&np2cfg.winntfix,	0},
@@ -700,6 +712,9 @@ static const INITBL iniitem[] = {
 #if defined(SUPPORT_ASYNC_CPU)
 	{"ASYNCCPU", INITYPE_BOOL,	&np2cfg.asynccpu,	0},
 #endif
+#if defined(SUPPORT_IDEIO)
+	{"IDEBADDR", INIRO_HEX8,	&np2cfg.idebaddr,	0},
+#endif
 
 	{"keyboard", INITYPE_KB,	&np2oscfg.KEYBOARD,	0},
 #if !defined(__LIBRETRO__)
@@ -718,6 +733,17 @@ static const INITBL iniitem[] = {
 	{"mpu98min", INITYPE_STR,	np2oscfg.mpu.min,	MAX_PATH},
 	{"mpu98mdl", INITYPE_STR,	np2oscfg.mpu.mdl,	64},
 	{"mpu98def", INITYPE_STR,	np2oscfg.mpu.def,	MAX_PATH},
+
+#if defined(SUPPORT_SMPU98)
+	{"smpuAmap", INITYPE_STR,	np2oscfg.smpuA.mout,	MAX_PATH},
+	{"smpuAmin", INITYPE_STR,	np2oscfg.smpuA.min,	MAX_PATH},
+	{"smpuAmdl", INITYPE_STR,	np2oscfg.smpuA.mdl,	64},
+	{"smpuAdef", INITYPE_STR,	np2oscfg.smpuA.def,	MAX_PATH},
+	{"smpuBmap", INITYPE_STR,	np2oscfg.smpuB.mout,	MAX_PATH},
+	{"smpuBmin", INITYPE_STR,	np2oscfg.smpuB.min,	MAX_PATH},
+	{"smpuBmdl", INITYPE_STR,	np2oscfg.smpuB.mdl,	64},
+	{"smpuBdef", INITYPE_STR,	np2oscfg.smpuB.def,	MAX_PATH},
+#endif
 
 #if !defined(__LIBRETRO__)
 	{"com1port", INIMAX_UINT8,	&np2oscfg.com[0].port,	COMPORT_NONE},
@@ -759,6 +785,12 @@ static const INITBL iniitem[] = {
 #if defined(_WIN32)
 	{"MIDIOUTd", INITYPE_STR,	&np2oscfg.MIDIDEV[0],	MAX_PATH},
 	{"MIDIIN_d", INITYPE_STR,	&np2oscfg.MIDIDEV[1],	MAX_PATH},
+#if defined(SUPPORT_SMPU98)
+	{"MIDIOUAd", INITYPE_STR,	&np2oscfg.MIDIDEVA[0],	MAX_PATH},
+	{"MIDIINAd", INITYPE_STR,	&np2oscfg.MIDIDEVA[1],	MAX_PATH},
+	{"MIDIOUBd", INITYPE_STR,	&np2oscfg.MIDIDEVB[0],	MAX_PATH},
+	{"MIDIINBd", INITYPE_STR,	&np2oscfg.MIDIDEVB[1],	MAX_PATH},
+#endif
 	{"MIDIWAIT", INITYPE_UINT32,	&np2oscfg.MIDIWAIT,	0},
 #endif	/* _WIN32 */
 #endif	/* __LIBRETRO__ */
@@ -819,6 +851,8 @@ void initload(void) {
 	char	path[MAX_PATH];
 
 	milstr_ncpy(path, file_getcd(inifile), sizeof(path));
+	fprintf(stderr, "Loading %s from %s", inifile, path);
+	TRACEOUT(("Loading %s from %s", inifile, path));
 	ini_read(path, ini_title, iniitem, INIITEMS);
 }
 
@@ -827,6 +861,7 @@ void initsave(void) {
 	char	path[MAX_PATH];
 
 	milstr_ncpy(path, file_getcd(inifile), sizeof(path));
+	fprintf(stderr, "Saving %s to %s", inifile, path);
 	ini_write(path, ini_title, iniitem, INIITEMS);
 }
 

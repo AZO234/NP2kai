@@ -3,6 +3,10 @@
 #include	"pccore.h"
 #include	"iocore.h"
 
+#if defined(SUPPORT_IA32_HAXM)
+#include	"i386hax/haxfunc.h"
+#include	"i386hax/haxcore.h"
+#endif
 
 enum {
 	PIC_OCW2_L		= 0x07,
@@ -26,6 +30,7 @@ static CRITICAL_SECTION pic_cs;
 
 static void pic_enter_criticalsection(void){
 #if defined(_WINDOWS) && !defined(__LIBRETRO__)
+	if(!pic_cs_initialized) return;
 	EnterCriticalSection(&pic_cs);
 #else
 	// TODO: 非Windows用コードを書く
@@ -33,6 +38,7 @@ static void pic_enter_criticalsection(void){
 }
 static void pic_leave_criticalsection(void){
 #if defined(_WINDOWS) && !defined(__LIBRETRO__)
+	if(!pic_cs_initialized) return;
 	LeaveCriticalSection(&pic_cs);
 #else
 	// TODO: 非Windows用コードを書く
@@ -128,6 +134,11 @@ void pic_irq(void) {												// ver0.78
 	REG8	slave;
 
 	// 割込み許可？
+#if defined(SUPPORT_IA32_HAXM)
+	if (np2hax.enable) {
+
+	}else
+#endif
 	if (!CPU_isEI) {
 		return;
 	}

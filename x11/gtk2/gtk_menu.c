@@ -53,6 +53,10 @@
 #include "scrnmng.h"
 #include "sysmng.h"
 
+#if defined(SUPPORT_SMPU98)
+#include "smpu98.h"
+#endif
+
 #include "gtk2/xnp2.h"
 #include "gtk2/gtk_menu.h"
 #include "gtk2/gtk_keyboard.h"
@@ -582,11 +586,13 @@ static const gchar *ui_info =
 "    <menuitem action='7.6mb'/>\n"
 "    <menuitem action='9.6mb'/>\n"
 "    <menuitem action='13.6mb'/>\n"
+#if defined(CPUCORE_IA32)
 "    <menuitem action='16.6mb'/>\n"
 "    <menuitem action='32.6mb'/>\n"
 "    <menuitem action='64.6mb'/>\n"
 "    <menuitem action='120.6mb'/>\n"
 "    <menuitem action='230.6mb'/>\n"
+#endif
 "   </menu>\n"
 "   <menu name='FPU' action='FPUMenu'>\n"
 "    <menuitem action='fpu80'/>\n"
@@ -1221,6 +1227,9 @@ cb_midipanic(GtkAction *action, gpointer user_data)
 
 	rs232c_midipanic();
 	mpu98ii_midipanic();
+#if defined(SUPPORT_SMPU98)
+	smpu98_midipanic();
+#endif
 	pc9861k_midipanic();
 }
 
@@ -2046,9 +2055,9 @@ cb_itfwork(GtkToggleAction *action, gpointer user_data)
 	gboolean b = gtk_toggle_action_get_active(action);
 	gboolean f;
 
-	f = (np2cfg.XSHIFT & 1) ^ (b ? 1 : 0);
+	f = (np2cfg.ITF_WORK & 1) ^ (b ? 1 : 0);
 	if (f) {
-		np2cfg.XSHIFT ^= 1;
+		np2cfg.ITF_WORK ^= 1;
 		sysmng_update(SYS_UPDATECFG);
 	}
 }

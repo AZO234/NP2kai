@@ -392,7 +392,7 @@ static void dlgupdate(void) {
 #endif
 	}
 	if (np2cfg.gd5430type != (UINT16)type) {
-		np2cfg.gd5430type = (UINT16)val;
+		np2cfg.gd5430type = (UINT16)type;
 		renewal = TRUE;
 	}
 	val = menudlg_getval(DID_CLGD_FC);

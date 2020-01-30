@@ -576,7 +576,10 @@ void cd_close(SXSIDEV sxsi) {
 
 void cd_destroy(SXSIDEV sxsi) {
 
-	_MFREE((CDINFO)sxsi->hdl);
+	if(sxsi->hdl){
+		_MFREE((CDINFO)sxsi->hdl);
+		sxsi->hdl = (INTPTR)NULL;
+	}
 }
 //	----
 

@@ -1,6 +1,6 @@
 /**
  * @file	commng.cpp
- * @brief	COM ãƒãƒãƒ¼ã‚¸ãƒ£ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
+ * @brief	COM ƒ}ƒl[ƒWƒƒ‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
  */
 
 #include "compiler.h"
@@ -10,20 +10,36 @@
 #include "commng/cmnull.h"
 #include "commng/cmpara.h"
 #include "commng/cmserial.h"
+#if defined(SUPPORT_WACOM_TABLET)
+#include "commng/cmwacom.h"
+#endif
+#if defined(SUPPORT_NAMED_PIPE)
+#include "commng/cmpipe.h"
+#endif
 #include "generic/cmjasts.h"
 
 /**
- * åˆæœŸåŒ–
+ * ‰Šú‰»
  */
 void commng_initialize(void)
 {
 	cmmidi_initailize();
+#if defined(SUPPORT_WACOM_TABLET)
+	cmwacom_initialize();
+	cmwacom_setNCControl(!!np2oscfg.mouse_nc);
+#endif
+}
+void commng_finalize(void)
+{
+#if defined(SUPPORT_WACOM_TABLET)
+	cmwacom_finalize();
+#endif
 }
 
 /**
- * ä½œæˆ
- * @param[in] nDevice ãƒ‡ãƒã‚¤ã‚¹
- * @return ãƒãƒ³ãƒ‰ãƒ«
+ * ì¬
+ * @param[in] nDevice ƒfƒoƒCƒX
+ * @return ƒnƒ“ƒhƒ‹
  */
 COMMNG commng_create(UINT nDevice)
 {
@@ -54,6 +70,16 @@ COMMNG commng_create(UINT nDevice)
 		case COMCREATE_MPU98II:
 			pComCfg = &np2oscfg.mpu;
 			break;
+			
+#if defined(SUPPORT_SMPU98)
+		case COMCREATE_SMPU98_A:
+			pComCfg = &np2oscfg.smpuA;
+			break;
+
+		case COMCREATE_SMPU98_B:
+			pComCfg = &np2oscfg.smpuB;
+			break;
+#endif
 
 		default:
 			break;
@@ -63,7 +89,7 @@ COMMNG commng_create(UINT nDevice)
 	{
 		if ((pComCfg->port >= COMPORT_COM1) && (pComCfg->port <= COMPORT_COM4))
 		{
-			ret = CComSerial::CreateInstance(pComCfg->port - COMPORT_COM1 + 1, pComCfg->param, pComCfg->speed);
+			ret = CComSerial::CreateInstance(pComCfg->port - COMPORT_COM1 + 1, pComCfg->param, pComCfg->speed, pComCfg->fixedspeed);
 		}
 		else if (pComCfg->port == COMPORT_MIDI)
 		{
@@ -74,6 +100,18 @@ COMMNG commng_create(UINT nDevice)
 				ret->msg(ret, COMMSG_MIMPIDEFEN, (INTPTR)pComCfg->def_en);
 			}
 		}
+#if defined(SUPPORT_WACOM_TABLET)
+		else if (pComCfg->port == COMPORT_TABLET)
+		{
+			ret = CComWacom::CreateInstance(g_hWndMain);
+		}
+#endif
+#if defined(SUPPORT_NAMED_PIPE)
+		else if (pComCfg->port == COMPORT_PIPE)
+		{
+			ret = CComPipe::CreateInstance(pComCfg->pipename, pComCfg->pipeserv);
+		}
+#endif
 	}
 
 	if (ret == NULL)
@@ -84,8 +122,8 @@ COMMNG commng_create(UINT nDevice)
 }
 
 /**
- * ç ´æ£„
- * @param[in] hdl ãƒãƒ³ãƒ‰ãƒ«
+ * ”jŠü
+ * @param[in] hdl ƒnƒ“ƒhƒ‹
  */
 void commng_destroy(COMMNG hdl)
 {

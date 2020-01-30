@@ -189,7 +189,7 @@ typedef	signed __int64		SINT64;
 
 #define SOUND_CRITICAL
 #define	SOUNDRESERVE	20
-#define SUPPORT_VSTi
+//#define SUPPORT_VSTi
 #define SUPPORT_ASIO
 #if (_MSC_VER >= 1500)
 #define SUPPORT_WASAPI
@@ -198,6 +198,13 @@ typedef	signed __int64		SINT64;
 #define	SUPPORT_TEXTCNV
 
 #define SUPPORT_WIN2000HOST
+
+#define np2max max
+#define np2min min
+
+#if defined(SUPPORT_IA32_HAXM)
+#define USE_CUSTOM_HOOKINST
+#endif
 
 #if defined(CPUCORE_IA32)
 #pragma warning(disable: 4819)
@@ -233,10 +240,3 @@ typedef long	FILELEN;
 #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #endif
 #endif	/* (_MSC_VER >= 1400) */
-
-#ifndef	np2max
-#define	np2max(a,b)	(((a) > (b)) ? (a) : (b))
-#endif
-#ifndef	np2min
-#define	np2min(a,b)	(((a) < (b)) ? (a) : (b))
-#endif

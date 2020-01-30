@@ -216,7 +216,7 @@ static HMIDIOUT
 #else
 static int
 #endif
-getmidiout(const char *midiout)
+getmidiout(const UINT device, const char *midiout)
 {
 #if defined(_WIN32) && !defined(__LIBRETRO__)
 	MMRESULT ret;
@@ -225,16 +225,33 @@ getmidiout(const char *midiout)
 #else
 	int hmidiout = -1;
 #endif
+	char* devfile = NULL;
 
 #if !defined(__LIBRETRO__)
+#if defined(SUPPORT_SMPU98)
+	switch(device) {
+	case COMCREATE_MPU98II:
+		devfile = np2oscfg.MIDIDEV[0];
+		break;
+	case COMCREATE_SMPU98_A:
+		devfile = np2oscfg.MIDIDEVA[0];
+		break;
+	case COMCREATE_SMPU98_B:
+		devfile = np2oscfg.MIDIDEVB[0];
+		break;
+	}
+#else
+	devfile = np2oscfg.MIDIDEV[0];
+#endif
+
 	if (midiout && midiout[0] != '\0') {
 		if ((!milstr_cmp(midiout, cmmidi_midiout_device))
-		 && (np2oscfg.MIDIDEV[0][0] != '\0')) {
+		 && (devfile[0] != '\0')) {
 #if defined(_WIN32)
 			ret = midiOutOpen(&hmidiout, device_num, NULL, NULL, CALLBACK_NULL);
 			if (ret != MMSYSERR_NOERROR) {
 #else
-			hmidiout = open(np2oscfg.MIDIDEV[0], O_WRONLY | O_NONBLOCK);
+			hmidiout = open(devfile, O_WRONLY | O_NONBLOCK);
 			if (hmidiout < 0) {
 #endif
 				perror("getmidiout");
@@ -253,7 +270,7 @@ static HMIDIIN
 #else
 static int
 #endif
-getmidiin(const char *midiin)
+getmidiin(const UINT device, const char *midiin)
 {
 #if defined(_WIN32) && !defined(__LIBRETRO__)
 	MMRESULT ret;
@@ -568,6 +585,7 @@ midiwrite(COMMNG self, UINT8 data)
 			case 0xc0:
 			case 0xd0:
 				midi->midictrl = MIDICTRL_2BYTES;
+				midi->midilast = data;
 				break;
 
 			case 0x80:
@@ -616,7 +634,23 @@ midiwrite(COMMNG self, UINT8 data)
 			/* running status */
 			midi->buffer[0] = midi->midilast;
 			midi->mpos = 1;
-			midi->midictrl = MIDICTRL_3BYTES;
+			switch (midi->midilast & 0xf0)
+			{
+				case 0xc0:
+				case 0xd0:
+				midi->midictrl = MIDICTRL_2BYTES;
+					break;
+
+				case 0x80:
+				case 0x90:
+				case 0xa0:
+				case 0xb0:
+				case 0xe0:
+				midi->midictrl = MIDICTRL_3BYTES;
+					break;
+				default:
+					return 1;
+			}
 		}
 	}
 	midi->buffer[midi->mpos] = data;
@@ -806,7 +840,7 @@ cmmidi_initailize(void)
 }
 
 COMMNG
-cmmidi_create(const char *midiout, const char *midiin, const char *module)
+cmmidi_create(const UINT device, const char *midiout, const char *midiin, const char *module)
 {
 	COMMNG ret;
 	CMMIDI midi;
@@ -824,7 +858,7 @@ cmmidi_create(const char *midiout, const char *midiin, const char *module)
 	int opened = 0;
 
 	/* MIDI-IN */
-	hmidiin = getmidiin(midiin);
+	hmidiin = getmidiin(device, midiin);
 #if defined(_WIN32) && !defined(__LIBRETRO__)
 	if (hmidiin != NULL) {
 #else
@@ -835,7 +869,7 @@ cmmidi_create(const char *midiout, const char *midiin, const char *module)
 
 	/* MIDI-OUT */
 	outfn = midiout_none;
-	hmidiout = getmidiout(midiout);
+	hmidiout = getmidiout(device, midiout);
 #if defined(_WIN32) && !defined(__LIBRETRO__)
 	if (hmidiout != NULL) {
 #else

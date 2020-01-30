@@ -30,6 +30,7 @@ SOURCES_C := 		$(NP2_PATH)/calendar.c \
 		$(NP2_PATH)/keystat.c \
 		$(NP2_PATH)/nevent.c \
 		$(NP2_PATH)/np2_thread.c \
+		$(NP2_PATH)/np2_tickcount.c \
 		$(NP2_PATH)/pccore.c \
 		$(NP2_PATH)/statsave.c \
 		$(NP2_PATH)/timing.c \

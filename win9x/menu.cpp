@@ -407,6 +407,13 @@ void xmenu_update(HMENU hMenu)
 	CheckMenuItem(hMenu, IDM_MEM646, MF_BYCOMMAND | MFCHECK(EXTMEM == 64));
 	CheckMenuItem(hMenu, IDM_MEM1206,MF_BYCOMMAND | MFCHECK(EXTMEM == 120));
 	CheckMenuItem(hMenu, IDM_MEM2306,MF_BYCOMMAND | MFCHECK(EXTMEM == 230));
+#if !defined(CPUCORE_IA32)
+	EnableMenuItem(hMenu, IDM_MEM166, MF_GRAYED);
+	EnableMenuItem(hMenu, IDM_MEM326, MF_GRAYED);
+	EnableMenuItem(hMenu, IDM_MEM646, MF_GRAYED);
+	EnableMenuItem(hMenu, IDM_MEM1206,MF_GRAYED);
+	EnableMenuItem(hMenu, IDM_MEM2306,MF_GRAYED);
+#endif
 	
 	// Device-FPU
 	const UINT8 fputype = np2cfg.fpu_type;
@@ -467,6 +474,9 @@ void xmenu_update(HMENU hMenu)
 	CheckMenuItem(hMenu, IDM_FASTMEMCHK, MF_BYCOMMAND | MFCHECK(np2cfg.memcheckspeed != 1));
 #endif
 	
+#if !defined(SUPPORT_ASYNC_CPU)
+	EnableMenuItem(hMenu, IDM_ASYNCCPU, MF_GRAYED);
+#endif
 #if !defined(USE_FPU)
 	EnableMenuItem(hMenu, IDM_FPU80, MF_GRAYED);
 	EnableMenuItem(hMenu, IDM_FPU64, MF_GRAYED);

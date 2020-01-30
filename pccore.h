@@ -33,7 +33,8 @@ enum {
 	PCROM_BIOS9821		= 0x10,
 
 	PCCBUS_PC9861K		= 0x0001,
-	PCCBUS_MPU98		= 0x0002
+	PCCBUS_MPU98		= 0x0002,
+	PCCBUS_SMPU98		= 0x0004
 };
 
 /**
@@ -107,6 +108,9 @@ struct tagNP2Config
 #if defined(SUPPORT_ASYNC_CPU)
 	UINT8	asynccpu; // 非同期CPUモード有効
 #endif
+#if defined(SUPPORT_IDEIO)
+	UINT8	idebaddr; // IDE BIOS アドレス（デフォルト：D8h(D8000h)）
+#endif
 	
 	// リセット時とかあんまり参照されない奴
 	OEMCHAR	model[8];
@@ -171,6 +175,12 @@ struct tagNP2Config
 	UINT8	mpuenable;
 	UINT8	mpuopt;
 	UINT8	mpu_at;
+	
+#if defined(SUPPORT_SMPU98)
+	UINT8	smpuenable;
+	UINT8	smpuopt;
+	UINT8	smpumuteB;
+#endif	/* SUPPORT_SMPU98 */
 
 	UINT8	pc9861enable;
 	UINT8	pc9861sw[3];
@@ -344,6 +354,10 @@ void screenvsync(NEVENTITEM item);
 
 void pccore_cfgupdate(void);
 
+#if defined(SUPPORT_IA32_HAXM)
+void pccore_mem_malloc(void);
+void pccore_mem_free(void);
+#endif
 void pccore_init(void);
 void pccore_term(void);
 void pccore_reset(void);
@@ -352,7 +366,10 @@ void pccore_exec(BOOL draw);
 void pccore_postevent(UINT32 event);
 
 #ifdef SUPPORT_ASYNC_CPU
+extern int asynccpu_lateflag;
+extern int asynccpu_fastflag;
 #if !defined(__LIBRETRO__) && !defined(NP2_SDL2) && !defined(NP2_X11)
+#if !defined (_WINDOWS) 
 typedef union {
     struct {
         UINT32 LowPart;
@@ -360,6 +377,7 @@ typedef union {
     } u;
     SINT64 QuadPart;
 } LARGE_INTEGER;
+#endif
 extern LARGE_INTEGER asynccpu_lastclock;
 extern LARGE_INTEGER asynccpu_clockpersec;
 extern LARGE_INTEGER asynccpu_clockcount;

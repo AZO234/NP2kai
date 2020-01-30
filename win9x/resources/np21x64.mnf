@@ -3,10 +3,10 @@
 <assemblyIdentity
     version="0.8.2.0"
 	processorArchitecture="amd64"
-	name="np21"
+	name="np21w"
 	type="win32"
 />
-<description>Neko Project 21 x64</description>
+<description>Neko Project 21/W x64</description>
 <dependency>
     <dependentAssembly>
         <assemblyIdentity

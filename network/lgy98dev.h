@@ -91,7 +91,6 @@ typedef struct {
     //qemu_irq irq;
     int isa_io_base;
     //PCIDevice *pci_dev;
-    VLANClientState *vc;
     REG8 macaddr[6];
     REG8 mem[NE2000_MEM_SIZE];
 	/*

@@ -31,7 +31,7 @@
 #include <signal.h>
 #include <unistd.h>
 
-#if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER)
+#if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER) || defined(USE_SDL2AUDIO) || defined(USE_SDL2MIXER)
 #include <SDL.h>
 #endif
 
@@ -311,7 +311,7 @@ main(int argc, char *argv[])
 
 	TRACEINIT();
 
-#if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER)
+#if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER) || defined(USE_SDL2AUDIO) || defined(USE_SDL2MIXER)
 	SDL_Init(0);
 #endif
 
@@ -471,7 +471,7 @@ fontmng_failure:
 #endif	// defined(SUPPORT_WAB)
 	skbdwin_deinitialize();
 
-#if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER)
+#if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER) || defined(USE_SDL2AUDIO) || defined(USE_SDL2MIXER)
 	SDL_Quit();
 #endif
 

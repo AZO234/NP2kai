@@ -68,27 +68,23 @@ void sysmng_updatecaption(UINT8 flag) {
 #if defined(SUPPORT_IDEIO)||defined(SUPPORT_SCSI)
 	int i, cddrvnum = 1;
 #endif
-#if defined(SUPPORT_IDEIO)
 	static OEMCHAR hddimgmenustrorg[4][MAX_PATH] = {0};
 	static OEMCHAR hddimgmenustr[4][MAX_PATH] = {0};
-#endif
 #if defined(SUPPORT_SCSI)
 	static OEMCHAR scsiimgmenustrorg[4][MAX_PATH] = {0};
 	static OEMCHAR scsiimgmenustr[4][MAX_PATH] = {0};
 #endif
 	OEMCHAR	work[2048] = {0};
+	OEMCHAR	fddtext[16] = {0};
 	
 	if (flag & 1) {
 		title[0] = '\0';
-		if (fdd_diskready(0)) {
-			milstr_ncat(title, OEMTEXT("  FDD1:"), NELEMENTS(title));
-			milstr_ncat(title, file_getname(fdd_diskname(0)),
-															NELEMENTS(title));
-		}
-		if (fdd_diskready(1)) {
-			milstr_ncat(title, OEMTEXT("  FDD2:"), NELEMENTS(title));
-			milstr_ncat(title, file_getname(fdd_diskname(1)),
-															NELEMENTS(title));
+		for(i=0;i<4;i++){
+			OEMSPRINTF(fddtext, OEMTEXT("  FDD%d:"), i+1);
+			if (fdd_diskready(i)) {
+				milstr_ncat(title, fddtext, NELEMENTS(title));
+				milstr_ncat(title, file_getname(fdd_diskname(i)), NELEMENTS(title));
+			}
 		}
 #ifdef SUPPORT_IDEIO
 		for(i=0;i<4;i++){

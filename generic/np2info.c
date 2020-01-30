@@ -62,8 +62,6 @@ static void info_ver(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
 static void info_cpu(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
-	UINT	family;
-
 #if defined(CPUCORE_IA32)
 #ifdef UNICODE
 	MultiByteToWideChar(CP_ACP, 0, i386cpuid.cpu_brandstring, -1, str, maxlen);
@@ -71,6 +69,7 @@ static void info_cpu(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 	milstr_ncpy(str, i386cpuid.cpu_brandstring, maxlen);
 #endif
 #else
+	UINT	family;
 #if defined(CPU_FAMILY)
 	family = np2min(CPU_FAMILY, 6);
 #else
@@ -408,10 +407,8 @@ static void info_display(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
 	bpp = scrnmng_getbpp();
 	milstr_ncpy(str, milstr_list(str_winclr, ((bpp >> 3) - 1) & 3), maxlen);
-#if defined(NP2_WIN)
-	OEMSPRINTF(buf, OEMTEXT(" %dx%d"), scrnmngp->width, scrnmngp->height);
-	milstr_ncat(str, buf, maxlen);
-#endif	/* NP2_WIN */
+//	OEMSPRINTF(buf, OEMTEXT(" %dx%d"), scrnmngp->width, scrnmngp->height);
+//	milstr_ncat(str, buf, maxlen);
 	milstr_ncat(str, milstr_list(str_winmode, (scrnmng_isfullscreen())?1:0),
 																	maxlen);
 	(void)ex;

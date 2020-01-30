@@ -31,6 +31,9 @@ static void IOOUTCALL sysp_o37(UINT port, REG8 dat) {
 		}
 		if (bit == 0x04) {									// ver0.29
 			rs232c.send = 1;
+			if(rs232c.result & 2){
+				pic_setirq(4);
+			}
 		}
 		else if (bit == 0x08) {
 			beep_oneventset();

@@ -3,7 +3,11 @@
  * @brief	The version
  */
 
-#define	NP2VER_CORE			"ver.0.86 kai rev.20"
+#if defined(SUPPORT_IA32_HAXM)
+#define	NP2VER_CORE			"ver.0.86 kai rev.21 HAXM"
+#else
+#define	NP2VER_CORE			"ver.0.86 kai rev.21"
+#endif
 #define	NP2VER_GIT			GIT_VERSION
 
 // #define	NP2VER_WIN9X

@@ -3,10 +3,10 @@
 <assemblyIdentity
     version="0.8.2.0"
 	processorArchitecture="X86"
-	name="np2"
+	name="np2w"
 	type="win32"
 />
-<description>Neko Project II</description>
+<description>Neko Project II/W</description>
 <dependency>
     <dependentAssembly>
         <assemblyIdentity

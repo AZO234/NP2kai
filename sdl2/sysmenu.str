@@ -161,6 +161,7 @@ static const char str_joyrapid[] = "Joy Rapid";
 static const char str_mouserapid[] = "Mouse Rapid";
 static const char str_itfwork[] = "ITF work";
 static const char str_fixmmtimer[] = "Fix MMTimer";
+static const char str_winntfix[] = "WinNT4/2000 IDE Fix";
 static const char str_skip16mbmemchk[] = "Skip over 16MB memcheck";
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 static const char str_fastmemchk[] = "Fast memcheck";
@@ -318,9 +319,15 @@ static const MSYSITEM s_screen[] = {
 		{str_window,		NULL,		MID_WINDOW,			MENU_GRAY},
 		{str_fullscrn,		NULL,		MID_FULLSCREEN,		MENU_GRAY},
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+#if SDL_MAJOR_VERSION == 1
+		{str_normal,		NULL,		MID_ROLNORMAL,		MENU_GRAY},
+		{str_leftrol,		NULL,		MID_ROLLEFT,		MENU_GRAY},
+		{str_rightrol,		NULL,		MID_ROLRIGHT,		MENU_GRAY},
+#else
 		{str_normal,		NULL,		MID_ROLNORMAL,		0},
 		{str_leftrol,		NULL,		MID_ROLLEFT,		0},
 		{str_rightrol,		NULL,		MID_ROLRIGHT,		0},
+#endif
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_dispsync,		NULL,		MID_DISPSYNC,		0},
 		{str_realpal,		NULL,		MID_RASTER,			0},
@@ -416,11 +423,19 @@ static const MSYSITEM s_mem[] = {
 		{str_mem76,			NULL,		MID_MEM76,			0},
 		{str_mem96,			NULL,		MID_MEM96,			0},
 		{str_mem136,			NULL,		MID_MEM136,			0},
+#if defined(CPUCORE_IA32)
 		{str_mem166,			NULL,		MID_MEM166,			0},
 		{str_mem326,			NULL,		MID_MEM326,			0},
 		{str_mem646,			NULL,		MID_MEM646,			0},
 		{str_mem1206,			NULL,		MID_MEM1206,			0},
 		{str_mem2306,			NULL,		MID_MEM2306,			MENU_DELETED}};
+#else
+		{str_mem166,			NULL,		MID_MEM166,			MENU_GRAY},
+		{str_mem326,			NULL,		MID_MEM326,			MENU_GRAY},
+		{str_mem646,			NULL,		MID_MEM646,			MENU_GRAY},
+		{str_mem1206,			NULL,		MID_MEM1206,			MENU_GRAY},
+		{str_mem2306,			NULL,		MID_MEM2306,			MENU_GRAY | MENU_DELETED}};
+#endif
 
 static const MSYSITEM s_device[] = {
 #if !defined(__LIBRETRO__)
@@ -459,8 +474,9 @@ static const MSYSITEM s_other[] = {
 		{str_joyrapid,		NULL,		MID_RAPID,			0},
 		{str_mouserapid,	NULL,		MID_MSRAPID,		MENU_GRAY},
 		{str_itfwork,		NULL,		MID_ITFWORK,			0},
-//		{str_fixmmtimer,	NULL,		MID_FIXMMTIMER,			0},
-//		{str_skip16mbmemchk,	NULL,		MID_SKIP16MBMEMCHK,		0},
+		{str_fixmmtimer,	NULL,		MID_FIXMMTIMER,			0},
+		{str_winntfix,		NULL,		MID_WINNTIDEFIX,	 	0},		
+		{str_skip16mbmemchk,	NULL,		MID_SKIP16MBMEMCHK,		0},
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 		{str_fastmemchk,	NULL,		MID_FASTMEMCHK,			0},
 #endif

@@ -72,6 +72,9 @@ extern	_NP2SYSP	np2sysp;
 extern	_PIC		pic;
 extern	_PIT		pit;
 extern	_RS232C		rs232c;
+#if defined(SUPPORT_RS232C_FIFO)
+extern	_RS232CFIFO	rs232cfifo;
+#endif
 extern	_SYSPORT	sysport;
 extern	_UPD4990	uPD4990;
 

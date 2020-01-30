@@ -42,6 +42,10 @@ typedef struct {
 	char	JOYDEV[2][MAX_PATH];
 
 	COMCFG	mpu;
+#if defined(SUPPORT_SMPU98)
+	COMCFG	smpuA;
+	COMCFG	smpuB;
+#endif
 	COMCFG	com[3];
 
 	UINT8	confirm;
@@ -59,6 +63,10 @@ typedef struct {
 
 	UINT8	snddrv;
 	char	MIDIDEV[2][MAX_PATH];
+#if defined(SUPPORT_SMPU98)
+	char	MIDIDEVA[2][MAX_PATH];
+	char	MIDIDEVB[2][MAX_PATH];
+#endif
 	UINT32	MIDIWAIT;
 
 	UINT8	mouse_move_ratio;

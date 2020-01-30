@@ -26,8 +26,14 @@ Np2Arg::Np2Arg()
  */
 Np2Arg::~Np2Arg()
 {
-	free(m_lpArg);
-	if(m_lpIniFile) free((TCHAR*)m_lpIniFile); // np21w ver0.86 rev8
+	if(m_lpArg){
+		free(m_lpArg);
+		m_lpArg = NULL;
+	}
+	if(m_lpIniFile){
+		free(m_lpIniFile); // np21w ver0.86 rev8
+		m_lpIniFile = NULL;
+	}
 }
 
 /**
@@ -35,8 +41,12 @@ Np2Arg::~Np2Arg()
  */
 void Np2Arg::Parse()
 {
+	LPCTSTR lpIniFile = NULL;
+
 	// 引数読み出し
-	free(m_lpArg);
+	if(m_lpArg) {
+		free(m_lpArg);
+	}
 	m_lpArg = _tcsdup(::GetCommandLine());
 
 	LPTSTR argv[MAXARG];
@@ -56,7 +66,7 @@ void Np2Arg::Parse()
 					break;
 
 				case 'i':
-					m_lpIniFile = &lpArg[2];
+					lpIniFile = &lpArg[2];
 					break;
 			}
 		}
@@ -65,7 +75,7 @@ void Np2Arg::Parse()
 			LPCTSTR lpExt = ::file_getext(lpArg);
 			if (::file_cmpname(lpExt, TEXT("ini")) == 0 || ::file_cmpname(lpExt, TEXT("npc")) == 0 || ::file_cmpname(lpExt, TEXT("npcfg")) == 0 || ::file_cmpname(lpExt, TEXT("np2cfg")) == 0 || ::file_cmpname(lpExt, TEXT("np21cfg")) == 0 || ::file_cmpname(lpExt, TEXT("np21wcfg")) == 0)
 			{
-				m_lpIniFile = lpArg;
+				lpIniFile = lpArg;
 			}
 			else if (nDrive < _countof(m_lpDisk))
 			{
@@ -76,15 +86,15 @@ void Np2Arg::Parse()
 	if(m_lpIniFile){ // np21w ver0.86 rev8
 		LPTSTR strbuf;
 		strbuf = (LPTSTR)calloc(500, sizeof(TCHAR));
-		if(!(_tcsstr(m_lpIniFile,_T(":"))!=NULL || (m_lpIniFile[0]=='\\'))){
+		if(!(_tcsstr(lpIniFile,_T(":"))!=NULL || (lpIniFile[0]=='¥¥'))){
 			// ファイル名のみの指定っぽかったら現在のディレクトリを結合
 			//getcwd(pathname, 300);
 			GetCurrentDirectory(500, strbuf);
-			if(strbuf[_tcslen(strbuf)-1]!='\\'){
-				_tcscat(strbuf, _T("\\")); // XXX: Linuxとかだったらスラッシュじゃないと駄目だよね？
+			if(strbuf[_tcslen(strbuf)-1]!='¥¥'){
+				_tcscat(strbuf, _T("¥¥")); // XXX: Linuxとかだったらスラッシュじゃないと駄目だよね？ -> Win専用だから問題ない
 			}
 		}
-		_tcscat(strbuf, m_lpIniFile);
+		_tcscat(strbuf, lpIniFile);
 		m_lpIniFile = strbuf;
 	}
 }

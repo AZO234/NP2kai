@@ -1,13 +1,9 @@
 # Neko Project II 0.86 kai
-Jul 14, 2019  
+Jan 26, 2019  
 
 NP2kai is PC-9801 series emulator  
 
 ![](https://img.shields.io/github/tag/AZO234/NP2kai.svg)
-
-**Table of Contents**
-
-[TOC]
 
 ## Build and Install
 
@@ -29,6 +25,7 @@ NP2kai is PC-9801 series emulator
 1. Locate .exe file anywhere.  
 2. Locate BIOS files to .exe same filder.  
 - F11 key or mouse middle button, to capture mouse.  
+
 
 #### SDL2 port
 ##### Install tools
@@ -54,6 +51,41 @@ $ make -f Makefile.win
 $ make -f Makefile21.win
 ```
 
+##### Install binary
+1. Install.  
+```
+$ make install
+```
+2. Locate BIOS files to ~/.config/np2kai(i286) or ~/.config/np21kai(i386).  
+3. Run np2kai(i286) or np21kai(i386).  
+- NP2's menu is shown F11 or mouse middle button, to swap FDD/HDD diskimages.  
+
+
+#### SDL1 port
+##### Install tools
+1. Install MSYS2 64bit.  
+2. Run MSYS2 64bit console  
+3. Run follow command.  
+```
+$ pacman -S git make mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd mingw-w64-x86_64-SDL mingw-w64-x86_64-SDL_ttf mingw-w64-x86_64-SDL_mixer
+```
+
+##### Build
+1. Change directory to sdl2.  
+```
+$ cd NP2kai/sdl2
+```
+2. Make.  
+(i286)  
+Edit 'SDL_VERSION' in Makefile.win from 2 to 1.
+```
+$ make -f Makefile.win
+```
+(i386)  
+Edit 'SDL_VERSION' in Makefile21.win from 2 to 1.
+```
+$ make -f Makefile21.win
+```
 
 ##### Install binary
 1. Install.  
@@ -64,9 +96,10 @@ $ make install
 3. Run np2kai(i286) or np21kai(i386).  
 - NP2's menu is shown F11 or mouse middle button, to swap FDD/HDD diskimages.  
 
+
 ### Linux
 
-#### X11 port
+#### X11 port SDL2
 ##### Install tools
 1. Install SDL2, etc.  
 ```
@@ -105,6 +138,47 @@ $ sudo make install
 3. Run xnp2kai(i286) or xnp21kai(i386).  
 - F11 or mouse middle button, to capture mouse.  
 
+
+#### X11 port SDL1
+##### Install tools
+1. Install SDL, etc.  
+```
+$ sudo apt-get install automake git gtk+-2 build-essential libsdl1.2-dev libsdl-ttf2.0-dev libsdl-mixer1.2-dev libusb-1.0-0-dev
+```
+
+##### Build
+1. Change directory to x11.  
+```
+$ cd NP2kai/x11
+```
+2. Run autotools script.  
+```
+$ ./autogen.sh
+```
+3. Run configure.  
+(i286)  
+```
+$ ./configure --enable-sdl --enable-sdlmixer --enable-sdlttf --enable-sdl2=no --enable-sdl2mixer=no --enable-sdl2ttf=no
+```
+(i386)  
+```
+$ ./configure --enable-sdl --enable-sdlmixer --enable-sdlttf --enable-sdl2=no --enable-sdl2mixer=no --enable-sdl2ttf=no --enable-ia32
+```
+4. Make.  
+```
+$ make
+```
+
+##### Install binary
+1. Install.  
+```
+$ sudo make install
+```
+2. Locate BIOS files to ~/.config/xnp2kai(i286) or ~/.config/xnp21kai(i386).  
+3. Run xnp2kai(i286) or xnp21kai(i386).  
+- F11 or mouse middle button, to capture mouse.  
+
+
 #### SDL2 port
 ##### Install tools
 1. Install SDL2, etc.  
@@ -127,6 +201,39 @@ $ make -f Makefile.unix
 $ make -f Makefile21.unix
 ```
 
+##### Install binary
+1. Install.  
+```
+$ sudo make install
+```
+2. Locate BIOS files to ~/.config/np2kai(i286) or ~/.config/np21kai(i386).  
+3. Run np2kai(i286) or np21kai(i386).  
+- NP2's menu is shown F11 key or mouse middle button, to swap FDD/HDD diskimages.  
+
+
+#### SDL1 port
+##### Install tools
+1. Install SDL2, etc.  
+```
+$ sudo apt-get install git build-essential libsdl1.2-dev libsdl-ttf2.0-dev libsdl-mixer1.2-dev
+```
+
+##### Build
+1. Change directory to sdl2.  
+```
+$ cd NP2kai/sdl2
+```
+2. Make.  
+(i286)  
+Edit 'SDL_VERSION' in Makefile.unix from 2 to 1.
+```
+$ make -f Makefile.unix
+```
+(i386)  
+Edit 'SDL_VERSION' in Makefile21.unix from 2 to 1.
+```
+$ make -f Makefile21.unix
+```
 
 ##### Install binary
 1. Install.  
@@ -136,6 +243,7 @@ $ sudo make install
 2. Locate BIOS files to ~/.config/np2kai(i286) or ~/.config/np21kai(i386).  
 3. Run np2kai(i286) or np21kai(i386).  
 - NP2's menu is shown F11 key or mouse middle button, to swap FDD/HDD diskimages.  
+
 
 ### macOS
 
@@ -172,7 +280,64 @@ $ make install
 3. Run np2kai(i286) or np21kai(i386).  
 - NP2's menu is shown F11 key or mouse middle button, to swap FDD/HDD diskimages.  
 
+
+#### SDL1 port
+##### Install tools
+1. Install XCode.  
+2. Install brew.  
+3. Execute follow command.  
+```
+$ brew install sdl sdl_mixier sdl_ttf
+```
+
+##### Build
+1. Change directory to sdl2.  
+```
+$ cd NP2kai/sdl2
+```
+2. Make.  
+(i286)  
+Edit 'SDL_VERSION' in Makefile.mac from 2 to 1.
+```
+$ make -f Makefile.mac
+```
+(i386)  
+Edit 'SDL_VERSION' in Makefile21.mac from 2 to 1.
+```
+$ make -f Makefile21.mac
+```
+
+##### Install binary
+1. Install.  
+```
+$ make install
+```
+2. Locate BIOS files to ~/.config/np2kai(i286) or ~/.config/np21kai(i386).  
+3. Run np2kai(i286) or np21kai(i386).  
+- NP2's menu is shown F11 key or mouse middle button, to swap FDD/HDD diskimages.  
+
+
 ### GCW Zero (GCW0) 
+
+##### Build
+1. Change directory into sdl2.  
+```
+$ cd NP2kai/sdl2
+```
+2. Make.  
+```
+$ make -f Makefile.gcw0
+```
+or
+```
+$ make -f Makefile21.gcw0
+```
+
+##### Install binary
+1. Transfer np2kai.opk or np21kai.opk to /media/apps/ .  
+2. BIOS files should locate in ~/.config/np2kai (or np21kai).  
+
+### Dingux series (RS90 GKD350H)
 
 ##### Build
 1. Change directory to sdl2.  
@@ -181,12 +346,16 @@ $ cd NP2kai/sdl2
 ```
 2. Make.  
 ```
-$ make -f Makefile21.gcw0 buildopk
+$ make -f Makefile.gkd350h
+```
+or
+```
+$ make -f Makefile21.gkd350h
 ```
 
 ##### Install binary
-1. Transfer np2kai.opk to /media/apps/ .  
-2. BIOS files should locate in ~/.config/np2kai .  
+1. Transfer np2kai.opk or np21kai.opk to /media/apps/ .  
+2. BIOS files should locate in ~/.config/np2kai (or np21kai).  
 
 #### libretro port (Windows/Linux/macOS)
 
@@ -262,13 +431,19 @@ You can libretro with .cmd file commandline,
 (This file must be wiritten in UTF-8.)  
 FDD/HDD/CD are mounted and start.  
 
-Mouse is cuptured (hidden/show toggle) by F11 key.  
+Mouse cursor moving is always enable with mouse.  
 
-Mouse cursor is able to move with joypad.  
+Mouse cursor moving and left-button be able to controled with joypad stick.  
+Switch Stick2Mouse mode in config to 'L-stick' or 'R-stick(default)'.  
+- Stick: mouse move  
+- Thumb: mouse left button  
+(if you need right-button, enable to J2M and use A button.)
+
+Mouse cursor is able to move with joypad's digital button.  
 Switch Joy2Mouse/Keyboard mode in config to 'Mouse'.  
 - D-UP/DOWN/LEFT/RIGHT: mouse move  
-- B button: left click  
-- A button: right click  
+- B button: mouse left button  
+- A button: mouse right button  
 - R button: mouse speed up durling hold  
 
 Keyboard is able to control with joypad.  
@@ -642,6 +817,31 @@ http://buffalo.jp/download/driver/multi/wgna_95.html
 https://www.iodata.jp/lib/product/g/175_win95.htm  
 
 ## Release
+* Jan 29, 2019  
+  - fix X11 no sound (please check 'sounddrv = SDL' in .config/xnp2kai/xnp2kairc)  
+  - fix for GKD350H  
+  - fix for GCW0  
+* Jan 26, 2019  
+  - mod mouse cursor moving.  
+* Jan 15, 2019  
+	- Support again SDL1  
+	- fix bool
+* Dec 10, 2019  
+	- Merge NP21/W 0.86 rev.69 (rev.21)  
+		- HAXM
+* Nov 19, 2019  
+	- fix Android makefile
+	- merge yoshisuga/tvos THANKS!!
+		- add libretro/tvOS port
+	- merge part of swingflip/master THANKS!!
+		- add xx Clasic port
+	- merge part of yksoft1/emscripten THANKS VERY MUCH!!
+		[SDL2 & libretro]
+		- fix WAB type value
+		- mod to apply UTF-8
+		- fix SUPPORT_LARGE_HDD
+		- WinNT4/200 IDE Fix
+	- fix Makefile21
 * Jul 14, 2019  
 	- Merge NP21/W 0.86 rev.62-63 (rev.20)  
 * Jun 23, 2019  

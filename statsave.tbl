@@ -91,10 +91,17 @@ static const SFENTRY np2tbl[] = {
 	{"CPUID",		0,	STATFLAG_BIN,	&i386cpuid,		sizeof(i386cpuid)},
 	{"CPUMSR",		0,	STATFLAG_BIN,	&i386msr,		sizeof(i386msr)},
 #endif
+#if defined(SUPPORT_IA32_HAXM)
+	{"CPUHAXM",		0,	STATFLAG_BIN,	&np2haxstat,	sizeof(np2haxstat)},
+#endif
 	{"MEMORY",		0,	STATFLAG_MEM,	NULL,			0x130000},
 	{"EXTMEM",		0,	STATFLAG_EXT,	NULL,			0},
 #if defined(SUPPORT_PC9821)
+#if defined(SUPPORT_IA32_HAXM)
+	{"VRAMEX",		0,	STATFLAG_BIN,	vramex_base,	sizeof(vramex_base)},
+#else
 	{"VRAMEX",		0,	STATFLAG_BIN,	vramex,			sizeof(vramex)},
+#endif
 #endif
 
 	{"ARTIC",		0,	STATFLAG_BIN,	&artic,			sizeof(artic)},
@@ -116,6 +123,9 @@ static const SFENTRY np2tbl[] = {
 	{"NP2SYSPORT",	0,	STATFLAG_BIN,	&np2sysp,		sizeof(np2sysp)},
 	{"PIC",			0,	STATFLAG_BIN,	&pic,			sizeof(pic)},
 	{"RS232C",		0,	STATFLAG_BIN,	&rs232c,		sizeof(rs232c)},
+#if defined(SUPPORT_RS232C_FIFO)
+	{"RS232CFIFO",	0,	STATFLAG_BIN,	&rs232cfifo,	sizeof(rs232cfifo)},
+#endif
 	{"SYSTEMPORT",	0,	STATFLAG_BIN,	&sysport,		sizeof(sysport)},
 	{"uPD4990",		0,	STATFLAG_BIN,	&uPD4990,		sizeof(uPD4990)},
 #if defined(SUPPORT_PC9821)&&defined(SUPPORT_PCI)
@@ -129,8 +139,15 @@ static const SFENTRY np2tbl[] = {
 	{"KEYSTAT",		0,	STATFLAG_BIN,	&keyctrl,		sizeof(keyctrl)},
 	{"PALEVENT",	0,	STATFLAG_BIN,	&palevent,		sizeof(palevent)},
 	{"MPU98II",		0,	STATFLAG_BIN,	&mpu98,			sizeof(mpu98)},
+#if defined(SUPPORT_SMPU98)
+	{"SMPU98",		0,	STATFLAG_BIN,	&smpu98,		sizeof(smpu98)},
+#endif
 	{"CMMPU98",		0,	STATFLAG_COM,	(void *)0,		0},
 	{"CMRS232C",	0,	STATFLAG_COM,	(void *)1,		0},
+#if defined(SUPPORT_SMPU98)
+	{"CMSMPUA",		0,	STATFLAG_COM,	(void *)2,		0},
+	{"CMSMPUB",		0,	STATFLAG_COM,	(void *)3,		0},
+#endif
 	{"FDD",			0,	STATFLAG_FDD,	NULL,			0},
 	{"SXSI",		0,	STATFLAG_SXSI,	NULL,			0},
 #if !defined(DISABLE_SOUND)
@@ -169,6 +186,9 @@ static const SFENTRY np2tbl[] = {
 #endif
 #if defined(SUPPORT_PC9821)&&defined(SUPPORT_PCI)
 	{"PEGC",		0,	STATFLAG_BIN,	&pegc,			sizeof(pegc)},
+#endif
+#if defined(USE_CUSTOM_HOOKINST)
+	{"BIOSHOOK",	0,	STATFLAG_BIN,	&bioshookinfo,		sizeof(bioshookinfo)},
 #endif
 	{"TERMINATE",	0,	STATFLAG_TERM,	NULL,			0}};
 

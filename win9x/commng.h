@@ -1,6 +1,6 @@
 /**
  * @file	commng.h
- * @brief	COM „Éû„Éç„Éº„Ç∏„É£„ÅÆÂÆ£Ë®Ä„Åä„Çà„Å≥„Ç§„É≥„Çø„Éº„Éï„Çß„Ç§„Çπ„ÅÆÂÆöÁæ©„Çí„Åó„Åæ„Åô
+ * @brief	COM É}ÉlÅ[ÉWÉÉÇÃêÈåæÇ®ÇÊÇ—ÉCÉìÉ^Å[ÉtÉFÉCÉXÇÃíËã`ÇÇµÇ‹Ç∑
  */
 
 #pragma once
@@ -12,21 +12,41 @@ enum {
 	COMCREATE_PC9861K1,
 	COMCREATE_PC9861K2,
 	COMCREATE_PRINTER,
-	COMCREATE_MPU98II
+	COMCREATE_MPU98II,
+#if defined(SUPPORT_SMPU98)
+	COMCREATE_SMPU98_A,
+	COMCREATE_SMPU98_B,
+#endif
+#if defined(SUPPORT_WACOM_TABLET)
+	COMCREATE_TABLET,
+#endif
+#if defined(SUPPORT_NAMED_PIPE)
+	COMCREATE_PIPE,
+#endif
+	COMCREATE_NULL			= 0xffff,
 };
 
 enum {
 	COMCONNECT_OFF			= 0,
 	COMCONNECT_SERIAL,
 	COMCONNECT_MIDI,
-	COMCONNECT_PARALLEL
+	COMCONNECT_PARALLEL,
+#if defined(SUPPORT_WACOM_TABLET)
+	COMCONNECT_TABLET,
+#endif
+#if defined(SUPPORT_NAMED_PIPE)
+	COMCONNECT_PIPE,
+#endif
+
 };
 
 enum {
 	COMMSG_MIDIRESET		= 0,
 	COMMSG_SETFLAG,
 	COMMSG_GETFLAG,
-	COMMSG_USER
+	COMMSG_CHANGESPEED,
+	COMMSG_CHANGEMODE,
+	COMMSG_USER			    = 0x80,
 };
 
 struct _commng;
@@ -75,7 +95,13 @@ enum {
 	COMPORT_COM2,
 	COMPORT_COM3,
 	COMPORT_COM4,
-	COMPORT_MIDI
+	COMPORT_MIDI,
+#if defined(SUPPORT_WACOM_TABLET)
+	COMPORT_TABLET,
+#endif
+#if defined(SUPPORT_NAMED_PIPE)
+	COMPORT_PIPE,
+#endif
 };
 
 enum {
@@ -83,7 +109,8 @@ enum {
 	COMSIG_COM2				= 0x324d4f43,
 	COMSIG_COM3				= 0x334d4f43,
 	COMSIG_COM4				= 0x344d4f43,
-	COMSIG_MIDI				= 0x4944494d
+	COMSIG_MIDI				= 0x4944494d,
+	COMSIG_TABLET			= 0x5944494d // XXX: Ç»Çº
 };
 
 enum {
@@ -92,3 +119,4 @@ enum {
 };
 
 void commng_initialize(void);
+void commng_finalize(void);

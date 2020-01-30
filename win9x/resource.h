@@ -30,8 +30,9 @@
 #define IDD_SNDFMGEN                    158
 #define IDD_SND118                      159
 #define IDD_SNDWSS                      160
-#define IDD_SNDSB16                     162
 #define IDD_CALENDAR                    161
+#define IDD_SNDSB16                     162
+#define IDD_SMPU98                      163
 #define IDD_ABOUT                       171
 #define IDD_LGY98                       180
 #define IDD_NETWORK                     181
@@ -112,11 +113,13 @@
 #define IDC_SKIPLIGHT                   13104
 #define IDC_LIGHTSTR                    13105
 #define IDC_SOFTWARERENDERING           13106
+#define IDC_1DOTTEXTSCRSHIFT            13107
 #define IDC_FULLSCREEN_SAMEBPP          13201
 #define IDC_FULLSCREEN_SAMERES          13202
 #define IDC_FULLSCREEN_ZOOM             13203
 #define IDC_RENDERER_TYPE               13210
 #define IDC_RENDERER_IMODE              13211
+#define IDC_RENDERER_EXCLUSIVE          13212
 #define IDC_GDC7220                     13301
 #define IDC_GDC72020                    13302
 #define IDC_GCBOX                       13303
@@ -155,6 +158,12 @@
 #define IDC_COM1DEFE                    14119
 #define IDC_COM1DEFF                    14120
 #define IDC_COM1DEFB                    14121
+#define IDC_COM1PENTABFA                14122
+#define IDC_COM1FSPEED                  14123
+#define IDC_COM1STR30                   14124
+#define IDC_COM1STR31                   14125
+#define IDC_COM1PIPENAME                14126
+#define IDC_COM1PIPESERV                14127
 #define IDC_PC9861E                     14201
 #define IDC_CH1SPEED                    14202
 #define IDC_CH1INT                      14203
@@ -173,6 +182,14 @@
 #define IDC_MPU98DEFF                   15108
 #define IDC_MPU98DEFB                   15109
 #define IDC_MPU98MDIN                   15110
+#define IDC_MPU98MMDL_B                 15111
+#define IDC_MPU98MMAP_B                 15112
+#define IDC_MPU98DEFE_B                 15113
+#define IDC_MPU98DEFF_B                 15114
+#define IDC_MPU98DEFB_B                 15115
+#define IDC_MPU98MDIN_B                 15116
+#define IDC_MPUENABLE                   15117
+#define IDC_MPUMUTEB                    15118
 #define IDC_VOLFM                       15201
 #define IDC_VOLFMSTR                    15202
 #define IDC_VOLPSG                      15203
@@ -184,6 +201,7 @@
 #define IDC_VOLRHYTHM                   15209
 #define IDC_VOLRHYTHMSTR                15210
 #define IDC_SNDMIXDEF                   15211
+#define IDC_SNDMIXDEF2                  15212
 #define IDC_VOLMASTER                   15213
 #define IDC_VOLMASTERSTR                15214
 #define IDC_VOLCDDA                     15220
@@ -323,6 +341,7 @@
 #define IDS_NETWORKOPTION               30044
 #define IDS_WABOPTION                   30045
 #define IDS_PCIOPTION                   30046
+#define IDS_MIDIOPTION                  30047
 #define IDS_CAPTION_FDD1                30051
 #define IDS_CAPTION_FDD2                30052
 #define IDS_CAPTION_FDD3                30053
@@ -359,6 +378,8 @@
 #define IDS_COM3                        30193
 #define IDS_COM4                        30194
 #define IDS_MIDI                        30195
+#define IDS_TABLET                      30196
+#define IDS_PIPE                        30197
 #define IDS_2_0MHZ                      30201
 #define IDS_2_5MHZ                      30202
 #define IDS_CLOCKFORMAT                 30203

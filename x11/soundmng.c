@@ -198,14 +198,14 @@ snddrv_setup(void)
 
 	if (np2oscfg.snddrv < SNDDRV_DRVMAX) {
 		switch (np2oscfg.snddrv) {
-#if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER)
+#if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER) || defined(USE_SDL2AUDIO) || defined(USE_SDL2MIXER)
 		case SNDDRV_SDL:
 			sdlaudio_setup();
 			return;
 #endif
 		}
 	} else {
-#if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER)
+#if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER) || defined(USE_SDL2AUDIO) || defined(USE_SDL2MIXER)
 		if (sdlaudio_setup() == SUCCESS) {
 			np2oscfg.snddrv = SNDDRV_SDL;
 			sysmng_update(SYS_UPDATEOSCFG);
@@ -903,13 +903,13 @@ saturation_s16mmx(SINT16 *dst, const SINT32 *src, UINT size)
 }
 #endif	/* GCC_CPU_ARCH_AMD64 */
 
-#if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER)
+#if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER) || defined(USE_SDL2AUDIO) || defined(USE_SDL2MIXER)
 
 #include <SDL.h>
 
 static void sdlaudio_callback(void *, unsigned char *, int);
 
-#if !defined(USE_SDLMIXER)
+#if !defined(USE_SDLMIXER) && !defined(USE_SDL2MIXER)
 
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 static UINT8 sound_silence;
@@ -1006,7 +1006,7 @@ sdlaudio_setup(void)
 	return SUCCESS;
 }
 
-#else	/* USE_SDLMIXER */
+#else	/* USE_SDLMIXER || USE_SDL2MIXER */
 
 #include <SDL_mixer.h>
 
@@ -1156,7 +1156,7 @@ sdlaudio_setup(void)
 #define	sndbuf_lock()	sdlmixer_lock()
 #define	sndbuf_unlock()	sdlmixer_unlock()
 
-#endif	/* !USE_SDLMIXER */
+#endif	/* !USE_SDLMIXER && !USE_SDL2MIXER */
 
 static void
 sdlaudio_callback(void *userdata, unsigned char *stream, int len)
@@ -1164,7 +1164,7 @@ sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 	const UINT frame_size = PTR_TO_UINT32(userdata);
 	struct sndbuf *sndbuf;
 
-#if !defined(USE_SDLMIXER) && SDL_VERSION_ATLEAST(2, 0, 0)
+#if !defined(USE_SDLMIXER) && !defined(USE_SDL2MIXER) && SDL_VERSION_ATLEAST(2, 0, 0)
 	/* SDL2 から SDL 側で stream を無音で初期化しなくなった */
 	memset(stream, sound_silence, len);
 #endif
@@ -1179,10 +1179,16 @@ sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 		SNDBUF_FILLED_QUEUE_REMOVE_HEAD();
 		sndbuf_unlock();
 
+#if SDL_MAJOR_VERSION == 1
+		SDL_MixAudio(stream,
+		    sndbuf->buf + (sndbuf->size - sndbuf->remain),
+		    sndbuf->remain, SDL_MIX_MAXVOLUME);
+#else
 		SDL_MixAudioFormat(stream,
 		    sndbuf->buf + (sndbuf->size - sndbuf->remain),
 		    AUDIO_S16LSB,
 		    sndbuf->remain, SDL_MIX_MAXVOLUME);
+#endif
 		stream += sndbuf->remain;
 		len -= sndbuf->remain;
 		sndbuf->remain = 0;
@@ -1199,8 +1205,13 @@ sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 		sndbuf_unlock();
 	}
 
+#if SDL_MAJOR_VERSION == 1
+	SDL_MixAudio(stream, sndbuf->buf + (sndbuf->size - sndbuf->remain),
+	    len, (int)(((float)SDL_MIX_MAXVOLUME / 100) * np2cfg.vol_master));
+#else
 	SDL_MixAudioFormat(stream, sndbuf->buf + (sndbuf->size - sndbuf->remain), AUDIO_S16LSB,
 	    len, (int)(((float)SDL_MIX_MAXVOLUME / 100) * np2cfg.vol_master));
+#endif
 	sndbuf->remain -= len;
 
 	if (sndbuf->remain == 0) {
@@ -1211,6 +1222,6 @@ sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 	sndbuf_unlock();
 }
 
-#endif	/* USE_SDLAUDIO || USE_SDLMIXER */
+#endif	/* USE_SDLAUDIO || USE_SDLMIXER || USE_SDL2AUDIO || USE_SDL2MIXER */
 
 #endif	/* !NOSOUND */

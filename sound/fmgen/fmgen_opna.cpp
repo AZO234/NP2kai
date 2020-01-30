@@ -431,7 +431,7 @@ bool OPNABase::tablehasmade = false;
 
 OPNABase::OPNABase()
 {
-	adpcmbuf = 0;
+	adpcmbuf = NULL;
 	memaddr = 0;
 	startaddr = 0;
 	deltan = 256;
@@ -1324,7 +1324,7 @@ OPNA::OPNA()
 {
 	for (int i=0; i<6; i++)
 	{
-		rhythm[i].sample = 0;
+		rhythm[i].sample = NULL;
 		rhythm[i].pos = 0;
 		rhythm[i].size = 0;
 		rhythm[i].volume = 0;
@@ -1339,9 +1339,16 @@ OPNA::OPNA()
 
 OPNA::~OPNA()
 {
-	delete[] adpcmbuf;
-	for (int i=0; i<6; i++)
-		delete[] rhythm[i].sample;
+	if(adpcmbuf){
+		delete[] adpcmbuf;
+		adpcmbuf = NULL;
+	}
+	for (int i=0; i<6; i++){
+		if(rhythm[i].sample){
+			delete[] rhythm[i].sample;
+			rhythm[i].sample = NULL;
+		}
+	}
 }
 
 
@@ -1465,7 +1472,8 @@ bool OPNA::LoadRhythmSample(const char* path)
 			break;
 		fsize = Max(fsize, (1<<31)/1024);
 		
-		delete rhythm[i].sample;
+		if(rhythm[i].sample)
+			delete[] rhythm[i].sample;
 		rhythm[i].sample = new int16[fsize];
 		if (!rhythm[i].sample)
 			break;
@@ -1481,7 +1489,7 @@ bool OPNA::LoadRhythmSample(const char* path)
 		for (i=0; i<6; i++)
 		{
 			delete[] rhythm[i].sample;
-			rhythm[i].sample = 0;
+			rhythm[i].sample = NULL;
 		}
 		return false;
 	}
@@ -1658,7 +1666,7 @@ void OPNA::Mix(Sample* buffer, int nsamples)
 //
 OPNB::OPNB()
 {
-	adpcmabuf = 0;
+	adpcmabuf = NULL;
 	adpcmasize = 0;
 	for (int i=0; i<6; i++)
 	{

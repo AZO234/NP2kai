@@ -47,8 +47,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+	
+#if defined(SUPPORT_IA32_HAXM)
+extern	UINT8	membase[0x200000];
+extern	UINT8	*mem;
+#else
 extern	UINT8	mem[0x200000];
+#endif
 
 void MEMCALL memm_arch(UINT type);
 void MEMCALL memm_vram(UINT operate);

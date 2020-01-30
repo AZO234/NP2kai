@@ -20,11 +20,13 @@ class CDebugUtyView : public CWndProc
 public:
 	static void Initialize(HINSTANCE hInstance);
 	static void New();
+	static void DisposeAllClosedWindow();
 	static void AllClose();
 	static void AllUpdate(bool bForce);
 
 	CDebugUtyView();
 	virtual ~CDebugUtyView();
+	void DetachDebugView();
 	void UpdateCaption();
 	UINT32 GetVScrollPos() const;
 	void SetVScrollPos(UINT nPos);

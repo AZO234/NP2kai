@@ -48,6 +48,10 @@
 #include "sysmng.h"
 #include "taskmng.h"
 
+#if defined(SUPPORT_IA32_HAXM)
+#include	"i386hax/haxfunc.h"
+#include	"i386hax/haxcore.h"
+#endif
 
 NP2OSCFG np2oscfg = {
 #if !defined(CPUCORE_IA32)		/* titles */
@@ -83,6 +87,10 @@ NP2OSCFG np2oscfg = {
 	{ "", "" },		/* JOYDEV */
 
 	{ FALSE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", "" },	/* mpu */
+#if defined(SUPPORT_SMPU98)
+	{ FALSE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", "" },	/* s-mpu */
+	{ FALSE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", "" },	/* s-mpu */
+#endif
 	{
 		{ TRUE, COMPORT_NONE, 0, 0x3e, 19200, "", "", "", "" },/* com1 */
 		{ TRUE, COMPORT_NONE, 0, 0x3e, 19200, "", "", "", "" },/* com2 */
@@ -104,6 +112,10 @@ NP2OSCFG np2oscfg = {
 
 	SNDDRV_SDL,		/* snddrv */
 	{ "", "" }, 		/* MIDIDEV */
+#if defined(SUPPORT_SMPU98)
+	{ "", "" }, 		/* MIDIDEVA */
+	{ "", "" }, 		/* MIDIDEVB */
+#endif
 	0,			/* MIDIWAIT */
 
 	MOUSE_RATIO_100,	/* mouse_move_ratio */
@@ -144,6 +156,7 @@ char timidity_cfgfile_path[MAX_PATH];
 
 int verbose = 0;
 
+static  UINT		lateframecount; // フレーム遅れ数
 
 UINT32
 gettick(void)
@@ -306,9 +319,27 @@ processwait(UINT cnt)
 {
 
 	if (timing_getcount() >= cnt) {
+#if defined(SUPPORT_IA32_HAXM)
+		if (np2hax.enable) {
+			np2haxcore.hltflag = 0;
+			if(lateframecount > 0 && np2haxcore.I_ratio < 254){
+				np2haxcore.I_ratio++;
+			}else if(np2haxcore.I_ratio > 1){
+				//np2haxcore.I_ratio--;
+			}
+			lateframecount = 0;
+		}
+#endif
 		timing_setcount(0);
 		framereset(cnt);
 	} else {
+#if defined(SUPPORT_IA32_HAXM)
+		if (np2hax.enable) {
+			if(np2haxcore.I_ratio > 1){
+				np2haxcore.I_ratio--;
+			}
+		}
+#endif
 		taskmng_sleep(1);
 	}
 }

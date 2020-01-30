@@ -39,10 +39,6 @@
 #include "xnp2.h"
 #endif
 
-#if !defined(_countof)
-#define _countof(a)	(sizeof(a)/sizeof(a[0]))
-#endif
-
 NP2WAB		np2wab = {0};
 NP2WABWND	np2wabwnd = {0};
 NP2WABCFG	np2wabcfg;
@@ -164,9 +160,9 @@ void wabwin_readini()
 #if defined(NP2_X11) || defined(NP2_SDL2) || defined(__LIBRETRO__)
 	milstr_ncpy(szPath, modulefile, sizeof(szPath));
 #else
-	initgetfile(szPath, _countof(szPath));
+	initgetfile(szPath, NELEMENTS(szPath));
 #endif
-	ini_read(szPath, g_Name, s_wabwndini, _countof(s_wabwndini));
+	ini_read(szPath, g_Name, s_wabwndini, NELEMENTS(s_wabwndini));
 }
 
 /**
@@ -178,16 +174,19 @@ void wabwin_writeini()
 		TCHAR szPath[MAX_PATH];
 #if defined(NP2_SDL2) || defined(__LIBRETRO__)
 		milstr_ncpy(szPath, modulefile, sizeof(szPath));
-		ini_write(szPath, g_Name, s_wabwndini, _countof(s_wabwndini));
+		ini_write(szPath, g_Name, s_wabwndini, NELEMENTS(s_wabwndini));
 #elif defined(NP2_X11)
 		milstr_ncpy(szPath, modulefile, sizeof(szPath));
-		ini_write(szPath, g_Name, s_wabwndini, _countof(s_wabwndini), FALSE);
+		ini_write(szPath, g_Name, s_wabwndini, NELEMENTS(s_wabwndini), FALSE);
 #else
-		initgetfile(szPath, _countof(szPath));
-		ini_write(szPath, g_Name, s_wabwndini, _countof(s_wabwndini));
+		initgetfile(szPath, NELEMENTS(szPath));
+		ini_write(szPath, g_Name, s_wabwndini, NELEMENTS(s_wabwndini));
 #endif
 	}
 }
+
+void scrnmng_updatefsres(void);
+void scrnmng_bltwab(void);
 
 /**
  * 画面サイズ設定
@@ -296,11 +295,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){
 			mii.cbSize = sizeof(mii);
 			mii.fMask = MIIM_TYPE | MIIM_STATE | MIIM_ID | MIIM_SUBMENU | MIIM_DATA;
 			mii.dwTypeData = szString;
-			mii.cch = _countof(szString);
+			mii.cch = NELEMENTS(szString);
 			GetMenuItemInfo(hWabMenu, 0, TRUE, &mii);
 			InsertMenuItem(hSysMenu, 0, TRUE, &mii);
 			mii.dwTypeData = szString;
-			mii.cch = _countof(szString);
+			mii.cch = NELEMENTS(szString);
 			GetMenuItemInfo(hWabMenu, 1, TRUE, &mii);
 			InsertMenuItem(hSysMenu, 0, TRUE, &mii);
 			CheckMenuItem(hSysMenu, IDM_WABSYSMENU_HALFTONE, MF_BYCOMMAND | (np2wabcfg.halftone ? MF_CHECKED : MF_UNCHECKED));

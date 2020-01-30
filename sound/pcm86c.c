@@ -139,6 +139,7 @@ void pcm86_setnextintr(void) {
 
 void SOUNDCALL pcm86gen_checkbuf(PCM86 pcm86)
 {
+	int smpsize[0x8] = {0, 2, 2, 4, 0, 1, 1, 2};
 	long	bufs;
 	UINT32	past;
 	static SINT32 lastvirbuf = 0;
@@ -154,25 +155,8 @@ void SOUNDCALL pcm86gen_checkbuf(PCM86 pcm86)
 		RECALC_NOWCLKWAIT(past);
 	}
 	
-	// XXX: Windowsでフリーズする問題の暫定対症療法（ある程度時間が経った小さいバッファを捨てる）
-	if(0 < pcm86->virbuf && pcm86->virbuf < 128){
-		if(pcm86->virbuf == lastvirbuf){
-			lastvirbufcnt++;
-			if(lastvirbufcnt > 500){
-				// 500回呼ばれても値が変化しなかったら捨てる
-				pcm86->virbuf = 0;
-				lastvirbufcnt = 0;
-			}
-		}else{
-			lastvirbuf = pcm86->virbuf;
-			lastvirbufcnt = 0;
-		}
-	}else{
-		lastvirbufcnt = 0;
-	}
-
 	bufs = pcm86->realbuf - pcm86->virbuf;
-	if (bufs <= 0)									/* 処理落ちてる… */
+	if (bufs < smpsize[(pcm86->dactrl >> 4) & 0x7])									/* 処理落ちてる… */
 	{
 		bufs &= ~3;
 		pcm86->virbuf += bufs;

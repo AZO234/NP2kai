@@ -21,6 +21,9 @@
 #include "scsiio.h"
 #include "pc9861k.h"
 #include "mpu98ii.h"
+#if defined(SUPPORT_SMPU98)
+#include "smpu98.h"
+#endif
 #include "board14.h"
 #include "amd98.h"
 #include "bios/bios.h"
@@ -41,17 +44,17 @@
 #include "keystat.h"
 #include "bmsio.h"
 #if defined(SUPPORT_WAB)
-#include "wab.h"
+#include "wab/wab.h"
 #endif
 #if defined(SUPPORT_CL_GD5430)
-#include "cirrus_vga_extern.h"
+#include "wab/cirrus_vga_extern.h"
 #endif
 #if defined(SUPPORT_NET)
-#include "net.h"
+#include "network/net.h"
 #endif
 #if defined(SUPPORT_LGY98)
-#include "lgy98.h"
-#include "lgy98dev.h"
+#include "network/lgy98.h"
+#include "network/lgy98dev.h"
 #endif
 #if defined(CPUCORE_IA32)
 #include "ia32/instructions/fpu/fp.h"
@@ -59,6 +62,12 @@
 #if defined(BIOS_IO_EMULATION)
 #include "bios/bios.h"
 #endif
+#if defined(SUPPORT_IA32_HAXM)
+#include	"i386hax/haxfunc.h"
+#include	"i386hax/haxcore.h"
+#endif
+
+extern int sxsi_unittbl[];
 
 #if defined(MACOS)
 #define	CRCONST		str_cr
@@ -133,6 +142,9 @@ typedef struct {
 
 
 extern	COMMNG	cm_mpu98;
+#if defined(SUPPORT_SMPU98)
+extern	COMMNG	cm_smpu98[];
+#endif
 extern	COMMNG	cm_rs232c;
 
 typedef struct {
@@ -1052,7 +1064,7 @@ const OEMCHAR	*path;
 	ret = statflag_write(sfh, &sds, sizeof(sds));
 	for (i=0; i<NELEMENTS(sds.ide); i++) {
 		if (sds.ide[i] != SXSIDEV_NC) {
-#if defined(SUPPORT_IDEIO)||defined(SUPPORT_PHYSICAL_CDDRV)
+#if defined(SUPPORT_IDEIO)&&defined(SUPPORT_PHYSICAL_CDDRV)
 			if(sds.ide[i]==SXSIDEV_CDROM){ // CD-ROMの場合、np2cfgを優先
 				path = np2cfg.idecd[i];
 			}else
@@ -1083,15 +1095,25 @@ static int flagcheck_sxsi(STFLAGH sfh, const SFENTRY *tbl) {
 	sxsi_allflash();
 	ret = statflag_read(sfh, &sds, sizeof(sds));
 	for (i=0; i<NELEMENTS(sds.ide); i++) {
-		if (sds.ide[i] != SXSIDEV_NC && sds.ide[i] != SXSIDEV_CDROM) {
-			OEMSPRINTF(buf, str_sasix, i+1);
-			ret |= statflag_checkpath(sfh, buf);
+		if (sds.ide[i] != SXSIDEV_NC) {
+			if(sds.ide[i] != SXSIDEV_CDROM) {
+				OEMSPRINTF(buf, str_sasix, i+1);
+				ret |= statflag_checkpath(sfh, buf);
+			}else{
+				OEMSPRINTF(buf, str_sasix, i+1);
+				statflag_checkpath(sfh, buf); // CDの時、フラグには影響させない
+			}
 		}
 	}
 	for (i=0; i<NELEMENTS(sds.scsi); i++) {
-		if (sds.scsi[i] != SXSIDEV_NC && sds.ide[i] != SXSIDEV_CDROM) {
-			OEMSPRINTF(buf, str_scsix, i);
-			ret |= statflag_checkpath(sfh, buf);
+		if (sds.scsi[i] != SXSIDEV_NC) {
+			if(sds.ide[i] != SXSIDEV_CDROM) {
+				OEMSPRINTF(buf, str_scsix, i);
+				ret |= statflag_checkpath(sfh, buf);
+			}else{
+				OEMSPRINTF(buf, str_scsix, i);
+				statflag_checkpath(sfh, buf); // CDの時、フラグには影響させない
+			}
 		}
 	}
 	(void)tbl;
@@ -1105,7 +1127,7 @@ static int flagload_sxsi(STFLAGH sfh, const SFENTRY *tbl) {
 	UINT		i;
 	REG8		drv;
 	STATPATH	sp;
-
+	
 	ret = statflag_read(sfh, &sds, sizeof(sds));
 	if (ret != STATFLAG_SUCCESS) {
 		return(ret);
@@ -1149,6 +1171,16 @@ static int flagsave_com(STFLAGH sfh, const SFENTRY *tbl) {
 		case 1:
 			cm = cm_rs232c;
 			break;
+			
+#if defined(SUPPORT_SMPU98)
+		case 2:
+			cm = cm_smpu98[0];
+			break;
+			
+		case 3:
+			cm = cm_smpu98[1];
+			break;
+#endif
 
 		default:
 			cm = NULL;
@@ -1203,6 +1235,20 @@ static int flagload_com(STFLAGH sfh, const SFENTRY *tbl) {
 			cm = commng_create(COMCREATE_SERIAL);
 			cm_rs232c = cm;
 			break;
+			
+#if defined(SUPPORT_SMPU98)
+		case 2:
+			commng_destroy(cm_smpu98[0]);
+			cm = commng_create(COMCREATE_SMPU98_A);
+			cm_smpu98[0] = cm;
+			break;
+
+		case 3:
+			commng_destroy(cm_smpu98[1]);
+			cm = commng_create(COMCREATE_SMPU98_B);
+			cm_smpu98[1] = cm;
+			break;
+#endif
 
 		default:
 			cm = NULL;
@@ -1284,6 +1330,11 @@ const SFENTRY	*tblterm;
 	
 #if defined(SUPPORT_CL_GD5430)
 	pc98_cirrus_vga_save();
+#endif
+	
+#if defined(SUPPORT_IA32_HAXM)
+	memcpy(vramex_base, vramex, sizeof(vramex_base));
+	i386haxfunc_vcpu_getMSRs(&np2haxstat.msrstate);
 #endif
 
 	ret = STATFLAG_SUCCESS;
@@ -1441,6 +1492,7 @@ int statsave_load(const OEMCHAR *filename) {
 	BOOL		done;
 const SFENTRY	*tbl;
 const SFENTRY	*tblterm;
+	UINT		i;
 
 	sffh = statflag_open(filename, NULL, 0);
 	if (sffh == NULL) {
@@ -1458,6 +1510,9 @@ const SFENTRY	*tblterm;
 	soundmng_stop();
 	rs232c_midipanic();
 	mpu98ii_midipanic();
+#if defined(SUPPORT_SMPU98)
+	smpu98_midipanic();
+#endif
 	pc9861k_midipanic();
 	sxsi_alltrash();
 
@@ -1566,6 +1621,23 @@ const SFENTRY	*tblterm;
 		}
 	}
 	statflag_close(sffh);
+	
+#if defined(SUPPORT_IA32_HAXM)
+	memcpy(vramex, vramex_base, sizeof(vramex_base));
+	i386haxfunc_vcpu_setREGs(&np2haxstat.state);
+	i386haxfunc_vcpu_setFPU(&np2haxstat.fpustate);
+	{
+		HAX_MSR_DATA	msrstate_set = {0};
+		i386haxfunc_vcpu_setMSRs(&np2haxstat.msrstate, &msrstate_set);
+	}
+	i386hax_vm_sethmemory(CPU_ADRSMASK != 0x000fffff);
+	i386hax_vm_setitfmemory(CPU_ITFBANK);
+	i386hax_vm_setvga256linearmemory();
+	np2haxcore.clockpersec = NP2_TickCount_GetFrequency();
+	np2haxcore.lastclock = NP2_TickCount_GetCount();
+	np2haxcore.clockcount = NP2_TickCount_GetCount();
+	np2haxcore.I_ratio = 0;
+#endif
 
 	// I/O作り直し
 	MEMM_ARCH((pccore.model & PCMODEL_EPSON)?1:0);
@@ -1574,6 +1646,29 @@ const SFENTRY	*tblterm;
 	cbuscore_bind();
 	fmboard_bind();
 	
+	// DA/UAと要素番号の対応関係を初期化
+	for(i=0;i<4;i++){
+		sxsi_unittbl[i] = i;
+	}
+#if defined(SUPPORT_IDEIO)
+	if (pccore.hddif & PCHDD_IDE) {
+		int i, idx, ncidx;
+		// 未接続のものを無視して接続順にDA/UAを割り当てる
+		ncidx = idx = 0;
+		for(i=0;i<4;i++){
+			if(sxsi_getdevtype(i)==SXSIDEV_HDD){
+				sxsi_unittbl[idx] = i;
+				idx++;
+			}else{
+				ncidx = i;
+			}
+		}
+		for(;idx<4;idx++){
+			sxsi_unittbl[idx] = ncidx; // XXX: 余ったDA/UAはとりあえず未接続の番号に設定
+		}
+	}
+#endif
+
 #if defined(SUPPORT_PC9821)&&defined(SUPPORT_PCI)
 	pcidev_bind();
 #endif
@@ -1620,6 +1715,11 @@ const SFENTRY	*tblterm;
 	np2wab.lastWidth = 0;
 	np2wab.lastHeight = 0;
 	np2wab_setScreenSize(np2wab.wndWidth, np2wab.wndHeight);
+#endif
+	
+	pit_setrs232cspeed((pit.ch + 2)->value);
+#if defined(SUPPORT_RS232C_FIFO)
+	rs232c_vfast_setrs232cspeed(rs232cfifo.vfast);
 #endif
 	
 	return(ret);

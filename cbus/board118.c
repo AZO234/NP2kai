@@ -21,7 +21,7 @@ static int a460_soundid = 0x80;
 /*********** for OPL (MAME) ***********/
 
 #ifdef USE_MAME
-static void *opl3;
+static void *opl3 = NULL;
 static int samplerate;
 void *YMF262Init(INT clock, INT rate);
 void YMF262ResetChip(void *chip);
@@ -739,4 +739,13 @@ void board118_unbind(void)
 		//iocore_detachinp(cs4231.port[10]+1);
 
 	}
+}
+void board118_finalize(void)
+{
+#ifdef USE_MAME
+	if (opl3) {
+		YMF262Shutdown(opl3);
+		opl3 = NULL;
+	}
+#endif
 }

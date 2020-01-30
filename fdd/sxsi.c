@@ -306,8 +306,13 @@ BRESULT sxsi_devopen(REG8 drv, const OEMCHAR *fname) {
 			}
 			if ((fname == NULL) || (fname[0] == '\0')) {
 				int num = drv & 0x0f;
-				sxsi->close(sxsi);
-				ideio_notify(sxsi->drv, 0);
+				if (sxsi->flag & SXSIFLAG_FILEOPENED) {
+					ideio_notify(sxsi->drv, 0);
+					(*sxsi->close)(sxsi);
+				}
+				if (sxsi->flag & SXSIFLAG_READY) {
+					(*sxsi->destroy)(sxsi);
+				}
 				file_cpyname(sxsi->fname, _T("\0\0\0\0"), 1);
 				sxsi->flag = 0;
 				file_cpyname(np2cfg.idecd[num], _T("\0\0\0\0"), 1);
@@ -317,8 +322,13 @@ BRESULT sxsi_devopen(REG8 drv, const OEMCHAR *fname) {
 			else {
 				if((sxsi->flag & SXSIFLAG_READY) && (_tcsnicmp(sxsi->fname, OEMTEXT("\\\\.\\"), 4)!=0 || _tcsicmp(sxsi->fname, np2cfg.idecd[drv & 0x0f])==0) ){
 					// いったん取り出す
-					sxsi->close(sxsi);
-					ideio_notify(sxsi->drv, 0);
+					if (sxsi->flag & SXSIFLAG_FILEOPENED) {
+						ideio_notify(sxsi->drv, 0);
+						(*sxsi->close)(sxsi);
+					}
+					if (sxsi->flag & SXSIFLAG_READY) {
+						(*sxsi->destroy)(sxsi);
+					}
 					sxsi->flag = 0;
 					cdchange_drv = drv;
 					file_cpyname(sxsi->fname, _T("\0\0\0\0"), 1);
@@ -476,7 +486,7 @@ BRESULT sxsi_state_save(const OEMCHAR *ext) {
 	while(sxsi < sxsiterm) {
 		if (sxsi->state_save != NULL) {
 			_SYSTIME st;
-			OEMCHAR dt[32];
+			OEMCHAR dt[64];
 			OEMCHAR	sfname[MAX_PATH];
 			BRESULT r;
 
@@ -508,7 +518,11 @@ static int str_get_mem_size(const OEMCHAR *str)
 #ifdef SUPPORT_ANK
 	return ((int)(milank_chr(str, 0) - str));
 #else
+#ifdef OSLANG_UTF8
 	return ((int)(milutf8_chr(str, 0) - str));
+#else
+	return ((int)(milstr_chr(str, 0) - str));
+#endif
 #endif
 }
 
@@ -559,7 +573,11 @@ static BRESULT state_load(SXSIDEV sxsi, const OEMCHAR *ext)
 #ifdef SUPPORT_ANK
 		if (milank_memcmp(fli.path, rname) != 0)
 #else
+#ifdef OSLANG_UTF8
 		if (milutf8_memcmp(fli.path, rname) != 0)
+#else
+		if (milstr_memcmp(fli.path, rname) != 0)
+#endif
 #endif
 		{
 			continue;

@@ -18,7 +18,7 @@
  * デフォルト仕様 IO:D2 DMA:3 INT:5 
  */
 
-static void *opl3;
+static void *opl3 = NULL;
 static const UINT8 sb16base[] = {0xd2,0xd4,0xd6,0xd8,0xda,0xdc,0xde};
 static int samplerate;
 
@@ -273,6 +273,15 @@ void boardsb16_unbind(void) {
 	iocore_detachout(0x8100 + g_sb16.base);	/* MIDI Port */
 	iocore_detachinp(0x8000 + g_sb16.base);	/* MIDI Port */
 	iocore_detachinp(0x8100 + g_sb16.base);	/* MIDI Port */
+}
+void boardsb16_finalize(void)
+{
+#ifdef USE_MAME
+	if (opl3) {
+		YMF262Shutdown(opl3);
+		opl3 = NULL;
+	}
+#endif
 }
 
 #endif

@@ -34,10 +34,10 @@ typedef enum _DWMWINDOWATTRIBUTE {
   DWMWA_LAST
 } DWMWINDOWATTRIBUTE;
 
-pfnDwmIsCompositionEnabled	F_DwmIsCompositionEnabled = NULL;
-pfnDwmGetWindowAttribute	F_DwmGetWindowAttribute = NULL;
-HMODULE hDwmModule = NULL;
-int noDWM = 0;
+static pfnDwmIsCompositionEnabled	F_DwmIsCompositionEnabled = NULL;
+static pfnDwmGetWindowAttribute	F_DwmGetWindowAttribute = NULL;
+static HMODULE hDwmModule = NULL;
+static int noDWM = 0;
 
 BOOL winloc_GetWindowRect(HWND hwnd, LPRECT lpRect);
 

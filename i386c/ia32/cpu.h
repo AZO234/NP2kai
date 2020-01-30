@@ -259,8 +259,8 @@ typedef enum {
 } FP_RND;
 
 typedef union {
-#ifdef FLOATX80
-    floatx80 d;
+#ifdef SUPPORT_FPU_SOFTFLOAT
+    extFloat80_t d;
 #else
     float d;
 #endif

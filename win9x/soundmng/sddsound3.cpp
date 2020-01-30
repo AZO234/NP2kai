@@ -264,8 +264,8 @@ void CSoundDeviceDSound3::DestroyStream()
 	if (m_hEvents[1])
 	{
 		::SetEvent(m_hEvents[1]);
-		CThreadBase::Stop();
 	}
+	CThreadBase::Stop();
 
 	if (m_lpDSStream)
 	{
@@ -384,8 +384,11 @@ void CSoundDeviceDSound3::SetMasterVolume(int nVolume)
  */
 bool CSoundDeviceDSound3::Task()
 {
-	 switch (WaitForMultipleObjects(_countof(m_hEvents), m_hEvents, 0, INFINITE))
-	 {
+	if(!m_hEvents[0] || !m_hEvents[1]){
+		return false;
+	}
+	switch (WaitForMultipleObjects(_countof(m_hEvents), m_hEvents, 0, INFINITE))
+	{
 		case WAIT_OBJECT_0 + 0:
 			if (m_lpDSStream)
 			{

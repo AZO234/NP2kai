@@ -73,9 +73,13 @@ void CVstBuffer::Delloc()
 {
 	for (UINT i = 0; i < m_nChannels; i++)
 	{
-		delete[] m_pBuffers[i];
+		if(m_pBuffers[i]){
+			delete[] m_pBuffers[i];
+		}
 	}
-	delete[] m_pBuffers;
+	if(m_pBuffers){
+		delete[] m_pBuffers;
+	}
 
 	m_nChannels = 0;
 	m_nSamples = 0;

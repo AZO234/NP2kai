@@ -1021,16 +1021,20 @@ mixer_default_button_clicked(GtkButton *b, gpointer d)
 {
 	int i;
 
+#if !defined(SUPPORT_FMGEN)
 	gtk_adjustment_set_value(GTK_ADJUSTMENT(mixer_adj[0]), 100.0);
 	for (i = 1; i <= NELEMENTS(mixer_vol_tbl) - 1; i++) {
 		gtk_adjustment_set_value(GTK_ADJUSTMENT(mixer_adj[i]), 64.0);
 	}
 	gtk_adjustment_set_value(GTK_ADJUSTMENT(mixer_adj[6]), 128.0);
-#if defined(SUPPORT_FMGEN)
-	OPNA_SetVolumeFM(g_opna[0].fmgen, pow((double)np2cfg.vol_fm / 128, 0.12) * (20 + 192) - 192);
-	OPNA_SetVolumePSG(g_opna[0].fmgen, pow((double)np2cfg.vol_ssg / 128, 0.12) * (20 + 192) - 192);
-	OPNA_SetVolumeADPCM(g_opna[0].fmgen, pow((double)np2cfg.vol_pcm / 128, 0.12) * (20 + 192) - 192);
-	OPNA_SetVolumeRhythmTotal(g_opna[0].fmgen, pow((double)np2cfg.vol_rhythm / 128, 0.12) * (20 + 192) - 192);
+#else  /* SUPPORT_FMGEN */
+	gtk_adjustment_set_value(GTK_ADJUSTMENT(mixer_adj[0]), 100.0);
+	gtk_adjustment_set_value(GTK_ADJUSTMENT(mixer_adj[1]), 64.0);
+	gtk_adjustment_set_value(GTK_ADJUSTMENT(mixer_adj[2]), 25.0);
+	gtk_adjustment_set_value(GTK_ADJUSTMENT(mixer_adj[3]), 64.0);
+	gtk_adjustment_set_value(GTK_ADJUSTMENT(mixer_adj[4]), 90.0);
+	gtk_adjustment_set_value(GTK_ADJUSTMENT(mixer_adj[5]), 64.0);
+	gtk_adjustment_set_value(GTK_ADJUSTMENT(mixer_adj[6]), 128.0);
 #endif	/* SUPPORT_FMGEN */
 
 }
@@ -2263,19 +2267,19 @@ create_driver_note(void)
 		g_signal_connect(G_OBJECT(driver_radiobutton[i]), "clicked",
 		    G_CALLBACK(driver_radiobutton_clicked), GINT_TO_POINTER(i));
 	}
-#if !defined(USE_SDLAUDIO) && !defined(USE_SDLMIXER)
+#if !defined(USE_SDLAUDIO) && !defined(USE_SDLMIXER) && !defined(USE_SDL2AUDIO) && !defined(USE_SDL2MIXER)
 	gtk_widget_set_sensitive(driver_radiobutton[SNDDRV_SDL], FALSE);
 #endif
 
 	switch (np2oscfg.snddrv) {
 	case SNDDRV_NODRV:
-#if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER)
+#if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER) || defined(USE_SDL2AUDIO) || defined(USE_SDL2MIXER)
 	case SNDDRV_SDL:
 #endif
 		g_signal_emit_by_name(G_OBJECT(driver_radiobutton[np2oscfg.snddrv]), "clicked");
 		break;
 
-#if !defined(USE_SDLAUDIO) && !defined(USE_SDLMIXER)
+#if !defined(USE_SDLAUDIO) && !defined(USE_SDLMIXER) && !defined(USE_SDL2AUDIO) && !defined(USE_SDL2MIXER)
 	case SNDDRV_SDL:
 #endif
 	case SNDDRV_DRVMAX:

@@ -354,8 +354,7 @@ UINT8 *dipswbmp_getmpu(UINT8 cfg) {
 	}
 	return(ret);
 }
-
-UINT8 *dipswbmp_getsnd118(UINT8 snd118io, UINT8 snd118dma, UINT8 snd118irqf, UINT8 snd118irqp, UINT8 snd118irqm, UINT8 snd118rom) {
+UINT8 *dipswbmp_getsmpu(UINT8 cfg) {
 
 	UINT8	*ret;
 	DIPBMP	dipbmp;
@@ -363,6 +362,26 @@ UINT8 *dipswbmp_getsnd118(UINT8 snd118io, UINT8 snd118dma, UINT8 snd118irqf, UIN
 	int		x;
 	int		y;
 	int		l;
+
+	ret = getbmp(bmpmpu, &dipbmp);
+	if (ret) {
+		for (i=0; i<4; i++) {
+			x = (i + 2) * 9 + 1;
+			y = (1 * 9) + ((cfg & (0x10 << i))?5:9); // 左右逆なだけっぽい
+			l = 0;
+			do {
+				line4x(&dipbmp, x, y + l, 7, 2);
+			} while(++l < 3);
+		}
+		setjumpery(&dipbmp, 9 + 3 - (cfg & 3), 1);
+	}
+	return(ret);
+}
+
+UINT8 *dipswbmp_getsnd118(UINT16 snd118io, UINT8 snd118dma, UINT8 snd118irqf, UINT8 snd118irqp, UINT8 snd118irqm, UINT8 snd118rom) {
+
+	UINT8	*ret;
+	DIPBMP	dipbmp;
 
 	ret = getbmpres(OEMTEXT("JUMPER118"), &dipbmp);
 	if (ret) {

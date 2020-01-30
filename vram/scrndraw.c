@@ -131,6 +131,10 @@ static UINT8 rasterdraw(SDRAWFN sdrawfn, SDRAW sdraw, int maxy) {
 	}
 }
 
+#ifdef SUPPORT_WAB
+void scrnmng_update(void);
+#endif
+
 UINT8 scrndraw_draw(UINT8 redraw) {
 
 	UINT8		ret;
@@ -146,6 +150,9 @@ const SDRAWFN	*sdrawfn;
 		updateallline(0x80808080);
 		redrawpending = 0;
 	}
+#if defined(SUPPORT_IA32_HAXM)
+	gdcs.grphdisp |= GDCSCRN_ALLDRAW2;
+#endif
 
 	ret = 0;
 #ifdef SUPPORT_WAB

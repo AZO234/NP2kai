@@ -14,7 +14,11 @@ void NP2_Thread_Create(NP2_Thread_t* pth, void *(*thread)(void *), void* param) 
 #elif defined(NP2_THREAD_POSIX)
   pthread_create(pth, NULL, thread, param);
 #elif defined(NP2_THREAD_SDL2)
+#if SDL_MAJOR_VERSION == 1
+  *(SDL_Thread**)pth = SDL_CreateThread(thread, param);
+#else
   *(SDL_Thread**)pth = SDL_CreateThread((SDL_ThreadFunction)thread, NULL, param);
+#endif
 #elif defined(NP2_THREAD_LR)
   *pth = sthread_create((void (*)(void*))thread, param);
 #endif
@@ -81,7 +85,11 @@ void NP2_Thread_Detach(NP2_Thread_t* pth) {
   pth = NULL;
 #elif defined(NP2_THREAD_SDL2)
   if(*pth)
+#if SDL_MAJOR_VERSION == 1
+    SDL_KillThread((SDL_Thread*)*pth);
+#else
     SDL_DetachThread((SDL_Thread*)*pth);
+#endif
   *pth = NULL;
 #elif defined(NP2_THREAD_LR)
   if(*pth)

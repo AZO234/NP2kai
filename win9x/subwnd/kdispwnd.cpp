@@ -384,6 +384,11 @@ void CKeyDisplayWnd::SetDispMode(UINT8 mode)
 	CheckMenuItem(hMenu, IDM_KDISPMIDI, ((mode == KEYDISP_MODEMIDI) ? MF_CHECKED : MF_UNCHECKED));
 }
 
+void kdispwin_create(){
+	keydisp_setresizeflag();
+	CKeyDisplayWnd::GetInstance()->Create();
+}
+
 /**
  * 設定読み込み
  */

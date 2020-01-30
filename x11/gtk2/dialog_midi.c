@@ -65,6 +65,7 @@ static const char *mpu98_midiin_str[] = {
 	cmmidi_midiin_device,
 };
 
+static GtkWidget *mpu98_en_checkbutton;
 static GtkWidget *mpu98_ioport_entry;
 static GtkWidget *mpu98_intr_entry;
 static GtkWidget *mpu98_devname_entry[NELEMENTS(mpu98_devname_str)];
@@ -74,6 +75,25 @@ static GtkWidget *mpu98_module_entry;
 static GtkWidget *mpu98_mimpi_def_checkbutton;
 static GtkWidget *mpu98_mimpi_def_entry;
 static UINT8 mpuopt;
+#if defined(SUPPORT_SMPU98)
+static GtkWidget *smpu_en_checkbutton;
+static GtkWidget *smpu_muteb_checkbutton;
+static GtkWidget *smpu_ioport_entry;
+static GtkWidget *smpu_intr_entry;
+static GtkWidget *smpu_devname_a_entry[NELEMENTS(mpu98_devname_str)];
+static GtkWidget *smpu_midiout_a_entry;
+static GtkWidget *smpu_midiin_a_entry;
+static GtkWidget *smpu_module_a_entry;
+static GtkWidget *smpu_mimpi_def_a_checkbutton;
+static GtkWidget *smpu_mimpi_def_a_entry;
+static GtkWidget *smpu_devname_b_entry[NELEMENTS(mpu98_devname_str)];
+static GtkWidget *smpu_midiout_b_entry;
+static GtkWidget *smpu_midiin_b_entry;
+static GtkWidget *smpu_module_b_entry;
+static GtkWidget *smpu_mimpi_def_b_checkbutton;
+static GtkWidget *smpu_mimpi_def_b_entry;
+static UINT8 smpuopt;
+#endif	/* SUPPORT_SMPU98 */
 
 
 static void
@@ -86,7 +106,13 @@ ok_button_clicked(GtkButton *b, gpointer d)
 	int i;
 
 	update = 0;
+	enable = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(mpu98_en_checkbutton)) ? 1 : 0;
+	if (np2cfg.mpuenable != enable) {
+		np2cfg.mpuenable = enable;
+		update |= SYS_UPDATECFG | SYS_UPDATEMIDI;
+	}
 	if (np2cfg.mpuopt != mpuopt) {
+		np2cfg.mpuopt = mpuopt;
 		update |= SYS_UPDATECFG | SYS_UPDATEMIDI;
 	}
 	utf8 = gtk_entry_get_text(GTK_ENTRY(mpu98_midiout_entry));
@@ -161,6 +187,168 @@ ok_button_clicked(GtkButton *b, gpointer d)
 			}
 		}
 	}
+
+#if defined(SUPPORT_SMPU98)
+	enable = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(smpu_en_checkbutton)) ? 1 : 0;
+	if (np2cfg.smpuenable != enable) {
+		np2cfg.smpuenable = enable;
+		update |= SYS_UPDATECFG | SYS_UPDATEMIDI;
+	}
+	enable = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(smpu_muteb_checkbutton)) ? 1 : 0;
+	if (np2cfg.smpumuteB != enable) {
+		np2cfg.smpumuteB = enable;
+		update |= SYS_UPDATECFG | SYS_UPDATEMIDI;
+	}
+	if (np2cfg.smpuopt != smpuopt) {
+		np2cfg.smpuopt = smpuopt;
+		update |= SYS_UPDATECFG | SYS_UPDATEMIDI;
+	}
+	utf8 = gtk_entry_get_text(GTK_ENTRY(smpu_midiout_a_entry));
+	if (utf8 != NULL) {
+		p = g_filename_from_utf8(utf8, -1, NULL, NULL, NULL);
+		if (p != NULL) {
+			if (milstr_cmp(np2oscfg.smpuA.mout, p)) {
+				milstr_ncpy(np2oscfg.smpuA.mout, p, sizeof(np2oscfg.smpuA.mout));
+				update |= SYS_UPDATECFG | SYS_UPDATEMIDI;
+			}
+			g_free(p);
+		}
+	}
+	utf8 = gtk_entry_get_text(GTK_ENTRY(smpu_midiin_a_entry));
+	if (utf8 != NULL) {
+		p = g_filename_from_utf8(utf8, -1, NULL, NULL, NULL);
+		if (p != NULL) {
+			if (milstr_cmp(np2oscfg.smpuA.min, p)) {
+				milstr_ncpy(np2oscfg.smpuA.min, p, sizeof(np2oscfg.smpuA.min));
+				update |= SYS_UPDATECFG | SYS_UPDATEMIDI;
+			}
+			g_free(p);
+		}
+	}
+	utf8 = gtk_entry_get_text(GTK_ENTRY(smpu_module_a_entry));
+	if (utf8 != NULL) {
+		p = g_filename_from_utf8(utf8, -1, NULL, NULL, NULL);
+		if (p != NULL) {
+			if (milstr_cmp(np2oscfg.smpuA.mdl, p)) {
+				milstr_ncpy(np2oscfg.smpuA.mdl, p, sizeof(np2oscfg.smpuA.mdl));
+				update |= SYS_UPDATECFG | SYS_UPDATEMIDI;
+			}
+			g_free(p);
+		}
+	}
+
+	/* MIMPI def enable/file PortA */
+	enable = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(smpu_mimpi_def_a_checkbutton)) ? 1 : 0;
+	if (np2oscfg.smpuA.def_en != enable) {
+		np2oscfg.smpuA.def_en = enable;
+		if (cm_mpu98) {
+			(*cm_mpu98->msg)(cm_mpu98, COMMSG_MIMPIDEFEN, enable);
+		}
+		update |= SYS_UPDATEOSCFG;
+	}
+	utf8 = gtk_entry_get_text(GTK_ENTRY(smpu_mimpi_def_a_entry));
+	if (utf8 != NULL) {
+		p = g_filename_from_utf8(utf8, -1, NULL, NULL, NULL);
+		if (p != NULL) {
+			if (milstr_cmp(np2oscfg.smpuA.def, p)) {
+				milstr_ncpy(np2oscfg.smpuA.def, p, sizeof(np2oscfg.smpuA.def));
+				if (cm_mpu98) {
+					(*cm_mpu98->msg)(cm_mpu98, COMMSG_MIMPIDEFFILE, (INTPTR)p);
+				}
+				update |= SYS_UPDATEOSCFG;
+			}
+			g_free(p);
+		}
+	}
+
+	/* MIDI-IN/OUT device PortA */
+	for (i = 0; i < NELEMENTS(mpu98_devname_str); i++) {
+		utf8 = gtk_entry_get_text(GTK_ENTRY(smpu_devname_a_entry[i]));
+		if (utf8 != NULL) {
+			p = g_filename_from_utf8(utf8, -1, NULL, NULL, NULL);
+			if (p != NULL) {
+				if (milstr_cmp(np2oscfg.MIDIDEVA[i], p)) {
+					milstr_ncpy(np2oscfg.MIDIDEVA[i], p, sizeof(np2oscfg.MIDIDEVA[0]));
+					update |= SYS_UPDATEOSCFG;
+				}
+				g_free(p);
+			}
+		}
+	}
+
+	utf8 = gtk_entry_get_text(GTK_ENTRY(smpu_midiout_b_entry));
+	if (utf8 != NULL) {
+		p = g_filename_from_utf8(utf8, -1, NULL, NULL, NULL);
+		if (p != NULL) {
+			if (milstr_cmp(np2oscfg.smpuB.mout, p)) {
+				milstr_ncpy(np2oscfg.smpuB.mout, p, sizeof(np2oscfg.smpuB.mout));
+				update |= SYS_UPDATECFG | SYS_UPDATEMIDI;
+			}
+			g_free(p);
+		}
+	}
+	utf8 = gtk_entry_get_text(GTK_ENTRY(smpu_midiin_b_entry));
+	if (utf8 != NULL) {
+		p = g_filename_from_utf8(utf8, -1, NULL, NULL, NULL);
+		if (p != NULL) {
+			if (milstr_cmp(np2oscfg.smpuB.min, p)) {
+				milstr_ncpy(np2oscfg.smpuB.min, p, sizeof(np2oscfg.smpuB.min));
+				update |= SYS_UPDATECFG | SYS_UPDATEMIDI;
+			}
+			g_free(p);
+		}
+	}
+	utf8 = gtk_entry_get_text(GTK_ENTRY(smpu_module_b_entry));
+	if (utf8 != NULL) {
+		p = g_filename_from_utf8(utf8, -1, NULL, NULL, NULL);
+		if (p != NULL) {
+			if (milstr_cmp(np2oscfg.smpuB.mdl, p)) {
+				milstr_ncpy(np2oscfg.smpuB.mdl, p, sizeof(np2oscfg.smpuB.mdl));
+				update |= SYS_UPDATECFG | SYS_UPDATEMIDI;
+			}
+			g_free(p);
+		}
+	}
+
+	/* MIMPI def enable/file PortB */
+	enable = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(smpu_mimpi_def_b_checkbutton)) ? 1 : 0;
+	if (np2oscfg.smpuB.def_en != enable) {
+		np2oscfg.smpuB.def_en = enable;
+		if (cm_mpu98) {
+			(*cm_mpu98->msg)(cm_mpu98, COMMSG_MIMPIDEFEN, enable);
+		}
+		update |= SYS_UPDATEOSCFG;
+	}
+	utf8 = gtk_entry_get_text(GTK_ENTRY(smpu_mimpi_def_b_entry));
+	if (utf8 != NULL) {
+		p = g_filename_from_utf8(utf8, -1, NULL, NULL, NULL);
+		if (p != NULL) {
+			if (milstr_cmp(np2oscfg.smpuB.def, p)) {
+				milstr_ncpy(np2oscfg.smpuB.def, p, sizeof(np2oscfg.smpuB.def));
+				if (cm_mpu98) {
+					(*cm_mpu98->msg)(cm_mpu98, COMMSG_MIMPIDEFFILE, (INTPTR)p);
+				}
+				update |= SYS_UPDATEOSCFG;
+			}
+			g_free(p);
+		}
+	}
+
+	/* MIDI-IN/OUT device PortB */
+	for (i = 0; i < NELEMENTS(mpu98_devname_str); i++) {
+		utf8 = gtk_entry_get_text(GTK_ENTRY(smpu_devname_b_entry[i]));
+		if (utf8 != NULL) {
+			p = g_filename_from_utf8(utf8, -1, NULL, NULL, NULL);
+			if (p != NULL) {
+				if (milstr_cmp(np2oscfg.MIDIDEVB[i], p)) {
+					milstr_ncpy(np2oscfg.MIDIDEVB[i], p, sizeof(np2oscfg.MIDIDEVB[0]));
+					update |= SYS_UPDATEOSCFG;
+				}
+				g_free(p);
+			}
+		}
+	}
+#endif	/* SUPPORT_SMPU98 */
 
 	if (update) {
 		sysmng_update(update);
@@ -289,10 +477,184 @@ end:
 		gtk_widget_destroy(dialog);
 }
 
-void
-create_midi_dialog(void)
+#if defined(SUPPORT_SMPU98)
+static void
+smpu_ioport_entry_changed(GtkEditable *e, gpointer d)
 {
-	GtkWidget *midi_dialog;
+	const gchar *utf8;
+	gchar *p;
+	UINT8 val;
+
+	utf8 = gtk_entry_get_text(GTK_ENTRY(e));
+	if (utf8 != NULL) {
+		p = g_filename_from_utf8(utf8, -1, NULL, NULL, NULL);
+		if (p != NULL) {
+			if (strlen(p) >= 4) {
+				val = (milstr_solveHEX(p) >> 6) & 0xf0;
+				smpuopt &= ~0xf0;
+				smpuopt |= val;
+			}
+			g_free(p);
+		}
+	}
+}
+
+static void
+smpu_intr_entry_changed(GtkEditable *e, gpointer d)
+{
+	const gchar *utf8;
+	gchar *p;
+	UINT8 val;
+
+	utf8 = gtk_entry_get_text(GTK_ENTRY(e));
+	if (utf8 != NULL) {
+		p = g_filename_from_utf8(utf8, -1, NULL, NULL, NULL);
+		if (p != NULL) {
+			if (strlen(p) >= 4) {
+				val = p[3] - '0';
+				if (val >= 3)
+					val = 3;
+				smpuopt &= ~0x03;
+				smpuopt |= val;
+			}
+			g_free(p);
+		}
+	}
+}
+
+static void
+smpu_default_button_clicked(GtkButton *b, gpointer d)
+{
+
+	gtk_entry_set_text(GTK_ENTRY(smpu_ioport_entry), "E0D0");
+	gtk_entry_set_text(GTK_ENTRY(smpu_intr_entry), "INT2");
+}
+
+static void
+smpu_mimpi_def_button_a_clicked(GtkButton *b, gpointer d)
+{
+	GtkWidget *dialog = NULL;
+	GtkFileFilter *filter;
+	gchar *utf8, *path;
+	struct stat sb;
+
+	dialog = gtk_file_chooser_dialog_new("Open MIMPI define file",
+	    GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_OPEN, 
+	    GTK_STOCK_OPEN, GTK_RESPONSE_OK,
+	    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+	    NULL);
+	if (dialog == NULL)
+		goto end;
+
+	g_object_set(G_OBJECT(dialog), "show-hidden", TRUE, NULL);
+	gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(dialog), FALSE);
+	if (np2oscfg.smpuA.def[0] != '\0') {
+		utf8 = g_filename_to_utf8(np2oscfg.smpuA.def, -1, NULL, NULL, NULL);
+		if (utf8) {
+			gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(dialog), utf8);
+			g_free(utf8);
+		}
+	}
+
+	filter = gtk_file_filter_new();
+	if (filter) {
+		gtk_file_filter_set_name(filter, "MIMPI DEF file");
+		gtk_file_filter_add_pattern(filter, "*.[dD][eE][fF]");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
+	}
+	gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(dialog), filter);
+	filter = gtk_file_filter_new();
+	if (filter) {
+		gtk_file_filter_set_name(filter, "All files");
+		gtk_file_filter_add_pattern(filter, "*");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
+	}
+
+	if (gtk_dialog_run(GTK_DIALOG(dialog)) != GTK_RESPONSE_OK)
+		goto end;
+
+	utf8 = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+	if (utf8) {
+		path = g_filename_from_utf8(utf8, -1, NULL, NULL, NULL);
+		if (path) {
+			if ((stat(path, &sb) == 0) && S_ISREG(sb.st_mode) && (sb.st_mode & S_IRUSR)) {
+				gtk_entry_set_text(GTK_ENTRY(smpu_mimpi_def_a_entry), utf8);
+			}
+			g_free(path);
+		}
+		g_free(utf8);
+	}
+
+end:
+	if (dialog)
+		gtk_widget_destroy(dialog);
+}
+
+static void
+smpu_mimpi_def_button_b_clicked(GtkButton *b, gpointer d)
+{
+	GtkWidget *dialog = NULL;
+	GtkFileFilter *filter;
+	gchar *utf8, *path;
+	struct stat sb;
+
+	dialog = gtk_file_chooser_dialog_new("Open MIMPI define file",
+	    GTK_WINDOW(main_window), GTK_FILE_CHOOSER_ACTION_OPEN, 
+	    GTK_STOCK_OPEN, GTK_RESPONSE_OK,
+	    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+	    NULL);
+	if (dialog == NULL)
+		goto end;
+
+	g_object_set(G_OBJECT(dialog), "show-hidden", TRUE, NULL);
+	gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(dialog), FALSE);
+	if (np2oscfg.smpuB.def[0] != '\0') {
+		utf8 = g_filename_to_utf8(np2oscfg.smpuB.def, -1, NULL, NULL, NULL);
+		if (utf8) {
+			gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(dialog), utf8);
+			g_free(utf8);
+		}
+	}
+
+	filter = gtk_file_filter_new();
+	if (filter) {
+		gtk_file_filter_set_name(filter, "MIMPI DEF file");
+		gtk_file_filter_add_pattern(filter, "*.[dD][eE][fF]");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
+	}
+	gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(dialog), filter);
+	filter = gtk_file_filter_new();
+	if (filter) {
+		gtk_file_filter_set_name(filter, "All files");
+		gtk_file_filter_add_pattern(filter, "*");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
+	}
+
+	if (gtk_dialog_run(GTK_DIALOG(dialog)) != GTK_RESPONSE_OK)
+		goto end;
+
+	utf8 = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+	if (utf8) {
+		path = g_filename_from_utf8(utf8, -1, NULL, NULL, NULL);
+		if (path) {
+			if ((stat(path, &sb) == 0) && S_ISREG(sb.st_mode) && (sb.st_mode & S_IRUSR)) {
+				gtk_entry_set_text(GTK_ENTRY(smpu_mimpi_def_b_entry), utf8);
+			}
+			g_free(path);
+		}
+		g_free(utf8);
+	}
+
+end:
+	if (dialog)
+		gtk_widget_destroy(dialog);
+}
+#endif	/* SUPPORT_SMPU98 */
+
+static GtkWidget *
+create_mup98ii_note(void)
+{
+	GtkWidget *root_widget;
 	GtkWidget *main_widget;
 	GtkWidget *ioport_label;
 	GtkWidget *ioport_combo;
@@ -309,29 +671,25 @@ create_midi_dialog(void)
 	GtkWidget *midiin_combo;
 	GtkWidget *module_label;
 	GtkWidget *module_combo;
-	GtkWidget *mimpi_button;
-	GtkWidget *confirm_widget;
-	GtkWidget *ok_button;
-	GtkWidget *cancel_button;
+	GtkWidget *mimpi_def_button;
 	GtkWidget *mpu98_default_button;
 	gchar *utf8;
 	int i;
 
-	uninstall_idle_process();
+	root_widget = gtk_vbox_new(FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(root_widget), 5);
+	gtk_widget_show(root_widget);
 
-	midi_dialog = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_window_set_title(GTK_WINDOW(midi_dialog), "MPU-PC98II");
-	gtk_window_set_position(GTK_WINDOW(midi_dialog),GTK_WIN_POS_CENTER);
-	gtk_window_set_modal(GTK_WINDOW(midi_dialog), TRUE);
-	gtk_window_set_resizable(GTK_WINDOW(midi_dialog), FALSE);
-
-	g_signal_connect(G_OBJECT(midi_dialog), "destroy",
-	    G_CALLBACK(dialog_destroy), NULL);
-
-	main_widget = gtk_table_new(10, 6, FALSE);
+	main_widget = gtk_table_new(10, 7, FALSE);
 	gtk_container_set_border_width(GTK_CONTAINER(main_widget), 5);
 	gtk_widget_show(main_widget);
-	gtk_container_add(GTK_CONTAINER(midi_dialog), main_widget);
+	gtk_container_add(GTK_CONTAINER(root_widget), main_widget);
+
+	mpu98_en_checkbutton = gtk_check_button_new_with_label("Enable");
+	gtk_widget_show(mpu98_en_checkbutton);
+	gtk_table_attach_defaults(GTK_TABLE(main_widget), mpu98_en_checkbutton, 0, 1, 0, 1);
+	if (np2cfg.mpuenable)
+		g_signal_emit_by_name(G_OBJECT(mpu98_en_checkbutton), "clicked");
 
 	/*
 	 * I/O port
@@ -339,12 +697,12 @@ create_midi_dialog(void)
 	ioport_label = gtk_label_new("I/O port");
 	gtk_widget_show(ioport_label);
 	gtk_table_attach_defaults(GTK_TABLE(main_widget), ioport_label,
-	    0, 1, 0, 1);
+	    0, 1, 1, 2);
 
 	ioport_combo = gtk_combo_box_entry_new_text();
 	gtk_widget_show(ioport_combo);
 	gtk_table_attach_defaults(GTK_TABLE(main_widget), ioport_combo,
-	    1, 2, 0, 1);
+	    1, 2, 1, 2);
 	for (i = 0; i < NELEMENTS(mpu98_ioport_str); i++) {
 		gtk_combo_box_append_text(GTK_COMBO_BOX(ioport_combo), mpu98_ioport_str[i]);
 	}
@@ -363,12 +721,12 @@ create_midi_dialog(void)
 	intr_label = gtk_label_new("Interrupt");
 	gtk_widget_show(intr_label);
 	gtk_table_attach_defaults(GTK_TABLE(main_widget), intr_label,
-	    0, 1, 1, 2);
+	    0, 1, 2, 3);
 
 	intr_combo = gtk_combo_box_entry_new_text();
 	gtk_widget_show(intr_combo);
 	gtk_table_attach_defaults(GTK_TABLE(main_widget), intr_combo,
-	    1, 2, 1, 2);
+	    1, 2, 2, 3);
 	for (i = 0; i < NELEMENTS(mpu98_intr_str); i++) {
 		gtk_combo_box_append_text(GTK_COMBO_BOX(intr_combo), mpu98_intr_str[i]);
 	}
@@ -388,7 +746,7 @@ create_midi_dialog(void)
 	gtk_container_set_border_width(GTK_CONTAINER(device_frame), 2);
 	gtk_widget_show(device_frame);
 	gtk_table_attach_defaults(GTK_TABLE(main_widget), device_frame,
-	    0, 6, 2, 4);
+	    0, 6, 3, 5);
 
 	deviceframe_widget = gtk_table_new(2, 6, FALSE);
 	gtk_container_set_border_width(GTK_CONTAINER(deviceframe_widget), 5);
@@ -424,7 +782,7 @@ create_midi_dialog(void)
 	gtk_container_set_border_width(GTK_CONTAINER(assign_frame), 2);
 	gtk_widget_show(assign_frame);
 	gtk_table_attach_defaults(GTK_TABLE(main_widget), assign_frame,
-	    0, 6, 4, 10);
+	    0, 6, 5, 11);
 
 	assignframe_widget = gtk_table_new(5, 6, FALSE);
 	gtk_container_set_border_width(GTK_CONTAINER(assignframe_widget), 5);
@@ -534,6 +892,8 @@ create_midi_dialog(void)
 	gtk_widget_show(mpu98_mimpi_def_checkbutton);
 	gtk_table_attach_defaults(GTK_TABLE(assignframe_widget),
 	    mpu98_mimpi_def_checkbutton, 0, 4, 3, 4);
+	if (np2oscfg.mpu.def_en)
+		g_signal_emit_by_name(G_OBJECT(mpu98_mimpi_def_checkbutton), "clicked");
 
 	mpu98_mimpi_def_entry = gtk_entry_new();
 	gtk_widget_show(mpu98_mimpi_def_entry);
@@ -548,12 +908,12 @@ create_midi_dialog(void)
 		}
 	}
 
-	mimpi_button = gtk_button_new_with_label("...");
-	gtk_widget_show(mimpi_button);
-	gtk_table_attach(GTK_TABLE(assignframe_widget), mimpi_button,
+	mimpi_def_button = gtk_button_new_with_label("...");
+	gtk_widget_show(mimpi_def_button);
+	gtk_table_attach(GTK_TABLE(assignframe_widget), mimpi_def_button,
 	    5, 6, 4, 5, GTK_FILL, GTK_FILL, 3, 3);
-	g_signal_connect(G_OBJECT(mimpi_button), "clicked",
-	    G_CALLBACK(mpu98_mimpi_def_button_clicked), midi_dialog);
+	g_signal_connect(G_OBJECT(mimpi_def_button), "clicked",
+	    G_CALLBACK(mpu98_mimpi_def_button_clicked), NULL);
 
 	/*
 	 * "Default" button
@@ -561,23 +921,550 @@ create_midi_dialog(void)
 	mpu98_default_button = gtk_button_new_with_label("Default");
 	gtk_widget_show(mpu98_default_button);
 	gtk_table_attach(GTK_TABLE(main_widget), mpu98_default_button,
-	    2, 3, 1, 2, GTK_SHRINK, GTK_SHRINK, 5, 5);
+	    2, 3, 2, 3, GTK_SHRINK, GTK_SHRINK, 5, 5);
 	g_signal_connect_swapped(G_OBJECT(mpu98_default_button), "clicked",
 	    G_CALLBACK(mpu98_default_button_clicked), NULL);
+
+	return root_widget;
+}
+
+#if defined(SUPPORT_SMPU98)
+static GtkWidget *
+create_smpu_note(void)
+{
+	GtkWidget *root_widget;
+	GtkWidget *main_widget;
+	GtkWidget *ioport_label;
+	GtkWidget *ioport_combo;
+	GtkWidget *intr_label;
+	GtkWidget *intr_combo;
+	GtkWidget *device_a_frame;
+	GtkWidget *deviceframe_a_widget;
+	GtkWidget *devname_a_label[NELEMENTS(mpu98_devname_str)];
+	GtkWidget *assign_a_frame;
+	GtkWidget *assignframe_a_widget;
+	GtkWidget *midiout_a_label;
+	GtkWidget *midiout_a_combo;
+	GtkWidget *midiin_a_label;
+	GtkWidget *midiin_a_combo;
+	GtkWidget *module_a_label;
+	GtkWidget *module_a_combo;
+	GtkWidget *mimpi_def_a_button;
+	GtkWidget *device_b_frame;
+	GtkWidget *deviceframe_b_widget;
+	GtkWidget *devname_b_label[NELEMENTS(mpu98_devname_str)];
+	GtkWidget *assign_b_frame;
+	GtkWidget *assignframe_b_widget;
+	GtkWidget *midiout_b_label;
+	GtkWidget *midiout_b_combo;
+	GtkWidget *midiin_b_label;
+	GtkWidget *midiin_b_combo;
+	GtkWidget *module_b_label;
+	GtkWidget *module_b_combo;
+	GtkWidget *mimpi_def_b_button;
+	GtkWidget *smpu_default_button;
+	gchar *utf8;
+	int i;
+
+	root_widget = gtk_vbox_new(FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(root_widget), 5);
+	gtk_widget_show(root_widget);
+
+	main_widget = gtk_table_new(10, 7, FALSE);
+	gtk_container_set_border_width(GTK_CONTAINER(main_widget), 5);
+	gtk_widget_show(main_widget);
+	gtk_container_add(GTK_CONTAINER(root_widget), main_widget);
+
+	smpu_en_checkbutton = gtk_check_button_new_with_label("Enable");
+	gtk_widget_show(smpu_en_checkbutton);
+	gtk_table_attach_defaults(GTK_TABLE(main_widget), smpu_en_checkbutton, 0, 1, 0, 1);
+	if (np2cfg.smpuenable)
+		g_signal_emit_by_name(G_OBJECT(smpu_en_checkbutton), "clicked");
+
+	smpu_muteb_checkbutton = gtk_check_button_new_with_label("Mute Port B during MPU-401 mode");
+	gtk_widget_show(smpu_muteb_checkbutton);
+	gtk_table_attach_defaults(GTK_TABLE(main_widget), smpu_muteb_checkbutton, 1, 2, 0, 1);
+	if (np2cfg.smpumuteB)
+		g_signal_emit_by_name(G_OBJECT(smpu_muteb_checkbutton), "clicked");
+
+	/*
+	 * I/O port
+	 */
+	ioport_label = gtk_label_new("I/O port");
+	gtk_widget_show(ioport_label);
+	gtk_table_attach_defaults(GTK_TABLE(main_widget), ioport_label,
+	    0, 1, 1, 2);
+
+	ioport_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(ioport_combo);
+	gtk_table_attach_defaults(GTK_TABLE(main_widget), ioport_combo,
+	    1, 2, 1, 2);
+	for (i = 0; i < NELEMENTS(mpu98_ioport_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(ioport_combo), mpu98_ioport_str[i]);
+	}
+
+	smpu_ioport_entry = gtk_bin_get_child(GTK_BIN(ioport_combo));
+	gtk_widget_show(smpu_ioport_entry);
+	g_signal_connect(G_OBJECT(smpu_ioport_entry), "changed",
+	    G_CALLBACK(smpu_ioport_entry_changed), NULL);
+	gtk_editable_set_editable(GTK_EDITABLE(smpu_ioport_entry), FALSE);
+	gtk_entry_set_text(GTK_ENTRY(smpu_ioport_entry),
+	    mpu98_ioport_str[(np2cfg.smpuopt >> 4) & 0x0f]);
+
+	/*
+	 * Interrupt
+	 */
+	intr_label = gtk_label_new("Interrupt");
+	gtk_widget_show(intr_label);
+	gtk_table_attach_defaults(GTK_TABLE(main_widget), intr_label,
+	    0, 1, 2, 3);
+
+	intr_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(intr_combo);
+	gtk_table_attach_defaults(GTK_TABLE(main_widget), intr_combo,
+	    1, 2, 2, 3);
+	for (i = 0; i < NELEMENTS(mpu98_intr_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(intr_combo), mpu98_intr_str[i]);
+	}
+
+	smpu_intr_entry = gtk_bin_get_child(GTK_BIN(intr_combo));
+	gtk_widget_show(smpu_intr_entry);
+	g_signal_connect(G_OBJECT(smpu_intr_entry), "changed",
+	    G_CALLBACK(smpu_intr_entry_changed), NULL);
+	gtk_editable_set_editable(GTK_EDITABLE(smpu_intr_entry), FALSE);
+	gtk_entry_set_text(GTK_ENTRY(smpu_intr_entry),
+	    mpu98_intr_str[np2cfg.smpuopt & 0x03]);
+
+	/*
+	 * MIDI-IN/OUT device Port A
+	 */
+	device_a_frame = gtk_frame_new("Device Port A");
+	gtk_container_set_border_width(GTK_CONTAINER(device_a_frame), 2);
+	gtk_widget_show(device_a_frame);
+	gtk_table_attach_defaults(GTK_TABLE(main_widget), device_a_frame,
+	    0, 6, 3, 5);
+
+	deviceframe_a_widget = gtk_table_new(2, 6, FALSE);
+	gtk_container_set_border_width(GTK_CONTAINER(deviceframe_a_widget), 5);
+	gtk_widget_show(deviceframe_a_widget);
+	gtk_table_set_row_spacings(GTK_TABLE(deviceframe_a_widget), 3);
+	gtk_table_set_col_spacings(GTK_TABLE(deviceframe_a_widget), 3);
+	gtk_container_add(GTK_CONTAINER(device_a_frame), deviceframe_a_widget);
+
+	for (i = 0; i < NELEMENTS(mpu98_devname_str); i++) {
+		devname_a_label[i] = gtk_label_new(mpu98_devname_str[i]);
+		gtk_widget_show(devname_a_label[i]);
+		gtk_table_attach_defaults(GTK_TABLE(deviceframe_a_widget),
+		    devname_a_label[i], 0, 1, i, i + 1);
+
+		smpu_devname_a_entry[i] = gtk_entry_new();
+		gtk_widget_show(smpu_devname_a_entry[i]);
+		gtk_table_attach_defaults(GTK_TABLE(deviceframe_a_widget),
+		    smpu_devname_a_entry[i], 1, 6, i, i + 1);
+
+		if (np2oscfg.MIDIDEVA[i][0] != '\0') {
+			utf8 = g_filename_to_utf8(np2oscfg.MIDIDEVA[i], -1, NULL, NULL, NULL);
+			if (utf8 != NULL) {
+				gtk_entry_set_text(GTK_ENTRY(smpu_devname_a_entry[i]), np2oscfg.MIDIDEVA[i]);
+				g_free(utf8);
+			}
+		}
+	}
+	/* MIDI-IN disable */
+	gtk_widget_set_sensitive(smpu_devname_a_entry[1], FALSE);
+
+	/* assign Port A */
+	assign_a_frame = gtk_frame_new("Assign Port A");
+	gtk_container_set_border_width(GTK_CONTAINER(assign_a_frame), 2);
+	gtk_widget_show(assign_a_frame);
+	gtk_table_attach_defaults(GTK_TABLE(main_widget), assign_a_frame,
+	    0, 6, 5, 11);
+
+	assignframe_a_widget = gtk_table_new(5, 6, FALSE);
+	gtk_container_set_border_width(GTK_CONTAINER(assignframe_a_widget), 5);
+	gtk_widget_show(assignframe_a_widget);
+	gtk_table_set_row_spacings(GTK_TABLE(assignframe_a_widget), 3);
+	gtk_table_set_col_spacings(GTK_TABLE(assignframe_a_widget), 3);
+	gtk_container_add(GTK_CONTAINER(assign_a_frame), assignframe_a_widget);
+
+	/*
+	 * MIDI-OUT
+	 */
+	midiout_a_label = gtk_label_new("MIDI-OUT");
+	gtk_widget_show(midiout_a_label);
+	gtk_table_attach_defaults(GTK_TABLE(assignframe_a_widget), midiout_a_label,
+	    0, 1, 0, 1);
+
+	midiout_a_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(midiout_a_combo);
+	gtk_table_attach_defaults(GTK_TABLE(assignframe_a_widget), midiout_a_combo,
+	    1, 6, 0, 1);
+	for (i = 0; i < NELEMENTS(mpu98_midiout_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(midiout_a_combo), mpu98_midiout_str[i]);
+	}
+
+	smpu_midiout_a_entry = gtk_bin_get_child(GTK_BIN(midiout_a_combo));
+	gtk_widget_show(smpu_midiout_a_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(smpu_midiout_a_entry), FALSE);
+	for (i = 0; i < NELEMENTS(mpu98_midiout_str); i++) {
+		if (!milstr_extendcmp(np2oscfg.smpuA.mout, mpu98_midiout_str[i])){
+			break;
+		}
+	}
+	if (i < NELEMENTS(mpu98_midiout_str)) {
+		gtk_entry_set_text(GTK_ENTRY(smpu_midiout_a_entry),
+		    mpu98_midiout_str[i]);
+	} else {
+		gtk_entry_set_text(GTK_ENTRY(smpu_midiout_a_entry), "N/C");
+		if (np2oscfg.smpuA.mout[0] != '\0') {
+			np2oscfg.smpuA.mout[0] = '\0';
+			sysmng_update(SYS_UPDATECFG|SYS_UPDATEMIDI);
+		}
+	}
+
+	/*
+	 * MIDI-IN
+	 */
+	midiin_a_label = gtk_label_new("MIDI-IN");
+	gtk_widget_show(midiin_a_label);
+	gtk_table_attach_defaults(GTK_TABLE(assignframe_a_widget), midiin_a_label,
+	    0, 1, 1, 2);
+
+	midiin_a_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(midiin_a_combo);
+	gtk_table_attach_defaults(GTK_TABLE(assignframe_a_widget), midiin_a_combo,
+	    1, 6, 1, 2);
+	for (i = 0; i < NELEMENTS(mpu98_midiin_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(midiin_a_combo), mpu98_midiin_str[i]);
+	}
+
+	smpu_midiin_a_entry = gtk_bin_get_child(GTK_BIN(midiin_a_combo));
+	gtk_widget_show(smpu_midiin_a_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(smpu_midiin_a_entry), FALSE);
+	for (i = 0; i < NELEMENTS(mpu98_midiin_str); i++) {
+		if (!milstr_extendcmp(np2oscfg.smpuA.min, mpu98_midiin_str[i])){
+			break;
+		}
+	}
+	if (i < NELEMENTS(mpu98_midiin_str)) {
+		gtk_entry_set_text(GTK_ENTRY(smpu_midiin_a_entry),
+		    mpu98_midiin_str[i]);
+	} else {
+		gtk_entry_set_text(GTK_ENTRY(smpu_midiin_a_entry), "N/C");
+		if (np2oscfg.smpuA.min[0] != '\0') {
+			np2oscfg.smpuA.min[0] = '\0';
+			sysmng_update(SYS_UPDATECFG|SYS_UPDATEMIDI);
+		}
+	}
+	/* MIDI-IN disable */
+	gtk_widget_set_sensitive(midiin_a_combo, FALSE);
+
+	/*
+	 * Module
+	 */
+	module_a_label = gtk_label_new("Module");
+	gtk_widget_show(module_a_label);
+	gtk_table_attach_defaults(GTK_TABLE(assignframe_a_widget), module_a_label,
+	    0, 1, 2, 3);
+
+	module_a_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(module_a_combo);
+	gtk_table_attach_defaults(GTK_TABLE(assignframe_a_widget), module_a_combo,
+	    1, 6, 2, 3);
+	for (i = 0; i < MIDI_OTHER; i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(module_a_combo), cmmidi_mdlname[i]);
+	}
+
+	smpu_module_a_entry = gtk_bin_get_child(GTK_BIN(module_a_combo));
+	gtk_widget_show(smpu_module_a_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(smpu_module_a_entry), TRUE);
+	gtk_entry_set_text(GTK_ENTRY(smpu_module_a_entry), np2oscfg.smpuA.mdl);
+
+	/*
+	 * MIMPI def
+	 */
+	smpu_mimpi_def_a_checkbutton = gtk_check_button_new_with_label(
+	    "Use program define file (MIMPI define)");
+	gtk_widget_show(smpu_mimpi_def_a_checkbutton);
+	gtk_table_attach_defaults(GTK_TABLE(assignframe_a_widget),
+	    smpu_mimpi_def_a_checkbutton, 0, 4, 3, 4);
+	if (np2oscfg.smpuA.def_en)
+		g_signal_emit_by_name(G_OBJECT(smpu_mimpi_def_a_checkbutton), "clicked");
+
+	smpu_mimpi_def_a_entry = gtk_entry_new();
+	gtk_widget_show(smpu_mimpi_def_a_entry);
+	gtk_table_attach(GTK_TABLE(assignframe_a_widget), smpu_mimpi_def_a_entry,
+	    0, 5, 4, 5, GTK_FILL, GTK_FILL, 3, 3);
+	gtk_widget_set_sensitive(smpu_mimpi_def_a_entry, FALSE);
+	if (np2oscfg.smpuA.def[0] != '\0') {
+		utf8 = g_filename_to_utf8(np2oscfg.smpuA.def, -1, NULL, NULL, NULL);
+		if (utf8 != NULL) {
+			gtk_entry_set_text(GTK_ENTRY(smpu_mimpi_def_a_entry), np2oscfg.smpuA.def);
+			g_free(utf8);
+		}
+	}
+
+	mimpi_def_a_button = gtk_button_new_with_label("...");
+	gtk_widget_show(mimpi_def_a_button);
+	gtk_table_attach(GTK_TABLE(assignframe_a_widget), mimpi_def_a_button,
+	    5, 6, 4, 5, GTK_FILL, GTK_FILL, 3, 3);
+	g_signal_connect(G_OBJECT(mimpi_def_a_button), "clicked",
+	    G_CALLBACK(smpu_mimpi_def_button_a_clicked), NULL);
+
+	/*
+	 * MIDI-IN/OUT device Port B
+	 */
+	device_b_frame = gtk_frame_new("Device Port B");
+	gtk_container_set_border_width(GTK_CONTAINER(device_b_frame), 2);
+	gtk_widget_show(device_b_frame);
+	gtk_table_attach_defaults(GTK_TABLE(main_widget), device_b_frame,
+	    0, 6, 11, 13);
+
+	deviceframe_b_widget = gtk_table_new(2, 6, FALSE);
+	gtk_container_set_border_width(GTK_CONTAINER(deviceframe_b_widget), 5);
+	gtk_widget_show(deviceframe_b_widget);
+	gtk_table_set_row_spacings(GTK_TABLE(deviceframe_b_widget), 3);
+	gtk_table_set_col_spacings(GTK_TABLE(deviceframe_b_widget), 3);
+	gtk_container_add(GTK_CONTAINER(device_b_frame), deviceframe_b_widget);
+
+	for (i = 0; i < NELEMENTS(mpu98_devname_str); i++) {
+		devname_b_label[i] = gtk_label_new(mpu98_devname_str[i]);
+		gtk_widget_show(devname_b_label[i]);
+		gtk_table_attach_defaults(GTK_TABLE(deviceframe_b_widget),
+		    devname_b_label[i], 0, 1, i, i + 1);
+
+		smpu_devname_b_entry[i] = gtk_entry_new();
+		gtk_widget_show(smpu_devname_b_entry[i]);
+		gtk_table_attach_defaults(GTK_TABLE(deviceframe_b_widget),
+		    smpu_devname_b_entry[i], 1, 6, i, i + 1);
+
+		if (np2oscfg.MIDIDEVB[i][0] != '\0') {
+			utf8 = g_filename_to_utf8(np2oscfg.MIDIDEVB[i], -1, NULL, NULL, NULL);
+			if (utf8 != NULL) {
+				gtk_entry_set_text(GTK_ENTRY(smpu_devname_b_entry[i]), np2oscfg.MIDIDEVB[i]);
+				g_free(utf8);
+			}
+		}
+	}
+	/* MIDI-IN disable */
+	gtk_widget_set_sensitive(smpu_devname_b_entry[1], FALSE);
+
+	/* assign Port B */
+	assign_b_frame = gtk_frame_new("Assign Port B");
+	gtk_container_set_border_width(GTK_CONTAINER(assign_b_frame), 2);
+	gtk_widget_show(assign_b_frame);
+	gtk_table_attach_defaults(GTK_TABLE(main_widget), assign_b_frame,
+	    0, 6, 13, 17);
+
+	assignframe_b_widget = gtk_table_new(5, 6, FALSE);
+	gtk_container_set_border_width(GTK_CONTAINER(assignframe_b_widget), 5);
+	gtk_widget_show(assignframe_b_widget);
+	gtk_table_set_row_spacings(GTK_TABLE(assignframe_b_widget), 3);
+	gtk_table_set_col_spacings(GTK_TABLE(assignframe_b_widget), 3);
+	gtk_container_add(GTK_CONTAINER(assign_b_frame), assignframe_b_widget);
+
+	/*
+	 * MIDI-OUT
+	 */
+	midiout_b_label = gtk_label_new("MIDI-OUT");
+	gtk_widget_show(midiout_b_label);
+	gtk_table_attach_defaults(GTK_TABLE(assignframe_b_widget), midiout_b_label,
+	    0, 1, 0, 1);
+
+	midiout_b_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(midiout_b_combo);
+	gtk_table_attach_defaults(GTK_TABLE(assignframe_b_widget), midiout_b_combo,
+	    1, 6, 0, 1);
+	for (i = 0; i < NELEMENTS(mpu98_midiout_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(midiout_b_combo), mpu98_midiout_str[i]);
+	}
+
+	smpu_midiout_b_entry = gtk_bin_get_child(GTK_BIN(midiout_b_combo));
+	gtk_widget_show(smpu_midiout_b_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(smpu_midiout_b_entry), FALSE);
+	for (i = 0; i < NELEMENTS(mpu98_midiout_str); i++) {
+		if (!milstr_extendcmp(np2oscfg.smpuB.mout, mpu98_midiout_str[i])){
+			break;
+		}
+	}
+	if (i < NELEMENTS(mpu98_midiout_str)) {
+		gtk_entry_set_text(GTK_ENTRY(smpu_midiout_b_entry),
+		    mpu98_midiout_str[i]);
+	} else {
+		gtk_entry_set_text(GTK_ENTRY(smpu_midiout_b_entry), "N/C");
+		if (np2oscfg.smpuB.mout[0] != '\0') {
+			np2oscfg.smpuB.mout[0] = '\0';
+			sysmng_update(SYS_UPDATECFG|SYS_UPDATEMIDI);
+		}
+	}
+
+	/*
+	 * MIDI-IN
+	 */
+	midiin_b_label = gtk_label_new("MIDI-IN");
+	gtk_widget_show(midiin_b_label);
+	gtk_table_attach_defaults(GTK_TABLE(assignframe_b_widget), midiin_b_label,
+	    0, 1, 1, 2);
+
+	midiin_b_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(midiin_b_combo);
+	gtk_table_attach_defaults(GTK_TABLE(assignframe_b_widget), midiin_b_combo,
+	    1, 6, 1, 2);
+	for (i = 0; i < NELEMENTS(mpu98_midiin_str); i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(midiin_b_combo), mpu98_midiin_str[i]);
+	}
+
+	smpu_midiin_b_entry = gtk_bin_get_child(GTK_BIN(midiin_b_combo));
+	gtk_widget_show(smpu_midiin_b_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(smpu_midiin_b_entry), FALSE);
+	for (i = 0; i < NELEMENTS(mpu98_midiin_str); i++) {
+		if (!milstr_extendcmp(np2oscfg.smpuB.min, mpu98_midiin_str[i])){
+			break;
+		}
+	}
+	if (i < NELEMENTS(mpu98_midiin_str)) {
+		gtk_entry_set_text(GTK_ENTRY(smpu_midiin_b_entry),
+		    mpu98_midiin_str[i]);
+	} else {
+		gtk_entry_set_text(GTK_ENTRY(smpu_midiin_b_entry), "N/C");
+		if (np2oscfg.smpuB.min[0] != '\0') {
+			np2oscfg.smpuB.min[0] = '\0';
+			sysmng_update(SYS_UPDATECFG|SYS_UPDATEMIDI);
+		}
+	}
+	/* MIDI-IN disable */
+	gtk_widget_set_sensitive(midiin_b_combo, FALSE);
+
+	/*
+	 * Module
+	 */
+	module_b_label = gtk_label_new("Module");
+	gtk_widget_show(module_b_label);
+	gtk_table_attach_defaults(GTK_TABLE(assignframe_b_widget), module_b_label,
+	    0, 1, 2, 3);
+
+	module_b_combo = gtk_combo_box_entry_new_text();
+	gtk_widget_show(module_b_combo);
+	gtk_table_attach_defaults(GTK_TABLE(assignframe_b_widget), module_b_combo,
+	    1, 6, 2, 3);
+	for (i = 0; i < MIDI_OTHER; i++) {
+		gtk_combo_box_append_text(GTK_COMBO_BOX(module_b_combo), cmmidi_mdlname[i]);
+	}
+
+	smpu_module_b_entry = gtk_bin_get_child(GTK_BIN(module_b_combo));
+	gtk_widget_show(smpu_module_b_entry);
+	gtk_editable_set_editable(GTK_EDITABLE(smpu_module_b_entry), TRUE);
+	gtk_entry_set_text(GTK_ENTRY(smpu_module_b_entry), np2oscfg.smpuB.mdl);
+
+	/*
+	 * MIMPI def
+	 */
+	smpu_mimpi_def_b_checkbutton = gtk_check_button_new_with_label(
+	    "Use program define file (MIMPI define)");
+	gtk_widget_show(smpu_mimpi_def_b_checkbutton);
+	gtk_table_attach_defaults(GTK_TABLE(assignframe_b_widget),
+	    smpu_mimpi_def_b_checkbutton, 0, 4, 3, 4);
+	if (np2oscfg.smpuB.def_en)
+		g_signal_emit_by_name(G_OBJECT(smpu_mimpi_def_b_checkbutton), "clicked");
+
+	smpu_mimpi_def_b_entry = gtk_entry_new();
+	gtk_widget_show(smpu_mimpi_def_b_entry);
+	gtk_table_attach(GTK_TABLE(assignframe_b_widget), smpu_mimpi_def_b_entry,
+	    0, 5, 4, 5, GTK_FILL, GTK_FILL, 3, 3);
+	gtk_widget_set_sensitive(smpu_mimpi_def_b_entry, FALSE);
+	if (np2oscfg.smpuB.def[0] != '\0') {
+		utf8 = g_filename_to_utf8(np2oscfg.smpuB.def, -1, NULL, NULL, NULL);
+		if (utf8 != NULL) {
+			gtk_entry_set_text(GTK_ENTRY(smpu_mimpi_def_b_entry), np2oscfg.smpuB.def);
+			g_free(utf8);
+		}
+	}
+
+	mimpi_def_b_button = gtk_button_new_with_label("...");
+	gtk_widget_show(mimpi_def_b_button);
+	gtk_table_attach(GTK_TABLE(assignframe_b_widget), mimpi_def_b_button,
+	    5, 6, 4, 5, GTK_FILL, GTK_FILL, 3, 3);
+	g_signal_connect(G_OBJECT(mimpi_def_b_button), "clicked",
+	    G_CALLBACK(smpu_mimpi_def_button_b_clicked), NULL);
+
+	/*
+	 * "Default" button
+	 */
+	smpu_default_button = gtk_button_new_with_label("Default");
+	gtk_widget_show(smpu_default_button);
+	gtk_table_attach(GTK_TABLE(main_widget), smpu_default_button,
+	    2, 3, 2, 3, GTK_SHRINK, GTK_SHRINK, 5, 5);
+	g_signal_connect_swapped(G_OBJECT(smpu_default_button), "clicked",
+	    G_CALLBACK(smpu_default_button_clicked), NULL);
+
+	return root_widget;
+}
+#endif	/* SUPPORT_SMPU98 */
+
+void
+create_midi_dialog(void)
+{
+	GtkWidget *midi_dialog;
+	GtkWidget *main_vbox;
+	GtkWidget *notebook;
+	GtkWidget *mup98ii_note;
+#if defined(SUPPORT_SMPU98)
+	GtkWidget *smpu_note;
+#endif	/* SUPPORT_SMPU98 */
+	GtkWidget *confirm_widget;
+	GtkWidget *ok_button;
+	GtkWidget *cancel_button;
+
+	uninstall_idle_process();
+
+	midi_dialog = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	gtk_window_set_title(GTK_WINDOW(midi_dialog), "MPU-PC98II");
+	gtk_window_set_position(GTK_WINDOW(midi_dialog),GTK_WIN_POS_CENTER);
+	gtk_window_set_modal(GTK_WINDOW(midi_dialog), TRUE);
+	gtk_window_set_resizable(GTK_WINDOW(midi_dialog), FALSE);
+
+	g_signal_connect(G_OBJECT(midi_dialog), "destroy",
+	    G_CALLBACK(dialog_destroy), NULL);
+
+	main_vbox = gtk_vbox_new(FALSE, 0);
+	gtk_widget_show(main_vbox);
+	gtk_container_add(GTK_CONTAINER(midi_dialog), main_vbox);
+
+	notebook = gtk_notebook_new();
+	gtk_widget_show(notebook);
+	gtk_box_pack_start(GTK_BOX(main_vbox), notebook, TRUE, TRUE, 0);
+
+	/* "MPU-PC98" note */
+	mup98ii_note = create_mup98ii_note();
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), mup98ii_note, gtk_label_new("MPU-PC98II"));
+
+#if defined(SUPPORT_SMPU98)
+	/* "S-MPU" note */
+	smpu_note = create_smpu_note();
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), smpu_note, gtk_label_new("S-MPU"));
+#endif	/* SUPPORT_SMPU98 */
 
 	/*
 	 * OK, Cancel button
 	 */
-	confirm_widget = gtk_vbutton_box_new();
+	confirm_widget = gtk_hbox_new(FALSE, 5);
 	gtk_widget_show(confirm_widget);
-	gtk_table_attach(GTK_TABLE(main_widget), confirm_widget, 4, 6, 0, 2,
-	    GTK_FILL, GTK_FILL, 0, 0);
-	gtk_button_box_set_layout(GTK_BUTTON_BOX(confirm_widget),
-	    GTK_BUTTONBOX_END);
+	gtk_box_pack_start(GTK_BOX(main_vbox), confirm_widget, FALSE, FALSE, 5);
+
+	cancel_button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+	gtk_widget_show(cancel_button);
+	gtk_box_pack_end(GTK_BOX(confirm_widget), cancel_button, FALSE, FALSE, 0);
+#if GTK_MAJOR_VERSION > 2 || (GTK_MAJOR_VERSION == 2 && GTK_MINOR_VERSION >= 18)
+	gtk_widget_set_can_default(cancel_button, TRUE);
+#else
+	GTK_WIDGET_SET_FLAGS(cancel_button, GTK_CAN_DEFAULT);
+#endif
+	g_signal_connect_swapped(G_OBJECT(cancel_button), "clicked",
+	    G_CALLBACK(gtk_widget_destroy), G_OBJECT(midi_dialog));
 
 	ok_button = gtk_button_new_from_stock(GTK_STOCK_OK);
 	gtk_widget_show(ok_button);
-	gtk_container_add(GTK_CONTAINER(confirm_widget), ok_button);
+	gtk_box_pack_end(GTK_BOX(confirm_widget), ok_button, FALSE, FALSE, 0);
 #if GTK_MAJOR_VERSION > 2 || (GTK_MAJOR_VERSION == 2 && GTK_MINOR_VERSION >= 18)
 	gtk_widget_set_can_default(ok_button, TRUE);
 	gtk_widget_has_default(ok_button);
@@ -588,17 +1475,6 @@ create_midi_dialog(void)
 	g_signal_connect(G_OBJECT(ok_button), "clicked",
 	    G_CALLBACK(ok_button_clicked), (gpointer)midi_dialog);
 	gtk_widget_grab_default(ok_button);
-
-	cancel_button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-	gtk_widget_show(cancel_button);
-	gtk_container_add(GTK_CONTAINER(confirm_widget), cancel_button);
-#if GTK_MAJOR_VERSION > 2 || (GTK_MAJOR_VERSION == 2 && GTK_MINOR_VERSION >= 18)
-	gtk_widget_set_can_default(cancel_button, TRUE);
-#else
-	GTK_WIDGET_SET_FLAGS(cancel_button, GTK_CAN_DEFAULT);
-#endif
-	g_signal_connect_swapped(G_OBJECT(cancel_button), "clicked",
-	    G_CALLBACK(gtk_widget_destroy), G_OBJECT(midi_dialog));
 
 	gtk_widget_show_all(midi_dialog);
 }

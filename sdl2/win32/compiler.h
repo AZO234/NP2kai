@@ -1,13 +1,11 @@
 #include	<windows.h>
 #include	<stdio.h>
+#include	<stdint.h>
+#include	<stdbool.h>
 #include	<setjmp.h>
 #include	<stddef.h>
 #include	<limits.h>
-#if defined(USE_SDL_CONFIG)
-#include	"SDL.h"
-#else
-#include	<SDL2\SDL.h>
-#endif
+#include	<SDL.h>
 
 //#define TRACE
 
@@ -27,8 +25,7 @@
 #define	siglongjmp(env, val)	longjmp(env, val)
 #endif
 
-typedef	int				BOOL;
-#define bool BOOL
+//typedef	bool				BOOL;
 #ifndef __GNUC__
 typedef	signed int			SINT;
 typedef	signed char			SINT8;
@@ -77,17 +74,11 @@ typedef	unsigned int		UINT;
 #define	_tcsnicmp	strncasecmp
 
 #ifndef	TRUE
-#define	TRUE	1
-#endif
-#ifndef	true
-#define true TRUE
+#define	TRUE	true
 #endif
 
 #ifndef	FALSE
-#define	FALSE	0
-#endif
-#ifndef	false
-#define false FALSE
+#define	FALSE	false
 #endif
 
 #if defined(SUPPORT_LARGE_HDD)

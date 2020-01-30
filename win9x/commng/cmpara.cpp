@@ -39,6 +39,7 @@ CComPara::~CComPara()
 	if (m_hParallel != INVALID_HANDLE_VALUE)
 	{
 		::CloseHandle(m_hParallel);
+		m_hParallel = INVALID_HANDLE_VALUE;
 	}
 }
 

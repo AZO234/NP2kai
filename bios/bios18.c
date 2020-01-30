@@ -380,12 +380,12 @@ const CRTDATA	*p;
 		}
 #if defined(SUPPORT_PC9821)
 		else {
-#if defined(BIOS_IO_EMULATION)
-			// XXX: Windows3.1 DOSプロンプト用 無理やり
-			if (CPU_STAT_PM && CPU_STAT_VM86) {
-				biosioemu_enq8(0x6a, 0x20);
-			}else
-#endif	
+//#if defined(BIOS_IO_EMULATION)
+//			// XXX: Windows3.1 DOSプロンプト用 無理やり
+//			if (CPU_STAT_PM && CPU_STAT_VM86) {
+//				biosioemu_enq8(0x6a, 0x20);
+//			}else
+//#endif	
 			{
 				gdc_analogext(FALSE);
 			}

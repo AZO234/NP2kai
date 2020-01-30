@@ -12,6 +12,7 @@ class Np2Arg
 {
 public:
 	static Np2Arg* GetInstance();
+	static void Release();
 
 	Np2Arg();
 	~Np2Arg();
@@ -20,13 +21,13 @@ public:
 	LPCTSTR disk(int nDrive) const;
 	LPCTSTR iniFilename() const;
 	bool fullscreen() const;
-	void setiniFilename(LPCTSTR newfile);
+	void setiniFilename(LPTSTR newfile);
 
 private:
 	static Np2Arg sm_instance;		//!< 唯一のインスタンスです
 
 	LPCTSTR m_lpDisk[4];	//!< ディスク
-	LPCTSTR m_lpIniFile;	//!< 設定ファイル
+	LPTSTR m_lpIniFile;	//!< 設定ファイル
 	bool m_fFullscreen;		//!< フルスクリーン モード
 	LPTSTR m_lpArg;			//!< ワーク
 };
@@ -38,6 +39,21 @@ private:
 inline Np2Arg* Np2Arg::GetInstance()
 {
 	return &sm_instance;
+}
+
+/**
+ * メモリ解放
+ */
+inline void Np2Arg::Release()
+{
+	if(sm_instance.m_lpArg){
+		free(sm_instance.m_lpArg);
+		sm_instance.m_lpArg = NULL;
+	}
+	if(sm_instance.m_lpIniFile){
+		free(sm_instance.m_lpIniFile); // np21w ver0.86 rev8
+		sm_instance.m_lpIniFile = NULL;
+	}
 }
 
 /**
@@ -73,8 +89,12 @@ inline bool Np2Arg::fullscreen() const
  * INI パスを得る
  * @return INI パス
  */
-inline void Np2Arg::setiniFilename(LPCTSTR newfile)
+inline void Np2Arg::setiniFilename(LPTSTR newfile)
 {
+	if(m_lpIniFile){
+		free(m_lpIniFile);
+		m_lpIniFile = NULL;
+	}
 	m_lpIniFile = newfile;
 }
 

@@ -67,7 +67,7 @@ static const DISKACC diskacc[3] = {
 					{IDC_TOOLFDD2ACC,	&toolwin.m_fddaccess[1]},
 					{IDC_TOOLHDDACC,	&toolwin.m_hddaccess}};
 
-static int fdlistlen = FDDLIST_DEFAULT; // FDファイル履歴数
+static UINT fdlistlen = FDDLIST_DEFAULT; // FDファイル履歴数
 
 /**
  * インスタンスを返す
@@ -464,6 +464,11 @@ void CToolWnd::DestroySubItems()
 		m_sub[i] = NULL;
 		if (sub)
 		{
+			if(m_subproc[i]){
+				SetWindowLongPtr(sub, GWLP_WNDPROC, (LONG_PTR)m_subproc[i]); // 一応戻しておいてあげましょう
+			}
+			m_subproc[i] = NULL;
+			::SetParent(sub, NULL); // 子ウィンドウ解除
 			::DestroyWindow(sub);
 		}
 	}
@@ -1120,7 +1125,7 @@ int gettoolwndini(PFTBL **ptoolwndini)
 	PFTBL *toolwndini;
 	int slistlen;
 
-	fdlistlen = np2oscfg.tollwndhistory;
+	fdlistlen = np2oscfg.toolwndhistory;
 	if(fdlistlen == 0) fdlistlen = FDDLIST_DEFAULT;
 	if(fdlistlen > FDDLIST_MAX) fdlistlen = FDDLIST_MAX;
 
@@ -1129,7 +1134,7 @@ int gettoolwndini(PFTBL **ptoolwndini)
 	slistlen = _countof(s_toolwndini);
 	memcpy(toolwndini, s_toolwndini, sizeof(s_toolwndini));
 	for(int j=0;j<2;j++){
-		for(int i=0;i<fdlistlen;i++){
+		for(UINT i=0;i<fdlistlen;i++){
 			OEMSPRINTF(toolwndini[slistlen + j*fdlistlen + i].item, OEMTEXT("FD%dNAME%X"), j+1, i);
 			toolwndini[slistlen + j*fdlistlen + i].itemtype = PFTYPE_STR;
 			toolwndini[slistlen + j*fdlistlen + i].value = s_toolwndcfg.fdd[j].name[i];
