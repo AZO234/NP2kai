@@ -20,9 +20,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#if !defined(BSD) && !defined(__APPLE__)
-#define _POSIX_C_SOURCE 199309L
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -42,13 +39,13 @@
 #include <windows.h>
 #endif
 
-#if defined(__CELLOS_LV2__)
+#if defined(__CELLOS_LV2__) || ( defined(__OpenBSD__) && defined(__powerpc__) )
 #ifndef _PPU_INTRINSICS_H
 #include <ppu_intrinsics.h>
 #endif
 #elif defined(_XBOX360)
 #include <PPCIntrinsics.h>
-#elif defined(_POSIX_MONOTONIC_CLOCK) || defined(ANDROID) || defined(__QNX__) || defined(DJGPP) || defined(__LIBXENON__)
+#elif defined(_POSIX_MONOTONIC_CLOCK) || defined(ANDROID) || defined(__QNX__) || defined(DJGPP)
 /* POSIX_MONOTONIC_CLOCK is not being defined in Android headers despite support being present. */
 #include <time.h>
 #endif
@@ -58,7 +55,9 @@
 #endif
 
 #if defined(PSP)
+#include <pspkernel.h>
 #include <sys/time.h>
+#include <psprtc.h>
 #endif
 
 #if defined(VITA)
@@ -69,6 +68,7 @@
 #if defined(PS2)
 #include <kernel.h>
 #include <timer.h>
+#include <time.h>
 #endif
 
 #if defined(__PSL1GHT__)
@@ -79,6 +79,10 @@
 
 #ifdef GEKKO
 #include <ogc/lwp_watchdog.h>
+#endif
+
+#ifdef WIIU
+#include <wiiu/os/time.h>
 #endif
 
 #if defined(HAVE_LIBNX)
@@ -129,7 +133,6 @@ static int ra_clock_gettime(int clk_ik, struct timespec *t)
 #endif
 
 #if defined(BSD) || defined(__APPLE__)
-#include <sys/types.h>
 #include <sys/sysctl.h>
 #endif
 
@@ -178,7 +181,7 @@ retro_perf_tick_t cpu_features_get_perf_counter(void)
    time_ticks = (retro_perf_tick_t)a | ((retro_perf_tick_t)d << 32);
 #elif defined(__ARM_ARCH_6__)
    __asm__ volatile( "mrc p15, 0, %0, c9, c13, 0" : "=r"(time_ticks) );
-#elif defined(__CELLOS_LV2__) || defined(_XBOX360) || defined(__powerpc__) || defined(__ppc__) || defined(__POWERPC__) || defined(__LIBXENON__)
+#elif defined(__CELLOS_LV2__) || defined(_XBOX360) || defined(__powerpc__) || defined(__ppc__) || defined(__POWERPC__)
    time_ticks = __mftb();
 #elif defined(GEKKO)
    time_ticks = gettime();
@@ -253,7 +256,7 @@ retro_time_t cpu_features_get_time_usec(void)
 #endif
 }
 
-#if defined(__x86_64__) || defined(__i386__) || defined(__i486__) || defined(__i686__) || (defined(_M_X64) && _MSC_VER > 1310) || (defined(_M_IX86)  && _MSC_VER > 1310)
+#if defined(__x86_64__) || defined(__i386__) || defined(__i486__) || defined(__i686__) || (defined(_M_X64) && _MSC_VER > 1310) || (defined(_M_IX86) && _MSC_VER > 1310)
 #define CPU_X86
 #endif
 
@@ -345,12 +348,12 @@ static unsigned char check_arm_cpu_feature(const char* feature)
    if (!fp)
       return 0;
 
-   while (filestream_gets(fp, line, sizeof(line)) != NULL)
+   while (filestream_gets(fp, line, sizeof(line)))
    {
       if (strncmp(line, "Features\t: ", 11))
          continue;
 
-      if (strstr(line + 11, feature) != NULL)
+      if (strstr(line + 11, feature))
          status = 1;
 
       break;
@@ -421,8 +424,7 @@ static void cpulist_parse(CpuList* list, char **buf, ssize_t length)
          q = end;
 
       /* Get first value */
-      p = parse_decimal(p, q, &start_value);
-      if (p == NULL)
+      if (!(p = parse_decimal(p, q, &start_value)))
          return;
 
       end_value = start_value;
@@ -432,8 +434,7 @@ static void cpulist_parse(CpuList* list, char **buf, ssize_t length)
        */
       if (p < q && *p == '-')
       {
-         p = parse_decimal(p+1, q, &end_value);
-         if (p == NULL)
+         if (!(p = parse_decimal(p+1, q, &end_value)))
             return;
       }
 
@@ -584,31 +585,13 @@ unsigned cpu_features_get_core_amount(void)
  **/
 uint64_t cpu_features_get(void)
 {
-   int flags[4];
-   int vendor_shuffle[3];
-   char vendor[13];
-   size_t len          = 0;
-   uint64_t cpu_flags  = 0;
    uint64_t cpu        = 0;
-   unsigned max_flag   = 0;
 #if defined(CPU_X86) && !defined(__MACH__)
    int vendor_is_intel = 0;
    const int avx_flags = (1 << 27) | (1 << 28);
 #endif
-
-   char buf[sizeof(" MMX MMXEXT SSE SSE2 SSE3 SSSE3 SS4 SSE4.2 AES AVX AVX2 NEON VMX VMX128 VFPU PS")];
-
-   memset(buf, 0, sizeof(buf));
-
-   (void)len;
-   (void)cpu_flags;
-   (void)flags;
-   (void)max_flag;
-   (void)vendor;
-   (void)vendor_shuffle;
-
 #if defined(__MACH__)
-   len     = sizeof(size_t);
+   size_t len          = sizeof(size_t);
    if (sysctlbyname("hw.optional.mmx", NULL, &len, NULL, 0) == 0)
    {
       cpu |= RETRO_SIMD_MMX;
@@ -670,8 +653,11 @@ uint64_t cpu_features_get(void)
    cpu |= RETRO_SIMD_SSE;
    cpu |= RETRO_SIMD_MMXEXT;
 #elif defined(CPU_X86)
-   (void)avx_flags;
-
+   unsigned max_flag   = 0;
+   int flags[4];
+   int vendor_shuffle[3];
+   char vendor[13];
+   uint64_t cpu_flags  = 0;
    x86_cpuid(0, flags);
    vendor_shuffle[0] = flags[1];
    vendor_shuffle[1] = flags[3];
@@ -803,25 +789,64 @@ uint64_t cpu_features_get(void)
    cpu |= RETRO_SIMD_PS;
 #endif
 
-   if (cpu & RETRO_SIMD_MMX)    strlcat(buf, " MMX", sizeof(buf));
-   if (cpu & RETRO_SIMD_MMXEXT) strlcat(buf, " MMXEXT", sizeof(buf));
-   if (cpu & RETRO_SIMD_SSE)    strlcat(buf, " SSE", sizeof(buf));
-   if (cpu & RETRO_SIMD_SSE2)   strlcat(buf, " SSE2", sizeof(buf));
-   if (cpu & RETRO_SIMD_SSE3)   strlcat(buf, " SSE3", sizeof(buf));
-   if (cpu & RETRO_SIMD_SSSE3)  strlcat(buf, " SSSE3", sizeof(buf));
-   if (cpu & RETRO_SIMD_SSE4)   strlcat(buf, " SSE4", sizeof(buf));
-   if (cpu & RETRO_SIMD_SSE42)  strlcat(buf, " SSE4.2", sizeof(buf));
-   if (cpu & RETRO_SIMD_AES)    strlcat(buf, " AES", sizeof(buf));
-   if (cpu & RETRO_SIMD_AVX)    strlcat(buf, " AVX", sizeof(buf));
-   if (cpu & RETRO_SIMD_AVX2)   strlcat(buf, " AVX2", sizeof(buf));
-   if (cpu & RETRO_SIMD_NEON)   strlcat(buf, " NEON", sizeof(buf));
-   if (cpu & RETRO_SIMD_VFPV3)  strlcat(buf, " VFPv3", sizeof(buf));
-   if (cpu & RETRO_SIMD_VFPV4)  strlcat(buf, " VFPv4", sizeof(buf));
-   if (cpu & RETRO_SIMD_VMX)    strlcat(buf, " VMX", sizeof(buf));
-   if (cpu & RETRO_SIMD_VMX128) strlcat(buf, " VMX128", sizeof(buf));
-   if (cpu & RETRO_SIMD_VFPU)   strlcat(buf, " VFPU", sizeof(buf));
-   if (cpu & RETRO_SIMD_PS)     strlcat(buf, " PS", sizeof(buf));
-   if (cpu & RETRO_SIMD_ASIMD)  strlcat(buf, " ASIMD", sizeof(buf));
-
    return cpu;
+}
+
+void cpu_features_get_model_name(char *name, int len)
+{
+#if defined(CPU_X86) && !defined(__MACH__)
+   union {
+      int i[4];
+      unsigned char s[16];
+   } flags;
+   int i, j;
+   size_t pos = 0;
+   bool start = false;
+
+   if (!name)
+      return;
+
+   x86_cpuid(0x80000000, flags.i);
+
+   if (flags.i[0] < 0x80000004)
+      return;
+
+   for (i = 0; i < 3; i++)
+   {
+      memset(flags.i, 0, sizeof(flags.i));
+      x86_cpuid(0x80000002 + i, flags.i);
+
+      for (j = 0; j < sizeof(flags.s); j++)
+      {
+         if (!start && flags.s[j] == ' ')
+            continue;
+         else
+            start = true;
+
+         if (pos == len - 1)
+         {
+            /* truncate if we ran out of room */
+            name[pos] = '\0';
+            goto end;
+         }
+
+         name[pos++] = flags.s[j];
+      }
+   }
+end:
+   /* terminate our string */
+   if (pos < (size_t)len)
+      name[pos] = '\0';
+#elif defined(__MACH__)
+   if (!name)
+      return;
+   {
+      size_t len_size = len;
+      sysctlbyname("machdep.cpu.brand_string", name, &len_size, NULL, 0);
+   }
+#else
+   if (!name)
+      return;
+   return;
+#endif
 }

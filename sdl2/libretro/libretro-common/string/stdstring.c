@@ -154,10 +154,11 @@ char *string_trim_whitespace(char *const s)
    return s;
 }
 
-char *word_wrap(char* buffer, const char *string, int line_width, bool unicode)
+char *word_wrap(char* buffer, const char *string, int line_width, bool unicode, unsigned max_lines)
 {
-   unsigned i   = 0;
-   unsigned len = (unsigned)strlen(string);
+   unsigned i     = 0;
+   unsigned len   = (unsigned)strlen(string);
+   unsigned lines = 1;
 
    while (i < len)
    {
@@ -194,14 +195,21 @@ char *word_wrap(char* buffer, const char *string, int line_width, bool unicode)
          /* check for newlines embedded in the original input
           * and reset the index */
          if (buffer[j] == '\n')
+         {
+            lines++;
             counter = 1;
+         }
       }
 
       /* check for whitespace */
       if (string[i] == ' ')
       {
-         buffer[i] = '\n';
-         i++;
+         if ((max_lines == 0 || lines < max_lines))
+         {
+            buffer[i] = '\n';
+            i++;
+            lines++;
+         }
       }
       else
       {
@@ -210,12 +218,13 @@ char *word_wrap(char* buffer, const char *string, int line_width, bool unicode)
          /* check for nearest whitespace back in string */
          for (k = i; k > 0; k--)
          {
-            if (string[k] != ' ')
+            if (string[k] != ' ' || (max_lines != 0 && lines >= max_lines))
                continue;
 
             buffer[k] = '\n';
             /* set string index back to character after this one */
             i         = k + 1;
+            lines++;
             break;
          }
 
@@ -227,4 +236,149 @@ char *word_wrap(char* buffer, const char *string, int line_width, bool unicode)
    buffer[i] = 0;
 
    return buffer;
+}
+
+/* Splits string into tokens seperated by 'delim'
+ * > Returned token string must be free()'d
+ * > Returns NULL if token is not found
+ * > After each call, 'str' is set to the position after the
+ *   last found token
+ * > Tokens *include* empty strings
+ * Usage example:
+ *    char *str      = "1,2,3,4,5,6,7,,,10,";
+ *    char **str_ptr = &str;
+ *    char *token    = NULL;
+ *    while((token = string_tokenize(str_ptr, ",")))
+ *    {
+ *        printf("%s\n", token);
+ *        free(token);
+ *        token = NULL;
+ *    }
+ */
+char* string_tokenize(char **str, const char *delim)
+{
+   /* Taken from https://codereview.stackexchange.com/questions/216956/strtok-function-thread-safe-supports-empty-tokens-doesnt-change-string# */
+   char *str_ptr    = NULL;
+   char *delim_ptr  = NULL;
+   char *token      = NULL;
+   size_t token_len = 0;
+
+   /* Sanity checks */
+   if (!str || string_is_empty(delim))
+      return NULL;
+
+   str_ptr = *str;
+
+   /* Note: we don't check string_is_empty() here,
+    * empty strings are valid */
+   if (!str_ptr)
+      return NULL;
+
+   /* Search for delimiter */
+   delim_ptr = strstr(str_ptr, delim);
+
+   if (delim_ptr)
+      token_len = delim_ptr - str_ptr;
+   else
+      token_len = strlen(str_ptr);
+
+   /* Allocate token string */
+   token = (char *)malloc((token_len + 1) * sizeof(char));
+
+   if (!token)
+      return NULL;
+
+   /* Copy token */
+   strlcpy(token, str_ptr, (token_len + 1) * sizeof(char));
+   token[token_len] = '\0';
+
+   /* Update input string pointer */
+   *str = delim_ptr ? delim_ptr + strlen(delim) : NULL;
+
+   return token;
+}
+
+/* Removes every instance of character 'c' from 'str' */
+void string_remove_all_chars(char *str, char c)
+{
+   char *read_ptr  = NULL;
+   char *write_ptr = NULL;
+
+   if (string_is_empty(str))
+      return;
+
+   read_ptr  = str;
+   write_ptr = str;
+
+   while (*read_ptr != '\0')
+   {
+      *write_ptr = *read_ptr++;
+      write_ptr += (*write_ptr != c) ? 1 : 0;
+   }
+
+   *write_ptr = '\0';
+}
+
+/* Replaces every instance of character 'find' in 'str'
+ * with character 'replace' */
+void string_replace_all_chars(char *str, char find, char replace)
+{
+   char *str_ptr = str;
+
+   if (string_is_empty(str))
+      return;
+
+   while ((str_ptr = strchr(str_ptr, find)))
+      *str_ptr++ = replace;
+}
+
+/* Converts string to unsigned integer.
+ * Returns 0 if string is invalid  */
+unsigned string_to_unsigned(const char *str)
+{
+   const char *ptr = NULL;
+
+   if (string_is_empty(str))
+      return 0;
+
+   for (ptr = str; *ptr != '\0'; ptr++)
+   {
+      if (!isdigit(*ptr))
+         return 0;
+   }
+
+   return (unsigned)strtoul(str, NULL, 10);
+}
+
+/* Converts hexadecimal string to unsigned integer.
+ * Handles optional leading '0x'.
+ * Returns 0 if string is invalid  */
+unsigned string_hex_to_unsigned(const char *str)
+{
+   const char *hex_str = str;
+   const char *ptr     = NULL;
+   size_t len;
+
+   if (string_is_empty(str))
+      return 0;
+
+   /* Remove leading '0x', if required */
+   len = strlen(str);
+
+   if (len >= 2)
+      if ((str[0] == '0') &&
+          ((str[1] == 'x') || (str[1] == 'X')))
+         hex_str = str + 2;
+
+   if (string_is_empty(hex_str))
+      return 0;
+
+   /* Check for valid characters */
+   for (ptr = hex_str; *ptr != '\0'; ptr++)
+   {
+      if (!isxdigit(*ptr))
+         return 0;
+   }
+
+   return (unsigned)strtoul(hex_str, NULL, 16);
 }

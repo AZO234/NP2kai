@@ -733,7 +733,6 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/png/rpng_encode.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/tga/rtga.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/wav/rwav.c \
-		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/xml/rxml.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/image_texture.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/formats/image_transfer.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/hash/rhash.c \

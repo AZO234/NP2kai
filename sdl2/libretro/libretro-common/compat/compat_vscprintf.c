@@ -23,10 +23,9 @@
 /* THIS FILE HAS NOT BEEN VALIDATED ON PLATFORMS BESIDES MSVC */
 #ifdef _MSC_VER
 
-#include <stdio.h>
-
 #include <retro_common.h>
 
+#include <stdio.h>
 #include <stdarg.h>
 
 #if defined(_MSC_VER) && _MSC_VER < 1800
