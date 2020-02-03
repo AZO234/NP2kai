@@ -742,9 +742,16 @@ xnp2kai_CPPFLAGS=	$(AM_CPPFLAGS) $(I286C_CPPFLAGS)
 endif	# CPUCORE_IA32
 endif	# BUILD_ALL
 
-CLEANFILES=	$(nodist_man1_MANS) make.log
+CLEANFILES=	$(nodist_man1_MANS) make.log compile_commands.json cppcheck.xml
 
 cleandir:: distclean
 
 .man1.1 .jman1.1j:
 	@sed -e 's;@PKGDATADIR@;${DESTDIR}${pkgdatadir};' < $< > $@
+
+cppcheck: compile_commands.json
+	cppcheck --project=compile_commands.json --xml 2> cppcheck.xml
+
+compile_commands.json:
+	bear make -f Makefile
+

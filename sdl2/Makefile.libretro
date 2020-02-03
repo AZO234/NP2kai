@@ -858,6 +858,14 @@ clean-objs:
 clean:
 	rm -f $(OBJECTS)
 	rm -f $(TARGET)
+	rm -f compile_commands.json
+	rm -f cppcheck.xml
+
+cppcheck: compile_commands.json
+	cppcheck --project=compile_commands.json --xml 2> cppcheck.xml
+
+compile_commands.json:
+	bear make -f Makefile.libretro
 
 install:
 	install -D -m 755 $(TARGET) $(DESTDIR)$(libdir)/$(LIBRETRO_DIR)/$(TARGET)
