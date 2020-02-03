@@ -14,13 +14,13 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <unistd.h>
-#elif defined(NP2_THREAD_SDL2)
+#elif defined(NP2_SDL2)
 #if defined(USE_SDL_CONFIG)
 #include "SDL.h"
 #else
 #include <SDL.h>
 #endif
-#elif defined(NP2_THREAD_LR)
+#elif defined(__LIBRETRO__)
 #include <rthreads/rthreads.h>
 #include <retro_timers.h>
 #include "sdl2/libretro/rsemaphore.h"
@@ -30,9 +30,9 @@
 typedef HANDLE NP2_Thread_t;
 #elif defined(NP2_THREAD_POSIX)
 typedef pthread_t NP2_Thread_t;
-#elif defined(NP2_THREAD_SDL2)
+#elif defined(NP2_SDL2)
 typedef SDL_Thread* NP2_Thread_t;
-#elif defined(NP2_THREAD_LR)
+#elif defined(__LIBRETRO__)
 typedef sthread_t* NP2_Thread_t;
 #endif
 
@@ -59,9 +59,9 @@ void NP2_Thread_Detach(NP2_Thread_t* pth);
 typedef HANDLE NP2_Semaphore_t;
 #elif defined(NP2_THREAD_POSIX)
 typedef sem_t NP2_Semaphore_t;
-#elif defined(NP2_THREAD_SDL2)
+#elif defined(NP2_SDL2)
 typedef SDL_sem* NP2_Semaphore_t;
-#elif defined(NP2_THREAD_LR)
+#elif defined(__LIBRETRO__)
 typedef ssem_t* NP2_Semaphore_t;
 #endif
 
@@ -133,9 +133,9 @@ void NP2_WaitQueue_Shift_Wait(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, void
 #define NP2_Sleep_ms(ms) Sleep(ms);
 #elif defined(NP2_THREAD_POSIX)
 #define NP2_Sleep_ms(ms) usleep(ms * 1000);
-#elif defined(NP2_THREAD_SDL2)
+#elif defined(NP2_SDL2)
 #define NP2_Sleep_ms(ms) SDL_Delay(ms);
-#elif defined(NP2_THREAD_LR)
+#elif defined(__LIBRETRO__)
 #define NP2_Sleep_ms(ms) retro_sleep(ms);
 #endif
 
