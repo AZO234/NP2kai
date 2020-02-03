@@ -44,15 +44,16 @@ enum task_type
 
 typedef struct retro_task retro_task_t;
 typedef void (*retro_task_callback_t)(retro_task_t *task,
-      void *task_data, void *user_data,
-      const char *error);
+      void *task_data,
+      void *user_data, const char *error);
 
 typedef void (*retro_task_handler_t)(retro_task_t *task);
 
 typedef bool (*retro_task_finder_t)(retro_task_t *task,
       void *userdata);
 
-typedef void (*retro_task_queue_msg_t)(retro_task_t *task, const char *msg,
+typedef void (*retro_task_queue_msg_t)(retro_task_t *task,
+      const char *msg,
       unsigned prio, unsigned duration, bool flush);
 
 typedef bool (*retro_task_retriever_t)(retro_task_t *task, void *data);
@@ -113,9 +114,14 @@ struct retro_task
    /* task identifier */
    uint32_t ident;
 
-   /* frontend userdata 
+   /* frontend userdata
     * (e.g. associate a sticky notification to a task) */
    void *frontend_userdata;
+
+   /* if set to true, frontend will
+   use an alternative look for the
+   task progress display */
+   bool alternative_look;
 
    /* don't touch this. */
    retro_task_t *next;
@@ -208,8 +214,10 @@ void task_queue_retrieve(task_retriever_data_t *data);
 void task_queue_check(void);
 
 /* Pushes a task
- * The task will start as soon as possible. */
-void task_queue_push(retro_task_t *task);
+ * The task will start as soon as possible.
+ * If a second blocking task is attempted, false will be returned
+ * and the task will be ignored. */
+bool task_queue_push(retro_task_t *task);
 
 /* Blocks until all tasks have finished
  * will return early if cond is not NULL
@@ -239,7 +247,7 @@ void task_queue_deinit(void);
  * This must only be called from the main thread. */
 void task_queue_init(bool threaded, retro_task_queue_msg_t msg_push);
 
-/* Allocs and inits a new retro_task_t */
+/* Allocates and inits a new retro_task_t */
 retro_task_t *task_init(void);
 
 RETRO_END_DECLS

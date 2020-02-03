@@ -31,6 +31,7 @@ extern "C"  {
 
 /* Pre-MSVC 2015 compilers don't implement snprintf in a cross-platform manner. */
 #if _MSC_VER < 1900
+   #include <stdio.h>
    #include <stdlib.h>
    #ifndef snprintf
       #define snprintf c99_snprintf_retro__
@@ -41,6 +42,7 @@ extern "C"  {
 
 /* Pre-MSVC 2008 compilers don't implement vsnprintf in a cross-platform manner? Not sure about this one. */
 #if _MSC_VER < 1500
+   #include <stdio.h>
    #include <stdarg.h>
    #include <stdlib.h>
    #ifndef vsnprintf
@@ -56,6 +58,8 @@ extern "C"  {
 #undef UNICODE /* Do not bother with UNICODE at this time. */
 #include <direct.h>
 #include <stddef.h>
+
+#define _USE_MATH_DEFINES
 #include <math.h>
 
 /* Python headers defines ssize_t and sets HAVE_SSIZE_T.

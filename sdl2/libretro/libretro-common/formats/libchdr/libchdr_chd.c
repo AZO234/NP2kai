@@ -637,14 +637,24 @@ static chd_error decompress_v5_map(chd_file* chd, chd_header* header)
 	{
 		uint8_t *rawmap = header->rawmap + (hunknum * 12);
 		if (repcount > 0)
-			rawmap[0] = lastcomp, repcount--;
+        {
+            rawmap[0] = lastcomp;
+            repcount--;
+        }
 		else
 		{
 			uint8_t val = huffman_decode_one(decoder, bitbuf);
 			if (val == COMPRESSION_RLE_SMALL)
-				rawmap[0] = lastcomp, repcount = 2 + huffman_decode_one(decoder, bitbuf);
+            {
+                rawmap[0] = lastcomp;
+                repcount = 2 + huffman_decode_one(decoder, bitbuf);
+            }
 			else if (val == COMPRESSION_RLE_LARGE)
-				rawmap[0] = lastcomp, repcount = 2 + 16 + (huffman_decode_one(decoder, bitbuf) << 4), repcount += huffman_decode_one(decoder, bitbuf);
+            {
+                rawmap[0] = lastcomp;
+                repcount = 2 + 16 + (huffman_decode_one(decoder, bitbuf) << 4);
+                repcount += huffman_decode_one(decoder, bitbuf);
+            }
 			else
 				rawmap[0] = lastcomp = val;
 		}
@@ -1027,6 +1037,9 @@ void chd_close(chd_file *chd)
 		for (i = 0 ; i < 4 ; i++)
       {
          void* codec = NULL;
+         if (!chd->codecintf[i])
+            continue;
+
          switch (chd->codecintf[i]->compression)
          {
             case CHD_CODEC_CD_LZMA:
@@ -1335,7 +1348,7 @@ static UINT32 header_guess_unitbytes(chd_file *chd)
 {
 	/* look for hard disk metadata; if found, then the unit size == sector size */
 	char metadata[512];
-	int i0, i1, i2, i3;
+	unsigned int i0, i1, i2, i3;
 	if (chd_get_metadata(chd, HARD_DISK_METADATA_TAG, 0, metadata, sizeof(metadata), NULL, NULL, NULL) == CHDERR_NONE &&
 		sscanf(metadata, HARD_DISK_METADATA_FORMAT, &i0, &i1, &i2, &i3) == 4)
 		return i3;
@@ -1460,7 +1473,7 @@ static chd_error header_read(chd_file *chd, chd_header *header)
 		header->mapoffset       = get_bigendian_uint64(&rawheader[40]);
 		header->metaoffset      = get_bigendian_uint64(&rawheader[48]);
 		header->hunkbytes       = get_bigendian_uint32(&rawheader[56]);
-		header->hunkcount       = (header->logicalbytes + header->hunkbytes - 1) / header->hunkbytes;
+		header->hunkcount       = (UINT32)((header->logicalbytes + header->hunkbytes - 1) / header->hunkbytes);
 		header->unitbytes       = get_bigendian_uint32(&rawheader[60]);
 		header->unitcount       = (header->logicalbytes + header->unitbytes - 1) / header->unitbytes;
 		memcpy(header->sha1, &rawheader[84], CHD_SHA1_BYTES);
@@ -1614,11 +1627,11 @@ static chd_error hunk_read_into_memory(chd_file *chd, UINT32 hunknum, UINT8 *des
 				if (chd->cachehunk == entry->offset && dest == chd->cache)
 					break;
 #endif
-				return hunk_read_into_memory(chd, entry->offset, dest);
+				return hunk_read_into_memory(chd, (UINT32)entry->offset, dest);
 
 			/* parent-referenced data */
 			case MAP_ENTRY_TYPE_PARENT_HUNK:
-				err = hunk_read_into_memory(chd->parent, entry->offset, dest);
+				err = hunk_read_into_memory(chd->parent, (UINT32)entry->offset, dest);
 				if (err != CHDERR_NONE)
 					return err;
 				break;
@@ -1669,6 +1682,8 @@ static chd_error hunk_read_into_memory(chd_file *chd, UINT32 hunknum, UINT8 *des
             bytes = read_compressed(chd, blockoffs, blocklen);
             if (bytes == NULL)
                return CHDERR_READ_ERROR;
+            if (!chd->codecintf[rawmap[0]])
+               return CHDERR_UNSUPPORTED_FORMAT;
 				switch (chd->codecintf[rawmap[0]]->compression)
 				{
 					case CHD_CODEC_CD_LZMA:
@@ -1711,7 +1726,7 @@ static chd_error hunk_read_into_memory(chd_file *chd, UINT32 hunknum, UINT8 *des
 				return CHDERR_NONE;
 
 			case COMPRESSION_SELF:
-				return hunk_read_into_memory(chd, blockoffs, dest);
+				return hunk_read_into_memory(chd, (UINT32)blockoffs, dest);
 
 			case COMPRESSION_PARENT:
 #if 0

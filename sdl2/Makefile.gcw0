@@ -79,6 +79,14 @@ clean:
 	rm -f *.opk
 	rm -f opk/$(TARGET)
 	rm -f opk/default.gcw0.desktop
+	rm -f compile_commands.json
+	rm -f cppcheck.xml
+
+cppcheck: compile_commands.json
+	cppcheck --project=compile_commands.json --xml 2> cppcheck.xml
+
+compile_commands.json:
+	bear make -f Makefile.gcw0
 
 
 buildopk: $(TARGET)

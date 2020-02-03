@@ -8,6 +8,8 @@
 
 #define	FONTMEMORYBIND				// 520KBくらいメモリ削除(ぉぃ
 
+#define FONTMEMORYSIZE 0x84000
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -15,7 +17,7 @@ extern "C" {
 #ifdef FONTMEMORYBIND
 #define	fontrom		(mem + FONT_ADRS)
 #else
-extern	UINT8	__font[0x84000];
+extern	UINT8	__font[FONTMEMORYSIZE];
 #define	fontrom		(__font)
 #endif
 

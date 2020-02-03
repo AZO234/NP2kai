@@ -15,7 +15,7 @@
 #include	"fontmake.h"
 
 #ifndef FONTMEMORYBIND
-	UINT8	__font[0x84000];
+	UINT8	__font[FONTMEMORYSIZE];
 #endif
 
 static const OEMCHAR fonttmpname[] = OEMTEXT("font.tmp");
@@ -25,7 +25,7 @@ static const OEMCHAR fonttmpname[] = OEMTEXT("font.tmp");
  */
 void font_initialize(void) {
 
-	ZeroMemory(fontrom, sizeof(fontrom));
+	ZeroMemory(fontrom, FONTMEMORYSIZE);
 	font_setchargraph(FALSE);
 }
 
