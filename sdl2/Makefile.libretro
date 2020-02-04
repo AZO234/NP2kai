@@ -713,6 +713,7 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 		$(NP2_PATH)/sdl2/libretro/libretro-common/file/config_file.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/file/config_file_userdata.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/file/file_path.c \
+		$(NP2_PATH)/sdl2/libretro/libretro-common/file/file_path_io.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/file/retro_dirent.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/file/nbio/nbio_intf.c \
 		$(NP2_PATH)/sdl2/libretro/libretro-common/file/nbio/nbio_orbis.c \
