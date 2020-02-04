@@ -1115,6 +1115,7 @@ void dialog_newdisk_ex(HWND hWnd, int mode)
 			{
 				_mt_cancel = 1;
 				WaitForSingleObject(newdisk_ThreadFunc, INFINITE);
+				CloseHandle(newdisk_ThreadFunc);
 			}
 			_mt_cancel = 1;
 		}

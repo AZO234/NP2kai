@@ -194,6 +194,7 @@ static REG8 scsibios_read(UINT type, SXSIDEV sxsi) {
 		size = 0x10000;
 	}
 	ret = sxsi_pos(type, sxsi, &pos);
+	posbase = pos;
 	if (!ret) {
 		addr = (CPU_ES << 4) + CPU_BP;
 		while(size) {

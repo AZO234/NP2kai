@@ -1082,7 +1082,6 @@ void mpu98ii_reset(const NP2CFG *pConfig) {
 void mpu98ii_bind(void) {
 
 	UINT	port;
-
 	
 	if(mpu98.enable){
 		mpu98ii_changeclock();

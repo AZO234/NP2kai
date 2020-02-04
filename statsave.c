@@ -849,7 +849,6 @@ static UINT GetSoundFlags(SOUNDID nSoundID)
 			
 		case SOUNDID_PC_9801_86_WSS:
 			return FLAG_OPNA1 | FLAG_PCM86 | FLAG_CS4231;
-			break;
 			
 		case SOUNDID_PC_9801_86_118:
 			return FLAG_OPNA1 | FLAG_OPNA2 | FLAG_PCM86 | FLAG_CS4231;
@@ -1701,6 +1700,35 @@ const SFENTRY	*tblterm;
 	pc98_cirrus_vga_bind();
 	pc98_cirrus_vga_load();
 #endif
+	
+	// OPNAボリューム再設定
+	if(g_nSoundID == SOUNDID_WAVESTAR){
+		opngen_setvol(np2cfg.vol_fm * cs4231.devvolume[0xff] / 15);
+		psggen_setvol(np2cfg.vol_ssg * cs4231.devvolume[0xff] / 15);
+		rhythm_setvol(np2cfg.vol_rhythm * cs4231.devvolume[0xff] / 15);
+#if defined(SUPPORT_FMGEN)
+		if(np2cfg.usefmgen) {
+			opna_fmgen_setallvolumeFM_linear(np2cfg.vol_fm * cs4231.devvolume[0xff] / 15);
+			opna_fmgen_setallvolumePSG_linear(np2cfg.vol_ssg * cs4231.devvolume[0xff] / 15);
+			opna_fmgen_setallvolumeRhythmTotal_linear(np2cfg.vol_rhythm * cs4231.devvolume[0xff] / 15);
+		}
+#endif
+	}else{
+		opngen_setvol(np2cfg.vol_fm);
+		psggen_setvol(np2cfg.vol_ssg);
+		rhythm_setvol(np2cfg.vol_rhythm);
+#if defined(SUPPORT_FMGEN)
+		if(np2cfg.usefmgen) {
+			opna_fmgen_setallvolumeFM_linear(np2cfg.vol_fm);
+			opna_fmgen_setallvolumePSG_linear(np2cfg.vol_ssg);
+			opna_fmgen_setallvolumeRhythmTotal_linear(np2cfg.vol_rhythm);
+		}
+#endif
+	}
+	for (i = 0; i < NELEMENTS(g_opna); i++)
+	{
+		rhythm_update(&g_opna[i].rhythm);
+	}
 
 	gdcs.textdisp |= GDCSCRN_EXT;
 	gdcs.textdisp |= GDCSCRN_ALLDRAW2;

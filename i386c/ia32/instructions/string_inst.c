@@ -1053,7 +1053,7 @@ STOSD_YdEAX(void)
 	}
 }
 
-// rep\82̂\DD
+// repのみ
 void
 STOSB_YbAL_rep(int reptype)
 {

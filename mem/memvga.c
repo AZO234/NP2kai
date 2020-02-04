@@ -605,7 +605,7 @@ void MEMCALL memvgaio_wr32(UINT32 address, UINT32 value){
 
 	pos = address - 0xe0000 - 0x0100;
 	
-	if(PEGC_REG_PATTERN <= pos){
+	if(address > 0xe0000 + 0x0100 && PEGC_REG_PATTERN <= pos){
 		if(vramop.mio2[PEGC_REG_PLANE_ROP] & 0x8000){
 			// 1 palette x 32 pixels
 			if((pos & 0x3)==0 && pos < 0x100){

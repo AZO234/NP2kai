@@ -324,8 +324,7 @@ cpu_stack_push_check(UINT16 s, descriptor_t *sdp, UINT32 sp, UINT len,
 			 */
 			if ((len > sdp->u.seg.limit)		/* len check */
 			 || (start > sp)			/* wrap check */
-//			 || (sp > sdp->u.seg.limit + 1)) {	/* [1] */
-			 || (sp > sdp->u.seg.limit)) {		/* [1] */
+			 || (sp > sdp->u.seg.limit + 1)) {	/* [1] */
 				goto exc;
 			}
 		}

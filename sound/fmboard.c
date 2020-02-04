@@ -153,11 +153,21 @@ void fmboard_reset(const NP2CFG *pConfig, SOUNDID nSoundID)
 	soundrom_reset();
 	beep_reset();												// ver0.27a
 
+	if (g_nSoundID != nSoundID)
+	{
+		for (i = 0; i < NELEMENTS(g_opna); i++)
+		{
+			opna_reset(&g_opna[i], 0);
+		}
+		opl3_reset(&g_opl3, 0);
+	}
+
 	extfn = NULL;
 	pcm86_reset();
 	cs4231_reset();
 
 	board14_reset(pConfig, (nSoundID == SOUNDID_PC_9801_14) ? TRUE : FALSE);
+	amd98_reset(pConfig);
 	
 	g_nSoundID = nSoundID; // XXX: 先に設定
 	switch (nSoundID)
@@ -295,7 +305,7 @@ void fmboard_bind(void) {
 		case SOUNDID_PC_9801_86_ADPCM:
 			board86_bind();
 			break;
-			
+
 		case SOUNDID_WAVESTAR:
 			board118_bind();
 			board86_bind();
@@ -382,7 +392,7 @@ void fmboard_unbind(void) {
 		case SOUNDID_PC_9801_86_ADPCM:
 			board86_unbind();
 			break;
-			
+
 		case SOUNDID_WAVESTAR:
 			board118_unbind();
 			board86_unbind();

@@ -400,7 +400,6 @@ REG8 sec2352_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 	return(0x00);
 }
 
-
 UINT32 calcCRC(UINT8 *buf, int len)
 {
 	int i;
@@ -462,6 +461,7 @@ REG8 sec2352_read_with_ecc(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 	}
 	return(0x00);
 }
+
 
 //	イメージファイル内全トラックセクタ長2448(2352+96)用
 REG8 sec2448_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {

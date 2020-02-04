@@ -18,11 +18,11 @@ REG16 MEMCALL pegc_memvgaplane_rd16(UINT32 address){
 	
 	int i,j;
 	UINT16 ret = 0;
-//	UINT8 bit;
+	//UINT8 bit;
 
 	UINT32 addr; // 画素単位の読み込み元アドレス
 
-//	UINT8 src, dst, pat1, pat2; // ソースデータ、ディスティネーションデータ、パターンデータ1&2
+	//UINT8 src, dst, pat1, pat2; // ソースデータ、ディスティネーションデータ、パターンデータ1&2
 	UINT8 ropcode = 0; // ラスタオペレーション設定 E0108h bit0〜bit7
 	UINT8 ropmethod = 0; // 論理演算の方法を指定（パターンレジスタまたはカラーパレット） E0108h bit11,10
 	UINT8 ropupdmode = 0; // 1ならラスタオペレーションを使用 E0108h bit12

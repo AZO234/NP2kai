@@ -30,6 +30,7 @@
 #include "ini.h"
 #include "dispsync.h"
 #include "wab.h"
+#include "bmpdata.h"
 #include "wabbmpsave.h"
 #if defined(_WINDOWS)
 #include	<process.h>

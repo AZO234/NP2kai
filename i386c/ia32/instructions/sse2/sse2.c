@@ -330,7 +330,7 @@ static INLINE void SSE_PART_GETDATA1DATA2_SD_REG2XMM(double **data1, SINT32 **da
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
-		*((UINT64*)(data2buf+ 0)) = cpu_vmemoryread_q(CPU_INST_SEGREG_INDEX, maddr+ 0);
+		*((UINT32*)(data2buf+ 0)) = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+ 0);
 		*data2 = data2buf;
 	}
 }
@@ -350,7 +350,7 @@ static INLINE void SSE_PART_GETDATA1DATA2_SD_XMM2REG(SINT32 **data1, double **da
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
-		*((UINT32*)(data2buf+ 0)) = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr+ 0);
+		*((UINT64*)(data2buf+ 0)) = cpu_vmemoryread_q(CPU_INST_SEGREG_INDEX, maddr+ 0);
 		*data2 = data2buf;
 	}
 }
