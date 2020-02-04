@@ -14,6 +14,8 @@
 #include "pccore.h"
 #include "common/strres.h"
 
+#ifdef SUPPORT_IDEIO
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -315,3 +317,5 @@ void dialog_ideopt(HWND hwndParent)
 	CIdeDlg dlg(hwndParent);
 	dlg.DoModal();
 }
+
+#endif

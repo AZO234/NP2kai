@@ -166,6 +166,7 @@ static void np2sysp_cngclkmul(const void *arg1, long arg2) {
 		np2sysp.outval = (oldclockmul << 24) + (np2sysp.outval >> 8);
 
 		pccore.multiple = newclockmul;
+		pccore.maxmultiple = newclockmul;
 		pccore.realclock = pccore.baseclock * pccore.multiple;
 		
 		sound_changeclock();

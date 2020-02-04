@@ -200,6 +200,10 @@ typedef struct {
 	REG8	mmioenable;
 	UINT32	gd54xxtype;
 	UINT32	defgd54xxtype;
+	
+#if defined(SUPPORT_VGA_MODEX)
+	UINT8	modex;
+#endif
 } NP2CLVGA;
 //typedef struct {
 //} NP2CLVGA2;

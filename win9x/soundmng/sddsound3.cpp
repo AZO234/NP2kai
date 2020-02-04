@@ -3,6 +3,7 @@
  * @brief	DSound3 オーディオ クラスの動作の定義を行います
  */
 
+#include <math.h>
 #include "compiler.h"
 #include "sddsound3.h"
 #include "soundmng.h"

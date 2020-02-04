@@ -396,23 +396,27 @@ void xmenu_update(HMENU hMenu)
 
 	// Device-Memory
 	const UINT16 EXTMEM = np2cfg.EXTMEM;
-	CheckMenuItem(hMenu, IDM_MEM640, MF_BYCOMMAND | MFCHECK(EXTMEM == 0));
-	CheckMenuItem(hMenu, IDM_MEM16,  MF_BYCOMMAND | MFCHECK(EXTMEM == 1));
-	CheckMenuItem(hMenu, IDM_MEM36,  MF_BYCOMMAND | MFCHECK(EXTMEM == 3));
-	CheckMenuItem(hMenu, IDM_MEM76,  MF_BYCOMMAND | MFCHECK(EXTMEM == 7));
-	CheckMenuItem(hMenu, IDM_MEM116, MF_BYCOMMAND | MFCHECK(EXTMEM == 11));
-	CheckMenuItem(hMenu, IDM_MEM136, MF_BYCOMMAND | MFCHECK(EXTMEM == 13));
-	CheckMenuItem(hMenu, IDM_MEM166, MF_BYCOMMAND | MFCHECK(EXTMEM == 16));
-	CheckMenuItem(hMenu, IDM_MEM326, MF_BYCOMMAND | MFCHECK(EXTMEM == 32));
-	CheckMenuItem(hMenu, IDM_MEM646, MF_BYCOMMAND | MFCHECK(EXTMEM == 64));
-	CheckMenuItem(hMenu, IDM_MEM1206,MF_BYCOMMAND | MFCHECK(EXTMEM == 120));
-	CheckMenuItem(hMenu, IDM_MEM2306,MF_BYCOMMAND | MFCHECK(EXTMEM == 230));
+	CheckMenuItem(hMenu, IDM_MEM640,  MF_BYCOMMAND | MFCHECK(EXTMEM == 0));
+	CheckMenuItem(hMenu, IDM_MEM16,   MF_BYCOMMAND | MFCHECK(EXTMEM == 1));
+	CheckMenuItem(hMenu, IDM_MEM36,   MF_BYCOMMAND | MFCHECK(EXTMEM == 3));
+	CheckMenuItem(hMenu, IDM_MEM76,   MF_BYCOMMAND | MFCHECK(EXTMEM == 7));
+	CheckMenuItem(hMenu, IDM_MEM116,  MF_BYCOMMAND | MFCHECK(EXTMEM == 11));
+	CheckMenuItem(hMenu, IDM_MEM136,  MF_BYCOMMAND | MFCHECK(EXTMEM == 13));
+	CheckMenuItem(hMenu, IDM_MEM166,  MF_BYCOMMAND | MFCHECK(EXTMEM == 16));
+	CheckMenuItem(hMenu, IDM_MEM326,  MF_BYCOMMAND | MFCHECK(EXTMEM == 32));
+	CheckMenuItem(hMenu, IDM_MEM646,  MF_BYCOMMAND | MFCHECK(EXTMEM == 64));
+	CheckMenuItem(hMenu, IDM_MEM1206, MF_BYCOMMAND | MFCHECK(EXTMEM == 120));
+	CheckMenuItem(hMenu, IDM_MEM2306, MF_BYCOMMAND | MFCHECK(EXTMEM == 230));
+	CheckMenuItem(hMenu, IDM_MEM5126, MF_BYCOMMAND | MFCHECK(EXTMEM == 512));
+	CheckMenuItem(hMenu, IDM_MEM10246,MF_BYCOMMAND | MFCHECK(EXTMEM == 1024));
 #if !defined(CPUCORE_IA32)
 	EnableMenuItem(hMenu, IDM_MEM166, MF_GRAYED);
 	EnableMenuItem(hMenu, IDM_MEM326, MF_GRAYED);
 	EnableMenuItem(hMenu, IDM_MEM646, MF_GRAYED);
 	EnableMenuItem(hMenu, IDM_MEM1206,MF_GRAYED);
 	EnableMenuItem(hMenu, IDM_MEM2306,MF_GRAYED);
+	EnableMenuItem(hMenu, IDM_MEM5126,MF_GRAYED);
+	EnableMenuItem(hMenu, IDM_MEM10246,MF_GRAYED);
 #endif
 	
 	// Device-FPU

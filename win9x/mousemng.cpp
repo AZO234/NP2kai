@@ -270,7 +270,7 @@ static void mousecapture(BOOL capture) {
 		ClipCursor(NULL);
 		style |= CS_DBLCLKS;
 		mousecaptureflg = 0;
-		if(np2oscfg.rawmouse && fndi8create){
+		if(np2oscfg.rawmouse && fndi8create && diRawMouse){
 			diRawMouse->Unacquire();
 			//destroyDirectInput();
 		}

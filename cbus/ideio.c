@@ -653,7 +653,6 @@ static void IOOUTCALL ideio_o64e(UINT port, REG8 dat) {
 	IDEDRV	drv, d;
 	IDEDEV	dev;
 	int		i;
-	FILEPOS	sec;
 
 	// execute device diagnostic
 	if (dat == 0x90) {
@@ -1339,6 +1338,7 @@ const UINT8	*ptr;
 	SINT32	samplen_d;
 static SINT32	sampcount2_n = 0;
 	SINT32	sampcount2_d;
+	UINT	mute = 0;
 
 	samplen_n = soundcfg.rate;
 	samplen_d = 44100;
@@ -1430,9 +1430,36 @@ static SINT32	sampcount2_n = 0;
 			drv->daflag = 0x13;
 			return(FAILURE);
 		}
-		if (sxsicd_readraw(sxsi, drv->dacurpos, drv->dabuf) != SUCCESS) {
-			drv->daflag = 0x14;
-			return(FAILURE);
+		if(np2cfg.cddtskip){
+			CDTRK	trk;
+			UINT	tracks;
+			trk = sxsicd_gettrk(sxsi, &tracks);
+			r = tracks;
+			while(r) {
+				r--;
+				if (trk[r].pos <= drv->dacurpos) {
+					break;
+				}
+			}
+			if(trk[r].adr_ctl!=TRACKTYPE_AUDIO){
+				if(drv->dacurpos != 0){
+					// オーディオトラックでない場合は強制的に次に飛ばす
+					if(r==tracks-1){
+						drv->dacurpos = trk[0].pos;
+					}else{
+						drv->dacurpos = trk[r+1].pos;
+					}
+				}
+				mute = 1;
+			}
+		}
+		if(mute){
+			memset(drv->dabuf, 0, sizeof(drv->dabuf));
+		}else{
+			if (sxsicd_readraw(sxsi, drv->dacurpos, drv->dabuf) != SUCCESS) {
+				drv->daflag = 0x14;
+				return(FAILURE);
+			}
 		}
 		drv->dalength--;
 		drv->dacurpos++;
@@ -1581,12 +1608,12 @@ void ideio_reset(const NP2CFG *pConfig) {
 					_tcscpy(ideio.biosname, tmpbiosname);
 					CPU_RAM_D000 &= ~(0x3 << 8);
 				}else{
-//					CopyMemory(mem + biosaddr, idebios, sizeof(idebios));
+					//CopyMemory(mem + biosaddr, idebios, sizeof(idebios));
 					TRACEOUT(("use simulate ide.rom"));
 				}
 				file_close(fh);
 			}else{
-//				CopyMemory(mem + biosaddr, idebios, sizeof(idebios));
+				//CopyMemory(mem + biosaddr, idebios, sizeof(idebios));
 				TRACEOUT(("use simulate ide.rom"));
 			}
 		}

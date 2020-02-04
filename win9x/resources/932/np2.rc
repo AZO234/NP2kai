@@ -1081,6 +1081,8 @@ BEGIN
             MENUITEM "&64.6MB",                     IDM_MEM646
             MENUITEM "&120.6MB",                    IDM_MEM1206
             MENUITEM "&230.6MB",                    IDM_MEM2306
+            MENUITEM "&512.6MB",                    IDM_MEM5126
+            MENUITEM "&1024.6MB",                   IDM_MEM10246
         END
         POPUP "&FPU"
         BEGIN

@@ -3,6 +3,7 @@
  * @brief	Implementation of OPNA
  */
 
+#include <math.h>
 #include "compiler.h"
 #include "sound/opna.h"
 #include "pccore.h"

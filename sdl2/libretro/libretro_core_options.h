@@ -130,6 +130,8 @@ struct retro_core_option_definition option_defs_us[] = {
          { "64", NULL },
          { "120", NULL },
          { "230", NULL },
+         { "512", NULL },
+         { "1024", NULL },
 #endif
          { NULL, NULL},
       },
@@ -900,6 +902,8 @@ struct retro_core_option_definition option_defs_ja[] = {
          { "64", NULL },
          { "120", NULL },
          { "230", NULL },
+         { "512", NULL },
+         { "1024", NULL },
 #endif
          { NULL, NULL},
       },

@@ -590,7 +590,7 @@ cpucontinue:
 						if(!asynccpu_fastflag){
 							latecount--;
 							if(latecount < -LATECOUNTER_THRESHOLDM){
-								if(pccore.multiple < np2cfg.multiple){
+								if(pccore.multiple < pccore.maxmultiple){
 									pccore.multiple+=1;
 									pccore.realclock = pccore.baseclock * pccore.multiple;
 		

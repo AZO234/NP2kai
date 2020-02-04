@@ -192,7 +192,7 @@ ia32_interrupt(int vect, int soft)
 
 //	TRACEOUT(("int (%x, %x) PE=%d VM=%d",  vect, soft, CPU_STAT_PM, CPU_STAT_VM86));
 #if defined(SUPPORT_IA32_HAXM)
-	if(np2hax.enable&&np2hax.hVCPUDevice){
+	if(np2hax.enable && !np2hax.emumode && np2hax.hVCPUDevice){
 		np2haxcore.hltflag = 0;
 		if(!soft){
 			HAX_TUNNEL *tunnel;
