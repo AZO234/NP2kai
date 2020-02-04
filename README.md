@@ -253,7 +253,7 @@ $ sudo make install
 2. Install brew.  
 3. Execute follow command.  
 ```
-$ brew install sdl2 sdl2_mixier sdl2_ttf
+$ brew install sdl2 sdl2_mixer sdl2_ttf
 ```
 
 ##### Build
@@ -287,7 +287,7 @@ $ make install
 2. Install brew.  
 3. Execute follow command.  
 ```
-$ brew install sdl sdl_mixier sdl_ttf
+$ brew install sdl sdl_mixer sdl_ttf
 ```
 
 ##### Build
