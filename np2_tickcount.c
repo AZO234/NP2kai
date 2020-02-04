@@ -4,7 +4,7 @@
 #include <windows.h>
 #elif defined(NP2_SDL2)
 #include <SDL.h>
-#elif defined(NP2_LR)
+#elif defined(__LIBRETRO__)
 #include <features/features_cpu.h>
 #endif
 
