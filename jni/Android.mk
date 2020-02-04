@@ -75,6 +75,7 @@ ifneq ($(STATIC_LINKING), 1)
 			$(NP2_PATH)/sdl2/libretro/libretro-common/file/config_file.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/file/config_file_userdata.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/file/file_path.c \
+			$(NP2_PATH)/sdl2/libretro/libretro-common/file/file_path_io.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/file/retro_dirent.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/file/nbio/nbio_intf.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/file/nbio/nbio_orbis.c \
@@ -95,7 +96,6 @@ ifneq ($(STATIC_LINKING), 1)
 			$(NP2_PATH)/sdl2/libretro/libretro-common/formats/png/rpng_encode.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/formats/tga/rtga.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/formats/wav/rwav.c \
-			$(NP2_PATH)/sdl2/libretro/libretro-common/formats/xml/rxml.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/formats/image_texture.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/formats/image_transfer.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/hash/rhash.c \
