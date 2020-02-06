@@ -1441,6 +1441,16 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			update |= SYS_UPDATECFG | SYS_UPDATEMEMORY;
 			break;
 			
+		case IDM_MEM5126:
+			np2cfg.EXTMEM = 512;
+			update |= SYS_UPDATECFG | SYS_UPDATEMEMORY;
+			break;
+			
+		case IDM_MEM10246:
+			np2cfg.EXTMEM = 1024;
+			update |= SYS_UPDATECFG | SYS_UPDATEMEMORY;
+			break;
+			
 		case IDM_FPU80:
 			np2cfg.fpu_type = FPU_TYPE_SOFTFLOAT;
 			update |= SYS_UPDATECFG;
@@ -2681,11 +2691,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 											_tcscpy(fnamebuf, np2cfg.idecd[i]);
 											if(wParam == DBT_DEVICEARRIVAL){
 												// CD挿入
-												diskdrv_setsxsi(0x02, fnamebuf);
+												diskdrv_setsxsi(i, fnamebuf);
 											}else{
 												// CD取出 XXX: 中身が空でもマウントは継続
-												diskdrv_setsxsi(0x02, fnamebuf);
+												diskdrv_setsxsi(i, NULL);
+												_tcscpy(np2cfg.idecd[i], fnamebuf);
 											}
+											sysmng_updatecaption(SYS_UPDATECAPTION_FDD);
 										}
 									}
 								}

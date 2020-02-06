@@ -379,8 +379,10 @@ UINT dmac_getdata_(DMACH dmach, UINT8 *buf, UINT offset, UINT size) {
 	UINT32	addr;
 	UINT	i;
 	SINT32	sampleirq = 0; // 割り込みまでに必要なデータ転送数(byte)
-#define PLAYCOUNT_ADJUST_VALUE	32768
+#define PLAYCOUNT_ADJUST_VALUE	65536
+#define PLAYCOUNT_ADJUST2_VALUE	16
 	static UINT32	playcount_adjustcounter = 0;
+	static UINT32	playcount_adjustcounter2 = 0;
 	
 	lengsum = 0;
 	while(size > 0) {
@@ -405,13 +407,20 @@ UINT dmac_getdata_(DMACH dmach, UINT8 *buf, UINT offset, UINT size) {
 				}
 
 				// XXX: 再生位置調整（Win9x,Win2000再生ノイズ対策用・とりあえず+方向だけ）
-				playcount_adjustcounter += leng;
-				if(playcount_adjustcounter >= PLAYCOUNT_ADJUST_VALUE){
-					playcount_adjustcounter -= PLAYCOUNT_ADJUST_VALUE;
-					if(!w31play){
-						addr += 4;
-						if(addr > dmach->lastaddr){
-							addr = dmach->startaddr + (addr - dmach->lastaddr - 1); // DMA読み取りアドレスがアドレス範囲の最後に到達したら最初に戻す
+				if(cs4231_playcountshift[cs4231.reg.datafmt >> 4] == 4){
+					playcount_adjustcounter += leng;
+					if(playcount_adjustcounter >= PLAYCOUNT_ADJUST_VALUE){
+						playcount_adjustcounter -= PLAYCOUNT_ADJUST_VALUE;
+						if(!w31play){
+							addr += 4;
+							if(addr > dmach->lastaddr){
+								addr = dmach->startaddr + (addr - dmach->lastaddr - 1); // DMA読み取りアドレスがアドレス範囲の最後に到達したら最初に戻す
+							}
+							playcount_adjustcounter2++;
+							if(playcount_adjustcounter2 > PLAYCOUNT_ADJUST2_VALUE){
+								playcount_adjustcounter2 -= PLAYCOUNT_ADJUST2_VALUE;
+								cs4231.totalsample += cs4231_playcountshift[cs4231.reg.datafmt >> 4];
+							}
 						}
 					}
 				}

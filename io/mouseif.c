@@ -222,6 +222,10 @@ static REG8 IOINPCALL mouseif_i7fd9(UINT port) {
 		if (portc & 0x40) {
 			x = y;
 		}
+		if(x < -128) 
+			x = -128;
+		if(x > +127) 
+			x = +127;
 		if (!(portc & 0x20)) {
 			ret |= x & 0x0f;
 		}

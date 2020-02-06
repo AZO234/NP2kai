@@ -83,3 +83,4 @@ UINT timing_getcount_baseclock(void) {
 	}
 	return(ret);
 }
+

@@ -48,7 +48,7 @@
 #include	"cbus/smpu98.h"
 #endif
 #endif
-#include <time.h>
+
 
 sigjmp_buf exec_1step_jmpbuf;
 
@@ -392,9 +392,7 @@ exec_allstep(void)
 		}
 
 		/* rep */
-	#if defined(SUPPORT_ASYNC_CPU)
 		repflag = CPU_ECX;
-	#endif
 		CPU_WORKCLOCK(5);
 	#if defined(DEBUG)
 		if (!cpu_debug_rep_cont) {
@@ -590,7 +588,7 @@ cpucontinue:
 						if(!asynccpu_fastflag){
 							latecount--;
 							if(latecount < -LATECOUNTER_THRESHOLDM){
-								if(pccore.multiple < np2cfg.multiple){
+								if(pccore.multiple < pccore.maxmultiple){
 									pccore.multiple+=1;
 									pccore.realclock = pccore.baseclock * pccore.multiple;
 		

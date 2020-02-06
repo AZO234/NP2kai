@@ -298,6 +298,8 @@ void vga_mem_writeb(void *opaque, target_phys_addr_t addr, uint32_t_ val){
     int memory_map_mode, plane, write_mode, b, func_select, mask;
     uint32_t_ write_mask, bit_mask, set_mask;
 
+	////val = ((val & 0x3) << 6) | ((val & 0xc) << 2) | ((val & 0x30) >> 2) | ((val & 0xc0) >> 4);
+
 #ifdef DEBUG_VGA_MEM
     printf("vga: [0x%x] = 0x%02x\n", addr, val);
 #endif
@@ -415,9 +417,8 @@ void vga_mem_writeb(void *opaque, target_phys_addr_t addr, uint32_t_ val){
         mask = s->sr[2];
         s->plane_updated |= mask; /* only used to detect font change */
         write_mask = mask16[mask];
-        ((uint32_t_ *)s->vram_ptr)[addr] =
-            (((uint32_t_ *)s->vram_ptr)[addr] & ~write_mask) |
-            (val & write_mask);
+		write_mask = ((write_mask & 0xff) << 24) | ((write_mask & 0xff00) << 8) | ((write_mask & 0xff0000) >> 8) | ((write_mask & 0xff000000) >> 24); // XXX: なんかひっくり返さないと駄目
+        ((uint32_t_ *)s->vram_ptr)[addr] = (((uint32_t_ *)s->vram_ptr)[addr] & ~write_mask) | (val & write_mask);
 #ifdef DEBUG_VGA_MEM
             printf("vga: latch: [0x%x] mask=0x%08x val=0x%08x\n",
                    addr * 4, write_mask, val);

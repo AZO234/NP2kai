@@ -34,11 +34,40 @@
 #endif
 #include	"fmboard.h"
 
+#if defined(SUPPORT_VGA_MODEX)
+#if defined(SUPPORT_WAB)
+#include	"wab/wab.h"
+#endif
+#if defined(SUPPORT_CL_GD5430)
+#include	"wab/cirrus_vga_extern.h"
+#endif
+#endif
+
 #if defined(SUPPORT_IA32_HAXM)
 #include	"i386hax/haxfunc.h"
 #include	"i386hax/haxcore.h"
 #define USE_CUSTOM_HOOKINST
 #endif
+
+#if 0
+#undef	TRACEOUT
+#define USE_TRACEOUT_VS
+#ifdef USE_TRACEOUT_VS
+static void trace_fmt_ex(const char *fmt, ...)
+{
+	char stmp[2048];
+	va_list ap;
+	va_start(ap, fmt);
+	vsprintf(stmp, fmt, ap);
+	strcat(stmp, "¥n");
+	va_end(ap);
+	OutputDebugStringA(stmp);
+}
+#define	TRACEOUT(s)	trace_fmt_ex s
+#else
+#define	TRACEOUT(s)	(void)(s)
+#endif
+#endif	/* 1 */
 
 #ifdef USE_CUSTOM_HOOKINST
 #define BIOS_HOOKINST	bioshookinfo.hookinst
@@ -474,7 +503,7 @@ void bios_initialize(void) {
 	if(np2cfg.memcheckspeed > 1){
 		// 猫メモリチェックのDEC r/m16 を強制フック(実行時はアドレスが変わるので注意)
 		STOREINTELWORD((mem + ITF_ADRS + 5886), 128 * np2cfg.memcheckspeed);
-		mem[ITF_ADRS + 5924] = 0x90;
+		mem[ITF_ADRS + 5924] = BIOS_HOOKINST;
 	}
 #endif
 	np2cfg.memchkmx = 0; // 無効化 (obsolete)
@@ -487,7 +516,7 @@ void bios_initialize(void) {
 			for(i=ITF_ADRS + 6066; i >= ITF_ADRS + 6058; i--){
 				mem[i] = mem[i-1]; // 1byteずらし
 			}
-			mem[ITF_ADRS + 6067] = mem[ITF_ADRS + 6068] = 0x90; // call	WAITVSYNC を NOP化
+			mem[ITF_ADRS + 6067] = mem[ITF_ADRS + 6068] = BIOS_HOOKINST; // call	WAITVSYNC を NOP化
 			mem[ITF_ADRS + 6055] = 0x81; // CMP r/m16, imm8 を CMP r/m16, imm16 に変える
 			STOREINTELWORD((mem + ITF_ADRS + 6057), (MEMORY_MAXSIZE-14)); // cmp　bx, (EXTMEMORYMAX - 16)の部分をいじる
 			STOREINTELWORD((mem + ITF_ADRS + 6061+1), (MEMORY_MAXSIZE-14)); // mov　bx, (EXTMEMORYMAX - 16)の部分をいじる（1byteずらしたのでオフセット注意）
@@ -578,9 +607,9 @@ void bios_initialize(void) {
 	}
 #endif
 	
-// np21w ver0.86 rev46 BIOS I/O emulation
+// np21w ver0.86 rev46-69 BIOS I/O emulation
 #if defined(BIOS_IO_EMULATION)
-	// エミュレーション用に書き換え。とりあえずINT 18HとINT 1CHのみ対応
+	// エミュレーション用に書き換え。とりあえずINT 18HとINT 1BHとINT 1CHのみ対応
 	if(biosioemu.enable){
 		mem[BIOS_BASE + BIOSOFST_18 + 1] = 0xee; // 0xcf(IRET) -> 0xee(OUT DX, AL)
 		mem[BIOS_BASE + BIOSOFST_18 + 2] = BIOS_HOOKINST; // 0x90(NOP) BIOS hook
@@ -591,6 +620,17 @@ void bios_initialize(void) {
 		mem[BIOS_BASE + BIOSOFST_1c + 1] = 0xee; // 0xcf(IRET) -> 0xee(OUT DX, AL)
 		mem[BIOS_BASE + BIOSOFST_1c + 2] = BIOS_HOOKINST; // 0x90(NOP) BIOS hook
 		mem[BIOS_BASE + BIOSOFST_1c + 3] = 0xcf; // 0xcf(IRET)
+	}
+#endif
+	
+// np21w ver0.86 rev70 VGA BIOS for MODE X
+#if defined(SUPPORT_VGA_MODEX)
+	if(np2cfg.usemodex){
+		mem[BIOS_BASE + BIOSOFST_10 + 0] = 0x90; // 0x90(NOP) BIOS hook
+		mem[BIOS_BASE + BIOSOFST_10 + 1] = 0xcf; // 0xcf(IRET)
+		mem[BIOS_BASE + BIOSOFST_10 + 0] = 0x90; // 0x90(NOP) BIOS hook
+		mem[BIOS_BASE + BIOS_TABLE + 0x20] = 0x8e;
+		mem[BIOS_BASE + BIOS_TABLE + 0x21] = 0x00;
 	}
 #endif
 	
@@ -627,7 +667,7 @@ static void bios_itfcall(void) {
 	}
 }
 
-// np21w ver0.86 rev46 BIOS I/O emulation
+// np21w ver0.86 rev46-69 BIOS I/O emulation
 #if defined(BIOS_IO_EMULATION)
 // LIFO（若干高速だが逆順のため注意）
 void biosioemu_push8(UINT16 port, UINT8 data) {
@@ -934,6 +974,43 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 			CPU_REMCLOCK -= 500;
 			bios0x0c();
 			return(1);
+			
+// np21w ver0.86 rev70 VGA BIOS for MODE X
+#if defined(SUPPORT_VGA_MODEX)
+		case BIOS_BASE + BIOSOFST_10:
+			CPU_REMCLOCK -= 500;
+			TRACEOUT(("VGA INT: AH=%02x, AL=%02x", CPU_AH, CPU_AL));
+			switch(CPU_AH){
+			case 0x00:
+#if defined(SUPPORT_CL_GD5430)
+				np2wab.relaystateint |= 0x02;
+				np2wab_setRelayState(0x02);
+				if(CPU_AL == 0x13){
+					// MODE X
+					np2clvga.modex = 1;
+					np2clvga.VRAMWindowAddr3 = 0xa0000;
+				}else{
+					np2clvga.modex = 0;
+					np2clvga.VRAMWindowAddr3 = 0;
+				}
+#endif
+				break;
+			case 0x1a:
+				// XXX: WAB有効の時だけ返す
+				if(np2wab.relaystateint || np2wab.relaystateext){
+					if(CPU_AL==0x00){
+						CPU_BH = 0x00;
+						CPU_BL = 0x08;
+					}
+					CPU_AL = 0x1a;
+				}
+				break;
+			default:
+				// nothing to do
+				break;
+			}
+			return(1);
+#endif
 
 		case BIOS_BASE + BIOSOFST_12:
 			CPU_REMCLOCK -= 500;

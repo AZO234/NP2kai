@@ -4,7 +4,7 @@
 #include <windows.h>
 #elif defined(NP2_SDL2)
 #include <SDL.h>
-#elif defined(NP2_LR)
+#elif defined(__LIBRETRO__)
 #include <features/features_cpu.h>
 #endif
 
@@ -51,13 +51,15 @@ int64_t NP2_TickCount_GetFrequency(void) {
 #elif defined(__LIBRETRO__)
   int64_t nowcount = cpu_features_get_perf_counter();
   int64_t nowtime = cpu_features_get_time_usec();
+  int64_t ret;
+  if(nowtime > lasttime) {
+    ret = ((nowcount - lastcount) / (nowtime - lasttime)) * 1000000;
+  } else {
+    ret = 0;
+  }
   lastcount = nowtime;
   lasttime = nowtime;
-  if(nowtime > lasttime) {
-    return ((nowcount - lastcount) / (nowtime - lasttime)) * 1000000;
-  } else {
-    return 0;
-  }
+  return ret;
 #else
   struct timespec res;
   clock_getres(CLOCK_MONOTONIC, &res);

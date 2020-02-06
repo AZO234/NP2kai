@@ -135,8 +135,8 @@ void pic_irq(void) {												// ver0.78
 
 	// 割込み許可？
 #if defined(SUPPORT_IA32_HAXM)
-	if (np2hax.enable) {
-
+	if (!np2hax.emumode && np2hax.enable && CPU_STAT_PM) {
+		// workaround
 	}else
 #endif
 	if (!CPU_isEI) {

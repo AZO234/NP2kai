@@ -630,6 +630,7 @@ void board118_bind(void)
 		iocore_attachinp(cs4231.port[9], sb16_i20d2);
 		iocore_attachout(cs4231.port[9]+1, sb16_o21d2);
 		iocore_attachout(cs4231.port[9]+2, sb16_o22d2);
+		iocore_attachinp(cs4231.port[9]+2, sb16_i22d2);
 		iocore_attachout(cs4231.port[9]+3, sb16_o23d2);
 
 		if (!opl3) {

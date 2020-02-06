@@ -31,6 +31,7 @@
 static int atapi_thread_initialized = 0;
 static HANDLE atapi_thread = NULL;
 static IDEDRV atapi_thread_drv = NULL;
+static HANDLE atapi_thread_main = NULL;
 #else
 	// TODO: 非Windows用コードを書く
 #endif
@@ -529,13 +530,17 @@ void atapi_dataread_threadfunc_part(IDEDRV drv) {
 		pic_setirq(IDE_IRQ);
 	}
 }
+void WINAPI atapi_APCFunc(ULONG_PTR arg)
+{
+	// nothing to do
+}
 unsigned int __stdcall atapi_dataread_threadfunc(void* vdParam) {
 	IDEDRV drv = NULL;
 
 	while(atapi_thread_initialized){
 		drv = atapi_thread_drv;
 		atapi_dataread_threadfunc_part(drv);
-
+		QueueUserAPC(atapi_APCFunc, atapi_thread_main, 0);
 		SuspendThread(atapi_thread);
 	}
 	
@@ -562,6 +567,7 @@ void atapi_dataread(IDEDRV drv) {
 		if(atapi_thread){
 			atapi_thread_drv = drv;
 			ResumeThread(atapi_thread);
+			SleepEx(1, TRUE);
 		}else{
 			atapi_dataread_threadfunc_part(drv);
 		}
@@ -1257,8 +1263,12 @@ void atapi_initialize(void) {
 	//	pic_cs_initialized = 1;
 	//}
 	if(!atapi_thread_initialized){
-		atapi_thread_initialized = 1;
-		atapi_thread = (HANDLE)_beginthreadex(NULL, 0, atapi_dataread_threadfunc, NULL, CREATE_SUSPENDED, &dwID);
+		if(DuplicateHandle(GetCurrentProcess(), GetCurrentThread(), GetCurrentProcess(), &atapi_thread_main, 0, FALSE, DUPLICATE_SAME_ACCESS)){
+			atapi_thread_initialized = 1;
+			atapi_thread = (HANDLE)_beginthreadex(NULL, 0, atapi_dataread_threadfunc, NULL, CREATE_SUSPENDED, &dwID);
+		}else{
+			atapi_thread_main = NULL;
+		}
 	}
 #else
 	// TODO: 非Windows用コードを書く
@@ -1275,6 +1285,8 @@ void atapi_deinitialize(void) {
 		}
 		CloseHandle(atapi_thread);
 		atapi_thread = NULL;
+		CloseHandle(atapi_thread_main);
+		atapi_thread_main = NULL;
 	}
 #else
 	// TODO: 非Windows用コードを書く

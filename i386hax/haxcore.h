@@ -22,6 +22,7 @@ typedef int HANDLE;
 typedef struct _NP2_HAX {
 	UINT8	available; // HAXM使用可
 	UINT8	enable; // HAXM有効
+	UINT8	emumode; // 猫CPUで代替処理中
 	HANDLE	hDevice; // HAXMデバイスのハンドル
 	HANDLE	hVMDevice; // HAXM仮想マシンデバイスのハンドル
 	HANDLE	hVCPUDevice; // HAXM仮想CPUデバイスのハンドル

@@ -121,7 +121,11 @@ enum
 #if defined(SUPPORT_BMS)
 	STATFLAG_BMS,
 #endif
-	STATFLAG_SXSI
+	STATFLAG_SXSI,
+	STATFLAG_MASK				= 0x3fff,
+	
+	STATFLAG_BWD_COMPATIBLE			= 0x4000, // このフラグが立っているとき、古いバージョンのステートセーブと互換性がある（足りないデータは0で埋められるので注意する）いまのところSTATFLAG_BINのみサポート
+	STATFLAG_FWD_COMPATIBLE			= 0x8000, // このフラグが立っているとき、新しいバージョンのステートセーブと互換性がある（足りないデータは無かったことになるので注意する）いまのところSTATFLAG_BINのみサポート
 };
 
 typedef struct {
@@ -490,7 +494,8 @@ static int flagsave_common(STFLAGH sfh, const SFENTRY *tbl) {
 
 static int flagload_common(STFLAGH sfh, const SFENTRY *tbl) {
 
-	return(statflag_read(sfh, tbl->arg1, tbl->arg2));
+	memset(tbl->arg1, 0, tbl->arg2);
+	return(statflag_read(sfh, tbl->arg1, np2min(tbl->arg2, sfh->hdr.size)));
 }
 
 
@@ -844,7 +849,6 @@ static UINT GetSoundFlags(SOUNDID nSoundID)
 			
 		case SOUNDID_PC_9801_86_WSS:
 			return FLAG_OPNA1 | FLAG_PCM86 | FLAG_CS4231;
-			break;
 			
 		case SOUNDID_PC_9801_86_118:
 			return FLAG_OPNA1 | FLAG_OPNA2 | FLAG_PCM86 | FLAG_CS4231;
@@ -1299,7 +1303,9 @@ static int flagload_bms(STFLAGH sfh, const SFENTRY *tbl) {
 
 static int flagcheck_versize(STFLAGH sfh, const SFENTRY *tbl) {
 
-	if ((sfh->hdr.ver == tbl->ver) && (sfh->hdr.size == tbl->arg2)) {
+	if ((sfh->hdr.ver == tbl->ver) && ((sfh->hdr.size == tbl->arg2) || 
+		((tbl->type & STATFLAG_BWD_COMPATIBLE) && sfh->hdr.size < tbl->arg2) || 
+		((tbl->type & STATFLAG_FWD_COMPATIBLE) && sfh->hdr.size > tbl->arg2))) {
 		return(STATFLAG_SUCCESS);
 	}
 	return(STATFLAG_FAILURE);
@@ -1342,7 +1348,7 @@ const SFENTRY	*tblterm;
 	tblterm = tbl + NELEMENTS(np2tbl);
 	while(tbl < tblterm) {
 		ret |= statflag_createsection(sffh, tbl);
-		switch(tbl->type) {
+		switch(tbl->type & STATFLAG_MASK) {
 			case STATFLAG_BIN:
 			case STATFLAG_TERM:
 				ret |= flagsave_common(&sffh->sfh, tbl);
@@ -1438,7 +1444,7 @@ const SFENTRY	*tblterm;
 			tbl++;
 		}
 		if (tbl < tblterm) {
-			switch(tbl->type) {
+			switch(tbl->type & STATFLAG_MASK) {
 				case STATFLAG_BIN:
 				case STATFLAG_MEM:
 					ret |= flagcheck_versize(&sffh->sfh, tbl);
@@ -1544,7 +1550,7 @@ const SFENTRY	*tblterm;
 			tbl++;
 		}
 		if (tbl < tblterm) {
-			switch(tbl->type) {
+			switch(tbl->type & STATFLAG_MASK) {
 				case STATFLAG_BIN:
 					ret |= flagload_common(&sffh->sfh, tbl);
 					break;
@@ -1621,6 +1627,9 @@ const SFENTRY	*tblterm;
 		}
 	}
 	statflag_close(sffh);
+
+	// ステートセーブ互換性維持用
+	if(pccore.maxmultiple == 0) pccore.maxmultiple = pccore.multiple;
 	
 #if defined(SUPPORT_IA32_HAXM)
 	memcpy(vramex, vramex_base, sizeof(vramex_base));
@@ -1691,6 +1700,35 @@ const SFENTRY	*tblterm;
 	pc98_cirrus_vga_bind();
 	pc98_cirrus_vga_load();
 #endif
+	
+	// OPNAボリューム再設定
+	if(g_nSoundID == SOUNDID_WAVESTAR){
+		opngen_setvol(np2cfg.vol_fm * cs4231.devvolume[0xff] / 15);
+		psggen_setvol(np2cfg.vol_ssg * cs4231.devvolume[0xff] / 15);
+		rhythm_setvol(np2cfg.vol_rhythm * cs4231.devvolume[0xff] / 15);
+#if defined(SUPPORT_FMGEN)
+		if(np2cfg.usefmgen) {
+			opna_fmgen_setallvolumeFM_linear(np2cfg.vol_fm * cs4231.devvolume[0xff] / 15);
+			opna_fmgen_setallvolumePSG_linear(np2cfg.vol_ssg * cs4231.devvolume[0xff] / 15);
+			opna_fmgen_setallvolumeRhythmTotal_linear(np2cfg.vol_rhythm * cs4231.devvolume[0xff] / 15);
+		}
+#endif
+	}else{
+		opngen_setvol(np2cfg.vol_fm);
+		psggen_setvol(np2cfg.vol_ssg);
+		rhythm_setvol(np2cfg.vol_rhythm);
+#if defined(SUPPORT_FMGEN)
+		if(np2cfg.usefmgen) {
+			opna_fmgen_setallvolumeFM_linear(np2cfg.vol_fm);
+			opna_fmgen_setallvolumePSG_linear(np2cfg.vol_ssg);
+			opna_fmgen_setallvolumeRhythmTotal_linear(np2cfg.vol_rhythm);
+		}
+#endif
+	}
+	for (i = 0; i < NELEMENTS(g_opna); i++)
+	{
+		rhythm_update(&g_opna[i].rhythm);
+	}
 
 	gdcs.textdisp |= GDCSCRN_EXT;
 	gdcs.textdisp |= GDCSCRN_ALLDRAW2;

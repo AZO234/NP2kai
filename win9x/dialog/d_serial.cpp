@@ -49,7 +49,7 @@ protected:
 private:
 	COMMNG m_cm;				//!< パラメタ
 	COMCFG& m_cfg;				//!< コンフィグ
-	UINT8 m_pentabfa;
+	UINT8 m_pentabfa;			//!< ペンタブアスペクト比固定
 	CWndProc m_chkpentabfa;		//!< Pen tablet fixed aspect mode
 	CWndProc m_chkfixedspeed;	//!< Fixed speed mode
 	CComboData m_port;			//!< Port

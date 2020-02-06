@@ -623,6 +623,9 @@ static const PFTBL s_IniItems[] =
 	PFVAL("GDMELOFS", PFTYPE_UINT8,		&np2cfg.gd5430melofs),
 	PFVAL("GANBBSEX", PFTYPE_BOOL,		&np2cfg.ga98nb_bigscrn_ex),
 #endif
+#if defined(SUPPORT_VGA_MODEX)
+	PFVAL("USEMODEX", PFTYPE_BOOL,		&np2cfg.usemodex),
+#endif
 #if defined(SUPPORT_GPIB)
 	PFVAL("USE_GPIB", PFTYPE_BOOL,		&np2cfg.usegpib),
 	PFVAL("GPIB_IRQ", PFTYPE_UINT8,		&np2cfg.gpibirq),
@@ -671,6 +674,7 @@ static const PFTBL s_IniItems[] =
 	PFVAL("USEPEGCP", PFTYPE_BOOL,		&np2cfg.usepegcplane), // PEGC プレーンモードサポート
 	
 	PFVAL("USECDECC", PFTYPE_BOOL,		&np2cfg.usecdecc), // CD-ROM EDC/ECC エミュレーションサポート
+	PFVAL("CDDTSKIP", PFTYPE_BOOL,		&np2cfg.cddtskip), // CD-ROM オーディオ再生時にデータトラックをスキップ
 	
 #if defined(SUPPORT_ASYNC_CPU)
 	PFVAL("ASYNCCPU", PFTYPE_BOOL,		&np2cfg.asynccpu), // 非同期CPUモード有効
@@ -678,6 +682,7 @@ static const PFTBL s_IniItems[] =
 #if defined(SUPPORT_IDEIO)
 	PFVAL("IDEBADDR", PFRO_HEX8,		&np2cfg.idebaddr), // IDE BIOS アドレス（デフォルト：D8h(D8000h)）
 #endif
+
 	
 
 	// OS依存？

@@ -645,6 +645,16 @@ static void sys_cmd(MENUID id) {
 			np2cfg.EXTMEM = 230;
 			update |= SYS_UPDATECFG;
 			break;
+
+		case MID_MEM5126:
+			np2cfg.EXTMEM = 512;
+			update |= SYS_UPDATECFG;
+			break;
+
+		case MID_MEM10246:
+			np2cfg.EXTMEM = 1024;
+			update |= SYS_UPDATECFG;
+			break;
 #if 0
 		case IDM_SERIAL1:
 			winuienter();
@@ -915,6 +925,8 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 	menusys_setcheck(MID_MEM646, (b == 64));
 	menusys_setcheck(MID_MEM1206, (b == 120));
 	menusys_setcheck(MID_MEM2306, (b == 230));
+	menusys_setcheck(MID_MEM5126, (b == 512));
+	menusys_setcheck(MID_MEM10246, (b == 1024));
 	menusys_setcheck(MID_JOYX, (np2cfg.BTN_MODE & 1));
 	menusys_setcheck(MID_RAPID, (np2cfg.BTN_RAPID & 1));
 	menusys_setcheck(MID_MSRAPID, (np2cfg.MOUSERAPID & 1));

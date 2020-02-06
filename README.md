@@ -253,7 +253,7 @@ $ sudo make install
 2. Install brew.  
 3. Execute follow command.  
 ```
-$ brew install sdl2 sdl2_mixier sdl2_ttf
+$ brew install sdl2 sdl2_mixer sdl2_ttf
 ```
 
 ##### Build
@@ -287,7 +287,7 @@ $ make install
 2. Install brew.  
 3. Execute follow command.  
 ```
-$ brew install sdl sdl_mixier sdl_ttf
+$ brew install sdl sdl_mixer sdl_ttf
 ```
 
 ##### Build
@@ -817,13 +817,17 @@ http://buffalo.jp/download/driver/multi/wgna_95.html
 https://www.iodata.jp/lib/product/g/175_win95.htm  
 
 ## Release
-* Jan 29, 2019  
+* Feb 4, 2020  
+  - Merge NP21/W rev.70 strongly  
+  - Merge NP21/W rev.70  
+  - update libretro-common  
+* Jan 29, 2020  
   - fix X11 no sound (please check 'sounddrv = SDL' in .config/xnp2kai/xnp2kairc)  
   - fix for GKD350H  
   - fix for GCW0  
-* Jan 26, 2019  
+* Jan 26, 2020  
   - mod mouse cursor moving.  
-* Jan 15, 2019  
+* Jan 15, 2020  
 	- Support again SDL1  
 	- fix bool
 * Dec 10, 2019  

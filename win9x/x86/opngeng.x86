@@ -356,9 +356,9 @@ og_noupdate:	ret		4
 				push	ebp
 				sub		esp, byte 8
 
-OPNV_SAMPL	equ	0
-OPNV_SAMPR	equ	4
-OPNV_LENG		equ	16 + 8 + 4
+%define	OPNV_SAMPL	equ	0
+%define	OPNV_SAMPR	equ	4
+%define	OPNV_LENG		equ	16 + 8 + 4
 
 				mov		esi, ecx
 				mov		ebp, edx
