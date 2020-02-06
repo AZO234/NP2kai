@@ -169,22 +169,35 @@ else ifeq ($(platform), qnx)
 	AR = QCC -Vgcc_ntoarmv7le
 	PLATFORM_DEFINES := -D__BLACKBERRY_QNX__ -marm -mcpu=cortex-a9 -mfpu=neon -mfloat-abi=hard
 
+# PS2
+else ifeq ($(platform), ps2)
+	HAS_GCC := 0
+	TARGET := $(TARGET_NAME)_libretro_ps2.a
+	PLATFORM_DEFINES := -DPS2
+	STATIC_LINKING = 1
+	DISABLE_GCC_SECURITY_FLAGS = 1
+
 # PS3
 else ifeq ($(platform), ps3)
-	HAVE_GCC_WARNINGS := 0
+	HAS_GCC := 0
 	TARGET := $(TARGET_NAME)_libretro_ps3.a
-	CXX = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-g++.exe
-	CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
-	AR = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-ar.exe
+	ifeq ($(system_platform), unix)
+		CXX = ppu-g++
+		CC = ppu-gcc
+		AR = ppu-ar
+	else
+		CXX = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-g++.exe
+		CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
+		AR = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-ar.exe
+	endif
 	PLATFORM_DEFINES := -D__CELLOS_LV2__
 	STATIC_LINKING = 1
 	DISABLE_GCC_SECURITY_FLAGS = 1
 
 # sncps3
 else ifeq ($(platform), sncps3)
-	HAVE_GCC_WARNINGS := 0
-	TARGET := $(TARGET_NAME)_libretro_ps3.a
 	HAS_GCC := 0
+	TARGET := $(TARGET_NAME)_libretro_ps3.a
 	CC = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
 	CXX = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
 	AR = $(CELL_SDK)/host-win32/sn/bin/ps3snarl.exe
