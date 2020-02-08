@@ -754,7 +754,6 @@ SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr.
 	$(NP2_PATH)/sdl2/libretro/libretro-common/lists/file_list.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/lists/string_list.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/lists/vector_list.c \
-	$(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rthreads.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/streams/chd_stream.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/streams/file_stream.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/streams/file_stream_transforms.c \
@@ -771,6 +770,9 @@ SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr.
 #	SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/xenon_sdl_threads.c
 	ifneq ($(NO_DIRENT), 1)
 		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/vfs/vfs_implementation.c
+	endif
+	ifneq ($(platform), emscripten)
+		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rthreads.c
 	endif
 	ifeq ($(platform), unix)
 #		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_ifaddrs.c
