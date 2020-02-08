@@ -5664,7 +5664,7 @@ void cirrusvga_drawGraphic(){
 		int vidwnd_yuv = 0;
 		if(vidwnd_horizontalZoom > 0) vidwnd_dstwidth = vidwnd_srcwidth * 256 / vidwnd_horizontalZoom;
 		if(vidwnd_verticalZoom > 0) vidwnd_srcheight = vidwnd_dstheight * vidwnd_verticalZoom / 256;
-#if defined(_WIN32)
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 		switch(vidwnd_format){
 		case 0: // YUV 4:2:2 UYVY
 			// TODO: YUVとかも作らないといけない（けどどうするよ？）
