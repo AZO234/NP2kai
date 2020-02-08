@@ -690,8 +690,7 @@ INCFLAGS += -I$(NP2_PATH)/sdl2/libretro \
 	-I$(NP2_PATH)/i386c/ia32/instructions \
 	-I$(NP2_PATH)/i386c/ia32/instructions/fpu
 
-SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro.c \
-	$(wildcard $(NP2_PATH)/i386c/*.c) \
+SOURCES_C += $(wildcard $(NP2_PATH)/i386c/*.c) \
 	$(wildcard $(NP2_PATH)/i386c/ia32/*.c) \
 	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/*.c) \
 	$(NP2_PATH)/i386c/ia32/instructions/fpu/fpdummy.c \
@@ -710,7 +709,8 @@ SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro.c \
 #	$(NP2_PATH)/sdl2/libretro/libretro-common/streams/trans_stream_zlib.c
 
 ifneq ($(STATIC_LINKING),1)
-SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr.c \
+SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro.c \
+	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_fnmatch.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_getopt.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_posix_string.c \
