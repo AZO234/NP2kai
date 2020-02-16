@@ -244,7 +244,11 @@ I286 v30_pushf(void) {							// 9C: pushf
 				//I286CLOCK(3)
 				I286CLOCK(8)
 				mov		dx, I286_FLAG
+#if defined(VAEG_FIX)
+				or		dx, 0f002h	// V30(=8086) + SZ0A0P1C
+#else
 				or		dx, 0f000h
+#endif
 				sub		I286_SP, 2
 				movzx	ecx, I286_SP
 				add		ecx, SS_BASE
@@ -263,7 +267,7 @@ I286 v30_popf(void) {							// 9D: popf
 				call	i286_memoryread_w
 				add		I286_SP, 2
 #if defined(VAEG_FIX)
-				or		ax, 0f002h
+				or		ax, 0f002h	// V30(=8086) + SZ0A0P1C
 #else
 				or		ah, 0f0h
 #endif
@@ -277,6 +281,31 @@ I286 v30_popf(void) {							// 9D: popf
 #endif
 				sete	I286_TRAP
 				I286IRQCHECKTERM
+		}
+}
+
+I286 v30_sahf(void) {							// 9E: sahf
+
+		__asm {
+				GET_NEXTPRE1
+				//I286CLOCK(2)
+				I286CLOCK_X(a, 2, 3)
+				mov		al, I286_AH
+				or		ax, 0f002h	// V30(=8086) + SZ0A0P1C
+				mov		I286_FLAGL, al
+				ret
+		}
+}
+
+I286 v30_lahf(void) {							// 9F: lahf
+
+		__asm {
+				GET_NEXTPRE1
+				I286CLOCK(2)
+				mov		al, I286_FLAGL
+				or		ax, 0f002h	// V30(=8086) + SZ0A0P1C
+				mov		I286_AH, al
+				ret
 		}
 }
 
@@ -2039,6 +2068,8 @@ static const V30PATCH v30patch_op[] = {
 			{0x8e, v30mov_seg_ea},			// 8E:	mov		segrem, EA
 			{0x9c, v30_pushf},				// 9C:	pushf
 			{0x9d, v30_popf},				// 9D:	popf
+			{0x9e, v30_sahf},				// 9E:	sahf
+			{0x9f, v30_lahf},				// 9F:	lahf
 			{0xc0, v30shift_ea8_data8},		// C0:	shift	EA8, DATA8
 			{0xc1, v30shift_ea16_data8},	// C1:	shift	EA16, DATA8
 #if defined(VAEG_FIX)
@@ -2129,6 +2160,8 @@ static const V30PATCH v30patch_repe[] = {
 			{0x8e, v30mov_seg_ea},			// 8E:	mov		segrem, EA
 			{0x9c, v30_pushf},				// 9C:	pushf
 			{0x9d, v30_popf},				// 9D:	popf
+			{0x9e, v30_sahf},				// 9E:	sahf
+			{0x9f, v30_lahf},				// 9F:	lahf
 			{0xc0, v30shift_ea8_data8},		// C0:	shift	EA8, DATA8
 			{0xc1, v30shift_ea16_data8},	// C1:	shift	EA16, DATA8
 #if defined(VAEG_FIX)
@@ -2215,6 +2248,8 @@ static const V30PATCH v30patch_repne[] = {
 			{0x8e, v30mov_seg_ea},			// 8E:	mov		segrem, EA
 			{0x9c, v30_pushf},				// 9C:	pushf
 			{0x9d, v30_popf},				// 9D:	popf
+			{0x9e, v30_sahf},				// 9E:	sahf
+			{0x9f, v30_lahf},				// 9F:	lahf
 			{0xc0, v30shift_ea8_data8},		// C0:	shift	EA8, DATA8
 			{0xc1, v30shift_ea16_data8},	// C1:	shift	EA16, DATA8
 #if defined(VAEG_FIX)
