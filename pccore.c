@@ -270,6 +270,11 @@ static void pccore_set(const NP2CFG *pConfig)
 	}
 	pccore.model = model;
 
+	CPU_TYPE = 0;
+	if (pConfig->dipsw[2] & 0x80) {
+		CPU_TYPE = CPUTYPE_V30;
+	}
+
 	if (np2cfg.baseclock >= ((PCBASECLOCK25 + PCBASECLOCK20) / 2))
 	{
 		pccore.baseclock = PCBASECLOCK25;			// 2.5MHz
@@ -443,6 +448,11 @@ void pccore_init(void) {
 #if defined(SUPPORT_IA32_HAXM)
 	pccore_mem_malloc();
 #endif
+
+	CPU_TYPE = 0;
+	if (np2cfg.dipsw[2] & 0x80) {
+		CPU_TYPE = CPUTYPE_V30;
+	}
 
 	CPU_INITIALIZE();
 	
@@ -750,22 +760,8 @@ void pccore_reset(void) {
 #endif
 	nevent_allreset();
 
-#if defined(VAEG_FIX)
-	//後ろに移動
-#else
 	CPU_RESET();
 	CPU_SETEXTSIZE((UINT32)pccore.extmem);
-#endif
-
-	CPU_TYPE = 0;
-	if (pccore.dipsw[2] & 0x80) {
-		CPU_TYPE = CPUTYPE_V30;
-	}
-
-#if defined(VAEG_FIX)
-	CPU_RESET();
-	CPU_SETEXTSIZE((UINT32)pccore.extmem);
-#endif
 
 	epson = (pccore.model & PCMODEL_EPSON) ? TRUE : FALSE;
 	if (epson || np2cfg.useram_d) {
