@@ -58,7 +58,9 @@ const UINT8 iflags[256] = {					// Z_FLAG, S_FLAG, P_FLAG
 void i286x_initialize(void) {
 
 	i286xadr_init();
-	v30xinit();
+	if (CPU_TYPE == CPUTYPE_V30) {
+		v30xinit();
+	}
 }
 
 void i286x_deinitialize(void) {
@@ -81,11 +83,8 @@ static void i286x_initreg(void) {
 
 #if defined(VAEG_FIX)
 void i286x_reset(void) {
-	UINT8 cputype = CPU_TYPE;
-
 	ZeroMemory(&i286core.s, sizeof(i286core.s));
-	CPU_TYPE = cputype;
-	if (cputype == CPUTYPE_V30) {
+	if (CPU_TYPE == CPUTYPE_V30) {
 		v30x_initreg();
 	}
 	else {
