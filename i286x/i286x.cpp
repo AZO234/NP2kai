@@ -2920,7 +2920,7 @@ I286 _pushf(void) {								// 9C: pushf
 				//I286CLOCK(3)
 				I286CLOCK_X(a, 3, 8)
 				mov		dx, I286_FLAG
-				and		dx, 0fffh
+				and		dx, 0fffh	// 286
 				sub		I286_SP, 2
 				movzx	ecx, I286_SP
 				add		ecx, SS_BASE
@@ -2938,7 +2938,7 @@ I286 _popf(void) {								// 9D: popf
 				add		ecx, SS_BASE
 				call	i286_memoryread_w
 				add		I286_SP, 2
-				and		ax, 0fffh
+				and		ax, 0fffh	// 286
 				mov		I286_FLAG, ax
 #if defined(VAEG_FIX)
 				and		ah, 1
@@ -2972,6 +2972,7 @@ I286 _sahf(void) {								// 9E: sahf
 				//I286CLOCK(2)
 				I286CLOCK_X(a, 2, 3)
 				mov		al, I286_AH
+				and		ax, 0fffh	// 286
 				mov		I286_FLAGL, al
 				ret
 		}
@@ -2983,6 +2984,7 @@ I286 _lahf(void) {								// 9F: lahf
 				GET_NEXTPRE1
 				I286CLOCK(2)
 				mov		al, I286_FLAGL
+				and		ax, 0fffh	// 286
 				mov		I286_AH, al
 				ret
 		}
