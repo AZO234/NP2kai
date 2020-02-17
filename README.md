@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Feb 17, 2019<br>
+Feb 18, 2020<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -979,6 +979,8 @@ https://www.iodata.jp/lib/product/g/175_win95.htm<br>
 </div></details>
 
 ## Release
+- Feb 18, 2020<br>
+  - fix V30 and 286 flag register<br>
 - Feb 4, 2020<br>
   - Merge NP21/W rev.70 strongly<br>
   - Merge NP21/W rev.70<br>
