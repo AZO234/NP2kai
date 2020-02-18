@@ -13,11 +13,11 @@ NP2kai is PC-9801 series emulator<br>
 for Windows/Linux/macOS
 </summary><div>
 
-##### Install tools
+#### Install tools
 1. MSYS2 64bit + 64bit console(Windows).<br>
 2. Install compiler, etc.<br>
 
-##### Build
+#### Build
 1. Change directory to sdl2.<br>
 ```
 $ cd NP2kai/sdl2
@@ -27,7 +27,7 @@ $ cd NP2kai/sdl2
 $ make
 ```
 
-##### Install binary
+#### Install binary
 1. Install shared library(.dll or .so or .dylib) to libretro's core directory.<br>
 2. Locate BIOS files to np2kai in libretro's BIOS directory (libretro/BIOS/np2kai).<br>
 </div></details>
@@ -36,7 +36,7 @@ $ make
 for Android/iOS
 </summary><div>
 
-##### Install tools
+#### Install tools
 1. MSYS2 64bit + 64bit console(Windows).<br>
 2. Install Android Studio, and NDK. And PATH there.<br>
 3. Clone libretro-super.<br>
@@ -44,7 +44,7 @@ for Android/iOS
 $ git clone --depth 1 https://github.com/libretro/libretro-super.git
 ```
 
-##### Build
+#### Build
 1. Change directory to libretro-super.<br>
 ```
 $ cd libretro-super
@@ -63,7 +63,7 @@ $ ./libretro-build-android-mk.sh np2kai
 $ ./libretro-build-ios.sh np2kai
 ```
 
-##### Install binary
+#### Install binary
 1. Install shared library(.so or .dylib) to libretro's core directory.<br>
 2. Locate BIOS files to np2kai in libretro's BIOS directory (libretro/BIOS/np2kai).<br>
 <br>
@@ -78,18 +78,18 @@ You should [NP2fmgen](http://nenecchi.kirara.st/) or [NP21/W](https://sites.goog
 VisualStudio 2019
 </summary><div>
 
-##### Install tools
+#### Install tools
 1. Install VisualStudio 2019.<br>
 2. Install NASM and PATH it.<br>
 3. Locate VST SDK to C:\VST_SDK and run copy_vst2_to_vst3_sdk.bat.<br>
 
-##### Build
+#### Build
 1. Open win9x/np2vs2019.<br>
 2. Set Release/x64.<br>
 3. Build projects.<br>
 4. Output np2kai.exe(i286) and np21kai.exe(i386).<br>
 
-##### Install binary
+#### Install binary
 1. Locate .exe file anywhere.<br>
 2. Locate BIOS files to .exe same filder.<br>
 </div></details>
@@ -98,7 +98,7 @@ VisualStudio 2019
 SDL2
 </summary><div>
 
-##### Install tools
+#### Install tools
 1. Install MSYS2 64bit.<br>
 2. Run MSYS2 64bit console<br>
 3. Run follow command.<br>
@@ -106,7 +106,7 @@ SDL2
 $ pacman -S git make mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL2_mixer
 ```
 
-##### Build
+#### Build
 1. Change directory to sdl2.<br>
 ```
 $ cd NP2kai/sdl2
@@ -121,7 +121,7 @@ $ make -f Makefile.win
 $ make -f Makefile21.win
 ```
 
-##### Install binary
+#### Install binary
 1. Install.<br>
 ```
 $ make install
@@ -136,7 +136,7 @@ $ make install
 SDL1
 </summary><div>
 
-##### Install tools
+#### Install tools
 1. Install MSYS2 64bit.<br>
 2. Run MSYS2 64bit console<br>
 3. Run follow command.<br>
@@ -144,7 +144,7 @@ SDL1
 $ pacman -S git make mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd mingw-w64-x86_64-SDL mingw-w64-x86_64-SDL_ttf mingw-w64-x86_64-SDL_mixer
 ```
 
-##### Build
+#### Build
 1. Change directory to sdl2.<br>
 ```
 $ cd NP2kai/sdl2
@@ -161,7 +161,7 @@ Edit 'SDL_VERSION' in Makefile21.win from 2 to 1.
 $ make -f Makefile21.win
 ```
 
-##### Install binary
+#### Install binary
 1. Install.<br>
 ```
 $ make install
@@ -186,13 +186,13 @@ $ dbus-launch --exit-with-session xnp2kai
 X11 with SDL2
 </summary><div>
 
-##### Install tools
+#### Install tools
 1. Install SDL2, etc.<br>
 ```
 $ sudo apt-get install automake git gtk+-2 build-essential libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev libusb-1.0-0-dev
 ```
 
-##### Build
+#### Build
 1. Change directory to x11.<br>
 ```
 $ cd NP2kai/x11
@@ -215,7 +215,7 @@ $ ./configure --enable-ia32
 $ make
 ```
 
-##### Install binary
+#### Install binary
 1. Install.<br>
 ```
 $ sudo make install
@@ -228,13 +228,13 @@ $ sudo make install
 X11 with SDL1
 </summary><div>
 
-##### Install tools
+#### Install tools
 1. Install SDL, etc.<br>
 ```
 $ sudo apt-get install automake git gtk+-2 build-essential libsdl1.2-dev libsdl-ttf2.0-dev libsdl-mixer1.2-dev libusb-1.0-0-dev
 ```
 
-##### Build
+#### Build
 1. Change directory to x11.<br>
 ```
 $ cd NP2kai/x11
@@ -257,7 +257,7 @@ $ ./configure --enable-sdl --enable-sdlmixer --enable-sdlttf --enable-sdl2=no --
 $ make
 ```
 
-##### Install binary
+#### Install binary
 1. Install.<br>
 ```
 $ sudo make install
@@ -270,13 +270,13 @@ $ sudo make install
 SDL2
 </summary><div>
 
-##### Install tools
+#### Install tools
 1. Install SDL2, etc.<br>
 ```
 $ sudo apt-get install git build-essential libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev
 ```
 
-##### Build
+#### Build
 1. Change directory to sdl2.<br>
 ```
 $ cd NP2kai/sdl2
@@ -291,7 +291,7 @@ $ make -f Makefile.unix
 $ make -f Makefile21.unix
 ```
 
-##### Install binary
+#### Install binary
 1. Install.<br>
 ```
 $ sudo make install
@@ -306,13 +306,13 @@ $ sudo make install
 SDL1
 </summary><div>
 
-##### Install tools
+#### Install tools
 1. Install SDL2, etc.<br>
 ```
 $ sudo apt-get install git build-essential libsdl1.2-dev libsdl-ttf2.0-dev libsdl-mixer1.2-dev
 ```
 
-##### Build
+#### Build
 1. Change directory to sdl2.<br>
 ```
 $ cd NP2kai/sdl2
@@ -329,7 +329,7 @@ Edit 'SDL_VERSION' in Makefile21.unix from 2 to 1.
 $ make -f Makefile21.unix
 ```
 
-##### Install binary
+#### Install binary
 1. Install.<br>
 ```
 $ sudo make install
@@ -346,7 +346,7 @@ $ sudo make install
 SDL2
 </summary><div>
 
-##### Install tools
+#### Install tools
 1. Install XCode.<br>
 2. Install brew.<br>
 3. Execute follow command.<br>
@@ -354,7 +354,7 @@ SDL2
 $ brew install sdl2 sdl2_mixer sdl2_ttf
 ```
 
-##### Build
+#### Build
 1. Change directory to sdl2.<br>
 ```
 $ cd NP2kai/sdl2
@@ -369,7 +369,7 @@ $ make -f Makefile.mac
 $ make -f Makefile21.mac
 ```
 
-##### Install binary
+#### Install binary
 1. Install.<br>
 ```
 $ make install
@@ -384,7 +384,7 @@ $ make install
 SDL1
 </summary><div>
 
-##### Install tools
+#### Install tools
 1. Install XCode.<br>
 2. Install brew.<br>
 3. Execute follow command.<br>
@@ -392,7 +392,7 @@ SDL1
 $ brew install sdl sdl_mixer sdl_ttf
 ```
 
-##### Build
+#### Build
 1. Change directory to sdl2.<br>
 ```
 $ cd NP2kai/sdl2
@@ -409,7 +409,7 @@ Edit 'SDL_VERSION' in Makefile21.mac from 2 to 1.
 $ make -f Makefile21.mac
 ```
 
-##### Install binary
+#### Install binary
 1. Install.<br>
 ```
 $ make install
@@ -420,11 +420,13 @@ $ make install
 - NP2 menu is shown F11 key or mouse middle button, to swap FDD/HDD diskimages.<br>
 </div></details>
 
+### for Other
+
 <details><summary>
 GCW Zero (GCW0)
 </summary><div>
 
-##### Build
+#### Build
 1. Change directory into sdl2.<br>
 ```
 $ cd NP2kai/sdl2
@@ -438,7 +440,7 @@ or
 $ make -f Makefile21.gcw0
 ```
 
-##### Install binary
+#### Install binary
 1. Transfer np2kai.opk or np21kai.opk to /media/apps/ .<br>
 2. BIOS files should locate in ~/.config/np2kai (or np21kai).<br>
 </div></details>
@@ -447,7 +449,7 @@ $ make -f Makefile21.gcw0
 Dingux series (RS90 GKD350H)
 </summary><div>
 
-##### Build
+#### Build
 1. Change directory to sdl2.<br>
 ```
 $ cd NP2kai/sdl2
@@ -461,7 +463,7 @@ or
 $ make -f Makefile21.gkd350h
 ```
 
-##### Install binary
+#### Install binary
 1. Transfer np2kai.opk or np21kai.opk to /media/apps/ .<br>
 2. BIOS files should locate in ~/.config/np2kai (or np21kai).<br>
 </div></details>
@@ -497,7 +499,7 @@ NP2 menu can swap FDD/HDD diskimages.(Swapping HDD need reset.)<br>
 </div></details>
 
 <details><summary>
-Swapping Disk/HDD
+Mounting/Swaping Disk and HDD/CD mounting at start
 </summary><div>
 
 Using libretro contents .m3u file listed floppy disk images,<br>
