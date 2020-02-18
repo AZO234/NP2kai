@@ -572,6 +572,30 @@ Write the key code of RETROK (see libretro.h) to this value.<br>
 The order is D-UP/DOWN/LEFT/RIGHT/A/B/X/Y/L/R/Select/Start.<br>
 </div></details>
 
+<details><summary>
+Tuning performance
+</summary><div>
+
+- CPU clock<br>
+Change "CPU Clock Multiplyer".<br>
+- Memory size<br>
+Change "RAM Size".<br>
+- Sound device<br>
+26K: for old games.<br>
+86: for newer games.<br>
+- Sound Generator (to change need reset)<br>
+fmgen: fmgen sound generator.<br>
+Default: NP2's default sound generator.<br>
+- How to set GDC 2.5MHz/5MHz?<br>
+1. Press End key(assigned Help key) + reset<br>
+2. Select 'ディップスイッチ２'(DIP switch 2)<br>
+- How to key typing?<br>
+There are two ways:<br>
+1. map the 'enable hotkeys' hotkey in settings > input > input hotkey binds and RetroArch will stop listening for hotkeys unless/until you hold that button/key<br>
+2. enable the "game focus mode" (mapped to scroll_lock by default) and it will send all of your inputs to the core instead of the frontend. However, some people have reported having trouble getting out of game focus mode.<br>
+(Thanks hasenbanck)
+</div></details>
+
 ## Keyboard mapping (libretro)
 
 <details><summary>
@@ -746,30 +770,6 @@ lr-np2kai="/opt/retropie/emulators/retroarch/bin/retroarch -L /opt/retropie/libr
 9. Launch ES and set "CARBON-MOD" to "THEME-SET".<br>
 </div></details>
 
-<details><summary>
-Tuning performance
-</summary><div>
-
-- CPU clock<br>
-Change "CPU Clock Multiplyer".<br>
-- Memory size<br>
-Change "RAM Size".<br>
-- Sound device<br>
-26K: for old games.<br>
-86: for newer games.<br>
-- Sound Generator (to change need reset)<br>
-fmgen: fmgen sound generator.<br>
-Default: NP2's default sound generator.<br>
-- How to set GDC 2.5MHz/5MHz?<br>
-1. Press End key(assigned Help key) + reset<br>
-2. Select 'ディップスイッチ２'(DIP switch 2)<br>
-- How to key typing?<br>
-There are two ways:<br>
-1. map the 'enable hotkeys' hotkey in settings > input > input hotkey binds and RetroArch will stop listening for hotkeys unless/until you hold that button/key<br>
-2. enable the "game focus mode" (mapped to scroll_lock by default) and it will send all of your inputs to the core instead of the frontend. However, some people have reported having trouble getting out of game focus mode.<br>
-(Thanks hasenbanck)
-</div></details>
-
 ## Informaion
 
 <details><summary>
@@ -868,6 +868,38 @@ IRQ:6<br>
 I/O:0x00D0
 </div></details>
 
+<details><summary>
+WAB (Window Accelerator Boards)
+</summary><div>
+
+NP2kai can use WAB (Window Accelerator Boards).<br>
+
+To use WAB, enable WAB in menu and restart.<br>
+
+WAB Type normally uses 'PC-9821Xe10,Xa7e,Xb10 built-in'.<br>
+
+**640x480 256 color support for Windows 3.1**
+
+1. Switch to directory 'A:￥WINDOWS', then run 'SETUP' command.<br>
+2. Select display mode '640x480 256色 16ﾄﾞｯﾄ(9821ｼﾘｰｽﾞ対応)', or '640x480 256色 12ﾄﾞｯﾄ(9821ｼﾘｰｽﾞ対応)' for smaller system font, then complete the changes. You may need Windows 3.1 installation disks when applying changes for the display driver.<br>
+3. Extract 'EGCN4.DRV' and 'PEGCV8.DRV' from 'MINI3.CAB' in Windows 98 CD.<br>
+4. Copy extracted 'EGCN4.DRV' and 'PEGCV8.DRV' to 'A:￥WINDOWS￥SYSTEM' directory, so as to replace the original driver files from Windows 3.1 installation disk.<br>
+5. Type 'win' command to check if the driver works well.<br>
+
+**NOTE:** Do not run MS-DOS prompt with fullscreen mode, or your screen will get garbled when switching back to Windows environment.<br>
+
+You can use WAB Type 'WAB-S', 'WSN', 'GA-98NB'.<br>
+
+- WAB-S driver<br>
+http://buffalo.jp/download/driver/multi/wab.html<br>
+
+- WSN driver<br>
+http://buffalo.jp/download/driver/multi/wgna_95.html<br>
+
+- GA-98NB driver<br>
+https://www.iodata.jp/lib/product/g/175_win95.htm<br>
+</div></details>
+
 #### MIDI sound (X11)
 
 <details><summary>
@@ -946,38 +978,6 @@ $ aconnect 28:0 129:0
 9. Finally set '/dev/snd/midiC3D0' to xnp2kai.<br>
 
 Next boot computer, you command from 4.<br>
-</div></details>
-
-<details><summary>
-WAB (Window Accelerator Boards)
-</summary><div>
-
-NP2kai can use WAB (Window Accelerator Boards).<br>
-
-To use WAB, enable WAB in menu and restart.<br>
-
-WAB Type normally uses 'PC-9821Xe10,Xa7e,Xb10 built-in'.<br>
-
-**640x480 256 color support for Windows 3.1**
-
-1. Switch to directory 'A:￥WINDOWS', then run 'SETUP' command.<br>
-2. Select display mode '640x480 256色 16ﾄﾞｯﾄ(9821ｼﾘｰｽﾞ対応)', or '640x480 256色 12ﾄﾞｯﾄ(9821ｼﾘｰｽﾞ対応)' for smaller system font, then complete the changes. You may need Windows 3.1 installation disks when applying changes for the display driver.<br>
-3. Extract 'EGCN4.DRV' and 'PEGCV8.DRV' from 'MINI3.CAB' in Windows 98 CD.<br>
-4. Copy extracted 'EGCN4.DRV' and 'PEGCV8.DRV' to 'A:￥WINDOWS￥SYSTEM' directory, so as to replace the original driver files from Windows 3.1 installation disk.<br>
-5. Type 'win' command to check if the driver works well.<br>
-
-**NOTE:** Do not run MS-DOS prompt with fullscreen mode, or your screen will get garbled when switching back to Windows environment.<br>
-
-You can use WAB Type 'WAB-S', 'WSN', 'GA-98NB'.<br>
-
-- WAB-S driver<br>
-http://buffalo.jp/download/driver/multi/wab.html<br>
-
-- WSN driver<br>
-http://buffalo.jp/download/driver/multi/wgna_95.html<br>
-
-- GA-98NB driver<br>
-https://www.iodata.jp/lib/product/g/175_win95.htm<br>
 </div></details>
 
 ## Release
