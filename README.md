@@ -488,6 +488,14 @@ BIOS files location
 
 BIOS files locate in 'np2kai' directory at BIOS directory (configured by RetroArch).<br>
 Configure file (np2kai.cfg) is made in 'np2kai' BIOS directory.<br>
+
+To get BIOS files, you need actual PC-98 machine.<br>
+Start MS-DOS on the actual PC-98 and execute the GETBIOS command<br>
+(included in the np2tool/np2tool.zip floppy image)<br>
+to create BIOS files.<br>
+
+Rhythm sound files are dumped from PC-98 machine with FM sound gen.<br>
+You can get sound files from [here](https://sites.google.com/site/ym2608rhythm/).
 </div></details>
 
 <details><summary>
