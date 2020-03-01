@@ -78,7 +78,7 @@ static char CMDFILE[512];
 bool did_reset, joy2key;
 int lr_init = 0;
 
-static char base_dir[MAX_PATH];
+char lr_game_base_dir[MAX_PATH];
 
 #ifdef _WIN32
 static char slash = '\\';
@@ -90,10 +90,10 @@ static void update_variables(void);
 
 /* media swap support */
 struct retro_disk_control_callback dskcb;
-static char disk_paths[50][MAX_PATH] = {0};
+extern char np2_main_disk_images_paths[50][MAX_PATH];
+extern unsigned int np2_main_disk_images_count;
 static unsigned drvno = 1;
 static unsigned disk_index = 0;
-static unsigned disk_images = 0;
 static bool disk_inserted = false;
 static unsigned int lastidx = 0;
 
@@ -113,32 +113,32 @@ unsigned getdskindex(){
 
 bool setdskindex(unsigned index){
    disk_index = index;
-   if(disk_index == disk_images)
+   if(disk_index == np2_main_disk_images_count)
    {
       //retroarch is trying to set "no disk in tray"
       return true;
    }
 
    update_variables();
-   strcpy(np2cfg.fddfile[drvno], disk_paths[disk_index]);
-   diskdrv_setfdd(drvno, disk_paths[disk_index], 0);
+   strcpy(np2cfg.fddfile[drvno], np2_main_disk_images_paths[disk_index]);
+   diskdrv_setfdd(drvno, np2_main_disk_images_paths[disk_index], 0);
    return true;
 }
 
 unsigned getnumimages(){
-   return disk_images;
+   return np2_main_disk_images_count;
 }
 
 bool addimageindex() {
-   if (disk_images >= 50)
+   if (np2_main_disk_images_count >= 50)
       return false;
 
-   disk_images++;
+   np2_main_disk_images_count++;
    return true;
 }
 
 bool replacedsk(unsigned index,const struct retro_game_info *info){
-   strcpy(disk_paths[index], info->path);
+   strcpy(np2_main_disk_images_paths[index], info->path);
    return true;
 }
 
@@ -151,13 +151,16 @@ void attach_disk_swap_interface(){
    dskcb.get_num_images  = getnumimages;
    dskcb.add_image_index = addimageindex;
    dskcb.replace_image_index = replacedsk;
+   if(np2_main_disk_images_count) {
+      disk_inserted = true;
+   }
 
    environ_cb(RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE,&dskcb);
 }
 
 void setnxtdskindex(void){
-	if(disk_images > 2) {
-		if(disk_index + 1 != disk_images) {
+	if(np2_main_disk_images_count > 2) {
+		if(disk_index + 1 != np2_main_disk_images_count) {
 			setdskindex(disk_index + 1);
 		} else {
 			setdskindex(0);
@@ -166,9 +169,9 @@ void setnxtdskindex(void){
 }
 
 void setpredskindex(void){
-	if(disk_images > 2) {
+	if(np2_main_disk_images_count > 2) {
 		if(disk_index == 0) {
-			setdskindex(disk_images - 1);
+			setdskindex(np2_main_disk_images_count - 1);
 		} else {
 			setdskindex(disk_index - 1);
 		}
@@ -238,47 +241,6 @@ static void extract_directory(char *buf, const char *path, size_t size)
       buf[0] = '\0';
 }
 
-static bool read_m3u(const char *file)
-{
-   char line[MAX_PATH];
-   char name[MAX_PATH];
-   RFILE *f = filestream_open(file, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
-
-   if (!f)
-      return false;
-
-   while (filestream_gets(f, line, sizeof(line)) && disk_images < sizeof(disk_paths) / sizeof(disk_paths[0]))
-   {
-      if (line[0] == '#')
-         continue;
-
-      char *carriage_return = strchr(line, '\r');
-      if (carriage_return)
-         *carriage_return = '\0';
-
-      char *newline = strchr(line, '\n');
-      if (newline)
-         *newline = '\0';
-
-      // Remove any beginning and ending quotes as these can cause issues when feeding the paths into command line later
-      if (line[0] == '"')
-          memmove(line, line + 1, strlen(line));
-
-      if (line[strlen(line) - 1] == '"')
-          line[strlen(line) - 1]  = '\0';
-
-      if (line[0] != '\0')
-      {
-         snprintf(name, sizeof(name), "%s%c%s", base_dir, slash, line);
-         strcpy(disk_paths[disk_images], name);
-         disk_images++;
-      }
-   }
-
-   filestream_close(f);
-   return (disk_images != 0);
-}
-
 void Add_Option(const char* option)
 {
    static int first=0;
@@ -301,23 +263,6 @@ int pre_main(const char *argv)
    {
       if( HandleExtension((char*)argv,"cmd") || HandleExtension((char*)argv,"CMD"))
          i=loadcmdfile((char*)argv);
-      else if (HandleExtension((char*)argv, "m3u") || HandleExtension((char*)argv, "M3U"))
-      {
-         if (!read_m3u((char*)argv))
-         {
-            if (log_cb)
-               log_cb(RETRO_LOG_ERROR, "%s\n", "[libretro]: failed to read m3u file ...");
-            return false;
-         }
-
-         sprintf((char*)argv, "np2kai \"%s\"", disk_paths[0]);
-         if(disk_images > 1)
-         {
-            sprintf((char*)argv, "%s \"%s\"", argv, disk_paths[1]);
-         }
-         disk_inserted = true;
-         attach_disk_swap_interface();
-      }
    }
 
    if(i==1)
@@ -1727,7 +1672,7 @@ bool retro_load_game(const struct retro_game_info *game)
    if(!worked)abort();
 
    if(game != NULL)
-      extract_directory(base_dir, game->path, sizeof(base_dir));
+      extract_directory(lr_game_base_dir, game->path, sizeof(lr_game_base_dir));
 
    strcpy(np2path, syspath);
    lr_init = 1;
