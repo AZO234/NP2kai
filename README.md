@@ -534,6 +534,9 @@ np2kai fdilocation/aaa.fdi hdilocation/bbb.hdi isolocation/ccc.iso
 'bbb.hdi' is mounted to HDD1,<br>
 'ccc.iso' is mounted to CD drive.<br>
 (Determined by extension)<br>
+
+.m3u files can written in .cmd file.<br>
+Then, You can FDs+HD and FDs+CD contents file.
 </div></details>
 
 <details><summary>
