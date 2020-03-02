@@ -390,6 +390,7 @@ char np2_main_read_m3u(const char *file)
 #if defined(__LIBRETRO__)
 extern char lr_game_base_dir[MAX_PATH];
 extern void attach_disk_swap_interface(void);
+extern int lr_uselasthddmount;
 #endif
 
 int np2_main(int argc, char *argv[]) {
@@ -480,6 +481,20 @@ int np2_main(int argc, char *argv[]) {
 	
 #if defined(SUPPORT_IDEIO) || defined(SUPPORT_SASI) || defined(SUPPORT_SCSI)
 	setmedia = drvhddSCSI = HDCount = CDCount = 0;
+#if defined(__LIBRETRO__)
+	if(!lr_uselasthddmount) {
+#if defined(SUPPORT_IDEIO) || defined(SUPPORT_SASI)
+		for(i = 0; i < 4; i++) {
+			milstr_ncpy(np2cfg.sasihdd[i], "", MAX_PATH);
+		}
+#endif
+#if defined(SUPPORT_SCSI)
+ 		for(i = 0; i < 4; i++) {
+			milstr_ncpy(np2cfg.scsihdd[i], "", MAX_PATH);
+		}
+#endif
+	}
+#endif	/* __LIBRETRO__ */
 #endif
 	for (i = 1; i < argc; i++) {
 		if (OEMSTRLEN(argv[i]) < 5) {

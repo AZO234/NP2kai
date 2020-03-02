@@ -80,6 +80,8 @@ int lr_init = 0;
 
 char lr_game_base_dir[MAX_PATH];
 
+int lr_uselasthddmount;
+
 #ifdef _WIN32
 static char slash = '\\';
 #else
@@ -972,6 +974,17 @@ static void update_variables(void)
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
       np2cfg.EXTMEM = atoi(var.value);
+   }
+
+   var.key = "np2kai_uselasthddmount";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "OFF") == 0)
+         lr_uselasthddmount = 0;
+      else
+         lr_uselasthddmount = 1;
    }
 
    var.key = "np2kai_FastMC";
