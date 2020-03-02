@@ -149,6 +149,17 @@ struct retro_core_option_definition option_defs_us[] = {
       "OFF"
    },
    {
+      "np2kai_uselasthddmount",
+      "Use last HDD mount",
+      "Last HDD mount at core start.",
+      {
+         { "OFF", NULL },
+         { "ON", NULL },
+         { NULL, NULL},
+      },
+      "OFF"
+   },
+   {
       "np2kai_gdc",
       "GDC",
       "Graphic Display Controller model.",
@@ -913,6 +924,17 @@ struct retro_core_option_definition option_defs_ja[] = {
       "np2kai_FastMC",
       "高速メモリチェック",
       "スタートアップ時のメモリチェックを素早くします。",
+      {
+         { "OFF", NULL },
+         { "ON", NULL },
+         { NULL, NULL},
+      },
+      "OFF"
+   },
+   {
+      "np2kai_uselasthddmount",
+      "前回のHDDマウントを使用",
+      "前回のHDDをコア開始時にマウントします。",
       {
          { "OFF", NULL },
          { "ON", NULL },

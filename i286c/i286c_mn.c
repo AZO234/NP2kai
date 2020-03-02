@@ -1847,13 +1847,13 @@ I286FN _popf(void) {						// 9D:	popf
 I286FN _sahf(void) {						// 9E:	sahf
 
 	I286_WORKCLOCK(2);
-	I286_FLAGL = I286_AH;
+	I286_FLAGL = (I286_AH & 0xfff);	// 286
 }
 
 I286FN _lahf(void) {						// 9F:	lahf
 
 	I286_WORKCLOCK(2);
-	I286_AH = I286_FLAGL;
+	I286_AH = (I286_FLAGL & 0xfff);	// 286
 }
 
 I286FN _mov_al_m8(void) {					// A0:	mov		al, m8

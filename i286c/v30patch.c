@@ -234,6 +234,18 @@ I286FN v30_popf(void) {						// 9D:	popf
 	I286IRQCHECKTERM
 }
 
+I286FN v30_sahf(void) {						// 9E:	sahf
+
+	I286_WORKCLOCK(2);
+	I286_FLAGL = (I286_AH | 0xf002);	// V30(=8086) + SZ0A0P1C
+}
+
+I286FN v30_lahf(void) {						// 9F:	lahf
+
+	I286_WORKCLOCK(2);
+	I286_AH = (I286_FLAGL | 0xf002);	// V30(=8086) + SZ0A0P1C
+}
+
 I286FN v30shift_ea8_data8(void) {			// C0:	shift	EA8, DATA8
 
 	UINT8	*out;
@@ -648,6 +660,8 @@ static const V30PATCH v30patch_op[] = {
 			{0x8e, v30mov_seg_ea},			// 8E:	mov		segrem, EA
 			{0x9c, v30_pushf},				// 9C:	pushf
 			{0x9d, v30_popf},				// 9D:	popf
+			{0x9e, v30_sahf},				// 9E:	sahf
+			{0x9f, v30_lahf},				// 9F:	lahf
 #if 0 // x64環境でまともに動かないので暫定的にコメントアウト
 			{0xc0, v30shift_ea8_data8},		// C0:	shift	EA8, DATA8
 			{0xc1, v30shift_ea16_data8},	// C1:	shift	EA16, DATA8
@@ -755,6 +769,8 @@ static const V30PATCH v30patch_repe[] = {
 			{0x8e, v30mov_seg_ea},			// 8E:	mov		segrem, EA
 			{0x9c, v30_pushf},				// 9C:	pushf
 			{0x9d, v30_popf},				// 9D:	popf
+			{0x9e, v30_sahf},				// 9E:	sahf
+			{0x9f, v30_lahf},				// 9F:	lahf
 			{0xc0, v30shift_ea8_data8},		// C0:	shift	EA8, DATA8
 			{0xc1, v30shift_ea16_data8},	// C1:	shift	EA16, DATA8
 #if defined(VAEG_FIX)
@@ -860,6 +876,8 @@ static const V30PATCH v30patch_repne[] = {
 			{0x8e, v30mov_seg_ea},			// 8E:	mov		segrem, EA
 			{0x9c, v30_pushf},				// 9C:	pushf
 			{0x9d, v30_popf},				// 9D:	popf
+			{0x9e, v30_sahf},				// 9E:	sahf
+			{0x9f, v30_lahf},				// 9F:	lahf
 			{0xc0, v30shift_ea8_data8},		// C0:	shift	EA8, DATA8
 			{0xc1, v30shift_ea16_data8},	// C1:	shift	EA16, DATA8
 #if defined(VAEG_FIX)

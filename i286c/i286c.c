@@ -157,7 +157,9 @@ void i286c_initialize(void) {
 #if !defined(MEMOPTIMIZE) || (MEMOPTIMIZE < 2)
 	i286cea_initialize();
 #endif
-	v30cinit();
+	if (CPU_TYPE == CPUTYPE_V30) {
+		v30cinit();
+	}
 	ZeroMemory(&i286core, sizeof(i286core));
 }
 
@@ -180,10 +182,8 @@ static void i286c_initreg(void) {
 
 #if defined(VAEG_FIX)
 void i286c_reset(void) {
-	UINT8 cputype = CPU_TYPE;
 	ZeroMemory(&i286core.s, sizeof(i286core.s));
-	CPU_TYPE = cputype;
-	if (cputype == CPUTYPE_V30) {
+	if (CPU_TYPE == CPUTYPE_V30) {
 		v30c_initreg();
 	}
 	else {
