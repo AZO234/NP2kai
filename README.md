@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Feb 18, 2020<br>
+Mar 2, 2020<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -992,6 +992,9 @@ Next boot computer, you command from 4.<br>
 </div></details>
 
 ## Release
+- Mar 2, 2020<br>
+  - Using absolute/rerative path in .m3u and .cmd list file<br>
+  - [lr] not remember last HDD mount<br>
 - Feb 18, 2020<br>
   - fix V30 and 286 flag register<br>
 - Feb 4, 2020<br>
