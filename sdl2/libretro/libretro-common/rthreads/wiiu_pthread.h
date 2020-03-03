@@ -1,7 +1,7 @@
-/* Copyright  (C) 2010-2020 The RetroArch team
+/* Copyright  (C) 2010-2016 The RetroArch team
  *
  * ---------------------------------------------------------------------------------------
- * The following license statement only applies to this file (gx_pthread.h).
+ * The following license statement only applies to this file (wiiu_pthread.h).
  * ---------------------------------------------------------------------------------------
  *
  * Permission is hereby granted, free of charge,
@@ -20,126 +20,96 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef _GX_PTHREAD_WRAP_GX_
-#define _GX_PTHREAD_WRAP_GX_
+#ifndef _WIIU_PTHREAD_WRAP_WIIU_
+#define _WIIU_PTHREAD_WRAP_WIIU_
 
-#include <ogcsys.h>
-#include <gccore.h>
-#include <ogc/cond.h>
 #include <retro_inline.h>
-
-#ifndef OSThread
-#define OSThread lwp_t
-#endif
-
-#ifndef OSCond
-#define OSCond lwpq_t
-#endif
-
-#ifndef OSThreadQueue
-#define OSThreadQueue lwpq_t
-#endif
-
-#ifndef OSInitMutex
-#define OSInitMutex(mutex) LWP_MutexInit(mutex, 0)
-#endif
-
-#ifndef OSLockMutex
-#define OSLockMutex(mutex) LWP_MutexLock(mutex)
-#endif
-
-#ifndef OSUnlockMutex
-#define OSUnlockMutex(mutex) LWP_MutexUnlock(mutex)
-#endif
-
-#ifndef OSTryLockMutex
-#define OSTryLockMutex(mutex) LWP_MutexTryLock(mutex)
-#endif
-
-#ifndef OSInitCond
-#define OSInitCond(cond) LWP_CondInit(cond)
-#endif
-
-#ifndef OSWaitCond
-#define OSWaitCond(cond, mutex) LWP_CondWait(cond, mutex)
-#endif
-
-#ifndef OSInitThreadQueue
-#define OSInitThreadQueue(queue) LWP_InitQueue(queue)
-#endif
-
-#ifndef OSSleepThread
-#define OSSleepThread(queue) LWP_ThreadSleep(queue)
-#endif
-
-#ifndef OSJoinThread
-#define OSJoinThread(thread, val) LWP_JoinThread(thread, val)
-#endif
-
-#ifndef OSCreateThread
-#define OSCreateThread(thread, func, intarg, ptrarg, stackbase, stacksize, priority, attrs) LWP_CreateThread(thread, func, ptrarg, stackbase, stacksize, priority)
-#endif
-
+#include <wiiu/os/condition.h>
+#include <wiiu/os/thread.h>
+#include <wiiu/os/mutex.h>
+#include <malloc.h>
 #define STACKSIZE (8 * 1024)
 
-typedef OSThread pthread_t;
-typedef mutex_t pthread_mutex_t;
+typedef OSThread* pthread_t;
+typedef OSMutex* pthread_mutex_t;
 typedef void* pthread_mutexattr_t;
 typedef int pthread_attr_t;
-typedef OSCond pthread_cond_t;
-typedef OSCond pthread_condattr_t;
+typedef OSCondition* pthread_cond_t;
+typedef OSCondition* pthread_condattr_t;
 
 static INLINE int pthread_create(pthread_t *thread,
       const pthread_attr_t *attr, void *(*start_routine)(void*), void *arg)
 {
-   *thread = 0;
-   return OSCreateThread(thread, start_routine, 0 /* unused */, arg,
-         0, STACKSIZE, 64, 0 /* unused */);
+   OSThread *t = memalign(8, sizeof(OSThread));
+   void *stack = memalign(32, STACKSIZE);
+   bool ret = OSCreateThread(t, (OSThreadEntryPointFn)start_routine, 
+      (uint32_t)arg, NULL, (void*)(((uint32_t)stack)+STACKSIZE), STACKSIZE, 8, OS_THREAD_ATTRIB_AFFINITY_ANY);
+   if(ret == true)
+   {
+      OSResumeThread(t);
+      *thread = t;
+   }
+   else
+      *thread = NULL;
+   return (ret == true) ? 0 : -1;
 }
 
 static INLINE pthread_t pthread_self(void)
 {
-   /* zero 20-mar-2016: untested */
-   return LWP_GetSelf();
+   return OSGetCurrentThread();
 }
 
 static INLINE int pthread_mutex_init(pthread_mutex_t *mutex,
       const pthread_mutexattr_t *attr)
 {
-   return OSInitMutex(mutex);
+   OSMutex *m = malloc(sizeof(OSMutex));
+   OSInitMutex(m);
+   *mutex = m;
+   return 0;
 }
 
 static INLINE int pthread_mutex_destroy(pthread_mutex_t *mutex)
 {
-   return LWP_MutexDestroy(*mutex);
+   if(*mutex)
+      free(*mutex);
+   *mutex = NULL;
+   return 0;
 }
 
 static INLINE int pthread_mutex_lock(pthread_mutex_t *mutex)
 {
-   return OSLockMutex(*mutex);
+   OSLockMutex(*mutex);
+   return 0;
 }
 
 static INLINE int pthread_mutex_unlock(pthread_mutex_t *mutex)
 {
-   return OSUnlockMutex(*mutex);
+   OSUnlockMutex(*mutex);
+   return 0;
 }
 
 static INLINE void pthread_exit(void *retval)
 {
-   /* FIXME: No LWP equivalent for this? */
    (void)retval;
+   OSExitThread(0);
 }
 
 static INLINE int pthread_detach(pthread_t thread)
 {
-   /* FIXME: pthread_detach equivalent missing? */
-   (void)thread;
+   OSDetachThread(thread);
    return 0;
 }
 
 static INLINE int pthread_join(pthread_t thread, void **retval)
 {
-   return OSJoinThread(thread, retval);
+   (void)retval;
+   bool ret = OSJoinThread(thread, NULL);
+   if(ret == true)
+   {
+      free(thread->stackEnd);
+      free(thread);
+   }
+   return (ret == true) ? 0 : -1;
 }
 
 static INLINE int pthread_mutex_trylock(pthread_mutex_t *mutex)
@@ -150,34 +120,46 @@ static INLINE int pthread_mutex_trylock(pthread_mutex_t *mutex)
 static INLINE int pthread_cond_wait(pthread_cond_t *cond,
       pthread_mutex_t *mutex)
 {
-   return OSWaitCond(*cond, *mutex);
+   OSWaitCond(*cond, *mutex);
+   return 0;
 }
 
 static INLINE int pthread_cond_timedwait(pthread_cond_t *cond,
       pthread_mutex_t *mutex, const struct timespec *abstime)
 {
-   return LWP_CondTimedWait(*cond, *mutex, abstime);
+   //FIXME: actual timeout needed
+   (void)abstime;
+   return pthread_cond_wait(cond, mutex);
 }
 
 static INLINE int pthread_cond_init(pthread_cond_t *cond,
       const pthread_condattr_t *attr)
 {
-   return OSInitCond(cond);
+   OSCondition *c = malloc(sizeof(OSCondition));
+   OSInitCond(c);
+   *cond = c;
+   return 0;
 }
 
 static INLINE int pthread_cond_signal(pthread_cond_t *cond)
 {
-   return LWP_CondSignal(*cond);
+   OSSignalCond(*cond);
+   return 0;
 }
 
 static INLINE int pthread_cond_broadcast(pthread_cond_t *cond)
 {
-   return LWP_CondBroadcast(*cond);
+   //FIXME: no OS equivalent
+   (void)cond;
+   return 0;
 }
 
 static INLINE int pthread_cond_destroy(pthread_cond_t *cond)
 {
-   return LWP_CondDestroy(*cond);
+   if(*cond)
+      free(*cond);
+   *cond = NULL;
+   return 0;
 }
 
 extern int pthread_equal(pthread_t t1, pthread_t t2);

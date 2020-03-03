@@ -1,4 +1,4 @@
-/* Copyright  (C) 2010-2018 The RetroArch team
+/* Copyright  (C) 2010-2020 The RetroArch team
  *
  * ---------------------------------------------------------------------------------------
  * The following license statement only applies to this file (features_cpu.c).
@@ -225,7 +225,7 @@ retro_time_t cpu_features_get_time_usec(void)
 
    if (!QueryPerformanceCounter(&count))
       return 0;
-   return count.QuadPart * 1000000 / freq.QuadPart;
+   return (count.QuadPart / freq.QuadPart * 1000000) + (count.QuadPart % freq.QuadPart * 1000000 / freq.QuadPart);
 #elif defined(__CELLOS_LV2__)
    return sys_time_get_system_time();
 #elif defined(GEKKO)

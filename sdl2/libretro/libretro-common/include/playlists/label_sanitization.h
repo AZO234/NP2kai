@@ -1,7 +1,7 @@
 /* Copyright  (C) 2010-2020 The RetroArch team
  *
  * ---------------------------------------------------------------------------------------
- * The following license statement only applies to this file (vector_4.h).
+ * The following license statement only applies to this file (label_sanitization.h).
  * ---------------------------------------------------------------------------------------
  *
  * Permission is hereby granted, free of charge,
@@ -19,43 +19,19 @@
  * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+#include <stddef.h>
+#include <boolean.h>
 
-#ifndef __LIBRETRO_SDK_GFX_MATH_VECTOR_4_H__
-#define __LIBRETRO_SDK_GFX_MATH_VECTOR_4_H__
+void label_sanitize(char *label, bool (*left)(char*), bool (*right)(char*));
 
-#include <stdint.h>
-#include <math.h>
+void label_remove_parens(char *label);
 
-#include <retro_common_api.h>
+void label_remove_brackets(char *label);
 
-RETRO_BEGIN_DECLS
+void label_remove_parens_and_brackets(char *label);
 
-typedef float vec4_t[4];
+void label_keep_region(char *label);
 
-#define vec4_add(dst, src) \
-   dst[0] += src[0]; \
-   dst[1] += src[1]; \
-   dst[2] += src[2]; \
-   dst[3] += src[3]
+void label_keep_disc(char *label);
 
-#define vec4_subtract(dst, src) \
-   dst[0] -= src[0]; \
-   dst[1] -= src[1]; \
-   dst[2] -= src[2]; \
-   dst[3] -= src[3]
-
-#define vec4_scale(dst, scale) \
-   dst[0] *= scale; \
-   dst[1] *= scale; \
-   dst[2] *= scale; \
-   dst[3] *= scale
-
-#define vec4_copy(dst, src) \
-   dst[0] = src[0]; \
-   dst[1] = src[1]; \
-   dst[2] = src[2]; \
-   dst[3] = src[3]
-
-RETRO_END_DECLS
-
-#endif
+void label_keep_region_and_disc(char *label);
