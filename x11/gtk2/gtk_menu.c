@@ -148,7 +148,7 @@ static GtkActionEntry menu_entries[] = {
 { "disk4eject",  NULL, "_Eject",            NULL, NULL, G_CALLBACK(cb_diskeject), },
 { "disk4open",   NULL, "_Open...",          NULL, NULL, G_CALLBACK(cb_diskopen), },
 { "exit",        NULL, "E_xit",             NULL, NULL, G_CALLBACK(gtk_main_quit) },
-{ "font",        NULL, "_Font...",          NULL, NULL, G_CALLBACK(cb_change_font), },
+//{ "font",        NULL, "_Font...",          NULL, NULL, G_CALLBACK(cb_change_font), },
 { "newfdisk",    NULL, "_Floppy disk image...", NULL, NULL, G_CALLBACK(cb_newfdisk) },
 { "newhdisk",    NULL, "_Hard disk image...",   NULL, NULL, G_CALLBACK(cb_newhdisk) },
 #if defined(SUPPORT_IDEIO)
@@ -444,7 +444,7 @@ static const gchar *ui_info =
 "    <menuitem action='newfdisk'/>\n"
 "    <menuitem action='newhdisk'/>\n"
 "   </menu>\n"
-"   <menuitem action='font'/>\n"
+//"   <menuitem action='font'/>\n"
 "   <separator/>\n"
 "   <menuitem action='exit'/>\n"
 "  </menu>\n"

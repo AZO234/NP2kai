@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Mar 2, 2020<br>
+Mar 6, 2020<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -499,6 +499,37 @@ You can get sound files from [here](https://sites.google.com/site/ym2608rhythm/)
 </div></details>
 
 <details><summary>
+Fonts
+</summary><div>
+
+NP2kai recommend font is using font.rom.<br>
+
+### Windows
+
+You can use 'MS Gothic'. To install add your windows,<br>
+'install files Easten Asian languages' at 'language' option.<br>
+
+After installation, 'msgothic.ttc' file's shortcut named 'default.ttf' put in BIOS directory.<br>
+(Already exist 'font.tmp', delete this.)<br>
+And start NP2kai.
+
+### Linux
+
+I recommend use 'Takao Gothic'.<br>
+Install with follow command.
+```
+sudo apt install 'fonts-takao-*'
+```
+and
+```
+ls -n /usr/share/fonts/truetype/takao-gothic/TakaoGothic.ttf BIOSdirectory/default.ttf'
+```
+After installation, '/usr/share/fonts/msgothic.ttc' file's shortcut put in BIOS directory.<br>
+(Already exist 'font.tmp', delete this.)<br>
+And start NP2kai.
+</div></details>
+
+<details><summary>
 NP2 menu (different libretro menu)
 </summary><div>
 
@@ -992,6 +1023,8 @@ Next boot computer, you command from 4.<br>
 </div></details>
 
 ## Release
+- Mar 6, 2020<br>
+  - [X11] fix default.ttf<br>
 - Mar 2, 2020<br>
   - Using absolute/rerative path in .m3u and .cmd list file<br>
   - [lr] not remember last HDD mount<br>

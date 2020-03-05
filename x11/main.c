@@ -144,6 +144,8 @@ main(int argc, char *argv[])
 	int rv = 1;
 	int ch;
 	int i, drvmax;
+	char	fontfile[MAX_PATH];
+  FILE *fcheck;
 
 	progname = argv[0];
 
@@ -260,6 +262,17 @@ main(int argc, char *argv[])
 	}
 	if (modulefile[0] != '\0') {
 		/* font file */
+		file_cpyname(fontfile, modulefile, sizeof(fontfile));
+		file_cutname(fontfile);
+		file_setseparator(fontfile, sizeof(fontfile));
+		file_catname(fontfile, "default.ttf", sizeof(fontfile));
+		fcheck = fopen(fontfile, "rb");
+		if (fcheck != NULL) {
+			fclose(fcheck);
+			fontmng_setdeffontname(fontfile);
+		}
+
+		/* font bmp file */
 		file_cpyname(np2cfg.fontfile, modulefile,
 		    sizeof(np2cfg.fontfile));
 		file_cutname(np2cfg.fontfile);
@@ -451,8 +464,6 @@ main(int argc, char *argv[])
 	scrnmng_destroy();
 
 scrnmng_failure:
-	fontmng_terminate();
-
 fontmng_failure:
 	if (!np2oscfg.readonly
 	 && (sys_updates & (SYS_UPDATECFG|SYS_UPDATEOSCFG))) {

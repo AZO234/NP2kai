@@ -66,7 +66,6 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/x11/gtk2/window_softkbd.c \
 		$(real_topsrcdir)/x11/gtk2/gtk_drawmng.c \
 		$(real_topsrcdir)/x11/gtk2/gtk_screen.c \
-		$(real_topsrcdir)/x11/gtk2/gtk_font.c \
 		$(real_topsrcdir)/x11/gtk2/gtk_keyboard.c \
 		$(real_topsrcdir)/x11/gtk2/gtk_menu.c \
 		$(real_topsrcdir)/x11/gtk2/gtk_mouse.c \
