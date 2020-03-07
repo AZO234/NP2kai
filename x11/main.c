@@ -146,6 +146,7 @@ main(int argc, char *argv[])
 	int i, drvmax;
 	char	fontfile[MAX_PATH];
   FILE *fcheck;
+  int createini = 0;
 
 	progname = argv[0];
 
@@ -316,6 +317,12 @@ main(int argc, char *argv[])
 #if defined(SUPPORT_HOSTDRV)
 	hostdrv_readini();
 #endif	// defined(SUPPORT_HOSTDRV)
+	fcheck = fopen(modulefile, "r");
+	if (fcheck == NULL)	{
+		createini = 1;
+	} else {
+		fclose(fcheck);
+	}
 
 	rand_setseed((SINT32)time(NULL));
 
@@ -465,14 +472,12 @@ main(int argc, char *argv[])
 
 scrnmng_failure:
 fontmng_failure:
-	if (!np2oscfg.readonly
-	 && (sys_updates & (SYS_UPDATECFG|SYS_UPDATEOSCFG))) {
+	if ((!np2oscfg.readonly
+	 && (sys_updates & (SYS_UPDATECFG|SYS_UPDATEOSCFG))) || createini) {
 		initsave();
 		toolwin_writeini();
 		kdispwin_writeini();
 		skbdwin_writeini();
-	}
-
 #if defined(SUPPORT_HOSTDRV)
 	hostdrv_writeini();
 #endif	// defined(SUPPORT_HOSTDRV)
@@ -480,6 +485,8 @@ fontmng_failure:
 	wabwin_writeini();
 	np2wabcfg.readonly = np2oscfg.readonly;
 #endif	// defined(SUPPORT_WAB)
+	}
+
 	skbdwin_deinitialize();
 
 #if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER) || defined(USE_SDL2AUDIO) || defined(USE_SDL2MIXER)
