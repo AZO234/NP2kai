@@ -780,7 +780,6 @@ SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr.
 	$(NP2_PATH)/sdl2/libretro/libretro-common/encodings/encoding_crc32.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/encodings/encoding_utf.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/features/features_cpu.c \
-	$(NP2_PATH)/sdl2/libretro/libretro-common/file/archive_file.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/file/config_file.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/file/config_file_userdata.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/file/file_path.c \

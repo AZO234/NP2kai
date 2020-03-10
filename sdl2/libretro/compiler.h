@@ -210,8 +210,6 @@ typedef SINT32	FILELEN;
 #define	SUPPORT_ROMEO
 #define	SUPPORT_HRTIMER
 
-#define  SUPPORT_ARC
-
 #define	SUPPORT_NORMALDISP
 
 #define SUPPORT_PX
@@ -232,7 +230,6 @@ typedef SINT32	FILELEN;
 //retroarch does these on its own
 //#define  SUPPORT_WAVEREC
 //#define  SUPPORT_RECVIDEO
-//#define  SUPPORT_ZLIB
 
 //the emulator must be self contained to work with retroarch
 //#define	SUPPORT_EXTERNALCHIP

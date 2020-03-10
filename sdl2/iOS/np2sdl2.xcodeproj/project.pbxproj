@@ -56,8 +56,6 @@
 		BA7E83C519063AFB00041C04 /* ucs2utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = BA7E81F819063AFA00041C04 /* ucs2utf8.c */; };
 		BA7E83C619063AFB00041C04 /* utf8ucs2.c in Sources */ = {isa = PBXBuildFile; fileRef = BA7E81F919063AFA00041C04 /* utf8ucs2.c */; };
 		BA7E83C719063AFB00041C04 /* _memory.c in Sources */ = {isa = PBXBuildFile; fileRef = BA7E81FB19063AFA00041C04 /* _memory.c */; };
-		BA7E83C819063AFB00041C04 /* arc.c in Sources */ = {isa = PBXBuildFile; fileRef = BA7E81FD19063AFA00041C04 /* arc.c */; };
-		BA7E83C919063AFB00041C04 /* arcunzip.c in Sources */ = {isa = PBXBuildFile; fileRef = BA7E81FF19063AFA00041C04 /* arcunzip.c */; };
 		BA7E83CA19063AFB00041C04 /* bmpdata.c in Sources */ = {isa = PBXBuildFile; fileRef = BA7E820119063AFA00041C04 /* bmpdata.c */; };
 		BA7E83CB19063AFB00041C04 /* lstarray.c in Sources */ = {isa = PBXBuildFile; fileRef = BA7E820319063AFA00041C04 /* lstarray.c */; };
 		BA7E83CC19063AFB00041C04 /* milstr.c in Sources */ = {isa = PBXBuildFile; fileRef = BA7E820519063AFA00041C04 /* milstr.c */; };
@@ -377,10 +375,6 @@
 		BA7E81F919063AFA00041C04 /* utf8ucs2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf8ucs2.c; sourceTree = "<group>"; };
 		BA7E81FB19063AFA00041C04 /* _memory.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = _memory.c; sourceTree = "<group>"; };
 		BA7E81FC19063AFA00041C04 /* _memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _memory.h; sourceTree = "<group>"; };
-		BA7E81FD19063AFA00041C04 /* arc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = arc.c; sourceTree = "<group>"; };
-		BA7E81FE19063AFA00041C04 /* arc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = arc.h; sourceTree = "<group>"; };
-		BA7E81FF19063AFA00041C04 /* arcunzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = arcunzip.c; sourceTree = "<group>"; };
-		BA7E820019063AFA00041C04 /* arcunzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = arcunzip.h; sourceTree = "<group>"; };
 		BA7E820119063AFA00041C04 /* bmpdata.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bmpdata.c; sourceTree = "<group>"; };
 		BA7E820219063AFA00041C04 /* bmpdata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bmpdata.h; sourceTree = "<group>"; };
 		BA7E820319063AFA00041C04 /* lstarray.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lstarray.c; sourceTree = "<group>"; };
@@ -1002,10 +996,6 @@
 			children = (
 				BA7E81FB19063AFA00041C04 /* _memory.c */,
 				BA7E81FC19063AFA00041C04 /* _memory.h */,
-				BA7E81FD19063AFA00041C04 /* arc.c */,
-				BA7E81FE19063AFA00041C04 /* arc.h */,
-				BA7E81FF19063AFA00041C04 /* arcunzip.c */,
-				BA7E820019063AFA00041C04 /* arcunzip.h */,
 				BA7E820119063AFA00041C04 /* bmpdata.c */,
 				BA7E820219063AFA00041C04 /* bmpdata.h */,
 				BA7E820319063AFA00041C04 /* lstarray.c */,
@@ -1498,7 +1488,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BA7E83C819063AFB00041C04 /* arc.c in Sources */,
 				BA7E842819063AFB00041C04 /* crtc.c in Sources */,
 				BA7E83EA19063AFB00041C04 /* fdd_xdf.c in Sources */,
 				BA7E845119063AFB00041C04 /* memtram.c in Sources */,
@@ -1592,7 +1581,6 @@
 				BA7E843919063AFB00041C04 /* np2sysp.c in Sources */,
 				BA7E84AF190650A800041C04 /* main.m in Sources */,
 				BA7E843619063AFB00041C04 /* mouseif.c in Sources */,
-				BA7E83C919063AFB00041C04 /* arcunzip.c in Sources */,
 				BA7E843F19063AFB00041C04 /* sysport.c in Sources */,
 				BA7E83E819063AFB00041C04 /* fdd_mtr.c in Sources */,
 				BA7E849E19063AFB00041C04 /* maketext.c in Sources */,

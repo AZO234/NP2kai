@@ -95,9 +95,6 @@
     <Filter Include="ソース ファイル\win9x\x86">
       <UniqueIdentifier>{29819abb-2d69-47c1-8275-aced08ddf2fc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\zlib">
-      <UniqueIdentifier>{c7695477-c913-49b6-ac42-fe56b1a746fc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
@@ -191,9 +188,6 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\win9x\x86">
       <UniqueIdentifier>{f8253966-6e1e-479a-9d92-354dbf11b852}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\zlib">
-      <UniqueIdentifier>{79f8a32d-653b-47a9-837c-c27bd03da0c3}</UniqueIdentifier>
     </Filter>
     <Filter Include="リソース ファイル">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
@@ -382,12 +376,6 @@
       <Filter>ソース ファイル\codecnv</Filter>
     </ClCompile>
     <ClCompile Include="..\common\_memory.c">
-      <Filter>ソース ファイル\common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\common\arc.c">
-      <Filter>ソース ファイル\common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\common\arcunzip.c">
       <Filter>ソース ファイル\common</Filter>
     </ClCompile>
     <ClCompile Include="..\common\bmpdata.c">
@@ -1008,24 +996,6 @@
     <ClCompile Include="subwnd\toolwnd.cpp">
       <Filter>ソース ファイル\win9x\subwnd</Filter>
     </ClCompile>
-    <ClCompile Include="..\zlib\adler32.c">
-      <Filter>ソース ファイル\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\zlib\crc32.c">
-      <Filter>ソース ファイル\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\zlib\inffast.c">
-      <Filter>ソース ファイル\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\zlib\inflate.c">
-      <Filter>ソース ファイル\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\zlib\inftrees.c">
-      <Filter>ソース ファイル\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\zlib\zutil.c">
-      <Filter>ソース ファイル\zlib</Filter>
-    </ClCompile>
     <ClCompile Include="..\diskimage\cd\cdd_ccd.c">
       <Filter>ソース ファイル\diskimage\cd</Filter>
     </ClCompile>
@@ -1341,12 +1311,6 @@
       <Filter>ヘッダー ファイル\codecnv</Filter>
     </ClInclude>
     <ClInclude Include="..\common\_memory.h">
-      <Filter>ヘッダー ファイル\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\arc.h">
-      <Filter>ヘッダー ファイル\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\arcunzip.h">
       <Filter>ヘッダー ファイル\common</Filter>
     </ClInclude>
     <ClInclude Include="..\common\bmpdata.h">
@@ -1963,30 +1927,6 @@
     </ClInclude>
     <ClInclude Include="soundmng\asio\asiosdk.h">
       <Filter>ヘッダー ファイル\win9x\soundmng\asio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\zlib\crc32.h">
-      <Filter>ヘッダー ファイル\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\zlib\inffast.h">
-      <Filter>ヘッダー ファイル\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\zlib\inffixed.h">
-      <Filter>ヘッダー ファイル\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\zlib\inflate.h">
-      <Filter>ヘッダー ファイル\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\zlib\inftrees.h">
-      <Filter>ヘッダー ファイル\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\zlib\zconf.h">
-      <Filter>ヘッダー ファイル\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\zlib\zlib.h">
-      <Filter>ヘッダー ファイル\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\zlib\zutil.h">
-      <Filter>ヘッダー ファイル\zlib</Filter>
     </ClInclude>
     <ClInclude Include="..\diskimage\cddfile.h">
       <Filter>ヘッダー ファイル\diskimage</Filter>

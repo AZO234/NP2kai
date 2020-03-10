@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Mar 6, 2020<br>
+Mar 8, 2020<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -517,6 +517,7 @@ And start NP2kai.
 
 I recommend use 'Takao Gothic'.<br>
 Install with follow command.
+After installation, 'TakaoGothic.ttf' file's shortcut put in BIOS directory.<br>
 ```
 sudo apt install 'fonts-takao-*'
 ```
@@ -524,9 +525,10 @@ and
 ```
 ls -n /usr/share/fonts/truetype/takao-gothic/TakaoGothic.ttf BIOSdirectory/default.ttf'
 ```
-After installation, '/usr/share/fonts/msgothic.ttc' file's shortcut put in BIOS directory.<br>
-(Already exist 'font.tmp', delete this.)<br>
-And start NP2kai.
+Already exist 'font.tmp', delete this.<br>
+And start NP2kai.<br>
+
+You can use 'Noto sans mono CJK', 'MS Gothic'(Japanese) also.
 </div></details>
 
 <details><summary>
@@ -1024,7 +1026,7 @@ Next boot computer, you command from 4.<br>
 
 ## Release
 - Mar 6, 2020<br>
-  - [X11] fix default.ttf<br>
+  - [SDL2/X11] fix default.ttf<br>
 - Mar 2, 2020<br>
   - Using absolute/rerative path in .m3u and .cmd list file<br>
   - [lr] not remember last HDD mount<br>

@@ -532,14 +532,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..¥..¥common¥arc.c"
-					>
-				</File>
-				<File
-					RelativePath="..¥..¥common¥arcunzip.c"
-					>
-				</File>
-				<File
 					RelativePath="..¥..¥common¥bmpdata.c"
 					>
 				</File>
@@ -1563,14 +1555,6 @@
 				>
 				<File
 					RelativePath="..¥..¥common¥_memory.h"
-					>
-				</File>
-				<File
-					RelativePath="..¥..¥common¥arc.h"
-					>
-				</File>
-				<File
-					RelativePath="..¥..¥common¥arcunzip.h"
 					>
 				</File>
 				<File

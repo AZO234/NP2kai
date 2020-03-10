@@ -99,8 +99,6 @@
 		BAF84D7F195AA10500183062 /* ucs2utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = BAF84B97195AA10400183062 /* ucs2utf8.c */; };
 		BAF84D80195AA10500183062 /* utf8ucs2.c in Sources */ = {isa = PBXBuildFile; fileRef = BAF84B98195AA10400183062 /* utf8ucs2.c */; };
 		BAF84D81195AA10500183062 /* _memory.c in Sources */ = {isa = PBXBuildFile; fileRef = BAF84B9A195AA10400183062 /* _memory.c */; };
-		BAF84D82195AA10500183062 /* arc.c in Sources */ = {isa = PBXBuildFile; fileRef = BAF84B9C195AA10400183062 /* arc.c */; };
-		BAF84D83195AA10500183062 /* arcunzip.c in Sources */ = {isa = PBXBuildFile; fileRef = BAF84B9E195AA10400183062 /* arcunzip.c */; };
 		BAF84D84195AA10500183062 /* bmpdata.c in Sources */ = {isa = PBXBuildFile; fileRef = BAF84BA0195AA10400183062 /* bmpdata.c */; };
 		BAF84D85195AA10500183062 /* lstarray.c in Sources */ = {isa = PBXBuildFile; fileRef = BAF84BA2195AA10400183062 /* lstarray.c */; };
 		BAF84D86195AA10500183062 /* milstr.c in Sources */ = {isa = PBXBuildFile; fileRef = BAF84BA4195AA10400183062 /* milstr.c */; };
@@ -436,10 +434,6 @@
 		BAF84B98195AA10400183062 /* utf8ucs2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf8ucs2.c; sourceTree = "<group>"; };
 		BAF84B9A195AA10400183062 /* _memory.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = _memory.c; sourceTree = "<group>"; };
 		BAF84B9B195AA10400183062 /* _memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _memory.h; sourceTree = "<group>"; };
-		BAF84B9C195AA10400183062 /* arc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = arc.c; sourceTree = "<group>"; };
-		BAF84B9D195AA10400183062 /* arc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = arc.h; sourceTree = "<group>"; };
-		BAF84B9E195AA10400183062 /* arcunzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = arcunzip.c; sourceTree = "<group>"; };
-		BAF84B9F195AA10400183062 /* arcunzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = arcunzip.h; sourceTree = "<group>"; };
 		BAF84BA0195AA10400183062 /* bmpdata.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bmpdata.c; sourceTree = "<group>"; };
 		BAF84BA1195AA10400183062 /* bmpdata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bmpdata.h; sourceTree = "<group>"; };
 		BAF84BA2195AA10400183062 /* lstarray.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lstarray.c; sourceTree = "<group>"; };
@@ -1030,10 +1024,6 @@
 			children = (
 				BAF84B9A195AA10400183062 /* _memory.c */,
 				BAF84B9B195AA10400183062 /* _memory.h */,
-				BAF84B9C195AA10400183062 /* arc.c */,
-				BAF84B9D195AA10400183062 /* arc.h */,
-				BAF84B9E195AA10400183062 /* arcunzip.c */,
-				BAF84B9F195AA10400183062 /* arcunzip.h */,
 				BAF84BA0195AA10400183062 /* bmpdata.c */,
 				BAF84BA1195AA10400183062 /* bmpdata.h */,
 				BAF84BA2195AA10400183062 /* lstarray.c */,
@@ -1678,7 +1668,6 @@
 				BAF84E2F195AA10500183062 /* taskmng.c in Sources */,
 				BAF84DFF195AA10500183062 /* gline.c in Sources */,
 				1BC850AB20F05E4800DF931C /* gpibio.c in Sources */,
-				BAF84D82195AA10500183062 /* arc.c in Sources */,
 				BADA5F521C3DE86F00FAEC20 /* externalpsg.cpp in Sources */,
 				BADA5F451C3DE7E600FAEC20 /* c86ctlc86box.cpp in Sources */,
 				BAF84EA4195AA38300183062 /* midtable.c in Sources */,
@@ -1743,7 +1732,6 @@
 				BAF84DED195AA10500183062 /* gdc_sub.c in Sources */,
 				BAF84DD0195AA10500183062 /* i286c.c in Sources */,
 				BAF84DB0195AA10500183062 /* fontpc88.c in Sources */,
-				BAF84D83195AA10500183062 /* arcunzip.c in Sources */,
 				BAF84D51195AA10500183062 /* bios09.c in Sources */,
 				1BC850D720F060B400DF931C /* opl3.c in Sources */,
 				BAF84EA1195AA38300183062 /* midimod.c in Sources */,

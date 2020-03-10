@@ -3,9 +3,6 @@
 #include	"dosio.h"
 #include	"textfile.h"
 #include	"midiout.h"
-#if defined(SUPPORT_ARC)
-#include	"arc.h"
-#endif
 
 
 #define	CFG_MAXAMP		400
@@ -53,9 +50,6 @@ static void VERMOUTHCL pathadd(MIDIMOD mod, const OEMCHAR *path) {
 		// separator change!
 		file_catname(pl.path, path, NELEMENTS(pl.path));
 		if (path[0]) {
-#if defined(SUPPORT_ARC)
-			if (milstr_chr(pl.path, '#') == NULL)
-#endif
 				file_setseparator(pl.path, NELEMENTS(pl.path));
 		}
 	}
@@ -347,11 +341,7 @@ BRESULT VERMOUTHCL midimod_getfile(MIDIMOD mod, const OEMCHAR *filename,
 	while(p) {
 		file_cpyname(path, p->path, size);
 		file_catname(path, filename, size);
-#if defined(SUPPORT_ARC)
-		attr = arcex_attr(path);
-#else
 		attr = file_attr(path);
-#endif
 		if (attr != -1) {
 			return(SUCCESS);
 		}
