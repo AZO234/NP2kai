@@ -143,5 +143,10 @@ int havemmx(void);
 
 extern UINT8 changescreeninit;
 
+#if defined(CPUCORE_IA32)
+extern int GetCpuTypeIndex();
+extern int SetCpuTypeIndex(UINT index);
+#endif
+
 #endif	/* __LIBRETRO__ */
 

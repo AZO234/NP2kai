@@ -35,6 +35,9 @@
 #include	"makegrex.h"
 #include	"sound.h"
 #include	"fmboard.h"
+#ifdef SUPPORT_SOUND_SB16
+#include	"ct1741io.h"
+#endif
 #include	"beep.h"
 #include	"s98.h"
 #include	"tms3631.h"
@@ -81,6 +84,7 @@
 #define	CPU_BRAND_STRING	"Intel(R) 80286 Processor "
 #define	CPU_FEATURES_ECX	(0)
 #define	CPU_BRAND_ID_AUTO	(0xffffffff)
+#define	CPU_EFLAGS_MASK		(0)
 #endif
 #if defined(SUPPORT_IA32_HAXM)
 #include	"np2_tickcount.h"
@@ -128,7 +132,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 				0x70, 1, 3, // Mate-X PCM
 
 #if defined(SUPPORT_SOUND_SB16)
-				0xd2, 3, 5,
+				0xd2, 3, 5, 0,
 #endif	/* SUPPORT_SOUND_SB16 */
 
 #if defined(SUPPORT_FMGEN)
@@ -191,13 +195,16 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 				0, 0xff00, 
 				0, 0, 0,
 				1,
-				CPU_VENDOR, CPU_FAMILY, CPU_MODEL, CPU_STEPPING, CPU_FEATURES, CPU_FEATURES_EX, CPU_BRAND_STRING, OEMTEXT(""), OEMTEXT(""), CPU_BRAND_ID_AUTO, CPU_FEATURES_ECX,
+				CPU_VENDOR, CPU_FAMILY, CPU_MODEL, CPU_STEPPING, CPU_FEATURES, CPU_FEATURES_EX, CPU_BRAND_STRING, OEMTEXT(""), OEMTEXT(""), CPU_BRAND_ID_AUTO, CPU_FEATURES_ECX, CPU_EFLAGS_MASK,
 				FPU_TYPE_SOFTFLOAT,
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 				1,
 #endif
 				0, 0,
 				1, 0,
+#if defined(SUPPORT_GAMEPORT)
+				0,
+#endif
 	};
 
 	PCCORE	pccore = {	PCBASECLOCK25, PCBASEMULTIPLE,
@@ -381,6 +388,9 @@ static void sound_init(void)
 	pcm86gen_initialize(rate);
 	pcm86gen_setvol(np2cfg.vol_pcm);
 	cs4231_initialize(rate);
+#ifdef SUPPORT_SOUND_SB16
+	ct1741_initialize(rate);
+#endif
 	amd98_initialize(rate);
 	oplgen_initialize(rate);
 	oplgen_setvol(np2cfg.vol_fm);
@@ -640,7 +650,10 @@ void pccore_reset(void) {
 	}
 	
 #if defined(CPUCORE_IA32)
-	if(np2cfg.cpu_family == CPU_I486SX_FAMILY && np2cfg.cpu_model == CPU_I486SX_MODEL){
+	if(np2cfg.cpu_family == CPU_80386_FAMILY && np2cfg.cpu_model == CPU_80386_MODEL){
+		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_80386);
+	}else if(np2cfg.cpu_family == CPU_I486SX_FAMILY && np2cfg.cpu_model == CPU_I486SX_MODEL){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_I486SX);
 	}else if(np2cfg.cpu_family == CPU_I486DX_FAMILY && np2cfg.cpu_model == CPU_I486DX_MODEL){
@@ -724,6 +737,7 @@ void pccore_reset(void) {
 		i386cpuid.cpu_feature = CPU_FEATURES_ALL;
 		i386cpuid.cpu_feature_ex = CPU_FEATURES_EX_ALL;
 		i386cpuid.cpu_feature_ecx = CPU_FEATURES_ALL;
+		i386cpuid.cpu_eflags_mask = 0;
 		i386cpuid.cpu_brandid = 0;
 	}else{
 		i386cpuid.cpu_family = np2cfg.cpu_family;
@@ -732,6 +746,7 @@ void pccore_reset(void) {
 		i386cpuid.cpu_feature = CPU_FEATURES_ALL & np2cfg.cpu_feature;
 		i386cpuid.cpu_feature_ex = CPU_FEATURES_EX_ALL & np2cfg.cpu_feature_ex;
 		i386cpuid.cpu_feature_ecx = CPU_FEATURES_ECX_ALL & np2cfg.cpu_feature_ecx;
+		i386cpuid.cpu_eflags_mask = (AC_FLAG) & np2cfg.cpu_eflags_mask;
 		i386cpuid.cpu_brandid = np2cfg.cpu_brandid;
 	}
 	strcpy(i386cpuid.cpu_brandstring, np2cfg.cpu_brandstring);
@@ -1085,6 +1100,7 @@ void pccore_postevent(UINT32 event) {	// yet!
 void pccore_exec(BOOL draw) {
 
 	static UINT32 disptmr = 0;
+	static UINT32 baseclk = 0;
 
 	pcstat.drawframe = (UINT8)draw;
 //	keystat_sync();
@@ -1112,6 +1128,10 @@ void pccore_exec(BOOL draw) {
 	while(pcstat.screendispflag) {
 #if defined(TRACE)
 		resetcnt++;
+#endif
+#if defined(USE_TSC)
+		CPU_MSR_TSC += CPU_BASECLOCK * pccore.maxmultiple / pccore.multiple;
+		baseclk = CPU_BASECLOCK * pccore.maxmultiple / pccore.multiple;
 #endif
 		pic_irq();
 #if defined(SUPPORT_IA32_HAXM)
@@ -1153,11 +1173,6 @@ void pccore_exec(BOOL draw) {
 #endif
 			CPU_SHUT();
 		}
-#if defined(USE_TSC)
-#if defined(NP2_X11) || defined(NP2_SDL2) || defined(__LIBRETRO__)
-		CPU_MSR_TSC += CPU_BASECLOCK;//CPU_REMCLOCK;
-#endif
-#endif
 #if defined(SUPPORT_IA32_HAXM)
 		if (np2hax.enable) {
 			i386hax_vm_exec();
@@ -1179,6 +1194,9 @@ void pccore_exec(BOOL draw) {
 			}
 #endif
 		}
+#if defined(USE_TSC)
+		CPU_MSR_TSC = CPU_MSR_TSC - baseclk + CPU_BASECLOCK * pccore.maxmultiple / pccore.multiple;
+#endif
 #if defined(SUPPORT_HRTIMER)
 	upd4990_hrtimer_count();
 #endif	/* SUPPORT_HRTIMER */

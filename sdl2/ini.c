@@ -611,6 +611,7 @@ static const INITBL iniitem[] = {
 	{"optsb16p", INITYPE_HEX8,	&np2cfg.sndsb16io,	0},
 	{"optsb16d", INITYPE_UINT8,	&np2cfg.sndsb16dma,	0},
 	{"optsb16i", INITYPE_UINT8,	&np2cfg.sndsb16irq,	0},
+	{"optsb16A", INITYPE_BOOL,	&np2cfg.sndsb16at,	0},
 #endif	/* SUPPORT_SOUND_SB16 */
 
 	{"volume_F", INIMAX_UINT8,	&np2cfg.vol_fm,		128},
@@ -703,6 +704,9 @@ static const INITBL iniitem[] = {
 	{"cpu_feat", INITYPE_HEX32,	&np2cfg.cpu_feature,	0},
 	{"cpu_f_ex", INITYPE_HEX32,	&np2cfg.cpu_feature_ex,	0},
 	{"cpu_bran", INIRO_STR,		np2cfg.cpu_brandstring_o, 63},
+	{"cpu_brid", INITYPE_HEX32,	&np2cfg.cpu_brandid,	0},
+	{"cpu_fecx", INITYPE_HEX32,	&np2cfg.cpu_feature_ecx,	0},
+	{"cpu_eflg", INITYPE_HEX32,	&np2cfg.cpu_eflags_mask,	0},
 
 	{"FPU_TYPE", INITYPE_UINT8,	&np2cfg.fpu_type,	0},
 #if defined(SUPPORT_FAST_MEMORYCHECK)
@@ -714,6 +718,9 @@ static const INITBL iniitem[] = {
 #endif
 #if defined(SUPPORT_IDEIO)
 	{"IDEBADDR", INIRO_HEX8,	&np2cfg.idebaddr,	0},
+#endif
+#if defined(SUPPORT_GAMEPORT)
+	{"GAMEPORT", INITYPE_BOOL,	&np2cfg.gameport,	0},
 #endif
 
 	{"keyboard", INITYPE_KB,	&np2oscfg.KEYBOARD,	0},

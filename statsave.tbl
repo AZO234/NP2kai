@@ -27,6 +27,9 @@ static const PROCTBL evtproc[] = {
 			{PROCID('e','c','s','d'), cs4231_dma},
 			{PROCID('e','p','8','6'), pcm86_cb},
 			{PROCID('e','a','m','d'), amd98int},
+#ifdef SUPPORT_SOUND_SB16
+			{PROCID('e','c','t','d'), ct1741_dma},
+#endif
 #endif
 #if defined(SUPPORT_SASI)
 			{PROCID('e','s','a','s'), sasiioint},
@@ -64,6 +67,9 @@ static const ENUMTBL evtnum[] = {
 			{PROCID('p','c','m','8'), NEVENT_86PCM},
 			{PROCID('s','a','s','i'), NEVENT_SASIIO},
 			{PROCID('s','c','s','i'), NEVENT_SCSIIO},
+#ifdef SUPPORT_SOUND_SB16
+			{PROCID('1','7','4','1'), NEVENT_CT1741},
+#endif
 };
 
 static const PROCTBL dmaproc[] = {
@@ -75,6 +81,9 @@ static const PROCTBL dmaproc[] = {
 			{PROCID('d','e','f','d'), fdc_dmafunc},
 #if !defined(DISABLE_SOUND)
 			{PROCID('d','e','c','s'), cs4231dmafunc},
+#if defined(SUPPORT_SOUND_SB16)
+			{PROCID('d','e','c','t'), ct1741dmafunc},
+#endif
 #endif
 #if defined(SUPPORT_SASI)
 			{PROCID('d','o','s','a'), sasi_dataread},

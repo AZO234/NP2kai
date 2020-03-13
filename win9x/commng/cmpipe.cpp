@@ -33,6 +33,8 @@ CComPipe::CComPipe()
 	: CComBase(COMCONNECT_SERIAL)
 	, m_hSerial(INVALID_HANDLE_VALUE)
 	, m_isserver(false)
+	, m_lastdata(0)
+	, m_lastdatafail(0)
 {
 }
 
@@ -147,18 +149,67 @@ UINT CComPipe::Read(UINT8* pData)
  */
 UINT CComPipe::Write(UINT8 cData)
 {
-	LPTSTR lpMsgBuf;
 	UINT ret;
 	DWORD dwWrittenSize;
-	DWORD errornum;
 	if (m_hSerial == INVALID_HANDLE_VALUE) {
+		m_lastdatafail = 1;
 		return 0;
 	}
 	ret = (::WriteFile(m_hSerial, &cData, 1, &dwWrittenSize, NULL)) ? 1 : 0;
 	if(dwWrittenSize==0) {
+		if(m_lastdatafail && GetTickCount() - m_lastdatatime > 1000){
+			return 1; // バッファデータが減りそうにないならあきらめる（毎秒1byte(8bit)は流石にあり得ない）
+		}
+		m_lastdatafail = 1;
+		m_lastdata = cData;
+		m_lastdatatime = GetTickCount();
 		return 0;
+	}else{
+		m_lastdatafail = 0;
+		m_lastdata = 0;
+		m_lastdatatime = 0;
 	}
 	return ret;
+}
+
+/**
+ * 書き込みリトライ
+ * @return サイズ
+ */
+UINT CComPipe::WriteRetry()
+{
+	UINT ret;
+	DWORD dwWrittenSize;
+	if(m_lastdatafail){
+		if (GetTickCount() - m_lastdatatime > 1000) return 1; // バッファデータが減りそうにないならあきらめる（毎秒1byte(8bit)は流石にあり得ない）
+		if (m_hSerial == INVALID_HANDLE_VALUE) {
+			return 0;
+		}
+		ret = (::WriteFile(m_hSerial, &m_lastdata, 1, &dwWrittenSize, NULL)) ? 1 : 0;
+		if(dwWrittenSize==0) {
+			return 0;
+		}
+		m_lastdatafail = 0;
+		m_lastdata = 0;
+		m_lastdatatime = 0;
+		return ret;
+	}
+	return 1;
+}
+
+/**
+ * 最後の書き込みが成功しているかチェック
+ * @return サイズ
+ */
+UINT CComPipe::LastWriteSuccess()
+{
+	if(m_lastdatafail && GetTickCount() - m_lastdatatime > 3000){
+		return 1; // 3秒間バッファデータが減りそうにないならあきらめる
+	}
+	if(m_lastdatafail){
+		return 0;
+	}
+	return 1;
 }
 
 /**
@@ -178,11 +229,11 @@ UINT8 CComPipe::GetStat()
  */
 INTPTR CComPipe::Message(UINT nMessage, INTPTR nParam)
 {
-	switch (nMessage)
-	{
-		default:
-			break;
-	}
+	//switch (nMessage)
+	//{
+	//	default:
+	//		break;
+	//}
 	return 0;
 }
 

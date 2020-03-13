@@ -135,6 +135,8 @@ SINT32 nevent_getremain(NEVENTID id);
 // NEVENTの強制脱出
 void nevent_forceexit(void);
 
+void nevent_changeclock(UINT32 oldclock, UINT32 newclock);
+
 #ifdef __cplusplus
 }
 #endif

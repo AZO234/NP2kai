@@ -1,6 +1,6 @@
 /**
  * @file	cmbase.h
- * @brief	commng åŸºåº•ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
+ * @brief	commng Šî’êƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
  */
 
 #pragma once
@@ -8,7 +8,7 @@
 #include "commng.h"
 
 /**
- * @brief commng åŸºåº•ã‚¯ãƒ©ã‚¹
+ * @brief commng Šî’êƒNƒ‰ƒX
  */
 class CComBase : public _commng
 {
@@ -29,24 +29,42 @@ protected:
 	 * @return result
 	 */
 	virtual UINT Write(UINT8 cData) = 0;
+	
+	/**
+	 * Write Retry
+	 * @return result
+	 */
+	virtual UINT WriteRetry(){
+		return 1; // í¬Œ÷ˆµ‚¢
+	}
+	
+	/**
+	 * Last Write Success
+	 * @return result
+	 */
+	virtual UINT LastWriteSuccess(){
+		return 1; // í¬Œ÷ˆµ‚¢
+	}
 
 	/**
-	 * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’å¾—ã‚‹
-	 * @return ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
+	 * ƒXƒe[ƒ^ƒX‚ğ“¾‚é
+	 * @return ƒXƒe[ƒ^ƒX
 	 */
 	virtual UINT8 GetStat() = 0;
 
 	/**
-	 * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
-	 * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
-	 * @param[in] nParam ãƒ‘ãƒ©ãƒ¡ã‚¿
-	 * @return ãƒªã‚¶ãƒ«ãƒˆ ã‚³ãƒ¼ãƒ‰
+	 * ƒƒbƒZ[ƒW
+	 * @param[in] nMessage ƒƒbƒZ[ƒW
+	 * @param[in] nParam ƒpƒ‰ƒƒ^
+	 * @return ƒŠƒUƒ‹ƒg ƒR[ƒh
 	 */
 	virtual INTPTR Message(UINT nMessage, INTPTR nParam) = 0;
 
 private:
 	static UINT cRead(COMMNG cm, UINT8* pData);
 	static UINT cWrite(COMMNG cm, UINT8 cData);
+	static UINT cWriteRetry(COMMNG cm);
+	static UINT cLastWriteSuccess(COMMNG cm);
 	static UINT8 cGetStat(COMMNG cm);
 	static INTPTR cMessage(COMMNG cm, UINT nMessage, INTPTR nParam);
 	static void cRelease(COMMNG cm);

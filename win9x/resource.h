@@ -164,6 +164,7 @@
 #define IDC_COM1STR31                   14125
 #define IDC_COM1PIPENAME                14126
 #define IDC_COM1PIPESERV                14127
+#define IDC_COM1STR32                   14128
 #define IDC_PC9861E                     14201
 #define IDC_CH1SPEED                    14202
 #define IDC_CH1INT                      14203
@@ -534,6 +535,7 @@
 #define IDS_CPU_AMD_K7_ATHLON           32037
 #define IDS_CPU_AMD_K7_ATHLONXP         32038
 #define IDS_CPU_80286					32040
+#define IDS_CPU_80386                   32041
 #define IDS_CPU_NEKOPRO                 32049
 #define IDS_RENDERER_DIRECTDRAW         32100
 #define IDS_RENDERER_DIRECT3D           32101
@@ -704,6 +706,11 @@
 #define IDM_PC9801_86_118               49650
 #define IDM_86SPEAKBOARD                49651
 #define IDM_WAVESTAR                    49652
+#define IDM_PC9801_118_SB16             49655
+#define IDM_PC9801_86_118_SB16			49656
+#define IDM_PC9801_86_WSS_SB16          49657
+#define IDM_WSS_SB16					49658
+#define IDM_PC9801_86_SB16              49659
 #define IDM_MEM640                      40661
 #define IDM_MEM16                       40662
 #define IDM_MEM36                       40663

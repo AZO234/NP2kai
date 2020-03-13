@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Mar 8, 2020<br>
+Mar 13, 2020<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -1025,6 +1025,11 @@ Next boot computer, you command from 4.<br>
 </div></details>
 
 ## Release
+- Mar 13, 2020<br>
+  - Merge NP21/W rev.71<br>
+    - [lr] add CPU feature<br>
+    - fix Sound Blaster 16 (OPL3)<br>
+    - GamePort on soundboards<br>
 - Mar 6, 2020<br>
   - [SDL2/X11] fix default.ttf<br>
 - Mar 2, 2020<br>

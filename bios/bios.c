@@ -951,10 +951,10 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 			bios_screeninit();
 			if (((pccore.model & PCMODELMASK) >= PCMODEL_VX) &&
 				(pccore.sound & 0x7e)) {
-				if(g_nSoundID == SOUNDID_MATE_X_PCM || ((g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_118) && np2cfg.snd118irqf == np2cfg.snd118irqp) || g_nSoundID == SOUNDID_PC_9801_86_WSS || g_nSoundID == SOUNDID_WAVESTAR){
+				if(g_nSoundID == SOUNDID_MATE_X_PCM || ((g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_118 || g_nSoundID == SOUNDID_PC_9801_118_SB16 || g_nSoundID == SOUNDID_PC_9801_86_118_SB16) && np2cfg.snd118irqf == np2cfg.snd118irqp) || g_nSoundID == SOUNDID_PC_9801_86_WSS || g_nSoundID == SOUNDID_WAVESTAR || g_nSoundID == SOUNDID_PC_9801_86_WSS_SB16){
 					iocore_out8(0x188, 0x27);
 					iocore_out8(0x18a, 0x30);
-					if(g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_118){
+					if(g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_118 || g_nSoundID == SOUNDID_PC_9801_118_SB16 || g_nSoundID == SOUNDID_PC_9801_86_118_SB16){
 						iocore_out8(cs4231.port[4], 0x27);
 						iocore_out8(cs4231.port[4]+2, 0x30);
 					}
@@ -983,21 +983,23 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 			switch(CPU_AH){
 			case 0x00:
 #if defined(SUPPORT_CL_GD5430)
-				np2wab.relaystateint |= 0x02;
-				np2wab_setRelayState(0x02);
 				if(CPU_AL == 0x13){
 					// MODE X
 					np2clvga.modex = 1;
 					np2clvga.VRAMWindowAddr3 = 0xa0000;
+					np2wab.relaystateext |= 0x02;
+					np2wab_setRelayState(np2wab.relaystateint|np2wab.relaystateext);
 				}else{
 					np2clvga.modex = 0;
 					np2clvga.VRAMWindowAddr3 = 0;
+					//np2wab.relaystateext &= ‾0x01;
+					np2wab_setRelayState(np2wab.relaystateint|np2wab.relaystateext);
 				}
 #endif
 				break;
 			case 0x1a:
 				// XXX: WAB有効の時だけ返す
-				if(np2wab.relaystateint || np2wab.relaystateext){
+				if(np2clvga.modex || np2wab.relaystateint || np2wab.relaystateext){
 					if(CPU_AL==0x00){
 						CPU_BH = 0x00;
 						CPU_BL = 0x08;

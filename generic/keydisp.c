@@ -101,7 +101,7 @@ typedef struct
 	KDCHANNEL	ch[KEYDISP_CHMAX];
 	OPNACTL		opnactl[5];			/*!< OPNA */
 	PSGCTL		psgctl[3];			/*!< PSG */
-	OPL3CTL		opl3ctl[1];			/*!< OPL3 */
+	OPL3CTL		opl3ctl[8];			/*!< OPL3 */
 	KDDELAYE	delaye[KEYDISP_DELAYEVENTS];
 } KEYDISP;
 

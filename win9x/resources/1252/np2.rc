@@ -1066,6 +1066,11 @@ BEGIN
             MENUITEM "Sound &Orchestra",            IDM_SOUNDORCHESTRA
             MENUITEM "Sound Orchestra-&V",          IDM_SOUNDORCHESTRAV
             MENUITEM "Sound &Blaster 16",           IDM_SB16
+            MENUITEM "PC-9801-86 + Sound Blaster 16",  IDM_PC9801_86_SB16
+            MENUITEM "Mate-X PCM + Sound Blaster 16",  IDM_WSS_SB16
+            MENUITEM "PC-9801-118 + Sound Blaster 16",   IDM_PC9801_118_SB16
+            MENUITEM "PC-9801-86 + Mate-X PCM(B460) + Sound Blaster 16",   IDM_PC9801_86_WSS_SB16
+            MENUITEM "PC-9801-86 + 118(B460) + Sound Blaster 16",   IDM_PC9801_86_118_SB16
             MENUITEM "&AMD-98",                     IDM_AMD98
             MENUITEM "&WaveStar",                   IDM_WAVESTAR
             MENUITEM "&JastSound",                  IDM_JASTSOUND

@@ -1,27 +1,29 @@
 /**
  * @file	cmbase.h
- * @brief	commng åŸºåº•ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
+ * @brief	commng Šî’êƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
  */
 
 #include "compiler.h"
 #include "cmbase.h"
 
 /**
- * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
- * @param[in] nConnect æ¥ç¶šãƒ•ãƒ©ã‚°
+ * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * @param[in] nConnect Ú‘±ƒtƒ‰ƒO
  */
 CComBase::CComBase(UINT nConnect)
 {
 	this->connect = nConnect;
 	this->read = cRead;
 	this->write = cWrite;
+	this->writeretry = cWriteRetry;
+	this->lastwritesuccess = cLastWriteSuccess;
 	this->getstat = cGetStat;
 	this->msg = cMessage;
 	this->release = cRelease;
 }
 
 /**
- * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒfƒXƒgƒ‰ƒNƒ^
  */
 CComBase::~CComBase()
 {
@@ -29,7 +31,7 @@ CComBase::~CComBase()
 
 /**
  * Read
- * @param[in] cm COMMNG ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+ * @param[in] cm COMMNG ƒCƒ“ƒXƒ^ƒ“ƒX
  * @param[out] pData
  * @return result
  */
@@ -40,7 +42,7 @@ UINT CComBase::cRead(COMMNG cm, UINT8* pData)
 
 /**
  * Write
- * @param[in] cm COMMNG ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+ * @param[in] cm COMMNG ƒCƒ“ƒXƒ^ƒ“ƒX
  * @param[in] cData
  * @return result
  */
@@ -50,9 +52,29 @@ UINT CComBase::cWrite(COMMNG cm, UINT8 cData)
 }
 
 /**
- * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’å¾—ã‚‹
- * @param[in] cm COMMNG ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
- * @return ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
+ * Write Retry
+ * @param[in] cm COMMNG ƒCƒ“ƒXƒ^ƒ“ƒX
+ * @return result
+ */
+UINT CComBase::cWriteRetry(COMMNG cm)
+{
+	return static_cast<CComBase*>(cm)->WriteRetry();
+}
+
+/**
+ * Last Write Success
+ * @param[in] cm COMMNG ƒCƒ“ƒXƒ^ƒ“ƒX
+ * @return result
+ */
+UINT CComBase::cLastWriteSuccess(COMMNG cm)
+{
+	return static_cast<CComBase*>(cm)->LastWriteSuccess();
+}
+
+/**
+ * ƒXƒe[ƒ^ƒX‚ğ“¾‚é
+ * @param[in] cm COMMNG ƒCƒ“ƒXƒ^ƒ“ƒX
+ * @return ƒXƒe[ƒ^ƒX
  */
 UINT8 CComBase::cGetStat(COMMNG cm)
 {
@@ -60,11 +82,11 @@ UINT8 CComBase::cGetStat(COMMNG cm)
 }
 
 /**
- * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
- * @param[in] cm COMMNG ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
- * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
- * @param[in] nParam ãƒ‘ãƒ©ãƒ¡ã‚¿
- * @return ãƒªã‚¶ãƒ«ãƒˆ ã‚³ãƒ¼ãƒ‰
+ * ƒƒbƒZ[ƒW
+ * @param[in] cm COMMNG ƒCƒ“ƒXƒ^ƒ“ƒX
+ * @param[in] nMessage ƒƒbƒZ[ƒW
+ * @param[in] nParam ƒpƒ‰ƒƒ^
+ * @return ƒŠƒUƒ‹ƒg ƒR[ƒh
  */
 INTPTR CComBase::cMessage(COMMNG cm, UINT nMessage, INTPTR nParam)
 {
@@ -72,8 +94,8 @@ INTPTR CComBase::cMessage(COMMNG cm, UINT nMessage, INTPTR nParam)
 }
 
 /**
- * ãƒªãƒªãƒ¼ã‚¹
- * @param[in] cm COMMNG ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+ * ƒŠƒŠ[ƒX
+ * @param[in] cm COMMNG ƒCƒ“ƒXƒ^ƒ“ƒX
  */
 void CComBase::cRelease(COMMNG cm)
 {

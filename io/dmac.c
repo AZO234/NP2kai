@@ -9,6 +9,9 @@
 #include	"iocore.h"
 #include	"sound.h"
 #include	"cs4231.h"
+#if defined(SUPPORT_SOUND_SB16)
+#include	"ct1741io.h"
+#endif
 #include	"sasiio.h"
 
 void DMACCALL dma_dummyout(REG8 data) {
@@ -39,9 +42,14 @@ static const DMAPROC dmaproc[] = {
 #endif
 		{dma_dummyout,		dma_dummyin,		dma_dummyproc},		// SCSI
 #if !defined(DISABLE_SOUND)
-		{dma_dummyout,		dma_dummyin,		cs4231dmafunc},		// CS4231
+#if defined(SUPPORT_SOUND_SB16)
+		{dma_dummyout,		dma_dummyin,		ct1741dmafunc},		// CT1741
 #else
-		{dma_dummyout,		dma_dummyin,		dma_dummyproc},		// SASI
+		{dma_dummyout,		dma_dummyin,		dma_dummyproc},		// Dummy
+#endif
+#else
+		{dma_dummyout,		dma_dummyin,		dma_dummyproc},		// Dummy
+		{dma_dummyout,		dma_dummyin,		dma_dummyproc},		// Dummy
 #endif
 };
 
@@ -280,8 +288,9 @@ static REG8 IOINPCALL dmac_i03(UINT port) {
 
 static REG8 IOINPCALL dmac_i11(UINT port) {
 
-	(void)port;
-	return(dmac.stat &= 0xf0);												// ToDo!!
+	REG8 ret = dmac.stat;
+	dmac.stat &= 0xf0;
+	return(ret);												// ToDo!!
 }
 static void IOOUTCALL dmac_oe05(UINT port, REG8 dat) {
 
@@ -381,6 +390,9 @@ static void dmacset(REG8 channel) {
 		case 3:TRACEOUT(("dmac set %d - SASI", channel));break;
 		case 4:TRACEOUT(("dmac set %d - SCSI", channel));break;
 		case 5:TRACEOUT(("dmac set %d - cs4231p", channel));break;
+#if defined(SUPPORT_SOUND_SB16)
+		case 6:TRACEOUT(("dmac set %d - CT1741", channel));break;
+#endif
 	}
 	dmac.dmach[channel].proc = dmaproc[dmadev];
 }

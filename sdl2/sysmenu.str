@@ -106,8 +106,8 @@ static const char str_pc980126k86[] = "PC-9801-26K + 86";
 static const char str_pc980186cb[] = "PC-9801-86 + Chibi-oto";
 static const char str_pc9801118[] = "PC-9801-118";
 static const char str_pc980186mx[] = "PC-9801-86 + Mate-X PCM(B460)";
-static const char str_pc980186118[] = "PC-9801-86 + 118";
-static const char str_pc9801mx[] = "Mate-X PCM(B460)";
+static const char str_pc980186118[] = "PC-9801-86 + 118(B460)";
+static const char str_pc9801mx[] = "Mate-X PCM";
 static const char str_spreakboard[] = "Speak board";
 static const char str_spreakboard86[] = "PC-9801-86 + Speak board";
 static const char str_sparkboard[] = "Spark board";
@@ -115,6 +115,11 @@ static const char str_sndorchestra[] = "Sound Orchestra";
 static const char str_sndorchestrav[] = "Sound Orchestra-V";
 #if defined(SUPPORT_SOUND_SB16)
 static const char str_sb16[] = "Sound Blaster 16";
+static const char str_86sb16[] = "PC-9801-86 + Sound Blaster 16";
+static const char str_mxsb16[] = "Mate-X PCM + Sound Blaster 16";
+static const char str_118sb16[] = "PC-9801-118 + Sound Blaster 16";
+static const char str_86mxsb16[] = "PC-9801-86 + Mate-X PCM(B460) + Sound Blaster 16";
+static const char str_86118sb16[] = "PC-9801-86 + 118(B460) + Sound Blaster 16";
 #endif	/* SUPPORT_SOUND_SB16 */
 static const char str_amd98[] = "AMD-98";
 static const char str_wavestar[] = "WaveStar";
@@ -406,6 +411,11 @@ static const MSYSITEM s_snd[] = {
 		{str_sndorchestrav,	NULL,		MID_SOUNDORCHESTRAV,	0},
 #if defined(SUPPORT_SOUND_SB16)
 		{str_sb16,		NULL,		MID_SB16,		0},
+		{str_86sb16,		NULL,		MID_86_SB16,		0},
+		{str_mxsb16,		NULL,		MID_MX_SB16,		0},
+		{str_118sb16,		NULL,		MID_118_SB16,		0},
+		{str_86mxsb16,		NULL,		MID_86MXSB16,		0},
+		{str_86118sb16,		NULL,		MID_86118SB16,		0},
 #endif	/* SUPPORT_SOUND_SB16 */
 		{str_amd98,			NULL,		MID_AMD98,			0},
 		{str_wavestar,		NULL,		MID_WAVESTAR,			0},

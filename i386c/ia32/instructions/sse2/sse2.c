@@ -25,6 +25,28 @@
 
 #include "compiler.h"
 
+#if 0
+#undef	TRACEOUT
+#define USE_TRACEOUT_VS
+//#define MEM_BDA_TRACEOUT
+//#define MEM_D8_TRACEOUT
+#ifdef USE_TRACEOUT_VS
+static void trace_fmt_ex(const char *fmt, ...)
+{
+	char stmp[2048];
+	va_list ap;
+	va_start(ap, fmt);
+	vsprintf(stmp, fmt, ap);
+	strcat(stmp, "\n");
+	va_end(ap);
+	OutputDebugStringA(stmp);
+}
+#define	TRACEOUT(s)	trace_fmt_ex s
+#else
+#define	TRACEOUT(s)	(void)(s)
+#endif
+#endif	/* 1 */
+
 #include <math.h>
 #include <float.h>
 
@@ -44,15 +66,15 @@
 
 static INLINE void
 SSE2_check_NM_EXCEPTION(){
-	// SSE2ãªã—ãªã‚‰UD(ç„¡åŠ¹ã‚ªãƒšã‚³ãƒ¼ãƒ‰ä¾‹å¤–)ã‚’ç™ºç”Ÿã•ã›ã‚‹
+	// SSE2‚È‚µ‚È‚çUD(–³ŒøƒIƒyƒR[ƒh—áŠO)‚ğ”­¶‚³‚¹‚é
 	if(!(i386cpuid.cpu_feature & CPU_FEATURE_SSE2)){
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	// ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ãªã‚‰UD(ç„¡åŠ¹ã‚ªãƒšã‚³ãƒ¼ãƒ‰ä¾‹å¤–)ã‚’ç™ºç”Ÿã•ã›ã‚‹
+	// ƒGƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚È‚çUD(–³ŒøƒIƒyƒR[ƒh—áŠO)‚ğ”­¶‚³‚¹‚é
 	if(CPU_CR0 & CPU_CR0_EM){
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
-	// ã‚¿ã‚¹ã‚¯ã‚¹ã‚¤ãƒƒãƒæ™‚ã«NM(ãƒ‡ãƒã‚¤ã‚¹ä½¿ç”¨ä¸å¯ä¾‹å¤–)ã‚’ç™ºç”Ÿã•ã›ã‚‹
+	// ƒ^ƒXƒNƒXƒCƒbƒ`‚ÉNM(ƒfƒoƒCƒXg—p•s‰Â—áŠO)‚ğ”­¶‚³‚¹‚é
 	if (CPU_CR0 & CPU_CR0_TS) {
 		EXCEPTION(NM_EXCEPTION, 0);
 	}
@@ -63,7 +85,7 @@ SSE2_setTag(void)
 {
 }
 
-// mmx.cã®ã‚‚ã®ã¨åŒã˜
+// mmx.c‚Ì‚à‚Ì‚Æ“¯‚¶
 static INLINE void
 MMX_setTag(void)
 {
@@ -95,14 +117,14 @@ double SSE2_ROUND_DOUBLE(double val){
 	case 0:	
 		floorval = floor(val);
 		if (val - floorval > 0.5){
-			return (floorval + 1); // åˆ‡ã‚Šä¸Šã’
+			return (floorval + 1); // Ø‚èã‚°
 		}else if (val - floorval < 0.5){
-			return (floorval); // åˆ‡ã‚Šæ¨ã¦
+			return (floorval); // Ø‚èÌ‚Ä
 		}else{
 			if(floor(floorval / 2) == floorval/2){
-				return (floorval); // å¶æ•°
+				return (floorval); // ‹ô”
 			}else{
-				return (floorval+1); // å¥‡æ•°
+				return (floorval+1); // Šï”
 			}
 		}
 		break;
@@ -112,9 +134,9 @@ double SSE2_ROUND_DOUBLE(double val){
 		return ceil(val);
 	case 3:
 		if(val < 0){
-			return ceil(val); // ã‚¼ãƒ­æ–¹å‘ã¸ã®åˆ‡ã‚Šæ¨ã¦
+			return ceil(val); // ƒ[ƒ•ûŒü‚Ö‚ÌØ‚èÌ‚Ä
 		}else{
-			return floor(val); // ã‚¼ãƒ­æ–¹å‘ã¸ã®åˆ‡ã‚Šæ¨ã¦
+			return floor(val); // ƒ[ƒ•ûŒü‚Ö‚ÌØ‚èÌ‚Ä
 		}
 		break;
 	default:
@@ -126,7 +148,7 @@ double SSE2_ROUND_DOUBLE(double val){
  * SSE2 interface
  */
 
-// ã‚³ãƒ¼ãƒ‰ãŒé•·ããªã‚‹ã®ã§ã‚„ã‚„å¼·å¼•ã«å…±é€šåŒ–
+// ƒR[ƒh‚ª’·‚­‚È‚é‚Ì‚Å‚â‚â‹­ˆø‚É‹¤’Ê‰»
 // xmm/m128 -> xmm
 static INLINE void SSE_PART_GETDATA1DATA2_PD(double **data1, double **data2, double *data2buf){
 	UINT32 op;
@@ -365,6 +387,7 @@ void SSE2_ADDPD(void)
 	for(i=0;i<2;i++){
 		data1[i] = data1[i] + data2[i];
 	}
+	TRACEOUT(("SSE2_ADDPD"));
 }
 void SSE2_ADDSD(void)
 {
@@ -373,14 +396,17 @@ void SSE2_ADDSD(void)
 	
 	SSE_PART_GETDATA1DATA2_SD(&data1, &data2, data2buf);
 	data1[0] = data1[0] + data2[0];
+	TRACEOUT(("SSE2_ADDSD"));
 }
 void SSE2_ANDNPD(void)
 {
 	SSE_ANDNPS();
+	TRACEOUT(("SSE2_ANDNPD"));
 }
 void SSE2_ANDPD(void)
 {
 	SSE_ANDPS();
+	TRACEOUT(("SSE2_ANDPD"));
 }
 void SSE2_CMPPD(void)
 {
@@ -437,6 +463,7 @@ void SSE2_CMPPD(void)
 			}
 			break;
 	}
+	TRACEOUT(("SSE2_CMPPD"));
 }
 void SSE2_CMPSD(void)
 {
@@ -476,6 +503,7 @@ void SSE2_CMPSD(void)
 			data1ui32[0] = data1ui32[1] = (!isnan(data1[0]) && !isnan(data2[0]) ? 0xffffffff : 0x00000000);
 			break;
 	}
+	TRACEOUT(("SSE2_CMPSD"));
 }
 void SSE2_COMISD(void)
 {
@@ -501,6 +529,7 @@ void SSE2_COMISD(void)
 		CPU_FLAGL = (CPU_FLAGL & ~P_FLAG) | 0;
 		CPU_FLAGL = (CPU_FLAGL & ~C_FLAG) | 0;
 	}
+	TRACEOUT(("SSE2_COMISD"));
 }
 void SSE2_CVTPI2PD(void)
 {
@@ -512,6 +541,7 @@ void SSE2_CVTPI2PD(void)
 
 	data1[0] = (double)data2[0];
 	data1[1] = (double)data2[1];
+	TRACEOUT(("SSE2_CVTPI2PD"));
 }
 void SSE2_CVTPD2PI(void)
 {
@@ -523,6 +553,7 @@ void SSE2_CVTPD2PI(void)
 
 	data1[0] = (SINT32)SSE2_ROUND_DOUBLE(data2[0]);
 	data1[1] = (SINT32)SSE2_ROUND_DOUBLE(data2[1]);
+	TRACEOUT(("SSE2_CVTPD2PI"));
 }
 void SSE2_CVTSI2SD(void)
 {
@@ -533,6 +564,7 @@ void SSE2_CVTSI2SD(void)
 	SSE_PART_GETDATA1DATA2_SD_REG2XMM(&data1, &data2, data2buf);
 
 	data1[0] = (double)data2[0];
+	TRACEOUT(("SSE2_CVTSI2SD"));
 }
 void SSE2_CVTSD2SI(void)
 {
@@ -543,6 +575,7 @@ void SSE2_CVTSD2SI(void)
 	SSE_PART_GETDATA1DATA2_SD_XMM2REG(&data1, &data2, data2buf);
 
 	data1[0] = (SINT32)SSE2_ROUND_DOUBLE(data2[0]);
+	TRACEOUT(("SSE2_CVTSD2SI"));
 }
 void SSE2_CVTTPD2PI(void)
 {
@@ -554,6 +587,7 @@ void SSE2_CVTTPD2PI(void)
 
 	data1[0] = (SINT32)(data2[0]);
 	data1[1] = (SINT32)(data2[1]);
+	TRACEOUT(("SSE2_CVTTPD2PI"));
 }
 void SSE2_CVTTSD2SI(void)
 {
@@ -564,6 +598,7 @@ void SSE2_CVTTSD2SI(void)
 	SSE_PART_GETDATA1DATA2_SD_XMM2REG(&data1, &data2, data2buf);
 	
 	data1[0] = (SINT32)(data2[0]);
+	TRACEOUT(("SSE2_CVTTSD2SI"));
 }
 void SSE2_CVTPD2PS(void)
 {
@@ -576,6 +611,7 @@ void SSE2_CVTPD2PS(void)
 	data1[0] = (float)(data2[0]);
 	data1[1] = (float)(data2[1]);
 	data1[2] = data1[3] = 0;
+	TRACEOUT(("SSE2_CVTPD2PS"));
 }
 void SSE2_CVTPS2PD(void)
 {
@@ -587,6 +623,7 @@ void SSE2_CVTPS2PD(void)
 	
 	data1[0] = (double)(data2[0]);
 	data1[1] = (double)(data2[1]);
+	TRACEOUT(("SSE2_CVTPS2PD"));
 }
 void SSE2_CVTSD2SS(void)
 {
@@ -597,6 +634,7 @@ void SSE2_CVTSD2SS(void)
 	SSE_PART_GETDATA1DATA2_SD((double**)(&data1), &data2, data2buf);
 	
 	data1[0] = (float)(data2[0]);
+	TRACEOUT(("SSE2_CVTSD2SS"));
 }
 void SSE2_CVTSS2SD(void)
 {
@@ -607,6 +645,7 @@ void SSE2_CVTSS2SD(void)
 	SSE_PART_GETDATA1DATA2_SDm64(&data1, &data2, data2buf);
 	
 	data1[0] = (double)(data2[0]);
+	TRACEOUT(("SSE2_CVTSS2SD"));
 }
 void SSE2_CVTPD2DQ(void)
 {
@@ -619,6 +658,7 @@ void SSE2_CVTPD2DQ(void)
 	data1[0] = (SINT32)SSE2_ROUND_DOUBLE(data2[0]);
 	data1[1] = (SINT32)SSE2_ROUND_DOUBLE(data2[1]);
 	data1[2] = data1[3] = 0;
+	TRACEOUT(("SSE2_CVTPD2DQ"));
 }
 void SSE2_CVTTPD2DQ(void)
 {
@@ -631,6 +671,7 @@ void SSE2_CVTTPD2DQ(void)
 	data1[0] = (SINT32)(data2[0]);
 	data1[1] = (SINT32)(data2[1]);
 	data1[2] = data1[3] = 0;
+	TRACEOUT(("SSE2_CVTTPD2DQ"));
 }
 void SSE2_CVTDQ2PD(void)
 {
@@ -642,6 +683,7 @@ void SSE2_CVTDQ2PD(void)
 	
 	data1[0] = (double)(data2[0]);
 	data1[1] = (double)(data2[1]);
+	TRACEOUT(("SSE2_CVTDQ2PD"));
 }
 void SSE2_CVTPS2DQ(void)
 {
@@ -655,6 +697,7 @@ void SSE2_CVTPS2DQ(void)
 	for(i=0;i<4;i++){
 		data1[i] = (SINT32)SSE2_ROUND_FLOAT(data2[i]);
 	}
+	TRACEOUT(("SSE2_CVTPS2DQ"));
 }
 void SSE2_CVTTPS2DQ(void)
 {
@@ -668,6 +711,7 @@ void SSE2_CVTTPS2DQ(void)
 	for(i=0;i<4;i++){
 		data1[i] = (SINT32)(data2[i]);
 	}
+	TRACEOUT(("SSE2_CVTTPS2DQ"));
 }
 void SSE2_CVTDQ2PS(void)
 {
@@ -681,6 +725,7 @@ void SSE2_CVTDQ2PS(void)
 	for(i=0;i<4;i++){
 		data1[i] = (float)(data2[i]);
 	}
+	TRACEOUT(("SSE2_CVTDQ2PS"));
 }
 void SSE2_DIVPD(void)
 {
@@ -692,6 +737,7 @@ void SSE2_DIVPD(void)
 	for(i=0;i<2;i++){
 		data1[i] = data1[i] / data2[i];
 	}
+	TRACEOUT(("SSE2_DIVPD"));
 }
 void SSE2_DIVSD(void)
 {
@@ -700,6 +746,7 @@ void SSE2_DIVSD(void)
 	
 	SSE_PART_GETDATA1DATA2_SD(&data1, &data2, data2buf);
 	data1[0] = data1[0] / data2[0];
+	TRACEOUT(("SSE2_DIVSD"));
 }
 void SSE2_MAXPD(void)
 {
@@ -715,6 +762,7 @@ void SSE2_MAXPD(void)
 			data1[i] = (data1[i] > data2[i] ? data1[i] : data2[i]);
 		}
 	}
+	TRACEOUT(("SSE2_MAXPD"));
 }
 void SSE2_MAXSD(void)
 {
@@ -727,6 +775,7 @@ void SSE2_MAXSD(void)
 	}else{
 		data1[0] = (data1[0] > data2[0] ? data1[0] : data2[0]);
 	}
+	TRACEOUT(("SSE2_MAXSD"));
 }
 void SSE2_MINPD(void)
 {
@@ -742,6 +791,7 @@ void SSE2_MINPD(void)
 			data1[i] = (data1[i] < data2[i] ? data1[i] : data2[i]);
 		}
 	}
+	TRACEOUT(("SSE2_MINPD"));
 }
 void SSE2_MINSD(void)
 {
@@ -754,30 +804,37 @@ void SSE2_MINSD(void)
 	}else{
 		data1[0] = (data1[0] < data2[0] ? data1[0] : data2[0]);
 	}
+	TRACEOUT(("SSE2_MINSD"));
 }
 void SSE2_MOVAPDmem2xmm(void)
 {
 	SSE_MOVAPSmem2xmm();
+	TRACEOUT(("SSE2_MOVAPDmem2xmm"));
 }
 void SSE2_MOVAPDxmm2mem(void)
 {
 	SSE_MOVAPSxmm2mem();
+	TRACEOUT(("SSE2_MOVAPDxmm2mem"));
 }
 void SSE2_MOVHPDmem2xmm(void)
 {
 	SSE_MOVHPSmem2xmm();
+	TRACEOUT(("SSE2_MOVHPDmem2xmm"));
 }
 void SSE2_MOVHPDxmm2mem(void)
 {
 	SSE_MOVHPSxmm2mem();
+	TRACEOUT(("SSE2_MOVHPDxmm2mem"));
 }
 void SSE2_MOVLPDmem2xmm(void)
 {
 	SSE_MOVLPSmem2xmm();
+	TRACEOUT(("SSE2_MOVLPDmem2xmm"));
 }
 void SSE2_MOVLPDxmm2mem(void)
 {
 	SSE_MOVLPSxmm2mem();
+	TRACEOUT(("SSE2_MOVLPDxmm2mem"));
 }
 void SSE2_MOVMSKPD(void)
 {
@@ -800,6 +857,7 @@ void SSE2_MOVMSKPD(void)
 	}
 	*data1 = ((data2[1] >> 31) & 0x1)|
 			 ((data2[3] >> 30) & 0x2);
+	TRACEOUT(("SSE2_MOVMSKPD"));
 }
 void SSE2_MOVSDmem2xmm(void)
 {
@@ -825,6 +883,7 @@ void SSE2_MOVSDmem2xmm(void)
 		*(UINT64*)(data1+1) = 0;
 	}
 	data1[0] = data2[0];
+	TRACEOUT(("SSE2_MOVSDmem2xmm"));
 }
 void SSE2_MOVSDxmm2mem(void)
 {
@@ -847,14 +906,17 @@ void SSE2_MOVSDxmm2mem(void)
 		madr = calc_ea_dst(op);
 		cpu_vmemorywrite_q(CPU_INST_SEGREG_INDEX, madr+ 0, *((UINT64*)(data1+ 0)));
 	}
+	TRACEOUT(("SSE2_MOVSDxmm2mem"));
 }
 void SSE2_MOVUPDmem2xmm(void)
 {
-	SSE2_MOVAPDmem2xmm(); // ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã§ã¯ã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆåˆ¶é™ãŒãªã„ã®ã§MOVAPDã¨åŒã˜
+	SSE2_MOVAPDmem2xmm(); // ƒGƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚Å‚ÍƒAƒ‰ƒCƒƒ“ƒg§ŒÀ‚ª‚È‚¢‚Ì‚ÅMOVAPD‚Æ“¯‚¶
+	TRACEOUT(("SSE2_MOVUPDmem2xmm"));
 }
 void SSE2_MOVUPDxmm2mem(void)
 {
-	SSE2_MOVAPDxmm2mem(); // ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã§ã¯ã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆåˆ¶é™ãŒãªã„ã®ã§MOVAPDã¨åŒã˜
+	SSE2_MOVAPDxmm2mem(); // ƒGƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚Å‚ÍƒAƒ‰ƒCƒƒ“ƒg§ŒÀ‚ª‚È‚¢‚Ì‚ÅMOVAPD‚Æ“¯‚¶
+	TRACEOUT(("SSE2_MOVUPDxmm2mem"));
 }
 void SSE2_MULPD(void)
 {
@@ -866,6 +928,7 @@ void SSE2_MULPD(void)
 	for(i=0;i<2;i++){
 		data1[i] = data1[i] * data2[i];
 	}
+	TRACEOUT(("SSE2_MULPD"));
 }
 void SSE2_MULSD(void)
 {
@@ -874,10 +937,12 @@ void SSE2_MULSD(void)
 	
 	SSE_PART_GETDATA1DATA2_SD(&data1, &data2, data2buf);
 	data1[0] = data1[0] * data2[0];
+	TRACEOUT(("SSE2_MULSD"));
 }
 void SSE2_ORPD(void)
 {
 	SSE_ORPS();
+	TRACEOUT(("SSE2_ORPD"));
 }
 void SSE2_SHUFPD(void)
 {
@@ -897,6 +962,7 @@ void SSE2_SHUFPD(void)
 	data1[0] = data1buf[imm8 & 0x1];
 	imm8 = (imm8 >> 1);
 	data1[1] = data2[imm8 & 0x1];
+	TRACEOUT(("SSE2_SHUFPD"));
 }
 void SSE2_SQRTPD(void)
 {
@@ -908,6 +974,7 @@ void SSE2_SQRTPD(void)
 	for(i=0;i<2;i++){
 		data1[i] = sqrt(data2[i]);
 	}
+	TRACEOUT(("SSE2_SQRTPD"));
 }
 void SSE2_SQRTSD(void)
 {
@@ -916,6 +983,7 @@ void SSE2_SQRTSD(void)
 	
 	SSE_PART_GETDATA1DATA2_SD(&data1, &data2, data2buf);
 	data1[0] = sqrt(data2[0]);
+	TRACEOUT(("SSE2_SQRTSD"));
 }
 //void SSE2_STMXCSR(UINT32 maddr)
 //{
@@ -931,6 +999,7 @@ void SSE2_SUBPD(void)
 	for(i=0;i<2;i++){
 		data1[i] = data1[i] - data2[i];
 	}
+	TRACEOUT(("SSE2_SUBPD"));
 }
 void SSE2_SUBSD(void)
 {
@@ -939,10 +1008,12 @@ void SSE2_SUBSD(void)
 	
 	SSE_PART_GETDATA1DATA2_SD(&data1, &data2, data2buf);
 	data1[0] = data1[0] - data2[0];
+	TRACEOUT(("SSE2_SUBSD"));
 }
 void SSE2_UCOMISD(void)
 {
-	SSE_COMISS(); // XXX: ã¨ã‚Šã‚ãˆãšä¾‹å¤–ã¯è€ƒãˆãªã„ã®ã§COMISSã¨åŒã˜
+	SSE_COMISS(); // XXX: ‚Æ‚è‚ ‚¦‚¸—áŠO‚Íl‚¦‚È‚¢‚Ì‚ÅCOMISS‚Æ“¯‚¶
+	TRACEOUT(("SSE2_UCOMISD"));
 }
 void SSE2_UNPCKHPD(void)
 {
@@ -957,6 +1028,7 @@ void SSE2_UNPCKHPD(void)
 	}
 	data1[0] = data1buf[1];
 	data1[1] = data2[1];
+	TRACEOUT(("SSE2_UNPCKHPD"));
 }
 void SSE2_UNPCKLPD(void)
 {
@@ -971,10 +1043,12 @@ void SSE2_UNPCKLPD(void)
 	}
 	data1[0] = data1buf[0];
 	data1[1] = data2[0];
+	TRACEOUT(("SSE2_UNPCKLPD"));
 }
 void SSE2_XORPD(void)
 {
 	SSE_XORPS();
+	TRACEOUT(("SSE2_XORPD"));
 }
 
 void SSE2_MOVDrm2xmm(void)
@@ -997,6 +1071,7 @@ void SSE2_MOVDrm2xmm(void)
 	}
 	FPU_STAT.xmm_reg[idx].ul32[0] = src;
 	FPU_STAT.xmm_reg[idx].ul32[1] = FPU_STAT.xmm_reg[idx].ul32[2] = FPU_STAT.xmm_reg[idx].ul32[3] = 0;
+	TRACEOUT(("SSE2_MOVDrm2xmm"));
 }
 void SSE2_MOVDxmm2rm(void)
 {
@@ -1016,22 +1091,27 @@ void SSE2_MOVDxmm2rm(void)
 		madr = calc_ea_dst(op);
 		cpu_vmemorywrite_d(CPU_INST_SEGREG_INDEX, madr, src);
 	}
+	TRACEOUT(("SSE2_MOVDxmm2rm"));
 }
 void SSE2_MOVDQAmem2xmm(void)
 {
 	SSE_MOVAPSmem2xmm();
+	TRACEOUT(("SSE2_MOVDQAmem2xmm"));
 }
 void SSE2_MOVDQAxmm2mem(void)
 {
 	SSE_MOVAPSxmm2mem();
+	TRACEOUT(("SSE2_MOVDQAxmm2mem"));
 }
 void SSE2_MOVDQUmem2xmm(void)
 {
-	SSE2_MOVDQAmem2xmm(); // ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã§ã¯ã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆåˆ¶é™ãŒãªã„ã®ã§MOVDQAã¨åŒã˜
+	SSE2_MOVDQAmem2xmm(); // ƒGƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚Å‚ÍƒAƒ‰ƒCƒƒ“ƒg§ŒÀ‚ª‚È‚¢‚Ì‚ÅMOVDQA‚Æ“¯‚¶
+	TRACEOUT(("SSE2_MOVDQUmem2xmm"));
 }
 void SSE2_MOVDQUxmm2mem(void)
 {
-	SSE2_MOVDQAxmm2mem(); // ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã§ã¯ã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆåˆ¶é™ãŒãªã„ã®ã§MOVDQAã¨åŒã˜
+	SSE2_MOVDQAxmm2mem(); // ƒGƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚Å‚ÍƒAƒ‰ƒCƒƒ“ƒg§ŒÀ‚ª‚È‚¢‚Ì‚ÅMOVDQA‚Æ“¯‚¶
+	TRACEOUT(("SSE2_MOVDQUxmm2mem"));
 }
 void SSE2_MOVQ2DQ(void)
 {
@@ -1046,11 +1126,12 @@ void SSE2_MOVQ2DQ(void)
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
-		FPU_STAT.xmm_reg[idx].ul64[0] = FPU_STAT.reg[sub].ll; // idxã¨subãŒé€†ã‹ã‚‚ã€‚è¦æ¤œè¨¼
+		FPU_STAT.xmm_reg[idx].ul64[0] = FPU_STAT.reg[sub].ll; // idx‚Æsub‚ª‹t‚©‚àB—vŒŸØ
 		FPU_STAT.xmm_reg[idx].ul64[1] = 0;
 	} else {
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
+	TRACEOUT(("SSE2_MOVQ2DQ"));
 }
 void SSE2_MOVDQ2Q(void)
 {
@@ -1065,10 +1146,11 @@ void SSE2_MOVDQ2Q(void)
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
-		FPU_STAT.reg[idx].ll = FPU_STAT.xmm_reg[sub].ul64[0]; // idxã¨subãŒé€†ã‹ã‚‚ã€‚è¦æ¤œè¨¼
+		FPU_STAT.reg[idx].ll = FPU_STAT.xmm_reg[sub].ul64[0]; // idx‚Æsub‚ª‹t‚©‚àB—vŒŸØ
 	} else {
 		EXCEPTION(UD_EXCEPTION, 0);
 	}
+	TRACEOUT(("SSE2_MOVDQ2Q"));
 }
 void SSE2_MOVQmem2xmm(void)
 {
@@ -1089,6 +1171,7 @@ void SSE2_MOVQmem2xmm(void)
 		FPU_STAT.xmm_reg[idx].ul64[0] = cpu_vmemoryread_q(CPU_INST_SEGREG_INDEX, madr);
 		FPU_STAT.xmm_reg[idx].ul64[1] = 0;
 	}
+	TRACEOUT(("SSE2_MOVQmem2xmm"));
 }
 void SSE2_MOVQxmm2mem(void)
 {
@@ -1108,6 +1191,7 @@ void SSE2_MOVQxmm2mem(void)
 		madr = calc_ea_dst(op);
 		cpu_vmemorywrite_q(CPU_INST_SEGREG_INDEX, madr, FPU_STAT.xmm_reg[idx].ul64[0]);
 	}
+	TRACEOUT(("SSE2_MOVQxmm2mem"));
 }
 void SSE2_PACKSSDW(void)
 {
@@ -1160,6 +1244,7 @@ void SSE2_PACKSSDW(void)
 	for(i=0;i<8;i++){
 		dstreg[i] = dstregbuf[i];
 	}
+	TRACEOUT(("SSE2_PACKSSDW"));
 }
 void SSE2_PACKSSWB(void)
 {
@@ -1212,6 +1297,7 @@ void SSE2_PACKSSWB(void)
 	for(i=0;i<16;i++){
 		dstreg[i] = dstregbuf[i];
 	}
+	TRACEOUT(("SSE2_PACKSSWB"));
 }
 void SSE2_PACKUSWB(void)
 {
@@ -1264,6 +1350,7 @@ void SSE2_PACKUSWB(void)
 	for(i=0;i<16;i++){
 		dstreg[i] = dstregbuf[i];
 	}
+	TRACEOUT(("SSE2_PACKUSWB"));
 }
 void SSE2_PADDQmm(void)
 {
@@ -1284,6 +1371,7 @@ void SSE2_PADDQmm(void)
 		madr = calc_ea_dst(op);
 		FPU_STAT.reg[idx].ll += (SINT64)cpu_vmemoryread_q(CPU_INST_SEGREG_INDEX, madr);
 	}
+	TRACEOUT(("SSE2_PADDQmm"));
 }
 void SSE2_PADDQxmm(void)
 {
@@ -1295,6 +1383,7 @@ void SSE2_PADDQxmm(void)
 	for(i=0;i<2;i++){
 		data1[i] = data1[i] + data2[i];
 	}
+	TRACEOUT(("SSE2_PADDQxmm"));
 }
 void SSE2_PADDB(void)
 {
@@ -1306,6 +1395,7 @@ void SSE2_PADDB(void)
 	for(i=0;i<16;i++){
 		data1[i] = data1[i] + data2[i];
 	}
+	TRACEOUT(("SSE2_PADDB"));
 }
 void SSE2_PADDW(void)
 {
@@ -1317,6 +1407,7 @@ void SSE2_PADDW(void)
 	for(i=0;i<8;i++){
 		data1[i] = data1[i] + data2[i];
 	}
+	TRACEOUT(("SSE2_PADDW"));
 }
 void SSE2_PADDD(void)
 {
@@ -1328,6 +1419,7 @@ void SSE2_PADDD(void)
 	for(i=0;i<4;i++){
 		data1[i] = data1[i] + data2[i];
 	}
+	TRACEOUT(("SSE2_PADDD"));
 }
 //void SSE2_PADDQ(void)
 //{
@@ -1350,6 +1442,7 @@ void SSE2_PADDSB(void)
 			data1[i] = (SINT8)cbuf;
 		}
 	}
+	TRACEOUT(("SSE2_PADDSB"));
 }
 void SSE2_PADDSW(void)
 {
@@ -1368,6 +1461,7 @@ void SSE2_PADDSW(void)
 			data1[i] = (SINT16)cbuf;
 		}
 	}
+	TRACEOUT(("SSE2_PADDSW"));
 }
 //void SSE2_PADDSD(void)
 //{
@@ -1392,6 +1486,7 @@ void SSE2_PADDUSB(void)
 			data1[i] = (UINT8)cbuf;
 		}
 	}
+	TRACEOUT(("SSE2_PADDUSB"));
 }
 void SSE2_PADDUSW(void)
 {
@@ -1408,6 +1503,7 @@ void SSE2_PADDUSW(void)
 			data1[i] = (UINT16)cbuf;
 		}
 	}
+	TRACEOUT(("SSE2_PADDUSW"));
 }
 //void SSE2_PADDUSD(void)
 //{
@@ -1420,10 +1516,12 @@ void SSE2_PADDUSW(void)
 void SSE2_PAND(void)
 {
 	SSE_ANDPS();
+	TRACEOUT(("SSE2_PAND"));
 }
 void SSE2_PANDN(void)
 {
 	SSE_ANDNPS();
+	TRACEOUT(("SSE2_PANDN"));
 }
 void SSE2_PAVGB(void)
 {
@@ -1435,6 +1533,7 @@ void SSE2_PAVGB(void)
 	for(i=0;i<16;i++){
 		data1[i] = (UINT8)(((UINT16)data1[i] + (UINT16)data2[i] + 1) / 2);
 	}
+	TRACEOUT(("SSE2_PAVGB"));
 }
 void SSE2_PAVGW(void)
 {
@@ -1446,6 +1545,7 @@ void SSE2_PAVGW(void)
 	for(i=0;i<8;i++){
 		data1[i] = (UINT16)(((UINT32)data1[i] + (UINT32)data2[i] + 1) / 2);
 	}
+	TRACEOUT(("SSE2_PAVGW"));
 }
 void SSE2_PCMPEQB(void)
 {
@@ -1457,6 +1557,7 @@ void SSE2_PCMPEQB(void)
 	for(i=0;i<16;i++){
 		data1[i] = (data1[i] == data2[i] ? 0xff : 0x00);
 	}
+	TRACEOUT(("SSE2_PCMPEQB"));
 }
 void SSE2_PCMPEQW(void)
 {
@@ -1468,6 +1569,7 @@ void SSE2_PCMPEQW(void)
 	for(i=0;i<8;i++){
 		data1[i] = (data1[i] == data2[i] ? 0xffff : 0x00);
 	}
+	TRACEOUT(("SSE2_PCMPEQW"));
 }
 void SSE2_PCMPEQD(void)
 {
@@ -1479,6 +1581,7 @@ void SSE2_PCMPEQD(void)
 	for(i=0;i<4;i++){
 		data1[i] = (data1[i] == data2[i] ? 0xffffffff : 0x00);
 	}
+	TRACEOUT(("SSE2_PCMPEQD"));
 }
 //void SSE2_PCMPEQQ(void)
 //{
@@ -1494,6 +1597,7 @@ void SSE2_PCMPGTB(void)
 	for(i=0;i<16;i++){
 		data1[i] = (data1[i] > data2[i] ? 0xff : 0x00);
 	}
+	TRACEOUT(("SSE2_PCMPGTB"));
 }
 void SSE2_PCMPGTW(void)
 {
@@ -1505,6 +1609,7 @@ void SSE2_PCMPGTW(void)
 	for(i=0;i<8;i++){
 		data1[i] = (data1[i] > data2[i] ? 0xffff : 0x00);
 	}
+	TRACEOUT(("SSE2_PCMPGTW"));
 }
 void SSE2_PCMPGTD(void)
 {
@@ -1516,6 +1621,7 @@ void SSE2_PCMPGTD(void)
 	for(i=0;i<4;i++){
 		data1[i] = (data1[i] > data2[i] ? 0xffffffff : 0x00);
 	}
+	TRACEOUT(("SSE2_PCMPGTD"));
 }
 //void SSE2_PCMPGTQ(void)
 //{
@@ -1543,6 +1649,7 @@ void SSE2_PEXTRW(void)
 	}
 	GET_PCBYTE((imm8));
 	*data1 = (UINT32)data2[imm8 & 0x7];
+	TRACEOUT(("SSE2_PEXTRW"));
 }
 void SSE2_PINSRW(void)
 {
@@ -1568,6 +1675,7 @@ void SSE2_PINSRW(void)
 	}
 	GET_PCBYTE((imm8));
 	data1[imm8 & 0x7] = data2;
+	TRACEOUT(("SSE2_PINSRW"));
 }
 void SSE2_PMADD(void)
 {
@@ -1587,6 +1695,7 @@ void SSE2_PMADD(void)
 	data1d[1] = data1dbuf[1];
 	data1d[2] = data1dbuf[2];
 	data1d[3] = data1dbuf[3];
+	TRACEOUT(("SSE2_PMADD"));
 }
 void SSE2_PMAXSW(void)
 {
@@ -1598,6 +1707,7 @@ void SSE2_PMAXSW(void)
 	for(i=0;i<8;i++){
 		data1[i] = (data1[i] > data2[i] ? data1[i] : data2[i]);
 	}
+	TRACEOUT(("SSE2_PMAXSW"));
 }
 void SSE2_PMAXUB(void)
 {
@@ -1609,6 +1719,7 @@ void SSE2_PMAXUB(void)
 	for(i=0;i<16;i++){
 		data1[i] = (data1[i] > data2[i] ? data1[i] : data2[i]);
 	}
+	TRACEOUT(("SSE2_PMAXUB"));
 }
 void SSE2_PMINSW(void)
 {
@@ -1620,6 +1731,7 @@ void SSE2_PMINSW(void)
 	for(i=0;i<8;i++){
 		data1[i] = (data1[i] < data2[i] ? data1[i] : data2[i]);
 	}
+	TRACEOUT(("SSE2_PMINSW"));
 }
 void SSE2_PMINUB(void)
 {
@@ -1631,6 +1743,7 @@ void SSE2_PMINUB(void)
 	for(i=0;i<16;i++){
 		data1[i] = (data1[i] < data2[i] ? data1[i] : data2[i]);
 	}
+	TRACEOUT(("SSE2_PMINUB"));
 }
 void SSE2_PMOVMSKB(void)
 {
@@ -1667,6 +1780,7 @@ void SSE2_PMOVMSKB(void)
 			 (((UINT32)(data2[13]>> 2) & 0x20) << 8)|
 			 (((UINT32)(data2[14]>> 1) & 0x40) << 8)|
 			 (((UINT32)(data2[15]>> 0) & 0x80) << 8);
+	TRACEOUT(("SSE2_PMOVMSKB"));
 }
 void SSE2_PMULHUW(void)
 {
@@ -1697,6 +1811,7 @@ void SSE2_PMULHUW(void)
 	for(i=0;i<8;i++){
 		data1[i] = (UINT16)((((UINT32)data2[i] * (UINT32)data1[i]) >> 16) & 0xffff);
 	}
+	TRACEOUT(("SSE2_PMULHUW"));
 }
 void SSE2_PMULHW(void)
 {
@@ -1727,6 +1842,7 @@ void SSE2_PMULHW(void)
 	for(i=0;i<8;i++){
 		data1[i] = (SINT16)((((SINT32)data2[i] * (SINT32)data1[i]) >> 16) & 0xffff);
 	}
+	TRACEOUT(("SSE2_PMULHW"));
 }
 void SSE2_PMULLW(void)
 {
@@ -1757,6 +1873,7 @@ void SSE2_PMULLW(void)
 	for(i=0;i<8;i++){
 		data1[i] = (SINT16)((((SINT32)data2[i] * (SINT32)data1[i])) & 0xffff);
 	}
+	TRACEOUT(("SSE2_PMULLW"));
 }
 void SSE2_PMULUDQmm(void)
 {
@@ -1777,6 +1894,7 @@ void SSE2_PMULUDQmm(void)
 		madr = calc_ea_dst(op);
 		FPU_STAT.reg[idx].ll = ((UINT64)FPU_STAT.reg[idx].l.lower * (cpu_vmemoryread_q(CPU_INST_SEGREG_INDEX, madr) & 0xffffffff));
 	}
+	TRACEOUT(("SSE2_PMULUDQmm"));
 }
 void SSE2_PMULUDQxmm(void)
 {
@@ -1788,10 +1906,12 @@ void SSE2_PMULUDQxmm(void)
 	for(i=0;i<2;i++){
 		data1[i] = (data1[i] & 0xffffffff) * (data2[i] & 0xffffffff);
 	}
+	TRACEOUT(("SSE2_PMULUDQxmm"));
 }
 void SSE2_POR(void)
 {
 	SSE_ORPS();
+	TRACEOUT(("SSE2_POR"));
 }
 void SSE2_PSADBW(void)
 {
@@ -1822,6 +1942,7 @@ void SSE2_PSADBW(void)
 	*((UINT16*)data2 + 5) = 0;
 	*((UINT16*)data2 + 6) = 0;
 	*((UINT16*)data2 + 7) = 0;
+	TRACEOUT(("SSE2_PSADBW"));
 }
 void SSE2_PSHUFLW(void)
 {
@@ -1843,6 +1964,7 @@ void SSE2_PSHUFLW(void)
 	for(i=4;i<8;i++){
 		data1[i] = data2[i];
 	}
+	TRACEOUT(("SSE2_PSHUFLW"));
 }
 void SSE2_PSHUFHW(void)
 {
@@ -1864,6 +1986,7 @@ void SSE2_PSHUFHW(void)
 	for(i=4;i<8;i++){
 		data1[i] = dstbuf[i];
 	}
+	TRACEOUT(("SSE2_PSHUFHW"));
 }
 void SSE2_PSHUFD(void)
 {
@@ -1882,6 +2005,7 @@ void SSE2_PSHUFD(void)
 	for(i=0;i<4;i++){
 		data1[i] = dstbuf[i];
 	}
+	TRACEOUT(("SSE2_PSHUFD"));
 }
 //void SSE2_PSLLDQ(void)
 //{
@@ -1901,11 +2025,12 @@ void SSE2_PSLLW(void)
 	
 	SSE_PART_GETDATA1DATA2_PD_UINT64((UINT64**)(&data1), (UINT64**)(&data2), (UINT64*)data2buf);
 	shift = data2[0];
-	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: ã¨ã‚Šã‚ãˆãšãƒ¬ã‚¸ã‚¹ã‚¿å†…å®¹ãŒæ¶ˆãˆã‚‹ãã‚‰ã„å¤§ããªã‚·ãƒ•ãƒˆé‡ã«ã—ã¦ãŠã
+	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: ‚Æ‚è‚ ‚¦‚¸ƒŒƒWƒXƒ^“à—e‚ªÁ‚¦‚é‚­‚ç‚¢‘å‚«‚ÈƒVƒtƒg—Ê‚É‚µ‚Ä‚¨‚­
 	
 	for(i=0;i<8;i++){
-		data1[i] = (shift >= 16 ? 0 : (data1[i] << (UINT16)shift)); // XXX: MSBãŒå–ã‚Šæ®‹ã•ã‚Œã‚‹ã®ã§ã”ã¾ã‹ã—ï¼ˆç’°å¢ƒä¾å­˜ï¼Ÿï¼‰
+		data1[i] = (shift >= 16 ? 0 : (data1[i] << (UINT16)shift)); // XXX: MSB‚ªæ‚èc‚³‚ê‚é‚Ì‚Å‚²‚Ü‚©‚µiŠÂ‹«ˆË‘¶Hj
 	}
+	TRACEOUT(("SSE2_PSLLW"));
 }
 void SSE2_PSLLD(void)
 {
@@ -1917,11 +2042,12 @@ void SSE2_PSLLD(void)
 	
 	SSE_PART_GETDATA1DATA2_PD_UINT64((UINT64**)(&data1), (UINT64**)(&data2), (UINT64*)data2buf);
 	shift = data2[0];
-	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: ã¨ã‚Šã‚ãˆãšãƒ¬ã‚¸ã‚¹ã‚¿å†…å®¹ãŒæ¶ˆãˆã‚‹ãã‚‰ã„å¤§ããªã‚·ãƒ•ãƒˆé‡ã«ã—ã¦ãŠã
+	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: ‚Æ‚è‚ ‚¦‚¸ƒŒƒWƒXƒ^“à—e‚ªÁ‚¦‚é‚­‚ç‚¢‘å‚«‚ÈƒVƒtƒg—Ê‚É‚µ‚Ä‚¨‚­
 	
 	for(i=0;i<4;i++){
-		data1[i] = (shift >= 32 ? 0 : (data1[i] << (UINT32)shift)); // XXX: MSBãŒå–ã‚Šæ®‹ã•ã‚Œã‚‹ã®ã§ã”ã¾ã‹ã—ï¼ˆç’°å¢ƒä¾å­˜ï¼Ÿï¼‰
+		data1[i] = (shift >= 32 ? 0 : (data1[i] << (UINT32)shift)); // XXX: MSB‚ªæ‚èc‚³‚ê‚é‚Ì‚Å‚²‚Ü‚©‚µiŠÂ‹«ˆË‘¶Hj
 	}
+	TRACEOUT(("SSE2_PSLLD"));
 }
 void SSE2_PSLLQ(void)
 {
@@ -1933,11 +2059,12 @@ void SSE2_PSLLQ(void)
 	
 	SSE_PART_GETDATA1DATA2_PD_UINT64((UINT64**)(&data1), (UINT64**)(&data2), (UINT64*)data2buf);
 	shift = data2[0];
-	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: ã¨ã‚Šã‚ãˆãšãƒ¬ã‚¸ã‚¹ã‚¿å†…å®¹ãŒæ¶ˆãˆã‚‹ãã‚‰ã„å¤§ããªã‚·ãƒ•ãƒˆé‡ã«ã—ã¦ãŠã
+	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: ‚Æ‚è‚ ‚¦‚¸ƒŒƒWƒXƒ^“à—e‚ªÁ‚¦‚é‚­‚ç‚¢‘å‚«‚ÈƒVƒtƒg—Ê‚É‚µ‚Ä‚¨‚­
 	
 	for(i=0;i<2;i++){
-		data1[i] = (shift >= 64 ? 0 : (data1[i] << (UINT64)shift)); // XXX: MSBãŒå–ã‚Šæ®‹ã•ã‚Œã‚‹ã®ã§ã”ã¾ã‹ã—ï¼ˆç’°å¢ƒä¾å­˜ï¼Ÿï¼‰
+		data1[i] = (shift >= 64 ? 0 : (data1[i] << (UINT64)shift)); // XXX: MSB‚ªæ‚èc‚³‚ê‚é‚Ì‚Å‚²‚Ü‚©‚µiŠÂ‹«ˆË‘¶Hj
 	}
+	TRACEOUT(("SSE2_PSLLQ"));
 }
 //void SSE2_PSLLBimm(void)
 //{
@@ -1970,9 +2097,9 @@ void SSE2_PSRAW(void)
 	
 	SSE_PART_GETDATA1DATA2_PD_UINT64((UINT64**)(&data1), (UINT64**)(&data2), (UINT64*)data2buf);
 	shift = data2[0];
-	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: ã¨ã‚Šã‚ãˆãšãƒ¬ã‚¸ã‚¹ã‚¿å†…å®¹ãŒæ¶ˆãˆã‚‹ãã‚‰ã„å¤§ããªã‚·ãƒ•ãƒˆé‡ã«ã—ã¦ãŠã
+	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: ‚Æ‚è‚ ‚¦‚¸ƒŒƒWƒXƒ^“à—e‚ªÁ‚¦‚é‚­‚ç‚¢‘å‚«‚ÈƒVƒtƒg—Ê‚É‚µ‚Ä‚¨‚­
 	
-	// ç„¡ç†ã‚„ã‚Šç®—è¡“ã‚·ãƒ•ãƒˆï¼ˆæ€ªã—ã„ï¼‰
+	// –³—‚â‚èZpƒVƒtƒgi‰ö‚µ‚¢j
 	if(16 <= shift){
 		signval = 0xffff;
 	}else{
@@ -1983,9 +2110,10 @@ void SSE2_PSRAW(void)
 		if(((INT16*)data1)[i] < 0){
 			data1[i] = (data1[i] >> shift) | signval;
 		}else{
-			data1[i] = (shift >= 16 ? 0 : (data1[i] >> (UINT16)shift)); // XXX: LSBãŒå–ã‚Šæ®‹ã•ã‚Œã‚‹ã®ã§ã”ã¾ã‹ã—ï¼ˆç’°å¢ƒä¾å­˜ï¼Ÿï¼‰
+			data1[i] = (shift >= 16 ? 0 : (data1[i] >> (UINT16)shift)); // XXX: LSB‚ªæ‚èc‚³‚ê‚é‚Ì‚Å‚²‚Ü‚©‚µiŠÂ‹«ˆË‘¶Hj
 		}
 	}
+	TRACEOUT(("SSE2_PSRAW"));
 }
 void SSE2_PSRAD(void)
 {
@@ -1998,9 +2126,9 @@ void SSE2_PSRAD(void)
 	
 	SSE_PART_GETDATA1DATA2_PD_UINT64((UINT64**)(&data1), (UINT64**)(&data2), (UINT64*)data2buf);
 	shift = data2[0];
-	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: ã¨ã‚Šã‚ãˆãšãƒ¬ã‚¸ã‚¹ã‚¿å†…å®¹ãŒæ¶ˆãˆã‚‹ãã‚‰ã„å¤§ããªã‚·ãƒ•ãƒˆé‡ã«ã—ã¦ãŠã
+	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: ‚Æ‚è‚ ‚¦‚¸ƒŒƒWƒXƒ^“à—e‚ªÁ‚¦‚é‚­‚ç‚¢‘å‚«‚ÈƒVƒtƒg—Ê‚É‚µ‚Ä‚¨‚­
 	
-	// ç„¡ç†ã‚„ã‚Šç®—è¡“ã‚·ãƒ•ãƒˆï¼ˆæ€ªã—ã„ï¼‰
+	// –³—‚â‚èZpƒVƒtƒgi‰ö‚µ‚¢j
 	if(32 <= shift){
 		signval = 0xffffffff;
 	}else{
@@ -2011,9 +2139,10 @@ void SSE2_PSRAD(void)
 		if(((INT32*)data1)[i] < 0){
 			data1[i] = (data1[i] >> shift) | signval;
 		}else{
-			data1[i] = (shift >= 32 ? 0 : (data1[i] >> (UINT32)shift)); // XXX: LSBãŒå–ã‚Šæ®‹ã•ã‚Œã‚‹ã®ã§ã”ã¾ã‹ã—ï¼ˆç’°å¢ƒä¾å­˜ï¼Ÿï¼‰
+			data1[i] = (shift >= 32 ? 0 : (data1[i] >> (UINT32)shift)); // XXX: LSB‚ªæ‚èc‚³‚ê‚é‚Ì‚Å‚²‚Ü‚©‚µiŠÂ‹«ˆË‘¶Hj
 		}
 	}
+	TRACEOUT(("SSE2_PSRAD"));
 }
 //void SSE2_PSRAQ(void)
 //{
@@ -2053,11 +2182,12 @@ void SSE2_PSRLW(void)
 	
 	SSE_PART_GETDATA1DATA2_PD_UINT64((UINT64**)(&data1), (UINT64**)(&data2), (UINT64*)data2buf);
 	shift = data2[0];
-	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: ã¨ã‚Šã‚ãˆãšãƒ¬ã‚¸ã‚¹ã‚¿å†…å®¹ãŒæ¶ˆãˆã‚‹ãã‚‰ã„å¤§ããªã‚·ãƒ•ãƒˆé‡ã«ã—ã¦ãŠã
+	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: ‚Æ‚è‚ ‚¦‚¸ƒŒƒWƒXƒ^“à—e‚ªÁ‚¦‚é‚­‚ç‚¢‘å‚«‚ÈƒVƒtƒg—Ê‚É‚µ‚Ä‚¨‚­
 	
 	for(i=0;i<8;i++){
-		data1[i] = (shift >= 16 ? 0 : (data1[i] >> (UINT16)shift)); // XXX: LSBãŒå–ã‚Šæ®‹ã•ã‚Œã‚‹ã®ã§ã”ã¾ã‹ã—ï¼ˆç’°å¢ƒä¾å­˜ï¼Ÿï¼‰
+		data1[i] = (shift >= 16 ? 0 : (data1[i] >> (UINT16)shift)); // XXX: LSB‚ªæ‚èc‚³‚ê‚é‚Ì‚Å‚²‚Ü‚©‚µiŠÂ‹«ˆË‘¶Hj
 	}
+	TRACEOUT(("SSE2_PSRLW"));
 }
 void SSE2_PSRLD(void)
 {
@@ -2069,11 +2199,12 @@ void SSE2_PSRLD(void)
 	
 	SSE_PART_GETDATA1DATA2_PD_UINT64((UINT64**)(&data1), (UINT64**)(&data2), (UINT64*)data2buf);
 	shift = data2[0];
-	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: ã¨ã‚Šã‚ãˆãšãƒ¬ã‚¸ã‚¹ã‚¿å†…å®¹ãŒæ¶ˆãˆã‚‹ãã‚‰ã„å¤§ããªã‚·ãƒ•ãƒˆé‡ã«ã—ã¦ãŠã
+	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: ‚Æ‚è‚ ‚¦‚¸ƒŒƒWƒXƒ^“à—e‚ªÁ‚¦‚é‚­‚ç‚¢‘å‚«‚ÈƒVƒtƒg—Ê‚É‚µ‚Ä‚¨‚­
 	
 	for(i=0;i<4;i++){
-		data1[i] = (shift >= 32 ? 0 : (data1[i] >> (UINT32)shift)); // XXX: LSBãŒå–ã‚Šæ®‹ã•ã‚Œã‚‹ã®ã§ã”ã¾ã‹ã—ï¼ˆç’°å¢ƒä¾å­˜ï¼Ÿï¼‰
+		data1[i] = (shift >= 32 ? 0 : (data1[i] >> (UINT32)shift)); // XXX: LSB‚ªæ‚èc‚³‚ê‚é‚Ì‚Å‚²‚Ü‚©‚µiŠÂ‹«ˆË‘¶Hj
 	}
+	TRACEOUT(("SSE2_PSRLD"));
 }
 void SSE2_PSRLQ(void)
 {
@@ -2085,11 +2216,12 @@ void SSE2_PSRLQ(void)
 	
 	SSE_PART_GETDATA1DATA2_PD_UINT64((UINT64**)(&data1), (UINT64**)(&data2), (UINT64*)data2buf);
 	shift = data2[0];
-	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: ã¨ã‚Šã‚ãˆãšãƒ¬ã‚¸ã‚¹ã‚¿å†…å®¹ãŒæ¶ˆãˆã‚‹ãã‚‰ã„å¤§ããªã‚·ãƒ•ãƒˆé‡ã«ã—ã¦ãŠã
+	if(data2[1] || data2[2] || data2[3]) shift = 0xffffffff; // XXX: ‚Æ‚è‚ ‚¦‚¸ƒŒƒWƒXƒ^“à—e‚ªÁ‚¦‚é‚­‚ç‚¢‘å‚«‚ÈƒVƒtƒg—Ê‚É‚µ‚Ä‚¨‚­
 	
 	for(i=0;i<2;i++){
-		data1[i] = (shift >= 64 ? 0 : (data1[i] >> (UINT64)shift)); // XXX: LSBãŒå–ã‚Šæ®‹ã•ã‚Œã‚‹ã®ã§ã”ã¾ã‹ã—ï¼ˆç’°å¢ƒä¾å­˜ï¼Ÿï¼‰
+		data1[i] = (shift >= 64 ? 0 : (data1[i] >> (UINT64)shift)); // XXX: LSB‚ªæ‚èc‚³‚ê‚é‚Ì‚Å‚²‚Ü‚©‚µiŠÂ‹«ˆË‘¶Hj
 	}
+	TRACEOUT(("SSE2_PSRLQ"));
 }
 //void SSE2_PSRLBimm(void)
 //{
@@ -2128,11 +2260,11 @@ void SSE2_PSxxWimm(void)
 	switch(idx){
 	case 2: // PSRLW(imm8)
 		for(i=0;i<8;i++){
-			dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSBãŒå–ã‚Šæ®‹ã•ã‚Œã‚‹ã®ã§ã”ã¾ã‹ã—ï¼ˆç’°å¢ƒä¾å­˜ï¼Ÿï¼‰
+			dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSB‚ªæ‚èc‚³‚ê‚é‚Ì‚Å‚²‚Ü‚©‚µiŠÂ‹«ˆË‘¶Hj
 		}
 		break;
 	case 4: // PSRAW(imm8)
-		// ç„¡ç†ã‚„ã‚Šç®—è¡“ã‚·ãƒ•ãƒˆï¼ˆæ€ªã—ã„ï¼‰
+		// –³—‚â‚èZpƒVƒtƒgi‰ö‚µ‚¢j
 		if(16 <= shift){
 			signval = 0xffff;
 		}else{
@@ -2143,18 +2275,19 @@ void SSE2_PSxxWimm(void)
 			if(((INT16*)dstreg)[i] < 0){
 				dstreg[i] = (dstreg[i] >> shift) | signval;
 			}else{
-				dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSBãŒå–ã‚Šæ®‹ã•ã‚Œã‚‹ã®ã§ã”ã¾ã‹ã—ï¼ˆç’°å¢ƒä¾å­˜ï¼Ÿï¼‰
+				dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSB‚ªæ‚èc‚³‚ê‚é‚Ì‚Å‚²‚Ü‚©‚µiŠÂ‹«ˆË‘¶Hj
 			}
 		}
 		break;
 	case 6: // PSLLW(imm8)
 		for(i=0;i<8;i++){
-			dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] << (UINT16)shift)); // XXX: MSBãŒå–ã‚Šæ®‹ã•ã‚Œã‚‹ã®ã§ã”ã¾ã‹ã—ï¼ˆç’°å¢ƒä¾å­˜ï¼Ÿï¼‰
+			dstreg[i] = (shift >= 16 ? 0 : (dstreg[i] << (UINT16)shift)); // XXX: MSB‚ªæ‚èc‚³‚ê‚é‚Ì‚Å‚²‚Ü‚©‚µiŠÂ‹«ˆË‘¶Hj
 		}
 		break;
 	default:
 		break;
 	}
+	TRACEOUT(("SSE2_PSxxWimm"));
 }
 void SSE2_PSxxDimm(void)
 {
@@ -2177,11 +2310,11 @@ void SSE2_PSxxDimm(void)
 	switch(idx){
 	case 2: // PSRLD(imm8)
 		for(i=0;i<4;i++){
-			dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] >> (UINT32)shift)); // XXX: LSBãŒå–ã‚Šæ®‹ã•ã‚Œã‚‹ã®ã§ã”ã¾ã‹ã—ï¼ˆç’°å¢ƒä¾å­˜ï¼Ÿï¼‰
+			dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] >> (UINT32)shift)); // XXX: LSB‚ªæ‚èc‚³‚ê‚é‚Ì‚Å‚²‚Ü‚©‚µiŠÂ‹«ˆË‘¶Hj
 		}
 		break;
 	case 4: // PSRAD(imm8)
-		// ç„¡ç†ã‚„ã‚Šç®—è¡“ã‚·ãƒ•ãƒˆï¼ˆæ€ªã—ã„ï¼‰
+		// –³—‚â‚èZpƒVƒtƒgi‰ö‚µ‚¢j
 		if(32 <= shift){
 			signval = 0xffffffff;
 		}else{
@@ -2192,18 +2325,19 @@ void SSE2_PSxxDimm(void)
 			if(((INT32*)dstreg)[i] < 0){
 				dstreg[i] = (dstreg[i] >> shift) | signval;
 			}else{
-				dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSBãŒå–ã‚Šæ®‹ã•ã‚Œã‚‹ã®ã§ã”ã¾ã‹ã—ï¼ˆç’°å¢ƒä¾å­˜ï¼Ÿï¼‰
+				dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] >> (UINT16)shift)); // XXX: LSB‚ªæ‚èc‚³‚ê‚é‚Ì‚Å‚²‚Ü‚©‚µiŠÂ‹«ˆË‘¶Hj
 			}
 		}
 		break;
 	case 6: // PSLLD(imm8)
 		for(i=0;i<4;i++){
-			dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] << (UINT32)shift)); // XXX: MSBãŒå–ã‚Šæ®‹ã•ã‚Œã‚‹ã®ã§ã”ã¾ã‹ã—ï¼ˆç’°å¢ƒä¾å­˜ï¼Ÿï¼‰
+			dstreg[i] = (shift >= 32 ? 0 : (dstreg[i] << (UINT32)shift)); // XXX: MSB‚ªæ‚èc‚³‚ê‚é‚Ì‚Å‚²‚Ü‚©‚µiŠÂ‹«ˆË‘¶Hj
 		}
 		break;
 	default:
 		break;
 	}
+	TRACEOUT(("SSE2_PSxxDimm"));
 }
 void SSE2_PSxxQimm(void)
 {
@@ -2225,23 +2359,24 @@ void SSE2_PSxxQimm(void)
 	switch(idx){
 	case 2: // PSRLQ(imm8)
 		for(i=0;i<2;i++){
-			dstreg[i] = (shift >= 64 ? 0 : (dstreg[i] >> (UINT64)shift)); // XXX: LSBãŒå–ã‚Šæ®‹ã•ã‚Œã‚‹ã®ã§ã”ã¾ã‹ã—ï¼ˆç’°å¢ƒä¾å­˜ï¼Ÿï¼‰
+			dstreg[i] = (shift >= 64 ? 0 : (dstreg[i] >> (UINT64)shift)); // XXX: LSB‚ªæ‚èc‚³‚ê‚é‚Ì‚Å‚²‚Ü‚©‚µiŠÂ‹«ˆË‘¶Hj
 		}
 		break;
 	case 3: // PSRLDQ
-		// ç„¡ç†ã‚„ã‚Š128bitå³ã‚·ãƒ•ãƒˆ æ€ªã—ã„ã®ã§è¦æ¤œè¨¼
+		// –³—‚â‚è128bit‰EƒVƒtƒg ‰ö‚µ‚¢‚Ì‚Å—vŒŸØ
+		shift *= 8; // ƒVƒtƒg—Ê‚ÍƒoƒCƒg”‚Åw’è
 		if(shift == 0){
-			// ã‚·ãƒ•ãƒˆç„¡ã—ãªã‚‰ä½•ã‚‚ã—ãªã„
+			// ƒVƒtƒg–³‚µ‚È‚ç‰½‚à‚µ‚È‚¢
 		}else if(shift >= 128){
-			// ã‚·ãƒ•ãƒˆãŒ128ä»¥ä¸Šã®æ™‚
+			// ƒVƒtƒg‚ª128ˆÈã‚Ì
 			dstreg[0] = dstreg[1] = 0;
 		}else if(shift >= 64){
-			// ã‚·ãƒ•ãƒˆãŒ64ä»¥ä¸Šã®æ™‚
+			// ƒVƒtƒg‚ª64ˆÈã‚Ì
 			dstreg[0] = dstreg[1] >> (shift - 64);
 			dstreg[1] = 0;
 		}else{
-			// ã‚·ãƒ•ãƒˆãŒ64ã‚ˆã‚Šå°ã•ã„æ™‚
-			dstreg[0] = (dstreg[0] >> shift) | (dstreg[1] << (64-shift)); // ä¸‹ä½QWORDå³ã‚·ãƒ•ãƒˆï¼†ä¸Šã‹ã‚‰é™ã‚Šã¦ããŸãƒ“ãƒƒãƒˆã‚’OR
+			// ƒVƒtƒg‚ª64‚æ‚è¬‚³‚¢
+			dstreg[0] = (dstreg[0] >> shift) | (dstreg[1] << (64-shift)); // ‰ºˆÊQWORD‰EƒVƒtƒg•ã‚©‚ç~‚è‚Ä‚«‚½ƒrƒbƒg‚ğOR
 			dstreg[1] = (dstreg[1] >> shift);
 		}
 		break;
@@ -2250,29 +2385,31 @@ void SSE2_PSxxQimm(void)
 		break;
 	case 6: // PSLLQ(imm8)
 		for(i=0;i<2;i++){
-			dstreg[i] = (shift >= 64 ? 0 : (dstreg[i] << (UINT64)shift)); // XXX: MSBãŒå–ã‚Šæ®‹ã•ã‚Œã‚‹ã®ã§ã”ã¾ã‹ã—ï¼ˆç’°å¢ƒä¾å­˜ï¼Ÿï¼‰
+			dstreg[i] = (shift >= 64 ? 0 : (dstreg[i] << (UINT64)shift)); // XXX: MSB‚ªæ‚èc‚³‚ê‚é‚Ì‚Å‚²‚Ü‚©‚µiŠÂ‹«ˆË‘¶Hj
 		}
 		break;
 	case 7: // PSLLDQ
-		// ç„¡ç†ã‚„ã‚Š128bitå·¦ã‚·ãƒ•ãƒˆ æ€ªã—ã„ã®ã§è¦æ¤œè¨¼
+		// –³—‚â‚è128bit¶ƒVƒtƒg ‰ö‚µ‚¢‚Ì‚Å—vŒŸØ
+		shift *= 8; // ƒVƒtƒg—Ê‚ÍƒoƒCƒg”‚Åw’è
 		if(shift == 0){
-			// ã‚·ãƒ•ãƒˆç„¡ã—ãªã‚‰ä½•ã‚‚ã—ãªã„
+			// ƒVƒtƒg–³‚µ‚È‚ç‰½‚à‚µ‚È‚¢
 		}else if(shift >= 128){
-			// ã‚·ãƒ•ãƒˆãŒ128ä»¥ä¸Šã®æ™‚
+			// ƒVƒtƒg‚ª128ˆÈã‚Ì
 			dstreg[0] = dstreg[1] = 0;
 		}else if(shift >= 64){
-			// ã‚·ãƒ•ãƒˆãŒ64ä»¥ä¸Šã®æ™‚
+			// ƒVƒtƒg‚ª64ˆÈã‚Ì
 			dstreg[1] = dstreg[0] << (shift - 64);
 			dstreg[0] = 0;
 		}else{
-			// ã‚·ãƒ•ãƒˆãŒ64ã‚ˆã‚Šå°ã•ã„æ™‚
-			dstreg[1] = (dstreg[1] << shift) | (dstreg[0] >> (64-shift)); // ä¸Šä½QWORDå·¦ã‚·ãƒ•ãƒˆï¼†ä¸‹ã‹ã‚‰ä¸ŠãŒã£ã¦ããŸãƒ“ãƒƒãƒˆã‚’OR
+			// ƒVƒtƒg‚ª64‚æ‚è¬‚³‚¢
+			dstreg[1] = (dstreg[1] << shift) | (dstreg[0] >> (64-shift)); // ãˆÊQWORD¶ƒVƒtƒg•‰º‚©‚çã‚ª‚Á‚Ä‚«‚½ƒrƒbƒg‚ğOR
 			dstreg[0] = (dstreg[0] << shift);
 		}
 		break;
 	default:
 		break;
 	}
+	TRACEOUT(("SSE2_PSxxQimm"));
 }
 void SSE2_PSUBQmm(void)
 {
@@ -2293,6 +2430,7 @@ void SSE2_PSUBQmm(void)
 		madr = calc_ea_dst(op);
 		FPU_STAT.reg[idx].ll -= (SINT64)cpu_vmemoryread_q(CPU_INST_SEGREG_INDEX, madr);
 	}
+	TRACEOUT(("SSE2_PSUBQmm"));
 }
 void SSE2_PSUBQxmm(void)
 {
@@ -2304,6 +2442,7 @@ void SSE2_PSUBQxmm(void)
 	for(i=0;i<2;i++){
 		data1[i] = data1[i] - data2[i];
 	}
+	TRACEOUT(("SSE2_PSUBQxmm"));
 }
 void SSE2_PSUBB(void)
 {
@@ -2315,6 +2454,7 @@ void SSE2_PSUBB(void)
 	for(i=0;i<16;i++){
 		data1[i] = data1[i] - data2[i];
 	}
+	TRACEOUT(("SSE2_PSUBB"));
 }
 void SSE2_PSUBW(void)
 {
@@ -2326,6 +2466,7 @@ void SSE2_PSUBW(void)
 	for(i=0;i<8;i++){
 		data1[i] = data1[i] - data2[i];
 	}
+	TRACEOUT(("SSE2_PSUBW"));
 }
 void SSE2_PSUBD(void)
 {
@@ -2337,6 +2478,7 @@ void SSE2_PSUBD(void)
 	for(i=0;i<4;i++){
 		data1[i] = data1[i] - data2[i];
 	}
+	TRACEOUT(("SSE2_PSUBD"));
 }
 //void SSE2_PSUBQ(void)
 //{
@@ -2359,6 +2501,7 @@ void SSE2_PSUBSB(void)
 			data1[i] = (SINT8)cbuf;
 		}
 	}
+	TRACEOUT(("SSE2_PSUBSB"));
 }
 void SSE2_PSUBSW(void)
 {
@@ -2377,6 +2520,7 @@ void SSE2_PSUBSW(void)
 			data1[i] = (SINT16)cbuf;
 		}
 	}
+	TRACEOUT(("SSE2_PSUBSW"));
 }
 //void SSE2_PSUBSD(void)
 //{
@@ -2403,6 +2547,7 @@ void SSE2_PSUBUSB(void)
 			data1[i] = (UINT8)cbuf;
 		}
 	}
+	TRACEOUT(("SSE2_PSUBUSB"));
 }
 void SSE2_PSUBUSW(void)
 {
@@ -2421,6 +2566,7 @@ void SSE2_PSUBUSW(void)
 			data1[i] = (UINT16)cbuf;
 		}
 	}
+	TRACEOUT(("SSE2_PSUBUSW"));
 }
 //void SSE2_PSUBUSD(void)
 //{
@@ -2447,6 +2593,7 @@ void SSE2_PUNPCKHBW(void)
 	for(i=0;i<16;i++){
 		data1[i] = dstregbuf[i];
 	}
+	TRACEOUT(("SSE2_PUNPCKHBW"));
 }
 void SSE2_PUNPCKHWD(void)
 {
@@ -2465,6 +2612,7 @@ void SSE2_PUNPCKHWD(void)
 	for(i=0;i<8;i++){
 		data1[i] = dstregbuf[i];
 	}
+	TRACEOUT(("SSE2_PUNPCKHWD"));
 }
 void SSE2_PUNPCKHDQ(void)
 {
@@ -2483,6 +2631,7 @@ void SSE2_PUNPCKHDQ(void)
 	for(i=0;i<4;i++){
 		data1[i] = dstregbuf[i];
 	}
+	TRACEOUT(("SSE2_PUNPCKHDQ"));
 }
 void SSE2_PUNPCKHQDQ(void)
 {
@@ -2497,6 +2646,7 @@ void SSE2_PUNPCKHQDQ(void)
 	dstregbuf[1] = data2[1];
 	data1[0] = dstregbuf[0];
 	data1[1] = dstregbuf[1];
+	TRACEOUT(("SSE2_PUNPCKHQDQ"));
 }
 void SSE2_PUNPCKLBW(void)
 {
@@ -2515,6 +2665,7 @@ void SSE2_PUNPCKLBW(void)
 	for(i=0;i<16;i++){
 		data1[i] = dstregbuf[i];
 	}
+	TRACEOUT(("SSE2_PUNPCKLBW"));
 }
 void SSE2_PUNPCKLWD(void)
 {
@@ -2533,6 +2684,7 @@ void SSE2_PUNPCKLWD(void)
 	for(i=0;i<8;i++){
 		data1[i] = dstregbuf[i];
 	}
+	TRACEOUT(("SSE2_PUNPCKLWD"));
 }
 void SSE2_PUNPCKLDQ(void)
 {
@@ -2551,6 +2703,7 @@ void SSE2_PUNPCKLDQ(void)
 	for(i=0;i<4;i++){
 		data1[i] = dstregbuf[i];
 	}
+	TRACEOUT(("SSE2_PUNPCKLDQ"));
 }
 void SSE2_PUNPCKLQDQ(void)
 {
@@ -2565,10 +2718,12 @@ void SSE2_PUNPCKLQDQ(void)
 	dstregbuf[1] = data2[0];
 	data1[0] = dstregbuf[0];
 	data1[1] = dstregbuf[1];
+	TRACEOUT(("SSE2_PUNPCKLQDQ"));
 }
 void SSE2_PXOR(void)
 {
 	SSE_XORPS();
+	TRACEOUT(("SSE2_PXOR"));
 }
 
 void SSE2_MASKMOVDQU(void)
@@ -2591,12 +2746,13 @@ void SSE2_MASKMOVDQU(void)
 			CPU_EDI += 1;
 		}
 	}
-	// æˆ»ã™
+	// –ß‚·
 	if (!CPU_INST_AS32) {
 		CPU_DI -= 16;
 	} else {
 		CPU_EDI -= 16;
 	}
+	TRACEOUT(("SSE2_MASKMOVDQU"));
 }
 //void SSE2_CLFLUSH(UINT32 op)
 //{
@@ -2605,10 +2761,12 @@ void SSE2_MASKMOVDQU(void)
 void SSE2_MOVNTPD(void)
 {
 	SSE_MOVNTPS();
+	TRACEOUT(("SSE2_MOVNTPD"));
 }
 void SSE2_MOVNTDQ(void)
 {
 	SSE_MOVNTPS();
+	TRACEOUT(("SSE2_MOVNTDQ"));
 }
 void SSE2_MOVNTI(void)
 {
@@ -2622,7 +2780,7 @@ void SSE2_MOVNTI(void)
 	GET_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
-	data1 = reg32_b53[(op)]; // ã“ã‚Œåˆã£ã¦ã‚‹ï¼Ÿ
+	data1 = reg32_b53[(op)]; // ‚±‚ê‡‚Á‚Ä‚éH
 	if ((op) >= 0xc0) {
 		EXCEPTION(UD_EXCEPTION, 0);
 	} else {
@@ -2630,10 +2788,12 @@ void SSE2_MOVNTI(void)
 		maddr = calc_ea_dst((op));
 		cpu_vmemorywrite_d(CPU_INST_SEGREG_INDEX, maddr, *data1);
 	}
+	TRACEOUT(("SSE2_MOVNTI"));
 }
 void SSE2_PAUSE(void)
 {
 	// Nothing to do
+	TRACEOUT(("SSE2_PAUSE"));
 }
 //void SSE2_LFENCE(void)
 //{

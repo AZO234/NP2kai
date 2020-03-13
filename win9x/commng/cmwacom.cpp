@@ -818,7 +818,7 @@ UINT CComWacom::Write(UINT8 cData)
 		}
 #endif
 	}
-	return 0;
+	return 1;
 }
 
 /**

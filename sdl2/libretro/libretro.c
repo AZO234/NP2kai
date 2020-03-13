@@ -947,6 +947,47 @@ static void update_variables(void)
          np2cfg.baseclock = 2457600;
    }
 
+   var.key = "np2kai_cpu_feature";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      UINT cpu_index;
+      if (strcmp(var.value, "Intel 80386") == 0)
+         cpu_index = 1;
+      else if (strcmp(var.value, "Intel i486SX") == 0)
+         cpu_index = 2;
+      else if (strcmp(var.value, "Intel i486DX") == 0)
+         cpu_index = 3;
+      else if (strcmp(var.value, "Intel Pentium") == 0)
+         cpu_index = 4;
+      else if (strcmp(var.value, "Intel MMX Pentium") == 0)
+         cpu_index = 5;
+      else if (strcmp(var.value, "Intel Pentium Pro") == 0)
+         cpu_index = 6;
+      else if (strcmp(var.value, "Intel Pentium II") == 0)
+         cpu_index = 7;
+      else if (strcmp(var.value, "Intel Pentium III") == 0)
+         cpu_index = 8;
+      else if (strcmp(var.value, "Intel Pentium M") == 0)
+         cpu_index = 9;
+      else if (strcmp(var.value, "Intel Pentium 4") == 0)
+         cpu_index = 10;
+      else if (strcmp(var.value, "AMD K6-2") == 0)
+         cpu_index = 15;
+      else if (strcmp(var.value, "AMD K6-III") == 0)
+         cpu_index = 16;
+      else if (strcmp(var.value, "AMD K7 Athlon") == 0)
+         cpu_index = 17;
+      else if (strcmp(var.value, "AMD K7 Athlon XP") == 0)
+         cpu_index = 18;
+      else if (strcmp(var.value, "Neko Processor II") == 0)
+         cpu_index = 255;
+      else
+         cpu_index = 0;
+      SetCpuTypeIndex(cpu_index);
+   }
+
    var.key = "np2kai_clk_mult";
    var.value = NULL;
 
@@ -1039,15 +1080,15 @@ static void update_variables(void)
       else if (strcmp(var.value, "PC9801-118") == 0)
          np2cfg.SOUND_SW = 0x08;
       else if (strcmp(var.value, "PC9801-86 + Mate-X PCM(B460)") == 0)
-         np2cfg.SOUND_SW = 0x64;
-      else if (strcmp(var.value, "PC9801-86 + 118") == 0)
-         np2cfg.SOUND_SW = 0x68;
-      else if (strcmp(var.value, "Mate-X PCM(B460)") == 0)
-         np2cfg.SOUND_SW = 0x60;
+         np2cfg.SOUND_SW = SOUNDID_PC_9801_86_WSS;
+      else if (strcmp(var.value, "PC9801-86 + 118(B460)") == 0)
+         np2cfg.SOUND_SW = SOUNDID_PC_9801_86_118;
+      else if (strcmp(var.value, "Mate-X PCM") == 0)
+         np2cfg.SOUND_SW = SOUNDID_MATE_X_PCM;
       else if (strcmp(var.value, "Speak Board") == 0)
          np2cfg.SOUND_SW = 0x20;
       else if (strcmp(var.value, "PC9801-86 + Speak Board") == 0)
-         np2cfg.SOUND_SW = 0x24;
+         np2cfg.SOUND_SW = SOUNDID_86_SPEAKBOARD;
       else if (strcmp(var.value, "Spark Board") == 0)
          np2cfg.SOUND_SW = 0x40;
       else if (strcmp(var.value, "Sound Orchestra") == 0)
@@ -1055,7 +1096,17 @@ static void update_variables(void)
       else if (strcmp(var.value, "Sound Orchestra-V") == 0)
          np2cfg.SOUND_SW = 0x82;
       else if (strcmp(var.value, "Sound Blaster 16") == 0)
-         np2cfg.SOUND_SW = 0x41;
+         np2cfg.SOUND_SW = SOUNDID_SB16;
+      else if (strcmp(var.value, "PC9801-86 + Sound Blaster 16") == 0)
+         np2cfg.SOUND_SW = SOUNDID_PC_9801_86_SB16;
+      else if (strcmp(var.value, "Mate-X PCM + Sound Blaster 16") == 0)
+         np2cfg.SOUND_SW = SOUNDID_WSS_SB16;
+      else if (strcmp(var.value, "PC9801-118 + Sound Blaster 16") == 0)
+         np2cfg.SOUND_SW = SOUNDID_PC_9801_118_SB16;
+      else if (strcmp(var.value, "PC9801-86 + Mate-X PCM(B460) + Sound Blaster 16") == 0)
+         np2cfg.SOUND_SW = SOUNDID_PC_9801_86_WSS_SB16;
+      else if (strcmp(var.value, "PC9801-86 + 118(B460) + Sound Blaster 16") == 0)
+         np2cfg.SOUND_SW = SOUNDID_PC_9801_86_118_SB16;
       else if (strcmp(var.value, "AMD-98") == 0)
          np2cfg.SOUND_SW = 0x80;
       else if (strcmp(var.value, "WaveStar") == 0)

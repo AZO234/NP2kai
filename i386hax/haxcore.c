@@ -970,6 +970,7 @@ coutinue_cpu:
 	// リセット可能フラグをクリア
 	np2haxcore.ready_for_reset = 0;
 	
+coutinue_cpu_imm:
 	// HAXM CPU実行
 	if(np2hax.emumode){
 		tunnel->_exit_status = HAX_EXIT_STATECHANGE;
@@ -1046,6 +1047,10 @@ coutinue_cpu:
 				}
 			}
 			break;
+		}
+		if(tunnel->io._port==0x1480){
+			// ゲームポート読み取りは即座に返す
+			goto coutinue_cpu_imm;
 		}
 		if(CPU_REMCLOCK==-1){
 			break;

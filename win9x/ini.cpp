@@ -554,6 +554,7 @@ static const PFTBL s_IniItems[] =
 	PFVAL("optsb16p", PFTYPE_HEX8,		&np2cfg.sndsb16io),
 	PFVAL("optsb16d", PFTYPE_UINT8,		&np2cfg.sndsb16dma),
 	PFVAL("optsb16i", PFTYPE_UINT8,		&np2cfg.sndsb16irq),
+	PFVAL("optsb16A", PFTYPE_BOOL,		&np2cfg.sndsb16at),
 #endif	/* SUPPORT_SOUND_SB16 */
 	
 	PFMAX("volume_M", PFTYPE_UINT8,		&np2cfg.vol_master,		100),
@@ -663,6 +664,7 @@ static const PFTBL s_IniItems[] =
 	PFSTR("cpu_bran", PFRO_STR,			np2cfg.cpu_brandstring_o),
 	PFVAL("cpu_brid", PFTYPE_HEX32,		&np2cfg.cpu_brandid),
 	PFVAL("cpu_fecx", PFTYPE_HEX32,		&np2cfg.cpu_feature_ecx),
+	PFVAL("cpu_eflg", PFTYPE_HEX32,		&np2cfg.cpu_eflags_mask),
 
 	PFMAX("FPU_TYPE", PFTYPE_UINT8,		&np2cfg.fpu_type,		0), // FPU種類
 	
@@ -681,6 +683,9 @@ static const PFTBL s_IniItems[] =
 #endif
 #if defined(SUPPORT_IDEIO)
 	PFVAL("IDEBADDR", PFRO_HEX8,		&np2cfg.idebaddr), // IDE BIOS アドレス（デフォルト：D8h(D8000h)）
+#endif
+#if defined(SUPPORT_GAMEPORT)
+	PFVAL("GAMEPORT", PFTYPE_BOOL,		&np2cfg.gameport),
 #endif
 
 	

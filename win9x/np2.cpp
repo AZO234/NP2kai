@@ -1342,6 +1342,31 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			np2cfg.SOUND_SW = SOUNDID_SB16;
 			update |= SYS_UPDATECFG | SYS_UPDATESBOARD;
 			break;
+			
+		case IDM_PC9801_86_SB16:
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_86_SB16;
+			update |= SYS_UPDATECFG | SYS_UPDATESBOARD;
+			break;
+			
+		case IDM_WSS_SB16:
+			np2cfg.SOUND_SW = SOUNDID_WSS_SB16;
+			update |= SYS_UPDATECFG | SYS_UPDATESBOARD;
+			break;
+			
+		case IDM_PC9801_86_WSS_SB16:
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_86_WSS_SB16;
+			update |= SYS_UPDATECFG | SYS_UPDATESBOARD;
+			break;
+			
+		case IDM_PC9801_118_SB16:
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_118_SB16;
+			update |= SYS_UPDATECFG | SYS_UPDATESBOARD;
+			break;
+			
+		case IDM_PC9801_86_118_SB16:
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_86_118_SB16;
+			update |= SYS_UPDATECFG | SYS_UPDATESBOARD;
+			break;
 #endif	// defined(SUPPORT_SOUND_SB16)
 
 #if defined(SUPPORT_PX)
