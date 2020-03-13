@@ -105,6 +105,16 @@ typedef	guint16		UINT16;
 typedef	guint32		UINT32;
 typedef	guint64		UINT64;
 
+typedef union {
+    struct {
+        UINT32 LowPart;
+        SINT32 HighPart;
+    } u;
+    SINT64 QuadPart;
+} LARGE_INTEGER;
+
+#define NP2_64_COPY(pd, ps) *(UINT64*)pd = *(UINT64*)ps;
+
 typedef	gboolean	BOOL;
 
 typedef	signed char	CHAR;

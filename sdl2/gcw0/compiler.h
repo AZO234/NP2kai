@@ -1,3 +1,6 @@
+#ifndef COMPILER_H
+#define COMPILER_H
+
 #include	<sys/param.h>
 #include	<stdio.h>
 #include	<stdlib.h>
@@ -63,6 +66,16 @@ typedef signed long int   INT64;
 __extension__
 typedef unsigned long long int  UINT64;
 #endif
+
+typedef union {
+    struct {
+        UINT32 LowPart;
+        SINT32 HighPart;
+    } u;
+    SINT64 QuadPart;
+} LARGE_INTEGER;
+
+#define NP2_64_COPY(pd, ps) *(UINT64*)pd = *(UINT64*)ps;
 
 typedef	bool				BOOL;
 typedef	signed char		CHAR;
@@ -240,3 +253,6 @@ typedef SINT32	FILELEN;
 #endif
 
 #include	"common.h"
+
+#endif  // COMPILER_H
+

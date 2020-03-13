@@ -5,7 +5,8 @@
  *			but are changed infrequently
  */
 
-#pragma once
+#ifndef COMPILER_H
+#define COMPILER_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -62,6 +63,16 @@ typedef	uint32_t		UINT32;
 typedef	int64_t		SINT64;
 typedef	int64_t		INT64;
 typedef	uint64_t		UINT64;
+
+typedef union {
+    struct {
+        UINT32 LowPart;
+        SINT32 HighPart;
+    } u;
+    SINT64 QuadPart;
+} LARGE_INTEGER;
+
+#define NP2_64_COPY(pd, ps) *(UINT64*)pd = *(UINT64*)ps;
 
 typedef  int32_t*    INTPTR;
 
@@ -264,4 +275,6 @@ typedef SINT32	FILELEN;
 #ifdef __cplusplus
 }
 #endif
+
+#endif  // COMPILER_H
 

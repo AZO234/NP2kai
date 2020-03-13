@@ -385,24 +385,19 @@ void pccore_postevent(UINT32 event);
 #ifdef SUPPORT_ASYNC_CPU
 extern int asynccpu_lateflag;
 extern int asynccpu_fastflag;
-#if !defined(__LIBRETRO__) && !defined(NP2_SDL2) && !defined(NP2_X11)
-#if !defined (_WINDOWS) 
-typedef union {
-    struct {
-        UINT32 LowPart;
-        SINT32 HighPart;
-    } u;
-    SINT64 QuadPart;
-} LARGE_INTEGER;
-#endif
 extern LARGE_INTEGER asynccpu_lastclock;
 extern LARGE_INTEGER asynccpu_clockpersec;
 extern LARGE_INTEGER asynccpu_clockcount;
-#else
-extern UINT64 asynccpu_lastclock;
-extern UINT64 asynccpu_clockpersec;
-extern UINT64 asynccpu_clockcount;
 #endif
+
+#if defined(CPUCORE_IA32)
+extern int GetCpuTypeIndex();
+extern int SetCpuTypeIndex(UINT index);
+#endif
+
+#if !defined(NP2_WIN)
+extern BOOL QueryPerformanceCounter(LARGE_INTEGER* count);
+extern BOOL QueryPerformanceFrequency(LARGE_INTEGER* freq);
 #endif
 
 #ifdef __cplusplus

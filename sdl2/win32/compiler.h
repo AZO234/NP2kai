@@ -1,3 +1,6 @@
+#ifndef COMPILER_H
+#define COMPILER_H
+
 #include	<windows.h>
 #include	<stdio.h>
 #include	<stdint.h>
@@ -64,6 +67,8 @@ typedef	unsigned int		UINT;
 
 #define	REG8		UINT8
 #define REG16		UINT16
+
+#define NP2_64_COPY(pd, ps) *pd = *ps;
 
 #define	BRESULT				UINT
 #define	OEMCHAR				char
@@ -202,4 +207,5 @@ typedef SINT32	FILELEN;
 
 #include	"common.h"
 
+#endif  // COMPILER_H
 

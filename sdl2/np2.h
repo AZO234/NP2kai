@@ -87,6 +87,7 @@ extern int mmxflag;
 int havemmx(void);
 
 #else	/* __LIBRETRO__ */
+
 #include <signal.h>
 
 #include "joymng.h"
@@ -151,11 +152,6 @@ extern int mmxflag;
 int havemmx(void);
 
 extern UINT8 changescreeninit;
-
-#if defined(CPUCORE_IA32)
-extern int GetCpuTypeIndex();
-extern int SetCpuTypeIndex(UINT index);
-#endif
 
 #endif	/* __LIBRETRO__ */
 

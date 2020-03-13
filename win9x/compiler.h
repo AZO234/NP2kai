@@ -8,6 +8,9 @@
  * @date	$Date: 2011/03/09 00:22:18 $
  */
 
+#ifndef COMPILER_H
+#define COMPILER_H
+
 #include "targetver.h"
 #define _USE_MATH_DEFINES
 #include <windows.h>
@@ -70,6 +73,8 @@ typedef	signed __int64		SINT64;
 #define	INLINE				inline
 #endif
 #define	FASTCALL			__fastcall
+
+#define NP2_64_COPY(pd, ps) *pd = *ps;
 
 #include <limits.h>
 #if !defined(LLONG_MIN)
@@ -238,3 +243,6 @@ typedef long	FILELEN;
 #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #endif
 #endif	/* (_MSC_VER >= 1400) */
+
+#endif  // COMPILER_H
+
