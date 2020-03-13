@@ -337,23 +337,23 @@ static REG8 IOINPCALL gameport_i4d2(UINT port)
 #endif
 	gameport_threshold_x = gameport_clkmax / 2;
 	gameport_threshold_y = gameport_clkmax / 2;
-	if(‾gameport_joyflag_base & 0x1){
+	if(~gameport_joyflag_base & 0x1){
 		gameport_threshold_y = GAMEPORT_JOYCOUNTER_MGN2;
 	}
-	if(‾gameport_joyflag_base & 0x2){
+	if(~gameport_joyflag_base & 0x2){
 		gameport_threshold_y = GAMEPORT_JOYCOUNTER_MGN2 + gameport_clkmax;
 	}
-	if(‾gameport_joyflag_base & 0x4){
+	if(~gameport_joyflag_base & 0x4){
 		gameport_threshold_x = GAMEPORT_JOYCOUNTER_MGN2;
 	}
-	if(‾gameport_joyflag_base & 0x8){
+	if(~gameport_joyflag_base & 0x8){
 		gameport_threshold_x = GAMEPORT_JOYCOUNTER_MGN2 + gameport_clkmax;
 	}
 	if(clockdiff >= (UINT64)gameport_threshold_x){
-		gameport_joyflag &= ‾0x01;
+		gameport_joyflag &= ~0x01;
 	}
 	if(clockdiff >= (UINT64)gameport_threshold_y){
-		gameport_joyflag &= ‾0x02;
+		gameport_joyflag &= ~0x02;
 	}
 	return gameport_joyflag;
 }

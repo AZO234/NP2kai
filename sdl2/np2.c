@@ -84,13 +84,11 @@ NP2OSCFG np2oscfg = {
 	1,			/* xrollkey */
 
 	SNDDRV_SDL,		/* snddrv */
-#if !defined(__LIBRETRO__)
 	{ "", "" }, 		/* MIDIDEV */
 #if defined(SUPPORT_SMPU98)
 	{ "", "" }, 		/* MIDIDEVA */
 	{ "", "" }, 		/* MIDIDEVB */
 #endif
-#endif	/* __LIBRETRO__ */
 	0,			/* MIDIWAIT */
 
 	{ TRUE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", "" },	/* mpu */

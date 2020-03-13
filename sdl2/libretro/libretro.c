@@ -953,6 +953,7 @@ static void update_variables(void)
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
       UINT cpu_index;
+
       if (strcmp(var.value, "Intel 80386") == 0)
          cpu_index = 1;
       else if (strcmp(var.value, "Intel i486SX") == 0)

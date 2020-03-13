@@ -57,9 +57,18 @@ typedef struct {
 	UINT8	xrollkey;
 
 	UINT8	snddrv;
+	char	MIDIDEV[2][MAX_PATH];
+#if defined(SUPPORT_SMPU98)
+	char	MIDIDEVA[2][MAX_PATH];
+	char	MIDIDEVB[2][MAX_PATH];
+#endif
 	UINT32	MIDIWAIT;
 
 	COMCFG	mpu;
+#if defined(SUPPORT_SMPU98)
+	COMCFG	smpuA;
+	COMCFG	smpuB;
+#endif
 
 	UINT8	readonly; // No save changed settings
 } NP2OSCFG;
