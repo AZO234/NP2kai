@@ -64,6 +64,7 @@ typedef	int64_t		SINT64;
 typedef	int64_t		INT64;
 typedef	uint64_t		UINT64;
 
+#if !defined(_WINDOWS) && !defined(__MINGW32__) && !defined(__CYGWIN__)
 typedef union {
     struct {
         UINT32 LowPart;
@@ -71,6 +72,7 @@ typedef union {
     } u;
     SINT64 QuadPart;
 } LARGE_INTEGER;
+#endif
 
 #define NP2_64_COPY(pd, ps) *(UINT64*)pd = *(UINT64*)ps;
 

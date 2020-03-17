@@ -799,7 +799,6 @@ SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr.
 	$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_cdrom.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_chd.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_huffman.c \
-	$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_zlib.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/formats/png/rpng.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/formats/png/rpng_encode.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/formats/tga/rtga.c \
