@@ -840,6 +840,10 @@ ifneq ($(platform), emscripten)
 	SOURCES_C += $(NP2_PATH)/sdl2/libretro/rsemaphore.c
 endif
 
+ifeq ($(platform), ctr)
+	SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rthreads.c
+endif
+
 ifeq ($(platform), windows_msvc2003_x86)
 	INCFLAGS += -I$(NP2_PATH)/sdl2/libretro/libretro-common/include/compat/msvc
 endif

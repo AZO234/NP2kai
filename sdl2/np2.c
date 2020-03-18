@@ -266,13 +266,27 @@ static void processwait(UINT cnt) {
 	}
 }
 
+int is_absolute(const char *path)
+{
+  if (path[0] == '/' || path[1] == ':')
+    return 1;
+  if (path[0] == '\\' && path[1] == '\\')
+    return 1;
+#if defined (_3DS) || defined (PSP) || defined (VITA)
+  char *pcolon = strchr(path, ':');
+  if (pcolon != NULL && pcolon[1] == '/')
+    return 1;
+#endif
+  return 0;
+}
+
 void np2_main_getfullpath(char* fullpath, const char* file, const char* base_dir) {
   int len;
 
   milstr_ncpy(fullpath, file, MAX_PATH);
   len = OEMSTRLEN(fullpath);
   if(len > 1) {
-    if(fullpath[0] != '/' && fullpath[1] != ':' && (fullpath[0] != '\\' && fullpath[1] != '\\')) {
+    if(!is_absolute(fullpath)) {
       milstr_ncpy(fullpath, base_dir, MAX_PATH);
       file_setseparator(fullpath, MAX_PATH);
       milstr_ncat(fullpath, file, MAX_PATH);
