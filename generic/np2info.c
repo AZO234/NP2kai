@@ -71,7 +71,7 @@ static void info_cpu(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 #else
 	UINT	family;
 #if defined(CPU_FAMILY)
-	family = np2min(CPU_FAMILY, 6);
+	family = MIN(CPU_FAMILY, 6);
 #else
 	family = (CPU_TYPE & CPUTYPE_V30)?1:2;
 #endif
@@ -85,10 +85,10 @@ static void info_cpu(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 static void info_clock(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
 	UINT32	clk;
-	OEMCHAR	clockstr[16];
+	OEMCHAR	clockstr[64];
 
 	clk = (pccore.realclock + 50000) / 100000;
-	OEMSPRINTF(clockstr, str_clockfmt, clk/10, clk % 10);
+	OEMSNPRINTF(clockstr, sizeof(clockstr), str_clockfmt, clk/10, clk % 10);
 	milstr_ncpy(str, clockstr, maxlen);
 	(void)ex;
 }
@@ -103,7 +103,7 @@ static void info_base(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 static void info_mem1(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
 	UINT	memsize;
-	OEMCHAR	memstr[32];
+	OEMCHAR	memstr[64];
 
 	memsize = np2cfg.memsw[2] & 7;
 	if (memsize < 6) {
@@ -113,10 +113,10 @@ static void info_mem1(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 		memsize = 640;
 	}
 	if (pccore.extmem) {
-		OEMSPRINTF(memstr, str_memfmt2, memsize, pccore.extmem * 1024);
+		OEMSNPRINTF(memstr, sizeof(memstr), str_memfmt2, memsize, pccore.extmem * 1024);
 	}
 	else {
-		OEMSPRINTF(memstr, str_memfmt, memsize);
+		OEMSNPRINTF(memstr, sizeof(memstr), str_memfmt, memsize);
 	}
 	milstr_ncpy(str, memstr, maxlen);
 	(void)ex;
@@ -125,7 +125,7 @@ static void info_mem1(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 static void info_mem2(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
 	UINT	memsize;
-	OEMCHAR	memstr[32];
+	OEMCHAR	memstr[64];
 
 	memsize = np2cfg.memsw[2] & 7;
 	if (memsize < 6) {
@@ -135,7 +135,7 @@ static void info_mem2(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 		memsize = 640;
 	}
 	memsize += pccore.extmem * 1024;
-	OEMSPRINTF(memstr, str_memfmt, memsize);
+	OEMSNPRINTF(memstr, sizeof(memstr), str_memfmt, memsize);
 	milstr_ncpy(str, memstr, maxlen);
 	(void)ex;
 }
@@ -143,7 +143,7 @@ static void info_mem2(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 static void info_mem3(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
 	UINT	memsize;
-	OEMCHAR	memstr[32];
+	OEMCHAR	memstr[64];
 
 	memsize = np2cfg.memsw[2] & 7;
 	if (memsize < 6) {
@@ -153,10 +153,10 @@ static void info_mem3(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 		memsize = 640;
 	}
 	if (pccore.extmem > 1) {
-		OEMSPRINTF(memstr, str_memfmt3, pccore.extmem, memsize / 100);
+		OEMSNPRINTF(memstr, sizeof(memstr), str_memfmt3, pccore.extmem, memsize / 100);
 	}
 	else {
-		OEMSPRINTF(memstr, str_memfmt, memsize);
+		OEMSNPRINTF(memstr, sizeof(memstr), str_memfmt, memsize);
 	}
 	milstr_ncpy(str, memstr, maxlen);
 	(void)ex;
@@ -171,9 +171,9 @@ static void info_gdc(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
 static void info_gdc2(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
-	OEMCHAR	textstr[32];
+	OEMCHAR	textstr[64];
 
-	OEMSPRINTF(textstr, str_dispclock,
+	OEMSNPRINTF(textstr, sizeof(textstr), str_dispclock,
 						gdc.hclock / 1000, (gdc.hclock / 10) % 100,
 						gdc.vclock / 10, gdc.vclock % 10);
 	milstr_ncpy(str, textstr, maxlen);
@@ -183,13 +183,13 @@ static void info_gdc2(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 static void info_text(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
 const OEMCHAR	*p;
-	OEMCHAR		textstr[64];
+	OEMCHAR		textstr[128];
 
 	if (!(gdcs.textdisp & GDCSCRN_ENABLE)) {
 		p = str_disable;
 	}
 	else {
-		OEMSPRINTF(textstr, str_twidth, ((gdc.mode1 & 0x4)?40:80));
+		OEMSNPRINTF(textstr, sizeof(textstr), str_twidth, ((gdc.mode1 & 0x4)?40:80));
 		p = textstr;
 	}
 	milstr_ncpy(str, p, maxlen);
@@ -345,18 +345,18 @@ static void info_sound(OEMCHAR *str, int maxlen, const NP2INFOEX *ex)
 
 static void info_extsnd(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
-	OEMCHAR	buf[64];
+	OEMCHAR	buf[128];
 
 	info_sound(str, maxlen, ex);
 	if (g_nSoundID & 4) {
 		milstr_ncat(str, ex->cr, maxlen);
-		OEMSPRINTF(buf, str_pcm86a,
+		OEMSNPRINTF(buf, sizeof(buf), str_pcm86a,
 							pcm86rate8[g_pcm86.fifo & 7] >> 3,
 							(16 - ((g_pcm86.dactrl >> 3) & 8)),
 							milstr_list(str_chpan, (g_pcm86.dactrl >> 4) & 3));
 		milstr_ncat(str, buf, maxlen);
 		milstr_ncat(str, ex->cr, maxlen);
-		OEMSPRINTF(buf, str_pcm86b, g_pcm86.virbuf, g_pcm86.fifosize);
+		OEMSNPRINTF(buf, sizeof(buf), str_pcm86b, g_pcm86.virbuf, g_pcm86.fifosize);
 		milstr_ncat(str, buf, maxlen);
 	}
 }
@@ -423,11 +423,11 @@ static void info_rhythm(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 static void info_display(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
 	UINT	bpp;
-	OEMCHAR buf[64] = {0};
+	OEMCHAR buf[128] = {0};
 
 	bpp = scrnmng_getbpp();
 	milstr_ncpy(str, milstr_list(str_winclr, ((bpp >> 3) - 1) & 3), maxlen);
-//	OEMSPRINTF(buf, OEMTEXT(" %dx%d"), scrnmngp->width, scrnmngp->height);
+//	OEMSNPRINTF(buf, sizeof(buf), OEMTEXT(" %dx%d"), scrnmngp->width, scrnmngp->height);
 //	milstr_ncat(str, buf, maxlen);
 	milstr_ncat(str, milstr_list(str_winmode, (scrnmng_isfullscreen())?1:0),
 																	maxlen);

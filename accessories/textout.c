@@ -23,7 +23,7 @@ void *textout_open(const char *filename, int bufsize) {
 	if (fh == NULL) {
 		goto toope_exit;
 	}
-	bufsize = np2max(bufsize, 256);
+	bufsize = MAX(bufsize, 256);
 	to = (TEXTOUT)_MALLOC(sizeof(_TEXTOUT) + bufsize, filename);
 	if (to == NULL) {
 		goto toope_exit;

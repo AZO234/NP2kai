@@ -120,9 +120,9 @@ static void np2sysp_cpu(const void *arg1, long arg2) {
 
 static void np2sysp_clock(const void *arg1, long arg2) {
 
-	OEMCHAR	str[16];
+	OEMCHAR	str[64];
 
-	OEMSPRINTF(str, str_mhz, (pccore.realclock + 500000) / 1000000);
+	OEMSNPRINTF(str, sizeof(str), str_mhz, (pccore.realclock + 500000) / 1000000);
 	setoutstr(str);
 	(void)arg1;
 	(void)arg2;
@@ -130,9 +130,9 @@ static void np2sysp_clock(const void *arg1, long arg2) {
 
 static void np2sysp_multiple(const void *arg1, long arg2) {
 
-	OEMCHAR	str[16];
+	OEMCHAR	str[64];
 
-	OEMSPRINTF(str, str_u, pccore.multiple);
+	OEMSNPRINTF(str, sizeof(str), str_u, pccore.multiple);
 	setoutstr(str);
 	(void)arg1;
 	(void)arg2;
@@ -147,9 +147,9 @@ static void np2sysp_hwreset(const void *arg1, long arg2) {
 
 static void np2sysp_changeclock(const void *arg1, long arg2) {
 
-	OEMCHAR	str[16];
+	OEMCHAR	str[64];
 
-	OEMSPRINTF(str, str_mhz, (pccore.realclock + 500000) / 1000000);
+	OEMSNPRINTF(str, sizeof(str), str_mhz, (pccore.realclock + 500000) / 1000000);
 	setoutstr(str);
 	(void)arg1;
 	(void)arg2;
@@ -158,7 +158,7 @@ static void np2sysp_changeclock(const void *arg1, long arg2) {
 // np21/w extensions
 static void np2sysp_cngclkmul(const void *arg1, long arg2) {
 
-	OEMCHAR	str[16];
+	OEMCHAR	str[64];
 	UINT8 oldclockmul = pccore.multiple;
 	UINT8 newclockmul = (np2sysp.outval >> 24);
 	
@@ -180,7 +180,7 @@ static void np2sysp_cngclkmul(const void *arg1, long arg2) {
 		gdc_updateclock();
 	}
 
-	OEMSPRINTF(str, OEMTEXT("%d"), pccore.multiple);
+	OEMSNPRINTF(str, sizeof(str), OEMTEXT("%d"), pccore.multiple);
 	setoutstr(str);
 	(void)arg1;
 	(void)arg2;
@@ -188,7 +188,7 @@ static void np2sysp_cngclkmul(const void *arg1, long arg2) {
 
 static void np2sysp_getconfig(const void *arg1, long arg2) {
 
-	OEMCHAR	str[16];
+	OEMCHAR	str[64];
 	UINT8 configid = (np2sysp.outval >> 24) & 0xff;
 	UINT8 configvalue = 0;
 	UINT16 configvalue16 = 0;
@@ -201,7 +201,7 @@ static void np2sysp_getconfig(const void *arg1, long arg2) {
 #if defined(SUPPORT_WAB) && defined(SUPPORT_CL_GD5430)
 		configvalue16 = np2clvga.gd54xxtype;
 #endif
-		OEMSPRINTF(str, OEMTEXT("%d"), configvalue16);
+		OEMSNPRINTF(str, sizeof(str), OEMTEXT("%d"), configvalue16);
 		setoutstr(str);
 		return;
 	case NP21W_SWITCH_PCIENABLE:
@@ -222,14 +222,14 @@ static void np2sysp_getconfig(const void *arg1, long arg2) {
 		break;
 	}
 
-	OEMSPRINTF(str, OEMTEXT("%d"), configvalue);
+	OEMSNPRINTF(str, sizeof(str), OEMTEXT("%d"), configvalue);
 	setoutstr(str);
 	(void)arg1;
 	(void)arg2;
 }
 static void np2sysp_cngconfig(const void *arg1, long arg2) {
 
-	OEMCHAR	str[16];
+	OEMCHAR	str[64];
 	UINT8 configid = (np2sysp.outval >> 24) & 0xff;
 	UINT8 configvalue = (np2sysp.outval >> 16) & 0xff;
 	UINT16 configvalue16 = 0;
@@ -308,7 +308,7 @@ static void np2sysp_cngconfig(const void *arg1, long arg2) {
 		np2wab.paletteChanged = 1;
 		pc98_cirrus_vga_resetresolution();
 #endif
-		OEMSPRINTF(str, OEMTEXT("%d"), configvalue16);
+		OEMSNPRINTF(str, sizeof(str), OEMTEXT("%d"), configvalue16);
 		setoutstr(str);
 		return;
 	case NP21W_SWITCH_PCIENABLE:
@@ -337,7 +337,7 @@ static void np2sysp_cngconfig(const void *arg1, long arg2) {
 		break;
 	}
 
-	OEMSPRINTF(str, OEMTEXT("%d"), configvalue);
+	OEMSNPRINTF(str, sizeof(str), OEMTEXT("%d"), configvalue);
 	setoutstr(str);
 	(void)arg1;
 	(void)arg2;

@@ -1,7 +1,12 @@
 #ifndef NP2_SDL2_DOSIO_H
 #define NP2_SDL2_DOSIO_H
 
+#if defined(__LIBRETRO__)
+#include "file_stream.h"
+typedef RFILE *				FILEH;
+#else
 typedef FILE *				FILEH;
+#endif
 #define	FILEH_INVALID		NULL
 
 #if defined(WIN32)
@@ -62,43 +67,43 @@ void dosio_init(void);
 void dosio_term(void);
 
 /* ファイル操作 */
-FILEH file_open(const char *path);
-FILEH file_open_rb(const char *path);
-FILEH file_create(const char *path);
+FILEH file_open(const OEMCHAR *path);
+FILEH file_open_rb(const OEMCHAR *path);
+FILEH file_create(const OEMCHAR *path);
 FILEPOS file_seek(FILEH handle, FILEPOS pointer, int method);
 UINT file_read(FILEH handle, void *data, UINT length);
 UINT file_write(FILEH handle, const void *data, UINT length);
 short file_close(FILEH handle);
 FILELEN file_getsize(FILEH handle);
 short file_getdatetime(FILEH handle, DOSDATE *dosdate, DOSTIME *dostime);
-short file_delete(const char *path);
-short file_attr(const char *path);
-short file_rename(const char *existpath, const char *newpath);
-short file_dircreate(const char *path);
-short file_dirdelete(const char *path);
+short file_delete(const OEMCHAR *path);
+short file_attr(const OEMCHAR *path);
+short file_rename(const OEMCHAR *existpath, const OEMCHAR *newpath);
+short file_dircreate(const OEMCHAR *path);
+short file_dirdelete(const OEMCHAR *path);
 
 /* カレントファイル操作 */
-void file_setcd(const char *exepath);
-char *file_getcd(const char *path);
-FILEH file_open_c(const char *path);
-FILEH file_open_rb_c(const char *path);
-FILEH file_create_c(const char *path);
-short file_delete_c(const char *path);
-short file_attr_c(const char *path);
+void file_setcd(const OEMCHAR *exepath);
+OEMCHAR *file_getcd(const OEMCHAR *path);
+FILEH file_open_c(const OEMCHAR *path);
+FILEH file_open_rb_c(const OEMCHAR *path);
+FILEH file_create_c(const OEMCHAR *path);
+short file_delete_c(const OEMCHAR *path);
+short file_attr_c(const OEMCHAR *path);
 
-FLISTH file_list1st(const char *dir, FLINFO *fli);
+FLISTH file_list1st(const OEMCHAR *dir, FLINFO *fli);
 BRESULT file_listnext(FLISTH hdl, FLINFO *fli);
 void file_listclose(FLISTH hdl);
 
 #define file_cpyname(p, n, m)	milstr_ncpy(p, n, m)
 #define file_cmpname(p, n)		milstr_cmp(p, n)
-void file_catname(char *path, const char *name, int maxlen);
-char *file_getname(const char *path);
-void file_cutname(char *path);
-char *file_getext(const char *path);
-void file_cutext(char *path);
-void file_cutseparator(char *path);
-void file_setseparator(char *path, int maxlen);
+void file_catname(OEMCHAR *path, const OEMCHAR *name, int maxlen);
+OEMCHAR *file_getname(const OEMCHAR *path);
+void file_cutname(OEMCHAR *path);
+OEMCHAR *file_getext(const OEMCHAR *path);
+void file_cutext(OEMCHAR *path);
+void file_cutseparator(OEMCHAR *path);
+void file_setseparator(OEMCHAR *path, int maxlen);
 
 #ifdef	__cplusplus
 }

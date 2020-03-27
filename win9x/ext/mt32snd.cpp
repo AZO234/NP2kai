@@ -193,7 +193,7 @@ UINT MT32Sound::Mix(SINT32* lpBuffer, UINT cchBuffer)
 	while (cchBuffer)
 	{
 		SINT16 sSamples[512 * 2];
-		const UINT nLength = np2min(cchBuffer, 512);
+		const UINT nLength = MIN(cchBuffer, 512);
 		(*m_fnMix)(sSamples, nLength);
 		for (UINT i = 0; i < nLength; i++)
 		{

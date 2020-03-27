@@ -140,18 +140,18 @@ static void usage(const char *progname) {
 
 // ---- resume
 
-static void getstatfilename(char *path, const char *ext, int size)
+static void getstatfilename(OEMCHAR *path, const OEMCHAR *ext, int size)
 {
-	char filename[32];
-	sprintf(filename, "np2.%s", ext);
+	OEMCHAR filename[32];
+	OEMSNPRINTF(filename, sizeof(filename), OEMTEXT("np2.%s"), ext);
 
 	file_cpyname(path, file_getcd(filename), size);
 }
 
-int flagsave(const char *ext) {
+int flagsave(const OEMCHAR *ext) {
 
 	int		ret;
-	char	path[MAX_PATH];
+	OEMCHAR	path[MAX_PATH];
 
 	getstatfilename(path, ext, sizeof(path));
 	ret = statsave_save(path);
@@ -161,21 +161,21 @@ int flagsave(const char *ext) {
 	return(ret);
 }
 
-void flagdelete(const char *ext) {
+void flagdelete(const OEMCHAR *ext) {
 
-	char	path[MAX_PATH];
+	OEMCHAR	path[MAX_PATH];
 
 	getstatfilename(path, ext, sizeof(path));
 	file_delete(path);
 }
 
-int flagload(const char *ext, const char *title, BOOL force) {
+int flagload(const OEMCHAR *ext, const OEMCHAR *title, BOOL force) {
 
 	int		ret;
 	int		id;
-	char	path[MAX_PATH];
-	char	buf[1024];
-	char	buf2[1024 + 256];
+	OEMCHAR	path[MAX_PATH];
+	OEMCHAR	buf[1024];
+	OEMCHAR	buf2[1024 + 256];
 
 	getstatfilename(path, ext, sizeof(path));
 	id = DID_YES;
@@ -185,7 +185,7 @@ int flagload(const char *ext, const char *title, BOOL force) {
 		id = DID_NO;
 	}
 	else if ((!force) && (ret & STATFLAG_DISKCHG)) {
-		SPRINTF(buf2, "Conflict!\n\n%s\nContinue?", buf);
+		OEMSNPRINTF(buf2, sizeof(buf2), OEMTEXT("Conflict!\n\n%s\nContinue?"), buf);
 		id = menumbox(buf2, title, MBOX_YESNOCAN | MBOX_ICONQUESTION);
 	}
 	if (id == DID_YES) {
@@ -294,10 +294,9 @@ void np2_main_getfullpath(char* fullpath, const char* file, const char* base_dir
   }
 }
 
-char np2_isfdimage(const char *file) {
+char np2_isfdimage(const char *file, const int len) {
   char fd = 0;
   char* ext;
-  unsigned int len = OEMSTRLEN(file);
 
   if(len > 4) {
     ext = file + len - 4;
@@ -387,7 +386,7 @@ char np2_main_read_m3u(const char *file)
         milstr_ncpy(name, base_dir, MAX_PATH);
         milstr_ncat(name, line, MAX_PATH);
       }
-      if(np2_isfdimage(name)) {
+      if(np2_isfdimage(name, OEMSTRLEN(name))) {
         milstr_ncpy(np2_main_disk_images_paths[np2_main_disk_images_count], name, MAX_PATH);
         np2_main_disk_images_count++;
       }
@@ -414,9 +413,9 @@ int np2_main(int argc, char *argv[]) {
 	char	*p;
 	int		id;
 	int		i, j, imagetype, drvfdd, setmedia, drvhddSCSI, HDCount, CDCount, CDDrv[4], CDArgv[4];
-	char	*ext;
-	char	base_dir[MAX_PATH];
-	char	fullpath[MAX_PATH];
+	OEMCHAR	*ext;
+	OEMCHAR	base_dir[MAX_PATH];
+	OEMCHAR	fullpath[MAX_PATH];
 #if defined(__LIBRETRO__)
   RFILE *fcheck;
 #else
@@ -479,7 +478,7 @@ int np2_main(int argc, char *argv[]) {
 	draw32bit = np2cfg.usegd5430;
 #endif
 
-	sprintf(fullpath, "%sdefault.ttf", np2cfg.biospath);
+	OEMSNPRINTF(fullpath, sizeof(fullpath), OEMTEXT("%sdefault.ttf"), np2cfg.biospath);
 #if defined(__LIBRETRO__)
   fcheck = filestream_open(fullpath, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
 #else
@@ -530,7 +529,7 @@ int np2_main(int argc, char *argv[]) {
 			np2_main_read_m3u(fullpath);
 		}
 
-		if(np2_isfdimage(fullpath)) {
+		if(np2_isfdimage(fullpath, OEMSTRLEN(fullpath))) {
 			imagetype = IMAGETYPE_FDD;
 			milstr_ncpy(np2_main_disk_images_paths[np2_main_disk_images_count], fullpath, MAX_PATH);
 			np2_main_disk_images_count++;
@@ -587,7 +586,7 @@ int np2_main(int argc, char *argv[]) {
 #if defined(SUPPORT_SCSI)
 		case IMAGETYPE_SCSI:
 			if (drvhddSCSI < 4) {
-				milstr_ncpy(np2cfg.scsihdd[drvhddSASI], fullpath, MAX_PATH);
+				milstr_ncpy(np2cfg.scsihdd[drvhddSCSI], fullpath, MAX_PATH);
 				drvhddSCSI++;
 			}
 			break;
@@ -656,8 +655,8 @@ int np2_main(int argc, char *argv[]) {
 	drvfdd = 0;
 	for (i = 0; i < np2_main_disk_images_count; i++) {
 		diskdrv_readyfdd(i, np2_main_disk_images_paths[i], 0);
-		if (i >= 1) {
-			break;
+		if (i < 2) {
+			diskdrv_readyfdd(i, np2_main_disk_images_paths[i], 0);
 		}
 	}
 

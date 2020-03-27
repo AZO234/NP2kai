@@ -102,9 +102,9 @@ static OEMCHAR	work[128];
 
 const OEMCHAR *debugsub_regs(void) {
 
-static OEMCHAR	work[256];
+static OEMCHAR	work[512];
 
-	OEMSPRINTF(work, str_register,	CPU_AX, CPU_BX, CPU_CX, CPU_DX,
+	OEMSNPRINTF(work, sizeof(work), str_register,	CPU_AX, CPU_BX, CPU_CX, CPU_DX,
 									CPU_SP, CPU_BP, CPU_SI, CPU_DI,
 									CPU_DS, CPU_ES, CPU_SS, CPU_CS, CPU_IP);
 	milstr_ncat(work, debugsub_flags(CPU_FLAG), NELEMENTS(work));
@@ -122,10 +122,10 @@ static void writeseg(const OEMCHAR *fname, UINT32 addr, UINT limit) {
 	if (fh == FILEH_INVALID) {
 		return;
 	}
-	limit = np2min(limit, 0xffff);
+	limit = MIN(limit, 0xffff);
 	limit++;
 	while(limit) {
-		size = np2min(limit, sizeof(buf));
+		size = MIN(limit, sizeof(buf));
 		MEML_READS(addr, buf, size);
 		file_write(fh, buf, size);
 		addr += size;
@@ -141,12 +141,12 @@ static int		filenum = 0;
 	OEMCHAR		work[512];
 const OEMCHAR	*p;
 
-	OEMSPRINTF(work, file_i286reg, filenum);
+	OEMSNPRINTF(work, sizeof(work), file_i286reg, filenum);
 	tfh = textfile_create(file_getcd(work), 0);
 	if (tfh != NULL) {
 		p = debugsub_regs();
 		textfile_write(tfh, p);
-		OEMSPRINTF(work, str_picstat,
+		OEMSNPRINTF(work, sizeof(work), str_picstat,
 								pic.pi[0].imr, pic.pi[0].irr, pic.pi[0].isr,
 								pic.pi[1].imr, pic.pi[1].irr, pic.pi[1].isr,
 								mouseif.upd8255.portc, sysport.c);
@@ -154,13 +154,13 @@ const OEMCHAR	*p;
 		textfile_close(tfh);
 	}
 
-	OEMSPRINTF(work, file_i286cs, filenum);
+	OEMSNPRINTF(work, sizeof(work), file_i286cs, filenum);
 	writeseg(work, CS_BASE, 0xffff);
-	OEMSPRINTF(work, file_i286ds, filenum);
+	OEMSNPRINTF(work, sizeof(work), file_i286ds, filenum);
 	writeseg(work, DS_BASE, 0xffff);
-	OEMSPRINTF(work, file_i286es, filenum);
+	OEMSNPRINTF(work, sizeof(work), file_i286es, filenum);
 	writeseg(work, ES_BASE, 0xffff);
-	OEMSPRINTF(work, file_i286ss, filenum);
+	OEMSNPRINTF(work, sizeof(work), file_i286ss, filenum);
 	writeseg(work, SS_BASE, 0xffff);
 	filenum++;
 }

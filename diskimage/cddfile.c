@@ -353,7 +353,7 @@ REG8 sec2048_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 	}
 
 	while(size) {
-		rsize = np2min(size, 2048);
+		rsize = MIN(size, 2048);
 		CPU_REMCLOCK -= rsize;
 		if (file_read(fh, buf, rsize) != rsize) {
 			return(0xd0);
@@ -388,7 +388,7 @@ REG8 sec2352_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 		if (file_seek(fh, fpos, FSEEK_SET) != fpos) {
 			return(0xd0);
 		}
-		rsize = np2min(size, 2048);
+		rsize = MIN(size, 2048);
 		CPU_REMCLOCK -= rsize;
 		if (file_read(fh, buf, rsize) != rsize) {
 			return(0xd0);
@@ -454,7 +454,7 @@ REG8 sec2352_read_with_ecc(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 			//return(0xd0);
 		}
 
-		rsize = np2min(size, 2048);
+		rsize = MIN(size, 2048);
 		buf += rsize;
 		size -= rsize;
 		pos++;
@@ -485,7 +485,7 @@ REG8 sec2448_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 		if (file_seek(fh, fpos, FSEEK_SET) != fpos) {
 			return(0xd0);
 		}
-		rsize = np2min(size, 2048);
+		rsize = MIN(size, 2048);
 		CPU_REMCLOCK -= rsize;
 		if (file_read(fh, buf, rsize) != rsize) {
 			return(0xd0);
@@ -537,7 +537,7 @@ REG8 sec_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 		if (file_seek(fh, fpos, FSEEK_SET) != fpos) {
 			return(0xd0);
 		}
-		rsize = np2min(size, 2048);
+		rsize = MIN(size, 2048);
 		CPU_REMCLOCK -= rsize;
 		if (file_read(fh, buf, rsize) != rsize) {
 			return(0xd0);
@@ -656,7 +656,7 @@ BRESULT setsxsidev(SXSIDEV sxsi, const OEMCHAR *path, const _CDTRK *trk, UINT tr
 	}
 	ZeroMemory(cdinfo, sizeof(_CDINFO));
 	cdinfo->fh = fh;
-	trks = np2min(trks, NELEMENTS(cdinfo->trk) - 1);
+	trks = MIN(trks, NELEMENTS(cdinfo->trk) - 1);
 	CopyMemory(cdinfo->trk, trk, trks * sizeof(_CDTRK));
 
 #ifdef	TOCLOGOUT

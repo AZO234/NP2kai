@@ -644,7 +644,7 @@ void ct1741_dma(NEVENTITEM item)
 					rem = g_sb16.dsp_info.dma.bufsize * BUF_ALIGN[g_sb16.dsp_info.dma.mode|g_sb16.dsp_info.dma.stereo <<3] / 4 * g_sb16.dsp_info.freq / 44100 - g_sb16.dsp_info.dma.bufdatas;
 				}
 				pos = (g_sb16.dsp_info.dma.bufpos + g_sb16.dsp_info.dma.bufdatas) & (DMA_BUFSIZE -1);
-				size = np2min(rem, (g_sb16.dsp_info.freq==8000 ? 64 : 32) * (g_sb16.dsp_info.dma.stereo ? 2 : 1)); // DMAの転送量を少量に変更（値に根拠はない）
+				size = MIN(rem, (g_sb16.dsp_info.freq==8000 ? 64 : 32) * (g_sb16.dsp_info.dma.stereo ? 2 : 1)); // DMAの転送量を少量に変更（値に根拠はない）
 				r = dmac_getdatas(g_sb16.dsp_info.dma.chan, dmabuf, size);
 				if(r!=0){
 					zerocounter = 0;
@@ -842,7 +842,7 @@ const UINT8	*ptr2;
 		pcm += 2;
 	}
 
-	leng = np2min(leng, samppos);
+	leng = MIN(leng, samppos);
 	cs->bufdatas -= (leng << 0);
 	cs->bufpos = (cs->bufpos + (leng << 0)) & DMA_BUFMASK;
 	if(g_sb16.dsp_info.dma.bufdatas < DMA_BUFSIZE / 2){
@@ -892,7 +892,7 @@ const UINT8	*ptr2;
 		pcm += 2;
 	}
 
-	leng = np2min(leng, samppos);
+	leng = MIN(leng, samppos);
 	cs->bufdatas -= (leng << 0);
 	cs->bufpos = (cs->bufpos + (leng << 0)) & DMA_BUFMASK;
 }
@@ -938,7 +938,7 @@ const UINT8	*ptr2;
 		pcm += 2;
 	}
 
-	leng = np2min(leng, samppos);
+	leng = MIN(leng, samppos);
 	cs->bufdatas -= (leng << 0);
 	cs->bufpos = (cs->bufpos + (leng << 0)) & CS4231_BUFMASK;
 }
@@ -985,7 +985,7 @@ const UINT8	*ptr2;
 		pcm += 2;
 	}
 
-	leng = np2min(leng, samppos);
+	leng = MIN(leng, samppos);
 	cs->bufdatas -= (leng << 0);
 	cs->bufpos = (cs->bufpos + (leng << 0)) & CS4231_BUFMASK;
 }
@@ -1031,7 +1031,7 @@ const UINT8	*ptr2;
 		pcm += 2;
 	}
 
-	leng = np2min(leng, samppos);
+	leng = MIN(leng, samppos);
 	cs->bufdatas -= (leng << 0);
 	cs->bufpos = (cs->bufpos + (leng << 0)) & CS4231_BUFMASK;
 }

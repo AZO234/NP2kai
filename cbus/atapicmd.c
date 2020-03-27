@@ -66,7 +66,7 @@ static const UINT8 cdrom_inquiry[] = {
 
 static void senddata(IDEDRV drv, UINT size, UINT limit) {
 
-	size = np2min(size, limit);
+	size = MIN(size, limit);
 	drv->sc = IDEINTR_IO;
 	drv->cy = size;
 	drv->status &= ~(IDESTAT_BSY|IDESTAT_DMRD|IDESTAT_SERV|IDESTAT_CHK);
@@ -793,7 +793,7 @@ static void atapi_cmd_mode_sense(IDEDRV drv) {
 			p2a = defval_pagecode_2a;
 			ptr = defval_pagecode_0f;
 		}
-		CopyMemory(p, ptr, np2min((leng - cnt), PC_0F_SIZE));
+		CopyMemory(p, ptr, MIN((leng - cnt), PC_0F_SIZE));
 		p[4] = (p2a[4] & 1);				// byte04 bit0 = Audioplay supported?
 		p[4] |= ((p2a[6] & 2) << 6);		// byte04 bit7 = lock state?
 		p[4] |= ((p2a[5] & 4) << 2);		// byte04 bit4 = R-W supported?
@@ -819,7 +819,7 @@ static void atapi_cmd_mode_sense(IDEDRV drv) {
 		else {
 			ptr = defval_pagecode_01;
 		}
-		CopyMemory(drv->buf + cnt, ptr, np2min((leng - cnt), PC_01_SIZE));
+		CopyMemory(drv->buf + cnt, ptr, MIN((leng - cnt), PC_01_SIZE));
 		cnt += PC_01_SIZE;
 		if (cnt > leng) {
 			goto length_exceeded;
@@ -836,7 +836,7 @@ static void atapi_cmd_mode_sense(IDEDRV drv) {
 		else {
 			ptr = defval_pagecode_0d;
 		}
-		CopyMemory(drv->buf + cnt, ptr, np2min((leng - cnt), PC_0D_SIZE));
+		CopyMemory(drv->buf + cnt, ptr, MIN((leng - cnt), PC_0D_SIZE));
 		cnt += PC_0D_SIZE;
 		if (cnt > leng) {
 			goto length_exceeded;
@@ -853,7 +853,7 @@ static void atapi_cmd_mode_sense(IDEDRV drv) {
 		else {
 			ptr = defval_pagecode_0e;
 		}
-		CopyMemory(drv->buf + cnt, ptr, np2min((leng - cnt), PC_0E_SIZE));
+		CopyMemory(drv->buf + cnt, ptr, MIN((leng - cnt), PC_0E_SIZE));
 		cnt += PC_0E_SIZE;
 		if (cnt > leng) {
 			goto length_exceeded;
@@ -871,7 +871,7 @@ static void atapi_cmd_mode_sense(IDEDRV drv) {
 		else {
 			ptr = defval_pagecode_2a;
 		}
-		CopyMemory(drv->buf + cnt, ptr, np2min((leng - cnt), PC_2A_SIZE));
+		CopyMemory(drv->buf + cnt, ptr, MIN((leng - cnt), PC_2A_SIZE));
 		cnt += PC_2A_SIZE;
 		if (cnt > leng) {
 			goto length_exceeded;
@@ -1080,7 +1080,7 @@ static void atapi_cmd_readtoc(IDEDRV drv) {
 	switch (format) {
 	case 0: // track info
 		//datasize = (tracks * 8) + 10;
-		strack = np2min(np2max(1U, strack), (tracks+1));		// special case: 0 = 1sttrack, 0xaa = leadout
+		strack = MIN(MAX(1U, strack), (tracks+1));		// special case: 0 = 1sttrack, 0xaa = leadout
 		datasize = ((tracks - strack + 1U) * 8U) + 10;
 		drv->buf[0] = (UINT8)(datasize >> 8);
 		drv->buf[1] = (UINT8)(datasize >> 0);

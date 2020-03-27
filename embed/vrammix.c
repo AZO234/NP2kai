@@ -29,7 +29,7 @@ static BRESULT cpyrect(MIX_RECT *r, const VRAMHDL dst, const POINT_T *pt,
 	}
 	r->srcpos = 0;
 	if (rct) {
-		width = np2min(rct->right, src->width);
+		width = MIN(rct->right, src->width);
 		if (rct->left >= 0) {
 			r->srcpos += rct->left;
 			width -= rct->left;
@@ -37,7 +37,7 @@ static BRESULT cpyrect(MIX_RECT *r, const VRAMHDL dst, const POINT_T *pt,
 		else {
 			p.x -= rct->left;
 		}
-		height = np2min(rct->bottom, src->height);
+		height = MIN(rct->bottom, src->height);
 		if (rct->top >= 0) {
 			r->srcpos += rct->top * src->width;
 			height -= rct->top;
@@ -52,10 +52,10 @@ static BRESULT cpyrect(MIX_RECT *r, const VRAMHDL dst, const POINT_T *pt,
 	}
 
 	r->dstpos = 0;
-	r->width = np2min(width + p.x, dst->width);
+	r->width = MIN(width + p.x, dst->width);
 	if (p.x > 0) {
 		r->dstpos += p.x;
-		r->width = np2min(r->width, dst->width) - p.x;
+		r->width = MIN(r->width, dst->width) - p.x;
 	}
 	else {
 		r->srcpos -= p.x;
@@ -64,10 +64,10 @@ static BRESULT cpyrect(MIX_RECT *r, const VRAMHDL dst, const POINT_T *pt,
 		return(FAILURE);
 	}
 
-	r->height = np2min(height + p.y, dst->height);
+	r->height = MIN(height + p.y, dst->height);
 	if (p.y > 0) {
 		r->dstpos += p.y * dst->width;
-		r->height = np2min(r->height, dst->height) - p.y;
+		r->height = MIN(r->height, dst->height) - p.y;
 	}
 	else {
 		r->srcpos -= p.y * src->width;
@@ -100,10 +100,10 @@ static BRESULT mixrect(MIX_RECT *r, const VRAMHDL dst, const RECT_T *rct,
 			(rct->left >= dst->width) || (rct->top >= dst->height)) {
 			return(FAILURE);
 		}
-		s.left = np2max(rct->left, 0);
-		s.top = np2max(rct->top, 0);
-		s.right = np2min(rct->right, dst->width);
-		s.bottom = np2min(rct->bottom, dst->height);
+		s.left = MAX(rct->left, 0);
+		s.top = MAX(rct->top, 0);
+		s.right = MIN(rct->right, dst->width);
+		s.bottom = MIN(rct->bottom, dst->height);
 		if ((s.top >= s.bottom) || (s.left >= s.right)) {
 			return(FAILURE);
 		}
@@ -117,11 +117,11 @@ static BRESULT mixrect(MIX_RECT *r, const VRAMHDL dst, const RECT_T *rct,
 	}
 	if (pos < 0) {
 		r->srcpos -= pos * src->width;
-		r->height = np2min(src->height + pos, s.bottom - s.top);
+		r->height = MIN(src->height + pos, s.bottom - s.top);
 	}
 	else {
 		r->dstpos += pos * dst->width;
-		r->height = np2min(s.bottom - s.top - pos, src->height);
+		r->height = MIN(s.bottom - s.top - pos, src->height);
 	}
 	if (r->height <= 0) {
 		return(FAILURE);
@@ -133,11 +133,11 @@ static BRESULT mixrect(MIX_RECT *r, const VRAMHDL dst, const RECT_T *rct,
 	}
 	if (pos < 0) {
 		r->srcpos -= pos;
-		r->width = np2min(src->width + pos, s.right - s.left);
+		r->width = MIN(src->width + pos, s.right - s.left);
 	}
 	else {
 		r->dstpos += pos;
-		r->width = np2min(s.right - s.left - pos, src->width);
+		r->width = MIN(s.right - s.left - pos, src->width);
 	}
 	if (r->width <= 0) {
 		return(FAILURE);
@@ -179,7 +179,7 @@ static BRESULT cpyrectex(MIXRECTEX *r, const VRAMHDL dst, const POINT_T *pt,
 
 	r->srcpos = 0;
 	if (rct) {
-		width = np2min(rct->right, src->width);
+		width = MIN(rct->right, src->width);
 		if (rct->left >= 0) {
 			r->srcpos += rct->left;
 			width -= rct->left;
@@ -187,7 +187,7 @@ static BRESULT cpyrectex(MIXRECTEX *r, const VRAMHDL dst, const POINT_T *pt,
 		else {
 			p.x -= rct->left;
 		}
-		height = np2min(rct->bottom, src->height);
+		height = MIN(rct->bottom, src->height);
 		if (rct->top >= 0) {
 			r->srcpos += rct->top * src->width;
 			height -= rct->top;
@@ -203,12 +203,12 @@ static BRESULT cpyrectex(MIXRECTEX *r, const VRAMHDL dst, const POINT_T *pt,
 
 	r->orgpos = 0;
 	r->dstpos = 0;
-	dstwidth = np2min(dst->width, org->width);
-	r->width = np2min(width + p.x, dstwidth);
+	dstwidth = MIN(dst->width, org->width);
+	r->width = MIN(width + p.x, dstwidth);
 	if (p.x > 0) {
 		r->orgpos += p.x;
 		r->dstpos += p.x;
-		r->width = np2min(r->width, dstwidth) - p.x;
+		r->width = MIN(r->width, dstwidth) - p.x;
 	}
 	else {
 		r->srcpos -= p.x;
@@ -217,12 +217,12 @@ static BRESULT cpyrectex(MIXRECTEX *r, const VRAMHDL dst, const POINT_T *pt,
 		return(FAILURE);
 	}
 
-	dstheight = np2min(dst->height, org->height);
-	r->height = np2min(height + p.y, dstheight);
+	dstheight = MIN(dst->height, org->height);
+	r->height = MIN(height + p.y, dstheight);
 	if (p.y > 0) {
 		r->orgpos += p.y * org->width;
 		r->dstpos += p.y * dst->width;
-		r->height = np2min(r->height, dstheight) - p.y;
+		r->height = MIN(r->height, dstheight) - p.y;
 	}
 	else {
 		r->srcpos -= p.y * src->width;
@@ -245,8 +245,8 @@ static BRESULT mixrectex(MIXRECTEX *r, const VRAMHDL dst, const VRAMHDL org,
 		(dst->bpp != org->bpp) || (dst->bpp != src->bpp)) {
 		return(FAILURE);
 	}
-	dstwidth = np2min(dst->width, org->width);
-	dstheight = np2min(dst->height, org->height);
+	dstwidth = MIN(dst->width, org->width);
+	dstheight = MIN(dst->height, org->height);
 	r->srcpos = 0;
 	if (rct == NULL) {
 		s.left = 0;
@@ -261,10 +261,10 @@ static BRESULT mixrectex(MIXRECTEX *r, const VRAMHDL dst, const VRAMHDL org,
 			(rct->left >= dstwidth) || (rct->top >= dstheight)) {
 			return(FAILURE);
 		}
-		s.left = np2max(rct->left, 0);
-		s.top = np2max(rct->top, 0);
-		s.right = np2min(rct->right, dstwidth);
-		s.bottom = np2min(rct->bottom, dstheight);
+		s.left = MAX(rct->left, 0);
+		s.top = MAX(rct->top, 0);
+		s.right = MIN(rct->right, dstwidth);
+		s.bottom = MIN(rct->bottom, dstheight);
 		if ((s.top >= s.bottom) || (s.left >= s.right)) {
 			return(FAILURE);
 		}
@@ -280,12 +280,12 @@ static BRESULT mixrectex(MIXRECTEX *r, const VRAMHDL dst, const VRAMHDL org,
 	}
 	if (pos < 0) {
 		r->srcpos -= pos * src->width;
-		r->height = np2min(src->height + pos, s.bottom - s.top);
+		r->height = MIN(src->height + pos, s.bottom - s.top);
 	}
 	else {
 		r->orgpos += pos * org->width;
 		r->dstpos += pos * dst->width;
-		r->height = np2min(s.bottom - s.top - pos, src->height);
+		r->height = MIN(s.bottom - s.top - pos, src->height);
 	}
 	if (r->height <= 0) {
 		return(FAILURE);
@@ -297,12 +297,12 @@ static BRESULT mixrectex(MIXRECTEX *r, const VRAMHDL dst, const VRAMHDL org,
 	}
 	if (pos < 0) {
 		r->srcpos -= pos;
-		r->width = np2min(src->width + pos, s.right - s.left);
+		r->width = MIN(src->width + pos, s.right - s.left);
 	}
 	else {
 		r->orgpos += pos;
 		r->dstpos += pos;
-		r->width = np2min(s.right - s.left - pos, src->width);
+		r->width = MIN(s.right - s.left - pos, src->width);
 	}
 	if (r->width <= 0) {
 		return(FAILURE);
@@ -983,10 +983,10 @@ const UINT8	*p;
 
 	do {
 		p = pbase;
-		ystep = np2min(mr->height, dot);
+		ystep = MIN(mr->height, dot);
 		x = mr->width;
 		do {
-			xstep = np2min(x, dot);
+			xstep = MIN(x, dot);
 			xstep2 = xstep * 2;
 			q = qbase;
 			yy = ystep;
@@ -1032,10 +1032,10 @@ const UINT8	*p;
 	dstep = (dst->yalign * dot) - (mr->width * 2);
 
 	do {
-		ystep = np2min(mr->height, dot);
+		ystep = MIN(mr->height, dot);
 		x = mr->width;
 		do {
-			xstep = np2min(x, dot);
+			xstep = MIN(x, dot);
 			xstep2 = xstep * 2;
 			r = q;
 			yy = ystep;
@@ -1647,10 +1647,10 @@ const UINT8	*p;
 
 	do {
 		p = pbase;
-		ystep = np2min(mr->height, dot);
+		ystep = MIN(mr->height, dot);
 		x = mr->width;
 		do {
-			xstep = np2min(x, dot);
+			xstep = MIN(x, dot);
 			xstep3 = xstep * 3;
 			q = qbase;
 			yy = ystep;
@@ -1696,10 +1696,10 @@ const UINT8	*p;
 	dstep = (dst->yalign * dot) - (mr->width * 3);
 
 	do {
-		ystep = np2min(mr->height, dot);
+		ystep = MIN(mr->height, dot);
 		x = mr->width;
 		do {
-			xstep = np2min(x, dot);
+			xstep = MIN(x, dot);
 			xstep3 = xstep * 3;
 			r = q;
 			yy = ystep;
@@ -2308,10 +2308,10 @@ const UINT8	*p;
 
 	do {
 		p = pbase;
-		ystep = np2min(mr->height, dot);
+		ystep = MIN(mr->height, dot);
 		x = mr->width;
 		do {
-			xstep = np2min(x, dot);
+			xstep = MIN(x, dot);
 			xstep3 = xstep * 4;
 			q = qbase;
 			yy = ystep;
@@ -2357,10 +2357,10 @@ const UINT8	*p;
 	dstep = (dst->yalign * dot) - (mr->width * 4);
 
 	do {
-		ystep = np2min(mr->height, dot);
+		ystep = MIN(mr->height, dot);
 		x = mr->width;
 		do {
-			xstep = np2min(x, dot);
+			xstep = MIN(x, dot);
 			xstep3 = xstep * 4;
 			r = q;
 			yy = ystep;
@@ -3270,10 +3270,10 @@ static BRESULT txtrect(VRAMHDL dst, const FNTDAT fnt, const POINT_T *pt,
 	pos = pt->y - rct->top;
 	if (pos < 0) {
 		r->srcpos -= pos * fnt->width;
-		r->height = np2min(fnt->height + pos, rct->bottom - rct->top);
+		r->height = MIN(fnt->height + pos, rct->bottom - rct->top);
 	}
 	else {
-		r->height = np2min(rct->bottom - rct->top - pos, fnt->height);
+		r->height = MIN(rct->bottom - rct->top - pos, fnt->height);
 	}
 	if (r->height <= 0) {
 		return(FAILURE);
@@ -3282,10 +3282,10 @@ static BRESULT txtrect(VRAMHDL dst, const FNTDAT fnt, const POINT_T *pt,
 	pos = pt->x - rct->left;
 	if (pos < 0) {
 		r->srcpos -= pos;
-		r->width = np2min(fnt->width + pos, rct->right - rct->left);
+		r->width = MIN(fnt->width + pos, rct->right - rct->left);
 	}
 	else {
-		r->width = np2min(rct->right - rct->left - pos, fnt->width);
+		r->width = MIN(rct->right - rct->left - pos, fnt->width);
 	}
 	if (r->width <= 0) {
 		return(FAILURE);

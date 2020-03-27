@@ -340,7 +340,7 @@ const UINT8		*palptr;
 		(bmpdata_getinfo(bi, &inf) != SUCCESS) || (inf.bpp != 4)) {
 		return(FAILURE);
 	}
-	pals = np2min(LOADINTELDWORD(bi->biClrUsed), 16);
+	pals = MIN(LOADINTELDWORD(bi->biClrUsed), 16);
 
 	src = (UINT8 *)bf + (LOADINTELDWORD(bf->bfOffBits));
 	bmpalign = bmpdata_getalign(bi);

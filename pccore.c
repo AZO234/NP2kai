@@ -322,9 +322,9 @@ static void pccore_set(const NP2CFG *pConfig)
 	{
 		extsize = np2cfg.EXTMEM;
 #if defined(CPUCORE_IA32)
-		extsize = np2min(extsize, MEMORY_MAXSIZE);
+		extsize = MIN(extsize, MEMORY_MAXSIZE);
 #else
-		extsize = np2min(extsize, 13);
+		extsize = MIN(extsize, 13);
 #endif
 	}
 	pccore.extmem = extsize;
@@ -698,11 +698,7 @@ void pccore_reset(void) {
 #if defined(CPUCORE_IA32)
 	if(strlen(np2cfg.cpu_vendor_o)!=0){
 		memset(np2cfg.cpu_vendor, 0, 12);
-#ifdef UNICODE
-		WideCharToMultiByte(CP_ACP, 0, np2cfg.cpu_vendor_o, -1, np2cfg.cpu_vendor, 12+1, NULL, NULL);
-#else
 		strcpy(np2cfg.cpu_vendor, np2cfg.cpu_vendor_o);
-#endif
 		// 字数が足りない時スペースで埋める
 		for(i=0;i<12;i++){
 			if(np2cfg.cpu_vendor[i] == '\0'){
@@ -713,11 +709,7 @@ void pccore_reset(void) {
 	}
 	if(strlen(np2cfg.cpu_brandstring_o)!=0){
 		memset(np2cfg.cpu_brandstring, 0, 48);
-#ifdef UNICODE
-		WideCharToMultiByte(CP_ACP, 0, np2cfg.cpu_brandstring_o, -1, np2cfg.cpu_brandstring, 48+1, NULL, NULL);
-#else
 		strcpy(np2cfg.cpu_brandstring, np2cfg.cpu_brandstring_o);
-#endif
 		// 最後に1文字スペースを入れる
 		strcat(np2cfg.cpu_brandstring, " ");
 	}
@@ -876,10 +868,10 @@ void pccore_reset(void) {
 #elif defined(NP2_X11) || defined(__LIBRETRO__)
 	{
 		UINT64 c = clock();
-		NP2_64_COPY(&asynccpu_lastclock, &c)
-		NP2_64_COPY(&asynccpu_clockcount, &c)
+		COPY64(&asynccpu_lastclock, &c)
+		COPY64(&asynccpu_clockcount, &c)
 		c = CLOCKS_PER_SEC;
-		NP2_64_COPY(&asynccpu_clockpersec, &c)
+		COPY64(&asynccpu_clockpersec, &c)
 	}
 #elif defined(NP2_SDL2)
 	{
@@ -889,10 +881,10 @@ void pccore_reset(void) {
 #else
 		c = SDL_GetPerformanceCounter();
 #endif
-		NP2_64_COPY(&asynccpu_lastclock, &c)
-		NP2_64_COPY(&asynccpu_clockcount, &c)
+		COPY64(&asynccpu_lastclock, &c)
+		COPY64(&asynccpu_clockcount, &c)
 		c = SDL_GetPerformanceFrequency();
-		NP2_64_COPY(&asynccpu_clockpersec, &c)
+		COPY64(&asynccpu_clockpersec, &c)
 	}
 #endif
 #endif
@@ -1585,12 +1577,12 @@ int SetCpuTypeIndex(UINT index){
 #if !defined(_WINDOWS) && !defined(__MINGW32__) && !defined(__CYGWIN__)
 BOOL QueryPerformanceCounter(LARGE_INTEGER* count) {
   int64_t icount = NP2_TickCount_GetCount();
-  NP2_64_COPY(count, &icount);
+  COPY64(count, &icount);
   return TRUE;
 }
 BOOL QueryPerformanceFrequency(LARGE_INTEGER* freq) {
   int64_t ifreq = NP2_TickCount_GetFrequency();
-  NP2_64_COPY(freq, &ifreq);
+  COPY64(freq, &ifreq);
   return TRUE;
 }
 #endif

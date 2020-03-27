@@ -163,7 +163,7 @@ void CDebugUtyAsm::ReadMemory(UINT nOffset, unsigned char* lpBuffer, UINT cbBuff
 {
 	while (cbBuffer)
 	{
-		const UINT nLimit = np2min(nOffset + cbBuffer, 0x10000);
+		const UINT nLimit = MIN(nOffset + cbBuffer, 0x10000);
 		const UINT nSize = nLimit - nOffset;
 
 		if (!m_buffer.empty())

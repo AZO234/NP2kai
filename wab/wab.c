@@ -120,11 +120,11 @@ static void wab_delete_criticalsection(void){
 #if defined(NP2_X11) || defined(NP2_SDL2) || defined(__LIBRETRO__)
 static const INITBL s_wabwndini[] =
 {
-	{"WindposX",  INITYPE_SINT32,	&np2wabcfg.posx,	0},
-	{"WindposY",  INITYPE_SINT32,	&np2wabcfg.posy,	0},
-	{"MULTIWND",  INITYPE_BOOL,	&np2wabcfg.multiwindow,	0},
-	{"MULTHREAD", INITYPE_BOOL,	&np2wabcfg.multithread,	0},
-	{"HALFTONE",  INITYPE_BOOL,	&np2wabcfg.halftone,	0},
+	{OEMTEXT("WindposX"),  INITYPE_SINT32,	&np2wabcfg.posx,	0},
+	{OEMTEXT("WindposY"),  INITYPE_SINT32,	&np2wabcfg.posy,	0},
+	{OEMTEXT("MULTIWND"),  INITYPE_BOOL,	&np2wabcfg.multiwindow,	0},
+	{OEMTEXT("MULTHREAD"), INITYPE_BOOL,	&np2wabcfg.multithread,	0},
+	{OEMTEXT("HALFTONE"),  INITYPE_BOOL,	&np2wabcfg.halftone,	0},
 };
 #else
 static const PFTBL s_wabwndini[] =

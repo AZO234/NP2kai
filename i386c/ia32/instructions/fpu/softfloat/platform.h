@@ -41,10 +41,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /*----------------------------------------------------------------------------
 *----------------------------------------------------------------------------*/
-#ifdef __GNUC_STDC_INLINE__
-#define INLINE inline
+#ifndef INLINE
+#if defined(_MSC_VER)
+#pragma warning(disable: 4244)
+#pragma warning(disable: 4245)
+#define INLINE __inline
+#elif defined(__BORLANDC__)
+#define INLINE __inline
+#elif defined(__GNUC__)
+#define INLINE __inline__ __attribute__((always_inline))
 #else
-#define INLINE extern inline
+#define INLINE
+#endif
 #endif
 
 /*----------------------------------------------------------------------------

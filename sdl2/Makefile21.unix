@@ -1,6 +1,6 @@
 DEBUG ?= 0
-SUPPORT_HAXM ?= 0
 SUPPORT_NET ?= 1
+SUPPORT_HAXM ?= 0
 SDL_VERSION ?= 2
 GIT_VERSION := "$(shell git rev-parse --short HEAD)"
 
@@ -23,17 +23,19 @@ TARGET_NAME := np21kai
 endif
 
 TARGET := $(TARGET_NAME)
-LDFLAGS :=
+CFLAGS += -DGIT_VERSION=\"$(GIT_VERSION)\"
+CXXFLAGS += -DGIT_VERSION=\"$(GIT_VERSION)\"
 fpic = -fPIC
 
 ifeq ($(DEBUG), 1)
-COMMONFLAGS += -O0 -g
+COMMONFLAGS += -O0 -g -DDEBUG -D_DEBUG
 else
-COMMONFLAGS += -O3 -DNDEBUG -DGIT_VERSION=\"$(GIT_VERSION)\"
+COMMONFLAGS += -O2 -DNDEBUG
 endif
 
-CORE_DIR    := ..
-SOURCES_C   :=
+CORE_DIR := ..
+INCFLAGS :=
+SOURCES_C :=
 SOURCES_CXX :=
 
 include Makefile.common

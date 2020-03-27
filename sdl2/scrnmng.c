@@ -73,15 +73,15 @@ static BRESULT calcdrawrect(DRAWRECT *dr, const RECT_T *rt) {
 	dr->height = scrnmng.height;
 
 	if (rt) {
-		pos = np2max(rt->left, 0);
+		pos = MAX(rt->left, 0);
 		dr->srcpos += pos;
 		dr->dstpos += pos * dr->xalign;
-		dr->width = np2min(rt->right, dr->width) - pos;
+		dr->width = MIN(rt->right, dr->width) - pos;
 
-		pos = np2max(rt->top, 0);
+		pos = MAX(rt->top, 0);
 		dr->srcpos += pos * scrnmng.width;
 		dr->dstpos += pos * dr->yalign;
-		dr->height = np2min(rt->bottom, dr->height) - pos;
+		dr->height = MIN(rt->bottom, dr->height) - pos;
 	}
 	if ((dr->width <= 0) || (dr->height <= 0)) {
 		return(FAILURE);

@@ -2,7 +2,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <time.h>
-#if defined(WIN32) && defined(OSLANG_UTF8)
+#if defined(_WINDOWS)
+#include "oemtext.h"
 #include "codecnv/codecnv.h"
 #endif
 #include "dosio.h"
@@ -12,18 +13,18 @@
 #include <unistd.h>
 #endif
 #else
-#if defined(WIN32) && (!defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR))
+#if defined(_WINDOWS)
 #include <direct.h>
 #else
 #include <dirent.h>
 #endif
 #endif
 
-#if defined(_WIN32)
-static	OEMCHAR	curpath[MAX_PATH] = ".\\";
-#else	/* _WIN32 */
-static	OEMCHAR	curpath[MAX_PATH] = "./";
-#endif	/* _WIN32 */
+#if defined(_WINDOWS)
+static	OEMCHAR	curpath[MAX_PATH] = OEMTEXT(".\\");
+#else
+static	OEMCHAR	curpath[MAX_PATH] = OEMTEXT("./");
+#endif
 static	OEMCHAR	*curfilep = curpath + 2;
 
 void
@@ -43,10 +44,19 @@ dosio_term(void)
 /* ファイル操作 */
 FILEH file_open(const OEMCHAR *path) {
 
-#if defined(WIN32) && defined(OSLANG_UTF8)
-	OEMCHAR	sjis[MAX_PATH];
-	codecnv_utf8tosjis(sjis, sizeof(sjis), path, (UINT)-1);
-	return(fopen(sjis, "rb+"));
+#if defined(__LIBRETRO__)
+	return(filestream_open(path, RETRO_VFS_FILE_ACCESS_READ_WRITE, RETRO_VFS_FILE_ACCESS_HINT_NONE));
+#elif defined(_WINDOWS)
+	wchar_t	ucpath[MAX_PATH];
+	MultiByteToWideChar(
+		CP_UTF8,
+		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
+		path,
+		MAX_PATH,
+		ucpath,
+		sizeof(ucpath)
+	);
+	return(_wfopen(ucpath, "rb+"));
 #else
 	return(fopen(path, "rb+"));
 #endif
@@ -54,10 +64,19 @@ FILEH file_open(const OEMCHAR *path) {
 
 FILEH file_open_rb(const OEMCHAR *path) {
 
-#if defined(WIN32) && defined(OSLANG_UTF8)
-	OEMCHAR	sjis[MAX_PATH];
-	codecnv_utf8tosjis(sjis, sizeof(sjis), path, (UINT)-1);
-	return(fopen(sjis, "rb"));
+#if defined(__LIBRETRO__)
+	return(filestream_open(path, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE));
+#elif defined(_WINDOWS)
+	wchar_t	ucpath[MAX_PATH];
+	MultiByteToWideChar(
+		CP_UTF8,
+		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
+		path,
+		MAX_PATH,
+		ucpath,
+		sizeof(ucpath)
+	);
+	return(_wfopen(ucpath, "rb"));
 #else
 	return(fopen(path, "rb"));
 #endif
@@ -65,10 +84,19 @@ FILEH file_open_rb(const OEMCHAR *path) {
 
 FILEH file_create(const OEMCHAR *path) {
 
-#if defined(WIN32) && defined(OSLANG_UTF8)
-	OEMCHAR	sjis[MAX_PATH];
-	codecnv_utf8tosjis(sjis, sizeof(sjis), path, (UINT)-1);
-	return(fopen(sjis, "wb+"));
+#if defined(__LIBRETRO__)
+	return(filestream_open(path, RETRO_VFS_FILE_ACCESS_READ_WRITE, RETRO_VFS_FILE_ACCESS_HINT_NONE));
+#elif defined(_WINDOWS)
+	wchar_t	ucpath[MAX_PATH];
+	MultiByteToWideChar(
+		CP_UTF8,
+		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
+		path,
+		MAX_PATH,
+		ucpath,
+		sizeof(ucpath)
+	);
+	return(_wfopen(ucpath, "wb+"));
 #else
 	return(fopen(path, "wb+"));
 #endif
@@ -76,7 +104,22 @@ FILEH file_create(const OEMCHAR *path) {
 
 FILEPOS file_seek(FILEH handle, FILEPOS pointer, int method) {
 #if defined(SUPPORT_LARGE_HDD)
-#if defined (__MINGW32__) 
+#if defined(__LIBRETRO__)
+	int rmethod = 0;
+	switch(method) {
+	case FSEEK_SET:
+		rmethod = RETRO_VFS_SEEK_POSITION_START;
+		break;
+	case FSEEK_CUR:
+		rmethod = RETRO_VFS_SEEK_POSITION_CURRENT;
+		break;
+	case FSEEK_END:
+		rmethod = RETRO_VFS_SEEK_POSITION_END;
+		break;
+	}
+	filestream_seek(handle, pointer, rmethod);
+	return(filestream_tell(handle));
+#elif defined (__MINGW32__) 
 	fseeko64(handle, pointer, method);
 	return(ftello64(handle));
 #elif defined (_MSC_VER)
@@ -87,31 +130,50 @@ FILEPOS file_seek(FILEH handle, FILEPOS pointer, int method) {
 	return(ftello(handle));
 #endif
 #else
+#if defined(__LIBRETRO__)
+	filestream_seek(handle, pointer, method);
+	return(filestream_tell(handle));
+#else
 	fseek(handle, pointer, method);
 	return(ftell(handle));
+#endif
 #endif
 }
 
 UINT file_read(FILEH handle, void *data, UINT length) {
 
+#if defined(__LIBRETRO__)
+	return((UINT)filestream_read(handle, data, length));
+#else
 	return((UINT)fread(data, 1, length, handle));
+#endif
 }
 
 UINT file_write(FILEH handle, const void *data, UINT length) {
 
+#if defined(__LIBRETRO__)
+	return((UINT)filestream_write(handle, data, length));
+#else
 	return((UINT)fwrite(data, 1, length, handle));
+#endif
 }
 
 short file_close(FILEH handle) {
 
+#if defined(__LIBRETRO__)
+	filestream_close(handle);
+#else
 	fclose(handle);
+#endif
 	return(0);
 }
 
 FILELEN file_getsize(FILEH handle) {
 
 #if defined(SUPPORT_LARGE_HDD)
-#if defined (__MINGW32__) || defined (_MSC_VER)
+#if defined(__LIBRETRO__)
+	return (FILELEN)filestream_get_size(handle);
+#elif defined(_WINDOWS)
 	struct _stati64 sb;
 
 	if (_fstati64(fileno(handle), &sb) == 0)
@@ -127,12 +189,16 @@ FILELEN file_getsize(FILEH handle) {
 	}
 #endif
 #else
+#if defined(__LIBRETRO__)
+	return (FILELEN)filestream_get_size(handle);
+#else
 	struct stat sb;
 
 	if (fstat(fileno(handle), &sb) == 0)
 	{
 		return (FILELEN)sb.st_size;
 	}
+#endif
 #endif
 	return(0);
 }
@@ -142,15 +208,29 @@ short file_attr(const OEMCHAR *path) {
 struct stat	sb;
 	short	attr;
 
-#if defined(WIN32) && defined(OSLANG_UTF8)
-	OEMCHAR	sjis[MAX_PATH];
-	codecnv_utf8tosjis(sjis, sizeof(sjis), path, (UINT)-1);
-	if (stat(sjis, &sb) == 0)
+#if defined(_LIBRETRO__)
+	if (path_is_directory(path)) {
+		attr = FILEATTR_DIRECTORY;
+	}
+	else {
+		attr = 0;
+	}
+#elif defined(_WINDOWS)
+	wchar_t	ucpath[MAX_PATH];
+	MultiByteToWideChar(
+		CP_UTF8,
+		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
+		path,
+		MAX_PATH,
+		ucpath,
+		sizeof(ucpath)
+	);
+	if (_wstat(ucpath, &sb) == 0)
 #else
 	if (stat(path, &sb) == 0)
 #endif
 	{
-#if defined(WIN32) && (!defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR))
+#if defined(_WINDOWS)
 		if (sb.st_mode & _S_IFDIR) {
 			attr = FILEATTR_DIRECTORY;
 		}
@@ -209,28 +289,38 @@ struct stat sb;
 
 short file_delete(const OEMCHAR *path) {
 
+#if defined(_LIBRETRO__)
+	return(filestream_delete(path))
+#else
 	return(remove(path));
+#endif
 }
 
 short file_rename(const OEMCHAR *existpath, const OEMCHAR *newpath) {
 
+#if defined(_LIBRETRO__)
+	return((short)filestream_rename(existpath, newpath));
+#else
 	return((short)rename(existpath, newpath));
+#endif
 }
 
 short file_dircreate(const OEMCHAR *path) {
 
-#if !(defined(__LIBRETRO__) && defined(VITA))
-#if defined(_WIN32)
+#if defined(__LIBRETRO__)
+	return((short)path_mkdir(path));
+#elif defined(_WINDOWS)
 	return((short)mkdir(path));
 #else
 	return((short)mkdir(path, 0777));
-#endif
 #endif
 }
 
 short file_dirdelete(const OEMCHAR *path) {
 
-#if !(defined(__LIBRETRO__) && (defined(VITA) || defined(EMSCRIPTEN)))
+#if defined(__LIBRETRO__)
+	return((short)rmdir(path));
+#else
 	return((short)rmdir(path));
 #endif
 }
@@ -279,7 +369,7 @@ short file_attr_c(const OEMCHAR *path) {
 	return(file_attr_c(curpath));
 }
 
-#if !defined(__LIBRETRO__) && defined(WIN32)
+#if !defined(__LIBRETRO__) && defined(_WINDOWS)
 static BRESULT cnvdatetime(FILETIME *file, DOSDATE *dosdate, DOSTIME *dostime) {
 
 	FILETIME	localtime;
@@ -462,15 +552,15 @@ void file_catname(OEMCHAR *path, const OEMCHAR *name, int maxlen) {
 	}
 	file_cpyname(path, name, maxlen);
 	while((csize = milstr_charsize(path)) != 0) {
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 		if ((csize == 1) && (*path == '\\')) {
 			*path = '\\';
 		}
-#else	/* _WIN32 */
+#else
 		if ((csize == 1) && (*path == '/')) {
 			*path = '/';
 		}
-#endif	/* _WIN32 */
+#endif
 		path += csize;
 	}
 }
@@ -482,11 +572,11 @@ const OEMCHAR	*ret;
 
 	ret = path;
 	while((csize = milstr_charsize(path)) != 0) {
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 		if ((csize == 1) && (*path == '\\')) {
-#else	/* _WIN32 */
+#else
 		if ((csize == 1) && (*path == '/')) {
-#endif	/* _WIN32 */
+#endif
 			ret = path + 1;
 		}
 		path += csize;
@@ -545,11 +635,11 @@ void file_cutseparator(OEMCHAR *path) {
 
 	pos = (int)strlen(path) - 1;
 	if ((pos > 0) &&							// 2文字以上でー
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 		(path[pos] == '\\') &&					// ケツが \ でー
-#else	/* _WIN32 */
+#else
 		(path[pos] == '/') &&					// ケツが \ でー
-#endif	/* _WIN32 */
+#endif
 		((pos != 1) || (path[0] != '.'))) {		// './' ではなかったら
 		path[pos] = '\0';
 	}
@@ -559,14 +649,14 @@ void file_setseparator(OEMCHAR *path, int maxlen) {
 
 	int		pos;
 
-	pos = (int)strlen(path);
-#if defined(_WIN32)
+	pos = (int)OEMSTRNLEN(path, maxlen);
+#if defined(_WINDOWS)
 	if ((pos) && (path[pos-1] != '\\') && ((pos + 2) < maxlen)) {
 		path[pos++] = '\\';
-#else	/* _WIN32 */
+#else	/* _WINDOWS */
 	if ((pos) && (path[pos-1] != '/') && ((pos + 2) < maxlen)) {
 		path[pos++] = '/';
-#endif	/* _WIN32 */
+#endif	/* _WINDOWS */
 		path[pos] = '\0';
 	}
 }

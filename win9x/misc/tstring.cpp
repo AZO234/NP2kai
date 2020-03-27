@@ -46,7 +46,7 @@ std::tstring LoadTString(UINT uID)
 		}
 
 		UINT nLength = pRes[dwPos++];
-		nLength = np2min(nLength, (dwResSize - dwPos));
+		nLength = MIN(nLength, (dwResSize - dwPos));
 
 #if defined(_UNICODE)
 

@@ -1,7 +1,7 @@
+#include "compiler.h"
+
 #if !defined(win32_types_h)
 #define win32_types_h
-
-#include "compiler.h"
 
 #define __stdcall
 #define HANDLE void *

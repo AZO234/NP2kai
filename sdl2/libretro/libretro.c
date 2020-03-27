@@ -60,7 +60,7 @@ extern void sdlaudio_callback(void *userdata, unsigned char *stream, int len);
 signed short soundbuf[SNDSZ*2]; //16bit*2ch
 
 char RPATH[512];
-char tmppath[4096];
+OEMCHAR tmppath[MAX_PATH];
 
 static retro_log_printf_t log_cb = NULL;
 static retro_video_refresh_t video_cb = NULL;
@@ -304,7 +304,6 @@ int pre_main(const char *argv)
    }
 
    dosio_init();
-   file_setcd(tmppath);
 
    i=np2_main(PARAMCOUNT,( char **)xargv_cmd);
 
@@ -1731,7 +1730,7 @@ bool retro_load_game(const struct retro_game_info *game)
 {
    //get system dir
    const char* syspath = 0;
-   char np2path[4096];
+   OEMCHAR np2path[MAX_PATH];
    bool load_floppy=false;
    bool worked = environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &syspath);
    if(!worked)abort();
@@ -1739,22 +1738,22 @@ bool retro_load_game(const struct retro_game_info *game)
    if(game != NULL)
       extract_directory(lr_game_base_dir, game->path, sizeof(lr_game_base_dir));
 
-   strcpy(np2path, syspath);
+   milstr_ncpy(np2path, syspath, MAX_PATH);
    lr_init = 1;
 
 #ifdef _WIN32
-   strcat(np2path, "\\np2kai");
+   milstr_ncat(np2path, OEMTEXT("\\np2kai"), MAX_PATH);
 #else
-   strcat(np2path, "/np2kai");
+   milstr_ncat(np2path, OEMTEXT("/np2kai"), MAX_PATH);
 #endif
 
-   sprintf(tmppath,"%s%c",np2path,G_DIR_SEPARATOR);
+   OEMSNPRINTF(tmppath, OEMTEXT("%s%c"), np2path, OEMPATHDIVC);
 
    np2cfg.delayms = 0;
 
-   sprintf(np2cfg.fontfile,"%s%cfont.bmp",np2path,G_DIR_SEPARATOR);
+   OEMSNPRINTF(np2cfg.fontfile, MAX_PATH, OEMTEXT("%s%cfont.bmp"), np2path, OEMPATHDIVC);
    file_setcd(np2cfg.fontfile);
-   sprintf(np2cfg.biospath,"%s%c",np2path,G_DIR_SEPARATOR);
+   OEMSNPRINTF(np2cfg.biospath, MAX_PATH, OEMTEXT("%s%c"), np2path, OEMPATHDIVC);
 
    if(game != NULL)
       strcpy(RPATH,game->path);

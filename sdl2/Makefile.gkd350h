@@ -2,10 +2,10 @@ CC=/opt/rs90-toolchain/usr/bin/mipsel-linux-cc
 AR=/opt/rs90-toolchain/usr/bin/mipsel-linux-ar
 CXX=/opt/rs90-toolchain/usr/bin/mipsel-linux-g++
 
-DEBUG=0
-SUPPORT_NET?=1
+DEBUG ?= 0
+SUPPORT_NET ?= 1
 SDL_VERSION ?= 1
-GIT_VERSION := " $(shell git rev-parse --short HEAD)"
+GIT_VERSION := "$(shell git rev-parse --short HEAD)"
 
 ifeq ($(SDL_VERSION), 1)
 SDL_CONFIG ?= /opt/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/bin/sdl-config
@@ -26,17 +26,20 @@ endif
 TARGET_NAME := np2kai
 
 TARGET := $(TARGET_NAME)
+CFLAGS += -DGIT_VERSION=\"$(GIT_VERSION)\"
+CXXFLAGS += -DGIT_VERSION=\"$(GIT_VERSION)\"
 LDFLAGS := -L/opt/rs90-toolchain/usr/lib
 fpic = -fPIC
 
 ifeq ($(DEBUG), 1)
-COMMONFLAGS += -O0 -g
+COMMONFLAGS += -O0 -g -DDEBUG -D_DEBUG
 else
-COMMONFLAGS += -O3 -DNDEBUG -DGIT_VERSION=\"$(GIT_VERSION)\"
+COMMONFLAGS += -O2 -DNDEBUG
 endif
 
-CORE_DIR    := ..
-SOURCES_C   :=
+CORE_DIR := ..
+INCFLAGS :=
+SOURCES_C :=
 SOURCES_CXX :=
 
 include Makefile.common

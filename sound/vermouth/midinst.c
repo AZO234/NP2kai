@@ -389,7 +389,7 @@ const UINT8		*d;
 				if (sampdat < 0) {
 					sampdat *= -1;
 				}
-				sampmax = np2max(sampmax, sampdat);
+				sampmax = MAX(sampmax, sampdat);
 			} while(--cnt);
 			layer->volume = 32768 * 128 / sampmax;
 		}

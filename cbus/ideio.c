@@ -1378,7 +1378,7 @@ static SINT32	sampcount2_n = 0;
 		return(FAILURE);
 	}
 	while(count) {
-		r = np2min(count, drv->dabufrem * samplen_n / samplen_d);
+		r = MIN(count, drv->dabufrem * samplen_n / samplen_d);
 		if (r) {
 			count -= r;
 			ptr = drv->dabuf + 2352 - (drv->dabufrem * 4);

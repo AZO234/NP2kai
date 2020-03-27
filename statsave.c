@@ -481,13 +481,13 @@ static int statflag_checkpath(STFLAGH sfh, const OEMCHAR *dvname) {
 			if ((memcmp(&sp.date, &dosdate, sizeof(dosdate))) ||
 				(memcmp(&sp.time, &dostime, sizeof(dostime)))) {
 				ret |= STATFLAG_DISKCHG;
-				OEMSPRINTF(buf, str_updated, dvname);
+				OEMSNPRINTF(buf, sizeof(buf), str_updated, dvname);
 				statflag_seterr(sfh, buf);
 			}
 		}
 		else {
 			ret |= STATFLAG_DISKCHG;
-			OEMSPRINTF(buf, str_notfound, dvname);
+			OEMSNPRINTF(buf, sizeof(buf), str_notfound, dvname);
 			statflag_seterr(sfh, buf);
 		}
 	}
@@ -505,7 +505,7 @@ static int flagsave_common(STFLAGH sfh, const SFENTRY *tbl) {
 static int flagload_common(STFLAGH sfh, const SFENTRY *tbl) {
 
 	memset(tbl->arg1, 0, tbl->arg2);
-	return(statflag_read(sfh, tbl->arg1, np2min(tbl->arg2, sfh->hdr.size)));
+	return(statflag_read(sfh, tbl->arg1, MIN(tbl->arg2, sfh->hdr.size)));
 }
 
 
@@ -1094,11 +1094,11 @@ static int flagcheck_fdd(STFLAGH sfh, const SFENTRY *tbl) {
 
 	int		ret;
 	int		i;
-	OEMCHAR	buf[8];
+	OEMCHAR	buf[32];
 
 	ret = STATFLAG_SUCCESS;
 	for (i=0; i<4; i++) {
-		OEMSPRINTF(buf, str_fddx, i+1);
+		OEMSNPRINTF(buf, sizeof(buf), str_fddx, i+1);
 		ret |= statflag_checkpath(sfh, buf);
 	}
 	(void)tbl;
@@ -1181,17 +1181,17 @@ static int flagcheck_sxsi(STFLAGH sfh, const SFENTRY *tbl) {
 	int			ret;
 	SXSIDEVS	sds;
 	UINT		i;
-	OEMCHAR		buf[8];
+	OEMCHAR		buf[32];
 
 	sxsi_allflash();
 	ret = statflag_read(sfh, &sds, sizeof(sds));
 	for (i=0; i<NELEMENTS(sds.ide); i++) {
 		if (sds.ide[i] != SXSIDEV_NC) {
 			if(sds.ide[i] != SXSIDEV_CDROM) {
-				OEMSPRINTF(buf, str_sasix, i+1);
+				OEMSNPRINTF(buf, sizeof(buf), str_sasix, i+1);
 				ret |= statflag_checkpath(sfh, buf);
 			}else{
-				OEMSPRINTF(buf, str_sasix, i+1);
+				OEMSNPRINTF(buf, sizeof(buf), str_sasix, i+1);
 				statflag_checkpath(sfh, buf); // CDの時、フラグには影響させない
 			}
 		}
@@ -1199,10 +1199,10 @@ static int flagcheck_sxsi(STFLAGH sfh, const SFENTRY *tbl) {
 	for (i=0; i<NELEMENTS(sds.scsi); i++) {
 		if (sds.scsi[i] != SXSIDEV_NC) {
 			if(sds.ide[i] != SXSIDEV_CDROM) {
-				OEMSPRINTF(buf, str_scsix, i);
+				OEMSNPRINTF(buf, sizeof(buf), str_scsix, i);
 				ret |= statflag_checkpath(sfh, buf);
 			}else{
-				OEMSPRINTF(buf, str_scsix, i);
+				OEMSNPRINTF(buf, sizeof(buf), str_scsix, i);
 				statflag_checkpath(sfh, buf); // CDの時、フラグには影響させない
 			}
 		}

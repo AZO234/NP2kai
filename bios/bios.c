@@ -233,7 +233,7 @@ static void bios_reinitbyswitch(void) {
 	}
 	mem[MEMB_BIOS_FLAG1] = biosflag;
 	extmem = pccore.extmem;
-	extmem = np2min(extmem, 14);
+	extmem = MIN(extmem, 14);
 	mem[MEMB_EXPMMSZ] = (UINT8)(extmem << 3);
 	if (pccore.extmem >= 15) {
 		//mem[0x0594] = pccore.extmem - 15;
@@ -508,7 +508,7 @@ void bios_initialize(void) {
 #endif
 	np2cfg.memchkmx = 0; // 無効化 (obsolete)
 	if(np2cfg.memchkmx){ // メモリカウント最大値変更
-		mem[ITF_ADRS + 6057] = mem[ITF_ADRS + 6061] = (UINT8)np2max((int)np2cfg.memchkmx-14, 1); // XXX: 場所決め打ち
+		mem[ITF_ADRS + 6057] = mem[ITF_ADRS + 6061] = (UINT8)MAX((int)np2cfg.memchkmx-14, 1); // XXX: 場所決め打ち
 	}else{
 #if defined(SUPPORT_LARGE_MEMORY)
 		if(np2cfg.EXTMEM >= 256){ // 大容量メモリカウント

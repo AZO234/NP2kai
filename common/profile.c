@@ -755,7 +755,7 @@ BRESULT profile_read(const OEMCHAR *lpAppName, const OEMCHAR *lpKeyName, const O
 	}
 	else
 	{
-		nSize = np2min(nSize, pfp.cchString + 1);
+		nSize = MIN(nSize, pfp.cchString + 1);
 		milstr_ncpy(lpReturnedString, pfp.lpString, nSize);
 		return SUCCESS;
 	}
@@ -781,7 +781,7 @@ int profile_readint(const OEMCHAR *lpAppName, const OEMCHAR *lpKeyName, int nDef
 	}
 	else
 	{
-		nSize = np2min(NELEMENTS(szBuffer), pfp.cchString + 1);
+		nSize = MIN(NELEMENTS(szBuffer), pfp.cchString + 1);
 		milstr_ncpy(szBuffer, pfp.lpString, nSize);
 		return (int)milstr_solveINT(szBuffer);
 	}
@@ -866,9 +866,9 @@ BRESULT profile_write(const OEMCHAR *lpAppName, const OEMCHAR *lpKeyName, const 
  */
 BRESULT profile_writeint(const OEMCHAR *lpAppName, const OEMCHAR *lpKeyName, int nValue, PFILEH hdl)
 {
-	OEMCHAR szBuffer[32];
+	OEMCHAR szBuffer[64];
 
-	OEMSPRINTF(szBuffer, OEMTEXT("%d"), nValue);
+	OEMSNPRINTF(szBuffer, sizeof(szBuffer), OEMTEXT("%d"), nValue);
 	return profile_write(lpAppName, lpKeyName, szBuffer, hdl);
 
 }
@@ -974,16 +974,16 @@ static void binset(UINT8 *lpBin, UINT cbBin, const OEMCHAR *lpString)
 static void binget(OEMCHAR *lpString, int cchString, const UINT8 *lpBin, UINT cbBin)
 {
 	UINT i;
-	OEMCHAR tmp[8];
+	OEMCHAR tmp[16];
 
 	if (cbBin)
 	{
-		OEMSPRINTF(tmp, OEMTEXT("%.2x"), lpBin[0]);
+		OEMSNPRINTF(tmp, sizeof(tmp), OEMTEXT("%.2x"), lpBin[0]);
 		milstr_ncpy(lpString, tmp, cchString);
 	}
 	for (i = 1; i < cbBin; i++)
 	{
-		OEMSPRINTF(tmp, OEMTEXT(" %.2x"), lpBin[i]);
+		OEMSNPRINTF(tmp, sizeof(tmp), OEMTEXT(" %.2x"), lpBin[i]);
 		milstr_ncat(lpString, tmp, cchString);
 	}
 }
@@ -1120,39 +1120,39 @@ void profile_iniwrite(const OEMCHAR *lpPath, const OEMCHAR *lpApp, const PFTBL *
 					break;
 
 				case PFTYPE_SINT8:
-					OEMSPRINTF(work, str_d, *((SINT8 *)p->value));
+					OEMSNPRINTF(work, sizeof(work), str_d, *((SINT8 *)p->value));
 					break;
 
 				case PFTYPE_SINT16:
-					OEMSPRINTF(work, str_d, *((SINT16 *)p->value));
+					OEMSNPRINTF(work, sizeof(work), str_d, *((SINT16 *)p->value));
 					break;
 
 				case PFTYPE_SINT32:
-					OEMSPRINTF(work, str_d, *((SINT32 *)p->value));
+					OEMSNPRINTF(work, sizeof(work), str_d, *((SINT32 *)p->value));
 					break;
 
 				case PFTYPE_UINT8:
-					OEMSPRINTF(work, str_u, *((UINT8 *)p->value));
+					OEMSNPRINTF(work, sizeof(work), str_u, *((UINT8 *)p->value));
 					break;
 
 				case PFTYPE_UINT16:
-					OEMSPRINTF(work, str_u, *((UINT16 *)p->value));
+					OEMSNPRINTF(work, sizeof(work), str_u, *((UINT16 *)p->value));
 					break;
 
 				case PFTYPE_UINT32:
-					OEMSPRINTF(work, str_u, *((UINT32 *)p->value));
+					OEMSNPRINTF(work, sizeof(work), str_u, *((UINT32 *)p->value));
 					break;
 
 				case PFTYPE_HEX8:
-					OEMSPRINTF(work, str_x, *((UINT8 *)p->value));
+					OEMSNPRINTF(work, sizeof(work), str_x, *((UINT8 *)p->value));
 					break;
 
 				case PFTYPE_HEX16:
-					OEMSPRINTF(work, str_x, *((UINT16 *)p->value));
+					OEMSNPRINTF(work, sizeof(work), str_x, *((UINT16 *)p->value));
 					break;
 
 				case PFTYPE_HEX32:
-					OEMSPRINTF(work, str_x, *((UINT32 *)p->value));
+					OEMSNPRINTF(work, sizeof(work), str_x, *((UINT32 *)p->value));
 					break;
 
 				default:

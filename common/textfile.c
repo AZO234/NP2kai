@@ -267,7 +267,7 @@ const UINT8	*p;
 	ret = SUCCESS;
 	p = (UINT8 *)buffer;
 	while(size) {
-		wsize = np2min(size, tf->bufrem);
+		wsize = MIN(size, tf->bufrem);
 		if (wsize) {
 			CopyMemory(tf->buf + tf->bufpos, p, wsize);
 			p += wsize;
@@ -294,7 +294,7 @@ const UINT8	*p;
 	ret = SUCCESS;
 	p = (UINT8 *)buffer;
 	while(size) {
-		wsize = np2min(size, tf->bufrem);
+		wsize = MIN(size, tf->bufrem);
 		if (wsize) {
 			q = tf->buf + (tf->bufpos * sizeof(UINT16));
 			CopyMemory(q, p, wsize * sizeof(UINT16));
