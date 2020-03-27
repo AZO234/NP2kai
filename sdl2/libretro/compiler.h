@@ -19,7 +19,6 @@
 
 #define __ASSERT(s)
 
-#define OSLANG_UTF8
 #define	OSLINEBREAK_LF
 #define RESOURCE_US
 

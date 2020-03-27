@@ -18,6 +18,8 @@
 
 #define __ASSERT(s)
 
+#define USE_TTF
+
 #define	SUPPORT_SJIS
 #define	OSLINEBREAK_CRLF
 

@@ -18,6 +18,8 @@
 
 #define	__ASSERT(s)
 
+#define USE_TTF
+
 #define	OSLINEBREAK_LF
 #define RESOURCE_US
 

@@ -12,12 +12,6 @@
 #include "ank12.res"
 #endif	/* defined(NP2_SIZE_QVGA) */
 
-#if !defined(USE_TTF)
-# if !defined(RESOURCE_US) && !defined(__LIBRETRO__)
-#  define USE_TTF
-# endif
-#endif
-
 #if defined(USE_TTF)		/* use TTF */
 #include <SDL_ttf.h>
 

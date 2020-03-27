@@ -8,8 +8,6 @@
 
 #include "ank12.res"
 
-#define USE_TTF
-
 #if defined(USE_TTF)		/* use TTF */
 
 #include <SDL2/SDL_ttf.h>

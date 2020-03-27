@@ -110,6 +110,8 @@ G_END_DECLS
 #endif
 #endif
 
+#define USE_TTF
+
 #define	SUPPORT_EUC
 
 #define	SUPPORT_EXTERNALCHIP

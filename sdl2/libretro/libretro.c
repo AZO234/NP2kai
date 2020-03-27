@@ -1747,7 +1747,7 @@ bool retro_load_game(const struct retro_game_info *game)
    milstr_ncat(np2path, OEMTEXT("/np2kai"), MAX_PATH);
 #endif
 
-   OEMSNPRINTF(tmppath, OEMTEXT("%s%c"), np2path, OEMPATHDIVC);
+   OEMSNPRINTF(tmppath, MAX_PATH, OEMTEXT("%s%c"), np2path, OEMPATHDIVC);
 
    np2cfg.delayms = 0;
 

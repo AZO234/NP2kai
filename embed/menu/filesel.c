@@ -128,7 +128,7 @@ const OEMCHAR	*filter;
 const OEMCHAR	*ext;
 #if defined(__LIBRETRO__)
 int drv;
-#endif	/* __LIBRETRO__ */
+#endif
 } FSELPRM;
 
 typedef struct {
@@ -140,7 +140,7 @@ const OEMCHAR	*ext;
 	OEMCHAR		path[MAX_PATH];
 #if defined(__LIBRETRO__)
 int drv;
-#endif	/* __LIBRETRO__ */
+#endif
 } FILESEL;
 
 static	FILESEL		filesel;
@@ -259,7 +259,7 @@ static void dlgsetlist(void) {
 	}
 }
 
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 static void dlgsetdrvlist(void) {
 
 	LISTARRAY	flist;
@@ -360,7 +360,7 @@ static int dlgcmd(int msg, MENUID id, long param) {
 #if defined(__LIBRETRO__)
 						if(filesel.drv>=0xff)diskdrv_setsxsi(filesel.drv-0xff,filesel.path);
 						else diskdrv_setfdd(filesel.drv, filesel.path, 0);
-#endif	/* __LIBRETRO__ */
+#endif
 						menubase_close();
 					}
 					break;
@@ -372,14 +372,14 @@ static int dlgcmd(int msg, MENUID id, long param) {
 				case DID_PARENT:
 					file_cutname(filesel.path);
 					file_cutseparator(filesel.path);
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 					if(filesel.path[0] == '\0')
 						dlgsetdrvlist();
 					else
 						dlgsetlist();
-#else	/* _WIN32 */
+#else
 					dlgsetlist();
-#endif	/* _WIN32 */
+#endif
 					menudlg_settext(DID_FILE, NULL);
 					break;
 
@@ -410,10 +410,10 @@ static int dlgcmd(int msg, MENUID id, long param) {
 #if defined(__LIBRETRO__)
 static BOOL selectfile(const FSELPRM *prm, OEMCHAR *path, int size, 
 														const OEMCHAR *def,int drv) {
-#else	/* __LIBRETRO__ */
+#else
 static BOOL selectfile(const FSELPRM *prm, OEMCHAR *path, int size, 
 														const OEMCHAR *def) {
-#endif	/* __LIBRETRO__ */
+#endif
 
 const OEMCHAR	*title;
 
@@ -434,12 +434,12 @@ const OEMCHAR	*title;
 		filesel.ext = prm->ext;
 #if defined(__LIBRETRO__)
 		filesel.drv = drv;
-#endif	/* __LIBRETRO__ */
+#endif
 	}
 	menudlg_create(DLGFS_WIDTH, DLGFS_HEIGHT, title, dlgcmd);
 #if !defined(__LIBRETRO__)
 	menubase_modalproc();
-#endif	/* __LIBRETRO__ */
+#endif
 	soundmng_play();
 	if (filesel.result) {
 		file_cpyname(path, filesel.path, size);
@@ -482,9 +482,9 @@ void filesel_fdd(REG8 drv) {
 	if (drv < 4) {
 #if defined(__LIBRETRO__)
 		if (selectfile(&fddprm, path, NELEMENTS(path), fdd_diskname(drv),drv)) {
-#else	/* __LIBRETRO__ */
+#else
 		if (selectfile(&fddprm, path, NELEMENTS(path), fdd_diskname(drv))) {
-#endif	/* __LIBRETRO__ */
+#endif
 			diskdrv_setfdd(drv, path, 0);
 		}
 	}
@@ -528,9 +528,9 @@ const FSELPRM	*prm;
 #endif
 #if defined(__LIBRETRO__)
 	if ((prm) && (selectfile(prm, path, NELEMENTS(path), p,drv+0xff))) {
-#else	/* __LIBRETRO__ */
+#else
 	if ((prm) && (selectfile(prm, path, NELEMENTS(path), p))) {
-#endif	/* __LIBRETRO__ */
+#endif
 		diskdrv_setsxsi(drv, path);
 	}
 }
