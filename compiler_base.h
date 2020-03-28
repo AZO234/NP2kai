@@ -433,14 +433,14 @@ typedef int32_t FILELEN;
 #define	SUPPORT_SWWABRLYSND
 #endif
 
-#if !defined(SUPPORT_PC9821)
 #define SUPPORT_BMS
-#endif
 #define SUPPORT_V30ORIGINAL
 #define SUPPORT_V30EXT
 #define VAEG_FIX
 
+#if !defined(NOSOUND)
 #define	VERMOUTH_LIB
+#endif
 
 #define	SUPPORT_RESUME
 #define	SUPPORT_STATSAVE 10

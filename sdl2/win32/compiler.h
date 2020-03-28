@@ -22,6 +22,7 @@
 
 #define	SUPPORT_SJIS
 #define	OSLINEBREAK_CRLF
+#define RESOURCE_US
 
 #define	GETTICK()			SDL_GetTicks()
 #define	SDL_main			main

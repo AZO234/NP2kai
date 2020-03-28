@@ -267,9 +267,9 @@ main(int argc, char *argv[])
 		file_cutname(fontfile);
 		file_setseparator(fontfile, sizeof(fontfile));
 		file_catname(fontfile, "default.ttf", sizeof(fontfile));
-		fcheck = fopen(fontfile, "rb");
+		fcheck = file_open_rb(fontfile);
 		if (fcheck != NULL) {
-			fclose(fcheck);
+			file_close(fcheck);
 			fontmng_setdeffontname(fontfile);
 		}
 
@@ -317,11 +317,11 @@ main(int argc, char *argv[])
 #if defined(SUPPORT_HOSTDRV)
 	hostdrv_readini();
 #endif	// defined(SUPPORT_HOSTDRV)
-	fcheck = fopen(modulefile, "r");
+	fcheck = file_open_rb(modulefile);
 	if (fcheck == NULL)	{
 		createini = 1;
 	} else {
-		fclose(fcheck);
+		file_close(fcheck);
 	}
 
 	rand_setseed((SINT32)time(NULL));

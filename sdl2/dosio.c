@@ -46,17 +46,17 @@ FILEH file_open(const OEMCHAR *path) {
 
 #if defined(__LIBRETRO__)
 	return(filestream_open(path, RETRO_VFS_FILE_ACCESS_READ_WRITE, RETRO_VFS_FILE_ACCESS_HINT_NONE));
-#elif defined(_WINDOWS)
-	wchar_t	ucpath[MAX_PATH];
+#elif defined(_WINDOWS) && defined(OSLANG_UTF8)
+	wchar_t	wpath[MAX_PATH];
 	MultiByteToWideChar(
 		CP_UTF8,
 		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
 		path,
 		MAX_PATH,
-		ucpath,
-		sizeof(ucpath)
+		wpath,
+		sizeof(wpath)
 	);
-	return(_wfopen(ucpath, "rb+"));
+	return(_wfopen(wpath, L"rb+"));
 #else
 	return(fopen(path, "rb+"));
 #endif
@@ -66,17 +66,17 @@ FILEH file_open_rb(const OEMCHAR *path) {
 
 #if defined(__LIBRETRO__)
 	return(filestream_open(path, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE));
-#elif defined(_WINDOWS)
-	wchar_t	ucpath[MAX_PATH];
+#elif defined(_WINDOWS) && defined(OSLANG_UTF8)
+	wchar_t	wpath[MAX_PATH];
 	MultiByteToWideChar(
 		CP_UTF8,
 		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
 		path,
 		MAX_PATH,
-		ucpath,
-		sizeof(ucpath)
+		wpath,
+		sizeof(wpath)
 	);
-	return(_wfopen(ucpath, "rb"));
+	return(_wfopen(wpath, L"rb"));
 #else
 	return(fopen(path, "rb"));
 #endif
@@ -86,17 +86,17 @@ FILEH file_create(const OEMCHAR *path) {
 
 #if defined(__LIBRETRO__)
 	return(filestream_open(path, RETRO_VFS_FILE_ACCESS_READ_WRITE, RETRO_VFS_FILE_ACCESS_HINT_NONE));
-#elif defined(_WINDOWS)
-	wchar_t	ucpath[MAX_PATH];
+#elif defined(_WINDOWS) && defined(OSLANG_UTF8)
+	wchar_t	wpath[MAX_PATH];
 	MultiByteToWideChar(
 		CP_UTF8,
 		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
 		path,
 		MAX_PATH,
-		ucpath,
-		sizeof(ucpath)
+		wpath,
+		sizeof(wpath)
 	);
-	return(_wfopen(ucpath, "wb+"));
+	return(_wfopen(wpath, L"wb+"));
 #else
 	return(fopen(path, "wb+"));
 #endif
@@ -205,28 +205,30 @@ FILELEN file_getsize(FILEH handle) {
 
 short file_attr(const OEMCHAR *path) {
 
-struct stat	sb;
 	short	attr;
 
 #if defined(_LIBRETRO__)
+	struct stat	sb;
 	if (path_is_directory(path)) {
 		attr = FILEATTR_DIRECTORY;
 	}
 	else {
 		attr = 0;
 	}
-#elif defined(_WINDOWS)
-	wchar_t	ucpath[MAX_PATH];
+#elif defined(_WINDOWS) && defined(OSLANG_UTF8)
+	struct _stat sb;
+	wchar_t	wpath[MAX_PATH];
 	MultiByteToWideChar(
 		CP_UTF8,
 		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
 		path,
 		MAX_PATH,
-		ucpath,
-		sizeof(ucpath)
+		wpath,
+		sizeof(wpath)
 	);
-	if (_wstat(ucpath, &sb) == 0)
+	if (_wstat(wpath, &sb) == 0)
 #else
+	struct stat	sb;
 	if (stat(path, &sb) == 0)
 #endif
 	{
@@ -291,6 +293,17 @@ short file_delete(const OEMCHAR *path) {
 
 #if defined(_LIBRETRO__)
 	return(filestream_delete(path))
+#elif defined(_WINDOWS) && defined(OSLANG_UTF8)
+	wchar_t	wpath[MAX_PATH];
+	MultiByteToWideChar(
+		CP_UTF8,
+		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
+		path,
+		MAX_PATH,
+		wpath,
+		sizeof(wpath)
+	);
+	return(_wremove(wpath));
 #else
 	return(remove(path));
 #endif
@@ -300,6 +313,26 @@ short file_rename(const OEMCHAR *existpath, const OEMCHAR *newpath) {
 
 #if defined(_LIBRETRO__)
 	return((short)filestream_rename(existpath, newpath));
+#elif defined(_WINDOWS) && defined(OSLANG_UTF8)
+	wchar_t	wepath[MAX_PATH];
+	wchar_t	wnpath[MAX_PATH];
+	MultiByteToWideChar(
+		CP_UTF8,
+		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
+		existpath,
+		MAX_PATH,
+		wepath,
+		sizeof(wepath)
+	);
+	MultiByteToWideChar(
+		CP_UTF8,
+		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
+		newpath,
+		MAX_PATH,
+		wnpath,
+		sizeof(wnpath)
+	);
+	return((short)_wrename(wepath, wnpath));
 #else
 	return((short)rename(existpath, newpath));
 #endif
@@ -309,8 +342,17 @@ short file_dircreate(const OEMCHAR *path) {
 
 #if defined(__LIBRETRO__)
 	return((short)path_mkdir(path));
-#elif defined(_WINDOWS)
-	return((short)mkdir(path));
+#elif defined(_WINDOWS) && defined(OSLANG_UTF8)
+	wchar_t	wpath[MAX_PATH];
+	MultiByteToWideChar(
+		CP_UTF8,
+		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
+		path,
+		MAX_PATH,
+		wpath,
+		sizeof(wpath)
+	);
+	return((short)_wmkdir(wpath));
 #else
 	return((short)mkdir(path, 0777));
 #endif
@@ -320,6 +362,17 @@ short file_dirdelete(const OEMCHAR *path) {
 
 #if defined(__LIBRETRO__)
 	return((short)rmdir(path));
+#elif defined(_WINDOWS) && defined(OSLANG_UTF8)
+	wchar_t	wpath[MAX_PATH];
+	MultiByteToWideChar(
+		CP_UTF8,
+		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
+		path,
+		MAX_PATH,
+		wpath,
+		sizeof(wpath)
+	);
+	return((short)_wrmdir(wpath));
 #else
 	return((short)rmdir(path));
 #endif
@@ -406,31 +459,44 @@ static BRESULT setflist(WIN32_FIND_DATA *w32fd, FLINFO *fli) {
 																== SUCCESS) {
 		fli->caps |= FLICAPS_DATE | FLICAPS_TIME;
 	}
-#if defined(OSLANG_UTF8)
-	codecnv_sjistoutf8(fli->path, sizeof(fli->path),
-												w32fd->cFileName, (UINT)-1);
-#else
-	file_cpyname(fli->path, w32fd->cFileName, sizeof(fli->path));
-#endif
+	WideCharToMultiByte(
+		CP_UTF8,
+		WC_SEPCHARS,
+		w32fd->cFileName,
+		MAX_PATH,
+		fli->path,
+		MAX_PATH,
+		NULL,
+		NULL
+	);
 	return(SUCCESS);
 }
 
 FLISTH file_list1st(const OEMCHAR *dir, FLINFO *fli) {
 
 	OEMCHAR			path[MAX_PATH];
+	wchar_t			wpath[MAX_PATH];
 	HANDLE			hdl;
 	WIN32_FIND_DATA	w32fd;
 
 	file_cpyname(path, dir, sizeof(path));
 	file_setseparator(path, sizeof(path));
 	file_catname(path, "*.*", sizeof(path));
-	hdl = FindFirstFile(path, &w32fd);
+	MultiByteToWideChar(
+		CP_UTF8,
+		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
+		path,
+		MAX_PATH,
+		wpath,
+		sizeof(wpath)
+	);
+	hdl = FindFirstFileW(wpath, &w32fd);
 	if (hdl != INVALID_HANDLE_VALUE) {
 		do {
 			if (setflist(&w32fd, fli) == SUCCESS) {
 				return(hdl);
 			}
-		} while(FindNextFile(hdl, &w32fd));
+		} while(FindNextFileW(hdl, &w32fd));
 		FindClose(hdl);
 	}
 	return(FLISTH_INVALID);
@@ -440,7 +506,7 @@ BRESULT file_listnext(FLISTH hdl, FLINFO *fli) {
 
 	WIN32_FIND_DATA	w32fd;
 
-	while(FindNextFile(hdl, &w32fd)) {
+	while(FindNextFileW(hdl, &w32fd)) {
 		if (setflist(&w32fd, fli) == SUCCESS) {
 			return(SUCCESS);
 		}
@@ -660,4 +726,3 @@ void file_setseparator(OEMCHAR *path, int maxlen) {
 		path[pos] = '\0';
 	}
 }
-

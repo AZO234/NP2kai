@@ -344,6 +344,17 @@ char np2_main_read_m3u(const char *file)
 
 #if defined(__LIBRETRO__)
   f = filestream_open(file, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
+#elif defined(_WINDOWS)
+	wchar_t	wfile[MAX_PATH];
+	MultiByteToWideChar(
+		CP_UTF8,
+		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
+		file,
+		MAX_PATH,
+		wfile,
+		sizeof(wfile)
+	);
+  f = _wfopen(wfile, "r");
 #else
   f = fopen(file, "r");
 #endif
@@ -482,13 +493,13 @@ int np2_main(int argc, char *argv[]) {
 #if defined(__LIBRETRO__)
   fcheck = filestream_open(fullpath, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
 #else
-  fcheck = fopen(fullpath, "rb");
+  fcheck = file_open_rb(fullpath);
 #endif
 	if (fcheck != NULL) {
 #if defined(__LIBRETRO__)
 		filestream_close(fcheck);
 #else
-		fclose(fcheck);
+		file_close(fcheck);
 #endif
 		fontmng_setdeffontname(fullpath);
 	}
