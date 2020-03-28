@@ -54,10 +54,6 @@ WINBASEAPI BOOL WINAPI SetFilePointerEx(HANDLE, LARGE_INTEGER, PLARGE_INTEGER, D
 #define	LABEL				__declspec(naked)
 #define	RELEASE(x) 			if (x) {(x)->Release(); (x) = NULL;}
 
-#if !defined(_WIN64)
-#define	OPNGENX86
-#endif
-
 #define	MT32SOUND_DLL
 
 #define	OSLINEBREAK_CRLF

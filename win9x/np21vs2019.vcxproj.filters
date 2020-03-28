@@ -20,9 +20,6 @@
     <Filter Include="ソース ファイル\win9x\commng\wintab">
       <UniqueIdentifier>{a6285a00-893d-4b3f-8f19-a6123ea4aabb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\win9x\x64">
-      <UniqueIdentifier>{a1871462-146b-47bb-84ed-8f784482e501}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\codecnv">
       <UniqueIdentifier>{6c9fde9a-3e05-4391-b480-2c6e62b0e849}</UniqueIdentifier>
     </Filter>
@@ -103,9 +100,6 @@
     </Filter>
     <Filter Include="ソース ファイル\win9x\x64">
       <UniqueIdentifier>{a1871462-146b-47bb-84ed-8f784482e501}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\win9x\x86">
-      <UniqueIdentifier>{29819abb-2d69-47c1-8275-aced08ddf2fc}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
@@ -3245,28 +3239,24 @@
     <ClInclude Include="..\i386c\ia32\instructions\fpu\softfloat\primitiveTypes.h">
       <Filter>ヘッダー ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <NASM Include="x86\cputype.x86">
-      <Filter>ソース ファイル\win9x\x86</Filter>
-    </NASM>
-    <NASM Include="x86\parts.x86">
-      <Filter>ソース ファイル\win9x\x86</Filter>
-    </NASM>
-    <NASM Include="x86\opngeng.x86">
-      <Filter>ソース ファイル\win9x\x86</Filter>
-    </NASM>
-    <NASM Include="x86\makegrph.x86">
-      <Filter>ソース ファイル\win9x\x86</Filter>
-    </NASM>
-  </ItemGroup>
-  <ItemGroup>
-    <YASM Include="x64\makegrph.x64">
-      <Filter>ソース ファイル\win9x\x64</Filter>
-    </YASM>
-    <YASM Include="x64\parts.x64">
-      <Filter>ソース ファイル\win9x\x64</Filter>
-    </YASM>
+    <ClInclude Include="..\io\pegc.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\mame\driver.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\mame\fm.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\mame\fmopl.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\mame\ymdeltat.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sound\mame\ymf262.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resources\932\np2.rc">
