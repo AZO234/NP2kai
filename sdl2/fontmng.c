@@ -454,9 +454,11 @@ static void TTFGetFont1(FNTMNG _this, FNTDAT fdat, UINT16 c)
 	int			x;
 	int			y;
 	int			depth;
+#if !defined(_WINDOWS)
 	int			minx;
 	int			maxy;
 	int			advance;
+#endif
 
 	sString[0] = c;
 	sString[1] = 0;
@@ -471,27 +473,41 @@ static void TTFGetFont1(FNTMNG _this, FNTDAT fdat, UINT16 c)
 		dst = (UINT8 *)(fdat + 1);
 		if (_this->fonttype & FDAT_ALIAS)
 		{
+#if !defined(_WINDOWS)
 			TTF_GlyphMetrics(_this->ttf_font,s,&minx,NULL,NULL,&maxy,&advance);
+#endif
 			for (y = 0; y < fdat->height; y++)
 			{
 				for (x = 0; x < fdat->width; x++)
 				{
+#if !defined(_WINDOWS)
 					depth = TTFGetPixelDepth(s, (x-minx)*2+0, (y+(TTF_FontAscent(_this->ttf_font)-maxy))*2+0);
 					depth += TTFGetPixelDepth(s, (x-minx)*2+1, (y+(TTF_FontAscent(_this->ttf_font)-maxy))*2+0);
 					depth += TTFGetPixelDepth(s, (x-minx)*2+0, (y+(TTF_FontAscent(_this->ttf_font)-maxy))*2+1);
 					depth += TTFGetPixelDepth(s, (x-minx)*2+1, (y+(TTF_FontAscent(_this->ttf_font)-maxy))*2+1);
-					*dst++ = (UINT8)((depth + 2) / 4);
+#else
+					depth = TTFGetPixelDepth(s, x*2+0, y*2+0);
+					depth += TTFGetPixelDepth(s, x*2+1, y*2+0);
+					depth += TTFGetPixelDepth(s, x*2+0, y*2+1);
+					depth += TTFGetPixelDepth(s, x*2+1, y*2+1);
+#endif
 				}
 			}
 		}
 		else
 		{
+#if !defined(_WINDOWS)
 			TTF_GlyphMetrics(_this->ttf_font,s,&minx,NULL,NULL,&maxy,&advance);
+#endif
 			for (y = 0; y < fdat->height; y++)
 			{
 				for (x = 0; x < fdat->width; x++)
 				{
+#if !defined(_WINDOWS)
 					*dst++ = TTFGetPixelDepth(s, x-minx, (y+(TTF_FontAscent(_this->ttf_font)-maxy)));
+#else
+					*dst++ = TTFGetPixelDepth(s, x, y);
+#endif
 				}
 			}
 		}
