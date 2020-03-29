@@ -94,18 +94,8 @@
 
 #define CIRRUS_MELCOWAB_OFS_DEFAULT	0x0
 
-typedef	signed char		int8_t;
-typedef	unsigned char	uint8_t;
-typedef	signed short	int16_t;
-typedef	unsigned short	uint16_t_;
-#if !defined(__LIBRETRO__)
-typedef	signed int		int32_t;
-#endif
-typedef	unsigned int	uint32_t_;
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
-typedef	signed __int64	int64_t;
-typedef	unsigned __int64	uint64_t;
-#endif
+typedef uint16_t uint16_t_;
+typedef uint32_t uint32_t_;
 
 typedef uint32_t_ ram_addr_t;
 typedef uint32_t_ target_phys_addr_t;

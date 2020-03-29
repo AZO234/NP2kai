@@ -17,10 +17,43 @@
 #endif
 #endif
 
+// standard include
+#if defined(__cplusplus)
+#if defined(_WINDOWS)
+#include <windows.h>
+#include <tchar.h>
+// not define _UNICODE, UNICODE now
+#elif defined(__APPLE__)
+#include <bits/stdc++.h>
+#endif
+#include <cstdio>
+#include <cstdlib>  // include cwchar
+#include <cstddef>
+#include <cstring>
+#include <cmath>
+#include <climits>
+#include <csetjmp>
+#include <cstdarg>
+#else
+#if defined(_WINDOWS)
+#include <windows.h>
+#include <tchar.h>
+// not define _UNICODE, UNICODE now
+#endif
+#include <stdio.h>
+#include <stdlib.h>  // include wchar.h
+#include <stddef.h>
+#include <string.h>
+#include <math.h>
+#include <limits.h>
+#include <setjmp.h>
+#include <stdarg.h>
+#endif
+
 // C/C++ standard
 #if defined(__cplusplus)
-#if __cplusplus >= 201103L
 #include <cinttypes>
+#if __cplusplus >= 201103L
 #if !defined(CPP11)
 #define CPP11
 #endif
@@ -97,24 +130,26 @@
 #define uint64_t unsigned long long
 #endif
 #endif
+#if !defined(_MSC_VER)
 typedef	int32_t  INT;
-typedef	INT      SINT;
 typedef	uint32_t UINT;
 typedef	int8_t   INT8;
-typedef	INT8     SINT8;
 typedef	uint8_t  UINT8;
+typedef	int32_t  INT32;
+typedef	uint32_t UINT32;
+#endif
+typedef	INT      SINT;
+typedef	INT8     SINT8;
 typedef	int16_t  INT16;
 typedef	INT16    SINT16;
 typedef	uint16_t UINT16;
-typedef	int32_t  INT32;
 typedef	INT32    SINT32;
-typedef	uint32_t UINT32;
 typedef	int64_t  INT64;
 typedef	INT64    SINT64;
 typedef	uint64_t UINT64;
 
 // variable size
-// size_t format: %zu
+typedef size_t    SIZET;    // format: %zu
 typedef intptr_t  INTPTR;   // format: %PRIdPTR
 typedef uintptr_t UINTPTR;  // format: %PRIuPTR
 typedef intmax_t  INTMAX;   // format: %PRIdMAX
@@ -125,52 +160,33 @@ typedef uintmax_t UINTMAX;  // format: %PRIuMAX
 #if !defined(_WINDOWS)  // BOOL typedefed as int in winnt.h
 typedef bool BOOL;
 #endif
+#if !defined(TRUE)
 #define TRUE  true
+#endif
+#if !defined(FALSE)
 #define FALSE false
+#endif
 #else
 #if defined(C99)
 #include <stdbool.h>
 #if !defined(_WINDOWS)  // BOOL typedefed as int in winnt.h
 typedef bool BOOL;
 #endif
+#if !defined(TRUE)
 #define TRUE  true
+#endif
+#if !defined(FALSE)
 #define FALSE false
+#endif
 #else
 typedef int  BOOL;
+#if !defined(TRUE)
 #define TRUE  (1==1)
+#endif
+#if !defined(FALSE)
 #define FALSE (1==0)
 #endif
 #endif
-
-// standard include
-#if defined(__cplusplus)
-#if defined(_WINDOWS)
-#include <windows.h>
-#include <tchar.h>
-// not define _UNICODE, UNICODE now
-#endif
-#include <cstdio>
-#include <cstdlib>  // include cwchar
-#include <cstddef>
-#include <cstring>
-#include <cmath>
-#include <climits>
-#include <csetjmp>
-#include <cstdarg>
-#else
-#if defined(_WINDOWS)
-#include <windows.h>
-#include <tchar.h>
-// not define _UNICODE, UNICODE now
-#endif
-#include <stdio.h>
-#include <stdlib.h>  // include wchar.h
-#include <stddef.h>
-#include <string.h>
-#include <math.h>
-#include <limits.h>
-#include <setjmp.h>
-#include <stdarg.h>
 #endif
 
 // inline
@@ -346,6 +362,7 @@ typedef uint16_t REG16;
 #define	VRAMCALL   FASTCALL
 #define	SCRNCALL   FASTCALL
 #define	VERMOUTHCL FASTCALL
+#define	PARTSCALL  FASTCALL
 
 #define GETRAND() rand()
 

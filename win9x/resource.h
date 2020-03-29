@@ -810,6 +810,9 @@
 #define IDM_WABSYSMENU_HALFTONE         43302
 #define IDM_IDE0PHYSICALDRV_ID0         43400 // size = 26*4
 #define IDM_IDE0PHYSICALDRV_LAST        43503
+#define IDC_BMS                         44001
+#define IDC_BMSIO                       44002
+#define IDC_BMSBANKS                    44003
 
 // Next default values for new objects
 // 

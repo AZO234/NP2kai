@@ -5197,7 +5197,7 @@ void cirrusvga_drawGraphic(){
 		static UINT8 lastmodex = 0;
 		if(np2clvga.modex){
 			if(!lastmodex){
-				cirrusvga->sr[0x07] &= ‾0x01;
+				cirrusvga->sr[0x07] &= ~0x01;
 			}
 			bpp = 8;
 			width = 320;

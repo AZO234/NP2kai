@@ -2232,6 +2232,12 @@
     <ClCompile Include="..\i386c\ia32\instructions\fpu\softfloat\ui32_to_extF80.c">
       <Filter>ソース ファイル\i386c\ia32\instructions\fpu\softfloat</Filter>
     </ClCompile>
+    <ClCompile Include="dialog\dialogs.cpp">
+      <Filter>ソース ファイル\win9x\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="win32sub.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\calendar.h">
@@ -3256,6 +3262,12 @@
     </ClInclude>
     <ClInclude Include="..\sound\mame\ymf262.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\dialogs.h">
+      <Filter>ヘッダー ファイル\win9x\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="win32sub.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
