@@ -9,6 +9,9 @@
 #include "np2.h"
 #include "np2arg.h"
 #include "dosio.h"
+#if defined(SUPPORT_BMS)
+#include "bmsio.h"
+#endif
 #include "ini.h"
 #include "winkbd.h"
 #include "pccore.h"
@@ -603,7 +606,13 @@ static const PFTBL s_IniItems[] =
 	PFEXT("FDDRIVE2", PFRO_BITMAP,		&np2cfg.fddequip,		1),
 	PFEXT("FDDRIVE3", PFRO_BITMAP,		&np2cfg.fddequip,		2),
 	PFEXT("FDDRIVE4", PFRO_BITMAP,		&np2cfg.fddequip,		3),
-	
+
+#if defined(SUPPORT_BMS)
+	PFEXT("Use_BMS_", PFTYPE_BOOL,		&bmsiocfg.enabled,		0),
+	PFEXT("BMS_Port", PFTYPE_HEX16,		&bmsiocfg.port,			0),
+	PFEXT("BMS_Size", PFTYPE_UINT8,		&bmsiocfg.numbanks,		0),
+#endif
+
 #if defined(SUPPORT_NET)
 	PFSTR("NP2NETTAP", PFTYPE_STR,		np2cfg.np2nettap),
 	PFVAL("NP2NETPMM", PFTYPE_BOOL,		&np2cfg.np2netpmm),

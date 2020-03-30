@@ -577,6 +577,22 @@ BEGIN
     EDITTEXT        IDC_NP2INFO,8,52,200,48,ES_MULTILINE | ES_READONLY | ES_WANTRETURN | WS_VSCROLL
 END
 
+IDD_BMS DIALOG DISCARDABLE  0, 0, 187, 95
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "IO Bank Memory"
+FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,130,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,130,24,50,14
+    LTEXT           "I/O port",IDC_STATIC,30,32,24,8
+    COMBOBOX        IDC_BMSIO,64,30,40,52,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Use IO Bank Memory",IDC_BMS,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,8,8,78,10
+    LTEXT           "Bank Size",IDC_STATIC,30,57,30,8
+    EDITTEXT        IDC_BMSBANKS,64,55,30,12,WS_GROUP
+END
+
 IDD_NETWORK DIALOGEX 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "General"
@@ -850,6 +866,17 @@ BEGIN
         TOPMARGIN, 8
         BOTTOMMARGIN, 100
     END
+
+    IDD_BMS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        VERTGUIDE, 30
+        VERTGUIDE, 64
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+        HORZGUIDE, 65
+    END
 	
     IDD_NETWORK, DIALOG
     BEGIN
@@ -1062,6 +1089,8 @@ BEGIN
             MENUITEM "Sp&ark board",                IDM_SPARKBOARD
             MENUITEM "Sound &Orchestra",            IDM_SOUNDORCHESTRA
             MENUITEM "Sound Orchestra-&V",          IDM_SOUNDORCHESTRAV
+            MENUITEM "L&ittle Orchestra L",         IDM_LITTLEORCHESTRAL
+            MENUITEM "&Multimedia Orchestra",       IDM_MULTIORCHESTRA
             MENUITEM "Sound B&laster 16",           IDM_SB16
             MENUITEM "PC-9801-86 + Sound Blaster 16",  IDM_PC9801_86_SB16
             MENUITEM "Mate-X PCM + Sound Blaster 16",  IDM_WSS_SB16
@@ -1110,6 +1139,8 @@ BEGIN
             MENUITEM "x1/3",                        IDM_MOUSED3X
             MENUITEM "x1/4",                        IDM_MOUSED4X
         END
+        MENUITEM "IO &Bank Memory...",              IDM_BMS
+        MENUITEM SEPARATOR
         MENUITEM "Se&rial option...",               IDM_SERIAL1
         MENUITEM SEPARATOR
         MENUITEM "MIDI &option...",                 IDM_MPUPC98

@@ -209,6 +209,8 @@
     <ClCompile Include="..\cbus\board14.c" />
     <ClCompile Include="..\cbus\board26k.c" />
     <ClCompile Include="..\cbus\board86.c" />
+    <ClCompile Include="..\cbus\boardlol.c" />
+    <ClCompile Include="..\cbus\boardmo.c" />
     <ClCompile Include="..\cbus\boardpx.c" />
     <ClCompile Include="..\cbus\boardsb16.c" />
     <ClCompile Include="..\cbus\boardso.c" />
@@ -531,7 +533,6 @@
     <ClCompile Include="dialog\c_dipsw.cpp" />
     <ClCompile Include="dialog\c_midi.cpp" />
     <ClCompile Include="dialog\c_slidervalue.cpp" />
-    <ClCompile Include="dialog\dialogs.cpp" />
     <ClCompile Include="dialog\d_about.cpp" />
     <ClCompile Include="dialog\d_bmp.cpp" />
     <ClCompile Include="dialog\d_cfgload.cpp" />
@@ -597,7 +598,6 @@
     <ClCompile Include="sysmng.cpp" />
     <ClCompile Include="taskmng.cpp" />
     <ClCompile Include="timemng.cpp" />
-    <ClCompile Include="win32sub.cpp" />
     <ClCompile Include="winkbd.cpp" />
     <ClCompile Include="winloc.cpp" />
   </ItemGroup>
@@ -614,6 +614,8 @@
     <ClInclude Include="..\cbus\board14.h" />
     <ClInclude Include="..\cbus\board26k.h" />
     <ClInclude Include="..\cbus\board86.h" />
+    <ClInclude Include="..\cbus\boardlol.h" />
+    <ClInclude Include="..\cbus\boardmo.h" />
     <ClInclude Include="..\cbus\boardpx.h" />
     <ClInclude Include="..\cbus\boardsb16.h" />
     <ClInclude Include="..\cbus\boardso.h" />
@@ -860,7 +862,6 @@
     <ClInclude Include="dialog\c_midi.h" />
     <ClInclude Include="dialog\c_slidervalue.h" />
     <ClInclude Include="dialog\dialog.h" />
-    <ClInclude Include="dialog\dialogs.h" />
     <ClInclude Include="dialog\np2class.h" />
     <ClInclude Include="dosio.h" />
     <ClInclude Include="ext\c86ctl\c86ctl.h" />
@@ -920,7 +921,6 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="taskmng.h" />
     <ClInclude Include="timemng.h" />
-    <ClInclude Include="win32sub.h" />
     <ClInclude Include="winkbd.h" />
     <ClInclude Include="winloc.h" />
     <ClInclude Include="x86\cputype.h" />

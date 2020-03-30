@@ -249,6 +249,8 @@ struct retro_core_option_definition option_defs_us[] = {
          { "Spark Board", NULL },
          { "Sound Orchestra", NULL },
          { "Sound Orchestra-V", NULL },
+         { "Little Orchestra L", NULL },
+         { "Multimedia Orchestra", NULL },
 #if defined(SUPPORT_SOUND_SB16)
          { "Sound Blaster 16", NULL },
          { "PC9801-86 + Sound Blaster 16", NULL },
@@ -256,11 +258,13 @@ struct retro_core_option_definition option_defs_us[] = {
          { "PC9801-118 + Sound Blaster 16", NULL },
          { "PC9801-86 + Mate-X PCM(B460) + Sound Blaster 16", NULL },
          { "PC9801-86 + 118(B460) + Sound Blaster 16", NULL },
-#endif	/* SUPPORT_SOUND_SB16 */
+#endif
          { "AMD-98", NULL },
          { "WaveStar", NULL },
+#if defined(SUPPORT_PX)
          { "Otomi-chanx2", NULL },
          { "Otomi-chanx2 + 86", NULL },
+#endif
          { "None", NULL },
          { NULL, NULL},
       },
@@ -1064,6 +1068,8 @@ struct retro_core_option_definition option_defs_ja[] = {
          { "Spark Board", NULL },
          { "Sound Orchestra", NULL },
          { "Sound Orchestra-V", NULL },
+         { "Little Orchestra L", NULL },
+         { "Multimedia Orchestra", NULL },
 #if defined(SUPPORT_SOUND_SB16)
          { "Sound Blaster 16", NULL },
          { "PC9801-86 + Sound Blaster 16", NULL },
@@ -1071,11 +1077,13 @@ struct retro_core_option_definition option_defs_ja[] = {
          { "PC9801-118 + Sound Blaster 16", NULL },
          { "PC9801-86 + Mate-X PCM(B460) + Sound Blaster 16", NULL },
          { "PC9801-86 + 118(B460) + Sound Blaster 16", NULL },
-#endif	/* SUPPORT_SOUND_SB16 */
+#endif
          { "AMD-98", NULL },
          { "WaveStar", NULL },
+#if defined(SUPPORT_PX)
          { "Otomi-chanx2", NULL },
          { "Otomi-chanx2 + 86", NULL },
+#endif
          { "None", NULL },
          { NULL, NULL},
       },

@@ -34,6 +34,7 @@
 #define IDD_SNDSB16                     162
 #define IDD_SMPU98                      163
 #define IDD_ABOUT                       171
+#define IDD_BMS                         172
 #define IDD_LGY98                       180
 #define IDD_NETWORK                     181
 #define IDD_GD5430                      190
@@ -277,6 +278,10 @@
 #define IDC_MORE                        17103
 #define IDC_NP2INFO                     17104
 #define IDC_NP2STR                      17105
+#define IDC_BMSIO                       17209
+#define IDC_BMS                         17210
+#define IDC_BMSIOBANK                   17210
+#define IDC_BMSBANKS                    17211
 #define IDC_TOOL_HDDACC                 18001
 #define IDC_TOOL_FDD1ACC                18002
 #define IDC_TOOL_FDD1LIST               18003
@@ -703,6 +708,8 @@
 #define IDM_PC9801_86_WSS               40657
 #define IDM_MATE_X_PCM                  40658
 #define IDM_SB16                        40659
+#define IDM_LITTLEORCHESTRA             40660
+#define IDM_MULTIORCHESTRA              40661
 #define IDM_PC9801_86_118               49650
 #define IDM_86SPEAKBOARD                49651
 #define IDM_WAVESTAR                    49652
@@ -774,6 +781,7 @@
 #define IDM_TOOL_SKINMRU1               41152
 #define IDM_TOOL_SKINMRU2               41153
 #define IDM_TOOL_SKINMRU3               41154
+#define IDM_BMS                         41155
 #define IDM_KDISPFM                     42001
 #define IDM_KDISPMIDI                   42002
 #define IDM_VIEWWINNEW                  43001
@@ -810,9 +818,6 @@
 #define IDM_WABSYSMENU_HALFTONE         43302
 #define IDM_IDE0PHYSICALDRV_ID0         43400 // size = 26*4
 #define IDM_IDE0PHYSICALDRV_LAST        43503
-#define IDC_BMS                         44001
-#define IDC_BMSIO                       44002
-#define IDC_BMSBANKS                    44003
 
 // Next default values for new objects
 // 

@@ -14,6 +14,8 @@
 #include	"boardpx.h"
 #endif	// defined(SUPPORT_PX)
 #include	"boardso.h"
+#include	"boardmo.h"
+#include	"boardlol.h"
 #include	"amd98.h"
 #if defined(SUPPORT_SOUND_SB16)
 #include	"boardsb16.h"
@@ -250,6 +252,14 @@ void fmboard_reset(const NP2CFG *pConfig, SOUNDID nSoundID)
 			boardso_reset(pConfig, TRUE);
 			break;
 			
+		case SOUNDID_LITTLEORCHESTRAL:
+			boardlol_reset(pConfig);
+			break;
+
+		case SOUNDID_MMORCHESTRA:
+			boardmo_reset(pConfig);
+			break;
+			
 #if defined(SUPPORT_SOUND_SB16)
 		case SOUNDID_SB16:
 			boardsb16_reset(pConfig);
@@ -282,7 +292,7 @@ void fmboard_reset(const NP2CFG *pConfig, SOUNDID nSoundID)
 			board118_reset(pConfig);
 			board86_reset(pConfig, FALSE);
 			break;
-#endif	// defined(SUPPORT_SOUND_SB16)
+#endif
 
 #if defined(SUPPORT_PX)
 		case SOUNDID_PX1:
@@ -372,6 +382,14 @@ void fmboard_bind(void) {
 			boardso_bind();
 			break;
 			
+		case SOUNDID_LITTLEORCHESTRAL:
+			boardlol_bind();
+			break;
+
+		case SOUNDID_MMORCHESTRA:
+			boardmo_bind();
+			break;
+
 #if defined(SUPPORT_SOUND_SB16)
 		case SOUNDID_SB16:
 			boardsb16_bind();
@@ -491,6 +509,14 @@ void fmboard_unbind(void) {
 			boardso_unbind();
 			break;
 			
+		case SOUNDID_LITTLEORCHESTRAL:
+			boardlol_unbind();
+			break;
+
+		case SOUNDID_MMORCHESTRA:
+			boardmo_unbind();
+			break;
+
 #if defined(SUPPORT_SOUND_SB16)
 		case SOUNDID_SB16:
 			boardsb16_unbind();

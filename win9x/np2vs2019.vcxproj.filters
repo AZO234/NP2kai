@@ -1185,11 +1185,11 @@
     <ClCompile Include="..\sound\opl3.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="dialog\dialogs.cpp">
-      <Filter>ソース ファイル\win9x\dialog</Filter>
+    <ClCompile Include="..\cbus\boardlol.c">
+      <Filter>ソース ファイル\cbus</Filter>
     </ClCompile>
-    <ClCompile Include="win32sub.cpp">
-      <Filter>ソース ファイル\win9x</Filter>
+    <ClCompile Include="..\cbus\boardmo.c">
+      <Filter>ソース ファイル\cbus</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2078,11 +2078,11 @@
     <ClInclude Include="..\i286c\v30patch.h">
       <Filter>ヘッダー ファイル\i286c</Filter>
     </ClInclude>
-    <ClInclude Include="dialog\dialogs.h">
-      <Filter>ヘッダー ファイル\win9x\dialog</Filter>
+    <ClInclude Include="..\cbus\boardlol.h">
+      <Filter>ヘッダー ファイル\cbus</Filter>
     </ClInclude>
-    <ClInclude Include="win32sub.h">
-      <Filter>ヘッダー ファイル\win9x</Filter>
+    <ClInclude Include="..\cbus\boardmo.h">
+      <Filter>ヘッダー ファイル\cbus</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

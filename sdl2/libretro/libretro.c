@@ -1072,13 +1072,13 @@ static void update_variables(void)
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
       if (strcmp(var.value, "PC9801-86") == 0)
-         np2cfg.SOUND_SW = 0x04;
+         np2cfg.SOUND_SW = SOUNDID_PC_9801_86;
       else if (strcmp(var.value, "PC9801-26K + 86") == 0)
-         np2cfg.SOUND_SW = 0x06;
+         np2cfg.SOUND_SW = SOUNDID_PC_9801_86_26K;
       else if (strcmp(var.value, "PC9801-86 + Chibi-oto") == 0)
-         np2cfg.SOUND_SW = 0x14;
+         np2cfg.SOUND_SW = SOUNDID_PC_9801_14;
       else if (strcmp(var.value, "PC9801-118") == 0)
-         np2cfg.SOUND_SW = 0x08;
+         np2cfg.SOUND_SW = SOUNDID_PC_9801_118;
       else if (strcmp(var.value, "PC9801-86 + Mate-X PCM(B460)") == 0)
          np2cfg.SOUND_SW = SOUNDID_PC_9801_86_WSS;
       else if (strcmp(var.value, "PC9801-86 + 118(B460)") == 0)
@@ -1086,15 +1086,20 @@ static void update_variables(void)
       else if (strcmp(var.value, "Mate-X PCM") == 0)
          np2cfg.SOUND_SW = SOUNDID_MATE_X_PCM;
       else if (strcmp(var.value, "Speak Board") == 0)
-         np2cfg.SOUND_SW = 0x20;
+         np2cfg.SOUND_SW = SOUNDID_SPEAKBOARD;
       else if (strcmp(var.value, "PC9801-86 + Speak Board") == 0)
          np2cfg.SOUND_SW = SOUNDID_86_SPEAKBOARD;
       else if (strcmp(var.value, "Spark Board") == 0)
-         np2cfg.SOUND_SW = 0x40;
+         np2cfg.SOUND_SW = SOUNDID_SPARKBOARD;
       else if (strcmp(var.value, "Sound Orchestra") == 0)
-         np2cfg.SOUND_SW = 0x32;
+         np2cfg.SOUND_SW = SOUNDID_SOUNDORCHESTRA;
       else if (strcmp(var.value, "Sound Orchestra-V") == 0)
-         np2cfg.SOUND_SW = 0x82;
+         np2cfg.SOUND_SW = SOUNDID_SOUNDORCHESTRAV;
+      else if (strcmp(var.value, "Little Orchestra L") == 0)
+         np2cfg.SOUND_SW = SOUNDID_LITTLEORCHESTRAL;
+      else if (strcmp(var.value, "Multimedia Orchestra") == 0)
+         np2cfg.SOUND_SW = SOUNDID_MMORCHESTRA;
+#if defined(SUPPORT_SOUND_SB16)
       else if (strcmp(var.value, "Sound Blaster 16") == 0)
          np2cfg.SOUND_SW = SOUNDID_SB16;
       else if (strcmp(var.value, "PC9801-86 + Sound Blaster 16") == 0)
@@ -1107,20 +1112,23 @@ static void update_variables(void)
          np2cfg.SOUND_SW = SOUNDID_PC_9801_86_WSS_SB16;
       else if (strcmp(var.value, "PC9801-86 + 118(B460) + Sound Blaster 16") == 0)
          np2cfg.SOUND_SW = SOUNDID_PC_9801_86_118_SB16;
+#endif
       else if (strcmp(var.value, "AMD-98") == 0)
-         np2cfg.SOUND_SW = 0x80;
+         np2cfg.SOUND_SW = SOUNDID_AMD98;
       else if (strcmp(var.value, "WaveStar") == 0)
-         np2cfg.SOUND_SW = 0x70;
+         np2cfg.SOUND_SW = SOUNDID_WAVESTAR;
+#if defined(SUPPORT_PX)
       else if (strcmp(var.value, "Otomi-chanx2") == 0)
-         np2cfg.SOUND_SW = 0x30;
+         np2cfg.SOUND_SW = SOUNDID_PX1;
       else if (strcmp(var.value, "Otomi-chanx2 + 86") == 0)
-         np2cfg.SOUND_SW = 0x50;
+         np2cfg.SOUND_SW = SOUNDID_PX2;
+#endif
       else if (strcmp(var.value, "None") == 0)
-         np2cfg.SOUND_SW = 0x00;
+         np2cfg.SOUND_SW = SOUNDID_NONE;
       else if (strcmp(var.value, "PC9801-14") == 0)
-         np2cfg.SOUND_SW = 0x01;
+         np2cfg.SOUND_SW = SOUNDID_PC_9801_14;
       else if (strcmp(var.value, "PC9801-26K") == 0)
-         np2cfg.SOUND_SW = 0x02;
+         np2cfg.SOUND_SW = SOUNDID_PC_9801_26K;
    }
 
    var.key = "np2kai_118ROM";

@@ -450,7 +450,9 @@ typedef int32_t FILELEN;
 #define	SUPPORT_SWWABRLYSND
 #endif
 
+#if !defined(_WINDOWS) && !defined(__LIBRETRO__) && !defined(NP2_SDL2)
 #define SUPPORT_BMS
+#endif
 #define SUPPORT_V30ORIGINAL
 #define SUPPORT_V30EXT
 #define VAEG_FIX

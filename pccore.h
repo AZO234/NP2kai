@@ -42,34 +42,38 @@ enum {
  */
 enum tagSoundId
 {
-	SOUNDID_NONE				= 0,		/*!< No boards */
-	SOUNDID_PC_9801_14			= 0x01,		/*!< PC-9801-14 */ 
-	SOUNDID_PC_9801_26K			= 0x02,		/*!< PC-9801-26K */ 
-	SOUNDID_PC_9801_86			= 0x04,		/*!< PC-9801-86 */ 
-	SOUNDID_PC_9801_86_26K		= 0x06,		/*!< PC-9801-86 + 26K */ 
-	SOUNDID_PC_9801_118			= 0x08,		/*!< PC-9801-118 */
-	SOUNDID_PC_9801_86_ADPCM	= 0x14,		/*!< PC-9801-86 with ADPCM */
-	SOUNDID_SPEAKBOARD			= 0x20,		/*!< Speak board */
-	SOUNDID_86_SPEAKBOARD		= 0x24,		/*!< PC-9801-86 + Speak board */
-	SOUNDID_SPARKBOARD			= 0x40,		/*!< Spark board */
-	SOUNDID_SB16				= 0x41,		/*!< Sound Blaster 16 */
-	SOUNDID_PC_9801_86_WSS_SB16	= 0x42,		/*!< PC-9801-86 + Mate-X PCM(B460) + Sound Blaster 16 */
-	SOUNDID_WSS_SB16			= 0x43,		/*!< Mate-X PCM(B460) + Sound Blaster 16 */
-	SOUNDID_PC_9801_86_SB16		= 0x44,		/*!< PC-9801-86 + Sound Blaster 16 */
-	SOUNDID_PC_9801_118_SB16	= 0x45,		/*!< PC-9801-118 + Sound Blaster 16 */
-	SOUNDID_PC_9801_86_118_SB16 = 0x46,		/*!< PC-9801-86 + PC-9801-118(B460) + Sound Blaster 16 */
-	SOUNDID_MATE_X_PCM			= 0x60,		/*!< Mate-X PCM */
-	SOUNDID_PC_9801_86_WSS		= 0x64,		/*!< PC-9801-86 + Mate-X PCM(B460) */
-	SOUNDID_PC_9801_86_118		= 0x68,		/*!< PC-9801-86 + PC-9801-118(B460) */
-	SOUNDID_WAVESTAR			= 0x70,		/*!< Wave Star */
-	SOUNDID_AMD98				= 0x80,		/*!< AMD-98 */
-	SOUNDID_SOUNDORCHESTRA		= 0x32,		/*!< SOUND ORCHESTRA */
-	SOUNDID_SOUNDORCHESTRAV		= 0x82,		/*!< SOUND ORCHESTRA-V */
+	SOUNDID_NONE				= 0,		//!< No boards
+	SOUNDID_PC_9801_14			= 0x01,		//!< PC-9801-14
+	SOUNDID_PC_9801_26K			= 0x02,		//!< PC-9801-26K
+	SOUNDID_PC_9801_86			= 0x04,		//!< PC-9801-86
+	SOUNDID_PC_9801_86_26K		= 0x06,		//!< PC-9801-86 + 26K
+	SOUNDID_PC_9801_118			= 0x08,		//!< PC-9801-118
+	SOUNDID_PC_9801_86_ADPCM	= 0x14,		//!< PC-9801-86 with ADPCM
+	SOUNDID_SPEAKBOARD			= 0x20,		//!< Speak board
+	SOUNDID_86_SPEAKBOARD		= 0x24,		//!< PC-9801-86 + Speak board
+	SOUNDID_SPARKBOARD			= 0x40,		//!< Spark board
+#if defined(SUPPORT_SOUND_SB16)
+	SOUNDID_SB16				= 0x41,		//!< Sound Blaster 16
+	SOUNDID_PC_9801_86_WSS_SB16	= 0x42,		//!< PC-9801-86 + Mate-X PCM(B460) + Sound Blaster 16
+	SOUNDID_WSS_SB16			= 0x43,		//!< Mate-X PCM(B460) + Sound Blaster 16
+	SOUNDID_PC_9801_86_SB16		= 0x44,		//!< PC-9801-86 + Sound Blaster 16
+	SOUNDID_PC_9801_118_SB16	= 0x45,		//!< PC-9801-118 + Sound Blaster 16
+	SOUNDID_PC_9801_86_118_SB16 = 0x46,		//!< PC-9801-86 + PC-9801-118(B460) + Sound Blaster 16
+#endif
+	SOUNDID_MATE_X_PCM			= 0x60,		//!< Mate-X PCM
+	SOUNDID_PC_9801_86_WSS		= 0x64,		//!< PC-9801-86 + Mate-X PCM(B460)
+	SOUNDID_PC_9801_86_118		= 0x68,		//!< PC-9801-86 + PC-9801-118(B460)
+	SOUNDID_WAVESTAR			= 0x70,		//!< Wave Star
+	SOUNDID_AMD98				= 0x80,		//!< AMD-98
+	SOUNDID_SOUNDORCHESTRA		= 0x32,		//!< SOUND ORCHESTRA
+	SOUNDID_SOUNDORCHESTRAV		= 0x82,		//!< SOUND ORCHESTRA-V
+	SOUNDID_LITTLEORCHESTRAL		= 0x22,		//!< LITTLE ORCHESTRA L
+	SOUNDID_MMORCHESTRA		= 0x26,		//!< MULTIMEDIA ORCHESTRA
 
 #if defined(SUPPORT_PX)
 	SOUNDID_PX1					= 0x30,
 	SOUNDID_PX2					= 0x50,
-#endif	/* defined(SUPPORT_PX) */
+#endif
 };
 typedef enum tagSoundId		SOUNDID;
 

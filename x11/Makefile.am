@@ -134,6 +134,8 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/cbus/boardpx.c \
 		$(real_topsrcdir)/cbus/boardsb16.c \
 		$(real_topsrcdir)/cbus/boardso.c \
+		$(real_topsrcdir)/cbus/boardlol.c \
+		$(real_topsrcdir)/cbus/boardmo.c \
 		$(real_topsrcdir)/cbus/boardspb.c \
 		$(real_topsrcdir)/cbus/boardx2.c \
 		$(real_topsrcdir)/cbus/cs4231io.c \

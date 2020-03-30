@@ -465,37 +465,37 @@ static void sys_cmd(MENUID id) {
 			break;
 
 		case MID_NOSOUND:
-			np2cfg.SOUND_SW = 0x00;
+			np2cfg.SOUND_SW = SOUNDID_NONE;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_PC9801_14:
-			np2cfg.SOUND_SW = 0x01;
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_14;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_PC9801_26K:
-			np2cfg.SOUND_SW = 0x02;
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_26K;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_PC9801_86:
-			np2cfg.SOUND_SW = 0x04;
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_86;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_PC9801_26_86:
-			np2cfg.SOUND_SW = 0x06;
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_86_26K;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_PC9801_86_CB:
-			np2cfg.SOUND_SW = 0x14;
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_86_ADPCM;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_PC9801_118:
-			np2cfg.SOUND_SW = 0x08;
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_118;
 			update |= SYS_UPDATECFG;
 			break;
 
@@ -515,7 +515,7 @@ static void sys_cmd(MENUID id) {
 			break;
 
 		case MID_SPEAKBOARD:
-			np2cfg.SOUND_SW = 0x20;
+			np2cfg.SOUND_SW = SOUNDID_SPEAKBOARD;
 			update |= SYS_UPDATECFG;
 			break;
 
@@ -525,17 +525,27 @@ static void sys_cmd(MENUID id) {
 			break;
 
 		case MID_SPARKBOARD:
-			np2cfg.SOUND_SW = 0x40;
+			np2cfg.SOUND_SW = SOUNDID_SPARKBOARD;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_SOUNDORCHESTRA:
-			np2cfg.SOUND_SW = 0x32;
+			np2cfg.SOUND_SW = SOUNDID_SOUNDORCHESTRA;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_SOUNDORCHESTRAV:
-			np2cfg.SOUND_SW = 0x82;
+			np2cfg.SOUND_SW = SOUNDID_SOUNDORCHESTRAV;
+			update |= SYS_UPDATECFG;
+			break;
+
+		case MID_LITTLEORCHESTRAL:
+			np2cfg.SOUND_SW = SOUNDID_LITTLEORCHESTRAL;
+			update |= SYS_UPDATECFG;
+			break;
+
+		case MID_MMORCHESTRA:
+			np2cfg.SOUND_SW = SOUNDID_MMORCHESTRA;
 			update |= SYS_UPDATECFG;
 			break;
 
@@ -569,29 +579,29 @@ static void sys_cmd(MENUID id) {
 			np2cfg.SOUND_SW = SOUNDID_PC_9801_86_118_SB16;
 			update |= SYS_UPDATECFG;
 			break;
-#endif	/* SUPPORT_SOUND_SB16 */
+#endif
 
 		case MID_AMD98:
-			np2cfg.SOUND_SW = 0x80;
+			np2cfg.SOUND_SW = SOUNDID_AMD98;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_WAVESTAR:
-			np2cfg.SOUND_SW = 0x70;
+			np2cfg.SOUND_SW = SOUNDID_WAVESTAR;
 			update |= SYS_UPDATECFG;
 			break;
 
 #if defined(SUPPORT_PX)
 		case MID_PX1:
-			np2cfg.SOUND_SW = 0x30;
+			np2cfg.SOUND_SW = SOUNDID_PX1;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_PX2:
-			np2cfg.SOUND_SW = 0x50;
+			np2cfg.SOUND_SW = SOUNDID_PX2;
 			update |= SYS_UPDATECFG;
 			break;
-#endif	/* defined(SUPPORT_PX) */
+#endif
 
 		case MID_PC9801_118_ROM:
 			np2cfg.snd118rom ^= 1;
@@ -603,7 +613,7 @@ static void sys_cmd(MENUID id) {
 			np2cfg.usefmgen ^= 1;
 			update |= SYS_UPDATECFG;
 			break;
-#endif	/* SUPPORT_FMGEN */
+#endif
 
 		case MID_JASTSND:
 			np2oscfg.jastsnd ^= 1;

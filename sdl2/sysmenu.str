@@ -113,6 +113,8 @@ static const char str_spreakboard86[] = "PC-9801-86 + Speak board";
 static const char str_sparkboard[] = "Spark board";
 static const char str_sndorchestra[] = "Sound Orchestra";
 static const char str_sndorchestrav[] = "Sound Orchestra-V";
+static const char str_littleorchestral[] = "Little Orchestra L";
+static const char str_mmorchestra[] = "Multimedia Orchestra";
 #if defined(SUPPORT_SOUND_SB16)
 static const char str_sb16[] = "Sound Blaster 16";
 static const char str_86sb16[] = "PC-9801-86 + Sound Blaster 16";
@@ -120,13 +122,13 @@ static const char str_mxsb16[] = "Mate-X PCM + Sound Blaster 16";
 static const char str_118sb16[] = "PC-9801-118 + Sound Blaster 16";
 static const char str_86mxsb16[] = "PC-9801-86 + Mate-X PCM(B460) + Sound Blaster 16";
 static const char str_86118sb16[] = "PC-9801-86 + 118(B460) + Sound Blaster 16";
-#endif	/* SUPPORT_SOUND_SB16 */
+#endif
 static const char str_amd98[] = "AMD-98";
 static const char str_wavestar[] = "WaveStar";
 #if defined(SUPPORT_PX)
 static const char str_px1[] = "Otomi-chanx2";
 static const char str_px2[] = "Otomi-chanx2 + 86";
-#endif	/* defined(SUPPORT_PX) */
+#endif
 static const char str_pc9801118rom[] = "118 ROM";
 #if defined(SUPPORT_FMGEN)
 static const char str_fmgen[] = "fmgen";
@@ -409,6 +411,8 @@ static const MSYSITEM s_snd[] = {
 		{str_sparkboard,	NULL,		MID_SPARKBOARD,		0},
 		{str_sndorchestra,	NULL,		MID_SOUNDORCHESTRA,	0},
 		{str_sndorchestrav,	NULL,		MID_SOUNDORCHESTRAV,	0},
+		{str_littleorchestral,	NULL,		MID_LITTLEORCHESTRAL,	0},
+		{str_mmorchestra,	NULL,		MID_MMORCHESTRA,	0},
 #if defined(SUPPORT_SOUND_SB16)
 		{str_sb16,		NULL,		MID_SB16,		0},
 		{str_86sb16,		NULL,		MID_86_SB16,		0},
@@ -416,13 +420,13 @@ static const MSYSITEM s_snd[] = {
 		{str_118sb16,		NULL,		MID_118_SB16,		0},
 		{str_86mxsb16,		NULL,		MID_86MXSB16,		0},
 		{str_86118sb16,		NULL,		MID_86118SB16,		0},
-#endif	/* SUPPORT_SOUND_SB16 */
+#endif
 		{str_amd98,			NULL,		MID_AMD98,			0},
 		{str_wavestar,		NULL,		MID_WAVESTAR,			0},
 #if defined(SUPPORT_PX)
 		{str_px1,			NULL,		MID_PX1,			0},
 		{str_px2,			NULL,		MID_PX2,			0},
-#endif	/* defined(SUPPORT_PX) */
+#endif
 		{str_pc9801118rom,	NULL,		MID_PC9801_118_ROM,	0},
 		{str_jastsnd,		NULL,		MID_JASTSND,		0},
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},

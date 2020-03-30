@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Mar 28, 2020<br>
+Mar 30, 2020<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -1025,6 +1025,8 @@ Next boot computer, you command from 4.<br>
 </div></details>
 
 ## Release
+- Mar 30, 2020<br>
+  - add LittleOrchestraL, MultimediaOrchestra
 - Mar 28, 2020<br>
   - Merge NP21/W rev.72<br>
   - [libretro] using lr file stream API

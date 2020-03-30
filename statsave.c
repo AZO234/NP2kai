@@ -847,6 +847,7 @@ static UINT GetSoundFlags(SOUNDID nSoundID)
 			return FLAG_MG;
 
 		case SOUNDID_PC_9801_26K:
+		case SOUNDID_LITTLEORCHESTRAL:
 			return FLAG_OPNA1;
 
 		case SOUNDID_PC_9801_86:
@@ -884,8 +885,9 @@ static UINT GetSoundFlags(SOUNDID nSoundID)
 
 		case SOUNDID_SOUNDORCHESTRA:
 		case SOUNDID_SOUNDORCHESTRAV:
+		case SOUNDID_MMORCHESTRA:
 			return FLAG_OPNA1 | FLAG_OPL3;
-			
+
 #if defined(SUPPORT_SOUND_SB16)
 		case SOUNDID_SB16:
 			return FLAG_OPL3 | FLAG_SB16;
@@ -905,15 +907,14 @@ static UINT GetSoundFlags(SOUNDID nSoundID)
 		case SOUNDID_PC_9801_86_118_SB16:
 			return FLAG_OPNA1 | FLAG_OPNA2 | FLAG_PCM86 | FLAG_CS4231 | FLAG_OPL3 | FLAG_SB16;
 			
-#endif	// defined(SUPPORT_SOUND_SB16)
-
+#endif
 #if defined(SUPPORT_PX)
 		case SOUNDID_PX1:
 			return FLAG_OPNA1 | FLAG_OPNA2 | FLAG_OPNA3 | FLAG_OPNA4;
 
 		case SOUNDID_PX2:
 			return FLAG_OPNA1 | FLAG_OPNA2 | FLAG_OPNA3 | FLAG_OPNA4 | FLAG_OPNA5 | FLAG_PCM86;
-#endif	/* defined(SUPPORT_PX) */
+#endif
 
 		default:
 			return 0;
