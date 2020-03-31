@@ -582,7 +582,8 @@ Mouse cursor moving and left-button be able to controled with joypad stick.<br>
 Switch Stick2Mouse mode in config to 'L-stick' or 'R-stick(default)'.<br>
 - Stick: mouse move<br>
 - Thumb: mouse left button<br>
-(if you need right-button, enable to J2M and use A button.)<br>
+- ClickShift+Thumb: mouse right button<br>
+ClickShift button is assigned to R1 default.<br>
 
 To switch Joy2Mouse/Keyboard mode in config to 'Mouse'.<br>
 Mouse cursor is able to move with joypad's digital button also.<br>
@@ -1025,6 +1026,11 @@ Next boot computer, you command from 4.<br>
 </div></details>
 
 ## Release
+- Mar 31, 2020<br>
+  - [libretro] fix input
+    - mash trigger, too fast move
+    - J2K 'Manual' setting lost
+    - add S2M click shift (l to r) button (default R1)
 - Mar 30, 2020<br>
   - add LittleOrchestraL, MultimediaOrchestra
 - Mar 28, 2020<br>
@@ -1037,14 +1043,14 @@ Next boot computer, you command from 4.<br>
   - [SDL2] mod Windows file access
 - Mar 13, 2020<br>
   - Merge NP21/W rev.71<br>
-    - [lr] add CPU feature<br>
+    - [libretro] add CPU feature<br>
     - fix Sound Blaster 16 (OPL3)<br>
     - GamePort on soundboards<br>
 - Mar 6, 2020<br>
   - [SDL2/X11] fix default.ttf<br>
 - Mar 2, 2020<br>
   - Using absolute/rerative path in .m3u and .cmd list file<br>
-  - [lr] not remember last HDD mount<br>
+  - [libretro] not remember last HDD mount<br>
 - Feb 18, 2020<br>
   - fix V30 and 286 flag register<br>
 - Feb 4, 2020<br>

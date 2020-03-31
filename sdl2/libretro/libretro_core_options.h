@@ -781,7 +781,7 @@ struct retro_core_option_definition option_defs_us[] = {
    },
    {
       "np2kai_stick2mouse",
-      "Joypad(Analog Stick) to Mouse Mapping",
+      "S2M(Joypad Analog Stick to Mouse) Mapping",
       "Emulate a mouse on your gamepad's analog stick.",
       {
          { "OFF", NULL },
@@ -792,8 +792,20 @@ struct retro_core_option_definition option_defs_us[] = {
       "R-stick"
    },
    {
+      "np2kai_stick2mouse_shift",
+      "S2M Click Shift Button Mapping",
+      "Stick push shift to left->right click.",
+      {
+         { "OFF", NULL },
+         { "R1", NULL },
+         { "R2", NULL },
+         { NULL, NULL},
+      },
+      "R1"
+   },
+   {
       "np2kai_joy2mousekey",
-      "Joypad(D-pad) to Mouse/Keyboard Mapping",
+      "J2M/J2K(Joypad D-pad to Mouse/Keyboard) Mapping",
       "Emulate a keyboard or mouse on your gamepad. Map keyboard 'Arrows' or 'Keypad' on the D-pad.",
       {
          { "OFF", NULL },
@@ -804,19 +816,6 @@ struct retro_core_option_definition option_defs_us[] = {
          { NULL, NULL},
       },
       "OFF"
-   },
-   {
-      "np2kai_j2msuratio",
-      "J2M Mouse Cursor Speed up Ratio",
-      "(Mouse cursor accelerates faster by holding down a direction key.)",
-      {
-         { "x5", NULL },
-         { "x10", NULL },
-         { "x20", NULL },
-         { "up stop", NULL },
-         { NULL, NULL},
-      },
-      "x10"
    },
    {
       "np2kai_joynp2menu",
@@ -1600,7 +1599,7 @@ struct retro_core_option_definition option_defs_ja[] = {
    },
    {
       "np2kai_stick2mouse",
-      "Joypad（アナログスティック）->マウス マッピング",
+      "S2M(ジョイパッド アナログスティック->マウス マッピング",
       "ジョイパッドのアナログスティックをマウスに割り当てる。",
       {
          { "OFF", NULL },
@@ -1611,8 +1610,20 @@ struct retro_core_option_definition option_defs_ja[] = {
       "R-stick"
    },
    {
+      "np2kai_stick2mouse_shift",
+      "S2M クリックシフトボタン マッピング",
+      "スティック押し込みを左→右クリックにシフトするボタンを割り当てる。",
+      {
+         { "OFF", NULL },
+         { "R1", NULL },
+         { "R2", NULL },
+         { NULL, NULL},
+      },
+      "R1"
+   },
+   {
       "np2kai_joy2mousekey",
-      "Joypad（デジタルボタン）->マウス/キーボード マッピング",
+      "J2M/J2K（ジョイパッド デジタルボタン->マウス/キーボード） マッピング",
       "ジョイパッドのデジタルボタンをキーボードやマウスの操作に割り当てる。",
       {
          { "OFF", NULL },
@@ -1623,19 +1634,6 @@ struct retro_core_option_definition option_defs_ja[] = {
          { NULL, NULL},
       },
       "OFF"
-   },
-   {
-      "np2kai_j2msuratio",
-      "J2M時のマウスカーソルスピード上昇率",
-      "（マウスカーソルは方向ボタンを押し続けることで加速度的に速くなる。）",
-      {
-         { "x5", NULL },
-         { "x10", NULL },
-         { "x20", NULL },
-         { "up stop", NULL },
-         { NULL, NULL},
-      },
-      "x10"
    },
    {
       "np2kai_joynp2menu",
