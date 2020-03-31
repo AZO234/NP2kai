@@ -75,26 +75,6 @@
 #define PTR_TO_UINT32(p)	((UINT32)GPOINTER_TO_UINT(p))
 #define UINT32_TO_PTR(v)	GUINT_TO_POINTER((UINT32)(v))
 
-/* archtecture */
-/* amd64 */
-#if defined(amd64) || defined(__AMD64__) || defined(__amd64__) || \
-    defined(x86_64) || defined(__x86_64__) || defined(__X86_64__)
-#define	NP2_CPU_ARCH_AMD64
-#endif /* amd64 */
-/* i386 */
-#if defined(i386) || defined(__i386__) || defined(NP2_CPU_ARCH_AMD64)
-#define	NP2_CPU_ARCH_IA32
-#endif /* i386 */
-
-#if defined(__GNUC__)
-#if defined(NP2_CPU_ARCH_IA32)
-#define	GCC_CPU_ARCH_IA32
-#endif
-#if defined(NP2_CPU_ARCH_AMD64)
-#define	GCC_CPU_ARCH_AMD64
-#endif
-#endif /* __GNUC__ */
-
 G_BEGIN_DECLS
 UINT32 gettick(void);
 G_END_DECLS

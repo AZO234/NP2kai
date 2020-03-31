@@ -17,6 +17,23 @@
 #endif
 #endif
 
+/* archtecture */
+#if defined(amd64) || defined(__AMD64__) || defined(__amd64__) || \
+    defined(x86_64) || defined(__x86_64__) || defined(__X86_64__)
+#define	NP2_CPU_ARCH_AMD64
+#endif
+#if defined(i386) || defined(__i386__) || defined(NP2_CPU_ARCH_AMD64)
+#define	NP2_CPU_ARCH_IA32
+#endif
+#if defined(__GNUC__)
+#if defined(NP2_CPU_ARCH_IA32)
+#define	GCC_CPU_ARCH_IA32
+#endif
+#if defined(NP2_CPU_ARCH_AMD64)
+#define	GCC_CPU_ARCH_AMD64
+#endif
+#endif
+
 // standard include
 #if defined(__cplusplus)
 #if defined(_WINDOWS)

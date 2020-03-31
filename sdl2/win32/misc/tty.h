@@ -13,7 +13,7 @@ class CTty
 public:
 	CTty();
 	~CTty();
-	bool Open(LPCTSTR lpDevName, UINT nSpeed = 0, LPCTSTR lpcszParam = NULL);
+	bool Open(LPCSTR lpDevName, UINT nSpeed = 0, LPCSTR lpcszParam = NULL);
 	bool IsOpened() const;
 	void Close();
 	ssize_t Read(LPVOID lpcvData, ssize_t nDataSize);
@@ -21,8 +21,8 @@ public:
 
 private:
 	HANDLE m_hFile;				/*!< ファイル ハンドル */
-	bool OpenPort(LPCTSTR lpPortName, UINT nSpeed, LPCTSTR lpcszParam);
-	static bool SetParam(LPCTSTR lpcszParam, DCB* dcb = NULL);
+	bool OpenPort(LPCSTR lpPortName, UINT nSpeed, LPCSTR lpcszParam);
+	static bool SetParam(LPCSTR lpcszParam, DCB* dcb = NULL);
 };
 
 /**

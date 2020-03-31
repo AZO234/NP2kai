@@ -708,8 +708,8 @@
 #define IDM_PC9801_86_WSS               40657
 #define IDM_MATE_X_PCM                  40658
 #define IDM_SB16                        40659
-#define IDM_LITTLEORCHESTRA             40660
-#define IDM_MULTIORCHESTRA              40661
+#define IDM_LITTLEORCHESTRAL            40810
+#define IDM_MMORCHESTRA                 40811
 #define IDM_PC9801_86_118               49650
 #define IDM_86SPEAKBOARD                49651
 #define IDM_WAVESTAR                    49652

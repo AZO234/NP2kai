@@ -26,7 +26,7 @@ UINT oemtext_utf8tochar(char *dst, UINT dcnt, const char *src, UINT scnt);
 }
 #endif
 
-#if defined(OSLANG_UCS2)
-#define oemtext_sjistooem(a, b, c, d)	oemtext_mbtoucs2(932, a, b, c, d)
-#define	oemtext_oemtosjis(a, b, c, d)	oemtext_ucs2tomb(932, a, b, c, d)
+#if defined(OSLANG_UTF8)
+#define oemtext_sjistooem(a, b, c, d)	oemtext_mbtoutf8(932, a, b, c, d)
+#define	oemtext_oemtosjis(a, b, c, d)	oemtext_utf8tomb(932, a, b, c, d)
 #endif

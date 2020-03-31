@@ -388,37 +388,47 @@ static void np2net_closeTAP(){
 #endif // defined(_WINDOWS)
 }
 //  TAPデバイスを開く
-static int np2net_openTAP(const OEMCHAR* tapname){
+static int np2net_openTAP(const char* tapname){
 #if defined(_WINDOWS)
 	DWORD dwID;
 	DWORD dwLen;
 	ULONG status = TRUE;
-	TCHAR Buf[2048];
-	TCHAR szDevicePath[256];
-	TCHAR szTAPname[MAX_PATH] = _T("TAP1");
+	char Buf[2048];
+	char DevicePath[256];
+	char TAPname[MAX_PATH] = "TAP1";
+	wchar_t wDevicePath[256];
 
 	if(*tapname){
-		_tcscpy(szTAPname, tapname);
+		strcpy(TAPname, tapname);
 	}
 
 	np2net_closeTAP();
 
 	// 指定された表示名から TAP の GUID を得る
-	if (!GetNetWorkDeviceGuid(szTAPname, Buf, 2048)) {
-		TRACEOUT(("LGY-98: [%s] GUID is not found\n", szTAPname));
+	if (!GetNetWorkDeviceGuid(TAPname, Buf, 2048)) {
+		TRACEOUT(("LGY-98: [%s] GUID is not found\n", TAPname));
 		return 1;
 	}
-	TRACEOUT(("LGY-98: [%s] GUID = %s\n", szTAPname, Buf));
-	_stprintf(szDevicePath, DEVICE_PATH_FMT, Buf);
- 
+	TRACEOUT(("LGY-98: [%s] GUID = %s\n", TAPname, Buf));
+	sprintf(DevicePath, DEVICE_PATH_FMT, Buf);
+
+	MultiByteToWideChar(
+		CP_UTF8,
+		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
+		DevicePath,
+		MAX_PATH,
+		wDevicePath,
+		sizeof(wDevicePath)
+	);
+
 	// TAP デバイスを開く
-	np2net_hTap = CreateFile (szDevicePath, GENERIC_READ | GENERIC_WRITE,
+	np2net_hTap = CreateFileW(wDevicePath, GENERIC_READ | GENERIC_WRITE,
 		0, 0, OPEN_EXISTING,
 		FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
  
 	if (np2net_hTap == INVALID_HANDLE_VALUE) {
 		DWORD err = GetLastError();
-		TRACEOUT(("LGY-98: Failed to open [%s] error:%d", szDevicePath, err));
+		TRACEOUT(("LGY-98: Failed to open [%s] error:%d", DevicePath, err));
 		return 2;
 	}
 
@@ -497,11 +507,7 @@ void np2net_init(void)
 }
 // リセット時に呼ばれる？
 void np2net_reset(const NP2CFG *pConfig){
-#if defined(_WINDOWS)
-	_tcscpy(np2net_tapName, pConfig->np2nettap);
-#else
 	strcpy(np2net_tapName, pConfig->np2nettap);
-#endif // defined(_WINDOWS)
 	np2net_pmm = pConfig->np2netpmm;
 	if(pConfig->uselgy98){ // XXX: 使われていないならTAPデバイスはオープンしない
 		np2net_openTAP(np2net_tapName);
@@ -525,9 +531,9 @@ void np2net_shutdown(void)
 // 参考文献: http://dsas.blog.klab.org/archives/51012690.html
 
 // ネットワークデバイス表示名からデバイス GUID 文字列を検索
-static TCHAR *GetNetWorkDeviceGuid(CONST TCHAR *pDisplayName, TCHAR *pszBuf, DWORD cbBuf)
+static char *GetNetWorkDeviceGuid(const char *pDisplayName, char *pszBuf, DWORD cbBuf)
 {
-  CONST TCHAR *SUBKEY = _T("SYSTEM\\CurrentControlSet\\Control\\Network");
+  const wchar_t *SUBKEY = L"SYSTEM\\CurrentControlSet\\Control\\Network";
  
 #define BUFSZ 256
   // HKLM\SYSTEM\\CurrentControlSet\\Control\\Network\{id1]\{id2}\Connection\Name が
@@ -537,7 +543,9 @@ static TCHAR *GetNetWorkDeviceGuid(CONST TCHAR *pDisplayName, TCHAR *pszBuf, DWO
   HKEY hKey1, hKey2, hKey3;
   LONG nResult;
   DWORD dwIdx1, dwIdx2;
-  TCHAR szData[64], *pKeyName1, *pKeyName2, *pKeyName3, *pKeyName4; 
+  char szData[64];
+  wchar_t *pKeyName1, *pKeyName2, *pKeyName3, *pKeyName4;
+
   DWORD dwSize, dwType = REG_SZ;
   BOOL bDone = FALSE;
   FILETIME ft;
@@ -546,28 +554,28 @@ static TCHAR *GetNetWorkDeviceGuid(CONST TCHAR *pDisplayName, TCHAR *pszBuf, DWO
   pKeyName1 = pKeyName2 = pKeyName3 = pKeyName4 = NULL;
  
   // 主キーのオープン
-  nResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, SUBKEY, 0, KEY_READ, &hKey1);
+  nResult = RegOpenKeyExW(HKEY_LOCAL_MACHINE, SUBKEY, 0, KEY_READ, &hKey1);
   if (nResult != ERROR_SUCCESS) {
     return NULL;
   }
-  pKeyName1 = (TCHAR*)malloc(sizeof(TCHAR)*BUFSZ);
-  pKeyName2 = (TCHAR*)malloc(sizeof(TCHAR)*BUFSZ);
-  pKeyName3 = (TCHAR*)malloc(sizeof(TCHAR)*BUFSZ);
-  pKeyName4 = (TCHAR*)malloc(sizeof(TCHAR)*BUFSZ);
+  pKeyName1 = (wchar_t*)malloc(sizeof(wchar_t)*BUFSZ);
+  pKeyName2 = (wchar_t*)malloc(sizeof(wchar_t)*BUFSZ);
+  pKeyName3 = (wchar_t*)malloc(sizeof(wchar_t)*BUFSZ);
+  pKeyName4 = (wchar_t*)malloc(sizeof(wchar_t)*BUFSZ);
  
   dwIdx1 = 0;
   while (bDone != TRUE) { // {id1} を列挙するループ
  
     dwSize = BUFSZ;
-    nResult = RegEnumKeyEx(hKey1, dwIdx1++, pKeyName1,
+    nResult = RegEnumKeyExW(hKey1, dwIdx1++, pKeyName1,
                           &dwSize, NULL, NULL, NULL, &ft);
     if (nResult == ERROR_NO_MORE_ITEMS) {
       break;
     }
  
     // SUBKEY\{id1} キーをオープン
-    _stprintf(pKeyName2, _T("%s\\%s"), SUBKEY, pKeyName1);
-    nResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, pKeyName2,
+    swprintf(pKeyName2, BUFSZ, L"%ls\\%ls", SUBKEY, pKeyName1);
+    nResult = RegOpenKeyExW(HKEY_LOCAL_MACHINE, pKeyName2,
                           0, KEY_READ, &hKey2);
     if (nResult != ERROR_SUCCESS) {
       continue;
@@ -575,7 +583,7 @@ static TCHAR *GetNetWorkDeviceGuid(CONST TCHAR *pDisplayName, TCHAR *pszBuf, DWO
     dwIdx2 = 0;
     while (1) { // {id2} を列挙するループ
       dwSize = BUFSZ;
-      nResult = RegEnumKeyEx(hKey2, dwIdx2++, pKeyName3,
+      nResult = RegEnumKeyExW(hKey2, dwIdx2++, pKeyName3,
                           &dwSize, NULL, NULL, NULL, &ft);
       if (nResult == ERROR_NO_MORE_ITEMS) {
         break;
@@ -586,9 +594,9 @@ static TCHAR *GetNetWorkDeviceGuid(CONST TCHAR *pDisplayName, TCHAR *pszBuf, DWO
       }
  
       // SUBKEY\{id1}\{id2]\Connection キーをオープン
-      _stprintf(pKeyName4, _T("%s\\%s\\%s"),
-                      pKeyName2, pKeyName3, _T("Connection"));
-      nResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE,
+      swprintf(pKeyName4, BUFSZ, L"%ls\\%ls\\%ls",
+                      pKeyName2, pKeyName3, L"Connection");
+      nResult = RegOpenKeyExW(HKEY_LOCAL_MACHINE,
                       pKeyName4, 0, KEY_READ, &hKey3);
       if (nResult != ERROR_SUCCESS) {
         continue;
@@ -596,12 +604,21 @@ static TCHAR *GetNetWorkDeviceGuid(CONST TCHAR *pDisplayName, TCHAR *pszBuf, DWO
  
       // SUBKEY\{id1}\{id2]\Connection\Name 値を取得
       dwSize = sizeof(szData);
-      nResult = RegQueryValueEx(hKey3, _T("Name"),
+      nResult = RegQueryValueExW(hKey3, L"Name",
                       0, &dwType, (LPBYTE)szData, &dwSize);
  
       if (nResult == ERROR_SUCCESS) {
-        if (_tcsicmp(szData, pDisplayName) == 0) {
-           	_tcscpy(pszBuf, pKeyName3);
+        if (stricmp(szData, pDisplayName) == 0) {
+          WideCharToMultiByte(
+            CP_UTF8,
+            WC_SEPCHARS,
+            pKeyName3,
+            MAX_PATH,
+            pszBuf,
+            cbBuf,
+            NULL,
+            NULL
+          );
           bDone = TRUE;
           break;
         }

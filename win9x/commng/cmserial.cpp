@@ -63,9 +63,9 @@ CComSerial::~CComSerial()
  */
 bool CComSerial::Initialize(UINT nPort, UINT8 cParam, UINT32 nSpeed, UINT8 fixedspeed)
 {
-	TCHAR szName[16];
-	wsprintf(szName, TEXT("COM%u"), nPort);
-	m_hSerial = CreateFile(szName, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, NULL);
+	wchar_t wName[16];
+	swprintf(wName, 16, L"COM%u", nPort);
+	m_hSerial = CreateFileW(wName, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, NULL);
 	if (m_hSerial == INVALID_HANDLE_VALUE)
 	{
 		return false;

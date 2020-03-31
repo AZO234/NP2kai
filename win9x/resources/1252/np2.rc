@@ -542,7 +542,7 @@ END
 IDD_SNDFMGEN DIALOG 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "fmgen"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     CONTROL         "Use fmgen",IDC_USEFMGEN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,58,10
 END
@@ -1066,7 +1066,7 @@ BEGIN
             MENUITEM "Sound &Orchestra",            IDM_SOUNDORCHESTRA
             MENUITEM "Sound Orchestra-&V",          IDM_SOUNDORCHESTRAV
             MENUITEM "L&ittle Orchestra L",         IDM_LITTLEORCHESTRAL
-            MENUITEM "&Multimedia Orchestra",       IDM_MULTIORCHESTRA
+            MENUITEM "&Multimedia Orchestra",       IDM_MMORCHESTRA
             MENUITEM "Sound &Blaster 16",           IDM_SB16
             MENUITEM "PC-9801-86 + Sound Blaster 16",  IDM_PC9801_86_SB16
             MENUITEM "Mate-X PCM + Sound Blaster 16",  IDM_WSS_SB16
@@ -1460,9 +1460,9 @@ BEGIN
     IDS_APP_NAME2           "Neko Project II/W"
     IDS_APP_NAME21          "Neko Project 21/W"
     IDS_FILENAME_HELP       "np2.chm"
-    IDS_FONTFACE            "‚l‚r ƒSƒVƒbƒN"
+    IDS_FONTFACE            "ï¼­ï¼³ ã‚´ã‚·ãƒƒã‚¯"
     IDS_PFONTFACE           "MS Sans Serif"
-    IDS_FONTFACE_PRIMARY    "‚l‚r ƒSƒVƒbƒN"
+    IDS_FONTFACE_PRIMARY    "ï¼­ï¼³ ã‚´ã‚·ãƒƒã‚¯"
     IDS_PFONTFACE_PRIMARY   "MS Sans Serif"
     IDS_FONTFACE_SECONDARY  "MS Gothic"
 END

@@ -332,7 +332,16 @@ void atapi_cmd_traycmd_eject_threadfunc(void* vdParam) {
 #if defined(_WINDOWS)
 	HANDLE handle;
 	DWORD dwRet = 0;
-	handle = CreateFile(np2cfg.idecd[(int)vdParam], GENERIC_READ|GENERIC_WRITE, FILE_SHARE_READ|FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	wchar_t	wpath[MAX_PATH];
+	MultiByteToWideChar(
+		CP_UTF8,
+		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
+		np2cfg.idecd[(int)vdParam],
+		MAX_PATH,
+		wpath,
+		sizeof(wpath)
+	);
+	handle = CreateFileW(wpath, GENERIC_READ|GENERIC_WRITE, FILE_SHARE_READ|FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 	if(handle != INVALID_HANDLE_VALUE){
 		if(DeviceIoControl(handle, FSCTL_LOCK_VOLUME, 0, 0, 0, 0, &dwRet, 0)){
 			if(DeviceIoControl(handle, FSCTL_DISMOUNT_VOLUME, 0, 0, 0, 0, &dwRet, 0)){
@@ -349,7 +358,16 @@ void atapi_cmd_traycmd_close_threadfunc(void* vdParam) {
 #if defined(_WINDOWS)
 	HANDLE handle;
 	DWORD dwRet = 0;
-	handle = CreateFile(np2cfg.idecd[(int)vdParam], GENERIC_READ, FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
+	wchar_t	wpath[MAX_PATH];
+	MultiByteToWideChar(
+		CP_UTF8,
+		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
+		np2cfg.idecd[(int)vdParam],
+		MAX_PATH,
+		wpath,
+		sizeof(wpath)
+	);
+	handle = CreateFileW(wpath, GENERIC_READ, FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
 	if(handle != INVALID_HANDLE_VALUE){
 		DeviceIoControl(handle, IOCTL_STORAGE_LOAD_MEDIA, 0, 0, 0, 0, &dwRet, 0);
 		CloseHandle(handle);

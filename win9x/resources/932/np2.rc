@@ -1090,7 +1090,7 @@ BEGIN
             MENUITEM "Sound &Orchestra",            IDM_SOUNDORCHESTRA
             MENUITEM "Sound Orchestra-&V",          IDM_SOUNDORCHESTRAV
             MENUITEM "L&ittle Orchestra L",         IDM_LITTLEORCHESTRAL
-            MENUITEM "&Multimedia Orchestra",       IDM_MULTIORCHESTRA
+            MENUITEM "&Multimedia Orchestra",       IDM_MMORCHESTRA
             MENUITEM "Sound B&laster 16",           IDM_SB16
             MENUITEM "PC-9801-86 + Sound Blaster 16",  IDM_PC9801_86_SB16
             MENUITEM "Mate-X PCM + Sound Blaster 16",  IDM_WSS_SB16

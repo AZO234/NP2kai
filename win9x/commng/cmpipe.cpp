@@ -1,6 +1,6 @@
 /**
  * @file	cmpipe.cpp
- * @brief	–¼‘O•t‚«ƒpƒCƒv ƒVƒŠƒAƒ‹ ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	åå‰ä»˜ããƒ‘ã‚¤ãƒ— ã‚·ãƒªã‚¢ãƒ« ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -9,13 +9,13 @@
 #if defined(SUPPORT_NAMED_PIPE)
 
 /**
- * ƒCƒ“ƒXƒ^ƒ“ƒXì¬
- * @param[in] nPort ƒ|[ƒg”Ô†
- * @param[in] pipename ƒpƒCƒv‚Ì–¼‘O
- * @param[in] servername ƒT[ƒo[‚Ì–¼‘O
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ä½œæˆ
+ * @param[in] nPort ãƒãƒ¼ãƒˆç•ªå·
+ * @param[in] pipename ãƒ‘ã‚¤ãƒ—ã®åå‰
+ * @param[in] servername ã‚µãƒ¼ãƒãƒ¼ã®åå‰
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
-CComPipe* CComPipe::CreateInstance(LPCTSTR pipename, LPCTSTR servername)
+CComPipe* CComPipe::CreateInstance(LPCSTR pipename, LPCSTR servername)
 {
 	CComPipe* pSerial = new CComPipe;
 	if (!pSerial->Initialize(pipename, servername))
@@ -27,7 +27,7 @@ CComPipe* CComPipe::CreateInstance(LPCTSTR pipename, LPCTSTR servername)
 }
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CComPipe::CComPipe()
 	: CComBase(COMCONNECT_SERIAL)
@@ -39,7 +39,7 @@ CComPipe::CComPipe()
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CComPipe::~CComPipe()
 {
@@ -54,32 +54,54 @@ CComPipe::~CComPipe()
 }
 
 /**
- * ‰Šú‰»
- * @param[in] nPort ƒ|[ƒg”Ô†
- * @param[in] pipename ƒpƒCƒv‚Ì–¼‘O
- * @param[in] servername ƒT[ƒo[‚Ì–¼‘O
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * åˆæœŸåŒ–
+ * @param[in] nPort ãƒãƒ¼ãƒˆç•ªå·
+ * @param[in] pipename ãƒ‘ã‚¤ãƒ—ã®åå‰
+ * @param[in] servername ã‚µãƒ¼ãƒãƒ¼ã®åå‰
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
-bool CComPipe::Initialize(LPCTSTR pipename, LPCTSTR servername)
+bool CComPipe::Initialize(LPCSTR pipename, LPCSTR servername)
 {
-	TCHAR szName[MAX_PATH];
-	if(pipename==NULL || _tcslen(pipename) == 0){
+	wchar_t wpipename[MAX_PATH];
+	wchar_t wservername[MAX_PATH];
+	wchar_t wName[MAX_PATH];
+	if(pipename==NULL){
 		// No pipe name
 		return false;
 	}
-	if(_tcslen(pipename) + (servername!=NULL ? _tcslen(servername) : 0) > MAX_PATH - 16){
+	MultiByteToWideChar(
+		CP_UTF8,
+		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
+		pipename,
+		MAX_PATH,
+		wpipename,
+		sizeof(wpipename)
+	);
+	if(wcslen(wpipename) == 0){
+		// No pipe name
+		return false;
+	}
+	MultiByteToWideChar(
+		CP_UTF8,
+		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
+		servername!=NULL ? servername : "",
+		MAX_PATH,
+		wservername,
+		sizeof(wservername)
+	);
+	if(wcslen(wpipename) + wcslen(wservername) > MAX_PATH - 16){
 		// too long pipe name
 		return false;
 	}
-	if(_tcschr(pipename, '\\') != NULL || (servername!=NULL && _tcschr(servername, '\\') != NULL)){
+	if(wcschr(wpipename, '\\') != NULL || wcschr(wservername, '\\') != NULL){
 		// cannot use \ in pipe name
 		return false;
 	}
-	if(servername && _tcslen(servername)!=0){
-		wsprintf(szName, TEXT("\\\\%s\\pipe\\%s"), servername, pipename);
+	if(wservername && wcslen(wservername)!=0){
+		swprintf(wName, MAX_PATH, L"\\\\%ls\\pipe\\%ls", wservername, wpipename);
 	}else{
-		wsprintf(szName, TEXT("\\\\.\\pipe\\%s"), pipename);
+		swprintf(wName, MAX_PATH, L"\\\\.\\pipe\\%ls", wpipename);
 	}
 
 	if(m_hSerial != INVALID_HANDLE_VALUE){
@@ -90,16 +112,16 @@ bool CComPipe::Initialize(LPCTSTR pipename, LPCTSTR servername)
 		m_hSerial = INVALID_HANDLE_VALUE;
 	}
 
-	// ƒNƒ‰ƒCƒAƒ“ƒgÚ‘±‚ğƒgƒ‰ƒC
-	m_hSerial = CreateFile(szName, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	// ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆæ¥ç¶šã‚’ãƒˆãƒ©ã‚¤
+	m_hSerial = CreateFileW(wName, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (m_hSerial == INVALID_HANDLE_VALUE) {
-		// ƒT[ƒo[‚ÅÄƒgƒ‰ƒC
-		m_hSerial = CreateNamedPipe(szName, PIPE_ACCESS_DUPLEX, PIPE_TYPE_BYTE|PIPE_NOWAIT, 1, 1024, 1024, 500, NULL);
+		// ã‚µãƒ¼ãƒãƒ¼ã§å†ãƒˆãƒ©ã‚¤
+		m_hSerial = CreateNamedPipeW(wName, PIPE_ACCESS_DUPLEX, PIPE_TYPE_BYTE|PIPE_NOWAIT, 1, 1024, 1024, 500, NULL);
 		if (m_hSerial == INVALID_HANDLE_VALUE) {
 			return false;
 		}
 		m_isserver = true;
-		//ConnectNamedPipe(m_hSerial, NULL); // With a nonblocking-wait handle, the connect operation returns zero immediately, and the GetLastError function returns ERROR_PIPE_LISTENING. ‚Æ‚Ì‚±‚Æ‚È‚Ì‚Åí0
+		//ConnectNamedPipe(m_hSerial, NULL); // With a nonblocking-wait handle, the connect operation returns zero immediately, and the GetLastError function returns ERROR_PIPE_LISTENING. ã¨ã®ã“ã¨ãªã®ã§å¸¸æ™‚0
 	}
 
 	_tcscpy(m_pipename, pipename);
@@ -109,9 +131,9 @@ bool CComPipe::Initialize(LPCTSTR pipename, LPCTSTR servername)
 }
 
 /**
- * “Ç‚İ‚İ
- * @param[out] pData ƒoƒbƒtƒ@
- * @return ƒTƒCƒY
+ * èª­ã¿è¾¼ã¿
+ * @param[out] pData ãƒãƒƒãƒ•ã‚¡
+ * @return ã‚µã‚¤ã‚º
  */
 UINT CComPipe::Read(UINT8* pData)
 {
@@ -143,9 +165,9 @@ UINT CComPipe::Read(UINT8* pData)
 }
 
 /**
- * ‘‚«‚İ
- * @param[out] cData ƒf[ƒ^
- * @return ƒTƒCƒY
+ * æ›¸ãè¾¼ã¿
+ * @param[out] cData ãƒ‡ãƒ¼ã‚¿
+ * @return ã‚µã‚¤ã‚º
  */
 UINT CComPipe::Write(UINT8 cData)
 {
@@ -158,7 +180,7 @@ UINT CComPipe::Write(UINT8 cData)
 	ret = (::WriteFile(m_hSerial, &cData, 1, &dwWrittenSize, NULL)) ? 1 : 0;
 	if(dwWrittenSize==0) {
 		if(m_lastdatafail && GetTickCount() - m_lastdatatime > 1000){
-			return 1; // ƒoƒbƒtƒ@ƒf[ƒ^‚ªŒ¸‚è‚»‚¤‚É‚È‚¢‚È‚ç‚ ‚«‚ç‚ß‚éi–ˆ•b1byte(8bit)‚Í—¬Î‚É‚ ‚è“¾‚È‚¢j
+			return 1; // ãƒãƒƒãƒ•ã‚¡ãƒ‡ãƒ¼ã‚¿ãŒæ¸›ã‚Šãã†ã«ãªã„ãªã‚‰ã‚ãã‚‰ã‚ã‚‹ï¼ˆæ¯ç§’1byte(8bit)ã¯æµçŸ³ã«ã‚ã‚Šå¾—ãªã„ï¼‰
 		}
 		m_lastdatafail = 1;
 		m_lastdata = cData;
@@ -173,15 +195,15 @@ UINT CComPipe::Write(UINT8 cData)
 }
 
 /**
- * ‘‚«‚İƒŠƒgƒ‰ƒC
- * @return ƒTƒCƒY
+ * æ›¸ãè¾¼ã¿ãƒªãƒˆãƒ©ã‚¤
+ * @return ã‚µã‚¤ã‚º
  */
 UINT CComPipe::WriteRetry()
 {
 	UINT ret;
 	DWORD dwWrittenSize;
 	if(m_lastdatafail){
-		if (GetTickCount() - m_lastdatatime > 1000) return 1; // ƒoƒbƒtƒ@ƒf[ƒ^‚ªŒ¸‚è‚»‚¤‚É‚È‚¢‚È‚ç‚ ‚«‚ç‚ß‚éi–ˆ•b1byte(8bit)‚Í—¬Î‚É‚ ‚è“¾‚È‚¢j
+		if (GetTickCount() - m_lastdatatime > 1000) return 1; // ãƒãƒƒãƒ•ã‚¡ãƒ‡ãƒ¼ã‚¿ãŒæ¸›ã‚Šãã†ã«ãªã„ãªã‚‰ã‚ãã‚‰ã‚ã‚‹ï¼ˆæ¯ç§’1byte(8bit)ã¯æµçŸ³ã«ã‚ã‚Šå¾—ãªã„ï¼‰
 		if (m_hSerial == INVALID_HANDLE_VALUE) {
 			return 0;
 		}
@@ -198,13 +220,13 @@ UINT CComPipe::WriteRetry()
 }
 
 /**
- * ÅŒã‚Ì‘‚«‚İ‚ª¬Œ÷‚µ‚Ä‚¢‚é‚©ƒ`ƒFƒbƒN
- * @return ƒTƒCƒY
+ * æœ€å¾Œã®æ›¸ãè¾¼ã¿ãŒæˆåŠŸã—ã¦ã„ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
+ * @return ã‚µã‚¤ã‚º
  */
 UINT CComPipe::LastWriteSuccess()
 {
 	if(m_lastdatafail && GetTickCount() - m_lastdatatime > 3000){
-		return 1; // 3•bŠÔƒoƒbƒtƒ@ƒf[ƒ^‚ªŒ¸‚è‚»‚¤‚É‚È‚¢‚È‚ç‚ ‚«‚ç‚ß‚é
+		return 1; // 3ç§’é–“ãƒãƒƒãƒ•ã‚¡ãƒ‡ãƒ¼ã‚¿ãŒæ¸›ã‚Šãã†ã«ãªã„ãªã‚‰ã‚ãã‚‰ã‚ã‚‹
 	}
 	if(m_lastdatafail){
 		return 0;
@@ -213,8 +235,8 @@ UINT CComPipe::LastWriteSuccess()
 }
 
 /**
- * ƒXƒe[ƒ^ƒX‚ğ“¾‚é
- * @return ƒXƒe[ƒ^ƒX
+ * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’å¾—ã‚‹
+ * @return ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
  */
 UINT8 CComPipe::GetStat()
 {
@@ -222,10 +244,10 @@ UINT8 CComPipe::GetStat()
 }
 
 /**
- * ƒƒbƒZ[ƒW
- * @param[in] nMessage ƒƒbƒZ[ƒW
- * @param[in] nParam ƒpƒ‰ƒƒ^
- * @return ƒŠƒUƒ‹ƒg ƒR[ƒh
+ * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @return ãƒªã‚¶ãƒ«ãƒˆ ã‚³ãƒ¼ãƒ‰
  */
 INTPTR CComPipe::Message(UINT nMessage, INTPTR nParam)
 {

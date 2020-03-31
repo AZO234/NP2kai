@@ -878,6 +878,8 @@ BEGIN
             MENUITEM "Sp&ark board",                IDM_SPARKBOARD
             MENUITEM "Sound &Orchestra",            IDM_SOUNDORCHESTRA
             MENUITEM "Sound Orchestra-&V",          IDM_SOUNDORCHESTRAV
+            MENUITEM "L&ittle Orchestra L",         IDM_LITTLEORCHESTRAL
+            MENUITEM "&Multimedia Orchestra",       IDM_MMORCHESTRA
             MENUITEM "&AMD-98",                     IDM_AMD98
             MENUITEM "&JastSound",                  IDM_JASTSOUND
             MENUITEM SEPARATOR

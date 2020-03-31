@@ -78,9 +78,9 @@ bool CUsbDev::Open(unsigned int vid, unsigned int pid, unsigned int nIndex)
  */
 bool CUsbDev::Open(const GUID& InterfaceGuid)
 {
-	TCHAR szDevicePath[512];
-	LPTSTR lpDevicePath = GetDevicePath(InterfaceGuid, szDevicePath, _countof(szDevicePath));
-	return OpenDevice(lpDevicePath);
+	wchar_t wDevicePath[512];
+	LPWSTR lpwDevicePath = GetDevicePath(InterfaceGuid, wDevicePath, 512);
+	return OpenDevice(lpwDevicePath);
 }
 
 /**
@@ -90,7 +90,7 @@ bool CUsbDev::Open(const GUID& InterfaceGuid)
  * @param[in] cchDevicePath デバイス パス バッファ長
  * @return パス
  */
-LPTSTR CUsbDev::GetDevicePath(const GUID& InterfaceGuid, LPTSTR lpDevicePath, int cchDevicePath)
+LPWSTR CUsbDev::GetDevicePath(const GUID& InterfaceGuid, LPSTR lpDevicePath, int cchDevicePath)
 {
 	HDEVINFO hDeviceInfo = ::SetupDiGetClassDevs(&InterfaceGuid, NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
 	if (hDeviceInfo == NULL)
@@ -99,10 +99,10 @@ LPTSTR CUsbDev::GetDevicePath(const GUID& InterfaceGuid, LPTSTR lpDevicePath, in
 		return NULL;
 	}
 
-	LPTSTR lpRet = NULL;
+	LPSTR lpRet = NULL;
 	for (DWORD i = 0; lpRet == NULL ; i++)
 	{
-		SP_DEVICE_INTERFACE_DATA interfaceData;
+		PSP_DEVICE_INTERFACE_DATA interfaceData;
 		interfaceData.cbSize = sizeof(interfaceData);
 		if (!::SetupDiEnumDeviceInterfaces(hDeviceInfo, NULL, &InterfaceGuid, i, &interfaceData))
 		{
@@ -112,7 +112,7 @@ LPTSTR CUsbDev::GetDevicePath(const GUID& InterfaceGuid, LPTSTR lpDevicePath, in
 		ULONG nRequiredLength = 0;
 		::SetupDiGetDeviceInterfaceDetail(hDeviceInfo, &interfaceData, NULL, 0, &nRequiredLength, NULL);
 
-		PSP_DEVICE_INTERFACE_DETAIL_DATA pDetailData = static_cast<PSP_DEVICE_INTERFACE_DETAIL_DATA>(::LocalAlloc(LMEM_FIXED, nRequiredLength));
+		PSP_DEVICE_INTERFACE_DETAIL_DATA_W pDetailData = static_cast<PSP_DEVICE_INTERFACE_DETAIL_DATA_W>(::LocalAlloc(LMEM_FIXED, nRequiredLength));
 		if (pDetailData == NULL)
 		{
 			continue;
@@ -120,9 +120,19 @@ LPTSTR CUsbDev::GetDevicePath(const GUID& InterfaceGuid, LPTSTR lpDevicePath, in
 
 		pDetailData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
 		ULONG nLength = nRequiredLength;
-		if (::SetupDiGetDeviceInterfaceDetail(hDeviceInfo, &interfaceData, pDetailData, nLength, &nRequiredLength, NULL))
+		if (::SetupDiGetDeviceInterfaceDetailW(hDeviceInfo, &interfaceData, pDetailData, nLength, &nRequiredLength, NULL))
 		{
-			lpRet = ::lstrcpyn(lpDevicePath, pDetailData->DevicePath, cchDevicePath);
+			WideCharToMultiByte(
+				CP_UTF8,
+				WC_SEPCHARS,
+				pDetailData->DevicePath,
+				MAX_PATH,
+				lpDevicePath,
+				cchDevicePath,
+				NULL,
+				NULL
+			);
+			lpRet = lpDevicePath;
 		}
 		::LocalFree(pDetailData);
 	}
@@ -137,9 +147,9 @@ LPTSTR CUsbDev::GetDevicePath(const GUID& InterfaceGuid, LPTSTR lpDevicePath, in
  * @retval true 成功
  * @retval false 失敗
  */
-bool CUsbDev::OpenDevice(LPCTSTR lpDevicePath)
+bool CUsbDev::OpenDevice(LPCWSTR wDevicePath)
 {
-	HANDLE hDev = ::CreateFile(lpDevicePath, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
+	HANDLE hDev = ::CreateFileW(wDevicePath, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
 	if (hDev == INVALID_HANDLE_VALUE)
 	{
 		return false;
