@@ -8,7 +8,7 @@
 #ifdef SUPPORT_PHYSICAL_CDDRV
 
 #include	<winioctl.h>
-#include	<api/ntddcdrm.h>
+#include	<ntddcdrm.h>
 
 #endif
 

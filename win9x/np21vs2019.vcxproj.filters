@@ -2238,6 +2238,9 @@
     <ClCompile Include="..\cbus\boardmo.c">
       <Filter>ソース ファイル\cbus</Filter>
     </ClCompile>
+    <ClCompile Include="..\diskimage\cd\cdd_real.c">
+      <Filter>ソース ファイル\diskimage\cd</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\calendar.h">
@@ -3268,6 +3271,9 @@
     </ClInclude>
     <ClInclude Include="..\cbus\boardmo.h">
       <Filter>ヘッダー ファイル\cbus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\diskimage\cd\cdd_real.h">
+      <Filter>ヘッダー ファイル\diskimage\cd</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -38,7 +38,11 @@ SOURCES_C := 		$(NP2_PATH)/calendar.c \
 		$(wildcard $(NP2_PATH)/codecnv/*.c) \
 		$(wildcard $(NP2_PATH)/common/*.c) \
 		$(wildcard $(NP2_PATH)/diskimage/*.c) \
-		$(wildcard $(NP2_PATH)/diskimage/cd/*.c) \
+		$(NP2_PATH)/diskimage/cd/cdd_ccd.c \
+		$(NP2_PATH)/diskimage/cd/cdd_cue.c \
+		$(NP2_PATH)/diskimage/cd/cdd_iso.c \
+		$(NP2_PATH)/diskimage/cd/cdd_mds.c \
+		$(NP2_PATH)/diskimage/cd/cdd_nrg.c \
 		$(wildcard $(NP2_PATH)/diskimage/fd/*.c) \
 		$(wildcard $(NP2_PATH)/embed/*.c) \
 		$(wildcard $(NP2_PATH)/embed/menu/*.c) \
