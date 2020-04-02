@@ -13,7 +13,6 @@
 #include	<pthread.h>
 #include	<SDL.h>
 
-//#define TRACE
 #define	msgbox(title, msg)
 
 #define __ASSERT(s)
@@ -21,17 +20,14 @@
 #define USE_TTF
 
 #define	SUPPORT_SJIS
-#define	OSLINEBREAK_CRLF
 #define RESOURCE_US
+
+#define NP2_SIZE_VGA
 
 #define	GETTICK()			SDL_GetTicks()
 #define	SDL_main			main
 
-#define	SOUNDRESERVE	100
-
 //#define	CPUSTRUC_MEMWAIT
-
-#define	SUPPORT_HRTIMER
 
 #define	USE_SDL_JOYSTICK
 

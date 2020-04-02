@@ -94,18 +94,12 @@ G_END_DECLS
 
 #define	SUPPORT_EUC
 
-#define	SUPPORT_EXTERNALCHIP
-
 #define	SUPPORT_KEYDISP
 #define	SUPPORT_SOFTKBD	0
 
-#define	SUPPORT_HRTIMER
-
-#define	SUPPORT_24BPP
 #define	SUPPORT_SCREENSIZE
 
 #if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER) || defined(USE_SDL2AUDIO) || defined(USE_SDL2MIXER)
-#define	SUPPORT_JOYSTICK
 #define	USE_SDL_JOYSTICK
 #endif
 

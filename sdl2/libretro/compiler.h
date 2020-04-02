@@ -14,7 +14,6 @@
 #include "sdlremap/sdl.h"
 #include "sdlremap/sdl_keycode.h"
 
-//#define TRACE
 #define	msgbox(title, msg)
 
 #define __ASSERT(s)
@@ -25,8 +24,6 @@
 #define NP2_SIZE_VGA
 
 #define GETTICK() (cpu_features_get_time_usec() / 1000)  // millisecond timer
-
-#define	SUPPORT_HRTIMER
 
 #include "retro_inline.h"
 #include "milstr.h"

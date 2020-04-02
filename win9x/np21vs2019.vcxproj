@@ -32,6 +32,20 @@
     <RootNamespace>np21vs2019</RootNamespace>
     <ProjectName>np21kaiw</ProjectName>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <NP2kaiCommonDefines>NP2_WIN;_CRT_SECURE_NO_WARNINGS;</NP2kaiCommonDefines>
+    <NP2kaiDebugDefines>_DEBUG;DEBUG;TRACE;</NP2kaiDebugDefines>
+    <NP2kaiNDebugDefines>_NDEBUG;NDEBUG;</NP2kaiNDebugDefines>
+    <NP2kaiDefines>ALLOW_MULTIRUN;BIOS_IO_EMULATION;HOOK_SYSKEY;MT32SOUND_DLL;OSLANG_UTF8;OSLINEBREAK_CRLF;SOUND_CRITICAL;SOUNDRESERVE=20;SUPPORT_16BPP;SUPPORT_24BPP;SUPPORT_32BPP;SUPPORT_8BPP;SUPPORT_ARC;SUPPORT_ASIO;SUPPORT_ASYNC_CPU;SUPPORT_CL_GD5430;SUPPORT_CRT15KHZ;SUPPORT_DCLOCK;SUPPORT_FAST_MEMORYCHECK;SUPPORT_FMGEN;SUPPORT_GPIB;SUPPORT_HOSTDRV;SUPPORT_HRTIMER;SUPPORT_IDEIO;SUPPORT_KAI_IMAGES;SUPPORT_KEYDISP;SUPPORT_LARGE_HDD;SUPPORT_LGY98;SUPPORT_NAMED_PIPE;SUPPORT_NET;SUPPORT_NORMALDISP;SUPPORT_NVL_IMAGES;SUPPORT_PC9861K;SUPPORT_PHYSICAL_CDDRV;SUPPORT_PX;SUPPORT_RECVIDEO;SUPPORT_RESUME;SUPPORT_ROMEO;SUPPORT_RS232C_FIFO;SUPPORT_S98;SUPPORT_SCRN_DIRECT3D;SUPPORT_SCSI;SUPPORT_SMPU98;SUPPORT_SOFTKBD=0;SUPPORT_SOUND_SB16;SUPPORT_SWSEEKSND;SUPPORT_SWWABRLYSND;SUPPORT_SJIS;SUPPORT_STATSAVE=10;SUPPORT_TEXTCNV;SUPPORT_UTF8;SUPPORT_V30EXT;SUPPORT_V30ORIGINAL;SUPPORT_VPCVHD;SUPPORT_WAB;SUPPORT_WACOM_TABLET;SUPPORT_WAVEREC;USE_MAME;VAEG_FIX;VERMOUTH_LIB;</NP2kaiDefines>
+    <!-- SUPPORT_BMS SUPPORT_SASI SUPPORT_VSTi -->
+    <NP2kaiDefines32>_WIN32;SUPPORT_WIN2000HOST;</NP2kaiDefines32>
+    <NP2kaiDefines64>_WIN64;</NP2kaiDefines64>
+    <NP21kaiDefines>CPUCORE_IA32;IA32_PAGING_EACHSIZE;IA32_REBOOT_ON_PANIC;SUPPORT_CRT31KHZ;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GAMEPORT;SUPPORT_MEMDBG32;SUPPORT_LARGE_MEMORY;SUPPORT_PC9801_119;SUPPORT_PC9821;SUPPORT_PCI;SUPPORT_PEGC;SUPPORT_SOUND_SB16;SUPPORT_VGA_MODEX;USE_3DNOW;USE_FASTPAGING;USE_FPU;USE_MMX;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_VME;</NP21kaiDefines>
+    <NP21kaiHAXMDefines>SUPPORT_IA32_HAXM;USE_CUSTOM_HOOKINST;</NP21kaiHAXMDefines>
+    <NP2kaiCommonInludes>.\;.\misc;.\x86;..\;..\common;..\fdd;..\mem;..\io;..\io\pci;..\cbus;..\network;..\vram;..\sound;..\wab;..\generic;</NP2kaiCommonInludes>
+    <!-- \VST_SDK -->
+    <NP2kaiInludes>..\i286c;</NP2kaiInludes>
+    <NP21kaiInludes>..\i386c;</NP21kaiInludes>
+    <!-- \VST_SDK -->
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -146,8 +160,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>NP2_WIN;CPUCORE_IA32;SUPPORT_PC9821;_WIN32;_DEBUG;_CRT_SECURE_NO_WARNINGS;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LARGE_MEMORY;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;SUPPORT_VGA_MODEX;SUPPORT_GAMEPORT;SUPPORT_GPIB;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;TRACE;SUPPORT_NP2_THREAD;NP2_THREAD_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\misc;.\x86;..\;..\common;..\fdd;..\i386c;..\mem;..\io;..\io\pci;..\cbus;..\network;..\vram;..\sound;..\wab;..\generic;\VST_SDK</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines32);$(NP2kaiDebugDefines);$(NP2kaiDefines);$(NP21kaiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(NP2kaiCommonInludes);$(NP21kaiInludes);</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4828</DisableSpecificWarnings>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -169,8 +183,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>NP2_WIN;CPUCORE_IA32;SUPPORT_PC9821;_WIN64;_DEBUG;_CRT_SECURE_NO_WARNINGS;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LARGE_MEMORY;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_GPIB;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;SUPPORT_VGA_MODEX;SUPPORT_GAMEPORT;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;TRACE;SUPPORT_NP2_THREAD;NP2_THREAD_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\misc;.\x86;..\;..\common;..\fdd;..\i386c;..\mem;..\io;..\io\pci;..\cbus;..\network;..\vram;..\sound;..\wab;..\generic;\VST_SDK</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines64);$(NP2kaiDebugDefines);$(NP2kaiDefines);$(NP21kaiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(NP2kaiCommonInludes);$(NP21kaiInludes);</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4828</DisableSpecificWarnings>
       <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -193,8 +207,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NP2_WIN;CPUCORE_IA32;SUPPORT_PC9821;_WIN32;NDEBUG;_CRT_SECURE_NO_WARNINGS;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LARGE_MEMORY;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_GPIB;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;SUPPORT_VGA_MODEX;SUPPORT_GAMEPORT;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;SUPPORT_NP2_THREAD;NP2_THREAD_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\misc;.\x86;..\;..\common;..\fdd;..\i386c;..\mem;..\io;..\io\pci;..\cbus;..\network;..\vram;..\sound;..\wab;..\generic;\VST_SDK</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines32);$(NP2kaiNDebugDefines);$(NP2kaiDefines);$(NP21kaiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(NP2kaiCommonInludes);$(NP21kaiInludes);</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4828</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -224,8 +238,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NP2_WIN;CPUCORE_IA32;SUPPORT_PC9821;_WIN64;NDEBUG;_CRTDBG_MAP_ALLOC;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LARGE_MEMORY;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_GPIB;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;SUPPORT_VGA_MODEX;SUPPORT_GAMEPORT;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;SUPPORT_NP2_THREAD;NP2_THREAD_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\misc;.\x86;..\;..\common;..\fdd;..\i386c;..\mem;..\io;..\io\pci;..\cbus;..\network;..\vram;..\sound;..\wab;..\generic;\VST_SDK</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines64);$(NP2kaiNDebugDefines);$(NP2kaiDefines);$(NP21kaiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(NP2kaiCommonInludes);$(NP21kaiInludes);</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4828</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -259,8 +273,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NP2_WIN;CPUCORE_IA32;SUPPORT_PC9821;_WIN32;NDEBUG;_CRT_SECURE_NO_WARNINGS;SUPPORT_LARGE_HDD;SUPPORT_LARGE_MEMORY;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_PHYSICAL_CDDRV;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;SUPPORT_VGA_MODEX;SUPPORT_GAMEPORT;SUPPORT_IA32_HAXM;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\misc;.\x86;..\;..\common;..\fdd;..\i386c;..\mem;..\io;..\io\pci;..\cbus;..\network;..\vram;..\sound;..\wab;..\generic;\VST_SDK</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines32);$(NP2kaiNDebugDefines);$(NP2kaiDefines);$(NP21kaiDefines);$(NP21kaiHAXMDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(NP2kaiCommonInludes);$(NP21kaiInludes);</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4828</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -270,6 +284,7 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <WarningLevel>Level3</WarningLevel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -290,8 +305,8 @@
       </PrecompiledHeader>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NP2_WIN;CPUCORE_IA32;SUPPORT_PC9821;_WIN64;NDEBUG;_CRTDBG_MAP_ALLOC;_WINDOWS;_CRT_SECURE_NO_WARNINGS;SUPPORT_LARGE_HDD;SUPPORT_LARGE_MEMORY;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_PHYSICAL_CDDRV;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;SUPPORT_VGA_MODEX;SUPPORT_GAMEPORT;SUPPORT_IA32_HAXM;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\misc;.\x86;..\;..\common;..\fdd;..\i386c;..\mem;..\io;..\io\pci;..\cbus;..\network;..\vram;..\sound;..\wab;..\generic;\VST_SDK</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines64);$(NP2kaiNDebugDefines);$(NP2kaiDefines);$(NP21kaiDefines);$(NP21kaiHAXMDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(NP2kaiCommonInludes);$(NP21kaiInludes);</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4828</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>

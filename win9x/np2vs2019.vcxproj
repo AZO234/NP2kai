@@ -24,6 +24,16 @@
     <RootNamespace>np2vs2019</RootNamespace>
     <ProjectName>np2kaiw</ProjectName>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <NP2kaiCommonDefines>NP2_WIN;_CRT_SECURE_NO_WARNINGS;</NP2kaiCommonDefines>
+    <NP2kaiDebugDefines>_DEBUG;DEBUG;TRACE;</NP2kaiDebugDefines>
+    <NP2kaiNDebugDefines>_NDEBUG;NDEBUG;</NP2kaiNDebugDefines>
+    <NP2kaiDefines>ALLOW_MULTIRUN;BIOS_IO_EMULATION;HOOK_SYSKEY;MT32SOUND_DLL;OSLANG_UTF8;OSLINEBREAK_CRLF;SOUND_CRITICAL;SOUNDRESERVE=20;SUPPORT_16BPP;SUPPORT_24BPP;SUPPORT_32BPP;SUPPORT_8BPP;SUPPORT_ARC;SUPPORT_ASIO;SUPPORT_ASYNC_CPU;SUPPORT_CL_GD5430;SUPPORT_CRT15KHZ;SUPPORT_DCLOCK;SUPPORT_FAST_MEMORYCHECK;SUPPORT_FMGEN;SUPPORT_GPIB;SUPPORT_HOSTDRV;SUPPORT_HRTIMER;SUPPORT_IDEIO;SUPPORT_KAI_IMAGES;SUPPORT_KEYDISP;SUPPORT_LARGE_HDD;SUPPORT_LGY98;SUPPORT_NAMED_PIPE;SUPPORT_NET;SUPPORT_NORMALDISP;SUPPORT_NVL_IMAGES;SUPPORT_PC9861K;SUPPORT_PHYSICAL_CDDRV;SUPPORT_PX;SUPPORT_RECVIDEO;SUPPORT_RESUME;SUPPORT_ROMEO;SUPPORT_RS232C_FIFO;SUPPORT_S98;SUPPORT_SCRN_DIRECT3D;SUPPORT_SCSI;SUPPORT_SMPU98;SUPPORT_SOFTKBD=0;SUPPORT_SOUND_SB16;SUPPORT_SWSEEKSND;SUPPORT_SWWABRLYSND;SUPPORT_SJIS;SUPPORT_STATSAVE=10;SUPPORT_TEXTCNV;SUPPORT_UTF8;SUPPORT_V30EXT;SUPPORT_V30ORIGINAL;SUPPORT_VPCVHD;SUPPORT_WAB;SUPPORT_WACOM_TABLET;SUPPORT_WAVEREC;USE_MAME;VAEG_FIX;VERMOUTH_LIB;</NP2kaiDefines>
+    <!-- SUPPORT_BMS SUPPORT_SASI SUPPORT_VSTi -->
+    <NP2kaiDefines32>_WIN32;SUPPORT_WIN2000HOST;</NP2kaiDefines32>
+    <NP2kaiDefines64>_WIN64;</NP2kaiDefines64>
+    <NP2kaiCommonInludes>.\;.\misc;.\x86;..\;..\common;..\fdd;..\mem;..\io;..\io\pci;..\cbus;..\network;..\vram;..\sound;..\wab;..\generic;</NP2kaiCommonInludes>
+    <!-- \VST_SDK -->
+    <NP2kaiInludes>..\i286c;</NP2kaiInludes>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -89,7 +99,7 @@
     <OutDir>..\bin\$(SolutionName)\$(PlatformName)\$(Configuration)\</OutDir>
     <IntDir>..\obj\$(SolutionName)\$(PlatformName)\$(Configuration)\$(ProjectName)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <TargetName>$(ProjectName)_x86_64</TargetName>
+    <TargetName>$(ProjectName)_i386</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -97,7 +107,7 @@
     <IntDir>..\obj\$(SolutionName)\$(PlatformName)\$(Configuration)\$(ProjectName)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <TargetName>$(ProjectName)_i386</TargetName>
+    <TargetName>$(ProjectName)_x86_64</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -105,8 +115,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>NP2_WIN;_WIN32;_DEBUG;_CRT_SECURE_NO_WARNINGS;NP2_WIN;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_GPIB;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_ASYNC_CPU;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_MAME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\misc;.\x86;..\;..\common;..\fdd;..\i286c;..\mem;..\io;..\cbus;..\vram;..\sound;..\wab;..\generic;\VST_SDK</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines32);$(NP2kaiDebugDefines);$(NP2kaiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(NP2kaiCommonInludes);$(NP2kaiInludes);</AdditionalIncludeDirectories>
       <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4828</DisableSpecificWarnings>
@@ -126,8 +136,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>NP2_WIN;_WIN64;_DEBUG;_CRT_SECURE_NO_WARNINGS;NP2_WIN;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_GPIB;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_ASYNC_CPU;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_MAME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\misc;.\x86;..\;..\common;..\fdd;..\i286c;..\mem;..\io;..\cbus;..\vram;..\sound;..\wab;..\generic;\VST_SDK</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines64);$(NP2kaiDebugDefines);$(NP2kaiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(NP2kaiCommonInludes);$(NP2kaiInludes);</AdditionalIncludeDirectories>
       <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4828</DisableSpecificWarnings>
@@ -150,8 +160,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NP2_WIN;_WIN32;NDEBUG;_CRT_SECURE_NO_WARNINGS;NP2_WIN;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_GPIB;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_ASYNC_CPU;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_MAME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\misc;.\x86;..\;..\common;..\fdd;..\i286c;..\mem;..\io;..\cbus;..\vram;..\sound;..\wab;..\generic;\VST_SDK</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines32);$(NP2kaiNDebugDefines);$(NP2kaiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(NP2kaiCommonInludes);$(NP2kaiInludes);</AdditionalIncludeDirectories>
       <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
       <DebugInformationFormat>None</DebugInformationFormat>
       <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
@@ -177,8 +187,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NP2_WIN;_WIN64;NDEBUG;_CRT_SECURE_NO_WARNINGS;NP2_WIN;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_GPIB;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_ASYNC_CPU;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_MAME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\misc;.\x86;..\;..\common;..\fdd;..\i286c;..\mem;..\io;..\cbus;..\vram;..\sound;..\wab;..\generic;\VST_SDK</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines64);$(NP2kaiNDebugDefines);$(NP2kaiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(NP2kaiCommonInludes);$(NP2kaiInludes);</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
       <DebugInformationFormat>None</DebugInformationFormat>

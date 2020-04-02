@@ -38,7 +38,7 @@ struct _textfile {
 	UINT8	xendian;
 #endif
 	_FILEH	fh;
-	long	fpos;
+	UINT64	fpos;
 	UINT8	*buf;
 	UINT	bufsize;
 	UINT	bufpos;
@@ -414,7 +414,7 @@ static TEXTFILEH registfile(_FILEH fh, UINT buffersize,
 static BRESULT flushfile(TEXTFILE tf) {
 
 	BRESULT	ret;
-	long	fpos;
+	UINT64	fpos;
 	UINT	size;
 	UINT	wsize;
 

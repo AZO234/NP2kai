@@ -19,6 +19,9 @@
 #include	"diskimage/cd/cdd_ccd.h"
 #include	"diskimage/cd/cdd_mds.h"
 #include	"diskimage/cd/cdd_nrg.h"
+#ifdef SUPPORT_PHYSICAL_CDDRV
+#include	"diskimage/cd/cdd_real.h"
+#endif
 
 BRESULT sxsicd_open(SXSIDEV sxsi, const OEMCHAR *fname) {
 

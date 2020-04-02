@@ -4,6 +4,7 @@
 #include	"cbuscore.h"
 #include	"boardlol.h"
 #include	"sound.h"
+#include	"soundrom.h"
 #include	"fmboard.h"
 #include	"s98.h"
 
@@ -88,7 +89,7 @@ static const IOOUT opn_o[4] = {
 static const IOINP opn_i[4] = {
 			opn_i188,	opn_i18a,	NULL,		NULL};
 
-static void psgpanset(PSGGEN psg) {
+static void psgpanset(OPNA* psg) {
 	// SSG‚ÍRŒÅ’è
 	psggen_setpan(psg, 0, 1);
 	psggen_setpan(psg, 1, 1);

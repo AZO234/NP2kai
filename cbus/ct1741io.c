@@ -280,10 +280,12 @@ static void ct1741_exec_command()
 		if(!g_sb16.dsp_info.uartmode){
 			if(mpu98.enable){
 				mpu98.mode = 1; // force set UART mode
-				return mpu98ii_o0(0x8000 + g_sb16.base, g_sb16.dsp_info.in.data[0]);
+				mpu98ii_o0(0x8000 + g_sb16.base, g_sb16.dsp_info.in.data[0]);
+				return;
 			}else if(smpu98.enable){
 				smpu98.mode = 1; // force set UART mode
-				return smpu98_o0(0x8000 + g_sb16.base, g_sb16.dsp_info.in.data[0]);
+				smpu98_o0(0x8000 + g_sb16.base, g_sb16.dsp_info.in.data[0]);
+				return;
 			}
 		}
 //		if (sb.midi == true) MIDI_RawOutByte(g_sb16.dsp_info.in.data[0]);

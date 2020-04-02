@@ -235,9 +235,6 @@ typedef int  BOOL;
 #endif
 
 // --> milstr OEMCHAR
-#define	SUPPORT_UTF8
-#define	OSLANG_UTF8
-
 #if defined(_WINDOWS)
 #define	OEMNEWLINE  "\r\n"
 #define	OEMPATHDIV  "\\"
@@ -441,45 +438,6 @@ typedef int32_t FILELEN;
 #define	LOW16(a)  ((UINT16)(a))
 #define	HIGH16(a) (((UINT32)(a)) >> 16)
 #endif
-
-#undef	SUPPORT_8BPP
-#define	SUPPORT_16BPP
-#define	SUPPORT_32BPP
-#define	SUPPORT_NORMALDISP
-
-#define SUPPORT_PC9861K
-#define SUPPORT_CRT15KHZ
-#if defined(SUPPORT_PC9821)
-#define IA32_PAGING_EACHSIZE
-#define IA32_REBOOT_ON_PANIC
-#define SUPPORT_CRT31KHZ
-#define SUPPORT_PC9801_119
-#endif
-
-#undef  SUPPORT_SASI
-#define SUPPORT_IDEIO
-#define SUPPORT_SCSI
-
-#define SUPPORT_PX
-#define SUPPORT_S98
-#define	SUPPORT_SWSEEKSND
-#if defined(SUPPORT_WAB)
-#define	SUPPORT_SWWABRLYSND
-#endif
-
-#if !defined(_WINDOWS) && !defined(__LIBRETRO__) && !defined(NP2_SDL2)
-#define SUPPORT_BMS
-#endif
-#define SUPPORT_V30ORIGINAL
-#define SUPPORT_V30EXT
-#define VAEG_FIX
-
-#if !defined(NOSOUND)
-#define	VERMOUTH_LIB
-#endif
-
-#define	SUPPORT_RESUME
-#define	SUPPORT_STATSAVE 10
 
 #include "common.h"
 #include "_memory.h"

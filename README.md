@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Mar 30, 2020<br>
+Apr 2, 2020<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -1026,6 +1026,8 @@ Next boot computer, you command from 4.<br>
 </div></details>
 
 ## Release
+- Apr 2, 2020<br>
+  - reform compiler options
 - Mar 31, 2020<br>
   - [libretro] fix input
     - mash trigger, too fast move
@@ -1243,6 +1245,23 @@ Next boot computer, you command from 4.<br>
   - [NP21] お察しください<br>
 - Jun 1, 2017<br>
   - First release<br>
+
+## ToDo
+
+### SDL2
+  - lvgl ?
+
+### libretro
+  - font.bmp
+
+### Linux
+  - GTK3 ?
+
+### Windows
+  - local UTF-8 to Wide conversion
+  - build for Win9x
+  - VST SDK 3
+  - BMS dialog
 
 ## Reference
 

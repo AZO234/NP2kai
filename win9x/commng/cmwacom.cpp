@@ -1,6 +1,6 @@
 /**
  * @file	cmwacom.cpp
- * @brief	Wacom Tablet ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	Wacom Tablet ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include "compiler.h"
@@ -128,11 +128,11 @@ LRESULT CALLBACK tabletWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
 
 
 /**
- * ƒCƒ“ƒXƒ^ƒ“ƒXì¬
- * @param[in] lpMidiOut MIDIOUT ƒfƒoƒCƒX
- * @param[in] lpMidiIn MIDIIN ƒfƒoƒCƒX
- * @param[in] lpModule ƒ‚ƒWƒ…[ƒ‹
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ä½œæˆ
+ * @param[in] lpMidiOut MIDIOUT ãƒ‡ãƒã‚¤ã‚¹
+ * @param[in] lpMidiIn MIDIIN ãƒ‡ãƒã‚¤ã‚¹
+ * @param[in] lpModule ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 CComWacom* CComWacom::CreateInstance(HWND hWnd)
 {
@@ -146,7 +146,7 @@ CComWacom* CComWacom::CreateInstance(HWND hWnd)
 }
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CComWacom::CComWacom()
 	: CComBase(COMCONNECT_TABLET)
@@ -180,7 +180,7 @@ CComWacom::CComWacom()
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CComWacom::~CComWacom()
 {
@@ -193,9 +193,9 @@ CComWacom::~CComWacom()
 }
 
 /**
- * ‰Šú‰»
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * åˆæœŸåŒ–
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CComWacom::Initialize(HWND hWnd)
 {
@@ -205,14 +205,14 @@ bool CComWacom::Initialize(HWND hWnd)
 	AXIS rotAxis[3] = {0};
 	
 	if(!g_wacom_initialized){
-		return false; // ‰Šú‰»‚³‚ê‚Ä‚¢‚È‚¢
+		return false; // åˆæœŸåŒ–ã•ã‚Œã¦ã„ãªã„
 	}
 	if(g_wacom_allocated){
-		return false; // •¡”ŒÂ‚Ì—˜—p‚Í•s‰Â
+		return false; // è¤‡æ•°å€‹ã®åˆ©ç”¨ã¯ä¸å¯
 	}
 
 	if (!gpWTInfoA || !gpWTInfoA(0, 0, NULL)) {
-		return false; // WinTabg—p•s‰Â
+		return false; // WinTabä½¿ç”¨ä¸å¯
 	}
 	
 	m_hwndMain = hWnd;
@@ -245,31 +245,31 @@ void CComWacom::InitializeTabletDevice(){
 	AXIS rotAxis[3] = {0};
 	
 	if(!g_wacom_initialized){
-		return; // ‰Šú‰»‚³‚ê‚Ä‚¢‚È‚¢
+		return; // åˆæœŸåŒ–ã•ã‚Œã¦ã„ãªã„
 	}
 	if(g_wacom_allocated){
-		return; // •¡”ŒÂ‚Ì—˜—p‚Í•s‰Â
+		return; // è¤‡æ•°å€‹ã®åˆ©ç”¨ã¯ä¸å¯
 	}
 
 	if (!gpWTInfoA(0, 0, NULL)) {
-		return; // WinTabg—p•s‰Â
+		return; // WinTabä½¿ç”¨ä¸å¯
 	}
 	
 	if(m_exclusivemode){
 		FIX32 axRes;
 		gpWTInfoA(WTI_DEVICES, DVC_X, &axis);
 		m_minX = axis.axMin;
-		m_maxX = axis.axMax; /* ‚w•ûŒü‚ÌÅ‘åÀ•W */
-		m_resX = axis.axResolution; /* ‚wÀ•W‚Ì•ª‰ğ”\ ’PˆÊ:line/inch */
+		m_maxX = axis.axMax; /* ï¼¸æ–¹å‘ã®æœ€å¤§åº§æ¨™ */
+		m_resX = axis.axResolution; /* ï¼¸åº§æ¨™ã®åˆ†è§£èƒ½ å˜ä½:line/inch */
 		gpWTInfoA(WTI_DEVICES, DVC_Y, &axis);
 		m_minY = axis.axMin;
-		m_maxY = axis.axMax; /* ‚x•ûŒü‚ÌÅ‘åÀ•W */
-		m_resY = axis.axResolution; /* ‚xÀ•W‚Ì•ª‰ğ”\ ’PˆÊ:line/inch */
+		m_maxY = axis.axMax; /* ï¼¹æ–¹å‘ã®æœ€å¤§åº§æ¨™ */
+		m_resY = axis.axResolution; /* ï¼¹åº§æ¨™ã®åˆ†è§£èƒ½ å˜ä½:line/inch */
 		gpWTInfoA(WTI_DEFSYSCTX, 0, &lcMine);
 	}
 
 	gpWTInfoA(m_exclusivemode ? WTI_DEFCONTEXT : WTI_DEFSYSCTX, 0, &lcMine);
-	lcMine.lcOptions |= CXO_MESSAGES|CXO_MARGIN; /* WintabÒ¯¾°¼Ş‚ª“n‚³‚ê‚é‚æ‚¤‚É‚·‚é */
+	lcMine.lcOptions |= CXO_MESSAGES|CXO_MARGIN; /* Wintabï¾’ï½¯ï½¾ï½°ï½¼ï¾ãŒæ¸¡ã•ã‚Œã‚‹ã‚ˆã†ã«ã™ã‚‹ */
 	lcMine.lcMsgBase = WT_DEFBASE;
 	lcMine.lcPktData = PACKETDATA;
 	lcMine.lcPktMode = PACKETMODE;
@@ -278,12 +278,12 @@ void CComWacom::InitializeTabletDevice(){
 	if(m_exclusivemode){
 		lcMine.lcInOrgX = m_minX;
 		lcMine.lcInOrgY = m_minY;
-		lcMine.lcInExtX = m_maxX; /* ÀÌŞÚ¯Ä‚Ì—LŒø”ÍˆÍ‘Sˆæ‚ğ‘€ì´Ø±‚Æ‚µ‚Ü‚· */
+		lcMine.lcInExtX = m_maxX; /* ï¾€ï¾Œï¾ï¾šï½¯ï¾„ã®æœ‰åŠ¹ç¯„å›²å…¨åŸŸã‚’æ“ä½œï½´ï¾˜ï½±ã¨ã—ã¾ã™ */
 		lcMine.lcInExtY = m_maxY;
 		lcMine.lcOutOrgX = 0;
 		lcMine.lcOutOrgY = 0;
-		lcMine.lcOutExtX = m_maxX-m_minX; /* ÀÌŞÚ¯Ä‚Ì•ª‰ğ”\‚Æ“ü—ÍÃŞ°À‚Ì•ª‰ğ”\‚ğ */
-		lcMine.lcOutExtY = m_maxY-m_minY; /* ‚ ‚í‚¹‚Ü‚· */
+		lcMine.lcOutExtX = m_maxX-m_minX; /* ï¾€ï¾Œï¾ï¾šï½¯ï¾„ã®åˆ†è§£èƒ½ã¨å…¥åŠ›ï¾ƒï¾ï½°ï¾€ã®åˆ†è§£èƒ½ã‚’ */
+		lcMine.lcOutExtY = m_maxY-m_minY; /* ã‚ã‚ã›ã¾ã™ */
 
 	}else{
 		m_minX = lcMine.lcOutOrgX;
@@ -296,7 +296,7 @@ void CComWacom::InitializeTabletDevice(){
 	{
 		return;
 	}
-	// WTI_DEVICES‚ÌDVC_NPRESSURE‚ğæ“¾ i•Mˆ³’l‚ÌÅ‘åAÅ¬j
+	// WTI_DEVICESã®DVC_NPRESSUREã‚’å–å¾— ï¼ˆç­†åœ§å€¤ã®æœ€å¤§ã€æœ€å°ï¼‰
 	gpWTInfoA(WTI_DEVICES, DVC_NPRESSURE, &pressAxis);
 	m_rawPressureMax = pressAxis.axMax;
 	m_rawPressureMin = pressAxis.axMin;
@@ -317,7 +317,7 @@ void CComWacom::InitializeTabletDevice(){
         gpWTMgrExt(m_hMgr, WTX_OBT, m_ObtBuf);
     }
 	
-	// ‹Ulastdata
+	// å½lastdata
 	m_lastdata[0] = 0xA0;
 	m_lastdata[1] = 0x00;
 	m_lastdata[2] = 0x00;
@@ -331,7 +331,7 @@ void CComWacom::FinalizeTabletDevice(){
 	if (m_hTab)
 	{
 		if (m_hMgr) {
-			// Out of Bounds Tracking ‚Ì‰ğœ
+			// Out of Bounds Tracking ã®è§£é™¤
 			m_ObtBuf[0] = 0;
 			gpWTMgrExt(m_hMgr, WTX_OBT, m_ObtBuf);
 			gpWTMgrClose(m_hMgr);
@@ -371,14 +371,14 @@ bool CComWacom::HandlePacketMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 			proximityflag = true;
 		}
 		
-		m_skipmouseevent = 2; // WinTab‚ÌƒoƒO‰ñ”ğ
+		m_skipmouseevent = 2; // WinTabã®ãƒã‚°å›é¿
 
-		m_rawX = tPckt.pkX; /* ƒfƒWƒ^ƒCƒUã‚Ì‚wÀ•W */
-		m_rawY = tPckt.pkY; /* ƒfƒWƒ^ƒCƒUã‚Ì‚xÀ•W */
-		newbuttons = LOWORD(tPckt.pkButtons); /* ƒ{ƒ^ƒ“”Ô† */
+		m_rawX = tPckt.pkX; /* ãƒ‡ã‚¸ã‚¿ã‚¤ã‚¶ä¸Šã®ï¼¸åº§æ¨™ */
+		m_rawY = tPckt.pkY; /* ãƒ‡ã‚¸ã‚¿ã‚¤ã‚¶ä¸Šã®ï¼¹åº§æ¨™ */
+		newbuttons = LOWORD(tPckt.pkButtons); /* ãƒœã‚¿ãƒ³ç•ªå· */
 		m_rawStatus = tPckt.pkStatus;
 
-		m_rawPressure = LOWORD(tPckt.pkNormalPressure); /* •Mˆ³ */
+		m_rawPressure = LOWORD(tPckt.pkNormalPressure); /* ç­†åœ§ */
 		if(m_rawPressureMax-m_rawPressureMin > 0){
 			if(m_rawPressure <= m_rawPressureMin){
 				m_pressure = 0.0;
@@ -443,7 +443,7 @@ bool CComWacom::HandlePacketMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 			SINT32 tablet_resY = TABLET_RAWMAX_Y * m_config.resolution_h / TABLET_BASERASOLUTION;
 			char buf[32];
 			pktPressure = (UINT32)(m_pressure * 255);
-			// ƒyƒ“ON/OFF‚»‚ê‚¼‚ê‚Å255’iŠKi‚ç‚µ‚¢j
+			// ãƒšãƒ³ON/OFFãã‚Œãã‚Œã§255æ®µéšï¼ˆã‚‰ã—ã„ï¼‰
 			if(!m_config.disablepressure){
 				if(m_pressure < 0.5){
 					m_rawButtons &= ~0x1;
@@ -453,26 +453,26 @@ bool CComWacom::HandlePacketMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 				}
 			}
 			if(m_exclusivemode){
-				// ”r‘¼ƒ‚[ƒhiƒ}ƒEƒXƒLƒƒƒvƒ`ƒƒ’†j
+				// æ’ä»–ãƒ¢ãƒ¼ãƒ‰ï¼ˆãƒã‚¦ã‚¹ã‚­ãƒ£ãƒ—ãƒãƒ£ä¸­ï¼‰
 				if(m_config.scrnsizemode){
 					tablet_resX = m_config.screen_w;
 					tablet_resY = m_config.screen_h;
 				}
 				if(m_fixedaspect){
-					// ƒAƒXƒyƒNƒg”ä‚ªArtPad II‚Æ“¯‚¶‚É‚È‚é‚æ‚¤‚ÉC³
+					// ã‚¢ã‚¹ãƒšã‚¯ãƒˆæ¯”ãŒArtPad IIã¨åŒã˜ã«ãªã‚‹ã‚ˆã†ã«ä¿®æ­£
 					if(tablet_resX * (m_maxY - m_minY) > tablet_resY * (m_maxX - m_minX)){
 						pktXtmp = (m_rawX * tablet_resX / (m_maxX - m_minX));
-						pktYtmp = tablet_resY - (m_rawY * tablet_resX / (m_maxX - m_minX)); // ¶‰ºŒ´“_‚Å‚·‚Á‚Ä‚æ
+						pktYtmp = tablet_resY - (m_rawY * tablet_resX / (m_maxX - m_minX)); // å·¦ä¸‹åŸç‚¹ã§ã™ã£ã¦ã‚ˆ
 					}else{
 						pktXtmp = (m_rawX * tablet_resY / (m_maxY - m_minY));
-						pktYtmp = tablet_resY - (m_rawY * tablet_resY / (m_maxY - m_minY)); // ¶‰ºŒ´“_‚Å‚·‚Á‚Ä‚æ
+						pktYtmp = tablet_resY - (m_rawY * tablet_resY / (m_maxY - m_minY)); // å·¦ä¸‹åŸç‚¹ã§ã™ã£ã¦ã‚ˆ
 					}
 				}else{
 					pktXtmp = (m_rawX * tablet_resX / (m_maxX - m_minX));
-					pktYtmp = tablet_resY - (m_rawY * tablet_resY / (m_maxY - m_minY)); // ¶‰ºŒ´“_‚Å‚·‚Á‚Ä‚æ
+					pktYtmp = tablet_resY - (m_rawY * tablet_resY / (m_maxY - m_minY)); // å·¦ä¸‹åŸç‚¹ã§ã™ã£ã¦ã‚ˆ
 				}
 			}else{
-				// ƒzƒXƒgƒ}ƒEƒX˜A“®ƒ‚[ƒhiƒ}ƒEƒXƒLƒƒƒvƒ`ƒƒ‚È‚µ‘€ìƒ‚[ƒhj
+				// ãƒ›ã‚¹ãƒˆãƒã‚¦ã‚¹é€£å‹•ãƒ¢ãƒ¼ãƒ‰ï¼ˆãƒã‚¦ã‚¹ã‚­ãƒ£ãƒ—ãƒãƒ£ãªã—æ“ä½œãƒ¢ãƒ¼ãƒ‰ï¼‰
 				RECT rectClient;
 				POINT pt;
 				scrnmng_getrect(&rectClient);
@@ -488,20 +488,20 @@ bool CComWacom::HandlePacketMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 				//pktXtmp = m_rawX - pt.x;
 				//pktYtmp = m_rawY - pt.y;
 				if(pktXtmp < 0 || pktYtmp < 0 || pktXtmp > tablet_resX || pktYtmp > tablet_resY){
-					// ”ÍˆÍŠO‚ÍˆÚ“®‚Ì‚İ‰Â”\
+					// ç¯„å›²å¤–ã¯ç§»å‹•ã®ã¿å¯èƒ½.
 					m_rawButtons = m_rawButtons & 0x4;
 					pktPressure = 0;
 					proximityflag = true;
 				}
 			}
-			// ‚Í‚İo‚³‚È‚¢‚æ‚¤‚ÉÀ•W”ÍˆÍ‚ğC³
+			// ã¯ã¿å‡ºã•ãªã„ã‚ˆã†ã«åº§æ¨™ç¯„å›²ã‚’ä¿®æ­£
 			if(pktXtmp < 0) pktXtmp = 0;
 			if(pktYtmp < 0) pktYtmp = 0;
 			if(pktXtmp > tablet_resX) pktXtmp = tablet_resX;
 			if(pktYtmp > tablet_resY) pktYtmp = tablet_resY;
 			
 			if(m_config.relmode){
-				// ‘Š‘ÎÀ•Wƒ‚[ƒh
+				// ç›¸å¯¾åº§æ¨™ãƒ¢ãƒ¼ãƒ‰
 				if(g_lastPosValid){
 					pktX = (SINT16)((SINT32)pktXtmp - g_lastPosX);
 					pktY = (SINT16)((SINT32)pktYtmp - g_lastPosY);
@@ -510,13 +510,13 @@ bool CComWacom::HandlePacketMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 					pktY = 0;
 				}
 			}else{
-				// â‘ÎÀ•Wƒ‚[ƒh
+				// çµ¶å¯¾åº§æ¨™ãƒ¢ãƒ¼ãƒ‰
 				pktX = (UINT16)pktXtmp;
 				pktY = (UINT16)pktYtmp;
 			}
 
 			if(m_config.disablepressure && m_config.csvmode){
-				// CSVÀ•Wƒ‚[ƒhi•Mˆ³–³Œøƒ‚[ƒh‚Å‚È‚¢‚Æg‚¦‚È‚¢j
+				// CSVåº§æ¨™ãƒ¢ãƒ¼ãƒ‰ï¼ˆç­†åœ§ç„¡åŠ¹ãƒ¢ãƒ¼ãƒ‰ã§ãªã„ã¨ä½¿ãˆãªã„ï¼‰
 				int slen = sprintf(buf, "#,%05d,%05d,%02d\r\n", pktX, pktY, proximityflag ? 99 : m_rawButtons);
 				if(slen > 0){
 					memcpy(m_lastdata, buf, slen);
@@ -527,7 +527,7 @@ bool CComWacom::HandlePacketMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 				}
 			}else{
 				if(m_config.disablepressure){
-					// •Mˆ³–³Œøƒ‚[ƒh
+					// ç­†åœ§ç„¡åŠ¹ãƒ¢ãƒ¼ãƒ‰
 					buf[0] = 0xe0|((pktX >> 14) & 0x3);
 					buf[1] = ((pktX >> 7) & 0x7f);
 					buf[2] = (pktX & 0x7f);
@@ -536,7 +536,7 @@ bool CComWacom::HandlePacketMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 					buf[5] = (pktY & 0x7f);
 					buf[6] = m_rawButtons;
 				}else{
-					// ’Êíƒ‚[ƒh
+					// é€šå¸¸ãƒ¢ãƒ¼ãƒ‰
 					buf[0] = (proximityflag ? 0xA0 : 0xE0)|((m_rawButtons & ~0x1) ? 0x8 : 0)|((pktX >> 14) & 0x3)|((((pktPressure) & 0) << 2));
 					buf[1] = ((pktX >> 7) & 0x7f);
 					buf[2] = (pktX & 0x7f);
@@ -600,13 +600,13 @@ bool CComWacom::SendDataToReadBuffer(const char *data, int len){
 	if(bufused + len >= WACOM_BUFFER){
 #if defined(SUPPORT_RS232C_FIFO)
 		if(rs232cfifo.port138 & 0x1){
-			// Ã‘£‚µ‚È‚¢
+			// å‚¬ä¿ƒã—ãªã„
 		}else 
 #endif
 		{
 			// Buffer Full
 			if (sysport.c & 1) {
-				pic_setirq(4); // XXX: Ã‘£
+				pic_setirq(4); // XXX: å‚¬ä¿ƒ
 			}
 		}
 		return false;
@@ -620,9 +620,9 @@ bool CComWacom::SendDataToReadBuffer(const char *data, int len){
 }
 
 /**
- * “Ç‚İ‚İ
- * @param[out] pData ƒoƒbƒtƒ@
- * @return ƒTƒCƒY
+ * èª­ã¿è¾¼ã¿
+ * @param[out] pData ãƒãƒƒãƒ•ã‚¡
+ * @return ã‚µã‚¤ã‚º
  */
 UINT CComWacom::Read(UINT8* pData)
 {
@@ -634,7 +634,7 @@ UINT CComWacom::Read(UINT8* pData)
 		return 0;
 	}
 	if(datatime - g_datatime > 500){
-		// ƒf[ƒ^‚ªŒÃ‚¢‚Ì‚ÅÌ‚Ä‚Ü‚µ‚å‚¤
+		// ãƒ‡ãƒ¼ã‚¿ãŒå¤ã„ã®ã§æ¨ã¦ã¾ã—ã‚‡ã†
 		m_sBuffer_rpos = m_sBuffer_wpos;
 		g_datatime = datatime;
 		return 0;
@@ -647,7 +647,7 @@ UINT CComWacom::Read(UINT8* pData)
 		return 1;
 	}else{
 		nodatacounter++;
-		//// XXX: ’·ŠúŠÔƒf[ƒ^‚ª‚È‚¢‚ÆWin9x‚Å‚¨‚©‚µ‚­‚È‚é‚æ‚¤‚È‚Ì‚Åb’è‘Îô
+		//// XXX: é•·æœŸé–“ãƒ‡ãƒ¼ã‚¿ãŒãªã„ã¨Win9xã§ãŠã‹ã—ããªã‚‹ã‚ˆã†ãªã®ã§æš«å®šå¯¾ç­–
 		//if(m_config.mode19200 && nodatacounter > 256){
 		//	if(m_lastdatalen > 0){
 		//		char buf[10];
@@ -667,9 +667,9 @@ UINT CComWacom::Read(UINT8* pData)
 }
 
 /**
- * ‘‚«‚İ
- * @param[out] cData ƒf[ƒ^
- * @return ƒTƒCƒY
+ * æ›¸ãè¾¼ã¿
+ * @param[out] cData ãƒ‡ãƒ¼ã‚¿
+ * @return ã‚µã‚¤ã‚º
  */
 UINT CComWacom::Write(UINT8 cData)
 {
@@ -681,11 +681,11 @@ UINT CComWacom::Write(UINT8 cData)
 	}
 	if (m_hTab)
 	{
-		if(cData=='\r' || cData=='\n'){ // ƒRƒ}ƒ“ƒhI’[‚ÌiXXX: LF‚àƒRƒ}ƒ“ƒhI’[ˆµ‚¢Hj
+		if(cData=='\r' || cData=='\n'){ // ã‚³ãƒãƒ³ãƒ‰çµ‚ç«¯ã®æ™‚ï¼ˆXXX: LFã‚‚ã‚³ãƒãƒ³ãƒ‰çµ‚ç«¯æ‰±ã„ï¼Ÿï¼‰
 			m_cmdbuf[m_cmdbuf_pos] = '\0';
 			if(strcmp(m_cmdbuf, "#")==0){
 				// Reset to protocol IV command set
-				m_sBuffer_rpos = m_sBuffer_wpos; // ƒf[ƒ^•úŠü
+				m_sBuffer_rpos = m_sBuffer_wpos; // ãƒ‡ãƒ¼ã‚¿æ”¾æ£„
 				m_config.scrnsizemode = false;
 				m_config.disablepressure = false;
 				m_config.csvmode = false;
@@ -694,7 +694,7 @@ UINT CComWacom::Write(UINT8 cData)
 				m_config.mode19200 = false;
 			}else if(strcmp(m_cmdbuf, "#~*F202C800")==0){
 				// 19200 bps mode
-				m_sBuffer_rpos = m_sBuffer_wpos; // ƒf[ƒ^•úŠü
+				m_sBuffer_rpos = m_sBuffer_wpos; // ãƒ‡ãƒ¼ã‚¿æ”¾æ£„
 				m_config.scrnsizemode = false;
 				m_config.disablepressure = false;
 				m_config.csvmode = false;
@@ -703,7 +703,7 @@ UINT CComWacom::Write(UINT8 cData)
 				m_config.mode19200 = true;
 			}else if(strncmp(m_cmdbuf, "~*F2039100,000,00,1000,1000", 3)==0){
 				// 19200 bps mode & Enable Pressure (win3.1)
-				m_sBuffer_rpos = m_sBuffer_wpos; // ƒf[ƒ^•úŠü
+				m_sBuffer_rpos = m_sBuffer_wpos; // ãƒ‡ãƒ¼ã‚¿æ”¾æ£„
 				m_config.scrnsizemode = false;
 				m_config.disablepressure = false;
 				m_config.csvmode = false;
@@ -712,7 +712,7 @@ UINT CComWacom::Write(UINT8 cData)
 				m_config.mode19200 = true;
 			}else if(strncmp(m_cmdbuf, "~*E2039100,000,00,1000,1000", 3)==0){
 				// 9600 bps mode & Enable Pressure (win3.1)
-				m_sBuffer_rpos = m_sBuffer_wpos; // ƒf[ƒ^•úŠü
+				m_sBuffer_rpos = m_sBuffer_wpos; // ãƒ‡ãƒ¼ã‚¿æ”¾æ£„
 				m_config.scrnsizemode = false;
 				m_config.disablepressure = false;
 				m_config.csvmode = false;
@@ -721,7 +721,7 @@ UINT CComWacom::Write(UINT8 cData)
 				m_config.mode19200 = false;
 			}else if(strcmp(m_cmdbuf, "$")==0){
 				// Reset to 9600 bps (sent at 19200 bps) & Disable Pressure
-				m_sBuffer_rpos = m_sBuffer_wpos; // ƒf[ƒ^•úŠü
+				m_sBuffer_rpos = m_sBuffer_wpos; // ãƒ‡ãƒ¼ã‚¿æ”¾æ£„
 				m_config.scrnsizemode = false;
 				m_config.disablepressure = true;
 				m_config.mode19200 = false;
@@ -783,7 +783,7 @@ UINT CComWacom::Write(UINT8 cData)
 			}else if(strcmp(m_cmdbuf, "TEFINE")==0){
 				// I'm Fine!
 				char data[] = "KT-0405-R00 V1.3-2 95/04/28 by WACOM\r\nFINE\r\nI AM FINE.\r\n";
-				m_sBuffer_rpos = m_sBuffer_wpos; //ƒoƒbƒtƒ@Á‚·
+				m_sBuffer_rpos = m_sBuffer_wpos; //ãƒãƒƒãƒ•ã‚¡æ¶ˆã™
 				SendDataToReadBuffer(data, sizeof(data));
 				m_lastdatalen = 0;
 				m_wait = sizeof(data);
@@ -794,13 +794,13 @@ UINT CComWacom::Write(UINT8 cData)
 		}else{
 			m_cmdbuf[m_cmdbuf_pos] = cData;
 			m_cmdbuf_pos++;
-			if(m_cmdbuf_pos >= 2 && strncmp(&m_cmdbuf[m_cmdbuf_pos-2], "~#", 2)==0){ // —áŠO“I‚É‘¦‰“š
-				m_sBuffer_rpos = m_sBuffer_wpos; //ƒoƒbƒtƒ@Á‚·
+			if(m_cmdbuf_pos >= 2 && strncmp(&m_cmdbuf[m_cmdbuf_pos-2], "~#", 2)==0){ // ä¾‹å¤–çš„ã«å³å¿œç­”
+				m_sBuffer_rpos = m_sBuffer_wpos; //ãƒãƒƒãƒ•ã‚¡æ¶ˆã™
 				SendDataToReadBuffer(cmwacom_ModelData, sizeof(cmwacom_ModelData));
 				//if(m_wait < WACOM_BUFFER) m_wait += sizeof(cmwacom_ModelData)*2;
 #if defined(SUPPORT_RS232C_FIFO)
 				if(rs232cfifo.port138 & 0x1){
-					// FIFOƒ‚[ƒh‚Å‚ÍƒEƒFƒCƒg‚È‚µ
+					// FIFOãƒ¢ãƒ¼ãƒ‰ã§ã¯ã‚¦ã‚§ã‚¤ãƒˆãªã—
 					m_wait = 0;
 				}else
 #endif
@@ -813,7 +813,7 @@ UINT CComWacom::Write(UINT8 cData)
 		}
 #if defined(SUPPORT_RS232C_FIFO)
 		if(rs232cfifo.port138 & 0x1){
-			// FIFOƒ‚[ƒh‚Å‚ÍƒEƒFƒCƒg‚È‚µ
+			// FIFOãƒ¢ãƒ¼ãƒ‰ã§ã¯ã‚¦ã‚§ã‚¤ãƒˆãªã—
 			m_wait = 0;
 		}
 #endif
@@ -822,8 +822,8 @@ UINT CComWacom::Write(UINT8 cData)
 }
 
 /**
- * ƒXƒe[ƒ^ƒX‚ğ“¾‚é
- * @return ƒXƒe[ƒ^ƒX
+ * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’å¾—ã‚‹
+ * @return ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
  */
 UINT8 CComWacom::GetStat()
 {
@@ -840,10 +840,10 @@ UINT8 CComWacom::GetStat()
 }
 
 /**
- * ƒƒbƒZ[ƒW
- * @param[in] nMessage ƒƒbƒZ[ƒW
- * @param[in] nParam ƒpƒ‰ƒƒ^
- * @return ƒŠƒUƒ‹ƒg ƒR[ƒh
+ * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @return ãƒªã‚¶ãƒ«ãƒˆ ã‚³ãƒ¼ãƒ‰
  */
 INTPTR CComWacom::Message(UINT nMessage, INTPTR nParam)
 {

@@ -54,40 +54,9 @@ WINBASEAPI BOOL WINAPI SetFilePointerEx(HANDLE, LARGE_INTEGER, PLARGE_INTEGER, D
 #define	LABEL				__declspec(naked)
 #define	RELEASE(x) 			if (x) {(x)->Release(); (x) = NULL;}
 
-#define	MT32SOUND_DLL
-
-#define	OSLINEBREAK_CRLF
-#define	SUPPORT_SJIS
-
-#define	SUPPORT_8BPP
-#define	SUPPORT_24BPP
-
-#define	SUPPORT_SOFTKBD		0
-#define SUPPORT_S98
-#define SUPPORT_WAVEREC
-#define SUPPORT_RECVIDEO
-#define	SUPPORT_KEYDISP
-#define	SUPPORT_MEMDBG32
-#define	SUPPORT_HOSTDRV
-#if !defined(_WIN64)
-#define	SUPPORT_DCLOCK
-#endif
-
-#define SOUND_CRITICAL
-#define	SOUNDRESERVE	20
-//#define SUPPORT_VSTi
-#define SUPPORT_ASIO
 #if (_MSC_VER >= 1500)
 #define SUPPORT_WASAPI
 #endif	/* (_MSC_VER >= 1500) */
-
-#define	SUPPORT_TEXTCNV
-
-#define SUPPORT_WIN2000HOST
-
-#if defined(SUPPORT_IA32_HAXM)
-#define USE_CUSTOM_HOOKINST
-#endif
 
 #if defined(CPUCORE_IA32)
 #pragma warning(disable: 4819)

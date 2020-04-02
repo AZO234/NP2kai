@@ -1,7 +1,7 @@
 
 NP2_PATH := $(CORE_DIR)
 
-INCFLAGS := -I$(NP2_PATH) \
+INCFLAGS :=	-I$(NP2_PATH) \
 	-I$(NP2_PATH)/cbus \
 	-I$(NP2_PATH)/common \
 	-I$(NP2_PATH)/diskimage \
@@ -15,6 +15,7 @@ INCFLAGS := -I$(NP2_PATH) \
 	-I$(NP2_PATH)/generic \
 	-I$(NP2_PATH)/io \
 	-I$(NP2_PATH)/mem \
+	-I$(NP2_PATH)/network \
 	-I$(NP2_PATH)/sound \
 	-I$(NP2_PATH)/sound/vermouth \
 	-I$(NP2_PATH)/sound/mame \
@@ -24,48 +25,45 @@ INCFLAGS := -I$(NP2_PATH) \
 	-I$(NP2_PATH)/wab \
 	-I$(NP2_PATH)/sdl2
 
-SOURCES_C := 		$(NP2_PATH)/calendar.c \
-		$(NP2_PATH)/debugsub.c \
-		$(NP2_PATH)/keystat.c \
-		$(NP2_PATH)/nevent.c \
-		$(NP2_PATH)/np2_thread.c \
-		$(NP2_PATH)/np2_tickcount.c \
-		$(NP2_PATH)/pccore.c \
-		$(NP2_PATH)/statsave.c \
-		$(NP2_PATH)/timing.c \
-		$(wildcard $(NP2_PATH)/bios/*.c) \
-		$(wildcard $(NP2_PATH)/cbus/*.c) \
-		$(wildcard $(NP2_PATH)/codecnv/*.c) \
-		$(wildcard $(NP2_PATH)/common/*.c) \
-		$(wildcard $(NP2_PATH)/diskimage/*.c) \
-		$(NP2_PATH)/diskimage/cd/cdd_ccd.c \
-		$(NP2_PATH)/diskimage/cd/cdd_cue.c \
-		$(NP2_PATH)/diskimage/cd/cdd_iso.c \
-		$(NP2_PATH)/diskimage/cd/cdd_mds.c \
-		$(NP2_PATH)/diskimage/cd/cdd_nrg.c \
-		$(wildcard $(NP2_PATH)/diskimage/fd/*.c) \
-		$(wildcard $(NP2_PATH)/embed/*.c) \
-		$(wildcard $(NP2_PATH)/embed/menu/*.c) \
-		$(wildcard $(NP2_PATH)/embed/menubase/*.c) \
-		$(wildcard $(NP2_PATH)/fdd/*.c) \
-		$(wildcard $(NP2_PATH)/font/*.c) \
-		$(wildcard $(NP2_PATH)/generic/*.c) \
-		$(wildcard $(NP2_PATH)/io/*.c) \
-		$(wildcard $(NP2_PATH)/io/pci/*.c) \
-		$(wildcard $(NP2_PATH)/lio/*.c) \
-		$(wildcard $(NP2_PATH)/mem/*.c) \
-		$(wildcard $(NP2_PATH)/sdl2/*.c) \
-		$(wildcard $(NP2_PATH)/sound/*.c) \
-		$(wildcard $(NP2_PATH)/sound/getsnd/*.c) \
-		$(wildcard $(NP2_PATH)/sound/mame/*.c) \
-		$(wildcard $(NP2_PATH)/sound/vermouth/*.c) \
-		$(wildcard $(NP2_PATH)/trap/*.c) \
-		$(wildcard $(NP2_PATH)/vram/*.c) \
-		$(wildcard $(NP2_PATH)/wab/*.c)
+SOURCES_C :=	$(NP2_PATH)/calendar.c \
+	$(NP2_PATH)/debugsub.c \
+	$(NP2_PATH)/keystat.c \
+	$(NP2_PATH)/nevent.c \
+	$(NP2_PATH)/np2_thread.c \
+	$(NP2_PATH)/np2_tickcount.c \
+	$(NP2_PATH)/pccore.c \
+	$(NP2_PATH)/statsave.c \
+	$(NP2_PATH)/timing.c \
+	$(wildcard $(NP2_PATH)/bios/*.c) \
+	$(wildcard $(NP2_PATH)/cbus/*.c) \
+	$(wildcard $(NP2_PATH)/codecnv/*.c) \
+	$(wildcard $(NP2_PATH)/common/*.c) \
+	$(wildcard $(NP2_PATH)/diskimage/*.c) \
+	$(NP2_PATH)/diskimage/cd/cdd_ccd.c \
+	$(NP2_PATH)/diskimage/cd/cdd_cue.c \
+	$(NP2_PATH)/diskimage/cd/cdd_iso.c \
+	$(NP2_PATH)/diskimage/cd/cdd_mds.c \
+	$(NP2_PATH)/diskimage/cd/cdd_nrg.c \
+	$(wildcard $(NP2_PATH)/diskimage/fd/*.c) \
+	$(wildcard $(NP2_PATH)/embed/*.c) \
+	$(wildcard $(NP2_PATH)/embed/menu/*.c) \
+	$(wildcard $(NP2_PATH)/embed/menubase/*.c) \
+	$(wildcard $(NP2_PATH)/fdd/*.c) \
+	$(wildcard $(NP2_PATH)/font/*.c) \
+	$(wildcard $(NP2_PATH)/generic/*.c) \
+	$(wildcard $(NP2_PATH)/io/*.c) \
+	$(wildcard $(NP2_PATH)/io/pci/*.c) \
+	$(wildcard $(NP2_PATH)/lio/*.c) \
+	$(wildcard $(NP2_PATH)/mem/*.c) \
+	$(wildcard $(NP2_PATH)/network/*.c) \
+	$(wildcard $(NP2_PATH)/sdl2/*.c) \
+	$(wildcard $(NP2_PATH)/sound/*.c) \
+	$(wildcard $(NP2_PATH)/sound/getsnd/*.c) \
+	$(wildcard $(NP2_PATH)/sound/mame/*.c) \
+	$(wildcard $(NP2_PATH)/sound/vermouth/*.c) \
+	$(wildcard $(NP2_PATH)/trap/*.c) \
+	$(wildcard $(NP2_PATH)/vram/*.c) \
+	$(wildcard $(NP2_PATH)/wab/*.c)
 
 SOURCES_CXX := $(wildcard $(NP2_PATH)/sound/fmgen/*.cpp)
 
-ifeq ($(SUPPORT_NET), 1)
-	INCFLAGS+=	-I$(NP2_PATH)/network
-	SOURCES_C+=	$(wildcard $(NP2_PATH)/network/*.c)
-endif
