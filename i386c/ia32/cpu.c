@@ -392,7 +392,9 @@ exec_allstep(void)
 		}
 
 		/* rep */
+#if defined(SUPPORT_ASYNC_CPU)
 		repflag = CPU_ECX;
+#endif
 		CPU_WORKCLOCK(5);
 	#if defined(DEBUG)
 		if (!cpu_debug_rep_cont) {

@@ -2,8 +2,6 @@ LOCAL_PATH := $(call my-dir)
 
 CORE_DIR := $(LOCAL_PATH)/..
 
-SUPPORT_NET := 1
-
 include $(CORE_DIR)/sdl2/Makefile.common
 
 INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro \
