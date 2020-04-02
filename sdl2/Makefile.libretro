@@ -684,9 +684,9 @@ ifeq ($(DEBUG), 1)
 		else
 			COMMONFLAGS += -MDd
 		endif
-		COMMONFLAGS += -Od -Zi -DDEBUG -D_DEBUG
+		COMMONFLAGS += -Od -Zi -DDEBUG -D_DEBUG -DTRACE
 	else
-		COMMONFLAGS += -O0 -g -DDEBUG -D_DEBUG
+		COMMONFLAGS += -O0 -g -DDEBUG -D_DEBUG -DTRACE
 	endif
 else
 	ifneq (,$(findstring msvc,$(platform)))
@@ -695,9 +695,9 @@ else
 		else
 			COMMONFLAGS += -MD
 		endif
-		COMMONFLAGS += -O2 -DNDEBUG
+		COMMONFLAGS += -O2 -DNDEBUG -D_NDEBUG
 	else
-		COMMONFLAGS += -O2 -DNDEBUG
+		COMMONFLAGS += -O2 -DNDEBUG -D_NDEBUG
 	endif
 endif
 
@@ -884,6 +884,10 @@ ifeq ($(platform), psp1)
 endif
 ifeq ($(SUPPORT_NP2_THREAD), 1)
 	DEFINES += -DSUPPORT_NP2_THREAD
+endif
+SUPPORT_ASYNC_CPU=1
+ifeq ($(SUPPORT_ASYNC_CPU), 1)
+	DEFINES += -DSUPPORT_ASYNC_CPU
 endif
 
 CFLAGS += $(fpic) $(DEFINES) $(C_VER) $(ENDIANNESS_DEFINES)

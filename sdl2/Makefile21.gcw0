@@ -32,9 +32,9 @@ LDFLAGS := -L/opt/gcw0-toolchain/usr/lib
 fpic = -fPIC
 
 ifeq ($(DEBUG), 1)
-COMMONFLAGS += -O0 -g -DDEBUG -D_DEBUG
+COMMONFLAGS += -O0 -g -DDEBUG -D_DEBUG -DTRACE
 else
-COMMONFLAGS += -O2 -DNDEBUG
+COMMONFLAGS += -O2 -DNDEBUG -D_NDEBUG
 endif
 
 CORE_DIR := ..
