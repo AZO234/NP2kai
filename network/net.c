@@ -93,7 +93,7 @@ static OEMCHAR np2net_tapName[MAX_PATH]; // TAPデバイス名
 static int		np2net_hThreadexit = 0; // スレッド終了フラグ
 
 #if defined(_WINDOWS)
-static TCHAR *GetNetWorkDeviceGuid(CONST TCHAR *, TCHAR *, DWORD); // TAPデバイス名からGUIDを取得する
+static char *GetNetWorkDeviceGuid(const char *, char *, DWORD); // TAPデバイス名からGUIDを取得する
 
 static HANDLE	np2net_hTap = NULL; // TAPデバイスの読み書きハンドル
 static HANDLE	np2net_hThreadR = NULL; // Read用スレッド
