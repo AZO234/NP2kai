@@ -2539,6 +2539,9 @@ create_menu(void)
 	xmenu_toggle_item(NULL, "xshiftkey", np2cfg.XSHIFT & 1);
 	xmenu_toggle_item(NULL, "xrollkey", np2oscfg.xrollkey);
 	xmenu_toggle_item(NULL, "itfwork", np2cfg.ITF_WORK);
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+	xmenu_toggle_item(NULL, "fastmemchk", np2cfg.memcheckspeed > 1);
+#endif
 	xmenu_toggle_item(NULL, "fixmmtimer", np2cfg.timerfix);
 	xmenu_toggle_item(NULL, "16mbmemchk", np2cfg.memchkmx == 15);
 #if defined(SUPPORT_FMGEN)
