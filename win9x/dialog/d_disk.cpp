@@ -156,7 +156,9 @@ void dialog_changehdd(HWND hWnd, REG8 drv)
 #endif
 	if ((szPath == NULL) || (szPath[0] == '\0') || _tcsnicmp(szPath, OEMTEXT("\\\\.\\"), 4)==0)
 	{
-		strcpy(szPath, sxsi_getfilename(drv));
+		if(sxsi_getfilename(drv)) {
+			strcpy(szPath, sxsi_getfilename(drv));
+		}
 		if ((szPath == NULL) || (szPath[0] == '\0') || _tcsnicmp(szPath, OEMTEXT("\\\\.\\"), 4)==0)
 		{
 			if(sxsi_getdevtype(drv)!=SXSIDEV_CDROM)

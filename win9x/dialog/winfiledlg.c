@@ -25,16 +25,16 @@ BOOL WinFileDialogW_MM(
   wchar_t wtitle[MAX_PATH];
   wchar_t wfilter[MAX_PATH];
 
-  codecnv_utf8toucs2(wpath, MAX_PATH, path, MAX_PATH);
-  codecnv_utf8toucs2(wname, MAX_PATH, name, MAX_PATH);
-  codecnv_utf8toucs2(wdefext, MAX_PATH, defext, MAX_PATH);
-  codecnv_utf8toucs2(wtitle, MAX_PATH, title, MAX_PATH);
-  codecnv_utf8toucs2(wfilter, MAX_PATH, filter, MAX_PATH);
+  codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
+  codecnv_utf8toucs2(wname, MAX_PATH, name, -1);
+  codecnv_utf8toucs2(wdefext, MAX_PATH, defext, -1);
+  codecnv_utf8toucs2(wtitle, MAX_PATH, title, -1);
+  codecnv_utf8toucs2(wfilter, MAX_PATH, filter, -1);
 
   res = WinFileDialogW_WW(hwnd, pofnw, mode, wpath, wname, wdefext, wtitle, wfilter, nFilterIndex);
 
-  codecnv_ucs2toutf8(path, MAX_PATH, wpath, MAX_PATH);
-  codecnv_ucs2toutf8(name, MAX_PATH, wname, MAX_PATH);
+  codecnv_ucs2toutf8(path, MAX_PATH, wpath, -1);
+  codecnv_ucs2toutf8(name, MAX_PATH, wname, -1);
 
   return res;
 }
