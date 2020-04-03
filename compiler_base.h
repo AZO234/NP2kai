@@ -440,8 +440,8 @@ typedef int32_t FILELEN;
 #endif
 
 #include "common.h"
-#include "_memory.h"
-#include "rect.h"
-#include "lstarray.h"
+#include "common/_memory.h"
+#include "common/rect.h"
+#include "common/lstarray.h"
 
 #endif  // _COMPILER_BASE_H_

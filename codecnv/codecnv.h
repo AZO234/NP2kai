@@ -21,8 +21,19 @@ UINT codecnv_euctoucs2(UINT16 *lpOutput, UINT cchOutput, const char *lpInput, UI
 UINT codecnv_utf8toucs2(UINT16 *lpOutput, UINT cchOutput, const char *lpInput, UINT cchInput);
 UINT codecnv_utf8tosjis(char *lpOutput, UINT cchOutput, const char *lpInput, UINT cchInput);
 
+UINT codecnv_ucs2len(const UINT16 *lpString);
 UINT codecnv_ucs2tosjis(char *lpOutput, UINT cchOutput, const UINT16 *lpInput, UINT cchInput);
 UINT codecnv_ucs2toutf8(char *lpOutput, UINT cchOutput, const UINT16 *lpInput, UINT cchInput);
+UINT codecnv_utf8toucs2(UINT16 *lpOutput, UINT cchOutput, const char *lpInput, UINT cchInput);
+
+UINT codecnv_utf8toucs4_1(UINT32 *lpOutput, const char *lpInput, UINT cchInput);
+UINT codecnv_utf8toucs4(UINT32 *lpOutput, UINT cchOutput, const char *lpInput, UINT cchInput);
+UINT codecnv_ucs4toutf8(char *lpOutput, UINT cchOutput, const UINT32 *lpInput, UINT cchInput);
+
+UINT codecnv_ucs4len(const UINT32 *lpString);
+UINT codecnv_ucs4toucs2_1(UINT16 *lpOutput, UINT cchOutput, const UINT32 *lpInput);
+UINT codecnv_ucs2toucs4(UINT32 *lpOutput, UINT cchOutput, const UINT16 *lpInput, UINT cchInput);
+UINT codecnv_ucs4toucs2(UINT16 *lpOutput, UINT cchOutput, const UINT32 *lpInput, UINT cchInput);
 
 #ifdef __cplusplus
 }

@@ -56,10 +56,11 @@ ANK=Alphabet Numeric Katakana=1Byte。
 */
 
 #include "milstr.h"
-#include <stdio.h>
 
-char strString1[1024];
-char strString2[1024];
+#define COUNT_BUFFER 256
+
+char strString1[COUNT_BUFFER];
+char strString2[COUNT_BUFFER];
 
 int main(int iArgc, char* strArgv[]) {
   // test000 : OEMSTRCPY, OEMPRINTFSTR

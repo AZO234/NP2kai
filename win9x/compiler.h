@@ -74,8 +74,8 @@ WINBASEAPI BOOL WINAPI SetFilePointerEx(HANDLE, LARGE_INTEGER, PLARGE_INTEGER, D
 #endif
 #endif	/* (_MSC_VER >= 1400) */
 
-#include "milstr.h"
-#include "trace.h"
+#include "common/milstr.h"
+#include "win9x/misc/trace.h"
 
 #endif  // COMPILER_H
 

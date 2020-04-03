@@ -25,9 +25,9 @@
 
 #define GETTICK() (cpu_features_get_time_usec() / 1000)  // millisecond timer
 
-#include "retro_inline.h"
-#include "milstr.h"
-#include "trace.h"
+//#include "retro_inline.h"
+#include "common/milstr.h"
+#include "sdl2/trace.h"
 
 #endif  // COMPILER_H
 

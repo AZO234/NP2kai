@@ -31,8 +31,8 @@
 
 #define	USE_SDL_JOYSTICK
 
-#include "milstr.h"
-#include "trace.h"
+#include "common/milstr.h"
+#include "sdl2/trace.h"
 
 #endif  // COMPILER_H
 

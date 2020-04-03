@@ -112,8 +112,8 @@ G_END_DECLS
 extern char timidity_cfgfile_path[MAX_PATH];
 #define	TIMIDITY_CFGFILE	timidity_cfgfile_path
 
-#include "milstr.h"
-#include "trace.h"
-#include "toolkit.h"
+#include "common/milstr.h"
+#include "x11/trace.h"
+#include "x11/toolkit.h"
 
 #endif	/* NP2_X11_COMPILER_H__ */

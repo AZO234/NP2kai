@@ -3,7 +3,11 @@
  * @brief	Implementation of converting UCS2 to S-JIS
  */
 
+#ifdef CODECNV_TEST
+#include "compiler_base.h"
+#else
 #include "compiler.h"
+#endif
 #include "codecnv.h"
 
 //! undefined code
