@@ -5,6 +5,7 @@
 
 #include "compiler.h"
 #include "cmpipe.h"
+#include "codecnv/codecnv.h"
 
 #if defined(SUPPORT_NAMED_PIPE)
 
@@ -70,26 +71,12 @@ bool CComPipe::Initialize(LPCSTR pipename, LPCSTR servername)
 		// No pipe name
 		return false;
 	}
-	MultiByteToWideChar(
-		CP_UTF8,
-		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
-		pipename,
-		MAX_PATH,
-		wpipename,
-		sizeof(wpipename)
-	);
+	codecnv_utf8toucs2((UINT16*)wpipename, MAX_PATH, pipename, -1);
 	if(wcslen(wpipename) == 0){
 		// No pipe name
 		return false;
 	}
-	MultiByteToWideChar(
-		CP_UTF8,
-		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
-		servername!=NULL ? servername : "",
-		MAX_PATH,
-		wservername,
-		sizeof(wservername)
-	);
+	codecnv_utf8toucs2((UINT16*)wservername, MAX_PATH, servername!=NULL ? servername : "", -1);
 	if(wcslen(wpipename) + wcslen(wservername) > MAX_PATH - 16){
 		// too long pipe name
 		return false;

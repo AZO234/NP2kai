@@ -1,108 +1,84 @@
 /* === NP2 file dialog for Windows === (c) 2020 AZO */
 
 #include "winfiledlg.h"
-#include "codecnv.h"
+#include "codecnv/codecnv.h"
 
-#define WINFILEDLG_GET_FLAG (OFN_FILEMUSTEXIST | OFN_HIDEREADONLY)
-#define WINFILEDLG_SET1_FLAG (OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_SHAREAWARE)
-#define WINFILEDLG_SET2_FLAG (OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY)
+#define WINFILEDLG_GET1_FLAG (OFN_FILEMUSTEXIST | OFN_HIDEREADONLY)
+#define WINFILEDLG_GET2_FLAG (OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_SHAREAWARE)
+#define WINFILEDLG_SET_FLAG  (OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY)
 
 BOOL WinFileDialogW_MM(
   HWND hwnd,
+  OPENFILENAMEW* pofnw,
   const WinFileDialogW_Mode_t mode,
   char* path,
   char* name,
+  const char* defext,
   const char* title,
-  const char* filter
+  const char* filter,
+  DWORD nFilterIndex
 ) {
   BOOL res;
   wchar_t wpath[MAX_PATH];
   wchar_t wname[MAX_PATH];
-
-  res = WinFileDialogW_MW(hwnd, mode, wpath, wname, title, filter);
-
-  codecnv_ucs2toutf8(path, MAX_PATH, wpath, MAX_PATH);
-  codecnv_ucs2toutf8(name, MAX_PATH, wname, MAX_PATH);
-
-  return res;
-}
-
-BOOL WinFileDialogW_MW(
-  HWND hwnd,
-  const WinFileDialogW_Mode_t mode,
-  wchar_t* path,
-  wchar_t* name,
-  const char* title,
-  const char* filter
-) {
-  wchar_t wtitle[256];
+  wchar_t wdefext[MAX_PATH];
+  wchar_t wtitle[MAX_PATH];
   wchar_t wfilter[MAX_PATH];
 
-  codecnv_utf8toucs2(wtitle, 256, title, 256);
+  codecnv_utf8toucs2(wpath, MAX_PATH, path, MAX_PATH);
+  codecnv_utf8toucs2(wname, MAX_PATH, name, MAX_PATH);
+  codecnv_utf8toucs2(wdefext, MAX_PATH, defext, MAX_PATH);
+  codecnv_utf8toucs2(wtitle, MAX_PATH, title, MAX_PATH);
   codecnv_utf8toucs2(wfilter, MAX_PATH, filter, MAX_PATH);
 
-  return WinFileDialogW_WW(hwnd, mode, wpath, wname, title, filter);
-}
-
-BOOL WinFileDialogW_WM(
-  HWND hwnd,
-  const WinFileDialogW_Mode_t mode,
-  char* path,
-  char* name,
-  const wchar_t* title,
-  const wchar_t* filter
-) {
-  BOOL res;
-  wchar_t wpath[MAX_PATH];
-  wchar_t wname[MAX_PATH];
-
-  res = WinFileDialogW_WW(hwnd, mode, wpath, wname, title, filter);
+  res = WinFileDialogW_WW(hwnd, pofnw, mode, wpath, wname, wdefext, wtitle, wfilter, nFilterIndex);
 
   codecnv_ucs2toutf8(path, MAX_PATH, wpath, MAX_PATH);
   codecnv_ucs2toutf8(name, MAX_PATH, wname, MAX_PATH);
 
   return res;
 }
+
 
 BOOL WinFileDialogW_WW(
   HWND hwnd,
+  OPENFILENAMEW* pofnw,
   const WinFileDialogW_Mode_t mode,
   wchar_t* path,
   wchar_t* name,
+  const wchar_t* defext,
   const wchar_t* title,
-  const wchar_t* filter
+  const wchar_t* filter,
+  DWORD nFilterIndex
 ) {
   BOOL res = TRUE;
-  OPENFILENAMEW ofnw;
 
-  path[0] = L'\0';
-  name[0] = L'\0';
-
-  memset(&ofnw, 0, sizeof(OPENFILENAMEW));
-
-  ofnw.lStructSize = sizeof(OPENFILENAMEW);
-  ofnw.hwndOwner = hwnd;
-  ofnw.lpstrFile = path;
-  ofnw.nMaxFile = MAX_PATH;
-  ofnw.lpstrFileTitle = name;
-  ofnw.nMaxFileTitle = MAX_PATH;
-  ofnw.lpstrFilter = filter;
-  ofnw.lpstrTitle = title;
+  memset(pofnw, 0, sizeof(OPENFILENAMEW));
+  pofnw->lStructSize = sizeof(OPENFILENAMEW);
+  pofnw->hwndOwner = hwnd;
+  pofnw->lpstrFile = path;
+  pofnw->nMaxFile = MAX_PATH;
+  pofnw->lpstrFileTitle = name;
+  pofnw->lpstrDefExt = defext;
+  pofnw->nMaxFileTitle = MAX_PATH;
+  pofnw->lpstrFilter = filter;
+  pofnw->lpstrTitle = title;
+  pofnw->nFilterIndex = nFilterIndex;
 
   switch(mode) {
-  case WINFILEDIALOGW_MODE_GET:
-    ofnw.Flags = WINFILEDLG_GET_FLAG;
-    if(GetOpenFileNameW(&ofnw) == FALSE) 
+  case WINFILEDIALOGW_MODE_GET1:
+    pofnw->Flags = WINFILEDLG_GET1_FLAG;
+    if(GetOpenFileNameW(pofnw) == FALSE) 
       res = FALSE;
     break;
-  case WINFILEDIALOGW_MODE_SET1:
-    ofnw.Flags = WINFILEDLG_SET1_FLAG;
-    if(GetSaveFileNameW(&ofnw) == FALSE) 
+  case WINFILEDIALOGW_MODE_GET2:
+    pofnw->Flags = WINFILEDLG_GET2_FLAG;
+    if(GetOpenFileNameW(pofnw) == FALSE) 
       res = FALSE;
     break;
-  case WINFILEDIALOGW_MODE_SET2:
-    ofnw.Flags = WINFILEDLG_SET2_FLAG;
-    if(GetSaveFileNameW(&ofnw) == FALSE) 
+  case WINFILEDIALOGW_MODE_SET:
+    pofnw->Flags = WINFILEDLG_SET_FLAG;
+    if(GetSaveFileNameW(pofnw) == FALSE) 
       res = FALSE;
     break;
   default:

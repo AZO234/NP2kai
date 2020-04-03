@@ -11,7 +11,7 @@
 #else
 #include	<unistd.h>
 #endif
-
+#include	"codecnv/codecnv.h"
 
 //#define TRACEOUT(a) printf(a);printf("\n");
 #define TRACEOUT(a)
@@ -412,16 +412,8 @@ static int np2net_openTAP(const char* tapname){
 	TRACEOUT(("LGY-98: [%s] GUID = %s\n", TAPname, Buf));
 	sprintf(DevicePath, DEVICE_PATH_FMT, Buf);
 
-	MultiByteToWideChar(
-		CP_UTF8,
-		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
-		DevicePath,
-		MAX_PATH,
-		wDevicePath,
-		sizeof(wDevicePath)
-	);
-
 	// TAP デバイスを開く
+	codecnv_utf8toucs2(wDevicePath, MAX_PATH, DevicePath, -1);
 	np2net_hTap = CreateFileW(wDevicePath, GENERIC_READ | GENERIC_WRITE,
 		0, 0, OPEN_EXISTING,
 		FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, 0);
@@ -609,16 +601,7 @@ static char *GetNetWorkDeviceGuid(const char *pDisplayName, char *pszBuf, DWORD 
  
       if (nResult == ERROR_SUCCESS) {
         if (stricmp(szData, pDisplayName) == 0) {
-          WideCharToMultiByte(
-            CP_UTF8,
-            WC_SEPCHARS,
-            pKeyName3,
-            MAX_PATH,
-            pszBuf,
-            cbBuf,
-            NULL,
-            NULL
-          );
+          codecnv_ucs2toutf8(pszBuf, MAX_PATH, pKeyName3, -1);
           bDone = TRUE;
           break;
         }

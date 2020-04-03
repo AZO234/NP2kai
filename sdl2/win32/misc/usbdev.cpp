@@ -6,6 +6,7 @@
 #include "compiler.h"
 #include "usbdev.h"
 #include <setupapi.h>
+#include "codecnv/codecnv.h"
 
 #pragma comment(lib, "setupapi.lib")
 #pragma comment(lib, "winusb.lib")
@@ -122,16 +123,7 @@ LPWSTR CUsbDev::GetDevicePath(const GUID& InterfaceGuid, LPSTR lpDevicePath, int
 		ULONG nLength = nRequiredLength;
 		if (::SetupDiGetDeviceInterfaceDetailW(hDeviceInfo, &interfaceData, pDetailData, nLength, &nRequiredLength, NULL))
 		{
-			WideCharToMultiByte(
-				CP_UTF8,
-				WC_SEPCHARS,
-				pDetailData->DevicePath,
-				MAX_PATH,
-				lpDevicePath,
-				cchDevicePath,
-				NULL,
-				NULL
-			);
+			codecnv_ucs2toutf8(lpDevicePath, MAX_PATH, pDetailData->DevicePath, -1);
 			lpRet = lpDevicePath;
 		}
 		::LocalFree(pDetailData);

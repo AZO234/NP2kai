@@ -107,8 +107,12 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/codecnv/tcswap32.c \
 		$(real_topsrcdir)/codecnv/textcnv.c \
 		$(real_topsrcdir)/codecnv/ucs2sjis.c \
+		$(real_topsrcdir)/codecnv/ucs2ucs4.c \
 		$(real_topsrcdir)/codecnv/ucs2utf8.c \
+		$(real_topsrcdir)/codecnv/ucs4ucs2.c \
+		$(real_topsrcdir)/codecnv/ucs4utf8.c \
 		$(real_topsrcdir)/codecnv/utf8ucs2.c \
+		$(real_topsrcdir)/codecnv/utf8ucs4.c \
 		\
 		$(real_topsrcdir)/bios/bios.c \
 		$(real_topsrcdir)/bios/bios09.c \

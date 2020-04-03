@@ -2241,6 +2241,24 @@
     <ClCompile Include="..\diskimage\cd\cdd_real.c">
       <Filter>ソース ファイル\diskimage\cd</Filter>
     </ClCompile>
+    <ClCompile Include="..\codecnv\ucs2sjis.c">
+      <Filter>ソース ファイル\codecnv</Filter>
+    </ClCompile>
+    <ClCompile Include="..\codecnv\ucs2ucs4.c">
+      <Filter>ソース ファイル\codecnv</Filter>
+    </ClCompile>
+    <ClCompile Include="..\codecnv\ucs4ucs2.c">
+      <Filter>ソース ファイル\codecnv</Filter>
+    </ClCompile>
+    <ClCompile Include="..\codecnv\ucs4utf8.c">
+      <Filter>ソース ファイル\codecnv</Filter>
+    </ClCompile>
+    <ClCompile Include="..\codecnv\utf8ucs4.c">
+      <Filter>ソース ファイル\codecnv</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\winfiledlg.c">
+      <Filter>ソース ファイル\win9x\dialog</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\calendar.h">
@@ -3274,6 +3292,9 @@
     </ClInclude>
     <ClInclude Include="..\diskimage\cd\cdd_real.h">
       <Filter>ヘッダー ファイル\diskimage\cd</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\winfiledlg.h">
+      <Filter>ヘッダー ファイル\win9x\dialog</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -8,6 +8,7 @@
 //#include <algorithm>
 #include <setupapi.h>
 #include <tchar.h>
+#include "codecnv/codecnv.h"
 
 #pragma comment(lib, "setupapi.lib")
 
@@ -46,15 +47,7 @@ bool CTty::Open(LPCSTR lpDevName, UINT nSpeed, LPCSTR lpcszParam)
 		return false;
 	}
 
-	MultiByteToWideChar(
-		CP_UTF8,
-		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
-		lpDevName,
-		MAX_PATH,
-		wDevName,
-		sizeof(wDevName)
-	);
-
+	codecnv_utf8toucs2(wDevName, MAX_PATH, lpDevName, -1);
 	HANDLE hFile = ::CreateFileW(wDevName, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, NULL);
 	if (hFile == INVALID_HANDLE_VALUE)
 	{

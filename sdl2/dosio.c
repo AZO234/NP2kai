@@ -48,14 +48,7 @@ FILEH file_open(const OEMCHAR *path) {
 	return(filestream_open(path, RETRO_VFS_FILE_ACCESS_READ_WRITE | RETRO_VFS_FILE_ACCESS_UPDATE_EXISTING, RETRO_VFS_FILE_ACCESS_HINT_NONE));
 #elif defined(_WINDOWS) && defined(OSLANG_UTF8)
 	wchar_t	wpath[MAX_PATH];
-	MultiByteToWideChar(
-		CP_UTF8,
-		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
-		path,
-		MAX_PATH,
-		wpath,
-		sizeof(wpath)
-	);
+	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
 	return(_wfopen(wpath, L"rb+"));
 #else
 	return(fopen(path, "rb+"));
@@ -68,14 +61,7 @@ FILEH file_open_rb(const OEMCHAR *path) {
 	return(filestream_open(path, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE));
 #elif defined(_WINDOWS) && defined(OSLANG_UTF8)
 	wchar_t	wpath[MAX_PATH];
-	MultiByteToWideChar(
-		CP_UTF8,
-		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
-		path,
-		MAX_PATH,
-		wpath,
-		sizeof(wpath)
-	);
+	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
 	return(_wfopen(wpath, L"rb"));
 #else
 	return(fopen(path, "rb"));
@@ -88,14 +74,7 @@ FILEH file_create(const OEMCHAR *path) {
 	return(filestream_open(path, RETRO_VFS_FILE_ACCESS_READ_WRITE, RETRO_VFS_FILE_ACCESS_HINT_NONE));
 #elif defined(_WINDOWS) && defined(OSLANG_UTF8)
 	wchar_t	wpath[MAX_PATH];
-	MultiByteToWideChar(
-		CP_UTF8,
-		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
-		path,
-		MAX_PATH,
-		wpath,
-		sizeof(wpath)
-	);
+	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
 	return(_wfopen(wpath, L"wb+"));
 #else
 	return(fopen(path, "wb+"));
@@ -218,14 +197,7 @@ short file_attr(const OEMCHAR *path) {
 #elif defined(_WINDOWS) && defined(OSLANG_UTF8)
 	struct _stat sb;
 	wchar_t	wpath[MAX_PATH];
-	MultiByteToWideChar(
-		CP_UTF8,
-		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
-		path,
-		MAX_PATH,
-		wpath,
-		sizeof(wpath)
-	);
+	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
 	if (_wstat(wpath, &sb) == 0)
 #else
 	struct stat	sb;
@@ -295,14 +267,7 @@ short file_delete(const OEMCHAR *path) {
 	return(filestream_delete(path))
 #elif defined(_WINDOWS) && defined(OSLANG_UTF8)
 	wchar_t	wpath[MAX_PATH];
-	MultiByteToWideChar(
-		CP_UTF8,
-		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
-		path,
-		MAX_PATH,
-		wpath,
-		sizeof(wpath)
-	);
+	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
 	return(_wremove(wpath));
 #else
 	return(remove(path));
@@ -316,22 +281,8 @@ short file_rename(const OEMCHAR *existpath, const OEMCHAR *newpath) {
 #elif defined(_WINDOWS) && defined(OSLANG_UTF8)
 	wchar_t	wepath[MAX_PATH];
 	wchar_t	wnpath[MAX_PATH];
-	MultiByteToWideChar(
-		CP_UTF8,
-		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
-		existpath,
-		MAX_PATH,
-		wepath,
-		sizeof(wepath)
-	);
-	MultiByteToWideChar(
-		CP_UTF8,
-		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
-		newpath,
-		MAX_PATH,
-		wnpath,
-		sizeof(wnpath)
-	);
+	codecnv_utf8toucs2(wepath, MAX_PATH, existpath, -1);
+	codecnv_utf8toucs2(wnpath, MAX_PATH, newpath, -1);
 	return((short)_wrename(wepath, wnpath));
 #else
 	return((short)rename(existpath, newpath));
@@ -344,14 +295,7 @@ short file_dircreate(const OEMCHAR *path) {
 	return((short)path_mkdir(path));
 #elif defined(_WINDOWS) && defined(OSLANG_UTF8)
 	wchar_t	wpath[MAX_PATH];
-	MultiByteToWideChar(
-		CP_UTF8,
-		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
-		path,
-		MAX_PATH,
-		wpath,
-		sizeof(wpath)
-	);
+	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
 	return((short)_wmkdir(wpath));
 #else
 	return((short)mkdir(path, 0777));
@@ -364,14 +308,7 @@ short file_dirdelete(const OEMCHAR *path) {
 	return((short)rmdir(path));
 #elif defined(_WINDOWS) && defined(OSLANG_UTF8)
 	wchar_t	wpath[MAX_PATH];
-	MultiByteToWideChar(
-		CP_UTF8,
-		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
-		path,
-		MAX_PATH,
-		wpath,
-		sizeof(wpath)
-	);
+	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
 	return((short)_wrmdir(wpath));
 #else
 	return((short)rmdir(path));
@@ -459,16 +396,7 @@ static BRESULT setflist(WIN32_FIND_DATA *w32fd, FLINFO *fli) {
 																== SUCCESS) {
 		fli->caps |= FLICAPS_DATE | FLICAPS_TIME;
 	}
-	WideCharToMultiByte(
-		CP_UTF8,
-		WC_SEPCHARS,
-		w32fd->cFileName,
-		MAX_PATH,
-		fli->path,
-		MAX_PATH,
-		NULL,
-		NULL
-	);
+	codecnv_ucs2toutf8(fli->path, MAX_PATH, w32fd->cFileName, -1);
 	return(SUCCESS);
 }
 
@@ -482,14 +410,7 @@ FLISTH file_list1st(const OEMCHAR *dir, FLINFO *fli) {
 	file_cpyname(path, dir, sizeof(path));
 	file_setseparator(path, sizeof(path));
 	file_catname(path, "*.*", sizeof(path));
-	MultiByteToWideChar(
-		CP_UTF8,
-		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
-		path,
-		MAX_PATH,
-		wpath,
-		sizeof(wpath)
-	);
+	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
 	hdl = FindFirstFileW(wpath, &w32fd);
 	if (hdl != INVALID_HANDLE_VALUE) {
 		do {

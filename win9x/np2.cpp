@@ -30,6 +30,7 @@
 #include "misc\WndProc.h"
 #include "debuguty\viewer.h"
 #include "np2arg.h"
+#include "codecnv/codecnv.h"
 #include "dosio.h"
 #include "misc\tstring.h"
 #include "commng.h"
@@ -1921,16 +1922,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 #if defined(OSLANG_UTF8)
 					wchar_t wchr[MAX_PATH];
 					DragQueryFileW((HDROP)wParam, i, wchr, NELEMENTS(wchr));
-					WideCharToMultiByte(
-						CP_UTF8,
-						WC_SEPCHARS,
-						wchr,
-						MAX_PATH,
-						fname,
-						MAX_PATH,
-						NULL,
-						NULL
-					);
+					codecnv_ucs2toutf8(fname, MAX_PATH, (UINT16*)wchr, -1);
 #else
 					DragQueryFile((HDROP)wParam, i, fname, NELEMENTS(fname));
 #endif

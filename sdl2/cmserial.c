@@ -30,6 +30,7 @@
 #include "pccore.h"
 #include "np2.h"
 #include "commng.h"
+#include "codecnv/codecnv.h"
 
 #if defined(_WINDOWS)
 #include <windows.h>
@@ -389,14 +390,7 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 	}
 
 #if defined(_WINDOWS)
-	MultiByteToWideChar(
-		CP_UTF8,
-		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
-		np2oscfg.com[port].mout,
-		MAX_PATH,
-		wmout,
-		sizeof(wmout)
-	);
+	codecnv_utf8toucs2(wmout, MAX_PATH, np2oscfg.com[port].mout, -1);
 	hdl = CreateFileW(wmout, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 	if (hdl == INVALID_HANDLE_VALUE) {
 #else

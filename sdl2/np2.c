@@ -9,6 +9,7 @@
 #endif
 #include	"dosio.h"
 #include	"commng.h"
+#include	"codecnv/codecnv.h"
 #include	"fontmng.h"
 #include	"inputmng.h"
 #include	"joymng.h"
@@ -346,14 +347,7 @@ char np2_main_read_m3u(const char *file)
   f = filestream_open(file, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
 #elif defined(_WINDOWS)
 	wchar_t	wfile[MAX_PATH];
-	MultiByteToWideChar(
-		CP_UTF8,
-		MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,
-		file,
-		MAX_PATH,
-		wfile,
-		sizeof(wfile)
-	);
+	codecnv_utf8toucs2(wfile, MAX_PATH, file, -1);
   f = _wfopen(wfile, "r");
 #else
   f = fopen(file, "r");

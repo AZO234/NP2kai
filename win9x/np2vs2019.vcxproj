@@ -248,8 +248,13 @@
     <ClCompile Include="..\cbus\scsiio.c" />
     <ClCompile Include="..\cbus\smpu98.c" />
     <ClCompile Include="..\codecnv\tcswap16.c" />
+    <ClCompile Include="..\codecnv\ucs2sjis.c" />
+    <ClCompile Include="..\codecnv\ucs2ucs4.c" />
     <ClCompile Include="..\codecnv\ucs2utf8.c" />
+    <ClCompile Include="..\codecnv\ucs4ucs2.c" />
+    <ClCompile Include="..\codecnv\ucs4utf8.c" />
     <ClCompile Include="..\codecnv\utf8ucs2.c" />
+    <ClCompile Include="..\codecnv\utf8ucs4.c" />
     <ClCompile Include="..\common\bmpdata.c" />
     <ClCompile Include="..\common\lstarray.c" />
     <ClCompile Include="..\common\milstr.c" />
@@ -501,6 +506,7 @@
     <ClCompile Include="dialog\d_txt.cpp" />
     <ClCompile Include="dialog\d_wab.cpp" />
     <ClCompile Include="dialog\np2class.cpp" />
+    <ClCompile Include="dialog\winfiledlg.c" />
     <ClCompile Include="dosio.cpp" />
     <ClCompile Include="ext\c86ctl\c86ctlif.cpp" />
     <ClCompile Include="ext\externalchipmanager.cpp" />
@@ -814,6 +820,7 @@
     <ClInclude Include="dialog\c_slidervalue.h" />
     <ClInclude Include="dialog\dialog.h" />
     <ClInclude Include="dialog\np2class.h" />
+    <ClInclude Include="dialog\winfiledlg.h" />
     <ClInclude Include="dosio.h" />
     <ClInclude Include="ext\c86ctl\c86ctl.h" />
     <ClInclude Include="ext\c86ctl\c86ctlif.h" />

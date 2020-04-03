@@ -19,6 +19,7 @@
 #if defined(SUPPORT_S98)
 #include "sound/s98.h"
 #endif	// defined(SUPPORT_S98)
+#include "dialog/winfiledlg.h"
 
 /**
  * デフォルト ファイルを得る
@@ -85,17 +86,16 @@ void dialog_soundlog(HWND hWnd)
 	std::tstring rTitle(LoadTString(IDS_WAVETITLE));
 
 	TCHAR szPath[MAX_PATH];
+	TCHAR szName[MAX_PATH];
 	GetDefaultFilename(rExt.c_str(), szPath, _countof(szPath));
 
-	CFileDlg dlg(FALSE, rExt.c_str(), szPath, OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY, rFilter.c_str(), hWnd);
-	dlg.m_ofn.lpstrTitle = rTitle.c_str();
-	dlg.m_ofn.nFilterIndex = 1;
-	if (!dlg.DoModal())
+	OPENFILENAMEW ofnw;
+	if (WinFileDialogW(hWnd, &ofnw, WINFILEDIALOGW_MODE_SET, szPath, szName, rExt.c_str(), rTitle.c_str(), rFilter.c_str(), 1))
 	{
 		return;
 	}
 
-	LPCTSTR lpFilename = dlg.GetPathName();
+	LPCTSTR lpFilename = szPath;
 	file_cpyname(bmpfilefolder, lpFilename, _countof(bmpfilefolder));
 	sysmng_update(SYS_UPDATEOSCFG);
 
