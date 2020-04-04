@@ -38,15 +38,15 @@ static const OEMCHAR sendermes[] = 										\
 					OEMTEXT("\r\n");
 
 
-static HANDLE check_sakura(void) {
+static HANDLE check_ssp(void) {
 
-	HANDLE	hsakura;
+	HANDLE	hssp;
 
-	hsakura = OpenMutex(MUTEX_ALL_ACCESS, FALSE, _T("sakura"));
-	if (hsakura != NULL) {
-		CloseHandle(hsakura);
+	hssp = OpenMutex(MUTEX_ALL_ACCESS, FALSE, _T("ssp"));
+	if (hssp != NULL) {
+		CloseHandle(hssp);
 	}
-	return(hsakura);
+	return(hssp);
 }
 
 
@@ -60,7 +60,7 @@ BOOL sstp_send(const OEMCHAR *msg, void (*proc)(HWND hWnd, char *msg)) {
 		sstp_stat = SSTP_BUSY;
 		return(FAILURE);
 	}
-	if ((!np2oscfg.sstp) || (scrnmng_isfullscreen()) || (!check_sakura())) {
+	if ((!np2oscfg.sstp) || (scrnmng_isfullscreen()) || (!check_ssp())) {
 		sstp_stat = SSTP_NOSEND;
 		return(FAILURE);
 	}
@@ -205,7 +205,7 @@ BOOL sstp_sendonly(const OEMCHAR *msg) {
 	char		msgstr[0x1000];
 	BOOL		ret = FAILURE;
 
-	if ((np2oscfg.sstp) && (check_sakura()) &&
+	if ((np2oscfg.sstp) && (check_ssp()) &&
 		(!WSAStartup(0x0101, &lwsadata))) {
 		if ((lSocket = socket(AF_INET, SOCK_STREAM, 0)) != INVALID_SOCKET) {
 			s_in.sin_family = AF_INET;
