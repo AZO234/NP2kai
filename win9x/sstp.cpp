@@ -30,11 +30,11 @@ static	DWORD		sstppos = 0;
 static	void		(*sstpproc)(HWND, char *) = NULL;
 
 static const OEMCHAR sendermes[] = 										\
-					OEMTEXT("SEND SSTP/1.2\r\n")						\
+					OEMTEXT("SEND SSTP/1.4\r\n")						\
 					OEMTEXT("Sender: Neko Project II\r\n")				\
 					OEMTEXT("Script: \\h\\s0%s\\e\r\n")					\
 					OEMTEXT("Option: notranslate\r\n")					\
-					OEMTEXT("Charset: UTF-8\r\n")					\
+					OEMTEXT("Charset: Shift_JIS\r\n")					\
 					OEMTEXT("\r\n");
 
 
@@ -42,7 +42,7 @@ static HANDLE check_sakura(void) {
 
 	HANDLE	hsakura;
 
-	hsakura = OpenMutex(MUTEX_ALL_ACCESS, FALSE, _T("ssp"));
+	hsakura = OpenMutex(MUTEX_ALL_ACCESS, FALSE, _T("sakura"));
 	if (hsakura != NULL) {
 		CloseHandle(hsakura);
 	}

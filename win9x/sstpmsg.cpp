@@ -156,18 +156,18 @@ const OEMCHAR	*p;
 	UINT		i;
 
 	if (!(np2cfg.SOUND_SW & 0x6c)) {
-		p = OEMTEXT("不要やで");
+		p = OEMTEXT("不要");
 	}
 	else {
 		exist = rhythm_getcaps();
 		if (exist == 0) {
-			p = OEMTEXT("用意されてないんか…");
+			p = OEMTEXT("用意されてない…");
 		}
 		else if (exist == 0x3f) {
-			p = OEMTEXT("全部あるで");
+			p = OEMTEXT("全部ある");
 		}
 		else {
-			milstr_ncpy(jrhythmstr, OEMTEXT("BSCHTRや"), NELEMENTS(jrhythmstr));
+			milstr_ncpy(jrhythmstr, OEMTEXT("BSCHTRです"), NELEMENTS(jrhythmstr));
 			for (i=0; i<6; i++) {
 				if (!(exist & (1 << i))) {
 					jrhythmstr[i] = '_';
@@ -354,7 +354,7 @@ static OEMCHAR *sstpsolve(OEMCHAR *buf, const UINT8 *dat) {
 
 static const UINT8 *prcs[4] = {k_keropi, k_winx68k, k_t98next, k_anex86};
 
-static int check_keropi(void) {
+static int check_emuprcs(void) {
 
 	UINT	i;
 
@@ -373,13 +373,13 @@ static int check_keropi(void) {
 
 void sstpmsg_welcome(void) {
 
-	UINT	kero;
+	UINT	emu;
 	OEMCHAR	*p;
 	OEMCHAR	buf[512];
 
 	p = buf;
-	kero = check_keropi();
-	if (!kero) {
+	emu = check_emuprcs();
+	if (!emu) {
 		switch(rand() & 15) {
 			case 0x00:
 			case 0x01:
@@ -413,7 +413,7 @@ void sstpmsg_welcome(void) {
 		}
 	}
 	else {
-		switch(kero) {
+		switch(emu) {
 			case 1:
 				p = sstpsolve(p, s_keropi0);
 				switch(rand() & 3) {
