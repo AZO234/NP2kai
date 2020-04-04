@@ -34,7 +34,7 @@ static const OEMCHAR sendermes[] = 										\
 					OEMTEXT("Sender: Neko Project II\r\n")				\
 					OEMTEXT("Script: \\h\\s0%s\\e\r\n")					\
 					OEMTEXT("Option: notranslate\r\n")					\
-					OEMTEXT("Charset: Shift_JIS\r\n")					\
+					OEMTEXT("Charset: UTF-8\r\n")					\
 					OEMTEXT("\r\n");
 
 
@@ -42,7 +42,7 @@ static HANDLE check_sakura(void) {
 
 	HANDLE	hsakura;
 
-	hsakura = OpenMutex(MUTEX_ALL_ACCESS, FALSE, _T("sakura"));
+	hsakura = OpenMutex(MUTEX_ALL_ACCESS, FALSE, _T("ssp"));
 	if (hsakura != NULL) {
 		CloseHandle(hsakura);
 	}
