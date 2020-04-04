@@ -47,6 +47,8 @@
 #include "ini.h"
 #include "menu.h"
 #include "winloc.h"
+#include "sstp.h"
+#include "sstpmsg.h"
 #include "dialog\np2class.h"
 #include "dialog\dialog.h"
 #include "cpucore.h"
@@ -170,7 +172,7 @@ static	TCHAR		szClassName[] = _T("NP2-MainWindow");
 #endif
 						},
 						0xffffff, 0xffbf6a, 0, 0,
-						0, 1,
+						0, 1, 0, 9801,
 						0, 0,
 #if !defined(_WIN64)
 						0,
@@ -751,7 +753,7 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			{
 				b = TRUE;
 			}
-			else
+			else if (sstpconfirm_reset())
 			{
 				winuienter();
 				if (messagebox(hWnd, MAKEINTRESOURCE(IDS_CONFIRM_RESET), MB_ICONQUESTION | MB_YESNO) == IDYES)
@@ -770,6 +772,7 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 #ifdef HOOK_SYSKEY
 				stop_hook_systemkey();
 #endif
+				sstpmsg_reset();
 				pccore_cfgupdate();
 				pccore_reset();
 				sysmng_updatecaption(SYS_UPDATECAPTION_FDD);
@@ -783,6 +786,7 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			break;
 		case IDM_CONFIG:
 			winuienter();
+			sstpmsg_config();
 			dialog_configure(hWnd);
 			if (!scrnmng_isfullscreen()) {
 				UINT8 thick;
@@ -1712,6 +1716,11 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			update |= SYS_UPDATECFG;
 			break;
 
+		case IDM_SSTP:
+			np2oscfg.sstp = !np2oscfg.sstp;
+			update |= SYS_UPDATEOSCFG;
+			break;
+
 		case IDM_CPUSAVE:
 			debugsub_status();
 			break;
@@ -1721,9 +1730,12 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			break;
 
 		case IDM_ABOUT:
-			winuienter();
-			dialog_about(hWnd);
-			winuileave();
+			sstpmsg_about();
+			if (sstp_result() != SSTP_SENDING) {
+				winuienter();
+				dialog_about(hWnd);
+				winuileave();
+			}
 			break;
 
 		case IDM_ITFWORK:
@@ -1991,6 +2003,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			g_hWndMain = hWnd;
 			np2class_wmcreate(hWnd);
 			np2class_windowtype(hWnd, np2oscfg.wintype);
+			sstp_construct(hWnd);
 #ifndef __GNUC__
 			WINNLSEnableIME(hWnd, FALSE);
 #endif
@@ -2634,7 +2647,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			if (!np2oscfg.comfirm) {
 				b = TRUE;
 			}
-			else
+			else if (sstpconfirm_exit())
 			{
 				winuienter();
 				if (messagebox(hWnd, MAKEINTRESOURCE(IDS_CONFIRM_EXIT),
@@ -2677,6 +2690,31 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 #ifdef HOOK_SYSKEY
 					start_hook_systemkey();
 #endif
+					break;
+			}
+			break;
+
+		case WM_SSTP:
+			switch(LOWORD(lParam)) {
+				case FD_CONNECT:
+					if (!HIWORD(lParam)) {
+						sstp_connect();
+					}
+					break;
+				case FD_READ:
+					if (!HIWORD(lParam)) {
+						sstp_readSocket();
+					}
+					break;
+				case FD_WRITE:
+					if (!HIWORD(lParam)) {
+//						sstp_writeSokect();
+					}
+					break;
+				case FD_CLOSE:
+					if (!HIWORD(lParam)) {
+						sstp_disconnect();
+					}
 					break;
 			}
 			break;
@@ -3404,6 +3442,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	
 #ifndef ALLOW_MULTIRUN
 	if ((hWnd = FindWindow(szClassName, NULL)) != NULL) {
+		sstpmsg_running();
 		ShowWindow(hWnd, SW_RESTORE);
 		SetForegroundWindow(hWnd);
 		dosio_term();
@@ -3524,7 +3563,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	if (scrnmng_create(g_scrnmode) != SUCCESS) {
 		g_scrnmode ^= SCRNMODE_FULLSCREEN;
 		if (scrnmng_create(g_scrnmode) != SUCCESS) {
+			if (sstpmsg_dxerror())
+			{
 			messagebox(hWnd, MAKEINTRESOURCE(IDS_ERROR_DIRECTDRAW), MB_OK | MB_ICONSTOP);
+			}
 			UnloadExternalResource();
 			TRACETERM();
 			dosio_term();
@@ -3577,6 +3619,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	pccore_init();
 	S98_init();
 
+	sstpmsg_welcome();
+
 #ifdef SUPPORT_NET
 	np2net_init();
 #endif
@@ -3609,6 +3653,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 			mousemng_disable(MOUSEPROC_WINUI);
 			S98_trash();
 			pccore_term();
+			sstp_destruct();
 			CSoundMng::GetInstance()->Close();
 			CSoundMng::Deinitialize();
 			scrnmng_destroy();
@@ -3799,6 +3844,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 #endif
 
 	pccore_term();
+
+	sstp_destruct();
 
 	CSoundMng::GetInstance()->Close();
 	CSoundMng::Deinitialize();

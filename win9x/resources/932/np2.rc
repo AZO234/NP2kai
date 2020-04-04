@@ -1172,6 +1172,7 @@ BEGIN
         MENUITEM "Joy re&verse",                IDM_JOYX
         MENUITEM "Joy &rapid",                  IDM_RAPID
         MENUITEM "&Mouse rapid",                IDM_MSRAPID
+        MENUITEM "&Use SSTP",                   IDM_SSTP
         MENUITEM "&ITF work",                   IDM_ITFWORK
         // MENUITEM "Fix &MMTimer",                IDM_TIMERFIX
         // MENUITEM "&Skip over 16MB memcheck",    IDM_SKIP16MEMCHK

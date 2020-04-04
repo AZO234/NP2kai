@@ -926,6 +926,7 @@ BEGIN
         MENUITEM "ŒS˜’šm˜Vˆ²“D(&V)",            IDM_JOYX
         MENUITEM "Œ–xšm˜Vˆ²“D(&R)",            IDM_RAPID
         MENUITEM "Œ–x‹ƒŽ—(&M)",                IDM_MSRAPID
+        MENUITEM "Žg—p SSTP(&U)",               IDM_SSTP
         MENUITEM "&ITF work",                   IDM_ITFWORK
         MENUITEM SEPARATOR
         MENUITEM "ˆí›ø›õ–à(&H)...",             IDM_HELP

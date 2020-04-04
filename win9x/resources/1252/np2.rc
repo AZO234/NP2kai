@@ -1145,6 +1145,7 @@ BEGIN
         MENUITEM "Joy &rapid",                  IDM_RAPID
         MENUITEM "&Mouse rapid",                IDM_MSRAPID
         MENUITEM "&ITF work",                   IDM_ITFWORK
+        MENUITEM "&Use SSTP",                   IDM_SSTP
         // MENUITEM "Fix &MMTimer",                IDM_TIMERFIX
         // MENUITEM "&Skip over 16MB memcheck",    IDM_SKIP16MEMCHK
         MENUITEM "Fast m&emcheck",              IDM_FASTMEMCHK

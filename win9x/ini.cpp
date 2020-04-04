@@ -711,6 +711,8 @@ static const PFTBL s_IniItems[] =
 	PFAND("clock_up", PFRO_HEX32,		&np2oscfg.clk_color1,	0xffffff),
 	PFAND("clock_dn", PFRO_HEX32,		&np2oscfg.clk_color2,	0xffffff),
 
+	PFVAL("use_sstp", PFTYPE_BOOL,		&np2oscfg.sstp),
+	PFVAL("sstpport", PFTYPE_UINT16,	&np2oscfg.sstpport),
 	PFVAL("comfirm_", PFTYPE_BOOL,		&np2oscfg.comfirm),
 	PFVAL("shortcut", PFTYPE_HEX8,		&np2oscfg.shortcut),
 

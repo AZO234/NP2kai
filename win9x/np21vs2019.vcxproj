@@ -1039,6 +1039,8 @@
     <ClCompile Include="soundmng\sdasio.cpp" />
     <ClCompile Include="soundmng\sddsound3.cpp" />
     <ClCompile Include="soundmng\sdwasapi.cpp" />
+    <ClCompile Include="sstp.cpp" />
+    <ClCompile Include="sstpmsg.cpp" />
     <ClCompile Include="subwnd\dclock.cpp" />
     <ClCompile Include="subwnd\dd2.cpp" />
     <ClCompile Include="subwnd\kdispwnd.cpp" />
@@ -1419,6 +1421,9 @@
     <ClInclude Include="soundmng\sdbase.h" />
     <ClInclude Include="soundmng\sddsound3.h" />
     <ClInclude Include="soundmng\sdwasapi.h" />
+    <ClInclude Include="sstp.h" />
+    <ClInclude Include="sstpmsg.h" />
+    <ClInclude Include="sstpres.h" />
     <ClInclude Include="subwnd\dclock.h" />
     <ClInclude Include="subwnd\dd2.h" />
     <ClInclude Include="subwnd\kdispwnd.h" />

@@ -761,6 +761,7 @@
 #define IDM_JOYX                        40707
 #define IDM_RAPID                       40708
 #define IDM_MSRAPID                     40709
+#define IDM_SSTP                        40710
 #define IDM_CPUSAVE                     40711
 #define IDM_HELP                        40712
 #define IDM_ABOUT                       40713

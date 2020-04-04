@@ -2259,6 +2259,12 @@
     <ClCompile Include="dialog\winfiledlg.c">
       <Filter>ソース ファイル\win9x\dialog</Filter>
     </ClCompile>
+    <ClCompile Include="sstp.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
+    <ClCompile Include="sstpmsg.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\calendar.h">
@@ -3295,6 +3301,15 @@
     </ClInclude>
     <ClInclude Include="dialog\winfiledlg.h">
       <Filter>ヘッダー ファイル\win9x\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="sstp.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="sstpmsg.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="sstpres.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
