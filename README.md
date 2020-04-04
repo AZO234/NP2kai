@@ -1026,6 +1026,12 @@ Next boot computer, you command from 4.<br>
 </div></details>
 
 ## Release
+- Apr 5, 2020<br>
+  - [Windows]
+    - add send to SSTP(伺か,ukagaka)
+    - apply wide character (inner UTF-8)
+  - add codecnv
+    - UTF-32(UCS4)
 - Apr 2, 2020<br>
   - reform compiler options
 - Mar 31, 2020<br>
