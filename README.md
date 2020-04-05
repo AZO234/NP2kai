@@ -1028,7 +1028,7 @@ Next boot computer, you command from 4.<br>
 ## Release
 - Apr 5, 2020<br>
   - [Windows]
-    - add send to SSTP(伺か,ukagaka)
+    - add send to SSTP(伺か,ukagaka) from xnp2
     - apply wide character (inner UTF-8)
   - add codecnv
     - UTF-32(UCS4)
@@ -1040,7 +1040,7 @@ Next boot computer, you command from 4.<br>
     - J2K 'Manual' setting lost
     - add S2M click shift (l to r) button (default R1)
 - Mar 30, 2020<br>
-  - add LittleOrchestraL, MultimediaOrchestra
+  - add LittleOrchestraL, MultimediaOrchestra from np2s
 - Mar 28, 2020<br>
   - Merge NP21/W rev.72<br>
   - [libretro] using lr file stream API

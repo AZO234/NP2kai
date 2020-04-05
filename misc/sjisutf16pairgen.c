@@ -34,12 +34,14 @@ int main(int iArgc, char* Argv[]) {
   n = 0;
   for(a = 0; a < sizeof(au16Sections) / (sizeof(uint16_t) * 2); a++) {
     for(sj = au16Sections[a][0]; sj <= au16Sections[a][1]; sj++) {
-      if(
-        ( sj & 0xFF) == 0x7F ||
-        ((sj & 0xFF) >= 0x00 && (sj & 0xFF) <= 0x3F) ||
-        ((sj & 0xFF) >= 0xFD && (sj & 0xFF) <= 0xFF)
-      ) {
-        continue;
+      if(sj >= 0x100) {
+        if(
+          ( sj & 0xFF) == 0x7F ||
+          ((sj & 0xFF) >= 0x00 && (sj & 0xFF) <= 0x3F) ||
+          ((sj & 0xFF) >= 0xFD && (sj & 0xFF) <= 0xFF)
+        ) {
+          continue;
+        }
       }
       if(n % 4 == 0) {
         printf("\n ");
