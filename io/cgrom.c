@@ -113,13 +113,13 @@ const UINT8	*ptr;
 	type = cr->code & 0x00ff;
 	if ((type >= 0x09) && (type < 0x0c)) {							// ver0.78
 		if (!cr->lr) {
-			hook_fontrom((cr->code & 0x7f7f) << 4);
+			hook_fontrom((cr->code & 0x7f7f) << 4, FALSE);
 			ptr += (cr->code & 0x7f7f) << 4;
 			return(ptr[cr->line & 0x0f]);
 		}
 	}
 	else if (cr->code & 0xff00) {
-		hook_fontrom((cr->code & 0x7f7f) << 4);
+		hook_fontrom((cr->code & 0x7f7f) << 4, FALSE);
 		ptr += (cr->code & 0x7f7f) << 4;
 		ptr += cr->lr;
 		return(ptr[cr->line & 0x0f]);
@@ -127,7 +127,7 @@ const UINT8	*ptr;
 	else if (!(cr->line & 0x10)) {		// 半角
 		ptr += 0x80000;
 		ptr += cr->code << 4;
-		hook_fontrom(ptr);
+		hook_fontrom(ptr, FALSE);
 		return(ptr[cr->line]);
 	}
 	(void)port;

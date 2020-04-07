@@ -204,10 +204,8 @@ const UINT8	*p;
 
 #define HF_BUFFERSIZE 0x10000
 
-UINT hf_enable;
-static UINT32 hf_preaddress;
-static UINT16 hf_prejis;
-static UINT hf_prechar, hf_type;
+UINT hf_enable = 1;
+static UINT hf_preaddr, hf_count, hf_type, hf_prespc;
 static char hf_buffer[HF_BUFFERSIZE];
 static UINT16 hf_u16buffer[HF_BUFFERSIZE];
 static char* hf_bufloc = hf_buffer;
@@ -229,87 +227,111 @@ void hook_fontrom_flush(void) {
   }
 }
 
-void hook_fontrom(UINT32 address) {
-  UINT c, output = 0;
+void hook_fontrom(UINT32 u32Address, BOOL bForce) {
+  UINT c, spc = 0, output = 0;
   UINT16 jis;
   UINT32 address_org;
 
   if(hf_enable != 1) {
     return;
   }
+  if(u32Address & 0x800) {
+    return;
+  }
 
-  address &= ~0x807;
-  address_org = address;
-  if(hf_preaddress != address_org) {
-    address >>= 4;
-    if(address >= 0x8000) {
-      c = address & 0xFF;
-      if(hf_prechar > 0x20 || c > 0x20) {
-        if(c < 0x80) {
-          if(hf_type != 0) {
-            *hf_bufloc = 0x1B;
-            hf_bufloc++;
-            *hf_bufloc = 0x28;
-            hf_bufloc++;
-            *hf_bufloc = 0x42;
-            hf_bufloc++;
-            hf_type = 0;
-          }
-        } else {
-          if(hf_type != 1) {
-            *hf_bufloc = 0x1B;
-            hf_bufloc++;
-            *hf_bufloc = 0x28;
-            hf_bufloc++;
-            *hf_bufloc = 0x49;
-            hf_bufloc++;
-            hf_type = 1;
-          }
+  u32Address >>= 4;
+  if(!bForce && hf_preaddr == u32Address) {
+    hf_count++;
+    if(hf_count % 0x16 == 0) {
+      hf_preaddr = 0;
+    }
+    return;
+  } else {
+    hf_count = 0;
+  }
+  hf_preaddr = u32Address;
+
+  if(u32Address >= 0x8000) {
+    c = u32Address & 0xFF;
+    if(c <= 0x1b || c == 0x20 || (c >= 0xF8 && c <= 0xFB) || c >= 0xFD) {
+      spc = 1;
+    }
+    if(hf_prespc && spc) {
+      output = 1;
+      hf_prespc = 1;
+    } else {
+      if(c == 0x20) {
+        hf_prespc = 1;
+      } else {
+        hf_prespc = 0;
+      }
+      if(c < 0x80) {
+        if(hf_type != 0) {
+          *hf_bufloc = 0x1B;
+          hf_bufloc++;
+          *hf_bufloc = 0x28;
+          hf_bufloc++;
+          *hf_bufloc = 0x42;
+          hf_bufloc++;
+          hf_type = 0;
         }
-        if(hf_type == 1) {
-          *hf_bufloc = c - 0x80;
-        } else {
-          *hf_bufloc = c;
+      } else {
+        if(hf_type != 1) {
+          *hf_bufloc = 0x1B;
+          hf_bufloc++;
+          *hf_bufloc = 0x28;
+          hf_bufloc++;
+          *hf_bufloc = 0x49;
+          hf_bufloc++;
+          hf_type = 1;
         }
+      }
+      if(hf_type == 1) {
+        *hf_bufloc = c - 0x80;
+      } else {
+        *hf_bufloc = c;
+      }
+      hf_bufloc++;
+      if(hf_bufloc - hf_buffer >= 0xFF00) {
+        output = 1;
+      }
+    }
+  } else {
+    u32Address &= 0x7F7F;
+    jis = (((u32Address & 0x7F) + 0x20) << 8) | ((u32Address >> 8) & 0x7F);
+    if(jis >= 0x2121 && jis <= 0x7C7E && (jis & 0x7F) >= 0x21 && (jis & 0x7F) <= 0x7E) {
+      if(hf_prespc && jis == 0x2121) {
+         output = 1;
+      } else {
+        if(jis == 0x2121) {
+           hf_prespc = 1;
+        } else {
+           hf_prespc = 0;
+        }
+        if(hf_type != 2) {
+          *hf_bufloc = 0x1B;
+          hf_bufloc++;
+          *hf_bufloc = 0x24;
+          hf_bufloc++;
+          *hf_bufloc = 0x42;
+          hf_bufloc++;
+          hf_type = 2;
+        }
+        *hf_bufloc = (jis >> 8) & 0x7F;
+        hf_bufloc++;
+        *hf_bufloc =  jis       & 0x7F;
         hf_bufloc++;
         if(hf_bufloc - hf_buffer >= 0xFF00) {
           output = 1;
         }
-      } else {
-        output = 1;
       }
-      hf_prechar = c;
     } else {
-      address &= 0x7F7F;
-      jis = (((address & 0x7F) + 0x20) << 8) | ((address >> 8) & 0x7F);
-      if(jis >= 0x2121 && jis <= 0x7C7E && (jis & 0x7F) >= 0x21 && (jis & 0x7F) <= 0x7E) {
-        if(hf_prejis != jis) {
-          if(hf_type != 2) {
-            *hf_bufloc = 0x1B;
-            hf_bufloc++;
-            *hf_bufloc = 0x24;
-            hf_bufloc++;
-            *hf_bufloc = 0x42;
-            hf_bufloc++;
-            hf_type = 2;
-          }
-          *hf_bufloc = (jis >> 8) & 0x7F;
-          hf_bufloc++;
-          *hf_bufloc =  jis       & 0x7F;
-          hf_bufloc++;
-          if(hf_bufloc - hf_buffer >= 0xFF00) {
-            output = 1;
-          }
-        }
-      } else {
-        output = 1;
-      }
-      hf_prejis = jis;
+      hf_prespc = 1;
+      output = 1;
     }
-    if(output) {
-      hook_fontrom_flush();
-    }
-    hf_preaddress = address_org;
+  }
+  if(output) {
+    hook_fontrom_flush();
   }
 }
 

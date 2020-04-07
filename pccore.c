@@ -553,6 +553,7 @@ void pccore_term(void) {
 	rs232c_destruct();
 	
 	printif_finalize();
+	hook_fontrom_flush();
 
 	sxsi_alltrash();
 	

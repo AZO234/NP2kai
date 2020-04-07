@@ -355,7 +355,7 @@ void maketext(int text_renewal) {
 							fntline >>= 1;
 						}
 						if(!fntline) {
-							hook_fontrom(bitmap[x] + (fntline & 0x0f));
+							hook_fontrom(bitmap[x] + (fntline & 0x0f), TRUE);
 						}
 						data = fontrom[bitmap[x] + (fntline & 0x0f)];
 						*(UINT32 *)(q+0) = text_table[color[x] + (data >> 4)];
@@ -667,7 +667,7 @@ void maketext40(int text_renewal) {
 							fntline >>= 1;
 						}
 						if(!fntline) {
-							hook_fontrom(bitmap[x] + (fntline & 0x0f));
+							hook_fontrom(bitmap[x] + (fntline & 0x0f), TRUE);
 						}
 						data = fontrom[bitmap[x] + (fntline & 0x0f)];
 						*(UINT32 *)(q+ 0) = text_tblx2[color[x] +
