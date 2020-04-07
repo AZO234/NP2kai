@@ -13,6 +13,7 @@
 #include	"font.h"
 #include	"fontdata.h"
 #include	"fontmake.h"
+#include	"codecnv/codecnv.h"
 
 #ifndef FONTMEMORYBIND
 	UINT8	__font[FONTMEMORYSIZE];
@@ -200,3 +201,115 @@ const UINT8	*p;
 	}
 	return(type);
 }
+
+#define HF_BUFFERSIZE 0x10000
+
+UINT hf_enable;
+static UINT32 hf_preaddress;
+static UINT16 hf_prejis;
+static UINT hf_prechar, hf_type;
+static char hf_buffer[HF_BUFFERSIZE];
+static UINT16 hf_u16buffer[HF_BUFFERSIZE];
+static char* hf_bufloc = hf_buffer;
+
+void hook_fontrom_flush(void) {
+  UINT ntype;
+
+  if(hf_enable != 1) {
+    return;
+  }
+
+  if(hf_bufloc != hf_buffer) {
+    *hf_bufloc = '\0';
+    hf_bufloc++;
+    codecnv_jistoucs2(&ntype, hf_u16buffer, HF_BUFFERSIZE, hf_buffer, -1, hf_type);
+    codecnv_ucs2toutf8(hf_buffer, HF_BUFFERSIZE, hf_u16buffer, -1);
+    printf("%s\n", hf_buffer);
+    hf_bufloc = hf_buffer;
+  }
+}
+
+void hook_fontrom(UINT32 address) {
+  UINT c, output = 0;
+  UINT16 jis;
+  UINT32 address_org;
+
+  if(hf_enable != 1) {
+    return;
+  }
+
+  address &= ~0x807;
+  address_org = address;
+  if(hf_preaddress != address_org) {
+    address >>= 4;
+    if(address >= 0x8000) {
+      c = address & 0xFF;
+      if(hf_prechar > 0x20 || c > 0x20) {
+        if(c < 0x80) {
+          if(hf_type != 0) {
+            *hf_bufloc = 0x1B;
+            hf_bufloc++;
+            *hf_bufloc = 0x28;
+            hf_bufloc++;
+            *hf_bufloc = 0x42;
+            hf_bufloc++;
+            hf_type = 0;
+          }
+        } else {
+          if(hf_type != 1) {
+            *hf_bufloc = 0x1B;
+            hf_bufloc++;
+            *hf_bufloc = 0x28;
+            hf_bufloc++;
+            *hf_bufloc = 0x49;
+            hf_bufloc++;
+            hf_type = 1;
+          }
+        }
+        if(hf_type == 1) {
+          *hf_bufloc = c - 0x80;
+        } else {
+          *hf_bufloc = c;
+        }
+        hf_bufloc++;
+        if(hf_bufloc - hf_buffer >= 0xFF00) {
+          output = 1;
+        }
+      } else {
+        output = 1;
+      }
+      hf_prechar = c;
+    } else {
+      address &= 0x7F7F;
+      jis = (((address & 0x7F) + 0x20) << 8) | ((address >> 8) & 0x7F);
+      if(jis >= 0x2121 && jis <= 0x7C7E && (jis & 0x7F) >= 0x21 && (jis & 0x7F) <= 0x7E) {
+        if(hf_prejis != jis) {
+          if(hf_type != 2) {
+            *hf_bufloc = 0x1B;
+            hf_bufloc++;
+            *hf_bufloc = 0x24;
+            hf_bufloc++;
+            *hf_bufloc = 0x42;
+            hf_bufloc++;
+            hf_type = 2;
+          }
+          *hf_bufloc = (jis >> 8) & 0x7F;
+          hf_bufloc++;
+          *hf_bufloc =  jis       & 0x7F;
+          hf_bufloc++;
+          if(hf_bufloc - hf_buffer >= 0xFF00) {
+            output = 1;
+          }
+        }
+      } else {
+        output = 1;
+      }
+      hf_prejis = jis;
+    }
+    if(output) {
+      hook_fontrom_flush();
+    }
+    hf_preaddress = address_org;
+  }
+}
+

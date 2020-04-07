@@ -9,15 +9,14 @@ extern "C" {
 
 #include <stdint.h>
 
-typedef struct {
+typedef struct jisutf16pair_t_ {
+  uint8_t type;
   uint16_t jis;
-  uint16_t utf16u;
-  uint16_t utf16l;
+  uint16_t utf16;
 } jisutf16pair_t;
 
 extern jisutf16pair_t jisutf16pairs[];
-
-#define jisutf16pair_count (sizeof(jisutf16pairs) / sizeof(jisutf16pair_t))
+extern uint16_t jisutf16pair_count;
 
 #ifdef __cplusplus
 }

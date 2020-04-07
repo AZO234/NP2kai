@@ -25,6 +25,10 @@ void font_initialize(void);
 void font_setchargraph(BOOL epson);
 UINT8 font_load(const OEMCHAR *filename, BOOL force);
 
+extern UINT hf_enable;
+void hook_fontrom_flush(void);
+void hook_fontrom(UINT32 address);
+
 #ifdef __cplusplus
 }
 #endif

@@ -11,6 +11,9 @@ extern "C"
 {
 #endif
 
+UINT codecnv_jistoucs2_1(UINT* puType, UINT16 *lpOutput, const char *lpInput, const UINT uType);
+UINT codecnv_jistoucs2(UINT* puType, UINT16 *lpOutput, UINT cchOutput, const char *lpInput, UINT cchInput, const UINT uType);
+
 UINT codecnv_sjistoeuc(char *lpOutput, UINT cchOutput, const char *lpInput, UINT cchInput);
 UINT codecnv_sjistoucs2(UINT16 *lpOutput, UINT cchOutput, const char *lpInput, UINT cchInput);
 UINT codecnv_sjistoutf8(char *lpOutput, UINT cchOutput, const char *lpInput, UINT cchInput);
