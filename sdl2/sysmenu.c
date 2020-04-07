@@ -9,6 +9,7 @@
 #include	"kbdmng.h"
 #include	"pccore.h"
 #include	"iocore.h"
+#include	"dosio.h"
 #include	"pc9861k.h"
 #include	"mpu98ii.h"
 #if defined(SUPPORT_SMPU98)
@@ -35,8 +36,17 @@
 #include	"wab/wab.h"
 #include	"wab/wabbmpsave.h"
 #endif
+#include	"font/font.h"
 
 static UINT bmpno = 0;
+
+static FILEH hf_file = NULL;
+static void hf_output(char* strOutput) {
+  if(hf_file) {
+    file_write(hf_file, strOutput, strlen(strOutput));
+    file_write(hf_file, "\n", 1);
+  }
+}
 
 /* Forward declarations */
 extern void changescreen(UINT8 newmode);
@@ -745,6 +755,25 @@ static void sys_cmd(MENUID id) {
 				}
 				initsave();
 			}
+			break;
+
+		case MID_HF_ENABLE:
+			hf_enable ^= 1;
+			if(hf_enable) {
+				hook_fontrom_setoutput(hf_output);
+				if(np2cfg.hf_additional) {
+					hf_file = file_open(HF_FILENAME);
+				} else {
+					hf_file = file_create(HF_FILENAME);
+				}
+			} else {
+			  file_close(hf_file);
+			}
+			break;
+
+		case MID_HF_ADDITONAL:
+			np2cfg.hf_additional ^= 1;
+			update |= SYS_UPDATECFG;
 			break;
 
 #if 0

@@ -374,6 +374,7 @@
     <ClCompile Include="..\cbus\scsicmd.c" />
     <ClCompile Include="..\cbus\scsiio.c" />
     <ClCompile Include="..\cbus\smpu98.c" />
+    <ClCompile Include="..\codecnv\jisucs2.c" />
     <ClCompile Include="..\codecnv\tcswap16.c" />
     <ClCompile Include="..\codecnv\ucs2sjis.c" />
     <ClCompile Include="..\codecnv\ucs2ucs4.c" />

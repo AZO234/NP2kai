@@ -773,6 +773,8 @@
 #define IDM_ALTENTER                    40721
 #define IDM_ALTF4                       40722
 #define IDM_SYSKHOOK                    40729
+#define IDM_HF_ENABLE                   40730
+#define IDM_HF_ADDITIONAL               40731
 #define IDM_IDEOPT                      40800
 #define IDM_CLOSE                       41001
 #define IDM_TOOL_SKIN                   41101

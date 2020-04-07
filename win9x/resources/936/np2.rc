@@ -914,6 +914,8 @@ BEGIN
     POPUP "ì‚ñõ(&O)"
     BEGIN
         MENUITEM "óπó[âBä‰(&B)...",             IDM_BMPSAVE
+        MENUITEM "Hook fomtrom",                IDM_HF_ENABLE
+        MENUITEM "Hfomtrom í«ãL",         IDM_HF_ADDITIONAL
         MENUITEM "&S98 é≈ë∫...",                IDM_S98LOGGING
         MENUITEM "òTóRïØé‚(&L)...",             IDM_CALENDAR
         POPUP "êåè|é˙(&K)"

@@ -1221,6 +1221,9 @@
     <ClCompile Include="sstpmsg.cpp">
       <Filter>ソース ファイル\win9x</Filter>
     </ClCompile>
+    <ClCompile Include="..\codecnv\jisucs2.c">
+      <Filter>ソース ファイル\codecnv</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\calendar.h">

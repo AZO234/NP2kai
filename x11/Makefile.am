@@ -101,6 +101,7 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		\
 		$(real_topsrcdir)/codecnv/eucsjis.c \
 		$(real_topsrcdir)/codecnv/eucucs2.c \
+		$(real_topsrcdir)/codecnv/jisucs2.c \
 		$(real_topsrcdir)/codecnv/sjiseuc.c \
 		$(real_topsrcdir)/codecnv/sjisucs2.c \
 		$(real_topsrcdir)/codecnv/tcswap16.c \

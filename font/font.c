@@ -204,11 +204,16 @@ const UINT8	*p;
 
 #define HF_BUFFERSIZE 0x10000
 
-UINT hf_enable = 1;
+UINT hf_enable;
 static UINT hf_preaddr, hf_count, hf_type, hf_prespc;
 static char hf_buffer[HF_BUFFERSIZE];
 static UINT16 hf_u16buffer[HF_BUFFERSIZE];
 static char* hf_bufloc = hf_buffer;
+static hook_fontrom_output_t hf_fucOutput = NULL;
+
+void hook_fontrom_setoutput(hook_fontrom_output_t fncOutput) {
+  hf_fucOutput = fncOutput;
+}
 
 void hook_fontrom_flush(void) {
   UINT ntype;
@@ -222,7 +227,9 @@ void hook_fontrom_flush(void) {
     hf_bufloc++;
     codecnv_jistoucs2(&ntype, hf_u16buffer, HF_BUFFERSIZE, hf_buffer, -1, hf_type);
     codecnv_ucs2toutf8(hf_buffer, HF_BUFFERSIZE, hf_u16buffer, -1);
-    printf("%s\n", hf_buffer);
+    if(hf_fucOutput) {
+      hf_fucOutput(hf_buffer);
+    }
     hf_bufloc = hf_buffer;
   }
 }

@@ -25,7 +25,10 @@ void font_initialize(void);
 void font_setchargraph(BOOL epson);
 UINT8 font_load(const OEMCHAR *filename, BOOL force);
 
+#define HF_FILENAME "hook_fontrom.txt"
+typedef void(*hook_fontrom_output_t)(char* strOutput);
 extern UINT hf_enable;
+void hook_fontrom_setoutput(hook_fontrom_output_t fncOutput);
 void hook_fontrom_flush(void);
 void hook_fontrom(UINT32 u32Address, BOOL bForce);
 

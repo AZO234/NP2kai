@@ -914,6 +914,8 @@ BEGIN
     POPUP "其他(&O)"
     BEGIN
         MENUITEM "另存點陣圖影像(&B)...",       IDM_BMPSAVE
+        MENUITEM "Hook fomtrom",                IDM_HF_ENABLE
+        MENUITEM "Hfomtrom 追記",         IDM_HF_ADDITIONAL
         MENUITEM "&S98 登錄...",                IDM_S98LOGGING
         MENUITEM "時間(&L)...",                 IDM_CALENDAR
         POPUP "快速鍵(&K)"
