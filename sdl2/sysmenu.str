@@ -159,7 +159,6 @@ static const char str_sndopt[] = "Sound option...";
 static const char str_other[] = "Other";
 static const char str_bmpsave[] = "BMP Save...";
 static const char str_hf_enable[] = "Fontrom hook";
-static const char str_hf_additional[] = "HFontrom add";
 static const char str_s98log[] = "S98 logging...";
 static const char str_calendar[] = "Calendar...";
 static const char str_shortcut[] = "Shortcut Key";
@@ -488,7 +487,6 @@ static const MSYSITEM s_other[] = {
 		{str_bmpsave,		NULL,		MID_BMPSAVE,			0},
 		{str_s98log,		NULL,		MID_S98LOGGING,		MENU_GRAY},
 		{str_hf_enable,			NULL,		MID_HF_ENABLE,		0},
-		{str_hf_additional,	NULL,		MID_HF_ADDITONAL,		0},
 #if !defined(__LIBRETRO__)
 		{str_calendar,		NULL,		MID_CALENDAR,		MENU_GRAY},
 		{str_shortcut,		s_sc,		MID_STATIC,			MENU_GRAY},

@@ -74,14 +74,6 @@
 BOOL nvl_check();
 #endif
 
-static FILEH hf_file = NULL;
-static void hf_output(char* strOutput) {
-  if(hf_file) {
-    file_write(hf_file, strOutput, strlen(strOutput));
-    file_write(hf_file, "\n", 1);
-  }
-}
-
 /* normal */
 static void cb_bmpsave(GtkAction *action, gpointer user_data);
 static void cb_change_font(GtkAction *action, gpointer user_data);
@@ -250,7 +242,6 @@ static void cb_fastmemchk(GtkToggleAction *action, gpointer user_data);
 static void cb_fmgen(GtkToggleAction *action, gpointer user_data);
 #endif
 static void cb_hf_enable(GtkToggleAction *action, gpointer user_data);
-static void cb_hf_additional(GtkToggleAction *action, gpointer user_data);
 
 static GtkToggleActionEntry togglemenu_entries[] = {
 { "clockdisp",    NULL, "_Clock disp",        NULL, NULL, G_CALLBACK(cb_clockdisp), FALSE },
@@ -285,7 +276,6 @@ static GtkToggleActionEntry togglemenu_entries[] = {
 { "fmgen",        NULL, "fmgen",              NULL, NULL, G_CALLBACK(cb_fmgen), FALSE },
 #endif
 { "hf_enable",    NULL, "Fontrom hook",       NULL, NULL, G_CALLBACK(cb_hf_enable), FALSE },
-{ "hf_additional", NULL, "Hfrom additional",  NULL, NULL, G_CALLBACK(cb_hf_additional), FALSE },
 };
 static const guint n_togglemenu_entries = G_N_ELEMENTS(togglemenu_entries);
 
@@ -659,7 +649,6 @@ static const gchar *ui_info =
 "  <menu name='Other' action='OtherMenu'>\n"
 "   <menuitem action='bmpsave'/>\n"
 "   <menuitem action='hf_enable'/>\n"
-"   <menuitem action='hf_additional'/>\n"
 "   <menuitem action='s98logging'/>\n"
 "   <menuitem action='calendar'/>\n"
 "   <menuitem action='clockdisp'/>\n"
@@ -2120,27 +2109,10 @@ cb_hf_enable(GtkToggleAction *action, gpointer user_data) {
 	if (f) {
 		hf_enable ^= 1;
 		if(hf_enable) {
-			hook_fontrom_setoutput(hf_output);
-			if(np2cfg.hf_additional) {
-				hf_file = file_open(HF_FILENAME);
-			} else {
-				hf_file = file_create(HF_FILENAME);
-			}
+			hook_fontrom_defenable();
 		} else {
-		  file_close(hf_file);
+			hook_fontrom_defdisable();
 		}
-	}
-}
-
-static void
-cb_hf_additional(GtkToggleAction *action, gpointer user_data) {
-	gboolean b = gtk_toggle_action_get_active(action);
-	gboolean f;
-
-	f = (np2cfg.hf_additional & 1) ^ (b ? 1 : 0);
-	if (f) {
-		np2cfg.hf_additional ^= 1;
-		sysmng_update(SYS_UPDATECFG);
 	}
 }
 
@@ -2597,7 +2569,6 @@ create_menu(void)
 	xmenu_toggle_item(NULL, "fmgen", np2cfg.usefmgen & 1);
 #endif
 	xmenu_toggle_item(NULL, "hf_enable", hf_enable & 1);
-	xmenu_toggle_item(NULL, "hf_additional", np2cfg.hf_additional & 1);
 	xmenu_toggle_item(NULL, "clockdisp", np2oscfg.DISPCLK & 1);
 	xmenu_toggle_item(NULL, "framedisp", np2oscfg.DISPCLK & 2);
 	xmenu_toggle_item(NULL, "jastsound", np2oscfg.jastsnd);

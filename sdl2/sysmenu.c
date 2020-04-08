@@ -40,14 +40,6 @@
 
 static UINT bmpno = 0;
 
-static FILEH hf_file = NULL;
-static void hf_output(char* strOutput) {
-  if(hf_file) {
-    file_write(hf_file, strOutput, strlen(strOutput));
-    file_write(hf_file, "\n", 1);
-  }
-}
-
 /* Forward declarations */
 extern void changescreen(UINT8 newmode);
 
@@ -760,20 +752,10 @@ static void sys_cmd(MENUID id) {
 		case MID_HF_ENABLE:
 			hf_enable ^= 1;
 			if(hf_enable) {
-				hook_fontrom_setoutput(hf_output);
-				if(np2cfg.hf_additional) {
-					hf_file = file_open(HF_FILENAME);
-				} else {
-					hf_file = file_create(HF_FILENAME);
-				}
+				hook_fontrom_defenable();
 			} else {
-			  file_close(hf_file);
+				hook_fontrom_defdisable();
 			}
-			break;
-
-		case MID_HF_ADDITONAL:
-			np2cfg.hf_additional ^= 1;
-			update |= SYS_UPDATECFG;
 			break;
 
 #if 0
@@ -1006,6 +988,7 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 	menusys_setcheck(MID_FASTMEMCHK, (np2cfg.memcheckspeed > 1));
 #endif
+	menusys_setcheck(MID_HF_ENABLE, (hf_enable == 1));
 	return(menusys_open(x, y));
 }
 

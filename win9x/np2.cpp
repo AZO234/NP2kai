@@ -207,14 +207,6 @@ static	TCHAR		szClassName[] = _T("NP2-MainWindow");
 		OEMCHAR		npcfgfilefolder[MAX_PATH];
 		OEMCHAR		modulefile[MAX_PATH];
 
-static FILEH hf_file = NULL;
-static void hf_output(char* strOutput) {
-  if(hf_file) {
-    file_write(hf_file, strOutput, strlen(strOutput));
-    file_write(hf_file, "\n", 1);
-  }
-}
-
 static	UINT		framecnt = 0;
 static	UINT		waitcnt = 0;
 static	UINT		framemax = 1;
@@ -1659,21 +1651,10 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 		case IDM_HF_ENABLE:
 			hf_enable ^= 1;
 			if(hf_enable) {
-				hook_fontrom_setoutput(hf_output);
-				if(np2cfg.hf_additional) {
-					hf_file = file_open(HF_FILENAME);
-				} else {
-					hf_file = file_create(HF_FILENAME);
-				}
+				hook_fontrom_defenable();
 			} else {
-			  file_close(hf_file);
-			  hf_file = NULL;
+				hook_fontrom_defdisable();
 			}
-			break;
-
-		case IDM_HF_ADDITIONAL:
-			np2cfg.hf_additional ^= 1;
-			update |= SYS_UPDATECFG;
 			break;
 
 		case IDM_TXTSAVE:

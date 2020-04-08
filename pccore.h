@@ -312,8 +312,6 @@ struct tagNP2Config
 #if defined(SUPPORT_GAMEPORT)
 	UINT8	gameport; // 118音源のゲームポートを使用する
 #endif
-
-	UINT8	hf_additional; // hook fontrom file 0:create/1:additional
 };
 typedef struct tagNP2Config  NP2CFG;		/*!< The define of config */
 

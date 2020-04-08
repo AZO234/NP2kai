@@ -205,14 +205,40 @@ const UINT8	*p;
 #define HF_BUFFERSIZE 0x10000
 
 UINT hf_enable;
+static FILEH hf_file;
 static UINT hf_preaddr, hf_count, hf_type, hf_prespc;
 static char hf_buffer[HF_BUFFERSIZE];
 static UINT16 hf_u16buffer[HF_BUFFERSIZE];
 static char* hf_bufloc = hf_buffer;
 static hook_fontrom_output_t hf_fucOutput = NULL;
 
+static void hook_fontrom_defoutput(const char* strString) {
+  if(hf_file) {
+    file_write(hf_file, strString, strlen(strString));
+    file_write(hf_file, "\n", 1);
+  }
+}
+
 void hook_fontrom_setoutput(hook_fontrom_output_t fncOutput) {
   hf_fucOutput = fncOutput;
+}
+
+void hook_fontrom_defenable(void) {
+  if(!hf_file) {
+    hook_fontrom_setoutput(hook_fontrom_defoutput);
+    hf_file = file_create(HF_FILENAME);
+    if(!hf_file) {
+      hf_enable = 0;
+    }
+  }
+}
+
+void hook_fontrom_defdisable(void) {
+  if(hf_file) {
+    hook_fontrom_flush();
+    file_close(hf_file);
+    hf_file = NULL;
+  }
 }
 
 void hook_fontrom_flush(void) {

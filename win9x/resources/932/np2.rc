@@ -1160,7 +1160,6 @@ BEGIN
     BEGIN
         MENUITEM "&BMP save...",                IDM_BMPSAVE
         MENUITEM "Hook fomtrom",                IDM_HF_ENABLE
-        MENUITEM "Hfomtrom additional",         IDM_HF_ADDITIONAL
         MENUITEM "&TXT save...",                IDM_TXTSAVE
         MENUITEM "&S98 logging...",             IDM_S98LOGGING
         MENUITEM "Ca&lendar...",                IDM_CALENDAR

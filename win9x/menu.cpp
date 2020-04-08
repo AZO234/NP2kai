@@ -474,7 +474,6 @@ void xmenu_update(HMENU hMenu)
 	}
 #endif
 	CheckMenuItem(hMenu, IDM_HF_ENABLE, MF_BYCOMMAND | MFCHECK(hf_enable));
-	CheckMenuItem(hMenu, IDM_HF_ADDITIONAL, MF_BYCOMMAND | MFCHECK(np2cfg.hf_additional));
 	CheckMenuItem(hMenu, MF_BYCOMMAND | IDM_S98LOGGING, MFCHECK(bLogging));
 	const UINT8 DISPCLK = np2oscfg.DISPCLK;
 	CheckMenuItem(hMenu, IDM_DISPCLOCK, MF_BYCOMMAND | MFCHECK(DISPCLK & 1));
