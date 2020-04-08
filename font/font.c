@@ -226,7 +226,7 @@ void hook_fontrom_setoutput(hook_fontrom_output_t fncOutput) {
 void hook_fontrom_defenable(void) {
   if(!hf_file) {
     hook_fontrom_setoutput(hook_fontrom_defoutput);
-    hf_file = file_create(HF_FILENAME);
+    hf_file = file_create_c(HF_FILENAME);
     if(!hf_file) {
       hf_enable = 0;
     }
@@ -325,7 +325,7 @@ void hook_fontrom(UINT32 u32Address, BOOL bForce) {
         *hf_bufloc = c;
       }
       hf_bufloc++;
-      if(hf_bufloc - hf_buffer >= 0xFF00) {
+      if(hf_bufloc - hf_buffer >= HF_BUFFERSIZE - 0x1000) {
         output = 1;
       }
     }
@@ -354,7 +354,7 @@ void hook_fontrom(UINT32 u32Address, BOOL bForce) {
         hf_bufloc++;
         *hf_bufloc =  jis       & 0x7F;
         hf_bufloc++;
-        if(hf_bufloc - hf_buffer >= 0xFF00) {
+        if(hf_bufloc - hf_buffer >= HF_BUFFERSIZE - 0x1000) {
           output = 1;
         }
       }
