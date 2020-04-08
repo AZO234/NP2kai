@@ -14,7 +14,10 @@ REG8 MEMCALL memtram_rd8(UINT32 address) {
 		return(mem[address]);
 	}
 	else if (address < 0xa5000) {
-		hook_fontrom(cgwindow.low + ((address >> 1) & 0x0f), FALSE);
+		if(hf_codeul) {
+			hook_fontrom(cgwindow.low);
+			hf_codeul = 0;
+		}
 		if (address & 1) {
 			return(fontrom[cgwindow.high + ((address >> 1) & 0x0f)]);
 		}
@@ -28,15 +31,17 @@ REG8 MEMCALL memtram_rd8(UINT32 address) {
 REG16 MEMCALL memtram_rd16(UINT32 address) {
 
 	CPU_REMCLOCK -= MEMWAIT_TRAM;
+	if(hf_codeul) {
+		hook_fontrom(cgwindow.low);
+		hf_codeul = 0;
+	}
 	if (address < (0xa4000 - 1)) {
 		return(LOADINTELWORD(mem + address));
 	}
 	else if (address == 0xa3fff) {
-		hook_fontrom(cgwindow.low, FALSE);
 		return(mem[address] + (fontrom[cgwindow.low] << 8));
 	}
 	else if (address < 0xa4fff) {
-		hook_fontrom(cgwindow.low + ((address >> 1) & 0x0f), FALSE);
 		if (address & 1) {
 			REG16 ret;
 			ret = fontrom[cgwindow.high + ((address >> 1) & 0x0f)];

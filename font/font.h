@@ -28,11 +28,12 @@ UINT8 font_load(const OEMCHAR *filename, BOOL force);
 #define HF_FILENAME "hook_fontrom.txt"
 typedef void(*hook_fontrom_output_t)(const char* strOutput);
 extern UINT hf_enable;
+extern UINT hf_codeul, hf_count;
 void hook_fontrom_defenable(void);
 void hook_fontrom_defdisable(void);
 void hook_fontrom_setoutput(hook_fontrom_output_t fncOutput);
 void hook_fontrom_flush(void);
-void hook_fontrom(UINT32 u32Address, BOOL bForce);
+void hook_fontrom(UINT32 u32Address);
 
 #ifdef __cplusplus
 }

@@ -205,8 +205,9 @@ const UINT8	*p;
 #define HF_BUFFERSIZE 0x10000
 
 UINT hf_enable;
+UINT hf_codeul, hf_count;
 static FILEH hf_file;
-static UINT hf_preaddr, hf_count, hf_type, hf_prespc;
+static UINT hf_type, hf_prespc;
 static char hf_buffer[HF_BUFFERSIZE];
 static UINT16 hf_u16buffer[HF_BUFFERSIZE];
 static char* hf_bufloc = hf_buffer;
@@ -260,7 +261,7 @@ void hook_fontrom_flush(void) {
   }
 }
 
-void hook_fontrom(UINT32 u32Address, BOOL bForce) {
+void hook_fontrom(UINT32 u32Address) {
   UINT c, spc = 0, output = 0;
   UINT16 jis;
   UINT32 address_org;
@@ -268,37 +269,24 @@ void hook_fontrom(UINT32 u32Address, BOOL bForce) {
   if(hf_enable != 1) {
     return;
   }
-  if(u32Address & 0x800) {
-    return;
-  }
 
   u32Address >>= 4;
-  if(!bForce && hf_preaddr == u32Address) {
-    hf_count++;
-    if(hf_count % 0x16 == 0) {
-      hf_preaddr = 0;
-    }
-    return;
-  } else {
-    hf_count = 0;
-  }
-  hf_preaddr = u32Address;
 
   if(u32Address >= 0x8000) {
     c = u32Address & 0xFF;
-    if(c <= 0x1b || c == 0x20 || (c >= 0xF8 && c <= 0xFB) || c >= 0xFD) {
-      spc = 1;
-    }
-    if(hf_prespc && spc) {
-      output = 1;
+//    if(c <= 0x1B || (c >= 0xF8 && c <= 0xFB) || c >= 0xFD) {
+    if(c <= 0x1F || c >= 0x7F && c <= 0xA0) || c >= 0xE0) {
       hf_prespc = 1;
+      output = 1;
+    } else if(c == 0x20 && hf_prespc) {
+      output = 1;
     } else {
       if(c == 0x20) {
         hf_prespc = 1;
       } else {
         hf_prespc = 0;
       }
-      if(c < 0x80) {
+      if(c >= 0x20 && c <= 0x7E) {
         if(hf_type != 0) {
           *hf_bufloc = 0x1B;
           hf_bufloc++;
@@ -308,7 +296,7 @@ void hook_fontrom(UINT32 u32Address, BOOL bForce) {
           hf_bufloc++;
           hf_type = 0;
         }
-      } else {
+      } else if(c >= 0xA1 && c <= 0xDF) {
         if(hf_type != 1) {
           *hf_bufloc = 0x1B;
           hf_bufloc++;
@@ -330,6 +318,9 @@ void hook_fontrom(UINT32 u32Address, BOOL bForce) {
       }
     }
   } else {
+    if(u32Address & 0x80) {
+      return;
+    }
     u32Address &= 0x7F7F;
     jis = (((u32Address & 0x7F) + 0x20) << 8) | ((u32Address >> 8) & 0x7F);
     if(jis >= 0x2121 && jis <= 0x7C7E && (jis & 0x7F) >= 0x21 && (jis & 0x7F) <= 0x7E) {
@@ -337,9 +328,9 @@ void hook_fontrom(UINT32 u32Address, BOOL bForce) {
          output = 1;
       } else {
         if(jis == 0x2121) {
-           hf_prespc = 1;
+          hf_prespc = 1;
         } else {
-           hf_prespc = 0;
+          hf_prespc = 0;
         }
         if(hf_type != 2) {
           *hf_bufloc = 0x1B;

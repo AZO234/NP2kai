@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Apr 2, 2020<br>
+Apr 9, 2020<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -945,6 +945,14 @@ http://buffalo.jp/download/driver/multi/wgna_95.html<br>
 https://www.iodata.jp/lib/product/g/175_win95.htm<br>
 </div></details>
 
+<details><summary>
+Hook fontrom (textize)
+</summary><div>
+Enable 'Hook fontrom' in menu,<br>
+Hook to using fontrom and output text to 'hook_fontrom.txt' in BIOS directory.<br>
+This function is disable at start NP2kai.<br>
+</div></details>
+
 #### MIDI sound (X11)
 
 <details><summary>
@@ -1026,6 +1034,8 @@ Next boot computer, you command from 4.<br>
 </div></details>
 
 ## Release
+- Apr 9, 2020<br>
+  - hook fontrom (textize)
 - Apr 5, 2020<br>
   - [Windows]
     - add send to SSTP(伺か,ukagaka) from xnp2
