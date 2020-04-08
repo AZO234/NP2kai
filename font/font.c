@@ -275,7 +275,7 @@ void hook_fontrom(UINT32 u32Address) {
   if(u32Address >= 0x8000) {
     c = u32Address & 0xFF;
 //    if(c <= 0x1B || (c >= 0xF8 && c <= 0xFB) || c >= 0xFD) {
-    if(c <= 0x1F || c >= 0x7F && c <= 0xA0) || c >= 0xE0) {
+    if(c <= 0x1F || (c >= 0x7F && c <= 0xA0) || c >= 0xE0) {
       hf_prespc = 1;
       output = 1;
     } else if(c == 0x20 && hf_prespc) {
