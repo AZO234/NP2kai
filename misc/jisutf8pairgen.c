@@ -1,9 +1,9 @@
-/* === ISO-2022-JP (mod for PC98) and UTF-16(UCS2) code pair generator === (C) AZO */
+/* === ISO-2022-JP (mod for PC98) and UTF-8 code pair generator === (C) AZO */
 
 // first install libnkf. https://github.com/AZO234/libnkf
 
-// build: gcc jisutf16pairgen.c -lnkf -o jisutf16pairgen
-// usage: ./jisutf16pairgen > jisutf16pair.txt
+// build: gcc jisutf8pairgen.c -lnkf -o jisutf8pairgen
+// usage: ./jisutf8pairgen > jisutf8pair.txt
 
 #include <stdio.h>
 #include <stdint.h>
@@ -35,15 +35,13 @@ int main(int iArgc, char* Argv[]) {
   };
 
   uint8_t pc98;
-  uint16_t j, uu;
-  uint32_t a, b, l, n;
+  uint16_t j;
+  uint32_t a, b, l, n, uu;
   char strJIS[6] = {0};
   char strJIS_ASCII[3]    = {0x1B, 0x28, 0x42};
   char strJIS_Katakana[3] = {0x1B, 0x28, 0x49};
   char strJIS_Kanji[3]    = {0x1B, 0x24, 0x42};
   char strOption8[]  = "-J -w8 -x";
-  char strOption16[] = "-J -w16 -x";
-  char* strUTF16;
   char* strUTF8;
   char* s;
 
@@ -67,14 +65,12 @@ int main(int iArgc, char* Argv[]) {
       if(n % 4 == 0) {
         printf("\n ");
       }
-      strUTF8  = nkf_convert(strJIS, l, strOption8, 9);
-      printf(" /* %s */ ", strUTF8);
+      strUTF8 = nkf_convert(strJIS, l, strOption8, 9);
+      uu  = (uint16_t)((uint8_t*)strUTF8)[3] << 16;
+      uu += (uint16_t)((uint8_t*)strUTF8)[4] <<  8;
+      uu += (uint16_t)((uint8_t*)strUTF8)[5]      ;
+      printf(" /* %s */ {0, 0x%04X, 0x%06X},", strUTF8, j, uu);
       free(strUTF8);
-      strUTF16 = nkf_convert(strJIS, l, strOption16, 10);
-      uu  = (uint16_t)((uint8_t*)strUTF16)[2] <<  8;
-      uu += (uint16_t)((uint8_t*)strUTF16)[3]      ;
-      printf("{0, 0x%04X, 0x%04X},", j, uu);
-      free(strUTF16);
       n++;
     }
   }
@@ -290,14 +286,12 @@ int main(int iArgc, char* Argv[]) {
       if(n % 4 == 0) {
         printf("\n ");
       }
-      strUTF8  = nkf_convert(strJIS, l, strOption8, 9);
-      printf(" /* %s */ ", strUTF8);
+      strUTF8 = nkf_convert(strJIS, l, strOption8, 9);
+      uu  = (uint16_t)((uint8_t*)strUTF8)[3] << 16;
+      uu += (uint16_t)((uint8_t*)strUTF8)[4] <<  8;
+      uu += (uint16_t)((uint8_t*)strUTF8)[5]      ;
+      printf(" /* %s */ {1, 0x%04X, 0x%06X},", strUTF8, j, uu);
       free(strUTF8);
-      strUTF16 = nkf_convert(strJIS, l, strOption16, 10);
-      uu  = (uint16_t)((uint8_t*)strUTF16)[2] <<  8;
-      uu += (uint16_t)((uint8_t*)strUTF16)[3]      ;
-      printf("{1, 0x%04X, 0x%04X},", j, uu);
-      free(strUTF16);
       n++;
     }
   }
@@ -562,14 +556,12 @@ int main(int iArgc, char* Argv[]) {
       if(n % 4 == 0) {
         printf("\n ");
       }
-      strUTF8  = nkf_convert(strJIS, l, strOption8, 9);
-      printf(" /* %s */ ", strUTF8);
+      strUTF8 = nkf_convert(strJIS, l, strOption8, 9);
+      uu  = (uint16_t)((uint8_t*)strUTF8)[3] << 16;
+      uu += (uint16_t)((uint8_t*)strUTF8)[4] <<  8;
+      uu += (uint16_t)((uint8_t*)strUTF8)[5]      ;
+      printf(" /* %s */ {2, 0x%04X, 0x%06X},", strUTF8, j, uu);
       free(strUTF8);
-      strUTF16 = nkf_convert(strJIS, l, strOption16, 10);
-      uu  = (uint16_t)((uint8_t*)strUTF16)[2] <<  8;
-      uu += (uint16_t)((uint8_t*)strUTF16)[3]      ;
-      printf("{2, 0x%04X, 0x%04X},", j, uu);
-      free(strUTF16);
       n++;
     }
   }

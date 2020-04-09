@@ -9,11 +9,13 @@
 #include	"compiler.h"
 #include	"strres.h"
 #include	"dosio.h"
+#include	"pccore.h"
 #include	"cpucore.h"
 #include	"font.h"
 #include	"fontdata.h"
 #include	"fontmake.h"
 #include	"codecnv/codecnv.h"
+#include	"io/cgrom.h"
 
 #ifndef FONTMEMORYBIND
 	UINT8	__font[FONTMEMORYSIZE];
@@ -204,6 +206,8 @@ const UINT8	*p;
 
 #define HF_BUFFERSIZE 0x10000
 
+extern _CGROM cgrom;
+
 UINT hf_enable;
 UINT hf_codeul, hf_count;
 static FILEH hf_file;
@@ -275,7 +279,7 @@ void hook_fontrom(UINT32 u32Address) {
   if(u32Address >= 0x8000) {
     c = u32Address & 0xFF;
 //    if(c <= 0x1B || (c >= 0xF8 && c <= 0xFB) || c >= 0xFD) {
-    if(c <= 0x1F || (c >= 0x7F && c <= 0xA0) || c >= 0xE0) {
+    if(c <= 0x1F || c >= 0x7F) {
       hf_prespc = 1;
       output = 1;
     } else if(c == 0x20 && hf_prespc) {
@@ -296,7 +300,18 @@ void hook_fontrom(UINT32 u32Address) {
           hf_bufloc++;
           hf_type = 0;
         }
-      } else if(c >= 0xA1 && c <= 0xDF) {
+      }
+      *hf_bufloc = c;
+      hf_bufloc++;
+      if(hf_bufloc - hf_buffer >= HF_BUFFERSIZE - 0x1000) {
+        output = 1;
+      }
+    }
+  } else {
+    if(u32Address == 0x7FFF) {
+      hf_prespc = 0;
+      c = (cgrom.code >> 8) & 0x7F;
+      if(c >= 0x21 && c <= 0x5F) {
         if(hf_type != 1) {
           *hf_bufloc = 0x1B;
           hf_bufloc++;
@@ -306,52 +321,50 @@ void hook_fontrom(UINT32 u32Address) {
           hf_bufloc++;
           hf_type = 1;
         }
-      }
-      if(hf_type == 1) {
-        *hf_bufloc = c - 0x80;
-      } else {
         *hf_bufloc = c;
-      }
-      hf_bufloc++;
-      if(hf_bufloc - hf_buffer >= HF_BUFFERSIZE - 0x1000) {
-        output = 1;
-      }
-    }
-  } else {
-    if(u32Address & 0x80) {
-      return;
-    }
-    u32Address &= 0x7F7F;
-    jis = (((u32Address & 0x7F) + 0x20) << 8) | ((u32Address >> 8) & 0x7F);
-    if(jis >= 0x2121 && jis <= 0x7C7E && (jis & 0x7F) >= 0x21 && (jis & 0x7F) <= 0x7E) {
-      if(hf_prespc && jis == 0x2121) {
-         output = 1;
-      } else {
-        if(jis == 0x2121) {
-          hf_prespc = 1;
-        } else {
-          hf_prespc = 0;
-        }
-        if(hf_type != 2) {
-          *hf_bufloc = 0x1B;
-          hf_bufloc++;
-          *hf_bufloc = 0x24;
-          hf_bufloc++;
-          *hf_bufloc = 0x42;
-          hf_bufloc++;
-          hf_type = 2;
-        }
-        *hf_bufloc = (jis >> 8) & 0x7F;
-        hf_bufloc++;
-        *hf_bufloc =  jis       & 0x7F;
         hf_bufloc++;
         if(hf_bufloc - hf_buffer >= HF_BUFFERSIZE - 0x1000) {
           output = 1;
         }
+      } else {
+        return;
       }
     } else {
-      hf_prespc = 1;
-      output = 1;
+      if(u32Address & 0x80) {
+        return;
+      }
+      u32Address &= 0x7F7F;
+      jis = (((u32Address & 0x7F) + 0x20) << 8) | ((u32Address >> 8) & 0x7F);
+      if(jis >= 0x2121 && jis <= 0x7C7E && (jis & 0x7F) >= 0x21 && (jis & 0x7F) <= 0x7E) {
+        if(hf_prespc && jis == 0x2121) {
+           output = 1;
+        } else {
+          if(jis == 0x2121) {
+            hf_prespc = 1;
+          } else {
+            hf_prespc = 0;
+          }
+          if(hf_type != 2) {
+            *hf_bufloc = 0x1B;
+            hf_bufloc++;
+            *hf_bufloc = 0x24;
+            hf_bufloc++;
+            *hf_bufloc = 0x42;
+            hf_bufloc++;
+            hf_type = 2;
+          }
+          *hf_bufloc = (jis >> 8) & 0x7F;
+          hf_bufloc++;
+          *hf_bufloc =  jis       & 0x7F;
+          hf_bufloc++;
+          if(hf_bufloc - hf_buffer >= HF_BUFFERSIZE - 0x1000) {
+            output = 1;
+          }
+        }
+      } else {
+        hf_prespc = 1;
+        output = 1;
+      }
     }
   }
   if(output) {
