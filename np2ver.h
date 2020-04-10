@@ -8,7 +8,12 @@
 #else
 #define	NP2VER_CORE			"ver.0.86 kai rev.21"
 #endif
+#if defined(_MSC_VER)
+#include "np2_git_version.h"
+#define	NP2VER_GIT			VER_SHASH " " VER_DSTR
+#else
 #define	NP2VER_GIT			GIT_VERSION
+#endif
 
 // #define	NP2VER_WIN9X
 // #define	NP2VER_MACOSX

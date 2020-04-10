@@ -275,8 +275,8 @@ typedef int  BOOL;
 #define	SNPRINTF                  OEMSNPRINTF
 #define	SPRINTF                   OEMSPRINTF
 
-#define	OEMSTRCPY(s1, s2) OEMSPRINTF(s1, "%s", s2)
-#define	OEMPRINTFSTR(s)   printf("%s", s)
+#define	OEMSTRCPY(s1, s2) OEMSPRINTF(s1, OEMTEXT("%s"), s2)
+#define	OEMPRINTFSTR(s)   printf(OEMTEXT("%s"), s)
 
 // future depracted maybe
 #define	OEMCHAR         char

@@ -3314,6 +3314,9 @@
     <ClInclude Include="sstpres.h">
       <Filter>ヘッダー ファイル\win9x</Filter>
     </ClInclude>
+    <ClInclude Include="np2_git_version.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resources\932\np2.rc">
