@@ -75,6 +75,7 @@ FILEH file_open_rb(const OEMCHAR *path) {
 }
 
 FILEH file_create(const OEMCHAR *path) {
+  FILEH hRes = NULL;
 
 #if defined(__LIBRETRO__)
 	hRes = filestream_open(path, RETRO_VFS_FILE_ACCESS_READ_WRITE, RETRO_VFS_FILE_ACCESS_HINT_NONE);
