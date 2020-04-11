@@ -264,11 +264,11 @@ int pre_main(const char *argv) {
     }
   }
 
-  if(CMDFILE[0]) {
-    parse_cmdline(CMDFILE);
-  } else {
-    parse_cmdline(argv);
+  if(CMDFILE[0] == '\0') {
+    milstr_ncpy(CMDFILE, "np2kai ", 512);
+    milstr_ncat(CMDFILE, argv, 512);
   }
+  parse_cmdline(CMDFILE);
 
    for (i = 0; i<64; i++)
       xargv_cmd[i] = NULL;
