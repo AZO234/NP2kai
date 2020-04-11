@@ -183,19 +183,17 @@ void setpredskindex(void){
 
 int loadcmdfile(char *argv)
 {
-   int res=0;
+  int res = 0;
 
-   RFILE *fp = filestream_open(argv, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
-printf("lcmd:ready\n");
-   if( fp != NULL )
-   {
-printf("lcmd:open\n");
-      if ( filestream_gets (fp, CMDFILE , 512) != NULL )
-         res=1;
-      filestream_close (fp);
-   }
+  RFILE* fp = filestream_open(argv, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
+  if(fp != NULL) {
+    if(filestream_gets(fp, CMDFILE, 512) != NULL) {
+      res = 1;
+    }
+    filestream_close(fp);
+  }
 
-   return res;
+  return res;
 }
 
 int HandleExtension(char *path,char *ext)
@@ -224,7 +222,7 @@ int PARAMCOUNT=0;
 
 extern int cmain(int argc, char *argv[]);
 
-void parse_cmdline( const char *argv );
+void parse_cmdline(const char *argv);
 
 static void extract_directory(char *buf, const char *path, size_t size)
 {
@@ -256,51 +254,33 @@ void Add_Option(const char* option)
    sprintf(XARGV[PARAMCOUNT++],"%s",option);
 }
 
-int pre_main(const char *argv)
-{
-   int i=0;
-   int Only1Arg;
+int pre_main(const char *argv) {
+  int i;
 
-   if (strlen(argv) > strlen("cmd"))
-   {
-      if( HandleExtension((char*)argv,"cmd") || HandleExtension((char*)argv,"CMD"))
-         i=loadcmdfile((char*)argv);
-   }
+  CMDFILE[0] = '\0';
+  if(strlen(argv) > strlen("cmd")) {
+    if(HandleExtension((char*)argv, "cmd") || HandleExtension((char*)argv, "CMD")) {
+      i = loadcmdfile((char*)argv);
+    }
+  }
 
-   if(i==1)
-      parse_cmdline(CMDFILE);
-   else
-      parse_cmdline(argv);
-
-   Only1Arg = (strcmp(ARGUV[0],"np2kai") == 0) ? 0 : 1;
+  if(CMDFILE[0]) {
+    parse_cmdline(CMDFILE);
+  } else {
+    parse_cmdline(argv);
+  }
 
    for (i = 0; i<64; i++)
       xargv_cmd[i] = NULL;
 
-
-   if(Only1Arg)
-   {
-      int cfgload=0;
-
-      Add_Option("np2kai");
-
-      if(cfgload==0)
-      {
-
-      }
-
-      Add_Option(RPATH);
-   }
-   else
-   { // Pass all cmdline args
-      for(i = 0; i < ARGUC; i++)
-         Add_Option(ARGUV[i]);
-   }
+   for (i = 0; i < ARGUC; i++)
+      Add_Option(ARGUV[i]);
 
    for (i = 0; i < PARAMCOUNT; i++)
    {
       xargv_cmd[i] = (char*)(XARGV[i]);
       printf("arg_%d:%s\n",i,xargv_cmd[i]);
+      printf("argl_%d:%d\n",i,strlen(xargv_cmd[i]));
    }
 
    dosio_init();
@@ -312,62 +292,57 @@ int pre_main(const char *argv)
    return 0;
 }
 
-void parse_cmdline(const char *argv)
-{
-   char *p,*p2,*start_of_word;
-   int c,c2;
-   static char buffer[512*4];
-   enum states { DULL, IN_WORD, IN_STRING } state = DULL;
+void parse_cmdline(const char *argv) {
+  char *p, *p2, *start_of_word;
+  int c, c2;
+  static char buffer[512 * 4];
+  enum states { DULL, IN_WORD, IN_STRING } state = DULL;
 
-   strcpy(buffer,argv);
-   strcat(buffer," \0");
+  strcpy(buffer, argv);
+  strcat(buffer," \0");
 
-   for (p = buffer; *p != '\0'; p++)
-   {
-      c = (unsigned char) *p; /* convert to unsigned char for is* functions */
-      switch (state)
-      {
-         case DULL: /* not in a word, not in a double quoted string */
-            if (isspace(c)) /* still not in a word, so ignore this char */
-               continue;
-            /* not a space -- if it's a double quote we go to IN_STRING, else to IN_WORD */
-            if (c == '"')
-            {
-               state = IN_STRING;
-               start_of_word = p + 1; /* word starts at *next* char, not this one */
-               continue;
-            }
-            state = IN_WORD;
-            start_of_word = p; /* word starts here */
-            continue;
-         case IN_STRING:
-            /* we're in a double quoted string, so keep going until we hit a close " */
-            if (c == '"')
-            {
-               /* word goes from start_of_word to p-1 */
-               //... do something with the word ...
-               for (c2 = 0,p2 = start_of_word; p2 < p; p2++, c2++)
-                  ARGUV[ARGUC][c2] = (unsigned char) *p2;
-               ARGUC++;
-
-               state = DULL; /* back to "not in word, not in string" state */
-            }
-            continue; /* either still IN_STRING or we handled the end above */
-         case IN_WORD:
-            /* we're in a word, so keep going until we get to a space */
-            if (isspace(c))
-            {
-               /* word goes from start_of_word to p-1 */
-               //... do something with the word ...
-               for (c2 = 0,p2 = start_of_word; p2 <p; p2++,c2++)
-                  ARGUV[ARGUC][c2] = (unsigned char) *p2;
-               ARGUC++;
-
-               state = DULL; /* back to "not in word, not in string" state */
-            }
-            continue; /* either still IN_WORD or we handled the end above */
+  for(p = buffer; *p != '\0'; p++) {
+    c = (unsigned char)*p; /* convert to unsigned char for is* functions */
+    switch(state) {
+    case DULL: /* not in a word, not in a double quoted string */
+      if(c == ' ' || c == '\t' ||  c == '\r' ||  c == '\n') { /* still not in a word, so ignore this char */
+        continue;
       }
-   }
+      /* not a space -- if it's a double quote we go to IN_STRING, else to IN_WORD */
+      if(c == '"') {
+        state = IN_STRING;
+        start_of_word = p + 1; /* word starts at *next* char, not this one */
+        continue;
+      }
+      state = IN_WORD;
+      start_of_word = p; /* word starts here */
+      continue;
+
+    case IN_STRING:
+      /* we're in a double quoted string, so keep going until we hit a close " */
+      if(c == '"') {
+        /* word goes from start_of_word to p-1 */
+        for(c2 = 0, p2 = start_of_word; p2 < p; p2++, c2++) {
+          ARGUV[ARGUC][c2] = (unsigned char)*p2;
+        }
+        ARGUC++;
+        state = DULL; /* back to "not in word, not in string" state */
+      }
+      continue; /* either still IN_STRING or we handled the end above */
+
+    case IN_WORD:
+      /* we're in a word, so keep going until we get to a space */
+      if(c == ' ' || c == '\t' ||  c == '\r' ||  c == '\n') {
+        /* word goes from start_of_word to p-1 */
+        for(c2 = 0, p2 = start_of_word; p2 < p; p2++, c2++) {
+          ARGUV[ARGUC][c2] = (unsigned char)*p2;
+        }
+        ARGUC++;
+        state = DULL; /* back to "not in word, not in string" state */
+      }
+      continue; /* either still IN_WORD or we handled the end above */
+    }
+  }
 }
 
 static const char *cross[] = {

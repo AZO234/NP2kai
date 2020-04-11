@@ -43,42 +43,50 @@ dosio_term(void)
 
 /* ファイル操作 */
 FILEH file_open(const OEMCHAR *path) {
+  FILEH hRes = NULL;
 
 #if defined(__LIBRETRO__)
-	return(filestream_open(path, RETRO_VFS_FILE_ACCESS_READ_WRITE | RETRO_VFS_FILE_ACCESS_UPDATE_EXISTING, RETRO_VFS_FILE_ACCESS_HINT_NONE));
+  hRes = filestream_open(path, RETRO_VFS_FILE_ACCESS_READ_WRITE | RETRO_VFS_FILE_ACCESS_UPDATE_EXISTING, RETRO_VFS_FILE_ACCESS_HINT_NONE);
 #elif defined(_WINDOWS) && defined(OSLANG_UTF8)
 	wchar_t	wpath[MAX_PATH];
 	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
-	return(_wfopen(wpath, L"rb+"));
+  hRes = _wfopen(wpath, L"rb+");
 #else
-	return(fopen(path, "rb+"));
+  hRes = fopen(path, "rb+");
 #endif
+
+  return hRes;
 }
 
 FILEH file_open_rb(const OEMCHAR *path) {
+  FILEH hRes = NULL;
 
 #if defined(__LIBRETRO__)
-	return(filestream_open(path, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE));
+  hRes = filestream_open(path, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
 #elif defined(_WINDOWS) && defined(OSLANG_UTF8)
 	wchar_t	wpath[MAX_PATH];
 	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
-	return(_wfopen(wpath, L"rb"));
+  hRes = _wfopen(wpath, L"rb");
 #else
-	return(fopen(path, "rb"));
+  hRes = fopen(path, "rb");
 #endif
+
+  return hRes;
 }
 
 FILEH file_create(const OEMCHAR *path) {
 
 #if defined(__LIBRETRO__)
-	return(filestream_open(path, RETRO_VFS_FILE_ACCESS_READ_WRITE, RETRO_VFS_FILE_ACCESS_HINT_NONE));
+	hRes = filestream_open(path, RETRO_VFS_FILE_ACCESS_READ_WRITE, RETRO_VFS_FILE_ACCESS_HINT_NONE);
 #elif defined(_WINDOWS) && defined(OSLANG_UTF8)
 	wchar_t	wpath[MAX_PATH];
 	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
-	return(_wfopen(wpath, L"wb+"));
+	hRes = _wfopen(wpath, L"wb+");
 #else
-	return(fopen(path, "wb+"));
+	hRes = fopen(path, "wb+");
 #endif
+
+  return hRes;
 }
 
 FILEPOS file_seek(FILEH handle, FILEPOS pointer, int method) {
@@ -183,49 +191,37 @@ FILELEN file_getsize(FILEH handle) {
 }
 
 short file_attr(const OEMCHAR *path) {
+  short	attr = 0;
 
-	short	attr;
-
-#if defined(_LIBRETRO__)
-	struct stat	sb;
-	if (path_is_directory(path)) {
-		attr = FILEATTR_DIRECTORY;
-	}
-	else {
-		attr = 0;
-	}
+#if defined(__LIBRETRO__)
+  if(path_is_directory(path)) {
+    attr |= FILEATTR_DIRECTORY;
+  }
 #elif defined(_WINDOWS) && defined(OSLANG_UTF8)
-	struct _stat sb;
-	wchar_t	wpath[MAX_PATH];
-	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
-	if (_wstat(wpath, &sb) == 0)
+  struct _stat sb;
+  wchar_t	wpath[MAX_PATH];
+  codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
+  if(_wstat(wpath, &sb) == 0) {
+    if(sb.st_mode & _S_IFDIR) {
+      attr |= FILEATTR_DIRECTORY;
+    }
+    if(!(sb.st_mode & S_IWRITE)) {
+      attr |= FILEATTR_READONLY;
+    }
+  }
 #else
-	struct stat	sb;
-	if (stat(path, &sb) == 0)
-#endif
-	{
-#if defined(_WINDOWS)
-		if (sb.st_mode & _S_IFDIR) {
-			attr = FILEATTR_DIRECTORY;
-		}
-		else {
-			attr = 0;
-		}
-		if (!(sb.st_mode & S_IWRITE)) {
+  struct stat sb;
+  if(stat(path, &sb) == 0) {
+    if(S_ISDIR(sb.st_mode)) {
+      attr |= FILEATTR_DIRECTORY;
+    }
+    if(!(sb.st_mode & S_IWUSR)) {
 			attr |= FILEATTR_READONLY;
 		}
-#else
-		if (S_ISDIR(sb.st_mode)) {
-			return(FILEATTR_DIRECTORY);
-		}
-		attr = 0;
-		if (!(sb.st_mode & S_IWUSR)) {
-			attr |= FILEATTR_READONLY;
-		}
-#endif
-		return(attr);
 	}
-	return(-1);
+#endif
+
+	return(attr);
 }
 
 static BRESULT cnv_sttime(time_t *t, DOSDATE *dosdate, DOSTIME *dostime) {
@@ -263,8 +259,8 @@ struct stat sb;
 
 short file_delete(const OEMCHAR *path) {
 
-#if defined(_LIBRETRO__)
-	return(filestream_delete(path))
+#if defined(__LIBRETRO__)
+	return(filestream_delete(path));
 #elif defined(_WINDOWS) && defined(OSLANG_UTF8)
 	wchar_t	wpath[MAX_PATH];
 	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
@@ -276,7 +272,7 @@ short file_delete(const OEMCHAR *path) {
 
 short file_rename(const OEMCHAR *existpath, const OEMCHAR *newpath) {
 
-#if defined(_LIBRETRO__)
+#if defined(__LIBRETRO__)
 	return((short)filestream_rename(existpath, newpath));
 #elif defined(_WINDOWS) && defined(OSLANG_UTF8)
 	wchar_t	wepath[MAX_PATH];

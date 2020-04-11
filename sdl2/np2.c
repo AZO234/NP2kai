@@ -124,9 +124,9 @@ char draw32bit;
 
 unsigned int np2_main_disk_images_count = 0;
 static unsigned int np2_main_cd_images_count = 0;
-char np2_main_disk_images_paths[50][MAX_PATH] = {0};
-static char np2_main_cd_images_paths[5][MAX_PATH] = {0};
-static unsigned int np2_main_cd_drv = sizeof(np2_main_cd_images_paths) / MAX_PATH;
+OEMCHAR np2_main_disk_images_paths[50][MAX_PATH] = {0};
+static OEMCHAR np2_main_cd_images_paths[5][MAX_PATH] = {0};
+static unsigned int np2_main_cd_drv[5] = {0xF, 0xF, 0xF, 0xF, 0xF};
 
 UINT8 scrnmode = 0;
 UINT8 changescreeninit = 0;
@@ -301,31 +301,31 @@ char np2_isfdimage(const char *file, const int len) {
 
   if(len > 4) {
     ext = file + len - 4;
-    if      (0 == milstr_cmp(ext, ".d88")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".d98")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".fdi")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".hdm")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".xdf")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".dup")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".2hd")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".nfd")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".fdd")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".hd4")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".hd5")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".hd9")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".h01")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".hdb")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".ddb")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".dd6")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".dd9")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".dcp")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".dcu")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".flp")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".bin")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".tfd")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".fim")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".img")) fd = 1;
-    else if (0 == milstr_cmp(ext, ".ima")) fd = 1;
+    if      (milstr_cmp(ext, ".d88") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".d98") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".fdi") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".hdm") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".xdf") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".dup") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".2hd") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".nfd") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".fdd") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".hd4") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".hd5") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".hd9") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".h01") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".hdb") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".ddb") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".dd6") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".dd9") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".dcp") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".dcu") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".flp") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".bin") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".tfd") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".fim") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".img") == 0) fd = 1;
+    else if (milstr_cmp(ext, ".ima") == 0) fd = 1;
   }
 
   return fd;
@@ -421,11 +421,7 @@ int np2_main(int argc, char *argv[]) {
 	OEMCHAR	*ext;
 	OEMCHAR	base_dir[MAX_PATH];
 	OEMCHAR	fullpath[MAX_PATH];
-#if defined(__LIBRETRO__)
-  RFILE *fcheck;
-#else
-  FILE *fcheck;
-#endif
+  FILEH fcheck;
 
 	pos = 1;
 	while(pos < argc) {
@@ -484,21 +480,12 @@ int np2_main(int argc, char *argv[]) {
 #endif
 
 	OEMSNPRINTF(fullpath, sizeof(fullpath), OEMTEXT("%sdefault.ttf"), np2cfg.biospath);
-#if defined(__LIBRETRO__)
-  fcheck = filestream_open(fullpath, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
-#else
   fcheck = file_open_rb(fullpath);
-#endif
 	if (fcheck != NULL) {
-#if defined(__LIBRETRO__)
-		filestream_close(fcheck);
-#else
 		file_close(fcheck);
-#endif
 		fontmng_setdeffontname(fullpath);
 	}
 	
-#if defined(SUPPORT_IDEIO) || defined(SUPPORT_SASI) || defined(SUPPORT_SCSI)
 	setmedia = drvhddSCSI = HDCount = CDCount = 0;
 #if defined(__LIBRETRO__)
 	if(!lr_uselasthddmount) {
@@ -514,7 +501,6 @@ int np2_main(int argc, char *argv[]) {
 #endif
 	}
 #endif	/* __LIBRETRO__ */
-#endif
 	for (i = 1; i < argc; i++) {
 		if (OEMSTRLEN(argv[i]) < 5) {
 			continue;
@@ -529,7 +515,7 @@ int np2_main(int argc, char *argv[]) {
 		np2_main_getfullpath(fullpath, argv[i], base_dir);
 		ext = fullpath + (OEMSTRLEN(fullpath) - 4);
 
-		if(0 == milstr_cmp(ext, ".m3u")) {
+		if(milstr_cmp(ext, ".m3u") == 0) {
 			imagetype = IMAGETYPE_OTHER;
 			np2_main_read_m3u(fullpath);
 		}
@@ -545,57 +531,61 @@ int np2_main(int argc, char *argv[]) {
 
 #if defined(SUPPORT_IDEIO) || defined(SUPPORT_SASI) || defined(SUPPORT_SCSI)
 		if(imagetype == IMAGETYPE_UNKNOWN) {
-			if      (0 == milstr_cmp(ext, ".hdi"))	imagetype = IMAGETYPE_SASI_IDE; // SASI/IDE
-			else if (0 == milstr_cmp(ext, ".thd"))	imagetype = IMAGETYPE_SASI_IDE;
-			else if (0 == milstr_cmp(ext, ".nhd"))	imagetype = IMAGETYPE_SASI_IDE;
-			else if (0 == milstr_cmp(ext, ".vhd"))	imagetype = IMAGETYPE_SASI_IDE;
-			else if (0 == milstr_cmp(ext, ".sln"))	imagetype = IMAGETYPE_SASI_IDE;
-			else if (0 == milstr_cmp(ext, ".iso"))	imagetype = IMAGETYPE_SASI_IDE_CD; // SASI/IDE CD
-			else if (0 == milstr_cmp(ext, ".cue"))	imagetype = IMAGETYPE_SASI_IDE_CD;
-			else if (0 == milstr_cmp(ext, ".ccd"))	imagetype = IMAGETYPE_SASI_IDE_CD;
-			else if (0 == milstr_cmp(ext, ".mds"))	imagetype = IMAGETYPE_SASI_IDE_CD;
-			else if (0 == milstr_cmp(ext, ".nrg"))	imagetype = IMAGETYPE_SASI_IDE_CD;
-			else if (0 == milstr_cmp(ext, ".hdd"))	imagetype = IMAGETYPE_SCSI; // SCSI
-			else if (0 == milstr_cmp(ext, ".hdn"))	imagetype = IMAGETYPE_SCSI;
-		}
-		switch (imagetype) {
 #if defined(SUPPORT_IDEIO) || defined(SUPPORT_SASI)
-		case IMAGETYPE_SASI_IDE:
-			for(j = 0; j < 4; j++) {
-				if (np2cfg.idetype[j] == SXSIDEV_HDD) {
-					if(!(setmedia & (1 << j))) {
-						milstr_ncpy(np2cfg.sasihdd[j], fullpath, MAX_PATH);
-						setmedia |= 1 << j;
-						HDCount++;
-						break;
-					}
-				}
-			}
-			break;
-		case IMAGETYPE_SASI_IDE_CD:
-			if(np2_main_cd_images_count < sizeof(np2_main_cd_images_paths) / MAX_PATH) {
-				milstr_ncpy(np2_main_cd_images_paths[np2_main_cd_images_count], fullpath, MAX_PATH);
-				np2_main_cd_images_count++;
-			}
-			for(j = 0; j < 4; j++) {
-				if (np2cfg.idetype[j] == SXSIDEV_CDROM) {
-					if (!(setmedia & (1 << j))) {
-						np2_main_cd_drv = j;
-						setmedia |= 1 << j;
-					}
-					break;
-				}
-			}
-			break;
+			if      (milstr_cmp(ext, ".hdi") == 0) imagetype = IMAGETYPE_SASI_IDE;  // SASI/IDE
+			else if (milstr_cmp(ext, ".thd") == 0) imagetype = IMAGETYPE_SASI_IDE;
+			else if (milstr_cmp(ext, ".nhd") == 0) imagetype = IMAGETYPE_SASI_IDE;
+			else if (milstr_cmp(ext, ".vhd") == 0) imagetype = IMAGETYPE_SASI_IDE;
+			else if (milstr_cmp(ext, ".sln") == 0) imagetype = IMAGETYPE_SASI_IDE;
+			else if (milstr_cmp(ext, ".iso") == 0) imagetype = IMAGETYPE_SASI_IDE_CD;  // SASI/IDE CD
+			else if (milstr_cmp(ext, ".cue") == 0) imagetype = IMAGETYPE_SASI_IDE_CD;
+			else if (milstr_cmp(ext, ".ccd") == 0) imagetype = IMAGETYPE_SASI_IDE_CD;
+			else if (milstr_cmp(ext, ".mds") == 0) imagetype = IMAGETYPE_SASI_IDE_CD;
+			else if (milstr_cmp(ext, ".nrg") == 0) imagetype = IMAGETYPE_SASI_IDE_CD;
 #endif
 #if defined(SUPPORT_SCSI)
-		case IMAGETYPE_SCSI:
-			if (drvhddSCSI < 4) {
-				milstr_ncpy(np2cfg.scsihdd[drvhddSCSI], fullpath, MAX_PATH);
-				drvhddSCSI++;
-			}
-			break;
+			if      (milstr_cmp(ext, ".hdd") == 0) imagetype = IMAGETYPE_SCSI;  // SCSI
+			else if (milstr_cmp(ext, ".hdn") == 0) imagetype = IMAGETYPE_SCSI;
 #endif
+			switch (imagetype) {
+#if defined(SUPPORT_IDEIO) || defined(SUPPORT_SASI)
+			case IMAGETYPE_SASI_IDE:
+				for(j = 0; j < 4; j++) {
+					if(np2cfg.idetype[j] == SXSIDEV_HDD) {
+						if(!(setmedia & (1 << j))) {
+							milstr_ncpy(np2cfg.sasihdd[j], fullpath, MAX_PATH);
+							setmedia |= 1 << j;
+							HDCount++;
+							break;
+						}
+					}
+				}
+				break;
+			case IMAGETYPE_SASI_IDE_CD:
+				if(np2_main_cd_images_count < sizeof(np2_main_cd_images_paths) / MAX_PATH) {
+					milstr_ncpy(np2_main_cd_images_paths[np2_main_cd_images_count], fullpath, MAX_PATH);
+					for(j = 0; j < 4; j++) {
+						if(np2cfg.idetype[j] == SXSIDEV_CDROM) {
+							if(!(setmedia & (1 << j))) {
+								np2_main_cd_drv[np2_main_cd_images_count] = j;
+								setmedia |= 1 << j;
+							}
+							break;
+						}
+					}
+					np2_main_cd_images_count++;
+				}
+				break;
+#endif
+#if defined(SUPPORT_SCSI)
+			case IMAGETYPE_SCSI:
+				if(drvhddSCSI < 4) {
+					milstr_ncpy(np2cfg.scsihdd[drvhddSCSI], fullpath, MAX_PATH);
+					drvhddSCSI++;
+				}
+				break;
+#endif
+			}
 		}
 #endif
 	}
@@ -653,13 +643,14 @@ int np2_main(int argc, char *argv[]) {
 	}
 #endif	/* defined(SUPPORT_RESUME) */
 
-	if(np2_main_cd_images_count < sizeof(np2_main_cd_images_paths) / MAX_PATH) {
-		sxsi_devopen(np2_main_cd_drv, np2_main_cd_images_paths[0]);
+	for (i = 0; i < np2_main_cd_images_count; i++) {
+		if (i < 1) {
+			sxsi_devopen(np2_main_cd_drv[i], np2_main_cd_images_paths[i]);
+		}
 	}
 
 	drvfdd = 0;
 	for (i = 0; i < np2_main_disk_images_count; i++) {
-		diskdrv_readyfdd(i, np2_main_disk_images_paths[i], 0);
 		if (i < 2) {
 			diskdrv_readyfdd(i, np2_main_disk_images_paths[i], 0);
 		}
