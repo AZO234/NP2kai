@@ -47,6 +47,7 @@
 #include	"i386hax/haxfunc.h"
 #include	"i386hax/haxcore.h"
 #endif
+#include	"np2_tickcount.h"
 
 static const char appname[] =
 #if defined(CPUCORE_IA32)

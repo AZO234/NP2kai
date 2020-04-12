@@ -36,8 +36,8 @@ typedef SDL_Thread* NP2_Thread_t;
 typedef sthread_t* NP2_Thread_t;
 #endif
 
-#ifndef TRACEOUT
-#define TRACEOUT(s)
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 /* --- thread --- */
@@ -137,6 +137,10 @@ void NP2_WaitQueue_Shift_Wait(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, void
 #define NP2_Sleep_ms(ms) SDL_Delay(ms);
 #elif defined(__LIBRETRO__)
 #define NP2_Sleep_ms(ms) retro_sleep(ms);
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif  /* SUPPORT_NP2_THREAD */
