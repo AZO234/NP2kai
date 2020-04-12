@@ -38,7 +38,6 @@ INCFLAGS += 	-I$(NP2_PATH)/sdl2/libretro \
 		-I$(NP2_PATH)/i386c/ia32/instructions/fpu
 
 SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro.c \
-	     	$(NP2_PATH)/sdl2/libretro/rsemaphore.c \
 		$(wildcard $(NP2_PATH)/i386c/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/*.c) \
@@ -69,7 +68,6 @@ ifneq ($(STATIC_LINKING), 1)
 			$(NP2_PATH)/sdl2/libretro/libretro-common/encodings/encoding_crc32.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/encodings/encoding_utf.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/features/features_cpu.c \
-			$(NP2_PATH)/sdl2/libretro/libretro-common/file/archive_file.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/file/config_file.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/file/config_file_userdata.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/file/file_path.c \
@@ -89,7 +87,6 @@ ifneq ($(STATIC_LINKING), 1)
 			$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_cdrom.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_chd.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_huffman.c \
-			$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_zlib.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/formats/png/rpng.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/formats/png/rpng_encode.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/formats/tga/rtga.c \
@@ -101,7 +98,6 @@ ifneq ($(STATIC_LINKING), 1)
 			$(NP2_PATH)/sdl2/libretro/libretro-common/lists/file_list.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/lists/string_list.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/lists/vector_list.c \
-			$(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rthreads.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/streams/chd_stream.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/streams/file_stream.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/streams/file_stream_transforms.c \
@@ -110,9 +106,22 @@ ifneq ($(STATIC_LINKING), 1)
 			$(NP2_PATH)/sdl2/libretro/libretro-common/streams/stdin_stream.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/streams/trans_stream.c \
 			$(NP2_PATH)/sdl2/libretro/libretro-common/streams/trans_stream_pipe.c \
-			$(NP2_PATH)/sdl2/libretro/libretro-common/string/stdstring.c \
-			$(NP2_PATH)/sdl2/libretro/libretro-common/vfs/vfs_implementation.c
+			$(NP2_PATH)/sdl2/libretro/libretro-common/string/stdstring.c
 endif
+
+	USE_RTHREAD = 1
+	ifeq ($(USE_RTHREAD), 1)
+		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rthreads.c
+	endif
+
+	USE_RSEMAPHOE = 1
+	ifeq ($(USE_RSEMAPHOE), 1)
+		SOURCES_C += $(NP2_PATH)/sdl2/libretro/rsemaphore.c
+	endif
+
+	ifneq ($(NO_DIRENT), 1)
+		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/vfs/vfs_implementation.c
+	endif
 
 COREFLAGS := -D__LIBRETRO__ $(INCFLAGS) $(NP2DEFINE) $(NP21DEFINE)
 
@@ -120,7 +129,6 @@ GIT_VERSION := " $(shell git rev-parse --short HEAD || echo unknown)"
 ifneq ($(GIT_VERSION)," unknown")
 	COREFLAGS += -DGIT_VERSION=\"$(GIT_VERSION)\"
 endif
-
 include $(CLEAR_VARS)
 LOCAL_MODULE    := retro
 LOCAL_SRC_FILES := $(SOURCES_C) $(SOURCES_CXX)

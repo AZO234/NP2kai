@@ -760,8 +760,8 @@ SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro.c \
 #	$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_flac_codec.c \
 #	$(NP2_PATH)/sdl2/libretro/libretro-common/streams/trans_stream_zlib.c
 
-ifneq ($(STATIC_LINKING),1)
-SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr.c \
+ifneq ($(STATIC_LINKING), 1)
+SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_fnmatch.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_getopt.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_posix_string.c \
@@ -812,28 +812,32 @@ SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr.
 	$(NP2_PATH)/sdl2/libretro/libretro-common/streams/trans_stream_pipe.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/string/stdstring.c
 
-#	ifeq ($(platform), libnx)
-#		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/switch_pthread.c
-#	endif
-#	SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/xenon_sdl_threads.c
+	USE_RTHREAD = 1
+	ifeq ($(platform), emscripten)
+		USE_RTHREAD = 0
+	endif
+	ifeq ($(platform), ctr)
+		USE_RTHREAD = 0
+	endif
+	ifeq ($(USE_RTHREAD), 1)
+		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rthreads.c
+	endif
+
+	USE_RSEMAPHOE = 1
+	ifeq ($(platform), emscripten)
+		USE_RSEMAPHOE = 0
+	endif
+	ifeq ($(USE_RSEMAPHOE), 1)
+		SOURCES_C += $(NP2_PATH)/sdl2/libretro/rsemaphore.c
+	endif
+
 	ifneq ($(NO_DIRENT), 1)
 		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/vfs/vfs_implementation.c
-	endif
-	ifneq ($(platform), emscripten)
-		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rthreads.c
 	endif
 	ifeq ($(platform), unix)
 #		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_ifaddrs.c
 		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/file/nbio/nbio_linux.c
 	endif
-endif
-
-ifneq ($(platform), emscripten)
-	SOURCES_C += $(NP2_PATH)/sdl2/libretro/rsemaphore.c
-endif
-
-ifeq ($(platform), ctr)
-	SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rthreads.c
 endif
 
 ifeq ($(platform), windows_msvc2003_x86)
@@ -856,8 +860,11 @@ ifeq ($(HAS_GCC), 1)
 	ifneq ($(platform), libnx)
 		C_VER = -std=gnu99
 	endif
+	ifneq ($(platform), psp)
+		CXX_VER = -std=gnu++11
+	endif
 	CFLAGS += -fsigned-char
-	CXXFLAGS += -std=gnu++11 -fno-rtti
+	CXXFLAGS += -fno-rtti
 	GCC_WARNINGS += -pedantic \
 		-Wall -Wextra \
 		-Wformat \
@@ -891,7 +898,7 @@ ifeq ($(SUPPORT_ASYNC_CPU), 1)
 endif
 
 CFLAGS += $(fpic) $(DEFINES) $(C_VER) $(ENDIANNESS_DEFINES)
-CXXFLAGS += $(fpic) $(DEFINES) $(ENDIANNESS_DEFINES)
+CXXFLAGS += $(fpic) $(DEFINES) $(CXX_VER) $(ENDIANNESS_DEFINES)
 LDFLAGS += $(fpic)
 ifeq ($(HAS_GCC), 1)
 	LDFLAGS += -lm -lpthread -v
