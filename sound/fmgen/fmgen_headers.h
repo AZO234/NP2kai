@@ -4,12 +4,12 @@
 #define STRICT
 #define WIN32_LEAN_AND_MEAN
 
+#include "compiler.h"
+#include <cassert>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "compiler.h"
-#include <cassert>
 
 #ifdef _MSC_VER
 	#undef max
