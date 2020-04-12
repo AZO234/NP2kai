@@ -8,12 +8,8 @@
 extern "C" {
 #endif
 
-//#include <windows.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
-#include <assert.h>
+#include "compiler.h"
+#include <cassert>
 
 #ifdef _MSC_VER
 	#undef max
