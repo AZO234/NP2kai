@@ -5,6 +5,8 @@
 
 #ifdef SUPPORT_NP2_THREAD
 
+#include "compiler.h"
+
 #include <stdlib.h>
 
 #if defined(NP2_THREAD_WIN)

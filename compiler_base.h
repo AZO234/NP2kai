@@ -35,14 +35,15 @@
 #endif
 
 // standard include
-#if defined(__cplusplus)
 #if defined(_WINDOWS)
 #include <windows.h>
 #include <tchar.h>
 // not define _UNICODE, UNICODE now
-//#elif defined(__APPLE__)
-//#include <bits/stdc++.h>
 #endif
+#if defined(__cplusplus)
+//#if defined(__APPLE__)
+//#include <bits/stdc++.h>
+//#endif
 #include <cstdio>
 #include <cstdlib>  // include cwchar
 #include <cstddef>
@@ -52,11 +53,6 @@
 #include <csetjmp>
 #include <cstdarg>
 #else
-#if defined(_WINDOWS)
-#include <windows.h>
-#include <tchar.h>
-// not define _UNICODE, UNICODE now
-#endif
 #include <stdio.h>
 #include <stdlib.h>  // include wchar.h
 #include <stddef.h>

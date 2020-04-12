@@ -1,6 +1,7 @@
 #ifndef NP2_TICKCOUNT_H
 #define NP2_TICKCOUNT_H
 
+#include "compiler.h"
 #include <stdint.h>
 
 #ifdef __cplusplus
