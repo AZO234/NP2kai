@@ -40,8 +40,8 @@
 #include <windows.h>
 #include <tchar.h>
 // not define _UNICODE, UNICODE now
-#elif defined(__APPLE__)
-#include <bits/stdc++.h>
+//#elif defined(__APPLE__)
+//#include <bits/stdc++.h>
 #endif
 #include <cstdio>
 #include <cstdlib>  // include cwchar
