@@ -19,6 +19,7 @@
 #include	"ideio.h"
 #include	"atapicmd.h"
 #include	"fdd/sxsi.h"
+#include	"codecnv/codecnv.h"
 
 #define	YUIDEBUG
 
@@ -66,7 +67,7 @@ static const UINT8 cdrom_inquiry[] = {
 
 static void senddata(IDEDRV drv, UINT size, UINT limit) {
 
-	size = np2min(size, limit);
+	size = MIN(size, limit);
 	drv->sc = IDEINTR_IO;
 	drv->cy = size;
 	drv->status &= ~(IDESTAT_BSY|IDESTAT_DMRD|IDESTAT_SERV|IDESTAT_CHK);
@@ -332,7 +333,9 @@ void atapi_cmd_traycmd_eject_threadfunc(void* vdParam) {
 #if defined(_WINDOWS)
 	HANDLE handle;
 	DWORD dwRet = 0;
-	handle = CreateFile(np2cfg.idecd[(int)vdParam], GENERIC_READ|GENERIC_WRITE, FILE_SHARE_READ|FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	wchar_t	wpath[MAX_PATH];
+	codecnv_utf8toucs2(wpath, MAX_PATH, np2cfg.idecd[(int)vdParam], -1);
+	handle = CreateFileW(wpath, GENERIC_READ|GENERIC_WRITE, FILE_SHARE_READ|FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 	if(handle != INVALID_HANDLE_VALUE){
 		if(DeviceIoControl(handle, FSCTL_LOCK_VOLUME, 0, 0, 0, 0, &dwRet, 0)){
 			if(DeviceIoControl(handle, FSCTL_DISMOUNT_VOLUME, 0, 0, 0, 0, &dwRet, 0)){
@@ -349,7 +352,9 @@ void atapi_cmd_traycmd_close_threadfunc(void* vdParam) {
 #if defined(_WINDOWS)
 	HANDLE handle;
 	DWORD dwRet = 0;
-	handle = CreateFile(np2cfg.idecd[(int)vdParam], GENERIC_READ, FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
+	wchar_t	wpath[MAX_PATH];
+	codecnv_utf8toucs2(wpath, MAX_PATH, np2cfg.idecd[(int)vdParam], -1);
+	handle = CreateFileW(wpath, GENERIC_READ, FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
 	if(handle != INVALID_HANDLE_VALUE){
 		DeviceIoControl(handle, IOCTL_STORAGE_LOAD_MEDIA, 0, 0, 0, 0, &dwRet, 0);
 		CloseHandle(handle);
@@ -793,7 +798,7 @@ static void atapi_cmd_mode_sense(IDEDRV drv) {
 			p2a = defval_pagecode_2a;
 			ptr = defval_pagecode_0f;
 		}
-		CopyMemory(p, ptr, np2min((leng - cnt), PC_0F_SIZE));
+		CopyMemory(p, ptr, MIN((leng - cnt), PC_0F_SIZE));
 		p[4] = (p2a[4] & 1);				// byte04 bit0 = Audioplay supported?
 		p[4] |= ((p2a[6] & 2) << 6);		// byte04 bit7 = lock state?
 		p[4] |= ((p2a[5] & 4) << 2);		// byte04 bit4 = R-W supported?
@@ -819,7 +824,7 @@ static void atapi_cmd_mode_sense(IDEDRV drv) {
 		else {
 			ptr = defval_pagecode_01;
 		}
-		CopyMemory(drv->buf + cnt, ptr, np2min((leng - cnt), PC_01_SIZE));
+		CopyMemory(drv->buf + cnt, ptr, MIN((leng - cnt), PC_01_SIZE));
 		cnt += PC_01_SIZE;
 		if (cnt > leng) {
 			goto length_exceeded;
@@ -836,7 +841,7 @@ static void atapi_cmd_mode_sense(IDEDRV drv) {
 		else {
 			ptr = defval_pagecode_0d;
 		}
-		CopyMemory(drv->buf + cnt, ptr, np2min((leng - cnt), PC_0D_SIZE));
+		CopyMemory(drv->buf + cnt, ptr, MIN((leng - cnt), PC_0D_SIZE));
 		cnt += PC_0D_SIZE;
 		if (cnt > leng) {
 			goto length_exceeded;
@@ -853,7 +858,7 @@ static void atapi_cmd_mode_sense(IDEDRV drv) {
 		else {
 			ptr = defval_pagecode_0e;
 		}
-		CopyMemory(drv->buf + cnt, ptr, np2min((leng - cnt), PC_0E_SIZE));
+		CopyMemory(drv->buf + cnt, ptr, MIN((leng - cnt), PC_0E_SIZE));
 		cnt += PC_0E_SIZE;
 		if (cnt > leng) {
 			goto length_exceeded;
@@ -871,7 +876,7 @@ static void atapi_cmd_mode_sense(IDEDRV drv) {
 		else {
 			ptr = defval_pagecode_2a;
 		}
-		CopyMemory(drv->buf + cnt, ptr, np2min((leng - cnt), PC_2A_SIZE));
+		CopyMemory(drv->buf + cnt, ptr, MIN((leng - cnt), PC_2A_SIZE));
 		cnt += PC_2A_SIZE;
 		if (cnt > leng) {
 			goto length_exceeded;
@@ -1080,7 +1085,7 @@ static void atapi_cmd_readtoc(IDEDRV drv) {
 	switch (format) {
 	case 0: // track info
 		//datasize = (tracks * 8) + 10;
-		strack = np2min(np2max(1U, strack), (tracks+1));		// special case: 0 = 1sttrack, 0xaa = leadout
+		strack = MIN(MAX(1U, strack), (tracks+1));		// special case: 0 = 1sttrack, 0xaa = leadout
 		datasize = ((tracks - strack + 1U) * 8U) + 10;
 		drv->buf[0] = (UINT8)(datasize >> 8);
 		drv->buf[1] = (UINT8)(datasize >> 0);

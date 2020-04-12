@@ -83,7 +83,7 @@ void Np2Arg::Parse()
 			}
 		}
 	}
-	if(m_lpIniFile){ // np21w ver0.86 rev8
+	if(lpIniFile){ // np21w ver0.86 rev8
 		LPTSTR strbuf;
 		strbuf = (LPTSTR)calloc(500, sizeof(TCHAR));
 		if(!(_tcsstr(lpIniFile,_T(":"))!=NULL || (lpIniFile[0]=='¥¥'))){

@@ -148,7 +148,7 @@ static GtkActionEntry menu_entries[] = {
 { "disk4eject",  NULL, "_Eject",            NULL, NULL, G_CALLBACK(cb_diskeject), },
 { "disk4open",   NULL, "_Open...",          NULL, NULL, G_CALLBACK(cb_diskopen), },
 { "exit",        NULL, "E_xit",             NULL, NULL, G_CALLBACK(gtk_main_quit) },
-{ "font",        NULL, "_Font...",          NULL, NULL, G_CALLBACK(cb_change_font), },
+//{ "font",        NULL, "_Font...",          NULL, NULL, G_CALLBACK(cb_change_font), },
 { "newfdisk",    NULL, "_Floppy disk image...", NULL, NULL, G_CALLBACK(cb_newfdisk) },
 { "newhdisk",    NULL, "_Hard disk image...",   NULL, NULL, G_CALLBACK(cb_newhdisk) },
 #if defined(SUPPORT_IDEIO)
@@ -238,7 +238,10 @@ static void cb_16mbmemchk(GtkToggleAction *action, gpointer user_data);
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 static void cb_fastmemchk(GtkToggleAction *action, gpointer user_data);
 #endif
+#if defined(SUPPORT_FMGEN)
 static void cb_fmgen(GtkToggleAction *action, gpointer user_data);
+#endif
+static void cb_hf_enable(GtkToggleAction *action, gpointer user_data);
 
 static GtkToggleActionEntry togglemenu_entries[] = {
 { "clockdisp",    NULL, "_Clock disp",        NULL, NULL, G_CALLBACK(cb_clockdisp), FALSE },
@@ -271,7 +274,8 @@ static GtkToggleActionEntry togglemenu_entries[] = {
 #endif
 #if defined(SUPPORT_FMGEN)
 { "fmgen",        NULL, "fmgen",              NULL, NULL, G_CALLBACK(cb_fmgen), FALSE },
-#endif	/* SUPPORT_FMGEN */
+#endif
+{ "hf_enable",    NULL, "Fontrom hook",       NULL, NULL, G_CALLBACK(cb_hf_enable), FALSE },
 };
 static const guint n_togglemenu_entries = G_N_ELEMENTS(togglemenu_entries);
 
@@ -324,30 +328,37 @@ static GtkRadioActionEntry beepvol_entries[] = {
 static const guint n_beepvol_entries = G_N_ELEMENTS(beepvol_entries);
 
 static GtkRadioActionEntry soundboard_entries[] = {
-{ "disableboards",  NULL, "_Disable boards",         NULL, NULL, 0x00 },
-{ "pc-9801-14",     NULL, "PC-9801-_14",             NULL, NULL, 0x01 },
-{ "pc-9801-26k",    NULL, "PC-9801-_26K",            NULL, NULL, 0x02 },
-{ "pc-9801-86",     NULL, "PC-9801-8_6",             NULL, NULL, 0x04 },
-{ "pc-9801-26k-86", NULL, "PC-9801-26_K + 86",       NULL, NULL, 0x06 },
-{ "pc-9801-86-cb",  NULL, "PC-9801-86 + _Chibi-oto", NULL, NULL, 0x14 },
-{ "pc-9801-118",    NULL, "PC-9801-11_8",            NULL, NULL, 0x08 },
-{ "pc-9801-86-mx",  NULL, "PC-9801-86 + Mate-X PCM(B460)", NULL, NULL, 0x64 },
-{ "pc-9801-86-118", NULL, "PC-9801-86 + 118",        NULL, NULL, 0x68 },
-{ "pc-9801-mx",     NULL, "Mate-X PCM(B460)",        NULL, NULL, 0x60 },
-{ "speakboard",     NULL, "S_peak board",            NULL, NULL, 0x20 },
-{ "speakboard86",   NULL, "PC-9801-86 + Speak board", NULL, NULL, 0x24 },
-{ "sparkboard",     NULL, "Sp_ark board",            NULL, NULL, 0x40 },
-{ "sndorchestra",   NULL, "Sound Orchestra",         NULL, NULL, 0x32 },
-{ "sndorchestrav",  NULL, "Sound Orchestra-V",       NULL, NULL, 0x82 },
+{ "disableboards",         NULL, "_Disable boards",                                  NULL, NULL, SOUNDID_NONE },
+{ "pc-9801-14",            NULL, "PC-9801-_14",                                      NULL, NULL, SOUNDID_PC_9801_14 },
+{ "pc-9801-26k",           NULL, "PC-9801-_26K",                                     NULL, NULL, SOUNDID_PC_9801_26K },
+{ "pc-9801-86",            NULL, "PC-9801-8_6",                                      NULL, NULL, SOUNDID_PC_9801_86 },
+{ "pc-9801-26k-86",        NULL, "PC-9801-26_K + 86",                                NULL, NULL, SOUNDID_PC_9801_26K },
+{ "pc-9801-86-cb",         NULL, "PC-9801-86 + _Chibi-oto",                          NULL, NULL, SOUNDID_PC_9801_86_ADPCM },
+{ "pc-9801-118",           NULL, "PC-9801-11_8",                                     NULL, NULL, SOUNDID_PC_9801_118 },
+{ "pc-9801-86-mx",         NULL, "PC-9801-86 + Mate-X PCM(B460)",                    NULL, NULL, SOUNDID_PC_9801_86_WSS },
+{ "pc-9801-86-118",        NULL, "PC-9801-86 + 118(B460)",                           NULL, NULL, SOUNDID_PC_9801_86_118 },
+{ "pc-9801-mx",            NULL, "Mate-X PCM",                                       NULL, NULL, SOUNDID_MATE_X_PCM },
+{ "speakboard",            NULL, "S_peak board",                                     NULL, NULL, SOUNDID_SPEAKBOARD },
+{ "speakboard86",          NULL, "PC-9801-86 + Speak board",                         NULL, NULL, SOUNDID_86_SPEAKBOARD },
+{ "sparkboard",            NULL, "Sp_ark board",                                     NULL, NULL, SOUNDID_SPARKBOARD },
+{ "sndorchestra",          NULL, "Sound Orchestra",                                  NULL, NULL, SOUNDID_SOUNDORCHESTRA },
+{ "sndorchestrav",         NULL, "Sound Orchestra-V",                                NULL, NULL, SOUNDID_SOUNDORCHESTRAV },
+{ "littleorchestral",      NULL, "Little Orchestra L",                               NULL, NULL, SOUNDID_LITTLEORCHESTRAL },
+{ "multiorchestra",        NULL, "Multimedia Orchestra",                             NULL, NULL, SOUNDID_MMORCHESTRA },
 #if defined(SUPPORT_SOUND_SB16)
-{ "sb16",	    NULL, "Sound Blaster 16",        NULL, NULL, 0x41 },
-#endif	/* SUPPORT_SOUND_SB16 */
-{ "amd98",          NULL, "_AMD98",                  NULL, NULL, 0x80 },
-{ "wavestar",       NULL, "_WaveStar",               NULL, NULL, 0x70 },
+{ "sb16",	                 NULL, "Sound Blaster 16",                                 NULL, NULL, SOUNDID_SB16 },
+{ "pc-9801-86-sb16",       NULL, "PC-9801-86 + Sound Blaster 16",                    NULL, NULL, SOUNDID_PC_9801_86_SB16 },
+{ "pc-9801-mx-sb16",       NULL, "Mate-X PCM + Sound Blaster 16",                    NULL, NULL, SOUNDID_WSS_SB16 },
+{ "pc-9801-118-sb16",      NULL, "PC-9801-118 + Sound Blaster 16",                   NULL, NULL, SOUNDID_PC_9801_118_SB16 },
+{ "pc-9801-86-mx-sb16",    NULL, "PC-9801-86 + Mate-X PCM(B460) + Sound Blaster 16", NULL, NULL, SOUNDID_PC_9801_86_WSS_SB16 },
+{ "pc-9801-86-118-sb16",   NULL, "PC-9801-86 + 118(B460) + Sound Blaster 16",        NULL, NULL, SOUNDID_PC_9801_86_118_SB16 },
+#endif
+{ "amd98",                 NULL, "_AMD98",                                           NULL, NULL, SOUNDID_AMD98 },
+{ "wavestar",              NULL, "_WaveStar",                                        NULL, NULL, SOUNDID_WAVESTAR },
 #if defined(SUPPORT_PX)
-{ "px1",            NULL, "Otomi-chanx2",            NULL, NULL, 0x30 },
-{ "px2",            NULL, "Otomi-chanx2 + 86",       NULL, NULL, 0x50 },
-#endif	/* SUPPORT_PX */
+{ "px1",                   NULL, "Otomi-chanx2",                                     NULL, NULL, SOUNDID_PX1 },
+{ "px2",                   NULL, "Otomi-chanx2 + 86",                                NULL, NULL, SOUNDID_PX2 },
+#endif
 };
 static const guint n_soundboard_entries = G_N_ELEMENTS(soundboard_entries);
 
@@ -444,7 +455,7 @@ static const gchar *ui_info =
 "    <menuitem action='newfdisk'/>\n"
 "    <menuitem action='newhdisk'/>\n"
 "   </menu>\n"
-"   <menuitem action='font'/>\n"
+//"   <menuitem action='font'/>\n"
 "   <separator/>\n"
 "   <menuitem action='exit'/>\n"
 "  </menu>\n"
@@ -562,8 +573,15 @@ static const gchar *ui_info =
 "    <menuitem action='sparkboard'/>\n"
 "    <menuitem action='sndorchestra'/>\n"
 "    <menuitem action='sndorchestrav'/>\n"
+"    <menuitem action='littleorchestral'/>\n"
+"    <menuitem action='multiorchestra'/>\n"
 #if defined(SUPPORT_SOUND_SB16)
 "    <menuitem action='sb16'/>\n"
+"    <menuitem action='pc-9801-86-sb16'/>\n"
+"    <menuitem action='pc-9801-mx-sb16'/>\n"
+"    <menuitem action='pc-9801-118-sb16'/>\n"
+"    <menuitem action='pc-9801-86-mx-sb16'/>\n"
+"    <menuitem action='pc-9801-86-118-sb16'/>\n"
 #endif	/* SUPPORT_SOUND_SB16 */
 "    <menuitem action='amd98'/>\n"
 "    <menuitem action='wavestar'/>\n"
@@ -630,6 +648,7 @@ static const gchar *ui_info =
 "  </menu>\n"
 "  <menu name='Other' action='OtherMenu'>\n"
 "   <menuitem action='bmpsave'/>\n"
+"   <menuitem action='hf_enable'/>\n"
 "   <menuitem action='s98logging'/>\n"
 "   <menuitem action='calendar'/>\n"
 "   <menuitem action='clockdisp'/>\n"
@@ -2079,7 +2098,23 @@ cb_fmgen(GtkToggleAction *action, gpointer user_data)
 		sysmng_update(SYS_UPDATECFG);
 	}
 }
-#endif	/* SUPPORT_FMGEN */
+#endif
+
+static void
+cb_hf_enable(GtkToggleAction *action, gpointer user_data) {
+	gboolean b = gtk_toggle_action_get_active(action);
+	gboolean f;
+
+	f = (hf_enable & 1) ^ (b ? 1 : 0);
+	if (f) {
+		hf_enable ^= 1;
+		if(hf_enable) {
+			hook_fontrom_defenable();
+		} else {
+			hook_fontrom_defdisable();
+		}
+	}
+}
 
 static void
 cb_sndus(GtkToggleAction *action, gpointer user_data)
@@ -2525,12 +2560,15 @@ create_menu(void)
 	xmenu_toggle_item(NULL, "xshiftkey", np2cfg.XSHIFT & 1);
 	xmenu_toggle_item(NULL, "xrollkey", np2oscfg.xrollkey);
 	xmenu_toggle_item(NULL, "itfwork", np2cfg.ITF_WORK);
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+	xmenu_toggle_item(NULL, "fastmemchk", np2cfg.memcheckspeed > 1);
+#endif
 	xmenu_toggle_item(NULL, "fixmmtimer", np2cfg.timerfix);
 	xmenu_toggle_item(NULL, "16mbmemchk", np2cfg.memchkmx == 15);
 #if defined(SUPPORT_FMGEN)
 	xmenu_toggle_item(NULL, "fmgen", np2cfg.usefmgen & 1);
-#endif	/* SUPPORT_FMGEN */
-
+#endif
+	xmenu_toggle_item(NULL, "hf_enable", hf_enable & 1);
 	xmenu_toggle_item(NULL, "clockdisp", np2oscfg.DISPCLK & 1);
 	xmenu_toggle_item(NULL, "framedisp", np2oscfg.DISPCLK & 2);
 	xmenu_toggle_item(NULL, "jastsound", np2oscfg.jastsnd);

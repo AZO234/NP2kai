@@ -1059,6 +1059,11 @@ BEGIN
             MENUITEM "Sound &Orchestra",            IDM_SOUNDORCHESTRA
             MENUITEM "Sound Orchestra-&V",          IDM_SOUNDORCHESTRAV
             MENUITEM "Sound &Blaster 16",           IDM_SB16
+            MENUITEM "PC-9801-86 + Sound Blaster 16",  IDM_PC9801_86_SB16
+            MENUITEM "Mate-X PCM + Sound Blaster 16",  IDM_WSS_SB16
+            MENUITEM "PC-9801-118 + Sound Blaster 16",   IDM_PC9801_118_SB16
+            MENUITEM "PC-9801-86 + Mate-X PCM(B460) + Sound Blaster 16",   IDM_PC9801_86_WSS_SB16
+            MENUITEM "PC-9801-86 + 118(B460) + Sound Blaster 16",   IDM_PC9801_86_118_SB16
             MENUITEM "&AMD-98",                     IDM_AMD98
             MENUITEM "&WaveStar",                   IDM_WAVESTAR
             MENUITEM "&JastSound",                  IDM_JASTSOUND
@@ -1119,6 +1124,7 @@ BEGIN
     POPUP "その他(&O)"
     BEGIN
         MENUITEM "BMP画面キャプチャ(&B)...",        IDM_BMPSAVE
+        MENUITEM "fomtromをフック",                 IDM_HF_ENABLE
         MENUITEM "テキストVRAM保存(&T)...",         IDM_TXTSAVE
         MENUITEM "S98サウンドログ保存(&S)...",      IDM_S98LOGGING
         MENUITEM "カレンダ設定(&L)...",             IDM_CALENDAR
@@ -1132,6 +1138,7 @@ BEGIN
         MENUITEM "ジョイスティックボタン反転(&V)",  IDM_JOYX
         MENUITEM "ジョイスティックボタン連打(&R)",  IDM_RAPID
         MENUITEM "マウスボタン連打(&M)",        IDM_MSRAPID
+        MENUITEM "SSTP出力",                    IDM_SSTP
         MENUITEM "&ITFエミュレーション",        IDM_ITFWORK
         // MENUITEM "タイマー不具合修正(&T)",      IDM_TIMERFIX
         // MENUITEM "16MB超メモリチェック省略(&S)",IDM_SKIP16MEMCHK

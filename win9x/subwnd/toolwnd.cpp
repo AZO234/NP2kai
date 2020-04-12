@@ -14,6 +14,7 @@
 #include "misc\tstring.h"
 #include	"pccore.h"
 #include	"fdd/diskdrv.h"
+#include	"dialog/winfiledlg.h"
 
 extern WINLOCEX np2_winlocexallwin(HWND base);
 
@@ -780,6 +781,8 @@ LRESULT CToolWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 					{
 						CSoundMng::GetInstance()->Disable(SNDPROC_TOOL);
 
+						TCHAR szPath[MAX_PATH];
+						TCHAR szName[MAX_PATH];
 						std::tstring rExt(LoadTString(IDS_SKINEXT));
 						std::tstring rFilter(LoadTString(IDS_SKINFILTER));
 						std::tstring rTitle(LoadTString(IDS_SKINTITLE));
@@ -787,13 +790,14 @@ LRESULT CToolWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 						CFileDlg dlg(TRUE, rExt.c_str(), s_toolwndcfg.skin, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, rFilter.c_str(), m_hWnd);
 						dlg.m_ofn.lpstrTitle = rTitle.c_str();
 						dlg.m_ofn.nFilterIndex = 1;
-						const BOOL r = dlg.DoModal();
+						OPENFILENAMEW ofnw;
+						const BOOL r = WinFileDialogW(NULL, &ofnw, WINFILEDIALOGW_MODE_GET1, szPath, szName, rExt.c_str(), rTitle.c_str(), rFilter.c_str(), 1);
 
 						CSoundMng::GetInstance()->Enable(SNDPROC_TOOL);
 
 						if (r)
 						{
-							file_cpyname(s_toolwndcfg.skin, dlg.GetPathName(), _countof(s_toolwndcfg.skin));
+							file_cpyname(s_toolwndcfg.skin, szPath, _countof(s_toolwndcfg.skin));
 							ChangeSkin();
 						}
 					}

@@ -237,9 +237,9 @@ static void setpage(UINT page) {
 
 static void setintstr(MENUID id, int val) {
 
-	OEMCHAR	buf[16];
+	OEMCHAR	buf[64];
 
-	OEMSPRINTF(buf, str_d, val);
+	OEMSNPRINTF(buf, sizeof(buf), str_d, val);
 	menudlg_settext(id, buf);
 }
 

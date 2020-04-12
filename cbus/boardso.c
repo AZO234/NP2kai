@@ -11,6 +11,8 @@
 #include "sound/sound.h"
 #include "sound/soundrom.h"
 
+#define G_OPL3_INDEX	2
+
 static void IOOUTCALL opn_o188(UINT port, REG8 dat)
 {
 	g_opna[0].s.addrl = dat;
@@ -52,22 +54,22 @@ static REG8 IOINPCALL opn_i18a(UINT port)
 
 static void IOOUTCALL opl2_o18c(UINT port, REG8 dat)
 {
-	g_opl3.s.addrl = dat;
+	g_opl3[G_OPL3_INDEX].s.addrl = dat;
 }
 
 static void IOOUTCALL opl2_o18e(UINT port, REG8 dat)
 {
-	opl3_writeRegister(&g_opl3, g_opl3.s.addrl, dat);
+	opl3_writeRegister(&g_opl3[G_OPL3_INDEX], g_opl3[G_OPL3_INDEX].s.addrl, dat);
 }
 
 static REG8 IOINPCALL opl2_i18c(UINT port)
 {
-	return opl3_readStatus(&g_opl3);
+	return opl3_readStatus(&g_opl3[G_OPL3_INDEX]);
 }
 
 static REG8 IOINPCALL opl2_i18e(UINT port)
 {
-	return opl3_readRegister(&g_opl3, g_opl3.s.addrl);
+	return opl3_readRegister(&g_opl3[G_OPL3_INDEX], g_opl3[G_OPL3_INDEX].s.addrl);
 }
 
 
@@ -88,7 +90,7 @@ void boardso_reset(const NP2CFG *pConfig, BOOL v)
 {
 	opna_reset(&g_opna[0], OPNA_MODE_2203 | OPNA_HAS_TIMER | OPNA_S98);
 	opna_timer(&g_opna[0], (pConfig->snd26opt & 0xc0) | 0x10, NEVENT_FMTIMERA, NEVENT_FMTIMERB);
-	opl3_reset(&g_opl3, (REG8)((v) ? OPL3_MODE_8950 : OPL3_MODE_3812));
+	opl3_reset(&g_opl3[G_OPL3_INDEX], (REG8)((v) ? OPL3_MODE_8950 : OPL3_MODE_3812));
 
 	opngen_setcfg(&g_opna[0].opngen, 3, 0x00);
 	soundrom_loadex(pConfig->snd26opt & 7, OEMTEXT("26"));
@@ -101,7 +103,7 @@ void boardso_reset(const NP2CFG *pConfig, BOOL v)
 void boardso_bind(void)
 {
 	opna_bind(&g_opna[0]);
-	opl3_bind(&g_opl3);
+	opl3_bind(&g_opl3[G_OPL3_INDEX]);
 	cbuscore_attachsndex(0x188 - g_opna[0].s.base, opn_o, opn_i);
 }
 void boardso_unbind(void)

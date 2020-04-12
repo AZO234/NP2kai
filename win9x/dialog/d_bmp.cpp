@@ -19,6 +19,7 @@
 #include "wab/wab.h"
 #include "wab/wabbmpsave.h"
 #endif
+#include "dialog/winfiledlg.h"
 
 /** フィルター */
 static const UINT s_nFilter[4] =
@@ -77,14 +78,13 @@ void dialog_writebmp(HWND hWnd)
 	std::tstring rTitle(LoadTString(IDS_BMPTITLE));
 
 	TCHAR szPath[MAX_PATH];
+	TCHAR szName[MAX_PATH];
 	GetDefaultFilename(rExt.c_str(), szPath, _countof(szPath));
 
-	CFileDlg dlg(FALSE, rExt.c_str(), szPath, OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY, rFilter.c_str(), hWnd);
-	dlg.m_ofn.lpstrTitle = rTitle.c_str();
-	dlg.m_ofn.nFilterIndex = 1;
-	if (dlg.DoModal())
+	OPENFILENAMEW ofnw;
+	if (WinFileDialogW(hWnd, &ofnw, WINFILEDIALOGW_MODE_SET, szPath, szName, rExt.c_str(), rTitle.c_str(), rFilter.c_str(), 1))
 	{
-		LPCTSTR lpFilename = dlg.GetPathName();
+		LPCTSTR lpFilename = szPath;
 		file_cpyname(bmpfilefolder, lpFilename, _countof(bmpfilefolder));
 		sysmng_update(SYS_UPDATEOSCFG);
 

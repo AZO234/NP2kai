@@ -13,6 +13,7 @@
 #if defined(MT32SOUND_DLL)
 #include "..\ext\mt32snd.h"
 #endif	// defined(MT32SOUND_DLL)
+#include "dialog/winfiledlg.h"
 
 /**
  * MIDI デバイスの初期化
@@ -110,18 +111,17 @@ void CComboMidiModule::PreSubclassWindow()
 void CEditMimpiFile::Browse()
 {
 	TCHAR szPath[MAX_PATH];
+	TCHAR szName[MAX_PATH];
 	GetWindowText(szPath, _countof(szPath));
 
 	std::tstring rExt(LoadTString(IDS_MIMPIEXT));
 	std::tstring rFilter(LoadTString(IDS_MIMPIFILTER));
 	std::tstring rTitle(LoadTString(IDS_MIMPITITLE));
 
-	CFileDlg dlg(TRUE, rExt.c_str(), szPath, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, rFilter.c_str(), m_hWnd);
-	dlg.m_ofn.lpstrTitle = rTitle.c_str();
-	dlg.m_ofn.nFilterIndex = 1;
-	if (dlg.DoModal())
+	OPENFILENAMEW ofnw;
+	if (WinFileDialogW(NULL, &ofnw, WINFILEDIALOGW_MODE_GET1, szPath, szName, rExt.c_str(), rTitle.c_str(), rFilter.c_str(), 1))
 	{
-		SetWindowText(dlg.GetPathName());
+		SetWindowText(szPath);
 	}
 	else
 	{

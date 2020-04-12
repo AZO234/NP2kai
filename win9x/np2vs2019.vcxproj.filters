@@ -95,9 +95,6 @@
     <Filter Include="ソース ファイル\win9x\x86">
       <UniqueIdentifier>{29819abb-2d69-47c1-8275-aced08ddf2fc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\zlib">
-      <UniqueIdentifier>{c7695477-c913-49b6-ac42-fe56b1a746fc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
@@ -122,9 +119,6 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\generic">
       <UniqueIdentifier>{09e56662-4cd1-4232-b414-9b0f90c1e145}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\i286x">
-      <UniqueIdentifier>{9e6219f1-0b53-4089-aa53-22a1be26ba5f}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\io">
       <UniqueIdentifier>{365eee28-18cb-4b90-ad6d-39cc2f26318d}</UniqueIdentifier>
@@ -192,9 +186,6 @@
     <Filter Include="ヘッダー ファイル\win9x\x86">
       <UniqueIdentifier>{f8253966-6e1e-479a-9d92-354dbf11b852}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\zlib">
-      <UniqueIdentifier>{79f8a32d-653b-47a9-837c-c27bd03da0c3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="リソース ファイル">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -241,9 +232,6 @@
     <Filter Include="ヘッダー ファイル\sound\mame">
       <UniqueIdentifier>{69e55071-1b40-4cc2-928d-d45bc986a5af}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\i286x">
-      <UniqueIdentifier>{a98b60df-cc2b-4313-96f0-37db98949566}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\i286c">
       <UniqueIdentifier>{f073fb96-07c9-4c40-bbcf-f55dad2396f4}</UniqueIdentifier>
     </Filter>
@@ -252,6 +240,9 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\win9x\commng\wintab">
       <UniqueIdentifier>{cecb7d12-c948-41ed-8e3b-9849e2b3b50a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\i286c">
+      <UniqueIdentifier>{9e6219f1-0b53-4089-aa53-22a1be26ba5f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -382,12 +373,6 @@
       <Filter>ソース ファイル\codecnv</Filter>
     </ClCompile>
     <ClCompile Include="..\common\_memory.c">
-      <Filter>ソース ファイル\common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\common\arc.c">
-      <Filter>ソース ファイル\common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\common\arcunzip.c">
       <Filter>ソース ファイル\common</Filter>
     </ClCompile>
     <ClCompile Include="..\common\bmpdata.c">
@@ -1008,24 +993,6 @@
     <ClCompile Include="subwnd\toolwnd.cpp">
       <Filter>ソース ファイル\win9x\subwnd</Filter>
     </ClCompile>
-    <ClCompile Include="..\zlib\adler32.c">
-      <Filter>ソース ファイル\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\zlib\crc32.c">
-      <Filter>ソース ファイル\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\zlib\inffast.c">
-      <Filter>ソース ファイル\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\zlib\inflate.c">
-      <Filter>ソース ファイル\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\zlib\inftrees.c">
-      <Filter>ソース ファイル\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\zlib\zutil.c">
-      <Filter>ソース ファイル\zlib</Filter>
-    </ClCompile>
     <ClCompile Include="..\diskimage\cd\cdd_ccd.c">
       <Filter>ソース ファイル\diskimage\cd</Filter>
     </ClCompile>
@@ -1152,24 +1119,6 @@
     <ClCompile Include="..\cbus\ct1745io.c">
       <Filter>ソース ファイル\cbus</Filter>
     </ClCompile>
-    <ClCompile Include="..\i286x\i286x.cpp">
-      <Filter>ソース ファイル\i286x</Filter>
-    </ClCompile>
-    <ClCompile Include="..\i286x\i286xadr.cpp">
-      <Filter>ソース ファイル\i286x</Filter>
-    </ClCompile>
-    <ClCompile Include="..\i286x\i286xcts.cpp">
-      <Filter>ソース ファイル\i286x</Filter>
-    </ClCompile>
-    <ClCompile Include="..\i286x\i286xrep.cpp">
-      <Filter>ソース ファイル\i286x</Filter>
-    </ClCompile>
-    <ClCompile Include="..\i286x\i286xs.cpp">
-      <Filter>ソース ファイル\i286x</Filter>
-    </ClCompile>
-    <ClCompile Include="..\i286x\v30patch.cpp">
-      <Filter>ソース ファイル\i286x</Filter>
-    </ClCompile>
     <ClCompile Include="..\i286c\i286c.c">
       <Filter>ソース ファイル\i286c</Filter>
     </ClCompile>
@@ -1232,6 +1181,48 @@
     </ClCompile>
     <ClCompile Include="dialog\d_wab.cpp">
       <Filter>ソース ファイル\win9x\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sound\opl3.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cbus\boardlol.c">
+      <Filter>ソース ファイル\cbus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cbus\boardmo.c">
+      <Filter>ソース ファイル\cbus</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\d_ide.cpp">
+      <Filter>ソース ファイル\win9x\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\diskimage\cd\cdd_real.c">
+      <Filter>ソース ファイル\diskimage\cd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\codecnv\ucs2sjis.c">
+      <Filter>ソース ファイル\codecnv</Filter>
+    </ClCompile>
+    <ClCompile Include="..\codecnv\ucs2ucs4.c">
+      <Filter>ソース ファイル\codecnv</Filter>
+    </ClCompile>
+    <ClCompile Include="..\codecnv\ucs4ucs2.c">
+      <Filter>ソース ファイル\codecnv</Filter>
+    </ClCompile>
+    <ClCompile Include="..\codecnv\ucs4utf8.c">
+      <Filter>ソース ファイル\codecnv</Filter>
+    </ClCompile>
+    <ClCompile Include="..\codecnv\utf8ucs4.c">
+      <Filter>ソース ファイル\codecnv</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\winfiledlg.c">
+      <Filter>ソース ファイル\win9x\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="sstp.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
+    <ClCompile Include="sstpmsg.cpp">
+      <Filter>ソース ファイル\win9x</Filter>
+    </ClCompile>
+    <ClCompile Include="..\codecnv\jisucs2.c">
+      <Filter>ソース ファイル\codecnv</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1343,12 +1334,6 @@
     <ClInclude Include="..\common\_memory.h">
       <Filter>ヘッダー ファイル\common</Filter>
     </ClInclude>
-    <ClInclude Include="..\common\arc.h">
-      <Filter>ヘッダー ファイル\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\arcunzip.h">
-      <Filter>ヘッダー ファイル\common</Filter>
-    </ClInclude>
     <ClInclude Include="..\common\bmpdata.h">
       <Filter>ヘッダー ファイル\common</Filter>
     </ClInclude>
@@ -1438,30 +1423,6 @@
     </ClInclude>
     <ClInclude Include="..\generic\unasm.h">
       <Filter>ヘッダー ファイル\generic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\i286x\cpucore.h">
-      <Filter>ヘッダー ファイル\i286x</Filter>
-    </ClInclude>
-    <ClInclude Include="..\i286x\cpumem.h">
-      <Filter>ヘッダー ファイル\i286x</Filter>
-    </ClInclude>
-    <ClInclude Include="..\i286x\i286x.h">
-      <Filter>ヘッダー ファイル\i286x</Filter>
-    </ClInclude>
-    <ClInclude Include="..\i286x\i286xadr.h">
-      <Filter>ヘッダー ファイル\i286x</Filter>
-    </ClInclude>
-    <ClInclude Include="..\i286x\i286xcts.h">
-      <Filter>ヘッダー ファイル\i286x</Filter>
-    </ClInclude>
-    <ClInclude Include="..\i286x\i286xrep.h">
-      <Filter>ヘッダー ファイル\i286x</Filter>
-    </ClInclude>
-    <ClInclude Include="..\i286x\i286xs.h">
-      <Filter>ヘッダー ファイル\i286x</Filter>
-    </ClInclude>
-    <ClInclude Include="..\i286x\v30patch.h">
-      <Filter>ヘッダー ファイル\i286x</Filter>
     </ClInclude>
     <ClInclude Include="..\io\artic.h">
       <Filter>ヘッダー ファイル\io</Filter>
@@ -1964,30 +1925,6 @@
     <ClInclude Include="soundmng\asio\asiosdk.h">
       <Filter>ヘッダー ファイル\win9x\soundmng\asio</Filter>
     </ClInclude>
-    <ClInclude Include="..\zlib\crc32.h">
-      <Filter>ヘッダー ファイル\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\zlib\inffast.h">
-      <Filter>ヘッダー ファイル\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\zlib\inffixed.h">
-      <Filter>ヘッダー ファイル\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\zlib\inflate.h">
-      <Filter>ヘッダー ファイル\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\zlib\inftrees.h">
-      <Filter>ヘッダー ファイル\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\zlib\zconf.h">
-      <Filter>ヘッダー ファイル\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\zlib\zlib.h">
-      <Filter>ヘッダー ファイル\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\zlib\zutil.h">
-      <Filter>ヘッダー ファイル\zlib</Filter>
-    </ClInclude>
     <ClInclude Include="..\diskimage\cddfile.h">
       <Filter>ヘッダー ファイル\diskimage</Filter>
     </ClInclude>
@@ -2044,9 +1981,6 @@
     </ClInclude>
     <ClInclude Include="..\diskimage\fd\fdd_xdf.h">
       <Filter>ヘッダー ファイル\diskimage\fd</Filter>
-    </ClInclude>
-    <ClInclude Include="..\i286x\dmap.h">
-      <Filter>ヘッダー ファイル\i286x</Filter>
     </ClInclude>
     <ClInclude Include="scrnmng_dd.h">
       <Filter>ヘッダー ファイル\win9x</Filter>
@@ -2150,32 +2084,57 @@
     <ClInclude Include="..\cbus\gpibio.h">
       <Filter>ヘッダー ファイル\cbus</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <NASM Include="..\mem\x86\dmax86.x86">
-      <Filter>ソース ファイル\mem\x86</Filter>
-    </NASM>
-    <NASM Include="..\mem\x86\memegc.x86">
-      <Filter>ソース ファイル\mem\x86</Filter>
-    </NASM>
-    <NASM Include="x86\cputype.x86">
-      <Filter>ソース ファイル\win9x\x86</Filter>
-    </NASM>
-    <NASM Include="x86\parts.x86">
-      <Filter>ソース ファイル\win9x\x86</Filter>
-    </NASM>
-    <NASM Include="x86\opngeng.x86">
-      <Filter>ソース ファイル\win9x\x86</Filter>
-    </NASM>
-    <NASM Include="x86\makegrph.x86">
-      <Filter>ソース ファイル\win9x\x86</Filter>
-    </NASM>
-    <NASM Include="..\i286x\cpumem.x86">
-      <Filter>ソース ファイル\i286x</Filter>
-    </NASM>
-    <NASM Include="..\i286x\dmap.x86">
-      <Filter>ソース ファイル\i286x</Filter>
-    </NASM>
+    <ClInclude Include="..\fdd\hdd_vhd.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fdd\hdd_vpc.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\lgy98.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\lgy98dev.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\network\net.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\i286c\cpucore.h">
+      <Filter>ヘッダー ファイル\i286c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\i286c\cpumem.h">
+      <Filter>ヘッダー ファイル\i286c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\i286c\i286c.h">
+      <Filter>ヘッダー ファイル\i286c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\i286c\v30patch.h">
+      <Filter>ヘッダー ファイル\i286c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cbus\boardlol.h">
+      <Filter>ヘッダー ファイル\cbus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cbus\boardmo.h">
+      <Filter>ヘッダー ファイル\cbus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\diskimage\cd\cdd_real.h">
+      <Filter>ヘッダー ファイル\diskimage\cd</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\winfiledlg.h">
+      <Filter>ヘッダー ファイル\win9x\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="sstp.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="sstpmsg.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="sstpres.h">
+      <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="np2_git_version.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resources\1252\np2.rc">
@@ -2183,7 +2142,17 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <YASM Include="x64\makegrph.x64" />
-    <YASM Include="x64\parts.x64" />
+    <None Include="..\i286c\x64\cpucore.inc">
+      <Filter>ヘッダー ファイル\i286c</Filter>
+    </None>
+    <None Include="..\i286c\x86\cpucore.inc">
+      <Filter>ヘッダー ファイル\i286c</Filter>
+    </None>
+    <None Include="..\i286c\i286c.mcr">
+      <Filter>ヘッダー ファイル\i286c</Filter>
+    </None>
+    <None Include="..\i286c\i286c_sf.mcr">
+      <Filter>ヘッダー ファイル\i286c</Filter>
+    </None>
   </ItemGroup>
 </Project>

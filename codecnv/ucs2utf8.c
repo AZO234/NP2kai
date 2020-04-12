@@ -3,10 +3,13 @@
  * @brief	Implementation of converting UCS2 to UTF-8
  */
 
+#ifdef CODECNV_TEST
+#include "compiler_base.h"
+#else
 #include "compiler.h"
+#endif
 #include "codecnv.h"
 
-static UINT ucs2len(const UINT16 *lpString);
 static UINT ucs2toutf8(char *lpOutput, UINT cchOutput, const UINT16 *lpInput, UINT cchInput);
 
 /**
@@ -17,36 +20,28 @@ static UINT ucs2toutf8(char *lpOutput, UINT cchOutput, const UINT16 *lpInput, UI
  * @param[in] cchInput Size, in characters, of the buffer indicated by lpInput
  * @return The number of characters written to the buffer indicated by lpOutput
  */
-UINT codecnv_ucs2toutf8(char *lpOutput, UINT cchOutput, const UINT16 *lpInput, UINT cchInput)
-{
+UINT codecnv_ucs2toutf8(char *lpOutput, UINT cchOutput, const UINT16 *lpInput, UINT cchInput) {
+	UINT n = 0;
 	UINT nLength;
 
-	if (lpInput == NULL)
-	{
-		return 0;
-	}
-
-	if (cchOutput == 0)
-	{
-		lpOutput = NULL;
-		cchOutput = (UINT)-1;
-	}
-
-	if (cchInput != (UINT)-1)
-	{
-		// Binary mode
-		return ucs2toutf8(lpOutput, cchOutput, lpInput, cchInput);
-	}
-	else
-	{
-		// String mode
-		nLength = ucs2toutf8(lpOutput, cchOutput - 1, lpInput, ucs2len(lpInput));
-		if (lpOutput)
-		{
-			lpOutput[nLength] = '\0';
+	if(lpOutput != NULL && lpInput != NULL) {
+		if(cchOutput == 0) {
+			lpOutput = NULL;
+			cchOutput = (UINT)-1;
 		}
-		return nLength + 1;
+
+		if(cchInput != (UINT)-1) {
+			// Binary mode
+			n = ucs2toutf8(lpOutput, cchOutput, lpInput, cchInput);
+		} else {
+			// String mode
+			nLength = ucs2toutf8(lpOutput, cchOutput - 1, lpInput, codecnv_ucs2len(lpInput));
+			lpOutput[nLength] = '\0';
+			n = nLength + 1;
+		}
 	}
+
+	return n;
 }
 
 /**
@@ -54,13 +49,13 @@ UINT codecnv_ucs2toutf8(char *lpOutput, UINT cchOutput, const UINT16 *lpInput, U
  * @param[in] lpString Null-terminated string
  * @return the number of characters in lpString
  */
-static UINT ucs2len(const UINT16 *lpString)
-{
+UINT codecnv_ucs2len(const UINT16 *lpString) {
 	const UINT16 *p = lpString;
-	while (*p != 0)
-	{
+
+	while (*p != 0) {
 		p++;
 	}
+
 	return (UINT)(p - lpString);
 }
 
@@ -72,52 +67,23 @@ static UINT ucs2len(const UINT16 *lpString)
  * @param[in] cchInput Size, in characters, of the buffer indicated by lpInput
  * @return The number of characters written to the buffer indicated by lpOutput
  */
-static UINT ucs2toutf8(char *lpOutput, UINT cchOutput, const UINT16 *lpInput, UINT cchInput)
-{
+static UINT ucs2toutf8(char *lpOutput, UINT cchOutput, const UINT16 *lpInput, UINT cchInput) {
+	UINT n, m;
 	UINT nRemain;
-	UINT c;
+	UINT32 c[2];
 
+	n = m = 1;
 	nRemain = cchOutput;
-	while ((cchInput > 0) && (nRemain > 0))
-	{
-		c = *lpInput++;
-		cchInput--;
-
-		if (c < 0x80)
-		{
-			nRemain--;
-			if (lpOutput)
-			{
-				*lpOutput++ = (char)c;
-			}
-		}
-		else if (c < 0x800)
-		{
-			if (nRemain < 2)
-			{
-				break;
-			}
-			nRemain -= 2;
-			if (lpOutput)
-			{
-				*lpOutput++ = (char)(0xc0 + ((c >> 6) & 0x1f));
-				*lpOutput++ = (char)(0x80 + ((c >> 0) & 0x3f));
-			}
-		}
-		else
-		{
-			if (nRemain < 3)
-			{
-				break;
-			}
-			nRemain -= 3;
-			if (lpOutput)
-			{
-				*lpOutput++ = (char)(0xe0 + ((c >> 12) & 0x0f));
-				*lpOutput++ = (char)(0x80 + ((c >> 6) & 0x3f));
-				*lpOutput++ = (char)(0x80 + ((c >> 0) & 0x3f));
-			}
+	while ((cchInput > 0) && (nRemain > 0) && (m > 0) && (n > 0)) {
+		n = codecnv_ucs2toucs4(c, 1, lpInput, 2);
+		if(n) {
+			m = codecnv_ucs4toutf8(lpOutput, nRemain, c, 1);
+			lpInput += n;
+			cchInput -= n;
+			lpOutput += m;
+			nRemain -= m;
 		}
 	}
+
 	return (UINT)(cchOutput - nRemain);
 }

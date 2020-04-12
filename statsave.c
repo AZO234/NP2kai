@@ -32,6 +32,9 @@
 #include "maketext.h"
 #include "sound.h"
 #include "fmboard.h"
+#ifdef SUPPORT_SOUND_SB16
+#include "ct1741io.h"
+#endif
 #include "beep.h"
 #include "diskimage/fddfile.h"
 #include "fdd/fdd_mtr.h"
@@ -65,6 +68,13 @@
 #if defined(SUPPORT_IA32_HAXM)
 #include	"i386hax/haxfunc.h"
 #include	"i386hax/haxcore.h"
+#endif
+
+#ifdef USE_MAME
+UINT8 YMF262Read(void *chip, INT a);
+INT YMF262Write(void *chip, INT a, INT v);
+int YMF262FlagSave(void *chip, void *dstbuf);
+int YMF262FlagLoad(void *chip, void *srcbuf, int size);
 #endif
 
 extern int sxsi_unittbl[];
@@ -471,13 +481,13 @@ static int statflag_checkpath(STFLAGH sfh, const OEMCHAR *dvname) {
 			if ((memcmp(&sp.date, &dosdate, sizeof(dosdate))) ||
 				(memcmp(&sp.time, &dostime, sizeof(dostime)))) {
 				ret |= STATFLAG_DISKCHG;
-				OEMSPRINTF(buf, str_updated, dvname);
+				OEMSNPRINTF(buf, sizeof(buf), str_updated, dvname);
 				statflag_seterr(sfh, buf);
 			}
 		}
 		else {
 			ret |= STATFLAG_DISKCHG;
-			OEMSPRINTF(buf, str_notfound, dvname);
+			OEMSNPRINTF(buf, sizeof(buf), str_notfound, dvname);
 			statflag_seterr(sfh, buf);
 		}
 	}
@@ -495,7 +505,7 @@ static int flagsave_common(STFLAGH sfh, const SFENTRY *tbl) {
 static int flagload_common(STFLAGH sfh, const SFENTRY *tbl) {
 
 	memset(tbl->arg1, 0, tbl->arg2);
-	return(statflag_read(sfh, tbl->arg1, np2min(tbl->arg2, sfh->hdr.size)));
+	return(statflag_read(sfh, tbl->arg1, MIN(tbl->arg2, sfh->hdr.size)));
 }
 
 
@@ -820,7 +830,8 @@ enum
 	FLAG_AMD98		= 0x0040,
 	FLAG_PCM86		= 0x0080,
 	FLAG_CS4231		= 0x0100,
-	FLAG_OPL3		= 0x0200
+	FLAG_OPL3		= 0x0200,
+	FLAG_SB16		= 0x0400
 };
 
 /**
@@ -836,6 +847,7 @@ static UINT GetSoundFlags(SOUNDID nSoundID)
 			return FLAG_MG;
 
 		case SOUNDID_PC_9801_26K:
+		case SOUNDID_LITTLEORCHESTRAL:
 			return FLAG_OPNA1;
 
 		case SOUNDID_PC_9801_86:
@@ -845,13 +857,13 @@ static UINT GetSoundFlags(SOUNDID nSoundID)
 			return FLAG_OPNA1 | FLAG_OPNA2 | FLAG_PCM86;
 
 		case SOUNDID_PC_9801_118:
-			return FLAG_OPNA1 | FLAG_CS4231;
+			return FLAG_OPNA1 | FLAG_OPL3 | FLAG_CS4231;
 			
 		case SOUNDID_PC_9801_86_WSS:
 			return FLAG_OPNA1 | FLAG_PCM86 | FLAG_CS4231;
 			
 		case SOUNDID_PC_9801_86_118:
-			return FLAG_OPNA1 | FLAG_OPNA2 | FLAG_PCM86 | FLAG_CS4231;
+			return FLAG_OPNA1 | FLAG_OPNA2 | FLAG_OPL3 | FLAG_PCM86 | FLAG_CS4231;
 			
 		case SOUNDID_MATE_X_PCM:
 			return FLAG_OPNA1 | FLAG_CS4231;
@@ -873,15 +885,36 @@ static UINT GetSoundFlags(SOUNDID nSoundID)
 
 		case SOUNDID_SOUNDORCHESTRA:
 		case SOUNDID_SOUNDORCHESTRAV:
+		case SOUNDID_MMORCHESTRA:
 			return FLAG_OPNA1 | FLAG_OPL3;
 
+#if defined(SUPPORT_SOUND_SB16)
+		case SOUNDID_SB16:
+			return FLAG_OPL3 | FLAG_SB16;
+			
+		case SOUNDID_PC_9801_86_SB16:
+			return FLAG_OPNA1 | FLAG_PCM86 | FLAG_OPL3 | FLAG_SB16;
+			
+		case SOUNDID_WSS_SB16:
+			return FLAG_CS4231 | FLAG_OPL3 | FLAG_SB16;
+			
+		case SOUNDID_PC_9801_86_WSS_SB16:
+			return FLAG_OPNA1 | FLAG_PCM86 | FLAG_CS4231 | FLAG_OPL3 | FLAG_SB16;
+			
+		case SOUNDID_PC_9801_118_SB16:
+			return FLAG_OPNA1 | FLAG_OPNA2 | FLAG_OPL3 | FLAG_PCM86 | FLAG_CS4231 | FLAG_SB16;
+
+		case SOUNDID_PC_9801_86_118_SB16:
+			return FLAG_OPNA1 | FLAG_OPNA2 | FLAG_PCM86 | FLAG_CS4231 | FLAG_OPL3 | FLAG_SB16;
+			
+#endif
 #if defined(SUPPORT_PX)
 		case SOUNDID_PX1:
 			return FLAG_OPNA1 | FLAG_OPNA2 | FLAG_OPNA3 | FLAG_OPNA4;
 
 		case SOUNDID_PX2:
 			return FLAG_OPNA1 | FLAG_OPNA2 | FLAG_OPNA3 | FLAG_OPNA4 | FLAG_OPNA5 | FLAG_PCM86;
-#endif	/* defined(SUPPORT_PX) */
+#endif
 
 		default:
 			return 0;
@@ -922,7 +955,34 @@ static int flagsave_fm(STFLAGH sfh, const SFENTRY *tbl)
 	}
 	if (nSaveFlags & FLAG_OPL3)
 	{
-		ret |= opl3_sfsave(&g_opl3, sfh, tbl);
+		for (i = 0; i < NELEMENTS(g_opl3); i++)
+		{
+			ret |= opl3_sfsave(&g_opl3[i], sfh, tbl);
+		}
+#ifdef USE_MAME
+		{
+			void* buffer;
+			SINT32 bufsize = 0;
+			bufsize = YMF262FlagSave(NULL, NULL);
+			buffer = malloc(bufsize);
+			for (i = 0; i < NELEMENTS(g_mame_opl3); i++)
+			{
+				if(g_mame_opl3[i]){
+					YMF262FlagSave(g_mame_opl3[i], buffer);
+					ret |= statflag_write(sfh, &bufsize, sizeof(SINT32));
+					ret |= statflag_write(sfh, buffer, bufsize);
+				}else{
+					SINT32 tmpsize = 0;
+					ret |= statflag_write(sfh, &tmpsize, sizeof(SINT32));
+				}
+			}
+			free(buffer);
+		}
+#endif
+	}
+	if (nSaveFlags & FLAG_SB16)
+	{
+		ret |= statflag_write(sfh, &g_sb16, sizeof(g_sb16));
 	}
 	return ret;
 }
@@ -964,7 +1024,35 @@ static int flagload_fm(STFLAGH sfh, const SFENTRY *tbl)
 	}
 	if (nSaveFlags & FLAG_OPL3)
 	{
-		ret |= opl3_sfload(&g_opl3, sfh, tbl);
+		for (i = 0; i < NELEMENTS(g_opl3); i++)
+		{
+			ret |= opl3_sfload(&g_opl3[i], sfh, tbl);
+		}
+#ifdef USE_MAME
+		for (i = 0; i < NELEMENTS(g_mame_opl3); i++)
+		{
+			void* buffer;
+			int bufsize = 0;
+			ret |= statflag_read(sfh, &bufsize, sizeof(SINT32));
+			if(bufsize!=0){
+				if(YMF262FlagSave(NULL, NULL) != bufsize){
+					ret = STATFLAG_FAILURE;
+					break;
+				}else{
+					buffer = malloc(bufsize);
+					ret |= statflag_read(sfh, buffer, bufsize);
+					if(g_mame_opl3[i]){
+						YMF262FlagLoad(g_mame_opl3[i], buffer, bufsize);
+					}
+					free(buffer);
+				}
+			}
+		}
+#endif
+	}
+	if (nSaveFlags & FLAG_SB16)
+	{
+		ret |= statflag_read(sfh, &g_sb16, sizeof(g_sb16));
 	}
 
 	// 復元。 これ移動すること！
@@ -1007,11 +1095,11 @@ static int flagcheck_fdd(STFLAGH sfh, const SFENTRY *tbl) {
 
 	int		ret;
 	int		i;
-	OEMCHAR	buf[8];
+	OEMCHAR	buf[32];
 
 	ret = STATFLAG_SUCCESS;
 	for (i=0; i<4; i++) {
-		OEMSPRINTF(buf, str_fddx, i+1);
+		OEMSNPRINTF(buf, sizeof(buf), str_fddx, i+1);
 		ret |= statflag_checkpath(sfh, buf);
 	}
 	(void)tbl;
@@ -1094,17 +1182,17 @@ static int flagcheck_sxsi(STFLAGH sfh, const SFENTRY *tbl) {
 	int			ret;
 	SXSIDEVS	sds;
 	UINT		i;
-	OEMCHAR		buf[8];
+	OEMCHAR		buf[32];
 
 	sxsi_allflash();
 	ret = statflag_read(sfh, &sds, sizeof(sds));
 	for (i=0; i<NELEMENTS(sds.ide); i++) {
 		if (sds.ide[i] != SXSIDEV_NC) {
 			if(sds.ide[i] != SXSIDEV_CDROM) {
-				OEMSPRINTF(buf, str_sasix, i+1);
+				OEMSNPRINTF(buf, sizeof(buf), str_sasix, i+1);
 				ret |= statflag_checkpath(sfh, buf);
 			}else{
-				OEMSPRINTF(buf, str_sasix, i+1);
+				OEMSNPRINTF(buf, sizeof(buf), str_sasix, i+1);
 				statflag_checkpath(sfh, buf); // CDの時、フラグには影響させない
 			}
 		}
@@ -1112,10 +1200,10 @@ static int flagcheck_sxsi(STFLAGH sfh, const SFENTRY *tbl) {
 	for (i=0; i<NELEMENTS(sds.scsi); i++) {
 		if (sds.scsi[i] != SXSIDEV_NC) {
 			if(sds.ide[i] != SXSIDEV_CDROM) {
-				OEMSPRINTF(buf, str_scsix, i);
+				OEMSNPRINTF(buf, sizeof(buf), str_scsix, i);
 				ret |= statflag_checkpath(sfh, buf);
 			}else{
-				OEMSPRINTF(buf, str_scsix, i);
+				OEMSNPRINTF(buf, sizeof(buf), str_scsix, i);
 				statflag_checkpath(sfh, buf); // CDの時、フラグには影響させない
 			}
 		}

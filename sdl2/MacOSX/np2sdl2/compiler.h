@@ -123,7 +123,4 @@ typedef SINT32	FILELEN;
 
 #define SUPPORT_EXTERNALCHIP
 
-#define SUPPORT_ARC
-#define SUPPORT_ZLIB
-
 #define	SCREEN_BPP		16

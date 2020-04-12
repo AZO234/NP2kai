@@ -289,7 +289,6 @@ exec_allstep(void)
 	static int remclock_mul = 1000;
 	int remclockb = 0;
 	int remclkcnt = 0x100;
-	int repflag = 0;
 	static int latecount = 0;
 	static int latecount2 = 0;
 	static int hltflag = 0;
@@ -392,7 +391,6 @@ exec_allstep(void)
 		}
 
 		/* rep */
-		repflag = CPU_ECX;
 		CPU_WORKCLOCK(5);
 	#if defined(DEBUG)
 		if (!cpu_debug_rep_cont) {
@@ -553,7 +551,8 @@ cpucontinue:
 						if(remclock_mul < 100000) {
 							latecount++;
 							if(latecount > +LATECOUNTER_THRESHOLD){
-								if(pccore.multiple > 2){
+								if(pccore.multiple > 4){
+									UINT32 oldmultiple = pccore.multiple;
 									if(pccore.multiple > 40){
 										pccore.multiple-=3;
 									}else if(pccore.multiple > 20){
@@ -562,6 +561,7 @@ cpucontinue:
 										pccore.multiple-=1;
 									}
 									pccore.realclock = pccore.baseclock * pccore.multiple;
+									nevent_changeclock(oldmultiple, pccore.multiple);
 		
 									sound_changeclock();
 									beep_changeclock();
@@ -578,9 +578,10 @@ cpucontinue:
 							}
 						}
 						asynccpu_lateflag = 1;
+
+						CPU_REMCLOCK = 0;
+						break;
 					}
-					CPU_REMCLOCK = 0;
-					break;
 				}else{
 					if(!hltflag && !asynccpu_lateflag && g_nevent.item[NEVENT_FLAMES].proc==screendisp && g_nevent.item[NEVENT_FLAMES].clock <= CPU_BASECLOCK){
 						//CPU_REMCLOCK = 10000;
@@ -589,8 +590,10 @@ cpucontinue:
 							latecount--;
 							if(latecount < -LATECOUNTER_THRESHOLDM){
 								if(pccore.multiple < pccore.maxmultiple){
+									UINT32 oldmultiple = pccore.multiple;
 									pccore.multiple+=1;
 									pccore.realclock = pccore.baseclock * pccore.multiple;
+									nevent_changeclock(oldmultiple, pccore.multiple);
 		
 									sound_changeclock();
 									beep_changeclock();
@@ -601,9 +604,8 @@ cpucontinue:
 									keyboard_changeclock();
 									mouseif_changeclock();
 									gdc_updateclock();
-
-									latecount = 0;
 								}
+								latecount = 0;
 							}
 							asynccpu_fastflag = 1;
 						}

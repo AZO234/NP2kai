@@ -278,12 +278,12 @@ dnl Checks for debug mode
 dnl
 AC_MSG_CHECKING([whether to enable debugging])
 if test x"$enable_debug" = "xyes"; then
-  CPPFLAGS="$CPPFLAGS -g -DDEBUG -DTRACE"
+  CPPFLAGS="$CPPFLAGS -g -DDEBUG -D_DEBUG -DTRACE"
   CFLAGS="$CFLAGS -Wstack-protector -fstack-protector --param ssp-buffer-size=1"
   CXXFLAGS="$CXXFLAGS -Wstack-protector -fstack-protector --param ssp-buffer-size=1"
   enable_warning=yes
 else
-  CPPFLAGS="$CPPFLAGS -DNDEBUG"
+  CPPFLAGS="$CPPFLAGS -DNDEBUG -D_NDEBUG"
 fi
 AC_MSG_RESULT($enable_debug)
 

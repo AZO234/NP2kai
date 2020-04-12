@@ -26,6 +26,8 @@
 #ifndef	NP2_X11_COMPILER_H__
 #define	NP2_X11_COMPILER_H__
 
+#include "compiler_base.h"
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -49,21 +51,14 @@
 #define bind_textdomain_codeset(d,c)	(c)
 #endif /* ENABLE_NLS */
 
-#ifdef	WORDS_BIGENDIAN
-#define	BYTESEX_BIG
-#else	/* !WORDS_BIGENDIAN */
-#define	BYTESEX_LITTLE
-#endif	/* WORDS_BIGENDIAN */
-
 #if !defined(USE_SDLAUDIO) && !defined(USE_SDLMIXER) && !defined(USE_SDL2AUDIO) && !defined(USE_SDL2MIXER)
 #ifndef	NOSOUND
 #define	NOSOUND
 #undef	VERMOUTH_LIB
 #endif	/* !NOSOUND */
-#else	/* USE_SDLAUDIO || USE_SDLMIXER  || USE_SDL2AUDIO || USE_SDL2MIXER */
+#else
 #undef	NOSOUND
-#define	VERMOUTH_LIB
-#endif	/* !USE_SDLAUDIO && !USE_SDLMIXER && !USE_SDL2AUDIO && !USE_SDL2MIXER */
+#endif
 
 #include <sys/param.h>
 #include <sys/time.h>
@@ -71,241 +66,45 @@
 #include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <setjmp.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <stdarg.h>
-#include <stddef.h>
-#include <string.h>
 #include <unistd.h>
 
 #define	X11
-#define	OSLANG_UTF8
-#define	OSLINEBREAK_LF
 
 #include <glib.h>
 
-typedef	gint32		SINT;
-typedef	gint32		INT;
-typedef	guint32		UINT;
-
-typedef	gint8		SINT8;
-typedef	gint8		INT8;
-typedef	gint16		SINT16;
-typedef	gint16		INT16;
-typedef	gint32		SINT32;
-typedef	gint32		INT32;
-typedef	gint64		SINT64;
-typedef	gint64		INT64;
-
-typedef	guint8		UINT8;
-typedef	guint16		UINT16;
-typedef	guint32		UINT32;
-typedef	guint64		UINT64;
-
-typedef	gboolean	BOOL;
-
-typedef	signed char	CHAR;
-typedef	signed char	TCHAR;
-typedef	unsigned char	BYTE;
-typedef	guint32		DWORD;
-typedef	guint16		WORD;
-
-#define	INTPTR		gintptr
-
 #define PTR_TO_UINT32(p)	((UINT32)GPOINTER_TO_UINT(p))
 #define UINT32_TO_PTR(v)	GUINT_TO_POINTER((UINT32)(v))
-
-#ifndef	TRUE
-#define	TRUE	true
-#endif
-
-#ifndef	FALSE
-#define	FALSE	false
-#endif
-
-#ifndef	MAX_PATH
-#define	MAX_PATH	MAXPATHLEN
-#endif
-
-#ifndef	np2max
-#define	np2max(a,b)	(((a) > (b)) ? (a) : (b))
-#endif
-#ifndef	np2min
-#define	np2min(a,b)	(((a) < (b)) ? (a) : (b))
-#endif
-
-#ifndef	ZeroMemory
-#define	ZeroMemory(d,n)		memset((d), 0, (n))
-#endif
-#ifndef	CopyMemory
-#define	CopyMemory(d,s,n)	memcpy((d), (s), (n))
-#endif
-#ifndef	FillMemory
-#define	FillMemory(a, b, c)	memset((a), (c), (b))
-#endif
-
-#ifndef	roundup
-#define	roundup(x, y)	((((x)+((y)-1))/(y))*(y))
-#endif
-
-#ifndef	NELEMENTS
-#define	NELEMENTS(a)	((int)(sizeof(a) / sizeof(a[0])))
-#endif
-
-/* archtecture */
-/* amd64 */
-#if defined(amd64) || defined(__AMD64__) || defined(__amd64__) || \
-    defined(x86_64) || defined(__x86_64__) || defined(__X86_64__)
-#define	NP2_CPU_ARCH_AMD64
-#endif /* amd64 */
-/* i386 */
-#if defined(i386) || defined(__i386__) || defined(NP2_CPU_ARCH_AMD64)
-#define	NP2_CPU_ARCH_IA32
-#endif /* i386 */
-
-#if defined(__GNUC__)
-#if defined(NP2_CPU_ARCH_IA32)
-#define	GCC_CPU_ARCH_IA32
-#endif
-#if defined(NP2_CPU_ARCH_AMD64)
-#define	GCC_CPU_ARCH_AMD64
-#endif
-#endif /* __GNUC__ */
-
-#if defined(SUPPORT_LARGE_HDD)
-typedef SINT64	FILEPOS;
-typedef SINT64	FILELEN;
-#define	NHD_MAXSIZE		8000
-#define	NHD_MAXSIZE2	32000
-#else
-typedef SINT32	FILEPOS;
-typedef SINT32	FILELEN;
-#define	NHD_MAXSIZE		2000
-#define	NHD_MAXSIZE2	2000
-#endif
-
-#define _T
-#define _tcscpy strcpy
-#define	_tcsicmp	strcasecmp
-#define	_tcsnicmp	strncasecmp
 
 G_BEGIN_DECLS
 UINT32 gettick(void);
 G_END_DECLS
 #define	GETTICK()	gettick()
-#define	GETRAND()	random()
-#define	SPRINTF		sprintf
-#define	STRLEN		strlen
-
-#define	OEMCHAR		gchar
-#define OEMTEXT(s)	s
-#define	OEMSPRINTF	sprintf
-#define	OEMSTRLEN	strlen
 
 #define	msgbox(title, msg)	toolkit_messagebox(title, msg);
 
-#if defined(CPUCORE_IA32)
-#if !defined(DISABLE_PC9821)
-#define	IA32_PAGING_EACHSIZE
-#define	IA32_REBOOT_ON_PANIC
-#define	SUPPORT_PC9821
-#define	SUPPORT_CRT31KHZ
-#endif
+#ifndef __ASSERT
+#ifdef  DEBUG
+#define __ASSERT(s)	assert(s)
 #else
-#define	SUPPORT_CRT15KHZ
+#define __ASSERT(s)
 #endif
-#define	SUPPORT_IDEIO
-#if !defined(SUPPORT_PC9821)
-#define SUPPORT_BMS
 #endif
 
-#if defined(NP2_CPU_ARCH_IA32)
-#undef	MEMOPTIMIZE
-#define LOADINTELDWORD(a)	(*((const UINT32 *)(a)))
-#define LOADINTELWORD(a)	(*((const UINT16 *)(a)))
-#define STOREINTELDWORD(a, b)	*(UINT32 *)(a) = (b)
-#define STOREINTELWORD(a, b)	*(UINT16 *)(a) = (b)
-#if !defined(DEBUG) && !defined(NP2_CPU_ARCH_AMD64)
-#define	FASTCALL	__attribute__((regparm(2)))
-#endif	/* !DEBUG && !NP2_CPU_ARCH_AMD64 */
-#elif defined(arm) || defined (__arm__)
-#define	MEMOPTIMIZE	2
-#define	OPNGENARM
-#else
-#define	MEMOPTIMIZE	1
-#endif
-#define	REG8		UINT8
-#define	REG16		UINT16
-
-#ifndef	FASTCALL
-#define	FASTCALL
-#endif
-#define	CPUCALL		FASTCALL
-#define	MEMCALL		FASTCALL
-#define	DMACCALL	FASTCALL
-#define	IOOUTCALL	FASTCALL
-#define	IOINPCALL	FASTCALL
-#define	SOUNDCALL	FASTCALL
-#define	VRAMCALL	FASTCALL
-#define	SCRNCALL	FASTCALL
-#define	VERMOUTHCL	FASTCALL
-
-
-#ifdef	DEBUG
-#define	INLINE
-#define	__ASSERT(s)	assert(s)
-#else
-#ifndef	__ASSERT
-#define	__ASSERT(s)
-#endif
-#ifndef	INLINE
-#define	INLINE		inline __attribute__((always_inline))
-#endif
-#endif
+#define USE_TTF
 
 #define	SUPPORT_EUC
-#define	SUPPORT_UTF8
 
-#undef	SUPPORT_8BPP
-#define	SUPPORT_16BPP
-#define	SUPPORT_24BPP
-#define	SUPPORT_32BPP
-#define	SUPPORT_NORMALDISP
-
-#define	SOUND_CRITICAL
-#undef	SOUNDRESERVE
-#define	SUPPORT_EXTERNALCHIP
-
-#define	SUPPORT_PC9861K
-#define	SUPPORT_HOSTDRV
-
-#define	SUPPORT_RESUME
-//#define	SUPPORT_STATSAVE
-
-#undef	SUPPORT_SASI
-#undef	SUPPORT_SCSI
-
-#define	SUPPORT_S98
 #define	SUPPORT_KEYDISP
 #define	SUPPORT_SOFTKBD	0
-
-#define	SUPPORT_HRTIMER
 
 #define	SUPPORT_SCREENSIZE
 
 #if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER) || defined(USE_SDL2AUDIO) || defined(USE_SDL2MIXER)
-#define	SUPPORT_JOYSTICK
 #define	USE_SDL_JOYSTICK
-#endif	/* USE_SDLAUDIO || USE_SDLMIXER || USE_SDL2AUDIO || USE_SDL2MIXER */
+#endif
 
-#define SUPPORT_PX
-#define SUPPORT_V30ORIGINAL
-#define SUPPORT_V30EXT
-#define VAEG_FIX
-//#define SUPPORT_WAVEREC
+#define SUPPORT_WAVEREC
+
 /*
  * You could specify a complete path, e.g. "/etc/timidity.cfg", and
  * then specify the library directory in the configuration file.
@@ -313,18 +112,8 @@ G_END_DECLS
 extern char timidity_cfgfile_path[MAX_PATH];
 #define	TIMIDITY_CFGFILE	timidity_cfgfile_path
 
-#if defined(SUPPORT_LARGE_MEMORY)
-#define	MEMORY_MAXSIZE		4000
-#else
-#define	MEMORY_MAXSIZE		230
-#endif
-
-#include "common.h"
-#include "milstr.h"
-#include "_memory.h"
-#include "rect.h"
-#include "lstarray.h"
-#include "trace.h"
-#include "toolkit.h"
+#include "common/milstr.h"
+#include "x11/trace.h"
+#include "x11/toolkit.h"
 
 #endif	/* NP2_X11_COMPILER_H__ */

@@ -161,6 +161,32 @@ static UINT8 rs232c_buf_rpos = 0;
 static UINT8 rs232c_buf_wpos = 0;
 static int rs232c_removecounter = 0;
 
+static void rs232c_writeretry() {
+
+	int ret;
+	if((rs232c.result & 0x1) != 0) return;
+	if (cm_rs232c) {
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+		cm_rs232c->writeretry(cm_rs232c);
+		ret = cm_rs232c->lastwritesuccess(cm_rs232c);
+		if(ret==0){
+			return; // 書き込み無視
+		}
+#endif
+		rs232c.result |= 0x5;
+	}
+	if (sysport.c & 4) {
+		rs232c.send = 0;
+#if defined(SUPPORT_RS232C_FIFO)
+		rs232cfifo.irqflag = 1;
+#endif
+		pic_setirq(4);
+	}
+	else {
+		rs232c.send = 1;
+	}
+}
+
 void rs232c_construct(void) {
 
 	cm_rs232c = NULL;
@@ -190,6 +216,9 @@ void rs232c_callback(void) {
 	if(bufused == 0){
 		rs232c_removecounter = 0;
 	}
+
+	rs232c_writeretry();
+
 #if defined(SUPPORT_RS232C_FIFO)
 	if(rs232cfifo.port138 & 0x1){
 		rs232c_removecounter = 0; // FIFOモードでは消さない
@@ -273,8 +302,19 @@ void rs232c_midipanic(void) {
 
 static void IOOUTCALL rs232c_o30(UINT port, REG8 dat) {
 
+	int ret;
 	if (cm_rs232c) {
+		rs232c_writeretry();
 		cm_rs232c->write(cm_rs232c, (UINT8)dat);
+#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+		ret = cm_rs232c->lastwritesuccess(cm_rs232c);
+
+		if(!ret){
+			rs232c.result &= ~0x5;
+			return; // まだ書き込めないので待つ
+		}
+#endif
+		rs232c.result |= 0x5;
 	}
 	if (sysport.c & 4) {
 		rs232c.send = 0;
@@ -362,6 +402,8 @@ static REG8 IOINPCALL rs232c_i30(UINT port) {
 
 	UINT8 ret = rs232c.data;
 	
+	rs232c_writeretry();
+
 #if defined(SUPPORT_RS232C_FIFO)
 	if(port==0x130){
 		if (rs232c_buf_rpos == rs232c_buf_wpos) {
@@ -404,8 +446,11 @@ static REG8 IOINPCALL rs232c_i30(UINT port) {
 
 static REG8 IOINPCALL rs232c_i32(UINT port) {
 
-	UINT8 ret = rs232c.result;
+	UINT8 ret;
 
+	rs232c_writeretry();
+
+	ret = rs232c.result;
 	if (!(rs232c_stat() & 0x20)) {
 		return(ret | 0x80);
 	}
@@ -417,8 +462,11 @@ static REG8 IOINPCALL rs232c_i32(UINT port) {
 
 static REG8 IOINPCALL rs232c_i132(UINT port) {
 
-	UINT8 ret = rs232c.result;
+	UINT8 ret;
+	
+	rs232c_writeretry();
 
+	ret = rs232c.result;
 	ret = (ret & ~0xf7) | ((rs232c.result << 1) & 0x6) | ((rs232c.result >> 2) & 0x1);
 
 	if (!(rs232c_stat() & 0x20)) {

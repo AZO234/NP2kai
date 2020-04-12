@@ -9,7 +9,6 @@
 
 #pragma comment(lib, "SDL2.lib")
 #pragma comment(lib, "SDL2main.lib")
-#pragma comment(lib, "zlib.lib")
 
 #if !defined(RESOURCE_US)
 #pragma comment(lib, "SDL2_ttf.lib")

@@ -1,5 +1,4 @@
-DEBUG=0
-SUPPORT_NET?=1
+DEBUG ?= 0
 GIT_VERSION := "$(shell git rev-parse --short HEAD)"
 HAS_GCC = 1
 ENDIANNESS_DEFINES=
@@ -473,8 +472,8 @@ else ifeq ($(platform), libnx)
 	include $(DEVKITPRO)/libnx/switch_rules
 	EXT=a
 	TARGET := $(TARGET_NAME)_libretro_$(platform).$(EXT)
-	DEFINES := -DSWITCH=1 -U__linux__ -U__linux -DRARCH_INTERNAL
-	CFLAGS := $(DEFINES) -g -O3 -fPIE -I$(DEVKITPRO)/libnx/include/ -ffunction-sections -fdata-sections -ftls-model=local-exec -Wl,--allow-multiple-definition -specs=$(DEVKITPRO)/libnx/switch.specs
+	PLATFORM_DEFINES := -DSWITCH=1 -U__linux__ -U__linux -DRARCH_INTERNAL
+	CFLAGS := -g -O3 -fPIE -I$(DEVKITPRO)/libnx/include/ -ffunction-sections -fdata-sections -ftls-model=local-exec -Wl,--allow-multiple-definition -specs=$(DEVKITPRO)/libnx/switch.specs
 	CFLAGS += $(INCDIRS)
 	CFLAGS += -D__SWITCH__ -DHAVE_LIBNX -march=armv8-a -mtune=cortex-a57 -mtp=soft
 	CXXFLAGS := $(ASFLAGS) $(CFLAGS) -fno-rtti -std=gnu++11
@@ -669,6 +668,7 @@ else
 	TARGET := $(TARGET_NAME)_libretro.dll
 	CC ?= gcc
 	CXX ?= g++
+	COMMONFLAGS += -municode
 	SHARED := -shared -static-libgcc -static-libstdc++ -Wl,-version-script=link.T
 	DISABLE_GCC_SECURITY_FLAGS = 1
 endif
@@ -680,32 +680,24 @@ CXXFLAGS += -DGIT_VERSION=\"$(GIT_VERSION)\"
 ifeq ($(DEBUG), 1)
 	ifneq (,$(findstring msvc,$(platform)))
 		ifeq ($(STATIC_LINKING),1)
-			CFLAGS += -MTd
-			CXXFLAGS += -MTd
+			COMMONFLAGS += -MTd
 		else
-			CFLAGS += -MDd
-			CXXFLAGS += -MDd
+			COMMONFLAGS += -MDd
 		endif
-		CFLAGS += -Od -Zi -DDEBUG -D_DEBUG
-		CXXFLAGS += -Od -Zi -DDEBUG -D_DEBUG
+		COMMONFLAGS += -Od -Zi -DDEBUG -D_DEBUG -DTRACE
 	else
-		CFLAGS += -O0 -g -DDEBUG
-		CXXFLAGS += -O0 -g -DDEBUG
+		COMMONFLAGS += -O0 -g -DDEBUG -D_DEBUG -DTRACE
 	endif
 else
 	ifneq (,$(findstring msvc,$(platform)))
 		ifeq ($(STATIC_LINKING),1)
-			CFLAGS += -MT
-			CXXFLAGS += -MT
+			COMMONFLAGS += -MT
 		else
-			CFLAGS += -MD
-			CXXFLAGS += -MD
+			COMMONFLAGS += -MD
 		endif
-		CFLAGS += -O2 -DNDEBUG
-		CXXFLAGS += -O2 -DNDEBUG
+		COMMONFLAGS += -O2 -DNDEBUG -D_NDEBUG
 	else
-		CFLAGS += -O2 -DNDEBUG
-		CXXFLAGS += -O2 -DNDEBUG
+		COMMONFLAGS += -O2 -DNDEBUG -D_NDEBUG
 	endif
 endif
 
@@ -780,7 +772,6 @@ SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr.
 	$(NP2_PATH)/sdl2/libretro/libretro-common/encodings/encoding_crc32.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/encodings/encoding_utf.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/features/features_cpu.c \
-	$(NP2_PATH)/sdl2/libretro/libretro-common/file/archive_file.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/file/config_file.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/file/config_file_userdata.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/file/file_path.c \
@@ -800,7 +791,6 @@ SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr.
 	$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_cdrom.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_chd.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_huffman.c \
-	$(NP2_PATH)/sdl2/libretro/libretro-common/formats/libchdr/libchdr_zlib.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/formats/png/rpng.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/formats/png/rpng_encode.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/formats/tga/rtga.c \
@@ -867,9 +857,8 @@ ifeq ($(HAS_GCC), 1)
 		C_VER = -std=gnu99
 	endif
 	CFLAGS += -fsigned-char
-	CXXFLAGS += -std=c++98
-	CXXFLAGS += -fno-rtti
-	GCC_WARNINGS += --pedantic \
+	CXXFLAGS += -std=gnu++11 -fno-rtti
+	GCC_WARNINGS += -pedantic \
 		-Wall -Wextra \
 		-Wformat \
 		-Wformat-security \
@@ -884,8 +873,8 @@ ifeq ($(HAS_GCC), 1)
 	endif
 endif
 
-DEFINES = -D__LIBRETRO__ $(PLATFORM_DEFINES) $(GCC_FLAGS) $(GCC_WARNINGS) $(GCC_SECURITY_FLAGS) -DNST_NO_ZLIB $(INCFLAGS) $(INCFLAGS_PLATFORM) -DCPUCORE_IA32 -DSUPPORT_PC9821 -DUSE_FPU -DSUPPORT_LARGE_HDD -DSUPPORT_VPCVHD -DSUPPORT_KAI_IMAGES -DHOOK_SYSKEY -DALLOW_MULTIRUN -DSUPPORT_WAB -DSUPPORT_LARGE_MEMORY -DSUPPORT_CL_GD5430 -DUSE_MAME -DSUPPORT_FMGEN -DSUPPORT_SOUND_SB16 -DSUPPORT_FPU_DOSBOX -DSUPPORT_FPU_DOSBOX2 -DSUPPORT_FPU_SOFTFLOAT -DSUPPORT_FAST_MEMORYCHECK -DSUPPORT_ASYNC_CPU -DSUPPORT_RS232C_FIFO -DSUPPORT_PEGC -DSUPPORT_GPIB -DSUPPORT_PCI -DUSE_MMX -DUSE_3DNOW -DUSE_SSE -DUSE_SSE2 -DUSE_SSE3 -DUSE_TSC -DUSE_FASTPAGING -DUSE_VME -DBIOS_IO_EMULATION
-# -DSUPPORT_SMPU98 -DSUPPORT_NVL_IMAGES
+DEFINES += -D__LIBRETRO__ $(PLATFORM_DEFINES) $(GCC_WARNINGS) $(COMMONFLAGS) $(GCC_SECURITY_FLAGS) -DNST_NO_ZLIB $(INCFLAGS) $(INCFLAGS_PLATFORM) $(NP2DEFINE) $(NP21DEFINE)
+
 SUPPORT_NP2_THREAD=1
 ifeq ($(platform), emscripten)
 	SUPPORT_NP2_THREAD=0
@@ -895,6 +884,10 @@ ifeq ($(platform), psp1)
 endif
 ifeq ($(SUPPORT_NP2_THREAD), 1)
 	DEFINES += -DSUPPORT_NP2_THREAD
+endif
+SUPPORT_ASYNC_CPU=1
+ifeq ($(SUPPORT_ASYNC_CPU), 1)
+	DEFINES += -DSUPPORT_ASYNC_CPU
 endif
 
 CFLAGS += $(fpic) $(DEFINES) $(C_VER) $(ENDIANNESS_DEFINES)
@@ -921,7 +914,7 @@ else
 endif
 
 ifeq ($(platform), theos_ios)
-	COMMON_FLAGS := -DIOS $(DEFINES) $(INCFLAGS) $(INCDIRS) -I$(THEOS_INCLUDE_PATH) -Wno-error
+	COMMON_FLAGS := -DIOS $(COMMONFLAGS) $(DEFINES) $(INCFLAGS) $(INCDIRS) -I$(THEOS_INCLUDE_PATH) -Wno-error
 	$(LIBRARY_NAME)_CFLAGS += $(CFLAGS) $(COMMON_FLAGS)
 	$(LIBRARY_NAME)_CXXFLAGS += $(CXXFLAGS) $(COMMON_FLAGS)
 	${LIBRARY_NAME}_FILES = $(SOURCES_CXX) $(SOURCES_C)
@@ -948,8 +941,7 @@ clean-objs:
 	rm -f $(OBJECTS)
 
 clean:
-	rm -f $(OBJECTS)
-	rm -f $(TARGET)
+	rm -f $(OBJECTS) $(TARGET)
 	rm -f compile_commands.json
 	rm -f cppcheck.xml
 

@@ -34,7 +34,7 @@ static _SMP_OUT *FUNC_NOR(GETSND trk, _SMP_OUT *pcm, _SMP_OUT *pcmterm) {
 	_SMP_IN	*samp;
 	UINT	size;
 
-	size = np2min(trk->remain, (UINT)(pcmterm - pcm));
+	size = MIN(trk->remain, (UINT)(pcmterm - pcm));
 	trk->remain -= size;
 	samp = (_SMP_IN *)trk->buf;
 	do {

@@ -1347,21 +1347,21 @@ static SINT32	sampcount2_n = 0;
 	//	samplen_n /= 100;
 	//	samplen_d /= 100;
 	//}
-	//if(g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_MATE_X_PCM || g_nSoundID == SOUNDID_PC_9801_86_WSS || g_nSoundID == SOUNDID_WAVESTAR){
+	//if(g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_MATE_X_PCM || g_nSoundID == SOUNDID_PC_9801_86_WSS || g_nSoundID == SOUNDID_WAVESTAR || g_nSoundID == SOUNDID_PC_9801_118_SB16 || g_nSoundID == SOUNDID_PC_9801_86_118_SB16){
 	//	if(cdda_softvolumereg_L != cs4231.devvolume[0x32]){
 	//		cdda_softvolumereg_L = cs4231.devvolume[0x32];
-	//		if(cdda_softvolumereg_L & 0x80){ // FM L Mute
+	//		if(cdda_softvolumereg_L & 0x80){ // CD L Mute
 	//			cdda_softvolume_L = 0;
 	//		}else{
-	//			cdda_softvolume_L = ((~cdda_softvolumereg_L) & 0x1f); // FM L Volume
+	//			cdda_softvolume_L = ((‾cdda_softvolumereg_L) & 0x1f); // CD L Volume
 	//		}
 	//	}
 	//	if(cdda_softvolumereg_R != cs4231.devvolume[0x33]){
 	//		cdda_softvolumereg_R = cs4231.devvolume[0x33];
-	//		if(cdda_softvolumereg_R & 0x80){ // FM R Mute
+	//		if(cdda_softvolumereg_R & 0x80){ // CD R Mute
 	//			cdda_softvolume_R = 0;
 	//		}else{
-	//			cdda_softvolume_R = ((~cdda_softvolumereg_R) & 0x1f); // FM R Volume
+	//			cdda_softvolume_R = ((‾cdda_softvolumereg_R) & 0x1f); // CD R Volume
 	//		}
 	//	}
 	//}else{
@@ -1378,7 +1378,7 @@ static SINT32	sampcount2_n = 0;
 		return(FAILURE);
 	}
 	while(count) {
-		r = np2min(count, drv->dabufrem * samplen_n / samplen_d);
+		r = MIN(count, drv->dabufrem * samplen_n / samplen_d);
 		if (r) {
 			count -= r;
 			ptr = drv->dabuf + 2352 - (drv->dabufrem * 4);

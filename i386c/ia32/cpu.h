@@ -400,6 +400,7 @@ typedef struct {
 	char cpu_brandstring[64]; // ブランド名（48byte）
 	UINT32 cpu_brandid; // ブランドID
 	UINT32 cpu_feature_ecx; // ECX機能フラグ
+	UINT32 cpu_eflags_mask; // EFLAGSマスク(1のところがマスク状態)
 	UINT32 reserved[32]; // 将来の拡張のためにとりあえず32bit*32個用意しておく
 	
 	UINT8 fpu_type; // FPU種類
@@ -505,6 +506,10 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 #define	CPU_I486SX_FAMILY			4
 #define	CPU_I486SX_MODEL			2	/* 486SX */
 #define	CPU_I486SX_STEPPING			3
+
+#define	CPU_80386_FAMILY			3
+#define	CPU_80386_MODEL				0	/* 80386 */
+#define	CPU_80386_STEPPING			8
 
 #define	CPU_80286_FAMILY			2
 #define	CPU_80286_MODEL				1	/* 80286 */
@@ -612,6 +617,7 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 #define	CPU_FEATURES_PENTIUM			(CPU_FEATURE_FPU|CPU_FEATURE_CX8|CPU_FEATURE_TSC|CPU_FEATURE_VME_FLAG)
 #define	CPU_FEATURES_I486DX				(CPU_FEATURE_FPU)
 #define	CPU_FEATURES_I486SX				(0)
+#define	CPU_FEATURES_80386				(0)
 #define	CPU_FEATURES_80286				(0)
 
 #define	CPU_FEATURES_AMD_K7_ATHLON_XP	(CPU_FEATURE_FPU|CPU_FEATURE_TSC|CPU_FEATURE_VME_FLAG|CPU_FEATURE_CMOV|CPU_FEATURE_FXSR|CPU_FEATURE_MMX|CPU_FEATURE_CLFSH|CPU_FEATURE_SSE)
@@ -650,6 +656,7 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 #define	CPU_FEATURES_EX_PENTIUM		(0)
 #define	CPU_FEATURES_EX_I486DX		(0)
 #define	CPU_FEATURES_EX_I486SX		(0)
+#define	CPU_FEATURES_EX_80386		(0)
 #define	CPU_FEATURES_EX_80286		(0)
 
 #define	CPU_FEATURES_EX_AMD_K6_2			(CPU_FEATURE_EX_3DNOW)
@@ -709,12 +716,32 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 #define	CPU_FEATURES_ECX_PENTIUM		(0)
 #define	CPU_FEATURES_ECX_I486DX			(0)
 #define	CPU_FEATURES_ECX_I486SX			(0)
+#define	CPU_FEATURES_ECX_80386			(0)
 #define	CPU_FEATURES_ECX_80286			(0)
 
 #define	CPU_FEATURES_ECX_AMD_K6_2			(0)
 #define	CPU_FEATURES_ECX_AMD_K6_III			(0)
 #define	CPU_FEATURES_ECX_AMD_K7_ATHLON		(0)
 #define	CPU_FEATURES_ECX_AMD_K7_ATHLON_XP	(0)
+
+
+/* EFLAGS MASK */
+#define	CPU_EFLAGS_MASK_PENTIUM_4		(0)
+#define	CPU_EFLAGS_MASK_PENTIUM_M		(0)
+#define	CPU_EFLAGS_MASK_PENTIUM_III		(0)
+#define	CPU_EFLAGS_MASK_PENTIUM_II		(0)
+#define	CPU_EFLAGS_MASK_PENTIUM_PRO		(0)
+#define	CPU_EFLAGS_MASK_MMX_PENTIUM		(0)
+#define	CPU_EFLAGS_MASK_PENTIUM			(0)
+#define	CPU_EFLAGS_MASK_I486DX			(0)
+#define	CPU_EFLAGS_MASK_I486SX			(0)
+#define	CPU_EFLAGS_MASK_80386			((1 << 18))
+#define	CPU_EFLAGS_MASK_80286			((1 << 18))
+
+#define	CPU_EFLAGS_MASK_AMD_K6_2			(0)
+#define	CPU_EFLAGS_MASK_AMD_K6_III			(0)
+#define	CPU_EFLAGS_MASK_AMD_K7_ATHLON		(0)
+#define	CPU_EFLAGS_MASK_AMD_K7_ATHLON_XP	(0)
 
 
 /* brand string */
@@ -727,6 +754,7 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 #define	CPU_BRAND_STRING_PENTIUM			"Intel(R) Pentium(R) Processor "
 #define	CPU_BRAND_STRING_I486DX				"Intel(R) i486DX Processor "
 #define	CPU_BRAND_STRING_I486SX				"Intel(R) i486SX Processor "
+#define	CPU_BRAND_STRING_80386				"Intel(R) 80386 Processor "
 #define	CPU_BRAND_STRING_80286				"Intel(R) 80286 Processor "
 #define	CPU_BRAND_STRING_AMD_K6_2			"AMD-K6(tm) 3D processor "
 #define	CPU_BRAND_STRING_AMD_K6_III			"AMD-K6(tm) 3D+ Processor "
@@ -746,6 +774,7 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 #define	CPU_BRAND_ID_PENTIUM			0
 #define	CPU_BRAND_ID_I486DX				0
 #define	CPU_BRAND_ID_I486SX				0
+#define	CPU_BRAND_ID_80386				0
 #define	CPU_BRAND_ID_80286				0
 #define	CPU_BRAND_ID_AMD_K6_2			0
 #define	CPU_BRAND_ID_AMD_K6_III			0
@@ -767,6 +796,7 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 #define	CPU_FEATURES_ECX	CPU_FEATURES_ECX_PENTIUM_III
 #define	CPU_BRAND_STRING	CPU_BRAND_STRING_PENTIUM_III
 #define	CPU_BRAND_ID		CPU_BRAND_ID_PENTIUM_III
+#define	CPU_EFLAGS_MASK		CPU_EFLAGS_MASK_PENTIUM_III
 //#define	CPU_FAMILY			CPU_PENTIUM_4_FAMILY
 //#define	CPU_MODEL			CPU_PENTIUM_4_MODEL	/* Pentium 4 */
 //#define	CPU_STEPPING		CPU_PENTIUM_4_STEPPING
@@ -775,6 +805,7 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 //#define	CPU_FEATURES_ECX	CPU_FEATURES_ECX_PENTIUM_4
 //#define	CPU_BRAND_STRING	CPU_BRAND_STRING_PENTIUM_4
 //#define	CPU_BRAND_ID		CPU_BRAND_ID_PENTIUM_4
+//#define	CPU_EFLAGS_MASK		CPU_EFLAGS_MASK_PENTIUM_4
 #elif defined(USE_SSE2)
 #define	CPU_FAMILY			CPU_PENTIUM_III_FAMILY
 #define	CPU_MODEL			CPU_PENTIUM_III_MODEL	/* Pentium III */
@@ -784,6 +815,7 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 #define	CPU_FEATURES_ECX	CPU_FEATURES_ECX_PENTIUM_III
 #define	CPU_BRAND_STRING	CPU_BRAND_STRING_PENTIUM_III
 #define	CPU_BRAND_ID		CPU_BRAND_ID_PENTIUM_III
+#define	CPU_EFLAGS_MASK		CPU_EFLAGS_MASK_PENTIUM_III
 //#define	CPU_FAMILY			CPU_PENTIUM_M_FAMILY
 //#define	CPU_MODEL			CPU_PENTIUM_M_MODEL	/* Pentium M */
 //#define	CPU_STEPPING		CPU_PENTIUM_M_STEPPING
@@ -792,6 +824,7 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 //#define	CPU_FEATURES_ECX	CPU_FEATURES_ECX_PENTIUM_M
 //#define	CPU_BRAND_STRING	CPU_BRAND_STRING_PENTIUM_M
 //#define	CPU_BRAND_ID		CPU_BRAND_ID_PENTIUM_M
+//#define	CPU_EFLAGS_MASK		CPU_EFLAGS_MASK_PENTIUM_M
 #elif defined(USE_SSE)
 #define	CPU_FAMILY			CPU_PENTIUM_III_FAMILY
 #define	CPU_MODEL			CPU_PENTIUM_III_MODEL	/* Pentium III */
@@ -801,6 +834,7 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 #define	CPU_FEATURES_ECX	CPU_FEATURES_ECX_PENTIUM_III
 #define	CPU_BRAND_STRING	CPU_BRAND_STRING_PENTIUM_III
 #define	CPU_BRAND_ID		CPU_BRAND_ID_PENTIUM_III
+#define	CPU_EFLAGS_MASK		CPU_EFLAGS_MASK_PENTIUM_III
 #elif defined(USE_MMX)
 #define	CPU_FAMILY			CPU_PENTIUM_II_FAMILY
 #define	CPU_MODEL			CPU_PENTIUM_II_MODEL	/* Pentium II */
@@ -810,6 +844,7 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 #define	CPU_FEATURES_ECX	CPU_FEATURES_ECX_PENTIUM_II
 #define	CPU_BRAND_STRING	CPU_BRAND_STRING_PENTIUM_II
 #define	CPU_BRAND_ID		CPU_BRAND_ID_PENTIUM_II
+#define	CPU_EFLAGS_MASK		CPU_EFLAGS_MASK_PENTIUM_II
 #else
 #define	CPU_FAMILY			CPU_PENTIUM_FAMILY
 #define	CPU_MODEL			CPU_PENTIUM_MODEL	/* Pentium */
@@ -819,6 +854,7 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 #define	CPU_FEATURES_ECX	CPU_FEATURES_ECX_PENTIUM
 #define	CPU_BRAND_STRING	CPU_BRAND_STRING_PENTIUM
 #define	CPU_BRAND_ID		CPU_BRAND_ID_PENTIUM
+#define	CPU_EFLAGS_MASK		CPU_EFLAGS_MASK_PENTIUM
 #endif
 #else
 #define	CPU_FAMILY			CPU_I486SX_FAMILY
@@ -829,6 +865,7 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 #define	CPU_FEATURES_ECX	CPU_FEATURES_ECX_I486SX
 #define	CPU_BRAND_STRING	CPU_BRAND_STRING_I486SX
 #define	CPU_BRAND_ID		CPU_BRAND_ID_I486SX
+#define	CPU_EFLAGS_MASK		CPU_EFLAGS_MASK_I486SX
 #endif
 
 

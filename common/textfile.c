@@ -4,26 +4,11 @@
 #if defined(SUPPORT_TEXTCNV)
 #include	"codecnv/textcnv.h"
 #endif
-#if defined(SUPPORT_ARC)
-#include	"arc.h"
-#else
 #include	"dosio.h"
-#endif
 
 
 // ---- arc support?
 
-#if defined(SUPPORT_ARC)
-#define	_FILEH				ARCFH
-#define	_FILEH_INVALID		NULL
-#define	_FSEEK_SET			ARCSEEK_SET
-#define _file_open_rb		arcex_fileopen
-#define _file_create		arcex_filecreate
-#define	_file_read			arc_fileread
-#define	_file_write			arc_filewrite
-#define	_file_seek			arc_fileseek
-#define	_file_close			arc_fileclose
-#else
 #define	_FILEH				FILEH
 #define	_FILEH_INVALID		FILEH_INVALID
 #define	_FSEEK_SET			FSEEK_SET
@@ -33,7 +18,6 @@
 #define	_file_write			file_write
 #define	_file_seek			file_seek
 #define	_file_close			file_close
-#endif
 
 enum {
 	TFMODE_READ		= 0x01,
@@ -54,7 +38,7 @@ struct _textfile {
 	UINT8	xendian;
 #endif
 	_FILEH	fh;
-	long	fpos;
+	UINT64	fpos;
 	UINT8	*buf;
 	UINT	bufsize;
 	UINT	bufpos;
@@ -283,7 +267,7 @@ const UINT8	*p;
 	ret = SUCCESS;
 	p = (UINT8 *)buffer;
 	while(size) {
-		wsize = np2min(size, tf->bufrem);
+		wsize = MIN(size, tf->bufrem);
 		if (wsize) {
 			CopyMemory(tf->buf + tf->bufpos, p, wsize);
 			p += wsize;
@@ -310,7 +294,7 @@ const UINT8	*p;
 	ret = SUCCESS;
 	p = (UINT8 *)buffer;
 	while(size) {
-		wsize = np2min(size, tf->bufrem);
+		wsize = MIN(size, tf->bufrem);
 		if (wsize) {
 			q = tf->buf + (tf->bufpos * sizeof(UINT16));
 			CopyMemory(q, p, wsize * sizeof(UINT16));
@@ -430,7 +414,7 @@ static TEXTFILEH registfile(_FILEH fh, UINT buffersize,
 static BRESULT flushfile(TEXTFILE tf) {
 
 	BRESULT	ret;
-	long	fpos;
+	UINT64	fpos;
 	UINT	size;
 	UINT	wsize;
 

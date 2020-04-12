@@ -1072,6 +1072,16 @@ void MEMCALL memp_write8(UINT32 address, REG8 value) {
 			//if(TEST_START_ADDR < address && address <= TEST_END_ADDR){
 			//	printf("%d: %d\n", address, value);
 			//}
+#if defined(SUPPORT_VGA_MODEX)
+			// PC/AT互換機 標準VGA相当 書き込み限定で許可
+			if(np2clvga.modex && vramWndAddr3==0xa0000){
+				UINT32 addr3 = address;
+				if(vramWndAddr3 <= addr3 && addr3 < vramWndAddr3 + VRA3WINDOW_SIZEX){
+					cirrus_vga_mem_writeb(cirrusvga_opaque, addr3, value);
+					vramWndAddr3 = 0;
+				}
+			}
+#endif
 			if(np2clvga.gd54xxtype!=CIRRUS_98ID_PCI){
 				if(vramWndAddr){
 					if(vramWndAddr <= address){
@@ -1110,16 +1120,6 @@ void MEMCALL memp_write8(UINT32 address, REG8 value) {
 						//	return;
 					}
 				}
-			}else{
-#if defined(SUPPORT_VGA_MODEX)
-				// PC/AT互換機 標準VGA相当 書き込み限定で許可
-				if(np2clvga.modex && vramWndAddr3==0xa0000){
-					UINT32 addr3 = address;
-					if(vramWndAddr3 <= addr3 && addr3 < vramWndAddr3 + VRA3WINDOW_SIZEX){
-						cirrus_vga_mem_writeb(cirrusvga_opaque, addr3, value);
-					}
-				}
-#endif
 			}
 		}
 #endif
@@ -1205,6 +1205,16 @@ void MEMCALL memp_write16(UINT32 address, REG16 value) {
 				//if(TEST_START_ADDR < address && address <= TEST_END_ADDR){
 				//	printf("%d: %d\n", address, value);
 				//}
+#if defined(SUPPORT_VGA_MODEX)
+				// PC/AT互換機 標準VGA相当 書き込み限定で許可
+				if(np2clvga.modex && vramWndAddr3==0xa0000){
+					UINT32 addr3 = address;
+					if(vramWndAddr3 <= addr3 && addr3 < vramWndAddr3 + VRA3WINDOW_SIZEX){
+						cirrus_vga_mem_writew(cirrusvga_opaque, addr3, value);
+						vramWndAddr3 = 0;
+					}
+				}
+#endif
 				if(np2clvga.gd54xxtype!=CIRRUS_98ID_PCI){
 					if(vramWndAddr){
 						if(vramWndAddr <= address){
@@ -1243,16 +1253,6 @@ void MEMCALL memp_write16(UINT32 address, REG16 value) {
 							//	return;
 						}
 					}
-				}else{
-#if defined(SUPPORT_VGA_MODEX)
-					// PC/AT互換機 標準VGA相当 書き込み限定で許可
-					if(np2clvga.modex && vramWndAddr3==0xa0000){
-						UINT32 addr3 = address;
-						if(vramWndAddr3 <= addr3 && addr3 < vramWndAddr3 + VRA3WINDOW_SIZEX){
-							cirrus_vga_mem_writew(cirrusvga_opaque, addr3, value);
-						}
-					}
-#endif
 				}
 			}
 #endif
@@ -1361,6 +1361,16 @@ void MEMCALL memp_write32(UINT32 address, UINT32 value) {
 				//if(TEST_START_ADDR < address && address <= TEST_END_ADDR){
 				//	printf("%d: %d\n", address, value);
 				//}
+#if defined(SUPPORT_VGA_MODEX)
+				// PC/AT互換機 標準VGA相当 書き込み限定で許可
+				if(np2clvga.modex && vramWndAddr3==0xa0000){
+					UINT32 addr3 = address;
+					if(vramWndAddr3 <= addr3 && addr3 < vramWndAddr3 + VRA3WINDOW_SIZEX){
+						cirrus_vga_mem_writel(cirrusvga_opaque, addr3, value);
+						vramWndAddr3 = 0;
+					}
+				}
+#endif
 				if(np2clvga.gd54xxtype!=CIRRUS_98ID_PCI){
 					if(vramWndAddr){
 						if(vramWndAddr <= address){
@@ -1399,16 +1409,6 @@ void MEMCALL memp_write32(UINT32 address, UINT32 value) {
 							//	return;
 						}
 					}
-				}else{
-#if defined(SUPPORT_VGA_MODEX)
-					// PC/AT互換機 標準VGA相当 書き込み限定で許可
-					if(np2clvga.modex && vramWndAddr3==0xa0000){
-						UINT32 addr3 = address;
-						if(vramWndAddr3 <= addr3 && addr3 < vramWndAddr3 + VRA3WINDOW_SIZEX){
-							cirrus_vga_mem_writel(cirrusvga_opaque, addr3, value);
-						}
-					}
-#endif
 				}
 			}
 #endif
@@ -1680,7 +1680,7 @@ void MEMCALL meml_reads(UINT32 address, void *dat, UINT leng) {
 	else {
 		while(leng) {
 			size = 0x1000 - (address & 0xfff);
-			size = np2min(size, leng);
+			size = MIN(size, leng);
 			memp_reads(physicaladdr(address, FALSE), dat, size);
 			address += size;
 			dat = ((UINT8 *)dat) + size;
@@ -1699,7 +1699,7 @@ void MEMCALL meml_writes(UINT32 address, const void *dat, UINT leng) {
 	else {
 		while(leng) {
 			size = 0x1000 - (address & 0xfff);
-			size = np2min(size, leng);
+			size = MIN(size, leng);
 			memp_writes(physicaladdr(address, TRUE), dat, size);
 			address += size;
 			dat = ((UINT8 *)dat) + size;
@@ -1772,10 +1772,10 @@ void MEMCALL memr_reads(UINT seg, UINT off, void *dat, UINT leng) {
 		off = LOW16(off);
 		addr = (seg << 4) + off;
 		rem = 0x10000 - off;
-		size = np2min(leng, rem);
+		size = MIN(leng, rem);
 		if (CPU_STAT_PAGING) {
 			rem = 0x1000 - (addr & 0xfff);
-			size = np2min(size, rem);
+			size = MIN(size, rem);
 			addr = physicaladdr(addr, FALSE);
 		}
 		memp_reads(addr, dat, size);
@@ -1795,10 +1795,10 @@ void MEMCALL memr_writes(UINT seg, UINT off, const void *dat, UINT leng) {
 		off = LOW16(off);
 		addr = (seg << 4) + off;
 		rem = 0x10000 - off;
-		size = np2min(leng, rem);
+		size = MIN(leng, rem);
 		if (CPU_STAT_PAGING) {
 			rem = 0x1000 - (addr & 0xfff);
-			size = np2min(size, rem);
+			size = MIN(size, rem);
 			addr = physicaladdr(addr, TRUE);
 		}
 		memp_writes(addr, dat, size);

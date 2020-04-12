@@ -9,10 +9,13 @@
 #include	"compiler.h"
 #include	"strres.h"
 #include	"dosio.h"
+#include	"pccore.h"
 #include	"cpucore.h"
 #include	"font.h"
 #include	"fontdata.h"
 #include	"fontmake.h"
+#include	"codecnv/codecnv.h"
+#include	"io/cgrom.h"
 
 #ifndef FONTMEMORYBIND
 	UINT8	__font[FONTMEMORYSIZE];
@@ -200,3 +203,172 @@ const UINT8	*p;
 	}
 	return(type);
 }
+
+#define HF_BUFFERSIZE 0x10000
+
+extern _CGROM cgrom;
+
+UINT hf_enable;
+UINT hf_codeul, hf_count;
+static FILEH hf_file;
+static UINT hf_type, hf_prespc;
+static char hf_buffer[HF_BUFFERSIZE];
+static UINT16 hf_u16buffer[HF_BUFFERSIZE];
+static char* hf_bufloc = hf_buffer;
+static hook_fontrom_output_t hf_fucOutput = NULL;
+
+static void hook_fontrom_defoutput(const char* strString) {
+  if(hf_file) {
+    file_write(hf_file, strString, strlen(strString));
+    file_write(hf_file, "\n", 1);
+  }
+}
+
+void hook_fontrom_setoutput(hook_fontrom_output_t fncOutput) {
+  hf_fucOutput = fncOutput;
+}
+
+void hook_fontrom_defenable(void) {
+  if(!hf_file) {
+    hook_fontrom_setoutput(hook_fontrom_defoutput);
+    hf_file = file_create_c(HF_FILENAME);
+    if(!hf_file) {
+      hf_enable = 0;
+    }
+  }
+}
+
+void hook_fontrom_defdisable(void) {
+  if(hf_file) {
+    hook_fontrom_flush();
+    file_close(hf_file);
+    hf_file = NULL;
+  }
+}
+
+void hook_fontrom_flush(void) {
+  UINT ntype;
+
+  if(hf_enable != 1) {
+    return;
+  }
+
+  if(hf_bufloc != hf_buffer) {
+    *hf_bufloc = '\0';
+    hf_bufloc++;
+    codecnv_jistoucs2(&ntype, hf_u16buffer, HF_BUFFERSIZE, hf_buffer, -1, hf_type);
+    codecnv_ucs2toutf8(hf_buffer, HF_BUFFERSIZE, hf_u16buffer, -1);
+    if(hf_fucOutput) {
+      hf_fucOutput(hf_buffer);
+    }
+    hf_bufloc = hf_buffer;
+  }
+}
+
+void hook_fontrom(UINT32 u32Address) {
+  UINT c, spc = 0, output = 0;
+  UINT16 jis;
+  UINT32 address_org;
+
+  if(hf_enable != 1) {
+    return;
+  }
+
+  u32Address >>= 4;
+
+  if(u32Address >= 0x8000) {
+    c = u32Address & 0xFF;
+//    if(c <= 0x1B || (c >= 0xF8 && c <= 0xFB) || c >= 0xFD) {
+    if(c <= 0x1F || c >= 0x7F) {
+      hf_prespc = 1;
+      output = 1;
+    } else if(c == 0x20 && hf_prespc) {
+      output = 1;
+    } else {
+      if(c == 0x20) {
+        hf_prespc = 1;
+      } else {
+        hf_prespc = 0;
+      }
+      if(c >= 0x20 && c <= 0x7E) {
+        if(hf_type != 0) {
+          *hf_bufloc = 0x1B;
+          hf_bufloc++;
+          *hf_bufloc = 0x28;
+          hf_bufloc++;
+          *hf_bufloc = 0x42;
+          hf_bufloc++;
+          hf_type = 0;
+        }
+      }
+      *hf_bufloc = c;
+      hf_bufloc++;
+      if(hf_bufloc - hf_buffer >= HF_BUFFERSIZE - 0x1000) {
+        output = 1;
+      }
+    }
+  } else {
+    if(u32Address == 0x7FFF) {
+      hf_prespc = 0;
+      c = (cgrom.code >> 8) & 0x7F;
+      if(c >= 0x21 && c <= 0x5F) {
+        if(hf_type != 1) {
+          *hf_bufloc = 0x1B;
+          hf_bufloc++;
+          *hf_bufloc = 0x28;
+          hf_bufloc++;
+          *hf_bufloc = 0x49;
+          hf_bufloc++;
+          hf_type = 1;
+        }
+        *hf_bufloc = c;
+        hf_bufloc++;
+        if(hf_bufloc - hf_buffer >= HF_BUFFERSIZE - 0x1000) {
+          output = 1;
+        }
+      } else {
+        return;
+      }
+    } else {
+      if(u32Address & 0x80) {
+        return;
+      }
+      u32Address &= 0x7F7F;
+      jis = (((u32Address & 0x7F) + 0x20) << 8) | ((u32Address >> 8) & 0x7F);
+      if(jis >= 0x2121 && jis <= 0x7C7E && (jis & 0x7F) >= 0x21 && (jis & 0x7F) <= 0x7E) {
+        if(hf_prespc && jis == 0x2121) {
+           output = 1;
+        } else {
+          if(jis == 0x2121) {
+            hf_prespc = 1;
+          } else {
+            hf_prespc = 0;
+          }
+          if(hf_type != 2) {
+            *hf_bufloc = 0x1B;
+            hf_bufloc++;
+            *hf_bufloc = 0x24;
+            hf_bufloc++;
+            *hf_bufloc = 0x42;
+            hf_bufloc++;
+            hf_type = 2;
+          }
+          *hf_bufloc = (jis >> 8) & 0x7F;
+          hf_bufloc++;
+          *hf_bufloc =  jis       & 0x7F;
+          hf_bufloc++;
+          if(hf_bufloc - hf_buffer >= HF_BUFFERSIZE - 0x1000) {
+            output = 1;
+          }
+        }
+      } else {
+        hf_prespc = 1;
+        output = 1;
+      }
+    }
+  }
+  if(output) {
+    hook_fontrom_flush();
+  }
+}
+

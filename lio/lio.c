@@ -148,13 +148,13 @@ void lio_updatedraw(GLIO lio) {
 	lio->draw.palmax = 1 << colorbit;
 
 	tmp = (SINT16)LOADINTELWORD(lio->work.viewx1);
-	lio->draw.x1 = np2max(tmp, 0);
+	lio->draw.x1 = MAX(tmp, 0);
 	tmp = (SINT16)LOADINTELWORD(lio->work.viewy1);
-	lio->draw.y1 = np2max(tmp, 0);
+	lio->draw.y1 = MAX(tmp, 0);
 	tmp = (SINT16)LOADINTELWORD(lio->work.viewx2);
-	lio->draw.x2 = np2min(tmp, 639);
+	lio->draw.x2 = MIN(tmp, 639);
 	tmp = (SINT16)LOADINTELWORD(lio->work.viewy2);
-	lio->draw.y2 = np2min(tmp, maxline);
+	lio->draw.y2 = MIN(tmp, maxline);
 	if (!gdcs.access) {
 		lio->draw.base = 0;
 		lio->draw.bank = 0;

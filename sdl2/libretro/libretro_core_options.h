@@ -74,6 +74,31 @@ struct retro_core_option_definition option_defs_us[] = {
       "2.4576 MHz"
    },
    {
+      "np2kai_cpu_feature",
+      "CPU Feature (Restart)",
+      NULL,
+      {
+         { "(custom)", NULL },
+         { "Intel 80386", NULL },
+         { "Intel i486SX", NULL },
+         { "Intel i486DX", NULL },
+         { "Intel Pentium", NULL },
+         { "Intel MMX Pentium", NULL },
+         { "Intel Pentium Pro", NULL },
+         { "Intel Pentium II", NULL },
+         { "Intel Pentium III", NULL },
+         { "Intel Pentium M", NULL },
+         { "Intel Pentium 4", NULL },
+         { "AMD K6-2", NULL },
+         { "AMD K6-III", NULL },
+         { "AMD K7 Athlon", NULL },
+         { "AMD K7 Athlon XP", NULL },
+         { "Neko Processor II", NULL },
+         { NULL, NULL},
+      },
+      "Intel 80386"
+   },
+   {
       "np2kai_clk_mult",
       "CPU Clock Multiplier (Restart)",
       "Higher values require a fast machine. Can make some games run too fast.",
@@ -211,24 +236,35 @@ struct retro_core_option_definition option_defs_us[] = {
       {
          { "PC9801-14", NULL },
          { "PC9801-86", NULL },
-         { "PC9801-86 + 118", NULL },
+         { "PC9801-86 + 118(B460)", NULL },
          { "PC9801-86 + Mate-X PCM(B460)", NULL },
          { "PC9801-86 + Chibi-oto", NULL },
          { "PC9801-86 + Speak Board", NULL },
          { "PC9801-26K", NULL },
          { "PC9801-26K + 86", NULL },
          { "PC9801-118", NULL },
-         { "Mate-X PCM(B460)", NULL },
+         { "Mate-X PCM", NULL },
          { "Chibi-oto", NULL },
          { "Speak Board", NULL },
          { "Spark Board", NULL },
          { "Sound Orchestra", NULL },
          { "Sound Orchestra-V", NULL },
+         { "Little Orchestra L", NULL },
+         { "Multimedia Orchestra", NULL },
+#if defined(SUPPORT_SOUND_SB16)
          { "Sound Blaster 16", NULL },
+         { "PC9801-86 + Sound Blaster 16", NULL },
+         { "Mate-X PCM + Sound Blaster 16", NULL },
+         { "PC9801-118 + Sound Blaster 16", NULL },
+         { "PC9801-86 + Mate-X PCM(B460) + Sound Blaster 16", NULL },
+         { "PC9801-86 + 118(B460) + Sound Blaster 16", NULL },
+#endif
          { "AMD-98", NULL },
          { "WaveStar", NULL },
+#if defined(SUPPORT_PX)
          { "Otomi-chanx2", NULL },
          { "Otomi-chanx2 + 86", NULL },
+#endif
          { "None", NULL },
          { NULL, NULL},
       },
@@ -745,7 +781,7 @@ struct retro_core_option_definition option_defs_us[] = {
    },
    {
       "np2kai_stick2mouse",
-      "Joypad(Analog Stick) to Mouse Mapping",
+      "S2M(Joypad Analog Stick to Mouse) Mapping",
       "Emulate a mouse on your gamepad's analog stick.",
       {
          { "OFF", NULL },
@@ -756,8 +792,20 @@ struct retro_core_option_definition option_defs_us[] = {
       "R-stick"
    },
    {
+      "np2kai_stick2mouse_shift",
+      "S2M Click Shift Button Mapping",
+      "Stick push shift to left->right click.",
+      {
+         { "OFF", NULL },
+         { "R1", NULL },
+         { "R2", NULL },
+         { NULL, NULL},
+      },
+      "R1"
+   },
+   {
       "np2kai_joy2mousekey",
-      "Joypad(D-pad) to Mouse/Keyboard Mapping",
+      "J2M/J2K(Joypad D-pad to Mouse/Keyboard) Mapping",
       "Emulate a keyboard or mouse on your gamepad. Map keyboard 'Arrows' or 'Keypad' on the D-pad.",
       {
          { "OFF", NULL },
@@ -768,19 +816,6 @@ struct retro_core_option_definition option_defs_us[] = {
          { NULL, NULL},
       },
       "OFF"
-   },
-   {
-      "np2kai_j2msuratio",
-      "J2M Mouse Cursor Speed up Ratio",
-      "(Mouse cursor accelerates faster by holding down a direction key.)",
-      {
-         { "x5", NULL },
-         { "x10", NULL },
-         { "x20", NULL },
-         { "up stop", NULL },
-         { NULL, NULL},
-      },
-      "x10"
    },
    {
       "np2kai_joynp2menu",
@@ -855,6 +890,31 @@ struct retro_core_option_definition option_defs_ja[] = {
          { NULL, NULL},
       },
       "2.4576 MHz"
+   },
+   {
+      "np2kai_cpu_feature",
+      "CPU仕様 (要リスタート)",
+      NULL,
+      {
+         { "(custom)", NULL },
+         { "Intel 80386", NULL },
+         { "Intel i486SX", NULL },
+         { "Intel i486DX", NULL },
+         { "Intel Pentium", NULL },
+         { "Intel MMX Pentium", NULL },
+         { "Intel Pentium Pro", NULL },
+         { "Intel Pentium II", NULL },
+         { "Intel Pentium III", NULL },
+         { "Intel Pentium M", NULL },
+         { "Intel Pentium 4", NULL },
+         { "AMD K6-2", NULL },
+         { "AMD K6-III", NULL },
+         { "AMD K7 Athlon", NULL },
+         { "AMD K7 Athlon XP", NULL },
+         { "Neko Processor II", NULL },
+         { NULL, NULL},
+      },
+      "Intel 80386"
    },
    {
       "np2kai_clk_mult",
@@ -994,24 +1054,35 @@ struct retro_core_option_definition option_defs_ja[] = {
       {
          { "PC9801-14", NULL },
          { "PC9801-86", NULL },
-         { "PC9801-86 + 118", NULL },
+         { "PC9801-86 + 118(B460)", NULL },
          { "PC9801-86 + Mate-X PCM(B460)", NULL },
          { "PC9801-86 + Chibi-oto", NULL },
          { "PC9801-86 + Speak Board", NULL },
          { "PC9801-26K", NULL },
          { "PC9801-26K + 86", NULL },
          { "PC9801-118", NULL },
-         { "Mate-X PCM(B460)", NULL },
+         { "Mate-X PCM", NULL },
          { "Chibi-oto", NULL },
          { "Speak Board", NULL },
          { "Spark Board", NULL },
          { "Sound Orchestra", NULL },
          { "Sound Orchestra-V", NULL },
+         { "Little Orchestra L", NULL },
+         { "Multimedia Orchestra", NULL },
+#if defined(SUPPORT_SOUND_SB16)
          { "Sound Blaster 16", NULL },
+         { "PC9801-86 + Sound Blaster 16", NULL },
+         { "Mate-X PCM + Sound Blaster 16", NULL },
+         { "PC9801-118 + Sound Blaster 16", NULL },
+         { "PC9801-86 + Mate-X PCM(B460) + Sound Blaster 16", NULL },
+         { "PC9801-86 + 118(B460) + Sound Blaster 16", NULL },
+#endif
          { "AMD-98", NULL },
          { "WaveStar", NULL },
+#if defined(SUPPORT_PX)
          { "Otomi-chanx2", NULL },
          { "Otomi-chanx2 + 86", NULL },
+#endif
          { "None", NULL },
          { NULL, NULL},
       },
@@ -1528,7 +1599,7 @@ struct retro_core_option_definition option_defs_ja[] = {
    },
    {
       "np2kai_stick2mouse",
-      "Joypad（アナログスティック）->マウス マッピング",
+      "S2M(ジョイパッド アナログスティック->マウス マッピング",
       "ジョイパッドのアナログスティックをマウスに割り当てる。",
       {
          { "OFF", NULL },
@@ -1539,8 +1610,20 @@ struct retro_core_option_definition option_defs_ja[] = {
       "R-stick"
    },
    {
+      "np2kai_stick2mouse_shift",
+      "S2M クリックシフトボタン マッピング",
+      "スティック押し込みを左→右クリックにシフトするボタンを割り当てる。",
+      {
+         { "OFF", NULL },
+         { "R1", NULL },
+         { "R2", NULL },
+         { NULL, NULL},
+      },
+      "R1"
+   },
+   {
       "np2kai_joy2mousekey",
-      "Joypad（デジタルボタン）->マウス/キーボード マッピング",
+      "J2M/J2K（ジョイパッド デジタルボタン->マウス/キーボード） マッピング",
       "ジョイパッドのデジタルボタンをキーボードやマウスの操作に割り当てる。",
       {
          { "OFF", NULL },
@@ -1551,19 +1634,6 @@ struct retro_core_option_definition option_defs_ja[] = {
          { NULL, NULL},
       },
       "OFF"
-   },
-   {
-      "np2kai_j2msuratio",
-      "J2M時のマウスカーソルスピード上昇率",
-      "（マウスカーソルは方向ボタンを押し続けることで加速度的に速くなる。）",
-      {
-         { "x5", NULL },
-         { "x10", NULL },
-         { "x20", NULL },
-         { "up stop", NULL },
-         { NULL, NULL},
-      },
-      "x10"
    },
    {
       "np2kai_joynp2menu",

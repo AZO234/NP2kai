@@ -34,6 +34,7 @@
 #define IDD_SNDSB16                     162
 #define IDD_SMPU98                      163
 #define IDD_ABOUT                       171
+#define IDD_BMS                         172
 #define IDD_LGY98                       180
 #define IDD_NETWORK                     181
 #define IDD_GD5430                      190
@@ -164,6 +165,7 @@
 #define IDC_COM1STR31                   14125
 #define IDC_COM1PIPENAME                14126
 #define IDC_COM1PIPESERV                14127
+#define IDC_COM1STR32                   14128
 #define IDC_PC9861E                     14201
 #define IDC_CH1SPEED                    14202
 #define IDC_CH1INT                      14203
@@ -276,6 +278,10 @@
 #define IDC_MORE                        17103
 #define IDC_NP2INFO                     17104
 #define IDC_NP2STR                      17105
+#define IDC_BMSIO                       17209
+#define IDC_BMS                         17210
+#define IDC_BMSIOBANK                   17210
+#define IDC_BMSBANKS                    17211
 #define IDC_TOOL_HDDACC                 18001
 #define IDC_TOOL_FDD1ACC                18002
 #define IDC_TOOL_FDD1LIST               18003
@@ -534,6 +540,7 @@
 #define IDS_CPU_AMD_K7_ATHLON           32037
 #define IDS_CPU_AMD_K7_ATHLONXP         32038
 #define IDS_CPU_80286					32040
+#define IDS_CPU_80386                   32041
 #define IDS_CPU_NEKOPRO                 32049
 #define IDS_RENDERER_DIRECTDRAW         32100
 #define IDS_RENDERER_DIRECT3D           32101
@@ -701,9 +708,16 @@
 #define IDM_PC9801_86_WSS               40657
 #define IDM_MATE_X_PCM                  40658
 #define IDM_SB16                        40659
+#define IDM_LITTLEORCHESTRAL            40810
+#define IDM_MMORCHESTRA                 40811
 #define IDM_PC9801_86_118               49650
 #define IDM_86SPEAKBOARD                49651
 #define IDM_WAVESTAR                    49652
+#define IDM_PC9801_118_SB16             49655
+#define IDM_PC9801_86_118_SB16			49656
+#define IDM_PC9801_86_WSS_SB16          49657
+#define IDM_WSS_SB16					49658
+#define IDM_PC9801_86_SB16              49659
 #define IDM_MEM640                      40661
 #define IDM_MEM16                       40662
 #define IDM_MEM36                       40663
@@ -747,6 +761,7 @@
 #define IDM_JOYX                        40707
 #define IDM_RAPID                       40708
 #define IDM_MSRAPID                     40709
+#define IDM_SSTP                        40710
 #define IDM_CPUSAVE                     40711
 #define IDM_HELP                        40712
 #define IDM_ABOUT                       40713
@@ -758,6 +773,8 @@
 #define IDM_ALTENTER                    40721
 #define IDM_ALTF4                       40722
 #define IDM_SYSKHOOK                    40729
+#define IDM_HF_ENABLE                   40730
+#define IDM_HF_ADDITIONAL               40731
 #define IDM_IDEOPT                      40800
 #define IDM_CLOSE                       41001
 #define IDM_TOOL_SKIN                   41101
@@ -767,6 +784,7 @@
 #define IDM_TOOL_SKINMRU1               41152
 #define IDM_TOOL_SKINMRU2               41153
 #define IDM_TOOL_SKINMRU3               41154
+#define IDM_BMS                         41155
 #define IDM_KDISPFM                     42001
 #define IDM_KDISPMIDI                   42002
 #define IDM_VIEWWINNEW                  43001

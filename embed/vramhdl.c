@@ -99,12 +99,12 @@ void vram_zerofill(VRAMHDL hdl, const RECT_T *rect) {
 			}
 		}
 		else {
-			pos = np2max(rect->left, 0);
+			pos = MAX(rect->left, 0);
 			ptr = pos;
-			width = np2min(rect->right, hdl->width) - pos;
-			pos = np2max(rect->top, 0);
+			width = MIN(rect->right, hdl->width) - pos;
+			pos = MAX(rect->top, 0);
 			ptr += pos * hdl->width;
-			height = np2min(rect->bottom, hdl->height) - pos;
+			height = MIN(rect->bottom, hdl->height) - pos;
 			if ((width > 0) && (height > 0)) {
 				p = hdl->ptr;
 				p += ptr * hdl->xalign;
@@ -201,12 +201,12 @@ void vram_fill(VRAMHDL hdl, const RECT_T *rect, UINT32 color, UINT8 alpha) {
 		}
 	}
 	else {
-		pos = np2max(rect->left, 0);
+		pos = MAX(rect->left, 0);
 		ptr = pos;
-		width = np2min(rect->right, hdl->width) - pos;
-		pos = np2max(rect->top, 0);
+		width = MIN(rect->right, hdl->width) - pos;
+		pos = MAX(rect->top, 0);
 		ptr += pos * hdl->width;
-		height = np2min(rect->bottom, hdl->height) - pos;
+		height = MIN(rect->bottom, hdl->height) - pos;
 		if ((width > 0) && (height > 0)) {
 			p = hdl->ptr;
 			p += ptr * hdl->xalign;
@@ -358,12 +358,12 @@ void vram_filldat(VRAMHDL hdl, const RECT_T *rect, UINT32 color) {
 		}
 	}
 	else {
-		pos = np2max(rect->left, 0);
+		pos = MAX(rect->left, 0);
 		ptr = pos;
-		width = np2min(rect->right, hdl->width) - pos;
-		pos = np2max(rect->top, 0);
+		width = MIN(rect->right, hdl->width) - pos;
+		pos = MAX(rect->top, 0);
 		ptr += pos * hdl->width;
-		height = np2min(rect->bottom, hdl->height) - pos;
+		height = MIN(rect->bottom, hdl->height) - pos;
 		if ((width > 0) && (height > 0)) {
 			p = hdl->ptr;
 			p += ptr * hdl->xalign;
@@ -454,12 +454,12 @@ void vram_fillalpha(VRAMHDL hdl, const RECT_T *rect, UINT8 alpha) {
 		FillMemory(hdl->alpha, hdl->scrnsize, alpha);
 	}
 	else {
-		pos = np2max(rect->left, 0);
+		pos = MAX(rect->left, 0);
 		ptr = pos;
-		width = np2min(rect->right, hdl->width) - pos;
-		pos = np2max(rect->top, 0);
+		width = MIN(rect->right, hdl->width) - pos;
+		pos = MAX(rect->top, 0);
 		ptr += pos * hdl->width;
-		height = np2min(rect->bottom, hdl->height) - pos;
+		height = MIN(rect->bottom, hdl->height) - pos;
 		if ((width > 0) && (height > 0)) {
 			p = hdl->alpha + ptr;
 			remain = height;
@@ -547,12 +547,12 @@ void vram_fillex(VRAMHDL hdl, const RECT_T *rect, UINT32 color, UINT8 alpha) {
 		}
 	}
 	else {
-		pos = np2max(rect->left, 0);
+		pos = MAX(rect->left, 0);
 		ptr = pos;
-		width = np2min(rect->right, hdl->width) - pos;
-		pos = np2max(rect->top, 0);
+		width = MIN(rect->right, hdl->width) - pos;
+		pos = MAX(rect->top, 0);
 		ptr += pos * hdl->width;
-		height = np2min(rect->bottom, hdl->height) - pos;
+		height = MIN(rect->bottom, hdl->height) - pos;
 		if ((width > 0) && (height > 0)) {
 			p = hdl->ptr;
 			p += ptr * hdl->xalign;
@@ -720,10 +720,10 @@ BRESULT vram_cliprect(RECT_T *clip, const VRAMHDL vram, const RECT_T *rct) {
 		(rct->left >= vram->width) || (rct->top >= vram->height)) {
 		return(FAILURE);
 	}
-	clip->left = np2max(rct->left, 0);
-	clip->top = np2max(rct->top, 0);
-	clip->right = np2min(rct->right, vram->width);
-	clip->bottom = np2min(rct->bottom, vram->height);
+	clip->left = MAX(rct->left, 0);
+	clip->top = MAX(rct->top, 0);
+	clip->right = MIN(rct->right, vram->width);
+	clip->bottom = MIN(rct->bottom, vram->height);
 	if ((clip->top >= clip->bottom) || (clip->left >= clip->right)) {
 		return(FAILURE);
 	}
@@ -739,10 +739,10 @@ BRESULT vram_cliprectex(RECT_T *clip, const VRAMHDL vram, const RECT_T *rct) {
 	if (rct == NULL) {
 		return(SUCCESS);
 	}
-	clip->left = np2max(clip->left, rct->left);
-	clip->top = np2max(clip->top, rct->top);
-	clip->right = np2min(clip->right, rct->right);
-	clip->bottom = np2min(clip->bottom, rct->bottom);
+	clip->left = MAX(clip->left, rct->left);
+	clip->top = MAX(clip->top, rct->top);
+	clip->right = MIN(clip->right, rct->right);
+	clip->bottom = MIN(clip->bottom, rct->bottom);
 	if ((clip->left >= clip->right) || (clip->top >= clip->bottom)) {
 		return(FAILURE);
 	}

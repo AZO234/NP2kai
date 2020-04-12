@@ -32,45 +32,61 @@
     <RootNamespace>np21vs2019</RootNamespace>
     <ProjectName>np21kaiw</ProjectName>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <NP2kaiCommonDefines>NP2_WIN;_CRT_SECURE_NO_WARNINGS;</NP2kaiCommonDefines>
+    <NP2kaiDebugDefines>_DEBUG;DEBUG;TRACE;</NP2kaiDebugDefines>
+    <NP2kaiNDebugDefines>_NDEBUG;NDEBUG;</NP2kaiNDebugDefines>
+    <NP2kaiDefines>ALLOW_MULTIRUN;BIOS_IO_EMULATION;HOOK_SYSKEY;MT32SOUND_DLL;NP2_THREAD_WIN;OSLANG_UTF8;OSLINEBREAK_CRLF;SOUND_CRITICAL;SOUNDRESERVE=20;SUPPORT_16BPP;SUPPORT_24BPP;SUPPORT_32BPP;SUPPORT_8BPP;SUPPORT_ARC;SUPPORT_ASIO;SUPPORT_ASYNC_CPU;SUPPORT_CL_GD5430;SUPPORT_CRT15KHZ;SUPPORT_DCLOCK;SUPPORT_FAST_MEMORYCHECK;SUPPORT_FMGEN;SUPPORT_GPIB;SUPPORT_HOSTDRV;SUPPORT_HRTIMER;SUPPORT_IDEIO;SUPPORT_KAI_IMAGES;SUPPORT_KEYDISP;SUPPORT_LARGE_HDD;SUPPORT_LGY98;SUPPORT_NAMED_PIPE;SUPPORT_NET;SUPPORT_NP2_THREAD;SUPPORT_NORMALDISP;SUPPORT_NVL_IMAGES;SUPPORT_PC9861K;SUPPORT_PHYSICAL_CDDRV;SUPPORT_PX;SUPPORT_RECVIDEO;SUPPORT_RESUME;SUPPORT_ROMEO;SUPPORT_RS232C_FIFO;SUPPORT_S98;SUPPORT_SCRN_DIRECT3D;SUPPORT_SCSI;SUPPORT_SMPU98;SUPPORT_SOFTKBD=0;SUPPORT_SOUND_SB16;SUPPORT_SWSEEKSND;SUPPORT_SWWABRLYSND;SUPPORT_SJIS;SUPPORT_STATSAVE=10;SUPPORT_UTF8;SUPPORT_V30EXT;SUPPORT_V30ORIGINAL;SUPPORT_VPCVHD;SUPPORT_WAB;SUPPORT_WACOM_TABLET;SUPPORT_WAVEREC;USE_MAME;VAEG_FIX;VERMOUTH_LIB;</NP2kaiDefines>
+    <!-- SUPPORT_BMS SUPPORT_SASI SUPPORT_VSTi -->
+    <NP2kaiDefines32>_WIN32;SUPPORT_WIN2000HOST;</NP2kaiDefines32>
+    <NP2kaiDefines64>_WIN64;</NP2kaiDefines64>
+    <NP21kaiDefines>CPUCORE_IA32;IA32_PAGING_EACHSIZE;IA32_REBOOT_ON_PANIC;SUPPORT_CRT31KHZ;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GAMEPORT;SUPPORT_MEMDBG32;SUPPORT_LARGE_MEMORY;SUPPORT_PC9801_119;SUPPORT_PC9821;SUPPORT_PCI;SUPPORT_PEGC;SUPPORT_SOUND_SB16;SUPPORT_VGA_MODEX;USE_3DNOW;USE_FASTPAGING;USE_FPU;USE_MMX;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_VME;</NP21kaiDefines>
+    <NP21kaiHAXMDefines>SUPPORT_IA32_HAXM;USE_CUSTOM_HOOKINST;</NP21kaiHAXMDefines>
+    <NP2kaiCommonInludes>.\;.\misc;.\x86;..\;..\common;..\fdd;..\mem;..\io;..\io\pci;..\cbus;..\network;..\vram;..\sound;..\wab;..\generic;</NP2kaiCommonInludes>
+    <!-- \VST_SDK -->
+    <NP2kaiInludes>..\i286c;</NP2kaiInludes>
+    <NP21kaiInludes>..\i386c;</NP21kaiInludes>
+    <!-- \VST_SDK -->
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -101,18 +117,21 @@
     <OutDir>..\bin\$(SolutionName)\$(PlatformName)\$(Configuration)\</OutDir>
     <IntDir>..\obj\$(SolutionName)\$(PlatformName)\$(Configuration)\$(ProjectName)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <TargetName>$(ProjectName)_i386</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\bin\$(SolutionName)\$(PlatformName)\$(Configuration)\</OutDir>
     <IntDir>..\obj\$(SolutionName)\$(PlatformName)\$(Configuration)\$(ProjectName)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <TargetName>$(ProjectName)_x86_64</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\bin\$(SolutionName)\$(PlatformName)\$(Configuration)\</OutDir>
     <IntDir>..\obj\$(SolutionName)\$(PlatformName)\$(Configuration)\$(ProjectName)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <TargetName>$(ProjectName)_i386</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -120,19 +139,20 @@
     <IntDir>..\obj\$(SolutionName)\$(PlatformName)\$(Configuration)\$(ProjectName)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <TargetName>$(ProjectName)_x86_64</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\bin\$(SolutionName)\$(PlatformName)\$(Configuration)\</OutDir>
     <IntDir>..\obj\$(SolutionName)\$(PlatformName)\$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>H:\WinDDK\7600.16385.1\inc;$(IncludePath)</IncludePath>
+    <TargetName>$(ProjectName)_i386_HAXM</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">
+    <LinkIncremental>false</LinkIncremental>
     <OutDir>..\bin\$(SolutionName)\$(PlatformName)\$(Configuration)\</OutDir>
     <IntDir>..\obj\$(SolutionName)\$(PlatformName)\$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>H:\WinDDK\7600.16385.1\inc;$(IncludePath)</IncludePath>
-    <LinkIncremental>false</LinkIncremental>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <TargetName>$(ProjectName)_x86_64_HAXM</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -140,9 +160,9 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>NP2_WIN;WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NP2_WIN;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LARGE_MEMORY;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;SUPPORT_VGA_MODEX;SUPPORT_GPIB;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;TRACE;SUPPORT_NP2_THREAD;NP2_THREAD_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\x86;..\;..\common;..\fdd;..\i386c;..\mem;..\io;..\io\pci;..\cbus;..\network;..\vram;..\sound;..\wab;..\generic;..\zlib;\VST_SDK</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines32);$(NP2kaiDebugDefines);$(NP2kaiDefines);$(NP21kaiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(NP2kaiCommonInludes);$(NP21kaiInludes);</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4828</DisableSpecificWarnings>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
@@ -151,13 +171,14 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <DelayLoadDLLs>d3d9.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
-    <NASM>
-      <AdditionalOptions>-I.\x86\ -I..\i386c\x86\ -I..\io\x86\ %(AdditionalOptions)</AdditionalOptions>
-    </NASM>
     <ResourceCompile>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;SUPPORT_PC9821;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
+    <PreBuildEvent>
+      <Command>powershell.exe -ExecutionPolicy RemoteSigned -File "$(SolutionDir)\version_info.ps1" server "$(ProjectDir)\" "$(SolutionDir)\"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -165,9 +186,9 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>NP2_WIN;WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NP2_WIN;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LARGE_MEMORY;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_GPIB;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;SUPPORT_VGA_MODEX;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;TRACE;SUPPORT_NP2_THREAD;NP2_THREAD_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\x64;..\;..\common;..\fdd;..\i386c;..\mem;..\io;..\io\pci;..\cbus;..\network;..\vram;..\sound;..\wab;..\generic;..\zlib;\VST_SDK</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines64);$(NP2kaiDebugDefines);$(NP2kaiDefines);$(NP21kaiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(NP2kaiCommonInludes);$(NP21kaiInludes);</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4828</DisableSpecificWarnings>
       <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -177,15 +198,12 @@
       <LargeAddressAware>false</LargeAddressAware>
       <DelayLoadDLLs>d3d9.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
-    <NASM>
-      <AdditionalOptions>-I.\x86\ -I..\i386c\x86\ -I..\io\x86\ %(AdditionalOptions)</AdditionalOptions>
-    </NASM>
-    <YASM>
-      <AdditionalOptions>-I.\x64\ -I..\i386c\x64\ -I..\io\x64\ %(AdditionalOptions)</AdditionalOptions>
-    </YASM>
     <ResourceCompile>
-      <PreprocessorDefinitions>_WIN64;_UNICODE;UNICODE;SUPPORT_PC9821;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
+    <PreBuildEvent>
+      <Command>powershell.exe -ExecutionPolicy RemoteSigned -File "$(SolutionDir)\version_info.ps1" server "$(ProjectDir)\" "$(SolutionDir)\"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -195,9 +213,9 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NP2_WIN;WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NP2_WIN;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LARGE_MEMORY;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_GPIB;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;SUPPORT_VGA_MODEX;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;SUPPORT_NP2_THREAD;NP2_THREAD_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\x86;..\;..\common;..\fdd;..\i386c;..\mem;..\io;..\io\pci;..\cbus;..\network;..\vram;..\sound;..\wab;..\generic;..\zlib;\VST_SDK</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines32);$(NP2kaiNDebugDefines);$(NP2kaiDefines);$(NP21kaiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(NP2kaiCommonInludes);$(NP21kaiInludes);</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4828</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
@@ -212,13 +230,14 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <DelayLoadDLLs>d3d9.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
-    <NASM>
-      <AdditionalOptions>-I.\x86\ -I..\i386c\x86\ -I..\io\x86\ %(AdditionalOptions)</AdditionalOptions>
-    </NASM>
     <ResourceCompile>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;SUPPORT_PC9821;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
+    <PreBuildEvent>
+      <Command>powershell.exe -ExecutionPolicy RemoteSigned -File "$(SolutionDir)\version_info.ps1" server "$(ProjectDir)\" "$(SolutionDir)\"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -228,9 +247,9 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NP2_WIN;WIN32;NDEBUG;_CRTDBG_MAP_ALLOC;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NP2_WIN;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_NET;SUPPORT_LARGE_MEMORY;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_GPIB;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;SUPPORT_VGA_MODEX;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;SUPPORT_NP2_THREAD;NP2_THREAD_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\x64;..\;..\common;..\fdd;..\i386c;..\mem;..\io;..\io\pci;..\cbus;..\network;..\vram;..\sound;..\wab;..\generic;..\zlib;\VST_SDK</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines64);$(NP2kaiNDebugDefines);$(NP2kaiDefines);$(NP21kaiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(NP2kaiCommonInludes);$(NP21kaiInludes);</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4828</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -249,18 +268,15 @@
       <DelayLoadDLLs>d3d9.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
-    <NASM>
-      <AdditionalOptions>-I.\x86\ -I..\i386c\x86\ -I..\io\x86\ %(AdditionalOptions)</AdditionalOptions>
-    </NASM>
-    <YASM>
-      <AdditionalOptions>-I.\x64\ -I..\i386c\x64\ -I..\io\x64\ %(AdditionalOptions)</AdditionalOptions>
-    </YASM>
     <ResourceCompile>
-      <PreprocessorDefinitions>_WIN64;_UNICODE;UNICODE;SUPPORT_PC9821;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <EnableDPIAwareness>true</EnableDPIAwareness>
     </Manifest>
+    <PreBuildEvent>
+      <Command>powershell.exe -ExecutionPolicy RemoteSigned -File "$(SolutionDir)\version_info.ps1" server "$(ProjectDir)\" "$(SolutionDir)\"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">
     <ClCompile>
@@ -269,9 +285,9 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NP2_WIN;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_LARGE_MEMORY;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_PHYSICAL_CDDRV;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;SUPPORT_VGA_MODEX;SUPPORT_IA32_HAXM;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\x86;..\;..\common;..\i386c;..\mem;..\io;..\cbus;..\vram;..\sound;..\generic;..\zlib</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines32);$(NP2kaiNDebugDefines);$(NP2kaiDefines);$(NP21kaiDefines);$(NP21kaiHAXMDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(NP2kaiCommonInludes);$(NP21kaiInludes);</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4828</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
@@ -280,6 +296,7 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <WarningLevel>Level3</WarningLevel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -289,12 +306,12 @@
       <DelayLoadDLLs>d3d9.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
-    <NASM>
-      <AdditionalOptions>-I.\x86\ -I..\i386c\x86\ -I..\io\x86\ %(AdditionalOptions)</AdditionalOptions>
-    </NASM>
     <ResourceCompile>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;SUPPORT_PC9821;NP2_WIN;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_LARGE_MEMORY;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_PHYSICAL_CDDRV;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;SUPPORT_VGA_MODEX;SUPPORT_IA32_HAXM;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
+    <PreBuildEvent>
+      <Command>powershell.exe -ExecutionPolicy RemoteSigned -File "$(SolutionDir)\version_info.ps1" server "$(ProjectDir)\" "$(SolutionDir)\"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">
     <ClCompile>
@@ -303,17 +320,18 @@
       </PrecompiledHeader>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CRTDBG_MAP_ALLOC;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NP2_WIN;SUPPORT_PC9821;SUPPORT_IDEIO;SUPPORT_LARGE_HDD;SUPPORT_LARGE_MEMORY;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_PHYSICAL_CDDRV;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;SUPPORT_VGA_MODEX;SUPPORT_IA32_HAXM;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;.\x64;..\;..\common;..\i386c;..\mem;..\io;..\cbus;..\vram;..\sound;..\generic;..\zlib</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines64);$(NP2kaiNDebugDefines);$(NP2kaiDefines);$(NP21kaiDefines);$(NP21kaiHAXMDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(NP2kaiCommonInludes);$(NP21kaiInludes);</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4828</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>None</DebugInformationFormat>
       <FloatingPointExceptions>false</FloatingPointExceptions>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -324,18 +342,15 @@
       <DelayLoadDLLs>d3d9.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
-    <NASM>
-      <AdditionalOptions>-I.\x86\ -I..\i386c\x86\ -I..\io\x86\ %(AdditionalOptions)</AdditionalOptions>
-    </NASM>
-    <YASM>
-      <AdditionalOptions>-I.\x64\ -I..\i386c\x64\ -I..\io\x64\ %(AdditionalOptions)</AdditionalOptions>
-    </YASM>
     <ResourceCompile>
-      <PreprocessorDefinitions>_WIN64;_UNICODE;UNICODE;SUPPORT_PC9821;SUPPORT_IDEIO;NP2_WIN;SUPPORT_LARGE_HDD;SUPPORT_LARGE_MEMORY;SUPPORT_NET;SUPPORT_LGY98;SUPPORT_WAB;SUPPORT_CL_GD5430;SUPPORT_HRTIMER;SUPPORT_VPCVHD;SUPPORT_KAI_IMAGES;SUPPORT_NVL_IMAGES;SUPPORT_PHYSICAL_CDDRV;SUPPORT_FMGEN;SUPPORT_SOUND_SB16;SUPPORT_FPU_DOSBOX;SUPPORT_FPU_DOSBOX2;SUPPORT_FPU_SOFTFLOAT;SUPPORT_GPIB;SUPPORT_PCI;SUPPORT_SCRN_DIRECT3D;SUPPORT_FAST_MEMORYCHECK;SUPPORT_PEGC;SUPPORT_ASYNC_CPU;SUPPORT_SMPU98;SUPPORT_WACOM_TABLET;SUPPORT_RS232C_FIFO;SUPPORT_NAMED_PIPE;SUPPORT_VGA_MODEX;SUPPORT_IA32_HAXM;HOOK_SYSKEY;ALLOW_MULTIRUN;USE_FPU;USE_MMX;USE_3DNOW;USE_SSE;USE_SSE2;USE_SSE3;USE_TSC;USE_MAME;USE_FASTPAGING;USE_VME;BIOS_IO_EMULATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <EnableDPIAwareness>true</EnableDPIAwareness>
     </Manifest>
+    <PreBuildEvent>
+      <Command>powershell.exe -ExecutionPolicy RemoteSigned -File "$(SolutionDir)\version_info.ps1" server "$(ProjectDir)\" "$(SolutionDir)\"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\bios\bios.c" />
@@ -357,6 +372,8 @@
     <ClCompile Include="..\cbus\board14.c" />
     <ClCompile Include="..\cbus\board26k.c" />
     <ClCompile Include="..\cbus\board86.c" />
+    <ClCompile Include="..\cbus\boardlol.c" />
+    <ClCompile Include="..\cbus\boardmo.c" />
     <ClCompile Include="..\cbus\boardpx.c" />
     <ClCompile Include="..\cbus\boardsb16.c" />
     <ClCompile Include="..\cbus\boardso.c" />
@@ -375,22 +392,20 @@
     <ClCompile Include="..\cbus\scsicmd.c" />
     <ClCompile Include="..\cbus\scsiio.c" />
     <ClCompile Include="..\cbus\smpu98.c" />
+    <ClCompile Include="..\codecnv\jisucs2.c" />
     <ClCompile Include="..\codecnv\tcswap16.c" />
+    <ClCompile Include="..\codecnv\ucs2sjis.c" />
+    <ClCompile Include="..\codecnv\ucs2ucs4.c" />
     <ClCompile Include="..\codecnv\ucs2utf8.c" />
+    <ClCompile Include="..\codecnv\ucs4ucs2.c" />
+    <ClCompile Include="..\codecnv\ucs4utf8.c" />
     <ClCompile Include="..\codecnv\utf8ucs2.c" />
-    <ClCompile Include="..\common\arc.c" />
-    <ClCompile Include="..\common\arcunzip.c" />
+    <ClCompile Include="..\codecnv\utf8ucs4.c" />
     <ClCompile Include="..\common\bmpdata.c" />
     <ClCompile Include="..\common\lstarray.c" />
     <ClCompile Include="..\common\milstr.c" />
     <ClCompile Include="..\common\mimpidef.c" />
-    <ClCompile Include="..\common\parts.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="..\common\parts.c" />
     <ClCompile Include="..\common\profile.c" />
     <ClCompile Include="..\common\rect.c" />
     <ClCompile Include="..\common\resize.c" />
@@ -405,6 +420,7 @@
     <ClCompile Include="..\diskimage\cd\cdd_iso.c" />
     <ClCompile Include="..\diskimage\cd\cdd_mds.c" />
     <ClCompile Include="..\diskimage\cd\cdd_nrg.c" />
+    <ClCompile Include="..\diskimage\cd\cdd_real.c" />
     <ClCompile Include="..\diskimage\fddfile.c" />
     <ClCompile Include="..\diskimage\fd\fdd_bkdsk.c" />
     <ClCompile Include="..\diskimage\fd\fdd_d88.c" />
@@ -827,6 +843,8 @@
     <ClCompile Include="..\io\nmiio.c" />
     <ClCompile Include="..\io\np2sysp.c" />
     <ClCompile Include="..\io\pcidev.c" />
+    <ClCompile Include="..\io\pci\98graphbridge.c" />
+    <ClCompile Include="..\io\pci\cbusbridge.c" />
     <ClCompile Include="..\io\pegc.c" />
     <ClCompile Include="..\io\pic.c" />
     <ClCompile Include="..\io\pit.c" />
@@ -834,8 +852,6 @@
     <ClCompile Include="..\io\serial.c" />
     <ClCompile Include="..\io\sysport.c" />
     <ClCompile Include="..\io\upd4990.c" />
-    <ClCompile Include="..\io\pci\98graphbridge.c" />
-    <ClCompile Include="..\io\pci\cbusbridge.c" />
     <ClCompile Include="..\keystat.c" />
     <ClCompile Include="..\lio\gcircle.c" />
     <ClCompile Include="..\lio\gline.c" />
@@ -885,11 +901,7 @@
     <ClCompile Include="..\sound\oplgenc.c" />
     <ClCompile Include="..\sound\oplgeng.c" />
     <ClCompile Include="..\sound\opngenc.c" />
-    <ClCompile Include="..\sound\opngeng.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="..\sound\opngeng.c" />
     <ClCompile Include="..\sound\opntimer.c" />
     <ClCompile Include="..\sound\pcm86c.c" />
     <ClCompile Include="..\sound\pcm86g.c" />
@@ -914,12 +926,7 @@
     <ClCompile Include="..\trap\steptrap.c" />
     <ClCompile Include="..\vram\dispsync.c" />
     <ClCompile Include="..\vram\makegrex.c" />
-    <ClCompile Include="..\vram\makegrph.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="..\vram\makegrph.c" />
     <ClCompile Include="..\vram\maketext.c" />
     <ClCompile Include="..\vram\maketgrp.c" />
     <ClCompile Include="..\vram\palettes.c" />
@@ -933,12 +940,6 @@
     </ClCompile>
     <ClCompile Include="..\wab\wab.c" />
     <ClCompile Include="..\wab\wab_rly.c" />
-    <ClCompile Include="..\zlib\adler32.c" />
-    <ClCompile Include="..\zlib\crc32.c" />
-    <ClCompile Include="..\zlib\inffast.c" />
-    <ClCompile Include="..\zlib\inflate.c" />
-    <ClCompile Include="..\zlib\inftrees.c" />
-    <ClCompile Include="..\zlib\zutil.c" />
     <ClCompile Include="commng.cpp" />
     <ClCompile Include="commng\cmbase.cpp" />
     <ClCompile Include="commng\cmmidi.cpp" />
@@ -1019,6 +1020,7 @@
     <ClCompile Include="dialog\d_txt.cpp" />
     <ClCompile Include="dialog\d_wab.cpp" />
     <ClCompile Include="dialog\np2class.cpp" />
+    <ClCompile Include="dialog\winfiledlg.c" />
     <ClCompile Include="dosio.cpp" />
     <ClCompile Include="ext\c86ctl\c86ctlif.cpp" />
     <ClCompile Include="ext\externalchipmanager.cpp" />
@@ -1056,6 +1058,8 @@
     <ClCompile Include="soundmng\sdasio.cpp" />
     <ClCompile Include="soundmng\sddsound3.cpp" />
     <ClCompile Include="soundmng\sdwasapi.cpp" />
+    <ClCompile Include="sstp.cpp" />
+    <ClCompile Include="sstpmsg.cpp" />
     <ClCompile Include="subwnd\dclock.cpp" />
     <ClCompile Include="subwnd\dd2.cpp" />
     <ClCompile Include="subwnd\kdispwnd.cpp" />
@@ -1082,6 +1086,8 @@
     <ClInclude Include="..\cbus\board14.h" />
     <ClInclude Include="..\cbus\board26k.h" />
     <ClInclude Include="..\cbus\board86.h" />
+    <ClInclude Include="..\cbus\boardlol.h" />
+    <ClInclude Include="..\cbus\boardmo.h" />
     <ClInclude Include="..\cbus\boardpx.h" />
     <ClInclude Include="..\cbus\boardsb16.h" />
     <ClInclude Include="..\cbus\boardso.h" />
@@ -1102,8 +1108,6 @@
     <ClInclude Include="..\cbus\smpu98.h" />
     <ClInclude Include="..\codecnv\codecnv.h" />
     <ClInclude Include="..\common.h" />
-    <ClInclude Include="..\common\arc.h" />
-    <ClInclude Include="..\common\arcunzip.h" />
     <ClInclude Include="..\common\bmpdata.h" />
     <ClInclude Include="..\common\lstarray.h" />
     <ClInclude Include="..\common\milstr.h" />
@@ -1123,6 +1127,7 @@
     <ClInclude Include="..\diskimage\cd\cdd_iso.h" />
     <ClInclude Include="..\diskimage\cd\cdd_mds.h" />
     <ClInclude Include="..\diskimage\cd\cdd_nrg.h" />
+    <ClInclude Include="..\diskimage\cd\cdd_real.h" />
     <ClInclude Include="..\diskimage\fddfile.h" />
     <ClInclude Include="..\diskimage\fd\fdd_bkdsk.h" />
     <ClInclude Include="..\diskimage\fd\fdd_d88.h" />
@@ -1221,14 +1226,15 @@
     <ClInclude Include="..\io\nmiio.h" />
     <ClInclude Include="..\io\np2sysp.h" />
     <ClInclude Include="..\io\pcidev.h" />
+    <ClInclude Include="..\io\pci\98graphbridge.h" />
+    <ClInclude Include="..\io\pci\cbusbridge.h" />
+    <ClInclude Include="..\io\pegc.h" />
     <ClInclude Include="..\io\pic.h" />
     <ClInclude Include="..\io\pit.h" />
     <ClInclude Include="..\io\printif.h" />
     <ClInclude Include="..\io\serial.h" />
     <ClInclude Include="..\io\sysport.h" />
     <ClInclude Include="..\io\upd4990.h" />
-    <ClInclude Include="..\io\pci\98graphbridge.h" />
-    <ClInclude Include="..\io\pci\cbusbridge.h" />
     <ClInclude Include="..\keystat.h" />
     <ClInclude Include="..\lio\lio.h" />
     <ClInclude Include="..\mem\dmav30.h" />
@@ -1264,6 +1270,11 @@
     <ClInclude Include="..\sound\fmgen\fmgen_psg.h" />
     <ClInclude Include="..\sound\fmgen\fmgen_types.h" />
     <ClInclude Include="..\sound\getsnd\getsnd.h" />
+    <ClInclude Include="..\sound\mame\driver.h" />
+    <ClInclude Include="..\sound\mame\fm.h" />
+    <ClInclude Include="..\sound\mame\fmopl.h" />
+    <ClInclude Include="..\sound\mame\ymdeltat.h" />
+    <ClInclude Include="..\sound\mame\ymf262.h" />
     <ClInclude Include="..\sound\opl3.h" />
     <ClInclude Include="..\sound\oplgen.h" />
     <ClInclude Include="..\sound\oplgencfg.h" />
@@ -1308,14 +1319,6 @@
     <ClInclude Include="..\wab\wab.h" />
     <ClInclude Include="..\wab\wabbmpsave.h" />
     <ClInclude Include="..\wab\wab_rly.h" />
-    <ClInclude Include="..\zlib\crc32.h" />
-    <ClInclude Include="..\zlib\inffast.h" />
-    <ClInclude Include="..\zlib\inffixed.h" />
-    <ClInclude Include="..\zlib\inflate.h" />
-    <ClInclude Include="..\zlib\inftrees.h" />
-    <ClInclude Include="..\zlib\zconf.h" />
-    <ClInclude Include="..\zlib\zlib.h" />
-    <ClInclude Include="..\zlib\zutil.h" />
     <ClInclude Include="commng.h" />
     <ClInclude Include="commng\cmbase.h" />
     <ClInclude Include="commng\cmmidi.h" />
@@ -1389,6 +1392,7 @@
     <ClInclude Include="dialog\c_slidervalue.h" />
     <ClInclude Include="dialog\dialog.h" />
     <ClInclude Include="dialog\np2class.h" />
+    <ClInclude Include="dialog\winfiledlg.h" />
     <ClInclude Include="dosio.h" />
     <ClInclude Include="ext\c86ctl\c86ctl.h" />
     <ClInclude Include="ext\c86ctl\c86ctlif.h" />
@@ -1423,6 +1427,7 @@
     <ClInclude Include="mousemng.h" />
     <ClInclude Include="np2.h" />
     <ClInclude Include="np2arg.h" />
+    <ClInclude Include="np2_git_version.h" />
     <ClInclude Include="oemtext.h" />
     <ClInclude Include="recvideo.h" />
     <ClInclude Include="resource.h" />
@@ -1436,6 +1441,9 @@
     <ClInclude Include="soundmng\sdbase.h" />
     <ClInclude Include="soundmng\sddsound3.h" />
     <ClInclude Include="soundmng\sdwasapi.h" />
+    <ClInclude Include="sstp.h" />
+    <ClInclude Include="sstpmsg.h" />
+    <ClInclude Include="sstpres.h" />
     <ClInclude Include="subwnd\dclock.h" />
     <ClInclude Include="subwnd\dd2.h" />
     <ClInclude Include="subwnd\kdispwnd.h" />
@@ -1450,47 +1458,6 @@
     <ClInclude Include="winkbd.h" />
     <ClInclude Include="winloc.h" />
     <ClInclude Include="x86\cputype.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <NASM Include="x86\cputype.x86">
-      <FileType>Document</FileType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
-    </NASM>
-    <NASM Include="x86\makegrph.x86">
-      <FileType>Document</FileType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
-    </NASM>
-    <NASM Include="x86\opngeng.x86">
-      <FileType>Document</FileType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
-    </NASM>
-    <NASM Include="x86\parts.x86">
-      <FileType>Document</FileType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
-    </NASM>
-  </ItemGroup>
-  <ItemGroup>
-    <YASM Include="x64\makegrph.x64">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
-    </YASM>
-    <YASM Include="x64\parts.x64">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseHAXM|x64'">true</ExcludedFromBuild>
-    </YASM>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resources\932\np2.rc" />

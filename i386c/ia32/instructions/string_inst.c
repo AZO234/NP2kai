@@ -33,6 +33,7 @@
 #include "misc_inst.h"
 #endif
 
+extern int cpu_debug_rep_cont;
 
 /* movs */
 void

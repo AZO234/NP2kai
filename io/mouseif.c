@@ -10,6 +10,8 @@
 // 一部のゲームでマウスデータを切り捨てるので正常な動かなくなる事がある
 // それを救う為に 均等に移動データが伝わるようにしなければならない
 
+static int mouseif_limitcounter = 0;
+
 
 void mouseif_sync(void) {
 
@@ -120,6 +122,7 @@ static void setportc(REG8 value) {
 		mouseif.x = 0;
 		mouseif.latch_y = mouseif.y;
 		mouseif.y = 0;
+		mouseif_limitcounter = 4; // XXX: カウンタがオーバーフローしてマウスカーソルが暴走するのを回避。ただし、オーバーフロー前提の物があるのでオーバーフローしっぱなしならそのままの値を渡す。
 		if (mouseif.latch_x > 127) {
 			mouseif.latch_x = 127;
 		}
@@ -222,10 +225,13 @@ static REG8 IOINPCALL mouseif_i7fd9(UINT port) {
 		if (portc & 0x40) {
 			x = y;
 		}
-		if(x < -128) 
-			x = -128;
-		if(x > +127) 
-			x = +127;
+		if (mouseif_limitcounter > 0) {
+			if(x < -128) 
+				x = -128;
+			if(x > +127) 
+				x = +127;
+			mouseif_limitcounter--;
+		}
 		if (!(portc & 0x20)) {
 			ret |= x & 0x0f;
 		}

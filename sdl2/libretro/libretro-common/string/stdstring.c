@@ -1,4 +1,4 @@
-/* Copyright  (C) 2010-2018 The RetroArch team
+/* Copyright  (C) 2010-2020 The RetroArch team
  *
  * ---------------------------------------------------------------------------------------
  * The following license statement only applies to this file (stdstring.c).
@@ -25,6 +25,18 @@
 
 #include <string/stdstring.h>
 #include <encodings/utf.h>
+
+char *string_init(const char *src)
+{
+   return src ? strdup(src) : NULL;
+}
+
+void string_set(char **string, const char *src)
+{
+   free(*string);
+   *string = src ? strdup(src) : NULL;
+}
+
 
 char *string_to_upper(char *s)
 {

@@ -1,4 +1,4 @@
-/* Copyright  (C) 2010-2018 The RetroArch team
+/* Copyright  (C) 2010-2020 The RetroArch team
  *
  * ---------------------------------------------------------------------------------------
  * The following license statement only applies to this file (features_cpu.c).
@@ -37,6 +37,10 @@
 
 #if defined(_WIN32) && !defined(_XBOX)
 #include <windows.h>
+#endif
+
+#ifdef __PSL1GHT__
+#include <lv2/systime.h>
 #endif
 
 #if defined(__CELLOS_LV2__) || ( defined(__OpenBSD__) && defined(__powerpc__) )
@@ -181,7 +185,7 @@ retro_perf_tick_t cpu_features_get_perf_counter(void)
    time_ticks = (retro_perf_tick_t)a | ((retro_perf_tick_t)d << 32);
 #elif defined(__ARM_ARCH_6__)
    __asm__ volatile( "mrc p15, 0, %0, c9, c13, 0" : "=r"(time_ticks) );
-#elif defined(__CELLOS_LV2__) || defined(_XBOX360) || defined(__powerpc__) || defined(__ppc__) || defined(__POWERPC__)
+#elif defined(__CELLOS_LV2__) || defined(_XBOX360) || defined(__powerpc__) || defined(__ppc__) || defined(__POWERPC__) || defined(__PSL1GHT__)
    time_ticks = __mftb();
 #elif defined(GEKKO)
    time_ticks = gettime();
@@ -225,7 +229,9 @@ retro_time_t cpu_features_get_time_usec(void)
 
    if (!QueryPerformanceCounter(&count))
       return 0;
-   return count.QuadPart * 1000000 / freq.QuadPart;
+   return (count.QuadPart / freq.QuadPart * 1000000) + (count.QuadPart % freq.QuadPart * 1000000 / freq.QuadPart);
+#elif defined(__PSL1GHT__)
+   return sysGetSystemTime();
 #elif defined(__CELLOS_LV2__)
    return sys_time_get_system_time();
 #elif defined(GEKKO)
@@ -492,7 +498,7 @@ unsigned cpu_features_get_core_amount(void)
    return sysinfo.dwNumberOfProcessors;
 #elif defined(GEKKO)
    return 1;
-#elif defined(PSP) || defined(PS2)
+#elif defined(PSP) || defined(PS2) || defined(__CELLOS_LV2__)
    return 1;
 #elif defined(VITA)
    return 4;

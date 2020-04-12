@@ -1,6 +1,6 @@
 /**
  * @file	menu.cpp
- * @brief	ƒƒjƒ…[‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #include "compiler.h"
@@ -19,15 +19,16 @@
 #include "sound\s98.h"
 #endif
 #include "mousemng.h"
+#include "font/font.h"
 
 /**
- * ŒŸõ
- * @param[in] hMenu ƒƒjƒ…[ ƒnƒ“ƒhƒ‹
+ * æ¤œç´¢
+ * @param[in] hMenu ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ãƒãƒ³ãƒ‰ãƒ«
  * @param[in] uID ID
- * @param[out] phmenuRet Œ©‚Â‚©‚Á‚½ƒƒjƒ…[
- * @param[out] pnPos Œ©‚Â‚©‚Á‚½ˆÊ’u
- * @retval true Œ©‚Â‚©‚Á‚½
- * @retval false Œ©‚Â‚©‚ç‚È‚©‚Á‚½
+ * @param[out] phmenuRet è¦‹ã¤ã‹ã£ãŸãƒ¡ãƒ‹ãƒ¥ãƒ¼
+ * @param[out] pnPos è¦‹ã¤ã‹ã£ãŸä½ç½®
+ * @retval true è¦‹ã¤ã‹ã£ãŸ
+ * @retval false è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
  */
 bool menu_searchmenu(HMENU hMenu, UINT uID, HMENU *phmenuRet, int *pnPos)
 {
@@ -62,12 +63,12 @@ bool menu_searchmenu(HMENU hMenu, UINT uID, HMENU *phmenuRet, int *pnPos)
 }
 
 /**
- * ƒƒjƒ…[’Ç‰Á
- * @param[in] hMenu ƒƒjƒ…[ ƒnƒ“ƒhƒ‹
- * @param[in] nPos ’Ç‰Á‚·‚éˆÊ’u
- * @param[in] hmenuAdd ’Ç‰Á‚·‚éƒƒjƒ…[
- * @param[in] bSeparator ƒZƒpƒŒ[ƒ^‚ğ’Ç‰Á‚·‚é
- * @return ’Ç‰Á”
+ * ãƒ¡ãƒ‹ãƒ¥ãƒ¼è¿½åŠ 
+ * @param[in] hMenu ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ãƒãƒ³ãƒ‰ãƒ«
+ * @param[in] nPos è¿½åŠ ã™ã‚‹ä½ç½®
+ * @param[in] hmenuAdd è¿½åŠ ã™ã‚‹ãƒ¡ãƒ‹ãƒ¥ãƒ¼
+ * @param[in] bSeparator ã‚»ãƒ‘ãƒ¬ãƒ¼ã‚¿ã‚’è¿½åŠ ã™ã‚‹
+ * @return è¿½åŠ æ•°
  */
 int menu_addmenu(HMENU hMenu, int nPos, HMENU hmenuAdd, BOOL bSeparator)
 {
@@ -109,12 +110,12 @@ int menu_addmenu(HMENU hMenu, int nPos, HMENU hmenuAdd, BOOL bSeparator)
 }
 
 /**
- * ƒƒjƒ…[’Ç‰Á
- * @param[in] hMenu ƒƒjƒ…[ ƒnƒ“ƒhƒ‹
- * @param[in] nPos ’Ç‰Á‚·‚éˆÊ’u
- * @param[in] uID ƒƒjƒ…[ ID
- * @param[in] bSeparator ƒZƒpƒŒ[ƒ^‚ğ’Ç‰Á‚·‚é
- * @return ’Ç‰Á”
+ * ãƒ¡ãƒ‹ãƒ¥ãƒ¼è¿½åŠ 
+ * @param[in] hMenu ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ãƒãƒ³ãƒ‰ãƒ«
+ * @param[in] nPos è¿½åŠ ã™ã‚‹ä½ç½®
+ * @param[in] uID ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ID
+ * @param[in] bSeparator ã‚»ãƒ‘ãƒ¬ãƒ¼ã‚¿ã‚’è¿½åŠ ã™ã‚‹
+ * @return è¿½åŠ æ•°
  */
 int menu_addmenures(HMENU hMenu, int nPos, UINT uID, BOOL bSeparator)
 {
@@ -130,11 +131,11 @@ int menu_addmenures(HMENU hMenu, int nPos, UINT uID, BOOL bSeparator)
 }
 
 /**
- * ƒƒjƒ…[’Ç‰Á
- * @param[in] hMenu ƒƒjƒ…[ ƒnƒ“ƒhƒ‹
- * @param[in] uByID ƒƒjƒ…[ˆÊ’u
- * @param[in] uID ƒƒjƒ…[ ID
- * @return ’Ç‰Á”
+ * ãƒ¡ãƒ‹ãƒ¥ãƒ¼è¿½åŠ 
+ * @param[in] hMenu ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ãƒãƒ³ãƒ‰ãƒ«
+ * @param[in] uByID ãƒ¡ãƒ‹ãƒ¥ãƒ¼ä½ç½®
+ * @param[in] uID ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ID
+ * @return è¿½åŠ æ•°
  */
 static int menu_addmenubyid(HMENU hMenu, UINT uByID, UINT uID)
 {
@@ -150,13 +151,13 @@ static int menu_addmenubyid(HMENU hMenu, UINT uByID, UINT uID)
 }
 
 /**
- * ƒƒjƒ…[’Ç‰Á
- * @param[in] hMenu ƒƒjƒ…[‚Ìƒnƒ“ƒhƒ‹
- * @param[in] uPosition V‚µ‚¢€–Ú‚Ì’¼‘O‚ÉˆÊ’u‚·‚é€–Ú
- * @param[in] uFlags ƒIƒvƒVƒ‡ƒ“
- * @param[in] uIDNewItem ¯•ÊqAƒƒjƒ…[AƒTƒuƒƒjƒ…[‚Ì‚¢‚¸‚ê‚©
- * @param[in] lpNewItem ƒƒjƒ…[ •¶š—ñ
- * @return ŠÖ”‚ª¬Œ÷‚·‚é‚ÆA0 ˆÈŠO‚Ì’l‚ª•Ô‚è‚Ü‚·
+ * ãƒ¡ãƒ‹ãƒ¥ãƒ¼è¿½åŠ 
+ * @param[in] hMenu ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ãƒãƒ³ãƒ‰ãƒ«
+ * @param[in] uPosition æ–°ã—ã„é …ç›®ã®ç›´å‰ã«ä½ç½®ã™ã‚‹é …ç›®
+ * @param[in] uFlags ã‚ªãƒ—ã‚·ãƒ§ãƒ³
+ * @param[in] uIDNewItem è­˜åˆ¥å­ã€ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã€ã‚µãƒ–ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ã„ãšã‚Œã‹
+ * @param[in] lpNewItem ãƒ¡ãƒ‹ãƒ¥ãƒ¼ æ–‡å­—åˆ—
+ * @return é–¢æ•°ãŒæˆåŠŸã™ã‚‹ã¨ã€0 ä»¥å¤–ã®å€¤ãŒè¿”ã‚Šã¾ã™
  */
 static BOOL InsertMenuString(HMENU hMenu, UINT uPosition, UINT uFlags, UINT_PTR uIDNewItem, UINT uStringID)
 {
@@ -171,9 +172,9 @@ static BOOL InsertMenuString(HMENU hMenu, UINT uPosition, UINT uFlags, UINT_PTR 
 }
 
 /**
- * ƒƒjƒ…[’Ç‰Á (’PƒƒRƒs[)
- * @param[in] popup ƒRƒs[æ
- * @param[in] menubar ƒRƒs[Œ³
+ * ãƒ¡ãƒ‹ãƒ¥ãƒ¼è¿½åŠ  (å˜ç´”ã‚³ãƒ”ãƒ¼)
+ * @param[in] popup ã‚³ãƒ”ãƒ¼å…ˆ
+ * @param[in] menubar ã‚³ãƒ”ãƒ¼å…ƒ
  */
 void menu_addmenubar(HMENU popup, HMENU menubar)
 {
@@ -185,8 +186,8 @@ void menu_addmenubar(HMENU popup, HMENU menubar)
 // ----
 
 /**
- * ƒVƒXƒeƒ€ ƒƒjƒ…[‰Šú‰»
- * @param[in] hMenu ƒƒjƒ…[ ƒnƒ“ƒhƒ‹
+ * ã‚·ã‚¹ãƒ†ãƒ  ãƒ¡ãƒ‹ãƒ¥ãƒ¼åˆæœŸåŒ–
+ * @param[in] hMenu ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ãƒãƒ³ãƒ‰ãƒ«
  */
 void sysmenu_initialize(HMENU hMenu)
 {
@@ -210,8 +211,8 @@ void sysmenu_initialize(HMENU hMenu)
 }
 
 /**
- * ƒVƒXƒeƒ€ ƒƒjƒ…[XV
- * @param[in] hMenu ƒƒjƒ…[ ƒnƒ“ƒhƒ‹
+ * ã‚·ã‚¹ãƒ†ãƒ  ãƒ¡ãƒ‹ãƒ¥ãƒ¼æ›´æ–°
+ * @param[in] hMenu ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ãƒãƒ³ãƒ‰ãƒ«
  */
 void sysmenu_update(HMENU hMenu)
 {
@@ -238,8 +239,8 @@ void sysmenu_update(HMENU hMenu)
 // ----
 
 /**
- * ƒƒjƒ…[‰Šú‰»
- * @param[in] ƒƒjƒ…[ ƒnƒ“ƒhƒ‹
+ * ãƒ¡ãƒ‹ãƒ¥ãƒ¼åˆæœŸåŒ–
+ * @param[in] ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ãƒãƒ³ãƒ‰ãƒ«
  */
 void xmenu_initialize(HMENU hMenu)
 {
@@ -294,15 +295,17 @@ void xmenu_initialize(HMENU hMenu)
 	{
 #if defined(SUPPORT_PC9821)
 		(void)menu_addmenubyid(hMenu, IDM_MSRAPID, IDR_CPUSAVE32);
+		(void)menu_addmenubyid(hMenu, IDM_SSTP, IDR_CPUSAVE32);
 #else	//	defined(SUPPORT_PC9821)
 		(void)menu_addmenubyid(hMenu, IDM_MSRAPID, IDR_CPUSAVE16);
+		(void)menu_addmenubyid(hMenu, IDM_SSTP, IDR_CPUSAVE16);
 #endif	//	defined(SUPPORT_PC9821)
 	}
 }
 
 /**
- * ƒƒjƒ…[ó‘Ô‚ğXV‚·‚é
- * @param[in] hMenu ƒƒjƒ…[ ƒnƒ“ƒhƒ‹
+ * ãƒ¡ãƒ‹ãƒ¥ãƒ¼çŠ¶æ…‹ã‚’æ›´æ–°ã™ã‚‹
+ * @param[in] hMenu ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ãƒãƒ³ãƒ‰ãƒ«
  */
 void xmenu_update(HMENU hMenu)
 {
@@ -367,29 +370,36 @@ void xmenu_update(HMENU hMenu)
 	CheckMenuItem(hMenu, IDM_BEEPMID, MF_BYCOMMAND | MFCHECK(BEEP_VOL == 2));
 	CheckMenuItem(hMenu, IDM_BEEPHIGH, MF_BYCOMMAND | MFCHECK(BEEP_VOL == 3));
 	const UINT8 SOUND_SW = np2cfg.SOUND_SW;
-	CheckMenuItem(hMenu, IDM_NOSOUND, MF_BYCOMMAND | MFCHECK(SOUND_SW == 0x00));
-	CheckMenuItem(hMenu, IDM_PC9801_14, MF_BYCOMMAND | MFCHECK(SOUND_SW == 0x01));
-	CheckMenuItem(hMenu, IDM_PC9801_26K, MF_BYCOMMAND | MFCHECK(SOUND_SW == 0x02));
-	CheckMenuItem(hMenu, IDM_PC9801_86, MF_BYCOMMAND | MFCHECK(SOUND_SW == 0x04));
-	CheckMenuItem(hMenu, IDM_PC9801_26_86, MF_BYCOMMAND | MFCHECK(SOUND_SW == 0x06));
-	CheckMenuItem(hMenu, IDM_PC9801_86_CB, MF_BYCOMMAND | MFCHECK(SOUND_SW == 0x14));
-	CheckMenuItem(hMenu, IDM_PC9801_118, MF_BYCOMMAND | MFCHECK(SOUND_SW == 0x08));
+	CheckMenuItem(hMenu, IDM_NOSOUND, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_NONE));
+	CheckMenuItem(hMenu, IDM_PC9801_14, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_PC_9801_14));
+	CheckMenuItem(hMenu, IDM_PC9801_26K, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_PC_9801_26K));
+	CheckMenuItem(hMenu, IDM_PC9801_86, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_PC_9801_86));
+	CheckMenuItem(hMenu, IDM_PC9801_26_86, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_PC_9801_86_26K));
+	CheckMenuItem(hMenu, IDM_PC9801_86_CB, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_PC_9801_86_ADPCM));
+	CheckMenuItem(hMenu, IDM_PC9801_118, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_PC_9801_118));
 	CheckMenuItem(hMenu, IDM_PC9801_86_WSS, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_PC_9801_86_WSS));
 	CheckMenuItem(hMenu, IDM_MATE_X_PCM, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_MATE_X_PCM));
 	CheckMenuItem(hMenu, IDM_PC9801_86_118, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_PC_9801_86_118));
-	CheckMenuItem(hMenu, IDM_SPEAKBOARD, MF_BYCOMMAND | MFCHECK(SOUND_SW == 0x20));
+	CheckMenuItem(hMenu, IDM_SPEAKBOARD, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_SPEAKBOARD));
 	CheckMenuItem(hMenu, IDM_86SPEAKBOARD, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_86_SPEAKBOARD));
-	CheckMenuItem(hMenu, IDM_SPARKBOARD, MF_BYCOMMAND | MFCHECK(SOUND_SW == 0x40));
+	CheckMenuItem(hMenu, IDM_SPARKBOARD, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_SPARKBOARD));
 #if defined(SUPPORT_SOUND_SB16)
 	CheckMenuItem(hMenu, IDM_SB16, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_SB16));
+	CheckMenuItem(hMenu, IDM_PC9801_86_SB16, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_PC_9801_86_SB16));
+	CheckMenuItem(hMenu, IDM_WSS_SB16, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_WSS_SB16));
+	CheckMenuItem(hMenu, IDM_PC9801_86_WSS_SB16, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_PC_9801_86_WSS_SB16));
+	CheckMenuItem(hMenu, IDM_PC9801_118_SB16, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_PC_9801_118_SB16));
+	CheckMenuItem(hMenu, IDM_PC9801_86_118_SB16, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_PC_9801_86_118_SB16));
 #endif	// defined(SUPPORT_SOUND_SB16)
 #if defined(SUPPORT_PX)
-	CheckMenuItem(hMenu, IDM_PX1, MF_BYCOMMAND | MFCHECK(SOUND_SW == 0x30));
-	CheckMenuItem(hMenu, IDM_PX2, MF_BYCOMMAND | MFCHECK(SOUND_SW == 0x50));
+	CheckMenuItem(hMenu, IDM_PX1, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_PX1));
+	CheckMenuItem(hMenu, IDM_PX2, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_PX2));
 #endif	// defined(SUPPORT_PX)
-	CheckMenuItem(hMenu, IDM_SOUNDORCHESTRA, MF_BYCOMMAND | MFCHECK(SOUND_SW == 0x32));
-	CheckMenuItem(hMenu, IDM_SOUNDORCHESTRAV, MF_BYCOMMAND | MFCHECK(SOUND_SW == 0x82));
-	CheckMenuItem(hMenu, IDM_AMD98, MF_BYCOMMAND | MFCHECK(SOUND_SW == 0x80));
+	CheckMenuItem(hMenu, IDM_SOUNDORCHESTRA, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_SOUNDORCHESTRA));
+	CheckMenuItem(hMenu, IDM_SOUNDORCHESTRAV, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_SOUNDORCHESTRAV));
+	CheckMenuItem(hMenu, IDM_LITTLEORCHESTRAL, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_LITTLEORCHESTRAL));
+	CheckMenuItem(hMenu, IDM_MMORCHESTRA, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_MMORCHESTRA));
+	CheckMenuItem(hMenu, IDM_AMD98, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_AMD98));
 	CheckMenuItem(hMenu, IDM_WAVESTAR, MF_BYCOMMAND | MFCHECK(SOUND_SW == SOUNDID_WAVESTAR));
 	CheckMenuItem(hMenu, IDM_JASTSOUND, MF_BYCOMMAND | MFCHECK(np2oscfg.jastsnd));
 	CheckMenuItem(hMenu, IDM_SEEKSND, MF_BYCOMMAND | MFCHECK(np2cfg.MOTOR));
@@ -463,6 +473,7 @@ void xmenu_update(HMENU hMenu)
 		bLogging = true;
 	}
 #endif
+	CheckMenuItem(hMenu, IDM_HF_ENABLE, MF_BYCOMMAND | MFCHECK(hf_enable));
 	CheckMenuItem(hMenu, MF_BYCOMMAND | IDM_S98LOGGING, MFCHECK(bLogging));
 	const UINT8 DISPCLK = np2oscfg.DISPCLK;
 	CheckMenuItem(hMenu, IDM_DISPCLOCK, MF_BYCOMMAND | MFCHECK(DISPCLK & 1));
@@ -470,7 +481,8 @@ void xmenu_update(HMENU hMenu)
 	CheckMenuItem(hMenu, IDM_JOYX, MF_BYCOMMAND | MFCHECK(np2cfg.BTN_MODE));
 	CheckMenuItem(hMenu, IDM_RAPID, MF_BYCOMMAND | MFCHECK(np2cfg.BTN_RAPID));
 	CheckMenuItem(hMenu, IDM_MSRAPID, MF_BYCOMMAND | MFCHECK(np2cfg.MOUSERAPID));
-	
+	CheckMenuItem(hMenu, IDM_SSTP, MF_BYCOMMAND | MFCHECK(np2oscfg.sstp));
+
 	CheckMenuItem(hMenu, IDM_ITFWORK, MF_BYCOMMAND | MFCHECK(np2cfg.ITF_WORK));
 	CheckMenuItem(hMenu, IDM_TIMERFIX, MF_BYCOMMAND | MFCHECK(np2cfg.timerfix));
 	CheckMenuItem(hMenu, IDM_SKIP16MEMCHK, MF_BYCOMMAND | MFCHECK(np2cfg.memchkmx != 0));

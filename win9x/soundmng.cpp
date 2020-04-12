@@ -25,23 +25,6 @@
 #include "sound\vermouth\vermouth.h"
 #endif
 
-#if !defined(_WIN64)
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-/**
- * satuation
- * @param[out] dst 出力バッファ
- * @param[in] src 入力バッファ
- * @param[in] size サイズ
- */
-void __fastcall satuation_s16mmx(SINT16 *dst, const SINT32 *src, UINT size);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
 #if defined(VERMOUTH_LIB)
 	MIDIMOD		vermouth_module = NULL;
 #endif
@@ -352,17 +335,7 @@ inline void CSoundMng::SetReverse(bool bReverse)
 {
 	if (!bReverse)
 	{
-#if !defined(_WIN64)
-		if (mmxflag)
-		{
-			m_fnMix = satuation_s16;
-		}
-		else {
-			m_fnMix = satuation_s16mmx;
-		}
-#else
 		m_fnMix = satuation_s16;
-#endif
 	}
 	else
 	{

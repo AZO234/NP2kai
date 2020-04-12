@@ -1,11 +1,9 @@
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-ARCH arcunzip_open(const OEMCHAR *path);
+BRESULT openrealcdd(SXSIDEV sxsi, const OEMCHAR *fname);
 
 #ifdef __cplusplus
 }
 #endif
-

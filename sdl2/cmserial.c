@@ -30,8 +30,9 @@
 #include "pccore.h"
 #include "np2.h"
 #include "commng.h"
+#include "codecnv/codecnv.h"
 
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 #include <windows.h>
 #else
 #include <sys/ioctl.h>
@@ -45,7 +46,7 @@
 
 
 typedef struct {
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 	HANDLE	hdl;
 #else
 	int		hdl;
@@ -62,7 +63,7 @@ static UINT
 serialread(COMMNG self, UINT8 *data)
 {
 	CMSER serial = (CMSER)(self + 1);
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 	COMSTAT status;
 	DWORD errors;
 	BOOLEAN rv;
@@ -73,7 +74,7 @@ serialread(COMMNG self, UINT8 *data)
 	int rv;
 #endif
 
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 	rv = ClearCommError(serial->hdl, &errors, &status);
 	if (rv && status.cbInQue > 0) {
 #else
@@ -81,7 +82,7 @@ serialread(COMMNG self, UINT8 *data)
 	if (rv == 0 && bytes > 0) {
 #endif
 		VERBOSE(("serialread: bytes = %d", bytes));
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 		ReadFile(serial->hdl, data, 1, &size, NULL);
 #else
 		size = read(serial->hdl, data, 1);
@@ -99,13 +100,13 @@ static UINT
 serialwrite(COMMNG self, UINT8 data)
 {
 	CMSER serial = (CMSER)(self + 1);
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 	DWORD size;
 #else
 	size_t size;
 #endif
 
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 	WriteFile(serial->hdl, &data, 1, &size, NULL);
 #else
 	size = write(serial->hdl, &data, 1);
@@ -122,7 +123,7 @@ static UINT8
 serialgetstat(COMMNG self)
 {
 	CMSER serial = (CMSER)(self + 1);
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 	DCB status;
 	BOOLEAN rv;
 #else
@@ -130,7 +131,7 @@ serialgetstat(COMMNG self)
 	int rv;
 #endif
 
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 	rv = GetCommState(serial->hdl, &status);
 	if (!rv) {
 #else
@@ -140,7 +141,7 @@ serialgetstat(COMMNG self)
 		VERBOSE(("serialgetstat: ioctl: %s", strerror(errno)));
 		return 0x20;
 	}
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 	if (!(status.fOutxDsrFlow)) {
 #else
 	if (!(status & TIOCM_DSR)) {
@@ -168,7 +169,7 @@ serialrelease(COMMNG self)
 {
 	CMSER serial = (CMSER)(self + 1);
 
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 	CloseHandle(serial->hdl);
 #else
 	tcsetattr(serial->hdl, TCSANOW, &serial->tio);
@@ -347,7 +348,7 @@ void convert_np2tocm(UINT port, UINT8* param, UINT32* speed) {
 COMMNG
 cmserial_create(UINT port, UINT8 param, UINT32 speed)
 {
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 	static const int cmserial_cflag[] = {
 		0/*CBR_B75*/, CBR_110, CBR_300, CBR_600, CBR_1200, CBR_2400, CBR_4800,
 		CBR_9600, CBR_19200, CBR_38400, CBR_57600, CBR_115200
@@ -362,9 +363,10 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 #endif
 	COMMNG ret;
 	CMSER serial;
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 	HANDLE hdl;
 	DCB dcb = {0};
+	wchar_t wmout[MAX_PATH];
 #else
 	int hdl;
 #endif
@@ -387,8 +389,9 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 		goto cscre_failure;
 	}
 
-#if defined(_WIN32)
-	hdl = CreateFile(np2oscfg.com[port].mout, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+#if defined(_WINDOWS)
+	codecnv_utf8toucs2(wmout, MAX_PATH, np2oscfg.com[port].mout, -1);
+	hdl = CreateFileW(wmout, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 	if (hdl == INVALID_HANDLE_VALUE) {
 #else
 	hdl = open(np2oscfg.com[port].mout, O_RDWR | O_NOCTTY | O_NDELAY);
@@ -398,7 +401,7 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 		goto cscre_failure;
 	}
 
-#if !defined(_WIN32)
+#if !defined(_WINDOWS)
 	if (!isatty(hdl)) {
 		VERBOSE(("cmserial_create: not terminal file descriptor (%s)", strerror(errno)));
 		goto cscre_close;
@@ -420,7 +423,7 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 		VERBOSE(("cmserial_create: speed is invaild"));
 		goto cscre_close;
 	}
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 	dcb.BaudRate = cmserial_cflag[i];
 #else
 	cfsetispeed(&options, cmserial_cflag[i]);
@@ -428,7 +431,7 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 #endif
 
 	/* character size bits */
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 	dcb.ByteSize = ((param >> 2) & 3) + 5;
 	VERBOSE(("cmserial_create: charactor size = %d", ((param >> 2) & 3) + 5));
 #else
@@ -441,7 +444,7 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 	switch (param & 0x30) {
 	case 0x10:
 		VERBOSE(("cmserial_create: odd parity"));
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 		dcb.fParity = 1;
 		dcb.Parity = ODDPARITY;
 #else
@@ -452,7 +455,7 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 
 	case 0x30:
 		VERBOSE(("cmserial_create: even parity"));
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 		dcb.fParity = 1;
 		dcb.Parity = EVENPARITY;
 #else
@@ -464,7 +467,7 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 
 	default:
 		VERBOSE(("cmserial_create: non parity"));
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 		dcb.fParity = 0;
 #else
 		options.c_cflag &= ~PARENB;
@@ -477,14 +480,14 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 	switch (param & 0xc0) {
 	case 0x80:
 		VERBOSE(("cmserial_create: stop bits: 1.5"));
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 		dcb.StopBits = ONE5STOPBITS;
 #endif
 		break;
 
 	case 0xc0:
 		VERBOSE(("cmserial_create: stop bits: 2"));
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 		dcb.StopBits = TWOSTOPBITS;
 #else
 		options.c_cflag |= CSTOPB;
@@ -493,7 +496,7 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 
 	default:
 		VERBOSE(("cmserial_create: stop bits: 1"));
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 		dcb.StopBits = ONESTOPBIT;
 #else
 		options.c_cflag &= ~CSTOPB;
@@ -501,7 +504,7 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 		break;
 	}
 
-#if !defined(_WIN32)
+#if !defined(_WINDOWS)
 	/* set misc flag */
 	cfmakeraw(&options);
 	options.c_cflag |= CLOCAL | CREAD;
@@ -519,7 +522,7 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 	}
 
 	/* set the new options for the port */
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 	SetCommState(hdl, &dcb);
 #else
 	tcsetattr(hdl, TCSANOW, &options);
@@ -537,13 +540,13 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 	ret->release = serialrelease;
 	serial = (CMSER)(ret + 1);
 	serial->hdl = hdl;
-#if !defined(_WIN32)
+#if !defined(_WINDOWS)
 	serial->tio = origopt;
 #endif
 	return ret;
 
 cscre_close:
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 	CloseHandle(hdl);
 #else
 	close(hdl);

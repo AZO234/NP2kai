@@ -45,9 +45,11 @@ static const char *clockmult_str[] = {
 	"1", "2", "4", "5", "6", "8", "10", "12", "16", "20", "24", "30", "32", "34", "36", "40", "42", "52", "64", "76", "88", "100"
 };
 
+#if defined(CPUCORE_IA32)
 static const char *cputype_str[] = {
-	"(custom)", "Intel i486SX", "Intel i486DX", "Intel Pentium", "Intel MMX Pentium", "Intel Pentium Pro", "Intel Pentium II", "Intel Pentium III", "AMD K6-2", "AMD K6-III", "AMD K7 Athlon", "AMD K7 Athlon XP", "Neko Processor II"
+	"(custom)", "Intel 80386", "Intel i486SX", "Intel i486DX", "Intel Pentium", "Intel MMX Pentium", "Intel Pentium Pro", "Intel Pentium II", "Intel Pentium III", "Intel Pentium M", "Intel Pentium 4", "AMD K6-2", "AMD K6-III", "AMD K7 Athlon", "AMD K7 Athlon XP", "Neko Processor II"
 };
+#endif
 
 static const char *samplingrate_str[] = {
 	"11025", "22050", "44100", "48000", "88200", "96000", "176400", "192000"
@@ -76,243 +78,6 @@ static GtkWidget *disablemmx_checkbutton;
 #endif
 static const char *arch;
 static int rate;
-
-
-/**
- * np2cfg CPUID -> CPU type index 相互変換
- */
-int GetCpuTypeIndex(){
-#if defined(CPUCORE_IA32)
-	if(np2cfg.cpu_family == CPU_I486SX_FAMILY && 
-	   np2cfg.cpu_model == CPU_I486SX_MODEL &&
-	   np2cfg.cpu_stepping == CPU_I486SX_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_I486SX &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_I486SX){
-		return 1;
-	}
-	if((CPU_FEATURES_ALL & CPU_FEATURES_I486DX) != CPU_FEATURES_I486DX) goto AMDCPUCheck;
-	if(np2cfg.cpu_family == CPU_I486DX_FAMILY && 
-	   np2cfg.cpu_model == CPU_I486DX_MODEL &&
-	   np2cfg.cpu_stepping == CPU_I486DX_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_I486DX &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_I486DX){
-		return 2;
-	}
-	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM) != CPU_FEATURES_PENTIUM) goto AMDCPUCheck;
-	if(np2cfg.cpu_family == CPU_PENTIUM_FAMILY && 
-	   np2cfg.cpu_model == CPU_PENTIUM_MODEL &&
-	   np2cfg.cpu_stepping == CPU_PENTIUM_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_PENTIUM &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_PENTIUM){
-		return 3;
-	}
-	if((CPU_FEATURES_ALL & CPU_FEATURES_MMX_PENTIUM) != CPU_FEATURES_MMX_PENTIUM) goto AMDCPUCheck;
-	if(np2cfg.cpu_family == CPU_MMX_PENTIUM_FAMILY && 
-	   np2cfg.cpu_model == CPU_MMX_PENTIUM_MODEL &&
-	   np2cfg.cpu_stepping == CPU_MMX_PENTIUM_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_MMX_PENTIUM &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_MMX_PENTIUM){
-		return 4;
-	}
-	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_PRO) != CPU_FEATURES_PENTIUM_PRO) goto AMDCPUCheck;
-	if(np2cfg.cpu_family == CPU_PENTIUM_PRO_FAMILY && 
-	   np2cfg.cpu_model == CPU_PENTIUM_PRO_MODEL &&
-	   np2cfg.cpu_stepping == CPU_PENTIUM_PRO_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_PENTIUM_PRO &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_PENTIUM_PRO){
-		return 5;
-	}
-	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_II) != CPU_FEATURES_PENTIUM_II) goto AMDCPUCheck;
-	if(np2cfg.cpu_family == CPU_PENTIUM_II_FAMILY && 
-	   np2cfg.cpu_model == CPU_PENTIUM_II_MODEL &&
-	   np2cfg.cpu_stepping == CPU_PENTIUM_II_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_PENTIUM_II &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_PENTIUM_II){
-		return 6;
-	}
-	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_III) != CPU_FEATURES_PENTIUM_III) goto AMDCPUCheck;
-	if(np2cfg.cpu_family == CPU_PENTIUM_III_FAMILY && 
-	   np2cfg.cpu_model == CPU_PENTIUM_III_MODEL &&
-	   np2cfg.cpu_stepping == CPU_PENTIUM_III_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_PENTIUM_III &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_PENTIUM_III){
-		return 7;
-	}
-
-AMDCPUCheck:
-	if((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K6_2) != CPU_FEATURES_AMD_K6_2 ||
-		(CPU_FEATURES_EX_ALL & CPU_FEATURES_EX_AMD_K6_2) != CPU_FEATURES_EX_AMD_K6_2) goto NekoCPUCheck;
-	if(np2cfg.cpu_family == CPU_AMD_K6_2_FAMILY && 
-	   np2cfg.cpu_model == CPU_AMD_K6_2_MODEL &&
-	   np2cfg.cpu_stepping == CPU_AMD_K6_2_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_AMD_K6_2 &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_AMD_K6_2){
-		return 15;
-	}
-	if((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K6_III) != CPU_FEATURES_AMD_K6_III ||
-		(CPU_FEATURES_EX_ALL & CPU_FEATURES_EX_AMD_K6_III) != CPU_FEATURES_EX_AMD_K6_III) goto NekoCPUCheck;
-	if(np2cfg.cpu_family == CPU_AMD_K6_III_FAMILY && 
-	   np2cfg.cpu_model == CPU_AMD_K6_III_MODEL &&
-	   np2cfg.cpu_stepping == CPU_AMD_K6_III_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_AMD_K6_III &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_AMD_K6_III){
-		return 16;
-	}
-	if((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K7_ATHLON) != CPU_FEATURES_AMD_K7_ATHLON ||
-		(CPU_FEATURES_EX_ALL & CPU_FEATURES_EX_AMD_K7_ATHLON) != CPU_FEATURES_EX_AMD_K7_ATHLON) goto NekoCPUCheck;
-	if(np2cfg.cpu_family == CPU_AMD_K7_ATHLON_FAMILY && 
-	   np2cfg.cpu_model == CPU_AMD_K7_ATHLON_MODEL &&
-	   np2cfg.cpu_stepping == CPU_AMD_K7_ATHLON_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_AMD_K7_ATHLON &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_AMD_K7_ATHLON){
-		return 17;
-	}
-	if((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K7_ATHLON_XP) != CPU_FEATURES_AMD_K7_ATHLON_XP ||
-		(CPU_FEATURES_EX_ALL & CPU_FEATURES_EX_AMD_K7_ATHLON_XP) != CPU_FEATURES_EX_AMD_K7_ATHLON_XP) goto NekoCPUCheck;
-	if(np2cfg.cpu_family == CPU_AMD_K7_ATHLON_XP_FAMILY && 
-	   np2cfg.cpu_model == CPU_AMD_K7_ATHLON_XP_MODEL &&
-	   np2cfg.cpu_stepping == CPU_AMD_K7_ATHLON_XP_STEPPING &&
-	   np2cfg.cpu_feature == CPU_FEATURES_AMD_K7_ATHLON_XP &&
-	   np2cfg.cpu_feature_ex == CPU_FEATURES_EX_AMD_K7_ATHLON_XP){
-		return 18;
-	}
-	
-NekoCPUCheck:
-	if(np2cfg.cpu_family == 0 && 
-	   np2cfg.cpu_model == 0 &&
-	   np2cfg.cpu_stepping == 0 &&
-	   np2cfg.cpu_feature == 0 &&
-	   np2cfg.cpu_feature_ex == 0){
-		return 255;
-	}
-#endif
-	return 0;
-}
-int SetCpuTypeIndex(UINT index){
-	switch(index){
-#if defined(CPUCORE_IA32)
-	case 1:
-		np2cfg.cpu_family = CPU_I486SX_FAMILY;
-		np2cfg.cpu_model = CPU_I486SX_MODEL;
-		np2cfg.cpu_stepping = CPU_I486SX_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_I486SX;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_I486SX;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_I486SX);
-		break;
-	case 2:
-		np2cfg.cpu_family = CPU_I486DX_FAMILY;
-		np2cfg.cpu_model = CPU_I486DX_MODEL;
-		np2cfg.cpu_stepping = CPU_I486DX_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_I486DX;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_I486DX;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_I486DX);
-		break;
-	case 3:
-		np2cfg.cpu_family = CPU_PENTIUM_FAMILY;
-		np2cfg.cpu_model = CPU_PENTIUM_MODEL;
-		np2cfg.cpu_stepping = CPU_PENTIUM_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_PENTIUM;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM);
-		break;
-	case 4:
-		np2cfg.cpu_family = CPU_MMX_PENTIUM_FAMILY;
-		np2cfg.cpu_model = CPU_MMX_PENTIUM_MODEL;
-		np2cfg.cpu_stepping = CPU_MMX_PENTIUM_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_MMX_PENTIUM;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_MMX_PENTIUM;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_MMX_PENTIUM);
-		break;
-	case 5:
-		np2cfg.cpu_family = CPU_PENTIUM_PRO_FAMILY;
-		np2cfg.cpu_model = CPU_PENTIUM_PRO_MODEL;
-		np2cfg.cpu_stepping = CPU_PENTIUM_PRO_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_PENTIUM_PRO;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM_PRO;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_PRO);
-		break;
-	case 6:
-		np2cfg.cpu_family = CPU_PENTIUM_II_FAMILY;
-		np2cfg.cpu_model = CPU_PENTIUM_II_MODEL;
-		np2cfg.cpu_stepping = CPU_PENTIUM_II_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_PENTIUM_II;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM_II;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_II);
-		break;
-	case 7:
-		np2cfg.cpu_family = CPU_PENTIUM_III_FAMILY;
-		np2cfg.cpu_model = CPU_PENTIUM_III_MODEL;
-		np2cfg.cpu_stepping = CPU_PENTIUM_III_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_PENTIUM_III;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM_III;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_III);
-		break;
-	case 15:
-		np2cfg.cpu_family = CPU_AMD_K6_2_FAMILY;
-		np2cfg.cpu_model = CPU_AMD_K6_2_MODEL;
-		np2cfg.cpu_stepping = CPU_AMD_K6_2_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_AMD_K6_2;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_AMD_K6_2;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K6_2);
-		break;
-	case 16:
-		np2cfg.cpu_family = CPU_AMD_K6_III_FAMILY;
-		np2cfg.cpu_model = CPU_AMD_K6_III_MODEL;
-		np2cfg.cpu_stepping = CPU_AMD_K6_III_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_AMD_K6_III;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_AMD_K6_III;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K6_III);
-		break;
-	case 17:
-		np2cfg.cpu_family = CPU_AMD_K7_ATHLON_FAMILY;
-		np2cfg.cpu_model = CPU_AMD_K7_ATHLON_MODEL;
-		np2cfg.cpu_stepping = CPU_AMD_K7_ATHLON_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_AMD_K7_ATHLON;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_AMD_K7_ATHLON;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K7_ATHLON);
-		break;
-	case 18:
-		np2cfg.cpu_family = CPU_AMD_K7_ATHLON_XP_FAMILY;
-		np2cfg.cpu_model = CPU_AMD_K7_ATHLON_XP_MODEL;
-		np2cfg.cpu_stepping = CPU_AMD_K7_ATHLON_XP_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_AMD_K7_ATHLON_XP;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_AMD_K7_ATHLON_XP;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K7_ATHLON_XP);
-		break;
-	case 255: // 全機能使用可能
-		np2cfg.cpu_family = 0;
-		np2cfg.cpu_model = 0;
-		np2cfg.cpu_stepping = 0;
-		np2cfg.cpu_feature = 0;
-		np2cfg.cpu_feature_ex = 0;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_NEKOPRO);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_NEKOPRO);
-		break;
-#endif
-	default:
-		return 0;
-	}
-//#ifdef UNICODE
-//	MultiByteToWideChar(CP_ACP, 0, np2cfg.cpu_vendor, -1, np2cfg.cpu_vendor_o, sizeof(np2cfg.cpu_vendor_o));
-//	MultiByteToWideChar(CP_ACP, 0, np2cfg.cpu_brandstring, -1, np2cfg.cpu_brandstring_o, sizeof(np2cfg.cpu_brandstring_o));
-//#else
-//	strcpy(np2cfg.cpu_vendor_o, np2cfg.cpu_vendor);
-//	strcpy(np2cfg.cpu_brandstring_o, np2cfg.cpu_brandstring);
-//#endif
-	return SYS_UPDATECFG;
-}
-
 
 static void
 ok_button_clicked(GtkButton *b, gpointer d)
@@ -361,6 +126,7 @@ ok_button_clicked(GtkButton *b, gpointer d)
 		break;
 	}
 
+#if defined(CPUCORE_IA32)
 	for (i = 0; i < NELEMENTS(cputype_str); i++) {
 		if(strcmp(cputype, cputype_str[i]) == 0) {
 			switch(i) {
@@ -372,27 +138,31 @@ ok_button_clicked(GtkButton *b, gpointer d)
 			case 5:
 			case 6:
 			case 7:
+			case 8:
+			case 9:
+			case 10:
 				SetCpuTypeIndex(i);
 				break;
-			case 8:
+			case 11:
 				SetCpuTypeIndex(15);
 				break;
-			case 9:
+			case 12:
 				SetCpuTypeIndex(16);
 				break;
-			case 10:
+			case 13:
 				SetCpuTypeIndex(17);
 				break;
-			case 11:
+			case 14:
 				SetCpuTypeIndex(18);
 				break;
-			case 12:
+			case 15:
 				SetCpuTypeIndex(255);
 				break;
 			}
 			break;
 		}
 	}
+#endif
 
 	for (i = 0; i < NELEMENTS(architecture); i++) {
 		if (strcmp(arch, architecture[i].arch) == 0) {
@@ -650,6 +420,7 @@ create_configure_dialog(void)
 	  G_CALLBACK(clock_changed), (gpointer)realclock_label);
 	clock_changed(NULL, realclock_label);
 
+#if defined(CPUCORE_IA32)
 	/* cpu type */
 	cputype_hbox = gtk_hbox_new(FALSE, 0);
 	gtk_widget_show(cputype_hbox);
@@ -680,27 +451,31 @@ create_configure_dialog(void)
 	case 5:
 	case 6:
 	case 7:
+	case 8:
+	case 9:
+	case 10:
 		j = i;
 		break;
 	case 15:
-		j = 8;
-		break;
-	case 16:
-		j = 9;
-		break;
-	case 17:
-		j = 10;
-		break;
-	case 18:
 		j = 11;
 		break;
-	case 255:
+	case 16:
 		j = 12;
+		break;
+	case 17:
+		j = 13;
+		break;
+	case 18:
+		j = 14;
+		break;
+	case 255:
+		j = 15;
 		break;
 	default:
 		j = 0;
 	}
 	gtk_entry_set_text(GTK_ENTRY(cputype_entry), cputype_str[j]);
+#endif
 
 	/* OK, Cancel button base widget */
 	confirm_widget = gtk_vbutton_box_new();

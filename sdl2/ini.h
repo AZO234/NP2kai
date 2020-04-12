@@ -27,7 +27,7 @@ enum {
 };
 
 typedef struct {
-	char	item[12];
+	OEMCHAR	item[32];
 	UINT16	itemtype;
 	void	*value;
 	UINT32	arg;
@@ -38,13 +38,13 @@ typedef struct {
 extern "C" {
 #endif
 
-void ini_read(const char *path, const char *title, const INITBL *tbl, UINT count);
-void ini_write(const char *path, const char *title, const INITBL *tbl, UINT count);
+void ini_read(const OEMCHAR *path, const OEMCHAR *title, const INITBL *tbl, UINT count);
+void ini_write(const OEMCHAR *path, const OEMCHAR *title, const INITBL *tbl, UINT count);
 
 void initload(void);
 void initsave(void);
 
-void initgetfile(char *lpPath, unsigned int cchPath);
+void initgetfile(OEMCHAR *lpPath, unsigned int cchPath);
 
 #ifdef __cplusplus
 }

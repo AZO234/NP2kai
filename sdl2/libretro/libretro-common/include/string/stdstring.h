@@ -1,4 +1,4 @@
-/* Copyright  (C) 2010-2019 The RetroArch team
+/* Copyright  (C) 2010-2020 The RetroArch team
  *
  * ---------------------------------------------------------------------------------------
  * The following license statement only applies to this file (stdstring.h).
@@ -145,6 +145,10 @@ unsigned string_to_unsigned(const char *str);
  * Handles optional leading '0x'.
  * Returns 0 if string is invalid  */
 unsigned string_hex_to_unsigned(const char *str);
+
+char *string_init(const char *src);
+
+void string_set(char **string, const char *src);
 
 RETRO_END_DECLS
 

@@ -878,6 +878,8 @@ BEGIN
             MENUITEM "Sp&ark board",                IDM_SPARKBOARD
             MENUITEM "Sound &Orchestra",            IDM_SOUNDORCHESTRA
             MENUITEM "Sound Orchestra-&V",          IDM_SOUNDORCHESTRAV
+            MENUITEM "L&ittle Orchestra L",         IDM_LITTLEORCHESTRAL
+            MENUITEM "&Multimedia Orchestra",       IDM_MMORCHESTRA
             MENUITEM "&AMD-98",                     IDM_AMD98
             MENUITEM "&JastSound",                  IDM_JASTSOUND
             MENUITEM SEPARATOR
@@ -912,6 +914,7 @@ BEGIN
     POPUP "其他(&O)"
     BEGIN
         MENUITEM "另存點陣圖影像(&B)...",       IDM_BMPSAVE
+        MENUITEM "Hook fomtrom",                IDM_HF_ENABLE
         MENUITEM "&S98 登錄...",                IDM_S98LOGGING
         MENUITEM "時間(&L)...",                 IDM_CALENDAR
         POPUP "快速鍵(&K)"
@@ -924,7 +927,8 @@ BEGIN
         MENUITEM "反向的遊戲台按鍵(&V)",        IDM_JOYX
         MENUITEM "快速的遊戲台按鍵(&R)",        IDM_RAPID
         MENUITEM "快速的滑鼠按鍵(&M)",          IDM_MSRAPID
-        MENUITEM "&ITF work",                   IDM_ITFWORK
+        MENUITEM "使用 SSTP(&U)",               IDM_SSTP
+         MENUITEM "&ITF work",                   IDM_ITFWORK
         MENUITEM SEPARATOR
         MENUITEM "說明主題(&H)...",             IDM_HELP
         MENUITEM "關於(&A)...",                 IDM_ABOUT

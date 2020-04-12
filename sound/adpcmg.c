@@ -265,7 +265,7 @@ void SOUNDCALL adpcm_getpcm(ADPCM ad, SINT32 *pcm, UINT count) {
 					if (ad->play == 0) {
 						goto adpcmstop;
 					}
-					samp += ad->out0 * np2min(remain, ad->pertim);
+					samp += ad->out0 * MIN(remain, ad->pertim);
 					remain -= ad->pertim;
 				} while(remain > 0);
 			}

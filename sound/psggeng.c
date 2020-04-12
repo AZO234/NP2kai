@@ -23,7 +23,7 @@ void SOUNDCALL psggen_getpcm(PSGGEN psg, SINT32 *pcm, UINT count) {
 	UINT	noise;
 
 	if ((psg->mixer & 0x3f) == 0) {
-		count = np2min(count, psg->puchicount);
+		count = MIN(count, psg->puchicount);
 		psg->puchicount -= count;
 	}
 	if (count == 0) {

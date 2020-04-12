@@ -225,7 +225,7 @@ UINT wavefile_write(WAVEFILEH hWave, const void *lpBuffer, UINT cbBuffer)
 	}
 	while (cbBuffer)
 	{
-		UINT nSize = np2min(hWave->nRemain, cbBuffer);
+		UINT nSize = MIN(hWave->nRemain, cbBuffer);
 		memcpy(hWave->lpCurrent, lpBuffer, nSize);
 		lpBuffer = ((UINT8 *)lpBuffer) + nSize;
 		cbBuffer -= nSize;

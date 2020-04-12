@@ -878,6 +878,8 @@ BEGIN
             MENUITEM "Sp&ark board",                IDM_SPARKBOARD
             MENUITEM "Sound &Orchestra",            IDM_SOUNDORCHESTRA
             MENUITEM "Sound Orchestra-&V",          IDM_SOUNDORCHESTRAV
+            MENUITEM "L&ittle Orchestra L",         IDM_LITTLEORCHESTRAL
+            MENUITEM "&Multimedia Orchestra",       IDM_MMORCHESTRA
             MENUITEM "&AMD-98",                     IDM_AMD98
             MENUITEM "&JastSound",                  IDM_JASTSOUND
             MENUITEM SEPARATOR
@@ -912,6 +914,7 @@ BEGIN
     POPUP "ì‚ñõ(&O)"
     BEGIN
         MENUITEM "óπó[âBä‰(&B)...",             IDM_BMPSAVE
+        MENUITEM "Hook fomtrom",                IDM_HF_ENABLE
         MENUITEM "&S98 é≈ë∫...",                IDM_S98LOGGING
         MENUITEM "òTóRïØé‚(&L)...",             IDM_CALENDAR
         POPUP "êåè|é˙(&K)"
@@ -924,6 +927,7 @@ BEGIN
         MENUITEM "åSòíömòVà≤ìD(&V)",            IDM_JOYX
         MENUITEM "êåñxömòVà≤ìD(&R)",            IDM_RAPID
         MENUITEM "êåñxãÉéó(&M)",                IDM_MSRAPID
+        MENUITEM "égóp SSTP(&U)",               IDM_SSTP
         MENUITEM "&ITF work",                   IDM_ITFWORK
         MENUITEM SEPARATOR
         MENUITEM "àÌõ¯õıñ‡(&H)...",             IDM_HELP

@@ -59,7 +59,7 @@ BOOL dispsync_renewalhorizontal(void) {
 	}
 	scrnxmax = cr + 2;
 	if ((scrnxpos + scrnxmax) > 80) {
-		scrnxmax = np2min(scrnxmax, 80);
+		scrnxmax = MIN(scrnxmax, 80);
 		scrnxpos = 80 - scrnxmax;
 	}
 	scrnxpos <<= 3;
@@ -123,7 +123,7 @@ BOOL dispsync_renewalvertical(void) {
 	dsync.textymax = textymax;
 	dsync.grphymax = grphymax;
 
-	scrnymax = np2max(grphymax, textymax);
+	scrnymax = MAX(grphymax, textymax);
 	scrnymax = (scrnymax + 7) & (~7);
 	if (dsync.scrnymax != scrnymax) {
 		dsync.scrnymax = scrnymax;

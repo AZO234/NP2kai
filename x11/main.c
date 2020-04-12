@@ -144,6 +144,9 @@ main(int argc, char *argv[])
 	int rv = 1;
 	int ch;
 	int i, drvmax;
+	char	fontfile[MAX_PATH];
+  FILE *fcheck;
+  int createini = 0;
 
 	progname = argv[0];
 
@@ -260,6 +263,17 @@ main(int argc, char *argv[])
 	}
 	if (modulefile[0] != '\0') {
 		/* font file */
+		file_cpyname(fontfile, modulefile, sizeof(fontfile));
+		file_cutname(fontfile);
+		file_setseparator(fontfile, sizeof(fontfile));
+		file_catname(fontfile, "default.ttf", sizeof(fontfile));
+		fcheck = file_open_rb(fontfile);
+		if (fcheck != NULL) {
+			file_close(fcheck);
+			fontmng_setdeffontname(fontfile);
+		}
+
+		/* font bmp file */
 		file_cpyname(np2cfg.fontfile, modulefile,
 		    sizeof(np2cfg.fontfile));
 		file_cutname(np2cfg.fontfile);
@@ -303,6 +317,12 @@ main(int argc, char *argv[])
 #if defined(SUPPORT_HOSTDRV)
 	hostdrv_readini();
 #endif	// defined(SUPPORT_HOSTDRV)
+	fcheck = file_open_rb(modulefile);
+	if (fcheck == NULL)	{
+		createini = 1;
+	} else {
+		file_close(fcheck);
+	}
 
 	rand_setseed((SINT32)time(NULL));
 
@@ -451,17 +471,13 @@ main(int argc, char *argv[])
 	scrnmng_destroy();
 
 scrnmng_failure:
-	fontmng_terminate();
-
 fontmng_failure:
-	if (!np2oscfg.readonly
-	 && (sys_updates & (SYS_UPDATECFG|SYS_UPDATEOSCFG))) {
+	if ((!np2oscfg.readonly
+	 && (sys_updates & (SYS_UPDATECFG|SYS_UPDATEOSCFG))) || createini) {
 		initsave();
 		toolwin_writeini();
 		kdispwin_writeini();
 		skbdwin_writeini();
-	}
-
 #if defined(SUPPORT_HOSTDRV)
 	hostdrv_writeini();
 #endif	// defined(SUPPORT_HOSTDRV)
@@ -469,6 +485,8 @@ fontmng_failure:
 	wabwin_writeini();
 	np2wabcfg.readonly = np2oscfg.readonly;
 #endif	// defined(SUPPORT_WAB)
+	}
+
 	skbdwin_deinitialize();
 
 #if defined(USE_SDLAUDIO) || defined(USE_SDLMIXER) || defined(USE_SDL2AUDIO) || defined(USE_SDL2MIXER)

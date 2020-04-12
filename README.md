@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Mar 2, 2020<br>
+Apr 9, 2020<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -499,6 +499,39 @@ You can get sound files from [here](https://sites.google.com/site/ym2608rhythm/)
 </div></details>
 
 <details><summary>
+Fonts
+</summary><div>
+
+NP2kai recommend font is using font.rom.<br>
+
+### Windows
+
+You can use 'MS Gothic'. To install add your windows,<br>
+'install files Easten Asian languages' at 'language' option.<br>
+
+After installation, 'msgothic.ttc' file's shortcut named 'default.ttf' put in BIOS directory.<br>
+(Already exist 'font.tmp', delete this.)<br>
+And start NP2kai.
+
+### Linux
+
+I recommend use 'Takao Gothic'.<br>
+Install with follow command.
+After installation, 'TakaoGothic.ttf' file's shortcut put in BIOS directory.<br>
+```
+sudo apt install 'fonts-takao-*'
+```
+and
+```
+ls -n /usr/share/fonts/truetype/takao-gothic/TakaoGothic.ttf BIOSdirectory/default.ttf'
+```
+Already exist 'font.tmp', delete this.<br>
+And start NP2kai.<br>
+
+You can use 'Noto sans mono CJK', 'MS Gothic'(Japanese) also.
+</div></details>
+
+<details><summary>
 NP2 menu (different libretro menu)
 </summary><div>
 
@@ -549,7 +582,8 @@ Mouse cursor moving and left-button be able to controled with joypad stick.<br>
 Switch Stick2Mouse mode in config to 'L-stick' or 'R-stick(default)'.<br>
 - Stick: mouse move<br>
 - Thumb: mouse left button<br>
-(if you need right-button, enable to J2M and use A button.)<br>
+- ClickShift+Thumb: mouse right button<br>
+ClickShift button is assigned to R1 default.<br>
 
 To switch Joy2Mouse/Keyboard mode in config to 'Mouse'.<br>
 Mouse cursor is able to move with joypad's digital button also.<br>
@@ -911,6 +945,14 @@ http://buffalo.jp/download/driver/multi/wgna_95.html<br>
 https://www.iodata.jp/lib/product/g/175_win95.htm<br>
 </div></details>
 
+<details><summary>
+Hook fontrom (textize)
+</summary><div>
+Enable 'Hook fontrom' in menu,<br>
+Hook to using fontrom and output text to 'hook_fontrom.txt' in BIOS directory.<br>
+This function is disable at start NP2kai.<br>
+</div></details>
+
 #### MIDI sound (X11)
 
 <details><summary>
@@ -992,9 +1034,41 @@ Next boot computer, you command from 4.<br>
 </div></details>
 
 ## Release
+- Apr 9, 2020<br>
+  - hook fontrom (textize)
+- Apr 5, 2020<br>
+  - [Windows]
+    - add send to SSTP(伺か,ukagaka) from xnp2
+    - apply wide character (inner UTF-8)
+  - add codecnv
+    - UTF-32(UCS4)
+- Apr 2, 2020<br>
+  - reform compiler options
+- Mar 31, 2020<br>
+  - [libretro] fix input
+    - mash trigger, too fast move
+    - J2K 'Manual' setting lost
+    - add S2M click shift (l to r) button (default R1)
+- Mar 30, 2020<br>
+  - add LittleOrchestraL, MultimediaOrchestra from np2s
+- Mar 28, 2020<br>
+  - Merge NP21/W rev.72<br>
+  - [libretro] using lr file stream API
+  - safe string function
+  - np2min/np2max to MIN/MAX
+  - common base compiler.h (compiler_base.h)
+  - [X11] fix SUPPORT_PC9821
+  - [SDL2] mod Windows file access
+- Mar 13, 2020<br>
+  - Merge NP21/W rev.71<br>
+    - [libretro] add CPU feature<br>
+    - fix Sound Blaster 16 (OPL3)<br>
+    - GamePort on soundboards<br>
+- Mar 6, 2020<br>
+  - [SDL2/X11] fix default.ttf<br>
 - Mar 2, 2020<br>
   - Using absolute/rerative path in .m3u and .cmd list file<br>
-  - [lr] not remember last HDD mount<br>
+  - [libretro] not remember last HDD mount<br>
 - Feb 18, 2020<br>
   - fix V30 and 286 flag register<br>
 - Feb 4, 2020<br>
@@ -1187,6 +1261,23 @@ Next boot computer, you command from 4.<br>
   - [NP21] お察しください<br>
 - Jun 1, 2017<br>
   - First release<br>
+
+## ToDo
+
+### SDL2
+  - lvgl ?
+
+### libretro
+  - font.bmp
+
+### Linux
+  - GTK3 ?
+
+### Windows
+  - local UTF-8 to Wide conversion
+  - build for Win9x
+  - VST SDK 3
+  - BMS dialog
 
 ## Reference
 

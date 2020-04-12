@@ -51,9 +51,9 @@ CComPara::~CComPara()
  */
 bool CComPara::Initialize(UINT nPort)
 {
-	TCHAR szName[16];
-	wsprintf(szName, TEXT("LPT%u"), nPort);
-	m_hParallel = CreateFile(szName, GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, NULL);
+	wchar_t wName[16];
+	swprintf(wName, 16, L"LPT%u", nPort);
+	m_hParallel = CreateFileW(wName, GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, NULL);
 	return (m_hParallel != INVALID_HANDLE_VALUE);
 }
 

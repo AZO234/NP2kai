@@ -684,7 +684,7 @@ const PALNUM	*s;
 	STOREINTELWORD(bitbuf + 7, sd->height);		// cy
 	bitbuf[9] = 0;								// noninterlace
 
-	bpp = np2max(bpp, 2);
+	bpp = MAX(bpp, 2);
 	bitbuf[10] = (UINT8)bpp;
 	if (file_write(fh, bitbuf, 11) != 11) {
 		goto sswg_err4;

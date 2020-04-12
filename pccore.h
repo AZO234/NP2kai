@@ -42,29 +42,38 @@ enum {
  */
 enum tagSoundId
 {
-	SOUNDID_NONE				= 0,		/*!< No boards */
-	SOUNDID_PC_9801_14			= 0x01,		/*!< PC-9801-14 */ 
-	SOUNDID_PC_9801_26K			= 0x02,		/*!< PC-9801-26K */ 
-	SOUNDID_PC_9801_86			= 0x04,		/*!< PC-9801-86 */ 
-	SOUNDID_PC_9801_86_26K		= 0x06,		/*!< PC-9801-86 + 26K */ 
-	SOUNDID_PC_9801_118			= 0x08,		/*!< PC-9801-118 */
-	SOUNDID_PC_9801_86_ADPCM	= 0x14,		/*!< PC-9801-86 with ADPCM */
-	SOUNDID_SPEAKBOARD			= 0x20,		/*!< Speak board */
-	SOUNDID_86_SPEAKBOARD		= 0x24,		/*!< PC-9801-86 + Speak board */
-	SOUNDID_SPARKBOARD			= 0x40,		/*!< Spark board */
-	SOUNDID_SB16				= 0x41,		/*!< Sound Blaster 16 */
-	SOUNDID_MATE_X_PCM			= 0x60,		/*!< Mate-X PCM */
-	SOUNDID_PC_9801_86_WSS		= 0x64,		/*!< PC-9801-86 + Mate-X PCM(B460) */
-	SOUNDID_PC_9801_86_118		= 0x68,		/*!< PC-9801-86 + PC-9801-118(B460) */
-	SOUNDID_WAVESTAR			= 0x70,		/*!< Wave Star */
-	SOUNDID_AMD98				= 0x80,		/*!< AMD-98 */
-	SOUNDID_SOUNDORCHESTRA		= 0x32,		/*!< SOUND ORCHESTRA */
-	SOUNDID_SOUNDORCHESTRAV		= 0x82,		/*!< SOUND ORCHESTRA-V */
+	SOUNDID_NONE				= 0,		//!< No boards
+	SOUNDID_PC_9801_14			= 0x01,		//!< PC-9801-14
+	SOUNDID_PC_9801_26K			= 0x02,		//!< PC-9801-26K
+	SOUNDID_PC_9801_86			= 0x04,		//!< PC-9801-86
+	SOUNDID_PC_9801_86_26K		= 0x06,		//!< PC-9801-86 + 26K
+	SOUNDID_PC_9801_118			= 0x08,		//!< PC-9801-118
+	SOUNDID_PC_9801_86_ADPCM	= 0x14,		//!< PC-9801-86 with ADPCM
+	SOUNDID_SPEAKBOARD			= 0x20,		//!< Speak board
+	SOUNDID_86_SPEAKBOARD		= 0x24,		//!< PC-9801-86 + Speak board
+	SOUNDID_SPARKBOARD			= 0x40,		//!< Spark board
+#if defined(SUPPORT_SOUND_SB16)
+	SOUNDID_SB16				= 0x41,		//!< Sound Blaster 16
+	SOUNDID_PC_9801_86_WSS_SB16	= 0x42,		//!< PC-9801-86 + Mate-X PCM(B460) + Sound Blaster 16
+	SOUNDID_WSS_SB16			= 0x43,		//!< Mate-X PCM(B460) + Sound Blaster 16
+	SOUNDID_PC_9801_86_SB16		= 0x44,		//!< PC-9801-86 + Sound Blaster 16
+	SOUNDID_PC_9801_118_SB16	= 0x45,		//!< PC-9801-118 + Sound Blaster 16
+	SOUNDID_PC_9801_86_118_SB16 = 0x46,		//!< PC-9801-86 + PC-9801-118(B460) + Sound Blaster 16
+#endif
+	SOUNDID_MATE_X_PCM			= 0x60,		//!< Mate-X PCM
+	SOUNDID_PC_9801_86_WSS		= 0x64,		//!< PC-9801-86 + Mate-X PCM(B460)
+	SOUNDID_PC_9801_86_118		= 0x68,		//!< PC-9801-86 + PC-9801-118(B460)
+	SOUNDID_WAVESTAR			= 0x70,		//!< Wave Star
+	SOUNDID_AMD98				= 0x80,		//!< AMD-98
+	SOUNDID_SOUNDORCHESTRA		= 0x32,		//!< SOUND ORCHESTRA
+	SOUNDID_SOUNDORCHESTRAV		= 0x82,		//!< SOUND ORCHESTRA-V
+	SOUNDID_LITTLEORCHESTRAL	= 0x22,		//!< LITTLE ORCHESTRA L
+	SOUNDID_MMORCHESTRA			= 0x26,		//!< MULTIMEDIA ORCHESTRA
 
 #if defined(SUPPORT_PX)
 	SOUNDID_PX1					= 0x30,
 	SOUNDID_PX2					= 0x50,
-#endif	/* defined(SUPPORT_PX) */
+#endif
 };
 typedef enum tagSoundId		SOUNDID;
 
@@ -161,6 +170,7 @@ struct tagNP2Config
 	UINT8	sndsb16io;
 	UINT8	sndsb16dma;
 	UINT8	sndsb16irq;
+	UINT8	sndsb16at;
 #endif	/* SUPPORT_SOUND_SB16 */
 
 	UINT8	BEEP_VOL;
@@ -285,6 +295,7 @@ struct tagNP2Config
 	OEMCHAR	cpu_brandstring_o[64]; // ブランド名（48byte）OEMCHAR
 	UINT32	cpu_brandid; // ブランドID
 	UINT32  cpu_feature_ecx; // ECX機能フラグ
+	UINT32  cpu_eflags_mask; // EFLAGSマスク
 	
 	UINT8	fpu_type; // FPU種類（0=Berkeley SoftFloat, 1=DOSBox FPU, 2=DOSBox FPU+INT64）
 	
@@ -297,6 +308,10 @@ struct tagNP2Config
 	
 	UINT8	usecdecc; // CD-ROM EDC/ECC エミュレーションサポート
 	UINT8	cddtskip; // CD-ROM オーディオ再生時にデータトラックをスキップ
+
+#if defined(SUPPORT_GAMEPORT)
+	UINT8	gameport; // 118音源のゲームポートを使用する
+#endif
 };
 typedef struct tagNP2Config  NP2CFG;		/*!< The define of config */
 
@@ -374,24 +389,19 @@ void pccore_postevent(UINT32 event);
 #ifdef SUPPORT_ASYNC_CPU
 extern int asynccpu_lateflag;
 extern int asynccpu_fastflag;
-#if !defined(__LIBRETRO__) && !defined(NP2_SDL2) && !defined(NP2_X11)
-#if !defined (_WINDOWS) 
-typedef union {
-    struct {
-        UINT32 LowPart;
-        SINT32 HighPart;
-    } u;
-    SINT64 QuadPart;
-} LARGE_INTEGER;
-#endif
 extern LARGE_INTEGER asynccpu_lastclock;
 extern LARGE_INTEGER asynccpu_clockpersec;
 extern LARGE_INTEGER asynccpu_clockcount;
-#else
-extern UINT64 asynccpu_lastclock;
-extern UINT64 asynccpu_clockpersec;
-extern UINT64 asynccpu_clockcount;
 #endif
+
+#if defined(CPUCORE_IA32)
+extern int GetCpuTypeIndex();
+extern int SetCpuTypeIndex(UINT index);
+#endif
+
+#if !defined(_WINDOWS) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+extern BOOL QueryPerformanceCounter(LARGE_INTEGER* count);
+extern BOOL QueryPerformanceFrequency(LARGE_INTEGER* freq);
 #endif
 
 #ifdef __cplusplus

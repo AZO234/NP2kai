@@ -9,6 +9,7 @@
 #include	"kbdmng.h"
 #include	"pccore.h"
 #include	"iocore.h"
+#include	"dosio.h"
 #include	"pc9861k.h"
 #include	"mpu98ii.h"
 #if defined(SUPPORT_SMPU98)
@@ -35,6 +36,7 @@
 #include	"wab/wab.h"
 #include	"wab/wabbmpsave.h"
 #endif
+#include	"font/font.h"
 
 static UINT bmpno = 0;
 
@@ -465,103 +467,143 @@ static void sys_cmd(MENUID id) {
 			break;
 
 		case MID_NOSOUND:
-			np2cfg.SOUND_SW = 0x00;
+			np2cfg.SOUND_SW = SOUNDID_NONE;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_PC9801_14:
-			np2cfg.SOUND_SW = 0x01;
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_14;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_PC9801_26K:
-			np2cfg.SOUND_SW = 0x02;
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_26K;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_PC9801_86:
-			np2cfg.SOUND_SW = 0x04;
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_86;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_PC9801_26_86:
-			np2cfg.SOUND_SW = 0x06;
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_86_26K;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_PC9801_86_CB:
-			np2cfg.SOUND_SW = 0x14;
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_86_ADPCM;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_PC9801_118:
-			np2cfg.SOUND_SW = 0x08;
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_118;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_PC9801_86_MX:
-			np2cfg.SOUND_SW = 0x64;
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_86_WSS;
+			update |= SYS_UPDATECFG;
+			break;
+
+		case MID_PC9801_86_118:
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_86_118;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_PC9801_MX:
-			np2cfg.SOUND_SW = 0x60;
+			np2cfg.SOUND_SW = SOUNDID_MATE_X_PCM;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_SPEAKBOARD:
-			np2cfg.SOUND_SW = 0x20;
+			np2cfg.SOUND_SW = SOUNDID_SPEAKBOARD;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_SPEAKBOARD86:
-			np2cfg.SOUND_SW = 0x24;
+			np2cfg.SOUND_SW = SOUNDID_86_SPEAKBOARD;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_SPARKBOARD:
-			np2cfg.SOUND_SW = 0x40;
+			np2cfg.SOUND_SW = SOUNDID_SPARKBOARD;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_SOUNDORCHESTRA:
-			np2cfg.SOUND_SW = 0x32;
+			np2cfg.SOUND_SW = SOUNDID_SOUNDORCHESTRA;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_SOUNDORCHESTRAV:
-			np2cfg.SOUND_SW = 0x82;
+			np2cfg.SOUND_SW = SOUNDID_SOUNDORCHESTRAV;
+			update |= SYS_UPDATECFG;
+			break;
+
+		case MID_LITTLEORCHESTRAL:
+			np2cfg.SOUND_SW = SOUNDID_LITTLEORCHESTRAL;
+			update |= SYS_UPDATECFG;
+			break;
+
+		case MID_MMORCHESTRA:
+			np2cfg.SOUND_SW = SOUNDID_MMORCHESTRA;
 			update |= SYS_UPDATECFG;
 			break;
 
 #if defined(SUPPORT_SOUND_SB16)
 		case MID_SB16:
-			np2cfg.SOUND_SW = 0x41;
+			np2cfg.SOUND_SW = SOUNDID_SB16;
 			update |= SYS_UPDATECFG;
 			break;
-#endif	/* SUPPORT_SOUND_SB16 */
+
+		case MID_86_SB16:
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_86_SB16;
+			update |= SYS_UPDATECFG;
+			break;
+
+		case MID_MX_SB16:
+			np2cfg.SOUND_SW = SOUNDID_WSS_SB16;
+			update |= SYS_UPDATECFG;
+			break;
+
+		case MID_118_SB16:
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_118_SB16;
+			update |= SYS_UPDATECFG;
+			break;
+
+		case MID_86MXSB16:
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_86_WSS_SB16;
+			update |= SYS_UPDATECFG;
+			break;
+
+		case MID_86118SB16:
+			np2cfg.SOUND_SW = SOUNDID_PC_9801_86_118_SB16;
+			update |= SYS_UPDATECFG;
+			break;
+#endif
 
 		case MID_AMD98:
-			np2cfg.SOUND_SW = 0x80;
+			np2cfg.SOUND_SW = SOUNDID_AMD98;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_WAVESTAR:
-			np2cfg.SOUND_SW = 0x70;
+			np2cfg.SOUND_SW = SOUNDID_WAVESTAR;
 			update |= SYS_UPDATECFG;
 			break;
 
 #if defined(SUPPORT_PX)
 		case MID_PX1:
-			np2cfg.SOUND_SW = 0x30;
+			np2cfg.SOUND_SW = SOUNDID_PX1;
 			update |= SYS_UPDATECFG;
 			break;
 
 		case MID_PX2:
-			np2cfg.SOUND_SW = 0x50;
+			np2cfg.SOUND_SW = SOUNDID_PX2;
 			update |= SYS_UPDATECFG;
 			break;
-#endif	/* defined(SUPPORT_PX) */
+#endif
 
 		case MID_PC9801_118_ROM:
 			np2cfg.snd118rom ^= 1;
@@ -573,7 +615,7 @@ static void sys_cmd(MENUID id) {
 			np2cfg.usefmgen ^= 1;
 			update |= SYS_UPDATECFG;
 			break;
-#endif	/* SUPPORT_FMGEN */
+#endif
 
 		case MID_JASTSND:
 			np2oscfg.jastsnd ^= 1;
@@ -704,6 +746,15 @@ static void sys_cmd(MENUID id) {
 					bmpfilenumber = 0;
 				}
 				initsave();
+			}
+			break;
+
+		case MID_HF_ENABLE:
+			hf_enable ^= 1;
+			if(hf_enable) {
+				hook_fontrom_defenable();
+			} else {
+				hook_fontrom_defdisable();
 			}
 			break;
 
@@ -937,6 +988,7 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 	menusys_setcheck(MID_FASTMEMCHK, (np2cfg.memcheckspeed > 1));
 #endif
+	menusys_setcheck(MID_HF_ENABLE, (hf_enable == 1));
 	return(menusys_open(x, y));
 }
 

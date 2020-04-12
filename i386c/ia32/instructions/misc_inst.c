@@ -122,10 +122,17 @@ _CPUID(void)
 		break;
 
 	case 2:
-		CPU_EAX = 0;
-		CPU_EBX = 0;
-		CPU_ECX = 0;
-		CPU_EDX = 0;
+		if(i386cpuid.cpu_family >= 6){
+			CPU_EAX = 0x1;
+			CPU_EBX = 0;
+			CPU_ECX = 0;
+			CPU_EDX = 0x43; // 512KB L2 Cache のふり
+		}else{
+			CPU_EAX = 0;
+			CPU_EBX = 0;
+			CPU_ECX = 0;
+			CPU_EDX = 0;
+		}
 		break;
 		
 	case 0x80000000:

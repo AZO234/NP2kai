@@ -33,7 +33,7 @@ extern COMMNG cm_pc9861ch2;
 #endif
 
 /**
- * @brief COM Ë®≠ÂÆö
+ * @brief COM ê›íË
  */
 class SerialOptComPage : public CPropPageProc
 {
@@ -47,9 +47,9 @@ protected:
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 
 private:
-	COMMNG m_cm;				//!< „Éë„É©„É°„Çø
-	COMCFG& m_cfg;				//!< „Ç≥„É≥„Éï„Ç£„Ç∞
-	UINT8 m_pentabfa;			//!< „Éö„É≥„Çø„Éñ„Ç¢„Çπ„Éö„ÇØ„ÉàÊØîÂõ∫ÂÆö
+	COMMNG m_cm;				//!< ÉpÉâÉÅÉ^
+	COMCFG& m_cfg;				//!< ÉRÉìÉtÉBÉO
+	UINT8 m_pentabfa;			//!< ÉyÉìÉ^ÉuÉAÉXÉyÉNÉgî‰å≈íË
 	CWndProc m_chkpentabfa;		//!< Pen tablet fixed aspect mode
 	CWndProc m_chkfixedspeed;	//!< Fixed speed mode
 	CComboData m_port;			//!< Port
@@ -65,7 +65,7 @@ private:
 	void UpdateControls();
 };
 
-//! „Éù„Éº„Éà
+//! É|Å[Ég
 static const CComboData::Entry s_port[] =
 {
 	{MAKEINTRESOURCE(IDS_NONCONNECT),	COMPORT_NONE},
@@ -82,7 +82,7 @@ static const CComboData::Entry s_port[] =
 #endif
 };
 
-//! „Ç≠„É£„É©„ÇØ„Çø „Çµ„Ç§„Ç∫
+//! ÉLÉÉÉâÉNÉ^ ÉTÉCÉY
 static const CComboData::Value s_chars[] =
 {
 	{5,	0x00},
@@ -91,7 +91,7 @@ static const CComboData::Value s_chars[] =
 	{8,	0x0c},
 };
 
-//! „Éë„É™„ÉÜ„Ç£
+//! ÉpÉäÉeÉB
 static const CComboData::Entry s_parity[] =
 {
     {MAKEINTRESOURCE(IDS_PARITY_NONE),	0x00},
@@ -99,7 +99,7 @@ static const CComboData::Entry s_parity[] =
 	{MAKEINTRESOURCE(IDS_PARITY_EVEN),	0x30},
 };
 
-//! „Çπ„Éà„ÉÉ„Éó „Éì„ÉÉ„Éà
+//! ÉXÉgÉbÉv ÉrÉbÉg
 static const CComboData::Entry s_sbit[] =
 {
     {MAKEINTRESOURCE(IDS_1),			0x40},
@@ -108,10 +108,10 @@ static const CComboData::Entry s_sbit[] =
 };
 
 /**
- * „Ç≥„É≥„Çπ„Éà„É©„ÇØ„Çø
- * @param[in] nCaption „Ç≠„É£„Éó„Ç∑„Éß„É≥ ID
- * @param[in] cm „Éë„É©„É°„Éº„Çø
- * @param[in] cfg „Ç≥„É≥„Éï„Ç£„Ç∞
+ * ÉRÉìÉXÉgÉâÉNÉ^
+ * @param[in] nCaption ÉLÉÉÉvÉVÉáÉì ID
+ * @param[in] cm ÉpÉâÉÅÅ[É^
+ * @param[in] cfg ÉRÉìÉtÉBÉO
  */
 SerialOptComPage::SerialOptComPage(UINT nCaption, COMMNG cm, COMCFG& cfg)
 	: CPropPageProc(IDD_SERIAL1, nCaption)
@@ -121,16 +121,16 @@ SerialOptComPage::SerialOptComPage(UINT nCaption, COMMNG cm, COMCFG& cfg)
 }
 
 /**
- * „Éá„Çπ„Éà„É©„ÇØ„Çø
+ * ÉfÉXÉgÉâÉNÉ^
  */
 SerialOptComPage::~SerialOptComPage()
 {
 }
 
 /**
- * „Åì„ÅÆ„É°„ÇΩ„ÉÉ„Éâ„ÅØ WM_INITDIALOG „ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„Å´ÂøúÁ≠î„Åó„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @retval TRUE ÊúÄÂàù„ÅÆ„Ç≥„É≥„Éà„É≠„Éº„É´„Å´ÂÖ•Âäõ„Éï„Ç©„Éº„Ç´„Çπ„ÇíË®≠ÂÆö
- * @retval FALSE Êó¢„Å´Ë®≠ÂÆöÊ∏à
+ * Ç±ÇÃÉÅÉ\ÉbÉhÇÕ WM_INITDIALOG ÇÃÉÅÉbÉZÅ[ÉWÇ…âûìöÇµÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @retval TRUE ç≈èâÇÃÉRÉìÉgÉçÅ[ÉãÇ…ì¸óÕÉtÉHÅ[ÉJÉXÇê›íË
+ * @retval FALSE ä˘Ç…ê›íËçœ
  */
 BOOL SerialOptComPage::OnInitDialog()
 {
@@ -191,6 +191,11 @@ BOOL SerialOptComPage::OnInitDialog()
 	m_pipename.SetWindowText(m_cfg.pipename);
 	m_pipeserv.SubclassDlgItem(IDC_COM1PIPESERV, this);
 	m_pipeserv.SetWindowText(m_cfg.pipeserv);
+	{
+		TCHAR pipecmd[MAX_PATH*3];
+		_stprintf(pipecmd, _T("\\\\%s\\pipe\\%s"), m_cfg.pipeserv, m_cfg.pipename);
+		SetDlgItemText(IDC_COM1STR32, pipecmd);
+	}
 #endif
 
 	UpdateControls();
@@ -200,7 +205,7 @@ BOOL SerialOptComPage::OnInitDialog()
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå OK „ÅÆ„Éú„Çø„É≥ (IDOK ID „Åå„ÅÆ„Éú„Çø„É≥) „Çí„ÇØ„É™„ÉÉ„ÇØ„Åô„Çã„Å®Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
+ * ÉÜÅ[ÉUÅ[Ç™ OK ÇÃÉ{É^Éì (IDOK ID Ç™ÇÃÉ{É^Éì) ÇÉNÉäÉbÉNÇ∑ÇÈÇ∆åƒÇ—èoÇ≥ÇÍÇ‹Ç∑
  */
 void SerialOptComPage::OnOK()
 {
@@ -305,10 +310,10 @@ void SerialOptComPage::OnOK()
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå„É°„Éã„É•„Éº„ÅÆÈ†ÖÁõÆ„ÇíÈÅ∏Êäû„Åó„Åü„Å®„Åç„Å´„ÄÅ„Éï„É¨„Éº„É†„ÉØ„Éº„ÇØ„Å´„Çà„Å£„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @param[in] wParam „Éë„É©„É°„Çø
- * @param[in] lParam „Éë„É©„É°„Çø
- * @retval TRUE „Ç¢„Éó„É™„Ç±„Éº„Ç∑„Éß„É≥„Åå„Åì„ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„ÇíÂá¶ÁêÜ„Åó„Åü
+ * ÉÜÅ[ÉUÅ[Ç™ÉÅÉjÉÖÅ[ÇÃçÄñ⁄ÇëIëÇµÇΩÇ∆Ç´Ç…ÅAÉtÉåÅ[ÉÄÉèÅ[ÉNÇ…ÇÊÇ¡ÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @param[in] wParam ÉpÉâÉÅÉ^
+ * @param[in] lParam ÉpÉâÉÅÉ^
+ * @retval TRUE ÉAÉvÉäÉPÅ[ÉVÉáÉìÇ™Ç±ÇÃÉÅÉbÉZÅ[ÉWÇèàóùÇµÇΩ
  */
 BOOL SerialOptComPage::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -325,12 +330,27 @@ BOOL SerialOptComPage::OnCommand(WPARAM wParam, LPARAM lParam)
 		case IDC_COM1PENTABFA:
 			m_pentabfa = (m_chkpentabfa.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0);
 			return TRUE;
+			
+#if defined(SUPPORT_NAMED_PIPE)
+		case IDC_COM1PIPENAME:
+		case IDC_COM1PIPESERV:
+		{
+			TCHAR pipename[MAX_PATH];
+			TCHAR pipeserv[MAX_PATH];
+			TCHAR pipecmd[MAX_PATH*3];
+			GetDlgItemText(IDC_COM1PIPENAME, pipename, _countof(pipename));
+			GetDlgItemText(IDC_COM1PIPESERV, pipeserv, _countof(pipeserv));
+			_stprintf(pipecmd, _T("\\\\%s\\pipe\\%s"), pipeserv, pipename);
+			SetDlgItemText(IDC_COM1STR32, pipecmd);
+			return TRUE;
+		}
+#endif
 	}
 	return FALSE;
 }
 
 /**
- * „Ç≥„É≥„Éà„É≠„Éº„É´Êõ¥Êñ∞
+ * ÉRÉìÉgÉçÅ[ÉãçXêV
  */
 void SerialOptComPage::UpdateControls()
 {
@@ -389,7 +409,7 @@ void SerialOptComPage::UpdateControls()
 	static const UINT pipe[] =
 	{
 		IDC_COM1PIPENAME, IDC_COM1PIPESERV,
-		IDC_COM1STR30, IDC_COM1STR31
+		IDC_COM1STR30, IDC_COM1STR31, IDC_COM1STR32
 	};
 	for (UINT i = 0; i < _countof(pipe); i++)
 	{
@@ -404,7 +424,7 @@ void SerialOptComPage::UpdateControls()
 // ----
 
 /**
- * @brief 61 „Éö„Éº„Ç∏
+ * @brief 61 ÉyÅ[ÉW
  */
 class SerialOpt61Page : public CPropPageProc
 {
@@ -419,8 +439,8 @@ protected:
 	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	UINT8 m_sw[3];				//!< „Çπ„Ç§„ÉÉ„ÉÅ
-	UINT8 m_jmp[6];				//!< „Ç∏„É£„É≥„Éë
+	UINT8 m_sw[3];				//!< ÉXÉCÉbÉ`
+	UINT8 m_jmp[6];				//!< ÉWÉÉÉìÉp
 	CComboData m_speed[2];		//!< Speed
 	CComboData m_int[2];		//!< INT
 	CComboData m_sync[2];		//!< Mode
@@ -467,7 +487,7 @@ static const CComboData::Value s_int2[] =
 	{6,	0x0c},
 };
 
-//! ÂêåÊúüÊñπÊ≥ï
+//! ìØä˙ï˚ñ@
 static const CComboData::Entry s_sync[] =
 {
 	{MAKEINTRESOURCE(IDS_SYNC),		0x03},
@@ -477,7 +497,7 @@ static const CComboData::Entry s_sync[] =
 };
 
 /**
- * „Ç≥„É≥„Çπ„Éà„É©„ÇØ„Çø
+ * ÉRÉìÉXÉgÉâÉNÉ^
  */
 SerialOpt61Page::SerialOpt61Page()
 	: CPropPageProc(IDD_PC9861A)
@@ -487,16 +507,16 @@ SerialOpt61Page::SerialOpt61Page()
 }
 
 /**
- * „Éá„Çπ„Éà„É©„ÇØ„Çø
+ * ÉfÉXÉgÉâÉNÉ^
  */
 SerialOpt61Page::~SerialOpt61Page()
 {
 }
 
 /**
- * „Åì„ÅÆ„É°„ÇΩ„ÉÉ„Éâ„ÅØ WM_INITDIALOG „ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„Å´ÂøúÁ≠î„Åó„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @retval TRUE ÊúÄÂàù„ÅÆ„Ç≥„É≥„Éà„É≠„Éº„É´„Å´ÂÖ•Âäõ„Éï„Ç©„Éº„Ç´„Çπ„ÇíË®≠ÂÆö
- * @retval FALSE Êó¢„Å´Ë®≠ÂÆöÊ∏à
+ * Ç±ÇÃÉÅÉ\ÉbÉhÇÕ WM_INITDIALOG ÇÃÉÅÉbÉZÅ[ÉWÇ…âûìöÇµÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @retval TRUE ç≈èâÇÃÉRÉìÉgÉçÅ[ÉãÇ…ì¸óÕÉtÉHÅ[ÉJÉXÇê›íË
+ * @retval FALSE ä˘Ç…ê›íËçœ
  */
 BOOL SerialOpt61Page::OnInitDialog()
 {
@@ -525,7 +545,7 @@ BOOL SerialOpt61Page::OnInitDialog()
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå OK „ÅÆ„Éú„Çø„É≥ (IDOK ID „Åå„ÅÆ„Éú„Çø„É≥) „Çí„ÇØ„É™„ÉÉ„ÇØ„Åô„Çã„Å®Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
+ * ÉÜÅ[ÉUÅ[Ç™ OK ÇÃÉ{É^Éì (IDOK ID Ç™ÇÃÉ{É^Éì) ÇÉNÉäÉbÉNÇ∑ÇÈÇ∆åƒÇ—èoÇ≥ÇÍÇ‹Ç∑
  */
 void SerialOpt61Page::OnOK()
 {
@@ -556,10 +576,10 @@ void SerialOpt61Page::OnOK()
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå„É°„Éã„É•„Éº„ÅÆÈ†ÖÁõÆ„ÇíÈÅ∏Êäû„Åó„Åü„Å®„Åç„Å´„ÄÅ„Éï„É¨„Éº„É†„ÉØ„Éº„ÇØ„Å´„Çà„Å£„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @param[in] wParam „Éë„É©„É°„Çø
- * @param[in] lParam „Éë„É©„É°„Çø
- * @retval TRUE „Ç¢„Éó„É™„Ç±„Éº„Ç∑„Éß„É≥„Åå„Åì„ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„ÇíÂá¶ÁêÜ„Åó„Åü
+ * ÉÜÅ[ÉUÅ[Ç™ÉÅÉjÉÖÅ[ÇÃçÄñ⁄ÇëIëÇµÇΩÇ∆Ç´Ç…ÅAÉtÉåÅ[ÉÄÉèÅ[ÉNÇ…ÇÊÇ¡ÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @param[in] wParam ÉpÉâÉÅÉ^
+ * @param[in] lParam ÉpÉâÉÅÉ^
+ * @retval TRUE ÉAÉvÉäÉPÅ[ÉVÉáÉìÇ™Ç±ÇÃÉÅÉbÉZÅ[ÉWÇèàóùÇµÇΩ
  */
 BOOL SerialOpt61Page::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -597,11 +617,11 @@ BOOL SerialOpt61Page::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * CWndProc „Ç™„Éñ„Ç∏„Çß„ÇØ„Éà„ÅÆ Windows „Éó„É≠„Ç∑„Éº„Ç∏„É£ (WindowProc) „ÅåÁî®ÊÑè„Åï„Çå„Å¶„ÅÑ„Åæ„Åô
- * @param[in] nMsg Âá¶ÁêÜ„Åï„Çå„Çã Windows „É°„ÉÉ„Çª„Éº„Ç∏„ÇíÊåáÂÆö„Åó„Åæ„Åô
- * @param[in] wParam „É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÂá¶ÁêÜ„Åß‰Ωø„ÅÜ‰ªòÂä†ÊÉÖÂ†±„ÇíÊèê‰æõ„Åó„Åæ„Åô„ÄÇ„Åì„ÅÆ„Éë„É©„É°„Éº„Çø„ÅÆÂÄ§„ÅØ„É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åó„Åæ„Åô
- * @param[in] lParam „É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÂá¶ÁêÜ„Åß‰Ωø„ÅÜ‰ªòÂä†ÊÉÖÂ†±„ÇíÊèê‰æõ„Åó„Åæ„Åô„ÄÇ„Åì„ÅÆ„Éë„É©„É°„Éº„Çø„ÅÆÂÄ§„ÅØ„É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åó„Åæ„Åô
- * @return „É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åô„ÇãÂÄ§„ÇíËøî„Åó„Åæ„Åô
+ * CWndProc ÉIÉuÉWÉFÉNÉgÇÃ Windows ÉvÉçÉVÅ[ÉWÉÉ (WindowProc) Ç™ópà”Ç≥ÇÍÇƒÇ¢Ç‹Ç∑
+ * @param[in] nMsg èàóùÇ≥ÇÍÇÈ Windows ÉÅÉbÉZÅ[ÉWÇéwíËÇµÇ‹Ç∑
+ * @param[in] wParam ÉÅÉbÉZÅ[ÉWÇÃèàóùÇ≈égÇ§ïtâ¡èÓïÒÇíÒãüÇµÇ‹Ç∑ÅBÇ±ÇÃÉpÉâÉÅÅ[É^ÇÃílÇÕÉÅÉbÉZÅ[ÉWÇ…àÀë∂ÇµÇ‹Ç∑
+ * @param[in] lParam ÉÅÉbÉZÅ[ÉWÇÃèàóùÇ≈égÇ§ïtâ¡èÓïÒÇíÒãüÇµÇ‹Ç∑ÅBÇ±ÇÃÉpÉâÉÅÅ[É^ÇÃílÇÕÉÅÉbÉZÅ[ÉWÇ…àÀë∂ÇµÇ‹Ç∑
+ * @return ÉÅÉbÉZÅ[ÉWÇ…àÀë∂Ç∑ÇÈílÇï‘ÇµÇ‹Ç∑
  */
 LRESULT SerialOpt61Page::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -620,9 +640,9 @@ LRESULT SerialOpt61Page::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * „Ç≥„É≥„Éà„É≠„Éº„É´Ë®≠ÂÆö
- * @param[in] sw Ë®≠ÂÆöÂÄ§
- * @param[in] jmp Ë®≠ÂÆöÂÄ§
+ * ÉRÉìÉgÉçÅ[Éãê›íË
+ * @param[in] sw ê›íËíl
+ * @param[in] jmp ê›íËíl
  */
 void SerialOpt61Page::Set(const UINT8* sw, const UINT8* jmp)
 {
@@ -636,10 +656,10 @@ void SerialOpt61Page::Set(const UINT8* sw, const UINT8* jmp)
 }
 
 /**
- * „É¢„Éº„Éâ„ÇíÂæó„Çã
- * @param[in] nIndex „Éù„Éº„Éà
- * @param[in] cMode „Éá„Éï„Ç©„É´„ÉàÂÄ§
- * @return „É¢„Éº„Éâ
+ * ÉÇÅ[ÉhÇìæÇÈ
+ * @param[in] nIndex É|Å[Ég
+ * @param[in] cMode ÉfÉtÉHÉãÉgíl
+ * @return ÉÇÅ[Éh
  */
 UINT8 SerialOpt61Page::GetMode(UINT nIndex, UINT8 cMode)
 {
@@ -665,9 +685,9 @@ UINT8 SerialOpt61Page::GetMode(UINT nIndex, UINT8 cMode)
 }
 
 /**
- * „É¢„Éº„Éâ„ÇíË®≠ÂÆö
- * @param[in] nIndex „Éù„Éº„Éà
- * @param[in] cMode „É¢„Éº„Éâ
+ * ÉÇÅ[ÉhÇê›íË
+ * @param[in] nIndex É|Å[Ég
+ * @param[in] cMode ÉÇÅ[Éh
  */
 void SerialOpt61Page::SetMode(UINT nIndex, UINT8 cMode)
 {
@@ -692,9 +712,9 @@ void SerialOpt61Page::SetMode(UINT nIndex, UINT8 cMode)
 }
 
 /**
- * Êõ¥Êñ∞
- * @param[in] nIndex „Éù„Éº„Éà
- * @param[out] cMode „É¢„Éº„Éâ
+ * çXêV
+ * @param[in] nIndex É|Å[Ég
+ * @param[out] cMode ÉÇÅ[Éh
  */
 void SerialOpt61Page::UpdateMode(UINT nIndex, UINT8& cMode)
 {
@@ -708,7 +728,7 @@ void SerialOpt61Page::UpdateMode(UINT nIndex, UINT8& cMode)
 }
 
 /**
- * DIPSW „Çí„Çø„ÉÉ„Éó„Åó„Åü
+ * DIPSW ÇÉ^ÉbÉvÇµÇΩ
  */
 void SerialOpt61Page::OnDipSw()
 {
@@ -730,7 +750,7 @@ void SerialOpt61Page::OnDipSw()
 	CopyMemory(sw, m_sw, sizeof(sw));
 	CopyMemory(jmp, m_jmp, sizeof(jmp));
 
-	if ((p.y >= 1) && (p.y < 3))					// 1ÊÆµÁõÆ
+	if ((p.y >= 1) && (p.y < 3))					// 1íiñ⁄
 	{
 		if ((p.x >= 1) && (p.x < 7))				// S1
 		{
@@ -745,7 +765,7 @@ void SerialOpt61Page::OnDipSw()
 			sw[2] ^= (1 << (p.x - 17));
 		}
 	}
-	else if ((p.y >= 4) && (p.y < 6))				// 2ÊÆµÁõÆ
+	else if ((p.y >= 4) && (p.y < 6))				// 2íiñ⁄
 	{
 		if ((p.x >= 1) && (p.x < 7))				// J1
 		{
@@ -760,7 +780,7 @@ void SerialOpt61Page::OnDipSw()
 			jmp[2] = (1 << (p.x - 17));
 		}
 	}
-	else if ((p.y >= 7) && (p.y < 9))				// 3ÊÆµÁõÆ
+	else if ((p.y >= 7) && (p.y < 9))				// 3íiñ⁄
 	{
 		if ((p.x >= 1) && (p.x < 9))				// J4
 		{
@@ -789,8 +809,8 @@ void SerialOpt61Page::OnDipSw()
 // ----
 
 /**
- * „Ç∑„É™„Ç¢„É´Ë®≠ÂÆö
- * @param[in] hwndParent Ë¶™„Ç¶„Ç£„É≥„Éâ„Ç¶
+ * ÉVÉäÉAÉãê›íË
+ * @param[in] hwndParent êeÉEÉBÉìÉhÉE
  */
 void dialog_serial(HWND hwndParent)
 {

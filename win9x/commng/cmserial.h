@@ -1,6 +1,6 @@
 /**
  * @file	cmserial.h
- * @brief	ã‚·ãƒªã‚¢ãƒ« ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
+ * @brief	ƒVƒŠƒAƒ‹ ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
  */
 
 #pragma once
@@ -10,7 +10,7 @@
 extern const UINT32 cmserial_speed[11];
 
 /**
- * @brief commng ã‚·ãƒªã‚¢ãƒ« ãƒ‡ãƒã‚¤ã‚¹ ã‚¯ãƒ©ã‚¹
+ * @brief commng ƒVƒŠƒAƒ‹ ƒfƒoƒCƒX ƒNƒ‰ƒX
  */
 class CComSerial : public CComBase
 {
@@ -22,13 +22,18 @@ protected:
 	virtual ~CComSerial();
 	virtual UINT Read(UINT8* pData);
 	virtual UINT Write(UINT8 cData);
+	virtual UINT WriteRetry();
+	virtual UINT LastWriteSuccess(); // ÅŒã‚Ì‘‚«‚İ‚ª¬Œ÷‚µ‚Ä‚¢‚é‚©ƒ`ƒFƒbƒN
 	virtual UINT8 GetStat();
 	virtual INTPTR Message(UINT nMessage, INTPTR nParam);
 
 private:
-	HANDLE m_hSerial;		/*!< ã‚·ãƒªã‚¢ãƒ« ãƒãƒ³ãƒ‰ãƒ« */
+	HANDLE m_hSerial;		/*!< ƒVƒŠƒAƒ‹ ƒnƒ“ƒhƒ‹ */
 
-	bool m_fixedspeed;	/*!< é€šä¿¡é€Ÿåº¦å›ºå®š */
+	bool m_fixedspeed;	/*!< ’ÊM‘¬“xŒÅ’è */
+	UINT8 m_lastdata; // ÅŒã‚É‘—‚ë‚¤‚Æ‚µ‚½ƒf[ƒ^
+	UINT8 m_lastdatafail; // ƒf[ƒ^‚ğ‘—‚é‚Ì‚É¸”s‚µ‚Ä‚¢‚½‚ç0ˆÈŠO
+	DWORD m_lastdatatime; // ƒf[ƒ^‚ğ‘—‚é‚Ì‚É¸”s‚µ‚½ŠÔi‚ ‚Ü‚è‚É‚à¸”s‚µ‘±‚¯‚é‚æ‚¤‚È‚ç–³‹‚·‚éj
 
 	bool Initialize(UINT nPort, UINT8 cParam, UINT32 nSpeed, UINT8 fixedspeed);
 };

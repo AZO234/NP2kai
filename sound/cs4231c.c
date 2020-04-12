@@ -137,9 +137,9 @@ void cs4231_dma(NEVENTITEM item) {
 			// バッファに空きがあればデータを読み出す
 			if(!w31play || !(cs4231.reg.featurestatus & (PI|TI|CI))){
 				if (cs4231.bufsize * cs4231_playcountshift[cs4231.reg.datafmt >> 4] / 4 - 4 > cs4231.bufdatas) {
-					rem = np2min(cs4231.bufsize - 4 - cs4231.bufdatas, CS4231_MAXDMAREADBYTES); //読み取り単位は16bitステレオの1サンプル分(4byte)にしておかないと雑音化する
+					rem = MIN(cs4231.bufsize - 4 - cs4231.bufdatas, CS4231_MAXDMAREADBYTES); //読み取り単位は16bitステレオの1サンプル分(4byte)にしておかないと雑音化する
 					pos = cs4231.bufwpos & CS4231_BUFMASK; // バッファ書き込み位置
-					size = np2min(rem, dmach->startcount); // バッファ書き込みサイズ
+					size = MIN(rem, dmach->startcount); // バッファ書き込みサイズ
 					r = dmac_getdata_(dmach, cs4231.buffer, pos, size); // DMA読み取り実行
 					cs4231.bufwpos = (cs4231.bufwpos + r) & CS4231_BUFMASK; // バッファ書き込み位置を更新
 					cs4231.bufdatas += r; // バッファ内の有効なデータ数を更新 = (bufwpos-bufpos)&CS4231_BUFMASK
@@ -154,11 +154,11 @@ void cs4231_dma(NEVENTITEM item) {
 					playcountsmp_Ictl = 1;
 				if(playcountsmp_Ictl > CS4231_MAXDMAREADBYTES) 
 					playcountsmp_Ictl = CS4231_MAXDMAREADBYTES;
-				//int playcountsmp = np2min(playcountsmpmax, r / cs4231_playcountshift[cs4231.reg.datafmt >> 4])-4;
+				//int playcountsmp = MIN(playcountsmpmax, r / cs4231_playcountshift[cs4231.reg.datafmt >> 4])-4;
 				//if(playcountsmp < CS4231_MINDMAREADBYTES) 
 				//	playcountsmp = CS4231_MINDMAREADBYTES*2;
 
-				//playcountsmp = np2min(np2max(r, CS4231_MAXDMAREADBYTES/4) / cs4231_playcountshift[cs4231.reg.datafmt >> 4], playcountsmp) / 2;
+				//playcountsmp = MIN(MAX(r, CS4231_MAXDMAREADBYTES/4) / cs4231_playcountshift[cs4231.reg.datafmt >> 4], playcountsmp) / 2;
 				//neventms = playcountsmp * 1000 / cs4231cfg.rate;
 				//if(neventms <= 0) neventms = 1;
 				//cnt = pccore.realclock / cs4231cfg.rate * 32;
@@ -248,7 +248,7 @@ static void setdataalign(void) {
 	step = (0 - cs4231.bufpos) & 3;
 	if (step) {
 		cs4231.bufpos += step;
-		cs4231.bufdatas -= np2min(step, cs4231.bufdatas);
+		cs4231.bufdatas -= MIN(step, cs4231.bufdatas);
 	}
 	cs4231.bufdatas &= ~3;
 	step = (0 - cs4231.bufwpos) & 3;
@@ -386,7 +386,7 @@ UINT dmac_getdata_(DMACH dmach, UINT8 *buf, UINT offset, UINT size) {
 	
 	lengsum = 0;
 	while(size > 0) {
-		leng = np2min(dmach->leng.w, size);
+		leng = MIN(dmach->leng.w, size);
 		if (leng) {
 			int playcount = ((cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8))) * cs4231_playcountshift[cs4231.reg.datafmt >> 4]; // PI割り込みを発生させるサンプル数(Playback Base register) * サンプルあたりのバイト数
 			if(cs4231.totalsample + (SINT32)leng > playcount){

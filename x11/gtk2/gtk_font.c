@@ -264,7 +264,7 @@ fontmng_getdrawsize(void *hdl, const char *str, POINT_T *pt)
 			memcpy(buf, str, len * sizeof(char));
 			buf[len] = '\0';
 			getlength1(fhdl, &fdat, buf, len);
-			width = posx + np2max(fdat.width, fdat.pitch);
+			width = posx + MAX(fdat.width, fdat.pitch);
 			posx += fdat.pitch;
 		}
 	}

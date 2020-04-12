@@ -1,9 +1,18 @@
-#include	"compiler.h"
-#include	"strres.h"
-#include	"resource.h"
-#include	"np2.h"
-#include	"sysmng.h"
-#include	"dialog.h"
+/**
+ * @file	d_bms.cpp
+ * @brief	BMS設定ダイアログ
+ */
+
+#include "compiler.h"
+#include "resource.h"
+#include "dialog.h"
+#include "c_combodata.h"
+#include "np2.h"
+#include "soundmng.h"
+#include "sysmng.h"
+#include "misc/DlgProc.h"
+#include "pccore.h"
+#include "common/strres.h"
 
 #include	"bmsio.h"
 
@@ -136,5 +145,13 @@ LRESULT CALLBACK BMSDialogProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 	return(TRUE);
 }
 
-
+/**
+ * BMS設定ダイアログ
+ * @param[in] hwndParent 親ウィンドウ
+ */
+void dialog_bms(HWND hwndParent)
+{
+	CBMSDlg dlg(hwndParent);
+	dlg.DoModal();
+}
 #endif

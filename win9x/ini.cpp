@@ -9,6 +9,9 @@
 #include "np2.h"
 #include "np2arg.h"
 #include "dosio.h"
+#if defined(SUPPORT_BMS)
+#include "bmsio.h"
+#endif
 #include "ini.h"
 #include "winkbd.h"
 #include "pccore.h"
@@ -554,6 +557,7 @@ static const PFTBL s_IniItems[] =
 	PFVAL("optsb16p", PFTYPE_HEX8,		&np2cfg.sndsb16io),
 	PFVAL("optsb16d", PFTYPE_UINT8,		&np2cfg.sndsb16dma),
 	PFVAL("optsb16i", PFTYPE_UINT8,		&np2cfg.sndsb16irq),
+	PFVAL("optsb16A", PFTYPE_BOOL,		&np2cfg.sndsb16at),
 #endif	/* SUPPORT_SOUND_SB16 */
 	
 	PFMAX("volume_M", PFTYPE_UINT8,		&np2cfg.vol_master,		100),
@@ -602,7 +606,13 @@ static const PFTBL s_IniItems[] =
 	PFEXT("FDDRIVE2", PFRO_BITMAP,		&np2cfg.fddequip,		1),
 	PFEXT("FDDRIVE3", PFRO_BITMAP,		&np2cfg.fddequip,		2),
 	PFEXT("FDDRIVE4", PFRO_BITMAP,		&np2cfg.fddequip,		3),
-	
+
+#if defined(SUPPORT_BMS)
+	PFEXT("Use_BMS_", PFTYPE_BOOL,		&bmsiocfg.enabled,		0),
+	PFEXT("BMS_Port", PFTYPE_HEX16,		&bmsiocfg.port,			0),
+	PFEXT("BMS_Size", PFTYPE_UINT8,		&bmsiocfg.numbanks,		0),
+#endif
+
 #if defined(SUPPORT_NET)
 	PFSTR("NP2NETTAP", PFTYPE_STR,		np2cfg.np2nettap),
 	PFVAL("NP2NETPMM", PFTYPE_BOOL,		&np2cfg.np2netpmm),
@@ -663,6 +673,7 @@ static const PFTBL s_IniItems[] =
 	PFSTR("cpu_bran", PFRO_STR,			np2cfg.cpu_brandstring_o),
 	PFVAL("cpu_brid", PFTYPE_HEX32,		&np2cfg.cpu_brandid),
 	PFVAL("cpu_fecx", PFTYPE_HEX32,		&np2cfg.cpu_feature_ecx),
+	PFVAL("cpu_eflg", PFTYPE_HEX32,		&np2cfg.cpu_eflags_mask),
 
 	PFMAX("FPU_TYPE", PFTYPE_UINT8,		&np2cfg.fpu_type,		0), // FPU種類
 	
@@ -682,6 +693,9 @@ static const PFTBL s_IniItems[] =
 #if defined(SUPPORT_IDEIO)
 	PFVAL("IDEBADDR", PFRO_HEX8,		&np2cfg.idebaddr), // IDE BIOS アドレス（デフォルト：D8h(D8000h)）
 #endif
+#if defined(SUPPORT_GAMEPORT)
+	PFVAL("GAMEPORT", PFTYPE_BOOL,		&np2cfg.gameport),
+#endif
 
 	
 
@@ -697,6 +711,8 @@ static const PFTBL s_IniItems[] =
 	PFAND("clock_up", PFRO_HEX32,		&np2oscfg.clk_color1,	0xffffff),
 	PFAND("clock_dn", PFRO_HEX32,		&np2oscfg.clk_color2,	0xffffff),
 
+	PFVAL("use_sstp", PFTYPE_BOOL,		&np2oscfg.sstp),
+	PFVAL("sstpport", PFTYPE_UINT16,	&np2oscfg.sstpport),
 	PFVAL("comfirm_", PFTYPE_BOOL,		&np2oscfg.comfirm),
 	PFVAL("shortcut", PFTYPE_HEX8,		&np2oscfg.shortcut),
 

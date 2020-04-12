@@ -8,6 +8,7 @@
 #undef NTDDI_VERSION
 #define NTDDI_VERSION NTDDI_WINXP
 #include <WinUsb.h>
+#include <wchar.h>
 
 /**
  * @brief USB アクセス クラス
@@ -29,9 +30,9 @@ private:
 	WINUSB_INTERFACE_HANDLE m_hWinUsb;	/*!< WinUSB */
 	UCHAR m_cOutPipeId;					/*!< パイプ ID */
 	UCHAR m_cInPipeId;					/*!< パイプ id */
-	static LPTSTR GetDevicePath(const GUID& InterfaceGuid, LPTSTR lpDevicePath, int cchDevicePath);
+	static LPSTR GetDevicePath(const GUID& InterfaceGuid, LPSTR lpDevicePath, int cchDevicePath);
 	bool Open(const GUID& InterfaceGuid);
-	bool OpenDevice(LPCTSTR lpDevicePath);
+	bool OpenDevice(LPWCSTR wDevicePath);
 };
 
 /**

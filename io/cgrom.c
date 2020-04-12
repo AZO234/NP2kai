@@ -58,6 +58,8 @@ static void IOOUTCALL cgrom_oa1(UINT port, REG8 dat) {
 	CGROM	cr;
 
 //	TRACEOUT(("%.4x:%.2x [%.4x:%.4x]", port, dat, CPU_CS, CPU_IP));
+	hf_codeul |= 0x1;
+	hf_count = 0;
 	cr = &cgrom;
 	cr->code = (dat << 8) | (cr->code & 0xff);
 	cgwindowset(cr);
@@ -70,6 +72,8 @@ static void IOOUTCALL cgrom_oa3(UINT port, REG8 dat) {
 	CGROM	cr;
 
 //	TRACEOUT(("%.4x:%.2x [%.4x:%.4x]", port, dat, CPU_CS, CPU_IP));
+	hf_codeul |= 0x2;
+	hf_count = 0;
 	cr = &cgrom;
 	cr->code = (cr->code & 0xff00) | dat;
 	cgwindowset(cr);
@@ -113,16 +117,31 @@ const UINT8	*ptr;
 	type = cr->code & 0x00ff;
 	if ((type >= 0x09) && (type < 0x0c)) {							// ver0.78
 		if (!cr->lr) {
+			if(hf_codeul && hf_count == 0) {
+				hook_fontrom((cr->code & 0x7f7f) << 4);
+				hf_codeul = 0;
+				hf_count++;
+			}
 			ptr += (cr->code & 0x7f7f) << 4;
 			return(ptr[cr->line & 0x0f]);
 		}
 	}
 	else if (cr->code & 0xff00) {
+		if(hf_codeul && hf_count == 0) {
+			hook_fontrom((cr->code & 0x7f7f) << 4);
+			hf_codeul = 0;
+			hf_count++;
+		}
 		ptr += (cr->code & 0x7f7f) << 4;
 		ptr += cr->lr;
 		return(ptr[cr->line & 0x0f]);
 	}
 	else if (!(cr->line & 0x10)) {		// 半角
+		if(hf_codeul && hf_count == 0) {
+			hook_fontrom(0x80000 + (cr->code << 4));
+			hf_codeul = 0;
+			hf_count++;
+		}
 		ptr += 0x80000;
 		ptr += cr->code << 4;
 		return(ptr[cr->line]);

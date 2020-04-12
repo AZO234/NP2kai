@@ -117,6 +117,21 @@ void nevent_progress(void)
 //	TRACEOUT(("nextbase = %d (%d)", nextbase, CPU_REMCLOCK));
 }
 
+void nevent_changeclock(UINT32 oldclock, UINT32 newclock)
+{
+	UINT i;
+	NEVENTID id;
+	NEVENTITEM item;
+
+	for (i = 0; i < g_nevent.readyevents; i++)
+	{
+		id = g_nevent.level[i];
+		item = &g_nevent.item[id];
+		if(item->clock > 0){
+			item->clock = item->clock * newclock / oldclock;
+		}
+	}
+}
 
 void nevent_reset(NEVENTID id)
 {

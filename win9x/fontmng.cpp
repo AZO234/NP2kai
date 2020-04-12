@@ -1,6 +1,6 @@
 #include	"compiler.h"
 #include	"fontmng.h"
-
+#include	"codecnv/codecnv.h"
 
 typedef struct {
 	int			fontsize;
@@ -146,11 +146,11 @@ void fontmng_destroy(void *hdl) {
 // ----
 
 static void getlength1(FNTMNG fhdl, FNTDAT fdat,
-										const OEMCHAR *string, int length) {
+										const wchar_t *string, int length) {
 
 	SIZE	fntsize;
 
-	if (GetTextExtentPoint32(fhdl->hdcimage, string, length, &fntsize)) {
+	if (GetTextExtentPoint32W(fhdl->hdcimage, string, length, &fntsize)) {
 		fntsize.cx = min(fntsize.cx, fhdl->bmpwidth);
 		fdat->width = fntsize.cx;
 		fdat->pitch = fntsize.cx;
@@ -165,12 +165,15 @@ static void getlength1(FNTMNG fhdl, FNTDAT fdat,
 static void fontmng_getchar(FNTMNG fhdl, FNTDAT fdat, const OEMCHAR *string) {
 
 	int		leng;
+	UINT16	c[8];
+	OEMCHAR* startstr = (OEMCHAR*)string;
 
 	FillRect(fhdl->hdcimage, &fhdl->rect,
 										(HBRUSH)GetStockObject(BLACK_BRUSH));
-	leng = milstr_charsize(string);
-	TextOut(fhdl->hdcimage, 0, 0, string, leng);
-	getlength1(fhdl, fdat, string, leng);
+	codecnv_utf8toucs2(c, 8, string, -1);
+	leng = codecnv_ucs2len(c);
+	TextOutW(fhdl->hdcimage, 0, 0, (wchar_t*)c, leng);
+	getlength1(fhdl, fdat, (wchar_t*)c, leng);
 }
 
 BRESULT fontmng_getsize(void *hdl, const OEMCHAR *string, POINT_T *pt) {
@@ -179,6 +182,7 @@ BRESULT fontmng_getsize(void *hdl, const OEMCHAR *string, POINT_T *pt) {
 	OEMCHAR	buf[4];
 	_FNTDAT	fdat;
 	int		leng;
+	UINT16	c[8];
 
 	if ((hdl == NULL) || (string == NULL)) {
 		goto fmgs_exit;
@@ -193,7 +197,9 @@ BRESULT fontmng_getsize(void *hdl, const OEMCHAR *string, POINT_T *pt) {
 		CopyMemory(buf, string, leng * sizeof(OEMCHAR));
 		buf[leng] = '\0';
 		string += leng;
-		getlength1((FNTMNG)hdl, &fdat, buf, leng);
+		codecnv_utf8toucs2(c, 8, buf, -1);
+		leng = codecnv_ucs2len(c);
+		getlength1((FNTMNG)hdl, &fdat, (wchar_t*)c, leng);
 		width += fdat.pitch;
 	}
 
@@ -214,6 +220,7 @@ BRESULT fontmng_getdrawsize(void *hdl, const OEMCHAR *string, POINT_T *pt) {
 	int		width;
 	int		posx;
 	int		leng;
+	UINT16	c[8];
 
 	if ((hdl == NULL) || (string == NULL)) {
 		goto fmgds_exit;
@@ -229,7 +236,8 @@ BRESULT fontmng_getdrawsize(void *hdl, const OEMCHAR *string, POINT_T *pt) {
 		CopyMemory(buf, string, leng * sizeof(OEMCHAR));
 		buf[leng] = '\0';
 		string += leng;
-		getlength1((FNTMNG)hdl, &fdat, buf, leng);
+		codecnv_utf8toucs2(c, 8, buf, -1);
+		getlength1((FNTMNG)hdl, &fdat, (wchar_t*)c, leng);
 		width = posx + max(fdat.width, fdat.pitch);
 		posx += fdat.pitch;
 	}
@@ -291,7 +299,6 @@ FNTDAT fontmng_get(void *hdl, const OEMCHAR *string) {
 
 	FNTMNG	fhdl;
 	FNTDAT	fdat;
-
 	if ((hdl == NULL) || (string == NULL)) {
 		goto ftmggt_err;
 	}

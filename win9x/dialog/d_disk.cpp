@@ -19,12 +19,14 @@
 #include "fdd/newdisk.h"
 #include "fdd/sxsi.h"
 #include "np2class.h"
+#include "winfiledlg.h"
 #if defined(_WINDOWS)
 #include	<process.h>
 #endif
 #ifdef SUPPORT_NVL_IMAGES
 extern "C" BOOL nvl_check();
 #endif
+#include "dialog/winfiledlg.h"
 
 
 // 進捗表示用（実装酷すぎ･･･）
@@ -40,25 +42,27 @@ void dialog_changefdd(HWND hWnd, REG8 drv)
 {
 	if (drv < 4)
 	{
-		LPCTSTR lpPath = fdd_diskname(drv);
-		if ((lpPath == NULL) || (lpPath[0] == '\0'))
+		char szPath[MAX_PATH];
+		char szImage[MAX_PATH];
+		char szName[MAX_PATH];
+
+		strcpy(szPath, fdd_diskname(drv));
+		if ((szPath == NULL) || (szPath[0] == '\0'))
 		{
-			lpPath = fddfolder;
+			strcpy(szPath, fddfolder);
 		}
 
 		std::tstring rExt(LoadTString(IDS_FDDEXT));
 		std::tstring rFilter(LoadTString(IDS_FDDFILTER));
 		std::tstring rTitle(LoadTString(IDS_FDDTITLE));
 
-		CFileDlg dlg(TRUE, rExt.c_str(), lpPath, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, rFilter.c_str(), hWnd);
-		dlg.m_ofn.lpstrTitle = rTitle.c_str();
-		dlg.m_ofn.nFilterIndex = 8; // 3;
-		if (dlg.DoModal())
+		OPENFILENAMEW ofnw;
+		if (WinFileDialogW(hWnd, &ofnw, WINFILEDIALOGW_MODE_GET1, szPath, szName, "", rTitle.c_str(), rFilter.c_str(), 8))
 		{
-			LPCTSTR lpImage = dlg.GetPathName();
-			BOOL bReadOnly = dlg.GetReadOnlyPref();
+			LPCTSTR lpImage = szPath;
+			BOOL bReadOnly = (ofnw.Flags & OFN_READONLY) ? TRUE : FALSE;
 
-			file_cpyname(fddfolder, lpImage, _countof(fddfolder));
+			file_cpyname(fddfolder, szImage, _countof(fddfolder));
 			sysmng_update(SYS_UPDATEOSCFG);
 			diskdrv_setfdd(drv, lpImage, bReadOnly);
 			toolwin_setfdd(drv, lpImage);
@@ -135,31 +139,35 @@ void dialog_changehdd(HWND hWnd, REG8 drv)
 		return;
 	}
 
-	LPCTSTR lpPath;
+	char szPath[MAX_PATH];
+	char szImage[MAX_PATH];
+	char szName[MAX_PATH];
 #ifdef SUPPORT_IDEIO
 	if(np2cfg.idetype[drv]!=SXSIDEV_CDROM)
 	{
 #endif
-		lpPath = diskdrv_getsxsi(drv);
+		strcpy(szPath, diskdrv_getsxsi(drv));
 #ifdef SUPPORT_IDEIO
 	}
 	else
 	{
-		lpPath = np2cfg.idecd[drv];
+		strcpy(szPath, np2cfg.idecd[drv]);
 	}
 #endif
-	if ((lpPath == NULL) || (lpPath[0] == '\0') || _tcsnicmp(lpPath, OEMTEXT("\\\\.\\"), 4)==0)
+	if ((szPath == NULL) || (szPath[0] == '\0') || _tcsnicmp(szPath, OEMTEXT("\\\\.\\"), 4)==0)
 	{
-		lpPath = sxsi_getfilename(drv);
-		if ((lpPath == NULL) || (lpPath[0] == '\0') || _tcsnicmp(lpPath, OEMTEXT("\\\\.\\"), 4)==0)
+		if(sxsi_getfilename(drv)) {
+			strcpy(szPath, sxsi_getfilename(drv));
+		}
+		if ((szPath == NULL) || (szPath[0] == '\0') || _tcsnicmp(szPath, OEMTEXT("\\\\.\\"), 4)==0)
 		{
 			if(sxsi_getdevtype(drv)!=SXSIDEV_CDROM)
 			{
-				lpPath = hddfolder;
+				strcpy(szPath, hddfolder);
 			}
 			else
 			{
-				lpPath = cdfolder;
+				strcpy(szPath, cdfolder);
 			}
 		}
 	}
@@ -193,26 +201,24 @@ void dialog_changehdd(HWND hWnd, REG8 drv)
 		}
 	}
 
-	CFileDlg dlg(TRUE, rExt.c_str(), lpPath, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_SHAREAWARE, rFilter.c_str(), hWnd);
-	dlg.m_ofn.lpstrTitle = rTitle.c_str();
-	dlg.m_ofn.nFilterIndex = nIndex;
-	if (dlg.DoModal())
+	OPENFILENAMEW ofnw;
+	if (WinFileDialogW(hWnd, &ofnw, WINFILEDIALOGW_MODE_GET2, szPath, szName, "", rTitle.c_str(), rFilter.c_str(), nIndex))
 	{
-		LPCTSTR lpImage = dlg.GetPathName();
+		strcpy(szImage, szPath);
 #ifdef SUPPORT_IDEIO
 		if(np2cfg.idetype[drv]!=SXSIDEV_CDROM)
 		{
-			file_cpyname(hddfolder, lpImage, _countof(hddfolder));
+			file_cpyname(hddfolder, szImage, _countof(hddfolder));
 		}
 		else
 		{
 #endif
-			file_cpyname(cdfolder, lpImage, _countof(cdfolder));
+			file_cpyname(cdfolder, szImage, _countof(cdfolder));
 #ifdef SUPPORT_IDEIO
 		}
 #endif
 		sysmng_update(SYS_UPDATEOSCFG);
-		diskdrv_setsxsi(drv, lpImage);
+		diskdrv_setsxsi(drv, szImage);
 	}
 }
 
@@ -975,7 +981,8 @@ static unsigned int __stdcall newdisk_ThreadFunc(LPVOID vdParam)
 void dialog_newdisk_ex(HWND hWnd, int mode)
 {
 	unsigned int dwID;
-	TCHAR szPath[MAX_PATH];
+	char szPath[MAX_PATH];
+	char szName[MAX_PATH];
 	std::tstring rTitle;
 	std::tstring rDefExt;
 	std::tstring rFilter;
@@ -1010,15 +1017,13 @@ void dialog_newdisk_ex(HWND hWnd, int mode)
 #endif	// defined(SUPPORT_SCSI)
 	}
 
-
-	CFileDlg fileDlg(FALSE, rDefExt.c_str(), szPath, OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY, rFilter.c_str(), hWnd);
-	fileDlg.m_ofn.lpstrTitle = rTitle.c_str();
-	if (fileDlg.DoModal() != IDOK)
+	OPENFILENAMEW ofnw;
+	if (WinFileDialogW(hWnd, &ofnw, WINFILEDIALOGW_MODE_SET, szPath, szName, rDefExt.c_str(), rTitle.c_str(), rFilter.c_str(), 0))
 	{
 		return;
 	}
 
-	LPCTSTR lpPath = fileDlg.GetPathName();
+	LPCTSTR lpPath = szPath;
 	LPCTSTR ext = file_getext(lpPath);
 	if (!file_cmpname(ext, str_thd))
 	{

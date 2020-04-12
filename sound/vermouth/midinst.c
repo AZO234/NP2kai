@@ -3,20 +3,11 @@
 #include	"midiout.h"
 
 
-#if defined(SUPPORT_ARC)
-#include	"arc.h"
-#define	_FILEH				ARCFH
-#define	_FILEH_INVALID		NULL
-#define _file_open			arcex_fileopen
-#define	_file_read			arc_fileread
-#define	_file_close			arc_fileclose
-#else
 #define	_FILEH				FILEH
 #define	_FILEH_INVALID		FILEH_INVALID
 #define _file_open			file_open
 #define	_file_read			file_read
 #define	_file_close			file_close
-#endif
 
 
 // GUS format references:  http://www.onicos.com/staff/iz/formats/guspat.html
@@ -398,7 +389,7 @@ const UINT8		*d;
 				if (sampdat < 0) {
 					sampdat *= -1;
 				}
-				sampmax = np2max(sampmax, sampdat);
+				sampmax = MAX(sampmax, sampdat);
 			} while(--cnt);
 			layer->volume = 32768 * 128 / sampmax;
 		}

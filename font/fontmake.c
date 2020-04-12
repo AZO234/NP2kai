@@ -156,8 +156,8 @@ const UINT8	*p;
 		dat = fontmng_get(fnt, work);
 #endif
 		if (dat) {
-			width = np2min(dat->width, 8);
-			height = np2min(dat->height, 16);
+			width = MIN(dat->width, 8);
+			height = MIN(dat->height, 16);
 			p = (UINT8 *)(dat + 1);
 			q = ptr;
 			while(height > 0) {
@@ -231,8 +231,8 @@ const UINT8	*p;
 				dat = fontmng_get(fnt, work);
 #endif
 				if (dat) {
-					width = np2min(dat->width, 16);
-					height = np2min(dat->height, 16);
+					width = MIN(dat->width, 16);
+					height = MIN(dat->height, 16);
 					p = (UINT8 *)(dat + 1);
 					q = ptr;
 					while(height > 0) {

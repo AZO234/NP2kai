@@ -122,11 +122,11 @@ BOOL CIdeDlg::OnInitDialog()
 	
 	m_nudrwait.SubclassDlgItem(IDC_IDERWAIT, this);
 	_stprintf(numbuf, _T("%d"), np2cfg.iderwait);
-	m_nudrwait.SetWindowTextW(numbuf);
+	m_nudrwait.SetWindowText(numbuf);
 
 	m_nudwwait.SubclassDlgItem(IDC_IDEWWAIT, this);
 	_stprintf(numbuf, _T("%d"), np2cfg.idewwait);
-	m_nudwwait.SetWindowTextW(numbuf);
+	m_nudwwait.SetWindowText(numbuf);
 	
 	m_chkautoidebios.SubclassDlgItem(IDC_AUTOIDEBIOS, this);
 	if(np2cfg.autoidebios){
@@ -193,7 +193,7 @@ void CIdeDlg::OnOK()
 		np2cfg.allowcdtraycmd = (m_chkallowtraycmd.SendMessage(BM_GETCHECK , 0 , 0) ? 1 : 0);
 		update |= SYS_UPDATECFG;
 	}
-	m_nudrwait.GetWindowTextW(numbuf, 30);
+	m_nudrwait.GetWindowText(numbuf, 30);
 	valtmp = _ttol(numbuf);
 	if (valtmp < 0) valtmp = 0;
 	if (valtmp > 100000000) valtmp = 100000000;
@@ -202,7 +202,7 @@ void CIdeDlg::OnOK()
 		np2cfg.iderwait = valtmp;
 		update |= SYS_UPDATECFG;
 	}
-	m_nudwwait.GetWindowTextW(numbuf, 30);
+	m_nudwwait.GetWindowText(numbuf, 30);
 	valtmp = _ttol(numbuf);
 	if (valtmp < 0) valtmp = 0;
 	if (valtmp > 100000000) valtmp = 100000000;
@@ -267,7 +267,7 @@ LRESULT CIdeDlg::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 			lpnud = (LPNMUPDOWN)lParam;
 			if(lpnud->hdr.code == UDN_DELTAPOS)
 			{
-				m_nudrwait.GetWindowTextW(numbuf, 30);
+				m_nudrwait.GetWindowText(numbuf, 30);
 				nudnum = _ttol(numbuf);
 				if(lpnud->iDelta > 0)
 				{
@@ -280,14 +280,14 @@ LRESULT CIdeDlg::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 					else nudnum++;
 				}
 				_stprintf(numbuf, _T("%d"), nudnum);
-				m_nudrwait.SetWindowTextW(numbuf);
+				m_nudrwait.SetWindowText(numbuf);
 			}
 			break;
 		case IDC_SPINIDEWWAIT:
 			lpnud = (LPNMUPDOWN)lParam;
 			if(lpnud->hdr.code == UDN_DELTAPOS)
 			{
-				m_nudwwait.GetWindowTextW(numbuf, 30);
+				m_nudwwait.GetWindowText(numbuf, 30);
 				nudnum = _ttol(numbuf);
 				if(lpnud->iDelta > 0)
 				{
@@ -300,7 +300,7 @@ LRESULT CIdeDlg::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 					else nudnum++;
 				}
 				_stprintf(numbuf, _T("%d"), nudnum);
-				m_nudwwait.SetWindowTextW(numbuf);
+				m_nudwwait.SetWindowText(numbuf);
 			}
 			break;
 	}

@@ -8,7 +8,7 @@
 #ifdef SUPPORT_PHYSICAL_CDDRV
 
 #include	<winioctl.h>
-#include	<api/ntddcdrm.h>
+#include	<ntddcdrm.h>
 
 #endif
 
@@ -19,6 +19,9 @@
 #include	"diskimage/cd/cdd_ccd.h"
 #include	"diskimage/cd/cdd_mds.h"
 #include	"diskimage/cd/cdd_nrg.h"
+#ifdef SUPPORT_PHYSICAL_CDDRV
+#include	"diskimage/cd/cdd_real.h"
+#endif
 
 BRESULT sxsicd_open(SXSIDEV sxsi, const OEMCHAR *fname) {
 
@@ -210,7 +213,7 @@ static REG8 sec2048_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 		return(0xd0);
 	}
 	while(size) {
-		rsize = np2min(size, 2048);
+		rsize = MIN(size, 2048);
 		CPU_REMCLOCK -= rsize;
 		if (file_read(fh, buf, rsize) != rsize) {
 			return(0xd0);
@@ -273,7 +276,7 @@ static REG8 sec2352_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 		if (file_seek(fh, fpos, FSEEK_SET) != fpos) {
 			return(0xd0);
 		}
-		rsize = np2min(size, 2048);
+		rsize = MIN(size, 2048);
 		CPU_REMCLOCK -= rsize;
 		if (file_read(fh, buf, rsize) != rsize) {
 			return(0xd0);
@@ -362,7 +365,7 @@ static BRESULT openimg(SXSIDEV sxsi, const OEMCHAR *path,
 	cdinfo->fh = fh;
 	cdinfo->type = type;
 	if ((trk != NULL) && (trks != 0)) {
-		trks = np2min(trks, NELEMENTS(cdinfo->trk) - 1);
+		trks = MIN(trks, NELEMENTS(cdinfo->trk) - 1);
 		CopyMemory(cdinfo->trk, trk, trks * sizeof(_CDTRK));
 	}
 	else {

@@ -15,13 +15,15 @@
 class CComPipe : public CComBase
 {
 public:
-	static CComPipe* CreateInstance(LPCTSTR pipename, LPCTSTR servername);
+	static CComPipe* CreateInstance(LPCSTR pipename, LPCSTR servername);
 
 protected:
 	CComPipe();
 	virtual ~CComPipe();
 	virtual UINT Read(UINT8* pData);
 	virtual UINT Write(UINT8 cData);
+	virtual UINT WriteRetry(); // 書き込み損なっていたら再書き込みする
+	virtual UINT LastWriteSuccess(); // 最後の書き込みが成功しているかチェック
 	virtual UINT8 GetStat();
 	virtual INTPTR Message(UINT nMessage, INTPTR nParam);
 
@@ -30,8 +32,11 @@ private:
 	bool m_isserver;		/*!< サーバーかどうか */
 	OEMCHAR	m_pipename[MAX_PATH]; // The name of the named-pipe
 	OEMCHAR	m_pipeserv[MAX_PATH]; // The server name of the named-pipe
+	UINT8 m_lastdata; // 最後に送ろうとしたデータ
+	UINT8 m_lastdatafail; // データを送るのに失敗していたら0以外
+	DWORD m_lastdatatime; // データを送るのに失敗した時間（あまりにも失敗し続けるようなら無視する）
 
-	bool Initialize(LPCTSTR pipename, LPCTSTR servername);
+	bool Initialize(LPCSTR pipename, LPCSTR servername);
 };
 
 #endif
