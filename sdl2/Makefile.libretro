@@ -111,9 +111,9 @@ else ifeq ($(platform), osx)
 		ENDIANNESS_DEFINES += -DMSB_FIRST
 	endif
 	OSX_LT_MAVERICKS = `(( $(OSXVER) <= 9)) && echo "YES"`
-	LDFLAGS += -mmacosx-version-min=10.7 -stdlib=libc++
-	CFLAGS += -mmacosx-version-min=10.7
-	CXXFLAGS += -mmacosx-version-min=10.7 -std=libc++
+	LDFLAGS += -mmacosx-version-min=10.8
+	CFLAGS += -mmacosx-version-min=10.8
+	CXXFLAGS += -mmacosx-version-min=10.8 -DUSE_STD_NAMESPACE
 	ifndef ($(NOUNIVERSAL))
 		CFLAGS	+= $(ARCHFLAGS)
 		CXXFLAGS	+= $(ARCHFLAGS)
@@ -141,21 +141,19 @@ else ifneq (,$(findstring ios,$(platform)))
 		endif
 		ifeq ($(platform), ios-arm64)
 			CC = cc -arch arm64 -isysroot $(IOSSDK)
-			CXX = c++ -arch arm64 -isysroot $(IOSSDK) -stdlib=libc++
-			LDFLAGS = -stdlib=libc++
+			CXX = c++ -arch arm64 -isysroot $(IOSSDK)
 		else
 			CC = cc -arch armv7 -isysroot $(IOSSDK)
-			CXX = c++ -arch armv7 -isysroot $(IOSSDK) -stdlib=libc++
-			LDFLAGS = -stdlib=libc++
+			CXX = c++ -arch armv7 -isysroot $(IOSSDK)
 		endif
 		ifeq ($(platform),$(filter $(platform),ios9 ios-arm64))
 			CC							 += -miphoneos-version-min=8.0
-			CXX							+= -miphoneos-version-min=8.0 -std=libc++
-			PLATFORM_DEFINES += -miphoneos-version-min=8.0 -stdlib=libc++
+			CXX							+= -miphoneos-version-min=8.0
+			PLATFORM_DEFINES += -miphoneos-version-min=8.0
 		else
 			CC							 += -miphoneos-version-min=5.0
-			CXX							+= -miphoneos-version-min=5.0 -std=libc++
-			PLATFORM_DEFINES += -miphoneos-version-min=5.0 -stdlib=libc++
+			CXX							+= -miphoneos-version-min=5.0
+			PLATFORM_DEFINES += -miphoneos-version-min=5.0
 		endif
 	endif
 
@@ -164,7 +162,6 @@ else ifeq ($(platform), tvos-arm64)
 	TARGET := $(TARGET_NAME)_libretro_tvos.dylib
 	fpic = -fPIC
 	SHARED := -dynamiclib
-	LDFLAGS = -stdlib=libc++
 	ifeq ($(IOSSDK),)
 		IOSSDK := $(shell xcodebuild -version -sdk appletvos Path)
 	endif

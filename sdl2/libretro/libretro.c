@@ -503,9 +503,11 @@ void updateInput(){
       input = input_cb(0, RETRO_DEVICE_JOYPAD, 0, j2k_pad[i]);
       if(input && !j2k_down[i]) {
         send_libretro_key_down(j2k_key[i]);
+        lr_np2kai_key_down[i] = 1;
         j2k_down[i] = 1;
       } else if (!input && j2k_down[i]) {
         send_libretro_key_up(j2k_key[i]);
+        lr_np2kai_key_down[i] = 0;
         j2k_down[i] = 0;
       }
     }
@@ -513,10 +515,13 @@ void updateInput(){
   } else {
     for(i = 0; i < keys_needed; i++) {
       input = input_cb(0, RETRO_DEVICE_KEYBOARD, 0, keys_to_poll[i]);
-      if(input && !lr_np2kai_key_down[i])
+      if(input && !lr_np2kai_key_down[i]) {
         send_libretro_key_down(keys_to_poll[i]);
-      else if(!input && lr_np2kai_key_down[i])
+        lr_np2kai_key_down[i] = 1;
+      } else if(!input && lr_np2kai_key_down[i]) {
         send_libretro_key_up(keys_to_poll[i]);
+        lr_np2kai_key_down[i] = 0;
+      }
     }
   }
 
