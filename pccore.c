@@ -86,8 +86,8 @@
 #define	CPU_BRAND_ID_AUTO	(0xffffffff)
 #define	CPU_EFLAGS_MASK		(0)
 #endif
-#if defined(SUPPORT_IA32_HAXM)
 #include	"np2_tickcount.h"
+#if defined(SUPPORT_IA32_HAXM)
 #include	"i386hax/haxfunc.h"
 #include	"i386hax/haxcore.h"
 #include	"dmax86.h"
