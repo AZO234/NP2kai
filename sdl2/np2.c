@@ -823,7 +823,7 @@ havemmx(void)
 #else	/* GCC_CPU_ARCH_IA32 */
 	int rv;
 
-#if defined(GCC_CPU_ARCH_AMD64)
+#if defined(GCC_CPU_ARCH_AMD64) || defined(__ANDROID__)
 	rv = 1;
 #else	/* !GCC_CPU_ARCH_AMD64 */
 	asm volatile (

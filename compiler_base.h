@@ -41,9 +41,6 @@
 // not define _UNICODE, UNICODE now
 #endif
 #if defined(__cplusplus)
-//#if defined(__APPLE__)
-//#include <bits/stdc++.h>
-//#endif
 #include <cstdio>
 #include <cstdlib>  // include cwchar
 #include <cstddef>
@@ -291,6 +288,18 @@ typedef int  BOOL;
 #if defined(__cpluscplus)
 #undef  THISCALL
 #endif
+
+#if defined(__ANDROID__) && defined(__i386__)  // temporary
+#define CDECL
+#define STDCALL
+#define FASTCALL
+#define SAFECALL
+#define CLRCALL
+#define VECTORCALL
+#if defined(__cpluscplus)
+#define THISCALL
+#endif
+#else
 #if defined(_MSC_VER)
 #define CDECL      __cdecl
 #define STDCALL    __stdcall
@@ -321,6 +330,7 @@ typedef int  BOOL;
 #define VECTORCALL
 #if defined(__cpluscplus)
 #define THISCALL
+#endif
 #endif
 #endif
 
