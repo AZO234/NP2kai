@@ -111,9 +111,10 @@ else ifeq ($(platform), osx)
 		ENDIANNESS_DEFINES += -DMSB_FIRST
 	endif
 	OSX_LT_MAVERICKS = `(( $(OSXVER) <= 9)) && echo "YES"`
-	LDFLAGS += -mmacosx-version-min=10.8
-	CFLAGS += -mmacosx-version-min=10.8
-	CXXFLAGS += -mmacosx-version-min=10.8
+	CXX_VER = -std=c++11
+	CFLAGS += -mmacosx-version-min=10.7
+	CXXFLAGS += -mmacosx-version-min=10.7 -stdlib=libc++
+	LDFLAGS += -mmacosx-version-min=10.7 -stdlib=libc++
 	ifndef ($(NOUNIVERSAL))
 		CFLAGS	+= $(ARCHFLAGS)
 		CXXFLAGS	+= $(ARCHFLAGS)
@@ -124,7 +125,6 @@ else ifeq ($(platform), osx)
 else ifneq (,$(findstring ios,$(platform)))
 	# Theos iOS
 	ifeq ($(platform), theos_ios)
-		HAS_GCC := 0
 		DEPLOYMENT_IOSVERSION = 5.0
 		TARGET = iphone:latest:$(DEPLOYMENT_IOSVERSION)
 		ARCHS = armv7 armv7s arm64
@@ -139,6 +139,7 @@ else ifneq (,$(findstring ios,$(platform)))
 		ifeq ($(IOSSDK),)
 			IOSSDK := $(shell xcodebuild -version -sdk iphoneos Path)
 		endif
+		CXX_VER = -std=c++11
 		ifeq ($(platform), ios-arm64)
 			CC = cc -arch arm64 -isysroot $(IOSSDK)
 			CXX = c++ -arch arm64 -isysroot $(IOSSDK)
@@ -147,13 +148,13 @@ else ifneq (,$(findstring ios,$(platform)))
 			CXX = c++ -arch armv7 -isysroot $(IOSSDK)
 		endif
 		ifeq ($(platform),$(filter $(platform),ios9 ios-arm64))
-			CC							 += -miphoneos-version-min=8.0
-			CXX							+= -miphoneos-version-min=8.0
-			PLATFORM_DEFINES += -miphoneos-version-min=8.0
+			CFLAGS += -miphoneos-version-min=8.0
+			CXXFLAGS += -miphoneos-version-min=8.0 -stdlib=libc++
+			LDFLAGS += -miphoneos-version-min=8.0 -stdlib=libc++
 		else
-			CC							 += -miphoneos-version-min=5.0
-			CXX							+= -miphoneos-version-min=5.0
-			PLATFORM_DEFINES += -miphoneos-version-min=5.0
+			CFLAGS += -miphoneos-version-min=5.0
+			CXXFLAGS += -miphoneos-version-min=5.0 -stdlib=libc++
+			LDFLAGS += -miphoneos-version-min=5.0 -stdlib=libc++
 		endif
 	endif
 
@@ -165,6 +166,8 @@ else ifeq ($(platform), tvos-arm64)
 	ifeq ($(IOSSDK),)
 		IOSSDK := $(shell xcodebuild -version -sdk appletvos Path)
 	endif
+	CXX_VER = -std=c++11
+	LDFLAGS += -stdlib=libc++
 
 # QNX
 else ifeq ($(platform), qnx)
@@ -234,6 +237,7 @@ else ifeq ($(platform), psp1)
 	TARGET := $(TARGET_NAME)_libretro_$(platform).a
 	CC = psp-gcc$(EXE_EXT)
 	CXX = psp-g++$(EXE_EXT)
+	CXX_VER = -std=c++11
 	AR = psp-ar$(EXE_EXT)
 	PLATFORM_DEFINES := -DPSP -G0
 	PLATFORM_DEFINES += -march=allegrex -mfp32 -mgp32 -mlong32 -mabi=eabi
@@ -854,14 +858,8 @@ ifeq ($(platform), unix)
 endif
 
 ifeq ($(HAS_GCC), 1)
-	ifneq ($(platform), libnx)
-		C_VER = -std=gnu99
-	endif
-	ifeq ($(platform), psp1)
-		CXX_VER = -std=c++11
-	else
-		CXX_VER = -std=gnu++11
-	endif
+	C_VER ?= -std=gnu99
+	CXX_VER ?= -std=gnu++11
 	CFLAGS += -fsigned-char
 	CXXFLAGS += -fno-rtti
 	GCC_WARNINGS += -pedantic \
