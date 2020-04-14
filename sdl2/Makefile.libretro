@@ -889,9 +889,13 @@ endif
 ifeq ($(platform), psp1)
 	SUPPORT_NP2_THREAD=0
 endif
+ifeq ($(platform), libnx)
+	SUPPORT_NP2_THREAD=0
+endif
 ifeq ($(SUPPORT_NP2_THREAD), 1)
 	DEFINES += -DSUPPORT_NP2_THREAD
 endif
+
 SUPPORT_ASYNC_CPU=1
 ifeq ($(SUPPORT_ASYNC_CPU), 1)
 	DEFINES += -DSUPPORT_ASYNC_CPU
