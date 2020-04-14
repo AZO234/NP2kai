@@ -3,6 +3,10 @@ GIT_VERSION := "$(shell git rev-parse --short HEAD)"
 HAS_GCC = 1
 ENDIANNESS_DEFINES=
 
+SUPPORT_NP2_THREAD = 1
+SUPPORT_DIRENT = 1
+SUPPORT_ASYNC_CPU = 1
+
 SPACE :=
 SPACE := $(SPACE) $(SPACE)
 BACKSLASH :=
@@ -111,9 +115,10 @@ else ifeq ($(platform), osx)
 		ENDIANNESS_DEFINES += -DMSB_FIRST
 	endif
 	OSX_LT_MAVERICKS = `(( $(OSXVER) <= 9)) && echo "YES"`
-	LDFLAGS += -mmacosx-version-min=10.8
-	CFLAGS += -mmacosx-version-min=10.8
-	CXXFLAGS += -mmacosx-version-min=10.8
+	CXX_VER = -std=c++11
+	CFLAGS += -mmacosx-version-min=10.7
+	CXXFLAGS += -mmacosx-version-min=10.7 -stdlib=libc++
+	LDFLAGS += -mmacosx-version-min=10.7 -stdlib=libc++
 	ifndef ($(NOUNIVERSAL))
 		CFLAGS	+= $(ARCHFLAGS)
 		CXXFLAGS	+= $(ARCHFLAGS)
@@ -124,7 +129,6 @@ else ifeq ($(platform), osx)
 else ifneq (,$(findstring ios,$(platform)))
 	# Theos iOS
 	ifeq ($(platform), theos_ios)
-		HAS_GCC := 0
 		DEPLOYMENT_IOSVERSION = 5.0
 		TARGET = iphone:latest:$(DEPLOYMENT_IOSVERSION)
 		ARCHS = armv7 armv7s arm64
@@ -139,6 +143,7 @@ else ifneq (,$(findstring ios,$(platform)))
 		ifeq ($(IOSSDK),)
 			IOSSDK := $(shell xcodebuild -version -sdk iphoneos Path)
 		endif
+		CXX_VER = -std=c++11
 		ifeq ($(platform), ios-arm64)
 			CC = cc -arch arm64 -isysroot $(IOSSDK)
 			CXX = c++ -arch arm64 -isysroot $(IOSSDK)
@@ -147,13 +152,13 @@ else ifneq (,$(findstring ios,$(platform)))
 			CXX = c++ -arch armv7 -isysroot $(IOSSDK)
 		endif
 		ifeq ($(platform),$(filter $(platform),ios9 ios-arm64))
-			CC							 += -miphoneos-version-min=8.0
-			CXX							+= -miphoneos-version-min=8.0
-			PLATFORM_DEFINES += -miphoneos-version-min=8.0
+			CFLAGS += -miphoneos-version-min=8.0
+			CXXFLAGS += -miphoneos-version-min=8.0 -stdlib=libc++
+			LDFLAGS += -miphoneos-version-min=8.0 -stdlib=libc++
 		else
-			CC							 += -miphoneos-version-min=5.0
-			CXX							+= -miphoneos-version-min=5.0
-			PLATFORM_DEFINES += -miphoneos-version-min=5.0
+			CFLAGS += -miphoneos-version-min=5.0
+			CXXFLAGS += -miphoneos-version-min=5.0 -stdlib=libc++
+			LDFLAGS += -miphoneos-version-min=5.0 -stdlib=libc++
 		endif
 	endif
 
@@ -165,6 +170,8 @@ else ifeq ($(platform), tvos-arm64)
 	ifeq ($(IOSSDK),)
 		IOSSDK := $(shell xcodebuild -version -sdk appletvos Path)
 	endif
+	CXX_VER = -std=c++11
+	LDFLAGS += -stdlib=libc++
 
 # QNX
 else ifeq ($(platform), qnx)
@@ -234,6 +241,7 @@ else ifeq ($(platform), psp1)
 	TARGET := $(TARGET_NAME)_libretro_$(platform).a
 	CC = psp-gcc$(EXE_EXT)
 	CXX = psp-g++$(EXE_EXT)
+	CXX_VER = -std=c++11
 	AR = psp-ar$(EXE_EXT)
 	PLATFORM_DEFINES := -DPSP -G0
 	PLATFORM_DEFINES += -march=allegrex -mfp32 -mgp32 -mlong32 -mabi=eabi
@@ -242,6 +250,7 @@ else ifeq ($(platform), psp1)
 	PLATFORM_DEFINES += -I$(PSPDEV)/psp/sdk/include
 	STATIC_LINKING=1
 	DISABLE_GCC_SECURITY_FLAGS = 1
+	SUPPORT_NP2_THREAD = 0
 
 # Vita
 else ifeq ($(platform), vita)
@@ -430,7 +439,7 @@ else ifeq ($(platform), xenon)
 	PLATFORM_DEFINES := -D__LIBXENON__ -D_POSIX_MONOTONIC_CLOCK -D_POSIX_THREADS -I$(DEVKITXENON)/xenon/include
 	ENDIANNESS_DEFINES += -DMSB_FIRST
 	STATIC_LINKING=1
-	NO_DIRENT = 1
+	SUPPORT_DIRENT = 0
 
 # Nintendo Game Cube / Nintendo Wii
 else ifneq (,$(filter $(platform),ngc wii))
@@ -478,6 +487,7 @@ else ifeq ($(platform), libnx)
 	LDFLAGS = $(LD_SHARED_LIBRARY_FLAGS) -ltransistor.lib.nro $(LIBTRANSISTOR_LIB_LDFLAGS) -E
 	STATIC_LINKING=1
 	DISABLE_GCC_SECURITY_FLAGS = 1
+	SUPPORT_NP2_THREAD = 0
 
 # ARM
 else ifneq (,$(findstring armv,$(platform)))
@@ -561,7 +571,7 @@ else ifneq (,$(findstring armv,$(platform)))
 			PLATFORM_DEFINES += -mfloat-abi=hard
 		endif
 		PLATFORM_DEFINES += -DARM
-		NO_DIRENT = 1
+		SUPPORT_DIRENT = 0
 	endif
 
 # GCW0
@@ -590,6 +600,7 @@ else ifeq ($(platform), emscripten)
 	PLATFORM_DEFINES += -DEMSCRIPTEN -I$(EMSCRIPTEN)/system/include
 	STATIC_LINKING=1
 	DISABLE_GCC_SECURITY_FLAGS = 1
+	SUPPORT_NP2_THREAD = 0
 
 # Windows MSVC 2010 x64
 else ifeq ($(platform), windows_msvc2010_x64)
@@ -809,26 +820,11 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 	$(NP2_PATH)/sdl2/libretro/libretro-common/streams/trans_stream_pipe.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/string/stdstring.c
 
-	USE_RTHREAD = 1
-	ifeq ($(platform), emscripten)
-		USE_RTHREAD = 0
-	endif
-	ifeq ($(platform), ctr)
-		USE_RTHREAD = 0
-	endif
-	ifeq ($(USE_RTHREAD), 1)
+	ifeq ($(SUPPORT_NP2_THREAD), 1)
 		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rthreads.c
-	endif
-
-	USE_RSEMAPHOE = 1
-	ifeq ($(platform), emscripten)
-		USE_RSEMAPHOE = 0
-	endif
-	ifeq ($(USE_RSEMAPHOE), 1)
 		SOURCES_C += $(NP2_PATH)/sdl2/libretro/rsemaphore.c
 	endif
-
-	ifneq ($(NO_DIRENT), 1)
+	ifeq ($(SUPPORT_DIRENT), 1)
 		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/vfs/vfs_implementation.c
 	endif
 	ifeq ($(platform), unix)
@@ -854,14 +850,8 @@ ifeq ($(platform), unix)
 endif
 
 ifeq ($(HAS_GCC), 1)
-	ifneq ($(platform), libnx)
-		C_VER = -std=gnu99
-	endif
-	ifeq ($(platform), psp1)
-		CXX_VER = -std=c++11
-	else
-		CXX_VER = -std=gnu++11
-	endif
+	C_VER ?= -std=gnu99
+	CXX_VER ?= -std=gnu++11
 	CFLAGS += -fsigned-char
 	CXXFLAGS += -fno-rtti
 	GCC_WARNINGS += -pedantic \
@@ -880,18 +870,9 @@ ifeq ($(HAS_GCC), 1)
 endif
 
 DEFINES += -D__LIBRETRO__ $(PLATFORM_DEFINES) $(GCC_WARNINGS) $(COMMONFLAGS) $(GCC_SECURITY_FLAGS) -DNST_NO_ZLIB $(INCFLAGS) $(INCFLAGS_PLATFORM) $(NP2DEFINE) $(NP21DEFINE)
-
-SUPPORT_NP2_THREAD=1
-ifeq ($(platform), emscripten)
-	SUPPORT_NP2_THREAD=0
-endif
-ifeq ($(platform), psp1)
-	SUPPORT_NP2_THREAD=0
-endif
 ifeq ($(SUPPORT_NP2_THREAD), 1)
 	DEFINES += -DSUPPORT_NP2_THREAD
 endif
-SUPPORT_ASYNC_CPU=1
 ifeq ($(SUPPORT_ASYNC_CPU), 1)
 	DEFINES += -DSUPPORT_ASYNC_CPU
 endif
