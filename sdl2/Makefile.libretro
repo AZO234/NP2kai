@@ -828,6 +828,9 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 	ifeq ($(platform), emscripten)
 		USE_RSEMAPHOE = 0
 	endif
+	ifeq ($(platform), libnx)
+		USE_RSEMAPHOE = 0
+	endif
 	ifeq ($(USE_RSEMAPHOE), 1)
 		SOURCES_C += $(NP2_PATH)/sdl2/libretro/rsemaphore.c
 	endif
