@@ -3,6 +3,10 @@ GIT_VERSION := "$(shell git rev-parse --short HEAD)"
 HAS_GCC = 1
 ENDIANNESS_DEFINES=
 
+SUPPORT_NP2_THREAD = 1
+SUPPORT_DIRENT = 1
+SUPPORT_ASYNC_CPU = 1
+
 SPACE :=
 SPACE := $(SPACE) $(SPACE)
 BACKSLASH :=
@@ -246,6 +250,7 @@ else ifeq ($(platform), psp1)
 	PLATFORM_DEFINES += -I$(PSPDEV)/psp/sdk/include
 	STATIC_LINKING=1
 	DISABLE_GCC_SECURITY_FLAGS = 1
+	SUPPORT_NP2_THREAD = 0
 
 # Vita
 else ifeq ($(platform), vita)
@@ -434,7 +439,7 @@ else ifeq ($(platform), xenon)
 	PLATFORM_DEFINES := -D__LIBXENON__ -D_POSIX_MONOTONIC_CLOCK -D_POSIX_THREADS -I$(DEVKITXENON)/xenon/include
 	ENDIANNESS_DEFINES += -DMSB_FIRST
 	STATIC_LINKING=1
-	NO_DIRENT = 1
+	SUPPORT_DIRENT = 0
 
 # Nintendo Game Cube / Nintendo Wii
 else ifneq (,$(filter $(platform),ngc wii))
@@ -482,6 +487,7 @@ else ifeq ($(platform), libnx)
 	LDFLAGS = $(LD_SHARED_LIBRARY_FLAGS) -ltransistor.lib.nro $(LIBTRANSISTOR_LIB_LDFLAGS) -E
 	STATIC_LINKING=1
 	DISABLE_GCC_SECURITY_FLAGS = 1
+	SUPPORT_NP2_THREAD = 0
 
 # ARM
 else ifneq (,$(findstring armv,$(platform)))
@@ -565,7 +571,7 @@ else ifneq (,$(findstring armv,$(platform)))
 			PLATFORM_DEFINES += -mfloat-abi=hard
 		endif
 		PLATFORM_DEFINES += -DARM
-		NO_DIRENT = 1
+		SUPPORT_DIRENT = 0
 	endif
 
 # GCW0
@@ -594,6 +600,7 @@ else ifeq ($(platform), emscripten)
 	PLATFORM_DEFINES += -DEMSCRIPTEN -I$(EMSCRIPTEN)/system/include
 	STATIC_LINKING=1
 	DISABLE_GCC_SECURITY_FLAGS = 1
+	SUPPORT_NP2_THREAD = 0
 
 # Windows MSVC 2010 x64
 else ifeq ($(platform), windows_msvc2010_x64)
@@ -813,29 +820,11 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 	$(NP2_PATH)/sdl2/libretro/libretro-common/streams/trans_stream_pipe.c \
 	$(NP2_PATH)/sdl2/libretro/libretro-common/string/stdstring.c
 
-	USE_RTHREAD = 1
-	ifeq ($(platform), emscripten)
-		USE_RTHREAD = 0
-	endif
-	ifeq ($(platform), ctr)
-		USE_RTHREAD = 0
-	endif
-	ifeq ($(USE_RTHREAD), 1)
+	ifeq ($(SUPPORT_NP2_THREAD), 1)
 		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rthreads.c
-	endif
-
-	USE_RSEMAPHOE = 1
-	ifeq ($(platform), emscripten)
-		USE_RSEMAPHOE = 0
-	endif
-	ifeq ($(platform), libnx)
-		USE_RSEMAPHOE = 0
-	endif
-	ifeq ($(USE_RSEMAPHOE), 1)
 		SOURCES_C += $(NP2_PATH)/sdl2/libretro/rsemaphore.c
 	endif
-
-	ifneq ($(NO_DIRENT), 1)
+	ifeq ($(SUPPORT_DIRENT), 1)
 		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/vfs/vfs_implementation.c
 	endif
 	ifeq ($(platform), unix)
@@ -881,22 +870,9 @@ ifeq ($(HAS_GCC), 1)
 endif
 
 DEFINES += -D__LIBRETRO__ $(PLATFORM_DEFINES) $(GCC_WARNINGS) $(COMMONFLAGS) $(GCC_SECURITY_FLAGS) -DNST_NO_ZLIB $(INCFLAGS) $(INCFLAGS_PLATFORM) $(NP2DEFINE) $(NP21DEFINE)
-
-SUPPORT_NP2_THREAD=1
-ifeq ($(platform), emscripten)
-	SUPPORT_NP2_THREAD=0
-endif
-ifeq ($(platform), psp1)
-	SUPPORT_NP2_THREAD=0
-endif
-ifeq ($(platform), libnx)
-	SUPPORT_NP2_THREAD=0
-endif
 ifeq ($(SUPPORT_NP2_THREAD), 1)
 	DEFINES += -DSUPPORT_NP2_THREAD
 endif
-
-SUPPORT_ASYNC_CPU=1
 ifeq ($(SUPPORT_ASYNC_CPU), 1)
 	DEFINES += -DSUPPORT_ASYNC_CPU
 endif
