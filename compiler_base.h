@@ -62,7 +62,12 @@
 
 // C/C++ standard
 #if defined(__cplusplus)
+#if defined(__APPLE__)
+#include <cstdint>
+#include <inttypes.h>
+#else
 #include <cinttypes>
+#endif
 #if __cplusplus >= 201103L
 #if !defined(CPP11)
 #define CPP11

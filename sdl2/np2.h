@@ -1,3 +1,7 @@
+#ifndef _NP2_H_
+#define _NP2_H_
+
+#include "compiler.h"
 #include "commng.h"
 
 typedef struct {
@@ -31,6 +35,9 @@ extern UINT bmpfilenumber;
 extern char modulefile[MAX_PATH];
 extern char draw32bit;
 extern UINT8 scrnmode;
+int flagsave(const OEMCHAR *ext);
+void flagdelete(const OEMCHAR *ext);
+int flagload(const OEMCHAR *ext, const OEMCHAR *title, BOOL force);
 extern void changescreen(UINT8 newmode);
 
 enum {
@@ -154,4 +161,6 @@ int havemmx(void);
 extern UINT8 changescreeninit;
 
 #endif	/* __LIBRETRO__ */
+
+#endif  // _NP2_H_
 

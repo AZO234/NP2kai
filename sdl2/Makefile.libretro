@@ -113,7 +113,7 @@ else ifeq ($(platform), osx)
 	OSX_LT_MAVERICKS = `(( $(OSXVER) <= 9)) && echo "YES"`
 	LDFLAGS += -mmacosx-version-min=10.8
 	CFLAGS += -mmacosx-version-min=10.8
-	CXXFLAGS += -mmacosx-version-min=10.8 -DUSE_STD_NAMESPACE
+	CXXFLAGS += -mmacosx-version-min=10.8
 	ifndef ($(NOUNIVERSAL))
 		CFLAGS	+= $(ARCHFLAGS)
 		CXXFLAGS	+= $(ARCHFLAGS)
@@ -857,7 +857,9 @@ ifeq ($(HAS_GCC), 1)
 	ifneq ($(platform), libnx)
 		C_VER = -std=gnu99
 	endif
-	ifneq ($(platform), psp)
+	ifeq ($(platform), psp1)
+		CXX_VER = -std=c++11
+	else
 		CXX_VER = -std=gnu++11
 	endif
 	CFLAGS += -fsigned-char

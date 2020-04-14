@@ -9,6 +9,7 @@
 #include "dosio.h"
 #if defined(__LIBRETRO__)
 #include <retro_dirent.h>
+#include <file_path.h>
 #if !defined(_MSC_VER)
 #include <unistd.h>
 #endif
