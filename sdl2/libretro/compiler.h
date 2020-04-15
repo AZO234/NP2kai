@@ -8,8 +8,8 @@
 #ifndef COMPILER_H
 #define COMPILER_H
 
-#include "compiler_base.h"
 #include "features/features_cpu.h"
+#include "compiler_base.h"
 
 #include "sdlremap/sdl.h"
 #include "sdlremap/sdl_keycode.h"
