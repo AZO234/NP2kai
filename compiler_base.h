@@ -18,6 +18,20 @@
 #endif
 
 /* archtecture */
+/*
+#if defined(amd64) || defined(__AMD64__) || defined(__amd64__) || \
+    defined(x86_64) || defined(__x86_64__) || defined(__X86_64__) || \
+    defined(__aarch64__) || defined(_WIN64) || \
+    defined(__LP64__) || defined(__LLP64__) || defined(__LLP64__)
+#define	NP2_CPU_64BIT
+#endif
+#if defined(i386) || defined(__i386__) || defined(__arm__) || \
+    defined(_WIN32) || \
+    defined(NP2_CPU_ARCH_AMD64)
+#define	NP2_CPU_32BIT
+#endif
+*/
+
 #if defined(amd64) || defined(__AMD64__) || defined(__amd64__) || \
     defined(x86_64) || defined(__x86_64__) || defined(__X86_64__)
 #define	NP2_CPU_ARCH_AMD64
@@ -138,13 +152,29 @@
 #if !defined(uint32_t)  // literal: nnnUL  format: %lu
 #define uint32_t unsigned long
 #endif
+//#if defined(NP2_CPU_64BIT)
 #if !defined(int64_t)   // literal: nnnLL  format: %PRId64
 #define int64_t  long long
 #endif
 #if !defined(uint64_t)  // literal: nnnULL format: %PRIu64
 #define uint64_t unsigned long long
 #endif
+//#else
+#if !defined(intptr_t)
+#define intptr_t  long
 #endif
+#if !defined(uintptr_t)
+#define uintptr_t unsigned long
+#endif
+#if !defined(intmax_t)
+#define intmax_t  long
+#endif
+#if !defined(uintmax_t)
+#define uintmax_t unsigned long
+#endif
+//#endif
+#endif
+
 #if !defined(_MSC_VER)
 typedef	int32_t  INT;
 typedef	uint32_t UINT;
@@ -159,9 +189,11 @@ typedef	int16_t  INT16;
 typedef	INT16    SINT16;
 typedef	uint16_t UINT16;
 typedef	INT32    SINT32;
+//#if defined(NP2_CPU_64BIT)
 typedef	int64_t  INT64;
 typedef	INT64    SINT64;
 typedef	uint64_t UINT64;
+//#endif
 
 // variable size
 typedef size_t    SIZET;    // format: %zu
