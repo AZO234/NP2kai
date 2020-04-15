@@ -302,8 +302,11 @@ short file_dircreate(const OEMCHAR *path) {
 
 short file_dirdelete(const OEMCHAR *path) {
 
+// libretro not support rmdir()?
 #if defined(__LIBRETRO__)
+#if !defined(VITA)
 	return((short)rmdir(path));
+#endif
 #elif defined(_WINDOWS) && defined(OSLANG_UTF8)
 	wchar_t	wpath[MAX_PATH];
 	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);

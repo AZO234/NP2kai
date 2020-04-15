@@ -4,7 +4,7 @@ HAS_GCC = 1
 ENDIANNESS_DEFINES=
 
 C_VER = -std=gnu99
-CXX_VER = -std=gnu++11
+CXX_VER =
 
 SUPPORT_NP2_THREAD = 1
 SUPPORT_DIRENT = 1
@@ -239,12 +239,12 @@ else ifeq ($(platform), psl1ght)
 	STATIC_LINKING=1
 	DISABLE_GCC_SECURITY_FLAGS = 1
 
-# PSP
+# PSP *Apr 15, 2020 can't build*
 else ifeq ($(platform), psp1)
 	TARGET := $(TARGET_NAME)_libretro_$(platform).a
 	CC = psp-gcc$(EXE_EXT)
 	CXX = psp-g++$(EXE_EXT)
-	# not standard c++
+	# don't c++11 gnu++11 (C++0x)
 	CXX_VER =
 	AR = psp-ar$(EXE_EXT)
 	PLATFORM_DEFINES := -DPSP -G0
