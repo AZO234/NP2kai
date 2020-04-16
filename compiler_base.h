@@ -77,19 +77,25 @@
 #if defined(__APPLE__)
 #include <cstdint>
 #include <inttypes.h>
+#define CPP11
 #else
-#if !defined(PSP)
-#include <cinttypes>
-#endif
-#endif
 #if __cplusplus >= 201103L
+#include <cinttypes>
 #if !defined(CPP11)
 #define CPP11
+#else
+#include <cstdint>
+#endif
+#endif
+#if defined(__GXX_EXPERIMENTAL_CXX0X__)
+#if !defined(CPP0X)
+#define CPP0X
+#endif
+#endif
 #endif
 #if !defined(_MSC_VER)
 #if !defined(SUPPORT_SNPRINTF)
 #define SUPPORT_SNPRINTF
-#endif
 #endif
 #endif
 #else
@@ -133,7 +139,7 @@
 #endif /* __STDC_VERSION__ */
 
 // size fixed integer
-#if (!defined(C99) && !defined(CPP11)) && !defined(PSP)
+#if !defined(__cplusplus) && !defined(C99)
 typedef char               int8_t;
 typedef unsigned char      uint8_t;
 typedef short              int16_t;

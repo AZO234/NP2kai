@@ -203,7 +203,11 @@ void rs232c_open(void) {
 	if (cm_rs232c == NULL) {
 		cm_rs232c = commng_create(COMCREATE_SERIAL);
 #if defined(VAEG_FIX)
-		cm_rs232c->msg(cm_rs232c, COMMSG_SETRSFLAG, rs232c.cmd & 0x22); /* RTS, DTR */
+		if(cm_rs232c) {
+			if(cm_rs232c->msg) {
+				cm_rs232c->msg(cm_rs232c, COMMSG_SETRSFLAG, rs232c.cmd & 0x22); /* RTS, DTR */
+			}
+		}
 #endif
 	}
 }
@@ -287,7 +291,13 @@ UINT8 rs232c_stat(void) {
 		cm_rs232c = commng_create(COMCREATE_SERIAL);
 #endif
 	}
-	return(cm_rs232c->getstat(cm_rs232c));
+	if(cm_rs232c) {
+		if(cm_rs232c->getstat) {
+			return(cm_rs232c->getstat(cm_rs232c));
+		}
+	}
+
+	return 0;
 }
 
 void rs232c_midipanic(void) {
