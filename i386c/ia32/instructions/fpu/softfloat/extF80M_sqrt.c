@@ -43,7 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef SOFTFLOAT_FAST_INT64
 
-void extF80M_sqrt( const extFloat80_t *aPtr, extFloat80_t *zPtr )
+void extF80M_sqrt( const sw_extFloat80_t *aPtr, sw_extFloat80_t *zPtr )
 {
 
     *zPtr = extF80_sqrt( *aPtr );
@@ -52,7 +52,7 @@ void extF80M_sqrt( const extFloat80_t *aPtr, extFloat80_t *zPtr )
 
 #else
 
-void extF80M_sqrt( const extFloat80_t *aPtr, extFloat80_t *zPtr )
+void extF80M_sqrt( const sw_extFloat80_t *aPtr, sw_extFloat80_t *zPtr )
 {
     const struct extFloat80M *aSPtr;
     struct extFloat80M *zSPtr;

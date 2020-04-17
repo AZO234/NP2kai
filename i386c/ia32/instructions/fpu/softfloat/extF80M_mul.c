@@ -45,7 +45,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 void
  extF80M_mul(
-     const extFloat80_t *aPtr, const extFloat80_t *bPtr, extFloat80_t *zPtr )
+     const sw_extFloat80_t *aPtr, const sw_extFloat80_t *bPtr, sw_extFloat80_t *zPtr )
 {
 
     *zPtr = extF80_mul( *aPtr, *bPtr );
@@ -56,7 +56,7 @@ void
 
 void
  extF80M_mul(
-     const extFloat80_t *aPtr, const extFloat80_t *bPtr, extFloat80_t *zPtr )
+     const sw_extFloat80_t *aPtr, const sw_extFloat80_t *bPtr, sw_extFloat80_t *zPtr )
 {
     const struct extFloat80M *aSPtr, *bSPtr;
     struct extFloat80M *zSPtr;

@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-uint_fast32_t f16_to_ui32( float16_t a, uint_fast8_t roundingMode, bool exact )
+uint_fast32_t f16_to_ui32( sw_float16_t a, uint_fast8_t roundingMode, bool exact )
 {
     union ui16_f16 uA;
     uint_fast16_t uiA;

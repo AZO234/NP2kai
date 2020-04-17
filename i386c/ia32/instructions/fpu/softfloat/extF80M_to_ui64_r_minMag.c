@@ -43,7 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef SOFTFLOAT_FAST_INT64
 
-uint_fast64_t extF80M_to_ui64_r_minMag( const extFloat80_t *aPtr, bool exact )
+uint_fast64_t extF80M_to_ui64_r_minMag( const sw_extFloat80_t *aPtr, bool exact )
 {
 
     return extF80_to_ui64_r_minMag( *aPtr, exact );
@@ -52,7 +52,7 @@ uint_fast64_t extF80M_to_ui64_r_minMag( const extFloat80_t *aPtr, bool exact )
 
 #else
 
-uint_fast64_t extF80M_to_ui64_r_minMag( const extFloat80_t *aPtr, bool exact )
+uint_fast64_t extF80M_to_ui64_r_minMag( const sw_extFloat80_t *aPtr, bool exact )
 {
     const struct extFloat80M *aSPtr;
     uint_fast16_t uiA64;

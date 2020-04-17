@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-extFloat80_t f128_to_extF80( float128_t a )
+sw_extFloat80_t f128_to_extF80( sw_float128_t a )
 {
     union ui128_f128 uA;
     uint_fast64_t uiA64, uiA0;
@@ -54,7 +54,7 @@ extFloat80_t f128_to_extF80( float128_t a )
     uint_fast64_t uiZ0;
     struct exp32_sig128 normExpSig;
     struct uint128 sig128;
-    union { struct extFloat80M s; extFloat80_t f; } uZ;
+    union { struct extFloat80M s; sw_extFloat80_t f; } uZ;
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/

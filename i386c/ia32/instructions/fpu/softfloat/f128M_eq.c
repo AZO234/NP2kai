@@ -43,7 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef SOFTFLOAT_FAST_INT64
 
-bool f128M_eq( const float128_t *aPtr, const float128_t *bPtr )
+bool f128M_eq( const sw_float128_t *aPtr, const sw_float128_t *bPtr )
 {
 
     return f128_eq( *aPtr, *bPtr );
@@ -52,7 +52,7 @@ bool f128M_eq( const float128_t *aPtr, const float128_t *bPtr )
 
 #else
 
-bool f128M_eq( const float128_t *aPtr, const float128_t *bPtr )
+bool f128M_eq( const sw_float128_t *aPtr, const sw_float128_t *bPtr )
 {
     const uint32_t *aWPtr, *bWPtr;
     uint32_t wordA, wordB, uiA96, uiB96;
@@ -87,8 +87,8 @@ bool f128M_eq( const float128_t *aPtr, const float128_t *bPtr )
     }
  false_checkSigNaNs:
     if (
-           f128M_isSignalingNaN( (const float128_t *) aWPtr )
-        || f128M_isSignalingNaN( (const float128_t *) bWPtr )
+           f128M_isSignalingNaN( (const sw_float128_t *) aWPtr )
+        || f128M_isSignalingNaN( (const sw_float128_t *) bWPtr )
     ) {
         softfloat_raiseFlags( softfloat_flag_invalid );
     }

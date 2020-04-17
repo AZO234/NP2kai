@@ -43,10 +43,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 void
  f128M_mulAdd(
-     const float128_t *aPtr,
-     const float128_t *bPtr,
-     const float128_t *cPtr,
-     float128_t *zPtr
+     const sw_float128_t *aPtr,
+     const sw_float128_t *bPtr,
+     const sw_float128_t *cPtr,
+     sw_float128_t *zPtr
  )
 {
     const uint64_t *aWPtr, *bWPtr, *cWPtr;
@@ -71,10 +71,10 @@ void
 
 void
  f128M_mulAdd(
-     const float128_t *aPtr,
-     const float128_t *bPtr,
-     const float128_t *cPtr,
-     float128_t *zPtr
+     const sw_float128_t *aPtr,
+     const sw_float128_t *bPtr,
+     const sw_float128_t *cPtr,
+     sw_float128_t *zPtr
  )
 {
 

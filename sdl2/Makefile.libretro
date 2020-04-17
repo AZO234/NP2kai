@@ -7,6 +7,7 @@ C_VER = -std=gnu99
 CXX_VER =
 
 SUPPORT_NP2_THREAD = 1
+SUPPORT_NP2_TICKCOUNT = 1
 SUPPORT_DIRENT = 1
 SUPPORT_ASYNC_CPU = 1
 
@@ -255,6 +256,7 @@ else ifeq ($(platform), psp1)
 	STATIC_LINKING=1
 	DISABLE_GCC_SECURITY_FLAGS = 1
 	SUPPORT_NP2_THREAD = 0
+	SUPPORT_NP2_TICKCOUNT = 0
 
 # Vita
 else ifeq ($(platform), vita)
@@ -284,6 +286,7 @@ else ifeq ($(platform), ctr)
 # Windows MSVC 2003 Xbox 1
 else ifeq ($(platform), xbox1_msvc2003)
 	TARGET := $(TARGET_NAME)_libretro_xdk1.lib
+	C_VER =
 	CC = CL.exe
 	CXX = CL.exe
 	LD = lib.exe
@@ -309,6 +312,7 @@ else ifeq ($(platform), dos)
 # Windows MSVC 2010 Xbox 360
 else ifeq ($(platform), xbox360_msvc2010)
 	TARGET := $(TARGET_NAME)_libretro_xdk360.lib
+	C_VER =
 	CC = cl.exe
 	CXX = cl.exe
 	LD = lib.exe
@@ -325,6 +329,7 @@ else ifeq ($(platform), xbox360_msvc2010)
 
 # Windows MSVC 2003 x86
 else ifeq ($(platform), windows_msvc2003_x86)
+	C_VER =
 	CC = cl.exe
 	CXX = cl.exe
 
@@ -361,10 +366,11 @@ else ifneq (,$(findstring windows_msvc2017,$(platform)))
 	endif
 
 	CFLAGS += $(MSVC2017CompileFlags) -source-charset:utf-8
-	CXXFLAGS += $(MSVC2017CompileFlags) -source-charset:utf-8
+	CXXFLAGS += $(MSVC2017CompileFlags) -source-charset:utf-8 -ZW
 
 	TargetArchMoniker = $(subst $(WinPartition)_,,$(PlatformSuffix))
 
+	C_VER =
 	CC = cl.exe
 	CXX = cl.exe
 	LD = link.exe
@@ -373,6 +379,7 @@ else ifneq (,$(findstring windows_msvc2017,$(platform)))
 	fix_path = $(subst $(SPACE),\ ,$(subst \,/,$1))
 
 	ProgramFiles86w := $(shell cmd /c "echo %PROGRAMFILES(x86)%")
+#	ProgramFiles86w := C:\Program Files (x86)
 	ProgramFiles86 := $(shell cygpath "$(ProgramFiles86w)")
 
 	WindowsSdkDir ?= $(call reg_query,InstallationFolder,HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Microsoft SDKs\Windows\v10.0)
@@ -407,6 +414,7 @@ else ifneq (,$(findstring windows_msvc2017,$(platform)))
 	WindowsSDKSharedIncludeDir := $(shell cygpath -w "$(WindowsSdkDir)\Include\$(WindowsSDKVersion)\shared")
 	WindowsSDKUCRTIncludeDir := $(shell cygpath -w "$(WindowsSdkDir)\Include\$(WindowsSDKVersion)\ucrt")
 	WindowsSDKUMIncludeDir := $(shell cygpath -w "$(WindowsSdkDir)\Include\$(WindowsSDKVersion)\um")
+	WindowsSDKWinRTIncludeDir := $(shell cygpath -w "$(WindowsSdkDir)\Include\$(WindowsSDKVersion)\winrt")
 	WindowsSDKUCRTLibDir := $(shell cygpath -w "$(WindowsSdkDir)\Lib\$(WindowsSDKVersion)\ucrt\$(TargetArchMoniker)")
 	WindowsSDKUMLibDir := $(shell cygpath -w "$(WindowsSdkDir)\Lib\$(WindowsSDKVersion)\um\$(TargetArchMoniker)")
 
@@ -429,7 +437,7 @@ else ifneq (,$(findstring windows_msvc2017,$(platform)))
 		LIB := $(shell IFS=$$'\n'; cygpath -w "$(LIB)/store")
 	endif
 
-	export INCLUDE := $(INCLUDE);$(WindowsSDKSharedIncludeDir);$(WindowsSDKUCRTIncludeDir);$(WindowsSDKUMIncludeDir)
+	export INCLUDE := $(INCLUDE);$(WindowsSDKSharedIncludeDir);$(WindowsSDKUCRTIncludeDir);$(WindowsSDKUMIncludeDir);$(WindowsSDKWinRTIncludeDir)
 	export LIB := $(LIB);$(WindowsSDKUCRTLibDir);$(WindowsSDKUMLibDir)
 	TARGET := $(TARGET_NAME)_libretro.dll
 	PSS_STYLE :=2
@@ -610,6 +618,7 @@ else ifeq ($(platform), emscripten)
 
 # Windows MSVC 2010 x64
 else ifeq ($(platform), windows_msvc2010_x64)
+	C_VER =
 	CC = cl.exe
 	CXX = cl.exe
 	HAS_GCC := 0
@@ -634,6 +643,7 @@ else ifeq ($(platform), windows_msvc2010_x64)
 
 # Windows MSVC 2010 x86
 else ifeq ($(platform), windows_msvc2010_x86)
+	C_VER =
 	CC = cl.exe
 	CXX = cl.exe
 	HAS_GCC := 0
@@ -658,6 +668,7 @@ else ifeq ($(platform), windows_msvc2010_x86)
 
 # Windows MSVC 2005 x86
 else ifeq ($(platform), windows_msvc2005_x86)
+	C_VER =
 	CC = cl.exe
 	CXX = cl.exe
 	HAS_GCC := 0
@@ -831,7 +842,11 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 		SOURCES_C += $(NP2_PATH)/sdl2/libretro/rsemaphore.c
 	endif
 	ifeq ($(SUPPORT_DIRENT), 1)
-		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/vfs/vfs_implementation.c
+		ifneq (,$(findstring uwp,$(platform)))
+			SOURCES_CXX += 	$(NP2_PATH)/sdl2/libretro/libretro-common/vfs/vfs_implementation_uwp.cpp
+		else
+			SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/vfs/vfs_implementation.c
+		endif
 	endif
 	ifeq ($(platform), unix)
 #		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_ifaddrs.c
@@ -876,6 +891,9 @@ endif
 DEFINES += -D__LIBRETRO__ $(PLATFORM_DEFINES) $(GCC_WARNINGS) $(COMMONFLAGS) $(GCC_SECURITY_FLAGS) -DNST_NO_ZLIB $(INCFLAGS) $(INCFLAGS_PLATFORM) $(NP2DEFINE) $(NP21DEFINE)
 ifeq ($(SUPPORT_NP2_THREAD), 1)
 	DEFINES += -DSUPPORT_NP2_THREAD
+endif
+ifeq ($(SUPPORT_NP2_TICKCOUNT), 1)
+	DEFINES += -DSUPPORT_NP2_TICKCOUNT
 endif
 ifeq ($(SUPPORT_ASYNC_CPU), 1)
 	DEFINES += -DSUPPORT_ASYNC_CPU

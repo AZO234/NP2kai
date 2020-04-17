@@ -45,10 +45,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 void
  extF80M_roundToInt(
-     const extFloat80_t *aPtr,
+     const sw_extFloat80_t *aPtr,
      uint_fast8_t roundingMode,
      bool exact,
-     extFloat80_t *zPtr
+     sw_extFloat80_t *zPtr
  )
 {
 
@@ -60,10 +60,10 @@ void
 
 void
  extF80M_roundToInt(
-     const extFloat80_t *aPtr,
+     const sw_extFloat80_t *aPtr,
      uint_fast8_t roundingMode,
      bool exact,
-     extFloat80_t *zPtr
+     sw_extFloat80_t *zPtr
  )
 {
     const struct extFloat80M *aSPtr;

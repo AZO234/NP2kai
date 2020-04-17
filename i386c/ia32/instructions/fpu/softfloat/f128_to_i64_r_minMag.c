@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-int_fast64_t f128_to_i64_r_minMag( float128_t a, bool exact )
+int_fast64_t f128_to_i64_r_minMag( sw_float128_t a, bool exact )
 {
     union ui128_f128 uA;
     uint_fast64_t uiA64, uiA0;

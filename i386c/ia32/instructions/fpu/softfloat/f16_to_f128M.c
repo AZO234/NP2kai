@@ -43,7 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef SOFTFLOAT_FAST_INT64
 
-void f16_to_f128M( float16_t a, float128_t *zPtr )
+void f16_to_f128M( sw_float16_t a, sw_float128_t *zPtr )
 {
 
     *zPtr = f16_to_f128( a );
@@ -52,7 +52,7 @@ void f16_to_f128M( float16_t a, float128_t *zPtr )
 
 #else
 
-void f16_to_f128M( float16_t a, float128_t *zPtr )
+void f16_to_f128M( sw_float16_t a, sw_float128_t *zPtr )
 {
     uint32_t *zWPtr;
     union ui16_f16 uA;

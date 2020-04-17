@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "specialize.h"
 
-float64_t
+sw_float64_t
  softfloat_addMagsF64( uint_fast64_t uiA, uint_fast64_t uiB, bool signZ )
 {
     int_fast16_t expA;

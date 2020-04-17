@@ -1,3 +1,5 @@
+#if defined(SUPPORT_NP2_TICKCOUNT)
+
 #include "np2_tickcount.h"
 #include <time.h>
 #if defined(NP2_WIN)
@@ -79,4 +81,6 @@ void NP2_TickCount_Initialize(void) {
 int64_t NP2_TickCount_GetCountFromInit(void) {
   return NP2_TickCount_GetCount() - initcount;
 }
+
+#endif  // SUPPORT_NP2_TICKCOUNT
 

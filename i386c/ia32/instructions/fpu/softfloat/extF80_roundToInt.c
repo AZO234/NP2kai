@@ -41,10 +41,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-extFloat80_t
- extF80_roundToInt( extFloat80_t a, uint_fast8_t roundingMode, bool exact )
+sw_extFloat80_t
+ extF80_roundToInt( sw_extFloat80_t a, uint_fast8_t roundingMode, bool exact )
 {
-    union { struct extFloat80M s; extFloat80_t f; } uA;
+    union { struct extFloat80M s; sw_extFloat80_t f; } uA;
     uint_fast16_t uiA64, signUI64;
     int_fast32_t exp;
     uint_fast64_t sigA;
@@ -53,7 +53,7 @@ extFloat80_t
     struct exp32_sig64 normExpSig;
     struct uint128 uiZ;
     uint_fast64_t lastBitMask, roundBitsMask;
-    union { struct extFloat80M s; extFloat80_t f; } uZ;
+    union { struct extFloat80M s; sw_extFloat80_t f; } uZ;
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/

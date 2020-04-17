@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "softfloat.h"
 
-float128_t f128_add( float128_t a, float128_t b )
+sw_float128_t f128_add( sw_float128_t a, sw_float128_t b )
 {
     union ui128_f128 uA;
     uint_fast64_t uiA64, uiA0;
@@ -49,7 +49,7 @@ float128_t f128_add( float128_t a, float128_t b )
     uint_fast64_t uiB64, uiB0;
     bool signB;
 #if ! defined INLINE_LEVEL || (INLINE_LEVEL < 2)
-    float128_t
+    sw_float128_t
         (*magsFuncPtr)(
             uint_fast64_t, uint_fast64_t, uint_fast64_t, uint_fast64_t, bool );
 #endif

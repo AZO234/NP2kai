@@ -40,9 +40,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-bool extF80_isSignalingNaN( extFloat80_t a )
+bool extF80_isSignalingNaN( sw_extFloat80_t a )
 {
-    union { struct extFloat80M s; extFloat80_t f; } uA;
+    union { struct extFloat80M s; sw_extFloat80_t f; } uA;
 
     uA.f = a;
     return softfloat_isSigNaNExtF80UI( uA.s.signExp, uA.s.signif );

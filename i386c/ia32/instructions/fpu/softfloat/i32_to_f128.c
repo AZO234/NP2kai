@@ -39,7 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "softfloat.h"
 
-float128_t i32_to_f128( int32_t a )
+sw_float128_t i32_to_f128( int32_t a )
 {
     uint_fast64_t uiZ64;
     bool sign;

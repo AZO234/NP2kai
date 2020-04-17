@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef SOFTFLOAT_FAST_INT64
 
-void i32_to_extF80M( int32_t a, extFloat80_t *zPtr )
+void i32_to_extF80M( int32_t a, sw_extFloat80_t *zPtr )
 {
 
     *zPtr = i32_to_extF80( a );
@@ -50,7 +50,7 @@ void i32_to_extF80M( int32_t a, extFloat80_t *zPtr )
 
 #else
 
-void i32_to_extF80M( int32_t a, extFloat80_t *zPtr )
+void i32_to_extF80M( int32_t a, sw_extFloat80_t *zPtr )
 {
     struct extFloat80M *zSPtr;
     uint_fast16_t uiZ64;

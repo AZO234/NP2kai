@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "softfloat.h"
 
-extFloat80_t
+sw_extFloat80_t
  softfloat_roundPackToExtF80(
      bool sign,
      int_fast32_t exp,
@@ -54,7 +54,7 @@ extFloat80_t
     uint_fast64_t roundIncrement, roundMask, roundBits;
     bool isTiny, doIncrement;
     struct uint64_extra sig64Extra;
-    union { struct extFloat80M s; extFloat80_t f; } uZ;
+    union { struct extFloat80M s; sw_extFloat80_t f; } uZ;
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/

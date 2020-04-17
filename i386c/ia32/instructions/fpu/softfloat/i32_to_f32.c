@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "softfloat.h"
 
-float32_t i32_to_f32( int32_t a )
+sw_float32_t i32_to_f32( int32_t a )
 {
     bool sign;
     union ui32_f32 uZ;

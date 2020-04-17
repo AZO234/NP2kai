@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "softfloat.h"
 
-bool f64_le( float64_t a, float64_t b )
+bool f64_le( sw_float64_t a, sw_float64_t b )
 {
     union ui64_f64 uA;
     uint_fast64_t uiA;

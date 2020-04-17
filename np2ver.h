@@ -8,7 +8,7 @@
 #else
 #define	NP2VER_CORE			"ver.0.86 kai rev.21"
 #endif
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && !defined(__LIBRETRO__)
 #include "np2_git_version.h"
 #define	NP2VER_GIT			VER_SHASH " " VER_DSTR
 #else
