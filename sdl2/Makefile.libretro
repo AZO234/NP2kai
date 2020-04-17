@@ -366,7 +366,7 @@ else ifneq (,$(findstring windows_msvc2017,$(platform)))
 	endif
 
 	CFLAGS += $(MSVC2017CompileFlags) -source-charset:utf-8
-	CXXFLAGS += $(MSVC2017CompileFlags) -source-charset:utf-8 -ZW
+	CXXFLAGS += $(MSVC2017CompileFlags) -source-charset:utf-8
 
 	TargetArchMoniker = $(subst $(WinPartition)_,,$(PlatformSuffix))
 
@@ -388,8 +388,8 @@ else ifneq (,$(findstring windows_msvc2017,$(platform)))
 	WindowsSdkDir ?= $(call reg_query,InstallationFolder,HKEY_CURRENT_USER\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v10.0)
 	WindowsSdkDir := $(WindowsSdkDir)
 
-	WindowsSDKVersion ?= $(firstword $(foreach folder,$(subst $(subst \,/,$(WindowsSdkDir)Include/),,$(wildcard $(call fix_path,$(WindowsSdkDir)Include\*))),$(if $(wildcard $(call fix_path,$(WindowsSdkDir)Include/$(folder)/um/Windows.h)),$(folder),)))$(BACKSLASH)
-	WindowsSDKVersion := $(WindowsSDKVersion)
+	WindowsSDKVersionNum ?= $(firstword $(foreach folder,$(subst $(subst \,/,$(WindowsSdkDir)Include/),,$(wildcard $(call fix_path,$(WindowsSdkDir)Include\*))),$(if $(wildcard $(call fix_path,$(WindowsSdkDir)Include/$(folder)/um/Windows.h)),$(folder),)))
+	WindowsSDKVersion := $(WindowsSDKVersionNum)$(BACKSLASH)
 
 	VsInstallBuildTools = $(ProgramFiles86)/Microsoft Visual Studio/2017/BuildTools
 	VsInstallEnterprise = $(ProgramFiles86)/Microsoft Visual Studio/2017/Enterprise
@@ -432,13 +432,16 @@ else ifneq (,$(findstring windows_msvc2017,$(platform)))
 	PATH := $(PATH):$(shell IFS=$$'\n'; cygpath "$(VsInstallRoot)/Common7/IDE")
 	INCLUDE := $(shell IFS=$$'\n'; cygpath -w "$(VcCompilerToolsDir)/include")
 	LIB := $(shell IFS=$$'\n'; cygpath -w "$(VcCompilerToolsDir)/lib/$(TargetArchMoniker)")
+	LIBPATH :=
 
 	ifneq (,$(findstring uwp,$(PlatformSuffix)))
-		LIB := $(shell IFS=$$'\n'; cygpath -w "$(LIB)/store")
+		CXXFLAGS += -ZW
+		LIBPATH := $(shell IFS=$$'\n'; cygpath -w "$(LIB)/store");$(shell IFS=$$'\n'; cygpath -w "$(VsInstallRoot)/Common7/IDE/VC/vcpackages");$(shell IFS=$$'\n'; cygpath -w "$(WindowsSdkDir)/UnionMetadata/$(WindowsSDKVersionNum)")
 	endif
 
 	export INCLUDE := $(INCLUDE);$(WindowsSDKSharedIncludeDir);$(WindowsSDKUCRTIncludeDir);$(WindowsSDKUMIncludeDir);$(WindowsSDKWinRTIncludeDir)
 	export LIB := $(LIB);$(WindowsSDKUCRTLibDir);$(WindowsSDKUMLibDir)
+	export LIBPATH := $(LIBPATH)
 	TARGET := $(TARGET_NAME)_libretro.dll
 	PSS_STYLE :=2
 	LDFLAGS += -DLL
