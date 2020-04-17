@@ -6,6 +6,7 @@
 #if !defined(_MSC_VER)
 #define __stdcall
 #define HANDLE void *
+#endif
 
 typedef unsigned char uchar;
 typedef unsigned short ushort;
@@ -23,6 +24,5 @@ typedef signed int sint32;
 typedef signed char int8;
 typedef signed short int16;
 typedef signed int int32;
-#endif
 
 #endif // win32_types_h

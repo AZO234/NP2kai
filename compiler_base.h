@@ -5,6 +5,10 @@
 #ifndef _COMPILER_BASE_H_
 #define _COMPILER_BASE_H_
 
+#if defined(__LIBRETRO__)
+#include <libretro.h>
+#endif
+
 // secure
 #if defined(__MINGW32__) || defined(__MINGW64__)
 #define MINGW_HAS_SECURE_API 1
@@ -20,12 +24,12 @@
 /* archtecture */
 #if defined(amd64) || defined(__AMD64__) || defined(__amd64__) || \
     defined(x86_64) || defined(__x86_64__) || defined(__X86_64__) || \
-    defined(__aarch64__) || defined(_WIN64) || \
+    defined(__aarch64__) || defined(_WIN64) || defined(_M_X64) || \
     defined(__LP64__) || defined(__LLP64__) || defined(__LLP64__)
 #define	NP2_CPU_64BIT
 #endif
 #if defined(i386) || defined(__i386__) || defined(__arm__) || \
-    defined(_WIN32) || \
+    defined(_WIN32) || defined(_M_IX86) || \
     defined(NP2_CPU_ARCH_AMD64)
 #define	NP2_CPU_32BIT
 #endif
@@ -181,13 +185,17 @@ typedef	INT16    SINT16;
 typedef	uint16_t UINT16;
 typedef	INT32    SINT32;
 #if defined(NP2_CPU_64BIT)
+#if !defined(_MSC_VER)
 typedef	int64_t  INT64;
-typedef	INT64    SINT64;
 typedef	uint64_t UINT64;
+#endif
+typedef	INT64    SINT64;
 #else
+#if !defined(_MSC_VER)
 typedef	int32_t  INT64;
-typedef	INT32    SINT64;
 typedef	uint32_t UINT64;
+#endif
+typedef	INT32    SINT64;
 #endif
 
 // variable size
@@ -332,7 +340,8 @@ typedef int  BOOL;
 #define THISCALL
 #endif
 #else
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && defined(_M_IX86)
+/*  // temporary
 #define CDECL      __cdecl
 #define STDCALL    __stdcall
 #define FASTCALL   __fastcall
@@ -341,6 +350,16 @@ typedef int  BOOL;
 #define VECTORCALL __vectorcall
 #if defined(__cpluscplus)
 #define THISCALL   __thiscall
+#endif
+*/
+#define CDECL
+#define STDCALL
+#define FASTCALL
+#define SAFECALL
+#define CLRCALL
+#define VECTORCALL
+#if defined(__cpluscplus)
+#define THISCALL
 #endif
 #elif defined(__GNUC__)
 #if defined(__i386__)

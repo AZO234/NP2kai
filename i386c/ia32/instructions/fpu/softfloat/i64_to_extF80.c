@@ -40,13 +40,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "softfloat.h"
 
-extFloat80_t i64_to_extF80( int64_t a )
+sw_extFloat80_t i64_to_extF80( int64_t a )
 {
     uint_fast16_t uiZ64;
     uint_fast64_t absA;
     bool sign;
     int_fast8_t shiftDist;
-    union { struct extFloat80M s; extFloat80_t f; } uZ;
+    union { struct extFloat80M s; sw_extFloat80_t f; } uZ;
 
     uiZ64 = 0;
     absA = 0;

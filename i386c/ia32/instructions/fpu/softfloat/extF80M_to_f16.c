@@ -43,7 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef SOFTFLOAT_FAST_INT64
 
-float16_t extF80M_to_f16( const extFloat80_t *aPtr )
+sw_float16_t extF80M_to_f16( const sw_extFloat80_t *aPtr )
 {
 
     return extF80_to_f16( *aPtr );
@@ -52,7 +52,7 @@ float16_t extF80M_to_f16( const extFloat80_t *aPtr )
 
 #else
 
-float16_t extF80M_to_f16( const extFloat80_t *aPtr )
+sw_float16_t extF80M_to_f16( const sw_extFloat80_t *aPtr )
 {
     const struct extFloat80M *aSPtr;
     uint_fast16_t uiA64;

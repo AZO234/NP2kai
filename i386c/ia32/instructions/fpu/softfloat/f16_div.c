@@ -44,7 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern const uint16_t softfloat_approxRecip_1k0s[];
 extern const uint16_t softfloat_approxRecip_1k1s[];
 
-float16_t f16_div( float16_t a, float16_t b )
+sw_float16_t f16_div( sw_float16_t a, sw_float16_t b )
 {
     union ui16_f16 uA;
     uint_fast16_t uiA;

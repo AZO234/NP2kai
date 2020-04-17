@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-extFloat80_t
+sw_extFloat80_t
  softfloat_subMagsExtF80(
      uint_fast16_t uiA64,
      uint_fast64_t uiA0,
@@ -60,7 +60,7 @@ extFloat80_t
     int_fast32_t expZ;
     uint_fast64_t sigExtra;
     struct uint128 sig128, uiZ;
-    union { struct extFloat80M s; extFloat80_t f; } uZ;
+    union { struct extFloat80M s; sw_extFloat80_t f; } uZ;
 
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/

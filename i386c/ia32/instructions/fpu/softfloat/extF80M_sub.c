@@ -43,7 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 void
  extF80M_sub(
-     const extFloat80_t *aPtr, const extFloat80_t *bPtr, extFloat80_t *zPtr )
+     const sw_extFloat80_t *aPtr, const sw_extFloat80_t *bPtr, sw_extFloat80_t *zPtr )
 {
     const struct extFloat80M *aSPtr, *bSPtr;
     uint_fast16_t uiA64;
@@ -53,7 +53,7 @@ void
     uint_fast64_t uiB0;
     bool signB;
 #if ! defined INLINE_LEVEL || (INLINE_LEVEL < 2)
-    extFloat80_t
+    sw_extFloat80_t
         (*magsFuncPtr)(
             uint_fast16_t, uint_fast64_t, uint_fast16_t, uint_fast64_t, bool );
 #endif
@@ -84,7 +84,7 @@ void
 
 void
  extF80M_sub(
-     const extFloat80_t *aPtr, const extFloat80_t *bPtr, extFloat80_t *zPtr )
+     const sw_extFloat80_t *aPtr, const sw_extFloat80_t *bPtr, sw_extFloat80_t *zPtr )
 {
 
     softfloat_addExtF80M(

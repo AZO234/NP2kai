@@ -39,7 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "platform.h"
 #include "internals.h"
 
-extFloat80_t
+sw_extFloat80_t
  softfloat_normRoundPackToExtF80(
      bool sign,
      int_fast32_t exp,

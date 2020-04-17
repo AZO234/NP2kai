@@ -43,7 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef SOFTFLOAT_FAST_INT64
 
-float32_t f128M_to_f32( const float128_t *aPtr )
+sw_float32_t f128M_to_f32( const sw_float128_t *aPtr )
 {
 
     return f128_to_f32( *aPtr );
@@ -52,7 +52,7 @@ float32_t f128M_to_f32( const float128_t *aPtr )
 
 #else
 
-float32_t f128M_to_f32( const float128_t *aPtr )
+sw_float32_t f128M_to_f32( const sw_float128_t *aPtr )
 {
     const uint32_t *aWPtr;
     uint32_t uiA96;

@@ -42,9 +42,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "softfloat.h"
 
 int_fast64_t
- extF80_to_i64( extFloat80_t a, uint_fast8_t roundingMode, bool exact )
+ extF80_to_i64( sw_extFloat80_t a, uint_fast8_t roundingMode, bool exact )
 {
-    union { struct extFloat80M s; extFloat80_t f; } uA;
+    union { struct extFloat80M s; sw_extFloat80_t f; } uA;
     uint_fast16_t uiA64;
     bool sign;
     int_fast32_t exp;

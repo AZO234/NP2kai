@@ -43,7 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef SOFTFLOAT_FAST_INT64
 
-uint_fast64_t f128M_to_ui64_r_minMag( const float128_t *aPtr, bool exact )
+uint_fast64_t f128M_to_ui64_r_minMag( const sw_float128_t *aPtr, bool exact )
 {
 
     return f128_to_ui64_r_minMag( *aPtr, exact );
@@ -52,7 +52,7 @@ uint_fast64_t f128M_to_ui64_r_minMag( const float128_t *aPtr, bool exact )
 
 #else
 
-uint_fast64_t f128M_to_ui64_r_minMag( const float128_t *aPtr, bool exact )
+uint_fast64_t f128M_to_ui64_r_minMag( const sw_float128_t *aPtr, bool exact )
 {
     const uint32_t *aWPtr;
     uint32_t uiA96;

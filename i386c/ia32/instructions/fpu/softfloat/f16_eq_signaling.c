@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "softfloat.h"
 
-bool f16_eq_signaling( float16_t a, float16_t b )
+bool f16_eq_signaling( sw_float16_t a, sw_float16_t b )
 {
     union ui16_f16 uA;
     uint_fast16_t uiA;

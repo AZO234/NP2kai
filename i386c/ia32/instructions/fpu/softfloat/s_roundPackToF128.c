@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "softfloat.h"
 
-float128_t
+sw_float128_t
  softfloat_roundPackToF128(
      bool sign,
      int_fast32_t exp,

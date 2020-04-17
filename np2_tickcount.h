@@ -1,6 +1,8 @@
 #ifndef NP2_TICKCOUNT_H
 #define NP2_TICKCOUNT_H
 
+#if defined(SUPPORT_NP2_TICKCOUNT)
+
 #include "compiler.h"
 #include <stdint.h>
 
@@ -18,5 +20,7 @@ int64_t NP2_TickCount_GetCountFromInit(void);
 }
 #endif
 
-#endif  /* NP2_TICKCOUNT_H */
+#endif  // SUPPORT_NP2_TICKCOUNT
+
+#endif  // NP2_TICKCOUNT_H
 

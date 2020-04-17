@@ -45,10 +45,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 void
  f128M_roundToInt(
-     const float128_t *aPtr,
+     const sw_float128_t *aPtr,
      uint_fast8_t roundingMode,
      bool exact,
-     float128_t *zPtr
+     sw_float128_t *zPtr
  )
 {
 
@@ -60,10 +60,10 @@ void
 
 void
  f128M_roundToInt(
-     const float128_t *aPtr,
+     const sw_float128_t *aPtr,
      uint_fast8_t roundingMode,
      bool exact,
-     float128_t *zPtr
+     sw_float128_t *zPtr
  )
 {
     const uint32_t *aWPtr;

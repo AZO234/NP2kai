@@ -209,7 +209,7 @@ static void FPU_FNOP(void){
 	return;
 }
 
-static void FPU_PUSH(extFloat80_t in){
+static void FPU_PUSH(sw_extFloat80_t in){
 	FPU_STAT_TOP = (FPU_STAT_TOP - 1) & 7;
 	//actually check if empty
 	FPU_STAT.tag[FPU_STAT_TOP] = TAG_Valid;
@@ -232,7 +232,7 @@ static void FPU_FPOP(void){
 	return;
 }
 
-static extFloat80_t FROUND(extFloat80_t in){
+static sw_extFloat80_t FROUND(sw_extFloat80_t in){
 	return extF80_roundToInt(in, softfloat_round_minMag, false);
 }
 
@@ -261,7 +261,7 @@ static void FPU_FLD_F32(UINT32 addr,UINT store_to) {
 	}	blah;
 	
 	blah.l = fpu_memoryread_d(addr);
-	FPU_STAT.reg[store_to].d = f32_to_extF80(*(float32_t*)&blah.f);
+	FPU_STAT.reg[store_to].d = f32_to_extF80(*(sw_float32_t*)&blah.f);
 }
 
 static void FPU_FLD_F64(UINT32 addr,UINT store_to) {
@@ -270,7 +270,7 @@ static void FPU_FLD_F64(UINT32 addr,UINT store_to) {
 		UINT64 l;
 	}	blah;
 	blah.l = fpu_memoryread_q(addr);
-	FPU_STAT.reg[store_to].d = f64_to_extF80(*(float64_t*)&blah.d);
+	FPU_STAT.reg[store_to].d = f64_to_extF80(*(sw_float64_t*)&blah.d);
 }
 
 static void FPU_FLD_F80(UINT32 addr) {
@@ -301,7 +301,7 @@ static void FPU_FLD_I64(UINT32 addr,UINT store_to) {
 static void FPU_FBLD(UINT32 addr,UINT store_to) 
 {
 	UINT i;
-	extFloat80_t temp;
+	sw_extFloat80_t temp;
 	
 	UINT64 val = 0;
 	UINT in = 0;
@@ -343,7 +343,7 @@ static void FPU_FST_F32(UINT32 addr) {
 		UINT32 l;
 	}	blah;
 	
-	*(float32_t*)&blah.f = extF80_to_f32(FPU_STAT.reg[FPU_STAT_TOP].d);
+	*(sw_float32_t*)&blah.f = extF80_to_f32(FPU_STAT.reg[FPU_STAT_TOP].d);
 	fpu_memorywrite_d(addr,blah.l);
 }
 
@@ -353,7 +353,7 @@ static void FPU_FST_F64(UINT32 addr) {
 		UINT64 l;
 	}	blah;
 
-	*(float64_t*)&blah.d = extF80_to_f64(FPU_STAT.reg[FPU_STAT_TOP].d);
+	*(sw_float64_t*)&blah.d = extF80_to_f64(FPU_STAT.reg[FPU_STAT_TOP].d);
 	fpu_memorywrite_q(addr,blah.l);
 }
 
@@ -394,9 +394,9 @@ static void FPU_FBST(UINT32 addr)
 	UINT32 p;
 	UINT i;
 	BOOL sign;
-	extFloat80_t temp;
-	extFloat80_t m1 = i32_to_extF80(-1);
-	extFloat80_t p10 = i32_to_extF80(10);
+	sw_extFloat80_t temp;
+	sw_extFloat80_t m1 = i32_to_extF80(-1);
+	sw_extFloat80_t p10 = i32_to_extF80(10);
 	signed char oldrnd = softfloat_roundingMode;
 	softfloat_roundingMode = softfloat_round_min;
 
@@ -445,11 +445,11 @@ static void FPU_FADD(UINT op1, UINT op2){
 
 static void FPU_FSIN(void){
 	double temp;
-	float64_t f64temp;
+	sw_float64_t f64temp;
 	softfloat_exceptionFlags = (FPU_STATUSWORD & 0x3f);
 	f64temp = extF80_to_f64(FPU_STAT.reg[FPU_STAT_TOP].d);
 	temp = sin(*(double*)&f64temp);
-	FPU_STAT.reg[FPU_STAT_TOP].d = f64_to_extF80(*(float64_t*)&temp);
+	FPU_STAT.reg[FPU_STAT_TOP].d = f64_to_extF80(*(sw_float64_t*)&temp);
 	FPU_SET_C2(0);
 	//flags and such :)
 	FPU_STATUSWORD |= softfloat_exceptionFlags;
@@ -458,13 +458,13 @@ static void FPU_FSIN(void){
 
 static void FPU_FSINCOS(void){
 	double temp;
-	float64_t f64temp;
+	sw_float64_t f64temp;
 	softfloat_exceptionFlags = (FPU_STATUSWORD & 0x3f);
 	f64temp = extF80_to_f64(FPU_STAT.reg[FPU_STAT_TOP].d);
 	temp = sin(*(double*)&f64temp);
-	FPU_STAT.reg[FPU_STAT_TOP].d = f64_to_extF80(*(float64_t*)&temp);
+	FPU_STAT.reg[FPU_STAT_TOP].d = f64_to_extF80(*(sw_float64_t*)&temp);
 	temp = cos(temp);
-	FPU_PUSH(f64_to_extF80(*(float64_t*)&temp));
+	FPU_PUSH(f64_to_extF80(*(sw_float64_t*)&temp));
 	FPU_SET_C2(0);
 	//flags and such :)
 	FPU_STATUSWORD |= softfloat_exceptionFlags;
@@ -473,11 +473,11 @@ static void FPU_FSINCOS(void){
 
 static void FPU_FCOS(void){
 	double temp;
-	float64_t f64temp;
+	sw_float64_t f64temp;
 	softfloat_exceptionFlags = (FPU_STATUSWORD & 0x3f);
 	f64temp = extF80_to_f64(FPU_STAT.reg[FPU_STAT_TOP].d);
 	temp = cos(*(double*)&f64temp);
-	FPU_STAT.reg[FPU_STAT_TOP].d = f64_to_extF80(*(float64_t*)&temp);
+	FPU_STAT.reg[FPU_STAT_TOP].d = f64_to_extF80(*(sw_float64_t*)&temp);
 	FPU_SET_C2(0);
 	//flags and such :)
 	FPU_STATUSWORD |= softfloat_exceptionFlags;
@@ -493,12 +493,12 @@ static void FPU_FSQRT(void){
 }
 static void FPU_FPATAN(void){
 	double temp;
-	float64_t f64temp, f64temp2;;
+	sw_float64_t f64temp, f64temp2;;
 	softfloat_exceptionFlags = (FPU_STATUSWORD & 0x3f);
 	f64temp  = extF80_to_f64(FPU_STAT.reg[FPU_ST(1)].d);
 	f64temp2 = extF80_to_f64(FPU_STAT.reg[FPU_STAT_TOP].d);
 	temp = atan2(*(double*)&f64temp, *(double*)&f64temp2);
-	FPU_STAT.reg[FPU_ST(1)].d = f64_to_extF80(*(float64_t*)&temp);
+	FPU_STAT.reg[FPU_ST(1)].d = f64_to_extF80(*(sw_float64_t*)&temp);
 	FPU_FPOP();
 	//flags and such :)
 	FPU_STATUSWORD |= softfloat_exceptionFlags;
@@ -506,11 +506,11 @@ static void FPU_FPATAN(void){
 }
 static void FPU_FPTAN(void){
 	double temp;
-	float64_t f64temp, f64temp2;;
+	sw_float64_t f64temp, f64temp2;;
 	softfloat_exceptionFlags = (FPU_STATUSWORD & 0x3f);
 	f64temp = extF80_to_f64(FPU_STAT.reg[FPU_STAT_TOP].d);
 	temp = tan(*(double*)&f64temp);
-	FPU_STAT.reg[FPU_STAT_TOP].d = f64_to_extF80(*(float64_t*)&temp);
+	FPU_STAT.reg[FPU_STAT_TOP].d = f64_to_extF80(*(sw_float64_t*)&temp);
 	FPU_PUSH(i32_to_extF80(1));
 	FPU_SET_C2(0);
 	//flags and such :)
@@ -705,8 +705,8 @@ static void FPU_FRNDINT(void){
 }
 
 static void FPU_FPREM(void){
-	extFloat80_t valtop;
-	extFloat80_t valdiv;
+	sw_extFloat80_t valtop;
+	sw_extFloat80_t valdiv;
 	SINT64 ressaved;
 	
 	softfloat_exceptionFlags = (FPU_STATUSWORD & 0x3f);
@@ -725,10 +725,10 @@ static void FPU_FPREM(void){
 }
 
 static void FPU_FPREM1(void){
-	extFloat80_t valtop;
-	extFloat80_t valdiv, quot, quotf, quot_sub_quotf;
+	sw_extFloat80_t valtop;
+	sw_extFloat80_t valdiv, quot, quotf, quot_sub_quotf;
 	SINT64 ressaved;
-	extFloat80_t v05 = extF80_div(i32_to_extF80(1), i32_to_extF80(2));
+	sw_extFloat80_t v05 = extF80_div(i32_to_extF80(1), i32_to_extF80(2));
 	signed char oldrnd = softfloat_roundingMode;
 	
 	softfloat_exceptionFlags = (FPU_STATUSWORD & 0x3f);
@@ -779,39 +779,39 @@ static void FPU_FXAM(void){
 
 static void FPU_F2XM1(void){
 	double temp;
-	float64_t f64temp;
+	sw_float64_t f64temp;
 	f64temp = extF80_to_f64(FPU_STAT.reg[FPU_STAT_TOP].d);
 	temp = pow(2.0, *(double*)&f64temp) - 1;
-	FPU_STAT.reg[FPU_STAT_TOP].d = f64_to_extF80(*(float64_t*)&temp);
+	FPU_STAT.reg[FPU_STAT_TOP].d = f64_to_extF80(*(sw_float64_t*)&temp);
 	return;
 }
 
 static void FPU_FYL2X(void){
 	double temp;
-	float64_t f64temp;
+	sw_float64_t f64temp;
 	f64temp = extF80_to_f64(FPU_STAT.reg[FPU_STAT_TOP].d);
 	temp = log(*(double*)&f64temp)/log(2.0);
-	FPU_STAT.reg[FPU_ST(1)].d = extF80_mul(FPU_STAT.reg[FPU_ST(1)].d, f64_to_extF80(*(float64_t*)&temp));
+	FPU_STAT.reg[FPU_ST(1)].d = extF80_mul(FPU_STAT.reg[FPU_ST(1)].d, f64_to_extF80(*(sw_float64_t*)&temp));
 	FPU_FPOP();
 	return;
 }
 
 static void FPU_FYL2XP1(void){
 	double temp;
-	float64_t f64temp;
+	sw_float64_t f64temp;
 	f64temp = extF80_to_f64(FPU_STAT.reg[FPU_STAT_TOP].d);
 	temp = log(*(double*)&f64temp+1.0)/log(2.0);
-	FPU_STAT.reg[FPU_ST(1)].d = extF80_mul(FPU_STAT.reg[FPU_ST(1)].d, f64_to_extF80(*(float64_t*)&temp));
+	FPU_STAT.reg[FPU_ST(1)].d = extF80_mul(FPU_STAT.reg[FPU_ST(1)].d, f64_to_extF80(*(sw_float64_t*)&temp));
 	FPU_FPOP();
 	return;
 }
 
 static void FPU_FSCALE(void){
 	double temp;
-	float64_t f64temp;
+	sw_float64_t f64temp;
 	f64temp = extF80_to_f64(FPU_STAT.reg[FPU_ST(1)].d);
 	temp = pow(2.0, *(double*)&f64temp);
-	FPU_STAT.reg[FPU_STAT_TOP].d = extF80_mul(FPU_STAT.reg[FPU_STAT_TOP].d, f64_to_extF80(*(float64_t*)&temp));
+	FPU_STAT.reg[FPU_STAT_TOP].d = extF80_mul(FPU_STAT.reg[FPU_STAT_TOP].d, f64_to_extF80(*(sw_float64_t*)&temp));
 	return; //2^x where x is chopped.
 }
 
@@ -1002,14 +1002,14 @@ static void FPU_FXTRACT(void) {
 	// if double ever uses a different base please correct this function
 	FP_REG test;
 	SINT64 exp80, exp80final;
-	extFloat80_t mant;
+	sw_extFloat80_t mant;
 	double temp;
 	
 	test = FPU_STAT.reg[FPU_STAT_TOP];
 	exp80 =  test.ll&QWORD_CONST(0x7ff0000000000000);
 	exp80final = (exp80>>52) - BIAS64;
 	temp = pow(2.0,(double)(exp80final));
-	mant = extF80_div(test.d, f64_to_extF80(*(float64_t*)&temp));
+	mant = extF80_div(test.d, f64_to_extF80(*(sw_float64_t*)&temp));
 	FPU_STAT.reg[FPU_STAT_TOP].d = i64_to_extF80(exp80final);
 	FPU_PUSH(mant);
 }
@@ -1041,31 +1041,31 @@ static void FPU_FLD1(void){
 static void FPU_FLDL2T(void){
 	double Value = L2T;
 	FPU_PREP_PUSH();
-	FPU_STAT.reg[FPU_STAT_TOP].d = f64_to_extF80(*(float64_t*)&Value);
+	FPU_STAT.reg[FPU_STAT_TOP].d = f64_to_extF80(*(sw_float64_t*)&Value);
 }
 
 static void FPU_FLDL2E(void){
 	double Value = L2E;
 	FPU_PREP_PUSH();
-	FPU_STAT.reg[FPU_STAT_TOP].d = f64_to_extF80(*(float64_t*)&Value);
+	FPU_STAT.reg[FPU_STAT_TOP].d = f64_to_extF80(*(sw_float64_t*)&Value);
 }
 
 static void FPU_FLDPI(void){
 	double Value = PI;
 	FPU_PREP_PUSH();
-	FPU_STAT.reg[FPU_STAT_TOP].d = f64_to_extF80(*(float64_t*)&Value);
+	FPU_STAT.reg[FPU_STAT_TOP].d = f64_to_extF80(*(sw_float64_t*)&Value);
 }
 
 static void FPU_FLDLG2(void){
 	double Value = LG2;
 	FPU_PREP_PUSH();
-	FPU_STAT.reg[FPU_STAT_TOP].d = f64_to_extF80(*(float64_t*)&Value);
+	FPU_STAT.reg[FPU_STAT_TOP].d = f64_to_extF80(*(sw_float64_t*)&Value);
 }
 
 static void FPU_FLDLN2(void){
 	double Value = LN2;
 	FPU_PREP_PUSH();
-	FPU_STAT.reg[FPU_STAT_TOP].d = f64_to_extF80(*(float64_t*)&Value);
+	FPU_STAT.reg[FPU_STAT_TOP].d = f64_to_extF80(*(sw_float64_t*)&Value);
 }
 
 static void FPU_FLDZ(void){

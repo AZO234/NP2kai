@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "softfloat.h"
 
-float16_t
+sw_float16_t
  softfloat_roundPackToF16( bool sign, int_fast16_t exp, uint_fast16_t sig )
 {
     uint_fast8_t roundingMode;

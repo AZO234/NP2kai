@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /*----------------------------------------------------------------------------
 *----------------------------------------------------------------------------*/
-bool extF80M_isSignalingNaN( const extFloat80_t *aPtr )
+bool extF80M_isSignalingNaN( const sw_extFloat80_t *aPtr )
 {
     const struct extFloat80M *aSPtr;
     uint64_t uiA0;

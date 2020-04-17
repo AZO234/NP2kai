@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "specialize.h"
 #include "softfloat.h"
 
-bool f16_isSignalingNaN( float16_t a )
+bool f16_isSignalingNaN( sw_float16_t a )
 {
     union ui16_f16 uA;
 

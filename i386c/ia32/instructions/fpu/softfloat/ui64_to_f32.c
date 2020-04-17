@@ -39,7 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "softfloat.h"
 
-float32_t ui64_to_f32( uint64_t a )
+sw_float32_t ui64_to_f32( uint64_t a )
 {
     int_fast8_t shiftDist;
     union ui32_f32 u;

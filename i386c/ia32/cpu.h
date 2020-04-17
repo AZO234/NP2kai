@@ -260,7 +260,7 @@ typedef enum {
 
 typedef union {
 #ifdef SUPPORT_FPU_SOFTFLOAT
-    extFloat80_t d;
+    sw_extFloat80_t d;
 #else
     float d;
 #endif

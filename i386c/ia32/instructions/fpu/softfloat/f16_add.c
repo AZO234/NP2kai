@@ -40,14 +40,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "softfloat.h"
 
-float16_t f16_add( float16_t a, float16_t b )
+sw_float16_t f16_add( sw_float16_t a, sw_float16_t b )
 {
     union ui16_f16 uA;
     uint_fast16_t uiA;
     union ui16_f16 uB;
     uint_fast16_t uiB;
 #if ! defined INLINE_LEVEL || (INLINE_LEVEL < 1)
-    float16_t (*magsFuncPtr)( uint_fast16_t, uint_fast16_t );
+    sw_float16_t (*magsFuncPtr)( uint_fast16_t, uint_fast16_t );
 #endif
 
     uA.f = a;

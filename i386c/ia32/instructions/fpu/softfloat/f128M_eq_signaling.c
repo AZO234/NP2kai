@@ -43,7 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef SOFTFLOAT_FAST_INT64
 
-bool f128M_eq_signaling( const float128_t *aPtr, const float128_t *bPtr )
+bool f128M_eq_signaling( const sw_float128_t *aPtr, const sw_float128_t *bPtr )
 {
 
     return f128_eq_signaling( *aPtr, *bPtr );
@@ -52,7 +52,7 @@ bool f128M_eq_signaling( const float128_t *aPtr, const float128_t *bPtr )
 
 #else
 
-bool f128M_eq_signaling( const float128_t *aPtr, const float128_t *bPtr )
+bool f128M_eq_signaling( const sw_float128_t *aPtr, const sw_float128_t *bPtr )
 {
     const uint32_t *aWPtr, *bWPtr;
     uint32_t wordA, wordB, uiA96, uiB96;

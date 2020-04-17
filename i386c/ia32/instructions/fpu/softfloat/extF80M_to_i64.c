@@ -45,7 +45,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int_fast64_t
  extF80M_to_i64(
-     const extFloat80_t *aPtr, uint_fast8_t roundingMode, bool exact )
+     const sw_extFloat80_t *aPtr, uint_fast8_t roundingMode, bool exact )
 {
 
     return extF80_to_i64( *aPtr, roundingMode, exact );
@@ -56,7 +56,7 @@ int_fast64_t
 
 int_fast64_t
  extF80M_to_i64(
-     const extFloat80_t *aPtr, uint_fast8_t roundingMode, bool exact )
+     const sw_extFloat80_t *aPtr, uint_fast8_t roundingMode, bool exact )
 {
     const struct extFloat80M *aSPtr;
     uint_fast16_t uiA64;

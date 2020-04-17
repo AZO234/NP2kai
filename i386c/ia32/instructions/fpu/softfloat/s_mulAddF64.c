@@ -43,7 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef SOFTFLOAT_FAST_INT64
 
-float64_t
+sw_float64_t
  softfloat_mulAddF64(
      uint_fast64_t uiA, uint_fast64_t uiB, uint_fast64_t uiC, uint_fast8_t op )
 {
@@ -243,7 +243,7 @@ float64_t
 
 #else
 
-float64_t
+sw_float64_t
  softfloat_mulAddF64(
      uint_fast64_t uiA, uint_fast64_t uiB, uint_fast64_t uiC, uint_fast8_t op )
 {

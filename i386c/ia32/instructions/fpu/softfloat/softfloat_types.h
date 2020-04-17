@@ -50,10 +50,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 | the types below may, if desired, be defined as aliases for the native types
 | (typically 'float' and 'double', and possibly 'long double').
 *----------------------------------------------------------------------------*/
-typedef struct { uint16_t v; } float16_t;
-typedef struct { uint32_t v; } float32_t;
-typedef struct { uint64_t v; } float64_t;
-typedef struct { uint64_t v[2]; } float128_t;
+typedef struct { uint16_t v; } sw_float16_t;
+typedef struct { uint32_t v; } sw_float32_t;
+typedef struct { uint64_t v; } sw_float64_t;
+typedef struct { uint64_t v[2]; } sw_float128_t;
 
 /*----------------------------------------------------------------------------
 | The format of an 80-bit extended floating-point number in memory.  This
@@ -69,16 +69,16 @@ struct extFloat80M { uint16_t signExp; uint64_t signif; };
 /*----------------------------------------------------------------------------
 | The type used to pass 80-bit extended floating-point arguments and
 | results to/from functions.  This type must have size identical to
-| 'struct extFloat80M'.  Type 'extFloat80_t' can be defined as an alias for
+| 'struct extFloat80M'.  Type 'sw_extFloat80_t' can be defined as an alias for
 | 'struct extFloat80M'.  Alternatively, if a platform has "native" support
 | for IEEE-Standard 80-bit extended floating-point, it may be possible,
-| if desired, to define 'extFloat80_t' as an alias for the native type
+| if desired, to define 'sw_extFloat80_t' as an alias for the native type
 | (presumably either 'long double' or a nonstandard compiler-intrinsic type).
 | In that case, the 'signif' and 'signExp' fields of 'struct extFloat80M'
 | must align exactly with the locations in memory of the sign, exponent, and
 | significand of the native type.
 *----------------------------------------------------------------------------*/
-typedef struct extFloat80M extFloat80_t;
+typedef struct extFloat80M sw_extFloat80_t;
 
 #endif
 

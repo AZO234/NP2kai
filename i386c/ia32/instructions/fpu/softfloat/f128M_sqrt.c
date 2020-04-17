@@ -43,7 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef SOFTFLOAT_FAST_INT64
 
-void f128M_sqrt( const float128_t *aPtr, float128_t *zPtr )
+void f128M_sqrt( const sw_float128_t *aPtr, sw_float128_t *zPtr )
 {
 
     *zPtr = f128_sqrt( *aPtr );
@@ -52,7 +52,7 @@ void f128M_sqrt( const float128_t *aPtr, float128_t *zPtr )
 
 #else
 
-void f128M_sqrt( const float128_t *aPtr, float128_t *zPtr )
+void f128M_sqrt( const sw_float128_t *aPtr, sw_float128_t *zPtr )
 {
     const uint32_t *aWPtr;
     uint32_t *zWPtr;

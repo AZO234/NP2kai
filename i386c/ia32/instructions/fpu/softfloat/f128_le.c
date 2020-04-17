@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internals.h"
 #include "softfloat.h"
 
-bool f128_le( float128_t a, float128_t b )
+bool f128_le( sw_float128_t a, sw_float128_t b )
 {
     union ui128_f128 uA;
     uint_fast64_t uiA64, uiA0;
