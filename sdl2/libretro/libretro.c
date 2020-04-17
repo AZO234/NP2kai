@@ -73,7 +73,7 @@ uint32_t   FrameBuffer[LR_SCREENWIDTH * LR_SCREENHEIGHT];
 
 retro_audio_sample_batch_t audio_batch_cb = NULL;
 
-static char CMDFILE[512];
+static char CMDFILE[1024];
 
 bool did_reset, joy2key;
 int lr_init = 0;
@@ -187,7 +187,7 @@ int loadcmdfile(char *argv)
 
   RFILE* fp = filestream_open(argv, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
   if(fp != NULL) {
-    if(filestream_gets(fp, CMDFILE, 512) != NULL) {
+    if(filestream_gets(fp, CMDFILE, 1024) != NULL) {
       res = 1;
     }
     filestream_close(fp);
@@ -265,8 +265,9 @@ int pre_main(const char *argv) {
   }
 
   if(CMDFILE[0] == '\0') {
-    milstr_ncpy(CMDFILE, "np2kai ", 512);
-    milstr_ncat(CMDFILE, argv, 512);
+    milstr_ncpy(CMDFILE, "np2kai \"", 1024);
+    milstr_ncat(CMDFILE, argv, 1024);
+    milstr_ncat(CMDFILE, "\"", 1024);
   }
   parse_cmdline(CMDFILE);
 
