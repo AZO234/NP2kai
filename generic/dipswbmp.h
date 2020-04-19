@@ -1,3 +1,4 @@
+#if defined(USE_RESOURCE_BMP)
 
 #ifdef __cplusplus
 extern "C"{
@@ -18,4 +19,6 @@ UINT8 *dipswbmp_getsnd118(UINT16 snd118io, UINT8 snd118dma, UINT8 snd118irqf, UI
 #ifdef __cplusplus
 }
 #endif
+
+#endif  // defined(USE_RESOURCE_BMP)
 

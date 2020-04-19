@@ -1,15 +1,20 @@
 #ifndef NP2_SDL2_KBTRANS_H
 #define NP2_SDL2_KBTRANS_H
 
+#include <compiler.h>
+
 #if defined(__LIBRETRO__)
-#include <stdint.h>
+typedef struct {
+  UINT  lrkey;
+  UINT8 keycode;
+} LRKCNV;
 
-extern uint16_t keys_to_poll[];
-extern uint16_t keys_needed;
+uint16_t keys_needed;
+LRKCNV*  keys_poll;
 
-void init_lr_key_to_pc98();
-void send_libretro_key_down(uint16_t key);
-void send_libretro_key_up(uint16_t key);
+void init_lrkey_to_pc98();
+void send_libretro_key_down(UINT key);
+void send_libretro_key_up(UINT key);
 #else	/* __LIBRETRO__ */
 void sdlkbd_initialize(void);
 void sdlkbd_keydown(UINT key);

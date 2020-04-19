@@ -3,6 +3,7 @@
 #include	"dipswbmp.h"
 #include	"dipswbmp.res"
 
+#if defined(USE_RESOURCE_BMP)
 
 typedef struct {
 	BMPDATA	inf;
@@ -444,4 +445,6 @@ UINT8 *dipswbmp_getsnd118(UINT16 snd118io, UINT8 snd118dma, UINT8 snd118irqf, UI
 	}
 	return(ret);
 }
+
+#endif  // defined(USE_RESOURCE_BMP)
 
