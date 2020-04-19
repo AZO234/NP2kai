@@ -779,69 +779,71 @@ struct retro_core_option_definition option_defs_us[] = {
       },
       "ON"
    },
-   {
-      "np2kai_stick2mouse",
-      "S2M(Joypad Analog Stick to Mouse) Mapping",
-      "Emulate a mouse on your gamepad's analog stick.",
-      {
-         { "OFF", NULL },
-         { "L-stick", NULL },
-         { "R-stick", NULL },
-         { NULL, NULL},
-      },
-      "R-stick"
-   },
-   {
-      "np2kai_stick2mouse_shift",
-      "S2M Click Shift Button Mapping",
-      "Stick push shift to left->right click.",
-      {
-         { "OFF", NULL },
-         { "L1", NULL },
-         { "L2", NULL },
-         { "R1", NULL },
-         { "R2", NULL },
-         { NULL, NULL},
-      },
-      "R1"
-   },
-   {
-      "np2kai_joy2mousekey",
-      "J2M/J2K(Joypad D-pad to Mouse/Keyboard) Mapping",
-      "Emulate a keyboard or mouse on your gamepad. Map keyboard 'Arrows' or 'Keypad' on the D-pad.",
-      {
-         { "OFF", NULL },
-         { "Mouse", NULL },
-         { "Arrows", NULL },
-         { "Keypad", NULL },
-         { "Manual", NULL },
-         { NULL, NULL},
-      },
-      "OFF"
-   },
-   {
-      "np2kai_joynp2menu",
-      "Joypad to NP2 menu Mapping",
-      "Select a gamepad button to open NP2 Menu.",
-      {
-         { "OFF", NULL },
-         { "L", NULL },
-         { "L2", NULL },
-         { "L3", NULL },
-         { "R", NULL },
-         { "R2", NULL },
-         { "R3", NULL },
-         { "A", NULL },
-         { "B", NULL },
-         { "X", NULL },
-         { "Y", NULL },
-         { "Start", NULL },
-         { "Select", NULL },
-         { NULL, NULL},
-      },
-      "L2"
-   },
-   { NULL, NULL, NULL, {{0}}, NULL },
+  {
+    "np2kai_stick2mouse",
+    "S2M(Joypad Analog Stick to Mouse) Mapping",
+    "Emulate a mouse on your gamepad's analog stick.",
+    {
+      {"OFF", NULL},
+      {"L-stick", NULL},
+      {"R-stick", NULL},
+      {NULL, NULL},
+    },
+    "R-stick"
+  },
+  {
+    "np2kai_stick2mouse_shift",
+    "S2M Click Shift Button Mapping",
+    "Stick push shift to left->right click.",
+    {
+      {"OFF", NULL},
+      {"L1", NULL},
+      {"L2", NULL},
+      {"R1", NULL},
+      {"R2", NULL},
+      {NULL, NULL},
+    },
+    "R1"
+  },
+  {
+    "np2kai_joymode",
+    "Joypad D-pad to Mouse/Keyboard/Joypad Mapping",
+    "Emulate a keyboard/mouse/joypad on your gamepad. Map keyboard 'Arrows' or 'Keypad' on the D-pad.",
+    {
+      {"OFF", NULL},
+      {"Mouse", NULL},
+      {"Arrows", NULL},
+      {"Keypad", NULL},
+      {"Manual Keyboard", NULL},
+      {"Atari Joypad", NULL},
+      {"Manual", NULL},
+      {NULL, NULL},
+    },
+    "OFF"
+  },
+  {
+    "np2kai_joynp2menu",
+    "Joypad to NP2 menu Mapping",
+    "Select a gamepad button to open NP2 Menu.",
+    {
+      {"OFF", NULL},
+      {"L1", NULL},
+      {"L2", NULL},
+      {"L3", NULL},
+      {"R1", NULL},
+      {"R2", NULL},
+      {"R3", NULL},
+      {"A", NULL},
+      {"B", NULL},
+      {"X", NULL},
+      {"Y", NULL},
+      {"Start", NULL},
+      {"Select", NULL},
+      {NULL, NULL},
+    },
+    "L2"
+  },
+  {NULL, NULL, NULL, {{0}}, NULL},
 };
 
 /* RETRO_LANGUAGE_JAPANESE */
@@ -1599,69 +1601,71 @@ struct retro_core_option_definition option_defs_ja[] = {
       },
       "ON"
    },
-   {
-      "np2kai_stick2mouse",
-      "S2M(ジョイパッド アナログスティック->マウス マッピング",
-      "ジョイパッドのアナログスティックをマウスに割り当てる。",
-      {
-         { "OFF", NULL },
-         { "L-stick", NULL },
-         { "R-stick", NULL },
-         { NULL, NULL},
-      },
-      "R-stick"
-   },
-   {
-      "np2kai_stick2mouse_shift",
-      "S2M クリックシフトボタン マッピング",
-      "スティック押し込みを左→右クリックにシフトするボタンを割り当てる。",
-      {
-         { "OFF", NULL },
-         { "L1", NULL },
-         { "L2", NULL },
-         { "R1", NULL },
-         { "R2", NULL },
-         { NULL, NULL},
-      },
-      "R1"
-   },
-   {
-      "np2kai_joy2mousekey",
-      "J2M/J2K（ジョイパッド デジタルボタン->マウス/キーボード） マッピング",
-      "ジョイパッドのデジタルボタンをキーボードやマウスの操作に割り当てる。",
-      {
-         { "OFF", NULL },
-         { "Mouse", NULL },
-         { "Arrows", NULL },
-         { "Keypad", NULL },
-         { "Manual", NULL },
-         { NULL, NULL},
-      },
-      "OFF"
-   },
-   {
-      "np2kai_joynp2menu",
-      "NP2メニュー表示ボタン設定",
-      NULL,
-      {
-         { "OFF", NULL },
-         { "L", NULL },
-         { "L2", NULL },
-         { "L3", NULL },
-         { "R", NULL },
-         { "R2", NULL },
-         { "R3", NULL },
-         { "A", NULL },
-         { "B", NULL },
-         { "X", NULL },
-         { "Y", NULL },
-         { "Start", NULL },
-         { "Select", NULL },
-         { NULL, NULL},
-      },
-      "L2"
-   },
-   { NULL, NULL, NULL, {{0}}, NULL },
+  {
+    "np2kai_stick2mouse",
+    "S2M(ジョイパッド アナログスティック->マウス マッピング",
+    "ジョイパッドのアナログスティックをマウスに割り当てる。",
+    {
+      {"OFF", NULL},
+      {"L-stick", NULL},
+      {"R-stick", NULL},
+      {NULL, NULL},
+    },
+    "R-stick"
+  },
+  {
+    "np2kai_stick2mouse_shift",
+    "S2M クリックシフトボタン マッピング",
+    "スティック押し込みを左→右クリックにシフトするボタンを割り当てる。",
+    {
+      {"OFF", NULL},
+      {"L1", NULL},
+      {"L2", NULL},
+      {"R1", NULL},
+      {"R2", NULL},
+      {NULL, NULL},
+    },
+    "R1"
+  },
+  {
+    "np2kai_joymode",
+    "ジョイパッド デジタルボタン マッピング",
+    "ジョイパッドのデジタルボタンをキーボード/マウス/ジョイパッドの操作に割り当てる。",
+    {
+      {"OFF", NULL},
+      {"Mouse", NULL},
+      {"Arrows", NULL},
+      {"Keypad", NULL},
+      {"Manual Keyboard", NULL},
+      {"Atari Joypad", NULL},
+      {"Manual", NULL},
+      {NULL, NULL},
+    },
+    "OFF"
+  },
+  {
+    "np2kai_joynp2menu",
+    "NP2メニュー表示ボタン設定",
+    NULL,
+    {
+      {"OFF", NULL},
+      {"L1", NULL},
+      {"L2", NULL},
+      {"L3", NULL},
+      {"R1", NULL},
+      {"R2", NULL},
+      {"R3", NULL},
+      {"A", NULL},
+      {"B", NULL},
+      {"X", NULL},
+      {"Y", NULL},
+      {"Start", NULL},
+      {"Select", NULL},
+      {NULL, NULL},
+    },
+    "L2"
+  },
+  {NULL, NULL, NULL, {{0}}, NULL},
 };
 
 /* RETRO_LANGUAGE_FRENCH */
