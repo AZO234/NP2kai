@@ -239,6 +239,7 @@ else ifeq ($(platform), psl1ght)
 	ENDIANNESS_DEFINES += -DMSB_FIRST
 	STATIC_LINKING=1
 	DISABLE_GCC_SECURITY_FLAGS = 1
+	SUPPORT_NP2_THREAD = 0
 
 # PSP *Apr 15, 2020 can't build*
 else ifeq ($(platform), psp1)
