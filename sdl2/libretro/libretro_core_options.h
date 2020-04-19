@@ -797,6 +797,8 @@ struct retro_core_option_definition option_defs_us[] = {
       "Stick push shift to left->right click.",
       {
          { "OFF", NULL },
+         { "L1", NULL },
+         { "L2", NULL },
          { "R1", NULL },
          { "R2", NULL },
          { NULL, NULL},
@@ -1615,6 +1617,8 @@ struct retro_core_option_definition option_defs_ja[] = {
       "スティック押し込みを左→右クリックにシフトするボタンを割り当てる。",
       {
          { "OFF", NULL },
+         { "L1", NULL },
+         { "L2", NULL },
          { "R1", NULL },
          { "R2", NULL },
          { NULL, NULL},
