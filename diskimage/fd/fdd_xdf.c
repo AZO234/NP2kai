@@ -85,7 +85,14 @@ const OEMCHAR	*p;			//	BKDSK(DD6) or BKDSK(DDB)判定用
 	if (attr & 0x18) {
 		return(FAILURE);
 	}
-	fh = file_open(fname);
+	if(attr & FILEATTR_READONLY) {
+		ro = 1;
+	}
+	if(ro) {
+		fh = file_open_rb(fname);
+	} else {
+		fh = file_open(fname);
+	}
 	if (fh == FILEH_INVALID) {
 		return(FAILURE);
 	}
@@ -161,7 +168,14 @@ BRESULT fdd_set_fdi(FDDFILE fdd, FDDFUNC fdd_fn, const OEMCHAR *fname, int ro) {
 	}
 	fdsize = 0;
 	r = 0;
-	fh = file_open_rb(fname);
+	if(attr & FILEATTR_READONLY) {
+		ro = 1;
+	}
+	if(ro) {
+		fh = file_open_rb(fname);
+	} else {
+		fh = file_open(fname);
+	}
 	if (fh != FILEH_INVALID) {
 		fdsize = (UINT32)file_getsize(fh);
 		r = file_read(fh, &fdi, sizeof(fdi));
@@ -547,7 +561,14 @@ const _XDFINFO	*xdf;
 	if (attr & 0x18) {
 		return(FAILURE);
 	}
-	fh = file_open(fname);
+	if(attr & FILEATTR_READONLY) {
+		ro = 1;
+	}
+	if(ro) {
+		fh = file_open_rb(fname);
+	} else {
+		fh = file_open(fname);
+	}
 	if (fh == FILEH_INVALID) {
 		return(FAILURE);
 	}
@@ -594,7 +615,14 @@ BRESULT fddxdf_setfdi(FDDFILE fdd, const OEMCHAR *fname, int ro) {
 	}
 	fdsize = 0;
 	r = 0;
-	fh = file_open_rb(fname);
+	if(attr & FILEATTR_READONLY) {
+		ro = 1;
+	}
+	if(ro) {
+		fh = file_open_rb(fname);
+	} else {
+		fh = file_open(fname);
+	}
 	if (fh != FILEH_INVALID) {
 		fdsize = file_getsize(fh);
 		r = file_read(fh, &fdi, sizeof(fdi));

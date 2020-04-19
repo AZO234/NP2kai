@@ -653,7 +653,7 @@ int np2_main(int argc, char *argv[]) {
 	drvfdd = 0;
 	for (i = 0; i < np2_main_disk_images_count; i++) {
 		if (i < 2) {
-			diskdrv_readyfdd(i, np2_main_disk_images_paths[i], 0);
+			diskdrv_setfdd(i, np2_main_disk_images_paths[i], 0);
 		}
 	}
 

@@ -196,8 +196,31 @@ short file_attr(const OEMCHAR *path) {
   short	attr = 0;
 
 #if defined(__LIBRETRO__)
+  FILEH fh = NULL;
+
   if(path_is_directory(path)) {
-    attr |= FILEATTR_DIRECTORY;
+    OEMCHAR testpath[MAX_PATH];
+
+    file_cpyname(testpath, MAX_PATH, path);
+    file_catname(testpath, "/_np2test", MAX_PATH);
+    fh = file_open_cb(path);
+    if(fh) {
+      file_close(fh);
+      file_delete(testpath);
+    } else {
+      attr |= FILEATTR_READONLY;
+    }
+  } else {
+    fh = file_open(path);
+    if(fh) {
+      file_close(fh);
+    } else {
+      fh = file_open_rb(path);
+      if(fh) {
+        file_close(fh);
+        attr |= FILEATTR_READONLY;
+      }
+    }
   }
 #elif defined(_WINDOWS) && defined(OSLANG_UTF8)
   struct _stat sb;

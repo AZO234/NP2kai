@@ -278,7 +278,14 @@ BRESULT fdd_set_d88(FDDFILE fdd, FDDFUNC fdd_fn, const OEMCHAR *fname, int ro) {
 	if (attr & 0x18) {
 		goto fdst_err;
 	}
-	fh = file_open(fname);
+	if(attr & FILEATTR_READONLY) {
+		ro = 1;
+	}
+	if(ro) {
+		fh = file_open_rb(fname);
+	} else {
+		fh = file_open(fname);
+	}
 	if (fh == FILEH_INVALID) {
 		goto fdst_err;
 	}
@@ -976,7 +983,14 @@ BRESULT fddd88_set(FDDFILE fdd, const OEMCHAR *fname, int ro) {
 	if (attr & 0x18) {
 		goto fdst_err;
 	}
-	fh = file_open(fname);
+	if(attr & FILEATTR_READONLY) {
+		ro = 1;
+	}
+	if(ro) {
+		fh = file_open_rb(fname);
+	} else {
+		fh = file_open(fname);
+	}
 	if (fh == FILEH_INVALID) {
 		goto fdst_err;
 	}

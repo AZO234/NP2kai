@@ -204,6 +204,13 @@ void diskdrv_readyfddex(REG8 drv, const OEMCHAR *fname, UINT ftype, int readonly
 	{
 		if ((fname != NULL) && (fname[0] != '\0'))
 		{
+			short attr;
+
+			attr = file_attr(fname);
+			if(attr & FILEATTR_READONLY) {
+				readonly = 1;
+			}
+
 			fdd_set(drv, fname, ftype, readonly);
 			if ((!(fdc.chgreg & 4)) || (fdc.ctrlreg & 0x08)){
 				fdc.stat[drv] = FDCRLT_AI | drv;
@@ -236,6 +243,13 @@ void diskdrv_setfddex(REG8 drv, const OEMCHAR *fname, UINT ftype, int readonly)
 
 		if (fname)
 		{
+			short attr;
+
+			attr = file_attr(fname);
+			if(attr & FILEATTR_READONLY) {
+				readonly = 1;
+			}
+
 			diskdrv_delay[drv] = DISK_DELAY;
 			diskdrv_ftype[drv] = ftype;
 			diskdrv_ro[drv] = readonly;
