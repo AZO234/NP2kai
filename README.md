@@ -573,7 +573,7 @@ Then, You can FDs+HD and FDs+CD contents file.
 </div></details>
 
 <details><summary>
-Using mouse (J2M Joypad2Mouse)
+Using mouse (Joypad mouse mode)
 </summary><div>
 
 Mouse cursor moving is always enable with mouse on PC.<br>
@@ -585,7 +585,7 @@ Switch Stick2Mouse mode in config to 'L-stick' or 'R-stick(default)'.<br>
 - ClickShift+Thumb: mouse right button<br>
 ClickShift button is assigned to R1 default.<br>
 
-To switch Joy2Mouse/Keyboard mode in config to 'Mouse'.<br>
+To using digital pad, switch 'Joypad mode' in config to 'Mouse'.<br>
 Mouse cursor is able to move with joypad's digital button also.<br>
 - D-UP/DOWN/LEFT/RIGHT: mouse move<br>
 - B button: mouse left button<br>
@@ -594,11 +594,11 @@ Mouse cursor is able to move with joypad's digital button also.<br>
 </div></details>
 
 <details><summary>
-Using keyboard (J2K Joypad2Keyboard)
+Using keyboard (Joypad Keyboard mode)
 </summary><div>
 
 Keyboard is able to control with joypad.<br>
-Switch Joy2Mouse/Keyboard mode in config to 'Arrows' or 'Keypad' (or 'Manual').<br>
+Switch 'Joypad mode' in config to 'Arrows' or 'Keypad' (or 'Manual keyboard').<br>
 
 - D-UP/DOWN/LEFT/RIGHT: Arrow key or Keypad(2468) key<br>
 - B button: Z key<br>
@@ -610,11 +610,19 @@ Switch Joy2Mouse/Keyboard mode in config to 'Arrows' or 'Keypad' (or 'Manual').<
 - Select button: Escape key<br>
 - Start button: Return key<br>
 
-By setting Joy2Mouse/Keyboard mode to 'Manual', you can custom keycode for button.<br>
+By setting 'Manual Kayboard', you can custom keycode for button.<br>
 Change 'lrjoybtn' value in system/np2kai/np2kai.cfg.<br>
 This value is little endian and 12 values ​​of 16bits(2Bytes) are arranged.<br>
 Write the key code of RETROK (see libretro.h) to this value.<br>
 The order is D-UP/DOWN/LEFT/RIGHT/A/B/X/Y/L/R/Select/Start.<br>
+</div></details>
+
+<details><summary>
+Using ATARI joypad (Joypad ATARI mode)
+</summary><div>
+
+By setting 'ATARI joypad', you can use ATARI joypad port.
+
 </div></details>
 
 <details><summary>
@@ -1034,6 +1042,9 @@ Next boot computer, you command from 4.<br>
 </div></details>
 
 ## Release
+- Apr 19, 2020<br>
+  - J2K/J2M -> JoypadMode
+    - add ATARI joypad
 - Apr 9, 2020<br>
   - hook fontrom (textize)
 - Apr 5, 2020<br>

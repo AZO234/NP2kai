@@ -185,13 +185,11 @@ typedef	INT16    SINT16;
 typedef	uint16_t UINT16;
 typedef	INT32    SINT32;
 #if defined(NP2_CPU_64BIT)
-#if !defined(_MSC_VER)
 typedef	int64_t  INT64;
 typedef	uint64_t UINT64;
-#endif
 typedef	INT64    SINT64;
 #else
-#if !defined(_MSC_VER)
+#if !defined(__MINGW32__)
 typedef	int32_t  INT64;
 typedef	uint32_t UINT64;
 #endif
