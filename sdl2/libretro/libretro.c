@@ -443,6 +443,20 @@ static uint16_t j2k_key_arrow[12] = {
    RETROK_DOWN,
    RETROK_LEFT,
    RETROK_RIGHT,
+   RETROK_c,
+   RETROK_x,
+   RETROK_SPACE,
+   RETROK_z,
+   RETROK_BACKSPACE,
+   RETROK_RSHIFT,
+   RETROK_ESCAPE,
+   RETROK_RETURN
+};
+static uint16_t j2k_key_arrow3[12] = { 
+   RETROK_UP,
+   RETROK_DOWN,
+   RETROK_LEFT,
+   RETROK_RIGHT,
    RETROK_x,
    RETROK_z,
    RETROK_SPACE,
@@ -461,6 +475,20 @@ static uint16_t j2k_key_kpad[12] = {
    RETROK_z,
    RETROK_SPACE,
    RETROK_LCTRL,
+   RETROK_BACKSPACE,
+   RETROK_RSHIFT,
+   RETROK_ESCAPE,
+   RETROK_RETURN
+};
+static uint16_t j2k_key_kpad3[12] = { 
+   RETROK_KP8,
+   RETROK_KP2,
+   RETROK_KP4,
+   RETROK_KP6,
+   RETROK_c,
+   RETROK_x,
+   RETROK_SPACE,
+   RETROK_z,
    RETROK_BACKSPACE,
    RETROK_RSHIFT,
    RETROK_ESCAPE,
@@ -1359,9 +1387,15 @@ static void update_variables(void)
     } else if(strcmp(var.value, "Arrows") == 0) {
       m_tJoyMode = LR_NP2KAI_JOYMODE_KEY;
       memcpy(j2k_key, j2k_key_arrow, sizeof(uint16_t) * 12);
+    } else if(strcmp(var.value, "Arrows 3button") == 0) {
+      m_tJoyMode = LR_NP2KAI_JOYMODE_KEY;
+      memcpy(j2k_key, j2k_key_arrow3, sizeof(uint16_t) * 12);
     } else if(strcmp(var.value, "Keypad") == 0) {
       m_tJoyMode = LR_NP2KAI_JOYMODE_KEY;
       memcpy(j2k_key, j2k_key_kpad, sizeof(uint16_t) * 12);
+    } else if(strcmp(var.value, "Keypad 3button") == 0) {
+      m_tJoyMode = LR_NP2KAI_JOYMODE_KEY;
+      memcpy(j2k_key, j2k_key_kpad3, sizeof(uint16_t) * 12);
     } else if(strcmp(var.value, "Manual Keyboard") == 0) {
       m_tJoyMode = LR_NP2KAI_JOYMODE_KEY;
       memcpy(j2k_key, np2oscfg.lrjoybtn, sizeof(uint16_t) * 12);
