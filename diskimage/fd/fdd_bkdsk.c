@@ -31,8 +31,10 @@ const _XDFINFO	*xdf;
 	if (attr & 0x18) {
 		return(FAILURE);
 	}
-	if(attr & FILEATTR_READONLY) {
-		ro = 1;
+	if(!ro) {
+		if(attr & FILEATTR_READONLY) {
+			ro = 1;
+		}
 	}
 	if(ro) {
 		fh = file_open_rb(fname);

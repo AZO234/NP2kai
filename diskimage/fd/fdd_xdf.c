@@ -85,8 +85,10 @@ const OEMCHAR	*p;			//	BKDSK(DD6) or BKDSK(DDB)判定用
 	if (attr & 0x18) {
 		return(FAILURE);
 	}
-	if(attr & FILEATTR_READONLY) {
-		ro = 1;
+	if(!ro) {
+		if(attr & FILEATTR_READONLY) {
+			ro = 1;
+		}
 	}
 	if(ro) {
 		fh = file_open_rb(fname);
@@ -168,8 +170,10 @@ BRESULT fdd_set_fdi(FDDFILE fdd, FDDFUNC fdd_fn, const OEMCHAR *fname, int ro) {
 	}
 	fdsize = 0;
 	r = 0;
-	if(attr & FILEATTR_READONLY) {
-		ro = 1;
+	if(!ro) {
+		if(attr & FILEATTR_READONLY) {
+			ro = 1;
+		}
 	}
 	if(ro) {
 		fh = file_open_rb(fname);
@@ -561,8 +565,10 @@ const _XDFINFO	*xdf;
 	if (attr & 0x18) {
 		return(FAILURE);
 	}
-	if(attr & FILEATTR_READONLY) {
-		ro = 1;
+	if(!ro) {
+		if(attr & FILEATTR_READONLY) {
+			ro = 1;
+		}
 	}
 	if(ro) {
 		fh = file_open_rb(fname);
@@ -615,8 +621,10 @@ BRESULT fddxdf_setfdi(FDDFILE fdd, const OEMCHAR *fname, int ro) {
 	}
 	fdsize = 0;
 	r = 0;
-	if(attr & FILEATTR_READONLY) {
-		ro = 1;
+	if(!ro) {
+		if(attr & FILEATTR_READONLY) {
+			ro = 1;
+		}
 	}
 	if(ro) {
 		fh = file_open_rb(fname);
