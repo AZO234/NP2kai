@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Apr 9, 2020<br>
+Apr 20, 2020<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -433,11 +433,11 @@ $ cd NP2kai/sdl2
 ```
 2. Make.<br>
 ```
-$ make -f Makefile.gcw0
+$ ODCONFIG=gcw0 make -f Makefile.opendingux
 ```
 or
 ```
-$ make -f Makefile21.gcw0
+$ ODCONFIG=gcw0 make -f Makefile21.opendingux
 ```
 
 #### Install binary
@@ -456,11 +456,11 @@ $ cd NP2kai/sdl2
 ```
 2. Make.<br>
 ```
-$ make -f Makefile.gkd350h
+$ ODCONFIG=rs90 make -f Makefile.opendingux
 ```
 or
 ```
-$ make -f Makefile21.gkd350h
+$ ODCONFIG=rs90 make -f Makefile.opendingux
 ```
 
 #### Install binary
@@ -1042,6 +1042,8 @@ Next boot computer, you command from 4.<br>
 </div></details>
 
 ## Release
+- Apr 20, 2020<br>
+  - mod OpenDingux
 - Apr 19, 2020<br>
   - J2K/J2M -> JoypadMode
     - add ATARI joypad
