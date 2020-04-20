@@ -26,7 +26,16 @@ BRESULT fdd_set_nfd(FDDFILE fdd, FDDFUNC fdd_fn, const OEMCHAR *fname, int ro) {
 	if (attr & 0x18) {
 		return(FAILURE);
 	}
-	fh = file_open(fname);
+	if(!ro) {
+		if(attr & FILEATTR_READONLY) {
+			ro = 1;
+		}
+	}
+	if(ro) {
+		fh = file_open_rb(fname);
+	} else {
+		fh = file_open(fname);
+	}
 	if (fh == FILEH_INVALID) {
 		return(FAILURE);
 	}
@@ -131,7 +140,11 @@ TRACEOUT(("\tSetOffset Trk[%03d]Sec[%02x] = Offset[%08x]", i, j, ptr));
 
 TRACEOUT(("This is NFD(r1) IMAGE!"));
 		//	ヘッダ再読込
-		fh = file_open(fname);
+		if(fdd->protect) {
+			fh = file_open_rb(fname);
+		} else {
+			fh = file_open(fname);
+		}
 		if (fh == FILEH_INVALID) {
 			return(FAILURE);
 		}

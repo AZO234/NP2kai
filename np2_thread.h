@@ -145,6 +145,11 @@ void NP2_WaitQueue_Shift_Wait(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, void
 }
 #endif
 
-#endif  /* SUPPORT_NP2_THREAD */
+#else  // SUPPORT_NP2_THREAD
+
+#define NP2_Sleep_ms(ms)
+
+#endif  // SUPPORT_NP2_THREAD
+
 #endif  /* _NP2_THREAD_H_ */
 

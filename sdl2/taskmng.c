@@ -9,10 +9,10 @@
 #include	"scrnmng.h"
 #include	"mousemng.h"
 #include	"np2.h"
+#include	"np2_thread.h"
 
 #if defined(__LIBRETRO__)
 #include <retro_miscellaneous.h>
-#include <retro_timers.h>
 #include "libretro.h"
 
 extern retro_environment_t environ_cb;
@@ -231,11 +231,7 @@ BOOL taskmng_sleep(UINT32 tick) {
 	base = GETTICK();
 	while((task_avail) && ((GETTICK() - base) < tick)) {
 		taskmng_rol();
-#if defined(__LIBRETRO__)
-      retro_sleep(1);
-#else	/* __LIBRETRO__ */
-		SDL_Delay(1);
-#endif	/* __LIBRETRO__ */
+		NP2_Sleep_ms(1);
 	}
 	return(task_avail);
 }

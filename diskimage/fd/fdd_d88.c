@@ -52,6 +52,9 @@ static BRESULT d88trk_flushdata(D88TRK trk) {
 	if ((fdd == NULL) || (trk->size == 0) || (!trk->write)) {
 		goto dtfd_exit;
 	}
+	if (fdd->protect) {
+		goto dtfd_exit;
+	}
 	fh = file_open(fdd->fname);
 	if (fh == FILEH_INVALID) {
 		goto dtfd_err1;
@@ -189,7 +192,7 @@ static void drvflush(FDDFILE fdd) {
 	D88TRK	trk;
 
 	trk = &d88trk;
-	if (trk->fdd == fdd) {
+	if (trk->fdd == fdd && !fdd->protect) {
 		d88trk_flushdata(trk);
 		trk->fdd = NULL;
 	}
@@ -278,7 +281,19 @@ BRESULT fdd_set_d88(FDDFILE fdd, FDDFUNC fdd_fn, const OEMCHAR *fname, int ro) {
 	if (attr & 0x18) {
 		goto fdst_err;
 	}
-	fh = file_open(fname);
+	if(attr & FILEATTR_READONLY) {
+		ro = 1;
+	}
+	if(!ro) {
+		if(attr & FILEATTR_READONLY) {
+			ro = 1;
+		}
+	}
+	if(ro) {
+		fh = file_open_rb(fname);
+	} else {
+		fh = file_open(fname);
+	}
 	if (fh == FILEH_INVALID) {
 		goto fdst_err;
 	}
@@ -436,6 +451,10 @@ BRESULT fdd_write_d88(FDDFILE fdd) {
 	UINT		size;
 	UINT		secsize;
 
+	if (fdd->protect) {
+		return(FAILURE);
+	}
+
 	fddlasterror = 0x00;
 	if (trkseek(fdd, (fdc.treg[fdc.us] << 1) + fdc.hd)) {
 		fddlasterror = 0xe0;
@@ -547,6 +566,10 @@ static int fileappend(FILEH hdl, FDDFILE fdd,
 	UINT8	tmp[0x400];							// Stack 0x1000->0x400
 	UINT32	cur;
 
+	if (fdd->protect) {
+		return(0);
+	}
+
 	if ((length = last - ptr) <= 0) {			// 書き換える必要なし
 		return(0);
 	}
@@ -590,6 +613,10 @@ static void endoftrack(UINT fmtsize, UINT8 sectors) {
 	long	trksize;
 	int		ptr;
 	long	apsize;
+
+	if (fdd->protect) {
+		return;
+	}
 
 	trk = (fdc.treg[fdc.us] << 1) + fdc.hd;
 
@@ -749,6 +776,9 @@ static BRESULT d88trk_flushdata(D88TRK trk) {
 	fdd = trk->fdd;
 	trk->fdd = NULL;
 	if ((fdd == NULL) || (trk->size == 0) || (!trk->write)) {
+		goto dtfd_exit;
+	}
+	if (fdd->protect) {
 		goto dtfd_exit;
 	}
 	fh = file_open(fdd->fname);
@@ -976,7 +1006,19 @@ BRESULT fddd88_set(FDDFILE fdd, const OEMCHAR *fname, int ro) {
 	if (attr & 0x18) {
 		goto fdst_err;
 	}
-	fh = file_open(fname);
+	if(attr & FILEATTR_READONLY) {
+		ro = 1;
+	}
+	if(!ro) {
+		if(attr & FILEATTR_READONLY) {
+			ro = 1;
+		}
+	}
+	if(ro) {
+		fh = file_open_rb(fname);
+	} else {
+		fh = file_open(fname);
+	}
 	if (fh == FILEH_INVALID) {
 		goto fdst_err;
 	}
@@ -1197,6 +1239,10 @@ static int fileappend(FILEH hdl, FDDFILE fdd, UINT ptr, UINT last, int apsize) {
 	UINT8	tmp[0x400];							// Stack 0x1000->0x400
 	UINT	cur;
 
+	if (fdd->protect) {
+		return(0);
+	}
+
 	if ((length = last - ptr) <= 0) {			// 書き換える必要なし
 		return(0);
 	}
@@ -1240,6 +1286,10 @@ static void endoftrack(UINT fmtsize, UINT8 sectors) {
 	UINT	trksize;
 	int		ptr;
 	int		apsize;
+
+	if (fdd->protect) {
+		return;
+	}
 
 	trk = (fdc.treg[fdc.us] << 1) + fdc.hd;
 

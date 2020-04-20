@@ -43,7 +43,16 @@ const __DCPINFO	*dcp;
 	if (attr & 0x18) {
 		return(FAILURE);
 	}
-	fh = file_open(fname);
+	if(!ro) {
+		if(attr & FILEATTR_READONLY) {
+			ro = 1;
+		}
+	}
+	if(ro) {
+		fh = file_open_rb(fname);
+	} else {
+		fh = file_open(fname);
+	}
 	if (fh == FILEH_INVALID) {
 		return(FAILURE);
 	}
@@ -230,6 +239,11 @@ BRESULT makenewtrack_dcp(FDDFILE fdd) {
 	UINT32	ptr;
 	UINT32	fdsize;
 
+	if (fdd->protect) {
+		fddlasterror = 0x70;
+		return(FAILURE);
+	}
+
 	hdl = file_open(fdd->fname);
 	if (hdl == FILEH_INVALID) {
 		fddlasterror = 0xc0;
@@ -295,7 +309,11 @@ BRESULT refreshheader_dcp(FDDFILE fdd) {
 
 	FILEH	hdl;
 
-	hdl = file_open(fdd->fname);
+	if (fdd->protect) {
+		hdl = file_open_rb(fdd->fname);
+	} else {
+		hdl = file_open(fdd->fname);
+	}
 	if (hdl == FILEH_INVALID) {
 		fddlasterror = 0xc0;
 		return(FAILURE);

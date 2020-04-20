@@ -9,8 +9,8 @@ typedef struct {
   UINT8 keycode;
 } LRKCNV;
 
-uint16_t keys_needed;
-LRKCNV*  keys_poll;
+extern uint16_t keys_needed;
+extern LRKCNV*  keys_poll;
 
 void init_lrkey_to_pc98();
 void send_libretro_key_down(UINT key);

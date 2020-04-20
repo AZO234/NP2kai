@@ -25,7 +25,16 @@ const _VFDD_ID	*sec_vfdd;
 	if (attr & 0x18) {
 		return(FAILURE);
 	}
-	fh = file_open(fname);
+	if(!ro) {
+		if(attr & FILEATTR_READONLY) {
+			ro = 1;
+		}
+	}
+	if(ro) {
+		fh = file_open_rb(fname);
+	} else {
+		fh = file_open(fname);
+	}
 	if (fh == FILEH_INVALID) {
 		return(FAILURE);
 	}
