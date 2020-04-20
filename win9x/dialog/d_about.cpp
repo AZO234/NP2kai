@@ -56,6 +56,7 @@ BOOL CAboutDlg::OnInitDialog()
 {
 	TCHAR szWork[128];
 	milstr_ncpy(szWork, s_np2title, _countof(szWork));
+	milstr_ncat(szWork, "\n", _countof(szWork));
 	milstr_ncat(szWork, np2version, _countof(szWork));
 #if defined(NP2VER_WIN9X)
 	milstr_ncat(szWork, NP2VER_WIN9X, _countof(szWork));

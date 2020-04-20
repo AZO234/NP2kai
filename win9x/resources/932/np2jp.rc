@@ -570,7 +570,7 @@ CLASS "np2dialog"
 FONT 9, "ÇlÇr ÇoÉSÉVÉbÉN"
 BEGIN
     ICON            IDI_ICON1,IDC_NP2ICON,8,8,20,20
-    LTEXT           "",IDC_NP2VER,36,16,152,8
+    LTEXT           "",IDC_NP2VER,36,12,152,16
     DEFPUSHBUTTON   "&OK",IDOK,168,8,40,14,WS_GROUP
     PUSHBUTTON      "è⁄ç◊ >>",IDC_MORE,168,26,40,14
     EDITTEXT        IDC_NP2INFO,8,52,200,48,ES_MULTILINE | ES_READONLY | ES_WANTRETURN | WS_VSCROLL
@@ -1460,8 +1460,8 @@ JUMPER118               RAWBMP                  "..\\j118.bmp"
 
 STRINGTABLE
 BEGIN
-    IDS_APP_NAME2           "Neko Project II/W"
-    IDS_APP_NAME21          "Neko Project 21/W"
+    IDS_APP_NAME2           "Neko Project II kai"
+    IDS_APP_NAME21          "Neko Project 21 kai"
     IDS_FILENAME_HELP       "np2.chm"
     IDS_FONTFACE            "ÇlÇr ÉSÉVÉbÉN"
     IDS_PFONTFACE           "ÇlÇr ÇoÉSÉVÉbÉN"

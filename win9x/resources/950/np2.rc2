@@ -6,15 +6,15 @@
 #ifdef NEEDS_MANIFEST
 #ifdef _WIN64
 #ifdef SUPPORT_PC9821
-IDR_MANIFEST            IRT_MANIFEST MOVEABLE PURE "..Â¥Â¥np21x64.mnf"
+IDR_MANIFEST            IRT_MANIFEST MOVEABLE PURE "..\\np21kaix64.mnf"
 #else
-IDR_MANIFEST            IRT_MANIFEST MOVEABLE PURE "..Â¥Â¥np2x64.mnf"
+IDR_MANIFEST            IRT_MANIFEST MOVEABLE PURE "..\\np2kaix64.mnf"
 #endif
 #else
 #ifdef SUPPORT_PC9821
-IDR_MANIFEST            IRT_MANIFEST MOVEABLE PURE "..Â¥Â¥np21.mnf"
+IDR_MANIFEST            IRT_MANIFEST MOVEABLE PURE "..\\np21kai.mnf"
 #else
-IDR_MANIFEST            IRT_MANIFEST MOVEABLE PURE "..Â¥Â¥np2.mnf"
+IDR_MANIFEST            IRT_MANIFEST MOVEABLE PURE "..\\np2kai.mnf"
 #endif
 #endif
 #endif
@@ -41,10 +41,37 @@ BEGIN
     BEGIN
         BLOCK "040403b6"
         BEGIN
-            VALUE "CompanyName", "Â¥0"
-            VALUE "FileVersion", "0, 8, 6, 0Â¥0"
-            VALUE "LegalCopyright", "ï½¿ï¾Ÿï½¤kï½¤hï½¶}ï½µoï½¶ï½¤Â¥0"
+            VALUE "CompanyName", "\0"
+            VALUE "FileVersion", "0, 8, 6, 21\0"
+            VALUE "LegalCopyright", "¿ß¤k¤h¶}µo¶¤\0"
 
-            VALUE "ProductVersion", "0, 8, 6, 0Â¥0"
+            VALUE "ProductVersion", "0, 8, 6, 21\0"
 #ifdef _USRDLL
-            VALUE "FileDescription", "PC-98x1 ï½¨tï½¦Cï½¼ï¾’ï¾€ï¾€ï½¾ï½¹ï½¸
+            VALUE "FileDescription", "PC-98x1 ¨t¦C¼ÒÀÀ¾¹¸ê·½ÀÉ\0"
+            VALUE "ProductName", "Neko Project II kai ¸ê·½ÀÉ\0"
+            VALUE "InternalName", "np2kai_950\0"
+            VALUE "OriginalFilename", "np2kai_950.dll\0"
+#else
+#ifdef SUPPORT_PC9821
+            VALUE "FileDescription", "PC-9821 ¨t¦C¼ÒÀÀ¾¹\0"
+            VALUE "ProductName", "Neko Project 21 kai\0"
+#else
+            VALUE "FileDescription", "PC-9801 ¨t¦C¼ÒÀÀ¾¹\0"
+            VALUE "ProductName", "Neko Project II kai\0"
+#endif
+#ifdef SUPPORT_PC9821
+            VALUE "InternalName", "np21kai\0"
+            VALUE "OriginalFilename", "np21kai.exe\0"
+#else
+            VALUE "InternalName", "np2kai\0"
+            VALUE "OriginalFilename", "np2kai.exe\0"
+#endif
+#endif
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x404, 950
+    END
+END
+

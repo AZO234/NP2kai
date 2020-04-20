@@ -30,7 +30,7 @@
     <ProjectGuid>{CA040333-3357-4598-A480-57C957DA24B5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>np21vs2019</RootNamespace>
-    <ProjectName>np21kaiw</ProjectName>
+    <ProjectName>np21kai</ProjectName>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <NP2kaiCommonDefines>NP2_WIN;_CRT_SECURE_NO_WARNINGS;</NP2kaiCommonDefines>
     <NP2kaiDebugDefines>_DEBUG;DEBUG;TRACE;</NP2kaiDebugDefines>
@@ -174,7 +174,7 @@
       <DelayLoadDLLs>d3d9.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines32);$(NP2kaiDebugDefines);$(NP2kaiDefines);$(NP21kaiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PreBuildEvent>
       <Command>powershell.exe -ExecutionPolicy RemoteSigned -File "$(SolutionDir)\version_info.ps1" server "$(ProjectDir)\" "$(SolutionDir)\"</Command>
@@ -199,7 +199,7 @@
       <DelayLoadDLLs>d3d9.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>>$(NP2kaiCommonDefines);$(NP2kaiDefines64);$(NP2kaiDebugDefines);$(NP2kaiDefines);$(NP21kaiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PreBuildEvent>
       <Command>powershell.exe -ExecutionPolicy RemoteSigned -File "$(SolutionDir)\version_info.ps1" server "$(ProjectDir)\" "$(SolutionDir)\"</Command>
@@ -233,7 +233,7 @@
       <DelayLoadDLLs>d3d9.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines32);$(NP2kaiNDebugDefines);$(NP2kaiDefines);$(NP21kaiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PreBuildEvent>
       <Command>powershell.exe -ExecutionPolicy RemoteSigned -File "$(SolutionDir)\version_info.ps1" server "$(ProjectDir)\" "$(SolutionDir)\"</Command>
@@ -269,7 +269,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines64);$(NP2kaiNDebugDefines);$(NP2kaiDefines);$(NP21kaiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <EnableDPIAwareness>true</EnableDPIAwareness>
@@ -307,7 +307,7 @@
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines32);$(NP2kaiNDebugDefines);$(NP2kaiDefines);$(NP21kaiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PreBuildEvent>
       <Command>powershell.exe -ExecutionPolicy RemoteSigned -File "$(SolutionDir)\version_info.ps1" server "$(ProjectDir)\" "$(SolutionDir)\"</Command>
@@ -343,7 +343,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines64);$(NP2kaiNDebugDefines);$(NP2kaiDefines);$(NP21kaiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <EnableDPIAwareness>true</EnableDPIAwareness>

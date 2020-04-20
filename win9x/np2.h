@@ -1,8 +1,8 @@
 
 #if !defined(SUPPORT_PC9821)
-#define PROJECTNAME			"Neko Project II/W"
+#define PROJECTNAME			"Neko Project II kai"
 #else
-#define PROJECTNAME			"Neko Project 21/W"
+#define PROJECTNAME			"Neko Project 21 kai"
 #endif
 
 #if !defined(_WIN64)

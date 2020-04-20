@@ -14,9 +14,3 @@
 #else
 #define	NP2VER_GIT			GIT_VERSION
 #endif
-
-// #define	NP2VER_WIN9X
-// #define	NP2VER_MACOSX
-// #define	NP2VER_X11
-// #define	NP2VER_SDL2
-
