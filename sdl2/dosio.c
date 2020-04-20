@@ -203,7 +203,7 @@ short file_attr(const OEMCHAR *path) {
 
     file_cpyname(testpath, MAX_PATH, path);
     file_catname(testpath, "/_np2test", MAX_PATH);
-    fh = file_open_cb(path);
+    fh = file_create(path);
     if(fh) {
       file_close(fh);
       file_delete(testpath);
