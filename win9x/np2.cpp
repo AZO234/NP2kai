@@ -220,9 +220,9 @@ static  UINT		lateframecount; // フレーム遅れ数
 static const OEMCHAR np2help[] = OEMTEXT("np2.chm");
 static const OEMCHAR np2flagext[] = OEMTEXT("S%02d");
 #if defined(_WIN64)
-static const OEMCHAR szNp2ResDll[] = OEMTEXT("np2x64_%u.dll");
+static const OEMCHAR szNp2ResDll[] = OEMTEXT("np2kai_%u_x86_64.dll");
 #else	// defined(_WIN64)
-static const OEMCHAR szNp2ResDll[] = OEMTEXT("np2_%u.dll");
+static const OEMCHAR szNp2ResDll[] = OEMTEXT("np2kai_%u_i386.dll");
 #endif	// defined(_WIN64)
 
 // ASCII -> 98キーコード表(np21w ver0.86 rev22)

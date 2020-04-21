@@ -22,7 +22,7 @@
     <ProjectGuid>{D0AC326F-CEFF-492D-839A-27D6CDA7EF64}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>np2vs2019</RootNamespace>
-    <ProjectName>np2kaiw</ProjectName>
+    <ProjectName>np2kai</ProjectName>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <NP2kaiCommonDefines>NP2_WIN;_CRT_SECURE_NO_WARNINGS;</NP2kaiCommonDefines>
     <NP2kaiDebugDefines>_DEBUG;DEBUG;TRACE;</NP2kaiDebugDefines>
@@ -127,7 +127,7 @@
       <DelayLoadDLLs>d3d9.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines32);$(NP2kaiDebugDefines);$(NP2kaiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PreBuildEvent>
       <Command>powershell.exe -ExecutionPolicy RemoteSigned -File "$(SolutionDir)\version_info.ps1" server "$(ProjectDir)\" "$(SolutionDir)\"</Command>
@@ -152,7 +152,7 @@
       <DelayLoadDLLs>d3d9.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines64);$(NP2kaiDebugDefines);$(NP2kaiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PreBuildEvent>
       <Command>powershell.exe -ExecutionPolicy RemoteSigned -File "$(SolutionDir)\version_info.ps1" server "$(ProjectDir)\" "$(SolutionDir)\"</Command>
@@ -182,7 +182,7 @@
       <DelayLoadDLLs>d3d9.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines32);$(NP2kaiNDebugDefines);$(NP2kaiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PreBuildEvent>
       <Command>powershell.exe -ExecutionPolicy RemoteSigned -File "$(SolutionDir)\version_info.ps1" server "$(ProjectDir)\" "$(SolutionDir)\"</Command>
@@ -213,7 +213,7 @@
       <DelayLoadDLLs>d3d9.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(NP2kaiCommonDefines);$(NP2kaiDefines64);$(NP2kaiNDebugDefines);$(NP2kaiDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PreBuildEvent>
       <Command>powershell.exe -ExecutionPolicy RemoteSigned -File "$(SolutionDir)\version_info.ps1" server "$(ProjectDir)\" "$(SolutionDir)\"</Command>

@@ -81,14 +81,21 @@
 #if defined(__APPLE__)
 #include <cstdint>
 #include <inttypes.h>
+#if !defined(CPP11)
 #define CPP11
+#endif
+#elif defined(_MSC_VER)
+#include <inttypes.h>
+#include <stdint.h>
+#if !defined(CPP11)
+#define CPP11
+#endif
 #else
 #if __cplusplus >= 201103L
 #include <cinttypes>
+#include <cstdint>
 #if !defined(CPP11)
 #define CPP11
-#else
-#include <cstdint>
 #endif
 #endif
 #if defined(__GXX_EXPERIMENTAL_CXX0X__)
@@ -106,6 +113,7 @@
 #if defined(_MSC_VER)
 #if _MSC_VER >= 1800
 #include <inttypes.h>
+#include <stdint.h>
 #if !defined(C99)
 #define C99
 #endif
@@ -189,7 +197,8 @@ typedef	int64_t  INT64;
 typedef	uint64_t UINT64;
 typedef	INT64    SINT64;
 #else
-#if !defined(__MINGW32__)
+#if !defined(__MINGW32__)  // for libretro
+//#if !defined(_WINDOWS)  // for me
 typedef	int32_t  INT64;
 typedef	uint32_t UINT64;
 #endif

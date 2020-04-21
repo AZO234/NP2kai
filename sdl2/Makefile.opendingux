@@ -1,21 +1,29 @@
-CC=/opt/rs90-toolchain/usr/bin/mipsel-linux-cc
-AR=/opt/rs90-toolchain/usr/bin/mipsel-linux-ar
-CXX=/opt/rs90-toolchain/usr/bin/mipsel-linux-g++
+# set ODCONFIG=gcw0 or ODCONFIG=rx90
+
+CC=/opt/$(ODCONFIG)-toolchain/usr/bin/mipsel-linux-cc
+AR=/opt/$(ODCONFIG)-toolchain/usr/bin/mipsel-linux-ar
+CXX=/opt/$(ODCONFIG)-toolchain/usr/bin/mipsel-linux-g++
 
 DEBUG ?= 0
 SUPPORT_NET ?= 1
 SDL_VERSION ?= 1
 GIT_VERSION := "$(shell git rev-parse --short HEAD)"
 
+ifeq ($($(ODCONFIG), rx90)
+SDL_VERSION ?= 2
+else ifeq ($($(ODCONFIG), gcw0)
+SDL_VERSION ?= 1
+endif
+
 ifeq ($(SDL_VERSION), 1)
-SDL_CONFIG ?= /opt/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/bin/sdl-config
+SDL_CONFIG ?= /opt/$(ODCONFIG)-toolchain/usr/mipsel-$(ODCONFIG)-linux-uclibc/sysroot/usr/bin/sdl-config
 SDL_OTHER_LIBS ?= -lSDL_ttf -lSDL_mixer
 SUPPORT_ASYNC_CPU ?=
 SDL_CFLAGS := $(shell $(SDL_CONFIG) --cflags) -DUSE_SDL_CONFIG
 #SDL_LIBS := $(shell $(SDL_CONFIG) --libs)
 SDL_LIBS := -lSDL
 else
-SDL_CONFIG ?= /opt/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/bin/sdl2-config
+SDL_CONFIG ?= /opt/$(ODCONFIG)-toolchain/usr/mipsel-$(ODCONFIG)-linux-uclibc/sysroot/usr/bin/sdl2-config
 SDL_OTHER_LIBS ?= -lSDL2_ttf -lSDL2_mixer
 SUPPORT_ASYNC_CPU ?= -DSUPPORT_ASYNC_CPU
 SDL_CFLAGS := $(shell $(SDL_CONFIG) --cflags) -DUSE_SDL_CONFIG
@@ -28,7 +36,7 @@ TARGET_NAME := np2kai
 TARGET := $(TARGET_NAME)
 CFLAGS += -DGIT_VERSION=\"$(GIT_VERSION)\"
 CXXFLAGS += -DGIT_VERSION=\"$(GIT_VERSION)\"
-LDFLAGS := -L/opt/rs90-toolchain/usr/lib
+LDFLAGS := -L/opt/$(ODCONFIG)-toolchain/usr/lib
 fpic = -fPIC
 
 ifeq ($(DEBUG), 1)
@@ -46,23 +54,28 @@ include Makefile.common
 
 INCFLAGS := $(SDL_CFLAGS) $(INCFLAGS)
 
-INCFLAGS += 	-I$(NP2_PATH)/i286c \
-		-I$(NP2_PATH)/sdl2/gcw0
-SOURCES_C += 	$(wildcard $(NP2_PATH)/i286c/*.c) \
-		$(NP2_PATH)/sdl2/gcw0/main.c
+INCFLAGS += -I$(NP2_PATH)/sdl2/opendingux
+SOURCES_C += $(NP2_PATH)/sdl2/opendingux/main.c
 
-NP2SDLDEFINE := -DNP2_SDL2 -DUSE_SDLAUDIO -DUSE_SDLMIXER -DSUPPORT_NP2_THREAD
-
-OBJECTS  = $(SOURCES_CXX:.cpp=.o) $(SOURCES_C:.c=.o)
-CXXFLAGS += $(fpic) $(INCFLAGS) $(COMMONFLAGS) -DGCW0 $(NP2SDLDEFINE) -DUSE_SDLAUDIO -DUSE_SDLMIXER -DSUPPORT_LARGE_HDD -DSUPPORT_VPCVHD -DSUPPORT_KAI_IMAGES -DHOOK_SYSKEY -DALLOW_MULTIRUN -DUSE_MAME -DSUPPORT_SOUND_SB16 -DSUPPORT_FMGEN -DSUPPORT_NP2_TICKCOUNT -std=gnu++11
-CFLAGS   += $(fpic) $(INCFLAGS) $(COMMONFLAGS) -DGCW0 $(NP2SDLDEFINE) -DUSE_SDLAUDIO -DUSE_SDLMIXER -DSUPPORT_LARGE_HDD -DSUPPORT_VPCVHD -DSUPPORT_KAI_IMAGES -DHOOK_SYSKEY -DALLOW_MULTIRUN -DUSE_MAME -DSUPPORT_SOUND_SB16 -DSUPPORT_FMGEN -DSUPPORT_NP2_TICKCOUNT -std=gnu11
-LDFLAGS  += $(fpic) -lm -lpthread $(SDL_LIBS) $(SDL_OTHER_LIBS)
+INCFLAGS += 	-I$(NP2_PATH)/i286c
+SOURCES_C += 	$(wildcard $(NP2_PATH)/i286c/*.c)
 
 ifeq ($(SUPPORT_NET), 1)
-CXXFLAGS += -DSUPPORT_NET -DSUPPORT_LGY98 -L/opt/rs90-toolchain/usr/lib
+CXXFLAGS += -DSUPPORT_NET -DSUPPORT_LGY98 -L/opt/$(ODCONFIG)-toolchain/usr/lib
 CFLAGS   += -DSUPPORT_NET -DSUPPORT_LGY98
 endif
 
+NP2SDLDEFINE := -DNP2_SDL2 -DUSE_SDLAUDIO -DUSE_SDLMIXER
+
+OBJECTS  = $(SOURCES_CXX:.cpp=.o) $(SOURCES_C:.c=.o)
+CXXFLAGS += $(fpic) $(INCFLAGS) $(COMMONFLAGS) $(NP2DEFINE) -D__OPENDINGUX__ $(NP2SDLDEFINE) -DSUPPORT_NP2_TICKCOUNT -DSUPPORT_NP2_THREAD -std=gnu++11
+CFLAGS   += $(fpic) $(INCFLAGS) $(COMMONFLAGS) $(NP2DEFINE) -D__OPENDINGUX__ $(NP2SDLDEFINE) -DSUPPORT_NP2_TICKCOUNT -DSUPPORT_NP2_THREAD -std=gnu11
+LDFLAGS  += $(fpic) -lm -lpthread $(SDL_LIBS) $(SDL_OTHER_LIBS) -L/opt/$(ODCONFIG)-toolchain/usr/lib
+
+ifeq ($(SUPPORT_NET), 1)
+CXXFLAGS += -DSUPPORT_NET -DSUPPORT_LGY98 -L/opt/$(ODCONFIG)-toolchain/usr/lib
+CFLAGS   += -DSUPPORT_NET -DSUPPORT_LGY98
+endif
 
 all: buildopk
 $(TARGET): $(OBJECTS)
@@ -78,12 +91,11 @@ endif
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
-
 clean:
 	rm -f $(OBJECTS) $(TARGET)
 	rm -f *.opk
 	rm -f opk/$(TARGET)
-	rm -f opk/default.gcw0.desktop
+	rm -f opk/default.$(ODCONFIG).desktop
 	rm -f compile_commands.json
 	rm -f cppcheck.xml
 
@@ -91,14 +103,13 @@ cppcheck: compile_commands.json
 	cppcheck --project=compile_commands.json --xml 2> cppcheck.xml
 
 compile_commands.json:
-	bear make -f Makefile.gkd350h
-
+	bear make -f Makefile.opendingux
 
 buildopk: $(TARGET)
 	cp -f $(TARGET) ./opk
-	cp ./opk/default_gcw0_$(TARGET)_desktop ./opk/default.gcw0.desktop
+	cp ./opk/default_opendingux_$(TARGET)_desktop ./opk/default.$(ODCONFIG).desktop
 	mksquashfs ./opk $(TARGET).opk -all-root -noappend -no-exports
-
 
 uninstall:
 	rm /usr/local/bin/$(TARGET)
+
