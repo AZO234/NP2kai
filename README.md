@@ -601,10 +601,18 @@ Keyboard is able to control with joypad.<br>
 Switch 'Joypad mode' in config to 'Arrows' or 'Keypad' (or 'Manual keyboard').<br>
 
 - D-UP/DOWN/LEFT/RIGHT: Arrow key or Keypad(2468) key<br>
+
+(No notation)
 - B button: Z key<br>
 - A button: X key<br>
 - X button: Space key<br>
 - Y button: left Ctrl key<br>
+(3 button)
+- B button: X key<br>
+- A button: C key<br>
+- X button: Space key<br>
+- Y button: Z key<br>
+
 - L button: Backspace key<br>
 - R button: right Shift key<br>
 - Select button: Escape key<br>
