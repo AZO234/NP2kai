@@ -197,7 +197,8 @@ typedef	int64_t  INT64;
 typedef	uint64_t UINT64;
 typedef	INT64    SINT64;
 #else
-#if !defined(__MINGW32__)
+#if !defined(__MINGW32__)  // for libretro
+//#if !defined(_WINDOWS)  // for me
 typedef	int32_t  INT64;
 typedef	uint32_t UINT64;
 #endif
