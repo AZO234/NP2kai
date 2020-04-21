@@ -86,8 +86,11 @@
 #define	CPU_BRAND_ID_AUTO	(0xffffffff)
 #define	CPU_EFLAGS_MASK		(0)
 #endif
-#include	"np2_tickcount.h"
 #if defined(SUPPORT_IA32_HAXM)
+#if !defined(SUPPORT_NP2_TICKCOUNT)
+#error HAXM need NP2_TickCount
+#endif
+#include	"np2_tickcount.h"
 #include	"i386hax/haxfunc.h"
 #include	"i386hax/haxcore.h"
 #include	"dmax86.h"
@@ -1573,15 +1576,3 @@ int SetCpuTypeIndex(UINT index){
 }
 #endif
 
-#if !defined(_WINDOWS) && !defined(__MINGW32__) && !defined(__CYGWIN__)
-BOOL QueryPerformanceCounter(LARGE_INTEGER* count) {
-  int64_t icount = NP2_TickCount_GetCount();
-  COPY64(count, &icount);
-  return TRUE;
-}
-BOOL QueryPerformanceFrequency(LARGE_INTEGER* freq) {
-  int64_t ifreq = NP2_TickCount_GetFrequency();
-  COPY64(freq, &ifreq);
-  return TRUE;
-}
-#endif

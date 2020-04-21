@@ -6,10 +6,11 @@ ENDIANNESS_DEFINES=
 C_VER = -std=gnu99
 CXX_VER =
 
-SUPPORT_NP2_THREAD = 1
-SUPPORT_NP2_TICKCOUNT = 1
+SUPPORT_NP2_THREAD ?= 1
+SUPPORT_NP2_TICKCOUNT ?= 1
+SUPPORT_NET ?= 0
+SUPPORT_ASYNC_CPU ?= 1
 SUPPORT_DIRENT = 1
-SUPPORT_ASYNC_CPU = 1
 
 SPACE :=
 SPACE := $(SPACE) $(SPACE)
@@ -844,8 +845,8 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 	$(NP2_PATH)/sdl2/libretro/libretro-common/string/stdstring.c
 
 	ifeq ($(SUPPORT_NP2_THREAD), 1)
-		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rthreads.c
-		SOURCES_C += $(NP2_PATH)/sdl2/libretro/rsemaphore.c
+		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rthreads.c \
+			$(NP2_PATH)/sdl2/libretro/rsemaphore.c
 	endif
 	ifeq ($(SUPPORT_DIRENT), 1)
 		ifneq (,$(findstring uwp,$(platform)))
@@ -855,7 +856,6 @@ SOURCES_C += 	$(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_strcasestr
 		endif
 	endif
 	ifeq ($(platform), unix)
-#		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/compat/compat_ifaddrs.c
 		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/file/nbio/nbio_linux.c
 	endif
 endif
@@ -868,13 +868,6 @@ ifeq ($(platform), windows_msvc2005_x86)
 endif
 
 OBJECTS = $(SOURCES_CXX:.cpp=.o) $(SOURCES_C:.c=.o)
-
-ifeq ($(platform), unix)
-	ifeq ($(SUPPORT_NET), 1)
-		CXXFLAGS += -DSUPPORT_NET -DSUPPORT_LGY98
-		CFLAGS += -DSUPPORT_NET -DSUPPORT_LGY98
-	endif
-endif
 
 ifeq ($(HAS_GCC), 1)
 	CFLAGS += -fsigned-char
@@ -895,15 +888,6 @@ ifeq ($(HAS_GCC), 1)
 endif
 
 DEFINES += -D__LIBRETRO__ $(PLATFORM_DEFINES) $(GCC_WARNINGS) $(COMMONFLAGS) $(GCC_SECURITY_FLAGS) -DNST_NO_ZLIB $(INCFLAGS) $(INCFLAGS_PLATFORM) $(NP2DEFINE) $(NP21DEFINE)
-ifeq ($(SUPPORT_NP2_THREAD), 1)
-	DEFINES += -DSUPPORT_NP2_THREAD
-endif
-ifeq ($(SUPPORT_NP2_TICKCOUNT), 1)
-	DEFINES += -DSUPPORT_NP2_TICKCOUNT
-endif
-ifeq ($(SUPPORT_ASYNC_CPU), 1)
-	DEFINES += -DSUPPORT_ASYNC_CPU
-endif
 
 CFLAGS += $(fpic) $(DEFINES) $(C_VER) $(ENDIANNESS_DEFINES)
 CXXFLAGS += $(fpic) $(DEFINES) $(CXX_VER) $(ENDIANNESS_DEFINES)

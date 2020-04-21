@@ -1,3 +1,11 @@
+DEBUG ?= 0
+
+SUPPORT_NP2_THREAD ?= 1
+SUPPORT_NP2_TICKCOUNT ?= 1
+SUPPORT_NET ?= 0
+SUPPORT_ASYNC_CPU ?= 0
+SUPPORT_DIRENT = 1
+
 LOCAL_PATH := $(call my-dir)
 
 CORE_DIR := $(LOCAL_PATH)/..
@@ -109,21 +117,15 @@ ifneq ($(STATIC_LINKING), 1)
 			$(NP2_PATH)/sdl2/libretro/libretro-common/string/stdstring.c
 endif
 
-	USE_RTHREAD = 1
-	ifeq ($(USE_RTHREAD), 1)
-		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rthreads.c
-	endif
-
-	USE_RSEMAPHOE = 1
-	ifeq ($(USE_RSEMAPHOE), 1)
-		SOURCES_C += $(NP2_PATH)/sdl2/libretro/rsemaphore.c
-	endif
-
-	ifneq ($(NO_DIRENT), 1)
-		SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/vfs/vfs_implementation.c
-	endif
-
 COREFLAGS := -D__LIBRETRO__ $(INCFLAGS) $(NP2DEFINE) $(NP21DEFINE) -DSUPPORT_NP2_TICKCOUNT
+
+ifeq ($(SUPPORT_NP2_THREAD), 1)
+	SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/rthreads/rthreads.c \
+		$(NP2_PATH)/sdl2/libretro/rsemaphore.c
+endif
+ifeq ($(SUPPORT_DIRENT), 1)
+	SOURCES_C += $(NP2_PATH)/sdl2/libretro/libretro-common/vfs/vfs_implementation.c
+endif
 
 GIT_VERSION := " $(shell git rev-parse --short HEAD || echo unknown)"
 ifneq ($(GIT_VERSION)," unknown")
