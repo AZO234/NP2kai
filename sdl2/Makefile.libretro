@@ -258,7 +258,6 @@ else ifeq ($(platform), psp1)
 	STATIC_LINKING=1
 	DISABLE_GCC_SECURITY_FLAGS = 1
 	SUPPORT_NP2_THREAD = 0
-	SUPPORT_NP2_TICKCOUNT = 0
 
 # Vita
 else ifeq ($(platform), vita)
