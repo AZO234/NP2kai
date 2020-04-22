@@ -4,7 +4,6 @@
 #if defined(SUPPORT_NP2_TICKCOUNT)
 
 #include "compiler.h"
-#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -12,9 +11,9 @@ extern "C" {
 
 void NP2_TickCount_Initialize(void);
 
-int64_t NP2_TickCount_GetCount(void);
-int64_t NP2_TickCount_GetFrequency(void);
-int64_t NP2_TickCount_GetCountFromInit(void);
+extern int64_t NP2_TickCount_GetCount(void);
+extern int64_t NP2_TickCount_GetFrequency(void);
+extern int64_t NP2_TickCount_GetCountFromInit(void);
 
 #ifdef __cplusplus
 }

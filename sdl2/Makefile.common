@@ -15,7 +15,6 @@ INCFLAGS :=	-I$(NP2_PATH) \
 	-I$(NP2_PATH)/generic \
 	-I$(NP2_PATH)/io \
 	-I$(NP2_PATH)/mem \
-	-I$(NP2_PATH)/network \
 	-I$(NP2_PATH)/sound \
 	-I$(NP2_PATH)/sound/vermouth \
 	-I$(NP2_PATH)/sound/mame \
@@ -29,8 +28,6 @@ SOURCES_C :=	$(NP2_PATH)/calendar.c \
 	$(NP2_PATH)/debugsub.c \
 	$(NP2_PATH)/keystat.c \
 	$(NP2_PATH)/nevent.c \
-	$(NP2_PATH)/np2_thread.c \
-	$(NP2_PATH)/np2_tickcount.c \
 	$(NP2_PATH)/pccore.c \
 	$(NP2_PATH)/statsave.c \
 	$(NP2_PATH)/timing.c \
@@ -55,7 +52,6 @@ SOURCES_C :=	$(NP2_PATH)/calendar.c \
 	$(wildcard $(NP2_PATH)/io/pci/*.c) \
 	$(wildcard $(NP2_PATH)/lio/*.c) \
 	$(wildcard $(NP2_PATH)/mem/*.c) \
-	$(wildcard $(NP2_PATH)/network/*.c) \
 	$(wildcard $(NP2_PATH)/sdl2/*.c) \
 	$(wildcard $(NP2_PATH)/sound/*.c) \
 	$(wildcard $(NP2_PATH)/sound/getsnd/*.c) \
@@ -71,4 +67,21 @@ NP2DEFINE := -DBIOS_IO_EMULATION -DOSLANG_UTF8 -DOSLINEBREAK_CRLF -DSOUND_CRITIC
 # -DSUPPORT_SMPU98 -DSUPPORT_NVL_IMAGES
 
 NP21DEFINE := -DCPUCORE_IA32 -DIA32_PAGING_EACHSIZE -DIA32_REBOOT_ON_PANIC -DSUPPORT_CRT31KHZ -DSUPPORT_FPU_DOSBOX -DSUPPORT_FPU_DOSBOX2 -DSUPPORT_FPU_SOFTFLOAT -DSUPPORT_GAMEPORT -DSUPPORT_MEMDBG32 -DSUPPORT_LARGE_MEMORY -DSUPPORT_PC9801_119 -DSUPPORT_PC9821 -DSUPPORT_PCI -DSUPPORT_PEGC -DSUPPORT_SOUND_SB16 -DSUPPORT_VGA_MODEX -DUSE_3DNOW -DUSE_FASTPAGING -DUSE_FPU -DUSE_MMX -DUSE_SSE -DUSE_SSE2 -DUSE_SSE3 -DUSE_TSC -DUSE_VME
+
+ifeq ($(SUPPORT_NP2_THREAD), 1)
+	SOURCES_C += $(NP2_PATH)/np2_thread.c
+	NP2DEFINES += -DSUPPORT_NP2_THREAD
+endif
+ifeq ($(SUPPORT_NP2_TICKCOUNT), 1)
+	SOURCES_C += $(NP2_PATH)/np2_tickcount.c
+	NP2DEFINES += -DSUPPORT_NP2_TICKCOUNT
+endif
+ifeq ($(SUPPORT_NET), 1)
+	INCFLAGS += -I$(NP2_PATH)/network
+	SOURCES_C += $(wildcard $(NP2_PATH)/network/*.c)
+	NP2DEFINES += -DSUPPORT_NET -DSUPPORT_LGY98
+endif
+ifeq ($(SUPPORT_ASYNC_CPU), 1)
+	NP2DEFINES += -DSUPPORT_ASYNC_CPU
+endif
 

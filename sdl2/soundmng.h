@@ -1,6 +1,8 @@
 #ifndef	NP2_X11_SOUNGMNG_H__
 #define	NP2_X11_SOUNGMNG_H__
 
+#include <compiler.h>
+
 enum {
 	SOUND_PCMSEEK,
 	SOUND_PCMSEEK1,

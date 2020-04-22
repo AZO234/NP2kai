@@ -1,8 +1,4 @@
 
-#ifndef PARTSCALL
-#define	PARTSCALL
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif

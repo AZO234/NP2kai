@@ -23,10 +23,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "compiler.h"
-#include "cmver.h"
-
 #include "soundmng.h"
+#include "cmver.h"
 
 #if defined(_MSC_VER)
 #define strcasecmp _stricmp

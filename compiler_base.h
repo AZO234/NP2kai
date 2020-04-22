@@ -336,19 +336,7 @@ typedef int  BOOL;
 #undef  THISCALL
 #endif
 
-#if defined(__ANDROID__) && defined(__i386__)  // temporary
-#define CDECL
-#define STDCALL
-#define FASTCALL
-#define SAFECALL
-#define CLRCALL
-#define VECTORCALL
-#if defined(__cpluscplus)
-#define THISCALL
-#endif
-#else
-#if defined(_MSC_VER) && defined(_M_IX86)
-/*  // temporary
+#if defined(_MSC_VER) && defined(_M_IX86) && !defined(LR_VS2017)
 #define CDECL      __cdecl
 #define STDCALL    __stdcall
 #define FASTCALL   __fastcall
@@ -358,18 +346,7 @@ typedef int  BOOL;
 #if defined(__cpluscplus)
 #define THISCALL   __thiscall
 #endif
-*/
-#define CDECL
-#define STDCALL
-#define FASTCALL
-#define SAFECALL
-#define CLRCALL
-#define VECTORCALL
-#if defined(__cpluscplus)
-#define THISCALL
-#endif
-#elif defined(__GNUC__)
-#if defined(__i386__)
+#elif defined(__GNUC__) && defined(__i386__) && !defined(__ANDROID__)
 #define CDECL      __attribute__ ((cdecl))
 #define STDCALL    __attribute__ ((stdcall))
 #define FASTCALL   __attribute__ ((fastcall))
@@ -377,7 +354,6 @@ typedef int  BOOL;
 #define VECTORCALL __attribute__ ((interrupt))
 #if defined(__cpluscplus)
 #define THISCALL   __attribute__ ((thiscall))
-#endif
 #endif
 #else
 #define CDECL
@@ -388,7 +364,6 @@ typedef int  BOOL;
 #define VECTORCALL
 #if defined(__cpluscplus)
 #define THISCALL
-#endif
 #endif
 #endif
 
@@ -422,6 +397,10 @@ typedef union {
 #endif
 #ifndef	FillMemory
 #define	FillMemory(d, z, c)	memset((d), (c), (z))
+#endif
+
+#if defined(__WINRT__) && defined(_M_IX86)
+#define CreateFileW(f, a, s, sec, p, flg, t) CreateFile2(f, a, s, p, NULL)
 #endif
 #endif
 // <-- Windowsnize

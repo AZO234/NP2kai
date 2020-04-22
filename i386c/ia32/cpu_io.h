@@ -26,13 +26,6 @@
 #ifndef	IA32_CPU_CPU_IO_H__
 #define	IA32_CPU_CPU_IO_H__
 
-#ifndef IOOUTCALL
-#define	IOOUTCALL
-#endif
-#ifndef IOINPCALL
-#define	IOINPCALL
-#endif
-
 #include "interface.h"
 
 #ifdef __cplusplus

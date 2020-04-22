@@ -82,5 +82,18 @@ int64_t NP2_TickCount_GetCountFromInit(void) {
   return NP2_TickCount_GetCount() - initcount;
 }
 
+#if !defined(_WINDOWS) && defined(SUPPORT_NP2_TICKCOUNT)
+BOOL QueryPerformanceCounter(LARGE_INTEGER* count) {
+  int64_t icount = NP2_TickCount_GetCount();
+  COPY64(count, &icount);
+  return TRUE;
+}
+BOOL QueryPerformanceFrequency(LARGE_INTEGER* freq) {
+  int64_t ifreq = NP2_TickCount_GetFrequency();
+  COPY64(freq, &ifreq);
+  return TRUE;
+}
+#endif
+
 #endif  // SUPPORT_NP2_TICKCOUNT
 

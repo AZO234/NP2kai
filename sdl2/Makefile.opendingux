@@ -5,7 +5,10 @@ AR=/opt/$(ODCONFIG)-toolchain/usr/bin/mipsel-linux-ar
 CXX=/opt/$(ODCONFIG)-toolchain/usr/bin/mipsel-linux-g++
 
 DEBUG ?= 0
+SUPPORT_NP2_THREAD ?= 1
+SUPPORT_NP2_TICKCOUNT ?= 1
 SUPPORT_NET ?= 1
+SUPPORT_ASYNC_CPU ?= 0
 SDL_VERSION ?= 1
 GIT_VERSION := "$(shell git rev-parse --short HEAD)"
 
@@ -60,22 +63,12 @@ SOURCES_C += $(NP2_PATH)/sdl2/opendingux/main.c
 INCFLAGS += 	-I$(NP2_PATH)/i286c
 SOURCES_C += 	$(wildcard $(NP2_PATH)/i286c/*.c)
 
-ifeq ($(SUPPORT_NET), 1)
-CXXFLAGS += -DSUPPORT_NET -DSUPPORT_LGY98 -L/opt/$(ODCONFIG)-toolchain/usr/lib
-CFLAGS   += -DSUPPORT_NET -DSUPPORT_LGY98
-endif
-
 NP2SDLDEFINE := -DNP2_SDL2 -DUSE_SDLAUDIO -DUSE_SDLMIXER
 
 OBJECTS  = $(SOURCES_CXX:.cpp=.o) $(SOURCES_C:.c=.o)
 CXXFLAGS += $(fpic) $(INCFLAGS) $(COMMONFLAGS) $(NP2DEFINE) -D__OPENDINGUX__ $(NP2SDLDEFINE) -DSUPPORT_NP2_TICKCOUNT -DSUPPORT_NP2_THREAD -std=gnu++11
 CFLAGS   += $(fpic) $(INCFLAGS) $(COMMONFLAGS) $(NP2DEFINE) -D__OPENDINGUX__ $(NP2SDLDEFINE) -DSUPPORT_NP2_TICKCOUNT -DSUPPORT_NP2_THREAD -std=gnu11
 LDFLAGS  += $(fpic) -lm -lpthread $(SDL_LIBS) $(SDL_OTHER_LIBS) -L/opt/$(ODCONFIG)-toolchain/usr/lib
-
-ifeq ($(SUPPORT_NET), 1)
-CXXFLAGS += -DSUPPORT_NET -DSUPPORT_LGY98 -L/opt/$(ODCONFIG)-toolchain/usr/lib
-CFLAGS   += -DSUPPORT_NET -DSUPPORT_LGY98
-endif
 
 all: buildopk
 $(TARGET): $(OBJECTS)
