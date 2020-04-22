@@ -422,6 +422,7 @@ static int joyNP2menubtn;
 static int s2m;
 static int s2m_no;
 static uint8_t s2m_shift;
+static bool abKeyStat[0x200];
 
 static int j2k_pad[12] = { 
    RETRO_DEVICE_ID_JOYPAD_UP,
@@ -537,20 +538,24 @@ void updateInput(){
   if(m_tJoyMode == LR_NP2KAI_JOYMODE_KEY) {
     for(i = 0; i < 12; i++) {
       input = input_cb(0, RETRO_DEVICE_JOYPAD, 0, j2k_pad[i]);
-      if(input) {
+      if(input && !abKeyStat[j2k_key[i]]) {
         send_libretro_key_down(j2k_key[i]);
-      } else {
-        send_libretro_key_up(j2k_key[i]);
+        abKeyStat[j2k_key[i]] = true;
+      } else if(!input && abKeyStat[j2k_key[i]]) {
+        send_libretro_key_up(keys_poll[i].lrkey);
+        abKeyStat[j2k_key[i]] = false;
       }
     }
   // keyboard
   } else {
     for(i = 0; i < keys_needed; i++) {
       input = input_cb(0, RETRO_DEVICE_KEYBOARD, 0, keys_poll[i].lrkey);
-      if(input) {
+      if(input && !abKeyStat[keys_poll[i].lrkey]) {
         send_libretro_key_down(keys_poll[i].lrkey);
-      } else {
+        abKeyStat[keys_poll[i].lrkey] = true;
+      } else if(!input && abKeyStat[keys_poll[i].lrkey]) {
         send_libretro_key_up(keys_poll[i].lrkey);
+        abKeyStat[keys_poll[i].lrkey] = false;
       }
     }
   }
