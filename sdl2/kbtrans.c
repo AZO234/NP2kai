@@ -270,6 +270,7 @@ void send_libretro_key_down(UINT lrkey) {
           keystat_keydown(keycode);
           key_states[keycode] = true;
         }
+        break;
       }
     }
   }
@@ -295,6 +296,7 @@ void send_libretro_key_up(UINT lrkey) {
           keystat_keyup(keycode);
           key_states[keycode] = false;
         }
+        break;
       }
     }
   }
@@ -805,9 +807,15 @@ void sdlkbd_keydown(UINT key) {
   UINT8   data;
 
   data = getKey(key);
-  if(data != NC && !key_states[data]) {
+#if SDL_MAJOR_VERSION == 1
+  if(key > 0x40000000) {
+    key -= 0x40000000;
+    key += 0x80;
+  }
+#endif
+  if(data != NC && !key_states[key]) {
      keystat_keydown(data);
-     key_states[data] = 1;
+     key_states[key] = 1;
   }
 }
 
@@ -819,9 +827,15 @@ void sdlkbd_keyup(UINT key) {
   UINT8   data;
 
   data = getKey(key);
-  if(data != NC && key_states[data]) {
+#if SDL_MAJOR_VERSION == 1
+  if(key > 0x40000000) {
+    key -= 0x40000000;
+    key += 0x80;
+  }
+#endif
+  if(data != NC && key_states[key]) {
      keystat_keyup(data);
-     key_states[data] = 0;
+     key_states[key] = 0;
   }
 }
 
