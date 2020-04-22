@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <io/iocore.h>
+
 #define CIRRUS_VRAM_SIZE_1MB	(1024 * 1024)
 #define CIRRUS_VRAM_SIZE_2MB	(2048 * 1024)
 #define CIRRUS_VRAM_SIZE_4MB	(4096 * 1024)
@@ -218,13 +220,10 @@ void pc98_cirrus_vga_resetresolution(void);
 void pc98_cirrus_vga_save(void);
 void pc98_cirrus_vga_load(void);
 
-#if defined(NP2_X11) || defined(NP2_SDL2) || defined(__LIBRETRO__)
-#define __fastcall
-#endif
-UINT16 __fastcall cirrusvga_ioport_read_wrap16(UINT addr);
-UINT32 __fastcall cirrusvga_ioport_read_wrap32(UINT addr);
-void __fastcall cirrusvga_ioport_write_wrap16(UINT addr, UINT16 dat);
-void __fastcall cirrusvga_ioport_write_wrap32(UINT addr, UINT32 dat);
+UINT IOOUTCALL cirrusvga_ioport_read_wrap16(UINT addr);
+UINT IOOUTCALL cirrusvga_ioport_read_wrap32(UINT addr);
+void IOOUTCALL cirrusvga_ioport_write_wrap16(UINT addr, UINT dat);
+void IOOUTCALL cirrusvga_ioport_write_wrap32(UINT addr, UINT dat);
 
 int pc98_cirrus_isWABport(UINT port);
 

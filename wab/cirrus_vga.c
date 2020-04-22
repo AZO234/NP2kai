@@ -4052,11 +4052,11 @@ static uint32_t_ vga_ioport_read(void *opaque, uint32_t_ addr)
 #endif
     return val;
 }
-static REG8 __fastcall vga_ioport_read_wrap(UINT addr)
+static REG8 IOOUTCALL vga_ioport_read_wrap(UINT addr)
 {
 	return vga_ioport_read(cirrusvga, addr);
 }
-UINT16 __fastcall cirrusvga_ioport_read_wrap16(UINT addr)
+UINT IOOUTCALL cirrusvga_ioport_read_wrap16(UINT addr)
 {
 	UINT16 ret;
 	addr = vga_convert_ioport(addr);
@@ -4064,7 +4064,7 @@ UINT16 __fastcall cirrusvga_ioport_read_wrap16(UINT addr)
 	ret |= ((REG16)vga_ioport_read(cirrusvga, addr+1) << 8);
 	return ret;
 }
-UINT32 __fastcall cirrusvga_ioport_read_wrap32(UINT addr)
+UINT IOOUTCALL cirrusvga_ioport_read_wrap32(UINT addr)
 {
 	UINT32 ret;
 	addr = vga_convert_ioport(addr);
@@ -4273,17 +4273,17 @@ static void vga_ioport_write(void *opaque, uint32_t_ addr, uint32_t_ val)
 		break;
     }
 }
-static void __fastcall vga_ioport_write_wrap(UINT addr, REG8 dat)
+static void IOOUTCALL vga_ioport_write_wrap(UINT addr, REG8 dat)
 {
 	vga_ioport_write(cirrusvga, addr, dat);
 }
-void __fastcall cirrusvga_ioport_write_wrap16(UINT addr, UINT16 dat)
+void IOOUTCALL cirrusvga_ioport_write_wrap16(UINT addr, UINT dat)
 {
 	addr = vga_convert_ioport(addr);
 	vga_ioport_write(cirrusvga, addr  , ((UINT32)dat     ) & 0xff);
 	vga_ioport_write(cirrusvga, addr+1, ((UINT32)dat >> 8) & 0xff);
 }
-void __fastcall cirrusvga_ioport_write_wrap32(UINT addr, UINT32 dat)
+void IOOUTCALL cirrusvga_ioport_write_wrap32(UINT addr, UINT dat)
 {
 	addr = vga_convert_ioport(addr);
 	vga_ioport_write(cirrusvga, addr  , (dat      ) & 0xff);
