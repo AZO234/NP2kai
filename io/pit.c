@@ -263,12 +263,20 @@ void pit_setrs232cspeed(UINT16 value) {
 						newvalue = 9600 * 256 / mul[rs232c.rawmode & 0x3] / value;
 					}
 					if(newvalue <= 38400){ // XXX: 大きすぎるのは無視
-						cm_rs232c->msg(cm_rs232c, COMMSG_CHANGESPEED, (INTPTR)&newvalue);
+						if(cm_rs232c) {
+							if(cm_rs232c->msg) {
+								cm_rs232c->msg(cm_rs232c, COMMSG_CHANGESPEED, (INTPTR)&newvalue);
+							}
+						}
 					}
 				}
 			}
 		}
-		cm_rs232c->msg(cm_rs232c, COMMSG_CHANGEMODE, (INTPTR)&rs232c.rawmode);
+		if(cm_rs232c) {
+			if(cm_rs232c->msg) {
+				cm_rs232c->msg(cm_rs232c, COMMSG_CHANGEMODE, (INTPTR)&rs232c.rawmode);
+			}
+		}
 	}
 }
 
