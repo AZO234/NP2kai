@@ -124,6 +124,8 @@ commng_destroy(COMMNG hdl)
 {
 
 	if (hdl) {
-		hdl->release(hdl);
+		if(hdl->release) {
+			hdl->release(hdl);
+		}
 	}
 }
