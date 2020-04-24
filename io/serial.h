@@ -1,3 +1,5 @@
+#ifndef _SERIAL_H_
+#define _SERIAL_H_
 
 enum {
 	KB_CTR			= (1 << 3),
@@ -80,4 +82,6 @@ void rs232c_vfast_setrs232cspeed(UINT8 value);
 #ifdef __cplusplus
 }
 #endif
+
+#endif  // _SERIAL_H_
 
