@@ -31,6 +31,9 @@
 #include "np2.h"
 #include "commng.h"
 #include "codecnv/codecnv.h"
+#if defined(SUPPORT_NP2_TICKCOUNT)
+#include <np2_tickcount.h>
+#endif
 
 #if defined(_WINDOWS)
 #include <windows.h>
@@ -107,16 +110,56 @@ serialwrite(COMMNG self, UINT8 data)
 #endif
 
 #if defined(_WINDOWS)
-	WriteFile(serial->hdl, &data, 1, &size, NULL);
+	size = WriteFile(serial->hdl, &data, 1, &size, NULL);
 #else
 	size = write(serial->hdl, &data, 1);
 #endif
+	self->lastdata = data;
+#if defined(SUPPORT_NP2_TICKCOUNT)
+	self->lastdatatime = (UINT)NP2_TickCount_GetCount();
+#else
+	self->lastdatatime = 0;
+#endif
 	if (size == 1) {
+		self->lastdatafail = 0;
 		VERBOSE(("serialwrite: data = %02x", data));
 		return 1;
 	}
+	self->lastdatafail = 1;
 	VERBOSE(("serialwrite: write failure (%s)", strerror(errno)));
 	return 0;
+}
+
+static UINT
+serialwriteretry(COMMNG self)
+{
+	CMSER serial = (CMSER)(self + 1);
+#if defined(_WIN32)
+	DWORD size;
+#else
+	size_t size;
+#endif
+
+	if(self->lastdatafail) {
+#if defined(_WIN32)
+		size = WriteFile(serial->hdl, &self->lastdata, 1, &size, NULL);
+#else
+		size = write(serial->hdl, &self->lastdata, 1);
+#endif
+		if (size == 0) {
+			VERBOSE(("serialwriteretry: write failure (%s)", strerror(errno)));
+			return 0;
+		}
+		self->lastdatafail = 0;
+		VERBOSE(("serialwriteretry: data = %02x", data));
+	}
+	return 1;
+}
+
+static UINT
+seriallastwritesuccess(COMMNG self)
+{
+	return self->lastdatafail;
 }
 
 static UINT8
@@ -535,6 +578,8 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 #endif
 	ret->read = serialread;
 	ret->write = serialwrite;
+	ret->writeretry = serialwriteretry;
+	ret->lastwritesuccess = seriallastwritesuccess;
 	ret->getstat = serialgetstat;
 	ret->msg = serialmsg;
 	ret->release = serialrelease;

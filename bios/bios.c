@@ -992,7 +992,7 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 				}else{
 					np2clvga.modex = 0;
 					np2clvga.VRAMWindowAddr3 = 0;
-					//np2wab.relaystateext &= ‾0x01;
+					//np2wab.relaystateext &= ~0x01;
 					np2wab_setRelayState(np2wab.relaystateint|np2wab.relaystateext);
 				}
 #endif
