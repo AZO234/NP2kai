@@ -59,7 +59,8 @@ REG8 fmboard_getjoy(POPNA opna)
 	ret = 0xff;
 	if (!(opna->s.reg[15] & 0x40))
 	{
-		ret &= (joymng_getstat() | (s_rapids & 0x30));
+//		ret &= (joymng_getstat() | (s_rapids & 0x30));
+		ret &= joymng_getstat();
 		if (np2cfg.KEY_MODE == 1)
 		{
 			ret &= keystat_getjoy();
