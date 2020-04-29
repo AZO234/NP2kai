@@ -417,12 +417,12 @@ static int menu_active = 0;
 static double j2m_axel = 1.0;
 static int j2m_movebtn = 0;
 static int j2m_l_down = 0, j2m_r_down = 0;
-static bool joyNP2menu;
+static BOOL joyNP2menu;
 static int joyNP2menubtn;
 static int s2m;
 static int s2m_no;
 static uint8_t s2m_shift;
-static bool abKeyStat[0x200];
+static BOOL abKeyStat[0x200];
 
 static int j2k_pad[12] = { 
    RETRO_DEVICE_ID_JOYPAD_UP,
@@ -540,10 +540,10 @@ void updateInput(){
       input = input_cb(0, RETRO_DEVICE_JOYPAD, 0, j2k_pad[i]);
       if(input && !abKeyStat[j2k_key[i]]) {
         send_libretro_key_down(j2k_key[i]);
-        abKeyStat[j2k_key[i]] = true;
+        abKeyStat[j2k_key[i]] = TRUE;
       } else if(!input && abKeyStat[j2k_key[i]]) {
-        send_libretro_key_up(keys_poll[i].lrkey);
-        abKeyStat[j2k_key[i]] = false;
+        send_libretro_key_up(j2k_key[i]);
+        abKeyStat[j2k_key[i]] = FALSE;
       }
     }
   // keyboard
@@ -552,10 +552,10 @@ void updateInput(){
       input = input_cb(0, RETRO_DEVICE_KEYBOARD, 0, keys_poll[i].lrkey);
       if(input && !abKeyStat[keys_poll[i].lrkey]) {
         send_libretro_key_down(keys_poll[i].lrkey);
-        abKeyStat[keys_poll[i].lrkey] = true;
+        abKeyStat[keys_poll[i].lrkey] = TRUE;
       } else if(!input && abKeyStat[keys_poll[i].lrkey]) {
         send_libretro_key_up(keys_poll[i].lrkey);
-        abKeyStat[keys_poll[i].lrkey] = false;
+        abKeyStat[keys_poll[i].lrkey] = FALSE;
       }
     }
   }
@@ -1415,43 +1415,43 @@ static void update_variables(void)
   var.value = NULL;
   if(environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
     if(strcmp(var.value, "A") == 0) {
-      joyNP2menu = true;
+      joyNP2menu = TRUE;
       joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_A;
     } else if(strcmp(var.value, "B") == 0) {
-      joyNP2menu = true;
+      joyNP2menu = TRUE;
       joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_B;
     } else if(strcmp(var.value, "X") == 0) {
-      joyNP2menu = true;
+      joyNP2menu = TRUE;
       joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_X;
     } else if(strcmp(var.value, "Y") == 0) {
-      joyNP2menu = true;
+      joyNP2menu = TRUE;
       joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_Y;
     } else if(strcmp(var.value, "L1") == 0) {
-      joyNP2menu = true;
+      joyNP2menu = TRUE;
       joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_L;
     } else if(strcmp(var.value, "L2") == 0) {
-      joyNP2menu = true;
+      joyNP2menu = TRUE;
       joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_L2;
     } else if(strcmp(var.value, "R1") == 0) {
-      joyNP2menu = true;
+      joyNP2menu = TRUE;
       joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_R;
     } else if(strcmp(var.value, "R2") == 0) {
-      joyNP2menu = true;
+      joyNP2menu = TRUE;
       joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_R2;
     } else if(strcmp(var.value, "L3") == 0) {
-      joyNP2menu = true;
+      joyNP2menu = TRUE;
       joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_L3;
     } else if(strcmp(var.value, "R3") == 0) {
-      joyNP2menu = true;
+      joyNP2menu = TRUE;
       joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_R3;
     } else if(strcmp(var.value, "Start") == 0) {
-      joyNP2menu = true;
+      joyNP2menu = TRUE;
       joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_START;
     } else if(strcmp(var.value, "Select") == 0) {
-      joyNP2menu = true;
+      joyNP2menu = TRUE;
       joyNP2menubtn = RETRO_DEVICE_ID_JOYPAD_SELECT;
     } else {
-      joyNP2menu = false;
+      joyNP2menu = FALSE;
     }
   }
 

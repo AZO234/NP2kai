@@ -242,7 +242,7 @@ void NP2_WaitQueue_RingInt_Append(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, 
       }
       NP2_Semaphore_Release(psem);
       if(pque->ring.queued == pque->ring.current) {
-        TRACEOUT("NP2_WaitQueue_Append: Error Queue is overlow.\n");
+//        TRACEOUT("NP2_WaitQueue_Append: Error Queue is overlow.\n");
       }
     }
   }
@@ -263,7 +263,7 @@ void NP2_WaitQueue_Append(NP2_WaitQueue_t* pque, NP2_Semaphore_t* psem, void* pa
       }
       NP2_Semaphore_Release(psem);
       if(pque->ring.queued == pque->ring.current) {
-        TRACEOUT("NP2_WaitQueue_Append: Error Queue is overlow.\n");
+//        TRACEOUT("NP2_WaitQueue_Append: Error Queue is overlow.\n");
       }
     } else {
       item = (NP2_WaitQueue_List_Item_t*)malloc(sizeof(NP2_WaitQueue_List_t));

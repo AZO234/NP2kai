@@ -201,6 +201,7 @@ short file_attr(const OEMCHAR *path) {
   if(path_is_directory(path)) {
     OEMCHAR testpath[MAX_PATH];
 
+    attr |= FILEATTR_DIRECTORY;
     file_cpyname(testpath, MAX_PATH, path);
     file_catname(testpath, "/_np2test", MAX_PATH);
     fh = file_create(path);

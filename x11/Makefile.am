@@ -749,7 +749,7 @@ xnp2kai_CPPFLAGS=	$(AM_CPPFLAGS) $(I286C_CPPFLAGS)
 endif	# CPUCORE_IA32
 endif	# BUILD_ALL
 
-CLEANFILES=	$(nodist_man1_MANS) make.log compile_commands.json cppcheck.xml
+CLEANFILES=	$(nodist_man1_MANS) make.log
 
 cleandir:: distclean
 

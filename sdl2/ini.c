@@ -859,7 +859,7 @@ void initload(void) {
 
 	milstr_ncpy(path, file_getcd(inifile), sizeof(path));
 	fprintf(stderr, OEMTEXT("Loading %s from %s"), inifile, path);
-	TRACEOUT(OEMTEXT("Loading %s from %s", inifile, path));
+//	TRACEOUT(OEMTEXT("Loading %s from %s", inifile, path));
 	ini_read(path, ini_title, iniitem, INIITEMS);
 }
 

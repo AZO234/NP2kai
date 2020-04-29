@@ -69,8 +69,6 @@ endif
 
 clean:
 	rm -f $(OBJECTS) $(TARGET)
-	rm -f compile_commands.json
-	rm -f cppcheck.xml
 
 cppcheck: compile_commands.json
 	cppcheck --project=compile_commands.json --xml 2> cppcheck.xml

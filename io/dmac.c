@@ -42,6 +42,7 @@ static const DMAPROC dmaproc[] = {
 #endif
 		{dma_dummyout,		dma_dummyin,		dma_dummyproc},		// SCSI
 #if !defined(DISABLE_SOUND)
+		{dma_dummyout,		dma_dummyin,		cs4231dmafunc},		// CS4231
 #if defined(SUPPORT_SOUND_SB16)
 		{dma_dummyout,		dma_dummyin,		ct1741dmafunc},		// CT1741
 #else

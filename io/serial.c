@@ -198,14 +198,12 @@ void rs232c_destruct(void) {
 
 void rs232c_open(void) {
 
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
 	if (cm_rs232c == NULL) {
 		cm_rs232c = commng_create(COMCREATE_SERIAL);
 #if defined(VAEG_FIX)
 		cm_rs232c->msg(cm_rs232c, COMMSG_SETRSFLAG, rs232c.cmd & 0x22); /* RTS, DTR */
 #endif
 	}
-#endif
 }
 
 void rs232c_callback(void) {

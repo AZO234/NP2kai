@@ -50,6 +50,9 @@ struct _commng {
 	UINT8	(*getstat)(COMMNG self);
 	INTPTR	(*msg)(COMMNG self, UINT msg, INTPTR param);
 	void	(*release)(COMMNG self);
+	UINT8 lastdata;
+	UINT8 lastdatafail;
+	UINT lastdatatime;
 };
 
 typedef struct {

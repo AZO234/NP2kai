@@ -11,6 +11,9 @@ static UINT
 ncread(COMMNG self, UINT8 *data)
 {
 
+	(void)self;
+	(void)data;
+
 	return 0;
 }
 
@@ -18,12 +21,35 @@ static UINT
 ncwrite(COMMNG self, UINT8 data)
 {
 
+	(void)self;
+	(void)data;
+
 	return 0;
+}
+
+static UINT
+ncwriteretry(COMMNG self)
+{
+
+	(void)self;
+
+	return 1;
+}
+
+static UINT
+nclastwritesuccess(COMMNG self)
+{
+
+	(void)self;
+
+	return 1;
 }
 
 static UINT8
 ncgetstat(COMMNG self)
 {
+
+	(void)self;
 
 	return 0xf0;
 }
@@ -31,6 +57,11 @@ ncgetstat(COMMNG self)
 static INTPTR
 ncmsg(COMMNG self, UINT msg, INTPTR param)
 {
+
+	(void)self;
+	(void)msg;
+	(void)param;
+
 
 	return 0;
 }
@@ -40,10 +71,12 @@ ncrelease(COMMNG self)
 {
 
 	/* Nothing to do */
+
+	(void)self;
 }
 
 static _COMMNG com_nc = {
-	COMCONNECT_OFF, ncread, ncwrite, ncgetstat, ncmsg, ncrelease
+	COMCONNECT_OFF, ncread, ncwrite, ncwriteretry, nclastwritesuccess, ncgetstat, ncmsg, ncrelease
 };
 
 
@@ -124,6 +157,8 @@ commng_destroy(COMMNG hdl)
 {
 
 	if (hdl) {
-		hdl->release(hdl);
+		if(hdl->release) {
+			hdl->release(hdl);
+		}
 	}
 }
