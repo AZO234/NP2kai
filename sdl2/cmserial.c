@@ -151,7 +151,7 @@ serialwriteretry(COMMNG self)
 			return 0;
 		}
 		self->lastdatafail = 0;
-		VERBOSE(("serialwriteretry: data = %02x", data));
+		VERBOSE(("serialwriteretry"));
 	}
 	return 1;
 }
