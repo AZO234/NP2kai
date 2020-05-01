@@ -631,6 +631,10 @@ Using ATARI joypad (Joypad ATARI mode)
 
 By setting 'ATARI joypad', you can use ATARI joypad port.
 
+- A button: A button<br>
+- B button: B button<br>
+- X button: Rapid A button<br>
+- Y button: Rapid B button<br>
 </div></details>
 
 <details><summary>

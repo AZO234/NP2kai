@@ -409,7 +409,10 @@ static enum {
   LR_NP2KAI_JOYMODE_MOUSE,
   LR_NP2KAI_JOYMODE_ATARI,
   LR_NP2KAI_JOYMODE_SB
-} m_tJoyMode;
+};
+static int m_tJoyMode;
+static int m_tJoyModeInt;
+static BOOL m_bJoyModeChange;
 
 static int lastx = 320, lasty = 240;
 static int menukey = 0;
@@ -495,11 +498,30 @@ static uint16_t j2k_key_kpad3[12] = {
    RETROK_ESCAPE,
    RETROK_RETURN
 };
-   
+
+void resetInput(void) {
+  int i;
+
+  menukey = 0;
+  j2m_l_down = 0;
+  j2m_r_down = 0;
+  for(i = 0; i < keys_needed; i++) {
+    abKeyStat[i] = FALSE;
+  }
+  joymng_sync();
+	reset_lrkey();
+  keystat_allrelease();
+}
+
 void updateInput(){
   static int mposx = 320, mposy = 240;
   int w, h;
   uint32_t i;
+
+  if(m_bJoyModeChange) {
+    resetInput();
+  }
+  m_bJoyModeChange = FALSE;
 
   scrnmng_getsize(&w, &h);
 
@@ -1387,27 +1409,39 @@ static void update_variables(void)
   var.key = "np2kai_joymode";
   var.value = NULL;
   if(environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
+    int preJoyModeInt = m_tJoyModeInt;
     if(strcmp(var.value, "Mouse") == 0) {
       m_tJoyMode = LR_NP2KAI_JOYMODE_MOUSE;
+      m_tJoyModeInt = 1;
     } else if(strcmp(var.value, "Arrows") == 0) {
       m_tJoyMode = LR_NP2KAI_JOYMODE_KEY;
       memcpy(j2k_key, j2k_key_arrow, sizeof(uint16_t) * 12);
+      m_tJoyModeInt = 2;
     } else if(strcmp(var.value, "Arrows 3button") == 0) {
       m_tJoyMode = LR_NP2KAI_JOYMODE_KEY;
       memcpy(j2k_key, j2k_key_arrow3, sizeof(uint16_t) * 12);
+      m_tJoyModeInt = 3;
     } else if(strcmp(var.value, "Keypad") == 0) {
       m_tJoyMode = LR_NP2KAI_JOYMODE_KEY;
       memcpy(j2k_key, j2k_key_kpad, sizeof(uint16_t) * 12);
+      m_tJoyModeInt = 4;
     } else if(strcmp(var.value, "Keypad 3button") == 0) {
       m_tJoyMode = LR_NP2KAI_JOYMODE_KEY;
       memcpy(j2k_key, j2k_key_kpad3, sizeof(uint16_t) * 12);
+      m_tJoyModeInt = 5;
     } else if(strcmp(var.value, "Manual Keyboard") == 0) {
       m_tJoyMode = LR_NP2KAI_JOYMODE_KEY;
       memcpy(j2k_key, np2oscfg.lrjoybtn, sizeof(uint16_t) * 12);
+      m_tJoyModeInt = 6;
     } else if(strcmp(var.value, "Atari Joypad") == 0) {
       m_tJoyMode = LR_NP2KAI_JOYMODE_ATARI;
+      m_tJoyModeInt = 7;
     } else {
       m_tJoyMode = LR_NP2KAI_JOYMODE_NONE;
+      m_tJoyModeInt = 0;
+    }
+    if(m_tJoyModeInt != preJoyModeInt) {
+      m_bJoyModeChange = TRUE;
     }
   }
 
@@ -1556,6 +1590,11 @@ void retro_deinit(void)
 
 void retro_reset (void)
 {
+   if(menuvram) {
+      menubase_close();
+      menu_active = 0;
+   }
+   resetInput();
    pccore_reset();
    did_reset = true;
 }
@@ -1587,6 +1626,11 @@ void retro_run (void)
    }
 
    if (did_reset){
+      if(menuvram) {
+         menubase_close();
+         menu_active = 0;
+      }
+      resetInput();
       pccore_cfgupdate();
       pccore_reset();
       did_reset = false;

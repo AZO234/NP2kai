@@ -50,6 +50,11 @@ static void sys_cmd(MENUID id) {
 	update = 0;
 	switch(id) {
 		case MID_RESET:
+#if defined(__LIBRETRO__)
+			reset_lrkey();
+#elif defined(NP2_SDL2)
+			sdlkbd_reset();
+#endif
 			pccore_cfgupdate();
 			pccore_reset();
 			break;

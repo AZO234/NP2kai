@@ -250,6 +250,10 @@ void init_lrkey_to_pc98() {
   }
 }
 
+void reset_lrkey() {
+  memset(key_states, 0, sizeof(key_states));
+}
+
 void send_libretro_key_down(UINT lrkey) {
   size_t i;
   uint8_t keycode;
@@ -797,6 +801,13 @@ static UINT8 getKey(SDL_Scancode key) {
   }
 
   return NC;
+}
+
+/**
+ * reset Key
+ */
+void sdlkbd_reset() {
+  memset(key_states, 0, sizeof(key_states));
 }
 
 /**
