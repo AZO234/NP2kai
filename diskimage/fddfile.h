@@ -1,3 +1,6 @@
+#ifndef _FDDFILE_H_
+#define _FDDFILE_H_
+
 
 #ifdef SUPPORT_KAI_IMAGES
 
@@ -85,6 +88,15 @@ typedef struct {
 } _VFDDINFO, *VFDDINFO;
 //
 
+union fdinfo {
+	_XDFINFO	xdf;
+	_D88INFO	d88;
+	_DCPINFO	dcp;	//	追加(Kai1)
+	_BKDSKINFO	bkdsk;	//	追加(Kai1)
+	_NFDINFO	nfd;	//	追加(Kai1)
+	_VFDDINFO	vfdd;	//	追加(Kai1)
+};
+
 typedef struct {
 	OEMCHAR	fname[MAX_PATH];
 	UINT	ftype;
@@ -92,14 +104,8 @@ typedef struct {
 	UINT8	type;
 	UINT8	num;
 	UINT8	protect;
-	union {
-		_XDFINFO	xdf;
-		_D88INFO	d88;
-		_DCPINFO	dcp;	//	追加(Kai1)
-		_BKDSKINFO	bkdsk;	//	追加(Kai1)
-		_NFDINFO	nfd;	//	追加(Kai1)
-		_VFDDINFO	vfdd;	//	追加(Kai1)
-	} inf;
+	union fdinfo inf;
+	UINT8	hash_sha1[20];
 } _FDDFILE, *FDDFILE;
 
 //	各種処理関数格納構造体(Kai1)
@@ -277,3 +283,5 @@ BOOL fdd_isformating(void);
 #endif
 
 #endif
+
+#endif  // _FDDFILE_H_

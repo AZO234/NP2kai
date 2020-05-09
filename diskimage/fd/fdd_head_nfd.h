@@ -1,3 +1,6 @@
+#ifndef _FDD_HEAD_NFD_H_
+#define _FDD_HEAD_NFD_H_
+
 enum {
 	NFD_TRKMAX		= 163,
 	NFD_TRKMAX1		= 164,
@@ -182,3 +185,4 @@ typedef struct {
 #pragma pack(pop)
 #endif
 
+#endif  // _FDD_HEAD_NFD_H_

@@ -105,6 +105,9 @@ AC_ARG_ENABLE(sdl2ttf,
 AC_ARG_ENABLE(sdl2mixer,
   AC_HELP_STRING([--enable-sdl2mixer],[Use SDL2_mixer library [default=yes]]),,
   [enable_sdl2mixer="yes"])
+AC_ARG_ENABLE(libssl,
+  AC_HELP_STRING([--enable-libssl],[Use libssl library [default=yes]]),,
+  [enable_libssl="yes"])
 AC_ARG_ENABLE(libusb1,
   AC_HELP_STRING([--enable-libusb1],[Use libusb-1.0 library [default=yes]]),,
   [enable_libusb1="yes"])
@@ -205,6 +208,18 @@ dnl      fi
       fi
     fi
   fi
+fi
+
+dnl
+dnl Checks for libssl
+dnl
+if test "$enable_libssl" = yes ; then
+  dnl Order matters!
+  AC_CHECK_LIB(crypto, CRYPTO_new_ex_data, [], [AC_MSG_ERROR([library 'crypto' is required])])
+  FOUND_SSL_LIB="no"
+  AC_CHECK_LIB(ssl, OPENSSL_init_ssl, [FOUND_SSL_LIB="yes"])
+  AC_CHECK_LIB(ssl, SSL_library_init, [FOUND_SSL_LIB="yes"])
+  AS_IF([test "x$FOUND_SSL_LIB" = xno], [AC_MSG_ERROR([library 'ssl' is required])])
 fi
 
 dnl

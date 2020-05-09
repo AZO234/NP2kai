@@ -1,3 +1,5 @@
+#ifndef _FDD_HEAD_D88_H_
+#define _FDD_HEAD_D88_H_
 
 enum {
 	D88_TRACKMAX		= 164,
@@ -61,3 +63,4 @@ typedef struct {
 #pragma pack(pop)
 #endif
 
+#endif  // _FDD_HEAD_D88_H_

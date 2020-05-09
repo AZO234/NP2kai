@@ -84,6 +84,7 @@ COMMON_SOURCES=	$(real_topsrcdir)/x11/main.c \
 		$(real_topsrcdir)/timing.c \
 		$(real_topsrcdir)/statsave.c \
 		$(real_topsrcdir)/keystat.c \
+		$(real_topsrcdir)/debugsnapshot.c \
 		$(real_topsrcdir)/np2_thread.c \
 		$(real_topsrcdir)/np2_tickcount.c \
 		\

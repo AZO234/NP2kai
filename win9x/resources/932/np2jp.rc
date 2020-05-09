@@ -1143,6 +1143,7 @@ BEGIN
         // MENUITEM "タイマー不具合修正(&T)",      IDM_TIMERFIX
         // MENUITEM "16MB超メモリチェック省略(&S)",IDM_SKIP16MEMCHK
         MENUITEM "高速メモリチェック(&E)",      IDM_FASTMEMCHK
+        MENUITEM "デバッグ用ステートセーブ",              IDM_EN_DBSS
         MENUITEM SEPARATOR
         MENUITEM "ヘルプ(&H)...",               IDM_HELP
         MENUITEM "バージョン情報(&A)...",       IDM_ABOUT
@@ -1174,6 +1175,22 @@ BEGIN
         MENUITEM "Load 7",                      IDM_FLAGLOAD7
         MENUITEM "Load 8",                      IDM_FLAGLOAD8
         MENUITEM "Load 9",                      IDM_FLAGLOAD9
+    END
+END
+
+IDR_DEBUGSS MENU
+BEGIN
+    POPUP "デバッグ用ステートセーブ"
+    BEGIN
+        MENUITEM "Save debugss 0",                      IDM_DBSSSAVE0
+        MENUITEM "Save debugss 1",                      IDM_DBSSSAVE1
+        MENUITEM "Save debugss 2",                      IDM_DBSSSAVE2
+        MENUITEM "Save debugss 3",                      IDM_DBSSSAVE3
+        MENUITEM SEPARATOR
+        MENUITEM "Load debugss 0",                      IDM_DBSSLOAD0
+        MENUITEM "Load debugss 1",                      IDM_DBSSLOAD1
+        MENUITEM "Load debugss 2",                      IDM_DBSSLOAD2
+        MENUITEM "Load debugss 3",                      IDM_DBSSLOAD3
     END
 END
 

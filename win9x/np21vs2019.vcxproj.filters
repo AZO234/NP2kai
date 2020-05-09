@@ -2268,6 +2268,9 @@
     <ClCompile Include="..\codecnv\jisucs2.c">
       <Filter>ソース ファイル\codecnv</Filter>
     </ClCompile>
+    <ClCompile Include="..\debugsnapshot.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\calendar.h">
@@ -3313,6 +3316,9 @@
     </ClInclude>
     <ClInclude Include="sstpres.h">
       <Filter>ヘッダー ファイル\win9x</Filter>
+    </ClInclude>
+    <ClInclude Include="..\debugsnapshot.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="np2_git_version.h">
       <Filter>ヘッダー ファイル\win9x</Filter>

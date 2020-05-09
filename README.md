@@ -103,7 +103,7 @@ SDL2
 2. Run MSYS2 64bit console<br>
 3. Run follow command.<br>
 ```
-$ pacman -S git make mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL2_mixer
+$ pacman -S git make mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL2_mixer mingw-w64-x86_64-openssl
 ```
 
 #### Build
@@ -141,7 +141,7 @@ SDL1
 2. Run MSYS2 64bit console<br>
 3. Run follow command.<br>
 ```
-$ pacman -S git make mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd mingw-w64-x86_64-SDL mingw-w64-x86_64-SDL_ttf mingw-w64-x86_64-SDL_mixer
+$ pacman -S git make mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd mingw-w64-x86_64-SDL mingw-w64-x86_64-SDL_ttf mingw-w64-x86_64-SDL_mixer mingw-w64-x86_64-openssl
 ```
 
 #### Build
@@ -189,7 +189,7 @@ X11 with SDL2
 #### Install tools
 1. Install SDL2, etc.<br>
 ```
-$ sudo apt-get install automake git gtk+-2 build-essential libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev libusb-1.0-0-dev
+$ sudo apt-get install automake git gtk+-2 build-essential libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev libssl-dev libusb-1.0-0-dev
 ```
 
 #### Build
@@ -273,7 +273,7 @@ SDL2
 #### Install tools
 1. Install SDL2, etc.<br>
 ```
-$ sudo apt-get install git build-essential libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev
+$ sudo apt-get install git build-essential libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev libssl-dev
 ```
 
 #### Build
@@ -309,7 +309,7 @@ SDL1
 #### Install tools
 1. Install SDL2, etc.<br>
 ```
-$ sudo apt-get install git build-essential libsdl1.2-dev libsdl-ttf2.0-dev libsdl-mixer1.2-dev
+$ sudo apt-get install git build-essential libsdl1.2-dev libsdl-ttf2.0-dev libsdl-mixer1.2-dev libssl-dev
 ```
 
 #### Build
@@ -389,7 +389,7 @@ SDL1
 2. Install brew.<br>
 3. Execute follow command.<br>
 ```
-$ brew install sdl sdl_mixer sdl_ttf
+$ brew install sdl sdl_mixer sdl_ttf openssl
 ```
 
 #### Build
@@ -973,6 +973,19 @@ Hook to using fontrom and output text to 'hook_fontrom.txt' in BIOS directory.<b
 This function is disable at start NP2kai.<br>
 </div></details>
 
+<details><summary>
+Debug snapshot
+</summary><div>
+Debug snapshot is 'save state' plus various information for debug.<br>
+(version, SHA-1 hash of FDs and CDs, displaied image, state of machine.)
+Those information files are saved into 'debugss' directory in BIOS directory.<br>
+<br>
+Take snapshot before and after the problem with reproducibility,<br>
+This function is used for communication purposes.<br>
+(Probably will be large file, so compression with ZIP<br>
+and be careful hosting when reporting.)
+</div></details>
+
 #### MIDI sound (X11)
 
 <details><summary>
@@ -1054,6 +1067,8 @@ Next boot computer, you command from 4.<br>
 </div></details>
 
 ## Release
+- May 9, 2020
+  - add debug snapshot
 - Apr 20, 2020<br>
   - mod OpenDingux
 - Apr 19, 2020<br>

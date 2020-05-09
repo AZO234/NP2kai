@@ -306,7 +306,7 @@ uint32_t crc32_calculate(const uint8_t *data, size_t length)
 
 /* Define the circular shift macro */
 #define SHA1CircularShift(bits,word) ((((word) << (bits)) & 0xFFFFFFFF) | ((word) >> (32-(bits))))
-
+#if 0
 struct sha1_context
 {
    unsigned Message_Digest[5]; /* Message Digest (output)          */
@@ -320,9 +320,9 @@ struct sha1_context
    int Computed;               /* Is the digest computed?          */
    int Corrupted;              /* Is the message digest corruped?  */
 };
+#endif
 
-
-static void SHA1Reset(struct sha1_context *context)
+void SHA1Reset(struct sha1_context *context)
 {
    if (!context)
       return;
@@ -470,7 +470,7 @@ static void SHA1PadMessage(struct sha1_context *context)
    SHA1ProcessMessageBlock(context);
 }
 
-static int SHA1Result(struct sha1_context *context)
+int SHA1Result(struct sha1_context *context)
 {
    if (context->Corrupted)
       return 0;
@@ -484,7 +484,7 @@ static int SHA1Result(struct sha1_context *context)
    return 1;
 }
 
-static void SHA1Input(struct sha1_context *context,
+void SHA1Input(struct sha1_context *context,
       const unsigned char *message_array,
       unsigned length)
 {

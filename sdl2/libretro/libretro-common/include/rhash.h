@@ -49,6 +49,26 @@ void sha256_hash(char *out, const uint8_t *in, size_t size);
 
 int sha1_calculate(const char *path, char *result);
 
+struct sha1_context
+{
+   unsigned Message_Digest[5]; /* Message Digest (output)          */
+
+   unsigned Length_Low;        /* Message length in bits           */
+   unsigned Length_High;       /* Message length in bits           */
+
+   unsigned char Message_Block[64]; /* 512-bit message blocks      */
+   int Message_Block_Index;    /* Index into message block array   */
+
+   int Computed;               /* Is the digest computed?          */
+   int Corrupted;              /* Is the message digest corruped?  */
+};
+
+void SHA1Reset(struct sha1_context *context);
+int SHA1Result(struct sha1_context *context);
+void SHA1Input(struct sha1_context *context,
+      const unsigned char *message_array,
+      unsigned length);
+
 uint32_t djb2_calculate(const char *str);
 
 /* Any 32-bit or wider unsigned integer data type will do */

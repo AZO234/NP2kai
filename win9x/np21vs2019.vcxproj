@@ -413,6 +413,7 @@
     <ClCompile Include="..\common\textfile.c" />
     <ClCompile Include="..\common\wavefile.c" />
     <ClCompile Include="..\common\_memory.c" />
+    <ClCompile Include="..\debugsnapshot.c" />
     <ClCompile Include="..\debugsub.c" />
     <ClCompile Include="..\diskimage\cddfile.c" />
     <ClCompile Include="..\diskimage\cd\cdd_ccd.c" />
@@ -1120,6 +1121,7 @@
     <ClInclude Include="..\common\textfile.h" />
     <ClInclude Include="..\common\wavefile.h" />
     <ClInclude Include="..\common\_memory.h" />
+    <ClInclude Include="..\debugsnapshot.h" />
     <ClInclude Include="..\debugsub.h" />
     <ClInclude Include="..\diskimage\cddfile.h" />
     <ClInclude Include="..\diskimage\cd\cdd_ccd.h" />
