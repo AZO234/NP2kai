@@ -18,7 +18,7 @@ void send_libretro_key_down(UINT key);
 void send_libretro_key_up(UINT key);
 #else	/* __LIBRETRO__ */
 void sdlkbd_initialize(void);
-void sdlkbd_reset()
+void sdlkbd_reset();
 void sdlkbd_keydown(UINT key);
 void sdlkbd_keyup(UINT key);
 #endif	/* __LIBRETRO__ */

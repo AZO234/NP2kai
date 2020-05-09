@@ -97,15 +97,18 @@ short
 file_attr(const OEMCHAR *path)
 {
 	struct stat sb;
-	short attr;
+	short attr = 0;
 
 	if (stat(path, &sb) == 0) {
 		if (S_ISDIR(sb.st_mode)) {
-			return FILEATTR_DIRECTORY;
+			attr |= FILEATTR_DIRECTORY;
+			return attr;
 		}
-		attr = 0;
 		if (!(sb.st_mode & S_IWUSR)) {
 			attr |= FILEATTR_READONLY;
+		}
+		if(!attr) {
+			attr |= FILEATTR_NORMAL;
 		}
 		return attr;
 	}

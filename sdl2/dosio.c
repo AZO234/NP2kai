@@ -198,30 +198,37 @@ short file_attr(const OEMCHAR *path) {
 #if defined(__LIBRETRO__)
   FILEH fh = NULL;
 
-  if(path_is_directory(path)) {
-    OEMCHAR testpath[MAX_PATH];
+  if(path_stat(path) & RETRO_VFS_STAT_IS_VALID) {
+    if(path_is_directory(path)) {
+      OEMCHAR testpath[MAX_PATH];
 
-    attr |= FILEATTR_DIRECTORY;
-    file_cpyname(testpath, MAX_PATH, path);
-    file_catname(testpath, "/_np2test", MAX_PATH);
-    fh = file_create(path);
-    if(fh) {
-      file_close(fh);
-      file_delete(testpath);
-    } else {
-      attr |= FILEATTR_READONLY;
-    }
-  } else {
-    fh = file_open(path);
-    if(fh) {
-      file_close(fh);
-    } else {
-      fh = file_open_rb(path);
+      attr |= FILEATTR_DIRECTORY;
+      file_cpyname(testpath, path, MAX_PATH);
+      file_catname(testpath, "/_np2test", MAX_PATH);
+      fh = file_open(path);
       if(fh) {
         file_close(fh);
+        file_delete(testpath);
+      } else {
         attr |= FILEATTR_READONLY;
       }
+    } else {
+      fh = file_open(path);
+      if(fh) {
+        file_close(fh);
+      } else {
+        fh = file_open_rb(path);
+        if(fh) {
+          file_close(fh);
+          attr |= FILEATTR_READONLY;
+        }
+      }
     }
+    if(!attr) {
+      attr |= FILEATTR_NORMAL;
+    }
+  } else {
+    attr = -1;
   }
 #elif defined(_WINDOWS) && defined(OSLANG_UTF8)
   struct _stat sb;
@@ -234,6 +241,11 @@ short file_attr(const OEMCHAR *path) {
     if(!(sb.st_mode & S_IWRITE)) {
       attr |= FILEATTR_READONLY;
     }
+		if(!attr) {
+			attr |= FILEATTR_NORMAL;
+		}
+  } else {
+    attr = -1;
   }
 #else
   struct stat sb;
@@ -244,7 +256,12 @@ short file_attr(const OEMCHAR *path) {
     if(!(sb.st_mode & S_IWUSR)) {
 			attr |= FILEATTR_READONLY;
 		}
-	}
+		if(!attr) {
+			attr |= FILEATTR_NORMAL;
+		}
+  } else {
+    attr = -1;
+  }
 #endif
 
 	return(attr);

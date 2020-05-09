@@ -35,7 +35,8 @@ enum
 	FILEATTR_SYSTEM		= 0x04,		/*!< システム ファイル */
 	FILEATTR_VOLUME		= 0x08,		/*!< ヴォリューム */
 	FILEATTR_DIRECTORY	= 0x10,		/*!< ディレクトリ */
-	FILEATTR_ARCHIVE	= 0x20		/*!< アーカイブ ファイル */
+	FILEATTR_ARCHIVE	= 0x20,		/*!< アーカイブ ファイル */
+	FILEATTR_NORMAL	= 0x80
 };
 
 /**
