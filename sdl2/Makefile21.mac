@@ -78,7 +78,7 @@ endif
 OBJECTS  = $(SOURCES_CXX:.cpp=.o) $(SOURCES_C:.c=.o)
 CXXFLAGS += $(fpic) $(INCFLAGS) $(COMMONFLAGS) $(NP2DEFINE) $(NP21DEFINE) $(NP2SDLDEFINE)
 CFLAGS   += $(fpic) $(INCFLAGS) $(COMMONFLAGS) $(NP2DEFINE) $(NP21DEFINE) $(NP2SDLDEFINE)
-LDFLAGS  += $(fpic) -lm -lpthread $(SDL_LIBS) $(SDL_OTHER_LIBS)
+LDFLAGS  += $(fpic) -lm -lssl -lcrypto -lpthread $(SDL_LIBS) $(SDL_OTHER_LIBS)
 
 all: $(TARGET)
 $(TARGET): $(OBJECTS)

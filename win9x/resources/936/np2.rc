@@ -922,6 +922,7 @@ BEGIN
             MENUITEM "Alt+Enter",                   IDM_ALTENTER
             MENUITEM "Alt+F4",                      IDM_ALTF4
         END
+<<<<<<< HEAD
         MENUITEM "Åã¥Ü®É¯ß(&C)",                IDM_DISPCLOCK
         MENUITEM "Åã¥Ü¨C¬íµe­±®æ¼Æ(&F)",        IDM_DISPFRAME
         MENUITEM "¤Ï¦Vªº¹CÀ¸¥x«öÁä(&V)",        IDM_JOYX
@@ -929,6 +930,16 @@ BEGIN
         MENUITEM "§Ö³tªº·Æ¹««öÁä(&M)",          IDM_MSRAPID
         MENUITEM "¨Ï¥Î SSTP(&U)",               IDM_SSTP
          MENUITEM "&ITF work",                   IDM_ITFWORK
+=======
+        MENUITEM "˜s•¼“³‘È(&C)",                IDM_DISPCLOCK
+        MENUITEM "˜s•¼›Ÿ’^’‹(&F)",              IDM_DISPFRAME
+        MENUITEM "ŒS˜’šm˜Vˆ²“D(&V)",            IDM_JOYX
+        MENUITEM "Œ–xšm˜Vˆ²“D(&R)",            IDM_RAPID
+        MENUITEM "Œ–x‹ƒŽ—(&M)",                IDM_MSRAPID
+        MENUITEM "Žg—p SSTP(&U)",               IDM_SSTP
+        MENUITEM "&ITF work",                   IDM_ITFWORK
+        MENUITEM "Enable DebugSS",              IDM_EN_DBSS
+>>>>>>> debug snapshot
         MENUITEM SEPARATOR
         MENUITEM "»¡©ú¥DÃD(&H)...",             IDM_HELP
         MENUITEM "Ãö©ó(&A)...",                 IDM_ABOUT
@@ -963,7 +974,27 @@ BEGIN
     END
 END
 
+<<<<<<< HEAD
 IDR_FDD1MENU MENU 
+=======
+IDR_DEBUGSS MENU
+BEGIN
+    POPUP "DebugSS"
+    BEGIN
+        MENUITEM "Save debugss 0",                      IDM_DBSSSAVE0
+        MENUITEM "Save debugss 1",                      IDM_DBSSSAVE1
+        MENUITEM "Save debugss 2",                      IDM_DBSSSAVE2
+        MENUITEM "Save debugss 3",                      IDM_DBSSSAVE3
+        MENUITEM SEPARATOR
+        MENUITEM "Load debugss 0",                      IDM_DBSSLOAD0
+        MENUITEM "Load debugss 1",                      IDM_DBSSLOAD1
+        MENUITEM "Load debugss 2",                      IDM_DBSSLOAD2
+        MENUITEM "Load debugss 3",                      IDM_DBSSLOAD3
+    END
+END
+
+IDR_FDD1MENU MENU DISCARDABLE 
+>>>>>>> debug snapshot
 BEGIN
     POPUP "³nºÐ¾÷-&1"
     BEGIN

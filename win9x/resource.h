@@ -49,6 +49,7 @@
 #define IDR_SYSDEBUG                    205
 #define IDR_MAIN                        211
 #define IDR_STAT                        212
+#define IDR_DEBUGSS                     213
 #define IDR_FDD1MENU                    221
 #define IDR_FDD2MENU                    222
 #define IDR_FDD3MENU                    223
@@ -600,6 +601,14 @@
 #define IDM_FLAGLOAD7                   40258
 #define IDM_FLAGLOAD8                   40259
 #define IDM_FLAGLOAD9                   40260
+#define IDM_DBSSSAVE0                   40270
+#define IDM_DBSSSAVE1                   40271
+#define IDM_DBSSSAVE2                   40272
+#define IDM_DBSSSAVE3                   40273
+#define IDM_DBSSLOAD0                   40274
+#define IDM_DBSSLOAD1                   40275
+#define IDM_DBSSLOAD2                   40276
+#define IDM_DBSSLOAD3                   40277
 #define IDM_FDD1OPEN                    40301
 #define IDM_FDD2OPEN                    40302
 #define IDM_FDD3OPEN                    40303
@@ -775,6 +784,7 @@
 #define IDM_SYSKHOOK                    40729
 #define IDM_HF_ENABLE                   40730
 #define IDM_HF_ADDITIONAL               40731
+#define IDM_EN_DBSS                     40732
 #define IDM_IDEOPT                      40800
 #define IDM_CLOSE                       41001
 #define IDM_TOOL_SKIN                   41101

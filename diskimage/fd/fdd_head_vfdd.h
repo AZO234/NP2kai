@@ -1,3 +1,6 @@
+#ifndef _FDD_HEAD_VFDD_H_
+#define _FDD_HEAD_VFDD_H_
+
 enum {
 	VFDD_TRKMAX		= 160,
 	VFDD_SECMAX		= 26,
@@ -88,3 +91,4 @@ typedef struct {
 #pragma pack(pop)
 #endif
 
+#endif  // _FDD_HEAD_VFDD_H_

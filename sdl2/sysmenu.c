@@ -37,6 +37,7 @@
 #include	"wab/wabbmpsave.h"
 #endif
 #include	"font/font.h"
+#include	"debugsnapshot.h"
 
 static UINT bmpno = 0;
 
@@ -145,6 +146,38 @@ static void sys_cmd(MENUID id) {
 			flagload("s09", "Status Load", TRUE);
 			break;
 #endif	/* SUPPORT_STATSAVE */
+
+		case MID_SAVEDBSS0:
+			debugsnapshot_save(0);
+			break;
+
+		case MID_SAVEDBSS1:
+			debugsnapshot_save(1);
+			break;
+
+		case MID_SAVEDBSS2:
+			debugsnapshot_save(2);
+			break;
+
+		case MID_SAVEDBSS3:
+			debugsnapshot_save(3);
+			break;
+
+		case MID_LOADDBSS0:
+			debugsnapshot_load(0);
+			break;
+
+		case MID_LOADDBSS1:
+			debugsnapshot_load(1);
+			break;
+
+		case MID_LOADDBSS2:
+			debugsnapshot_load(2);
+			break;
+
+		case MID_LOADDBSS3:
+			debugsnapshot_load(3);
+			break;
 
 		case MID_FDD1OPEN:
 			filesel_fdd(0);
@@ -845,6 +878,12 @@ static void sys_cmd(MENUID id) {
 			break;
 #endif
 
+		case MID_EN_DBSS:
+			np2cfg.debugss ^= 1;
+			menusys_sethide(MID_DBSS, np2cfg.debugss ? 0 : 1);
+			update |= SYS_UPDATECFG;
+			break;
+
 		case MID_ABOUT:
 			menudlg_create(DLGABOUT_WIDTH, DLGABOUT_HEIGHT,
 											(char *)mstr_about, dlgabout_cmd);
@@ -993,6 +1032,8 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 	menusys_setcheck(MID_FASTMEMCHK, (np2cfg.memcheckspeed > 1));
 #endif
+	menusys_setcheck(MID_EN_DBSS, np2cfg.debugss);
+	menusys_sethide(MID_DBSS, np2cfg.debugss ? 0 : 1);
 	menusys_setcheck(MID_HF_ENABLE, (hf_enable == 1));
 	return(menusys_open(x, y));
 }

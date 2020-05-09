@@ -31,6 +31,7 @@ SOURCES_C :=	$(NP2_PATH)/calendar.c \
 	$(NP2_PATH)/pccore.c \
 	$(NP2_PATH)/statsave.c \
 	$(NP2_PATH)/timing.c \
+	$(NP2_PATH)/debugsnapshot.c \
 	$(wildcard $(NP2_PATH)/bios/*.c) \
 	$(wildcard $(NP2_PATH)/cbus/*.c) \
 	$(wildcard $(NP2_PATH)/codecnv/*.c) \

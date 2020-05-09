@@ -301,6 +301,10 @@ void xmenu_initialize(HMENU hMenu)
 		(void)menu_addmenubyid(hMenu, IDM_SSTP, IDR_CPUSAVE16);
 #endif	//	defined(SUPPORT_PC9821)
 	}
+
+	if (np2cfg.debugss) {
+		menu_addmenures(hMenu, GetMenuItemCount(hMenu) - 1, IDR_DEBUGSS, FALSE);
+	}
 }
 
 /**
@@ -489,6 +493,7 @@ void xmenu_update(HMENU hMenu)
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 	CheckMenuItem(hMenu, IDM_FASTMEMCHK, MF_BYCOMMAND | MFCHECK(np2cfg.memcheckspeed != 1));
 #endif
+	CheckMenuItem(hMenu, IDM_EN_DBSS, MF_BYCOMMAND | MFCHECK(np2cfg.debugss));
 	
 #if !defined(SUPPORT_ASYNC_CPU)
 	EnableMenuItem(hMenu, IDM_ASYNCCPU, MF_GRAYED);

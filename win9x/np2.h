@@ -1,3 +1,5 @@
+#ifndef _NP2_H_
+#define _NP2_H_
 
 #if !defined(SUPPORT_PC9821)
 #define PROJECTNAME			"Neko Project II kai"
@@ -9,6 +11,10 @@
 #define PROJECTSUBNAME		""
 #else
 #define PROJECTSUBNAME		" x64"
+#endif
+
+#if defined(__cplusplus)
+extern "C" {
 #endif
 
 typedef struct {
@@ -182,3 +188,8 @@ void np2active_renewal(void);
 void unloadNP2INI();
 void loadNP2INI(const OEMCHAR *fname);
 
+#if defined(__cplusplus)
+}
+#endif
+
+#endif  // _NP2_H_
