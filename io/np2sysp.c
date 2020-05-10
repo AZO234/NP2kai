@@ -159,7 +159,7 @@ static void np2sysp_changeclock(const void *arg1, long arg2) {
 static void np2sysp_cngclkmul(const void *arg1, long arg2) {
 
 	OEMCHAR	str[64];
-	UINT8 oldclockmul = pccore.multiple;
+	UINT8 oldclockmul = pccore.maxmultiple;
 	UINT8 newclockmul = (np2sysp.outval >> 24);
 	
 	if(newclockmul > 0) {
@@ -180,7 +180,7 @@ static void np2sysp_cngclkmul(const void *arg1, long arg2) {
 		gdc_updateclock();
 	}
 
-	OEMSNPRINTF(str, sizeof(str), OEMTEXT("%d"), pccore.multiple);
+	OEMSPRINTF(str, OEMTEXT("%d"), pccore.maxmultiple);
 	setoutstr(str);
 	(void)arg1;
 	(void)arg2;

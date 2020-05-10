@@ -1054,6 +1054,8 @@ Next boot computer, you command from 4.<br>
 </div></details>
 
 ## Release
+- May 10, 2020<br>
+  - merge NP21/W rev.73
 - Apr 20, 2020<br>
   - mod OpenDingux
 - Apr 19, 2020<br>
@@ -1109,8 +1111,8 @@ Next boot computer, you command from 4.<br>
 - Jan 15, 2020<br>
   - Support again SDL1<br>
   - fix bool
-- Dec 10, 2019<br>
-  - Merge NP21/W 0.86 rev.69 (rev.21)<br>
+- Dec 10, 2019 (rev.21)<br>
+  - Merge NP21/W 0.86 rev.69<br>
     - HAXM
 - Nov 19, 2019<br>
   - fix Android makefile
@@ -1125,8 +1127,8 @@ Next boot computer, you command from 4.<br>
     - fix SUPPORT_LARGE_HDD
     - WinNT4/200 IDE Fix
   - fix Makefile21
-- Jul 14, 2019<br>
-  - Merge NP21/W 0.86 rev.62-63 (rev.20)<br>
+- Jul 14, 2019 (rev.20)<br>
+  - Merge NP21/W 0.86 rev.62-63<br>
 - Jun 23, 2019<br>
   - modify default cfg/BIOS location (np2kai or 'np21kai')<br>
 - Jun 21, 2019<br>

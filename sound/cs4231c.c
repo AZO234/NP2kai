@@ -204,6 +204,7 @@ void cs4231_datasend(REG8 dat) {
 
 // DMA再生開始・終了・中断時に呼ばれる（つもり）
 REG8 DMACCALL cs4231dmafunc(REG8 func) {
+	DMACH	dmach;
 	SINT32	cnt;
 	switch(func) {
 		case DMAEXT_START:
@@ -211,6 +212,10 @@ REG8 DMACCALL cs4231dmafunc(REG8 func) {
 				int playcount = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)) * cs4231_playcountshift[cs4231.reg.datafmt >> 4]; // PI割り込みを発生させるサンプル数(Playback Base register) * サンプルあたりのバイト数
 				// DMA読み取り数カウンタを初期化
 				cs4231.totalsample = 0; 
+
+				// DMA読み取り位置を戻す
+				dmach = dmac.dmach + cs4231.dmach;
+				dmach->adrs.d = dmach->startaddr;
 
 				// DMA読み取り処理開始(NEVENTセット)
 				//nevent_setbyms(NEVENT_CS4231, CS4231_MAXDMAREADBYTES * 1000 / cs4231cfg.rate, cs4231_dma, NEVENT_ABSOLUTE);

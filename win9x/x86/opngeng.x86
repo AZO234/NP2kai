@@ -214,8 +214,8 @@ section .text
 				mov		ebp, edx
 				mov		ebx, [esi + opngen_t.calcremain]
 og_fmout_st:	mov		eax, FMDIV_ENT
-				and		dword [esp + OPNV_SAMPL], byte 0
-				and		dword [esp + OPNV_SAMPR], byte 0
+				and		dword [esp + OPN_SAMPL], byte 0
+				and		dword [esp + OPN_SAMPR], byte 0
 				sub		ebx, eax
 				jnc		near og_nextsamp
 				lea		eax, [eax + ebx]

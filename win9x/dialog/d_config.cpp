@@ -642,7 +642,7 @@ int CConfigureDlg::SetCpuTypeIndex(UINT index){
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K7_ATHLON_XP);
 		np2cfg.cpu_brandid = CPU_BRAND_ID_AMD_K7_ATHLON_XP;
 		break;
-	case 255: // 全機能使用可能.
+	case 255: // 全機能使用可
 		np2cfg.cpu_family = 0;
 		np2cfg.cpu_model = 0;
 		np2cfg.cpu_stepping = 0;

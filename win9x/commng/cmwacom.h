@@ -157,6 +157,7 @@ private:
 	bool Initialize(HWND hWnd);
 	
 	bool SendDataToReadBuffer(const char *data, int len);
+	bool SendDataToReadBuffer(const UINT8 *data, int len);
 };
 
 #endif

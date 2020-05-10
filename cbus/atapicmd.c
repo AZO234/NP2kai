@@ -571,6 +571,8 @@ void atapi_dataread(IDEDRV drv) {
 	if(np2cfg.useasynccd){
 		if(atapi_thread){
 			atapi_thread_drv = drv;
+			drv->status &= ‾IDESTAT_DRQ;
+			SleepEx(0, TRUE); // キューに溜まっている物を捨てる
 			ResumeThread(atapi_thread);
 			SleepEx(1, TRUE);
 		}else{

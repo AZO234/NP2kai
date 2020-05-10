@@ -17,9 +17,9 @@
 
 typedef CComWacom *CMWACOM;
 
-const CHAR cmwacom_RData[] = "~RE202C900,002,02,1270,1270\r";
-const CHAR cmwacom_ModelData[] = "~#KT-0405-R00 V1.3-2\r";
-const CHAR cmwacom_CData[] = "~C06400,04800\r";
+const char cmwacom_RData[] = "‾RE202C900,002,02,1270,1270¥r";
+const char cmwacom_ModelData[] = "‾#KT-0405-R00 V1.3-2¥r";
+const char cmwacom_CData[] = "‾C06400,04800¥r";
 
 #define TABLET_BASERASOLUTION	1000
 
@@ -199,11 +199,6 @@ CComWacom::~CComWacom()
  */
 bool CComWacom::Initialize(HWND hWnd)
 {
-	LOGCONTEXTA lcMine;
-	AXIS axis;
-	AXIS pressAxis;
-	AXIS rotAxis[3] = {0};
-	
 	if(!g_wacom_initialized){
 		return false; // 初期化されていない
 	}
@@ -256,7 +251,6 @@ void CComWacom::InitializeTabletDevice(){
 	}
 	
 	if(m_exclusivemode){
-		FIX32 axRes;
 		gpWTInfoA(WTI_DEVICES, DVC_X, &axis);
 		m_minX = axis.axMin;
 		m_maxX = axis.axMax; /* Ｘ方向の最大座標 */
@@ -488,7 +482,7 @@ bool CComWacom::HandlePacketMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 				//pktXtmp = m_rawX - pt.x;
 				//pktYtmp = m_rawY - pt.y;
 				if(pktXtmp < 0 || pktYtmp < 0 || pktXtmp > tablet_resX || pktYtmp > tablet_resY){
-					// 範囲外は移動のみ可能.
+					// 範囲外は移動のみ可
 					m_rawButtons = m_rawButtons & 0x4;
 					pktPressure = 0;
 					proximityflag = true;
@@ -596,6 +590,9 @@ void CComWacom::SetNCControl(bool enable){
 }
 
 bool CComWacom::SendDataToReadBuffer(const char *data, int len){
+	return SendDataToReadBuffer((const UINT8 *)data, len);
+}
+bool CComWacom::SendDataToReadBuffer(const UINT8 *data, int len){
 	int bufused = (m_sBuffer_wpos - m_sBuffer_rpos) & (WACOM_BUFFER - 1);
 	if(bufused + len >= WACOM_BUFFER){
 #if defined(SUPPORT_RS232C_FIFO)
@@ -673,7 +670,6 @@ UINT CComWacom::Read(UINT8* pData)
  */
 UINT CComWacom::Write(UINT8 cData)
 {
-	char buf[1024];
 	CMWACOM wtab = this;
 
 	if(m_cmdbuf_pos == WACOM_CMDBUFFER){
@@ -729,7 +725,7 @@ UINT CComWacom::Write(UINT8 cData)
 				m_config.start = true; // Start sending coordinates
 			}else if(strncmp(m_cmdbuf, "@ST", 2)==0){
 				// Start sending coordinates & get current position
-				char data[] = {0xA0};
+				UINT8 data[] = {0xA0};
 				if(m_lastdatalen > 0){
 					char buf[10];
 					memcpy(buf, m_lastdata, 7);

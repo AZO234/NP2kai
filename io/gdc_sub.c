@@ -209,6 +209,15 @@ void gdcsub_vect0(UINT32 csrw, const GDCVECT *vect, REG16 pat, REG8 ope) {
 	(void)ope;
 }
 
+void gdcsub_vectp(UINT32 csrw, const GDCVECT *vect, REG16 pat, REG8 ope) {
+
+	_GDCPSET	pset;
+
+	gdcpset_prepare(&pset, csrw, pat, ope);
+	gdcpset(&pset, pset.x, pset.y);
+	calc_gdcslavewait(pset.dots);
+}
+
 void gdcsub_vectl(UINT32 csrw, const GDCVECT *vect, REG16 pat, REG8 ope) {
 
 	_GDCPSET	pset;

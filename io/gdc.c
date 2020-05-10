@@ -196,6 +196,9 @@ const GDCVECT	*vect;
 	textw = LOADINTELWORD(gdc.s.para + GDC_TEXTW);
 	ope = gdc.s.para[GDC_WRITE];
 
+	if (!(vect->ope & 0x78)) {
+		gdcsub_vectp(csrw, vect, textw, ope); // Single Dot Writing?
+    }
 	if (vect->ope & 0x08) {
 		gdcsub_vectl(csrw, vect, textw, ope);
 	}
@@ -223,7 +226,10 @@ const GDCVECT	*vect;
 	textw = gdc.s.para[GDC_TEXTW + 7];
 	textw = (textw << 8) + textw;
 	ope = gdc.s.para[GDC_WRITE];
-
+	
+	if (!(vect->ope & 0x78)) {
+		gdcsub_vectp(csrw, vect, textw, ope); // Single Dot Writing?
+    }
 	if (vect->ope & 0x08) {		// undocumented
 		gdcsub_vectl(csrw, vect, textw, ope);
 	}

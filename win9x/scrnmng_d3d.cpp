@@ -45,6 +45,8 @@
 
 #define CREATEDEVICE_RETRY_MAX	3
 
+static int nvidia_fixflag = 0;
+
 static int devicelostflag = 0;
 static int req_enter_criticalsection = 0;
 
@@ -652,12 +654,13 @@ static BOOL CALLBACK monitorInfoEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRE
 typedef IDirect3D9 * (WINAPI *TEST_DIRECT3DCREATE9)(UINT SDKVersion);
 
 BRESULT scrnmngD3D_check() {
-	// Direct3Dが使用できるかチェック
+	// Direct3Dが使用できるかチェック + ベンダ確認
 	HMODULE hModule;
 	TEST_DIRECT3DCREATE9 fnd3dcreate9;
 	LPDIRECT3D9				test_d3d;
 	D3DPRESENT_PARAMETERS	test_d3dparam;
 	LPDIRECT3DDEVICE9		test_d3ddev;
+	D3DADAPTER_IDENTIFIER9 identifier;
 
 	hModule = LoadLibrary(_T("d3d9.dll"));
 	if(!hModule){
@@ -671,6 +674,13 @@ BRESULT scrnmngD3D_check() {
 	if(!(test_d3d = Direct3DCreate9(D3D_SDK_VERSION))){
 		goto scre_err2;
 	}
+	if(test_d3d->GetAdapterIdentifier(D3DADAPTER_DEFAULT, 0, &identifier) == D3D_OK){
+		if(identifier.VendorId == 0x10DE){
+			// NVIDIA Adapter
+			nvidia_fixflag = 1;
+		}
+	}
+
 	ZeroMemory(&test_d3dparam, sizeof(test_d3dparam));
 	test_d3dparam.BackBufferWidth = 640;
 	test_d3dparam.BackBufferHeight = 480;
@@ -1379,6 +1389,7 @@ void scrnmngD3D_update(void) {
 	RECT	*scrn;
 	HRESULT	r;
 	D3DTEXTUREFILTERTYPE d3dtexf;
+	int		scrnoffset;
 
 	if(current_d3d_imode == D3D_IMODE_NEAREST_NEIGHBOR){
 		d3dtexf = D3DTEXF_POINT;
@@ -1422,32 +1433,36 @@ void scrnmngD3D_update(void) {
 					// 転送時の1pxズレ対策
 					rectsrcbuf = *rect;
 					rectdstbuf = rectbuf;
-					rectsrcbuf.left = rectsrcbuf.right - 1;
-					rectdstbuf.left = rectdstbuf.right - ((1 << (d3d.backsurf2mul-1)) >> 1);
-					rectdstbuf.bottom -= ((1 << (d3d.backsurf2mul-1)) >> 1);
-					r = d3d.d3ddev->StretchRect(d3d.backsurf, &rectsrcbuf, d3d.backsurf2, &rectdstbuf, D3DTEXF_POINT); // 右端
-					rectsrcbuf = *rect;
-					rectdstbuf = rectbuf;
-					rectsrcbuf.top = rectsrcbuf.bottom - 1;
-					rectdstbuf.top = rectdstbuf.bottom - ((1 << (d3d.backsurf2mul-1)) >> 1);
-					rectdstbuf.right -= ((1 << (d3d.backsurf2mul-1)) >> 1);
-					r = d3d.d3ddev->StretchRect(d3d.backsurf, &rectsrcbuf, d3d.backsurf2, &rectdstbuf, D3DTEXF_POINT); // 下端
-					rectsrcbuf = *rect;
-					rectdstbuf = rectbuf;
-					rectsrcbuf.left = rectsrcbuf.right - 1;
-					rectdstbuf.left = rectdstbuf.right - ((1 << (d3d.backsurf2mul-1)) >> 1);
-					rectsrcbuf.top = rectsrcbuf.bottom - 1;
-					rectdstbuf.top = rectdstbuf.bottom - ((1 << (d3d.backsurf2mul-1)) >> 1);
-					r = d3d.d3ddev->StretchRect(d3d.backsurf, &rectsrcbuf, d3d.backsurf2, &rectdstbuf, D3DTEXF_POINT); // 右下隅
-					rectsrcbuf = *rect;
-					rectdstbuf = rectbuf;
-					rectdstbuf.right -= ((1 << (d3d.backsurf2mul-1)) >> 1);
-					rectdstbuf.bottom -= ((1 << (d3d.backsurf2mul-1)) >> 1);
+					if(nvidia_fixflag){
+						rectsrcbuf.left = rectsrcbuf.right - 1;
+						rectdstbuf.left = rectdstbuf.right - ((1 << (d3d.backsurf2mul-1)) >> 1);
+						rectdstbuf.bottom -= ((1 << (d3d.backsurf2mul-1)) >> 1);
+						r = d3d.d3ddev->StretchRect(d3d.backsurf, &rectsrcbuf, d3d.backsurf2, &rectdstbuf, D3DTEXF_POINT); // 右端
+						rectsrcbuf = *rect;
+						rectdstbuf = rectbuf;
+						rectsrcbuf.top = rectsrcbuf.bottom - 1;
+						rectdstbuf.top = rectdstbuf.bottom - ((1 << (d3d.backsurf2mul-1)) >> 1);
+						rectdstbuf.right -= ((1 << (d3d.backsurf2mul-1)) >> 1);
+						r = d3d.d3ddev->StretchRect(d3d.backsurf, &rectsrcbuf, d3d.backsurf2, &rectdstbuf, D3DTEXF_POINT); // 下端
+						rectsrcbuf = *rect;
+						rectdstbuf = rectbuf;
+						rectsrcbuf.left = rectsrcbuf.right - 1;
+						rectdstbuf.left = rectdstbuf.right - ((1 << (d3d.backsurf2mul-1)) >> 1);
+						rectsrcbuf.top = rectsrcbuf.bottom - 1;
+						rectdstbuf.top = rectdstbuf.bottom - ((1 << (d3d.backsurf2mul-1)) >> 1);
+						r = d3d.d3ddev->StretchRect(d3d.backsurf, &rectsrcbuf, d3d.backsurf2, &rectdstbuf, D3DTEXF_POINT); // 右下隅
+						rectsrcbuf = *rect;
+						rectdstbuf = rectbuf;
+						rectdstbuf.right -= ((1 << (d3d.backsurf2mul-1)) >> 1);
+						rectdstbuf.bottom -= ((1 << (d3d.backsurf2mul-1)) >> 1);
+					}
 					r = d3d.d3ddev->StretchRect(d3d.backsurf, &rectsrcbuf, d3d.backsurf2, &rectdstbuf, D3DTEXF_POINT);
 					r = d3d.d3ddev->StretchRect(d3d.backsurf2, &rectbuf, d3d.d3dbacksurf, scrn, D3DTEXF_LINEAR);
 				}else{
 					r = d3d.d3ddev->StretchRect(d3d.backsurf, rect, d3d.d3dbacksurf, scrn, D3DTEXF_LINEAR);
 				}
+				rect->right--; // なぞの調整
+				scrn->left += scrnoffset; // なぞの調整
 			}
 			else {
 				if (scrnmng.allflash) {
@@ -1469,27 +1484,29 @@ void scrnmngD3D_update(void) {
 					// 転送時の1pxズレ対策
 					rectsrcbuf = d3d.rect;
 					rectdstbuf = rectbuf;
-					rectsrcbuf.left = rectsrcbuf.right - 1;
-					rectdstbuf.left = rectdstbuf.right - ((1 << (d3d.backsurf2mul-1)) >> 1);
-					rectdstbuf.bottom -= ((1 << (d3d.backsurf2mul-1)) >> 1);
-					r = d3d.d3ddev->StretchRect(d3d.backsurf, &rectsrcbuf, d3d.backsurf2, &rectdstbuf, D3DTEXF_POINT); // 右端
-					rectsrcbuf = d3d.rect;
-					rectdstbuf = rectbuf;
-					rectsrcbuf.top = rectsrcbuf.bottom - 1;
-					rectdstbuf.top = rectdstbuf.bottom - ((1 << (d3d.backsurf2mul-1)) >> 1);
-					rectdstbuf.right -= ((1 << (d3d.backsurf2mul-1)) >> 1);
-					r = d3d.d3ddev->StretchRect(d3d.backsurf, &rectsrcbuf, d3d.backsurf2, &rectdstbuf, D3DTEXF_POINT); // 下端
-					rectsrcbuf = d3d.rect;
-					rectdstbuf = rectbuf;
-					rectsrcbuf.left = rectsrcbuf.right - 1;
-					rectdstbuf.left = rectdstbuf.right - ((1 << (d3d.backsurf2mul-1)) >> 1);
-					rectsrcbuf.top = rectsrcbuf.bottom - 1;
-					rectdstbuf.top = rectdstbuf.bottom - ((1 << (d3d.backsurf2mul-1)) >> 1);
-					r = d3d.d3ddev->StretchRect(d3d.backsurf, &rectsrcbuf, d3d.backsurf2, &rectdstbuf, D3DTEXF_POINT); // 右下隅
-					rectsrcbuf = d3d.rect;
-					rectdstbuf = rectbuf;
-					rectdstbuf.right -= ((1 << (d3d.backsurf2mul-1)) >> 1);
-					rectdstbuf.bottom -= ((1 << (d3d.backsurf2mul-1)) >> 1);
+					if(nvidia_fixflag){
+						rectsrcbuf.left = rectsrcbuf.right - 1;
+						rectdstbuf.left = rectdstbuf.right - ((1 << (d3d.backsurf2mul-1)) >> 1);
+						rectdstbuf.bottom -= ((1 << (d3d.backsurf2mul-1)) >> 1);
+						r = d3d.d3ddev->StretchRect(d3d.backsurf, &rectsrcbuf, d3d.backsurf2, &rectdstbuf, D3DTEXF_POINT); // 右端
+						rectsrcbuf = d3d.rect;
+						rectdstbuf = rectbuf;
+						rectsrcbuf.top = rectsrcbuf.bottom - 1;
+						rectdstbuf.top = rectdstbuf.bottom - ((1 << (d3d.backsurf2mul-1)) >> 1);
+						rectdstbuf.right -= ((1 << (d3d.backsurf2mul-1)) >> 1);
+						r = d3d.d3ddev->StretchRect(d3d.backsurf, &rectsrcbuf, d3d.backsurf2, &rectdstbuf, D3DTEXF_POINT); // 下端
+						rectsrcbuf = d3d.rect;
+						rectdstbuf = rectbuf;
+						rectsrcbuf.left = rectsrcbuf.right - 1;
+						rectdstbuf.left = rectdstbuf.right - ((1 << (d3d.backsurf2mul-1)) >> 1);
+						rectsrcbuf.top = rectsrcbuf.bottom - 1;
+						rectdstbuf.top = rectdstbuf.bottom - ((1 << (d3d.backsurf2mul-1)) >> 1);
+						r = d3d.d3ddev->StretchRect(d3d.backsurf, &rectsrcbuf, d3d.backsurf2, &rectdstbuf, D3DTEXF_POINT); // 右下隅
+						rectsrcbuf = d3d.rect;
+						rectdstbuf = rectbuf;
+						rectdstbuf.right -= ((1 << (d3d.backsurf2mul-1)) >> 1);
+						rectdstbuf.bottom -= ((1 << (d3d.backsurf2mul-1)) >> 1);
+					}
 					r = d3d.d3ddev->StretchRect(d3d.backsurf, &rectsrcbuf, d3d.backsurf2, &rectdstbuf, D3DTEXF_POINT);
 					r = d3d.d3ddev->StretchRect(d3d.backsurf2, &rectbuf, d3d.d3dbacksurf, &dst, D3DTEXF_LINEAR);
 				}else{
@@ -1516,8 +1533,20 @@ void scrnmngD3D_update(void) {
 					rect = &d3d.rectclip;
 					scrn = &d3d.scrnclip;
 				}
-
+				scrnoffset = (scrn->right - scrn->left)/(rect->right - rect->left);
+				if(nvidia_fixflag){
+					rect->right++; // なぞの調整
+					scrn->left -= scrnoffset; // なぞの調整
+					scrn->right -= ((1 << (scrnoffset-1)) >> 1);
+					scrn->bottom -= ((1 << (scrnoffset-1)) >> 1);
+				}
 				r = d3d.d3ddev->StretchRect(d3d.backsurf, rect, d3d.d3dbacksurf, scrn, d3dtexf);
+				if(nvidia_fixflag){
+					rect->right--; // なぞの調整
+					scrn->left += scrnoffset; // なぞの調整
+					scrn->right += ((1 << (scrnoffset-1)) >> 1);
+					scrn->bottom += ((1 << (scrnoffset-1)) >> 1);
+				}
 			}
 			else {
 				if (scrnmng.allflash) {

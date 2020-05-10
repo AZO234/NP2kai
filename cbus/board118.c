@@ -469,7 +469,7 @@ static REG8 IOINPCALL ym_i148b(UINT port) //  ???
 
 /*********** PC-9801-118 config I/O ? ***********/
 
-REG8 sound118;
+REG8 sound118 = 0x05;
 static void IOOUTCALL csctrl_o148e(UINT port, REG8 dat) {
 	TRACEOUT(("write %x %x",port,dat));
 	sound118 = dat;
