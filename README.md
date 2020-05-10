@@ -1054,7 +1054,7 @@ Next boot computer, you command from 4.<br>
 </div></details>
 
 ## Release
-- May 10, 2020<br>
+- May 10, 2020 (rev.22)<br>
   - merge NP21/W rev.73
 - Apr 20, 2020<br>
   - mod OpenDingux

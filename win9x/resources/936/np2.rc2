@@ -25,8 +25,8 @@ IDR_MANIFEST            IRT_MANIFEST MOVEABLE PURE "..\\np2kai.mnf"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,8,6,21
- PRODUCTVERSION 0,8,6,21
+ FILEVERSION 0,86,0,22
+ PRODUCTVERSION 0,86,0,22
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -39,24 +39,24 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "080403a8"
+        BLOCK "040403b6"
         BEGIN
             VALUE "CompanyName", "\0"
             VALUE "FileVersion", "0, 8, 6, 21\0"
-            VALUE "LegalCopyright", "íGòüèÉêIåAã—\0"
+            VALUE "LegalCopyright", "øﬂ§k§h∂}µo∂§\0"
 
             VALUE "ProductVersion", "0, 8, 6, 21\0"
 #ifdef _USRDLL
-            VALUE "FileDescription", "PC-98x1òTëoí°í‡ìıúiö≤ó¬é¸\0"
-            VALUE "ProductName", "Neko Project II kai úiö≤ó¬é¸\0"
-            VALUE "InternalName", "np2kai_936\0"
-            VALUE "OriginalFilename", "np2kai_936.dll\0"
+            VALUE "FileDescription", "PC-98x1 ®t¶Cº“¿¿æπ∏Í∑Ω¿…\0"
+            VALUE "ProductName", "Neko Project II kai ∏Í∑Ω¿…\0"
+            VALUE "InternalName", "np2kai_950\0"
+            VALUE "OriginalFilename", "np2kai_950.dll\0"
 #else
 #ifdef SUPPORT_PC9821
-            VALUE "FileDescription", "PC-9821òTëoí°í‡ìı\0"
+            VALUE "FileDescription", "PC-9821 ®t¶Cº“¿¿æπ\0"
             VALUE "ProductName", "Neko Project 21 kai\0"
 #else
-            VALUE "FileDescription", "PC-9801òTëoí°í‡ìı\0"
+            VALUE "FileDescription", "PC-9801 ®t¶Cº“¿¿æπ\0"
             VALUE "ProductName", "Neko Project II kai\0"
 #endif
 #ifdef SUPPORT_PC9821
@@ -71,7 +71,7 @@ BEGIN
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x804, 936
+        VALUE "Translation", 0x404, 950
     END
 END
 

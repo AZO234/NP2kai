@@ -4,9 +4,9 @@
  */
 
 #if defined(SUPPORT_IA32_HAXM)
-#define	NP2VER_CORE			"0.86 rev.21 HAXM"
+#define	NP2VER_CORE			"0.86 HAXM"
 #else
-#define	NP2VER_CORE			"0.86 rev.21"
+#define	NP2VER_CORE			"0.86"
 #endif
 #if defined(_MSC_VER) && !defined(__LIBRETRO__)
 #include "np2_git_version.h"
