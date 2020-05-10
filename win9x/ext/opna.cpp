@@ -783,7 +783,7 @@ int opna_sfsave(PCOPNA opna, STFLAGH sfh, const SFENTRY *tbl)
 		ret |= statflag_write(sfh, &opna->adpcm, sizeof(opna->adpcm));
 	}
 #if defined(SUPPORT_FMGEN)
-	statflag_write(sfh, &opna->usefmgen, sizeof(opna->usefmgen));
+	ret |= statflag_write(sfh, &opna->usefmgen, sizeof(opna->usefmgen));
 	if(opna->usefmgen) {
 		void* buf;
 
