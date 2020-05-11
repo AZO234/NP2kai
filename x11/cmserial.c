@@ -62,13 +62,13 @@ serialread(COMMNG self, UINT8 *data)
 
 	rv = ioctl(serial->hdl, FIONREAD, &bytes);
 	if (rv == 0 && bytes > 0) {
-		VERBOSE(("serialread: bytes = %d", bytes));
+//		VERBOSE(("serialread: bytes = %d", bytes));
 		size = read(serial->hdl, data, 1);
 		if (size == 1) {
-			VERBOSE(("serialread: data = %02x", *data));
+//			VERBOSE(("serialread: data = %02x", *data));
 			return 1;
 		}
-		VERBOSE(("serialread: read failure (%s)", strerror(errno)));
+//		VERBOSE(("serialread: read failure (%s)", strerror(errno)));
 	}
 	return 0;
 }
@@ -87,11 +87,11 @@ serialwrite(COMMNG self, UINT8 data)
 	self->lastdatatime = 0;
 #endif
 	if (size == 1) {
-		VERBOSE(("serialwrite: data = %02x", data));
+//		VERBOSE(("serialwrite: data = %02x", data));
 		return 1;
 	}
 	self->lastdatafail = 1;
-	VERBOSE(("serialwrite: write failure (%s)", strerror(errno)));
+//	VERBOSE(("serialwrite: write failure (%s)", strerror(errno)));
 	return 0;
 }
 
@@ -104,11 +104,11 @@ serialwriteretry(COMMNG self)
 	if(self->lastdatafail) {
 		size = write(serial->hdl, &self->lastdata, 1);
 		if (size == 0) {
-			VERBOSE(("serialwriteretry: write failure (%s)", strerror(errno)));
+//			VERBOSE(("serialwriteretry: write failure (%s)", strerror(errno)));
 			return 0;
 		}
 		self->lastdatafail = 0;
-		VERBOSE(("serialwriteretry: data = %02x", data));
+//		VERBOSE(("serialwriteretry: data = %02x", data));
 	}
 	return 1;
 }
@@ -128,14 +128,14 @@ serialgetstat(COMMNG self)
 
 	rv = ioctl(serial->hdl, TIOCMGET, &status);
 	if (rv < 0) {
-		VERBOSE(("serialgetstat: ioctl: %s", strerror(errno)));
+//		VERBOSE(("serialgetstat: ioctl: %s", strerror(errno)));
 		return 0x20;
 	}
 	if (!(status & TIOCM_DSR)) {
-		VERBOSE(("serialgetstat: DSR is disable"));
+//		VERBOSE(("serialgetstat: DSR is disable"));
 		return 0x20;
 	}
-	VERBOSE(("serialgetstat: DSR is enable"));
+//	VERBOSE(("serialgetstat: DSR is enable"));
 	return 0x00;
 }
 
@@ -345,27 +345,27 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 		convert_np2tocm(port, &param, &speed);
 	}
 
-	VERBOSE(("cmserial_create: port = %d, param = %02x, speed = %d", port, param, speed));
+//	VERBOSE(("cmserial_create: port = %d, param = %02x, speed = %d", port, param, speed));
 
 	if (port == 0 || port > MAX_SERIAL_PORT_NUM) {
-		VERBOSE(("cmserial_create: port is invalid"));
+//		VERBOSE(("cmserial_create: port is invalid"));
 		goto cscre_failure;
 	}
 
 	port--;
 	if (np2oscfg.com[port].mout[0] == '\0') {
-		VERBOSE(("cmserial_create: com device file is disable"));
+//		VERBOSE(("cmserial_create: com device file is disable"));
 		goto cscre_failure;
 	}
 
 	hdl = open(np2oscfg.com[port].mout, O_RDWR | O_NOCTTY | O_NDELAY);
 	if (hdl == -1) {
-		VERBOSE(("cmserial_create: open failure %s, %s", np2oscfg.com[port].mout, strerror(errno)));
+//		VERBOSE(("cmserial_create: open failure %s, %s", np2oscfg.com[port].mout, strerror(errno)));
 		goto cscre_failure;
 	}
 
 	if (!isatty(hdl)) {
-		VERBOSE(("cmserial_create: not terminal file descriptor (%s)", strerror(errno)));
+//		VERBOSE(("cmserial_create: not terminal file descriptor (%s)", strerror(errno)));
 		goto cscre_close;
 	}
 
@@ -376,12 +376,12 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 	/* baud rates */
 	for (i = 0; i < NELEMENTS(cmserial_speed); i++) {
 		if (cmserial_speed[i] >= speed) {
-			VERBOSE(("cmserial_create: spped = %d", cmserial_speed[i]));
+//			VERBOSE(("cmserial_create: spped = %d", cmserial_speed[i]));
 			break;
 		}
 	}
 	if (i >= NELEMENTS(cmserial_speed)) {
-		VERBOSE(("cmserial_create: speed is invaild"));
+//		VERBOSE(("cmserial_create: speed is invaild"));
 		goto cscre_close;
 	}
 	cfsetispeed(&options, cmserial_cflag[i]);
@@ -390,25 +390,25 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 	/* character size bits */
 	options.c_cflag &= ~CSIZE;
 	options.c_cflag |= csize[(param >> 2) & 3];
-	VERBOSE(("cmserial_create: charactor size = %d", csize[(param >> 2) & 3]));
+//	VERBOSE(("cmserial_create: charactor size = %d", csize[(param >> 2) & 3]));
 
 	/* parity check */
 	switch (param & 0x30) {
 	case 0x10:
-		VERBOSE(("cmserial_create: odd parity"));
+//		VERBOSE(("cmserial_create: odd parity"));
 		options.c_cflag |= PARENB | PARODD;
 		options.c_iflag |= INPCK | ISTRIP;
 		break;
 
 	case 0x30:
-		VERBOSE(("cmserial_create: even parity"));
+//		VERBOSE(("cmserial_create: even parity"));
 		options.c_cflag |= PARENB;
 		options.c_cflag &= ~PARODD;
 		options.c_iflag |= INPCK | ISTRIP;
 		break;
 
 	default:
-		VERBOSE(("cmserial_create: non parity"));
+//		VERBOSE(("cmserial_create: non parity"));
 		options.c_cflag &= ~PARENB;
 		options.c_iflag &= ~(INPCK | ISTRIP);
 		break;
@@ -417,16 +417,16 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 	/* stop bits */
 	switch (param & 0xc0) {
 	case 0x80:
-		VERBOSE(("cmserial_create: stop bits: 1.5"));
+//		VERBOSE(("cmserial_create: stop bits: 1.5"));
 		break;
 
 	case 0xc0:
-		VERBOSE(("cmserial_create: stop bits: 2"));
+//		VERBOSE(("cmserial_create: stop bits: 2"));
 		options.c_cflag |= CSTOPB;
 		break;
 
 	default:
-		VERBOSE(("cmserial_create: stop bits: 1"));
+//		VERBOSE(("cmserial_create: stop bits: 1"));
 		options.c_cflag &= ~CSTOPB;
 		break;
 	}
@@ -442,7 +442,7 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 
 	ret = (COMMNG)_MALLOC(sizeof(_COMMNG) + sizeof(_CMSER), "SERIAL");
 	if (ret == NULL) {
-		VERBOSE(("cmserial_create: memory alloc failure"));
+//		VERBOSE(("cmserial_create: memory alloc failure"));
 		goto cscre_close;
 	}
 

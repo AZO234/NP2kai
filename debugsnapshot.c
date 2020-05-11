@@ -520,6 +520,7 @@ int debugsnapshot_load(const UINT uNo) {
         );
         DBSS_MSG(strString);
         OEMSNPRINTF(strString, MAX_PATH, OEMTEXT("%s"), OEMTEXT("  SHA-1: "));
+        DBSS_MSG(strString);
         strString[0] = '\0';
         for(iVal2 = 0; iVal2 < 20; iVal2++) {
           OEMSNPRINTF(
@@ -556,6 +557,7 @@ int debugsnapshot_load(const UINT uNo) {
         DBSS_MSG(strString);
         if(tDebugSnapshot.auHDCDType[iVal] == SXSIDEV_CDROM) {
           OEMSNPRINTF(strString, MAX_PATH, OEMTEXT("%s"), OEMTEXT("  SHA-1: "));
+          DBSS_MSG(strString);
           strString[0] = '\0';
           for(iVal2 = 0; iVal2 < 20; iVal2++) {
             OEMSNPRINTF(
