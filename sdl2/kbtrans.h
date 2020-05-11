@@ -16,6 +16,7 @@ void init_lrkey_to_pc98();
 void reset_lrkey();
 void send_libretro_key_down(UINT key);
 void send_libretro_key_up(UINT key);
+void reset_lrkey();
 #else	/* __LIBRETRO__ */
 void sdlkbd_initialize(void);
 void sdlkbd_reset();
