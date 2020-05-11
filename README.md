@@ -1068,12 +1068,17 @@ Next boot computer, you command from 4.<br>
 
 ## Release
 <<<<<<< HEAD
+<<<<<<< HEAD
 - May 10, 2020 (rev.22)<br>
   - merge NP21/W rev.73
 =======
 - May 9, 2020
   - add debug snapshot
 >>>>>>> debug snapshot
+=======
+- May 9, 2020
+  - add debug snapshot
+>>>>>>> 9af68ad729aa490a480bd27cb3c47169793ef60c
 - Apr 20, 2020<br>
   - mod OpenDingux
 - Apr 19, 2020<br>

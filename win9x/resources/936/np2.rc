@@ -939,7 +939,10 @@ BEGIN
         MENUITEM "Žg—p SSTP(&U)",               IDM_SSTP
         MENUITEM "&ITF work",                   IDM_ITFWORK
         MENUITEM "Enable DebugSS",              IDM_EN_DBSS
+<<<<<<< HEAD
 >>>>>>> debug snapshot
+=======
+>>>>>>> 9af68ad729aa490a480bd27cb3c47169793ef60c
         MENUITEM SEPARATOR
         MENUITEM "»¡©ú¥DÃD(&H)...",             IDM_HELP
         MENUITEM "Ãö©ó(&A)...",                 IDM_ABOUT
@@ -977,6 +980,22 @@ END
 <<<<<<< HEAD
 IDR_FDD1MENU MENU 
 =======
+IDR_DEBUGSS MENU
+BEGIN
+    POPUP "DebugSS"
+    BEGIN
+        MENUITEM "Save debugss 0",                      IDM_DBSSSAVE0
+        MENUITEM "Save debugss 1",                      IDM_DBSSSAVE1
+        MENUITEM "Save debugss 2",                      IDM_DBSSSAVE2
+        MENUITEM "Save debugss 3",                      IDM_DBSSSAVE3
+        MENUITEM SEPARATOR
+        MENUITEM "Load debugss 0",                      IDM_DBSSLOAD0
+        MENUITEM "Load debugss 1",                      IDM_DBSSLOAD1
+        MENUITEM "Load debugss 2",                      IDM_DBSSLOAD2
+        MENUITEM "Load debugss 3",                      IDM_DBSSLOAD3
+    END
+END
+
 IDR_DEBUGSS MENU
 BEGIN
     POPUP "DebugSS"
