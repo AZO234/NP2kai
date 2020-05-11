@@ -20,11 +20,13 @@ extern "C" {
 
 FileIO::FileIO()
 {
+	pfile = NULL;
 	flags = 0;
 }
 
 FileIO::FileIO(const char* filename, uint flg)
 {
+	pfile = NULL;
 	flags = 0;
 	Open(filename, flg);
 }
@@ -99,7 +101,10 @@ void FileIO::Close()
 {
 	if (GetFlags() & open)
 	{
-		fclose(pfile);
+		if(pfile) {
+			fclose(pfile);
+			pfile = NULL;
+		}
 		flags = 0;
 	}
 }
