@@ -2,14 +2,14 @@
 // μPD8253C タイマLSI
 // 
 
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"sound.h"
-#include	"beep.h"
-#include	"board14.h"
-#include	"commng.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<sound/sound.h>
+#include	<sound/beep.h>
+#include	<cbus/board14.h>
+#include	<commng.h>
 
 extern	COMMNG	cm_rs232c;
 

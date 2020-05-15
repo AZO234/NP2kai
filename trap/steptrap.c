@@ -3,17 +3,17 @@
  * @brief	Implementation of the step trap
  */
 
-#include "compiler.h"
+#include <compiler.h>
 
 #define	IPTRACE			(1 << 12)
 
 #if defined(ENABLE_TRAP)
 #include "steptrap.h"
-#include "dosio.h"
-#include "pccore.h"
-#include "cpucore.h"
-#include "sound.h"
-#include "fmboard.h"
+#include <dosio.h>
+#include <pccore.h>
+#include <cpucore.h>
+#include <sound/sound.h>
+#include <sound/fmboard.h>
 
 
 #if IPTRACE

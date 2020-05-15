@@ -3,12 +3,12 @@
  * @brief	Implementation of the CS4231
  */
 
-#include "compiler.h"
-#include "cs4231.h"
-#include "iocore.h"
-#include "fmboard.h"
-#include "dmac.h"
-#include "cpucore.h"
+#include <compiler.h>
+#include <sound/cs4231.h>
+#include <io/iocore.h>
+#include <sound/fmboard.h>
+#include <io/dmac.h>
+#include <cpucore.h>
 #ifndef CPU_STAT_PM
 #define CPU_STAT_PM	0
 #endif

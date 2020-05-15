@@ -1,13 +1,13 @@
-#include	"compiler.h"
-#include	"strres.h"
-#include	"dosio.h"
-#include	"soundmng.h"
-#include	"pccore.h"
-#include	"fdd/diskdrv.h"
-#include	"diskimage/fddfile.h"
+#include	<compiler.h>
+#include	<common/strres.h>
+#include	<dosio.h>
+#include	<soundmng.h>
+#include	<pccore.h>
+#include	<fdd/diskdrv.h>
+#include	<diskimage/fddfile.h>
 #include	"filesel.h"
-#include	"vramhdl.h"
-#include	"menubase.h"
+#include	<embed/vramhdl.h>
+#include	<embed/menubase/menubase.h>
 #include	"menustr.h"
 
 #ifdef SUPPORT_NVL_IMAGES
@@ -126,7 +126,7 @@ typedef struct {
 const OEMCHAR	*title;
 const OEMCHAR	*filter;
 const OEMCHAR	*ext;
-#if defined(__LIBRETRO__)
+#if defined(__LIBRETRO__) || defined(EMSCRIPTEN)
 int drv;
 #endif
 } FSELPRM;
@@ -138,7 +138,7 @@ typedef struct {
 const OEMCHAR	*filter;
 const OEMCHAR	*ext;
 	OEMCHAR		path[MAX_PATH];
-#if defined(__LIBRETRO__)
+#if defined(__LIBRETRO__) || defined(EMSCRIPTEN)
 int drv;
 #endif
 } FILESEL;
@@ -357,7 +357,7 @@ static int dlgcmd(int msg, MENUID id, long param) {
 			switch(id) {
 				case DID_OK:
 					if (dlgupdate()) {
-#if defined(__LIBRETRO__)
+#if defined(__LIBRETRO__) || defined(EMSCRIPTEN)
 						if(filesel.drv>=0xff)diskdrv_setsxsi(filesel.drv-0xff,filesel.path);
 						else diskdrv_setfdd(filesel.drv, filesel.path, 0);
 #endif
@@ -407,7 +407,7 @@ static int dlgcmd(int msg, MENUID id, long param) {
 	return(0);
 }
 
-#if defined(__LIBRETRO__)
+#if defined(__LIBRETRO__) || defined(EMSCRIPTEN)
 static BOOL selectfile(const FSELPRM *prm, OEMCHAR *path, int size, 
 														const OEMCHAR *def,int drv) {
 #else
@@ -432,12 +432,12 @@ const OEMCHAR	*title;
 		title = prm->title;
 		filesel.filter = prm->filter;
 		filesel.ext = prm->ext;
-#if defined(__LIBRETRO__)
+#if defined(__LIBRETRO__) || defined(EMSCRIPTEN)
 		filesel.drv = drv;
 #endif
 	}
 	menudlg_create(DLGFS_WIDTH, DLGFS_HEIGHT, title, dlgcmd);
-#if !defined(__LIBRETRO__)
+#if !defined(__LIBRETRO__) && !defined(EMSCRIPTEN)
 	menubase_modalproc();
 #endif
 	soundmng_play();
@@ -480,7 +480,7 @@ void filesel_fdd(REG8 drv) {
 	OEMCHAR	path[MAX_PATH];
 
 	if (drv < 4) {
-#if defined(__LIBRETRO__)
+#if defined(__LIBRETRO__) || defined(EMSCRIPTEN)
 		if (selectfile(&fddprm, path, NELEMENTS(path), fdd_diskname(drv),drv)) {
 #else
 		if (selectfile(&fddprm, path, NELEMENTS(path), fdd_diskname(drv))) {
@@ -526,7 +526,7 @@ const FSELPRM	*prm;
 		}
 	}
 #endif
-#if defined(__LIBRETRO__)
+#if defined(__LIBRETRO__) || defined(EMSCRIPTEN)
 	if ((prm) && (selectfile(prm, path, NELEMENTS(path), p,drv+0xff))) {
 #else
 	if ((prm) && (selectfile(prm, path, NELEMENTS(path), p))) {

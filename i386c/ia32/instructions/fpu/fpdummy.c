@@ -1,6 +1,6 @@
-#include "compiler.h"
+#include <compiler.h>
 
-#include "ia32/cpu.h"
+#include <ia32/cpu.h>
 #include "ia32/ia32.mcr"
 #include "fp.h"
 

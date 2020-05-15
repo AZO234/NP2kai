@@ -1,8 +1,8 @@
-#include	"compiler.h"
-#include	"bmpdata.h"
-#include	"scrnmng.h"
-#include	"cpucore.h"
-#include	"cmndraw.h"
+#include	<compiler.h>
+#include	<common/bmpdata.h>
+#include	<scrnmng.h>
+#include	<cpucore.h>
+#include	<generic/cmndraw.h>
 #include	"minifont.res"
 
 

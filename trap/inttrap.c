@@ -3,11 +3,11 @@
  * @brief	Implementation of the trap of interrupt
  */
 
-#include "compiler.h"
+#include <compiler.h>
 
 #if defined(ENABLE_TRAP)
 #include "inttrap.h"
-#include "cpucore.h"
+#include <cpucore.h>
 
 void CPUCALL softinttrap(UINT cs, UINT32 eip, UINT vect) {
 

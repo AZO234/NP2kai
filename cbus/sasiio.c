@@ -1,13 +1,13 @@
-#include	"compiler.h"
+#include	<compiler.h>
 
 #if defined(SUPPORT_SASI)
 
-#include	"dosio.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"sasiio.h"
-#include	"fdd/sxsi.h"
+#include	<dosio.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<cbus/sasiio.h>
+#include	<fdd/sxsi.h>
 #include	"sasibios.res"
 
 

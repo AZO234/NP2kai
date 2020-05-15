@@ -1,7 +1,7 @@
 
 #if defined(SUPPORT_SOFTKBD)
 
-#include	"cmndraw.h"
+#include	<generic/cmndraw.h>
 
 enum {
 	LEDFLAG_NUM		= 0x01,

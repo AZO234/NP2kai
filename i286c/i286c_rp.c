@@ -1,8 +1,8 @@
-#include	"compiler.h"
-#include	"cpucore.h"
+#include	<compiler.h>
+#include	<cpucore.h>
 #include	"i286c.h"
-#include	"pccore.h"
-#include	"iocore.h"
+#include	<pccore.h>
+#include	<io/iocore.h>
 #include	"i286c.mcr"
 
 

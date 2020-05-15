@@ -1,6 +1,6 @@
-#include	"compiler.h"
-#include	"pccore.h"
-#include	"iocore.h"
+#include	<compiler.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
 
 
 // こっちで処理するか　シリンダ倍移動で誤魔化すか悩ましいところ

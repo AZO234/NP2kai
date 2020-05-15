@@ -23,8 +23,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "compiler.h"
-#include "dosio.h"
+#include <compiler.h>
+#include <dosio.h>
 #include "cpu.h"
 #include "ia32.mcr"
 
@@ -35,17 +35,17 @@
 #endif
 
 #if defined(SUPPORT_ASYNC_CPU)
-#include "timing.h"
-#include "nevent.h"
-#include "pccore.h"
-#include	"iocore.h"
-#include	"sound/sound.h"
-#include	"sound/beep.h"
-#include	"sound/fmboard.h"
-#include	"sound/soundrom.h"
-#include	"cbus/mpu98ii.h"
+#include <timing.h>
+#include <nevent.h>
+#include <pccore.h>
+#include	<io/iocore.h>
+#include	<sound/sound.h>
+#include	<sound/beep.h>
+#include	<sound/fmboard.h>
+#include	<sound/soundrom.h>
+#include	<cbus/mpu98ii.h>
 #if defined(SUPPORT_SMPU98)
-#include	"cbus/smpu98.h"
+#include	<cbus/smpu98.h>
 #endif
 #endif
 

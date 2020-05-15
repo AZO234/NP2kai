@@ -1,13 +1,13 @@
 
 // emulation MPU-401 CPU Version 1.3 ('84/07/07)
 
-#include	"compiler.h"
-#include	"commng.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"cbuscore.h"
-#include	"mpu98ii.h"
-#include	"fmboard.h"
+#include	<compiler.h>
+#include	<commng.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<cbus/cbuscore.h>
+#include	<cbus/mpu98ii.h>
+#include	<sound/fmboard.h>
 
 #if 0
 #undef	TRACEOUT

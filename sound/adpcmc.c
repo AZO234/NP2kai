@@ -3,9 +3,9 @@
  * @brief	Implementation of the OPNA ADPCM
  */
 
-#include "compiler.h"
+#include <compiler.h>
 #include "adpcm.h"
-#include "opngen.h"
+#include <sound/opngen.h>
 
 	ADPCMCFG	adpcmcfg;
 

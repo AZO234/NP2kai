@@ -1,7 +1,7 @@
-#include	"compiler.h"
-#include	"fontmng.h"
-#include	"vramhdl.h"
-#include	"vrammix.h"
+#include	<compiler.h>
+#include	<fontmng.h>
+#include	<embed/vramhdl.h>
+#include	<embed/vrammix.h>
 
 
 enum {

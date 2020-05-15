@@ -23,11 +23,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "compiler.h"
+#include <compiler.h>
 
 #include "cpu.h"
-#include "pccore.h"
-#include "iocore.h"
+#include <pccore.h>
+#include <io/iocore.h>
 #include "cpumem.h"
 
 static void CPUCALL check_io(UINT port, UINT len);

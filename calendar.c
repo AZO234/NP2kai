@@ -1,8 +1,8 @@
-#include	"compiler.h"
-#include	"parts.h"
-#include	"timemng.h"
-#include	"pccore.h"
-#include	"calendar.h"
+#include	<compiler.h>
+#include	<common/parts.h>
+#include	<timemng.h>
+#include	<pccore.h>
+#include	<calendar.h>
 
 
 	_CALENDAR	cal;

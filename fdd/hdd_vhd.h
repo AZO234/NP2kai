@@ -6,13 +6,13 @@
     license: same as xnp2 (under the 2-clause BSD)
 */
 #ifndef HDD_VPCVHD_H
-//#include "compiler.h"
-//#include "strres.h"
-//#include "dosio.h"
-//#include "sysmng.h"
-//#include "cpucore.h"
-//#include "pccore.h"
-//#include "sxsi.h"
+//#include <compiler.h>
+//#include <common/strres.h>
+//#include <dosio.h>
+//#include <sysmng.h>
+//#include <cpucore.h>
+//#include <pccore.h>
+//#include <fdd/sxsi.h>
 //#include "hdd_vpc.h"
 #endif
 

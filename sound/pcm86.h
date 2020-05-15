@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "sound.h"
-#include "nevent.h"
+#include <sound/sound.h>
+#include <nevent.h>
 
 enum {
 	PCM86_LOGICALBUF	= 0x8000,

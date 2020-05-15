@@ -1,14 +1,14 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"scsicmd.h"
-#include	"bios.h"
-#include	"biosmem.h"
-#include	"sxsibios.h"
-#include	"diskimage/fddfile.h"
-#include	"fdd/fdd_mtr.h"
-#include	"fdd/sxsi.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<cbus/scsicmd.h>
+#include	<bios/bios.h>
+#include	<bios/biosmem.h>
+#include	<bios/sxsibios.h>
+#include	<diskimage/fddfile.h>
+#include	<fdd/fdd_mtr.h>
+#include	<fdd/sxsi.h>
 
 
 enum {

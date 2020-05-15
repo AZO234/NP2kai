@@ -1,11 +1,11 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"ct1741io.h"
-#include	"ct1745io.h"
-#include	"sound.h"
-#include	"fmboard.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<cbus/ct1741io.h>
+#include	<cbus/ct1745io.h>
+#include	<sound/sound.h>
+#include	<sound/fmboard.h>
 
 #include	<math.h>
 

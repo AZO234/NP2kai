@@ -7,7 +7,7 @@
 //   gcc test_codecnv.c -DCODECNV_TEST ../codecnv/sjisucs2.c ../codecnv/ucs2sjis.c ../codecnv/ucs2ucs4.c ../codecnv/ucs2utf8.c ../codecnv/ucs4ucs2.c ../codecnv/ucs4utf8.c ../codecnv/utf8ucs2.c ../codecnv/utf8ucs4.c -I../ -I../codecnv -Wall -Wextra -o test_codecnv
 
 #include "compiler_base.h"
-#include "codecnv.h"
+#include <codecnv/codecnv.h>
 
 #define COUNT_BUFFER 256
 

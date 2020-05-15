@@ -23,10 +23,10 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "compiler.h"
-#include "ia32/cpu.h"
+#include <compiler.h>
+#include <ia32/cpu.h>
 #include "ia32/ia32.mcr"
-#include "pccore.h"
+#include <pccore.h>
 
 #include "system_inst.h"
 
@@ -1136,7 +1136,7 @@ void
 RDTSC(void)
 {
 #if defined(USE_TSC)
-#if defined(NP2_X11) || defined(NP2_SDL2) || defined(__LIBRETRO__)
+#if defined(NP2_X) || defined(NP2_SDL) || defined(__LIBRETRO__)
 //	ia32_panic("RDTSC: not implemented yet!");
 	UINT64 tsc_tmp;
 	if(CPU_REMCLOCK != -1){

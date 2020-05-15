@@ -23,15 +23,15 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"timing.h"
-#include	"dmax86.h"
-#include	"bios/bios.h"
-#include	"vram/vram.h"
-#include	"wab/cirrus_vga_extern.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<timing.h>
+#include	<mem/dmax86.h>
+#include	<bios/bios.h>
+#include	<vram/vram.h>
+#include	<wab/cirrus_vga_extern.h>
 
 #if defined(SUPPORT_IA32_HAXM)
 
@@ -56,7 +56,7 @@ static void trace_fmt_ex(const char *fmt, ...)
 #endif	/* 1 */
 #include	"haxfunc.h"
 #include	"haxcore.h"
-#include	"np2_tickcount.h"
+#include	<np2_tickcount.h>
 
 #if defined(_WINDOWS)
 #include	<process.h>

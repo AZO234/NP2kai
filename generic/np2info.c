@@ -1,18 +1,18 @@
-#include	"compiler.h"
-#include	"strres.h"
-#include	"scrnmng.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"sound.h"
-#include	"fmboard.h"
-#include	"np2info.h"
-#include "sound/soundrom.h"
+#include	<compiler.h>
+#include	<common/strres.h>
+#include	<scrnmng.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<sound/sound.h>
+#include	<sound/fmboard.h>
+#include	<generic/np2info.h>
+#include <sound/soundrom.h>
 #if defined(SUPPORT_IDEIO)
-#include	"ideio.h"
+#include	<cbus/ideio.h>
 #endif
 #if defined(SUPPORT_GPIB)
-#include	"gpibio.h"
+#include	<cbus/gpibio.h>
 #endif
 
 static const OEMCHAR str_comma[] = OEMTEXT(", ");

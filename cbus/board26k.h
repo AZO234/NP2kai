@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "pccore.h"
+#include <pccore.h>
 
 #ifdef __cplusplus
 extern "C"

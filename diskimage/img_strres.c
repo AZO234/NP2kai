@@ -1,4 +1,4 @@
-#include	"compiler.h"
+#include	<compiler.h>
 #include	"diskimage/img_strres.h"
 
 #ifdef SUPPORT_KAI_IMAGES

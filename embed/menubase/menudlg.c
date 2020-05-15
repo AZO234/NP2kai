@@ -1,10 +1,10 @@
-#include	"compiler.h"
-#include	"strres.h"
-#include	"fontmng.h"
-#include	"vramhdl.h"
-#include	"vrammix.h"
+#include	<compiler.h>
+#include	<common/strres.h>
+#include	<fontmng.h>
+#include	<embed/vramhdl.h>
+#include	<embed/vrammix.h>
 #include	"menudeco.inc"
-#include	"menubase.h"
+#include	<embed/menubase/menubase.h>
 
 
 typedef struct _dprm {

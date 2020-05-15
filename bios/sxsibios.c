@@ -3,19 +3,19 @@
  * @brief	Implementation of SxSI BIOS
  */
 
-#include "compiler.h"
-#include "sxsibios.h"
-#include "biosmem.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"scsicmd.h"
-#include	"fdd/sxsi.h"
-#include	"timing.h"
+#include <compiler.h>
+#include <bios/sxsibios.h>
+#include <bios/biosmem.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<cbus/scsicmd.h>
+#include	<fdd/sxsi.h>
+#include	<timing.h>
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
-#include	"bios.h"
+#include	<bios/bios.h>
 #endif
 // XXX: WORKAROUND for Win9x boot menu
-#include	"keystat.h"
+#include	<keystat.h>
 
 extern int sxsi_unittbl[];
 

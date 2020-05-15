@@ -39,29 +39,29 @@
 	・細かいところはQEMU/9821の同名ファイルを参照
 */
 
-#include	"compiler.h"
+#include	<compiler.h>
 
 #if defined(SUPPORT_CL_GD5430)
 
-#include	"pccore.h"
-#include	"wab.h"
-#include	"cirrus_vga_extern.h"
+#include	<pccore.h>
+#include	<wab/wab.h>
+#include	<wab/cirrus_vga_extern.h>
 #include	"cirrus_vga.h"
 #include	"vga_int.h"
-#include	"dosio.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"soundmng.h"
+#include	<dosio.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<soundmng.h>
 
 #if defined(SUPPORT_IA32_HAXM)
-#include "i386hax/haxfunc.h"
-#include "i386hax/haxcore.h"
+#include <i386hax/haxfunc.h>
+#include <i386hax/haxcore.h>
 #endif
 
-#if defined(NP2_SDL2)
+#if defined(NP2_SDL)
 #include <SDL.h>
-#elif defined(NP2_X11)
+#elif defined(NP2_X)
 #include <gdk/gdk.h>
 #endif
 
@@ -124,7 +124,7 @@ uint8_t* cursorptr; // CIRRUS VGAのカーソル画像バッファへのポイ�
 
 DisplayState ds = {0}; // np21/wでは実質的に使われない
 
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 BITMAPINFO *ga_bmpInfo; // CIRRUS VGAのVRAM映像を転送する時に使うBITMAPINFO構造体
 BITMAPINFO *ga_bmpInfo_cursor; // CIRRUS VGAのカーソル画像を転送する時に使うBITMAPINFO構造体
 HBITMAP		ga_hbmp_cursor; // CIRRUS VGAのカーソルのHBITMAP
@@ -4991,7 +4991,7 @@ void cirrus_reset(void *opaque)
 	}
 	pc98_cirrus_setWABreg();
 	
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 	BitBlt(np2wabwnd.hDCBuf, 0, 0, WAB_MAX_WIDTH, WAB_MAX_HEIGHT, NULL, 0, 0, BLACKNESS);
 #endif
 	if ((np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC || np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F) {
@@ -5033,7 +5033,7 @@ void cirrus_reset(void *opaque)
 	//}
 }
 
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 LOGPALETTE * NewLogPal(const uint8_t *pCirrusPalette , int iSize) {
 	LOGPALETTE *lpPalette;
 	int count;
@@ -5109,7 +5109,7 @@ void cirrusvga_drawGraphic(){
 #endif
 	int i, j, width, height, bpp;
 	uint32_t_ line_offset = 0;
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 	LOGPALETTE * lpPalette;
 	static HPALETTE hPalette = NULL, oldPalette = NULL;
 	HDC hdc = np2wabwnd.hDCBuf;
@@ -5122,10 +5122,10 @@ void cirrusvga_drawGraphic(){
 	uint8_t *scanptr;
 	uint8_t *vram_ptr;
 	
-#if defined(NP2_SDL2) || defined(__LIBRETRO__)
+#if defined(NP2_SDL) || defined(__LIBRETRO__)
 	unsigned int *VRAMBuf = NULL;
 	char* p;
-#elif defined(NP2_X11)
+#elif defined(NP2_X)
 	GdkPixbuf *VRAMBuf = NULL;
 	char* p;
 #endif
@@ -5267,7 +5267,7 @@ void cirrusvga_drawGraphic(){
 	}
 
 	// 色数判定
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 	if(bpp==16){
 		// ビットフィールドでRGB565を指定
 		uint32_t_* bitfleld = (uint32_t_*)(ga_bmpInfo->bmiColors);
@@ -5310,7 +5310,7 @@ void cirrusvga_drawGraphic(){
 	np2wab.realWidth = realWidth;
 	np2wab.realHeight = realHeight;
     
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 	if(ga_bmpInfo->bmiHeader.biBitCount!=8 && bpp==8){
 		np2wab.paletteChanged = 1;
 	}
@@ -5323,7 +5323,7 @@ void cirrusvga_drawGraphic(){
 #endif
 	if(bpp<=8){
 		if(np2wab.paletteChanged){
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 			WORD* PalIndexes = (WORD*)((char*)ga_bmpInfo + sizeof(BITMAPINFOHEADER));
 			for (i = 0; i < 256; ++i) PalIndexes[i] = i;
 			lpPalette = NewLogPal(cirrusvga->palette , 1<<bpp);
@@ -5342,7 +5342,7 @@ void cirrusvga_drawGraphic(){
 		if(scanpixW*bpp/8==scanW){
 			if(scanshift){
 				// XXX: WABのスキャン位置シフト無視してるけど･･･
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 				ga_bmpInfo->bmiHeader.biWidth = scanpixW;
 				ga_bmpInfo->bmiHeader.biHeight = -height;
 				scanptr = vram_ptr;
@@ -5367,7 +5367,7 @@ void cirrusvga_drawGraphic(){
 				//	0 , 0 , 0 , scanshiftY ,
 				//	vram_ptr , ga_bmpInfo , DIB_PAL_COLORS
 				//);
-#elif defined(NP2_SDL2) || defined(__LIBRETRO__)
+#elif defined(NP2_SDL) || defined(__LIBRETRO__)
 				scanptr = vram_ptr;
 				VRAMBuf = (unsigned int*)malloc(width * height * sizeof(unsigned int));
 				p = (unsigned char*)VRAMBuf;
@@ -5378,7 +5378,7 @@ void cirrusvga_drawGraphic(){
 						p[(j * width + i) * 4    ] = cirrusvga->palette[vram_ptr[j * width + i] * 3 + 2] << 2;
 					}
 				}
-#elif defined(NP2_X11)
+#elif defined(NP2_X)
 				scanptr = vram_ptr;
 				if(np2wabwnd.pPixbuf) {
 					VRAMBuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
@@ -5393,7 +5393,7 @@ void cirrusvga_drawGraphic(){
 				}
 #endif
 			}else{
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 				ga_bmpInfo->bmiHeader.biWidth = scanpixW;
 				ga_bmpInfo->bmiHeader.biHeight = -height;
 				scanptr = vram_ptr;
@@ -5403,7 +5403,7 @@ void cirrusvga_drawGraphic(){
 					0 , 0 , 0 , -ga_bmpInfo->bmiHeader.biHeight ,
 					vram_ptr , ga_bmpInfo , DIB_PAL_COLORS
 				);
-#elif defined(NP2_SDL2) || defined(__LIBRETRO__)
+#elif defined(NP2_SDL) || defined(__LIBRETRO__)
 				scanptr = vram_ptr;
 				VRAMBuf = (unsigned int*)malloc(width * height * sizeof(unsigned int));
 				p = (unsigned char*)VRAMBuf;
@@ -5414,7 +5414,7 @@ void cirrusvga_drawGraphic(){
 						p[(j * width + i) * 4    ] = cirrusvga->palette[vram_ptr[j * width + i] * 3 + 2] << 2;
 					}
 				}
-#elif defined(NP2_X11)
+#elif defined(NP2_X)
 				scanptr = vram_ptr;
 				if(np2wabwnd.pPixbuf) {
 					VRAMBuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
@@ -5431,7 +5431,7 @@ void cirrusvga_drawGraphic(){
 			}
 		}else{
 			// ズレがあるなら1ラインずつ転送
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 			scanptr = vram_ptr;
 			for(i=0;i<height;i++){
 				ga_bmpInfo->bmiHeader.biWidth = width;
@@ -5444,7 +5444,7 @@ void cirrusvga_drawGraphic(){
 				);
 				scanptr += scanW;
 			}
-#elif defined(NP2_SDL2) || defined(__LIBRETRO__)
+#elif defined(NP2_SDL) || defined(__LIBRETRO__)
 			scanptr = vram_ptr;
 			VRAMBuf = (unsigned int*)malloc(width * height * sizeof(unsigned int));
 			p = (unsigned char*)VRAMBuf;
@@ -5455,7 +5455,7 @@ void cirrusvga_drawGraphic(){
 					p[(j * width + i) * 4    ] = cirrusvga->palette[vram_ptr[j * width + i] * 3 + 2] << 2;
 				}
 			}
-#elif defined(NP2_X11)
+#elif defined(NP2_X)
 			scanptr = vram_ptr;
 			if(np2wabwnd.pPixbuf) {
 				GdkPixbuf *VRAMBuf;
@@ -5467,7 +5467,7 @@ void cirrusvga_drawGraphic(){
 		if(scanpixW*bpp/8==scanW){
 			if(scanshift){
 				// XXX: スキャン位置シフト
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 				ga_bmpInfo->bmiHeader.biWidth = scanpixW;
 				ga_bmpInfo->bmiHeader.biHeight = -height;
 				scanptr = vram_ptr;
@@ -5477,7 +5477,7 @@ void cirrusvga_drawGraphic(){
 					0 , 0 , 0 , -ga_bmpInfo->bmiHeader.biHeight ,
 					vram_ptr+scanshift*bpp/8 , ga_bmpInfo , DIB_RGB_COLORS
 				);
-#elif defined(NP2_SDL2) || defined(__LIBRETRO__)
+#elif defined(NP2_SDL) || defined(__LIBRETRO__)
 				scanptr = vram_ptr;
 				VRAMBuf = (unsigned int*)malloc(width * height * sizeof(unsigned int));
 				p = (unsigned char*)VRAMBuf;
@@ -5488,7 +5488,7 @@ void cirrusvga_drawGraphic(){
 						p[(j * width + i) * 4 + 2] = vram_ptr[(j * width + i) * 3 + 2];
 					}
 				}
-#elif defined(NP2_X11)
+#elif defined(NP2_X)
 				scanptr = vram_ptr;
 				if(np2wabwnd.pPixbuf) {
 					VRAMBuf = gdk_pixbuf_new_from_data(vram_ptr, GDK_COLORSPACE_RGB, FALSE, 8, width, height, width*bpp/8, NULL,NULL);
@@ -5496,7 +5496,7 @@ void cirrusvga_drawGraphic(){
 				}
 #endif
 			}else{
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 				ga_bmpInfo->bmiHeader.biWidth = scanpixW;
 				ga_bmpInfo->bmiHeader.biHeight = -height;
 				scanptr = vram_ptr;
@@ -5506,7 +5506,7 @@ void cirrusvga_drawGraphic(){
 					0 , 0 , 0 , -ga_bmpInfo->bmiHeader.biHeight ,
 					vram_ptr , ga_bmpInfo , DIB_RGB_COLORS
 				);
-#elif defined(NP2_SDL2) || defined(__LIBRETRO__)
+#elif defined(NP2_SDL) || defined(__LIBRETRO__)
 				scanptr = vram_ptr;
 				VRAMBuf = (unsigned int*)malloc(width * height * sizeof(unsigned int));
 				p = (unsigned char*)VRAMBuf;
@@ -5535,7 +5535,7 @@ void cirrusvga_drawGraphic(){
 						}
 					}
 				}
-#elif defined(NP2_X11)
+#elif defined(NP2_X)
 				scanptr = vram_ptr;
 				if(np2wabwnd.pPixbuf) {
 					if(bpp == 24) {
@@ -5566,7 +5566,7 @@ void cirrusvga_drawGraphic(){
 			}
 		}else{
 			// ズレがあるなら1ラインずつ転送
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 			scanptr = vram_ptr;
 			for(i=0;i<height;i++){
 				ga_bmpInfo->bmiHeader.biWidth = width;
@@ -5579,7 +5579,7 @@ void cirrusvga_drawGraphic(){
 				);
 				scanptr += scanW;
 			}
-#elif defined(NP2_SDL2) || defined(__LIBRETRO__)
+#elif defined(NP2_SDL) || defined(__LIBRETRO__)
 			scanptr = vram_ptr;
 			VRAMBuf = (unsigned int*)malloc(width * height * sizeof(unsigned int));
 			p = (unsigned char*)VRAMBuf;
@@ -5624,7 +5624,7 @@ void cirrusvga_drawGraphic(){
 					}
 				}
 			}
-#elif defined(NP2_X11)
+#elif defined(NP2_X)
 			scanptr = vram_ptr;
 			if(np2wabwnd.pPixbuf) {
 				if(bpp == 15) {
@@ -5701,7 +5701,7 @@ void cirrusvga_drawGraphic(){
 		int vidwnd_yuv = 0;
 		if(vidwnd_horizontalZoom > 0) vidwnd_dstwidth = vidwnd_srcwidth * 256 / vidwnd_horizontalZoom;
 		if(vidwnd_verticalZoom > 0) vidwnd_srcheight = vidwnd_dstheight * vidwnd_verticalZoom / 256;
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 		switch(vidwnd_format){
 		case 0: // YUV 4:2:2 UYVY
 			vidwnd_yuv = 1;
@@ -5789,7 +5789,7 @@ void cirrusvga_drawGraphic(){
 				free(linebuf);
 			}
 		}
-#elif defined(NP2_X11)
+#elif defined(NP2_X)
 		// TODO: 非Windows用コードを書く
 #endif
 	}
@@ -5805,9 +5805,9 @@ void cirrusvga_drawGraphic(){
 		}
 		if(np2cfg.gd5430fakecur){
 			// ハードウェアカーソルが上手く表示できない場合用
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 			DrawIcon(hdc, hwcur_x, hwcur_y, ga_hFakeCursor);
-#elif defined(NP2_SDL2) || defined(__LIBRETRO__)
+#elif defined(NP2_SDL) || defined(__LIBRETRO__)
 			int fcx, fcy;
 			UINT8 col;
 			for(fcy = 0; fcy < CIRRUS_FMC_H; fcy++) {
@@ -5821,7 +5821,7 @@ void cirrusvga_drawGraphic(){
 					}
 				}
 			}
-#elif defined(NP2_X11)
+#elif defined(NP2_X)
 			int fcx, fcy;
 			UINT8 col;
 			p = gdk_pixbuf_get_pixels(VRAMBuf);
@@ -5855,7 +5855,7 @@ void cirrusvga_drawGraphic(){
 			if (cirrusvga->sr[0x12] & CIRRUS_CURSOR_LARGE) {
 				cursize = 64;
 			}
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 			BitBlt(ga_hdc_cursor , 0 , 0 , cursize , cursize , hdc , hwcur_x , hwcur_y , SRCCOPY);
 		
 			if(np2clvga.gd54xxtype == CIRRUS_98ID_PCI){
@@ -5930,7 +5930,7 @@ void cirrusvga_drawGraphic(){
 				}
 			}
 			BitBlt(hdc , hwcur_x , hwcur_y , cursize , cursize , ga_hdc_cursor , 0 , 0 , SRCCOPY);
-#elif defined(NP2_SDL2) || defined(__LIBRETRO__)
+#elif defined(NP2_SDL) || defined(__LIBRETRO__)
 			if(np2clvga.gd54xxtype == CIRRUS_98ID_PCI){
 				base = cirrusvga->vram_ptr + cirrusvga->real_vram_size - 16 * 1024;
 			}else if(np2clvga.gd54xxtype <= 0xff){
@@ -6017,7 +6017,7 @@ void cirrusvga_drawGraphic(){
 					}
 				}
 			}
-#elif defined(NP2_X11)
+#elif defined(NP2_X)
 			if(np2clvga.gd54xxtype == CIRRUS_98ID_PCI){
 				base = cirrusvga->vram_ptr + cirrusvga->real_vram_size - 16 * 1024;
 			}else if(np2clvga.gd54xxtype <= 0xff){
@@ -6108,10 +6108,10 @@ void cirrusvga_drawGraphic(){
 #endif
 		}
 	}
-#if defined(NP2_SDL2) || defined(__LIBRETRO__)
+#if defined(NP2_SDL) || defined(__LIBRETRO__)
 	memcpy(np2wabwnd.pBuffer, VRAMBuf, width * height * sizeof(unsigned int));
 	free(VRAMBuf);
-#elif defined(NP2_X11)
+#elif defined(NP2_X)
 	if(VRAMBuf && np2wabwnd.pPixbuf) {
 		gdk_pixbuf_scale(VRAMBuf, np2wabwnd.pPixbuf,
 			0, 0, width, height,
@@ -6128,7 +6128,7 @@ void cirrusvga_drawGraphic(){
 		}
 	}
 #endif
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 	ga_bmpInfo->bmiHeader.biWidth = width; // 前回の解像度を保存
 	ga_bmpInfo->bmiHeader.biHeight = height; // 前回の解像度を保存
 #endif
@@ -6800,7 +6800,7 @@ static void pc98_cirrus_reset(CirrusVGAState * s, int device_id, int is_pci)
 	
 	np2wab.relaystateext = 0;
 	np2wab_setRelayState(np2wab.relaystateint|np2wab.relaystateext);
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 	ShowWindow(np2wabwnd.hWndWAB, SW_HIDE); // 設定変更対策
 #endif
 
@@ -7294,7 +7294,7 @@ static void pc98_cirrus_deinit_common(CirrusVGAState * s, int device_id, int is_
 
 void pc98_cirrus_vga_init(void)
 {
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 	HDC hdc;
 	UINT i;
 	WORD* PalIndexes;
@@ -7432,7 +7432,7 @@ void pc98_cirrus_vga_bind(void)
 	
 	np2wabwnd.drawframe = cirrusvga_drawGraphic;
 
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 	ga_bmpInfo->bmiHeader.biWidth = 0;
 	ga_bmpInfo->bmiHeader.biHeight = 0;
 #endif
@@ -7466,12 +7466,12 @@ void pc98_cirrus_vga_unbind(void)
 void pc98_cirrus_vga_shutdown(void)
 {
 	np2wabwnd.drawframe = NULL;
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 	free(ga_bmpInfo_cursor);
 	free(ga_bmpInfo);
 #endif
 #if defined(SUPPORT_IA32_HAXM)
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 	_aligned_free(vramptr);
 #else
 	free(vramptr);
@@ -7479,7 +7479,7 @@ void pc98_cirrus_vga_shutdown(void)
 #else
 	free(vramptr);
 #endif
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 	DeleteDC(ga_hdc_cursor);
 	DeleteObject(ga_hbmp_cursor);
 #endif

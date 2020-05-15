@@ -3,17 +3,17 @@
  * @brief	Implementation of PX
  */
 
-#include "compiler.h"
+#include <compiler.h>
 
 #if defined(SUPPORT_PX)
 
-#include "boardpx.h"
-#include "iocore.h"
-#include "cbuscore.h"
-#include "pcm86io.h"
-#include "sound/fmboard.h"
-#include "sound/sound.h"
-#include "sound/soundrom.h"
+#include <cbus/boardpx.h>
+#include <io/iocore.h>
+#include <cbus/cbuscore.h>
+#include <cbus/pcm86io.h>
+#include <sound/fmboard.h>
+#include <sound/sound.h>
+#include <sound/soundrom.h>
 
 static void IOOUTCALL spb_o088(UINT port, REG8 dat)
 {

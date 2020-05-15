@@ -3,14 +3,14 @@
  * @brief	Implementation of PC-9801-86
  */
 
-#include "compiler.h"
-#include "board86.h"
-#include "iocore.h"
-#include "cbuscore.h"
-#include "pcm86io.h"
-#include "sound/fmboard.h"
-#include "sound/sound.h"
-#include "sound/soundrom.h"
+#include <compiler.h>
+#include <cbus/board86.h>
+#include <io/iocore.h>
+#include <cbus/cbuscore.h>
+#include <cbus/pcm86io.h>
+#include <sound/fmboard.h>
+#include <sound/sound.h>
+#include <sound/soundrom.h>
 
 static void IOOUTCALL opna_o188(UINT port, REG8 dat)
 {

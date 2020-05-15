@@ -3,12 +3,12 @@
  * @brief	Implementation of the 86-PCM
  */
 
-#include "compiler.h"
-#include "pcm86.h"
-#include "pccore.h"
-#include "cpucore.h"
-#include "iocore.h"
-#include "fmboard.h"
+#include <compiler.h>
+#include <sound/pcm86.h>
+#include <pccore.h>
+#include <cpucore.h>
+#include <io/iocore.h>
+#include <sound/fmboard.h>
 
 /* サンプリングレートに8掛けた物 */
 const UINT pcm86rate8[] = {352800, 264600, 176400, 132300,

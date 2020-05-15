@@ -7,8 +7,8 @@
 
 #if defined(SUPPORT_HOSTDRV)
 
-#include "hostdrv.h"
-#include "dosio.h"
+#include <generic/hostdrv.h>
+#include <dosio.h>
 
 /**
  * dos error codes : see int2159-BX0000

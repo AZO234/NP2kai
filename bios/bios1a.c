@@ -1,11 +1,11 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"bios.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<bios/bios.h>
 
 #if defined(SUPPORT_PCI)
-#include "ia32/cpu.h"
+#include <ia32/cpu.h>
 #include "ia32/instructions/data_trans.h"
 #endif
 

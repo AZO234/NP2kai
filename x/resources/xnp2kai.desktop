@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=xNP2kai
+GenericName=PC-9801 Emulator
+GenericName[ja]=PC-9801エミュレータ
+Comment=PC-9801 Emulator
+Comment[ja]=PC-9801エミュレータ
+Exec=xnp2kai
+Icon=np2kai
+Categories=Game;Emulator;
+Name[ja]=xNP2kai
+

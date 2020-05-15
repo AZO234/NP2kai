@@ -6,10 +6,10 @@
 #pragma once
 
 #include "adpcm.h"
-#include "opngen.h"
+#include <sound/opngen.h>
 #include "psggen.h"
 #include "rhythm.h"
-#include "statsave.h"
+#include <statsave.h>
 
 /**
  * Chips flags

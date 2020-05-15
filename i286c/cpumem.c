@@ -1,25 +1,25 @@
-#include	"compiler.h"
+#include	<compiler.h>
 
 #ifndef NP2_MEMORY_ASM
 
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"memtram.h"
-#include	"memvram.h"
-#include	"memegc.h"
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<mem/memtram.h>
+#include	<mem/memvram.h>
+#include	<mem/memegc.h>
 #if defined(SUPPORT_PC9821)
-#include	"memvga.h"
+#include	<mem/memvga.h>
 #endif
 #if defined(SUPPORT_BMS)
-#include	"bmsio.h"
+#include	<io/bmsio.h>
 #endif
-#include	"memems.h"
-#include	"memepp.h"
-#include	"vram.h"
-#include	"font/font.h"
+#include	<mem/memems.h>
+#include	<mem/memepp.h>
+#include	<vram/vram.h>
+#include	<font/font.h>
 #if defined(SUPPORT_CL_GD5430)
-#include	"wab/cirrus_vga_extern.h"
+#include	<wab/cirrus_vga_extern.h>
 #endif
 
 

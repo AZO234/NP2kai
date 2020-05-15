@@ -1,30 +1,30 @@
-#include	"compiler.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"cbuscore.h"
-#include	"ideio.h"
-#include	"sasiio.h"
-#include	"scsiio.h"
-#include	"pc9861k.h"
-#include	"mpu98ii.h"
+#include	<compiler.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<cbus/cbuscore.h>
+#include	<cbus/ideio.h>
+#include	<cbus/sasiio.h>
+#include	<cbus/scsiio.h>
+#include	<cbus/pc9861k.h>
+#include	<cbus/mpu98ii.h>
 #ifdef SUPPORT_SMPU98
-#include	"smpu98.h"
+#include	<cbus/smpu98.h>
 #endif
-#include	"bmsio.h"
+#include	<io/bmsio.h>
 #ifdef SUPPORT_NET
-#include	"network/net.h"
+#include	<network/net.h>
 #endif
 #ifdef SUPPORT_LGY98
-#include	"network/lgy98.h"
+#include	<network/lgy98.h>
 #endif
 #ifdef SUPPORT_WAB
-#include	"wab/wab.h"
+#include	<wab/wab.h>
 #endif
 #ifdef SUPPORT_CL_GD5430
-#include	"wab/cirrus_vga_extern.h"
+#include	<wab/cirrus_vga_extern.h>
 #endif
 #ifdef SUPPORT_GPIB
-#include	"gpibio.h"
+#include	<cbus/gpibio.h>
 #endif
 
 static const FNIORESET resetfn[] = {

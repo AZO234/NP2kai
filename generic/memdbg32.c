@@ -1,12 +1,12 @@
-#include	"compiler.h"
+#include	<compiler.h>
 
 #if defined(CPUCORE_IA32) && defined(SUPPORT_MEMDBG32)
 
-#include	"strres.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"memdbg32.h"
+#include	<common/strres.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<generic/memdbg32.h>
 
 #define MEMDBG32_MAXMEM	16
 #define MEMDBG32_DATAPERLINE	128

@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "sound.h"
+#include <sound/sound.h>
 
 enum {
 	ADTIMING_BIT	= 11,

@@ -1,4 +1,4 @@
-#include	"compiler.h"
+#include	<compiler.h>
 
 #if 0
 #undef	TRACEOUT
@@ -12,14 +12,14 @@
 #include	<process.h>
 #endif
 
-#include	"dosio.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"ideio.h"
-#include	"atapicmd.h"
-#include	"fdd/sxsi.h"
-#include	"codecnv/codecnv.h"
+#include	<dosio.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<cbus/ideio.h>
+#include	<cbus/atapicmd.h>
+#include	<fdd/sxsi.h>
+#include	<codecnv/codecnv.h>
 
 #define	YUIDEBUG
 

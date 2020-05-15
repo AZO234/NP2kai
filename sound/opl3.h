@@ -6,7 +6,7 @@
 #pragma once
 
 #include "oplgen.h"
-#include "statsave.h"
+#include <statsave.h>
 
 /**
  * Chips flags

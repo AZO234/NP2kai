@@ -1,12 +1,12 @@
-#include	"compiler.h"
-#include	"bmpdata.h"
-#include	"parts.h"
+#include	<compiler.h>
+#include	<common/bmpdata.h>
+#include	<common/parts.h>
 #if defined(OSLANG_EUC) || defined(OSLANG_UTF8) || defined(OSLANG_UCS2)
 #include	"oemtext.h"
 #endif
-#include	"dosio.h"
-#include	"fontmng.h"
-#include	"font.h"
+#include	<dosio.h>
+#include	<fontmng.h>
+#include	<font/font.h>
 #include	"fontdata.h"
 #include	"fontmake.h"
 

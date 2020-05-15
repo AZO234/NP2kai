@@ -1,13 +1,13 @@
 
 // PC-9821 PCI-CBusブリッジ
 
-#include	"compiler.h"
+#include	<compiler.h>
 
 #if defined(SUPPORT_PC9821)
 
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
 
 #if defined(SUPPORT_PCI)
 

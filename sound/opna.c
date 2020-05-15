@@ -2,22 +2,22 @@
  * @file	opna.c
  * @brief	Implementation of OPNA
  */
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 #define bool _Bool
 #define false FALSE
 #endif
 
-#include "compiler.h"
+#include <compiler.h>
 #include "opna.h"
-#include "pccore.h"
-#include "iocore.h"
-#include "fmboard.h"
-#include "sound.h"
-#include "s98.h"
-#include "generic/keydisp.h"
+#include <pccore.h>
+#include <io/iocore.h>
+#include <sound/fmboard.h>
+#include <sound/sound.h>
+#include <sound/s98.h>
+#include <generic/keydisp.h>
 #if defined(SUPPORT_FMGEN)
 #include <math.h>
-#include "fmgen_fmgwrap.h"
+#include <sound/fmgen/fmgen_fmgwrap.h>
 #endif	/* SUPPORT_FMGEN */
 
 static void writeRegister(POPNA opna, UINT nAddress, REG8 cData);

@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include	"bmpdata.h"
+#include	<common/bmpdata.h>
 
 /**
  * types

@@ -1,25 +1,25 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"cbuscore.h"
-#include	"sound.h"
-#include	"fmboard.h"
-#include	"ideio.h"
-#include	"cs4231io.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<cbus/cbuscore.h>
+#include	<sound/sound.h>
+#include	<sound/fmboard.h>
+#include	<cbus/ideio.h>
+#include	<cbus/cs4231io.h>
 #include	"iocore16.tbl"
 #ifdef SUPPORT_LGY98
-#include	"network/lgy98.h"
+#include	<network/lgy98.h>
 #endif
 #ifdef SUPPORT_WAB
-#include	"wab/wab.h"
+#include	<wab/wab.h>
 #endif
 #ifdef SUPPORT_CL_GD5430
-#include	"wab/cirrus_vga_extern.h"
+#include	<wab/cirrus_vga_extern.h>
 #endif
 #ifdef SUPPORT_SMPU98
-#include	"cbus/mpu98ii.h"
-#include	"cbus/smpu98.h"
+#include	<cbus/mpu98ii.h>
+#include	<cbus/smpu98.h>
 #endif
 
 

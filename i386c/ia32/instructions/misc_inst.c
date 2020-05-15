@@ -23,21 +23,21 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "compiler.h"
-#include "ia32/cpu.h"
+#include <compiler.h>
+#include <ia32/cpu.h>
 #include "ia32/ia32.mcr"
 
 #include "misc_inst.h"
 #include "ia32/inst_table.h"
 
-#include "pccore.h"
+#include <pccore.h>
 
 #ifdef USE_SSE2
 #include "ia32/instructions/sse2/sse2.h"
 #endif
 
 #ifdef SUPPORT_IA32_HAXM
-#include "bios/bios.h"
+#include <bios/bios.h>
 #endif
 void
 LEA_GwM(void)

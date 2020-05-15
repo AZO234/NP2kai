@@ -3,8 +3,8 @@
  * @brief	Implementation of the OPN generator
  */
 
-#include "compiler.h"
-#include "opngen.h"
+#include <compiler.h>
+#include <sound/opngen.h>
 #include "opngencfg.h"
 
 #if defined(OPNGENX86)

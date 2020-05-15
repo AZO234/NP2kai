@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-May 10, 2020<br>
+Apr 20, 2020<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -80,14 +80,12 @@ VisualStudio 2019
 
 #### Install tools
 1. Install VisualStudio 2019.<br>
-2. Install NASM and PATH it.<br>
-3. Locate VST SDK to C:\VST_SDK and run copy_vst2_to_vst3_sdk.bat.<br>
 
 #### Build
-1. Open win9x/np2vs2019.<br>
+1. Open windows/np2vs2019.sln.<br>
 2. Set Release/x64.<br>
-3. Build projects.<br>
-4. Output np2kai.exe(i286) and np21kai.exe(i386).<br>
+3. Build solution.<br>
+4. Output np2kai.exe(i286) and np21kai.exe(IA-32).<br>
 
 #### Install binary
 1. Locate .exe file anywhere.<br>
@@ -95,7 +93,7 @@ VisualStudio 2019
 </div></details>
 
 <details><summary>
-SDL2
+SDL
 </summary><div>
 
 #### Install tools
@@ -103,74 +101,53 @@ SDL2
 2. Run MSYS2 64bit console<br>
 3. Run follow command.<br>
 ```
-$ pacman -S git make mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL2_mixer
+$ pacman -S git cmake make mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_mixer mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL mingw-w64-x86_64-SDL_mixer mingw-w64-x86_64-SDL_mixer
 ```
 
 #### Build
-1. Change directory to sdl2.<br>
+1. Change directory to NP2kai.<br>
 ```
-$ cd NP2kai/sdl2
+$ cd NP2kai
 ```
-2. Make.<br>
-(i286)<br>
+2. Make work directory, and step into there.<br>
 ```
-$ make -f Makefile.win
+$ mkdir build
+$ cd build
 ```
-(i386)<br>
+3. Generate Makefile.<br>
 ```
-$ make -f Makefile21.win
+$ cmake .. -D BUILD_SDL=ON
 ```
+4. Make.<br>
+```
+$ make -j
+```
+
+- CMake options of SDL port (*=default)
+
+|name|value|work|output|
+|:---:|:---:|:---:|:---:|
+|BUILD_SDL|ON(*)|Build SDL port||
+|USE_SDL_SDL2|ON*|SDL2 with build SDL port|sdlnp2kai|
+|USE_SDL_SDL2|OFF|SDL with build SDL port|sdlnp2kai_sdl1|
+|USE_SDL_SDL_MIXER|ON*|SDL_mixer or SDL2_mixer with build SDL port||
+|USE_SDL_SDL_TTF|ON*|SDL_ttf or SDL2_ttf with build SDL port||
+|BUILD_IA32|ON|Build SDL IA-32 port|sdlnp21kai|
+|BUILD_HAXM|ON|Build SDL IA-32 HAXM port|sdlnp21kai_HAXM|
+
+  - BUILD_SDL=ON default on macOS
 
 #### Install binary
 1. Install.<br>
 ```
 $ make install
 ```
-2. Locate BIOS files to ~/.config/np2kai(i286) or ~/.config/np21kai(i386).<br>
-3. Run np2kai(i286) or np21kai(i386).<br>
-<br>
+2. Locate BIOS files to ~/.config/&lt;SDL NP2kai filename&gt;<br>
+3. Run SDL NP2kai.<br>
+
 - NP2 menu is shown F11 or mouse middle button, to swap FDD/HDD diskimages.<br>
 </div></details>
 
-<details><summary>
-SDL1
-</summary><div>
-
-#### Install tools
-1. Install MSYS2 64bit.<br>
-2. Run MSYS2 64bit console<br>
-3. Run follow command.<br>
-```
-$ pacman -S git make mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd mingw-w64-x86_64-SDL mingw-w64-x86_64-SDL_ttf mingw-w64-x86_64-SDL_mixer
-```
-
-#### Build
-1. Change directory to sdl2.<br>
-```
-$ cd NP2kai/sdl2
-```
-2. Make.<br>
-(i286)<br>
-Edit 'SDL_VERSION' in Makefile.win from 2 to 1.
-```
-$ make -f Makefile.win
-```
-(i386)<br>
-Edit 'SDL_VERSION' in Makefile21.win from 2 to 1.
-```
-$ make -f Makefile21.win
-```
-
-#### Install binary
-1. Install.<br>
-```
-$ make install
-```
-2. Locate BIOS files to ~/.config/np2kai(i286) or ~/.config/np21kai(i386).<br>
-3. Run np2kai(i286) or np21kai(i386).<br>
-<br>
-- NP2 menu is shown F11 or mouse middle button, to swap FDD/HDD diskimages.<br>
-</div></details>
 
 ### Linux
 
@@ -183,262 +160,127 @@ $ dbus-launch --exit-with-session xnp2kai
 ```
 
 <details><summary>
-X11 with SDL2
+X with SDL
 </summary><div>
 
 #### Install tools
-1. Install SDL2, etc.<br>
+1. Install MSYS2 64bit.<br>
+2. Run MSYS2 64bit console<br>
+3. Run follow command.<br>
 ```
-$ sudo apt-get install automake git gtk+-2 build-essential libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev libusb-1.0-0-dev
+$ pacman -S git cmake make mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL2_mixer
 ```
 
 #### Build
-1. Change directory to x11.<br>
+1. Change directory to NP2kai.<br>
 ```
-$ cd NP2kai/x11
+$ cd NP2kai
 ```
-2. Run autotools script.<br>
+2. Make work directory, and step in.<br>
 ```
-$ ./autogen.sh
+$ mkdir build
+$ cd build
 ```
-3. Run configure.<br>
-(i286)<br>
+3. Generate Makefile.<br>
 ```
-$ ./configure
-```
-(i386)<br>
-```
-$ ./configure --enable-ia32
+$ cmake .. -D BUILD_X=ON
 ```
 4. Make.<br>
 ```
-$ make
+$ make -j
 ```
+
+- CMake options of SDL port
+
+|name|value|work|output|
+|:---:|:---:|:---:|:---:|
+|BUILD_X|ON+|Build X port||
+|BUILD_X|OFF|Not build X port||
+|USE_X_SDL2|ON*|SDL2 with build X port|xnp2kai|
+|USE_X_SDL2|OFF|SDL2 with build X port|xnp2kai_sdl1|
+|USE_X_SDL_MIXER|ON*|SDL_mixer or SDL2_mixer with build X port||
+|USE_X_SDL_TTF|ON*|SDL_ttf or SDL2_ttf with build X port||
+|BUILD_IA32|ON|Build X IA-32 port|xnp21kai|
+|BUILD_HAXM|ON|Build X IA-32 HAXM port|xnp21kai_HAXM|
+
+  - BUILD_SDL=ON default on UNIX
 
 #### Install binary
 1. Install.<br>
 ```
 $ sudo make install
 ```
-2. Locate BIOS files to ~/.config/xnp2kai(i286) or ~/.config/xnp21kai(i386).<br>
-3. Run xnp2kai(i286) or xnp21kai(i386).<br>
+2. Locate BIOS files to ~/.config/<SDL NP2kai filename><br>
+3. Run X NP2kai.<br>
+
+- NP2 menu is shown F11 key or mouse middle button, to swap FDD/HDD diskimages.<br>
 </div></details>
 
 <details><summary>
-X11 with SDL1
+Emscripten
 </summary><div>
 
-#### Install tools
-1. Install SDL, etc.<br>
-```
-$ sudo apt-get install automake git gtk+-2 build-essential libsdl1.2-dev libsdl-ttf2.0-dev libsdl-mixer1.2-dev libusb-1.0-0-dev
-```
-
 #### Build
-1. Change directory to x11.<br>
+1. Change directory to NP2kai.<br>
 ```
-$ cd NP2kai/x11
+$ cd NP2kai
 ```
-2. Run autotools script.<br>
+2. Make work directory, and step in.<br>
 ```
-$ ./autogen.sh
+$ mkdir build
+$ cd build
 ```
-3. Run configure.<br>
-(i286)<br>
+3. Generate Makefile.<br>
 ```
-$ ./configure --enable-sdl --enable-sdlmixer --enable-sdlttf --enable-sdl2=no --enable-sdl2mixer=no --enable-sdl2ttf=no
-```
-(i386)<br>
-```
-$ ./configure --enable-sdl --enable-sdlmixer --enable-sdlttf --enable-sdl2=no --enable-sdl2mixer=no --enable-sdl2ttf=no --enable-ia32
+$ emcmake cmake ..
 ```
 4. Make.<br>
 ```
-$ make
+$ make -j
 ```
 
-#### Install binary
-1. Install.<br>
-```
-$ sudo make install
-```
-2. Locate BIOS files to ~/.config/xnp2kai(i286) or ~/.config/xnp21kai(i386).<br>
-3. Run xnp2kai(i286) or xnp21kai(i386).<br>
-</div></details>
+- CMake options of Emscripten port
+
+|name|value|work|output|
+|:---:|:---:|:---:|:---:|
+|USE_EMSCRIPTEN_SDL2|ON*|SDL2 with build Emscripten port|xnp2kai|
+|BUILD_IA32|ON|Build X IA-32 port|xnp21kai|
 
 <details><summary>
-SDL2
-</summary><div>
-
-#### Install tools
-1. Install SDL2, etc.<br>
-```
-$ sudo apt-get install git build-essential libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev
-```
-
-#### Build
-1. Change directory to sdl2.<br>
-```
-$ cd NP2kai/sdl2
-```
-2. Make.<br>
-(i286)<br>
-```
-$ make -f Makefile.unix
-```
-(i386)<br>
-```
-$ make -f Makefile21.unix
-```
-
-#### Install binary
-1. Install.<br>
-```
-$ sudo make install
-```
-2. Locate BIOS files to ~/.config/np2kai(i286) or ~/.config/np21kai(i386).<br>
-3. Run np2kai(i286) or np21kai(i386).<br>
-<br>
-- NP2 menu is shown F11 key or mouse middle button, to swap FDD/HDD diskimages.<br>
-</div></details>
-
-<details><summary>
-SDL1
-</summary><div>
-
-#### Install tools
-1. Install SDL2, etc.<br>
-```
-$ sudo apt-get install git build-essential libsdl1.2-dev libsdl-ttf2.0-dev libsdl-mixer1.2-dev
-```
-
-#### Build
-1. Change directory to sdl2.<br>
-```
-$ cd NP2kai/sdl2
-```
-2. Make.<br>
-(i286)<br>
-Edit 'SDL_VERSION' in Makefile.unix from 2 to 1.
-```
-$ make -f Makefile.unix
-```
-(i386)<br>
-Edit 'SDL_VERSION' in Makefile21.unix from 2 to 1.
-```
-$ make -f Makefile21.unix
-```
-
-#### Install binary
-1. Install.<br>
-```
-$ sudo make install
-```
-2. Locate BIOS files to ~/.config/np2kai(i286) or ~/.config/np21kai(i386).<br>
-3. Run np2kai(i286) or np21kai(i386).<br>
-<br>
-- NP2 menu is shown F11 key or mouse middle button, to swap FDD/HDD diskimages.<br>
-</div></details>
-
-### macOS
-
-<details><summary>
-SDL2
-</summary><div>
-
-#### Install tools
-1. Install XCode.<br>
-2. Install brew.<br>
-3. Execute follow command.<br>
-```
-$ brew install sdl2 sdl2_mixer sdl2_ttf
-```
-
-#### Build
-1. Change directory to sdl2.<br>
-```
-$ cd NP2kai/sdl2
-```
-2. Make.<br>
-(i286)<br>
-```
-$ make -f Makefile.mac
-```
-(i386)<br>
-```
-$ make -f Makefile21.mac
-```
-
-#### Install binary
-1. Install.<br>
-```
-$ make install
-```
-2. Locate BIOS files to ~/.config/np2kai(i286) or ~/.config/np21kai(i386).<br>
-3. Run np2kai(i286) or np21kai(i386).<br>
-<br>
-- NP2 menu is shown F11 key or mouse middle button, to swap FDD/HDD diskimages.<br>
-</div></details>
-
-<details><summary>
-SDL1
-</summary><div>
-
-#### Install tools
-1. Install XCode.<br>
-2. Install brew.<br>
-3. Execute follow command.<br>
-```
-$ brew install sdl sdl_mixer sdl_ttf
-```
-
-#### Build
-1. Change directory to sdl2.<br>
-```
-$ cd NP2kai/sdl2
-```
-2. Make.<br>
-(i286)<br>
-Edit 'SDL_VERSION' in Makefile.mac from 2 to 1.
-```
-$ make -f Makefile.mac
-```
-(i386)<br>
-Edit 'SDL_VERSION' in Makefile21.mac from 2 to 1.
-```
-$ make -f Makefile21.mac
-```
-
-#### Install binary
-1. Install.<br>
-```
-$ make install
-```
-2. Locate BIOS files to ~/.config/np2kai(i286) or ~/.config/np21kai(i386).<br>
-3. Run np2kai(i286) or np21kai(i386).<br>
-<br>
-- NP2 menu is shown F11 key or mouse middle button, to swap FDD/HDD diskimages.<br>
-</div></details>
-
-### for Other
-
-<details><summary>
-GCW Zero (GCW0)
+OpenDigux
 </summary><div>
 
 #### Build
-1. Change directory into sdl2.<br>
+1. Change directory to NP2kai.<br>
 ```
-$ cd NP2kai/sdl2
+$ cd NP2kai
 ```
-2. Make.<br>
+2. Make work directory, and step in.<br>
 ```
-$ ODCONFIG=gcw0 make -f Makefile.opendingux
+$ mkdir build
+$ cd build
 ```
-or
+3. Generate Makefile.<br>
 ```
-$ ODCONFIG=gcw0 make -f Makefile21.opendingux
+$ cmake .. -D BUILD_OPENDINGUX_GCW0=ON
 ```
+4. Make.<br>
+```
+$ make -j
+```
+
+- CMake options of SDL port
+
+|name|value|work|output|
+|:---:|:---:|:---:|:---:|
+|BUILD_OPENDINGUX_GCW0|ON|Build for GCW0||
+|USE_OPENDINGUX_GCW0_SDL2|ON*|SDL2 with build for GCW0|xnp2kai|
+|USE_OPENDINGUX_GCW0_SDL2|OFF|SDL with build for GCW0|xnp2kai_sdl1|
+|BUILD_OPENDINGUX_RG350|ON|Build for RG350||
+|USE_OPENDINGUX_RG350_SDL2|ON*|SDL2 with build for RG350|xnp2kai|
+|USE_OPENDINGUX_RG350_SDL2|OFF|SDL with build for RG350|xnp2kai_sdl1|
+|BUILD_OPENDINGUX_RS90|ON|Build for RS90||
+|BUILD_IA32|ON|Build X IA-32 port|xnp21kai|
 
 #### Install binary
 1. Transfer np2kai.opk or np21kai.opk to /media/apps/ .<br>
@@ -1054,8 +896,6 @@ Next boot computer, you command from 4.<br>
 </div></details>
 
 ## Release
-- May 10, 2020 (rev.22)<br>
-  - merge NP21/W rev.73
 - Apr 20, 2020<br>
   - mod OpenDingux
 - Apr 19, 2020<br>
@@ -1111,8 +951,8 @@ Next boot computer, you command from 4.<br>
 - Jan 15, 2020<br>
   - Support again SDL1<br>
   - fix bool
-- Dec 10, 2019 (rev.21)<br>
-  - Merge NP21/W 0.86 rev.69<br>
+- Dec 10, 2019<br>
+  - Merge NP21/W 0.86 rev.69 (rev.21)<br>
     - HAXM
 - Nov 19, 2019<br>
   - fix Android makefile
@@ -1127,8 +967,8 @@ Next boot computer, you command from 4.<br>
     - fix SUPPORT_LARGE_HDD
     - WinNT4/200 IDE Fix
   - fix Makefile21
-- Jul 14, 2019 (rev.20)<br>
-  - Merge NP21/W 0.86 rev.62-63<br>
+- Jul 14, 2019<br>
+  - Merge NP21/W 0.86 rev.62-63 (rev.20)<br>
 - Jun 23, 2019<br>
   - modify default cfg/BIOS location (np2kai or 'np21kai')<br>
 - Jun 21, 2019<br>

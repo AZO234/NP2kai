@@ -1,8 +1,8 @@
-#include	"compiler.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"sound.h"
-#include	"beep.h"
+#include	<compiler.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<sound/sound.h>
+#include	<sound/beep.h>
 
 
 // ---- I/O

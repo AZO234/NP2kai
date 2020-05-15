@@ -3,16 +3,16 @@
  * @brief	Implementation of the sound
  */
 
-#include "compiler.h"
-#include "sound.h"
-#include "cpucore.h"
-#include "pccore.h"
-#include "iocore.h"
+#include <compiler.h>
+#include <sound/sound.h>
+#include <cpucore.h>
+#include <pccore.h>
+#include <io/iocore.h>
 #include "sndcsec.h"
-#include "beep.h"
-#include "soundmng.h"
+#include <sound/beep.h>
+#include <soundmng.h>
 #if defined(SUPPORT_WAVEREC)
-#include "common/wavefile.h"
+#include <common/wavefile.h>
 #endif	/* defined(SUPPORT_WAVEREC) */
 
 	SOUNDCFG	soundcfg;

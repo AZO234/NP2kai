@@ -1,7 +1,7 @@
 #ifndef	NP2_I386C_CPUCORE_H__
 #define	NP2_I386C_CPUCORE_H__
 
-#include "ia32/cpu.h"
+#include <ia32/cpu.h>
 
 #define	I286_MEMREADMAX		CPU_MEMREADMAX
 #define	I286_MEMWRITEMAX	CPU_MEMWRITEMAX

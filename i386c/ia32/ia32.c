@@ -23,13 +23,13 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "compiler.h"
+#include <compiler.h>
 #include "cpu.h"
 #include "ia32.mcr"
 
 #if defined(SUPPORT_IA32_HAXM)
-#include "i386hax/haxfunc.h"
-#include "i386hax/haxcore.h"
+#include <i386hax/haxfunc.h>
+#include <i386hax/haxcore.h>
 #endif
 
 I386CORE	i386core;

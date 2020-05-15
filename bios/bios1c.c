@@ -1,12 +1,12 @@
-#include	"compiler.h"
-#include	"parts.h"
-#include	"timemng.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"calendar.h"
-#include	"bios.h"
-#include	"biosmem.h"
+#include	<compiler.h>
+#include	<common/parts.h>
+#include	<timemng.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<calendar.h>
+#include	<bios/bios.h>
+#include	<bios/biosmem.h>
 
 void bios0x1c(void) {
 

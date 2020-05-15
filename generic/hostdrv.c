@@ -1,4 +1,4 @@
-#include	"compiler.h"
+#include	<compiler.h>
 
 #if defined(SUPPORT_HOSTDRV)
 
@@ -9,12 +9,12 @@
 	更に、手抜き版だし(マテ
 */
 
-#include	"dosio.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"hostdrv.h"
-#include	"hostdrvs.h"
+#include	<dosio.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<generic/hostdrv.h>
+#include	<generic/hostdrvs.h>
 #include	"hostdrv.tbl"
 
 

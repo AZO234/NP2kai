@@ -1,3 +1,5 @@
+#ifndef _MILSTR_H_
+#define _MILSTR_H_
 
 #ifndef STRCALL
 #define	STRCALL
@@ -127,4 +129,6 @@ OEMCHAR * STRCALL milstr_list(const OEMCHAR *lststr, UINT pos);
 #define	milstr_ncat(d, s, l)	milank_ncat(d, s, l)
 #define	milstr_chr(s, c)		milank_chr(s, c)
 #endif
+
+#endif  // _MILSTR_H_
 

@@ -1,4 +1,4 @@
-#include	"compiler.h"
+#include	<compiler.h>
 
 #if 1
 #undef	TRACEOUT
@@ -20,18 +20,18 @@
 
 #if defined(SUPPORT_IDEIO)
 
-#include	"dosio.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"ideio.h"
-#include	"atapicmd.h"
-#include	"fdd/sxsi.h"
-#include	"sound.h"
+#include	<dosio.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<cbus/ideio.h>
+#include	<cbus/atapicmd.h>
+#include	<fdd/sxsi.h>
+#include	<sound/sound.h>
 #include	"idebios.res"
-#include	"bios/biosmem.h"
-#include	"fmboard.h"
-#include	"cs4231io.h"
+#include	<bios/biosmem.h>
+#include	<sound/fmboard.h>
+#include	<cbus/cs4231io.h>
 
 	IDEIO	ideio;
 

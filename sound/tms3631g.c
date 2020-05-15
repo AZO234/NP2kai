@@ -3,8 +3,8 @@
  * @brief	Implementation of the TMS3631
  */
 
-#include "compiler.h"
-#include "tms3631.h"
+#include <compiler.h>
+#include <sound/tms3631.h>
 
 extern	TMS3631CFG	tms3631cfg;
 

@@ -23,13 +23,13 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "compiler.h"
-#include "pccore.h"
-#include "ia32/cpu.h"
+#include <compiler.h>
+#include <pccore.h>
+#include <ia32/cpu.h>
 #include "ia32/ia32.mcr"
 #include "ia32/inst_table.h"
 
-#include "ia32/instructions/fpu/fp.h"
+#include <ia32/instructions/fpu/fp.h>
 #include "ia32/instructions/fpu/fpumem.h"
 
 #if defined(USE_FPU) && !defined(SUPPORT_FPU_DOSBOX) && !defined(SUPPORT_FPU_DOSBOX2) && !defined(SUPPORT_FPU_SOFTFLOAT)

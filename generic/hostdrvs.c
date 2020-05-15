@@ -3,15 +3,15 @@
  * @brief	Implementation of host-drive
  */
 
-#include "compiler.h"
-#include "hostdrvs.h"
+#include <compiler.h>
+#include <generic/hostdrvs.h>
 
 #if defined(SUPPORT_HOSTDRV)
 
 #if defined(OSLANG_EUC) || defined(OSLANG_UTF8) || defined(OSLANG_UCS2)
 #include "oemtext.h"
 #endif
-#include "pccore.h"
+#include <pccore.h>
 #include "ini.h"
 
 //#include <shlwapi.h>

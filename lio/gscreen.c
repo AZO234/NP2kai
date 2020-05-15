@@ -1,11 +1,11 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"bios/bios.h"
-#include	"bios/biosmem.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<bios/bios.h>
+#include	<bios/biosmem.h>
 #include	"lio.h"
-#include	"vram.h"
+#include	<vram/vram.h>
 
 
 typedef struct {

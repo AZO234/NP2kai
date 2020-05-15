@@ -1,10 +1,10 @@
-#include	"compiler.h"
-#include	"sysmng.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"sound.h"
-#include	"beep.h"
+#include	<compiler.h>
+#include	<sysmng.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<sound/sound.h>
+#include	<sound/beep.h>
 
 
 void IOOUTCALL dipsw_w8(UINT port, REG8 value) {

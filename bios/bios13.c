@@ -1,9 +1,9 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"bios.h"
-#include	"biosmem.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<bios/bios.h>
+#include	<bios/biosmem.h>
 
 
 #define	baseport 0x0090

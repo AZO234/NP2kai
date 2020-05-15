@@ -1,12 +1,12 @@
-#include	"compiler.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"cbuscore.h"
-#include	"boardso.h"
-#include	"sound.h"
-#include	"soundrom.h"
-#include	"fmboard.h"
-#include	"s98.h"
+#include	<compiler.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<cbus/cbuscore.h>
+#include	<cbus/boardso.h>
+#include	<sound/sound.h>
+#include	<sound/soundrom.h>
+#include	<sound/fmboard.h>
+#include	<sound/s98.h>
 
 #define G_OPL3_INDEX1	2
 #define G_OPL3_INDEX2	3

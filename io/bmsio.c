@@ -3,11 +3,11 @@
  *
  */
 
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"bmsio.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<io/bmsio.h>
 
 		_BMSIOCFG	bmsiocfg = {FALSE, 0x00ec, 0xffff, 0x10};
 		_BMSIO		bmsio;

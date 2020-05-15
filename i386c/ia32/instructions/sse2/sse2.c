@@ -23,7 +23,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "compiler.h"
+#include <compiler.h>
 
 #if 0
 #undef	TRACEOUT
@@ -54,7 +54,7 @@ static void trace_fmt_ex(const char *fmt, ...)
 #define isnan(x) (_isnan(x))
 #endif
 
-#include "ia32/cpu.h"
+#include <ia32/cpu.h>
 #include "ia32/ia32.mcr"
 
 #include "ia32/instructions/sse/sse.h"

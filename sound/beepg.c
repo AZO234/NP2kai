@@ -1,7 +1,7 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"sound.h"
-#include	"beep.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<sound/sound.h>
+#include	<sound/beep.h>
 
 
 extern	BEEPCFG		beepcfg;

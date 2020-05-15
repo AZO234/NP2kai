@@ -6,9 +6,9 @@
 #ifdef CODECNV_TEST
 #include "compiler_base.h"
 #else
-#include "compiler.h"
+#include <compiler.h>
 #endif
-#include "codecnv.h"
+#include <codecnv/codecnv.h>
 
 static BOOL isucs2highsurrogate(const UINT16 c);
 static BOOL isucs2lowsurrogate(const UINT16 c);

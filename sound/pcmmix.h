@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "sound.h"
+#include <sound/sound.h>
 
 enum {
 	PMIXFLAG_L		= 0x0001,

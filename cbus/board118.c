@@ -3,18 +3,18 @@
  * @brief	Implementation of PC-9801-118
  */
 
-#include "compiler.h"
-#include "board118.h"
-#include "pccore.h"
-#include "iocore.h"
-#include "cbuscore.h"
-#include "cs4231io.h"
-#include "joymng.h"
-#include "cpucore.h"
-#include "sound/fmboard.h"
-#include "sound/sound.h"
-#include "sound/soundrom.h"
-#include "mpu98ii.h"
+#include <compiler.h>
+#include <cbus/board118.h>
+#include <pccore.h>
+#include <io/iocore.h>
+#include <cbus/cbuscore.h>
+#include <cbus/cs4231io.h>
+#include <joymng.h>
+#include <cpucore.h>
+#include <sound/fmboard.h>
+#include <sound/sound.h>
+#include <sound/soundrom.h>
+#include <cbus/mpu98ii.h>
 
 
 static int opna_idx = 0;

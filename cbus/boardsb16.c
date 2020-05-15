@@ -1,17 +1,17 @@
-#include	"compiler.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"cbuscore.h"
-#include	"boardso.h"
-#include	"sound.h"
-#include	"ct1741io.h"
-#include	"ct1745io.h"
-#include	"fmboard.h"
-#include	"mpu98ii.h"
-#include	"smpu98.h"
-#include	"joymng.h"
-#include	"cpucore.h"
-//#include	"s98.h"
+#include	<compiler.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<cbus/cbuscore.h>
+#include	<cbus/boardso.h>
+#include	<sound/sound.h>
+#include	<cbus/ct1741io.h>
+#include	<cbus/ct1745io.h>
+#include	<sound/fmboard.h>
+#include	<cbus/mpu98ii.h>
+#include	<cbus/smpu98.h>
+#include	<joymng.h>
+#include	<cpucore.h>
+//#include	<sound/s98.h>
 
 #include	<math.h>
 

@@ -1,5 +1,5 @@
-#include	"compiler.h"
-#include	"strres.h"
+#include	<compiler.h>
+#include	<common/strres.h>
 
 
 const UINT8 str_utf8[3] = {0xef, 0xbb, 0xbf};

@@ -3,71 +3,71 @@
  * @brief	Implementation of State save
  */
 
-#include "compiler.h"
-#include "statsave.h"
-#include "strres.h"
-#include "dosio.h"
-#include "commng.h"
-#include "scrnmng.h"
-#include "soundmng.h"
-#include "timemng.h"
-#include "cpucore.h"
-#include "pccore.h"
-#include "iocore.h"
-#include "gdc_sub.h"
-#include "cbuscore.h"
-#include "ideio.h"
-#include "sasiio.h"
-#include "scsiio.h"
-#include "pc9861k.h"
-#include "mpu98ii.h"
+#include <compiler.h>
+#include <statsave.h>
+#include <common/strres.h>
+#include <dosio.h>
+#include <commng.h>
+#include <scrnmng.h>
+#include <soundmng.h>
+#include <timemng.h>
+#include <cpucore.h>
+#include <pccore.h>
+#include <io/iocore.h>
+#include <io/gdc_sub.h>
+#include <cbus/cbuscore.h>
+#include <cbus/ideio.h>
+#include <cbus/sasiio.h>
+#include <cbus/scsiio.h>
+#include <cbus/pc9861k.h>
+#include <cbus/mpu98ii.h>
 #if defined(SUPPORT_SMPU98)
-#include "smpu98.h"
+#include <cbus/smpu98.h>
 #endif
-#include "board14.h"
-#include "amd98.h"
-#include "bios/bios.h"
-#include "vram.h"
-#include "palettes.h"
-#include "maketext.h"
-#include "sound.h"
-#include "fmboard.h"
+#include <cbus/board14.h>
+#include <cbus/amd98.h>
+#include <bios/bios.h>
+#include <vram/vram.h>
+#include <vram/palettes.h>
+#include <vram/maketext.h>
+#include <sound/sound.h>
+#include <sound/fmboard.h>
 #ifdef SUPPORT_SOUND_SB16
-#include "ct1741io.h"
+#include <cbus/ct1741io.h>
 #endif
-#include "beep.h"
-#include "diskimage/fddfile.h"
-#include "fdd/fdd_mtr.h"
-#include "wab/wab_rly.h"
-#include "fdd/sxsi.h"
-#include "font/font.h"
-#include "keydisp.h"
-#include "hostdrv.h"
-#include "calendar.h"
-#include "keystat.h"
-#include "bmsio.h"
+#include <sound/beep.h>
+#include <diskimage/fddfile.h>
+#include <fdd/fdd_mtr.h>
+#include <wab/wab_rly.h>
+#include <fdd/sxsi.h>
+#include <font/font.h>
+#include <generic/keydisp.h>
+#include <generic/hostdrv.h>
+#include <calendar.h>
+#include <keystat.h>
+#include <io/bmsio.h>
 #if defined(SUPPORT_WAB)
-#include "wab/wab.h"
+#include <wab/wab.h>
 #endif
 #if defined(SUPPORT_CL_GD5430)
-#include "wab/cirrus_vga_extern.h"
+#include <wab/cirrus_vga_extern.h>
 #endif
 #if defined(SUPPORT_NET)
-#include "network/net.h"
+#include <network/net.h>
 #endif
 #if defined(SUPPORT_LGY98)
-#include "network/lgy98.h"
-#include "network/lgy98dev.h"
+#include <network/lgy98.h>
+#include <network/lgy98dev.h>
 #endif
 #if defined(CPUCORE_IA32)
-#include "ia32/instructions/fpu/fp.h"
+#include <ia32/instructions/fpu/fp.h>
 #endif
 #if defined(BIOS_IO_EMULATION)
-#include "bios/bios.h"
+#include <bios/bios.h>
 #endif
 #if defined(SUPPORT_IA32_HAXM)
-#include	"i386hax/haxfunc.h"
-#include	"i386hax/haxcore.h"
+#include	<i386hax/haxfunc.h>
+#include	<i386hax/haxcore.h>
 #endif
 
 #ifdef USE_MAME
@@ -81,7 +81,7 @@ extern int sxsi_unittbl[];
 
 #if defined(MACOS)
 #define	CRCONST		str_cr
-#elif defined(_WIN32) || defined(NP2_X11) || defined(NP2_SDL2) || defined(__LIBRETRO__)
+#elif defined(_WIN32) || defined(NP2_X) || defined(NP2_SDL) || defined(__LIBRETRO__)
 #define	CRCONST		str_lf
 #else
 #define	CRCONST		str_crlf

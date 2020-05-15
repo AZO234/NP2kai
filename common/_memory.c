@@ -1,4 +1,4 @@
-#include	"compiler.h"
+#include	<compiler.h>
 
 
 #define	MEMTBLMAX	256
@@ -7,8 +7,8 @@
 
 #if defined(MEMTRACE)
 
-#include	"strres.h"
-#include	"dosio.h"
+#include	<common/strres.h>
+#include	<dosio.h>
 
 #if defined(MACOS)
 #define	CRLITERAL	"\r"

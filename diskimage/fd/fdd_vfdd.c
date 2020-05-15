@@ -1,11 +1,11 @@
-#include	"compiler.h"
-#include	"dosio.h"
-#include	"pccore.h"
-#include	"iocore.h"
+#include	<compiler.h>
+#include	<dosio.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
 
 #ifdef SUPPORT_KAI_IMAGES
 
-#include	"diskimage/fddfile.h"
+#include	<diskimage/fddfile.h>
 #include	"diskimage/fd/fdd_vfdd.h"
 
 static const UINT8 vfdd_verID_100[8] =

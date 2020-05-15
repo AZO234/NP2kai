@@ -1,9 +1,9 @@
-#include	"compiler.h"
-#include	"dosio.h"
-#include	"pccore.h"
-#include	"iocore.h"
+#include	<compiler.h>
+#include	<dosio.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
 
-#include	"diskimage/fddfile.h"
+#include	<diskimage/fddfile.h>
 #include	"diskimage/fd/fdd_d88.h"
 
 #define		D88BUFSIZE		0x6000

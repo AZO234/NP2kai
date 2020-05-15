@@ -1,11 +1,11 @@
-#include	"compiler.h"
-#include	"dosio.h"
-#include	"textfile.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"keystat.h"
+#include	<compiler.h>
+#include	<dosio.h>
+#include	<common/textfile.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<keystat.h>
 #include	"keystat.tbl"
-#include	"softkbd.h"
+#include	<generic/softkbd.h>
 
 
 		NKEYTBL		nkeytbl;

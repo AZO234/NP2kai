@@ -3,10 +3,10 @@
  * @brief	Implementation of OPL3
  */
 
-#include "compiler.h"
+#include <compiler.h>
 #include "opl3.h"
-#include "sound.h"
-#include "generic/keydisp.h"
+#include <sound/sound.h>
+#include <generic/keydisp.h>
 
 static void writeRegister(POPL3 opl3, UINT nAddress, REG8 cData);
 static void writeExtendedRegister(POPL3 opl3, UINT nAddress, REG8 cData);

@@ -3,11 +3,11 @@
  * @brief	Implementation of the profiler
  */
 
-#include "compiler.h"
-#include "strres.h"
-#include "profile.h"
-#include "dosio.h"
-#include "textfile.h"
+#include <compiler.h>
+#include <common/strres.h>
+#include <common/profile.h>
+#include <dosio.h>
+#include <common/textfile.h>
 #if defined(SUPPORT_TEXTCNV)
 #include "codecnv/textcnv.h"
 #endif

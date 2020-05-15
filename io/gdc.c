@@ -1,15 +1,15 @@
-#include	"compiler.h"
-#include	"scrnmng.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
+#include	<compiler.h>
+#include	<scrnmng.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
 #include	"gdc_cmd.tbl"
-#include	"gdc_sub.h"
-#include	"vram.h"
-#include	"palettes.h"
-#include	"timing.h"
+#include	<io/gdc_sub.h>
+#include	<vram/vram.h>
+#include	<vram/palettes.h>
+#include	<timing.h>
 #if defined(BIOS_IO_EMULATION)
-#include	"bios/bios.h"
+#include	<bios/bios.h>
 #endif
 
 #if !defined(CPUCORE_IA32)

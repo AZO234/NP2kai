@@ -1,10 +1,10 @@
-#include	"compiler.h"
-#include	"strres.h"
-#include	"dosio.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"debugsub.h"
+#include	<compiler.h>
+#include	<common/strres.h>
+#include	<dosio.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<debugsub.h>
 
 void debugwriteseg(const OEMCHAR *fname, const descriptor_t *sd,
 												UINT32 addr, UINT32 size);

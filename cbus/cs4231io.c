@@ -1,11 +1,11 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"cs4231io.h"
-#include	"cs4231.h"
-#include	"sound.h"
-#include	"fmboard.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<cbus/cs4231io.h>
+#include	<sound/cs4231.h>
+#include	<sound/sound.h>
+#include	<sound/fmboard.h>
 
 
 static const UINT8 cs4231dma[] = {0xff,0x00,0x01,0x03,0xff,0x00,0x01,0x03};

@@ -5,15 +5,15 @@
 
 // 注意：まだ何も実装してないので使えません（GP-IBボードもそれで動く機器も持ってないし･･･）
 
-#include	"compiler.h"
+#include	<compiler.h>
 
-#include	"dosio.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"bios/biosmem.h"
-#include	"gpibio.h"
-#include	"bios/bios.h"
+#include	<dosio.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<bios/biosmem.h>
+#include	<cbus/gpibio.h>
+#include	<bios/bios.h>
 
 #if defined(SUPPORT_GPIB)
 

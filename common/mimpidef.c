@@ -1,7 +1,7 @@
-#include	"compiler.h"
-#include	"dosio.h"
-#include	"textfile.h"
-#include	"mimpidef.h"
+#include	<compiler.h>
+#include	<dosio.h>
+#include	<common/textfile.h>
+#include	<common/mimpidef.h>
 
 
 static const OEMCHAR str_la[] = OEMTEXT("LA");

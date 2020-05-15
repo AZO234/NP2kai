@@ -1,5 +1,5 @@
-#include	"compiler.h"
-#include	"cpucore.h"
+#include	<compiler.h>
+#include	<cpucore.h>
 #include	"lio.h"
 
 typedef struct {

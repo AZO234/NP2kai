@@ -3,10 +3,10 @@
  * @brief	Implementation of the CS4231
  */
 
-#include "compiler.h"
-#include "cs4231.h"
-#include "iocore.h"
-#include "sound/fmboard.h"
+#include <compiler.h>
+#include <sound/cs4231.h>
+#include <io/iocore.h>
+#include <sound/fmboard.h>
 #include <math.h>
 
 extern	CS4231CFG	cs4231cfg;

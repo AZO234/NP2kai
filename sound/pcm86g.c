@@ -3,8 +3,8 @@
  * @brief	Implementation of the 86-PCM
  */
 
-#include "compiler.h"
-#include "pcm86.h"
+#include <compiler.h>
+#include <sound/pcm86.h>
 
 #define PCM86GET8(p, a)													\
 	do																	\

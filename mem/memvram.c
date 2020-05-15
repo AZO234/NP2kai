@@ -1,9 +1,9 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"memvram.h"
-#include	"vram.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<mem/memvram.h>
+#include	<vram/vram.h>
 
 
 // ---- macros

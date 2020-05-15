@@ -1,15 +1,15 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"vram.h"
-#include	"scrndraw.h"
-#include	"dispsync.h"
-#include	"palettes.h"
-#include	"maketext.h"
-#include	"maketgrp.h"
-#include	"makegrph.h"
-#include	"font/font.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<vram/vram.h>
+#include	<vram/scrndraw.h>
+#include	<vram/dispsync.h>
+#include	<vram/palettes.h>
+#include	<vram/maketext.h>
+#include	<vram/maketgrp.h>
+#include	<vram/makegrph.h>
+#include	<font/font.h>
 #include	"makegrph.mcr"
 
 

@@ -1,9 +1,9 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"commng.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"keystat.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<commng.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<keystat.h>
 
 
 // ---- Keyboard
@@ -278,7 +278,7 @@ void rs232c_callback(void) {
 
 UINT8 rs232c_stat(void) {
 
-#if !defined(NP2_X11) && !defined(NP2_SDL2) && !defined(__LIBRETRO__)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 	if (cm_rs232c == NULL) {
 #if defined(VAEG_FIX)
 		rs232c_open();

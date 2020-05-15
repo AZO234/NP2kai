@@ -1,10 +1,10 @@
 #if defined(SUPPORT_NP2_TICKCOUNT)
 
-#include "np2_tickcount.h"
+#include <np2_tickcount.h>
 #include <time.h>
 #if defined(NP2_WIN)
 #include <windows.h>
-#elif defined(NP2_SDL2)
+#elif defined(NP2_SDL)
 #include <SDL.h>
 #elif defined(__LIBRETRO__)
 #include <features/features_cpu.h>
@@ -22,7 +22,7 @@ int64_t NP2_TickCount_GetCount(void) {
   LARGE_INTEGER count;
   QueryPerformanceCounter(&count);
   return count.QuadPart;
-#elif defined(NP2_SDL2)
+#elif defined(NP2_SDL)
 #if SDL_MAJOR_VERSION == 1
   return SDL_GetTicks();
 #else
@@ -44,7 +44,7 @@ int64_t NP2_TickCount_GetFrequency(void) {
   LARGE_INTEGER freq;
   QueryPerformanceFrequency(&freq);
   return freq.QuadPart;
-#elif defined(NP2_SDL2)
+#elif defined(NP2_SDL)
 #if SDL_MAJOR_VERSION == 1
   return 100000000;
 #else

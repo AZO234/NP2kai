@@ -3,11 +3,11 @@
  * @brief	Implementation of the sound rom
  */
 
-#include "compiler.h"
-#include "soundrom.h"
-#include "cpucore.h"
-#include "pccore.h"
-#include "dosio.h"
+#include <compiler.h>
+#include <sound/soundrom.h>
+#include <cpucore.h>
+#include <pccore.h>
+#include <dosio.h>
 
 	SOUNDROM	soundrom;
 

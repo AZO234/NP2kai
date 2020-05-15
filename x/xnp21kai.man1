@@ -1,0 +1,137 @@
+.TH Xnp21kai 1 "Feb 5, 2018"
+.SH NAME
+Xnp21kai \- PC-9801 series emulator with IA-32 emulation
+.SH SYNOPSIS
+.B xnp21kai
+[
+.B \--config filename
+]
+[
+.B \--timidity-config filename
+]
+[
+.B FD1 image
+[
+.B FD2 image
+[
+.B FD3 image
+[
+.B FD4 image
+]
+]
+]
+]
+.SH DESCRIPTION
+.B PC-9801 series emulator with IA-32 emulation for UNIX platform.
+.SH OPTIONS
+.TP
+.B \--config
+Indicate Xnp21kai configuration file.
+[Default: $(HOME)/.config/xnp21kai/xnp21kairc]
+.TP
+.B \--timidity-config
+Indicate Xnp21kai included software MIDI configuration file.
+[Default: $(HOME)/.config/xnp21kai/timidity.cfg]
+.SH EXAMPLES
+.nf
+Indicate Xnp21kai configuration file "xnp21kai.cfg".
+.ft B
+xnp21kai --config xnp21kai.cfg
+.ft R
+
+Indicate software MIDI configuration file "/usr/local/lib/timidity/timidity.cfg".
+.ft B
+xnp21kai --timidity-config /usr/local/lib/timidity/timidity.cfg
+.ft R
+
+Insert system.d88 disk image in floppy disk drive1, insert data.d88 disk image in floopy disk drive2. And Xnp21kai is started.
+.ft B
+xnp21kai system.d88 data.d88
+.ft R
+.fi
+.SH COMMAND
+.TP
+.B Mouse middle button
+Change mouse operation between X and Xnp21kai.
+.SH FILES
+.TP
+.B $(HOME)/.config/xnp21kai/xnp21kairc
+Xnp21kai configuration file
+.TP
+.B $(HOME)/.config/xnp21kai/font.tmp
+font bitmap file
+.TP
+.B $(HOME)/.config/xnp21kai/bios.rom
+BIOS ROM file
+.TP
+.B $(HOME)/.config/xnp21kai/FONT.ROM
+font ROM file
+.TP
+.B $(HOME)/.config/xnp21kai/sound26.rom
+PC-9801-26K BIOS ROM file
+.TP
+.B $(HOME)/.config/xnp21kai/sound86.rom
+PC-9801-86 BIOS ROM file
+.TP
+.B $(HOME)/.config/xnp21kai/sound118.rom
+PC-9801-118 BIOS ROM file
+.TP
+.B $(HOME)/.config/xnp21kai/soundSPB.rom
+Speak board BIOS ROM file
+.TP
+.B $(HOME)/.config/xnp21kai/SCCI.ini
+SCCI (Sound Chip Common Interface) configuration file
+.TP
+.B $(HOME)/.config/xnp21kai/timidity.cfg
+included software MIDI configuration file
+.TP
+.B $(HOME)/.config/xnp21kai/2608_bd.wav
+OPNA rythm sound source (bass drum)
+.TP
+.B $(HOME)/.config/xnp21kai/2608_sd.wav
+OPNA rythm sound source (snare drum)
+.TP
+.B $(HOME)/.config/xnp21kai/2608_top.wav
+OPNA rythm sound source (Cymbal)
+.TP
+.B $(HOME)/.config/xnp21kai/2608_hh.wav
+OPNA rythm sound source (High hat)
+.TP
+.B $(HOME)/.config/xnp21kai/2608_tom.wav
+OPNA rythm sound source (Tamm)
+.TP
+.B $(HOME)/.config/xnp21kai/2608_rim.wav
+OPNA rythm sound source (Rim shor)
+.TP
+.B $(HOME)/.config/xnp21kai/np2tool.d88
+disk image for hostdrv.
+.TP
+.B $(HOME)/.config/xnp21kai/fddseek.wav
+floppy disk seek sound file
+.TP
+.B $(HOME)/.config/xnp21kai/fddseek1.wav
+another floppy disk seek sound file
+.SH AUTHOR
+Yui <np2@yui.ne.jp>, the
+.B Neko Project II
+main developer, who is maintainer for MS-Windows, MacOS 8.x and MacOS 9 versions.
+.br
+NONAKA Kimihiro <nonakap@gmail.com>, who ported
+.B Neko Project II
+to the UNIX platform.
+.br
+tk800 <tk_np2x@yahoo.co.jp>, who ported
+.B Neko Project IIx
+to MacOS X.
+.SH "SEE ALSO"
+.B Xnp2
+Web site: http://www.nonakap.org/np2/ (japanese)
+.br
+AZO234 <typesylph@gmail.com>,
+.B Neko Project II kai
+to libretro.
+.SH "SEE ALSO"
+.B Xnp2kai
+Web site: http://domisan.sakura.ne.jp/article/np2kai/np2kai.html (japanese)
+.br
+

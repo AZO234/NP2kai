@@ -6,9 +6,9 @@
 #ifdef CODECNV_TEST
 #include "compiler_base.h"
 #else
-#include "compiler.h"
+#include <compiler.h>
 #endif
-#include "codecnv.h"
+#include <codecnv/codecnv.h>
 
 //! undefined code
 #define	UDCODE	0x30fb

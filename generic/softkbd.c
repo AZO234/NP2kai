@@ -1,10 +1,10 @@
-#include	"compiler.h"
+#include	<compiler.h>
 
 #if defined(SUPPORT_SOFTKBD)
 
-#include	"bmpdata.h"
-#include	"softkbd.h"
-#include	"keystat.h"
+#include	<common/bmpdata.h>
+#include	<generic/softkbd.h>
+#include	<keystat.h>
 
 
 #define	SOFTKEY_MENU	0xfe

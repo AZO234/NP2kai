@@ -1,8 +1,8 @@
-#include	"compiler.h"
-#include	"fontmng.h"
-#include	"vramhdl.h"
+#include	<compiler.h>
+#include	<fontmng.h>
+#include	<embed/vramhdl.h>
 #include	"menudeco.inc"
-#include	"menubase.h"
+#include	<embed/menubase/menubase.h>
 
 
 typedef struct {

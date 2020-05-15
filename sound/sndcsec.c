@@ -3,7 +3,7 @@
  * @brief	Implementation of the critical section for sound
  */
 
-#include "compiler.h"
+#include <compiler.h>
 #include "sndcsec.h"
 
 #if defined(SOUND_CRITICAL) && defined(SUPPORT_NP2_THREAD)

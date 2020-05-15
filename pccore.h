@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "nevent.h"
+#include <nevent.h>
 
 enum {
 	PCBASECLOCK25		= 2457600,

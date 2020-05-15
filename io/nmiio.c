@@ -1,6 +1,6 @@
-#include	"compiler.h"
-#include	"pccore.h"
-#include	"iocore.h"
+#include	<compiler.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
 
 
 // ---- I/O

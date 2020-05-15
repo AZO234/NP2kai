@@ -1,4 +1,4 @@
-#include "compiler.h"
+#include <compiler.h>
 #include "img_dosio.h"
 
 INT64 DOSIOCALL file_seeki64(FILEH handle, INT64 pointer, int method) {

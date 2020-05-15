@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "nevent.h"
+#include <nevent.h>
 #include "opna.h"
 
 #ifdef __cplusplus

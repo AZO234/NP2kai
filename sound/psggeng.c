@@ -3,9 +3,9 @@
  * @brief	Implementation of the PSG
  */
 
-#include "compiler.h"
+#include <compiler.h>
 #include "psggen.h"
-#include "parts.h"
+#include <common/parts.h>
 
 extern	PSGGENCFG	psggencfg;
 

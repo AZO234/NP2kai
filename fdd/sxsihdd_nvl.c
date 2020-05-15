@@ -1,16 +1,16 @@
-#include	"compiler.h"
+#include	<compiler.h>
 
 #ifdef SUPPORT_NVL_IMAGES
 
 #if !defined(_WIN32)
 #include	<dlfcn.h>
 #endif
-#include	"strres.h"
-#include	"dosio.h"
-#include	"sysmng.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"sxsi.h"
+#include	<common/strres.h>
+#include	<dosio.h>
+#include	<sysmng.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<fdd/sxsi.h>
 
 
 #if defined(_WIN32)

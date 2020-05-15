@@ -1,22 +1,22 @@
-#include	"compiler.h"
-#include	"cpucore.h"
+#include	<compiler.h>
+#include	<cpucore.h>
 #include	"i286c.h"
 #include	"v30patch.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"dmax86.h"
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<mem/dmax86.h>
 #include	"i286c.mcr"
 #if defined(ENABLE_TRAP)
 #include "trap/steptrap.h"
 #endif
 #if defined(SUPPORT_ASYNC_CPU)
-#include "timing.h"
-#include "nevent.h"
-#include	"sound/sound.h"
-#include	"sound/beep.h"
-#include	"sound/fmboard.h"
-#include	"sound/soundrom.h"
-#include	"cbus/mpu98ii.h"
+#include <timing.h>
+#include <nevent.h>
+#include	<sound/sound.h>
+#include	<sound/beep.h>
+#include	<sound/fmboard.h>
+#include	<sound/soundrom.h>
+#include	<cbus/mpu98ii.h>
 #endif
 
 

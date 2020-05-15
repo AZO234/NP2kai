@@ -1,13 +1,13 @@
-#include	"compiler.h"
+#include	<compiler.h>
 #if !defined(DISABLE_MATH_H)
 #include	<math.h>
 #endif
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"gdc_sub.h"
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<io/gdc_sub.h>
 #include	"gdc_pset.h"
-#include	"vram.h"
+#include	<vram/vram.h>
 
 
 enum {

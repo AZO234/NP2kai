@@ -23,8 +23,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "compiler.h"
-#include "ia32/cpu.h"
+#include <compiler.h>
+#include <ia32/cpu.h>
 #include "ia32/ia32.mcr"
 #include "arith.mcr"
 

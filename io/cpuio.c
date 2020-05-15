@@ -1,10 +1,10 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
 
 //#ifdef SUPPORT_IDEIO
-//#include	"fdd/sxsi.h"
+//#include	<fdd/sxsi.h>
 //int ide_f0portread = 0;
 //#endif
 

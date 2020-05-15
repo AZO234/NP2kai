@@ -1,9 +1,9 @@
-#include	"compiler.h"
-#include	"strres.h"
-#include	"textfile.h"
-#include	"dosio.h"
-#include	"sysmng.h"
-#include	"sxsi.h"
+#include	<compiler.h>
+#include	<common/strres.h>
+#include	<common/textfile.h>
+#include	<dosio.h>
+#include	<sysmng.h>
+#include	<fdd/sxsi.h>
 
 #ifdef SUPPORT_PHYSICAL_CDDRV
 
@@ -149,8 +149,8 @@ BRESULT sxsicd_readraw(SXSIDEV sxsi, FILEPOS pos, void *buf) {
 
 #else /* SUPPORT_KAI_IMAGES */
 // 旧処理もとりあえず残しておく
-#include	"cpucore.h"
-#include	"pccore.h"
+#include	<cpucore.h>
+#include	<pccore.h>
 
 static const UINT8 cd001[7] = {0x01,'C','D','0','0','1',0x01};
 

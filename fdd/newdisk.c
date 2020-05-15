@@ -1,11 +1,11 @@
-#include	"compiler.h"
+#include	<compiler.h>
 #if defined(OSLANG_UTF8) || defined(OSLANG_UCS2)
 #include	"oemtext.h"
 #endif
-#include	"dosio.h"
+#include	<dosio.h>
 #include	"newdisk.h"
-#include	"diskimage/fddfile.h"
-#include	"sxsi.h"
+#include	<diskimage/fddfile.h>
+#include	<fdd/sxsi.h>
 #include	"hddboot.res"
 
 #ifdef SUPPORT_VPCVHD

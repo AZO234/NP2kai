@@ -1,8 +1,8 @@
-#include	"compiler.h"
-#include	"vramhdl.h"
-#include	"vrammix.h"
+#include	<compiler.h>
+#include	<embed/vramhdl.h>
+#include	<embed/vrammix.h>
 #include	"menudeco.inc"
-#include	"menubase.h"
+#include	<embed/menubase/menubase.h>
 
 
 UINT32	menucolor[] = {

@@ -1,10 +1,10 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"memtram.h"
-#include	"vram.h"
-#include	"font/font.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<mem/memtram.h>
+#include	<vram/vram.h>
+#include	<font/font.h>
 
 
 REG8 MEMCALL memtram_rd8(UINT32 address) {

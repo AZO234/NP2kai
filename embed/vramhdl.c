@@ -1,6 +1,6 @@
-#include	"compiler.h"
-#include	"resize.h"
-#include	"vramhdl.h"
+#include	<compiler.h>
+#include	<common/resize.h>
+#include	<embed/vramhdl.h>
 
 
 VRAMHDL vram_create(int width, int height, BOOL alpha, int bpp) {

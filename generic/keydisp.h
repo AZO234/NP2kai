@@ -7,7 +7,7 @@
 
 #if defined(SUPPORT_KEYDISP)
 
-#include "cmndraw.h"
+#include <generic/cmndraw.h>
 
 struct _cmnpalfn
 {

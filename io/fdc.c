@@ -2,16 +2,16 @@
 // FDC μPD765A
 //
 
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"diskimage/fddfile.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<diskimage/fddfile.h>
 #if defined(SUPPORT_SWSEEKSND)
-#include	"sound/pcmmix.h"
-#include	"fdd_mtr.res"
+#include	<sound/pcmmix.h>
+#include	<fdd/fdd_mtr.res>
 #endif
-#include	"soundmng.h"
+#include	<soundmng.h>
 
 #if 1
 #undef	TRACEOUT

@@ -1,7 +1,7 @@
-#include	"compiler.h"
-#include	"vramhdl.h"
-#include	"menubase.h"
-#include	"menustr.h"
+#include	<compiler.h>
+#include	<embed/vramhdl.h>
+#include	<embed/menubase/menubase.h>
+#include	<embed/menu/menustr.h>
 
 
 const OEMCHAR mstr_cfg[] = OEMTEXT("Configure");

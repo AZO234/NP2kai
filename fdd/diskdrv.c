@@ -3,14 +3,14 @@
  * @brief	Implementation of the disk-drive
  */
 
-#include "compiler.h"
-#include "diskdrv.h"
-#include "dosio.h"
-#include "sysmng.h"
-#include "pccore.h"
-#include "iocore.h"
-#include "diskimage/fddfile.h"
-#include "sxsi.h"
+#include <compiler.h>
+#include <fdd/diskdrv.h>
+#include <dosio.h>
+#include <sysmng.h>
+#include <pccore.h>
+#include <io/iocore.h>
+#include <diskimage/fddfile.h>
+#include <fdd/sxsi.h>
 
 #define DISK_DELAY	20			/*!< Delay 0.4sec */
 
