@@ -809,7 +809,8 @@ static void np2exec()
 	while(taskmng_isavail()) {
 		taskmng_rol();
 #if defined(EMSCRIPTEN) && !defined(__LIBRETRO__)
-		emscripten_sleep_with_yield(0);
+//		emscripten_sleep_with_yield(0);
+		emscripten_sleep(0);
 #endif
 		if (np2oscfg.NOWAIT) {
 			joymng_sync();
