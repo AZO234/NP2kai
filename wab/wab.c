@@ -173,10 +173,7 @@ void wabwin_writeini()
 {
 	if(!np2wabcfg.readonly){
 		TCHAR szPath[MAX_PATH];
-#if defined(NP2_SDL) || defined(__LIBRETRO__)
-		milstr_ncpy(szPath, modulefile, sizeof(szPath));
-		ini_write(szPath, g_Name, s_wabwndini, NELEMENTS(s_wabwndini));
-#elif defined(NP2_X)
+#if defined(NP2_SDL) || defined(__LIBRETRO__) || defined(NP2_X)
 		milstr_ncpy(szPath, modulefile, sizeof(szPath));
 		ini_write(szPath, g_Name, s_wabwndini, NELEMENTS(s_wabwndini), FALSE);
 #else
