@@ -203,7 +203,7 @@ $ cmake .. -D BUILD_X=ON
 $ make -j
 ```
 
-- CMake options of SDL port
+- CMake options of X port (*=default)
 
 |name|value|work|output|
 |:---:|:---:|:---:|:---:|
@@ -276,7 +276,7 @@ $ emcmake cmake ..
 $ make -j
 ```
 
-- CMake options of Emscripten port
+- CMake options of Emscripten port (*=default)
 
 |name|value|work|output|
 |:---:|:---:|:---:|:---:|
@@ -338,16 +338,19 @@ $ cmake .. -D BUILD_OPENDINGUX_RS90=ON
 $ make -j
 ```
 
-- CMake options of OpenDingux port
+- CMake options of OpenDingux port (*=default)
 
 |name|value|work|output|
 |:---:|:---:|:---:|:---:|
+|BUILD_OPENDINGUX_GCW0|ON|Build OpenDingux GCW0|np21kai_gcw0.opk|
+|BUILD_OPENDINGUX_RG350|ON|Build OpenDingux RG350|np21kai_rg350.opk|
+|BUILD_OPENDINGUX_RS90|ON|Build OpenDingux RS90|np21kai_rs90.opk|
 |USE_SDL2|ON*|Build with SDL2|&lt;machine&gt;_np21kai.opk|
 |USE_SDL2|OFF|Build with SDL|&lt;machine&gt;_np21kai_sdl1.opk|
 |USE_SDL_MIXER|ON*|Build with SDL_mixer or SDL2_mixer||
 |USE_SDL_TTF|ON*|Build with SDL_ttf or SDL2_ttf||
-|BUILD_I286|ON|Build i286|&lt;machine&gt;_np2kai.opk|
-|BUILD_I286|OFF*|Build IA-32|&lt;machine&gt;_np21kai.opk|
+|BUILD_I286|ON|Build i286|np2kai_&lt;machine&gt;.opk|
+|BUILD_I286|OFF*|Build IA-32|np21kai_&lt;machine&gt;.opk|
 
   - RS90 port cannot be with SDL2
   - RS90 port cannot be with SDL_ttf

@@ -705,15 +705,65 @@ if(CMAKE_CROSSCOMPILING)
 
 		add_executable(np2kai_gcw0_sdl1)
 		target_link_libraries(np2kai_gcw0_sdl1 PUBLIC NP2kai_base NP2kai_gcw0_SDL1_base)
+		add_custom_command(
+			TARGET np2kai_gcw0_sdl1
+			POST_BUILD
+			COMMENT "Genarate .opk pack."
+			COMMAND cp -r ${NP2kai_SOURCE_DIR}/sdl/opendingux/opk ${NP2kai_BINARY_DIR}/np2kai_gcw0_sdl1_opk
+			COMMAND mv np2kai_gcw0_sdl1.opk ${NP2kai_BINARY_DIR}/np2kai_gcw0_sdl1_opk/
+			COMMAND rm ${NP2kai_BINARY_DIR}/np2kai_gcw0_sdl1_opk/default_opendingux_np21kai_desktop
+			COMMAND sed -i -e 's/Name=NP2kai/Name=NP2kai(SDL1)/g' ${NP2kai_BINARY_DIR}/np2kai_gcw0_sdl1_opk/default_opendingux_np2kai_desktop
+			COMMAND sed -i -e 's/Exec=np2kai/Exec=np2kai_gcw0_sdl1/g' ${NP2kai_BINARY_DIR}/np2kai_gcw0_sdl1_opk/default_opendingux_np2kai_desktop
+			COMMAND mv ${NP2kai_BINARY_DIR}/np2kai_gcw0_sdl1_opk/default_opendingux_np2kai_desktop ${NP2kai_BINARY_DIR}/np2kai_gcw0_sdl1_opk/default_opendingux_np2kai_gcw0_sdl1.desktop
+			COMMAND mksquashfs ${NP2kai_BINARY_DIR}/np2kai_gcw0_sdl1_opk ${NP2kai_BINARY_DIR}/np2kai_gcw0_sdl1.opk -all-root -noappend -no-exports
+			COMMAND rm -r ${NP2kai_BINARY_DIR}/np2kai_gcw0_sdl1_opk
+		)
 
 		add_executable(np21kai_gcw0_sdl1)
 		target_link_libraries(np21kai_gcw0_sdl1 PUBLIC NP21kai_base NP2kai_gcw0_SDL1_base)
+		add_custom_command(
+			TARGET np21kai_gcw0_sdl1
+			POST_BUILD
+			COMMENT "Genarate .opk pack."
+			COMMAND cp -r ${NP2kai_SOURCE_DIR}/sdl/opendingux/opk ${NP2kai_BINARY_DIR}/np21kai_gcw0_sdl1_opk
+			COMMAND mv np21kai_gcw0_sdl1.opk ${NP2kai_BINARY_DIR}/np21kai_gcw0_sdl1_opk/
+			COMMAND rm ${NP2kai_BINARY_DIR}/np21kai_gcw0_sdl1_opk/default_opendingux_np2kai_desktop
+			COMMAND sed -i -e 's/Name=NP21kai/Name=NP21kai(SDL1)/g' ${NP2kai_BINARY_DIR}/np21kai_gcw0_sdl1_opk/default_opendingux_np21kai_desktop
+			COMMAND sed -i -e 's/Exec=np21kai/Exec=np21kai_gcw0_sdl1/g' ${NP2kai_BINARY_DIR}/np21kai_gcw0_sdl1_opk/default_opendingux_np21kai_desktop
+			COMMAND mv ${NP2kai_BINARY_DIR}/np21kai_gcw0_sdl1_opk/default_opendingux_np21kai_desktop ${NP2kai_BINARY_DIR}/np21kai_gcw0_sdl1_opk/default_opendingux_np21kai_gcw0_sdl1.desktop
+			COMMAND mksquashfs ${NP2kai_BINARY_DIR}/np21kai_gcw0_sdl1_opk ${NP2kai_BINARY_DIR}/np21kai_gcw0_sdl1.opk -all-root -noappend -no-exports
+			COMMAND rm -r ${NP2kai_BINARY_DIR}/np21kai_gcw0_sdl1_opk
+		)
 
 		add_executable(np2kai_gcw0)
 		target_link_libraries(np2kai_gcw0 PUBLIC NP2kai_base NP2kai_gcw0_SDL2_base)
+		add_custom_command(
+			TARGET np2kai_gcw0
+			POST_BUILD
+			COMMENT "Genarate .opk pack."
+			COMMAND cp -r ${NP2kai_SOURCE_DIR}/sdl/opendingux/opk ${NP2kai_BINARY_DIR}/np2kai_gcw0_opk
+			COMMAND mv np2kai_gcw0.opk ${NP2kai_BINARY_DIR}/np2kai_gcw0_opk/
+			COMMAND rm ${NP2kai_BINARY_DIR}/np2kai_gcw0_opk/default_opendingux_np21kai_desktop
+			COMMAND sed -i -e 's/Exec=np2kai/Exec=np2kai_gcw0/g' ${NP2kai_BINARY_DIR}/np2kai_gcw0_opk/default_opendingux_np2kai_desktop
+			COMMAND mv ${NP2kai_BINARY_DIR}/np2kai_gcw0_opk/default_opendingux_np2kai_desktop ${NP2kai_BINARY_DIR}/np2kai_gcw0_opk/default_opendingux_np2kai_gcw0.desktop
+			COMMAND mksquashfs ${NP2kai_BINARY_DIR}/np2kai_gcw0_opk ${NP2kai_BINARY_DIR}/np2kai_gcw0.opk -all-root -noappend -no-exports
+			COMMAND rm -r ${NP2kai_BINARY_DIR}/np2kai_gcw0_opk
+		)
 
 		add_executable(np21kai_gcw0)
 		target_link_libraries(np21kai_gcw0 PUBLIC NP21kai_base NP2kai_gcw0_SDL2_base)
+		add_custom_command(
+			TARGET np21kai_gcw0
+			POST_BUILD
+			COMMENT "Genarate .opk pack."
+			COMMAND cp -r ${NP2kai_SOURCE_DIR}/sdl/opendingux/opk ${NP2kai_BINARY_DIR}/np21kai_gcw0_opk
+			COMMAND mv np21kai_gcw0.opk ${NP2kai_BINARY_DIR}/np21kai_gcw0_opk/
+			COMMAND rm ${NP2kai_BINARY_DIR}/np21kai_gcw0_opk/default_opendingux_np2kai_desktop
+			COMMAND sed -i -e 's/Exec=np21kai/Exec=np21kai_gcw0/g' ${NP2kai_BINARY_DIR}/np21kai_gcw0_opk/default_opendingux_np21kai_desktop
+			COMMAND mv ${NP2kai_BINARY_DIR}/np21kai_gcw0_opk/default_opendingux_np21kai_desktop ${NP2kai_BINARY_DIR}/np21kai_gcw0_opk/default_opendingux_np21kai_gcw0.desktop
+			COMMAND mksquashfs ${NP2kai_BINARY_DIR}/np21kai_gcw0_opk ${NP2kai_BINARY_DIR}/np21kai_gcw0.opk -all-root -noappend -no-exports
+			COMMAND rm -r ${NP2kai_BINARY_DIR}/np21kai_gcw0_opk
+		)
 
 		if(NOT BUILD_I286)
 			set_target_properties(np2kai_gcw0_sdl1 np2kai_gcw0 PROPERTIES EXCLUDE_FROM_ALL true)
@@ -730,15 +780,65 @@ if(CMAKE_CROSSCOMPILING)
 
 		add_executable(np2kai_rg350_sdl1)
 		target_link_libraries(np2kai_rg350_sdl1 PUBLIC NP2kai_base NP2kai_rg350_SDL1_base)
+		add_custom_command(
+			TARGET np2kai_rg350_sdl1
+			POST_BUILD
+			COMMENT "Genarate .opk pack."
+			COMMAND cp -r ${NP2kai_SOURCE_DIR}/sdl/opendingux/opk ${NP2kai_BINARY_DIR}/np2kai_rg350_sdl1_opk
+			COMMAND mv np2kai_rg350_sdl1.opk ${NP2kai_BINARY_DIR}/np2kai_rg350_sdl1_opk/
+			COMMAND rm ${NP2kai_BINARY_DIR}/np2kai_rg350_sdl1_opk/default_opendingux_np21kai_desktop
+			COMMAND sed -i -e 's/Name=NP2kai/Name=NP2kai(SDL1)/g' ${NP2kai_BINARY_DIR}/np2kai_rg350_sdl1_opk/default_opendingux_np2kai_desktop
+			COMMAND sed -i -e 's/Exec=np2kai/Exec=np2kai_rg350_sdl1/g' ${NP2kai_BINARY_DIR}/np2kai_rg350_sdl1_opk/default_opendingux_np2kai_desktop
+			COMMAND mv ${NP2kai_BINARY_DIR}/np2kai_rg350_sdl1_opk/default_opendingux_np2kai_desktop ${NP2kai_BINARY_DIR}/np2kai_rg350_sdl1_opk/default_opendingux_np2kai_rg350_sdl1.desktop
+			COMMAND mksquashfs ${NP2kai_BINARY_DIR}/np2kai_rg350_sdl1_opk ${NP2kai_BINARY_DIR}/np2kai_rg350_sdl1.opk -all-root -noappend -no-exports
+			COMMAND rm -r ${NP2kai_BINARY_DIR}/np2kai_rg350_sdl1_opk
+		)
 
 		add_executable(np21kai_rg350_sdl1)
 		target_link_libraries(np21kai_rg350_sdl1 PUBLIC NP21kai_base NP2kai_rg350_SDL1_base)
+		add_custom_command(
+			TARGET np21kai_rg350_sdl1
+			POST_BUILD
+			COMMENT "Genarate .opk pack."
+			COMMAND cp -r ${NP2kai_SOURCE_DIR}/sdl/opendingux/opk ${NP2kai_BINARY_DIR}/np21kai_rg350_sdl1_opk
+			COMMAND mv np21kai_rg350_sdl1.opk ${NP2kai_BINARY_DIR}/np21kai_rg350_sdl1_opk/
+			COMMAND rm ${NP2kai_BINARY_DIR}/np21kai_rg350_sdl1_opk/default_opendingux_np2kai_desktop
+			COMMAND sed -i -e 's/Name=NP21kai/Name=NP21kai(SDL1)/g' ${NP2kai_BINARY_DIR}/np21kai_rg350_sdl1_opk/default_opendingux_np21kai_desktop
+			COMMAND sed -i -e 's/Exec=np21kai/Exec=np21kai_rg350_sdl1/g' ${NP2kai_BINARY_DIR}/np21kai_rg350_sdl1_opk/default_opendingux_np21kai_desktop
+			COMMAND mv ${NP2kai_BINARY_DIR}/np21kai_rg350_sdl1_opk/default_opendingux_np21kai_desktop ${NP2kai_BINARY_DIR}/np21kai_rg350_sdl1_opk/default_opendingux_np21kai_rg350_sdl1.desktop
+			COMMAND mksquashfs ${NP2kai_BINARY_DIR}/np21kai_rg350_sdl1_opk ${NP2kai_BINARY_DIR}/np21kai_rg350_sdl1.opk -all-root -noappend -no-exports
+			COMMAND rm -r ${NP2kai_BINARY_DIR}/np21kai_rg350_sdl1_opk
+		)
 
 		add_executable(np2kai_rg350)
 		target_link_libraries(np2kai_rg350 PUBLIC NP2kai_base NP2kai_rg350_SDL2_base)
+		add_custom_command(
+			TARGET np2kai_rg350
+			POST_BUILD
+			COMMENT "Genarate .opk pack."
+			COMMAND cp -r ${NP2kai_SOURCE_DIR}/sdl/opendingux/opk ${NP2kai_BINARY_DIR}/np2kai_rg350_opk
+			COMMAND mv np2kai_rg350.opk ${NP2kai_BINARY_DIR}/np2kai_rg350_opk/
+			COMMAND rm ${NP2kai_BINARY_DIR}/np2kai_rg350_opk/default_opendingux_np21kai_desktop
+			COMMAND sed -i -e 's/Exec=np2kai/Exec=np2kai_rg350/g' ${NP2kai_BINARY_DIR}/np2kai_rg350_opk/default_opendingux_np2kai_desktop
+			COMMAND mv ${NP2kai_BINARY_DIR}/np2kai_rg350_opk/default_opendingux_np2kai_desktop ${NP2kai_BINARY_DIR}/np2kai_rg350_opk/default_opendingux_np2kai_rg350.desktop
+			COMMAND mksquashfs ${NP2kai_BINARY_DIR}/np2kai_rg350_opk ${NP2kai_BINARY_DIR}/np2kai_rg350.opk -all-root -noappend -no-exports
+			COMMAND rm -r ${NP2kai_BINARY_DIR}/np2kai_rg350_opk
+		)
 
 		add_executable(np21kai_rg350)
 		target_link_libraries(np21kai_rg350 PUBLIC NP21kai_base NP2kai_rg350_SDL2_base)
+		add_custom_command(
+			TARGET np21kai_rg350
+			POST_BUILD
+			COMMENT "Genarate .opk pack."
+			COMMAND cp -r ${NP2kai_SOURCE_DIR}/sdl/opendingux/opk ${NP2kai_BINARY_DIR}/np21kai_rg350_opk
+			COMMAND mv np21kai_rg350.opk ${NP2kai_BINARY_DIR}/np21kai_rg350_opk/
+			COMMAND rm ${NP2kai_BINARY_DIR}/np21kai_rg350_opk/default_opendingux_np2kai_desktop
+			COMMAND sed -i -e 's/Exec=np21kai/Exec=np21kai_rg350/g' ${NP2kai_BINARY_DIR}/np21kai_rg350_opk/default_opendingux_np21kai_desktop
+			COMMAND mv ${NP2kai_BINARY_DIR}/np21kai_rg350_opk/default_opendingux_np21kai_desktop ${NP2kai_BINARY_DIR}/np21kai_rg350_opk/default_opendingux_np21kai_rg350.desktop
+			COMMAND mksquashfs ${NP2kai_BINARY_DIR}/np21kai_rg350_opk ${NP2kai_BINARY_DIR}/np21kai_rg350.opk -all-root -noappend -no-exports
+			COMMAND rm -r ${NP2kai_BINARY_DIR}/np21kai_rg350_opk
+		)
 
 		if(NOT BUILD_I286)
 			set_target_properties(np2kai_rg350_sdl1 np2kai_rg350 PROPERTIES EXCLUDE_FROM_ALL true)
@@ -755,15 +855,65 @@ if(CMAKE_CROSSCOMPILING)
 
 		add_executable(np2kai_rs90_sdl1)
 		target_link_libraries(np2kai_rs90_sdl1 PUBLIC NP2kai_base NP2kai_rs90_SDL1_base)
+		add_custom_command(
+			TARGET np2kai_rs90_sdl1
+			POST_BUILD
+			COMMENT "Genarate .opk pack."
+			COMMAND cp -r ${NP2kai_SOURCE_DIR}/sdl/opendingux/opk ${NP2kai_BINARY_DIR}/np2kai_rs90_sdl1_opk
+			COMMAND mv np2kai_rs90_sdl1.opk ${NP2kai_BINARY_DIR}/np2kai_rs90_sdl1_opk/
+			COMMAND rm ${NP2kai_BINARY_DIR}/np2kai_rs90_sdl1_opk/default_opendingux_np21kai_desktop
+			COMMAND sed -i -e 's/Name=NP2kai/Name=NP2kai(SDL1)/g' ${NP2kai_BINARY_DIR}/np2kai_rs90_sdl1_opk/default_opendingux_np2kai_desktop
+			COMMAND sed -i -e 's/Exec=np2kai/Exec=np2kai_rs90_sdl1/g' ${NP2kai_BINARY_DIR}/np2kai_rs90_sdl1_opk/default_opendingux_np2kai_desktop
+			COMMAND mv ${NP2kai_BINARY_DIR}/np2kai_rs90_sdl1_opk/default_opendingux_np2kai_desktop ${NP2kai_BINARY_DIR}/np2kai_rs90_sdl1_opk/default_opendingux_np2kai_rs90_sdl1.desktop
+			COMMAND mksquashfs ${NP2kai_BINARY_DIR}/np2kai_rs90_sdl1_opk ${NP2kai_BINARY_DIR}/np2kai_rs90_sdl1.opk -all-root -noappend -no-exports
+			COMMAND rm -r ${NP2kai_BINARY_DIR}/np2kai_rs90_sdl1_opk
+		)
 
 		add_executable(np21kai_rs90_sdl1)
 		target_link_libraries(np21kai_rs90_sdl1 PUBLIC NP21kai_base NP2kai_rs90_SDL1_base)
+		add_custom_command(
+			TARGET np21kai_rs90_sdl1
+			POST_BUILD
+			COMMENT "Genarate .opk pack."
+			COMMAND cp -r ${NP2kai_SOURCE_DIR}/sdl/opendingux/opk ${NP2kai_BINARY_DIR}/np21kai_rs90_sdl1_opk
+			COMMAND mv np21kai_rs90_sdl1.opk ${NP2kai_BINARY_DIR}/np21kai_rs90_sdl1_opk/
+			COMMAND rm ${NP2kai_BINARY_DIR}/np21kai_rs90_sdl1_opk/default_opendingux_np2kai_desktop
+			COMMAND sed -i -e 's/Name=NP21kai/Name=NP21kai(SDL1)/g' ${NP2kai_BINARY_DIR}/np21kai_rs90_sdl1_opk/default_opendingux_np21kai_desktop
+			COMMAND sed -i -e 's/Exec=np21kai/Exec=np21kai_rs90_sdl1/g' ${NP2kai_BINARY_DIR}/np21kai_rs90_sdl1_opk/default_opendingux_np21kai_desktop
+			COMMAND mv ${NP2kai_BINARY_DIR}/np21kai_rs90_sdl1_opk/default_opendingux_np21kai_desktop ${NP2kai_BINARY_DIR}/np21kai_rs90_sdl1_opk/default_opendingux_np21kai_rs90_sdl1.desktop
+			COMMAND mksquashfs ${NP2kai_BINARY_DIR}/np21kai_rs90_sdl1_opk ${NP2kai_BINARY_DIR}/np21kai_rs90_sdl1.opk -all-root -noappend -no-exports
+			COMMAND rm -r ${NP2kai_BINARY_DIR}/np21kai_rs90_sdl1_opk
+		)
 
 		add_executable(np2kai_rs90)
 		target_link_libraries(np2kai_rs90 PUBLIC NP2kai_base NP2kai_rs90_base)
+		add_custom_command(
+			TARGET np2kai_rs90
+			POST_BUILD
+			COMMENT "Genarate .opk pack."
+			COMMAND cp -r ${NP2kai_SOURCE_DIR}/sdl/opendingux/opk ${NP2kai_BINARY_DIR}/np2kai_rs90_opk
+			COMMAND mv np2kai_rs90.opk ${NP2kai_BINARY_DIR}/np2kai_rs90_opk/
+			COMMAND rm ${NP2kai_BINARY_DIR}/np2kai_rs90_opk/default_opendingux_np21kai_desktop
+			COMMAND sed -i -e 's/Exec=np2kai/Exec=np2kai_rs90/g' ${NP2kai_BINARY_DIR}/np2kai_rs90_opk/default_opendingux_np2kai_desktop
+			COMMAND mv ${NP2kai_BINARY_DIR}/np2kai_rs90_opk/default_opendingux_np2kai_desktop ${NP2kai_BINARY_DIR}/np2kai_rs90_opk/default_opendingux_np2kai_rs90.desktop
+			COMMAND mksquashfs ${NP2kai_BINARY_DIR}/np2kai_rs90_opk ${NP2kai_BINARY_DIR}/np2kai_rs90.opk -all-root -noappend -no-exports
+			COMMAND rm -r ${NP2kai_BINARY_DIR}/np2kai_rs90_opk
+		)
 
 		add_executable(np21kai_rs90_sdl1)
 		target_link_libraries(np21kai_rs90 PUBLIC NP21kai_base NP2kai_rs90_base)
+		add_custom_command(
+			TARGET np21kai_rs90
+			POST_BUILD
+			COMMENT "Genarate .opk pack."
+			COMMAND cp -r ${NP2kai_SOURCE_DIR}/sdl/opendingux/opk ${NP2kai_BINARY_DIR}/np21kai_rs90_opk
+			COMMAND mv np21kai_rs90.opk ${NP2kai_BINARY_DIR}/np21kai_rs90_opk/
+			COMMAND rm ${NP2kai_BINARY_DIR}/np21kai_rs90_opk/default_opendingux_np2kai_desktop
+			COMMAND sed -i -e 's/Exec=np21kai/Exec=np21kai_rs90/g' ${NP2kai_BINARY_DIR}/np21kai_rs90_opk/default_opendingux_np21kai_desktop
+			COMMAND mv ${NP2kai_BINARY_DIR}/np21kai_rs90_opk/default_opendingux_np21kai_desktop ${NP2kai_BINARY_DIR}/np21kai_rs90_opk/default_opendingux_np21kai_rs90.desktop
+			COMMAND mksquashfs ${NP2kai_BINARY_DIR}/np21kai_rs90_opk ${NP2kai_BINARY_DIR}/np21kai_rs90.opk -all-root -noappend -no-exports
+			COMMAND rm -r ${NP2kai_BINARY_DIR}/np21kai_rs90_opk
+		)
 
 		if(NOT BUILD_I286)
 			set_target_properties(np2kai_rs90_sdl1 np2kai_rs90 PROPERTIES EXCLUDE_FROM_ALL true)
