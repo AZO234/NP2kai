@@ -107,6 +107,14 @@ VisualStudio 2019
 3. Build -> Build all.
 4. Output np21kai_windows.exe in out directory.
 
+- CMake options of VisualStudio 2019 port (*=default)
+
+|name|value|work|output|
+|:---:|:---:|:---:|:---:|
+|BUILD_I286|ON|Build i286|NP2kai_windows|
+|BUILD_I286|OFF*|Build IA-32|NP21kai_windows|
+|BUILD_HAXM|ON|Build IA-32 HAXM|NP21kai_HAXM_windows|
+
 #### Install binary
 1. Locate .exe file anywhere.
 2. Locate BIOS files to .exe same filder.
