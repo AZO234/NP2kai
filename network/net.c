@@ -32,6 +32,10 @@
 #include	<process.h>
 #endif
 
+#if defined(_MSC_VER)
+#define stricmp _stricmp
+#endif
+
 #pragma warning(disable: 4996)
 #pragma comment(lib, "Advapi32.lib")
 

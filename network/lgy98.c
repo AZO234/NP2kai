@@ -38,6 +38,10 @@
 #include	<network/lgy98dev.h>
 #include	<network/lgy98.h>
 
+#if defined(_MSC_VER)
+#define strdup _strdup
+#endif
+
 // XXX: 
 #ifndef _countof
 #define _countof(a) (sizeof(a) / sizeof((a)[0]))
