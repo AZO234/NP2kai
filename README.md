@@ -99,7 +99,10 @@ VisualStudio 2019
   - IntelliCode
 2. Install [vcpkg](https://github.com/Microsoft/vcpkg)
 3. Install packages with vcpkg.
-  - (something)
+  - OpenSSL
+  - SDL2 SDL2_mixer SDL2_ttf
+  - libusb
+4. Install [Ninja](http://www.projectmanager.ninja/home.html)
 
 #### Build
 1. Start VisualStudio 2019 (and without code).
@@ -137,13 +140,13 @@ $ pacman -S git cmake make mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd min
 - Linux
 1. Run follow command.
 ```
-$ sudo apt install git cmake build-essential libsdl2-dev libsdl2-mixer-dev libsdl2-ttf-dev libsdl1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libusb-1.0-0-dev
+$ sudo apt install git cmake ninja-build build-essential libsdl2-dev libsdl2-mixer-dev libsdl2-ttf-dev libsdl1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libusb-1.0-0-dev libssl-dev
 ```
 - macOS
 1. Install XCode and brew.
 2. Run follow command.
 ```
-$ sudo brew install cmake SDL2 SDL2_mixer SDL2_ttf SDL SDL_mixer SDL_ttf
+$ sudo brew install cmake ninja sdl sdl_mixer sdl_ttf sdl2 sdl2_mixer sdl2_ttf libusb
 ```
 
 #### Build
@@ -209,7 +212,7 @@ X with GTK2 and SDL
 #### Install tools
 1. Run follow command.
 ```
-$ sudo apt install git cmake build-essential libx11-dev libglib2.0-dev libgtk2.0-dev libsdl2-dev libsdl2-mixer-dev libsdl2-ttf-dev libsdl1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libusb-1.0-0-dev
+$ sudo apt install git cmake ninja-build build-essential libx11-dev libglib2.0-dev libgtk2.0-dev libsdl2-dev libsdl2-mixer-dev libsdl2-ttf-dev libsdl1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev  libusb-1.0-0-dev libssl-dev
 ```
 
 #### Build

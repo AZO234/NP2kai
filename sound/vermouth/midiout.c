@@ -154,7 +154,7 @@ static void VERMOUTHCL voice_on(MIDIHDL hdl, CHANNEL ch, VOICE v, int key,
 			v->frequency = inst->freq;
 		}
 		else {
-			v->frequency = freq_table[key];
+			v->frequency = ver_freq_table[key];
 		}
 		layer = selectlayer(v, inst);
 	}
@@ -175,7 +175,7 @@ static void VERMOUTHCL voice_on(MIDIHDL hdl, CHANNEL ch, VOICE v, int key,
 			v->frequency = inst->freq;
 		}
 		else {
-			v->frequency = freq_table[key];
+			v->frequency = ver_freq_table[key];
 		}
 	}
 	v->sample = layer;

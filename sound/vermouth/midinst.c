@@ -238,7 +238,7 @@ const UINT8		*d;
 	layer = (INSTLAYER)(ret + 1);
 	ret->layers = layers;
 	if (cfg->note != TONECFG_VARIABLE) {
-		ret->freq = freq_table[cfg->note];
+		ret->freq = ver_freq_table[cfg->note];
 	}
 
 	do {

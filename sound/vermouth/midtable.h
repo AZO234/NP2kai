@@ -47,7 +47,7 @@ enum {
 extern "C" {
 #endif
 
-extern const SINT32 freq_table[128];
+extern const SINT32 ver_freq_table[128];
 extern const SINT16 envsin12q[1 << (SINENT_BIT - 2)];
 extern const SINT16 vibsin12[1 << VIBRATE_SHIFT];
 extern const SINT16 voltbl12[128];
