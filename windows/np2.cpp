@@ -70,6 +70,7 @@
 #include <timing.h>
 #include <keystat.h>
 #include <debugsub.h>
+#include <debugsnapshot.h>
 #include "subwnd/kdispwnd.h"
 #include "subwnd/mdbgwnd.h"
 #include "subwnd/skbdwnd.h"
@@ -1777,7 +1778,24 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			update |= SYS_UPDATECFG;
 #endif
 			break;
-			
+
+		case IDM_EN_DBSS:
+		{
+			HMENU hMenu = np2class_gethmenu(g_hWndMain);
+			if (np2cfg.debugss == 0) {
+				np2cfg.debugss = 1;
+				menu_addmenures(hMenu, GetMenuItemCount(hMenu), IDR_DEBUGSS, FALSE);
+			}
+			else {
+				np2cfg.debugss = 0;
+				//DeleteMenu(hMenu, IDR_DEBUGSS, MF_BYCOMMAND);
+				DeleteMenu(hMenu, GetMenuItemCount(hMenu) - 1, MF_BYPOSITION);
+			}
+			DrawMenuBar(hWnd);
+			update |= SYS_UPDATECFG;
+			break;
+		}
+
 		case IDM_RESTOREBORDER:
 			if(np2oscfg.wintype!=0){
 				WINLOCEX	wlex;
@@ -1903,6 +1921,14 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 				flagload(hWnd, ext, _T("Status Load"), TRUE);
 			}
 #endif
+			if ((uID >= IDM_DBSSSAVE0) && (uID <= IDM_DBSSSAVE3))
+			{
+				debugsnapshot_save(uID - IDM_DBSSSAVE0);
+			}
+			else if ((uID >= IDM_DBSSLOAD0) && (uID <= IDM_DBSSLOAD3))
+			{
+				debugsnapshot_load(uID - IDM_DBSSLOAD0);
+			}
 			break;
 	}
 	sysmng_update(update);

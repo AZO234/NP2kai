@@ -135,7 +135,7 @@ SDL
 2. Run MSYS2 64bit console.
 3. Run follow command.
 ```
-$ pacman -S git cmake make mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_mixer mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL mingw-w64-x86_64-SDL_mixer mingw-w64-x86_64-SDL_ttf
+$ pacman -S git cmake make mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_mixer mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL mingw-w64-x86_64-SDL_mixer mingw-w64-x86_64-SDL_ttf mingw-w64-x86_64-openssl
 ```
 - Linux
 1. Run follow command.
@@ -893,6 +893,19 @@ Hook to using fontrom and output text to 'hook_fontrom.txt' in BIOS directory.<b
 This function is disable at start NP2kai.<br>
 </div></details>
 
+<details><summary>
+Debug snapshot
+</summary><div>
+Debug snapshot is 'save state' plus various information for debug.<br>
+(version, SHA-1 hash of FDs and CDs, displaied image, state of machine.)
+Those information files are saved into 'debugss' directory in BIOS directory.<br>
+<br>
+Take snapshot before and after the problem with reproducibility,<br>
+This function is used for communication purposes.<br>
+(Probably will be large file, so compression with ZIP<br>
+and be careful hosting when reporting.)
+</div></details>
+
 #### MIDI sound (X11)
 
 <details><summary>
@@ -974,12 +987,15 @@ Next boot computer, you command from 4.
 </div></details>
 
 ## Release
-- May 17, 2020
+- May 22, 2020
   - CMake
   - Emscripten
+  - Debug snapshot
 - May 10, 2020 (rev.22)
   - merge NP21/W rev.73
 - Apr 20, 2020
+- May 10, 2020 (rev.22)<br>
+  - merge NP21/W rev.73
   - mod OpenDingux
 - Apr 19, 2020
   - J2K/J2M -> JoypadMode

@@ -1178,6 +1178,7 @@ BEGIN
         // MENUITEM "Fix &MMTimer",                IDM_TIMERFIX
         // MENUITEM "&Skip over 16MB memcheck",    IDM_SKIP16MEMCHK
         MENUITEM "Fast m&emcheck",              IDM_FASTMEMCHK
+        MENUITEM "Enable DebugSS",              IDM_EN_DBSS
         MENUITEM SEPARATOR
         MENUITEM "&Help...",                    IDM_HELP
         MENUITEM "&About...",                   IDM_ABOUT
@@ -1209,6 +1210,22 @@ BEGIN
         MENUITEM "Load 7",                      IDM_FLAGLOAD7
         MENUITEM "Load 8",                      IDM_FLAGLOAD8
         MENUITEM "Load 9",                      IDM_FLAGLOAD9
+    END
+END
+
+IDR_DEBUGSS MENU
+BEGIN
+    POPUP "DebugSS"
+    BEGIN
+        MENUITEM "Save debugss 0",                      IDM_DBSSSAVE0
+        MENUITEM "Save debugss 1",                      IDM_DBSSSAVE1
+        MENUITEM "Save debugss 2",                      IDM_DBSSSAVE2
+        MENUITEM "Save debugss 3",                      IDM_DBSSSAVE3
+        MENUITEM SEPARATOR
+        MENUITEM "Load debugss 0",                      IDM_DBSSLOAD0
+        MENUITEM "Load debugss 1",                      IDM_DBSSLOAD1
+        MENUITEM "Load debugss 2",                      IDM_DBSSLOAD2
+        MENUITEM "Load debugss 3",                      IDM_DBSSLOAD3
     END
 END
 

@@ -1,3 +1,5 @@
+#ifndef _SXSI_H_
+#define _SXSI_H_
 
 #if defined(SUPPORT_SCSI)
 enum {
@@ -78,6 +80,8 @@ struct _sxsidev {
 extern "C" {
 #endif
 
+extern _SXSIDEV	sxsi_dev[SASIHDD_MAX + SCSIHDD_MAX];
+
 #if !defined(_WIN32)
 unsigned GetTickCount();
 #endif
@@ -108,3 +112,4 @@ BOOL sxsi_iside(void);
 }
 #endif
 
+#endif  // _SXSI_H_

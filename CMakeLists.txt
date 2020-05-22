@@ -53,6 +53,7 @@ list(APPEND NP2kai_Windows_include_dirs "windows" "windows/misc")
 
 # NP2kai sources
 list(APPEND NP2kai_common_sources "calendar.c")
+list(APPEND NP2kai_common_sources "debugsnapshot.c")
 list(APPEND NP2kai_common_sources "keystat.c")
 list(APPEND NP2kai_common_sources "nevent.c")
 list(APPEND NP2kai_common_sources "pccore.c")
@@ -643,6 +644,8 @@ target_include_directories(NP2kai_bbase INTERFACE ${NP2kai_common_include_dirs})
 target_sources(NP2kai_bbase INTERFACE ${NP2kai_common_sources})
 if(NP2kai_Windows AND NOT MSVC_VERSION)
 target_link_libraries(NP2kai_bbase INTERFACE stdc++)
+elseif(NOT NP2kai_Windows)
+target_link_libraries(NP2kai_bbase INTERFACE ssl crypto)
 endif()
 
 add_library(NP2kai_base INTERFACE)
