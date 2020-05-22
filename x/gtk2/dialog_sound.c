@@ -2267,19 +2267,19 @@ create_driver_note(void)
 		g_signal_connect(G_OBJECT(driver_radiobutton[i]), "clicked",
 		    G_CALLBACK(driver_radiobutton_clicked), GINT_TO_POINTER(i));
 	}
-#if !defined(SUPPORT_SDL_AUDIO) && !defined(SUPPORT_SDL_MIXER) && !defined(USE_SDL2AUDIO) && !defined(USE_SDL2MIXER)
+#if !defined(SUPPORT_SDL_AUDIO) && !defined(SUPPORT_SDL_MIXER)
 	gtk_widget_set_sensitive(driver_radiobutton[SNDDRV_SDL], FALSE);
 #endif
 
 	switch (np2oscfg.snddrv) {
 	case SNDDRV_NODRV:
-#if defined(SUPPORT_SDL_AUDIO) || defined(SUPPORT_SDL_MIXER) || defined(USE_SDL2AUDIO) || defined(USE_SDL2MIXER)
+#if defined(SUPPORT_SDL_AUDIO) || defined(SUPPORT_SDL_MIXER)
 	case SNDDRV_SDL:
 #endif
 		g_signal_emit_by_name(G_OBJECT(driver_radiobutton[np2oscfg.snddrv]), "clicked");
 		break;
 
-#if !defined(SUPPORT_SDL_AUDIO) && !defined(SUPPORT_SDL_MIXER) && !defined(USE_SDL2AUDIO) && !defined(USE_SDL2MIXER)
+#if !defined(SUPPORT_SDL_AUDIO) && !defined(SUPPORT_SDL_MIXER)
 	case SNDDRV_SDL:
 #endif
 	case SNDDRV_DRVMAX:

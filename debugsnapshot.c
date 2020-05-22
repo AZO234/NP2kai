@@ -240,13 +240,13 @@ int debugsnapshot_save(const UINT uNo) {
 #else
   milstr_ncpy(tDebugSnapshot.strProgramType, "Emscripten", sizeof(tDebugSnapshot.strProgramType));
 #endif
-#elif defined(NP2_SDL2)
+#elif defined(NP2_SDL)
 #if defined(SUPPORT_PC9821)
   milstr_ncpy(tDebugSnapshot.strProgramType, "SDL IA-32", sizeof(tDebugSnapshot.strProgramType));
 #else
   milstr_ncpy(tDebugSnapshot.strProgramType, "SDL", sizeof(tDebugSnapshot.strProgramType));
 #endif
-#elif defined(NP2_X11)
+#elif defined(NP2_X)
 #if defined(SUPPORT_PC9821)
   milstr_ncpy(tDebugSnapshot.strProgramType, "X IA-32", sizeof(tDebugSnapshot.strProgramType));
 #else
@@ -438,13 +438,13 @@ int debugsnapshot_load(const UINT uNo) {
 #else
     if(milstr_cmp(tDebugSnapshot.strProgramType, "Emscripten") != 0) {
 #endif
-#elif defined(NP2_SDL2)
+#elif defined(NP2_SDL)
 #if defined(SUPPORT_PC9821)
     if(milstr_cmp(tDebugSnapshot.strProgramType, "SDL IA-32") != 0) {
 #else
     if(milstr_cmp(tDebugSnapshot.strProgramType, "SDL") != 0) {
 #endif
-#elif defined(NP2_X11)
+#elif defined(NP2_X)
 #if defined(SUPPORT_PC9821)
     if(milstr_cmp(tDebugSnapshot.strProgramType, "X IA-32") != 0) {
 #else

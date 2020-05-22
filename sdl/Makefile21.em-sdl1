@@ -56,7 +56,7 @@ INCFLAGS += 	-I$(NP2_PATH)/i386c \
 		-I$(NP2_PATH)/i386c/ia32/instructions/fpu/softfloat \
 		-I$(NP2_PATH)/i386c/ia32/instructions/mmx \
 		-I$(NP2_PATH)/i386c/ia32/instructions/sse \
-		-I$(NP2_PATH)/sdl2/em
+		-I$(NP2_PATH)/sdl/em
 SOURCES_C += 	$(wildcard $(NP2_PATH)/i386c/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/*.c) \
@@ -69,13 +69,13 @@ SOURCES_C += 	$(wildcard $(NP2_PATH)/i386c/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse2/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse3/*.c) \
-		$(NP2_PATH)/sdl2/em/main.c
+		$(NP2_PATH)/sdl/em/main.c
 
 ifeq ($(SDL_VERSION), 1)
-	CFLAGS	+= $(NP2_PATH)/sdl2/em/SDL_mixer.c
+	CFLAGS	+= $(NP2_PATH)/sdl/em/SDL_mixer.c
 endif
 
-NP2SDLDEFINE := -DNP2_SDL2 -DUSE_SDLAUDIO
+NP2SDLDEFINE := -DNP2_SDL -DUSE_SDLAUDIO
 
 OBJECTS  = $(SOURCES_CXX:.cpp=.o) $(SOURCES_C:.c=.o)
 CXXFLAGS += $(fpic) $(INCFLAGS) $(COMMONFLAGS) $(NP2DEFINE) $(NP21DEFINE) $(NP2SDLDEFINE)

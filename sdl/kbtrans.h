@@ -1,5 +1,5 @@
-#ifndef NP2_SDL2_KBTRANS_H
-#define NP2_SDL2_KBTRANS_H
+#ifndef NP2_SDL_KBTRANS_H
+#define NP2_SDL_KBTRANS_H
 
 #include <compiler.h>
 

@@ -50,15 +50,15 @@ include Makefile.common
 INCFLAGS := $(SDL_CFLAGS) $(INCFLAGS)
 
 INCFLAGS += 	-I$(NP2_PATH)/i286c \
-		-I$(NP2_PATH)/sdl2/em
+		-I$(NP2_PATH)/sdl/em
 SOURCES_C += 	$(wildcard $(NP2_PATH)/i286c/*.c) \
-		$(NP2_PATH)/sdl2/em/main.c
+		$(NP2_PATH)/sdl/em/main.c
 
 ifeq ($(SDL_VERSION), 1)
-	CFLAGS	+= $(NP2_PATH)/sdl2/em/SDL_mixer.c
+	CFLAGS	+= $(NP2_PATH)/sdl/em/SDL_mixer.c
 endif
 
-NP2SDLDEFINE := -DNP2_SDL2 -DUSE_SDLAUDIO
+NP2SDLDEFINE := -DNP2_SDL -DUSE_SDLAUDIO
 
 OBJECTS  = $(SOURCES_CXX:.cpp=.o) $(SOURCES_C:.c=.o)
 CXXFLAGS += $(fpic) $(INCFLAGS) $(COMMONFLAGS) $(NP2DEFINE) $(NP2SDLDEFINE)

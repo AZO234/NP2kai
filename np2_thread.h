@@ -23,7 +23,7 @@
 #elif defined(__LIBRETRO__)
 #include <rthreads/rthreads.h>
 #include <retro_timers.h>
-#include "sdl2/libretro/rsemaphore.h"
+#include <libretro/rsemaphore.h>
 #endif
 
 #if defined(NP2_THREAD_WIN)
