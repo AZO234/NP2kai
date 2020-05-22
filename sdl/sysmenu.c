@@ -54,7 +54,7 @@ static void sys_cmd(MENUID id) {
 		case MID_RESET:
 #if defined(__LIBRETRO__)
 			reset_lrkey();
-#elif defined(NP2_SDL2)
+#elif defined(NP2_SDL)
 			sdlkbd_reset();
 #endif
 			pccore_cfgupdate();

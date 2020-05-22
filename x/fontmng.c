@@ -10,7 +10,7 @@
 
 #if defined(SUPPORT_SDL_TTF)		/* use TTF */
 
-#include <SDL2/SDL_ttf.h>
+#include <SDL_ttf.h>
 
 #define FONTMNG_CACHE		64						/*!< Cache count */
 

@@ -198,14 +198,14 @@ snddrv_setup(void)
 
 	if (np2oscfg.snddrv < SNDDRV_DRVMAX) {
 		switch (np2oscfg.snddrv) {
-#if defined(SUPPORT_SDL_AUDIO) || defined(SUPPORT_SDL_MIXER) || defined(USE_SDL2AUDIO) || defined(USE_SDL2MIXER)
+#if defined(SUPPORT_SDL_AUDIO) || defined(SUPPORT_SDL_MIXER)
 		case SNDDRV_SDL:
 			sdlaudio_setup();
 			return;
 #endif
 		}
 	} else {
-#if defined(SUPPORT_SDL_AUDIO) || defined(SUPPORT_SDL_MIXER) || defined(USE_SDL2AUDIO) || defined(USE_SDL2MIXER)
+#if defined(SUPPORT_SDL_AUDIO) || defined(SUPPORT_SDL_MIXER)
 		if (sdlaudio_setup() == SUCCESS) {
 			np2oscfg.snddrv = SNDDRV_SDL;
 			sysmng_update(SYS_UPDATEOSCFG);
@@ -903,13 +903,13 @@ saturation_s16mmx(SINT16 *dst, const SINT32 *src, UINT size)
 }
 #endif	/* GCC_CPU_ARCH_AMD64 */
 
-#if defined(SUPPORT_SDL_AUDIO) || defined(SUPPORT_SDL_MIXER) || defined(USE_SDL2AUDIO) || defined(USE_SDL2MIXER)
+#if defined(SUPPORT_SDL_AUDIO) || defined(SUPPORT_SDL_MIXER)
 
 #include <SDL.h>
 
 static void sdlaudio_callback(void *, unsigned char *, int);
 
-#if !defined(SUPPORT_SDL_MIXER) && !defined(USE_SDL2MIXER)
+#if !defined(SUPPORT_SDL_MIXER)
 
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 static UINT8 sound_silence;
@@ -1006,7 +1006,7 @@ sdlaudio_setup(void)
 	return SUCCESS;
 }
 
-#else	/* SUPPORT_SDL_MIXER || USE_SDL2MIXER */
+#else	/* SUPPORT_SDL_MIXER */
 
 #include <SDL_mixer.h>
 
@@ -1156,7 +1156,7 @@ sdlaudio_setup(void)
 #define	sndbuf_lock()	sdlmixer_lock()
 #define	sndbuf_unlock()	sdlmixer_unlock()
 
-#endif	/* !SUPPORT_SDL_MIXER && !USE_SDL2MIXER */
+#endif	/* !SUPPORT_SDL_MIXER */
 
 static void
 sdlaudio_callback(void *userdata, unsigned char *stream, int len)
@@ -1164,7 +1164,7 @@ sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 	const UINT frame_size = PTR_TO_UINT32(userdata);
 	struct sndbuf *sndbuf;
 
-#if !defined(SUPPORT_SDL_MIXER) && !defined(USE_SDL2MIXER) && SDL_VERSION_ATLEAST(2, 0, 0)
+#if !defined(SUPPORT_SDL_MIXER) && SDL_VERSION_ATLEAST(2, 0, 0)
 	/* SDL2 から SDL 側で stream を無音で初期化しなくなった */
 	memset(stream, sound_silence, len);
 #endif
@@ -1222,6 +1222,6 @@ sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 	sndbuf_unlock();
 }
 
-#endif	/* SUPPORT_SDL_AUDIO || SUPPORT_SDL_MIXER || USE_SDL2AUDIO || USE_SDL2MIXER */
+#endif	/* SUPPORT_SDL_AUDIO || SUPPORT_SDL_MIXER */
 
 #endif	/* !NOSOUND */

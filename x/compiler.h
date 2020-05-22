@@ -51,7 +51,7 @@
 #define bind_textdomain_codeset(d,c)	(c)
 #endif /* ENABLE_NLS */
 
-#if !defined(SUPPORT_SDL_AUDIO) && !defined(SUPPORT_SDL_MIXER) && !defined(USE_SDL2AUDIO) && !defined(USE_SDL2MIXER)
+#if !defined(SUPPORT_SDL_AUDIO) && !defined(SUPPORT_SDL_MIXER)
 #ifndef	NOSOUND
 #define	NOSOUND
 #undef	VERMOUTH_LIB
@@ -97,7 +97,7 @@ G_END_DECLS
 
 #define	SUPPORT_SCREENSIZE
 
-#if defined(SUPPORT_SDL_AUDIO) || defined(SUPPORT_SDL_MIXER) || defined(USE_SDL2AUDIO) || defined(USE_SDL2MIXER)
+#if defined(SUPPORT_SDL_AUDIO) || defined(SUPPORT_SDL_MIXER)
 #define	USE_SDL_JOYSTICK
 #endif
 
