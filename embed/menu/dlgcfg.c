@@ -1,13 +1,13 @@
-#include	"compiler.h"
-#include	"strres.h"
+#include	<compiler.h>
+#include	<common/strres.h>
 #include	"np2.h"
-#include	"sysmng.h"
-#include	"pccore.h"
-#include	"vramhdl.h"
-#include	"menubase.h"
-#include	"menustr.h"
+#include	<sysmng.h>
+#include	<pccore.h>
+#include	<embed/vramhdl.h>
+#include	<embed/menubase/menubase.h>
+#include	<embed/menu/menustr.h>
 #include	"sysmenu.res"
-#include	"dlgcfg.h"
+#include	<embed/menu/dlgcfg.h>
 
 
 enum {

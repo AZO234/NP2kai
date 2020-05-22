@@ -3,15 +3,15 @@
  * @brief	Implementation of PC-9801-86 + 26K
  */
 
-#include "compiler.h"
-#include "boardx2.h"
-#include "iocore.h"
-#include "cbuscore.h"
-#include "pcm86io.h"
-#include "sound/fmboard.h"
-#include "sound/sound.h"
-#include "sound/soundrom.h"
-#include "s98.h"
+#include <compiler.h>
+#include <cbus/boardx2.h>
+#include <io/iocore.h>
+#include <cbus/cbuscore.h>
+#include <cbus/pcm86io.h>
+#include <sound/fmboard.h>
+#include <sound/sound.h>
+#include <sound/soundrom.h>
+#include <sound/s98.h>
 
 static void IOOUTCALL opn_o088(UINT port, REG8 dat)
 {

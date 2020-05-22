@@ -1,5 +1,5 @@
-#include	"compiler.h"
-#include	"cpucore.h"
+#include	<compiler.h>
+#include	<cpucore.h>
 #include	"i286x.h"
 #include	"i286xadr.h"
 #include	"i286xs.h"

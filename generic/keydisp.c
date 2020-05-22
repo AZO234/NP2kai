@@ -3,14 +3,14 @@
  * @brief	Implementation of the key display
  */
 
-#include "compiler.h"
+#include <compiler.h>
 
 #if defined(SUPPORT_KEYDISP)
 
-#include "keydisp.h"
+#include <generic/keydisp.h>
 #include <math.h>
-#include "pccore.h"
-#include "iocore.h"
+#include <pccore.h>
+#include <io/iocore.h>
 #include "sound/psggen.h"
 
 typedef struct

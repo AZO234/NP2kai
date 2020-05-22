@@ -1,34 +1,34 @@
-#include	"compiler.h"
-#include	"strres.h"
+#include	<compiler.h>
+#include	<common/strres.h>
 #if defined(OSLANG_UCS2)
 #include	"oemtext.h"
 #endif
 #include	"taskmng.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"bios/sxsibios.h"
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<bios/sxsibios.h>
 #if defined(SUPPORT_HOSTDRV)
-#include	"hostdrv.h"
+#include	<generic/hostdrv.h>
 #endif
-#include	"sound/sound.h"
-#include	"sound/beep.h"
-#include	"sound/fmboard.h"
-#include	"sound/soundrom.h"
-#include	"cbus/mpu98ii.h"
+#include	<sound/sound.h>
+#include	<sound/beep.h>
+#include	<sound/fmboard.h>
+#include	<sound/soundrom.h>
+#include	<cbus/mpu98ii.h>
 #if defined(SUPPORT_SMPU98)
-#include	"cbus/smpu98.h"
+#include	<cbus/smpu98.h>
 #endif
 #if defined(SUPPORT_IDEIO)
-#include	"cbus/ideio.h"
+#include	<cbus/ideio.h>
 #endif
 #if defined(SUPPORT_WAB) && defined(SUPPORT_CL_GD5430)
-#include	"wab/cirrus_vga_extern.h"
-#include	"wab/wab.h"
+#include	<wab/cirrus_vga_extern.h>
+#include	<wab/wab.h>
 #endif
 #include	"np2.h"
 #if defined(SUPPORT_HRTIMER)
-#include	"timemng.h"
+#include	<timemng.h>
 #endif
 
 
@@ -159,7 +159,7 @@ static void np2sysp_changeclock(const void *arg1, long arg2) {
 static void np2sysp_cngclkmul(const void *arg1, long arg2) {
 
 	OEMCHAR	str[64];
-	UINT8 oldclockmul = pccore.multiple;
+	UINT8 oldclockmul = pccore.maxmultiple;
 	UINT8 newclockmul = (np2sysp.outval >> 24);
 	
 	if(newclockmul > 0) {
@@ -180,7 +180,7 @@ static void np2sysp_cngclkmul(const void *arg1, long arg2) {
 		gdc_updateclock();
 	}
 
-	OEMSNPRINTF(str, sizeof(str), OEMTEXT("%d"), pccore.multiple);
+	OEMSPRINTF(str, OEMTEXT("%d"), pccore.maxmultiple);
 	setoutstr(str);
 	(void)arg1;
 	(void)arg2;

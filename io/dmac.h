@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "pccore.h"
+#include <pccore.h>
 
 #ifndef DMACCALL
 #define DMACCALL

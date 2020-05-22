@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "nevent.h"
+#include <nevent.h>
 
 enum {
 	PCBASECLOCK25		= 2457600,
@@ -312,6 +312,8 @@ struct tagNP2Config
 #if defined(SUPPORT_GAMEPORT)
 	UINT8	gameport; // 118音源のゲームポートを使用する
 #endif
+
+	UINT8	debugss;
 };
 typedef struct tagNP2Config  NP2CFG;		/*!< The define of config */
 

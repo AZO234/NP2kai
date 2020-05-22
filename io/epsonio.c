@@ -1,7 +1,7 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
 
 
 // EPSON専用ポート 0c00〜

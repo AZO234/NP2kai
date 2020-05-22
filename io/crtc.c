@@ -1,8 +1,8 @@
-#include	"compiler.h"
+#include	<compiler.h>
 #include	"cpumem.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"vram.h"
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<vram/vram.h>
 
 
 // ---- I/O

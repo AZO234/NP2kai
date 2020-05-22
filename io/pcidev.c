@@ -3,20 +3,20 @@
 
 // 現状はConfiguration Mechanism #1対応でバス番号0のみ。bios1a.cにエミュレーションPCI BIOSがあります。
 
-#include	"compiler.h"
+#include	<compiler.h>
 
 #if defined(SUPPORT_PC9821)
 
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
 
 #if defined(SUPPORT_PCI)
 
-#include	"dosio.h"
+#include	<dosio.h>
 #include	"pci/cbusbridge.h"
 #include	"pci/98graphbridge.h"
-#include	"wab/cirrus_vga_extern.h"
+#include	<wab/cirrus_vga_extern.h>
 
 #define GETCFGREG_B(reg, ofs)			PCI_GETCFGREG_B(reg, ofs)
 #define GETCFGREG_W(reg, ofs)			PCI_GETCFGREG_W(reg, ofs)

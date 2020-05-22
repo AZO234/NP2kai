@@ -26,17 +26,21 @@
  * 注意：このファイルのオリジナルはQEMUのne2000.cですが、大幅な改変が行われています。
  */
 
-#include	"compiler.h"
+#include	<compiler.h>
 
 #if defined(SUPPORT_LGY98)
 
-#include	"dosio.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"net.h"
-#include	"lgy98dev.h"
-#include	"lgy98.h"
+#include	<dosio.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<network/net.h>
+#include	<network/lgy98dev.h>
+#include	<network/lgy98.h>
+
+#if defined(_MSC_VER)
+#define strdup _strdup
+#endif
 
 // XXX: 
 #ifndef _countof

@@ -1,3 +1,5 @@
+#ifndef _SXSICD_H_
+#define _SXSICD_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -166,8 +168,11 @@ BRESULT sxsicd_open(SXSIDEV sxsi, const OEMCHAR *fname);
 
 CDTRK sxsicd_gettrk(SXSIDEV sxsi, UINT *tracks);
 BRESULT sxsicd_readraw(SXSIDEV sxsi, FILEPOS pos, void *buf);
+UINT sxsicd_readraw_forhash(SXSIDEV sxsi, UINT uSecNo, UINT8 *pu8Buf, UINT* puSize);
 
 #ifdef __cplusplus
 }
 #endif
+
+#endif  // _SXSICD_H_
 

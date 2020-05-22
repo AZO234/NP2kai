@@ -1,6 +1,6 @@
-#include "compiler.h"
+#include <compiler.h>
 
-#include "fmgen_fmgwrap.h"
+#include <sound/fmgen/fmgen_fmgwrap.h>
 #include "fmgen_opm.h"
 #include "fmgen_opna.h"
 #include "fmgen_fmgen.h"

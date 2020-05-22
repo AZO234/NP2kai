@@ -1,7 +1,7 @@
 #include	<stdio.h>
 #include	<string.h>
 #include	"common.h"
-#include	"dosio.h"
+#include	<dosio.h>
 
 // ----------------------------------------- ƒƒCƒ“
 

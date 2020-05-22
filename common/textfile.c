@@ -1,10 +1,10 @@
-#include	"compiler.h"
-#include	"strres.h"
-#include	"textfile.h"
+#include	<compiler.h>
+#include	<common/strres.h>
+#include	<common/textfile.h>
 #if defined(SUPPORT_TEXTCNV)
 #include	"codecnv/textcnv.h"
 #endif
-#include	"dosio.h"
+#include	<dosio.h>
 
 
 // ---- arc support?

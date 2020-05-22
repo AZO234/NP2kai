@@ -1,5 +1,5 @@
-#include	"compiler.h"
-#include	"unasm.h"
+#include	<compiler.h>
+#include	<generic/unasm.h>
 #include	"unasmdef.tbl"
 #include	"unasmstr.tbl"
 #include	"unasmop3.tbl"

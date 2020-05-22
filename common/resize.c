@@ -1,5 +1,5 @@
-#include	"compiler.h"
-#include	"resize.h"
+#include	<compiler.h>
+#include	<common/resize.h>
 
 
 enum {

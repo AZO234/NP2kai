@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=NP21kai PC98
-Comment=PC9821 emulator
-Exec=np21kai %f
-Terminal=false
-Type=Application
-StartupNotify=true
-Icon=np2
-Categories=emulators;

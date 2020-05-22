@@ -1,9 +1,9 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"memegc.h"
-#include	"vram.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<mem/memegc.h>
+#include	<vram/vram.h>
 
 // PEGC プレーンモード
 // 関連: vram.c, vram.h, memvga.c, memvga.h

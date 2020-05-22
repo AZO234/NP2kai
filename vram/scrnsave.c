@@ -3,15 +3,15 @@
  * @brief	Implementation of the screen saver
  */
 
-#include	"compiler.h"
-#include	"bmpdata.h"
-#include	"scrnsave.h"
-#include	"dosio.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"scrndraw.h"
-#include	"dispsync.h"
-#include	"palettes.h"
+#include	<compiler.h>
+#include	<common/bmpdata.h>
+#include	<vram/scrnsave.h>
+#include	<dosio.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<vram/scrndraw.h>
+#include	<vram/dispsync.h>
+#include	<vram/palettes.h>
 
 /**
  * @brief The structure of screen saver

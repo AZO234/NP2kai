@@ -3,11 +3,11 @@
  * @brief	Implementation of OPN timer
  */
 
-#include "compiler.h"
+#include <compiler.h>
 #include "opntimer.h"
-#include "pccore.h"
-#include "iocore.h"
-#include "fmboard.h"
+#include <pccore.h>
+#include <io/iocore.h>
+#include <sound/fmboard.h>
 
 /** IRQ */
 static const UINT8 s_irqtable[4] = {0x03, 0x0d, 0x0a, 0x0c};

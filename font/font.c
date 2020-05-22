@@ -6,15 +6,15 @@
  * @date	$Date: 2011/02/23 10:11:44 $
  */
 
-#include	"compiler.h"
-#include	"strres.h"
-#include	"dosio.h"
-#include	"pccore.h"
-#include	"cpucore.h"
-#include	"font.h"
+#include	<compiler.h>
+#include	<common/strres.h>
+#include	<dosio.h>
+#include	<pccore.h>
+#include	<cpucore.h>
+#include	<font/font.h>
 #include	"fontdata.h"
 #include	"fontmake.h"
-#include	"codecnv/codecnv.h"
+#include	<codecnv/codecnv.h>
 #include	"io/cgrom.h"
 
 #ifndef FONTMEMORYBIND

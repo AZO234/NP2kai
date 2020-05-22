@@ -1,10 +1,10 @@
-#include	"compiler.h"
-#include	"strres.h"
-#include	"dosio.h"
-#include	"sysmng.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"sxsi.h"
+#include	<compiler.h>
+#include	<common/strres.h>
+#include	<dosio.h>
+#include	<sysmng.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<fdd/sxsi.h>
 #ifdef SUPPORT_VPCVHD
 #include "hdd_vpc.h"
 #endif

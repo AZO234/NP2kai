@@ -1,0 +1,13 @@
+[submodule "cmake/vst3_cmake"]
+	path = cmake/vst3_cmake
+	url = https://github.com/steinbergmedia/vst3_cmake.git
+[submodule "cmake/FindWDK"]
+	path = cmake/FindWDK
+	url = https://github.com/SergiusTheBest/FindWDK.git
+[submodule "vst3sdk"]
+	path = vst3sdk
+	url = https://github.com/steinbergmedia/vst3sdk.git
+	shallow = true
+[submodule "cmake/sdl2-cmake-modules"]
+	path = cmake/sdl2-cmake-modules
+	url = https://github.com/aminosbh/sdl2-cmake-modules.git

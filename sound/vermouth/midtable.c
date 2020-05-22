@@ -1,8 +1,8 @@
-#include	"compiler.h"
+#include	<compiler.h>
 #include	"midiout.h"
 
 
-const SINT32 freq_table[128] = {
+const SINT32 ver_freq_table[128] = {
 			    8175,     8661,     9177,     9722,    10300,    10913,
 			   11562,    12249,    12978,    13750,    14567,    15433,
 

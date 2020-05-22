@@ -1,11 +1,11 @@
-#include	"compiler.h"
-#include	"fontmng.h"
-#include	"inputmng.h"
-#include	"scrnmng.h"
+#include	<compiler.h>
+#include	<fontmng.h>
+#include	<inputmng.h>
+#include	<scrnmng.h>
 #include	"taskmng.h"
-#include	"vramhdl.h"
+#include	<embed/vramhdl.h>
 #include	"menudeco.inc"
-#include	"menubase.h"
+#include	<embed/menubase/menubase.h>
 
 
 	VRAMHDL		menuvram;

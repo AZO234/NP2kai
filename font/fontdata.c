@@ -1,6 +1,6 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"font.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<font/font.h>
 #include	"fontdata.h"
 #include	"fontdata.res"
 

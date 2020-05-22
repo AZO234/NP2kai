@@ -1,11 +1,11 @@
-#include	"compiler.h"
-#include	"dosio.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"sound.h"
-#include	"fmboard.h"
-#include	"beep.h"
+#include	<compiler.h>
+#include	<dosio.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<sound/sound.h>
+#include	<sound/fmboard.h>
+#include	<sound/beep.h>
 
 
 	_BEEP		g_beep;

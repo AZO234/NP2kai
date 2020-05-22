@@ -1,11 +1,11 @@
-#include	"compiler.h"
-#include	"cpucore.h"
+#include	<compiler.h>
+#include	<cpucore.h>
 #include	"i286c.h"
 #include	"v30patch.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"bios/bios.h"
-#include	"dmav30.h"
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<bios/bios.h>
+#include	<mem/dmav30.h>
 #include	"i286c.mcr"
 #if defined(ENABLE_TRAP)
 #include "trap/steptrap.h"

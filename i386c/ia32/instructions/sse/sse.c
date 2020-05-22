@@ -23,7 +23,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "compiler.h"
+#include <compiler.h>
 
 #include <math.h>
 #include <float.h>
@@ -32,7 +32,7 @@
 #define isnan(x) (_isnan(x))
 #endif
 
-#include "ia32/cpu.h"
+#include <ia32/cpu.h>
 #include "ia32/ia32.mcr"
 
 #include "ia32/instructions/sse/sse.h"

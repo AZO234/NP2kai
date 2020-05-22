@@ -3,7 +3,7 @@
  * @brief	Implementation of the OPNA ADPCM
  */
 
-#include "compiler.h"
+#include <compiler.h>
 #include "adpcm.h"
 
 #define	ADPCM_NBR	0x80000000

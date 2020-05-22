@@ -5,17 +5,17 @@
 //   ・Super MPU Developer's Kit for Windows プログラマーズ・ガイド
 //   ・https://gist.github.com/o-p-a/8b26f12c36073a3f1f6829d3ed974dd1#file-smpumsg-txt-L93
 
-#include	"compiler.h"
+#include	<compiler.h>
 
 #if defined(SUPPORT_SMPU98)
 
-#include	"commng.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"cbuscore.h"
-#include	"mpu98ii.h"
-#include	"smpu98.h"
-#include	"fmboard.h"
+#include	<commng.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<cbus/cbuscore.h>
+#include	<cbus/mpu98ii.h>
+#include	<cbus/smpu98.h>
+#include	<sound/fmboard.h>
 
 enum {
 	MIDI_STOP			= 0xfc,

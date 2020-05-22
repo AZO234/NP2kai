@@ -3,16 +3,16 @@
  * @brief	Implementation of the DMA controller
  */
 
-#include "compiler.h"
-#include "dmac.h"
-#include	"cpucore.h"
-#include	"iocore.h"
-#include	"sound.h"
-#include	"cs4231.h"
+#include <compiler.h>
+#include <io/dmac.h>
+#include	<cpucore.h>
+#include	<io/iocore.h>
+#include	<sound/sound.h>
+#include	<sound/cs4231.h>
 #if defined(SUPPORT_SOUND_SB16)
-#include	"ct1741io.h"
+#include	<cbus/ct1741io.h>
 #endif
-#include	"sasiio.h"
+#include	<cbus/sasiio.h>
 
 void DMACCALL dma_dummyout(REG8 data) {
 	

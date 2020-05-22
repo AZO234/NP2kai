@@ -23,20 +23,20 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "compiler.h"
+#include <compiler.h>
 #include "cpu.h"
 #include "ia32.mcr"
 
-#include "pccore.h"
-#include "iocore.h"
-#include "dmax86.h"
-#include "bios/bios.h"
+#include <pccore.h>
+#include <io/iocore.h>
+#include <mem/dmax86.h>
+#include <bios/bios.h>
 
-#include "ia32/instructions/fpu/fp.h"
+#include <ia32/instructions/fpu/fp.h>
 
 #if defined(SUPPORT_IA32_HAXM)
-#include "i386hax/haxfunc.h"
-#include "i386hax/haxcore.h"
+#include <i386hax/haxfunc.h>
+#include <i386hax/haxcore.h>
 #endif
 
 void

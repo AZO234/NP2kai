@@ -1,9 +1,9 @@
-#include	"compiler.h"
-#include	"cpucore.h"
+#include	<compiler.h>
+#include	<cpucore.h>
 #include	"i286c.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"bios/bios.h"
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<bios/bios.h>
 #include	"i286c.mcr"
 #if defined(ENABLE_TRAP)
 #include "trap/inttrap.h"

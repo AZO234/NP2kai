@@ -1,5 +1,5 @@
-#include	"compiler.h"
-#include	"parts.h"
+#include	<compiler.h>
+#include	<common/parts.h>
 
 
 static	SINT32	randseed = 1;

@@ -1,8 +1,8 @@
-#include	"compiler.h"
-#include	"parts.h"
-#include	"dosio.h"
-#include	"cpucore.h"
-#include	"font.h"
+#include	<compiler.h>
+#include	<common/parts.h>
+#include	<dosio.h>
+#include	<cpucore.h>
+#include	<font/font.h>
 #include	"fontdata.h"
 
 

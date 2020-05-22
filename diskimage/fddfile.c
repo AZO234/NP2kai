@@ -1,10 +1,10 @@
-#include	"compiler.h"
-#include	"strres.h"
-#include	"dosio.h"
-#include	"sysmng.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"fddfile.h"
+#include	<compiler.h>
+#include	<common/strres.h>
+#include	<dosio.h>
+#include	<sysmng.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<diskimage/fddfile.h>
 
 #ifdef SUPPORT_KAI_IMAGES
 

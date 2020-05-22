@@ -3,15 +3,15 @@
  * @brief	Implementation of LIO
  */
 
-#include "compiler.h"
+#include <compiler.h>
 #include "lio.h"
-#include "cpucore.h"
-#include "pccore.h"
-#include "iocore.h"
-#include "gdc_sub.h"
-#include "bios/bios.h"
-#include "bios/biosmem.h"
-#include "vram.h"
+#include <cpucore.h>
+#include <pccore.h>
+#include <io/iocore.h>
+#include <io/gdc_sub.h>
+#include <bios/bios.h>
+#include <bios/biosmem.h>
+#include <vram/vram.h>
 #include "lio.res"
 
 void lio_initialize(void) {

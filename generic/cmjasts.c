@@ -1,8 +1,8 @@
-#include	"compiler.h"
-#include	"commng.h"
-#include	"cpucore.h"
-#include	"sound.h"
-#include	"cmjasts.h"
+#include	<compiler.h>
+#include	<commng.h>
+#include	<cpucore.h>
+#include	<sound/sound.h>
+#include	<generic/cmjasts.h>
 
 
 #define	JSEVENTS	512

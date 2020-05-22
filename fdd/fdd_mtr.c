@@ -1,10 +1,10 @@
-#include	"compiler.h"
-#include	"soundmng.h"
-#include	"pccore.h"
-#include	"fdd_mtr.h"
+#include	<compiler.h>
+#include	<soundmng.h>
+#include	<pccore.h>
+#include	<fdd/fdd_mtr.h>
 #if defined(SUPPORT_SWSEEKSND)
-#include	"sound/pcmmix.h"
-#include	"fdd_mtr.res"
+#include	<sound/pcmmix.h>
+#include	<fdd/fdd_mtr.res>
 #endif
 
 

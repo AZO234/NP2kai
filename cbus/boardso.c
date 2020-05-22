@@ -3,13 +3,13 @@
  * @brief	Implementation of Sound Orchestra
  */
 
-#include "compiler.h"
-#include "boardso.h"
-#include "iocore.h"
-#include "cbuscore.h"
-#include "sound/fmboard.h"
-#include "sound/sound.h"
-#include "sound/soundrom.h"
+#include <compiler.h>
+#include <cbus/boardso.h>
+#include <io/iocore.h>
+#include <cbus/cbuscore.h>
+#include <sound/fmboard.h>
+#include <sound/sound.h>
+#include <sound/soundrom.h>
 
 #define G_OPL3_INDEX	2
 

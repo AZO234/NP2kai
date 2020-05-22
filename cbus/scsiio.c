@@ -1,15 +1,15 @@
-#include	"compiler.h"
+#include	<compiler.h>
 
 #if defined(SUPPORT_SCSI)
 
-#include	"dosio.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"cbuscore.h"
-#include	"scsiio.h"
+#include	<dosio.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<cbus/cbuscore.h>
+#include	<cbus/scsiio.h>
 #include	"scsiio.tbl"
-#include	"scsicmd.h"
+#include	<cbus/scsicmd.h>
 #include	"scsibios.res"
 
 

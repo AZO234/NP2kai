@@ -1,13 +1,13 @@
-#include	"compiler.h"
-#include	"scrnmng.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"scrndraw.h"
+#include	<compiler.h>
+#include	<scrnmng.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<vram/scrndraw.h>
 #include	"sdraw.h"
-#include	"dispsync.h"
-#include	"palettes.h"
+#include	<vram/dispsync.h>
+#include	<vram/palettes.h>
 #ifdef SUPPORT_WAB
-#include	"wab/wab.h"
+#include	<wab/wab.h>
 #endif
 
 

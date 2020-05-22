@@ -6,74 +6,74 @@
  * @date	$Date: 2011/02/23 10:11:44 $
  */
 
-#include	"compiler.h"
-#include	"strres.h"
-#include	"dosio.h"
-#include	"soundmng.h"
-#include	"sysmng.h"
-#include	"timemng.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"gdc_sub.h"
-#include	"cbuscore.h"
-#include	"pc9861k.h"
-#include	"mpu98ii.h"
+#include	<compiler.h>
+#include	<common/strres.h>
+#include	<dosio.h>
+#include	<soundmng.h>
+#include	<sysmng.h>
+#include	<timemng.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<io/gdc_sub.h>
+#include	<cbus/cbuscore.h>
+#include	<cbus/pc9861k.h>
+#include	<cbus/mpu98ii.h>
 #if defined(SUPPORT_SMPU98)
-#include	"smpu98.h"
+#include	<cbus/smpu98.h>
 #endif
-#include	"amd98.h"
-#include "bios/bios.h"
-#include "bios/biosmem.h"
-#include	"vram.h"
-#include	"scrndraw.h"
-#include	"dispsync.h"
-#include	"palettes.h"
-#include	"maketext.h"
-#include	"maketgrp.h"
-#include	"makegrph.h"
-#include	"makegrex.h"
-#include	"sound.h"
-#include	"fmboard.h"
+#include	<cbus/amd98.h>
+#include <bios/bios.h>
+#include <bios/biosmem.h>
+#include	<vram/vram.h>
+#include	<vram/scrndraw.h>
+#include	<vram/dispsync.h>
+#include	<vram/palettes.h>
+#include	<vram/maketext.h>
+#include	<vram/maketgrp.h>
+#include	<vram/makegrph.h>
+#include	<vram/makegrex.h>
+#include	<sound/sound.h>
+#include	<sound/fmboard.h>
 #ifdef SUPPORT_SOUND_SB16
-#include	"ct1741io.h"
+#include	<cbus/ct1741io.h>
 #endif
-#include	"beep.h"
-#include	"s98.h"
-#include	"tms3631.h"
-#include	"fdd/diskdrv.h"
-#include	"diskimage/fddfile.h"
-#include	"fdd/fdd_mtr.h"
-#include	"wab/wab_rly.h"
-#include	"fdd/sxsi.h"
-#include	"font/font.h"
-#include	"bmsio.h"
+#include	<sound/beep.h>
+#include	<sound/s98.h>
+#include	<sound/tms3631.h>
+#include	<fdd/diskdrv.h>
+#include	<diskimage/fddfile.h>
+#include	<fdd/fdd_mtr.h>
+#include	<wab/wab_rly.h>
+#include	<fdd/sxsi.h>
+#include	<font/font.h>
+#include	<io/bmsio.h>
 #if defined(SUPPORT_HOSTDRV)
-#include	"hostdrv.h"
+#include	<generic/hostdrv.h>
 #endif
-#include	"np2ver.h"
-#include	"calendar.h"
-#include	"timing.h"
-#include	"keystat.h"
-#include	"debugsub.h"
+#include	<np2ver.h>
+#include	<calendar.h>
+#include	<timing.h>
+#include	<keystat.h>
+#include	<debugsub.h>
 #if defined(SUPPORT_WAB)
-#include	"wab/wab.h"
+#include	<wab/wab.h>
 #endif
 #if defined(SUPPORT_CL_GD5430)
-#include	"wab/cirrus_vga_extern.h"
+#include	<wab/cirrus_vga_extern.h>
 #endif
 #if defined(SUPPORT_HRTIMER)
-#include	"upd4990.h"
+#include	<io/upd4990.h>
 #endif	/* SUPPORT_HRTIMER */
 #if defined(SUPPORT_IDEIO)
-#include	"ideio.h"
+#include	<cbus/ideio.h>
 #endif
 #if defined(SUPPORT_GPIB)
-#include	"cbus/gpibio.h"
+#include	<cbus/gpibio.h>
 #endif
 #if defined(CPUCORE_IA32)
-#include	"ia32/cpu.h"
-#include	"ia32/instructions/fpu/fp.h"
+#include	<ia32/cpu.h>
+#include	<ia32/instructions/fpu/fp.h>
 #else
 #define	CPU_VENDOR		"GenuineIntel"
 #define	CPU_FAMILY	2
@@ -90,10 +90,10 @@
 #if !defined(SUPPORT_NP2_TICKCOUNT)
 #error HAXM need NP2_TickCount
 #endif
-#include	"np2_tickcount.h"
-#include	"i386hax/haxfunc.h"
-#include	"i386hax/haxcore.h"
-#include	"dmax86.h"
+#include	<np2_tickcount.h>
+#include	<i386hax/haxfunc.h>
+#include	<i386hax/haxcore.h>
+#include	<mem/dmax86.h>
 #endif
 #include <time.h>
 
@@ -204,6 +204,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE " " NP2VER_GIT);
 #if defined(SUPPORT_GAMEPORT)
 				0,
 #endif
+				0,
 	};
 
 	PCCORE	pccore = {	PCBASECLOCK25, PCBASEMULTIPLE,
@@ -859,7 +860,7 @@ void pccore_reset(void) {
 	}
 #endif
 #ifdef SUPPORT_ASYNC_CPU
-#if !defined(__LIBRETRO__) && !defined(NP2_SDL2) && !defined(NP2_X11)
+#if !defined(__LIBRETRO__) && !defined(NP2_SDL) && !defined(NP2_X)
 	if(GetTickCounterMode()==TCMODE_PERFORMANCECOUNTER){
 		asynccpu_clockpersec = GetTickCounter_ClockPerSec();
 		asynccpu_lastclock = GetTickCounter_Clock();
@@ -867,7 +868,7 @@ void pccore_reset(void) {
 	}else{
 		asynccpu_clockpersec.QuadPart = 0;
 	}
-#elif defined(NP2_X11) || defined(__LIBRETRO__)
+#elif defined(NP2_X) || defined(__LIBRETRO__)
 	{
 		UINT64 c = clock();
 		COPY64(&asynccpu_lastclock, &c)
@@ -875,7 +876,7 @@ void pccore_reset(void) {
 		c = CLOCKS_PER_SEC;
 		COPY64(&asynccpu_clockpersec, &c)
 	}
-#elif defined(NP2_SDL2)
+#elif defined(NP2_SDL)
 	{
 		UINT64 c;
 #if SDL_MAJOR_VERSION == 1

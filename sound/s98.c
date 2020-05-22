@@ -4,15 +4,15 @@
  *			for S98amp S98 Input plugin for Winamp Version 1.3.1+ by Mamiya
  */
 
-#include "compiler.h"
+#include <compiler.h>
 
 #if defined(SUPPORT_S98)
 
-#include "s98.h"
-#include "pccore.h"
-#include "nevent.h"
-#include "dosio.h"
-#include "fmboard.h"
+#include <sound/s98.h>
+#include <pccore.h>
+#include <nevent.h>
+#include <dosio.h>
+#include <sound/fmboard.h>
 
 #define S98LOG_BUFSIZE (32 * 1024)
 

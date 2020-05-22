@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "pccore.h"
-#include "statsave.h"
+#include <pccore.h>
+#include <statsave.h>
 #include "sound/psggen.h"
 
 /**

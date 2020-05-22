@@ -1,4 +1,4 @@
-#include	"compiler.h"
+#include	<compiler.h>
 
 // PEGC 256 color mode 
 
@@ -7,11 +7,11 @@
 
 #if defined(SUPPORT_PC9821)
 
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"memvga.h"
-#include	"vram.h"
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<mem/memvga.h>
+#include	<vram/vram.h>
 
 
 // ---- macros

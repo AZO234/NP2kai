@@ -3,12 +3,12 @@
  * @brief	Implementation of the 86-PCM
  */
 
-#include "compiler.h"
-#include "pcm86.h"
-#include "pccore.h"
-#include "cpucore.h"
-#include "iocore.h"
-#include "fmboard.h"
+#include <compiler.h>
+#include <sound/pcm86.h>
+#include <pccore.h>
+#include <cpucore.h>
+#include <io/iocore.h>
+#include <sound/fmboard.h>
 
 /* サンプリングレートに8掛けた物 */
 const UINT pcm86rate8[] = {352800, 264600, 176400, 132300,
@@ -153,6 +153,23 @@ void SOUNDCALL pcm86gen_checkbuf(PCM86 pcm86)
 		past = past / pcm86->stepclock;
 		pcm86->lastclock += (past * pcm86->stepclock);
 		RECALC_NOWCLKWAIT(past);
+	}
+	
+	// XXX: Windowsでフリーズする問題の暫定対症療法（ある程度時間が経った小さいバッファを捨てる）
+	if(0 < pcm86->virbuf && pcm86->virbuf < 128){
+		if(pcm86->virbuf == lastvirbuf){
+			lastvirbufcnt++;
+			if(lastvirbufcnt > 500){
+				// 500回呼ばれても値が変化しなかったら捨てる
+				pcm86->virbuf = pcm86->realbuf = 0;
+				lastvirbufcnt = 0;
+			}
+		}else{
+			lastvirbuf = pcm86->virbuf;
+			lastvirbufcnt = 0;
+		}
+	}else{
+		lastvirbufcnt = 0;
 	}
 	
 	bufs = pcm86->realbuf - pcm86->virbuf;

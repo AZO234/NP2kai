@@ -1,12 +1,12 @@
-#include	"compiler.h"
-#include	"strres.h"
-#include	"np2ver.h"
-#include	"pccore.h"
-#include	"vramhdl.h"
-#include	"menubase.h"
-#include	"menustr.h"
+#include	<compiler.h>
+#include	<common/strres.h>
+#include	<np2ver.h>
+#include	<pccore.h>
+#include	<embed/vramhdl.h>
+#include	<embed/menubase/menubase.h>
+#include	<embed/menu/menustr.h>
 #include	"sysmenu.res"
-#include	"dlgabout.h"
+#include	<embed/menu/dlgabout.h>
 
 
 enum {
@@ -49,10 +49,7 @@ static void dlginit(void) {
 	milstr_ncpy(work, str_np2, NELEMENTS(work));
 	milstr_ncat(work, str_space, NELEMENTS(work));
 	milstr_ncat(work, NP2VER_CORE, NELEMENTS(work));
-	milstr_ncpy(work2, NP2VER_GIT, NELEMENTS(work));
-#if defined(NP2VER_SDL2)
-	milstr_ncat(work, OEMTEXT(NP2VER_SDL2), NELEMENTS(work));
-#endif
+	milstr_ncpy(work2, NP2VER_GIT, NELEMENTS(work2));
 	menudlg_settext(DID_VER, work);
 	menudlg_settext(DID_VER2, work2);
 }

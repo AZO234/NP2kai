@@ -1,7 +1,7 @@
-#include	"compiler.h"
-#include	"strres.h"
-#include	"dosio.h"
-#include	"textfile.h"
+#include	<compiler.h>
+#include	<common/strres.h>
+#include	<dosio.h>
+#include	<common/textfile.h>
 #include	"midiout.h"
 
 

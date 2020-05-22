@@ -1,12 +1,12 @@
-#include	"compiler.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"cbuscore.h"
-#include	"boardlol.h"
-#include	"sound.h"
-#include	"soundrom.h"
-#include	"fmboard.h"
-#include	"s98.h"
+#include	<compiler.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<cbus/cbuscore.h>
+#include	<cbus/boardlol.h>
+#include	<sound/sound.h>
+#include	<sound/soundrom.h>
+#include	<sound/fmboard.h>
+#include	<sound/s98.h>
 
 /**
  * SNE Little Orchestra

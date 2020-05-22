@@ -1,8 +1,8 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"memepp.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<mem/memepp.h>
 
 
 // ---- EPP-ROM

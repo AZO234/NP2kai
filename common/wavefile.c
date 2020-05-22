@@ -3,9 +3,9 @@
  * @brief	Implementation of wave file
  */
 
-#include "compiler.h"
-#include "wavefile.h"
-#include "dosio.h"
+#include <compiler.h>
+#include <common/wavefile.h>
+#include <dosio.h>
 
 #if !defined(WAVE_FORMAT_PCM)
 #define WAVE_FORMAT_PCM			1		/*!< PCM */

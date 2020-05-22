@@ -1,13 +1,13 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"ct1741io.h"
-#include	"ct1745io.h"
-#include	"sound.h"
-#include	"fmboard.h"
-#include	"mpu98ii.h"
-#include	"smpu98.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<cbus/ct1741io.h>
+#include	<cbus/ct1745io.h>
+#include	<sound/sound.h>
+#include	<sound/fmboard.h>
+#include	<cbus/mpu98ii.h>
+#include	<cbus/smpu98.h>
 
 #ifdef SUPPORT_SOUND_SB16
 
@@ -281,11 +281,9 @@ static void ct1741_exec_command()
 			if(mpu98.enable){
 				mpu98.mode = 1; // force set UART mode
 				mpu98ii_o0(0x8000 + g_sb16.base, g_sb16.dsp_info.in.data[0]);
-				return;
 			}else if(smpu98.enable){
 				smpu98.mode = 1; // force set UART mode
 				smpu98_o0(0x8000 + g_sb16.base, g_sb16.dsp_info.in.data[0]);
-				return;
 			}
 		}
 //		if (sb.midi == true) MIDI_RawOutByte(g_sb16.dsp_info.in.data[0]);

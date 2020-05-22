@@ -1,5 +1,5 @@
-#include	"compiler.h"
-#include	"codecnv.h"
+#include	<compiler.h>
+#include	<codecnv/codecnv.h>
 #include	"textcnv.h"
 
 

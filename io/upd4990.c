@@ -1,10 +1,10 @@
-#include	"compiler.h"
-#include	"timemng.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"calendar.h"
+#include	<compiler.h>
+#include	<timemng.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<calendar.h>
 #if defined(SUPPORT_HRTIMER)
-#include	"cpucore.h"
+#include	<cpucore.h>
 #include	"cpumem.h"
 #endif	/* SUPPORT_HRTIMER */
 

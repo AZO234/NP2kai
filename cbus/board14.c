@@ -3,14 +3,14 @@
  * @brief	Implementation of PC-9801-14
  */
 
-#include "compiler.h"
-#include "pccore.h"
-#include "iocore.h"
-#include "board14.h"
-#include "cbuscore.h"
-#include "sound.h"
-#include "soundrom.h"
-#include "tms3631.h"
+#include <compiler.h>
+#include <pccore.h>
+#include <io/iocore.h>
+#include <cbus/board14.h>
+#include <cbus/cbuscore.h>
+#include <sound/sound.h>
+#include <sound/soundrom.h>
+#include <sound/tms3631.h>
 
 /* どうも 8253C-2は 4MHz/16らすい？ */
 /* とりあえず 1996800/8を入力してみる... (ver0.71) */

@@ -2,7 +2,7 @@
 // vermouthのみ使用のCOMMNG-MIDI
 // あまりに一緒すぎるんで 関数名変えてこっちへ
 
-#include "commng.h"
+#include <commng.h>
 
 // ---- com manager midi for vermouth
 

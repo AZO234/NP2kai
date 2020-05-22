@@ -13,7 +13,7 @@ typedef	UINT (IOINPCALL *IOINP)(UINT port);
 #include	"cpuio.h"
 #include	"crtc.h"
 #include	"dipsw.h"
-#include	"dmac.h"
+#include	<io/dmac.h>
 #include	"egc.h"
 #include	"epsonio.h"
 #include	"emsio.h"
@@ -28,9 +28,9 @@ typedef	UINT (IOINPCALL *IOINP)(UINT port);
 #include	"pic.h"
 #include	"pit.h"
 #include	"printif.h"
-#include	"serial.h"
+#include	<io/serial.h>
 #include	"sysport.h"
-#include	"upd4990.h"
+#include	<io/upd4990.h>
 
 #if defined(SUPPORT_PC9821)
 #include	"pcidev.h"

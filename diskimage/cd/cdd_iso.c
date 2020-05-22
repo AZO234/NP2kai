@@ -1,6 +1,6 @@
-#include	"compiler.h"
-#include	"dosio.h"
-#include	"fdd/sxsi.h"
+#include	<compiler.h>
+#include	<dosio.h>
+#include	<fdd/sxsi.h>
 
 #ifdef SUPPORT_KAI_IMAGES
 

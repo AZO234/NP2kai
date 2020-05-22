@@ -1,12 +1,12 @@
-#include	"compiler.h"
+#include	<compiler.h>
 
 #if defined(SUPPORT_PC9861K)
 
-#include	"commng.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"cbuscore.h"
-#include	"pc9861k.h"
+#include	<commng.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<cbus/cbuscore.h>
+#include	<cbus/pc9861k.h>
 
 
 	_PC9861K	pc9861k;

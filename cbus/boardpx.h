@@ -7,7 +7,7 @@
 
 #if defined(SUPPORT_PX)
 
-#include "pccore.h"
+#include <pccore.h>
 
 #ifdef __cplusplus
 extern "C"

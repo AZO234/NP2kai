@@ -3,14 +3,14 @@
  * @brief	Implementation of Speak board
  */
 
-#include "compiler.h"
-#include "boardspb.h"
-#include "iocore.h"
-#include "cbuscore.h"
-#include "sound/fmboard.h"
-#include "sound/sound.h"
-#include "sound/soundrom.h"
-#include "s98.h"
+#include <compiler.h>
+#include <cbus/boardspb.h>
+#include <io/iocore.h>
+#include <cbus/cbuscore.h>
+#include <sound/fmboard.h>
+#include <sound/sound.h>
+#include <sound/soundrom.h>
+#include <sound/s98.h>
 
 static int opna_idx = 0;
 

@@ -4,13 +4,9 @@
  */
 
 #if defined(SUPPORT_IA32_HAXM)
-#define	NP2VER_CORE			"0.86 rev.21 HAXM"
+#define	NP2VER_CORE			"HAXM 0.86"
 #else
-#define	NP2VER_CORE			"0.86 rev.21"
+#define	NP2VER_CORE			"0.86"
 #endif
-#if defined(_MSC_VER) && !defined(__LIBRETRO__)
-#include "np2_git_version.h"
-#define	NP2VER_GIT			VER_SHASH
-#else
-#define	NP2VER_GIT			GIT_VERSION
-#endif
+#define	NP2VER_GIT			NP2KAI_GIT_TAG " " NP2KAI_GIT_HASH
+

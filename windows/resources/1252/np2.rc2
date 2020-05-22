@@ -1,0 +1,77 @@
+/////////////////////////////////////////////////////////////////////////////
+//
+// Manifest
+//
+
+#ifdef NEEDS_MANIFEST
+#ifdef _WIN64
+#ifdef SUPPORT_PC9821
+IDR_MANIFEST            IRT_MANIFEST MOVEABLE PURE "..\\np21kaix64.mnf"
+#else
+IDR_MANIFEST            IRT_MANIFEST MOVEABLE PURE "..\\np2kaix64.mnf"
+#endif
+#else
+#ifdef SUPPORT_PC9821
+IDR_MANIFEST            IRT_MANIFEST MOVEABLE PURE "..\\np21kai.mnf"
+#else
+IDR_MANIFEST            IRT_MANIFEST MOVEABLE PURE "..\\np2kai.mnf"
+#endif
+#endif
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 0,86,0,22
+ PRODUCTVERSION 0,86,0,22
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "CompanyName", "\0"
+            VALUE "FileVersion", "0, 8, 6, 21\0"
+            VALUE "LegalCopyright", "Nekosan development team\0"
+
+            VALUE "ProductVersion", "0, 8, 6, 21\0"
+#ifdef _USRDLL
+            VALUE "FileDescription", "PC-98x1series emulator resource file\0"
+            VALUE "ProductName", "Neko Project II kai resource file\0"
+            VALUE "InternalName", "np2kai_1252\0"
+            VALUE "OriginalFilename", "np2kai_1252.dll\0"
+#else
+#ifdef SUPPORT_PC9821
+            VALUE "FileDescription", "PC-9821series emulator\0"
+            VALUE "ProductName", "Neko Project 21 kai\0"
+#else
+            VALUE "FileDescription", "PC-9801series emulator\0"
+            VALUE "ProductName", "Neko Project II kai\0"
+#endif
+#ifdef SUPPORT_PC9821
+            VALUE "InternalName", "np21kai\0"
+            VALUE "OriginalFilename", "np21kai.exe\0"
+#else
+            VALUE "InternalName", "np2kai\0"
+            VALUE "OriginalFilename", "np2kai.exe\0"
+#endif
+#endif
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+

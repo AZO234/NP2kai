@@ -1,7 +1,7 @@
 #ifndef FMGEN_FMGWRAP_H
 #define FMGEN_FMGWRAP_H
 
-#include "compiler.h"
+#include <compiler.h>
 #include "fmgen_types.h"
 
 #ifdef __cplusplus

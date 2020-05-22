@@ -1,7 +1,7 @@
-#include	"compiler.h"
-#include	"dosio.h"
-#include	"cpucore.h"
-#include	"fdd/sxsi.h"
+#include	<compiler.h>
+#include	<dosio.h>
+#include	<cpucore.h>
+#include	<fdd/sxsi.h>
 
 #ifdef SUPPORT_PHYSICAL_CDDRV
 

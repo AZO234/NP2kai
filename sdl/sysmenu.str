@@ -1,0 +1,552 @@
+
+static const char str_emulate[] = "Emulate";
+static const char str_reset[] = "Reset";
+static const char str_config[] = "Configure...";
+static const char str_newdisk[] = "NewDisk...";
+static const char str_font[] = "Font...";
+static const char str_exit[] = "Exit";
+
+static const char str_stat[] = "Stat";
+static const char str_save0[] = "Save 0";
+static const char str_save1[] = "Save 1";
+static const char str_save2[] = "Save 2";
+static const char str_save3[] = "Save 3";
+static const char str_save4[] = "Save 4";
+static const char str_save5[] = "Save 5";
+static const char str_save6[] = "Save 6";
+static const char str_save7[] = "Save 7";
+static const char str_save8[] = "Save 8";
+static const char str_save9[] = "Save 9";
+static const char str_load0[] = "Load 0";
+static const char str_load1[] = "Load 1";
+static const char str_load2[] = "Load 2";
+static const char str_load3[] = "Load 3";
+static const char str_load4[] = "Load 4";
+static const char str_load5[] = "Load 5";
+static const char str_load6[] = "Load 6";
+static const char str_load7[] = "Load 7";
+static const char str_load8[] = "Load 8";
+static const char str_load9[] = "Load 9";
+
+static const char str_fdd[] = "FDD";
+static const char str_fdd1[] = "FDD1";
+static const char str_fdd2[] = "FDD2";
+static const char str_fdd3[] = "FDD3";
+static const char str_fdd4[] = "FDD4";
+static const char str_harddisk[] = "HardDisk";
+static const char str_sasi1[] = "SASI1";
+static const char str_sasi2[] = "SASI2";
+static const char str_ide1[] = "IDE1";
+static const char str_ide2[] = "IDE2";
+static const char str_idecd[] = "CD-ROM";
+static const char str_scsi0[] = "SCSI0";
+static const char str_scsi1[] = "SCSI1";
+static const char str_scsi2[] = "SCSI2";
+static const char str_scsi3[] = "SCSI3";
+static const char str_open[] = "Open...";
+static const char str_eject[] = "Eject";
+static const char str_remove[] = "Remove";
+
+static const char str_screen[] = "Screen";
+static const char str_window[] = "Window";
+static const char str_fullscrn[] = "FullScreen";
+static const char str_normal[] = "Normal";
+static const char str_leftrol[] = "Left Rotated";
+static const char str_rightrol[] = "Right Rotated";
+static const char str_dispsync[] = "Disp Vsync";
+static const char str_realpal[] = "Real Palettes";
+static const char str_nowait[] = "No Wait";
+#if defined(SUPPORT_ASYNC_CPU)
+static const char str_asynccpu[] = "Async CPU";
+#endif
+static const char str_autoframe[] = "Auto frame";
+static const char str_60fps[] = "Full frame";
+static const char str_30fps[] = "1/2 frame";
+static const char str_20fps[] = "1/3 frame";
+static const char str_15fps[] = "1/4 frame";
+static const char str_scropt[] = "Screen option...";
+static const char str_wabopt[] = "WAB option...";
+
+static const char str_device[] = "Device";
+static const char str_keyboard[] = "Keyboard";
+static const char str_joykey1[] = "JoyKey-1";
+static const char str_joykey2[] = "JoyKey-2";
+static const char str_mousekey[] = "Mouse-Key";
+static const char str_mecshift[] = "mechanical SHIFT";
+static const char str_mecctrl[] = "mechanical CTRL";
+static const char str_mecgrph[] = "mechanical GRPH";
+static const char str_xroll[] = "Swap PageUp/PageDown";
+
+static const char str_keyboard_106[] = "JP Keyboard 106";
+static const char str_keyboard_101[] = "US Keyboard 101";
+static const char str_key_Copy[] = "Send COPY";
+static const char str_key_Kana[] = "Send Kana";
+static const char str_key_Yen[] = "Send Yen";
+static const char str_key_SYen[] = "Send Shift+Yen";
+static const char str_key_At[] = "Send @";
+static const char str_key_SAt[] = "Send Shift+@";
+static const char str_key_UB[] = "Send _";
+static const char str_key_SUB[] = "Send Shift+_";
+static const char str_key_KPEquals[] = "Send KP=";
+static const char str_key_KPComma[] = "Send KP,";
+static const char str_sndcad[] = "Send Ctrl+Alt+Del";
+
+static const char str_beep[] = "Beep";
+static const char str_off[] = "off";
+static const char str_low[] = "low";
+static const char str_mid[] = "mid";
+static const char str_high[] = "high";
+
+static const char str_soundboard[] = "SoundBoard";
+static const char str_nosound[] = "Disable boards";
+static const char str_pc980114[] = "PC-9801-14";
+static const char str_pc980126k[] = "PC-9801-26K";
+static const char str_pc980186[] = "PC-9801-86";
+static const char str_pc980126k86[] = "PC-9801-26K + 86";
+static const char str_pc980186cb[] = "PC-9801-86 + Chibi-oto";
+static const char str_pc9801118[] = "PC-9801-118";
+static const char str_pc980186mx[] = "PC-9801-86 + Mate-X PCM(B460)";
+static const char str_pc980186118[] = "PC-9801-86 + 118(B460)";
+static const char str_pc9801mx[] = "Mate-X PCM";
+static const char str_spreakboard[] = "Speak board";
+static const char str_spreakboard86[] = "PC-9801-86 + Speak board";
+static const char str_sparkboard[] = "Spark board";
+static const char str_sndorchestra[] = "Sound Orchestra";
+static const char str_sndorchestrav[] = "Sound Orchestra-V";
+static const char str_littleorchestral[] = "Little Orchestra L";
+static const char str_mmorchestra[] = "Multimedia Orchestra";
+#if defined(SUPPORT_SOUND_SB16)
+static const char str_sb16[] = "Sound Blaster 16";
+static const char str_86sb16[] = "PC-9801-86 + Sound Blaster 16";
+static const char str_mxsb16[] = "Mate-X PCM + Sound Blaster 16";
+static const char str_118sb16[] = "PC-9801-118 + Sound Blaster 16";
+static const char str_86mxsb16[] = "PC-9801-86 + Mate-X PCM(B460) + Sound Blaster 16";
+static const char str_86118sb16[] = "PC-9801-86 + 118(B460) + Sound Blaster 16";
+#endif
+static const char str_amd98[] = "AMD-98";
+static const char str_wavestar[] = "WaveStar";
+#if defined(SUPPORT_PX)
+static const char str_px1[] = "Otomi-chanx2";
+static const char str_px2[] = "Otomi-chanx2 + 86";
+#endif
+static const char str_pc9801118rom[] = "118 ROM";
+#if defined(SUPPORT_FMGEN)
+static const char str_fmgen[] = "fmgen";
+#endif	/* SUPPORT_FMGEN */
+static const char str_jastsnd[] = "JAST SOUND";
+static const char str_seeksound[] = "Seek Sound";
+
+static const char str_memory[] = "Memory";
+static const char str_mem640[] = "640KB";
+static const char str_mem16[] = "1.6MB";
+static const char str_mem36[] = "3.6MB";
+static const char str_mem76[] = "7.6MB";
+static const char str_mem96[] = "9.6MB";
+static const char str_mem136[] = "13.6MB";
+static const char str_mem166[] = "16.6MB";
+static const char str_mem326[] = "32.6MB";
+static const char str_mem646[] = "64.6MB";
+static const char str_mem1206[] = "120.6MB";
+static const char str_mem2306[] = "230.6MB";
+static const char str_mem5126[] = "512.6MB";
+static const char str_mem10246[] = "10240.6MB";
+
+static const char str_seropt[] = "Serial option...";
+static const char str_midiopt[] = "MIDI option...";
+static const char str_midipanic[] = "MIDI Panic";
+static const char str_sndopt[] = "Sound option...";
+
+static const char str_other[] = "Other";
+#if defined(EMSCRIPTEN) && !defined(__LIBRETRO__)
+static const char str_capmouse[] = "Capture Mouse";
+#endif
+static const char str_bmpsave[] = "BMP Save...";
+static const char str_hf_enable[] = "Fontrom hook";
+static const char str_s98log[] = "S98 logging...";
+static const char str_calendar[] = "Calendar...";
+static const char str_shortcut[] = "Shortcut Key";
+static const char str_altenter[] = "Alt+Enter";
+static const char str_altf4[] = "Alt+F4";
+static const char str_clockdisp[] = "Clock Disp";
+static const char str_framedisp[] = "Frame Disp";
+static const char str_joyrev[] = "Joy Reverse";
+static const char str_joyrapid[] = "Joy Rapid";
+static const char str_mouserapid[] = "Mouse Rapid";
+static const char str_itfwork[] = "ITF work";
+static const char str_fixmmtimer[] = "Fix MMTimer";
+static const char str_winntfix[] = "WinNT4/2000 IDE Fix";
+static const char str_skip16mbmemchk[] = "Skip over 16MB memcheck";
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+static const char str_fastmemchk[] = "Fast memcheck";
+#endif
+static const char str_en_dbss[] = "Debug snapshot";
+static const char str_about[] = "About...";
+
+static const char str_dbss[] = "Debug";
+static const char str_sdbss0[] = "Save debug ss 0";
+static const char str_sdbss1[] = "Save debug ss 1";
+static const char str_sdbss2[] = "Save debug ss 2";
+static const char str_sdbss3[] = "Save debug ss 3";
+static const char str_ldbss0[] = "Load debug ss 0";
+static const char str_ldbss1[] = "Load debug ss 1";
+static const char str_ldbss2[] = "Load debug ss 2";
+static const char str_ldbss3[] = "Load debug ss 3";
+
+static const MSYSITEM s_emu[] = {
+		{str_reset,			NULL,		MID_RESET,			0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+#if defined(__LIBRETRO__)
+		{str_config,		NULL,		MID_CONFIG,		MENU_GRAY},
+#else	/* __LIBRETRO__ */
+		{str_config,		NULL,		MID_CONFIG,			0},
+#endif	/* __LIBRETRO__ */
+		{str_newdisk,		NULL,		MID_NEWDISK,		MENU_GRAY},
+		{str_font,			NULL,		MID_CHANGEFONT,		MENU_GRAY},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_exit,			NULL,		MID_EXIT,			MENU_DELETED}};
+
+static const MSYSITEM s_state[] = {
+		{NULL,				NULL,		MID_STATIC,			MENU_DELETED}};
+
+static const MSYSITEM s_statee[] = {
+		{str_save0,			NULL,		MID_SAVESTAT0,			0},
+		{str_save1,			NULL,		MID_SAVESTAT1,			0},
+		{str_save2,			NULL,		MID_SAVESTAT2,			0},
+		{str_save3,			NULL,		MID_SAVESTAT3,			0},
+		{str_save4,			NULL,		MID_SAVESTAT4,			0},
+		{str_save5,			NULL,		MID_SAVESTAT5,			0},
+		{str_save6,			NULL,		MID_SAVESTAT6,			0},
+		{str_save7,			NULL,		MID_SAVESTAT7,			0},
+		{str_save8,			NULL,		MID_SAVESTAT8,			0},
+		{str_save9,			NULL,		MID_SAVESTAT9,			0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_load0,			NULL,		MID_LOADSTAT0,			0},
+		{str_load1,			NULL,		MID_LOADSTAT1,			0},
+		{str_load2,			NULL,		MID_LOADSTAT2,			0},
+		{str_load3,			NULL,		MID_LOADSTAT3,			0},
+		{str_load4,			NULL,		MID_LOADSTAT4,			0},
+		{str_load5,			NULL,		MID_LOADSTAT5,			0},
+		{str_load6,			NULL,		MID_LOADSTAT6,			0},
+		{str_load7,			NULL,		MID_LOADSTAT7,			0},
+		{str_load8,			NULL,		MID_LOADSTAT8,			0},
+		{str_load9,			NULL,		MID_LOADSTAT9,			MENU_DELETED}};
+
+static const MSYSITEM s_fdd1[] = {
+		{str_open,			NULL,		MID_FDD1OPEN,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_eject,			NULL,		MID_FDD1EJECT,		MENU_DELETED}};
+
+static const MSYSITEM s_fdd2[] = {
+		{str_open,			NULL,		MID_FDD2OPEN,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_eject,			NULL,		MID_FDD2EJECT,		MENU_DELETED}};
+
+static const MSYSITEM s_fdd3[] = {
+		{str_open,			NULL,		MID_FDD3OPEN,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_eject,			NULL,		MID_FDD3EJECT,		MENU_DELETED}};
+
+static const MSYSITEM s_fdd4[] = {
+		{str_open,			NULL,		MID_FDD4OPEN,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_eject,			NULL,		MID_FDD4EJECT,		MENU_DELETED}};
+
+static const MSYSITEM s_fdd[] = {
+		{str_fdd1,			s_fdd1,		MID_STATIC,		0},
+		{str_fdd2,			s_fdd2,		MID_STATIC,		MENU_DELETED}};
+
+static const MSYSITEM s_fddf[] = {
+		{str_fdd1,			s_fdd1,		MID_STATIC,		0},
+		{str_fdd2,			s_fdd2,		MID_STATIC,		0},
+		{str_fdd3,			s_fdd3,		MID_STATIC,		0},
+		{str_fdd4,			s_fdd4,		MID_STATIC,		MENU_DELETED}};
+
+static const MSYSITEM s_fdd123[] = {
+		{str_fdd1,			s_fdd1,		MID_STATIC,		0},
+		{str_fdd2,			s_fdd2,		MID_STATIC,		0},
+		{str_fdd3,			s_fdd3,		MID_STATIC,		MENU_DELETED}};
+
+static const MSYSITEM s_fdd124[] = {
+		{str_fdd1,			s_fdd1,		MID_STATIC,		0},
+		{str_fdd2,			s_fdd2,		MID_STATIC,		0},
+		{str_fdd4,			s_fdd4,		MID_STATIC,		MENU_DELETED}};
+
+#if defined(SUPPORT_IDEIO)
+static const MSYSITEM s_ide1[] = {
+		{str_open,			NULL,		MID_IDE1OPEN,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_remove,		NULL,		MID_IDE1EJECT,		MENU_DELETED}};
+
+static const MSYSITEM s_ide2[] = {
+		{str_open,			NULL,		MID_IDE2OPEN,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_remove,		NULL,		MID_IDE2EJECT,		MENU_DELETED}};
+
+static const MSYSITEM s_idecd[] = {
+		{str_open,			NULL,		MID_IDECDOPEN,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_remove,		NULL,		MID_IDECDEJECT,		MENU_DELETED}};
+#else
+static const MSYSITEM s_sasi1[] = {
+		{str_open,			NULL,		MID_SASI1OPEN,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_remove,		NULL,		MID_SASI1EJECT,		MENU_DELETED}};
+
+static const MSYSITEM s_sasi2[] = {
+		{str_open,			NULL,		MID_SASI2OPEN,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_remove,		NULL,		MID_SASI2EJECT,		MENU_DELETED}};
+#endif
+
+#if defined(SUPPORT_SCSI)
+static const MSYSITEM s_scsi0[] = {
+		{str_open,			NULL,		MID_SCSI0OPEN,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_remove,		NULL,		MID_SCSI0EJECT,		MENU_DELETED}};
+
+static const MSYSITEM s_scsi1[] = {
+		{str_open,			NULL,		MID_SCSI1OPEN,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_remove,		NULL,		MID_SCSI1EJECT,		MENU_DELETED}};
+
+static const MSYSITEM s_scsi2[] = {
+		{str_open,			NULL,		MID_SCSI2OPEN,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_remove,		NULL,		MID_SCSI2EJECT,		MENU_DELETED}};
+
+static const MSYSITEM s_scsi3[] = {
+		{str_open,			NULL,		MID_SCSI3OPEN,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_remove,		NULL,		MID_SCSI3EJECT,		MENU_DELETED}};
+#endif
+
+static const MSYSITEM s_hdd[] = {
+#if defined(SUPPORT_IDEIO)
+		{str_ide1,			s_ide1,		MID_STATIC,			0},
+		{str_ide2,			s_ide2,		MID_STATIC,			0},
+		{str_idecd,			s_idecd,	MID_STATIC,			0},
+#else
+		{str_sasi1,			s_sasi1,	MID_STATIC,			0},
+		{str_sasi2,			s_sasi2,	MID_STATIC,			0},
+#endif
+#if defined(SUPPORT_SCSI)
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_scsi0,			s_scsi0,	MID_STATIC,			0},
+		{str_scsi1,			s_scsi1,	MID_STATIC,			0},
+		{str_scsi2,			s_scsi2,	MID_STATIC,			0},
+		{str_scsi3,			s_scsi3,	MID_STATIC,			MENU_DELETED}};
+#else
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR | MENU_DELETED }};
+#endif
+
+static const MSYSITEM s_screen[] = {
+		{str_window,		NULL,		MID_WINDOW,			MENU_GRAY},
+		{str_fullscrn,		NULL,		MID_FULLSCREEN,		MENU_GRAY},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+#if SDL_MAJOR_VERSION == 1
+		{str_normal,		NULL,		MID_ROLNORMAL,		MENU_GRAY},
+		{str_leftrol,		NULL,		MID_ROLLEFT,		MENU_GRAY},
+		{str_rightrol,		NULL,		MID_ROLRIGHT,		MENU_GRAY},
+#else
+		{str_normal,		NULL,		MID_ROLNORMAL,		0},
+		{str_leftrol,		NULL,		MID_ROLLEFT,		0},
+		{str_rightrol,		NULL,		MID_ROLRIGHT,		0},
+#endif
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_dispsync,		NULL,		MID_DISPSYNC,		0},
+		{str_realpal,		NULL,		MID_RASTER,			0},
+		{str_nowait,		NULL,		MID_NOWAIT,			0},
+#if defined(SUPPORT_ASYNC_CPU)
+		{str_asynccpu,		NULL,		MID_ASYNCCPU,			0},
+#endif
+		{str_autoframe,		NULL,		MID_AUTOFPS,		0},
+		{str_60fps,			NULL,		MID_60FPS,			0},
+		{str_30fps,			NULL,		MID_30FPS,			0},
+		{str_20fps,			NULL,		MID_20FPS,			0},
+		{str_15fps,			NULL,		MID_15FPS,			0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+#if defined(SUPPORT_WAB) && defined(SUPPORT_CL_GD5430)
+		{str_scropt,		NULL,		MID_SCREENOPT,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_wabopt,		NULL,		MID_WABOPT,		MENU_DELETED}};
+#else
+		{str_scropt,		NULL,		MID_SCREENOPT,		MENU_DELETED}};
+#endif
+
+static const MSYSITEM s_keybd[] = {
+#if !defined(__LIBRETRO__)
+		{str_keyboard_106,	NULL,		MID_KEYBOARD_106,		0},
+		{str_keyboard_101,	NULL,		MID_KEYBOARD_101,		0},
+		{NULL,			NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_keyboard,		NULL,		MID_KEY,			0},
+		{str_joykey1,		NULL,		MID_JOY1,			0},
+		{str_joykey2,		NULL,		MID_JOY2,			0},
+		{str_mousekey,		NULL,		MID_MOUSEKEY,		0},
+		{NULL,			NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_mecshift,		NULL,		MID_XSHIFT,			0},
+		{str_mecctrl,		NULL,		MID_XCTRL,			0},
+		{str_mecgrph,		NULL,		MID_XGRPH,			0},
+		{str_xroll,		NULL,		MID_XROLL,			0},
+		{NULL,			NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_sndcad,		NULL,		MID_SNDCAD,			MENU_DELETED}};
+#else
+		{str_key_Copy,		NULL,		MID_KEY_COPY,			0},
+		{str_key_Kana,		NULL,		MID_KEY_KANA,			0},
+		{str_key_Yen,		NULL,		MID_KEY_YEN,			0},
+		{str_key_SYen,		NULL,		MID_KEY_SYEN,			0},
+		{str_key_At,		NULL,		MID_KEY_AT,			0},
+		{str_key_SAt,		NULL,		MID_KEY_SAT,			0},
+		{str_key_UB,		NULL,		MID_KEY_UB,			0},
+		{str_key_SUB,		NULL,		MID_KEY_SUB,			0},
+		{str_key_KPEquals,	NULL,		MID_KEY_KPEQUALS,		0},
+		{str_key_KPComma,	NULL,		MID_KEY_KPCOMMA,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_sndcad,		NULL,		MID_SNDCAD,			MENU_DELETED}};
+#endif
+
+static const MSYSITEM s_beep[] = {
+		{str_off,			NULL,		MID_BEEPOFF,		0},
+		{str_low,			NULL,		MID_BEEPLOW,		0},
+		{str_mid,			NULL,		MID_BEEPMID,		0},
+		{str_high,			NULL,		MID_BEEPHIGH,		MENU_DELETED}};
+
+static const MSYSITEM s_snd[] = {
+		{str_nosound,		NULL,		MID_NOSOUND,		0},
+		{str_pc980114,		NULL,		MID_PC9801_14,		0},
+		{str_pc980126k,		NULL,		MID_PC9801_26K,		0},
+		{str_pc980186,		NULL,		MID_PC9801_86,		0},
+		{str_pc980126k86,	NULL,		MID_PC9801_26_86,	0},
+		{str_pc980186cb,	NULL,		MID_PC9801_86_CB,	0},
+		{str_pc9801118,		NULL,		MID_PC9801_118,		0},
+		{str_pc980186mx,	NULL,		MID_PC9801_86_MX,	0},
+		{str_pc980186118,	NULL,		MID_PC9801_86_118,	0},
+		{str_pc9801mx,		NULL,		MID_PC9801_MX,		0},
+		{str_spreakboard,	NULL,		MID_SPEAKBOARD,		0},
+		{str_spreakboard86,	NULL,		MID_SPEAKBOARD86,		0},
+		{str_sparkboard,	NULL,		MID_SPARKBOARD,		0},
+		{str_sndorchestra,	NULL,		MID_SOUNDORCHESTRA,	0},
+		{str_sndorchestrav,	NULL,		MID_SOUNDORCHESTRAV,	0},
+		{str_littleorchestral,	NULL,		MID_LITTLEORCHESTRAL,	0},
+		{str_mmorchestra,	NULL,		MID_MMORCHESTRA,	0},
+#if defined(SUPPORT_SOUND_SB16)
+		{str_sb16,		NULL,		MID_SB16,		0},
+		{str_86sb16,		NULL,		MID_86_SB16,		0},
+		{str_mxsb16,		NULL,		MID_MX_SB16,		0},
+		{str_118sb16,		NULL,		MID_118_SB16,		0},
+		{str_86mxsb16,		NULL,		MID_86MXSB16,		0},
+		{str_86118sb16,		NULL,		MID_86118SB16,		0},
+#endif
+		{str_amd98,			NULL,		MID_AMD98,			0},
+		{str_wavestar,		NULL,		MID_WAVESTAR,			0},
+#if defined(SUPPORT_PX)
+		{str_px1,			NULL,		MID_PX1,			0},
+		{str_px2,			NULL,		MID_PX2,			0},
+#endif
+		{str_pc9801118rom,	NULL,		MID_PC9801_118_ROM,	0},
+		{str_jastsnd,		NULL,		MID_JASTSND,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_seeksound,		NULL,		MID_SEEKSND,		MENU_DELETED}};
+
+static const MSYSITEM s_mem[] = {
+		{str_mem640,		NULL,		MID_MEM640,			0},
+		{str_mem16,			NULL,		MID_MEM16,			0},
+		{str_mem36,			NULL,		MID_MEM36,			0},
+		{str_mem76,			NULL,		MID_MEM76,			0},
+		{str_mem96,			NULL,		MID_MEM96,			0},
+		{str_mem136,			NULL,		MID_MEM136,			0},
+#if defined(CPUCORE_IA32)
+		{str_mem166,			NULL,		MID_MEM166,			0},
+		{str_mem326,			NULL,		MID_MEM326,			0},
+		{str_mem646,			NULL,		MID_MEM646,			0},
+		{str_mem1206,			NULL,		MID_MEM1206,			0},
+		{str_mem2306,			NULL,		MID_MEM2306,			0},
+		{str_mem5126,			NULL,		MID_MEM5126,			0},
+		{str_mem10246,		NULL,		MID_MEM10246,			MENU_DELETED}};
+#else
+		{str_mem166,			NULL,		MID_MEM166,			MENU_GRAY},
+		{str_mem326,			NULL,		MID_MEM326,			MENU_GRAY},
+		{str_mem646,			NULL,		MID_MEM646,			MENU_GRAY},
+		{str_mem1206,			NULL,		MID_MEM1206,			MENU_GRAY},
+		{str_mem2306,			NULL,		MID_MEM2306,			MENU_GRAY},
+		{str_mem5126,			NULL,		MID_MEM5126,			MENU_GRAY},
+		{str_mem10246,		NULL,		MID_MEM10246,			MENU_GRAY | MENU_DELETED}};
+#endif
+
+static const MSYSITEM s_device[] = {
+#if !defined(__LIBRETRO__)
+		{str_keyboard,		s_keybd,	MID_STATIC,			0},
+		{str_beep,			s_beep,		MID_STATIC,			0},
+		{str_soundboard,	s_snd,		MID_STATIC,			0},
+		{str_memory,		s_mem,		MID_STATIC,			0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_seropt,		NULL,		MID_SERIAL1,		MENU_GRAY},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_midiopt,		NULL,		MID_MPUPC98,		MENU_GRAY},
+		{str_midipanic,		NULL,		MID_MIDIPANIC,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+#if defined(SUPPORT_FMGEN)
+		{str_fmgen,			NULL,		MID_FMGEN,			0},
+#endif	/* SUPPORT_FMGEN */
+		{str_sndopt,		NULL,		MID_SNDOPT,			MENU_GRAY |
+															MENU_DELETED}};
+#else
+		{str_keyboard,		s_keybd,	MID_STATIC,			MENU_DELETED}};
+#endif
+
+static const MSYSITEM s_sc[] = {
+		{str_altenter,		NULL,		MID_ALTENTER,		MENU_GRAY},
+		{str_altf4,			NULL,		MID_ALTF4,			MENU_DELETED}};
+
+static const MSYSITEM s_other[] = {
+#if defined(EMSCRIPTEN) && !defined(__LIBRETRO__)
+		{str_capmouse,		NULL,		MID_CAPMOUSE,			0},
+#endif
+		{str_bmpsave,		NULL,		MID_BMPSAVE,			0},
+		{str_s98log,		NULL,		MID_S98LOGGING,		MENU_GRAY},
+		{str_hf_enable,			NULL,		MID_HF_ENABLE,		0},
+#if !defined(__LIBRETRO__)
+		{str_calendar,		NULL,		MID_CALENDAR,		MENU_GRAY},
+		{str_shortcut,		s_sc,		MID_STATIC,			MENU_GRAY},
+		{str_clockdisp,		NULL,		MID_DISPCLOCK,		MENU_GRAY},
+		{str_framedisp,		NULL,		MID_DISPFRAME,		MENU_GRAY},
+		{str_joyrev,		NULL,		MID_JOYX,			0},
+		{str_joyrapid,		NULL,		MID_RAPID,			0},
+		{str_mouserapid,	NULL,		MID_MSRAPID,		MENU_GRAY},
+		{str_itfwork,		NULL,		MID_ITFWORK,			0},
+		{str_fixmmtimer,	NULL,		MID_FIXMMTIMER,			0},
+		{str_winntfix,		NULL,		MID_WINNTIDEFIX,	 	0},		
+		{str_skip16mbmemchk,	NULL,		MID_SKIP16MBMEMCHK,		0},
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+		{str_fastmemchk,	NULL,		MID_FASTMEMCHK,			0},
+#endif
+#endif
+		{str_en_dbss,	NULL,		MID_EN_DBSS,			0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_about,			NULL,		MID_ABOUT,			MENU_DELETED}};
+
+static const MSYSITEM s_dbss[] = {
+		{str_sdbss0,			NULL,		MID_SAVEDBSS0,			0},
+		{str_sdbss1,			NULL,		MID_SAVEDBSS1,			0},
+		{str_sdbss2,			NULL,		MID_SAVEDBSS2,			0},
+		{str_sdbss3,			NULL,		MID_SAVEDBSS3,			0},
+		{str_ldbss0,			NULL,		MID_LOADDBSS0,			0},
+		{str_ldbss1,			NULL,		MID_LOADDBSS1,			0},
+		{str_ldbss2,			NULL,		MID_LOADDBSS2,			0},
+		{str_ldbss3,			NULL,		MID_LOADDBSS3,			MENU_DELETED}};
+
+static MSYSITEM s_main[10] = {
+#if !defined(__LIBRETRO__)
+		{str_emulate,		s_emu,		MID_STATIC,			0},
+#if defined(SUPPORT_STATSAVE)
+		{str_stat,		s_state,		MID_STATIC,			0},
+#endif
+#endif
+		{str_fdd,			s_fdd,		MID_STATIC,			0},
+		{str_harddisk,		s_hdd,		MID_STATIC,			0},
+#if !defined(__LIBRETRO__)
+		{str_screen,		s_screen,	MID_STATIC,			0},
+#endif
+		{str_device,		s_device,	MID_STATIC,			0},
+		{str_other,		s_other,	MID_STATIC,			0},
+		{str_dbss,			s_dbss,	MID_DBSS,			MENU_DELETED}};
+

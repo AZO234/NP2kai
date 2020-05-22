@@ -1,13 +1,13 @@
-#include	"compiler.h"
-#include	"commng.h"
-//#include	"cmver.h"
+#include	<compiler.h>
+#include	<commng.h>
+//#include	<generic/cmver.h>
 
 
 #if defined(VERMOUTH_LIB)
 
-#include	"sound.h"
+#include	<sound/sound.h>
 #include	"sound/vermouth/vermouth.h"
-#include	"keydisp.h"
+#include	<generic/keydisp.h>
 
 #define MIDIOUTS(a, b, c)	(((c) << 16) + (b << 8) + (a))
 #define MIDIOUTS2(a)		((a)[0] + ((a)[1] << 8))

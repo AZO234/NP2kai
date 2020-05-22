@@ -1,10 +1,10 @@
-#include	"compiler.h"
-#include	"cpucore.h"
+#include	<compiler.h>
+#include	<cpucore.h>
 #include	"i286x.h"
 #include	"i286xs.h"
 #include	"i286xrep.h"
-#include	"pccore.h"
-#include	"iocore.h"
+#include	<pccore.h>
+#include	<io/iocore.h>
 #include	"i286x.mcr"
 #include	"i286xea.mcr"
 

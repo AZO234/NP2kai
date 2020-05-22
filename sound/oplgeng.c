@@ -3,7 +3,7 @@
  * @brief	Implementation of the OPL generator
  */
 
-#include "compiler.h"
+#include <compiler.h>
 #include "oplgen.h"
 #include "oplgencfg.h"
 

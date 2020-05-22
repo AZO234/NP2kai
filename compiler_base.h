@@ -78,21 +78,19 @@
 
 // C/C++ standard
 #if defined(__cplusplus)
+#include <inttypes.h>
 #if defined(__APPLE__)
 #include <cstdint>
-#include <inttypes.h>
 #if !defined(CPP11)
 #define CPP11
 #endif
 #elif defined(_MSC_VER)
-#include <inttypes.h>
 #include <stdint.h>
 #if !defined(CPP11)
 #define CPP11
 #endif
 #else
 #if __cplusplus >= 201103L
-#include <cinttypes>
 #include <cstdint>
 #if !defined(CPP11)
 #define CPP11
@@ -346,7 +344,7 @@ typedef int  BOOL;
 #if defined(__cpluscplus)
 #define THISCALL   __thiscall
 #endif
-#elif defined(__GNUC__) && defined(__i386__) && !defined(__ANDROID__)
+#elif defined(__GNUC__) && defined(__i386__) && !defined(__ANDROID__) && !defined(EMSCRIPTEN)
 #define CDECL      __attribute__ ((cdecl))
 #define STDCALL    __attribute__ ((stdcall))
 #define FASTCALL   __attribute__ ((fastcall))

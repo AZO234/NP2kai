@@ -573,7 +573,7 @@
 
 　・内部変更
 　　　pccore.h の中で statsave.hをインクルード
-　　　　→ #include "statsave.h" をトル
+　　　　→ #include <statsave.h> をトル
 
 　　　io/extmem を io/emsioに変更
 　　　(IA32は emsioは要らないが、NEC EMSバンク形式で必要になるかも)

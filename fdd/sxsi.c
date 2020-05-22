@@ -1,15 +1,15 @@
 #include	<string.h>
-#include	"compiler.h"
-#include	"strres.h"
-#include	"dosio.h"
-#include	"sysmng.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"sxsi.h"
-#include	"timemng.h"
+#include	<compiler.h>
+#include	<common/strres.h>
+#include	<dosio.h>
+#include	<sysmng.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<fdd/sxsi.h>
+#include	<timemng.h>
 #if defined(SUPPORT_IDEIO)
-#include	"ideio.h"
+#include	<cbus/ideio.h>
 #endif
 #if !defined(_MSC_VER)
 #include <sys/time.h>

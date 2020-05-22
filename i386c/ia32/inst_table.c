@@ -23,7 +23,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "compiler.h"
+#include <compiler.h>
 #include "cpu.h"
 
 #include "inst_table.h"
@@ -42,7 +42,7 @@
 #include "ia32/instructions/string_inst.h"
 #include "ia32/instructions/system_inst.h"
 
-#include "ia32/instructions/fpu/fp.h"
+#include <ia32/instructions/fpu/fp.h>
 #include "ia32/instructions/mmx/mmx.h"
 #include "ia32/instructions/mmx/3dnow.h"
 #include "ia32/instructions/sse/sse.h"

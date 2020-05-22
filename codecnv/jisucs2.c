@@ -6,9 +6,9 @@
 #ifdef CODECNV_TEST
 #include "compiler_base.h"
 #else
-#include "compiler.h"
+#include <compiler.h>
 #endif
-#include "codecnv.h"
+#include <codecnv/codecnv.h>
 
 static UINT16 jisutf16_ascii[] = {
   0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,

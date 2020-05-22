@@ -55,7 +55,7 @@ milank、mileucはお役御免、かな。milsjisもそのうち・・・。
 ANK=Alphabet Numeric Katakana=1Byte。
 */
 
-#include "milstr.h"
+#include <common/milstr.h>
 
 #define COUNT_BUFFER 256
 

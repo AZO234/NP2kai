@@ -3,10 +3,10 @@
  * @brief	Implementation of the pcm sound
  */
 
-#include "compiler.h"
-#include "pcmmix.h"
+#include <compiler.h>
+#include <sound/pcmmix.h>
 #include "getsnd/getsnd.h"
-#include "dosio.h"
+#include <dosio.h>
 
 BRESULT pcmmix_regist(PMIXDAT *dat, void *datptr, UINT datsize, UINT rate) {
 

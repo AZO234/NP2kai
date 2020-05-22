@@ -3,10 +3,10 @@
  * @brief	Implementation of the event
  */
 
-#include "compiler.h"
-#include "nevent.h"
-#include "cpucore.h"
-#include "pccore.h"
+#include <compiler.h>
+#include <nevent.h>
+#include <cpucore.h>
+#include <pccore.h>
 
 	_NEVENT g_nevent;
 

@@ -1,5 +1,5 @@
-#include	"compiler.h"
-#include	"dosio.h"
+#include	<compiler.h>
+#include	<dosio.h>
 #include	"textout.h"
 
 enum {

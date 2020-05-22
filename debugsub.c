@@ -1,11 +1,11 @@
-#include	"compiler.h"
-#include	"strres.h"
-#include	"textfile.h"
-#include	"dosio.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"debugsub.h"
+#include	<compiler.h>
+#include	<common/strres.h>
+#include	<common/textfile.h>
+#include	<dosio.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<debugsub.h>
 
 
 #if defined(MACOS)

@@ -46,16 +46,16 @@
  *   拡張倍精度浮動小数点ではなく倍精度浮動小数点で計算されるので実際のx87 FPUより精度が劣ります
  */
 
-#include "compiler.h"
+#include <compiler.h>
 
 #if defined(USE_FPU) && defined(SUPPORT_FPU_DOSBOX)
 
 #include <float.h>
 #include <math.h>
-#include "ia32/cpu.h"
+#include <ia32/cpu.h>
 #include "ia32/ia32.mcr"
 
-#include "ia32/instructions/fpu/fp.h"
+#include <ia32/instructions/fpu/fp.h>
 #include "ia32/instructions/fpu/fpumem.h"
 #ifdef USE_SSE
 #include "ia32/instructions/sse/sse.h"

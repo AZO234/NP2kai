@@ -1,7 +1,7 @@
 
 #if defined(CPUCORE_IA32) && defined(SUPPORT_MEMDBG32)
 
-#include	"cmndraw.h"
+#include	<generic/cmndraw.h>
 
 enum {
 	MEMDBG32_BLOCKW		= 3,

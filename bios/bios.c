@@ -3,20 +3,20 @@
  * @brief	Implementation of BIOS
  */
 
-#include "compiler.h"
-#include "bios.h"
-#include "biosmem.h"
-#include "sxsibios.h"
-#include "strres.h"
-#include "cpucore.h"
-#include "pccore.h"
-#include "iocore.h"
+#include <compiler.h>
+#include <bios/bios.h>
+#include <bios/biosmem.h>
+#include <bios/sxsibios.h>
+#include <common/strres.h>
+#include <cpucore.h>
+#include <pccore.h>
+#include <io/iocore.h>
 #include "lio/lio.h"
-#include "vram.h"
-#include "diskimage/fddfile.h"
-#include "fdd/fdd_mtr.h"
+#include <vram/vram.h>
+#include <diskimage/fddfile.h>
+#include <fdd/fdd_mtr.h>
 #include "fdfmt.h"
-#include "dosio.h"
+#include <dosio.h>
 #include "keytable.res"
 #include "itfrom.res"
 #include "startup.res"
@@ -26,26 +26,26 @@
 #include "biosfd80.res"
 #endif
 #if defined(SUPPORT_IDEIO)
-#include	"fdd/sxsi.h"
-#include	"cbus/ideio.h"
+#include	<fdd/sxsi.h>
+#include	<cbus/ideio.h>
 #endif
 #if defined(SUPPORT_HRTIMER)
-#include	"timemng.h"
+#include	<timemng.h>
 #endif
-#include	"fmboard.h"
+#include	<sound/fmboard.h>
 
 #if defined(SUPPORT_VGA_MODEX)
 #if defined(SUPPORT_WAB)
-#include	"wab/wab.h"
+#include	<wab/wab.h>
 #endif
 #if defined(SUPPORT_CL_GD5430)
-#include	"wab/cirrus_vga_extern.h"
+#include	<wab/cirrus_vga_extern.h>
 #endif
 #endif
 
 #if defined(SUPPORT_IA32_HAXM)
-#include	"i386hax/haxfunc.h"
-#include	"i386hax/haxcore.h"
+#include	<i386hax/haxfunc.h>
+#include	<i386hax/haxcore.h>
 #define USE_CUSTOM_HOOKINST
 #endif
 
@@ -1028,6 +1028,7 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 			CPU_REMCLOCK -= 200;
 #if defined(BIOS_IO_EMULATION)
 			oldEIP = CPU_EIP;
+			biosioemu.count = 0; 
 #endif
 			bios0x18();
 #if defined(BIOS_IO_EMULATION)
@@ -1097,6 +1098,7 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 			CPU_REMCLOCK -= 200;
 #if defined(BIOS_IO_EMULATION)
 			oldEIP = CPU_EIP;
+			biosioemu.count = 0; 
 #endif
 			bios0x1c();
 #if defined(BIOS_IO_EMULATION)

@@ -1,8 +1,8 @@
-#include	"compiler.h"
-#include	"commng.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
+#include	<compiler.h>
+#include	<commng.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
 
 
 	COMMNG	cm_prt;

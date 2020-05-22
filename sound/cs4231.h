@@ -5,8 +5,8 @@ sudo make - * @file	cs4231.h
 
 #pragma once
 
-#include "sound.h"
-#include "io/dmac.h"
+#include <sound/sound.h>
+#include <io/dmac.h>
 
 enum {
 	CS4231_BUFFERS	= (1 << 11),

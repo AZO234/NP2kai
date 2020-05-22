@@ -22,7 +22,10 @@ enum {
 	CMD_TEXTW		= 0x78,
 	CMD_TEXTE		= 0x68,
 	CMD_CSRR		= 0xe0,
-	CMD_MASK		= 0x4a
+	CMD_MASK		= 0x4a,
+
+    CMD_WRITE		= 0x20,
+    CMD_READ		= 0xa0
 };
 
 enum {

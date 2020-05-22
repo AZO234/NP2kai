@@ -1,6 +1,6 @@
-#include	"compiler.h"
-#include	"bmpdata.h"
-#include	"dipswbmp.h"
+#include	<compiler.h>
+#include	<common/bmpdata.h>
+#include	<generic/dipswbmp.h>
 #include	"dipswbmp.res"
 
 #if defined(USE_RESOURCE_BMP)

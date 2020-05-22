@@ -5,23 +5,23 @@
  * @author	$Author: SimK $
  */
 
-#include	"compiler.h"
+#include	<compiler.h>
 #if defined(_MSC_VER)
 #include	<io.h>
 #else
 #include	<unistd.h>
 #endif
-#include	"codecnv/codecnv.h"
+#include	<codecnv/codecnv.h>
 
 //#define TRACEOUT(a) printf(a);printf("\n");
 #define TRACEOUT(a)
 
 #if defined(SUPPORT_NET)
 
-#include	"pccore.h"
-#include	"net.h"
+#include	<pccore.h>
+#include	<network/net.h>
 #ifdef SUPPORT_LGY98
-#include	"lgy98.h"
+#include	<network/lgy98.h>
 #endif
 
 #if defined(_WINDOWS)
@@ -30,6 +30,10 @@
 
 #if defined(_WINDOWS)
 #include	<process.h>
+#endif
+
+#if defined(_MSC_VER)
+#define stricmp _stricmp
 #endif
 
 #pragma warning(disable: 4996)

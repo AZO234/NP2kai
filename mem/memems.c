@@ -1,8 +1,8 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"memems.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<mem/memems.h>
 
 
 REG8 MEMCALL memems_rd8(UINT32 address) {

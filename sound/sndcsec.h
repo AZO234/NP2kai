@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "np2_thread.h"
+#include <np2_thread.h>
 
 #ifdef __cplusplus
 extern "C"

@@ -1,3 +1,6 @@
+#ifndef _FDD_HEAD_DCP_H_
+#define _FDD_HEAD_DCP_H_
+
 enum {
 	DCP_TRACKMAX		= 160,
 	DCP_HEADERSIZE		= 0x01 + DCP_TRACKMAX + 0x01,
@@ -31,3 +34,4 @@ typedef struct {
 #pragma pack(pop)
 #endif
 
+#endif  // _FDD_HEAD_DCP_H_

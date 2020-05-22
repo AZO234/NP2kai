@@ -6,9 +6,9 @@
 #ifdef CODECNV_TEST
 #include "compiler_base.h"
 #else
-#include "compiler.h"
+#include <compiler.h>
 #endif
-#include "codecnv.h"
+#include <codecnv/codecnv.h>
 
 static UINT utf8toucs2(UINT16 *lpOutput, UINT cchOutput, const char *lpInput, UINT cchInput);
 

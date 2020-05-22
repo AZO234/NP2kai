@@ -3,7 +3,7 @@
 
 #if defined(SUPPORT_NP2_TICKCOUNT)
 
-#include "compiler.h"
+#include <compiler.h>
 
 #ifdef __cplusplus
 extern "C" {

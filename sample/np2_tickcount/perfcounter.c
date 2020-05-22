@@ -4,23 +4,23 @@
 /* --- Windows --- */
 /* > cl /Feperfcounter.exe -DNP2_WIN perfcounter.c ../../np2_tickcount.c */
 /* --- POSIX --- */
-/* $ gcc -o perfcounter -DNP2_X11 perfcounter.c ../../np2_tickcount.c */
+/* $ gcc -o perfcounter -DNP2_X perfcounter.c ../../np2_tickcount.c */
 /* --- SDL2 --- */
-/* $ gcc -o perfcounter -DNP2_SDL2 perfcounter.c ../../np2_tickcount.c \ */
+/* $ gcc -o perfcounter -DNP2_SDL perfcounter.c ../../np2_tickcount.c \ */
 /*   `sdl2-config --cflags --libs` */
 
 #include <stdio.h>
 #if defined(NP2_WIN)
 #include <windows.h>
 #endif
-#if defined(NP2_SDL2)
+#if defined(NP2_SDL)
 #include <SDL.h>
 #endif
 
 #include "../../np2_tickcount.h"
 
 void main(void) {
-#if defined(NP2_SDL2)
+#if defined(NP2_SDL)
   SDL_Init(SDL_INIT_EVERYTHING);
 #endif
   NP2_TickCount_Initialize();

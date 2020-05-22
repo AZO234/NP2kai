@@ -1,11 +1,11 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"pcm86io.h"
-#include	"sound.h"
-#include	"fmboard.h"
-#include	"cs4231io.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<cbus/pcm86io.h>
+#include	<sound/sound.h>
+#include	<sound/fmboard.h>
+#include	<cbus/cs4231io.h>
 
 
 extern	PCM86CFG	pcm86cfg;

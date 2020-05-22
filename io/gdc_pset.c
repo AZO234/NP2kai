@@ -1,11 +1,11 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"memegc.h"
-#include	"gdc_sub.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<mem/memegc.h>
+#include	<io/gdc_sub.h>
 #include	"gdc_pset.h"
-#include	"vram.h"
+#include	<vram/vram.h>
 
 
 static void MEMCALL _nop(GDCPSET pset, UINT addr, UINT bit) {

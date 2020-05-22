@@ -3,13 +3,13 @@
  * @brief	Implementation of PC-9801-26K
  */
 
-#include "compiler.h"
-#include "board26k.h"
-#include "iocore.h"
-#include "cbuscore.h"
-#include "sound/fmboard.h"
-#include "sound/sound.h"
-#include "sound/soundrom.h"
+#include <compiler.h>
+#include <cbus/board26k.h>
+#include <io/iocore.h>
+#include <cbus/cbuscore.h>
+#include <sound/fmboard.h>
+#include <sound/sound.h>
+#include <sound/soundrom.h>
 
 static void IOOUTCALL opn_o188(UINT port, REG8 dat)
 {

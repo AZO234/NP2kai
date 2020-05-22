@@ -3,11 +3,11 @@
  * @brief	Implementation of the OPN generator
  */
 
-#include "compiler.h"
-#include "opngen.h"
+#include <compiler.h>
+#include <sound/opngen.h>
 #include <math.h>
 #include "opngencfg.h"
-#include "pccore.h"
+#include <pccore.h>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846264338327

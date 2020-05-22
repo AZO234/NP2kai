@@ -1,6 +1,6 @@
-#include	"compiler.h"
-#include	"vramhdl.h"
-#include	"menubase.h"
+#include	<compiler.h>
+#include	<embed/vramhdl.h>
+#include	<embed/menubase/menubase.h>
 
 
 #if defined(OSLANG_SJIS) && !defined(RESOURCE_US)

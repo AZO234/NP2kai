@@ -1,13 +1,13 @@
-#include	"compiler.h"
+#include	<compiler.h>
 #if !defined(DISABLE_MATH_H)
 #include	<math.h>
 #endif
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"gdc_sub.h"
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<io/gdc_sub.h>
 #include	"gdc_pset.h"
-#include	"vram.h"
+#include	<vram/vram.h>
 
 
 enum {
@@ -207,6 +207,15 @@ void gdcsub_vect0(UINT32 csrw, const GDCVECT *vect, REG16 pat, REG8 ope) {
 	(void)vect;
 	(void)pat;
 	(void)ope;
+}
+
+void gdcsub_vectp(UINT32 csrw, const GDCVECT *vect, REG16 pat, REG8 ope) {
+
+	_GDCPSET	pset;
+
+	gdcpset_prepare(&pset, csrw, pat, ope);
+	gdcpset(&pset, pset.x, pset.y);
+	calc_gdcslavewait(pset.dots);
 }
 
 void gdcsub_vectl(UINT32 csrw, const GDCVECT *vect, REG16 pat, REG8 ope) {

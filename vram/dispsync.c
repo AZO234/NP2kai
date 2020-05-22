@@ -1,9 +1,9 @@
-#include	"compiler.h"
-#include	"scrnmng.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"scrndraw.h"
-#include	"dispsync.h"
+#include	<compiler.h>
+#include	<scrnmng.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<vram/scrndraw.h>
+#include	<vram/dispsync.h>
 
 
 	DSYNC	dsync;

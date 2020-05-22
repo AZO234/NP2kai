@@ -3,7 +3,7 @@
  * @brief	Implementation of the PSG
  */
 
-#include "compiler.h"
+#include <compiler.h>
 #include <math.h>
 #include "psggen.h"
 

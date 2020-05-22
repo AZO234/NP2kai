@@ -23,15 +23,15 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"timing.h"
-#include	"dmax86.h"
-#include	"bios/bios.h"
-#include	"vram/vram.h"
-#include	"wab/cirrus_vga_extern.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<timing.h>
+#include	<mem/dmax86.h>
+#include	<bios/bios.h>
+#include	<vram/vram.h>
+#include	<wab/cirrus_vga_extern.h>
 
 #if defined(SUPPORT_IA32_HAXM)
 
@@ -56,7 +56,7 @@ static void trace_fmt_ex(const char *fmt, ...)
 #endif	/* 1 */
 #include	"haxfunc.h"
 #include	"haxcore.h"
-#include	"np2_tickcount.h"
+#include	<np2_tickcount.h>
 
 #if defined(_WINDOWS)
 #include	<process.h>
@@ -1058,13 +1058,14 @@ coutinue_cpu_imm:
 		//CPU_REMCLOCK = oldremclock;
 		
 		// ‚‘¬‰»‚Ì‚½‚ß‚Éˆê•”‚ÌI/Oƒ|[ƒg‚Ìˆ—‚ðŠÈ—ª‰»
-		//if(tunnel->io._port < 0x60 || 
+		//if(tunnel->io._port != 0x90 && tunnel->io._port != 0x92 && tunnel->io._port != 0x94 && 
+		//	tunnel->io._port != 0xc8 && tunnel->io._port != 0xca && tunnel->io._port != 0xcc && tunnel->io._port != 0xbe && tunnel->io._port != 0x4be) {
 		//	(0x430 <= tunnel->io._port && tunnel->io._port <= 0x64e && !(g_nevent.item[NEVENT_SASIIO].flag & NEVENT_ENABLE)) || 
 		//	(0x7FD9 <= tunnel->io._port && tunnel->io._port <= 0x7FDF)){
 			if(tunnel->io._port==0x640){
 				// Œµ‚µ‚ß‚É‚·‚é
 				if (np2haxcore.hurryup) {
-					//np2haxcore.hurryup = 0;
+					np2haxcore.hurryup = 0;
 					break;
 				}
 			}

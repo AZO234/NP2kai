@@ -23,7 +23,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include	"compiler.h"
+#include	<compiler.h>
 #include	"haxfunc.h"
 #include	"haxcore.h"
 
