@@ -5,6 +5,7 @@
 #include	<embed/vrammix.h>
 #include	"menudeco.inc"
 #include	<embed/menubase/menubase.h>
+#include	<sysmenu.res>
 
 
 typedef struct _mhdl {
