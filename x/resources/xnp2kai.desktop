@@ -6,7 +6,7 @@ GenericName[ja]=PC-9801エミュレータ
 Comment=PC-9801 Emulator
 Comment[ja]=PC-9801エミュレータ
 Exec=xnp2kai
-Icon=np2kai
+Icon=np2
 Categories=Game;Emulator;
 Name[ja]=xNP2kai
 

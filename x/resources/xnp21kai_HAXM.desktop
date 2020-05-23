@@ -6,7 +6,7 @@ GenericName[ja]=PC-9821エミュレータ IA-32 HAXM
 Comment=PC-9821 Emulator IA-32 HAXM
 Comment[ja]=PC-9821エミュレータ IA-32 HAXM
 Exec=xnp21kai_HAXM
-Icon=np2kai
+Icon=np2
 Categories=Game;Emulator;
 Name[ja]=xNP21kai HAXM
 
