@@ -8,7 +8,9 @@
 #include <np2ver.h>
 #include <statsave.h>
 
-#if(_MSC_VER)
+#if(__LIBRETRO__)
+// Nothing
+#elif(_MSC_VER)
 #include <windows.h>
 #else
 #include <openssl/sha.h>

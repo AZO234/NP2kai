@@ -101,7 +101,6 @@ ifneq ($(STATIC_LINKING), 1)
 			$(NP2_PATH)/sdl/libretro/libretro-common/formats/wav/rwav.c \
 			$(NP2_PATH)/sdl/libretro/libretro-common/formats/image_texture.c \
 			$(NP2_PATH)/sdl/libretro/libretro-common/formats/image_transfer.c \
-			$(NP2_PATH)/sdl/libretro/libretro-common/hash/rhash.c \
 			$(NP2_PATH)/sdl/libretro/libretro-common/lists/dir_list.c \
 			$(NP2_PATH)/sdl/libretro/libretro-common/lists/file_list.c \
 			$(NP2_PATH)/sdl/libretro/libretro-common/lists/string_list.c \
