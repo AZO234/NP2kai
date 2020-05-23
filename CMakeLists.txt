@@ -1219,6 +1219,8 @@ else()
 	if(NOT NP2kai_temp)
 		install(TARGETS xnp21kai_HAXM CONFIGURATIONS RelWithDebInfo COMPONENT RelWithDebInfo)
 		install(TARGETS xnp21kai_HAXM CONFIGURATIONS Release COMPONENT Release)
+		install(FILES ${NP2kai_SOURCE_DIR}/x/resources/xnp21kai_HAXM.desktop DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications CONFIGURATIONS RelWithDebInfo COMPONENT RelWithDebInfo)
+		install(FILES ${NP2kai_SOURCE_DIR}/x/resources/xnp21kai_HAXM.desktop DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications CONFIGURATIONS Release COMPONENT Release)
 		set(X_MISC_INSTALL ON)
 	endif()
 
