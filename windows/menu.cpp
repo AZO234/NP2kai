@@ -302,9 +302,11 @@ void xmenu_initialize(HMENU hMenu)
 #endif	//	defined(SUPPORT_PC9821)
 	}
 
+#if defined(SUPPORT_DEBUGSS)
 	if (np2cfg.debugss) {
 		menu_addmenures(hMenu, GetMenuItemCount(hMenu) - 1, IDR_DEBUGSS, FALSE);
 	}
+#endif
 }
 
 /**
@@ -493,7 +495,9 @@ void xmenu_update(HMENU hMenu)
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 	CheckMenuItem(hMenu, IDM_FASTMEMCHK, MF_BYCOMMAND | MFCHECK(np2cfg.memcheckspeed != 1));
 #endif
+#if defined(SUPPORT_DEBUGSS)
 	CheckMenuItem(hMenu, IDM_EN_DBSS, MF_BYCOMMAND | MFCHECK(np2cfg.debugss));
+#endif
 	
 #if !defined(SUPPORT_ASYNC_CPU)
 	EnableMenuItem(hMenu, IDM_ASYNCCPU, MF_GRAYED);

@@ -1,5 +1,7 @@
 /* === NP2 debug snapshot === (c) 2020 AZO */
 
+#if defined(SUPPORT_DEBUGSS)
+
 #include <debugsnapshot.h>
 #include <dosio.h>
 #include <fdd/sxsi.h>
@@ -910,4 +912,5 @@ int debugsnapshot_load(const UINT uNo) {
   return uRes;
 }
 
+#endif  // SUPPORT_DEBUGSS
 

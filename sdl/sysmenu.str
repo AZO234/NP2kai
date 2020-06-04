@@ -179,9 +179,12 @@ static const char str_skip16mbmemchk[] = "Skip over 16MB memcheck";
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 static const char str_fastmemchk[] = "Fast memcheck";
 #endif
+#if defined(SUPPORT_DEBUGSS)
 static const char str_en_dbss[] = "Debug snapshot";
+#endif
 static const char str_about[] = "About...";
 
+#if defined(SUPPORT_DEBUGSS)
 static const char str_dbss[] = "Debug";
 static const char str_sdbss0[] = "Save debug ss 0";
 static const char str_sdbss1[] = "Save debug ss 1";
@@ -191,6 +194,7 @@ static const char str_ldbss0[] = "Load debug ss 0";
 static const char str_ldbss1[] = "Load debug ss 1";
 static const char str_ldbss2[] = "Load debug ss 2";
 static const char str_ldbss3[] = "Load debug ss 3";
+#endif
 
 static const MSYSITEM s_emu[] = {
 		{str_reset,			NULL,		MID_RESET,			0},
@@ -520,10 +524,13 @@ static const MSYSITEM s_other[] = {
 		{str_fastmemchk,	NULL,		MID_FASTMEMCHK,			0},
 #endif
 #endif
+#if defined(SUPPORT_DEBUGSS)
 		{str_en_dbss,	NULL,		MID_EN_DBSS,			0},
+#endif
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_about,			NULL,		MID_ABOUT,			MENU_DELETED}};
 
+#if defined(SUPPORT_DEBUGSS)
 static const MSYSITEM s_dbss[] = {
 		{str_sdbss0,			NULL,		MID_SAVEDBSS0,			0},
 		{str_sdbss1,			NULL,		MID_SAVEDBSS1,			0},
@@ -533,6 +540,7 @@ static const MSYSITEM s_dbss[] = {
 		{str_ldbss1,			NULL,		MID_LOADDBSS1,			0},
 		{str_ldbss2,			NULL,		MID_LOADDBSS2,			0},
 		{str_ldbss3,			NULL,		MID_LOADDBSS3,			MENU_DELETED}};
+#endif
 
 static MSYSITEM s_main[10] = {
 #if !defined(__LIBRETRO__)
@@ -548,5 +556,7 @@ static MSYSITEM s_main[10] = {
 #endif
 		{str_device,		s_device,	MID_STATIC,			0},
 		{str_other,		s_other,	MID_STATIC,			0},
+#if defined(SUPPORT_DEBUGSS)
 		{str_dbss,			s_dbss,	MID_DBSS,			MENU_DELETED}};
+#endif
 

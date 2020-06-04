@@ -53,7 +53,9 @@
 #include <scrnmng.h>
 #include <sysmng.h>
 
+#if defined(SUPPORT_DEBUGSS)
 #include "debugsnapshot.h"
+#endif
 
 #if defined(SUPPORT_SMPU98)
 #include <cbus/smpu98.h>
@@ -99,8 +101,10 @@ static void cb_sasiremove(GtkAction *action, gpointer user_data);
 static void cb_statsave(GtkAction *action, gpointer user_data);
 static void cb_statload(GtkAction *action, gpointer user_data);
 #endif
+#if defined(SUPPORT_DEBUGSS)
 static void cb_dbsssave(GtkAction *action, gpointer user_data);
 static void cb_dbssload(GtkAction *action, gpointer user_data);
+#endif
 static void cb_sndus(GtkToggleAction *action, gpointer user_data);
 static void cb_sndcad(GtkToggleAction *action, gpointer user_data);
 
@@ -118,7 +122,9 @@ static GtkActionEntry menu_entries[] = {
 #if defined(SUPPORT_STATSAVE)
 { "StatMenu",     NULL, "Stat",     NULL, NULL, NULL },
 #endif
+#if defined(SUPPORT_DEBUGSS)
 { "DebugSSMenu",  NULL, "DebugSS",  NULL, NULL, NULL },
+#endif
 
 /* Submenu */
 { "NewDiskMenu",  NULL, "_New disk", NULL, NULL, NULL },
@@ -213,6 +219,7 @@ static GtkActionEntry menu_entries[] = {
 { "stat08load",  NULL, "Load 8",            NULL, NULL, G_CALLBACK(cb_statload), },
 { "stat09load",  NULL, "Load 9",            NULL, NULL, G_CALLBACK(cb_statload), },
 #endif
+#if defined(SUPPORT_DEBUGSS)
 { "dbss00save",  NULL, "Save debugss 0",    NULL, NULL, G_CALLBACK(cb_dbsssave), },
 { "dbss01save",  NULL, "Save debugss 1",    NULL, NULL, G_CALLBACK(cb_dbsssave), },
 { "dbss02save",  NULL, "Save debugss 2",    NULL, NULL, G_CALLBACK(cb_dbsssave), },
@@ -221,6 +228,7 @@ static GtkActionEntry menu_entries[] = {
 { "dbss01load",  NULL, "Load debugss 1",    NULL, NULL, G_CALLBACK(cb_dbssload), },
 { "dbss02load",  NULL, "Load debugss 2",    NULL, NULL, G_CALLBACK(cb_dbssload), },
 { "dbss03load",  NULL, "Load debugss 3",    NULL, NULL, G_CALLBACK(cb_dbssload), },
+#endif
 { "sndus",       NULL, "Send underscore",   NULL, NULL, G_CALLBACK(cb_sndus), },
 { "sndcad",      NULL, "Send Ctrl+Alt+Del", NULL, NULL, G_CALLBACK(cb_sndcad), },
 };
@@ -257,7 +265,9 @@ static void cb_fastmemchk(GtkToggleAction *action, gpointer user_data);
 static void cb_fmgen(GtkToggleAction *action, gpointer user_data);
 #endif
 static void cb_hf_enable(GtkToggleAction *action, gpointer user_data);
+#if defined(SUPPORT_DEBUGSS)
 static void cb_en_dbss(GtkToggleAction *action, gpointer user_data);
+#endif
 
 static GtkToggleActionEntry togglemenu_entries[] = {
 { "clockdisp",    NULL, "_Clock disp",        NULL, NULL, G_CALLBACK(cb_clockdisp), FALSE },
@@ -292,7 +302,9 @@ static GtkToggleActionEntry togglemenu_entries[] = {
 { "fmgen",        NULL, "fmgen",              NULL, NULL, G_CALLBACK(cb_fmgen), FALSE },
 #endif
 { "hf_enable",    NULL, "Fontrom hook",       NULL, NULL, G_CALLBACK(cb_hf_enable), FALSE },
+#if defined(SUPPORT_DEBUGSS)
 { "en_dbss",      NULL, "Debug snapshot",       NULL, NULL, G_CALLBACK(cb_en_dbss), FALSE },
+#endif
 };
 static const guint n_togglemenu_entries = G_N_ELEMENTS(togglemenu_entries);
 
@@ -679,7 +691,9 @@ static const gchar *ui_info =
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 "   <menuitem action='fastmemchk'/>\n"
 #endif
+#if defined(SUPPORT_DEBUGSS)
 "   <menuitem action='en_dbss'/>\n"
+#endif
 "   <separator/>\n"
 "   <menuitem action='toolwindow'/>\n"
 "   <menuitem action='keydisplay'/>\n"
@@ -687,6 +701,7 @@ static const gchar *ui_info =
 "   <separator/>\n"
 "   <menuitem action='about'/>\n"
 "  </menu>\n"
+#if defined(SUPPORT_DEBUGSS)
 "  <menu name='DebugSS' action='DebugSSMenu'>\n"
 "   <menuitem action='dbss00save'/>\n"
 "   <menuitem action='dbss01save'/>\n"
@@ -697,6 +712,7 @@ static const gchar *ui_info =
 "   <menuitem action='dbss02load'/>\n"
 "   <menuitem action='dbss03load'/>\n"
 "  </menu>\n"
+#endif
 " </menubar>\n"
 "</ui>\n";
 
@@ -1737,6 +1753,7 @@ cb_statload(GtkAction *action, gpointer user_data)
 }
 #endif
 
+#if defined(SUPPORT_DEBUGSS)
 static void
 cb_dbsssave(GtkAction *action, gpointer user_data)
 {
@@ -1768,6 +1785,7 @@ cb_dbssload(GtkAction *action, gpointer user_data)
 		debugsnapshot_load(n);
 	}
 }
+#endif
 
 static void
 cb_dialog(GtkAction *action, gpointer user_data)
@@ -2194,6 +2212,7 @@ cb_hf_enable(GtkToggleAction *action, gpointer user_data) {
 	}
 }
 
+#if defined(SUPPORT_DEBUGSS)
 static void
 cb_en_dbss(GtkToggleAction *action, gpointer user_data) {
 	gboolean b = gtk_toggle_action_get_active(action);
@@ -2207,6 +2226,7 @@ cb_en_dbss(GtkToggleAction *action, gpointer user_data) {
 
 	xmenu_visible_item(NULL, "DebugSSMenu", np2cfg.debugss);
 }
+#endif
 
 static void
 cb_sndus(GtkToggleAction *action, gpointer user_data)
@@ -2676,7 +2696,9 @@ create_menu(void)
 	xmenu_toggle_item(NULL, "softkeyboard", np2oscfg.softkbd);
 	xmenu_toggle_item(NULL, "toolwindow", np2oscfg.toolwin);
 
+#if defined(SUPPORT_DEBUGSS)
 	xmenu_toggle_item(NULL, "en_dbss", np2cfg.debugss);
+#endif
 
 	xmenu_select_beepvol(np2cfg.BEEP_VOL);
 	xmenu_select_kbtype(np2oscfg.KEYBOARD);
@@ -2703,7 +2725,9 @@ create_menu(void)
 	}
 	xmenu_select_fpu(i);
 
+#if defined(SUPPORT_DEBUGSS)
 	xmenu_visible_item(NULL, "DebugSSMenu", np2cfg.debugss);
+#endif
 
 	menubar = gtk_ui_manager_get_widget(menu_hdl.ui_manager, "/MainMenu");
 

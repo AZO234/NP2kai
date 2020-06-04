@@ -313,7 +313,9 @@ struct tagNP2Config
 	UINT8	gameport; // 118音源のゲームポートを使用する
 #endif
 
+#if defined(SUPPORT_DEBUGSS)
 	UINT8	debugss;
+#endif
 };
 typedef struct tagNP2Config  NP2CFG;		/*!< The define of config */
 
