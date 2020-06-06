@@ -46,6 +46,54 @@ inisetbmp(UINT8 *ptr, UINT pos, BOOL set)
 }
 
 static void
+inirdargu32(const char *src, INITBL *ini)
+{
+	uint32_t *dst;
+	int dsize;
+	int i;
+	char c;
+
+	dst = (uint32_t *)ini->value;
+	dsize = ini->arg;
+
+	for (i = 0; i < dsize; i++) {
+		while (*src == ' ') {
+			src++;
+		}
+		if (*src == '\0') {
+			break;
+		}
+		dst[i] = (uint32_t)milstr_solveINT(src);
+		while (*src != '\0') {
+			c = *src++;
+			if (c == ',') {
+				break;
+			}
+		}
+	}
+}
+
+static void
+iniwrsetargu32(char *work, int size, INITBL *ini)
+{
+	char tmp[256];
+	const uint32_t *ptr;
+	UINT arg;
+	UINT i;
+
+	ptr = (uint32_t *)(ini->value);
+	arg = ini->arg;
+	for (i = 0; i < arg; i++) {
+		if(i + 1 >= arg) {
+			snprintf(tmp, sizeof(tmp), "%d", ptr[i]);
+		} else {
+			snprintf(tmp, sizeof(tmp), "%d,", ptr[i]);
+		}
+		milstr_ncat(work, tmp, size);
+	}
+}
+
+static void
 inirdargs16(const char *src, INITBL *ini)
 {
 	SINT16 *dst;
@@ -229,6 +277,11 @@ inireadcb(void *arg, const char *para, const char *key, const char *data)
 
 			case INITYPE_BITMAP:
 				inisetbmp((UINT8 *)p->value, p->arg, milstr_cmp(data, str_true) == 0);
+				break;
+
+			case INITYPE_ARGU32:
+				milstr_ncpy(work, data, 512);
+				inirdargu32(work, p);
 				break;
 
 			case INITYPE_ARGS16:
@@ -421,6 +474,10 @@ ini_write(const char *path, const char *title, INITBL *tbl, UINT count, BOOL cre
 
 			case INITYPE_BITMAP:
 				milstr_ncpy(work, inigetbmp((UINT8 *)p->value, p->arg) ? str_true : str_false, sizeof(work));
+				break;
+
+			case INITYPE_ARGU32:
+				iniwrsetargu32(work, sizeof(work), p);
 				break;
 
 			case INITYPE_ARGH8:
@@ -793,6 +850,27 @@ static INITBL iniitem[] = {
 
 	{"READONLY", INIRO_BOOL,	&np2oscfg.readonly,	0},
 	{"I286SAVE", INIRO_BOOL,	&np2oscfg.I286SAVE,	0},
+
+#if defined(SUPPORT_VIDEOFILTER)
+	{OEMTEXT("vf1_enable"), INITYPE_BOOL,   &np2cfg.vf1_enable,        0},
+	{OEMTEXT("vf1_pcount"), INITYPE_UINT8,  &np2cfg.vf1_pcount,        3},
+	{OEMTEXT("vf1_pno"),    INITYPE_UINT8,  &np2cfg.vf1_pno,           0},
+	{OEMTEXT("vf1_p0_fc"),  INITYPE_UINT8,  &np2cfg.vf1_profile[0][0], 3},
+	{OEMTEXT("vf1_p0_fno"), INITYPE_UINT8,  &np2cfg.vf1_profile[0][1], 2},
+	{OEMTEXT("vf1_p0_p0"),  INITYPE_ARGU32, np2cfg.vf1_param[0][0],    8},
+	{OEMTEXT("vf1_p0_p1"),  INITYPE_ARGU32, np2cfg.vf1_param[0][1],    8},
+	{OEMTEXT("vf1_p0_p2"),  INITYPE_ARGU32, np2cfg.vf1_param[0][2],    8},
+	{OEMTEXT("vf1_p1_fc"),  INITYPE_UINT8,  &np2cfg.vf1_profile[1][0], 3},
+	{OEMTEXT("vf1_p1_fno"), INITYPE_UINT8,  &np2cfg.vf1_profile[1][1], 2},
+	{OEMTEXT("vf1_p1_p0"),  INITYPE_ARGU32, np2cfg.vf1_param[1][0],    8},
+	{OEMTEXT("vf1_p1_p1"),  INITYPE_ARGU32, np2cfg.vf1_param[1][1],    8},
+	{OEMTEXT("vf1_p1_p2"),  INITYPE_ARGU32, np2cfg.vf1_param[1][2],    8},
+	{OEMTEXT("vf1_p2_fc"),  INITYPE_UINT8,  &np2cfg.vf1_profile[2][0], 3},
+	{OEMTEXT("vf1_p2_fno"), INITYPE_UINT8,  &np2cfg.vf1_profile[2][1], 2},
+	{OEMTEXT("vf1_p2_p0"),  INITYPE_ARGU32, np2cfg.vf1_param[2][0],    8},
+	{OEMTEXT("vf1_p2_p1"),  INITYPE_ARGU32, np2cfg.vf1_param[2][1],    8},
+	{OEMTEXT("vf1_p2_p2"),  INITYPE_ARGU32, np2cfg.vf1_param[2][2],    8},
+#endif
 };
 #define	INIITEMS	(sizeof(iniitem) / sizeof(iniitem[0]))
 

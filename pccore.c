@@ -33,6 +33,9 @@
 #include	<vram/maketgrp.h>
 #include	<vram/makegrph.h>
 #include	<vram/makegrex.h>
+#if defined(SUPPORT_VIDEOFILTER)
+#include	<vram/videofilter.h>
+#endif
 #include	<sound/sound.h>
 #include	<sound/fmboard.h>
 #ifdef SUPPORT_SOUND_SB16
@@ -206,6 +209,15 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE " " NP2VER_GIT);
 #endif
 #if defined(SUPPORT_DEBUGSS)
 				0,
+#endif
+#if defined(SUPPORT_VIDEOFILTER)
+				0, 3, 0,
+				{{3, 2}, {3, 2}, {3, 2}},
+				{
+					{{1, 1, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}},
+					{{1, 2, 6, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}},
+					{{1, 3, 8, 0, 0, 255, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}},
+				},
 #endif
 	};
 
@@ -464,6 +476,20 @@ void pccore_init(void) {
 	
 	pic_initialize();
 
+#if defined(SUPPORT_VIDEOFILTER)
+	{
+		uint8_t vf_i, vf_j;
+
+		hVFMng1 = VideoFilter_Init(1600, 1600, 25, 10);
+		VideoFilterMng_LoadSetting(hVFMng1, np2cfg.vf1_enable, np2cfg.vf1_pcount, np2cfg.vf1_pno);
+		for(vf_j = 0; vf_j < np2cfg.vf1_pcount; vf_j++) {
+			VideoFilter_LoadProfile(hVFMng1, vf_j, np2cfg.vf1_profile[vf_j][0], np2cfg.vf1_profile[vf_j][1]);
+			for(vf_i = 0; vf_i < np2cfg.vf1_profile[vf_j][0]; vf_i++) {
+				VideoFilter_LoadFilter(hVFMng1, vf_j, vf_i, np2cfg.vf1_param[vf_j][vf_i]);
+			}
+		}
+	}
+#endif
 	pal_initlcdtable();
 	pal_makelcdpal();
 	pal_makeskiptable();
@@ -560,6 +586,21 @@ void pccore_term(void) {
 	hook_fontrom_defdisable();
 
 	sxsi_alltrash();
+
+#if defined(SUPPORT_VIDEOFILTER)
+	{
+		uint8_t vf_i, vf_j;
+
+		VideoFilterMng_SaveSetting(hVFMng1, &np2cfg.vf1_enable, &np2cfg.vf1_pcount, &np2cfg.vf1_pno);
+		for(vf_j = 0; vf_j < np2cfg.vf1_pcount; vf_j++) {
+			VideoFilter_SaveProfile(hVFMng1, &np2cfg.vf1_profile[vf_j][0], &np2cfg.vf1_profile[vf_j][1], vf_j);
+			for(vf_i = 0; vf_i < np2cfg.vf1_profile[vf_j][0]; vf_i++) {
+				VideoFilter_SaveFilter(hVFMng1, np2cfg.vf1_param[vf_j][vf_i], vf_j, vf_i);
+			}
+		}
+		VideoFilter_Deinit(hVFMng1);
+	}
+#endif
 	
 	pic_deinitialize();
 

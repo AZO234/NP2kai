@@ -18,6 +18,10 @@ typedef void (SCRNCALL * SDRAWFN)(SDRAW sdraw, int maxy);
 extern "C" {
 #endif
 
+#if defined(SUPPORT_VIDEOFILTER)
+extern BOOL	bVFImport;
+#endif
+
 const SDRAWFN *sdraw_getproctbl(const SCRNSURF *surf);
 
 #if defined(SUPPORT_PC9821)

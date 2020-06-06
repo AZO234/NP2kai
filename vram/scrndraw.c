@@ -6,6 +6,9 @@
 #include	"sdraw.h"
 #include	<vram/dispsync.h>
 #include	<vram/palettes.h>
+#if defined(SUPPORT_VIDEOFILTER)
+#include	<vram/videofilter.h>
+#endif
 #ifdef SUPPORT_WAB
 #include	<wab/wab.h>
 #endif
@@ -15,7 +18,6 @@
 	UINT8	np2_tram[SURFACE_SIZE];
 	UINT8	np2_vram[2][SURFACE_SIZE];
 	UINT8	redrawpending = 0;
-
 
 static void updateallline(UINT32 update) {
 
@@ -254,6 +256,18 @@ const SDRAWFN	*sdrawfn;
 			sdraw.src2 = np2_tram;
 			break;
 	}
+#if defined(SUPPORT_VIDEOFILTER)
+	bVFImport = FALSE;
+	if(bit & 3) {
+		if(bit & 1) {
+			VideoFilter_Import98(hVFMng1, np2_vram[0]);
+		} else {
+			VideoFilter_Import98(hVFMng1, np2_vram[1]);
+		}
+		bVFImport = TRUE;
+		VideoFilter_Calc(hVFMng1);
+	}
+#endif
 	sdraw.dst = surf->ptr;
 	sdraw.width = surf->width;
 	sdraw.xbytes = surf->xalign * surf->width;

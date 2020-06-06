@@ -11,6 +11,7 @@
 enum
 {
 	PFTYPE_ARGS16		= PFTYPE_USER,			/*!< 16ビット配列 */
+	PFTYPE_ARGU32,								/*!< 32ビット配列 */
 	PFTYPE_BYTE3,								/*!< 3バイト */
 	PFTYPE_KB,									/*!< キーボード設定 */
 };
