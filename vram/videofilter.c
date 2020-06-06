@@ -12,18 +12,18 @@
 
 h_VideoFilterMng hVFMng1;
 
-#define GETR(c) (uint8_t)( (c) & 0x000000FF       )
+#define GETR(c) (uint8_t)(((c) & 0x00FF0000) >> 16)
 #define GETG(c) (uint8_t)(((c) & 0x0000FF00) >>  8)
-#define GETB(c) (uint8_t)(((c) & 0x00FF0000) >> 16)
-#define SETRGB(r, g, b) ((uint32_t)(r) | ((uint32_t)(g) << 8) | ((uint32_t)(b) << 16))
+#define GETB(c) (uint8_t)( (c) & 0x000000FF       )
+#define SETRGB(r, g, b) ((uint32_t)(b) | ((uint32_t)(g) << 8) | ((uint32_t)(r) << 16))
 #define GETH(c) (uint16_t)(((c) & 0x01FF0000) >> 16)
 #define GETS(c) (uint8_t) (((c) & 0x0000FF00) >>  8)
 #define GETV(c) (uint8_t) ( (c) & 0x000000FF)
 #define SETHSV(h, s, v) ((uint32_t)(v) | ((uint32_t)(s) << 8) | ((uint32_t)(h) << 16))
-#define GETX(c) (uint8_t)( (c) & 0x000000FF       )
-#define GETY(c) (uint8_t)(((c) & 0x0000FF00) >>  8)
 #define GETZ(c) (uint8_t)(((c) & 0x00FF0000) >> 16)
-#define SETXYZ(x, y, z) ((uint32_t)(x) | ((uint32_t)(y) << 8) | ((uint32_t)(z) << 16))
+#define GETY(c) (uint8_t)(((c) & 0x0000FF00) >>  8)
+#define GETX(c) (uint8_t)( (c) & 0x000000FF       )
+#define SETXYZ(x, y, z) ((uint32_t)(z) | ((uint32_t)(y) << 8) | ((uint32_t)(x) << 16))
 
 static uint32_t RGBtoHSV(const uint32_t u32RGB) {
 	uint8_t u8R = GETR(u32RGB);

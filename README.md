@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-May 17, 2020<br>
+Jun 7, 2020<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -906,6 +906,45 @@ This function is used for communication purposes.<br>
 and be careful hosting when reporting.)
 </div></details>
 
+<details><summary>
+Video filter
+</summary><div>
+To enable video filter, set to 'vf1_enable = true' in configure file.<br>
+Video filter1 have 3 profiles.<br>
+To select profile, set 'vf1_pno = (profile no)'.<br>
+<br>
+A profile include 3 filters.<br>
+Filters are applied in order.<br>
+filter0 -&gt; filter1 -&gt; filter2<br>
+<br>
+Filters parameter is set to 'vf1_p(profile no)_p(filter no)' to 8 params.<br>
+
+|Param No|Name|value|
+|:---:|:---:|:---:|
+|0|Enable|0:OFF/1:ON|
+|1|Filter Type No|(follow table Filter Type no)|
+|2|Param 0||
+|3|Param 1||
+|4|Param 2||
+|5|Param 3||
+|6|Param 4||
+|7|Param 5||
+
+|Filter Type No|Filter Name|Param 0|Param 1|Param 2|Param 3|Param 4|Param 5|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|0|THRU|-|-|-|-|-|-|
+|1|NP(Nega/Posi) invert|-|-|-|-|-|-|
+|2|Depth down|0-7:downbits<br>(default 7)|-|-|-|-|-|
+|3|Grey|0-8:Grey depth|0-359:H of white<br>(default 0)|0-255:S of white<br>(default 0)|0-255:V of white<br>(default 255)|-|-|
+|4|V Gamma|1-255:Gamma*10<br>(default 10)|-|-|-|-|-|
+|5|Rotate H|0-359:Rotate H<br>(default 0)|-|-|-|-|-|
+|6|HSV smoothing|5-25:Radius*10<br>(default 5)|1/3/5:Sample<br>(default 3)|0-180:include H diff<br>(default 30)|0-128:include S diff<br>(default 30)|0-128:include V diff<br>(default 30)|
+|7|RGB smoothing|5-25:Radius*10<br>(default 5)|1/3/5:Sample<br>(default 3)|0-128:include R diff<br>(default 30)|0-128:include G diff<br>(default 30)|0-128:include B diff<br>(default 30)|
+
+HSV/RGB smoothing is heavy to work.<br>
+</div></details>
+
+
 #### MIDI sound (X11)
 
 <details><summary>
@@ -987,6 +1026,8 @@ Next boot computer, you command from 4.
 </div></details>
 
 ## Release
+- Jun 7, 2020
+  - Video filter
 - May 22, 2020
   - CMake
   - Emscripten
