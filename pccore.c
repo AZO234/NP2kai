@@ -480,7 +480,7 @@ void pccore_init(void) {
 	{
 		uint8_t vf_i, vf_j;
 
-		hVFMng1 = VideoFilter_Init(1600, 1600, 25, 10);
+		hVFMng1 = VideoFilter_Init(640, 480, 25, 10);
 		VideoFilterMng_LoadSetting(hVFMng1, np2cfg.vf1_enable, np2cfg.vf1_pcount, np2cfg.vf1_pno);
 		for(vf_j = 0; vf_j < np2cfg.vf1_pcount; vf_j++) {
 			VideoFilter_LoadProfile(hVFMng1, vf_j, np2cfg.vf1_profile[vf_j][0], np2cfg.vf1_profile[vf_j][1]);

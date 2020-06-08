@@ -259,11 +259,7 @@ const SDRAWFN	*sdrawfn;
 #if defined(SUPPORT_VIDEOFILTER)
 	bVFImport = FALSE;
 	if(bit & 3) {
-		if(bit & 1) {
-			VideoFilter_Import98(hVFMng1, np2_vram[0]);
-		} else {
-			VideoFilter_Import98(hVFMng1, np2_vram[1]);
-		}
+		VideoFilter_Import98(hVFMng1, (bit & 1) ? np2_vram[0] : np2_vram[1]);
 		bVFImport = TRUE;
 		VideoFilter_Calc(hVFMng1);
 	}

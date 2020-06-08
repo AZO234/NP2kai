@@ -12,32 +12,18 @@
 
 h_VideoFilterMng hVFMng1;
 
-#define GETR(c) (uint8_t)(((c) & 0x00FF0000) >> 16)
-#define GETG(c) (uint8_t)(((c) & 0x0000FF00) >>  8)
-#define GETB(c) (uint8_t)( (c) & 0x000000FF       )
-#define SETRGB(r, g, b) ((uint32_t)(b) | ((uint32_t)(g) << 8) | ((uint32_t)(r) << 16))
-#define GETH(c) (uint16_t)(((c) & 0x01FF0000) >> 16)
-#define GETS(c) (uint8_t) (((c) & 0x0000FF00) >>  8)
-#define GETV(c) (uint8_t) ( (c) & 0x000000FF)
-#define SETHSV(h, s, v) ((uint32_t)(v) | ((uint32_t)(s) << 8) | ((uint32_t)(h) << 16))
-#define GETZ(c) (uint8_t)(((c) & 0x00FF0000) >> 16)
-#define GETY(c) (uint8_t)(((c) & 0x0000FF00) >>  8)
-#define GETX(c) (uint8_t)( (c) & 0x000000FF       )
-#define SETXYZ(x, y, z) ((uint32_t)(z) | ((uint32_t)(y) << 8) | ((uint32_t)(x) << 16))
-
-static uint32_t RGBtoHSV(const uint32_t u32RGB) {
-	uint8_t u8R = GETR(u32RGB);
-	uint8_t u8G = GETG(u32RGB);
-	uint8_t u8B = GETB(u32RGB);
+static void RGBtoHSV_d(uint16_t* pu16H, uint8_t* pu8S, uint8_t* pu8V, const uint8_t u8R, const uint8_t u8G, const uint8_t u8B) {
 	int16_t i16H;
-	uint8_t u8S;
-	uint8_t u8V;
 	uint8_t u8D;
+
+//	if(!pu16H || !pu8S || !pu8V) {
+//		return;
+//	}
 
 	if(u8R == u8G && u8R == u8B) {
 		i16H = 0;
-		u8S = 0;
-		u8V = u8R;
+		*pu8S = 0;
+		*pu8V = u8R;
 	} else if(u8R >= u8G && u8R >= u8B) {
 		if(u8B >= u8G) {
 			u8D = u8R - u8G;
@@ -46,8 +32,8 @@ static uint32_t RGBtoHSV(const uint32_t u32RGB) {
 			u8D = u8R - u8B;
 			i16H = 60 * ((int16_t)u8G - u8B) / u8D;
 		}
-		u8S = (uint8_t)((uint16_t)u8D * 255 / u8R);
-		u8V = u8R;
+		*pu8S = (uint8_t)((uint16_t)u8D * 255 / u8R);
+		*pu8V = u8R;
 	} else if(u8G >= u8R && u8G >= u8B) {
 		if(u8R >= u8B) {
 			u8D = u8G - u8B;
@@ -56,8 +42,8 @@ static uint32_t RGBtoHSV(const uint32_t u32RGB) {
 			u8D = u8G - u8R;
 			i16H = 60 * ((int16_t)u8B - u8R) / u8D + 120;
 		}
-		u8S = (uint8_t)((uint16_t)u8D * 255 / u8G);
-		u8V = u8G;
+		*pu8S = (uint8_t)((uint16_t)u8D * 255 / u8G);
+		*pu8V = u8G;
 	} else {
 		if(u8G >= u8R) {
 			u8D = u8B - u8R;
@@ -66,80 +52,127 @@ static uint32_t RGBtoHSV(const uint32_t u32RGB) {
 			u8D = u8B - u8G;
 			i16H = 60 * ((int16_t)u8R - u8G) / u8D + 240;
 		}
-		u8S = (uint8_t)((uint16_t)u8D * 255 / u8B);
-		u8V = u8B;
+		*pu8S = (uint8_t)((uint16_t)u8D * 255 / u8B);
+		*pu8V = u8B;
 	}
 	if(i16H < 0) {
 		i16H += 360;
 	}
-
-	return SETHSV(i16H, u8S, u8V);
+	*pu16H = (uint16_t)i16H;
 }
 
-static uint32_t HSVtoRGB(const uint32_t u32HSV) {
-	uint16_t u16H = GETH(u32HSV) % 360;
-	uint8_t u8S = GETS(u32HSV);
-	uint8_t u8V = GETV(u32HSV);
+static uint32_t RGBtoHSV(const uint32_t u32RGB) {
+	uint8_t u8R = GETR(u32RGB);
+	uint8_t u8G = GETG(u32RGB);
+	uint8_t u8B = GETB(u32RGB);
+	int16_t u16H;
+	uint8_t u8S;
+	uint8_t u8V;
+
+	RGBtoHSV_d(&u16H, &u8S, &u8V, u8R, u8G, u8B);
+
+	return SETHSV(u16H, u8S, u8V);
+}
+
+static void HSVtoRGB_d(uint8_t* pu8R, uint8_t* pu8G, uint8_t* pu8B, const uint16_t u16H, const uint8_t u8S, const uint8_t u8V) {
+	uint16_t u16UseH = u16H % 360;
 	uint8_t u8Min = u8V - (u8S * u8V) / 255;
 	uint8_t u8R, u8G, u8B;
 
-	if(u16H < 60) {
-		u8R = u8V;
-		u8G =        u16H  * (u8V - u8Min) / 60 + u8Min;
-		u8B = u8Min;
-	} else if(u16H >= 60 && u16H < 120) {
-		u8R = (120 - u16H) * (u8V - u8Min) / 60 + u8Min;
-		u8G = u8V;
-		u8B = u8Min;
-	} else if(u16H >= 120 && u16H < 180) {
-		u8R = u8Min;
-		u8G = u8V;
-		u8B = (u16H - 120) * (u8V - u8Min) / 60 + u8Min;
-	} else if(u16H >= 180 && u16H < 240) {
-		u8R = u8Min;
-		u8G = (240 - u16H) * (u8V - u8Min) / 60 + u8Min;
-		u8B = u8V;
-	} else if(u16H >= 240 && u16H < 300) {
-		u8R = (u16H - 240) * (u8V - u8Min) / 60 + u8Min;
-		u8G = u8Min;
-		u8B = u8V;
-	} else if(u16H >= 300 && u16H < 360) {
-		u8R = u8V;
-		u8G = u8Min;
-		u8B = (360 - u16H) * (u8V - u8Min) / 60 + u8Min;
+//	if(!pu8R || !pu8G || !pu8B) {
+//		return;
+//	}
+
+	if(u16UseH < 60) {
+		*pu8R = u8V;
+		*pu8G =        u16UseH  * (u8V - u8Min) / 60 + u8Min;
+		*pu8B = u8Min;
+	} else if(u16UseH >= 60 && u16UseH < 120) {
+		*pu8R = (120 - u16UseH) * (u8V - u8Min) / 60 + u8Min;
+		*pu8G = u8V;
+		*pu8B = u8Min;
+	} else if(u16UseH >= 120 && u16UseH < 180) {
+		*pu8R = u8Min;
+		*pu8G = u8V;
+		*pu8B = (u16UseH - 120) * (u8V - u8Min) / 60 + u8Min;
+	} else if(u16UseH >= 180 && u16UseH < 240) {
+		*pu8R = u8Min;
+		*pu8G = (240 - u16UseH) * (u8V - u8Min) / 60 + u8Min;
+		*pu8B = u8V;
+	} else if(u16UseH >= 240 && u16UseH < 300) {
+		*pu8R = (u16UseH - 240) * (u8V - u8Min) / 60 + u8Min;
+		*pu8G = u8Min;
+		*pu8B = u8V;
+	} else if(u16UseH >= 300 && u16UseH < 360) {
+		*pu8R = u8V;
+		*pu8G = u8Min;
+		*pu8B = (360 - u16UseH) * (u8V - u8Min) / 60 + u8Min;
 	}
+}
+
+static uint32_t HSVtoRGB(const uint32_t u32HSV) {
+	uint16_t u16H = GETH(u32HSV);
+	uint8_t u8S = GETS(u32HSV);
+	uint8_t u8V = GETV(u32HSV);
+	uint8_t u8R;
+	uint8_t u8G;
+	uint8_t u8B;
+
+	HSVtoRGB_d(&u8R, &u8G, &u8B, u16H, u8S, u8V);
 
 	return SETRGB(u8R, u8G, u8B);
+}
+
+static void RGBtoXYZ_d(uint8_t* pu8X, uint8_t* pu8Y, uint8_t* pu8Z, const uint8_t u8R, const uint8_t u8G, const uint8_t u8B) {
+//	if(!pu8X || !pu8Y || !pu8Z) {
+//		return;
+//	}
+
+	//  0.4887180  0.3106803  0.2006017
+	//  0.1762044  0.8129847  0.0108109
+	//  0.0000000  0.0102048  0.9897952
+	*pu8X = (488718 * u8R + 310680 * u8G + 200601 * u8B) / 1000000;
+	*pu8Y = (176204 * u8R + 812984 * u8G +  10810 * u8B) / 1000000;
+	*pu8Z = (     0 * u8R +  10204 * u8G + 989795 * u8B) / 1000000;
 }
 
 static uint32_t RGBtoXYZ(const uint32_t u32RGB) {
 	uint8_t u8R = GETR(u32RGB);
 	uint8_t u8G = GETG(u32RGB);
 	uint8_t u8B = GETB(u32RGB);
+	int16_t u8X;
+	uint8_t u8Y;
+	uint8_t u8Z;
 
-	//  0.4887180  0.3106803  0.2006017
-	//  0.1762044  0.8129847  0.0108109
-	//  0.0000000  0.0102048  0.9897952
-	return SETXYZ(
-		(488718 * u8R + 310680 * u8G + 200601 * u8B) / 1000000,
-		(176204 * u8R + 812984 * u8G +  10810 * u8B) / 1000000,
-		(     0 * u8R +  10204 * u8G + 989795 * u8B) / 1000000
-	);
+	RGBtoHSV_d(&u8X, &u8Y, &u8Z, u8R, u8G, u8B);
+
+	return SETXYZ(u8X, u8Y, u8Z);
+}
+
+static uint32_t XYZtoRGB_d(uint8_t* pu8R, uint8_t* pu8G, uint8_t* pu8B, const uint8_t u8X, const uint8_t u8Y, const uint8_t u8Z) {
+//	if(!pu8R || !pu8G || !pu8B) {
+//		return;
+//	}
+
+	//  2.3706743 -0.9000405 -0.4706338
+	// -0.5138850  1.4253036  0.0885814
+	//  0.0052982 -0.0146949  1.0093968
+	*pu8R = (2370674 * u8X -  900040 * u8Y -  470633 * u8Z) / 1000000;
+	*pu8G = (1425303 * u8Y -  513885 * u8X +   88581 * u8Z) / 1000000;
+	*pu8B = (   5298 * u8X -   14684 * u8Y + 1009396 * u8Z) / 1000000;
 }
 
 static uint32_t XYZtoRGB(const uint32_t u32XYZ) {
 	uint8_t u8X = GETX(u32XYZ);
 	uint8_t u8Y = GETY(u32XYZ);
 	uint8_t u8Z = GETZ(u32XYZ);
+	uint8_t u8R;
+	uint8_t u8G;
+	uint8_t u8B;
 
-	//  2.3706743 -0.9000405 -0.4706338
-	// -0.5138850  1.4253036  0.0885814
-	//  0.0052982 -0.0146949  1.0093968
-	return SETRGB(
-		(2370674 * u8X -  900040 * u8Y -  470633 * u8Z) / 1000000,
-		(1425303 * u8Y -  513885 * u8X +   88581 * u8Z) / 1000000,
-		(   5298 * u8X -   14684 * u8Y + 1009396 * u8Z) / 1000000
-	);
+	XYZtoRGB_d(&u8R, &u8G, &u8B, u8X, u8Y, u8Z);
+
+	return SETRGB(u8R, u8G, u8B);
 }
 
 enum {
@@ -154,6 +187,58 @@ enum {
 	VFE98_TYPE_TORGB,     // pallet x to RGB
 	VFE98_TYPE_TOHSV,     // pallet x to HSV
 };
+
+typedef struct VF_Palette_t_ {
+	union {
+		struct {
+			uint8_t u8B;
+			uint8_t u8G;
+			uint8_t u8R;
+			uint8_t u8Z;
+		} tRGB;
+		uint32_t u32RGB;
+	};
+	union {
+		struct {
+			uint8_t  u8V;
+			uint8_t  u8S;
+			uint16_t u16H;
+		} tHSV;
+		uint32_t u32HSV;
+	};
+} VF_Palette_t;
+
+VF_Palette_t m_atPalette[256];
+
+typedef struct VF_Dot_t_ {
+	union {
+		struct {
+			uint8_t u8B;
+			uint8_t u8G;
+			uint8_t u8R;
+			uint8_t u8Z;
+		} tRGB;
+		uint32_t u32RGB;
+	};
+} VF_Dot_t;
+
+typedef struct VF_WorkDot_t_ {
+	union {
+		struct {
+			uint8_t u8B;
+			uint8_t u8G;
+			uint8_t u8R;
+			uint8_t u8Z;
+		} tRGB;
+		uint32_t u32RGB;
+		struct {
+			uint8_t  u8V;
+			uint8_t  u8S;
+			uint16_t u16H;
+		} tHSV;
+		uint32_t u32HSV;
+	};
+} VF_WorkDot_t;
 
 typedef struct VF_CalcSample_t_ {
 	uint32_t u32X;
@@ -262,9 +347,10 @@ typedef struct VF_Mng_t_ {
 	uint16_t         u16Height;
 	uint8_t          u8MaxRadius;
 	BOOL             bBufferMain;
-	uint32_t*        pu32Buffer;
+	VF_Dot_t*        ptBuffer;
+	uint8_t*         pu8VRAM;
 	uint8_t          u8WorkSize;
-	uint32_t*        pu32Work;
+	VF_WorkDot_t*    ptWork;
 	uint32_t         au32WorkFF[256];
 	uint16_t         u16WorkX;
 	uint16_t         u16WorkY;
@@ -296,13 +382,13 @@ h_VideoFilterMng VideoFilter_Init(const uint16_t u16MaxWidth, const uint16_t u16
 	ptMng->u8MaxRadius = u8MaxRadius;
 	ptMng->u8MaxSample = u8MaxSample;
 
-	ptMng->pu32Buffer = (uint32_t*)malloc(ptMng->u16Width * ptMng->u16Height * 2 * sizeof(uint32_t));
-	if(!ptMng->pu32Buffer) {
+	ptMng->ptBuffer = (VF_Dot_t*)malloc(ptMng->u16Width * ptMng->u16Height * 2 * sizeof(VF_Dot_t));
+	if(!ptMng->ptBuffer) {
 		VideoFilter_Deinit(ptMng);
 		return NULL;
 	}
-	ptMng->pu32Work = (uint32_t*)malloc(ptMng->u8WorkSize * ptMng->u8WorkSize * sizeof(uint32_t));
-	if(!ptMng->pu32Work) {
+	ptMng->ptWork = (VF_WorkDot_t*)malloc(ptMng->u8WorkSize * ptMng->u8WorkSize * sizeof(VF_WorkDot_t));
+	if(!ptMng->ptWork) {
 		VideoFilter_Deinit(ptMng);
 		return NULL;
 	}
@@ -311,6 +397,8 @@ h_VideoFilterMng VideoFilter_Init(const uint16_t u16MaxWidth, const uint16_t u16
 		VideoFilter_Deinit(ptMng);
 		return NULL;
 	}
+
+	VideoFilter_SetSize(ptMng, 640, 480);
 
 	return ptMng;
 }
@@ -322,11 +410,11 @@ void VideoFilter_Deinit(h_VideoFilterMng hMng) {
 		return;
 	}
 
-	if(ptMng->pu32Buffer) {
-		free(ptMng->pu32Buffer);
+	if(ptMng->ptBuffer) {
+		free(ptMng->ptBuffer);
 	}
-	if(ptMng->pu32Work) {
-		free(ptMng->pu32Work);
+	if(ptMng->ptWork) {
+		free(ptMng->ptWork);
 	}
 	if(ptMng->ptCalcSample) {
 		free(ptMng->ptCalcSample);
@@ -357,6 +445,8 @@ void VideoFilterMng_LoadSetting(
 	ptMng->u16Width       = 480;
 	ptMng->u8WorkSize     = 0;
 	ptMng->bWorkHSV       = FALSE;
+
+	VideoFilter_SetSize(hMng, 640, 480);
 }
 
 void VideoFilter_LoadProfile(h_VideoFilterMng hMng, const uint8_t u8ProfileNo, const uint8_t u8FilterCount, const uint8_t u8OutputNo) {
@@ -462,44 +552,140 @@ void VideoFilter_SetSize(h_VideoFilterMng hMng, const uint16_t u16Width, const u
 
 	ptMng->u16Width  = u16Width;
 	ptMng->u16Height = u16Height;
+
+	memset(ptMng->ptBuffer, 0, ptMng->u16MaxWidth * ptMng->u16MaxHeight * sizeof(VF_Dot_t));
 }
 
-void VideoFilter_SetSrcPos(h_VideoFilterMng hMng, const uint16_t u16X, const uint16_t u16Y, const uint32_t u32RGB) {
+void VideoFilter_SetSrcRGB_d(h_VideoFilterMng hMng, const uint16_t u16X, const uint16_t u16Y, const uint8_t u8R, const uint8_t u8G, const uint8_t u8B) {
 	VF_Mng_t* ptMng = (VF_Mng_t*)hMng;
-	uint32_t* pu32Src;
+	VF_Dot_t* ptSrc;
 
 	if(!hMng) {
 		return;
 	}
 
-	pu32Src  = &ptMng->pu32Buffer[ ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+	ptSrc = &ptMng->ptBuffer[ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
 
 	if(u16X < ptMng->u16Width && u16Y < ptMng->u16Height) {
-		pu32Src[u16Y * ptMng->u16Width + u16X] = u32RGB;
+		ptSrc[u16Y * ptMng->u16Width + u16X].tRGB.u8R = u8R;
+		ptSrc[u16Y * ptMng->u16Width + u16X].tRGB.u8G = u8G;
+		ptSrc[u16Y * ptMng->u16Width + u16X].tRGB.u8B = u8B;
+	}
+}
+
+void VideoFilter_SetSrcRGB(h_VideoFilterMng hMng, const uint16_t u16X, const uint16_t u16Y, const uint32_t u32RGB) {
+	VF_Mng_t* ptMng = (VF_Mng_t*)hMng;
+	VF_Dot_t* ptSrc;
+
+	if(!hMng) {
+		return;
+	}
+
+	ptSrc = &ptMng->ptBuffer[ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+
+	if(u16X < ptMng->u16Width && u16Y < ptMng->u16Height) {
+		ptSrc[u16Y * ptMng->u16Width + u16X].u32RGB = u32RGB;
+	}
+}
+
+void VideoFilter_SetSrcHSV_d(h_VideoFilterMng hMng, const uint16_t u16X, const uint16_t u16Y, const uint16_t u16H, const uint8_t u8S, const uint8_t u8V) {
+	VF_Mng_t* ptMng = (VF_Mng_t*)hMng;
+	VF_Dot_t* ptSrc;
+	VF_Dot_t* ptSrcPos;
+	uint16_t u16UseH = u16H % 360;
+
+	if(!hMng) {
+		return;
+	}
+
+	ptSrc = &ptMng->ptBuffer[ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+
+	if(u16X < ptMng->u16Width && u16Y < ptMng->u16Height) {
+		ptSrcPos = &ptSrc[u16Y * ptMng->u16Width + u16X];
+		HSVtoRGB_d(&ptSrcPos->tRGB.u8R, &ptSrcPos->tRGB.u8G, &ptSrcPos->tRGB.u8B, u16UseH, u8S, u8V);
+	}
+}
+void VideoFilter_SetSrcHSV(h_VideoFilterMng hMng, const uint16_t u16X, const uint16_t u16Y, const uint32_t u32HSV) {
+	VF_Mng_t* ptMng = (VF_Mng_t*)hMng;
+	VF_Dot_t* ptSrc;
+	VF_Dot_t* ptSrcPos;
+
+	if(!hMng) {
+		return;
+	}
+
+	ptSrc = &ptMng->ptBuffer[ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+
+	if(u16X < ptMng->u16Width && u16Y < ptMng->u16Height) {
+		ptSrcPos = &ptSrc[u16Y * ptMng->u16Width + u16X];
+		HSVtoRGB_d(&ptSrcPos->tRGB.u8R, &ptSrcPos->tRGB.u8G, &ptSrcPos->tRGB.u8B, GETH(u32HSV), GETS(u32HSV), GETV(u32HSV));
+	}
+}
+
+static void VideoFilter_SetPalette(void) {
+	uint16_t  u16Color;
+
+	memset(m_atPalette, 0, sizeof(VF_Palette_t) * 256);
+
+	for(u16Color = 0; u16Color < 256; u16Color++) {
+		m_atPalette[u16Color].u32RGB = np2_pal32[u16Color + NP2PAL_GRPH].d;
+		RGBtoHSV_d(
+			&m_atPalette[u16Color].tHSV.u16H,
+			&m_atPalette[u16Color].tHSV.u8S,
+			&m_atPalette[u16Color].tHSV.u8V,
+			np2_pal32[u16Color + NP2PAL_GRPH].p.r,
+			np2_pal32[u16Color + NP2PAL_GRPH].p.g,
+			np2_pal32[u16Color + NP2PAL_GRPH].p.b
+		);
 	}
 }
 
 void VideoFilter_Import98(h_VideoFilterMng hMng, uint8_t* pu8VRAM) {
 	VF_Mng_t* ptMng = (VF_Mng_t*)hMng;
-	uint16_t u16X, u16Y;
-	uint32_t* pu32Src;
-	uint32_t u32Loc;
 
 	if(!hMng || !pu8VRAM) {
 		return;
 	}
 
-	VideoFilter_SetSize(hMng, SURFACE_WIDTH, SURFACE_HEIGHT);
-	pu32Src  = &ptMng->pu32Buffer[ ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+//	VideoFilter_SetSize(hMng, SURFACE_WIDTH, SURFACE_HEIGHT);
+	ptMng->pu8VRAM = pu8VRAM;
 
-	for(u16Y = 0; u16Y < SURFACE_HEIGHT; u16Y++) {
-		for(u16X = 0; u16X < SURFACE_WIDTH; u16X++) {
-		u32Loc = u16Y * SURFACE_WIDTH + u16X;
-			pu32Src[u32Loc] = SETRGB(
-				np2_pal32[pu8VRAM[u32Loc] + NP2PAL_GRPH].p.r,
-				np2_pal32[pu8VRAM[u32Loc] + NP2PAL_GRPH].p.g,
-				np2_pal32[pu8VRAM[u32Loc] + NP2PAL_GRPH].p.b
-			);
+	VideoFilter_SetPalette();
+}
+
+void VideoFilter_Import(h_VideoFilterMng hMng, void* pInputBuf, const uint8_t u8InputBPP, const uint16_t u16YAlign) {
+	VF_Mng_t* ptMng = (VF_Mng_t*)hMng;
+	uint16_t u16X, u16Y;
+	uint8_t* pu8YInput;
+	VF_Dot_t* ptSrc;
+	VF_Dot_t* ptSrcPos;
+
+	if(!hMng || !pInputBuf || !u8InputBPP || !u16YAlign) {
+		return;
+	}
+
+	ptSrc = &ptMng->ptBuffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+
+	for(u16Y = 0; u16Y < ptMng->u16Height; u16Y++) {
+		pu8YInput = &((uint8_t*)pInputBuf)[u16Y * u16YAlign];
+		ptSrcPos = &ptSrc[u16Y * ptMng->u16Width];
+		for(u16X = 0; u16X < ptMng->u16Width; u16X++) {
+			switch(u8InputBPP) {
+			case 16:
+				ptSrcPos->tRGB.u8R = (*(uint16_t*)pu8YInput >> 11) & 0x1F;
+				ptSrcPos->tRGB.u8G = (*(uint16_t*)pu8YInput >>  5) & 0x3F;
+				ptSrcPos->tRGB.u8B =  *(uint16_t*)pu8YInput        & 0x1F;
+				break;
+			case 24:
+				ptSrcPos->tRGB.u8R = pu8YInput[RGB24_R];
+				ptSrcPos->tRGB.u8G = pu8YInput[RGB24_G];
+				ptSrcPos->tRGB.u8B = pu8YInput[RGB24_B];
+				break;
+			case 32:
+				ptSrcPos->u32RGB = *(uint32_t*)pu8YInput;
+				break;
+			}
+			pu8YInput += u8InputBPP;
 		}
 	}
 }
@@ -508,7 +694,7 @@ uint32_t* VideoFilter_GetDest(h_VideoFilterMng hMng) {
 	VF_Mng_t *ptMng = (VF_Mng_t *) hMng;
 
 	if (hMng) {
-		return &ptMng->pu32Buffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+		return &ptMng->ptBuffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height].u32RGB;
 	} else {
 		return NULL;
 	}
@@ -517,25 +703,39 @@ uint32_t* VideoFilter_GetDest(h_VideoFilterMng hMng) {
 void VideoFilter_NP(h_VideoFilterMng hMng) {
 	VF_Mng_t* ptMng = (VF_Mng_t*)hMng;
 	uint16_t u16X, u16Y;
-	uint32_t* pu32Src;
-	uint32_t* pu32Dest;
-	uint32_t* pu32YSrc;
-	uint32_t* pu32YDest;
+	VF_Dot_t* ptSrc;
+	VF_Dot_t* ptDest;
+	uint8_t*  pu8YVRAMSrc;
+	VF_Dot_t* ptYSrc;
+	VF_Dot_t* ptYDest;
 
 	if(!hMng) {
 		return;
 	}
 
-	pu32Src  = &ptMng->pu32Buffer[ ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
-	pu32Dest = &ptMng->pu32Buffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+	ptDest = &ptMng->ptBuffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
 
-	for(u16Y = 0; u16Y < ptMng->u16Height; u16Y++) {
-		pu32YSrc  = &pu32Src[ptMng->u16Width * u16Y];
-		pu32YDest = &pu32Dest[ptMng->u16Width * u16Y];
-		for(u16X = 0; u16X < ptMng->u16Width; u16X++) {
-			*pu32YDest = ~(*pu32YSrc) & 0x00FFFFFF;
-			pu32YSrc++;
-			pu32YDest++;
+	if(ptMng->pu8VRAM) {
+		for(u16Y = 0; u16Y < ptMng->u16Height; u16Y++) {
+			pu8YVRAMSrc = &ptMng->pu8VRAM[ptMng->u16Width * u16Y];
+			ptYDest     = &ptDest[ptMng->u16Width * u16Y];
+			for(u16X = 0; u16X < ptMng->u16Width; u16X++) {
+				ptYDest->u32RGB = ~(m_atPalette[*pu8YVRAMSrc].u32RGB) & 0x00FFFFFF;
+				pu8YVRAMSrc++;
+				ptYDest++;
+			}
+		}
+	} else {
+		ptSrc = &ptMng->ptBuffer[ ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+
+		for(u16Y = 0; u16Y < ptMng->u16Height; u16Y++) {
+			ptYSrc  = &ptSrc[ptMng->u16Width * u16Y];
+			ptYDest = &ptDest[ptMng->u16Width * u16Y];
+			for(u16X = 0; u16X < ptMng->u16Width; u16X++) {
+				ptYDest->u32RGB = ~(ptYSrc->u32RGB) & 0x00FFFFFF;
+				ptYSrc++;
+				ptYDest++;
+			}
 		}
 	}
 }
@@ -543,11 +743,11 @@ void VideoFilter_NP(h_VideoFilterMng hMng) {
 void VideoFilter_DDown(h_VideoFilterMng hMng, const uint8_t u8DDown) {
 	VF_Mng_t* ptMng = (VF_Mng_t*)hMng;
 	uint16_t u16X, u16Y;
-	uint32_t* pu32Src;
-	uint32_t* pu32Dest;
-	uint32_t* pu32YSrc;
-	uint32_t* pu32YDest;
-	uint32_t u32RGB;
+	VF_Dot_t* ptSrc;
+	VF_Dot_t* ptDest;
+	uint8_t*  pu8YVRAMSrc;
+	VF_Dot_t* ptYSrc;
+	VF_Dot_t* ptYDest;
 	uint8_t u8UseDDown = u8DDown;
 	uint8_t u8Div;
 
@@ -561,21 +761,33 @@ void VideoFilter_DDown(h_VideoFilterMng hMng, const uint8_t u8DDown) {
 
 	u8Div = (1 << (8 - u8DDown)) - 1;
 
-	pu32Src  = &ptMng->pu32Buffer[ ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
-	pu32Dest = &ptMng->pu32Buffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+	ptDest = &ptMng->ptBuffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
 
-	for(u16Y = 0; u16Y < ptMng->u16Height; u16Y++) {
-		pu32YSrc  = &pu32Src[ptMng->u16Width * u16Y];
-		pu32YDest = &pu32Dest[ptMng->u16Width * u16Y];
-		for(u16X = 0; u16X < ptMng->u16Width; u16X++) {
-			u32RGB = *pu32YSrc;
-			*pu32YDest = SETRGB(
-				(GETR(u32RGB) >> u8DDown) * 255 / u8Div,
-				(GETG(u32RGB) >> u8DDown) * 255 / u8Div,
-				(GETB(u32RGB) >> u8DDown) * 255 / u8Div
-			);
-			pu32YSrc++;
-			pu32YDest++;
+	if(ptMng->pu8VRAM) {
+		for(u16Y = 0; u16Y < ptMng->u16Height; u16Y++) {
+			pu8YVRAMSrc = &ptMng->pu8VRAM[ptMng->u16Width * u16Y];
+			ptYDest     = &ptDest[ptMng->u16Width * u16Y];
+			for(u16X = 0; u16X < ptMng->u16Width; u16X++) {
+				ptYDest->tRGB.u8R = (m_atPalette[*pu8YVRAMSrc].tRGB.u8R >> u8DDown) * 255 / u8Div;
+				ptYDest->tRGB.u8G = (m_atPalette[*pu8YVRAMSrc].tRGB.u8G >> u8DDown) * 255 / u8Div;
+				ptYDest->tRGB.u8B = (m_atPalette[*pu8YVRAMSrc].tRGB.u8B >> u8DDown) * 255 / u8Div;
+				pu8YVRAMSrc++;
+				ptYDest++;
+			}
+		}
+	} else {
+		ptSrc  = &ptMng->ptBuffer[ ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+
+		for(u16Y = 0; u16Y < ptMng->u16Height; u16Y++) {
+			ptYSrc  = &ptSrc[ptMng->u16Width * u16Y];
+			ptYDest = &ptDest[ptMng->u16Width * u16Y];
+			for(u16X = 0; u16X < ptMng->u16Width; u16X++) {
+				ptYDest->tRGB.u8R = (ptYSrc->tRGB.u8R >> u8DDown) * 255 / u8Div;
+				ptYDest->tRGB.u8G = (ptYSrc->tRGB.u8G >> u8DDown) * 255 / u8Div;
+				ptYDest->tRGB.u8B = (ptYSrc->tRGB.u8B >> u8DDown) * 255 / u8Div;
+				ptYSrc++;
+				ptYDest++;
+			}
 		}
 	}
 }
@@ -583,14 +795,12 @@ void VideoFilter_DDown(h_VideoFilterMng hMng, const uint8_t u8DDown) {
 void VideoFilter_Grey(h_VideoFilterMng hMng, const uint8_t u8Bit, const uint16_t u16H, const uint8_t u8S, const uint8_t u8V) {
 	VF_Mng_t* ptMng = (VF_Mng_t*)hMng;
 	uint16_t u16X, u16Y;
-	uint32_t* pu32Src;
-	uint32_t* pu32Dest;
-	uint32_t* pu32YSrc;
-	uint32_t* pu32YDest;
-	uint32_t u32RGB;
-	uint8_t u8R;
-	uint8_t u8G;
-	uint8_t u8B;
+	VF_Dot_t* ptSrc;
+	VF_Dot_t* ptDest;
+	uint8_t*  pu8YVRAMSrc;
+	VF_Dot_t* ptYSrc;
+	VF_Dot_t* ptYDest;
+	uint8_t u8R, u8G, u8B;
 	uint16_t u16UseH = u16H % 360;
 	uint8_t u8UseBit = u8Bit;
 
@@ -602,39 +812,49 @@ void VideoFilter_Grey(h_VideoFilterMng hMng, const uint8_t u8Bit, const uint16_t
 		u8UseBit = 8;
 	}
 
-	pu32Src  = &ptMng->pu32Buffer[ ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
-	pu32Dest = &ptMng->pu32Buffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+	ptDest = &ptMng->ptBuffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
 
-	for(u16Y = 0; u16Y < ptMng->u16Height; u16Y++) {
-		pu32YSrc  = &pu32Src[ptMng->u16Width * u16Y];
-		pu32YDest = &pu32Dest[ptMng->u16Width * u16Y];
-		for(u16X = 0; u16X < ptMng->u16Width; u16X++) {
-			u32RGB = *pu32YSrc;
-			*pu32YDest = ((uint16_t)GETR(u32RGB) + GETG(u32RGB) + GETB(u32RGB)) / 3;
-			pu32YSrc++;
-			pu32YDest++;
+	if(ptMng->pu8VRAM) {
+		for(u16Y = 0; u16Y < ptMng->u16Height; u16Y++) {
+			pu8YVRAMSrc = &ptMng->pu8VRAM[ptMng->u16Width * u16Y];
+			ptYDest     = &ptDest[ptMng->u16Width * u16Y];
+			for(u16X = 0; u16X < ptMng->u16Width; u16X++) {
+				ptYDest->u32RGB =
+					((uint16_t)m_atPalette[*pu8YVRAMSrc].tRGB.u8R +
+					m_atPalette[*pu8YVRAMSrc].tRGB.u8G +
+					m_atPalette[*pu8YVRAMSrc].tRGB.u8B) / 3;
+				pu8YVRAMSrc++;
+				ptYDest++;
+			}
+		}
+	} else {
+		ptSrc  = &ptMng->ptBuffer[ ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+
+		for(u16Y = 0; u16Y < ptMng->u16Height; u16Y++) {
+			ptYSrc  = &ptSrc[ptMng->u16Width * u16Y];
+			ptYDest = &ptDest[ptMng->u16Width * u16Y];
+			for(u16X = 0; u16X < ptMng->u16Width; u16X++) {
+				ptYDest->u32RGB = ((uint16_t)ptYDest->tRGB.u8R + ptYDest->tRGB.u8G + ptYDest->tRGB.u8B) / 3;
+				ptYSrc++;
+				ptYDest++;
+			}
 		}
 	}
 
 	ptMng->bBufferMain ^= 1;
-	pu32Src  = &ptMng->pu32Buffer[ ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
-	pu32Dest = &ptMng->pu32Buffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+	ptSrc  = &ptMng->ptBuffer[ ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+	ptDest = &ptMng->ptBuffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
 
-	u32RGB = HSVtoRGB(SETHSV(u16UseH, u8S, u8V));
-	u8R = GETR(u32RGB);
-	u8G = GETG(u32RGB);
-	u8B = GETB(u32RGB);
+	HSVtoRGB_d(&u8R, &u8G, &u8B, u16UseH, u8S, u8V);
 	for(u16Y = 0; u16Y < ptMng->u16Height; u16Y++) {
-		pu32YSrc  = &pu32Src[ptMng->u16Width * u16Y];
-		pu32YDest = &pu32Dest[ptMng->u16Width * u16Y];
+		ptYSrc  = &ptSrc[ptMng->u16Width * u16Y];
+		ptYDest = &ptDest[ptMng->u16Width * u16Y];
 		for(u16X = 0; u16X < ptMng->u16Width; u16X++) {
-			*pu32YDest = SETRGB(
-				(*pu32YSrc * u8R) / 255,
-				(*pu32YSrc * u8G) / 255,
-				(*pu32YSrc * u8B) / 255
-			);
-			pu32YSrc++;
-			pu32YDest++;
+			ptYDest->tRGB.u8R = (ptYSrc->u32RGB * u8R) / 255;
+			ptYDest->tRGB.u8G = (ptYSrc->u32RGB * u8G) / 255;
+			ptYDest->tRGB.u8B = (ptYSrc->u32RGB * u8B) / 255;
+			ptYSrc++;
+			ptYDest++;
 		}
 	}
 }
@@ -642,12 +862,14 @@ void VideoFilter_Grey(h_VideoFilterMng hMng, const uint8_t u8Bit, const uint16_t
 void VideoFilter_Gamma(h_VideoFilterMng hMng, const uint8_t u8Gamma) {
 	VF_Mng_t* ptMng = (VF_Mng_t*)hMng;
 	uint16_t u16X, u16Y;
-	uint32_t* pu32Src;
-	uint32_t* pu32Dest;
-	uint32_t* pu32YSrc;
-	uint32_t* pu32YDest;
+	VF_Dot_t* ptSrc;
+	VF_Dot_t* ptDest;
+	uint8_t*  pu8YVRAMSrc;
+	VF_Dot_t* ptYSrc;
+	VF_Dot_t* ptYDest;
 	uint8_t u8UseGamma = u8Gamma;
-	uint32_t u32HSV;
+	uint16_t u16H;
+	uint8_t u8S, u8V;
 
 	if(!hMng) {
 		return;
@@ -661,17 +883,34 @@ void VideoFilter_Gamma(h_VideoFilterMng hMng, const uint8_t u8Gamma) {
 		ptMng->au32WorkFF[u16X] = (uint8_t)(255 * pow(1.0 * u16X / 255, 1.0 / (u8UseGamma / 10.0)));
 	}
 
-	pu32Src  = &ptMng->pu32Buffer[ ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
-	pu32Dest = &ptMng->pu32Buffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+	ptDest = &ptMng->ptBuffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
 
-	for(u16Y = 0; u16Y < ptMng->u16Height; u16Y++) {
-		pu32YSrc  = &pu32Src[ptMng->u16Width * u16Y];
-		pu32YDest = &pu32Dest[ptMng->u16Width * u16Y];
-		for(u16X = 0; u16X < ptMng->u16Width; u16X++) {
-			u32HSV = RGBtoHSV(*pu32YSrc);
-			*pu32YDest = HSVtoRGB(SETHSV(GETH(u32HSV), GETS(u32HSV), ptMng->au32WorkFF[GETV(u32HSV)]));
-			pu32YSrc++;
-			pu32YDest++;
+	if(ptMng->pu8VRAM) {
+		for(u16Y = 0; u16Y < ptMng->u16Height; u16Y++) {
+			pu8YVRAMSrc = &ptMng->pu8VRAM[ptMng->u16Width * u16Y];
+			ptYDest     = &ptDest[ptMng->u16Width * u16Y];
+			for(u16X = 0; u16X < ptMng->u16Width; u16X++) {
+				ptYDest->u32RGB = HSVtoRGB(SETHSV(
+					m_atPalette[*pu8YVRAMSrc].tHSV.u16H,
+					m_atPalette[*pu8YVRAMSrc].tHSV.u8S,
+					ptMng->au32WorkFF[m_atPalette[*pu8YVRAMSrc].tHSV.u8V]
+				));
+				pu8YVRAMSrc++;
+				ptYDest++;
+			}
+		}
+	} else {
+		ptSrc = &ptMng->ptBuffer[ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+
+		for(u16Y = 0; u16Y < ptMng->u16Height; u16Y++) {
+			ptYSrc  = &ptSrc[ptMng->u16Width * u16Y];
+			ptYDest = &ptDest[ptMng->u16Width * u16Y];
+			for(u16X = 0; u16X < ptMng->u16Width; u16X++) {
+				RGBtoHSV_d(&u16H, &u8S, &u8V, ptYSrc->tRGB.u8R, ptYSrc->tRGB.u8G, ptYSrc->tRGB.u8B);
+				ptYDest->u32RGB = HSVtoRGB(SETHSV(u16H, u8S, ptMng->au32WorkFF[u8V]));
+				ptYSrc++;
+				ptYDest++;
+			}
 		}
 	}
 }
@@ -679,28 +918,47 @@ void VideoFilter_Gamma(h_VideoFilterMng hMng, const uint8_t u8Gamma) {
 void VideoFilter_RotateH(h_VideoFilterMng hMng, const uint16_t u16RotateH) {
 	VF_Mng_t* ptMng = (VF_Mng_t*)hMng;
 	uint16_t u16X, u16Y;
-	uint32_t* pu32Src;
-	uint32_t* pu32Dest;
-	uint32_t* pu32YSrc;
-	uint32_t* pu32YDest;
+	VF_Dot_t* ptSrc;
+	VF_Dot_t* ptDest;
+	uint8_t*  pu8YVRAMSrc;
+	VF_Dot_t* ptYSrc;
+	VF_Dot_t* ptYDest;
 	uint16_t u16UseRotateH = u16RotateH % 360;
-	uint32_t u32HSV;
+	uint16_t u16H;
+	uint8_t u8S, u8V;
 
 	if(!hMng) {
 		return;
 	}
 
-	pu32Src  = &ptMng->pu32Buffer[ ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
-	pu32Dest = &ptMng->pu32Buffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+	ptDest = &ptMng->ptBuffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
 
-	for(u16Y = 0; u16Y < ptMng->u16Height; u16Y++) {
-		pu32YSrc  = &pu32Src[ptMng->u16Width * u16Y];
-		pu32YDest = &pu32Dest[ptMng->u16Width * u16Y];
-		for(u16X = 0; u16X < ptMng->u16Width; u16X++) {
-			u32HSV = RGBtoHSV(*pu32YSrc);
-			*pu32YDest = HSVtoRGB(SETHSV((GETH(u32HSV) + u16UseRotateH) % 360, GETS(u32HSV), GETV(u32HSV)));
-			pu32YSrc++;
-			pu32YDest++;
+	if(ptMng->pu8VRAM) {
+		for(u16Y = 0; u16Y < ptMng->u16Height; u16Y++) {
+			pu8YVRAMSrc = &ptMng->pu8VRAM[ptMng->u16Width * u16Y];
+			ptYDest     = &ptDest[ptMng->u16Width * u16Y];
+			for(u16X = 0; u16X < ptMng->u16Width; u16X++) {
+				ptYDest->u32RGB = HSVtoRGB(SETHSV(
+					(m_atPalette[*pu8YVRAMSrc].tHSV.u16H + u16UseRotateH) % 360,
+					m_atPalette[*pu8YVRAMSrc].tHSV.u8S,
+					m_atPalette[*pu8YVRAMSrc].tHSV.u8V
+				));
+				pu8YVRAMSrc++;
+				ptYDest++;
+			}
+		}
+	} else {
+		ptSrc = &ptMng->ptBuffer[ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+
+		for(u16Y = 0; u16Y < ptMng->u16Height; u16Y++) {
+			ptYSrc  = &ptSrc[ptMng->u16Width * u16Y];
+			ptYDest = &ptDest[ptMng->u16Width * u16Y];
+			for(u16X = 0; u16X < ptMng->u16Width; u16X++) {
+				RGBtoHSV_d(&u16H, &u8S, &u8V, ptYSrc->tRGB.u8R, ptYSrc->tRGB.u8G, ptYSrc->tRGB.u8B);
+				ptYDest->u32RGB = HSVtoRGB(SETHSV((u16H + u16UseRotateH) % 360, u8S, u8V));
+				ptYSrc++;
+				ptYDest++;
+			}
 		}
 	}
 }
@@ -708,39 +966,63 @@ void VideoFilter_RotateH(h_VideoFilterMng hMng, const uint16_t u16RotateH) {
 static void FetchWork(h_VideoFilterMng hMng) {
 	VF_Mng_t* ptMng = (VF_Mng_t*)hMng;
 	int16_t i16SelectX, i16SelectY;
-	uint32_t *pu32Src;
-	uint32_t *pu32SrcPos;
-	uint32_t *pu32WorkPos;
+	VF_Dot_t* ptSrc;
+	uint8_t*  pu8YVRAMSrc;
+	VF_Dot_t* ptSrcPos;
+	VF_WorkDot_t *ptWorkPos;
 
 	if(!hMng) {
 		return;
 	}
 
-	pu32Src = &(ptMng->pu32Buffer[ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height]);
+	ptSrc = &ptMng->ptBuffer[ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
 
 	i16SelectY = (int16_t)ptMng->u16WorkSrcY - ptMng->u8WorkSize / 2;
 	for(ptMng->u16WorkY = 0; ptMng->u16WorkY < ptMng->u8WorkSize; ptMng->u16WorkY++) {
-		pu32WorkPos = &ptMng->pu32Work[ptMng->u16WorkY * ptMng->u8WorkSize];
+		ptWorkPos = &ptMng->ptWork[ptMng->u16WorkY * ptMng->u8WorkSize];
 		if(i16SelectY >= 0 && i16SelectY < ptMng->u16Height) {
 			i16SelectX = (int16_t)ptMng->u16WorkSrcX - ptMng->u8WorkSize / 2;
 			for(ptMng->u16WorkX = 0; ptMng->u16WorkX < ptMng->u8WorkSize; ptMng->u16WorkX++) {
 				if(i16SelectX >= 0 && i16SelectX < ptMng->u16Width) {
-					pu32SrcPos = &pu32Src[i16SelectY * ptMng->u16Width + i16SelectX];
-					if(ptMng->bWorkHSV) {
-						*pu32WorkPos = RGBtoHSV(*pu32SrcPos);
+					if(ptMng->pu8VRAM) {
+						pu8YVRAMSrc = &ptMng->pu8VRAM[i16SelectY * ptMng->u16Width + i16SelectX];
+						if(ptMng->bWorkHSV) {
+							RGBtoHSV_d(
+								&ptWorkPos->tHSV.u16H,
+								&ptWorkPos->tHSV.u8S,
+								&ptWorkPos->tHSV.u8V,
+								m_atPalette[*pu8YVRAMSrc].tRGB.u8R,
+								m_atPalette[*pu8YVRAMSrc].tRGB.u8G,
+								m_atPalette[*pu8YVRAMSrc].tRGB.u8B
+							);
+						} else {
+							ptWorkPos->u32RGB = m_atPalette[*pu8YVRAMSrc].u32RGB;
+						}
 					} else {
-						*pu32WorkPos = *pu32SrcPos;
+						ptSrcPos = &ptSrc[i16SelectY * ptMng->u16Width + i16SelectX];
+						if(ptMng->bWorkHSV) {
+							RGBtoHSV_d(
+								&ptWorkPos->tHSV.u16H,
+								&ptWorkPos->tHSV.u8S,
+								&ptWorkPos->tHSV.u8V,
+								ptSrcPos->tRGB.u8R,
+								ptSrcPos->tRGB.u8G,
+								ptSrcPos->tRGB.u8B
+							);
+						} else {
+							ptWorkPos->u32RGB = ptSrcPos->u32RGB;
+						}
 					}
 				} else {
-					*pu32WorkPos = VF_COLOR_OUTOFRANGE;
+					ptWorkPos->u32RGB = VF_COLOR_OUTOFRANGE;
 				}
-				pu32WorkPos++;
+				ptWorkPos++;
 				i16SelectX++;
 			}
 		} else {
 			for(ptMng->u16WorkX = 0; ptMng->u16WorkX < ptMng->u8WorkSize; ptMng->u16WorkX++) {
-				*pu32WorkPos = VF_COLOR_OUTOFRANGE;
-				pu32WorkPos++;
+				ptWorkPos->u32RGB = VF_COLOR_OUTOFRANGE;
+				ptWorkPos++;
 			}
 		}
 		i16SelectY++;
@@ -750,41 +1032,65 @@ static void FetchWork(h_VideoFilterMng hMng) {
 static void WorkRight(h_VideoFilterMng hMng) {
 	VF_Mng_t* ptMng = (VF_Mng_t*)hMng;
 	int16_t i16SelectX, i16SelectY;
-	uint32_t *pu32Src;
-	uint32_t *pu32SrcPos;
-	uint32_t *pu32WorkPos;
+	VF_Dot_t *ptSrc;
+	uint8_t*  pu8YVRAMSrc;
+	VF_Dot_t *ptSrcPos;
+	VF_WorkDot_t *ptWorkPos;
 
 	if(!hMng) {
 		return;
 	}
 
-	pu32Src  = &ptMng->pu32Buffer[ ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+	ptSrc  = &ptMng->ptBuffer[ ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
 
 	for(ptMng->u16WorkY = 0; ptMng->u16WorkY < ptMng->u8WorkSize; ptMng->u16WorkY++) {
-		pu32WorkPos = &ptMng->pu32Work[ptMng->u16WorkY * ptMng->u8WorkSize];
+		ptWorkPos = &ptMng->ptWork[ptMng->u16WorkY * ptMng->u8WorkSize];
 		for(ptMng->u16WorkX = 0; ptMng->u16WorkX < ptMng->u8WorkSize - 1; ptMng->u16WorkX++) {
-			*pu32WorkPos = *(pu32WorkPos + 1);
-			pu32WorkPos++;
+			ptWorkPos->u32RGB = (ptWorkPos + 1)->u32RGB;
+			ptWorkPos++;
 		}
 	}
 
 	i16SelectX = (int16_t)ptMng->u16WorkSrcX + ptMng->u8WorkSize / 2 + 1;
 	i16SelectY = (int16_t)ptMng->u16WorkSrcY - ptMng->u8WorkSize / 2;
 	for(ptMng->u16WorkY = 0; ptMng->u16WorkY < ptMng->u8WorkSize; ptMng->u16WorkY++) {
-        pu32WorkPos = &ptMng->pu32Work[ptMng->u16WorkY * ptMng->u8WorkSize + ptMng->u8WorkSize - 1];
+		ptWorkPos = &ptMng->ptWork[ptMng->u16WorkY * ptMng->u8WorkSize + ptMng->u8WorkSize - 1];
 		if(i16SelectX < ptMng->u16Width) {
 			if(i16SelectY >= 0 && i16SelectY < ptMng->u16Height) {
-				pu32SrcPos = &pu32Src[i16SelectY * ptMng->u16Width + i16SelectX];
-				if(ptMng->bWorkHSV) {
-					*pu32WorkPos = RGBtoHSV(*pu32SrcPos);
+				if(ptMng->pu8VRAM) {
+					pu8YVRAMSrc = &ptMng->pu8VRAM[i16SelectY * ptMng->u16Width + i16SelectX];
+					if(ptMng->bWorkHSV) {
+						RGBtoHSV_d(
+							&ptWorkPos->tHSV.u16H,
+							&ptWorkPos->tHSV.u8S,
+							&ptWorkPos->tHSV.u8V,
+							m_atPalette[*pu8YVRAMSrc].tRGB.u8R,
+							m_atPalette[*pu8YVRAMSrc].tRGB.u8G,
+							m_atPalette[*pu8YVRAMSrc].tRGB.u8B
+						);
+					} else {
+						ptWorkPos->u32RGB = m_atPalette[*pu8YVRAMSrc].u32RGB;
+					}
 				} else {
-					*pu32WorkPos = *pu32SrcPos;
+					ptSrcPos = &ptSrc[i16SelectY * ptMng->u16Width + i16SelectX];
+					if(ptMng->bWorkHSV) {
+						RGBtoHSV_d(
+							&ptWorkPos->tHSV.u16H,
+							&ptWorkPos->tHSV.u8S,
+							&ptWorkPos->tHSV.u8V,
+							ptSrcPos->tRGB.u8R,
+							ptSrcPos->tRGB.u8G,
+							ptSrcPos->tRGB.u8B
+						);
+					} else {
+						ptWorkPos->u32RGB = ptSrcPos->u32RGB;
+					}
 				}
 			} else {
-				*pu32WorkPos = VF_COLOR_OUTOFRANGE;
+				ptWorkPos->u32RGB = VF_COLOR_OUTOFRANGE;
 			}
 		} else {
-			*pu32WorkPos = VF_COLOR_OUTOFRANGE;
+			ptWorkPos->u32RGB = VF_COLOR_OUTOFRANGE;
 		}
 		i16SelectY++;
 	}
@@ -792,20 +1098,15 @@ static void WorkRight(h_VideoFilterMng hMng) {
 
 void VideoFilter_HSVSmooth(h_VideoFilterMng hMng, const uint8_t u8Radius, const uint8_t u8Sample, const uint8_t u8HDiff, const uint8_t u8SDiff, const uint8_t u8VDiff, const uint8_t u8WType) {
 	VF_Mng_t* ptMng = (VF_Mng_t*)hMng;
-	uint16_t u16X, u16Y;
-	uint32_t* pu32Src;
-	uint32_t* pu32Dest;
-	uint32_t* pu32YSrc;
-	uint32_t* pu32YDest;
+	VF_Dot_t* ptDest;
+	VF_Dot_t* ptYDest;
+	VF_WorkDot_t* ptC;
+	VF_WorkDot_t* ptD;
 	uint8_t u8UseRadius = u8Radius;
 	uint8_t u8UseSample = u8Sample;
 	uint8_t u8UseHDiff = u8HDiff;
 	uint8_t u8UseSDiff = u8SDiff;
 	uint8_t u8UseVDiff = u8VDiff;
-	uint32_t u32HSV, u32SrcHSV;
-	int16_t i16H;
-	uint16_t u16CH;
-	uint8_t u8CS, u8CV;
 	int16_t i16DH, i16DS, i16DV;
 	uint32_t u32AllH, u32AllS, u32AllV;
 	BOOL bCalc;
@@ -841,18 +1142,18 @@ void VideoFilter_HSVSmooth(h_VideoFilterMng hMng, const uint8_t u8Radius, const 
 
 	switch(u8WType) {
 	case 1:
-		for(u16X = 0; u16X < 90; u16X++) {
-			ptMng->au32WorkFF[u16X] = (uint8_t)(((90 - u16X) * 255) / 90);
+		for(u32SampleCount = 0; u32SampleCount < 90; u32SampleCount++) {
+			ptMng->au32WorkFF[u32SampleCount] = (uint8_t)(((90 - u32SampleCount) * 255) / 90);
 		}
 		break;
 	case 2:
-		for(u16X = 0; u16X < 90; u16X++) {
-			ptMng->au32WorkFF[u16X] = (uint8_t)(cos(u16X * 3.141592 / 180.0) * 255);
+		for(u32SampleCount = 0; u32SampleCount < 90; u32SampleCount++) {
+			ptMng->au32WorkFF[u32SampleCount] = (uint8_t)(cos(u32SampleCount * 3.141592 / 180.0) * 255);
 		}
 		break;
 	default:
-		for(u16X = 0; u16X < 90; u16X++) {
-			ptMng->au32WorkFF[u16X] = 255;
+		for(u32SampleCount = 0; u32SampleCount < 90; u32SampleCount++) {
+			ptMng->au32WorkFF[u32SampleCount] = 255;
 		}
 		break;
 	}
@@ -868,56 +1169,34 @@ void VideoFilter_HSVSmooth(h_VideoFilterMng hMng, const uint8_t u8Radius, const 
 		}
 	}
 
-	pu32Src  = &ptMng->pu32Buffer[ ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
-	pu32Dest = &ptMng->pu32Buffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+	ptDest = &ptMng->ptBuffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+	ptC = &ptMng->ptWork[(ptMng->u8WorkSize / 2) * ptMng->u8WorkSize + ptMng->u8WorkSize / 2];
 
 	ptMng->bWorkHSV = TRUE;
 	for(ptMng->u16WorkSrcY = 0; ptMng->u16WorkSrcY < ptMng->u16Height; ptMng->u16WorkSrcY++) {
-		pu32YDest = &pu32Dest[ptMng->u16WorkSrcY * ptMng->u16Width];
+		ptYDest = &ptDest[ptMng->u16WorkSrcY * ptMng->u16Width];
 		ptMng->u16WorkSrcX = 0;
 		FetchWork(hMng);
 		for(; ptMng->u16WorkSrcX < ptMng->u16Width; ptMng->u16WorkSrcX++) {
-			u32SrcHSV = RGBtoHSV(pu32Src[ptMng->u16WorkSrcY * ptMng->u16Width + ptMng->u16WorkSrcX]);
-			u16CH = GETH(u32SrcHSV);
-			u8CS  = GETS(u32SrcHSV);
-			u8CV  = GETV(u32SrcHSV);
 			u32AllH = u32AllS = u32AllV = 0;
 			u32SampleCount = 0;
 			for(u8SampleY = 0; u8SampleY < u8UseSample; u8SampleY++) {
 				ptCalcSample = &ptMng->ptCalcSample[u8SampleY * u8UseSample];
 				for(u8SampleX = 0; u8SampleX < u8UseSample; u8SampleX++) {
-					u32HSV = ptMng->pu32Work[ptCalcSample->u32Y * ptMng->u8WorkSize + ptCalcSample->u32X];
-					if(u32SrcHSV == u32HSV) {
-						u32AllH += u16CH;
-						u32AllS += u8CS;
-						u32AllV += u8CV;
+					ptD = &ptMng->ptWork[ptCalcSample->u32Y * ptMng->u8WorkSize + ptCalcSample->u32X];
+					if(ptC->u32HSV == ptD->u32HSV) {
+						u32AllH += ptC->tHSV.u16H;
+						u32AllS += ptC->tHSV.u8S;
+						u32AllV += ptC->tHSV.u8V;
 						u32SampleCount++;
-					} else if(u32HSV != VF_COLOR_OUTOFRANGE) {
-						i16H = (int16_t)GETH(u32HSV) - u16CH;
-						i16DH = i16H - u16CH;
-						i16DS = (int16_t)GETS(u32HSV) -  u8CS;
-						i16DV = (int16_t)GETV(u32HSV) -  u8CV;
+					} else if(ptD->u32HSV != VF_COLOR_OUTOFRANGE) {
+						i16DH = ptD->tHSV.u16H - ptC->tHSV.u16H;
+						i16DS = ptD->tHSV.u8S  - ptC->tHSV.u8S;
+						i16DV = ptD->tHSV.u8V  - ptC->tHSV.u8V;
 						bCalc = TRUE;
 						if(bCalc) {
 							if(i16DS < -1 * u8UseSDiff || u8UseSDiff < i16DS) {
 								bCalc = FALSE;
-							}
-						}
-						if(bCalc) {
-							if(u8CS && GETS(u32HSV)) {
-								if((int16_t)u16CH - u8UseHDiff < 0) {
-									if(u16CH + u8UseHDiff < i16H && i16H < u16CH + 360 - u8UseHDiff) {
-										bCalc = FALSE;
-									}
-								} else if(u16CH + u8UseHDiff > 360) {
-									if(u16CH + u8UseHDiff - 360 < i16H && i16H < u16CH - u8UseHDiff) {
-										bCalc = FALSE;
-									}
-								} else {
-									if(i16H < u16CH - u8UseHDiff || u16CH + u8UseHDiff < i16H) {
-										bCalc = FALSE;
-									}
-								}
 							}
 						}
 						if(bCalc) {
@@ -926,17 +1205,43 @@ void VideoFilter_HSVSmooth(h_VideoFilterMng hMng, const uint8_t u8Radius, const 
 							}
 						}
 						if(bCalc) {
-							u32AllH += u16CH + (i16DH * ptCalcSample->u8Weight) / 255;
-							u32AllS += u8CS  + (i16DS * ptCalcSample->u8Weight) / 255;
-							u32AllV += u8CV  + (i16DV * ptCalcSample->u8Weight) / 255;
+							if(!ptC->tHSV.u8V || !ptD->tHSV.u8V || ptC->tHSV.u8V == 255 || ptD->tHSV.u8V == 255) {
+								i16DH = 0;
+							} else if(ptC->tHSV.u8S && ptD->tHSV.u8S) {
+								if((int16_t)ptC->tHSV.u16H - u8UseHDiff < 0) {
+									if(ptC->tHSV.u16H + u8UseHDiff < ptD->tHSV.u16H && ptD->tHSV.u16H < ptC->tHSV.u16H + 360 - u8UseHDiff) {
+										bCalc = FALSE;
+									}
+								} else if(ptC->tHSV.u16H + u8UseHDiff > 360) {
+									if(ptC->tHSV.u16H + u8UseHDiff - 360 < ptD->tHSV.u16H && ptD->tHSV.u16H < ptC->tHSV.u16H - u8UseHDiff) {
+										bCalc = FALSE;
+									}
+								} else {
+									if(ptD->tHSV.u16H < ptC->tHSV.u16H - u8UseHDiff || ptC->tHSV.u16H + u8UseHDiff < ptD->tHSV.u16H) {
+										bCalc = FALSE;
+									}
+								}
+							}
+						}
+						if(bCalc) {
+							u32AllH += ptC->tHSV.u16H + (i16DH * ptCalcSample->u8Weight) / 255;
+							u32AllS += ptC->tHSV.u8S  + (i16DS * ptCalcSample->u8Weight) / 255;
+							u32AllV += ptC->tHSV.u8V  + (i16DV * ptCalcSample->u8Weight) / 255;
 							u32SampleCount++;
 						}
 					}
 					ptCalcSample++;
 				}
 			}
-			*pu32YDest = HSVtoRGB(SETHSV(u32AllH / u32SampleCount, u32AllS / u32SampleCount, u32AllV / u32SampleCount));
-			pu32YDest++;
+			HSVtoRGB_d(
+				&ptYDest->tRGB.u8R,
+				&ptYDest->tRGB.u8G,
+				&ptYDest->tRGB.u8B,
+				u32AllH / u32SampleCount,
+				u32AllS / u32SampleCount,
+				u32AllV / u32SampleCount
+			);
+			ptYDest++;
 			WorkRight(hMng);
 		}
 	}
@@ -944,18 +1249,15 @@ void VideoFilter_HSVSmooth(h_VideoFilterMng hMng, const uint8_t u8Radius, const 
 
 void VideoFilter_RGBSmooth(h_VideoFilterMng hMng, const uint8_t u8Radius, const uint8_t u8Sample, const uint8_t u8RDiff, const uint8_t u8GDiff, const uint8_t u8BDiff, const uint8_t u8WType) {
 	VF_Mng_t* ptMng = (VF_Mng_t*)hMng;
-	uint16_t u16X, u16Y;
-	uint32_t* pu32Src;
-	uint32_t* pu32Dest;
-	uint32_t* pu32YSrc;
-	uint32_t* pu32YDest;
+	VF_Dot_t* ptDest;
+	VF_Dot_t* ptYDest;
+	VF_WorkDot_t* ptC;
+	VF_WorkDot_t* ptD;
 	uint8_t u8UseRadius = u8Radius;
 	uint8_t u8UseSample = u8Sample;
 	uint8_t u8UseRDiff = u8RDiff;
 	uint8_t u8UseGDiff = u8GDiff;
 	uint8_t u8UseBDiff = u8BDiff;
-	uint32_t u32RGB, u32SrcRGB;
-	uint8_t u8CR, u8CG, u8CB;
 	int16_t i16DR, i16DG, i16DB;
 	uint32_t u32AllR, u32AllG, u32AllB;
 	BOOL bCalc;
@@ -991,18 +1293,18 @@ void VideoFilter_RGBSmooth(h_VideoFilterMng hMng, const uint8_t u8Radius, const 
 
 	switch(u8WType) {
 	case 1:
-		for(u16X = 0; u16X < 90; u16X++) {
-			ptMng->au32WorkFF[u16X] = (uint8_t)(((90 - u16X) * 255) / 90);
+		for(u32SampleCount = 0; u32SampleCount < 90; u32SampleCount++) {
+			ptMng->au32WorkFF[u32SampleCount] = (uint8_t)(((90 - u32SampleCount) * 255) / 90);
 		}
 		break;
 	case 2:
-		for(u16X = 0; u16X < 90; u16X++) {
-			ptMng->au32WorkFF[u16X] = (uint8_t)(cos(u16X * 3.141592 / 180.0) * 255);
+		for(u32SampleCount = 0; u32SampleCount < 90; u32SampleCount++) {
+			ptMng->au32WorkFF[u32SampleCount] = (uint8_t)(cos(u32SampleCount * 3.141592 / 180.0) * 255);
 		}
 		break;
 	default:
-		for(u16X = 0; u16X < 90; u16X++) {
-			ptMng->au32WorkFF[u16X] = 255;
+		for(u32SampleCount = 0; u32SampleCount < 90; u32SampleCount++) {
+			ptMng->au32WorkFF[u32SampleCount] = 255;
 		}
 		break;
 	}
@@ -1018,34 +1320,30 @@ void VideoFilter_RGBSmooth(h_VideoFilterMng hMng, const uint8_t u8Radius, const 
 		}
 	}
 
-	pu32Src  = &ptMng->pu32Buffer[ ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
-	pu32Dest = &ptMng->pu32Buffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+	ptDest = &ptMng->ptBuffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+	ptC = &ptMng->ptWork[(ptMng->u8WorkSize / 2) * ptMng->u8WorkSize + ptMng->u8WorkSize / 2];
 
 	ptMng->bWorkHSV = FALSE;
 	for(ptMng->u16WorkSrcY = 0; ptMng->u16WorkSrcY < ptMng->u16Height; ptMng->u16WorkSrcY++) {
-		pu32YDest = &pu32Dest[ptMng->u16WorkSrcY * ptMng->u16Width];
+		ptYDest = &ptDest[ptMng->u16WorkSrcY * ptMng->u16Width];
 		ptMng->u16WorkSrcX = 0;
 		FetchWork(hMng);
 		for(; ptMng->u16WorkSrcX < ptMng->u16Width; ptMng->u16WorkSrcX++) {
-			u32SrcRGB = pu32Src[ptMng->u16WorkSrcY * ptMng->u16Width + ptMng->u16WorkSrcX];
-			u8CR = GETR(u32SrcRGB);
-			u8CG = GETG(u32SrcRGB);
-			u8CB = GETB(u32SrcRGB);
 			u32AllR = u32AllG = u32AllB = 0;
 			u32SampleCount = 0;
 			for(u8SampleY = 0; u8SampleY < u8UseSample; u8SampleY++) {
 				ptCalcSample = &ptMng->ptCalcSample[u8SampleY * u8UseSample];
 				for(u8SampleX = 0; u8SampleX < u8UseSample; u8SampleX++) {
-					u32RGB = ptMng->pu32Work[ptCalcSample->u32Y * ptMng->u8WorkSize + ptCalcSample->u32X];
-					if(u32SrcRGB == u32RGB) {
-						u32AllR += u8CR;
-						u32AllG += u8CG;
-						u32AllB += u8CB;
+					ptD = &ptMng->ptWork[ptCalcSample->u32Y * ptMng->u8WorkSize + ptCalcSample->u32X];
+					if(ptC->u32RGB == ptD->u32RGB) {
+						u32AllR += ptC->tRGB.u8R;
+						u32AllG += ptC->tRGB.u8G;
+						u32AllB += ptC->tRGB.u8B;
 						u32SampleCount++;
-					} else if(u32RGB != VF_COLOR_OUTOFRANGE) {
-						i16DR = (int16_t)GETR(u32RGB) - u8CR;
-						i16DG = (int16_t)GETG(u32RGB) - u8CG;
-						i16DB = (int16_t)GETB(u32RGB) - u8CB;
+					} else if(ptD->u32RGB != VF_COLOR_OUTOFRANGE) {
+						i16DR = ptD->tRGB.u8R - ptC->tRGB.u8R;
+						i16DG = ptD->tRGB.u8G - ptC->tRGB.u8G;
+						i16DB = ptD->tRGB.u8B - ptC->tRGB.u8B;
 						bCalc = TRUE;
 						if(bCalc) {
 							if(i16DR < -1 * u8UseRDiff || u8UseRDiff < i16DR) {
@@ -1063,17 +1361,19 @@ void VideoFilter_RGBSmooth(h_VideoFilterMng hMng, const uint8_t u8Radius, const 
 							}
 						}
 						if(bCalc) {
-							u32AllR += u8CR + (i16DR * ptCalcSample->u8Weight) / 255;
-							u32AllG += u8CG + (i16DG * ptCalcSample->u8Weight) / 255;
-							u32AllB += u8CB + (i16DB * ptCalcSample->u8Weight) / 255;
+							u32AllR += ptC->tRGB.u8R + (i16DR * ptCalcSample->u8Weight) / 255;
+							u32AllG += ptC->tRGB.u8G + (i16DG * ptCalcSample->u8Weight) / 255;
+							u32AllB += ptC->tRGB.u8B + (i16DB * ptCalcSample->u8Weight) / 255;
 							u32SampleCount++;
 						}
 					}
 					ptCalcSample++;
 				}
 			}
-			*pu32YDest = SETRGB(u32AllR / u32SampleCount, u32AllG / u32SampleCount, u32AllB / u32SampleCount);
-			pu32YDest++;
+			ptYDest->tRGB.u8R = u32AllR / u32SampleCount;
+			ptYDest->tRGB.u8G = u32AllG / u32SampleCount;
+			ptYDest->tRGB.u8B = u32AllB / u32SampleCount;
+			ptYDest++;
 			WorkRight(hMng);
 		}
 	}
@@ -1081,9 +1381,6 @@ void VideoFilter_RGBSmooth(h_VideoFilterMng hMng, const uint8_t u8Radius, const 
 
 void VideoFilter_Calc(h_VideoFilterMng hMng) {
 	VF_Mng_t* ptMng = (VF_Mng_t*)hMng;
-	uint16_t u16X, u16Y;
-	uint32_t* pu32Src;
-	uint32_t* pu32Dest;
 	VF_Profile_t* ptProfile;
 	VFE_t* ptFilter;
 	uint8_t i;
@@ -1091,9 +1388,6 @@ void VideoFilter_Calc(h_VideoFilterMng hMng) {
 	if(!hMng) {
 		return;
 	}
-
-	pu32Src  = &ptMng->pu32Buffer[ ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
-	pu32Dest = &ptMng->pu32Buffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
 
 	if(ptMng->bEnable) {
 		ptProfile = &ptMng->atProfile[ptMng->u8ProfileNo];
@@ -1156,17 +1450,19 @@ void VideoFilter_Calc(h_VideoFilterMng hMng) {
 				default:
 					break;
 				}
+				ptMng->pu8VRAM = NULL;
 			}
 		}
 	} else {
 		ptMng->bBufferMain ^= 1;
+		ptMng->pu8VRAM = NULL;
 	}
 }
 
-void VideoFilter_GetDestPos(h_VideoFilterMng hMng, void* pOutput, const uint16_t u16X, const uint16_t u16Y, const uint8_t u8OutputBPP) {
+void VideoFilter_PutSrc(h_VideoFilterMng hMng, void* pOutput, const uint16_t u16X, const uint16_t u16Y, const uint8_t u8OutputBPP) {
 	VF_Mng_t* ptMng = (VF_Mng_t*)hMng;
-	uint32_t* pu32Dest;
-	uint32_t u32RGB;
+	VF_Dot_t* ptSrc;
+	VF_Dot_t* ptSrcPos;
 
 	if(!hMng  || !u8OutputBPP) {
 		return;
@@ -1175,40 +1471,70 @@ void VideoFilter_GetDestPos(h_VideoFilterMng hMng, void* pOutput, const uint16_t
 		return;
 	}
 
-	pu32Dest = &ptMng->pu32Buffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+	ptSrc = &ptMng->ptBuffer[ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
 
-	u32RGB = pu32Dest[u16Y * ptMng->u16Width + u16X];
+	ptSrcPos = &ptSrc[u16Y * ptMng->u16Width + u16X];
 	switch(u8OutputBPP) {
 	case 2:
-//		*(uint16_t*)pOutput = (GETB(u32RGB) >> 3) | ((GETG(u32RGB) >> 3) << 5) | ((GETR(u32RGB) >> 3) << 11);  // RGB555
-		*(uint16_t*)pOutput = (GETB(u32RGB) >> 3) | ((GETG(u32RGB) >> 2) << 5) | ((GETR(u32RGB) >> 3) << 11);  // RGB565
+//		*(uint16_t*)pOutput = (ptSrcPos->tRGB.u8B >> 3) | ((ptSrcPos->tRGB.u8G >> 3) << 5) | ((ptSrcPos->tRGB.u8R >> 3) << 11);  // RGB555
+		*(uint16_t*)pOutput = (ptSrcPos->tRGB.u8B >> 3) | ((ptSrcPos->tRGB.u8G >> 2) << 5) | ((ptSrcPos->tRGB.u8R >> 3) << 11);  // RGB565
 		break;
 	case 3:
-		((uint8_t*)pOutput)[RGB24_R] = GETR(u32RGB);
-		((uint8_t*)pOutput)[RGB24_G] = GETG(u32RGB);
-		((uint8_t*)pOutput)[RGB24_B] = GETB(u32RGB);
+		((uint8_t*)pOutput)[RGB24_R] = ptSrcPos->tRGB.u8R;
+		((uint8_t*)pOutput)[RGB24_G] = ptSrcPos->tRGB.u8G;
+		((uint8_t*)pOutput)[RGB24_B] = ptSrcPos->tRGB.u8B;
 		break;
 	case 4:
-		*(uint32_t*)pOutput = u32RGB;
+		*(uint32_t*)pOutput = ptSrcPos->u32RGB;
 		break;
 	}
 }
 
-void VideoFilter_Export(h_VideoFilterMng hMng, void* pOutputBuf, const uint8_t u8OutputBPP, const uint16_t u16YAlign) {
+void VideoFilter_PutDest(h_VideoFilterMng hMng, void* pOutput, const uint16_t u16X, const uint16_t u16Y, const uint8_t u8OutputBPP) {
+	VF_Mng_t* ptMng = (VF_Mng_t*)hMng;
+	VF_Dot_t* ptDest;
+	VF_Dot_t* ptDestPos;
+
+	if(!hMng  || !u8OutputBPP) {
+		return;
+	}
+	if(u16X >= ptMng->u16Width || u16Y >= ptMng->u16Height) {
+		return;
+	}
+
+	ptDest = &ptMng->ptBuffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
+
+	ptDestPos = &ptDest[u16Y * ptMng->u16Width + u16X];
+	switch(u8OutputBPP) {
+	case 2:
+//		*(uint16_t*)pOutput = (ptDestPos->tRGB.u8B >> 3) | ((ptDestPos->tRGB.u8G >> 3) << 5) | ((ptDestPos->tRGB.u8R >> 3) << 11);  // RGB555
+		*(uint16_t*)pOutput = (ptDestPos->tRGB.u8B >> 3) | ((ptDestPos->tRGB.u8G >> 2) << 5) | ((ptDestPos->tRGB.u8R >> 3) << 11);  // RGB565
+		break;
+	case 3:
+		((uint8_t*)pOutput)[RGB24_R] = ptDestPos->tRGB.u8R;
+		((uint8_t*)pOutput)[RGB24_G] = ptDestPos->tRGB.u8G;
+		((uint8_t*)pOutput)[RGB24_B] = ptDestPos->tRGB.u8B;
+		break;
+	case 4:
+		*(uint32_t*)pOutput = ptDestPos->u32RGB;
+		break;
+	}
+}
+
+void VideoFilter_ExportDest(h_VideoFilterMng hMng, void* pOutputBuf, const uint8_t u8OutputBPP, const uint16_t u16YAlign) {
 	VF_Mng_t* ptMng = (VF_Mng_t*)hMng;
 	uint16_t u16X, u16Y;
-	uint8_t* pu8YDest;
-	uint32_t u32RGB;
+	uint8_t* pu8YOutput;
 
 	if(!hMng || !pOutputBuf || !u8OutputBPP || !u16YAlign) {
 		return;
 	}
 
 	for(u16Y = 0; u16Y < ptMng->u16Height; u16Y++) {
-		pu8YDest = &((uint8_t*)pOutputBuf)[u16Y * u16YAlign];
+		pu8YOutput = &((uint8_t*)pOutputBuf)[u16Y * u16YAlign];
 		for(u16X = 0; u16X < ptMng->u16Width; u16X++) {
-			VideoFilter_GetDestPos(hMng, pu8YDest, u16X, u16Y, u8OutputBPP);
-			pu8YDest += u8OutputBPP;
+			VideoFilter_PutDest(hMng, pu8YOutput, u16X, u16Y, u8OutputBPP);
+			pu8YOutput += u8OutputBPP;
 		}
 	}
 }
