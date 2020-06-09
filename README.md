@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Jun 7, 2020<br>
+Jun 10, 2020<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -917,7 +917,14 @@ A profile include 3 filters.<br>
 Filters are applied in order.<br>
 filter0 -&gt; filter1 -&gt; filter2<br>
 <br>
-Filters parameter is set to 'vf1_p(profile no)_p(filter no)' to 8 params.<br>
+Profile's parameters are set to 'vf1_p(profile no)_fc' and 'vf1_p(profile no)_fno'.
+
+|Param|Name|value|
+|:---:|:---:|:---:|
+|fc|Filter count|3 (constant)|
+|fno|Output Filter No|2 (&lt; fc)|
+<br>
+Filter's parameters are set to 'vf1_p(profile no)_p(filter no)' to 8 params.
 
 |Param No|Name|value|
 |:---:|:---:|:---:|
@@ -938,8 +945,8 @@ Filters parameter is set to 'vf1_p(profile no)_p(filter no)' to 8 params.<br>
 |3|Grey|0-8:Grey depth|0-359:H of white<br>(default 0)|0-255:S of white<br>(default 0)|0-255:V of white<br>(default 255)|-|-|
 |4|V Gamma|1-255:Gamma*10<br>(default 10)|-|-|-|-|-|
 |5|Rotate H|0-359:Rotate H<br>(default 0)|-|-|-|-|-|
-|6|HSV smoothing|5-25:Radius*10<br>(default 5)|1/3/5:Sample<br>(default 3)|0-180:include H diff<br>(default 30)|0-128:include S diff<br>(default 30)|0-128:include V diff<br>(default 30)|
-|7|RGB smoothing|5-25:Radius*10<br>(default 5)|1/3/5:Sample<br>(default 3)|0-128:include R diff<br>(default 30)|0-128:include G diff<br>(default 30)|0-128:include B diff<br>(default 30)|
+|6|HSV smoothing|5-25:Radius*10<br>(default 5)|1/3/5:Sample count<br>(default 3)|0-180:Merge H diff<br>(default 30)|0-128:Merge S diff<br>(default 30)|0-128:Merge V diff<br>(default 90)|Weight 0:Same/1:Linear/2:Sign<br>(default 0)|
+|7|RGB smoothing|5-25:Radius*10<br>(default 5)|1/3/5:Sample count<br>(default 3)|0-128:Merge R diff<br>(default 30)|0-128:Merge G diff<br>(default 30)|0-128:Merge B diff<br>(default 30)|Weight 0:Same/1:Linear/2:Sign<br>(default 0)|
 
 HSV/RGB smoothing is heavy to work.<br>
 </div></details>
@@ -1026,7 +1033,7 @@ Next boot computer, you command from 4.
 </div></details>
 
 ## Release
-- Jun 7, 2020
+- Jun 10, 2020
   - Video filter
 - May 22, 2020
   - CMake

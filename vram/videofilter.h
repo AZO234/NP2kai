@@ -54,7 +54,7 @@ void VideoFilter_SetSrcRGB_d(h_VideoFilterMng hMng, const uint16_t u16X, const u
 void VideoFilter_SetSrcRGB(h_VideoFilterMng hMng, const uint16_t u16X, const uint16_t u16Y, const uint32_t u32RGB);
 void VideoFilter_SetSrcHSV_d(h_VideoFilterMng hMng, const uint16_t u16X, const uint16_t u16Y, const uint16_t u16H, const uint8_t u8S, const uint8_t u8V);
 void VideoFilter_SetSrcHSV(h_VideoFilterMng hMng, const uint16_t u16X, const uint16_t u16Y, const uint32_t u32HSV);
-void VideoFilter_Import98(h_VideoFilterMng hMng, uint8_t* pu8VRAM);
+void VideoFilter_Import98(h_VideoFilterMng hMng, uint8_t* pu8VRAM, BOOL bPalletEx);
 void VideoFilter_Import(h_VideoFilterMng hMng, void* pInputBuf, const uint8_t u8InputBPP, const uint16_t u16YAlign);
 void VideoFilter_Calc(h_VideoFilterMng hMng);
 uint32_t* VideoFilter_GetDest(h_VideoFilterMng hMng);
