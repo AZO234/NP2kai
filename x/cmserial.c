@@ -40,10 +40,16 @@
 #include <fcntl.h>
 #include <termios.h>
 
+#include <SDL_net.h>
 
+typedef enum {
+  SERIAL_TYPE_TTY=1,
+  SERIAL_TYPE_TCP=0,
+} _SERIAL_TYPE;
 typedef struct {
+  _SERIAL_TYPE type;
 	int		hdl;
-
+  IPaddress address;
 	struct termios	tio;
 } _CMSER, *CMSER;
 
@@ -340,6 +346,10 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 	CMSER serial;
 	int hdl;
 	UINT i;
+
+  if(np2oscfg.com[port].usetcp){
+    TRACEOUT(("TCP Connection to use"));
+  }
 
 	if(np2oscfg.com[port].direct) {
 		convert_np2tocm(port, &param, &speed);

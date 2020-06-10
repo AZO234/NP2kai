@@ -31,6 +31,8 @@
 #include <signal.h>
 #include <unistd.h>
 
+#include <SDL.h>
+#include <SDL_net.h>
 #if defined(SUPPORT_SDL_AUDIO) || defined(SUPPORT_SDL_MIXER)
 #include <SDL.h>
 #endif
@@ -331,8 +333,11 @@ main(int argc, char *argv[])
 
 	TRACEINIT();
 
-#if defined(SUPPORT_SDL_AUDIO) || defined(SUPPORT_SDL_MIXER)
+
 	SDL_Init(0);
+  SDLNet_Init();
+#if defined(SUPPORT_SDL_AUDIO) || defined(SUPPORT_SDL_MIXER)
+	//SDL_Init(0);
 #endif
 
 	if (fontmng_init() != SUCCESS)
@@ -489,8 +494,11 @@ fontmng_failure:
 
 	skbdwin_deinitialize();
 
-#if defined(SUPPORT_SDL_AUDIO) || defined(SUPPORT_SDL_MIXER)
+
+  SDLNet_Quit();
 	SDL_Quit();
+#if defined(SUPPORT_SDL_AUDIO) || defined(SUPPORT_SDL_MIXER)
+	//SDL_Quit();
 #endif
 
 	TRACETERM();

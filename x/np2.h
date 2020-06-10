@@ -17,6 +17,10 @@ typedef struct {
 	char	min[MAX_PATH];
 	char	mdl[64];
 	char	def[MAX_PATH];
+  //TCP use
+	UINT8	usetcp;
+  char  host[MAX_PATH];
+  UINT16  tcpPort;
 } COMCFG;
 
 typedef struct {

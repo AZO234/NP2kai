@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
+include(GNUInstallDirs)
+
 project(
 	NP2kai
 	VERSION 0.86.0.22

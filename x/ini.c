@@ -744,6 +744,9 @@ static INITBL iniitem[] = {
 	{"com1mmap", INITYPE_STR,	np2oscfg.com[0].mout,	MAX_PATH},
 	{"com1mmdl", INITYPE_STR,	np2oscfg.com[0].mdl,	64},
 	{"com1mdef", INITYPE_STR,	np2oscfg.com[0].def,	MAX_PATH},
+	{"com1usetcp", INITYPE_BOOL,	&np2oscfg.com[0].usetcp,	0},
+	{"com1tcphost", INITYPE_STR,	np2oscfg.com[0].host,	MAX_PATH},
+	{"com1tcpport", INITYPE_UINT16,	&np2oscfg.com[0].tcpPort,	23},
 
 	{"com2port", INIMAX_UINT8,	&np2oscfg.com[1].port,	COMPORT_MIDI},
 	{"com2dir",  INITYPE_BOOL,	&np2oscfg.com[1].direct,	1},
@@ -752,6 +755,9 @@ static INITBL iniitem[] = {
 	{"com2mmap", INITYPE_STR,	np2oscfg.com[1].mout,	MAX_PATH},
 	{"com2mmdl", INITYPE_STR,	np2oscfg.com[1].mdl,	64},
 	{"com2mdef", INITYPE_STR,	np2oscfg.com[1].def,	MAX_PATH},
+	{"com2usetcp", INITYPE_BOOL,	&np2oscfg.com[1].usetcp,	0},
+	{"com2tcphost", INITYPE_STR,	np2oscfg.com[1].host,	MAX_PATH},
+	{"com2tcpport", INITYPE_UINT16,	&np2oscfg.com[1].tcpPort,	23},
 
 	{"com3port", INIMAX_UINT8,	&np2oscfg.com[2].port,	COMPORT_MIDI},
 	{"com3dir",  INITYPE_BOOL,	&np2oscfg.com[2].direct,	1},
@@ -760,6 +766,9 @@ static INITBL iniitem[] = {
 	{"com3mmap", INITYPE_STR,	np2oscfg.com[2].mout,	MAX_PATH},
 	{"com3mmdl", INITYPE_STR,	np2oscfg.com[2].mdl,	64},
 	{"com3mdef", INITYPE_STR,	np2oscfg.com[2].def,	MAX_PATH},
+	{"com3usetcp", INITYPE_BOOL,	&np2oscfg.com[2].usetcp,	0},
+	{"com3tcphost", INITYPE_STR,	np2oscfg.com[2].host,	MAX_PATH},
+	{"com3tcpport", INITYPE_UINT16,	&np2oscfg.com[2].tcpPort,	23},
 
 #if defined(SUPPORT_RESUME)
 	{"e_resume", INITYPE_BOOL,	&np2oscfg.resume,	0},

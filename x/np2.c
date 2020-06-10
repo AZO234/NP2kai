@@ -86,15 +86,15 @@ NP2OSCFG np2oscfg = {
 	},
 	{ "", "" },		/* JOYDEV */
 
-	{ FALSE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", "" },	/* mpu */
+	{ FALSE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", "" , 0, "", 0},	/* mpu */
 #if defined(SUPPORT_SMPU98)
-	{ FALSE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", "" },	/* s-mpu */
-	{ FALSE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", "" },	/* s-mpu */
+	{ FALSE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", "" , 0, "", 0},	/* s-mpu */
+	{ FALSE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", "" , 0, "", 0},	/* s-mpu */
 #endif
 	{
-		{ TRUE, COMPORT_NONE, 0, 0x3e, 19200, "", "", "", "" },/* com1 */
-		{ TRUE, COMPORT_NONE, 0, 0x3e, 19200, "", "", "", "" },/* com2 */
-		{ TRUE, COMPORT_NONE, 0, 0x3e, 19200, "", "", "", "" },/* com3 */
+		{ TRUE, COMPORT_NONE, 0, 0x3e, 19200, "", "", "", "" , 0, "", 0 },/* com1 */
+		{ TRUE, COMPORT_NONE, 0, 0x3e, 19200, "", "", "", "" , 0, "", 0 },/* com2 */
+		{ TRUE, COMPORT_NONE, 0, 0x3e, 19200, "", "", "", "" , 0, "", 0 },/* com3 */
 	},
 
 	0,			/* confirm */
