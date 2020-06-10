@@ -132,7 +132,7 @@ BRESULT scrnmng_create(UINT8 mode) {
 	s_renderer = SDL_CreateRenderer(s_window, -1, 0);
 #endif
 #if SDL_MAJOR_VERSION != 1
-#if defined(__OPENDINGUX__)
+#if defined(__OPENDINGUX__) && !defined(OPENDINGUX_VGA)
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
 #endif
 	if(mode & SCRNMODE_ROTATEMASK) {
@@ -242,7 +242,7 @@ void scrnmng_setwidth(int posx, int width) {
 	} else {
 		SDL_RenderSetLogicalSize(s_renderer, width, scrnmng.height);
 	}
-#if defined(__OPENDINGUX__)
+#if defined(__OPENDINGUX__) && !defined(OPENDINGUX_VGA)
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
 #endif
 	switch(scrnmng.bpp) {
@@ -307,7 +307,7 @@ void scrnmng_setheight(int posy, int height) {
 	} else {
 		SDL_RenderSetLogicalSize(s_renderer, scrnmng.width, height);
 	}
-#if defined(__OPENDINGUX__)
+#if defined(__OPENDINGUX__) && !defined(OPENDINGUX_VGA)
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
 #endif
 	switch(scrnmng.bpp) {

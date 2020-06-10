@@ -1,3 +1,6 @@
+# OpenDingux
+set(OPENDINGUX TRUE)
+
 # cross compiler settings
 set(CMAKE_CROSSCOMPILING TRUE)
 set(CROSS_COMPILE "/opt/rs90-toolchain/usr/bin/mipsel-rs90-linux-musl-")

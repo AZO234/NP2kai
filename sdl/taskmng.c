@@ -42,9 +42,9 @@ void taskmng_exit(void) {
 
 int ENABLE_MOUSE=0; //0--disable
 
-#if SDL_MAJOR_VERSION != 1
 int convertKeyMap(int scancode){
   switch(scancode){
+#if SDL_MAJOR_VERSION != 1
     case 82: //up
       return SDL_SCANCODE_UP;
     case 81: //down
@@ -58,7 +58,7 @@ int convertKeyMap(int scancode){
     case 44:  //y
       return SDL_SCANCODE_UNKNOWN;
     case 224: //A
-      return  SDL_SCANCODE_RETURN;
+      return SDL_SCANCODE_RETURN;
     case 226: //B
       return SDLK_TAB;
     case 41: //select
@@ -71,9 +71,36 @@ int convertKeyMap(int scancode){
       // ENABLE_MOUSE++;
       // ENABLE_MOUSE=ENABLE_MOUSE%2;
       return 	999;
+#else
+    case 82: //up
+      return SDLK_UP;
+    case 81: //down
+      return SDLK_DOWN;
+    case 80: //left
+      return SDLK_LEFT;
+    case 79: //right
+      return SDLK_RIGHT;
+    case 225: //x
+      return SDLK_UNKNOWN;
+    case 44:  //y
+      return SDLK_UNKNOWN;
+    case 224: //A
+      return SDLK_RETURN;
+    case 226: //B
+      return SDLK_TAB;
+    case 41: //select
+      return SDLK_ESCAPE;
+    case 40: //start
+      return SDLK_RETURN;
+    case 43: //L
+      return SDLK_F10;
+    case 42: //R
+      // ENABLE_MOUSE++;
+      // ENABLE_MOUSE=ENABLE_MOUSE%2;
+      return 	999;
+#endif
   }
 }
-#endif
 
 #endif  // __OPENDINGUX__
 
@@ -177,6 +204,11 @@ void taskmng_rol(void) {
       if(e.key.keysym.scancode==SDL_SCANCODE_UNKNOWN || e.key.keysym.scancode ==999){
         return;
       }
+#else
+      e.key.keysym.sym=convertKeyMap(e.key.keysym.sym);
+      if(e.key.keysym.sym==SDLK_UNKNOWN || e.key.keysym.sym ==999){
+        return;
+      }
 #endif
 #endif  // __OPENDINGUX__
 #if SDL_MAJOR_VERSION == 1
@@ -221,6 +253,11 @@ void taskmng_rol(void) {
 #if SDL_MAJOR_VERSION != 1
       e.key.keysym.scancode=convertKeyMap(e.key.keysym.scancode);
       if(e.key.keysym.scancode==SDL_SCANCODE_UNKNOWN || e.key.keysym.scancode ==999){
+        return;
+      }
+#else
+      e.key.keysym.sym=convertKeyMap(e.key.keysym.sym);
+      if(e.key.keysym.sym==SDLK_UNKNOWN || e.key.keysym.sym ==999){
         return;
       }
 #endif
