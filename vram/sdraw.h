@@ -1,4 +1,7 @@
 
+#include	<vram/scrndraw.h>
+#include	<scrnmng.h>
+
 typedef struct {
 const UINT8	*src;
 const UINT8	*src2;
@@ -19,6 +22,7 @@ extern "C" {
 #endif
 
 #if defined(SUPPORT_VIDEOFILTER)
+extern BOOL	bVFEnable;
 extern BOOL	bVFImport;
 #endif
 

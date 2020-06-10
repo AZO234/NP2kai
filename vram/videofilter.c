@@ -529,7 +529,17 @@ void VideoFilter_SaveFilter(h_VideoFilterMng hMng, uint32_t au32Param[2 + VF_PAR
 	memcpy(&au32Param[2], ptMng->atProfile[u8ProfileNo].atFilters[u8FilterNo].tMaxParam.au32Param, VF_PARAM_COUNT * sizeof(uint32_t));
 }
 
-void VideoFilter_Enable(h_VideoFilterMng hMng, const BOOL bEnable) {
+BOOL VideoFilter_GetEnable(h_VideoFilterMng hMng) {
+	VF_Mng_t* ptMng = (VF_Mng_t*)hMng;
+
+	if(!hMng) {
+		return FALSE;
+	}
+
+	return ptMng->bEnable;
+}
+
+void VideoFilter_SetEnable(h_VideoFilterMng hMng, const BOOL bEnable) {
 	VF_Mng_t* ptMng = (VF_Mng_t*)hMng;
 
 	if(!hMng) {
@@ -1426,7 +1436,7 @@ void VideoFilter_Calc(h_VideoFilterMng hMng) {
 		return;
 	}
 
-	if(ptMng->bEnable) {
+	if(ptMng->bEnable && ptMng->atProfile[ptMng->u8ProfileNo].atFilters[0].tBase.bEnable) {
 		ptProfile = &ptMng->atProfile[ptMng->u8ProfileNo];
 		for(i = 0; i <= ptProfile->u8OutputNo && i < ptProfile->u8FilterCount; i++) {
 			ptFilter = &ptProfile->atFilters[i];
@@ -1491,7 +1501,9 @@ void VideoFilter_Calc(h_VideoFilterMng hMng) {
 			}
 		}
 	} else {
-		VideoFilter_Thru98(hMng);
+		if(ptMng->pu8VRAM) {
+			VideoFilter_Thru98(hMng);
+		}
 		ptMng->bBufferMain ^= 1;
 		ptMng->pu8VRAM = NULL;
 	}

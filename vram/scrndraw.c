@@ -147,7 +147,6 @@ const SDRAWFN	*sdrawfn;
 	int			i;
 	int			height;
 	
-
 	if (redraw || redrawpending) {
 		updateallline(0x80808080);
 		redrawpending = 0;
@@ -257,11 +256,14 @@ const SDRAWFN	*sdrawfn;
 			break;
 	}
 #if defined(SUPPORT_VIDEOFILTER)
+	bVFEnable = VideoFilter_GetEnable(hVFMng1);
 	bVFImport = FALSE;
-	if(bit & 3) {
-		VideoFilter_Import98(hVFMng1, (bit & 1) ? np2_vram[0] : np2_vram[1], (gdc.analog & 2) ? TRUE : FALSE);
-		bVFImport = TRUE;
-		VideoFilter_Calc(hVFMng1);
+	if(bVFEnable) {
+		if(bit & 3) {
+			VideoFilter_Import98(hVFMng1, (bit & 1) ? np2_vram[0] : np2_vram[1], (gdc.analog & 2) ? TRUE : FALSE);
+			bVFImport = TRUE;
+			VideoFilter_Calc(hVFMng1);
+		}
 	}
 #endif
 	sdraw.dst = surf->ptr;

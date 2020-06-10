@@ -40,7 +40,7 @@ const UINT8	*p;
 		if (sdraw->dirty[y]) {
 			for (x=0; x<sdraw->width; x++) {
 #if defined(SUPPORT_VIDEOFILTER)
-				if(!bVFImport) {
+				if(!bVFEnable || !bVFImport) {
 					SDSETPIXEL(q, p[x] + NP2PAL_GRPH);
 				} else {
 					VideoFilter_PutDest(hVFMng1, q, x, y, sdraw->xalign);
@@ -78,8 +78,8 @@ const UINT8	*q;
 		if (sdraw->dirty[y]) {
 			for (x=0; x<sdraw->width; x++) {
 #if defined(SUPPORT_VIDEOFILTER)
-				if(q[x]) {
-					SDSETPIXEL(r, q[x] + NP2PAL_GRPH);
+				if(!bVFEnable || q[x]) {
+                    SDSETPIXEL(r, p[x] + q[x] + NP2PAL_GRPH);
 				} else {
 					VideoFilter_PutDest(hVFMng1, r, x, y, sdraw->xalign);
 				}
@@ -116,7 +116,7 @@ const UINT8	*p;
 		if (sdraw->dirty[y]) {
 			for (x=0; x<sdraw->width; x++) {
 #if defined(SUPPORT_VIDEOFILTER)
-				if(!bVFImport) {
+				if(!bVFEnable || !bVFImport) {
 					SDSETPIXEL(q, p[x] + NP2PAL_GRPH);
 				} else {
 					VideoFilter_PutDest(hVFMng1, q, x, y, sdraw->xalign);
@@ -163,7 +163,11 @@ const UINT8	*p;
 		if (sdraw->dirty[y]) {
 			for (x=0; x<sdraw->width; x++) {
 #if defined(SUPPORT_VIDEOFILTER)
-				VideoFilter_PutDest(hVFMng1, q, x, y, sdraw->xalign);
+				if(!bVFEnable) {
+					SDSETPIXEL(q, p[x] + NP2PAL_GRPH);
+				} else {
+					VideoFilter_PutDest(hVFMng1, q, x, y, sdraw->xalign);
+				}
 #else
 				SDSETPIXEL(q, p[x] + NP2PAL_GRPH);
 #endif
@@ -208,8 +212,8 @@ const UINT8	*q;
 		if (sdraw->dirty[y]) {
 			for (x=0; x<sdraw->width; x++) {
 #if defined(SUPPORT_VIDEOFILTER)
-				if(q[x]) {
-					SDSETPIXEL(r, q[x] + NP2PAL_GRPH);
+				if(!bVFEnable || q[x]) {
+                    SDSETPIXEL(r, p[x] + q[x] + NP2PAL_GRPH);
 				} else {
 					VideoFilter_PutDest(hVFMng1, r, x, y, sdraw->xalign);
 				}
@@ -258,7 +262,7 @@ const UINT8	*p;
 			sdraw->dirty[y+1] |= 0xff;
 			for (x=0; x<sdraw->width; x++) {
 #if defined(SUPPORT_VIDEOFILTER)
-				if(!bVFImport) {
+				if(!bVFEnable || !bVFImport) {
 					SDSETPIXEL(q, p[x] + NP2PAL_GRPH);
 				} else {
 					VideoFilter_PutDest(hVFMng1, q, x, y, sdraw->xalign);
@@ -308,8 +312,8 @@ const UINT8	*q;
 			sdraw->dirty[y+1] |= 0xff;
 			for (x=0; x<sdraw->width; x++) {
 #if defined(SUPPORT_VIDEOFILTER)
-				if(q[x]) {
-					SDSETPIXEL(r, q[x] + NP2PAL_GRPH);
+				if(!bVFEnable || q[x]) {
+                    SDSETPIXEL(r, p[x] + q[x] + NP2PAL_GRPH);
 				} else {
 					VideoFilter_PutDest(hVFMng1, r, x, y, sdraw->xalign);
 				}
@@ -365,7 +369,7 @@ const UINT8	*p;
 		if (sdraw->dirty[y]) {
 			for (x=0; x<sdraw->width; x++) {
 #if defined(SUPPORT_VIDEOFILTER)
-				if(!bVFImport) {
+				if(!bVFEnable || !bVFImport) {
 					c = p[x] + NP2PAL_GRPH;
 					SDSETPIXEL(q, c);
 					SDSETPIXEL((q + a), c);
@@ -411,8 +415,8 @@ const UINT8	*q;
 		if (sdraw->dirty[y]) {
 			for (x=0; x<sdraw->width; x++) {
 #if defined(SUPPORT_VIDEOFILTER)
-				if(q[x]) {
-					c = q[x] + NP2PAL_GRPH;
+				if(!bVFEnable || q[x]) {
+                    c = p[x] + q[x] + NP2PAL_GRPH;
 					SDSETPIXEL(r, c);
 					SDSETPIXEL((r + a), c);
 				} else {
@@ -526,7 +530,11 @@ const UINT8	*p;
 			for (x=0; x<sdraw->width; x++) {
 				q += sdraw->xalign;
 #if defined(SUPPORT_VIDEOFILTER)
-				VideoFilter_PutDest(hVFMng1, q, x, y, sdraw->xalign);
+				if(!bVFEnable) {
+					SDSETPIXEL(q, p[x] + NP2PAL_GRPH);
+				} else {
+					VideoFilter_PutDest(hVFMng1, q, x, y, sdraw->xalign);
+				}
 #else
 				SDSETPIXEL(q, p[x] + NP2PAL_GRPH);
 #endif
@@ -561,8 +569,8 @@ const UINT8	*q;
 			r += sdraw->xalign;
 			for (x=1; x<sdraw->width; x++) {
 #if defined(SUPPORT_VIDEOFILTER)
-				if(q[x]) {
-					SDSETPIXEL(r, q[x] + NP2PAL_GRPH);
+				if(!bVFEnable || q[x]) {
+                    SDSETPIXEL(r, p[x-1] + q[x] + NP2PAL_GRPH);
 				} else {
 					VideoFilter_PutDest(hVFMng1, r, x - 1, y, sdraw->xalign);
 				}
@@ -572,7 +580,11 @@ const UINT8	*q;
 				r += sdraw->xalign;
 			}
 #if defined(SUPPORT_VIDEOFILTER)
-			VideoFilter_PutDest(hVFMng1, r, x - 1, y, sdraw->xalign);
+			if(!bVFEnable) {
+				SDSETPIXEL(r, p[x-1] + NP2PAL_GRPH);
+			} else {
+				VideoFilter_PutDest(hVFMng1, r, x - 1, y, sdraw->xalign);
+			}
 #else
 			SDSETPIXEL(r, p[x-1] + NP2PAL_GRPH);
 #endif
@@ -606,7 +618,7 @@ const UINT8	*p;
 			q += sdraw->xalign;
 			for (x=1; x<sdraw->width; x++) {
 #if defined(SUPPORT_VIDEOFILTER)
-				if(!bVFImport) {
+				if(!bVFEnable || !bVFImport) {
 					SDSETPIXEL(q, p[x] + NP2PAL_GRPH);
 				} else {
 					VideoFilter_PutDest(hVFMng1, q, x, y, sdraw->xalign);
@@ -659,7 +671,11 @@ const UINT8	*p;
 			for (x=0; x<sdraw->width; x++) {
 				q += sdraw->xalign;
 #if defined(SUPPORT_VIDEOFILTER)
-				VideoFilter_PutDest(hVFMng1, q, x, y, sdraw->xalign);
+				if(!bVFEnable) {
+					SDSETPIXEL(q, p[x] + NP2PAL_GRPH);
+				} else {
+					VideoFilter_PutDest(hVFMng1, q, x, y, sdraw->xalign);
+				}
 #else
 				SDSETPIXEL(q, p[x] + NP2PAL_GRPH);
 #endif
@@ -706,8 +722,8 @@ const UINT8	*q;
 			r += sdraw->xalign;
 			for (x=1; x<sdraw->width; x++) {
 #if defined(SUPPORT_VIDEOFILTER)
-				if(q[x]) {
-					SDSETPIXEL(r, q[x] + NP2PAL_GRPH);
+				if(!bVFEnable || q[x]) {
+                    SDSETPIXEL(r, p[x-1] + q[x] + NP2PAL_GRPH);
 				} else {
 					VideoFilter_PutDest(hVFMng1, r, x - 1, y, sdraw->xalign);
 				}
@@ -717,7 +733,11 @@ const UINT8	*q;
 				r += sdraw->xalign;
 			}
 #if defined(SUPPORT_VIDEOFILTER)
-			VideoFilter_PutDest(hVFMng1, r, x - 1, y, sdraw->xalign);
+			if(!bVFEnable) {
+				SDSETPIXEL(r, p[x-1] + NP2PAL_GRPH);
+			} else {
+				VideoFilter_PutDest(hVFMng1, r, x - 1, y, sdraw->xalign);
+			}
 #else
 			SDSETPIXEL(r, p[x-1] + NP2PAL_GRPH);
 #endif
@@ -767,7 +787,11 @@ const UINT8	*p;
 			for (x=0; x<sdraw->width; x++) {
 				q += sdraw->xalign;
 #if defined(SUPPORT_VIDEOFILTER)
-				VideoFilter_PutDest(hVFMng1, q, x, y, sdraw->xalign);
+				if(!bVFEnable) {
+					SDSETPIXEL(q, p[x] + NP2PAL_GRPH);
+				} else {
+					VideoFilter_PutDest(hVFMng1, q, x, y, sdraw->xalign);
+				}
 #else
 				SDSETPIXEL(q, p[x] + NP2PAL_GRPH);
 #endif
@@ -815,8 +839,8 @@ const UINT8	*q;
 			r += sdraw->xalign;
 			for (x=1; x<sdraw->width; x++) {
 #if defined(SUPPORT_VIDEOFILTER)
-				if(q[x]) {
-					SDSETPIXEL(r, q[x] + NP2PAL_GRPH);
+				if(!bVFEnable || q[x]) {
+                    SDSETPIXEL(r, p[x-1] + q[x] + NP2PAL_GRPH);
 				} else {
 					VideoFilter_PutDest(hVFMng1, r, x - 1, y, sdraw->xalign);
 				}
@@ -826,7 +850,11 @@ const UINT8	*q;
 				r += sdraw->xalign;
 			}
 #if defined(SUPPORT_VIDEOFILTER)
-			VideoFilter_PutDest(hVFMng1, r, x - 1, y, sdraw->xalign);
+			if(!bVFEnable) {
+				SDSETPIXEL(r, p[x-1] + NP2PAL_GRPH);
+			} else {
+				VideoFilter_PutDest(hVFMng1, r, x - 1, y, sdraw->xalign);
+			}
 #else
 			SDSETPIXEL(r, p[x-1] + NP2PAL_GRPH);
 #endif
@@ -922,8 +950,14 @@ const UINT8	*p;
 			for (x=0; x<sdraw->width; x++) {
 				q += sdraw->xalign;
 #if defined(SUPPORT_VIDEOFILTER)
-				VideoFilter_PutDest(hVFMng1, q, x, y,     sdraw->xalign);
-				VideoFilter_PutDest(hVFMng1, q, x, y + 1, sdraw->xalign);
+				if(!bVFEnable) {
+					c = p[x] + NP2PAL_GRPH;
+					SDSETPIXEL(q, c);
+					SDSETPIXEL((q + a), c);
+				} else {
+					VideoFilter_PutDest(hVFMng1, q, x, y,     sdraw->xalign);
+					VideoFilter_PutDest(hVFMng1, q, x, y + 1, sdraw->xalign);
+				}
 #else
 				c = p[x] + NP2PAL_GRPH;
 				SDSETPIXEL(q, c);
@@ -965,8 +999,8 @@ const UINT8	*q;
 			r += sdraw->xalign;
 			for (x=1; x<sdraw->width; x++) {
 #if defined(SUPPORT_VIDEOFILTER)
-				if(q[x]) {
-					c = q[x] + NP2PAL_GRPH;
+				if(!bVFEnable || q[x]) {
+                    c = p[x-1] + q[x] + NP2PAL_GRPH;
 					SDSETPIXEL(r, c);
 					SDSETPIXEL((r + a), c);
 				} else {
@@ -981,8 +1015,14 @@ const UINT8	*q;
 				r += sdraw->xalign;
 			}
 #if defined(SUPPORT_VIDEOFILTER)
-			VideoFilter_PutDest(hVFMng1, r, x - 1, y,     sdraw->xalign);
-			VideoFilter_PutDest(hVFMng1, r, x - 1, y + 1, sdraw->xalign);
+			if(!bVFEnable) {
+				c = p[x-1] + NP2PAL_GRPH;
+				SDSETPIXEL(r, c);
+				SDSETPIXEL((r + a), c);
+			} else {
+				VideoFilter_PutDest(hVFMng1, r, x - 1, y,     sdraw->xalign);
+				VideoFilter_PutDest(hVFMng1, r, x - 1, y + 1, sdraw->xalign);
+			}
 #else
 			c = p[x-1] + NP2PAL_GRPH;
 			SDSETPIXEL(r, c);

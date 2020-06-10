@@ -8,6 +8,7 @@
 #endif
 
 #if defined(SUPPORT_VIDEOFILTER)
+BOOL	bVFEnable;
 BOOL	bVFImport;
 #endif
 
