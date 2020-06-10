@@ -5,7 +5,7 @@
 #include	<vram/palettes.h>
 
 
-#if defined(SIZE_QVGA) && !defined(SIZE_VGATEST) && defined(SUPPORT_16BPP)
+#if defined(NP2_SIZE_QVGA) && !defined(SIZE_VGATEST) && defined(SUPPORT_16BPP)
 
 // vram off
 static void SCRNCALL qvga16p_0(SDRAW sdraw, int maxy) {
