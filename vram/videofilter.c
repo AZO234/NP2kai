@@ -672,11 +672,15 @@ static void VideoFilter_SetPalette(BOOL bPalletEx) {
 
 	memset(m_atPalette, 0, sizeof(VF_Palette_t) * 256);
 
+#if defined(SUPPORT_PC9821)
 	if(bPalletEx) {
 		u32Pallet = NP2PAL_GRPHEX;
 	} else {
 		u32Pallet = NP2PAL_GRPH;
 	}
+#else
+	u32Pallet = NP2PAL_GRPH;
+#endif
 
 	for(u16Color = 0; u16Color < 256; u16Color++) {
 		m_atPalette[u16Color].u32RGB = np2_pal32[u16Color + u32Pallet].d;
@@ -701,11 +705,15 @@ void VideoFilter_Import98(h_VideoFilterMng hMng, uint8_t* pu8VRAM, uint8_t* pu8D
 //	VideoFilter_SetSize(hMng, SURFACE_WIDTH, SURFACE_HEIGHT);
 	ptMng->pu8VRAM = pu8VRAM;
 
+#if defined(SUPPORT_PC9821)
 	if(bPalletEx) {
 		ptMng->u32Pallet = NP2PAL_GRPHEX;
 	} else {
 		ptMng->u32Pallet = NP2PAL_GRPH;
 	}
+#else
+	ptMng->u32Pallet = NP2PAL_GRPH;
+#endif
 	VideoFilter_SetPalette(bPalletEx);
 
 	memcpy(ptMng->pu8Dirty, pu8Dirty, ptMng->u16Height);
