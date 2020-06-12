@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Jun 10, 2020<br>
+Jun 12, 2020<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -909,20 +909,12 @@ and be careful hosting when reporting.)
 <details><summary>
 Video filter
 </summary><div>
-To enable video filter, set to 'vf1_enable = true' in configure file.<br>
+To enable and select profile, control by menu.<br>
 Video filter1 have 3 profiles.<br>
-To select profile, set 'vf1_pno = (profile no)'.<br>
 <br>
 A profile include 3 filters.<br>
 Filters are applied in order.<br>
 filter0 -&gt; filter1 -&gt; filter2<br>
-<br>
-Profile's parameters are set to 'vf1_p(profile no)_fc' and 'vf1_p(profile no)_fno'.
-
-|Param|Name|value|
-|:---:|:---:|:---:|
-|fc|Filter count|3 (constant)|
-|fno|Output Filter No|2 (&lt; fc)|
 <br>
 Filter's parameters are set to 'vf1_p(profile no)_p(filter no)' to 8 params.
 
@@ -1033,7 +1025,7 @@ Next boot computer, you command from 4.
 </div></details>
 
 ## Release
-- Jun 10, 2020
+- Jun 12, 2020
   - Video filter
 - May 22, 2020
   - CMake
