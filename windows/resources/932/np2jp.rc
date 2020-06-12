@@ -1005,6 +1005,12 @@ BEGIN
         MENUITEM "1/&3フレーム",                IDM_20FPS
         MENUITEM "1/&4フレーム",                IDM_15FPS
         MENUITEM SEPARATOR
+        MENUITEM "VF 有効",                   IDM_VF1EN
+        MENUITEM "プロファイル 0",                   IDM_VF1P0
+        MENUITEM "プロファイル 1",                   IDM_VF1P1
+        MENUITEM "プロファイル 2",                   IDM_VF1P2
+        MENUITEM "BMP保存時のみ有効",                IDM_VF1BO
+        MENUITEM SEPARATOR
         MENUITEM "画面設定(&S)...",             IDM_SCREENOPT
     END
     POPUP "デバイス(&D)"

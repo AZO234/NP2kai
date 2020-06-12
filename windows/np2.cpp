@@ -62,6 +62,9 @@
 #include <cbus/smpu98.h>
 #endif
 #include <vram/scrndraw.h>
+#if defined(SUPPORT_VIDEOFILTER)
+#include <vram/videofilter.h>
+#endif
 #include <sound/sound.h>
 #include <sound/beep.h>
 #include <sound/s98.h>
@@ -1124,6 +1127,37 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			np2oscfg.DRAW_SKIP = 4;
 			update |= SYS_UPDATECFG;
 			break;
+
+#if defined(SUPPORT_VIDEOFILTER)
+		case IDM_VF1EN:
+			np2cfg.vf1_enable ^= 1;
+			VideoFilter_SetEnable(hVFMng1, np2cfg.vf1_enable);
+			update |= SYS_UPDATECFG;
+			break;
+
+		case IDM_VF1P0:
+			np2cfg.vf1_pno = 0;
+			VideoFilter_SetProfileNo(hVFMng1, 0);
+			update |= SYS_UPDATECFG;
+			break;
+
+		case IDM_VF1P1:
+			np2cfg.vf1_pno = 1;
+			VideoFilter_SetProfileNo(hVFMng1, 1);
+			update |= SYS_UPDATECFG;
+			break;
+
+		case IDM_VF1P2:
+			np2cfg.vf1_pno = 2;
+			VideoFilter_SetProfileNo(hVFMng1, 2);
+			update |= SYS_UPDATECFG;
+			break;
+
+		case IDM_VF1BO:
+			np2cfg.vf1_bmponly ^= 1;
+			update |= SYS_UPDATECFG;
+			break;
+#endif
 
 		case IDM_SCREENOPT:
 			winuienter();

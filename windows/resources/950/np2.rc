@@ -836,6 +836,12 @@ BEGIN
         MENUITEM "&2跳過畫面播放",              IDM_20FPS
         MENUITEM "&3跳過畫面播放",              IDM_15FPS
         MENUITEM SEPARATOR
+        MENUITEM "VF Enable",                   IDM_VF1EN
+        MENUITEM "Profile 0",                   IDM_VF1P0
+        MENUITEM "Profile 1",                   IDM_VF1P1
+        MENUITEM "Profile 2",                   IDM_VF1P2
+        MENUITEM "Use BMP only",                IDM_VF1BO
+        MENUITEM SEPARATOR
         MENUITEM "螢幕選項(&S)...",             IDM_SCREENOPT
     END
     POPUP "裝置(&D)"

@@ -319,6 +319,7 @@ struct tagNP2Config
 
 #if defined(SUPPORT_VIDEOFILTER)
 	BOOL     vf1_enable;
+	BOOL     vf1_bmponly;
 	uint8_t  vf1_pcount;
 	uint8_t  vf1_pno;
 	uint8_t  vf1_profile[3][2];

@@ -42,6 +42,9 @@
 #include <cbus/pc9861k.h>
 #include <sound/s98.h>
 #include <vram/scrnsave.h>
+#if defined(SUPPORT_VIDEOFILTER)
+#include <vram/videofilter.h>
+#endif
 
 #include <kdispwin.h>
 #include <toolwin.h>
@@ -144,6 +147,9 @@ static GtkActionEntry menu_entries[] = {
 { "SASI2Menu",    NULL, "SASI-_2",   NULL, NULL, NULL },
 #endif
 { "ScrnSizeMenu", NULL, "Size",      NULL, NULL, NULL },
+#if defined(SUPPORT_VIDEOFILTER)
+{ "VF1Menu",      NULL, "Video filter", NULL, NULL, NULL },
+#endif
 { "SoundMenu",    NULL, "_Sound",    NULL, NULL, NULL },
 { "FPUMenu",      NULL, "FPU",       NULL, NULL, NULL },
 
@@ -246,6 +252,10 @@ static void cb_mousemode(GtkToggleAction *action, gpointer user_data);
 static void cb_mouserapid(GtkToggleAction *action, gpointer user_data);
 static void cb_nowait(GtkToggleAction *action, gpointer user_data);
 static void cb_asynccpu(GtkToggleAction *action, gpointer user_data);
+#if defined(SUPPORT_VIDEOFILTER)
+static void cb_vf1en(GtkToggleAction *action, gpointer user_data);
+static void cb_vf1bo(GtkToggleAction *action, gpointer user_data);
+#endif
 static void cb_realpalettes(GtkToggleAction *action, gpointer user_data);
 static void cb_s98logging(GtkToggleAction *action, gpointer user_data);
 static void cb_seeksound(GtkToggleAction *action, gpointer user_data);
@@ -283,6 +293,10 @@ static GtkToggleActionEntry togglemenu_entries[] = {
 #if defined(SUPPORT_ASYNC_CPU)
 { "asynccpu",     NULL, "_Async CPU(experimental)", NULL, NULL, G_CALLBACK(cb_asynccpu), FALSE },
 #endif
+#if defined(SUPPORT_VIDEOFILTER)
+{ "vf1en",        NULL, "Enable",             NULL, NULL, G_CALLBACK(cb_vf1en), FALSE },
+{ "vf1bo",        NULL, "Use BMP only",       NULL, NULL, G_CALLBACK(cb_vf1bo), FALSE },
+#endif
 { "realpalettes", NULL, "Real _palettes",     NULL, NULL, G_CALLBACK(cb_realpalettes), FALSE },
 { "s98logging",   NULL, "_S98 logging",       NULL, NULL, G_CALLBACK(cb_s98logging), FALSE },
 { "seeksound",    NULL, "_Seek sound",        NULL, NULL, G_CALLBACK(cb_seeksound), FALSE },
@@ -317,6 +331,15 @@ static GtkRadioActionEntry framerate_entries[] = {
 { "1/4 frame", NULL, "1/_4 frame",  NULL, NULL, 4 },
 };
 static const guint n_framerate_entries = G_N_ELEMENTS(framerate_entries);
+
+#if defined(SUPPORT_VIDEOFILTER)
+static GtkRadioActionEntry vf1p_entries[] = {
+{ "vf1p0", NULL, "Profile 0", NULL, NULL, 0 },
+{ "vf1p1", NULL, "Profile 1", NULL, NULL, 1 },
+{ "vf1p2", NULL, "Profile 2", NULL, NULL, 2 },
+};
+static const guint n_vf1p_entries = G_N_ELEMENTS(vf1p_entries);
+#endif
 
 static GtkRadioActionEntry kbtype_entries[] = {
 { "kb106", NULL, "JP Keyboard 106", NULL, NULL, 0 },
@@ -443,6 +466,9 @@ static void cb_beepvol(gint idx);
 static void cb_kbtype(gint idx);
 static void cb_f11key(gint idx);
 static void cb_f12key(gint idx);
+#if defined(SUPPORT_VIDEOFILTER)
+static void cb_vf1p(gint idx);
+#endif
 static void cb_framerate(gint idx);
 static void cb_joykey(gint idx);
 static void cb_memory(gint idx);
@@ -461,6 +487,9 @@ static const struct {
 	{ kbtype_entries, G_N_ELEMENTS(kbtype_entries), cb_kbtype },
 	{ f11key_entries, G_N_ELEMENTS(f11key_entries), cb_f11key },
 	{ f12key_entries, G_N_ELEMENTS(f12key_entries), cb_f12key },
+#if defined(SUPPORT_VIDEOFILTER)
+	{ vf1p_entries, G_N_ELEMENTS(vf1p_entries), cb_vf1p },
+#endif
 	{ framerate_entries, G_N_ELEMENTS(framerate_entries), cb_framerate },
 	{ joykey_entries, G_N_ELEMENTS(joykey_entries), cb_joykey },
 	{ memory_entries, G_N_ELEMENTS(memory_entries), cb_memory },
@@ -549,6 +578,18 @@ static const gchar *ui_info =
 "    <menuitem action='800x500'/>\n"
 "    <menuitem action='960x600'/>\n"
 "    <menuitem action='1280x800'/>\n"
+"   </menu>\n"
+#endif
+#if defined(SUPPORT_VIDEOFILTER)
+"   <separator/>\n"
+"   <menu name='Video filter' action='VF1Menu'>\n"
+"    <menuitem action='vf1en'/>\n"
+"    <separator/>\n"
+"    <menuitem action='vf1p0'/>\n"
+"    <menuitem action='vf1p1'/>\n"
+"    <menuitem action='vf1p2'/>\n"
+"    <separator/>\n"
+"    <menuitem action='vf1bo'/>\n"
 "   </menu>\n"
 #endif
 "   <separator/>\n"
@@ -793,6 +834,10 @@ xmenu_select_item_by_index(MENU_HDL hdl, GtkRadioActionEntry *entry, guint nentr
 	xmenu_select_item_by_index(NULL, f11key_entries, n_f11key_entries, v);
 #define	xmenu_select_f12key(v) \
 	xmenu_select_item_by_index(NULL, f12key_entries, n_f12key_entries, v);
+#if defined(SUPPORT_VIDEOFILTER)
+#define	xmenu_select_vf1p(v) \
+	xmenu_select_item_by_index(NULL, vf1p_entries, n_vf1p_entries, v);
+#endif
 #define	xmenu_select_framerate(v) \
 	xmenu_select_item_by_index(NULL, framerate_entries, n_framerate_entries, v);
 #define	xmenu_select_joykey(v) \
@@ -1876,6 +1921,35 @@ cb_framedisp(GtkToggleAction *action, gpointer user_data)
 	}
 }
 
+#if defined(SUPPORT_VIDEOFILTER)
+static void
+cb_vf1en(GtkToggleAction *action, gpointer user_data)
+{
+	gboolean b = gtk_toggle_action_get_active(action);
+	gboolean f;
+
+	f = (np2cfg.vf1_enable ? 1 : 0) ^ (b ? 1 : 0);
+	if (f) {
+		np2cfg.vf1_enable = !np2cfg.vf1_enable;
+		VideoFilter_SetEnable(hVFMng1, np2cfg.vf1_enable);
+		sysmng_update(SYS_UPDATECFG);
+	}
+}
+
+static void
+cb_vf1bo(GtkToggleAction *action, gpointer user_data)
+{
+	gboolean b = gtk_toggle_action_get_active(action);
+	gboolean f;
+
+	f = (np2cfg.vf1_bmponly ? 1 : 0) ^ (b ? 1 : 0);
+	if (f) {
+		np2cfg.vf1_bmponly = !np2cfg.vf1_bmponly;
+		sysmng_update(SYS_UPDATECFG);
+	}
+}
+#endif
+
 static void
 cb_jastsound(GtkToggleAction *action, gpointer user_data)
 {
@@ -2318,6 +2392,18 @@ cb_f12key(gint idx)
 	}
 }
 
+#if defined(SUPPORT_VIDEOFILTER)
+static void
+cb_vf1p(gint idx)
+{
+	if (np2cfg.vf1_pno != idx) {
+		np2cfg.vf1_pno = idx;
+		VideoFilter_SetProfileNo(hVFMng1, idx);
+		sysmng_update(SYS_UPDATECFG);
+	}
+}
+#endif
+
 static void
 cb_framerate(gint idx)
 {
@@ -2685,6 +2771,10 @@ create_menu(void)
 #endif
 	xmenu_toggle_item(NULL, "hf_enable", hf_enable & 1);
 	xmenu_toggle_item(NULL, "clockdisp", np2oscfg.DISPCLK & 1);
+#if defined(SUPPORT_VIDEOFILTER)
+	xmenu_toggle_item(NULL, "vf1en", np2cfg.vf1_enable);
+	xmenu_toggle_item(NULL, "vf1bo", np2cfg.vf1_bmponly);
+#endif
 	xmenu_toggle_item(NULL, "framedisp", np2oscfg.DISPCLK & 2);
 	xmenu_toggle_item(NULL, "jastsound", np2oscfg.jastsnd);
 	xmenu_toggle_item(NULL, "keydisplay", np2oscfg.keydisp);
@@ -2704,6 +2794,9 @@ create_menu(void)
 	xmenu_select_kbtype(np2oscfg.KEYBOARD);
 	xmenu_select_f11key(np2oscfg.F11KEY);
 	xmenu_select_f12key(np2oscfg.F12KEY);
+#if defined(SUPPORT_VIDEOFILTER)
+	xmenu_select_vf1p(np2cfg.vf1_pno);
+#endif
 	xmenu_select_framerate(np2oscfg.DRAW_SKIP);
 	xmenu_select_joykey(np2cfg.KEY_MODE);
 	xmenu_select_memory(np2cfg.EXTMEM);

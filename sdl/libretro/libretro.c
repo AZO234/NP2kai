@@ -39,6 +39,9 @@
 #include <embed/vramhdl.h>
 #include <embed/menubase/menubase.h>
 #include <vram/palettes.h>
+#if defined(SUPPORT_VIDEOFILTER)
+#include <vram/videofilter.h>
+#endif
 #include "sysmenu.h"
 #include <vram/scrndraw.h>
 #include <common/milstr.h>
@@ -992,6 +995,35 @@ static void update_variables(void)
       else
          np2cfg.memcheckspeed = 8;
    }
+
+#if defined(SUPPORT_VIDEOFILTER)
+   var.key = "np2kai_vf1";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "Profile 0") == 0) {
+         np2cfg.vf1_enable = 1;
+         np2cfg.vf1_pno = 0;
+         VideoFilter_SetEnable(hVFMng1, np2cfg.vf1_enable);
+         VideoFilter_SetProfileNo(hVFMng1, 0);
+      } else if (strcmp(var.value, "Profile 1") == 0) {
+         np2cfg.vf1_enable = 1;
+         np2cfg.vf1_pno = 1;
+         VideoFilter_SetEnable(hVFMng1, np2cfg.vf1_enable);
+         VideoFilter_SetProfileNo(hVFMng1, 1);
+      } else if (strcmp(var.value, "Profile 2") == 0) {
+         np2cfg.vf1_enable = 1;
+         np2cfg.vf1_pno = 2;
+         VideoFilter_SetEnable(hVFMng1, np2cfg.vf1_enable);
+         VideoFilter_SetProfileNo(hVFMng1, 2);
+      } else {
+         np2cfg.vf1_enable = 0;
+         VideoFilter_SetEnable(hVFMng1, np2cfg.vf1_enable);
+      }
+      scrndraw_redraw();
+   }
+#endif
 
    var.key = "np2kai_skipline";
    var.value = NULL;

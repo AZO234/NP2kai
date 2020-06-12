@@ -671,6 +671,11 @@
 #define IDM_30FPS                       40511
 #define IDM_20FPS                       40512
 #define IDM_15FPS                       40513
+#define IDM_VF1EN                       40517
+#define IDM_VF1P0                       40518
+#define IDM_VF1P1                       40519
+#define IDM_VF1P2                       40520
+#define IDM_VF1BO                       40521
 #define IDM_SCREENOPT                   40514
 #define IDM_CPUSTABILIZER               40515
 #define IDM_ASYNCCPU                    40516

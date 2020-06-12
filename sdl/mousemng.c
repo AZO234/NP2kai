@@ -17,6 +17,7 @@ UINT8 mousemng_getstat(SINT16 *x, SINT16 *y, int clear) {
 }
 
 static void mousecapture(BOOL capture) {
+#if !defined(DEBUG)
 #if defined(EMSCRIPTEN) && !defined(__LIBRETRO__)
 	captured = capture;
 	if(captured)
@@ -37,6 +38,7 @@ static void mousecapture(BOOL capture) {
 		SDL_CaptureMouse(FALSE);
 #endif
 	}
+#endif
 #endif
 }
 
@@ -148,6 +150,7 @@ void mousemng_toggle(UINT proc) {
 
 #if !defined(__LIBRETRO__)
 void mousemng_hidecursor() {
+#if !defined(DEBUG)
 #if defined(EMSCRIPTEN) && !defined(__LIBRETRO__)
 	if(captured) {
 		SDL_ShowCursor(SDL_DISABLE);
@@ -167,9 +170,11 @@ void mousemng_hidecursor() {
 #endif
 	}
 #endif
+#endif
 }
 
 void mousemng_showcursor() {
+#if !defined(DEBUG)
 #if defined(EMSCRIPTEN) && !defined(__LIBRETRO__)
 	SDL_ShowCursor(SDL_ENABLE);
 #if SDL_MAJOR_VERSION == 1
@@ -186,6 +191,7 @@ void mousemng_showcursor() {
 		SDL_SetRelativeMouseMode(SDL_FALSE);
 #endif
 	}
+#endif
 #endif
 }
 

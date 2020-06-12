@@ -211,7 +211,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE " " NP2VER_GIT);
 				0,
 #endif
 #if defined(SUPPORT_VIDEOFILTER)
-				0, 3, 0,
+				0, 0, 3, 0,
 				{{3, 2}, {3, 2}, {3, 2}},
 				{
 					{{1, 1, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}},

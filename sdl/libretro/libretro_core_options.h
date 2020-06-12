@@ -184,6 +184,21 @@ struct retro_core_option_definition option_defs_us[] = {
       },
       "OFF"
    },
+#if defined(SUPPORT_VIDEOFILTER)
+   {
+      "np2kai_vf1",
+      "Video filter",
+      "Video filter setting. (Setting details set in cfg file)",
+      {
+         { "OFF", NULL },
+         { "Profile 0", NULL },
+         { "Profile 1", NULL },
+         { "Profile 2", NULL },
+         { NULL, NULL},
+      },
+      "OFF"
+   },
+#endif
    {
       "np2kai_gdc",
       "GDC",
@@ -1007,6 +1022,21 @@ struct retro_core_option_definition option_defs_ja[] = {
       },
       "OFF"
    },
+#if defined(SUPPORT_VIDEOFILTER)
+   {
+      "np2kai_vf1",
+      "ビデオフィルタ",
+      "ビデオフィルタを設定します。（内容はcfgファイルにて設定。）",
+      {
+         { "OFF", NULL },
+         { "Profile 0", NULL },
+         { "Profile 1", NULL },
+         { "Profile 2", NULL },
+         { NULL, NULL},
+      },
+      "OFF"
+   },
+#endif
    {
       "np2kai_gdc",
       "GDCタイプ",

@@ -156,6 +156,15 @@ static const char str_midiopt[] = "MIDI option...";
 static const char str_midipanic[] = "MIDI Panic";
 static const char str_sndopt[] = "Sound option...";
 
+#if defined(SUPPORT_VIDEOFILTER)
+static const char str_vf1[] = "Video filter";
+static const char str_vf1_enable[] = "Use Video filter";
+static const char str_vf1_bmponly[] = "Use BMP save only";
+static const char str_vf1_p0[] = "Profile 0";
+static const char str_vf1_p1[] = "Profile 1";
+static const char str_vf1_p2[] = "Profile 2";
+#endif
+
 static const char str_other[] = "Other";
 #if defined(EMSCRIPTEN) && !defined(__LIBRETRO__)
 static const char str_capmouse[] = "Capture Mouse";
@@ -343,6 +352,17 @@ static const MSYSITEM s_hdd[] = {
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR | MENU_DELETED }};
 #endif
 
+#if defined(SUPPORT_VIDEOFILTER)
+static const MSYSITEM s_vf1[] = {
+		{str_vf1_enable,		NULL,		MID_VF1_ENABLE,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_vf1_p0,			NULL,		MID_VF1_P0,		0},
+		{str_vf1_p1,			NULL,		MID_VF1_P1,		0},
+		{str_vf1_p2,			NULL,		MID_VF1_P2,		0},
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_vf1_bmponly,		NULL,		MID_VF1_BMPONLY,		MENU_DELETED}};
+#endif
+
 static const MSYSITEM s_screen[] = {
 		{str_window,		NULL,		MID_WINDOW,			MENU_GRAY},
 		{str_fullscrn,		NULL,		MID_FULLSCREEN,		MENU_GRAY},
@@ -368,6 +388,10 @@ static const MSYSITEM s_screen[] = {
 		{str_30fps,			NULL,		MID_30FPS,			0},
 		{str_20fps,			NULL,		MID_20FPS,			0},
 		{str_15fps,			NULL,		MID_15FPS,			0},
+#if defined(SUPPORT_VIDEOFILTER)
+		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_vf1,		s_vf1,		MID_VF1,			0},
+#endif
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 #if defined(SUPPORT_WAB) && defined(SUPPORT_CL_GD5430)
 		{str_scropt,		NULL,		MID_SCREENOPT,		0},
@@ -467,13 +491,7 @@ static const MSYSITEM s_mem[] = {
 		{str_mem5126,			NULL,		MID_MEM5126,			0},
 		{str_mem10246,		NULL,		MID_MEM10246,			MENU_DELETED}};
 #else
-		{str_mem166,			NULL,		MID_MEM166,			MENU_GRAY},
-		{str_mem326,			NULL,		MID_MEM326,			MENU_GRAY},
-		{str_mem646,			NULL,		MID_MEM646,			MENU_GRAY},
-		{str_mem1206,			NULL,		MID_MEM1206,			MENU_GRAY},
-		{str_mem2306,			NULL,		MID_MEM2306,			MENU_GRAY},
-		{str_mem5126,			NULL,		MID_MEM5126,			MENU_GRAY},
-		{str_mem10246,		NULL,		MID_MEM10246,			MENU_GRAY | MENU_DELETED}};
+		{str_mem166,			NULL,		MID_MEM166,			MENU_DELETED}};
 #endif
 
 static const MSYSITEM s_device[] = {
@@ -491,8 +509,7 @@ static const MSYSITEM s_device[] = {
 #if defined(SUPPORT_FMGEN)
 		{str_fmgen,			NULL,		MID_FMGEN,			0},
 #endif	/* SUPPORT_FMGEN */
-		{str_sndopt,		NULL,		MID_SNDOPT,			MENU_GRAY |
-															MENU_DELETED}};
+		{str_sndopt,		NULL,		MID_SNDOPT,			MENU_GRAY | MENU_DELETED}};
 #else
 		{str_keyboard,		s_keybd,	MID_STATIC,			MENU_DELETED}};
 #endif
@@ -555,8 +572,10 @@ static MSYSITEM s_main[10] = {
 		{str_screen,		s_screen,	MID_STATIC,			0},
 #endif
 		{str_device,		s_device,	MID_STATIC,			0},
-		{str_other,		s_other,	MID_STATIC,			0},
 #if defined(SUPPORT_DEBUGSS)
+		{str_other,		s_other,	MID_STATIC,			0},
 		{str_dbss,			s_dbss,	MID_DBSS,			MENU_DELETED}};
+#else
+		{str_other,		s_other,	MID_STATIC,			MENU_DELETED}};
 #endif
 

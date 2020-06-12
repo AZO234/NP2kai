@@ -18,6 +18,9 @@
 	UINT8	np2_tram[SURFACE_SIZE];
 	UINT8	np2_vram[2][SURFACE_SIZE];
 	UINT8	redrawpending = 0;
+#if defined(SUPPORT_VIDEOFILTER)
+	BOOL bPreEnable;
+#endif
 
 static void updateallline(UINT32 update) {
 
@@ -256,14 +259,18 @@ const SDRAWFN	*sdrawfn;
 			break;
 	}
 #if defined(SUPPORT_VIDEOFILTER)
-	bVFEnable = VideoFilter_GetEnable(hVFMng1);
+	bVFEnable = VideoFilter_GetEnable(hVFMng1) & !np2cfg.vf1_bmponly;
 	bVFImport = FALSE;
 	if(bVFEnable) {
 		if(bit & 3) {
-			VideoFilter_Import98(hVFMng1, (bit & 1) ? np2_vram[0] : np2_vram[1], (gdc.analog & 2) ? TRUE : FALSE);
+			VideoFilter_Import98(hVFMng1, (bit & 1) ? np2_vram[0] : np2_vram[1], sdraw.dirty, (gdc.analog & 2) ? TRUE : FALSE);
 			bVFImport = TRUE;
 			VideoFilter_Calc(hVFMng1);
 		}
+	}
+	if(bPreEnable != bVFEnable) {
+		memset(sdraw.dirty, 1, SURFACE_HEIGHT);
+		bPreEnable = bVFEnable;
 	}
 #endif
 	sdraw.dst = surf->ptr;

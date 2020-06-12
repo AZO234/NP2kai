@@ -178,6 +178,8 @@ SCRNSAVE scrnsave_create(void)
 	PALNUM		col;
 	BMPPAL		curpal;
 	UINT		pos;
+	uint8_t*	dirty[SURFACE_HEIGHT];
+
 
 	width = dsync.scrnxmax;
 	height = dsync.scrnymax;
@@ -189,6 +191,8 @@ SCRNSAVE scrnsave_create(void)
 		goto ssg_err;
 	}
 	ZeroMemory(sd, sizeof(SCRNDATA));
+
+	memset(dirty, 1, SURFACE_HEIGHT);
 
 	dat = sd->dat;
 	scrnsize = SURFACE_WIDTH * SURFACE_HEIGHT;
@@ -225,7 +229,7 @@ SCRNSAVE scrnsave_create(void)
 #if defined(SUPPORT_VIDEOFILTER)
 	bVFEnable = VideoFilter_GetEnable(hVFMng1);
 	if(bVFEnable) {
-		VideoFilter_Import98(hVFMng1, datagrph, (gdc.analog & 2) ? TRUE : FALSE);
+		VideoFilter_Import98(hVFMng1, datagrph, dirty, (gdc.analog & 2) ? TRUE : FALSE);
 		VideoFilter_Calc(hVFMng1);
 	}
 #endif

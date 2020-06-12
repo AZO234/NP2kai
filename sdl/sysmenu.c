@@ -31,7 +31,10 @@
 #include	<embed/menu/dlgscr.h>
 #include	<embed/menu/dlgwab.h>
 #include	<embed/menu/dlgabout.h>
-#include	"vram/scrnsave.h"
+#if defined(SUPPORT_VIDEOFILTER)
+#include	<vram/videofilter.h>
+#endif
+#include	<vram/scrnsave.h>
 #include	"ini.h"
 #ifdef SUPPORT_WAB
 #include	<wab/wab.h>
@@ -348,6 +351,35 @@ static void sys_cmd(MENUID id) {
 			np2oscfg.DRAW_SKIP = 4;
 			update |= SYS_UPDATECFG;
 			break;
+
+#if defined(SUPPORT_VIDEOFILTER)
+		case MID_VF1_ENABLE:
+			np2cfg.vf1_enable ^= 1;
+			VideoFilter_SetEnable(hVFMng1, np2cfg.vf1_enable);
+			update |= SYS_UPDATECFG;
+			break;
+
+		case MID_VF1_BMPONLY:
+			np2cfg.vf1_bmponly ^= 1;
+			update |= SYS_UPDATECFG;
+			break;
+
+		case MID_VF1_P0:
+			VideoFilter_SetProfileNo(hVFMng1, 0);
+			np2cfg.vf1_pno = 0;
+			update |= SYS_UPDATECFG;
+			break;
+		case MID_VF1_P1:
+			VideoFilter_SetProfileNo(hVFMng1, 1);
+			np2cfg.vf1_pno = 1;
+			update |= SYS_UPDATECFG;
+			break;
+		case MID_VF1_P2:
+			VideoFilter_SetProfileNo(hVFMng1, 2);
+			np2cfg.vf1_pno = 2;
+			update |= SYS_UPDATECFG;
+			break;
+#endif
 
 		case MID_SCREENOPT:
 			menudlg_create(DLGSCR_WIDTH, DLGSCR_HEIGHT,
@@ -1042,6 +1074,24 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 	menusys_setcheck(MID_FIXMMTIMER, (np2cfg.timerfix & 1));
 	menusys_setcheck(MID_WINNTIDEFIX, (np2cfg.winntfix & 1));
 	menusys_setcheck(MID_SKIP16MBMEMCHK, (np2cfg.memchkmx != 0));
+#if defined(SUPPORT_VIDEOFILTER)
+	menusys_setcheck(MID_VF1_ENABLE, (np2cfg.vf1_enable != 0));
+	menusys_setcheck(MID_VF1_BMPONLY, (np2cfg.vf1_bmponly != 0));
+	menusys_setcheck(MID_VF1_P0, 0);
+	menusys_setcheck(MID_VF1_P1, 0);
+	menusys_setcheck(MID_VF1_P2, 0);
+	switch(np2cfg.vf1_pno) {
+	case 0:
+		menusys_setcheck(MID_VF1_P0, 1);
+		break;
+	case 1:
+		menusys_setcheck(MID_VF1_P1, 1);
+		break;
+	case 2:
+		menusys_setcheck(MID_VF1_P2, 1);
+		break;
+	}
+#endif
 #if defined(EMSCRIPTEN) && !defined(__LIBRETRO__)
 	menusys_setcheck(MID_CAPMOUSE, (ismouse_captured() != 0));
 #endif

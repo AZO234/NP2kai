@@ -335,12 +335,24 @@ void xmenu_update(HMENU hMenu)
 #if defined(SUPPORT_ASYNC_CPU)
 	CheckMenuItem(hMenu, IDM_ASYNCCPU, MF_BYCOMMAND | MFCHECK(np2cfg.asynccpu != 0));
 #endif
-	const UINT8 DRAW_SKIP = np2oscfg.DRAW_SKIP;
+	const UINT8 DRAW_SKIP = 	CheckMenuItem(hMenu, IDM_AUTOFPS, MF_BYCOMMAND | MFCHECK(DRAW_SKIP == 0));
+	CheckMenuItem(hMenu, IDM_60FPS, MF_BYCOMMAND | MFCHECK(DRAW_SKIP == 1));
+	CheckMenuItem(hMenu, IDM_30FPS, MF_BYCOMMAND | MFCHECK(DRAW_SKIP == 2));
+	CheckMenuItem(hMenu, IDM_20FPS, MF_BYCOMMAND | MFCHECK(DRAW_SKIP == 3));
+	CheckMenuItem(hMenu, IDM_15FPS, MF_BYCOMMAND | MFCHECK(DRAW_SKIP == 4));
+DRAW_SKIP;
 	CheckMenuItem(hMenu, IDM_AUTOFPS, MF_BYCOMMAND | MFCHECK(DRAW_SKIP == 0));
 	CheckMenuItem(hMenu, IDM_60FPS, MF_BYCOMMAND | MFCHECK(DRAW_SKIP == 1));
 	CheckMenuItem(hMenu, IDM_30FPS, MF_BYCOMMAND | MFCHECK(DRAW_SKIP == 2));
 	CheckMenuItem(hMenu, IDM_20FPS, MF_BYCOMMAND | MFCHECK(DRAW_SKIP == 3));
 	CheckMenuItem(hMenu, IDM_15FPS, MF_BYCOMMAND | MFCHECK(DRAW_SKIP == 4));
+#if defined(SUPPORT_VIDEOFILTER)
+	CheckMenuItem(hMenu, IDM_VF1EN, MF_BYCOMMAND | MFCHECK(np2cfg.vf1_enable));
+	CheckMenuItem(hMenu, IDM_VF1P0, MF_BYCOMMAND | MFCHECK(np2cfg.vf1_fno == 0));
+	CheckMenuItem(hMenu, IDM_VF1P1, MF_BYCOMMAND | MFCHECK(np2cfg.vf1_fno == 1));
+	CheckMenuItem(hMenu, IDM_VF1P2, MF_BYCOMMAND | MFCHECK(np2cfg.vf1_fno == 2));
+	CheckMenuItem(hMenu, IDM_VF1BO, MF_BYCOMMAND | MFCHECK(np2cfg.vf1_bmponly));
+#endif
 
 	// Device-Keyboard
 	const UINT8 KEY_MODE = np2cfg.KEY_MODE;
