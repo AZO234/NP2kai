@@ -245,7 +245,7 @@ check_netwm(GtkWidget *widget)
 	unsigned long nitems;
 	unsigned long remain;
 	unsigned char *prop;
-	guint32 *data;
+	Atom *data;
 	int rv;
 	unsigned long i;
 
@@ -259,7 +259,7 @@ check_netwm(GtkWidget *widget)
 	    "_NET_WM_STATE_FULLSCREEN", False);
 
 	rv = XGetWindowProperty(xdisplay, root_window, _NET_SUPPORTED,
-	    0, 65536 / sizeof(guint32), False, AnyPropertyType,
+	    0, 65536 / sizeof(Atom), False, AnyPropertyType,
 	    &type, &format, &nitems, &remain, &prop);
 	if (rv != Success) {
 		return 0;
@@ -272,7 +272,7 @@ check_netwm(GtkWidget *widget)
 	}
 
 	rv = 0;
-	data = (guint32 *)prop;
+	data = (Atom *)prop;
 	for (i = 0; i < nitems; i++) {
 		if (data[i] == _NET_WM_STATE_FULLSCREEN) {
 			VERBOSE(("Support _NET_WM_STATE_FULLSCREEN\n"));
