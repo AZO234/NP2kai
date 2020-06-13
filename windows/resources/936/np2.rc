@@ -836,11 +836,16 @@ BEGIN
         MENUITEM "&2–ö›Ÿ",                      IDM_20FPS
         MENUITEM "&3–ö›Ÿ",                      IDM_15FPS
         MENUITEM SEPARATOR
-        MENUITEM "VF Enable",                   IDM_VF1EN
-        MENUITEM "Profile 0",                   IDM_VF1P0
-        MENUITEM "Profile 1",                   IDM_VF1P1
-        MENUITEM "Profile 2",                   IDM_VF1P2
-        MENUITEM "Use BMP only",                IDM_VF1BO
+        POPUP "Video filter"
+        BEGIN
+            MENUITEM "Enable",                   IDM_VF1EN
+            MENUITEM SEPARATOR
+            MENUITEM "Profile 0",                   IDM_VF1P0
+            MENUITEM "Profile 1",                   IDM_VF1P1
+            MENUITEM "Profile 2",                   IDM_VF1P2
+            MENUITEM SEPARATOR
+            MENUITEM "Use BMP only",                IDM_VF1BO
+        END
         MENUITEM SEPARATOR
         MENUITEM "“¿’¹™@˜Ž(&S)...",             IDM_SCREENOPT
     END
