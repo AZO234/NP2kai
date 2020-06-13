@@ -51,9 +51,9 @@
 
 static const char appname[] =
 #if defined(CPUCORE_IA32)
-    "np21kai"
+    "sdlnp21kai"
 #else
-    "np2kai"
+    "sdlnp2kai"
 #endif
 ;
 
