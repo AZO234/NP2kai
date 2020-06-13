@@ -348,9 +348,9 @@ DRAW_SKIP;
 	CheckMenuItem(hMenu, IDM_15FPS, MF_BYCOMMAND | MFCHECK(DRAW_SKIP == 4));
 #if defined(SUPPORT_VIDEOFILTER)
 	CheckMenuItem(hMenu, IDM_VF1EN, MF_BYCOMMAND | MFCHECK(np2cfg.vf1_enable));
-	CheckMenuItem(hMenu, IDM_VF1P0, MF_BYCOMMAND | MFCHECK(np2cfg.vf1_fno == 0));
-	CheckMenuItem(hMenu, IDM_VF1P1, MF_BYCOMMAND | MFCHECK(np2cfg.vf1_fno == 1));
-	CheckMenuItem(hMenu, IDM_VF1P2, MF_BYCOMMAND | MFCHECK(np2cfg.vf1_fno == 2));
+	CheckMenuItem(hMenu, IDM_VF1P0, MF_BYCOMMAND | MFCHECK(np2cfg.vf1_pno == 0));
+	CheckMenuItem(hMenu, IDM_VF1P1, MF_BYCOMMAND | MFCHECK(np2cfg.vf1_pno == 1));
+	CheckMenuItem(hMenu, IDM_VF1P2, MF_BYCOMMAND | MFCHECK(np2cfg.vf1_pno == 2));
 	CheckMenuItem(hMenu, IDM_VF1BO, MF_BYCOMMAND | MFCHECK(np2cfg.vf1_bmponly));
 #endif
 

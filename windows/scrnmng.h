@@ -1,3 +1,5 @@
+#ifndef _SCRNMNG_H_
+#define _SCRNMNG_H_
 
 enum {
 	RGB24_B	= 0,
@@ -85,7 +87,7 @@ typedef struct {
 extern "C" {
 #endif
 
-extern	SCRNMNG		scrnmng;			// É}ÉNÉçóp
+extern	SCRNMNG		scrnmng;			// „Éû„ÇØ„É≠Áî®
 extern	SCRNSTAT	scrnstat;
 extern	SCRNRESCFG	scrnrescfg;
 
@@ -154,3 +156,4 @@ void scrnmng_dispclock(void);
 }
 #endif
 
+#endif  // _SCRNMNG_H_
