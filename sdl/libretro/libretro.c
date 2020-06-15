@@ -1593,6 +1593,16 @@ void retro_init (void)
 	if (log_cb)
 		log_cb(RETRO_LOG_INFO, "Logger interface initialized\n");
 
+/*
+   uint64_t statestate = \
+      RETRO_SERIALIZATION_QUIRK_MUST_INITIALIZE | \
+      RETRO_SERIALIZATION_QUIRK_CORE_VARIABLE_SIZE | \
+      RETRO_SERIALIZATION_QUIRK_FRONT_VARIABLE_SIZE | \
+      RETRO_SERIALIZATION_QUIRK_ENDIAN_DEPENDENT;
+
+   environ_cb(RETRO_ENVIRONMENT_SET_SERIALIZATION_QUIRKS, &statestate);
+*/
+
 	static struct retro_midi_interface midi_interface;
 	if(environ_cb(RETRO_ENVIRONMENT_GET_MIDI_INTERFACE, &midi_interface))
 		retro_midi_interface = &midi_interface;
@@ -1768,7 +1778,7 @@ size_t retro_serialize_size(void)
    FILEH fh;
 
    path = file_getcd(RETRO_NP2_TEMPSTATE);
-   ret = statsave_save(path);
+   ret = statsave_save_d(path);
    if(ret) {
       size = 0;
    } else {
@@ -1788,7 +1798,7 @@ bool retro_serialize(void *data, size_t size)
    FILEH fh;
 
    path = file_getcd(RETRO_NP2_TEMPSTATE);
-   ret = statsave_save(path);
+   ret = statsave_save_d(path);
    if(ret) {
       file_delete(path);
       return false;
@@ -1813,7 +1823,7 @@ bool retro_unserialize(const void *data, size_t size)
    fh = file_create(path);
    file_write(fh, data, size);
    file_close(fh);
-   statsave_load(path);
+   statsave_load_d(path);
    file_delete(path);
    return true;
 }

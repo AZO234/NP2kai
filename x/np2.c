@@ -347,6 +347,12 @@ processwait(UINT cnt)
 int
 mainloop(void *p)
 {
+	if(g_u8ControlState == 1) {
+		statsave_save_d();
+	} else if(g_u8ControlState == 2) {
+		statsave_load_d();
+	}
+	g_u8ControlState = 0;
 
 	if (np2oscfg.NOWAIT) {
 		joymng_sync();

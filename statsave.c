@@ -70,6 +70,9 @@
 #include	<i386hax/haxcore.h>
 #endif
 
+uint8_t g_u8ControlState;
+static OEMCHAR m_strStateFilename[MAX_PATH];
+
 #ifdef USE_MAME
 UINT8 YMF262Read(void *chip, INT a);
 INT YMF262Write(void *chip, INT a, INT v);
@@ -1411,13 +1414,28 @@ static int flagcheck_veronly(STFLAGH sfh, const SFENTRY *tbl) {
 // ----
 
 int statsave_save(const OEMCHAR *filename) {
+	if(filename) {
+		milstr_ncpy(m_strStateFilename, filename, MAX_PATH);
+		g_u8ControlState = 1;
+	}
+}
+
+#if defined(__LIBRETRO__)
+int statsave_save_d(const OEMCHAR *filename) {
+#else
+int statsave_save_d(void) {
+#endif
 
 	SFFILEH		sffh;
 	int			ret;
 const SFENTRY	*tbl;
 const SFENTRY	*tblterm;
 
+#if defined(__LIBRETRO__)
 	sffh = statflag_create(filename);
+#else
+	sffh = statflag_create(m_strStateFilename);
+#endif
 	if (sffh == NULL) {
 		return(STATFLAG_FAILURE);
 	}
@@ -1580,6 +1598,17 @@ const SFENTRY	*tblterm;
 }
 
 int statsave_load(const OEMCHAR *filename) {
+	if(filename) {
+		milstr_ncpy(m_strStateFilename, filename, MAX_PATH);
+		g_u8ControlState = 2;
+	}
+}
+
+#if defined(__LIBRETRO__)
+int statsave_load_d(const OEMCHAR *filename) {
+#else
+int statsave_load_d(void) {
+#endif
 
 	SFFILEH		sffh;
 	int			ret;
@@ -1588,7 +1617,11 @@ const SFENTRY	*tbl;
 const SFENTRY	*tblterm;
 	UINT		i;
 
+#if defined(__LIBRETRO__)
 	sffh = statflag_open(filename, NULL, 0);
+#else
+	sffh = statflag_open(m_strStateFilename, NULL, 0);
+#endif
 	if (sffh == NULL) {
 		return(STATFLAG_FAILURE);
 	}

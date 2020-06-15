@@ -219,8 +219,8 @@ $ sudo apt install git cmake ninja-build build-essential libx11-dev libglib2.0-d
 
 - Fedora series
 ```
-$ sudo yum groupinstall "Development Tools" "Development Libraries"
-$ sudo yum install gcc-c++ cmake libusb-devel SDL-devel SDL_mixer-devel SDL_ttf-devel SDL2-devel SDL2_mixer-devel SDL2_ttf-devel gtk2-devel libX11-devel
+$ sudo dnf groupinstall "Development Tools"
+$ sudo dnf install gcc-c++ cmake libusb-devel SDL-devel SDL_mixer-devel SDL_ttf-devel SDL2-devel SDL2_mixer-devel SDL2_ttf-devel gtk2-devel libX11-devel
 ```
 
 #### Build
@@ -1033,6 +1033,8 @@ Next boot computer, you command from 4.
 </div></details>
 
 ## Release
+- Jun 15, 2020
+  - [not lr] state save/load at first of main loop
 - Jun 12, 2020
   - Video filter
 - May 22, 2020

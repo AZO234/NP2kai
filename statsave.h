@@ -39,6 +39,8 @@ extern "C"
 {
 #endif
 
+extern uint8_t g_u8ControlState;
+
 int statflag_read(STFLAGH sfh, void *ptr, UINT size);
 int statflag_write(STFLAGH sfh, const void *ptr, UINT size);
 void statflag_seterr(STFLAGH sfh, const OEMCHAR *str);
@@ -48,6 +50,14 @@ int statsave_check(const OEMCHAR *filename, OEMCHAR *buf, int size);
 int statsave_load(const OEMCHAR *filename);
 int statsave_save_hdd(const OEMCHAR *ext);
 int statsave_load_hdd(const OEMCHAR *ext);
+
+#if defined(__LIBRETRO__)
+int statsave_save_d(const OEMCHAR *filename);
+int statsave_load_d(const OEMCHAR *filename);
+#else
+int statsave_save_d(void);
+int statsave_load_d(void);
+#endif
 
 #ifdef __cplusplus
 }

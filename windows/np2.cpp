@@ -3798,6 +3798,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 
 	lateframecount = 0;
 	while(1) {
+		if(g_u8ControlState == 1) {
+			statsave_save_d();
+		} else if(g_u8ControlState == 2) {
+			statsave_load_d();
+		}
+		g_u8ControlState = 0;
+
 		if (!np2stopemulate) {
 			if (PeekMessage(&msg, 0, 0, 0, PM_NOREMOVE)) {
 				if (!GetMessage(&msg, NULL, 0, 0)) {

@@ -807,6 +807,15 @@ havemmx(void)
 static void np2exec()
 {
 	while(taskmng_isavail()) {
+#if !defined(__LIBRETRO__)
+		if(g_u8ControlState == 1) {
+			statsave_save_d();
+		} else if(g_u8ControlState == 2) {
+			statsave_load_d();
+		}
+		g_u8ControlState = 0;
+#endif
+
 		taskmng_rol();
 #if defined(EMSCRIPTEN) && !defined(__LIBRETRO__)
 //		emscripten_sleep_with_yield(0);
