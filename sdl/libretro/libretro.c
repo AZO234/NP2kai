@@ -1593,7 +1593,6 @@ void retro_init (void)
 	if (log_cb)
 		log_cb(RETRO_LOG_INFO, "Logger interface initialized\n");
 
-/*
    uint64_t statestate = \
       RETRO_SERIALIZATION_QUIRK_MUST_INITIALIZE | \
       RETRO_SERIALIZATION_QUIRK_CORE_VARIABLE_SIZE | \
@@ -1601,7 +1600,6 @@ void retro_init (void)
       RETRO_SERIALIZATION_QUIRK_ENDIAN_DEPENDENT;
 
    environ_cb(RETRO_ENVIRONMENT_SET_SERIALIZATION_QUIRKS, &statestate);
-*/
 
 	static struct retro_midi_interface midi_interface;
 	if(environ_cb(RETRO_ENVIRONMENT_GET_MIDI_INTERFACE, &midi_interface))
