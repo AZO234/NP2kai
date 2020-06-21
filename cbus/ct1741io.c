@@ -960,9 +960,9 @@ const UINT8	*ptr2;
 	int	samplen_src;
 	// 何故かDMAで送られてきたデータのサンプリングレートがいかれているので無理矢理修正する。謎
 	if(g_sb16.dsp_info.freq==44100){
-		samplen_src = g_sb16.dsp_info.freq * 120/ 100;
+		samplen_src = g_sb16.dsp_info.freq * 130/ 100;
 	}else{
-		samplen_src = g_sb16.dsp_info.freq * 108/ 100;
+		samplen_src = g_sb16.dsp_info.freq * 112/ 100;
 	}
 
 	leng = cs->bufdatas & ~0x1;

@@ -231,6 +231,8 @@ void pc98_cirrus_vga_updatePCIaddr();
 void pc98_cirrus_vga_initVRAMWindowAddr();
 void pc98_cirrus_vga_setvramsize();
 
+void pc98_cirrus_vga_setVRAMWindowAddr3(UINT32 addr);
+
 #ifdef __cplusplus
 }
 #endif

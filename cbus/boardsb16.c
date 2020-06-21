@@ -269,6 +269,9 @@ static UINT32 gameport_threshold_y = 0;
 static void IOOUTCALL gameport_o4d2(UINT port, REG8 dat)
 {
 	REG8 joyflag = joymng_getstat();
+	if(!joymng_available()){
+		return;
+	}
 	gameport_joyflag_base = joyflag;
 	gameport_joyflag = ((joyflag >> 2) & 0x30)  | ((joyflag << 2) & 0xc0) | 0x0f;
 #if defined(SUPPORT_IA32_HAXM)
@@ -310,6 +313,9 @@ static void IOOUTCALL gameport_o4d2(UINT port, REG8 dat)
 static REG8 IOINPCALL gameport_i4d2(UINT port)
 {
 	UINT64 clockdiff;
+	if(!joymng_available()){
+		return;
+	}
 #if defined(SUPPORT_IA32_HAXM)
 	if(gameport_useqpc){
 		LARGE_INTEGER li = {0};

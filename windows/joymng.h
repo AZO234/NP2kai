@@ -4,6 +4,7 @@ extern "C" {
 #endif
 
 REG8 joymng_getstat(void);
+REG8 joymng_available(void);
 
 #ifdef __cplusplus
 }

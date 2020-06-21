@@ -27,6 +27,7 @@ enum {
 static	REG8	joyflag = 0xff;
 static	UINT8	joypad1btn[4];
 
+static	REG8	joyavailable = 0;
 
 void joymng_initialize(void) {
 
@@ -54,11 +55,13 @@ REG8 joymng_getstat(void) {
 	JOYINFOEX		ji;
 	static DWORD nojoy_time = 0;
 
+	joyavailable = 0;
 	if (np2oscfg.JOYPAD1 == 1){
 		if(nojoy_time == 0 || GetTickCount() - nojoy_time > 5000){
 			ji.dwSize = sizeof(JOYINFOEX);
 			ji.dwFlags = JOY_RETURNALL;
 			if(joyGetPosEx(JOYSTICKID1, &ji) == JOYERR_NOERROR) {
+				joyavailable = 1;
 				np2oscfg.JOYPAD1 |= 0x80;
 				joyflag = 0xff;
 				if (ji.dwXpos < 0x4000U) {
@@ -92,6 +95,9 @@ REG8 joymng_getstat(void) {
 		}
 	}
 	return(joyflag);
+}
+REG8 joymng_available(void) {
+	return(joyavailable);
 }
 
 // joyflag	bit:0		up

@@ -668,9 +668,9 @@ void IOOUTCALL iocore_out16(UINT port, REG16 dat) {
 		}else if(np2clvga.gd54xxtype <= 0xff){
 			if(port == 0xc44){
 				if(dat == 0xffff){
-					np2clvga.VRAMWindowAddr3 = 0;
+					pc98_cirrus_vga_setVRAMWindowAddr3(0);
 				}else{
-					np2clvga.VRAMWindowAddr3 = ((UINT32)dat) << 16;
+					pc98_cirrus_vga_setVRAMWindowAddr3(((UINT32)dat) << 16);
 				}
 				return;
 			}
@@ -793,6 +793,13 @@ void IOOUTCALL iocore_out32(UINT port, UINT32 dat) {
 		}
 	}
 #endif
+//#if defined(SUPPORT_IDEIO)
+//	if (port == 0x0640) {
+//		ideio_w16(port, (UINT16)dat);
+//		ideio_w16(port, (UINT16)(dat >> 16));
+//		return;
+//	}
+//#endif
 	iocore_out16(port, (UINT16)dat);
 	iocore_out16(port+2, (UINT16)(dat >> 16));
 }
@@ -816,6 +823,13 @@ UINT32 IOINPCALL iocore_inp32(UINT port) {
 		}
 	}
 #endif
+//#if defined(SUPPORT_IDEIO)
+//	if (port == 0x0640) {
+//		ret = ideio_r16(port);
+//		ret |= ideio_r16(port) << 16;
+//		return ret;
+//	}
+//#endif
 	ret = iocore_inp16(port);
 	return(ret + (iocore_inp16(port+2) << 16));
 }

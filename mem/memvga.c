@@ -60,14 +60,20 @@
 // ---- flat (PEGC 0F00000h-00F80000h Memory Access ?)
 
 REG8 MEMCALL memvgaf_rd8(UINT32 address) {
-
+	
+	if(!(vramop.mio2[PEGC_REG_VRAM_ENABLE] & 0x1)){
+		return 0xff;
+	}
 	return(vramex[address & 0x7ffff]);
 }
 
 void MEMCALL memvgaf_wr8(UINT32 address, REG8 value) {
 
 	UINT8	bit;
-
+	
+	if(!(vramop.mio2[PEGC_REG_VRAM_ENABLE] & 0x1)){
+		return;
+	}
 	address = address & 0x7ffff;
 	vramex[address] = value;
 	bit = (address & 0x40000)?2:1;
@@ -76,7 +82,10 @@ void MEMCALL memvgaf_wr8(UINT32 address, REG8 value) {
 }
 
 REG16 MEMCALL memvgaf_rd16(UINT32 address) {
-
+	
+	if(!(vramop.mio2[PEGC_REG_VRAM_ENABLE] & 0x1)){
+		return 0xffff;
+	}
 	address = address & 0x7ffff;
 	return(LOADINTELWORD(vramex + address));
 }
@@ -84,7 +93,10 @@ REG16 MEMCALL memvgaf_rd16(UINT32 address) {
 void MEMCALL memvgaf_wr16(UINT32 address, REG16 value) {
 
 	UINT8	bit;
-
+	
+	if(!(vramop.mio2[PEGC_REG_VRAM_ENABLE] & 0x1)){
+		return;
+	}
 	address = address & 0x7ffff;
 	STOREINTELWORD(vramex + address, value);
 	bit = (address & 0x40000)?2:1;

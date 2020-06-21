@@ -172,6 +172,10 @@ static REG8 sasibios_read(UINT type, SXSIDEV sxsi) {
 			}else{
 				biosioemu_push8(0x432, 0x00); // BANK #1 
 			}
+			biosioemu_push8_read(0x430);
+			
+			// XXX: Win9x用 Workaround 接続フラグ切り替え（NT系はプロテクトモードでBIOSコールしないはず） 
+			mem[0x05ba] = mem[0x05bb];
 		}
 #endif
 	}
@@ -345,7 +349,6 @@ static REG8 sasibios_sense(UINT type, SXSIDEV sxsi) {
 		return((REG8)(sxsi->mediatype & 7));
 	}
 	else {
-		char buf[64];
 		if (CPU_AH == 0x84) {
 			CPU_BX = sxsi->size;
 			CPU_CX = sxsi->cylinders;
