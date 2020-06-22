@@ -184,11 +184,16 @@ static void atapi_cmd_pauseresume(IDEDRV drv);
 static void atapi_cmd_seek(IDEDRV drv, UINT32 lba);
 static void atapi_cmd_mechanismstatus(IDEDRV drv);
 
+#define MEDIA_CHANGE_WAIT	6	// Waitを入れないとWinNT系で正しくメディア交換出来ない
+static int mediachangeflag = 0;
+
+extern REG8 cdchange_drv;
+void cdchange_timeoutproc(NEVENTITEM item);
+
 void atapicmd_a0(IDEDRV drv) {
 
 	UINT32	lba, leng;
 	UINT8	cmd;
-	static int mediachangeflag = 1;
 
 	cmd = drv->buf[0];
 	switch (cmd) {
@@ -198,35 +203,64 @@ void atapicmd_a0(IDEDRV drv) {
 			/* medium not present */
 			ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_NOT_READY);
 			drv->asc = ATAPI_ASC_MEDIUM_NOT_PRESENT;
-			mediachangeflag = 1;
+			if(drv->sxsidrv==cdchange_drv && g_nevent.item[NEVENT_CDWAIT].clock > 0){
+				if(mediachangeflag==MEDIA_CHANGE_WAIT){
+					nevent_set(NEVENT_CDWAIT, 1, cdchange_timeoutproc, NEVENT_ABSOLUTE); // OS側がCDを催促しているようなので更に急いで交換
+				}else if(mediachangeflag==0){
+					nevent_setbyms(NEVENT_CDWAIT, 100, cdchange_timeoutproc, NEVENT_ABSOLUTE); // OS側がCDが無いと認識したようなので急いで交換
+				}
+			}
+			if(mediachangeflag < MEDIA_CHANGE_WAIT) mediachangeflag++;
+			//drv->status |= IDESTAT_ERR;
+			//drv->error = IDEERR_MCNG;
 			senderror(drv);
 			break;
 		}
 		if (drv->media & IDEIO_MEDIA_CHANGED) {
+			UINT8 olderror = drv->error;
 			ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_NOT_READY);
 			if(drv->damsfbcd){
 				// NECCDD.SYS
-				if(mediachangeflag){
+				//if(mediachangeflag){
+				//if(mediachangeflag >= MEDIA_CHANGE_WAIT){
 					drv->media &= ~IDEIO_MEDIA_CHANGED;
 					drv->asc = ATAPI_ASC_NOT_READY_TO_READY_TRANSITION;
-				}else{
-					drv->asc = ATAPI_ASC_MEDIUM_NOT_PRESENT;
-					mediachangeflag++;
-				}
+					//drv->error &= ~IDEERR_MCRQ;
+				//}else{
+				//	drv->asc = ATAPI_ASC_MEDIUM_NOT_PRESENT;
+				//	mediachangeflag++;
+				//	//drv->status |= IDESTAT_ERR;
+				//	//drv->error |= IDEERR_MCRQ;
+				//}
 			}else{
 				// for WinNT,2000 setup
-				if(mediachangeflag){
+				if(mediachangeflag >= MEDIA_CHANGE_WAIT){
 					drv->media &= ~IDEIO_MEDIA_CHANGED;
 					drv->asc = 0x0204; // LOGICAL DRIVE NOT READY - INITIALIZING COMMAND REQUIRED
+				//}else if(mediachangeflag >= 1){
+				//	drv->asc = 0x0204; // LOGICAL DRIVE NOT READY - INITIALIZING COMMAND REQUIRED
+				//	mediachangeflag++;
 				}else{
 					drv->asc = ATAPI_ASC_MEDIUM_NOT_PRESENT;
-					mediachangeflag++;
+//#if defined(CPUCORE_IA32)
+//					// Workaround for WinNT
+//					if (CPU_STAT_PM && !CPU_STAT_VM86) {
+						//mediachangeflag++;
+//					} else
+//#endif
+//					{
+						mediachangeflag = MEDIA_CHANGE_WAIT;
+					//}
 				}
 			}
 			senderror(drv);
 			break;
 		}
 		mediachangeflag = 0;
+		//if(drv->error & IDEERR_MCNG){
+		//	drv->status &= ~IDESTAT_ERR;
+		//	drv->error &= ~IDEERR_MCNG;
+		//}
 
 		cmddone(drv);
 		break;

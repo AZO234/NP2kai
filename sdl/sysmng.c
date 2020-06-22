@@ -7,6 +7,12 @@
 #include <sysmng.h>
 #include <ini.h>
 
+extern REG8 cdchange_drv;
+
+UINT	sys_updates;
+
+SYSMNGMISCINFO	sys_miscinfo = {0};
+
 /**
  * Initialize
  */

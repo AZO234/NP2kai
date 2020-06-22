@@ -30,12 +30,26 @@ int STRCALL milsjis_cmp(const OEMCHAR *str, const OEMCHAR *cmp);
 int STRCALL mileuc_cmp(const OEMCHAR *str, const OEMCHAR *cmp);
 int STRCALL milutf8_cmp(const OEMCHAR *str, const OEMCHAR *cmp);
 
+// 大文字小文字を同一視してmaxlen分比較
+// ret 0:一致
+int STRCALL milank_ncmp(const char *str, const char *cmp, unsigned int maxlen);
+int STRCALL milsjis_ncmp(const OEMCHAR *str, const OEMCHAR *cmp, unsigned int maxlen);
+int STRCALL mileuc_ncmp(const OEMCHAR *str, const OEMCHAR *cmp, unsigned int maxlen);
+int STRCALL milutf8_ncmp(const OEMCHAR *str, const OEMCHAR *cmp, unsigned int maxlen);
+
 // 大文字小文字を 同一視してcmpのヌルまで比較
 // ret 0:一致
 int STRCALL milank_memcmp(const char *str, const char *cmp);
 int STRCALL milsjis_memcmp(const char *str, const char *cmp);
 int STRCALL mileuc_memcmp(const char *str, const char *cmp);
 int STRCALL milutf8_memcmp(const char *str, const char *cmp);
+
+// 大文字小文字を 同一視してmaxlen分またはcmpのヌルまで比較
+// ret 0:一致
+int STRCALL milank_memncmp(const char *str, const char *cmp, unsigned int maxlen);
+int STRCALL milsjis_memncmp(const char *str, const char *cmp, unsigned int maxlen);
+int STRCALL mileuc_memncmp(const char *str, const char *cmp, unsigned int maxlen);
+int STRCALL milutf8_memncmp(const char *str, const char *cmp, unsigned int maxlen);
 
 // str[pos]が漢字１バイト目かどうか…
 int STRCALL milsjis_kanji1st(const char *str, unsigned int pos);
@@ -95,7 +109,9 @@ OEMCHAR * STRCALL milstr_list(const OEMCHAR *lststr, UINT pos);
 #if defined(OSLANG_SJIS)
 #define	milstr_charsize(s)		milsjis_charsize(s)
 #define	milstr_cmp(s, c)		milsjis_cmp(s, c)
+#define	milstr_ncmp(s, c, n)		milsjis_ncmp(s, c, n)
 #define	milstr_memcmp(s, c)		milsjis_memcmp(s, c)
+#define	milstr_memncmp(s, c, n)		milsjis_memncmp(s, c, n)
 #define	milstr_kanji1st(s, p)	milsjis_kanji1st(s, p)
 #define	milstr_kanji2nd(s, p)	milsjis_kanji2nd(s, p)
 #define	milstr_ncpy(d, s, l)	milsjis_ncpy(d, s, l)
@@ -104,7 +120,9 @@ OEMCHAR * STRCALL milstr_list(const OEMCHAR *lststr, UINT pos);
 #elif defined(OSLANG_EUC)
 #define	milstr_charsize(s)		mileuc_charsize(s)
 #define	milstr_cmp(s, c)		mileuc_cmp(s, c)
+#define	milstr_ncmp(s, c, n)		mileuc_ncmp(s, c, n)
 #define	milstr_memcmp(s, c)		mileuc_memcmp(s, c)
+#define	milstr_memncmp(s, c, n)		mileuc_memncmp(s, c, n)
 #define	milstr_kanji1st(s, p)	mileuc_kanji1st(s, p)
 #define	milstr_kanji2nd(s, p)	mileuc_kanji2nd(s, p)
 #define	milstr_ncpy(d, s, l)	mileuc_ncpy(d, s, l)
@@ -113,7 +131,9 @@ OEMCHAR * STRCALL milstr_list(const OEMCHAR *lststr, UINT pos);
 #elif defined(OSLANG_UTF8)
 #define	milstr_charsize(s)		milutf8_charsize(s)
 #define	milstr_cmp(s, c)		milutf8_cmp(s, c)
+#define	milstr_ncmp(s, c, n)		milutf8_ncmp(s, c, n)
 #define	milstr_memcmp(s, c)		milutf8_memcmp(s, c)
+#define	milstr_memncmp(s, c, n)		milutf8_memncmp(s, c, n)
 #define	milstr_kanji1st(s, p)	milutf8_kanji1st(s, p)
 #define	milstr_kanji2nd(s, p)	milutf8_kanji2nd(s, p)
 #define	milstr_ncpy(d, s, l)	milutf8_ncpy(d, s, l)
@@ -122,7 +142,9 @@ OEMCHAR * STRCALL milstr_list(const OEMCHAR *lststr, UINT pos);
 #else
 #define	milstr_charsize(s)		milank_charsize(s)
 #define	milstr_cmp(s, c)		milank_cmp(s, c)
+#define	milstr_ncmp(s, c, n)		milank_ncmp(s, c, n)
 #define	milstr_memcmp(s, c)		milank_memcmp(s, c)
+#define	milstr_memncmp(s, c, n)		milank_memncmp(s, c, n)
 #define	milstr_kanji1st(s, p)	(0)
 #define	milstr_kanji2nd(s, p)	(0)
 #define	milstr_ncpy(d, s, l)	milank_ncpy(d, s, l)

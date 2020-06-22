@@ -11,7 +11,11 @@
 #include <sysmng.h>
 #include <toolkit.h>
 
+extern REG8 cdchange_drv;
+
 UINT	sys_updates;
+
+SYSMNGMISCINFO	sys_miscinfo = {0};
 
 static char titlestr[512];
 static char clockstr[64];
@@ -54,8 +58,8 @@ sysmng_workclockrenewal(void)
 void
 sysmng_updatecaption(UINT8 flag)
 {
-	char work[512];
-	int i;
+	char work[2048];
+	int i, cddrvnum = 1;
 	OEMCHAR	fddtext[16] = {0};
 
 	if (flag & 1) {
@@ -68,9 +72,17 @@ sysmng_updatecaption(UINT8 flag)
 			}
 		}
 #if defined(SUPPORT_IDEIO)
-		if (sxsi_getfilename(0x02)) {
-			milstr_ncat(titlestr, "  CD-ROM:", sizeof(titlestr));
-			milstr_ncat(titlestr, file_getname((OEMCHAR *)sxsi_getfilename(0x02)), sizeof(titlestr));
+		for(i = 0; i < 4; i++) {
+			OEMSPRINTF(work, "  CDD%d:", cddrvnum);
+			if (sxsi_getdevtype(i)==SXSIDEV_CDROM){
+				if(*(np2cfg.idecd[i])) {
+					milstr_ncat(titlestr, work, NELEMENTS(titlestr));
+					milstr_ncat(titlestr, file_getname(np2cfg.idecd[i]), NELEMENTS(titlestr));
+				}else if(i==cdchange_drv && g_nevent.item[NEVENT_CDWAIT].clock > 0){
+					milstr_ncat(titlestr, work, NELEMENTS(titlestr));
+					milstr_ncat(titlestr, OEMTEXT("Now Loading..."), NELEMENTS(titlestr));
+				}
+			}
 		}
 #endif
 	}

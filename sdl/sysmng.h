@@ -22,12 +22,29 @@ enum {
 	SYS_UPDATESERIAL1	= 0x0400
 };
 
-void sysmng_initialize(void);
-void sysmng_deinitialize(void);
+enum {
+	SYS_UPDATECAPTION_FDD	= 0x01,
+	SYS_UPDATECAPTION_CLK	= 0x02,
+	SYS_UPDATECAPTION_MISC	= 0x04,
+	
+	SYS_UPDATECAPTION_ALL	= 0xff,
+};
+
+typedef struct {
+	UINT8	showvolume;
+	UINT8	showmousespeed;
+} SYSMNGMISCINFO;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+extern	UINT	sys_updates;
+
+extern	SYSMNGMISCINFO	sys_miscinfo;
+
+void sysmng_initialize(void);
+void sysmng_deinitialize(void);
 
 void sysmng_update(UINT update);
 void sysmng_cpureset(void);

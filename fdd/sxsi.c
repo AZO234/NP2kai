@@ -337,12 +337,13 @@ BRESULT sxsi_devopen(REG8 drv, const OEMCHAR *fname) {
 					cdchange_flag = 1;
 					cdchange_timeoutset();
 					cdchange_reqtime = GetTickCount();
+					sysmng_updatecaption(SYS_UPDATECAPTION_FDD);
 					return(FAILURE); // XXX: ここで失敗返してええの？
 				}
 				r = sxsicd_open(sxsi, fname);
 				if (r == SUCCESS || _tcsnicmp(fname, OEMTEXT("\\\\.\\"), 4)==0) {
 					int num = drv & 0x0f;
-					file_cpyname(np2cfg.idecd[num], fname, NELEMENTS(cdchange_fname));
+					file_cpyname(np2cfg.idecd[num], fname, MAX_PATH);
 					if(r != SUCCESS && _tcsnicmp(fname, OEMTEXT("\\\\.\\"), 4)==0){
 						ideio_notify(sxsi->drv, 0);
 					}
@@ -351,7 +352,7 @@ BRESULT sxsi_devopen(REG8 drv, const OEMCHAR *fname) {
 					file_cpyname(np2cfg.idecd[num], _T("\0\0\0\0"), 1);
 				}
 				sysmng_updatecaption(1); // SYS_UPDATECAPTION_FDD
-				ideio_mediachange(cdchange_drv);
+				ideio_mediachange(drv);
 			}
 #endif
 			break;

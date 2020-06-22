@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Jun 21, 2020<br>
+Jun 23, 2020<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -505,6 +505,11 @@ Using mouse (Joypad mouse mode)
 
 Mouse cursor moving is always enable with mouse on PC.<br>
 
+If mouse cannot use on a game,<br>
+check mouse driver for the game or included in MS-DOS is loaded by CONFIG.SYS.<br>
+(Or MS-DOS's mouse driver inhibit the game only mouse driver.)<br>
+<code>DEVICE=A:&yen;DOS&yen;MOUSE.SYS</code>
+
 Mouse cursor moving and left-button be able to controled with joypad stick.<br>
 Switch Stick2Mouse mode in config to 'L-stick' or 'R-stick(default)'.<br>
 - Stick: mouse move
@@ -574,6 +579,8 @@ Tuning performance
   Change "CPU Clock Multiplyer".
 - Memory size
   Change "RAM Size".
+  - MS-DOS 5 or older : lower 16.6MB
+  - MS-DOS 6 : lower 64.6MB
 - Sound device
   - 26K: for old games.
   - 86: for newer games.
@@ -770,15 +777,11 @@ Using CD-ROM drive
 </summary><div>
 
 To use CD drive with MS-DOS 6.2,<br>
-write follow to CONFIG.SYS.
-```
-LASTDRIVE=Z
-DEVICE=A:￥DOS￥NECCDD.SYS /D:CD_101
-```
-And write follow to AUTOEXEC.BAT.
-```
-A:￥DOS￥MSCDEX.EXE /D:CD_101 /L:Q
-```
+write follow to CONFIG.SYS.<br>
+<code>LASTDRIVE=Z</code><br>
+<code>DEVICE=A:&yen;DOS&yen;NECCDD.SYS /D:CD_101</code><br>
+And write follow to AUTOEXEC.BAT.<br>
+<code>A:&yen;DOS&yen;MSCDEX.EXE /D:CD_101 /L:Q</code><br>
 Then, you'll can use CD drive as Q drive.
 </div></details>
 
@@ -848,6 +851,46 @@ Then we can use follow types HDD image files.<br>
 - qcow
 - qcow2
 - hdd
+</div></details>
+
+<details><summary>
+Memory driver
+</summary><div>
+
+When start PC-98, memory amount is displaied.
+```
+MEMORY 640KB + 13312KB
+```
+640KB is conventional memory.<br>
+(For example) 13312KB is extnded memory.
+
+Extnded memory is use as XMS(eXtended Memory Specification)<br>
+by HIMEM.SYS is written in CONFIG.SYS.<br>
+<code>DEVICE=A:&yen;DOS&yen;HIMEM.SYS</code><br>
+Drivers and daemons can be loaded on XMB.<br>
+(But EMM386.EXE, SMARTDRV.EXE, NECCD*.SYS cannot be loaded on XMB.)<br>
+<code>DEVICEHIGH=A:&yen;DOS&yen;MOUSE.SYS</code><br>
+<code>DEVICEHIGH=A:&yen;DOS&yen;RAMDISK.SYS /X 1536</code><br>
+8086 or V30 can use HMA(448KB XMS).<br>
+i286 or later,<br>
+MS-DOS 5 or older can use lower 16MB XMS.<br>
+MS-DOS 6 can use lower 64MB XMS.
+
+XMB can use as UMB(386KB), EMB by<br>
+EMM386.EXE(old EMM386.SYS) is written in CONFIG.SYS.<br>
+<code>DEVICE=A:&yen;DOS&yen;EMM386.EXE /P=64 /UMB</code><br>
+'/P=64' means using EMS 64page (1page=16KB).
+
+Normaly, MS-DOS is located on conventional memory.<br>
+You can use XMB and UMB, DOS can be located on them,
+```
+DOS=HIGH,UMB
+```
+
+If you use upper 64MB XMB,<br>
+you can use [VEM486](https://www.vector.co.jp/soft/dos/hardware/se025675.html) (deposit software)<br>
+instead of HIMEM.SYS and EMM386.EXE.<br>
+<code>DEVICE=A:&yen;VEM486&yen;VEM486.EXE</code>
 </div></details>
 
 <details><summary>
@@ -1033,6 +1076,8 @@ Next boot computer, you command from 4.
 </div></details>
 
 ## Release
+- Jun 23, 2020
+  - merge NP21/W rev.75
 - Jun 21, 2020
   - merge NP21/W rev.74
 - Jun 15, 2020

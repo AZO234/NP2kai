@@ -29,6 +29,30 @@ int STRCALL milank_cmp(const char *str, const char *cmp) {
 	return(0);
 }
 
+int STRCALL milank_ncmp(const char *str, const char *cmp, unsigned int maxlen) {
+
+	int		s;
+	int		c;
+
+	do {
+		s = *str++;
+		if ((s >= 'a') && (s <= 'z')) {
+			s -= 0x20;
+		}
+		c = *cmp++;
+		if ((c >= 'a') && (c <= 'z')) {
+			c -= 0x20;
+		}
+		if (s != c) {
+			return((s > c)?1:-1);
+		}
+		if(maxlen) {
+			maxlen--;
+		}
+	} while(s && maxlen);
+	return(0);
+}
+
 int STRCALL milank_memcmp(const char *str, const char *cmp) {
 
 	int		s;
@@ -47,6 +71,30 @@ int STRCALL milank_memcmp(const char *str, const char *cmp) {
 			s -= 0x20;
 		}
 	} while(s == c);
+	return((s > c)?1:-1);
+}
+
+int STRCALL milank_memncmp(const char *str, const char *cmp, unsigned int maxlen) {
+
+	int		s;
+	int		c;
+
+	do {
+		c = *cmp++;
+		if (c == 0) {
+			return(0);
+		}
+		if ((c >= 'a') && (c <= 'z')) {
+			c -= 0x20;
+		}
+		s = *str++;
+		if ((s >= 'a') && (s <= 'z')) {
+			s -= 0x20;
+		}
+		if(maxlen) {
+			maxlen--;
+		}
+	} while(s == c && maxlen);
 	return((s > c)?1:-1);
 }
 
@@ -145,6 +193,46 @@ mscp_err:
 	return((s > c)?1:-1);
 }
 
+int STRCALL milsjis_ncmp(const OEMCHAR *str, const OEMCHAR *cmp, unsigned int maxlen) {
+
+	int		s;
+	int		c;
+
+	do {
+		s = (UINT8)*str++;
+		if ((((s ^ 0x20) - 0xa1) & 0xff) < 0x3c) {
+			c = (UINT8)*cmp++;
+			if (s != c) {
+				goto mscp_err;
+			}
+			if(maxlen) {
+				maxlen--;
+			}
+			s = (UINT8)*str++;
+			c = (UINT8)*cmp++;
+		}
+		else {
+			if (((s - 'a') & 0xff) < 26) {
+				s -= 0x20;
+			}
+			c = (UINT8)*cmp++;
+			if (((c - 'a') & 0xff) < 26) {
+				c -= 0x20;
+			}
+		}
+		if (s != c) {
+			goto mscp_err;
+		}
+		if(maxlen) {
+			maxlen--;
+		}
+	} while(s && maxlen);
+	return(0);
+
+mscp_err:
+	return((s > c)?1:-1);
+}
+
 int STRCALL milsjis_memcmp(const char *str, const char *cmp) {
 
 	int		s;
@@ -173,6 +261,43 @@ int STRCALL milsjis_memcmp(const char *str, const char *cmp) {
 			return(0);
 		}
 	} while(s == c);
+	return((s > c)?1:-1);
+}
+
+int STRCALL milsjis_memncmp(const char *str, const char *cmp, unsigned int maxlen) {
+
+	int		s;
+	int		c;
+
+	do {
+		c = (UINT8)*cmp++;
+		if ((((c ^ 0x20) - 0xa1) & 0xff) < 0x3c) {
+			s = (UINT8)*str++;
+			if (c != s) {
+				break;
+			}
+			if(maxlen) {
+				maxlen--;
+			}
+			c = (UINT8)*cmp++;
+			s = (UINT8)*str++;
+		}
+		else if (c) {
+			if (((c - 'a') & 0xff) < 26) {
+				c &= ~0x20;
+			}
+			s = (UINT8)*str++;
+			if (((s - 'a') & 0xff) < 26) {
+				s &= ~0x20;
+			}
+		}
+		else {
+			return(0);
+		}
+		if(maxlen) {
+			maxlen--;
+		}
+	} while(s == c && cn);
 	return((s > c)?1:-1);
 }
 
@@ -308,6 +433,46 @@ mscp_err:
 	return((s > c)?1:-1);
 }
 
+int STRCALL mileuc_ncmp(const OEMCHAR *str, const OEMCHAR *cmp, unsigned int maxlen) {
+
+	int		s;
+	int		c;
+
+	do {
+		s = (UINT8)*str++;
+		if (s & 0x80) {
+			c = (UINT8)*cmp++;
+			if (s != c) {
+				goto mscp_err;
+			}
+			if(maxlen) {
+				maxlen--;
+			}
+			s = (UINT8)*str++;
+			c = (UINT8)*cmp++;
+		}
+		else {
+			if (((s - 'a') & 0xff) < 26) {
+				s -= 0x20;
+			}
+			c = (UINT8)*cmp++;
+			if (((c - 'a') & 0xff) < 26) {
+				c -= 0x20;
+			}
+		}
+		if (s != c) {
+			goto mscp_err;
+		}
+		if(maxlen) {
+			maxlen--;
+		}
+	} while(s && maxlen);
+	return(0);
+
+mscp_err:
+	return((s > c)?1:-1);
+}
+
 int STRCALL mileuc_memcmp(const char *str, const char *cmp) {
 
 	int		s;
@@ -336,6 +501,43 @@ int STRCALL mileuc_memcmp(const char *str, const char *cmp) {
 			return(0);
 		}
 	} while(s == c);
+	return((s > c)?1:-1);
+}
+
+int STRCALL mileuc_memncmp(const char *str, const char *cmp, unsigned int maxlen) {
+
+	int		s;
+	int		c;
+
+	do {
+		c = (UINT8)*cmp++;
+		if (c & 0x80) {
+			s = (UINT8)*str++;
+			if (c != s) {
+				break;
+			}
+			if(maxlen) {
+				maxlen--;
+			}
+			c = (UINT8)*cmp++;
+			s = (UINT8)*str++;
+		}
+		else if (c) {
+			if (((c - 'a') & 0xff) < 26) {
+				c -= 0x20;
+			}
+			s = (UINT8)*str++;
+			if (((s - 'a') & 0xff) < 26) {
+				s -= 0x20;
+			}
+		}
+		else {
+			return(0);
+		}
+		if(maxlen) {
+			maxlen--;
+		}
+	} while(s == c && maxlen);
 	return((s > c)?1:-1);
 }
 
@@ -471,6 +673,30 @@ int STRCALL milutf8_cmp(const OEMCHAR *str, const OEMCHAR *cmp) {
 	return(0);
 }
 
+int STRCALL milutf8_ncmp(const OEMCHAR *str, const OEMCHAR *cmp, unsigned int maxlen) {
+
+	int		s;
+	int		c;
+
+	do {
+		s = (UINT8)*str++;
+		if (((s - 'a') & 0xff) < 26) {
+			s -= 0x20;
+		}
+		c = (UINT8)*cmp++;
+		if (((c - 'a') & 0xff) < 26) {
+			c -= 0x20;
+		}
+		if (s != c) {
+			return((s > c)?1:-1);
+		}
+		if(maxlen) {
+			maxlen--;
+		}
+	} while(s && maxlen);
+	return(0);
+}
+
 int STRCALL milutf8_memcmp(const char *str, const char *cmp) {
 
 	int		s;
@@ -489,6 +715,30 @@ int STRCALL milutf8_memcmp(const char *str, const char *cmp) {
 			s -= 0x20;
 		}
 	} while(s == c);
+	return((s > c)?1:-1);
+}
+
+int STRCALL milutf8_memncmp(const char *str, const char *cmp, unsigned int maxlen) {
+
+	int		s;
+	int		c;
+
+	do {
+		c = (UINT8)*cmp++;
+		if (c == 0) {
+			return(0);
+		}
+		if (((c - 'a') & 0xff) < 26) {
+			c -= 0x20;
+		}
+		s = (UINT8)*str++;
+		if (((s - 'a') & 0xff) < 26) {
+			s -= 0x20;
+		}
+		if(maxlen) {
+			maxlen--;
+		}
+	} while(s == c && maxlen);
 	return((s > c)?1:-1);
 }
 

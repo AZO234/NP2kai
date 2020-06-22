@@ -64,6 +64,7 @@ typedef struct {
 #if defined(SUPPORT_JOYSTICK)
 
 REG8 joymng_getstat(void);
+REG8 joymng_available(void);
 
 // -- X11
 void joymng_initialize(void);
@@ -74,6 +75,7 @@ void joymng_sync(void);
 #else	/* !SUPPORT_JOYSTICK */
 
 #define	joymng_getstat()		(REG8)0xff
+#define	joymng_available()		(REG8)0
 
 // -- X11
 #define	joymng_initialize()		(np2oscfg.JOYPAD1 |= 2)

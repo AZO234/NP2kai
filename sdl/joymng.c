@@ -176,8 +176,10 @@ joymng_getstat(void)
 	JOYINFO_T ji;
 	int i;
 
+	joyavailable = 0;
 	if ((np2oscfg.JOYPAD1 == 1) && joyinfo.hdl) {
 		if (joydrv_getstat(joyinfo.hdl, &ji) == SUCCESS) {
+			joyavailable = 1;
 			np2oscfg.JOYPAD1 |= 0x80;
 			joyinfo.flag = 0xff;
 
@@ -205,6 +207,10 @@ joymng_getstat(void)
 	}
 
 	return joyinfo.flag;
+}
+
+REG8 joymng_available(void) {
+	return(joyavailable);
 }
 
 #if defined(USE_SDL_JOYSTICK)
