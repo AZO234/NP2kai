@@ -255,30 +255,8 @@ uninstall_idle_process(void)
 BRESULT
 gui_gtk_arginit(int *argcp, char ***argvp)
 {
-	char buf[MAX_PATH];
-
 	gtk_set_locale();
 	gtk_init(argcp, argvp);
-
-	char *config_home = getenv("XDG_CONFIG_HOME");
-	char *home = getenv("HOME");
-	if (config_home && config_home[0] == '/') {
-		/* base dir */
-		g_snprintf(buf, sizeof(buf), "%s/xnp2kai/", config_home);
-	} else if (home) {
-		/* base dir */
-		g_snprintf(buf, sizeof(buf), "%s/.config/xnp2kai/", home);
-	} else {
-		g_printerr("$HOME isn't defined.\n");
-		exit(1);
-	}
-
-	g_strlcat(buf, "gtkrc", sizeof(buf));
-	gtk_rc_add_default_file(buf);
-
-	g_strlcat(buf, "accels", sizeof(buf));
-	if (g_file_test(buf, G_FILE_TEST_IS_REGULAR))
-		gtk_accel_map_load(buf);
 
 	return SUCCESS;
 }

@@ -335,10 +335,10 @@ $ emrun <Emscripten NP2kai filename>.html
 ```
 </div></details>
 
-### OpenDigux
+### OpenDingux
 
 <details><summary>
-OpenDigux
+OpenDingux
 </summary><div>
 
 #### Install tools
@@ -346,6 +346,7 @@ OpenDigux
 1. Install host toolchain to /opt/gcw0-toolchain with [buildroot](https://github.com/OpenDingux/buildroot).
 - RG350
 1. Install host toolchain to /opt/rg350-toolchain with [RG350_buildroot](https://github.com/tonyjih/RG350_buildroot).
+2. [patch](https://raw.githubusercontent.com/AZO234/RAcross_linux/master/RG350_buildroot.patch).
 - RS90
 1. Install host toolchain to /opt/rs90-toolchain with [buildroot](https://github.com/OpenDingux/buildroot).
 
