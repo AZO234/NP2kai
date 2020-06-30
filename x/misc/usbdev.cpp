@@ -8,7 +8,7 @@
 
 #define	XFER_TIMEOUT	1000	/* ms */
 
-#ifdef USE_LIBUSB1
+#ifdef SUPPORT_USB
 #if 0
 class USBDeviceLock {
 public:
@@ -36,14 +36,14 @@ private:
  * コンストラクタ
  */
 CUsbDev::CUsbDev()
-#ifdef USE_LIBUSB1
+#ifdef SUPPORT_USB
     : m_ctx(NULL)
     , m_handle(NULL)
     , m_readEp(0)
     , m_writeEp(0)
 #endif
 {
-#ifdef USE_LIBUSB1
+#ifdef SUPPORT_USB
 	if (libusb_init(&m_ctx) != 0)
 		printf("USB library init failed.");
 #endif
@@ -54,7 +54,7 @@ CUsbDev::CUsbDev()
  */
 CUsbDev::~CUsbDev()
 {
-#ifdef USE_LIBUSB1
+#ifdef SUPPORT_USB
 	if (m_ctx != NULL) {
 		libusb_exit(m_ctx);
 		m_ctx = NULL;
@@ -72,7 +72,7 @@ CUsbDev::~CUsbDev()
  */
 bool CUsbDev::Open(unsigned int vid, unsigned int pid, unsigned int nIndex)
 {
-#ifdef USE_LIBUSB1
+#ifdef SUPPORT_USB
 	libusb_device **list = NULL;
 	libusb_device_handle *handle = NULL;
 	struct libusb_config_descriptor *conf = NULL;
@@ -183,7 +183,7 @@ bool CUsbDev::Open(unsigned int vid, unsigned int pid, unsigned int nIndex)
  */
 void CUsbDev::Close()
 {
-#ifdef USE_LIBUSB1
+#ifdef SUPPORT_USB
 	if (m_handle != NULL) {
 #if 1
 		libusb_release_interface(m_handle, 0);
@@ -206,7 +206,7 @@ void CUsbDev::Close()
  */
 int CUsbDev::CtrlXfer(int nType, int nRequest, int nValue, int nIndex, void* lpBuffer, int cbBuffer)
 {
-#ifdef USE_LIBUSB1
+#ifdef SUPPORT_USB
 	if (m_handle != NULL) {
 //		USBDeviceLock lock(m_handle);
 		int numBytesXfer = libusb_control_transfer(m_handle, nType,
@@ -232,7 +232,7 @@ int CUsbDev::CtrlXfer(int nType, int nRequest, int nValue, int nIndex, void* lpB
  */
 int CUsbDev::WriteBulk(const void* lpBuffer, int cbBuffer)
 {
-#ifdef USE_LIBUSB1
+#ifdef SUPPORT_USB
 	if (m_handle != NULL) {
 //		USBDeviceLock lock(m_handle);
 		int numBytesWrite;
@@ -258,7 +258,7 @@ int CUsbDev::WriteBulk(const void* lpBuffer, int cbBuffer)
  */
 int CUsbDev::ReadBulk(void* lpBuffer, int cbBuffer)
 {
-#ifdef USE_LIBUSB1
+#ifdef SUPPORT_USB
 	if (m_handle != NULL) {
 //		USBDeviceLock lock(m_handle);
 		int numBytesRead;

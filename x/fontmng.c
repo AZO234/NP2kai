@@ -4,7 +4,7 @@
  */
 
 #include <compiler.h>
-#include <fontmng.h>
+#include "fontmng.h"
 
 #include "ank12.res"
 
