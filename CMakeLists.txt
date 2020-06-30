@@ -9,6 +9,7 @@ project(
 )
 
 cmake_policy(SET CMP0076 NEW)
+list(APPEND CMAKE_MODULE_PATH "${NP2kai_SOURCE_DIR}/cmake")
 
 # Windows
 if(WIN32 OR MSVC_VERSION OR MINGW OR MSYS OR CYGWIN)
@@ -487,26 +488,11 @@ if(NOT CMAKE_CROSSCOMPILING)
 	endif()
 
 	# libusb
-	if(NOT NP2kai_Windows)
-		find_path(LIBUSB_INCLUDE_DIR NAMES libusb.h PATH_SUFFIXES "include" "libusb" "libusb-1.0")
-		find_library(LIBUSB_LIBRARY NAMES usb PATH_SUFFIXES "lib" "lib32" "lib64")
-		if(NOT LIBUSB_INCLUDE_DIR STREQUAL "" AND NOT LIBUSB_LIBRARY STREQUAL "")
-			if(LIBUSB_LIBRARY STREQUAL "LIBUSB_LIBRARY-NOTFOUND")
-				set(LIBUSB_LIBRARY "")
-			endif()
-			message("-- Found libusb")
-		else()
-			if(USE_USB)
-				message(FATAL_ERROR "-- Not found libusb")
-			else()
-				message("-- Not found libusb")
-			endif()
-		endif()
-	endif()
 	if(USE_USB)
+		find_package(Libusb1 REQUIRED)
 		list(APPEND lib_usb_definitions "SUPPORT_USB")
-		list(APPEND lib_usb_include_dirs ${LIBUSB_INCLUDE_DIR})
-		list(APPEND lib_usb_libraries ${LIBUSB_LIBRARY})
+		list(APPEND lib_usb_include_dirs ${LIBUSB1_INCLUDE_DIRS})
+		list(APPEND lib_usb_libraries ${LIBUSB1_LIBRARIES})
 	endif()
 
 	# X11
