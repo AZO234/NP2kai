@@ -7,7 +7,7 @@
 
 #include <compiler.h>
 
-#ifdef USE_LIBUSB1
+#ifdef SUPPORT_USB
 #include <libusb.h>
 #endif
 
@@ -27,7 +27,7 @@ public:
 	bool IsOpened() const;
 
 private:
-#ifdef USE_LIBUSB1
+#ifdef SUPPORT_USB
 	libusb_context *m_ctx;
 	libusb_device_handle *m_handle;
 	unsigned char m_readEp, m_writeEp;
@@ -41,7 +41,7 @@ private:
  */
 inline bool CUsbDev::IsOpened() const
 {
-#ifdef USE_LIBUSB1
+#ifdef SUPPORT_USB
 	if (m_handle != NULL)
 		return true;
 #endif

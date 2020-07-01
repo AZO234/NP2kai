@@ -5,7 +5,6 @@ real_topsrcdir=	$(top_srcdir)/..
 dist_pkgdata_DATA=	$(real_topsrcdir)/x/resources/fddseek.wav \
 			$(real_topsrcdir)/x/resources/fddseek1.wav \
 			$(real_topsrcdir)/x/resources/relay1.wav
-dist_pkgdata_DATA+=	$(real_topsrcdir)/np2tool/np2tool.d88
 
 #EMUFM_SOURCES=	$(real_topsrcdir)/sound/opl3.c \
 #		$(real_topsrcdir)/sound/opna.c
