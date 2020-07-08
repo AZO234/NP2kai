@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Jun 23, 2020<br>
+Jul 8, 2020<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -855,6 +855,30 @@ Then we can use follow types HDD image files.<br>
 </div></details>
 
 <details><summary>
+Text editor
+</summary><div>
+
+MS-DOS for PC-9801 include 'SEDIT.EXE' text editor.<br>
+Also there is 'VZ Editor' product.
+</div></details>
+
+<details><summary>
+About LHA(lzh) archived file
+</summary><div>
+
+File has extention '.lzh' is compressed file by [LHA](https://www.vector.co.jp/soft/dos/util/se002413.html).<br>
+If to extract only, you can use [LHE](https://www.vector.co.jp/soft/dos/util/se017776.html).
+</div></details>
+
+<details><summary>
+File manager
+</summary><div>
+
+To file management, you can use [FILMTN](https://www.vector.co.jp/soft/dos/util/se001385.html) and [LHMTN](https://www.vector.co.jp/soft/dos/util/se001396.html),<br>
+or [FD](https://www.vector.co.jp/soft/dos/util/se000010.html).<br>
+</div></details>
+
+<details><summary>
 Memory driver
 </summary><div>
 
@@ -879,8 +903,9 @@ MS-DOS 6 can use lower 64MB XMS.
 
 XMB can use as UMB(386KB), EMB by<br>
 EMM386.EXE(old EMM386.SYS) is written in CONFIG.SYS.<br>
-<code>DEVICE=A:&yen;DOS&yen;EMM386.EXE /P=64 /UMB</code><br>
-'/P=64' means using EMS 64page (1page=16KB).
+<code>DEVICE=A:&yen;DOS&yen;EMM386.EXE /P=64 /UMB /DPMI</code><br>
+'/P=64' means using EMS 64page (1page=16KB).<br>
+'/DPMI' means with DPMI support.
 
 Normaly, MS-DOS is located on conventional memory.<br>
 You can use XMB and UMB, DOS can be located on them,
@@ -892,6 +917,22 @@ If you use upper 64MB XMB,<br>
 you can use [VEM486](https://www.vector.co.jp/soft/dos/hardware/se025675.html) (deposit software)<br>
 instead of HIMEM.SYS and EMM386.EXE.<br>
 <code>DEVICE=A:&yen;VEM486&yen;VEM486.EXE</code>
+</div></details>
+
+<details><summary>
+Running Turbo C++ 4.0
+</summary><div>
+
+To run Turbo C++ 4.0, use HIMEM.SYS only.
+</div></details>
+
+<details><summary>
+Running NASM
+</summary><div>
+
+To run NASM, use DPMI(HIMEM.SYS + EMM386.EXE + DPMI option).<br>
+And before run NASM, set swap follow command.<br>
+<code>A:&yen;NASM&yen;CWSDPMI.EXE -S A:&yen;NASM&yen;CWSDPMI.SWP</code>
 </div></details>
 
 <details><summary>
