@@ -197,6 +197,13 @@ $ make install
 
 ### X with GTK2 and SDL
 
+
+#### Arch Linux
+
+For the [latest release](https://github.com/AZO234/NP2kai/releases), a package can be found in the [AUR](https://aur.archlinux.org/packages/xnp2kai-azo234/)
+
+Fonts are **NOT** included in the AUR package.
+
 *temporary*<br>
 It seems slow xnp2kai's dialog now, on Ubuntu GNOME.<br>
 (Maybe GTK issue. No problem on Ubuntu MATE.)<br>
@@ -451,7 +458,7 @@ sudo apt install 'fonts-takao-*'
 ```
 and
 ```
-ls -n /usr/share/fonts/truetype/takao-gothic/TakaoGothic.ttf BIOSdirectory/default.ttf'
+ln -s /usr/share/fonts/truetype/takao-gothic/TakaoGothic.ttf BIOSdirectory/default.ttf'
 ```
 Already exist 'font.tmp', delete this.<br>
 And start NP2kai.<br>
