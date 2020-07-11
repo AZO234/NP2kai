@@ -944,7 +944,7 @@ And before run NASM, set swap follow command.<br>
 CWSDPMI.EXE is loaded on memory continuous.<br>
 <code>A:&yen;NASM&yen;CWSDPMI.EXE -P -S A:&yen;NASM&yen;CWSDPMI.SWP</code><br>
 To free<br>
-<code>A:&yen;NASM&yen;CWSDPMI.EXE -U<br>
+<code>A:&yen;NASM&yen;CWSDPMI.EXE -U</code><br>
 </div></details>
 
 <details><summary>
