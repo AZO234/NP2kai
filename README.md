@@ -940,6 +940,30 @@ Running NASM
 To run NASM, use DPMI(HIMEM.SYS + EMM386.EXE + DPMI option).<br>
 And before run NASM, set swap follow command.<br>
 <code>A:&yen;NASM&yen;CWSDPMI.EXE -S A:&yen;NASM&yen;CWSDPMI.SWP</code>
+
+CWSDPMI.EXE is loaded on memory continuous.<br>
+<code>A:&yen;NASM&yen;CWSDPMI.EXE -P -S A:&yen;NASM&yen;CWSDPMI.SWP</code><br>
+To free<br>
+<code>A:&yen;NASM&yen;CWSDPMI.EXE -U<br>
+</div></details>
+
+<details><summary>
+Using linker
+</summary><div>
+
+I think better linker is genarate 16bit executable one.<br>
+(Ex.LNK563)<br>
+if Not careful, you can use MASM's linker.<br>
+</div></details>
+
+<details><summary>
+About MS-C
+</summary><div>
+
+When MS-C ver.5 is released, users use MS-DOS 3.0.<br>
+MS-C ver.6 is worked on Windows DOS prompt only.<br>
+Then MS-C is unconvenience to MS-DOS.<br>
+I think Turbo C++ 4.0 is used.
 </div></details>
 
 <details><summary>
