@@ -314,7 +314,7 @@ static REG8 IOINPCALL gameport_i4d2(UINT port)
 {
 	UINT64 clockdiff;
 	if(!joymng_available()){
-		return;
+		return 0xff;
 	}
 #if defined(SUPPORT_IA32_HAXM)
 	if(gameport_useqpc){
