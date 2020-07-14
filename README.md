@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Jul 8, 2020<br>
+Jul 14, 2020<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -1149,6 +1149,8 @@ Next boot computer, you command from 4.
 </div></details>
 
 ## Release
+- Jul 14, 2020
+  - add mouse input off
 - Jun 23, 2020
   - merge NP21/W rev.75
 - Jun 21, 2020

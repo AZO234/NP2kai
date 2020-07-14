@@ -795,6 +795,17 @@ struct retro_core_option_definition option_defs_us[] = {
       "ON"
    },
   {
+    "np2kai_inputmouse",
+    "Use mouse or touchpanel to input mouse",
+    "",
+    {
+      {"OFF", NULL},
+      {"ON", NULL},
+      {NULL, NULL},
+    },
+    "ON"
+  },
+  {
     "np2kai_stick2mouse",
     "S2M(Joypad Analog Stick to Mouse) Mapping",
     "Emulate a mouse on your gamepad's analog stick.",
@@ -1632,6 +1643,17 @@ struct retro_core_option_definition option_defs_ja[] = {
       },
       "ON"
    },
+  {
+    "np2kai_inputmouse",
+    "マウス操作用にマウスまたはタッチパッドを使用",
+    "",
+    {
+      {"OFF", NULL},
+      {"ON", NULL},
+      {NULL, NULL},
+    },
+    "ON"
+  },
   {
     "np2kai_stick2mouse",
     "S2M(ジョイパッド アナログスティック->マウス マッピング",

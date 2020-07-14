@@ -429,6 +429,7 @@ static int s2m;
 static int s2m_no;
 static uint8_t s2m_shift;
 static BOOL abKeyStat[0x200];
+static BOOL m_bInputMouse;
 
 static int j2k_pad[12] = { 
    RETRO_DEVICE_ID_JOYPAD_UP,
@@ -588,17 +589,19 @@ void updateInput(){
   // --- move mouse
 
   // mouse
-  int mouse_x_device = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
-  int mouse_y_device = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
+  if(m_bInputMouse) {
+		int mouse_x_device = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
+		int mouse_y_device = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
 
-  if(menuvram == NULL) {
-    mousemng_sync(mouse_x_device, mouse_y_device);
-  } else {
-    mposx += mouse_x_device; if(mposx < 0) mposx = 0; if(mposx >= w) mposx = w - 1;
-    mposy += mouse_y_device; if(mposy < 0) mposy = 0; if(mposy >= h) mposy = h - 1;
-    if(lastx != mposx || lasty != mposy)
-      menubase_moving(mposx, mposy, 0);
-  }
+		if(menuvram == NULL) {
+		  mousemng_sync(mouse_x_device, mouse_y_device);
+		} else {
+		  mposx += mouse_x_device; if(mposx < 0) mposx = 0; if(mposx >= w) mposx = w - 1;
+		  mposy += mouse_y_device; if(mposy < 0) mposy = 0; if(mposy >= h) mposy = h - 1;
+		  if(lastx != mposx || lasty != mposy)
+		    menubase_moving(mposx, mposy, 0);
+		}
+	}
 
   // Joy2Mouse
   if(m_tJoyMode == LR_NP2KAI_JOYMODE_MOUSE) {
@@ -1407,6 +1410,16 @@ static void update_variables(void)
       else
          np2cfg.usecdecc = 0;
    }
+
+  var.key = "np2kai_inputmouse";
+  var.value = NULL;
+  if(environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
+    if(strcmp(var.value, "ON") == 0) {
+      m_bInputMouse = true;
+    } else {
+      m_bInputMouse = false;
+    }
+  }
 
   var.key = "np2kai_stick2mouse";
   var.value = NULL;
