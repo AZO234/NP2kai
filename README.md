@@ -68,6 +68,9 @@ $ ./libretro-build-ios.sh np2kai
 2. Locate BIOS files to np2kai in libretro's system directory (libretro/system/np2kai).
 
 NP2 menu is shown F12 or mouse middle button or L2, to swap FDD/HDD diskimages.
+
+On Android, Game Files are need to locate in '/storage/emulated/0/RetroArch' by access rights reason.
+Game Files cannot locate on external storage.
 </div></details>
 
 ### VisualStudio 2019
