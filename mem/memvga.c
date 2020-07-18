@@ -401,6 +401,16 @@ void MEMCALL memvgaio_wr8(UINT32 address, REG8 value) {
 	}
 	pos = address - 0x0100;
 	if (pos < 0x20) {
+		if(pos == PEGC_REG_MODE){
+#ifdef SUPPORT_PEGC
+			if(pegc.enable){
+				value &= 0x1;
+			}
+#endif
+			else{
+				value = 0x0;
+			}
+		}
 		vramop.mio2[pos] = value;
 		return;
 	}
