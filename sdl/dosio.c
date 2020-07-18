@@ -48,9 +48,12 @@ FILEH file_open(const OEMCHAR *path) {
   FILEH hRes = NULL;
 
 #if defined(__LIBRETRO__)
+  if(log_cb) {
+    log_cb(RETRO_LOG_INFO, "Open file (RO) %s.\n", path);
+  }
   hRes = filestream_open(path, RETRO_VFS_FILE_ACCESS_READ_WRITE | RETRO_VFS_FILE_ACCESS_UPDATE_EXISTING, RETRO_VFS_FILE_ACCESS_HINT_NONE);
   if(!hRes && log_cb) {
-    log_cb(RETRO_LOG_INFO, "Couldn't open file (RW) %s.\n", path);
+    log_cb(RETRO_LOG_WARN, "Couldn't open file (RW) %s.\n", path);
   }
 #elif defined(_WINDOWS) && defined(OSLANG_UTF8)
 	wchar_t	wpath[MAX_PATH];
@@ -67,9 +70,12 @@ FILEH file_open_rb(const OEMCHAR *path) {
   FILEH hRes = NULL;
 
 #if defined(__LIBRETRO__)
+  if(log_cb) {
+    log_cb(RETRO_LOG_INFO, "Open file (RO) %s.\n", path);
+  }
   hRes = filestream_open(path, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
   if(!hRes && log_cb) {
-    log_cb(RETRO_LOG_INFO, "Couldn't open file (RO) %s.\n", path);
+    log_cb(RETRO_LOG_WARN, "Couldn't open file (RO) %s.\n", path);
   }
 #elif defined(_WINDOWS) && defined(OSLANG_UTF8)
 	wchar_t	wpath[MAX_PATH];
@@ -86,9 +92,12 @@ FILEH file_create(const OEMCHAR *path) {
   FILEH hRes = NULL;
 
 #if defined(__LIBRETRO__)
+  if(log_cb) {
+    log_cb(RETRO_LOG_INFO, "Open file (W) %s.\n", path);
+  }
 	hRes = filestream_open(path, RETRO_VFS_FILE_ACCESS_READ_WRITE, RETRO_VFS_FILE_ACCESS_HINT_NONE);
   if(!hRes && log_cb) {
-    log_cb(RETRO_LOG_INFO, "Couldn't open file (W) %s.\n", path);
+    log_cb(RETRO_LOG_WARN, "Couldn't open file (W) %s.\n", path);
   }
 #elif defined(_WINDOWS) && defined(OSLANG_UTF8)
 	wchar_t	wpath[MAX_PATH];
