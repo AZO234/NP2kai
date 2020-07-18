@@ -65,7 +65,7 @@ signed short soundbuf[SNDSZ*2]; //16bit*2ch
 char RPATH[512];
 OEMCHAR tmppath[MAX_PATH];
 
-static retro_log_printf_t log_cb = NULL;
+retro_log_printf_t log_cb = NULL;
 static retro_video_refresh_t video_cb = NULL;
 static retro_input_poll_t poll_cb = NULL;
 retro_input_state_t input_cb = NULL;
