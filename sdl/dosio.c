@@ -49,7 +49,7 @@ FILEH file_open(const OEMCHAR *path) {
 
 #if defined(__LIBRETRO__)
   if(log_cb) {
-    log_cb(RETRO_LOG_INFO, "Open file (RO) %s.\n", path);
+    log_cb(RETRO_LOG_INFO, "Open file (RW) %s.\n", path);
   }
   hRes = filestream_open(path, RETRO_VFS_FILE_ACCESS_READ_WRITE | RETRO_VFS_FILE_ACCESS_UPDATE_EXISTING, RETRO_VFS_FILE_ACCESS_HINT_NONE);
   if(!hRes && log_cb) {

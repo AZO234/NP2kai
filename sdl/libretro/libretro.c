@@ -847,12 +847,12 @@ void retro_set_environment(retro_environment_t cb)
 
    environ_cb(RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME, &allow_no_game);
 
-   if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &logging))
-      log_cb = logging.log;
-   else
-      log_cb = NULL;
+//   if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &logging))
+//      log_cb = logging.log;
+//   else
+//      log_cb = NULL;
 
-   libretro_set_core_options(environ_cb);
+//   libretro_set_core_options(environ_cb);
 }
 
 static void update_variables(void)
@@ -1605,6 +1605,10 @@ void retro_init (void)
 
 	if (log_cb)
 		log_cb(RETRO_LOG_INFO, "Logger interface initialized\n");
+
+   if(log_cb) {
+      log_cb(RETRO_LOG_INFO, "*** Start NP2kai " NP2KAI_GIT_TAG " " NP2KAI_GIT_HASH "***\n");
+   }
 
    uint64_t statestate = \
       RETRO_SERIALIZATION_QUIRK_MUST_INITIALIZE | \
