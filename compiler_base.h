@@ -190,13 +190,13 @@ typedef	int16_t  INT16;
 typedef	INT16    SINT16;
 typedef	uint16_t UINT16;
 typedef	INT32    SINT32;
-#if defined(NP2_CPU_64BIT)
+#if defined(NP2_CPU_64BIT) || defined(__arm__)
 typedef	int64_t  INT64;
 typedef	uint64_t UINT64;
 typedef	INT64    SINT64;
 #else
-#if !defined(__MINGW32__)  // for libretro
-//#if !defined(_WINDOWS)  // for me
+#if !defined(__MINGW32__) && !defined(__arm__)  // for libretro
+//#if !defined(_WINDOWS) && !defined(__arm__)  // for me
 typedef	int32_t  INT64;
 typedef	uint32_t UINT64;
 #endif

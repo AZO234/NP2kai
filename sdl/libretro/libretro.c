@@ -847,12 +847,7 @@ void retro_set_environment(retro_environment_t cb)
 
    environ_cb(RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME, &allow_no_game);
 
-//   if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &logging))
-//      log_cb = logging.log;
-//   else
-//      log_cb = NULL;
-
-//   libretro_set_core_options(environ_cb);
+   libretro_set_core_options(environ_cb);
 }
 
 static void update_variables(void)
