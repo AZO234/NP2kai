@@ -712,8 +712,12 @@ void updateInput(){
   // --- input mouse button
 
   // mouse
-  int mouse_l_device = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_LEFT);
-  int mouse_r_device = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_RIGHT);
+  int mouse_l_device = 0;
+  int mouse_r_device = 0;
+  if(m_bInputMouse) {
+    mouse_l_device = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_LEFT);
+    mouse_r_device = input_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_RIGHT);
+  }
   int mouse_l, mouse_r;
 
   mouse_l = mouse_r = 0;
