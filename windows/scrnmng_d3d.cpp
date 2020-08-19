@@ -1425,6 +1425,17 @@ void scrnmngD3D_update(void) {
 					rect = &d3d.rectclip;
 					scrn = &d3d.scrnclip;
 				}
+				scrnoffset = (scrn->right - scrn->left)/(rect->right - rect->left);
+
+				RECT lastrect = *rect;
+				RECT lastscrn = *scrn;
+				rect->right++; // ‚È‚¼‚Ì’²®
+				scrn->left -= scrnoffset; // ‚È‚¼‚Ì’²®
+				if(scrn->left < 0){
+					// for full mode
+					rect->left++; // ‚È‚¼‚Ì’²®
+					scrn->left += scrnoffset; // ‚È‚¼‚Ì’²®
+				}
 
 				rectbuf.right = (rect->right - rect->left) * d3d.backsurf2mul;
 				rectbuf.bottom = (rect->bottom - rect->top) * d3d.backsurf2mul;
@@ -1461,8 +1472,8 @@ void scrnmngD3D_update(void) {
 				}else{
 					r = d3d.d3ddev->StretchRect(d3d.backsurf, rect, d3d.d3dbacksurf, scrn, D3DTEXF_LINEAR);
 				}
-				rect->right--; // ‚È‚¼‚Ì’²®
-				scrn->left += scrnoffset; // ‚È‚¼‚Ì’²®
+				*rect = lastrect;
+				*scrn = lastscrn;
 			}
 			else {
 				if (scrnmng.allflash) {
@@ -1534,19 +1545,22 @@ void scrnmngD3D_update(void) {
 					scrn = &d3d.scrnclip;
 				}
 				scrnoffset = (scrn->right - scrn->left)/(rect->right - rect->left);
+				RECT lastrect = *rect;
+				RECT lastscrn = *scrn;
 				if(nvidia_fixflag){
 					rect->right++; // ‚È‚¼‚Ì’²®
 					scrn->left -= scrnoffset; // ‚È‚¼‚Ì’²®
 					scrn->right -= ((1 << (scrnoffset-1)) >> 1);
 					scrn->bottom -= ((1 << (scrnoffset-1)) >> 1);
 				}
-				r = d3d.d3ddev->StretchRect(d3d.backsurf, rect, d3d.d3dbacksurf, scrn, d3dtexf);
-				if(nvidia_fixflag){
-					rect->right--; // ‚È‚¼‚Ì’²®
+				if(scrn->left < 0){
+					// for full mode
+					rect->left++; // ‚È‚¼‚Ì’²®
 					scrn->left += scrnoffset; // ‚È‚¼‚Ì’²®
-					scrn->right += ((1 << (scrnoffset-1)) >> 1);
-					scrn->bottom += ((1 << (scrnoffset-1)) >> 1);
 				}
+				r = d3d.d3ddev->StretchRect(d3d.backsurf, rect, d3d.d3dbacksurf, scrn, d3dtexf);
+				*rect = lastrect;
+				*scrn = lastscrn;
 			}
 			else {
 				if (scrnmng.allflash) {

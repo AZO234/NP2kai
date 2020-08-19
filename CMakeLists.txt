@@ -488,11 +488,13 @@ if(NOT CMAKE_CROSSCOMPILING)
 	endif()
 
 	# libusb
+	if(NOT MSVC_VERSION)  # temporaly
 	if(USE_USB)
 		find_package(Libusb1 REQUIRED)
 		list(APPEND lib_usb_definitions "SUPPORT_USB")
 		list(APPEND lib_usb_include_dirs ${LIBUSB1_INCLUDE_DIRS})
 		list(APPEND lib_usb_libraries ${LIBUSB1_LIBRARIES})
+	endif()
 	endif()
 
 	# X11

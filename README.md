@@ -1152,8 +1152,12 @@ Next boot computer, you command from 4.
 </div></details>
 
 ## Release
+- Aug 19, 2020
+  - merge NP21/W rev.77
 - Aug 12, 2020
   - fix mouse input off
+- Jul 18, 2020
+  - merge NP21/W rev.76
 - Jul 14, 2020
   - add mouse input off
 - Jun 23, 2020
