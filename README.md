@@ -1104,7 +1104,7 @@ $ sudo apt-get install timidity fluid-soundfont-gm
 ```
 2. Edit timidity.cfg
 ```
-$ sudo nano /etc/timidity
+$ sudo nano /etc/timidity/timidity.cfg
 ```
 ```
 #source /etc/timidity/freepats.cfg<br>
