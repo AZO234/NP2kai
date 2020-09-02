@@ -75,9 +75,11 @@ create_about_dialog(void)
 	gtk_box_pack_start(GTK_BOX(main_widget), neko_image, FALSE, FALSE, 10);
 
 	milstr_ncpy(work, "Neko Project II kai\n", sizeof(work));
-	milstr_ncat(work, NP2VER_CORE, sizeof(work));
+	milstr_ncat(work, NP2KAI_GIT_TAG, sizeof(work));
+	milstr_ncat(work, " ", sizeof(work));
+	milstr_ncat(work, NP2KAI_GIT_HASH, sizeof(work));
 	milstr_ncat(work, "\n", sizeof(work));
-	milstr_ncat(work, NP2VER_GIT, sizeof(work));
+	milstr_ncat(work, NP2KAI_BUILDER, sizeof(work));
 	ver_label = gtk_label_new(work);
 	gtk_widget_show(ver_label);
 	gtk_box_pack_start(GTK_BOX(main_widget), ver_label, FALSE, FALSE, 10);

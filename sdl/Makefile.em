@@ -13,10 +13,6 @@ SUPPORT_ASYNC_CPU ?= 0
 SDL_VERSION ?= 2
 
 # Nixpkgs has not Git. Need version and hash is given by env variants.
-ifneq ($(NP2KAI_COMMIT),)
-GIT_TAG := $(shell echo $(NP2KAI_COMMIT) | sed 's/\(rev.[0-9]\+\) - dev [0-9a-f]\{7\}/\1/')
-GIT_HASH := $(shell echo $(NP2KAI_COMMIT) | sed 's/rev.[0-9]\+ - dev \([0-9a-f]\{7\}\)/\1/')
-else
 ifneq ($(NP2KAI_VERSION),)
 GIT_TAG := $(NP2KAI_VERSION)
 else
@@ -27,12 +23,16 @@ GIT_HASH := $(NP2KAI_HASH)
 else
 GIT_HASH := "$(shell git rev-parse --short HEAD)"
 endif
-endif
 ifeq ($(GIT_TAG),)
 $(error Need Git to build NP2kai.)
 endif
 ifeq ($(GIT_HASH),)
 $(error Need Git to build NP2kai.)
+endif
+ifeq ($(NP2KAI_BUILDER),)
+BUILDER := "localbuild"
+else
+BUILDER := $(NP2KAI_BUILDER)
 endif
 
 ifeq ($(SDL_VERSION), 1)
@@ -52,8 +52,8 @@ EMSCRIPTEN_TOTAL_MEMORY=67108864
 TARGET_NAME := np2kai.bc
 
 TARGET := $(TARGET_NAME)
-CFLAGS += -DNP2KAI_GIT_TAG=\"$(GIT_TAG)\" -DNP2KAI_GIT_HASH=\"$(GIT_HASH)\"
-CXXFLAGS += -DNP2KAI_GIT_TAG=\"$(GIT_TAG)\" -DNP2KAI_GIT_HASH=\"$(GIT_HASH)\"
+CFLAGS += -DNP2KAI_GIT_TAG=\"$(GIT_TAG)\" -DNP2KAI_GIT_HASH=\"$(GIT_HASH)\" -DNP2KAI_BUILDER=\"$(BUILDER)\"
+CXXFLAGS += -DNP2KAI_GIT_TAG=\"$(GIT_TAG)\" -DNP2KAI_GIT_HASH=\"$(GIT_HASH)\" -DNP2KAI_BUILDER=\"$(BUILDER)\"
 fpic = -fPIC
 
 ifeq ($(DEBUG), 1)

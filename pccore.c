@@ -101,7 +101,7 @@
 #include <time.h>
 
 
-const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE " " NP2VER_GIT);
+const OEMCHAR np2version[] = OEMTEXT(NP2KAI_GIT_TAG " " NP2KAI_GIT_HASH);
 
 #if defined(_WIN32_WCE)
 #define	PCBASEMULTIPLE	2

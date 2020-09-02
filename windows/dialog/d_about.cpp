@@ -54,13 +54,18 @@ CAboutDlg::CAboutDlg(HWND hwndParent)
  */
 BOOL CAboutDlg::OnInitDialog()
 {
-	TCHAR szWork[128];
+	TCHAR szWork[256];
 	milstr_ncpy(szWork, s_np2title, _countof(szWork));
-	milstr_ncat(szWork, "\n", _countof(szWork));
-	milstr_ncat(szWork, np2version, _countof(szWork));
 #if defined(NP2VER_WIN9X)
+	milstr_ncat(szWork, "\n", _countof(szWork));
 	milstr_ncat(szWork, NP2VER_WIN9X, _countof(szWork));
 #endif
+	milstr_ncat(szWork, "\n", _countof(szWork));
+	milstr_ncat(szWork, NP2KAI_GIT_TAG, _countof(szWork));
+	milstr_ncat(szWork, " ", _countof(szWork));
+	milstr_ncat(szWork, NP2KAI_GIT_HASH, _countof(szWork));
+	milstr_ncat(szWork, "\n", _countof(szWork));
+	milstr_ncat(szWork, NP2KAI_BUILDER, _countof(szWork));
 	SetDlgItemText(IDC_NP2VER, szWork);
 
 	RECT rect;

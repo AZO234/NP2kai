@@ -619,7 +619,7 @@ int debugsnapshot_save(const UINT uNo) {
   }
 
   if(!uRes) {
-    OEMSTRCPY(tDebugSnapshot.strVersion, OEMTEXT(NP2VER_CORE) OEMTEXT(" ") OEMTEXT(NP2VER_GIT));
+    OEMSTRCPY(tDebugSnapshot.strVersion, OEMTEXT(NP2KAI_GIT_TAG) OEMTEXT(" ") OEMTEXT(NP2KAI_GIT_HASH));
     OEMSNPRINTF(
       tDebugSnapshot.strStatePath, MAX_PATH, OEMTEXT("%s%c%s_%d.state"),
       pstrBaseDir,
@@ -810,10 +810,10 @@ int debugsnapshot_load(const UINT uNo) {
     DBSS_MSG(strString);
     OEMSNPRINTF(
       strString, MAX_PATH, OEMTEXT("[debugss] Program ver: %s"),
-        OEMTEXT(NP2VER_CORE) OEMTEXT(" ") OEMTEXT(NP2VER_GIT)
+        OEMTEXT(NP2KAI_GIT_TAG) OEMTEXT(" ") OEMTEXT(NP2KAI_GIT_HASH)
     );
     DBSS_MSG(strString);
-    if(milstr_cmp(tDebugSnapshot.strVersion, OEMTEXT(NP2VER_CORE) OEMTEXT(" ") OEMTEXT(NP2VER_GIT)) != 0) {
+    if(milstr_cmp(tDebugSnapshot.strVersion, OEMTEXT(NP2KAI_GIT_TAG) OEMTEXT(" ") OEMTEXT(NP2KAI_GIT_HASH)) != 0) {
       DBSS_MSG("[debugss] not match version.");
       uRes = 4;
     }

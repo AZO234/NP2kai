@@ -8,5 +8,4 @@
 #else
 #define	NP2VER_CORE			"0.86"
 #endif
-#define	NP2VER_GIT			NP2KAI_GIT_TAG " " NP2KAI_GIT_HASH
 
