@@ -78,8 +78,6 @@ create_about_dialog(void)
 	milstr_ncat(work, NP2KAI_GIT_TAG, sizeof(work));
 	milstr_ncat(work, " ", sizeof(work));
 	milstr_ncat(work, NP2KAI_GIT_HASH, sizeof(work));
-	milstr_ncat(work, "\n", sizeof(work));
-	milstr_ncat(work, NP2KAI_BUILDER, sizeof(work));
 	ver_label = gtk_label_new(work);
 	gtk_widget_show(ver_label);
 	gtk_box_pack_start(GTK_BOX(main_widget), ver_label, FALSE, FALSE, 10);

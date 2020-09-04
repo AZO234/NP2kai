@@ -143,14 +143,9 @@ endif
 ifeq ($(GIT_HASH),)
 $(error Need Git to build NP2kai.)
 endif
-ifeq ($(NP2KAI_BUILDER),)
-BUILDER := "localbuild"
-else
-BUILDER := $(NP2KAI_BUILDER)
-endif
 
 ifneq ($(GIT_VERSION)," unknown")
-	COREFLAGS += -DNP2KAI_GIT_TAG=\"$(GIT_TAG)\" -DNP2KAI_GIT_HASH=\"$(GIT_HASH)\" -DNP2KAI_BUILDER=\"$(BUILDER)\"
+	COREFLAGS += -DNP2KAI_GIT_TAG=\"$(GIT_TAG)\" -DNP2KAI_GIT_HASH=\"$(GIT_HASH)\"
 endif
 include $(CLEAR_VARS)
 LOCAL_MODULE    := retro

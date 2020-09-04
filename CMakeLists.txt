@@ -44,11 +44,6 @@ if(NOT NP2kai_GIT_HASH)
 	message(FATAL_ERROR "Need Git command to build NP2kai.")
 endif()
 set(NP2kai_GIT_VERSION "${NP2kai_GIT_TAG} ${NP2kai_GIT_HASH}")
-if(DEFINED ENV{NP2KAI_BUILDER})
-	set(NP2kai_BUILDER $ENV{NP2KAI_BUILDER})
-else()
-	set(NP2kai_BUILDER "localbuild")
-endif()
 
 message("*** NP2kai version is ${NP2kai_GIT_TAG} ${NP2kai_GIT_HASH}")
 
@@ -687,7 +682,7 @@ endif()
 
 # target base
 add_library(NP2kai_bbase INTERFACE)
-target_compile_definitions(NP2kai_bbase INTERFACE ${NP2kai_common_definitions} "NP2KAI_GIT_TAG=\"${NP2kai_GIT_TAG}\"" "NP2KAI_GIT_HASH=\"${NP2kai_GIT_HASH}\"" "NP2KAI_BUILDER=\"${NP2kai_BUILDER}\"")
+target_compile_definitions(NP2kai_bbase INTERFACE ${NP2kai_common_definitions} "NP2KAI_GIT_TAG=\"${NP2kai_GIT_TAG}\"" "NP2KAI_GIT_HASH=\"${NP2kai_GIT_HASH}\"")
 target_include_directories(NP2kai_bbase INTERFACE ${NP2kai_common_include_dirs})
 target_sources(NP2kai_bbase INTERFACE ${NP2kai_common_sources})
 if(NP2kai_Windows AND NOT MSVC_VERSION)

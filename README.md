@@ -1152,7 +1152,7 @@ Next boot computer, you command from 4.
 </div></details>
 
 ## Release
-- Sep 1, 2020
+- Sep 4, 2020
   - Apply to Nixpkgs package
 - Aug 19, 2020
   - merge NP21/W rev.77

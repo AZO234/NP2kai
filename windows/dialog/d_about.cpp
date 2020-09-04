@@ -64,8 +64,6 @@ BOOL CAboutDlg::OnInitDialog()
 	milstr_ncat(szWork, NP2KAI_GIT_TAG, _countof(szWork));
 	milstr_ncat(szWork, " ", _countof(szWork));
 	milstr_ncat(szWork, NP2KAI_GIT_HASH, _countof(szWork));
-	milstr_ncat(szWork, "\n", _countof(szWork));
-	milstr_ncat(szWork, NP2KAI_BUILDER, _countof(szWork));
 	SetDlgItemText(IDC_NP2VER, szWork);
 
 	RECT rect;
