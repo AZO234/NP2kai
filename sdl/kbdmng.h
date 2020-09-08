@@ -31,6 +31,7 @@
 enum {
 	KEY_KEY106 = 0,
 	KEY_KEY101,
+	KEY_KEYMACJIS,
 	KEY_TYPEMAX
 };
 

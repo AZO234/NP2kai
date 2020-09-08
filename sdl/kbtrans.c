@@ -756,6 +756,229 @@ static const SDLKCNV sdlcnv106[] = {
 #endif
 };
 
+#ifdef __MACOSX__
+/* Mac JIS keyboard key table */
+static const SDLKCNV sdlcnvMacJis[] = {
+#if SDL_MAJOR_VERSION == 1
+  // test result on Linux Twocode/caNnotpush/Miss/Different
+  {SDLK_PAUSE,        0x60},  // STOP
+  {SDLK_PRINT,        0x61},  // COPY (M)
+  {SDLK_F1,           0x62},  // f.1
+  {SDLK_F2,           0x63},  // f.2
+  {SDLK_F3,           0x64},  // f.3
+  {SDLK_F4,           0x65},  // f.4
+  {SDLK_F5,           0x66},  // f.5
+  {SDLK_F6,           0x67},  // f.6
+  {SDLK_F7,           0x68},  // f.7
+  {SDLK_F8,           0x69},  // f.8
+  {SDLK_F9,           0x6a},  // f.9
+  {SDLK_F10,          0x6b},  // f.10
+  // vf.1 - 5
+  {SDLK_ESCAPE,       0x00},  // ESC
+  {SDLK_1,            0x01},  // 1 !
+  {SDLK_2,            0x02},  // 2 "
+  {SDLK_3,            0x03},  // 3 #
+  {SDLK_4,            0x04},  // 4 $
+  {SDLK_5,            0x05},  // 5 %
+  {SDLK_6,            0x06},  // 6 &
+  {SDLK_7,            0x07},  // 7 '
+  {SDLK_8,            0x08},  // 8 (
+  {SDLK_9,            0x09},  // 9 )
+  {SDLK_0,            0x0a},  // 0 0
+  {SDLK_MINUS,        0x0b},  // - =
+  {SDLK_EQUALS,       0x0c},  // ^ `
+  {SDLK_BACKSPACE,    0x0e},  // BS
+  {SDLK_TAB,          0x0f},  // TAB
+  {SDLK_q,            0x10},  // q Q
+  {SDLK_w,            0x11},  // w W
+  {SDLK_e,            0x12},  // e E
+  {SDLK_r,            0x13},  // r R
+  {SDLK_t,            0x14},  // t T
+  {SDLK_y,            0x15},  // y Y
+  {SDLK_u,            0x16},  // u U
+  {SDLK_i,            0x17},  // i I
+  {SDLK_o,            0x18},  // o O
+  {SDLK_p,            0x19},  // p P
+  {SDLK_LEFTBRACKET,  0x1a},  // @ ~
+  {SDLK_RIGHTBRACKET, 0x1b},  // [ {
+  {SDLK_RETURN,       0x1c},  // Enter
+  {SDLK_LCTRL,        0x74},  // CTRL
+  {SDLK_CAPSLOCK,     0x71},  // CAPS
+  {SDLK_a,            0x1d},  // a A
+  {SDLK_s,            0x1e},  // s S
+  {SDLK_d,            0x1f},  // d D
+  {SDLK_f,            0x20},  // f F
+  {SDLK_g,            0x21},  // g G
+  {SDLK_h,            0x22},  // h H
+  {SDLK_j,            0x23},  // j J
+  {SDLK_k,            0x24},  // k K
+  {SDLK_l,            0x25},  // l L
+  {SDLK_SEMICOLON,    0x26},  // ; +
+  {SDLK_QUOTE,        0x27},  // : *
+  {SDLK_BACKSLASH,    0x28},  // ] }
+  {SDLK_LSHIFT,       0x70},  // LShift
+  {SDLK_z,            0x29},  // z Z
+  {SDLK_x,            0x2a},  // x X
+  {SDLK_c,            0x2b},  // c C
+  {SDLK_v,            0x2c},  // v V
+  {SDLK_b,            0x2d},  // b B
+  {SDLK_n,            0x2e},  // n N
+  {SDLK_m,            0x2f},  // m M
+  {SDLK_COMMA,        0x30},  // , <
+  {SDLK_PERIOD,       0x31},  // . >
+  {SDLK_SLASH,        0x32},  // / ?
+  // _ _
+  {SDLK_RSHIFT,       0x75},  // RShift
+  // Kana
+/*  {SDLK_LSUPER,       0x70},  // LSuper (M) */
+  {SDLK_LALT,         0x73},  // GRPH
+  {SDLK_LSUPER,       0x51},  // NFER
+  {SDLK_SPACE,        0x34},  // Space
+  {SDLK_RSUPER,       0x35},  // XFER
+  {SDLK_MENU,         0x35},  // XFER
+/*  {SDLK_RSUPER,       0x78},  // RSuper */
+/*  {SDLK_MENU,         0x79},  // Menu */
+  {SDLK_INSERT,       0x38},  // INS
+  {SDLK_DELETE,       0x39},  // DEL
+  {SDLK_PAGEUP,       0x36},  // ROLLUP
+  {SDLK_PAGEDOWN,     0x37},  // ROLLDOWN
+  {SDLK_UP,           0x3a},  // Up
+  {SDLK_LEFT,         0x3b},  // Left
+  {SDLK_RIGHT,        0x3c},  // Right
+  {SDLK_DOWN,         0x3d},  // Down
+  {SDLK_HOME,         0x3e},  // HOME/CLR
+  {SDLK_END,          0x3f},  // HELP
+  {SDLK_KP_MINUS,     0x40},  // KP-
+  {SDLK_KP_DIVIDE,    0x41},  // KP/
+  {SDLK_KP7,          0x42},  // KP7
+  {SDLK_KP8,          0x43},  // KP8
+  {SDLK_KP9,          0x44},  // KP9
+  {SDLK_KP_MULTIPLY,  0x45},  // KP*
+  {SDLK_KP4,          0x46},  // KP4
+  {SDLK_KP5,          0x47},  // KP5
+  {SDLK_KP6,          0x48},  // KP6
+  {SDLK_KP_PLUS,      0x49},  // KP+
+  {SDLK_KP1,          0x4a},  // KP1
+  {SDLK_KP2,          0x4b},  // KP2
+  {SDLK_KP3,          0x4c},  // KP3
+  {SDLK_KP_EQUALS,    0x4d},  // KP= (N)
+  {SDLK_KP0,          0x4e},  // KP0
+//  {SDLK_KP_COMMA,     0x4f},  // KP, (N)
+  {SDLK_KP_PERIOD,    0x50},  // KP.
+  {SDLK_KP_ENTER,     0x1c},  // KPEnter
+#else
+  // test result on Linux Twocode/caNnotpush/Miss/Different
+  {SDL_SCANCODE_PAUSE,          0x60},  // STOP
+  {SDL_SCANCODE_PRINTSCREEN,    0x61},  // COPY (M)
+  {SDL_SCANCODE_F1,             0x62},  // f.1
+  {SDL_SCANCODE_F2,             0x63},  // f.2
+  {SDL_SCANCODE_F3,             0x64},  // f.3
+  {SDL_SCANCODE_F4,             0x65},  // f.4
+  {SDL_SCANCODE_F5,             0x66},  // f.5
+  {SDL_SCANCODE_F6,             0x67},  // f.6
+  {SDL_SCANCODE_F7,             0x68},  // f.7
+  {SDL_SCANCODE_F8,             0x69},  // f.8
+  {SDL_SCANCODE_F9,             0x6a},  // f.9
+  {SDL_SCANCODE_F10,            0x6b},  // f.10
+  // vf.1 - 5
+  {SDL_SCANCODE_ESCAPE,         0x00},  // ESC
+  {SDL_SCANCODE_1,              0x01},  // 1 !
+  {SDL_SCANCODE_2,              0x02},  // 2 "
+  {SDL_SCANCODE_3,              0x03},  // 3 #
+  {SDL_SCANCODE_4,              0x04},  // 4 $
+  {SDL_SCANCODE_5,              0x05},  // 5 %
+  {SDL_SCANCODE_6,              0x06},  // 6 &
+  {SDL_SCANCODE_7,              0x07},  // 7 '
+  {SDL_SCANCODE_8,              0x08},  // 8 (
+  {SDL_SCANCODE_9,              0x09},  // 9 )
+  {SDL_SCANCODE_0,              0x0a},  // 0 0
+  {SDL_SCANCODE_MINUS,          0x0b},  // - =
+  {SDL_SCANCODE_EQUALS,         0x0c},  // ^ `
+  {SDL_SCANCODE_INTERNATIONAL3, 0x0d},  // Yen |
+  {SDL_SCANCODE_BACKSPACE,      0x0e},  // BS
+  {SDL_SCANCODE_TAB,            0x0f},  // TAB
+  {SDL_SCANCODE_Q,              0x10},  // q Q
+  {SDL_SCANCODE_W,              0x11},  // w W
+  {SDL_SCANCODE_E,              0x12},  // e E
+  {SDL_SCANCODE_R,              0x13},  // r R
+  {SDL_SCANCODE_T,              0x14},  // t T
+  {SDL_SCANCODE_Y,              0x15},  // y Y
+  {SDL_SCANCODE_U,              0x16},  // u U
+  {SDL_SCANCODE_I,              0x17},  // i I
+  {SDL_SCANCODE_O,              0x18},  // o O
+  {SDL_SCANCODE_P,              0x19},  // p P
+  {SDL_SCANCODE_LEFTBRACKET,    0x1a},  // @ ~
+  {SDL_SCANCODE_RIGHTBRACKET,   0x1b},  // [ {
+  {SDL_SCANCODE_RETURN,         0x1c},  // Enter
+  {SDL_SCANCODE_LCTRL,          0x74},  // CTRL
+  {SDL_SCANCODE_CAPSLOCK,       0x71},  // CAPS
+  {SDL_SCANCODE_A,              0x1d},  // a A
+  {SDL_SCANCODE_S,              0x1e},  // s S
+  {SDL_SCANCODE_D,              0x1f},  // d D
+  {SDL_SCANCODE_F,              0x20},  // f F
+  {SDL_SCANCODE_G,              0x21},  // g G
+  {SDL_SCANCODE_H,              0x22},  // h H
+  {SDL_SCANCODE_J,              0x23},  // j J
+  {SDL_SCANCODE_K,              0x24},  // k K
+  {SDL_SCANCODE_L,              0x25},  // l L
+  {SDL_SCANCODE_SEMICOLON,      0x26},  // ; +
+  {SDL_SCANCODE_APOSTROPHE,     0x27},  // : *
+  {SDL_SCANCODE_BACKSLASH,      0x28},  // ] }
+  {SDL_SCANCODE_LSHIFT,         0x70},  // LShift
+  {SDL_SCANCODE_Z,              0x29},  // z Z
+  {SDL_SCANCODE_X,              0x2a},  // x X
+  {SDL_SCANCODE_C,              0x2b},  // c C
+  {SDL_SCANCODE_V,              0x2c},  // v V
+  {SDL_SCANCODE_B,              0x2d},  // b B
+  {SDL_SCANCODE_N,              0x2e},  // n N
+  {SDL_SCANCODE_M,              0x2f},  // m M
+  {SDL_SCANCODE_COMMA,          0x30},  // , <
+  {SDL_SCANCODE_PERIOD,         0x31},  // . >
+  {SDL_SCANCODE_SLASH,          0x32},  // / ?
+  {SDL_SCANCODE_INTERNATIONAL1, 0x33},  // _ _
+  {SDL_SCANCODE_RSHIFT,         0x75},  // RShift
+  // Kana
+/*  {SDL_SCANCODE_LGUI,           0x70},  // LSuper (M) */
+  {SDL_SCANCODE_RCTRL,          0x73},  // GRPH
+  {SDL_SCANCODE_LALT,           0x73},  // GRPH
+  {SDL_SCANCODE_LGUI,           0x51},  // NFER
+  {SDL_SCANCODE_SPACE,          0x34},  // Space
+  {SDL_SCANCODE_RGUI,           0x35},  // XFER
+  {SDL_SCANCODE_APPLICATION,    0x35},  // Menu
+/*  {SDL_SCANCODE_RGUI,           0x78},  // RSuper */
+/*  {SDL_SCANCODE_APPLICATION,    0x79},  // Menu */
+  {SDL_SCANCODE_INSERT,         0x38},  // INS
+  {SDL_SCANCODE_DELETE,         0x39},  // DEL
+  {SDL_SCANCODE_PAGEUP,         0x36},  // ROLLUP
+  {SDL_SCANCODE_PAGEDOWN,       0x37},  // ROLLDOWN
+  {SDL_SCANCODE_UP,             0x3a},  // Up
+  {SDL_SCANCODE_LEFT,           0x3b},  // Left
+  {SDL_SCANCODE_RIGHT,          0x3c},  // Right
+  {SDL_SCANCODE_DOWN,           0x3d},  // Down
+  {SDL_SCANCODE_HOME,           0x3e},  // HOME/CLR
+  {SDL_SCANCODE_END,            0x3f},  // HELP
+  {SDL_SCANCODE_KP_MINUS,       0x40},  // KP-
+  {SDL_SCANCODE_KP_DIVIDE,      0x41},  // KP/
+  {SDL_SCANCODE_KP_7,           0x42},  // KP7
+  {SDL_SCANCODE_KP_8,           0x43},  // KP8
+  {SDL_SCANCODE_KP_9,           0x44},  // KP9
+  {SDL_SCANCODE_KP_MULTIPLY,    0x45},  // KP*
+  {SDL_SCANCODE_KP_4,           0x46},  // KP4
+  {SDL_SCANCODE_KP_5,           0x47},  // KP5
+  {SDL_SCANCODE_KP_6,           0x48},  // KP6
+  {SDL_SCANCODE_KP_PLUS,        0x49},  // KP+
+  {SDL_SCANCODE_KP_1,           0x4a},  // KP1
+  {SDL_SCANCODE_KP_2,           0x4b},  // KP2
+  {SDL_SCANCODE_KP_3,           0x4c},  // KP3
+  {SDL_SCANCODE_KP_EQUALS,      0x4d},  // KP= (N)
+  {SDL_SCANCODE_KP_0,           0x4e},  // KP0
+  {SDL_SCANCODE_KP_COMMA,       0x4f},  // KP, (N)
+  {SDL_SCANCODE_KP_PERIOD,      0x50},  // KP.
+  {SDL_SCANCODE_KP_ENTER,       0x1c},  // KPEnter
+#endif
+};
+#endif
+
 /**
  * Serializes
  * @param[in] key Key code
@@ -789,6 +1012,11 @@ static UINT8 getKey(SDL_Scancode key) {
   if(np2oscfg.KEYBOARD == KEY_KEY101) {
     sdlcnv = (SDLKCNV*)sdlcnv101;
     imax = SDL_arraysize(sdlcnv101);
+#ifdef __MACOSX__
+  } else if(np2oscfg.KEYBOARD == KEY_KEYMACJIS) {
+    sdlcnv = (SDLKCNV*)sdlcnvMacJis;
+    imax = SDL_arraysize(sdlcnvMacJis);
+#endif
   } else {
     sdlcnv = (SDLKCNV*)sdlcnv106;
     imax = SDL_arraysize(sdlcnv106);
