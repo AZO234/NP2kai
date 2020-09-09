@@ -89,8 +89,8 @@ static const LRKCNV lrcnv101[] = {
   // _ _
   {RETROK_RSHIFT,       0x75},  // RShift
   // Kana
-  {RETROK_LSUPER,       0x70},  // LSuper
-  {RETROK_RCTRL,        0x33},  // GRPH
+  {RETROK_LSUPER,       0x77},  // LSuper
+  {RETROK_RCTRL,        0x73},  // GRPH
   {RETROK_LALT,         0x51},  // NFER
   {RETROK_SPACE,        0x34},  // Space
   {RETROK_RALT,         0x35},  // XFER
@@ -199,8 +199,8 @@ static const LRKCNV lrcnv106[] = {
   {2,      0x33},       // _ _ (L2?menu open?)
   {RETROK_RSHIFT,       0x75},  // RShift
   // Kana
-  {RETROK_LSUPER,       0x70},  // LSuper
-  {RETROK_RCTRL,        0x33},  // GRPH
+  {RETROK_LSUPER,       0x77},  // LSuper
+  {RETROK_RCTRL,        0x73},  // GRPH
   {RETROK_LALT,         0x51},  // NFER
   {RETROK_SPACE,        0x34},  // Space
   {RETROK_RALT,         0x35},  // XFER
