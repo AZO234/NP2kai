@@ -869,6 +869,7 @@ static const SDLKCNV sdlcnvMacJis[] = {
 #else
   // test result on Linux Twocode/caNnotpush/Miss/Different
   {SDL_SCANCODE_PAUSE,          0x60},  // STOP
+  {SDL_SCANCODE_F12,            0x60},  // STOP
   {SDL_SCANCODE_PRINTSCREEN,    0x61},  // COPY (M)
   {SDL_SCANCODE_F1,             0x62},  // f.1
   {SDL_SCANCODE_F2,             0x63},  // f.2
