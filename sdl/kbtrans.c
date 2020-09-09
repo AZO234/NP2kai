@@ -393,8 +393,8 @@ static const SDLKCNV sdlcnv101[] = {
   // _ _
   {SDLK_RSHIFT,       0x75},  // RShift
   // Kana
-  {SDLK_LSUPER,       0x70},  // LSuper (M)
-  {SDLK_RCTRL,        0x33},  // GRPH
+  {SDLK_LSUPER,       0x77},  // LSuper (M)
+  {SDLK_RCTRL,        0x73},  // GRPH
   {SDLK_LALT,         0x51},  // NFER
   {SDLK_SPACE,        0x34},  // Space
   {SDLK_RALT,         0x35},  // XFER
@@ -500,8 +500,8 @@ static const SDLKCNV sdlcnv101[] = {
   // _ _
   {SDL_SCANCODE_RSHIFT,       0x75},  // RShift
   // Kana
-  {SDL_SCANCODE_LGUI,         0x70},  // LSuper (M)
-  {SDL_SCANCODE_RCTRL,        0x33},  // GRPH
+  {SDL_SCANCODE_LGUI,         0x77},  // LSuper (M)
+  {SDL_SCANCODE_RCTRL,        0x73},  // GRPH
   {SDL_SCANCODE_LALT,         0x51},  // NFER
   {SDL_SCANCODE_SPACE,        0x34},  // Space
   {SDL_SCANCODE_RALT,         0x35},  // XFER
@@ -611,8 +611,8 @@ static const SDLKCNV sdlcnv106[] = {
   // _ _
   {SDLK_RSHIFT,       0x75},  // RShift
   // Kana
-  {SDLK_LSUPER,       0x70},  // LSuper (M)
-  {SDLK_RCTRL,        0x33},  // GRPH
+  {SDLK_LSUPER,       0x77},  // LSuper (M)
+  {SDLK_RCTRL,        0x73},  // GRPH
   {SDLK_LALT,         0x51},  // NFER
   {SDLK_SPACE,        0x34},  // Space
   {SDLK_RALT,         0x35},  // XFER
@@ -718,8 +718,8 @@ static const SDLKCNV sdlcnv106[] = {
   {SDL_SCANCODE_INTERNATIONAL1, 0x33},  // _ _
   {SDL_SCANCODE_RSHIFT,         0x75},  // RShift
   // Kana
-  {SDL_SCANCODE_LGUI,           0x70},  // LSuper (M)
-  {SDL_SCANCODE_RCTRL,          0x33},  // GRPH
+  {SDL_SCANCODE_LGUI,           0x77},  // LSuper (M)
+  {SDL_SCANCODE_RCTRL,          0x73},  // GRPH
   {SDL_SCANCODE_LALT,           0x51},  // NFER
   {SDL_SCANCODE_SPACE,          0x34},  // Space
   {SDL_SCANCODE_RALT,           0x35},  // XFER
