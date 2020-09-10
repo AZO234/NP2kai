@@ -1,6 +1,10 @@
 #ifndef NP2_SDL_DOSIO_H
 #define NP2_SDL_DOSIO_H
 
+#ifndef WIN32
+#include <dirent.h>
+#endif
+
 #if defined(__LIBRETRO__)
 #include "file_stream.h"
 typedef RFILE *				FILEH;
@@ -13,8 +17,11 @@ typedef FILE *				FILEH;
 #define	FLISTH				HANDLE
 #define	FLISTH_INVALID		(INVALID_HANDLE_VALUE)
 #else
-#define	FLISTH				long
-#define	FLISTH_INVALID		0
+typedef struct {
+	OEMCHAR path[MAX_PATH];
+	void *hdl;
+} _FLISTH, *FLISTH;
+#define FLISTH_INVALID		NULL
 #endif
 
 #define	FSEEK_SET	SEEK_SET
