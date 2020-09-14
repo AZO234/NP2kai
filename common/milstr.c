@@ -297,7 +297,7 @@ int STRCALL milsjis_memncmp(const char *str, const char *cmp, unsigned int maxle
 		if(maxlen) {
 			maxlen--;
 		}
-	} while(s == c && cn);
+	} while(s == c && maxlen);
 	return((s > c)?1:-1);
 }
 
