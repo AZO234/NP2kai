@@ -151,6 +151,7 @@ enum {
 #ifdef __MACOSX__
 	MID_KEYBOARD_MACJIS,
 	MID_KEY_STOP,
+	MID_KEY_INS,
 #endif
 	MID_KEY_COPY,
 	MID_KEY_KANA,

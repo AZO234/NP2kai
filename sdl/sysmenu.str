@@ -82,6 +82,7 @@ static const char str_keyboard_101[] = "US Keyboard 101";
 #ifdef __MACOSX__
 static const char str_keyboard_macjis[] = "JIS Mac Keyboard";
 static const char str_key_Stop[] = "Send STOP";
+static const char str_key_Ins[] = "Send INS";
 #endif
 static const char str_key_Copy[] = "Send COPY";
 static const char str_key_Kana[] = "Send Kana";
@@ -411,6 +412,7 @@ static const MSYSITEM s_keybd[] = {
 		{str_key_Stop,		NULL,		MID_KEY_STOP,			0},
 		{str_key_Copy,		NULL,		MID_KEY_COPY,			0},
 		{str_key_Kana,		NULL,		MID_KEY_KANA,			0},
+		{str_key_Ins,		NULL,		MID_KEY_INS,			0},
 		{NULL,			NULL,		MID_STATIC,			MENU_SEPARATOR},
 #endif
 		{str_keyboard_106,	NULL,		MID_KEYBOARD_106,		0},
