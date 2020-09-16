@@ -461,6 +461,11 @@ static void sys_cmd(MENUID id) {
 			keystat_senddata(0x60);
 			keystat_senddata(0x60 | 0x80);
 			break;
+
+		case MID_KEY_INS:
+			keystat_senddata(0x38);
+			keystat_senddata(0x38 | 0x80);
+			break;
 #endif
 		case MID_KEY_COPY:
 			keystat_senddata(0x61);
