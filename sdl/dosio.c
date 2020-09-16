@@ -541,13 +541,16 @@ struct stat		sb;
 		memset(fli, 0, sizeof(*fli));
 		fli->caps = FLICAPS_ATTR;
 #if defined(__LIBRETRO__)
-		fli->attr = retro_dirent_is_dir((struct RDIR *)hdl, "") ? FILEATTR_DIRECTORY : 0;
+		fli->attr = retro_dirent_is_dir((struct RDIR *)hdl->hdl, "") ? FILEATTR_DIRECTORY : 0;
 #else
 		fli->attr = (de->d_type & DT_DIR) ? FILEATTR_DIRECTORY : 0;
 #endif
 
 #if defined(__LIBRETRO__)
-		milstr_ncpy(fli->path, retro_dirent_get_name((struct RDIR *)hdl), sizeof(fli->path));
+		milstr_ncpy(fli->path, retro_dirent_get_name((struct RDIR *)hdl->hdl), sizeof(fli->path));
+        milstr_ncpy(buf, hdl->path, sizeof(buf));
+        milstr_ncat(buf, fli->path, sizeof(buf));
+		fli->size = path_get_size(buf);
 #else
         milstr_ncpy(buf, hdl->path, sizeof(buf));
         milstr_ncat(buf, de->d_name, sizeof(buf));
