@@ -228,7 +228,7 @@ create_video_note(void)
 	gtk_widget_show(main_widget);
 
 	video_lcd_checkbutton =
-	    gtk_check_button_new_with_label("Liquid Crystal Display");
+	    gtk_check_button_new_with_label("(Old monochrome)Liquid Crystal Display");
 	gtk_widget_show(video_lcd_checkbutton);
 	gtk_box_pack_start(GTK_BOX(main_widget), video_lcd_checkbutton,
 	    FALSE, FALSE, 0);
