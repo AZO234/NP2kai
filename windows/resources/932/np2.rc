@@ -152,7 +152,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Video"
 FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
 BEGIN
-    CONTROL         "Liquid Crystal Display",IDC_LCD,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,8,156,10
+    CONTROL         "(Old monochrome) Liquid Crystal Display",IDC_LCD,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,8,156,10
     CONTROL         "Reverse",IDC_LCDX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,24,144,10
     CONTROL         "Use skipline revisions",IDC_SKIPLINE,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,40,156,10
     LTEXT           "Ratio",IDC_STATIC,20,55,22,8
