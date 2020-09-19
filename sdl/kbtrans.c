@@ -824,7 +824,7 @@ void sdlkbd_keydown(UINT key) {
     key += 0x80;
   }
 #endif
-  if(data != NC && !key_states[key]) {
+  if(data != NC) {
      keystat_keydown(data);
      key_states[key] = 1;
   }
