@@ -550,6 +550,7 @@ struct stat		sb;
 		milstr_ncpy(fli->path, retro_dirent_get_name((struct RDIR *)hdl->hdl), sizeof(fli->path));
         milstr_ncpy(buf, hdl->path, sizeof(buf));
         milstr_ncat(buf, fli->path, sizeof(buf));
+		fli->caps |= FLICAPS_SIZE;
 		fli->size = path_get_size(buf);
 #else
         milstr_ncpy(buf, hdl->path, sizeof(buf));
