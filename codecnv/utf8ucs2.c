@@ -24,19 +24,25 @@ UINT codecnv_utf8toucs2(UINT16 *lpOutput, UINT cchOutput, const char *lpInput, U
 	UINT n = 0;
 	UINT nLength;
 
-	if(lpOutput != NULL && lpInput != NULL) {
-		if(cchOutput == 0) {
+	if (lpInput != NULL) {
+		if (!lpOutput || cchOutput == 0) {
 			lpOutput = NULL;
-			cchOutput = (UINT)-1;
+			if (cchInput == -1) {
+				cchOutput = 0;
+			} else {
+				cchOutput = (UINT)-1;
+			}
 		}
 
-		if(cchInput != (UINT)-1) {
+		if (cchInput != (UINT)-1) {
 			// Binary mode
 			n = utf8toucs2(lpOutput, cchOutput, lpInput, cchInput);
 		} else {
 			// String mode
 			nLength = utf8toucs2(lpOutput, cchOutput - 1, lpInput, (UINT)strlen(lpInput));
-			lpOutput[nLength] = '\0';
+			if (lpOutput) {
+				lpOutput[nLength] = '\0';
+			}
 			n = nLength + 1;
 		}
 	}
@@ -56,20 +62,27 @@ static UINT utf8toucs2(UINT16 *lpOutput, UINT cchOutput, const char *lpInput, UI
 	UINT n, m;
 	UINT nRemain;
 	UINT32 c[2];
+	UINT len = 0;
 
 	n = m = 1;
 	nRemain = cchOutput;
-	while ((cchInput > 0) && (nRemain > 0) && (m > 0) && (n > 0)) {
+	while ((cchInput > 0) && (m > 0) && (n > 0)) {
+		if (nRemain <= 0 && (INT)cchOutput > 0) {
+			break;
+		}
 		n = codecnv_utf8toucs4_1(c, lpInput, cchInput);
-		if(n) {
+		if (n) {
 			c[1] = '\0';
 			m = codecnv_ucs4toucs2(lpOutput, 2, c, 1);
 			lpInput += n;
 			cchInput -= n;
-			lpOutput += m;
-			nRemain -= m;
+			if (lpOutput) {
+				lpOutput += m;
+				nRemain -= m;
+			}
+			len += m;
 		}
 	}
 
-	return (UINT)(cchOutput - nRemain);
+	return len;
 }
