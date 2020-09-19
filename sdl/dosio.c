@@ -333,7 +333,7 @@ short file_rename(const OEMCHAR *existpath, const OEMCHAR *newpath) {
 short file_dircreate(const OEMCHAR *path) {
 
 #if defined(__LIBRETRO__)
-	return((short)path_mkdir(path));
+	return((short)path_mkdir(path) ? 0:-1);
 #elif defined(_WINDOWS) && defined(OSLANG_UTF8)
 	wchar_t	wpath[MAX_PATH];
 	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
