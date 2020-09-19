@@ -13,7 +13,7 @@ typedef FILE *				FILEH;
 #endif
 #define	FILEH_INVALID		NULL
 
-#if defined(WIN32)
+#if defined(WIN32) && !defined(__LIBRETRO__)
 #define	FLISTH				HANDLE
 #define	FLISTH_INVALID		(INVALID_HANDLE_VALUE)
 #else
