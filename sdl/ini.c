@@ -598,9 +598,6 @@ static const INITBL iniitem[] = {
 	{OEMTEXT("bmap_Num"), INITYPE_UINT32,	&bmpfilenumber,		0},
 	{OEMTEXT("fontfile"), INITYPE_STR,	np2cfg.fontfile,	MAX_PATH},
 	{OEMTEXT("biospath"), INIRO_STR,		np2cfg.biospath,	MAX_PATH},
-	{OEMTEXT("hdrvroot"), INIRO_STR,		np2cfg.hdrvroot,	MAX_PATH},
-	{OEMTEXT("hdrv_acc"), INIRO_UINT8,	&np2cfg.hdrvacc,	0},
-
 #if defined(SUPPORT_HOSTDRV)
 	{OEMTEXT("use_hdrv"), INITYPE_BOOL,	&np2cfg.hdrvenable,	0},
 	{OEMTEXT("hdrvroot"), INITYPE_STR,	&np2cfg.hdrvroot,	MAX_PATH},

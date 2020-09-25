@@ -584,9 +584,6 @@ static INITBL iniitem[] = {
 	{"bmap_Dir", INITYPE_STR,	bmpfilefolder,		MAX_PATH},
 	{"fontfile", INITYPE_STR,	np2cfg.fontfile,	MAX_PATH},
 	{"biospath", INIRO_STR,		np2cfg.biospath,	MAX_PATH},
-	{"hdrvroot", INIRO_STR,		np2cfg.hdrvroot,	MAX_PATH},
-	{"hdrv_acc", INIRO_UINT8,	&np2cfg.hdrvacc,	0},
-
 #if defined(SUPPORT_HOSTDRV)
 	{"use_hdrv", INITYPE_BOOL,	&np2cfg.hdrvenable,	0},
 	{"hdrvroot", INITYPE_STR,	&np2cfg.hdrvroot,	MAX_PATH},
