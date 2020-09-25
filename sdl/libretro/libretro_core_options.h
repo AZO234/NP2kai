@@ -235,7 +235,7 @@ struct retro_core_option_definition option_defs_us[] = {
    },
    {
       "np2kai_lcd",
-      "LCD",
+      "LCD (old monochrome)",
       NULL,
       {
          { "OFF", NULL },
@@ -1084,7 +1084,7 @@ struct retro_core_option_definition option_defs_ja[] = {
    },
    {
       "np2kai_lcd",
-      "液晶ディスプレイ",
+      "(古いモノクロ)液晶ディスプレイ",
       NULL,
       {
          { "OFF", NULL },
