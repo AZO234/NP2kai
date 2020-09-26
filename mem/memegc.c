@@ -675,6 +675,32 @@ static void MEMCALL shiftinput_decw(void) {
 		}														\
 	} while(0)
 
+#define	EGCOPE_SHIFTW2											\
+	do {														\
+			if (!(egc.sft & 0x1000)) {							\
+				egc.inptr[ 0] = (UINT8)value;					\
+				egc.inptr[ 1] = (UINT8)(value >> 8);			\
+				egc.inptr[ 4] = (UINT8)value;					\
+				egc.inptr[ 5] = (UINT8)(value >> 8);			\
+				egc.inptr[ 8] = (UINT8)value;					\
+				egc.inptr[ 9] = (UINT8)(value >> 8);			\
+				egc.inptr[12] = (UINT8)value;					\
+				egc.inptr[13] = (UINT8)(value >> 8);			\
+				shiftinput_incw();								\
+			}													\
+			else {												\
+				egc.inptr[-1] = (UINT8)value;					\
+				egc.inptr[ 0] = (UINT8)(value >> 8);			\
+				egc.inptr[ 3] = (UINT8)value;					\
+				egc.inptr[ 4] = (UINT8)(value >> 8);			\
+				egc.inptr[ 7] = (UINT8)value;					\
+				egc.inptr[ 8] = (UINT8)(value >> 8);			\
+				egc.inptr[11] = (UINT8)value;					\
+				egc.inptr[12] = (UINT8)(value >> 8);			\
+				shiftinput_decw();								\
+			}													\
+	} while(0)
+
 // ----
 
 static const UINT8 data_00[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
@@ -760,6 +786,12 @@ static const EGCQUAD * MEMCALL ope_nd(REG8 ope, UINT32 ad) {
 			pat.d[1] = egc.fgc.d[1];
 			break;
 
+		case 0x6000:
+			pat.d[0] = egc.fgc.d[0];
+			pat.d[1] = egc.bgc.d[1];
+			break;
+
+
 		default:
 			if ((egc.ope & 0x0300) == 0x0100) {
 				pat.d[0] = egc_src.d[0];
@@ -840,6 +872,11 @@ static const EGCQUAD * MEMCALL ope_xx(REG8 ope, UINT32 ad) {
 			pat.d[1] = egc.fgc.d[1];
 			break;
 
+		case 0x6000:
+			pat.d[0] = egc.fgc.d[0];
+			pat.d[1] = egc.bgc.d[1];
+			break;
+
 		default:
 			if ((egc.ope & 0x0300) == 0x0100) {
 				pat.d[0] = egc_src.d[0];
@@ -896,38 +933,70 @@ static const EGCQUAD * MEMCALL ope_xx(REG8 ope, UINT32 ad) {
 typedef const EGCQUAD * (MEMCALL * OPEFN)(REG8 ope, UINT32 ad);
 
 static const OPEFN opefn[256] = {
-			ope_00, ope_xx, ope_xx, ope_np, ope_xx, ope_nd, ope_xx, ope_xx,
-			ope_xx, ope_xx, ope_nd, ope_xx, ope_np, ope_xx, ope_xx, ope_0f,
-			ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx,
-			ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx,
-			ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx,
-			ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx,
-			ope_np, ope_xx, ope_xx, ope_np, ope_xx, ope_xx, ope_xx, ope_xx,
-			ope_xx, ope_xx, ope_xx, ope_xx, ope_np, ope_xx, ope_xx, ope_np,
-			ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx,
-			ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx,
-			ope_nd, ope_xx, ope_xx, ope_xx, ope_xx, ope_nd, ope_xx, ope_xx,
-			ope_xx, ope_xx, ope_nd, ope_xx, ope_xx, ope_xx, ope_xx, ope_nd,
-			ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx,
-			ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx,
-			ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx,
-			ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx,
-			ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx,
-			ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx,
-			ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx,
-			ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx,
-			ope_nd, ope_xx, ope_xx, ope_xx, ope_xx, ope_nd, ope_xx, ope_xx,
-			ope_xx, ope_xx, ope_nd, ope_xx, ope_xx, ope_xx, ope_xx, ope_nd,
-			ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx,
-			ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx,
-			ope_c0, ope_xx, ope_xx, ope_np, ope_xx, ope_xx, ope_xx, ope_xx,
-			ope_xx, ope_xx, ope_xx, ope_xx, ope_np, ope_xx, ope_xx, ope_np,
-			ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx,
-			ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx,
-			ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx,
-			ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx, ope_xx,
-			ope_f0, ope_xx, ope_xx, ope_np, ope_xx, ope_nd, ope_xx, ope_xx,
-			ope_xx, ope_xx, ope_nd, ope_xx, ope_fc, ope_xx, ope_xx, ope_ff};
+			ope_00, ope_xx, ope_xx, ope_np,
+ 			ope_xx, ope_nd, ope_xx, ope_xx,
+			ope_xx, ope_xx, ope_nd, ope_xx,
+ 			ope_np, ope_xx, ope_xx, ope_0f,
+			ope_xx, ope_xx, ope_xx, ope_xx,
+ 			ope_xx, ope_xx, ope_xx, ope_xx,
+			ope_xx, ope_xx, ope_xx, ope_xx,
+ 			ope_xx, ope_xx, ope_xx, ope_xx,
+			ope_xx, ope_xx, ope_xx, ope_xx,
+			 ope_xx, ope_xx, ope_xx, ope_xx,
+			ope_xx, ope_xx, ope_xx, ope_xx,
+			 ope_xx, ope_xx, ope_xx, ope_xx,
+			ope_np, ope_xx, ope_xx, ope_np,
+ 			ope_xx, ope_xx, ope_xx, ope_xx,
+			ope_xx, ope_xx, ope_xx, ope_xx,
+ 			ope_np, ope_xx, ope_xx, ope_np,
+			ope_xx, ope_xx, ope_xx, ope_xx,
+ 			ope_xx, ope_xx, ope_xx, ope_xx,
+			ope_xx, ope_xx, ope_xx, ope_xx,
+ 			ope_xx, ope_xx, ope_xx, ope_xx,
+			ope_nd, ope_xx, ope_xx, ope_xx,
+ 			ope_xx, ope_nd, ope_xx, ope_xx,
+			ope_xx, ope_xx, ope_nd, ope_xx,
+ 			ope_xx, ope_xx, ope_xx, ope_nd,
+			ope_xx, ope_xx, ope_xx, ope_xx,
+ 			ope_xx, ope_xx, ope_xx, ope_xx,
+			ope_xx, ope_xx, ope_xx, ope_xx,
+ 			ope_xx, ope_xx, ope_xx, ope_xx,
+			ope_xx, ope_xx, ope_xx, ope_xx,
+ 			ope_xx, ope_xx, ope_xx, ope_xx,
+			ope_xx, ope_xx, ope_xx, ope_xx,
+ 			ope_xx, ope_xx, ope_xx, ope_xx,
+			ope_xx, ope_xx, ope_xx, ope_xx,
+ 			ope_xx, ope_xx, ope_xx, ope_xx,
+			ope_xx, ope_xx, ope_xx, ope_xx,
+ 			ope_xx, ope_xx, ope_xx, ope_xx,
+			ope_xx, ope_xx, ope_xx, ope_xx,
+ 			ope_xx, ope_xx, ope_xx, ope_xx,
+			ope_xx, ope_xx, ope_xx, ope_xx,
+ 			ope_xx, ope_xx, ope_xx, ope_xx,
+			ope_nd, ope_xx, ope_xx, ope_xx,
+ 			ope_xx, ope_nd, ope_xx, ope_xx,
+			ope_xx, ope_xx, ope_nd, ope_xx,
+ 			ope_xx, ope_xx, ope_xx, ope_nd,
+			ope_xx, ope_xx, ope_xx, ope_xx,
+ 			ope_xx, ope_xx, ope_xx, ope_xx,
+			ope_xx, ope_xx, ope_xx, ope_xx,
+ 			ope_xx, ope_xx, ope_xx, ope_xx,
+			ope_c0, ope_xx, ope_xx, ope_np,
+ 			ope_xx, ope_xx, ope_xx, ope_xx,
+			ope_xx, ope_xx, ope_xx, ope_xx,
+ 			ope_np, ope_xx, ope_xx, ope_np,
+			ope_xx, ope_xx, ope_xx, ope_xx,
+ 			ope_xx, ope_xx, ope_xx, ope_xx,
+			ope_xx, ope_xx, ope_xx, ope_xx,
+ 			ope_xx, ope_xx, ope_xx, ope_xx,
+			ope_xx, ope_xx, ope_xx, ope_xx,
+ 			ope_xx, ope_xx, ope_xx, ope_xx,
+			ope_xx, ope_xx, ope_xx, ope_xx,
+ 			ope_xx, ope_xx, ope_xx, ope_xx,
+			ope_f0, ope_xx, ope_xx, ope_np,
+ 			ope_xx, ope_nd, ope_xx, ope_xx,
+			ope_xx, ope_xx, ope_nd, ope_xx,
+ 			ope_fc, ope_xx, ope_xx, ope_ff};
 
 
 // ----
@@ -983,17 +1052,15 @@ static const EGCQUAD * MEMCALL egc_opew(UINT32 ad, REG16 value) {
 			return((*opefn[tmp])((REG8)tmp, ad));
 
 		case 0x1000:
+	     EGCOPE_SHIFTW2;
+            egc.mask2.w &= egc.srcmask.w;
 			switch(egc.fgbg & 0x6000) {
 				case 0x2000:
 					return(&egc.bgc);
-
 				case 0x4000:
 					return(&egc.fgc);
-
 				default:
-					EGCOPE_SHIFTW;
-					egc.mask2.w &= egc.srcmask.w;
-					return(&egc_src);
+					return(&egc.patreg);
 			}
 			break;
 
@@ -1005,6 +1072,8 @@ static const EGCQUAD * MEMCALL egc_opew(UINT32 ad, REG16 value) {
 			egc_data.w[1] = (UINT16)value;
 			egc_data.w[2] = (UINT16)value;
 			egc_data.w[3] = (UINT16)value;
+			EGCOPE_SHIFTW2;
+			egc.mask2.w &= egc.srcmask.w;
 			return(&egc_data);
 	}
 }
@@ -1059,7 +1128,6 @@ void MEMCALL egc_writebyte(UINT32 addr, REG8 value) {
 
 	UINT		ext;
 const EGCQUAD	*data;
-
 	addr = LOW15(addr);
 	ext = EGCADDR(addr & 1);
 	if (!gdcs.access) {
@@ -1102,6 +1170,7 @@ const EGCQUAD	*data;
 REG16 MEMCALL egc_readword(UINT32 addr) {
 
 	UINT32	ad;
+	int pl;
 
 	__ASSERT(!(addr & 1));
 	if (gdcs.access) {
@@ -1114,8 +1183,13 @@ REG16 MEMCALL egc_readword(UINT32 addr) {
 	egc.lastvram.w[3] = *(UINT16 *)(&mem[ad + VRAM_E]);
 
 	// shift input
+	pl = (egc.fgbg >> 8) & 3;
 	if (!(egc.ope & 0x400)) {
 		if (!(egc.sft & 0x1000)) {
+			if(!(egc.ope & 0x2000)){
+					egc.inptr[ 4*pl+0] = egc.lastvram._b[pl][EGCADDR_L];
+					egc.inptr[ 4*pl+1] = egc.lastvram._b[pl][EGCADDR_L];
+			}else{
 			egc.inptr[ 0] = egc.lastvram._b[0][EGCADDR_L];
 			egc.inptr[ 1] = egc.lastvram._b[0][EGCADDR_H];
 			egc.inptr[ 4] = egc.lastvram._b[1][EGCADDR_L];
@@ -1124,9 +1198,10 @@ REG16 MEMCALL egc_readword(UINT32 addr) {
 			egc.inptr[ 9] = egc.lastvram._b[2][EGCADDR_H];
 			egc.inptr[12] = egc.lastvram._b[3][EGCADDR_L];
 			egc.inptr[13] = egc.lastvram._b[3][EGCADDR_H];
+			
 			shiftinput_incw();
-		}
-		else {
+			}
+		}else {
 			egc.inptr[-1] = egc.lastvram._b[0][EGCADDR_L];
 			egc.inptr[ 0] = egc.lastvram._b[0][EGCADDR_H];
 			egc.inptr[ 3] = egc.lastvram._b[1][EGCADDR_L];
@@ -1144,15 +1219,49 @@ REG16 MEMCALL egc_readword(UINT32 addr) {
 		egc.patreg.d[1] = egc.lastvram.d[1];
 	}
 	if (!(egc.ope & 0x2000)) {
-		int pl = (egc.fgbg >> 8) & 3;
-		if (!(egc.ope & 0x400)) {
-			return(LOADINTELWORD(egc_src._b[pl]));
-		}
-		else {
-			return(LOADINTELWORD(mem + ad + planead[pl]));
-		}
+
+//		if (!(egc.ope & 0x400)) {
+//			return(LOADINTELWORD(egc_src._b[pl]));
+//		}
+//		else {
+			UINT temp0,temp1,temp2,temp_1,temp_2;
+			UINT16 tempx;
+			UINT32 temp;
+			if(ad > 3)temp_2 =mem[ad -3 + planead[pl]];
+			if(ad > 2)temp_1 =mem[ad -2 + planead[pl]];
+			if(ad > 1)temp0 = mem[ad -1 + planead[pl]];
+			temp1 = mem[ad -0 + planead[pl]];
+			temp2 = mem[ad +1 + planead[pl]];
+			if( ((egc.sft & 0xf0)>>4) < (egc.sft & 0xf)){//sftcopy1?
+				temp = (temp_2 << 24)|(temp_1<<16)|(temp0 <<8)|(temp1);
+				temp = (temp << (egc.sft & 0x0f) ) >> ((egc.sft & 0xf0)>>4);
+				temp = temp >> 8;
+				tempx = (temp & 0xff00)>>8;
+				tempx |= (temp & 0xff)<<8;
+				return tempx;
+			}else{							//sftcopy
+				temp = (temp0 <<16)|(temp1 <<8)|temp2;
+				temp = (temp << (egc.sft & 0x0f) ) >> ((egc.sft & 0xf0)>>4);
+				tempx = (temp & 0xff00)>>8;
+				tempx |= (temp & 0xff)<<8;
+				return tempx;
+			}
+//		}
 	}
-	return(LOADINTELWORD(mem + addr));
+	{
+		int fg1,fg2,fg4,fg8;
+		UINT16 temp3;
+		if(!(egc.access & 1))fg1 = (egc.fg&1)|(egc.fg&1)<<1|(egc.fg&1)<<2|(egc.fg&1)<<3|(egc.fg&1)<<4|(egc.fg&1)<<5|(egc.fg&1)<<6|(egc.fg&1)<<7; 
+		if(!(egc.access & 1))fg2 = (egc.fg&2)|(egc.fg&2)<<1|(egc.fg&2)<<2|(egc.fg&2)<<3|(egc.fg&2)<<4|(egc.fg&2)<<5|(egc.fg&2)<<6|(egc.fg&2)<<7; 
+		if(!(egc.access & 1))fg4 = (egc.fg&4)|(egc.fg&4)<<1|(egc.fg&4)<<2|(egc.fg&4)<<3|(egc.fg&4)<<4|(egc.fg&4)<<5|(egc.fg&4)<<6|(egc.fg&4)<<7; 
+		if(!(egc.access & 1))fg8 = (egc.fg&8)|(egc.fg&8)<<1|(egc.fg&8)<<2|(egc.fg&8)<<3|(egc.fg&8)<<4|(egc.fg&8)<<5|(egc.fg&8)<<6|(egc.fg&8)<<7; 
+            temp3  = *(UINT16 *)(&mem[ad + VRAM_B]) ^ fg1;
+            temp3 |= *(UINT16 *)(&mem[ad + VRAM_R]) ^ fg2;
+            temp3 |= *(UINT16 *)(&mem[ad + VRAM_G]) ^ fg4;
+            temp3 |= *(UINT16 *)(&mem[ad + VRAM_E]) ^ fg8;
+	        return (~temp3);
+	}
+//	return(LOADINTELWORD(mem + addr));
 }
 
 void MEMCALL egc_writeword(UINT32 addr, REG16 value) {
