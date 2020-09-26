@@ -1,6 +1,5 @@
-# Neko Project II 0.86 kai
 
-[Neko Project II kai](https://github.com/AZO234/NP2kai)をforkして、MacBook Proの内蔵キーボードでそこそこ使いやすいようにキーマップを変更して勝手に追加してみた。
+[Neko Project II kai](https://github.com/AZO234/NP2kai)をforkして、MacBook Proの内蔵キーボードでそこそこ使いやすいようにキーマップを変更して勝手に追加してみた。(SDL2ポートのみ)
 
 106キーボードのマップをベースに特殊キーの配置を少し調整したJIS Mac Keyboardを追加し、メニューのDevice - Keyboard - JIS Mac Keyboard で選択できるようになります。また、STOP、COPY、かな、INSをDevice - Keyboardメニューがら送信できるようにもなってます。(SDLポートでmacOSでビルドしたときのみ)
 
@@ -20,7 +19,9 @@
 
 ---
 
-Sep 9, 2020<br>
+# Neko Project II 0.86 kai
+
+Sep 27, 2020<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -1173,6 +1174,8 @@ Next boot computer, you command from 4.
 </div></details>
 
 ## Release
+- Sep 28, 2020
+  - merge NP21/W rev.78
 - Sep 9, 2020
   - [SDL,lr] Fix GRPH and LWin keycode (thanks miyamoto999!)
 - Sep 4, 2020
