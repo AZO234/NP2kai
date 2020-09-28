@@ -9,7 +9,8 @@
             "defines": [
                 "USE_SDL_VERSION=2",
                 "SUPPORT_HOSTDRV=1",
-                "OSLANG_UTF8=1"
+                "OSLANG_UTF8=1",
+                "SUPPORT_NET=1"
             ],
             "macFrameworkPath": [
                 "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
