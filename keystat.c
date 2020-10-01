@@ -8,6 +8,21 @@
 #include	<generic/softkbd.h>
 
 
+// Keyrepeat
+#define KEYREPEAT_BUF_MAX	16
+#define KEYREPEAT_DELAY		np2cfg.keyrepeat_delay
+#define KEYREPEAT_INTERVAL	np2cfg.keyrepeat_interval
+
+static UINT8 keyrepeat_buf[KEYREPEAT_BUF_MAX];
+static int keyrepeat_index = 0;
+static BOOL keyrepeat_delay_flag = FALSE;
+static UINT32 keyrepeat_delay = 0;
+static UINT32 keyrepeat_interval = 0; 
+
+static void keystat_send(REG8 data);
+#define KEYBOARD_SEND(d)	np2cfg.keyrepeat_enable ? keystat_send(d):keyboard_send(d)
+
+
 		NKEYTBL		nkeytbl;
 		KEYCTRL		keyctrl;
 		KEYSTAT		keystat;
@@ -262,17 +277,17 @@ void keystat_down(const UINT8 *key, REG8 keys, REG8 ref) {
 #if 1												// 05/02/04
 			if (keystat.ref[keycode] != NKEYREF_NC) {
 				if (!(kbexflag[keycode] & KBEX_NONREP)) {
-					keyboard_send((REG8)(keycode + 0x80));
+					KEYBOARD_SEND((REG8)(keycode + 0x80));
 					keystat.ref[keycode] = NKEYREF_NC;
 				}
 			}
 			if (keystat.ref[keycode] == NKEYREF_NC) {
-				keyboard_send(keycode);
+				KEYBOARD_SEND(keycode);
 			}
 #else
 			if ((keystat.ref[keycode] == NKEYREF_NC) ||
 				(!(kbexflag[keycode] & KBEX_NONREP))) {
-				keyboard_send(keycode);
+				KEYBOARD_SEND(keycode);
 			}
 #endif
 			keystat.ref[keycode] = ref;
@@ -298,7 +313,7 @@ void keystat_down(const UINT8 *key, REG8 keys, REG8 ref) {
 			if (!(keydata & 0x80)) {			// シフト
 				if (keystat.ref[keycode] == NKEYREF_NC) {
 					keystat.ref[keycode] = ref;
-					keyboard_send(keycode);
+					KEYBOARD_SEND(keycode);
 				}
 			}
 			else {								// シフトメカニカル処理
@@ -310,7 +325,7 @@ void keystat_down(const UINT8 *key, REG8 keys, REG8 ref) {
 					keystat.ref[keycode] = NKEYREF_NC;
 					data = (REG8)(keycode + 0x80);
 				}
-				keyboard_send(data);
+				KEYBOARD_SEND(data);
 			}
 			if ((keycode == 0x71) || (keycode == 0x72)) {
 				reloadled();
@@ -330,7 +345,7 @@ void keystat_up(const UINT8 *key, REG8 keys, REG8 ref) {
 		if (keycode <= 0x70) {
 			if (keystat.ref[keycode] == ref) {
 				keystat.ref[keycode] = NKEYREF_NC;
-				keyboard_send((REG8)(keycode + 0x80));
+				KEYBOARD_SEND((REG8)(keycode + 0x80));
 			}
 		}
 		else {
@@ -354,7 +369,7 @@ void keystat_up(const UINT8 *key, REG8 keys, REG8 ref) {
 			if (!(keydata & 0x80)) {			// シフト
 				if (keystat.ref[keycode] != NKEYREF_NC) {
 					keystat.ref[keycode] = NKEYREF_NC;
-					keyboard_send((REG8)(keycode + 0x80));
+					KEYBOARD_SEND((REG8)(keycode + 0x80));
 					if ((keycode == 0x71) || (keycode == 0x72)) {
 						reloadled();
 					}
@@ -373,6 +388,8 @@ void keystat_resendstat(void) {
 			keyboard_send(i);
 		}
 	}
+	keyrepeat_delay_flag = FALSE;
+	keyrepeat_index = 0;
 }
 
 
@@ -429,7 +446,7 @@ void keystat_releaseref(REG8 ref) {
 	for (i=0; i<0x80; i++) {
 		if (keystat.ref[i] == ref) {
 			keystat.ref[i] = NKEYREF_NC;
-			keyboard_send((REG8)(i + 0x80));
+			KEYBOARD_SEND((REG8)(i + 0x80));
 		}
 	}
 }
@@ -453,7 +470,7 @@ void keystat_releasekey(REG8 key) {
 	if ((key != 0x71) && (key != 0x72)) {
 		if (keystat.ref[key] != NKEYREF_NC) {
 			keystat.ref[key] = NKEYREF_NC;
-			keyboard_send((REG8)(key + 0x80));
+			KEYBOARD_SEND((REG8)(key + 0x80));
 		}
 	}
 }
@@ -589,4 +606,73 @@ void keystat_forcerelease(REG8 data) {
 
 	keycode = cnvnewcode((REG8)(data & 0x7f));
 	keystat_releasekey(keycode);
+}
+
+// Keyrepeat
+static void keystat_send(REG8 data) {
+	UINT8 keycode = data & 0x7f;
+	int i;
+
+	if(kbexflag[keycode] & KBEX_NONREP) {	// none repeat key
+		keyboard_send(data);
+		return;
+	}
+	if(!(data & 0x80))	{	// key down
+		if(keyrepeat_index >= KEYREPEAT_BUF_MAX) {	// keyreat buf full
+			return;
+		}
+		for(i = 0; i < keyrepeat_index; i++) {
+			if(keyrepeat_buf[i] == keycode) {
+				return;
+			}
+		}
+		keyrepeat_buf[keyrepeat_index] = keycode;
+		keyrepeat_index++;
+		keyrepeat_delay_flag = TRUE;
+		keyrepeat_delay = GETTICK();
+		keyboard_send(data);
+	} else {
+		// removes keycode from the repeat buffer
+		if(keyrepeat_index) {
+			for(i = keyrepeat_index - 1; i >= 0; i--) {
+				if(keyrepeat_buf[i] == keycode) {
+					if(i == keyrepeat_index - 1) {
+						keyrepeat_delay_flag = TRUE;
+						keyrepeat_delay = GETTICK();
+					}
+					for(; i < keyrepeat_index - 1; i++) {
+						keyrepeat_buf[i] = keyrepeat_buf[i+1];
+					}
+					keyrepeat_index--;
+					break;
+				}
+			}
+		}
+		keyboard_send(data);
+	}
+}
+
+// keyrepeat interval processing
+void keyrepeat_proc() {
+	if(!keyrepeat_index) {
+		return;
+	}
+	if(keyrepeat_delay_flag) {
+		UINT32 dt = GETTICK() - keyrepeat_delay;
+		if(dt < KEYREPEAT_DELAY - KEYREPEAT_INTERVAL) {
+			return;
+		}
+		keyrepeat_delay_flag = FALSE;
+		keyrepeat_delay = 0;
+		keyrepeat_interval = GETTICK();
+	} else {
+		UINT32 dt = GETTICK() - keyrepeat_interval;
+		if(dt >= KEYREPEAT_INTERVAL) {
+			UINT8 keycode = keyrepeat_buf[keyrepeat_index-1];
+			keyrepeat_interval = GETTICK();
+			keyboard_send(keycode | 0x80);
+			keyboard_send(keycode);
+		}
+
+	}
 }
