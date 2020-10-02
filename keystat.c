@@ -619,23 +619,29 @@ static void keystat_send(REG8 data) {
 	}
 	if(!(data & 0x80))	{	// key down
 		if(keyrepeat_index >= KEYREPEAT_BUF_MAX) {	// keyreat buf full
+			// Nothing
 			return;
 		}
+		// If the keycode is stored in the repeat buffer, return
 		for(i = 0; i < keyrepeat_index; i++) {
 			if(keyrepeat_buf[i] == keycode) {
 				return;
 			}
 		}
+		// Add the keycode to keyrepeat buffer
 		keyrepeat_buf[keyrepeat_index] = keycode;
 		keyrepeat_index++;
+		// Delay flag ON
 		keyrepeat_delay_flag = TRUE;
 		keyrepeat_delay = GETTICK();
+		// Send keycode(make)
 		keyboard_send(data);
-	} else {
-		// removes keycode from the repeat buffer
+	} else {		// key up
+		// Remove keycode from the keyrepeat buffer
 		if(keyrepeat_index) {
 			for(i = keyrepeat_index - 1; i >= 0; i--) {
 				if(keyrepeat_buf[i] == keycode) {
+					// Remove keycode from the keyrepeat buffer
 					if(i == keyrepeat_index - 1) {
 						keyrepeat_delay_flag = TRUE;
 						keyrepeat_delay = GETTICK();
@@ -648,25 +654,30 @@ static void keystat_send(REG8 data) {
 				}
 			}
 		}
+		// Send keycode(break)
 		keyboard_send(data);
 	}
 }
 
 // keyrepeat interval processing
 void keyrepeat_proc() {
+	// If the keyrepeat buffer is empty, return
 	if(!keyrepeat_index) {
 		return;
 	}
-	if(keyrepeat_delay_flag) {
+	if(keyrepeat_delay_flag) {	// If Delay flag is ON,
 		UINT32 dt = GETTICK() - keyrepeat_delay;
+		// If it hasn't been (delay time - repeat time) yet, return
 		if(dt < KEYREPEAT_DELAY - KEYREPEAT_INTERVAL) {
 			return;
 		}
+		// Delay flag OFF
 		keyrepeat_delay_flag = FALSE;
 		keyrepeat_delay = 0;
 		keyrepeat_interval = GETTICK();
-	} else {
+	} else {	// If Delay flag is OFF,
 		UINT32 dt = GETTICK() - keyrepeat_interval;
+		// If is has been repeat time,
 		if(dt >= KEYREPEAT_INTERVAL) {
 			UINT8 keycode = keyrepeat_buf[keyrepeat_index-1];
 			keyrepeat_interval = GETTICK();
