@@ -219,6 +219,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2KAI_GIT_TAG " " NP2KAI_GIT_HASH);
 					{{1, 3, 8, 0, 0, 255, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}},
 				},
 #endif
+				0, 500, 50,
 	};
 
 	PCCORE	pccore = {	PCBASECLOCK25, PCBASEMULTIPLE,
@@ -1163,6 +1164,10 @@ void pccore_exec(BOOL draw) {
 	nevent_set(NEVENT_FLAMES, gdc.dispclock, screenvsync, NEVENT_RELATIVE);
 
 //	nevent_get1stevent();
+
+	if(np2cfg.keyrepeat_enable) {
+		keyrepeat_proc();
+	}
 	
 	while(pcstat.screendispflag) {
 #if defined(TRACE)

@@ -32,7 +32,7 @@ enum {
 };
 
 typedef struct {
-	char	item[12];
+	char	item[32];
 	UINT16	itemtype;
 	void	*value;
 	UINT32	arg;

@@ -871,6 +871,10 @@ static INITBL iniitem[] = {
 	{OEMTEXT("vf1_p2_p1"),  INITYPE_ARGU32, np2cfg.vf1_param[2][1],    8},
 	{OEMTEXT("vf1_p2_p2"),  INITYPE_ARGU32, np2cfg.vf1_param[2][2],    8},
 #endif
+	// Keyrepeat
+	{"keyrepeat_enable", INITYPE_BOOL,	&np2cfg.keyrepeat_enable,	0},
+	{"keyrepeat_delay", INITYPE_UINT16,	&np2cfg.keyrepeat_delay,	500},
+	{"keyrepeat_interval", INITYPE_UINT16,	&np2cfg.keyrepeat_interval,	50},
 };
 #define	INIITEMS	(sizeof(iniitem) / sizeof(iniitem[0]))
 
