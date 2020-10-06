@@ -24,10 +24,14 @@ UINT codecnv_ucs4toucs2(UINT16 *lpOutput, UINT cchOutput, const UINT32 *lpInput,
 	UINT n = 0;
 	UINT nLength;
 
-	if(lpOutput != NULL && lpInput != NULL) {
-		if(cchOutput == 0) {
+	if(lpInput != NULL) {
+		if(!lpOutput || cchOutput == 0) {
 			lpOutput = NULL;
-			cchOutput = (UINT)-1;
+			if (cchInput == (UINT)-1) {
+				cchOutput = 0;
+			} else {
+				cchOutput = (UINT)-1;
+			}
 		}
 
 		if(cchInput != (UINT)-1) {
@@ -36,7 +40,9 @@ UINT codecnv_ucs4toucs2(UINT16 *lpOutput, UINT cchOutput, const UINT32 *lpInput,
 		} else {
 			// String mode
 			nLength = ucs4toucs2(lpOutput, cchOutput - 1, lpInput, codecnv_ucs4len(lpInput));
-			lpOutput[nLength] = '\0';
+			if (lpOutput) {
+				lpOutput[nLength] = '\0';
+			}
 			n = nLength + 1;
 		}
 	}
@@ -74,12 +80,16 @@ UINT codecnv_ucs4toucs2_1(UINT16 *lpOutput, UINT cchOutput, const UINT32 *lpInpu
 	}
 
 	if(lpInput[0] < 0x10000 && cchOutput > 1) {
-		lpOutput[0] = (UINT16)lpInput[0];
-		lpOutput[1] = 0;
+		if (lpOutput) {
+			lpOutput[0] = (UINT16)lpInput[0];
+			lpOutput[1] = 0;
+		}
 		n = 1;
 	} else if(cchOutput > 2) {
-		lpOutput[0] = (UINT16)((lpInput[0] - 0x10000) / 0x400 + 0xD800);
-		lpOutput[1] = (UINT16)((lpInput[0] - 0x10000) % 0x400 + 0xDC00);
+		if (lpOutput) {
+			lpOutput[0] = (UINT16)((lpInput[0] - 0x10000) / 0x400 + 0xD800);
+			lpOutput[1] = (UINT16)((lpInput[0] - 0x10000) % 0x400 + 0xDC00);
+		}
 		n = 2;
 	}
 
@@ -97,15 +107,20 @@ UINT codecnv_ucs4toucs2_1(UINT16 *lpOutput, UINT cchOutput, const UINT32 *lpInpu
 static UINT ucs4toucs2(UINT16 *lpOutput, UINT cchOutput, const UINT32 *lpInput, UINT cchInput) {
 	UINT nRemain;
 	UINT n = 1;
-
+	UINT len;
+	
+	len = 0;
 	nRemain = cchOutput;
 	while ((cchInput > 0) && (nRemain > 0) && (n > 0)) {
 		n = codecnv_ucs4toucs2_1(lpOutput, nRemain, lpInput);
-		lpOutput += n;
-		nRemain -= n;
+		if (lpOutput) {
+			lpOutput += n;
+			nRemain -= n;
+		}
+		len += n;
 		lpInput++;
 		cchInput--;
 	}
 
-	return (UINT)(cchOutput - nRemain);
+	return len;
 }

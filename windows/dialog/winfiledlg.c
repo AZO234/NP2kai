@@ -23,18 +23,32 @@ BOOL WinFileDialogW_MM(
   wchar_t wname[MAX_PATH];
   wchar_t wdefext[MAX_PATH];
   wchar_t wtitle[MAX_PATH];
-  wchar_t wfilter[MAX_PATH];
+  wchar_t *wfilter;
+  UINT len;
+
+  len = codecnv_utf8toucs2(NULL, 0, filter, -1);
+  wfilter = (wchar_t*)calloc(len, sizeof(wchar_t));
+  if (!wfilter) {
+      return FALSE;
+  }
 
   codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
   codecnv_utf8toucs2(wname, MAX_PATH, name, -1);
   codecnv_utf8toucs2(wdefext, MAX_PATH, defext, -1);
   codecnv_utf8toucs2(wtitle, MAX_PATH, title, -1);
-  codecnv_utf8toucs2(wfilter, MAX_PATH, filter, -1);
+  codecnv_utf8toucs2(wfilter, len, filter, -1);
 
+  for (UINT i = 0; i < len; i++) {
+      if (wfilter[i] == L'|') {
+          wfilter[i] = 0;
+      }
+  }
   res = WinFileDialogW_WW(hwnd, pofnw, mode, wpath, wname, wdefext, wtitle, wfilter, nFilterIndex);
 
   codecnv_ucs2toutf8(path, MAX_PATH, wpath, -1);
   codecnv_ucs2toutf8(name, MAX_PATH, wname, -1);
+
+  free(wfilter);
 
   return res;
 }
