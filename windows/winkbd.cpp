@@ -52,8 +52,8 @@ static UINT8 key106[256] = {
 //				  NC,0x73,0x4d,  NC,  NC,  NC,  NC,  NC,			// ver0.28
 			//	    ,    ,    ,    ,    ,    ,    ,    		; 0x98
 				  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-			//	    ,    ,    ,    ,    ,    ,    ,    		; 0xa0
-				  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
+			//	SFTL,SFTR,    ,    ,    ,    ,    ,    		; 0xa0
+				0x70,0x7d,  NC,  NC,  NC,  NC,  NC,  NC,
 			//	    ,    ,    ,    ,    ,    ,    ,    		; 0xa8
 				  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
 			//	    ,    ,    ,    ,    ,    ,    ,    		; 0xb0
@@ -151,6 +151,11 @@ void winkbd_keydown(WPARAM wParam, LPARAM lParam) {
 
 	UINT8	data;
 
+	if (wParam == VK_SHIFT) {
+		UINT scancode = (lParam & 0x00ff0000) >> 16;
+		wParam = MapVirtualKey(scancode, MAPVK_VSC_TO_VK_EX);
+	}
+
 	data = key106[wParam & 0xff];
 	if (data != NC) {
 		if ((data == 0x73) &&
@@ -179,6 +184,10 @@ void winkbd_keyup(WPARAM wParam, LPARAM lParam) {
 
 	UINT8	data;
 
+	if (wParam == VK_SHIFT) {
+		UINT scancode = (lParam & 0x00ff0000) >> 16;
+		wParam = MapVirtualKey(scancode, MAPVK_VSC_TO_VK_EX);
+	}
 	data = key106[wParam & 0xff];
 	if (data != NC) {
 		if ((data == 0x73) &&
