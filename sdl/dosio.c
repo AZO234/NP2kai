@@ -19,6 +19,7 @@
 #include <direct.h>
 #else
 #include <dirent.h>
+#include <unistd.h>
 #endif
 #endif
 
