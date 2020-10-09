@@ -72,7 +72,7 @@ enum
  */
 struct tagProfileItem
 {
-	OEMCHAR item[12];		/*!< The name of the item */
+	OEMCHAR item[32];		/*!< The name of the item */
 	UINT itemtype;			/*!< The type of the item */
 	void *value;			/*!< The pointer of values */
 	UINT32 arg;				/*!< The arg */
