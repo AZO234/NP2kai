@@ -87,7 +87,7 @@ static const LRKCNV lrcnv101[] = {
   {RETROK_PERIOD,       0x31},  // . >
   {RETROK_SLASH,        0x32},  // / ?
   // _ _
-  {RETROK_RSHIFT,       0x75},  // RShift
+  {RETROK_RSHIFT,       0x7d},  // RShift
   // Kana
   {RETROK_LSUPER,       0x77},  // LSuper
   {RETROK_RCTRL,        0x73},  // GRPH
@@ -197,7 +197,7 @@ static const LRKCNV lrcnv106[] = {
   {RETROK_PERIOD,       0x31},  // . >
   {RETROK_SLASH,        0x32},  // / ?
   {2,      0x33},       // _ _ (L2?menu open?)
-  {RETROK_RSHIFT,       0x75},  // RShift
+  {RETROK_RSHIFT,       0x7d},  // RShift
   // Kana
   {RETROK_LSUPER,       0x77},  // LSuper
   {RETROK_RCTRL,        0x73},  // GRPH
@@ -391,7 +391,7 @@ static const SDLKCNV sdlcnv101[] = {
   {SDLK_PERIOD,       0x31},  // . >
   {SDLK_SLASH,        0x32},  // / ?
   // _ _
-  {SDLK_RSHIFT,       0x75},  // RShift
+  {SDLK_RSHIFT,       0x7d},  // RShift
   // Kana
   {SDLK_LSUPER,       0x77},  // LSuper (M)
   {SDLK_RCTRL,        0x73},  // GRPH
@@ -498,7 +498,7 @@ static const SDLKCNV sdlcnv101[] = {
   {SDL_SCANCODE_PERIOD,       0x31},  // . >
   {SDL_SCANCODE_SLASH,        0x32},  // / ?
   // _ _
-  {SDL_SCANCODE_RSHIFT,       0x75},  // RShift
+  {SDL_SCANCODE_RSHIFT,       0x7d},  // RShift
   // Kana
   {SDL_SCANCODE_LGUI,         0x77},  // LSuper (M)
   {SDL_SCANCODE_RCTRL,        0x73},  // GRPH
@@ -609,7 +609,7 @@ static const SDLKCNV sdlcnv106[] = {
   {SDLK_PERIOD,       0x31},  // . >
   {SDLK_SLASH,        0x32},  // / ?
   // _ _
-  {SDLK_RSHIFT,       0x75},  // RShift
+  {SDLK_RSHIFT,       0x7d},  // RShift
   // Kana
   {SDLK_LSUPER,       0x77},  // LSuper (M)
   {SDLK_RCTRL,        0x73},  // GRPH
@@ -716,7 +716,7 @@ static const SDLKCNV sdlcnv106[] = {
   {SDL_SCANCODE_PERIOD,         0x31},  // . >
   {SDL_SCANCODE_SLASH,          0x32},  // / ?
   {SDL_SCANCODE_INTERNATIONAL1, 0x33},  // _ _
-  {SDL_SCANCODE_RSHIFT,         0x75},  // RShift
+  {SDL_SCANCODE_RSHIFT,         0x7d},  // RShift
   // Kana
   {SDL_SCANCODE_LGUI,           0x77},  // LSuper (M)
   {SDL_SCANCODE_RCTRL,          0x73},  // GRPH
