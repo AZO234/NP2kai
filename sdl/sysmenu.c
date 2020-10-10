@@ -46,6 +46,7 @@
 #endif
 
 static UINT bmpno = 0;
+static BOOL fullscreen = FALSE;
 
 /* Forward declarations */
 extern void changescreen(UINT8 newmode);
@@ -958,6 +959,12 @@ static void sys_cmd(MENUID id) {
 		case SID_CLOSE:
 			taskmng_exit();
 			break;
+
+		case MID_FULLSCREEN:
+			if(scrnmng_fullscreen(!fullscreen)) {
+				fullscreen = !fullscreen;
+			}
+			break;
 	}
 	sysmng_update(update);
 }
@@ -1121,6 +1128,9 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 	menusys_sethide(MID_DBSS, np2cfg.debugss ? 0 : 1);
 #endif
 	menusys_setcheck(MID_HF_ENABLE, (hf_enable == 1));
+
+	menusys_setcheck(MID_FULLSCREEN, fullscreen);
+
 	return(menusys_open(x, y));
 }
 
