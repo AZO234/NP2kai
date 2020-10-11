@@ -603,7 +603,11 @@ static const INITBL iniitem[] = {
 
 	{OEMTEXT("DIPswtch"), INITYPE_ARGH8,	np2cfg.dipsw,		3},
 	{OEMTEXT("MEMswtch"), INITYPE_ARGH8,	np2cfg.memsw,		8},
+#if defined(SUPPORT_LARGE_MEMORY)
+	{OEMTEXT("ExMemory"), INITYPE_UINT16,	&np2cfg.EXTMEM,		13},
+#else
 	{OEMTEXT("ExMemory"), INIMAX_UINT8,	&np2cfg.EXTMEM,		13},
+#endif
 	{OEMTEXT("ITF_WORK"), INIRO_BOOL,	&np2cfg.ITF_WORK,	0},
 
 	{OEMTEXT("HDD1FILE"), INITYPE_STR,	np2cfg.sasihdd[0],	MAX_PATH},
