@@ -960,8 +960,13 @@ static void sys_cmd(MENUID id) {
 			taskmng_exit();
 			break;
 
+		case MID_WINDOW:
+			if(fullscreen && scrnmng_fullscreen(!fullscreen)) {
+				fullscreen = !fullscreen;
+			}
+			break;
 		case MID_FULLSCREEN:
-			if(scrnmng_fullscreen(!fullscreen)) {
+			if(!fullscreen && scrnmng_fullscreen(!fullscreen)) {
 				fullscreen = !fullscreen;
 			}
 			break;
@@ -1129,6 +1134,7 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 #endif
 	menusys_setcheck(MID_HF_ENABLE, (hf_enable == 1));
 
+	menusys_setcheck(MID_WINDOW, !fullscreen);
 	menusys_setcheck(MID_FULLSCREEN, fullscreen);
 
 	return(menusys_open(x, y));

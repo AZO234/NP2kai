@@ -612,14 +612,10 @@ BOOL scrnmng_fullscreen(BOOL val) {
 	if(scrnmng.dispsurf) {
 		ret = TRUE;
 	} else {
-		scrnmng.dispsurf = SDL_SetVideoMode(scrnmng.width, scrnmng.height, scrnmng.bpp, SDL_HWSURFACE | (val ? SDL_FULLSCREEN:0));
+		scrnmng.dispsurf = SDL_SetVideoMode(scrnmng.width, scrnmng.height, scrnmng.bpp, SDL_HWSURFACE);
 	}
-	if(scrnmng.pc98surf) {
-		SDL_FreeSurface(scrnmng.pc98surf);
-	}
-	scrnmng.pc98surf = SDL_CreateRGBSurface(SDL_SWSURFACE, scrnmng.width, scrnmng.height, scrnmng.bpp, 0xf800, 0x07e0, 0x001f, 0);
 #else
-	if(SDL_SetWindowFullscreen(s_window, val ? SDL_WINDOW_FULLSCREEN:0) == 0) {
+	if(SDL_SetWindowFullscreen(s_window, val ? SDL_WINDOW_FULLSCREEN_DESKTOP:0) == 0) {
 		ret = TRUE;
 	}
 #endif
