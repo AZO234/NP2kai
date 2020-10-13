@@ -241,6 +241,12 @@ void taskmng_rol(void) {
 				}
 			}
 #endif
+#if SDL_MAJOR_VERSION != 1
+			else if(menuvram && e.key.keysym.scancode >= SDL_SCANCODE_F1 
+						&& e.key.keysym.scancode <= SDL_SCANCODE_F10) {
+				sdlkbd_keydownMenuFn(e.key.keysym.scancode);
+			}
+#endif
 			else {
 #if SDL_MAJOR_VERSION == 1
 				sdlkbd_keydown(e.key.keysym.sym);
@@ -268,7 +274,12 @@ void taskmng_rol(void) {
 #if SDL_MAJOR_VERSION == 1
       sdlkbd_keyup(e.key.keysym.sym);
 #else
-      sdlkbd_keyup(e.key.keysym.scancode);
+	if(menuvram && e.key.keysym.scancode >= SDL_SCANCODE_F1 
+			&& e.key.keysym.scancode <= SDL_SCANCODE_F10) {
+		sdlkbd_keyupMenuFn(e.key.keysym.scancode);
+	} else {
+	    sdlkbd_keyup(e.key.keysym.scancode);
+	}
 #endif
 			break;
 
