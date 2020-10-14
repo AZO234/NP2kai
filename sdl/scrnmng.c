@@ -439,10 +439,10 @@ void scrnmng_leavemenu(void) {
 	if(ismouse_captured())
 		mousemng_hidecursor();
 #else
-#if !defined(TARGET_OS_MAC)
+// #if !defined(TARGET_OS_MAC)
 /* once hide mouse cursor, can't show it on macOS */
 	mousemng_hidecursor();
-#endif
+// #endif
 #endif
 #endif	/* __LIBRETRO__ */
 }

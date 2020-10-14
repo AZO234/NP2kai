@@ -828,7 +828,7 @@ static const SDLKCNV sdlcnvMacJis[] = {
   {SDLK_PERIOD,       0x31},  // . >
   {SDLK_SLASH,        0x32},  // / ?
   // _ _
-  {SDLK_RSHIFT,       0x75},  // RShift
+  {SDLK_RSHIFT,       0x7d},  // RShift
   // Kana
 /*  {SDLK_LSUPER,       0x70},  // LSuper (M) */
   {SDLK_LALT,         0x73},  // GRPH
@@ -937,7 +937,7 @@ static const SDLKCNV sdlcnvMacJis[] = {
   {SDL_SCANCODE_PERIOD,         0x31},  // . >
   {SDL_SCANCODE_SLASH,          0x32},  // / ?
   {SDL_SCANCODE_INTERNATIONAL1, 0x33},  // _ _
-  {SDL_SCANCODE_RSHIFT,         0x75},  // RShift
+  {SDL_SCANCODE_RSHIFT,         0x7d},  // RShift
   // Kana
 /*  {SDL_SCANCODE_LGUI,           0x70},  // LSuper (M) */
   {SDL_SCANCODE_RCTRL,          0x73},  // GRPH
