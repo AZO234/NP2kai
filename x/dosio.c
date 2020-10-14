@@ -451,6 +451,6 @@ short file_rename(const char* ExistFile, const char* NewFile)
 
 short file_dirdelete(const char* PathName)
 {
-	return (remove(PathName)) ? 0 : -1;
+	return (remove(PathName) == 0) ? 0 : -1;
 }
 

@@ -401,10 +401,9 @@ FLISTH DOSIOCALL file_list1st(const OEMCHAR* lpPathName, FLINFO* fli)
 	file_cpyname(szPath, lpPathName, NELEMENTS(szPath));
 	file_setseparator(szPath, NELEMENTS(szPath));
 	file_catname(szPath, s_szWildCard, NELEMENTS(szPath));
-
 	WIN32_FIND_DATAW w32fd;
 	wchar_t wPath[MAX_PATH];
-	codecnv_utf8toucs2((UINT16*)wPath, MAX_PATH, lpPathName, -1);
+	codecnv_utf8toucs2((UINT16*)wPath, MAX_PATH, szPath, -1);
 	HANDLE hFile = ::FindFirstFileW(wPath, &w32fd);
 	if (hFile != INVALID_HANDLE_VALUE)
 	{

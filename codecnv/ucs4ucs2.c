@@ -24,17 +24,17 @@ UINT codecnv_ucs4toucs2(UINT16 *lpOutput, UINT cchOutput, const UINT32 *lpInput,
 	UINT n = 0;
 	UINT nLength;
 
-	if(lpInput != NULL) {
-		if(!lpOutput || cchOutput == 0) {
+	if (lpInput != NULL) {
+		if (!lpOutput || cchOutput == 0) {
 			lpOutput = NULL;
-			if (cchInput == (UINT)-1) {
-				cchOutput = 0;
-			} else {
+			if (cchInput != (UINT)-1) {
 				cchOutput = (UINT)-1;
+			} else {
+				cchOutput = 0;
 			}
 		}
 
-		if(cchInput != (UINT)-1) {
+		if (cchInput != (UINT)-1) {
 			// Binary mode
 			n = ucs4toucs2(lpOutput, cchOutput, lpInput, cchInput);
 		} else {
@@ -107,19 +107,21 @@ UINT codecnv_ucs4toucs2_1(UINT16 *lpOutput, UINT cchOutput, const UINT32 *lpInpu
 static UINT ucs4toucs2(UINT16 *lpOutput, UINT cchOutput, const UINT32 *lpInput, UINT cchInput) {
 	UINT nRemain;
 	UINT n = 1;
-	UINT len;
-	
-	len = 0;
+	UINT len = 0;
+
 	nRemain = cchOutput;
 	while ((cchInput > 0) && (nRemain > 0) && (n > 0)) {
+		if (nRemain <= 0 && (INT)cchOutput > 0) {
+			break;
+		}
 		n = codecnv_ucs4toucs2_1(lpOutput, nRemain, lpInput);
 		if (lpOutput) {
 			lpOutput += n;
 			nRemain -= n;
 		}
-		len += n;
 		lpInput++;
 		cchInput--;
+		len += n;
 	}
 
 	return len;
