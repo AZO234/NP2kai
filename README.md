@@ -1,7 +1,8 @@
+2020/10/14更新
 
 [Neko Project II kai](https://github.com/AZO234/NP2kai)をforkして、MacBook Proの内蔵キーボードでそこそこ使いやすいようにキーマップを変更して勝手に追加してみた。(SDL2ポートのみ)
 
-106キーボードのマップをベースに特殊キーの配置を少し調整したJIS Mac Keyboardを追加し、メニューのDevice - Keyboard - JIS Mac Keyboard で選択できるようになります。また、STOP、COPY、かな、INSをDevice - Keyboardメニューがら送信できるようにもなってます。(SDLポートでmacOSでビルドしたときのみ)
+106キーボードのマップをベースに特殊キーの配置を少し調整したJIS Mac Keyboardを追加し、メニューのDevice - Keyboard - JIS Mac Keyboard で選択できるようになります。また、STOP、COPY、かな、INSをDevice - Keyboardメニューがら送信できるようにもなってます。(SDL2ポートでmacOSでビルドしたときのみ)
 
 次の表のようにしました。
 
@@ -16,6 +17,14 @@
 | HOME                      | HOME/CLR              |
 | END                       | HELP                  |
 
+
+## 更新履歴
+
+- 2020/11/14
+  - ホストドライブ機能がおかしかったので改修(ただいまプルリクエスト中)
+
+
+ここから先はフォーク元のREADME。
 
 ---
 
