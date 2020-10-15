@@ -1101,7 +1101,7 @@ void sdlkbd_keydownMenuFn(UINT key) {
   }
   UINT8 data = menuFnCnv[key - SDL_SCANCODE_F1];
   if(data != NC && !key_states[key]) {
-     keystat_keydown(data);
+     keystat_senddata(data);
      key_states[key] = 1;
   }  
 }
@@ -1112,7 +1112,7 @@ void sdlkbd_keyupMenuFn(UINT key) {
   }
   UINT8 data = menuFnCnv[key - SDL_SCANCODE_F1];
   if(data != NC && key_states[key]) {
-     keystat_keyup(data);
+     keystat_senddata(data | 0x80);
      key_states[key] = 0;
   }  
 }
