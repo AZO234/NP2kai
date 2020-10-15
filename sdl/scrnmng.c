@@ -1,10 +1,12 @@
 #include	<compiler.h>
+#include	<cpucore.h>
 #include	"mousemng.h"
 #include	"scrnmng.h"
 #include	<embed/menubase/menubase.h>
 #include	"commng.h"
 #include	<pccore.h>
 #include	"np2.h"
+#include	<font/font.h>
 
 #if defined(SUPPORT_WAB)
 #include <wab/wab.h>
@@ -622,3 +624,120 @@ BOOL scrnmng_fullscreen(BOOL val) {
 #endif
 	return ret;
 }
+#if SDL_MAJOR_VERSION != 1
+
+static const OEMCHAR *funckey[10] = {
+	OEMTEXT(" STOP "),
+	OEMTEXT(" COPY "),
+	OEMTEXT(" KANA "),
+	OEMTEXT(" INS  "),
+	OEMTEXT(" DEL  "),
+	
+	OEMTEXT(" H/C  "),
+	OEMTEXT(" HELP "),
+	OEMTEXT("      "),
+	OEMTEXT("      "),
+	OEMTEXT("      "),
+};
+
+void menuvram_drawFuncKey() {
+	vram_drawFuncKey(menuvram, funckey);
+}
+
+void vram_drawFuncKey(const VRAMHDL vram, const OEMCHAR *funckey[]) {
+	int x = 0;
+	int y = vram->height - 16;
+	UINT32 black = RGB32D(0, 0, 0);
+	UINT32 light_blue = RGB32D(24, 235, 249);
+	vram_drawAnkText(vram, x, y, "    ", black, black);
+	x = 4 * 8;
+	for(int i = 0; i < 5; i++) {
+		vram_drawAnkText(vram, x, y, funckey[i], black, light_blue);
+		x += strlen(funckey[i]) * 8;
+		vram_drawAnkText(vram, x, y, " ", black, black);
+		x += 8;
+	}
+	vram_drawAnkText(vram, x, y, "   ", black, black);
+	x += 8 * 3;
+	for(int i = 5; i < 10; i++) {
+		vram_drawAnkText(vram, x, y, funckey[i], black, light_blue);
+		x += strlen(funckey[i]) * 8;
+		vram_drawAnkText(vram, x, y, " ", black, black);
+		x += 8;
+	}
+	vram_drawAnkText(vram, x, y, "   ", black, black);
+}
+
+void vram_drawAnkText(const VRAMHDL vram, const int posx, const int posy,
+			const OEMCHAR *text, const UINT32 forecolor, const UINT32 backcolor) {
+	for(int i = 0; i < strlen(text); i++) {
+		vram_drawAnkChar(vram, posx + i * 8, posy, text[i], forecolor, backcolor);
+	}
+}
+
+void vram_drawAnkChar(const VRAMHDL vram, const int posx, const int posy,
+			const OEMCHAR code, const UINT32 forecolor, const UINT32 backcolor) {
+#ifdef SUPPORT_16BPP
+	UINT16 forecolor16 = MAKE16PAL(forecolor);
+	UINT16 backcolor16 = MAKE16PAL(backcolor);
+#endif
+#if defined(SUPPORT_24BPP) || defined(SUPPORT_32BPP)
+	UINT8 forecolor24[] = {
+		(UINT8)(forecolor),
+		(UINT8)(forecolor >> 8),
+		(UINT8)(forecolor >> 16),
+	};
+	UINT8 backcolor24[] = {
+		(UINT8)(backcolor),
+		(UINT8)(backcolor >> 8),
+		(UINT8)(backcolor >> 16),
+	};
+#endif
+	UINT8 *p = &fontrom[0x80000 + (code << 4)];
+
+	for(int y = 0; y < 16; y++) {
+		UINT8 pt = *p;
+		for(int x = 0; x < 8; x++) {
+			int xx = posx + x;
+			int yy = posy + y;
+			if(xx < vram->posx || yy < vram->posy
+					|| xx >= vram->width || yy >= vram->height) {
+				continue;
+			}
+			UINT8 *p = vram->ptr + (xx - vram->posx) * vram->xalign 
+						+ (yy - vram->posy) * menuvram->yalign;
+			UINT8 *a = vram->alpha + xx - vram->posx
+						+ (yy - vram->posy) * vram->width;
+			switch (vram->bpp)
+			{
+#ifdef SUPPORT_16BPP
+			case 16:
+				if(pt & 0x80) {
+					*(UINT16*)p = forecolor16;
+				} else {
+					*(UINT16*)p = backcolor16;
+				}
+				break;
+#endif
+#if defined(SUPPORT_24BPP) || defined(SUPPORT_32BPP)
+			case 24:
+			case 32:
+				if(pt & 0x80) {
+					p[0] = forecolor24[0];
+					p[1] = forecolor24[1];
+					p[2] = forecolor24[2];
+				} else {
+					p[0] = backcolor24[0];
+					p[1] = backcolor24[1];
+					p[2] = backcolor24[2];
+				}
+				break;
+#endif
+			}
+			*a = 0x2;
+			pt <<= 1;
+		}
+		p++;
+	}
+}
+#endif

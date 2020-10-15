@@ -1079,4 +1079,42 @@ void sdlkbd_keyup(UINT key) {
   }
 }
 
+#if SDL_MAJOR_VERSION != 1
+/* メニュー表示時にファンクションキーの変換テーブル */
+static UINT8 menuFnCnv[] = {
+  0x60,     /* F1(STOP) */
+  0x61,     /* F2(COPY) */
+  0x72,     /* F3(KANA) */
+  0x38,     /* F4(INS) */
+  0x39,     /* F5(DEL) */
+
+  0x3e,     /* F6(HOME/CLR) */
+  0x3f,     /* F7(HELP) */
+  NC,       /* F8 */
+  NC,       /* F9 */
+  NC,       /* F10 */
+};
+
+void sdlkbd_keydownMenuFn(UINT key) {
+  if(key < SDL_SCANCODE_F1 || key > SDL_SCANCODE_F10) {
+    return;
+  }
+  UINT8 data = menuFnCnv[key - SDL_SCANCODE_F1];
+  if(data != NC && !key_states[key]) {
+     keystat_keydown(data);
+     key_states[key] = 1;
+  }  
+}
+
+void sdlkbd_keyupMenuFn(UINT key) {
+  if(key < SDL_SCANCODE_F1 || key > SDL_SCANCODE_F10) {
+    return;
+  }
+  UINT8 data = menuFnCnv[key - SDL_SCANCODE_F1];
+  if(data != NC && key_states[key]) {
+     keystat_keyup(data);
+     key_states[key] = 0;
+  }  
+}
+#endif
 #endif  // __LIBRETRO__

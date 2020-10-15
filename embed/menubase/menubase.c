@@ -155,6 +155,15 @@ const	RECT_T	*rect;
 		if (draw) {
 			draw(menuvram, rect, arg);
 		}
+#if SDL_MAJOR_VERSION != 1
+		RECT_T rr;
+		rr.top = rect->top;
+		rr.left = rect->left;
+		rr.right = rect->right;
+		rr.bottom = menuvram->height;
+		menuvram_drawFuncKey();
+		rect = &rr;
+#endif
 		scrnmng_menudraw(rect);
 		unionrect_rst(&mb->rect);
 	} else {
