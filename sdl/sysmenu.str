@@ -369,8 +369,13 @@ static const MSYSITEM s_vf1[] = {
 #endif
 
 static const MSYSITEM s_screen[] = {
+#if SDL_MAJOR_VERSION == 1
 		{str_window,		NULL,		MID_WINDOW,			MENU_GRAY},
 		{str_fullscrn,		NULL,		MID_FULLSCREEN,		MENU_GRAY},
+#else
+		{str_window,		NULL,		MID_WINDOW,			0},
+		{str_fullscrn,		NULL,		MID_FULLSCREEN,		0},
+#endif
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 #if SDL_MAJOR_VERSION == 1
 		{str_normal,		NULL,		MID_ROLNORMAL,		MENU_GRAY},

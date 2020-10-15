@@ -603,3 +603,22 @@ void scrnmng_bltwab(void) {
 	}
 #endif
 }
+
+BOOL scrnmng_fullscreen(BOOL val) {
+	BOOL ret = FALSE;
+#if !defined(__LIBRETRO__)
+#if SDL_MAJOR_VERSION == 1
+	scrnmng.dispsurf = SDL_SetVideoMode(scrnmng.width, scrnmng.height, scrnmng.bpp, SDL_HWSURFACE | (val ? SDL_FULLSCREEN:0));
+	if(scrnmng.dispsurf) {
+		ret = TRUE;
+	} else {
+		scrnmng.dispsurf = SDL_SetVideoMode(scrnmng.width, scrnmng.height, scrnmng.bpp, SDL_HWSURFACE);
+	}
+#else
+	if(SDL_SetWindowFullscreen(s_window, val ? SDL_WINDOW_FULLSCREEN_DESKTOP:0) == 0) {
+		ret = TRUE;
+	}
+#endif
+#endif
+	return ret;
+}
