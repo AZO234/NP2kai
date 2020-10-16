@@ -325,6 +325,11 @@ struct tagNP2Config
 	uint8_t  vf1_profile[3][2];
 	uint32_t vf1_param[3][3][8];
 #endif
+
+	// Setting Keyrepeat
+	UINT8	keyrepeat_enable;
+	UINT16	keyrepeat_delay;		// Keyrepeat delay time(ms)
+	UINT16	keyrepeat_interval;		// Keyrepeat interval time(ms)
 };
 typedef struct tagNP2Config  NP2CFG;		/*!< The define of config */
 

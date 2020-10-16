@@ -590,9 +590,6 @@ static const INITBL iniitem[] = {
 	{OEMTEXT("bmap_Num"), INITYPE_UINT32,	&bmpfilenumber,		0},
 	{OEMTEXT("fontfile"), INITYPE_STR,	np2cfg.fontfile,	MAX_PATH},
 	{OEMTEXT("biospath"), INIRO_STR,		np2cfg.biospath,	MAX_PATH},
-	{OEMTEXT("hdrvroot"), INIRO_STR,		np2cfg.hdrvroot,	MAX_PATH},
-	{OEMTEXT("hdrv_acc"), INIRO_UINT8,	&np2cfg.hdrvacc,	0},
-
 #if defined(SUPPORT_HOSTDRV)
 	{OEMTEXT("use_hdrv"), INITYPE_BOOL,	&np2cfg.hdrvenable,	0},
 	{OEMTEXT("hdrvroot"), INITYPE_STR,	&np2cfg.hdrvroot,	MAX_PATH},
@@ -606,7 +603,11 @@ static const INITBL iniitem[] = {
 
 	{OEMTEXT("DIPswtch"), INITYPE_ARGH8,	np2cfg.dipsw,		3},
 	{OEMTEXT("MEMswtch"), INITYPE_ARGH8,	np2cfg.memsw,		8},
+#if defined(SUPPORT_LARGE_MEMORY)
+	{OEMTEXT("ExMemory"), INITYPE_UINT16,	&np2cfg.EXTMEM,		13},
+#else
 	{OEMTEXT("ExMemory"), INIMAX_UINT8,	&np2cfg.EXTMEM,		13},
+#endif
 	{OEMTEXT("ITF_WORK"), INIRO_BOOL,	&np2cfg.ITF_WORK,	0},
 
 	{OEMTEXT("HDD1FILE"), INITYPE_STR,	np2cfg.sasihdd[0],	MAX_PATH},
@@ -883,6 +884,11 @@ static const INITBL iniitem[] = {
 	{OEMTEXT("vf1_p2_p1"),  INITYPE_ARGU32, np2cfg.vf1_param[2][1],    8},
 	{OEMTEXT("vf1_p2_p2"),  INITYPE_ARGU32, np2cfg.vf1_param[2][2],    8},
 #endif
+
+	// Keyrepeat
+	{OEMTEXT("keyrepeat_enable"), INITYPE_BOOL,	&np2cfg.keyrepeat_enable,	0},
+	{OEMTEXT("keyrepeat_delay"), INITYPE_UINT16,	&np2cfg.keyrepeat_delay,	500},
+	{OEMTEXT("keyrepeat_interval"), INITYPE_UINT16,	&np2cfg.keyrepeat_interval,	50},
 };
 
 #define	INIITEMS	(sizeof(iniitem) / sizeof(INITBL))

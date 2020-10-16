@@ -227,7 +227,7 @@ static const UINT8 xkeyconv_misc[256] = {
 	/*	    ,    ,    ,    ,    ,    ,    ,   		; 0xd8 */
 		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
 	/*	    ,SFTL,SFTR,CTLL,CTLR,CAPS,    ,METL		; 0xe0 */
-		  NC,0x70,0x75,0x74,0x73,0x71,  NC,0x51,
+		  NC,0x70,0x7d,0x74,0x73,0x71,  NC,0x51,
 	/*	METR,ALTL,ALTR,    ,    ,    ,    ,    		; 0xe8 */
 		0x35,0x51,0x35,  NC,  NC,  NC,  NC,  NC,
 	/*	    ,    ,    ,    ,    ,    ,    ,    		; 0xf0 */

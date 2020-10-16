@@ -912,6 +912,10 @@ static const PFTBL s_IniItems[] =
 #if defined(SUPPORT_WACOM_TABLET)
 	PFVAL("PENTABFA", PFTYPE_BOOL,		&np2oscfg.pentabfa), // ペンタブレット アスペクト比固定モード
 #endif
+	// Keyrepeat
+	PFEXT("keyrepeat_enable", PFTYPE_BOOL,	&np2cfg.keyrepeat_enable, 0),
+	PFEXT("keyrepeat_delay", PFTYPE_UINT16,	&np2cfg.keyrepeat_delay, 500),
+	PFEXT("keyrepeat_interval", PFTYPE_UINT16,	&np2cfg.keyrepeat_interval, 50),
 };
 
 //! .ini 拡張子
