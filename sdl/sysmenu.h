@@ -13,9 +13,6 @@ void sysmenu_destroy(void);
 
 BRESULT sysmenu_menuopen(UINT menutype, int x, int y);
 
-BOOL scrnmng_fullscreen(BOOL val);
-
-
 #ifdef __cplusplus
 }
 #endif

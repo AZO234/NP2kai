@@ -4,6 +4,8 @@
 #include	<embed/vramhdl.h>
 #include	<vram/scrndraw.h>
 
+extern BOOL g_fullscreen;
+
 enum {
 	RGB24_B	= 2,
 	RGB24_G	= 1,
@@ -47,7 +49,7 @@ void scrnmng_setheight(int posy, int height);
 const SCRNSURF *scrnmng_surflock(void);
 void scrnmng_surfunlock(const SCRNSURF *surf);
 
-#define	scrnmng_isfullscreen()	(0)
+#define	scrnmng_isfullscreen()	g_fullscreen
 #define	scrnmng_haveextend()	(0)
 #define	scrnmng_getbpp()		(16)
 #define	scrnmng_allflash()		
@@ -84,6 +86,9 @@ void scrnmng_updatecursor(void);
 void scrnmng_updatefsres(void);
 void scrnmng_blthdc(void);
 void scrnmng_bltwab(void);
+
+BOOL scrnmng_toggleFullscreen();
+BOOL scrnmng_fullscreen(BOOL val);
 
 #if SDL_MAJOR_VERSION != 1
 void vram_drawAnkChar(const VRAMHDL vram, const int posx, const int posy,

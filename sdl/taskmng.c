@@ -216,6 +216,9 @@ void taskmng_rol(void) {
 #if SDL_MAJOR_VERSION == 1
 			if (e.key.keysym.sym == SDLK_F11) {
 #else
+			if((e.key.keysym.mod & KMOD_SHIFT) && e.key.keysym.scancode == SDL_SCANCODE_F11) {
+				scrnmng_toggleFullscreen();
+			} else
 			if (e.key.keysym.scancode == SDL_SCANCODE_F11) {
 #endif
 #if defined(EMSCRIPTEN) && !defined(__LIBRETRO__) //in web browsers, F11 is commonly occupied. Use CTRL+F11

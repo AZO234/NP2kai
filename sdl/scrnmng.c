@@ -64,6 +64,8 @@ typedef struct {
 	int		dstpos;
 } DRAWRECT;
 
+BOOL g_fullscreen = FALSE;
+
 static BRESULT calcdrawrect(DRAWRECT *dr, const RECT_T *rt) {
 	int		pos;
 
@@ -619,10 +621,15 @@ BOOL scrnmng_fullscreen(BOOL val) {
 #else
 	if(SDL_SetWindowFullscreen(s_window, val ? SDL_WINDOW_FULLSCREEN:0) == 0) {
 		ret = TRUE;
+		g_fullscreen = val;
 	}
 #endif
 #endif
 	return ret;
+}
+
+BOOL scrnmng_toggleFullscreen() {
+	return scrnmng_fullscreen(!g_fullscreen);
 }
 #if SDL_MAJOR_VERSION != 1
 
