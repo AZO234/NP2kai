@@ -617,7 +617,7 @@ BOOL scrnmng_fullscreen(BOOL val) {
 		scrnmng.dispsurf = SDL_SetVideoMode(scrnmng.width, scrnmng.height, scrnmng.bpp, SDL_HWSURFACE);
 	}
 #else
-	if(SDL_SetWindowFullscreen(s_window, val ? SDL_WINDOW_FULLSCREEN_DESKTOP:0) == 0) {
+	if(SDL_SetWindowFullscreen(s_window, val ? SDL_WINDOW_FULLSCREEN:0) == 0) {
 		ret = TRUE;
 	}
 #endif
