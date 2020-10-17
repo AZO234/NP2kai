@@ -1,21 +1,23 @@
-2020/10/15更新
+2020/10/18更新
 
-- [Neko Project II kai](https://github.com/AZO234/NP2kai)をforkして、MacBook Proの内蔵キーボードでそこそこ使いやすいようにキーマップを変更して勝手に追加してみた。(SDL2ポートのみ)
+[Neko Project II kai](https://github.com/AZO234/NP2kai)をforkして、MacBook Proの内蔵キーボードでそこそこ使いやすいようにキーマップを変更して勝手に追加してみた。(SDL2ポートのみ)
 
 106キーボードのマップをベースに特殊キーの配置を少し調整したJIS Mac Keyboardを追加し、メニューのDevice - Keyboard - JIS Mac Keyboard で選択できるようになります。また、STOP、COPY、かな、INSをDevice - Keyboardメニューがら送信できるようにもなってます。(SDL2ポートでmacOSでビルドしたときのみ)
 
 次の表のようにしました。
 
-| Mac                      | PC-9801                |
-|--------------------------|------------------------|
-| F11                      | エミュレータのメニュー表示 |
-| Pause / F12              | STOP                   |
-| Print Screen             | COPY                   | 
-| Option(LALT)             | GRPH                   |
-| LGUI(左cmd)               | NFER                  |
-| RGUI(右cmd) / APPLICATION | XFER                  |
-| HOME                      | HOME/CLR              |
-| END                       | HELP                  |
+| Macキーボード | 109キーボード                | PC-9801                |
+|--------------|----------------------------|------------------------|
+| F11          | F11                        | エミュレータのメニュー表示 |
+| (F15) / F12  | Pause / F12                | STOP                   |
+| (F13)        | Print Screen               | COPY                   | 
+| 左option      | 左alt                       | GRPH                   |
+| 左command     | 左Windowsキー               | NFER                  |
+| 右command     | 右Windowsキー / メニューキー  | XFER                  |
+| (HOME)        | HOME                      | HOME/CLR              |
+| (END)         | END                       | HELP                  |
+
+Macキーボードの()内はApple純正フルキーボードにあるキー
 
 2020/11/16追加
 
