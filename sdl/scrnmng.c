@@ -438,6 +438,8 @@ void scrnmng_leavemenu(void) {
 #if defined(EMSCRIPTEN)
 	if(ismouse_captured())
 		mousemng_hidecursor();
+#else
+	mousemng_hidecursor();
 #endif
 #endif	/* __LIBRETRO__ */
 }
