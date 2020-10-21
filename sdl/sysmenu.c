@@ -442,6 +442,11 @@ static void sys_cmd(MENUID id) {
 			update |= SYS_UPDATEOSCFG;
 			break;
 
+		case MID_KEYREPEAT:
+			np2cfg.keyrepeat_enable ^= 1;
+			update |= SYS_UPDATECFG;
+			break;
+
 		case MID_KEYBOARD_106:
 			np2oscfg.KEYBOARD = KEY_KEY106;
 			update |= SYS_UPDATEOSCFG;
@@ -1007,6 +1012,7 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 	menusys_setcheck(MID_30FPS, (b == 2));
 	menusys_setcheck(MID_20FPS, (b == 3));
 	menusys_setcheck(MID_15FPS, (b == 4));
+	menusys_setcheck(MID_KEYREPEAT, (np2cfg.keyrepeat_enable & 1));
 	b = np2oscfg.KEYBOARD;
 	menusys_setcheck(MID_KEYBOARD_106, (b == KEY_KEY106));
 	menusys_setcheck(MID_KEYBOARD_101, (b == KEY_KEY101));

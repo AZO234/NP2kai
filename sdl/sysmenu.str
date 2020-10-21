@@ -77,6 +77,7 @@ static const char str_mecctrl[] = "mechanical CTRL";
 static const char str_mecgrph[] = "mechanical GRPH";
 static const char str_xroll[] = "Swap PageUp/PageDown";
 
+static const char str_keyrepeat[] = "Key-repeat";
 static const char str_keyboard_106[] = "JP Keyboard 106";
 static const char str_keyboard_101[] = "US Keyboard 101";
 static const char str_key_Copy[] = "Send COPY";
@@ -403,6 +404,8 @@ static const MSYSITEM s_screen[] = {
 
 static const MSYSITEM s_keybd[] = {
 #if !defined(__LIBRETRO__)
+		{str_keyrepeat,	NULL,		MID_KEYREPEAT,		0},
+		{NULL,			NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_keyboard_106,	NULL,		MID_KEYBOARD_106,		0},
 		{str_keyboard_101,	NULL,		MID_KEYBOARD_101,		0},
 		{NULL,			NULL,		MID_STATIC,			MENU_SEPARATOR},

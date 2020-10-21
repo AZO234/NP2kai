@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Sep 27, 2020<br>
+Oct 22, 2020<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -784,6 +784,14 @@ lr-np2kai="/opt/retropie/emulators/retroarch/bin/retroarch -L /opt/retropie/libr
 ## Informaion
 
 <details><summary>
+Key-repeat (libretro and SDL)
+</summary><div>
+
+To use Key-repeat, enable in menu.<br>
+On default, Key-repeat's delay is 500ms, Key-repeat's interval is 50ms.<br>
+</div></details>
+
+<details><summary>
 Using CD-ROM drive
 </summary><div>
 
@@ -1152,6 +1160,9 @@ Next boot computer, you command from 4.
 </div></details>
 
 ## Release
+- Oct 22, 2020
+  (Thanks to @miyamoto999)
+  - Key-repeat
 - Sep 28, 2020
   - merge NP21/W rev.78
 - Sep 9, 2020

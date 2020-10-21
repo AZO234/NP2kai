@@ -869,6 +869,43 @@ static void update_variables(void)
          drvno = 1;
    }
 
+   var.key = "np2kai_keyrepeat";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "ON") == 0)
+         np2cfg.keyrepeat_enable = 1;
+      else
+         np2cfg.keyrepeat_enable = 0;
+   }
+
+   var.key = "np2kai_keyrepeat_delay";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "250ms") == 0)
+         np2cfg.keyrepeat_delay = 250;
+      else if (strcmp(var.value, "1000ms") == 0)
+         np2cfg.keyrepeat_delay = 1000;
+      else
+         np2cfg.keyrepeat_delay = 500;
+   }
+
+   var.key = "np2kai_keyrepeat_interval";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "25ms") == 0)
+         np2cfg.keyrepeat_interval = 25;
+      else if (strcmp(var.value, "100ms") == 0)
+         np2cfg.keyrepeat_interval = 100;
+      else
+         np2cfg.keyrepeat_interval = 50;
+   }
+
    var.key = "np2kai_keyboard";
    var.value = NULL;
 
