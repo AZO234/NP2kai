@@ -77,6 +77,7 @@ static const char str_mecctrl[] = "mechanical CTRL";
 static const char str_mecgrph[] = "mechanical GRPH";
 static const char str_xroll[] = "Swap PageUp/PageDown";
 
+static const char str_keyrepeat[] = "Key-repeat";
 static const char str_keyboard_106[] = "JP Keyboard 106";
 static const char str_keyboard_101[] = "US Keyboard 101";
 #ifdef __MACOSX__
@@ -420,6 +421,8 @@ static const MSYSITEM s_keybd[] = {
 		{str_key_Ins,		NULL,		MID_KEY_INS,			0},
 		{NULL,			NULL,		MID_STATIC,			MENU_SEPARATOR},
 #endif
+		{str_keyrepeat,	NULL,		MID_KEYREPEAT,		0},
+		{NULL,			NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_keyboard_106,	NULL,		MID_KEYBOARD_106,		0},
 		{str_keyboard_101,	NULL,		MID_KEYBOARD_101,		0},
 #ifdef __MACOSX__
