@@ -22,10 +22,8 @@ void sdlkbd_reset();
 void sdlkbd_keydown(UINT key);
 void sdlkbd_keyup(UINT key);
 
-#if SDL_MAJOR_VERSION != 1
 void sdlkbd_keydownMenuFn(UINT key);
 void sdlkbd_keyupMenuFn(UINT key);
-#endif
 
 #endif	/* __LIBRETRO__ */
 #endif

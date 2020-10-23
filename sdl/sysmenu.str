@@ -80,11 +80,11 @@ static const char str_xroll[] = "Swap PageUp/PageDown";
 static const char str_keyrepeat[] = "Key-repeat";
 static const char str_keyboard_106[] = "JP Keyboard 106";
 static const char str_keyboard_101[] = "US Keyboard 101";
-#ifdef __MACOSX__
-static const char str_keyboard_macjis[] = "JIS Mac Keyboard";
+static const char str_keyboard_mini106[] = "JP Mini Keyboard 106";
+static const char str_keyboard_mini101[] = "US Mini Keyboard 101";
 static const char str_key_Stop[] = "Send STOP";
 static const char str_key_Ins[] = "Send INS";
-#endif
+static const char str_tenkey[] = "Ten Key";
 static const char str_key_Copy[] = "Send COPY";
 static const char str_key_Kana[] = "Send Kana";
 static const char str_key_Yen[] = "Send Yen";
@@ -414,7 +414,6 @@ static const MSYSITEM s_screen[] = {
 
 static const MSYSITEM s_keybd[] = {
 #if !defined(__LIBRETRO__)
-#ifdef __MACOSX__
 		{str_key_Stop,		NULL,		MID_KEY_STOP,			0},
 		{str_key_Copy,		NULL,		MID_KEY_COPY,			0},
 		{str_key_Kana,		NULL,		MID_KEY_KANA,			0},
@@ -425,9 +424,10 @@ static const MSYSITEM s_keybd[] = {
 		{NULL,			NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_keyboard_106,	NULL,		MID_KEYBOARD_106,		0},
 		{str_keyboard_101,	NULL,		MID_KEYBOARD_101,		0},
-#ifdef __MACOSX__
-		{str_keyboard_macjis,	NULL,		MID_KEYBOARD_MACJIS,		0},
-#endif
+		{str_keyboard_mini106,	NULL,		MID_KEYBOARD_MINI106,		0},
+		{str_keyboard_mini101,	NULL,		MID_KEYBOARD_MINI101,		0},
+		{NULL,			NULL,		MID_STATIC,			MENU_SEPARATOR},
+		{str_tenkey,	NULL,		MID_TENKEY,			0},
 		{NULL,			NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_keyboard,		NULL,		MID_KEY,			0},
 		{str_joykey1,		NULL,		MID_JOY1,			0},

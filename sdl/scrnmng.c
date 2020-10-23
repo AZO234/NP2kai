@@ -7,6 +7,7 @@
 #include	<pccore.h>
 #include	"np2.h"
 #include	<font/font.h>
+#include	"kbdmng.h"
 
 #if defined(SUPPORT_WAB)
 #include <wab/wab.h>
@@ -628,8 +629,8 @@ BOOL scrnmng_fullscreen(BOOL val) {
 BOOL scrnmng_toggleFullscreen() {
 	return scrnmng_fullscreen(!g_fullscreen);
 }
-#if SDL_MAJOR_VERSION != 1
 
+#if !defined(__LIBRETRO__)
 static const OEMCHAR *funckey[10] = {
 	OEMTEXT(" STOP "),
 	OEMTEXT(" COPY "),
@@ -641,7 +642,7 @@ static const OEMCHAR *funckey[10] = {
 	OEMTEXT(" HELP "),
 	OEMTEXT("      "),
 	OEMTEXT("      "),
-	OEMTEXT("      "),
+	OEMTEXT("TENKEY"),
 };
 
 void menuvram_drawFuncKey() {
@@ -651,8 +652,9 @@ void menuvram_drawFuncKey() {
 void vram_drawFuncKey(const VRAMHDL vram, const OEMCHAR *funckey[]) {
 	int x = 0;
 	int y = vram->height - 16;
-	UINT32 black = RGB32D(0, 0, 0);
-	UINT32 light_blue = RGB32D(24, 235, 249);
+	const UINT32 black = RGB32D(0, 0, 0);
+	const UINT32 light_blue = RGB32D(24, 235, 249);
+	const UINT32 yellow = RGB32D(255, 235, 0);
 	vram_drawAnkText(vram, x, y, "    ", black, black);
 	x = 4 * 8;
 	for(int i = 0; i < 5; i++) {
@@ -664,7 +666,11 @@ void vram_drawFuncKey(const VRAMHDL vram, const OEMCHAR *funckey[]) {
 	vram_drawAnkText(vram, x, y, "   ", black, black);
 	x += 8 * 3;
 	for(int i = 5; i < 10; i++) {
-		vram_drawAnkText(vram, x, y, funckey[i], black, light_blue);
+		if(i == 9 && g_tenkey) {
+			vram_drawAnkText(vram, x, y, funckey[i], black, yellow);
+		} else {
+			vram_drawAnkText(vram, x, y, funckey[i], black, light_blue);
+		}
 		x += strlen(funckey[i]) * 8;
 		vram_drawAnkText(vram, x, y, " ", black, black);
 		x += 8;

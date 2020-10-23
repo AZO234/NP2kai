@@ -155,7 +155,7 @@ const	RECT_T	*rect;
 		if (draw) {
 			draw(menuvram, rect, arg);
 		}
-#if SDL_MAJOR_VERSION != 1
+#if !defined(__LIBRETRO__)
 		RECT_T rr;
 		rr.top = rect->top;
 		rr.left = rect->left;
