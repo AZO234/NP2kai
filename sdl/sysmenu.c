@@ -44,6 +44,7 @@
 #if defined(SUPPORT_DEBUGSS)
 #include	<debugsnapshot.h>
 #endif
+#include "kbdmng.h"
 
 static UINT bmpno = 0;
 
@@ -451,9 +452,12 @@ static void sys_cmd(MENUID id) {
 			np2oscfg.KEYBOARD = KEY_KEY101;
 			update |= SYS_UPDATEOSCFG;
 			break;
-#ifdef __MACOSX__
-		case MID_KEYBOARD_MACJIS:
-			np2oscfg.KEYBOARD = KEY_KEYMACJIS;
+		case MID_KEYBOARD_MINI106:
+			np2oscfg.KEYBOARD = KEY_KEYMINI106;
+			update |= SYS_UPDATEOSCFG;
+			break;
+		case MID_KEYBOARD_MINI101:
+			np2oscfg.KEYBOARD = KEY_KEYMINI101;
 			update |= SYS_UPDATEOSCFG;
 			break;
 
@@ -465,6 +469,10 @@ static void sys_cmd(MENUID id) {
 		case MID_KEY_INS:
 			keystat_senddata(0x38);
 			keystat_senddata(0x38 | 0x80);
+			break;
+#if !defined(__LIBRETRO__)
+		case MID_TENKEY:
+			g_tenkey = !g_tenkey;
 			break;
 #endif
 		case MID_KEY_COPY:
@@ -1036,8 +1044,10 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 	b = np2oscfg.KEYBOARD;
 	menusys_setcheck(MID_KEYBOARD_106, (b == KEY_KEY106));
 	menusys_setcheck(MID_KEYBOARD_101, (b == KEY_KEY101));
-#ifdef __MACOSX__
-	menusys_setcheck(MID_KEYBOARD_MACJIS, (b == KEY_KEYMACJIS));
+	menusys_setcheck(MID_KEYBOARD_MINI106, (b == KEY_KEYMINI106));
+	menusys_setcheck(MID_KEYBOARD_MINI101, (b == KEY_KEYMINI101));
+#if !defined(__LIBRETRO__)
+	menusys_setcheck(MID_TENKEY, g_tenkey);
 #endif
 	b = np2cfg.KEY_MODE;
 	menusys_setcheck(MID_KEY, (b == 0));

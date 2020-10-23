@@ -31,12 +31,15 @@
 enum {
 	KEY_KEY106 = 0,
 	KEY_KEY101,
-	KEY_KEYMACJIS,
+	KEY_KEYMINI106,
+	KEY_KEYMINI101,
 	KEY_TYPEMAX
 };
 
 enum {
 	KEYBOARD_KC_NC = 0xff
 };
+
+extern BOOL g_tenkey;
 
 #endif	/* NP2_KBDMNG_H__ */

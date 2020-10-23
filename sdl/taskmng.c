@@ -12,6 +12,7 @@
 #include	"mousemng.h"
 #include	"np2.h"
 #include	<np2_thread.h>
+#include	"kbdmng.h"
 
 #if defined(__LIBRETRO__)
 #include <retro_miscellaneous.h>
@@ -244,12 +245,25 @@ void taskmng_rol(void) {
 				}
 			}
 #endif
-#if SDL_MAJOR_VERSION != 1
+#if SDL_MAJOR_VERSION == 1
+			else if(menuvram && e.key.keysym.sym >= SDLK_F1 
+						&& e.key.keysym.sym <= SDLK_F10) {
+				if(e.key.keysym.sym == SDLK_F10) {
+#else
 			else if(menuvram && e.key.keysym.scancode >= SDL_SCANCODE_F1 
 						&& e.key.keysym.scancode <= SDL_SCANCODE_F10) {
-				sdlkbd_keydownMenuFn(e.key.keysym.scancode);
-			}
+				if(e.key.keysym.scancode == SDL_SCANCODE_F10) {
 #endif
+					g_tenkey = !g_tenkey;
+					menubase_close();
+				} else {
+#if SDL_MAJOR_VERSION == 1
+					sdlkbd_keydownMenuFn(e.key.keysym.sym);
+#else
+					sdlkbd_keydownMenuFn(e.key.keysym.scancode);
+#endif
+				}
+			} 
 			else {
 #if SDL_MAJOR_VERSION == 1
 				sdlkbd_keydown(e.key.keysym.sym);

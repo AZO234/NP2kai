@@ -216,10 +216,10 @@ inirdkb(const OEMCHAR *src, INITBL *ini)
 	 || (!milstr_cmp(src, "PCAT"))
 	 || (!milstr_cmp(src, "AT"))) {
 		*(UINT8 *)ini->value = KEY_KEY106;
-#ifdef __MACOSX__
-	 } else if(!milstr_cmp(src, "MacJIS")) {
-		*(UINT8 *)ini->value = KEY_KEYMACJIS;
-#endif
+	 } else if(!milstr_cmp(src, "MacJIS") || !milstr_cmp(src, "MINI106")) {
+		*(UINT8 *)ini->value = KEY_KEYMINI106;
+	 } else if(!milstr_cmp(src, "MINI101")) {
+		*(UINT8 *)ini->value = KEY_KEYMINI101;
 	} else if ((!milstr_extendcmp(src, "KEY101"))
 	        || (!milstr_cmp(src, "ASCII"))
 	        || (!milstr_cmp(src, "EN"))
@@ -536,10 +536,10 @@ ini_write(const OEMCHAR *path, const OEMCHAR *title, const INITBL *tbl, UINT cou
 			case INITYPE_KB:
 				if (*(UINT8 *)p->value == KEY_KEY101)
 					milstr_ncpy(work, OEMTEXT("101"), sizeof(work));
-#ifdef __MACOSX__
-				else if (*(UINT8 *)p->value == KEY_KEYMACJIS)
-					milstr_ncpy(work, OEMTEXT("MacJIS"), sizeof(work));
-#endif
+				else if (*(UINT8 *)p->value == KEY_KEYMINI106)
+					milstr_ncpy(work, OEMTEXT("MINI106"), sizeof(work));
+				else if (*(UINT8 *)p->value == KEY_KEYMINI101)
+					milstr_ncpy(work, OEMTEXT("MINI101"), sizeof(work));
 				else
 					milstr_ncpy(work, OEMTEXT("106"), sizeof(work));
 				break;
