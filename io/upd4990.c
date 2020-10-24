@@ -94,12 +94,8 @@ static void IOOUTCALL upd4990_o20(UINT port, REG8 dat) {
 	(void)port;
 }
 
-
-#if defined(SUPPORT_HRTIMER)
+#ifdef SUPPORT_HRTIMER
 int io22value = 0;
-static UINT32 hrtimerdiv = 32;
-static UINT32 hrtimerclock = 0;
-
 static void IOOUTCALL upd4990_o22(UINT port, REG8 dat) {
 	io22value = dat;
 	(void)port;
@@ -113,21 +109,21 @@ static void IOOUTCALL upd4990_o128(UINT port, REG8 dat) {
 	switch(dattmp){
 	case 0:
 		hrtimerdiv = 64;
+		hrtimerclock = pccore.baseclock/hrtimerdiv;
 		break;
 	case 1:
 		hrtimerdiv = 32;
+		hrtimerclock = pccore.baseclock/hrtimerdiv;
 		break;
 	case 2:
 		hrtimerdiv = 0;
+		hrtimerclock = 0;//pccore.realclock/hrtimerdiv;
 		break;
 	case 3:
 		hrtimerdiv = 16;
+		hrtimerclock = pccore.baseclock/hrtimerdiv;
 		break;
 	}
-	if(hrtimerdiv)
-		hrtimerclock = pccore.realclock / hrtimerdiv;
-	else
-		hrtimerclock = 0;
 	(void)port;
 }
 
@@ -144,7 +140,7 @@ static REG8 IOOUTCALL upd4990_i128(UINT port) {
 	}
 	return(0x81);
 }
-#endif	/* SUPPORT_HRTIMER */
+#endif
 
 
 // ---- I/F
@@ -161,7 +157,7 @@ void uPD4990_reset(const NP2CFG *pConfig) {
 void uPD4990_bind(void) {
 
 	iocore_attachsysoutex(0x0020, 0x0cf1, updo20, 1);
-#if defined(SUPPORT_HRTIMER)
+#ifdef SUPPORT_HRTIMER
 	iocore_attachout(0x0022, upd4990_o22);
 	iocore_attachinp(0x0022, upd4990_i22);
 	iocore_attachout(0x0128, upd4990_o128);
@@ -169,30 +165,6 @@ void uPD4990_bind(void) {
 
 	hrtimerdiv = 32;
 	hrtimerclock = pccore.baseclock/hrtimerdiv;
-#endif	/* SUPPORT_HRTIMER */
+#endif
 }
-
-#if defined(SUPPORT_HRTIMER)
-static UINT32 clockcounter = 0;
-
-void upd4990_hrtimer_start(void) {
-}
-
-void upd4990_hrtimer_stop(void) {
-}
-
-void upd4990_hrtimer_count(void) {
-	_SYSTIME hrtimertime;
-	UINT32 hrtimertimeuint;
-
-	// pulse interrupt
-	if(hrtimerclock) {
-		clockcounter += CPU_BASECLOCK;
-		if(clockcounter > hrtimerclock) {
-			clockcounter -= hrtimerclock;
-			pic_setirq(15);
-		}
-	}
-}
-#endif	/* SUPPORT_HRTIMER */
 
