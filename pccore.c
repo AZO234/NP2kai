@@ -65,9 +65,6 @@
 #if defined(SUPPORT_CL_GD5430)
 #include	<wab/cirrus_vga_extern.h>
 #endif
-#if defined(SUPPORT_HRTIMER)
-#include	<io/upd4990.h>
-#endif	/* SUPPORT_HRTIMER */
 #if defined(SUPPORT_IDEIO)
 #include	<cbus/ideio.h>
 #endif
@@ -237,6 +234,20 @@ const OEMCHAR np2version[] = OEMTEXT(NP2KAI_GIT_TAG " " NP2KAI_GIT_HASH);
 #if defined(SUPPORT_FMGEN)
 	UINT8	enable_fmgen = 0;
 #endif	/* SUPPORT_FMGEN */
+
+#if defined(SUPPORT_HRTIMER)
+	UINT32 hrtimerdiv = 32; 
+	UINT32 hrtimerclock = 0; 
+	UINT32 hrtimerclock32 = 0; 
+
+static void pccore_hrtimer_start() {
+	hrtimerclock32 = pccore.baseclock/32; 
+}
+static void pccore_hrtimer_stop() {
+	// 廃止
+}
+
+#endif
 
 #ifdef SUPPORT_ASYNC_CPU
 int asynccpu_lateflag = 0;
@@ -536,8 +547,8 @@ void pccore_init(void) {
 #endif
 
 #if defined(SUPPORT_HRTIMER)
-	upd4990_hrtimer_start();
-#endif	/* SUPPORT_HRTIMER */
+	pccore_hrtimer_start();
+#endif
 
 #if defined(SUPPORT_GPIB)
 	gpibio_initialize();
@@ -551,8 +562,8 @@ void pccore_term(void) {
 #endif
 
 #if defined(SUPPORT_HRTIMER)
-	upd4990_hrtimer_stop();
-#endif	/* SUPPORT_HRTIMER */
+	pccore_hrtimer_stop();
+#endif
 
 #if defined(SUPPORT_HOSTDRV)
 	hostdrv_deinitialize();
@@ -1139,8 +1150,12 @@ void pccore_postevent(UINT32 event) {	// yet!
 
 void pccore_exec(BOOL draw) {
 
-	static UINT32 disptmr = 0;
+	// ここでローカル変数を使うとsetjmp周りの最適化で破壊される可能性があるので注意
+	static UINT32 clockcounter = 0;
+	static UINT32 clockcounter32 = 0;
 	static UINT32 baseclk = 0;
+	//UINT32 lastclock;
+	//UINT32 mflag = 0;
 
 	pcstat.drawframe = (UINT8)draw;
 //	keystat_sync();
@@ -1242,8 +1257,27 @@ void pccore_exec(BOOL draw) {
 		CPU_MSR_TSC = CPU_MSR_TSC - baseclk + CPU_BASECLOCK * pccore.maxmultiple / pccore.multiple;
 #endif
 #if defined(SUPPORT_HRTIMER)
-	upd4990_hrtimer_count();
-#endif	/* SUPPORT_HRTIMER */
+		if(hrtimerclock){
+			clockcounter += CPU_BASECLOCK;
+			if(clockcounter > hrtimerclock*pccore.multiple){
+				clockcounter -= hrtimerclock*pccore.multiple;
+
+				pic_setirq(15);
+			}
+		}
+		clockcounter32 += CPU_BASECLOCK;
+		if(clockcounter32 > hrtimerclock32*pccore.multiple){
+			UINT32 hrtimertimeuint;
+			clockcounter32 -= hrtimerclock32*pccore.multiple;
+			
+			hrtimertimeuint = LOADINTELDWORD(mem+0x04F1);
+			hrtimertimeuint++;
+			if((hrtimertimeuint & 0x3fffff) >= 24*60*60*32){
+				hrtimertimeuint = ((hrtimertimeuint & ~0x3fffff) + 0x400000) & 0xffffff; // 日付変わった
+			}
+			STOREINTELDWORD(mem+0x04F1, hrtimertimeuint); // XXX: 04F4にも書いちゃってるけど差し当たっては問題なさそうなので･･･
+		}
+#endif
 		nevent_progress();
 	}
 #if defined(SUPPORT_ASYNC_CPU)

@@ -404,6 +404,11 @@ void pccore_exec(BOOL draw);
 
 void pccore_postevent(UINT32 event);
 
+#ifdef SUPPORT_HRTIMER
+extern UINT32 hrtimerdiv;
+extern UINT32 hrtimerclock;
+#endif
+
 #ifdef SUPPORT_ASYNC_CPU
 extern int asynccpu_lateflag;
 extern int asynccpu_fastflag;
