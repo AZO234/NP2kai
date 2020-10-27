@@ -27,6 +27,7 @@
 
 #include <math.h>
 #include <gdk/gdk.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 
 #include <np2.h>
 #include <pccore.h>
@@ -671,7 +672,7 @@ void scrnmng_updatefsres(void) {
 }
 
 // transmit WAB display
-void scrnmng_blthdc(GdkPixbuf* wab_pixbuf) {
+void scrnmng_blthdc(void) {
 #if defined(SUPPORT_WAB)
 	mt_wabdrawing = 0;
 	if (np2wabwnd.multiwindow) return;

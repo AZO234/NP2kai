@@ -28,6 +28,7 @@
 
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 
 G_BEGIN_DECLS
 

@@ -44,6 +44,8 @@ void ini_write(const char *path, const char *title, INITBL *tbl, UINT count, BOO
 void initload(void);
 void initsave(void);
 
+void initgetfile(OEMCHAR *lpPath, unsigned int cchPath);
+
 G_END_DECLS
 
 #endif	/* NP2_X_INI_H__ */

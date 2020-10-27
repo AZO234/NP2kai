@@ -68,6 +68,7 @@ RGB16 scrnmng_makepal16(RGB32 pal32);
 
 void scrnmng_setmultiple(int multiple);
 void scrnmng_fullscreen(int onoff);
+void scrnmng_blthdc(void);
 
 /*
  * for menubase

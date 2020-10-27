@@ -45,6 +45,7 @@
 #if defined(SUPPORT_VIDEOFILTER)
 #include <vram/videofilter.h>
 #endif
+#include <fdd/newdisk.h>
 
 #include <kdispwin.h>
 #include <toolwin.h>
@@ -80,6 +81,17 @@
 #ifdef SUPPORT_NVL_IMAGES
 BOOL nvl_check();
 #endif
+
+void create_hostdrv_dialog(void);
+void create_sound_dialog(void);
+void create_midi_dialog(void);
+void create_serial_dialog(void);
+void create_ide_dialog(void);
+void create_network_dialog(void);
+void create_about_dialog(void);
+void create_screen_dialog(void);
+void create_pci_dialog(void);
+void create_wab_dialog(void);
 
 /* normal */
 static void cb_bmpsave(GtkAction *action, gpointer user_data);

@@ -73,6 +73,8 @@ short file_getdatetime(FILEH handle, DOSDATE *dosdate, DOSTIME *dostime);
 short file_delete(const OEMCHAR *path);
 short file_attr(const OEMCHAR *path);
 short file_dircreate(const OEMCHAR *path);
+short file_dirdelete(const OEMCHAR *path);
+short file_rename(const char* ExistFile, const char* NewFile);
 
 /* カレントファイル操作 */
 void file_setcd(const OEMCHAR *exepath);
