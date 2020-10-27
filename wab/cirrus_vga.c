@@ -63,6 +63,7 @@
 #include <SDL.h>
 #elif defined(NP2_X)
 #include <gdk/gdk.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 #endif
 
 /* force some bits to zero */

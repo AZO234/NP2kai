@@ -30,6 +30,7 @@
 #include <locale.h>
 #include <signal.h>
 #include <unistd.h>
+#include <libgen.h>
 
 #if defined(SUPPORT_SDL_AUDIO) || defined(SUPPORT_SDL_MIXER)
 #include <SDL.h>
@@ -131,6 +132,9 @@ usage(void)
 	g_printerr("\t--timidity-config [-C] <file> : specify timidity config file\n");
 	exit(1);
 }
+
+void hostdrv_readini();
+void hostdrv_writeini();
 
 
 /*
