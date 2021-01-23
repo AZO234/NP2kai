@@ -76,6 +76,38 @@ typedef struct {
 	SINT32		totalsample; // PI割り込み用のデータ数カウンタ
 } _CS4231, *CS4231;
 
+typedef struct { // ステートセーブ互換性維持用（変更禁止）
+	UINT		bufsize; // サウンド再生用の循環バッファサイズ。データのread/writeは4byte単位（16bitステレオの1サンプル単位）で行うこと
+	UINT		bufdatas; // = (bufwpos-bufpos)&CS4231_BUFMASK
+	UINT		bufpos; // バッファの読み取り位置。bufwposと一致してもよいが追い越してはいけない
+	UINT		bufwpos; // バッファの書き込み位置。周回遅れのbufposに追いついてはいけない（一致も不可）
+	UINT32		pos12;
+	UINT32		step12;
+
+	UINT8		enable; // CS4231有効フラグ
+	UINT8		portctrl;
+	UINT8		dmairq; // CS4231 IRQ
+	UINT8		dmach; // CS4231 DMAチャネル
+	UINT16		port[16]; // I/Oポートアドレス（再配置可能）
+	UINT8		adrs; // DMA読み取りアドレス
+	UINT8		index; // Index Address Register
+	UINT8		intflag; // Status Register
+	UINT8		outenable;
+	UINT8		extfunc;
+	UINT8		extindex;
+	
+	UINT16		timer; // 廃止
+	SINT32		timercounter; // TI割り込み用のダウンカウンタ（の予定）
+
+	CS4231REG	reg;
+	UINT8		buffer[CS4231_BUFFERS]; // DMA読み取りアドレス
+
+	UINT8		devvolume[0x100]; // CS4231内蔵ボリューム
+
+	SINT32		totalsample; // PI割り込み用のデータ数カウンタ
+} _CS4231_OLD, *CS4231_OLD;
+
+
 typedef struct {
 	UINT	rate;
 } CS4231CFG;

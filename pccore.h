@@ -74,6 +74,8 @@ enum tagSoundId
 	SOUNDID_PX1					= 0x30,
 	SOUNDID_PX2					= 0x50,
 #endif
+	
+	SOUNDID_INVALID				= 0xff,		/*!< for new statesave checker */
 };
 typedef enum tagSoundId		SOUNDID;
 
@@ -116,6 +118,7 @@ struct tagNP2Config
 	
 #if defined(SUPPORT_ASYNC_CPU)
 	UINT8	asynccpu; // 非同期CPUモード有効
+	UINT8	consttsc; // RDTSCをAsyncクロック変更によらず一定間隔にする
 #endif
 #if defined(SUPPORT_IDEIO)
 	UINT8	idebaddr; // IDE BIOS アドレス（デフォルト：D8h(D8000h)）
@@ -403,11 +406,6 @@ void pccore_reset(void);
 void pccore_exec(BOOL draw);
 
 void pccore_postevent(UINT32 event);
-
-#ifdef SUPPORT_HRTIMER
-extern UINT32 hrtimerdiv;
-extern UINT32 hrtimerclock;
-#endif
 
 #ifdef SUPPORT_ASYNC_CPU
 extern int asynccpu_lateflag;

@@ -95,6 +95,41 @@ static void IOOUTCALL upd4990_o20(UINT port, REG8 dat) {
 }
 
 #ifdef SUPPORT_HRTIMER
+static UINT32 hrtimerdiv = 32; 
+static UINT32 hrtimerclock = 0; 
+static UINT32 hrtimerclock32 = 0; 
+
+static UINT32 clockcounter = 0;
+static UINT32 clockcounter32 = 0;
+
+static void upd4990_hrtimer_start(void) {
+	hrtimerclock32 = pccore.baseclock / 32;
+	clockcounter = 0;
+	clockcounter32 = 0;
+}
+void upd4990_hrtimer_count(void) {
+	if(hrtimerclock){
+		clockcounter += CPU_BASECLOCK;
+		if(clockcounter > hrtimerclock*pccore.multiple){
+			clockcounter -= hrtimerclock*pccore.multiple;
+
+			pic_setirq(15);
+		}
+	}
+	clockcounter32 += CPU_BASECLOCK;
+	if(clockcounter32 > hrtimerclock32*pccore.multiple){
+		UINT32 hrtimertimeuint;
+		clockcounter32 -= hrtimerclock32*pccore.multiple;
+			
+		hrtimertimeuint = LOADINTELDWORD(mem+0x04F1);
+		hrtimertimeuint++;
+		if((hrtimertimeuint & 0x3fffff) >= 24*60*60*32){
+			hrtimertimeuint = ((hrtimertimeuint & ~0x3fffff) + 0x400000) & 0xffffff; // 日付変わった
+		}
+		STOREINTELDWORD(mem+0x04F1, hrtimertimeuint); // XXX: 04F4にも書いちゃってるけど差し当たっては問題なさそうなので･･･
+	}
+}
+
 int io22value = 0;
 static void IOOUTCALL upd4990_o22(UINT port, REG8 dat) {
 	io22value = dat;
@@ -150,6 +185,10 @@ static const IOOUT updo20[1] = {upd4990_o20};
 void uPD4990_reset(const NP2CFG *pConfig) {
 
 	ZeroMemory(&uPD4990, sizeof(uPD4990));
+	
+#if defined(SUPPORT_HRTIMER)
+	upd4990_hrtimer_start();
+#endif
 
 	(void)pConfig;
 }

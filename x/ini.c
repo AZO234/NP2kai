@@ -761,6 +761,7 @@ static INITBL iniitem[] = {
 	{"USERAM_D", INITYPE_BOOL,	&np2cfg.useram_d,	0},
 #if defined(SUPPORT_ASYNC_CPU)
 	{"ASYNCCPU", INITYPE_BOOL,	&np2cfg.asynccpu,	0},
+	{"CONSTTSC", INITYPE_BOOL,	&np2cfg.consttsc,	0},
 #endif
 #if defined(SUPPORT_IDEIO)
 	{"IDEBADDR", INIRO_HEX8,	&np2cfg.idebaddr,	0},

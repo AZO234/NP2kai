@@ -929,12 +929,17 @@ static int flagsave_fm(STFLAGH sfh, const SFENTRY *tbl)
 	int ret;
 	UINT nSaveFlags;
 	UINT i;
-
+	SOUNDID invalidSoundID = SOUNDID_INVALID;
+	UINT32 datalen;
+	
+	ret = statflag_write(sfh, &invalidSoundID, sizeof(invalidSoundID));
 	ret = statflag_write(sfh, &g_nSoundID, sizeof(g_nSoundID));
 
 	nSaveFlags = GetSoundFlags(g_nSoundID);
 	if (nSaveFlags & FLAG_MG)
 	{
+		datalen = sizeof(g_musicgen);
+		ret |= statflag_write(sfh, &datalen, sizeof(datalen));
 		ret |= statflag_write(sfh, &g_musicgen, sizeof(g_musicgen));
 	}
 	for (i = 0; i < NELEMENTS(g_opna); i++)
@@ -946,10 +951,14 @@ static int flagsave_fm(STFLAGH sfh, const SFENTRY *tbl)
 	}
 	if (nSaveFlags & FLAG_PCM86)
 	{
+		datalen = sizeof(g_pcm86);
+		ret |= statflag_write(sfh, &datalen, sizeof(datalen));
 		ret |= statflag_write(sfh, &g_pcm86, sizeof(g_pcm86));
 	}
 	if (nSaveFlags & FLAG_CS4231)
 	{
+		datalen = sizeof(cs4231);
+		ret |= statflag_write(sfh, &datalen, sizeof(datalen));
 		ret |= statflag_write(sfh, &cs4231, sizeof(cs4231));
 	}
 	if (nSaveFlags & FLAG_AMD98)
@@ -985,6 +994,8 @@ static int flagsave_fm(STFLAGH sfh, const SFENTRY *tbl)
 	}
 	if (nSaveFlags & FLAG_SB16)
 	{
+		datalen = sizeof(g_sb16);
+		ret |= statflag_write(sfh, &datalen, sizeof(datalen));
 		ret |= statflag_write(sfh, &g_sb16, sizeof(g_sb16));
 	}
 	return ret;
@@ -996,66 +1007,173 @@ static int flagload_fm(STFLAGH sfh, const SFENTRY *tbl)
 	SOUNDID nSoundID;
 	UINT nSaveFlags;
 	UINT i;
+	UINT32 datalen;
 
 	ret = statflag_read(sfh, &nSoundID, sizeof(nSoundID));
-	fmboard_reset(&np2cfg, nSoundID);
+	if(nSoundID==SOUNDID_INVALID){
+		// new statsave
+		// 新方式ステートセーブ：原則として構造体サイズを書くように変更。復元時に足りない部分は0で埋められる。メンバ順を入れ替えず追記していけば工夫により互換性維持が可能。
+		ret = statflag_read(sfh, &nSoundID, sizeof(nSoundID));
+		fmboard_reset(&np2cfg, nSoundID);
 
-	nSaveFlags = GetSoundFlags(g_nSoundID);
-	if (nSaveFlags & FLAG_MG)
-	{
-		ret |= statflag_read(sfh, &g_musicgen, sizeof(g_musicgen));
-		board14_allkeymake();
-	}
-	for (i = 0; i < NELEMENTS(g_opna); i++)
-	{
-		if (nSaveFlags & (FLAG_OPNA1 << i))
+		nSaveFlags = GetSoundFlags(g_nSoundID);
+		if (nSaveFlags & FLAG_MG)
 		{
-			ret |= opna_sfload(&g_opna[i], sfh, tbl);
+			ret |= statflag_read(sfh, &datalen, sizeof(datalen));
+			if(datalen > sizeof(g_musicgen)) return STATFLAG_FAILURE; // 旧バージョンで読めないようにしておく（コメントアウトすると読めるようになるが、ちゃんと考えて設計しないと危険）
+			ret |= statflag_read(sfh, &g_musicgen, MIN(datalen, sizeof(g_musicgen)));
+			if(datalen > sizeof(g_musicgen)){
+				sfh->pos += datalen - sizeof(g_musicgen);
+			}else{
+				memset((UINT8*)(&g_musicgen) + datalen, 0, sizeof(g_musicgen) - datalen); // ない部分は0埋め
+			}
+			board14_allkeymake();
 		}
-	}
-	if (nSaveFlags & FLAG_PCM86)
-	{
-		ret |= statflag_read(sfh, &g_pcm86, sizeof(g_pcm86));
-	}
-	if (nSaveFlags & FLAG_CS4231)
-	{
-		ret |= statflag_read(sfh, &cs4231, sizeof(cs4231));
-	}
-	if (nSaveFlags & FLAG_AMD98)
-	{
-		ret |= amd98_sfload(sfh, tbl);
-	}
-	if (nSaveFlags & FLAG_OPL3)
-	{
-		for (i = 0; i < NELEMENTS(g_opl3); i++)
+		for (i = 0; i < NELEMENTS(g_opna); i++)
 		{
-			ret |= opl3_sfload(&g_opl3[i], sfh, tbl);
-		}
-#ifdef USE_MAME
-		for (i = 0; i < NELEMENTS(g_mame_opl3); i++)
-		{
-			void* buffer;
-			int bufsize = 0;
-			ret |= statflag_read(sfh, &bufsize, sizeof(SINT32));
-			if(bufsize!=0){
-				if(YMF262FlagSave(NULL, NULL) != bufsize){
-					ret = STATFLAG_FAILURE;
-					break;
-				}else{
-					buffer = malloc(bufsize);
-					ret |= statflag_read(sfh, buffer, bufsize);
-					if(g_mame_opl3[i]){
-						YMF262FlagLoad(g_mame_opl3[i], buffer, bufsize);
-					}
-					free(buffer);
-				}
+			if (nSaveFlags & (FLAG_OPNA1 << i))
+			{
+				ret |= opna_sfload(&g_opna[i], sfh, tbl);
 			}
 		}
+		if (nSaveFlags & FLAG_PCM86)
+		{
+			ret |= statflag_read(sfh, &datalen, sizeof(datalen));
+			if(datalen > sizeof(g_pcm86)) return STATFLAG_FAILURE; // 旧バージョンで読めないようにしておく（コメントアウトすると読めるようになるが、ちゃんと考えて設計しないと危険）
+			ret |= statflag_read(sfh, &g_pcm86, MIN(datalen, sizeof(g_pcm86)));
+			if(datalen > sizeof(g_pcm86)){
+				sfh->pos += datalen - sizeof(g_pcm86);
+			}else{
+				memset((UINT8*)(&g_pcm86) + datalen, 0, sizeof(g_pcm86) - datalen); // ない部分は0埋め
+			}
+		}
+		if (nSaveFlags & FLAG_CS4231)
+		{
+			ret |= statflag_read(sfh, &datalen, sizeof(datalen));
+			if(datalen > sizeof(cs4231)) return STATFLAG_FAILURE; // 旧バージョンで読めないようにしておく（コメントアウトすると読めるようになるが、ちゃんと考えて設計しないと危険）
+			ret |= statflag_read(sfh, &cs4231, MIN(datalen, sizeof(cs4231)));
+			if(datalen > sizeof(cs4231)){
+				sfh->pos += datalen - sizeof(cs4231);
+			}else{
+				memset((UINT8*)(&cs4231) + datalen, 0, sizeof(cs4231) - datalen); // ない部分は0埋め
+			}
+		}
+		if (nSaveFlags & FLAG_AMD98)
+		{
+			ret |= amd98_sfload(sfh, tbl);
+		}
+		if (nSaveFlags & FLAG_OPL3)
+		{
+			for (i = 0; i < NELEMENTS(g_opl3); i++)
+			{
+				ret |= opl3_sfload(&g_opl3[i], sfh, tbl);
+			}
+#ifdef USE_MAME
+			for (i = 0; i < NELEMENTS(g_mame_opl3); i++)
+			{
+				void* buffer;
+				int bufsize = 0;
+				ret |= statflag_read(sfh, &bufsize, sizeof(SINT32));
+				if(bufsize!=0){
+					if(YMF262FlagSave(NULL, NULL) != bufsize){
+						ret = STATFLAG_FAILURE;
+						break;
+					}else{
+						buffer = malloc(bufsize);
+						ret |= statflag_read(sfh, buffer, bufsize);
+						if(g_mame_opl3[i]){
+							YMF262FlagLoad(g_mame_opl3[i], buffer, bufsize);
+						}
+						free(buffer);
+					}
+				}
+			}
 #endif
-	}
-	if (nSaveFlags & FLAG_SB16)
-	{
-		ret |= statflag_read(sfh, &g_sb16, sizeof(g_sb16));
+		}
+		if (nSaveFlags & FLAG_SB16)
+		{
+			ret |= statflag_read(sfh, &datalen, sizeof(datalen));
+			if(datalen > sizeof(g_sb16)) return STATFLAG_FAILURE; // 旧バージョンで読めないようにしておく（コメントアウトすると読めるようになるが、ちゃんと考えて設計しないと危険）
+			ret |= statflag_read(sfh, &g_sb16, MIN(datalen, sizeof(g_sb16)));
+			if(datalen > sizeof(g_sb16)){
+				sfh->pos += datalen - sizeof(g_sb16);
+			}else{
+				memset((UINT8*)(&g_sb16) + datalen, 0, sizeof(g_sb16) - datalen); // ない部分は0埋め
+			}
+		}
+	}else{
+		// old statsave
+		nSaveFlags = GetSoundFlags(g_nSoundID);
+		if (nSaveFlags & FLAG_MG)
+		{
+			ret |= statflag_read(sfh, &g_musicgen, sizeof(MUSICGEN_OLD));
+			if(sizeof(MUSICGEN_OLD) < sizeof(g_musicgen)){
+				memset((UINT8*)(&g_musicgen) + sizeof(MUSICGEN_OLD), 0, sizeof(g_musicgen) - sizeof(MUSICGEN_OLD)); // ない部分は0埋め
+			}
+			board14_allkeymake();
+		}
+		for (i = 0; i < NELEMENTS(g_opna); i++)
+		{
+			if (nSaveFlags & (FLAG_OPNA1 << i))
+			{
+				ret |= opna_sfload(&g_opna[i], sfh, tbl);
+			}
+		}
+		if (nSaveFlags & FLAG_PCM86)
+		{
+			ret |= statflag_read(sfh, &g_pcm86, sizeof(_PCM86_OLD));
+			if(sizeof(_PCM86_OLD) < sizeof(g_pcm86)){
+				memset((UINT8*)(&g_pcm86) + sizeof(_PCM86_OLD), 0, sizeof(g_pcm86) - sizeof(_PCM86_OLD)); // ない部分は0埋め
+			}
+			g_pcm86.lastclock = g_pcm86.lastclock_obsolate;
+			g_pcm86.stepclock = g_pcm86.stepclock_obsolate;
+		}
+		if (nSaveFlags & FLAG_CS4231)
+		{
+			ret |= statflag_read(sfh, &cs4231, sizeof(_CS4231_OLD));
+			if(sizeof(_CS4231_OLD) < sizeof(cs4231)){
+				memset((UINT8*)(&cs4231) + sizeof(_CS4231_OLD), 0, sizeof(cs4231) - sizeof(_CS4231_OLD)); // ない部分は0埋め
+			}
+		}
+		if (nSaveFlags & FLAG_AMD98)
+		{
+			ret |= amd98_sfload(sfh, tbl);
+		}
+		if (nSaveFlags & FLAG_OPL3)
+		{
+			for (i = 0; i < NELEMENTS(g_opl3); i++)
+			{
+				ret |= opl3_sfload(&g_opl3[i], sfh, tbl);
+			}
+#ifdef USE_MAME
+			for (i = 0; i < NELEMENTS(g_mame_opl3); i++)
+			{
+				void* buffer;
+				int bufsize = 0;
+				ret |= statflag_read(sfh, &bufsize, sizeof(SINT32));
+				if(bufsize!=0){
+					if(YMF262FlagSave(NULL, NULL) != bufsize){
+						ret = STATFLAG_FAILURE;
+						break;
+					}else{
+						buffer = malloc(bufsize);
+						ret |= statflag_read(sfh, buffer, bufsize);
+						if(g_mame_opl3[i]){
+							YMF262FlagLoad(g_mame_opl3[i], buffer, bufsize);
+						}
+						free(buffer);
+					}
+				}
+			}
+#endif
+		}
+		if (nSaveFlags & FLAG_SB16)
+		{
+			ret |= statflag_read(sfh, &g_sb16, sizeof(SB16_OLD));
+			if(sizeof(SB16_OLD) < sizeof(g_sb16)){
+				memset((UINT8*)(&g_sb16) + sizeof(SB16_OLD), 0, sizeof(g_sb16) - sizeof(SB16_OLD)); // ない部分は0埋め
+			}
+		}
 	}
 
 	// 復元。 これ移動すること！
@@ -1067,6 +1185,10 @@ static int flagload_fm(STFLAGH sfh, const SFENTRY *tbl)
 	if (nSaveFlags & FLAG_CS4231)
 	{
 		fmboard_extenable((REG8)(cs4231.extfunc & 1));
+	}
+	if (nSaveFlags & FLAG_SB16)
+	{
+		g_sb16.dsp_info.dma.chan = dmac.dmach + g_sb16.dmach; // DMAチャネル復元
 	}
 	return(ret);
 }

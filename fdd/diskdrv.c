@@ -152,7 +152,9 @@ void diskdrv_hddbind(void)
 				sxsi_setdevtype(drv, SXSIDEV_NC);
 				if(np2cfg.sasihdd[drv & 0x0f]!=NULL && np2cfg.sasihdd[drv & 0x0f][0]!='\0')
 				{
-					msgbox("HD image file open error" ,"file open error"); 
+					char strbuf[] = "IDE#  file open error";
+					strbuf[4] = '0'+drv;
+					msgbox("HD image file open error", strbuf); 
 				}
 			}
 		}
@@ -174,7 +176,9 @@ void diskdrv_hddbind(void)
 			sxsi_setdevtype(drv, SXSIDEV_NC);
 			if(np2cfg.sasihdd[drv & 0x0f]!=NULL && np2cfg.sasihdd[drv & 0x0f][0]!='\0')
 			{
-				msgbox("HD image file open error" ,"file open error"); 
+				char strbuf[] = "SASI#  file open error";
+				strbuf[5] = '0'+drv;
+				msgbox("HD image file open error", strbuf); 
 			}
 		}
 	}

@@ -100,13 +100,19 @@ static BRESULT writezero(FILEH fh, FILELEN size) {
 
 static BRESULT writehddiplex2(FILEH fh, UINT ssize, FILELEN tsize, int blank, int *progress, int *cancel) {
 
-	UINT8	work[65536];
+	UINT8	*work;
 	FILELEN	size;
 	FILELEN	progtotal;
+	int worksize = 65536;
+
+	if(tsize < worksize) worksize = (int)tsize;
+	if(tsize > 1024*1024) worksize = 1024*1024;
+	if(tsize > 8*1024*1024) worksize = 8*1024*1024;
+	work = (UINT8*)malloc(worksize);
 
 	progtotal = tsize;
 	*progress = 0;
-	ZeroMemory(work, sizeof(work));
+	ZeroMemory(work, worksize);
 	if(!blank){
 		CopyMemory(work, hdddiskboot, sizeof(hdddiskboot));
 		if (ssize < 1024) {
@@ -114,24 +120,28 @@ static BRESULT writehddiplex2(FILEH fh, UINT ssize, FILELEN tsize, int blank, in
 			work[ssize - 1] = 0xaa;
 		}
 	}
-	if (file_write(fh, work, sizeof(work)) != sizeof(work)) {
+	if (file_write(fh, work, worksize) != worksize) {
+		free(work);
 		return(FAILURE);
 	}
-	if (tsize > sizeof(work)) {
-		tsize -= sizeof(work);
-		ZeroMemory(work, sizeof(work));
+	if (tsize > worksize) {
+		tsize -= worksize;
+		ZeroMemory(work, worksize);
 		while(tsize) {
-			size = MIN(tsize, sizeof(work));
+			size = MIN(tsize, worksize);
 			tsize -= size;
 			if (file_write(fh, work, (UINT)size) != size) {
+				free(work);
 				return(FAILURE);
 			}
 			*progress = (UINT32)((progtotal - tsize) * 100 / progtotal);
 			if(*cancel){
+				free(work);
 				return(FAILURE);
 			}
 		}
 	}
+	free(work);
 	return(SUCCESS);
 }
 static BRESULT writehddiplex(FILEH fh, UINT ssize, FILELEN tsize, int *progress, int *cancel) {

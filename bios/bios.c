@@ -140,6 +140,9 @@ static void bios_updatehookinst(UINT8 *mem, UINT32 updatesize) {
 //             DA/UA = 80h,00h 81h,01h 82h,01h 83h,01h
 int sxsi_unittbl[4] = {0,      1,      2,      3}; // DA/UAをインデックスに変換する
 
+#define SXSI_WORKAROUND_BOOTWAIT	50
+int sxsi_workaround_bootwait = 0;
+
 static void bios_itfprepare(void) {
 
 const IODATA	*p;
@@ -1138,6 +1141,7 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 
 		case 0xfffe8:					// ブートストラップロード
 			CPU_REMCLOCK -= 2000;
+			sxsi_workaround_bootwait = SXSI_WORKAROUND_BOOTWAIT;
 			bootseg = bootstrapload();
 			if (bootseg) {
 				CPU_STI;

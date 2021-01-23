@@ -83,8 +83,13 @@ void fmport_a(NEVENTITEM item)
 
 	if (item->flag & NEVENT_SETEVENT)
 	{
-		intreq = pcm86gen_intrq();
-		if (opna->s.reg[0x27] & 0x04)
+		if(g_pcm86.irq==opna->s.irq){
+			intreq = pcm86gen_intrq();
+			if(!(opna->s.status & 0x01) && g_pcm86.irqflag){
+				intreq = TRUE;
+			}
+		}
+		if ((opna->s.reg[0x27] & 0x04) && !(opna->s.status & 0x01))
 		{
 			opna->s.status |= 0x01;
 			intreq = TRUE;
@@ -117,8 +122,13 @@ void fmport_b(NEVENTITEM item)
 
 	if (item->flag & NEVENT_SETEVENT)
 	{
-		intreq = pcm86gen_intrq();
-		if (opna->s.reg[0x27] & 0x08)
+		if(g_pcm86.irq==opna->s.irq){
+			intreq = pcm86gen_intrq();
+			if(!(opna->s.status & 0x02) && g_pcm86.irqflag){
+				intreq = TRUE;
+			}
+		}
+		if ((opna->s.reg[0x27] & 0x08) && !(opna->s.status & 0x02))
 		{
 			opna->s.status |= 0x02;
 			intreq = TRUE;
@@ -169,6 +179,17 @@ void opna_settimer(POPNA opna, REG8 cData)
 	v_NEVENT_FMTIMERA = (OPNAidx==0) ? NEVENT_FMTIMERA : NEVENT_FMTIMER2A;
 	v_NEVENT_FMTIMERB = (OPNAidx==0) ? NEVENT_FMTIMERB : NEVENT_FMTIMER2B;
 
+	if(cData & 0x10){
+		//nevent_reset((NEVENTID)v_NEVENT_FMTIMERA);
+		opna->s.reg[0x27] &= ~0x10;
+		opna->s.status &= ~0x01;
+	}
+	if(cData & 0x20){
+		//nevent_reset((NEVENTID)v_NEVENT_FMTIMERB);
+		opna->s.reg[0x27] &= ~0x20;
+		opna->s.status &= ~0x02;
+	}
+
 	opna->s.status &= ~((cData & 0x30) >> 4);
 	if (cData & 0x01)
 	{
@@ -194,8 +215,11 @@ void opna_settimer(POPNA opna, REG8 cData)
 		nevent_reset((NEVENTID)v_NEVENT_FMTIMERB);
 	}
 
-	if ((!(cData & 0x03)) && (opna->s.irq != 0xff))
+	if ((!(cData & 0x03) || (cData & 0x30)) && (opna->s.irq != 0xff))
 	{
-		pic_resetirq(opna->s.irq);
+		PCM86 pcm86 = &g_pcm86;
+		if(pcm86->irq!=opna->s.irq || !pcm86->irqflag){
+			pic_resetirq(opna->s.irq);
+		}
 	}
 }

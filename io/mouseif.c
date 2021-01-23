@@ -11,7 +11,7 @@
 // それを救う為に 均等に移動データが伝わるようにしなければならない
 
 static int mouseif_limitcounter = 0;
-
+static int mouseif_test = 0;
 
 void mouseif_sync(void) {
 
@@ -32,6 +32,14 @@ void mouseif_sync(void) {
 #else
 	mouseif.lastc = CPU_CLOCK + CPU_BASECLOCK + CPU_REMCLOCK;
 #endif
+	
+	// XXX: 何故かマウスイベントが消えることがあるので復活させる･･･ np21w ver.0.86 rev.79
+	if (!(mouseif.upd8255.portc & 0x10)) {
+		if (!nevent_iswork(NEVENT_MOUSE)) {
+			nevent_set(NEVENT_MOUSE, mouseif.intrclock << mouseif.timing,
+											mouseint, NEVENT_ABSOLUTE);
+		}
+	}
 }
 
 static void calc_mousexy(void) {

@@ -3,6 +3,8 @@
 
 void winloc_setclientsize(HWND hwnd, int width, int height);
 
+void winloc_getDWMmargin(HWND hwnd, int *ofsx, int *ofsy);
+
 
 // ----
 

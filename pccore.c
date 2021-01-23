@@ -114,7 +114,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2KAI_GIT_TAG " " NP2KAI_GIT_HASH);
 				0, 0, {1, 1, 6, 1, 8, 1},
 				128, 0x00, 1, 
 #if defined(SUPPORT_ASYNC_CPU)
-				0,
+				0, 1,
 #endif
 #if defined(SUPPORT_IDEIO)
 				0xD8,
@@ -234,20 +234,6 @@ const OEMCHAR np2version[] = OEMTEXT(NP2KAI_GIT_TAG " " NP2KAI_GIT_HASH);
 #if defined(SUPPORT_FMGEN)
 	UINT8	enable_fmgen = 0;
 #endif	/* SUPPORT_FMGEN */
-
-#if defined(SUPPORT_HRTIMER)
-	UINT32 hrtimerdiv = 32; 
-	UINT32 hrtimerclock = 0; 
-	UINT32 hrtimerclock32 = 0; 
-
-static void pccore_hrtimer_start() {
-	hrtimerclock32 = pccore.baseclock/32; 
-}
-static void pccore_hrtimer_stop() {
-	// 廃止
-}
-
-#endif
 
 #ifdef SUPPORT_ASYNC_CPU
 int asynccpu_lateflag = 0;
@@ -546,10 +532,6 @@ void pccore_init(void) {
 	hostdrv_initialize();
 #endif
 
-#if defined(SUPPORT_HRTIMER)
-	pccore_hrtimer_start();
-#endif
-
 #if defined(SUPPORT_GPIB)
 	gpibio_initialize();
 #endif
@@ -559,10 +541,6 @@ void pccore_term(void) {
 	
 #if defined(SUPPORT_GPIB)
 	gpibio_shutdown();
-#endif
-
-#if defined(SUPPORT_HRTIMER)
-	pccore_hrtimer_stop();
 #endif
 
 #if defined(SUPPORT_HOSTDRV)
@@ -1151,8 +1129,6 @@ void pccore_postevent(UINT32 event) {	// yet!
 void pccore_exec(BOOL draw) {
 
 	// ここでローカル変数を使うとsetjmp周りの最適化で破壊される可能性があるので注意
-	static UINT32 clockcounter = 0;
-	static UINT32 clockcounter32 = 0;
 	static UINT32 baseclk = 0;
 	//UINT32 lastclock;
 	//UINT32 mflag = 0;
@@ -1205,6 +1181,7 @@ void pccore_exec(BOOL draw) {
 #endif
 #if defined(SUPPORT_CL_GD5430)
 			np2clvga.gd54xxtype = np2clvga.defgd54xxtype; // Auto Select用
+			pc98_cirrus_vga_initVRAMWindowAddr();
 			pc98_cirrus_vga_resetresolution();
 #endif
 #if defined(SUPPORT_IDEIO)
@@ -1257,26 +1234,7 @@ void pccore_exec(BOOL draw) {
 		CPU_MSR_TSC = CPU_MSR_TSC - baseclk + CPU_BASECLOCK * pccore.maxmultiple / pccore.multiple;
 #endif
 #if defined(SUPPORT_HRTIMER)
-		if(hrtimerclock){
-			clockcounter += CPU_BASECLOCK;
-			if(clockcounter > hrtimerclock*pccore.multiple){
-				clockcounter -= hrtimerclock*pccore.multiple;
-
-				pic_setirq(15);
-			}
-		}
-		clockcounter32 += CPU_BASECLOCK;
-		if(clockcounter32 > hrtimerclock32*pccore.multiple){
-			UINT32 hrtimertimeuint;
-			clockcounter32 -= hrtimerclock32*pccore.multiple;
-			
-			hrtimertimeuint = LOADINTELDWORD(mem+0x04F1);
-			hrtimertimeuint++;
-			if((hrtimertimeuint & 0x3fffff) >= 24*60*60*32){
-				hrtimertimeuint = ((hrtimertimeuint & ~0x3fffff) + 0x400000) & 0xffffff; // 日付変わった
-			}
-			STOREINTELDWORD(mem+0x04F1, hrtimertimeuint); // XXX: 04F4にも書いちゃってるけど差し当たっては問題なさそうなので･･･
-		}
+		upd4990_hrtimer_count();
 #endif
 		nevent_progress();
 	}

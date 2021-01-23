@@ -752,6 +752,7 @@ static const PFTBL s_IniItems[] =
 	
 #if defined(SUPPORT_ASYNC_CPU)
 	PFVAL("ASYNCCPU", PFTYPE_BOOL,		&np2cfg.asynccpu), // 非同期CPUモード有効
+	PFVAL("CONSTTSC", PFTYPE_BOOL,		&np2cfg.consttsc), // RDTSCをAsyncクロック変更によらず一定間隔にする
 #endif
 #if defined(SUPPORT_IDEIO)
 	PFVAL("IDEBADDR", PFRO_HEX8,		&np2cfg.idebaddr), // IDE BIOS アドレス（デフォルト：D8h(D8000h)）

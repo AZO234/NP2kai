@@ -179,9 +179,9 @@ static REG8 IOINPCALL pcm86_ia460(UINT port)
 
 static REG8 IOINPCALL pcm86_ia466(UINT port) {
 
-	UINT32	past;
-	UINT32	cnt;
-	UINT32	stepclock;
+	UINT64	past;
+	UINT64	cnt;
+	UINT64	stepclock;
 	REG8	ret;
 	
 	past = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
@@ -201,7 +201,7 @@ static REG8 IOINPCALL pcm86_ia466(UINT port) {
 	if (g_pcm86.virbuf >= PCM86_LOGICALBUF) {			// バッファフル
 		ret |= 0x80;
 	}
-	else if (!g_pcm86.virbuf) {						// バッファ０
+	else if (g_pcm86.virbuf <= 0) {						// バッファ０
 		ret |= 0x40;								// ちと変…
 	}
 	(void)port;
@@ -215,7 +215,7 @@ static REG8 IOINPCALL pcm86_ia468(UINT port) {
 	
 	ret = g_pcm86.fifo & (~0x10);
 #if 1
-	if (pcm86gen_intrq()) {
+	if (pcm86gen_intrq() || g_pcm86.irqflag) {
 		ret |= 0x10;
 	}
 #elif 1		// むしろこう？

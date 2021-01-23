@@ -12,6 +12,10 @@
 #include	<io/iocore.h>
 #include	<mem/memvga.h>
 #include	<vram/vram.h>
+#if defined(SUPPORT_IA32_HAXM)
+#include	<i386hax/haxfunc.h>
+#include	<i386hax/haxcore.h>
+#endif
 
 
 // ---- macros
@@ -397,6 +401,10 @@ void MEMCALL memvgaio_wr8(UINT32 address, REG8 value) {
 	pos = address - 0x0004;
 	if (pos < 4) {
 		vramop.mio1[pos] = value;
+#if defined(SUPPORT_IA32_HAXM)
+		i386hax_vm_setmemoryarea(vramex + ((vramop.mio1[0] & 15) << 15), 0xA8000, 0x8000);
+		i386hax_vm_setmemoryarea(vramex + ((vramop.mio1[2] & 15) << 15), 0xB0000, 0x8000);
+#endif
 		return;
 	}
 	pos = address - 0x0100;

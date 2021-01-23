@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Oct 22, 2020<br>
+Jan 19, 2021<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -1092,7 +1092,7 @@ Set RetroArch's 'Setting' -&gt; 'Audio' -&gt; 'MIDI' -&gt; 'Output' -&gt; '(MIDI
 Windows
 </summary><div>
 
-NP2kai can use 'Microsoft GS Wavetable Synth'.
+NP2kai can use 'Microsoft GS Wavetable Synth'.<br>
 NP2kai can use external MIDI sound generator with UM-1(USB-MIDI interface).<br>
 </div></details>
 
@@ -1221,6 +1221,8 @@ Next boot computer, you command from 4.
 </div></details>
 
 ## Release
+- Jan 19, 2021
+  - merge NP21/W rev.79
 - Oct 22, 2020
   (Thanks to @miyamoto999)
   - Key-repeat

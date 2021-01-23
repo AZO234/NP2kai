@@ -4,6 +4,7 @@
 #include	<io/iocore.h>
 #include	<bios/bios.h>
 #include	<bios/biosmem.h>
+#include	<keystat.h>
 
 
 void bios0x09_init(void) {
@@ -96,6 +97,10 @@ void bios0x09(void) {
 					code = 0xffff;
 				}
 			}
+			else if (key == 0x70 || key == 0x7d) { // シフトキーの場合左右の区別をしない
+				mem[MEMB_SHIFT_STS] |= 0x1;
+				updateshiftkey();
+			}
 			else if (key < 0x75) {
 				mem[MEMB_SHIFT_STS] |= bit;
 				updateshiftkey();
@@ -116,8 +121,12 @@ void bios0x09(void) {
 	}
 	else {
 		mem[MEMX_KB_KY_STS + pos] &= ~bit;
-		if ((key >= 0xf0) && (key < 0xf5)) {
-			mem[MEMB_SHIFT_STS] &= ~bit;
+		if (((key >= 0xf0) && (key < 0xf5)) || key == 0xfd) {
+			if (key == 0xf0 || key == 0xfd) { // シフトキーの場合左右の区別をしない
+				mem[MEMB_SHIFT_STS] &= ~0x1;
+			}else{
+				mem[MEMB_SHIFT_STS] &= ~bit;
+			}
 			updateshiftkey();
 		}
 	}

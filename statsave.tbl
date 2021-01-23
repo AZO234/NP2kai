@@ -164,7 +164,7 @@ static const SFENTRY np2tbl[] = {
 	{"BEEP",		0,	STATFLAG_BIN,	&g_beep,		sizeof(g_beep)},
 #endif
 #if defined(SUPPORT_IDEIO)
-	{"IDE",			0,	STATFLAG_BIN,	&ideio,			sizeof(ideio)},
+	{"IDE",			0,	STATFLAG_BIN|STATFLAG_BWD_COMPATIBLE,	&ideio,			sizeof(ideio)},
 #endif
 #if defined(SUPPORT_SASI)
 	{"SASI",		0,	STATFLAG_BIN,	&sasiio,		sizeof(sasiio)},

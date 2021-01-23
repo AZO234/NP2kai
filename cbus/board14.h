@@ -18,8 +18,19 @@ struct musicgen_t
 	int		sync;
 	int		ch;
 };
+struct musicgen_old_t // ステートセーブ互換性維持用（変更禁止）
+{
+	UINT8	porta;
+	UINT8	portb;
+	UINT8	portc;
+	UINT8	mask;
+	UINT8	key[8];
+	int		sync;
+	int		ch;
+};
 
 typedef struct musicgen_t MUSICGEN;
+typedef struct musicgen_old_t MUSICGEN_OLD;
 
 #ifdef __cplusplus
 extern "C"

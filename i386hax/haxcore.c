@@ -391,6 +391,7 @@ void i386hax_resetVMMem(void) {
 	//i386hax_vm_setmemoryarea(mem+0xE0000, 0xE0000, 0x8000);
 	i386hax_vm_setmemoryarea(mem+0xE8000, 0xE8000, 0x8000);
 	i386hax_vm_setmemoryarea(mem+0xF0000, 0xF0000, 0x8000);
+	i386hax_vm_setmemoryarea(mem+0xF8000, 0xF8000, 0x8000);
 	
 	//i386hax_vm_setmemoryarea(mem+0xA5000, 0xA5000, 0x3000);
 	//i386hax_vm_setmemoryarea(mem+0xA8000, 0xA8000, 0x8000);
@@ -920,9 +921,9 @@ coutinue_cpu:
 		i386hax_vm_setitfmemory(CPU_ITFBANK);
 		np2haxcore.lastITFbank = CPU_ITFBANK;
 	}
-	if(np2haxcore.lastVGA256linear != (vramop.mio2[0x2]==0x1)){
+	if(np2haxcore.lastVGA256linear != (vramop.mio2[0x2]==0x1 && (gdc.analog & (1 << GDCANALOG_256))!=0)){
 		i386hax_vm_setvga256linearmemory();
-		np2haxcore.lastVGA256linear = (vramop.mio2[0x2]==0x1);
+		np2haxcore.lastVGA256linear = (vramop.mio2[0x2]==0x1 && (gdc.analog & (1 << GDCANALOG_256))!=0);
 	}
 	
 	// プロテクトモードが続いたらBIOSエミュレーション用のデバッグ設定を無効にする（デバッグレジスタを使うソフト用）
@@ -1590,7 +1591,7 @@ void i386hax_vm_setvga256linearmemory(void) {
 	info.size =  0x80000;
 	info.flags = HAX_RAM_INFO_INVALID;
 	i386haxfunc_setRAM(&info);
-	if(vramop.mio2[0x2]==0x1){
+	if(vramop.mio2[0x2]==0x1 && (gdc.analog & (1 << GDCANALOG_256))!=0){
 		info.flags = 0;
 		info.va = (UINT64)vramex;
 		if(i386haxfunc_setRAM(&info)==FAILURE){

@@ -75,6 +75,8 @@ static const OEMCHAR str_mhz[] = OEMTEXT("%uMHz");
 #define NP21W_SWITCH_PCIENABLE			4
 #define NP21W_SWITCH_ASYNCCPU			5
 #define NP21W_SWITCH_DISABLESOUNDROM	6
+#define NP21W_SWITCH_SETIDEWAIT_R		7
+#define NP21W_SWITCH_SETIDEWAIT_W		8
 
 
 static void setoutstr(const OEMCHAR *str) {
@@ -160,6 +162,7 @@ static void np2sysp_cngclkmul(const void *arg1, long arg2) {
 
 	OEMCHAR	str[64];
 	UINT8 oldclockmul = pccore.maxmultiple;
+	UINT8 oldclockmult = pccore.multiple;
 	UINT8 newclockmul = (np2sysp.outval >> 24);
 	
 	if(newclockmul > 0) {
@@ -169,6 +172,7 @@ static void np2sysp_cngclkmul(const void *arg1, long arg2) {
 		pccore.maxmultiple = newclockmul;
 		pccore.realclock = pccore.baseclock * pccore.multiple;
 		
+		pcm86_changeclock(oldclockmult);
 		sound_changeclock();
 		beep_changeclock();
 		mpu98ii_changeclock();
@@ -217,6 +221,14 @@ static void np2sysp_getconfig(const void *arg1, long arg2) {
 	case NP21W_SWITCH_DISABLESOUNDROM:
 		configvalue = 0; // 常時0
 		break;
+#if defined(SUPPORT_IDEIO)
+	case NP21W_SWITCH_SETIDEWAIT_R:
+		configvalue = (UINT8)(ideio.rwait >> 8);
+		break;
+	case NP21W_SWITCH_SETIDEWAIT_W:
+		configvalue = (UINT8)(ideio.wwait >> 8);
+		break;
+#endif
 	case NP21W_SWITCH_DUMMY:
 	default:
 		break;
@@ -332,6 +344,14 @@ static void np2sysp_cngconfig(const void *arg1, long arg2) {
 			soundrom_reset(); // サウンドROMを消す
 		}
 		break;
+#if defined(SUPPORT_IDEIO)
+	case NP21W_SWITCH_SETIDEWAIT_R:
+		ideio.rwait = configvalue << 8;
+		break;
+	case NP21W_SWITCH_SETIDEWAIT_W:
+		ideio.wwait = configvalue << 8;
+		break;
+#endif
 	case NP21W_SWITCH_DUMMY:
 	default:
 		break;

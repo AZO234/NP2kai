@@ -463,7 +463,7 @@ typedef uint16_t REG16;
 typedef int64_t FILEPOS;
 typedef int64_t FILELEN;
 #define	NHD_MAXSIZE  8000
-#define	NHD_MAXSIZE2 32000
+#define	NHD_MAXSIZE2 130558
 #else
 typedef int32_t FILEPOS;
 typedef int32_t FILELEN;

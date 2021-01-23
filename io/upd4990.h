@@ -18,6 +18,10 @@ typedef struct {
 #ifdef __cplusplus
 extern "C" {
 #endif
+	
+#if defined(SUPPORT_HRTIMER)
+void upd4990_hrtimer_count(void);
+#endif
 
 void uPD4990_reset(const NP2CFG *pConfig);
 void uPD4990_bind(void);

@@ -342,6 +342,8 @@ void
 gui_gtk_widget_quit(void)
 {
 
+	scrnmng_setwidth(0, 640);
+	scrnmng_setheight(0, 400);
 	taskmng_exit();
 	gtk_main_quit();
 }

@@ -118,7 +118,7 @@ static const UINT8 key106ext[256] = {
 				  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
 			//	    ,    ,    ,    ,    ,    ,    ,    		; 0x98
 				  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-			//	    ,    ,    ,    ,    ,    ,    ,    		; 0xa0
+			//	SFTL,SFTR,    ,    ,    ,    ,    ,    		; 0xa0
 				  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
 			//	    ,    ,    ,    ,    ,    ,    ,    		; 0xa8
 				  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
@@ -188,6 +188,7 @@ void winkbd_keyup(WPARAM wParam, LPARAM lParam) {
 		UINT scancode = (lParam & 0x00ff0000) >> 16;
 		wParam = MapVirtualKey(scancode, MAPVK_VSC_TO_VK_EX);
 	}
+
 	data = key106[wParam & 0xff];
 	if (data != NC) {
 		if ((data == 0x73) &&

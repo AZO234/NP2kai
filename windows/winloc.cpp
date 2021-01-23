@@ -102,6 +102,14 @@ BOOL winloc_GetWindowRect(HWND hwnd, LPRECT lpRect) {
 	}
 }
 
+void winloc_getDWMmargin(HWND hwnd, int *ofsx, int *ofsy) {
+	RECT rDWM, r;
+	winloc_GetWindowRect(hwnd, &rDWM);
+	GetWindowRect(hwnd, &r);
+	*ofsx = rDWM.left - r.left;
+	*ofsy = rDWM.top - r.top;
+}
+
 void winloc_setclientsize(HWND hwnd, int width, int height) {
 
 	RECT	rectDisktop;

@@ -58,6 +58,18 @@ void ct1741_initialize(UINT rate) {
 	g_sb16.dsp_info.dma.rate2 = ct1741_np2_rate = rate;
 }
 
+//static int ct1741_irqbit[16] = {0};
+void ct1741_setpicirq(UINT8 irq) {
+	//if(!ct1741_irqbit[irq]){
+		pic_setirq(irq);
+		//ct1741_irqbit[irq] = 1;
+	//}
+}
+void ct1741_resetpicirq(UINT8 irq) {
+	pic_resetirq(irq);
+	//ct1741_irqbit[irq] = 0;
+}
+
 void ct1741_set_dma_irq(UINT8 irq) {
 	g_sb16.dsp_info.dmairq = irq;
 	switch(irq) {
@@ -409,14 +421,14 @@ static void ct1741_exec_command()
 //		SB_RaiseIRQ(SB_IRQ_8);
 		ct1741_flush_data();
 		ct1741_add_data (0xaa);
-		pic_setirq(g_sb16.dmairq);
+		ct1741_setpicirq(g_sb16.dmairq);
 		g_sb16.mixreg[0x82] |= 1;
 		break;
 	case 0xf3:	/* Trigger 16bit IRQ */
 //		SB_RaiseIRQ(SB_IRQ_8);
 		ct1741_flush_data();
 		ct1741_add_data (0xaa);
-		pic_setirq(g_sb16.dmairq);
+		ct1741_setpicirq(g_sb16.dmairq);
 		g_sb16.mixreg[0x82] |= 2;
 		break;
 	case 0x30: case 0x31:
@@ -548,8 +560,8 @@ printf("read 2ed2 g_sb16.dsp_info.out.used =%x mixer[82] = %x cmd = %x¥n",g_sb1
 	if(g_sb16.dsp_info.cmd_o == 0xf2){g_sb16.dsp_info.cmd_o =0;return 0;}
 	if(g_sb16.mixreg[0x82] & 1){ // 一定量の転送が終わると割り込みが来るらしい。bit0は8-bit用
 		g_sb16.mixreg[0x82] &= ~1;
-		pic_resetirq(g_sb16.dmairq);
-		if(g_sb16.dsp_info.dma.lastautoinit || g_sb16.dsp_info.dma.autoinit){ // 自動でDMAしか転送を繰り返すらしい
+		ct1741_resetpicirq(g_sb16.dmairq);
+		if(g_sb16.dsp_info.dma.lastautoinit || g_sb16.dsp_info.dma.autoinit){ // 自動でDMA転送を繰り返すらしい
 			if (!(g_sb16.dsp_info.dma.chan->leng.w)) {
 				g_sb16.dsp_info.dma.laststartaddr = g_sb16.dsp_info.dma.chan->startaddr;
 				g_sb16.dsp_info.dma.laststartcount = g_sb16.dsp_info.dma.chan->startcount;
@@ -573,8 +585,8 @@ printf("read 2ed2 g_sb16.dsp_info.out.used =%x mixer[82] = %x cmd = %x¥n",g_sb1
 	// bit7が0ならDSPバッファは空
 	if(g_sb16.mixreg[0x82] & 2){ // 一定量の転送が終わると割り込みが来るらしい。bit1は16-bit用
 		g_sb16.mixreg[0x82] &= ~2;
-		pic_resetirq(g_sb16.dmairq);
-		if(g_sb16.dsp_info.dma.lastautoinit || g_sb16.dsp_info.dma.autoinit){ // 自動でDMAしか転送を繰り返すらしい
+		ct1741_resetpicirq(g_sb16.dmairq);
+		if(g_sb16.dsp_info.dma.lastautoinit || g_sb16.dsp_info.dma.autoinit){ // 自動でDMA転送を繰り返すらしい
 			if (!(g_sb16.dsp_info.dma.chan->leng.w)) {
 				g_sb16.dsp_info.dma.laststartaddr = g_sb16.dsp_info.dma.chan->startaddr;
 				g_sb16.dsp_info.dma.laststartcount = g_sb16.dsp_info.dma.chan->startcount;
@@ -593,11 +605,10 @@ printf("read 2ed2 g_sb16.dsp_info.out.used =%x mixer[82] = %x cmd = %x¥n",g_sb1
 			}
 		}
 	}
+
 	return 0xff;
 }
 
-// 超無理矢理 バッファ転送速度調整（転送が速すぎor遅すぎると早送り再生やスロー再生になったり周波数が落ちたりする）
-#define BUF_SPEED	(g_sb16.dsp_info.dma.mode==DSP_DMA_16 || g_sb16.dsp_info.dma.mode==DSP_DMA_16_ALIASED ? (g_sb16.dsp_info.dma.stereo ? 6 : 6) : (g_sb16.dsp_info.dma.stereo ? 15 : 15)) / (g_sb16.dsp_info.freq<=16000 ? (g_sb16.dsp_info.freq<=9000 ? 4 : 2) : 1)
 // 気休めのアライメント調整（意味があるのかはよく分からない）
 static int BUF_ALIGN[] = {
 			1,		// 0: STOP
@@ -618,7 +629,8 @@ static int BUF_ALIGN[] = {
 			1,
 			1
 };
-
+// ↓なんやこれ
+#define DMAPLAY_ADJUST_VALUE	((soundcfg.rate < 22050 ? 192 : 96) * 44100 / soundcfg.rate)
 void ct1741_dma(NEVENTITEM item)
 {
 	UINT	r;
@@ -629,6 +641,15 @@ void ct1741_dma(NEVENTITEM item)
 	UINT8	dmabuf[DMA_BUFSIZE];
 	int i;
 	static int zerocounter = 0; // DMA転送が終了してからct1741_dmaが呼ばれた回数カウント
+	//static int timingshift = 65535;
+	//if(GetKeyState(VK_SHIFT)<0){
+	//	timingshift -= 128;
+	//	if(timingshift < 1000) timingshift = 1000;
+	//}
+	//if(GetKeyState(VK_CONTROL)<0){
+	//	timingshift += 128;
+	//	if(timingshift > 500000) timingshift = 500000;
+	//}
 
 	if (item->flag & NEVENT_SETEVENT) {
 		if (g_sb16.dmach != 0xff) {
@@ -638,13 +659,18 @@ void ct1741_dma(NEVENTITEM item)
 
 				// 転送〜
 				// DMAでデータを取るのが速すぎるといかれるのでバッファサイズに制限を設けた方が良いのかなと思いました（無意味な気もする）
-				if(g_sb16.dsp_info.dma.bufsize * BUF_ALIGN[g_sb16.dsp_info.dma.mode|g_sb16.dsp_info.dma.stereo <<3] / 4 * g_sb16.dsp_info.freq / 44100 < g_sb16.dsp_info.dma.bufdatas){
+				//if(g_sb16.dsp_info.dma.bufsize * BUF_ALIGN[g_sb16.dsp_info.dma.mode|g_sb16.dsp_info.dma.stereo <<3] / 4 * g_sb16.dsp_info.freq / 44100 < g_sb16.dsp_info.dma.bufdatas){
+				//	rem = 0;
+				//}else{
+				//	rem = g_sb16.dsp_info.dma.bufsize * BUF_ALIGN[g_sb16.dsp_info.dma.mode|g_sb16.dsp_info.dma.stereo <<3] / 4 * g_sb16.dsp_info.freq / 44100 - g_sb16.dsp_info.dma.bufdatas;
+				//}
+				if(g_sb16.dsp_info.dma.bufsize < g_sb16.dsp_info.dma.bufdatas){
 					rem = 0;
 				}else{
-					rem = g_sb16.dsp_info.dma.bufsize * BUF_ALIGN[g_sb16.dsp_info.dma.mode|g_sb16.dsp_info.dma.stereo <<3] / 4 * g_sb16.dsp_info.freq / 44100 - g_sb16.dsp_info.dma.bufdatas;
+					rem = g_sb16.dsp_info.dma.bufsize - g_sb16.dsp_info.dma.bufdatas;
 				}
 				pos = (g_sb16.dsp_info.dma.bufpos + g_sb16.dsp_info.dma.bufdatas) & (DMA_BUFSIZE -1);
-				size = MIN(rem, (g_sb16.dsp_info.freq==8000 ? 64 : 32) * (g_sb16.dsp_info.dma.stereo ? 2 : 1)); // DMAの転送量を少量に変更（値に根拠はない）
+				size = rem;//min(rem, (g_sb16.dsp_info.freq==8000 ? 64 : 512) * (g_sb16.dsp_info.dma.stereo ? 2 : 1)); // DMAの転送量を少量に変更（値に根拠はない）
 				r = dmac_getdatas(g_sb16.dsp_info.dma.chan, dmabuf, size);
 				if(r!=0){
 					zerocounter = 0;
@@ -658,7 +684,7 @@ void ct1741_dma(NEVENTITEM item)
 						g_sb16.dsp_info.dma.bufdatas++;
 					}
 				}
-				// 再生開始をディレイさせる（バッファ不足が空になるのを防ぎたいだけの気休め）
+				// 再生開始をディレイさせる（バッファ不足で空になるのを防ぎたいだけの気休め）
 				if(playwaitcounter>0){
 					playwaitcounter -= r;
 					if(playwaitcounter < 0){
@@ -670,17 +696,21 @@ void ct1741_dma(NEVENTITEM item)
 
 				// 一定のデータ量を転送したら割り込みを発生させる（フォーマットによってなぜか違いますが何故なのかは不明）
 				g_sb16.dsp_info.smpcounter += r;
-				if(g_sb16.dsp_info.smpcounter >= (int)g_sb16.dsp_info.dma.total * (g_sb16.dsp_info.dma.mode==DSP_DMA_16 ? 2 : 1)){
-					g_sb16.dsp_info.smpcounter -= (int)g_sb16.dsp_info.dma.total * (g_sb16.dsp_info.dma.mode==DSP_DMA_16 ? 2 : 1);
+				if(g_sb16.dsp_info.smpcounter >= (int)g_sb16.dsp_info.dma.total * (g_sb16.dsp_info.dma.last16mode  ? 2 : 1)){
+					g_sb16.dsp_info.smpcounter -= (int)g_sb16.dsp_info.dma.total * (g_sb16.dsp_info.dma.last16mode  ? 2 : 1);
 					//g_sb16.mixreg[0x82] |= 1;//(nchan & 4) ? 2 : 1;
-					g_sb16.mixreg[0x82] |= (g_sb16.dsp_info.dma.mode==DSP_DMA_16 || g_sb16.dsp_info.dma.mode==DSP_DMA_16_ALIASED ? 2 : 1);
-					pic_setirq(g_sb16.dmairq);
+					g_sb16.mixreg[0x82] |= (g_sb16.dsp_info.dma.last16mode  ? 2 : 1);
+					ct1741_setpicirq(g_sb16.dmairq);
 					g_sb16.dsp_info.write_busy = 0;
 				}
 				
 				if ((g_sb16.dsp_info.dma.chan->leng.w) && (g_sb16.dsp_info.freq)) {
 					// 再度イベント設定
-					cnt = pccore.realclock / g_sb16.dsp_info.freq * g_sb16.dsp_info.dma.rate2 / g_sb16.dsp_info.freq * BUF_SPEED;
+					cnt = pccore.realclock / g_sb16.dsp_info.freq * g_sb16.dsp_info.dma.rate2 / g_sb16.dsp_info.freq * (DMAPLAY_ADJUST_VALUE * g_sb16.dsp_info.freq / 44100);
+						//if(g_sb16.dsp_info.dma.mode==DSP_DMA_16 || g_sb16.dsp_info.dma.mode==DSP_DMA_16_ALIASED){
+						//}else{
+						//	cnt = pccore.realclock / g_sb16.dsp_info.freq * g_sb16.dsp_info.dma.rate2 / g_sb16.dsp_info.freq * BUF_SPEED;
+						//}
 					if(cnt != 0){
 						nevent_set(NEVENT_CT1741, cnt, ct1741_dma, NEVENT_RELATIVE);
 					}else{
@@ -691,12 +721,12 @@ void ct1741_dma(NEVENTITEM item)
 					g_sb16.dsp_info.write_busy = 0;
 					if(zerocounter == 0){
 						// 終わった直後。フラグを立てたり割り込みしたりする。
-						g_sb16.mixreg[0x82] |= (g_sb16.dsp_info.dma.mode==DSP_DMA_16 || g_sb16.dsp_info.dma.mode==DSP_DMA_16_ALIASED ? 2 : 1);
-						pic_setirq(g_sb16.dmairq);
+						g_sb16.mixreg[0x82] |= (g_sb16.dsp_info.dma.last16mode  ? 2 : 1);
+						ct1741_setpicirq(g_sb16.dmairq);
 						if (g_sb16.dmach != 0xff) {
 							dmac.stat |= (1 << g_sb16.dmach);
 						}
-						cnt = pccore.realclock / g_sb16.dsp_info.freq * g_sb16.dsp_info.dma.rate2 / g_sb16.dsp_info.freq * BUF_SPEED;
+						cnt = pccore.realclock / g_sb16.dsp_info.freq * g_sb16.dsp_info.dma.rate2 / g_sb16.dsp_info.freq * (DMAPLAY_ADJUST_VALUE * g_sb16.dsp_info.freq / 44100);
 						if(cnt != 0){
 							nevent_set(NEVENT_CT1741, cnt, ct1741_dma, NEVENT_RELATIVE);
 						}else{
@@ -706,8 +736,8 @@ void ct1741_dma(NEVENTITEM item)
 						// 無反応なら再送。終わった直後に出した割り込みがスルーされる場合があるので無理矢理
 						if((zerocounter % 4) == 2 || zerocounter>32){
 							if(g_sb16.dsp_info.dma.bufdatas < DMA_BUFSIZE/4){
-								g_sb16.mixreg[0x82] |= (g_sb16.dsp_info.dma.mode==DSP_DMA_16 || g_sb16.dsp_info.dma.mode==DSP_DMA_16_ALIASED ? 2 : 1);
-								pic_setirq(g_sb16.dmairq);
+								g_sb16.mixreg[0x82] |= (g_sb16.dsp_info.dma.last16mode  ? 2 : 1);
+								ct1741_setpicirq(g_sb16.dmairq);
 								if (g_sb16.dmach != 0xff) {
 									dmac.stat |= (1 << g_sb16.dmach);
 								}
@@ -736,8 +766,8 @@ void ct1741_dma(NEVENTITEM item)
 			}else{
 				// DMA転送終了
 				g_sb16.dsp_info.write_busy = 0;
-				g_sb16.mixreg[0x82] |= (g_sb16.dsp_info.dma.mode==DSP_DMA_16 || g_sb16.dsp_info.dma.mode==DSP_DMA_16_ALIASED ? 2 : 1);
-				pic_setirq(g_sb16.dmairq);
+				g_sb16.mixreg[0x82] |= (g_sb16.dsp_info.dma.last16mode  ? 2 : 1);
+				ct1741_setpicirq(g_sb16.dmairq);
 				g_sb16.dsp_info.smpcounter2 = 0;
 				g_sb16.dsp_info.smpcounter = 0;
 				if (g_sb16.dmach != 0xff) {
@@ -766,17 +796,16 @@ REG8 DMACCALL ct1741dmafunc(REG8 func)
 				g_sb16.dsp_info.dma.chan->adrs.d = (g_sb16.dsp_info.dma.chan->startaddr & 0xffff0000) | ((g_sb16.dsp_info.dma.chan->startaddr << 1) & 0xffff);
 				g_sb16.dsp_info.dma.chan->lastaddr = g_sb16.dsp_info.dma.chan->adrs.d + g_sb16.dsp_info.dma.chan->startcount;
 				g_sb16.dsp_info.dma.chan->leng.w = g_sb16.dsp_info.dma.chan->startcount; // 戻す
-				g_sb16.dsp_info.dma.last16mode = 1; // 16bit転送モード
 			}
 			g_sb16.mixreg[0x82] &= ~3;
-			pic_resetirq(g_sb16.dmairq);
+			ct1741_resetpicirq(g_sb16.dmairq);
 			g_sb16.dsp_info.write_busy = 0;
 			g_sb16.dsp_info.smpcounter = 0;
 			g_sb16.dsp_info.smpcounter2 = 0;
 			g_sb16.dsp_info.dma.bufdatas = 0;
 			g_sb16.dsp_info.dma.bufpos = 0;
-			playwaitcounter = DMA_BUFSIZE * BUF_ALIGN[g_sb16.dsp_info.dma.mode|g_sb16.dsp_info.dma.stereo <<3] * g_sb16.dsp_info.freq / 44100 / 8;
-			cnt = pccore.realclock / g_sb16.dsp_info.freq * g_sb16.dsp_info.dma.rate2 / g_sb16.dsp_info.freq * BUF_SPEED;
+			playwaitcounter = DMA_BUFSIZE * BUF_ALIGN[g_sb16.dsp_info.dma.mode|g_sb16.dsp_info.dma.stereo <<3] * g_sb16.dsp_info.freq / 44100 / 16;
+			cnt = pccore.realclock / g_sb16.dsp_info.freq * g_sb16.dsp_info.dma.rate2 / g_sb16.dsp_info.freq * (DMAPLAY_ADJUST_VALUE * g_sb16.dsp_info.freq / 44100);
 			if(cnt != 0){
 				nevent_set(NEVENT_CT1741, cnt, ct1741_dma, NEVENT_RELATIVE);
 			}else{
@@ -792,7 +821,7 @@ REG8 DMACCALL ct1741dmafunc(REG8 func)
 			// DMA転送中断
 			nevent_reset(NEVENT_CT1741);
 			g_sb16.mixreg[0x82] &= ~3;
-			pic_resetirq(g_sb16.dmairq);
+			ct1741_resetpicirq(g_sb16.dmairq);
 			g_sb16.dsp_info.write_busy = 0;
 			if (g_sb16.dmach != 0xff) {
 				dmac.stat |= (1 << g_sb16.dmach);
@@ -863,14 +892,15 @@ const UINT8	*ptr2;
 	int i;
 	int	samplen_dst = soundcfg.rate;
 	int	samplen_src;
-	// 何故かDMAで送られてきたデータのサンプリングレートがいかれているので無理矢理修正する。謎
-	if(g_sb16.dsp_info.freq==44100){
-		samplen_src = g_sb16.dsp_info.freq * 110/ 100;
-	}else if(g_sb16.dsp_info.freq==8000){
-		samplen_src = g_sb16.dsp_info.freq * 104/ 100;
-	}else{
-		samplen_src = g_sb16.dsp_info.freq * 102/ 100;
-	}
+	//// 何故かDMAで送られてきたデータのサンプリングレートがいかれているので無理矢理修正する。謎
+	//if(g_sb16.dsp_info.freq==44100){
+	//	samplen_src = g_sb16.dsp_info.freq * 110/ 100;
+	//}else if(g_sb16.dsp_info.freq==8000){
+	//	samplen_src = g_sb16.dsp_info.freq * 104/ 100;
+	//}else{
+	//	samplen_src = g_sb16.dsp_info.freq * 102/ 100;
+	//}
+	samplen_src = g_sb16.dsp_info.freq;
 
 	leng = cs->bufdatas;
 	if (!leng) {
@@ -911,12 +941,13 @@ const UINT8	*ptr2;
 	int i;
 	int	samplen_dst = soundcfg.rate;
 	int	samplen_src;
-	// 何故かDMAで送られてきたデータのサンプリングレートがいかれているので無理矢理修正する。謎
-	if(g_sb16.dsp_info.freq==44100){
-		samplen_src = g_sb16.dsp_info.freq * 110/ 100;
-	}else{
-		samplen_src = g_sb16.dsp_info.freq * 102/ 100;
-	}
+	//// 何故かDMAで送られてきたデータのサンプリングレートがいかれているので無理矢理修正する。謎
+	//if(g_sb16.dsp_info.freq==44100){
+	//	samplen_src = g_sb16.dsp_info.freq * 110/ 100;
+	//}else{
+	//	samplen_src = g_sb16.dsp_info.freq * 102/ 100;
+	//}
+	samplen_src = g_sb16.dsp_info.freq;
 
 	leng = cs->bufdatas;
 	if (!leng) {
@@ -940,7 +971,7 @@ const UINT8	*ptr2;
 
 	leng = MIN(leng, samppos);
 	cs->bufdatas -= (leng << 0);
-	cs->bufpos = (cs->bufpos + (leng << 0)) & CS4231_BUFMASK;
+	cs->bufpos = (cs->bufpos + (leng << 0)) & DMA_BUFMASK;
 }
 
 
@@ -958,12 +989,13 @@ const UINT8	*ptr2;
 	int i;
 	int	samplen_dst = soundcfg.rate;
 	int	samplen_src;
-	// 何故かDMAで送られてきたデータのサンプリングレートがいかれているので無理矢理修正する。謎
-	if(g_sb16.dsp_info.freq==44100){
-		samplen_src = g_sb16.dsp_info.freq * 130/ 100;
-	}else{
-		samplen_src = g_sb16.dsp_info.freq * 112/ 100;
-	}
+	//// 何故かDMAで送られてきたデータのサンプリングレートがいかれているので無理矢理修正する。謎
+	//if(g_sb16.dsp_info.freq==44100){
+	//	samplen_src = g_sb16.dsp_info.freq * 130/ 100;
+	//}else{
+	//	samplen_src = g_sb16.dsp_info.freq * 112/ 100;
+	//}
+	samplen_src = g_sb16.dsp_info.freq;
 
 	leng = cs->bufdatas & ~0x1;
 	if (!leng) {
@@ -987,7 +1019,7 @@ const UINT8	*ptr2;
 
 	leng = MIN(leng, samppos);
 	cs->bufdatas -= (leng << 0);
-	cs->bufpos = (cs->bufpos + (leng << 0)) & CS4231_BUFMASK;
+	cs->bufpos = (cs->bufpos + (leng << 0)) & DMA_BUFMASK;
 }
 
 // 16bit ステレオ(little endian)
@@ -1004,12 +1036,13 @@ const UINT8	*ptr2;
 	int i;
 	int	samplen_dst = soundcfg.rate;
 	int	samplen_src;
-	// 何故かDMAで送られてきたデータのサンプリングレートがいかれているので無理矢理修正する。謎
-	if(g_sb16.dsp_info.freq==44100){
-		samplen_src = g_sb16.dsp_info.freq * 125/ 100;
-	}else{
-		samplen_src = g_sb16.dsp_info.freq * 108/ 100;
-	}
+	//// 何故かDMAで送られてきたデータのサンプリングレートがいかれているので無理矢理修正する。謎
+	//if(g_sb16.dsp_info.freq==44100){
+	//	samplen_src = g_sb16.dsp_info.freq * 125/ 100;
+	//}else{
+	//	samplen_src = g_sb16.dsp_info.freq * 108/ 100;
+	//}
+	samplen_src = g_sb16.dsp_info.freq;
 
 	leng = cs->bufdatas & ~0x3;
 	if (!leng) {
@@ -1033,7 +1066,7 @@ const UINT8	*ptr2;
 
 	leng = MIN(leng, samppos);
 	cs->bufdatas -= (leng << 0);
-	cs->bufpos = (cs->bufpos + (leng << 0)) & CS4231_BUFMASK;
+	cs->bufpos = (cs->bufpos + (leng << 0)) & DMA_BUFMASK;
 }
 static void SOUNDCALL nomake(DMA_INFO *ct, SINT32 *pcm, UINT count) {
 	(void)ct;

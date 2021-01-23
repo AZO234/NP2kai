@@ -768,6 +768,7 @@ static void sys_cmd(MENUID id) {
 			update |= SYS_UPDATECFG;
 			break;
 
+#if defined(SUPPORT_LARGE_MEMORY)
 		case MID_MEM5126:
 			np2cfg.EXTMEM = 512;
 			update |= SYS_UPDATECFG;
@@ -777,6 +778,7 @@ static void sys_cmd(MENUID id) {
 			np2cfg.EXTMEM = 1024;
 			update |= SYS_UPDATECFG;
 			break;
+#endif
 #if 0
 		case IDM_SERIAL1:
 			winuienter();
@@ -946,6 +948,8 @@ static void sys_cmd(MENUID id) {
 #endif
 		case MID_EXIT:
 		case SID_CLOSE:
+			scrnmng_setwidth(0, 640);
+			scrnmng_setheight(0, 400);
 			taskmng_exit();
 			break;
 	}

@@ -591,14 +591,12 @@ void bios0x18_42(REG8 mode) {
 				gdcs.grphdisp |= GDCSCRN_EXT;
 				mem[MEMB_PRXDUPD] |= 0x08;
 			}
-#if defined(SUPPORT_PC9821)
-#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
-			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
-				biosioemu_enq8(0x6a, 0x83);
-				biosioemu_enq8(0x6a, 0x85);
-			}
-#endif
-#endif
+//#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
+//			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
+//				biosioemu_enq8(0x6a, 0x83);
+//				biosioemu_enq8(0x6a, 0x85);
+//			}
+//#endif
 		}
 		else {
 			if ((mem[MEMB_PRXDUPD] & 0x24) == 0x24) {
@@ -613,14 +611,12 @@ void bios0x18_42(REG8 mode) {
 				gdc.s.para[GDC_PITCH] = 40;
 				gdcs.grphdisp |= GDCSCRN_EXT;
 				mem[MEMB_PRXDUPD] |= 0x08;
-#if defined(SUPPORT_PC9821)
-#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
-				if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
-					biosioemu_enq8(0x6a, 0x82);
-					biosioemu_enq8(0x6a, 0x84);
-				}
-#endif
-#endif
+//#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
+//				if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
+//					biosioemu_enq8(0x6a, 0x82);
+//					biosioemu_enq8(0x6a, 0x84);
+//				}
+//#endif
 			}
 			if (crtmode & 1) {				// UPPER
 				gdc.s.para[GDC_SCROLL+0] = (200*40) & 0xff;
@@ -667,12 +663,12 @@ void bios0x18_42(REG8 mode) {
 #endif
 	if (crtmode != 3) {
 		gdcs.disp = (mode >> 4) & 1;
-#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
-		// np21w ver0.86 rev62 BIOS I/O emulation
-		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
-			biosioemu_enq8(0xa4, (mode >> 4));
-		}
-#endif
+//#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
+//		// np21w ver0.86 rev62 BIOS I/O emulation
+//		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
+//			biosioemu_enq8(0xa4, (mode >> 4));
+//		}
+//#endif
 	}
 	if (!(mode & 0x20)) {
 		gdc.mode2 &= ~0x04;

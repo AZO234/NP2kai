@@ -439,8 +439,10 @@ static GtkRadioActionEntry memory_entries[] = {
 { "64.6mb", NULL, "64.6MB", NULL, NULL, 64 },
 { "120.6mb", NULL, "120.6MB", NULL, NULL, 120 },
 { "230.6mb", NULL, "230.6MB", NULL, NULL, 230 },
+#if defined(SUPPORT_LARGE_MEMORY)
 { "512.6mb", NULL, "512.6MB", NULL, NULL, 512 },
 { "1024.6mb", NULL, "1024.6MB", NULL, NULL, 1024 },
+#endif
 };
 static const guint n_memory_entries = G_N_ELEMENTS(memory_entries);
 

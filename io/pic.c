@@ -137,6 +137,9 @@ void pic_irq(void) {												// ver0.78
 #if defined(SUPPORT_IA32_HAXM)
 	if (!np2hax.emumode && np2hax.enable && CPU_STAT_PM) {
 		// workaround
+		//if (!(np2haxstat.state._eflags & I_FLAG)) {
+		//	return;
+		//}
 	}else
 #endif
 	if (!CPU_isEI) {

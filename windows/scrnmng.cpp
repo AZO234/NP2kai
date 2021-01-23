@@ -114,6 +114,8 @@ void scrnmng_setwindowsize(HWND hWnd, int width, int height)
 	do
 	{
 		RECT rectwindow;
+		int marginX, marginY;
+		winloc_getDWMmargin(hWnd, &marginX, &marginY); // Win10ŠÂ‹«—p‚Ì‘Îô
 		GetWindowRect(hWnd, &rectwindow);
 		RECT rectclient;
 		GetClientRect(hWnd, &rectclient);
@@ -134,9 +136,9 @@ void scrnmng_setwindowsize(HWND hWnd, int width, int height)
 		}
 		else
 		{
-			if ((winx + cx) > workrc.right)
+			if ((winx + cx) > workrc.right + marginX)
 			{
-				winx = workrc.right - cx;
+				winx = workrc.right + marginX - cx;
 			}
 			if (winx < workrc.left)
 			{

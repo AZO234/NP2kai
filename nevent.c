@@ -135,7 +135,10 @@ void nevent_changeclock(UINT32 oldclock, UINT32 newclock)
 				item->clock = item->clock * newclock / oldclock;
 			}
 		}
+		CPU_BASECLOCK = CPU_BASECLOCK * newclock / oldclock;
+		CPU_REMCLOCK = CPU_REMCLOCK * newclock / oldclock;
 	}
+
 }
 
 void nevent_reset(NEVENTID id)
