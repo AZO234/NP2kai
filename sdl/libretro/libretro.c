@@ -502,6 +502,20 @@ static uint16_t j2k_key_kpad3[12] = {
    RETROK_ESCAPE,
    RETROK_RETURN
 };
+static uint16_t j2k_key_kpadf[12] = { 
+   RETROK_KP8,
+   RETROK_KP2,
+   RETROK_KP4,
+   RETROK_KP6,
+   RETROK_x,
+   RETROK_z,
+   RETROK_s,
+   RETROK_a,
+   RETROK_BACKSPACE,
+   RETROK_RSHIFT,
+   RETROK_ESCAPE,
+   RETROK_RETURN
+};
 
 void resetInput(void) {
   int i;
@@ -1517,6 +1531,10 @@ static void update_variables(void)
     } else if(strcmp(var.value, "Atari Joypad") == 0) {
       m_tJoyMode = LR_NP2KAI_JOYMODE_ATARI;
       m_tJoyModeInt = 7;
+    } else if(strcmp(var.value, "Keypad Fighting") == 0) {
+      m_tJoyMode = LR_NP2KAI_JOYMODE_KEY;
+      memcpy(j2k_key, j2k_key_kpadf, sizeof(uint16_t) * 12);
+      m_tJoyModeInt = 8;
     } else {
       m_tJoyMode = LR_NP2KAI_JOYMODE_NONE;
       m_tJoyModeInt = 0;
