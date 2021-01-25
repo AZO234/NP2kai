@@ -879,6 +879,7 @@ struct retro_core_option_definition option_defs_us[] = {
       {"Keypad 3button", NULL},
       {"Manual Keyboard", NULL},
       {"Atari Joypad", NULL},
+      {"Keypad Fighting", NULL},
       {NULL, NULL},
     },
     "OFF"
@@ -1763,6 +1764,7 @@ struct retro_core_option_definition option_defs_ja[] = {
       {"Keypad 3button", NULL},
       {"Manual Keyboard", NULL},
       {"Atari Joypad", NULL},
+      {"Keypad Fighting", NULL},
       {NULL, NULL},
     },
     "OFF"
