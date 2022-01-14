@@ -334,7 +334,7 @@ short file_rename(const OEMCHAR *existpath, const OEMCHAR *newpath) {
 short file_dircreate(const OEMCHAR *path) {
 
 #if defined(__LIBRETRO__)
-	return((short)path_mkdir(path));
+	return((short)path_mkdir(path) ? 0:-1);
 #elif defined(_WINDOWS) && defined(OSLANG_UTF8)
 	wchar_t	wpath[MAX_PATH];
 	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
@@ -488,33 +488,39 @@ void file_listclose(FLISTH hdl) {
 }
 #else
 FLISTH file_list1st(const OEMCHAR *dir, FLINFO *fli) {
+	FLISTH ret;
 
-#if defined(__LIBRETRO__)
-	struct RDIR	*ret;
-
-	ret = retro_opendir(dir);
-#else
-	DIR		*ret;
-
-	ret = opendir(dir);
-#endif
+	ret = (FLISTH)malloc(sizeof(_FLISTH));
 	if (ret == NULL) {
-		goto ff1_err;
+		return FLISTH_INVALID;
 	}
-	if (file_listnext((FLISTH)ret, fli) == SUCCESS) {
-		return((FLISTH)ret);
+	milstr_ncpy(ret->path, dir, sizeof(ret->path));
+	file_setseparator(ret->path, sizeof(ret->path));
+
+#if defined(__LIBRETRO__)
+	ret->hdl = retro_opendir(dir);
+#else
+	ret->hdl = opendir(dir);
+#endif
+	if (ret->hdl == NULL) {
+		free(ret);
+		return FLISTH_INVALID;
+	}
+	if (file_listnext(ret, fli) == SUCCESS) {
+		return (FLISTH)ret;
 	}
 #if defined(__LIBRETRO__)
-	retro_closedir(ret);
+	retro_closedir(ret->hdl);
 #else
-	closedir(ret);
+	closedir(ret->hdl);
 #endif
-
-ff1_err:
-	return(FLISTH_INVALID);
+	free(ret);
+	return FLISTH_INVALID;
 }
 
 BRESULT file_listnext(FLISTH hdl, FLINFO *fli) {
+
+	OEMCHAR buf[MAX_PATH];
 
 #if defined(__LIBRETRO__)
 int	de;
@@ -524,10 +530,10 @@ struct dirent	*de;
 struct stat		sb;
 
 #if defined(__LIBRETRO__)
-	de = retro_readdir((struct RDIR *)hdl);
+	de = retro_readdir((struct RDIR *)hdl->hdl);
 	if (de == 0) {
 #else
-	de = readdir((DIR *)hdl);
+	de = readdir((DIR *)hdl->hdl);
 	if (de == NULL) {
 #endif
 		return(FAILURE);
@@ -536,15 +542,21 @@ struct stat		sb;
 		memset(fli, 0, sizeof(*fli));
 		fli->caps = FLICAPS_ATTR;
 #if defined(__LIBRETRO__)
-		fli->attr = retro_dirent_is_dir((struct RDIR *)hdl, "") ? FILEATTR_DIRECTORY : 0;
+		fli->attr = retro_dirent_is_dir((struct RDIR *)hdl->hdl, "") ? FILEATTR_DIRECTORY : 0;
 #else
 		fli->attr = (de->d_type & DT_DIR) ? FILEATTR_DIRECTORY : 0;
 #endif
 
 #if defined(__LIBRETRO__)
-		milstr_ncpy(fli->path, retro_dirent_get_name((struct RDIR *)hdl), sizeof(fli->path));
+		milstr_ncpy(fli->path, retro_dirent_get_name((struct RDIR *)hdl->hdl), sizeof(fli->path));
+        milstr_ncpy(buf, hdl->path, sizeof(buf));
+        milstr_ncat(buf, fli->path, sizeof(buf));
+		fli->caps |= FLICAPS_SIZE;
+		fli->size = path_get_size(buf);
 #else
-		if (stat(de->d_name, &sb) == 0) {
+        milstr_ncpy(buf, hdl->path, sizeof(buf));
+        milstr_ncat(buf, de->d_name, sizeof(buf));
+		if (stat(buf, &sb) == 0) {
 			fli->caps |= FLICAPS_SIZE;
 			fli->size = (UINT)sb.st_size;
 			if (S_ISDIR(sb.st_mode)) {
@@ -565,11 +577,14 @@ struct stat		sb;
 
 void file_listclose(FLISTH hdl) {
 
+	if(hdl) {
 #if defined(__LIBRETRO__)
-	retro_closedir((struct RDIR *)hdl);
+		retro_closedir((struct RDIR *)hdl->hdl);
 #else
-	closedir((DIR *)hdl);
+		closedir((DIR *)hdl->hdl);
 #endif
+		free(hdl);
+	}
 }
 #endif
 

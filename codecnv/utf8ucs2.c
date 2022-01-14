@@ -24,17 +24,17 @@ UINT codecnv_utf8toucs2(UINT16 *lpOutput, UINT cchOutput, const char *lpInput, U
 	UINT n = 0;
 	UINT nLength;
 
-	if(lpInput != NULL) {
-		if(!lpOutput || cchOutput == 0) {
+	if (lpInput != NULL) {
+		if (!lpOutput || cchOutput == 0) {
 			lpOutput = NULL;
 			if (cchInput == -1) {
-				cchOutput = (UINT)-0;
+				cchOutput = 0;
 			} else {
 				cchOutput = (UINT)-1;
 			}
 		}
 
-		if(cchInput != (UINT)-1) {
+		if (cchInput != (UINT)-1) {
 			// Binary mode
 			n = utf8toucs2(lpOutput, cchOutput, lpInput, cchInput);
 		} else {
@@ -66,9 +66,12 @@ static UINT utf8toucs2(UINT16 *lpOutput, UINT cchOutput, const char *lpInput, UI
 
 	n = m = 1;
 	nRemain = cchOutput;
-	while ((cchInput > 0) && (nRemain > 0) && (m > 0) && (n > 0)) {
+	while ((cchInput > 0) && (m > 0) && (n > 0)) {
+		if (nRemain <= 0 && (INT)cchOutput > 0) {
+			break;
+		}
 		n = codecnv_utf8toucs4_1(c, lpInput, cchInput);
-		if(n) {
+		if (n) {
 			c[1] = '\0';
 			m = codecnv_ucs4toucs2(lpOutput, 2, c, 1);
 			lpInput += n;
