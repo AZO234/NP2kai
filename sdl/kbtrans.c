@@ -773,15 +773,15 @@ static UINT8 getKey(SDL_Scancode key) {
   if(np2oscfg.xrollkey) {
 #if SDL_MAJOR_VERSION == 1
     if(key == SDLK_PAGEUP) {
-      return key = SDLK_PAGEDOWN;
+      key = SDLK_PAGEDOWN;
     } else if(key == SDLK_PAGEDOWN) {
-      return key = SDLK_PAGEUP;
+      key = SDLK_PAGEUP;
     }
 #else
     if(key == SDL_SCANCODE_PAGEUP) {
-      return key = SDL_SCANCODE_PAGEDOWN;
+      key = SDL_SCANCODE_PAGEDOWN;
     } else if(key == SDL_SCANCODE_PAGEDOWN) {
-      return key = SDL_SCANCODE_PAGEUP;
+      key = SDL_SCANCODE_PAGEUP;
     }
 #endif
   }
