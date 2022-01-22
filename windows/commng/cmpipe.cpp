@@ -223,11 +223,39 @@ UINT CComPipe::LastWriteSuccess()
 
 /**
  * ステータスを得る
+ * bit 7: ‾CI (RI, RING)
+ * bit 6: ‾CS (CTS)
+ * bit 5: ‾CD (DCD, RLSD)
+ * bit 4: reserved
+ * bit 3: reserved
+ * bit 2: reserved
+ * bit 1: reserved
+ * bit 0: ‾DSR (DR)
  * @return ステータス
  */
 UINT8 CComPipe::GetStat()
 {
-	return 0x20;
+	UINT8 ret = 0xa0;
+	DWORD dwReadSize;
+	if (m_hSerial == INVALID_HANDLE_VALUE) {
+		ret = 0xe1;
+	}else if (!PeekNamedPipe(m_hSerial, NULL, 0, NULL, &dwReadSize, NULL)){
+		DWORD err = GetLastError();
+		if(err==ERROR_BAD_PIPE){
+			ret = 0xe1;
+		}else{
+			if(m_isserver){
+				if(err==ERROR_BROKEN_PIPE){
+					ret = 0xe1;
+				}
+			}else{
+				if(err==ERROR_PIPE_NOT_CONNECTED){
+					ret = 0xe1;
+				}
+			}
+		}
+	}
+	return ret;
 }
 
 /**
@@ -238,11 +266,19 @@ UINT8 CComPipe::GetStat()
  */
 INTPTR CComPipe::Message(UINT nMessage, INTPTR nParam)
 {
-	//switch (nMessage)
-	//{
-	//	default:
-	//		break;
-	//}
+	switch (nMessage)
+	{
+		case COMMSG_PURGE:
+			{
+				m_lastdatafail = 0;
+				m_lastdata = 0;
+				m_lastdatatime = 0;
+			}
+			break;
+
+		default:
+			break;
+	}
 	return 0;
 }
 

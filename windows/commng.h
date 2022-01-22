@@ -49,6 +49,10 @@ enum {
 #endif
 	COMMSG_CHANGESPEED,
 	COMMSG_CHANGEMODE,
+	COMMSG_SETCOMMAND,
+	COMMSG_PURGE,
+	COMMSG_GETERROR,
+	COMMSG_CLRERROR,
 	COMMSG_USER			    = 0x80,
 };
 
@@ -65,6 +69,8 @@ struct _commng
 	UINT	(*read)(COMMNG self, UINT8 *data);					/*!< read */
 	UINT	(*write)(COMMNG self, UINT8 data);					/*!< write */
 	UINT	(*writeretry)(COMMNG self);							/*!< write retry */
+	void	(*beginblocktranster)(COMMNG self);					/*!< begin block transfer */
+	void	(*endblocktranster)(COMMNG self);					/*!< end block transfer */
 	UINT	(*lastwritesuccess)(COMMNG self);					/*!< last write success */
 	UINT8	(*getstat)(COMMNG self);							/*!< get status */
 	INTPTR	(*msg)(COMMNG self, UINT msg, INTPTR param);		/*!< message */
@@ -84,7 +90,7 @@ extern "C"
 {
 #endif
 
-COMMNG commng_create(UINT device);
+COMMNG commng_create(UINT device, BOOL onReset);
 void commng_destroy(COMMNG hdl);
 
 #ifdef __cplusplus

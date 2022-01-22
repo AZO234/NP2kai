@@ -866,8 +866,8 @@ const UINT8	*ptr2;
 		samp1 = ((SINT32)ptr1[0] - 0x80) << 8;
 		samp2 = ((SINT32)ptr2[0] - 0x80) << 8;
 		//samp1 += ((samp2 - samp1) * fract) >> 12;
-		pcm[0] += (samp1 * np2cfg.vol_pcm * (SINT32)g_sb16.mixregexp[MIXER_VOC_LEFT]  / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_LEFT] ) >> CT1741_WAVE_VOL_SHIFT;
-		pcm[1] += (samp1 * np2cfg.vol_pcm * (SINT32)g_sb16.mixregexp[MIXER_VOC_RIGHT] / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_RIGHT]) >> CT1741_WAVE_VOL_SHIFT;
+		pcm[0] += (samp1 * ((int)np2cfg.vol_pcm * np2cfg.vol_master / 100) * (SINT32)g_sb16.mixregexp[MIXER_VOC_LEFT]  / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_LEFT] ) >> CT1741_WAVE_VOL_SHIFT;
+		pcm[1] += (samp1 * ((int)np2cfg.vol_pcm * np2cfg.vol_master / 100) * (SINT32)g_sb16.mixregexp[MIXER_VOC_RIGHT] / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_RIGHT]) >> CT1741_WAVE_VOL_SHIFT;
 		pcm += 2;
 	}
 
@@ -917,8 +917,8 @@ const UINT8	*ptr2;
 		samp1 = ((SINT32)ptr1[0] - 0x80) << 8;
 		samp2 = ((SINT32)ptr2[0] - 0x80) << 8;
 		//samp1 += ((samp2 - samp1) * fract) >> 12;
-		pcm[0] += (samp1 * np2cfg.vol_pcm * (SINT32)g_sb16.mixregexp[MIXER_VOC_LEFT]  / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_LEFT] ) >> CT1741_WAVE_VOL_SHIFT;
-		pcm[1] += (samp1 * np2cfg.vol_pcm * (SINT32)g_sb16.mixregexp[MIXER_VOC_RIGHT] / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_RIGHT]) >> CT1741_WAVE_VOL_SHIFT;
+		pcm[0] += (samp1 * ((int)np2cfg.vol_pcm * np2cfg.vol_master / 100) * (SINT32)g_sb16.mixregexp[MIXER_VOC_LEFT]  / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_LEFT] ) >> CT1741_WAVE_VOL_SHIFT;
+		pcm[1] += (samp1 * ((int)np2cfg.vol_pcm * np2cfg.vol_master / 100) * (SINT32)g_sb16.mixregexp[MIXER_VOC_RIGHT] / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_RIGHT]) >> CT1741_WAVE_VOL_SHIFT;
 		pcm += 2;
 	}
 
@@ -964,8 +964,8 @@ const UINT8	*ptr2;
 		samp1 = ((SINT32)ptr1[0] - 0x80) << 8;
 		samp2 = ((SINT32)ptr2[0] - 0x80) << 8;
 		//samp1 += ((samp2 - samp1) * fract) >> 12;
-		pcm[0] += (samp1 * np2cfg.vol_pcm * (SINT32)g_sb16.mixregexp[MIXER_VOC_LEFT]  / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_LEFT] ) >> CT1741_WAVE_VOL_SHIFT;
-		pcm[1] += (samp2 * np2cfg.vol_pcm * (SINT32)g_sb16.mixregexp[MIXER_VOC_RIGHT] / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_RIGHT]) >> CT1741_WAVE_VOL_SHIFT;
+		pcm[0] += (samp1 * ((int)np2cfg.vol_pcm * np2cfg.vol_master / 100) * (SINT32)g_sb16.mixregexp[MIXER_VOC_LEFT]  / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_LEFT] ) >> CT1741_WAVE_VOL_SHIFT;
+		pcm[1] += (samp2 * ((int)np2cfg.vol_pcm * np2cfg.vol_master / 100) * (SINT32)g_sb16.mixregexp[MIXER_VOC_RIGHT] / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_RIGHT]) >> CT1741_WAVE_VOL_SHIFT;
 		pcm += 2;
 	}
 
@@ -1012,8 +1012,8 @@ const UINT8	*ptr2;
 		samp1 = ((SINT32)((SINT8)ptr1[1]) << 8) + ptr1[0];
 		samp2 = ((SINT32)((SINT8)ptr2[1]) << 8) + ptr2[0];
 		//samp1 += ((samp2 - samp1) * fract) >> 12;
-		pcm[0] += (samp1 * np2cfg.vol_pcm * (SINT32)g_sb16.mixregexp[MIXER_VOC_LEFT]  / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_LEFT] ) >> CT1741_WAVE_VOL_SHIFT;
-		pcm[1] += (samp1 * np2cfg.vol_pcm * (SINT32)g_sb16.mixregexp[MIXER_VOC_RIGHT] / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_RIGHT]) >> CT1741_WAVE_VOL_SHIFT;
+		pcm[0] += (samp1 * ((int)np2cfg.vol_pcm * np2cfg.vol_master / 100) * (SINT32)g_sb16.mixregexp[MIXER_VOC_LEFT]  / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_LEFT] ) >> CT1741_WAVE_VOL_SHIFT;
+		pcm[1] += (samp1 * ((int)np2cfg.vol_pcm * np2cfg.vol_master / 100) * (SINT32)g_sb16.mixregexp[MIXER_VOC_RIGHT] / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_RIGHT]) >> CT1741_WAVE_VOL_SHIFT;
 		pcm += 2;
 	}
 
@@ -1059,8 +1059,8 @@ const UINT8	*ptr2;
 		samp1 = ((SINT32)((SINT8)ptr1[1]) << 8) + ptr1[0];
 		samp2 = ((SINT32)((SINT8)ptr2[1]) << 8) + ptr2[0];
 		//samp1 += ((samp2 - samp1) * fract) >> 12;
-		pcm[0] += (samp1 * np2cfg.vol_pcm * (SINT32)g_sb16.mixregexp[MIXER_VOC_LEFT]  / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_LEFT] ) >> CT1741_WAVE_VOL_SHIFT;
-		pcm[1] += (samp2 * np2cfg.vol_pcm * (SINT32)g_sb16.mixregexp[MIXER_VOC_RIGHT] / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_RIGHT]) >> CT1741_WAVE_VOL_SHIFT;
+		pcm[0] += (samp1 * ((int)np2cfg.vol_pcm * np2cfg.vol_master / 100) * (SINT32)g_sb16.mixregexp[MIXER_VOC_LEFT]  / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_LEFT] ) >> CT1741_WAVE_VOL_SHIFT;
+		pcm[1] += (samp2 * ((int)np2cfg.vol_pcm * np2cfg.vol_master / 100) * (SINT32)g_sb16.mixregexp[MIXER_VOC_RIGHT] / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_RIGHT]) >> CT1741_WAVE_VOL_SHIFT;
 		pcm += 2;
 	}
 

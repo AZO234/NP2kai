@@ -95,39 +95,67 @@ static void IOOUTCALL upd4990_o20(UINT port, REG8 dat) {
 }
 
 #ifdef SUPPORT_HRTIMER
-static UINT32 hrtimerdiv = 32; 
-static UINT32 hrtimerclock = 0; 
-static UINT32 hrtimerclock32 = 0; 
 
-static UINT32 clockcounter = 0;
-static UINT32 clockcounter32 = 0;
+static void upd4990_hrtimer_setinterval(int absolute);
+
+void upd4990_hrtimer_proc(NEVENTITEM item) {
+	static UINT32 divcounter = 0;
+	static UINT32 divcounter32 = 0;
+	divcounter++;
+	if(divcounter >= 64 / uPD4990HRT.hrtimerdiv){ // 64 -> hrtimerdiv
+		pic_setirq(15);
+		divcounter = 0;
+	}
+	if(uPD4990HRT.hrtimerclock32){
+		divcounter32++;
+		if(divcounter32 >= 2){ // 64 -> 32
+			UINT32 hrtimertimeuint;
+			
+			hrtimertimeuint = LOADINTELDWORD(mem+0x04F1);
+			hrtimertimeuint++;
+			if((hrtimertimeuint & 0x3fffff) >= 24*60*60*32){
+				hrtimertimeuint = ((hrtimertimeuint & ~0x3fffff) + 0x400000) & 0xffffff; // 日付変わった
+			}
+			STOREINTELDWORD(mem+0x04F1, hrtimertimeuint); // XXX: 04F4にも書いちゃってるけど差し当たっては問題なさそうなので･･･
+			divcounter32 = 0;
+		}
+	}
+	upd4990_hrtimer_setinterval(0);
+}
+static void upd4990_hrtimer_setinterval(int absolute) {
+	if(uPD4990HRT.hrtimerclock > 0){
+		nevent_set(NEVENT_HRTIMER, pccore.baseclock * pccore.multiple / 64, upd4990_hrtimer_proc, absolute ? NEVENT_ABSOLUTE : NEVENT_RELATIVE);
+	}
+}
 
 static void upd4990_hrtimer_start(void) {
-	hrtimerclock32 = pccore.baseclock / 32;
-	clockcounter = 0;
-	clockcounter32 = 0;
+	uPD4990HRT.hrtimerclock32 = pccore.baseclock / 32;
+	uPD4990HRT.clockcounter = 0;
+	uPD4990HRT.clockcounter32 = 0;
 }
 void upd4990_hrtimer_count(void) {
-	if(hrtimerclock){
-		clockcounter += CPU_BASECLOCK;
-		if(clockcounter > hrtimerclock*pccore.multiple){
-			clockcounter -= hrtimerclock*pccore.multiple;
+	//if(uPD4990HRT.hrtimerclock){
+	//	uPD4990HRT.clockcounter += CPU_BASECLOCK;
+	//	if(uPD4990HRT.clockcounter > uPD4990HRT.hrtimerclock*pccore.multiple){
+	//		uPD4990HRT.clockcounter -= uPD4990HRT.hrtimerclock*pccore.multiple;
 
-			pic_setirq(15);
-		}
-	}
-	clockcounter32 += CPU_BASECLOCK;
-	if(clockcounter32 > hrtimerclock32*pccore.multiple){
-		UINT32 hrtimertimeuint;
-		clockcounter32 -= hrtimerclock32*pccore.multiple;
-			
-		hrtimertimeuint = LOADINTELDWORD(mem+0x04F1);
-		hrtimertimeuint++;
-		if((hrtimertimeuint & 0x3fffff) >= 24*60*60*32){
-			hrtimertimeuint = ((hrtimertimeuint & ~0x3fffff) + 0x400000) & 0xffffff; // 日付変わった
-		}
-		STOREINTELDWORD(mem+0x04F1, hrtimertimeuint); // XXX: 04F4にも書いちゃってるけど差し当たっては問題なさそうなので･･･
-	}
+	//		pic_setirq(15);
+	//	}
+	//}
+	//if(uPD4990HRT.hrtimerclock32){
+	//	uPD4990HRT.clockcounter32 += CPU_BASECLOCK;
+	//	if(uPD4990HRT.clockcounter32 > uPD4990HRT.hrtimerclock32*pccore.multiple){
+	//		UINT32 hrtimertimeuint;
+	//		uPD4990HRT.clockcounter32 -= uPD4990HRT.hrtimerclock32*pccore.multiple;
+	//		
+	//		hrtimertimeuint = LOADINTELDWORD(mem+0x04F1);
+	//		hrtimertimeuint++;
+	//		if((hrtimertimeuint & 0x3fffff) >= 24*60*60*32){
+	//			hrtimertimeuint = ((hrtimertimeuint & ‾0x3fffff) + 0x400000) & 0xffffff; // 日付変わった
+	//		}
+	//		STOREINTELDWORD(mem+0x04F1, hrtimertimeuint); // XXX: 04F4にも書いちゃってるけど差し当たっては問題なさそうなので･･･
+	//	}
+	//}
 }
 
 int io22value = 0;
@@ -143,27 +171,28 @@ static void IOOUTCALL upd4990_o128(UINT port, REG8 dat) {
 	REG8 dattmp = dat & 0x3;
 	switch(dattmp){
 	case 0:
-		hrtimerdiv = 64;
-		hrtimerclock = pccore.baseclock/hrtimerdiv;
+		uPD4990HRT.hrtimerdiv = 64;
+		uPD4990HRT.hrtimerclock = pccore.baseclock/uPD4990HRT.hrtimerdiv;
 		break;
 	case 1:
-		hrtimerdiv = 32;
-		hrtimerclock = pccore.baseclock/hrtimerdiv;
+		uPD4990HRT.hrtimerdiv = 32;
+		uPD4990HRT.hrtimerclock = pccore.baseclock/uPD4990HRT.hrtimerdiv;
 		break;
 	case 2:
-		hrtimerdiv = 0;
-		hrtimerclock = 0;//pccore.realclock/hrtimerdiv;
+		uPD4990HRT.hrtimerdiv = 0;
+		uPD4990HRT.hrtimerclock = 0;//pccore.realclock/uPD4990HRT.hrtimerdiv;
 		break;
 	case 3:
-		hrtimerdiv = 16;
-		hrtimerclock = pccore.baseclock/hrtimerdiv;
+		uPD4990HRT.hrtimerdiv = 16;
+		uPD4990HRT.hrtimerclock = pccore.baseclock/uPD4990HRT.hrtimerdiv;
 		break;
 	}
 	(void)port;
 }
 
 static REG8 IOOUTCALL upd4990_i128(UINT port) {
-	switch(hrtimerdiv){
+	pic_resetirq(15);
+	switch(uPD4990HRT.hrtimerdiv){
 	case 64:
 		return(0x80);
 	case 32:
@@ -202,8 +231,9 @@ void uPD4990_bind(void) {
 	iocore_attachout(0x0128, upd4990_o128);
 	iocore_attachinp(0x0128, upd4990_i128);
 
-	hrtimerdiv = 32;
-	hrtimerclock = pccore.baseclock/hrtimerdiv;
+	uPD4990HRT.hrtimerdiv = 32;
+	uPD4990HRT.hrtimerclock = pccore.baseclock/uPD4990HRT.hrtimerdiv;
+	upd4990_hrtimer_setinterval(1);
 #endif
 }
 

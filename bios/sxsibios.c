@@ -17,6 +17,8 @@
 // XXX: WORKAROUND for Win9x boot menu & PC-98 HDD boot menu
 #include	<keystat.h>
 
+#define SXSIBIOS_WORKSIZE	4096
+
 extern int sxsi_unittbl[];
 
 extern int sxsi_workaround_bootwait;
@@ -32,7 +34,7 @@ static REG8 sxsi_pos(UINT type, SXSIDEV sxsi, FILEPOS *ppos) {
 	pos = 0;
 	if (CPU_AL & 0x80) {
 #if defined(SUPPORT_IDEIO_48BIT)
-		if(sxsi->totals > 0xfffffff){
+		if(sxsi->totals > 65535*16*255){
 			if (CPU_CX >= sxsi->totals / 255 / 255) {
 				ret = 0xd0;
 			}
@@ -65,7 +67,7 @@ static REG8 sxsi_pos(UINT type, SXSIDEV sxsi, FILEPOS *ppos) {
 	}
 
 	*ppos = pos;
-	if (sxsi->size > 1024) {
+	if (sxsi->size > SXSIBIOS_WORKSIZE) {
 		ret = 0xd0;
 	}
 	return(ret);
@@ -78,7 +80,7 @@ static REG8 sasibios_write(UINT type, SXSIDEV sxsi) {
 	FILEPOS	pos;
 	UINT32	addr;
 	UINT	r;
-	UINT8	work[1024];
+	UINT8	work[SXSIBIOS_WORKSIZE];
 
 	size = CPU_BX;
 	if (!size) {
@@ -108,7 +110,7 @@ static REG8 scsibios_write(UINT type, SXSIDEV sxsi) {
 	FILEPOS	pos;
 	UINT32	addr;
 	UINT	r;
-	UINT8	work[1024];
+	UINT8	work[SXSIBIOS_WORKSIZE];
 
 	size = CPU_BX;
 	if (!size) {
@@ -139,7 +141,7 @@ static REG8 sasibios_read(UINT type, SXSIDEV sxsi) {
 	FILEPOS	pos;
 	UINT32	addr;
 	UINT	r;
-	UINT8	work[1024];
+	UINT8	work[SXSIBIOS_WORKSIZE];
 	FILEPOS	posbase;
 	UINT8	oldAL = CPU_AL;
 
@@ -236,7 +238,7 @@ static REG8 scsibios_read(UINT type, SXSIDEV sxsi) {
 	FILEPOS	pos;
 	UINT32	addr;
 	UINT	r;
-	UINT8	work[1024];
+	UINT8	work[SXSIBIOS_WORKSIZE];
 	FILEPOS	posbase;
 	UINT8	oldAL = CPU_AL;
 
@@ -398,7 +400,7 @@ static REG8 sasibios_sense(UINT type, SXSIDEV sxsi) {
 	else {
 		if (CPU_AH == 0x84) {
 #if defined(SUPPORT_IDEIO_48BIT)
-			if(sxsi->totals > 0xfffffff){
+			if(sxsi->totals > 65535*16*255){
 				FILELEN tmpCyl = (UINT32)(sxsi->totals / 255 / 255);
 				CPU_BX = sxsi->size;
 				CPU_CX = (UINT16)(tmpCyl < 0xffff ? tmpCyl : 0xffff);
@@ -461,6 +463,10 @@ REG8 sasibios_operate(void) {
 		sxsi_workaround_bootwait--;
 		if(keystat.ref[0x1c] != NKEYREF_NC || keystat.ref[0x0f] != NKEYREF_NC){
 			CPU_REMCLOCK = -1;
+			if((CPU_AH & 0x0f) == 4){ // sasibios_sense
+				keystat.ref[0x1c] = NKEYREF_NC;//keystat_keyup(0x1c);
+				sxsi_workaround_bootwait = 0;
+			}
 		}
 	}
 	return((*sasifunc[CPU_AH & 0x0f])(type, sxsi));

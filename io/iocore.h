@@ -69,6 +69,9 @@ extern	_RS232CFIFO	rs232cfifo;
 #endif
 extern	_SYSPORT	sysport;
 extern	_UPD4990	uPD4990;
+#ifdef SUPPORT_HRTIMER
+extern	_UPD4990HRT	uPD4990HRT;
+#endif
 
 #if defined(SUPPORT_PC9821)
 extern	_PCIDEV		pcidev;

@@ -159,7 +159,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Video"
 FONT 9, "MS Sans Serif"
 BEGIN
-    CONTROL         "(Old monochrome) Liquid Crystal Display",IDC_LCD,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,8,156,10
+    CONTROL         "Liquid Crystal Display",IDC_LCD,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,8,156,10
     CONTROL         "Reverse",IDC_LCDX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,24,144,10
     CONTROL         "Use skipline revisions",IDC_SKIPLINE,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,40,156,10
     LTEXT           "Ratio",IDC_STATIC,20,55,22,8
@@ -205,7 +205,7 @@ BEGIN
     CONTROL         "GRCG",IDC_GRCG,"Button",BS_AUTORADIOBUTTON,54,54,34,10
     CONTROL         "GRCG+",IDC_GRCG2,"Button",BS_AUTORADIOBUTTON,88,54,40,10
     CONTROL         "EGC",IDC_EGC,"Button",BS_AUTORADIOBUTTON,128,54,34,10
-    CONTROL         "&Enable PEGC plane mode",IDC_PEGC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,68,148,10
+    CONTROL         "&Enable PEGC plane mode",IDC_PEGC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,68,110,10
     CONTROL         "&Enable 16color-board (PC-9801-24)",IDC_PC980124,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,90,148,10
 END
 
@@ -238,7 +238,7 @@ FONT 9, "MS Sans Serif"
 BEGIN
     LTEXT           "Port",IDC_STATIC,8,10,30,8
     COMBOBOX        IDC_COM1PORT,40,8,48,96,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Assign",IDC_COM1STR00,8,28,182,84
+    GROUPBOX        "Assign",IDC_COM1STR00,8,28,202,84
     LTEXT           "Speed",IDC_COM1STR01,16,45,40,8
     COMBOBOX        IDC_COM1SPEED,60,42,48,128,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "bps",IDC_COM1STR02,112,45,26,8
@@ -246,6 +246,7 @@ BEGIN
     LTEXT           "Data bits",IDC_COM1STR03,16,61,40,8
     COMBOBOX        IDC_COM1CHARSIZE,60,58,48,64,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "bits",IDC_COM1STR04,112,61,26,8
+    CONTROL         "H/W DSR check",IDC_COM1DSRCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,130,60,70,10
     LTEXT           "Parity",IDC_COM1STR05,16,77,40,8
     COMBOBOX        IDC_COM1PARITY,60,74,48,64,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Stop bits",IDC_COM1STR06,16,93,40,8
@@ -265,6 +266,7 @@ BEGIN
     EDITTEXT        IDC_COM1PIPENAME,55,25,80,14, ES_AUTOHSCROLL
     LTEXT           "Server Name",IDC_COM1STR31,8,44,50,8
     EDITTEXT        IDC_COM1PIPESERV,55,41,80,14, ES_AUTOHSCROLL
+    EDITTEXT        IDC_COM1STR32,8,60,150,14, ES_READONLY
 END
 
 IDD_PC9861A DIALOG 0, 0, 224, 140
@@ -381,8 +383,14 @@ BEGIN
     LTEXT           "CD-DA",IDC_STATIC,8,89,30,8
     CONTROL         "Slider32",IDC_VOLCDDA,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,40,89,88,10
     LTEXT           "",IDC_VOLCDDASTR,134,88,16,10,SS_SUNKEN,WS_EX_RIGHT
-	PUSHBUTTON      "Defaults 1",IDC_SNDMIXDEF,116,102,40,14
-	PUSHBUTTON      "Defaults 2",IDC_SNDMIXDEF2,160,102,40,14
+    LTEXT           "MIDI",IDC_STATIC,8,103,30,8
+    CONTROL         "Slider1",IDC_VOLMIDI,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,40,103,88,10
+    LTEXT           "",IDC_VOLMIDISTR,134,103,16,10,SS_SUNKEN,WS_EX_RIGHT
+    LTEXT           "Hardware",IDC_STATIC,8,117,36,8
+    CONTROL         "Slider1",IDC_VOLHW,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,40,117,88,10
+    LTEXT           "",IDC_VOLHWSTR,134,117,16,10,SS_SUNKEN,WS_EX_RIGHT
+	PUSHBUTTON      "Defaults 1",IDC_SNDMIXDEF,160,92,40,14
+	PUSHBUTTON      "Defaults 2",IDC_SNDMIXDEF2,160,112,40,14
 END
 
 IDD_SND14 DIALOGEX 0, 0, 184, 124
@@ -537,12 +545,14 @@ BEGIN
     CONTROL         "B",IDC_PAD1_RB,"Button",BS_AUTOCHECKBOX,86,60,21,10
     CONTROL         "C",IDC_PAD1_RC,"Button",BS_AUTOCHECKBOX,108,60,21,10
     CONTROL         "D",IDC_PAD1_RD,"Button",BS_AUTOCHECKBOX,130,60,21,10
+    LTEXT           "JoyPad ID",IDC_STATIC,24,81,40,8
+    COMBOBOX        IDC_PAD1_ID,64,79,120,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
 END
 
 IDD_SNDFMGEN DIALOG 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "fmgen"
-FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
+FONT 9, "MS Sans Serif"
 BEGIN
     CONTROL         "Use fmgen",IDC_USEFMGEN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,58,10
 END
@@ -577,7 +587,7 @@ CLASS "np2dialog"
 FONT 9, "MS Sans Serif"
 BEGIN
     ICON            IDI_ICON1,IDC_NP2ICON,8,8,20,20
-    LTEXT           "",IDC_NP2VER,36,12,152,16
+    LTEXT           "",IDC_NP2VER,36,16,152,8
     DEFPUSHBUTTON   "&OK",IDOK,168,8,40,14,WS_GROUP
     PUSHBUTTON      "More >>",IDC_MORE,168,26,40,14
     EDITTEXT        IDC_NP2INFO,8,52,200,48,ES_MULTILINE | ES_READONLY | ES_WANTRETURN | WS_VSCROLL
@@ -1005,23 +1015,13 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&No wait",                    IDM_NOWAIT
         MENUITEM "&CPU clock stabilizer",       IDM_CPUSTABILIZER
+        MENUITEM "&Async CPU (experimental)",   IDM_ASYNCCPU
         MENUITEM SEPARATOR
         MENUITEM "&Auto frame",                 IDM_AUTOFPS
         MENUITEM "F&ull frame",                 IDM_60FPS
         MENUITEM "1/&2 frame",                  IDM_30FPS
         MENUITEM "1/&3 frame",                  IDM_20FPS
         MENUITEM "1/&4 frame",                  IDM_15FPS
-        MENUITEM SEPARATOR
-        POPUP "Video filter"
-        BEGIN
-            MENUITEM "Enable",                   IDM_VF1EN
-            MENUITEM SEPARATOR
-            MENUITEM "Profile 0",                   IDM_VF1P0
-            MENUITEM "Profile 1",                   IDM_VF1P1
-            MENUITEM "Profile 2",                   IDM_VF1P2
-            MENUITEM SEPARATOR
-            MENUITEM "Use BMP only",                IDM_VF1BO
-        END
         MENUITEM SEPARATOR
         MENUITEM "&Screen option...",           IDM_SCREENOPT
     END
@@ -1076,8 +1076,6 @@ BEGIN
             MENUITEM "Sp&ark board",                IDM_SPARKBOARD
             MENUITEM "Sound &Orchestra",            IDM_SOUNDORCHESTRA
             MENUITEM "Sound Orchestra-&V",          IDM_SOUNDORCHESTRAV
-            MENUITEM "L&ittle Orchestra L",         IDM_LITTLEORCHESTRAL
-            MENUITEM "&Multimedia Orchestra",       IDM_MMORCHESTRA
             MENUITEM "Sound &Blaster 16",           IDM_SB16
             MENUITEM "PC-9801-86 + Sound Blaster 16",  IDM_PC9801_86_SB16
             MENUITEM "Mate-X PCM + Sound Blaster 16",  IDM_WSS_SB16
@@ -1142,7 +1140,6 @@ BEGIN
     POPUP "&Other"
     BEGIN
         MENUITEM "&BMP save...",                IDM_BMPSAVE
-        MENUITEM "Hook fomtrom",                IDM_HF_ENABLE
         MENUITEM "&TXT save...",                IDM_TXTSAVE
         MENUITEM "&S98 logging...",             IDM_S98LOGGING
         MENUITEM "Ca&lendar...",                IDM_CALENDAR
@@ -1157,11 +1154,9 @@ BEGIN
         MENUITEM "Joy &rapid",                  IDM_RAPID
         MENUITEM "&Mouse rapid",                IDM_MSRAPID
         MENUITEM "&ITF work",                   IDM_ITFWORK
-        MENUITEM "&Use SSTP",                   IDM_SSTP
         // MENUITEM "Fix &MMTimer",                IDM_TIMERFIX
         // MENUITEM "&Skip over 16MB memcheck",    IDM_SKIP16MEMCHK
         MENUITEM "Fast m&emcheck",              IDM_FASTMEMCHK
-        MENUITEM "Enable DebugSS",              IDM_EN_DBSS
         MENUITEM SEPARATOR
         MENUITEM "&Help...",                    IDM_HELP
         MENUITEM "&About...",                   IDM_ABOUT
@@ -1193,22 +1188,6 @@ BEGIN
         MENUITEM "Load 7",                      IDM_FLAGLOAD7
         MENUITEM "Load 8",                      IDM_FLAGLOAD8
         MENUITEM "Load 9",                      IDM_FLAGLOAD9
-    END
-END
-
-IDR_DEBUGSS MENU
-BEGIN
-    POPUP "DebugSS"
-    BEGIN
-        MENUITEM "Save debugss 0",                      IDM_DBSSSAVE0
-        MENUITEM "Save debugss 1",                      IDM_DBSSSAVE1
-        MENUITEM "Save debugss 2",                      IDM_DBSSSAVE2
-        MENUITEM "Save debugss 3",                      IDM_DBSSSAVE3
-        MENUITEM SEPARATOR
-        MENUITEM "Load debugss 0",                      IDM_DBSSLOAD0
-        MENUITEM "Load debugss 1",                      IDM_DBSSLOAD1
-        MENUITEM "Load debugss 2",                      IDM_DBSSLOAD2
-        MENUITEM "Load debugss 3",                      IDM_DBSSLOAD3
     END
 END
 
@@ -1259,26 +1238,34 @@ BEGIN
         MENUITEM "&Open...",                    IDM_IDE0OPEN
         MENUITEM SEPARATOR
         MENUITEM "&Remove",                     IDM_IDE0EJECT
+        MENUITEM SEPARATOR
+        MENUITEM " ",							IDM_IDE0STATE
     END
     POPUP "IDE #1"
     BEGIN
         MENUITEM "&Open...",                    IDM_IDE1OPEN
         MENUITEM SEPARATOR
         MENUITEM "&Remove",                     IDM_IDE1EJECT
+        MENUITEM SEPARATOR
+        MENUITEM " ",							IDM_IDE1STATE
     END
     POPUP "IDE #2"
     BEGIN
         MENUITEM "&Open...",                    IDM_IDE2OPEN
         MENUITEM SEPARATOR
         MENUITEM "&Remove",                     IDM_IDE2EJECT
+        MENUITEM SEPARATOR
+        MENUITEM " ",							IDM_IDE2STATE
     END
     POPUP "IDE #3"
     BEGIN
         MENUITEM "&Open...",                    IDM_IDE3OPEN
         MENUITEM SEPARATOR
         MENUITEM "&Remove",                     IDM_IDE3EJECT
+        MENUITEM SEPARATOR
+        MENUITEM " ",							IDM_IDE3STATE
     END
-    MENUITEM "&IDE option...",              IDM_IDEOPT
+    MENUITEM "&IDE option...",                  IDM_IDEOPT
 END
 
 IDR_SASIMENU MENU
@@ -1288,12 +1275,16 @@ BEGIN
         MENUITEM "&Open...",                    IDM_IDE0OPEN
         MENUITEM SEPARATOR
         MENUITEM "&Remove",                     IDM_IDE0EJECT
+        MENUITEM SEPARATOR
+        MENUITEM " ",							IDM_IDE0STATE
     END
     POPUP "SASI #1"
     BEGIN
         MENUITEM "&Open...",                    IDM_IDE1OPEN
         MENUITEM SEPARATOR
         MENUITEM "&Remove",                     IDM_IDE1EJECT
+        MENUITEM SEPARATOR
+        MENUITEM " ",							IDM_IDE1STATE
     END
 END
 
@@ -1487,12 +1478,12 @@ JUMPER118               RAWBMP                  "..\\j118.bmp"
 
 STRINGTABLE
 BEGIN
-    IDS_APP_NAME2           "Neko Project II kai"
-    IDS_APP_NAME21          "Neko Project 21 kai"
+    IDS_APP_NAME2           "Neko Project II/W"
+    IDS_APP_NAME21          "Neko Project 21/W"
     IDS_FILENAME_HELP       "np2.chm"
-    IDS_FONTFACE            "ï¼­ï¼³ ã‚´ã‚·ãƒƒã‚¯"
+    IDS_FONTFACE            "‚l‚r ƒSƒVƒbƒN"
     IDS_PFONTFACE           "MS Sans Serif"
-    IDS_FONTFACE_PRIMARY    "ï¼­ï¼³ ã‚´ã‚·ãƒƒã‚¯"
+    IDS_FONTFACE_PRIMARY    "‚l‚r ƒSƒVƒbƒN"
     IDS_PFONTFACE_PRIMARY   "MS Sans Serif"
     IDS_FONTFACE_SECONDARY  "MS Gothic"
 END

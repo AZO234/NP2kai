@@ -1688,6 +1688,9 @@ static void cirrus_get_resolution(VGAState *s, int *pwidth, int *pheight)
 	if(width==320) height /= 2; // XXX: Win98で表示がおかしくなるのでとりあえず仮
 	if(width==400) height = 300; // XXX: Win98で表示がおかしくなるのでとりあえず仮
 	if(width==512) height = 384; // XXX: Win98で表示がおかしくなるのでとりあえず仮
+	if(height >= width * 3 / 4 * 2){
+		height /= 2; // XXX: 縦長過ぎるとき、高さ半分にしておく
+	}
 	
 	// WSN 1280x1024
 	if(np2clvga.gd54xxtype == CIRRUS_98ID_WSN || np2clvga.gd54xxtype == CIRRUS_98ID_WAB || np2clvga.gd54xxtype == CIRRUS_98ID_WSN_A2F){
@@ -3287,10 +3290,22 @@ void cirrus_linear_memwnd_addr_convert(void *opaque, target_phys_addr_t *addrval
 		addr += (offset);
 	}else{
 		addr &= 0x7fff;
-		if ((s->gr[0x0b] & 0x01) != 0)	/* dual bank */
-			offset = s->gr[0x09/* + bank_index*/];
-		else			/* single bank */
+		if ((s->gr[0x0b] & 0x01) != 0){
+			/* dual bank */
+			if(addr < 0x4000){
+				offset = s->gr[0x09];
+			}else{
+				addr -= 0x4000;
+				offset = s->gr[0x0a];
+			}
+		}else{
+			/* single bank */
 			offset = s->gr[0x09];
+		}
+		//if ((s->gr[0x0b] & 0x01) != 0)	/* dual bank */
+		//	offset = s->gr[0x09/* + bank_index*/];
+		//else			/* single bank */
+		//	offset = s->gr[0x09];
 
 		if ((s->gr[0x0b] & 0x20) != 0)
 			addr += (offset) << 14L;
@@ -5212,13 +5227,13 @@ void cirrusvga_drawGraphic(){
 	//if(GetKeyState(VK_CONTROL)<0){
 	switch(sysmemmode){
 	case 0:
-		vram_ptr = vram_ptr + 1280*16*memshift;
+		vram_ptr = vram_ptr + 256*16*memshift;
 		break;
 	case 1:
-		vram_ptr = mem + 1280*16*memshift;
+		vram_ptr = mem + 256*16*memshift;
 		break;
 	case 2:
-		vram_ptr = CPU_EXTMEMBASE + 1280*16*memshift;
+		vram_ptr = CPU_EXTMEMBASE + 256*16*memshift;
 		break;
 	}
 	//}

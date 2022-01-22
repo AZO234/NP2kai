@@ -143,7 +143,11 @@ void rs232ctimer(NEVENTITEM item) {
 			};
 			int speed;
 			speed = speedtbl[rs232cfifo.vfast & 0xf];
-			nevent_set(NEVENT_RS232C, pccore.realclock * 8 / speed, rs232ctimer, NEVENT_RELATIVE);
+			if(speed != 0){
+				nevent_set(NEVENT_RS232C, pccore.realclock * 8 / speed, rs232ctimer, NEVENT_RELATIVE);
+			}else{
+				nevent_set(NEVENT_RS232C, pccore.realclock * 8 / 9600, rs232ctimer, NEVENT_RELATIVE);
+			}
 		}else
 #endif
 		if ((pitch->ctrl & 0x0c) == 0x04) {
@@ -247,6 +251,7 @@ void pit_setflag(PITCH pitch, REG8 value) {
 	}
 }
 
+// RS-232C通信速度設定　関連: serial.c rs232c_vfast_setrs232cspeed
 void pit_setrs232cspeed(UINT16 value) {
 	if (cm_rs232c) {
 #if defined(SUPPORT_RS232C_FIFO)

@@ -48,6 +48,9 @@
 #endif
 	_SYSPORT	sysport;
 	_UPD4990	uPD4990;
+#ifdef SUPPORT_HRTIMER
+	_UPD4990HRT	uPD4990HRT;
+#endif
 
 #if defined(SUPPORT_PC9821)
 	_PCIDEV		pcidev;

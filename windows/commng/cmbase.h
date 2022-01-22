@@ -39,6 +39,17 @@ protected:
 	}
 	
 	/**
+	 * ブロック単位転送開始
+	 */
+	virtual void BeginBlockTransfer(){
+	}
+	/**
+	 * ブロック単位転送終了
+	 */
+	virtual void EndBlockTransfer(){
+	}
+	
+	/**
 	 * Last Write Success
 	 * @return result
 	 */
@@ -64,6 +75,8 @@ private:
 	static UINT cRead(COMMNG cm, UINT8* pData);
 	static UINT cWrite(COMMNG cm, UINT8 cData);
 	static UINT cWriteRetry(COMMNG cm);
+	static void cBeginBlockTransfer(COMMNG cm);
+	static void cEndBlockTransfer(COMMNG cm);
 	static UINT cLastWriteSuccess(COMMNG cm);
 	static UINT8 cGetStat(COMMNG cm);
 	static INTPTR cMessage(COMMNG cm, UINT nMessage, INTPTR nParam);

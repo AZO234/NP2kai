@@ -1134,6 +1134,9 @@ WRMSR(void)
 	}
 }
 
+#if defined(SUPPORT_GAMEPORT)
+int gameport_tsccounter = 0;
+#endif
 void
 RDTSC(void)
 {
@@ -1209,6 +1212,9 @@ RDTSC(void)
 		CPU_EAX = (tsc_cur & 0xffffffff);
 #if defined(SUPPORT_ASYNC_CPU)
 	}
+#endif
+#if defined(SUPPORT_GAMEPORT)
+	if(gameport_tsccounter < INT_MAX) gameport_tsccounter++;
 #endif
 #endif
 //	ia32_panic("RDTSC: not implemented yet!");

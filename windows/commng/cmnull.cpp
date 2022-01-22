@@ -36,11 +36,19 @@ UINT CComNull::Write(UINT8 cData)
 
 /**
  * ステータスを得る
+ * bit 7: ‾CI (RI, RING)
+ * bit 6: ‾CS (CTS)
+ * bit 5: ‾CD (DCD, RLSD)
+ * bit 4: reserved
+ * bit 3: reserved
+ * bit 2: reserved
+ * bit 1: reserved
+ * bit 0: ‾DSR (DR)
  * @return ステータス
  */
 UINT8 CComNull::GetStat()
 {
-	return 0xf0;
+	return 0xf1;
 }
 
 /**

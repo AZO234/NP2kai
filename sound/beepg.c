@@ -2,16 +2,20 @@
 #include	<cpucore.h>
 #include	<sound/sound.h>
 #include	<sound/beep.h>
+#include	<pccore.h>
 
 
 extern	BEEPCFG		beepcfg;
 
 static void oneshot(BEEP bp, SINT32 *pcm, UINT count) {
-
+	
+	SINT32		volM;
 	SINT32		samp;
 	UINT32		firsttime = beep_time[bp->beep_data_curr_loc];
 	UINT32		time = firsttime;
 	UINT32		bound;
+
+	volM = np2cfg.vol_master;
 
 	if(bp->beep_data_load_loc != 0)
 		bound = (beep_time[bp->beep_data_load_loc - 1] - firsttime) / count;
@@ -29,8 +33,8 @@ static void oneshot(BEEP bp, SINT32 *pcm, UINT count) {
 		else
 			samp = beep_data[BEEPDATACOUNT - 1];
 		samp = (SINT32)((double)samp / 0x100 * (0x3000 * beepcfg.vol) - (0x1500 * beepcfg.vol));
-		pcm[0] += samp;
-		pcm[1] += samp;
+		pcm[0] += samp * volM / 100;
+		pcm[1] += samp * volM / 100;
 		pcm += 2;
 		time += bound;
 	}
@@ -39,12 +43,15 @@ static void oneshot(BEEP bp, SINT32 *pcm, UINT count) {
 static void rategenerator(BEEP bp, SINT32 *pcm, UINT count) {
 
 	SINT32		vol;
+	SINT32		volM;
 const BPEVENT	*bev;
 	SINT32		samp;
 	SINT32		remain;
 	SINT32		clk;
 	int			event;
 	UINT		r;
+	
+	volM = np2cfg.vol_master;
 
 	vol = beepcfg.vol;
 	bev = bp->event;
@@ -78,8 +85,8 @@ const BPEVENT	*bev;
 					samp <<= (10 - 2);
 					if(samp > 32767) samp = 0; // XXX: 処理落ち時のノイズ回避 np21w ver0.86 rev42
 					if(samp < -32768) samp = 0; // XXX: 処理落ち時のノイズ回避 np21w ver0.86 rev42
-					pcm[0] += samp;
-					pcm[1] += samp;
+					pcm[0] += samp * volM / 100;
+					pcm[1] += samp * volM / 100;
 					pcm += 2;
 				} while(--r);
 			}
@@ -115,8 +122,8 @@ const BPEVENT	*bev;
 			samp >>= (16 - 10);
 			if(samp > 32767) samp = 0; // XXX: 処理落ち時のノイズ回避 np21w ver0.86 rev42
 			if(samp < -32768) samp = 0; // XXX: 処理落ち時のノイズ回避 np21w ver0.86 rev42
-			pcm[0] += samp;
-			pcm[1] += samp;
+			pcm[0] += samp * volM / 100;
+			pcm[1] += samp * volM / 100;
 			pcm += 2;
 			count--;
 		}

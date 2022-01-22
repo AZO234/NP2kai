@@ -58,7 +58,7 @@ void CSoundMng::Initialize()
 	::CoInitializeEx(NULL, COINIT_MULTITHREADED);
 #endif	// defined(SUPPORT_ASIO) || defined(SUPPORT_WASAPI)
 
-	CSoundDeviceDSound3::s_mastervol_available = np2oscfg.usemastervolume ? true : false;
+	CSoundDeviceDSound3::s_mastervol_available = true;//np2oscfg.usemastervolume ? true : false;
 	CSoundDeviceDSound3::Initialize();
 #if defined(SUPPORT_WASAPI)
 	CSoundDeviceWasapi::Initialize();
@@ -392,6 +392,19 @@ void CSoundMng::LoadPCM(SoundPCMNumber nNum, LPCTSTR lpFilename)
 	if (m_pSoundDevice)
 	{
 		m_pSoundDevice->LoadPCM(nNum, lpFilename);
+	}
+}
+
+/**
+ * PCM データ再読み込み
+ * @param[in] nNum PCM 番号
+ * @param[in] lpFilename ファイル名
+ */
+void CSoundMng::ReloadPCM(SoundPCMNumber nNum)
+{
+	if (m_pSoundDevice)
+	{
+		m_pSoundDevice->ReloadPCM(nNum);
 	}
 }
 

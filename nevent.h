@@ -56,8 +56,9 @@ enum tagNEventId
 #if defined(SUPPORT_WAB)
 	NEVENT_WABSNDOFF	= 33,
 #endif
+	NEVENT_HRTIMER		= 34,
 	/* ---- */
-	NEVENT_MAXEVENTS	= 34
+	NEVENT_MAXEVENTS	= 35
 };
 typedef enum tagNEventId NEVENTID;
 
@@ -128,6 +129,9 @@ void nevent_waitreset(NEVENTID id);
 
 // イベントの動作状態取得
 BOOL nevent_iswork(NEVENTID id);
+
+// イベントコールバックの強制実行（注:既存の待ちイベントの無効化は行われない）
+void nevent_forceexecute(NEVENTID id);
 
 // イベント実行までのクロック数の取得
 SINT32 nevent_getremain(NEVENTID id);

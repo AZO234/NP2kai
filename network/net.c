@@ -89,7 +89,7 @@ unsigned GetTickCount()
 
 #endif // defined(_WINDOWS)
  
-#define NET_BUFLEN (10*1024) // バッファ1つの長さ（XXX: パケットサイズの最大値にしないと無駄。もっと言えば可変長で大きな1つのバッファに入れるべき？）
+#define NET_BUFLEN (16*1024) // バッファ1つの長さ（XXX: パケットサイズの最大値にしないと無駄。もっと言えば可変長で大きな1つのバッファに入れるべき？）
 #define NET_ARYLEN (128) // バッファの数
 
 	NP2NET	np2net;
@@ -101,7 +101,7 @@ static int		np2net_hThreadexit = 0; // スレッド終了フラグ
 #if defined(_WINDOWS)
 static char *GetNetWorkDeviceGuid(const char *, char *, DWORD); // TAPデバイス名からGUIDを取得する
 
-static HANDLE	np2net_hTap = NULL; // TAPデバイスの読み書きハンドル
+static HANDLE	np2net_hTap = INVALID_HANDLE_VALUE; // TAPデバイスの読み書きハンドル
 static HANDLE	np2net_hThreadR = NULL; // Read用スレッド
 static HANDLE	np2net_hThreadW = NULL; // Write用スレッド
 #else
@@ -294,7 +294,7 @@ static unsigned int __stdcall np2net_ThreadFuncR(LPVOID vdParam) {
 		if(!np2net_highspeedmode) {
 			Sleep(50);
 		}else{
-			Sleep(1);
+			Sleep(0);
 		}
 	}
 	CloseHandle(hEvent);
@@ -355,13 +355,15 @@ static void* np2net_ThreadFuncR(void *thdata) {
 //  TAPデバイスを閉じる
 static void np2net_closeTAP(){
 #if defined(_WINDOWS)
-    if (np2net_hTap != NULL) {
+	ULONG status = FALSE;
+	DWORD dwLen;
+    if (np2net_hTap != INVALID_HANDLE_VALUE) {
 		if(np2net_hThreadR){
 			np2net_hThreadexit = 1;
 			if(WaitForSingleObject(np2net_hThreadR, 5000) == WAIT_TIMEOUT){
 				TerminateThread(np2net_hThreadR, 0);
 			}
-			if(WaitForSingleObject(np2net_hThreadW, 1000) == WAIT_TIMEOUT){
+			if(WaitForSingleObject(np2net_hThreadW, 5000) == WAIT_TIMEOUT){
 				TerminateThread(np2net_hThreadW, 0);
 			}
 			np2net_membuf_readpos = np2net_membuf_writepos;
@@ -371,9 +373,18 @@ static void np2net_closeTAP(){
 			np2net_hThreadR = NULL;
 			np2net_hThreadW = NULL;
 		}
+		
+		// TAP デバイスを非アクティブに
+		status = FALSE;
+		if (!DeviceIoControl(np2net_hTap,TAP_IOCTL_SET_MEDIA_STATUS,
+					&status, sizeof(status), &status, sizeof(status),
+					&dwLen, NULL)) {
+			TRACEOUT(("LGY-98: TAP_IOCTL_SET_MEDIA_STATUS err"));
+		}
+ 
 		CloseHandle(np2net_hTap);
 		TRACEOUT(("LGY-98: TAP is closed"));
-		np2net_hTap = NULL;
+		np2net_hTap = INVALID_HANDLE_VALUE;
     }
 #else
     if (np2net_hTap >= 0) {
@@ -396,7 +407,7 @@ static void np2net_closeTAP(){
 //  TAPデバイスを開く
 static int np2net_openTAP(const char* tapname){
 #if defined(_WINDOWS)
-	DWORD dwID;
+	unsigned int dwID;
 	DWORD dwLen;
 	ULONG status = TRUE;
 	char Buf[2048];

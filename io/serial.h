@@ -27,12 +27,11 @@ typedef struct {
 	UINT8	result;
 	UINT8	data;
 	UINT8	send;
-#if defined(VAEG_FIX)
-	UINT8	cmd;
-#else
 	UINT8	pad;
-#endif
-	UINT	pos;
+	UINT8	pos;
+	UINT8	cmd;
+	UINT8	cmdvalid;
+	UINT8	reserved;
 	UINT	dummyinst;
 	UINT	mul;
 	UINT8	rawmode;
@@ -73,6 +72,8 @@ void rs232c_open(void);
 void rs232c_callback(void);
 
 UINT8 rs232c_stat(void);
+UINT8 rs232c_geterror(void);
+void rs232c_clearerror(void);
 void rs232c_midipanic(void);
 
 #if defined(SUPPORT_RS232C_FIFO)

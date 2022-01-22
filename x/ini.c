@@ -761,14 +761,15 @@ static INITBL iniitem[] = {
 	{"USERAM_D", INITYPE_BOOL,	&np2cfg.useram_d,	0},
 #if defined(SUPPORT_ASYNC_CPU)
 	{"ASYNCCPU", INITYPE_BOOL,	&np2cfg.asynccpu,	0},
-	{"CONSTTSC", INITYPE_BOOL,	&np2cfg.consttsc,	0},
 #endif
+	{"CONSTTSC", INITYPE_BOOL,	&np2cfg.consttsc,	0},
 #if defined(SUPPORT_IDEIO)
 	{"IDEBADDR", INIRO_HEX8,	&np2cfg.idebaddr,	0},
 #endif
 #if defined(SUPPORT_GAMEPORT)
 	{"GAMEPORT", INITYPE_BOOL,	&np2cfg.gameport,	0},
 #endif
+	{"USEMOVCS", INIRO_BOOL,	&np2cfg.allowMOVCS,	0},
 
 	{"keyboard", INITYPE_KB,	&np2oscfg.KEYBOARD,	0},
 	{"F12_COPY", INITYPE_UINT8,	&np2oscfg.F12KEY,	0},

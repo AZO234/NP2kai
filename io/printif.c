@@ -16,7 +16,7 @@ static void IOOUTCALL prt_o40(UINT port, REG8 dat) {
 
 	prt = cm_prt;
 	if (prt == NULL) {
-		prt = commng_create(COMCREATE_PRINTER);
+		prt = commng_create(COMCREATE_PRINTER, FALSE);
 		cm_prt = prt;
 	}
 	prt->write(prt, (UINT8)dat);

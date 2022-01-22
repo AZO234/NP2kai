@@ -499,4 +499,22 @@ UINT8 i386haxfunc_vcpu_debug(HAX_DEBUG *inbuf){
 
 	return SUCCESS;
 }
+UINT8 i386haxfunc_vcpu_setCPUID(HAX_CPUID *inbuf){
+	int ret = 0;
+	DWORD dwSize;
+
+	if(!np2hax.hVCPUDevice){
+		return FAILURE;
+	}
+
+	ret = DeviceIoControl(np2hax.hVCPUDevice, HAX_VCPU_IOCTL_SET_CPUID,
+                          inbuf, sizeof(HAX_CPUID) - sizeof(HAX_CPUID_ENTRY) * (HAX_MAX_CPUID_ENTRIES - inbuf->total),
+						  NULL, 0, &dwSize, 
+						  (LPOVERLAPPED)NULL);
+	if (!ret) {
+        return FAILURE;
+	}
+
+	return SUCCESS;
+}
 #endif

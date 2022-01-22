@@ -167,6 +167,7 @@
 #define IDC_COM1PIPENAME                14126
 #define IDC_COM1PIPESERV                14127
 #define IDC_COM1STR32                   14128
+#define IDC_COM1DSRCHECK                14129
 #define IDC_PC9861E                     14201
 #define IDC_CH1SPEED                    14202
 #define IDC_CH1INT                      14203
@@ -209,6 +210,10 @@
 #define IDC_VOLMASTERSTR                15214
 #define IDC_VOLCDDA                     15220
 #define IDC_VOLCDDASTR                  15221
+#define IDC_VOLMIDI                     15222
+#define IDC_VOLMIDISTR                  15223
+#define IDC_VOLHW                       15224
+#define IDC_VOLHWSTR                    15225
 #define IDC_VOL14L                      15301
 #define IDC_VOL14LSTR                   15302
 #define IDC_VOL14R                      15303
@@ -264,6 +269,7 @@
 #define IDC_PAD1_RB                     15711
 #define IDC_PAD1_RC                     15712
 #define IDC_PAD1_RD                     15713
+#define IDC_PAD1_ID                     15714
 #define IDC_USEFMGEN                    15801
 #define IDC_CLNDREAL                    16101
 #define IDC_CLNDVIR                     16102

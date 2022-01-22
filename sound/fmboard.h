@@ -66,6 +66,8 @@ extern	SB16		g_sb16;
 
 REG8 fmboard_getjoy(POPNA opna);
 
+void fmboard_updatevolume(void);
+
 void fmboard_extreg(void (*ext)(REG8 enable));
 void fmboard_extenable(REG8 enable);
 

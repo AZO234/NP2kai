@@ -14,6 +14,15 @@ typedef struct {
 	UINT8	regsft;
 } _UPD4990, *UPD4990;
 
+typedef struct {
+	UINT32 hrtimerdiv; 
+	UINT32 hrtimerclock; 
+	UINT32 hrtimerclock32; 
+	
+	UINT32 clockcounter;
+	UINT32 clockcounter32;
+} _UPD4990HRT, *UPD4990HRT;
+
 
 #ifdef __cplusplus
 extern "C" {

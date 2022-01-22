@@ -173,6 +173,7 @@ serialgetstat(COMMNG self)
 	int status;
 	int rv;
 #endif
+	UINT8 ret = 0;
 
 #if defined(_WINDOWS)
 	rv = GetCommState(serial->hdl, &status);
@@ -182,7 +183,7 @@ serialgetstat(COMMNG self)
 	if (rv < 0) {
 #endif
 		VERBOSE(("serialgetstat: ioctl: %s", strerror(errno)));
-		return 0x20;
+		return 0x01;
 	}
 #if defined(_WINDOWS)
 	if (!(status.fOutxDsrFlow)) {
@@ -190,10 +191,20 @@ serialgetstat(COMMNG self)
 	if (!(status & TIOCM_DSR)) {
 #endif
 		VERBOSE(("serialgetstat: DSR is disable"));
-		return 0x20;
+		ret |= 0x01;
+	}else{
+		VERBOSE(("serialgetstat: DSR is enable"));
 	}
-	VERBOSE(("serialgetstat: DSR is enable"));
-	return 0x00;
+	if (!(status & TIOCM_CTS)) {
+		ret |= 0x40;
+	}
+	if (!(status & TIOCM_RNG)) {
+		ret |= 0x80;
+	}
+	if (!(status & TIOCM_CAR)) {
+		ret |= 0x20;
+	}
+	return ret;
 }
 
 static INTPTR

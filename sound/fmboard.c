@@ -94,6 +94,43 @@ REG8 fmboard_getjoy(POPNA opna)
 	return ret;
 }
 
+void fmboard_updatevolume(){
+	UINT volex = 15;
+	UINT i;
+	if(g_nSoundID==SOUNDID_WAVESTAR){
+		volex = cs4231.devvolume[0xff];
+	}
+	opngen_setvol(np2cfg.vol_fm * volex / 15 * np2cfg.vol_master / 100);
+#if defined(SUPPORT_FMGEN)
+	opna_fmgen_setallvolumeFM_linear(np2cfg.vol_fm * volex / 15 * np2cfg.vol_master / 100);
+#endif	/* SUPPORT_FMGEN */
+	psggen_setvol(np2cfg.vol_ssg * volex / 15 * np2cfg.vol_master / 100);
+#if defined(SUPPORT_FMGEN)
+	opna_fmgen_setallvolumePSG_linear(np2cfg.vol_ssg * volex / 15 * np2cfg.vol_master / 100);
+#endif	/* SUPPORT_FMGEN */
+
+	adpcm_setvol(np2cfg.vol_adpcm * np2cfg.vol_master / 100);
+#if defined(SUPPORT_FMGEN)
+	opna_fmgen_setallvolumeADPCM_linear(np2cfg.vol_adpcm * np2cfg.vol_master / 100);
+#endif	/* SUPPORT_FMGEN */
+	for (i = 0; i < OPNA_MAX; i++)
+	{
+		adpcm_update(&g_opna[i].adpcm);
+	}
+
+	pcm86gen_setvol(np2cfg.vol_pcm * np2cfg.vol_master / 100);
+	pcm86gen_update();
+	
+	rhythm_setvol(np2cfg.vol_rhythm * volex / 15 * np2cfg.vol_master / 100);
+#if defined(SUPPORT_FMGEN)
+	opna_fmgen_setallvolumeRhythmTotal_linear(np2cfg.vol_rhythm * volex / 15 * np2cfg.vol_master / 100);
+#endif	/* SUPPORT_FMGEN */
+	for (i = 0; i < OPNA_MAX; i++)
+	{
+		rhythm_update(&g_opna[i].rhythm);
+	}
+}
+
 
 // ----
 

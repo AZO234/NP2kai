@@ -27,6 +27,7 @@ typedef struct {
 	OEMCHAR	mdl[64];
 	OEMCHAR	def[MAX_PATH];
 	UINT8	fixedspeed;
+	UINT8	DSRcheck;
 #if defined(SUPPORT_NAMED_PIPE)
 	OEMCHAR	pipename[MAX_PATH]; // The name of the named-pipe
 	OEMCHAR	pipeserv[MAX_PATH]; // The server name of the named-pipe
@@ -58,6 +59,9 @@ typedef struct {
 	UINT8	JOYPAD1;
 	UINT8	JOYPAD2;
 	UINT8	JOY1BTN[4];
+	UINT8	JOY2BTN[4];
+	UINT8	JOYPAD1ID;
+	UINT8	JOYPAD2ID;
 
 	COMCFG	mpu;
 #if defined(SUPPORT_SMPU98)
@@ -130,7 +134,9 @@ typedef struct {
 	UINT8	readonly; // No save changed settings
 	UINT8	usewheel; // Use mouse wheel
 	UINT8	tickmode; // Force Set Tick Counter Mode
-	UINT8	usemastervolume; // Use Master Volume
+	//UINT8	usemastervolume; // Use Master Volume
+	UINT8	usemidivolume; // Use MIDI Volume
+	UINT8	mastervolumemax; // Maxmum Master Volume
 	
 	UINT8	toolwndhistory; // Number of data of recently opened FD image list in Tool Window
 	

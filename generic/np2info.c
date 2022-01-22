@@ -68,6 +68,9 @@ static void info_cpu(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 #else
 	milstr_ncpy(str, i386cpuid.cpu_brandstring, maxlen);
 #endif
+	if(i386cpuid.allow_movCS){
+		milstr_ncat(str, OEMTEXT(" (+MOV CS,xx)"), maxlen - OEMSTRLEN(str));
+	}
 #else
 	UINT	family;
 #if defined(CPU_FAMILY)

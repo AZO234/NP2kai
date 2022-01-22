@@ -8,7 +8,8 @@
 // PEGC プレーンモード
 // 関連: vram.c, vram.h, memvga.c, memvga.h
 
-// 詳しくもないのに作ったのでかなりいい加減です。
+// 詳しくもないのに作ったのでかなりいい加減です。Better than nothing.
+// シフタを設定すると読み取りアドレスまで一緒にずれるという致命的な設計ミスをしています。
 // 改良するのであれば全部捨てて作り直した方が良いかもしれません
 
 #ifdef SUPPORT_PEGC
@@ -28,8 +29,9 @@ REG16 MEMCALL pegc_memvgaplane_rd16(UINT32 address){
 	UINT8 ropupdmode = 0; // 1ならラスタオペレーションを使用 E0108h bit12
 	UINT8 planemask = 0; // プレーン書き込み禁止(0=許可, 1=禁止)　E0104h
 	UINT32 pixelmask = 0; // ビット（画素）への書き込み禁止(0=禁止, 1=許可) E010Ch
-	UINT32 bitlength = 0; // ブロック転送ビット長(転送サイズ-1) E0110h
+	UINT32 blocklength = 0; // ブロック転送ビット長(転送サイズ-1) E0110h
 	UINT32 srcbitshift = 0; // リード時のビットシフト数 E0112h
+	UINT32 dstbitshift = 0; // ライト時のビットシフト数 E0112h
 	UINT8 shiftdir = 1; // シフト方向（0:inc, 1:dec）E0108h bit9
 	UINT8 srccpu = 1; // 直前に読み取ったVRAMデータではなくCPUデータを使用するか E0108h bit8
 
@@ -39,7 +41,9 @@ REG16 MEMCALL pegc_memvgaplane_rd16(UINT32 address){
 	ropupdmode = (LOADINTELWORD(vramop.mio2+PEGC_REG_PLANE_ROP) >> 12) & 0x1;
 	planemask = vramop.mio2[PEGC_REG_PLANE_ACCESS];
 	pixelmask = LOADINTELDWORD(vramop.mio2 + PEGC_REG_MASK);
-	bitlength = LOADINTELDWORD(vramop.mio2 + PEGC_REG_LENGTH) & 0x0fff;
+	blocklength = LOADINTELDWORD(vramop.mio2 + PEGC_REG_LENGTH) & 0x0fff;
+	srcbitshift = (LOADINTELWORD(vramop.mio2+PEGC_REG_SHIFT)) & 0x1f;
+	dstbitshift = (LOADINTELWORD(vramop.mio2+PEGC_REG_SHIFT) >> 8) & 0x1f;
 	srcbitshift = (LOADINTELWORD(vramop.mio2+PEGC_REG_SHIFT)) & 0x1f;
 	shiftdir = (LOADINTELWORD(vramop.mio2+PEGC_REG_PLANE_ROP) >> 9) & 0x1;
 	srccpu = (LOADINTELWORD(vramop.mio2+PEGC_REG_PLANE_ROP) >> 8) & 0x1;
@@ -47,8 +51,20 @@ REG16 MEMCALL pegc_memvgaplane_rd16(UINT32 address){
 	// 画素単位のアドレス計算
 	addr = (address - 0xa8000) * 8;
 	addr += srcbitshift;
+	if(!shiftdir){
+		if(pegc.remain == blocklength + 1){
+		}else{
+			addr -= dstbitshift;
+		}
+	}else{
+		if(pegc.remain == blocklength + 1){
+		}else{
+			addr -= dstbitshift;
+		}
+	}
 	addr &= 0x80000-1; // 安全のため
-
+	
+	pegc.lastdatalen = 0;
 	if(!srccpu){
 		if(!shiftdir){
 			for(i=0;i<16;i++){
@@ -62,7 +78,7 @@ REG16 MEMCALL pegc_memvgaplane_rd16(UINT32 address){
 				}
 
 				// update last data
-				pegc.lastdata[i] = data;
+				pegc.lastdata[pegc.lastdatalen + i] = data;
 
 				// update pattern reg
 				if((LOADINTELWORD(vramop.mio2+PEGC_REG_PLANE_ROP) >> 13) & 0x1){
@@ -85,7 +101,7 @@ REG16 MEMCALL pegc_memvgaplane_rd16(UINT32 address){
 				}
 
 				// update last data
-				pegc.lastdata[i] = data;
+				pegc.lastdata[pegc.lastdatalen + i] = data;
 
 				// update pattern reg
 				if(LOADINTELWORD(vramop.mio2+PEGC_REG_PLANE_ROP) & 0x2000){
@@ -98,11 +114,13 @@ REG16 MEMCALL pegc_memvgaplane_rd16(UINT32 address){
 			}
 		}
 	}
-	pegc.lastdatalen += 16;
+	if(pegc.lastdatalen < 32) pegc.lastdatalen += 16;
 	return ret;
 }
 void MEMCALL pegc_memvgaplane_wr16(UINT32 address, REG16 value){
 	
+	static int firstSkip = 0;
+
 	int i,j;
 	UINT8 bit;
 
@@ -114,10 +132,13 @@ void MEMCALL pegc_memvgaplane_wr16(UINT32 address, REG16 value){
 	UINT8 ropupdmode = 0; // 1ならラスタオペレーションを使用 E0108h bit12
 	UINT8 planemask = 0; // プレーン書き込み禁止(0=許可, 1=禁止)　E0104h
 	UINT32 pixelmask = 0; // ビット（画素）への書き込み禁止(0=禁止, 1=許可) E010Ch
-	UINT32 bitlength = 0; // ブロック転送ビット長(転送サイズ-1) E0110h
+	UINT32 blocklength = 0; // ブロック転送ビット長(転送サイズ-1) E0110h
+	UINT32 srcbitshift = 0; // リード時のビットシフト数 E0112h
 	UINT32 dstbitshift = 0; // ライト時のビットシフト数 E0112h
 	UINT8 shiftdir = 1; // シフト方向（0:inc, 1:dec）E0108h bit9
 	UINT8 srccpu = 1; // 直前に読み取ったVRAMデータではなくCPUデータを使用するか E0108h bit8
+	int datalen = 16;
+	int exshiftmode;
 
 	// PEGCレジスタ読みだし
 	ropcode = LOADINTELWORD(vramop.mio2+PEGC_REG_PLANE_ROP) & 0xff;
@@ -125,27 +146,41 @@ void MEMCALL pegc_memvgaplane_wr16(UINT32 address, REG16 value){
 	ropupdmode = (LOADINTELWORD(vramop.mio2+PEGC_REG_PLANE_ROP) >> 12) & 0x1;
 	planemask = vramop.mio2[PEGC_REG_PLANE_ACCESS];
 	pixelmask = LOADINTELDWORD(vramop.mio2 + PEGC_REG_MASK);
-	bitlength = LOADINTELDWORD(vramop.mio2 + PEGC_REG_LENGTH) & 0x0fff;
+	blocklength = LOADINTELDWORD(vramop.mio2 + PEGC_REG_LENGTH) & 0x0fff;
+	srcbitshift = (LOADINTELWORD(vramop.mio2+PEGC_REG_SHIFT)) & 0x1f;
 	dstbitshift = (LOADINTELWORD(vramop.mio2+PEGC_REG_SHIFT) >> 8) & 0x1f;
 	shiftdir = (LOADINTELWORD(vramop.mio2+PEGC_REG_PLANE_ROP) >> 9) & 0x1;
 	srccpu = (LOADINTELWORD(vramop.mio2+PEGC_REG_PLANE_ROP) >> 8) & 0x1;
 	
+	if(pegc.remain == 0){
+		// データ数戻す?
+		pegc.remain = blocklength + 1;
+		pegc.lastdatalen = 0;
+	}else{
+		firstSkip = 0;
+	}
+	if(firstSkip){
+		firstSkip = 0;
+		return;
+	}
+
+	exshiftmode = (!srccpu || ((blocklength + 1) & 0xf)!=0); // WORKAROUND
+	
 	// 画素単位のアドレス計算
 	addr = (address - 0xa8000) * 8;
-	addr += dstbitshift;
+	if(exshiftmode){
+		if(pegc.remain == blocklength + 1){
+			addr += dstbitshift;
+			datalen -= dstbitshift;
+		}
+	}else{
+		// WORKAROUND
+		addr += dstbitshift;
+	}
 	addr &= 0x80000-1; // 安全のため
 
 	// ???
 	bit = (addr & 0x40000)?2:1;
-	
-	//if(!srccpu && pegc.remain!=0 && pegc.lastdatalen < 16){
-	//	return; // 書き込み無視
-	//}
-	
-	if(pegc.remain == 0){
-		// データ数戻す?
-		pegc.remain = (LOADINTELDWORD(vramop.mio2 + PEGC_REG_LENGTH) & 0x0fff) + 1;
-	}
 	
 	if(!shiftdir){
 		// とりあえずインクリメンタル
@@ -165,9 +200,10 @@ void MEMCALL pegc_memvgaplane_wr16(UINT32 address, REG16 value){
 		// plane6 vramex[0]  [1]  [2]  [3]  [4]  [5]  [6]  [7]  [8]  [9] [10] [11] [12] [13] [14] [15]    bit6        bit6
 		// plane7 vramex[0]  [1]  [2]  [3]  [4]  [5]  [6]  [7]  [8]  [9] [10] [11] [12] [13] [14] [15]    bit7        bit7
 
-		for(i=0;i<16;i++){
+		for(i=0;i<datalen;i++){
 			UINT32 addrtmp = (addr + i) & (0x80000-1); // 書き込み位置
 			UINT32 pixmaskpos = (1 << ((i/8)*8 + (7-(i&0x7)))); // 現在の画素に対応するvalueやpixelmaskのビット位置
+			//if(pegc.remain > 32){
 			if(pixelmask & pixmaskpos){ // 書き込み禁止チェック
 				// SRCの設定
 				if(srccpu){
@@ -180,7 +216,7 @@ void MEMCALL pegc_memvgaplane_wr16(UINT32 address, REG16 value){
 
 				// DSTの設定 現在のVRAMデータ取得
 				dst = vramex[addrtmp];
-
+				
 				if(ropupdmode){
 					// ROP使用
 					vramex[addrtmp] = (vramex[addrtmp] & planemask); // 書き換えされる予定のビットを0にしておく
@@ -228,7 +264,6 @@ void MEMCALL pegc_memvgaplane_wr16(UINT32 address, REG16 value){
 				// ???
 				vramupdate[LOW15(addrtmp >> 3)] |= bit;
 			}
-
 			pegc.remain--;
 			// 転送サイズチェック
 			if(pegc.remain == 0){
@@ -236,7 +271,7 @@ void MEMCALL pegc_memvgaplane_wr16(UINT32 address, REG16 value){
 			}
 		}
 	}else{
-		for(i=0;i<16;i++){
+		for(i=0;i<datalen;i++){
 			UINT32 addrtmp = (addr - i) & (0x80000-1); // 書き込み位置
 			UINT32 pixmaskpos = (1 << ((i/8)*8 + (7-(i&0x7)))); // 現在の画素に対応するvalueやpixelmaskのビット位置
 			if(pixelmask & pixmaskpos){ // 書き込み禁止チェック
@@ -251,7 +286,7 @@ void MEMCALL pegc_memvgaplane_wr16(UINT32 address, REG16 value){
 
 				// DSTの設定 現在のVRAMデータ取得
 				dst = vramex[addrtmp];
-
+				
 				if(ropupdmode){
 					// ROP使用
 					vramex[addrtmp] = (vramex[addrtmp] & planemask); // 書き換えされる予定のビットを0にしておく
@@ -299,7 +334,7 @@ void MEMCALL pegc_memvgaplane_wr16(UINT32 address, REG16 value){
 				// ???
 				vramupdate[LOW15(addrtmp >> 3)] |= bit;
 			}
-
+			
 			pegc.remain--;
 			// 転送サイズチェック
 			if(pegc.remain == 0){
@@ -309,7 +344,22 @@ void MEMCALL pegc_memvgaplane_wr16(UINT32 address, REG16 value){
 	}
 endloop:
 	gdcs.grphdisp |= bit;
-	pegc.lastdatalen -= 16;
+	
+	if(pegc.remain == 0){
+		if(exshiftmode){
+			// nothing to do
+		}else{
+			// WORKAROUND
+			if(dstbitshift){
+				firstSkip = 1;
+			}
+		}
+	}
+	if(pegc.lastdatalen > 16) {
+		pegc.lastdatalen -= 16;
+	}else{
+		pegc.lastdatalen = 0;
+	}
 }
 UINT32 MEMCALL pegc_memvgaplane_rd32(UINT32 address){
 	// TODO: 作る

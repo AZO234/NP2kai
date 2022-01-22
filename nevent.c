@@ -111,7 +111,7 @@ void nevent_progress(void)
 
 	// NEVENT_FLAMESが消える問題に暫定対処
 	if(!fevtchk){
-		printf("NEVENT_FLAMES is missing!!\n");
+		//printf("NEVENT_FLAMES is missing!!¥n");
 		pcstat.screendispflag = 0;
 	}
 //	TRACEOUT(("nextbase = %d (%d)", nextbase, CPU_REMCLOCK));
@@ -264,6 +264,19 @@ BOOL nevent_iswork(NEVENTID id)
 		}
 	}
 	return FALSE;
+}
+
+void nevent_forceexecute(NEVENTID id)
+{
+	NEVENTITEM item;
+
+	item = &g_nevent.item[id];
+
+	/* コールバックの実行 */
+	if (item->proc != NULL)
+	{
+		item->proc(item);
+	}
 }
 
 SINT32 nevent_getremain(NEVENTID id)

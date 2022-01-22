@@ -152,7 +152,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "画面出力"
 FONT 9, "ＭＳ Ｐゴシック"
 BEGIN
-    CONTROL         "（古いモノクロ）液晶ディスプレイ",IDC_LCD,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,8,156,10
+    CONTROL         "液晶ディスプレイ",IDC_LCD,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,8,156,10
     CONTROL         "色反転",IDC_LCDX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,24,144,10
     CONTROL         "スキップラインを中間色で埋める",IDC_SKIPLINE,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,40,156,10
     LTEXT           "明るさ",IDC_STATIC,20,55,22,8
@@ -231,7 +231,7 @@ FONT 9, "ＭＳ Ｐゴシック"
 BEGIN
     LTEXT           "ポート",IDC_STATIC,8,10,30,8
     COMBOBOX        IDC_COM1PORT,40,8,48,96,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "ポート設定",IDC_COM1STR00,8,28,182,84
+    GROUPBOX        "ポート設定",IDC_COM1STR00,8,28,202,84
     LTEXT           "通信速度",IDC_COM1STR01,16,45,40,8
     COMBOBOX        IDC_COM1SPEED,60,42,48,128,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "bps",IDC_COM1STR02,112,45,26,8
@@ -239,6 +239,7 @@ BEGIN
     LTEXT           "データビット",IDC_COM1STR03,16,61,40,8
     COMBOBOX        IDC_COM1CHARSIZE,60,58,48,64,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "bits",IDC_COM1STR04,112,61,26,8
+    CONTROL         "H/W DSR受信制御",IDC_COM1DSRCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,130,60,70,10
     LTEXT           "パリティ",IDC_COM1STR05,16,77,40,8
     COMBOBOX        IDC_COM1PARITY,60,74,48,64,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "ストップビット",IDC_COM1STR06,16,93,40,8
@@ -258,6 +259,7 @@ BEGIN
     EDITTEXT        IDC_COM1PIPENAME,55,25,80,14, ES_AUTOHSCROLL
     LTEXT           "サーバー名",IDC_COM1STR31,8,44,50,8
     EDITTEXT        IDC_COM1PIPESERV,55,41,80,14, ES_AUTOHSCROLL
+    EDITTEXT        IDC_COM1STR32,8,60,150,14, ES_READONLY
 END
 
 IDD_PC9861A DIALOG 0, 0, 224, 140
@@ -374,8 +376,14 @@ BEGIN
     LTEXT           "CD-DA",IDC_STATIC,8,89,30,8
     CONTROL         "Slider32",IDC_VOLCDDA,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,40,89,88,10
     LTEXT           "",IDC_VOLCDDASTR,134,88,16,10,SS_SUNKEN,WS_EX_RIGHT
-	PUSHBUTTON      "既定値1",IDC_SNDMIXDEF,116,102,40,14
-	PUSHBUTTON      "既定値2",IDC_SNDMIXDEF2,160,102,40,14
+    LTEXT           "MIDI",IDC_STATIC,8,103,30,8
+    CONTROL         "Slider1",IDC_VOLMIDI,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,40,103,88,10
+    LTEXT           "",IDC_VOLMIDISTR,134,103,16,10,SS_SUNKEN,WS_EX_RIGHT
+    LTEXT           "Hardware",IDC_STATIC,8,117,30,8
+    CONTROL         "Slider1",IDC_VOLHW,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,40,117,88,10
+    LTEXT           "",IDC_VOLHWSTR,134,117,16,10,SS_SUNKEN,WS_EX_RIGHT
+	PUSHBUTTON      "既定値1",IDC_SNDMIXDEF,160,102,40,14
+	PUSHBUTTON      "既定値2",IDC_SNDMIXDEF2,160,122,40,14
 END
 
 IDD_SND14 DIALOGEX 0, 0, 184, 124
@@ -530,6 +538,8 @@ BEGIN
     CONTROL         "B",IDC_PAD1_RB,"Button",BS_AUTOCHECKBOX,86,60,21,10
     CONTROL         "C",IDC_PAD1_RC,"Button",BS_AUTOCHECKBOX,108,60,21,10
     CONTROL         "D",IDC_PAD1_RD,"Button",BS_AUTOCHECKBOX,130,60,21,10
+    LTEXT           "ジョイパッドID",IDC_STATIC,24,81,60,8
+    COMBOBOX        IDC_PAD1_ID,84,79,120,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
 END
 
 IDD_SNDFMGEN DIALOG 0, 0, 184, 124
@@ -570,7 +580,7 @@ CLASS "np2dialog"
 FONT 9, "ＭＳ Ｐゴシック"
 BEGIN
     ICON            IDI_ICON1,IDC_NP2ICON,8,8,20,20
-    LTEXT           "",IDC_NP2VER,36,12,152,16
+    LTEXT           "",IDC_NP2VER,36,16,152,8
     DEFPUSHBUTTON   "&OK",IDOK,168,8,40,14,WS_GROUP
     PUSHBUTTON      "詳細 >>",IDC_MORE,168,26,40,14
     EDITTEXT        IDC_NP2INFO,8,52,200,48,ES_MULTILINE | ES_READONLY | ES_WANTRETURN | WS_VSCROLL
@@ -998,23 +1008,13 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "CPUウェイト無し(&N)",         IDM_NOWAIT
         MENUITEM "CPUクロック安定化(&C)",       IDM_CPUSTABILIZER
+        MENUITEM "CPUクロック可変[実験中](&A)", IDM_ASYNCCPU
         MENUITEM SEPARATOR
         MENUITEM "自動フレームスキップ(&A)",    IDM_AUTOFPS
         MENUITEM "フレームスキップ無し(&U)",    IDM_60FPS
         MENUITEM "1/&2フレーム",                IDM_30FPS
         MENUITEM "1/&3フレーム",                IDM_20FPS
         MENUITEM "1/&4フレーム",                IDM_15FPS
-        MENUITEM SEPARATOR
-        POPUP "Video filter"
-        BEGIN
-            MENUITEM "有効",                   IDM_VF1EN
-            MENUITEM SEPARATOR
-            MENUITEM "プロファイル 0",                   IDM_VF1P0
-            MENUITEM "プロファイル 1",                   IDM_VF1P1
-            MENUITEM "プロファイル 2",                   IDM_VF1P2
-            MENUITEM SEPARATOR
-            MENUITEM "BMP保存時のみ有効",                IDM_VF1BO
-        END
         MENUITEM SEPARATOR
         MENUITEM "画面設定(&S)...",             IDM_SCREENOPT
     END
@@ -1135,7 +1135,6 @@ BEGIN
     POPUP "その他(&O)"
     BEGIN
         MENUITEM "BMP画面キャプチャ(&B)...",        IDM_BMPSAVE
-        MENUITEM "fomtromをフック",                 IDM_HF_ENABLE
         MENUITEM "テキストVRAM保存(&T)...",         IDM_TXTSAVE
         MENUITEM "S98サウンドログ保存(&S)...",      IDM_S98LOGGING
         MENUITEM "カレンダ設定(&L)...",             IDM_CALENDAR
@@ -1149,12 +1148,10 @@ BEGIN
         MENUITEM "ジョイスティックボタン反転(&V)",  IDM_JOYX
         MENUITEM "ジョイスティックボタン連打(&R)",  IDM_RAPID
         MENUITEM "マウスボタン連打(&M)",        IDM_MSRAPID
-        MENUITEM "SSTP出力",                    IDM_SSTP
         MENUITEM "&ITFエミュレーション",        IDM_ITFWORK
         // MENUITEM "タイマー不具合修正(&T)",      IDM_TIMERFIX
         // MENUITEM "16MB超メモリチェック省略(&S)",IDM_SKIP16MEMCHK
         MENUITEM "高速メモリチェック(&E)",      IDM_FASTMEMCHK
-        MENUITEM "デバッグ用ステートセーブ",              IDM_EN_DBSS
         MENUITEM SEPARATOR
         MENUITEM "ヘルプ(&H)...",               IDM_HELP
         MENUITEM "バージョン情報(&A)...",       IDM_ABOUT
@@ -1186,22 +1183,6 @@ BEGIN
         MENUITEM "Load 7",                      IDM_FLAGLOAD7
         MENUITEM "Load 8",                      IDM_FLAGLOAD8
         MENUITEM "Load 9",                      IDM_FLAGLOAD9
-    END
-END
-
-IDR_DEBUGSS MENU
-BEGIN
-    POPUP "デバッグ用ステートセーブ"
-    BEGIN
-        MENUITEM "Save debugss 0",                      IDM_DBSSSAVE0
-        MENUITEM "Save debugss 1",                      IDM_DBSSSAVE1
-        MENUITEM "Save debugss 2",                      IDM_DBSSSAVE2
-        MENUITEM "Save debugss 3",                      IDM_DBSSSAVE3
-        MENUITEM SEPARATOR
-        MENUITEM "Load debugss 0",                      IDM_DBSSLOAD0
-        MENUITEM "Load debugss 1",                      IDM_DBSSLOAD1
-        MENUITEM "Load debugss 2",                      IDM_DBSSLOAD2
-        MENUITEM "Load debugss 3",                      IDM_DBSSLOAD3
     END
 END
 
@@ -1488,8 +1469,8 @@ JUMPER118               RAWBMP                  "..\\j118.bmp"
 
 STRINGTABLE
 BEGIN
-    IDS_APP_NAME2           "Neko Project II kai"
-    IDS_APP_NAME21          "Neko Project 21 kai"
+    IDS_APP_NAME2           "Neko Project II/W"
+    IDS_APP_NAME21          "Neko Project 21/W"
     IDS_FILENAME_HELP       "np2.chm"
     IDS_FONTFACE            "ＭＳ ゴシック"
     IDS_PFONTFACE           "ＭＳ Ｐゴシック"

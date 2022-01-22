@@ -272,14 +272,14 @@ void cs4231_control(UINT idx, REG8 dat) {
 			UINT i;
 			if(dat >= 0x10) dat = 15;
 			cs4231.devvolume[0xff] = (~dat) & 15;
-			opngen_setvol(np2cfg.vol_fm * cs4231.devvolume[0xff] / 15);
-			psggen_setvol(np2cfg.vol_ssg * cs4231.devvolume[0xff] / 15);
-			rhythm_setvol(np2cfg.vol_rhythm * cs4231.devvolume[0xff] / 15);
+			opngen_setvol(np2cfg.vol_fm * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
+			psggen_setvol(np2cfg.vol_ssg * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
+			rhythm_setvol(np2cfg.vol_rhythm * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
 #if defined(SUPPORT_FMGEN)
 			if(np2cfg.usefmgen) {
-				opna_fmgen_setallvolumeFM_linear(np2cfg.vol_fm * cs4231.devvolume[0xff] / 15);
-				opna_fmgen_setallvolumePSG_linear(np2cfg.vol_ssg * cs4231.devvolume[0xff] / 15);
-				opna_fmgen_setallvolumeRhythmTotal_linear(np2cfg.vol_rhythm * cs4231.devvolume[0xff] / 15);
+				opna_fmgen_setallvolumeFM_linear(np2cfg.vol_fm * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
+				opna_fmgen_setallvolumePSG_linear(np2cfg.vol_ssg * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
+				opna_fmgen_setallvolumeRhythmTotal_linear(np2cfg.vol_rhythm * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
 			}
 #endif
 			for (i = 0; i < NELEMENTS(g_opna); i++)

@@ -292,7 +292,7 @@ tr_nextsearch_more:
 				if (!tr->step) {
 					if ((tr->datas) && (tr->remain == 0)) {
 						if (cm_mpu98 == NULL) {
-							cm_mpu98 = commng_create(COMCREATE_MPU98II);
+							cm_mpu98 = commng_create(COMCREATE_MPU98II, FALSE);
 						}
 						if (tr->data[0] == MIDI_STOP) {
 							tr->datas = 0;
@@ -973,7 +973,7 @@ void IOOUTCALL mpu98ii_o0(UINT port, REG8 dat) {
 
 TRACEOUT(("mpu98ii out %.4x %.2x", port, dat));
 	if (cm_mpu98 == NULL) {
-		cm_mpu98 = commng_create(COMCREATE_MPU98II);
+		cm_mpu98 = commng_create(COMCREATE_MPU98II, FALSE);
 	}
 	if (cm_mpu98->connect != COMCONNECT_OFF) {
 		if (mpu98.mode) {
@@ -995,7 +995,7 @@ void IOOUTCALL mpu98ii_o2(UINT port, REG8 dat) {
 
 TRACEOUT(("mpu98ii out %.4x %.2x", port, dat));
 	if (cm_mpu98 == NULL) {
-		cm_mpu98 = commng_create(COMCREATE_MPU98II);
+		cm_mpu98 = commng_create(COMCREATE_MPU98II, FALSE);
 	}
 	if (cm_mpu98->connect != COMCONNECT_OFF) {
 		if (!mpu98.mode) {
@@ -1025,7 +1025,7 @@ TRACEOUT(("mpu98ii out %.4x %.2x", port, dat));
 REG8 IOINPCALL mpu98ii_i0(UINT port) {
 	
 	if (cm_mpu98 == NULL) {
-		cm_mpu98 = commng_create(COMCREATE_MPU98II);
+		cm_mpu98 = commng_create(COMCREATE_MPU98II, FALSE);
 	}
 	if (cm_mpu98->connect != COMCONNECT_OFF) {
 		if (mpu98.r.cnt) {
@@ -1065,7 +1065,7 @@ REG8 IOINPCALL mpu98ii_i2(UINT port) {
 	REG8	ret;
 	
 	if (cm_mpu98 == NULL) {
-		cm_mpu98 = commng_create(COMCREATE_MPU98II);
+		cm_mpu98 = commng_create(COMCREATE_MPU98II, FALSE);
 	}
 	if (cm_mpu98->connect != COMCONNECT_OFF || g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_118_SB16) {
 		ret = mpu98.status;
@@ -1106,6 +1106,10 @@ void mpu98ii_reset(const NP2CFG *pConfig) {
 	mpu98.irqnum = mpuirqnum[pConfig->mpuopt & 3];
 	setdefaultcondition();
 //	pic_registext(mpu98.irqnum);
+	
+	if (cm_mpu98 == NULL) {
+		cm_mpu98 = commng_create(COMCREATE_MPU98II, TRUE);
+	}
 
 	(void)pConfig;
 }

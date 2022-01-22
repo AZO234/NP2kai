@@ -63,6 +63,9 @@ static void sys_cmd(MENUID id) {
 			sdlkbd_reset();
 #endif
 			pccore_cfgupdate();
+			if(nevent_iswork(NEVENT_CDWAIT)){
+				nevent_forceexecute(NEVENT_CDWAIT);
+			}
 			pccore_reset();
 			break;
 

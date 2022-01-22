@@ -16,6 +16,8 @@ CComBase::CComBase(UINT nConnect)
 	this->read = cRead;
 	this->write = cWrite;
 	this->writeretry = cWriteRetry;
+	this->beginblocktranster = cBeginBlockTransfer;
+	this->endblocktranster = cEndBlockTransfer;
 	this->lastwritesuccess = cLastWriteSuccess;
 	this->getstat = cGetStat;
 	this->msg = cMessage;
@@ -61,6 +63,24 @@ UINT CComBase::cWriteRetry(COMMNG cm)
 	return static_cast<CComBase*>(cm)->WriteRetry();
 }
 
+/**
+ * Begin Block Transfer
+ * @param[in] cm COMMNG インスタンス
+ * @return result
+ */
+void CComBase::cBeginBlockTransfer(COMMNG cm)
+{
+	return static_cast<CComBase*>(cm)->BeginBlockTransfer();
+}
+/**
+ * End Block Transfer
+ * @param[in] cm COMMNG インスタンス
+ * @return result
+ */
+void CComBase::cEndBlockTransfer(COMMNG cm)
+{
+	return static_cast<CComBase*>(cm)->EndBlockTransfer();
+}
 /**
  * Last Write Success
  * @param[in] cm COMMNG インスタンス

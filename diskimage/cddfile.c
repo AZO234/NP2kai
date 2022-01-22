@@ -750,7 +750,7 @@ BRESULT setsxsidev(SXSIDEV sxsi, const OEMCHAR *path, const _CDTRK *trk, UINT tr
 	sxsi->destroy		= cd_destroy;
 	sxsi->hdl			= (INTPTR)cdinfo;
 //	sxsi->totals		= totals;
-	sxsi->cylinders		= 0;
+	sxsi->cylinders		= sxsi->totals / 2048;
 	sxsi->size			= 2048;
 	sxsi->sectors		= 1;
 	sxsi->surfaces		= 1;

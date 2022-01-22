@@ -207,6 +207,10 @@ typedef	INT32    SINT64;
 typedef size_t    SIZET;    // format: %zu
 typedef intptr_t  INTPTR;   // format: %PRIdPTR
 typedef uintptr_t UINTPTR;  // format: %PRIuPTR
+#if !defined(_MSC_VER)
+typedef intptr_t  INT_PTR;  // format: %PRIdPTR
+typedef uintptr_t UINT_PTR; // format: %PRIuPTR
+#endif
 typedef intmax_t  INTMAX;   // format: %PRIdMAX
 typedef uintmax_t UINTMAX;  // format: %PRIuMAX
 

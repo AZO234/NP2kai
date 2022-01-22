@@ -11,6 +11,8 @@ void newdisk_thd(const OEMCHAR *fname, UINT hddsize);
 void newdisk_nhd_ex_CHS(const OEMCHAR *fname, UINT32 C, UINT16 H, UINT16 S, UINT16 SS, int blank, int *progress, int *cancel);
 void newdisk_nhd_ex(const OEMCHAR *fname, UINT hddsize, int blank, int *progress, int *cancel);
 void newdisk_nhd(const OEMCHAR *fname, UINT hddsize);
+void newdisk_hdi_ex_CHS(const OEMCHAR *fname, UINT32 C, UINT16 H, UINT16 S, UINT16 SS, int blank, int *progress, int *cancel);
+void newdisk_hdi_ex(const OEMCHAR *fname, UINT hddsize, int blank, int *progress, int *cancel);
 void newdisk_hdi(const OEMCHAR *fname, UINT hddtype);
 void newdisk_vhd(const OEMCHAR *fname, UINT hddsize);
 void newdisk_hdn(const OEMCHAR *fname, UINT hddsize);

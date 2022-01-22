@@ -1,12 +1,12 @@
 /**
  * @file	sddsound3.cpp
- * @brief	DSound3 ã‚ªãƒ¼ãƒ‡ã‚£ã‚ª ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
+ * @brief	DSound3 ƒI[ƒfƒBƒI ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
  */
 
 #include <math.h>
-#include <compiler.h>
+#include "compiler.h"
 #include "sddsound3.h"
-#include <soundmng.h>
+#include "soundmng.h"
 #include "misc\extrom.h"
 
 #if !defined(__GNUC__)
@@ -15,18 +15,18 @@
 #endif	// !defined(__GNUC__)
 
 #ifndef DSBVOLUME_MAX
-#define DSBVOLUME_MAX		0							/*!< ãƒ´ã‚©ãƒªãƒ¥ãƒ¼ãƒ æœ€å¤§å€¤ */
+#define DSBVOLUME_MAX		0							/*!< ƒ”ƒHƒŠƒ…[ƒ€Å‘å’l */
 #endif
 #ifndef DSBVOLUME_MIN
-#define DSBVOLUME_MIN		(-10000)					/*!< ãƒ´ã‚©ãƒªãƒ¥ãƒ¼ãƒ æœ€å°å€¤ */
+#define DSBVOLUME_MIN		(-10000)					/*!< ƒ”ƒHƒŠƒ…[ƒ€Å¬’l */
 #endif
 
 #define NP2VOLUME2DSDB(a)	((LONG)(10*log((a)/100.0f)/log(2.0)*100))
 
-//! ãƒ‡ãƒã‚¤ã‚¹ ãƒªã‚¹ãƒˆ
+//! ƒfƒoƒCƒX ƒŠƒXƒg
 std::vector<DSound3Device> CSoundDeviceDSound3::sm_devices;
 
-//! ãƒã‚¹ã‚¿ãƒœãƒªãƒ¥ãƒ¼ãƒ ä½¿ç”¨å¯èƒ½ï¼Ÿ 
+//! ƒ}ƒXƒ^ƒ{ƒŠƒ…[ƒ€g—p‰Â”\H 
 bool CSoundDeviceDSound3::s_mastervol_available = true;
 
 
@@ -50,7 +50,7 @@ struct Chunk
 };
 
 /**
- * åˆæœŸåŒ–
+ * ‰Šú‰»
  */
 void CSoundDeviceDSound3::Initialize()
 {
@@ -58,12 +58,12 @@ void CSoundDeviceDSound3::Initialize()
 }
 
 /**
- * ãƒ‡ãƒã‚¤ã‚¹åˆ—æŒ™ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
+ * ƒfƒoƒCƒX—ñ‹“ƒR[ƒ‹ƒoƒbƒN
  * @param[in] lpGuid GUID
- * @param[in] lpcstrDescription ãƒ‡ãƒã‚¤ã‚¹å
- * @param[in] lpcstrModule ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«å
- * @param[in] lpContext ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ
- * @retval TRUE ç¶™ç¶š
+ * @param[in] lpcstrDescription ƒfƒoƒCƒX–¼
+ * @param[in] lpcstrModule ƒ‚ƒWƒ…[ƒ‹–¼
+ * @param[in] lpContext ƒRƒ“ƒeƒLƒXƒg
+ * @retval TRUE Œp‘±
  */
 BOOL CALLBACK CSoundDeviceDSound3::EnumCallback(LPGUID lpGuid, LPCTSTR lpcstrDescription, LPCTSTR lpcstrModule, LPVOID lpContext)
 {
@@ -79,8 +79,8 @@ BOOL CALLBACK CSoundDeviceDSound3::EnumCallback(LPGUID lpGuid, LPCTSTR lpcstrDes
 }
 
 /**
- * åˆ—æŒ™
- * @param[out] devices ãƒ‡ãƒã‚¤ã‚¹ ãƒªã‚¹ãƒˆ
+ * —ñ‹“
+ * @param[out] devices ƒfƒoƒCƒX ƒŠƒXƒg
  */
 void CSoundDeviceDSound3::EnumerateDevices(std::vector<LPCTSTR>& devices)
 {
@@ -91,7 +91,7 @@ void CSoundDeviceDSound3::EnumerateDevices(std::vector<LPCTSTR>& devices)
 }
 
 /**
- * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
  */
 CSoundDeviceDSound3::CSoundDeviceDSound3()
 	: m_lpDSound(NULL)
@@ -106,7 +106,7 @@ CSoundDeviceDSound3::CSoundDeviceDSound3()
 }
 
 /**
- * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒfƒXƒgƒ‰ƒNƒ^
  */
 CSoundDeviceDSound3::~CSoundDeviceDSound3()
 {
@@ -114,11 +114,11 @@ CSoundDeviceDSound3::~CSoundDeviceDSound3()
 }
 
 /**
- * ã‚ªãƒ¼ãƒ—ãƒ³
- * @param[in] lpDevice ãƒ‡ãƒã‚¤ã‚¹å
- * @param[in] hWnd ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ«
- * @retval true æˆåŠŸ
- * @retval false å¤±æ•—
+ * ƒI[ƒvƒ“
+ * @param[in] lpDevice ƒfƒoƒCƒX–¼
+ * @param[in] hWnd ƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹
+ * @retval true ¬Œ÷
+ * @retval false ¸”s
  */
 bool CSoundDeviceDSound3::Open(LPCTSTR lpDevice, HWND hWnd)
 {
@@ -142,7 +142,7 @@ bool CSoundDeviceDSound3::Open(LPCTSTR lpDevice, HWND hWnd)
 		lpGuid = const_cast<LPGUID>(&it->guid);
 	}
 
-	// DirectSoundã®åˆæœŸåŒ–
+	// DirectSound‚Ì‰Šú‰»
 	LPDIRECTSOUND lpDSound;
 	if (FAILED(DirectSoundCreate(lpGuid, &lpDSound, 0)))
 	{
@@ -162,7 +162,7 @@ bool CSoundDeviceDSound3::Open(LPCTSTR lpDevice, HWND hWnd)
 }
 
 /**
- * ã‚¯ãƒ­ãƒ¼ã‚º
+ * ƒNƒ[ƒY
  */
 void CSoundDeviceDSound3::Close()
 {
@@ -177,11 +177,11 @@ void CSoundDeviceDSound3::Close()
 }
 
 /**
- * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®ä½œæˆ
- * @param[in] nSamplingRate ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚° ãƒ¬ãƒ¼ãƒˆ
- * @param[in] nChannels ãƒãƒ£ãƒãƒ«æ•°
- * @param[in] nBufferSize ãƒãƒƒãƒ•ã‚¡ ã‚µã‚¤ã‚º
- * @return ãƒãƒƒãƒ•ã‚¡ ã‚µã‚¤ã‚º
+ * ƒXƒgƒŠ[ƒ€‚Ìì¬
+ * @param[in] nSamplingRate ƒTƒ“ƒvƒŠƒ“ƒO ƒŒ[ƒg
+ * @param[in] nChannels ƒ`ƒƒƒlƒ‹”
+ * @param[in] nBufferSize ƒoƒbƒtƒ@ ƒTƒCƒY
+ * @return ƒoƒbƒtƒ@ ƒTƒCƒY
  */
 UINT CSoundDeviceDSound3::CreateStream(UINT nSamplingRate, UINT nChannels, UINT nBufferSize)
 {
@@ -211,9 +211,9 @@ UINT CSoundDeviceDSound3::CreateStream(UINT nSamplingRate, UINT nChannels, UINT 
 	DSBUFFERDESC dsbdesc;
 	ZeroMemory(&dsbdesc, sizeof(dsbdesc));
 	dsbdesc.dwSize = sizeof(dsbdesc);
-	dsbdesc.dwFlags = DSBCAPS_CTRLPAN | (s_mastervol_available ? DSBCAPS_CTRLVOLUME : 0) |
+	dsbdesc.dwFlags = DSBCAPS_CTRLPAN /*| (s_mastervol_available ? DSBCAPS_CTRLVOLUME : 0)*/ |
 						DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRLPOSITIONNOTIFY |
-						DSBCAPS_STICKYFOCUS | DSBCAPS_GETCURRENTPOSITION2;
+						DSBCAPS_GLOBALFOCUS | DSBCAPS_GETCURRENTPOSITION2;
 	dsbdesc.lpwfxFormat = reinterpret_cast<LPWAVEFORMATEX>(&pcmwf);
 	dsbdesc.dwBufferBytes = m_dwHalfBufferSize * 2;
 	HRESULT hr = m_lpDSound->CreateSoundBuffer(&dsbdesc, &m_lpDSStream, NULL);
@@ -258,7 +258,7 @@ UINT CSoundDeviceDSound3::CreateStream(UINT nSamplingRate, UINT nChannels, UINT 
 }
 
 /**
- * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’ç ´æ£„
+ * ƒXƒgƒŠ[ƒ€‚ğ”jŠü
  */
 void CSoundDeviceDSound3::DestroyStream()
 {
@@ -289,7 +289,7 @@ void CSoundDeviceDSound3::DestroyStream()
 }
 
 /**
- * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’ãƒªã‚»ãƒƒãƒˆ
+ * ƒXƒgƒŠ[ƒ€‚ğƒŠƒZƒbƒg
  */
 void CSoundDeviceDSound3::ResetStream()
 {
@@ -313,9 +313,9 @@ void CSoundDeviceDSound3::ResetStream()
 }
 
 /**
- * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®å†ç”Ÿ
- * @retval true æˆåŠŸ
- * @retval false å¤±æ•—
+ * ƒXƒgƒŠ[ƒ€‚ÌÄ¶
+ * @retval true ¬Œ÷
+ * @retval false ¸”s
  */
 bool CSoundDeviceDSound3::PlayStream()
 {
@@ -331,7 +331,7 @@ bool CSoundDeviceDSound3::PlayStream()
 }
 
 /**
- * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®åœæ­¢
+ * ƒXƒgƒŠ[ƒ€‚Ì’â~
  */
 void CSoundDeviceDSound3::StopStream()
 {
@@ -342,46 +342,33 @@ void CSoundDeviceDSound3::StopStream()
 }
 
 /**
- * ã‚¹ãƒˆãƒªãƒ¼ãƒ  ãƒ´ã‚©ãƒªãƒ¥ãƒ¼ãƒ è¨­å®š
- * @param[in] nVolume ãƒ´ã‚©ãƒªãƒ¥ãƒ¼ãƒ (max 100)
+ * ƒXƒgƒŠ[ƒ€ ƒ”ƒHƒŠƒ…[ƒ€İ’è
+ * @param[in] nVolume ƒ”ƒHƒŠƒ…[ƒ€(max 100)
  */
 void CSoundDeviceDSound3::SetMasterVolume(int nVolume)
 {
 
 	m_mastervolume = nVolume;
 	if(s_mastervol_available){
-		if (m_lpDSStream)
-		{
-			if(m_mastervolume == 0){
-				m_lpDSStream->SetVolume(DSBVOLUME_MIN);
-			}else if(m_mastervolume == 100){
-				m_lpDSStream->SetVolume(DSBVOLUME_MAX);
-			}else{
-				m_lpDSStream->SetVolume(NP2VOLUME2DSDB(m_mastervolume));
-			}
-		}
+		int numlen = m_pcm.size();
+		UINT *nums = new UINT[numlen];
+		int i = 0;
 		for( auto it = m_pcm.begin(); it != m_pcm.end() ; ++it ) {
-			LPDIRECTSOUNDBUFFER lpDSBuffer = it->second;
-			int volume = 100;
-			if(it->first < PCMVOLUME_MAXCOUNT){
-				volume = m_pcmvolume[it->first];
-			}
-			volume *= m_mastervolume;
-			if(volume == 0){
-				lpDSBuffer->SetVolume(DSBVOLUME_MIN);
-			}else if(volume == 100){
-				lpDSBuffer->SetVolume(DSBVOLUME_MAX);
-			}else{
-				lpDSBuffer->SetVolume(NP2VOLUME2DSDB(volume));
-			}
+			nums[i] = it->first;
+			i++;
 		}
+		for(i=0; i<numlen; i++) {
+			int nNum = nums[i];
+			ReloadPCM(nNum);
+		}
+		delete[] nums;
 	}
 }
 
 /**
- * åŒæœŸ
- * @retval true ç¶™ç¶š
- * @retval false çµ‚äº†
+ * “¯Šú
+ * @retval true Œp‘±
+ * @retval false I—¹
  */
 bool CSoundDeviceDSound3::Task()
 {
@@ -413,8 +400,8 @@ bool CSoundDeviceDSound3::Task()
 }
 
 /**
- * ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’æ›´æ–°ã™ã‚‹
- * @param[in] dwPosition æ›´æ–°ä½ç½®
+ * ƒXƒgƒŠ[ƒ€‚ğXV‚·‚é
+ * @param[in] dwPosition XVˆÊ’u
  */
 void CSoundDeviceDSound3::FillStream(DWORD dwPosition)
 {
@@ -444,7 +431,7 @@ void CSoundDeviceDSound3::FillStream(DWORD dwPosition)
 }
 
 /**
- * PCM ãƒãƒƒãƒ•ã‚¡ã‚’ç ´æ£„ã™ã‚‹
+ * PCM ƒoƒbƒtƒ@‚ğ”jŠü‚·‚é
  */
 void CSoundDeviceDSound3::DestroyAllPCM()
 {
@@ -455,10 +442,16 @@ void CSoundDeviceDSound3::DestroyAllPCM()
 		lpDSBuffer->Release();
 	}
 	m_pcm.clear();
+	for (std::map<UINT, TCHAR*>::iterator it = m_pcmfile.begin(); it != m_pcmfile.begin(); ++it)
+	{
+		TCHAR* lpFilename = it->second;
+		delete[] lpFilename;
+	}
+	m_pcmfile.clear();
 }
 
 /**
- * PCM ã‚’ã‚¹ãƒˆãƒƒãƒ—
+ * PCM ‚ğƒXƒgƒbƒv
  */
 void CSoundDeviceDSound3::StopAllPCM()
 {
@@ -470,17 +463,61 @@ void CSoundDeviceDSound3::StopAllPCM()
 }
 
 /**
- * PCM ãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿
- * @param[in] nNum PCM ç•ªå·
- * @param[in] lpFilename ãƒ•ã‚¡ã‚¤ãƒ«å
- * @retval true æˆåŠŸ
- * @retval false å¤±æ•—
+ * PCM ƒf[ƒ^“Ç‚İ‚İ
+ * @param[in] nNum PCM ”Ô†
+ * @param[in] lpFilename ƒtƒ@ƒCƒ‹–¼
+ * @retval true ¬Œ÷
+ * @retval false ¸”s
  */
 bool CSoundDeviceDSound3::LoadPCM(UINT nNum, LPCTSTR lpFilename)
 {
 	UnloadPCM(nNum);
+	
+	int nVolume = 100;
+	if(nNum	< PCMVOLUME_MAXCOUNT){
+		nVolume = m_pcmvolume[nNum];
+	}
+	nVolume = nVolume * m_mastervolume / 100;
+	LPDIRECTSOUNDBUFFER lpDSBuffer = CreateWaveBuffer(lpFilename, nVolume);
+	if (lpDSBuffer)
+	{
+		m_pcm[nNum] = lpDSBuffer;
+		if(m_pcmfile.find(nNum)==m_pcmfile.end()){
+			// V‹Kì¬
+			TCHAR *filename = new TCHAR[OEMSTRLEN(lpFilename)+1];
+			_tcscpy(filename, lpFilename);
+			m_pcmfile[nNum] = filename;
+		}else{
+			// XV
+			_tcscpy(m_pcmfile[nNum], lpFilename);
+		}
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 
-	LPDIRECTSOUNDBUFFER lpDSBuffer = CreateWaveBuffer(lpFilename);
+/**
+ * PCM ƒf[ƒ^Ä“Ç‚İ‚İ
+ * @param[in] nNum PCM ”Ô†
+ * @param[in] lpFilename ƒtƒ@ƒCƒ‹–¼
+ * @retval true ¬Œ÷
+ * @retval false ¸”s
+ */
+bool CSoundDeviceDSound3::ReloadPCM(UINT nNum)
+{
+	if(m_pcm.find(nNum) == m_pcm.end()) return false; // ‘¶İ‚µ‚Ä‚¢‚È‚¢
+
+	UnloadPCM(nNum);
+	
+	int nVolume = 100;
+	if(nNum	< PCMVOLUME_MAXCOUNT){
+		nVolume = m_pcmvolume[nNum];
+	}
+	nVolume = nVolume * m_mastervolume / 100;
+	LPDIRECTSOUNDBUFFER lpDSBuffer = CreateWaveBuffer(m_pcmfile[nNum], nVolume);
 	if (lpDSBuffer)
 	{
 		m_pcm[nNum] = lpDSBuffer;
@@ -493,11 +530,11 @@ bool CSoundDeviceDSound3::LoadPCM(UINT nNum, LPCTSTR lpFilename)
 }
 
 /**
- * PCM ãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿
- * @param[in] lpFilename ãƒ•ã‚¡ã‚¤ãƒ«å
- * @return ãƒãƒƒãƒ•ã‚¡
+ * PCM ƒf[ƒ^“Ç‚İ‚İ
+ * @param[in] lpFilename ƒtƒ@ƒCƒ‹–¼
+ * @return ƒoƒbƒtƒ@
  */
-LPDIRECTSOUNDBUFFER CSoundDeviceDSound3::CreateWaveBuffer(LPCTSTR lpFilename)
+LPDIRECTSOUNDBUFFER CSoundDeviceDSound3::CreateWaveBuffer(LPCTSTR lpFilename, int volume100)
 {
 	LPDIRECTSOUNDBUFFER lpDSBuffer = NULL;
 	CExtRom extrom;
@@ -564,7 +601,7 @@ LPDIRECTSOUNDBUFFER CSoundDeviceDSound3::CreateWaveBuffer(LPCTSTR lpFilename)
 		DSBUFFERDESC dsbdesc;
 		ZeroMemory(&dsbdesc, sizeof(dsbdesc));
 		dsbdesc.dwSize = sizeof(dsbdesc);
-		dsbdesc.dwFlags = DSBCAPS_CTRLPAN | (s_mastervol_available ? DSBCAPS_CTRLVOLUME : 0) | DSBCAPS_CTRLFREQUENCY | DSBCAPS_STATIC | DSBCAPS_STICKYFOCUS | DSBCAPS_GETCURRENTPOSITION2;
+		dsbdesc.dwFlags = DSBCAPS_CTRLPAN /*| (s_mastervol_available ? DSBCAPS_CTRLVOLUME : 0) */| DSBCAPS_CTRLFREQUENCY | DSBCAPS_STATIC | DSBCAPS_GLOBALFOCUS | DSBCAPS_GETCURRENTPOSITION2;
 		dsbdesc.dwBufferBytes = chunk.nSize;
 		dsbdesc.lpwfxFormat = reinterpret_cast<LPWAVEFORMATEX>(&pcmwf);
 
@@ -595,12 +632,56 @@ LPDIRECTSOUNDBUFFER CSoundDeviceDSound3::CreateWaveBuffer(LPCTSTR lpFilename)
 			lpDSBuffer = NULL;
 			break;
 		}
+		
+		if(pcmwf.wBitsPerSample==8)
+		{
+			unsigned char *buf = new unsigned char[cbBlock1];
+			extrom.Read(buf, cbBlock1);
+			for(DWORD i=0;i<cbBlock1;i++){
+				buf[i] = (unsigned char)((buf[i] - 0x80) * volume100 / 100 + 0x80);
+			}
+			memcpy(lpBlock1, buf, cbBlock1);
+			delete[] buf;
+		}
+		else if(pcmwf.wBitsPerSample==16)
+		{
+			short *buf = new short[cbBlock1/2];
+			extrom.Read(buf, cbBlock1);
+			for(DWORD i=0;i<cbBlock1/2;i++){
+				buf[i] = (short)((int)buf[i] * volume100 / 100);
+			}
+			memcpy(lpBlock1, buf, cbBlock1);
+			delete[] buf;
+		}else{
+			extrom.Read(lpBlock1, cbBlock1);
+		}
 
-		extrom.Read(lpBlock1, cbBlock1);
 		if ((lpBlock2) && (cbBlock2))
 		{
-			extrom.Read(lpBlock2, cbBlock2);
+			if(pcmwf.wBitsPerSample==8)
+			{
+				unsigned char *buf = new unsigned char[cbBlock2];
+				extrom.Read(buf, cbBlock2);
+				for(DWORD i=0;i<cbBlock2;i++){
+					buf[i] = (unsigned char)((buf[i] - 0x80) * volume100 / 100 + 0x80);
+				}
+				memcpy(lpBlock2, buf, cbBlock2);
+				delete[] buf;
+			}
+			else if(pcmwf.wBitsPerSample==16)
+			{
+				short *buf = new short[cbBlock2/2];
+				extrom.Read(buf, cbBlock2);
+				for(DWORD i=0;i<cbBlock2/2;i++){
+					buf[i] = (short)((int)buf[i] * volume100 / 100);
+				}
+				memcpy(lpBlock2, buf, cbBlock2);
+				delete[] buf;
+			}else{
+				extrom.Read(lpBlock2, cbBlock2);
+			}
 		}
+
 		lpDSBuffer->Unlock(lpBlock1, cbBlock1, lpBlock2, cbBlock2);
 	} while (0 /*CONSTCOND*/);
 
@@ -608,8 +689,8 @@ LPDIRECTSOUNDBUFFER CSoundDeviceDSound3::CreateWaveBuffer(LPCTSTR lpFilename)
 }
 
 /**
- * PCM ã‚’ã‚¢ãƒ³ãƒ­ãƒ¼ãƒ‰
- * @param[in] nNum PCM ç•ªå·
+ * PCM ‚ğƒAƒ“ƒ[ƒh
+ * @param[in] nNum PCM ”Ô†
  */
 void CSoundDeviceDSound3::UnloadPCM(UINT nNum)
 {
@@ -625,41 +706,27 @@ void CSoundDeviceDSound3::UnloadPCM(UINT nNum)
 }
 
 /**
- * PCM ãƒ´ã‚©ãƒªãƒ¥ãƒ¼ãƒ è¨­å®š
- * @param[in] nNum PCM ç•ªå·
- * @param[in] nVolume ãƒ´ã‚©ãƒªãƒ¥ãƒ¼ãƒ 
+ * PCM ƒ”ƒHƒŠƒ…[ƒ€İ’è
+ * @param[in] nNum PCM ”Ô†
+ * @param[in] nVolume ƒ”ƒHƒŠƒ…[ƒ€
  */
 void CSoundDeviceDSound3::SetPCMVolume(UINT nNum, int nVolume)
 {
 	if(s_mastervol_available){
-		std::map<UINT, LPDIRECTSOUNDBUFFER>::iterator it = m_pcm.find(nNum);
-		if (it != m_pcm.end())
-		{
-			LPDIRECTSOUNDBUFFER lpDSBuffer = it->second;
-			int volume = nVolume;
-			if(nNum	< PCMVOLUME_MAXCOUNT){
-				m_pcmvolume[nNum] = nVolume;
-			}
-			volume *= m_mastervolume;
-		
-			if(volume == 0){
-				lpDSBuffer->SetVolume(DSBVOLUME_MIN);
-			}else if(volume == 100){
-				lpDSBuffer->SetVolume(DSBVOLUME_MAX);
-			}else{
-				lpDSBuffer->SetVolume(NP2VOLUME2DSDB(volume));
-			}
-			//lpDSBuffer->SetVolume((((DSBVOLUME_MAX - DSBVOLUME_MIN) * nVolume) / 100) + DSBVOLUME_MIN);
+		int volume = nVolume;
+		if(nNum	< PCMVOLUME_MAXCOUNT){
+			m_pcmvolume[nNum] = nVolume;
 		}
+		ReloadPCM(nNum);
 	}
 }
 
 /**
- * PCM å†ç”Ÿ
- * @param[in] nNum PCM ç•ªå·
- * @param[in] bLoop ãƒ«ãƒ¼ãƒ— ãƒ•ãƒ©ã‚°
- * @retval true æˆåŠŸ
- * @retval false å¤±æ•—
+ * PCM Ä¶
+ * @param[in] nNum PCM ”Ô†
+ * @param[in] bLoop ƒ‹[ƒv ƒtƒ‰ƒO
+ * @retval true ¬Œ÷
+ * @retval false ¸”s
  */
 bool CSoundDeviceDSound3::PlayPCM(UINT nNum, BOOL bLoop)
 {
@@ -675,8 +742,8 @@ bool CSoundDeviceDSound3::PlayPCM(UINT nNum, BOOL bLoop)
 }
 
 /**
- * PCM åœæ­¢
- * @param[in] nNum PCM ç•ªå·
+ * PCM ’â~
+ * @param[in] nNum PCM ”Ô†
  */
 void CSoundDeviceDSound3::StopPCM(UINT nNum)
 {

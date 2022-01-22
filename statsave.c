@@ -1443,26 +1443,26 @@ static int flagload_com(STFLAGH sfh, const SFENTRY *tbl) {
 	switch(device) {
 		case 0:
 			commng_destroy(cm_mpu98);
-			cm = commng_create(COMCREATE_MPU98II);
+			cm = commng_create(COMCREATE_MPU98II, FALSE);
 			cm_mpu98 = cm;
 			break;
 
 		case 1:
 			commng_destroy(cm_rs232c);
-			cm = commng_create(COMCREATE_SERIAL);
+			cm = commng_create(COMCREATE_SERIAL, FALSE);
 			cm_rs232c = cm;
 			break;
 			
 #if defined(SUPPORT_SMPU98)
 		case 2:
 			commng_destroy(cm_smpu98[0]);
-			cm = commng_create(COMCREATE_SMPU98_A);
+			cm = commng_create(COMCREATE_SMPU98_A, FALSE);
 			cm_smpu98[0] = cm;
 			break;
 
 		case 3:
 			commng_destroy(cm_smpu98[1]);
-			cm = commng_create(COMCREATE_SMPU98_B);
+			cm = commng_create(COMCREATE_SMPU98_B, FALSE);
 			cm_smpu98[1] = cm;
 			break;
 #endif
@@ -1946,25 +1946,25 @@ const SFENTRY	*tblterm;
 	
 	// OPNAボリューム再設定
 	if(g_nSoundID == SOUNDID_WAVESTAR){
-		opngen_setvol(np2cfg.vol_fm * cs4231.devvolume[0xff] / 15);
-		psggen_setvol(np2cfg.vol_ssg * cs4231.devvolume[0xff] / 15);
-		rhythm_setvol(np2cfg.vol_rhythm * cs4231.devvolume[0xff] / 15);
+		opngen_setvol(np2cfg.vol_fm * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
+		psggen_setvol(np2cfg.vol_ssg * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
+		rhythm_setvol(np2cfg.vol_rhythm * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
 #if defined(SUPPORT_FMGEN)
 		if(np2cfg.usefmgen) {
-			opna_fmgen_setallvolumeFM_linear(np2cfg.vol_fm * cs4231.devvolume[0xff] / 15);
-			opna_fmgen_setallvolumePSG_linear(np2cfg.vol_ssg * cs4231.devvolume[0xff] / 15);
-			opna_fmgen_setallvolumeRhythmTotal_linear(np2cfg.vol_rhythm * cs4231.devvolume[0xff] / 15);
+			opna_fmgen_setallvolumeFM_linear(np2cfg.vol_fm * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
+			opna_fmgen_setallvolumePSG_linear(np2cfg.vol_ssg * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
+			opna_fmgen_setallvolumeRhythmTotal_linear(np2cfg.vol_rhythm * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
 		}
 #endif
 	}else{
-		opngen_setvol(np2cfg.vol_fm);
-		psggen_setvol(np2cfg.vol_ssg);
-		rhythm_setvol(np2cfg.vol_rhythm);
+		opngen_setvol(np2cfg.vol_fm * np2cfg.vol_master / 100);
+		psggen_setvol(np2cfg.vol_ssg * np2cfg.vol_master / 100);
+		rhythm_setvol(np2cfg.vol_rhythm * np2cfg.vol_master / 100);
 #if defined(SUPPORT_FMGEN)
 		if(np2cfg.usefmgen) {
-			opna_fmgen_setallvolumeFM_linear(np2cfg.vol_fm);
-			opna_fmgen_setallvolumePSG_linear(np2cfg.vol_ssg);
-			opna_fmgen_setallvolumeRhythmTotal_linear(np2cfg.vol_rhythm);
+			opna_fmgen_setallvolumeFM_linear(np2cfg.vol_fm * np2cfg.vol_master / 100);
+			opna_fmgen_setallvolumePSG_linear(np2cfg.vol_ssg * np2cfg.vol_master / 100);
+			opna_fmgen_setallvolumeRhythmTotal_linear(np2cfg.vol_rhythm * np2cfg.vol_master / 100);
 		}
 #endif
 	}

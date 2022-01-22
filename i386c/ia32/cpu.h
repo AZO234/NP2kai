@@ -401,7 +401,10 @@ typedef struct {
 	UINT32 cpu_brandid; // ブランドID
 	UINT32 cpu_feature_ecx; // ECX機能フラグ
 	UINT32 cpu_eflags_mask; // EFLAGSマスク(1のところがマスク状態)
-	UINT32 reserved[32]; // 将来の拡張のためにとりあえず32bit*32個用意しておく
+
+	UINT8 allow_movCS; // mov cs,xxを許可する
+	UINT8 reserved8[3]; // 将来の拡張のためにとりあえず
+	UINT32 reserved[30]; // 将来の拡張のためにとりあえず32bit*31個用意しておく
 	
 	UINT8 fpu_type; // FPU種類
 } I386CPUID;

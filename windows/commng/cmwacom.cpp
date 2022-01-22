@@ -37,11 +37,25 @@ static SINT32 g_lastPosX = 0;
 static SINT32 g_lastPosY = 0;
 static bool g_lastPosValid = false;
 
+static HCTX g_fakeContext = NULL; // 入力が変になるのを修正
+
 void cmwacom_initialize(void){
 	if(!g_wacom_initialized){
 		if ( LoadWintab( ) ){
 			g_datatime = GetTickCount();
 			g_wacom_initialized = true;
+			
+			if(!g_fakeContext){
+				LOGCONTEXTA lcMine;
+				gpWTInfoA(WTI_DEFSYSCTX, 0, &lcMine);
+				lcMine.lcOptions |= CXO_MARGIN;// | CXO_MESSAGES;
+				lcMine.lcMsgBase = WT_DEFBASE;
+				lcMine.lcPktData = PACKETDATA;
+				lcMine.lcPktMode = PACKETMODE;
+				lcMine.lcMoveMask = PACKETDATA;
+				lcMine.lcBtnUpMask = lcMine.lcBtnDnMask;
+				g_fakeContext = gpWTOpenA(g_hWndMain, &lcMine, TRUE);
+			}
 		}else{
 			g_wacom_initialized = false;
 		}
@@ -61,6 +75,10 @@ void cmwacom_finalize(void){
 		g_cmwacom->FinalizeTabletDevice();
 	}
 	if(g_wacom_initialized){
+		if(g_fakeContext){
+			gpWTClose(g_fakeContext);
+			g_fakeContext = NULL;
+		}
 		UnloadWintab();
 	}
 	g_cmwacom = NULL;
@@ -109,8 +127,8 @@ LRESULT CALLBACK tabletWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
 			break;
 		case WM_ACTIVATE:
 			if (wParam) {
-				gpWTOverlap(g_cmwacom->GetHTab(), TRUE);
 				gpWTEnable(g_cmwacom->GetHTab(), TRUE);
+				gpWTOverlap(g_cmwacom->GetHTab(), TRUE);
 				{
 					SINT16 x, y;
 					mousemng_getstat(&x, &y, false);
@@ -285,6 +303,9 @@ void CComWacom::InitializeTabletDevice(){
 		m_maxX = lcMine.lcOutExtX;
 		m_maxY = lcMine.lcOutExtY;
 	}
+	if(g_fakeContext){
+		gpWTEnable(g_fakeContext, FALSE);
+	}
 	m_hTab = gpWTOpenA(m_hwndMain, &lcMine, GetForegroundWindow()==m_hwndMain ? TRUE : FALSE);
 	if (!m_hTab)
 	{
@@ -334,6 +355,10 @@ void CComWacom::FinalizeTabletDevice(){
 		gpWTClose(m_hTab);
 		m_hTab = NULL;
 		g_wacom_allocated = false;
+		
+		if(g_fakeContext){
+			gpWTEnable(g_fakeContext, TRUE);
+		}
 	}
 }
 
@@ -716,11 +741,11 @@ UINT CComWacom::Write(UINT8 cData)
 				m_config.start = true; // Start sending coordinates
 				m_config.mode19200 = false;
 			}else if(strcmp(m_cmdbuf, "$")==0){
-				// Reset to 9600 bps (sent at 19200 bps) & Disable Pressure
+				// Reset to 9600 bps (sent at 19200 bps)? & Disable Pressure
 				m_sBuffer_rpos = m_sBuffer_wpos; // データ放棄
 				m_config.scrnsizemode = false;
 				m_config.disablepressure = true;
-				m_config.mode19200 = false;
+				m_config.mode19200 = false; // 違うかも
 			}else if(strncmp(m_cmdbuf, "ST", 2)==0){
 				m_config.start = true; // Start sending coordinates
 			}else if(strncmp(m_cmdbuf, "@ST", 2)==0){
@@ -776,11 +801,16 @@ UINT CComWacom::Write(UINT8 cData)
 						m_config.scrnsizemode = true;
 					}
 				}
-			}else if(strcmp(m_cmdbuf, "TEFINE")==0){
-				// I'm Fine!
-				char data[] = "KT-0405-R00 V1.3-2 95/04/28 by WACOM\r\nFINE\r\nI AM FINE.\r\n";
+			}else if(strncmp(m_cmdbuf, "TE", 2)==0){
+				// I'm fine!
+				char data[256];
+				if(strlen(m_cmdbuf) <= 2){ // TE only
+					sprintf(data, "KT-0405-R00 V1.3-2 95/04/28 by WACOM¥r¥nI AM FINE.¥r¥n");
+				}else{ // TExxxx 4文字を越えた部分は捨てる
+					sprintf(data, "KT-0405-R00 V1.3-2 95/04/28 by WACOM¥r¥n%.4s¥r¥nI AM FINE.¥r¥n", m_cmdbuf + 2);
+				}
 				m_sBuffer_rpos = m_sBuffer_wpos; //バッファ消す
-				SendDataToReadBuffer(data, sizeof(data));
+				SendDataToReadBuffer(data, (int)strlen(data));
 				m_lastdatalen = 0;
 				m_wait = sizeof(data);
 				m_config.enable = true;
@@ -819,6 +849,14 @@ UINT CComWacom::Write(UINT8 cData)
 
 /**
  * ステータスを得る
+ * bit 7: ‾CI (RI, RING)
+ * bit 6: ‾CS (CTS)
+ * bit 5: ‾CD (DCD, RLSD)
+ * bit 4: reserved
+ * bit 3: reserved
+ * bit 2: reserved
+ * bit 1: reserved
+ * bit 0: ‾DSR (DR)
  * @return ステータス
  */
 UINT8 CComWacom::GetStat()
@@ -831,7 +869,7 @@ UINT8 CComWacom::GetStat()
 	//		return 0x00;
 	//	}
 	//}else{
-		return 0x20;
+		return 0xa0;
 	//}
 }
 
@@ -845,6 +883,12 @@ INTPTR CComWacom::Message(UINT nMessage, INTPTR nParam)
 {
 	switch (nMessage)
 	{
+		case COMMSG_PURGE:
+			{
+				m_sBuffer_rpos = m_sBuffer_wpos; //バッファ消す
+			}
+			break;
+
 		case COMMSG_SETFLAG:
 			{
 				COMFLAG flag = reinterpret_cast<COMFLAG>(nParam);

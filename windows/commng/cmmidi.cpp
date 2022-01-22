@@ -6,6 +6,7 @@
 #include <compiler.h>
 #include "cmmidi.h"
 #include <np2.h>
+#include <pccore.h>
 
 #include "cmmidiin32.h"
 #include "cmmidiout32.h"
@@ -481,6 +482,19 @@ UINT CComMidi::Write(UINT8 cData)
 				MIDICH* mch = m_midich + (m_sBuffer[0] & 0xf);
 				switch (m_sBuffer[0] & 0xf0)
 				{
+					case 0x90:
+						if(np2cfg.vol_midi != 128 || (np2oscfg.usemidivolume && np2cfg.vol_master != 100)){
+							UINT32 val;
+							if(np2oscfg.usemidivolume){
+								val = (UINT32)m_sBuffer[2] * np2cfg.vol_midi / 128 * np2cfg.vol_master / 100;
+							}else{
+								val = (UINT32)m_sBuffer[2] * np2cfg.vol_midi / 128;
+							}
+							if(val > 127) val = 127;
+							m_sBuffer[2] = (UINT8)val; // 無理矢理
+						}
+						break;
+
 					case 0xb0:
 						if (m_sBuffer[1] == 123)
 						{
@@ -558,11 +572,19 @@ UINT CComMidi::Write(UINT8 cData)
 
 /**
  * ステータスを得る
+ * bit 7: ‾CI (RI, RING)
+ * bit 6: ‾CS (CTS)
+ * bit 5: ‾CD (DCD, RLSD)
+ * bit 4: reserved
+ * bit 3: reserved
+ * bit 2: reserved
+ * bit 1: reserved
+ * bit 0: ‾DSR (DR)
  * @return ステータス
  */
 UINT8 CComMidi::GetStat()
 {
-	return 0x00;
+	return 0xa0;
 }
 
 /**

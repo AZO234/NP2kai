@@ -26,6 +26,11 @@
 #include "sound/opna.h"
 #endif	/* SUPPORT_FMGEN */
 
+#include <regstr.h>
+#if !defined(__GNUC__)
+#pragma comment(lib, "winmm.lib")
+#endif	// !defined(__GNUC__)
+
 // ---- mixer
 
 /**
@@ -51,6 +56,8 @@ private:
 	CSliderValue m_pcm;			//!< PCM ヴォリューム
 	CSliderValue m_rhythm;		//!< RHYTHM ヴォリューム
 	CSliderValue m_cdda;		//!< CD-DA ヴォリューム
+	CSliderValue m_midi;		//!< MIDI ヴォリューム
+	CSliderValue m_hardware;	//!< ハード関係（シーク・リレー） ヴォリューム
 };
 
 /**
@@ -77,12 +84,12 @@ BOOL SndOptMixerPage::OnInitDialog()
 {
 	m_master.SubclassDlgItem(IDC_VOLMASTER, this);
 	m_master.SetStaticId(IDC_VOLMASTERSTR);
-	m_master.SetRange(0, 100);
+	m_master.SetRange(0, np2oscfg.mastervolumemax);
 	m_master.SetPos(np2cfg.vol_master);
-	if(!np2oscfg.usemastervolume){
-		m_master.SetPos(100);
-		m_master.EnableWindow(FALSE);
-	}
+	//if(!np2oscfg.usemastervolume){
+	//	m_master.SetPos(100);
+	//	m_master.EnableWindow(FALSE);
+	//}
 
 	m_fm.SubclassDlgItem(IDC_VOLFM, this);
 	m_fm.SetStaticId(IDC_VOLFMSTR);
@@ -113,6 +120,16 @@ BOOL SndOptMixerPage::OnInitDialog()
 	m_cdda.SetStaticId(IDC_VOLCDDASTR);
 	m_cdda.SetRange(0, 255);
 	m_cdda.SetPos(np2cfg.davolume);
+	
+	m_midi.SubclassDlgItem(IDC_VOLMIDI, this);
+	m_midi.SetStaticId(IDC_VOLMIDISTR);
+	m_midi.SetRange(0, 128);
+	m_midi.SetPos(np2cfg.vol_midi);
+	
+	m_hardware.SubclassDlgItem(IDC_VOLHW, this);
+	m_hardware.SetStaticId(IDC_VOLHWSTR);
+	m_hardware.SetRange(0, 100);
+	m_hardware.SetPos(np2cfg.MOTORVOL);
 
 	return TRUE;
 }
@@ -123,50 +140,52 @@ BOOL SndOptMixerPage::OnInitDialog()
 void SndOptMixerPage::OnOK()
 {
 	bool bUpdated = false;
+	bool bMasterChange = false;
 	
-	if(np2oscfg.usemastervolume){
+	//if(np2oscfg.usemastervolume){
 		const UINT8 cMaster = static_cast<UINT8>(m_master.GetPos());
 		if (np2cfg.vol_master != cMaster)
 		{
 			np2cfg.vol_master = cMaster;
+			bMasterChange = true;
 			soundmng_setvolume(cMaster);
 			bUpdated = true;
 		}
-	}
+	//}
 
 	UINT volex = 15;
 	if(g_nSoundID==SOUNDID_WAVESTAR){
 		volex = cs4231.devvolume[0xff];
 	}
 	const UINT8 cFM = static_cast<UINT8>(m_fm.GetPos());
-	if (np2cfg.vol_fm != cFM)
+	if (np2cfg.vol_fm != cFM || bMasterChange)
 	{
 		np2cfg.vol_fm = cFM;
-		opngen_setvol(cFM * volex / 15);
+		opngen_setvol(cFM * volex / 15 * np2cfg.vol_master / 100);
 #if defined(SUPPORT_FMGEN)
-		opna_fmgen_setallvolumeFM_linear(cFM * volex / 15);
+		opna_fmgen_setallvolumeFM_linear(cFM * volex / 15 * np2cfg.vol_master / 100);
 #endif	/* SUPPORT_FMGEN */
 		bUpdated = true;
 	}
 
 	const UINT8 cPSG = static_cast<UINT8>(m_psg.GetPos());
-	if (np2cfg.vol_ssg != cPSG)
+	if (np2cfg.vol_ssg != cPSG || bMasterChange)
 	{
 		np2cfg.vol_ssg = cPSG;
-		psggen_setvol(cPSG * volex / 15);
+		psggen_setvol(cPSG * volex / 15 * np2cfg.vol_master / 100);
 #if defined(SUPPORT_FMGEN)
-		opna_fmgen_setallvolumePSG_linear(cPSG * volex / 15);
+		opna_fmgen_setallvolumePSG_linear(cPSG * volex / 15 * np2cfg.vol_master / 100);
 #endif	/* SUPPORT_FMGEN */
 		bUpdated = true;
 	}
 
 	const UINT8 cADPCM = static_cast<UINT8>(m_adpcm.GetPos());
-	if (np2cfg.vol_adpcm != cADPCM)
+	if (np2cfg.vol_adpcm != cADPCM || bMasterChange)
 	{
 		np2cfg.vol_adpcm = cADPCM;
-		adpcm_setvol(cADPCM);
+		adpcm_setvol(cADPCM * np2cfg.vol_master / 100);
 #if defined(SUPPORT_FMGEN)
-		opna_fmgen_setallvolumeADPCM_linear(cADPCM);
+		opna_fmgen_setallvolumeADPCM_linear(cADPCM * np2cfg.vol_master / 100);
 #endif	/* SUPPORT_FMGEN */
 		for (UINT i = 0; i < _countof(g_opna); i++)
 		{
@@ -176,21 +195,21 @@ void SndOptMixerPage::OnOK()
 	}
 
 	const UINT8 cPCM = static_cast<UINT8>(m_pcm.GetPos());
-	if (np2cfg.vol_pcm != cPCM)
+	if (np2cfg.vol_pcm != cPCM || bMasterChange)
 	{
 		np2cfg.vol_pcm = cPCM;
-		pcm86gen_setvol(cPCM);
+		pcm86gen_setvol(cPCM * np2cfg.vol_master / 100);
 		pcm86gen_update();
 		bUpdated = true;
 	}
 
 	const UINT8 cRhythm = static_cast<UINT8>(m_rhythm.GetPos());
-	if (np2cfg.vol_rhythm != cRhythm)
+	if (np2cfg.vol_rhythm != cRhythm || bMasterChange)
 	{
 		np2cfg.vol_rhythm = cRhythm;
-		rhythm_setvol(cRhythm * volex / 15);
+		rhythm_setvol(cRhythm * volex / 15 * np2cfg.vol_master / 100);
 #if defined(SUPPORT_FMGEN)
-		opna_fmgen_setallvolumeRhythmTotal_linear(cRhythm * volex / 15);
+		opna_fmgen_setallvolumeRhythmTotal_linear(cRhythm * volex / 15 * np2cfg.vol_master / 100);
 #endif	/* SUPPORT_FMGEN */
 		for (UINT i = 0; i < _countof(g_opna); i++)
 		{
@@ -200,10 +219,27 @@ void SndOptMixerPage::OnOK()
 	}
 	
 	const UINT8 cCDDA = static_cast<UINT8>(m_cdda.GetPos());
-	if (np2cfg.davolume != cCDDA)
+	if (np2cfg.davolume != cCDDA || bMasterChange)
 	{
 		np2cfg.davolume = cCDDA;
 		//ideio_setdavol(cCDDA);
+		bUpdated = true;
+	}
+	
+	const UINT8 cMIDI = static_cast<UINT8>(m_midi.GetPos());
+	if (np2cfg.vol_midi != cMIDI || bMasterChange)
+	{
+		np2cfg.vol_midi = cMIDI;
+		bUpdated = true;
+	}
+	
+	const UINT8 cHardware = static_cast<UINT8>(m_hardware.GetPos());
+	if (np2cfg.MOTORVOL != cHardware || bMasterChange)
+	{
+		np2cfg.MOTORVOL = cHardware;
+		CSoundMng::GetInstance()->SetPCMVolume(SOUND_PCMSEEK, np2cfg.MOTORVOL);
+		CSoundMng::GetInstance()->SetPCMVolume(SOUND_PCMSEEK1, np2cfg.MOTORVOL);
+		CSoundMng::GetInstance()->SetPCMVolume(SOUND_RELAY1, np2cfg.MOTORVOL);
 		bUpdated = true;
 	}
 
@@ -229,6 +265,7 @@ BOOL SndOptMixerPage::OnCommand(WPARAM wParam, LPARAM lParam)
 		m_pcm.SetPos(64);
 		m_rhythm.SetPos(64);
 		m_cdda.SetPos(128);
+		m_midi.SetPos(128);
 		return TRUE;
 	}
 	else if (LOWORD(wParam) == IDC_SNDMIXDEF2)
@@ -239,6 +276,7 @@ BOOL SndOptMixerPage::OnCommand(WPARAM wParam, LPARAM lParam)
 		m_pcm.SetPos(90);
 		m_rhythm.SetPos(64);
 		m_cdda.SetPos(128);
+		m_midi.SetPos(128);
 		return TRUE;
 	}
 
@@ -284,6 +322,14 @@ LRESULT SndOptMixerPage::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 				
 			case IDC_VOLCDDA:
 				m_cdda.UpdateValue();
+				break;
+				
+			case IDC_VOLMIDI:
+				m_midi.UpdateValue();
+				break;
+				
+			case IDC_VOLHW:
+				m_hardware.UpdateValue();
 				break;
 
 			default:
@@ -1849,6 +1895,9 @@ public:
 protected:
 	virtual BOOL OnInitDialog();
 	virtual void OnOK();
+
+private:
+	CComboData m_cmbid;				//!< ID
 };
 
 //! ボタン
@@ -1884,7 +1933,71 @@ BOOL SndOptPadPage::OnInitDialog()
 			CheckDlgButton(s_pad[i][j], (np2oscfg.JOY1BTN[i] & (1 << j)) ? BST_CHECKED : BST_UNCHECKED);
 		}
 	}
+	
+	m_cmbid.SubclassDlgItem(IDC_PAD1_ID, this);
+	OEMCHAR strbuf[256] = {0};
+	JOYCAPS joycaps;
+	for(int i=0;i<16;i++)
+	{
+		if(joyGetDevCaps(i, &joycaps, sizeof(joycaps)) == JOYERR_NOERROR)
+		{
+			OEMCHAR szKey[256];
+			OEMCHAR szValue[256];
+			OEMCHAR szOEMKey[256];
+			OEMCHAR szOEMName[256];
+			HKEY hKey;
+			DWORD dwcb;
+			LONG lret;
+			bool hkcu = false;
 
+			OEMSPRINTF(szKey, OEMTEXT("%s\\%s\\%s"), REGSTR_PATH_JOYCONFIG, joycaps.szRegKey, REGSTR_KEY_JOYCURR);
+			lret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, (LPTSTR) &szKey, 0, KEY_READ, &hKey);
+			if(lret != ERROR_SUCCESS){
+				lret = RegOpenKeyEx(HKEY_CURRENT_USER, (LPTSTR) &szKey, 0, KEY_READ, &hKey);
+				hkcu = true;
+			}
+			if (lret == ERROR_SUCCESS) 
+			{
+				dwcb = sizeof(szOEMKey);
+				OEMSPRINTF(szValue, OEMTEXT("Joystick%d%s"), i+1, REGSTR_VAL_JOYOEMNAME);
+				lret = RegQueryValueEx(hKey, szValue, 0, 0, (LPBYTE) &szOEMKey, (LPDWORD) &dwcb);
+				RegCloseKey(hKey);
+				if (lret == ERROR_SUCCESS)
+				{
+					OEMSPRINTF(szKey, OEMTEXT("%s\\%s"), REGSTR_PATH_JOYOEM, szOEMKey);
+					lret = RegOpenKeyEx(hkcu ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE, szKey, 0, KEY_READ, &hKey);
+
+					if (lret == ERROR_SUCCESS) 
+					{
+						// Get OEM Name
+						dwcb = sizeof(szValue);
+						lret = RegQueryValueEx(hKey, REGSTR_VAL_JOYOEMNAME, 0, 0, (LPBYTE)szOEMName, (LPDWORD) &dwcb);
+						RegCloseKey(hKey);
+						OEMSPRINTF(strbuf, OEMTEXT("%d - %s"), i, szOEMName);
+					}
+					else
+					{
+						OEMSPRINTF(strbuf, OEMTEXT("%d - Controller #%d"), i, i+1);
+					}
+				}
+				else
+				{
+					OEMSPRINTF(strbuf, OEMTEXT("%d - Controller #%d"), i, i+1);
+				}
+			}
+			else
+			{
+				OEMSPRINTF(strbuf, OEMTEXT("%d - Controller #%d"), i, i+1);
+			}
+		}
+		else
+		{
+			OEMSPRINTF(strbuf, OEMTEXT("%d"), i);
+		}
+		m_cmbid.Add(strbuf, i);
+	}
+	m_cmbid.SetCurSel(np2oscfg.JOYPAD1ID);
+	
 	return TRUE;
 }
 
@@ -1916,6 +2029,13 @@ void SndOptPadPage::OnOK()
 				bUpdated = true;
 			}
 		}
+	}
+
+	const UINT8 cJoyID = (UINT8)m_cmbid.GetCurItemData(np2oscfg.JOYPAD1ID);
+	if(cJoyID != np2oscfg.JOYPAD1ID)
+	{
+		np2oscfg.JOYPAD1ID = cJoyID;
+		bUpdated = true;
 	}
 
 	if (bUpdated)

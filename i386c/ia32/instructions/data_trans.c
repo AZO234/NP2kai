@@ -164,7 +164,7 @@ MOV_SwEw(void)
 
 	GET_PCBYTE(op);
 	idx = ((UINT8)(op >> 3) & 7);
-	if (idx != CPU_CS_INDEX && idx < CPU_SEGREG_NUM) {
+	if ((idx != CPU_CS_INDEX || i386cpuid.allow_movCS) && idx < CPU_SEGREG_NUM) {
 		if (op >= 0xc0) {
 			CPU_WORKCLOCK(2);
 			src = *(reg16_b20[op]);

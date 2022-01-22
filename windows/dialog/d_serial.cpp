@@ -52,6 +52,7 @@ private:
 	UINT8 m_pentabfa;			//!< ペンタブアスペクト比固定
 	CWndProc m_chkpentabfa;		//!< Pen tablet fixed aspect mode
 	CWndProc m_chkfixedspeed;	//!< Fixed speed mode
+	CWndProc m_chkDSRcheck;		//!< Hardware DSR check mode
 	CComboData m_port;			//!< Port
 	CComboData m_speed;			//!< Speed
 	CComboData m_chars;			//!< Chars
@@ -186,6 +187,14 @@ BOOL SerialOptComPage::OnInitDialog()
 		m_chkfixedspeed.SendMessage(BM_SETCHECK , m_cfg.fixedspeed ? BST_CHECKED : BST_UNCHECKED , 0);
 	}
 	
+	m_chkDSRcheck.SubclassDlgItem(IDC_COM1DSRCHECK, this);
+	if(m_cm != cm_rs232c){
+		m_chkDSRcheck.EnableWindow(FALSE);
+		m_chkDSRcheck.SendMessage(BM_SETCHECK , BST_CHECKED , 0);
+	}else{
+		m_chkDSRcheck.SendMessage(BM_SETCHECK , m_cfg.DSRcheck ? BST_CHECKED : BST_UNCHECKED , 0);
+	}
+	
 #if defined(SUPPORT_NAMED_PIPE)
 	m_pipename.SubclassDlgItem(IDC_COM1PIPENAME, this);
 	m_pipename.SetWindowText(m_cfg.pipename);
@@ -229,6 +238,13 @@ void SerialOptComPage::OnOK()
 	if (m_cfg.fixedspeed != cFSpeedEnable)
 	{
 		m_cfg.fixedspeed = cFSpeedEnable;
+		nUpdated |= SYS_UPDATEOSCFG;
+	}
+	
+	const UINT8 cDSRcheckEnable = (IsDlgButtonChecked(IDC_COM1DSRCHECK) != BST_UNCHECKED) ? 1 : 0;
+	if (m_cfg.DSRcheck != cDSRcheckEnable)
+	{
+		m_cfg.DSRcheck = cDSRcheckEnable;
 		nUpdated |= SYS_UPDATEOSCFG;
 	}
 
@@ -387,6 +403,7 @@ void SerialOptComPage::UpdateControls()
 		m_chkfixedspeed.EnableWindow(bSerialShow ? TRUE : FALSE);
 	}
 	m_chkfixedspeed.ShowWindow(bSerialShow ? SW_SHOW : SW_HIDE);
+	m_chkDSRcheck.ShowWindow(bSerialShow ? SW_SHOW : SW_HIDE);
 	
 	// Serial MIDI emulation
 	static const UINT midi[] =

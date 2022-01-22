@@ -328,7 +328,24 @@ static void np2sysp_cngconfig(const void *arg1, long arg2) {
 		if(configvalue==0){
 			pcidev.enable = configvalue;
 		}else{
-			// TODO: 無効→有効にする場合のコードを書く
+			if(!pcidev.enable){
+				int oldusepci = np2cfg.usepci;
+				np2cfg.usepci = 1;
+				pcidev_reset(&np2cfg);
+				pcidev_bind();
+#if defined(SUPPORT_WAB) && defined(SUPPORT_CL_GD5430)
+				// 作り直し
+				pc98_cirrus_vga_unbind();
+				pc98_cirrus_vga_bind();
+				np2clvga.VRAMWindowAddr2 = 0;
+				np2clvga.VRAMWindowAddr3 = 0;
+				pc98_cirrus_vga_initVRAMWindowAddr();
+				np2clvga.mmioenable = 0;
+				np2wab.paletteChanged = 1;
+				pc98_cirrus_vga_resetresolution();
+#endif
+				np2cfg.usepci = oldusepci;
+			}
 		}
 		configvalue = pcidev.enable;
 #endif

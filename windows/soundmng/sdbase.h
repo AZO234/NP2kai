@@ -118,6 +118,18 @@ public:
 	}
 
 	/**
+	 * PCM データ再読み込み
+	 * @param[in] nNum PCM 番号
+	 * @param[in] lpFilename ファイル名
+	 * @retval true 成功
+	 * @retval false 失敗
+	 */
+	virtual bool ReloadPCM(UINT nNum)
+	{
+		return false;
+	}
+
+	/**
 	 * PCM をアンロード
 	 * @param[in] nNum PCM 番号
 	 */

@@ -39,9 +39,10 @@ void commng_finalize(void)
 /**
  * 作成
  * @param[in] nDevice デバイス
+ * @param[in] onReset リセット時かどうか（現状、PIPEのみリセット時にオープンする）
  * @return ハンドル
  */
-COMMNG commng_create(UINT nDevice)
+COMMNG commng_create(UINT nDevice, BOOL onReset)
 {
 	COMMNG ret = NULL;
 
@@ -89,10 +90,12 @@ COMMNG commng_create(UINT nDevice)
 	{
 		if ((pComCfg->port >= COMPORT_COM1) && (pComCfg->port <= COMPORT_COM4))
 		{
-			ret = CComSerial::CreateInstance(pComCfg->port - COMPORT_COM1 + 1, pComCfg->param, pComCfg->speed, pComCfg->fixedspeed);
+			if(onReset) return NULL;
+			ret = CComSerial::CreateInstance(pComCfg->port - COMPORT_COM1 + 1, pComCfg->param, pComCfg->speed, pComCfg->fixedspeed, pComCfg->DSRcheck);
 		}
 		else if (pComCfg->port == COMPORT_MIDI)
 		{
+			if(onReset) return NULL;
 			ret = CComMidi::CreateInstance(pComCfg->mout, pComCfg->min, pComCfg->mdl);
 			if (ret)
 			{
@@ -103,6 +106,7 @@ COMMNG commng_create(UINT nDevice)
 #if defined(SUPPORT_WACOM_TABLET)
 		else if (pComCfg->port == COMPORT_TABLET)
 		{
+			if(onReset) return NULL;
 			ret = CComWacom::CreateInstance(g_hWndMain);
 		}
 #endif
@@ -116,6 +120,7 @@ COMMNG commng_create(UINT nDevice)
 
 	if (ret == NULL)
 	{
+		if(onReset) return NULL;
 		ret = new CComNull;
 	}
 	return ret;

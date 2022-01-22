@@ -773,14 +773,15 @@ static const INITBL iniitem[] = {
 	{OEMTEXT("USERAM_D"), INITYPE_BOOL,	&np2cfg.useram_d,	0},
 #if defined(SUPPORT_ASYNC_CPU)
 	{OEMTEXT("ASYNCCPU"), INITYPE_BOOL,	&np2cfg.asynccpu,	0},
-	{OEMTEXT("CONSTTSC"), INITYPE_BOOL,	&np2cfg.consttsc,	0},
 #endif
+	{OEMTEXT("CONSTTSC"), INITYPE_BOOL,	&np2cfg.consttsc,	0},
 #if defined(SUPPORT_IDEIO)
 	{OEMTEXT("IDEBADDR"), INIRO_HEX8,	&np2cfg.idebaddr,	0},
 #endif
 #if defined(SUPPORT_GAMEPORT)
 	{OEMTEXT("GAMEPORT"), INITYPE_BOOL,	&np2cfg.gameport,	0},
 #endif
+	{OEMTEXT("USEMOVCS"), INIRO_BOOL,	&np2cfg.allowMOVCS,	0},
 
 	{OEMTEXT("keyboard"), INITYPE_KB,	&np2oscfg.KEYBOARD,	0},
 #if !defined(__LIBRETRO__)

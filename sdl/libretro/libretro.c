@@ -1743,6 +1743,9 @@ void retro_run (void)
       }
       resetInput();
       pccore_cfgupdate();
+      if(nevent_iswork(NEVENT_CDWAIT)){
+         nevent_forceexecute(NEVENT_CDWAIT);
+      }
       pccore_reset();
       did_reset = false;
    }

@@ -629,6 +629,7 @@ static const PFTBL s_IniItems[] =
 	PFMAX("volume_A", PFTYPE_UINT8,		&np2cfg.vol_adpcm,		128),
 	PFMAX("volume_P", PFTYPE_UINT8,		&np2cfg.vol_pcm,		128),
 	PFMAX("volume_R", PFTYPE_UINT8,		&np2cfg.vol_rhythm,		128),
+	PFMAX("volume_V", PFTYPE_UINT8,		&np2cfg.vol_midi,		128),
 
 	PFVAL("Seek_Snd", PFTYPE_BOOL,		&np2cfg.MOTOR),
 	PFMAX("Seek_Vol", PFTYPE_UINT8,		&np2cfg.MOTORVOL,		100),
@@ -738,7 +739,7 @@ static const PFTBL s_IniItems[] =
 	PFVAL("cpu_fecx", PFTYPE_HEX32,		&np2cfg.cpu_feature_ecx),
 	PFVAL("cpu_eflg", PFTYPE_HEX32,		&np2cfg.cpu_eflags_mask),
 
-	PFMAX("FPU_TYPE", PFTYPE_UINT8,		&np2cfg.fpu_type,		0), // FPU種類
+	PFVAL("FPU_TYPE", PFTYPE_UINT8,		&np2cfg.fpu_type), // FPU種類
 	
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 	PFVAL("memckspd", PFTYPE_UINT8,		&np2cfg.memcheckspeed),
@@ -752,14 +753,15 @@ static const PFTBL s_IniItems[] =
 	
 #if defined(SUPPORT_ASYNC_CPU)
 	PFVAL("ASYNCCPU", PFTYPE_BOOL,		&np2cfg.asynccpu), // 非同期CPUモード有効
-	PFVAL("CONSTTSC", PFTYPE_BOOL,		&np2cfg.consttsc), // RDTSCをAsyncクロック変更によらず一定間隔にする
 #endif
+	PFVAL("CONSTTSC", PFTYPE_BOOL,		&np2cfg.consttsc), // RDTSCをクロック変更によらず一定間隔にする
 #if defined(SUPPORT_IDEIO)
 	PFVAL("IDEBADDR", PFRO_HEX8,		&np2cfg.idebaddr), // IDE BIOS アドレス（デフォルト：D8h(D8000h)）
 #endif
 #if defined(SUPPORT_GAMEPORT)
 	PFVAL("GAMEPORT", PFTYPE_BOOL,		&np2cfg.gameport),
 #endif
+	PFVAL("USEMOVCS", PFRO_BOOL,		&np2cfg.allowMOVCS),
 
 #if defined(SUPPORT_VIDEOFILTER)
 		PFVAL("vf1_enable", PFTYPE_BOOL, &np2cfg.vf1_enable),
@@ -789,6 +791,7 @@ static const PFTBL s_IniItems[] =
 	PFVAL("F12_COPY", PFTYPE_UINT8,		&np2oscfg.F12COPY),
 	PFVAL("Joystick", PFTYPE_BOOL,		&np2oscfg.JOYPAD1),
 	PFEXT("Joy1_btn", PFTYPE_BIN,		np2oscfg.JOY1BTN,		4),
+	PFMAX("Joy1_PID", PFTYPE_UINT8,		&np2oscfg.JOYPAD1ID,	15),
 
 	PFVAL("clocknow", PFTYPE_UINT8,		&np2oscfg.clk_x),
 	PFVAL("clockfnt", PFTYPE_UINT8,		&np2oscfg.clk_fnt),
@@ -820,6 +823,7 @@ static const PFTBL s_IniItems[] =
 	PFVAL("com1para", PFTYPE_UINT8,		&np2oscfg.com1.param),
 	PFVAL("com1_bps", PFTYPE_UINT32,	&np2oscfg.com1.speed),
 	PFVAL("com1fbps", PFTYPE_BOOL,		&np2oscfg.com1.fixedspeed),
+	PFVAL("com1dsrc", PFTYPE_BOOL,		&np2oscfg.com1.DSRcheck),
 	PFSTR("com1mmap", PFTYPE_STR,		np2oscfg.com1.mout),
 	PFSTR("com1mmdl", PFTYPE_STR,		np2oscfg.com1.mdl),
 	PFSTR("com1mdef", PFTYPE_STR,		np2oscfg.com1.def),
@@ -832,6 +836,7 @@ static const PFTBL s_IniItems[] =
 	PFVAL("com2para", PFTYPE_UINT8,		&np2oscfg.com2.param),
 	PFVAL("com2_bps", PFTYPE_UINT32,	&np2oscfg.com2.speed),
 	PFVAL("com2fbps", PFTYPE_BOOL,		&np2oscfg.com2.fixedspeed),
+	PFVAL("com2dsrc", PFTYPE_BOOL,		&np2oscfg.com2.DSRcheck),
 	PFSTR("com2mmap", PFTYPE_STR,		np2oscfg.com2.mout),
 	PFSTR("com2mmdl", PFTYPE_STR,		np2oscfg.com2.mdl),
 	PFSTR("com2mdef", PFTYPE_STR,		np2oscfg.com2.def),
@@ -844,6 +849,7 @@ static const PFTBL s_IniItems[] =
 	PFVAL("com3para", PFTYPE_UINT8,		&np2oscfg.com3.param),
 	PFVAL("com3_bps", PFTYPE_UINT32,	&np2oscfg.com3.speed),
 	PFVAL("com3fbps", PFTYPE_BOOL,		&np2oscfg.com3.fixedspeed),
+	PFVAL("com3dsrc", PFTYPE_BOOL,		&np2oscfg.com3.DSRcheck),
 	PFSTR("com3mmap", PFTYPE_STR,		np2oscfg.com3.mout),
 	PFSTR("com3mmdl", PFTYPE_STR,		np2oscfg.com3.mdl),
 	PFSTR("com3mdef", PFTYPE_STR,		np2oscfg.com3.def),
@@ -906,7 +912,9 @@ static const PFTBL s_IniItems[] =
 	PFVAL("READONLY", PFRO_BOOL,		&np2oscfg.readonly), // 変更を設定ファイルに書き込まない
 	PFVAL("TICKMODE", PFRO_UINT8,		&np2oscfg.tickmode), // Tickカウンタのモードを強制的に設定する
 	PFVAL("USEWHEEL", PFRO_BOOL,		&np2oscfg.usewheel), // マウスホイールによる音量・マウス速度設定を使用する
-	PFVAL("USE_MVOL", PFRO_BOOL,		&np2oscfg.usemastervolume), // マスタボリューム設定を使用する
+	//PFVAL("USE_MVOL", PFRO_BOOL,		&np2oscfg.usemastervolume), // マスタボリューム設定を使用する
+	PFVAL("USEMIDIV", PFRO_BOOL,		&np2oscfg.usemidivolume), // MIDI疑似ボリューム設定を使用する
+	PFMAX("MVOL_MAX", PFRO_UINT8,		&np2oscfg.mastervolumemax, 255), // マスタボリュームの最大値を設定する
 	
 	PFVAL("TWNDHIST", PFRO_UINT8,		&np2oscfg.toolwndhistory), // ツールウィンドウのFDファイル履歴の記憶数
 	

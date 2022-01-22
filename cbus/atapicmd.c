@@ -108,7 +108,7 @@ static void senderror(IDEDRV drv) {
 	//drv->sc = IDEINTR_IO;
 	drv->sc = IDEINTR_IO | IDEINTR_CD; // set Command or Data bit np21w ver0.86 rev38
 	drv->status &= ~(IDESTAT_BSY|IDESTAT_DMRD|IDESTAT_SERV|IDESTAT_DRQ); // clear DRQ bit np21w ver0.86 rev38
-	drv->status |= IDESTAT_CHK;
+	drv->status |= IDESTAT_CHK|IDESTAT_DSC;
 
 	if (!(drv->ctrl & IDECTRL_NIEN)) {
 		//TRACEOUT(("atapicmd: senderror()"));
@@ -207,7 +207,7 @@ void atapicmd_a0(IDEDRV drv) {
 				if(mediachangeflag==MEDIA_CHANGE_WAIT){
 					nevent_set(NEVENT_CDWAIT, 1, cdchange_timeoutproc, NEVENT_ABSOLUTE); // OS側がCDを催促しているようなので更に急いで交換
 				}else if(mediachangeflag==0){
-					nevent_setbyms(NEVENT_CDWAIT, 100, cdchange_timeoutproc, NEVENT_ABSOLUTE); // OS側がCDが無いと認識したようなので急いで交換
+					nevent_setbyms(NEVENT_CDWAIT, 1000, cdchange_timeoutproc, NEVENT_ABSOLUTE); // OS側がCDが無いと認識したようなので急いで交換
 				}
 			}
 			if(mediachangeflag < MEDIA_CHANGE_WAIT) mediachangeflag++;

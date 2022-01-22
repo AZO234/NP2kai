@@ -118,8 +118,8 @@ struct tagNP2Config
 	
 #if defined(SUPPORT_ASYNC_CPU)
 	UINT8	asynccpu; // 非同期CPUモード有効
-	UINT8	consttsc; // RDTSCをAsyncクロック変更によらず一定間隔にする
 #endif
+	UINT8	consttsc; // RDTSCをAsyncクロック変更によらず一定間隔にする
 #if defined(SUPPORT_IDEIO)
 	UINT8	idebaddr; // IDE BIOS アドレス（デフォルト：D8h(D8000h)）
 #endif
@@ -184,6 +184,7 @@ struct tagNP2Config
 	UINT8	vol_adpcm;
 	UINT8	vol_pcm;
 	UINT8	vol_rhythm;
+	UINT8	vol_midi;
 
 	UINT8	mpuenable;
 	UINT8	mpuopt;
@@ -315,6 +316,7 @@ struct tagNP2Config
 #if defined(SUPPORT_GAMEPORT)
 	UINT8	gameport; // 118音源のゲームポートを使用する
 #endif
+	UINT8	allowMOVCS; // mov cs,xx命令の実行を許可する（8086）
 
 #if defined(SUPPORT_DEBUGSS)
 	UINT8	debugss;

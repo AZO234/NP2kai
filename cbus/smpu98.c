@@ -372,10 +372,10 @@ tr_nextsearch_more:
 				if (!tr->step) {
 					if ((tr->datas) && (tr->remain == 0)) {
 						if (cm_smpu98[0] == NULL) {
-							cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A);
+							cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A, FALSE);
 						}
 						if (cm_smpu98[1] == NULL) {
-							cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B);
+							cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B, FALSE);
 							smpu98.portBready = (cm_smpu98[1]->connect != COMCONNECT_OFF);
 						}
 						if (tr->data[0] == MIDI_STOP) {
@@ -1070,10 +1070,10 @@ void IOOUTCALL smpu98_o0(UINT port, REG8 dat) {
 
 TRACEOUT(("smpu98 out %.4x %.2x", port, dat));
 	if (cm_smpu98[0] == NULL) {
-		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A);
+		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A, FALSE);
 	}
 	if (cm_smpu98[1] == NULL) {
-		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B);
+		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B, FALSE);
 		smpu98.portBready = (cm_smpu98[1]->connect != COMCONNECT_OFF);
 	}
 	if (cm_smpu98[0]->connect != COMCONNECT_OFF) {
@@ -1101,10 +1101,10 @@ void IOOUTCALL smpu98_o2(UINT port, REG8 dat) {
 
 TRACEOUT(("smpu98 out %.4x %.2x", port, dat));
 	if (cm_smpu98[0] == NULL) {
-		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A);
+		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A, FALSE);
 	}
 	if (cm_smpu98[1] == NULL) {
-		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B);
+		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B, FALSE);
 		smpu98.portBready = (cm_smpu98[1]->connect != COMCONNECT_OFF);
 	}
 	if (cm_smpu98[0]->connect != COMCONNECT_OFF) {
@@ -1136,10 +1136,10 @@ TRACEOUT(("smpu98 out %.4x %.2x", port, dat));
 REG8 IOINPCALL smpu98_i0(UINT port) {
 	
 	if (cm_smpu98[0] == NULL) {
-		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A);
+		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A, FALSE);
 	}
 	if (cm_smpu98[1] == NULL) {
-		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B);
+		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B, FALSE);
 		smpu98.portBready = (cm_smpu98[1]->connect != COMCONNECT_OFF);
 	}
 	if (cm_smpu98[0]->connect != COMCONNECT_OFF) {
@@ -1181,10 +1181,10 @@ REG8 IOINPCALL smpu98_i2(UINT port) {
 	REG8	ret;
 	
 	if (cm_smpu98[0] == NULL) {
-		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A);
+		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A, FALSE);
 	}
 	if (cm_smpu98[1] == NULL) {
-		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B);
+		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B, FALSE);
 		smpu98.portBready = (cm_smpu98[1]->connect != COMCONNECT_OFF);
 	}
 	if ((cm_smpu98[0]->connect != COMCONNECT_OFF) || g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_118_SB16) {
@@ -1207,10 +1207,10 @@ void IOOUTCALL smpu98_o4(UINT port, UINT16 dat) {
 
 TRACEOUT(("smpu98 out %.4x %.2x", port, dat));
 	if (cm_smpu98[0] == NULL) {
-		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A);
+		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A, FALSE);
 	}
 	if (cm_smpu98[1] == NULL) {
-		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B);
+		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B, FALSE);
 		smpu98.portBready = (cm_smpu98[1]->connect != COMCONNECT_OFF);
 	}
 	if (cm_smpu98[0]->connect != COMCONNECT_OFF && cm_smpu98[1]->connect != COMCONNECT_OFF) {
@@ -1233,10 +1233,10 @@ void IOOUTCALL smpu98_o6(UINT port, UINT16 dat) {
 
 TRACEOUT(("smpu98 out %.4x %.2x", port, dat));
 	if (cm_smpu98[0] == NULL) {
-		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A);
+		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A, FALSE);
 	}
 	if (cm_smpu98[1] == NULL) {
-		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B);
+		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B, FALSE);
 		smpu98.portBready = (cm_smpu98[1]->connect != COMCONNECT_OFF);
 	}
 	if (cm_smpu98[0]->connect != COMCONNECT_OFF && cm_smpu98[1]->connect != COMCONNECT_OFF) {
@@ -1261,10 +1261,10 @@ void IOOUTCALL smpu98_o8(UINT port, UINT16 dat) {
 
 TRACEOUT(("smpu98 out %.4x %.2x", port, dat));
 	if (cm_smpu98[0] == NULL) {
-		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A);
+		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A, FALSE);
 	}
 	if (cm_smpu98[1] == NULL) {
-		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B);
+		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B, FALSE);
 		smpu98.portBready = (cm_smpu98[1]->connect != COMCONNECT_OFF);
 	}
 	if (cm_smpu98[0]->connect != COMCONNECT_OFF && cm_smpu98[1]->connect != COMCONNECT_OFF) {
@@ -1345,10 +1345,10 @@ void IOOUTCALL smpu98_oa(UINT port, UINT16 dat) {
 
 TRACEOUT(("smpu98 out %.4x %.2x", port, dat));
 	if (cm_smpu98[0] == NULL) {
-		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A);
+		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A, FALSE);
 	}
 	if (cm_smpu98[1] == NULL) {
-		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B);
+		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B, FALSE);
 		smpu98.portBready = (cm_smpu98[1]->connect != COMCONNECT_OFF);
 	}
 	if (cm_smpu98[0]->connect != COMCONNECT_OFF && cm_smpu98[1]->connect != COMCONNECT_OFF) {
@@ -1363,10 +1363,10 @@ UINT16 IOINPCALL smpu98_i4(UINT port) {
 	UINT16	ret = 0xffff;
 	
 	if (cm_smpu98[0] == NULL) {
-		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A);
+		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A, FALSE);
 	}
 	if (cm_smpu98[1] == NULL) {
-		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B);
+		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B, FALSE);
 		smpu98.portBready = (cm_smpu98[1]->connect != COMCONNECT_OFF);
 	}
 	if (cm_smpu98[0]->connect != COMCONNECT_OFF && cm_smpu98[1]->connect != COMCONNECT_OFF) {
@@ -1393,10 +1393,10 @@ UINT16 IOINPCALL smpu98_i6(UINT port) {
 	UINT16	ret = 0xffff;
 	
 	if (cm_smpu98[0] == NULL) {
-		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A);
+		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A, FALSE);
 	}
 	if (cm_smpu98[1] == NULL) {
-		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B);
+		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B, FALSE);
 		smpu98.portBready = (cm_smpu98[1]->connect != COMCONNECT_OFF);
 	}
 	if (cm_smpu98[0]->connect != COMCONNECT_OFF && cm_smpu98[1]->connect != COMCONNECT_OFF) {
@@ -1423,10 +1423,10 @@ UINT16 IOINPCALL smpu98_i8(UINT port) {
 	UINT16	ret = 0xffff;
 	
 	if (cm_smpu98[0] == NULL) {
-		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A);
+		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A, FALSE);
 	}
 	if (cm_smpu98[1] == NULL) {
-		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B);
+		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B, FALSE);
 		smpu98.portBready = (cm_smpu98[1]->connect != COMCONNECT_OFF);
 	}
 	if (cm_smpu98[0]->connect != COMCONNECT_OFF && cm_smpu98[1]->connect != COMCONNECT_OFF) {
@@ -1453,10 +1453,10 @@ UINT16 IOINPCALL smpu98_ia(UINT port) {
 	UINT16	ret;
 	
 	if (cm_smpu98[0] == NULL) {
-		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A);
+		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A, FALSE);
 	}
 	if (cm_smpu98[1] == NULL) {
-		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B);
+		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B, FALSE);
 		smpu98.portBready = (cm_smpu98[1]->connect != COMCONNECT_OFF);
 	}
 	if (cm_smpu98[0]->connect != COMCONNECT_OFF && cm_smpu98[1]->connect != COMCONNECT_OFF) {
@@ -1520,6 +1520,16 @@ void smpu98_reset(const NP2CFG *pConfig) {
 	setdefaultcondition();
 //	pic_registext(smpu98.irqnum);
 
+	if (cm_smpu98[0] == NULL) {
+		cm_smpu98[0] = commng_create(COMCREATE_SMPU98_A, TRUE);
+	}
+	if (cm_smpu98[1] == NULL) {
+		cm_smpu98[1] = commng_create(COMCREATE_SMPU98_B, TRUE);
+		if(cm_smpu98[1]){
+			smpu98.portBready = (cm_smpu98[1]->connect != COMCONNECT_OFF);
+		}
+	}
+
 	(void)pConfig;
 }
 
@@ -1577,8 +1587,8 @@ void smpu98_bind(void) {
 			iocore_attachout(cs4231.port[10]+1, smpu98_o2);
 			iocore_attachinp(cs4231.port[10]+1, smpu98_i2);
 			// NULLÇ≈çÏÇ¡ÇƒÇ®Ç≠
-			cm_smpu98[0] = commng_create(COMCREATE_NULL);
-			cm_smpu98[1] = commng_create(COMCREATE_NULL);
+			cm_smpu98[0] = commng_create(COMCREATE_NULL, FALSE);
+			cm_smpu98[1] = commng_create(COMCREATE_NULL, FALSE);
 		}
 	}
 }

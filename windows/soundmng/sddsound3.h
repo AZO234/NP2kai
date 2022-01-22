@@ -44,6 +44,7 @@ public:
 	virtual void StopStream();
 	virtual void SetMasterVolume(int nVolume);
 	virtual bool LoadPCM(UINT nNum, LPCTSTR lpFilename = NULL);
+	virtual bool ReloadPCM(UINT nNum);
 	virtual void SetPCMVolume(UINT nNum, int nVolume);
 	virtual bool PlayPCM(UINT nNum, BOOL bLoop);
 	virtual void StopPCM(UINT nNum);
@@ -62,6 +63,7 @@ private:
 	UINT m_dwHalfBufferSize;					//!< バッファ バイト
 	HANDLE m_hEvents[2];						//!< イベント
 	std::map<UINT, LPDIRECTSOUNDBUFFER> m_pcm;	//!< PCM バッファ
+	std::map<UINT, TCHAR*> m_pcmfile;			//!< PCM ファイル名
 	int m_mastervolume;							//!< マスタボリューム
 	int m_pcmvolume[PCMVOLUME_MAXCOUNT];		//!< PCMボリューム 
 
@@ -69,5 +71,5 @@ private:
 	void FillStream(DWORD dwPosition);
 	void UnloadPCM(UINT nNum);
 	void DestroyAllPCM();
-	LPDIRECTSOUNDBUFFER CreateWaveBuffer(LPCTSTR lpFilename);
+	LPDIRECTSOUNDBUFFER CreateWaveBuffer(LPCTSTR lpFilename, int volume100);
 };

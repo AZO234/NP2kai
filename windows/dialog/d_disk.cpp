@@ -243,6 +243,15 @@ static const UINT16 s_sasires[6] =
 	IDC_NEWSASI30MB, IDC_NEWSASI40MB
 };
 
+/** SASI HDD CHS (SS=256) */
+static const SASIHDD s_sasihddtbl[] = {
+	{33, 4, 153},			// 5MB
+	{33, 4, 310},			// 10MB
+	{33, 6, 310},			// 15MB
+	{33, 8, 310},			// 20MB
+	{33, 6, 615},			// 30MB
+	{33, 8, 615}};			// 40MB
+
 /**
  * @brief 新しいHDD
  */
@@ -255,7 +264,7 @@ public:
 	 * @param[in] nHddMinSize 最小サイズ
 	 * @param[in] nHddMaxSize 最大サイズ
 	 */
-	CNewHddDlg(HWND hwndParent, UINT32 nHddMinSize, UINT32 nHddMaxSize)
+	CNewHddDlg(HWND hwndParent, UINT32 nHddMinSize, UINT32 nHddMaxSize, UINT8 allowsasi)
 		: CDlgProc(IDD_NEWHDDDISK, hwndParent)
 		, m_nHddSize(0)
 		, m_nHddMinSize(nHddMinSize)
@@ -268,6 +277,7 @@ public:
 		, m_HddSS(0)
 		, m_dynsize(0)
 		, m_blank(0)
+		, m_allowsasi(allowsasi)
 	{
 	}
 
@@ -409,17 +419,21 @@ public:
 	 */
 	void SetSizefromCHS()
 	{
-		//UINT16 C,H,S,SS;
-		//UINT32 hddsize; // disk size(MB)
-		
-		//m_HddC = GetDlgItemInt(IDC_HDDADVANCED_C, NULL, FALSE);
-		//m_HddH = GetDlgItemInt(IDC_HDDADVANCED_H, NULL, FALSE);
-		//m_HddS = GetDlgItemInt(IDC_HDDADVANCED_S, NULL, FALSE);
-		//m_HddSS = GetDlgItemInt(IDC_HDDADVANCED_SS, NULL, FALSE);
-
 		m_nHddSize = (UINT32)((FILELEN)m_HddC * m_HddH * m_HddS * m_HddSS / 1024 / 1024);
-		
-		SetDlgItemInt(IDC_HDDSIZE, m_nHddSize, FALSE);
+
+		int sasiidx = NELEMENTS(s_sasihddtbl);
+		if(m_allowsasi && m_HddSS==256){
+			for(sasiidx=0;sasiidx<NELEMENTS(s_sasihddtbl);sasiidx++){
+				if(m_HddC==s_sasihddtbl[sasiidx].cylinders && m_HddH==s_sasihddtbl[sasiidx].surfaces && m_HddS==s_sasihddtbl[sasiidx].sectors){
+					break;
+				}
+			}
+		}
+		if(sasiidx < NELEMENTS(s_sasihddtbl)){
+			m_hddsize.SetCurSel(sasiidx);
+		}else{
+			SetDlgItemInt(IDC_HDDSIZE, m_nHddSize, FALSE);
+		}
 	}
 	
 	/**
@@ -449,6 +463,14 @@ protected:
 		}
 
 		m_hddsize.SubclassDlgItem(IDC_HDDSIZE, this);
+		if(m_allowsasi){
+			for(int i=0;i<NELEMENTS(s_sasihddtbl);i++){
+				TCHAR sasistr[32];
+				OEMSPRINTF(sasistr, TEXT("(SASI) %d"), 
+					(s_sasihddtbl[i].cylinders * s_sasihddtbl[i].surfaces * s_sasihddtbl[i].sectors * 256 / 1024 / 1024 + 2) / 5 * 5); // 強制5MB単位表示
+				m_hddsize.Add(sasistr, 0xffffffff-i); // あり得ない値にしておく
+			}
+		}
 		m_hddsize.Add(s_hddsizetbl, hddsizetblcount);
 		
 		m_cmbhddC.SubclassDlgItem(IDC_HDDADVANCED_C, this);
@@ -462,9 +484,14 @@ protected:
 
 		m_cmbhddSS.SubclassDlgItem(IDC_HDDADVANCED_SS, this);
 		m_cmbhddSS.Add(s_hddSStbl, _countof(s_hddSStbl));
+		if(!m_allowsasi){
+			m_HddSS = 512;
+			SetDlgItemInt(IDC_HDDADVANCED_SS, m_HddSS, FALSE);
+			m_cmbhddSS.EnableWindow(FALSE);
+		}
 
 		TCHAR work[32];
-		::wsprintf(work, TEXT("(%d-%dMB)"), m_nHddMinSize, m_nHddMaxSize);
+		::wsprintf(work, TEXT("(%u-%uMB)"), m_nHddMinSize, m_nHddMaxSize > NHD_MAXSIZE28 ? NHD_MAXSIZE28 : m_nHddMaxSize); // 表向き28bit LBA制限
 		SetDlgItemText(IDC_HDDLIMIT, work);
 		
 		m_rdbfixsize.SubclassDlgItem(IDC_HDDADVANCED_FIXSIZE, this);
@@ -532,7 +559,9 @@ protected:
 				GetDlgItem(IDC_HDDADVANCED_C).EnableWindow(TRUE);
 				GetDlgItem(IDC_HDDADVANCED_H).EnableWindow(TRUE);
 				GetDlgItem(IDC_HDDADVANCED_S).EnableWindow(TRUE);
-				GetDlgItem(IDC_HDDADVANCED_SS).EnableWindow(TRUE);
+				if(m_allowsasi){
+					GetDlgItem(IDC_HDDADVANCED_SS).EnableWindow(TRUE);
+				}
 				GetDlgItem(IDC_HDDADVANCED_C).SetFocus();
 				if(m_dynsize){
 					GetDlgItem(IDC_HDDADVANCED_FIXSIZE).EnableWindow(TRUE);
@@ -549,8 +578,26 @@ protected:
 				}else if(HIWORD(wParam) == CBN_SELCHANGE) {
 					int selindex = m_hddsize.GetCurSel();
 					if(selindex!=CB_ERR){
-						m_nHddSize = s_hddsizetbl[m_hddsize.GetCurSel()];
-						SetCHSfromSize();
+						if(m_allowsasi){
+							if(selindex < NELEMENTS(s_sasihddtbl)){
+								m_HddC = s_sasihddtbl[selindex].cylinders;
+								m_HddH = s_sasihddtbl[selindex].surfaces;
+								m_HddS = s_sasihddtbl[selindex].sectors;
+								m_HddSS = 256;
+								m_nHddSize = (UINT32)((FILELEN)m_HddC * m_HddH * m_HddS * m_HddSS / 1024 / 1024);
+								SetDlgItemInt(IDC_HDDADVANCED_C, m_HddC, FALSE);
+								SetDlgItemInt(IDC_HDDADVANCED_H, m_HddH, FALSE);
+								SetDlgItemInt(IDC_HDDADVANCED_S, m_HddS, FALSE);
+								SetDlgItemInt(IDC_HDDADVANCED_SS, m_HddSS, FALSE);
+							}else{
+								selindex -= NELEMENTS(s_sasihddtbl);
+								m_nHddSize = s_hddsizetbl[selindex];
+								SetCHSfromSize();
+							}
+						}else{
+							m_nHddSize = s_hddsizetbl[selindex];
+							SetCHSfromSize();
+						}
 					}
 					return TRUE;
 				}
@@ -661,6 +708,7 @@ private:
 	CWndProc m_rdbfixsize;			//!< FIXED
 	CWndProc m_rdbdynsize;			//!< DYNAMIC
 	UINT8 m_blank;					/*!< 空ディスク作成フラグ */
+	UINT8 m_allowsasi;				/*!< SASI互換形式作成可能フラグ */
 	CWndProc m_chkblank;			//!< BLANK
 };
 
@@ -940,7 +988,13 @@ static unsigned int __stdcall newdisk_ThreadFunc(LPVOID vdParam)
 	}
 	else if (!file_cmpname(ext, str_hdi))
 	{
-		newdisk_hdi(lpPath, _mt_diskSize);
+		if(_mt_diskSize){
+			// 全容量指定モード
+			newdisk_hdi_ex(lpPath, _mt_diskSize, _mt_blank, &mt_progressvalue, &_mt_cancel);
+		}else{
+			// CHS指定モード
+			newdisk_hdi_ex_CHS(lpPath, _mt_diskC, _mt_diskH, _mt_diskS, _mt_diskSS, _mt_blank, &mt_progressvalue, &_mt_cancel);
+		}
 	}
 #if defined(SUPPORT_SCSI)
 	else if (!file_cmpname(ext, str_hdd))
@@ -1022,7 +1076,7 @@ void dialog_newdisk_ex(HWND hWnd, int mode)
 	LPCTSTR ext = file_getext(lpPath);
 	if (!file_cmpname(ext, str_thd))
 	{
-		CNewHddDlg dlg(hWnd, 5, 256);
+		CNewHddDlg dlg(hWnd, 5, 256, 1);
 		if (dlg.DoModal() == IDOK)
 		{
 			newdisk_thd(lpPath, dlg.GetSize());
@@ -1030,19 +1084,25 @@ void dialog_newdisk_ex(HWND hWnd, int mode)
 	}
 	else if (!file_cmpname(ext, str_nhd))
 	{
-		CNewHddDlg dlg(hWnd, 5, np2oscfg.makelhdd ? NHD_MAXSIZE2 : NHD_MAXSIZE);
+		CNewHddDlg dlg(hWnd, 5, np2oscfg.makelhdd ? NHD_MAXSIZE2 : NHD_MAXSIZE, 1);
 		dlg.EnableAdvancedOptions();
 		if (dlg.DoModal() == IDOK)
 		{
-			if(dlg.IsAdvancedMode()){
+			//if(dlg.IsAdvancedMode()){
 				_mt_diskSize = 0;
 				_mt_diskC = dlg.GetC();
 				_mt_diskH = dlg.GetH();
 				_mt_diskS = dlg.GetS();
 				_mt_diskSS = dlg.GetSS();
-			}else{
-				_mt_diskSize = dlg.GetSize();
-			}
+				if ((_mt_diskC > 65535 || _mt_diskH > 16 || _mt_diskS > 255) && MessageBoxA(hWnd, "Specified parameters are incompatible with CHS access.\nDo you want to continue anyway?", "New Disk", MB_YESNO | MB_ICONQUESTION) != IDYES) {
+					return;
+				}
+			//}else{
+			//	_mt_diskSize = dlg.GetSize();
+			//	if (((FILELEN)_mt_diskSize * _mt_diskH * _mt_diskS > 65535*16*255) && MessageBoxA(hWnd, "Specified parameters are incompatible with CHS access.\nDo you want to continue anyway?", "New Disk", MB_YESNO | MB_ICONQUESTION) != IDYES) {
+			//		return;
+			//	}
+			//}
 			_mt_blank = dlg.IsBlankDisk();
 			_mt_dyndisk = 0;
 			_mt_cancel = 0;
@@ -1062,16 +1122,46 @@ void dialog_newdisk_ex(HWND hWnd, int mode)
 	}
 	else if (!file_cmpname(ext, str_hdi))
 	{
-		CNewSasiDlg dlg(hWnd);
+		CNewHddDlg dlg(hWnd, 5, np2oscfg.makelhdd ? NHD_MAXSIZE2 : NHD_MAXSIZE, 1);
+		dlg.EnableAdvancedOptions();
 		if (dlg.DoModal() == IDOK)
 		{
-			newdisk_hdi(lpPath, dlg.GetType());
+			//if(dlg.IsAdvancedMode()){
+				_mt_diskSize = 0;
+				_mt_diskC = dlg.GetC();
+				_mt_diskH = dlg.GetH();
+				_mt_diskS = dlg.GetS();
+				_mt_diskSS = dlg.GetSS();
+				if ((_mt_diskC > 65535 || _mt_diskH > 16 || _mt_diskS > 255) && MessageBoxA(hWnd, "Specified parameters are incompatible with CHS access.\nDo you want to continue anyway?", "New Disk", MB_YESNO | MB_ICONQUESTION) != IDYES) {
+					return;
+				}
+			//}else{
+			//	_mt_diskSize = dlg.GetSize();
+			//	if (((FILELEN)_mt_diskSize * _mt_diskH * _mt_diskS > 65535*16*255) && MessageBoxA(hWnd, "Specified parameters are incompatible with CHS access.\nDo you want to continue anyway?", "New Disk", MB_YESNO | MB_ICONQUESTION) != IDYES) {
+			//		return;
+			//	}
+			//}
+			_mt_blank = dlg.IsBlankDisk();
+			_mt_dyndisk = 0;
+			_mt_cancel = 0;
+			mt_progressvalue = 0;
+			mt_progressmax = 100;
+			_tcscpy(_mt_lpPath, lpPath);
+			newdisk_hThread = (HANDLE)_beginthreadex(NULL , 0 , newdisk_ThreadFunc  , NULL , 0 , &dwID);
+			CNewHddDlgProg dlg2(hWnd, mt_progressmax, mt_progressvalue);
+			if (dlg2.DoModal() != IDOK)
+			{
+				_mt_cancel = 1;
+				WaitForSingleObject(newdisk_hThread, INFINITE);
+				CloseHandle(newdisk_hThread);
+			}
+			_mt_cancel = 1;
 		}
 	}
 #if defined(SUPPORT_SCSI)
 	else if (!file_cmpname(ext, str_hdd))
 	{
-		CNewHddDlg dlg(hWnd, 2, 512);
+		CNewHddDlg dlg(hWnd, 2, 512, 1);
 		if (dlg.DoModal() == IDOK)
 		{
 			newdisk_vhd(lpPath, dlg.GetSize());
@@ -1079,7 +1169,7 @@ void dialog_newdisk_ex(HWND hWnd, int mode)
 	}
 	else if (!file_cmpname(ext, str_hdn))
 	{
-		CNewHddDlg dlg(hWnd, 2, 6399);
+		CNewHddDlg dlg(hWnd, 2, 6399, 1);
 		if (dlg.DoModal() == IDOK)
 		{
 			newdisk_hdn(lpPath, dlg.GetSize());
@@ -1089,20 +1179,26 @@ void dialog_newdisk_ex(HWND hWnd, int mode)
 #ifdef SUPPORT_VPCVHD
 	else if (!file_cmpname(ext, str_vhd))
 	{
-		CNewHddDlg dlg(hWnd, 5, np2oscfg.makelhdd ? NHD_MAXSIZE2 : NHD_MAXSIZE);
+		CNewHddDlg dlg(hWnd, 5, np2oscfg.makelhdd ? NHD_MAXSIZE2 : NHD_MAXSIZE, 0);
 		dlg.EnableAdvancedOptions();
 		dlg.EnableDynamicSize();
 		if (dlg.DoModal() == IDOK)
 		{
-			if(dlg.IsAdvancedMode()){
+			//if(dlg.IsAdvancedMode()){
 				_mt_diskSize = 0;
 				_mt_diskC = dlg.GetC();
 				_mt_diskH = dlg.GetH();
 				_mt_diskS = dlg.GetS();
 				_mt_diskSS = dlg.GetSS();
-			}else{
-				_mt_diskSize = dlg.GetSize();
-			}
+				if ((_mt_diskC > 65535 || _mt_diskH > 16 || _mt_diskS > 255) && MessageBoxA(hWnd, "Specified parameters are incompatible with CHS access.\nDo you want to continue anyway?", "New Disk", MB_YESNO | MB_ICONQUESTION) != IDYES) {
+					return;
+				}
+			//}else{
+			//	_mt_diskSize = dlg.GetSize();
+			//	if (((FILELEN)_mt_diskSize * _mt_diskH * _mt_diskS > 65535*16*255) && MessageBoxA(hWnd, "Specified parameters are incompatible with CHS access.\nDo you want to continue anyway?", "New Disk", MB_YESNO | MB_ICONQUESTION) != IDYES) {
+			//		return;
+			//	}
+			//}
 			_mt_blank = dlg.IsBlankDisk();
 			_mt_dyndisk = dlg.IsDynamicDisk();
 			_mt_cancel = 0;

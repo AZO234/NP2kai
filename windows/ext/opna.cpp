@@ -151,10 +151,10 @@ void opna_reset(POPNA opna, REG8 cCaps)
 		strcpy(strbuf, path);
 #endif
 		OPNA_LoadRhythmSample(opna->fmgen, strbuf);
-		OPNA_SetVolumeFM(opna->fmgen, (int)LINEAR2DB((double)np2cfg.vol_fm / 128));
-		OPNA_SetVolumePSG(opna->fmgen, (int)LINEAR2DB((double)np2cfg.vol_ssg / 128));
-		OPNA_SetVolumeADPCM(opna->fmgen, (int)LINEAR2DB((double)np2cfg.vol_adpcm / 128));
-		OPNA_SetVolumeRhythmTotal(opna->fmgen, (int)LINEAR2DB((double)np2cfg.vol_rhythm / 128));
+		OPNA_SetVolumeFM(opna->fmgen, (int)LINEAR2DB((double)np2cfg.vol_fm / 128 * np2cfg.vol_master / 100));
+		OPNA_SetVolumePSG(opna->fmgen, (int)LINEAR2DB((double)np2cfg.vol_ssg / 128 * np2cfg.vol_master / 100));
+		OPNA_SetVolumeADPCM(opna->fmgen, (int)LINEAR2DB((double)np2cfg.vol_adpcm / 128 * np2cfg.vol_master / 100));
+		OPNA_SetVolumeRhythmTotal(opna->fmgen, (int)LINEAR2DB((double)np2cfg.vol_rhythm / 128 * np2cfg.vol_master / 100));
 		OPNA_Reset(opna->fmgen);
 		OPNA_SetReg(opna->fmgen, 0x07, 0xbf);
 		OPNA_SetReg(opna->fmgen, 0x0e, 0xff);
@@ -191,14 +191,14 @@ void opna_reset(POPNA opna, REG8 cCaps)
 	}
 	
 	// âπó èâä˙âª
-	opngen_setvol(np2cfg.vol_fm);
-	psggen_setvol(np2cfg.vol_ssg);
-	rhythm_setvol(np2cfg.vol_rhythm);
+	opngen_setvol(np2cfg.vol_fm * np2cfg.vol_master / 100);
+	psggen_setvol(np2cfg.vol_ssg * np2cfg.vol_master / 100);
+	rhythm_setvol(np2cfg.vol_rhythm * np2cfg.vol_master / 100);
 #if defined(SUPPORT_FMGEN)
 	if(np2cfg.usefmgen) {
-		opna_fmgen_setallvolumeFM_linear(np2cfg.vol_fm);
-		opna_fmgen_setallvolumePSG_linear(np2cfg.vol_ssg);
-		opna_fmgen_setallvolumeRhythmTotal_linear(np2cfg.vol_rhythm);
+		opna_fmgen_setallvolumeFM_linear(np2cfg.vol_fm * np2cfg.vol_master / 100);
+		opna_fmgen_setallvolumePSG_linear(np2cfg.vol_ssg * np2cfg.vol_master / 100);
+		opna_fmgen_setallvolumeRhythmTotal_linear(np2cfg.vol_rhythm * np2cfg.vol_master / 100);
 	}
 #endif	/* SUPPORT_FMGEN */
 	for (UINT i = 0; i < NELEMENTS(g_opna); i++)

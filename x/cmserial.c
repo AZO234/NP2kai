@@ -125,18 +125,29 @@ serialgetstat(COMMNG self)
 	CMSER serial = (CMSER)(self + 1);
 	int status;
 	int rv;
+	UINT8 ret = 0;
 
 	rv = ioctl(serial->hdl, TIOCMGET, &status);
 	if (rv < 0) {
 		VERBOSE(("serialgetstat: ioctl: %s", strerror(errno)));
-		return 0x20;
+		return 0x01;
 	}
 	if (!(status & TIOCM_DSR)) {
 		VERBOSE(("serialgetstat: DSR is disable"));
-		return 0x20;
+		ret |= 0x01;
+	}else{
+		VERBOSE(("serialgetstat: DSR is enable"));
 	}
-	VERBOSE(("serialgetstat: DSR is enable"));
-	return 0x00;
+	if (!(status & TIOCM_CTS)) {
+		ret |= 0x40;
+	}
+	if (!(status & TIOCM_RNG)) {
+		ret |= 0x80;
+	}
+	if (!(status & TIOCM_CAR)) {
+		ret |= 0x20;
+	}
+	return ret;
 }
 
 static INTPTR

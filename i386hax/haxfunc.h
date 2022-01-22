@@ -43,6 +43,10 @@
 
 #define HAX_IOCTL_VCPU_DEBUG \
         CTL_CODE(HAX_DEVICE_TYPE, 0x916, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
+#define HAX_VCPU_IOCTL_SET_CPUID \
+        CTL_CODE(HAX_DEVICE_TYPE, 0x917, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
 #else
 /* The mac specific interface to qemu because of mac's
  * special handling like hax tunnel allocation etc */

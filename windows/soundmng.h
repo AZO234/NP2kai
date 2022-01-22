@@ -82,6 +82,7 @@ public:
 	void SetReverse(bool bReverse);
 	void SetMasterVolume(int nVolume);
 	void LoadPCM(SoundPCMNumber nNum, LPCTSTR lpFilename);
+	void ReloadPCM(SoundPCMNumber nNum);
 	void SetPCMVolume(SoundPCMNumber nNum, int nVolume);
 	bool PlayPCM(SoundPCMNumber nNum, BOOL bLoop);
 	void StopPCM(SoundPCMNumber nNum);

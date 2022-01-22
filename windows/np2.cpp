@@ -104,6 +104,7 @@
 #if defined(SUPPORT_CL_GD5430)
 #include <wab/cirrus_vga_extern.h>
 #endif
+#include <sound/fmboard.h>
 #include <sound/pcm86.h>
 #if defined(SUPPORT_PHYSICAL_CDDRV)
 #include "Dbt.h"
@@ -139,41 +140,41 @@ static	TCHAR		szClassName[] = _T("NP2-MainWindow");
 						OEMTEXT("NP2"),
 						CW_USEDEFAULT, CW_USEDEFAULT, 1, 1, 0, 0, 0, 1, 0, 1,
 						0, 0, KEY_UNKNOWN, 0, 0,
-						0, 0, 0, {1, 2, 2, 1},
+						0, 0, 0, {1, 2, 2, 1}, {1, 2, 2, 1}, 0, 1,
 						{5, 0, 0x3e, 19200,
-						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), 0, 
+						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), 0, 1,
 #if defined(SUPPORT_NAMED_PIPE)
 						 OEMTEXT("NP2-NamedPipe"), OEMTEXT("."),
 #endif
 						},
 #if defined(SUPPORT_SMPU98)
 						{5, 0, 0x3e, 19200,
-						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), 0, 
+						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), 0, 1, 
 #if defined(SUPPORT_NAMED_PIPE)
 						 OEMTEXT("NP2-NamedPipe"), OEMTEXT("."),
 #endif
 						},
 						{5, 0, 0x3e, 19200,
-						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), 0, 
+						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), 0, 1,
 #if defined(SUPPORT_NAMED_PIPE)
 						 OEMTEXT("NP2-NamedPipe"), OEMTEXT("."),
 #endif
 						},
 #endif
 						{0, 0, 0x3e, 19200,
-						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), 0, 
+						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), 0, 1,
 #if defined(SUPPORT_NAMED_PIPE)
 						 OEMTEXT("NP2-NamedPipe"), OEMTEXT("."),
 #endif
 						},
 						{0, 0, 0x3e, 19200,
-						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), 0, 
-#if defined(SUPPORT_NAMED_PIPE)
+						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), 0, 1,
+if defined(SUPPORT_NAMED_PIPE)
 						 OEMTEXT("NP2-NamedPipe"), OEMTEXT("."),
 #endif
 						},
 						{0, 0, 0x3e, 19200,
-						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), 0, 
+						 OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), 0, 1,
 #if defined(SUPPORT_NAMED_PIPE)
 						 OEMTEXT("NP2-NamedPipe"), OEMTEXT("."),
 #endif
@@ -199,7 +200,7 @@ static	TCHAR		szClassName[] = _T("NP2-MainWindow");
 						0, 0, 1, 0, 1, 1, 
 						0, 0, 
 						0, 8, 
-						0, 0, 0, TCMODE_DEFAULT, 0, 1, 
+						0, 0, 0, 0, TCMODE_DEFAULT, 0, 100,
 						0,
 #if defined(SUPPORT_WACOM_TABLET)
 						0,
@@ -781,6 +782,9 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 #endif
 				sstpmsg_reset();
 				pccore_cfgupdate();
+				if(nevent_iswork(NEVENT_CDWAIT)){
+					nevent_forceexecute(NEVENT_CDWAIT);
+				}
 				pccore_reset();
 				sysmng_updatecaption(SYS_UPDATECAPTION_FDD);
 #ifdef SUPPORT_PHYSICAL_CDDRV
@@ -2069,6 +2073,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 #ifdef HOOK_SYSKEY
 					stop_hook_systemkey();
 #endif
+					if(nevent_iswork(NEVENT_CDWAIT)){
+						nevent_forceexecute(NEVENT_CDWAIT);
+					}
 					pccore_reset();
 #ifdef HOOK_SYSKEY
 					start_hook_systemkey();
@@ -2688,20 +2695,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					sysmng_updatecaption(SYS_UPDATECAPTION_MISC);
 					tmrSysMngHide = SetTimer(hWnd, TMRSYSMNG_ID, 5000, SysMngHideTimerProc);
 				}else{
-					if(np2oscfg.usemastervolume){
+					//if(np2oscfg.usemastervolume){
 						int cMaster = np2cfg.vol_master;
 						cMaster += GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA * 2;
 						if(cMaster < 0) cMaster = 0;
-						if(cMaster > 100) cMaster = 100;
+						if(cMaster > np2oscfg.mastervolumemax) cMaster = np2oscfg.mastervolumemax;
 						if (np2cfg.vol_master != cMaster)
 						{
 							np2cfg.vol_master = cMaster;
 							soundmng_setvolume(cMaster);
+							fmboard_updatevolume();
 						}
 						sys_miscinfo.showvolume = 1;
 						sysmng_updatecaption(SYS_UPDATECAPTION_MISC);
 						tmrSysMngHide = SetTimer(hWnd, TMRSYSMNG_ID, 5000, SysMngHideTimerProc);
-					}
+					//}
 				}
 			}
 			break;
@@ -2767,6 +2775,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 #ifdef HOOK_SYSKEY
 					stop_hook_systemkey();
 #endif
+					if(nevent_iswork(NEVENT_CDWAIT)){
+						nevent_forceexecute(NEVENT_CDWAIT);
+					}
 					pccore_reset();
 #ifdef HOOK_SYSKEY
 					start_hook_systemkey();
@@ -3120,7 +3131,7 @@ static void processwait(UINT cnt) {
 		if(lateframecount){
 			SleepEx(0, TRUE);
 		}else{
-			Sleep(1);
+			Sleep(0);
 		}
 	}
 	soundmng_sync();
@@ -3608,6 +3619,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 						winx, winy, 640, 400,
 						NULL, NULL, hInstance, NULL);
 	g_hWndMain = hWnd;
+
+	//{
+	//	HMODULE modUsedr32 = LoadLibraryA("User32.dll");
+	//	if(modUsedr32){
+	//		BOOL (WINAPI *pfnRegisterTouchWindow)(__in HWND hwnd, __in ULONG ulFlags);
+	//		pfnRegisterTouchWindow = (BOOL (WINAPI *)(__in HWND hwnd, __in ULONG ulFlags))GetProcAddress(modUsedr32, "RegisterTouchWindow");
+	//		if(pfnRegisterTouchWindow){
+	//			(*pfnRegisterTouchWindow)(g_hWndMain, 0x00000001);
+	//		}
+	//		FreeLibrary(modUsedr32);
+	//	}
+	//}
 	
 	mousemng_initialize(); // 場所移動 np21w ver0.96 rev13
 

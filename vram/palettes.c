@@ -188,6 +188,68 @@ static void pal_makedegital(const UINT8 *paltbl) {
 #endif
 }
 
+static void pal_makedegital_mono(const UINT8 *paltbl) {
+
+	UINT	i;
+	UINT32	fcol;
+	UINT32	bcol;
+
+	if ((np2cfg.LCD_MODE & 3) == 3) {
+		fcol = 0x000000;
+		bcol = 0xffffff;
+	}else{
+		fcol = 0xffffff;
+		bcol = 0x000000;
+	}
+
+	for (i=0; i<4; i++) {
+		if((paltbl[i] >> 4) & 4){
+			np2_pal32[i+NP2PAL_GRPH+ 0].d = np2_pal32[i+NP2PAL_GRPH+ 8].d = fcol;
+		}else{
+			np2_pal32[i+NP2PAL_GRPH+ 0].d = np2_pal32[i+NP2PAL_GRPH+ 8].d = bcol;
+		}
+		if(paltbl[i] & 4){
+			np2_pal32[i+NP2PAL_GRPH+ 4].d = np2_pal32[i+NP2PAL_GRPH+12].d = fcol;
+		}else{
+			np2_pal32[i+NP2PAL_GRPH+ 4].d = np2_pal32[i+NP2PAL_GRPH+12].d = bcol;
+		}
+		if (np2cfg.skipline) {
+			if((paltbl[i] >> 4) & 4){
+				np2_pal32[i+NP2PAL_SKIP+ 0].d = np2_pal32[i+NP2PAL_SKIP+ 8].d = fcol;
+			}else{
+				np2_pal32[i+NP2PAL_SKIP+ 0].d = np2_pal32[i+NP2PAL_SKIP+ 8].d = bcol;
+			}
+			if(paltbl[i] & 4){
+				np2_pal32[i+NP2PAL_SKIP+ 4].d = np2_pal32[i+NP2PAL_SKIP+12].d = fcol;
+			}else{
+				np2_pal32[i+NP2PAL_SKIP+ 4].d = np2_pal32[i+NP2PAL_SKIP+12].d = bcol;
+			}
+		}
+	}
+#if defined(SUPPORT_16BPP)
+	if (scrnmng_getbpp() == 16) {
+		for (i=0; i<4; i++) {
+			np2_pal16[i+NP2PAL_GRPH+ 0] =
+			np2_pal16[i+NP2PAL_GRPH+ 8] =
+								scrnmng_makepal16(np2_pal32[i+NP2PAL_GRPH+0]);
+			np2_pal16[i+NP2PAL_GRPH+ 4] =
+			np2_pal16[i+NP2PAL_GRPH+12] =
+								scrnmng_makepal16(np2_pal32[i+NP2PAL_GRPH+4]);
+		}
+		if (np2cfg.skipline) {
+			for (i=0; i<4; i++) {
+				np2_pal16[i+NP2PAL_SKIP+ 0] =
+				np2_pal16[i+NP2PAL_SKIP+ 8] =
+								scrnmng_makepal16(np2_pal32[i+NP2PAL_SKIP+0]);
+				np2_pal16[i+NP2PAL_SKIP+ 4] =
+				np2_pal16[i+NP2PAL_SKIP+12] =
+								scrnmng_makepal16(np2_pal32[i+NP2PAL_SKIP+4]);
+			}
+		}
+	}
+#endif
+}
+
 void pal_makeanalog_lcd(RGB32 *pal, UINT16 bit) {
 
 	UINT	i;
@@ -426,7 +488,11 @@ void pal_change(UINT8 textpalset) {
 #endif
 	if (!(np2cfg.LCD_MODE & 1)) {
 		if (gdc.mode1 & 2) {
-			pal_makedegital(deftbl);
+			if (gdcs.textdisp & GDCSCRN_ENABLE) {
+				pal_makedegital(deftbl);
+			}else{
+				pal_makedegital_mono(gdc.degpal);
+			}
 			pal_makeingmono();
 		}
 		else {
@@ -440,7 +506,11 @@ void pal_change(UINT8 textpalset) {
 	}
 	else {
 		if (gdc.mode1 & 2) {
-			pal_makedegital_lcd(deftbl);
+			if (gdcs.textdisp & GDCSCRN_ENABLE) {
+				pal_makedegital(deftbl);
+			}else{
+				pal_makedegital_mono(gdc.degpal);
+			}
 			pal_makeingmono();
 		}
 		else {

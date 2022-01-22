@@ -137,6 +137,9 @@ static const SFENTRY np2tbl[] = {
 #endif
 	{"SYSTEMPORT",	0,	STATFLAG_BIN,	&sysport,		sizeof(sysport)},
 	{"uPD4990",		0,	STATFLAG_BIN,	&uPD4990,		sizeof(uPD4990)},
+#if defined(SUPPORT_HRTIMER)
+	{"uPD4990HRT",	0,	STATFLAG_BIN,	&uPD4990HRT,	sizeof(uPD4990HRT)},
+#endif
 #if defined(SUPPORT_PC9821)&&defined(SUPPORT_PCI)
 	{"PCI",			0,	STATFLAG_BIN,	&pcidev,		sizeof(pcidev)},
 #endif
