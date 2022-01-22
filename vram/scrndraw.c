@@ -298,6 +298,8 @@ void scrndraw_redraw(void) {
 	scrnmng_allflash();
 	pal_change(1);
 	dispsync_renewalmode();
-	scrndraw_draw(1);
+	scrndraw_updateallline();
+	pcstat.screenupdate = 1;
+	//scrndraw_draw(1);
 }
 

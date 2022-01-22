@@ -372,3 +372,135 @@ void hook_fontrom(UINT32 u32Address) {
   }
 }
 
+#if defined(SUPPORT_TEXTHOOK)
+#pragma optimize( "", off )
+//------------------------------------------------------------
+// Japanese JIS to Shift-JIS code
+//
+//    return: Converted code
+//    0: not JIS code
+//
+//  note: user defined code (0xf040 - 0xfcfc) is unsupported.
+//------------------------------------------------------------
+unsigned short font_Jis2Sjis( unsigned short jis )
+{
+    unsigned short     ubyte, lbyte;
+    UINT16 SJis;
+    UINT8 th[3];
+    
+    ubyte = jis >> 8;
+    lbyte = jis & 0x00ff;
+    
+    lbyte += 0x1f;
+    if ( lbyte >= 0x7f ) lbyte++;
+    if ( lbyte <= 0x3f ) return 0;
+    
+    if ( (ubyte & 0x0001) == 0 )
+    {
+        lbyte = jis & 0x00ff;
+        lbyte += 0x7e;
+        ubyte--;
+        if ( lbyte > 0xfd ) return 0;
+    }
+    
+    ubyte -= 0x1f;
+    ubyte = ubyte >> 1;
+    ubyte += 0x80;
+    if ( ubyte >= 0xa0 ) ubyte += 0x40;
+    
+    if ( lbyte < 0x40 || lbyte > 0xFC ) return 0;
+    
+    if ( ((ubyte >= 0x81) && (ubyte <= 0x9f)) ||
+            ((ubyte >= 0xe0) && (ubyte <= 0xef)) )
+    {
+        SJis =(ubyte << 8) + lbyte;
+			
+		if (SJis > 0xEA9E && SJis < 0xED40) return 0;
+		if (SJis > 0x8197 && SJis < 0x824F) return 0;
+		if (SJis > 0x8258 && SJis < 0x8260) return 0;
+		if (SJis > 0x8279 && SJis < 0x8281) return 0;
+		if (SJis > 0x829A && SJis < 0x829F) return 0;
+		if (SJis > 0x82F1 && SJis < 0x8340) return 0;
+		if (SJis > 0x8396 && SJis < 0x839F) return 0;
+		if (SJis > 0x83B6 && SJis < 0x83BF) return 0;
+		if (SJis > 0x83D6 && SJis < 0x8440) return 0;
+		if (SJis > 0x8460 && SJis < 0x8470) return 0;
+		if (SJis > 0x8491 && SJis < 0x8540) return 0;
+		if (SJis > 0x84BE && SJis < 0x8740) return 0;
+		if (SJis > 0x8775 && SJis < 0x877E) return 0;
+		if (SJis > 0x879C && SJis < 0x889F) return 0;
+									
+		th[0] = ubyte; th[1] = lbyte; th[2] = '¥0';
+		lstrlenA((char*)th);
+		return SJis;
+			
+    } else {
+        return 0;
+    }
+    
+}
+
+unsigned short font_Jis2Sjis2( unsigned short jis )
+{
+    unsigned short     ubyte, lbyte;
+    UINT16 SJis;
+    UINT8 th[3];
+    
+    ubyte = jis >> 8;
+    lbyte = jis & 0x00ff;
+    
+    lbyte += 0x1f;
+    if ( lbyte >= 0x7f ) lbyte++;
+    if ( lbyte <= 0x3f ) return 0;
+    
+    if ( (ubyte & 0x0001) == 0 )
+    {
+        lbyte = jis & 0x00ff;
+        lbyte += 0x7e;
+        ubyte--;
+        if ( lbyte > 0xfd ) return 0;
+    }
+    
+    ubyte -= 0x1f;
+    ubyte = ubyte >> 1;
+    ubyte += 0x80;
+    if ( ubyte >= 0xa0 ) ubyte += 0x40;
+    
+    if ( lbyte < 0x40 || lbyte > 0xFC ) return 0;
+    
+    if ( ((ubyte >= 0x81) && (ubyte <= 0x9f)) ||
+            ((ubyte >= 0xe0) && (ubyte <= 0xef)) )
+    {
+        SJis =(ubyte << 8) + lbyte;
+			
+		if (SJis > 0xEA9E && SJis < 0xED40) return 0;
+		if (SJis > 0x8197 && SJis < 0x824F) return 0;
+		if (SJis > 0x8258 && SJis < 0x8260) return 0;
+		if (SJis > 0x8279 && SJis < 0x8281) return 0;
+		if (SJis > 0x829A && SJis < 0x829F) return 0;
+		if (SJis > 0x82F1 && SJis < 0x8340) return 0;
+		if (SJis > 0x8396 && SJis < 0x839F) return 0;
+		if (SJis > 0x83B6 && SJis < 0x83BF) return 0;
+		if (SJis > 0x83D6 && SJis < 0x8440) return 0;
+		if (SJis > 0x8460 && SJis < 0x8470) return 0;
+		if (SJis > 0x8491 && SJis < 0x8540) return 0;
+		if (SJis > 0x84BE && SJis < 0x8740) return 0;
+		if (SJis > 0x8775 && SJis < 0x877E) return 0;
+		if (SJis > 0x879C && SJis < 0x889F) return 0;
+										
+		th[0] = ubyte; th[1] = lbyte; th[2] = '¥0';
+		CharNextA((char*)th);
+		return SJis;
+			
+    } else {
+        return 0;
+    }
+}
+
+void font_outhooktest( wchar_t* thw )
+{
+	volatile int slen;
+	slen = lstrlenW((wchar_t*)thw);
+}
+#pragma optimize( "", on )
+#endif

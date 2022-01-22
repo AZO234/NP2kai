@@ -12,6 +12,16 @@ static void IOOUTCALL necio_o0439(UINT port, REG8 dat) {
 	(void)port;
 }
 
+static void IOOUTCALL necio_o043b(UINT port, REG8 dat) {
+
+	necio.port043b = dat & 0x04;
+	(void)port;
+}
+static REG8 IOOUTCALL necio_i043b(UINT port) {
+	
+	return(necio.port043b);
+}
+
 static void IOOUTCALL necio_o043d(UINT port, REG8 dat) {
 
 	switch(dat) {
@@ -41,6 +51,8 @@ void necio_bind(void) {
 	iocore_attachout(0x0439, necio_o0439);
 
 	if (!(pccore.model & PCMODEL_EPSON)) {
+		iocore_attachout(0x043b, necio_o043b);
+		iocore_attachinp(0x043b, necio_i043b);
 		iocore_attachout(0x043d, necio_o043d);
 	}
 }

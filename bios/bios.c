@@ -291,7 +291,7 @@ static void bios_reinitbyswitch(void) {
 		mem[0xF8E80+0x0010] = (sxsi_getdevtype(3)!=SXSIDEV_NC ? 0x8 : 0x0)|(sxsi_getdevtype(2)!=SXSIDEV_NC ? 0x4 : 0x0)|
 								(sxsi_getdevtype(1)!=SXSIDEV_NC ? 0x2 : 0x0)|(sxsi_getdevtype(0)!=SXSIDEV_NC ? 0x1 : 0x0);
 
-		// WinNT4.0でHDDが認識するようになる。Win9xもBIOS I/Oエミュレーションで対応。　ideio.cのideio_basereset()も参照のこと
+		// WORKAROUND for WinNT4.0　ideio.cのideio_basereset()も参照のこと
 		mem[0x05bb] = (sxsi_getdevtype(3)==SXSIDEV_HDD ? 0x8 : 0x0)|(sxsi_getdevtype(2)==SXSIDEV_HDD ? 0x4 : 0x0)|
 						(sxsi_getdevtype(1)==SXSIDEV_HDD ? 0x2 : 0x0)|(sxsi_getdevtype(0)==SXSIDEV_HDD ? 0x1 : 0x0); // XXX: 未使用って書いてあったので勝手に借りる
 		if(compmode){
@@ -318,6 +318,8 @@ static void bios_reinitbyswitch(void) {
 	
 #endif
 	mem[0x45B] |= 0x80; // XXX: TEST OUT 5Fh,AL wait
+
+	mem[0xF8E80+0x0011] &= ~0x80; // for 17KB version NECCDD.SYS
 	
 #if defined(SUPPORT_PCI)
 	mem[0xF8E80+0x0004] |= 0x2c;
@@ -470,14 +472,18 @@ void bios_initialize(void) {
 	//	file_close(fh);
 	//}
 #if defined(BIOS_SIMULATE)
+	// PC-9821用 機能フラグ F8E8:0000〜003F
 	mem[0xf8e80] = 0x98;
 	mem[0xf8e81] = 0x21;
 	mem[0xf8e82] = 0x1f;
-	mem[0xf8e83] = 0x20;	// Model Number?
+	mem[0xf8e83] = 0x20;
 	mem[0xf8e84] = 0x2c;
 	mem[0xf8e85] = 0xb0;
 
-	// mem[0xf8eaf] = 0x21;		// <- これって何だっけ？
+	mem[0xF8E80+0x0011] = 0;
+	//mem[0xF8E80+0x003f] = 0x21; // 機種ID PC-9821 Xa7,9,10,12/C
+
+	// mem[0xf8eaf] = 0x21;		// <- これって何だっけ？ 0xf8ebfの間違い？
 #endif
 #endif
 

@@ -115,7 +115,7 @@ void ct1741_set_dma_ch(UINT8 dmach) {
 }
 
 UINT8 ct1741_get_dma_ch() {
-	switch(g_sb16.dsp_info.dmach){
+	switch(g_sb16.dmach){
 		case 0:return 0x21;
 		case 3:return 0x42;
 	}
@@ -590,7 +590,7 @@ printf("read 2ed2 g_sb16.dsp_info.out.used =%x mixer[82] = %x cmd = %x¥n",g_sb1
 			if (!(g_sb16.dsp_info.dma.chan->leng.w)) {
 				g_sb16.dsp_info.dma.laststartaddr = g_sb16.dsp_info.dma.chan->startaddr;
 				g_sb16.dsp_info.dma.laststartcount = g_sb16.dsp_info.dma.chan->startcount;
-				if((g_sb16.dsp_info.dmach & 0x20) && g_sb16.dsp_info.dma.mode==DSP_DMA_16){
+				if((g_sb16.dsp_info.dmach & 0xe0) && g_sb16.dsp_info.dma.mode==DSP_DMA_16){
 					// なぞの1ビットずらし
 					testflag = !testflag;
 					g_sb16.dsp_info.dma.chan->adrs.d = (g_sb16.dsp_info.dma.chan->startaddr & 0xffff0000) | ((g_sb16.dsp_info.dma.chan->startaddr << 1) & 0xffff);
@@ -789,7 +789,7 @@ REG8 DMACCALL ct1741dmafunc(REG8 func)
 			// DMA転送開始
 			g_sb16.dsp_info.dma.laststartaddr = g_sb16.dsp_info.dma.chan->startaddr;
 			g_sb16.dsp_info.dma.laststartcount = g_sb16.dsp_info.dma.chan->startcount;
-			if((g_sb16.dsp_info.dmach & 0x20) && (g_sb16.dsp_info.dma.mode==DSP_DMA_16 || g_sb16.dsp_info.dma.mode==DSP_DMA_NONE)){
+			if((g_sb16.dsp_info.dmach & 0xe0) && (g_sb16.dsp_info.dma.mode==DSP_DMA_16 || g_sb16.dsp_info.dma.mode==DSP_DMA_NONE)){
 				// なぞの1ビットずらし
 				testflag = 1;
 				g_sb16.dsp_info.dma.chan->startcount *= 2; // データ数も2倍

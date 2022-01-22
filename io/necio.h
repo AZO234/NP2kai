@@ -1,6 +1,7 @@
 
 typedef struct {
 	UINT8	port0439;
+	UINT8	port043b;
 } _NECIO, *NECIO;
 
 #ifdef __cplusplus

@@ -5,6 +5,9 @@
 #include	<mem/memtram.h>
 #include	<vram/vram.h>
 #include	<font/font.h>
+#if defined(SUPPORT_TEXTHOOK)
+#include	<codecnv/codecnv.h>
+#endif
 
 
 REG8 MEMCALL memtram_rd8(UINT32 address) {
@@ -66,6 +69,7 @@ UINT32 MEMCALL memtram_rd32(UINT32 address){
 }
 
 void MEMCALL memtram_wr8(UINT32 address, REG8 value) {
+	
 
 	CPU_REMCLOCK -= MEMWAIT_TRAM;
 	if (address < 0xa2000) {
@@ -98,6 +102,30 @@ void MEMCALL memtram_wr8(UINT32 address, REG8 value) {
 }
 
 void MEMCALL memtram_wr16(UINT32 address, REG16 value) {
+
+#if defined(SUPPORT_TEXTHOOK)
+	if(np2cfg.usetexthook){
+		UINT16 SJis;
+		UINT8 th[3];
+		UINT16 thw[2];
+		thw[1]='\0';
+		if (address & 2){
+			SJis=font_Jis2Sjis(((value + 0x20) << 8) | (value >> 8));
+			if(SJis){
+				th[0] = SJis >> 8; th[1] = SJis & 0x00ff; th[2] = '\0';
+				codecnv_sjistoucs2(thw, 1, (const char*)th, 2);
+				font_outhooktest((wchar_t*)thw);
+			}
+		}else if (!(address & 3)){
+			SJis=font_Jis2Sjis2(((value + 0x20) << 8) | (value >> 8));
+			if(SJis){
+				th[0] = SJis >> 8; th[1] = SJis & 0x00ff; th[2] = '\0';
+				codecnv_sjistoucs2(thw, 1, (const char*)th, 2);
+				font_outhooktest((wchar_t*)thw);
+			}
+		}
+	}
+#endif
 
 	CPU_REMCLOCK -= MEMWAIT_TRAM;
 	if (address < 0xa1fff) {

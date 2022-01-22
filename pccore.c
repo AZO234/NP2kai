@@ -67,6 +67,7 @@
 #endif
 #if defined(SUPPORT_IDEIO)
 #include	<cbus/ideio.h>
+#include	<cbus/atapicmd.h>
 #endif
 #if defined(SUPPORT_GPIB)
 #include	<cbus/gpibio.h>
@@ -457,6 +458,10 @@ void pccore_mem_free(void) {
 	
 void pccore_init(void) {
 	
+#if defined(SUPPORT_MULTITHREAD)
+	nevent_initialize();
+#endif
+	
 #if defined(SUPPORT_IA32_HAXM)
 	i386hax_check();
 	np2hax.enable = 1;
@@ -606,7 +611,10 @@ void pccore_term(void) {
 #if defined(SUPPORT_IA32_HAXM)
 	pccore_mem_free();
 #endif
-
+	
+#if defined(SUPPORT_MULTITHREAD)
+	nevent_shutdown();
+#endif
 }
 
 
@@ -1254,6 +1262,11 @@ void pccore_exec(BOOL draw) {
 #endif
 #if defined(SUPPORT_HRTIMER)
 		upd4990_hrtimer_count();
+#endif
+#if defined(SUPPORT_IDEIO)
+#if defined(_WINDOWS)
+	atapi_dataread_asyncwait(INFINITE);
+#endif
 #endif
 		nevent_progress();
 	}

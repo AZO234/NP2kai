@@ -980,8 +980,18 @@ BEGIN
     POPUP "&Emulate"
     BEGIN
         MENUITEM "&Reset",                      IDM_RESET
+        MENUITEM "&Pause",                      IDM_PAUSE
         MENUITEM SEPARATOR
         MENUITEM "&Configure...",               IDM_CONFIG
+        POPUP "Change CPU &Speed"
+        BEGIN
+            MENUITEM "&x2",      IDM_CHANGECLK_X2
+            MENUITEM "&x8",      IDM_CHANGECLK_X8
+            MENUITEM "&x16",     IDM_CHANGECLK_X16
+            MENUITEM "&x30",     IDM_CHANGECLK_X30
+            MENUITEM "&x42",     IDM_CHANGECLK_X42
+            MENUITEM "&Restore", IDM_CHANGECLK_RESTORE
+        END
         POPUP "&New disk"
         BEGIN
             MENUITEM "&Floppy disk image...",   IDM_NEWDISKFD
@@ -1011,7 +1021,7 @@ BEGIN
         MENUITEM "&CPU clock stabilizer",       IDM_CPUSTABILIZER
         MENUITEM "&Async CPU (experimental)",   IDM_ASYNCCPU
         MENUITEM SEPARATOR
-        MENUITEM "&Auto frame",                 IDM_AUTOFPS
+        //MENUITEM "&Auto frame",                 IDM_AUTOFPS
         MENUITEM "F&ull frame",                 IDM_60FPS
         MENUITEM "1/&2 frame",                  IDM_30FPS
         MENUITEM "1/&3 frame",                  IDM_20FPS
@@ -1032,6 +1042,7 @@ BEGIN
             MENUITEM "mechanical &GRPH",            IDM_XGRPH
             MENUITEM SEPARATOR
             MENUITEM "Send Ctrl+Alt+Del",           IDM_SENDCAD
+            MENUITEM "Paste Clipboard Text",		IDM_COPYPASTE_PASTE
             MENUITEM SEPARATOR
             MENUITEM "F12 = &Mouse",                IDM_F12MOUSE
             MENUITEM "F12 = Co&py",                 IDM_F12COPY

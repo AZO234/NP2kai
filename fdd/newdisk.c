@@ -108,6 +108,7 @@ static BRESULT writehddiplex2(FILEH fh, UINT ssize, FILELEN tsize, int blank, in
 	if(tsize < worksize) worksize = (int)tsize;
 	if(tsize > 1024*1024) worksize = 1024*1024;
 	if(tsize > 8*1024*1024) worksize = 8*1024*1024;
+	if(worksize < sizeof(hdddiskboot)) worksize = sizeof(hdddiskboot);
 	work = (UINT8*)malloc(worksize);
 
 	progtotal = tsize;
@@ -202,7 +203,7 @@ void newdisk_thd(const OEMCHAR *fname, UINT hddsize) {
 		goto ndthd_err;
 	}
 	ZeroMemory(work, 256);
-	size = hddsize * 15;
+	size = hddsize * (1024 * 1024 / 8 / 256) / 33;
 	STOREINTELWORD(work, size);
 	r = (file_write(fh, work, 256) == 256) ? SUCCESS : FAILURE;
 	r |= writehddipl(fh, 256, 0);

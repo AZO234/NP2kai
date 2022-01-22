@@ -19,7 +19,7 @@ enum SoundPCMNumber
 extern "C"
 {
 #endif
-
+	
 UINT soundmng_create(UINT rate, UINT ms);
 void soundmng_destroy(void);
 void soundmng_reset(void);
@@ -35,7 +35,7 @@ void soundmng_pcmstop(enum SoundPCMNumber nNum);
 #ifdef __cplusplus
 }
 
-#include "soundmng\sdbase.h"
+#include "soundmng/sdbase.h"
 
 /**
  * サウンド プロシージャ
@@ -45,7 +45,8 @@ enum SoundProc
 	SNDPROC_MASTER		= 0,
 	SNDPROC_MAIN,
 	SNDPROC_TOOL,
-	SNDPROC_SUBWIND
+	SNDPROC_SUBWIND,
+	SNDPROC_USER
 };
 
 /**
@@ -90,6 +91,13 @@ public:
 
 private:
 	static CSoundMng sm_instance;		//!< 唯一のインスタンスです
+	
+	void InitializeSoundCriticalSection();
+	void FinalizeSoundCriticalSection();
+	void EnterSoundCriticalSection();
+	void LeaveSoundCriticalSection();
+	void EnterAllCriticalSection();
+	void LeaveAllCriticalSection();
 
 	/**
 	 * satuation関数型宣言
@@ -99,6 +107,9 @@ private:
 	CSoundDeviceBase* m_pSoundDevice;	//!< サウンド デバイス
 	UINT m_nMute;						//!< ミュート フラグ
 	FNMIX m_fnMix;						//!< satuation関数ポインタ
+	
+	bool m_sound_cs_initialized;						//!< クリティカルセクション 初期化済みフラグ
+	CRITICAL_SECTION m_sound_cs;						//!< クリティカルセクション
 };
 
 /**

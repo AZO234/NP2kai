@@ -33,6 +33,7 @@
 #ifdef SUPPORT_WAB
 #include <wab/wab.h>
 #endif
+#include	<np2mt.h>
 
 #include <shlwapi.h>
 
@@ -42,9 +43,43 @@ SCRNRESCFG	scrnrescfg = {0};
 
 int d3davailable = 0;
 
+static BOOL scrnmng_cs_initialized = 0; // Screen Manager クリティカルセクション 初期化済みフラグ
+static CRITICAL_SECTION	scrnmng_cs = {0}; // Screen Manager surflock in/out クリティカルセクション
+static void scrnmng_cs_Initialize(){
+	if(!scrnmng_cs_initialized){
+		InitializeCriticalSection(&scrnmng_cs);
+		scrnmng_cs_initialized = TRUE;
+	}
+}
+static void scrnmng_cs_Finalize(){
+	if(scrnmng_cs_initialized){
+		DeleteCriticalSection(&scrnmng_cs);
+		scrnmng_cs_initialized = FALSE;
+	}
+}
+void scrnmng_cs_EnterModeChangeCriticalSection(){
+	if(scrnmng_cs_initialized){
+		EnterCriticalSection(&scrnmng_cs);
+	}
+}
+void scrnmng_cs_LeaveModeChangeCriticalSection(){
+	if(scrnmng_cs_initialized){
+		LeaveCriticalSection(&scrnmng_cs);
+	}
+}
+
 // ----
 
 UINT8 scrnmng_current_drawtype = DRAWTYPE_INVALID;
+static bool scrnmng_changemode_pending = false; // 画面モード変更保留中
+static int scrnmng_changemode_posx = INT_MAX;
+static int scrnmng_changemode_posy = INT_MAX;
+static int scrnmng_changemode_width = INT_MAX;
+static int scrnmng_changemode_height = INT_MAX;
+static int scrnmng_changemode_extend = INT_MAX;
+static int scrnmng_changemode_multiple = INT_MAX;
+static bool scrnmng_changemode_updatefsres = false;
+static DWORD scrnmng_UIthreadID = 0;
 
 /**
  * 設定
@@ -105,7 +140,7 @@ void scrnmng_setwindowsize(HWND hWnd, int width, int height)
 	SystemParametersInfo(SPI_GETWORKAREA, 0, &workrc, 0);
 	const int scx = GetSystemMetrics(SM_CXSCREEN);
 	const int scy = GetSystemMetrics(SM_CYSCREEN);
-
+	
 	// マルチモニタ暫定対応 ver0.86 rev30
 	workrc.right = GetSystemMetrics(SM_CXVIRTUALSCREEN);
 	workrc.bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN);
@@ -167,17 +202,23 @@ void scrnmng_setwindowsize(HWND hWnd, int width, int height)
 
 void scrnmng_initialize(void) {
 	
+	scrnmng_cs_Initialize();
+
 	scrnstat.width = 640;
 	scrnstat.height = 400;
 	scrnstat.extend = 1;
 	scrnstat.multiple = 8;
 	scrnmng_setwindowsize(g_hWndMain, 640, 400);
+
+	scrnmng_UIthreadID = GetCurrentThreadId();
 	
 	if(np2oscfg.fsrescfg) scrnres_readini_res(640, 400);
 }
 
 BRESULT scrnmng_create(UINT8 scrnmode) {
 	
+	if(scrnmng_UIthreadID != GetCurrentThreadId()) return 1; // 別のスレッドからのアクセスは不可
+
 #ifdef SUPPORT_SCRN_DIRECT3D
 	scrnmng_current_drawtype = np2oscfg.drawtype;
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D && !d3davailable){
@@ -188,18 +229,22 @@ BRESULT scrnmng_create(UINT8 scrnmode) {
 		}
 	}
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
-		return scrnmngD3D_create(scrnmode);
+		BRESULT r = scrnmngD3D_create(scrnmode);
+		return  r;
 	}else
 #else
 	scrnmng_current_drawtype = DRAWTYPE_DIRECTDRAW_HW;
 #endif
 	{
-		return scrnmngDD_create(scrnmode);
+		BRESULT r = scrnmngDD_create(scrnmode);
+		return r;
 	}
 }
 
 void scrnmng_destroy(void) {
 	
+	if(scrnmng_UIthreadID != GetCurrentThreadId()) return; // 別のスレッドからのアクセスは不可
+
 #ifdef SUPPORT_SCRN_DIRECT3D
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
 		scrnmngD3D_destroy();
@@ -217,12 +262,16 @@ void scrnmng_shutdown(void) {
 	scrnmngD3D_shutdown();
 #endif
 	scrnmngDD_shutdown();
+	
+	scrnmng_cs_Finalize();
 }
 
 void scrnmng_querypalette(void) {
 	
+	if(scrnmng_UIthreadID != GetCurrentThreadId()) return; // 別のスレッドからのアクセスは不可
+
 #ifdef SUPPORT_SCRN_DIRECT3D
-	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) return;
+	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) {return;}
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
 		scrnmngD3D_querypalette();
 	}else
@@ -234,8 +283,10 @@ void scrnmng_querypalette(void) {
 
 RGB16 scrnmng_makepal16(RGB32 pal32) {
 	
+	if(scrnmng_UIthreadID != GetCurrentThreadId()) return 0; // 別のスレッドからのアクセスは不可
+
 #ifdef SUPPORT_SCRN_DIRECT3D
-	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) return 0;
+	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) {return 0;}
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
 		return scrnmngD3D_makepal16(pal32);
 	}else
@@ -247,8 +298,10 @@ RGB16 scrnmng_makepal16(RGB32 pal32) {
 
 void scrnmng_fullscrnmenu(int y) {
 	
+	if(scrnmng_UIthreadID != GetCurrentThreadId()) return; // 別のスレッドからのアクセスは不可
+
 #ifdef SUPPORT_SCRN_DIRECT3D
-	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) return;
+	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) {return;}
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
 		scrnmngD3D_fullscrnmenu(y);
 	}else
@@ -260,8 +313,10 @@ void scrnmng_fullscrnmenu(int y) {
 
 void scrnmng_topwinui(void) {
 	
+	if(scrnmng_UIthreadID != GetCurrentThreadId()) return; // 別のスレッドからのアクセスは不可
+
 #ifdef SUPPORT_SCRN_DIRECT3D
-	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) return;
+	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) {return;}
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
 		scrnmngD3D_topwinui();
 	}else
@@ -273,8 +328,10 @@ void scrnmng_topwinui(void) {
 
 void scrnmng_clearwinui(void) {
 	
+	if(scrnmng_UIthreadID != GetCurrentThreadId()) return; // 別のスレッドからのアクセスは不可
+
 #ifdef SUPPORT_SCRN_DIRECT3D
-	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) return;
+	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) {return;}
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
 		scrnmngD3D_clearwinui();
 	}else
@@ -286,13 +343,22 @@ void scrnmng_clearwinui(void) {
 
 void scrnmng_setwidth(int posx, int width) {
 	
+	if(scrnmng_UIthreadID != GetCurrentThreadId()){
+		// 別のスレッドからのアクセスの場合、遅延変更
+		scrnmng_cs_EnterModeChangeCriticalSection();
+		scrnmng_changemode_posx = posx;
+		scrnmng_changemode_width = width;
+		scrnmng_changemode_pending = true;
+		scrnmng_cs_LeaveModeChangeCriticalSection();
+		return;
+	}
 	if(np2oscfg.fsrescfg){
 		scrnres_readini_res(width, scrnstat.height);
 		scrnstat.multiple = scrnrescfg.scrn_mul;
 	}
 
 #ifdef SUPPORT_SCRN_DIRECT3D
-	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) return;
+	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) {return;}
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
 		scrnmngD3D_setwidth(posx, width);
 	}else
@@ -304,8 +370,16 @@ void scrnmng_setwidth(int posx, int width) {
 
 void scrnmng_setextend(int extend) {
 	
+	if(scrnmng_UIthreadID != GetCurrentThreadId()){
+		// 別のスレッドからのアクセスの場合、遅延変更
+		scrnmng_cs_EnterModeChangeCriticalSection();
+		scrnmng_changemode_extend = extend;
+		scrnmng_changemode_pending = true;
+		scrnmng_cs_LeaveModeChangeCriticalSection();
+		return;
+	}
 #ifdef SUPPORT_SCRN_DIRECT3D
-	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) return;
+	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) { return;}
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
 		scrnmngD3D_setextend(extend);
 	}else
@@ -317,13 +391,22 @@ void scrnmng_setextend(int extend) {
 
 void scrnmng_setheight(int posy, int height) {
 	
+	if(scrnmng_UIthreadID != GetCurrentThreadId()){
+		// 別のスレッドからのアクセスの場合、遅延変更
+		scrnmng_cs_EnterModeChangeCriticalSection();
+		scrnmng_changemode_posy = posy;
+		scrnmng_changemode_height = height;
+		scrnmng_changemode_pending = true;
+		scrnmng_cs_LeaveModeChangeCriticalSection();
+		return;
+	}
 	if(np2oscfg.fsrescfg){
 		scrnres_readini_res(scrnstat.width, height);
 		scrnstat.multiple = scrnrescfg.scrn_mul;
 	}
 
 #ifdef SUPPORT_SCRN_DIRECT3D
-	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) return;
+	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) {return;}
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
 		scrnmngD3D_setheight(posy, height);
 	}else
@@ -335,13 +418,24 @@ void scrnmng_setheight(int posy, int height) {
 
 void scrnmng_setsize(int posx, int posy, int width, int height) {
 	
+	if(scrnmng_UIthreadID != GetCurrentThreadId()){
+		// 別のスレッドからのアクセスの場合、遅延変更
+		scrnmng_cs_EnterModeChangeCriticalSection();
+		scrnmng_changemode_posx = posx;
+		scrnmng_changemode_posy = posy;
+		scrnmng_changemode_width = width;
+		scrnmng_changemode_height = height;
+		scrnmng_changemode_pending = true;
+		scrnmng_cs_LeaveModeChangeCriticalSection();
+		return;
+	}
 	if(np2oscfg.fsrescfg){
 		scrnres_readini_res(width, height);
 		scrnstat.multiple = scrnrescfg.scrn_mul;
 	}
 
 #ifdef SUPPORT_SCRN_DIRECT3D
-	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) return;
+	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) {return;}
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
 		scrnmngD3D_setsize(posx, posy, width, height);
 	}else
@@ -354,7 +448,7 @@ void scrnmng_setsize(int posx, int posy, int width, int height) {
 const SCRNSURF *scrnmng_surflock(void) {
 	
 #ifdef SUPPORT_SCRN_DIRECT3D
-	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) return NULL;
+	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) {return NULL;}
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
 		return scrnmngD3D_surflock();
 	}else
@@ -367,7 +461,7 @@ const SCRNSURF *scrnmng_surflock(void) {
 void scrnmng_surfunlock(const SCRNSURF *surf) {
 	
 #ifdef SUPPORT_SCRN_DIRECT3D
-	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) return;
+	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) {return;}
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
 		scrnmngD3D_surfunlock(surf);
 	}else
@@ -380,7 +474,7 @@ void scrnmng_surfunlock(const SCRNSURF *surf) {
 void scrnmng_update(void) {
 	
 #ifdef SUPPORT_SCRN_DIRECT3D
-	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) return;
+	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) {return;}
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
 		scrnmngD3D_update();
 	}else
@@ -390,11 +484,18 @@ void scrnmng_update(void) {
 	}
 }
 
-
 // ----
 
 void scrnmng_setmultiple(int multiple)
 {
+	if(scrnmng_UIthreadID != GetCurrentThreadId()){
+		// 別のスレッドからのアクセスの場合、遅延変更
+		scrnmng_cs_EnterModeChangeCriticalSection();
+		scrnmng_changemode_multiple = multiple;
+		scrnmng_changemode_pending = true;
+		scrnmng_cs_LeaveModeChangeCriticalSection();
+		return;
+	}
 	if(multiple < 1) multiple = 8;
 	if(np2oscfg.fsrescfg && scrnrescfg.scrn_mul!=multiple){
 		scrnrescfg.hasfscfg = 1;
@@ -407,7 +508,7 @@ void scrnmng_setmultiple(int multiple)
 	}
 
 #ifdef SUPPORT_SCRN_DIRECT3D
-	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) return;
+	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) {return;}
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
 		scrnmngD3D_setmultiple(multiple);
 	}else
@@ -420,16 +521,17 @@ void scrnmng_setmultiple(int multiple)
 int scrnmng_getmultiple(void)
 {
 #ifdef SUPPORT_SCRN_DIRECT3D
-	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) return 0;
+	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) {return 0;}
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
-		return scrnmngD3D_getmultiple();
+		int result = scrnmngD3D_getmultiple();
+		return result;
 	}else
 #endif
 	{
-		return scrnmngDD_getmultiple();
+		int result = scrnmngDD_getmultiple();
+		return result;
 	}
 }
-
 
 
 // ----
@@ -437,8 +539,10 @@ int scrnmng_getmultiple(void)
 #if defined(SUPPORT_DCLOCK)
 BOOL scrnmng_isdispclockclick(const POINT *pt) {
 	
+	if(scrnmng_UIthreadID != GetCurrentThreadId()) return FALSE; // 別のスレッドからのアクセスは不可
+
 #ifdef SUPPORT_SCRN_DIRECT3D
-	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) return FALSE;
+	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) {return FALSE;}
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
 		return scrnmngD3D_isdispclockclick(pt);
 	}else
@@ -450,8 +554,10 @@ BOOL scrnmng_isdispclockclick(const POINT *pt) {
 
 void scrnmng_dispclock(void)
 {
+	if(scrnmng_UIthreadID != GetCurrentThreadId()) return; // 別のスレッドからのアクセスは不可
+
 #ifdef SUPPORT_SCRN_DIRECT3D
-	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) return;
+	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) {return;}
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
 		scrnmngD3D_dispclock();
 	}else
@@ -467,6 +573,8 @@ void scrnmng_dispclock(void)
 
 void scrnmng_entersizing(void) {
 	
+	if(scrnmng_UIthreadID != GetCurrentThreadId()) return; // 別のスレッドからのアクセスは不可
+
 #ifdef SUPPORT_SCRN_DIRECT3D
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
 		scrnmngD3D_entersizing();
@@ -479,6 +587,8 @@ void scrnmng_entersizing(void) {
 
 void scrnmng_sizing(UINT side, RECT *rect) {
 	
+	if(scrnmng_UIthreadID != GetCurrentThreadId()) return; // 別のスレッドからのアクセスは不可
+
 #ifdef SUPPORT_SCRN_DIRECT3D
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
 		scrnmngD3D_sizing(side, rect);
@@ -491,6 +601,8 @@ void scrnmng_sizing(UINT side, RECT *rect) {
 
 void scrnmng_exitsizing(void)
 {
+	if(scrnmng_UIthreadID != GetCurrentThreadId()) return; // 別のスレッドからのアクセスは不可
+
 #ifdef SUPPORT_SCRN_DIRECT3D
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
 		scrnmngD3D_exitsizing();		// ugh
@@ -503,6 +615,14 @@ void scrnmng_exitsizing(void)
 
 // フルスクリーン解像度調整
 void scrnmng_updatefsres(void) {
+	if(scrnmng_UIthreadID != GetCurrentThreadId()){
+		// 別のスレッドからのアクセスの場合、遅延変更
+		scrnmng_cs_EnterModeChangeCriticalSection();
+		scrnmng_changemode_updatefsres = true;
+		scrnmng_changemode_pending = true;
+		scrnmng_cs_LeaveModeChangeCriticalSection();
+		return;
+	}
 #ifdef SUPPORT_SCRN_DIRECT3D
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
 		scrnmngD3D_updatefsres();
@@ -536,6 +656,8 @@ void scrnmng_bltwab() {
 }
 
 void scrnmng_getrect(RECT *lpRect){
+	if(scrnmng_UIthreadID != GetCurrentThreadId()) return; // 別のスレッドからのアクセスは不可
+
 #ifdef SUPPORT_SCRN_DIRECT3D
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
 		scrnmngD3D_getrect(lpRect);
@@ -543,5 +665,48 @@ void scrnmng_getrect(RECT *lpRect){
 #endif
 	{
 		scrnmngDD_getrect(lpRect);
+	}
+}
+
+void scrnmng_delaychangemode(void){
+	//if(scrnmng_UIthreadID != GetCurrentThreadId()) return; // 別のスレッドからのアクセスは不可
+	
+	if(scrnmng_changemode_pending){
+		DWORD oldThreadID;
+		if(IsIconic(g_hWndMain)) return;
+		scrnmng_cs_EnterModeChangeCriticalSection();
+		oldThreadID = scrnmng_UIthreadID;
+		scrnmng_UIthreadID = GetCurrentThreadId();
+		if(scrnmng_changemode_posx != INT_MAX && scrnmng_changemode_width != INT_MAX && scrnmng_changemode_posy != INT_MAX && scrnmng_changemode_height != INT_MAX){
+			scrnmng_setsize(scrnmng_changemode_posx, scrnmng_changemode_posy, scrnmng_changemode_width, scrnmng_changemode_height);
+		}
+		else if(scrnmng_changemode_posx != INT_MAX && scrnmng_changemode_width != INT_MAX){
+			scrnmng_setwidth(scrnmng_changemode_posx, scrnmng_changemode_width);
+		}
+		else if(scrnmng_changemode_posy != INT_MAX && scrnmng_changemode_height != INT_MAX){
+			scrnmng_setheight(scrnmng_changemode_posy, scrnmng_changemode_height);
+		}
+		if(scrnmng_changemode_extend != INT_MAX){
+			scrnmng_setextend(scrnmng_changemode_extend);
+		}
+		if(scrnmng_changemode_multiple != INT_MAX){
+			scrnmng_setmultiple(scrnmng_changemode_multiple);
+		}
+		if(scrnmng_changemode_updatefsres){
+			scrnmng_updatefsres();
+		}
+		scrnmng_UIthreadID = oldThreadID;
+		scrnmng_changemode_posx = INT_MAX;
+		scrnmng_changemode_posy = INT_MAX;
+		scrnmng_changemode_width = INT_MAX;
+		scrnmng_changemode_height = INT_MAX;
+		scrnmng_changemode_extend = INT_MAX;
+		scrnmng_changemode_multiple = INT_MAX;
+		scrnmng_changemode_updatefsres = false;
+		scrnmng_changemode_pending = false;
+		scrnmng_cs_LeaveModeChangeCriticalSection();
+
+		scrndraw_redraw();
+		InvalidateRect(g_hWndMain, NULL, TRUE);		// ugh
 	}
 }

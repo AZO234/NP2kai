@@ -14,6 +14,9 @@
 #if !defined(_MSC_VER)
 #include <sys/time.h>
 #endif
+#if defined(SUPPORT_MULTITHREAD)
+#include	<np2mt.h>
+#endif
 
 #if defined(_MSC_VER)
 #define strcasecmp _stricmp
@@ -260,7 +263,9 @@ void cdchange_timeoutproc(NEVENTITEM item) {
 #if defined(SUPPORT_IDEIO)
 	ideio_mediachange(cdchange_drv);
 #endif
-	sysmng_updatecaption(1); // SYS_UPDATECAPTION_FDD
+#if defined(_WINDOWS)
+	sysmng_requestupdatecaption(SYS_UPDATECAPTION_FDD);
+#endif
 }
 static void cdchange_timeoutset(void) {
 

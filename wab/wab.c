@@ -11,6 +11,7 @@
 
 #include "np2.h"
 #if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
+#include "np2mt.h"
 #include "resource.h"
 #endif
 #include <dosio.h>
@@ -838,7 +839,14 @@ void np2wab_setRelayState(REG8 state)
 #endif
 			}else{
 				// 統合モードなら画面を乗っ取る
-				np2wab_setScreenSize(ga_lastwabwidth, ga_lastwabheight);
+#if defined(SUPPORT_MULTITHREAD)
+				if(np2_multithread_Enabled()){
+					np2wab_setScreenSizeMT(ga_lastwabwidth, ga_lastwabheight);
+				}else
+#endif
+				{
+					np2wab_setScreenSize(ga_lastwabwidth, ga_lastwabheight);
+				}
 			}
 		}else{
 			// リレーがOFF

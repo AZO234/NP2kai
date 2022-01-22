@@ -35,6 +35,12 @@ void hook_fontrom_setoutput(hook_fontrom_output_t fncOutput);
 void hook_fontrom_flush(void);
 void hook_fontrom(UINT32 u32Address);
 
+#if defined(SUPPORT_TEXTHOOK)
+unsigned short font_Jis2Sjis( unsigned short jis );
+unsigned short font_Jis2Sjis2( unsigned short jis );
+void font_outhooktest( wchar_t* thw );
+#endif
+
 #ifdef __cplusplus
 }
 #endif

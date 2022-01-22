@@ -10,6 +10,7 @@
 #include "c_slidervalue.h"
 #include "np2class.h"
 #include <np2.h>
+#include <np2mt.h>
 #include <scrnmng.h>
 #ifdef SUPPORT_SCRN_DIRECT3D
 #include "scrnmng_d3d.h"
@@ -477,7 +478,22 @@ ScrOptFullscreenPage::~ScrOptFullscreenPage()
  */
 BOOL ScrOptFullscreenPage::OnInitDialog()
 {
-	const UINT8 c = FSCRNCFG_fscrnmod;
+	UINT8 c = FSCRNCFG_fscrnmod;
+#if defined(SUPPORT_MULTITHREAD)
+	if(np2_multithread_Enabled()){
+		CWndBase wndTemp;
+		wndTemp = GetDlgItem(IDC_FULLSCREEN_SAMEBPP);
+		if(wndTemp){
+			wndTemp.EnableWindow(FALSE);
+		}
+		wndTemp = GetDlgItem(IDC_FULLSCREEN_SAMERES);
+		if(wndTemp){
+			wndTemp.EnableWindow(FALSE);
+		}
+		c |= FSCRNMOD_SAMEBPP | FSCRNMOD_SAMERES;
+	}
+#endif
+
 	CheckDlgButton(IDC_FULLSCREEN_SAMEBPP, (c & FSCRNMOD_SAMEBPP) ? BST_CHECKED : BST_UNCHECKED);
 	CheckDlgButton(IDC_FULLSCREEN_SAMERES, (c & FSCRNMOD_SAMERES) ? BST_CHECKED : BST_UNCHECKED);
 
@@ -618,6 +634,7 @@ BOOL ScrOptRendererPage::OnInitDialog()
 	
 	m_chkexclusive.SubclassDlgItem(IDC_RENDERER_EXCLUSIVE, this);
 	m_chkexclusive.SendMessage(BM_SETCHECK , (np2oscfg.d3d_exclusive) ? BST_CHECKED : BST_UNCHECKED , 0);
+	::ShowWindow(m_chkexclusive.GetSafeHwnd(), SW_HIDE);
 	
 	return TRUE;
 }

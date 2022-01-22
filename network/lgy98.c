@@ -162,13 +162,23 @@ static void ne2000_reset(LGY98 *s)
 	
 static void ne2000_update_irq(LGY98 *s)
 {
+	static int irqflag = 0;
+	static unsigned long irqtime = 0; // WORKAROUND 短期間で割り込みし続けると暴走する問題を回避
     int isr;
     isr = (s->isr & s->imr) & 0x7f;
     //qemu_set_irq(s->irq, (isr != 0));
 	if(isr != 0){
-		pic_setirq(s->irq);
+		if(irqflag && GETTICK()-irqtime > 2){
+			irqflag = 0; // 2ms経過したら再割り込みOKとする
+		}
+		if(!irqflag) {
+			pic_setirq(s->irq);
+			irqtime = GETTICK();
+		}
+		irqflag = 1;
 	}else{
 		pic_resetirq(s->irq);
+		irqflag = 0;
 	}
 }
 	
@@ -257,6 +267,7 @@ static void ne2000_dma_update(LGY98 *s, int len)
 void ne2000_send_packet(VLANClientState *vc1, const UINT8 *buf, int size)
 {
     VLANState *vlan = vc1->vlan;
+    LGY98 *s = (LGY98*)vc1->opaque;
     //VLANClientState *vc;
 
     if (vc1->link_down)
@@ -267,11 +278,6 @@ void ne2000_send_packet(VLANClientState *vc1, const UINT8 *buf, int size)
     hex_dump(stdout, buf, size);
 #endif
 	np2net.send_packet((UINT8*)buf, size);
-    /*for(vc = vlan->first_client; vc != NULL; vc = vc->next) {
-        if (vc != vc1 && !vc->link_down) {
-            vc->fd_read(vc->opaque, buf, size);
-        }
-    }*/
 }
 
 
@@ -350,6 +356,9 @@ static void ne2000_receive(void *opaque, const UINT8 *buf, int size)
 
     if (s->cmd & E8390_STOP || ne2000_buffer_full(s))
         return;
+    if (size >= s->stop - s->start - 0x100)
+        return; // 巨大パケットは捨てる
+
 
     /* XXX: check this */
     if (s->rxcr & 0x10) {
@@ -608,21 +617,21 @@ static REG8 IOINPCALL lgy98_ib000(UINT addr) {
         case EN2_STOPPG:
             ret = s->stop >> 8;
             break;
-	case EN0_RTL8029ID0:
-	    ret = 0x50;
-	    break;
-	case EN0_RTL8029ID1:
-	    ret = 0x43;
-	    break;
-	case EN3_CONFIG0:
-	    ret = 0;		/* 10baseT media */
-	    break;
-	case EN3_CONFIG2:
-	    ret = 0x40;		/* 10baseT active */
-	    break;
-	case EN3_CONFIG3:
-	    ret = 0x40;		/* Full duplex */
-	    break;
+		case EN0_RTL8029ID0:
+			ret = 0x29;
+			break;
+		case EN0_RTL8029ID1:
+			ret = 0x43;
+			break;
+		case EN3_CONFIG0:
+			ret = 0;		/* 10baseT media */
+			break;
+		case EN3_CONFIG2:
+			ret = 0x40;		/* 10baseT active */
+			break;
+		case EN3_CONFIG3:
+			ret = 0x40;		/* Full duplex */
+			break;
         default:
             ret = 0x00;
             break;

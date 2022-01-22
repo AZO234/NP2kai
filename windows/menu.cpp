@@ -21,7 +21,9 @@
 #include <mousemng.h>
 #include <font/font.h>
 
-/**
+/extern UINT8	np2userpause;
+
+**
  * 検索
  * @param[in] hMenu メニュー ハンドル
  * @param[in] uID ID
@@ -319,7 +321,10 @@ void xmenu_update(HMENU hMenu)
 	{
 		return;
 	}
-
+	
+	// Emulate
+	CheckMenuItem(hMenu, IDM_PAUSE, MF_BYCOMMAND | MFCHECK(np2userpause));
+	
 	// Screen
 	const bool bFullScreen = ((g_scrnmode & SCRNMODE_FULLSCREEN) != 0);
 	CheckMenuItem(hMenu, IDM_WINDOW, MF_BYCOMMAND | MFCHECK(!bFullScreen));
@@ -531,4 +536,5 @@ DRAW_SKIP;
 #if !defined(SUPPORT_HOSTDRV)
 	EnableMenuItem(hMenu, IDM_HOSTDRVOPT, MF_GRAYED);
 #endif
+	
 }

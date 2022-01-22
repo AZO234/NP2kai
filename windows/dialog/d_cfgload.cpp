@@ -8,6 +8,7 @@
 #include "dialog.h"
 #include <dosio.h>
 #include <np2.h>
+#include <np2mt.h>
 #include <sysmng.h>
 #include "misc/DlgProc.h"
 #include <cpucore.h>
@@ -76,8 +77,10 @@ int dialog_readnpcfg(HWND hWnd)
 			}
 		}
 		if (b) {
+			np2_multithread_Suspend();
 			unloadNP2INI();
 			loadNP2INI(lpFilename);
+			np2_multithread_Resume();
 			return 1;
 		}
 	}

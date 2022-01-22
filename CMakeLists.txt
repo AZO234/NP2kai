@@ -272,7 +272,7 @@ endif()
 
 list(APPEND NP2kai_X_definitions "NP2_X" "USE_RESOURCE_BMP" "SUPPORT_BMS")
 
-list(APPEND NP2kai_Windows_definitions "NP2_WIN" "USE_RESOURCE_BMP")
+list(APPEND NP2kai_Windows_definitions "NP2_WIN" "USE_RESOURCE_BMP" "SUPPORT_MULTITHREAD")
 
 # build type
 if(NOT CMAKE_BUILD_TYPE)

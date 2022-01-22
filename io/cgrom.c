@@ -3,6 +3,9 @@
 #include	<pccore.h>
 #include	<io/iocore.h>
 #include	<font/font.h>
+#if defined(SUPPORT_TEXTHOOK)
+#include	<codecnv/codecnv.h>
+#endif
 
 
 static void cgwindowset(CGROM cr) {
@@ -62,6 +65,20 @@ static void IOOUTCALL cgrom_oa1(UINT port, REG8 dat) {
 	hf_count = 0;
 	cr = &cgrom;
 	cr->code = (dat << 8) | (cr->code & 0xff);
+//#if defined(SUPPORT_TEXTHOOK)
+//	if(np2cfg.usetexthook){
+//		UINT16 SJis;
+//		UINT8 th[3];
+//		UINT16 thw[2];
+//		thw[1]='¥0';
+//		SJis = font_Jis2Sjis(((cr->code + 0x20) << 8) | (cr->code >> 8));
+//		if(SJis){
+//			th[0] = SJis >> 8; th[1] = SJis & 0x00ff; th[2] = '¥0';
+//			codecnv_sjistoucs2(thw, 1, (const char*)th, 2);
+//			font_outhooktest((wchar_t*)thw);
+//		}
+//	}
+//#endif
 	cgwindowset(cr);
 	(void)port;
 }
@@ -76,6 +93,20 @@ static void IOOUTCALL cgrom_oa3(UINT port, REG8 dat) {
 	hf_count = 0;
 	cr = &cgrom;
 	cr->code = (cr->code & 0xff00) | dat;
+#if defined(SUPPORT_TEXTHOOK)
+	if(np2cfg.usetexthook){
+		UINT16 SJis;
+		UINT8 th[3];
+		UINT16 thw[2];
+		thw[1]='¥0';
+		SJis = font_Jis2Sjis(((cr->code + 0x20) << 8) | (cr->code >> 8));
+		if(SJis){
+			th[0] = SJis >> 8; th[1] = SJis & 0x00ff; th[2] = '¥0';
+			codecnv_sjistoucs2(thw, 1, (const char*)th, 2);
+			font_outhooktest((wchar_t*)thw);
+		}
+	}
+#endif
 	cgwindowset(cr);
 	(void)port;
 }
@@ -88,6 +119,20 @@ static void IOOUTCALL cgrom_oa5(UINT port, REG8 dat) {
 	cr = &cgrom;
 	cr->line = dat & 0x1f;
 	cr->lr = ((~dat) & 0x20) << 6;
+#if defined(SUPPORT_TEXTHOOK)
+	if(dat == 0 && np2cfg.usetexthook){
+		UINT16 SJis;
+		UINT8 th[3];
+		UINT16 thw[2];
+		thw[1]='¥0';
+		SJis = font_Jis2Sjis(((cr->code + 0x20) << 8) | (cr->code >> 8));
+		if(SJis){
+			th[0] = SJis >> 8; th[1] = SJis & 0x00ff; th[2] = '¥0';
+			codecnv_sjistoucs2(thw, 1, (const char*)th, 2);
+			font_outhooktest((wchar_t*)thw);
+		}
+	}
+#endif
 	cgwindowset(cr);
 	(void)port;
 }

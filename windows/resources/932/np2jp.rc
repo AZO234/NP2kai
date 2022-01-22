@@ -980,8 +980,18 @@ BEGIN
     POPUP "エミュレータ(&E)"
     BEGIN
         MENUITEM "リセット(&R)",                IDM_RESET
+        MENUITEM "一時停止(&P)",                IDM_PAUSE
         MENUITEM SEPARATOR
         MENUITEM "設定(&C)...",                 IDM_CONFIG
+        POPUP "動的CPU速度変更 (&S)"
+        BEGIN
+            MENUITEM "&x2",      IDM_CHANGECLK_X2
+            MENUITEM "&x8",      IDM_CHANGECLK_X8
+            MENUITEM "&x16",     IDM_CHANGECLK_X16
+            MENUITEM "&x30",     IDM_CHANGECLK_X30
+            MENUITEM "&x42",     IDM_CHANGECLK_X42
+            MENUITEM "&設定値に戻す", IDM_CHANGECLK_RESTORE
+        END
         POPUP "ディスクイメージ作成(&N)"
         BEGIN
             MENUITEM "フロッピーディスクイメージ(&F)...",   IDM_NEWDISKFD
@@ -1010,7 +1020,7 @@ BEGIN
         MENUITEM "CPUクロック安定化(&C)",       IDM_CPUSTABILIZER
         MENUITEM "CPUクロック可変[実験中](&A)", IDM_ASYNCCPU
         MENUITEM SEPARATOR
-        MENUITEM "自動フレームスキップ(&A)",    IDM_AUTOFPS
+        //MENUITEM "自動フレームスキップ(&A)",    IDM_AUTOFPS
         MENUITEM "フレームスキップ無し(&U)",    IDM_60FPS
         MENUITEM "1/&2フレーム",                IDM_30FPS
         MENUITEM "1/&3フレーム",                IDM_20FPS
@@ -1094,6 +1104,8 @@ BEGIN
             MENUITEM "&64.6MB",                     IDM_MEM646
             MENUITEM "&120.6MB",                    IDM_MEM1206
             MENUITEM "&230.6MB",                    IDM_MEM2306
+            MENUITEM "&512.6MB",                    IDM_MEM5126
+            MENUITEM "&1024.6MB",                   IDM_MEM10246
         END
         POPUP "&FPU"
         BEGIN

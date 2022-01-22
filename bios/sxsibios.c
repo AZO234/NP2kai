@@ -223,8 +223,11 @@ static REG8 sasibios_read(UINT type, SXSIDEV sxsi) {
 				biosioemu_push8_read(0x430);
 			}
 			
-			// XXX: Win9x用 Workaround 接続フラグ切り替え（NT系はプロテクトモードでBIOSコールしないはず） 
-			mem[0x05ba] = mem[0x05bb];
+			// XXX: WORKAROUND for WinNT4.0 正常な接続フラグに書き戻す
+			if(mem[0x05bb]){
+				mem[0x05ba] = mem[0x05bb];
+				mem[0x05bb] = 0;
+			}
 		}
 #endif
 	}
@@ -398,6 +401,7 @@ static REG8 sasibios_sense(UINT type, SXSIDEV sxsi) {
 		return((REG8)(sxsi->mediatype & 7));
 	}
 	else {
+		unsigned long lbasize;
 		if (CPU_AH == 0x84) {
 #if defined(SUPPORT_IDEIO_48BIT)
 			if(sxsi->totals > 65535*16*255){
@@ -415,7 +419,18 @@ static REG8 sasibios_sense(UINT type, SXSIDEV sxsi) {
 				CPU_DL = sxsi->sectors;
 			}
 		}
-		return(0x0f);
+		if(sxsi->sectors==33 && sxsi->surfaces <= 8){
+			// SASIっぽい
+			lbasize = sxsi->cylinders * sxsi->surfaces * sxsi->sectors * sxsi->size;
+			if (lbasize < 10475520) return 0;//10MB未満　4*33*310
+			else if (lbasize < 15713280) return 1;//15MB未満　6*33*310
+			else if (lbasize < 20275200) return 2;//20MB未満　8*33*310 →thdの20MBは8:33:300なので調整
+			else if (lbasize < 41564160) return 3;//40MB未満　8*33*615
+			else if (lbasize == 41564160) return 4;//40MB 8*33*615
+			else return 0x0f;
+		}else{
+			return 0x0f;
+		}
 	}
 }
 

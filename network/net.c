@@ -123,29 +123,85 @@ static int		np2net_highspeedmode = 0; // 高速送受信モード
 static UINT32		np2net_highspeeddatacount = 0; // 送受信データ数カウンタ
 
 #if defined(_WINDOWS)
-static HANDLE		np2net_write_hEvent;
-static OVERLAPPED	np2net_write_ovl;
+static BOOL np2net_cs_initialized = 0; // np2net クリティカルセクション 初期化済みフラグ
+static CRITICAL_SECTION	np2net_cs = {0}; // np2net クリティカルセクション
+static void np2net_cs_Initialize(){
+	if(!np2net_cs_initialized){
+		InitializeCriticalSection(&np2net_cs);
+		np2net_cs_initialized = TRUE;
+	}
+}
+static void np2net_cs_Finalize(){
+	if(np2net_cs_initialized){
+		DeleteCriticalSection(&np2net_cs);
+		np2net_cs_initialized = FALSE;
+	}
+}
+void np2net_cs_EnterCriticalSection(){
+	if(np2net_cs_initialized){
+		EnterCriticalSection(&np2net_cs);
+	}
+}
+void np2net_cs_LeaveCriticalSection(){
+	if(np2net_cs_initialized){
+		LeaveCriticalSection(&np2net_cs);
+	}
+}
 #endif // defined(_WINDOWS)
 
 #if defined(_WINDOWS)
 // パケットデータを TAP へ書き出す
-static int doWriteTap(HANDLE hTap, const UINT8 *pSendBuf, UINT32 len)
+static int doWriteTap(HANDLE hTap, const UCHAR *pSendBuf, DWORD len, OVERLAPPED *ovl)
 {
-	#define ETHERDATALEN_MIN 46
 	DWORD dwWriteLen;
 
-	if (!WriteFile(hTap, pSendBuf, len, &dwWriteLen, &np2net_write_ovl)) {
+	np2net_cs_EnterCriticalSection();
+	if (!WriteFile(hTap, pSendBuf, len, &dwWriteLen, ovl)) {
 		DWORD err = GetLastError();
+		np2net_cs_LeaveCriticalSection();
 		if (err == ERROR_IO_PENDING) {
-			if(WaitForSingleObject(np2net_write_hEvent, 3000)!=WAIT_TIMEOUT){ // 完了待ち
-				GetOverlappedResult(hTap, &np2net_write_ovl, &dwWriteLen, FALSE);
-			} 
+			DWORD beginTime = GETTICK();
+			int cancel = 0;
+			// 完了待ち
+			while(1){
+				if (WaitForSingleObject(ovl->hEvent, 1000) == WAIT_OBJECT_0){
+					BOOL result;
+					np2net_cs_EnterCriticalSection();
+					result = GetOverlappedResult(np2net_hTap, ovl, &dwWriteLen, FALSE);
+					err = GetLastError();
+					np2net_cs_LeaveCriticalSection();
+					if(cancel){
+						dwWriteLen = len; // 書けたことにする
+					}
+					if(result) break;
+					if (err != ERROR_IO_INCOMPLETE) {
+						break;
+					}
+				}
+				if(!cancel && GETTICK() - beginTime > 3000){
+					//CancelIoEx(np2net_hTap, ovl); // 秒単位で終わらないのはおかしいのでキャンセル
+					cancel = 1;
+				}
+				if(np2net_hThreadexit){
+					break;
+				}
+				//if(((np2net_membuf_writepos - np2net_membuf_readpos) & (NET_ARYLEN - 1)) < NET_ARYLEN/4){
+					Sleep(0);
+				//}else{
+				//	Sleep(1);
+				//}
+			}
+			if(dwWriteLen==0){
+				return 1;
+			}
 		} else {
-			TRACEOUT(("LGY-98: WriteFile err=0x%08X\n", err));
+			TRACEOUT(("LGY-98: WriteFile err=0x%08X¥n", err));
 			return -1;
 		}
+	}else{
+		np2net_cs_LeaveCriticalSection();
 	}
-	//TRACEOUT(("LGY-98: send %u bytes\n", dwWriteLen));
+	//TRACEOUT(("LGY-98: send %u bytes¥n", dwWriteLen));
 	return 0;
 }
 #else
@@ -180,6 +236,9 @@ static int sendDataToBuffer(const UINT8 *pSendBuf, UINT32 len){
 			//Sleep(0); // バッファがいっぱいなので待つ
 			return 1; // バッファがいっぱいなので捨てる
 		}
+	}
+	if(NET_BUFLEN < len){
+		return 1; // 巨大パケット（？）は捨てる
 	}
 	memcpy(np2net_membuf[np2net_membuf_writepos], pSendBuf, len);
 	np2net_membuflen[np2net_membuf_writepos] = len;
@@ -227,10 +286,19 @@ static void np2net_updateHighSpeedMode(){
 #if defined(_WINDOWS)
 //  非同期で通信してみる（Write）
 static unsigned int __stdcall np2net_ThreadFuncW(LPVOID vdParam) {
+	HANDLE hEvent = NULL;
+	OVERLAPPED ovl;
+
+	// OVERLAPPED非同期書き込み準備
+	memset(&ovl, 0, sizeof(OVERLAPPED));
+	ovl.hEvent = hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	ovl.Offset = 0;
+	ovl.OffsetHigh = 0;
+
 	while (!np2net_hThreadexit) {
 		if(np2net.recieve_packet != np2net_default_recieve_packet){
 			if(np2net_membuf_readpos!=np2net_membuf_writepos){
-				doWriteTap(np2net_hTap, (UCHAR*)(np2net_membuf[np2net_membuf_readpos]), np2net_membuflen[np2net_membuf_readpos]);
+				doWriteTap(np2net_hTap, (UCHAR*)(np2net_membuf[np2net_membuf_readpos]), np2net_membuflen[np2net_membuf_readpos], &ovl);
 				np2net_membuf_readpos = (np2net_membuf_readpos+1)%NET_ARYLEN;
 			}else{
 				Sleep(0);
@@ -242,6 +310,8 @@ static unsigned int __stdcall np2net_ThreadFuncW(LPVOID vdParam) {
 		if(!np2net_highspeedmode) 
 			Sleep(50);
 	}
+	CloseHandle(hEvent);
+	hEvent = NULL;
 	return 0;
 }
 //  非同期で通信してみる（Read）
@@ -261,18 +331,34 @@ static unsigned int __stdcall np2net_ThreadFuncR(LPVOID vdParam) {
 	ovl.OffsetHigh = 0;
  
 	while (!np2net_hThreadexit) {
+		np2net_cs_EnterCriticalSection();
 		if (!ReadFile(np2net_hTap, np2net_Buf, sizeof(np2net_Buf), &dwLen, &ovl)) {
 			DWORD err = GetLastError();
+			np2net_cs_LeaveCriticalSection();
 			if (err == ERROR_IO_PENDING) {
 				// 読み取り待ち
-				if(WaitForSingleObject(hEvent, 3000)!=WAIT_TIMEOUT){ // 受信完了待ち
-					GetOverlappedResult(np2net_hTap, &ovl, &dwLen, FALSE);
-					if(dwLen>0){
-						//TRACEOUT(("LGY-98: recieve %u bytes¥n", dwLen));
-						np2net.recieve_packet((UINT8*)np2net_Buf, dwLen); // 受信できたので通知する
-						np2net_highspeeddatacount += dwLen;
+				while(1){
+					if (WaitForSingleObject(ovl.hEvent, 1000) == WAIT_OBJECT_0){
+						BOOL result;
+						np2net_cs_EnterCriticalSection();
+						result = GetOverlappedResult(np2net_hTap, &ovl, &dwLen, FALSE);
+						err = GetLastError();
+						np2net_cs_LeaveCriticalSection();
+						if(result) break;
+						if (err != ERROR_IO_INCOMPLETE) {
+							break;
+						}
 					}
-				} 
+					if(np2net_hThreadexit){
+						break;
+					}
+					Sleep(0);
+				}
+				if(dwLen>0){
+					//TRACEOUT(("LGY-98: recieve %u bytes¥n", dwLen));
+					np2net.recieve_packet((UINT8*)np2net_Buf, dwLen); // 受信できたので通知する
+					np2net_highspeeddatacount += dwLen;
+				}
 			} else {
 				// 読み取りエラー
 				printf("TAP-Win32: ReadFile err=0x%08X\n", err);
@@ -281,6 +367,7 @@ static unsigned int __stdcall np2net_ThreadFuncR(LPVOID vdParam) {
 				Sleep(1);
 			}
 		} else {
+			np2net_cs_LeaveCriticalSection();
 			// 読み取り成功
 			if(dwLen>0){
 				//TRACEOUT(("LGY-98: recieve %u bytes\n", dwLen));
@@ -360,10 +447,10 @@ static void np2net_closeTAP(){
     if (np2net_hTap != INVALID_HANDLE_VALUE) {
 		if(np2net_hThreadR){
 			np2net_hThreadexit = 1;
-			if(WaitForSingleObject(np2net_hThreadR, 5000) == WAIT_TIMEOUT){
+			if(WaitForSingleObject(np2net_hThreadR, 10000) == WAIT_TIMEOUT){
 				TerminateThread(np2net_hThreadR, 0);
 			}
-			if(WaitForSingleObject(np2net_hThreadW, 5000) == WAIT_TIMEOUT){
+			if(WaitForSingleObject(np2net_hThreadW, 10000) == WAIT_TIMEOUT){
 				TerminateThread(np2net_hThreadW, 0);
 			}
 			np2net_membuf_readpos = np2net_membuf_writepos;
@@ -504,10 +591,7 @@ static int np2net_openTAP(const char* tapname){
 void np2net_init(void)
 {
 #if defined(_WINDOWS)
-	memset(&np2net_write_ovl, 0, sizeof(OVERLAPPED));
-	np2net_write_ovl.hEvent = np2net_write_hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-	np2net_write_ovl.Offset = 0;
-	np2net_write_ovl.OffsetHigh = 0;
+	np2net_cs_Initialize();
 #endif // defined(_WINDOWS)
 
 	memset(np2net_tapName, 0, sizeof(np2net_tapName));
@@ -530,8 +614,12 @@ void np2net_shutdown(void)
 {
 	np2net_hThreadexit = 1;
 	np2net_closeTAP();
+
 #ifdef SUPPORT_LGY98
 	lgy98_shutdown();
+#endif
+#if defined(_WINDOWS)
+	np2net_cs_Finalize();
 #endif
 
 }

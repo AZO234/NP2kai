@@ -1274,6 +1274,7 @@ void i386hax_vm_exec(void) {
 	static SINT32 remain_clk = 0;
 	SINT32 remclktmp = CPU_REMCLOCK;
 	int timing;
+	int i;
 	if(pcstat.hardwarereset){
 		CPU_REMCLOCK = 0;
 		return;
@@ -1282,15 +1283,19 @@ void i386hax_vm_exec(void) {
 		CPU_REMCLOCK += remain_clk;
 		np2haxcore.lastclock = NP2_TickCount_GetCount();
 		while(CPU_REMCLOCK > 0){
+			int remclkdiff = 0;
 			i386hax_vm_exec_part();
-			if(dmac.working) {
-				dmax86();
-			}
-			np2haxcore.clockcount = NP2_TickCount_GetCount();
+			np2haxcore.clockcount = GetTickCounter_Clock();
 			if(CPU_REMCLOCK > 0){
-				CPU_REMCLOCK -= (np2haxcore.clockcount - np2haxcore.lastclock) * pccore.realclock / np2haxcore.clockpersec;
+				remclkdiff = (np2haxcore.clockcount.QuadPart - np2haxcore.lastclock.QuadPart) * pccore.realclock / np2haxcore.clockpersec.QuadPart;
+				CPU_REMCLOCK -= remclkdiff;
 			}
 			np2haxcore.lastclock  = np2haxcore.clockcount;
+			if(dmac.working) {
+				for(i=0;i<(remclkdiff+3)/4;i++){
+					dmax86(); // XXX: –{“–‚Í1–½—ßŽÀs‚²‚Æ‚ÉŒÄ‚Ô‚Ì‚ª³‚µ‚¢‚¯‚Ço—ˆ‚È‚¢‚Ì‚Å‚Ü‚Æ‚ß‚ÄŒÄ‚Ô¥¥¥
+				}
+			}
 			if(CPU_RESETREQ) break;
 			if(pcstat.hardwarereset) break;
 			if (CPU_REMCLOCK > 0 && (timing = timing_getcount_baseclock())!=0) {
@@ -1314,7 +1319,9 @@ void i386hax_vm_exec(void) {
 		CPU_REMCLOCK = 0;
 	}else{
 		if(dmac.working) {
-			dmax86();
+			for(i=0;i<(CPU_REMCLOCK+3)/4;i++){
+				dmax86();
+			}
 		}
 		CPU_REMCLOCK = 0;
 		remain_clk = 0;

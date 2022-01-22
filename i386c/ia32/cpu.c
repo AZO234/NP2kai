@@ -49,6 +49,8 @@
 #endif
 #endif
 
+UINT8 cpu_drawskip = 1;
+UINT8 cpu_nowait = 0;
 
 sigjmp_buf exec_1step_jmpbuf;
 
@@ -291,7 +293,7 @@ exec_allstep(void)
 	int remclkcnt = 0x100;
 	static int latecount = 0;
 	static int latecount2 = 0;
-	static int hltflag = 0;
+	static unsigned int hltflag = 0;
 
 	if(latecount2==0){
 		if(latecount > 0){
@@ -535,7 +537,8 @@ exec_allstep(void)
 cpucontinue:
 #if defined(SUPPORT_ASYNC_CPU)
 		// 非同期CPU処理
-		if(np2cfg.asynccpu){
+		if(np2cfg.asynccpu && !cpu_nowait){
+			UINT8 drawskip = cpu_drawskip;
 #define LATECOUNTER_THRESHOLD	6
 #define LATECOUNTER_THRESHOLDM	2
 			int realclock = 0;
@@ -546,7 +549,7 @@ cpucontinue:
 				remclkcnt = 0;
 				firstflag = 0;
 				timing = timing_getcount_baseclock();
-				if(timing!=0){
+				if(timing>=drawskip){
 					if(!asynccpu_fastflag && !asynccpu_lateflag){
 						if(remclock_mul < 100000) {
 							latecount++;
@@ -584,12 +587,12 @@ cpucontinue:
 						break;
 					}
 				}else{
-					if(!hltflag && !asynccpu_lateflag && g_nevent.item[NEVENT_FLAMES].proc==screendisp && g_nevent.item[NEVENT_FLAMES].clock <= CPU_BASECLOCK){
+					if(!hltflag && !asynccpu_lateflag && g_nevent.item[NEVENT_FLAMES].proc==screendisp && g_nevent.item[NEVENT_FLAMES].clock >= CPU_BASECLOCK){
 						//CPU_REMCLOCK = 10000;
 						//oldremclock = CPU_REMCLOCK;
 						if(!asynccpu_fastflag){
 							latecount--;
-							if(latecount < -LATECOUNTER_THRESHOLDM * ((g_pcm86.fifo & 0x80) ? 10 : 1)){
+							if(latecount < -LATECOUNTER_THRESHOLDM * ((g_pcm86.fifo & 0x80) || nevent_iswork(NEVENT_CS4231) || nevent_iswork(NEVENT_CT1741) ? 10 : 1)){
 								if(pccore.multiple < pccore.maxmultiple){
 									UINT32 oldmultiple = pccore.multiple;
 									pccore.multiple+=1;

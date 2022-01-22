@@ -166,7 +166,20 @@ UINT CComPipe::Write(UINT8 cData)
 	}
 	ret = (::WriteFile(m_hSerial, &cData, 1, &dwWrittenSize, NULL)) ? 1 : 0;
 	if(dwWrittenSize==0) {
+		DWORD err = GetLastError();
+		if(m_isserver){
+			if(err==ERROR_BROKEN_PIPE){
+				return 0;
+			}
+		}else{
+			if(err==ERROR_PIPE_NOT_CONNECTED){
+				return 0;
+			}
+		}
 		if(m_lastdatafail && GetTickCount() - m_lastdatatime > 1000){
+			m_lastdatafail = 0;
+			m_lastdata = 0;
+			m_lastdatatime = 0;
 			return 1; // バッファデータが減りそうにないならあきらめる（毎秒1byte(8bit)は流石にあり得ない）
 		}
 		m_lastdatafail = 1;
@@ -190,12 +203,27 @@ UINT CComPipe::WriteRetry()
 	UINT ret;
 	DWORD dwWrittenSize;
 	if(m_lastdatafail){
-		if (GetTickCount() - m_lastdatatime > 1000) return 1; // バッファデータが減りそうにないならあきらめる（毎秒1byte(8bit)は流石にあり得ない）
 		if (m_hSerial == INVALID_HANDLE_VALUE) {
 			return 0;
 		}
 		ret = (::WriteFile(m_hSerial, &m_lastdata, 1, &dwWrittenSize, NULL)) ? 1 : 0;
 		if(dwWrittenSize==0) {
+			DWORD err = GetLastError();
+			if(m_isserver){
+				if(err==ERROR_BROKEN_PIPE){
+					return 1; // 常時成功扱い
+				}
+			}else{
+				if(err==ERROR_PIPE_NOT_CONNECTED){
+					return 1; // 常時成功扱い
+				}
+			}
+			if(m_lastdatafail && GetTickCount() - m_lastdatatime > 1000){
+				m_lastdatafail = 0;
+				m_lastdata = 0;
+				m_lastdatatime = 0;
+				return 1; // バッファデータが減りそうにないならあきらめる（毎秒1byte(8bit)は流石にあり得ない）
+			}
 			return 0;
 		}
 		m_lastdatafail = 0;

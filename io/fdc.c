@@ -18,6 +18,8 @@
 #define	TRACEOUT(s)	(void)(s)
 #endif	/* 0 */
 
+static int fdc_lasttreg[4] = {0}; // 暫定：Win用　Seek後にはtregをfdc.Cで更新　本当はfdc構造体の中に入れるべき
+
 extern void fddmtrsnd_play(UINT num, BOOL play);
 
 enum {
@@ -33,7 +35,10 @@ static const UINT8 FDCCMD_TABLE[32] = {
 #define FDC_FORCEREADY (1)
 #define	FDC_DELAYERROR7
 
-#define FDC_INT_DELAY		5			/*!< Delay 100ms */
+#define FDC_INT_DELAY		6			/*!< Delay 100ms */
+#define FDC_SEEKSOUND_TIMEOUT		60			/*!< Timeout 1000ms */
+						
+static int fdc_seeksndtimeout[4] = {0};
 
 void fdc_intwait(NEVENTITEM item) {
 	
@@ -323,8 +328,16 @@ static BRESULT writesector(void) {
 #if defined(SUPPORT_SWSEEKSND)
 	if(np2cfg.MOTOR) fddmtrsnd_play(1, TRUE);
 #else
-	if(np2cfg.MOTOR) soundmng_pcmplay(SOUND_PCMSEEK, FALSE);
+	if(np2cfg.MOTOR) {
+		if(fdc_seeksndtimeout[fdc.us]!=0){
+			soundmng_pcmplay(SOUND_PCMSEEK, FALSE);
+		}else{
+			soundmng_pcmstop(SOUND_PCMSEEK1);
+			soundmng_pcmplay(SOUND_PCMSEEK1, FALSE);
+		}
+	}
 #endif
+	fdc_seeksndtimeout[fdc.us] = FDC_SEEKSOUND_TIMEOUT;
 	fdc_dmaready(1);
 	dmac_check();
 	return(SUCCESS);
@@ -338,7 +351,9 @@ static void FDC_WriteData(void) {						// cmd: 05
 			get_chrn();
 			get_eotgsldtl();
 			fdc.stat[fdc.us] = (fdc.hd << 2) | fdc.us;
-			fdc.treg[fdc.us] = fdc.C;	/* 170101 ST modified to work on Windows 9x/2000 */
+			if(fdc_lasttreg[fdc.us] != fdc.treg[fdc.us]){
+				fdc.treg[fdc.us] = fdc.C;	/* 170101 ST modified to work on Windows 9x/2000 */
+			}
 			if (FDC_DriveCheck(TRUE)) {
 				fdc.event = FDCEVENT_BUFRECV;
 				fdc.bufcnt = 128 << fdc.N;
@@ -413,8 +428,16 @@ static void readsector(void) {
 #if defined(SUPPORT_SWSEEKSND)
 	if(np2cfg.MOTOR) fddmtrsnd_play(1, TRUE);
 #else
-	if(np2cfg.MOTOR) soundmng_pcmplay(SOUND_PCMSEEK, FALSE);
+	if(np2cfg.MOTOR) {
+		if(fdc_seeksndtimeout[fdc.us]!=0){
+			soundmng_pcmplay(SOUND_PCMSEEK, FALSE);
+		}else{
+			soundmng_pcmstop(SOUND_PCMSEEK1);
+			soundmng_pcmplay(SOUND_PCMSEEK1, FALSE);
+		}
+	}
 #endif
+	fdc_seeksndtimeout[fdc.us] = FDC_SEEKSOUND_TIMEOUT;
 
 	fdc.event = FDCEVENT_BUFSEND2;
 	fdc.bufp = 0;
@@ -442,7 +465,9 @@ static void FDC_ReadData(void) {						// cmd: 06
 			get_hdus();
 			get_chrn();
 			get_eotgsldtl();
-			fdc.treg[fdc.us] = fdc.C;	/* 170101 ST modified to work on Windows 9x/2000 */
+			if(fdc_lasttreg[fdc.us] != fdc.treg[fdc.us]){
+				fdc.treg[fdc.us] = fdc.C;	/* 170101 ST modified to work on Windows 9x/2000 */
+			}
 			readsector();
 			break;
 
@@ -615,7 +640,7 @@ static void FDC_ReadID(void) {							// cmd: 0a
 #if defined(SUPPORT_SWSEEKSND)
 				if(np2cfg.MOTOR) fddmtrsnd_play(1, TRUE);
 #else
-				if(np2cfg.MOTOR) soundmng_pcmplay(SOUND_PCMSEEK, FALSE);
+				if(np2cfg.MOTOR) soundmng_pcmplay(SOUND_PCMSEEK1, FALSE);
 #endif
 			}
 			else {
@@ -719,6 +744,7 @@ static void FDC_Seek(void) {							// cmd: 0f
 				fdc.int_stat[fdc.us] |= FDCRLT_IC0 | FDCRLT_NR;
 			}
 			else {
+				UINT8 sdiff = fdc.cmds[1] - fdc.ncn;
 				fdc.ncn = fdc.cmds[1];
 				fdc.treg[fdc.us] = fdc.ncn;
 				fdc.R = 1;
@@ -729,9 +755,18 @@ static void FDC_Seek(void) {							// cmd: 0f
 #if defined(SUPPORT_SWSEEKSND)
 					if(np2cfg.MOTOR) fddmtrsnd_play(1, TRUE);
 #else
-					if(np2cfg.MOTOR) soundmng_pcmplay(SOUND_PCMSEEK1, FALSE);
+					if(np2cfg.MOTOR) {
+						if(fdc_seeksndtimeout[fdc.us]!=0 && sdiff==1){
+							soundmng_pcmplay(SOUND_PCMSEEK, FALSE);
+						}else{
+							soundmng_pcmstop(SOUND_PCMSEEK1);
+							soundmng_pcmplay(SOUND_PCMSEEK1, FALSE);
+						}
+					}
 #endif
+				fdc_seeksndtimeout[fdc.us] = FDC_SEEKSOUND_TIMEOUT;
 				//}
+				fdc_lasttreg[fdc.us] = fdc.treg[fdc.us];
 				/* 170107 for Windows95 ... to */
 			}
 			fdc.int_timer[fdc.us] = FDC_INT_DELAY;
@@ -927,6 +962,7 @@ void fdc_intdelay(void) {
 				fdc_interrupt();
 			}
 		}
+		if(fdc_seeksndtimeout[i] > 0) fdc_seeksndtimeout[i]--;
 	}
 }
 

@@ -762,6 +762,7 @@ static const PFTBL s_IniItems[] =
 	PFVAL("GAMEPORT", PFTYPE_BOOL,		&np2cfg.gameport),
 #endif
 	PFVAL("USEMOVCS", PFRO_BOOL,		&np2cfg.allowMOVCS),
+	PFVAL("USETHOOK", PFRO_BOOL,		&np2cfg.usetexthook),
 
 #if defined(SUPPORT_VIDEOFILTER)
 		PFVAL("vf1_enable", PFTYPE_BOOL, &np2cfg.vf1_enable),
@@ -920,6 +921,9 @@ static const PFTBL s_IniItems[] =
 	
 #if defined(SUPPORT_WACOM_TABLET)
 	PFVAL("PENTABFA", PFTYPE_BOOL,		&np2oscfg.pentabfa), // ペンタブレット アスペクト比固定モード
+#endif
+#if defined(SUPPORT_MULTITHREAD)
+	PFVAL("MTENABLE", PFRO_BOOL,		&np2oscfg.multithread), // マルチスレッドモード
 #endif
 	// Keyrepeat
 	PFEXT("keyrepeat_enable", PFTYPE_BOOL,	&np2cfg.keyrepeat_enable, 0),

@@ -2,6 +2,7 @@
 #include	<np2.h>
 #include	"winkbd.h"
 #include	<keystat.h>
+#include	<np2mt.h>
 
 
 #define		NC		0xff
@@ -150,7 +151,8 @@ static const UINT8 f12keys[] = {
 void winkbd_keydown(WPARAM wParam, LPARAM lParam) {
 
 	UINT8	data;
-
+	
+	np2_multithread_EnterCriticalSection();
 	if (wParam == VK_SHIFT) {
 		UINT scancode = (lParam & 0x00ff0000) >> 16;
 		wParam = MapVirtualKey(scancode, MAPVK_VSC_TO_VK_EX);
@@ -178,12 +180,14 @@ void winkbd_keydown(WPARAM wParam, LPARAM lParam) {
 			keystat_senddata(0x47);
 		}
 	}
+	np2_multithread_LeaveCriticalSection();
 }
 
 void winkbd_keyup(WPARAM wParam, LPARAM lParam) {
 
 	UINT8	data;
-
+	
+	np2_multithread_EnterCriticalSection();
 	if (wParam == VK_SHIFT) {
 		UINT scancode = (lParam & 0x00ff0000) >> 16;
 		wParam = MapVirtualKey(scancode, MAPVK_VSC_TO_VK_EX);
@@ -211,6 +215,7 @@ void winkbd_keyup(WPARAM wParam, LPARAM lParam) {
 			keystat_senddata(0x47 | 0x80);
 		}
 	}
+	np2_multithread_LeaveCriticalSection();
 }
 
 void winkbd_roll(BOOL pcat) {
@@ -242,9 +247,11 @@ void winkbd_setf12(UINT f12key) {
 void winkbd_resetf12(void) {
 
 	UINT	i;
-
+	
+	np2_multithread_EnterCriticalSection();
 	for (i=0; i<NELEMENTS(f12keys); i++) {
 		keystat_forcerelease(f12keys[i]);
 	}
+	np2_multithread_LeaveCriticalSection();
 }
 

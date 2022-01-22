@@ -1168,7 +1168,7 @@ const EGCQUAD	*data;
 }
 
 REG16 MEMCALL egc_readword(UINT32 addr) {
-
+/*	
 	UINT32	ad;
 	int pl;
 
@@ -1261,7 +1261,62 @@ REG16 MEMCALL egc_readword(UINT32 addr) {
             temp3 |= *(UINT16 *)(&mem[ad + VRAM_E]) ^ fg8;
 	        return (~temp3);
 	}
-//	return(LOADINTELWORD(mem + addr));
+//	return(LOADINTELWORD(mem + addr));*/
+
+	
+	UINT32	ad;
+
+	__ASSERT(!(addr & 1));
+	if (gdcs.access) {
+		addr += VRAM_STEP;
+	}
+	ad = VRAMADDRMASKEX(addr);
+	egc.lastvram.w[0] = *(UINT16 *)(&mem[ad + VRAM_B]);
+	egc.lastvram.w[1] = *(UINT16 *)(&mem[ad + VRAM_R]);
+	egc.lastvram.w[2] = *(UINT16 *)(&mem[ad + VRAM_G]);
+	egc.lastvram.w[3] = *(UINT16 *)(&mem[ad + VRAM_E]);
+
+	// shift input
+	if (!(egc.ope & 0x400)) {
+		if (!(egc.sft & 0x1000)) {
+			egc.inptr[ 0] = egc.lastvram._b[0][EGCADDR_L];
+			egc.inptr[ 1] = egc.lastvram._b[0][EGCADDR_H];
+			egc.inptr[ 4] = egc.lastvram._b[1][EGCADDR_L];
+			egc.inptr[ 5] = egc.lastvram._b[1][EGCADDR_H];
+			egc.inptr[ 8] = egc.lastvram._b[2][EGCADDR_L];
+			egc.inptr[ 9] = egc.lastvram._b[2][EGCADDR_H];
+			egc.inptr[12] = egc.lastvram._b[3][EGCADDR_L];
+			egc.inptr[13] = egc.lastvram._b[3][EGCADDR_H];
+			shiftinput_incw();
+		}
+		else {
+			egc.inptr[-1] = egc.lastvram._b[0][EGCADDR_L];
+			egc.inptr[ 0] = egc.lastvram._b[0][EGCADDR_H];
+			egc.inptr[ 3] = egc.lastvram._b[1][EGCADDR_L];
+			egc.inptr[ 4] = egc.lastvram._b[1][EGCADDR_H];
+			egc.inptr[ 7] = egc.lastvram._b[2][EGCADDR_L];
+			egc.inptr[ 8] = egc.lastvram._b[2][EGCADDR_H];
+			egc.inptr[11] = egc.lastvram._b[3][EGCADDR_L];
+			egc.inptr[12] = egc.lastvram._b[3][EGCADDR_H];
+			shiftinput_decw();
+		}
+	}
+
+	if ((egc.ope & 0x0300) == 0x0100) {
+		egc.patreg.d[0] = egc.lastvram.d[0];
+		egc.patreg.d[1] = egc.lastvram.d[1];
+	}
+	if (!(egc.ope & 0x2000)) {
+		int pl = (egc.fgbg >> 8) & 3;
+		if (!(egc.ope & 0x400)) {
+			return(LOADINTELWORD(egc_src._b[pl]));
+		}
+		else {
+			return(LOADINTELWORD(mem + ad + planead[pl]));
+		}
+	}
+	return(LOADINTELWORD(mem + addr));
+	
 }
 
 void MEMCALL egc_writeword(UINT32 addr, REG16 value) {

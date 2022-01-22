@@ -32,8 +32,8 @@
 static int atapi_thread_initialized = 0;
 static HANDLE atapi_thread = NULL;
 static IDEDRV atapi_thread_drv = NULL;
-static HANDLE atapi_thread_main = NULL;
-#else
+static HANDLE atapi_thread_event_request = NULL;
+static HANDLE atapi_thread_event_complete = NULL;
 	// TODO: 非Windows用コードを書く
 #endif
 
@@ -512,6 +512,7 @@ static void atapi_cmd_read_capacity(IDEDRV drv) {
 
 // 0x28: READ(10)
 #if defined(_WINDOWS) && !defined(__LIBRETRO__)
+static int atapi_dataread_error = -1;
 void atapi_dataread_threadfunc_part(IDEDRV drv) {
 
 	SXSIDEV	sxsi;
@@ -519,70 +520,88 @@ void atapi_dataread_threadfunc_part(IDEDRV drv) {
 	sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
 
 	if (sxsi_read(drv->sxsidrv, drv->sector, drv->buf, 2048) != 0) {
-		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_ILLEGAL_REQUEST);
-		drv->asc = 0x21;
-		sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
-		senderror(drv);
-		TRACEOUT(("atapicmd: read error at sector %d", drv->sector));
+		atapi_dataread_error = 1;
 		return;
 	}
 
 	// EDC/ECC check
 	if(np2cfg.usecdecc && (sxsi->cdflag_ecc & CD_ECC_BITMASK)==CD_ECC_ERROR){
-		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_MEDIUM_ERROR);
-		drv->sk = 0x03;
-		drv->asc = 0x11;
-		drv->status |= IDESTAT_ERR;
-		drv->error |= IDEERR_UNC;
-		sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
-		senderror(drv);
-		TRACEOUT(("atapicmd: EDC/ECC error detected at sector %d", drv->sector));
+		atapi_dataread_error = 2;
 		return;
 	}
-
-	drv->sector++;
-	drv->nsectors--;
-
-	drv->sc = IDEINTR_IO;
-	drv->cy = 2048;
-	drv->status &= ~(IDESTAT_DMRD|IDESTAT_SERV|IDESTAT_CHK);
-	drv->status |= IDESTAT_DRQ;
-	drv->error = 0;
-	ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_NO_SENSE);
-	drv->asc = ATAPI_ASC_NO_ADDITIONAL_SENSE_INFORMATION;
-	drv->bufdir = IDEDIR_IN;
-	drv->buftc = (drv->nsectors)?IDETC_ATAPIREAD:IDETC_TRANSFEREND;
-	drv->bufpos = 0;
-	drv->bufsize = 2048;
 	
-	if(np2cfg.usecdecc && (sxsi->cdflag_ecc & CD_ECC_BITMASK)==CD_ECC_RECOVERED){
-		drv->status |= IDESTAT_CORR;
-		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_RECOVERED_ERROR);
-		drv->asc = 0x18;
-	}
-	sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
-
-	drv->status &= ~(IDESTAT_BSY); // 念のため直前で解除
-	if (!(drv->ctrl & IDECTRL_NIEN)) {
-		//TRACEOUT(("atapicmd: senddata()"));
-		ideio.bank[0] = ideio.bank[1] | 0x80;			// ????
-		pic_setirq(IDE_IRQ);
-	}
+	atapi_dataread_error = 0;
 }
-void WINAPI atapi_APCFunc(ULONG_PTR arg)
-{
-	// nothing to do
+void atapi_dataread_asyncwait(int wait) {
+	if(atapi_dataread_error!=-1 && atapi_thread_drv && (!np2cfg.useasynccd || !atapi_thread || WaitForSingleObject(atapi_thread_event_complete, wait) == WAIT_OBJECT_0)){
+		IDEDRV drv = atapi_thread_drv;
+		SXSIDEV	sxsi;
+		sxsi = sxsi_getptr(drv->sxsidrv);
+
+		switch(atapi_dataread_error){
+		case 1:
+			ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_ILLEGAL_REQUEST);
+			drv->asc = 0x21;
+			sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ‾CD_ECC_BITMASK) | CD_ECC_NOERROR;
+			senderror(drv);
+			TRACEOUT(("atapicmd: read error at sector %d", drv->sector));
+			break;
+		case 2:
+			ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_MEDIUM_ERROR);
+			drv->sk = 0x03;
+			drv->asc = 0x11;
+			drv->status |= IDESTAT_ERR;
+			drv->error |= IDEERR_UNC;
+			sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ‾CD_ECC_BITMASK) | CD_ECC_NOERROR;
+			senderror(drv);
+			TRACEOUT(("atapicmd: EDC/ECC error detected at sector %d", drv->sector));
+			break;
+		case 0:
+			drv->sector++;
+			drv->nsectors--;
+
+			drv->sc = IDEINTR_IO;
+			drv->cy = 2048;
+			drv->status &= ‾(IDESTAT_DMRD|IDESTAT_SERV|IDESTAT_CHK);
+			drv->status |= IDESTAT_DRQ;
+			drv->error = 0;
+			ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_NO_SENSE);
+			drv->asc = ATAPI_ASC_NO_ADDITIONAL_SENSE_INFORMATION;
+			drv->bufdir = IDEDIR_IN;
+			drv->buftc = (drv->nsectors)?IDETC_ATAPIREAD:IDETC_TRANSFEREND;
+			drv->bufpos = 0;
+			drv->bufsize = 2048;
+	
+			if(np2cfg.usecdecc && (sxsi->cdflag_ecc & CD_ECC_BITMASK)==CD_ECC_RECOVERED){
+				drv->status |= IDESTAT_CORR;
+				ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_RECOVERED_ERROR);
+				drv->asc = 0x18;
+			}
+			sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ‾CD_ECC_BITMASK) | CD_ECC_NOERROR;
+
+			drv->status &= ‾(IDESTAT_BSY); // 念のため直前で解除
+			if (!(drv->ctrl & IDECTRL_NIEN)) {
+				//TRACEOUT(("atapicmd: senddata()"));
+				ideio.bank[0] = ideio.bank[1] | 0x80;			// ????
+				pic_setirq(IDE_IRQ);
+			}
+
+			break;
+		}
+		atapi_dataread_error = -1;
+	}
 }
 unsigned int __stdcall atapi_dataread_threadfunc(void* vdParam) {
 	IDEDRV drv = NULL;
-
-	while(atapi_thread_initialized){
+	
+	SetEvent(atapi_thread_event_complete);
+	while(WaitForSingleObject(atapi_thread_event_request, INFINITE) == WAIT_OBJECT_0){
+		if(!atapi_thread_initialized) break;
 		drv = atapi_thread_drv;
 		atapi_dataread_threadfunc_part(drv);
-		QueueUserAPC(atapi_APCFunc, atapi_thread_main, 0);
-		SuspendThread(atapi_thread);
+		SetEvent(atapi_thread_event_complete);
 	}
-	
+	SetEvent(atapi_thread_event_complete);
     _endthreadex(0);
 	return 0;
 
@@ -604,18 +623,26 @@ void atapi_dataread(IDEDRV drv) {
 	
 	if(np2cfg.useasynccd){
 		if(atapi_thread){
+			atapi_dataread_asyncwait(INFINITE);
+			ResetEvent(atapi_thread_event_complete);
+			atapi_dataread_error = -1;
 			atapi_thread_drv = drv;
-			SleepEx(0, TRUE); // キューに溜まっている物を捨てる
-			ResumeThread(atapi_thread);
-			SleepEx(2, TRUE);
+			SetEvent(atapi_thread_event_request);
+			atapi_dataread_asyncwait(2);
 		}else{
+			atapi_dataread_error = -1;
+			atapi_thread_drv = drv;
 			atapi_dataread_threadfunc_part(drv);
+			atapi_dataread_asyncwait(0);
 		}
-		//if(_beginthread(atapi_dataread_threadfunc, 0, (void*)drv)==-1){
-			//atapi_dataread_threadfunc((void*)drv);
-		//}
 	}else{
+		if(atapi_thread){
+			atapi_dataread_asyncwait(INFINITE);
+		}
+		atapi_dataread_error = -1;
+		atapi_thread_drv = drv;
 		atapi_dataread_threadfunc_part(drv);
+		atapi_dataread_asyncwait(0);
 	}
 }
 #else
@@ -1303,12 +1330,10 @@ void atapi_initialize(void) {
 	//	pic_cs_initialized = 1;
 	//}
 	if(!atapi_thread_initialized){
-		if(DuplicateHandle(GetCurrentProcess(), GetCurrentThread(), GetCurrentProcess(), &atapi_thread_main, 0, FALSE, DUPLICATE_SAME_ACCESS)){
-			atapi_thread_initialized = 1;
-			atapi_thread = (HANDLE)_beginthreadex(NULL, 0, atapi_dataread_threadfunc, NULL, CREATE_SUSPENDED, &dwID);
-		}else{
-			atapi_thread_main = NULL;
-		}
+		atapi_thread_initialized = 1;
+		atapi_thread_event_complete = CreateEvent(NULL, TRUE, TRUE, NULL);
+		atapi_thread_event_request = CreateEvent(NULL, FALSE, FALSE, NULL);
+		atapi_thread = (HANDLE)_beginthreadex(NULL, 0, atapi_dataread_threadfunc, NULL, 0, &dwID);
 	}
 #else
 	// TODO: 非Windows用コードを書く
@@ -1319,14 +1344,14 @@ void atapi_deinitialize(void) {
 #if defined(_WINDOWS) && !defined(__LIBRETRO__)
 	if(atapi_thread_initialized){
 		atapi_thread_initialized = 0;
-		while(((int)ResumeThread(atapi_thread)) > 0);
+		SetEvent(atapi_thread_event_request);
 		if(WaitForSingleObject(atapi_thread, 5000) == WAIT_TIMEOUT){
 			TerminateThread(atapi_thread, 0);
 		}
 		CloseHandle(atapi_thread);
+		CloseHandle(atapi_thread_event_complete);
+		CloseHandle(atapi_thread_event_request);
 		atapi_thread = NULL;
-		CloseHandle(atapi_thread_main);
-		atapi_thread_main = NULL;
 	}
 #else
 	// TODO: 非Windows用コードを書く

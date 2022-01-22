@@ -143,6 +143,10 @@ typedef struct {
 #ifdef SUPPORT_WACOM_TABLET
 	UINT8	pentabfa; // Pen tablet fixed aspect mode
 #endif	// defined(SUPPORT_WACOM_TABLET)
+	
+#if defined(SUPPORT_MULTITHREAD)
+	UINT8	multithread; // Multi Thread Mode
+#endif
 } NP2OSCFG;
 
 

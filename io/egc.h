@@ -8,6 +8,7 @@ typedef union {
 	UINT8	_b[4][2];
 	UINT16	w[4];
 	UINT32	d[2];
+	UINT64	q;
 } EGCQUAD;
 
 typedef struct {

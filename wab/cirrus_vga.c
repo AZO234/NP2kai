@@ -5093,24 +5093,30 @@ void ConvertYUV2RGB(int width, unsigned char *srcYUV16, unsigned char *dstRGB32L
 	int j;
 	int offset = 128;
 	if(cirrusvga->cr[0x3f] & 0x10){
-		for(j=0;j<width/2;j++){
-			int u0 = srcYUV16[j * 4 + 0];
-			int v0 = srcYUV16[j * 4 + 1];
-			int y1 = srcYUV16[j * 4 + 2];
-			int y0 = srcYUV16[j * 4 + 3];
-			int r0 = (298 * (y0 - 16) + 409 * (v0 - offset) + 128) >> 8;
-			int g0 = (298 * (y0 - 16) - 100 * (u0 - offset) - 208 * (v0 - offset) + 128) >> 8;
-			int b0 = (298 * (y0 - 16) + 516 * (u0 - offset) + 128) >> 8;
-			int r1 = (298 * (y1 - 16) + 409 * (v0 - offset) + 128) >> 8;
-			int g1 = (298 * (y1 - 16) - 100 * (u0 - offset) - 208 * (v0 - offset) + 128) >> 8;
-			int b1 = (298 * (y1 - 16) + 516 * (u0 - offset) + 128) >> 8;
-			dstRGB32Line[j*8 + 0] = (b0 < 0 ? 0 : (b0 > 255 ? 255 : b0));
-			dstRGB32Line[j*8 + 1] = (g0 < 0 ? 0 : (g0 > 255 ? 255 : g0));
-			dstRGB32Line[j*8 + 2] = (r0 < 0 ? 0 : (r0 > 255 ? 255 : r0));
-			dstRGB32Line[j*8 + 4] = (b1 < 0 ? 0 : (b1 > 255 ? 255 : b1));
-			dstRGB32Line[j*8 + 5] = (g1 < 0 ? 0 : (g1 > 255 ? 255 : g1));
-			dstRGB32Line[j*8 + 6] = (r1 < 0 ? 0 : (r1 > 255 ? 255 : r1));
-		}
+		//if(cirrusvga->cr[0x3f] & 0x08){
+		//	// RGB555
+		//	//memcpy(dstRGB32Line, srcYUV16, width);
+		//}else{
+			// YCC422
+			for(j=0;j<width/2;j++){
+				int u0 = srcYUV16[j * 4 + 0];
+				int v0 = srcYUV16[j * 4 + 1];
+				int y1 = srcYUV16[j * 4 + 2];
+				int y0 = srcYUV16[j * 4 + 3];
+				int r0 = (298 * (y0 - 16) + 409 * (v0 - offset) + 128) >> 8;
+				int g0 = (298 * (y0 - 16) - 100 * (u0 - offset) - 208 * (v0 - offset) + 128) >> 8;
+				int b0 = (298 * (y0 - 16) + 516 * (u0 - offset) + 128) >> 8;
+				int r1 = (298 * (y1 - 16) + 409 * (v0 - offset) + 128) >> 8;
+				int g1 = (298 * (y1 - 16) - 100 * (u0 - offset) - 208 * (v0 - offset) + 128) >> 8;
+				int b1 = (298 * (y1 - 16) + 516 * (u0 - offset) + 128) >> 8;
+				dstRGB32Line[j*8 + 0] = (b0 < 0 ? 0 : (b0 > 255 ? 255 : b0));
+				dstRGB32Line[j*8 + 1] = (g0 < 0 ? 0 : (g0 > 255 ? 255 : g0));
+				dstRGB32Line[j*8 + 2] = (r0 < 0 ? 0 : (r0 > 255 ? 255 : r0));
+				dstRGB32Line[j*8 + 4] = (b1 < 0 ? 0 : (b1 > 255 ? 255 : b1));
+				dstRGB32Line[j*8 + 5] = (g1 < 0 ? 0 : (g1 > 255 ? 255 : g1));
+				dstRGB32Line[j*8 + 6] = (r1 < 0 ? 0 : (r1 > 255 ? 255 : r1));
+			}
+		//}
 	}else{
 		for(j=0;j<width/2;j++){
 			int u0 = srcYUV16[j * 4 + 0];
@@ -5743,6 +5749,7 @@ void cirrusvga_drawGraphic(){
 		case 0: // YUV 4:2:2 UYVY
 			vidwnd_yuv = 1;
 			vidwnd_bpp = 32;
+			ga_bmpInfo->bmiHeader.biCompression = BI_RGB;
 			break;
 		case 4: // RGB555
 			//// XXX: RGB555になってない？？？
@@ -7006,6 +7013,9 @@ static void pc98_cirrus_init_common(CirrusVGAState * s, int device_id, int is_pc
 			if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK || np2clvga.gd54xxtype != CIRRUS_98ID_96){
 				iocore_attachout(0xff82, cirrusvga_off82);
 				iocore_attachinp(0xff82, cirrusvga_iff82);
+				
+				//iocore_attachout(0x904, cirrusvga_o0904);
+				//iocore_attachinp(0x904, cirrusvga_i0904);	
 
 				for(i=0;i<16;i++){
 					iocore_attachout(0xca0 + i, vga_ioport_write_wrap);	// 0x3C0 to 0x3CF
@@ -7409,7 +7419,10 @@ void pc98_cirrus_vga_reset(const NP2CFG *pConfig)
 		np2haxcore.allocwabmem = 1;
 	}
 #endif
-
+	
+#if defined(SUPPORT_VGA_MODEX)
+	np2clvga.modex = 0;
+#endif
 	np2clvga.defgd54xxtype = np2cfg.gd5430type;
 	np2clvga.gd54xxtype = np2cfg.gd5430type;
 	//np2clvga.defgd54xxtype = CIRRUS_98ID_PCI;

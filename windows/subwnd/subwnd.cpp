@@ -7,6 +7,7 @@
 #include "resource.h"
 #include "subwnd.h"
 #include <np2.h>
+#include <np2mt.h>
 #include <soundmng.h>
 #include "winloc.h"
 #include "dialog/np2class.h"
@@ -118,15 +119,24 @@ LRESULT CSubWndBase::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 			break;
 
 		case WM_ENTERMENULOOP:
-			CSoundMng::GetInstance()->Disable(SNDPROC_SUBWIND);
+			if(!np2_multithread_Enabled())
+			{
+				CSoundMng::GetInstance()->Disable(SNDPROC_SUBWIND);
+			}
 			break;
 
 		case WM_EXITMENULOOP:
-			CSoundMng::GetInstance()->Enable(SNDPROC_SUBWIND);
+			if(!np2_multithread_Enabled())
+			{
+				CSoundMng::GetInstance()->Enable(SNDPROC_SUBWIND);
+			}
 			break;
 
 		case WM_ENTERSIZEMOVE:
-			CSoundMng::GetInstance()->Disable(SNDPROC_SUBWIND);
+			if(!np2_multithread_Enabled())
+			{
+				CSoundMng::GetInstance()->Disable(SNDPROC_SUBWIND);
+			}
 			winlocex_destroy(m_wlex);
 			m_wlex = np2_winlocexallwin(m_hWnd);
 			break;
@@ -140,7 +150,10 @@ LRESULT CSubWndBase::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 		case WM_EXITSIZEMOVE:
 			::winlocex_destroy(m_wlex);
 			m_wlex = NULL;
-			CSoundMng::GetInstance()->Enable(SNDPROC_SUBWIND);
+			if(!np2_multithread_Enabled())
+			{
+				CSoundMng::GetInstance()->Enable(SNDPROC_SUBWIND);
+			}
 			break;
 
 		case WM_CLOSE:

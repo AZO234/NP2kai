@@ -107,6 +107,13 @@ extern "C" {
 
 extern	_NEVENT		g_nevent;
 
+#if defined(SUPPORT_MULTITHREAD)
+// 全体の初期化処理
+void nevent_initialize(void);
+// 全体の解放処理
+void nevent_shutdown(void);
+#endif
+
 // 初期化
 void nevent_allreset(void);
 

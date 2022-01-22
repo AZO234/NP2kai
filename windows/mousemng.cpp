@@ -4,6 +4,7 @@
 #include	<np2.h>
 #include	<mousemng.h>
 #include    <scrnmng.h>
+#include	<np2mt.h>
 
 #include	<dinput.h>
 //#pragma comment(lib, "dinput8.lib")
@@ -51,7 +52,8 @@ BRESULT mousemng_checkdinput8(){
 	LPDIRECTINPUTDEVICE8 test_didevice = NULL;
 
 	if(fndi8create) return(SUCCESS);
-
+	
+	np2_multithread_EnterCriticalSection();
 	hModuleDI8 = LoadLibrary(_T("dinput8.dll"));
 	if(!hModuleDI8){
 		goto scre_err;
@@ -72,6 +74,7 @@ BRESULT mousemng_checkdinput8(){
 	test_didevice->Release();
 	test_dinput->Release();
 
+	np2_multithread_LeaveCriticalSection();
 	return(SUCCESS);
 scre_err3:
 	test_dinput->Release();
@@ -80,6 +83,7 @@ scre_err2:
 scre_err:
 	hModuleDI8 = NULL;
 	fndi8create = NULL;
+	np2_multithread_LeaveCriticalSection();
 	return(FAILURE);
 }
 
@@ -111,8 +115,10 @@ UINT8 mousemng_supportrawinput() {
 }
 
 void mousemng_updatespeed() {
+	np2_multithread_EnterCriticalSection();
 	mouseMul = np2oscfg.mousemul != 0 ? np2oscfg.mousemul : 1;
 	mouseDiv = np2oscfg.mousediv != 0 ? np2oscfg.mousediv : 1;
+	np2_multithread_LeaveCriticalSection();
 }
 
 // ----
@@ -165,7 +171,8 @@ static void initDirectInput(){
     obj[6].pguid        = NULL;
     obj[6].dwType       = DIDFT_ANYINSTANCE | DIDFT_OPTIONAL | DIDFT_BUTTON;
     obj[6].dwFlags      = 0;
-
+	
+	np2_multithread_EnterCriticalSection();
 	if(fndi8create && !dinput){
 		//hr = DirectInputCreateEx(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput7, (void**)&dinput, NULL);
 		//hr = DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (LPVOID*)&dinput, NULL); // 関数名変えてやがった( ﾟдﾟ)
@@ -213,8 +220,10 @@ static void initDirectInput(){
 	}else{
 		hr = diRawMouse->Acquire();
 	}
+	np2_multithread_LeaveCriticalSection();
 }
 static void destroyDirectInput(){
+	np2_multithread_EnterCriticalSection();
 	if(diRawMouse){
 		diRawMouse->Release();
 		diRawMouse = NULL;
@@ -228,6 +237,7 @@ static void destroyDirectInput(){
 		hModuleDI8 = NULL;
 		fndi8create = NULL;
 	}
+	np2_multithread_LeaveCriticalSection();
 }
 
 static void mousecapture(BOOL capture) {
@@ -236,6 +246,7 @@ static void mousecapture(BOOL capture) {
 	POINT	cp;
 	RECT	rct;
 	
+	np2_multithread_EnterCriticalSection();
 #ifdef SUPPORT_WACOM_TABLET
 	cmwacom_setExclusiveMode(capture ? true : false);
 #endif
@@ -276,26 +287,31 @@ static void mousecapture(BOOL capture) {
 		}
 	}
 	SetClassLong(g_hWndMain, GCL_STYLE, style);
+	np2_multithread_LeaveCriticalSection();
 }
 
 void mousemng_initialize(void) {
-
+	
+	np2_multithread_EnterCriticalSection();
 	ZeroMemory(&mousemng, sizeof(mousemng));
 	mousemng.btn = uPD8255A_LEFTBIT | uPD8255A_RIGHTBIT;
 	mousemng.flag = (1 << MOUSEPROC_SYSTEM);
 	
 	mousemng_updatespeed();
-}
+	np2_multithread_LeaveCriticalSection();
+}}
 
 void mousemng_destroy(void) {
+	np2_multithread_EnterCriticalSection();
 	destroyDirectInput();
+	np2_multithread_LeaveCriticalSection();
 }
 
 void mousemng_sync(void) {
 
 	POINT	p;
 	POINT	cp;
-
+	
 	if ((!mousemng.flag) && (GetCursorPos(&p))) {
 		getmaincenter(&cp);
 		if(np2oscfg.rawmouse && fndi8create && dinput==NULL)
@@ -342,7 +358,8 @@ void mousemng_sync(void) {
 }
 
 BOOL mousemng_buttonevent(UINT event) {
-
+	
+	np2_multithread_EnterCriticalSection();
 	if (!mousemng.flag || (np2oscfg.mouse_nc/* && !scrnmng_isfullscreen()*/ && mousemng.flag)) {
 		switch(event) {
 			case MOUSEMNG_LEFTDOWN:
@@ -361,9 +378,11 @@ BOOL mousemng_buttonevent(UINT event) {
 				mousemng.btn |= uPD8255A_RIGHTBIT;
 				break;
 		}
+		np2_multithread_LeaveCriticalSection();
 		return(TRUE);
 	}
 	else {
+		np2_multithread_LeaveCriticalSection();
 		return(FALSE);
 	}
 }
@@ -371,7 +390,8 @@ BOOL mousemng_buttonevent(UINT event) {
 void mousemng_enable(UINT proc) {
 
 	UINT	bit;
-
+	
+	np2_multithread_EnterCriticalSection();
 	bit = 1 << proc;
 	if (mousemng.flag & bit) {
 		mousemng.flag &= ~bit;
@@ -379,18 +399,22 @@ void mousemng_enable(UINT proc) {
 			mousecapture(TRUE);
 		}
 	}
+	np2_multithread_LeaveCriticalSection();
 }
 
 void mousemng_disable(UINT proc) {
-
+	
+	np2_multithread_EnterCriticalSection();
 	if (!mousemng.flag) {
 		mousecapture(FALSE);
 	}
 	mousemng.flag |= (1 << proc);
+	np2_multithread_LeaveCriticalSection();
 }
 
 void mousemng_toggle(UINT proc) {
-
+	
+	np2_multithread_EnterCriticalSection();
 	if (!mousemng.flag) {
 		mousecapture(FALSE);
 	}
@@ -398,11 +422,14 @@ void mousemng_toggle(UINT proc) {
 	if (!mousemng.flag) {
 		mousecapture(TRUE);
 	}
+	np2_multithread_LeaveCriticalSection();
 }
 
 void mousemng_updateclip(){
+	//np2_multithread_EnterCriticalSection();
 	if(mousecaptureflg){
 		mousecapture(FALSE);
 		mousecapture(TRUE); // キャプチャし直し
 	}
+	//np2_multithread_LeaveCriticalSection();
 }
