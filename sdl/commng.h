@@ -48,8 +48,8 @@ struct _commng {
 	UINT	(*read)(COMMNG self, UINT8 *data);
 	UINT	(*write)(COMMNG self, UINT8 data);
 	UINT	(*writeretry)(COMMNG self);
-//	void	(*beginblocktranster)(COMMNG self);					/*!< begin block transfer */
-//	void	(*endblocktranster)(COMMNG self);					/*!< end block transfer */
+	void	(*beginblocktranster)(COMMNG self);					/*!< begin block transfer */
+	void	(*endblocktranster)(COMMNG self);					/*!< end block transfer */
 	UINT	(*lastwritesuccess)(COMMNG self);
 	UINT8	(*getstat)(COMMNG self);
 	INTPTR	(*msg)(COMMNG self, UINT msg, INTPTR param);
