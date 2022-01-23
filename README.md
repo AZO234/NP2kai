@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Jan 19, 2021<br>
+Jan 23, 2022<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -481,9 +481,10 @@ NP2 menu can swap FDD/HDD diskimages.(Swapping HDD need reset.)<br>
 Mounting/Swaping Disk and HDD/CD mounting at start
 </summary><div>
 
-Using libretro contents .m3u file listed floppy disk images,<br>
+Using .m3u file listed floppy disk images,<br>
 You can use libretro swap interface.<br>
 (This file must be wiritten in UTF-8.)<br>
+(On libretro m3u file supported is not in core now.)
 ```
 1st.d88
 2nd.d88
@@ -1221,6 +1222,9 @@ Next boot computer, you command from 4.
 </div></details>
 
 ## Release
+- Jan 23, 2021
+  - merge NP21/W rev.84
+  - [lr]remove m3u file support
 - Jan 19, 2021
   - merge NP21/W rev.79
 - Oct 22, 2020

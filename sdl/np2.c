@@ -528,10 +528,12 @@ int np2_main(int argc, char *argv[]) {
 		np2_main_getfullpath(fullpath, argv[i], base_dir);
 		ext = fullpath + (OEMSTRLEN(fullpath) - 4);
 
+#if !defined(__LIBRETRO__)
 		if(milstr_cmp(ext, ".m3u") == 0) {
 			imagetype = IMAGETYPE_OTHER;
 			np2_main_read_m3u(fullpath);
 		}
+#endif
 
 		if(np2_isfdimage(fullpath, OEMSTRLEN(fullpath))) {
 			imagetype = IMAGETYPE_FDD;
