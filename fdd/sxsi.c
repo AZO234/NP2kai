@@ -263,7 +263,7 @@ void cdchange_timeoutproc(NEVENTITEM item) {
 #if defined(SUPPORT_IDEIO)
 	ideio_mediachange(cdchange_drv);
 #endif
-#if defined(_WINDOWS)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 	sysmng_requestupdatecaption(SYS_UPDATECAPTION_FDD);
 #endif
 }

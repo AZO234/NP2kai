@@ -1264,7 +1264,7 @@ void pccore_exec(BOOL draw) {
 		upd4990_hrtimer_count();
 #endif
 #if defined(SUPPORT_IDEIO)
-#if defined(_WINDOWS)
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 	atapi_dataread_asyncwait(INFINITE);
 #endif
 #endif
