@@ -241,7 +241,9 @@ static void rs232c_writeretry() {
 				}
 			}
 			rs232c.result |= 0x5; // バッファ空きならTxEMP,TxRDYを立てる
+#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 			cm_rs232c->endblocktranster(cm_rs232c); // ブロック転送モード解除
+#endif
 		}else
 #endif
 		{

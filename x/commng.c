@@ -36,6 +36,24 @@ ncwriteretry(COMMNG self)
 	return 1;
 }
 
+static void
+ncbeginblocktranster(COMMNG self)
+{
+
+	(void)self;
+
+	return;
+}
+
+static void
+ncendblocktranster(COMMNG self)
+{
+
+	(void)self;
+
+	return;
+}
+
 static UINT
 nclastwritesuccess(COMMNG self)
 {
@@ -76,6 +94,7 @@ ncrelease(COMMNG self)
 }
 
 static _COMMNG com_nc = {
+//	COMCONNECT_OFF, ncread, ncwrite, ncwriteretry, ncbeginblocktranster, ncendblocktranster, nclastwritesuccess, ncgetstat, ncmsg, ncrelease
 	COMCONNECT_OFF, ncread, ncwrite, ncwriteretry, nclastwritesuccess, ncgetstat, ncmsg, ncrelease
 };
 
