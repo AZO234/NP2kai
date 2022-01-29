@@ -2069,10 +2069,10 @@ void scrnmngD3D_getrect(RECT *lpRect) {
 #include "scrnmng.h"
 #include "scrnmng_d3d.h"
 // #include "sysmng.h"
-#include "dialog¥np2class.h"
+#include "dialog/np2class.h"
 #include "pccore.h"
-#include "scrndraw.h"
-#include "palettes.h"
+#include <vram/scrndraw.h>
+#include <vram/palettes.h>
 
 #if defined(SUPPORT_DCLOCK)
 #include "subwnd¥dclock.h"

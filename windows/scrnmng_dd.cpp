@@ -528,16 +528,16 @@ BRESULT scrnmngDD_create(UINT8 scrnmode) {
 	winstyleex = GetWindowLong(g_hWndMain, GWL_EXSTYLE);
 	if (scrnmode & SCRNMODE_FULLSCREEN) {
 		//if(np2oscfg.mouse_nc){
-		//	winstyle &= ‾CS_DBLCLKS;
+		//	winstyle &= ~CS_DBLCLKS;
 		//}else{
 			winstyle |= CS_DBLCLKS;
 		//}
 		if(!(lastscrnmode & SCRNMODE_FULLSCREEN)){
 			GetWindowPlacement(g_hWndMain, &wp);
 		}
-		scrnmode &= ‾SCRNMODE_ROTATEMASK;
+		scrnmode &= ~SCRNMODE_ROTATEMASK;
 		scrnmng.flag = SCRNFLAG_FULLSCREEN;
-		winstyle &= ‾(WS_CAPTION | WS_SYSMENU | WS_THICKFRAME);
+		winstyle &= ~(WS_CAPTION | WS_SYSMENU | WS_THICKFRAME);
 		winstyle |= WS_POPUP;
 		winstyleex |= WS_EX_TOPMOST;
 		ddraw.menudisp = 0;
@@ -550,7 +550,7 @@ BRESULT scrnmngDD_create(UINT8 scrnmode) {
 		scrnmng.flag = SCRNFLAG_HAVEEXTEND;
 		winstyle |= WS_SYSMENU;
 		if(np2oscfg.mouse_nc){
-			winstyle &= ‾CS_DBLCLKS;
+			winstyle &= ~CS_DBLCLKS;
 			if (np2oscfg.wintype != 0) {
 				WINLOCEX	wlex;
 				// XXX: メニューが出せなくなって詰むのを回避（暫定）
@@ -571,8 +571,8 @@ BRESULT scrnmngDD_create(UINT8 scrnmode) {
 		if (np2oscfg.wintype < 2) {
 			winstyle |= WS_CAPTION;
 		}
-		winstyle &= ‾WS_POPUP;
-		winstyleex &= ‾WS_EX_TOPMOST;
+		winstyle &= ~WS_POPUP;
+		winstyleex &= ~WS_EX_TOPMOST;
 		if(lastscrnmode & SCRNMODE_FULLSCREEN){
 			char *strtmp;
 			char szModulePath[MAX_PATH];
@@ -1004,7 +1004,7 @@ void scrnmngDD_clearwinui(void) {
 	if(scrnmng.forcereset){
 		scrnmng_destroy();
 		if (scrnmng_create(g_scrnmode) != SUCCESS) {
-			g_scrnmode &= ‾SCRNMODE_FULLSCREEN;
+			g_scrnmode &= ~SCRNMODE_FULLSCREEN;
 			if (scrnmng_create(g_scrnmode) != SUCCESS) {
 				dd_leave_criticalsection();
 				PostQuitMessage(0);
@@ -1403,7 +1403,7 @@ void scrnmngDD_updatefsres(void) {
 		np2wab.lastWidth = width;
 		np2wab.lastHeight = height;
 		if((g_scrnmode & SCRNMODE_FULLSCREEN)!=0){
-			g_scrnmode = g_scrnmode & ‾SCRNMODE_FULLSCREEN;
+			g_scrnmode = g_scrnmode & ~SCRNMODE_FULLSCREEN;
 			scrnmngDD_destroy();
 			if (scrnmngDD_create(g_scrnmode | SCRNMODE_FULLSCREEN) == SUCCESS) {
 				g_scrnmode = g_scrnmode | SCRNMODE_FULLSCREEN;

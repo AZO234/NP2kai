@@ -203,7 +203,7 @@ void CSoundMng::Enable(SoundProc nProc)
 		LeaveSoundCriticalSection();
 		return;
 	}
-	m_nMute &= ‾nBit;
+	m_nMute &= ~nBit;
 	if (!m_nMute)
 	{
 		if (m_pSoundDevice)
@@ -263,7 +263,7 @@ UINT CSoundMng::CreateStream(UINT nSamplingRate, UINT ms)
 		ms = 1000;
 	}
 	UINT nBuffer = (nSamplingRate * ms) / 2000;
-	nBuffer = (nBuffer + 1) & (‾1);
+	nBuffer = (nBuffer + 1) & (~1);
 
 	nBuffer = m_pSoundDevice->CreateStream(nSamplingRate, 2, nBuffer);
 	if (nBuffer == 0)

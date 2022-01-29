@@ -1,23 +1,22 @@
 /**
  * @file	cmserial.cpp
- * @brief	ƒVƒŠƒAƒ‹ ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
+ * @brief	ã‚·ãƒªã‚¢ãƒ« ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
  */
 
 #include <compiler.h>
 #include "cmserial.h"
 
 /**
- * ƒCƒ“ƒXƒ^ƒ“ƒXì¬
- * @param[in] nPort ƒ|[ƒg”Ô†
- * @param[in] cParam ƒpƒ‰ƒƒ^
- * @param[in] nSpeed ƒXƒs[ƒh
- * @return ƒCƒ“ƒXƒ^ƒ“ƒX
+ * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ä½œæˆ
+ * @param[in] nPort ãƒãƒ¼ãƒˆç•ªå·
+ * @param[in] cParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @param[in] nSpeed ã‚¹ãƒ”ãƒ¼ãƒ‰
+ * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  */
 CComSerial* CComSerial::CreateInstance(UINT nPort, UINT8 cParam, UINT32 nSpeed, UINT8 fixedspeed, UINT8 DSRcheck)
 {
 	CComSerial* pSerial = new CComSerial;
 	if (!pSerial->Initialize(nPort, cParam, nSpeed, fixedspeed, DSRcheck))
-	if (!pSerial->Initialize(nPort, cParam, nSpeed, fixedspeed))
 	{
 		delete pSerial;
 		pSerial = NULL;
@@ -26,7 +25,7 @@ CComSerial* CComSerial::CreateInstance(UINT nPort, UINT8 cParam, UINT32 nSpeed, 
 }
 
 /**
- * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+ * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CComSerial::CComSerial()
 	: CComBase(COMCONNECT_SERIAL)
@@ -44,7 +43,7 @@ CComSerial::CComSerial()
 {
 	HANDLE hEvent;
 
-	// Write OVERLAPPEDì¬
+	// Write OVERLAPPEDä½œæˆ
 	for(int i=0;i<SERIAL_OVERLAP_COUNT;i++){
 		hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 		memset(&m_writeovl[i], 0, sizeof(OVERLAPPED));
@@ -52,28 +51,28 @@ CComSerial::CComSerial()
 		m_writeovl_pending[i] = false;
 	}
 
-	// Read OVERLAPPEDì¬
+	// Read OVERLAPPEDä½œæˆ
     hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
     memset(&m_readovl, 0, sizeof(OVERLAPPED));
     m_readovl.hEvent = hEvent;
 }
 
 /**
- * ƒfƒXƒgƒ‰ƒNƒ^
+ * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 CComSerial::~CComSerial()
 {
 
 	if (m_hSerial != INVALID_HANDLE_VALUE)
 	{
-		// Write OVERLAPPEDŠ®—¹‘Ò‹@
+		// Write OVERLAPPEDå®Œäº†å¾…æ©Ÿ
 		for(int i=0;i<SERIAL_OVERLAP_COUNT;i++){
 			if(m_writeovl_pending[i]){
 				DWORD cbNumberOfBytesTransferred = 0;
 				GetOverlappedResult(m_hSerial, &m_writeovl[i], &cbNumberOfBytesTransferred, TRUE);
 			}
 		}
-		// Read OVERLAPPEDŠ®—¹‘Ò‹@
+		// Read OVERLAPPEDå®Œäº†å¾…æ©Ÿ
 		if(m_readovl_pending){
 			DWORD cbNumberOfBytesTransferred = 0;
 			GetOverlappedResult(m_hSerial, &m_readovl, &cbNumberOfBytesTransferred, TRUE);
@@ -83,7 +82,7 @@ CComSerial::~CComSerial()
 		m_hSerial = INVALID_HANDLE_VALUE;
 	}
 
-	// Write OVERLAPPED”jŠü
+	// Write OVERLAPPEDç ´æ£„
 	for(int i=0;i<SERIAL_OVERLAP_COUNT;i++){
 		if(m_writeovl[i].hEvent){
 			CloseHandle(m_writeovl[i].hEvent);
@@ -91,7 +90,7 @@ CComSerial::~CComSerial()
 		memset(&m_writeovl, 0, sizeof(OVERLAPPED));
 	}
 	
-	// Read OVERLAPPED”jŠü
+	// Read OVERLAPPEDç ´æ£„
 	if(m_readovl.hEvent){
 		CloseHandle(m_readovl.hEvent);
 	}
@@ -99,18 +98,18 @@ CComSerial::~CComSerial()
 }
 
 /**
- * ‰Šú‰»
- * @param[in] nPort ƒ|[ƒg”Ô†
- * @param[in] cParam ƒpƒ‰ƒƒ^
- * @param[in] nSpeed ƒXƒs[ƒh
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * åˆæœŸåŒ–
+ * @param[in] nPort ãƒãƒ¼ãƒˆç•ªå·
+ * @param[in] cParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @param[in] nSpeed ã‚¹ãƒ”ãƒ¼ãƒ‰
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool CComSerial::Initialize(UINT nPort, UINT8 cParam, UINT32 nSpeed, UINT8 fixedspeed, UINT8 DSRcheck)
 {
 	wchar_t wName[16];
 	swprintf(wName, 16, L"COM%u", nPort);
-	m_hSerial = CreateFile(szName, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
+	m_hSerial = CreateFileW(wName, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
 	if (m_hSerial == INVALID_HANDLE_VALUE)
 	{
 		return false;
@@ -165,10 +164,10 @@ bool CComSerial::Initialize(UINT nPort, UINT8 cParam, UINT32 nSpeed, UINT8 fixed
 	dcb.fInX = FALSE;
 	dcb.fOutxCtsFlow = FALSE;
 	dcb.fOutxDsrFlow = FALSE;
-	dcb.fDsrSensitivity = (DSRcheck ? TRUE : FALSE); // TRUE‚É‚·‚é‚ÆDSRƒrƒbƒg‚ª—§‚Á‚Ä‚¢‚È‚¢‚Æ‚«‚ÌóMƒf[ƒ^‚ğ–³‹‚·‚é
+	dcb.fDsrSensitivity = (DSRcheck ? TRUE : FALSE); // TRUEã«ã™ã‚‹ã¨DSRãƒ“ãƒƒãƒˆãŒç«‹ã£ã¦ã„ãªã„ã¨ãã®å—ä¿¡ãƒ‡ãƒ¼ã‚¿ã‚’ç„¡è¦–ã™ã‚‹
 	::SetCommState(m_hSerial, &dcb);
 
-	// ƒ^ƒCƒ€ƒAƒEƒgİ’èi”ñ“¯Šú‘Ò‚¿‚·‚é‚Ì‚Å—v‚ç‚È‚¢‹C‚à‚·‚éj
+	// ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆè¨­å®šï¼ˆéåŒæœŸå¾…ã¡ã™ã‚‹ã®ã§è¦ã‚‰ãªã„æ°—ã‚‚ã™ã‚‹ï¼‰
 	COMMTIMEOUTS tmo;
 	tmo.ReadIntervalTimeout = 20;
 	tmo.ReadTotalTimeoutConstant = 10;
@@ -181,8 +180,8 @@ bool CComSerial::Initialize(UINT nPort, UINT8 cParam, UINT32 nSpeed, UINT8 fixed
 }
 
 /**
- * ƒGƒ‰[ó‘Ô‚ğİ’è (bit0: ƒpƒŠƒeƒB, bit1: ƒI[ƒo[ƒ‰ƒ“, bit2: ƒtƒŒ[ƒ~ƒ“ƒO, bit3: ƒuƒŒ[ƒNM†)
- * @param[in] errorcode ClearCommErrorƒGƒ‰[ƒR[ƒh
+ * ã‚¨ãƒ©ãƒ¼çŠ¶æ…‹ã‚’è¨­å®š (bit0: ãƒ‘ãƒªãƒ†ã‚£, bit1: ã‚ªãƒ¼ãƒãƒ¼ãƒ©ãƒ³, bit2: ãƒ•ãƒ¬ãƒ¼ãƒŸãƒ³ã‚°, bit3: ãƒ–ãƒ¬ãƒ¼ã‚¯ä¿¡å·)
+ * @param[in] errorcode ClearCommErrorã‚¨ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰
  */
 void CComSerial::CheckCommError(DWORD errorcode)
 {
@@ -201,9 +200,9 @@ void CComSerial::CheckCommError(DWORD errorcode)
 }
 
 /**
- * “Ç‚İ‚İ
- * @param[out] pData ƒoƒbƒtƒ@
- * @return ƒTƒCƒY
+ * èª­ã¿è¾¼ã¿
+ * @param[out] pData ãƒãƒƒãƒ•ã‚¡
+ * @return ã‚µã‚¤ã‚º
  */
 UINT CComSerial::Read(UINT8* pData)
 {
@@ -212,7 +211,7 @@ UINT CComSerial::Read(UINT8* pData)
 	::ClearCommError(m_hSerial, &err, &ct);
 	CheckCommError(err);
 	if(m_readovl_pending){
-		// ”ñ“¯ŠúI/O‘Ò‚¿‚Ìê‡
+		// éåŒæœŸI/Oå¾…ã¡ã®å ´åˆ
 		DWORD cbNumberOfBytesTransferred = 0;
 		if(GetOverlappedResult(m_hSerial, &m_readovl, &cbNumberOfBytesTransferred, FALSE)){
 			*pData = m_readovl_buf;
@@ -228,7 +227,7 @@ UINT CComSerial::Read(UINT8* pData)
 				*pData = m_readovl_buf;
 				return 1;
 			}else{
-				// ”ñ“¯ŠúI/O‘Ò‚¿ŠJn ƒoƒbƒtƒ@‚Éƒf[ƒ^‚ª—ˆ‚é‚Ü‚ÅReadFile‚µ‚È‚¢‚Ì‚ÅŠî–{“I‚É‚±‚±‚É‚Í—ˆ‚È‚¢
+				// éåŒæœŸI/Oå¾…ã¡é–‹å§‹ ãƒãƒƒãƒ•ã‚¡ã«ãƒ‡ãƒ¼ã‚¿ãŒæ¥ã‚‹ã¾ã§ReadFileã—ãªã„ã®ã§åŸºæœ¬çš„ã«ã“ã“ã«ã¯æ¥ãªã„
 				DWORD lastError = GetLastError();
 				if(lastError==ERROR_IO_PENDING){
 					m_readovl_pending = true;
@@ -240,9 +239,9 @@ UINT CComSerial::Read(UINT8* pData)
 }
 
 /**
- * ‘‚«‚İ
- * @param[out] cData ƒf[ƒ^
- * @return ƒTƒCƒY
+ * æ›¸ãè¾¼ã¿
+ * @param[out] cData ãƒ‡ãƒ¼ã‚¿
+ * @return ã‚µã‚¤ã‚º
  */
 UINT CComSerial::Write(UINT8 cData)
 {
@@ -255,43 +254,43 @@ UINT CComSerial::Write(UINT8 cData)
 	int idx = -1;
 	for(int i=0;i<SERIAL_OVERLAP_COUNT;i++){
 		if(m_writeovl_pending[i]){
-			// ”ñ“¯ŠúI/O‘Ò‚¿‚Ìê‡
+			// éåŒæœŸI/Oå¾…ã¡ã®å ´åˆ
 			DWORD cbNumberOfBytesTransferred = 0;
 			if(GetOverlappedResult(m_hSerial, &m_writeovl[i], &cbNumberOfBytesTransferred, FALSE)){
 				m_writeovl_pending[i] = false;
-				// g—p‰Â”\”Ô†‚Æ‚µ‚ÄŠ„‚è“–‚Ä
+				// ä½¿ç”¨å¯èƒ½ç•ªå·ã¨ã—ã¦å‰²ã‚Šå½“ã¦
 				idx = i;
 				emptycount++;
 			}
 		}else{
-			// g—p‰Â”\”Ô†‚Æ‚µ‚ÄŠ„‚è“–‚Ä
+			// ä½¿ç”¨å¯èƒ½ç•ªå·ã¨ã—ã¦å‰²ã‚Šå½“ã¦
 			idx = i;
 			emptycount++;
 		}
 	}
 	if(m_blocktransfer){
-		// ƒuƒƒbƒN’PˆÊ‘‚«‚İ
+		// ãƒ–ãƒ­ãƒƒã‚¯å˜ä½æ›¸ãè¾¼ã¿
 		if(m_blockbuffer_pos < m_blockbuffer_size){
 			m_blockbuffer[m_blockbuffer_pos] = cData;
 			m_blockbuffer_pos++;
 		}
 		if(m_blockbuffer_pos == m_blockbuffer_size){
 			if(idx==-1){
-				// ‹ó‚«‚ª‚È‚¢‚Ì‚Å‘‚«‚İ•s‰Â
+				// ç©ºããŒãªã„ã®ã§æ›¸ãè¾¼ã¿ä¸å¯
 				m_lastdatafail = 1;
 				m_lastdata = cData;
 				m_lastdatatime = GetTickCount();
 				return 0;
 			}
 			if(::WriteFile(m_hSerial, m_blockbuffer, m_blockbuffer_size, &dwWrittenSize, &m_writeovl[idx])){
-				// ‘‚«‚ß‚½ê‡
+				// æ›¸ãè¾¼ã‚ãŸå ´åˆ
 				m_lastdatafail = 0;
 				m_lastdata = 0;
 				m_lastdatatime = 0;
 				m_blockbuffer_pos = 0;
 				return 1;
 			}else{
-				// ”ñ“¯ŠúI/O‘Ò‚¿ŠJn
+				// éåŒæœŸI/Oå¾…ã¡é–‹å§‹
 				DWORD lastError = GetLastError();
 				if(lastError==ERROR_IO_PENDING){
 					m_writeovl_pending[idx] = true;
@@ -308,22 +307,22 @@ UINT CComSerial::Write(UINT8 cData)
 		m_lastdatatime = 0;
 		return 1;
 	}else{
-		// 1byte‘‚«‚İ
+		// 1byteæ›¸ãè¾¼ã¿
 		if(idx==-1){
-			// ‹ó‚«‚ª‚È‚¢‚Ì‚Å‘‚«‚İ•s‰Â
+			// ç©ºããŒãªã„ã®ã§æ›¸ãè¾¼ã¿ä¸å¯
 			m_lastdatafail = 1;
 			m_lastdata = cData;
 			m_lastdatatime = GetTickCount();
 			return 0;
 		}
 		if(::WriteFile(m_hSerial, &cData, 1, &dwWrittenSize, &m_writeovl[idx])){
-			// ‘‚«‚ß‚½ê‡
+			// æ›¸ãè¾¼ã‚ãŸå ´åˆ
 			m_lastdatafail = 0;
 			m_lastdata = 0;
 			m_lastdatatime = 0;
 			return 1;
 		}else{
-			// ”ñ“¯ŠúI/O‘Ò‚¿ŠJn
+			// éåŒæœŸI/Oå¾…ã¡é–‹å§‹
 			DWORD lastError = GetLastError();
 			if(lastError==ERROR_IO_PENDING){
 				m_writeovl_pending[idx] = true;
@@ -337,8 +336,8 @@ UINT CComSerial::Write(UINT8 cData)
 }
 
 /**
- * ‘‚«‚İƒŠƒgƒ‰ƒC
- * @return ƒTƒCƒY
+ * æ›¸ãè¾¼ã¿ãƒªãƒˆãƒ©ã‚¤
+ * @return ã‚µã‚¤ã‚º
  */
 UINT CComSerial::WriteRetry()
 {
@@ -351,24 +350,24 @@ UINT CComSerial::WriteRetry()
 	}
 	for(int i=0;i<SERIAL_OVERLAP_COUNT;i++){
 		if(m_writeovl_pending[i]){
-			// ”ñ“¯ŠúI/O‘Ò‚¿‚Ìê‡
+			// éåŒæœŸI/Oå¾…ã¡ã®å ´åˆ
 			DWORD cbNumberOfBytesTransferred = 0;
 			if(GetOverlappedResult(m_hSerial, &m_writeovl[i], &cbNumberOfBytesTransferred, FALSE)){
 				m_writeovl_pending[i] = false;
-				// g—p‰Â”\”Ô†‚Æ‚µ‚ÄŠ„‚è“–‚Ä
+				// ä½¿ç”¨å¯èƒ½ç•ªå·ã¨ã—ã¦å‰²ã‚Šå½“ã¦
 				idx = i;
 				emptycount++;
 			}
 		}else{
-			// g—p‰Â”\”Ô†‚Æ‚µ‚ÄŠ„‚è“–‚Ä
+			// ä½¿ç”¨å¯èƒ½ç•ªå·ã¨ã—ã¦å‰²ã‚Šå½“ã¦
 			idx = i;
 			emptycount++;
 		}
 	}
 	if(idx==-1){
-		// ‹ó‚«‚ª‚È‚¢‚Ì‚Å‘‚«‚İ•s‰Â
+		// ç©ºããŒãªã„ã®ã§æ›¸ãè¾¼ã¿ä¸å¯
 		if (GetTickCount() - m_lastdatatime > 3000) {
-			// 3•bŠÔƒoƒbƒtƒ@ƒf[ƒ^‚ªŒ¸‚è‚»‚¤‚É‚È‚¢‚È‚ç‚ ‚«‚ç‚ß‚é
+			// 3ç§’é–“ãƒãƒƒãƒ•ã‚¡ãƒ‡ãƒ¼ã‚¿ãŒæ¸›ã‚Šãã†ã«ãªã„ãªã‚‰ã‚ãã‚‰ã‚ã‚‹
 			m_lastdatafail = 0;
 			m_lastdata = 0;
 			m_lastdatatime = 0;
@@ -377,17 +376,17 @@ UINT CComSerial::WriteRetry()
 		return 0;
 	}
 	if(m_blocktransfer){
-		// ƒuƒƒbƒN’PˆÊ‘‚«‚İ
+		// ãƒ–ãƒ­ãƒƒã‚¯å˜ä½æ›¸ãè¾¼ã¿
 		if(m_blockbuffer_pos == m_blockbuffer_size){
 			if(::WriteFile(m_hSerial, m_blockbuffer, m_blockbuffer_size, &dwWrittenSize, &m_writeovl[idx])){
-				// ‘‚«‚ß‚½ê‡
+				// æ›¸ãè¾¼ã‚ãŸå ´åˆ
 				m_lastdatafail = 0;
 				m_lastdata = 0;
 				m_lastdatatime = 0;
 				m_blockbuffer_pos = 0;
 				return 1;
 			}else{
-				// ”ñ“¯ŠúI/O‘Ò‚¿ŠJn
+				// éåŒæœŸI/Oå¾…ã¡é–‹å§‹
 				DWORD lastError = GetLastError();
 				if(lastError==ERROR_IO_PENDING){
 					m_writeovl_pending[idx] = true;
@@ -399,7 +398,7 @@ UINT CComSerial::WriteRetry()
 				return 1;
 			}
 		}else{
-			// Šî–{“I‚É‚Í‚±‚±‚É‚Í—ˆ‚È‚¢‚Í‚¸
+			// åŸºæœ¬çš„ã«ã¯ã“ã“ã«ã¯æ¥ãªã„ã¯ãš
 			m_blockbuffer[m_blockbuffer_pos] = m_lastdata;
 			m_blockbuffer_pos++;
 			m_lastdatafail = 0;
@@ -408,15 +407,15 @@ UINT CComSerial::WriteRetry()
 		}
 		return 1;
 	}else{
-		// 1byte‘‚«‚İ
+		// 1byteæ›¸ãè¾¼ã¿
 		if(::WriteFile(m_hSerial, &m_lastdata, 1, &dwWrittenSize, &m_writeovl[idx])){
-			// ‘‚«‚ß‚½ê‡
+			// æ›¸ãè¾¼ã‚ãŸå ´åˆ
 			m_lastdatafail = 0;
 			m_lastdata = 0;
 			m_lastdatatime = 0;
 			return 1;
 		}else{
-			// ”ñ“¯ŠúI/O‘Ò‚¿ŠJn
+			// éåŒæœŸI/Oå¾…ã¡é–‹å§‹
 			DWORD lastError = GetLastError();
 			if(lastError==ERROR_IO_PENDING){
 				m_writeovl_pending[idx] = true;
@@ -430,7 +429,7 @@ UINT CComSerial::WriteRetry()
 }
 
 /**
- * ƒuƒƒbƒN’PˆÊ“]‘—ŠJn
+ * ãƒ–ãƒ­ãƒƒã‚¯å˜ä½è»¢é€é–‹å§‹
  */
 void CComSerial::BeginBlockTransfer()
 {
@@ -450,7 +449,7 @@ void CComSerial::BeginBlockTransfer()
 		}else if(dcb.BaudRate >= 2400){
 			m_blockbuffer_size = 2;
 		}else{
-			return; // ƒuƒƒbƒN“]‘—‚µ‚È‚¢
+			return; // ãƒ–ãƒ­ãƒƒã‚¯è»¢é€ã—ãªã„
 		}
 		m_blockbuffer_pos = 0;
 		if(!LastWriteSuccess()){
@@ -464,7 +463,7 @@ void CComSerial::BeginBlockTransfer()
 	}
 }
 /**
- * ƒuƒƒbƒN’PˆÊ“]‘—I—¹
+ * ãƒ–ãƒ­ãƒƒã‚¯å˜ä½è»¢é€çµ‚äº†
  */
 void CComSerial::EndBlockTransfer()
 {
@@ -475,33 +474,33 @@ void CComSerial::EndBlockTransfer()
 			int idx = -1;
 			for(int i=0;i<SERIAL_OVERLAP_COUNT;i++){
 				if(m_writeovl_pending[i]){
-					// ”ñ“¯ŠúI/O‘Ò‚¿‚Ìê‡
+					// éåŒæœŸI/Oå¾…ã¡ã®å ´åˆ
 					DWORD cbNumberOfBytesTransferred = 0;
 					if(GetOverlappedResult(m_hSerial, &m_writeovl[i], &cbNumberOfBytesTransferred, FALSE)){
 						m_writeovl_pending[i] = false;
-						// g—p‰Â”\”Ô†‚Æ‚µ‚ÄŠ„‚è“–‚Ä
+						// ä½¿ç”¨å¯èƒ½ç•ªå·ã¨ã—ã¦å‰²ã‚Šå½“ã¦
 						idx = i;
 						emptycount++;
 					}
 				}else{
-					// g—p‰Â”\”Ô†‚Æ‚µ‚ÄŠ„‚è“–‚Ä
+					// ä½¿ç”¨å¯èƒ½ç•ªå·ã¨ã—ã¦å‰²ã‚Šå½“ã¦
 					idx = i;
 					emptycount++;
 				}
 			}
 			if(idx==-1){
-				// ‹ó‚«‚ª‚È‚¢‚Ì‚Å0”Ô‚Ì‘‚«‚İŠ®—¹‚ğ‘Ò‚Â
+				// ç©ºããŒãªã„ã®ã§0ç•ªã®æ›¸ãè¾¼ã¿å®Œäº†ã‚’å¾…ã¤
 				DWORD cbNumberOfBytesTransferred = 0;
 				GetOverlappedResult(m_hSerial, &m_writeovl[0], &cbNumberOfBytesTransferred, TRUE);
 				idx = 0;
 			}
 			if(::WriteFile(m_hSerial, m_blockbuffer, m_blockbuffer_pos, &dwWrittenSize, &m_writeovl[idx])){
-				// ‘‚«‚ß‚½ê‡
+				// æ›¸ãè¾¼ã‚ãŸå ´åˆ
 				m_lastdatafail = 0;
 				m_lastdata = 0;
 				m_lastdatatime = 0;
 			}else{
-				// ”ñ“¯ŠúI/O‘Ò‚¿ŠJn
+				// éåŒæœŸI/Oå¾…ã¡é–‹å§‹
 				DWORD lastError = GetLastError();
 				if(lastError==ERROR_IO_PENDING){
 					m_writeovl_pending[idx] = true;
@@ -517,13 +516,13 @@ void CComSerial::EndBlockTransfer()
 }
 
 /**
- * ÅŒã‚Ì‘‚«‚İ‚ª¬Œ÷‚µ‚Ä‚¢‚é‚©ƒ`ƒFƒbƒN
- * @return ƒTƒCƒY
+ * æœ€å¾Œã®æ›¸ãè¾¼ã¿ãŒæˆåŠŸã—ã¦ã„ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
+ * @return ã‚µã‚¤ã‚º
  */
 UINT CComSerial::LastWriteSuccess()
 {
 	if(m_lastdatafail && GetTickCount() - m_lastdatatime > 3000){
-		return 1; // 3•bŠÔƒoƒbƒtƒ@ƒf[ƒ^‚ªŒ¸‚è‚»‚¤‚É‚È‚¢‚È‚ç‚ ‚«‚ç‚ß‚é
+		return 1; // 3ç§’é–“ãƒãƒƒãƒ•ã‚¡ãƒ‡ãƒ¼ã‚¿ãŒæ¸›ã‚Šãã†ã«ãªã„ãªã‚‰ã‚ãã‚‰ã‚ã‚‹
 	}
 	if(m_lastdatafail){
 		return 0;
@@ -532,7 +531,7 @@ UINT CComSerial::LastWriteSuccess()
 }
 
 /**
- * ƒXƒe[ƒ^ƒX‚ğ“¾‚é
+ * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’å¾—ã‚‹
  * bit 7: ~CI (RI, RING)
  * bit 6: ~CS (CTS)
  * bit 5: ~CD (DCD, RLSD)
@@ -541,7 +540,7 @@ UINT CComSerial::LastWriteSuccess()
  * bit 2: reserved
  * bit 1: reserved
  * bit 0: ~DSR (DR)
- * @return ƒXƒe[ƒ^ƒX 
+ * @return ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ 
  */
 UINT8 CComSerial::GetStat()
 {
@@ -587,10 +586,10 @@ UINT8 CComSerial::GetStat()
 }
 
 /**
- * ƒƒbƒZ[ƒW
- * @param[in] nMessage ƒƒbƒZ[ƒW
- * @param[in] nParam ƒpƒ‰ƒƒ^
- * @return ƒŠƒUƒ‹ƒg ƒR[ƒh
+ * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * @param[in] nParam ãƒ‘ãƒ©ãƒ¡ã‚¿
+ * @return ãƒªã‚¶ãƒ«ãƒˆ ã‚³ãƒ¼ãƒ‰
  */
 INTPTR CComSerial::Message(UINT nMessage, INTPTR nParam)
 {
@@ -600,7 +599,7 @@ INTPTR CComSerial::Message(UINT nMessage, INTPTR nParam)
 	}
 	switch (nMessage)
 	{
-		case COMMSG_CHANGESPEED: // ’ÊM‘¬“x•ÏX
+		case COMMSG_CHANGESPEED: // é€šä¿¡é€Ÿåº¦å¤‰æ›´
 			if(!m_fixedspeed){
 				int newspeed = *(reinterpret_cast<int*>(nParam));
 				for (UINT i = 0; i < NELEMENTS(cmserial_speed); i++)
@@ -619,10 +618,10 @@ INTPTR CComSerial::Message(UINT nMessage, INTPTR nParam)
 			}
 			break;
 			
-		case COMMSG_CHANGEMODE: // ’ÊMƒ‚[ƒh•ÏX
+		case COMMSG_CHANGEMODE: // é€šä¿¡ãƒ¢ãƒ¼ãƒ‰å¤‰æ›´
 			if(!m_fixedspeed){
 				bool changed = false;
-				UINT8 newmode = *(reinterpret_cast<UINT8*>(nParam)); // I/O 32h ƒ‚[ƒhƒZƒbƒg‚Ìƒf[ƒ^
+				UINT8 newmode = *(reinterpret_cast<UINT8*>(nParam)); // I/O 32h ãƒ¢ãƒ¼ãƒ‰ã‚»ãƒƒãƒˆã®ãƒ‡ãƒ¼ã‚¿
 				BYTE stopbits_value[] = {ONESTOPBIT, ONESTOPBIT, ONE5STOPBITS, TWOSTOPBITS};
 				BYTE parity_value[] = {NOPARITY, ODDPARITY, NOPARITY, EVENPARITY};
 				BYTE bytesize_value[] = {5, 6, 7, 8};
@@ -647,9 +646,9 @@ INTPTR CComSerial::Message(UINT nMessage, INTPTR nParam)
 			}
 			break;
 
-		case COMMSG_SETCOMMAND: // RTS‚ÆDTRƒtƒ‰ƒO‚ÌƒZƒbƒg
+		case COMMSG_SETCOMMAND: // RTSã¨DTRãƒ•ãƒ©ã‚°ã®ã‚»ãƒƒãƒˆ
 			{
-				UINT8 cmd = *(reinterpret_cast<UINT8*>(nParam)); // I/O 32h ƒRƒ}ƒ“ƒhƒZƒbƒg‚Ìƒf[ƒ^
+				UINT8 cmd = *(reinterpret_cast<UINT8*>(nParam)); // I/O 32h ã‚³ãƒãƒ³ãƒ‰ã‚»ãƒƒãƒˆã®ãƒ‡ãƒ¼ã‚¿
 				::PurgeComm(m_hSerial, PURGE_TXABORT | PURGE_RXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR);
 				if(cmd & 0x20){ // RTS
 					::EscapeCommFunction(m_hSerial, SETRTS);
@@ -664,7 +663,7 @@ INTPTR CComSerial::Message(UINT nMessage, INTPTR nParam)
 			}
 			break;
 
-		case COMMSG_PURGE: // ƒoƒbƒtƒ@ƒf[ƒ^”jŠü
+		case COMMSG_PURGE: // ãƒãƒƒãƒ•ã‚¡ãƒ‡ãƒ¼ã‚¿ç ´æ£„
 			{
 				::PurgeComm(m_hSerial, PURGE_TXABORT | PURGE_RXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR);
 			}
@@ -696,17 +695,17 @@ INTPTR CComSerial::Message(UINT nMessage, INTPTR nParam)
 			}
 			break;
 
-		case COMMSG_GETERROR: // ’ÊMƒGƒ‰[æ“¾
+		case COMMSG_GETERROR: // é€šä¿¡ã‚¨ãƒ©ãƒ¼å–å¾—
 			{
-				// ƒGƒ‰[ó‘Ô (bit0: ƒpƒŠƒeƒB, bit1: ƒI[ƒo[ƒ‰ƒ“, bit2: ƒtƒŒ[ƒ~ƒ“ƒO, bit3: ƒuƒŒ[ƒNM†)
-				UINT8 *errflag = (reinterpret_cast<UINT8*>(nParam)); // I/O 32h ƒRƒ}ƒ“ƒhƒZƒbƒg‚Ìƒf[ƒ^
+				// ã‚¨ãƒ©ãƒ¼çŠ¶æ…‹ (bit0: ãƒ‘ãƒªãƒ†ã‚£, bit1: ã‚ªãƒ¼ãƒãƒ¼ãƒ©ãƒ³, bit2: ãƒ•ãƒ¬ãƒ¼ãƒŸãƒ³ã‚°, bit3: ãƒ–ãƒ¬ãƒ¼ã‚¯ä¿¡å·)
+				UINT8 *errflag = (reinterpret_cast<UINT8*>(nParam)); // I/O 32h ã‚³ãƒãƒ³ãƒ‰ã‚»ãƒƒãƒˆã®ãƒ‡ãƒ¼ã‚¿
 				if(errflag){
 					*errflag = m_errorstat;
 				}
 			}
 			break;
 
-		case COMMSG_CLRERROR: // ’ÊMƒGƒ‰[ƒNƒŠƒA
+		case COMMSG_CLRERROR: // é€šä¿¡ã‚¨ãƒ©ãƒ¼ã‚¯ãƒªã‚¢
 			{
 				m_errorstat = 0;
 			}

@@ -12,6 +12,10 @@
       "ctestCommandArgs": "",
       "variables": [
         {
+          "name": "CMAKE_TOOLCHAIN_FILE",
+          "value": "C:\\dev\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake"
+        },
+        {
           "name": "BUILD_I286",
           "value": "False",
           "type": "BOOL"
@@ -34,6 +38,10 @@
       "ctestCommandArgs": "",
       "inheritEnvironments": [ "msvc_x64_x64" ],
       "variables": [
+        {
+          "name": "CMAKE_TOOLCHAIN_FILE",
+          "value": "C:\\dev\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake"
+        },
         {
           "name": "BUILD_I286",
           "value": "False",

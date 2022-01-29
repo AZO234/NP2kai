@@ -9,8 +9,8 @@
 #if defined(SUPPORT_IDEIO)||defined(SUPPORT_SCSI)
 #include	"fdd/sxsi.h"
 #include	"resource.h"
-#include	"win9x/dialog/np2class.h"
-#include	"win9x/menu.h"
+#include	"windows/dialog/np2class.h"
+#include	"windows/menu.h"
 #endif
 
 extern UINT8	np2userpause;

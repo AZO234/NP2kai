@@ -299,7 +299,7 @@ void mousemng_initialize(void) {
 	
 	mousemng_updatespeed();
 	np2_multithread_LeaveCriticalSection();
-}}
+}
 
 void mousemng_destroy(void) {
 	np2_multithread_EnterCriticalSection();

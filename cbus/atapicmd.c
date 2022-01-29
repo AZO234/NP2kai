@@ -542,7 +542,7 @@ void atapi_dataread_asyncwait(int wait) {
 		case 1:
 			ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_ILLEGAL_REQUEST);
 			drv->asc = 0x21;
-			sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ‾CD_ECC_BITMASK) | CD_ECC_NOERROR;
+			sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
 			senderror(drv);
 			TRACEOUT(("atapicmd: read error at sector %d", drv->sector));
 			break;
@@ -552,7 +552,7 @@ void atapi_dataread_asyncwait(int wait) {
 			drv->asc = 0x11;
 			drv->status |= IDESTAT_ERR;
 			drv->error |= IDEERR_UNC;
-			sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ‾CD_ECC_BITMASK) | CD_ECC_NOERROR;
+			sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
 			senderror(drv);
 			TRACEOUT(("atapicmd: EDC/ECC error detected at sector %d", drv->sector));
 			break;
@@ -562,7 +562,7 @@ void atapi_dataread_asyncwait(int wait) {
 
 			drv->sc = IDEINTR_IO;
 			drv->cy = 2048;
-			drv->status &= ‾(IDESTAT_DMRD|IDESTAT_SERV|IDESTAT_CHK);
+			drv->status &= ~(IDESTAT_DMRD|IDESTAT_SERV|IDESTAT_CHK);
 			drv->status |= IDESTAT_DRQ;
 			drv->error = 0;
 			ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_NO_SENSE);
@@ -577,9 +577,9 @@ void atapi_dataread_asyncwait(int wait) {
 				ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_RECOVERED_ERROR);
 				drv->asc = 0x18;
 			}
-			sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ‾CD_ECC_BITMASK) | CD_ECC_NOERROR;
+			sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
 
-			drv->status &= ‾(IDESTAT_BSY); // 念のため直前で解除
+			drv->status &= ~(IDESTAT_BSY); // 念のため直前で解除
 			if (!(drv->ctrl & IDECTRL_NIEN)) {
 				//TRACEOUT(("atapicmd: senddata()"));
 				ideio.bank[0] = ideio.bank[1] | 0x80;			// ????

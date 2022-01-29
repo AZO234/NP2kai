@@ -49,6 +49,8 @@
 #include <ini.h>
 #include "menu.h"
 #include "winloc.h"
+#include "sstp.h"
+#include "sstpmsg.h"
 #include "dialog/np2class.h"
 #include "dialog/dialog.h"
 #include <cpucore.h>

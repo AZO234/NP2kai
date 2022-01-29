@@ -21,9 +21,9 @@
 #include <mousemng.h>
 #include <font/font.h>
 
-/extern UINT8	np2userpause;
+extern UINT8	np2userpause;
 
-**
+/**
  * 検索
  * @param[in] hMenu メニュー ハンドル
  * @param[in] uID ID
