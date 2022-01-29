@@ -73,16 +73,16 @@ On Android, Game Files are need to locate in '/storage/emulated/0/RetroArch' by 
 Game Files cannot locate on external storage.
 </div></details>
 
-### VisualStudio 2019
+### VisualStudio 2022
 
 You should [NP2fmgen](http://nenecchi.kirara.st/) or [NP21/W](https://sites.google.com/site/np21win/home), maybe.
 
 <details><summary>
-VisualStudio 2019
+VisualStudio 2022
 </summary><div>
 
 #### Install tools
-1. Install VisualStudio 2019.
+1. Install VisualStudio 2022.
   - Desktop Development with C++
   - .NET Framework 4.8 SDK
   - C++ ATL
@@ -100,20 +100,21 @@ VisualStudio 2019
   - MSBuild
   - CMake for Windows
   - IntelliCode
-2. Install [vcpkg](https://github.com/Microsoft/vcpkg)
-3. Install packages with vcpkg.
+2. Install [WDK KMDF](https://docs.microsoft.com/ja-jp/windows-hardware/drivers/download-the-wdk)
+3. Install [vcpkg](https://github.com/Microsoft/vcpkg)
+4. Install packages with vcpkg.
   - OpenSSL
   - SDL2 SDL2_mixer SDL2_ttf
   - libusb
-4. Install [Ninja](http://www.projectmanager.ninja/home.html)
+5. Install [Ninja](http://www.projectmanager.ninja/home.html)
 
 #### Build
-1. Start VisualStudio 2019 (and without code).
+1. Start VisualStudio 2022 (and without code).
 2. File -> Open -> CMake -> CMakeLists.txt in NP2kai directory.
 3. Build -> Build all.
 4. Output np21kai_windows.exe in out directory.
 
-- CMake options of VisualStudio 2019 port (*=default)
+- CMake options of VisualStudio 2022 port (*=default)
 
 |name|value|work|output|
 |:---:|:---:|:---:|:---:|
