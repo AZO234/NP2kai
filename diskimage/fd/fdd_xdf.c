@@ -29,6 +29,7 @@ static const _XDFINFO supportxdf[] = {
 												//	BKDSK(HDM)	MS-DOS 1.25M(2HD)
 			// 1.44MB
 			{0, 160, 18, 2, DISKTYPE_2HD, 1},	//	BKDSK(HD4)	MS-DOS 1.44M(2HD)
+			{0, 160, 21, 2, DISKTYPE_2HD, 1},	//	BKDSK     	MS 2HD-DMF
 
 			//	追加でいくつかのBKDSK形式に対応
 			{0, 154, 26, 1, DISKTYPE_2HD, 0},	//	BKDSK(H01)	2HD:256byte*26sec (0-154)track

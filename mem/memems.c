@@ -27,7 +27,9 @@ const UINT8	*ptr;
 }
 
 UINT32 MEMCALL memems_rd32(UINT32 address){
-	return (UINT32)memems_rd16(address)|(memems_rd16(address+2)<<16);
+	UINT32 r = (UINT32)memems_rd16(address);
+	r |= (UINT32)memems_rd16(address+2) << 16;
+	return r;
 }
 
 void MEMCALL memems_wr8(UINT32 address, REG8 value) {

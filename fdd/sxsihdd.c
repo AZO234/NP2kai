@@ -231,12 +231,27 @@ const OEMCHAR	*ext;
 		totals = (SINT32)LOADINTELDWORD(vhd.totals);
 	}
 	else if ((iftype == SXSIDRV_SCSI) && (!file_cmpname(ext, str_hdn))) {
-		// RaSCSI flat disk image (NEC PC-9801-55)
+		// RaSCSI flat disk image for NEC PC-9801-55
 		FILELEN fsize = file_getsize(fh);
 		headersize = 0;
 		size = 512;
 		surfaces = 8;
-		sectors = 25;
+		if(np2cfg.rascsi92){
+			sectors = 32;
+		}else{
+			sectors = 25;
+		}
+		cylinders = (UINT32)(fsize / (sectors * surfaces * size));
+		totals = fsize / size;
+		// totals = (FILEPOS)cylinders * sectors * surfaces;
+	}
+	else if ((iftype == SXSIDRV_SCSI) && (!file_cmpname(ext, str_hds))) {
+		// RaSCSI flat disk image
+		FILELEN fsize = file_getsize(fh);
+		headersize = 0;
+		size = 512;
+		surfaces = 8;
+		sectors = 32;
 		cylinders = (UINT32)(fsize / (sectors * surfaces * size));
 		totals = fsize / size;
 		// totals = (FILEPOS)cylinders * sectors * surfaces;

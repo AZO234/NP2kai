@@ -336,6 +336,16 @@ void atapicmd_a0(IDEDRV drv) {
 		atapi_cmd_playaudio(drv);
 		break;
 
+	case 0x46:		// get config?
+		TRACEOUT(("atapicmd: get config"));
+		leng = drv->buf[7]|(drv->buf[8] << 8);
+		ZeroMemory(drv->buf, 512);
+		drv->buf[10] = 3;
+		drv->buf[6] = 8;
+		if(leng == 0) leng = 12;
+		senddata(drv, 512, leng);
+		break;
+
 	case 0x47:		// Play Audio MSF
 		TRACEOUT(("atapicmd: Play Audio MSF"));
 		atapi_cmd_playaudiomsf(drv);
@@ -537,6 +547,7 @@ void atapi_dataread_asyncwait(int wait) {
 		IDEDRV drv = atapi_thread_drv;
 		SXSIDEV	sxsi;
 		sxsi = sxsi_getptr(drv->sxsidrv);
+		drv->status &= ~(IDESTAT_DRQ);
 
 		switch(atapi_dataread_error){
 		case 1:
@@ -619,7 +630,6 @@ void atapi_dataread(IDEDRV drv) {
 	}
 
 	drv->status |= IDESTAT_BSY;
-	drv->status &= ~(IDESTAT_DRQ);
 	
 	if(np2cfg.useasynccd){
 		if(atapi_thread){

@@ -1,81 +1,24 @@
 /**
  *	@file	ini.cpp
- *	@brief	è¨­å®šãƒ•ã‚¡ã‚¤ãƒ« ã‚¢ã‚¯ã‚»ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
+ *	@brief	İ’èƒtƒ@ƒCƒ‹ ƒAƒNƒZƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
  */
 
-#include <compiler.h>
-#include <common/strres.h>
-#include <common/profile.h>
-#include <np2.h>
+#include "compiler.h"
+#include "strres.h"
+#include "profile.h"
+#include "np2.h"
 #include "np2arg.h"
-#include <dosio.h>
-#if defined(SUPPORT_BMS)
-#include <io/bmsio.h>
-#endif
-#include <ini.h>
+#include "dosio.h"
+#include "ini.h"
 #include "winkbd.h"
-#include <pccore.h>
+#include "pccore.h"
 
 // ---- user type
 
 /**
- * 32ãƒ“ãƒƒãƒˆé…åˆ—ã‚’èª­ã¿è¾¼ã‚€
- * @param[in] lpString æ–‡å­—åˆ—
- * @param[out] ini è¨­å®šãƒ†ãƒ¼ãƒ–ãƒ«
- */
-static void inirdargu32(LPCTSTR lpString, const PFTBL* ini)
-{
-	uint32_t* lpDst = static_cast<uint32_t*>(ini->value);
-	const int nCount = ini->arg;
-
-	for (int i = 0; i < nCount; i++)
-	{
-		while (*lpString == ' ')
-		{
-			lpString++;
-		}
-
-		if (*lpString == '\0')
-		{
-			break;
-		}
-
-		lpDst[i] = static_cast<uint32_t>(milstr_solveINT(lpString));
-		while (*lpString != '\0')
-		{
-			const TCHAR c = *lpString++;
-			if (c == ',')
-			{
-				break;
-			}
-		}
-	}
-}
-
-/**
- * 32ãƒ“ãƒƒãƒˆé…åˆ—ã‚’æ›¸ãè¾¼ã‚€
- * @param[in] lpString æ–‡å­—åˆ—
- * @param[out] ini è¨­å®šãƒ†ãƒ¼ãƒ–ãƒ«
- */
-static void iniwrargu32(LPTSTR lpString, const PFTBL* ini)
-{
-	uint32_t* lpSrc = static_cast<uint32_t*>(ini->value);
-	const int nCount = ini->arg;
-	TCHAR tmp[256];
-
-	snprintf(tmp, sizeof(tmp), "%d", lpSrc[0]);
-	milstr_ncpy(lpString, tmp, 512);
-	for (int i = 1; i < nCount; i++)
-	{
-		snprintf(tmp, sizeof(tmp), ",%d", lpSrc[i]);
-		milstr_ncat(lpString, tmp, 512);
-	}
-}
-
-/**
- * 16ãƒ“ãƒƒãƒˆé…åˆ—ã‚’èª­ã¿è¾¼ã‚€
- * @param[in] lpString æ–‡å­—åˆ—
- * @param[out] ini è¨­å®šãƒ†ãƒ¼ãƒ–ãƒ«
+ * 16ƒrƒbƒg”z—ñ‚ğ“Ç‚İ‚Ş
+ * @param[in] lpString •¶š—ñ
+ * @param[out] ini İ’èƒe[ƒuƒ‹
  */
 static void inirdargs16(LPCTSTR lpString, const PFTBL* ini)
 {
@@ -107,9 +50,9 @@ static void inirdargs16(LPCTSTR lpString, const PFTBL* ini)
 }
 
 /**
- * 3ãƒã‚¤ãƒˆã‚’èª­ã¿è¾¼ã‚€
- * @param[in] lpString æ–‡å­—åˆ—
- * @param[out] ini è¨­å®šãƒ†ãƒ¼ãƒ–ãƒ«
+ * 3ƒoƒCƒg‚ğ“Ç‚İ‚Ş
+ * @param[in] lpString •¶š—ñ
+ * @param[out] ini İ’èƒe[ƒuƒ‹
  */
 static void inirdbyte3(LPCTSTR lpString, const PFTBL* ini)
 {
@@ -128,9 +71,9 @@ static void inirdbyte3(LPCTSTR lpString, const PFTBL* ini)
 }
 
 /**
- * ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰è¨­å®šã‚’èª­ã¿è¾¼ã‚€
- * @param[in] lpString æ–‡å­—åˆ—
- * @param[out] ini è¨­å®šãƒ†ãƒ¼ãƒ–ãƒ«
+ * ƒL[ƒ{[ƒhİ’è‚ğ“Ç‚İ‚Ş
+ * @param[in] lpString •¶š—ñ
+ * @param[out] ini İ’èƒe[ƒuƒ‹
  */
 static void inirdkb(LPCTSTR lpString, const PFTBL* ini)
 {
@@ -153,10 +96,10 @@ static void inirdkb(LPCTSTR lpString, const PFTBL* ini)
 
 #if !defined(_UNICODE)
 /**
- * ãƒ“ãƒƒãƒˆã‚’è¨­å®š
- * @param[in,out] lpBuffer ãƒãƒƒãƒ•ã‚¡
- * @param[in] nPos ä½ç½®
- * @param[in] set ã‚»ãƒƒãƒˆ or ã‚¯ãƒªã‚¢
+ * ƒrƒbƒg‚ğİ’è
+ * @param[in,out] lpBuffer ƒoƒbƒtƒ@
+ * @param[in] nPos ˆÊ’u
+ * @param[in] set ƒZƒbƒg or ƒNƒŠƒA
  */
 static void bitmapset(void* lpBuffer, UINT nPos, BOOL set)
 {
@@ -173,10 +116,10 @@ static void bitmapset(void* lpBuffer, UINT nPos, BOOL set)
 }
 
 /**
- * ãƒ“ãƒƒãƒˆã‚’å¾—ã‚‹
- * @param[in] lpBuffer ãƒãƒƒãƒ•ã‚¡
- * @param[in] nPos ä½ç½®
- * @return ãƒ“ãƒƒãƒˆ
+ * ƒrƒbƒg‚ğ“¾‚é
+ * @param[in] lpBuffer ƒoƒbƒtƒ@
+ * @param[in] nPos ˆÊ’u
+ * @return ƒrƒbƒg
  */
 static BOOL bitmapget(const void* lpBuffer, UINT nPos)
 {
@@ -186,10 +129,10 @@ static BOOL bitmapget(const void* lpBuffer, UINT nPos)
 }
 
 /**
- * ãƒã‚¤ãƒŠãƒªã‚’ã‚¢ãƒ³ã‚·ãƒªã‚¢ãƒ©ã‚¤ã‚º
- * @param[out] lpBin ãƒã‚¤ãƒŠãƒª
- * @param[in] cbBin ãƒã‚¤ãƒŠãƒªã®ã‚µã‚¤ã‚º
- * @param[in] lpString æ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡
+ * ƒoƒCƒiƒŠ‚ğƒAƒ“ƒVƒŠƒAƒ‰ƒCƒY
+ * @param[out] lpBin ƒoƒCƒiƒŠ
+ * @param[in] cbBin ƒoƒCƒiƒŠ‚ÌƒTƒCƒY
+ * @param[in] lpString •¶š—ñƒoƒbƒtƒ@
  */
 static void binset(void* lpBin, UINT cbBin, LPCTSTR lpString)
 {
@@ -213,11 +156,11 @@ static void binset(void* lpBin, UINT cbBin, LPCTSTR lpString)
 }
 
 /**
- * ãƒã‚¤ãƒŠãƒªã‚’ã‚·ãƒªã‚¢ãƒ©ã‚¤ã‚º
- * @param[out] lpString æ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡
- * @param[in] cchString æ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡é•·
- * @param[in] lpBin ãƒã‚¤ãƒŠãƒª
- * @param[in] cbBin ãƒã‚¤ãƒŠãƒªã®ã‚µã‚¤ã‚º
+ * ƒoƒCƒiƒŠ‚ğƒVƒŠƒAƒ‰ƒCƒY
+ * @param[out] lpString •¶š—ñƒoƒbƒtƒ@
+ * @param[in] cchString •¶š—ñƒoƒbƒtƒ@’·
+ * @param[in] lpBin ƒoƒCƒiƒŠ
+ * @param[in] cbBin ƒoƒCƒiƒŠ‚ÌƒTƒCƒY
  */
 static void binget(LPTSTR lpString, int cchString, const void* lpBin, UINT cbBin)
 {
@@ -237,11 +180,11 @@ static void binget(LPTSTR lpString, int cchString, const void* lpBin, UINT cbBin
 }
 
 /**
- * è¨­å®šèª­ã¿å‡ºã—
- * @param[in] lpPath ãƒ‘ã‚¹
- * @param[in] lpTitle ã‚¿ã‚¤ãƒˆãƒ«
- * @param[in] lpTable è¨­å®šãƒ†ãƒ¼ãƒ–ãƒ«
- * @param[in] nCount è¨­å®šãƒ†ãƒ¼ãƒ–ãƒ« ã‚¢ã‚¤ãƒ†ãƒ æ•°
+ * İ’è“Ç‚İo‚µ
+ * @param[in] lpPath ƒpƒX
+ * @param[in] lpTitle ƒ^ƒCƒgƒ‹
+ * @param[in] lpTable İ’èƒe[ƒuƒ‹
+ * @param[in] nCount İ’èƒe[ƒuƒ‹ ƒAƒCƒeƒ€”
  */
 void ini_read(LPCTSTR lpPath, LPCTSTR lpTitle, const PFTBL* lpTable, UINT nCount)
 {
@@ -317,11 +260,6 @@ void ini_read(LPCTSTR lpPath, LPCTSTR lpTitle, const PFTBL* lpTable, UINT nCount
 				inirdargs16(szWork, p);
 				break;
 
-			case PFTYPE_ARGU32:
-				GetPrivateProfileString(lpTitle, p->item, str_null, szWork, _countof(szWork), lpPath);
-				inirdargu32(szWork, p);
-				break;
-
 			case PFTYPE_BYTE3:
 				GetPrivateProfileString(lpTitle, p->item, str_null, szWork, _countof(szWork), lpPath);
 				inirdbyte3(szWork, p);
@@ -337,11 +275,11 @@ void ini_read(LPCTSTR lpPath, LPCTSTR lpTitle, const PFTBL* lpTable, UINT nCount
 }
 
 /**
- * è¨­å®šæ›¸ãè¾¼ã¿
- * @param[in] lpPath ãƒ‘ã‚¹
- * @param[in] lpTitle ã‚¿ã‚¤ãƒˆãƒ«
- * @param[in] lpTable è¨­å®šãƒ†ãƒ¼ãƒ–ãƒ«
- * @param[in] nCount è¨­å®šãƒ†ãƒ¼ãƒ–ãƒ« ã‚¢ã‚¤ãƒ†ãƒ æ•°
+ * İ’è‘‚«‚İ
+ * @param[in] lpPath ƒpƒX
+ * @param[in] lpTitle ƒ^ƒCƒgƒ‹
+ * @param[in] lpTable İ’èƒe[ƒuƒ‹
+ * @param[in] nCount İ’èƒe[ƒuƒ‹ ƒAƒCƒeƒ€”
  */
 void ini_write(LPCTSTR lpPath, LPCTSTR lpTitle, const PFTBL* lpTable, UINT nCount)
 {
@@ -408,10 +346,6 @@ void ini_write(LPCTSTR lpPath, LPCTSTR lpTitle, const PFTBL* lpTable, UINT nCoun
 					wsprintf(szWork, str_x, *(static_cast<const UINT32*>(p->value)));
 					break;
 
-				case PFTYPE_ARGU32:
-					iniwrargu32(szWork, p);
-					break;
-
 				default:
 					lpSet = NULL;
 					break;
@@ -430,9 +364,9 @@ void ini_write(LPCTSTR lpPath, LPCTSTR lpTitle, const PFTBL* lpTable, UINT nCoun
 // ---- Use profile.c
 
 /**
- * ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
- * @param[in] item ã‚¢ã‚¤ãƒ†ãƒ 
- * @param[in] lpString æ–‡å­—åˆ—
+ * ƒR[ƒ‹ƒoƒbƒN
+ * @param[in] item ƒAƒCƒeƒ€
+ * @param[in] lpString •¶š—ñ
  */
 static void UserReadItem(const PFTBL* item, LPCTSTR lpString)
 {
@@ -453,11 +387,11 @@ static void UserReadItem(const PFTBL* item, LPCTSTR lpString)
 }
 
 /**
- * è¨­å®šèª­ã¿å–ã‚Š
- * @param[in] lpPath ãƒ‘ã‚¹
- * @param[in] lpTitle ã‚¿ã‚¤ãƒˆãƒ«
- * @param[in] lpTable è¨­å®šãƒ†ãƒ¼ãƒ–ãƒ«
- * @param[in] nCount è¨­å®šãƒ†ãƒ¼ãƒ–ãƒ« ã‚¢ã‚¤ãƒ†ãƒ æ•°
+ * İ’è“Ç‚İæ‚è
+ * @param[in] lpPath ƒpƒX
+ * @param[in] lpTitle ƒ^ƒCƒgƒ‹
+ * @param[in] lpTable İ’èƒe[ƒuƒ‹
+ * @param[in] nCount İ’èƒe[ƒuƒ‹ ƒAƒCƒeƒ€”
  */
 void ini_read(LPCTSTR lpPath, LPCTSTR lpTitle, const PFTBL* lpTable, UINT nCount)
 {
@@ -465,11 +399,11 @@ void ini_read(LPCTSTR lpPath, LPCTSTR lpTitle, const PFTBL* lpTable, UINT nCount
 }
 
 /**
- * è¨­å®šæ›¸ãè¾¼ã¿
- * @param[in] lpPath ãƒ‘ã‚¹
- * @param[in] lpTitle ã‚¿ã‚¤ãƒˆãƒ«
- * @param[in] lpTable è¨­å®šãƒ†ãƒ¼ãƒ–ãƒ«
- * @param[in] nCount è¨­å®šãƒ†ãƒ¼ãƒ–ãƒ« ã‚¢ã‚¤ãƒ†ãƒ æ•°
+ * İ’è‘‚«‚İ
+ * @param[in] lpPath ƒpƒX
+ * @param[in] lpTitle ƒ^ƒCƒgƒ‹
+ * @param[in] lpTable İ’èƒe[ƒuƒ‹
+ * @param[in] nCount İ’èƒe[ƒuƒ‹ ƒAƒCƒeƒ€”
  */
 void ini_write(LPCTSTR lpPath, LPCTSTR lpTitle, const PFTBL* lpTable, UINT nCount)
 {
@@ -482,13 +416,13 @@ void ini_write(LPCTSTR lpPath, LPCTSTR lpTitle, const PFTBL* lpTable, UINT nCoun
 // ----
 
 #if !defined(SUPPORT_PC9821)
-static const TCHAR s_szIniTitle[] = TEXT("NekoProjectII");		//!< ã‚¢ãƒ—ãƒªå
+static const TCHAR s_szIniTitle[] = TEXT("NekoProjectII");		//!< ƒAƒvƒŠ–¼
 #else
-static const TCHAR s_szIniTitle[] = TEXT("NekoProject21");		//!< ã‚¢ãƒ—ãƒªå
+static const TCHAR s_szIniTitle[] = TEXT("NekoProject21");		//!< ƒAƒvƒŠ–¼
 #endif
 
 /**
- * è¿½åŠ è¨­å®š
+ * ’Ç‰Áİ’è
  */
 enum
 {
@@ -504,7 +438,7 @@ enum
 };
 
 /**
- * OS è¨­å®š ãƒ†ãƒ¼ãƒ–ãƒ«
+ * OS İ’è ƒe[ƒuƒ‹
  */
 static const PFTBL s_IniItems[] =
 {
@@ -543,7 +477,7 @@ static const PFTBL s_IniItems[] =
 #endif
 	PFVAL("ITF_WORK", PFTYPE_BOOL,		&np2cfg.ITF_WORK),
 	
-	PFVAL("USE_BIOS", PFTYPE_BOOL,		&np2cfg.usebios),  // å®Ÿæ©ŸBIOSä½¿ç”¨
+	PFVAL("USE_BIOS", PFTYPE_BOOL,		&np2cfg.usebios),  // À‹@BIOSg—p
 	
 	PFVAL("SVFDFILE", PFTYPE_BOOL,		&np2cfg.savefddfile),
 	PFSTR("FDD1FILE", PFTYPE_STR,		np2cfg.fddfile[0]),
@@ -566,8 +500,8 @@ static const PFTBL s_IniItems[] =
 	PFVAL("IDE2TYPE", PFTYPE_UINT8,		&np2cfg.idetype[1]),
 	PFVAL("IDE3TYPE", PFTYPE_UINT8,		&np2cfg.idetype[2]),
 	PFVAL("IDE4TYPE", PFTYPE_UINT8,		&np2cfg.idetype[3]),
-	PFVAL("IDE_BIOS", PFTYPE_BOOL,		&np2cfg.idebios),  // å®Ÿæ©ŸIDE BIOSä½¿ç”¨
-	PFVAL("AIDEBIOS", PFTYPE_BOOL,		&np2cfg.autoidebios),  // å®Ÿæ©ŸIDE BIOSä½¿ç”¨ã‚’è‡ªå‹•è¨­å®šã™ã‚‹
+	PFVAL("IDE_BIOS", PFTYPE_BOOL,		&np2cfg.idebios),  // À‹@IDE BIOSg—p
+	PFVAL("AIDEBIOS", PFTYPE_BOOL,		&np2cfg.autoidebios),  // À‹@IDE BIOSg—p‚ğ©“®İ’è‚·‚é
 	PFVAL("IDERWAIT", PFTYPE_UINT32,	&np2cfg.iderwait),
 	PFVAL("IDEWWAIT", PFTYPE_UINT32,	&np2cfg.idewwait),
 	PFVAL("IDEMWAIT", PFTYPE_UINT32,	&np2cfg.idemwait),
@@ -670,13 +604,7 @@ static const PFTBL s_IniItems[] =
 	PFEXT("FDDRIVE2", PFRO_BITMAP,		&np2cfg.fddequip,		1),
 	PFEXT("FDDRIVE3", PFRO_BITMAP,		&np2cfg.fddequip,		2),
 	PFEXT("FDDRIVE4", PFRO_BITMAP,		&np2cfg.fddequip,		3),
-
-#if defined(SUPPORT_BMS)
-	PFEXT("Use_BMS_", PFTYPE_BOOL,		&bmsiocfg.enabled,		0),
-	PFEXT("BMS_Port", PFTYPE_HEX16,		&bmsiocfg.port,			0),
-	PFEXT("BMS_Size", PFTYPE_UINT8,		&bmsiocfg.numbanks,		0),
-#endif
-
+	
 #if defined(SUPPORT_NET)
 	PFSTR("NP2NETTAP", PFTYPE_STR,		np2cfg.np2nettap),
 	PFVAL("NP2NETPMM", PFTYPE_BOOL,		&np2cfg.np2netpmm),
@@ -720,11 +648,11 @@ static const PFTBL s_IniItems[] =
 	
 	PFVAL("WINNTFIX", PFTYPE_BOOL,		&np2cfg.winntfix),
 	
-	PFVAL("SYSIOMSK", PFTYPE_HEX16,		&np2cfg.sysiomsk), // ã‚·ã‚¹ãƒ†ãƒ IOãƒã‚¹ã‚¯
+	PFVAL("SYSIOMSK", PFTYPE_HEX16,		&np2cfg.sysiomsk), // ƒVƒXƒeƒ€IOƒ}ƒXƒN
 	
-	PFMAX("MEMCHKMX", PFTYPE_UINT8,		&np2cfg.memchkmx,		0), // ãƒ¡ãƒ¢ãƒªãƒã‚§ãƒƒã‚¯ã™ã‚‹æœ€å¤§ã‚µã‚¤ã‚ºï¼ˆæœ€å°ã¯15MBãƒ»0ã¯åˆ¶é™ç„¡ã—ãƒ»ãƒ¡ãƒ¢ãƒªãƒã‚§ãƒƒã‚¯ãŒé•·ã„ã®ãŒå«Œã ã‘ã©è¦‹ã‹ã‘ä¸Šã‚«ã‚¦ãƒ³ãƒˆã ã‘ã¯ã—ã¦ãŠããŸã„äººå‘ã‘ï¼‰
-	PFMAX("SBEEPLEN", PFTYPE_UINT8,		&np2cfg.sbeeplen,		0), // ãƒ”ãƒéŸ³ã®é•·ã•ï¼ˆ0ã§ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ»4ãŒNP2æ¨™æº–ï¼‰
-	PFVAL("SBEEPADJ", PFTYPE_BOOL,		&np2cfg.sbeepadj), // ãƒ”ãƒéŸ³ã®é•·ã•è‡ªå‹•èª¿æ•´
+	PFMAX("MEMCHKMX", PFTYPE_UINT8,		&np2cfg.memchkmx,		0), // ƒƒ‚ƒŠƒ`ƒFƒbƒN‚·‚éÅ‘åƒTƒCƒYiÅ¬‚Í15MBE0‚Í§ŒÀ–³‚µEƒƒ‚ƒŠƒ`ƒFƒbƒN‚ª’·‚¢‚Ì‚ªŒ™‚¾‚¯‚ÇŒ©‚©‚¯ãƒJƒEƒ“ƒg‚¾‚¯‚Í‚µ‚Ä‚¨‚«‚½‚¢lŒü‚¯j
+	PFMAX("SBEEPLEN", PFTYPE_UINT8,		&np2cfg.sbeeplen,		0), // ƒsƒ|‰¹‚Ì’·‚³i0‚ÅƒfƒtƒHƒ‹ƒgE4‚ªNP2•W€j
+	PFVAL("SBEEPADJ", PFTYPE_BOOL,		&np2cfg.sbeepadj), // ƒsƒ|‰¹‚Ì’·‚³©“®’²®
 
 	PFVAL("BIOSIOEM", PFTYPE_BOOL,		&np2cfg.biosioemu), // np21w ver0.86 rev46 BIOS I/O emulation
 	
@@ -739,54 +667,35 @@ static const PFTBL s_IniItems[] =
 	PFVAL("cpu_fecx", PFTYPE_HEX32,		&np2cfg.cpu_feature_ecx),
 	PFVAL("cpu_eflg", PFTYPE_HEX32,		&np2cfg.cpu_eflags_mask),
 
-	PFVAL("FPU_TYPE", PFTYPE_UINT8,		&np2cfg.fpu_type), // FPUç¨®é¡
+	PFVAL("FPU_TYPE", PFTYPE_UINT8,		&np2cfg.fpu_type), // FPUí—Ş
 	
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 	PFVAL("memckspd", PFTYPE_UINT8,		&np2cfg.memcheckspeed),
 #endif
 	
-	PFVAL("USERAM_D", PFTYPE_BOOL,		&np2cfg.useram_d), // EPSONã§ãªãã¦ã‚‚D0000h-DFFFFhã‚’RAMã«ï¼ˆãŸã ã—IDE BIOS D8000h-DBFFFhã¯é§„ç›®ï¼‰
-	PFVAL("USEPEGCP", PFTYPE_BOOL,		&np2cfg.usepegcplane), // PEGC ãƒ—ãƒ¬ãƒ¼ãƒ³ãƒ¢ãƒ¼ãƒ‰ã‚µãƒãƒ¼ãƒˆ
+	PFVAL("USERAM_D", PFTYPE_BOOL,		&np2cfg.useram_d), // EPSON‚Å‚È‚­‚Ä‚àD0000h-DFFFFh‚ğRAM‚Éi‚½‚¾‚µIDE BIOS D8000h-DBFFFh‚Í‘Ê–Új
+	PFVAL("USEPEGCP", PFTYPE_BOOL,		&np2cfg.usepegcplane), // PEGC ƒvƒŒ[ƒ“ƒ‚[ƒhƒTƒ|[ƒg
 	
-	PFVAL("USECDECC", PFTYPE_BOOL,		&np2cfg.usecdecc), // CD-ROM EDC/ECC ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã‚µãƒãƒ¼ãƒˆ
-	PFVAL("CDDTSKIP", PFTYPE_BOOL,		&np2cfg.cddtskip), // CD-ROM ã‚ªãƒ¼ãƒ‡ã‚£ã‚ªå†ç”Ÿæ™‚ã«ãƒ‡ãƒ¼ã‚¿ãƒˆãƒ©ãƒƒã‚¯ã‚’ã‚¹ã‚­ãƒƒãƒ—
+	PFVAL("USECDECC", PFTYPE_BOOL,		&np2cfg.usecdecc), // CD-ROM EDC/ECC ƒGƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“ƒTƒ|[ƒg
+	PFVAL("CDDTSKIP", PFTYPE_BOOL,		&np2cfg.cddtskip), // CD-ROM ƒI[ƒfƒBƒIÄ¶‚Éƒf[ƒ^ƒgƒ‰ƒbƒN‚ğƒXƒLƒbƒv
 	
 #if defined(SUPPORT_ASYNC_CPU)
-	PFVAL("ASYNCCPU", PFTYPE_BOOL,		&np2cfg.asynccpu), // éåŒæœŸCPUãƒ¢ãƒ¼ãƒ‰æœ‰åŠ¹
+	PFVAL("ASYNCCPU", PFTYPE_BOOL,		&np2cfg.asynccpu), // ”ñ“¯ŠúCPUƒ‚[ƒh—LŒø
 #endif
-	PFVAL("CONSTTSC", PFTYPE_BOOL,		&np2cfg.consttsc), // RDTSCã‚’ã‚¯ãƒ­ãƒƒã‚¯å¤‰æ›´ã«ã‚ˆã‚‰ãšä¸€å®šé–“éš”ã«ã™ã‚‹
+	PFVAL("CONSTTSC", PFTYPE_BOOL,		&np2cfg.consttsc), // RDTSC‚ğƒNƒƒbƒN•ÏX‚É‚æ‚ç‚¸ˆê’èŠÔŠu‚É‚·‚é
 #if defined(SUPPORT_IDEIO)
-	PFVAL("IDEBADDR", PFRO_HEX8,		&np2cfg.idebaddr), // IDE BIOS ã‚¢ãƒ‰ãƒ¬ã‚¹ï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆï¼šD8h(D8000h)ï¼‰
+	PFVAL("IDEBADDR", PFRO_HEX8,		&np2cfg.idebaddr), // IDE BIOS ƒAƒhƒŒƒXiƒfƒtƒHƒ‹ƒgFD8h(D8000h)j
 #endif
 #if defined(SUPPORT_GAMEPORT)
 	PFVAL("GAMEPORT", PFTYPE_BOOL,		&np2cfg.gameport),
 #endif
 	PFVAL("USEMOVCS", PFRO_BOOL,		&np2cfg.allowMOVCS),
 	PFVAL("USETHOOK", PFRO_BOOL,		&np2cfg.usetexthook),
+	PFVAL("RASCSI92", PFRO_BOOL,		&np2cfg.rascsi92),
 
-#if defined(SUPPORT_VIDEOFILTER)
-		PFVAL("vf1_enable", PFTYPE_BOOL, &np2cfg.vf1_enable),
-		PFVAL("vf1_pcount", PFTYPE_UINT8, &np2cfg.vf1_pcount),
-		PFVAL("vf1_pno", PFTYPE_UINT8, &np2cfg.vf1_pno),
-		PFVAL("vf1_p0_fc", PFTYPE_UINT8, &np2cfg.vf1_profile[0][0]),
-		PFVAL("vf1_p0_fno", PFTYPE_UINT8, &np2cfg.vf1_profile[0][1]),
-		PFEXT("vf1_p0_p0", PFTYPE_ARGU32, np2cfg.vf1_param[0][0], 8),
-		PFEXT("vf1_p0_p1", PFTYPE_ARGU32, np2cfg.vf1_param[0][1], 8),
-		PFEXT("vf1_p0_p2", PFTYPE_ARGU32, np2cfg.vf1_param[0][2], 8),
-		PFVAL("vf1_p1_fc", PFTYPE_UINT8, &np2cfg.vf1_profile[1][0]),
-		PFVAL("vf1_p1_fno", PFTYPE_UINT8, &np2cfg.vf1_profile[1][1]),
-		PFEXT("vf1_p1_p0", PFTYPE_ARGU32, np2cfg.vf1_param[1][0], 8),
-		PFEXT("vf1_p1_p1", PFTYPE_ARGU32, np2cfg.vf1_param[1][1], 8),
-		PFEXT("vf1_p1_p2", PFTYPE_ARGU32, np2cfg.vf1_param[1][2], 8),
-		PFVAL("vf1_p2_fc", PFTYPE_UINT8, &np2cfg.vf1_profile[2][0]),
-		PFVAL("vf1_p2_fno", PFTYPE_UINT8, &np2cfg.vf1_profile[2][1]),
-		PFEXT("vf1_p2_p0", PFTYPE_ARGU32, np2cfg.vf1_param[2][0], 8),
-		PFEXT("vf1_p2_p1", PFTYPE_ARGU32, np2cfg.vf1_param[2][1], 8),
-		PFEXT("vf1_p2_p2", PFTYPE_ARGU32, np2cfg.vf1_param[2][2], 8),
-#endif
+	
 
-
-	// OSä¾å­˜ï¼Ÿ
+	// OSˆË‘¶H
 	PFVAL("keyboard", PFRO_KB,			&np2oscfg.KEYBOARD),
 	PFVAL("usenlock", PFTYPE_BOOL,		&np2oscfg.USENUMLOCK),
 	PFVAL("F12_COPY", PFTYPE_UINT8,		&np2oscfg.F12COPY),
@@ -799,8 +708,6 @@ static const PFTBL s_IniItems[] =
 	PFAND("clock_up", PFRO_HEX32,		&np2oscfg.clk_color1,	0xffffff),
 	PFAND("clock_dn", PFRO_HEX32,		&np2oscfg.clk_color2,	0xffffff),
 
-	PFVAL("use_sstp", PFTYPE_BOOL,		&np2oscfg.sstp),
-	PFVAL("sstpport", PFTYPE_UINT16,	&np2oscfg.sstpport),
 	PFVAL("comfirm_", PFTYPE_BOOL,		&np2oscfg.comfirm),
 	PFVAL("shortcut", PFTYPE_HEX8,		&np2oscfg.shortcut),
 
@@ -878,11 +785,11 @@ static const PFTBL s_IniItems[] =
 	PFVAL("fscrn_cy", PFRO_SINT32,		&np2oscfg.fscrn_cy),
 	PFVAL("fscrnbpp", PFRO_UINT8,		&np2oscfg.fscrnbpp),
 	PFVAL("fscrnmod", PFTYPE_HEX8,		&np2oscfg.fscrnmod),
-	PFVAL("fsrescfg", PFTYPE_BOOL,		&np2oscfg.fsrescfg), // è§£åƒåº¦æ¯ã«è¨­å®šä¿å­˜ã™ã‚‹
+	PFVAL("fsrescfg", PFTYPE_BOOL,		&np2oscfg.fsrescfg), // ‰ğ‘œ“x–ˆ‚Éİ’è•Û‘¶‚·‚é
 
 #if defined(SUPPORT_SCRN_DIRECT3D)
-	PFVAL("D3D_IMODE", PFTYPE_UINT8,	&np2oscfg.d3d_imode), // Direct3D æ‹¡å¤§ç¸®å°è£œé–“ãƒ¢ãƒ¼ãƒ‰
-	PFVAL("D3D_EXCLU", PFTYPE_BOOL,		&np2oscfg.d3d_exclusive), // Direct3D æ’ä»–ãƒ¢ãƒ¼ãƒ‰ä½¿ç”¨
+	PFVAL("D3D_IMODE", PFTYPE_UINT8,	&np2oscfg.d3d_imode), // Direct3D Šg‘åk¬•âŠÔƒ‚[ƒh
+	PFVAL("D3D_EXCLU", PFTYPE_BOOL,		&np2oscfg.d3d_exclusive), // Direct3D ”r‘¼ƒ‚[ƒhg—p
 #endif
 
 	PFVAL("snddev_t", PFTYPE_UINT8,		&np2oscfg.cSoundDeviceType),
@@ -892,52 +799,48 @@ static const PFTBL s_IniItems[] =
 	PFSTR("VSTiFile", PFRO_STR,			np2oscfg.szVSTiFile),
 #endif	// defined(SUPPORT_VSTi)
 	
-	PFVAL("EMUDDRAW", PFTYPE_BOOL,		&np2oscfg.emuddraw), // æœ€è¿‘ã¯EMULATIONONLYã«ã—ãŸæ–¹é€Ÿã‹ã£ãŸã‚Šã™ã‚‹ï¼ˆç‰¹ã«ãƒ”ã‚¯ã‚»ãƒ«æ“ä½œã™ã‚‹å ´åˆã¨ã‹ï¼‰
-	PFVAL("DRAWTYPE", PFTYPE_UINT8,		&np2oscfg.drawtype), // ç”»é¢ãƒ¬ãƒ³ãƒ€ãƒ© (0: DirectDraw, 1: reserved(DirecrDraw), 2: Direct3D)
+	PFVAL("EMUDDRAW", PFTYPE_BOOL,		&np2oscfg.emuddraw), // Å‹ß‚ÍEMULATIONONLY‚É‚µ‚½•û‘¬‚©‚Á‚½‚è‚·‚éi“Á‚ÉƒsƒNƒZƒ‹‘€ì‚·‚éê‡‚Æ‚©j
+	PFVAL("DRAWTYPE", PFTYPE_UINT8,		&np2oscfg.drawtype), // ‰æ–ÊƒŒƒ“ƒ_ƒ‰ (0: DirectDraw, 1: reserved(DirecrDraw), 2: Direct3D)
 	
-	PFVAL("DRAGDROP", PFRO_BOOL,		&np2oscfg.dragdrop), // ãƒ‰ãƒ©ãƒƒã‚°ã‚¢ãƒ³ãƒ‰ãƒ‰ãƒ­ãƒƒãƒ—ã‚µãƒãƒ¼ãƒˆ
-	PFVAL("MAKELHDD", PFRO_BOOL,		&np2oscfg.makelhdd), // å·¨å¤§HDDã‚¤ãƒ¡ãƒ¼ã‚¸ä½œæˆã‚µãƒãƒ¼ãƒˆ
-	PFVAL("SYSKHOOK", PFTYPE_BOOL,		&np2oscfg.syskhook), // ã‚·ã‚¹ãƒ†ãƒ ã‚­ãƒ¼ãƒ•ãƒƒã‚¯ã‚µãƒãƒ¼ãƒˆ
-	PFVAL("RAWMOUSE", PFTYPE_BOOL,		&np2oscfg.rawmouse), // ç›´æ¥ãƒã‚¦ã‚¹ãƒ‡ãƒ¼ã‚¿èª­ã¿å–ã‚Š
-	PFVAL("MOUSEMUL", PFTYPE_SINT16,	&np2oscfg.mousemul), // ãƒã‚¦ã‚¹ã‚¹ãƒ”ãƒ¼ãƒ‰å€ç‡ï¼ˆåˆ†å­ï¼‰
-	PFVAL("MOUSEDIV", PFTYPE_SINT16,	&np2oscfg.mousediv), // ãƒã‚¦ã‚¹ã‚¹ãƒ”ãƒ¼ãƒ‰å€ç‡ï¼ˆåˆ†æ¯ï¼‰
+	PFVAL("DRAGDROP", PFRO_BOOL,		&np2oscfg.dragdrop), // ƒhƒ‰ƒbƒOƒAƒ“ƒhƒhƒƒbƒvƒTƒ|[ƒg
+	PFVAL("MAKELHDD", PFRO_BOOL,		&np2oscfg.makelhdd), // ‹‘åHDDƒCƒ[ƒWì¬ƒTƒ|[ƒg
+	PFVAL("SYSKHOOK", PFTYPE_BOOL,		&np2oscfg.syskhook), // ƒVƒXƒeƒ€ƒL[ƒtƒbƒNƒTƒ|[ƒg
+	PFVAL("RAWMOUSE", PFTYPE_BOOL,		&np2oscfg.rawmouse), // ’¼Úƒ}ƒEƒXƒf[ƒ^“Ç‚İæ‚è
+	PFVAL("MOUSEMUL", PFTYPE_SINT16,	&np2oscfg.mousemul), // ƒ}ƒEƒXƒXƒs[ƒh”{—¦i•ªqj
+	PFVAL("MOUSEDIV", PFTYPE_SINT16,	&np2oscfg.mousediv), // ƒ}ƒEƒXƒXƒs[ƒh”{—¦i•ª•êj
 	
-	PFVAL("SCRNMODE", PFTYPE_UINT8,		&np2oscfg.scrnmode), // ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³è¨­å®š
-	PFVAL("SAVESCRN", PFTYPE_BOOL,		&np2oscfg.savescrn), // ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³è¨­å®šã‚’ä¿å­˜ãƒ»å¾©å…ƒã™ã‚‹
+	PFVAL("SCRNMODE", PFTYPE_UINT8,		&np2oscfg.scrnmode), // ƒtƒ‹ƒXƒNƒŠ[ƒ“İ’è
+	PFVAL("SAVESCRN", PFTYPE_BOOL,		&np2oscfg.savescrn), // ƒtƒ‹ƒXƒNƒŠ[ƒ“İ’è‚ğ•Û‘¶E•œŒ³‚·‚é
 	
-	PFVAL("SVSCRMUL", PFTYPE_BOOL,		&np2oscfg.svscrmul), // ç”»é¢è¡¨ç¤ºå€ç‡ã‚’ä¿å­˜ã™ã‚‹ã‹
-	PFVAL("SCRN_MUL", PFTYPE_UINT8,		&np2oscfg.scrn_mul), // ç”»é¢è¡¨ç¤ºå€ç‡ï¼ˆ8ãŒç­‰å€ï¼‰
+	PFVAL("SVSCRMUL", PFTYPE_BOOL,		&np2oscfg.svscrmul), // ‰æ–Ê•\¦”{—¦‚ğ•Û‘¶‚·‚é‚©
+	PFVAL("SCRN_MUL", PFTYPE_UINT8,		&np2oscfg.scrn_mul), // ‰æ–Ê•\¦”{—¦i8‚ª“™”{j
 	
-	PFVAL("MOUSE_NC", PFTYPE_BOOL,		&np2oscfg.mouse_nc), // ãƒã‚¦ã‚¹ã‚­ãƒ£ãƒ—ãƒãƒ£ç„¡ã—ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«
-	PFVAL("CPUSTABF", PFTYPE_UINT16,	&np2oscfg.cpustabf), // ã‚¯ãƒ­ãƒƒã‚¯å®‰å®šå™¨é©ç”¨é™ç•Œæ™‚é–“ï¼ˆãƒ•ãƒ¬ãƒ¼ãƒ ï¼‰
-	PFVAL("READONLY", PFRO_BOOL,		&np2oscfg.readonly), // å¤‰æ›´ã‚’è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãè¾¼ã¾ãªã„
-	PFVAL("TICKMODE", PFRO_UINT8,		&np2oscfg.tickmode), // Tickã‚«ã‚¦ãƒ³ã‚¿ã®ãƒ¢ãƒ¼ãƒ‰ã‚’å¼·åˆ¶çš„ã«è¨­å®šã™ã‚‹
-	PFVAL("USEWHEEL", PFRO_BOOL,		&np2oscfg.usewheel), // ãƒã‚¦ã‚¹ãƒ›ã‚¤ãƒ¼ãƒ«ã«ã‚ˆã‚‹éŸ³é‡ãƒ»ãƒã‚¦ã‚¹é€Ÿåº¦è¨­å®šã‚’ä½¿ç”¨ã™ã‚‹
-	//PFVAL("USE_MVOL", PFRO_BOOL,		&np2oscfg.usemastervolume), // ãƒã‚¹ã‚¿ãƒœãƒªãƒ¥ãƒ¼ãƒ è¨­å®šã‚’ä½¿ç”¨ã™ã‚‹
-	PFVAL("USEMIDIV", PFRO_BOOL,		&np2oscfg.usemidivolume), // MIDIç–‘ä¼¼ãƒœãƒªãƒ¥ãƒ¼ãƒ è¨­å®šã‚’ä½¿ç”¨ã™ã‚‹
-	PFMAX("MVOL_MAX", PFRO_UINT8,		&np2oscfg.mastervolumemax, 255), // ãƒã‚¹ã‚¿ãƒœãƒªãƒ¥ãƒ¼ãƒ ã®æœ€å¤§å€¤ã‚’è¨­å®šã™ã‚‹
+	PFVAL("MOUSE_NC", PFTYPE_BOOL,		&np2oscfg.mouse_nc), // ƒ}ƒEƒXƒLƒƒƒvƒ`ƒƒ–³‚µƒRƒ“ƒgƒ[ƒ‹
+	PFVAL("CPUSTABF", PFTYPE_UINT16,	&np2oscfg.cpustabf), // ƒNƒƒbƒNˆÀ’èŠí“K—pŒÀŠEŠÔiƒtƒŒ[ƒ€j
+	PFVAL("READONLY", PFRO_BOOL,		&np2oscfg.readonly), // •ÏX‚ğİ’èƒtƒ@ƒCƒ‹‚É‘‚«‚Ü‚È‚¢
+	PFVAL("TICKMODE", PFRO_UINT8,		&np2oscfg.tickmode), // TickƒJƒEƒ“ƒ^‚Ìƒ‚[ƒh‚ğ‹­§“I‚Éİ’è‚·‚é
+	PFVAL("USEWHEEL", PFRO_BOOL,		&np2oscfg.usewheel), // ƒ}ƒEƒXƒzƒC[ƒ‹‚É‚æ‚é‰¹—ÊEƒ}ƒEƒX‘¬“xİ’è‚ğg—p‚·‚é
+	//PFVAL("USE_MVOL", PFRO_BOOL,		&np2oscfg.usemastervolume), // ƒ}ƒXƒ^ƒ{ƒŠƒ…[ƒ€İ’è‚ğg—p‚·‚é
+	PFVAL("USEMIDIV", PFRO_BOOL,		&np2oscfg.usemidivolume), // MIDI‹^—ƒ{ƒŠƒ…[ƒ€İ’è‚ğg—p‚·‚é
+	PFMAX("MVOL_MAX", PFRO_UINT8,		&np2oscfg.mastervolumemax, 255), // ƒ}ƒXƒ^ƒ{ƒŠƒ…[ƒ€‚ÌÅ‘å’l‚ğİ’è‚·‚é
 	
-	PFVAL("TWNDHIST", PFRO_UINT8,		&np2oscfg.toolwndhistory), // ãƒ„ãƒ¼ãƒ«ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®FDãƒ•ã‚¡ã‚¤ãƒ«å±¥æ­´ã®è¨˜æ†¶æ•°
+	PFVAL("TWNDHIST", PFRO_UINT8,		&np2oscfg.toolwndhistory), // ƒc[ƒ‹ƒEƒBƒ“ƒhƒE‚ÌFDƒtƒ@ƒCƒ‹—š—ğ‚Ì‹L‰¯”
 	
 #if defined(SUPPORT_WACOM_TABLET)
-	PFVAL("PENTABFA", PFTYPE_BOOL,		&np2oscfg.pentabfa), // ãƒšãƒ³ã‚¿ãƒ–ãƒ¬ãƒƒãƒˆ ã‚¢ã‚¹ãƒšã‚¯ãƒˆæ¯”å›ºå®šãƒ¢ãƒ¼ãƒ‰
+	PFVAL("PENTABFA", PFTYPE_BOOL,		&np2oscfg.pentabfa), // ƒyƒ“ƒ^ƒuƒŒƒbƒg ƒAƒXƒyƒNƒg”äŒÅ’èƒ‚[ƒh
 #endif
 #if defined(SUPPORT_MULTITHREAD)
-	PFVAL("MTENABLE", PFRO_BOOL,		&np2oscfg.multithread), // ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ãƒ¢ãƒ¼ãƒ‰
+	PFVAL("MTENABLE", PFRO_BOOL,		&np2oscfg.multithread), // ƒ}ƒ‹ƒ`ƒXƒŒƒbƒhƒ‚[ƒh
 #endif
-	// Keyrepeat
-	PFEXT("keyrepeat_enable", PFTYPE_BOOL,	&np2cfg.keyrepeat_enable, 0),
-	PFEXT("keyrepeat_delay", PFTYPE_UINT16,	&np2cfg.keyrepeat_delay, 500),
-	PFEXT("keyrepeat_interval", PFTYPE_UINT16,	&np2cfg.keyrepeat_interval, 50),
 };
 
-//! .ini æ‹¡å¼µå­
+//! .ini Šg’£q
 static const TCHAR s_szExt[] = TEXT(".ini");
 
 /**
- * è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹ã‚’å¾—ã‚‹
- * @param[out] lpPath ãƒ‘ã‚¹
- * @param[in] cchPath ãƒ‘ã‚¹ ãƒãƒƒãƒ•ã‚¡ã®é•·ã•
+ * İ’èƒtƒ@ƒCƒ‹‚ÌƒpƒX‚ğ“¾‚é
+ * @param[out] lpPath ƒpƒX
+ * @param[in] cchPath ƒpƒX ƒoƒbƒtƒ@‚Ì’·‚³
  */
 void initgetfile(LPTSTR lpPath, UINT cchPath)
 {
@@ -960,7 +863,7 @@ void initgetfile(LPTSTR lpPath, UINT cchPath)
 }
 
 /**
- * èª­ã¿è¾¼ã¿
+ * “Ç‚İ‚İ
  */
 void initload(void)
 {
@@ -971,7 +874,7 @@ void initload(void)
 }
 
 /**
- * æ›¸ãå‡ºã—
+ * ‘‚«o‚µ
  */
 void initsave(void)
 {

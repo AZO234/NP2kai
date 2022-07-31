@@ -318,6 +318,7 @@ struct tagNP2Config
 #endif
 	UINT8	allowMOVCS; // mov cs,xx命令の実行を許可する（8086）
 	UINT8	usetexthook; // Text Hookを有効にする（海外向け）
+	UINT8	rascsi92; // 92互換でRaSCSI形式(*.HDN)を読む
 
 #if defined(SUPPORT_DEBUGSS)
 	UINT8	debugss;

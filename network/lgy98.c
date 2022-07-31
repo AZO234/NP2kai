@@ -855,7 +855,7 @@ void lgy98_setretseq(int index){
 }
 
 static void IOOUTCALL lgy98_ob300_16(UINT port, REG8 dat) {
-	static REG8 codebuf[] = {0};
+	static REG8 codebuf[128] = {0};
 	static REG8 codebufpos = 0;
 	LGY98 *s = &lgy98;
 	TRACEOUT(("LGY-98: out %04X d=%02X", port, dat));

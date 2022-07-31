@@ -1611,6 +1611,9 @@ REG16 IOINPCALL ideio_r16(UINT port) {
 					break;
 
 				case 0xa0:
+					if (drv->status & IDESTAT_BSY) {
+						break;
+					}
 					if (drv->buftc == IDETC_ATAPIREAD) {
 						atapi_dataread(drv);
 						break;

@@ -152,7 +152,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "画面出力"
 FONT 9, "ＭＳ Ｐゴシック"
 BEGIN
-    CONTROL         "（古いモノクロ）液晶ディスプレイ",IDC_LCD,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,8,156,10
+    CONTROL         "液晶ディスプレイ",IDC_LCD,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,8,156,10
     CONTROL         "色反転",IDC_LCDX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,24,144,10
     CONTROL         "スキップラインを中間色で埋める",IDC_SKIPLINE,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,40,156,10
     LTEXT           "明るさ",IDC_STATIC,20,55,22,8
@@ -580,7 +580,7 @@ CLASS "np2dialog"
 FONT 9, "ＭＳ Ｐゴシック"
 BEGIN
     ICON            IDI_ICON1,IDC_NP2ICON,8,8,20,20
-    LTEXT           "",IDC_NP2VER,36,12,152,16
+    LTEXT           "",IDC_NP2VER,36,16,152,8
     DEFPUSHBUTTON   "&OK",IDOK,168,8,40,14,WS_GROUP
     PUSHBUTTON      "詳細 >>",IDC_MORE,168,26,40,14
     EDITTEXT        IDC_NP2INFO,8,52,200,48,ES_MULTILINE | ES_READONLY | ES_WANTRETURN | WS_VSCROLL
@@ -1026,17 +1026,6 @@ BEGIN
         MENUITEM "1/&3フレーム",                IDM_20FPS
         MENUITEM "1/&4フレーム",                IDM_15FPS
         MENUITEM SEPARATOR
-        POPUP "Video filter"
-        BEGIN
-            MENUITEM "有効",                   IDM_VF1EN
-            MENUITEM SEPARATOR
-            MENUITEM "プロファイル 0",                   IDM_VF1P0
-            MENUITEM "プロファイル 1",                   IDM_VF1P1
-            MENUITEM "プロファイル 2",                   IDM_VF1P2
-            MENUITEM SEPARATOR
-            MENUITEM "BMP保存時のみ有効",                IDM_VF1BO
-        END
-        MENUITEM SEPARATOR
         MENUITEM "画面設定(&S)...",             IDM_SCREENOPT
     END
     POPUP "デバイス(&D)"
@@ -1171,12 +1160,10 @@ BEGIN
         MENUITEM "ジョイスティックボタン反転(&V)",  IDM_JOYX
         MENUITEM "ジョイスティックボタン連打(&R)",  IDM_RAPID
         MENUITEM "マウスボタン連打(&M)",        IDM_MSRAPID
-        MENUITEM "SSTP出力",                    IDM_SSTP
         MENUITEM "&ITFエミュレーション",        IDM_ITFWORK
         // MENUITEM "タイマー不具合修正(&T)",      IDM_TIMERFIX
         // MENUITEM "16MB超メモリチェック省略(&S)",IDM_SKIP16MEMCHK
         MENUITEM "高速メモリチェック(&E)",      IDM_FASTMEMCHK
-        MENUITEM "デバッグ用ステートセーブ",              IDM_EN_DBSS
         MENUITEM SEPARATOR
         MENUITEM "ヘルプ(&H)...",               IDM_HELP
         MENUITEM "バージョン情報(&A)...",       IDM_ABOUT
@@ -1208,22 +1195,6 @@ BEGIN
         MENUITEM "Load 7",                      IDM_FLAGLOAD7
         MENUITEM "Load 8",                      IDM_FLAGLOAD8
         MENUITEM "Load 9",                      IDM_FLAGLOAD9
-    END
-END
-
-IDR_DEBUGSS MENU
-BEGIN
-    POPUP "デバッグ用ステートセーブ"
-    BEGIN
-        MENUITEM "Save debugss 0",                      IDM_DBSSSAVE0
-        MENUITEM "Save debugss 1",                      IDM_DBSSSAVE1
-        MENUITEM "Save debugss 2",                      IDM_DBSSSAVE2
-        MENUITEM "Save debugss 3",                      IDM_DBSSSAVE3
-        MENUITEM SEPARATOR
-        MENUITEM "Load debugss 0",                      IDM_DBSSLOAD0
-        MENUITEM "Load debugss 1",                      IDM_DBSSLOAD1
-        MENUITEM "Load debugss 2",                      IDM_DBSSLOAD2
-        MENUITEM "Load debugss 3",                      IDM_DBSSLOAD3
     END
 END
 
@@ -1510,9 +1481,9 @@ JUMPER118               RAWBMP                  "..\\j118.bmp"
 
 STRINGTABLE
 BEGIN
-    IDS_APP_NAME2           "Neko Project II kai"
-    IDS_APP_NAME21          "Neko Project 21 kai"
-    IDS_FILENAME_HELP       "np2kai.chm"
+    IDS_APP_NAME2           "Neko Project II/W"
+    IDS_APP_NAME21          "Neko Project 21/W"
+    IDS_FILENAME_HELP       "np2.chm"
     IDS_FONTFACE            "ＭＳ ゴシック"
     IDS_PFONTFACE           "ＭＳ Ｐゴシック"
     IDS_FONTFACE_PRIMARY    "ＭＳ ゴシック"
@@ -1840,7 +1811,7 @@ STRINGTABLE
 BEGIN
     IDS_SCSITITLE           "SCSIイメージ選択"
     IDS_SCSIEXT             "hdd"
-    IDS_SCSIFILTER          "Virtual98ハードディスクイメージ(*.hdd)|*.hdd|RaSCSIハードディスクイメージ(*.hdn)|*.hdn|対応しているすべての形式|*.hdd;*.hdn|すべてのファイル(*.*)|*.*|"
+    IDS_SCSIFILTER          "Virtual98ハードディスクイメージ(*.hdd)|*.hdd|RaSCSIハードディスクイメージ(*.hdn;*.hds)|*.hdn;*.hds|対応しているすべての形式|*.hdd;*.hdn;*.hds|すべてのファイル(*.*)|*.*|"
     IDS_NEWDISKTITLE        "Create disk image"
 END
 

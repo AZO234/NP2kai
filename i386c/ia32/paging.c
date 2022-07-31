@@ -812,7 +812,7 @@ do { \
 } while (/*CONSTCOND*/ 0)
 
 #define	NTLB		2	/* 0: DTLB, 1: ITLB */
-#define	NENTRY		(1 << 8)
+#define	NENTRY		(1 << 6)
 #define	TLB_ENTRY_SHIFT	12
 #define	TLB_ENTRY_MASK	(NENTRY - 1)
 

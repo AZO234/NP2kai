@@ -380,17 +380,22 @@ const PALNUM	*s;
 	bf.bfType[1] = 'M';
 	pos = sizeof(BMPFILE) + sizeof(BMPINFO) + palsize;
 	STOREINTELDWORD(bf.bfOffBits, pos);
-	if (file_write(fh, &bf, sizeof(bf)) != sizeof(bf)) {
-		goto sswb_err2;
-	}
 
 	// Bitmap Info
 	bmpdata_setinfo(&bi, &bd);
 	STOREINTELDWORD(bi.biClrImportant, sd->pals);
 	align = bmpdata_getalign(&bi);
+	
+	// Bitmap File (size)
+	STOREINTELDWORD(bf.bfSize, (sizeof(BMPFILE) + sizeof(BMPINFO) + palsize + bmpdata_getalign(&bi) * bd.height));
+
+	if (file_write(fh, &bf, sizeof(bf)) != sizeof(bf)) {
+		goto sswb_err2;
+	}
 	if (file_write(fh, &bi, sizeof(bi)) != sizeof(bi)) {
 		goto sswb_err2;
 	}
+
 	if (palsize) {
 		ZeroMemory(palwork, palsize);
 		CopyMemory(palwork, sd->pal, sd->pals * 4);
@@ -521,7 +526,6 @@ const PALNUM	*s;
 	bf.bfType[1] = 'M';
 	pos = sizeof(BMPFILE) + sizeof(BMPINFO) + palsize;
 	STOREINTELDWORD(bf.bfOffBits, pos);
-	CopyMemory(lpbf, &bf, sizeof(bf));
 
 	// Bitmap Info
 	bmpdata_setinfo(&bi, &bd);
@@ -534,6 +538,10 @@ const PALNUM	*s;
 		CopyMemory(palwork, sd->pal, sd->pals * 4);
 		CopyMemory(*lplppal, palwork, palsize);
 	}
+	
+	// Bitmap File (size)
+	STOREINTELDWORD(bf.bfSize, (sizeof(BMPFILE) + sizeof(BMPINFO) + palsize + bmpdata_getalign(&bi) * bd.height));
+	CopyMemory(lpbf, &bf, sizeof(bf));
 
 	work = (UINT8 *)_MALLOC(align, filename);
 	if (work == NULL) {
@@ -586,6 +594,7 @@ const PALNUM	*s;
 		CopyMemory(dstpix, work, align);
 		dstpix += align;
 	} while(--bd.height);
+	
 
 	_MFREE(work);
 	return(SUCCESS);
