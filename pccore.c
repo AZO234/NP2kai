@@ -208,6 +208,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2KAI_GIT_TAG " " NP2KAI_GIT_HASH);
 #endif
 				0,
 				0,
+				0,
 #if defined(SUPPORT_DEBUGSS)
 				0,
 #endif

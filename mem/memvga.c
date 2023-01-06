@@ -110,7 +110,9 @@ void MEMCALL memvgaf_wr16(UINT32 address, REG16 value) {
 }
 
 UINT32 MEMCALL memvgaf_rd32(UINT32 address){
-	return (UINT32)memvgaf_rd16(address)|(memvgaf_rd16(address+2)<<16);
+	UINT32 r = (UINT32)memvgaf_rd16(address);
+	r |= (UINT32)memvgaf_rd16(address+2) << 16;
+	return r;
 }
 void MEMCALL memvgaf_wr32(UINT32 address, UINT32 value){
 	memvgaf_wr16(address, (REG16)value);

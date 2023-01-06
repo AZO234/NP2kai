@@ -41,6 +41,7 @@
 
 #include	<compiler.h>
 
+
 #if defined(SUPPORT_CL_GD5430)
 
 #include	<pccore.h>
@@ -66,6 +67,27 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #endif
 
+//#if 1
+//#undef	TRACEOUT
+//#define USE_TRACEOUT_VS
+////#define MEM_BDA_TRACEOUT
+////#define MEM_D8_TRACEOUT
+//#ifdef USE_TRACEOUT_VS
+//static void trace_fmt_ex(const char *fmt, ...)
+//{
+//	char stmp[2048];
+//	va_list ap;
+//	va_start(ap, fmt);
+//	vsprintf(stmp, fmt, ap);
+//	strcat(stmp, "¥n");
+//	va_end(ap);
+//	OutputDebugStringA(stmp);
+//}
+//#define	TRACEOUT(s)	trace_fmt_ex s
+//#else
+//#define	TRACEOUT(s)	(void)(s)
+//#endif
+//#endif	/* 1 */
 /* force some bits to zero */
 const uint8_t sr_mask[8] = {
     (uint8_t)~0xfc,
@@ -3056,7 +3078,20 @@ uint32_t_ cirrus_linear_readb(void *opaque, target_phys_addr_t addr)
 		}
 		addr &= s->cirrus_addr_mask;
 		ret = *(s->vram_ptr + addr);
-    }
+		//if(addr >= 0x1ff000){
+		//	TRACEOUT(("vga: read 0x%x", addr));
+		//}
+		//if (0x1fff00 <= addr && addr < 0x1fff40){
+		//	ret = s->cr[addr & 0xff];
+		//}
+		//if (addr == 0x1fff40){
+		//	if(np2wab.relaystateint & 0x2){
+		//		ret = 0x80;
+		//	}else{
+		//		ret = 0x00;
+		//	}
+		//}
+     }
 
     return ret;
 }
@@ -3129,6 +3164,28 @@ void cirrus_linear_writeb(void *opaque, target_phys_addr_t addr,
 				cirrus_mem_writeb_mode4and5_16bpp(s, mode, addr, val);
 			}
 		}
+		//if (0x1fff00 <= addr && addr < 0x1fff40){
+		//	cirrus_mmio_blt_write(s, addr & 0xff, val);
+		//	//cirrus_hook_write_cr(s, addr & 0xff, val);
+		//}
+		//if (addr == 0x1fff40){
+		//	char dat = 0x0;
+		//	if(val == 0x80){
+		//		dat = 0x2;
+		//	}
+		//	if((!!np2wab.relaystateint) != (!!(dat & 0x2))){
+		//		np2wab.relaystateint = dat & 0x2;
+		//		np2wab_setRelayState(np2wab.relaystateint|np2wab.relaystateext); // リレーはORで･･･（暫定やっつけ修正）
+		//	}
+		//	np2clvga.mmioenable = (dat&0x1);
+		//	TRACEOUT(("vga: write 0x%x=%02x", addr, val));
+		//}
+		//if(0x1ff000 <= addr && addr < 0x1fff00){
+		//	TRACEOUT(("vga: write 0x%x=%02x", addr, val));
+		//}
+		//if(addr >= 0x1ff000){
+		//	TRACEOUT(("vga: write 0x%x=%02x", addr, val));
+		//}
     }
 }
 
@@ -5249,6 +5306,9 @@ void cirrusvga_drawGraphic(){
 	// Cirrusの色数と解像度を取得
     bpp = cirrusvga->get_bpp((VGAState*)cirrusvga);
     cirrusvga->get_resolution((VGAState*)cirrusvga, &width, &height);
+	//bpp = 16;
+	//width = 1024;
+	//height = 768;
 	
 #if defined(SUPPORT_VGA_MODEX)
 	// PC/AT MODE X compatible
@@ -7571,7 +7631,7 @@ void pc98_cirrus_vga_resetresolution(void)
 		cirrusvga_wab_42e1 = 0x18;  // 存在しない
 		cirrusvga_wab_46e8 = 0x10;
 	}else{
-		memset(cirrusvga->vram_ptr, 0xff, cirrusvga->real_vram_size);
+		memset(cirrusvga->vram_ptr, 0x00, cirrusvga->real_vram_size);
 		cirrusvga_wab_46e8 = 0x18;
 	}
 #if defined(SUPPORT_PCI)

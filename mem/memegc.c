@@ -1413,7 +1413,9 @@ void MEMCALL memegc_wr16(UINT32 addr, REG16 value) {
 }
 
 UINT32 MEMCALL memegc_rd32(UINT32 address){
-	return (UINT32)memegc_rd16(address)|(memegc_rd16(address+2)<<16);
+	UINT32 r = (UINT32)memegc_rd16(address);
+	r |= (UINT32)memegc_rd16(address+2) << 16;
+	return r;
 }
 
 void MEMCALL memegc_wr32(UINT32 address, UINT32 value){

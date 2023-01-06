@@ -238,10 +238,14 @@ REG8 MEMCALL memtcr1_rd8(UINT32 address)	TCRRD8(1, address)
 REG16 MEMCALL memtcr0_rd16(UINT32 address)	TCRRD16(0, address)
 REG16 MEMCALL memtcr1_rd16(UINT32 address)	TCRRD16(1, address)
 UINT32 MEMCALL memtcr0_rd32(UINT32 address){
-	return (UINT32)memtcr0_rd16(address)|(memtcr0_rd16(address+2)<<16);
+	UINT32 r = (UINT32)memtcr0_rd16(address);
+	r |= (UINT32)memtcr0_rd16(address+2) << 16;
+	return r;
 }
 UINT32 MEMCALL memtcr1_rd32(UINT32 address){
-	return (UINT32)memtcr1_rd16(address)|(memtcr1_rd16(address+2)<<16);
+	UINT32 r = (UINT32)memtcr1_rd16(address);
+	r |= (UINT32)memtcr1_rd16(address+2) << 16;
+	return r;
 }
 
 void MEMCALL memrmw0_wr8(UINT32 address, REG8 value)

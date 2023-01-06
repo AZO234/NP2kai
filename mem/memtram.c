@@ -65,7 +65,9 @@ REG16 MEMCALL memtram_rd16(UINT32 address) {
 }
 
 UINT32 MEMCALL memtram_rd32(UINT32 address){
-	return (UINT32)memtram_rd16(address)|(memtram_rd16(address+2)<<16);
+	UINT32 r = (UINT32)memtram_rd16(address);
+	r |= (UINT32)memtram_rd16(address+2) << 16;
+	return r;
 }
 
 void MEMCALL memtram_wr8(UINT32 address, REG8 value) {

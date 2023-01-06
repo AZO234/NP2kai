@@ -916,7 +916,6 @@ BRESULT np2wab_getbmp(BMPFILE *lpbf, BMPINFO *lpbi, UINT8 **lplppal, UINT8 **lpl
 	bf.bfType[1] = 'M';
 	pos = sizeof(BMPFILE) + sizeof(BMPINFO);
 	STOREINTELDWORD(bf.bfOffBits, pos);
-	CopyMemory(lpbf, &bf, sizeof(bf));
 
 	// Bitmap Info
 	bmpdata_setinfo(&bi, &bd);
@@ -924,6 +923,10 @@ BRESULT np2wab_getbmp(BMPFILE *lpbf, BMPINFO *lpbi, UINT8 **lplppal, UINT8 **lpl
 	align = bmpdata_getalign(&bi);
 	CopyMemory(lpbi, &bi, sizeof(bi));
 	*lplppal = (UINT8*)malloc(0); // freeで解放されても大丈夫なように（大抵NULLが入る）
+	
+	// Bitmap File (size)
+	STOREINTELDWORD(bf.bfSize, (sizeof(BMPFILE) + sizeof(BMPINFO) + 0 + bmpdata_getalign(&bi) * bd.height));
+	CopyMemory(lpbf, &bf, sizeof(bf));
 
 	*lplppixels = (UINT8*)malloc(bmpdata_getalign(&bi) * bd.height);
 	dstpix = *lplppixels;
