@@ -76,19 +76,37 @@ UINT codecnv_utf8toucs4_1(UINT32 *lpOutput, const char *lpInput, UINT cchInput) 
 		lpOutput[0] = (UINT8)lpInput[0];
 		break;
 	case 2:
+#if !defined(MSB_FIRST)
 		lpOutput[0]  = ((UINT8)lpInput[0] & 0x1F) << 6;
 		lpOutput[0] |=  (UINT8)lpInput[1] & 0x3F;
+#else
+		lpOutput[0]  = ((UINT8)lpInput[1] & 0x1F) << 6;
+		lpOutput[0] |=  (UINT8)lpInput[0] & 0x3F;
+#endif
 		break;
 	case 3:
+#if !defined(MSB_FIRST)
 		lpOutput[0]  = ((UINT8)lpInput[0] & 0x0F) << 12;
 		lpOutput[0] |= ((UINT8)lpInput[1] & 0x3F) <<  6;
 		lpOutput[0] |=  (UINT8)lpInput[2] & 0x3F;
+#else
+		lpOutput[0]  = ((UINT8)lpInput[2] & 0x0F) << 12;
+		lpOutput[0] |= ((UINT8)lpInput[1] & 0x3F) <<  6;
+		lpOutput[0] |=  (UINT8)lpInput[0] & 0x3F;
+#endif
 		break;
 	case 4:
+#if !defined(MSB_FIRST)
 		lpOutput[0]  = ((UINT8)lpInput[0] & 0x07) << 18;
 		lpOutput[0] |= ((UINT8)lpInput[1] & 0x3F) << 12;
 		lpOutput[0] |= ((UINT8)lpInput[2] & 0x3F) <<  6;
 		lpOutput[0] |=  (UINT8)lpInput[3] & 0x3F;
+#else
+		lpOutput[0]  = ((UINT8)lpInput[3] & 0x07) << 18;
+		lpOutput[0] |= ((UINT8)lpInput[2] & 0x3F) << 12;
+		lpOutput[0] |= ((UINT8)lpInput[1] & 0x3F) <<  6;
+		lpOutput[0] |=  (UINT8)lpInput[0] & 0x3F;
+#endif
 		break;
 	}
 

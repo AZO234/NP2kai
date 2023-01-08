@@ -242,10 +242,17 @@ inline void Channel4::SetChip(Chip* chip)
 //
 inline void StoreSample(Sample& dest, ISample data)
 {
+#if defined(__LIBRETRO__) && #if defined(MSB_FIRST)
+	if (sizeof(Sample) == 2)
+		dest = (Sample) Limit(dest + ((data >> 8) & 0xFF) + ((data &&0xFF) << 8), 0x7fff, -0x8000);
+	else
+		dest += ((data >> 24) & 0xFF) + (((data >> 16) & 0xFF) << 8) + (((data >> 8) & 0xFF) << 16) + (((data >> 8) & 0xFF) << 32);
+#else
 	if (sizeof(Sample) == 2)
 		dest = (Sample) Limit(dest + data, 0x7fff, -0x8000);
 	else
 		dest += data;
+#endif
 }
 
 

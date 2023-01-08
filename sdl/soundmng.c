@@ -1094,7 +1094,11 @@ sdlmixer_init(UINT rate, UINT samples)
 		goto failure;
 	}
 
+#if !defined(MSB_FIRST)
 	rv = Mix_OpenAudio(rate, AUDIO_S16SYS, 2, samples);
+#else
+	rv = Mix_OpenAudio(rate, AUDIO_S16SYSMSB, 2, samples);
+#endif
 	if (rv < 0) {
 		g_printerr("sdlmixer_init: Mix_OpenAudio(): %s\n",
 		    Mix_GetError());
