@@ -79,7 +79,7 @@ static void IOOUTCALL pcm86_oa468(UINT port, REG8 val) {
 		g_pcm86.lastclock = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
 		g_pcm86.lastclock <<= 6;
 	}
-	if ((xchgbit & 0x10) && (!(val & 0x10))) {
+	if (/*(xchgbit & 0x10) &&*/ (!(val & 0x10))) {
 		g_pcm86.irqflag = 0;
 //		g_pcm86.write = 0;
 //		g_pcm86.reqirq = 0;
@@ -193,7 +193,7 @@ static REG8 IOINPCALL pcm86_ia466(UINT port) {
 		g_pcm86.lastclock += (cnt * stepclock);
 		past -= cnt * stepclock;
 		if (g_pcm86.fifo & 0x80) {
-			sound_sync();
+			//sound_sync();
 			RECALC_NOWCLKWAIT(cnt);
 		}
 	}
@@ -215,7 +215,7 @@ static REG8 IOINPCALL pcm86_ia468(UINT port) {
 	
 	ret = g_pcm86.fifo & (~0x10);
 #if 1
-	if (pcm86gen_intrq() || g_pcm86.irqflag) {
+	if (pcm86gen_intrq()) {
 		ret |= 0x10;
 	}
 #elif 1		// むしろこう？

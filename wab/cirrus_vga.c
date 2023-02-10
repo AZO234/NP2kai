@@ -3065,7 +3065,7 @@ uint32_t_ cirrus_linear_readb(void *opaque, target_phys_addr_t addr)
 		/* XXX handle bitblt */
 		//ret = 0xff;
 		ret = *s->cirrus_srcptr;
-		*s->cirrus_srcptr++;
+		s->cirrus_srcptr++;
 		if (s->cirrus_srcptr >= s->cirrus_srcptr_end) {
 			cirrus_bitblt_videotocpu_next(s);
 		}
@@ -3767,7 +3767,7 @@ uint32_t_ cirrus_linear_bitblt_readb(void *opaque, target_phys_addr_t addr)
     /* handle bitblt */
     if (s->cirrus_srcptr != s->cirrus_srcptr_end) {
 		ret = *s->cirrus_srcptr;
-		*s->cirrus_srcptr++;
+		s->cirrus_srcptr++;
 		if (s->cirrus_srcptr >= s->cirrus_srcptr_end) {
 			cirrus_bitblt_videotocpu_next(s);
 		}

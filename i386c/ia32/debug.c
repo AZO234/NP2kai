@@ -132,6 +132,7 @@ dbg_printf(const char *str, ...)
 	va_start(ap, str);
 	vsnprintf(buf, sizeof(buf), str, ap);
 	va_end(ap);
+	buf[NELEMENTS(buf) - 2] = '\0';
 	strcat(buf, "\n");
 
 	printf("%s", buf);

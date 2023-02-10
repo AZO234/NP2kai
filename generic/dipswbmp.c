@@ -54,6 +54,9 @@ static UINT8 *getbmpres(const OEMCHAR* resname, DIPBMP *dipbmp) {
 	int ressize;
 
 	hRsrc = FindResource(NULL, resname, OEMTEXT("RAWBMP"));
+	if (hRsrc == NULL) {
+		goto gb_err1;
+	}
 	hRes = LoadResource(NULL, hRsrc);
 	if (hRes == NULL) {
 		goto gb_err1;

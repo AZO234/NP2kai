@@ -507,7 +507,7 @@ void bios_initialize(void) {
 	mem[0xffff0] = 0xea;
 	STOREINTELDWORD(mem + 0xffff1, 0xfd800000);
 
-	CopyMemory(mem + 0x0fd800 + 0x0e00, keytable[0], 0x300);
+	CopyMemory(mem + 0x0fd800 + 0x0e00, keytable[0], 0x60 * 8);
 	
 	//fh = file_create_c(_T("emuitf.rom"));
 	//if (fh != FILEH_INVALID) {
@@ -515,7 +515,8 @@ void bios_initialize(void) {
 	//	file_close(fh);
 	//	TRACEOUT(("write emuitf.rom"));
 	//}
-	CopyMemory(mem + ITF_ADRS, itfrom, sizeof(itfrom)+1);
+	memset(mem + ITF_ADRS, 0, sizeof(itfrom)+1);
+	CopyMemory(mem + ITF_ADRS, itfrom, sizeof(itfrom));
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 	// 高速メモリチェック
 	if(np2cfg.memcheckspeed > 1){

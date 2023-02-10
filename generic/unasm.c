@@ -582,7 +582,9 @@ opeana_ea:
 	}
 
 opeana_ed:
-	r->mnemonic = rstr.ope[mnemonic];
+	if (mnemonic < NELEMENTS(rstr.ope)) {
+		r->mnemonic = rstr.ope[mnemonic];
+	}
 	p[0] = '\0';
 	return((UINT)(ptr - org));
 }

@@ -581,9 +581,9 @@ static int fileappend(FILEH hdl, FDDFILE fdd,
 			size = length;
 		}
 		length -= size;
-		file_seek(hdl, ptr + length, 0);
+		file_seek(hdl, (FILEPOS)ptr + length, 0);
 		rsize = file_read(hdl, tmp, size);
-		file_seek(hdl, ptr + length + apsize, 0);
+		file_seek(hdl, (FILEPOS)ptr + length + apsize, 0);
 		file_write(hdl, tmp, rsize);
 	}
 
@@ -658,6 +658,10 @@ static void endoftrack(UINT fmtsize, UINT8 sectors) {
 		fileappend(hdl, fdd, endpointer, lastpointer, apsize);
 		fdd->inf.d88.fd_size += apsize;
 		STOREINTELDWORD(fdd->inf.d88.head.fd_size, fdd->inf.d88.fd_size);
+	}
+	if (trk >= D88_TRACKMAX) {
+		file_close(hdl);
+		return;
 	}
 	fdd->inf.d88.ptr[trk] = fpointer;
 	STOREINTELDWORD(fdd->inf.d88.head.trackp[trk], fpointer);

@@ -190,7 +190,7 @@ const OEMCHAR	*ext;
 		cylinders = LOADINTELWORD(thd.cylinders);
 		sectors = 33;
 		size = 256;
-		totals = cylinders * sectors * surfaces;
+		totals = (FILEPOS)cylinders * sectors * surfaces;
 	}
 	else if ((iftype == SXSIDRV_SASI) && (!file_cmpname(ext, str_nhd))) {
 		NHDHDR nhd;						// T98Next HDD (IDE)
@@ -215,7 +215,7 @@ const OEMCHAR	*ext;
 		cylinders = LOADINTELDWORD(hdi.cylinders);
 		sectors = LOADINTELDWORD(hdi.sectors);
 		size = LOADINTELDWORD(hdi.sectorsize);
-		totals = cylinders * sectors * surfaces;
+		totals = (FILEPOS)cylinders * sectors * surfaces;
 	}
 	else if ((iftype == SXSIDRV_SCSI) && (!file_cmpname(ext, str_hdd))) {
 		VHDHDR vhd;						// Virtual98 HDD (SCSI)
@@ -241,7 +241,7 @@ const OEMCHAR	*ext;
 		}else{
 			sectors = 25;
 		}
-		cylinders = (UINT32)(fsize / (sectors * surfaces * size));
+		cylinders = (UINT32)(fsize / ((FILELEN)sectors * surfaces * size));
 		totals = fsize / size;
 		// totals = (FILEPOS)cylinders * sectors * surfaces;
 	}
@@ -252,7 +252,7 @@ const OEMCHAR	*ext;
 		size = 512;
 		surfaces = 8;
 		sectors = 32;
-		cylinders = (UINT32)(fsize / (sectors * surfaces * size));
+		cylinders = (UINT32)(fsize / ((FILELEN)sectors * surfaces * size));
 		totals = fsize / size;
 		// totals = (FILEPOS)cylinders * sectors * surfaces;
 	}

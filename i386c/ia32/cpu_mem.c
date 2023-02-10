@@ -455,22 +455,27 @@ REG80 MEMCALL
 cpu_memoryread_f(UINT32 paddr)
 {
 	REG80 value;
-	int i;
+	//int i;
 
-	for (i = 0; i < (int)sizeof(REG80); ++i) {
-		value.b[i] = cpu_memoryread(paddr + i);
-	}
-	return value;
+	//for (i = 0; i < (int)sizeof(REG80); ++i) {
+	//	value.b[i] = cpu_memoryread(paddr + i);
+	//}
+	value.d.l[0] = cpu_memoryread_d(paddr);
+	value.d.l[1] = cpu_memoryread_d(paddr + 4);
+	value.d.h = cpu_memoryread_w(paddr + 8);
 }
 
 void MEMCALL
 cpu_memorywrite_f(UINT32 paddr, const REG80 *value)
 {
-	int i;
+	//int i;
 
-	for (i = 0; i < (int)sizeof(REG80); ++i) {
-		cpu_memorywrite(paddr + i, value->b[i]);
-	}
+	//for (i = 0; i < (int)sizeof(REG80); ++i) {
+	//	cpu_memorywrite(paddr + i, value->b[i]);
+	//}
+	cpu_memorywrite_d(paddr, value->d.l[0]);
+	cpu_memorywrite_d(paddr + 4, value->d.l[1]);
+	cpu_memorywrite_w(paddr + 8, value->d.h);
 }
 
 /*

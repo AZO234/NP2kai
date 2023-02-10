@@ -280,7 +280,6 @@ REG8 MEMCALL memvgaio_rd8(UINT32 address) {
 	UINT	pos;
 	
 	if(address > 0xe0000 + 0x0100){
-		UINT	pos;
 		REG8 ret;
 		pos = address - 0xe0000 - 0x0100;
 	
@@ -368,7 +367,6 @@ void MEMCALL memvgaio_wr8(UINT32 address, REG8 value) {
 	UINT	pos;
 	
 	if(address > 0xe0000 + 0x0100){
-		UINT	pos;
 		pos = address - 0xe0000 - 0x0100;
 	
 		if(PEGC_REG_PATTERN <= pos){

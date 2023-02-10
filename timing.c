@@ -84,3 +84,19 @@ UINT timing_getcount_baseclock(void) {
 	return(ret);
 }
 
+double timing_getcount_raw(void) {
+
+	UINT32	ticknow;
+	UINT32	span;
+	UINT32	fraction;
+	double	ret = 0;
+
+	ticknow = GETTICK();
+	span = ticknow - timing.tick;
+	if (span >= 1000) {
+		span = 1000;
+	}
+	fraction = timing.fraction + (span * timing.msstep);
+	ret = timing.cnt + ((double)fraction / (1 << MSSHIFT));
+	return(ret);
+}

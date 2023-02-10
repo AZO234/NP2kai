@@ -274,16 +274,16 @@ static void IOOUTCALL pci_o063c(UINT port, REG8 dat) {
 
 	//// とりあえずバンク切り替えらしきが出来るように･･･（手抜きなので頻繁に切り替えられると困る）
 	switch(dat & 0x3) {
-		case 0x01:
+		case 0x1:
 			if((pcidev.membankd8 & 0x3) != 0x01){
 				memcpy(pcidev.biosromtmp, mem + 0x0d8000, 0x8000);
 				memcpy(mem + 0x0d8000, pcidev.biosrom, 0x8000);
 			}
 			break;
 
-		case 0x10:
-		case 0x11:
-		case 0x00:
+		case 0x2:
+		case 0x3:
+		case 0x0:
 		default:
 			if((pcidev.membankd8 & 0x3) == 0x01){
 				memcpy(pcidev.biosrom, mem + 0x0d8000, 0x8000);

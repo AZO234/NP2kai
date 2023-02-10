@@ -110,6 +110,9 @@ static BRESULT writehddiplex2(FILEH fh, UINT ssize, FILELEN tsize, int blank, in
 	if(tsize > 8*1024*1024) worksize = 8*1024*1024;
 	if(worksize < sizeof(hdddiskboot)) worksize = sizeof(hdddiskboot);
 	work = (UINT8*)malloc(worksize);
+	if (!work) {
+		return(FAILURE);
+	}
 
 	progtotal = tsize;
 	*progress = 0;
@@ -161,19 +164,19 @@ static void hddsize2CHS(UINT hddsizeMB, UINT32 *C, UINT16 *H, UINT16 *S, UINT16 
 	FILELEN	size;
 #ifdef SUPPORT_LARGE_HDD
 	if(hddsizeMB <= 4351){
-		size = hddsizeMB * 15;
+		size = (FILELEN)hddsizeMB * 15;
 		*C = (UINT32)size;
 		*H = 8;
 		*S = 17;
 		*SS = 512;
 	}else if(hddsizeMB <= 32255){
-		size = hddsizeMB * 15 * 17 / 2 / 63;
+		size = (FILELEN)hddsizeMB * 15 * 17 / 2 / 63;
 		*C = (UINT32)size;
 		*H = 16;
 		*S = 63;
 		*SS = 512;
 	}else{
-		size = hddsizeMB * 15 * 17 / 2 / 255;
+		size = (FILELEN)hddsizeMB * 15 * 17 / 2 / 255;
 		*C = (UINT32)size;
 		*H = 16;
 		*S = 255;
@@ -323,7 +326,7 @@ void newdisk_hdi_ex_CHS(const OEMCHAR *fname, UINT32 C, UINT16 H, UINT16 S, UINT
 		goto ndhdi_err;
 	}
 	ZeroMemory(&hdi, sizeof(hdi));
-	hddsize = SS * S * H * C;
+	hddsize = (FILELEN)SS * S * H * C;
 	STOREINTELDWORD(hdi.headersize, 4096);
 	STOREINTELDWORD(hdi.hddsize, hddsize);
 	STOREINTELDWORD(hdi.sectorsize, SS);
@@ -407,7 +410,7 @@ void newdisk_hdn(const OEMCHAR *fname, UINT hddsize) {
 	if (fh == FILEH_INVALID) {
 		goto ndhdn_err;
 	}
-	tmp = hddsize * 1024 * 1024;
+	tmp = (FILELEN)hddsize * 1024 * 1024;
 	// round up 
 	if ((tmp % (512 * 25 * 8)) != 0) {
 		tmp = tmp / (512 * 25 * 8) + 1;

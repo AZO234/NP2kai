@@ -8,6 +8,7 @@ void timing_setrate(UINT lines, UINT crthz);
 void timing_setcount(UINT value);
 UINT timing_getcount(void);
 UINT timing_getcount_baseclock(void);
+double timing_getcount_raw(void);
 
 #ifdef __cplusplus
 }

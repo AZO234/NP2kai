@@ -158,6 +158,10 @@ BRESULT fdd_read_vfdd(FDDFILE fdd) {
 			file_close(hdl);
 		}
 	}
+	else {
+		fddlasterror = 0xc0;
+		return(FAILURE);
+	}
 
 	fdc.bufcnt = secsize;
 	fddlasterror = 0x00;
@@ -225,6 +229,10 @@ BRESULT fdd_write_vfdd(FDDFILE fdd) {
 			return(FAILURE);
 		}
 		file_close(hdl);
+	}
+	else {
+		fddlasterror = 0xc0;
+		return(FAILURE);
 	}
 
 	fdc.bufcnt = secsize;

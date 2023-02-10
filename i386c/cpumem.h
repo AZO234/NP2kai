@@ -2,8 +2,12 @@
 #define	NP2_I386C_CPUMEM_H__
 
 #ifdef NP2_MEMORY_ASM			// アセンブラ版は 必ずfastcallで
-//#undef	MEMCALL
-//#define	MEMCALL	FASTCALL
+#undef	MEMCALL
+#define	MEMCALL	FASTCALL
+#endif
+
+#if !defined(MEMCALL)
+#define	MEMCALL
 #endif
 
 // 000000-0fffff メインメモリ

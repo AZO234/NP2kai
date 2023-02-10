@@ -228,7 +228,9 @@ static REG8 IOINPCALL pc9861k_ib0(UINT port) {
 	if (cm_pc9861ch1 == NULL) {
 		pc9861ch1_open();
 	}
-	(void)port;
+	if (cm_pc9861ch1 == NULL) {
+		return 0;
+	}
 	return(cm_pc9861ch1->getstat(cm_pc9861ch1) | pc9861k.ch1.vect);
 }
 
@@ -237,7 +239,9 @@ static REG8 IOINPCALL pc9861k_ib2(UINT port) {
 	if (cm_pc9861ch2 == NULL) {
 		pc9861ch2_open();
 	}
-	(void)port;
+	if (cm_pc9861ch1 == NULL) {
+		return 0;
+	}
 	return(cm_pc9861ch2->getstat(cm_pc9861ch2) | pc9861k.ch2.vect);
 }
 

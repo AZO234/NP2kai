@@ -404,13 +404,16 @@ void sound_pcmunlock(const SINT32 *hdl) {
 	if (hdl) {
 		leng = sndstream.reserve - sndstream.remain;
 		if (leng > 0) {
+			//CopyMemory(sndstream.buffer,
+			//			sndstream.buffer + (sndstream.samples * 2),
+			//									(sndstream.samples * 2));
 			CopyMemory(sndstream.buffer,
 						sndstream.buffer + (sndstream.samples * 2),
 												leng * 2 * sizeof(SINT32));
 		}
 		sndstream.ptr = sndstream.buffer + (leng * 2);
-		sndstream.remain = sndstream.samples + sndstream.reserve - leng;
-//		sndstream.remain += sndstream.samples;
+//		sndstream.remain = sndstream.samples + sndstream.reserve - leng;
+		sndstream.remain += sndstream.samples;
 		SNDCSEC_LEAVE;
 		locks--;
 	}

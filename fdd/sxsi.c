@@ -310,7 +310,7 @@ BRESULT sxsi_devopen(REG8 drv, const OEMCHAR *fname) {
 				return(FAILURE);
 			}
 			if ((fname == NULL) || (fname[0] == '\0')) {
-				int num = drv & 0x0f;
+				int num = drv & 0x03;
 				if (sxsi->flag & SXSIFLAG_FILEOPENED) {
 					ideio_notify(sxsi->drv, 0);
 					(*sxsi->close)(sxsi);
@@ -337,7 +337,7 @@ BRESULT sxsi_devopen(REG8 drv, const OEMCHAR *fname) {
 					sxsi->flag = 0;
 					cdchange_drv = drv;
 					file_cpyname(sxsi->fname, _T("\0\0\0\0"), 1);
-					file_cpyname(np2cfg.idecd[drv & 0x0f], _T("\0\0\0\0"), NELEMENTS(cdchange_fname));
+					file_cpyname(np2cfg.idecd[drv & 0x03], _T("\0\0\0\0"), NELEMENTS(cdchange_fname));
 					file_cpyname(cdchange_fname, fname, NELEMENTS(cdchange_fname));
 					cdchange_flag = 1;
 					cdchange_timeoutset();
@@ -347,13 +347,13 @@ BRESULT sxsi_devopen(REG8 drv, const OEMCHAR *fname) {
 				}
 				r = sxsicd_open(sxsi, fname);
 				if (r == SUCCESS || _tcsnicmp(fname, OEMTEXT("\\\\.\\"), 4)==0) {
-					int num = drv & 0x0f;
+					int num = drv & 0x03;
 					file_cpyname(np2cfg.idecd[num], fname, MAX_PATH);
 					if(r != SUCCESS && _tcsnicmp(fname, OEMTEXT("\\\\.\\"), 4)==0){
 						ideio_notify(sxsi->drv, 0);
 					}
 				}else{
-					int num = drv & 0x0f;
+					int num = drv & 0x03;
 					file_cpyname(np2cfg.idecd[num], _T("\0\0\0\0"), 1);
 				}
 				sysmng_updatecaption(1); // SYS_UPDATECAPTION_FDD

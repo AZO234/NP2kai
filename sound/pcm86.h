@@ -25,7 +25,7 @@ enum {
 #define RECALC_NOWCLKWAIT(cnt)											\
 	do																	\
 	{																	\
-		g_pcm86.virbuf -= (SINT32)(cnt << g_pcm86.stepbit);				\
+		g_pcm86.virbuf -= (SINT64)(cnt << g_pcm86.stepbit);				\
 		if (g_pcm86.virbuf < 0)											\
 		{																\
 			g_pcm86.virbuf &= g_pcm86.stepmask;							\

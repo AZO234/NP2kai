@@ -44,8 +44,7 @@ check_io(UINT port, UINT len)
 		EXCEPTION(GP_EXCEPTION, 0);
 	}
 
-//	if ((port + len) / 8 >= CPU_STAT_IOLIMIT) {
-	if ((port + len - 1) / 8 >= CPU_STAT_IOLIMIT) {
+	if ((port + len) / 8 >= CPU_STAT_IOLIMIT) {
 		VERBOSE(("check_io: out of range: CPU_STAT_IOLIMIT(%08x) (port = %04x, len = %d)", CPU_STAT_IOLIMIT, port, len));
 		EXCEPTION(GP_EXCEPTION, 0);
 	}

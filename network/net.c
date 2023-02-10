@@ -292,6 +292,7 @@ static unsigned int __stdcall np2net_ThreadFuncW(LPVOID vdParam) {
 	// OVERLAPPED非同期書き込み準備
 	memset(&ovl, 0, sizeof(OVERLAPPED));
 	ovl.hEvent = hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	if (hEvent == NULL) return 0;
 	ovl.Offset = 0;
 	ovl.OffsetHigh = 0;
 
@@ -322,17 +323,24 @@ static unsigned int __stdcall np2net_ThreadFuncR(LPVOID vdParam) {
 	int nodatacount = 0;
 	int sleepcount = 0;
 	int timediff = 0;
-	CHAR np2net_Buf[NET_BUFLEN];
+	CHAR* np2net_Buf = (CHAR*)malloc(NET_BUFLEN);
+	if (!np2net_Buf) {
+		return 0;
+	}
 
 	// OVERLAPPED非同期読み取り準備
 	memset(&ovl, 0, sizeof(OVERLAPPED));
 	ovl.hEvent = hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	if (hEvent == NULL) {
+		free(np2net_Buf);
+		return 0;
+	}
 	ovl.Offset = 0;
 	ovl.OffsetHigh = 0;
  
 	while (!np2net_hThreadexit) {
 		np2net_cs_EnterCriticalSection();
-		if (!ReadFile(np2net_hTap, np2net_Buf, sizeof(np2net_Buf), &dwLen, &ovl)) {
+		if (!ReadFile(np2net_hTap, np2net_Buf, NET_BUFLEN, &dwLen, &ovl)) {
 			DWORD err = GetLastError();
 			np2net_cs_LeaveCriticalSection();
 			if (err == ERROR_IO_PENDING) {
@@ -386,6 +394,7 @@ static unsigned int __stdcall np2net_ThreadFuncR(LPVOID vdParam) {
 	}
 	CloseHandle(hEvent);
 	hEvent = NULL;
+	free(np2net_Buf);
 	return 0;
 }
 #else
@@ -416,7 +425,7 @@ static void* np2net_ThreadFuncR(void *thdata) {
 	UINT8 np2net_Buf[NET_BUFLEN];
 
 	while (!np2net_hThreadexit) {
-		if ((dwLen = read(np2net_hTap, np2net_Buf, sizeof(np2net_Buf))) < 0) {
+		if ((dwLen = read(np2net_hTap, np2net_Buf, NET_BUFLEN)) < 0) {
 			// 読み取りエラー
 			printf("TAP-Win32: ReadFile err");
 			sched_yield();

@@ -277,9 +277,9 @@ BRESULT makenewtrack_dcp(FDDFILE fdd) {
 				size = length;
 			}
 			length -= size;
-			file_seek(hdl, ptr + length, 0);
+			file_seek(hdl, (FILEPOS)ptr + length, 0);
 			rsize = file_read(hdl, tmp, size);
-			file_seek(hdl, ptr + length + tracksize, 0);
+			file_seek(hdl, (FILEPOS)ptr + length + tracksize, 0);
 			file_write(hdl, tmp, rsize);
 		}
 
@@ -294,6 +294,10 @@ BRESULT makenewtrack_dcp(FDDFILE fdd) {
 		}
 	}
 	else {
+		if (newtrack >= DCP_TRACKMAX) {
+			file_close(hdl);
+			return(FAILURE);
+		}
 		fdd->inf.dcp.ptr[newtrack] = fdsize;
 	}
 

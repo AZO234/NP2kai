@@ -184,7 +184,7 @@ static void np2sysp_cngclkmul(const void *arg1, long arg2) {
 		gdc_updateclock();
 	}
 
-	OEMSPRINTF(str, OEMTEXT("%d"), pccore.maxmultiple);
+	OEMSPRINTF(str, OEMTEXT("%u"), pccore.maxmultiple);
 	setoutstr(str);
 	(void)arg1;
 	(void)arg2;
@@ -205,7 +205,7 @@ static void np2sysp_getconfig(const void *arg1, long arg2) {
 #if defined(SUPPORT_WAB) && defined(SUPPORT_CL_GD5430)
 		configvalue16 = np2clvga.gd54xxtype;
 #endif
-		OEMSNPRINTF(str, sizeof(str), OEMTEXT("%d"), configvalue16);
+		OEMSNPRINTF(str, sizeof(str), OEMTEXT("%u"), configvalue16);
 		setoutstr(str);
 		return;
 	case NP21W_SWITCH_PCIENABLE:
@@ -234,7 +234,7 @@ static void np2sysp_getconfig(const void *arg1, long arg2) {
 		break;
 	}
 
-	OEMSNPRINTF(str, sizeof(str), OEMTEXT("%d"), configvalue);
+	OEMSNPRINTF(str, sizeof(str), OEMTEXT("%u"), configvalue);
 	setoutstr(str);
 	(void)arg1;
 	(void)arg2;
@@ -320,7 +320,7 @@ static void np2sysp_cngconfig(const void *arg1, long arg2) {
 		np2wab.paletteChanged = 1;
 		pc98_cirrus_vga_resetresolution();
 #endif
-		OEMSNPRINTF(str, sizeof(str), OEMTEXT("%d"), configvalue16);
+		OEMSNPRINTF(str, sizeof(str), OEMTEXT("%u"), configvalue16);
 		setoutstr(str);
 		return;
 	case NP21W_SWITCH_PCIENABLE:
@@ -374,7 +374,7 @@ static void np2sysp_cngconfig(const void *arg1, long arg2) {
 		break;
 	}
 
-	OEMSNPRINTF(str, sizeof(str), OEMTEXT("%d"), configvalue);
+	OEMSNPRINTF(str, sizeof(str), OEMTEXT("%u"), configvalue);
 	setoutstr(str);
 	(void)arg1;
 	(void)arg2;

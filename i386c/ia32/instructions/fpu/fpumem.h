@@ -48,6 +48,12 @@ fpu_memoryread_q(UINT32 address);
 REG80 MEMCALL
 fpu_memoryread_f(UINT32 address);
 
+float MEMCALL
+fpu_memoryread_f32(UINT32 address);
+
+double MEMCALL
+fpu_memoryread_f64(UINT32 address);
+
 void MEMCALL
 fpu_memorywrite_b(UINT32 address, UINT8 value);
 
@@ -62,6 +68,12 @@ fpu_memorywrite_q(UINT32 address, UINT64 value);
 
 void MEMCALL
 fpu_memorywrite_f(UINT32 address, REG80 *value);
+
+void MEMCALL
+fpu_memorywrite_f32(UINT32 address, float value);
+
+void MEMCALL
+fpu_memorywrite_f64(UINT32 address, double value);
 
 #ifdef __cplusplus
 }

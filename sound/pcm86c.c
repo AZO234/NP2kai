@@ -42,7 +42,8 @@ static const UINT clk20_128[] = {
 
 
 	PCM86CFG	pcm86cfg;
-
+	
+static UINT32 bufundercounter = 0;
 
 void pcm86gen_initialize(UINT rate)
 {
@@ -68,7 +69,7 @@ void pcm86_reset(void)
 	pcm86->stepclock /= 44100;
 	pcm86->stepclock *= pccore.multiple;
 	pcm86->rescue = (PCM86_RESCUE * 32) << 2;
-	pcm86->irq = 0xff;
+	pcm86->irq = 0xff;	
 	pcm86_setpcmrate(pcm86->fifo); // デフォルト値をセット
 }
 
@@ -129,6 +130,9 @@ void pcm86_cb(NEVENTITEM item)
 			pcm86_setnextintr();
 		}
 	}
+
+	bufundercounter = 0;
+
 	(void)item;
 }
 
@@ -193,7 +197,6 @@ void SOUNDCALL pcm86gen_checkbuf(PCM86 pcm86, UINT nCount)
 	UINT64	past;
 	static SINT32 lastvirbuf = 0;
 	static UINT32 lastvirbufcnt = 0;
-	static UINT32 bufundercounter = 0;
 	static UINT32 bufundertimevalid = 0;
 	static UINT32 bufundertime = 0;
 	//UINT32 bufundertime_interval = (pccore.baseclock >> 6) * pccore.multiple;
@@ -211,7 +214,7 @@ void SOUNDCALL pcm86gen_checkbuf(PCM86 pcm86, UINT nCount)
 		past = past / pcm86->stepclock;
 		pcm86->lastclock += (past * pcm86->stepclock);
 		//if (g_pcm86.fifo & 0x80) {
-			RECALC_NOWCLKWAIT(past);
+		//	RECALC_NOWCLKWAIT(past);
 		//}
 	}
 	
@@ -225,7 +228,6 @@ void SOUNDCALL pcm86gen_checkbuf(PCM86 pcm86, UINT nCount)
 				lastvirbufcnt = 0;
 			}
 		}else{
-			lastvirbuf = pcm86->virbuf;
 			lastvirbufcnt = 0;
 		}
 	}else{
@@ -238,7 +240,7 @@ void SOUNDCALL pcm86gen_checkbuf(PCM86 pcm86, UINT nCount)
 	//}
 	
 	bufs = pcm86->realbuf - pcm86->virbuf;
-	if (bufs < smpsize[(pcm86->dactrl >> 4) & 0x7])									/* 処理落ちてる… */
+	if (bufs <= 0 || bufs < smpsize[(pcm86->dactrl >> 4) & 0x7] && !nevent_iswork(NEVENT_86PCM))									/* 処理落ちてる… */
 	{
 		bufs &= ~3;
 		pcm86->virbuf += bufs;
@@ -266,7 +268,7 @@ void SOUNDCALL pcm86gen_checkbuf(PCM86 pcm86, UINT nCount)
 							pic_setirq(pcm86->irq);
 						//}
 					}
-					//bufundercounter = 0;
+					bufundercounter = 0;
 					//TRACEOUT(("buf: %d, (FIFOSIZE: %d) FORCE IRQ", pcm86->virbuf, pcm86->fifosize));
 				}
 				else
@@ -276,7 +278,9 @@ void SOUNDCALL pcm86gen_checkbuf(PCM86 pcm86, UINT nCount)
 				}
 			}else{
 				if(pcm86->virbuf < pcm86->fifosize) {
-					bufundercounter += nCount;
+					if(pcm86->virbuf == lastvirbuf) {
+						bufundercounter += nCount;
+					}
 				}else{
 					if(bufundercounter >= nCount) {
 						bufundercounter -= nCount;
@@ -298,23 +302,26 @@ void SOUNDCALL pcm86gen_checkbuf(PCM86 pcm86, UINT nCount)
 		}
 		bufundercounter = 0;
 	}
+	lastvirbuf = pcm86->virbuf;
 	//bufundertime += bufundertime_interval * ((newtime - bufundertime) / bufundertime_interval);
 }
 
 BOOL pcm86gen_intrq(void)
 {
 	PCM86 pcm86 = &g_pcm86;
-
-	//if (pcm86->irqflag)
-	//{
-	//	return TRUE;
-	//}
-	if (pcm86->fifo & 0x20)
+	if (!(pcm86->fifo & 0x20))
 	{
+		return FALSE;
+	}
+	if (pcm86->irqflag)
+	{
+		return TRUE;
+	}
+	if (!nevent_iswork(NEVENT_86PCM)) {
 		sound_sync();
-		if ((pcm86->reqirq) && (pcm86->virbuf <= pcm86->fifosize))
+		if (!(pcm86->irqflag) && (pcm86->virbuf <= pcm86->fifosize))
 		{
-			pcm86->reqirq = 0;
+			//pcm86->reqirq = 0;
 			pcm86->irqflag = 1;
 			return TRUE;
 		}

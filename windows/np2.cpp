@@ -121,7 +121,12 @@
 #if defined(CPUCORE_IA32)
 extern "C" UINT8 cpu_drawskip;
 extern "C" UINT8 cpu_nowait;
+#if defined(SUPPORT_ASYNC_CPU)
+extern "C" double np2cpu_lastTimingValue;
+int np2cpu_lastTimingValid = 0;
 #endif
+#endif
+
 
 #ifdef SUPPORT_WACOM_TABLET
 void cmwacom_setNCControl(bool enable);
@@ -3437,6 +3442,14 @@ static void processwait(UINT cnt) {
 	static int incskip = 0;
 
 	UINT count = timing_getcount();
+#if defined(CPUCORE_IA32)
+#if defined(SUPPORT_ASYNC_CPU)
+	if (!np2cpu_lastTimingValid) {
+		np2cpu_lastTimingValue = timing_getcount_raw();
+		np2cpu_lastTimingValid = 1;
+	}
+#endif
+#endif
 	if (count+lateframecount >= cnt) {
 		lateframecount = lateframecount + count - cnt;
 #if defined(SUPPORT_IA32_HAXM)
@@ -3455,6 +3468,11 @@ static void processwait(UINT cnt) {
 		}
 		incskip = 0;
 		averageskipcounter = 0;
+#if defined(CPUCORE_IA32)
+#if defined(SUPPORT_ASYNC_CPU)
+		np2cpu_lastTimingValid = 0;
+#endif
+#endif
 	}
 	else {
 		if(lateframecount){

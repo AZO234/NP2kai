@@ -209,6 +209,36 @@ fpu_memoryread_f(UINT32 address)
 	return cpu_vmemoryread_f(seg, address);
 }
 
+float MEMCALL
+fpu_memoryread_f32(UINT32 address)
+{
+	UINT16 seg;
+	union {
+		float f;
+		UINT32 l;
+	} val;
+
+	FPU_DATAPTR_SEG = seg = CPU_INST_SEGREG_INDEX;
+	FPU_DATAPTR_OFFSET = address;
+	val.l = cpu_vmemoryread_d(seg, address);
+	return val.f;
+}
+
+double MEMCALL
+fpu_memoryread_f64(UINT32 address)
+{
+	UINT16 seg;
+	union {
+		double f;
+		UINT64 q;
+	} val;
+
+	FPU_DATAPTR_SEG = seg = CPU_INST_SEGREG_INDEX;
+	FPU_DATAPTR_OFFSET = address;
+	val.q = cpu_vmemoryread_q(seg, address);
+	return val.f;
+}
+
 void MEMCALL
 fpu_memorywrite_b(UINT32 address, UINT8 value)
 {
@@ -257,6 +287,38 @@ fpu_memorywrite_f(UINT32 address, REG80 *value)
 	FPU_DATAPTR_SEG = seg = CPU_INST_SEGREG_INDEX;
 	FPU_DATAPTR_OFFSET = address;
 	cpu_vmemorywrite_f(seg, address, value);
+}
+
+void MEMCALL
+fpu_memorywrite_f32(UINT32 address, float value)
+{
+	UINT16 seg;
+	union {
+		float f;
+		UINT32 l;
+	} val;
+
+	val.f = value;
+
+	FPU_DATAPTR_SEG = seg = CPU_INST_SEGREG_INDEX;
+	FPU_DATAPTR_OFFSET = address;
+	cpu_vmemorywrite_d(seg, address, val.l);
+}
+
+void MEMCALL
+fpu_memorywrite_f64(UINT32 address, double value)
+{
+	UINT16 seg;
+	union {
+		double f;
+		UINT64 q;
+	} val;
+
+	val.f = value;
+
+	FPU_DATAPTR_SEG = seg = CPU_INST_SEGREG_INDEX;
+	FPU_DATAPTR_OFFSET = address;
+	cpu_vmemorywrite_q(seg, address, val.q);
 }
 #endif
 

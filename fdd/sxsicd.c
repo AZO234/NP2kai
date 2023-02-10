@@ -72,8 +72,8 @@ BRESULT sxsicd_readraw(SXSIDEV sxsi, FILEPOS pos, void *buf) {
 	CDINFO	cdinfo;
 	FILEH	fh;
 	FILEPOS	fpos;
-	UINT16	secsize;
-	UINT	i;
+	UINT16	secsize = 0;
+	SINT32	i;
 	UINT32	secs;
 //	UINT64	trk_offset;
 	
@@ -93,12 +93,19 @@ BRESULT sxsicd_readraw(SXSIDEV sxsi, FILEPOS pos, void *buf) {
 
 #endif
 
+	if (cdinfo->trks == 0) {
+		return(FAILURE);
+	}
+
 	//	pos位置のセクタサイズを取得
 	for (i = cdinfo->trks - 1; i >= 0; i--) {
 		if (cdinfo->trk[i].pos <= (UINT32)pos) {
 			secsize = cdinfo->trk[i].sector_size;
 			break;
 		}
+	}
+	if (secsize == 0) {
+		return(FAILURE);
 	}
 	if (secsize == 2048 && !isPhysicalCD) {
 		return(FAILURE);
@@ -116,7 +123,7 @@ BRESULT sxsicd_readraw(SXSIDEV sxsi, FILEPOS pos, void *buf) {
 			fpos += (pos - secs) * cdinfo->trk[i].sector_size;
 			break;
 		}
-		fpos += cdinfo->trk[i].sectors * cdinfo->trk[i].sector_size;
+		fpos += (FILEPOS)cdinfo->trk[i].sectors * cdinfo->trk[i].sector_size;
 		secs += cdinfo->trk[i].sectors;
 	}
 	fpos += (FILEPOS)(cdinfo->trk[0].start_offset);
