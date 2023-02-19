@@ -295,11 +295,19 @@ short file_getdatetime(FILEH handle, DOSDATE *dosdate, DOSTIME *dostime) {
 
 struct stat sb;
 
+#if defined(__LIBRETRO__)
+	if (fstat(handle, &sb) == 0) {
+		if (cnv_sttime(&sb.st_mtime, dosdate, dostime) == SUCCESS) {
+			return(0);
+		}
+	}
+#else
 	if (fstat(fileno(handle), &sb) == 0) {
 		if (cnv_sttime(&sb.st_mtime, dosdate, dostime) == SUCCESS) {
 			return(0);
 		}
 	}
+#endif
 	return(-1);
 }
 
