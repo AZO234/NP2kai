@@ -1472,8 +1472,8 @@ bool OPNA::LoadRhythmSample(const char* path)
 			break;
 		fsize = Max(fsize, (1<<31)/1024);
 		
-		if(rhythm[i].sample)
-			delete[] rhythm[i].sample;
+//		if(rhythm[i].sample)
+//			delete[] rhythm[i].sample;
 		rhythm[i].sample = new int16[fsize];
 		if (!rhythm[i].sample)
 			break;
