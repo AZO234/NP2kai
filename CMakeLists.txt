@@ -257,7 +257,7 @@ list(APPEND NP2kai_Windows_sources ${NP2kai_temp})
 list(APPEND NP2kai_Windows_sources "windows/resources/1252/np2.rc")
 
 # NP2kai definitions
-list(APPEND NP2kai_common_definitions "BIOS_IO_EMULATION" "OSLANG_UTF8" "SUPPORT_8BPP" "SUPPORT_16BPP" "SUPPORT_24BPP" "SUPPORT_32BPP" "SUPPORT_CL_GD5430" "SUPPORT_CRT15KHZ" "SUPPORT_DEBUGSS" "SUPPORT_FAST_MEMORYCHECK" "SUPPORT_FMGEN" "SUPPORT_GPIB" "SUPPORT_HOSTDRV" "SUPPORT_HRTIMER" "SUPPORT_IDEIO" "SUPPORT_IDEIO_48BIT" "SUPPORT_KAI_IMAGES" "SUPPORT_LARGE_HDD" "SUPPORT_NORMALDISP" "SUPPORT_PC9861K" "SUPPORT_PX" "SUPPORT_RESUME" "SUPPORT_RS232C_FIFO" "SUPPORT_S98" "SUPPORT_SCSI" "SUPPORT_SMPU98" "SUPPORT_SOFTKBD=0" "SUPPORT_SOUND_SB16" "SUPPORT_STATSAVE=10" "SUPPORT_UTF8" "SUPPORT_V30EXT" "SUPPORT_V30ORIGINAL" "SUPPORT_VIDEOFILTER" "SUPPORT_VPCVHD" "SUPPORT_WAB" "USE_MAME" "VAEG_FIX" "VERMOUTH_LIB")
+list(APPEND NP2kai_common_definitions "BIOS_IO_EMULATION" "OSLANG_UTF8" "SUPPORT_8BPP" "SUPPORT_16BPP" "SUPPORT_24BPP" "SUPPORT_32BPP" "SUPPORT_CL_GD5430" "SUPPORT_CRT15KHZ" "SUPPORT_FAST_MEMORYCHECK" "SUPPORT_FMGEN" "SUPPORT_GPIB" "SUPPORT_HOSTDRV" "SUPPORT_HRTIMER" "SUPPORT_IDEIO" "SUPPORT_IDEIO_48BIT" "SUPPORT_KAI_IMAGES" "SUPPORT_LARGE_HDD" "SUPPORT_NORMALDISP" "SUPPORT_PC9861K" "SUPPORT_PX" "SUPPORT_RESUME" "SUPPORT_RS232C_FIFO" "SUPPORT_S98" "SUPPORT_SCSI" "SUPPORT_SMPU98" "SUPPORT_SOFTKBD=0" "SUPPORT_SOUND_SB16" "SUPPORT_STATSAVE=10" "SUPPORT_UTF8" "SUPPORT_V30EXT" "SUPPORT_V30ORIGINAL" "SUPPORT_VIDEOFILTER" "SUPPORT_VPCVHD" "SUPPORT_WAB" "USE_MAME" "VAEG_FIX" "VERMOUTH_LIB")
 
 list(APPEND NP2kai_extra_definitions "SUPPORT_SMPU98" "SUPPORT_NVL_IMAGES" "SUPPORT_SWSEEKSND" "SUPPORT_SWWABRLYSND")
 
@@ -584,7 +584,7 @@ if(NOT CMAKE_CROSSCOMPILING)
 			set(OPENSSL_LIBRARIES "/usr/local/opt/openssl@1.1/lib")
 		endif()
 		find_package(OpenSSL REQUIRED)
-		list(APPEND NP2kai_OpenSSL_definitions "SUPPORT_OPENSSL")
+		list(APPEND NP2kai_OpenSSL_definitions "SUPPORT_OPENSSL" "SUPPORT_DEBUGSS")
 	endif()
 
 	# HAXM
@@ -789,7 +789,7 @@ else()
 
 	add_library(NP2kai_SDL_SDL1_base INTERFACE)
 	target_sources(NP2kai_SDL_SDL1_base INTERFACE ${NP2kai_SDL_sources} ${NP2kai_Thread_sources} ${NP2kai_TickCount_sources} ${NP2kai_Network_sources})
-	target_compile_definitions(NP2kai_SDL_SDL1_base INTERFACE ${NP2kai_SDL_definitions} ${lib_SDL_mixer_definitions} ${lib_SDL_ttf_definitions} ${NP2kai_extra_definitions} ${NP2kai_LinkBreak_definitions} ${NP2kai_TickCount_definitions} ${NP2kai_Network_definitions} ${SDL_DEFINE} ${SDL_MIXER_DEFINE} ${SDL_TTF_DEFINE} ${lib_usb_definitions})
+	target_compile_definitions(NP2kai_SDL_SDL1_base INTERFACE ${NP2kai_SDL_definitions} ${lib_SDL_mixer_definitions} ${lib_SDL_ttf_definitions} ${NP2kai_extra_definitions} ${NP2kai_LinkBreak_definitions} ${NP2kai_TickCount_definitions} ${NP2kai_Network_definitions} ${SDL_DEFINE} ${SDL_MIXER_DEFINE} ${SDL_TTF_DEFINE} ${NP2kai_OpenSSL_definitions} ${lib_usb_definitions})
 	target_include_directories(NP2kai_SDL_SDL1_base INTERFACE ${SDL_INCLUDE_DIR} ${SDL_MIXER_INCLUDE_DIR} ${SDL_TTF_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR} ${lib_usb_include_dirs} ${lib_vst3sdk_include_dirs})
 	if(MINGW OR MSYS OR CYGWIN)
 		target_link_libraries(NP2kai_SDL_SDL1_base INTERFACE ${lib_math_libraries} ${lib_vst3sdk_libraries} ${lib_Threads_libraries} ${SDL_LIBRARY} ${SDL_MIXER_LIBRARY} ${SDL_TTF_LIBRARY} ${lib_SDL_depend_libraries} ${lib_SDL_mixer_depend_libraries} ${lib_SDL_ttf_depend_libraries} ${OPENSSL_LIBRARIES} ${lib_usb_libraries} ${lib_dl_libraries} SDL dxguid mad)
@@ -800,7 +800,7 @@ else()
 
 	add_library(NP2kai_SDL_SDL2_base INTERFACE)
 	target_sources(NP2kai_SDL_SDL2_base INTERFACE ${NP2kai_SDL_sources} ${NP2kai_Thread_sources} ${NP2kai_TickCount_sources} ${NP2kai_Network_sources})
-	target_compile_definitions(NP2kai_SDL_SDL2_base INTERFACE ${NP2kai_SDL_definitions} ${lib_SDL_mixer_definitions} ${lib_SDL_ttf_definitions} ${NP2kai_extra_definitions} ${NP2kai_LinkBreak_definitions} ${NP2kai_TickCount_definitions} ${NP2kai_Network_definitions} ${SDL2_DEFINE} ${SDL2_MIXER_DEFINE} ${SDL2_TTF_DEFINE} ${lib_usb_definitions})
+	target_compile_definitions(NP2kai_SDL_SDL2_base INTERFACE ${NP2kai_SDL_definitions} ${lib_SDL_mixer_definitions} ${lib_SDL_ttf_definitions} ${NP2kai_extra_definitions} ${NP2kai_LinkBreak_definitions} ${NP2kai_TickCount_definitions} ${NP2kai_Network_definitions} ${SDL2_DEFINE} ${SDL2_MIXER_DEFINE} ${SDL2_TTF_DEFINE} ${NP2kai_OpenSSL_definitions} ${lib_usb_definitions})
 	#target_include_directories(NP2kai_SDL_SDL2_base INTERFACE ${NP2kai_SDL_UNIX_dirs} ${OPENSSL_INCLUDE_DIR} ${lib_usb_include_dirs} ${lib_vst3sdk_include_dirs})
 	#target_link_libraries(NP2kai_SDL_SDL2_base INTERFACE ${lib_math_libraries} ${lib_vst3sdk_libraries} ${lib_Threads_libraries} SDL2::Main SDL2::Mixer SDL2::TTF ${lib_SDL_depend_libraries} ${lib_SDL_mixer_depend_libraries} ${lib_SDL_ttf_depend_libraries} ${OPENSSL_LIBRARIES} ${lib_usb_libraries} ${lib_dl_libraries})
 	target_include_directories(NP2kai_SDL_SDL2_base INTERFACE ${OPENSSL_INCLUDE_DIR} ${SDL2_INCLUDE_DIR} ${SDL2_MIXER_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR} ${lib_usb_include_dirs} ${lib_vst3sdk_include_dirs})
@@ -808,13 +808,13 @@ else()
 	
 	add_library(NP2kai_X_SDL1_base INTERFACE)
 	target_sources(NP2kai_X_SDL1_base INTERFACE ${NP2kai_X_sources} ${NP2kai_Thread_sources} ${NP2kai_TickCount_sources} ${NP2kai_Network_sources})
-	target_compile_definitions(NP2kai_X_SDL1_base INTERFACE ${NP2kai_X_definitions} ${lib_SDL_definitions} ${lib_SDL_mixer_definitions} ${lib_SDL_ttf_definitions} ${NP2kai_extra_definitions} ${NP2kai_LinkBreak_definitions} ${NP2kai_TickCount_definitions} ${NP2kai_Network_definitions} ${GTK2_DEFINITIONS} ${SDL_DEFINE} ${SDL_MIXER_DEFINE} ${SDL_TTF_DEFINE} ${lib_usb_definitions} "SYSRESPATH=\"resources\"")
+	target_compile_definitions(NP2kai_X_SDL1_base INTERFACE ${NP2kai_X_definitions} ${lib_SDL_definitions} ${lib_SDL_mixer_definitions} ${lib_SDL_ttf_definitions} ${NP2kai_extra_definitions} ${NP2kai_LinkBreak_definitions} ${NP2kai_TickCount_definitions} ${NP2kai_Network_definitions} ${GTK2_DEFINITIONS} ${SDL_DEFINE} ${SDL_MIXER_DEFINE} ${SDL_TTF_DEFINE} ${NP2kai_OpenSSL_definitions} ${lib_usb_definitions} "SYSRESPATH=\"resources\"")
 	target_include_directories(NP2kai_X_SDL1_base INTERFACE ${NP2kai_X_include_dirs} ${lib_glib_include_dirs} ${lib_glibconfig_include_dirs} ${GTK2_INCLUDE_DIRS} ${X11_INCLUDE_DIRS} ${Freetype_INCLUDE_DIRS} ${Fontconfig_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} ${SDL_MIXER_INCLUDE_DIR} ${SDL_TTF_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR} ${lib_usb_include_dirs} ${lib_vst3sdk_include_dirs})
 	target_link_libraries(NP2kai_X_SDL1_base INTERFACE ${lib_math_libraries} glib-2.0 ${GTK2_LIBRARIES} ${X11_LIBRARIES} ${Freetype_LIBRARIES} ${Fontconfig_LIBRARIES} ${lib_vst3sdk_libraries} ${lib_Threads_libraries} ${SDL_LIBRARY} ${SDL_MIXER_LIBRARY} ${SDL_TTF_LIBRARY} ${lib_SDL_depend_libraries} ${lib_SDL_mixer_depend_libraries} ${lib_SDL_ttf_depend_libraries} ${OPENSSL_LIBRARIES} ${lib_usb_libraries} ${lib_dl_libraries})
 
 	add_library(NP2kai_X_SDL2_base INTERFACE)
 	target_sources(NP2kai_X_SDL2_base INTERFACE ${NP2kai_X_sources} ${NP2kai_Thread_sources} ${NP2kai_TickCount_sources} ${NP2kai_Network_sources})
-	target_compile_definitions(NP2kai_X_SDL2_base INTERFACE ${NP2kai_X_definitions} ${lib_SDL_definitions} ${lib_SDL_mixer_definitions} ${lib_SDL_ttf_definitions} ${NP2kai_extra_definitions} ${NP2kai_LinkBreak_definitions} ${NP2kai_TickCount_definitions} ${NP2kai_Network_definitions} ${GTK2_DEFINITIONS} ${SDL2_DEFINE} ${SDL2_MIXER_DEFINE} ${SDL2_TTF_DEFINE} ${lib_usb_definitions} "SYSRESPATH=\"resources\"")
+	target_compile_definitions(NP2kai_X_SDL2_base INTERFACE ${NP2kai_X_definitions} ${lib_SDL_definitions} ${lib_SDL_mixer_definitions} ${lib_SDL_ttf_definitions} ${NP2kai_extra_definitions} ${NP2kai_LinkBreak_definitions} ${NP2kai_TickCount_definitions} ${NP2kai_Network_definitions} ${GTK2_DEFINITIONS} ${SDL2_DEFINE} ${SDL2_MIXER_DEFINE} ${SDL2_TTF_DEFINE} ${NP2kai_OpenSSL_definitions} ${lib_usb_definitions} "SYSRESPATH=\"resources\"")
 	#target_include_directories(NP2kai_X_SDL2_base INTERFACE ${NP2kai_X_include_dirs} ${lib_glib_include_dirs} ${lib_glibconfig_include_dirs} ${GTK2_INCLUDE_DIRS} ${X11_INCLUDE_DIRS} ${Fontconfig_INCLUDE_DIRS} ${Freetype_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${lib_usb_include_dirs} ${lib_vst3sdk_include_dirs})
 	target_include_directories(NP2kai_X_SDL2_base INTERFACE ${NP2kai_X_include_dirs} ${lib_glib_include_dirs} ${lib_glibconfig_include_dirs} ${GTK2_INCLUDE_DIRS} ${X11_INCLUDE_DIRS} ${Fontconfig_INCLUDE_DIRS} ${Freetype_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR} ${SDL2_INCLUDE_DIR} ${SDL2_MIXER_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR} ${lib_usb_include_dirs} ${lib_vst3sdk_include_dirs})
 	#target_link_libraries(NP2kai_X_SDL2_base INTERFACE ${lib_math_libraries} glib-2.0 ${GTK2_LIBRARIES} ${X11_LIBRARIES} ${Fontconfig_LIBRARIES} ${Freetype_LIBRARIES} ${lib_vst3sdk_libraries} ${lib_Threads_libraries} SDL2::Main SDL2::Mixer SDL2::TTF ${lib_SDL_depend_libraries} ${lib_SDL_mixer_depend_libraries} ${lib_SDL_ttf_depend_libraries} ${OPENSSL_LIBRARIES} ${lib_usb_libraries} ${lib_dl_libraries})
