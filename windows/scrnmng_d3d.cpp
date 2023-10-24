@@ -52,6 +52,8 @@ static int nvidia_fixflag = 0;
 static int devicelostflag = 0;
 static int req_enter_criticalsection = 0;
 
+extern bool scrnmng_create_pending; // グラフィックレンダラ生成保留中
+
 extern WINLOCEX np2_winlocexallwin(HWND base);
 
 typedef struct {
@@ -1988,9 +1990,9 @@ void scrnmngD3D_blthdc(HDC hdc) {
 		d3d_leave_criticalsection();
 	}else{
 		if(!d3d.d3dbacksurf){
-			d3d_enter_criticalsection();
-			scrnmngD3D_create(g_scrnmode);
-			d3d_leave_criticalsection();
+			// 生成要求
+			scrnmng_create_pending = true;
+			Sleep(1000);
 		}
 	}
 #endif
@@ -2034,9 +2036,9 @@ void scrnmngD3D_bltwab() {
 		d3d_leave_criticalsection();
 	}else{
 		if(!d3d.d3dbacksurf){
-			d3d_enter_criticalsection();
-			scrnmngD3D_create(g_scrnmode);
-			d3d_leave_criticalsection();
+			// 生成要求
+			scrnmng_create_pending = true;
+			Sleep(1000);
 		}
 	}
 #endif

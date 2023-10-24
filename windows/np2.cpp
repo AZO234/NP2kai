@@ -3780,21 +3780,12 @@ void loadNP2INI(const OEMCHAR *fname){
 			}
 		}
 	}
-	// コマンドラインのディスク挿入。
-	for (i = 0; i < 4; i++)
-	{
-		LPCTSTR lpDisk = Np2Arg::GetInstance()->disk(i);
-		if (lpDisk)
-		{
-			diskdrv_readyfdd((REG8)i, lpDisk, 0);
-		}
-	}
 #if defined(SUPPORT_IDEIO)
 	// INIに記録されたCDを挿入
-	if(np2cfg.savecdfile){
+	if (np2cfg.savecdfile) {
 		for (i = 0; i < 4; i++)
 		{
-			if(np2cfg.idetype[i]==IDETYPE_CDROM){
+			if (np2cfg.idetype[i] == IDETYPE_CDROM) {
 				LPCTSTR lpDisk = np2cfg.idecd[i];
 				if (lpDisk)
 				{
@@ -4267,6 +4258,37 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 			toolwin_setfdd((REG8)i, lpDisk);
 		}
 	}
+	// コマンドラインのディスク挿入。
+	for (i = 0; i < 4; i++)
+	{
+		LPCTSTR lpDisk = Np2Arg::GetInstance()->disk(i);
+		if (lpDisk)
+		{
+			diskdrv_readyfdd((REG8)i, lpDisk, 0);
+		}
+	}
+#ifdef SUPPORT_IDEIO
+	if (Np2Arg::GetInstance()->cdisk(0))
+	{
+		int cdiskidx = 0;
+		for (i = 0; i < 4; i++)
+		{
+			if (np2cfg.idetype[i] == IDETYPE_CDROM)
+			{
+				for (; cdiskidx < 4; cdiskidx++)
+				{
+					LPCTSTR lpDisk = Np2Arg::GetInstance()->cdisk(cdiskidx);
+					if (lpDisk)
+					{
+						diskdrv_setsxsi(i, NULL);
+						diskdrv_setsxsi(i, lpDisk);
+						break;
+					}
+				}
+			}
+		}
+	}
+#endif
 
 #ifdef OPENING_WAIT
 	while((GetTickCount() - tick) < OPENING_WAIT);
@@ -4311,6 +4333,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 				TranslateMessage(&msg);
 			}
 			DispatchMessage(&msg);
+			mousemng_UIThreadSync();
 		}
 		KillTimer(hWnd, tmrID);
 	}else

@@ -209,7 +209,7 @@ void atapicmd_a0(IDEDRV drv) {
 				if(mediachangeflag==MEDIA_CHANGE_WAIT){
 					nevent_set(NEVENT_CDWAIT, 1, cdchange_timeoutproc, NEVENT_ABSOLUTE); // OS側がCDを催促しているようなので更に急いで交換
 				}else if(mediachangeflag==0){
-					nevent_setbyms(NEVENT_CDWAIT, 1000, cdchange_timeoutproc, NEVENT_ABSOLUTE); // OS側がCDが無いと認識したようなので急いで交換
+					//nevent_setbyms(NEVENT_CDWAIT, 1000, cdchange_timeoutproc, NEVENT_ABSOLUTE); // OS側がCDが無いと認識したようなので急いで交換
 				}
 			}
 			if(mediachangeflag < MEDIA_CHANGE_WAIT) mediachangeflag++;

@@ -772,7 +772,7 @@ UINT32 MEMCALL memp_read32(UINT32 address) {
 		return(LOADINTELDWORD(mem + address));
 	}
 	else{
-		if (((address + 3) & 0x7fff) > (address & 0x7fff)) {			// non 32kb boundary
+		if ((address & 0x7fff) <= 0x8000 - 4) {			// non 32kb boundary
 #if defined(SUPPORT_CL_GD5430)
 			if(np2clvga.enabled && cirrusvga_opaque && (cirrusvga_wab_46e8 & 0x08)){
 				UINT32 vramWndAddr = np2clvga.VRAMWindowAddr;
@@ -960,7 +960,7 @@ UINT32 MEMCALL memp_read32_codefetch(UINT32 address) {
 		return(LOADINTELDWORD(mem + address));
 	}
 	else{
-		if (((address + 1) & 0x7fff) && ((address + 2) & 0x7fff) && ((address + 3) & 0x7fff)) {			// non 32kb boundary
+		if ((address & 0x7fff) <= 0x8000 - 4) {			// non 32kb boundary
 			address = address & CPU_ADRSMASK;
 			if (address < USE_HIMEM) {
 				return(memfn0.rd32[address >> 15](address));

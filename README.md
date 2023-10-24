@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Jul 31, 2022<br>
+Oct 24, 2023<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -1223,6 +1223,10 @@ Next boot computer, you command from 4.
 </div></details>
 
 ## Release
+- Oct 24, 2023
+  - merge NP21/W rev.90
+- Feb 10, 2023
+  - merge NP21/W rev.87,88
 - Jly 31, 2022
   - merge NP21/W rev.85,86
     - (Exclusion is_nan, is_inf)

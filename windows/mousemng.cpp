@@ -46,14 +46,20 @@ typedef HRESULT (WINAPI *FN_DIRECTINPUT8CREATE)(HINSTANCE hinst, DWORD dwVersion
 static  HMODULE hModuleDI8 = NULL;
 static  FN_DIRECTINPUT8CREATE fndi8create = NULL;
 
+static DWORD mousemng_UIthreadID = 0;
+static bool mousemng_requestCreateInput = false;
+static bool mousemng_requestAcquire = false;
+static CRITICAL_SECTION mousemng_multithread_deviceinit_cs = { 0 };
+
 BRESULT mousemng_checkdinput8(){
+	if (mousemng_UIthreadID != GetCurrentThreadId()) return FAILURE; // 別のスレッドからのアクセスは不可
+
 	// DirectInput8が使用できるかチェック
 	LPDIRECTINPUT8 test_dinput = NULL; 
 	LPDIRECTINPUTDEVICE8 test_didevice = NULL;
 
 	if(fndi8create) return(SUCCESS);
 	
-	np2_multithread_EnterCriticalSection();
 	hModuleDI8 = LoadLibrary(_T("dinput8.dll"));
 	if(!hModuleDI8){
 		goto scre_err;
@@ -74,7 +80,6 @@ BRESULT mousemng_checkdinput8(){
 	test_didevice->Release();
 	test_dinput->Release();
 
-	np2_multithread_LeaveCriticalSection();
 	return(SUCCESS);
 scre_err3:
 	test_dinput->Release();
@@ -83,7 +88,6 @@ scre_err2:
 scre_err:
 	hModuleDI8 = NULL;
 	fndi8create = NULL;
-	np2_multithread_LeaveCriticalSection();
 	return(FAILURE);
 }
 
@@ -133,6 +137,7 @@ static void getmaincenter(POINT *cp) {
 }
 
 static void initDirectInput(){
+	if (mousemng_UIthreadID != GetCurrentThreadId()) return; // 別のスレッドからのアクセスは不可
 	
 	HRESULT		hr;
 	DIOBJECTDATAFORMAT obj[7];
@@ -171,8 +176,8 @@ static void initDirectInput(){
     obj[6].pguid        = NULL;
     obj[6].dwType       = DIDFT_ANYINSTANCE | DIDFT_OPTIONAL | DIDFT_BUTTON;
     obj[6].dwFlags      = 0;
-	
-	np2_multithread_EnterCriticalSection();
+
+	EnterCriticalSection(&mousemng_multithread_deviceinit_cs);
 	if(fndi8create && !dinput){
 		//hr = DirectInputCreateEx(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput7, (void**)&dinput, NULL);
 		//hr = DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (LPVOID*)&dinput, NULL); // 関数名変えてやがった( ﾟдﾟ)
@@ -214,16 +219,20 @@ static void initDirectInput(){
 			}
 		}else{
 			// 失敗･･･
-			diRawMouse = NULL;
 			dinput = NULL;
 		}
 	}else{
-		hr = diRawMouse->Acquire();
+		if (diRawMouse)
+		{
+			hr = diRawMouse->Acquire();
+		}
 	}
-	np2_multithread_LeaveCriticalSection();
+	LeaveCriticalSection(&mousemng_multithread_deviceinit_cs);
 }
 static void destroyDirectInput(){
-	np2_multithread_EnterCriticalSection();
+	if (mousemng_UIthreadID != GetCurrentThreadId()) return; // 別のスレッドからのアクセスは不可
+
+	EnterCriticalSection(&mousemng_multithread_deviceinit_cs);
 	if(diRawMouse){
 		diRawMouse->Release();
 		diRawMouse = NULL;
@@ -237,24 +246,26 @@ static void destroyDirectInput(){
 		hModuleDI8 = NULL;
 		fndi8create = NULL;
 	}
-	np2_multithread_LeaveCriticalSection();
+	LeaveCriticalSection(&mousemng_multithread_deviceinit_cs);
 }
 
 static void mousecapture(BOOL capture) {
+	if (mousemng_UIthreadID != GetCurrentThreadId()) return; // 別のスレッドからのアクセスは不可
 
 	LONG	style;
 	POINT	cp;
 	RECT	rct;
-	
-	np2_multithread_EnterCriticalSection();
+
 #ifdef SUPPORT_WACOM_TABLET
 	cmwacom_setExclusiveMode(capture ? true : false);
 #endif
 
 	if(np2oscfg.rawmouse){
 		if(mousemng_checkdinput8()!=SUCCESS){
+			np2_multithread_LeaveCriticalSection();
 			np2oscfg.rawmouse = 0;
 			MessageBox(g_hWndMain, _T("Failed to initialize DirectInput8."), _T("DirectInput Error"), MB_OK|MB_ICONEXCLAMATION);
+			return;
 		}
 	}
 
@@ -281,41 +292,71 @@ static void mousecapture(BOOL capture) {
 		ClipCursor(NULL);
 		style |= CS_DBLCLKS;
 		mousecaptureflg = 0;
+		EnterCriticalSection(&mousemng_multithread_deviceinit_cs);
 		if(np2oscfg.rawmouse && fndi8create && diRawMouse){
 			diRawMouse->Unacquire();
 			//destroyDirectInput();
 		}
+		LeaveCriticalSection(&mousemng_multithread_deviceinit_cs);
 	}
 	SetClassLong(g_hWndMain, GCL_STYLE, style);
-	np2_multithread_LeaveCriticalSection();
 }
 
 void mousemng_initialize(void) {
-	
+
+	InitializeCriticalSection(&mousemng_multithread_deviceinit_cs);
+
+	mousemng_UIthreadID = GetCurrentThreadId();
+
 	np2_multithread_EnterCriticalSection();
 	ZeroMemory(&mousemng, sizeof(mousemng));
 	mousemng.btn = uPD8255A_LEFTBIT | uPD8255A_RIGHTBIT;
 	mousemng.flag = (1 << MOUSEPROC_SYSTEM);
+	np2_multithread_LeaveCriticalSection();
 	
 	mousemng_updatespeed();
-	np2_multithread_LeaveCriticalSection();
 }
 
 void mousemng_destroy(void) {
-	np2_multithread_EnterCriticalSection();
+	if (mousemng_UIthreadID != GetCurrentThreadId()) return; // 別のスレッドからのアクセスは不可
+
 	destroyDirectInput();
-	np2_multithread_LeaveCriticalSection();
+
+	DeleteCriticalSection(&mousemng_multithread_deviceinit_cs);
+}
+
+void mousemng_UIThreadSync()
+{
+	if (mousemng_requestCreateInput)
+	{
+		mousemng_requestCreateInput = false;
+		destroyDirectInput();
+		initDirectInput();
+	}
+	if (mousemng_requestAcquire)
+	{
+		mousemng_requestAcquire = false;
+		EnterCriticalSection(&mousemng_multithread_deviceinit_cs);
+		if (diRawMouse)
+		{
+			diRawMouse->Acquire();
+		}
+		LeaveCriticalSection(&mousemng_multithread_deviceinit_cs);
+	}
 }
 
 void mousemng_sync(void) {
-
 	POINT	p;
 	POINT	cp;
-	
+
 	if ((!mousemng.flag) && (GetCursorPos(&p))) {
 		getmaincenter(&cp);
-		if(np2oscfg.rawmouse && fndi8create && dinput==NULL)
-			initDirectInput();
+		if (np2oscfg.rawmouse && fndi8create && dinput == NULL)
+		{
+			mousemng_requestCreateInput = true;
+			PostMessage(g_hWndMain, WM_NULL, 0, 0);
+		}
+		EnterCriticalSection(&mousemng_multithread_deviceinit_cs);
 		if(np2oscfg.rawmouse && fndi8create && mousemng_supportrawinput()){
 			DIMOUSESTATE diMouseState = {0};
 			HRESULT hr;
@@ -326,13 +367,14 @@ void mousemng_sync(void) {
 					break;
 				case DIERR_INPUTLOST:
 				case DIERR_NOTACQUIRED:
-					diRawMouse->Acquire();
+					mousemng_requestAcquire = true;
+					PostMessage(g_hWndMain, WM_NULL, 0, 0);
 					break;
 				case DIERR_NOTINITIALIZED:
 				case DIERR_INVALIDPARAM:
 				default:
-					destroyDirectInput(); 
-					initDirectInput();
+					mousemng_requestCreateInput = true;
+					PostMessage(g_hWndMain, WM_NULL, 0, 0);
 					break;
 				}
 			}else{
@@ -343,6 +385,7 @@ void mousemng_sync(void) {
 			mousebufX += (p.x - cp.x)*mouseMul;
 			mousebufY += (p.y - cp.y)*mouseMul;
 		}
+		LeaveCriticalSection(&mousemng_multithread_deviceinit_cs);
 		if(mousebufX >= mouseDiv || mousebufX <= -mouseDiv){
 			mousemng.x += (SINT16)(mousebufX / mouseDiv);
 			mousebufX   = mousebufX % mouseDiv;

@@ -53,6 +53,7 @@ void Np2Arg::Parse()
 	const int argc = ::milstr_getarg(m_lpArg, argv, _countof(argv));
 
 	int nDrive = 0;
+	int nCDrive = 0;
 
 	for (int i = ARG_BASE; i < argc; i++)
 	{
@@ -77,9 +78,21 @@ void Np2Arg::Parse()
 			{
 				lpIniFile = lpArg;
 			}
-			else if (nDrive < _countof(m_lpDisk))
+			else if (::file_cmpname(lpExt, TEXT("iso")) == 0 || ::file_cmpname(lpExt, TEXT("cue")) == 0 || ::file_cmpname(lpExt, TEXT("ccd")) == 0 || ::file_cmpname(lpExt, TEXT("cdm")) == 0 || ::file_cmpname(lpExt, TEXT("mds")) == 0 || ::file_cmpname(lpExt, TEXT("nrg")) == 0)
 			{
-				m_lpDisk[nDrive++] = lpArg;
+				// CDぽい
+				if (nCDrive < _countof(m_lpCDisk))
+				{
+					m_lpCDisk[nCDrive++] = lpArg;
+				}
+			}
+			else 
+			{
+				// ディスク扱い
+				if (nDrive < _countof(m_lpDisk))
+				{
+					m_lpDisk[nDrive++] = lpArg;
+				}
 			}
 		}
 	}
@@ -105,4 +118,5 @@ void Np2Arg::Parse()
 void Np2Arg::ClearDisk()
 {
 	ZeroMemory(m_lpDisk, sizeof(m_lpDisk));
+	ZeroMemory(m_lpCDisk, sizeof(m_lpCDisk));
 }

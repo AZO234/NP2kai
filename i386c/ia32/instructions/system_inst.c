@@ -355,21 +355,19 @@ MOV_CdRd(void)
 			 * 1 = PVI (protected mode virtual interrupt)
 			 * 0 = VME (VM8086 mode extention)
 			 */
-			reg = 0		/* allow bit */
-#if (CPU_FEATURES & CPU_FEATURE_PGE) == CPU_FEATURE_PGE
-			    | CPU_CR4_PGE
-#endif
-#if (CPU_FEATURES & CPU_FEATURE_VME) == CPU_FEATURE_VME
-			    | CPU_CR4_PVI | CPU_CR4_VME
-#endif
-#if (CPU_FEATURES & CPU_FEATURE_FXSR) == CPU_FEATURE_FXSR
-			    | CPU_CR4_OSFXSR
-#endif
-#if (CPU_FEATURES & CPU_FEATURE_SSE) == CPU_FEATURE_SSE
-			    | CPU_CR4_OSXMMEXCPT
-#endif
-			    | CPU_CR4_PCE
-			;
+			reg = CPU_CR4_PCE;		/* allow bit */
+			if (i386cpuid.cpu_feature & CPU_FEATURE_PGE) {
+				reg |= CPU_CR4_PGE;
+			}
+			if (i386cpuid.cpu_feature & CPU_FEATURE_VME) {
+				reg |= CPU_CR4_PVI | CPU_CR4_VME;
+			}
+			if (i386cpuid.cpu_feature & CPU_FEATURE_FXSR) {
+				reg |= CPU_CR4_OSFXSR;
+			}
+			if (i386cpuid.cpu_feature & CPU_FEATURE_SSE) {
+				reg |= CPU_CR4_OSXMMEXCPT;
+			}
 			if (src & ~reg) {
 				//if (src & 0xfffffc00) {
 				if (src & 0xfffff800) {

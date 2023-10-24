@@ -19,6 +19,7 @@ public:
 	void Parse();
 	void ClearDisk();
 	LPCTSTR disk(int nDrive) const;
+	LPCTSTR cdisk(int nDrive) const;
 	LPCTSTR iniFilename() const;
 	bool fullscreen() const;
 	void setiniFilename(LPTSTR newfile);
@@ -27,6 +28,7 @@ private:
 	static Np2Arg sm_instance;		//!< 唯一のインスタンスです
 
 	LPCTSTR m_lpDisk[4];	//!< ディスク
+	LPCTSTR m_lpCDisk[4];	//!< CD
 	LPTSTR m_lpIniFile;	//!< 設定ファイル
 	bool m_fFullscreen;		//!< フルスクリーン モード
 	LPTSTR m_lpArg;			//!< ワーク
@@ -64,6 +66,16 @@ inline void Np2Arg::Release()
 inline LPCTSTR Np2Arg::disk(int nDrive) const
 {
 	return m_lpDisk[nDrive];
+}
+
+/**
+ * CD パスを得る
+ * @param[in] nDrive ドライブ
+ * @return ディスク パス
+ */
+inline LPCTSTR Np2Arg::cdisk(int nDrive) const
+{
+	return m_lpCDisk[nDrive];
 }
 
 /**
