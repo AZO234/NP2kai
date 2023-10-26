@@ -241,6 +241,18 @@ void taskmng_rol(void) {
 				}
 			}
 #endif
+#if SDL_MAJOR_VERSION != 1
+			/* use command-f to toggle fullscreen/windowed mode */
+			if ((e.key.keysym.mod == KMOD_LGUI) || (e.key.keysym.mod == KMOD_RGUI)) {
+				if (e.key.keysym.scancode == SDL_SCANCODE_F) {
+					if (!scrnmng_isfullscreen()) {
+						changescreen(scrnmode | SCRNMODE_FULLSCREEN);
+					} else {
+						changescreen(scrnmode & ~SCRNMODE_FULLSCREEN);
+					}
+				}
+			}
+#endif
 			else {
 #if SDL_MAJOR_VERSION == 1
 				sdlkbd_keydown(e.key.keysym.sym);
