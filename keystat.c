@@ -573,7 +573,7 @@ static REG8 cnvnewcode(REG8 oldcode) {
 		case 0x79:				// メカニカルロックcaps
 			return(0x71);
 
-		case 0x7a:				// メカニカルロックcaps
+		case 0x7a:				// メカニカルロックkana
 			return(0x72);
 
 		case 0x76:
@@ -592,6 +592,18 @@ void keystat_senddata(REG8 data) {
 	REG8	keycode;
 
 	keycode = cnvnewcode((REG8)(data & 0x7f));
+	if (!(data & 0x80)) {
+		keystat_keydown(keycode);
+	}
+	else {
+		keystat_keyup(keycode);
+	}
+}
+void keystat_senddataraw(REG8 data) {
+
+	REG8	keycode;
+
+	keycode = (REG8)(data & 0x7f);
 	if (!(data & 0x80)) {
 		keystat_keydown(keycode);
 	}

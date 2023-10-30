@@ -770,6 +770,7 @@
 #define IDM_FPU80                       49680
 #define IDM_FPU64                       49681
 #define IDM_FPU64INT                    49682
+#define IDM_MOUSEWHEELCTL               40688
 #define IDM_MOUSENC                     40689
 #define IDM_MOUSERAW                    40690
 #define IDM_MOUSE30X                    40691

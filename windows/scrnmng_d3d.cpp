@@ -53,6 +53,7 @@ static int devicelostflag = 0;
 static int req_enter_criticalsection = 0;
 
 extern bool scrnmng_create_pending; // グラフィックレンダラ生成保留中
+extern bool scrnmng_restore_pending;
 
 extern WINLOCEX np2_winlocexallwin(HWND base);
 
@@ -491,7 +492,7 @@ static void update_backbuffer2size(){
 	}
 }
 
-static void restoresurfaces() {
+void scrnmngD3D_restoresurfaces() {
 	HRESULT r;
 
 	d3d_enter_criticalsection();
@@ -1365,7 +1366,8 @@ const SCRNSURF *scrnmngD3D_surflock(void) {
 	HRESULT			r;
 	
 	if(devicelostflag){
-		restoresurfaces();
+		scrnmng_restore_pending = true;
+		return NULL;
 	}
 
 	ZeroMemory(&destrect, sizeof(destrect));
@@ -1412,7 +1414,7 @@ void scrnmngD3D_update(void) {
 	
 	if(d3d.d3ddev == NULL) return;
 	if(devicelostflag){
-		restoresurfaces();
+		scrnmng_restore_pending = true;
 		return;
 	}
 
@@ -1574,7 +1576,9 @@ void scrnmngD3D_update(void) {
 			//	DrawMenuBar(g_hWndMain);
 			//}
 			if(d3d.d3ddev->Present(NULL, NULL, NULL, NULL)==D3DERR_DEVICELOST){
-				restoresurfaces();
+				scrnmng_restore_pending = true;
+				d3d_leave_criticalsection();
+				return;
 			}
 		}else{
 			if (d3d.scrnmode & SCRNMODE_FULLSCREEN) {
@@ -1638,7 +1642,9 @@ void scrnmngD3D_update(void) {
 			//	DrawMenuBar(g_hWndMain);
 			//}
 			if(d3d.d3ddev->Present(NULL, NULL, NULL, NULL)==D3DERR_DEVICELOST){
-				restoresurfaces();
+				scrnmng_restore_pending = true;
+				d3d_leave_criticalsection();
+				return;
 			}
 		}
 	}
@@ -1954,9 +1960,10 @@ void scrnmngD3D_blthdc(HDC hdc) {
 	if (mt_wabpausedrawing) return;
 	if (np2wab.wndWidth < 32 || np2wab.wndHeight < 32) return;
 	if (d3d.wabsurf != NULL) {
-		while(req_enter_criticalsection){
-			Sleep(1);
-		}
+		//while(req_enter_criticalsection){
+		//	np2wab_drawframe();
+		//	Sleep(1);
+		//}
 		d3d_enter_criticalsection();
 		mt_wabdrawing = 1;
 		r = d3d.wabsurf->GetDC(&hDCDD);

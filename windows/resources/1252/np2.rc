@@ -1125,6 +1125,7 @@ BEGIN
             MENUITEM "&Mouse Capture",              IDM_MOUSE
             MENUITEM "&Raw Input Mode",             IDM_MOUSERAW
             MENUITEM "&Non-capture Control",        IDM_MOUSENC
+            MENUITEM "&Change Sound Volume by Wheel",   IDM_MOUSEWHEELCTL
             MENUITEM SEPARATOR
             MENUITEM "x3.0",                        IDM_MOUSE30X
             MENUITEM "x2.0",                        IDM_MOUSE20X
@@ -1493,9 +1494,9 @@ BEGIN
     IDS_APP_NAME2           "Neko Project II/W"
     IDS_APP_NAME21          "Neko Project 21/W"
     IDS_FILENAME_HELP       "np2.chm"
-    IDS_FONTFACE            "ÇlÇr ÉSÉVÉbÉN"
+    IDS_FONTFACE            "\82l\82r \83S\83V\83b\83N"
     IDS_PFONTFACE           "MS Sans Serif"
-    IDS_FONTFACE_PRIMARY    "ÇlÇr ÉSÉVÉbÉN"
+    IDS_FONTFACE_PRIMARY    "\82l\82r \83S\83V\83b\83N"
     IDS_PFONTFACE_PRIMARY   "MS Sans Serif"
     IDS_FONTFACE_SECONDARY  "MS Gothic"
 END

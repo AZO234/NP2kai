@@ -72,6 +72,7 @@ void scrnmng_cs_LeaveModeChangeCriticalSection(){
 
 UINT8 scrnmng_current_drawtype = DRAWTYPE_INVALID;
 bool scrnmng_create_pending = false; // グラフィックレンダラ生成保留中
+bool scrnmng_restore_pending = false;
 static bool scrnmng_changemode_pending = false; // 画面モード変更保留中
 static int scrnmng_changemode_posx = INT_MAX;
 static int scrnmng_changemode_posy = INT_MAX;
@@ -710,7 +711,34 @@ void scrnmng_delaychangemode(void){
 		scrndraw_redraw();
 		InvalidateRect(g_hWndMain, NULL, TRUE);		// ugh
 	}
-	if (scrnmng_create_pending) {
+}
+
+void scrnmng_UIThreadProc(void)
+{
+	if (scrnmng_restore_pending)
+	{
+		scrnmng_cs_EnterModeChangeCriticalSection();
+		scrnmng_restore_pending = false;
+#ifdef SUPPORT_SCRN_DIRECT3D
+		if (scrnmng_current_drawtype != DRAWTYPE_INVALID)
+		{
+			if (scrnmng_current_drawtype == DRAWTYPE_DIRECT3D)
+			{
+				scrnmngD3D_restoresurfaces();
+			}
+			else
+			{
+				scrnmngDD_restoresurfaces();
+		}
+	}
+#else
+		scrnmngDD_restoresurfaces();
+#endif
+		scrnmng_cs_LeaveModeChangeCriticalSection();
+
+}
+	if (scrnmng_create_pending)
+	{
 		if (IsIconic(g_hWndMain)) return;
 		scrnmng_cs_EnterModeChangeCriticalSection();
 		scrnmng_create(g_scrnmode);
