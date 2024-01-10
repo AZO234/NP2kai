@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "ms-vscode.cpptools",
+    "lucianirsigler.nasm",
+    "jbenden.c-cpp-flylint",
+    "twxs.cmake",
+    "ms-vscode.cmake-tools",
+    "ms-vscode.wasm-dwarf-debugging"
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "NP2kai CMake: make 'build' directory & configure",
+      "command": "mkdir ${workspaceFolder}/build && cd ${workspaceFolder}/build && cmake .. ${input:cmake_options}",
+      "problemMatcher": [],
+      "detail": ""
+    },
+    {
+      "type": "shell",
+      "label": "NP2kai CMake Emscripten: make 'build' directory & configure",
+      "command": "mkdir ${workspaceFolder}/build && cd ${workspaceFolder}/build && emcmake cmake .. ${input:cmake_options}",
+      "problemMatcher": [],
+      "detail": ""
+    },
+    {
+      "type": "shell",
+      "label": "NP2kai CMake: delete 'build' directory",
+      "command": "rm -rf build",
+      "problemMatcher": [],
+      "detail": ""
+    },
+    {
+      "type": "shell",
+      "label": "NP2kai Make: build",
+      "command": "cd ${workspaceFolder}/build && make -j${input:threads}",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "type": "shell",
+      "label": "NP2kai Make: clean",
+      "command": "cd ${workspaceFolder}/build && make clean",
+      "problemMatcher": [],
+      "detail": ""
+    }
+  ],
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "cmake_options",
+      "description": "CMake options",
+      "default": "-DCMAKE_BUILD_TYPE=Debug"
+    },
+    {
+      "type": "promptString",
+      "id": "threads",
+      "description": "use number of threads for Make",
+      "default": "`grep processor /proc/cpuinfo | wc -l`"
+    }
+  ]
+}
