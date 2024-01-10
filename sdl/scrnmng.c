@@ -6,6 +6,8 @@
 #include	<pccore.h>
 #include	"np2.h"
 
+SCRNMNG		scrnmng;
+
 #if defined(SUPPORT_WAB)
 #include <wab/wab.h>
 #endif
@@ -17,22 +19,6 @@
 extern retro_environment_t environ_cb;
 #endif	/* __LIBRETRO__ */
 
-typedef struct {
-	BOOL	enable;
-	int		width;
-	int		height;
-	int		bpp;
-#if defined(__LIBRETRO__)
-	void*	pc98surf;
-	void*	dispsurf;
-#else	/* __LIBRETRO__ */
-	SDL_Surface* pc98surf;
-	SDL_Surface* dispsurf;
-#endif	/* __LIBRETRO__ */
-	VRAMHDL vram;
-} SCRNMNG;
-
-static SCRNMNG scrnmng;
 static SCRNSURF scrnsurf;
 
 #if !defined(__LIBRETRO__)
@@ -170,6 +156,16 @@ BRESULT scrnmng_create(UINT8 mode) {
 	scrnsurf.extend = 0;																// ?
 
 	scrnmng.enable = TRUE;
+	#if SDL_MAJOR_VERSION != 1
+		if((mode & SCRNMODE_FULLSCREEN) && !scrnmng_isfullscreen()) {
+			scrnmng.flag |= SCRNFLAG_FULLSCREEN;
+			SDL_SetWindowFullscreen(s_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+		} else { 
+			if(!(mode & SCRNMODE_FULLSCREEN) && scrnmng_isfullscreen()) {
+				scrnmng.flag &= ~SCRNFLAG_FULLSCREEN;
+			}
+		}
+	#endif
 	return(SUCCESS);
 }
 
