@@ -479,6 +479,15 @@ static void readsec(IDEDRV drv) {
 	sec = getcursec(drv);
 	//TRACEOUT(("readsec->drv %d sec %x cnt %d thr %d",
 	//							drv->sxsidrv, sec, drv->mulcnt, drv->multhr));
+	if (sxsi_read(drv->sxsidrv, sec, drv->buf, 512)) {
+		TRACEOUT(("read error!"));
+		goto read_err;
+	}
+	drv->bufdir = IDEDIR_IN;
+	drv->buftc = IDETC_TRANSFEREND;
+	drv->bufpos = 0;
+	drv->bufsize = 512;
+	// READはI/Oポートで読み取るデータが準備できたら割り込み
 	if (1) {
 		drv->status = IDESTAT_DRDY | IDESTAT_DSC | IDESTAT_DRQ;
 		drv->error = 0;
