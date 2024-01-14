@@ -1142,8 +1142,8 @@ create_mixer_note(void)
 {
 	GtkWidget *root_widget;
 	GtkWidget *table;
-	GtkWidget *vol_label[NELEMENTS(snd14_adj)];
-	GtkWidget *vol_hscale[NELEMENTS(snd14_adj)];
+	GtkWidget *vol_label[NELEMENTS(mixer_vol_tbl)];
+	GtkWidget *vol_hscale[NELEMENTS(mixer_vol_tbl)];
 	GtkWidget *mixer_default_button;
 	GtkWidget *hbox;
 	int i;
