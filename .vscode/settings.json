@@ -34,5 +34,11 @@
   "[xml]": {
     "editor.tabSize": 2,
     "editor.insertSpaces": true
+  },
+  "files.associations": {
+    "dosio.h": "c",
+    "np2mt.h": "c",
+    "cpu.h": "c",
+    "pc9861k.h": "c"
   }
 }

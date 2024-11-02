@@ -126,6 +126,7 @@ extern "C" double np2cpu_lastTimingValue;
 int np2cpu_lastTimingValid = 0;
 #endif
 #endif
+extern bool scrnmng_create_pending; // グラフィックレンダラ生成保留中
 
 
 #ifdef SUPPORT_WACOM_TABLET
@@ -407,6 +408,8 @@ int np2_multithread_Enabled(){
 char *autokey_sendbuffer = NULL;
 int autokey_sendbufferlen = 0;
 int autokey_sendbufferpos = 0;
+int autokey_lastkanastate = 0;
+int autokey_kanjimode = 1; // 0=漢字無視, 1=BASIC, 2=DOS
 
 // オートラン抑制用
 static int WM_QueryCancelAutoPlay;
@@ -644,7 +647,8 @@ static void changescreen(UINT8 newmode) {
 		}
 		else {
 			if (scrnmng_create(g_scrnmode) != SUCCESS) {
-				PostQuitMessage(0);
+				scrnmng_create_pending = true;
+				//PostQuitMessage(0);
 				np2_multithread_Resume();
 				return;
 			}
@@ -2133,11 +2137,13 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 						if((hg = GetClipboardData(CF_TEXT))!=NULL) {
 							txtlen = (int)GlobalSize(hg);
 							autokey_sendbufferlen = 0;
-							autokey_sendbuffer = (char*)malloc(txtlen);
+							autokey_sendbuffer = (char*)malloc(txtlen + 10);
+							memset(autokey_sendbuffer, 0, txtlen + 10);
 							strClip = (char*)GlobalLock(hg);
 							strcpy(autokey_sendbuffer , strClip);
 							GlobalUnlock(hg);
 							CloseClipboard();
+							autokey_lastkanastate = keyctrl.kanaref;
 							autokey_sendbufferlen = (int)strlen(autokey_sendbuffer);
 							autokey_sendbufferpos = 0;
 							keystat_senddata(0x80|0x70);
@@ -2517,6 +2523,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				np2oscfg.winy = rc.top;
 				sysmng_update(SYS_UPDATEOSCFG);
 			}
+			break;
+
+		case WM_SIZE:
+			np2wab_forceupdate();
 			break;
 
 		case WM_ENTERMENULOOP:
@@ -3187,15 +3197,48 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 // --- auto sendkey
 
+static unsigned short sjis_to_jis(unsigned short sjis)
+{
+	int h = sjis >> 8;
+	int l = sjis & 0xff;
+
+	if (h <= 0x9f)
+	{
+		if (l < 0x9f)
+			h = (h << 1) - 0xe1;
+		else
+			h = (h << 1) - 0xe0;
+	}
+	else
+	{
+		if (l < 0x9f)
+			h = (h << 1) - 0x161;
+		else
+			h = (h << 1) - 0x160;
+	}
+
+	if (l < 0x7f)
+		l -= 0x1f;
+	else if (l < 0x9f)
+		l -= 0x20;
+	else
+		l -= 0x7e;
+	return h << 8 | l;
+}
+
 void autoSendKey(){
 	static int shift = 0;
+	static int kanjimode = 0;
 	static DWORD lastsendtime = 0;
 	int capslock = 0;
 	//int i;
 	DWORD curtime = 0;
 	
 	// 送るものなし
-	if(autokey_sendbufferlen==0) return;
+	if (autokey_sendbufferlen == 0)
+	{
+		return;
+	}
 	
 	// 10文字だけ送る(入力速度制御付き)
 	curtime = GetTickCount();
@@ -3206,33 +3249,134 @@ void autoSendKey(){
 		for(i=0;i<maxkey;i++){
 			if(keybrd.buffers < KB_BUF/2 && autokey_sendbufferpos < autokey_sendbufferlen){
 				UINT8 sendchar = ((UINT8*)autokey_sendbuffer)[autokey_sendbufferpos];
+				int isKanji = 0;
 				if(sendchar){
 					np2_multithread_EnterCriticalSection();
 					if(sendchar <= 0x7f){
 						// ASCII
-						if(vkeylist[sendchar]){
-							if( shift_on[sendchar] && !(capslock^shift)){
-								keystat_senddata(0x00|0x70);
+						if (kanjimode)
+						{
+							keystat_senddata(0x00 | 0x74);
+							keystat_senddata(0x00 | 0x35);
+							keystat_senddata(0x80 | 0x35);
+							keystat_senddata(0x80 | 0x74);
+							kanjimode = 0;
+						}
+						if (keyctrl.kanaref != 0xff)
+						{
+							keystat_senddata(0x00 | 0x72);
+							keystat_senddata(0x80 | 0x72);
+							i++;
+						}
+						if (vkeylist[sendchar])
+						{
+							if ((shift_on[sendchar]) && !(capslock ^ shift))
+							{
+								keystat_senddata(0x00 | 0x70);
 								shift = 1;
 							}
-							if(!shift_on[sendchar] &&  (capslock^shift)){
-								keystat_senddata(0x80|0x70);
+							if ((!shift_on[sendchar]) && (capslock ^ shift))
+							{
+								keystat_senddata(0x80 | 0x70);
 								shift = 0;
 							}
-							keystat_senddata(0x00|vkeylist[sendchar]);
-							keystat_senddata(0x80|vkeylist[sendchar]);
+							keystat_senddata(0x00 | vkeylist[sendchar]);
+							keystat_senddata(0x80 | vkeylist[sendchar]);
 						}
 					}else if(0xA1 <= sendchar && sendchar <= 0xDF){
-						// 半角ｶﾅだけどまだ未実装
-						i--;
+						// 半角ｶﾅ
+						if (kanjimode)
+						{
+							keystat_senddata(0x00 | 0x74);
+							keystat_senddata(0x00 | 0x35);
+							keystat_senddata(0x80 | 0x35);
+							keystat_senddata(0x80 | 0x74);
+							kanjimode = 0;
+							i+=2;
+						}
+						if (keyctrl.kanaref == 0xff)
+						{
+							keystat_senddata(0x00 | 0x72);
+							keystat_senddata(0x80 | 0x72);
+							i++;
+						}
+						if (vkeylist[sendchar])
+						{
+							if ((shift_on[sendchar]) && !(capslock ^ shift))
+							{
+								keystat_senddata(0x00 | 0x70);
+								shift = 1;
+							}
+							if ((!shift_on[sendchar]) && (capslock ^ shift))
+							{
+								keystat_senddata(0x80 | 0x70);
+								shift = 0;
+							}
+							keystat_senddata(0x00 | vkeylist[sendchar]);
+							keystat_senddata(0x80 | vkeylist[sendchar]);
+						}
 					}else if(0x80 <= sendchar){
 						// 多分2byte文字
+						if (autokey_kanjimode)
+						{
+							isKanji = 1;
+							if ((capslock ^ shift))
+							{
+								keystat_senddata(0x80 | 0x70);
+								shift = 0;
+							}
+							if (keyctrl.kanaref != 0xff)
+							{
+								keystat_senddata(0x00 | 0x72);
+								keystat_senddata(0x80 | 0x72);
+								i++;
+							}
+							if (!kanjimode)
+							{
+								keystat_senddata(0x00 | 0x74);
+								keystat_senddata(0x00 | 0x35);
+								keystat_senddata(0x80 | 0x35);
+								keystat_senddata(0x80 | 0x74);
+								kanjimode = 1;
+								i += 2;
+							}
+							UINT8 sendchar2 = ((UINT8*)autokey_sendbuffer)[autokey_sendbufferpos + 1];
+							unsigned short jiscode = sjis_to_jis(((unsigned short)sendchar << 8) | (unsigned short)sendchar2);
+							UINT8 hexToAsc[] = { '0','1' ,'2' ,'3' ,'4' ,'5' ,'6' ,'7' ,'8' ,'9' ,'a' ,'b' ,'c' ,'d' ,'e' ,'f' };
+							keystat_senddata(0x00 | vkeylist[hexToAsc[((jiscode >> 12) & 0xf)]]);
+							keystat_senddata(0x80 | vkeylist[hexToAsc[((jiscode >> 12) & 0xf)]]);
+							keystat_senddata(0x00 | vkeylist[hexToAsc[((jiscode >> 8) & 0xf)]]);
+							keystat_senddata(0x80 | vkeylist[hexToAsc[((jiscode >> 8) & 0xf)]]);
+							keystat_senddata(0x00 | vkeylist[hexToAsc[((jiscode >> 4) & 0xf)]]);
+							keystat_senddata(0x80 | vkeylist[hexToAsc[((jiscode >> 4) & 0xf)]]);
+							keystat_senddata(0x00 | vkeylist[hexToAsc[((jiscode) & 0xf)]]);
+							keystat_senddata(0x80 | vkeylist[hexToAsc[((jiscode) & 0xf)]]);
+							if (autokey_kanjimode == 2)
+							{
+								// DOSは1文字毎に解除される
+								kanjimode = 0;
+							}
+							i += 16;
+						}
 						autokey_sendbufferpos++;
+					}
+					else
+					{
 						i--;
 					}
 					np2_multithread_LeaveCriticalSection();
 				}
 				autokey_sendbufferpos++;
+				//if (isKanji)
+				//{
+				//	// 漢字は慎重に送る
+				//	break;
+				//}
+				if (keybrd.buffers > KB_BUF * 3 / 4)
+				{
+					// 溢れそうなので一旦逃げる
+					break;
+				}
 			}
 		}
 		lastsendtime = curtime;
@@ -3240,6 +3384,19 @@ void autoSendKey(){
 
 	// 送信完了したら
 	if(autokey_sendbufferpos >= autokey_sendbufferlen){
+		if (kanjimode)
+		{
+			keystat_senddata(0x00 | 0x74);
+			keystat_senddata(0x00 | 0x35);
+			keystat_senddata(0x80 | 0x35);
+			keystat_senddata(0x80 | 0x74);
+			kanjimode = 0;
+		}
+		if (autokey_lastkanastate != 0xff && keyctrl.kanaref == 0xff || autokey_lastkanastate == 0xff && keyctrl.kanaref != 0xff)
+		{
+			keystat_senddata(0x00 | 0x72);
+			keystat_senddata(0x80 | 0x72);
+		}
 		keystat_senddata(0x80|0x70);
 		autokey_sendbufferlen = 0;
 		autokey_sendbufferpos = 0;
@@ -3276,6 +3433,19 @@ void createAsciiTo98KeyCodeList(){
 		vkeylist[spkeyascii[i]] = spkeycode[i];
 		vkeylist[ spshascii[i]] = spkeycode[i];
 		shift_on[ spshascii[i]] = 1;
+	}
+	char kanakeycode[] = { 0x31,0x1b,0x28,0x30,0x32,0x0a,0x03,0x12,0x04,0x05,0x06,0x07,0x08,0x09,0x29,0x0d,0x03,0x12,0x04,0x05,0x06,0x14,0x21,0x22,0x27,0x2d,0x2a,0x1f,0x13,0x19,0x2b,0x10,0x1d,0x29,0x11,0x1e,0x16,0x17,0x01,0x30,0x24,0x20,0x2c,0x02,0x0c,0x0b,0x23,0x2e,0x28,0x32,0x2f,0x07,0x08,0x09,0x18,0x25,0x31,0x26,0x33,0x0a,0x15,0x1a,0x1b };
+	for (i = 0xa1; i <= 0xdf; i++)
+	{
+		vkeylist[i] = kanakeycode[i - 0xa1];
+		if (i <= 0xaf)
+		{
+			shift_on[i] = 1;
+		}
+		else
+		{
+			shift_on[i] = 0;
+		}
 	}
 }
 

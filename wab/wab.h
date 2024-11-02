@@ -29,7 +29,7 @@ typedef struct {
 	int		readonly; // from np2oscfg
 } NP2WABCFG;
 
-typedef void NP2WAB_DrawFrame();
+typedef int NP2WAB_DrawFrame();
 typedef struct {
 	REG8 relay; // 画面出力リレー状態（bit0=内蔵ウィンドウアクセラレータ, bit1=RGB INスルー, それ以外のビットはReserved。bit0,1が00で98グラフィック
 	REG8 paletteChanged; // パレット要更新フラグ
@@ -79,8 +79,10 @@ void np2wab_setRelayState(REG8 state);
 void np2wab_setScreenSize(int width, int height);
 void np2wab_setScreenSizeMT(int width, int height);
 
-void wabwin_readini();
-void wabwin_writeini();
+void wabwin_readini(void);
+void wabwin_writeini(void);
+
+void np2wab_forceupdate(void);
 
 extern NP2WAB		np2wab;
 extern NP2WABCFG	np2wabcfg;

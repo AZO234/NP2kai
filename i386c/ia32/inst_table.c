@@ -48,6 +48,10 @@
 #include "ia32/instructions/sse/sse.h"
 #include "ia32/instructions/sse2/sse2.h"
 #include "ia32/instructions/sse3/sse3.h"
+#include "ia32/instructions/ssse3/ssse3.h"
+#include "ia32/instructions/sse4/sse4_1.h"
+#include "ia32/instructions/sse4/sse4_2.h"
+#include "ia32/instructions/sse4a/sse4a.h"
 
 /*
  * UNDEF OP
@@ -1508,9 +1512,9 @@ void (*insttable_2byte[2][256])(void) = {
 		SYSEXIT,
 		undef_op,
 		undef_op,
-		undef_op,		/* 38 */
+		_3byte_38ESC_16,		/* 38 */
 		undef_op,
-		undef_op,
+		_3byte_3AESC,
 		undef_op,
 		undef_op,
 		undef_op,
@@ -1550,7 +1554,7 @@ void (*insttable_2byte[2][256])(void) = {
 		SSE_MINPS,
 		SSE_DIVPS,
 		SSE_MAXPS,
-		
+
 		MMX_PUNPCKLBW,		/* 60 */
 		MMX_PUNPCKLWD,
 		MMX_PUNPCKLDQ,
@@ -1740,7 +1744,7 @@ void (*insttable_2byte[2][256])(void) = {
 		AMD3DNOW_PREFETCH,
 		AMD3DNOW_FEMMS,
 		undef_op,
-		
+
 		SSE_MOVUPSmem2xmm,		/* 10 */
 		SSE_MOVUPSxmm2mem,
 		SSE_MOVLPSmem2xmm, // + MOVHLPS
@@ -1783,9 +1787,9 @@ void (*insttable_2byte[2][256])(void) = {
 		SYSEXIT,
 		undef_op,
 		undef_op,
-		undef_op,		/* 38 */
+		_3byte_38ESC,		/* 38 */
 		undef_op,
-		undef_op,
+		_3byte_3AESC,
 		undef_op,
 		undef_op,
 		undef_op,
@@ -1808,7 +1812,7 @@ void (*insttable_2byte[2][256])(void) = {
 		CMOVNL_GdEd,
 		CMOVLE_GdEd,
 		CMOVNLE_GdEd,
-		
+
 		SSE_MOVMSKPS,		/* 50 */
 		SSE_SQRTPS,
 		SSE_RSQRTPS,
@@ -1842,7 +1846,7 @@ void (*insttable_2byte[2][256])(void) = {
 		undef_op,
 		MMX_MOVD_mm_rm32,
 		MMX_MOVQ_mm_mmm64,
-		
+
 		SSE_PSHUFW,		/* 70 */
 		MMX_PSxxW_imm8,
 		MMX_PSxxD_imm8,
@@ -1961,7 +1965,7 @@ void (*insttable_2byte[2][256])(void) = {
 		MMX_PADDUSW,
 		SSE_PMAXUB,
 		MMX_PANDN,
-		
+
 		SSE_PAVGB,		/* E0 */
 		MMX_PSRAW,
 		MMX_PSRAD,
@@ -2004,7 +2008,7 @@ void (*insttable_2byte660F_32[256])(void) = {
 	NULL,
 	NULL,
 	NULL,
-	NULL,		
+	NULL,
 	NULL,
 	NULL,
 	NULL,		/* 08 */
@@ -2126,8 +2130,8 @@ void (*insttable_2byte660F_32[256])(void) = {
 	SSE2_PCMPEQW,
 	SSE2_PCMPEQD,
 	NULL,
-	NULL,		/* 78 */
-	NULL,
+	SSE4a_EXTRQimm,		/* 78 */
+	SSE4a_EXTRQxmm,
 	NULL,
 	NULL,
 	SSE3_HADDPD,
@@ -2175,8 +2179,8 @@ void (*insttable_2byte660F_32[256])(void) = {
 	NULL,
 	NULL,
 	NULL,
-	NULL,		
-	NULL,		
+	NULL,
+	NULL,
 	NULL,		/* A8 */
 	NULL,
 	NULL,
@@ -2278,7 +2282,7 @@ void (*insttable_2byteF20F_32[256])(void) = {
 	NULL,
 	NULL,
 	NULL,
-	NULL,		
+	NULL,
 	NULL,
 	NULL,
 	NULL,		/* 08 */
@@ -2318,7 +2322,7 @@ void (*insttable_2byteF20F_32[256])(void) = {
 	NULL,		/* 28 */
 	NULL,
 	SSE2_CVTSI2SD,
-	NULL,
+	SSE4a_MOVNTSD,
 	SSE2_CVTTSD2SI,
 	SSE2_CVTSD2SI,
 	NULL,
@@ -2400,8 +2404,8 @@ void (*insttable_2byteF20F_32[256])(void) = {
 	NULL,
 	NULL,
 	NULL,
-	NULL,		/* 78 */
-	NULL,
+	SSE4a_INSERTQimm,		/* 78 */
+	SSE4a_INSERTQxmm,
 	NULL,
 	NULL,
 	SSE3_HADDPS,
@@ -2449,8 +2453,8 @@ void (*insttable_2byteF20F_32[256])(void) = {
 	NULL,
 	NULL,
 	NULL,
-	NULL,		
-	NULL,		
+	NULL,
+	NULL,
 	NULL,		/* A8 */
 	NULL,
 	NULL,
@@ -2552,7 +2556,7 @@ void (*insttable_2byteF30F_32[256])(void) = {
 	NULL,
 	NULL,
 	NULL,
-	NULL,		
+	NULL,
 	NULL,
 	NULL,
 	NULL,		/* 08 */
@@ -2592,7 +2596,7 @@ void (*insttable_2byteF30F_32[256])(void) = {
 	NULL,		/* 28 */
 	NULL,
 	SSE_CVTSI2SS,
-	NULL,
+	SSE4a_MOVNTSS,
 	SSE_CVTTSS2SI,
 	SSE_CVTSS2SI,
 	NULL,
@@ -2723,8 +2727,8 @@ void (*insttable_2byteF30F_32[256])(void) = {
 	NULL,
 	NULL,
 	NULL,
-	NULL,		
-	NULL,		
+	NULL,
+	NULL,
 	NULL,		/* A8 */
 	NULL,
 	NULL,
@@ -2820,14 +2824,1569 @@ void (*insttable_2byteF30F_32[256])(void) = {
 	NULL,
 };
 
+void (*insttable_2byte0F38_32[256])(void) = {
+	SSSE3_PSHUFB_MM,		/* 00 */
+	SSSE3_PHADDW_MM,
+	SSSE3_PHADDD_MM,
+	SSSE3_PHADDSW_MM,
+	SSSE3_PMADDUBSW_MM,
+	SSSE3_PHSUBW_MM,
+	SSSE3_PHSUBD_MM,
+	SSSE3_PHSUBSW_MM,
+	SSSE3_PSIGNB_MM,		/* 08 */
+	SSSE3_PSIGNW_MM,
+	SSSE3_PSIGND_MM,
+	SSSE3_PMULHRSW_MM,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 10 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 18 */
+	NULL,
+	NULL,
+	NULL,
+	SSSE3_PABSB_MM,
+	SSSE3_PABSW_MM,
+	SSSE3_PABSD_MM,
+	NULL,
+	NULL,		/* 20 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 28 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 30 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 38 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 40 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 48 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 50 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 58 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 60 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 68 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 70 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 78 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 80 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 88 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 90 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 98 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* A0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* A8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* B0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* B8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* C0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* C8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* D0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* D8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* E0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* E8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* F0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* F8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL
+};
+
+void (*insttable_3byte660F38_32[256])(void) = {
+	SSSE3_PSHUFB,		/* 00 */
+	SSSE3_PHADDW,
+	SSSE3_PHADDD,
+	SSSE3_PHADDSW,
+	SSSE3_PMADDUBSW,
+	SSSE3_PHSUBW,
+	SSSE3_PHSUBD,
+	SSSE3_PHSUBSW,
+	SSSE3_PSIGNB,		/* 08 */
+	SSSE3_PSIGNW,
+	SSSE3_PSIGND,
+	SSSE3_PMULHRSW,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	SSE4_1_PBLENDVB,		/* 10 */
+	NULL,
+	NULL,
+	NULL,
+	SSE4_1_BLENDVPS,
+	SSE4_1_BLENDVPD,
+	NULL,
+	SSE4_1_VPTEST,
+	NULL,		/* 18 */
+	NULL,
+	NULL,
+	NULL,
+	SSSE3_PABSB,
+	SSSE3_PABSW,
+	SSSE3_PABSD,
+	NULL,
+	SSE4_1_PMOVSXBW,		/* 20 */
+	SSE4_1_PMOVSXBD,
+	SSE4_1_PMOVSXBQ,
+	SSE4_1_PMOVSXWD,
+	SSE4_1_PMOVSXWQ,
+	SSE4_1_PMOVSXDQ,
+	NULL,
+	NULL,
+	SSE4_1_PMULDQ,		/* 28 */
+	SSE4_1_PCMPEQQ,
+	SSE4_1_MOVNTDQA,
+	SSE4_1_PACKUSDW,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	SSE4_1_PMOVZXBW,		/* 30 */
+	SSE4_1_PMOVZXBD,
+	SSE4_1_PMOVZXBQ,
+	SSE4_1_PMOVZXWD,
+	SSE4_1_PMOVZXWQ,
+	SSE4_1_PMOVZXDQ,
+	NULL,
+	SSE4_2_PCMPGTQ,
+	SSE4_1_PMINSB,		/* 38 */
+	SSE4_1_PMINSD,
+	SSE4_1_PMINUW,
+	SSE4_1_PMINUD,
+	SSE4_1_PMAXSB,
+	SSE4_1_PMAXSD,
+	SSE4_1_PMAXUW,
+	SSE4_1_PMAXUD,
+	SSE4_1_PMULLD,		/* 40 */
+	SSE4_1_PHMINPOSUW,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 48 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 50 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 58 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 60 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 68 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 70 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 78 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 80 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 88 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 90 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 98 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* A0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* A8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* B0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* B8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* C0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* C8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* D0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* D8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* E0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* E8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* F0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* F8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL
+};
+
+void (*insttable_2byte0F3A_32[256])(void) = {
+	NULL,		/* 00 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 08 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	SSSE3_PALIGNR_MM,
+	NULL,		/* 10 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 18 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 20 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 28 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 30 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 38 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 40 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 48 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 50 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 58 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 60 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 68 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 70 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 78 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 80 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 88 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 90 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 98 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* A0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* A8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* B0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* B8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* C0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* C8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* D0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* D8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* E0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* E8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* F0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* F8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL
+};
+
+void (*insttable_3byte660F3A_32[256])(void) = {
+	NULL,		/* 00 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	SSE4_1_ROUNDPS,		/* 08 */
+	SSE4_1_ROUNDPD,
+	SSE4_1_ROUNDSS,
+	SSE4_1_ROUNDSD,
+	SSE4_1_PBLENDPS,
+	SSE4_1_PBLENDPD,
+	SSE4_1_PBLENDW,
+	SSSE3_PALIGNR,
+	NULL,		/* 10 */
+	NULL,
+	NULL,
+	NULL,
+	SSE4_1_PEXTRB,
+	SSE4_1_PEXTRW,
+	SSE4_1_PEXTRD,
+	SSE4_1_PEXTRACTPS,
+	NULL,		/* 18 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	SSE4_1_PINSRB,		/* 20 */
+	SSE4_1_INSERTPS,
+	SSE4_1_PINSRD,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 28 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 30 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 38 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	SSE4_1_DPPS,		/* 40 */
+	SSE4_1_DPPD,
+	SSE4_1_MPSADBW,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 48 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 50 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 58 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	SSE4_2_PCMPESTRM,		/* 60 */
+	SSE4_2_PCMPESTRI,
+	SSE4_2_PCMPISTRM,
+	SSE4_2_PCMPISTRI,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 68 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 70 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 78 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 80 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 88 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 90 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 98 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* A0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* A8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* B0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* B8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* C0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* C8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* D0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* D8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* E0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* E8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* F0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* F8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL
+};
+
+void (*insttable_3byteF20F38_32[256])(void) = {
+	NULL,		/* 00 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 08 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 10 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 18 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 20 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 28 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 30 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 38 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 40 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 48 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 50 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 58 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 60 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 68 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 70 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 78 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 80 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 88 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 90 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 98 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* A0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* A8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* B0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	SSE4_2_POPCNT_32,		/* B8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* C0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* C8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* D0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* D8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* E0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* E8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	SSE4_2_CRC32_Gy_Eb,		/* F0 */
+	SSE4_2_CRC32_Gy_Ev,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* F8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL
+};
+
+
+void (*insttable_3byteF20F38_16[256])(void) = {
+	NULL,		/* 00 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 08 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 10 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 18 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 20 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 28 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 30 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 38 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 40 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 48 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 50 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 58 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 60 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 68 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 70 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 78 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 80 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 88 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 90 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* 98 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* A0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* A8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* B0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	SSE4_2_POPCNT_16,		/* B8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* C0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* C8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* D0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* D8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* E0 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* E8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	SSE4_2_CRC32_Gy_Eb_16,		/* F0 */
+	SSE4_2_CRC32_Gy_Ev_16,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,		/* F8 */
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL
+};
+
 
 
 /*
  * for group
  */
 
-/* group 1 */
-void (CPUCALL *insttable_G1EbIb[])(UINT8 *, UINT32) = {
+ /* group 1 */
+void (CPUCALL* insttable_G1EbIb[])(UINT8*, UINT32) = {
 	ADD_EbIb,
 	OR_EbIb,
 	ADC_EbIb,
@@ -2837,7 +4396,7 @@ void (CPUCALL *insttable_G1EbIb[])(UINT8 *, UINT32) = {
 	XOR_EbIb,
 	CMP_EbIb,
 };
-void (CPUCALL *insttable_G1EbIb_ext[])(UINT32, UINT32) = {
+void (CPUCALL* insttable_G1EbIb_ext[])(UINT32, UINT32) = {
 	ADD_EbIb_ext,
 	OR_EbIb_ext,
 	ADC_EbIb_ext,
@@ -2848,7 +4407,7 @@ void (CPUCALL *insttable_G1EbIb_ext[])(UINT32, UINT32) = {
 	CMP_EbIb_ext,
 };
 
-void (CPUCALL *insttable_G1EwIx[])(UINT16 *, UINT32) = {
+void (CPUCALL* insttable_G1EwIx[])(UINT16*, UINT32) = {
 	ADD_EwIx,
 	OR_EwIx,
 	ADC_EwIx,
@@ -2858,7 +4417,7 @@ void (CPUCALL *insttable_G1EwIx[])(UINT16 *, UINT32) = {
 	XOR_EwIx,
 	CMP_EwIx,
 };
-void (CPUCALL *insttable_G1EwIx_ext[])(UINT32, UINT32) = {
+void (CPUCALL* insttable_G1EwIx_ext[])(UINT32, UINT32) = {
 	ADD_EwIx_ext,
 	OR_EwIx_ext,
 	ADC_EwIx_ext,
@@ -2869,7 +4428,7 @@ void (CPUCALL *insttable_G1EwIx_ext[])(UINT32, UINT32) = {
 	CMP_EwIx_ext,
 };
 
-void (CPUCALL *insttable_G1EdIx[])(UINT32 *, UINT32) = {
+void (CPUCALL* insttable_G1EdIx[])(UINT32*, UINT32) = {
 	ADD_EdIx,
 	OR_EdIx,
 	ADC_EdIx,
@@ -2879,7 +4438,7 @@ void (CPUCALL *insttable_G1EdIx[])(UINT32 *, UINT32) = {
 	XOR_EdIx,
 	CMP_EdIx,
 };
-void (CPUCALL *insttable_G1EdIx_ext[])(UINT32, UINT32) = {
+void (CPUCALL* insttable_G1EdIx_ext[])(UINT32, UINT32) = {
 	ADD_EdIx_ext,
 	OR_EdIx_ext,
 	ADC_EdIx_ext,
@@ -2892,7 +4451,7 @@ void (CPUCALL *insttable_G1EdIx_ext[])(UINT32, UINT32) = {
 
 
 /* group 2 */
-void (CPUCALL *insttable_G2Eb[])(UINT8 *) = {
+void (CPUCALL* insttable_G2Eb[])(UINT8*) = {
 	ROL_Eb,
 	ROR_Eb,
 	RCL_Eb,
@@ -2902,7 +4461,7 @@ void (CPUCALL *insttable_G2Eb[])(UINT8 *) = {
 	SHL_Eb,
 	SAR_Eb,
 };
-void (CPUCALL *insttable_G2Eb_ext[])(UINT32) = {
+void (CPUCALL* insttable_G2Eb_ext[])(UINT32) = {
 	ROL_Eb_ext,
 	ROR_Eb_ext,
 	RCL_Eb_ext,
@@ -2913,7 +4472,7 @@ void (CPUCALL *insttable_G2Eb_ext[])(UINT32) = {
 	SAR_Eb_ext,
 };
 
-void (CPUCALL *insttable_G2Ew[])(UINT16 *) = {
+void (CPUCALL* insttable_G2Ew[])(UINT16*) = {
 	ROL_Ew,
 	ROR_Ew,
 	RCL_Ew,
@@ -2923,7 +4482,7 @@ void (CPUCALL *insttable_G2Ew[])(UINT16 *) = {
 	SHL_Ew,
 	SAR_Ew,
 };
-void (CPUCALL *insttable_G2Ew_ext[])(UINT32) = {
+void (CPUCALL* insttable_G2Ew_ext[])(UINT32) = {
 	ROL_Ew_ext,
 	ROR_Ew_ext,
 	RCL_Ew_ext,
@@ -2934,7 +4493,7 @@ void (CPUCALL *insttable_G2Ew_ext[])(UINT32) = {
 	SAR_Ew_ext,
 };
 
-void (CPUCALL *insttable_G2Ed[])(UINT32 *) = {
+void (CPUCALL* insttable_G2Ed[])(UINT32*) = {
 	ROL_Ed,
 	ROR_Ed,
 	RCL_Ed,
@@ -2944,7 +4503,7 @@ void (CPUCALL *insttable_G2Ed[])(UINT32 *) = {
 	SHL_Ed,
 	SAR_Ed,
 };
-void (CPUCALL *insttable_G2Ed_ext[])(UINT32) = {
+void (CPUCALL* insttable_G2Ed_ext[])(UINT32) = {
 	ROL_Ed_ext,
 	ROR_Ed_ext,
 	RCL_Ed_ext,
@@ -2955,7 +4514,7 @@ void (CPUCALL *insttable_G2Ed_ext[])(UINT32) = {
 	SAR_Ed_ext,
 };
 
-void (CPUCALL *insttable_G2EbCL[])(UINT8 *, UINT) = {
+void (CPUCALL* insttable_G2EbCL[])(UINT8*, UINT) = {
 	ROL_EbCL,
 	ROR_EbCL,
 	RCL_EbCL,
@@ -2965,7 +4524,7 @@ void (CPUCALL *insttable_G2EbCL[])(UINT8 *, UINT) = {
 	SHL_EbCL,
 	SAR_EbCL,
 };
-void (CPUCALL *insttable_G2EbCL_ext[])(UINT32, UINT) = {
+void (CPUCALL* insttable_G2EbCL_ext[])(UINT32, UINT) = {
 	ROL_EbCL_ext,
 	ROR_EbCL_ext,
 	RCL_EbCL_ext,
@@ -2976,7 +4535,7 @@ void (CPUCALL *insttable_G2EbCL_ext[])(UINT32, UINT) = {
 	SAR_EbCL_ext,
 };
 
-void (CPUCALL *insttable_G2EwCL[])(UINT16 *, UINT) = {
+void (CPUCALL* insttable_G2EwCL[])(UINT16*, UINT) = {
 	ROL_EwCL,
 	ROR_EwCL,
 	RCL_EwCL,
@@ -2986,7 +4545,7 @@ void (CPUCALL *insttable_G2EwCL[])(UINT16 *, UINT) = {
 	SHL_EwCL,
 	SAR_EwCL,
 };
-void (CPUCALL *insttable_G2EwCL_ext[])(UINT32, UINT) = {
+void (CPUCALL* insttable_G2EwCL_ext[])(UINT32, UINT) = {
 	ROL_EwCL_ext,
 	ROR_EwCL_ext,
 	RCL_EwCL_ext,
@@ -2997,7 +4556,7 @@ void (CPUCALL *insttable_G2EwCL_ext[])(UINT32, UINT) = {
 	SAR_EwCL_ext,
 };
 
-void (CPUCALL *insttable_G2EdCL[])(UINT32 *, UINT) = {
+void (CPUCALL* insttable_G2EdCL[])(UINT32*, UINT) = {
 	ROL_EdCL,
 	ROR_EdCL,
 	RCL_EdCL,
@@ -3007,7 +4566,7 @@ void (CPUCALL *insttable_G2EdCL[])(UINT32 *, UINT) = {
 	SHL_EdCL,
 	SAR_EdCL,
 };
-void (CPUCALL *insttable_G2EdCL_ext[])(UINT32, UINT) = {
+void (CPUCALL* insttable_G2EdCL_ext[])(UINT32, UINT) = {
 	ROL_EdCL_ext,
 	ROR_EdCL_ext,
 	RCL_EdCL_ext,
@@ -3019,7 +4578,7 @@ void (CPUCALL *insttable_G2EdCL_ext[])(UINT32, UINT) = {
 };
 
 /* group 3 */
-void (CPUCALL *insttable_G3Eb[])(UINT32) = {
+void (CPUCALL* insttable_G3Eb[])(UINT32) = {
 	TEST_EbIb,
 	TEST_EbIb,
 	NOT_Eb,
@@ -3030,7 +4589,7 @@ void (CPUCALL *insttable_G3Eb[])(UINT32) = {
 	IDIV_ALEb,
 };
 
-void (CPUCALL *insttable_G3Ew[])(UINT32) = {
+void (CPUCALL* insttable_G3Ew[])(UINT32) = {
 	TEST_EwIw,
 	TEST_EwIw,
 	NOT_Ew,
@@ -3041,7 +4600,7 @@ void (CPUCALL *insttable_G3Ew[])(UINT32) = {
 	IDIV_AXEw,
 };
 
-void (CPUCALL *insttable_G3Ed[])(UINT32) = {
+void (CPUCALL* insttable_G3Ed[])(UINT32) = {
 	TEST_EdId,
 	TEST_EdId,
 	NOT_Ed,
@@ -3053,7 +4612,7 @@ void (CPUCALL *insttable_G3Ed[])(UINT32) = {
 };
 
 /* group 4 */
-void (CPUCALL *insttable_G4[])(UINT32) = {
+void (CPUCALL* insttable_G4[])(UINT32) = {
 	INC_Eb,
 	DEC_Eb,
 	undef_op2,
@@ -3065,7 +4624,7 @@ void (CPUCALL *insttable_G4[])(UINT32) = {
 };
 
 /* group 5 */
-void (CPUCALL *insttable_G5Ew[])(UINT32) = {
+void (CPUCALL* insttable_G5Ew[])(UINT32) = {
 	INC_Ew,
 	DEC_Ew,
 	CALL_Ew,
@@ -3076,7 +4635,7 @@ void (CPUCALL *insttable_G5Ew[])(UINT32) = {
 	undef_op2,	/* POP_Ew_G5 */
 };
 
-void (CPUCALL *insttable_G5Ed[])(UINT32) = {
+void (CPUCALL* insttable_G5Ed[])(UINT32) = {
 	INC_Ed,
 	DEC_Ed,
 	CALL_Ed,
@@ -3088,7 +4647,7 @@ void (CPUCALL *insttable_G5Ed[])(UINT32) = {
 };
 
 /* group 6 */
-void (CPUCALL *insttable_G6[])(UINT32) = {
+void (CPUCALL* insttable_G6[])(UINT32) = {
 	SLDT_Ew,
 	STR_Ew,
 	LLDT_Ew,
@@ -3100,7 +4659,7 @@ void (CPUCALL *insttable_G6[])(UINT32) = {
 };
 
 /* group 7 */
-void (CPUCALL *insttable_G7[])(UINT32) = {
+void (CPUCALL* insttable_G7[])(UINT32) = {
 	SGDT_Ms,
 	SIDT_Ms,
 	LGDT_Ms,
@@ -3112,7 +4671,7 @@ void (CPUCALL *insttable_G7[])(UINT32) = {
 };
 
 /* group 8 */
-void (CPUCALL *insttable_G8EwIb[])(UINT32) = {
+void (CPUCALL* insttable_G8EwIb[])(UINT32) = {
 	undef_op2,
 	undef_op2,
 	undef_op2,
@@ -3123,7 +4682,7 @@ void (CPUCALL *insttable_G8EwIb[])(UINT32) = {
 	BTC_EwIb,
 };
 
-void (CPUCALL *insttable_G8EdIb[])(UINT32) = {
+void (CPUCALL* insttable_G8EdIb[])(UINT32) = {
 	undef_op2,
 	undef_op2,
 	undef_op2,
@@ -3135,7 +4694,7 @@ void (CPUCALL *insttable_G8EdIb[])(UINT32) = {
 };
 
 /* group 9 */
-void (CPUCALL *insttable_G9[])(UINT32) = {
+void (CPUCALL* insttable_G9[])(UINT32) = {
 	undef_op2,
 	CMPXCHG8B,
 	undef_op2,

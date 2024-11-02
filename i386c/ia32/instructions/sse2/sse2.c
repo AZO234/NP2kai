@@ -62,7 +62,7 @@ static void trace_fmt_ex(const char *fmt, ...)
 
 #if defined(USE_SSE2) && defined(USE_SSE) && defined(USE_FPU)
 
-#define CPU_SSE2WORKCLOCK	CPU_WORKCLOCK(8)
+#define CPU_SSE2WORKCLOCK	CPU_WORKCLOCK(2)
 
 static INLINE void
 SSE2_check_NM_EXCEPTION(){

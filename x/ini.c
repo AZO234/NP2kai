@@ -752,6 +752,7 @@ static INITBL iniitem[] = {
 	{"cpu_bran", INIRO_STR,		np2cfg.cpu_brandstring_o, 63},
 	{"cpu_brid", INITYPE_HEX32,	&np2cfg.cpu_brandid,	0},
 	{"cpu_fecx", INITYPE_HEX32,	&np2cfg.cpu_feature_ecx,	0},
+	{"cpu_fxcx", INITYPE_HEX32,	&np2cfg.cpu_feature_ex_ecx,	0},
 	{"cpu_eflg", INITYPE_HEX32,	&np2cfg.cpu_eflags_mask,	0},
 
 	{"FPU_TYPE", INITYPE_UINT8,	&np2cfg.fpu_type,	0},

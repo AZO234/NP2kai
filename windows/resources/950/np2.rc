@@ -28,9 +28,9 @@ LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL
 
 IDD_CONFIG DIALOG  0, 0, 182, 238
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "³]©w"
+CAPTION "ï¿½]ï¿½w"
 CLASS "np2dialog"
-FONT 9, "·s²Ó©úÅé"
+FONT 9, "ï¿½sï¿½Ó©ï¿½ï¿½ï¿½"
 BEGIN
     GROUPBOX        "CPU",IDC_STATIC,8,8,110,44
     COMBOBOX        IDC_BASECLOCK,14,22,54,43,CBS_DROPDOWNLIST | WS_VSCROLL | 
@@ -40,95 +40,95 @@ BEGIN
                     WS_VSCROLL | WS_GROUP | WS_TABSTOP
     RTEXT           "",IDC_CLOCKMSG,14,41,80,8
     LTEXT           "MHz",IDC_STATIC,96,41,16,8
-    GROUPBOX        "¼Ò«¬",IDC_STATIC,8,56,166,28
+    GROUPBOX        "ï¿½Ò«ï¿½",IDC_STATIC,8,56,166,28
     CONTROL         "PC-9801VM",IDC_MODELVM,"Button",BS_AUTORADIOBUTTON | 
                     WS_GROUP | WS_TABSTOP,16,68,54,10
     CONTROL         "PC-9801VX",IDC_MODELVX,"Button",BS_AUTORADIOBUTTON,72,
                     68,54,10
     CONTROL         "PC-286",IDC_MODELEPSON,"Button",BS_AUTORADIOBUTTON,128,
                     68,44,10
-    GROUPBOX        "Án­µ",IDC_STATIC,8,88,166,84
-    LTEXT           "Ãþ«¬",IDC_STATIC,14,102,48,8
+    GROUPBOX        "ï¿½nï¿½ï¿½",IDC_STATIC,8,88,166,84
+    LTEXT           "ï¿½ï¿½ï¿½ï¿½",IDC_STATIC,14,102,48,8
     COMBOBOX        IDC_SOUND_DEVICE_TYPE,64,99,64,128,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    LTEXT           "³]³Æ¦WºÙ",IDC_STATIC,14,120,48,8
+    LTEXT           "ï¿½]ï¿½Æ¦Wï¿½ï¿½",IDC_STATIC,14,120,48,8
     COMBOBOX        IDC_SOUND_DEVICE_NAME,64,117,104,128,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    LTEXT           "¨ú¼Ë³t²v",IDC_STATIC,14,138,48,8
+    LTEXT           "ï¿½ï¿½ï¿½Ë³tï¿½v",IDC_STATIC,14,138,48,8
     COMBOBOX        IDC_SOUND_RATE,64,135,50,128,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    LTEXT           "»®¯÷",IDC_STATIC,116,138,48,8
-    LTEXT           "½w½Ä°Ï",IDC_STATIC,14,156,48,8
+    LTEXT           "ï¿½ï¿½ï¿½ï¿½",IDC_STATIC,116,138,48,8
+    LTEXT           "ï¿½wï¿½Ä°ï¿½",IDC_STATIC,14,156,48,8
     EDITTEXT        IDC_SOUND_BUFFER,64,153,30,12,WS_GROUP
-    LTEXT           "²@¬í",IDC_STATIC,96,156,48,8
-    CONTROL         "¤¹³\µøµ¡½Õ¾ã¤j¤p",IDC_ALLOWRESIZE,"Button",BS_AUTOCHECKBOX | 
+    LTEXT           "ï¿½@ï¿½ï¿½",IDC_STATIC,96,156,48,8
+    CONTROL         "ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½Õ¾ï¿½jï¿½p",IDC_ALLOWRESIZE,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,8,180,162,10
-    CONTROL         "¸T¥Îªº MMX",IDC_DISABLEMMX,"Button",BS_AUTOCHECKBOX | 
+    CONTROL         "ï¿½Tï¿½Îªï¿½ MMX",IDC_DISABLEMMX,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,8,194,162,10
-    CONTROL         "½T»{¹ï¸Ü¤è¶ô (­«³]/µ²§ô®É)",IDC_COMFIRM,"Button",
+    CONTROL         "ï¿½Tï¿½{ï¿½ï¿½Ü¤ï¿½ï¿½ (ï¿½ï¿½ï¿½]/ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)",IDC_COMFIRM,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,8,208,162,10
-    CONTROL         "Ä~Äò",IDC_RESUME,"Button",BS_AUTOCHECKBOX | 
+    CONTROL         "ï¿½~ï¿½ï¿½",IDC_RESUME,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,8,222,162,10
-    DEFPUSHBUTTON   "½T©w",IDOK,130,8,44,14,WS_GROUP
-    PUSHBUTTON      "¨ú®ø",IDCANCEL,130,26,44,14
+    DEFPUSHBUTTON   "ï¿½Tï¿½w",IDOK,130,8,44,14,WS_GROUP
+    PUSHBUTTON      "ï¿½ï¿½ï¿½ï¿½",IDCANCEL,130,26,44,14
 END
 
 IDD_NEWDISK DIALOG  0, 0, 180, 48
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "«Ø¥ß³nºÐÀÉ®×"
+CAPTION "ï¿½Ø¥ß³nï¿½ï¿½ï¿½É®ï¿½"
 CLASS "np2dialog"
-FONT 9, "·s²Ó©úÅé"
+FONT 9, "ï¿½sï¿½Ó©ï¿½ï¿½ï¿½"
 BEGIN
-    LTEXT           "ºÏºÐ¦WºÙ",IDC_STATIC,8,10,38,8
+    LTEXT           "ï¿½ÏºÐ¦Wï¿½ï¿½",IDC_STATIC,8,10,38,8
     EDITTEXT        IDC_DISKLABEL,48,8,64,12,ES_AUTOHSCROLL | WS_GROUP
-    LTEXT           "ºÏºÐ«¬§O",IDC_STATIC,8,28,38,8
+    LTEXT           "ï¿½ÏºÐ«ï¿½ï¿½O",IDC_STATIC,8,28,38,8
     CONTROL         "2DD",IDC_MAKE2DD,"Button",BS_AUTORADIOBUTTON | WS_GROUP | 
                     WS_TABSTOP,48,27,30,10
     CONTROL         "2HD",IDC_MAKE2HD,"Button",BS_AUTORADIOBUTTON,80,27,30,
                     10
-    DEFPUSHBUTTON   "½T©w",IDOK,128,8,44,14,WS_GROUP
-    PUSHBUTTON      "¨ú®ø",IDCANCEL,128,26,44,14
+    DEFPUSHBUTTON   "ï¿½Tï¿½w",IDOK,128,8,44,14,WS_GROUP
+    PUSHBUTTON      "ï¿½ï¿½ï¿½ï¿½",IDCANCEL,128,26,44,14
 END
 
 IDD_NEWDISK2 DIALOG  0, 0, 196, 48
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "«Ø¥ß³nºÐÀÉ®×"
+CAPTION "ï¿½Ø¥ß³nï¿½ï¿½ï¿½É®ï¿½"
 CLASS "np2dialog"
-FONT 9, "·s²Ó©úÅé"
+FONT 9, "ï¿½sï¿½Ó©ï¿½ï¿½ï¿½"
 BEGIN
-    LTEXT           "ºÏºÐ¦WºÙ",IDC_STATIC,8,10,38,8
+    LTEXT           "ï¿½ÏºÐ¦Wï¿½ï¿½",IDC_STATIC,8,10,38,8
     EDITTEXT        IDC_DISKLABEL,48,8,64,12,ES_AUTOHSCROLL | WS_GROUP
-    LTEXT           "ºÏºÐ«¬§O",IDC_STATIC,8,28,38,8
+    LTEXT           "ï¿½ÏºÐ«ï¿½ï¿½O",IDC_STATIC,8,28,38,8
     CONTROL         "2DD",IDC_MAKE2DD,"Button",BS_AUTORADIOBUTTON | WS_GROUP | 
                     WS_TABSTOP,48,27,30,10
     CONTROL         "2HD",IDC_MAKE2HD,"Button",BS_AUTORADIOBUTTON,78,27,30,
                     10
     CONTROL         "1.44",IDC_MAKE144,"Button",BS_AUTORADIOBUTTON,108,27,30,
                     10
-    DEFPUSHBUTTON   "½T©w",IDOK,144,8,44,14,WS_GROUP
-    PUSHBUTTON      "¨ú®ø",IDCANCEL,144,26,44,14
+    DEFPUSHBUTTON   "ï¿½Tï¿½w",IDOK,144,8,44,14,WS_GROUP
+    PUSHBUTTON      "ï¿½ï¿½ï¿½ï¿½",IDCANCEL,144,26,44,14
 END
 
 IDD_NEWHDDDISK DIALOG  0, 0, 160, 48
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "«Ø¥ßµwºÐÀÉ®×"
+CAPTION "ï¿½Ø¥ßµwï¿½ï¿½ï¿½É®ï¿½"
 CLASS "np2dialog"
-FONT 9, "·s²Ó©úÅé"
+FONT 9, "ï¿½sï¿½Ó©ï¿½ï¿½ï¿½"
 BEGIN
-    LTEXT           "ºÏºÐ¤j¤p",IDC_STATIC,8,10,38,8
+    LTEXT           "ï¿½ÏºÐ¤jï¿½p",IDC_STATIC,8,10,38,8
     COMBOBOX        IDC_HDDSIZE,48,8,32,46,CBS_DROPDOWN | 
                     WS_VSCROLL | WS_TABSTOP
     LTEXT           "MB",IDC_STATIC,86,10,16,8
     RTEXT           "",IDC_HDDLIMIT,48,30,54,8
-    DEFPUSHBUTTON   "½T©w",IDOK,108,8,44,14,WS_GROUP
-    PUSHBUTTON      "¨ú®ø",IDCANCEL,108,26,44,14
+    DEFPUSHBUTTON   "ï¿½Tï¿½w",IDOK,108,8,44,14,WS_GROUP
+    PUSHBUTTON      "ï¿½ï¿½ï¿½ï¿½",IDCANCEL,108,26,44,14
 END
 
 IDD_NEWSASI DIALOG  0, 0, 144, 54
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "«Ø¥ß SASI µwºÐÀÉ®×"
+CAPTION "ï¿½Ø¥ï¿½ SASI ï¿½wï¿½ï¿½ï¿½É®ï¿½"
 CLASS "np2dialog"
-FONT 9, "·s²Ó©úÅé"
+FONT 9, "ï¿½sï¿½Ó©ï¿½ï¿½ï¿½"
 BEGIN
     CONTROL         "5MB",IDC_NEWSASI5MB,"Button",BS_AUTORADIOBUTTON | 
                     WS_TABSTOP,8,8,38,10
@@ -142,22 +142,22 @@ BEGIN
                     38,10
     CONTROL         "40MB",IDC_NEWSASI40MB,"Button",BS_AUTORADIOBUTTON,48,36,
                     38,10
-    DEFPUSHBUTTON   "½T©w",IDOK,92,8,44,14,WS_GROUP
-    PUSHBUTTON      "¨ú®ø",IDCANCEL,92,26,44,14
+    DEFPUSHBUTTON   "ï¿½Tï¿½w",IDOK,92,8,44,14,WS_GROUP
+    PUSHBUTTON      "ï¿½ï¿½ï¿½ï¿½",IDCANCEL,92,26,44,14
 END
 
 IDD_SCROPT1 DIALOG  0, 0, 172, 96
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "µø°T"
-FONT 9, "·s²Ó©úÅé"
+CAPTION "ï¿½ï¿½ï¿½T"
+FONT 9, "ï¿½sï¿½Ó©ï¿½ï¿½ï¿½"
 BEGIN
     CONTROL         "Liquid Crystal Display",IDC_LCD,"Button",
                     BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,8,156,10
-    CONTROL         "¤Ï¦V",IDC_LCDX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+    CONTROL         "ï¿½Ï¦V",IDC_LCDX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
                     20,24,144,10
-    CONTROL         "¨Ï¥Î¸õ¦æ­×¥¿",IDC_SKIPLINE,"Button",
+    CONTROL         "ï¿½Ï¥Î¸ï¿½ï¿½ï¿½×¥ï¿½",IDC_SKIPLINE,"Button",
                     BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,40,156,10
-    LTEXT           "¤ñ¨Ò",IDC_STATIC,20,55,22,8
+    LTEXT           "ï¿½ï¿½ï¿½",IDC_STATIC,20,55,22,8
     CONTROL         "Slider1",IDC_SKIPLIGHT,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,44,55,96,10
     RTEXT           "",IDC_LIGHTSTR,144,54,20,10,SS_SUNKEN
@@ -165,23 +165,23 @@ END
 
 IDD_SCROPT_FULLSCREEN DIALOG  0, 0, 172, 96
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "¥þ¿Ã¹õ"
-FONT 9, "·s²Ó©úÅé"
+CAPTION "ï¿½ï¿½ï¿½Ã¹ï¿½"
+FONT 9, "ï¿½sï¿½Ó©ï¿½ï¿½ï¿½"
 BEGIN
-    CONTROL         "¤£ÅÜ§ó¦â±m²`«×",IDC_FULLSCREEN_SAMEBPP,"Button",
+    CONTROL         "ï¿½ï¿½ï¿½Ü§ï¿½ï¿½mï¿½`ï¿½ï¿½",IDC_FULLSCREEN_SAMEBPP,"Button",
                     BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,8,156,10
-    CONTROL         "¤£ÅÜ§ó¿Ã¹õ¸ÑªR«×",IDC_FULLSCREEN_SAMERES,
+    CONTROL         "ï¿½ï¿½ï¿½Ü§ï¿½Ã¹ï¿½ï¿½ÑªRï¿½ï¿½",IDC_FULLSCREEN_SAMERES,
                     "Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,24,
                     156,10
-    LTEXT           "ÅÜµJ",IDC_STATIC,8,45,22,8
+    LTEXT           "ï¿½ÜµJ",IDC_STATIC,8,45,22,8
     COMBOBOX        IDC_FULLSCREEN_ZOOM,40,42,96,80,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_GROUP | WS_TABSTOP
 END
 
 IDD_SCROPT2 DIALOG  0, 0, 172, 96
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "´¹¤ù"
-FONT 9, "·s²Ó©úÅé"
+CAPTION "ï¿½ï¿½ï¿½ï¿½"
+FONT 9, "ï¿½sï¿½Ó©ï¿½ï¿½ï¿½"
 BEGIN
     GROUPBOX        "Graphic Display Controller",IDC_STATIC,8,8,120,28
     CONTROL         "uPD7220",IDC_GDC7220,"Button",BS_AUTORADIOBUTTON | 
@@ -195,14 +195,14 @@ BEGIN
     CONTROL         "GRCG+",IDC_GRCG2,"Button",BS_AUTORADIOBUTTON,88,54,40,
                     10
     CONTROL         "EGC",IDC_EGC,"Button",BS_AUTORADIOBUTTON,128,54,34,10
-    CONTROL         "¨Ï¥Î 16¦â±mªO (PC-9801-24)",IDC_PC980124,"Button",
+    CONTROL         "ï¿½Ï¥ï¿½ 16ï¿½ï¿½mï¿½O (PC-9801-24)",IDC_PC980124,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,16,80,148,10
 END
 
 IDD_SCROPT3 DIALOG  0, 0, 172, 96
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "®É§Ç"
-FONT 9, "·s²Ó©úÅé"
+CAPTION "ï¿½É§ï¿½"
+FONT 9, "ï¿½sï¿½Ó©ï¿½ï¿½ï¿½"
 BEGIN
     LTEXT           "T-RAM",IDC_STATIC,8,9,30,8
     CONTROL         "Slider1",IDC_TRAMWAIT,"msctls_trackbar32",TBS_BOTH | 
@@ -219,7 +219,7 @@ BEGIN
     LTEXT           "clock",IDC_STATIC,148,9,22,8
     LTEXT           "clock",IDC_STATIC,148,25,22,8
     LTEXT           "clock",IDC_STATIC,148,41,22,8
-    LTEXT           "§Y®É½Õ¦â½L½Õ¾ã",IDC_STATIC,8,60,156,8
+    LTEXT           "ï¿½Yï¿½É½Õ¦ï¿½Lï¿½Õ¾ï¿½",IDC_STATIC,8,60,156,8
     CONTROL         "Slider3",IDC_REALPAL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,40,73,80,10
     RTEXT           "",IDC_REALPALSTR,124,72,20,10,SS_SUNKEN
@@ -228,35 +228,35 @@ END
 IDD_SERIAL1 DIALOG  0, 0, 202, 160
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "COM1"
-FONT 9, "·s²Ó©úÅé"
+FONT 9, "ï¿½sï¿½Ó©ï¿½ï¿½ï¿½"
 BEGIN
-    LTEXT           "³s±µ°ð",IDC_STATIC,8,10,30,8
+    LTEXT           "ï¿½sï¿½ï¿½ï¿½ï¿½",IDC_STATIC,8,10,30,8
     COMBOBOX        IDC_COM1PORT,40,8,48,96,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP
-    GROUPBOX        "³sµ²",IDC_COM1STR00,8,28,144,84
-    LTEXT           "¨C¬í¶Ç¿é¦ì¤¸",IDC_COM1STR01,16,45,48,8
+    GROUPBOX        "ï¿½sï¿½ï¿½",IDC_COM1STR00,8,28,144,84
+    LTEXT           "ï¿½Cï¿½ï¿½ï¿½Ç¿ï¿½ì¤¸",IDC_COM1STR01,16,45,48,8
     COMBOBOX        IDC_COM1SPEED,68,42,44,128,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    LTEXT           "¤ñ¯S/¬í",IDC_COM1STR02,116,45,26,8
-    LTEXT           "¸ê®Æ¦ì¤¸",IDC_COM1STR03,16,61,48,8
+    LTEXT           "ï¿½ï¿½S/ï¿½ï¿½",IDC_COM1STR02,116,45,26,8
+    LTEXT           "ï¿½ï¿½Æ¦ì¤¸",IDC_COM1STR03,16,61,48,8
     COMBOBOX        IDC_COM1CHARSIZE,68,58,44,64,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    LTEXT           "¦ì¤¸",IDC_COM1STR04,116,61,26,8
-    LTEXT           "¦P¦ìÀË¬d",IDC_COM1STR05,16,77,48,8
+    LTEXT           "ï¿½ì¤¸",IDC_COM1STR04,116,61,26,8
+    LTEXT           "ï¿½Pï¿½ï¿½ï¿½Ë¬d",IDC_COM1STR05,16,77,48,8
     COMBOBOX        IDC_COM1PARITY,68,74,44,48,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP
-    LTEXT           "°±¤î¦ì¤¸",IDC_COM1STR06,16,93,48,8
+    LTEXT           "ï¿½ï¿½ï¿½ï¿½ì¤¸",IDC_COM1STR06,16,93,48,8
     COMBOBOX        IDC_COM1STOPBIT,68,90,44,64,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    LTEXT           "¦ì¤¸",IDC_COM1STR07,116,93,26,8
-    GROUPBOX        "³sµ²",IDC_COM1STR10,8,28,186,84
-    LTEXT           "¸Ë¸m",IDC_COM1STR11,16,45,30,8
+    LTEXT           "ï¿½ì¤¸",IDC_COM1STR07,116,93,26,8
+    GROUPBOX        "ï¿½sï¿½ï¿½",IDC_COM1STR10,8,28,186,84
+    LTEXT           "ï¿½Ë¸m",IDC_COM1STR11,16,45,30,8
     COMBOBOX        IDC_COM1MMAP,50,42,136,96,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    LTEXT           "¼Ò²Õ",IDC_COM1STR12,16,61,30,8
+    LTEXT           "ï¿½Ò²ï¿½",IDC_COM1STR12,16,61,30,8
     COMBOBOX        IDC_COM1MMDL,50,58,136,96,CBS_DROPDOWN | 
                     WS_VSCROLL | WS_TABSTOP
-    CONTROL         "¨Ï¥Îµ{¦¡ªºÀÉ®× (MIMPI ©w¸q)",IDC_COM1DEFE,
+    CONTROL         "ï¿½Ï¥Îµ{ï¿½ï¿½ï¿½ï¿½ï¿½É®ï¿½ (MIMPI ï¿½wï¿½q)",IDC_COM1DEFE,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,82,170,10
     LTEXT           "",IDC_COM1DEFF,26,94,148,10,SS_SUNKEN
     PUSHBUTTON      "...",IDC_COM1DEFB,176,94,10,10
@@ -265,13 +265,13 @@ END
 IDD_PC9861A DIALOG  0, 0, 202, 160
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "PC-9861K"
-FONT 9, "·s²Ó©úÅé"
+FONT 9, "ï¿½sï¿½Ó©ï¿½ï¿½ï¿½"
 BEGIN
-    CONTROL         "¨Ï¥Î",IDC_PC9861E,"Button",BS_AUTOCHECKBOX | 
+    CONTROL         "ï¿½Ï¥ï¿½",IDC_PC9861E,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,8,8,48,10
-    LTEXT           "¨C¬í¶Ç¿é¦ì¤¸",IDC_STATIC,16,27,48,8
-    LTEXT           "´¡Â_­n¨D",IDC_STATIC,16,45,48,8
-    LTEXT           "¦P¨B¼Ò¦¡",IDC_STATIC,16,63,48,8
+    LTEXT           "ï¿½Cï¿½ï¿½ï¿½Ç¿ï¿½ì¤¸",IDC_STATIC,16,27,48,8
+    LTEXT           "ï¿½ï¿½ï¿½_ï¿½nï¿½D",IDC_STATIC,16,45,48,8
+    LTEXT           "ï¿½Pï¿½Bï¿½Ò¦ï¿½",IDC_STATIC,16,63,48,8
     LTEXT           "CH.1",IDC_STATIC,68,9,40,8
     COMBOBOX        IDC_CH1SPEED,68,24,56,128,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
@@ -286,7 +286,7 @@ BEGIN
                     WS_VSCROLL | WS_TABSTOP
     COMBOBOX        IDC_CH2MODE,136,60,56,64,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP
-    LTEXT           "¤Á´«ªO",IDC_STATIC,8,84,32,8
+    LTEXT           "ï¿½ï¿½ï¿½ï¿½ï¿½O",IDC_STATIC,8,84,32,8
     CONTROL         "",IDC_PC9861DIP,"Static",SS_ENHMETAFILE | SS_NOTIFY,44,
                     84,156,68
 END
@@ -295,40 +295,40 @@ IDD_MPUPC98 DIALOG  0, 0, 202, 178
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "MPU-PC98II"
 CLASS "np2dialog"
-FONT 9, "·s²Ó©úÅé"
+FONT 9, "ï¿½sï¿½Ó©ï¿½ï¿½ï¿½"
 BEGIN
-    LTEXT           "¿é¤J/¿é¥X",IDC_STATIC,8,10,40,8
+    LTEXT           "ï¿½ï¿½J/ï¿½ï¿½X",IDC_STATIC,8,10,40,8
     COMBOBOX        IDC_MPUIO,52,8,48,52,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    LTEXT           "´¡Â_­n¨D",IDC_STATIC,8,26,40,8
+    LTEXT           "ï¿½ï¿½ï¿½_ï¿½nï¿½D",IDC_STATIC,8,26,40,8
     COMBOBOX        IDC_MPUINT,52,24,48,52,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    LTEXT           "¤Á´«ªO",IDC_STATIC,8,46,40,8
+    LTEXT           "ï¿½ï¿½ï¿½ï¿½ï¿½O",IDC_STATIC,8,46,40,8
     CONTROL         "",IDC_MPUDIP,"Static",SS_ENHMETAFILE | SS_NOTIFY,52,46,
                     96,26
-    GROUPBOX        "³sµ²",IDC_STATIC,8,72,186,98
-    LTEXT           "MIDI ¿é¥X",IDC_STATIC,16,87,36,8
+    GROUPBOX        "ï¿½sï¿½ï¿½",IDC_STATIC,8,72,186,98
+    LTEXT           "MIDI ï¿½ï¿½X",IDC_STATIC,16,87,36,8
     COMBOBOX        IDC_MPU98MMAP,54,84,132,96,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    LTEXT           "MIDI ¿é¤J",IDC_STATIC,16,103,36,8
+    LTEXT           "MIDI ï¿½ï¿½J",IDC_STATIC,16,103,36,8
     COMBOBOX        IDC_MPU98MDIN,54,100,132,96,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    LTEXT           "¼Ò²Õ",IDC_STATIC,16,119,36,8
+    LTEXT           "ï¿½Ò²ï¿½",IDC_STATIC,16,119,36,8
     COMBOBOX        IDC_MPU98MMDL,54,116,132,96,CBS_DROPDOWN | 
                     WS_VSCROLL | WS_TABSTOP
-    CONTROL         "¨Ï¥Îµ{¦¡ªºÀÉ®× (MIMPI ©w¸q)",IDC_MPU98DEFE,
+    CONTROL         "ï¿½Ï¥Îµ{ï¿½ï¿½ï¿½ï¿½ï¿½É®ï¿½ (MIMPI ï¿½wï¿½q)",IDC_MPU98DEFE,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,140,150,10
     LTEXT           "",IDC_MPU98DEFF,26,152,148,10,SS_SUNKEN
     PUSHBUTTON      "...",IDC_MPU98DEFB,176,152,10,10
-    DEFPUSHBUTTON   "½T©w",IDOK,150,8,44,14,WS_GROUP
-    PUSHBUTTON      "¨ú®ø",IDCANCEL,150,26,44,14
-    PUSHBUTTON      "¦¨¹w³]­È",IDC_MPUDEF,150,58,44,14
+    DEFPUSHBUTTON   "ï¿½Tï¿½w",IDOK,150,8,44,14,WS_GROUP
+    PUSHBUTTON      "ï¿½ï¿½ï¿½ï¿½",IDCANCEL,150,26,44,14
+    PUSHBUTTON      "ï¿½ï¿½ï¿½wï¿½]ï¿½ï¿½",IDC_MPUDEF,150,58,44,14
 END
 
 IDD_SNDMIX DIALOGEX 0, 0, 224, 124
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "²V¦X"
-FONT 9, "·s²Ó©úÅé", 0, 0, 0x1
+CAPTION "ï¿½Vï¿½X"
+FONT 9, "ï¿½sï¿½Ó©ï¿½ï¿½ï¿½", 0, 0, 0x1
 BEGIN
     LTEXT           "FM",IDC_STATIC,8,9,40,8
     CONTROL         "Slider1",IDC_VOLFM,"msctls_trackbar32",TBS_BOTH | 
@@ -350,13 +350,13 @@ BEGIN
     CONTROL         "Slider8",IDC_VOLRHYTHM,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,50,65,128,10
     LTEXT           "",IDC_VOLRHYTHMSTR,180,64,26,10,SS_SUNKEN,WS_EX_RIGHT
-    PUSHBUTTON      "¦¨¹w³]­È",IDC_SNDMIXDEF,176,102,40,14
+    PUSHBUTTON      "ï¿½ï¿½ï¿½wï¿½]ï¿½ï¿½",IDC_SNDMIXDEF,176,102,40,14
 END
 
 IDD_SND14 DIALOGEX 0, 0, 224, 124
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "PC-9801-14"
-FONT 9, "·s²Ó©úÅé", 0, 0, 0x1
+FONT 9, "ï¿½sï¿½Ó©ï¿½ï¿½ï¿½", 0, 0, 0x1
 BEGIN
     LTEXT           "Left",IDC_STATIC,8,9,40,8
     CONTROL         "Slider1",IDC_VOL14L,"msctls_trackbar32",TBS_BOTH | 
@@ -387,96 +387,96 @@ END
 IDD_SND26 DIALOG  0, 0, 224, 124
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "26"
-FONT 9, "·s²Ó©úÅé"
+FONT 9, "ï¿½sï¿½Ó©ï¿½ï¿½ï¿½"
 BEGIN
-    LTEXT           "¿é¤J/¿é¥X",IDC_STATIC,8,10,40,8
+    LTEXT           "ï¿½ï¿½J/ï¿½ï¿½X",IDC_STATIC,8,10,40,8
     COMBOBOX        IDC_SND26IO,50,8,40,52,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    LTEXT           "´¡Â_­n¨D",IDC_STATIC,124,10,40,8
+    LTEXT           "ï¿½ï¿½ï¿½_ï¿½nï¿½D",IDC_STATIC,124,10,40,8
     COMBOBOX        IDC_SND26INT,166,8,40,52,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    LTEXT           "°O¾ÐÅé¦ì§}",IDC_STATIC,8,28,40,8
+    LTEXT           "ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½}",IDC_STATIC,8,28,40,8
     COMBOBOX        IDC_SND26ROM,50,26,40,64,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    LTEXT           "¤Á´«ªO",IDC_STATIC,8,66,40,8
+    LTEXT           "ï¿½ï¿½ï¿½ï¿½ï¿½O",IDC_STATIC,8,66,40,8
     CONTROL         "",IDC_SND26JMP,"Static",SS_ENHMETAFILE | SS_NOTIFY,50,
                     66,156,34
-    PUSHBUTTON      "¦¨¹w³]­È",IDC_SND26DEF,176,102,40,14
+    PUSHBUTTON      "ï¿½ï¿½ï¿½wï¿½]ï¿½ï¿½",IDC_SND26DEF,176,102,40,14
 END
 
 IDD_SND86 DIALOG  0, 0, 224, 124
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "86"
-FONT 9, "·s²Ó©úÅé"
+FONT 9, "ï¿½sï¿½Ó©ï¿½ï¿½ï¿½"
 BEGIN
-    LTEXT           "¿é¤J/¿é¥X",IDC_STATIC,8,10,40,8
+    LTEXT           "ï¿½ï¿½J/ï¿½ï¿½X",IDC_STATIC,8,10,40,8
     COMBOBOX        IDC_SND86IO,50,8,40,52,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    CONTROL         "´¡Â_­n¨D",IDC_SND86INT,"Button",BS_AUTOCHECKBOX | 
+    CONTROL         "ï¿½ï¿½ï¿½_ï¿½nï¿½D",IDC_SND86INT,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,114,9,50,10
     COMBOBOX        IDC_SND86INTA,166,8,40,52,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Án­µ ID",IDC_STATIC,8,28,40,8
+    LTEXT           "ï¿½nï¿½ï¿½ ID",IDC_STATIC,8,28,40,8
     COMBOBOX        IDC_SND86ID,50,26,40,64,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    CONTROL         "°O¾ÐÅé¦ì§}",IDC_SND86ROM,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+    CONTROL         "ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½}",IDC_SND86ROM,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
                     114,27,50,10
-    LTEXT           "¤Á´«ªO",IDC_STATIC,8,66,40,8
+    LTEXT           "ï¿½ï¿½ï¿½ï¿½ï¿½O",IDC_STATIC,8,66,40,8
     CONTROL         "",IDC_SND86DIP,"Static",SS_ENHMETAFILE | SS_NOTIFY,50,
                     66,156,34
-    PUSHBUTTON      "¦¨¹w³]­È",IDC_SND86DEF,176,102,40,14
+    PUSHBUTTON      "ï¿½ï¿½ï¿½wï¿½]ï¿½ï¿½",IDC_SND86DEF,176,102,40,14
 END
 
 IDD_SNDSPB DIALOG  0, 0, 224, 124
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "SPB"
-FONT 9, "·s²Ó©úÅé"
+FONT 9, "ï¿½sï¿½Ó©ï¿½ï¿½ï¿½"
 BEGIN
-    LTEXT           "¿é¤J/¿é¥X",IDC_STATIC,8,10,40,8
+    LTEXT           "ï¿½ï¿½J/ï¿½ï¿½X",IDC_STATIC,8,10,40,8
     COMBOBOX        IDC_SPBIO,50,8,40,52,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    LTEXT           "´¡Â_­n¨D",IDC_STATIC,124,10,40,8
+    LTEXT           "ï¿½ï¿½ï¿½_ï¿½nï¿½D",IDC_STATIC,124,10,40,8
     COMBOBOX        IDC_SPBINT,166,8,40,52,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    LTEXT           "°O¾ÐÅé¦ì§}",IDC_STATIC,8,28,40,8
+    LTEXT           "ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½}",IDC_STATIC,8,28,40,8
     COMBOBOX        IDC_SPBROM,50,26,40,64,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    CONTROL         "¥ª¥k¤Ï¦VªºÁn­µ",IDC_SPBREVERSE,"Button",
+    CONTROL         "ï¿½ï¿½ï¿½kï¿½Ï¦Vï¿½ï¿½ï¿½nï¿½ï¿½",IDC_SPBREVERSE,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,114,27,92,10
     LTEXT           "VR",IDC_STATIC,8,46,30,8
-    CONTROL         "¥ª",IDC_SPBVRL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,50,
+    CONTROL         "ï¿½ï¿½",IDC_SPBVRL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,50,
                     45,22,10
-    CONTROL         "¥k",IDC_SPBVRR,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,84,
+    CONTROL         "ï¿½k",IDC_SPBVRR,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,84,
                     45,22,10
-    RTEXT           "·P«×",IDC_STATIC,108,46,22,8
+    RTEXT           "ï¿½Pï¿½ï¿½",IDC_STATIC,108,46,22,8
     CONTROL         "Slider16",IDC_SPBVRLEVEL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,132,46,64,10
-    LTEXT           "¤Á´«ªO",IDC_STATIC,8,66,40,8
+    LTEXT           "ï¿½ï¿½ï¿½ï¿½ï¿½O",IDC_STATIC,8,66,40,8
     CONTROL         "",IDC_SPBJMP,"Static",SS_ENHMETAFILE | SS_NOTIFY,50,66,
                     156,34
-    PUSHBUTTON      "¦¨¹w³]­È",IDC_SPBDEF,176,102,40,14
+    PUSHBUTTON      "ï¿½ï¿½ï¿½wï¿½]ï¿½ï¿½",IDC_SPBDEF,176,102,40,14
 END
 
 IDD_SNDPAD1 DIALOG  0, 0, 224, 124
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "¹CÀ¸¥x"
-FONT 9, "·s²Ó©úÅé"
+CAPTION "ï¿½Cï¿½ï¿½ï¿½x"
+FONT 9, "ï¿½sï¿½Ó©ï¿½ï¿½ï¿½"
 BEGIN
-    CONTROL         "¨Ï¥Î¹CÀ¸¥x-1",IDC_JOYPAD1,"Button",BS_AUTOCHECKBOX | 
+    CONTROL         "ï¿½Ï¥Î¹Cï¿½ï¿½ï¿½x-1",IDC_JOYPAD1,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,8,8,144,10
-    LTEXT           "«ö¶s-1",IDC_STATIC,24,27,40,8
+    LTEXT           "ï¿½ï¿½ï¿½s-1",IDC_STATIC,24,27,40,8
     CONTROL         "A",IDC_PAD1_1A,"Button",BS_AUTOCHECKBOX | WS_GROUP | 
                     WS_TABSTOP,64,26,30,10
     CONTROL         "B",IDC_PAD1_1B,"Button",BS_AUTOCHECKBOX,96,26,30,10
     CONTROL         "C",IDC_PAD1_1C,"Button",BS_AUTOCHECKBOX,128,26,30,10
     CONTROL         "D",IDC_PAD1_1D,"Button",BS_AUTOCHECKBOX,160,26,30,10
-    LTEXT           "«ö¶s-2",IDC_STATIC,24,43,40,8
+    LTEXT           "ï¿½ï¿½ï¿½s-2",IDC_STATIC,24,43,40,8
     CONTROL         "A",IDC_PAD1_2A,"Button",BS_AUTOCHECKBOX | WS_GROUP | 
                     WS_TABSTOP,64,42,30,10
     CONTROL         "B",IDC_PAD1_2B,"Button",BS_AUTOCHECKBOX,96,42,30,10
     CONTROL         "C",IDC_PAD1_2C,"Button",BS_AUTOCHECKBOX,128,42,30,10
     CONTROL         "D",IDC_PAD1_2D,"Button",BS_AUTOCHECKBOX,160,42,30,10
-    LTEXT           "§Ö³t",IDC_STATIC,24,61,40,8
+    LTEXT           "ï¿½Ö³t",IDC_STATIC,24,61,40,8
     CONTROL         "A",IDC_PAD1_RA,"Button",BS_AUTOCHECKBOX | WS_GROUP | 
                     WS_TABSTOP,64,60,30,10
     CONTROL         "B",IDC_PAD1_RB,"Button",BS_AUTOCHECKBOX,96,60,30,10
@@ -486,13 +486,13 @@ END
 
 IDD_CALENDAR DIALOG  0, 0, 164, 80
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "®É¶¡"
+CAPTION "ï¿½É¶ï¿½"
 CLASS "np2dialog"
-FONT 9, "·s²Ó©úÅé"
+FONT 9, "ï¿½sï¿½Ó©ï¿½ï¿½ï¿½"
 BEGIN
-    CONTROL         "§Y®É (localtime)",IDC_CLNDREAL,"Button",
+    CONTROL         "ï¿½Yï¿½ï¿½ (localtime)",IDC_CLNDREAL,"Button",
                     BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,8,8,96,10
-    CONTROL         "µêÀÀ®É¶¡",IDC_CLNDVIR,"Button",
+    CONTROL         "ï¿½ï¿½ï¿½ï¿½ï¿½É¶ï¿½",IDC_CLNDVIR,"Button",
                     BS_AUTORADIOBUTTON,8,24,96,10
     EDITTEXT        IDC_VIRYEAR,20,40,14,12,WS_GROUP
     CTEXT           "/",IDC_STATIC,34,42,8,8
@@ -504,21 +504,21 @@ BEGIN
     EDITTEXT        IDC_VIRMINUTE,42,60,14,12
     CTEXT           ":",IDC_STATIC,56,62,8,8
     EDITTEXT        IDC_VIRSECOND,64,60,14,12
-    PUSHBUTTON      "²{¦b",IDC_SETNOW,84,60,22,12,WS_GROUP
-    DEFPUSHBUTTON   "½T©w",IDOK,112,8,44,14,WS_GROUP
-    PUSHBUTTON      "¨ú®ø",IDCANCEL,112,26,44,14
+    PUSHBUTTON      "ï¿½{ï¿½b",IDC_SETNOW,84,60,22,12,WS_GROUP
+    DEFPUSHBUTTON   "ï¿½Tï¿½w",IDOK,112,8,44,14,WS_GROUP
+    PUSHBUTTON      "ï¿½ï¿½ï¿½ï¿½",IDCANCEL,112,26,44,14
 END
 
 IDD_ABOUT DIALOG  0, 0, 196, 108
 STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Ãö©ó"
+CAPTION "ï¿½ï¿½ï¿½ï¿½"
 CLASS "np2dialog"
-FONT 9, "·s²Ó©úÅé"
+FONT 9, "ï¿½sï¿½Ó©ï¿½ï¿½ï¿½"
 BEGIN
     ICON            IDI_ICON1,IDC_NP2ICON,8,8,20,20
     LTEXT           "",IDC_NP2VER,36,16,102,8
-    DEFPUSHBUTTON   "½T©w",IDOK,148,8,40,14,WS_GROUP
-    PUSHBUTTON      "¸Ô²Ó >>",IDC_MORE,148,26,40,14
+    DEFPUSHBUTTON   "ï¿½Tï¿½w",IDOK,148,8,40,14,WS_GROUP
+    PUSHBUTTON      "ï¿½Ô²ï¿½ >>",IDC_MORE,148,26,40,14
     EDITTEXT        IDC_NP2INFO,8,52,180,48,ES_MULTILINE | ES_READONLY | 
                     ES_WANTRETURN | WS_VSCROLL
 END
@@ -526,7 +526,7 @@ END
 IDD_LGY98 DIALOGEX 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "LGY-98"
-FONT 9, "·s²Ó©úÅé", 0, 0, 0x0
+FONT 9, "ï¿½sï¿½Ó©ï¿½ï¿½ï¿½", 0, 0, 0x0
 BEGIN
     CONTROL         "Enabled",IDC_LGY98ENABLED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,40,10
     LTEXT           "I/O port",IDC_STATIC,8,26,30,8
@@ -539,7 +539,7 @@ END
 IDD_GD5430 DIALOGEX 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "CL-GD5430"
-FONT 9, "·s²Ó©úÅé", 0, 0, 0x0
+FONT 9, "ï¿½sï¿½Ó©ï¿½ï¿½ï¿½", 0, 0, 0x0
 BEGIN
     CONTROL         "Enabled",IDC_GD5430ENABLED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,40,10
     LTEXT           "Type",IDC_STATIC,8,26,30,8
@@ -768,12 +768,12 @@ END
 
 IDR_SYS MENU 
 BEGIN
-    MENUITEM "¤u¨ãµøµ¡(&T)",                IDM_TOOLWIN
+    MENUITEM "ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½(&T)",                IDM_TOOLWIN
     MENUITEM SEPARATOR
-    MENUITEM "²¾°Ê¦Ü¤¤¤ß(&C)",              IDM_SCREENCENTER
-    MENUITEM "µøµ¡»Î±µ(&W)",                IDM_SNAPENABLE
-    MENUITEM "­I´º¤u§@(&B)",                IDM_BACKGROUND
-    MENUITEM "­I´ºÁn­µ(&G)",                IDM_BGSOUND
+    MENUITEM "ï¿½ï¿½ï¿½Ê¦Ü¤ï¿½ï¿½ï¿½(&C)",              IDM_SCREENCENTER
+    MENUITEM "ï¿½ï¿½ï¿½ï¿½ï¿½Î±ï¿½(&W)",                IDM_SNAPENABLE
+    MENUITEM "ï¿½Iï¿½ï¿½ï¿½uï¿½@(&B)",                IDM_BACKGROUND
+    MENUITEM "ï¿½Iï¿½ï¿½ï¿½nï¿½ï¿½(&G)",                IDM_BGSOUND
     MENUITEM SEPARATOR
     MENUITEM " 320x200",                    IDM_SCRNMUL4
     MENUITEM " 480x300",                    IDM_SCRNMUL6
@@ -786,12 +786,12 @@ END
 
 IDR_SYSKEYDISP MENU 
 BEGIN
-    MENUITEM "Án­µÁä½L(&K)",                IDM_KEYDISP
+    MENUITEM "ï¿½nï¿½ï¿½ï¿½ï¿½L(&K)",                IDM_KEYDISP
 END
 
 IDR_SYSSOFTKBD MENU 
 BEGIN
-    MENUITEM "³nÅéÁä½L(&S)",                IDM_SOFTKBD
+    MENUITEM "ï¿½nï¿½ï¿½ï¿½ï¿½L(&S)",                IDM_SOFTKBD
 END
 
 IDR_SYSDEBUG32 MENU 
@@ -808,33 +808,33 @@ END
 
 IDR_MAIN MENU 
 BEGIN
-    POPUP "¼ÒÀÀ(&E)"
+    POPUP "ï¿½ï¿½ï¿½ï¿½(&E)"
     BEGIN
-        MENUITEM "­«³](&R)",                    IDM_RESET
+        MENUITEM "ï¿½ï¿½ï¿½](&R)",                    IDM_RESET
         MENUITEM SEPARATOR
-        MENUITEM "³]©w(&C)...",                 IDM_CONFIG
-        MENUITEM "«Ø¥ßºÏºÐ(&N)...",             IDM_NEWDISK
-        MENUITEM "¦r«¬(&F)...",                 IDM_CHANGEFONT
+        MENUITEM "ï¿½]ï¿½w(&C)...",                 IDM_CONFIG
+        MENUITEM "ï¿½Ø¥ßºÏºï¿½(&N)...",             IDM_NEWDISK
+        MENUITEM "ï¿½rï¿½ï¿½(&F)...",                 IDM_CHANGEFONT
         MENUITEM SEPARATOR
-        MENUITEM "µ²§ô(&X)",                    IDM_EXIT
+        MENUITEM "ï¿½ï¿½ï¿½ï¿½(&X)",                    IDM_EXIT
     END
-    POPUP "¿Ã¹õ(&S)"
+    POPUP "ï¿½Ã¹ï¿½(&S)"
     BEGIN
-        MENUITEM "µøµ¡(&W)",                    IDM_WINDOW
-        MENUITEM "¥þ¿Ã¹õ(&F)",                  IDM_FULLSCREEN
+        MENUITEM "ï¿½ï¿½ï¿½ï¿½(&W)",                    IDM_WINDOW
+        MENUITEM "ï¿½ï¿½ï¿½Ã¹ï¿½(&F)",                  IDM_FULLSCREEN
         MENUITEM SEPARATOR
-        MENUITEM "¼Ð·Ç(&M)",                    IDM_ROLNORMAL
-        MENUITEM "¥ª±ÛÂà(&L)",                  IDM_ROLLEFT
-        MENUITEM "¥k±ÛÂà(&R)",                  IDM_ROLRIGHT
+        MENUITEM "ï¿½Ð·ï¿½(&M)",                    IDM_ROLNORMAL
+        MENUITEM "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(&L)",                  IDM_ROLLEFT
+        MENUITEM "ï¿½kï¿½ï¿½ï¿½ï¿½(&R)",                  IDM_ROLRIGHT
         MENUITEM SEPARATOR
-        MENUITEM "««ª½¦P¨B®ÉÃ¸¹Ï(&D)",          IDM_DISPSYNC
-        MENUITEM "§Y®É½Õ¦â½L(&P)",              IDM_RASTER
-        MENUITEM "¥þ³t(&N)",                    IDM_NOWAIT
-        MENUITEM "¦Û°Êµe­±¼½©ñ³t²v(&A)",        IDM_AUTOFPS
-        MENUITEM "¥þ³¡µe­±¼½©ñ(&U)",            IDM_60FPS
-        MENUITEM "1¸õ¹Lµe­±¼½©ñ",               IDM_30FPS
-        MENUITEM "&2¸õ¹Lµe­±¼½©ñ",              IDM_20FPS
-        MENUITEM "&3¸õ¹Lµe­±¼½©ñ",              IDM_15FPS
+        MENUITEM "ï¿½ï¿½ï¿½ï¿½ï¿½Pï¿½Bï¿½ï¿½Ã¸ï¿½ï¿½(&D)",          IDM_DISPSYNC
+        MENUITEM "ï¿½Yï¿½É½Õ¦ï¿½L(&P)",              IDM_RASTER
+        MENUITEM "ï¿½ï¿½ï¿½t(&N)",                    IDM_NOWAIT
+        MENUITEM "ï¿½Û°Êµeï¿½ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½v(&A)",        IDM_AUTOFPS
+        MENUITEM "ï¿½ï¿½ï¿½ï¿½ï¿½eï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(&U)",            IDM_60FPS
+        MENUITEM "1ï¿½ï¿½ï¿½Lï¿½eï¿½ï¿½ï¿½ï¿½ï¿½ï¿½",               IDM_30FPS
+        MENUITEM "&2ï¿½ï¿½ï¿½Lï¿½eï¿½ï¿½ï¿½ï¿½ï¿½ï¿½",              IDM_20FPS
+        MENUITEM "&3ï¿½ï¿½ï¿½Lï¿½eï¿½ï¿½ï¿½ï¿½ï¿½ï¿½",              IDM_15FPS
         MENUITEM SEPARATOR
         POPUP "Video filter"
         BEGIN
@@ -847,21 +847,21 @@ BEGIN
             MENUITEM "Use BMP only",                IDM_VF1BO
         END
         MENUITEM SEPARATOR
-        MENUITEM "¿Ã¹õ¿ï¶µ(&S)...",             IDM_SCREENOPT
+        MENUITEM "ï¿½Ã¹ï¿½ï¿½ï¶µ(&S)...",             IDM_SCREENOPT
     END
-    POPUP "¸Ë¸m(&D)"
+    POPUP "ï¿½Ë¸m(&D)"
     BEGIN
-        POPUP "Áä½L(&K)"
+        POPUP "ï¿½ï¿½L(&K)"
         BEGIN
-            MENUITEM "Áä½L(&K)",                    IDM_KEY
-            MENUITEM "¥N¥Î¹CÀ¸¥x-&1",               IDM_JOY1
-            MENUITEM "¥N¥Î¹CÀ¸¥x-&2",               IDM_JOY2
+            MENUITEM "ï¿½ï¿½L(&K)",                    IDM_KEY
+            MENUITEM "ï¿½Nï¿½Î¹Cï¿½ï¿½ï¿½x-&1",               IDM_JOY1
+            MENUITEM "ï¿½Nï¿½Î¹Cï¿½ï¿½ï¿½x-&2",               IDM_JOY2
             MENUITEM SEPARATOR
-            MENUITEM "¤Á´« &SHIFT",                 IDM_XSHIFT
-            MENUITEM "¤Á´« &CTRL",                  IDM_XCTRL
-            MENUITEM "¤Á´« &GRPH",                  IDM_XGRPH
+            MENUITEM "ï¿½ï¿½ï¿½ï¿½ &SHIFT",                 IDM_XSHIFT
+            MENUITEM "ï¿½ï¿½ï¿½ï¿½ &CTRL",                  IDM_XCTRL
+            MENUITEM "ï¿½ï¿½ï¿½ï¿½ &GRPH",                  IDM_XGRPH
             MENUITEM SEPARATOR
-            MENUITEM "F12 = ·Æ¹«(&M)",              IDM_F12MOUSE
+            MENUITEM "F12 = ï¿½Æ¹ï¿½(&M)",              IDM_F12MOUSE
             MENUITEM "F12 = Co&py",                 IDM_F12COPY
             MENUITEM "F12 = S&top",                 IDM_F12STOP
             MENUITEM "F12 = tenkey [=]",            IDM_F12EQU
@@ -869,14 +869,14 @@ BEGIN
             MENUITEM "F12 = User1",                 IDM_USERKEY1
             MENUITEM "F12 = User2",                 IDM_USERKEY2
         END
-        POPUP "Án­µ(&S)"
+        POPUP "ï¿½nï¿½ï¿½(&S)"
         BEGIN
-            MENUITEM "¹Í¹ÍÁn ÀR­µ(&O)",             IDM_BEEPOFF
-            MENUITEM "¹Í¹ÍÁn ¤p(&L)",               IDM_BEEPLOW
-            MENUITEM "¹Í¹ÍÁn ¤¤(&M)",               IDM_BEEPMID
-            MENUITEM "¹Í¹ÍÁn ¤j(&H)",               IDM_BEEPHIGH
+            MENUITEM "ï¿½Í¹ï¿½ï¿½n ï¿½Rï¿½ï¿½(&O)",             IDM_BEEPOFF
+            MENUITEM "ï¿½Í¹ï¿½ï¿½n ï¿½p(&L)",               IDM_BEEPLOW
+            MENUITEM "ï¿½Í¹ï¿½ï¿½n ï¿½ï¿½(&M)",               IDM_BEEPMID
+            MENUITEM "ï¿½Í¹ï¿½ï¿½n ï¿½j(&H)",               IDM_BEEPHIGH
             MENUITEM SEPARATOR
-            MENUITEM "°±¥ÎÁn­µªO(&D)",              IDM_NOSOUND
+            MENUITEM "ï¿½ï¿½ï¿½ï¿½ï¿½nï¿½ï¿½ï¿½O(&D)",              IDM_NOSOUND
             MENUITEM "PC-9801-&14",                 IDM_PC9801_14
             MENUITEM "PC-9801-&26K",                IDM_PC9801_26K
             MENUITEM "PC-9801-8&6",                 IDM_PC9801_86
@@ -892,9 +892,9 @@ BEGIN
             MENUITEM "&AMD-98",                     IDM_AMD98
             MENUITEM "&JastSound",                  IDM_JASTSOUND
             MENUITEM SEPARATOR
-            MENUITEM "ºÏºÐ·j´MÁn­µ(&S)",            IDM_SEEKSND
+            MENUITEM "ï¿½ÏºÐ·jï¿½Mï¿½nï¿½ï¿½(&S)",            IDM_SEEKSND
         END
-        POPUP "°O¾ÐÅé(&E)"
+        POPUP "ï¿½Oï¿½ï¿½ï¿½ï¿½(&E)"
         BEGIN
             MENUITEM "64&0KB",                      IDM_MEM640
             MENUITEM "&1.6MB",                      IDM_MEM16
@@ -907,69 +907,69 @@ BEGIN
             MENUITEM "&64.6MB",                     IDM_MEM646
             MENUITEM "&120.6MB",                    IDM_MEM1206
         END
-        MENUITEM "·Æ¹«(&M)",                    IDM_MOUSE
+        MENUITEM "ï¿½Æ¹ï¿½(&M)",                    IDM_MOUSE
         MENUITEM SEPARATOR
-        MENUITEM "¦ê¦æ¿ï¶µ(&R)...",             IDM_SERIAL1
+        MENUITEM "ï¿½ï¿½ï¿½ï¶µ(&R)...",             IDM_SERIAL1
         MENUITEM SEPARATOR
-        MENUITEM "MIDI ¿ï¶µ(&O)...",            IDM_MPUPC98
-        MENUITEM "MIDI ­«³](&P)",               IDM_MIDIPANIC
+        MENUITEM "MIDI ï¿½ï¶µ(&O)...",            IDM_MPUPC98
+        MENUITEM "MIDI ï¿½ï¿½ï¿½](&P)",               IDM_MIDIPANIC
         MENUITEM SEPARATOR
-        MENUITEM "Án­µ¿ï¶µ(&U)...",             IDM_SNDOPT
+        MENUITEM "ï¿½nï¿½ï¿½ï¿½ï¶µ(&U)...",             IDM_SNDOPT
         MENUITEM SEPARATOR
         MENUITEM "&Network option...",          IDM_NETOPT
         MENUITEM SEPARATOR
         MENUITEM "&Window Accelerator option...", IDM_WABOPT
     END
-    POPUP "¨ä¥L(&O)"
+    POPUP "ï¿½ï¿½L(&O)"
     BEGIN
-        MENUITEM "¥t¦sÂI°}¹Ï¼v¹³(&B)...",       IDM_BMPSAVE
+        MENUITEM "ï¿½tï¿½sï¿½Iï¿½}ï¿½Ï¼vï¿½ï¿½(&B)...",       IDM_BMPSAVE
         MENUITEM "Hook fomtrom",                IDM_HF_ENABLE
-        MENUITEM "&S98 µn¿ý...",                IDM_S98LOGGING
-        MENUITEM "®É¶¡(&L)...",                 IDM_CALENDAR
-        POPUP "§Ö³tÁä(&K)"
+        MENUITEM "&S98 ï¿½nï¿½ï¿½...",                IDM_S98LOGGING
+        MENUITEM "ï¿½É¶ï¿½(&L)...",                 IDM_CALENDAR
+        POPUP "ï¿½Ö³tï¿½ï¿½(&K)"
         BEGIN
             MENUITEM "Alt+Enter",                   IDM_ALTENTER
             MENUITEM "Alt+F4",                      IDM_ALTF4
         END
-        MENUITEM "Åã¥Ü®É¯ß(&C)",                IDM_DISPCLOCK
-        MENUITEM "Åã¥Ü¨C¬íµe­±®æ¼Æ(&F)",        IDM_DISPFRAME
-        MENUITEM "¤Ï¦Vªº¹CÀ¸¥x«öÁä(&V)",        IDM_JOYX
-        MENUITEM "§Ö³tªº¹CÀ¸¥x«öÁä(&R)",        IDM_RAPID
-        MENUITEM "§Ö³tªº·Æ¹««öÁä(&M)",          IDM_MSRAPID
-        MENUITEM "¨Ï¥Î SSTP(&U)",               IDM_SSTP
+        MENUITEM "ï¿½ï¿½Ü®É¯ï¿½(&C)",                IDM_DISPCLOCK
+        MENUITEM "ï¿½ï¿½Ü¨Cï¿½ï¿½ï¿½eï¿½ï¿½ï¿½ï¿½ï¿½(&F)",        IDM_DISPFRAME
+        MENUITEM "ï¿½Ï¦Vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½xï¿½ï¿½ï¿½ï¿½(&V)",        IDM_JOYX
+        MENUITEM "ï¿½Ö³tï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½xï¿½ï¿½ï¿½ï¿½(&R)",        IDM_RAPID
+        MENUITEM "ï¿½Ö³tï¿½ï¿½ï¿½Æ¹ï¿½ï¿½ï¿½ï¿½ï¿½(&M)",          IDM_MSRAPID
+        MENUITEM "ï¿½Ï¥ï¿½ SSTP(&U)",               IDM_SSTP
          MENUITEM "&ITF work",                   IDM_ITFWORK
         MENUITEM "Enable DebugSS",              IDM_EN_DBSS
         MENUITEM SEPARATOR
-        MENUITEM "»¡©ú¥DÃD(&H)...",             IDM_HELP
-        MENUITEM "Ãö©ó(&A)...",                 IDM_ABOUT
+        MENUITEM "ï¿½ï¿½ï¿½ï¿½ï¿½Dï¿½D(&H)...",             IDM_HELP
+        MENUITEM "ï¿½ï¿½ï¿½ï¿½(&A)...",                 IDM_ABOUT
     END
 END
 
 IDR_STAT MENU 
 BEGIN
-    POPUP "ª¬ºA(&T)"
+    POPUP "ï¿½ï¿½ï¿½A(&T)"
     BEGIN
-        MENUITEM "¥t¦s 0",                      IDM_FLAGSAVE0
-        MENUITEM "¥t¦s 1",                      IDM_FLAGSAVE1
-        MENUITEM "¥t¦s 2",                      IDM_FLAGSAVE2
-        MENUITEM "¥t¦s 3",                      IDM_FLAGSAVE3
-        MENUITEM "¥t¦s 4",                      IDM_FLAGSAVE4
-        MENUITEM "¥t¦s 5",                      IDM_FLAGSAVE5
-        MENUITEM "¥t¦s 6",                      IDM_FLAGSAVE6
-        MENUITEM "¥t¦s 7",                      IDM_FLAGSAVE7
-        MENUITEM "¥t¦s 8",                      IDM_FLAGSAVE8
-        MENUITEM "¥t¦s 9",                      IDM_FLAGSAVE9
+        MENUITEM "ï¿½tï¿½s 0",                      IDM_FLAGSAVE0
+        MENUITEM "ï¿½tï¿½s 1",                      IDM_FLAGSAVE1
+        MENUITEM "ï¿½tï¿½s 2",                      IDM_FLAGSAVE2
+        MENUITEM "ï¿½tï¿½s 3",                      IDM_FLAGSAVE3
+        MENUITEM "ï¿½tï¿½s 4",                      IDM_FLAGSAVE4
+        MENUITEM "ï¿½tï¿½s 5",                      IDM_FLAGSAVE5
+        MENUITEM "ï¿½tï¿½s 6",                      IDM_FLAGSAVE6
+        MENUITEM "ï¿½tï¿½s 7",                      IDM_FLAGSAVE7
+        MENUITEM "ï¿½tï¿½s 8",                      IDM_FLAGSAVE8
+        MENUITEM "ï¿½tï¿½s 9",                      IDM_FLAGSAVE9
         MENUITEM SEPARATOR
-        MENUITEM "¸ü¤J 0",                      IDM_FLAGLOAD0
-        MENUITEM "¸ü¤J 1",                      IDM_FLAGLOAD1
-        MENUITEM "¸ü¤J 2",                      IDM_FLAGLOAD2
-        MENUITEM "¸ü¤J 3",                      IDM_FLAGLOAD3
-        MENUITEM "¸ü¤J 4",                      IDM_FLAGLOAD4
-        MENUITEM "¸ü¤J 5",                      IDM_FLAGLOAD5
-        MENUITEM "¸ü¤J 6",                      IDM_FLAGLOAD6
-        MENUITEM "¸ü¤J 7",                      IDM_FLAGLOAD7
-        MENUITEM "¸ü¤J 8",                      IDM_FLAGLOAD8
-        MENUITEM "¸ü¤J 9",                      IDM_FLAGLOAD9
+        MENUITEM "ï¿½ï¿½ï¿½J 0",                      IDM_FLAGLOAD0
+        MENUITEM "ï¿½ï¿½ï¿½J 1",                      IDM_FLAGLOAD1
+        MENUITEM "ï¿½ï¿½ï¿½J 2",                      IDM_FLAGLOAD2
+        MENUITEM "ï¿½ï¿½ï¿½J 3",                      IDM_FLAGLOAD3
+        MENUITEM "ï¿½ï¿½ï¿½J 4",                      IDM_FLAGLOAD4
+        MENUITEM "ï¿½ï¿½ï¿½J 5",                      IDM_FLAGLOAD5
+        MENUITEM "ï¿½ï¿½ï¿½J 6",                      IDM_FLAGLOAD6
+        MENUITEM "ï¿½ï¿½ï¿½J 7",                      IDM_FLAGLOAD7
+        MENUITEM "ï¿½ï¿½ï¿½J 8",                      IDM_FLAGLOAD8
+        MENUITEM "ï¿½ï¿½ï¿½J 9",                      IDM_FLAGLOAD9
     END
 END
 
@@ -991,41 +991,41 @@ END
 
 IDR_FDD1MENU MENU DISCARDABLE 
 BEGIN
-    POPUP "³nºÐ¾÷-&1"
+    POPUP "ï¿½nï¿½Ð¾ï¿½-&1"
     BEGIN
-        MENUITEM "¶}±Ò(&O)...",                 IDM_FDD1OPEN
+        MENUITEM "ï¿½}ï¿½ï¿½(&O)...",                 IDM_FDD1OPEN
         MENUITEM SEPARATOR
-        MENUITEM "¼u¥X(&E)",                    IDM_FDD1EJECT
+        MENUITEM "ï¿½uï¿½X(&E)",                    IDM_FDD1EJECT
     END
 END
 
 IDR_FDD2MENU MENU 
 BEGIN
-    POPUP "³nºÐ¾÷-&2"
+    POPUP "ï¿½nï¿½Ð¾ï¿½-&2"
     BEGIN
-        MENUITEM "¶}±Ò(&O)...",                 IDM_FDD2OPEN
+        MENUITEM "ï¿½}ï¿½ï¿½(&O)...",                 IDM_FDD2OPEN
         MENUITEM SEPARATOR
-        MENUITEM "¼u¥X(&E)",                    IDM_FDD2EJECT
+        MENUITEM "ï¿½uï¿½X(&E)",                    IDM_FDD2EJECT
     END
 END
 
 IDR_FDD3MENU MENU 
 BEGIN
-    POPUP "³nºÐ¾÷-&3"
+    POPUP "ï¿½nï¿½Ð¾ï¿½-&3"
     BEGIN
-        MENUITEM "¶}±Ò(&O)...",                 IDM_FDD3OPEN
+        MENUITEM "ï¿½}ï¿½ï¿½(&O)...",                 IDM_FDD3OPEN
         MENUITEM SEPARATOR
-        MENUITEM "¼u¥X(&E)",                    IDM_FDD3EJECT
+        MENUITEM "ï¿½uï¿½X(&E)",                    IDM_FDD3EJECT
     END
 END
 
 IDR_FDD4MENU MENU 
 BEGIN
-    POPUP "³nºÐ¾÷-&4"
+    POPUP "ï¿½nï¿½Ð¾ï¿½-&4"
     BEGIN
-        MENUITEM "¶}±Ò(&O)...",                 IDM_FDD4OPEN
+        MENUITEM "ï¿½}ï¿½ï¿½(&O)...",                 IDM_FDD4OPEN
         MENUITEM SEPARATOR
-        MENUITEM "¼u¥X(&E)",                    IDM_FDD4EJECT
+        MENUITEM "ï¿½uï¿½X(&E)",                    IDM_FDD4EJECT
     END
 END
 
@@ -1033,27 +1033,27 @@ IDR_IDEMENU MENU
 BEGIN
     POPUP "IDE #0"
     BEGIN
-        MENUITEM "¶}±Ò(&O)...",                 IDM_IDE0OPEN
+        MENUITEM "ï¿½}ï¿½ï¿½(&O)...",                 IDM_IDE0OPEN
         MENUITEM SEPARATOR
-        MENUITEM "²¾¥h(&R)",                    IDM_IDE0EJECT
+        MENUITEM "ï¿½ï¿½ï¿½h(&R)",                    IDM_IDE0EJECT
     END
     POPUP "IDE #1"
     BEGIN
-        MENUITEM "¶}±Ò(&O)...",                 IDM_IDE1OPEN
+        MENUITEM "ï¿½}ï¿½ï¿½(&O)...",                 IDM_IDE1OPEN
         MENUITEM SEPARATOR
-        MENUITEM "²¾¥h(&R)",                    IDM_IDE1EJECT
+        MENUITEM "ï¿½ï¿½ï¿½h(&R)",                    IDM_IDE1EJECT
     END
     POPUP "IDE #2"
     BEGIN
-        MENUITEM "¶}±Ò(&O)...",                 IDM_IDE2OPEN
+        MENUITEM "ï¿½}ï¿½ï¿½(&O)...",                 IDM_IDE2OPEN
         MENUITEM SEPARATOR
-        MENUITEM "¼u¥X(&E)",                    IDM_IDE2EJECT
+        MENUITEM "ï¿½uï¿½X(&E)",                    IDM_IDE2EJECT
     END
     POPUP "IDE #3"
     BEGIN
-        MENUITEM "¶}±Ò(&O)...",                 IDM_IDE3OPEN
+        MENUITEM "ï¿½}ï¿½ï¿½(&O)...",                 IDM_IDE3OPEN
         MENUITEM SEPARATOR
-        MENUITEM "¼u¥X(&E)",                    IDM_IDE3EJECT
+        MENUITEM "ï¿½uï¿½X(&E)",                    IDM_IDE3EJECT
     END
 END
 
@@ -1061,15 +1061,15 @@ IDR_SASIMENU MENU
 BEGIN
     POPUP "SASI #0"
     BEGIN
-        MENUITEM "¶}±Ò(&O)...",                 IDM_IDE0OPEN
+        MENUITEM "ï¿½}ï¿½ï¿½(&O)...",                 IDM_IDE0OPEN
         MENUITEM SEPARATOR
-        MENUITEM "²¾¥h(&R)",                    IDM_IDE0EJECT
+        MENUITEM "ï¿½ï¿½ï¿½h(&R)",                    IDM_IDE0EJECT
     END
     POPUP "SASI #1"
     BEGIN
-        MENUITEM "¶}±Ò(&O)...",                 IDM_IDE1OPEN
+        MENUITEM "ï¿½}ï¿½ï¿½(&O)...",                 IDM_IDE1OPEN
         MENUITEM SEPARATOR
-        MENUITEM "²¾¥h(&R)",                    IDM_IDE1EJECT
+        MENUITEM "ï¿½ï¿½ï¿½h(&R)",                    IDM_IDE1EJECT
     END
 END
 
@@ -1077,27 +1077,27 @@ IDR_SCSIMENU MENU
 BEGIN
     POPUP "SCSI #0"
     BEGIN
-        MENUITEM "¶}±Ò(&O)...",                 IDM_SCSI0OPEN
+        MENUITEM "ï¿½}ï¿½ï¿½(&O)...",                 IDM_SCSI0OPEN
         MENUITEM SEPARATOR
-        MENUITEM "²¾¥h(&R)",                    IDM_SCSI0EJECT
+        MENUITEM "ï¿½ï¿½ï¿½h(&R)",                    IDM_SCSI0EJECT
     END
     POPUP "SCSI #1"
     BEGIN
-        MENUITEM "¶}±Ò(&O)...",                 IDM_SCSI1OPEN
+        MENUITEM "ï¿½}ï¿½ï¿½(&O)...",                 IDM_SCSI1OPEN
         MENUITEM SEPARATOR
-        MENUITEM "²¾¥h(&R)",                    IDM_SCSI1EJECT
+        MENUITEM "ï¿½ï¿½ï¿½h(&R)",                    IDM_SCSI1EJECT
     END
     POPUP "SCSI #2"
     BEGIN
-        MENUITEM "¶}±Ò(&O)...",                 IDM_SCSI2OPEN
+        MENUITEM "ï¿½}ï¿½ï¿½(&O)...",                 IDM_SCSI2OPEN
         MENUITEM SEPARATOR
-        MENUITEM "²¾¥h(&R)",                    IDM_SCSI2EJECT
+        MENUITEM "ï¿½ï¿½ï¿½h(&R)",                    IDM_SCSI2EJECT
     END
     POPUP "SCSI #3"
     BEGIN
-        MENUITEM "¶}±Ò(&O)...",                 IDM_SCSI3OPEN
+        MENUITEM "ï¿½}ï¿½ï¿½(&O)...",                 IDM_SCSI3OPEN
         MENUITEM SEPARATOR
-        MENUITEM "²¾¥h(&R)",                    IDM_SCSI3EJECT
+        MENUITEM "ï¿½ï¿½ï¿½h(&R)",                    IDM_SCSI3EJECT
     END
 END
 
@@ -1109,37 +1109,37 @@ END
 
 IDR_WAVEREC MENU 
 BEGIN
-    MENUITEM "¥t¦sÁn­µ(&W)...",             IDM_WAVEREC
+    MENUITEM "ï¿½tï¿½sï¿½nï¿½ï¿½(&W)...",             IDM_WAVEREC
 END
 
 IDR_CPUSAVE16 MENU 
 BEGIN
-    MENUITEM "&i286 ¥t¦s",                  IDM_CPUSAVE
+    MENUITEM "&i286 ï¿½tï¿½s",                  IDM_CPUSAVE
 END
 
 IDR_CPUSAVE32 MENU 
 BEGIN
-    MENUITEM "&i386 ¥t¦s",                  IDM_CPUSAVE
+    MENUITEM "&i386 ï¿½tï¿½s",                  IDM_CPUSAVE
 END
 
 IDR_CLOSE MENU 
 BEGIN
-    MENUITEM "Ãö³¬(&C)",                    IDM_CLOSE
+    MENUITEM "ï¿½ï¿½ï¿½ï¿½(&C)",                    IDM_CLOSE
 END
 
 IDR_TOOLWIN MENU 
 BEGIN
-    POPUP "¥DÃD(&S)"
+    POPUP "ï¿½Dï¿½D(&S)"
     BEGIN
-        MENUITEM "¿ï¨ú¥DÃD(&S)...",             IDM_TOOL_SKINSEL
+        MENUITEM "ï¿½ï¿½ï¿½ï¿½Dï¿½D(&S)...",             IDM_TOOL_SKINSEL
         MENUITEM SEPARATOR
-        MENUITEM "<¹w³]¥DÃD>(&B)",              IDM_TOOL_SKINDEF
+        MENUITEM "<ï¿½wï¿½]ï¿½Dï¿½D>(&B)",              IDM_TOOL_SKINDEF
     END
 END
 
 IDR_KEYDISP MENU 
 BEGIN
-    POPUP "¼Ò²Õ(&M)"
+    POPUP "ï¿½Ò²ï¿½(&M)"
     BEGIN
         MENUITEM "&FM",                         IDM_KDISPFM
         MENUITEM "&MIDI",                       IDM_KDISPMIDI
@@ -1247,17 +1247,17 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_CAPTION_TOOL        "¤u¨ãµøµ¡"
-    IDS_CAPTION_KEYDISP     "Án­µÁä½L"
-    IDS_CAPTION_SOFTKEY     "³nÅéÁä½L"
+    IDS_CAPTION_TOOL        "ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½"
+    IDS_CAPTION_KEYDISP     "ï¿½nï¿½ï¿½ï¿½ï¿½L"
+    IDS_CAPTION_SOFTKEY     "ï¿½nï¿½ï¿½ï¿½ï¿½L"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_HDD                 "µwºÐ¾÷(&H)"
-    IDS_SCREENOPTION        "¿Ã¹õ¿ï¶µ"
-    IDS_SOUNDOPTION         "Án­µªO¿ï¶µ"
-    IDS_SERIALOPTION        "¦ê¦æ¿ï¶µ"
+    IDS_HDD                 "ï¿½wï¿½Ð¾ï¿½(&H)"
+    IDS_SCREENOPTION        "ï¿½Ã¹ï¿½ï¿½ï¶µ"
+    IDS_SOUNDOPTION         "ï¿½nï¿½ï¿½ï¿½Oï¿½ï¶µ"
+    IDS_SERIALOPTION        "ï¿½ï¿½ï¿½ï¶µ"
     IDS_NETWORKOPTION       "Network option"
     IDS_WABOPTION           "Window Accelerator board option"
 END
@@ -1275,16 +1275,16 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_ERROR_DIRECTDRAW    "¤£¯à«Ø¥ß DirectDraw ª«¥ó"
-    IDS_CONFIRM_RESET       "­«³]¶Ü¡H"
-    IDS_CONFIRM_EXIT        "µ²§ô¶Ü¡H"
-    IDS_CONFIRM_RESUME      "½Ä¬ð!\n\n%s\nÄ~Äò¶Ü?"
-    IDS_ERROR_RESUME        "¤£¯à¦A¶}©l"
+    IDS_ERROR_DIRECTDRAW    "ï¿½ï¿½ï¿½ï¿½Ø¥ï¿½ DirectDraw ï¿½ï¿½ï¿½ï¿½"
+    IDS_CONFIRM_RESET       "ï¿½ï¿½ï¿½]ï¿½Ü¡H"
+    IDS_CONFIRM_EXIT        "ï¿½ï¿½ï¿½ï¿½ï¿½Ü¡H"
+    IDS_CONFIRM_RESUME      "ï¿½Ä¬ï¿½!\n\n%s\nï¿½~ï¿½ï¿½ï¿½?"
+    IDS_ERROR_RESUME        "ï¿½ï¿½ï¿½ï¿½Aï¿½}ï¿½l"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_NONCONNECT          "¤£³s±µ"
+    IDS_NONCONNECT          "ï¿½ï¿½ï¿½sï¿½ï¿½"
     IDS_1                   "1"
 END
 
@@ -1341,10 +1341,10 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_ZOOM_NONE           "¹ê»Ú¤j¤p"
-    IDS_ZOOM_FIXEDASPECT    "©T©w¥~Æ[¤ñ¨Ò"
-    IDS_ZOOM_ADJUSTASPECT   "½Õ¾ã¥~Æ[¤ñ¨Ò"
-    IDS_ZOOM_FULL           "¥þ¿Ã¹õ"
+    IDS_ZOOM_NONE           "ï¿½ï¿½Ú¤jï¿½p"
+    IDS_ZOOM_FIXEDASPECT    "ï¿½Tï¿½wï¿½~ï¿½[ï¿½ï¿½ï¿½"
+    IDS_ZOOM_ADJUSTASPECT   "ï¿½Õ¾ï¿½~ï¿½[ï¿½ï¿½ï¿½"
+    IDS_ZOOM_FULL           "ï¿½ï¿½ï¿½Ã¹ï¿½"
 END
 
 STRINGTABLE 
@@ -1377,17 +1377,17 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_PARITY_NONE         "µL"
-    IDS_PARITY_ODD          "©_¼Æ"
-    IDS_PARITY_EVEN         "°¸¼Æ"
-    IDS_SYNC                "¦P¨B"
+    IDS_PARITY_NONE         "ï¿½L"
+    IDS_PARITY_ODD          "ï¿½_ï¿½ï¿½"
+    IDS_PARITY_EVEN         "ï¿½ï¿½ï¿½ï¿½"
+    IDS_SYNC                "ï¿½Pï¿½B"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_ASYNC               "«D¦P¨B"
-    IDS_ASYNC16X            "«D¦P¨B 16x"
-    IDS_ASYNC64X            "«D¦P¨B 64x"
+    IDS_ASYNC               "ï¿½Dï¿½Pï¿½B"
+    IDS_ASYNC16X            "ï¿½Dï¿½Pï¿½B 16x"
+    IDS_ASYNC64X            "ï¿½Dï¿½Pï¿½B 64x"
 END
 
 STRINGTABLE
@@ -1460,23 +1460,29 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_CPU_CUSTOM          "(custom)"
-    IDS_CPU_80286           "Intel 80286"
-    IDS_CPU_80386           "Intel 80386"
-    IDS_CPU_I486SX          "Intel i486SX"
-    IDS_CPU_I486DX          "Intel i486DX"
-    IDS_CPU_PENTIUM         "Intel Pentium"
-    IDS_CPU_MMXPENTIUM      "Intel MMX Pentium"
-    IDS_CPU_PENTIUMPRO      "Intel Pentium Pro"
-    IDS_CPU_PENTIUMII       "Intel Pentium II"
-    IDS_CPU_PENTIUMIII      "Intel Pentium III"
-    IDS_CPU_PENTIUMM        "Intel Pentium M"
-    IDS_CPU_PENTIUM4        "Intel Pentium 4"
-    IDS_CPU_AMD_K6_2        "AMD K6-2"
-    IDS_CPU_AMD_K6_III      "AMD K6-III"
-    IDS_CPU_AMD_K7_ATHLON   "AMD K7 Athlon"
-    IDS_CPU_AMD_K7_ATHLONXP "AMD K7 Athlon XP"
-    IDS_CPU_NEKOPRO         "Neko Processor II"
+    IDS_CPU_CUSTOM            "(custom)"
+    IDS_CPU_80286             "Intel 80286 / V30"
+    IDS_CPU_80386             "Intel 80386"
+    IDS_CPU_I486SX            "Intel i486SX"
+    IDS_CPU_I486DX            "Intel i486DX"
+    IDS_CPU_PENTIUM           "Intel Pentium"
+    IDS_CPU_MMXPENTIUM        "Intel MMX Pentium"
+    IDS_CPU_PENTIUMPRO        "Intel Pentium Pro"
+    IDS_CPU_PENTIUMII         "Intel Pentium II"
+    IDS_CPU_PENTIUMIII        "Intel Pentium III"
+    IDS_CPU_PENTIUMM          "Intel Pentium M"
+    IDS_CPU_PENTIUM4          "Intel Pentium 4"
+    IDS_CPU_CORE_2_DUO        "Intel Core 2 Gen 1"
+    IDS_CPU_CORE_2_DUOW       "Intel Core 2 Gen 2"
+    IDS_CPU_CORE_I            "Intel Core i Gen 1"
+    IDS_CPU_AMD_K6_2          "AMD K6-2"
+    IDS_CPU_AMD_K6_III        "AMD K6-III"
+    IDS_CPU_AMD_K7_ATHLON     "AMD K7 Athlon"
+    IDS_CPU_AMD_K7_ATHLONXP   "AMD K7 Athlon XP"
+    IDS_CPU_AMD_K8_ATHLON64   "AMD K8 Athlon 64"
+    IDS_CPU_AMD_K8_ATHLON64X2 "AMD K8 Athlon 64X2"
+    IDS_CPU_AMD_K10_PHENOM    "AMD K10 Phenom"
+    IDS_CPU_NEKOPRO           "Neko Processor II"
 END
 
 STRINGTABLE
@@ -1497,76 +1503,76 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_FONTTITLE           "¿ï¨ú¦r«¬ÀÉ"
+    IDS_FONTTITLE           "ï¿½ï¿½ï¿½ï¿½rï¿½ï¿½ï¿½ï¿½"
     IDS_FONTEXT             "bmp"
-    IDS_FONTFILTER          "PC-98 ÂI°}¦r«¬ (*.bmp)|*.bmp|Virtual98 ¦r«¬|font.rom|©Ò¦³¤ä´©ÀÉ®×|*.bmp;pc88.fnt;kanji1.rom;kanji2.rom;font.rom;subsys_c.rom;kanji.rom;fnt0808.x1;fnt0816.x1;fnt1616.x1;cgrom.dat|"
+    IDS_FONTFILTER          "PC-98 ï¿½Iï¿½}ï¿½rï¿½ï¿½ (*.bmp)|*.bmp|Virtual98 ï¿½rï¿½ï¿½|font.rom|ï¿½Ò¦ï¿½ï¿½ä´©ï¿½É®ï¿½|*.bmp;pc88.fnt;kanji1.rom;kanji2.rom;font.rom;subsys_c.rom;kanji.rom;fnt0808.x1;fnt0816.x1;fnt1616.x1;cgrom.dat|"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_BMPTITLE            "¥t¦sÂI°}¹Ï¼v¹³"
+    IDS_BMPTITLE            "ï¿½tï¿½sï¿½Iï¿½}ï¿½Ï¼vï¿½ï¿½"
     IDS_BMPEXT              "bmp"
-    IDS_BMPFILTER1          "1¦ì¤¸ÂI°}¹Ï¼v¹³ (*.bmp)|*.bmp|GIF ¼v¹³ (*.gif)|*.gif|"
-    IDS_BMPFILTER4          "4¦ì¤¸ÂI°}¹Ï¼v¹³ (*.bmp)|*.bmp|GIF ¼v¹³ (*.gif)|*.gif|"
-    IDS_BMPFILTER8          "8¦ì¤¸ÂI°}¹Ï¼v¹³ (*.bmp)|*.bmp|GIF ¼v¹³ (*.gif)|*.gif|"
-    IDS_BMPFILTER24         "24¦ì¤¸ÂI°}¹Ï¼v¹³ (*.bmp)|*.bmp|"
-    IDS_MIMPITITLE          "¶}±Ò MIMPI ©w¸qÀÉ"
+    IDS_BMPFILTER1          "1ï¿½ì¤¸ï¿½Iï¿½}ï¿½Ï¼vï¿½ï¿½ (*.bmp)|*.bmp|GIF ï¿½vï¿½ï¿½ (*.gif)|*.gif|"
+    IDS_BMPFILTER4          "4ï¿½ì¤¸ï¿½Iï¿½}ï¿½Ï¼vï¿½ï¿½ (*.bmp)|*.bmp|GIF ï¿½vï¿½ï¿½ (*.gif)|*.gif|"
+    IDS_BMPFILTER8          "8ï¿½ì¤¸ï¿½Iï¿½}ï¿½Ï¼vï¿½ï¿½ (*.bmp)|*.bmp|GIF ï¿½vï¿½ï¿½ (*.gif)|*.gif|"
+    IDS_BMPFILTER24         "24ï¿½ì¤¸ï¿½Iï¿½}ï¿½Ï¼vï¿½ï¿½ (*.bmp)|*.bmp|"
+    IDS_MIMPITITLE          "ï¿½}ï¿½ï¿½ MIMPI ï¿½wï¿½qï¿½ï¿½"
     IDS_MIMPIEXT            "def"
-    IDS_MIMPIFILTER         "MIMPI ©w¸qÀÉ®× (*.def)|*.def|"
+    IDS_MIMPIFILTER         "MIMPI ï¿½wï¿½qï¿½É®ï¿½ (*.def)|*.def|"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_FDDTITLE            "¶}±Ò³nºÐÀÉ"
+    IDS_FDDTITLE            "ï¿½}ï¿½Ò³nï¿½ï¿½ï¿½ï¿½"
     IDS_FDDEXT              "d88"
-    IDS_FDDFILTER           "D88 ³nºÐÀÉ®× (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|³nºÐÀÉ®× (*.xdf;*.hdm;*.dup;*.2hd)|*.xdf;*.hdm;*.dup;*.2hd;*.tfd|©Ò¦³¤ä´©ÀÉ®×|*.d88;*.88d;*.d98;*.98d;*.fdi;*.xdf;*.hdm;*.dup;*.2hd;*.tfd|©Ò¦³ÀÉ®× (*.*)|*.*|"
+    IDS_FDDFILTER           "D88 ï¿½nï¿½ï¿½ï¿½É®ï¿½ (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|ï¿½nï¿½ï¿½ï¿½É®ï¿½ (*.xdf;*.hdm;*.dup;*.2hd)|*.xdf;*.hdm;*.dup;*.2hd;*.tfd|ï¿½Ò¦ï¿½ï¿½ä´©ï¿½É®ï¿½|*.d88;*.88d;*.d98;*.98d;*.fdi;*.xdf;*.hdm;*.dup;*.2hd;*.tfd|ï¿½Ò¦ï¿½ï¿½É®ï¿½ (*.*)|*.*|"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_HDDTITLE            "¿ï¨úµwºÐÀÉ"
+    IDS_HDDTITLE            "ï¿½ï¿½ï¿½ï¿½wï¿½ï¿½ï¿½ï¿½"
     IDS_HDDEXT              "thd"
-    IDS_HDDFILTER           "Anex86 µwºÐÀÉ®× (*.hdi)|*.hdi|T98 µwºÐÀÉ®× (*.thd)|*.thd|T98-Next µwºÐÀÉ®× (*.nhd)|*.nhd|©Ò¦³¤ä´©ÀÉ®×|*.thd;*.nhd;*.hdi|"
-    IDS_SASITITLE           "¿ï¨ú SASI/IDE µwºÐÀÉ"
-    IDS_IDETITLE            "¿ï¨ú IDE µwºÐÀÉ"
-    IDS_ISOTITLE            "¶}±Ò ISO-9660 ÀÉ®×"
+    IDS_HDDFILTER           "Anex86 ï¿½wï¿½ï¿½ï¿½É®ï¿½ (*.hdi)|*.hdi|T98 ï¿½wï¿½ï¿½ï¿½É®ï¿½ (*.thd)|*.thd|T98-Next ï¿½wï¿½ï¿½ï¿½É®ï¿½ (*.nhd)|*.nhd|ï¿½Ò¦ï¿½ï¿½ä´©ï¿½É®ï¿½|*.thd;*.nhd;*.hdi|"
+    IDS_SASITITLE           "ï¿½ï¿½ï¿½ SASI/IDE ï¿½wï¿½ï¿½ï¿½ï¿½"
+    IDS_IDETITLE            "ï¿½ï¿½ï¿½ IDE ï¿½wï¿½ï¿½ï¿½ï¿½"
+    IDS_ISOTITLE            "ï¿½}ï¿½ï¿½ ISO-9660 ï¿½É®ï¿½"
     IDS_ISOEXT              "iso"
-    IDS_ISOFILTER           "Cue sheets (*.cue)|*.cue|ISO-9660 ÀÉ®× (*.iso)|*.iso;*.img|©Ò¦³¤ä´©ÀÉ®×|*.cue;*.iso;*.img|©Ò¦³ÀÉ®× (*.*)|*.*|"
+    IDS_ISOFILTER           "Cue sheets (*.cue)|*.cue|ISO-9660 ï¿½É®ï¿½ (*.iso)|*.iso;*.img|ï¿½Ò¦ï¿½ï¿½ä´©ï¿½É®ï¿½|*.cue;*.iso;*.img|ï¿½Ò¦ï¿½ï¿½É®ï¿½ (*.*)|*.*|"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_SCSITITLE           "¿ï¨ú SCSI µwºÐÀÉ"
+    IDS_SCSITITLE           "ï¿½ï¿½ï¿½ SCSI ï¿½wï¿½ï¿½ï¿½ï¿½"
     IDS_SCSIEXT             "hdd"
-    IDS_SCSIFILTER          "Virtual98 µwºÐÀÉ®× (*.hdd)|*.hdd|"
-    IDS_NEWDISKTITLE        "¥t¦sºÏºÐÀÉ"
+    IDS_SCSIFILTER          "Virtual98 ï¿½wï¿½ï¿½ï¿½É®ï¿½ (*.hdd)|*.hdd|"
+    IDS_NEWDISKTITLE        "ï¿½tï¿½sï¿½Ïºï¿½ï¿½ï¿½"
 END
 
 STRINGTABLE 
 BEGIN
     IDS_NEWDISKEXT          "d88"
-    IDS_NEWDISKFILTER       "D88 ³nºÐÀÉ®× (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Anex86 µwºÐÀÉ®× (*.hdi)|*.hdi|T98 harddisk µwºÐÀÉ®× (*.thd)|*.thd|T98-Next µwºÐÀÉ®× (*.nhd)|*.nhd|Virtual98 µwºÐÀÉ®× (*.hdd)|*.hdd|"
-    IDS_NEWDISKFILTER2      "D88 ³nºÐÀÉ®× (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Anex86 µwºÐÀÉ®× (*.hdi)|*.hdi|T98 harddisk µwºÐÀÉ®× (*.thd)|*.thd|T98-Next µwºÐÀÉ®× (*.nhd)|*.nhd|"
+    IDS_NEWDISKFILTER       "D88 ï¿½nï¿½ï¿½ï¿½É®ï¿½ (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Anex86 ï¿½wï¿½ï¿½ï¿½É®ï¿½ (*.hdi)|*.hdi|T98 harddisk ï¿½wï¿½ï¿½ï¿½É®ï¿½ (*.thd)|*.thd|T98-Next ï¿½wï¿½ï¿½ï¿½É®ï¿½ (*.nhd)|*.nhd|Virtual98 ï¿½wï¿½ï¿½ï¿½É®ï¿½ (*.hdd)|*.hdd|"
+    IDS_NEWDISKFILTER2      "D88 ï¿½nï¿½ï¿½ï¿½É®ï¿½ (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|Anex86 ï¿½wï¿½ï¿½ï¿½É®ï¿½ (*.hdi)|*.hdi|T98 harddisk ï¿½wï¿½ï¿½ï¿½É®ï¿½ (*.thd)|*.thd|T98-Next ï¿½wï¿½ï¿½ï¿½É®ï¿½ (*.nhd)|*.nhd|"
     IDS_NEWDISKHDFILTER     "T98-Next harddisk image files (*.nhd)|*.nhd|VirtualPC harddisk image files (*.vhd)|*.vhd|Anex86 harddisk image files (*.hdi)|*.hdi|T98 harddisk image files (*.thd)|*.thd|Virtual98 harddisk image files (*.hdd)|*.hdd|RaSCSI harddisk image files (*.hdn)|*.hdn|"
     IDS_NEWDISKHDFILTER2    "T98-Next harddisk image files (*.nhd)|*.nhd|VirtualPC harddisk image files (*.vhd)|*.vhd|Anex86 harddisk image files (*.hdi)|*.hdi|T98 harddisk image files (*.thd)|*.thd|"
     IDS_NEWDISKFDFILTER     "D88 image files (*.d88;*.d98)|*.d88;*.88d;*.d98;*.98d|1.25MB raw image file (*.hdm)|*.hdm|1.44MB raw image file (*.hd4)|*.hd4|"
-    IDS_S98TITLE            "¥t¦s S98 µn¿ý"
+    IDS_S98TITLE            "ï¿½tï¿½s S98 ï¿½nï¿½ï¿½"
     IDS_S98EXT              "s98"
-    IDS_S98FILTER           "S98 µn¿ý (*.s98)|*.s98|"
+    IDS_S98FILTER           "S98 ï¿½nï¿½ï¿½ (*.s98)|*.s98|"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_WAVETITLE           "¥t¦sÁn­µ"
+    IDS_WAVETITLE           "ï¿½tï¿½sï¿½nï¿½ï¿½"
     IDS_WAVEEXT             "wav"
-    IDS_WAVEFILTER          "Án­µ (*.wav)|*.wav|"
+    IDS_WAVEFILTER          "ï¿½nï¿½ï¿½ (*.wav)|*.wav|"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_SKINTITLE           "¶}±Ò¥DÃDÀÉ"
+    IDS_SKINTITLE           "ï¿½}ï¿½Ò¥Dï¿½Dï¿½ï¿½"
     IDS_SKINEXT             "ini"
-    IDS_SKINFILTER          "²ÕºA³]©w­È (*.ini)|*.ini|¤å¦r¤å¥ó(*.txt)|*.txt|©Ò¦³ÀÉ®× (*.*)|*.*|"
+    IDS_SKINFILTER          "ï¿½ÕºAï¿½]ï¿½wï¿½ï¿½ (*.ini)|*.ini|ï¿½ï¿½rï¿½ï¿½ï¿½(*.txt)|*.txt|ï¿½Ò¦ï¿½ï¿½É®ï¿½ (*.*)|*.*|"
 END
 
 #endif    // Chinese (Taiwan) resources

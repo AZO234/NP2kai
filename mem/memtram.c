@@ -76,13 +76,13 @@ void MEMCALL memtram_wr8(UINT32 address, REG8 value) {
 	CPU_REMCLOCK -= MEMWAIT_TRAM;
 	if (address < 0xa2000) {
 		mem[address] = (UINT8)value;
-		tramupdate[LOW12(address >> 1)] = 1;
+		tramupdate[LOW12(address >> 1)] |= 1;
 		gdcs.textdisp |= 1;
 	}
 	else if (address < 0xa3fe0) {
 		if (!(address & 1)) {
 			mem[address] = (UINT8)value;
-			tramupdate[LOW12(address >> 1)] = 1;
+			tramupdate[LOW12(address >> 1)] |= 3;
 			gdcs.textdisp |= 1;
 		}
 	}
@@ -90,7 +90,7 @@ void MEMCALL memtram_wr8(UINT32 address, REG8 value) {
 		if (!(address & 1)) {
 			if ((!(address & 2)) || (gdcs.msw_accessable)) {
 				mem[address] = (UINT8)value;
-				tramupdate[LOW12(address >> 1)] = 1;
+				tramupdate[LOW12(address >> 1)] |= 3;
 				gdcs.textdisp |= 1;
 			}
 		}
@@ -132,14 +132,14 @@ void MEMCALL memtram_wr16(UINT32 address, REG16 value) {
 	CPU_REMCLOCK -= MEMWAIT_TRAM;
 	if (address < 0xa1fff) {
 		STOREINTELWORD(mem + address, value);
-		tramupdate[LOW12(address >> 1)] = 1;
-		tramupdate[LOW12((address + 1) >> 1)] = 1;
+		tramupdate[LOW12(address >> 1)] |= 1;
+		tramupdate[LOW12((address + 1) >> 1)] |= 1;
 		gdcs.textdisp |= 1;
 	}
 	else if (address == 0xa1fff) {
 		STOREINTELWORD(mem + address, value);
-		tramupdate[0] = 1;
-		tramupdate[0xfff] = 1;
+		tramupdate[0] |= 3;
+		tramupdate[0xfff] |= 1;
 		gdcs.textdisp |= 1;
 	}
 	else if (address < 0xa3fe0) {
@@ -148,8 +148,8 @@ void MEMCALL memtram_wr16(UINT32 address, REG16 value) {
 			value >>= 8;
 		}
 		mem[address] = (UINT8)value;
-		tramupdate[LOW12(address >> 1)] = 1;
-		gdcs.textdisp |= 1;
+		tramupdate[LOW12(address >> 1)] |= 3;
+		gdcs.textdisp |= 3;
 	}
 	else if (address < 0xa3fff) {
 		if (address & 1) {
@@ -158,8 +158,8 @@ void MEMCALL memtram_wr16(UINT32 address, REG16 value) {
 		}
 		if ((!(address & 2)) || (gdcs.msw_accessable)) {
 			mem[address] = (UINT8)value;
-			tramupdate[LOW12(address >> 1)] = 1;
-			gdcs.textdisp |= 1;
+			tramupdate[LOW12(address >> 1)] |= 3;
+			gdcs.textdisp |= 3;
 		}
 	}
 	else if (address < 0xa5000) {

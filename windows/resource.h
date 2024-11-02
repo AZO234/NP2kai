@@ -542,10 +542,16 @@
 #define IDS_CPU_PENTIUMIII              32027
 #define IDS_CPU_PENTIUMM                32028
 #define IDS_CPU_PENTIUM4                32029
+#define IDS_CPU_CORE_2_DUO              32030
+#define IDS_CPU_CORE_2_DUOW             32031
+#define IDS_CPU_CORE_I                  32032
 #define IDS_CPU_AMD_K6_2                32035
 #define IDS_CPU_AMD_K6_III              32036
 #define IDS_CPU_AMD_K7_ATHLON           32037
 #define IDS_CPU_AMD_K7_ATHLONXP         32038
+#define IDS_CPU_AMD_K8_ATHLON64         32039
+#define IDS_CPU_AMD_K8_ATHLON64X2       32042
+#define IDS_CPU_AMD_K10_PHENOM          32043
 #define IDS_CPU_80286					32040
 #define IDS_CPU_80386                   32041
 #define IDS_CPU_NEKOPRO                 32049

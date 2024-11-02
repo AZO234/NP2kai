@@ -84,6 +84,7 @@
 #define	CPU_FEATURES_EX		(0)
 #define	CPU_BRAND_STRING	"Intel(R) 80286 Processor "
 #define	CPU_FEATURES_ECX	(0)
+#define	CPU_FEATURES_EX_ECX	(0)
 #define	CPU_BRAND_ID_AUTO	(0xffffffff)
 #define	CPU_EFLAGS_MASK		(0)
 #endif
@@ -196,7 +197,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2KAI_GIT_TAG " " NP2KAI_GIT_HASH);
 				0, 0xff00, 
 				0, 0, 0,
 				1,
-				CPU_VENDOR, CPU_FAMILY, CPU_MODEL, CPU_STEPPING, CPU_FEATURES, CPU_FEATURES_EX, CPU_BRAND_STRING, OEMTEXT(""), OEMTEXT(""), CPU_BRAND_ID_AUTO, CPU_FEATURES_ECX, CPU_EFLAGS_MASK,
+				CPU_VENDOR, CPU_FAMILY, CPU_MODEL, CPU_STEPPING, CPU_FEATURES, CPU_FEATURES_EX, CPU_BRAND_STRING, OEMTEXT(""), OEMTEXT(""), CPU_BRAND_ID_AUTO, CPU_FEATURES_ECX, CPU_EFLAGS_MASK, CPU_FEATURES_EX_ECX,
 				FPU_TYPE_SOFTFLOAT,
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 				1,
@@ -722,6 +723,15 @@ void pccore_reset(void) {
 	}else if(np2cfg.cpu_family == CPU_PENTIUM_4_FAMILY && np2cfg.cpu_model == CPU_PENTIUM_4_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_4);
+	}else if(np2cfg.cpu_family == CPU_CORE_2_DUO_FAMILY && np2cfg.cpu_model == CPU_CORE_2_DUO_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
+		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_CORE_2_DUO);
+	}else if(np2cfg.cpu_family == CPU_CORE_2_DUOW_FAMILY && np2cfg.cpu_model == CPU_CORE_2_DUOW_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
+		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_CORE_2_DUOW);
+	}else if(np2cfg.cpu_family == CPU_CORE_I_FAMILY && np2cfg.cpu_model == CPU_CORE_I_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
+		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_CORE_I);
 
 	}else if(np2cfg.cpu_family == CPU_AMD_K6_2_FAMILY && np2cfg.cpu_model == CPU_AMD_K6_2_MODEL){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
@@ -735,6 +745,15 @@ void pccore_reset(void) {
 	}else if(np2cfg.cpu_family == CPU_AMD_K7_ATHLON_XP_FAMILY && np2cfg.cpu_model == CPU_AMD_K7_ATHLON_XP_MODEL){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
 		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K7_ATHLON_XP);
+	}else if(np2cfg.cpu_family == CPU_AMD_K8_ATHLON_64_FAMILY && np2cfg.cpu_model == CPU_AMD_K8_ATHLON_64_MODEL){
+		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
+		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K8_ATHLON_64);
+	}else if(np2cfg.cpu_family == CPU_AMD_K8_ATHLON_64X2_FAMILY && np2cfg.cpu_model == CPU_AMD_K8_ATHLON_64X2_MODEL){
+		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
+		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K8_ATHLON_64X2);
+	}else if(np2cfg.cpu_family == CPU_AMD_K10_PHENOM_FAMILY && np2cfg.cpu_model == CPU_AMD_K10_PHENOM_MODEL){
+		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
+		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K10_PHENOM);
 
 	}else if(np2cfg.cpu_family == 0 && np2cfg.cpu_model == 0 && np2cfg.cpu_stepping == 0 && np2cfg.cpu_feature == 0){
 		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_NEKOPRO);
@@ -770,7 +789,8 @@ void pccore_reset(void) {
 		i386cpuid.cpu_stepping = CPU_STEPPING;
 		i386cpuid.cpu_feature = CPU_FEATURES_ALL;
 		i386cpuid.cpu_feature_ex = CPU_FEATURES_EX_ALL;
-		i386cpuid.cpu_feature_ecx = CPU_FEATURES_ALL;
+		i386cpuid.cpu_feature_ecx = CPU_FEATURES_ECX_ALL;
+		i386cpuid.cpu_feature_ex_ecx = CPU_FEATURES_EX_ECX_ALL;
 		i386cpuid.cpu_eflags_mask = 0;
 		i386cpuid.cpu_brandid = 0;
 	}else{
@@ -780,6 +800,7 @@ void pccore_reset(void) {
 		i386cpuid.cpu_feature = CPU_FEATURES_ALL & np2cfg.cpu_feature;
 		i386cpuid.cpu_feature_ex = CPU_FEATURES_EX_ALL & np2cfg.cpu_feature_ex;
 		i386cpuid.cpu_feature_ecx = CPU_FEATURES_ECX_ALL & np2cfg.cpu_feature_ecx;
+		i386cpuid.cpu_feature_ex_ecx = CPU_FEATURES_EX_ECX_ALL & np2cfg.cpu_feature_ex_ecx;
 		i386cpuid.cpu_eflags_mask = (AC_FLAG) & np2cfg.cpu_eflags_mask;
 		i386cpuid.cpu_brandid = np2cfg.cpu_brandid;
 	}

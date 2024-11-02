@@ -77,6 +77,8 @@ static int wab_cs_initialized = 0;
 static CRITICAL_SECTION wab_cs;
 #endif
 
+static int np2wab_forceupdateflag = 0;
+
 static BOOL wab_tryenter_criticalsection(void){
 #if defined(_WIN32)
 	if(!wab_cs_initialized) return TRUE;
@@ -170,6 +172,14 @@ void wabwin_readini()
 /**
  * 設定書き込み
  */
+void np2wab_forceupdate()
+{
+	np2wab_forceupdateflag = 1;
+}
+
+/**
+ * 設定書き込み
+ */
 void wabwin_writeini()
 {
 	if(!np2wabcfg.readonly){
@@ -240,6 +250,9 @@ void np2wab_setScreenSize(int width, int height)
 	}
 	// とりあえずパレットは更新しておく
 	np2wab.paletteChanged = 1;
+
+	// 画面更新
+	np2wab_forceupdateflag = 1;
 }
 /**
  * 画面サイズ設定マルチスレッド対応版（すぐに更新できない場合はnp2wab.ready=0に）
@@ -258,6 +271,9 @@ void np2wab_setScreenSizeMT(int width, int height)
 		ga_reqChangeWindowSize = 1;
 		np2wabwnd.ready = 0; // 更新待ち
 	}
+
+	// 画面更新
+	np2wab_forceupdateflag = 1;
 }
 
 /**
@@ -279,6 +295,9 @@ void np2wab_resetscreensize()
 		SetWindowPos( np2wabwnd.hWndWAB, NULL, 0, 0, rect.right-rect.left, rect.bottom-rect.top, SWP_NOMOVE|SWP_NOZORDER );
 #endif
 	}
+
+	// 画面更新
+	np2wab_forceupdateflag = 1;
 }
 
 #if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
@@ -349,6 +368,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){
 			break;
 			
 		case WM_SIZE:
+			np2wab_forceupdate();
 		case WM_SIZING:
 			GetClientRect( hWnd, &rc );
 			np2wab.wndWidth = rc.right - rc.left;
@@ -520,15 +540,18 @@ void np2wab_drawframe()
 		if(np2wabwnd.ready && np2wabwnd.hWndWAB!=NULL && (np2wab.relay&0x3)!=0){
 #endif
 			// マルチスレッドじゃない場合はここで描画処理
-			np2wabwnd.drawframe();
+			if (np2wabwnd.drawframe())
+			{
 #if defined(NP2_X) || defined(NP2_SDL) || defined(__LIBRETRO__)
-			np2wab_drawWABWindow();
+				np2wab_drawWABWindow();
 #else
-			np2wab_drawWABWindow(np2wabwnd.hDCBuf);
+				np2wab_drawWABWindow(np2wabwnd.hDCBuf);
 #endif
-			if(!np2wabwnd.multiwindow){
-				scrnmng_bltwab();
-				scrnmng_update();
+				if (!np2wabwnd.multiwindow)
+				{
+					scrnmng_bltwab();
+					scrnmng_update();
+				}
 			}
 #if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 		}
@@ -584,6 +607,7 @@ void np2wab_drawframe()
  * 非同期描画（ga_threadmodeが真）
  */
 unsigned int __stdcall ga_ThreadFunc(LPVOID vdParam) {
+	static int skipcounter = 0;
 	DWORD time = GetTickCount();
 	int timeleft = 0;
 	while (!ga_exitThread && ga_threadmode) {
@@ -591,11 +615,28 @@ unsigned int __stdcall ga_ThreadFunc(LPVOID vdParam) {
 			wab_enter_criticalsection();
 			wab_leave_criticalsection();
 			if(np2wabwnd.ready && np2wabwnd.hWndWAB!=NULL && np2wabwnd.drawframe!=NULL && (np2wab.relay&0x3)!=0){
-				np2wabwnd.drawframe();
-				np2wab_drawWABWindow(np2wabwnd.hDCBuf); 
-				// 画面転送待ち
-				ga_screenupdated = 1;
-				//if(!ga_exitThread) SuspendThread(ga_hThread);
+				if (np2wabwnd.drawframe() || np2wab_forceupdateflag)
+				{
+					np2wab_forceupdateflag = 0;
+					np2wab_drawWABWindow(np2wabwnd.hDCBuf);
+					// 画面転送待ち
+					ga_screenupdated = 1;
+					//if(!ga_exitThread) SuspendThread(ga_hThread);
+					skipcounter = 0;
+				}
+				else
+				{
+					skipcounter++;
+					if (skipcounter > 50)
+					{
+						Sleep(8); // 画面更新があまりなさそうなのでサボる
+					}
+					else
+					{
+						Sleep(1);
+						skipcounter++;
+					}
+				}
 			}else{
 				// 描画しないのに高速でぐるぐる回しても仕方ないのでスリープ
 				ga_screenupdated = 1;

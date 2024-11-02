@@ -116,16 +116,16 @@ const CRTDATA	*crt;
 		crt += 2;
 	}
 	if (!(mode & 0x01)) {
-		crt += 1;						// 25s
+		crt += 1;						// 25ï¿½s
 	}
 	if (mode & 0x02) {
-		gdc.mode1 |= 0x04;				// 40Œ…
+		gdc.mode1 |= 0x04;				// 40ï¿½ï¿½
 	}
 	if (mode & 0x04) {
-		gdc.mode1 |= 0x01;				// ƒAƒgƒŠƒrƒ…[ƒg
+		gdc.mode1 |= 0x01;				// ï¿½Aï¿½gï¿½ï¿½ï¿½rï¿½ï¿½ï¿½[ï¿½g
 	}
 	if (mode & 0x08) {
-		gdc.mode1 |= 0x20;				// ƒR[ƒhƒAƒNƒZƒX
+		gdc.mode1 |= 0x20;				// ï¿½Rï¿½[ï¿½hï¿½Aï¿½Nï¿½Zï¿½X
 	}
 	mem[MEMB_CRT_RASTER] = crt->raster;
 	crtc.reg.pl = crt->pl;
@@ -333,7 +333,7 @@ const CRTDATA	*p;
 		//if (rate & 4) {
 		if (rate & 0xc) { // np21w ver0.86 rev47 workaround
 //#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
-//			// XXX: Windows3.1 DOSƒvƒƒ“ƒvƒg—p –³—‚â‚è
+//			// XXX: Windows3.1 DOSï¿½vï¿½ï¿½ï¿½ï¿½ï¿½vï¿½gï¿½p ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //			if (CPU_STAT_PM && CPU_STAT_VM86) {
 //				biosioemu_enq8(0x6a, 0x21);
 //				mem[MEMB_PRXDUPD] |= 0x80;
@@ -381,9 +381,9 @@ const CRTDATA	*p;
 #if defined(SUPPORT_PC9821)
 		else {
 //#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
-//			// XXX: Windows3.1 DOSƒvƒƒ“ƒvƒg—p –³—‚â‚è
+//			// XXX: Windows3.1 DOSï¿½vï¿½ï¿½ï¿½ï¿½ï¿½vï¿½gï¿½p ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
-//				biosioemu_enq8(0x6a, 0x20); // ‚±‚ê‚Í‘Ê–Ú
+//				biosioemu_enq8(0x6a, 0x20); // ï¿½ï¿½ï¿½ï¿½Í‘Ê–ï¿½
 //			}else
 //#endif	
 			{
@@ -392,7 +392,7 @@ const CRTDATA	*p;
 			mem[MEMB_PRXDUPD] &= ~0x80;
 		}
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
-		// XXX: Windows3.1 DOSƒvƒƒ“ƒvƒg—p –³—‚â‚è
+		// XXX: Windows3.1 DOSï¿½vï¿½ï¿½ï¿½ï¿½ï¿½vï¿½gï¿½p ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
 			biosioemu_enq8(0x6a, 0x68);
 		}else
@@ -405,7 +405,7 @@ const CRTDATA	*p;
 	crt += (scrn & 3);
 	
 //#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
-//	// XXX: Windows3.1 DOSƒvƒƒ“ƒvƒg—p –³—‚â‚è
+//	// XXX: Windows3.1 DOSï¿½vï¿½ï¿½ï¿½ï¿½ï¿½vï¿½gï¿½p ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //	if (CPU_STAT_PM && CPU_STAT_VM86) {
 //		if (rate & 4) {
 //			biosioemu_push8(0x09a8, 0x01);
@@ -443,7 +443,7 @@ const CRTDATA	*p;
 	ZeroMemory(gdc.s.para + GDC_SCROLL, 4);
 	if (slave & 1) {
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
-		// XXX: Windows3.1 DOSƒvƒƒ“ƒvƒg—p –³—‚â‚è
+		// XXX: Windows3.1 DOSï¿½vï¿½ï¿½ï¿½ï¿½ï¿½vï¿½gï¿½p ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
 			biosioemu_enq8(0xa2, CMD_PITCH);
 			biosioemu_enq8(0xa0, 80);
@@ -458,7 +458,7 @@ const CRTDATA	*p;
 	}
 	else {
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
-		// XXX: Windows3.1 DOSƒvƒƒ“ƒvƒg—p –³—‚â‚è
+		// XXX: Windows3.1 DOSï¿½vï¿½ï¿½ï¿½ï¿½ï¿½vï¿½gï¿½p ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
 			biosioemu_enq8(0xa2, CMD_PITCH);
 			biosioemu_enq8(0xa0, 40);
@@ -484,9 +484,9 @@ const CRTDATA	*p;
 	}
 
 #if defined(BIOS_IO_EMULATION)
-	// XXX: Windows3.1 DOSƒvƒƒ“ƒvƒg—p –³—‚â‚è
+	// XXX: Windows3.1 DOSï¿½vï¿½ï¿½ï¿½ï¿½ï¿½vï¿½gï¿½p ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
-		biosioemu_enq8(0x6a, 0x40 | ((gdc.display & (1 << GDCDISP_PLAZMA)) ? 1 : 0)); // gdcs.textdisp |= GDCSCRN_EXT; ‚Ì‘ã‚í‚èEEE
+		biosioemu_enq8(0x6a, 0x40 | ((gdc.display & (1 << GDCDISP_PLAZMA)) ? 1 : 0)); // gdcs.textdisp |= GDCSCRN_EXT; ï¿½Ì‘ï¿½ï¿½ï¿½Eï¿½Eï¿½E
 		biosioemu_enq8(0x6a, 0x82 | (gdc.clock & 1)); // gdcs.grphdisp |= GDCSCRN_EXT;
 		biosioemu_enq8(0x62, CMD_STOP); // gdcs.textdisp &= ~GDCSCRN_ENABLE; pcstat.screenupdate |= 2;
 	}else
@@ -509,7 +509,7 @@ const CRTDATA	*p;
 	if (scrn & 2) {
 		mem[MEMB_CRT_STS_FLAG] |= 0x10;
 	}
-	return(5);			// ÅŒã‚ÉGDC‚Ö‘—‚Á‚½ƒf[ƒ^c
+	return(5);			// ï¿½ÅŒï¿½ï¿½GDCï¿½Ö‘ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½c
 }
 
 static REG8 bios0x18_31al(void) {
@@ -671,10 +671,24 @@ void bios0x18_42(REG8 mode) {
 //#endif
 	}
 	if (!(mode & 0x20)) {
+		gdc.mode1 &= ~0x02;
 		gdc.mode2 &= ~0x04;
-	}
+#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
+		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable)
+		{
+			biosioemu_enq8(0x68, 0x02);
+		}
+#endif
+}
 	else {
+		gdc.mode1 |= 0x02;
 		gdc.mode2 |= 0x04;
+#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
+		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable)
+		{
+			biosioemu_enq8(0x68, 0x03);
+		}
+#endif
 	}
 	gdcs.mode2 = gdc.mode2;
 	gdcs.grphdisp |= GDCSCRN_ALLDRAW2;
@@ -695,7 +709,7 @@ static void setbiosgdc(UINT32 csrw, const GDCVECT *vect, UINT8 ope) {
 	mem[MEMB_PRXDUPD] |= ope;
 }
 
-/*	«‚±‚±‚©‚ç	‰½ˆ‚©(2ch?)‚ÅŒöŠJ‚³‚ê‚½ƒ\[ƒX	*/
+/*	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(2ch?)ï¿½ÅŒï¿½ï¿½Jï¿½ï¿½ï¿½ê‚½ï¿½\ï¿½[ï¿½X	*/
 static void bios0x18_45(void) {
 
 	UCWTBL		ucw;
@@ -710,32 +724,32 @@ static void bios0x18_45(void) {
 	UINT32		csrw;
 	UINT8		ope;
 
-	//ƒXƒŒ[ƒu‚Ì‰Šú‰»
+	//ï¿½Xï¿½ï¿½ï¿½[ï¿½uï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
 	gdc_forceready(GDCWORK_SLAVE);
 
-	//BX“Ç‚İ‚İ
+	//BXï¿½Ç‚İï¿½ï¿½ï¿½
 	MEMR_READS(CPU_DS, CPU_BX, &ucw, sizeof(ucw));
 
-	//‘ã“ü
+	//ï¿½ï¿½ï¿½
 	GBSX1  = LOADINTELWORD(ucw.GBSX1);
 	GBSY1  = LOADINTELWORD(ucw.GBSY1);
 	GBWDPA = LOADINTELWORD(ucw.GBWDPA);
 	GBLNG1 = LOADINTELWORD(ucw.GBLNG1);
 
-	//200ƒ‰ƒCƒ“‚Å‚¸‚ç‚·
+	//200ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½Å‚ï¿½ï¿½ç‚·
 	if ((CPU_CH & 0xc0) == 0x40) {
 		GBSY1 += 200;
 	}
 
-	//•`‰æ•ûŒü‚ğ‰E‰º‚Éİ’è
+	//ï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Eï¿½ï¿½ï¿½Éİ’ï¿½
 	vect.ope =0x02 ;
 
 	i = 0;
 	for(;;){
-		//ƒpƒ^[ƒ““Ç‚İ‚İ
+		//ï¿½pï¿½^ï¿½[ï¿½ï¿½ï¿½Ç‚İï¿½ï¿½ï¿½
 		MEMR_READS(CPU_DS, GBWDPA+i, pat, 1);
 
-		//’[”ˆ—(gdcsub_setvect‚Ì•K—v‚È’l‚¾‚¯‚ğg‚Á‚ÄŒã‚Í“K“–)
+		//ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(gdcsub_setvectï¿½Ì•Kï¿½vï¿½È’lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ÄŒï¿½Í“Kï¿½ï¿½)
 		if((GBLNG1 - i*8) < 8){
 			gdcsub_setvectl(&vect, 1, 1, (GBLNG1 - i*8), 1);
 			tmp = 0xFF << (8- (GBLNG1 - i*8));
@@ -748,7 +762,7 @@ static void bios0x18_45(void) {
 		}
 
 
-		//•`‰æŠJn(0x49‚Ì^—)
+		//ï¿½`ï¿½ï¿½Jï¿½n(0x49ï¿½Ì^ï¿½ï¿½)
 		csrw = (GBSY1 * 40) + ((GBSX1 + i*8) >> 4);
 		csrw += ((GBSX1 + i*8) & 0xf) << 20;
 
@@ -767,15 +781,15 @@ static void bios0x18_45(void) {
 			gdcsub_vectl(csrw, &vect, tmp, ope);
 		}
 
-		//Ÿ‚Ìƒf[ƒ^‚ª–³‚¯‚ê‚Î”²‚¯‚é
+		//ï¿½ï¿½ï¿½Ìƒfï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î”ï¿½ï¿½ï¿½ï¿½ï¿½
 		i++;
 		if(i*8 >= GBLNG1) break;
 	}
 
-	// ÅŒã‚Ég‚Á‚½“z‚ğ‹L‰¯
+	// ï¿½ÅŒï¿½Égï¿½ï¿½ï¿½ï¿½ï¿½zï¿½ï¿½ï¿½Lï¿½ï¿½
 	setbiosgdc(csrw, &vect, ope);
 }
-/*	ª‚±‚±‚Ü‚Å	‰½ˆ‚©(2ch?)‚ÅŒöŠJ‚³‚ê‚½ƒ\[ƒX	*/
+/*	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(2ch?)ï¿½ÅŒï¿½ï¿½Jï¿½ï¿½ï¿½ê‚½ï¿½\ï¿½[ï¿½X	*/
 
 static void bios0x18_47(void) {
 
@@ -887,7 +901,7 @@ static void bios0x18_47(void) {
 		func(csrw, &vect, GBMDOTI, ope);
 	}
 
-	// ÅŒã‚Ég‚Á‚½“z‚ğ‹L‰¯
+	// ï¿½ÅŒï¿½Égï¿½ï¿½ï¿½ï¿½ï¿½zï¿½ï¿½ï¿½Lï¿½ï¿½
 	*(UINT16 *)(mem + MEMW_PRXGLS) = *(UINT16 *)(ucw.GBMDOTI);
 	STOREINTELWORD(mem + GDC_TEXTW, GBMDOTI);
 	setbiosgdc(csrw, &vect, ope);
@@ -947,7 +961,7 @@ static void bios0x18_49(void) {
 		gdcsub_text(csrw, &vect, pat, ope);
 	}
 
-	// ÅŒã‚Ég‚Á‚½“z‚ğ‹L‰¯
+	// ï¿½ÅŒï¿½Égï¿½ï¿½ï¿½ï¿½ï¿½zï¿½ï¿½ï¿½Lï¿½ï¿½
 	setbiosgdc(csrw, &vect, ope);
 }
 
@@ -996,7 +1010,7 @@ void bios0x18(void) {
 #endif
 	
 	switch(CPU_AH) {
-		case 0x00:						// ƒL[Eƒf[ƒ^‚Ì“Ç‚İ‚¾‚µ
+		case 0x00:						// ï¿½Lï¿½[ï¿½Eï¿½fï¿½[ï¿½^ï¿½Ì“Ç‚İ‚ï¿½ï¿½ï¿½
 			if (mem[MEMB_KB_COUNT]) {
 				CPU_AX = keyget();
 			}
@@ -1007,7 +1021,7 @@ void bios0x18(void) {
 			}
 			break;
 
-   		case 0x01:						// ƒL[Eƒoƒbƒtƒ@ó‘Ô‚ÌƒZƒ“ƒX
+   		case 0x01:						// ï¿½Lï¿½[ï¿½Eï¿½oï¿½bï¿½tï¿½@ï¿½ï¿½Ô‚ÌƒZï¿½ï¿½ï¿½X
 			if (mem[MEMB_KB_COUNT]) {
 				tmp.d = GETBIOSMEM16(MEMW_KB_BUF_HEAD);
 				CPU_AX = GETBIOSMEM16(tmp.d);
@@ -1018,11 +1032,11 @@ void bios0x18(void) {
 			}
 			break;
 
-   		case 0x02:						// ƒVƒtƒgEƒL[ó‘Ô‚ÌƒZƒ“ƒX
+   		case 0x02:						// ï¿½Vï¿½tï¿½gï¿½Eï¿½Lï¿½[ï¿½ï¿½Ô‚ÌƒZï¿½ï¿½ï¿½X
 			CPU_AL = mem[MEMB_SHIFT_STS];
 			break;
 
-   		case 0x03:						// ƒL[ƒ{[ƒhEƒCƒ“ƒ^ƒtƒFƒCƒX‚Ì‰Šú‰»
+   		case 0x03:						// ï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½Eï¿½Cï¿½ï¿½ï¿½^ï¿½tï¿½Fï¿½Cï¿½Xï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 			// np21w ver0.86 rev47 BIOS I/O emulation
 			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
@@ -1043,11 +1057,11 @@ void bios0x18(void) {
 			}
 			break;
 
-   		case 0x04:						// ƒL[“ü—Íó‘Ô‚ÌƒZƒ“ƒX
+   		case 0x04:						// ï¿½Lï¿½[ï¿½ï¿½ï¿½Íï¿½Ô‚ÌƒZï¿½ï¿½ï¿½X
 			CPU_AH = mem[MEMX_KB_KY_STS + (CPU_AL & 0x0f)];
  			break;
 
-   		case 0x05:						// ƒL[“ü—ÍƒZƒ“ƒX
+   		case 0x05:						// ï¿½Lï¿½[ï¿½ï¿½ï¿½ÍƒZï¿½ï¿½ï¿½X
 			if (mem[MEMB_KB_COUNT]) {
 				CPU_AX = keyget();
 				CPU_BH = 1;
@@ -1057,15 +1071,15 @@ void bios0x18(void) {
 			}
  			break;
 
-   		case 0x0a:						// CRTƒ‚[ƒh‚Ìİ’è(15/24khz)
+   		case 0x0a:						// CRTï¿½ï¿½ï¿½[ï¿½hï¿½Ìİ’ï¿½(15/24khz)
 			bios0x18_0a(CPU_AL);
 			break;
 
-   		case 0x0b:						// CRTƒ‚[ƒh‚ÌƒZƒ“ƒX
+   		case 0x0b:						// CRTï¿½ï¿½ï¿½[ï¿½hï¿½ÌƒZï¿½ï¿½ï¿½X
 			CPU_AL = mem[MEMB_CRT_STS_FLAG];
  			break;
 
-   		case 0x0c:						// ƒeƒLƒXƒg‰æ–Ê‚Ì•\¦ŠJn
+   		case 0x0c:						// ï¿½eï¿½Lï¿½Xï¿½gï¿½ï¿½Ê‚Ì•\ï¿½ï¿½ï¿½Jï¿½n
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 			// np21w ver0.86 rev47 BIOS I/O emulation
 			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
@@ -1080,7 +1094,7 @@ void bios0x18(void) {
 			}
  			break;
 
-   		case 0x0d:						// ƒeƒLƒXƒg‰æ–Ê‚Ì•\¦I—¹
+   		case 0x0d:						// ï¿½eï¿½Lï¿½Xï¿½gï¿½ï¿½Ê‚Ì•\ï¿½ï¿½ï¿½Iï¿½ï¿½
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 			// np21w ver0.86 rev47 BIOS I/O emulation
 			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
@@ -1098,7 +1112,7 @@ void bios0x18(void) {
 			}
  			break;
 
-		case 0x0e:						// ˆê‚Â‚Ì•\¦—Ìˆæ‚Ìİ’è
+		case 0x0e:						// ï¿½ï¿½Â‚Ì•\ï¿½ï¿½ï¿½Ìˆï¿½Ìİ’ï¿½
 			gdc_forceready(GDCWORK_MASTER);
 			ZeroMemory(&gdc.m.para[GDC_SCROLL], 16);
 			tmp.w = CPU_DX >> 1;
@@ -1114,17 +1128,17 @@ void bios0x18(void) {
 //			pcstat.screenupdate |= 2;
  			break;
 
-		case 0x0f:						// •¡”‚Ì•\¦—Ìˆæ‚Ìİ’è
+		case 0x0f:						// ï¿½ï¿½ï¿½ï¿½ï¿½Ì•\ï¿½ï¿½ï¿½Ìˆï¿½Ìİ’ï¿½
 			gdc_forceready(GDCWORK_MASTER);
 			bios0x18_0f(CPU_BX, CPU_CX, CPU_DH, CPU_DL);
 			break;
 
-   		case 0x10:						// ƒJ[ƒ\ƒ‹ƒ^ƒCƒv‚Ìİ’è(15/24khz)
+   		case 0x10:						// ï¿½Jï¿½[ï¿½\ï¿½ï¿½ï¿½^ï¿½Cï¿½vï¿½Ìİ’ï¿½(15/24khz)
 			gdc_forceready(GDCWORK_MASTER);
 			bios0x18_10((REG8)(CPU_AL & 1));
  			break;
 
-   		case 0x11:						// ƒJ[ƒ\ƒ‹‚Ì•\¦ŠJn
+   		case 0x11:						// ï¿½Jï¿½[ï¿½\ï¿½ï¿½ï¿½Ì•\ï¿½ï¿½ï¿½Jï¿½n
 			gdc_forceready(GDCWORK_MASTER);
 			if (gdc.m.para[GDC_CSRFORM] != (mem[MEMB_CRT_RASTER] | 0x80)) {
 				gdc.m.para[GDC_CSRFORM] = mem[MEMB_CRT_RASTER] | 0x80;
@@ -1132,7 +1146,7 @@ void bios0x18(void) {
 			gdcs.textdisp |= GDCSCRN_ALLDRAW | GDCSCRN_EXT;
 			break;
 
-   		case 0x12:						// ƒJ[ƒ\ƒ‹‚Ì•\¦’â~
+   		case 0x12:						// ï¿½Jï¿½[ï¿½\ï¿½ï¿½ï¿½Ì•\ï¿½ï¿½ï¿½ï¿½~
 			gdc_forceready(GDCWORK_MASTER);
 			if (gdc.m.para[GDC_CSRFORM] != mem[MEMB_CRT_RASTER]) {
 				gdc.m.para[GDC_CSRFORM] = mem[MEMB_CRT_RASTER];
@@ -1140,7 +1154,7 @@ void bios0x18(void) {
 			}
 			break;
 
-   		case 0x13:						// ƒJ[ƒ\ƒ‹ˆÊ’u‚Ìİ’è
+   		case 0x13:						// ï¿½Jï¿½[ï¿½\ï¿½ï¿½ï¿½Ê’uï¿½Ìİ’ï¿½
 			gdc_forceready(GDCWORK_MASTER);
 			tmp.w = CPU_DX >> 1;
 			if (LOADINTELWORD(gdc.m.para + GDC_CSRW) != tmp.w) {
@@ -1149,33 +1163,33 @@ void bios0x18(void) {
 			}
  			break;
 
-   		case 0x14:						// ƒtƒHƒ“ƒgƒpƒ^[ƒ“‚Ì“Ç‚İo‚µ
+   		case 0x14:						// ï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½pï¿½^ï¿½[ï¿½ï¿½ï¿½Ì“Ç‚İoï¿½ï¿½
 			bios0x18_14(CPU_BX, CPU_CX, CPU_DX);
  			break;
 
- 		case 0x15:						// ƒ‰ƒCƒgƒyƒ“ˆÊ’u“Ç‚İ‚¾‚µ
+ 		case 0x15:						// ï¿½ï¿½ï¿½Cï¿½gï¿½yï¿½ï¿½ï¿½Ê’uï¿½Ç‚İ‚ï¿½ï¿½ï¿½
  			break;
 
-   		case 0x16:						// ƒeƒLƒXƒgVRAM‚Ì‰Šú‰»
+   		case 0x16:						// ï¿½eï¿½Lï¿½Xï¿½gVRAMï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
 			bios0x18_16(CPU_DL, CPU_DH);
  			break;
 
-		case 0x17:						// ƒuƒU[‚Ì‹NŒÄ
+		case 0x17:						// ï¿½uï¿½Uï¿½[ï¿½Ì‹Nï¿½ï¿½
 			iocore_out8(0x37, 0x06);
 			break;
 
-		case 0x18:						// ƒuƒU[‚Ì’â~
+		case 0x18:						// ï¿½uï¿½Uï¿½[ï¿½Ì’ï¿½~
 			iocore_out8(0x37, 0x07);
 			break;
 
-		case 0x19:						// ƒ‰ƒCƒgƒyƒ“‰Ÿ‰ºó‘Ô‚Ì‰Šú‰»
+		case 0x19:						// ï¿½ï¿½ï¿½Cï¿½gï¿½yï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô‚Ìï¿½ï¿½ï¿½ï¿½ï¿½
 			break;
 
-   		case 0x1a:						// ƒ†[ƒU[•¶š‚Ì’è‹`
+   		case 0x1a:						// ï¿½ï¿½ï¿½[ï¿½Uï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½Ì’ï¿½`
 			bios0x18_1a(CPU_BX, CPU_CX, CPU_DX);
 			break;
 
-		case 0x1b:						// KCGƒAƒNƒZƒXƒ‚[ƒh‚Ìİ’è
+		case 0x1b:						// KCGï¿½Aï¿½Nï¿½Zï¿½Xï¿½ï¿½ï¿½[ï¿½hï¿½Ìİ’ï¿½
 			switch(CPU_AL) {
 				case 0:
 					mem[MEMB_CRT_STS_FLAG] &= ~0x08;
@@ -1215,7 +1229,7 @@ void bios0x18(void) {
 			}
 			break;
 #endif
-   		case 0x40:						// ƒOƒ‰ƒtƒBƒbƒN‰æ–Ê‚Ì•\¦ŠJn
+   		case 0x40:						// ï¿½Oï¿½ï¿½ï¿½tï¿½Bï¿½bï¿½Nï¿½ï¿½Ê‚Ì•\ï¿½ï¿½ï¿½Jï¿½n
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 			// np21w ver0.86 rev47 BIOS I/O emulation
 			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
@@ -1232,7 +1246,7 @@ void bios0x18(void) {
 			}
  			break;
 
-   		case 0x41:						// ƒOƒ‰ƒtƒBƒbƒN‰æ–Ê‚Ì•\¦I—¹
+   		case 0x41:						// ï¿½Oï¿½ï¿½ï¿½tï¿½Bï¿½bï¿½Nï¿½ï¿½Ê‚Ì•\ï¿½ï¿½ï¿½Iï¿½ï¿½
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 			// np21w ver0.86 rev47 BIOS I/O emulation
 			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
@@ -1249,11 +1263,11 @@ void bios0x18(void) {
 			}
  			break;
 
-   		case 0x42:						// •\¦—Ìˆæ‚Ìİ’è
+   		case 0x42:						// ï¿½\ï¿½ï¿½ï¿½Ìˆï¿½Ìİ’ï¿½
 			bios0x18_42(CPU_CH);
  			break;
 
-		case 0x43:						// ƒpƒŒƒbƒg‚Ìİ’è
+		case 0x43:						// ï¿½pï¿½ï¿½ï¿½bï¿½gï¿½Ìİ’ï¿½
 			MEMR_READS(CPU_DS, CPU_BX + offsetof(UCWTBL, GBCPC), tmp.col, 4);
 			for (i=0; i<4; i++) {
 				gdc_setdegitalpal(6 - (i*2), (REG8)(tmp.col[i] >> 4));
@@ -1261,28 +1275,28 @@ void bios0x18(void) {
 			}
 			break;
 
-		case 0x44:						// ƒ{[ƒ_ƒJƒ‰[‚Ìİ’è
+		case 0x44:						// ï¿½{ï¿½[ï¿½_ï¿½Jï¿½ï¿½ï¿½[ï¿½Ìİ’ï¿½
 //			if (!(mem[MEMB_PRXCRT] & 0x40)) {
 //				color = MEMR_READ8(CPU_DS, CPU_BX + 1);
 //			}
 			break;
-		case 0x45:	/*	int18,45h‚ğ’Ç‰Á(from Kai2, np21w ver0.86 rev16)	*/
+		case 0x45:	/*	int18,45hï¿½ï¿½Ç‰ï¿½(from Kai2, np21w ver0.86 rev16)	*/
 			bios0x18_45();
 			break;
 		case 0x46:
 			TRACEOUT(("unsupport bios 18-%.2x", CPU_AH));
 			break;
 
-		case 0x47:						// ’¼üA‹éŒ`‚Ì•`‰æ
-		case 0x48:						// ‰~‚Ì•`‰æ
+		case 0x47:						// ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½`ï¿½Ì•`ï¿½ï¿½
+		case 0x48:						// ï¿½~ï¿½Ì•`ï¿½ï¿½
 			bios0x18_47();
 			break;
 
-		case 0x49:						// ƒOƒ‰ƒtƒBƒbƒN•¶š‚Ì•`‰æ
+		case 0x49:						// ï¿½Oï¿½ï¿½ï¿½tï¿½Bï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½Ì•`ï¿½ï¿½
 			bios0x18_49();
 			break;
 
-		case 0x4a:						// •`‰æƒ‚[ƒh‚Ìİ’è
+		case 0x4a:						// ï¿½`ï¿½æƒ‚ï¿½[ï¿½hï¿½Ìİ’ï¿½
 			if (!(mem[MEMB_PRXCRT] & 0x01)) {
 				gdc.s.para[GDC_SYNC] = CPU_CH;
 				gdcs.grphdisp |= GDCSCRN_EXT;
