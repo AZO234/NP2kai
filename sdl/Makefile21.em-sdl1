@@ -86,6 +86,9 @@ SOURCES_C += 	$(wildcard $(NP2_PATH)/i386c/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse2/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse3/*.c) \
+		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/ssse3/*.c) \
+		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse4/*.c) \
+		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse4a/*.c) \
 		$(NP2_PATH)/sdl/em/main.c
 
 ifeq ($(SDL_VERSION), 1)

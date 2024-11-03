@@ -801,7 +801,10 @@ SOURCES_C += $(NP2_PATH)/sdl/libretro/libretro.c \
 	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/mmx/*.c) \
 	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse/*.c) \
 	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse2/*.c) \
-	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse3/*.c)
+	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse3/*.c) \
+	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/ssse3/*.c) \
+	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse4/*.c) \
+	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse4a/*.c) \
 
 #	$(NP2_PATH)/sdl/libretro/libretro-common/file/archive_file_zlib.c \
 #	$(NP2_PATH)/sdl/libretro/libretro-common/formats/libchdr/libchdr_flac.c \
