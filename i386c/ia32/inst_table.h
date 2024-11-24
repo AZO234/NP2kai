@@ -42,6 +42,13 @@ extern void (*insttable_2byte660F_32[256])(void);
 extern void (*insttable_2byteF20F_32[256])(void);
 extern void (*insttable_2byteF30F_32[256])(void);
 
+extern void (*insttable_2byte0F38_32[256])(void);
+extern void (*insttable_3byte660F38_32[256])(void);
+extern void (*insttable_2byte0F3A_32[256])(void);
+extern void (*insttable_3byte660F3A_32[256])(void);
+extern void (*insttable_3byteF20F38_32[256])(void);
+extern void (*insttable_3byteF20F38_16[256])(void);
+
 /*
  * for group
  */

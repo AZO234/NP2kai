@@ -269,7 +269,7 @@ void cdchange_timeoutproc(NEVENTITEM item) {
 }
 static void cdchange_timeoutset(void) {
 
-	nevent_setbyms(NEVENT_CDWAIT, 6000, cdchange_timeoutproc, NEVENT_ABSOLUTE);
+	nevent_setbyms(NEVENT_CDWAIT, 8000, cdchange_timeoutproc, NEVENT_ABSOLUTE);
 }
 
 #ifdef SUPPORT_NVL_IMAGES

@@ -172,7 +172,15 @@ void winkbd_keydown(WPARAM wParam, LPARAM lParam) {
 			keystat_senddata(0x70);							// PC/AT only!
 			data = key106ext[wParam & 0xff];
 		}
-		keystat_senddata(data);
+		if ((np2oscfg.KEYBOARD == KEY_KEY106 && data == 0x79))
+		{
+			// APPキー特例
+			keystat_senddataraw(data);
+		}
+		else
+		{
+			keystat_senddata(data);
+		}
 	}
 	else {													// ver0.28
 		if ((!np2oscfg.KEYBOARD != KEY_PC98) && (wParam == 0x0c)) {
@@ -207,7 +215,15 @@ void winkbd_keyup(WPARAM wParam, LPARAM lParam) {
 			keystat_senddata(0x70 | 0x80);				// PC/AT only
 			data = key106ext[wParam & 0xff];
 		}
-		keystat_senddata((UINT8)(data | 0x80));
+		if (((np2oscfg.KEYBOARD != KEY_PC98) && data == 0x79))
+		{
+			// APPキー特例
+			keystat_senddataraw((UINT8)(data | 0x80));
+		}
+		else
+		{
+			keystat_senddata((UINT8)(data | 0x80));
+		}
 	}
 	else {												// ver0.28
 		if ((np2oscfg.KEYBOARD != KEY_PC98) && (wParam == 0x0c)) {

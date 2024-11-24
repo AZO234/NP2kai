@@ -966,8 +966,11 @@ void bios0x1b(void) {
 			break;
 
 		case 0x70:
-		case 0xf0:
 			ret_ah = fdd_operate(0, 0, FALSE);
+			break;
+
+		case 0xf0:
+			ret_ah = fdd_operate(2, 0, FALSE);
 			break;
 
 		case 0x50:

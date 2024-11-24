@@ -34,7 +34,7 @@
 
 #if defined(USE_3DNOW) && defined(USE_MMX) && defined(USE_FPU)
 
-#define CPU_MMXWORKCLOCK(a)	CPU_WORKCLOCK(8)
+#define CPU_MMXWORKCLOCK(a)	CPU_WORKCLOCK(2)
 
 // 3DNow!
 void AMD3DNOW_PAVGUSB_REG(UINT8 reg1, UINT8 reg2);

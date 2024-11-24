@@ -449,6 +449,8 @@ typedef void (*cirrus_bitblt_rop_t) (struct CirrusVGAState *s,
 typedef void (*cirrus_fill_t)(struct CirrusVGAState *s,
                               uint8_t *dst, int dst_pitch, int width, int height);
 
+static int cirrusvga_updated = 1;
+
 typedef struct CirrusVGAState {
     VGA_STATE_COMMON
 
@@ -1064,6 +1066,7 @@ static void cirrus_invalidate_region(CirrusVGAState * s, int off_begin,
 		}
 		off_begin += off_pitch;
     }
+	cirrusvga_updated = 1;
 }
 
 static int cirrus_bitblt_common_patterncopy(CirrusVGAState * s,
@@ -1083,6 +1086,7 @@ static int cirrus_bitblt_common_patterncopy(CirrusVGAState * s,
     cirrus_invalidate_region(s, s->cirrus_blt_dstaddr,
                              s->cirrus_blt_dstpitch, s->cirrus_blt_width,
                              s->cirrus_blt_height);
+	cirrusvga_updated = 1;
     return 1;
 }
 
@@ -1104,7 +1108,8 @@ static int cirrus_bitblt_solidfill(CirrusVGAState *s, int blt_rop)
 			     s->cirrus_blt_dstpitch, s->cirrus_blt_width,
 			     s->cirrus_blt_height);
     cirrus_bitblt_reset(s);
-    return 1;
+ 	cirrusvga_updated = 1;
+   return 1;
 }
 
 /***************************************
@@ -1176,6 +1181,7 @@ static void cirrus_do_copy(CirrusVGAState *s, int dst, int src, int w, int h)
 		      (s->cirrus_blt_srcaddr & s->cirrus_addr_mask),
 		      s->cirrus_blt_dstpitch, s->cirrus_blt_srcpitch,
 		      s->cirrus_blt_width, s->cirrus_blt_height);
+	cirrusvga_updated = 1;
 
     if (notify){
 		qemu_console_copy(s->ds,
@@ -1190,6 +1196,7 @@ static void cirrus_do_copy(CirrusVGAState *s, int dst, int src, int w, int h)
     cirrus_invalidate_region(s, s->cirrus_blt_dstaddr,
 				s->cirrus_blt_dstpitch, s->cirrus_blt_width,
 				s->cirrus_blt_height);
+	cirrusvga_updated = 1;
 }
 
 static int cirrus_bitblt_videotovideo_copy(CirrusVGAState * s)
@@ -1250,6 +1257,7 @@ static void cirrus_bitblt_cputovideo_next(CirrusVGAState * s)
 				}
             } while (s->cirrus_srcptr >= s->cirrus_srcptr_end);
         }
+		cirrusvga_updated = 1;
     }
 }
 
@@ -1284,6 +1292,7 @@ static void cirrus_bitblt_videotocpu_next(CirrusVGAState * s)
 				s->cirrus_srcptr_end = s->cirrus_bltbuf + sizeof(s->cirrus_bltbuf);
 			}
         }
+		cirrusvga_updated = 1;
     }
 }
 
@@ -1395,6 +1404,7 @@ static int cirrus_bitblt_videotocpu(CirrusVGAState * s)
 	(*s->cirrus_rop)(s, s->cirrus_bltbuf, s->vram_ptr +
                     (s->cirrus_blt_srcaddr & s->cirrus_addr_mask),
                     0, 0, s->cirrus_blt_width, 1);
+	cirrusvga_updated = 1;
     return 1;
 }
 
@@ -1897,6 +1907,7 @@ cirrus_hook_write_sr(CirrusVGAState * s, unsigned reg_index, int reg_value)
     case 0xf0:			// Graphics Cursor X
 		s->sr[0x10] = reg_value;
 		s->hw_cursor_x = (reg_value << 3) | (reg_index >> 5);
+		cirrusvga_updated = 1;
 	break;
     case 0x11:
     case 0x31:
@@ -1908,6 +1919,7 @@ cirrus_hook_write_sr(CirrusVGAState * s, unsigned reg_index, int reg_value)
     case 0xf1:			// Graphics Cursor Y
 		s->sr[0x11] = reg_value;
 		s->hw_cursor_y = (reg_value << 3) | (reg_index >> 5);
+		cirrusvga_updated = 1;
 	break;
 	case 0x07:			// Extended Sequencer Mode
 //		cirrus_update_memory_access(s);
@@ -2005,19 +2017,21 @@ static int cirrus_hook_read_palette(CirrusVGAState * s, int *reg_value)
     return CIRRUS_HOOK_HANDLED;
 }
 
-static int cirrus_hook_write_palette(CirrusVGAState * s, int reg_value)
+static int cirrus_hook_write_palette(CirrusVGAState* s, int reg_value)
 {
-    if (!(s->sr[0x12] & CIRRUS_CURSOR_HIDDENPEL))
-	return CIRRUS_HOOK_NOT_HANDLED;
-    s->dac_cache[s->dac_sub_index] = reg_value;
-    if (++s->dac_sub_index == 3) {
-        memcpy(&s->cirrus_hidden_palette[(s->dac_write_index & 0x0f) * 3],
-               s->dac_cache, 3);
-        /* XXX update cursor */
-	s->dac_sub_index = 0;
-	s->dac_write_index++;
-    }
-    return CIRRUS_HOOK_HANDLED;
+	if (!(s->sr[0x12] & CIRRUS_CURSOR_HIDDENPEL))
+		return CIRRUS_HOOK_NOT_HANDLED;
+	s->dac_cache[s->dac_sub_index] = reg_value;
+	if (++s->dac_sub_index == 3)
+	{
+		memcpy(&s->cirrus_hidden_palette[(s->dac_write_index & 0x0f) * 3],
+			s->dac_cache, 3);
+		/* XXX update cursor */
+		s->dac_sub_index = 0;
+		s->dac_write_index++;
+		cirrusvga_updated = 1;
+	}
+	return CIRRUS_HOOK_HANDLED;
 }
 
 /***************************************
@@ -2640,6 +2654,7 @@ static void cirrus_mem_writeb_mode4and5_8bpp(CirrusVGAState * s,
     }
     cpu_physical_memory_set_dirty(s->vram_offset + offset);
     cpu_physical_memory_set_dirty(s->vram_offset + offset + 7);
+	cirrusvga_updated = 1;
 }
 
 static void cirrus_mem_writeb_mode4and5_16bpp(CirrusVGAState * s,
@@ -2678,6 +2693,7 @@ static void cirrus_mem_writeb_mode4and5_16bpp(CirrusVGAState * s,
     }
     cpu_physical_memory_set_dirty(s->vram_offset + offset);
     cpu_physical_memory_set_dirty(s->vram_offset + offset + 15);
+	cirrusvga_updated = 1;
 }
 
 /***************************************
@@ -2806,6 +2822,7 @@ void cirrus_vga_mem_writeb(void *opaque, target_phys_addr_t addr,
 					*(s->vram_ptr + bank_offset) = mem_value;
 					cpu_physical_memory_set_dirty(s->vram_offset +
 								  bank_offset);
+					cirrusvga_updated = 1;
 				} else {
 					if ((s->gr[0x0B] & 0x14) != 0x14) {
 						cirrus_mem_writeb_mode4and5_8bpp(s, mode,
@@ -2961,6 +2978,7 @@ static void cirrus_cursor_invalidate(VGAState *s1)
         /* compute the real cursor min and max y */
         cirrus_cursor_compute_yrange(s);
         invalidate_cursor1(s);
+		cirrusvga_updated = 1;
     }
 }
 
@@ -3048,6 +3066,7 @@ void cirrus_linear_mmio_update(void *opaque)
 		//}
 	}
 #endif
+	cirrusvga_updated = 1;
 }
 
 uint32_t_ cirrus_linear_readb(void *opaque, target_phys_addr_t addr)
@@ -3157,6 +3176,7 @@ void cirrus_linear_writeb(void *opaque, target_phys_addr_t addr,
 		if (mode < 4 || mode > 5 || ((s->gr[0x0B] & 0x4) == 0)) {
 			*(s->vram_ptr + addr) = (uint8_t) val;
 			cpu_physical_memory_set_dirty(s->vram_offset + addr);
+			cirrusvga_updated = 1;
 		} else {
 			if ((s->gr[0x0B] & 0x14) != 0x14) {
 				cirrus_mem_writeb_mode4and5_8bpp(s, mode, addr, val);
@@ -3249,6 +3269,7 @@ void cirrus_linear_mem_writeb(void *opaque, target_phys_addr_t addr,
     addr &= s->cirrus_addr_mask;
     *(s->vram_ptr + addr) = val;
     cpu_physical_memory_set_dirty(s->vram_offset + addr);
+	cirrusvga_updated = 1;
 }
 
 void cirrus_linear_mem_writew(void *opaque, target_phys_addr_t addr,
@@ -3259,6 +3280,7 @@ void cirrus_linear_mem_writew(void *opaque, target_phys_addr_t addr,
     addr &= s->cirrus_addr_mask;
     cpu_to_le16w((uint16_t_ *)(s->vram_ptr + addr), val);
     cpu_physical_memory_set_dirty(s->vram_offset + addr);
+	cirrusvga_updated = 1;
 }
 
 void cirrus_linear_mem_writel(void *opaque, target_phys_addr_t addr,
@@ -3269,6 +3291,7 @@ void cirrus_linear_mem_writel(void *opaque, target_phys_addr_t addr,
     addr &= s->cirrus_addr_mask;
     cpu_to_le32w((uint32_t_ *)(s->vram_ptr + addr), val);
     cpu_physical_memory_set_dirty(s->vram_offset + addr);
+	cirrusvga_updated = 1;
 }
 
 /***************************************
@@ -4290,6 +4313,7 @@ static void vga_ioport_write(void *opaque, uint32_t_ addr, uint32_t_ val)
 			s->dac_sub_index = 0;
 			s->dac_write_index++;
 			np2wab.paletteChanged = 1; // パレット変えました
+			cirrusvga_updated = 1;
 		}
 		break;
 	//case 0x3cc:
@@ -5047,6 +5071,7 @@ void pc98_cirrus_vga_load()
 	np2wab.realHeight = 0;
 
 	np2wab.paletteChanged = 1; // パレット変えました
+	cirrusvga_updated = 1;
 }
 
 /***************************************
@@ -5125,6 +5150,7 @@ void cirrus_reset(void *opaque)
 	//	fwrite(s, sizeof(CirrusVGAState), 1, fh);
 	//	fclose(fh);
 	//}
+	cirrusvga_updated = 1;
 }
 
 #if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
@@ -5198,7 +5224,7 @@ void ConvertYUV2RGB(int width, unsigned char *srcYUV16, unsigned char *dstRGB32L
 
 //　画面表示(仮)　本当はQEMUのオリジナルのコードを移植すべきなんだけど･･･
 //  Cirrus VRAM (screen & cursor) -> GDI Device Independent Bitmap
-void cirrusvga_drawGraphic(){
+int cirrusvga_drawGraphic(){
 //#define DEBUG_CIRRUS_VRAM
 #if defined(DEBUG_CIRRUS_VRAM)
 	//static UINT32 kdown = 0;
@@ -5235,6 +5261,9 @@ void cirrusvga_drawGraphic(){
 	
 	int realWidth = 0;
 	int realHeight = 0;
+
+	if (!cirrusvga_updated && !np2wab.paletteChanged) return 0;
+	cirrusvga_updated = 0;
 
 	// VRAM上での1ラインのサイズ（表示幅と等しくない場合有り）
 	line_offset = cirrusvga->cr[0x13] | ((cirrusvga->cr[0x1b] & 0x10) << 4);
@@ -5331,7 +5360,7 @@ void cirrusvga_drawGraphic(){
 	}
 #endif
 
-	if(bpp==0) return; 
+	if(bpp==0) return 0; 
 
 	// Palette mode > 85MHz (1280x1024)
 	if((cirrusvga->cirrus_hidden_dac_data & 0xCF) == 0x4A){
@@ -6236,6 +6265,7 @@ void cirrusvga_drawGraphic(){
 	ga_bmpInfo->bmiHeader.biWidth = width; // 前回の解像度を保存
 	ga_bmpInfo->bmiHeader.biHeight = height; // 前回の解像度を保存
 #endif
+	return 1;
 }
 
 /***************************************
@@ -6592,6 +6622,7 @@ static void cirrusvga_setAutoWABID() {
 	pc98_cirrus_setWABreg();
 	pc98_cirrus_vga_setvramsize();
 	pc98_cirrus_vga_initVRAMWindowAddr();
+	cirrusvga_updated = 1;
 }
 
 static REG8 IOINPCALL cirrusvga_i59e1(UINT port) {
@@ -7194,6 +7225,7 @@ static void pc98_cirrus_init_common(CirrusVGAState * s, int device_id, int is_pc
 			cirrusvga_wab_40e1 = 0xC2;	// bit1=0:DRAM REFRESH MODE?? とりあえず初期値はC2hじゃないとWin95ドライバはボードを認識しない
 			cirrusvga_wab_42e1 = 0x18;  // 存在しない
 			cirrusvga_wab_46e8 = 0x10;
+			cirrusvga_updated = 1;
 		}
 		
 		//np2clvga.VRAMWindowAddr3 = 0xF00000; // XXX
@@ -7236,6 +7268,7 @@ static void pc98_cirrus_init_common(CirrusVGAState * s, int device_id, int is_pc
 	//if(np2clvga.gd54xxtype == CIRRUS_98ID_WAB || np2clvga.gd54xxtype == CIRRUS_98ID_WSN){
 	//	//s->sr[0x06] = 0x12; // Unlock Cirrus extensions by default
 	//}
+	cirrusvga_updated = 1;
 }
 static void pc98_cirrus_deinit_common(CirrusVGAState * s, int device_id, int is_pci)
 {
@@ -7507,6 +7540,8 @@ void pc98_cirrus_vga_reset(const NP2CFG *pConfig)
 	}else{
 		pc98_cirrus_reset(s, CIRRUS_ID_CLGD5430, 0);
 	}
+
+	cirrusvga_updated = 1;
 }
 void pc98_cirrus_vga_bind(void)
 {
@@ -7643,6 +7678,7 @@ void pc98_cirrus_vga_resetresolution(void)
 		cirrusvga->sr[0x08] = 0xFE;
 	}
 #endif
+	cirrusvga_updated = 1;
 }
 
 // MELCO WAB系ポートならTRUE

@@ -218,6 +218,7 @@ void keyrepeat_proc();
 // ---- 廃止関数
 
 void keystat_senddata(REG8 data);
+void keystat_senddataraw(REG8 data);
 void keystat_forcerelease(REG8 data);
 
 #ifdef __cplusplus

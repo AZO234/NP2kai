@@ -1,0 +1,44 @@
+{
+  "[c]": {
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true
+  },
+  "[cpp]": {
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true
+  },
+  "[markdown]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "[json]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "[jsonc]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "[cmake]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "[makefile]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "[nasm]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
+  },
+  "[xml]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "files.associations": {
+    "dosio.h": "c",
+    "np2mt.h": "c",
+    "cpu.h": "c",
+    "pc9861k.h": "c"
+  }
+}

@@ -3,6 +3,8 @@
 #define	INHIBIT_WORDP(m)	((m) >= (I286_MEMWRITEMAX - 1))
 #elif (defined(ARM) || defined(X11)) && defined(BYTESEX_LITTLE)
 #define	INHIBIT_WORDP(m)	(((m) & 1) || ((m) >= I286_MEMWRITEMAX))
+#elif (defined(_WIN32)) || (defined(_WIN64))
+#define	INHIBIT_WORDP(m)	((m) >= (I286_MEMWRITEMAX - 1))
 #else
 #define	INHIBIT_WORDP(m)	(1)
 #endif

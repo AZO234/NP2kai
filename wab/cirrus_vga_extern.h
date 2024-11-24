@@ -207,7 +207,7 @@ extern void			*cirrusvga_opaque;
 extern NP2CLVGA		np2clvga;
 //extern NP2CLVGA2	np2clvga;
 	
-void cirrusvga_drawGraphic();
+int cirrusvga_drawGraphic(void);
 
 // 無理矢理外から呼べるように
 void pc98_cirrus_vga_init(void);

@@ -299,6 +299,7 @@ struct tagNP2Config
 	OEMCHAR	cpu_brandstring_o[64]; // ブランド名（48byte）OEMCHAR
 	UINT32	cpu_brandid; // ブランドID
 	UINT32  cpu_feature_ecx; // ECX機能フラグ
+	UINT32  cpu_feature_ex_ecx; // ECX拡張機能フラグ
 	UINT32  cpu_eflags_mask; // EFLAGSマスク
 	
 	UINT8	fpu_type; // FPU種類（0=Berkeley SoftFloat, 1=DOSBox FPU, 2=DOSBox FPU+INT64）

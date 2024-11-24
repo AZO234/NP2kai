@@ -176,8 +176,8 @@ static const UINT8 kbexflag[NKEY_SYSTEM] = {
 			0x80,0x80,0x80,0x80,   0,   0,   0,   0,
 		//	 SFT,CAPS,KANA,GRPH,CTRL,    ,    ,   		; 70h
 			0x80,0x80,0x80,0x80,0x80,   0,   0,   0,
-		//	    ,    ,    ,    ,    ,RSFT,    ,   		; 78h
-			   0,   0,   0,   0,   0,0x80,   0,   0,
+		//	RWIN, APP,    ,    ,    ,RSFT,    ,   		; 78h
+			0x80,0x80,   0,   0,   0,0x80,   0,   0,
 		//	    ,    ,    ,    ,    ,    ,    ,   		; 80h
 			   0,   0,   0,   0,   0,   0,   0,   0,
 		//	    ,    ,    ,    ,    ,    ,    ,   		; 88h

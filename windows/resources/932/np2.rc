@@ -13,7 +13,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// “ú–{Œê (“ú–{) resources
+// æ—¥æœ¬èªž (æ—¥æœ¬) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
 LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
@@ -28,7 +28,7 @@ IDD_CONFIG DIALOG 0, 0, 182, 294
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Configure"
 CLASS "np2dialog"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     GROUPBOX        "CPU",IDC_STATIC,8,8,110,64
     COMBOBOX        IDC_BASECLOCK,14,22,54,43,CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP
@@ -67,7 +67,7 @@ IDD_NEWDISK DIALOG 0, 0, 180, 48
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Create new FD image"
 CLASS "np2dialog"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     LTEXT           "Disk label",IDC_STATIC,8,10,38,8
     EDITTEXT        IDC_DISKLABEL,48,8,64,12,ES_AUTOHSCROLL | WS_GROUP
@@ -82,7 +82,7 @@ IDD_NEWDISK2 DIALOG 0, 0, 196, 48
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Create new FD image"
 CLASS "np2dialog"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     LTEXT           "Disk label",IDC_STATIC,8,10,38,8
     EDITTEXT        IDC_DISKLABEL,48,8,64,12,ES_AUTOHSCROLL | WS_GROUP
@@ -98,7 +98,7 @@ IDD_NEWHDDDISK DIALOG 0, 0, 160, 130
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Create new HD image"
 CLASS "np2dialog"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     LTEXT           "HDD size",IDC_STATIC,8,10,38,8
     COMBOBOX        IDC_HDDSIZE,40,8,48,46,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
@@ -124,7 +124,7 @@ IDD_NEWHDDPROC DIALOG 0, 0, 116, 52
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
 CAPTION "Create new HD image"
 CLASS "np2dialog"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,66,32,44,14
     CONTROL         "Progress1",IDC_HDDCREATE_PROGRESS,"msctls_progress32",WS_BORDER,8,8,100,15
@@ -135,7 +135,7 @@ IDD_NEWSASI DIALOG 0, 0, 144, 54
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Create new SASI image"
 CLASS "np2dialog"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     CONTROL         "5MB",IDC_NEWSASI5MB,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,8,8,38,10
     CONTROL         "10MB",IDC_NEWSASI10MB,"Button",BS_AUTORADIOBUTTON,48,8,38,10
@@ -150,7 +150,7 @@ END
 IDD_SCROPT1 DIALOG 0, 0, 172, 96
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Video"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     CONTROL         "Liquid Crystal Display",IDC_LCD,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,8,156,10
     CONTROL         "Reverse",IDC_LCDX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,24,144,10
@@ -163,7 +163,7 @@ END
 IDD_SCROPT_FULLSCREEN DIALOG 0, 0, 172, 96
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "FullScreen"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     CONTROL         "No change screen colors",IDC_FULLSCREEN_SAMEBPP,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,8,156,10
     CONTROL         "No change screen resolution",IDC_FULLSCREEN_SAMERES,
@@ -175,7 +175,7 @@ END
 IDD_SCROPT_RENDERER DIALOG 0, 0, 172, 96
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Renderer"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     LTEXT           "Type",IDC_STATIC,8,15,60,8
     COMBOBOX        IDC_RENDERER_TYPE,70,12,96,80,CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP
@@ -188,7 +188,7 @@ END
 IDD_SCROPT2 DIALOG 0, 0, 172, 96
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Chip"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     GROUPBOX        "Graphic Display Controller",IDC_STATIC,8,8,120,28
     CONTROL         "uPD7220",IDC_GDC7220,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,20,20,50,10
@@ -205,7 +205,7 @@ END
 IDD_SCROPT3 DIALOG 0, 0, 172, 96
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Timing"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     LTEXT           "T-RAM",IDC_STATIC,8,9,30,8
     CONTROL         "Slider1",IDC_TRAMWAIT,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,40,9,80,10
@@ -227,7 +227,7 @@ END
 IDD_SERIAL1 DIALOG 0, 0, 224, 140
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "COM1"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     LTEXT           "Port",IDC_STATIC,8,10,30,8
     COMBOBOX        IDC_COM1PORT,40,8,48,96,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
@@ -265,7 +265,7 @@ END
 IDD_PC9861A DIALOG 0, 0, 224, 140
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "PC-9861K"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     CONTROL         "Enable",IDC_PC9861E,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,208,10
     LTEXT           "CH.1",IDC_STATIC,8,27,20,8
@@ -289,7 +289,7 @@ END
 IDD_MPUPC98 DIALOG 0, 0, 192, 178
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "MPU-PC98II"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     CONTROL         "Enable",IDC_MPUENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,6,100,10
     LTEXT           "I/O port",IDC_STATIC,8,20,32,8
@@ -315,7 +315,7 @@ END
 IDD_SMPU98 DIALOG 0, 0, 192, 280
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "S-MPU"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     CONTROL         "Enable",IDC_MPUENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,6,40,10
     CONTROL         "Mute Port B during MPU-401 mode",IDC_MPUMUTEB,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,50,6,150,10
@@ -353,7 +353,7 @@ END
 IDD_SNDMIX DIALOGEX 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Mixer"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN", 0, 0, 0x1
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯", 0, 0, 0x1
 BEGIN
     LTEXT           "Master",IDC_STATIC,8,5,30,8
     CONTROL         "Slider1",IDC_VOLMASTER,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_GROUP | WS_TABSTOP,40,5,88,10
@@ -389,7 +389,7 @@ END
 IDD_SND14 DIALOGEX 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "PC-9801-14"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN", 0, 0, 0x1
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯", 0, 0, 0x1
 BEGIN
     LTEXT           "Left",IDC_STATIC,8,9,30,8
     CONTROL         "Slider1",IDC_VOL14L,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_GROUP | WS_TABSTOP,40,9,48,10
@@ -414,7 +414,7 @@ END
 IDD_SND26 DIALOG 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "PC-9801-26"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     LTEXT           "I/O port",IDC_STATIC,8,10,30,8
     COMBOBOX        IDC_SND26IO,40,8,40,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
@@ -430,7 +430,7 @@ END
 IDD_SND86 DIALOG 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "PC-9801-86"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     LTEXT           "I/O port",IDC_STATIC,8,10,30,8
     COMBOBOX        IDC_SND86IO,40,8,40,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
@@ -447,7 +447,7 @@ END
 IDD_SND118 DIALOG 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "PC-9801-118"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     LTEXT           "I/O port",IDC_STATIC,8,10,30,8
     COMBOBOX        IDC_SND118IO,40,8,40,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
@@ -470,7 +470,7 @@ END
 IDD_SNDWSS DIALOG 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Mate-X PCM"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     LTEXT           "Sound ID",IDC_STATIC,8,28,30,8
     COMBOBOX        IDC_SND118ID,40,26,40,64,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
@@ -484,7 +484,7 @@ END
 IDD_SNDSB16 DIALOG 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "SB16"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     LTEXT           "I/O port",IDC_STATIC,8,10,30,8
     COMBOBOX        IDC_SND118IO,40,8,40,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
@@ -498,7 +498,7 @@ END
 IDD_SNDSPB DIALOG 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "SPB"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     LTEXT           "I/O port",IDC_STATIC,8,10,30,8
     COMBOBOX        IDC_SPBIO,40,8,40,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
@@ -520,7 +520,7 @@ END
 IDD_SNDPAD1 DIALOG 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "JoyPad"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     CONTROL         "Use JoyPad-1",IDC_JOYPAD1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,58,10
     LTEXT           "Trigger-1",IDC_STATIC,24,27,40,8
@@ -545,7 +545,7 @@ END
 IDD_SNDFMGEN DIALOG 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "fmgen"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     CONTROL         "Use fmgen",IDC_USEFMGEN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,58,10
 END
@@ -554,7 +554,7 @@ IDD_CALENDAR DIALOG 0, 0, 164, 80
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Calendar"
 CLASS "np2dialog"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     CONTROL         "Real (localtime)",IDC_CLNDREAL,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,8,8,96,10
     CONTROL         "Virtual calendar",IDC_CLNDVIR,"Button",BS_AUTORADIOBUTTON,8,24,96,10
@@ -577,7 +577,7 @@ IDD_ABOUT DIALOG 0, 0, 216, 108
 STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 CLASS "np2dialog"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
 BEGIN
     ICON            IDI_ICON1,IDC_NP2ICON,8,8,20,20
     LTEXT           "",IDC_NP2VER,36,16,152,8
@@ -589,7 +589,7 @@ END
 IDD_NETWORK DIALOGEX 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "General"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN", 0, 0, 0x0
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯", 0, 0, 0x0
 BEGIN
     LTEXT           "TAP device name",IDC_STATIC,8,8,76,8
     COMBOBOX        IDC_NETTAP,8,18,168,12,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP | CBS_AUTOHSCROLL
@@ -599,7 +599,7 @@ END
 IDD_LGY98 DIALOGEX 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "LGY-98"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN", 0, 0, 0x0
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯", 0, 0, 0x0
 BEGIN
     CONTROL         "Enable",IDC_LGY98ENABLED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,40,10
     LTEXT           "I/O port",IDC_STATIC,8,26,30,8
@@ -612,7 +612,7 @@ END
 IDD_WAB DIALOGEX 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "General"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN", 0, 0, 0x0
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯", 0, 0, 0x0
 BEGIN
     CONTROL         "Use Analog Switch IC (No relay sound)",IDC_WABASWITCH,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,200,10
     CONTROL         "Multi Window Mode",IDC_WABMULTIWIN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,28,200,10
@@ -622,7 +622,7 @@ END
 IDD_GD5430 DIALOGEX 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "CL-GD54xx"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN", 0, 0, 0x0
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯", 0, 0, 0x0
 BEGIN
     CONTROL         "Enable",IDC_GD5430ENABLED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,40,10
     LTEXT           "Type",IDC_STATIC,8,26,30,8
@@ -635,7 +635,7 @@ IDD_IDE DIALOGEX 0, 0, 195, 186
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "IDE Configure"
 CLASS "np2dialog"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN", 0, 0, 0x0
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯", 0, 0, 0x0
 BEGIN
     LTEXT           "Primary",IDC_STATIC,40,8,64,8
     LTEXT           "Secondary",IDC_STATIC,118,8,68,8
@@ -666,7 +666,7 @@ IDD_HOSTDRV DIALOGEX 0, 0, 195, 156
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Hostdrv Configure"
 CLASS "np2dialog"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN", 0, 0, 0x0
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯", 0, 0, 0x0
 BEGIN
     CONTROL         "Enable",IDC_HOSTDRVENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,140,10
     LTEXT           "Shared Directory",IDC_STATIC,8,23,76,8
@@ -683,7 +683,7 @@ END
 IDD_PCI DIALOGEX 0, 0, 184, 124
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "General"
-FONT 9, "‚l‚r ‚oƒSƒVƒbƒN", 0, 0, 0x0
+FONT 9, "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯", 0, 0, 0x0
 BEGIN
     CONTROL         "Enable",IDC_PCIENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,8,140,10
     LTEXT           "PCMC Type",IDC_STATIC,8,26,30,8
@@ -1121,6 +1121,7 @@ BEGIN
             MENUITEM "&Mouse Capture",              IDM_MOUSE
             MENUITEM "&Raw Input Mode",             IDM_MOUSERAW
             MENUITEM "&Non-capture Control",        IDM_MOUSENC
+            MENUITEM "&Change Sound Volume by Wheel",   IDM_MOUSEWHEELCTL
             MENUITEM SEPARATOR
             MENUITEM "x3.0",                        IDM_MOUSE30X
             MENUITEM "x2.0",                        IDM_MOUSE20X
@@ -1494,10 +1495,10 @@ BEGIN
     IDS_APP_NAME2           "Neko Project II/W"
     IDS_APP_NAME21          "Neko Project 21/W"
     IDS_FILENAME_HELP       "np21w.chm"
-    IDS_FONTFACE            "‚l‚r ƒSƒVƒbƒN"
-    IDS_PFONTFACE           "‚l‚r ‚oƒSƒVƒbƒN"
-    IDS_FONTFACE_PRIMARY    "‚l‚r ƒSƒVƒbƒN"
-    IDS_PFONTFACE_PRIMARY   "‚l‚r ‚oƒSƒVƒbƒN"
+    IDS_FONTFACE            "ï¼­ï¼³ ã‚´ã‚·ãƒƒã‚¯"
+    IDS_PFONTFACE           "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
+    IDS_FONTFACE_PRIMARY    "ï¼­ï¼³ ã‚´ã‚·ãƒƒã‚¯"
+    IDS_PFONTFACE_PRIMARY   "ï¼­ï¼³ ï¼°ã‚´ã‚·ãƒƒã‚¯"
     IDS_FONTFACE_SECONDARY  "MS Gothic"
 END
 
@@ -1735,23 +1736,29 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_CPU_CUSTOM          "(custom)"
-    IDS_CPU_80286           "Intel 80286"
-    IDS_CPU_80386           "Intel 80386"
-    IDS_CPU_I486SX          "Intel i486SX"
-    IDS_CPU_I486DX          "Intel i486DX"
-    IDS_CPU_PENTIUM         "Intel Pentium"
-    IDS_CPU_MMXPENTIUM      "Intel MMX Pentium"
-    IDS_CPU_PENTIUMPRO      "Intel Pentium Pro"
-    IDS_CPU_PENTIUMII       "Intel Pentium II"
-    IDS_CPU_PENTIUMIII      "Intel Pentium III"
-    IDS_CPU_PENTIUMM        "Intel Pentium M"
-    IDS_CPU_PENTIUM4        "Intel Pentium 4"
-    IDS_CPU_AMD_K6_2        "AMD K6-2"
-    IDS_CPU_AMD_K6_III      "AMD K6-III"
-    IDS_CPU_AMD_K7_ATHLON   "AMD K7 Athlon"
-    IDS_CPU_AMD_K7_ATHLONXP "AMD K7 Athlon XP"
-    IDS_CPU_NEKOPRO         "Neko Processor II"
+    IDS_CPU_CUSTOM            "(custom)"
+    IDS_CPU_80286             "Intel 80286 / V30"
+    IDS_CPU_80386             "Intel 80386"
+    IDS_CPU_I486SX            "Intel i486SX"
+    IDS_CPU_I486DX            "Intel i486DX"
+    IDS_CPU_PENTIUM           "Intel Pentium"
+    IDS_CPU_MMXPENTIUM        "Intel MMX Pentium"
+    IDS_CPU_PENTIUMPRO        "Intel Pentium Pro"
+    IDS_CPU_PENTIUMII         "Intel Pentium II"
+    IDS_CPU_PENTIUMIII        "Intel Pentium III"
+    IDS_CPU_PENTIUMM          "Intel Pentium M"
+    IDS_CPU_PENTIUM4          "Intel Pentium 4"
+    IDS_CPU_CORE_2_DUO        "Intel Core 2 Gen 1"
+    IDS_CPU_CORE_2_DUOW       "Intel Core 2 Gen 2"
+    IDS_CPU_CORE_I            "Intel Core i Gen 1"
+    IDS_CPU_AMD_K6_2          "AMD K6-2"
+    IDS_CPU_AMD_K6_III        "AMD K6-III"
+    IDS_CPU_AMD_K7_ATHLON     "AMD K7 Athlon"
+    IDS_CPU_AMD_K7_ATHLONXP   "AMD K7 Athlon XP"
+    IDS_CPU_AMD_K8_ATHLON64   "AMD K8 Athlon 64"
+    IDS_CPU_AMD_K8_ATHLON64X2 "AMD K8 Athlon 64X2"
+    IDS_CPU_AMD_K10_PHENOM    "AMD K10 Phenom"
+    IDS_CPU_NEKOPRO           "Neko Processor II"
 END
 
 STRINGTABLE
@@ -1853,7 +1860,7 @@ BEGIN
     IDS_SKINFILTER          "ini files (*.ini)|*.ini|text files (*.txt)|*.txt|All files (*.*)|*.*|"
 END
 
-#endif    // “ú–{Œê (“ú–{) resources
+#endif    // æ—¥æœ¬èªž (æ—¥æœ¬) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
