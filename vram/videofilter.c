@@ -525,7 +525,7 @@ void VideoFilter_SaveProfile(h_VideoFilterMng hMng, uint8_t* pu8FilterCount, uin
 void VideoFilter_SaveFilter(h_VideoFilterMng hMng, uint32_t au32Param[2 + VF_PARAM_COUNT], const uint8_t u8ProfileNo, const uint8_t u8FilterNo) {
 	VF_Mng_t* ptMng = (VF_Mng_t*)hMng;
 
-	if(!hMng || au32Param) {
+	if(!hMng || !au32Param) {
 		return;
 	}
 	if(u8ProfileNo >= ptMng->u8ProfileCount) {
