@@ -6,6 +6,8 @@ NP2kai is PC-9801 series emulator<br>
 ![](https://img.shields.io/github/tag/AZO234/NP2kai.svg)
 
 [![BuyMeACoffee](https://img.shields.io/badge/-Buy%20Me%20a%20Coffee-ffdd00?style=flat-square&logo=buymeacoffee&logoColor=black)](https://coff.ee/azo234)
+[![GitHub Sponsors]("https://img.shields.io/badge/Sponsor-%E2%9D%A4-lightgrey?style=for-the-badge&logo=github-sponsors")](https://github.com/sponsors/azo234)
+[![](https://github.com/sponsors/azo234)]
 
 ## Build and Install
 
