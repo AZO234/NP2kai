@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Nov 3, 2024<br>
+Sep 8, 2025<br>
 
 NP2kai is PC-9801 series emulator<br>
 
