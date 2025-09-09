@@ -3,13 +3,13 @@ enum {
 	TEXTXMAX		= 80,
 	TEXTYMAX		= 400,
 
-	TXTATR_ST		= 0x01,		// ~ƒV[ƒNƒŒƒbƒg
-	TXTATR_BL		= 0x02,		// ƒuƒŠƒ“ƒN
-	TXTATR_RV		= 0x04,		// ƒŠƒo[ƒX
-	TXTATR_UL		= 0x08,		// ƒAƒ“ƒ_[ƒ‰ƒCƒ“
-	TXTATR_VL		= 0x10,		// ƒo[ƒ`ƒJƒ‹ƒ‰ƒCƒ“
-	TXTATR_BG		= 0x10,		// ŠÈˆÕƒOƒ‰ƒt
-	TEXTATR_RGB		= 0xe0		// ƒrƒbƒg•À‚Ñ‚ÍGRB‚Ì‡
+	TXTATR_ST		= 0x01,		// ~ã‚·ãƒ¼ã‚¯ãƒ¬ãƒƒãƒˆ
+	TXTATR_BL		= 0x02,		// ãƒ–ãƒªãƒ³ã‚¯
+	TXTATR_RV		= 0x04,		// ãƒªãƒãƒ¼ã‚¹
+	TXTATR_UL		= 0x08,		// ã‚¢ãƒ³ãƒ€ãƒ¼ãƒ©ã‚¤ãƒ³
+	TXTATR_VL		= 0x10,		// ãƒãƒ¼ãƒã‚«ãƒ«ãƒ©ã‚¤ãƒ³
+	TXTATR_BG		= 0x10,		// ç°¡æ˜“ã‚°ãƒ©ãƒ•
+	TEXTATR_RGB		= 0xe0		// ãƒ“ãƒƒãƒˆä¸¦ã³ã¯GRBã®é †
 };
 
 typedef struct {

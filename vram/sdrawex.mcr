@@ -27,7 +27,7 @@ static void SCRNCALL SDSYM(pex_0)(SDRAW sdraw, int maxy) {
 	sdraw->y = y;
 }
 
-// text 1プレーン
+// text 1繝励Ξ繝ｼ繝ｳ
 static void SCRNCALL SDSYM(pex_t)(SDRAW sdraw, int maxy) {
 
 const UINT8	*p;
@@ -55,7 +55,7 @@ const UINT8	*p;
 	sdraw->y = y;
 }
 
-// grph 1プレーン
+// grph 1繝励Ξ繝ｼ繝ｳ
 static void SCRNCALL SDSYM(pex_g)(SDRAW sdraw, int maxy) {
 
 const UINT8	*p;
@@ -69,7 +69,15 @@ const UINT8	*p;
 	do {
 		if (sdraw->dirty[y]) {
 			for (x=0; x<sdraw->width; x++) {
+#if defined(SUPPORT_VIDEOFILTER)
+				if(!bVFEnable) {
+					SDSETPIXEL(q, p[x] + NP2PAL_GRPHEX);
+				} else {
+					VideoFilter_PutDest(hVFMng1, q, x, y, sdraw->xalign);
+				}
+#else
 				SDSETPIXEL(q, p[x] + NP2PAL_GRPHEX);
+#endif
 				q += sdraw->xalign;
 			}
 			q -= sdraw->xbytes;
@@ -105,7 +113,15 @@ const UINT8	*q;
 					c = (c >> 4) + NP2PAL_TEXTEX;
 				}
 				else {
+#if defined(SUPPORT_VIDEOFILTER)
+					if(!bVFEnable) {
+						c = p[x] + NP2PAL_GRPHEX;
+					} else {
+						VideoFilter_PutDest(hVFMng1, &c, x, y, sdraw->xalign);
+					}
+#else
 					c = p[x] + NP2PAL_GRPHEX;
+#endif
 				}
 				SDSETPIXEL(r, c);
 				r += sdraw->xalign;
@@ -158,7 +174,7 @@ static void SCRNCALL SDSYM(nex_0)(SDRAW sdraw, int maxy) {
 	sdraw->y = y;
 }
 
-// text 1プレーン
+// text 1繝励Ξ繝ｼ繝ｳ
 static void SCRNCALL SDSYM(nex_t)(SDRAW sdraw, int maxy) {
 
 const UINT8	*p;
@@ -189,7 +205,7 @@ const UINT8	*p;
 	sdraw->y = y;
 }
 
-// grph 1プレーン
+// grph 1繝励Ξ繝ｼ繝ｳ
 static void SCRNCALL SDSYM(nex_g)(SDRAW sdraw, int maxy) {
 
 const UINT8	*p;
@@ -205,7 +221,15 @@ const UINT8	*p;
 			SDSETPIXEL(q, NP2PAL_TEXTEX3);
 			for (x=0; x<sdraw->width; x++) {
 				q += sdraw->xalign;
+#if defined(SUPPORT_VIDEOFILTER)
+				if(!bVFEnable) {
+					SDSETPIXEL(q, p[x] + NP2PAL_GRPHEX);
+				} else {
+					VideoFilter_PutDest(hVFMng1, q, x, y, sdraw->xalign);
+				}
+#else
 				SDSETPIXEL(q, p[x] + NP2PAL_GRPHEX);
+#endif
 			}
 			q -= sdraw->xbytes;
 		}
@@ -237,12 +261,20 @@ const UINT8	*q;
 			SDSETPIXEL(r, (q[0] >> 4) + NP2PAL_TEXT3);
 			r += sdraw->xalign;
 			for (x=1; x<sdraw->width; x++) {
-				c = q[x];
-				if (c) {
-					c = (c >> 4) + NP2PAL_TEXTEX;
-				}
-				else {
+                c = q[x];
+                if (c) {
+                    c = (c >> 4) + NP2PAL_TEXTEX;
+                }
+                else {
+#if defined(SUPPORT_VIDEOFILTER)
+					if(!bVFEnable) {
+						c = p[x-1] + NP2PAL_GRPHEX;
+					} else {
+						VideoFilter_PutDest(hVFMng1, &c, x - 1, y, sdraw->xalign);
+					}
+#else
 					c = p[x-1] + NP2PAL_GRPHEX;
+#endif
 				}
 				SDSETPIXEL(r, c);
 				r += sdraw->xalign;
