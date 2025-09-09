@@ -796,6 +796,7 @@ xmenu_toggle_item(MENU_HDL hdl, const char *name, BOOL onoff)
 	}
 }
 
+static void
 xmenu_visible_item(MENU_HDL hdl, const char *name, BOOL onoff)
 {
 	GtkAction *action;
