@@ -1,12 +1,11 @@
 # Neko Project II 0.86 kai
-Sep 8, 2025<br>
+Nov 3, 2024<br>
 
 NP2kai is PC-9801 series emulator<br>
 
 ![](https://img.shields.io/github/tag/AZO234/NP2kai.svg)
 
 [![BuyMeACoffee](https://img.shields.io/badge/-Buy%20Me%20a%20Coffee-ffdd00?style=flat-square&logo=buymeacoffee&logoColor=black)](https://coff.ee/azo234)
-[![](https://img.shields.io/static/v1?label=Sponsor&message=❤️&logo=github-sponsors&color=lightgrey&style=for-the-badge)](https://github.com/sponsors/azo234)
 
 ## Build and Install
 
