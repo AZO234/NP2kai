@@ -1,9 +1,9 @@
-#include	<compiler.h>
-#include	<scrnmng.h>
-#include	<pccore.h>
-#include	<io/iocore.h>
-#include	<vram/scrndraw.h>
-#include	<vram/dispsync.h>
+#include	"compiler.h"
+#include	"scrnmng.h"
+#include	"pccore.h"
+#include	"iocore.h"
+#include	"scrndraw.h"
+#include	"dispsync.h"
 
 
 	DSYNC	dsync;
@@ -59,7 +59,7 @@ BOOL dispsync_renewalhorizontal(void) {
 	}
 	scrnxmax = cr + 2;
 	if ((scrnxpos + scrnxmax) > 80) {
-		scrnxmax = MIN(scrnxmax, 80);
+		scrnxmax = min(scrnxmax, 80);
 		scrnxpos = 80 - scrnxmax;
 	}
 	scrnxpos <<= 3;
@@ -123,7 +123,7 @@ BOOL dispsync_renewalvertical(void) {
 	dsync.textymax = textymax;
 	dsync.grphymax = grphymax;
 
-	scrnymax = MAX(grphymax, textymax);
+	scrnymax = max(grphymax, textymax);
 	scrnymax = (scrnymax + 7) & (~7);
 	if (dsync.scrnymax != scrnymax) {
 		dsync.scrnymax = scrnymax;

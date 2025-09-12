@@ -5,8 +5,6 @@
 
 #pragma once
 
-#include	<common/bmpdata.h>
-
 /**
  * types
  */

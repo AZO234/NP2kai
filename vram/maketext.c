@@ -1,12 +1,12 @@
-#include	<compiler.h>
-#include	<cpucore.h>
-#include	<pccore.h>
-#include	<io/iocore.h>
-#include	<vram/vram.h>
-#include	<vram/scrndraw.h>
-#include	<vram/dispsync.h>
-#include	<vram/maketext.h>
-#include	<font/font.h>
+#include	"compiler.h"
+#include	"cpucore.h"
+#include	"pccore.h"
+#include	"iocore.h"
+#include	"vram.h"
+#include	"scrndraw.h"
+#include	"dispsync.h"
+#include	"maketext.h"
+#include	"font/font.h"
 
 
 		TRAM_T	tramflag;
@@ -177,7 +177,7 @@ void maketext(int text_renewal) {
 		topline = TEXT_PL;
 		lines = TEXT_BL - topline;
 		if (lines <= 0) {
-			lines += 32;											// Ë£úÊ≠£
+			lines += 32;											// ï‚ê≥
 		}
 	}
 	nowline = topline;
@@ -354,10 +354,6 @@ void maketext(int text_renewal) {
 						if (curx[x] & 0x20) {
 							fntline >>= 1;
 						}
-						if(!fntline) {
-							hook_fontrom(bitmap[x] + (fntline & 0x0f));
-							hf_codeul = 0;
-						}
 						data = fontrom[bitmap[x] + (fntline & 0x0f)];
 						*(UINT32 *)(q+0) = text_table[color[x] + (data >> 4)];
 						*(UINT32 *)(q+4) = text_table[color[x] + (data & 15)];
@@ -373,7 +369,7 @@ void maketext(int text_renewal) {
 					}
 				}
 				if ((line_effect & TXTATR_UL) &&
-					((nowline + 1) == lines)) {			// „Ç¢„É≥„ÉÄ„Éº„É©„Ç§„É≥‰ΩçÁΩÆ
+					((nowline + 1) == lines)) {			// ÉAÉìÉ_Å[ÉâÉCÉìà íu
 					// width80
 					q -= TEXTXMAX * 8;
 					q += 4;
@@ -397,15 +393,15 @@ void maketext(int text_renewal) {
 					q -= TEXTXMAX * 8;
 					for (x=0; x<TEXTXMAX; x++) {
 						if (curx[x] & TXTATR_VL) {
-							// text_table[] „Çí ‰Ωø„Å£„Å¶„Å™„ÅÑ„ÅÆ„ÅßÊ≥®ÊÑè
+							// text_table[] Ç égÇ¡ÇƒÇ»Ç¢ÇÃÇ≈íçà”
 							*(q+4) |= (color[x] & 0x70) + 0x10;
 						}
 						q += 8;
 					}
 				}
-				// *(q+4) |= (color[x] & 0x70) + 0x10; „ÅØ‚Ä¶
+				// *(q+4) |= (color[x] & 0x70) + 0x10; ÇÕÅc
 				// *(DWORD *)(q+4) |= text_table[(color[x] & 0x70) + 8];
-				// „ÅßÁ≠â‰æ°„Å´„Å™„ÇãÁ≠à„Éª„Éª„Éª
+				// Ç≈ìôâøÇ…Ç»ÇÈî§ÅEÅEÅE
 			}
 			else {
 				q += TEXTXMAX * 8;
@@ -490,7 +486,7 @@ void maketext40(int text_renewal) {
 		topline = TEXT_PL;
 		lines = TEXT_BL - topline;
 		if (lines <= 0) {
-			lines += 32;											// Ë£úÊ≠£
+			lines += 32;											// ï‚ê≥
 		}
 	}
 	nowline = topline;
@@ -667,10 +663,6 @@ void maketext40(int text_renewal) {
 						if (curx[x] & 0x20) {
 							fntline >>= 1;
 						}
-						if(!fntline) {
-							hook_fontrom(bitmap[x] + (fntline & 0x0f));
-							hf_codeul = 0;
-						}
 						data = fontrom[bitmap[x] + (fntline & 0x0f)];
 						*(UINT32 *)(q+ 0) = text_tblx2[color[x] +
 															(data>>4)][0];
@@ -694,7 +686,7 @@ void maketext40(int text_renewal) {
 					}
 				}
 				if ((line_effect & TXTATR_UL) &&
-					((nowline + 1) == lines)) {			// „Ç¢„É≥„ÉÄ„Éº„É©„Ç§„É≥‰ΩçÁΩÆ
+					((nowline + 1) == lines)) {			// ÉAÉìÉ_Å[ÉâÉCÉìà íu
 					// width40
 					q -= TEXTXMAX * 8;
 					q += 4;
@@ -726,7 +718,7 @@ void maketext40(int text_renewal) {
 					q -= TEXTXMAX * 8;
 					for (x=0; x<(TEXTXMAX/2); x++) {
 						if (curx[x] & TXTATR_VL) {
-							// text_table[] „Çí ‰Ωø„Å£„Å¶„Å™„ÅÑ„ÅÆ„ÅßÊ≥®ÊÑè
+							// text_table[] Ç égÇ¡ÇƒÇ»Ç¢ÇÃÇ≈íçà”
 							*(q+ 4) |= (color[x] & 0x70) + 0x10;
 							*(q+12) |= (color[x] & 0x70) + 0x10;
 						}

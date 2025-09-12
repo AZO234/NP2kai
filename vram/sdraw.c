@@ -1,18 +1,10 @@
-#include	<compiler.h>
-#include	<scrnmng.h>
-#include	<vram/scrndraw.h>
+#include	"compiler.h"
+#include	"scrnmng.h"
+#include	"scrndraw.h"
 #include	"sdraw.h"
-#include	<vram/palettes.h>
-#if defined(SUPPORT_VIDEOFILTER)
-#include	<vram/videofilter.h>
-#endif
+#include	"palettes.h"
 
-#if defined(SUPPORT_VIDEOFILTER)
-BOOL	bVFEnable;
-BOOL	bVFImport;
-#endif
-
-#if !defined(NP2_SIZE_QVGA) || defined(SIZE_VGATEST)
+#if !defined(SIZE_QVGA) || defined(SIZE_VGATEST)
 
 #if defined(SUPPORT_8BPP)
 #define	SDSYM(sym)				sdraw8##sym

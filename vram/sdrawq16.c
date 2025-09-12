@@ -1,11 +1,11 @@
-#include	<compiler.h>
-#include	<scrnmng.h>
-#include	<vram/scrndraw.h>
+#include	"compiler.h"
+#include	"scrnmng.h"
+#include	"scrndraw.h"
 #include	"sdraw.h"
-#include	<vram/palettes.h>
+#include	"palettes.h"
 
 
-#if defined(NP2_SIZE_QVGA) && !defined(SIZE_VGATEST) && defined(SUPPORT_16BPP)
+#if defined(SIZE_QVGA) && !defined(SIZE_VGATEST) && defined(SUPPORT_16BPP)
 
 // vram off
 static void SCRNCALL qvga16p_0(SDRAW sdraw, int maxy) {
@@ -38,7 +38,7 @@ static void SCRNCALL qvga16p_0(SDRAW sdraw, int maxy) {
 	sdraw->y = y;
 }
 
-// text or grph 1繝励Ξ繝ｼ繝ｳ
+// text or grph 1プレーン
 static void SCRNCALL qvga16p_1(SDRAW sdraw, int maxy) {
 
 	int		xbytes;
@@ -209,7 +209,7 @@ const UINT8	*q;
 }
 
 #if defined(SUPPORT_CRT15KHZ)
-// text or grph 1繝励Ξ繝ｼ繝ｳ (15kHz)
+// text or grph 1プレーン (15kHz)
 static void SCRNCALL qvga16p_1d(SDRAW sdraw, int maxy) {
 
 	int		xbytes;

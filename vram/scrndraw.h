@@ -1,5 +1,3 @@
-#ifndef NP2_SCRNDRAW_H
-#define NP2_SCRNDRAW_H
 
 #ifndef SCRNCALL
 #define	SCRNCALL
@@ -32,6 +30,4 @@ void scrndraw_updateallline(void);
 #ifdef __cplusplus
 }
 #endif
-
-#endif	/* NP2_SCRNDRAW_H */
 
