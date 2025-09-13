@@ -1,9 +1,9 @@
-#include	"compiler.h"
-#include	"scrnmng.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"scrndraw.h"
-#include	"palettes.h"
+#include	<compiler.h>
+#include	<scrnmng.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<vram/scrndraw.h>
+#include	<vram/palettes.h>
 
 		RGB32		np2_pal32[NP2PAL_MAX];
 #if defined(SUPPORT_16BPP)
@@ -547,7 +547,7 @@ void pal_eventclear(void) {
 	palevent.anabit = 0;
 	palevent.events = 0;
 	if ((!pcstat.drawframe) || (!np2cfg.RASTER) || (scrnmng_getbpp() == 8)) {
-		palevent.events--;					// 0xffffffff Ç…Ç∑ÇÈ...
+		palevent.events--;					// 0xffffffff „Å´„Åô„Çã...
 	}
 	else {
 		CopyMemory(palevent.pal, gdc.anapal, sizeof(gdc.anapal));

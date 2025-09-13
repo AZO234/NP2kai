@@ -1,15 +1,15 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"vram.h"
-#include	"scrndraw.h"
-#include	"dispsync.h"
-#include	"palettes.h"
-#include	"maketext.h"
-#include	"maketgrp.h"
-#include	"makegrph.h"
-#include	"font/font.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<vram/vram.h>
+#include	<vram/scrndraw.h>
+#include	<vram/dispsync.h>
+#include	<vram/palettes.h>
+#include	<vram/maketext.h>
+#include	<vram/maketgrp.h>
+#include	<vram/makegrph.h>
+#include	<font/font.h>
 #include	"makegrph.mcr"
 
 
@@ -108,7 +108,7 @@ void maketextgrph(int plane, int text_renewal, int grph_renewal) {
 	GRPH_LR = gdc.s.para[GDC_CSRFORM] & 0x1f;
 	GRPH_LRcnt = GRPH_LR;
 
-	// グラフのほーが上…
+	// 繧ｰ繝ｩ繝輔�ｮ縺ｻ繝ｼ縺御ｸ岩ｦ
 	if (dsync.text_vbp > dsync.grph_vbp) {
 		UINT remain;
 		remain = dsync.text_vbp - dsync.grph_vbp;
@@ -136,7 +136,7 @@ void maketextgrph(int plane, int text_renewal, int grph_renewal) {
 
 	ppage = (plane)?VRAM_STEP:0;
 	gbit = 0x01010101 << plane;
-	ymax = min(dsync.textymax, dsync.grphymax);
+	ymax = MIN(dsync.textymax, dsync.grphymax);
 	q = np2_vram[plane] + dsync.textvad;
 	wait1 = 0;
 	TEXT_LRcnt = 0;
@@ -366,7 +366,7 @@ void maketextgrph40(int plane, int text_renewal, int grph_renewal) {
 	GRPH_LR = gdc.s.para[GDC_CSRFORM] & 0x1f;
 	GRPH_LRcnt = GRPH_LR;
 
-	// グラフのほーが上…
+	// 繧ｰ繝ｩ繝輔�ｮ縺ｻ繝ｼ縺御ｸ岩ｦ
 	if (dsync.text_vbp > dsync.grph_vbp) {
 		UINT remain;
 		remain = dsync.text_vbp - dsync.grph_vbp;
@@ -394,7 +394,7 @@ void maketextgrph40(int plane, int text_renewal, int grph_renewal) {
 
 	ppage = (plane)?VRAM_STEP:0;
 	gbit = 0x01010101 << plane;
-	ymax = min(dsync.textymax, dsync.grphymax);
+	ymax = MIN(dsync.textymax, dsync.grphymax);
 	q = np2_vram[plane] + dsync.textvad;
 	wait1 = 0;
 	TEXT_LRcnt = 0;

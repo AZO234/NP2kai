@@ -1,4 +1,7 @@
 
+#include	<vram/scrndraw.h>
+#include	<scrnmng.h>
+
 typedef struct {
 const UINT8	*src;
 const UINT8	*src2;
@@ -16,6 +19,11 @@ typedef void (SCRNCALL * SDRAWFN)(SDRAW sdraw, int maxy);
 
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+#if defined(SUPPORT_VIDEOFILTER)
+extern BOOL	bVFEnable;
+extern BOOL	bVFImport;
 #endif
 
 const SDRAWFN *sdraw_getproctbl(const SCRNSURF *surf);

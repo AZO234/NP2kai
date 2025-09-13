@@ -1,6 +1,6 @@
-#include	"compiler.h"
-#include	"cpucore.h"
-#include	"vram.h"
+#include	<compiler.h>
+#include	<cpucore.h>
+#include	<vram/vram.h>
 
 
 	_VRAMOP	vramop;

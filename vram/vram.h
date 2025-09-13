@@ -12,8 +12,8 @@ typedef struct {
 	UINT	grcgwait;
 #endif
 #if defined(SUPPORT_PC9821)
-	UINT8	mio1[4]; // PEGC Packed-pixel Mode ƒoƒ“ƒNØ‚è‘Ö‚¦(mio1[0`1] E0004H, mio1[2`3] E0006H)
-	UINT8	mio2[0x100]; // PEGC MMIOƒŒƒWƒXƒ^(mio2[0`1] E0100H ` E0200H)
+	UINT8	mio1[4]; // PEGC Packed-pixel Mode ãƒãƒ³ã‚¯åˆ‡ã‚Šæ›¿ãˆ(mio1[0ã€œ1] E0004H, mio1[2ã€œ3] E0006H)
+	UINT8	mio2[0x100]; // PEGC MMIOãƒ¬ã‚¸ã‚¹ã‚¿(mio2[0ã€œ1] E0100H ã€œ E0200H)
 #endif
 } _VRAMOP, *VRAMOP;
 

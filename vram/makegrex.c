@@ -1,14 +1,14 @@
-#include	"compiler.h"
+#include	<compiler.h>
 
 #if defined(SUPPORT_PC9821)
 
-#include	"cpucore.h"
-#include	"pccore.h"
-#include	"iocore.h"
-#include	"vram.h"
-#include	"scrndraw.h"
-#include	"dispsync.h"
-#include	"makegrex.h"
+#include	<cpucore.h>
+#include	<pccore.h>
+#include	<io/iocore.h>
+#include	<vram/vram.h>
+#include	<vram/scrndraw.h>
+#include	<vram/dispsync.h>
+#include	<vram/makegrex.h>
 
 
 typedef struct {
