@@ -957,7 +957,7 @@ ok_button_clicked(GtkButton *b, gpointer d)
 		}
 
 		joypad_device_index = 0;
-		if (joypad_devlist == NULL) {
+		if (joypad_devlist != NULL) {
 			for (i = 0; joypad_devlist[i] != NULL; ++i) {
 				if (strcmp(joypad_devname, joypad_devlist[i]->devname) == 0) {
 					joypad_device_index = joypad_devlist[i]->devindex;
