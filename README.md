@@ -209,7 +209,7 @@ sdlnp21kai
 
 #### Arch Linux
 
-For the [latest release](https://github.com/AZO234/NP2kai/releases), a package can be found in the [AUR](https://aur.archlinux.org/packages/xnp2kai-azo234/)
+For the [latest release](https://github.com/AZO234/NP2kai/releases), a package can be found in the [AUR](https://aur.archlinux.org/packages/np2kai-git)
 
 Fonts are **NOT** included in the AUR package.
 
@@ -442,7 +442,7 @@ Start MS-DOS on the actual PC-98 and execute the GETBIOS command<br>
 to create BIOS files.<br>
 
 Rhythm sound files are dumped from PC-98 machine with FM sound gen.<br>
-You can get sound files from [here](https://sites.google.com/site/ym2608rhythm/).
+You can get sound files from [here](https://github.com/Abdess/retroarch_system/tree/libretro/NEC%20-%20PC-98).
 </div></details>
 
 <details><summary>
