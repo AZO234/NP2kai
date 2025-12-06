@@ -1,7 +1,7 @@
 # Neko Project II 0.86 kai
 Sep 8, 2025<br>
 
-NP2kai is PC-9801 series emulator<br>
+NP2kai is a PC-9801 series emulator<br>
 
 ![](https://img.shields.io/github/tag/AZO234/NP2kai.svg)
 
@@ -13,7 +13,7 @@ NP2kai is PC-9801 series emulator<br>
 ### libretro core
 
 <details><summary>
-for Windows/Linux/macOS
+Windows/Linux/macOS
 </summary><div>
 
 #### Install tools
@@ -23,11 +23,11 @@ for Windows/Linux/macOS
 #### Build
 1. Change directory to sdl.
 ```
-$ cd NP2kai/sdl
+cd NP2kai/sdl
 ```
 2. Make.
 ```
-$ make
+make
 ```
 
 #### Install binary
@@ -44,26 +44,26 @@ for Android/iOS
 2. Install Android Studio, and NDK. And PATH there.
 3. Clone libretro-super.
 ```
-$ git clone --depth 1 https://github.com/libretro/libretro-super.git
+git clone --depth 1 https://github.com/libretro/libretro-super.git
 ```
 
 #### Build
 1. Change directory to libretro-super.
 ```
-$ cd libretro-super
+cd libretro-super
 ```
 2. Fetch np2kai.
 ```
-$ ./libretro-fetsh.sh np2kai
+./libretro-fetsh.sh np2kai
 ```
 3. Build.
 - Android
 ```
-$ ./libretro-build-android-mk.sh np2kai
+./libretro-build-android-mk.sh np2kai
 ```
 - iOS
 ```
-$ ./libretro-build-ios.sh np2kai
+./libretro-build-ios.sh np2kai
 ```
 
 #### Install binary
@@ -78,7 +78,7 @@ Game Files cannot locate on external storage.
 
 ### VisualStudio 2022
 
-You should [NP2fmgen](http://nenecchi.kirara.st/) or [NP21/W](https://sites.google.com/site/np21win/home), maybe.
+You should probably use [NP2fmgen](https://nenecchi.kirara.st/) or [NP21/W](https://simk98.github.io/np21w/) instead, maybe.
 
 <details><summary>
 VisualStudio 2022
@@ -140,39 +140,39 @@ SDL
 - MSYS2
 1. Install MSYS2 64bit.
 2. Run MSYS2 64bit console.
-3. Run follow command.
+3. Run the following command:
 ```
-$ pacman -S git cmake make mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_mixer mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL mingw-w64-x86_64-SDL_mixer mingw-w64-x86_64-SDL_ttf mingw-w64-x86_64-openssl mingw-w64-x86_64-libusb
+pacman -S git cmake make mingw-w64-x86_64-toolchain mingw-w64-x86_64-ntldd mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_mixer mingw-w64-x86_64-SDL2_ttf mingw-w64-x86_64-SDL mingw-w64-x86_64-SDL_mixer mingw-w64-x86_64-SDL_ttf mingw-w64-x86_64-openssl mingw-w64-x86_64-libusb
 ```
-- Linux
-1. Run follow command.
+- Linux (Debian-based)
+1. Run the following command:
 ```
-$ sudo apt install git cmake ninja-build build-essential libsdl2-dev libsdl2-mixer-dev libsdl2-ttf-dev libsdl1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libusb-1.0-0-dev libssl-dev
+sudo apt install git cmake ninja-build build-essential libsdl2-dev libsdl2-mixer-dev libsdl2-ttf-dev libsdl1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libusb-1.0-0-dev libssl-dev
 ```
 - macOS
 1. Install XCode and brew.
-2. Run follow command.
+2. Run the following command:
 ```
-$ sudo brew install cmake ninja sdl sdl_mixer sdl_ttf sdl2 sdl2_mixer sdl2_ttf libusb
+sudo brew install cmake ninja sdl sdl_mixer sdl_ttf sdl2 sdl2_mixer sdl2_ttf libusb
 ```
 
 #### Build
 1. Change directory to NP2kai.
 ```
-$ cd NP2kai
+cd NP2kai
 ```
 2. Make work directory, and step into there.
 ```
-$ mkdir build
-$ cd build
+mkdir build
+cd build
 ```
-3. Generate Makefile.
+3. Generate the makefile.
 ```
-$ cmake .. -D BUILD_SDL=ON
+cmake .. -D BUILD_SDL=ON
 ```
 4. Make.
 ```
-$ make -j
+make -j
 ```
 
 - CMake options of SDL port (*=default)
@@ -191,14 +191,16 @@ $ make -j
   - BUILD_SDL=ON default on macOS
 
 #### Install binary
-1. Install.
+1. Install to `/usr/local/bin/`
 ```
-$ make install
+make install
 ```
-2. Locate BIOS files to ~/.config/&lt;SDL NP2kai filename&gt;
+2. Locate BIOS files to `~/.config/sdlnp21kai`
 3. Run SDL NP2kai.
-
-- NP2 menu is shown F11 or mouse middle button, to swap FDD/HDD diskimages.
+```
+sdlnp21kai
+```
+- NP2 menu is shown with F11 or the middle mouse button, in order to swap FDD/HDD diskimages.
 </div></details>
 
 
@@ -212,11 +214,11 @@ For the [latest release](https://github.com/AZO234/NP2kai/releases), a package c
 Fonts are **NOT** included in the AUR package.
 
 *temporary*<br>
-It seems slow xnp2kai's dialog now, on Ubuntu GNOME.<br>
-(Maybe GTK issue. No problem on Ubuntu MATE.)<br>
-This issue is can aboid with follow command when starting
+It seems that xnp2kai's dialog is slow on Ubuntu GNOME.<br>
+(Maybe it's a GTK issue, there's no problem on Ubuntu MATE.)<br>
+This issue is can be avoided with the following command when running xnp21kai:
 ```
-$ dbus-launch --exit-with-session xnp2kai
+dbus-launch --exit-with-session xnp21kai
 ```
 
 <details><summary>
@@ -224,36 +226,36 @@ X with GTK2 and SDL
 </summary><div>
 
 #### Install tools
-1. Run follow command.
+1. Install the following packages:
 
-- Debian/Ubuntu series
+- Debian/Ubuntu/Linux Mint
 ```
-$ sudo apt install git cmake ninja-build build-essential libx11-dev libglib2.0-dev libgtk2.0-dev libsdl2-dev libsdl2-mixer-dev libsdl2-ttf-dev libsdl1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev  libusb-1.0-0-dev libfreetype-dev libfontconfig1-dev libssl-dev
+sudo apt install git cmake ninja-build build-essential libx11-dev libglib2.0-dev libgtk2.0-dev libsdl2-dev libsdl2-mixer-dev libsdl2-ttf-dev libsdl1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev  libusb-1.0-0-dev libfreetype-dev libfontconfig1-dev libssl-dev
 ```
 
-- Fedora series
+- Fedora
 ```
-$ sudo dnf groupinstall "Development Tools"
-$ sudo dnf install gcc-c++ cmake libusb-devel SDL-devel SDL_mixer-devel SDL_ttf-devel SDL2-devel SDL2_mixer-devel SDL2_ttf-devel gtk2-devel libX11-devel fontconfig-devel freetype-devel
+sudo dnf groupinstall "Development Tools"
+sudo dnf install gcc-c++ cmake libusb-devel SDL-devel SDL_mixer-devel SDL_ttf-devel SDL2-devel SDL2_mixer-devel SDL2_ttf-devel gtk2-devel libX11-devel fontconfig-devel freetype-devel
 ```
 
 #### Build
 1. Change directory to NP2kai.
 ```
-$ cd NP2kai
+cd NP2kai
 ```
-2. Make work directory, and step in.
+2. Create the build directory, and step into it.
 ```
-$ mkdir build
-$ cd build
+mkdir build
+cd build
 ```
-3. Generate Makefile.
+3. Generate the makefile.
 ```
-$ cmake .. -D BUILD_X=ON
+cmake .. -D BUILD_X=ON
 ```
 4. Make.
 ```
-$ make -j
+make -j
 ```
 
 - CMake options of X port (*=default)
@@ -272,14 +274,17 @@ $ make -j
   - BUILD_X=ON default on UNIX
 
 #### Install binary
-1. Install.
+1. Install to `/usr/local/bin/`
 ```
-$ sudo make install
+sudo make install
 ```
-2. Locate BIOS files to ~/.config/<X NP2kai filename>
-3. Run X NP2kai.
+2. Move/copy the BIOS files to `~/.config/xnp21kai`
+3. Run xnp21kai
+```
+xnp21kai
+```
 
-- NP2 menu is shown F11 key or mouse middle button, to swap FDD/HDD diskimages.
+- NP2 menu is shown with F11 or the middle mouse button, in order to swap FDD/HDD diskimages.
 </div></details>
 
 ### Emscripten
@@ -294,39 +299,39 @@ Emscripten
 2. Run MSYS2 64bit console
 3. Run follow command.
 ```
-$ pacman -S git cmake make
+pacman -S git cmake make
 ```
 - Linux
 1. Install [Emscripten](https://emscripten.org/).
 2. Run follow command.
 ```
-$ sudo apt install git cmake build-essential
+sudo apt install git cmake build-essential
 ```
 - macOS
 1. Install [Emscripten](https://emscripten.org/).
 2. Install XCode and brew.
 3. Run follow command.
 ```
-$ sudo brew install cmake
+sudo brew install cmake
 ```
 
 #### Build
 1. Change directory to NP2kai.
 ```
-$ cd NP2kai
+cd NP2kai
 ```
 2. Make work directory, and step in.
 ```
-$ mkdir build
-$ cd build
+mkdir build
+cd build
 ```
 3. Generate Makefile.
 ```
-$ emcmake cmake ..
+emcmake cmake ..
 ```
 4. Make.
 ```
-$ make -j
+make -j
 ```
 
 - CMake options of Emscripten port (*=default)
@@ -345,7 +350,7 @@ $ make -j
 #### Run
 1. Run on emrun.
 ```
-$ emrun <Emscripten NP2kai filename>.html
+emrun <Emscripten NP2kai filename>.html
 ```
 </div></details>
 
@@ -367,29 +372,29 @@ OpenDingux
 #### Build
 1. Change directory to NP2kai.
 ```
-$ cd NP2kai
+cd NP2kai
 ```
 2. Make work directory, and step in.
 ```
-$ mkdir build
-$ cd build
+mkdir build
+cd build
 ```
-3. Generate Makefile.
+3. Generate the makefile.
 - GCW0
 ```
-$ cmake .. -D BUILD_OPENDINGUX_GCW0=ON
+cmake .. -D BUILD_OPENDINGUX_GCW0=ON
 ```
 - RG350
 ```
-$ cmake .. -D BUILD_OPENDINGUX_RG350=ON
+cmake .. -D BUILD_OPENDINGUX_RG350=ON
 ```
 - RS90
 ```
-$ cmake .. -D BUILD_OPENDINGUX_RS90=ON
+cmake .. -D BUILD_OPENDINGUX_RS90=ON
 ```
 4. Make.
 ```
-$ make -j
+make -j
 ```
 
 - CMake options of OpenDingux port (*=default)
@@ -444,22 +449,22 @@ You can get sound files from [here](https://sites.google.com/site/ym2608rhythm/)
 Fonts
 </summary><div>
 
-NP2kai recommend font is using font.rom.<br>
+The recommended font for NP2kai is the original font.rom from a PC-98 computer.<br>
 
 ### Windows
 
-You can use 'MS Gothic'. To install add your windows,<br>
-'install files Easten Asian languages' at 'language' option.<br>
+You can use 'MS Gothic'. To install it in Windows,<br>
+'install files East Asian languages' in the 'language' settings.<br>
 
-After installation, 'msgothic.ttc' file's shortcut named 'default.ttf' put in BIOS directory.<br>
-(Already exist 'font.tmp', delete this.)<br>
+After installation, put 'msgothic.ttc' file's shortcut named 'default.ttf' in the BIOS directory.<br>
+(Delete 'font.tmp')<br>
 And start NP2kai.
 
 ### Linux
 
 I recommend use 'Takao Gothic'.<br>
 Install with follow command.
-After installation, 'TakaoGothic.ttf' file's shortcut put in BIOS directory.<br>
+After installation, put 'TakaoGothic.ttf' file's shortcut in the BIOS directory with:<br>
 ```
 sudo apt install 'fonts-takao-*'
 ```
@@ -467,10 +472,9 @@ and
 ```
 ln -s /usr/share/fonts/truetype/takao-gothic/TakaoGothic.ttf BIOSdirectory/default.ttf'
 ```
-Already exist 'font.tmp', delete this.<br>
-And start NP2kai.<br>
+Delete 'font.tmp', and start NP2kai.<br>
 
-You can use 'Noto sans mono CJK', 'MS Gothic'(Japanese) also.
+You can use 'Noto Sans Mono CJK' or 'MS Gothic'(Japanese).
 </div></details>
 
 <details><summary>
@@ -722,20 +726,20 @@ Setting to RetroPie
 
 1. Install Japanese font. (umefont need SDL2 port only)
 ```
-$ sudo apt-get install fonts-droid fonts-horai-umefont
+sudo apt-get install fonts-droid fonts-horai-umefont
 ```
 2. Locate libretro & SDL2 port files.
 ```
-$ sudo mkdir /opt/retropie/libretrocores/lr-np2kai
-$ sudo cp np2kai_libretro.so /opt/retropie/libretrocores/lr-np2kai/
-$ sudo mkdir /opt/retropie/emulators/np2kai
-$ sudo cp np2kai /opt/retropie/emulators/np2kai/
-$ sudo touch /opt/retropie/emulators/np2kai/np2kai.cfg
-$ sudo chmod 666 /opt/retropie/emulators/np2kai/np2kai.cfg
+sudo mkdir /opt/retropie/libretrocores/lr-np2kai
+sudo cp np2kai_libretro.so /opt/retropie/libretrocores/lr-np2kai/
+sudo mkdir /opt/retropie/emulators/np2kai
+sudo cp np2kai /opt/retropie/emulators/np2kai/
+sudo touch /opt/retropie/emulators/np2kai/np2kai.cfg
+sudo chmod 666 /opt/retropie/emulators/np2kai/np2kai.cfg
 ```
 3. Write & locate retroarch.cfg.
 ```
-$ sudo vi /opt/retropie/configs/pc98/retroarch.cfg`
+sudo vi /opt/retropie/configs/pc98/retroarch.cfg`
 ```
 Settings made here will only override settings in the global retroarch.cfg if placed above the #include line
 ```
@@ -746,16 +750,16 @@ input_remapping_directory = "/opt/retropie/configs/pc98/"
   BIOS files locate in "&tilde;/RetroPie/BIOS/np2kai/" directory.<br>and "/opt/retropie/emulators/np2kai/" too.
 5. Make shortcut to Japanese font. (SDL2 port only)
 ```
-$ sudo ln -s /usr/share/fonts/truetype/horai-umefont/ume-ugo4.ttf /opt/retropie/emulators/np2kai/default.ttf
+sudo ln -s /usr/share/fonts/truetype/horai-umefont/ume-ugo4.ttf /opt/retropie/emulators/np2kai/default.ttf
 ```
 6. Add "carbon-mod". (Japanese nize)
 ```
-$ git clone https://github.com/eagle0wl/es-theme-carbon.git`
-$ sudo cp -r ./es-theme-carbon /etc/emulationstation/themes/carbon-mod
+git clone https://github.com/eagle0wl/es-theme-carbon.git`
+sudo cp -r ./es-theme-carbon /etc/emulationstation/themes/carbon-mod
 ```
 7. Add to "/etc/emulationstation/es_systems.cfg" writing.
 ```
-$ sudo nano /etc/emulationstation/es_systems.cfg`
+sudo nano /etc/emulationstation/es_systems.cfg`
 ```
 ```
       </system>
@@ -773,10 +777,10 @@ $ sudo nano /etc/emulationstation/es_systems.cfg`
 ```
 8. Add to "/opt/retropie/configs/pc98/emulators.cfg" writing.
 ```
-$ cd /opt/retropie/configs
-$ sudo mkdir pc98
-$ cd pc98
-$ sudo nano emulators.cfg
+cd /opt/retropie/configs
+sudo mkdir pc98
+cd pc98
+sudo nano emulators.cfg
 ```
 ```
 np2kai="/opt/retropie/emulators/np2kai %ROM%"
@@ -1120,11 +1124,11 @@ NP2kai can software synthesizer Timidity++ as ALSA Virtual MIDI.<br>
 
 1. Install Timidity++ and fluid-soundfont
 ```
-$ sudo apt install timidity timidity-interfaces-extra fluid-soundfont-gm fluid-soundfont-gs
+sudo apt install timidity timidity-interfaces-extra fluid-soundfont-gm fluid-soundfont-gs
 ```
 2. Edit timidity.cfg
 ```
-$ sudo nano /etc/timidity/timidity.cfg
+sudo nano /etc/timidity/timidity.cfg
 ```
 ```
 #source /etc/timidity/freepats.cfg<br>
@@ -1132,11 +1136,11 @@ source /etc/timidity/fluidr3_gm.cfg
 ```
 3. Restart timidity
 ```
-$ sudo service timidity restart
+sudo service timidity restart
 ```
 4. Run timidity daemon output to ALSA.
 ```
-$ timidity -iA -B2,8 -Os &
+timidity -iA -B2,8 -Os &
 ```
 
 5. It maybe able to select 'Timidity port 0' RetroArch's MIDI device.
@@ -1166,7 +1170,7 @@ External MIDI
 NP2kai can use external MIDI sound generator with UM-1(USB-MIDI interface).<br>
 
 1. Connect UM-1 to USB
-2. Check you can see 'midiC4D0' by '$ ls /dev/snd' command
+2. Check you can see 'midiC4D0' by 'ls /dev/snd' command
 3. Open xnp2kai and set MIDI device.
 
 I tried with Touhou 2 (set MIDI option), I could listen MIDI sound.
@@ -1181,11 +1185,11 @@ To using, necessaly setup Virtual MIDI Port module too.
 
 1. Install Timidity++ and fluid-soundfont
 ```
-$ sudo apt install timidity timidity-interfaces-extra fluid-soundfont-gm fluid-soundfont-gs
+sudo apt install timidity timidity-interfaces-extra fluid-soundfont-gm fluid-soundfont-gs
 ```
 2. Edit timidity.cfg
 ```
-$ sudo nano /etc/timidity/timidity.cfg
+sudo nano /etc/timidity/timidity.cfg
 ```
 ```
 #source /etc/timidity/freepats.cfg<br>
@@ -1193,32 +1197,32 @@ source /etc/timidity/fluidr3_gm.cfg
 ```
 3. Restart timidity
 ```
-$ sudo service timidity restart
+sudo service timidity restart
 ```
 4. Run timidity daemon output to ALSA.
 ```
-$ timidity -iA -B2,8 -Os &
+timidity -iA -B2,8 -Os &
 ```
 You will see like ALSAed Timidity port 128:0 to 128:3.<br>
 ```
-$ aconnect -o
+aconnect -o
 ```
 5. Add virtual MIDI port module.
 ```
-$ sudo modprobe snd-virmidi
+sudo modprobe snd-virmidi
 ```
 (If you want to use snd-virmidi permanently, see [detail info](https://wiki.archlinux.org/index.php/Timidity%2B%2B).)
 ```
-$ aconnect -o
+aconnect -o
 ```
 You can see like VirMIDI 0-0 to 0-3 at 16:0 to 19:0.<br>
 6. You can also see VirMIDI 0-0 to 0-3 as midiC0D0 to midiC0D3.<br>
 ```
-$ ls /dev/snd
+ls /dev/snd
 ```
 7. Connect VirMIDI 0-0 and ALSAed Timidity port 0.
 ```
-$ aconnect 16:0 128:0
+aconnect 16:0 128:0
 ```
 8. Finally set '/dev/snd/midiC0D0' to xnp2kai.
 
