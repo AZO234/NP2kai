@@ -297,20 +297,20 @@ Emscripten
 - MSYS2
 1. Install [Emscripten](https://emscripten.org/).
 2. Run MSYS2 64bit console
-3. Run follow command.
+3. Run the following command:
 ```
 pacman -S git cmake make
 ```
 - Linux
 1. Install [Emscripten](https://emscripten.org/).
-2. Run follow command.
+2. Run the following command:
 ```
 sudo apt install git cmake build-essential
 ```
 - macOS
 1. Install [Emscripten](https://emscripten.org/).
 2. Install XCode and brew.
-3. Run follow command.
+3. Run the following command:
 ```
 sudo brew install cmake
 ```
@@ -463,7 +463,7 @@ And start NP2kai.
 ### Linux
 
 I recommend use 'Takao Gothic'.<br>
-Install with follow command.
+Install with the following command:
 After installation, put 'TakaoGothic.ttf' file's shortcut in the BIOS directory with:<br>
 ```
 sudo apt install 'fonts-takao-*'
@@ -500,7 +500,7 @@ You can use libretro swap interface.<br>
 ```
 1st image is mouted to FDD1, 2nd image is mouted to FDD2.<br>
 (Not suitable when using only one FDD1 drive. Use NP2 menu.)<br>
-To swap FDD2 imagefile, libretro menu durling run core,<br>
+To swap FDD2 imagefile, open the libretro menu when the core is running,<br>
 'Disk Control' -> 'Disk Cycle Tray Status' (eject) -> 'Disk Index' -> 'Disk Cycle Tray Status' (disk set)<br>
 So, to swap FDD1 imagefile, libretro 'Option' menu -> 'Swap Disks on Drive' set 'FDD1'<br>
 
@@ -612,8 +612,8 @@ Tuning performance
 2. Select 'ディップスイッチ２'(DIP switch 2)
 - How to key typing?
   There are two ways:
-  1. map the 'enable hotkeys' hotkey in settings > input > input hotkey binds and RetroArch will stop listening for hotkeys unless/until you hold that button/key
-  2. enable the "game focus mode" (mapped to scroll_lock by default) and it will send all of your inputs to the core instead of the frontend. However, some people have reported having trouble getting out of game focus mode.
+  1. Map the 'enable hotkeys' hotkey in settings > input > input hotkey binds and RetroArch will stop listening for hotkeys unless/until you hold that button/key
+  2. Enable the "game focus mode" (mapped to scroll_lock by default) and it will send all of your inputs to the core instead of the frontend. However, some people have reported having trouble getting out of game focus mode.
   (Thanks hasenbanck)
 </div></details>
 
@@ -746,8 +746,8 @@ Settings made here will only override settings in the global retroarch.cfg if pl
 input_remapping_directory = "/opt/retropie/configs/pc98/"
 #include "/opt/retropie/configs/all/retroarch.cfg"
 ```
-4. Locate BIOS files.
-  BIOS files locate in "&tilde;/RetroPie/BIOS/np2kai/" directory.<br>and "/opt/retropie/emulators/np2kai/" too.
+4. Locate the BIOS files.
+  BIOS files are located in "&tilde;/RetroPie/BIOS/np2kai/" directory <br>and "/opt/retropie/emulators/np2kai/".
 5. Make shortcut to Japanese font. (SDL2 port only)
 ```
 sudo ln -s /usr/share/fonts/truetype/horai-umefont/ume-ugo4.ttf /opt/retropie/emulators/np2kai/default.ttf
@@ -796,7 +796,7 @@ lr-np2kai="/opt/retropie/emulators/retroarch/bin/retroarch -L /opt/retropie/libr
 Key-repeat (libretro and SDL)
 </summary><div>
 
-To use Key-repeat, enable in menu.<br>
+To use Key-repeat, enable it in the menu.<br>
 On default, Key-repeat's delay is 500ms, Key-repeat's interval is 50ms.<br>
 </div></details>
 
@@ -804,7 +804,7 @@ On default, Key-repeat's delay is 500ms, Key-repeat's interval is 50ms.<br>
 Using CD-ROM drive
 </summary><div>
 
-To use CD drive with MS-DOS 6.2,<br>
+To use a CD drive with MS-DOS 6.2,<br>
 write follow to CONFIG.SYS.<br>
 <code>LASTDRIVE=Z</code><br>
 <code>DEVICE=A:&yen;DOS&yen;NECCDD.SYS /D:CD_101</code><br>
@@ -817,9 +817,9 @@ Then, you'll can use CD drive as Q drive.
 How many files(0-15)?
 </summary><div>
 
-This screen is boot as PC-98 ROM BASIC mode.<br>
-You succeed to locate BIOS files.<br>
-Your floppy/harddisk image isn't mount correctry.<br>
+This screen boots as PC-98 ROM BASIC mode.<br>
+You found the BIOS files.<br>
+Your floppy/harddisk image isn't mounting correctly.<br>
 Check selecting image files and restart.
 </div></details>
 
@@ -909,7 +909,7 @@ or [FD](https://www.vector.co.jp/soft/dos/util/se000010.html).<br>
 Memory driver
 </summary><div>
 
-When start PC-98, memory amount is displaied.
+When booting up a PC-98, the amount of memory is displayed on-screen.
 ```
 MEMORY 640KB + 13312KB
 ```
@@ -958,7 +958,7 @@ Running NASM
 </summary><div>
 
 To run NASM, use DPMI(HIMEM.SYS + EMM386.EXE + DPMI option).<br>
-And before run NASM, set swap follow command.<br>
+And before run NASM, set swap with the following command:<br>
 <code>A:&yen;NASM&yen;CWSDPMI.EXE -S A:&yen;NASM&yen;CWSDPMI.SWP</code>
 
 CWSDPMI.EXE is loaded on memory continuous.<br>
@@ -1167,7 +1167,7 @@ And set 'Assign''s 'MIDI-OUT' to 'MIDI-OUT device'.
 External MIDI
 </summary><div>
 
-NP2kai can use external MIDI sound generator with UM-1(USB-MIDI interface).<br>
+NP2kai can use an external MIDI sound generator with UM-1(USB-MIDI interface).<br>
 
 1. Connect UM-1 to USB
 2. Check you can see 'midiC4D0' by 'ls /dev/snd' command
