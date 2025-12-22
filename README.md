@@ -235,7 +235,7 @@ sudo apt install git cmake ninja-build build-essential libx11-dev libglib2.0-dev
 
 - Fedora
 ```
-sudo dnf groupinstall "Development Tools"
+sudo dnf group install "development-tools"
 sudo dnf install gcc-c++ cmake libusb-devel SDL-devel SDL_mixer-devel SDL_ttf-devel SDL2-devel SDL2_mixer-devel SDL2_ttf-devel gtk2-devel libX11-devel fontconfig-devel freetype-devel
 ```
 
