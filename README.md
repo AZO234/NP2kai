@@ -230,13 +230,13 @@ X with GTK2 and SDL
 
 - Debian/Ubuntu/Linux Mint
 ```
-sudo apt install git cmake ninja-build build-essential libx11-dev libglib2.0-dev libgtk2.0-dev libsdl2-dev libsdl2-mixer-dev libsdl2-ttf-dev libsdl1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev  libusb-1.0-0-dev libfreetype-dev libfontconfig1-dev libssl-dev
+sudo apt install git cmake ninja-build nasm build-essential libx11-dev libglib2.0-dev libgtk2.0-dev libsdl2-dev libsdl2-mixer-dev libsdl2-ttf-dev libsdl1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev  libusb-1.0-0-dev libfreetype-dev libfontconfig1-dev libssl-dev
 ```
 
 - Fedora
 ```
 sudo dnf group install "development-tools"
-sudo dnf install gcc-c++ cmake libusb-devel SDL-devel SDL_mixer-devel SDL_ttf-devel SDL2-devel SDL2_mixer-devel SDL2_ttf-devel gtk2-devel libX11-devel fontconfig-devel freetype-devel
+sudo dnf install gcc-c++ cmake ninja-build nasm /usr/lib64/libusb.so SDL-devel SDL_mixer-devel SDL_ttf-devel SDL2-devel SDL2_mixer-devel SDL2_ttf-devel gtk2-devel libX11-devel fontconfig-devel freetype-devel
 ```
 
 #### Build
