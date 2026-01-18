@@ -473,6 +473,9 @@ REG8 sasibios_operate(void) {
 	if (sxsi == NULL) {
 		return(0x60);
 	}
+	if (sxsi->devtype == SXSIDEV_CDROM && !(sxsi->flag & SXSIFLAG_READY)) {
+		return(0x60);
+	}
 	// XXX: WORKAROUND for Win9x boot menu & PC-98 HDD boot menu
 	if(sxsi_workaround_bootwait > 0){
 		sxsi_workaround_bootwait--;

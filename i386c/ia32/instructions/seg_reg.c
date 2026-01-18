@@ -37,9 +37,9 @@ LES_GwMp(void)
 	UINT32 op, dst, madr;
 	UINT16 sreg;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op < 0xc0) {
-		out = reg16_b53[op];
+		out = CPU_REG16_B53(op);
 		madr = calc_ea_dst(op);
 		dst = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, madr);
 		sreg = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, madr + 2);
@@ -57,9 +57,9 @@ LES_GdMp(void)
 	UINT32 op, dst, madr;
 	UINT16 sreg;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op < 0xc0) {
-		out = reg32_b53[op];
+		out = CPU_REG32_B53(op);
 		madr = calc_ea_dst(op);
 		dst = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, madr);
 		sreg = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, madr + 4);
@@ -77,9 +77,9 @@ LSS_GwMp(void)
 	UINT32 op, dst, madr;
 	UINT16 sreg;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op < 0xc0) {
-		out = reg16_b53[op];
+		out = CPU_REG16_B53(op);
 		madr = calc_ea_dst(op);
 		dst = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, madr);
 		sreg = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, madr + 2);
@@ -97,9 +97,9 @@ LSS_GdMp(void)
 	UINT32 op, dst, madr;
 	UINT16 sreg;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op < 0xc0) {
-		out = reg32_b53[op];
+		out = CPU_REG32_B53(op);
 		madr = calc_ea_dst(op);
 		dst = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, madr);
 		sreg = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, madr + 4);
@@ -117,9 +117,9 @@ LDS_GwMp(void)
 	UINT32 op, dst, madr;
 	UINT16 sreg;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op < 0xc0) {
-		out = reg16_b53[op];
+		out = CPU_REG16_B53(op);
 		madr = calc_ea_dst(op);
 		dst = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, madr);
 		sreg = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, madr + 2);
@@ -137,9 +137,9 @@ LDS_GdMp(void)
 	UINT32 op, dst, madr;
 	UINT16 sreg;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op < 0xc0) {
-		out = reg32_b53[op];
+		out = CPU_REG32_B53(op);
 		madr = calc_ea_dst(op);
 		dst = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, madr);
 		sreg = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, madr + 4);
@@ -157,9 +157,9 @@ LFS_GwMp(void)
 	UINT32 op, dst, madr;
 	UINT16 sreg;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op < 0xc0) {
-		out = reg16_b53[op];
+		out = CPU_REG16_B53(op);
 		madr = calc_ea_dst(op);
 		dst = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, madr);
 		sreg = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, madr + 2);
@@ -177,9 +177,9 @@ LFS_GdMp(void)
 	UINT32 op, dst, madr;
 	UINT16 sreg;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op < 0xc0) {
-		out = reg32_b53[op];
+		out = CPU_REG32_B53(op);
 		madr = calc_ea_dst(op);
 		dst = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, madr);
 		sreg = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, madr + 4);
@@ -197,9 +197,9 @@ LGS_GwMp(void)
 	UINT32 op, dst, madr;
 	UINT16 sreg;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op < 0xc0) {
-		out = reg16_b53[op];
+		out = CPU_REG16_B53(op);
 		madr = calc_ea_dst(op);
 		dst = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, madr);
 		sreg = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, madr + 2);
@@ -217,9 +217,9 @@ LGS_GdMp(void)
 	UINT32 op, dst, madr;
 	UINT16 sreg;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op < 0xc0) {
-		out = reg32_b53[op];
+		out = CPU_REG32_B53(op);
 		madr = calc_ea_dst(op);
 		dst = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, madr);
 		sreg = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, madr + 4);

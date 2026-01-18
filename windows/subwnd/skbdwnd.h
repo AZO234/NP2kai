@@ -1,6 +1,6 @@
 /**
  * @file	skbdwnd.h
- * @brief	ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢ ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
+ * @brief	ƒ\ƒtƒgƒEƒFƒA ƒL[ƒ{[ƒh ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
  */
 
 #pragma once
@@ -11,7 +11,7 @@
 #include "subwnd.h"
 
 /**
- * @brief ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢ ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰
+ * @brief ƒ\ƒtƒgƒEƒFƒA ƒL[ƒ{[ƒh
  */
 class CSoftKeyboardWnd : public CSubWndBase
 {
@@ -30,17 +30,18 @@ protected:
 	void OnPaint();
 
 private:
-	static CSoftKeyboardWnd sm_instance;	//!< ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
-	DD2Surface m_dd2;						//!< DirectDraw2 ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
-	int m_nWidth;							//!< å¹…
-	int m_nHeight;							//!< é«˜ã•
+	static CSoftKeyboardWnd sm_instance;	//!< ƒCƒ“ƒXƒ^ƒ“ƒX
+	DD2Surface m_dd2;						//!< DirectDraw2 ƒCƒ“ƒXƒ^ƒ“ƒX
+	int m_nWidth;							//!< Dot by dot•
+	int m_nHeight;							//!< Dot by dot‚‚³
 	void OnDraw(BOOL redraw);
 	static void skpalcnv(CMNPAL *dst, const RGB32 *src, UINT pals, UINT bpp);
+	void ConvertClientPointToSoftkbdPoint(int& x, int& y);
 };
 
 /**
- * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’è¿”ã™
- * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+ * ƒCƒ“ƒXƒ^ƒ“ƒX‚ğ•Ô‚·
+ * @return ƒCƒ“ƒXƒ^ƒ“ƒX
  */
 inline CSoftKeyboardWnd* CSoftKeyboardWnd::GetInstance()
 {

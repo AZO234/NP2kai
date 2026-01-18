@@ -4,6 +4,8 @@
 // ---------------------------------------------------------------------------
 //	$Id: fmtimer.cpp,v 1.1 2000/09/08 13:45:56 cisc Exp $
 
+#if defined(SUPPORT_FMGEN)
+
 #include "fmgen_headers.h"
 #include "fmgen_fmtimer.h"
 
@@ -215,3 +217,5 @@ void Timer::SetTimerBase(uint clock)
 }
 
 #endif
+
+#endif	/* SUPPORT_FMGEN */

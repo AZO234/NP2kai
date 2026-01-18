@@ -46,6 +46,7 @@ void CExternalChipManager::Deinitialize()
 	m_c86ctl.Deinitialize();
 	m_juliet.Deinitialize();
 	m_scci.Deinitialize();
+	m_scci2.Deinitialize();
 }
 
 /**
@@ -115,6 +116,12 @@ IExternalChip* CExternalChipManager::GetInterfaceInner(IExternalChip::ChipType n
 	if (pChip == NULL)
 	{
 		pChip = m_scci.GetInterface(nChipType, nClock);
+	}
+
+	/* SCCI2 */
+	if (pChip == NULL)
+	{
+		pChip = m_scci2.GetInterface(nChipType, nClock);
 	}
 
 	/* G.I.M.I.C / C86BOX */

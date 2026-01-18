@@ -1,17 +1,17 @@
 /**
  * @file	vsteffect.h
- * @brief	VST effect ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
+ * @brief	VST effect ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
  */
 
 #pragma once
 
 #include <map>
-#include <VST3 SDK/pluginterfaces/vst2.x/aeffectx.h>
+#include <pluginterfaces/vst2.x/aeffectx.h>
 
 class IVstEditWnd;
 
 /**
- * @brief VST effect ã‚¯ãƒ©ã‚¹
+ * @brief VST effect ƒNƒ‰ƒX
  */
 class CVstEffect
 {
@@ -48,14 +48,14 @@ protected:
 
 private:
 #if _WIN32
-	HMODULE m_hModule;			/*!< ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ« */
+	HMODULE m_hModule;			/*!< ƒ‚ƒWƒ…[ƒ‹ */
 #else	// _WIN32
-	void* m_hModule;			/*!< ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ« */
+	void* m_hModule;			/*!< ƒ‚ƒWƒ…[ƒ‹ */
 #endif
-	char* m_lpDir;				/*!< ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª */
+	char* m_lpDir;				/*!< ƒfƒBƒŒƒNƒgƒŠ */
 	IVstEditWnd* m_pWnd;		/*!< Window */
 
-	static std::map<AEffect*, CVstEffect*> sm_effects;		/*!< ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ ãƒãƒ³ãƒ‰ãƒ©ãƒ¼ */
+	static std::map<AEffect*, CVstEffect*> sm_effects;		/*!< ƒGƒtƒFƒNƒg ƒnƒ“ƒhƒ‰[ */
 };
 
 /**

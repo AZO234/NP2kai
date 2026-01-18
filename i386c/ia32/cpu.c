@@ -49,10 +49,6 @@
 #endif
 #endif
 
-UINT8 cpu_drawskip = 1;
-UINT8 cpu_nowait = 0;
-double np2cpu_lastTimingValue = 1.0;
-
 sigjmp_buf exec_1step_jmpbuf;
 
 #if defined(IA32_INSTRUCTION_TRACE)
@@ -104,7 +100,7 @@ exec_1step(void)
 			int len = d->nopbytes > 8 ? 8 : d->nopbytes;
 			int i;
 
-			buf[0] = '\0';
+			buf[0] = '¥0';
 			for (i = 0; i < len; i++) {
 				snprintf(tmp, sizeof(tmp), "%02x ", d->opbyte[i]);
 				milstr_ncat(buf, tmp, sizeof(buf));
@@ -114,13 +110,13 @@ exec_1step(void)
 			}
 			VERBOSE(("%04x:%08x: %s%s", CPU_CS, CPU_EIP, buf, d->str));
 
-			buf[0] = '\0';
+			buf[0] = '¥0';
 			for (; i < d->nopbytes; i++) {
 				snprintf(tmp, sizeof(tmp), "%02x ", d->opbyte[i]);
 				milstr_ncat(buf, tmp, sizeof(buf));
 				if ((i % 8) == 7) {
 					VERBOSE(("             : %s", buf));
-					buf[0] = '\0';
+					buf[0] = '¥0';
 				}
 			}
 			if ((i % 8) != 0) {
@@ -277,39 +273,23 @@ exec_1step(void)
 	}
 }
 
-
 void
 exec_allstep(void)
 {
 	int prefix;
 	UINT32 op;
 	void (*func)(void);
-#if defined(SUPPORT_ASYNC_CPU)
-	int remclkcnt = INT_MAX;
-	static int latecount = 0;
-	static int latecount2 = 0;
-	static unsigned int hltflag = 0;
-
-	if(latecount2==0){
-		if(latecount > 0){
-			//latecount--;
-		}else if (latecount < 0){
-			latecount++;
-		}
-	}
-	latecount2 = (latecount2+1) & 0x1fff;
-#endif
 	
 	do {
 
 		CPU_PREV_EIP = CPU_EIP;
 		CPU_STATSAVE.cpu_inst = CPU_STATSAVE.cpu_inst_default;
 
-	#if defined(ENABLE_TRAP)
+#if defined(ENABLE_TRAP)
 		steptrap(CPU_CS, CPU_EIP);
-	#endif
+#endif
 
-	#if defined(IA32_INSTRUCTION_TRACE)
+#if defined(IA32_INSTRUCTION_TRACE)
 		ctx[ctx_index].regs = CPU_STATSAVE.cpu_regs;
 		if (cpu_inst_trace) {
 			disasm_context_t *d = &ctx[ctx_index].disasm;
@@ -323,7 +303,7 @@ exec_allstep(void)
 				int len = d->nopbytes > 8 ? 8 : d->nopbytes;
 				int i;
 
-				buf[0] = '\0';
+				buf[0] = '¥0';
 				for (i = 0; i < len; i++) {
 					snprintf(tmp, sizeof(tmp), "%02x ", d->opbyte[i]);
 					milstr_ncat(buf, tmp, sizeof(buf));
@@ -333,13 +313,13 @@ exec_allstep(void)
 				}
 				VERBOSE(("%04x:%08x: %s%s", CPU_CS, CPU_EIP, buf, d->str));
 
-				buf[0] = '\0';
+				buf[0] = '¥0';
 				for (; i < d->nopbytes; i++) {
 					snprintf(tmp, sizeof(tmp), "%02x ", d->opbyte[i]);
 					milstr_ncat(buf, tmp, sizeof(buf));
 					if ((i % 8) == 7) {
 						VERBOSE(("             : %s", buf));
-						buf[0] = '\0';
+						buf[0] = '¥0';
 					}
 				}
 				if ((i % 8) != 0) {
@@ -348,19 +328,85 @@ exec_allstep(void)
 			}
 		}
 		ctx[ctx_index].opbytes = 0;
-	#endif
+#endif
 
-		for (prefix = 0; prefix < MAX_PREFIX; prefix++) {
-			GET_PCBYTE(op);
-	#if defined(IA32_INSTRUCTION_TRACE)
+		for (prefix = 0; prefix < MAX_PREFIX; prefix++)
+		{
+#if defined(USE_CPU_MODRMPREFETCH)
+			if ((CPU_EIP + 1) & CPU_PAGE_MASK)
+			{
+				op = cpu_opcodefetch(CPU_EIP);
+#if defined(USE_CPU_EIPMASK)
+				CPU_EIP = (CPU_EIP + 1) & CPU_EIPMASK;
+#else
+				if (CPU_STATSAVE.cpu_inst_default.op_32)
+				{
+					CPU_EIP = (CPU_EIP + 1);
+				}
+				else
+				{
+					CPU_EIP = (CPU_EIP + 1) & 0xffff;
+				}
+#endif
+			}
+			else
+#endif
+			{
+				GET_PCBYTE(op);
+			}
+#if defined(IA32_INSTRUCTION_TRACE)
 			ctx[ctx_index].op[prefix] = op;
 			ctx[ctx_index].opbytes++;
-	#endif
+#endif
 
 			/* prefix */
-			if (insttable_info[op] & INST_PREFIX) {
+			if (insttable_info[op] & INST_PREFIX)
+			{
+#if defined(USE_CPU_INLINEINST)
+				// インライン命令群　関数テーブルよりも呼び出しが高速だが、多く置きすぎるとifが増えて逆に遅くなる。なので呼び出し頻度が高い物を優先して配置
+				if (!(op & 0x26)) {
+					(*insttable_1byte[0][op])();
+					continue;
+				}
+				else {
+					if (op == 0x66)
+					{
+						CPU_INST_OP32 = !CPU_STATSAVE.cpu_inst_default.op_32;
+						continue;
+					}
+					else if (op == 0x26)
+					{
+						CPU_INST_SEGUSE = 1;
+						CPU_INST_SEGREG_INDEX = CPU_ES_INDEX;
+						continue;
+					}
+					else if (op == 0x67)
+					{
+						CPU_INST_AS32 = !CPU_STATSAVE.cpu_inst_default.as_32;
+						continue;
+					}
+					else if (op == 0x2E)
+					{
+						CPU_INST_SEGUSE = 1;
+						CPU_INST_SEGREG_INDEX = CPU_CS_INDEX;
+						continue;
+					}
+					//else if (op == 0xF3)
+					//{
+					//	CPU_INST_REPUSE = 0xf3;
+					//	continue;
+					//}
+					else
+					{
+						(*insttable_1byte[0][op])();
+						continue;
+					}
+				}
+#else
+
 				(*insttable_1byte[0][op])();
 				continue;
+#endif
 			}
 			break;
 		}
@@ -368,7 +414,7 @@ exec_allstep(void)
 			EXCEPTION(UD_EXCEPTION, 0);
 		}
 
-	#if defined(IA32_INSTRUCTION_TRACE)
+#if defined(IA32_INSTRUCTION_TRACE)
 		if (op == 0x0f) {
 			BYTE op2;
 			op2 = cpu_codefetch(CPU_EIP);
@@ -376,25 +422,79 @@ exec_allstep(void)
 			ctx[ctx_index].opbytes++;
 		}
 		ctx_index = (ctx_index + 1) % NELEMENTS(ctx);
-	#endif
+#endif
 	
 		/* normal / rep, but not use */
+#if defined(USE_CPU_INLINEINST)
+		if (CPU_INST_OP32)
+		{
+			// インライン命令群　関数テーブルよりも呼び出しが高速だが、多く置きすぎるとifが増えて逆に遅くなる。なので呼び出し頻度が高い物を優先して配置
+			if (op == 0x8b)
+			{
+				UINT32* out;
+				UINT32 op2, src;
+
+				PREPART_REG32_EA(op2, src, out, 2, 5);
+				*out = src;
+				continue;
+			}
+			else if (op == 0x0f)
+			{
+				UINT8 repuse = CPU_INST_REPUSE;
+
+				GET_MODRM_PCBYTE(op);
+#ifdef USE_SSE
+				if (insttable_2byte660F_32[op] && CPU_INST_OP32 == !CPU_STATSAVE.cpu_inst_default.op_32)
+				{
+					(*insttable_2byte660F_32[op])();
+				}
+				else if (insttable_2byteF20F_32[op] && repuse == 0xf2)
+				{
+					(*insttable_2byteF20F_32[op])();
+				}
+				else if (insttable_2byteF30F_32[op] && repuse == 0xf3)
+				{
+					(*insttable_2byteF30F_32[op])();
+				}
+				else
+				{
+					(*insttable_2byte[1][op])();
+				}
+#else
+				(*insttable_2byte[1][op])();
+#endif
+				continue;
+			}
+			else if (op == 0x74)
+			{
+				if (CC_NZ)
+				{
+					JMPNOP(2, 1);
+				}
+				else
+				{
+					JMPSHORT(7);
+				}
+				continue;
+			}
+		}
+#endif
 		if (!(insttable_info[op] & INST_STRING) || !CPU_INST_REPUSE) {
-	#if defined(DEBUG)
+#if defined(DEBUG)
 			cpu_debug_rep_cont = 0;
-	#endif
+#endif
 			(*insttable_1byte[CPU_INST_OP32][op])();
-			goto cpucontinue; //continue;
+			continue;
 		}
 
 		/* rep */
 		CPU_WORKCLOCK(5);
-	#if defined(DEBUG)
+#if defined(DEBUG)
 		if (!cpu_debug_rep_cont) {
 			cpu_debug_rep_cont = 1;
 			cpu_debug_rep_regs = CPU_STATSAVE.cpu_regs;
 		}
-	#endif
+#endif
 		func = insttable_1byte[CPU_INST_OP32][op];
 		if (!CPU_INST_AS32) {
 			if (CPU_CX != 0) {
@@ -410,9 +510,9 @@ exec_allstep(void)
 							for (;;) {
 								(*func)();
 								if (--CPU_CX == 0) {
-			#if defined(DEBUG)
+#if defined(DEBUG)
 									cpu_debug_rep_cont = 0;
-			#endif
+#endif
 									break;
 								}
 								if (CPU_REMCLOCK <= 0) {
@@ -429,9 +529,9 @@ exec_allstep(void)
 							for (;;) {
 								(*func)();
 								if (--CPU_CX == 0 || CC_NZ) {
-			#if defined(DEBUG)
+#if defined(DEBUG)
 									cpu_debug_rep_cont = 0;
-			#endif
+#endif
 									break;
 								}
 								if (CPU_REMCLOCK <= 0) {
@@ -448,9 +548,9 @@ exec_allstep(void)
 							for (;;) {
 								(*func)();
 								if (--CPU_CX == 0 || CC_Z) {
-			#if defined(DEBUG)
+#if defined(DEBUG)
 									cpu_debug_rep_cont = 0;
-			#endif
+#endif
 									break;
 								}
 								if (CPU_REMCLOCK <= 0) {
@@ -476,9 +576,9 @@ exec_allstep(void)
 							for (;;) {
 								(*func)();
 								if (--CPU_ECX == 0) {
-			#if defined(DEBUG)
+#if defined(DEBUG)
 									cpu_debug_rep_cont = 0;
-			#endif
+#endif
 									break;
 								}
 								if (CPU_REMCLOCK <= 0) {
@@ -495,9 +595,9 @@ exec_allstep(void)
 							for (;;) {
 								(*func)();
 								if (--CPU_ECX == 0 || CC_NZ) {
-			#if defined(DEBUG)
+#if defined(DEBUG)
 									cpu_debug_rep_cont = 0;
-			#endif
+#endif
 									break;
 								}
 								if (CPU_REMCLOCK <= 0) {
@@ -514,9 +614,9 @@ exec_allstep(void)
 							for (;;) {
 								(*func)();
 								if (--CPU_ECX == 0 || CC_Z) {
-			#if defined(DEBUG)
+#if defined(DEBUG)
 									cpu_debug_rep_cont = 0;
-			#endif
+#endif
 									break;
 								}
 								if (CPU_REMCLOCK <= 0) {
@@ -529,111 +629,5 @@ exec_allstep(void)
 				}
 			}
 		}
-cpucontinue:;
-
 	} while (CPU_REMCLOCK > 0);
-
-#if defined(SUPPORT_ASYNC_CPU)
-	// 非同期CPU処理
-	if(np2cfg.asynccpu && !cpu_nowait){
-#define LATECOUNTER_THRESHOLD	6
-#define LATECOUNTER_THRESHOLDM	2
-		if(CPU_STAT_HLT){
-			hltflag = pccore.multiple;
-		}
-		if (!asynccpu_fastflag && !asynccpu_lateflag) {
-			double timimg = np2cpu_lastTimingValue;
-			if (timimg > cpu_drawskip) {
-				latecount++;
-				if (latecount > +LATECOUNTER_THRESHOLD) {
-					if (pccore.multiple > 4) {
-						UINT32 oldmultiple = pccore.multiple;
-						if (pccore.multiple > 40) {
-							if (timimg > 2.0) {
-								pccore.multiple -= 10;
-							}
-							else if (timimg > 1.5) {
-								pccore.multiple -= 5;
-							}
-							else if (timimg > 1.2) {
-								pccore.multiple -= 3;
-							}
-							else {
-								pccore.multiple -= 1;
-							}
-						}
-						else if (pccore.multiple > 20) {
-							if (timimg > 2.0) {
-								pccore.multiple -= 6;
-							}
-							else if (timimg > 1.5) {
-								pccore.multiple -= 3;
-							}
-							else if (timimg > 1.2) {
-								pccore.multiple -= 2;
-							}
-							else {
-								pccore.multiple -= 1;
-							}
-						}
-						else {
-							pccore.multiple -= 1;
-						}
-						pccore.realclock = pccore.baseclock * pccore.multiple;
-						nevent_changeclock(oldmultiple, pccore.multiple);
-
-						sound_changeclock();
-						pcm86_changeclock(oldmultiple);
-						beep_changeclock();
-						mpu98ii_changeclock();
-#if defined(SUPPORT_SMPU98)
-						smpu98_changeclock();
-#endif
-						keyboard_changeclock();
-						mouseif_changeclock();
-						gdc_updateclock();
-					}
-
-					latecount = 0;
-				}
-				asynccpu_lateflag = 1;
-			}
-			else if(timimg < cpu_drawskip){
-				if (!hltflag && g_nevent.item[NEVENT_FLAMES].proc == screendisp && g_nevent.item[NEVENT_FLAMES].clock >= CPU_BASECLOCK) {
-					latecount--;
-					if (latecount < -LATECOUNTER_THRESHOLDM) {
-						if (pccore.multiple < pccore.maxmultiple) {
-							UINT32 oldmultiple = pccore.multiple;
-							if (timimg < 0.5) {
-								pccore.multiple += 3;
-							}
-							else if (timimg < 0.7) {
-								pccore.multiple += 2;
-							}
-							else {
-								pccore.multiple += 1;
-							}
-							pccore.realclock = pccore.baseclock * pccore.multiple;
-							nevent_changeclock(oldmultiple, pccore.multiple);
-
-							sound_changeclock();
-							pcm86_changeclock(oldmultiple);
-							beep_changeclock();
-							mpu98ii_changeclock();
-#if defined(SUPPORT_SMPU98)
-							smpu98_changeclock();
-#endif
-							keyboard_changeclock();
-							mouseif_changeclock();
-							gdc_updateclock();
-						}
-						latecount = 0;
-					}
-					asynccpu_fastflag = 1;
-				}
-			}
-		}
-	}
-	if(hltflag > 0) hltflag--;
-#endif
 }

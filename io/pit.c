@@ -23,7 +23,9 @@ extern	COMMNG	cm_rs232c;
 
 static void setsystimerevent(UINT32 cnt, NEVENTPOSITION absolute) {
 
-	if (cnt > 8) {									// 根拠なし
+	PITCH	pitch;
+	pitch = pit.ch + 0;
+	if (cnt > 8) { // 根拠なし
 		cnt *= pccore.multiple;
 	}
 	else {

@@ -1,9 +1,9 @@
 /**
  * @file	dd2.cpp
- * @brief	DirectDraw2 æç”»ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
+ * @brief	DirectDraw2 •`‰æƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
  */
 
-#include <compiler.h>
+#include "compiler.h"
 #include "dd2.h"
 
 #if !defined(__GNUC__)
@@ -12,7 +12,7 @@
 #endif	// !defined(__GNUC__)
 
 /**
- * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
  */
 DD2Surface::DD2Surface()
 	: m_hWnd(NULL)
@@ -32,7 +32,7 @@ DD2Surface::DD2Surface()
 }
 
 /**
- * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒfƒXƒgƒ‰ƒNƒ^
  */
 DD2Surface::~DD2Surface()
 {
@@ -40,12 +40,12 @@ DD2Surface::~DD2Surface()
 }
 
 /**
- * ä½œæˆ
- * @param[in] hWnd ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ«
- * @param[in] nWidth å¹…
- * @param[in] nHeight é«˜ã•
- * @retval true æˆåŠŸ
- * @retval false å¤±æ•—
+ * ì¬
+ * @param[in] hWnd ƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹
+ * @param[in] nWidth •
+ * @param[in] nHeight ‚‚³
+ * @retval true ¬Œ÷
+ * @retval false ¸”s
  */
 bool DD2Surface::Create(HWND hWnd, int nWidth, int nHeight)
 {
@@ -158,7 +158,7 @@ bool DD2Surface::Create(HWND hWnd, int nWidth, int nHeight)
 }
 
 /**
- * è§£æ”¾
+ * ‰ğ•ú
  */
 void DD2Surface::Release()
 {
@@ -195,8 +195,8 @@ void DD2Surface::Release()
 }
 
 /**
- * ãƒãƒƒãƒ•ã‚¡ ãƒ­ãƒƒã‚¯
- * @return ãƒãƒƒãƒ•ã‚¡
+ * ƒoƒbƒtƒ@ ƒƒbƒN
+ * @return ƒoƒbƒtƒ@
  */
 CMNVRAM* DD2Surface::Lock()
 {
@@ -223,7 +223,7 @@ CMNVRAM* DD2Surface::Lock()
 }
 
 /**
- * ãƒãƒƒãƒ•ã‚¡ ã‚¢ãƒ³ãƒ­ãƒƒã‚¯
+ * ƒoƒbƒtƒ@ ƒAƒ“ƒƒbƒN
  */
 void DD2Surface::Unlock()
 {
@@ -235,8 +235,8 @@ void DD2Surface::Unlock()
 
 /**
  * blt
- * @param[in] pt ä½ç½®
- * @param[in] lpRect é ˜åŸŸ
+ * @param[in] pt ˆÊ’u
+ * @param[in] lpRect —Ìˆæ
  */
 void DD2Surface::Blt(const POINT* pt, const RECT* lpRect)
 {
@@ -267,9 +267,42 @@ void DD2Surface::Blt(const POINT* pt, const RECT* lpRect)
 }
 
 /**
- * 16BPP è‰²ã‚’å¾—ã‚‹
- * @param[in] pal è‰²
- * @return 16BPPè‰²
+ * blt
+ * @param[in] pt ˆÊ’u
+ * @param[in] lpRect —Ìˆæ
+ */
+void DD2Surface::Blt(const POINT* pt, const RECT* lpDstRect, const RECT* lpSrcRect)
+{
+	if (m_pBackSurface)
+	{
+		POINT clipt;
+		if (pt)
+		{
+			clipt = *pt;
+		}
+		else
+		{
+			clipt.x = 0;
+			clipt.y = 0;
+		}
+		::ClientToScreen(m_hWnd, &clipt);
+		RECT scrn;
+		scrn.left = clipt.x + lpDstRect->left;
+		scrn.top = clipt.y + lpDstRect->top;
+		scrn.right = scrn.left + lpDstRect->right - lpDstRect->left;
+		scrn.bottom = scrn.top + lpDstRect->bottom - lpDstRect->top;
+		if (m_pPrimarySurface->Blt(&scrn, m_pBackSurface, const_cast<LPRECT>(lpSrcRect), DDBLT_WAIT, NULL) == DDERR_SURFACELOST)
+		{
+			m_pBackSurface->Restore();
+			m_pPrimarySurface->Restore();
+		}
+	}
+}
+
+/**
+ * 16BPP F‚ğ“¾‚é
+ * @param[in] pal F
+ * @return 16BPPF
  */
 UINT16 DD2Surface::GetPalette16(RGB32 pal) const
 {

@@ -1,9 +1,12 @@
 /**
  * @file	vsteffect.cpp
- * @brief	VST effect ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
+ * @brief	VST effect ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
  */
 
-#include <compiler.h>
+#include "compiler.h"
+
+#ifdef SUPPORT_VSTi
+
 #include "vsteffect.h"
 #include "vsteditwndbase.h"
 
@@ -15,11 +18,11 @@
 #include <dlfcn.h>
 #endif	// _WIN32
 
-/*! ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ ãƒãƒ³ãƒ‰ãƒ©ãƒ¼ */
+/*! ƒGƒtƒFƒNƒg ƒnƒ“ƒhƒ‰[ */
 std::map<AEffect*, CVstEffect*> CVstEffect::sm_effects;
 
 /**
- * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
  */
 CVstEffect::CVstEffect()
 	: m_effect(NULL)
@@ -30,7 +33,7 @@ CVstEffect::CVstEffect()
 }
 
 /**
- * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒfƒXƒgƒ‰ƒNƒ^
  */
 CVstEffect::~CVstEffect()
 {
@@ -38,17 +41,17 @@ CVstEffect::~CVstEffect()
 }
 
 /**
- * ãƒ­ãƒ¼ãƒ‰ã™ã‚‹
- * @param[in] lpVst ãƒ—ãƒ©ã‚°ã‚¤ãƒ³
- * @retval true æˆåŠŸ
- * @retval false å¤±æ•—
+ * ƒ[ƒh‚·‚é
+ * @param[in] lpVst ƒvƒ‰ƒOƒCƒ“
+ * @retval true ¬Œ÷
+ * @retval false ¸”s
  */
 bool CVstEffect::Load(LPCTSTR lpVst)
 {
 	Unload();
 
 #ifdef _WIN32
-	/* VSTièª­ã¿è¾¼ã¿ */
+	/* VSTi“Ç‚İ‚İ */
 	HMODULE hModule = ::LoadLibrary(lpVst);
 	if (hModule == NULL)
 	{
@@ -66,7 +69,7 @@ bool CVstEffect::Load(LPCTSTR lpVst)
 		return false;
 	}
 
-	// åˆæœŸåŒ–
+	// ‰Šú‰»
 	AEffect* effect = (*fnMain)(cAudioMasterCallback);
 	if (effect == NULL)
 	{
@@ -88,7 +91,7 @@ bool CVstEffect::Load(LPCTSTR lpVst)
 
 #else	// _WIN32
 
-	/* VSTièª­ã¿è¾¼ã¿ */
+	/* VSTi“Ç‚İ‚İ */
 	void* hModule = ::dlopen(lpVst, 262);
 	if (hModule == NULL)
 	{
@@ -106,7 +109,7 @@ bool CVstEffect::Load(LPCTSTR lpVst)
 		return false;
 	}
 
-	// åˆæœŸåŒ–
+	// ‰Šú‰»
 	AEffect* effect = (*fnMain)(cAudioMasterCallback);
 	if (effect == NULL)
 	{
@@ -142,7 +145,7 @@ bool CVstEffect::Load(LPCTSTR lpVst)
 }
 
 /**
- * ã‚¢ãƒ³ãƒ­ãƒ¼ãƒ‰ã™ã‚‹
+ * ƒAƒ“ƒ[ƒh‚·‚é
  */
 void CVstEffect::Unload()
 {
@@ -168,9 +171,9 @@ void CVstEffect::Unload()
 }
 
 /**
- * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ã‚¢ã‚¿ãƒƒãƒ
- * @param[in] pWnd ãƒãƒ³ãƒ‰ãƒ«
- * @return ä»¥å‰ã®ãƒãƒ³ãƒ‰ãƒ«
+ * ƒEƒBƒ“ƒhƒE ƒAƒ^ƒbƒ`
+ * @param[in] pWnd ƒnƒ“ƒhƒ‹
+ * @return ˆÈ‘O‚Ìƒnƒ“ƒhƒ‹
  */
 IVstEditWnd* CVstEffect::Attach(IVstEditWnd* pWnd)
 {
@@ -180,7 +183,7 @@ IVstEditWnd* CVstEffect::Attach(IVstEditWnd* pWnd)
 }
 
 /**
- * ãƒ‡ã‚£ã‚¹ãƒ‘ãƒƒãƒ
+ * ƒfƒBƒXƒpƒbƒ`
  * @param[in] opcode The operation code
  * @param[in] index The index
  * @param[in] value The value
@@ -198,10 +201,10 @@ VstIntPtr CVstEffect::dispatcher(VstInt32 opcode, VstInt32 index, VstIntPtr valu
 }
 
 /**
- * ãƒ—ãƒ­ã‚»ã‚¹
- * @param[in] inputs å…¥åŠ›
- * @param[in] outputs å‡ºåŠ›
- * @param[in] sampleFrames ã‚µãƒ³ãƒ—ãƒ«æ•°
+ * ƒvƒƒZƒX
+ * @param[in] inputs “ü—Í
+ * @param[in] outputs o—Í
+ * @param[in] sampleFrames ƒTƒ“ƒvƒ‹”
  */
 void CVstEffect::processReplacing(float** inputs, float** outputs, VstInt32 sampleFrames)
 {
@@ -212,7 +215,7 @@ void CVstEffect::processReplacing(float** inputs, float** outputs, VstInt32 samp
 }
 
 /**
- * ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
+ * ƒR[ƒ‹ƒoƒbƒN
  * @param[in] effect The instance of effect
  * @param[in] opcode The operation code
  * @param[in] index The index
@@ -241,7 +244,7 @@ VstIntPtr CVstEffect::cAudioMasterCallback(AEffect* effect, VstInt32 opcode, Vst
 }
 
 /**
- * ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
+ * ƒR[ƒ‹ƒoƒbƒN
  * @param[in] opcode The operation code
  * @param[in] index The index
  * @param[in] value The value
@@ -283,3 +286,5 @@ VstIntPtr CVstEffect::audioMasterCallback(VstInt32 opcode, VstInt32 index, VstIn
 
 	return ret;
 }
+
+#endif

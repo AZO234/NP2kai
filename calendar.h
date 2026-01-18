@@ -17,6 +17,7 @@ void calendar_initialize(void);
 void calendar_inc(void);
 void calendar_set(const UINT8 *bcd);
 void calendar_get(UINT8 *bcd);
+void calendar_getdt(_SYSTIME* dt);
 void calendar_getreal(UINT8 *bcd);
 void calendar_getvir(UINT8 *bcd);
 

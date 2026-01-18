@@ -30,7 +30,9 @@
 extern "C" {
 #endif
 	
-void fpu_initialize(void);
+void CPUCALL fpu_initialize(int initreg);
+
+void fpu_statesave_load(void);
 
 void FPU_FWAIT(void);
 
@@ -59,7 +61,7 @@ void DB2_ESC5(void);
 void DB2_ESC6(void);
 void DB2_ESC7(void);
 #endif
-#if defined(SUPPORT_FPU_SOFTFLOAT)
+#if defined(SUPPORT_FPU_SOFTFLOAT) || defined(SUPPORT_FPU_SOFTFLOAT3)
 void SF_FPU_FINIT(void);
 void SF_FPU_FXSAVERSTOR(void);
 void SF_ESC0(void);

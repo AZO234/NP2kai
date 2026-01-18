@@ -10,7 +10,7 @@
 #include	<sound/sound.h>
 #include	<sound/cs4231.h>
 #if defined(SUPPORT_SOUND_SB16)
-#include	<cbus/ct1741io.h>
+#include	<sound/ct1741.h>
 #endif
 #include	<cbus/sasiio.h>
 

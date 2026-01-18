@@ -944,7 +944,7 @@ void initload(void) {
 	OEMCHAR	path[MAX_PATH];
 
 	milstr_ncpy(path, file_getcd(inifile), sizeof(path));
-	fprintf(stderr, OEMTEXT("Loading %s from %s"), inifile, path);
+	fprintf(stderr, OEMTEXT("Loading %s from %s\n"), inifile, path);
 //	TRACEOUT(OEMTEXT("Loading %s from %s", inifile, path));
 	ini_read(path, ini_title, iniitem, INIITEMS);
 }
@@ -954,7 +954,7 @@ void initsave(void) {
 	OEMCHAR	path[MAX_PATH];
 
 	milstr_ncpy(path, file_getcd(inifile), sizeof(path));
-	fprintf(stderr, OEMTEXT("Saving %s to %s"), inifile, path);
+	fprintf(stderr, OEMTEXT("Saving %s to %s\n"), inifile, path);
 	ini_write(path, ini_title, iniitem, INIITEMS);
 }
 

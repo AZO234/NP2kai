@@ -47,19 +47,22 @@ static void trace_fmt_ex(const char *fmt, ...)
 #define G_OPL3_INDEX	1
 
 static const UINT8 sb16base[] = {0xd2,0xd4,0xd6,0xd8,0xda,0xdc,0xde};
-static int samplerate;
 
 static UINT8 seq[] = {0x60, 0x80, 0xff, 0x21}; // XXX: Win2kドライバのチェックを通すためだけの暫定シーケンス
 static int forceopl3mode = 0;
 static int seqpos = 0;
 
 #ifdef USE_MAME
-void *YMF262Init(INT clock, INT rate);
-void YMF262ResetChip(void *chip);
-void YMF262Shutdown(void *chip);
-INT YMF262Write(void *chip, INT a, INT v);
-UINT8 YMF262Read(void *chip, INT a);
-void YMF262UpdateOne(void *chip, INT16 **buffer, INT length);
+#ifdef USE_MAME_BSD
+#if _MSC_VER < 1900
+#include "sound/mamebsdsub/np2interop.h"
+#else
+#include "sound/mamebsd/np2interop.h"
+#endif
+#else
+#include "sound/mame/np2interop.h"
+#endif
+static int samplerate;
 #endif
 
 static void IOOUTCALL sb16_o0400(UINT port, REG8 dat) {
@@ -108,8 +111,8 @@ static void IOOUTCALL sb16_o2000(UINT port, REG8 dat) {
 	(void)port;
 #ifdef USE_MAME
 	YMF262Write(g_mame_opl3[G_OPL3_INDEX], 0, dat);
-	g_opl3[G_OPL3_INDEX].s.addrl = dat; // Key Display用
 #endif
+	g_opl3[G_OPL3_INDEX].s.addrl = dat; // Key Display用
 	//TRACEOUT(("OPL3 PORT=0x%04x, DATA=0x%02x", port, dat));
 }
 
@@ -117,8 +120,8 @@ static void IOOUTCALL sb16_o2100(UINT port, REG8 dat) {
 	(void)port;
 #ifdef USE_MAME
 	YMF262Write(g_mame_opl3[G_OPL3_INDEX], 1, dat);
-	opl3_writeRegister(&g_opl3[G_OPL3_INDEX], g_opl3[G_OPL3_INDEX].s.addrl, dat); // Key Display用
 #endif
+	opl3_writeRegister(&g_opl3[G_OPL3_INDEX], g_opl3[G_OPL3_INDEX].s.addrl, dat); // Key Display用
 	if(g_opl3[G_OPL3_INDEX].s.addrl==2 || g_opl3[G_OPL3_INDEX].s.addrl==4){
 		if(seqpos < sizeof(seq) && seq[seqpos]==dat){
 			seqpos++;
@@ -134,8 +137,8 @@ static void IOOUTCALL sb16_o2200(UINT port, REG8 dat) {
 	(void)port;
 #ifdef USE_MAME
 	YMF262Write(g_mame_opl3[G_OPL3_INDEX], 2, dat);
-	g_opl3[G_OPL3_INDEX].s.addrh = dat; // Key Display用
 #endif
+	g_opl3[G_OPL3_INDEX].s.addrh = dat; // Key Display用
 	//TRACEOUT(("OPL3 PORT=0x%04x, DATA=0x%02x", port, dat));
 }
 
@@ -143,8 +146,8 @@ static void IOOUTCALL sb16_o2300(UINT port, REG8 dat) {
 	(void)port;
 #ifdef USE_MAME
 	YMF262Write(g_mame_opl3[G_OPL3_INDEX], 3, dat);
-	opl3_writeExtendedRegister(&g_opl3[G_OPL3_INDEX], g_opl3[G_OPL3_INDEX].s.addrh, dat); // Key Display用
 #endif
+	opl3_writeExtendedRegister(&g_opl3[G_OPL3_INDEX], g_opl3[G_OPL3_INDEX].s.addrh, dat); // Key Display用
 	//TRACEOUT(("OPL3 PORT=0x%04x, DATA=0x%02x", port, dat));
 }
 
@@ -157,12 +160,14 @@ static void IOOUTCALL sb16_o2800(UINT port, REG8 dat) {
 #ifdef USE_MAME
 	YMF262Write(g_mame_opl3[G_OPL3_INDEX], 0, dat);
 #endif
+	g_opl3[G_OPL3_INDEX].s.addrl = dat; // Key Display用
 }
 static void IOOUTCALL sb16_o2900(UINT port, REG8 dat) {
 	port = dat;
 #ifdef USE_MAME
 	YMF262Write(g_mame_opl3[G_OPL3_INDEX], 1, dat);
 #endif
+	opl3_writeRegister(&g_opl3[G_OPL3_INDEX], g_opl3[G_OPL3_INDEX].s.addrl, dat); // Key Display用
 }
 
 static REG8 IOINPCALL sb16_i0400(UINT port) {
@@ -276,10 +281,6 @@ static UINT32 gameport_threshold_y = 0;
 static void IOOUTCALL gameport_o4d2(UINT port, REG8 dat)
 {
 	REG8 joyflag;
-#if defined(SUPPORT_IA32_HAXM)
-	LARGE_INTEGER li = {0};
-	QueryPerformanceCounter(&li);
-#endif
 	joyflag = joymng_getstat();
 	if(!joymng_available()){
 		return;
@@ -288,11 +289,11 @@ static void IOOUTCALL gameport_o4d2(UINT port, REG8 dat)
 	gameport_joyflag = ((joyflag >> 2) & 0x30)  | ((joyflag << 2) & 0xc0) | 0x0f;
 #if defined(SUPPORT_IA32_HAXM)
 	{
-		//LARGE_INTEGER li = {0};
+		LARGE_INTEGER li = {0};
 		if (QueryPerformanceFrequency(&gameport_qpf)) {
-			//QueryPerformanceCounter(&li);
+			QueryPerformanceCounter(&li);
 			//li.QuadPart = li.QuadPart;
-			gameport_tsc = li.QuadPart;
+			gameport_tsc = (UINT64)li.QuadPart;
 			gameport_useqpc = 1;
 		}else{
 			gameport_tsc = CPU_MSR_TSC;
@@ -316,22 +317,31 @@ static void IOOUTCALL gameport_o4d2(UINT port, REG8 dat)
 static REG8 IOINPCALL gameport_i4d2(UINT port)
 {
 	REG8 retval = 0xff;
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+	UINT32 joyAnalogX;
+	UINT32 joyAnalogY;
+#endif
 	UINT64 clockdiff;
 #if defined(SUPPORT_IA32_HAXM)
-	LARGE_INTEGER li = {0};
+	LARGE_INTEGER li = { 0 };
 	QueryPerformanceCounter(&li);
 #endif
-	if(!joymng_available()){
+	{
 		REG8 joyflag = joymng_getstat();
-		if(!joymng_available()){
-			return 0xff;
-		}
+		gameport_joyflag = ((joyflag >> 2) & 0x30) | ((joyflag << 2) & 0xc0) | (gameport_joyflag & 0x0f);
 	}
+	if (!joymng_available())
+	{
+		return 0xff;
+	}
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+	joyAnalogX = joymng_getAnalogX();
+	joyAnalogY = joymng_getAnalogY();
+#endif
 #if defined(SUPPORT_IA32_HAXM)
 	if(gameport_useqpc){
-		//li.QuadPart = li.QuadPart * GAMEPORT_JOYCOUNTER_TMPCLK / gameport_qpf.QuadPart;
-		clockdiff = (unsigned long long)(li.QuadPart - gameport_tsc);// * GAMEPORT_JOYCOUNTER_TMPCLK / gameport_qpf.QuadPart;
-		gameport_clkmax = gameport_qpf.QuadPart / 1300; // とりあえず0.7msで･･･
+		clockdiff = (unsigned long long)((UINT64)li.QuadPart - gameport_tsc);
+		gameport_clkmax = (UINT64)gameport_qpf.QuadPart / 1300; // とりあえず0.7msで･･･
 	}else{
 		clockdiff = CPU_MSR_TSC - gameport_tsc;
 		gameport_clkmax = pccore.realclock / 1430; // とりあえず0.7msで･･･
@@ -355,19 +365,34 @@ static REG8 IOINPCALL gameport_i4d2(UINT port)
 	gameport_tsc++;
 #endif
 #endif
-	gameport_threshold_x = gameport_clkmax / 2;
-	gameport_threshold_y = gameport_clkmax / 2;
-	if(~gameport_joyflag_base & 0x1){
-		gameport_threshold_y = GAMEPORT_JOYCOUNTER_MGN2;
-	}
-	if(~gameport_joyflag_base & 0x2){
-		gameport_threshold_y = gameport_clkmax - GAMEPORT_JOYCOUNTER_MGN2;
-	}
-	if(~gameport_joyflag_base & 0x4){
+	if (np2cfg.analogjoy)
+	{
+		// アナログ入力タイプ
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+		gameport_threshold_x = GAMEPORT_JOYCOUNTER_MGN2 + (UINT32)((UINT64)(gameport_clkmax - GAMEPORT_JOYCOUNTER_MGN2 * 2) * joyAnalogX / 65535);
+		gameport_threshold_y = GAMEPORT_JOYCOUNTER_MGN2 + (UINT32)((UINT64)(gameport_clkmax - GAMEPORT_JOYCOUNTER_MGN2 * 2) * joyAnalogY / 65535);
+#else
 		gameport_threshold_x = GAMEPORT_JOYCOUNTER_MGN2;
+		gameport_threshold_y = GAMEPORT_JOYCOUNTER_MGN2;
+#endif
 	}
-	if(~gameport_joyflag_base & 0x8){
-		gameport_threshold_x = gameport_clkmax - GAMEPORT_JOYCOUNTER_MGN2;
+	else
+	{
+		// ON/OFFタイプ
+		gameport_threshold_x = gameport_clkmax / 2;
+		gameport_threshold_y = gameport_clkmax / 2;
+		if(~gameport_joyflag_base & 0x1){
+			gameport_threshold_y = GAMEPORT_JOYCOUNTER_MGN2;
+		}
+		if(~gameport_joyflag_base & 0x2){
+			gameport_threshold_y = gameport_clkmax - GAMEPORT_JOYCOUNTER_MGN2;
+		}
+		if(~gameport_joyflag_base & 0x4){
+			gameport_threshold_x = GAMEPORT_JOYCOUNTER_MGN2;
+		}
+		if(~gameport_joyflag_base & 0x8){
+			gameport_threshold_x = gameport_clkmax - GAMEPORT_JOYCOUNTER_MGN2;
+		}
 	}
 	retval = gameport_joyflag;
 	if(clockdiff >= (UINT64)gameport_threshold_x){
@@ -382,51 +407,76 @@ static REG8 IOINPCALL gameport_i4d2(UINT port)
 
 // ----
 
+#ifdef USE_MAME
+#define OPL3_SAMPLE_BUFFER	4096	
+static INT16 oplfm_s1ls[OPL3_SAMPLE_BUFFER] = { 0 };
+static INT16 oplfm_s1rs[OPL3_SAMPLE_BUFFER] = { 0 };
+static INT16 oplfm_s2ls[OPL3_SAMPLE_BUFFER] = { 0 };
+static INT16 oplfm_s2rs[OPL3_SAMPLE_BUFFER] = { 0 };
 static void SOUNDCALL opl3gen_getpcm(void* opl3, SINT32 *pcm, UINT count) {
 	UINT i;
 	INT16 *buf[4];
-	INT16 s1l,s1r,s2l,s2r;
 	SINT32 *outbuf = pcm;
 	SINT32 oplfm_volume;
 	SINT32 midivolL = g_sb16.mixregexp[MIXER_MIDI_LEFT];
 	SINT32 midivolR = g_sb16.mixregexp[MIXER_MIDI_RIGHT];
+	SINT32 volL, volR;
 	oplfm_volume = np2cfg.vol_fm * np2cfg.vol_master / 100;
-	buf[0] = &s1l;
-	buf[1] = &s1r;
-	buf[2] = &s2l;
-	buf[3] = &s2r;
-	for (i=0; i < count; i++) {
-		s1l = s1r = s2l = s2r = 0;
-#ifdef USE_MAME
-		YMF262UpdateOne(opl3, buf, 1);
-#endif
-		outbuf[0] += (SINT32)(((s1l << 1) * oplfm_volume * midivolL / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_LEFT] / 255) >> 6);
-		outbuf[1] += (SINT32)(((s1r << 1) * oplfm_volume * midivolR / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_RIGHT] / 255) >> 6);
-		outbuf += 2;
+	buf[0] = oplfm_s1ls;
+	buf[1] = oplfm_s1rs;
+	buf[2] = oplfm_s2ls;
+	buf[3] = oplfm_s2rs;
+
+	// PCMサウンドバッファに送る
+	volL = oplfm_volume * midivolL * 2;
+	volR = oplfm_volume * midivolR * 2;
+	while (count > 0) {
+		int cc = MIN(count, OPL3_SAMPLE_BUFFER);
+		YMF262UpdateOne(opl3, buf, cc);
+		for (i = 0; i < cc; i++) {
+			outbuf[0] += (SINT32)((oplfm_s1ls[i] * volL / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_LEFT] / 255) >> 6);
+			outbuf[1] += (SINT32)((oplfm_s1rs[i] * volR / 255 * (SINT32)g_sb16.mixregexp[MIXER_MASTER_RIGHT] / 255) >> 6);
+			outbuf += 2;
+		}
+		count -= cc;
 	}
 }
 
+static void SOUNDCALL opl3gen_getpcm_dummy(void* opl3, SINT32* pcm, UINT count) {
+	UINT i;
+	INT16* buf[4];
+	INT16 s1l, s1r, s2l, s2r;
+	buf[0] = oplfm_s1ls;
+	buf[1] = oplfm_s1rs;
+	buf[2] = oplfm_s2ls;
+	buf[3] = oplfm_s2rs;
+	while (count > 0) {
+		int cc = MIN(count, OPL3_SAMPLE_BUFFER);
+		YMF262UpdateOne(opl3, buf, cc);
+		count -= cc;
+	}
+}
+#endif
+
 void boardsb16_reset(const NP2CFG *pConfig) {
 	DSP_INFO olddsp;
+#ifdef USE_MAME
 	if (g_mame_opl3[G_OPL3_INDEX]) {
-		if (samplerate != pConfig->samplingrate) {
-#ifdef USE_MAME
+		if (samplerate != soundcfg.rate) {
 			YMF262Shutdown(g_mame_opl3[G_OPL3_INDEX]);
-			g_mame_opl3[G_OPL3_INDEX] = YMF262Init(14400000, pConfig->samplingrate);
-#endif
-			samplerate = pConfig->samplingrate;
+			g_mame_opl3[G_OPL3_INDEX] = YMF262Init(14400000, soundcfg.rate);
+			samplerate = soundcfg.rate;
 		} else {
-#ifdef USE_MAME
-			YMF262ResetChip(g_mame_opl3[G_OPL3_INDEX]);
-#endif
+			YMF262ResetChip(g_mame_opl3[G_OPL3_INDEX], samplerate);
 		}
 	}
+#endif
 	olddsp = g_sb16.dsp_info; // dsp_infoだけ初期化しない
 	ZeroMemory(&g_sb16, sizeof(g_sb16));
 	g_sb16.dsp_info = olddsp;
 	// ボードデフォルト IO:D2 DMA:3 IRQ:5(INT1) 
 	g_sb16.base = np2cfg.sndsb16io; //0xd2;
-	g_sb16.dmach = np2cfg.sndsb16dma; //0x3;
+	g_sb16.dmachnum = np2cfg.sndsb16dma; //0x3;
 	g_sb16.dmairq = np2cfg.sndsb16irq; //0x5;
 	ct1745io_reset();
 	ct1741io_reset();
@@ -511,14 +561,23 @@ void boardsb16_bind(void) {
 	}
 #endif
 
-	if (!g_mame_opl3[G_OPL3_INDEX]) {
 #ifdef USE_MAME
+	if (!g_mame_opl3[G_OPL3_INDEX]) {
 		g_mame_opl3[G_OPL3_INDEX] = YMF262Init(14400000, np2cfg.samplingrate);
-#endif
 		samplerate = np2cfg.samplingrate;
 	}
-	sound_streamregist(g_mame_opl3[G_OPL3_INDEX], (SOUNDCB)opl3gen_getpcm);
+#endif
 	opl3_bind(&g_opl3[G_OPL3_INDEX]); // MAME使用の場合Key Display用
+#ifdef USE_MAME
+	if (g_opl3[G_OPL3_INDEX].userdata) {
+		// 外部音源を使用する場合 ダミー登録
+		sound_streamregist(g_mame_opl3[G_OPL3_INDEX], (SOUNDCB)opl3gen_getpcm_dummy);
+	}
+	else {
+		// 外部音源を使用しない場合 PCM登録
+		sound_streamregist(g_mame_opl3[G_OPL3_INDEX], (SOUNDCB)opl3gen_getpcm);
+	}
+#endif
 }
 void boardsb16_unbind(void) {
 	ct1745io_unbind();

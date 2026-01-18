@@ -1935,7 +1935,7 @@ void (*insttable_2byte[2][256])(void) = {
 		XADD_EbGb,		/* C0 */
 		XADD_EdGd,
 		SSE_CMPPS,
-		undef_op,
+		SSE2_MOVNTI,
 		SSE_PINSRW,
 		SSE_PEXTRW,
 		SSE_SHUFPS,

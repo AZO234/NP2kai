@@ -122,7 +122,7 @@ const OEMCHAR	*p;
  *                  If this parameter is FALSE, load when font is not ready
  * @return font type
  */
-UINT8 font_load(const OEMCHAR *filename, BOOL force) {
+UINT8 font_load(const OEMCHAR *filename, BOOL force, const OEMCHAR* defaultfontface) {
 
 	UINT	i;
 const UINT8	*p;
@@ -197,7 +197,7 @@ const UINT8	*p;
 	if (loading & FONTLOAD_16) {
 		file_cpyname(fname, file_getcd(fonttmpname), NELEMENTS(fname));
 		if (file_attr(fname) == -1) {
-			makepc98bmp(fname);
+			makepc98bmp(fname, defaultfontface);
 		}
 		loading = fontpc98_read(fname, loading);
 	}

@@ -1,0 +1,30 @@
+#include <winver.h>
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION    1,0,0,0
+ PRODUCTVERSION 1,0,0,0
+ FILEFLAGSMASK  0x3fL
+ FILEFLAGS      0x0L
+ FILEOS         VOS_NT
+ FILETYPE       VFT_DRV
+ FILESUBTYPE    VFT2_DRV_SYSTEM
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "041103a4"
+        BEGIN
+            VALUE "CompanyName",      "Neko Project II\0"
+            VALUE "FileDescription",  "Neko Project II SCSI Host Controller Miniport\0"
+            VALUE "FileVersion",      "1.0.0.0\0"
+            VALUE "InternalName",     "npstor.sys\0"
+            VALUE "OriginalFilename", "npstor.sys\0"
+            VALUE "ProductName",      "Neko Project II SCSI Host Controller Miniport\0"
+            VALUE "ProductVersion",   "1.0.0.0\0"
+            VALUE "LegalCopyright",   "ÇÀÇ±Ç≥ÇÒäJî≠ÇøÅ[Çﬁ\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0411, 932
+    END
+END

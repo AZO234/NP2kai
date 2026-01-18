@@ -278,6 +278,7 @@ print_status(const struct termios *tio)
 }
 #endif
 
+void
 convert_np2tocm(UINT port, UINT8* param, UINT32* speed) {
 	static const int cmserial_pc98_ch1_speed[] = {
 		0, 75, 150, 300, 600, 1200, 2400, 4800, 9600

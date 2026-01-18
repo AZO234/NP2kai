@@ -4,6 +4,8 @@
 // ---------------------------------------------------------------------------
 //	$Id: psg.cpp,v 1.10 2002/05/15 21:38:01 cisc Exp $
 
+#if defined(SUPPORT_FMGEN)
+
 #include "fmgen_headers.h"
 #include "fmgen_misc.h"
 #include "fmgen_psg.h"
@@ -393,3 +395,5 @@ void PSG::Mix(Sample* dest, int nsamples)
 uint	PSG::noisetable[noisetablesize] = { 0, };
 int		PSG::EmitTable[0x20] = { -1, };
 uint	PSG::enveloptable[16][64] = { 0, };
+
+#endif	/* SUPPORT_FMGEN */
