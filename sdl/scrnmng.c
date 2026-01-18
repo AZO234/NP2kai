@@ -156,7 +156,7 @@ BRESULT scrnmng_create(UINT8 mode) {
 	scrnsurf.extend = 0;																// ?
 
 	scrnmng.enable = TRUE;
-	#if !defined(__LIBRETRO__)
+#if !defined(__LIBRETRO__)
 	#if SDL_MAJOR_VERSION != 1
 		if((mode & SCRNMODE_FULLSCREEN) && !scrnmng_isfullscreen()) {
 			scrnmng.flag |= SCRNFLAG_FULLSCREEN;
@@ -167,7 +167,7 @@ BRESULT scrnmng_create(UINT8 mode) {
 			}
 		}
 	#endif
-	#endif	/* __LIBRETRO__ */
+#endif    /* __LIBRETRO__ */
 	return(SUCCESS);
 }
 
