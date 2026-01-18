@@ -118,6 +118,7 @@ struct tagNP2Config
 	
 #if defined(SUPPORT_ASYNC_CPU)
 	UINT8	asynccpu; // 非同期CPUモード有効
+	UINT8	asynclvl; // 非同期CPUモード調整レベル（0:制御最弱〜100:アグレッシブ）
 #endif
 	UINT8	consttsc; // RDTSCをAsyncクロック変更によらず一定間隔にする
 #if defined(SUPPORT_IDEIO)
@@ -210,6 +211,7 @@ struct tagNP2Config
 	UINT8	PROTECTMEM;
 	UINT8	hdrvacc;
 	UINT8	hdrvenable;
+	UINT8	hdrvntenable;
 	
 	UINT8	savefddfile;											// ver0.86w rev20
 	OEMCHAR	fddfile[4][MAX_PATH];									// ver0.86w rev20
@@ -315,11 +317,25 @@ struct tagNP2Config
 	UINT8	cddtskip; // CD-ROM オーディオ再生時にデータトラックをスキップ
 
 #if defined(SUPPORT_GAMEPORT)
-	UINT8	gameport; // 118音源のゲームポートを使用する
+	UINT8	gameport; // SB16や118音源のゲームポートを使用する
+	UINT8	analogjoy; // ゲームポートをアナログジョイスティックにする
 #endif
 	UINT8	allowMOVCS; // mov cs,xx命令の実行を許可する（8086）
 	UINT8	usetexthook; // Text Hookを有効にする（海外向け）
 	UINT8	rascsi92; // 92互換でRaSCSI形式(*.HDN)を読む
+	UINT8	nbeepofs; // BEEPの出力オフセットを消す
+
+	SINT64	cal_vofs; // 仮想カレンダ時刻オフセット(秒)
+
+#if defined(SUPPORT_NP2SCSI)
+	UINT8	usenp2stor; // np2 SCSIを使用する
+#endif
+
+	UINT32	emuspeed; // emulation speed(%)
+
+	OEMCHAR	fontface[256];
+
+	UINT8	slowmous; // 4ビット切り捨ての低速マウスを使う
 
 #if defined(SUPPORT_DEBUGSS)
 	UINT8	debugss;
@@ -378,6 +394,22 @@ typedef struct
 	UINT8	hardwarereset;
 } PCSTAT;
 
+#if defined(SUPPORT_ASYNC_CPU)
+#define ASYNCCPU_CLOCKTABLE_MAX	64
+typedef struct
+{
+	UINT32 drawskip;
+	UINT32 nowait;
+	UINT32 lastTimingValue;
+	UINT32 asyncTarget;
+	int lastTimingValid;
+	int screendisp;
+	int threshold_down;
+	int threshold_up;
+	int clockUpTbl[ASYNCCPU_CLOCKTABLE_MAX];
+	int clockDownTbl[ASYNCCPU_CLOCKTABLE_MAX];
+} ASYNCCPUSTAT;
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -393,6 +425,10 @@ extern	UINT	drawcount;
 #if defined(SUPPORT_FMGEN)
 extern	UINT8	enable_fmgen;
 #endif	/* SUPPORT_FMGEN */
+
+#if defined(SUPPORT_ASYNC_CPU)
+extern	ASYNCCPUSTAT	pccore_asynccpustat;
+#endif
 
 void getbiospath(OEMCHAR *path, const OEMCHAR *fname, int maxlen);
 void screendisp(NEVENTITEM item);
@@ -413,6 +449,9 @@ void pccore_exec(BOOL draw);
 void pccore_postevent(UINT32 event);
 
 #ifdef SUPPORT_ASYNC_CPU
+void pccore_asynccpu_initialize(void);
+void pccore_asynccpu_updatesettings(int asyncLevel);
+
 extern int asynccpu_lateflag;
 extern int asynccpu_fastflag;
 extern LARGE_INTEGER asynccpu_lastclock;

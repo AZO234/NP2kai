@@ -826,6 +826,29 @@ static REG16 boot_hd(REG8 drv) {
 	return(0);
 }
 
+static REG16 boot_cd(REG8 drv) {
+
+	REG8	ret;
+	UINT8	buf[0x400];
+	
+	if(pccore.hddif & PCHDD_IDE){
+		ret = sxsi_read((drv & 0xf0)==0x80 ? (0x80 | sxsi_unittbl[drv & 0x3]) : drv, 0, buf, sizeof(buf));
+	}else{
+		ret = sxsi_read(drv, 0, buf, sizeof(buf));
+	}
+	if (buf[sizeof(buf) - 2] != 0x55 || buf[sizeof(buf) - 1] != 0xAA)
+	{
+		// ブータブルではない
+		return(0);
+	}
+	CopyMemory(mem + 0x1fc00, buf, sizeof(buf));
+	if (ret < 0x20) {
+		mem[MEMB_DISK_BOOT] = drv;
+		return(0x1fc0);
+	}
+	return(0);
+}
+
 REG16 bootstrapload(void) {
 
 	UINT8	i;
@@ -880,6 +903,18 @@ REG16 bootstrapload(void) {
 	}
 	if(pccore.hddif & PCHDD_IDE){
 		for (i=0; (i<4) && (!bootseg); i++) {
+			if (sxsi_getptr(sxsi_unittbl[i])->devtype == SXSIDEV_CDROM && (sxsi_getptr(sxsi_unittbl[i])->flag & SXSIFLAG_READY)){
+				bootseg = boot_cd((REG8)(0x80 + i));
+				// MEMW_DISK_EQUIPにブート対象のCD-ROMを含める
+				if(bootseg) {
+					UINT16	diskequip;
+					diskequip = GETBIOSMEM16(MEMW_DISK_EQUIP);
+					diskequip |= 0x0100 << i;
+					SETBIOSMEM16(MEMW_DISK_EQUIP, diskequip);
+				}
+			}
+		}
+		for (i=0; (i<4) && (!bootseg); i++) {
 			if(sxsi_getptr(sxsi_unittbl[i])->devtype == SXSIDEV_HDD){
 				bootseg = boot_hd((REG8)(0x80 + i));
 			}
@@ -904,39 +939,42 @@ void bios0x1b(void) {
 	REG8	flag;
 
 #if 1			// bypass to disk bios
-	REG8	seg;
-	UINT	sp;
+	if ((CPU_AL & 0xf0) != 0x20 && (CPU_AL & 0xf0) != 0xa0 && (CPU_AL & 0xf0) != 0xc0) // SCSIは除外
+	{
+		REG8	seg;
+		UINT	sp;
 
-	seg = mem[MEMX_DISK_XROM + (CPU_AL >> 4)];
-	if (seg) {
-		sp = CPU_SP;
-		MEMR_WRITE16(CPU_SS, sp - 2, CPU_DS);
-		MEMR_WRITE16(CPU_SS, sp - 4, CPU_SI);
-		MEMR_WRITE16(CPU_SS, sp - 6, CPU_DI);
-		MEMR_WRITE16(CPU_SS, sp - 8, CPU_ES);		// +a
-		MEMR_WRITE16(CPU_SS, sp - 10, CPU_BP);		// +8
-		MEMR_WRITE16(CPU_SS, sp - 12, CPU_DX);		// +6
-		MEMR_WRITE16(CPU_SS, sp - 14, CPU_CX);		// +4
-		MEMR_WRITE16(CPU_SS, sp - 16, CPU_BX);		// +2
-		MEMR_WRITE16(CPU_SS, sp - 18, CPU_AX);		// +0
+		seg = mem[MEMX_DISK_XROM + (CPU_AL >> 4)];
+		if (seg) {
+			sp = CPU_SP;
+			MEMR_WRITE16(CPU_SS, sp - 2, CPU_DS);
+			MEMR_WRITE16(CPU_SS, sp - 4, CPU_SI);
+			MEMR_WRITE16(CPU_SS, sp - 6, CPU_DI);
+			MEMR_WRITE16(CPU_SS, sp - 8, CPU_ES);		// +a
+			MEMR_WRITE16(CPU_SS, sp - 10, CPU_BP);		// +8
+			MEMR_WRITE16(CPU_SS, sp - 12, CPU_DX);		// +6
+			MEMR_WRITE16(CPU_SS, sp - 14, CPU_CX);		// +4
+			MEMR_WRITE16(CPU_SS, sp - 16, CPU_BX);		// +2
+			MEMR_WRITE16(CPU_SS, sp - 18, CPU_AX);		// +0
 #if 0
-		TRACEOUT(("call by %.4x:%.4x",
-							MEMR_READ16(CPU_SS, CPU_SP+2),
-							MEMR_READ16(CPU_SS, CPU_SP)));
-		TRACEOUT(("bypass to %.4x:0018", seg << 8));
-		TRACEOUT(("AX=%04x BX=%04x %02x:%02x:%02x:%02x ES=%04x BP=%04x",
-							CPU_AX, CPU_BX, CPU_CL, CPU_DH, CPU_DL, CPU_CH,
-							CPU_ES, CPU_BP));
+			TRACEOUT(("call by %.4x:%.4x",
+								MEMR_READ16(CPU_SS, CPU_SP+2),
+								MEMR_READ16(CPU_SS, CPU_SP)));
+			TRACEOUT(("bypass to %.4x:0018", seg << 8));
+			TRACEOUT(("AX=%04x BX=%04x %02x:%02x:%02x:%02x ES=%04x BP=%04x",
+								CPU_AX, CPU_BX, CPU_CL, CPU_DH, CPU_DL, CPU_CH,
+								CPU_ES, CPU_BP));
 #endif
-		sp -= 18;
-		CPU_SP = sp;
-		CPU_BP = sp;
-		CPU_DS = 0x0000;
-		CPU_BX = 0x04B0;
-		CPU_AX = seg << 8;
-		CPU_CS = seg << 8;
-		CPU_IP = 0x18;
-		return;
+			sp -= 18;
+			CPU_SP = sp;
+			CPU_BP = sp;
+			CPU_DS = 0x0000;
+			CPU_BX = 0x04B0;
+			CPU_AX = seg << 8;
+			CPU_CS = seg << 8;
+			CPU_IP = 0x18;
+			return;
+		}
 	}
 #endif
 

@@ -42,7 +42,7 @@ Grp1_EbIb(void)
 	UINT32 op, src;
 	int idx;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	idx = (op >> 3) & 7;
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
@@ -65,11 +65,11 @@ Grp1_EwIb(void)
 	UINT32 op;
 	int idx;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	idx = (op >> 3) & 7;
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		out = reg16_b20[op];
+		out = CPU_REG16_B20(op);
 		GET_PCBYTES(src);
 		(*insttable_G1EwIx[idx])(out, src);
 	} else {
@@ -88,11 +88,11 @@ Grp1_EdIb(void)
 	UINT32 op;
 	int idx;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	idx = (op >> 3) & 7;
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		out = reg32_b20[op];
+		out = CPU_REG32_B20(op);
 		GET_PCBYTESD(src);
 		(*insttable_G1EdIx[idx])(out, src);
 	} else {
@@ -111,11 +111,11 @@ Grp1_EwIw(void)
 	UINT32 op;
 	int idx;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	idx = (op >> 3) & 7;
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		out = reg16_b20[op];
+		out =  CPU_REG16_B20(op);
 		GET_PCWORD(src);
 		(*insttable_G1EwIx[idx])(out, src);
 	} else {
@@ -134,11 +134,11 @@ Grp1_EdId(void)
 	UINT32 op;
 	int idx;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	idx = (op >> 3) & 7;
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		out = reg32_b20[op];
+		out = CPU_REG32_B20(op);
 		GET_PCDWORD(src);
 		(*insttable_G1EdIx[idx])(out, src);
 	} else {
@@ -160,7 +160,7 @@ Grp2_EbIb(void)
 	UINT32 cl;
 	int idx;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	idx = (op >> 3) & 7;
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(5);
@@ -186,11 +186,11 @@ Grp2_EwIb(void)
 	UINT32 cl;
 	int idx;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	idx = (op >> 3) & 7;
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(5);
-		out = reg16_b20[op];
+		out = CPU_REG16_B20(op);
 		GET_PCBYTE(cl);
 		CPU_WORKCLOCK(cl & 0x1f);
 		(*insttable_G2EwCL[idx])(out, cl);
@@ -212,11 +212,11 @@ Grp2_EdIb(void)
 	UINT32 cl;
 	int idx;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	idx = (op >> 3) & 7;
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(5);
-		out = reg32_b20[op];
+		out = CPU_REG32_B20(op);
 		GET_PCBYTE(cl);
 		CPU_WORKCLOCK(cl & 0x1f);
 		(*insttable_G2EdCL[idx])(out, cl);
@@ -235,7 +235,7 @@ Grp2_Eb(void)
 	UINT32 op;
 	int idx;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	idx = (op >> 3) & 7;
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
@@ -252,11 +252,11 @@ Grp2_Ew(void)
 	UINT32 op;
 	int idx;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	idx = (op >> 3) & 7;
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		(*insttable_G2Ew[idx])(reg16_b20[op]);
+		(*insttable_G2Ew[idx])(CPU_REG16_B20(op));
 	} else {
 		CPU_WORKCLOCK(7);
 		(*insttable_G2Ew_ext[idx])(calc_ea_dst(op));
@@ -269,11 +269,11 @@ Grp2_Ed(void)
 	UINT32 op;
 	int idx;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	idx = (op >> 3) & 7;
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		(*insttable_G2Ed[idx])(reg32_b20[op]);
+		(*insttable_G2Ed[idx])(CPU_REG32_B20(op));
 	} else {
 		CPU_WORKCLOCK(7);
 		(*insttable_G2Ed_ext[idx])(calc_ea_dst(op));
@@ -289,7 +289,7 @@ Grp2_EbCL(void)
 	UINT32 cl;
 	int idx;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	idx = (op >> 3) & 7;
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(5);
@@ -317,11 +317,11 @@ Grp2_EwCL(void)
 	UINT32 cl;
 	int idx;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	idx = (op >> 3) & 7;
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(5);
-		out = reg16_b20[op];
+		out = CPU_REG16_B20(op);
 		cl = CPU_CL;
 		cl &= 0x1f;
 		CPU_WORKCLOCK(cl);
@@ -345,11 +345,11 @@ Grp2_EdCL(void)
 	UINT32 cl;
 	int idx;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	idx = (op >> 3) & 7;
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(5);
-		out = reg32_b20[op];
+		out = CPU_REG32_B20(op);
 		cl = CPU_CL;
 		cl &= 0x1f;
 		CPU_WORKCLOCK(cl);
@@ -371,7 +371,7 @@ Grp3_Eb(void)
 {
 	UINT32 op;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	(*insttable_G3Eb[(op >> 3) & 7])(op);
 }
 
@@ -380,7 +380,7 @@ Grp3_Ew(void)
 {
 	UINT32 op;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	(*insttable_G3Ew[(op >> 3) & 7])(op);
 }
 
@@ -389,7 +389,7 @@ Grp3_Ed(void)
 {
 	UINT32 op;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	(*insttable_G3Ed[(op >> 3) & 7])(op);
 }
 
@@ -400,7 +400,7 @@ Grp4(void)
 {
 	UINT32 op;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	(*insttable_G4[(op >> 3) & 7])(op);
 }
 
@@ -411,7 +411,7 @@ Grp5_Ew(void)
 {
 	UINT32 op;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	(*insttable_G5Ew[(op >> 3) & 7])(op);
 }
 
@@ -420,7 +420,7 @@ Grp5_Ed(void)
 {
 	UINT32 op;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	(*insttable_G5Ed[(op >> 3) & 7])(op);
 }
 
@@ -431,7 +431,7 @@ Grp6(void)
 {
 	UINT32 op;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	(*insttable_G6[(op >> 3) & 7])(op);
 }
 
@@ -442,7 +442,7 @@ Grp7(void)
 {
 	UINT32 op;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 #if defined(USE_SSE3)
 	if(op==0xC8){
 		SSE3_MONITOR();
@@ -463,7 +463,7 @@ Grp8_EwIb(void)
 {
 	UINT32 op;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	(*insttable_G8EwIb[(op >> 3) & 7])(op);
 }
 
@@ -472,7 +472,7 @@ Grp8_EdIb(void)
 {
 	UINT32 op;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	(*insttable_G8EdIb[(op >> 3) & 7])(op);
 }
 
@@ -483,6 +483,6 @@ Grp9(void)
 {
 	UINT32 op;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	(*insttable_G9[(op >> 3) & 7])(op);
 }

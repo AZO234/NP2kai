@@ -1,0 +1,38 @@
+--------------------------------------
+/sound/mame以下に適用
+
+プリプロセッサ USE_MAME_BSDを定義するか、USE_MAMEを定義しない場合は除外
+
+license:GPL-2.0+
+copyright-holders:Jarek Burczynski
+
+
+
+ File: ymf262.c - software implementation of YMF262
+                  FM sound generator type OPL3
+
+ Copyright (C) 2003 Jarek Burczynski
+
+ Version 0.2
+
+
+
+ File: ymdeltat.c
+
+ YAMAHA DELTA-T adpcm sound emulation subroutine
+ used by fmopl.c (Y8950) and fm.c (YM2608 and YM2610/B)
+
+ Base program is YM2610 emulator by Hiromitsu Shioya.
+ Written by Tatsuyuki Satoh
+ Improvements by Jarek Burczynski (bujar at mame dot net)
+
+
+
+
+ File: fmopl.c - software implementation of FM sound generator
+                                            types OPL and OPL2
+
+ Copyright (C) 2002,2003 Jarek Burczynski (bujar at mame dot net)
+ Copyright (C) 1999,2000 Tatsuyuki Satoh , MultiArcadeMachineEmulator development
+
+ Version 0.72

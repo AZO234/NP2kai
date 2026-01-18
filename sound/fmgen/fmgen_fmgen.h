@@ -4,6 +4,9 @@
 // ---------------------------------------------------------------------------
 //	$Id: fmgen.h,v 1.37 2003/08/25 13:33:11 cisc Exp $
 
+#pragma once
+#if defined(SUPPORT_FMGEN)
+
 #ifndef FM_GEN_H
 #define FM_GEN_H
 
@@ -333,3 +336,5 @@ namespace FM
 }
 
 #endif // FM_GEN_H
+
+#endif	/* SUPPORT_FMGEN */

@@ -17,17 +17,162 @@
 #include	<generic/hostdrvs.h>
 #include	"hostdrv.tbl"
 
+// 性能上最適化で優先しない方がいいコードなのでわざと別セグメントに置く
+#pragma code_seg(".MISCCODE")
+
+#if 0
+#undef	TRACEOUT
+static void trace_fmt_ex(const char* fmt, ...)
+{
+	char stmp[2048];
+	va_list ap;
+	va_start(ap, fmt);
+	vsprintf(stmp, fmt, ap);
+	strcat(stmp, "¥n");
+	va_end(ap);
+	OutputDebugStringA(stmp);
+}
+#define	TRACEOUT(s)	trace_fmt_ex s
+#endif	/* 1 */
+
+
 
 #define IS_PERMITWRITE		(np2cfg.hdrvacc & HDFMODE_WRITE)
 #define IS_PERMITDELETE		(np2cfg.hdrvacc & HDFMODE_DELETE)
 
-#define ROOTPATH_NAME		"\\\\HOSTDRV\\"
-#define ROOTPATH_SIZE		(sizeof(ROOTPATH_NAME) - 1)
+#define ROOTPATH_NAME_NEW	"A:¥¥"
+#define ROOTPATH_NAME_OLD	"¥¥¥¥HOSTDRV¥¥"
+#define ROOTPATH_SIZE_NEW	(sizeof(ROOTPATH_NAME_NEW) - 1)
+#define ROOTPATH_SIZE_OLD	(sizeof(ROOTPATH_NAME_OLD) - 1)
 
-static const char ROOTPATH[ROOTPATH_SIZE + 1] = ROOTPATH_NAME;
+static int ROOTPATH_SIZE = ROOTPATH_SIZE_OLD;
+static char ROOTPATH[] = ROOTPATH_NAME_OLD;
 static const HDRVFILE hdd_volume = {{'_','H','O','S','T','D','R','I','V','E','_'}, 0, 0, 0x08, {0}, {0}};
 
 	HOSTDRV		hostdrv;
+
+// XXX: DTA単位の複数検索に対応　本当はステートセーブすべき
+#define HOSTDRV_FINDHANDLE_INVALID	0xffffffff
+#define HOSTDRV_FINDHANDLE_MAX	256 // さすがに同時に256検索出来れば十分でしょう…
+static UINT32 hostdrv_findhandle_currentindex = HOSTDRV_FINDHANDLE_INVALID; // 現在有効なハンドルが格納されているインデックス
+static HOSTDRV_FINDHANDLE hostdrv_findhandles[HOSTDRV_FINDHANDLE_MAX] = { 0 }; // 検索ハンドルリスト
+static UINT32 hostdrv_writepos = 0; // リストへの書き込み位置
+static UINT32 hostdrv_findhandles_count = 0; // リスト項目数
+
+static void hostdrv_findhandles_add(LISTARRAY flist, UINT flistpos)
+{
+	static UINT16 flistidx = 0; // 仮想的なクラスタ番号
+	int i;
+	
+	if (flist == NULL)
+	{
+		// 無効
+		hostdrv_findhandle_currentindex = HOSTDRV_FINDHANDLE_INVALID;
+		return;
+	}
+	for (i = 0; i < HOSTDRV_FINDHANDLE_MAX; i++)
+	{
+		if (hostdrv_findhandles[i].flist == flist)
+		{
+			hostdrv_findhandle_currentindex = i;
+			return; // 二重登録防止
+		}
+	}
+	// 新規
+	if (hostdrv_writepos == hostdrv_findhandle_currentindex)
+	{
+		// 現在使用中の場所は破棄できないのでずらす
+		hostdrv_writepos = (hostdrv_writepos + 1) % HOSTDRV_FINDHANDLE_MAX;
+	}
+	if (hostdrv_findhandles[hostdrv_writepos].flist != NULL)
+	{
+		listarray_destroy(hostdrv_findhandles[hostdrv_writepos].flist); // ハンドル閉じる
+		// カウント減らす
+		hostdrv_findhandles_count--;
+	}
+	hostdrv_findhandles[hostdrv_writepos].flist = flist;
+	hostdrv_findhandles[hostdrv_writepos].flistpos = flistpos;
+	hostdrv_findhandles[hostdrv_writepos].flistidx = flistidx;
+	flistidx++;
+
+	// 現在有効なハンドルにする
+	hostdrv_findhandle_currentindex = hostdrv_writepos;
+
+	// 次の書き込み位置を指定
+	hostdrv_writepos = (hostdrv_writepos + 1) % HOSTDRV_FINDHANDLE_MAX;
+
+	// カウント増やす
+	hostdrv_findhandles_count++;
+}
+static void hostdrv_findhandles_setcurrentbyflistidx(UINT16 flistidx)
+{
+	int i;
+	// 仮想クラスタ番号から検索ハンドルを選択
+	for (i = 0; i < HOSTDRV_FINDHANDLE_MAX; i++)
+	{
+		if (hostdrv_findhandles[i].flist && hostdrv_findhandles[i].flistidx == flistidx)
+		{
+			hostdrv_findhandle_currentindex = i;
+			return;
+		}
+	}
+	hostdrv_findhandle_currentindex = HOSTDRV_FINDHANDLE_INVALID;
+}
+static HOSTDRV_FINDHANDLE* hostdrv_findhandles_getcurrent()
+{
+	if (hostdrv_findhandle_currentindex == HOSTDRV_FINDHANDLE_INVALID) return NULL;
+
+	// 現在有効なハンドルを取得
+	return &hostdrv_findhandles[hostdrv_findhandle_currentindex];
+}
+static void hostdrv_findhandles_close()
+{
+	if (hostdrv_findhandle_currentindex == HOSTDRV_FINDHANDLE_INVALID) return;
+
+	// 現在有効なハンドルを閉じる
+	hostdrv_findhandles[hostdrv_findhandle_currentindex].flist = NULL;
+	hostdrv_findhandles[hostdrv_findhandle_currentindex].flistpos = 0;
+
+	// カウント減らす
+	hostdrv_findhandles_count--;
+
+	if (hostdrv_findhandle_currentindex + 1 == hostdrv_writepos)
+	{
+		// この項目の次が書き込み位置になっていたとき、書き込み位置を戻して無駄に場所を使うのを避ける
+		hostdrv_writepos = hostdrv_findhandle_currentindex;
+		if (hostdrv_findhandles_count > 1)
+		{
+			// 更に手前のデータがない位置まで書き込み位置を戻して無駄に場所を使うのを避ける
+			int i;
+			for (i = 0; i < HOSTDRV_FINDHANDLE_MAX; i++)
+			{
+				UINT32 tmpWritePos = (hostdrv_writepos + HOSTDRV_FINDHANDLE_MAX - 1) % HOSTDRV_FINDHANDLE_MAX;
+				if (hostdrv_findhandles[tmpWritePos].flist != NULL)
+				{
+					break;
+				}
+				hostdrv_writepos = tmpWritePos;
+			}
+		}
+	}
+	hostdrv_findhandle_currentindex = HOSTDRV_FINDHANDLE_INVALID;
+}
+static void hostdrv_findhandles_clear()
+{
+	int i;
+	for (i = 0; i < HOSTDRV_FINDHANDLE_MAX; i++)
+	{
+		if (hostdrv_findhandles[i].flist)
+		{
+			listarray_destroy(hostdrv_findhandles[i].flist); // ハンドル閉じる
+			hostdrv_findhandles[i].flist = NULL;
+			hostdrv_findhandles[i].flistpos = 0;
+			hostdrv_findhandles[i].flistidx = 0;
+		}
+	}
+	// カウント0にする
+	hostdrv_findhandles_count = 0;
+}
 
 // ---- i/f
 
@@ -150,7 +295,7 @@ static void store_srch(INTRST is) {
 	CopyMemory(srchrec->srch_mask, is->fcbname_ptr, 11);
 	srchrec->attr_mask = *is->srch_attr_ptr;
 	STOREINTELWORD(srchrec->dir_entry_no, ((UINT16)-1));
-	STOREINTELWORD(srchrec->dir_sector, ((UINT16)-1));
+	STOREINTELWORD(srchrec->dir_sector, hostdrv_findhandle_currentindex == HOSTDRV_FINDHANDLE_INVALID ? 0xffff : (UINT16)hostdrv_findhandles[hostdrv_findhandle_currentindex].flistidx); // 仮想クラスタ番号
 }
 
 static void store_dir(INTRST is, const HDRVFILE *phdf) {
@@ -523,7 +668,7 @@ static void change_currdir(INTRST intrst) {
 
 	ptr = intrst->filename_ptr;
 	TRACEOUT(("change_currdir %s", intrst->filename_ptr));
-	if (ptr[0] == '\0') {							// るーと
+	if (ptr[0] == '\0' || (ptr[0] == '\\' && ptr[1] == '\0')) {							// るーと
 		strcpy(intrst->filename_ptr, "\\");
 		strcpy(intrst->current_path, intrst->filename_ptr);
 		store_sda_currcds(&sc);
@@ -750,6 +895,7 @@ static void set_fileattr(INTRST intrst) {
 	_SDACDS		sc;
 	HDRVPATH	hdp;
 	REG16		attr;
+	UINT32		hostattr;
 
 	if (pathishostdrv(intrst, &sc) != SUCCESS) {
 		return;
@@ -765,8 +911,36 @@ static void set_fileattr(INTRST intrst) {
 	}
 	attr = MEMR_READ16(CPU_SS, CPU_BP + sizeof(IF4INTR)) & 0x37;
 
-	// 成功したことにする...
-	succeed(intrst);
+	hostattr = file_attr(hdp.szPath);
+	hostattr &= ‾(FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_ARCHIVE | FILE_ATTRIBUTE_SYSTEM);
+	if (attr & 0x01)
+	{
+		hostattr |= FILE_ATTRIBUTE_READONLY;
+	}
+	if (attr & 0x02)
+	{
+		hostattr |= FILE_ATTRIBUTE_HIDDEN;
+	}
+	if (attr & 0x04)
+	{
+		hostattr |= FILE_ATTRIBUTE_SYSTEM;
+	}
+	if (attr & 0x20)
+	{
+		hostattr |= FILE_ATTRIBUTE_ARCHIVE;
+	}
+	if (hostattr == 0)
+	{
+		hostattr |= FILE_ATTRIBUTE_NORMAL;
+	}
+	if (file_setattr(hdp.szPath, hostattr))
+	{
+		fail(intrst, ERR_ACCESSDENIED);
+	}
+	else
+	{
+		succeed(intrst);
+	}
 }
 
 /* 0F */
@@ -775,14 +949,18 @@ static void get_fileattr(INTRST intrst) {
 	_SDACDS		sc;
 	HDRVPATH	hdp;
 	UINT16		ax;
+	FILEH fh;
+	int isRoot;
 
 	if (pathishostdrv(intrst, &sc) != SUCCESS) {
 		return;
 	}
 
 	TRACEOUT(("get_fileattr: ->%s", intrst->fcbname_ptr));
-	if(strcmp(intrst->fcbname_ptr, "???????????") || intrst->filename_ptr[0]){ // XXX: Win用特例
-		if ((is_wildcards(intrst->fcbname_ptr)) ||
+	isRoot = intrst->filename_ptr[0] == '¥0' || (intrst->filename_ptr[0] == '¥¥' && intrst->filename_ptr[1] == '¥0');
+	if(!isRoot && (strcmp(intrst->fcbname_ptr, "???????????") || intrst->filename_ptr[0])){ // XXX: Win用特例
+		if (is_wildcards(intrst->fcbname_ptr) || (hostdrvs_getrealpath(&hdp, intrst->filename_ptr) != ERR_NOERROR))
+		{
 			(hostdrvs_getrealpath(&hdp, intrst->filename_ptr) != ERR_NOERROR)) {
 			fail(intrst, ERR_FILENOTFOUND);
 			return;
@@ -800,6 +978,24 @@ static void get_fileattr(INTRST intrst) {
 	}
 	intrst->r.b.flag_l &= ~C_FLAG;
 	STOREINTELWORD(intrst->r.w.ax, ax);
+
+	fh = file_open(hdp.szPath);
+	if (fh != FILEH_INVALID)
+	{
+		DOSDATE date;
+		DOSTIME time;
+		UINT16 datestamp;
+		UINT16 timestamp;
+		UINT32 size = (UINT32)file_getsize(fh);
+		STOREINTELWORD(intrst->r.w.bx, (UINT16)(size >> 16));
+		STOREINTELWORD(intrst->r.w.di, (UINT16)(size));
+		file_getdatetime(fh, &date, &time);
+		datestamp = ((UINT16)(date.year - 1980) << 9) | ((UINT16)date.month << 5) | ((UINT16)date.day);
+		timestamp = ((UINT16)time.hour << 11) | ((UINT16)time.minute << 5) | ((UINT16)time.second / 2);
+		STOREINTELWORD(intrst->r.w.dx, datestamp);
+		STOREINTELWORD(intrst->r.w.cx, timestamp);
+		file_close(fh);
+	}
 }
 
 /* 11 */
@@ -1202,18 +1398,9 @@ static void create_file(INTRST intrst)
 /* 1B */
 static void find_first(INTRST intrst) {
 
-	LISTARRAY flist;
 	_SDACDS sc;
 	HDRVPATH hdp;
 	char fcbname[11];
-
-	flist = hostdrv.flist;
-	if (flist)
-	{
-		hostdrv.flist = NULL;
-		hostdrv.stat.flistpos = 0;
-		listarray_destroy(flist);
-	}
 
 	if (pathishostdrv(intrst, &sc) != SUCCESS)
 	{
@@ -1236,9 +1423,11 @@ static void find_first(INTRST intrst) {
 		TRACEOUT(("find_first %s -> %s", intrst->filename_ptr, hdp.szPath));
 		hostdrv.flist = hostdrvs_getpathlist(&hdp, intrst->fcbname_ptr, *intrst->srch_attr_ptr);
 		hostdrv.stat.flistpos = 0;
+		hostdrv_findhandles_add(hostdrv.flist, hostdrv.stat.flistpos);
 		if (find_file(intrst) != SUCCESS)
 		{
-			fail(intrst, ERR_PATHNOTFOUND);
+			hostdrv_findhandles_close(); // 列挙失敗ならハンドル閉じる
+			fail(intrst, ERR_FILENOTFOUND);
 			return;
 		}
 	}
@@ -1251,24 +1440,44 @@ static void find_next(INTRST intrst) {
 
 	_SDACDS		sc;
 	SRCHREC		srchrec;
+	UINT16 flistidx;
+	HOSTDRV_FINDHANDLE* findHandle;
 
 	fetch_sda_currcds(&sc);
 	setup_ptrs(intrst, &sc);
 
+	// DTAを読み取ってクラスタ番号を取得
+	flistidx = MEMR_READ16(LOADINTELWORD(sc.ver3.sda.current_dta.seg), LOADINTELWORD(sc.ver3.sda.current_dta.off) + 0x0f);
+	findHandle = hostdrv_findhandles_getcurrent();
+
+	// 現在対象の場所と違う場所でfind_nextされたとき、検索ハンドルリストにあるか確認してそれを使用
+	if (!hostdrv.flist || findHandle == NULL || findHandle->flistidx != flistidx) {
+		hostdrv_findhandles_setcurrentbyflistidx(flistidx);
+		findHandle = hostdrv_findhandles_getcurrent();
+		if (findHandle) {
+			// 退避していた検索ハンドルに置き換え
+			hostdrv.flist = findHandle->flist;
+			hostdrv.stat.flistpos = findHandle->flistpos;
+		}
+	}
+
 	srchrec = intrst->srchrec_ptr;
 	if ((!(srchrec->drive_no & 0x40)) ||
 		((srchrec->drive_no & 0x1f) != hostdrv.stat.drive_no)) {
-		CPU_FLAG &= ~Z_FLAG;	// chain
+		CPU_FLAG &= ‾Z_FLAG;	// chain
 		return;
 	}
 	if (find_file(intrst) != SUCCESS) {
+		hostdrv_findhandles_close(); // 列挙が終わったならハンドル閉じる
 		fail(intrst, ERR_NOMOREFILES);
 		return;
+	}
+	if (findHandle) {
+		findHandle->flistpos = hostdrv.stat.flistpos; // 検索位置更新
 	}
 	store_sda_currcds(&sc);
 	succeed(intrst);
 }
-
 #if 1
 /* 1E */
 static void do_redir(INTRST intrst) {
@@ -1346,6 +1555,77 @@ static void seek_fromend(INTRST intrst) {
 	store_sft(intrst, &sft);
 	intrst->r.b.flag_l &= ~C_FLAG;
 }
+
+#if 0
+/* 2D */
+static void qualify_remote_filename(INTRST intrst)
+{
+	int i;
+	char driveLetter;
+	char srcpath[MAX_PATH] = { 0 };
+	char dstpath[MAX_PATH] = { 0 };
+	UINT16 seg;
+	UINT16 off;
+	UINT16 bufsize;
+
+	seg = LOADINTELWORD(intrst->r.w.ds);
+	off = LOADINTELWORD(intrst->r.w.si);
+	for (i = 0; i < MAX_PATH - 1; i++)
+	{
+		srcpath[i] = MEMR_READ8(seg, off);
+		if ('a' <= srcpath[i] && srcpath[i] <= 'z')
+		{
+			srcpath[i] -= 0x20; // 小文字から0x20を引けば大文字のコード
+		}
+		if (srcpath[i] == '¥0') break;
+		off++;
+	}
+
+	driveLetter = (char)('A' + hostdrv.stat.drive_no);
+	if (srcpath[0] == driveLetter && srcpath[1] == ':' && srcpath[2] == '¥¥')
+	{
+		// 先頭がドライブレターで始まる場合、ドライブレターをネットワーク名に変更
+		//memcpy(dstpath, srcpath, MAX_PATH);
+		//dstpath[0] = 'Z';
+		strcpy(dstpath, ROOTPATH_NAME);
+		//strcat(dstpath, "SHARE¥¥");
+		strcat(dstpath, srcpath + 3);
+		//strcpy(dstpath, srcpath + 2);
+	}
+	else if (strnicmp(srcpath, ROOTPATH_NAME, ROOTPATH_SIZE) == 0)
+	{
+		// 先頭がネットワーク名で始まる場合、変更不要
+		memcpy(dstpath, srcpath, MAX_PATH);
+		//sprintf(dstpath, "%c:¥¥", driveLetter);
+		//strcat(dstpath, srcpath + ROOTPATH_SIZE);
+		//strcpy(dstpath, srcpath + ROOTPATH_SIZE - 1);
+	}
+	else
+	{
+		// HOSTDRVのパスではない
+		CPU_FLAG &= ‾Z_FLAG;	// chain
+		return;
+	}
+
+#if 1
+	// 結果を書き込み
+	seg = LOADINTELWORD(intrst->r.w.es);
+	off = LOADINTELWORD(intrst->r.w.di);
+	for (i = 0; i < 128 - 1; i++)
+	{
+		MEMR_WRITE8(seg, off, dstpath[i]);
+		if (dstpath[i] == '¥0') break; // NULLが来たら終わり
+		off++;
+	}
+
+	succeed(intrst);
+#else
+	// error
+	intrst->r.b.flag_l |= C_FLAG;
+	STOREINTELWORD(intrst->r.w.ax, 1);
+#endif
+}
+#endif
 
 /* 2D */
 static void unknownfunc_2d(INTRST intrst) {
@@ -1435,7 +1715,8 @@ static void ext_openfile(INTRST intrst)
 					break;
 
 				default:
-					nResult = ERR_ACCESSDENIED;
+					nResult = ERR_FILE_EXISTS;
+					fail(intrst, (UINT16)nResult);
 					return;
 			}
 		}
@@ -1551,7 +1832,7 @@ static const HDINTRFN intr_func[] = {
 		NULL,
 		seek_fromend,		/* 21 */
 		NULL,
-		NULL,
+		NULL, //qualify_remote_filename, /* 23 */
 		NULL,
 		NULL,
 		NULL,
@@ -1573,13 +1854,25 @@ void hostdrv_initialize(void) {
 
 	ZeroMemory(&hostdrv, sizeof(hostdrv));
 	hostdrv.fhdl = listarray_new(sizeof(_HDRVHANDLE), 16);
+
+	// 旧プロトコル互換セット
+	ROOTPATH_SIZE = ROOTPATH_SIZE_OLD;
+	strcpy(ROOTPATH, ROOTPATH_NAME_OLD);
+	TRACEOUT(("hostdrv: Switch to old protocol"));
+
 	TRACEOUT(("hostdrv_initialize"));
 }
 
 // 終わりに一回だけ呼んでね(はーと
 void hostdrv_deinitialize(void) {
 
-	listarray_destroy(hostdrv.flist);
+	if (hostdrv.flist)
+	{
+		listarray_destroy(hostdrv.flist);
+		hostdrv.flist = NULL;
+		hostdrv_findhandles_close();
+	}
+	hostdrv_findhandles_clear();
 	hostdrvs_fhdlallclose(hostdrv.fhdl);
 	listarray_destroy(hostdrv.fhdl);
 	TRACEOUT(("hostdrv_deinitialize"));
@@ -1601,7 +1894,8 @@ void hostdrv_mount(const void *arg1, long arg2) {
 		np2sysp_outstr(OEMTEXT("ng"), 0);
 		return;
 	}
-	hostdrv.stat.is_mount = TRUE;
+	hostdrv.stat.is_mount = 1;
+	hostdrv.stat.newprotocol = 0;
 	fetch_if4dos();
 	np2sysp_outstr(OEMTEXT("ok"), 0);
 	(void)arg1;
@@ -1649,6 +1943,26 @@ void hostdrv_intr(const void *arg1, long arg2) {
 	(void)arg1;
 	(void)arg2;
 }
+
+void hostdrv_setn(const void* arg1, long arg2)
+{
+	if (hostdrv.stat.is_mount)
+	{
+		// マウント中の場合新プロトコル有効化
+		hostdrv.stat.newprotocol = 1;
+
+		// 新プロトコルセット
+		ROOTPATH_SIZE = ROOTPATH_SIZE_NEW;
+		strcpy(ROOTPATH, ROOTPATH_NAME_NEW);
+		ROOTPATH[0] = 'A' + hostdrv.stat.drive_no;
+	}
+
+	np2sysp_outstr(OEMTEXT("pok"), 0);
+
+	(void)arg1;
+	(void)arg2;
+}
+
 
 
 // ---- for statsave
@@ -1744,15 +2058,38 @@ int hostdrv_sfload(STFLAGH sfh, const SFENTRY *tbl) {
 			hdf->hdl = (INTPTR)fh;
 		}
 	}
-	for (i=0; i<sfhdrv.flists; i++) {
-		hdl = (HDRVLST)listarray_append(hostdrv.flist, NULL);
-		if (hdl == NULL) {
-			return(STATFLAG_FAILURE);
+	if (sfhdrv.flists > 0)
+	{
+		hostdrv.flist = listarray_new(sizeof(_HDRVLST), 64);
+		for (i = 0; i < sfhdrv.flists; i++)
+		{
+			hdl = (HDRVLST)listarray_append(hostdrv.flist, NULL);
+			if (hdl == NULL)
+			{
+				return(STATFLAG_FAILURE);
+			}
+			ret |= statflag_read(sfh, hdl, sizeof(_HDRVLST));
 		}
-		ret |= statflag_read(sfh, hdl, sizeof(_HDRVLST));
+	}
+	if (hostdrv.stat.newprotocol == 1)
+	{
+		// 新プロトコルセット
+		ROOTPATH_SIZE = ROOTPATH_SIZE_NEW;
+		strcpy(ROOTPATH, ROOTPATH_NAME_NEW);
+		ROOTPATH[0] = 'A' + hostdrv.stat.drive_no;
+		TRACEOUT(("hostdrv: Switch to new protocol"));
+	}
+	else
+	{
+		// 旧プロトコル互換セット
+		ROOTPATH_SIZE = ROOTPATH_SIZE_OLD;
+		strcpy(ROOTPATH, ROOTPATH_NAME_OLD);
+		TRACEOUT(("hostdrv: Switch to old protocol"));
 	}
 	(void)tbl;
 	return(ret);
 }
-#endif
 
+#pragma code_seg()
+
+#endif

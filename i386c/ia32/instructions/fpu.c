@@ -32,12 +32,12 @@
 #include <ia32/instructions/fpu/fp.h>
 #include "ia32/instructions/fpu/fpumem.h"
 
-#if defined(USE_FPU) && !defined(SUPPORT_FPU_DOSBOX) && !defined(SUPPORT_FPU_DOSBOX2) && !defined(SUPPORT_FPU_SOFTFLOAT)
-#error No FPU detected. Please define SUPPORT_FPU_DOSBOX, SUPPORT_FPU_DOSBOX2 or SUPPORT_FPU_SOFTFLOAT.
+#if defined(USE_FPU) && !defined(SUPPORT_FPU_DOSBOX) && !defined(SUPPORT_FPU_DOSBOX2) && !defined(SUPPORT_FPU_SOFTFLOAT) && !defined(SUPPORT_FPU_SOFTFLOAT3)
+#error No FPU detected. Please define SUPPORT_FPU_DOSBOX, SUPPORT_FPU_DOSBOX2, SUPPORT_FPU_SOFTFLOAT or SUPPORT_FPU_SOFTFLOAT3.
 #endif
 
-void
-fpu_initialize(void)
+void CPUCALL
+fpu_initialize(int initreg)
 {
 #if defined(USE_FPU)
 	if(i386cpuid.cpu_feature & CPU_FEATURE_FPU){
@@ -53,7 +53,7 @@ fpu_initialize(void)
 			insttable_1byte[0][0xdd] = insttable_1byte[1][0xdd] = DB_ESC5;
 			insttable_1byte[0][0xde] = insttable_1byte[1][0xde] = DB_ESC6;
 			insttable_1byte[0][0xdf] = insttable_1byte[1][0xdf] = DB_ESC7;
-			DB_FPU_FINIT();
+			if (initreg) DB_FPU_FINIT();
 			break;
 #endif
 #if defined(SUPPORT_FPU_DOSBOX2)
@@ -67,10 +67,10 @@ fpu_initialize(void)
 			insttable_1byte[0][0xdd] = insttable_1byte[1][0xdd] = DB2_ESC5;
 			insttable_1byte[0][0xde] = insttable_1byte[1][0xde] = DB2_ESC6;
 			insttable_1byte[0][0xdf] = insttable_1byte[1][0xdf] = DB2_ESC7;
-			DB2_FPU_FINIT();
+			if (initreg) DB2_FPU_FINIT();
 			break;
 #endif
-#if defined(SUPPORT_FPU_SOFTFLOAT)
+#if defined(SUPPORT_FPU_SOFTFLOAT) || defined(SUPPORT_FPU_SOFTFLOAT3)
 		case FPU_TYPE_SOFTFLOAT:
 			insttable_2byte[0][0xae] = insttable_2byte[1][0xae] = SF_FPU_FXSAVERSTOR;
 			insttable_1byte[0][0xd8] = insttable_1byte[1][0xd8] = SF_ESC0;
@@ -81,11 +81,11 @@ fpu_initialize(void)
 			insttable_1byte[0][0xdd] = insttable_1byte[1][0xdd] = SF_ESC5;
 			insttable_1byte[0][0xde] = insttable_1byte[1][0xde] = SF_ESC6;
 			insttable_1byte[0][0xdf] = insttable_1byte[1][0xdf] = SF_ESC7;
-			SF_FPU_FINIT();
+			if (initreg) SF_FPU_FINIT();
 			break;
 #endif
 		default:
-#if defined(SUPPORT_FPU_SOFTFLOAT)
+#if defined(SUPPORT_FPU_SOFTFLOAT) || defined(SUPPORT_FPU_SOFTFLOAT3)
 			insttable_2byte[0][0xae] = insttable_2byte[1][0xae] = SF_FPU_FXSAVERSTOR;
 			insttable_1byte[0][0xd8] = insttable_1byte[1][0xd8] = SF_ESC0;
 			insttable_1byte[0][0xd9] = insttable_1byte[1][0xd9] = SF_ESC1;
@@ -95,7 +95,7 @@ fpu_initialize(void)
 			insttable_1byte[0][0xdd] = insttable_1byte[1][0xdd] = SF_ESC5;
 			insttable_1byte[0][0xde] = insttable_1byte[1][0xde] = SF_ESC6;
 			insttable_1byte[0][0xdf] = insttable_1byte[1][0xdf] = SF_ESC7;
-			SF_FPU_FINIT();
+			if (initreg) SF_FPU_FINIT();
 #elif defined(SUPPORT_FPU_DOSBOX)
 			insttable_2byte[0][0xae] = insttable_2byte[1][0xae] = DB_FPU_FXSAVERSTOR;
 			insttable_1byte[0][0xd8] = insttable_1byte[1][0xd8] = DB_ESC0;
@@ -106,7 +106,7 @@ fpu_initialize(void)
 			insttable_1byte[0][0xdd] = insttable_1byte[1][0xdd] = DB_ESC5;
 			insttable_1byte[0][0xde] = insttable_1byte[1][0xde] = DB_ESC6;
 			insttable_1byte[0][0xdf] = insttable_1byte[1][0xdf] = DB_ESC7;
-			DB_FPU_FINIT();
+			if (initreg) DB_FPU_FINIT();
 #elif defined(SUPPORT_FPU_DOSBOX2)
 			insttable_2byte[0][0xae] = insttable_2byte[1][0xae] = DB2_FPU_FXSAVERSTOR;
 			insttable_1byte[0][0xd8] = insttable_1byte[1][0xd8] = DB2_ESC0;
@@ -117,7 +117,7 @@ fpu_initialize(void)
 			insttable_1byte[0][0xdd] = insttable_1byte[1][0xdd] = DB2_ESC5;
 			insttable_1byte[0][0xde] = insttable_1byte[1][0xde] = DB2_ESC6;
 			insttable_1byte[0][0xdf] = insttable_1byte[1][0xdf] = DB2_ESC7;
-			DB2_FPU_FINIT();
+			if (initreg) DB2_FPU_FINIT();
 #else
 			insttable_2byte[0][0xae] = insttable_2byte[1][0xae] = NOFPU_FPU_FXSAVERSTOR;
 			insttable_1byte[0][0xd8] = insttable_1byte[1][0xd8] = NOFPU_ESC0;
@@ -128,7 +128,7 @@ fpu_initialize(void)
 			insttable_1byte[0][0xdd] = insttable_1byte[1][0xdd] = NOFPU_ESC5;
 			insttable_1byte[0][0xde] = insttable_1byte[1][0xde] = NOFPU_ESC6;
 			insttable_1byte[0][0xdf] = insttable_1byte[1][0xdf] = NOFPU_ESC7;
-			NOFPU_FPU_FINIT();
+			if (initreg) NOFPU_FPU_FINIT();
 #endif
 			break;
 		}
@@ -143,10 +143,100 @@ fpu_initialize(void)
 		insttable_1byte[0][0xdd] = insttable_1byte[1][0xdd] = NOFPU_ESC5;
 		insttable_1byte[0][0xde] = insttable_1byte[1][0xde] = NOFPU_ESC6;
 		insttable_1byte[0][0xdf] = insttable_1byte[1][0xdf] = NOFPU_ESC7;
-		NOFPU_FPU_FINIT();
+		if (initreg) NOFPU_FPU_FINIT();
 #if defined(USE_FPU)
 	}
 #endif
+}
+
+void
+fpu_statesave_load(void)
+{
+	int i;
+
+	// FPU互換性維持用
+#if !defined(SUPPORT_FPU_SOFTFLOAT) && !defined(SUPPORT_FPU_SOFTFLOAT3)
+	if (i386cpuid.fpu_type == FPU_TYPE_SOFTFLOAT) {
+		// XXX: floatx80 -> doubleはsoftfloatなしでは処理できないので無視
+		i386cpuid.fpu_type = FPU_TYPE_DOSBOX2;
+	}
+#else
+	if (i386cpuid.fpu_type == FPU_TYPE_DOSBOX2 || i386cpuid.fpu_type == FPU_TYPE_DOSBOX) {
+#if !defined(SUPPORT_FPU_DOSBOX2) && !defined(SUPPORT_FPU_DOSBOX)
+#if defined(SUPPORT_FPU_SOFTFLOAT)
+		// double -> floatx80
+		for (i = 0; i < 8; i++) {
+			FPU_STAT.reg[i].d = c_double_to_floatx80(FPU_STAT.reg[i].d64);
+		}
+		i386cpuid.fpu_type = FPU_TYPE_SOFTFLOAT;
+#elif defined(SUPPORT_FPU_SOFTFLOAT3)
+		// double -> floatx80
+		for (i = 0; i < 8; i++) {
+			sw_float64_t f = *(sw_float64_t*)(&(FPU_STAT.reg[i].d64));
+			FPU_STAT.reg[i].d = f64_to_extF80(f);
+		}
+		i386cpuid.fpu_type = FPU_TYPE_SOFTFLOAT;
+#endif
+#elif !defined(SUPPORT_FPU_DOSBOX2)
+		if (i386cpuid.fpu_type == FPU_TYPE_DOSBOX2) {
+			i386cpuid.fpu_type = FPU_TYPE_DOSBOX;
+		}
+#elif !defined(SUPPORT_FPU_DOSBOX)
+		if (i386cpuid.fpu_type == FPU_TYPE_DOSBOX) {
+			i386cpuid.fpu_type = FPU_TYPE_DOSBOX2;
+		}
+#endif
+	}
+#endif
+
+	// フラグの復元
+	if (i386cpuid.fpu_type == FPU_TYPE_SOFTFLOAT) {
+#if defined(SUPPORT_FPU_SOFTFLOAT) 
+		float_exception_flags = (FPU_STATUSWORD & 0x3f);
+		switch (FPU_STAT.round) {
+		case ROUND_Nearest:
+			float_rounding_mode = float_round_nearest_even;
+			break;
+		case ROUND_Down:
+			float_rounding_mode = float_round_down;
+			break;
+		case ROUND_Up:
+			float_rounding_mode = float_round_up;
+			break;
+		case ROUND_Chop:
+			float_rounding_mode = float_round_to_zero;
+			break;
+		default:
+			break;
+		}
+#endif
+#if defined(SUPPORT_FPU_SOFTFLOAT3)
+		const UINT16 statusword = FPU_STATUSWORD;
+		UINT8 result = 0;
+		if (statusword & (1 << 0)) result |= softfloat_flag_invalid;
+		if (statusword & (1 << 2)) result |= softfloat_flag_infinite;
+		if (statusword & (1 << 3)) result |= softfloat_flag_overflow;
+		if (statusword & (1 << 4)) result |= softfloat_flag_underflow;
+		if (statusword & (1 << 5)) result |= softfloat_flag_inexact;
+		softfloat_exceptionFlags = result;
+		switch (FPU_STAT.round) {
+		case ROUND_Nearest:
+			softfloat_roundingMode = softfloat_round_near_even;
+			break;
+		case ROUND_Down:
+			softfloat_roundingMode = softfloat_round_min;
+			break;
+		case ROUND_Up:
+			softfloat_roundingMode = softfloat_round_max;
+			break;
+		case ROUND_Chop:
+			softfloat_roundingMode = softfloat_round_minMag;
+			break;
+		default:
+			break;
+		}
+#endif
+	}
 }
 
 char *

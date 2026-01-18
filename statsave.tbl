@@ -174,6 +174,9 @@ static const SFENTRY np2tbl[] = {
 #endif
 #if defined(SUPPORT_SCSI)
 	{"SCSI",		0,	STATFLAG_BIN,	&scsiio,		sizeof(scsiio)},
+#if defined(SUPPORT_NP2SCSI)
+	{"NP2STOR",		0,	STATFLAG_BIN|STATFLAG_BWD_COMPATIBLE,	&np2stor,		sizeof(np2stor)},
+#endif
 #endif
 #if defined(SUPPORT_PC9861K)
 	{"PC9861K",		0,	STATFLAG_BIN,	&pc9861k,		sizeof(pc9861k)},
@@ -193,6 +196,9 @@ static const SFENTRY np2tbl[] = {
 #if defined(SUPPORT_HOSTDRV)
 	{"HOSTDRV",		0,	STATFLAG_HDRV,	NULL,			0},
 #endif
+#if defined(SUPPORT_HOSTDRVNT)
+	{"HOSTDRVNT",	0,	STATFLAG_HDRVNT,NULL,			0},
+#endif
 #if defined(BIOS_IO_EMULATION)
 	{"BIOSIOEMU",	0,	STATFLAG_BIN,	&biosioemu,		sizeof(biosioemu)},
 #endif
@@ -201,6 +207,9 @@ static const SFENTRY np2tbl[] = {
 #endif
 #if defined(USE_CUSTOM_HOOKINST)
 	{"BIOSHOOK",	0,	STATFLAG_BIN,	&bioshookinfo,		sizeof(bioshookinfo)},
+#endif
+#if !defined(NP2_SDL) && !defined(__LIBRETRO__) && !defined(NP2_X)
+	{"MOUSEMNGST",	0,	STATFLAG_BIN|STATFLAG_FWD_COMPATIBLE|STATFLAG_BWD_COMPATIBLE,	&mousemngstat,		sizeof(mousemngstat)},
 #endif
 	{"TERMINATE",	0,	STATFLAG_TERM,	NULL,			0}};
 

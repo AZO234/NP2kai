@@ -185,7 +185,7 @@ void oplgen_initialize(UINT rate)
 		freq *= (double)(1 << ((i >> 2) - 1));
 		attacktable[i] = (SINT32)(freq * 3.0 / OPM_ARRATE);
 		decaytable[i] = (SINT32)(freq * 2.0 / OPM_DRRATE);
-#if 1
+#if 0
 		if (attacktable[i] >= EC_DECAY)
 		{
 			printf("attacktable %d %d %ld\n", i, attacktable[i], EC_DECAY);

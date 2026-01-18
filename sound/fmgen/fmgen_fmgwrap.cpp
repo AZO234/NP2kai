@@ -1,3 +1,5 @@
+#if defined(SUPPORT_FMGEN)
+
 #include <compiler.h>
 
 #include <sound/fmgen/fmgen_fmgwrap.h>
@@ -130,3 +132,4 @@ void	OPM_SetChannelMask(void* OPM, uint mask) { ((FM::OPM*)OPM)->SetChannelMask(
 void	OPM_DataSave(void* OPM, void* opmdata) { ((FM::OPM*)OPM)->DataSave((FM::OPMData*)opmdata); }
 void	OPM_DataLoad(void* OPM, void* opmdata) { ((FM::OPM*)OPM)->DataLoad((FM::OPMData*)opmdata); }
 
+#endif	/* SUPPORT_FMGEN */

@@ -74,7 +74,7 @@ inst##_Ew(UINT32 op) \
 \
 	if (op >= 0xc0) { \
 		CPU_WORKCLOCK(2); \
-		out = reg16_b20[op]; \
+		out = CPU_REG16_B20(op); \
 		dst = *out; \
 		WORD_##inst(dst); \
 		*out = (UINT16)dst; \
@@ -93,7 +93,7 @@ inst##_Ed(UINT32 op) \
 \
 	if (op >= 0xc0) { \
 		CPU_WORKCLOCK(2); \
-		out = reg32_b20[op]; \
+		out = CPU_REG32_B20(op); \
 		dst = *out; \
 		DWORD_##inst(dst); \
 		*out = dst; \
@@ -157,7 +157,7 @@ inst##_EwGw(void) \
 	PREPART_EA_REG16(op, src); \
 	if (op >= 0xc0) { \
 		CPU_WORKCLOCK(2); \
-		out = reg16_b20[op]; \
+		out = CPU_REG16_B20(op); \
 		dst = *out; \
 		WORD_##inst(dst, src); \
 		*out = (UINT16)dst; \
@@ -177,7 +177,7 @@ inst##_EdGd(void) \
 	PREPART_EA_REG32(op, src); \
 	if (op >= 0xc0) { \
 		CPU_WORKCLOCK(2); \
-		out = reg32_b20[op]; \
+		out = CPU_REG32_B20(op); \
 		dst = *out; \
 		DWORD_##inst(dst, src); \
 		*out = dst; \
@@ -230,7 +230,7 @@ inst##_ALIb(void) \
 	UINT32 src, dst; \
 \
 	CPU_WORKCLOCK(3); \
-	GET_PCBYTE(src); \
+	GET_MODRM_PCBYTE(src); \
 	dst = CPU_AL; \
 	BYTE_##inst(dst, src); \
 	CPU_AL = (UINT8)dst; \
@@ -367,7 +367,7 @@ inst##_EwGw(void) \
 	PREPART_EA_REG16(op, src); \
 	if (op >= 0xc0) { \
 		CPU_WORKCLOCK(2); \
-		out = reg16_b20[op]; \
+		out = CPU_REG16_B20(op); \
 		dst = *out; \
 		WORD_##inst(res, dst, src); \
 		*out = (UINT16)res; \
@@ -387,7 +387,7 @@ inst##_EdGd(void) \
 	PREPART_EA_REG32(op, src); \
 	if (op >= 0xc0) { \
 		CPU_WORKCLOCK(2); \
-		out = reg32_b20[op]; \
+		out = CPU_REG32_B20(op); \
 		dst = *out; \
 		DWORD_##inst(res, dst, src); \
 		*out = res; \
@@ -440,7 +440,7 @@ inst##_ALIb(void) \
 	UINT32 src, dst, res; \
 \
 	CPU_WORKCLOCK(2); \
-	GET_PCBYTE(src); \
+	GET_MODRM_PCBYTE(src); \
 	dst = CPU_AL; \
 	BYTE_##inst(res, dst, src); \
 	CPU_AL = (UINT8)res; \

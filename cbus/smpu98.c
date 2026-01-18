@@ -1,9 +1,9 @@
 
 // emulation Super MPU
 
-// Ql‘—¿
-//   ESuper MPU Developer's Kit for Windows ƒvƒƒOƒ‰ƒ}[ƒYEƒKƒCƒh
-//   Ehttps://gist.github.com/o-p-a/8b26f12c36073a3f1f6829d3ed974dd1#file-smpumsg-txt-L93
+// ï¿½Qï¿½lï¿½ï¿½ï¿½ï¿½
+//   ï¿½ESuper MPU Developer's Kit for Windows ï¿½vï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½}ï¿½[ï¿½Yï¿½Eï¿½Kï¿½Cï¿½h
+//   ï¿½Ehttps://gist.github.com/o-p-a/8b26f12c36073a3f1f6829d3ed974dd1#file-smpumsg-txt-L93
 
 #include	<compiler.h>
 
@@ -84,7 +84,7 @@ enum {
 	SMPUMODE_NATIVE		= 2,
 };
 
-// [Native Mode] status ‚Ìƒrƒbƒg
+// [Native Mode] status ï¿½Ìƒrï¿½bï¿½g
 enum {
 	SMPU_STATUS_ISR		= 0x0001, // Imm data set ready
 	SMPU_STATUS_SSR		= 0x0002, // Seq data set ready
@@ -102,13 +102,13 @@ enum {
 	SMPU_STATUS_IM4		= 0x2000, // Int mask monitor 0010
 };
 
-// [Native Mode] Int mask ‚Ìƒrƒbƒg  0‚Å‹Ö~ 1‚Å‹–‰Â
+// [Native Mode] Int mask ï¿½Ìƒrï¿½bï¿½g  0ï¿½Å‹Ö~ 1ï¿½Å‹ï¿½ï¿½ï¿½
 enum {
-	SMPU_INTMASK_RSS		= 0x0001, // RSS Š„‚è‚İ
-	SMPU_INTMASK_RIR		= 0x0002, // RIR Š„‚è‚İ
-	SMPU_INTMASK_RSR		= 0x0004, // RSR Š„‚è‚İ
-	SMPU_INTMASK_RMR		= 0x0008, // RMR Š„‚è‚İ
-	SMPU_INTMASK_401		= 0x0010, // 401 Š„‚è‚İ
+	SMPU_INTMASK_RSS		= 0x0001, // RSS ï¿½ï¿½ï¿½èï¿½ï¿½
+	SMPU_INTMASK_RIR		= 0x0002, // RIR ï¿½ï¿½ï¿½èï¿½ï¿½
+	SMPU_INTMASK_RSR		= 0x0004, // RSR ï¿½ï¿½ï¿½èï¿½ï¿½
+	SMPU_INTMASK_RMR		= 0x0008, // RMR ï¿½ï¿½ï¿½èï¿½ï¿½
+	SMPU_INTMASK_401		= 0x0010, // 401 ï¿½ï¿½ï¿½èï¿½ï¿½
 	
 	SMPU_INTMASK_ALL		= 0x001f,
 };
@@ -127,6 +127,9 @@ static const UINT8 shortmsgleng[0x10] = {
 static const UINT8 hclk_step1[4][4] = {{0, 0, 0, 0}, {1, 0, 0, 0},
 									{1, 0, 1, 0}, {1, 1, 1, 0}};
 
+// XXX: æ ¹æ‹ ãªã—ã€€ã¨ã‚Šã‚ãˆãšå¤§ãã‚ã®å€¤ã«ã—ã¦ãŠã
+#define SMPU98_WRITEBUFFER	2048
+static int smpu98_writecounter = 0;
 
 static void makeintclock(void) {
 
@@ -210,11 +213,11 @@ static void setrecvdata(REG8 data) {
 // -------   for S-MPU Native Mode
 static void smpu98_writeimm_r(UINT16 dat) {
 	if(smpu98.native_immbuf_r_len < SMPU_IMMBUF_R_LEN){
-		// IMM READƒoƒbƒtƒ@‚É‘‚«‚İˆ—
+		// IMM READï¿½oï¿½bï¿½tï¿½@ï¿½Éï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İï¿½ï¿½ï¿½
 		smpu98.native_immbuf_r[smpu98.native_immbuf_r_len] = dat;
 		smpu98.native_immbuf_r_len++;
 		if(smpu98.native_immbuf_r_len >= SMPU_IMMBUF_R_LEN){
-			//smpu98.native_status |= SMPU_STATUS_IRR; // XXX: ‚±‚ê‚Å—Ç‚¢‚Ì‚©•ª‚©‚ç‚È‚¢
+			//smpu98.native_status |= SMPU_STATUS_IRR; // XXX: ï¿½ï¿½ï¿½ï¿½Å—Ç‚ï¿½ï¿½Ì‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½
 		}
 		if(smpu98.native_status & SMPU_STATUS_ISR){
 			smpu98.native_status &= ~SMPU_STATUS_ISR;
@@ -440,15 +443,39 @@ void smpu98_midiint(NEVENTITEM item) {
 void smpu98_midiwaitout(NEVENTITEM item) {
 
 //	TRACE_("midi ready", 0);
-	smpu98.status &= ~MIDIOUT_BUSY;
+	if (smpu98_writecounter > 0) {
+		smpu98_writecounter--;
+	}
+	if (smpu98_writecounter < SMPU98_WRITEBUFFER) {
+		// ã‚«ã‚¦ãƒ³ã‚¿ãŒãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚ˆã‚Šå°ã•ã„ãªã‚‰BUSYè§£é™¤
+		smpu98.status &= ~MIDIOUT_BUSY;
+	}
+	if (smpu98_writecounter > 0) {
+		// ã‚«ã‚¦ãƒ³ã‚¿ãŒ0ã«ãªã‚‹ã¾ã§å†ç™»éŒ²
+		nevent_set(NEVENT_MIDIWAIT, smpu98.xferclock, smpu98_midiwaitout, NEVENT_RELATIVE);
+	}
 	(void)item;
 }
 
 static void midiwait(SINT32 waitclock) {
 
-	if (!nevent_iswork(NEVENT_MIDIWAIT)) {
+	// è»¢é€ãŒå¤šã™ãã¦ãƒãƒƒãƒ•ã‚¡ã‚’æº¢ã‚Œã‚‹ã‚ˆã†ãªã‚‰BUSYã«å¤‰ãˆã‚‹
+	smpu98_writecounter += waitclock / smpu98.xferclock;
+	if (smpu98_writecounter > SMPU98_WRITEBUFFER) {
 		smpu98.status |= MIDIOUT_BUSY;
-		nevent_set(NEVENT_MIDIWAIT, waitclock, smpu98_midiwaitout, NEVENT_ABSOLUTE);
+	}
+	if (!nevent_iswork(NEVENT_MIDIWAIT)) {
+		nevent_set(NEVENT_MIDIWAIT, smpu98.xferclock, smpu98_midiwaitout, NEVENT_ABSOLUTE);
+	}
+}
+
+static void midicmdwait(SINT32 waitclock) {
+
+	// ä¸€å®šæ™‚é–“å¼·åˆ¶BUSY
+	smpu98_writecounter++;
+	smpu98.status |= MIDIOUT_BUSY;
+	if (!nevent_iswork(NEVENT_MIDIWAIT)) {
+		nevent_set(NEVENT_MIDIWAIT, smpu98.xferclock, smpu98_midiwaitout, NEVENT_ABSOLUTE);
 	}
 }
 
@@ -1127,7 +1154,7 @@ TRACEOUT(("smpu98 out %.4x %.2x", port, dat));
 				setrecvdata(MPUMSG_ACK);
 			}
 		}
-		midiwait(pccore.realclock / 10000);
+		midicmdwait(pccore.realclock / 10000);
 	}
 	(void)port;
 }
@@ -1216,11 +1243,11 @@ TRACEOUT(("smpu98 out %.4x %.2x", port, dat));
 	if (cm_smpu98[0]->connect != COMCONNECT_OFF && cm_smpu98[1]->connect != COMCONNECT_OFF) {
 		if((smpu98.native_status & SMPU_STATUS_IRR) == 0){
 			if(smpu98.native_immbuf_w_len < SMPU_IMMBUF_W_LEN){
-				// IMM‘‚«‚İˆ—
+				// IMMï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İï¿½ï¿½ï¿½
 				smpu98.native_immbuf_w[smpu98.native_immbuf_w_len] = dat;
 				smpu98.native_immbuf_w_len++;
 				if(smpu98.native_immbuf_w_len >= SMPU_IMMBUF_W_LEN){
-					//smpu98.native_status |= SMPU_STATUS_IRR; // XXX: ‚±‚ê‚Å—Ç‚¢‚Ì‚©•ª‚©‚ç‚È‚¢
+					//smpu98.native_status |= SMPU_STATUS_IRR; // XXX: ï¿½ï¿½ï¿½ï¿½Å—Ç‚ï¿½ï¿½Ì‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½
 				}
 			}
 		}
@@ -1242,11 +1269,11 @@ TRACEOUT(("smpu98 out %.4x %.2x", port, dat));
 	if (cm_smpu98[0]->connect != COMCONNECT_OFF && cm_smpu98[1]->connect != COMCONNECT_OFF) {
 		if((smpu98.native_status & SMPU_STATUS_SRR) == 0){
 			if(smpu98.native_seqbuf_w_len < SMPU_SEQBUF_W_LEN){
-				// SEQ‘‚«‚İˆ—
+				// SEQï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İï¿½ï¿½ï¿½
 				smpu98.native_seqbuf_w[smpu98.native_seqbuf_w_len] = dat;
 				smpu98.native_seqbuf_w_len++;
 				if(smpu98.native_seqbuf_w_len >= SMPU_SEQBUF_W_LEN){
-					//smpu98.native_status |= SMPU_STATUS_SRR; // XXX: ‚±‚ê‚Å—Ç‚¢‚Ì‚©•ª‚©‚ç‚È‚¢
+					//smpu98.native_status |= SMPU_STATUS_SRR; // XXX: ï¿½ï¿½ï¿½ï¿½Å—Ç‚ï¿½ï¿½Ì‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½
 				}
 			}
 		}
@@ -1271,14 +1298,14 @@ TRACEOUT(("smpu98 out %.4x %.2x", port, dat));
 		UINT8 *buf = smpu98.native_tmpbuf;
 		switch(dat){
 		case 1:
-			// IMMˆ—
+			// IMMï¿½ï¿½ï¿½ï¿½
 			while(smpu98.native_immbuf_w_pos < smpu98.native_immbuf_w_len){
 				UINT16 w1 = smpu98.native_immbuf_w[smpu98.native_immbuf_w_pos];
 				UINT8 msg = ((w1 >> 8) & 0xff);
 				if(msg & 0x80){
 					smpu98.native_lastmsg = msg;
 					if(msg==0xf7){
-						// F7(End of Exclusive)‚¾‚¯‘—‚é
+						// F7(End of Exclusive)ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 						sent += cm_smpu98[smpu98.native_portnum]->write(cm_smpu98[smpu98.native_portnum], (w1 >> 8) & 0xff);
 						smpu98.native_lastmsg = smpu98.native_runningmsg;
 					}else if(msg==0xef){
@@ -1287,35 +1314,35 @@ TRACEOUT(("smpu98 out %.4x %.2x", port, dat));
 						smpu98.native_portnum = (smpu98.native_linenum > 0xf ? 1 : 0);
 						smpu98.native_lastmsg = 0xf0;
 					}else if(0xf0 <= msg && msg <= 0xff){
-						// ƒ‰ƒCƒ“ƒiƒ“ƒo[‚ğí‚Á‚Ä‘—‚é
+						// ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½iï¿½ï¿½ï¿½oï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‘ï¿½ï¿½ï¿½
 						smpu98.native_linenum = (w1 & 0xff);
 						smpu98.native_portnum = (smpu98.native_linenum > 0xf ? 1 : 0);
 						sent += cm_smpu98[smpu98.native_portnum]->write(cm_smpu98[smpu98.native_portnum], (w1 >> 8) & 0xff);
 					}else if(msg & 0x0f){
-						// ‚Æ‚è‚ ‚¦‚¸–³‹
+						// ï¿½Æ‚è‚ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 						if(smpu98.native_lastmsg==0xf0){
-							// ƒ^ƒCƒ€ƒXƒ^ƒ“ƒv‚Æ‚©‚ğŠÔ‚É‹²‚ß‚é‚ç‚µ‚¢BContinue Exclusive‚ª‘—‚ç‚ê‚Ä‚«‚½‚çExclusive‘—MÄŠJ
+							// ï¿½^ï¿½Cï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½vï¿½Æ‚ï¿½ï¿½ï¿½ï¿½Ô‚É‹ï¿½ï¿½ß‚ï¿½ç‚µï¿½ï¿½ï¿½BContinue Exclusiveï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½Exclusiveï¿½ï¿½ï¿½Mï¿½ÄŠJ
 						}
 					}else{
-						// ch‚ğ“ü‚ê‚Ä‘—‚é
+						// chï¿½ï¿½ï¿½ï¿½ï¿½Ä‘ï¿½ï¿½ï¿½
 						smpu98.native_linenum = (w1 & 0xff);
 						smpu98.native_portnum = (smpu98.native_linenum > 0xf ? 1 : 0);
 						sent += cm_smpu98[smpu98.native_portnum]->write(cm_smpu98[smpu98.native_portnum], (w1 >> 8) & 0xf0 | (smpu98.native_linenum & 0xf));
 						smpu98.native_runningmsg = msg;
 					}
 				}else{
-					msg = smpu98.native_lastmsg; // ’¼‹ß‚ÌƒƒbƒZ[ƒW‚Ì‘±‚«
+					msg = smpu98.native_lastmsg; // ï¿½ï¿½ï¿½ß‚Ìƒï¿½ï¿½bï¿½Zï¿½[ï¿½Wï¿½Ì‘ï¿½ï¿½ï¿½
 					if(!(msg==0xf7) && !(0xf0 <= msg && msg <= 0xff || msg==0xef) && (msg & 0x0f)){
-						// ‚Æ‚è‚ ‚¦‚¸–³‹
+						// ï¿½Æ‚è‚ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 					}else{
 						switch(msg){
 						case 0xc0:
 						case 0xd0:
-							// 1byte–Ú‚¾‚¯‘—‚é
+							// 1byteï¿½Ú‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 							sent += cm_smpu98[smpu98.native_portnum]->write(cm_smpu98[smpu98.native_portnum], (w1 >> 8) & 0xff);
 							break;
 						default:
-							// ‚»‚Ì‚Ü‚Ü‘—‚é
+							// ï¿½ï¿½ï¿½Ì‚Ü‚Ü‘ï¿½ï¿½ï¿½
 							sent += cm_smpu98[smpu98.native_portnum]->write(cm_smpu98[smpu98.native_portnum], (w1 >> 8) & 0xff);
 							sent += cm_smpu98[smpu98.native_portnum]->write(cm_smpu98[smpu98.native_portnum], (w1     ) & 0xff);
 							if((w1 & 0xff) == 0xf7){
@@ -1329,7 +1356,7 @@ TRACEOUT(("smpu98 out %.4x %.2x", port, dat));
 			smpu98.native_immbuf_w_pos = smpu98.native_immbuf_w_len = 0;
 			break;
 		case 2:
-			// TODO: SEQˆ—
+			// TODO: SEQï¿½ï¿½ï¿½ï¿½
 			smpu98.native_seqbuf_w_pos = smpu98.native_seqbuf_w_len = 0;
 			break;
 		}
@@ -1376,7 +1403,7 @@ UINT16 IOINPCALL smpu98_i4(UINT port) {
 			if(smpu98.native_immbuf_r_pos >= smpu98.native_immbuf_r_len){
 				smpu98.native_status |= SMPU_STATUS_ISR;
 				smpu98.native_immbuf_r_pos = smpu98.native_immbuf_r_len = 0;
-				//smpu98.native_status &= ~SMPU_STATUS_IRR; // XXX: ‚±‚ê‚Å—Ç‚¢‚Ì‚©•ª‚©‚ç‚È‚¢
+				//smpu98.native_status &= ~SMPU_STATUS_IRR; // XXX: ï¿½ï¿½ï¿½ï¿½Å—Ç‚ï¿½ï¿½Ì‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½
 			}
 			smpu98.native_status &= ~SMPU_STATUS_RIR;
 		}
@@ -1406,7 +1433,7 @@ UINT16 IOINPCALL smpu98_i6(UINT port) {
 			if(smpu98.native_seqbuf_r_pos >= smpu98.native_seqbuf_r_len){
 				smpu98.native_status |= SMPU_STATUS_SSR;
 				smpu98.native_seqbuf_r_pos = smpu98.native_seqbuf_r_len = 0;
-				//smpu98.native_status &= ~SMPU_STATUS_SRR; // XXX: ‚±‚ê‚Å—Ç‚¢‚Ì‚©•ª‚©‚ç‚È‚¢
+				//smpu98.native_status &= ~SMPU_STATUS_SRR; // XXX: ï¿½ï¿½ï¿½ï¿½Å—Ç‚ï¿½ï¿½Ì‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½
 			}
 			smpu98.native_status &= ~SMPU_STATUS_RSR;
 		}
@@ -1547,7 +1574,7 @@ void smpu98_bind(void) {
 		iocore_attachout(port, smpu98_o2);
 		iocore_attachinp(port, smpu98_i2);
 
-		// for S-MPU Native Mode (16-bit I/Oƒ|[ƒg‚È‚Ì‚Åiocore.c‚Åˆ—)
+		// for S-MPU Native Mode (16-bit I/Oï¿½|ï¿½[ï¿½gï¿½È‚Ì‚ï¿½iocore.cï¿½Åï¿½ï¿½ï¿½)
 		//port += 2;
 		//iocore_attachout(port, smpu98_o4);
 		//iocore_attachinp(port, smpu98_i4);
@@ -1578,7 +1605,7 @@ void smpu98_bind(void) {
 			}
 		}
 	}else if(!mpu98.enable){
-		// MPU-PC98II‚àS-MPU‚à–³Œø‚Ì
+		// MPU-PC98IIï¿½ï¿½S-MPUï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìï¿½
 
 		// PC-9801-118
 		if(g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_118 || g_nSoundID == SOUNDID_PC_9801_118_SB16 || g_nSoundID == SOUNDID_PC_9801_86_118_SB16){
@@ -1586,7 +1613,7 @@ void smpu98_bind(void) {
 			iocore_attachinp(cs4231.port[10], smpu98_i0);
 			iocore_attachout(cs4231.port[10]+1, smpu98_o2);
 			iocore_attachinp(cs4231.port[10]+1, smpu98_i2);
-			// NULL‚Åì‚Á‚Ä‚¨‚­
+			// NULLï¿½Åï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
 			cm_smpu98[0] = commng_create(COMCREATE_NULL, FALSE);
 			cm_smpu98[1] = commng_create(COMCREATE_NULL, FALSE);
 		}
@@ -1595,7 +1622,7 @@ void smpu98_bind(void) {
 
 static void smpu98_callback_port(UINT8 dat, UINT8 port) {
 	if(smpu98.native_immread_phase[port] == 0){
-		// 1byte–Ú
+		// 1byteï¿½ï¿½
 		if(dat & 0x80){
 			smpu98.native_immread_lastmsg[port] = dat;
 			smpu98.native_immread_portbuf[port] = ((UINT16)dat) << 8;
@@ -1603,31 +1630,31 @@ static void smpu98_callback_port(UINT8 dat, UINT8 port) {
 				// F7(End of Exclusive)
 				smpu98_writeimm_r(smpu98.native_immread_portbuf[port]);
 			}else if(0xf0 <= dat && dat <= 0xff){
-				// ƒ‰ƒCƒ“ƒiƒ“ƒo[‚ğ“ü‚ê‚é
+				// ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½iï¿½ï¿½ï¿½oï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				smpu98.native_immread_portbuf[port] |= (port==0 ? 0x00 : 0x10);
 				smpu98_writeimm_r(smpu98.native_immread_portbuf[port]);
 			}else{
-				// ch‚ğƒ‰ƒCƒ“ƒiƒ“ƒo[‚É•ÏŠ·
-				smpu98.native_immread_portbuf[port] &= 0xf000; // ch‚ğÁ‚·
-				smpu98.native_immread_portbuf[port] |= (port==0 ? 0x00 : 0x10) | (dat & 0x0f); // ch¨ƒ‰ƒCƒ“ƒiƒ“ƒo[•ÏŠ·
+				// chï¿½ï¿½ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½iï¿½ï¿½ï¿½oï¿½[ï¿½É•ÏŠï¿½
+				smpu98.native_immread_portbuf[port] &= 0xf000; // chï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+				smpu98.native_immread_portbuf[port] |= (port==0 ? 0x00 : 0x10) | (dat & 0x0f); // chï¿½ï¿½ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½iï¿½ï¿½ï¿½oï¿½[ï¿½ÏŠï¿½
 				smpu98_writeimm_r(smpu98.native_immread_portbuf[port]);
 			}
 		}else{
-			UINT8 oldmsg = smpu98.native_immread_lastmsg[port]; // ’¼‹ß‚ÌƒƒbƒZ[ƒW‚Ì‘±‚«
+			UINT8 oldmsg = smpu98.native_immread_lastmsg[port]; // ï¿½ï¿½ï¿½ß‚Ìƒï¿½ï¿½bï¿½Zï¿½[ï¿½Wï¿½Ì‘ï¿½ï¿½ï¿½
 			smpu98.native_immread_portbuf[port] = ((UINT16)dat) << 8;
 			switch(oldmsg){
 			case 0xc0:
 			case 0xd0:
-				// 1byte‚¾‚¯i2byte–Ú‚Í0‚Åj
+				// 1byteï¿½ï¿½ï¿½ï¿½ï¿½i2byteï¿½Ú‚ï¿½0ï¿½Åj
 				smpu98_writeimm_r(smpu98.native_immread_portbuf[port]);
 				break;
 			default:
-				// 2byte–Ú‚ğ‘Ò‚Â
+				// 2byteï¿½Ú‚ï¿½Ò‚ï¿½
 				smpu98.native_immread_phase[port] = 1;
 			}
 		}
 	}else{
-		// 2byte–Ú
+		// 2byteï¿½ï¿½
 		smpu98.native_immread_portbuf[port] |= ((UINT16)dat);
 		smpu98_writeimm_r(smpu98.native_immread_portbuf[port]);
 		smpu98.native_immread_phase[port] = 0;
@@ -1642,7 +1669,7 @@ void smpu98_callback(void) {
 		if (cm_smpu98[0]) {
 			while((SMPU_IMMBUF_R_LEN < smpu98.native_immbuf_r_len) && (cm_smpu98[0]->read(cm_smpu98[0], &data))) {
 				smpu98_callback_port(data, 0);
-				// XXX: 401‚É‚à‘—‚Á‚Ä‚¨‚­
+				// XXX: 401ï¿½É‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
 				if (!smpu98.r.cnt) {
 					smpu98_int();
 				}
@@ -1679,7 +1706,8 @@ void smpu98_midipanic(void) {
 
 void smpu98_changeclock(void) {
 	
-	smpu98.xferclock = pccore.realclock / 3125;
+	smpu98.xferclock = pccore.realclock / (31250 / 8);
+
 	makeintclock();
 }
 

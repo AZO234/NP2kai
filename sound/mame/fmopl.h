@@ -1,3 +1,6 @@
+
+#ifndef USE_MAME_BSD
+
 #ifndef __FMOPL_H_
 #define __FMOPL_H_
 
@@ -109,3 +112,5 @@ void Y8950SetUpdateHandler (void *chip, OPL_UPDATEHANDLER UpdateHandler, void *p
 
 
 #endif /* __FMOPL_H_ */
+
+#endif 

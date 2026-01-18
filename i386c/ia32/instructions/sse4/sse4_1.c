@@ -149,7 +149,7 @@ static INLINE void SSE_PART_GETDATA1DATA2_PD(double **data1, double **data2, dou
 	SSE4_1_check_NM_EXCEPTION();
 	SSE4_1_setTag();
 	CPU_SSSE3WORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	*data1 = (double*)(&(FPU_STAT.xmm_reg[idx]));
@@ -178,7 +178,7 @@ static INLINE UINT32 SSE_PART_GETDATA1DATA2_PD_MODRM(double **data1, double **da
 	SSE4_1_check_NM_EXCEPTION();
 	SSE4_1_setTag();
 	CPU_SSSE3WORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	*data1 = (double*)(&(FPU_STAT.xmm_reg[idx]));
@@ -201,7 +201,7 @@ static INLINE void MMX_PART_GETDATA1DATA2_PD(float **data1, float **data2, float
 	SSE4_1_check_NM_EXCEPTION();
 	SSE4_1_setTag();
 	CPU_SSSE3WORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	*data1 = (float*)(&(FPU_STAT.reg[idx]));
@@ -659,13 +659,13 @@ void SSE4_1_PEXTRB(void)
 	SSE4_1_check_NM_EXCEPTION();
 	SSE4_1_setTag();
 	CPU_SSSE3WORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	data1 = (UINT8*)(&(FPU_STAT.xmm_reg[idx]));
 	GET_PCBYTE((op2));
 	if ((op) >= 0xc0) {
-		out = reg32_b20[op];
+		out = CPU_REG32_B20(op);
 		*out = (UINT32)(data1[op2&0xF]&0xFF);
 	} else {
 		maddr = calc_ea_dst((op));
@@ -692,13 +692,13 @@ void SSE4_1_PEXTRW(void)
 	SSE4_1_check_NM_EXCEPTION();
 	SSE4_1_setTag();
 	CPU_SSSE3WORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	data1 = (UINT16*)(&(FPU_STAT.xmm_reg[idx]));
 	GET_PCBYTE((op2));
 	if ((op) >= 0xc0) {
-		out = reg32_b20[op];
+		out = CPU_REG32_B20(op);
 		*out = (UINT32)(data1[op2&0x7]&0xFFFF);
 	} else {
 		maddr = calc_ea_dst((op));
@@ -725,13 +725,13 @@ void SSE4_1_PEXTRD(void)
 	SSE4_1_check_NM_EXCEPTION();
 	SSE4_1_setTag();
 	CPU_SSSE3WORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	data1 = (UINT32*)(&(FPU_STAT.xmm_reg[idx]));
 	GET_PCBYTE((op2));
 	if ((op) >= 0xc0) {
-		out = reg32_b20[op];
+		out = CPU_REG32_B20(op);
 		*out = (UINT32)(data1[op2&0x3]&0xFFFFFFFF);
 	} else {
 		maddr = calc_ea_dst((op));
@@ -758,13 +758,13 @@ void SSE4_1_PINSRB(void)
 	SSE4_1_check_NM_EXCEPTION();
 	SSE4_1_setTag();
 	CPU_SSSE3WORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	data1 = (UINT8*)(&(FPU_STAT.xmm_reg[idx]));
 	GET_PCBYTE((op2));
 	if ((op) >= 0xc0) {
-		out = reg32_b20[op];
+		out = CPU_REG32_B20(op);
 		data1[op2&0xF] = *out;
 	} else {
 		maddr = calc_ea_dst((op));
@@ -791,13 +791,13 @@ void SSE4_1_PINSRW(void)
 	SSE4_1_check_NM_EXCEPTION();
 	SSE4_1_setTag();
 	CPU_SSSE3WORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	data1 = (UINT16*)(&(FPU_STAT.xmm_reg[idx]));
 	GET_PCBYTE((op2));
 	if ((op) >= 0xc0) {
-		out = reg32_b20[op];
+		out = CPU_REG32_B20(op);
 		data1[op2&0x7] = *out;
 	} else {
 		maddr = calc_ea_dst((op));
@@ -824,13 +824,13 @@ void SSE4_1_PINSRD(void)
 	SSE4_1_check_NM_EXCEPTION();
 	SSE4_1_setTag();
 	CPU_SSSE3WORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	data1 = (UINT32*)(&(FPU_STAT.xmm_reg[idx]));
 	GET_PCBYTE((op2));
 	if ((op) >= 0xc0) {
-		out = reg32_b20[op];
+		out = CPU_REG32_B20(op);
 		data1[op2&0x3] = *out;
 	} else {
 		maddr = calc_ea_dst((op));
@@ -855,7 +855,7 @@ void SSE4_1_PEXTRACTPS(void)
 	SSE4_1_check_NM_EXCEPTION();
 	SSE4_1_setTag();
 	CPU_SSSE3WORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -869,7 +869,7 @@ void SSE4_1_PEXTRACTPS(void)
 	GET_PCBYTE((op2));
 
 	if (op >= 0xc0) {
-		out = reg32_b20[op];
+		out = CPU_REG32_B20(op);
 		*out = data2[op2&0x3] & 0xFFFFFFFF;
 	} else {
 		maddr = calc_ea_dst((op));
@@ -887,7 +887,7 @@ void SSE4_1_INSERTPS(void)
 	UINT32 op;
 	UINT32 tmp = SSE_PART_GETDATA1DATA2_PD_MODRM((double**)(&data1), (double**)(&data2), (double*)data2buf);
 
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	data1[(op>>4)&3] = data2[(tmp >= 0xc0) ? ((op>>6)&3) : 0];
 	for(i=0;i<4;i++){
 		if (op & (1 << i)){
@@ -907,7 +907,7 @@ void SSE4_1_DPPS(void)
 	UINT32 op;
 	SSE_PART_GETDATA1DATA2_PD((double**)(&data1), (double**)(&data2), (double*)data2buf);
 
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	for(i=0;i<4;i++){
 		if (op&(1 << (i + 4))){
 			tmpsinedcalc += data1[i] * data2[i];
@@ -929,7 +929,7 @@ void SSE4_1_DPPD(void)
 	UINT32 op;
 	SSE_PART_GETDATA1DATA2_PD((double**)(&data1), (double**)(&data2), (double*)data2buf);
 
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	for(i=0;i<2;i++){
 		if (op&(1 << (i + 4))){
 			tmpsinedcalc += data1[i] * data2[i];
@@ -952,7 +952,7 @@ void SSE4_1_MPSADBW(void)
 	UINT32 op;
 	SSE_PART_GETDATA1DATA2_PD((double**)(&data1), (double**)(&data2), (double*)data2buf);
 
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	for(i=0;i<11;i++){
 		tmpsinedcalcb[i] = data1[((op >> 2) & 1)*4 + i];
 	}
@@ -975,7 +975,7 @@ void SSE4_1_ROUNDPS(void)
 	UINT32 op;
 	SSE_PART_GETDATA1DATA2_PD((double**)(&data1), (double**)(&data2), (double*)data2buf);
 
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	for(i=0;i<4;i++){
 		switch ((op & 4) ? ((CPU_MXCSR >> 13) & 3) : (op & 3)){
 			case 0:
@@ -1004,7 +1004,7 @@ void SSE4_1_ROUNDPD(void)
 	UINT32 op;
 	SSE_PART_GETDATA1DATA2_PD((double**)(&data1), (double**)(&data2), (double*)data2buf);
 
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	for(i=0;i<2;i++){
 		switch ((op & 4) ? ((CPU_MXCSR >> 13) & 3) : (op & 3)){
 			case 0:
@@ -1031,7 +1031,7 @@ void SSE4_1_ROUNDSS(void)
 	UINT32 op;
 	SSE_PART_GETDATA1DATA2_PD((double**)(&data1), (double**)(&data2), (double*)data2buf);
 
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	switch ((op & 4) ? ((CPU_MXCSR >> 13) & 3) : (op & 3)){
 		case 0:
 			data1[0] = NEARBYINTF(data2[0]);
@@ -1056,7 +1056,7 @@ void SSE4_1_ROUNDSD(void)
 	UINT32 op;
 	SSE_PART_GETDATA1DATA2_PD((double**)(&data1), (double**)(&data2), (double*)data2buf);
 
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	switch ((op & 4) ? ((CPU_MXCSR >> 13) & 3) : (op & 3)){
 		case 0:
 			data1[0] = NEARBYINT(data2[0]);
@@ -1083,7 +1083,7 @@ void SSE4_1_PBLENDPS(void)
 	UINT32 op;
 	SSE_PART_GETDATA1DATA2_PD((double**)(&data1), (double**)(&data2), (double*)data2buf);
 
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	for(i=0;i<4;i++){
 		if (op & (1 << i)){
 			data1[i] = data2[i];
@@ -1101,7 +1101,7 @@ void SSE4_1_PBLENDPD(void)
 	UINT32 op;
 	SSE_PART_GETDATA1DATA2_PD((double**)(&data1), (double**)(&data2), (double*)data2buf);
 
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	for(i=0;i<2;i++){
 		if (op & (1 << i)){
 			data1[i] = data2[i];
@@ -1119,7 +1119,7 @@ void SSE4_1_PBLENDW(void)
 	UINT32 op;
 	SSE_PART_GETDATA1DATA2_PD((double**)(&data1), (double**)(&data2), (double*)data2buf);
 
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	for(i=0;i<8;i++){
 		if (op & (1 << i)){
 			data1[i] = data2[i];

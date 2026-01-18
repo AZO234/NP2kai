@@ -1,3 +1,6 @@
+
+#ifndef USE_MAME_BSD
+
 #ifndef YMF262_H
 #define YMF262_H
 
@@ -39,7 +42,7 @@ typedef void (*OPL3_UPDATEHANDLER)(void *param,int min_interval_us);
 
 void *YMF262Init(int clock, int rate);
 void YMF262Shutdown(void *chip);
-void YMF262ResetChip(void *chip);
+void YMF262ResetChip(void *chip, int samplerate);
 int  YMF262Write(void *chip, int a, int v);
 unsigned char YMF262Read(void *chip, int a);
 int  YMF262TimerOver(void *chip, int c);
@@ -53,3 +56,5 @@ void YMF262SetUpdateHandler(void *chip, OPL3_UPDATEHANDLER UpdateHandler, void *
 
 
 #endif /* YMF262_H */
+
+#endif

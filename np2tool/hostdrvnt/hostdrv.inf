@@ -1,0 +1,46 @@
+[Version]
+Signature="$Windows NT$"
+Class=LegacyDriver
+Provider=%ProviderName%
+DriverVer=05/05/2025,1.2.0.0
+
+[DestinationDirs]
+DefaultDestDir = 12 ; system32\drivers
+NP2HostDrive.CopyToSys32 = 11 ; system32
+
+[DefaultInstall]
+CopyFiles=NP2HostDrive.Copy, NP2HostDrive.CopyToSys32
+AddReg=NP2HostDrive.AddReg
+
+[NP2HostDrive.Copy]
+hostdrv.sys
+
+[NP2HostDrive.CopyToSys32]
+hdrvmnt.exe
+
+[NP2HostDrive.AddReg]
+HKLM,"System\CurrentControlSet\Services\hostdrv","Type",0x00010001,1
+HKLM,"System\CurrentControlSet\Services\hostdrv","Start",0x00010001,2
+HKLM,"System\CurrentControlSet\Services\hostdrv","ErrorControl",0x00010001,1
+HKLM,"System\CurrentControlSet\Services\hostdrv","ImagePath",0x00020000,"system32\drivers\hostdrv.sys"
+HKLM,"System\CurrentControlSet\Services\hostdrv","DisplayName",0x00000000,"Neko Project II Host Drive"
+HKLM,"System\CurrentControlSet\Services\hostdrv","IsDiskDevice",0x00010001,0
+HKLM,"System\CurrentControlSet\Services\hostdrv","IsRemovableDevice",0x00010001,0
+HKLM,"System\CurrentControlSet\Services\hostdrv","UseRealCapacity",0x00010001,0
+HKLM,"System\CurrentControlSet\Services\hostdrv","UseCheckNotify",0x00010001,0
+HKLM,"System\CurrentControlSet\Services\hostdrv","CheckNotifyInterval",0x00010001,0
+HKLM,"System\CurrentControlSet\Services\hostdrv","AutoMount",0x00010001,1
+HKLM,"System\CurrentControlSet\Services\hostdrv","AutoMountDriveLetter",0x00000000,"Auto"
+
+[SourceDisksNames]
+1=%DiskName%,,,
+
+[SourceDisksFiles]
+hostdrv.sys=1
+hdrvmnt.exe=1
+
+[Strings]
+ProviderName="ねこさん開発ちーむ"
+MfgName="Neko Project II"
+NP2HostDrive.DeviceDesc="Neko Project II ホスト共有ドライブ"
+DiskName="Neko Project II ユーティリティディスク"

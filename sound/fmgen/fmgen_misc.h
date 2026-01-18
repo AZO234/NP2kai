@@ -4,6 +4,9 @@
 // ---------------------------------------------------------------------------
 //	$Id: misc.h,v 1.5 2002/05/31 09:45:20 cisc Exp $
 
+#pragma once
+#if defined(SUPPORT_FMGEN)
+
 #ifndef MISC_H
 #define MISC_H
 
@@ -66,4 +69,6 @@ T bessel0(T x)
 
 
 #endif // MISC_H
+
+#endif	/* SUPPORT_FMGEN */
 

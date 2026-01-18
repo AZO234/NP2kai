@@ -67,6 +67,8 @@ Revision History:
         verify volume of the FM part on the Y8950
 */
 
+#ifndef USE_MAME_BSD
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -2478,3 +2480,4 @@ void Y8950SetKeyboardHandler(void *chip,OPL_PORTHANDLER_W KeyboardHandler_w,OPL_
 
 #endif
 
+#endif

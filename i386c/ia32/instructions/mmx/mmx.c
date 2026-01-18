@@ -112,11 +112,11 @@ void MMX_MOVD_mm_rm32(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
-		(src) = *(reg32_b20[(op)]);
+		(src) = *(CPU_REG32_B20(op));
 	} else {
 		UINT32 maddr;
 		maddr = calc_ea_dst((op));
@@ -133,12 +133,12 @@ void MMX_MOVD_rm32_mm(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	src = FPU_STAT.reg[idx].ul.lower;
 	if (op >= 0xc0) {
-		*(reg32_b20[op]) = src;
+		*(CPU_REG32_B20(op)) = src;
 	} else {
 		madr = calc_ea_dst(op);
 		cpu_vmemorywrite_d(CPU_INST_SEGREG_INDEX, madr, src);
@@ -153,7 +153,7 @@ void MMX_MOVQ_mm_mmm64(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -174,7 +174,7 @@ void MMX_MOVQ_mmm64_mm(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -205,7 +205,7 @@ void MMX_PACKSSWB(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -257,7 +257,7 @@ void MMX_PACKSSDW(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -310,7 +310,7 @@ void MMX_PACKUSWB(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -363,7 +363,7 @@ void MMX_PADDB(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -393,7 +393,7 @@ void MMX_PADDW(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -423,7 +423,7 @@ void MMX_PADDD(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -454,7 +454,7 @@ void MMX_PADDSB(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -491,7 +491,7 @@ void MMX_PADDSW(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -529,7 +529,7 @@ void MMX_PADDUSB(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -564,7 +564,7 @@ void MMX_PADDUSW(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -601,7 +601,7 @@ void MMX_PAND(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -629,7 +629,7 @@ void MMX_PANDN(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -659,7 +659,7 @@ void MMX_POR(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -687,7 +687,7 @@ void MMX_PXOR(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -719,7 +719,7 @@ void MMX_PCMPEQB(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -753,7 +753,7 @@ void MMX_PCMPEQW(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -764,7 +764,7 @@ void MMX_PCMPEQW(void)
 		srcregbuf.d[0] = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr);
 		srcregbuf.d[1] = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, maddr + 4);
 		srcreg = srcregbuf.w;
-}
+	}
 	dstreg = (UINT16*)(&(FPU_STAT.reg[idx]));
 	
 	for(i=0;i<4;i++){
@@ -787,7 +787,7 @@ void MMX_PCMPEQD(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -824,7 +824,7 @@ void MMX_PCMPGTB(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -858,7 +858,7 @@ void MMX_PCMPGTW(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -892,7 +892,7 @@ void MMX_PCMPGTD(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -929,7 +929,7 @@ void MMX_PMADDWD(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -963,7 +963,7 @@ void MMX_PMULHW(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -993,7 +993,7 @@ void MMX_PMULLW(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -1024,7 +1024,7 @@ void MMX_PSLLW(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -1054,7 +1054,7 @@ void MMX_PSLLD(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -1083,7 +1083,7 @@ void MMX_PSLLQ(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -1115,7 +1115,7 @@ void MMX_PSRAW(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -1156,7 +1156,7 @@ void MMX_PSRAD(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -1198,7 +1198,7 @@ void MMX_PSRLW(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -1228,7 +1228,7 @@ void MMX_PSRLD(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -1257,7 +1257,7 @@ void MMX_PSRLQ(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -1288,11 +1288,11 @@ void MMX_PSxxW_imm8(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	dstreg = (UINT16*)(&(FPU_STAT.reg[sub]));
-	GET_PCBYTE((shift));
+	GET_MODRM_PCBYTE((shift));
 	
 	switch(idx){
 	case 2: // PSRLW(imm8)
@@ -1337,11 +1337,11 @@ void MMX_PSxxD_imm8(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	dstreg = (UINT32*)(&(FPU_STAT.reg[sub]));
-	GET_PCBYTE((shift));
+	GET_MODRM_PCBYTE((shift));
 	
 	switch(idx){
 	case 2: // PSRLD(imm8)
@@ -1384,11 +1384,11 @@ void MMX_PSxxQ_imm8(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	dstreg = (UINT64*)(&(FPU_STAT.reg[sub]));
-	GET_PCBYTE((shift));
+	GET_MODRM_PCBYTE((shift));
 	
 	switch(idx){
 	case 2: // PSRLQ(imm8)
@@ -1419,7 +1419,7 @@ void MMX_PSUBB(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -1449,7 +1449,7 @@ void MMX_PSUBW(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -1479,7 +1479,7 @@ void MMX_PSUBD(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -1510,7 +1510,7 @@ void MMX_PSUBSB(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -1547,7 +1547,7 @@ void MMX_PSUBSW(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -1585,7 +1585,7 @@ void MMX_PSUBUSB(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -1622,7 +1622,7 @@ void MMX_PSUBUSW(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -1663,7 +1663,7 @@ void MMX_PUNPCKHBW(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -1698,7 +1698,7 @@ void MMX_PUNPCKHWD(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -1732,7 +1732,7 @@ void MMX_PUNPCKHDQ(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -1764,7 +1764,7 @@ void MMX_PUNPCKLBW(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -1799,7 +1799,7 @@ void MMX_PUNPCKLWD(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -1833,7 +1833,7 @@ void MMX_PUNPCKLDQ(void)
 	MMX_check_NM_EXCEPTION();
 	MMX_setTag();
 	CPU_MMXWORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {

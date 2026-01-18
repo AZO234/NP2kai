@@ -389,6 +389,11 @@ void IOOUTCALL cs4231io0_w8(UINT port, REG8 value) {
 					else dmac_attach(DMADEV_NONE, 0);
 				}
 				dmac_attach(DMADEV_CS4231, cs4231.dmach); // CS4231のDMAチャネルを割り当て
+				// DMA読み取り位置を戻す
+				{
+					DMACH dmach = dmac.dmach + cs4231.dmach;
+					dmach->adrs.d = dmach->startaddr;
+				}
 #if 0
 				if (cs4231.reg.iface & SDC) {
 					dmac.dmach[cs4231.dmach].ready = 1;

@@ -32,12 +32,25 @@
 #include <i386hax/haxcore.h>
 #endif
 
+#if defined(USE_CPU_EIPMASK)
+UINT32		cpu_eipMask;
+#endif
 I386CORE	i386core;
+#if defined(USE_CPU_MODRMPREFETCH)
+UINT32		opCache;
+#endif
+UINT8   *reg8_b20[0x100];
+UINT8   *reg8_b53[0x100];
+#if !defined(USE_CPU_DIRECTREG)
+UINT16	*reg16_b20[0x100];
+UINT16	*reg16_b53[0x100];
+UINT32	*reg32_b20[0x100];
+UINT32	*reg32_b53[0x100];
+#endif
 I386CPUID	i386cpuid = {I386CPUID_VERSION, CPU_VENDOR, CPU_FAMILY, CPU_MODEL, CPU_STEPPING, CPU_FEATURES, CPU_FEATURES_EX, CPU_BRAND_STRING, CPU_BRAND_ID, CPU_FEATURES_ECX, CPU_EFLAGS_MASK};
 I386MSR		i386msr = {0};
 
-UINT8	*reg8_b20[0x100];
-UINT8	*reg8_b53[0x100];
+
 UINT16	*reg16_b20[0x100];
 UINT16	*reg16_b53[0x100];
 UINT32	*reg32_b20[0x100];
@@ -73,6 +86,7 @@ ia32_init(void)
 			reg8_b20[i] = &CPU_REGS_BYTEL(i & 3);
 		}
 
+#if !defined(USE_CPU_DIRECTREG)
 		/* 16bit */
 		reg16_b53[i] = &CPU_REGS_WORD((i >> 3) & 7);
 		reg16_b20[i] = &CPU_REGS_WORD(i & 7);
@@ -80,6 +94,7 @@ ia32_init(void)
 		/* 32bit */
 		reg32_b53[i] = &CPU_REGS_DWORD((i >> 3) & 7);
 		reg32_b20[i] = &CPU_REGS_DWORD(i & 7);
+#endif
 	}
 
 	resolve_init();
@@ -208,6 +223,9 @@ change_pm(BOOL onoff)
 	CPU_INST_OP32 = CPU_INST_AS32 =
 	    CPU_STATSAVE.cpu_inst_default.op_32 = 
 	    CPU_STATSAVE.cpu_inst_default.as_32 = 0;
+#if defined(USE_CPU_EIPMASK)
+	CPU_EIPMASK = 0xffff;
+#endif
 	CPU_STAT_SS32 = 0;
 	set_cpl(0);
 	CPU_STAT_PM = onoff;
@@ -240,6 +258,9 @@ change_vm(BOOL onoff)
 		CPU_INST_OP32 = CPU_INST_AS32 =
 		    CPU_STATSAVE.cpu_inst_default.op_32 =
 		    CPU_STATSAVE.cpu_inst_default.as_32 = 0;
+#if defined(USE_CPU_EIPMASK)
+		CPU_EIPMASK = 0xffff;
+#endif
 		CPU_STAT_SS32 = 0;
 		set_cpl(3);
 	} else {

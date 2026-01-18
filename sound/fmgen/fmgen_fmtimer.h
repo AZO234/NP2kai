@@ -4,6 +4,9 @@
 // ---------------------------------------------------------------------------
 //	$Id: fmtimer.h,v 1.2 2003/04/22 13:12:53 cisc Exp $
 
+#pragma once
+#if defined(SUPPORT_FMGEN)
+
 #ifndef FM_TIMER_H
 #define FM_TIMER_H
 
@@ -65,3 +68,5 @@ inline void Timer::Reset()
 } // namespace FM
 
 #endif // FM_TIMER_H
+
+#endif	/* SUPPORT_FMGEN */

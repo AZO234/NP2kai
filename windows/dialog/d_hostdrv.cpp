@@ -1,20 +1,23 @@
 /**
  * @file	d_hostdrv.cpp
- * @brief	HOSTDRV Ë®≠ÂÆö„ÉÄ„Ç§„Ç¢„É≠„Ç∞
+ * @brief	HOSTDRV ê›íËÉ_ÉCÉAÉçÉO
  */
 
-#include <compiler.h>
+#include "compiler.h"
 #include "resource.h"
 #include "dialog.h"
 #include "c_combodata.h"
-#include <np2.h>
-#include <commng.h>
-#include <sysmng.h>
+#include "np2.h"
+#include "commng.h"
+#include "sysmng.h"
 #include "misc/DlgProc.h"
-#include <pccore.h>
-#include <common/strres.h>
-#include <generic/hostdrv.h>
-#include <ini.h>
+#include "pccore.h"
+#include "common/strres.h"
+#include "hostdrv.h"
+#if defined(SUPPORT_HOSTDRVNT)
+#include "hostdrvNT.h"
+#endif
+#include "ini.h"
 
 #include <shlobj.h>
 
@@ -42,8 +45,8 @@ int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpDa
 }
 
 /**
- * @brief HOSTDRV Ë®≠ÂÆö„ÉÄ„Ç§„Ç¢„É≠„Ç∞
- * @param[in] hwndParent Ë¶™„Ç¶„Ç£„É≥„Éâ„Ç¶
+ * @brief HOSTDRV ê›íËÉ_ÉCÉAÉçÉO
+ * @param[in] hwndParent êeÉEÉBÉìÉhÉE
  */
 class CHostdrvDlg : public CDlgProc
 {
@@ -57,19 +60,21 @@ protected:
 	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	UINT8 m_hdrvenable;			//!< ÊúâÂäπ
-	TCHAR m_hdrvroot[MAX_PATH];	//!< ÂÖ±Êúâ„Éá„Ç£„É¨„ÇØ„Éà„É™
-	UINT8 m_hdrvacc;			//!< „Ç¢„ÇØ„Çª„ÇπÊ®©Èôê
+	UINT8 m_hdrvenable;			//!< óLå¯
+	TCHAR m_hdrvroot[MAX_PATH];	//!< ã§óLÉfÉBÉåÉNÉgÉä
+	UINT8 m_hdrvacc;			//!< ÉAÉNÉZÉXå†å¿
+	UINT8 m_hdrvNTenable;		//!< NTóLå¯
 	CWndProc m_chkenabled;		//!< Enabled
-	CComboData m_cmbdir;			//!< Shared Directory
+	CComboData m_cmbdir;		//!< Shared Directory
 	CWndProc m_chkread;			//!< Permission: Read
 	CWndProc m_chkwrite;		//!< Permission: Write
 	CWndProc m_chkdelete;		//!< Permission: Delete
+	CWndProc m_chkNTenabled;	//!< Enabled NT
 };
 
 /**
- * „Ç≥„É≥„Çπ„Éà„É©„ÇØ„Çø
- * @param[in] hwndParent Ë¶™„Ç¶„Ç£„É≥„Éâ„Ç¶
+ * ÉRÉìÉXÉgÉâÉNÉ^
+ * @param[in] hwndParent êeÉEÉBÉìÉhÉE
  */
 CHostdrvDlg::CHostdrvDlg(HWND hwndParent)
 	: CDlgProc(IDD_HOSTDRV, hwndParent)
@@ -77,9 +82,9 @@ CHostdrvDlg::CHostdrvDlg(HWND hwndParent)
 }
 
 /**
- * „Åì„ÅÆ„É°„ÇΩ„ÉÉ„Éâ„ÅØ WM_INITDIALOG „ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„Å´ÂøúÁ≠î„Åó„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @retval TRUE ÊúÄÂàù„ÅÆ„Ç≥„É≥„Éà„É≠„Éº„É´„Å´ÂÖ•Âäõ„Éï„Ç©„Éº„Ç´„Çπ„ÇíË®≠ÂÆö
- * @retval FALSE Êó¢„Å´Ë®≠ÂÆöÊ∏à
+ * Ç±ÇÃÉÅÉ\ÉbÉhÇÕ WM_INITDIALOG ÇÃÉÅÉbÉZÅ[ÉWÇ…âûìöÇµÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @retval TRUE ç≈èâÇÃÉRÉìÉgÉçÅ[ÉãÇ…ì¸óÕÉtÉHÅ[ÉJÉXÇê›íË
+ * @retval FALSE ä˘Ç…ê›íËçœ
  */
 BOOL CHostdrvDlg::OnInitDialog()
 {
@@ -87,6 +92,7 @@ BOOL CHostdrvDlg::OnInitDialog()
 	hostdrv_setcurrentpath(m_hdrvroot);
 	m_hdrvacc = np2cfg.hdrvacc;
 	m_hdrvenable = np2cfg.hdrvenable;
+	m_hdrvNTenable = np2cfg.hdrvntenable;
 	
 	m_chkenabled.SubclassDlgItem(IDC_HOSTDRVENABLE, this);
 	if(m_hdrvenable)
@@ -119,13 +125,20 @@ BOOL CHostdrvDlg::OnInitDialog()
 	else
 		m_chkdelete.SendMessage(BM_SETCHECK , BST_UNCHECKED , 0);
 
+	m_chkNTenabled.SubclassDlgItem(IDC_HOSTDRVNTENABLE, this);
+	if (m_hdrvNTenable)
+		m_chkNTenabled.SendMessage(BM_SETCHECK, BST_CHECKED, 0);
+	else
+		m_chkNTenabled.SendMessage(BM_SETCHECK, BST_UNCHECKED, 0);
+
+
 	m_cmbdir.SetFocus();
 
 	return FALSE;
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå OK „ÅÆ„Éú„Çø„É≥ (IDOK ID „Åå„ÅÆ„Éú„Çø„É≥) „Çí„ÇØ„É™„ÉÉ„ÇØ„Åô„Çã„Å®Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
+ * ÉÜÅ[ÉUÅ[Ç™ OK ÇÃÉ{É^Éì (IDOK ID Ç™ÇÃÉ{É^Éì) ÇÉNÉäÉbÉNÇ∑ÇÈÇ∆åƒÇ—èoÇ≥ÇÍÇ‹Ç∑
  */
 void CHostdrvDlg::OnOK()
 {
@@ -134,13 +147,17 @@ void CHostdrvDlg::OnOK()
 	//TCHAR numbuf[31];
 	
 	hostdrv_setcurrentpath(m_hdrvroot);
-	if (m_hdrvenable!=np2cfg.hdrvenable || _tcscmp(np2cfg.hdrvroot, m_hdrvroot)!=0 || m_hdrvacc!=np2cfg.hdrvacc)
+	if (m_hdrvenable!=np2cfg.hdrvenable || m_hdrvNTenable != np2cfg.hdrvntenable || _tcscmp(np2cfg.hdrvroot, m_hdrvroot)!=0 || m_hdrvacc!=np2cfg.hdrvacc)
 	{
 		np2cfg.hdrvenable = m_hdrvenable;
+		np2cfg.hdrvntenable = m_hdrvNTenable;
 		_tcscpy(np2cfg.hdrvroot, m_hdrvroot);
 		np2cfg.hdrvacc = m_hdrvacc;
 		update |= SYS_UPDATECFG;
 	}
+#if defined(SUPPORT_HOSTDRVNT)
+	hostdrvNT_updateHDrvRoot();
+#endif
 
 	sysmng_update(update);
 
@@ -148,10 +165,10 @@ void CHostdrvDlg::OnOK()
 }
 
 /**
- * „É¶„Éº„Ç∂„Éº„Åå„É°„Éã„É•„Éº„ÅÆÈ†ÖÁõÆ„ÇíÈÅ∏Êäû„Åó„Åü„Å®„Åç„Å´„ÄÅ„Éï„É¨„Éº„É†„ÉØ„Éº„ÇØ„Å´„Çà„Å£„Å¶Âëº„Å≥Âá∫„Åï„Çå„Åæ„Åô
- * @param[in] wParam „Éë„É©„É°„Çø
- * @param[in] lParam „Éë„É©„É°„Çø
- * @retval TRUE „Ç¢„Éó„É™„Ç±„Éº„Ç∑„Éß„É≥„Åå„Åì„ÅÆ„É°„ÉÉ„Çª„Éº„Ç∏„ÇíÂá¶ÁêÜ„Åó„Åü
+ * ÉÜÅ[ÉUÅ[Ç™ÉÅÉjÉÖÅ[ÇÃçÄñ⁄ÇëIëÇµÇΩÇ∆Ç´Ç…ÅAÉtÉåÅ[ÉÄÉèÅ[ÉNÇ…ÇÊÇ¡ÇƒåƒÇ—èoÇ≥ÇÍÇ‹Ç∑
+ * @param[in] wParam ÉpÉâÉÅÉ^
+ * @param[in] lParam ÉpÉâÉÅÉ^
+ * @retval TRUE ÉAÉvÉäÉPÅ[ÉVÉáÉìÇ™Ç±ÇÃÉÅÉbÉZÅ[ÉWÇèàóùÇµÇΩ
  */
 BOOL CHostdrvDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -253,16 +270,20 @@ BOOL CHostdrvDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 			m_hdrvacc = (m_hdrvacc & ~HDFMODE_DELETE);
 			m_hdrvacc |= (m_chkdelete.SendMessage(BM_GETCHECK , 0 , 0) ? HDFMODE_DELETE : 0);
 			return TRUE;
+
+		case IDC_HOSTDRVNTENABLE:
+			m_hdrvNTenable = (UINT8)m_chkNTenabled.SendMessage(BM_GETCHECK, 0, 0);
+			return TRUE;
 	}
 	return FALSE;
 }
 
 /**
- * CWndProc „Ç™„Éñ„Ç∏„Çß„ÇØ„Éà„ÅÆ Windows „Éó„É≠„Ç∑„Éº„Ç∏„É£ (WindowProc) „ÅåÁî®ÊÑè„Åï„Çå„Å¶„ÅÑ„Åæ„Åô
- * @param[in] nMsg Âá¶ÁêÜ„Åï„Çå„Çã Windows „É°„ÉÉ„Çª„Éº„Ç∏„ÇíÊåáÂÆö„Åó„Åæ„Åô
- * @param[in] wParam „É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÂá¶ÁêÜ„Åß‰Ωø„ÅÜ‰ªòÂä†ÊÉÖÂ†±„ÇíÊèê‰æõ„Åó„Åæ„Åô„ÄÇ„Åì„ÅÆ„Éë„É©„É°„Éº„Çø„ÅÆÂÄ§„ÅØ„É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åó„Åæ„Åô
- * @param[in] lParam „É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÂá¶ÁêÜ„Åß‰Ωø„ÅÜ‰ªòÂä†ÊÉÖÂ†±„ÇíÊèê‰æõ„Åó„Åæ„Åô„ÄÇ„Åì„ÅÆ„Éë„É©„É°„Éº„Çø„ÅÆÂÄ§„ÅØ„É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åó„Åæ„Åô
- * @return „É°„ÉÉ„Çª„Éº„Ç∏„Å´‰æùÂ≠ò„Åô„ÇãÂÄ§„ÇíËøî„Åó„Åæ„Åô
+ * CWndProc ÉIÉuÉWÉFÉNÉgÇÃ Windows ÉvÉçÉVÅ[ÉWÉÉ (WindowProc) Ç™ópà”Ç≥ÇÍÇƒÇ¢Ç‹Ç∑
+ * @param[in] nMsg èàóùÇ≥ÇÍÇÈ Windows ÉÅÉbÉZÅ[ÉWÇéwíËÇµÇ‹Ç∑
+ * @param[in] wParam ÉÅÉbÉZÅ[ÉWÇÃèàóùÇ≈égÇ§ïtâ¡èÓïÒÇíÒãüÇµÇ‹Ç∑ÅBÇ±ÇÃÉpÉâÉÅÅ[É^ÇÃílÇÕÉÅÉbÉZÅ[ÉWÇ…àÀë∂ÇµÇ‹Ç∑
+ * @param[in] lParam ÉÅÉbÉZÅ[ÉWÇÃèàóùÇ≈égÇ§ïtâ¡èÓïÒÇíÒãüÇµÇ‹Ç∑ÅBÇ±ÇÃÉpÉâÉÅÅ[É^ÇÃílÇÕÉÅÉbÉZÅ[ÉWÇ…àÀë∂ÇµÇ‹Ç∑
+ * @return ÉÅÉbÉZÅ[ÉWÇ…àÀë∂Ç∑ÇÈílÇï‘ÇµÇ‹Ç∑
  */
 LRESULT CHostdrvDlg::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -270,8 +291,8 @@ LRESULT CHostdrvDlg::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * „Ç≥„É≥„Éï„Ç£„Ç∞ „ÉÄ„Ç§„Ç¢„É≠„Ç∞
- * @param[in] hwndParent Ë¶™„Ç¶„Ç£„É≥„Éâ„Ç¶
+ * ÉRÉìÉtÉBÉO É_ÉCÉAÉçÉO
+ * @param[in] hwndParent êeÉEÉBÉìÉhÉE
  */
 void dialog_hostdrvopt(HWND hwndParent)
 {
@@ -280,11 +301,11 @@ void dialog_hostdrvopt(HWND hwndParent)
 }
 
 
-//! „Çø„Ç§„Éà„É´
+//! É^ÉCÉgÉã
 static const TCHAR s_hostdrvapp[] = TEXT("NP2 hostdrv");
 
 /**
- * Ë®≠ÂÆö
+ * ê›íË
  */
 static const PFTBL s_hostdrvini[] =
 {
@@ -301,7 +322,7 @@ static const PFTBL s_hostdrvini[] =
 };
 
 /**
- * Ë®≠ÂÆöË™≠„ÅøËæº„Åø
+ * ê›íËì«Ç›çûÇ›
  */
 void hostdrv_readini()
 {
@@ -313,7 +334,7 @@ void hostdrv_readini()
 }
 
 /**
- * Ë®≠ÂÆöÊõ∏„ÅçËæº„Åø
+ * ê›íËèëÇ´çûÇ›
  */
 void hostdrv_writeini()
 {
@@ -325,7 +346,7 @@ void hostdrv_writeini()
 }
 
 /**
- * ÊåáÂÆö„Åó„Åü„Éë„Çπ„ÇíÊúÄ‰∏ä‰Ωç„Å´
+ * éwíËÇµÇΩÉpÉXÇç≈è„à Ç…
  */
 void hostdrv_setcurrentpath(const TCHAR* newpath)
 {

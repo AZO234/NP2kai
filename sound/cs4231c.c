@@ -16,8 +16,7 @@
 
 	CS4231CFG	cs4231cfg;
 
-	int calpenflag = 0; // XXX: CAL0だけ(0x04)→CAL0とPENが同時に立つ状態(0x05)に遷移した時だけ挙動を変える･･･ Win3.1+necpcm.drv用のその場しのぎ
-	int w31play = 0; // XXX: CAL0だけ(0x04)→CAL0とPENが同時に立つ状態(0x05)に遷移した時だけ挙動を変える･･･ Win3.1+necpcm.drv用のその場しのぎ
+	int cs4231_bufdelaycounter = 0;
 	
 	static int playcountsmp_Ictl = CS4231_BUFREADSMP; // 積分制御で無理やり一定サンプルずつ読むようにする･･･
 	
@@ -92,7 +91,44 @@ static const UINT8 cs4231cnt64[8] = {
 				2560/64};	//  9600/ 6620
 
 //    640:441
-				
+
+#if defined(SUPPORT_MULTITHREAD)
+static int cs4231_cs_initialized = 0;
+static CRITICAL_SECTION cs4231_cs;
+
+void cs4231cs_enter_criticalsection(void)
+{
+	if (!cs4231_cs_initialized) return;
+	EnterCriticalSection(&cs4231_cs);
+}
+void cs4231cs_leave_criticalsection(void)
+{
+	if (!cs4231_cs_initialized) return;
+	LeaveCriticalSection(&cs4231_cs);
+}
+
+void cs4231cs_initialize(void)
+{
+	/* クリティカルセクション準備 */
+	if (!cs4231_cs_initialized)
+	{
+		memset(&cs4231_cs, 0, sizeof(cs4231_cs));
+		InitializeCriticalSection(&cs4231_cs);
+		cs4231_cs_initialized = 1;
+	}
+}
+void cs4231cs_shutdown(void)
+{
+	/* クリティカルセクション破棄 */
+	if (cs4231_cs_initialized)
+	{
+		memset(&cs4231_cs, 0, sizeof(cs4231_cs));
+		DeleteCriticalSection(&cs4231_cs);
+		cs4231_cs_initialized = 0;
+	}
+}
+#endif
+
 void cs4231_initialize(UINT rate) {
 
 	cs4231cfg.rate = rate;
@@ -128,59 +164,37 @@ void cs4231_dma(NEVENTITEM item) {
 	UINT	r = 0;
 	//SINT32	cnt;
 	if (item->flag & NEVENT_SETEVENT) {
-		if (cs4231.dmach != 0xff) {
+		if (cs4231.dmach != 0xff && !(cs4231.reg.iface & PPIO)) {
 			dmach = dmac.dmach + cs4231.dmach;
 
-			// サウンド再生用バッファに送る？(cs4231g.c)
+			// サウンド再生用バッファに送る(cs4231g.c)
 			sound_sync();
 
 			// バッファに空きがあればデータを読み出す
-			if(!w31play || !(cs4231.reg.featurestatus & (PI|TI|CI))){
-				if (cs4231.bufsize * cs4231_playcountshift[cs4231.reg.datafmt >> 4] / 4 - 4 > cs4231.bufdatas) {
-					rem = MIN(cs4231.bufsize - 4 - cs4231.bufdatas, CS4231_MAXDMAREADBYTES); //読み取り単位は16bitステレオの1サンプル分(4byte)にしておかないと雑音化する
-					pos = cs4231.bufwpos & CS4231_BUFMASK; // バッファ書き込み位置
-					size = MIN(rem, dmach->startcount); // バッファ書き込みサイズ
-					r = dmac_getdata_(dmach, cs4231.buffer, pos, size); // DMA読み取り実行
-					cs4231.bufwpos = (cs4231.bufwpos + r) & CS4231_BUFMASK; // バッファ書き込み位置を更新
-					cs4231.bufdatas += r; // バッファ内の有効なデータ数を更新 = (bufwpos-bufpos)&CS4231_BUFMASK
-				}
+#if defined(SUPPORT_MULTITHREAD)
+			cs4231cs_enter_criticalsection();
+#endif
+			if (cs4231.bufsize * cs4231_playcountshift[cs4231.reg.datafmt >> 4] / 4 - 4 > cs4231.bufdatas) {
+				rem = MIN(cs4231.bufsize - 4 - cs4231.bufdatas, CS4231_MAXDMAREADBYTES); //読み取り単位は16bitステレオの1サンプル分(4byte)にしておかないと雑音化する
+				pos = cs4231.bufwpos & CS4231_BUFMASK; // バッファ書き込み位置
+				size = MIN(rem, (UINT)dmach->startcount + 1); // バッファ書き込みサイズ
+				r = dmac_getdata_(dmach, cs4231.buffer, pos, size); // DMA読み取り実行
+				cs4231.bufwpos = (cs4231.bufwpos + r) & CS4231_BUFMASK; // バッファ書き込み位置を更新
+				cs4231.bufdatas += r; // バッファ内の有効なデータ数を更新 = (bufwpos-bufpos)&CS4231_BUFMASK
 			}
+#if defined(SUPPORT_MULTITHREAD)
+			cs4231cs_leave_criticalsection();
+#endif
+
 			// NEVENTをセット
 			if (cs4231cfg.rate) {
-				//SINT32 neventms;
-				//int playcountsmpmax = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)); // PI割り込みを発生させるサンプル数(Playback Base register)
 				playcountsmp_Ictl += ((CS4231_BUFREADSMP - (int)r) / cs4231_playcountshift[cs4231.reg.datafmt >> 4])/2;
 				if(playcountsmp_Ictl < 1)
 					playcountsmp_Ictl = 1;
 				if(playcountsmp_Ictl > CS4231_MAXDMAREADBYTES) 
 					playcountsmp_Ictl = CS4231_MAXDMAREADBYTES;
-				//int playcountsmp = MIN(playcountsmpmax, r / cs4231_playcountshift[cs4231.reg.datafmt >> 4])-4;
-				//if(playcountsmp < CS4231_MINDMAREADBYTES) 
-				//	playcountsmp = CS4231_MINDMAREADBYTES*2;
-
-				//playcountsmp = MIN(MAX(r, CS4231_MAXDMAREADBYTES/4) / cs4231_playcountshift[cs4231.reg.datafmt >> 4], playcountsmp) / 2;
-				//neventms = playcountsmp * 1000 / cs4231cfg.rate;
-				//if(neventms <= 0) neventms = 1;
-				//cnt = pccore.realclock / cs4231cfg.rate * 32;
-				//nevent_set(NEVENT_CS4231, cnt, cs4231_dma, NEVENT_RELATIVE);
-				//cnt = (UINT32)((UINT64)pccore.realclock * playcountsmp / cs4231cfg.rate / 10);
-				//nevent_setbyms(NEVENT_CS4231, neventms, cs4231_dma, NEVENT_RELATIVE);
 				nevent_set(NEVENT_CS4231, pccore.realclock / cs4231cfg.rate * playcountsmp_Ictl, cs4231_dma, NEVENT_RELATIVE);
 			}
-
-			//// NEVENTをセット
-			//if (cs4231cfg.rate) {
-			//	SINT32 neventms;
-			//	int playcountsmp;// = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)); // PI割り込みを発生させるサンプル数(Playback Base register)
-			//	playcountsmp = 32 / cs4231_playcountshift[cs4231.reg.datafmt >> 4];//max(r, 32) / cs4231_playcountshift[cs4231.reg.datafmt >> 4];//min(max(r, 64) / cs4231_playcountshift[cs4231.reg.datafmt >> 4], playcountsmp) / 2; // 謎
-			//	//neventms = playcountsmp * 1000 / cs4231cfg.rate;
-			//	//if(neventms <= 0) neventms = 1;
-			//	//cnt = pccore.realclock / cs4231cfg.rate * 32;
-			//	//nevent_set(NEVENT_CS4231, cnt, cs4231_dma, NEVENT_RELATIVE);
-			//	//cnt = (UINT32)((UINT64)pccore.realclock * playcountsmp / cs4231cfg.rate / 10);
-			//	//nevent_setbyms(NEVENT_CS4231, neventms, cs4231_dma, NEVENT_RELATIVE);
-			//	nevent_set(NEVENT_CS4231, pccore.realclock / cs4231cfg.rate * playcountsmp, cs4231_dma, NEVENT_RELATIVE);
-			//}
 		}
 	}
 	(void)item;
@@ -190,15 +204,30 @@ void cs4231_dma(NEVENTITEM item) {
 void cs4231_datasend(REG8 dat) {
 	UINT	pos;
 	if (cs4231.reg.iface & PPIO) {		// PIO play enable
-		if (cs4231.bufsize <= cs4231.bufdatas) {
+		if (cs4231.bufdatas > 0)
+		{
 			sound_sync();
 		}
+#if defined(SUPPORT_MULTITHREAD)
+		cs4231cs_enter_criticalsection();
+#endif
 		if (cs4231.bufsize > cs4231.bufdatas) {
 			pos = (cs4231.bufwpos) & CS4231_BUFMASK;
 			cs4231.buffer[pos] = dat;
 			cs4231.bufdatas++;
 			cs4231.bufwpos = (cs4231.bufwpos + 1) & CS4231_BUFMASK;
 		}
+		if (cs4231.bufdatas > CS4231_PIOBUFFERS)
+		{
+			cs4231.intflag &= ~PRDY;
+		}
+		else
+		{
+			cs4231.intflag |= PRDY;
+		}
+#if defined(SUPPORT_MULTITHREAD)
+		cs4231cs_leave_criticalsection();
+#endif
 	}
 }
 
@@ -209,20 +238,27 @@ REG8 DMACCALL cs4231dmafunc(REG8 func) {
 	switch(func) {
 		case DMAEXT_START:
 			if (cs4231cfg.rate) {
-				int playcount = (cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8)) * cs4231_playcountshift[cs4231.reg.datafmt >> 4]; // PI割り込みを発生させるサンプル数(Playback Base register) * サンプルあたりのバイト数
+#if defined(SUPPORT_MULTITHREAD)
+				cs4231cs_enter_criticalsection();
+#endif
 				// DMA読み取り数カウンタを初期化
-				cs4231.totalsample = 0; 
+				cs4231.totalsample = 0;
 
-				// DMA読み取り位置を戻す
-				dmach = dmac.dmach + cs4231.dmach;
-				dmach->adrs.d = dmach->startaddr;
+				// ディレイ再生カウンタもリセット
+				cs4231_bufdelaycounter = 0;
 
+				// 再生位置も戻す
+				cs4231.bufpos = cs4231.bufwpos;
+				cs4231.bufdatas = 0;
+				cs4231.pos12 = 0;
+
+#if defined(SUPPORT_MULTITHREAD)
+				cs4231cs_leave_criticalsection();
+#endif
 				// DMA読み取り処理開始(NEVENTセット)
-				//nevent_setbyms(NEVENT_CS4231, CS4231_MAXDMAREADBYTES * 1000 / cs4231cfg.rate, cs4231_dma, NEVENT_ABSOLUTE);
-				//cnt = pccore.realclock / cs4231cfg.rate * 512;
-				//nevent_set(NEVENT_CS4231, cnt, cs4231_dma, NEVENT_ABSOLUTE);
 				playcountsmp_Ictl = CS4231_BUFREADSMP;
-				cnt = pccore.realclock / cs4231cfg.rate * playcountsmp_Ictl;
+				cnt = (pccore.realclock / cs4231cfg.rate * playcountsmp_Ictl) / 2;
+				if (cnt < 1) cnt = 1;
 				nevent_set(NEVENT_CS4231, cnt, cs4231_dma, NEVENT_ABSOLUTE);
 			}
 			break;
@@ -233,11 +269,13 @@ REG8 DMACCALL cs4231dmafunc(REG8 func) {
 			//	cs4231.reg.featurestatus |= PI;
 			//	pic_setirq(cs4231.dmairq);
 			//}
+
 			break;
 
 		case DMAEXT_BREAK:
 			// DMA読み取り処理終了(NEVENT解除)
 			nevent_reset(NEVENT_CS4231);
+
 			break;
 
 	}
@@ -286,6 +324,7 @@ void cs4231_control(UINT idx, REG8 dat) {
 			{
 				rhythm_update(&g_opna[i].rhythm);
 			}
+			oplgen_setvol(np2cfg.vol_fm * np2cfg.vol_master / 100);
 		}
 		break;
 	case 0x3: // Right Auxiliary #1 Input Control
@@ -344,6 +383,8 @@ void cs4231_control(UINT idx, REG8 dat) {
 		else {
 			cs4231.step12 = 0;
 		}
+		// DMA読み取り位置を戻す
+		dmach->adrs.d = dmach->startaddr;
 		break;
 	case CS4231REG_INTERFACE:
 		// 再生録音の有効無効とかDMAとかの設定　Interface Configuration (I9)
@@ -351,7 +392,7 @@ void cs4231_control(UINT idx, REG8 dat) {
 			if (cs4231.dmach != 0xff) {
 				dmach = dmac.dmach + cs4231.dmach;
 				if ((dat & (PEN)) == (PEN)){
-					dmach->ready = 1;
+					dmach->ready = 1; 
 				}
 				else {
 					dmach->ready = 0;
@@ -359,19 +400,8 @@ void cs4231_control(UINT idx, REG8 dat) {
 				dmac_check();
 			}	
 			if (!(dat & PEN)) {		// stop!
-				cs4231.pos12 = 0; 
+				cs4231.pos12 = 0;
 			}
-		}
-		// XXX: CAL0だけ(0x04)→CAL0とPENが同時に立つ状態(0x05)に遷移した時だけ挙動を変える･･･ Win3.1+necpcm.drv用のその場しのぎ
-		if(((UINT8 *)&cs4231.reg)[idx] == 0x05 && calpenflag == 1){
-			calpenflag = 2;
-			w31play = 1;
-		}else if(((UINT8 *)&cs4231.reg)[idx] == 0x04){
-			calpenflag = 1;
-			w31play = 0;
-		}else{
-			calpenflag = 0;
-			w31play = 0;
 		}
 		break;
 	}
@@ -384,16 +414,12 @@ UINT dmac_getdata_(DMACH dmach, UINT8 *buf, UINT offset, UINT size) {
 	UINT32	addr;
 	UINT	i;
 	SINT32	sampleirq = 0; // 割り込みまでに必要なデータ転送数(byte)
-#define PLAYCOUNT_ADJUST_VALUE	65536
-#define PLAYCOUNT_ADJUST2_VALUE	16
-	static UINT32	playcount_adjustcounter = 0;
-	static UINT32	playcount_adjustcounter2 = 0;
 	
 	lengsum = 0;
 	while(size > 0) {
 		leng = MIN(dmach->leng.w, size);
 		if (leng) {
-			int playcount = ((cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8))) * cs4231_playcountshift[cs4231.reg.datafmt >> 4]; // PI割り込みを発生させるサンプル数(Playback Base register) * サンプルあたりのバイト数
+			int playcount = ((cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8))) * cs4231_playcountshift[cs4231.reg.datafmt >> 4]+4; // PI割り込みを発生させるサンプル数(Playback Base register) * サンプルあたりのバイト数
 			if(cs4231.totalsample + (SINT32)leng > playcount){
 				// DMA再生サンプル数カウンタ(Playback DMA count register)がPI割り込みを発生させるサンプル数(Playback Base register)を超えないように調整
 				leng = playcount - cs4231.totalsample;
@@ -411,25 +437,6 @@ UINT dmac_getdata_(DMACH dmach, UINT8 *buf, UINT offset, UINT size) {
 					offset = (offset+1) & CS4231_BUFMASK; // DMAデータ読み取りバッファの書き込み位置を進める（＆最後に到達したら最初に戻す）
 				}
 
-				// XXX: 再生位置調整（Win9x,Win2000再生ノイズ対策用・とりあえず+方向だけ）
-				if(cs4231_playcountshift[cs4231.reg.datafmt >> 4] == 4){
-					playcount_adjustcounter += leng;
-					if(playcount_adjustcounter >= PLAYCOUNT_ADJUST_VALUE){
-						playcount_adjustcounter -= PLAYCOUNT_ADJUST_VALUE;
-						if(!w31play){
-							addr += 4;
-							if(addr > dmach->lastaddr){
-								addr = dmach->startaddr + (addr - dmach->lastaddr - 1); // DMA読み取りアドレスがアドレス範囲の最後に到達したら最初に戻す
-							}
-							playcount_adjustcounter2++;
-							if(playcount_adjustcounter2 > PLAYCOUNT_ADJUST2_VALUE){
-								playcount_adjustcounter2 -= PLAYCOUNT_ADJUST2_VALUE;
-								cs4231.totalsample += cs4231_playcountshift[cs4231.reg.datafmt >> 4];
-							}
-						}
-					}
-				}
-
 				dmach->adrs.d = addr; // DMA読み取りアドレス現在位置を更新
 			}
 			else {									// dir -
@@ -442,13 +449,12 @@ UINT dmac_getdata_(DMACH dmach, UINT8 *buf, UINT offset, UINT size) {
 					}
 					offset = (offset+1) & CS4231_BUFMASK; // DMAデータ読み取りバッファの書き込み位置を進める（＆最後に到達したら最初に戻す）
 				}
-				playcount_adjustcounter = (playcount_adjustcounter+leng) % PLAYCOUNT_ADJUST_VALUE;
 				dmach->adrs.d = addr;
 			}
 
-			// 読み取りバイト数だけdmach->leng.wを減らす（0以下になったらdmach->startcountに戻す）
+			// 読み取りバイト数だけdmach->leng.wを減らす（0以下になったらdmach->startcount+1に戻す）
 			if (dmach->leng.w <= leng) {
-				dmach->leng.w = dmach->leng.w + dmach->startcount - leng; // 戻す
+				dmach->leng.w = (UINT16)((UINT)dmach->leng.w + dmach->startcount + 1 - leng); // 戻す
 				dmach->proc.extproc(DMAEXT_END);
 			}else{
 				dmach->leng.w -= leng;
@@ -466,13 +472,9 @@ UINT dmac_getdata_(DMACH dmach, UINT8 *buf, UINT offset, UINT size) {
 				cs4231.totalsample -= playcount;
 				// 割り込みが有効な場合割り込みを発生させる
 				if ((cs4231.reg.pinctrl & IEN) && (cs4231.dmairq != 0xff)) {
-					// XXX: CAL0だけ(0x04)→CAL0とPENが同時に立つ状態(0x05)に遷移した時だけ挙動を変える･･･ Win3.1+necpcm.drv用のその場しのぎ
-					if(calpenflag != 2){
-						cs4231.intflag |= INt; // 割り込み中(Interrupt Status)ビットをセット
-						cs4231.reg.featurestatus |= PI; // PI(Playback Interrupt)ビットをセット
-						pic_setirq(cs4231.dmairq); // 割り込みを発生させる
-					}
-					calpenflag = 0;
+					cs4231.intflag |= INt; // 割り込み中(Interrupt Status)ビットをセット
+					cs4231.reg.featurestatus |= PI; // PI(Playback Interrupt)ビットをセット
+					pic_setirq(cs4231.dmairq); // 割り込みを発生させる
 				}
 				break;
 			}

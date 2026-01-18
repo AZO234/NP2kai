@@ -1,3 +1,6 @@
+#pragma once
+#if defined(SUPPORT_FMGEN)
+
 #ifndef incl_diag_h
 #define incl_diag_h
 
@@ -13,3 +16,5 @@
 #define LOG9(m,a,b,c,d,e,f,g,h,i)	void (0)
 
 #endif // incl_diag_h
+
+#endif	/* SUPPORT_FMGEN */

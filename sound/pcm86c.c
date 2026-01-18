@@ -12,7 +12,6 @@
 
 #if 0
 #undef	TRACEOUT
-#define	TRACEOUT(s)	(void)(s)
 static void trace_fmt_ex(const char *fmt, ...)
 {
 	char stmp[2048];
@@ -24,6 +23,8 @@ static void trace_fmt_ex(const char *fmt, ...)
 	OutputDebugStringA(stmp);
 }
 #define	TRACEOUT(s)	trace_fmt_ex s
+#else
+#define	TRACEOUT(s)	(void)(s)
 #endif	/* 1 */
 
 /* サンプリングレートに8掛けた物 */
@@ -42,8 +43,47 @@ static const UINT clk20_128[] = {
 
 
 	PCM86CFG	pcm86cfg;
-	
-static UINT32 bufundercounter = 0;
+
+	UINT64 datawriteirqwait = 0;
+	static SINT32 bufunferflag = 0;
+	static SINT32 vbufunferflag = 0;
+
+#if defined(SUPPORT_MULTITHREAD)
+	static int pcm86_cs_initialized = 0;
+	static CRITICAL_SECTION pcm86_cs;
+
+	void pcm86cs_enter_criticalsection(void)
+	{
+		if (!pcm86_cs_initialized) return;
+		EnterCriticalSection(&pcm86_cs);
+	}
+	void pcm86cs_leave_criticalsection(void)
+	{
+		if (!pcm86_cs_initialized) return;
+		LeaveCriticalSection(&pcm86_cs);
+	}
+
+	void pcm86cs_initialize(void)
+	{
+		/* クリティカルセクション準備 */
+		if (!pcm86_cs_initialized)
+		{
+			memset(&pcm86_cs, 0, sizeof(pcm86_cs));
+			InitializeCriticalSection(&pcm86_cs);
+			pcm86_cs_initialized = 1;
+		}
+	}
+	void pcm86cs_shutdown(void)
+	{
+		/* クリティカルセクション破棄 */
+		if (pcm86_cs_initialized)
+		{
+			memset(&pcm86_cs, 0, sizeof(pcm86_cs));
+			DeleteCriticalSection(&pcm86_cs);
+			pcm86_cs_initialized = 0;
+		}
+	}
+#endif
 
 void pcm86gen_initialize(UINT rate)
 {
@@ -81,6 +121,12 @@ void pcm86gen_update(void)
 	pcm86_setpcmrate(pcm86->fifo);
 }
 
+void pcm86_setwaittime()
+{
+	// WORKAROUND: データ書き込みから割り込み発生までの時間が短すぎると不具合が起こる場合があるのでわざと遅延 値に根拠はなし
+	datawriteirqwait = 20000 * pccore.multiple;
+}
+
 void pcm86_setpcmrate(REG8 val)
 {
 	PCM86 pcm86 = &g_pcm86;
@@ -95,34 +141,28 @@ void pcm86_setpcmrate(REG8 val)
 		pcm86->div = (rate << (PCM86_DIVBIT - 3)) / pcm86cfg.rate;
 		pcm86->div2 = (pcm86cfg.rate << (PCM86_DIVBIT + 3)) / rate;
 	}
+
+	pcm86_setwaittime();
 }
 
 void pcm86_cb(NEVENTITEM item)
 {
 	PCM86 pcm86 = &g_pcm86;
-	
+	SINT32 adjustbuf;
+
 	if (pcm86->reqirq)
 	{
 		sound_sync();
-//		RECALC_NOWCLKP;
+		//		RECALC_NOWCLKP;
 
-		if (pcm86->virbuf <= pcm86->fifosize)
+		adjustbuf = (SINT32)(((SINT64)pcm86->virbuf * 4 + pcm86->realbuf) / 5);
+		if (pcm86->virbuf <= pcm86->fifosize || pcm86->realbuf > pcm86->stepmask && adjustbuf <= pcm86->fifosize)
 		{
 			pcm86->reqirq = 0;
 			pcm86->irqflag = 1;
 			if (pcm86->irq != 0xff)
 			{
-				//int i;
-				//for(i=0;i<OPNA_MAX;i++){
-				//	if(g_opna[i].s.irq == pcm86->irq){
-				//		if(((g_opna[i].s.status & 0x01)) || ((g_opna[i].s.status & 0x02))){
-				//			break;
-				//		}
-				//	}
-				//}
-				//if(i==OPNA_MAX){
-					pic_setirq(pcm86->irq);
-				//}
+				pic_setirq(pcm86->irq);
 			}
 		}
 		else
@@ -130,8 +170,10 @@ void pcm86_cb(NEVENTITEM item)
 			pcm86_setnextintr();
 		}
 	}
-
-	bufundercounter = 0;
+	else
+	{
+		pcm86_setnextintr();
+	}
 
 	(void)item;
 }
@@ -139,17 +181,68 @@ void pcm86_cb(NEVENTITEM item)
 void pcm86_setnextintr(void) {
 
 	PCM86 pcm86 = &g_pcm86;
+	SINT32	cntv;
+	SINT32	cntr;
 	SINT32	cnt;
 	SINT32	clk;
 
 	if (pcm86->fifo & 0x80)
 	{
-		cnt = pcm86->virbuf - pcm86->fifosize;
+		cntv = pcm86->virbuf - pcm86->fifosize;
+		cntr = pcm86->realbuf - pcm86->fifosize;
+		if (pcm86->realbuf > pcm86->stepmask)
+		{
+			if (cntr < cntv)
+			{
+				//cnt = cntr;
+				if (bufunferflag > 32000)
+				{
+					cnt = (SINT32)(((SINT64)cntv * 9 + cntr) / 10);
+					TRACEOUT(("Buf Under2", bufunferflag));
+				}
+				else if (bufunferflag > 4000)
+				{
+					cnt = (SINT32)(((SINT64)cntv * 99 + cntr) / 100);
+					TRACEOUT(("Buf Under", bufunferflag));
+				}
+				else
+				{
+					cnt = cntv;
+				}
+			}
+			else
+			{
+				if (vbufunferflag > 64000)
+				{
+					cnt = (SINT32)(((SINT64)cntv * 9 + cntr) / 10);
+					TRACEOUT(("VBuf Under3", vbufunferflag));
+				}
+				else if (vbufunferflag > 16000)
+				{
+					cnt = (SINT32)(((SINT64)cntv * 49 + cntr) / 50);
+					TRACEOUT(("VBuf Under2", vbufunferflag));
+				}
+				else if (vbufunferflag > 4000)
+				{
+					cnt = (SINT32)(((SINT64)cntv * 99 + cntr) / 100);
+					TRACEOUT(("VBuf Under", vbufunferflag));
+				}
+				else
+				{
+					cnt = cntv;
+				}
+			}
+		}
+		else
+		{
+			cnt = cntv;
+		}
+		//cnt = (SINT32)(((SINT64)cntv + cntr) / 2);
 		if (cnt > 0)
 		{
 			cnt += pcm86->stepmask;
 			cnt >>= pcm86->stepbit;
-//			cnt += 4;								/* ちょっと延滞させる */
+			//cnt += 4;
 			/* ここで clk = pccore.realclock * cnt / 86pcm_rate */
 			/* clk = ((pccore.baseclock / 86pcm_rate) * cnt) * pccore.multiple */
 			if (pccore.cpumode & CPUMODE_8MHZ) {
@@ -163,10 +256,45 @@ void pcm86_setnextintr(void) {
 			clk >>= 7;
 //			clk++;						/* roundup */
 			//clk--;						/* roundup */
+			//if (clk > 1) clk--;
 			clk *= pccore.multiple;
 			nevent_set(NEVENT_86PCM, clk, pcm86_cb, NEVENT_ABSOLUTE);
+			TRACEOUT(("%d,%d", pcm86->virbuf, pcm86->realbuf));
+		}
+		else
+		{
+			if (pcm86->reqirq)
+			{
+				// 即時
+				nevent_set(NEVENT_86PCM, 1, pcm86_cb, NEVENT_ABSOLUTE);
+			}
+			else
+			{
+				// WORKAROUND: 前回の割り込みがうまくいっていない。適当な時間間隔で再度割り込みを送る。早すぎるとNT4等が割り込み無限ループするので注意
+				pcm86->reqirq = 1;
+				nevent_set(NEVENT_86PCM, 100 * pccore.multiple, pcm86_cb, NEVENT_ABSOLUTE);
+			}
 		}
 	}
+}
+
+void RECALC_NOWCLKWAIT(UINT64 cnt)
+{
+	SINT64 decvalue = (SINT64)(cnt << g_pcm86.stepbit);
+#if defined(SUPPORT_MULTITHREAD)
+	pcm86cs_enter_criticalsection();
+#endif
+	if (g_pcm86.virbuf - decvalue < g_pcm86.virbuf)
+	{
+		g_pcm86.virbuf -= decvalue;
+	}
+	if (g_pcm86.virbuf < 0)
+	{
+		g_pcm86.virbuf &= g_pcm86.stepmask;
+	}
+#if defined(SUPPORT_MULTITHREAD)
+	pcm86cs_leave_criticalsection();
+#endif
 }
 
 void pcm86_changeclock(UINT oldmultiple)
@@ -174,14 +302,45 @@ void pcm86_changeclock(UINT oldmultiple)
 	PCM86 pcm86 = &g_pcm86;
 	if(pcm86){
 		if(pcm86->rateval){
+			UINT64	cur;
 			UINT64	past;
-			past = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
-			past <<= 6;
-			past -= pcm86->lastclock;
-			pcm86->stepclock = ((UINT64)pccore.baseclock << 6);
-			pcm86->stepclock /= pcm86->rateval;
-			pcm86->stepclock *= (pccore.multiple << 3);
-			pcm86->lastclock += past - past * pccore.multiple / oldmultiple;
+			UINT64  pastCycle;
+			UINT64	newstepclock;
+			newstepclock = ((UINT64)pccore.baseclock << 6);
+			newstepclock /= pcm86->rateval;
+			newstepclock *= ((UINT64)pccore.multiple << 3);
+			pastCycle = (UINT64)UINT_MAX << 6;
+			cur = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
+			cur <<= 6;
+			past = (cur + pastCycle - pcm86->lastclock) % pastCycle;
+			if (past > pastCycle / 2)
+			{
+				// 負の値になってしまっているとき
+				if (past < pastCycle - pcm86->stepclock * 4)
+				{
+					// かなり小さいならリセットをかける
+					past = 1;
+					pcm86->lastclock = cur - 1;
+				}
+				else
+				{
+					// 小さいなら様子見で0扱いとする
+					past = 0;
+				}
+			}
+			if (past >= pcm86->stepclock)
+			{
+				//SINT32 latvirbuf = pcm86->virbuf;
+				past = past / pcm86->stepclock;
+				pcm86->lastclock = (pcm86->lastclock + past * pcm86->stepclock) % pastCycle;
+				RECALC_NOWCLKWAIT(past);
+				//TRACEOUT(("%d %d %d", latvirbuf, pcm86->virbuf, past));
+			}
+			past = (cur + pastCycle - pcm86->lastclock) % pastCycle;
+			pcm86->lastclock = (cur + pastCycle - (past * newstepclock + pcm86->stepclock / 2) / pcm86->stepclock) % pastCycle; // 補正
+			pcm86->stepclock = newstepclock;
+
+			pcm86_setwaittime();
 		}else{
 			//pcm86->stepclock = ((UINT64)pccore.baseclock << 6);
 			//pcm86->stepclock /= 44100;
@@ -192,124 +351,133 @@ void pcm86_changeclock(UINT oldmultiple)
 
 void SOUNDCALL pcm86gen_checkbuf(PCM86 pcm86, UINT nCount)
 {
-	int smpsize[0x8] = {0, 2, 2, 4, 0, 1, 1, 2};
 	long	bufs;
+	UINT64	cur;
 	UINT64	past;
-	static SINT32 lastvirbuf = 0;
-	static UINT32 lastvirbufcnt = 0;
-	static UINT32 bufundertimevalid = 0;
-	static UINT32 bufundertime = 0;
-	//UINT32 bufundertime_interval = (pccore.baseclock >> 6) * pccore.multiple;
-	UINT32 bufunder_threshold = pcm86->fifosize * smpsize[(pcm86->dactrl >> 4) & 0x7] / 4;
-	//UINT32 newtime;
-	if(pcm86->fifosize < 1024){
-		bufunder_threshold /= 4;
-	}
-
-	past = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
-	past <<= 6;
-	past -= pcm86->lastclock;
-	if (past >= pcm86->stepclock)
+	UINT64  pastCycle;
+	UINT64	curClock;
+	SINT32	flagStep;
+	static UINT32	lastClock = 0;
+	curClock = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
+	if (lastClock == 0)
 	{
-		past = past / pcm86->stepclock;
-		pcm86->lastclock += (past * pcm86->stepclock);
-		//if (g_pcm86.fifo & 0x80) {
-		//	RECALC_NOWCLKWAIT(past);
-		//}
-	}
-	
-	// XXX: Windowsでフリーズする問題の暫定対症療法（ある程度時間が経った小さいバッファを捨てる）
-	if(0 < pcm86->virbuf && pcm86->virbuf < 128){
-		if(pcm86->virbuf == lastvirbuf){
-			lastvirbufcnt++;
-			if(lastvirbufcnt > 500){
-				// 500回呼ばれても値が変化しなかったら捨てる
-				pcm86->virbuf = pcm86->realbuf = 0;
-				lastvirbufcnt = 0;
-			}
-		}else{
-			lastvirbufcnt = 0;
-		}
-	}else{
-		lastvirbufcnt = 0;
-	}
-	//newtime = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
-	//if(!bufundertimevalid){
-	//	bufundertime = newtime;
-	//	bufundertimevalid = 1;
-	//}
-	
-	bufs = pcm86->realbuf - pcm86->virbuf;
-	if (bufs <= 0 || bufs < smpsize[(pcm86->dactrl >> 4) & 0x7] && !nevent_iswork(NEVENT_86PCM))									/* 処理落ちてる… */
-	{
-		bufs &= ~3;
-		pcm86->virbuf += bufs;
-
-		//if(newtime - bufundertime > bufundertime_interval){
-			//if(newtime - bufundertime > bufundertime_interval * 2){
-			//	TRACEOUT(("XXX: %d", (newtime - bufundertime) / bufundertime_interval));
-			//}
-			if(bufundercounter >= bufunder_threshold){
-				if (pcm86->virbuf < pcm86->fifosize)
-				{
-					pcm86->reqirq = 0;
-					pcm86->irqflag = 1;
-					if (pcm86->irq != 0xff)
-					{
-						//int i;
-						//for(i=0;i<OPNA_MAX;i++){
-						//	if(g_opna[i].s.irq == pcm86->irq){
-						//		if(((g_opna[i].s.status & 0x01)) || ((g_opna[i].s.status & 0x02))){
-						//			break;
-						//		}
-						//	}
-						//}
-						//if(i==OPNA_MAX){
-							pic_setirq(pcm86->irq);
-						//}
-					}
-					bufundercounter = 0;
-					//TRACEOUT(("buf: %d, (FIFOSIZE: %d) FORCE IRQ", pcm86->virbuf, pcm86->fifosize));
-				}
-				else
-				{
-					pcm86_setnextintr();
-					//TRACEOUT(("buf: %d, (FIFOSIZE: %d) WARNING", pcm86->virbuf, pcm86->fifosize));
-				}
-			}else{
-				if(pcm86->virbuf < pcm86->fifosize) {
-					if(pcm86->virbuf == lastvirbuf) {
-						bufundercounter += nCount;
-					}
-				}else{
-					if(bufundercounter >= nCount) {
-						bufundercounter -= nCount;
-					}else{
-						bufundercounter = 0;
-					}
-				}
-			}
-		//}
+		flagStep = 0;
 	}
 	else
 	{
-		bufs -= PCM86_EXTBUF;
-		if (bufs > 0)
-		{
-			bufs &= ~3;
-			pcm86->realbuf -= bufs;
-			pcm86->readpos += bufs;
-		}
-		bufundercounter = 0;
+		flagStep = (SINT32)((SINT64)(curClock - lastClock) * 1000 / pccore.realclock);
 	}
-	lastvirbuf = pcm86->virbuf;
-	//bufundertime += bufundertime_interval * ((newtime - bufundertime) / bufundertime_interval);
+	//TRACEOUT(("FS %d", flagStep));
+
+	pastCycle = (UINT64)UINT_MAX << 6;
+	cur = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
+	cur <<= 6;
+	past = (cur + pastCycle - pcm86->lastclock) % pastCycle;
+	if (past > pastCycle / 2)
+	{
+		// 負の値になってしまっているとき
+		if (past < pastCycle - pcm86->stepclock * 4)
+		{
+			// かなり小さいならリセットをかける
+			past = 1;
+			pcm86->lastclock = cur - 1;
+		}
+		else
+		{
+			// 小さいなら様子見で0扱いとする
+			past = 0;
+		}
+	}
+	if (past >= pcm86->stepclock)
+	{
+		past = past / pcm86->stepclock;
+		pcm86->lastclock = (pcm86->lastclock + past * pcm86->stepclock) % pastCycle;
+		RECALC_NOWCLKWAIT(past);
+	}
+
+	//pcm86->virbuf = pcm86->realbuf;
+	bufs = pcm86->realbuf - pcm86->virbuf;
+	if (bufs < 0)
+	{
+		// 処理落ちてるかもしれない
+		if (bufs <= -pcm86->fifosize && pcm86->virbuf < pcm86->fifosize)
+		{
+			// 駄目そうな場合
+			//TRACEOUT(("CRITCAL buf: real %d, vir %d, (FIFOSIZE: %d) FORCE IRQ", pcm86->realbuf, pcm86->virbuf, pcm86->fifosize));
+			bufs &= ~3;
+			pcm86->virbuf += bufs;
+			// nevent_setでデッドロックする可能性があるので割り込みはしない
+		}
+		//TRACEOUT(("buf: real %d, vir %d, (FIFOSIZE: %d) FORCE IRQ", pcm86->realbuf, pcm86->virbuf, pcm86->fifosize));
+		//pcm86->lastclock += pcm86->stepclock / 50;
+		if (bufunferflag < INT_MAX - flagStep)
+		{
+			if (lastClock != 0)
+			{
+				bufunferflag += flagStep;
+			}
+			//TRACEOUT(("%d", bufunferflag));
+		}
+	//}
+	//else if (bufs < pcm86->fifosize)
+	//{
+	//	if (bufunferflag < 8000)
+	//	{
+	//		if (lastClock != 0)
+	//		{
+	//			bufunferflag += flagStep;
+	//		}
+	//		//TRACEOUT(("%d", bufunferflag));
+	//	}
+	}
+	else
+	{
+		// 余裕あり
+		//bufs -= PCM86_EXTBUF;
+		//if (bufs > 0)
+		//{
+		//	bufs &= ~3;
+		//	pcm86->realbuf -= bufs;
+		//	pcm86->readpos += bufs;
+		//}
+
+		//TRACEOUT(("%d,%d", pcm86->virbuf, pcm86->realbuf));
+		if (pcm86->virbuf > pcm86->fifosize && pcm86->realbuf > pcm86->stepmask && pcm86->realbuf > pcm86->virbuf + pcm86->fifosize * 3)
+		{
+			//if (vbufunferflag < INT_MAX - flagStep)
+			//{
+			//	if (lastClock != 0)
+			//	{
+			//		vbufunferflag += flagStep;
+			//	}
+			//	//TRACEOUT(("v %d", vbufunferflag));
+			//}
+			pcm86->virbuf += (pcm86->realbuf - (pcm86->virbuf - pcm86->fifosize * 3)) / 8;
+			TRACEOUT(("ADJUST!"));
+		}
+		//else
+		//{
+		//	//vbufunferflag = 0;
+		//	if (lastClock != 0)
+		//	{
+		//		vbufunferflag -= flagStep;
+		//	}
+		//	if (vbufunferflag < 0) vbufunferflag = 0;
+		//}
+		bufunferflag = 0;
+	}
+
+	lastClock = curClock;
 }
 
-BOOL pcm86gen_intrq(void)
+BOOL pcm86gen_intrq(int fromFMTimer)
 {
 	PCM86 pcm86 = &g_pcm86;
-	if (!(pcm86->fifo & 0x20))
+	UINT64 curclk = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
+	// WORKAROUND: データ書き込みから割り込み発生までの時間が短すぎると不具合が起こる場合があるのでわざと遅延
+	// XXX: 本当は循環しているのでg_pcm86.lastclockforwaitセットから時間が経ちすぎると不味い
+	// しかし仮に500MHzとしたときUINT64が1周するのは40万日くらいなので事実上問題ない
+	if (!(pcm86->fifo & 0x20) || !(curclk - g_pcm86.lastclockforwait >= datawriteirqwait))
 	{
 		return FALSE;
 	}
@@ -319,7 +487,7 @@ BOOL pcm86gen_intrq(void)
 	}
 	if (!nevent_iswork(NEVENT_86PCM)) {
 		sound_sync();
-		if (!(pcm86->irqflag) && (pcm86->virbuf <= pcm86->fifosize))
+		if (!(pcm86->irqflag) && (pcm86->virbuf <= pcm86->fifosize || pcm86->realbuf > pcm86->stepmask && pcm86->realbuf <= pcm86->fifosize))
 		{
 			//pcm86->reqirq = 0;
 			pcm86->irqflag = 1;
