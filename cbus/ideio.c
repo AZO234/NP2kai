@@ -211,7 +211,7 @@ static void setintr(IDEDRV drv) {
 		TRACEOUT(("ideio: setintr()"));
 		ideio.bank[0] = ideio.bank[1] | 0x80;			// ????
 		pic_setirq(IDE_IRQ);
-		//mem[MEMB_DISK_INTH] |= 0x01; 
+		mem[MEMB_DISK_INTH] |= 0x01; 
 	}
 }
 
@@ -246,7 +246,7 @@ void ideioint(NEVENTITEM item) {
 	if(!(dev->drv[0].ctrl & IDECTRL_NIEN) || !(dev->drv[1].ctrl & IDECTRL_NIEN)){
 		TRACEOUT(("ideio: run setdintr()"));
 		pic_setirq(IDE_IRQ);
-		//mem[MEMB_DISK_INTH] |= 0x01; 
+		mem[MEMB_DISK_INTH] |= 0x01; 
 	}
    (void)item;
 }
@@ -281,7 +281,7 @@ void ideioint2(NEVENTITEM item) {
 	if(!(dev->drv[0].ctrl & IDECTRL_NIEN) || !(dev->drv[1].ctrl & IDECTRL_NIEN)){
 		TRACEOUT(("ideio: run setdintr()"));
 		pic_setirq(IDE_IRQ);
-		//mem[MEMB_DISK_INTH] |= 0x01; 
+		mem[MEMB_DISK_INTH] |= 0x01; 
 	}
    (void)item;
 }
@@ -298,7 +298,14 @@ static void setdintr(IDEDRV drv, UINT8 errno, UINT8 status, UINT32 delay) {
 		//nevent_set(NEVENT_SASIIO, (pccore.realclock / 1000 / 1000) * delay, ideioint, NEVENT_ABSOLUTE);
 
 		// 指定した時間遅延（クロック数）
-		nevent_set(NEVENT_SASIIO, delay, ideioint, NEVENT_ABSOLUTE);
+		if (delay == 0)
+		{
+			ideioint(&g_nevent.item[NEVENT_SASIIO]);
+		}
+		else
+		{
+			nevent_set(NEVENT_SASIIO, delay, ideioint, NEVENT_ABSOLUTE);
+		}
 	}
 }
 static void setdintr2(IDEDRV drv, UINT8 errno, UINT8 status, UINT32 delay) {
@@ -312,7 +319,14 @@ static void setdintr2(IDEDRV drv, UINT8 errno, UINT8 status, UINT32 delay) {
 		//nevent_set(NEVENT_SASIIO, (pccore.realclock / 1000 / 1000) * delay, ideioint, NEVENT_ABSOLUTE);
 
 		// 指定した時間遅延（クロック数）
-		nevent_set(NEVENT_SASIIO, delay, ideioint2, NEVENT_ABSOLUTE);
+		if (delay == 0)
+		{
+			ideioint2(&g_nevent.item[NEVENT_SASIIO]);
+		}
+		else
+		{
+			nevent_set(NEVENT_SASIIO, delay, ideioint2, NEVENT_ABSOLUTE);
+		}
 	}
 }
 
@@ -1419,7 +1433,7 @@ static REG8 IOINPCALL ideio_i64e(UINT port) {
 		if (!(drv->ctrl & IDECTRL_NIEN)) {
 			TRACEOUT(("ideio: resetirq"));
 			pic_resetirq(IDE_IRQ);
-			//mem[MEMB_DISK_INTH] &= ~0x01; 
+			mem[MEMB_DISK_INTH] &= ~0x01; 
 		}
 		return(drv->status);
 	}

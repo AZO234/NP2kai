@@ -103,6 +103,17 @@ enum {
 #define	REG16		UINT16
 #endif
 
+#if defined(USE_CPU_PLATFORMINT)
+// プラットフォームネイティブの整数型を使用
+typedef  UINT32	PF_UINT8;
+typedef  UINT32	PF_UINT16;
+typedef  UINT32	PF_UINT32;
+#else
+typedef  UINT8	PF_UINT8;
+typedef  UINT16	PF_UINT16;
+typedef  UINT32	PF_UINT32;
+#endif
+
 #ifndef LOW8
 #define	LOW8(a)					((UINT8)(a))
 #endif

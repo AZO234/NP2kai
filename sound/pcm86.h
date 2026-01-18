@@ -22,15 +22,20 @@ enum {
 #define	PCM86_EXTBUF		g_pcm86.rescue					/* 救済延滞… */
 #define	PCM86_REALBUFSIZE	(PCM86_LOGICALBUF + PCM86_EXTBUF)
 
-#define RECALC_NOWCLKWAIT(cnt)											\
-	do																	\
-	{																	\
-		g_pcm86.virbuf -= (SINT64)(cnt << g_pcm86.stepbit);				\
-		if (g_pcm86.virbuf < 0)											\
-		{																\
-			g_pcm86.virbuf &= g_pcm86.stepmask;							\
-		}																\
-	} while (0 /*CONSTCOND*/)
+void RECALC_NOWCLKWAIT(UINT64 cnt);
+//#define RECALC_NOWCLKWAIT(cnt)											¥
+//	do																	¥
+//	{																	¥
+//		SINT64 decvalue =(SINT64)(cnt << g_pcm86.stepbit);				¥
+//		if (g_pcm86.virbuf - decvalue < g_pcm86.virbuf) 				¥
+//		{																¥
+//			g_pcm86.virbuf -= decvalue;									¥
+//		}																¥
+//		if (g_pcm86.virbuf < 0)											¥
+//		{																¥
+//			g_pcm86.virbuf &= g_pcm86.stepmask;							¥
+//		}																¥
+//	} while (0 /*CONSTCOND*/)
 
 typedef struct {
 	SINT32	divremain;
@@ -53,8 +58,13 @@ typedef struct {
 	SINT32	volume;
 	SINT32	vol5;
 
-	UINT32	lastclock_obsolate;
-	UINT32	stepclock_obsolate;
+	union {
+		struct {
+			UINT32	lastclock_obsolate;
+			UINT32	stepclock_obsolate;
+		} obsolate;
+		UINT64	lastclockforwait;
+	};
 	UINT	stepmask;
 
 	UINT8	fifo;
@@ -126,8 +136,10 @@ extern const UINT pcm86rate8[];
 
 void pcm86_cb(NEVENTITEM item);
 
-void pcm86gen_initialize(UINT rate);
-void pcm86gen_setvol(UINT vol);
+void pcm86cs_initialize();
+void pcm86cs_shutdown();
+void pcm86cs_enter_criticalsection();
+void pcm86cs_leave_criticalsection();
 
 void pcm86_reset(void);
 void pcm86gen_update(void);
@@ -138,7 +150,7 @@ void pcm86_changeclock(UINT oldmultiple);
 void SOUNDCALL pcm86gen_checkbuf(PCM86 pcm86, UINT nCount);
 void SOUNDCALL pcm86gen_getpcm(PCM86 pcm86, SINT32 *lpBuffer, UINT nCount);
 
-BOOL pcm86gen_intrq(void);
+BOOL pcm86gen_intrq(int fromFMTimer);
 
 #ifdef __cplusplus
 }

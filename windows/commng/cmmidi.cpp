@@ -1,7 +1,9 @@
 /**
  * @file	cmmidi.cpp
- * @brief	MIDI ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
+ * @brief	MIDI ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ðs‚¢‚Ü‚·
  */
+
+#include <process.h>
 
 #include "compiler.h"
 #include "cmmidi.h"
@@ -83,11 +85,26 @@ static const UINT8 midictrltbl[] = { 0, 1, 5, 7, 10, 11, 64,
 
 static	UINT8	midictrlindex[128];
 
+static unsigned int __stdcall ccommidi_activesenseThreadFroc(LPVOID vdParam)
+{
+	CComMidi* midi = (CComMidi*)vdParam;
+	if (midi != NULL)
+	{
+		const UINT32 interval = midi->m_activesenseInterval;
+		while (WaitForSingleObject(midi->m_activesenseExitRequestEvent, interval) == WAIT_TIMEOUT)
+		{
+			midi->SendActive();
+		}
+		SetEvent(midi->m_activesenseExitEvent);
+	}
+
+	return 0;
+}
 
 /**
- * ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ç•ªå·ã‚’å¾—ã‚‹
- * @param[in] lpModule ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«å
- * @return ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ç•ªå·
+ * ƒ‚ƒWƒ…[ƒ‹”Ô†‚ð“¾‚é
+ * @param[in] lpModule ƒ‚ƒWƒ…[ƒ‹–¼
+ * @return ƒ‚ƒWƒ…[ƒ‹”Ô†
  */
 UINT CComMidi::module2number(LPCTSTR lpModule)
 {
@@ -104,7 +121,7 @@ UINT CComMidi::module2number(LPCTSTR lpModule)
 }
 
 /**
- * ã‚ªãƒ¼ãƒ« ãƒŽãƒ¼ãƒˆ ã‚ªãƒ•
+ * ƒI[ƒ‹ ƒm[ƒg ƒIƒt
  */
 void CComMidi::midiallnoteoff()
 {
@@ -123,7 +140,7 @@ void CComMidi::midiallnoteoff()
 }
 
 /**
- * MIDI ãƒªã‚»ãƒƒãƒˆ
+ * MIDI ƒŠƒZƒbƒg
  */
 void CComMidi::midireset()
 {
@@ -173,7 +190,7 @@ void CComMidi::midireset()
 }
 
 /**
- * ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®š
+ * ƒpƒ‰ƒ[ƒ^Ý’è
  */
 void CComMidi::midisetparam()
 {
@@ -208,7 +225,7 @@ void CComMidi::midisetparam()
 }
 
 /**
- * åˆæœŸåŒ–
+ * ‰Šú‰»
  */
 void cmmidi_initailize(void)
 {
@@ -221,11 +238,11 @@ void cmmidi_initailize(void)
 }
 
 /**
- * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ä½œæˆ
- * @param[in] lpMidiOut MIDIOUT ãƒ‡ãƒã‚¤ã‚¹
- * @param[in] lpMidiIn MIDIIN ãƒ‡ãƒã‚¤ã‚¹
- * @param[in] lpModule ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«
- * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+ * ƒCƒ“ƒXƒ^ƒ“ƒXì¬
+ * @param[in] lpMidiOut MIDIOUT ƒfƒoƒCƒX
+ * @param[in] lpMidiIn MIDIIN ƒfƒoƒCƒX
+ * @param[in] lpModule ƒ‚ƒWƒ…[ƒ‹
+ * @return ƒCƒ“ƒXƒ^ƒ“ƒX
  */
 CComMidi* CComMidi::CreateInstance(LPCTSTR lpMidiOut, LPCTSTR lpMidiIn, LPCTSTR lpModule)
 {
@@ -239,7 +256,7 @@ CComMidi* CComMidi::CreateInstance(LPCTSTR lpMidiOut, LPCTSTR lpMidiIn, LPCTSTR 
 }
 
 /**
- * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
  */
 CComMidi::CComMidi()
 	: CComBase(COMCONNECT_MIDI)
@@ -251,6 +268,11 @@ CComMidi::CComMidi()
 	, m_nRecvSize(0)
 	, m_cLastData(0)
 	, m_bMimpiDef(false)
+	, m_useactivesense(1)
+	, m_activesenseInterval(200)
+	, m_activesenseThread(NULL)
+	, m_activesenseExitEvent(NULL)
+	, m_activesenseExitRequestEvent(NULL)
 {
 	ZeroMemory(&m_mimpiDef, sizeof(m_mimpiDef));
 	FillMemory(m_midich, sizeof(m_midich), 0xff);
@@ -258,11 +280,25 @@ CComMidi::CComMidi()
 }
 
 /**
- * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒfƒXƒgƒ‰ƒNƒ^
  */
 CComMidi::~CComMidi()
 {
 	midiallnoteoff();
+	if (m_activesenseExitRequestEvent && m_activesenseExitEvent)
+	{
+		SetEvent(m_activesenseExitRequestEvent);
+		if (WaitForSingleObject(m_activesenseExitEvent, 10000) == WAIT_TIMEOUT)
+		{
+			TerminateThread(m_activesenseThread, 0); // ƒ]ƒ“ƒrƒXƒŒƒbƒhŽ€‚·‚×‚µ
+		}
+		CloseHandle(m_activesenseThread);
+		CloseHandle(m_activesenseExitRequestEvent);
+		CloseHandle(m_activesenseExitEvent);
+		m_activesenseThread = NULL;
+		m_activesenseExitRequestEvent = NULL;
+		m_activesenseExitEvent = NULL;
+	}
 	if (m_pMidiOut)
 	{
 		delete m_pMidiOut;
@@ -276,12 +312,12 @@ CComMidi::~CComMidi()
 }
 
 /**
- * åˆæœŸåŒ–
- * @param[in] lpMidiOut MIDIOUT ãƒ‡ãƒã‚¤ã‚¹
- * @param[in] lpMidiIn MIDIIN ãƒ‡ãƒã‚¤ã‚¹
- * @param[in] lpModule ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«
- * @retval true æˆåŠŸ
- * @retval false å¤±æ•—
+ * ‰Šú‰»
+ * @param[in] lpMidiOut MIDIOUT ƒfƒoƒCƒX
+ * @param[in] lpMidiIn MIDIIN ƒfƒoƒCƒX
+ * @param[in] lpModule ƒ‚ƒWƒ…[ƒ‹
+ * @retval true ¬Œ÷
+ * @retval false Ž¸”s
  */
 bool CComMidi::Initialize(LPCTSTR lpMidiOut, LPCTSTR lpMidiIn, LPCTSTR lpModule)
 {
@@ -306,6 +342,21 @@ bool CComMidi::Initialize(LPCTSTR lpMidiOut, LPCTSTR lpMidiIn, LPCTSTR lpModule)
 	if (m_pMidiOut == NULL)
 	{
 		m_pMidiOut = CComMidiOut32::CreateInstance(lpMidiOut);
+
+		// MIDI Active Sensing‚ð‘—‚é
+		// WORKAROUND: ˆê•”‚Ìƒ\ƒtƒgMIDIƒVƒ“ƒZ‚Å‰½‚ç‚©‚ÌƒƒbƒZ[ƒW‚ð‘—‚ç‚È‚¢‚ÆCPU‚ðˆÙí‚ÉŽg‚¤–â‘è‚Ì‘Îô‚ÉŽg—p
+		m_useactivesense = np2oscfg.midiasns;
+		m_activesenseInterval = np2oscfg.midiaint;
+		if (m_useactivesense && m_activesenseInterval > 0)
+		{
+			unsigned int dwID;
+			m_activesenseExitEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+			m_activesenseExitRequestEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+			if (m_activesenseExitEvent && m_activesenseExitRequestEvent)
+			{
+				m_activesenseThread = (HANDLE)_beginthreadex(NULL, 0, ccommidi_activesenseThreadFroc, this, 0, &dwID);
+			}
+		}
 	}
 
 	m_pMidiIn = CComMidiIn32::CreateInstance(lpMidiIn);
@@ -321,13 +372,15 @@ bool CComMidi::Initialize(LPCTSTR lpMidiOut, LPCTSTR lpMidiIn, LPCTSTR lpModule)
 	}
 
 	m_nModule = module2number(lpModule);
+
+
 	return true;
 }
 
 /**
- * èª­ã¿è¾¼ã¿
- * @param[out] pData ãƒãƒƒãƒ•ã‚¡
- * @return ã‚µã‚¤ã‚º
+ * “Ç‚Ýž‚Ý
+ * @param[out] pData ƒoƒbƒtƒ@
+ * @return ƒTƒCƒY
  */
 UINT CComMidi::Read(UINT8* pData)
 {
@@ -339,9 +392,9 @@ UINT CComMidi::Read(UINT8* pData)
 }
 
 /**
- * æ›¸ãè¾¼ã¿
- * @param[out] cData ãƒ‡ãƒ¼ã‚¿
- * @return ã‚µã‚¤ã‚º
+ * ‘‚«ž‚Ý
+ * @param[out] cData ƒf[ƒ^
+ * @return ƒTƒCƒY
  */
 UINT CComMidi::Write(UINT8 cData)
 {
@@ -413,7 +466,7 @@ UINT CComMidi::Write(UINT8 cData)
 					break;
 			}
 		}
-		else						// Key-onã®ã¿ãªæ°—ãŒã—ãŸã‚“ã ã‘ã©å¿˜ã‚ŒãŸâ€¦
+		else						// Key-on‚Ì‚Ý‚È‹C‚ª‚µ‚½‚ñ‚¾‚¯‚Ç–Y‚ê‚½c
 		{
 			// running status
 			m_sBuffer[0] = m_cLastData;
@@ -491,7 +544,7 @@ UINT CComMidi::Write(UINT8 cData)
 								val = (UINT32)m_sBuffer[2] * np2cfg.vol_midi / 128;
 							}
 							if(val > 127) val = 127;
-							m_sBuffer[2] = (UINT8)val; // ç„¡ç†çŸ¢ç†
+							m_sBuffer[2] = (UINT8)val; // –³—–î—
 						}
 						break;
 
@@ -537,7 +590,7 @@ UINT CComMidi::Write(UINT8 cData)
 				m_nMidiCtrl = MIDICTRL_READY;
 				return m_nIndex;
 			}
-			else if (m_nIndex >= sizeof(m_sBuffer))		// ãŠãƒ¼ã°ãƒ¼ãµã‚ãƒ¼
+			else if (m_nIndex >= sizeof(m_sBuffer))		// ‚¨[‚Î[‚Ó‚ë[
 			{
 				m_nMidiCtrl = MIDICTRL_READY;
 			}
@@ -548,7 +601,7 @@ UINT CComMidi::Write(UINT8 cData)
 			{
 				if ((cData == 0x7e) || (cData == 0x7f))
 				{
-					// exclusiveã¨åŒã˜ã§ã„ã„ç­ˆâ€¦
+					// exclusive‚Æ“¯‚¶‚Å‚¢‚¢”¤c
 					m_nMidiCtrl = MIDICTRL_EXCLUSIVE;
 				}
 				else
@@ -571,7 +624,7 @@ UINT CComMidi::Write(UINT8 cData)
 }
 
 /**
- * ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’å¾—ã‚‹
+ * ƒXƒe[ƒ^ƒX‚ð“¾‚é
  * bit 7: ~CI (RI, RING)
  * bit 6: ~CS (CTS)
  * bit 5: ~CD (DCD, RLSD)
@@ -580,7 +633,7 @@ UINT CComMidi::Write(UINT8 cData)
  * bit 2: reserved
  * bit 1: reserved
  * bit 0: ~DSR (DR)
- * @return ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
+ * @return ƒXƒe[ƒ^ƒX
  */
 UINT8 CComMidi::GetStat()
 {
@@ -588,10 +641,10 @@ UINT8 CComMidi::GetStat()
 }
 
 /**
- * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
- * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
- * @param[in] nParam ãƒ‘ãƒ©ãƒ¡ã‚¿
- * @return ãƒªã‚¶ãƒ«ãƒˆ ã‚³ãƒ¼ãƒ‰
+ * ƒƒbƒZ[ƒW
+ * @param[in] nMessage ƒƒbƒZ[ƒW
+ * @param[in] nParam ƒpƒ‰ƒƒ^
+ * @return ƒŠƒUƒ‹ƒg ƒR[ƒh
  */
 INTPTR CComMidi::Message(UINT nMessage, INTPTR nParam)
 {
@@ -640,4 +693,15 @@ INTPTR CComMidi::Message(UINT nMessage, INTPTR nParam)
 			break;
 	}
 	return 0;
+}
+
+/**
+ * Active Sensing‚ð‘—‚é
+ */
+void CComMidi::SendActive()
+{
+	if (m_pMidiOut)
+	{
+		m_pMidiOut->Short(0xFE);
+	}
 }

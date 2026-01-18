@@ -142,6 +142,9 @@ load_cs(UINT16 selector, const descriptor_t *sdp, int new_cpl)
 	CPU_INST_OP32 = CPU_INST_AS32 =
 	    CPU_STATSAVE.cpu_inst_default.op_32 =
 	    CPU_STATSAVE.cpu_inst_default.as_32 = sdp->d;
+#if defined(USE_CPU_EIPMASK)
+	CPU_EIPMASK = CPU_STATSAVE.cpu_inst_default.op_32 ? 0xffffffff : 0xffff;
+#endif
 	CPU_CS = (UINT16)((selector & ~3) | cpl);
 	CPU_CS_DESC = *sdp;
 	set_cpl(cpl);

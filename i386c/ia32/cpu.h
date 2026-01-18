@@ -38,6 +38,9 @@
 #if defined(SUPPORT_FPU_SOFTFLOAT)
 #include "instructions/fpu/softfloat/softfloat.h"
 #endif
+#if defined(SUPPORT_FPU_SOFTFLOAT3)
+#include "instructions/fpu/softfloat3/softfloat.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -261,7 +264,12 @@ typedef enum {
 } FP_RND;
 
 typedef union {
-    floatx80 d;
+#if defined(SUPPORT_FPU_SOFTFLOAT) && !defined(SUPPORT_FPU_SOFTFLOAT3)
+	floatx80 d;
+#endif
+#if defined(SUPPORT_FPU_SOFTFLOAT3)
+	sw_extFloat80_t d;
+#endif
     double d64;
     struct {
         UINT32 lower;
@@ -316,9 +324,12 @@ typedef struct {
 	FP_REG		reg[FPU_REG_NUM+1]; // R0 to R7 + α
 	FP_TAG		tag[FPU_REG_NUM+1]; // R0 to R7 + α
 	FP_RND		round;
-#ifdef SUPPORT_FPU_DOSBOX2 // XXX: 整数間だけ正確にするため用
+#if defined(SUPPORT_FPU_DOSBOX2) // XXX: 整数間だけ正確にするため用
 	FP_INT_REG	int_reg[FPU_REG_NUM+1];
 	UINT8		int_regvalid[FPU_REG_NUM+1];
+#elif defined(SUPPORT_FPU_DOSBOX2_COMPATIBLE) // XXX: 互換維持用　未使用
+	FP_INT_REG	reserved_fpu1[FPU_REG_NUM + 1];
+	UINT8		reserved_fpu2[FPU_REG_NUM + 1];
 #endif
 #ifdef USE_SSE
 	XMM_REG		xmm_reg[XMM_REG_NUM+1]; // xmm0 to xmm7	
@@ -409,6 +420,10 @@ typedef struct {
 extern I386CORE		i386core;
 extern I386CPUID	i386cpuid;
 extern I386MSR		i386msr;
+
+#if defined(USE_CPU_MODRMPREFETCH)
+extern UINT32		opCache;
+#endif
 
 #define	CPU_STATSAVE	i386core.s
 
@@ -964,6 +979,28 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 #define	CPU_REGS_DWORD(n)	CPU_STATSAVE.cpu_regs.reg[(n)].d
 #define	CPU_REGS_SREG(n)	CPU_STATSAVE.cpu_regs.sreg[(n)]
 
+#if defined(USE_CPU_DIRECTREG)
+#define	CPU_REG16_B53_V(n)	CPU_REGS_WORD(((n) >> 3) & 7)
+#define	CPU_REG16_B20_V(n)	CPU_REGS_WORD((n) & 7)
+#define	CPU_REG32_B53_V(n)	CPU_REGS_DWORD(((n) >> 3) & 7)
+#define	CPU_REG32_B20_V(n)	CPU_REGS_DWORD((n) & 7)
+
+#define	CPU_REG16_B53(n)	(&CPU_REG16_B53_V(n))
+#define	CPU_REG16_B20(n)	(&CPU_REG16_B20_V(n))
+#define	CPU_REG32_B53(n)	(&CPU_REG32_B53_V(n))
+#define	CPU_REG32_B20(n)	(&CPU_REG32_B20_V(n))
+#else
+#define	CPU_REG16_B53_V(n)	(*CPU_REG16_B53(n))
+#define	CPU_REG16_B20_V(n)	(*CPU_REG16_B20(n))
+#define	CPU_REG32_B53_V(n)	(*CPU_REG32_B53(n))
+#define	CPU_REG32_B20_V(n)	(*CPU_REG32_B20(n))
+
+#define	CPU_REG16_B53(n)	reg16_b53[n]
+#define	CPU_REG16_B20(n)	reg16_b20[n]
+#define	CPU_REG32_B53(n)	reg32_b53[n]
+#define	CPU_REG32_B20(n)	reg32_b20[n]
+#endif
+
 #define	CPU_STAT_SREG(n)	CPU_STATSAVE.cpu_stat.sreg[(n)]
 #define	CPU_STAT_SREGBASE(n)	CPU_STAT_SREG((n)).u.seg.segbase
 #define	CPU_STAT_SREGLIMIT(n)	CPU_STAT_SREG((n)).u.seg.limit
@@ -997,6 +1034,9 @@ extern sigjmp_buf	exec_1step_jmpbuf;
 #define	CPU_ESI		CPU_REGS_DWORD(CPU_ESI_INDEX)
 #define	CPU_EDI		CPU_REGS_DWORD(CPU_EDI_INDEX)
 #define CPU_EIP		CPU_STATSAVE.cpu_regs.eip.d
+#if defined(USE_CPU_EIPMASK)
+#define CPU_EIPMASK		cpu_eipMask
+#endif
 #define CPU_PREV_EIP	CPU_STATSAVE.cpu_regs.prev_eip.d
 #define CPU_PREV_ESP	CPU_STATSAVE.cpu_regs.prev_esp.d
 
@@ -1268,12 +1308,18 @@ extern const UINT8 iflags[];
 #define	szpcflag	iflags
 extern UINT8 szpflag_w[0x10000];
 
+#if defined(USE_CPU_EIPMASK)
+extern UINT32 cpu_eipMask;
+#endif
+
 extern UINT8 *reg8_b20[0x100];
 extern UINT8 *reg8_b53[0x100];
+#if !defined(USE_CPU_DIRECTREG)
 extern UINT16 *reg16_b20[0x100];
 extern UINT16 *reg16_b53[0x100];
 extern UINT32 *reg32_b20[0x100];
 extern UINT32 *reg32_b53[0x100];
+#endif
 
 extern const char *reg8_str[CPU_REG_NUM];
 extern const char *reg16_str[CPU_REG_NUM];

@@ -1061,6 +1061,7 @@ I286FN _aas(void) {								// 3f: aas
 	else {
 		I286_FLAGL &= ~(A_FLAG | C_FLAG);
 	}
+	I286_AL &= 0x0f;
 }
 
 I286FN _inc_ax(void) INCWORD2(I286_AX, 2) 	// 40:	inc		ax
@@ -2425,7 +2426,8 @@ I286FN _aam(void) {							// D4:	AAM
 		al = I286_AL;
 		I286_AH = al / div;
 		I286_AL = al % div;
-		I286_FLAGL &= ~(S_FLAG | Z_FLAG | P_FLAG);
+		// A_FLAG is undefined, but real i286 may clear this flag.
+		I286_FLAGL &= ~(A_FLAG | S_FLAG | Z_FLAG | P_FLAG);
 		I286_FLAGL |= WORDSZPF(I286_AX);
 	}
 	else {
@@ -2442,7 +2444,8 @@ I286FN _aad(void) {							// D5:	AAD
 	GET_PCBYTE(mul);
 	I286_AL += (UINT8)(I286_AH * mul);
 	I286_AH = 0;
-	I286_FLAGL &= ~(S_FLAG | Z_FLAG | P_FLAG);
+	// A_FLAG is undefined, but real i286 may clear this flag.
+	I286_FLAGL &= ~(A_FLAG | S_FLAG | Z_FLAG | P_FLAG);
 	I286_FLAGL |= BYTESZPF(I286_AL);
 }
 

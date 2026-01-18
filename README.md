@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Nov 3, 2024<br>
+Jan 18, 2026<br>
 
 NP2kai is PC-9801 series emulator<br>
 
@@ -16,16 +16,19 @@ for Windows/Linux/macOS
 </summary><div>
 
 #### Install tools
-1. MSYS2 64bit + 64bit console(Windows).
+1. MinGW64 console(in MSYS2 64bit Windows).
 2. Install compiler, etc.
+``` bash
+$ pacman -S make git mingw64/mingw-w64-x86_64-toolchain
+```
 
 #### Build
 1. Change directory to sdl.
-```
+``` bash
 $ cd NP2kai/sdl
 ```
 2. Make.
-```
+``` bash
 $ make
 ```
 
@@ -39,29 +42,29 @@ for Android/iOS
 </summary><div>
 
 #### Install tools
-1. MSYS2 64bit + 64bit console(Windows).
+1. MinGW64 console(in MSYS2 64bit Windows).
 2. Install Android Studio, and NDK. And PATH there.
 3. Clone libretro-super.
-```
+``` bash
 $ git clone --depth 1 https://github.com/libretro/libretro-super.git
 ```
 
 #### Build
 1. Change directory to libretro-super.
-```
+``` bash
 $ cd libretro-super
 ```
 2. Fetch np2kai.
-```
+``` bash
 $ ./libretro-fetsh.sh np2kai
 ```
 3. Build.
 - Android
-```
+``` bash
 $ ./libretro-build-android-mk.sh np2kai
 ```
 - iOS
-```
+``` zsh
 $ ./libretro-build-ios.sh np2kai
 ```
 

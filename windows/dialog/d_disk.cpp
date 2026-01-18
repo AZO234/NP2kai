@@ -237,6 +237,7 @@ static const UINT32 s_hddCtbl[] = {16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 
 static const UINT32 s_hddHtbl[] = { 8, 15, 16};
 static const UINT32 s_hddStbl[] = {17, 63, 255};
 static const UINT32 s_hddSStbl[] = {256, 512};
+static const UINT32 s_hddHtblSCSI[] = { 8, 15 };
 
 /** SASI HDD */
 static const UINT16 s_sasires[6] = 
@@ -267,12 +268,13 @@ public:
 	 * @param[in] nHddMinSize 最小サイズ
 	 * @param[in] nHddMaxSize 最大サイズ
 	 */
-	CNewHddDlg(HWND hwndParent, UINT32 nHddMinSize, UINT32 nHddMaxSize, UINT8 allowsasi)
+	CNewHddDlg(HWND hwndParent, UINT32 nHddMinSize, UINT32 nHddMaxSize, UINT8 allowsasi, UINT8 isSCSI = 0)
 		: CDlgProc(IDD_NEWHDDDISK, hwndParent)
 		, m_nHddSize(0)
 		, m_nHddMinSize(nHddMinSize)
 		, m_nHddMaxSize(nHddMaxSize)
 		, m_advanced(0)
+		, m_isSCSI(isSCSI)
 		, m_usedynsize(0)
 		, m_HddC(0)
 		, m_HddH(0)
@@ -395,18 +397,47 @@ public:
 		
 		//hddsize = GetDlgItemInt(IDC_HDDSIZE, NULL, FALSE);
 
-		if(m_nHddSize < 4351){
-			m_HddH = 8;
-			m_HddS = 17;
-			m_HddSS = 512;
-		}else if(m_nHddSize < 32255){
-			m_HddH = 16;
-			m_HddS = 63;
-			m_HddSS = 512;
-		}else{
-			m_HddH = 16;
-			m_HddS = 255;
-			m_HddSS = 512;
+		if (m_isSCSI)
+		{
+			if (m_nHddSize < 8192)
+			{
+				m_HddH = 8;
+				m_HddS = 32;
+				m_HddSS = 512;
+			}
+			else if (m_nHddSize < 32767)
+			{
+				m_HddH = 8;
+				m_HddS = 128;
+				m_HddSS = 512;
+			}
+			else
+			{
+				m_HddH = 15;
+				m_HddS = 255;
+				m_HddSS = 512;
+			}
+		}
+		else
+		{
+			if (m_nHddSize < 4351)
+			{
+				m_HddH = 8;
+				m_HddS = 17;
+				m_HddSS = 512;
+			}
+			else if (m_nHddSize < 32255)
+			{
+				m_HddH = 16;
+				m_HddS = 63;
+				m_HddSS = 512;
+			}
+			else
+			{
+				m_HddH = 16;
+				m_HddS = 255;
+				m_HddSS = 512;
+			}
 		}
 		m_HddC = (UINT32)((FILELEN)m_nHddSize * 1024 * 1024 / m_HddH / m_HddS / m_HddSS);
 
@@ -479,8 +510,16 @@ protected:
 		m_cmbhddC.SubclassDlgItem(IDC_HDDADVANCED_C, this);
 		m_cmbhddC.Add(s_hddCtbl, _countof(s_hddCtbl));
 
-		m_cmbhddH.SubclassDlgItem(IDC_HDDADVANCED_H, this);
-		m_cmbhddH.Add(s_hddHtbl, _countof(s_hddHtbl));
+		if (m_isSCSI)
+		{
+			m_cmbhddH.SubclassDlgItem(IDC_HDDADVANCED_H, this);
+			m_cmbhddH.Add(s_hddHtblSCSI, _countof(s_hddHtblSCSI));
+		}
+		else
+		{
+			m_cmbhddH.SubclassDlgItem(IDC_HDDADVANCED_H, this);
+			m_cmbhddH.Add(s_hddHtbl, _countof(s_hddHtbl));
+		}
 
 		m_cmbhddS.SubclassDlgItem(IDC_HDDADVANCED_S, this);
 		m_cmbhddS.Add(s_hddStbl, _countof(s_hddStbl));
@@ -699,6 +738,7 @@ private:
 	SIZE m_szNewDisk;				//!< ウィンドウのサイズ
 	CWndProc m_btnAdvanced;			/*!< 詳細設定ボタン */
 	UINT8 m_advanced;				/*!< 詳細設定許可フラグ */
+	UINT8 m_isSCSI;					/*!< SCSIフラグ */
 	UINT32 m_HddC;					/*!< Cylinder */
 	UINT16 m_HddH;					/*!< Head */
 	UINT16 m_HddS;					/*!< Sector */

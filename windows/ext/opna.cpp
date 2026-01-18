@@ -143,7 +143,7 @@ void opna_reset(POPNA opna, REG8 cCaps)
 		OEMCHAR path[MAX_PATH];
 		char strbuf[MAX_PATH];
 
-		OPNA_Init(opna->fmgen, OPNA_CLOCK*2, np2cfg.samplingrate, false, ""); // サンプリングレート強制変更･･･
+		OPNA_Init(opna->fmgen, OPNA_CLOCK*2, soundcfg.rate, false, ""); // サンプリングレート強制変更･･･
 		getbiospath(path, OEMTEXT(""), NELEMENTS(path));
 #ifdef UNICODE
 		wcstombs(strbuf, path, MAX_PATH);
@@ -369,6 +369,10 @@ void opna_bind(POPNA opna)
 		pExt->WriteRegister(0x10, 0xbf);
 		pExt->WriteRegister(0x11, 0x30);
 		pExt->WriteRegister(0x27, opna->s.reg[0x27]);
+
+#if defined(SUPPORT_FMGEN)
+		opna->usefmgen = 0; // 外部があればfmgenを使わない
+#endif	/* SUPPORT_FMGEN */
 	}
 	else
 	{

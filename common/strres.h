@@ -45,6 +45,8 @@ extern const OEMCHAR str_hd4[];
 
 extern const OEMCHAR str_d[];
 extern const OEMCHAR str_u[];
+extern const OEMCHAR str_lld[];
+extern const OEMCHAR str_llu[];
 extern const OEMCHAR str_x[];
 extern const OEMCHAR str_2d[];
 extern const OEMCHAR str_2x[];

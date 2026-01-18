@@ -5,6 +5,23 @@
 #include	<pccore.h>
 
 
+static int beepOffsetCounter = 0;
+static SINT32 beepOffsetSum = 0;
+static SINT32 beepOffset = 0;
+
+static void pushBeepOffsetData(SINT32 data) {
+	if (np2cfg.nbeepofs) {
+		beepOffsetSum += data;
+		beepOffsetCounter++;
+		beepOffset = beepOffsetSum / beepOffsetCounter;
+	}
+}
+static void resetBeepOffsetData() {
+	beepOffsetCounter = 0;
+	beepOffsetSum = 0;
+	beepOffset = 0;
+}
+
 extern	BEEPCFG		beepcfg;
 
 static void oneshot(BEEP bp, SINT32 *pcm, UINT count) {
@@ -14,6 +31,11 @@ static void oneshot(BEEP bp, SINT32 *pcm, UINT count) {
 	UINT32		firsttime = beep_time[bp->beep_data_curr_loc];
 	UINT32		time = firsttime;
 	UINT32		bound;
+	SINT32		curBeepOffset = beepOffset;
+
+	if (!np2cfg.nbeepofs) {
+		curBeepOffset = 0x2500 * beepcfg.vol; // 固定オフセット
+	}
 
 	volM = np2cfg.vol_master;
 
@@ -32,7 +54,14 @@ static void oneshot(BEEP bp, SINT32 *pcm, UINT count) {
 			samp = beep_data[bp->beep_data_curr_loc - 1];
 		else
 			samp = beep_data[BEEPDATACOUNT - 1];
-		samp = (SINT32)((double)samp / 0x100 * (0x3000 * beepcfg.vol) - (0x1500 * beepcfg.vol));
+		samp = (SINT32)((double)samp / 0x100 * (0x5000 * beepcfg.vol));
+		if (beepOffsetCounter < 500 && np2cfg.nbeepofs)
+		{
+			// 平均オフセット 500サンプルまでを見る
+			pushBeepOffsetData(samp);
+			curBeepOffset = beepOffset;
+		}
+		samp -= curBeepOffset;
 		pcm[0] += samp * volM / 100;
 		pcm[1] += samp * volM / 100;
 		pcm += 2;

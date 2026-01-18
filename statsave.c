@@ -11,6 +11,7 @@
 #include <scrnmng.h>
 #include <soundmng.h>
 #include <timemng.h>
+#include "mousemng.h"
 #include <cpucore.h>
 #include <pccore.h>
 #include <io/iocore.h>
@@ -43,6 +44,9 @@
 #include <font/font.h>
 #include <generic/keydisp.h>
 #include <generic/hostdrv.h>
+#if defined(SUPPORT_HOSTDRVNT)
+#include <generic/hostdrvnt.h>
+#endif
 #include <calendar.h>
 #include <keystat.h>
 #include <io/bmsio.h>
@@ -74,10 +78,15 @@ uint8_t g_u8ControlState;
 static OEMCHAR m_strStateFilename[MAX_PATH];
 
 #ifdef USE_MAME
-UINT8 YMF262Read(void *chip, INT a);
-INT YMF262Write(void *chip, INT a, INT v);
-int YMF262FlagSave(void *chip, void *dstbuf);
-int YMF262FlagLoad(void *chip, void *srcbuf, int size);
+#ifdef USE_MAME_BSD
+#if _MSC_VER < 1900
+#include <sound/mamebsdsub/np2interop.h>
+#else
+#include <sound/mamebsd/np2interop.h>
+#endif
+#else
+#include <sound/mame/np2interop.h>
+#endif
 #endif
 
 extern int sxsi_unittbl[];
@@ -135,6 +144,7 @@ enum
 	STATFLAG_BMS,
 #endif
 	STATFLAG_SXSI,
+	STATFLAG_HDRVNT,
 	STATFLAG_MASK				= 0x3fff,
 	
 	STATFLAG_BWD_COMPATIBLE			= 0x4000, // このフラグが立っているとき、古いバージョンのステートセーブと互換性がある（足りないデータは0で埋められるので注意する）いまのところSTATFLAG_BINのみサポート
@@ -974,21 +984,20 @@ static int flagsave_fm(STFLAGH sfh, const SFENTRY *tbl)
 #ifdef USE_MAME
 		{
 			void* buffer;
-			SINT32 bufsize = 0;
-			bufsize = YMF262FlagSave(NULL, NULL);
-			buffer = malloc(bufsize);
 			for (i = 0; i < NELEMENTS(g_mame_opl3); i++)
 			{
 				if(g_mame_opl3[i]){
+					SINT32 bufsize = YMF262FlagSave(g_mame_opl3[i], NULL);
+					buffer = malloc(bufsize);
 					YMF262FlagSave(g_mame_opl3[i], buffer);
 					ret |= statflag_write(sfh, &bufsize, sizeof(SINT32));
 					ret |= statflag_write(sfh, buffer, bufsize);
+					free(buffer);
 				}else{
 					SINT32 tmpsize = 0;
 					ret |= statflag_write(sfh, &tmpsize, sizeof(SINT32));
 				}
 			}
-			free(buffer);
 		}
 #endif
 	}
@@ -1077,17 +1086,16 @@ static int flagload_fm(STFLAGH sfh, const SFENTRY *tbl)
 				int bufsize = 0;
 				ret |= statflag_read(sfh, &bufsize, sizeof(SINT32));
 				if(bufsize!=0){
-					if(YMF262FlagSave(NULL, NULL) != bufsize){
-						ret = STATFLAG_FAILURE;
-						break;
-					}else{
-						buffer = malloc(bufsize);
-						ret |= statflag_read(sfh, buffer, bufsize);
-						if(g_mame_opl3[i]){
-							YMF262FlagLoad(g_mame_opl3[i], buffer, bufsize);
+					buffer = malloc(bufsize);
+					ret |= statflag_read(sfh, buffer, bufsize);
+					if (g_mame_opl3[i]) {
+						if (!YMF262FlagLoad(g_mame_opl3[i], buffer, bufsize)) {
+							free(buffer);
+							ret = STATFLAG_FAILURE;
+							break;
 						}
-						free(buffer);
 					}
+					free(buffer);
 				}
 			}
 #endif
@@ -1129,8 +1137,8 @@ static int flagload_fm(STFLAGH sfh, const SFENTRY *tbl)
 			if(sizeof(_PCM86_OLD) < sizeof(g_pcm86)){
 				memset((UINT8*)(&g_pcm86) + sizeof(_PCM86_OLD), 0, sizeof(g_pcm86) - sizeof(_PCM86_OLD)); // ない部分は0埋め
 			}
-			g_pcm86.lastclock = g_pcm86.lastclock_obsolate;
-			g_pcm86.stepclock = g_pcm86.stepclock_obsolate;
+			g_pcm86.lastclock = g_pcm86.obsolate.lastclock_obsolate;
+			g_pcm86.stepclock = g_pcm86.obsolate.stepclock_obsolate;
 		}
 		if (nSaveFlags & FLAG_CS4231)
 		{
@@ -1156,17 +1164,16 @@ static int flagload_fm(STFLAGH sfh, const SFENTRY *tbl)
 				int bufsize = 0;
 				ret |= statflag_read(sfh, &bufsize, sizeof(SINT32));
 				if(bufsize!=0){
-					if(YMF262FlagSave(NULL, NULL) != bufsize){
-						ret = STATFLAG_FAILURE;
-						break;
-					}else{
-						buffer = malloc(bufsize);
-						ret |= statflag_read(sfh, buffer, bufsize);
-						if(g_mame_opl3[i]){
-							YMF262FlagLoad(g_mame_opl3[i], buffer, bufsize);
+					buffer = malloc(bufsize);
+					ret |= statflag_read(sfh, buffer, bufsize);
+					if (g_mame_opl3[i]) {
+						if (!YMF262FlagLoad(g_mame_opl3[i], buffer, bufsize)) {
+							free(buffer);
+							ret = STATFLAG_FAILURE;
+							break;
 						}
-						free(buffer);
 					}
+					free(buffer);
 				}
 			}
 #endif
@@ -1174,9 +1181,9 @@ static int flagload_fm(STFLAGH sfh, const SFENTRY *tbl)
 #if defined(SUPPORT_SOUND_SB16)
 		if (nSaveFlags & FLAG_SB16)
 		{
-			ret |= statflag_read(sfh, &g_sb16, sizeof(SB16_OLD));
-			if(sizeof(SB16_OLD) < sizeof(g_sb16)){
-				memset((UINT8*)(&g_sb16) + sizeof(SB16_OLD), 0, sizeof(g_sb16) - sizeof(SB16_OLD)); // ない部分は0埋め
+			ret |= statflag_read(sfh, &g_sb16, SIZEOF_SB16_OLD);
+			if(SIZEOF_SB16_OLD < sizeof(g_sb16)){
+				memset((UINT8*)(&g_sb16) + SIZEOF_SB16_OLD, 0, sizeof(g_sb16) - SIZEOF_SB16_OLD); // ない部分は0埋め
 			}
 		}
 #endif
@@ -1195,7 +1202,8 @@ static int flagload_fm(STFLAGH sfh, const SFENTRY *tbl)
 #if defined(SUPPORT_SOUND_SB16)
 	if (nSaveFlags & FLAG_SB16)
 	{
-		g_sb16.dsp_info.dma.chan = dmac.dmach + g_sb16.dmach; // DMAチャネル復元
+		g_sb16.dsp_info.dma.dmach = dmac.dmach + g_sb16.dmachnum; // DMAチャネル復元
+		dmac_attach(DMADEV_CT1741, g_sb16.dmachnum); // 再割り当て
 	}
 #endif
 	return(ret);
@@ -1629,8 +1637,13 @@ const SFENTRY	*tblterm;
 				break;
 
 #if defined(SUPPORT_HOSTDRV)
-				case STATFLAG_HDRV:
+			case STATFLAG_HDRV:
 				ret |= hostdrv_sfsave(&sffh->sfh, tbl);
+				break;
+#endif
+#if defined(SUPPORT_HOSTDRVNT)
+			case STATFLAG_HDRVNT:
+				ret |= hostdrvNT_sfsave(&sffh->sfh, tbl);
 				break;
 #endif
 
@@ -1700,11 +1713,20 @@ const SFENTRY	*tblterm;
 #if !defined(DISABLE_SOUND)
 				case STATFLAG_FM:
 #endif
-#if defined(SUPPORT_HOSTDRV)
-				case STATFLAG_HDRV:
-#endif
 					ret |= flagcheck_veronly(&sffh->sfh, tbl);
 					break;
+
+#if defined(SUPPORT_HOSTDRV)
+				case STATFLAG_HDRV:
+					ret |= flagcheck_veronly(&sffh->sfh, tbl);
+					break;
+#endif
+
+#if defined(SUPPORT_HOSTDRVNT)
+				case STATFLAG_HDRVNT:
+					ret |= flagcheck_veronly(&sffh->sfh, tbl);
+					break;
+#endif
 
 				case STATFLAG_FDD:
 					ret |= flagcheck_fdd(&sffh->sfh, tbl);
@@ -1746,6 +1768,9 @@ int statsave_load_d(void) {
 const SFENTRY	*tbl;
 const SFENTRY	*tblterm;
 	UINT		i;
+#if defined(SUPPORT_FMGEN)
+	UINT8		usefmgen = 0;
+#endif
 
 #if defined(__LIBRETRO__)
 	sffh = statflag_open(filename, NULL, 0);
@@ -1854,6 +1879,12 @@ const SFENTRY	*tblterm;
 					break;
 #endif
 
+#if defined(SUPPORT_HOSTDRVNT)
+				case STATFLAG_HDRVNT:
+					ret |= hostdrvNT_sfload(&sffh->sfh, tbl);
+					break;
+#endif
+
 				case STATFLAG_MEM:
 					ret |= flagload_mem(&sffh->sfh, tbl);
 					break;
@@ -1881,7 +1912,12 @@ const SFENTRY	*tblterm;
 
 	// ステートセーブ互換性維持用
 	if(pccore.maxmultiple == 0) pccore.maxmultiple = pccore.multiple;
-	
+
+#if defined(CPUCORE_IA32)
+	// FPUロード
+	fpu_statesave_load();
+#endif
+
 #if defined(SUPPORT_IA32_HAXM)
 	memcpy(vramex, vramex_base, sizeof(vramex_base));
 	i386haxfunc_vcpu_setREGs(&np2haxstat.state);
@@ -1934,7 +1970,10 @@ const SFENTRY	*tblterm;
 #endif
 
 #if defined(CPUCORE_IA32)
-	fpu_initialize();
+#if defined(USE_CPU_EIPMASK)
+	CPU_EIPMASK = CPU_STATSAVE.cpu_inst_default.op_32 ? 0xffffffff : 0xffff;
+#endif
+	fpu_initialize(0);
 #endif
 
 #if defined(SUPPORT_NET)
@@ -1953,12 +1992,17 @@ const SFENTRY	*tblterm;
 #endif
 	
 	// OPNAボリューム再設定
+#if defined(SUPPORT_FMGEN)
+	for (i = 0; i < OPNA_MAX; i++) {
+		usefmgen |= g_opna[i].usefmgen;
+	}
+#endif
 	if(g_nSoundID == SOUNDID_WAVESTAR){
 		opngen_setvol(np2cfg.vol_fm * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
 		psggen_setvol(np2cfg.vol_ssg * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
 		rhythm_setvol(np2cfg.vol_rhythm * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
 #if defined(SUPPORT_FMGEN)
-		if(np2cfg.usefmgen) {
+		if(usefmgen) {
 			opna_fmgen_setallvolumeFM_linear(np2cfg.vol_fm * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
 			opna_fmgen_setallvolumePSG_linear(np2cfg.vol_ssg * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
 			opna_fmgen_setallvolumeRhythmTotal_linear(np2cfg.vol_rhythm * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
@@ -1969,12 +2013,13 @@ const SFENTRY	*tblterm;
 		psggen_setvol(np2cfg.vol_ssg * np2cfg.vol_master / 100);
 		rhythm_setvol(np2cfg.vol_rhythm * np2cfg.vol_master / 100);
 #if defined(SUPPORT_FMGEN)
-		if(np2cfg.usefmgen) {
+		if(usefmgen) {
 			opna_fmgen_setallvolumeFM_linear(np2cfg.vol_fm * np2cfg.vol_master / 100);
 			opna_fmgen_setallvolumePSG_linear(np2cfg.vol_ssg * np2cfg.vol_master / 100);
 			opna_fmgen_setallvolumeRhythmTotal_linear(np2cfg.vol_rhythm * np2cfg.vol_master / 100);
 		}
 #endif
+		oplgen_setvol(np2cfg.vol_fm * np2cfg.vol_master / 100);
 	}
 	for (i = 0; i < NELEMENTS(g_opna); i++)
 	{
@@ -2014,6 +2059,11 @@ const SFENTRY	*tblterm;
 	pit_setrs232cspeed((pit.ch + 2)->value);
 #if defined(SUPPORT_RS232C_FIFO)
 	rs232c_vfast_setrs232cspeed(rs232cfifo.vfast);
+#endif
+	
+#if !defined(NP2_SDL) && !defined(__LIBRETRO__) && !defined(NP2_X)
+	// カーソル表示状態復元
+	mousemng_updateautohidecursor();
 #endif
 	
 	return(ret);

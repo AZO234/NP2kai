@@ -1,21 +1,20 @@
-#include	<compiler.h>
+#include	"compiler.h"
 #include	"resource.h"
 #include	"toolwnd.h"
-#include	<common/strres.h>
-#include	<np2.h>
-#include	<np2mt.h>
+#include	"strres.h"
+#include	"np2.h"
+#include	"np2mt.h"
 #include	"winloc.h"
-#include	<dosio.h>
-#include	<soundmng.h>
-#include	<sysmng.h>
+#include	"dosio.h"
+#include	"soundmng.h"
+#include	"sysmng.h"
 #include	"menu.h"
-#include	<ini.h>
+#include	"ini.h"
 #include "dialog\np2class.h"
 #include "misc\DlgProc.h"
 #include "misc\tstring.h"
-#include	<pccore.h>
-#include	<fdd/diskdrv.h>
-#include	"dialog/winfiledlg.h"
+#include	"pccore.h"
+#include	"fdd/diskdrv.h"
 
 extern WINLOCEX np2_winlocexallwin(HWND base);
 
@@ -69,11 +68,11 @@ static const DISKACC diskacc[3] = {
 					{IDC_TOOLFDD2ACC,	&toolwin.m_fddaccess[1]},
 					{IDC_TOOLHDDACC,	&toolwin.m_hddaccess}};
 
-static UINT fdlistlen = FDDLIST_DEFAULT; // FDãƒ•ã‚¡ã‚¤ãƒ«å±¥æ­´æ•°
+static UINT fdlistlen = FDDLIST_DEFAULT; // FDƒtƒ@ƒCƒ‹—š—ğ”
 
 /**
- * ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’è¿”ã™
- * @return ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+ * ƒCƒ“ƒXƒ^ƒ“ƒX‚ğ•Ô‚·
+ * @return ƒCƒ“ƒXƒ^ƒ“ƒX
  */
 CToolWnd* CToolWnd::GetInstance()
 {
@@ -81,14 +80,14 @@ CToolWnd* CToolWnd::GetInstance()
 }
 
 /**
- * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
  */
 CToolWnd::CToolWnd()
 {
 }
 
 /**
- * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒfƒXƒgƒ‰ƒNƒ^
  */
 CToolWnd::~CToolWnd()
 {
@@ -247,6 +246,7 @@ static void sellist(UINT drv) {
 	fdd = s_toolwndcfg.fdd + drv;
 	sel = (UINT)SendMessage(hwnd, CB_GETCURSEL, 0, 0);
 	if (sel < fdd->cnt) {
+		file_cpyname(fddfolder, fdd->name[fdd->pos[sel]], _countof(fddfolder));
 		diskdrv_setfdd(drv, fdd->name[fdd->pos[sel]], 0);
 		fdd->insert = 1;
 		setlist(hwnd, fdd, sel);
@@ -355,6 +355,7 @@ static LRESULT CALLBACK twsub(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 				diskdrv_setfdd(1, fname, 0);
 				toolwin_setfdd(1, fname);
 			}
+			file_cpyname(fddfolder, fname, _countof(fddfolder));
 		}
 		DragFinish((HDROP)wp);
 		return(FALSE);
@@ -429,6 +430,7 @@ void CToolWnd::CreateSubItems()
 			sub = CreateWindow(cls, p->text, WS_CHILD | WS_VISIBLE | style,
 							p->posx, p->posy, p->width, p->height,
 							m_hWnd, (HMENU)(i + IDC_BASE), CWndProc::GetInstanceHandle(), NULL);
+			winloc_DisableCornerRound(sub);
 		}
 		m_sub[i] = sub;
 		m_subproc[i] = NULL;
@@ -467,10 +469,10 @@ void CToolWnd::DestroySubItems()
 		if (sub)
 		{
 			if(m_subproc[i]){
-				SetWindowLongPtr(sub, GWLP_WNDPROC, (LONG_PTR)m_subproc[i]); // ä¸€å¿œæˆ»ã—ã¦ãŠã„ã¦ã‚ã’ã¾ã—ã‚‡ã†
+				SetWindowLongPtr(sub, GWLP_WNDPROC, (LONG_PTR)m_subproc[i]); // ˆê‰–ß‚µ‚Ä‚¨‚¢‚Ä‚ ‚°‚Ü‚µ‚å‚¤
 			}
 			m_subproc[i] = NULL;
-			::SetParent(sub, NULL); // å­ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦è§£é™¤
+			::SetParent(sub, NULL); // qƒEƒBƒ“ƒhƒE‰ğœ
 			::DestroyWindow(sub);
 		}
 	}
@@ -783,8 +785,6 @@ LRESULT CToolWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 						if(!np2_multithread_Enabled())
 							CSoundMng::GetInstance()->Disable(SNDPROC_TOOL);
 
-						TCHAR szPath[MAX_PATH];
-						TCHAR szName[MAX_PATH];
 						std::tstring rExt(LoadTString(IDS_SKINEXT));
 						std::tstring rFilter(LoadTString(IDS_SKINFILTER));
 						std::tstring rTitle(LoadTString(IDS_SKINTITLE));
@@ -792,15 +792,14 @@ LRESULT CToolWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 						CFileDlg dlg(TRUE, rExt.c_str(), s_toolwndcfg.skin, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, rFilter.c_str(), m_hWnd);
 						dlg.m_ofn.lpstrTitle = rTitle.c_str();
 						dlg.m_ofn.nFilterIndex = 1;
-						OPENFILENAMEW ofnw;
-						const BOOL r = WinFileDialogW(NULL, &ofnw, WINFILEDIALOGW_MODE_GET1, szPath, szName, rExt.c_str(), rTitle.c_str(), rFilter.c_str(), 1);
+						const BOOL r = dlg.DoModal();
 						
 						if(!np2_multithread_Enabled())
 							CSoundMng::GetInstance()->Enable(SNDPROC_TOOL);
 
 						if (r)
 						{
-							file_cpyname(s_toolwndcfg.skin, szPath, _countof(s_toolwndcfg.skin));
+							file_cpyname(s_toolwndcfg.skin, dlg.GetPathName(), _countof(s_toolwndcfg.skin));
 							ChangeSkin();
 						}
 					}
@@ -833,7 +832,7 @@ LRESULT CToolWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 			break;
 
 #if 0
-		case WM_KEYDOWN:						// TABã‚’æŠ¼ã—ãŸæ™‚ã«å¾©å¸°
+		case WM_KEYDOWN:						// TAB‚ğ‰Ÿ‚µ‚½‚É•œ‹A
 			if ((short)wParam == VK_TAB)
 			{
 				UINT idc = (UINT)GetWindowLongPtr(m_hWnd, GTWLP_FOCUS);
@@ -943,7 +942,7 @@ LRESULT CToolWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ä½œæˆ
+ * ì¬
  */
 void CToolWnd::Create()
 {
@@ -1097,11 +1096,11 @@ const DISKACC	*accterm;
 
 // ----
 
-//! ã‚¿ã‚¤ãƒˆãƒ«
+//! ƒ^ƒCƒgƒ‹
 static const TCHAR s_toolwndapp[] = TEXT("NP2 tool");
 
 /**
- * è¨­å®š
+ * İ’è
  */
 static const PFTBL s_toolwndini[] =
 {
@@ -1159,7 +1158,7 @@ int gettoolwndini(PFTBL **ptoolwndini)
 }
 
 /**
- * è¨­å®šèª­ã¿è¾¼ã¿
+ * İ’è“Ç‚İ‚İ
  */
 void toolwin_readini()
 {
@@ -1181,7 +1180,7 @@ void toolwin_readini()
 }
 
 /**
- * è¨­å®šæ›¸ãè¾¼ã¿
+ * İ’è‘‚«‚İ
  */
 void toolwin_writeini()
 {

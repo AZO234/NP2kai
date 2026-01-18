@@ -4,6 +4,9 @@
 // ---------------------------------------------------------------------------
 //	$Id: opna.h,v 1.33 2003/06/12 13:14:37 cisc Exp $
 
+#pragma once
+#if defined(SUPPORT_FMGEN)
+
 #ifndef FM_OPNA_H
 #define FM_OPNA_H
 
@@ -515,3 +518,5 @@ inline void FM::OPNBase::SetVolumePSG(int db)
 }
 
 #endif // FM_OPNA_H
+
+#endif	/* SUPPORT_FMGEN */

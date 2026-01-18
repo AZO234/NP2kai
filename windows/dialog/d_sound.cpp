@@ -3,25 +3,25 @@
  * @brief	Sound configure dialog procedure
  */
 
-#include <compiler.h>
+#include "compiler.h"
 #include "resource.h"
 #include "dialog.h"
 #include "c_combodata.h"
 #include "c_dipsw.h"
 #include "c_slidervalue.h"
 #include "np2class.h"
-#include <dosio.h>
-#include <joymng.h>
-#include <np2.h>
-#include <sysmng.h>
+#include "dosio.h"
+#include "joymng.h"
+#include "np2.h"
+#include "sysmng.h"
 #include "misc/PropProc.h"
-#include <pccore.h>
-#include <io/iocore.h>
-#include <soundmng.h>
-#include <generic/dipswbmp.h>
-#include <sound/sound.h>
-#include <sound/fmboard.h>
-#include <sound/tms3631.h>
+#include "pccore.h"
+#include "iocore.h"
+#include "soundmng.h"
+#include "generic/dipswbmp.h"
+#include "sound/sound.h"
+#include "sound/fmboard.h"
+#include "sound/tms3631.h"
 #if defined(SUPPORT_FMGEN)
 #include "sound/opna.h"
 #endif	/* SUPPORT_FMGEN */
@@ -154,7 +154,10 @@ void SndOptMixerPage::OnOK()
 	//}
 
 	UINT volex = 15;
-	if(g_nSoundID==SOUNDID_WAVESTAR){
+	if(g_nSoundID == SOUNDID_WAVESTAR){
+		volex = cs4231.devvolume[0xff];
+	}
+	if (g_nSoundID == SOUNDID_WAVESTAR) {
 		volex = cs4231.devvolume[0xff];
 	}
 	const UINT8 cFM = static_cast<UINT8>(m_fm.GetPos());
@@ -165,6 +168,7 @@ void SndOptMixerPage::OnOK()
 #if defined(SUPPORT_FMGEN)
 		opna_fmgen_setallvolumeFM_linear(cFM * volex / 15 * np2cfg.vol_master / 100);
 #endif	/* SUPPORT_FMGEN */
+		oplgen_setvol(cFM * np2cfg.vol_master / 100);
 		bUpdated = true;
 	}
 
@@ -1547,7 +1551,7 @@ BOOL SndOptSB16Page::OnCommand(WPARAM wParam, LPARAM lParam)
 	switch (LOWORD(wParam))
 	{
 		case IDC_SND118IO:
-			m_snd118io = m_cmbio.GetCurItemData(0x0188);
+			m_snd118io = m_cmbio.GetCurItemData(0xd2);
 			return TRUE;
 
 		case IDC_SND118DMA:
@@ -1555,7 +1559,7 @@ BOOL SndOptSB16Page::OnCommand(WPARAM wParam, LPARAM lParam)
 			return TRUE;
 
 		case IDC_SND118INTF:
-			m_snd118irqf = m_cmbirqf.GetCurItemData(12);
+			m_snd118irqf = m_cmbirqf.GetCurItemData(5);
 			return TRUE;
 
 		case IDC_SND118DEF:
@@ -1895,6 +1899,7 @@ public:
 protected:
 	virtual BOOL OnInitDialog();
 	virtual void OnOK();
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 
 private:
 	CComboData m_cmbid;				//!< ID
@@ -1925,6 +1930,17 @@ SndOptPadPage::SndOptPadPage()
 BOOL SndOptPadPage::OnInitDialog()
 {
 	CheckDlgButton(IDC_JOYPAD1, (np2oscfg.JOYPAD1 & 1) ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(IDC_PAD1_POVXY, (np2oscfg.JOYPAD1POVXY & 1) ? BST_CHECKED : BST_UNCHECKED);
+#if defined(SUPPORT_GAMEPORT)
+	CheckDlgButton(IDC_PAD1_GAMEPORT, (np2cfg.gameport & 1) ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(IDC_PAD1_ANALOG, (np2cfg.analogjoy & 1) ? BST_CHECKED : BST_UNCHECKED);
+#else
+	GetDlgItem(IDC_PAD1_GAMEPORT).EnableWindow(0);
+	GetDlgItem(IDC_PAD1_ANALOG).EnableWindow(0);
+#endif
+
+	const BOOL bGamePortEnable = (IsDlgButtonChecked(IDC_PAD1_GAMEPORT) != BST_UNCHECKED) ? TRUE : FALSE;
+	GetDlgItem(IDC_PAD1_ANALOG).EnableWindow(bGamePortEnable);
 
 	for (UINT i = 0; i < _countof(s_pad); i++)
 	{
@@ -2014,6 +2030,26 @@ void SndOptPadPage::OnOK()
 		np2oscfg.JOYPAD1 = cJoyPad;
 	}
 
+	const UINT8 cJoyPadPOVXY = (np2oscfg.JOYPAD2POVXY & (~1)) | ((IsDlgButtonChecked(IDC_PAD1_POVXY) != BST_UNCHECKED) ? 1 : 0);
+	if (np2oscfg.JOYPAD1POVXY != cJoyPadPOVXY)
+	{
+		np2oscfg.JOYPAD1POVXY = cJoyPadPOVXY;
+	}
+
+#if defined(SUPPORT_GAMEPORT)
+	const UINT8 cJoyPadGamePort = (np2oscfg.JOYPAD1 & (~1)) | ((IsDlgButtonChecked(IDC_PAD1_GAMEPORT) != BST_UNCHECKED) ? 1 : 0);
+	if (np2cfg.gameport != cJoyPadGamePort)
+	{
+		np2cfg.gameport = cJoyPadGamePort;
+	}
+
+	const UINT8 cJoyPadAnalogInput = (np2oscfg.JOYPAD1 & (~1)) | ((IsDlgButtonChecked(IDC_PAD1_ANALOG) != BST_UNCHECKED) ? 1 : 0);
+	if (np2cfg.analogjoy != cJoyPadAnalogInput)
+	{
+		np2cfg.analogjoy = cJoyPadAnalogInput;
+	}
+#endif
+
 	for (UINT i = 0; i < _countof(s_pad); i++)
 	{
 		UINT8 cBtn = 0;
@@ -2030,7 +2066,7 @@ void SndOptPadPage::OnOK()
 			}
 		}
 	}
-
+	
 	const UINT8 cJoyID = (UINT8)m_cmbid.GetCurItemData(np2oscfg.JOYPAD1ID);
 	if(cJoyID != np2oscfg.JOYPAD1ID)
 	{
@@ -2041,8 +2077,25 @@ void SndOptPadPage::OnOK()
 	if (bUpdated)
 	{
 		::joymng_initialize();
-		::sysmng_update(SYS_UPDATEOSCFG);
+		::sysmng_update(SYS_UPDATEOSCFG|SYS_UPDATECFG);
 	}
+}
+
+/**
+ * ユーザーがメニューの項目を選択したときに、フレームワークによって呼び出されます
+ * @param[in] wParam パラメタ
+ * @param[in] lParam パラメタ
+ * @retval TRUE アプリケーションがこのメッセージを処理した
+ */
+BOOL SndOptPadPage::OnCommand(WPARAM wParam, LPARAM lParam)
+{
+	if (LOWORD(wParam) == IDC_PAD1_GAMEPORT)
+	{
+		const BOOL bEnable = (IsDlgButtonChecked(IDC_PAD1_GAMEPORT) != BST_UNCHECKED) ? TRUE : FALSE;
+		GetDlgItem(IDC_PAD1_ANALOG).EnableWindow(bEnable);
+		return TRUE;
+	}
+	return FALSE;
 }
 
 

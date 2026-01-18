@@ -241,7 +241,7 @@ static void writeRegister(POPL3 opl3, UINT nAddress, REG8 cData)
 	}
 	else
 	{
-#ifndef USE_MAME
+#if !defined(USE_MAME) || defined(USE_MAME_BSD)
 		sound_sync();
 #endif
 		oplgen_setreg(&opl3->oplgen, nAddress, cData);
@@ -324,7 +324,7 @@ static void writeExtendedRegister(POPL3 opl3, UINT nAddress, REG8 cData)
 //#if 0
 	else
 	{
-#ifndef USE_MAME
+#if !defined(USE_MAME) || defined(USE_MAME_BSD)
 		sound_sync();
 #endif
 		oplgen_setreg(&opl3->oplgen, nAddress + 0x100, cData);

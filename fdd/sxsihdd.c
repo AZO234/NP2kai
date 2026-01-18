@@ -192,7 +192,7 @@ const OEMCHAR	*ext;
 		size = 256;
 		totals = (FILEPOS)cylinders * sectors * surfaces;
 	}
-	else if ((iftype == SXSIDRV_SASI) && (!file_cmpname(ext, str_nhd))) {
+	else if ((iftype == SXSIDRV_SASI || iftype == SXSIDRV_SCSI) && (!file_cmpname(ext, str_nhd))) {
 		NHDHDR nhd;						// T98Next HDD (IDE)
 		if ((file_read(fh, &nhd, sizeof(nhd)) != sizeof(nhd)) ||
 			(memcmp(nhd.sig, sig_nhd, 15))) {
@@ -205,7 +205,7 @@ const OEMCHAR	*ext;
 		size = LOADINTELWORD(nhd.sectorsize);
 		totals = (FILEPOS)cylinders * sectors * surfaces;
 	}
-	else if ((iftype == SXSIDRV_SASI) && (!file_cmpname(ext, str_hdi))) {
+	else if ((iftype == SXSIDRV_SASI || iftype == SXSIDRV_SCSI) && (!file_cmpname(ext, str_hdi))) {
 		HDIHDR hdi;						// ANEX86 HDD (SASI) thanx Mamiya
 		if (file_read(fh, &hdi, sizeof(hdi)) != sizeof(hdi)) {
 			goto sxsiope_err2;
@@ -270,7 +270,7 @@ const OEMCHAR	*ext;
 		totals = (FILEPOS)cylinders * sectors * surfaces;
 	}
 #ifdef SUPPORT_VPCVHD
-	else if ((iftype == SXSIDRV_SASI) && (!file_cmpname(ext, str_vhd))) {
+	else if ((iftype == SXSIDRV_SASI || iftype == SXSIDRV_SCSI) && (!file_cmpname(ext, str_vhd))) {
 		// Microsoft VirtualPC VHD (SASI/IDE)
 		BRESULT rc = sxsihdd_vpcvhd_mount(sxsi, fh);
 		if (rc == FAILURE) {

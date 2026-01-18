@@ -789,7 +789,8 @@ INCFLAGS += -I$(NP2_PATH)/sdl/libretro \
 	-I$(NP2_PATH)/i386c/ia32/instructions \
 	-I$(NP2_PATH)/i386c/ia32/instructions/fpu
 
-SOURCES_C += $(NP2_PATH)/sdl/libretro/libretro.c \
+SOURCES_C += $(NP2_PATH)/generic/hostdrv.c \
+	$(NP2_PATH)/sdl/libretro/libretro.c \
 	$(wildcard $(NP2_PATH)/i386c/*.c) \
 	$(wildcard $(NP2_PATH)/i386c/ia32/*.c) \
 	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/*.c) \
@@ -798,6 +799,7 @@ SOURCES_C += $(NP2_PATH)/sdl/libretro/libretro.c \
 	$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox2.c \
 	$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_softfloat.c \
 	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/fpu/softfloat/*.c) \
+	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/fpu/softfloat3/*.c) \
 	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/mmx/*.c) \
 	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse/*.c) \
 	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse2/*.c) \
@@ -805,6 +807,8 @@ SOURCES_C += $(NP2_PATH)/sdl/libretro/libretro.c \
 	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/ssse3/*.c) \
 	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse4/*.c) \
 	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse4a/*.c) \
+
+SOURCES_CXX += $(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_softfloat3.cpp
 
 #	$(NP2_PATH)/sdl/libretro/libretro-common/file/archive_file_zlib.c \
 #	$(NP2_PATH)/sdl/libretro/libretro-common/formats/libchdr/libchdr_flac.c \
@@ -893,7 +897,7 @@ ifeq ($(HAS_GCC), 1)
 	GCC_WARNINGS += -pedantic \
 		-Wall -Wextra \
 		-Wformat \
-		-Wformat-security \
+		-Wformat-security
 	# These flags are not compatible with PS3
 	ifneq ($(platform), ps3)
 		GCC_WARNINGS += -Wno-overflow \
@@ -948,11 +952,13 @@ else
 endif
 	@echo "** BUILD SUCCESSFUL! GG NO RE **"
 
+COMMON_C_FLAGS := -Wno-implicit-function-declaration  -Wno-incompatible-pointer-types -Wno-int-conversion
+
 %.o: %.cpp
-	$(CXX) -c $(OBJOUT)$@ $< $(CXXFLAGS) $(INCDIRS)
+	$(CXX) -c $(OBJOUT)$@ $< $(CXXFLAGS) $(INCDIRS) $(COMMON_C_FLAGS)
 
 %.o: %.c
-	$(CC) -c $(OBJOUT)$@ $< $(CFLAGS) $(INCDIRS)
+	$(CC) -c $(OBJOUT)$@ $< $(CFLAGS) $(INCDIRS) $(COMMON_C_FLAGS)
 
 clean-objs:
 	rm -f $(OBJECTS)

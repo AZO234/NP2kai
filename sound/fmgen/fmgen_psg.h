@@ -4,6 +4,9 @@
 // ---------------------------------------------------------------------------
 //	$Id: psg.h,v 1.8 2003/04/22 13:12:53 cisc Exp $
 
+#pragma once
+#if defined(SUPPORT_FMGEN)
+
 #ifndef PSG_H
 #define PSG_H
 
@@ -112,3 +115,5 @@ protected:
 };
 
 #endif // PSG_H
+
+#endif	/* SUPPORT_FMGEN */

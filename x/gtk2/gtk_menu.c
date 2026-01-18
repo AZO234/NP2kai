@@ -1011,7 +1011,7 @@ cb_change_font(GtkAction *action, gpointer user_data)
 		path = g_filename_from_utf8(utf8, -1, NULL, NULL, NULL);
 		if (path) {
 			if ((stat(path, &sb) == 0) && S_ISREG(sb.st_mode) && (sb.st_mode & S_IRUSR)) {
-				if (font_load(path, FALSE)) {
+				if (font_load(path, FALSE, np2cfg.fontface)) {
 					gdcs.textdisp |= GDCSCRN_ALLDRAW2;
 					file_cpyname(np2cfg.fontfile, path, sizeof(np2cfg.fontfile));
 					sysmng_update(SYS_UPDATECFG);

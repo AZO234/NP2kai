@@ -1,0 +1,6 @@
+TARGETNAME=npmouse
+TARGETTYPE=DRIVER
+TARGETPATH=obj
+SOURCES= \
+    npmouse.c \
+    npmouse.rc

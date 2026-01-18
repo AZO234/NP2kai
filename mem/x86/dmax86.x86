@@ -1,0 +1,56 @@
+
+%include	'iocore.inc'
+
+section .text
+
+	global	_dmax86
+	extern	@i286_memoryread@4
+	extern	@i286_memorywrite@8
+
+				align	16
+_dmax86:		cmp		byte [_dmac + dmac_t.working], byte 0
+				je		short .nowork
+				mov		cl, 1
+				mov		eax, _dmac + dmac_t.dmach
+.sea:			test	[_dmac + dmac_t.working], cl
+				jne		short .hit
+				add		cl, cl
+				add		eax, byte dmach_t_size
+				test	cl, 15
+				jne		short .sea
+.nowork:		ret
+
+.hit:			push	edi
+				sub		word [eax + dmach_t.leng], byte 1
+				mov		edi, eax
+				jnc		short .exec
+				or		[_dmac + dmac_t.stat], cl
+				not		cl
+				and		[_dmac + dmac_t.working], cl
+				mov		ecx, DMAEXT_END
+				call	dword [edi + dmach_t.extproc]
+.exec:			mov		al, [edi + dmach_t.mode]
+				and		al, 0x0c
+				je		short .verify
+				cmp		al, 0x04
+				je		short .port2mem
+				mov		ecx, [edi + dmach_t.adrs]
+				call	@i286_memoryread@4
+				mov		cl, al
+				call	dword [edi + dmach_t.outproc]
+				jmp		short .inccnt
+.verify:		call	dword [edi + dmach_t.inproc]
+				jmp		short .inccnt
+.port2mem:		call	dword [edi + dmach_t.inproc]
+				mov		ecx, [edi + dmach_t.adrs]
+				mov		dl, al
+				call	@i286_memorywrite@8
+.inccnt:		test	byte [edi + dmach_t.mode], 0x20
+				jne		short .adrsdec
+				inc		dword [edi + dmach_t.adrs]
+				pop		edi
+				ret
+.adrsdec:		dec		dword [edi + dmach_t.adrs]
+				pop		edi
+				ret
+

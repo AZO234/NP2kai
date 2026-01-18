@@ -139,9 +139,9 @@ UINT8 MEMCALL cpu_linear_memory_read_b(UINT32 laddr, int ucrw);
 UINT16 MEMCALL cpu_linear_memory_read_w(UINT32 laddr, int ucrw);
 UINT32 MEMCALL cpu_linear_memory_read_d(UINT32 laddr, int ucrw);
 UINT64 MEMCALL cpu_linear_memory_read_q(UINT32 laddr, int ucrw);
-UINT8 MEMCALL cpu_linear_memory_read_b_codefetch(UINT32 laddr, int ucrw);
-UINT16 MEMCALL cpu_linear_memory_read_w_codefetch(UINT32 laddr, int ucrw);
-UINT32 MEMCALL cpu_linear_memory_read_d_codefetch(UINT32 laddr, int ucrw);
+PF_UINT8 MEMCALL cpu_linear_memory_read_b_codefetch(UINT32 laddr, int ucrw);
+PF_UINT16 MEMCALL cpu_linear_memory_read_w_codefetch(UINT32 laddr, int ucrw);
+PF_UINT32 MEMCALL cpu_linear_memory_read_d_codefetch(UINT32 laddr, int ucrw);
 REG80 MEMCALL cpu_linear_memory_read_f(UINT32 laddr, int ucrw);
 void MEMCALL cpu_linear_memory_write_b(UINT32 laddr, UINT8 value, int ucrw);
 void MEMCALL cpu_linear_memory_write_w(UINT32 laddr, UINT16 value, int ucrw);
@@ -207,7 +207,7 @@ cpu_lmemoryread_b(UINT32 laddr, int ucrw)
 		return cpu_memoryread_b(laddr);
 	return cpu_linear_memory_read_b(laddr, ucrw);
 }
-STATIC_INLINE UINT8 MEMCALL
+STATIC_INLINE PF_UINT8 MEMCALL
 cpu_lmemoryread_b_codefetch(UINT32 laddr, int ucrw)
 {
 
@@ -226,7 +226,7 @@ cpu_lmemoryread_w(UINT32 laddr, int ucrw)
 		return cpu_memoryread_w(laddr);
 	return cpu_linear_memory_read_w(laddr, ucrw);
 }
-STATIC_INLINE UINT16 MEMCALL
+STATIC_INLINE PF_UINT16 MEMCALL
 cpu_lmemoryread_w_codefetch(UINT32 laddr, int ucrw)
 {
 
@@ -244,7 +244,7 @@ cpu_lmemoryread_d(UINT32 laddr, int ucrw)
 		return cpu_memoryread_d(laddr);
 	return cpu_linear_memory_read_d(laddr, ucrw);
 }
-STATIC_INLINE UINT32 MEMCALL
+STATIC_INLINE PF_UINT32 MEMCALL
 cpu_lmemoryread_d_codefetch(UINT32 laddr, int ucrw)
 {
 

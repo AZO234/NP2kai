@@ -1,0 +1,73 @@
+[Version]
+signature="$CHICAGO$"
+Class=SCSIAdapter
+ClassGUID={4D36E97B-E325-11CE-BFC1-08002BE10318}
+Provider=%INF_PROVIDER%
+LayoutFile=layout.inf
+DriverVer=06/21/2025
+
+[SourceDisksNames]
+1 = %FLOPPY_DESCRIPTION%,,,.
+
+[SourceDisksFiles]
+npstor.sys = 1
+npstor.mpd = 1
+SCSIPORT.PDR = 2
+
+[Manufacturer]
+%NP2%=NP2
+
+[NP2]
+%*NPSTOR.DeviceDesc%= NPSTOR,*NPSTOR
+
+[NPSTOR]
+CopyFiles=@npstor.mpd,@SCSIPORT.PDR
+LogConfig=*NPSTOR.LogConfig
+AddReg = ios, win98.reg
+
+[NPSTOR.NTx86]
+CopyFiles=@npstor.sys
+LogConfig=*NPSTOR.LogConfig
+
+[NPSTOR.NTx86.Services]
+AddService = npstor, 2, npstor_Service_Inst, Miniport_EventLog_Inst
+
+[npstor_Service_Inst]
+ServiceType    = 1      ; SERVICE_KERNEL_DRIVER
+StartType      = 0      ; SERVICE_BOOT_START
+ErrorControl   = 1      ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\npstor.sys
+LoadOrderGroup = SCSI Miniport
+AddReg         = pnpsafe_isa_addreg
+
+[pnpsafe_isa_addreg]
+HKR, "Parameters\PnpInterface", "1", 0x00010001, 0x00000001
+
+[*NPSTOR.LogConfig]
+ConfigPriority = HARDRECONFIG
+IOConfig       = 7EA-7EB
+
+[Miniport_EventLog_Inst]
+AddReg = Miniport_EventLog_AddReg
+
+[Miniport_EventLog_AddReg]
+HKR,,EventMessageFile,0x00020000,"%%SystemRoot%%\System32\IoLogMsg.dll"
+HKR,,TypesSupported,0x00010001,7
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+[IOS]
+HKR,,DevLoader,,*IOS
+HKR,,DontLoadIfConflict,,"Y"
+
+[WIN98.REG]
+HKR,,PortDriver,,npstor.mpd
+
+[Strings]
+INF_PROVIDER="ねこさん開発ちーむ"
+NP2="Neko Project II"
+FLOPPY_DESCRIPTION="Neko Project II ユーティリティディスク"
+*NPSTOR.DeviceDesc="Neko Project II SCSI Host Controller"
+
+

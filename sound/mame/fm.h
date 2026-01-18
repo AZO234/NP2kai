@@ -2,6 +2,9 @@
   File: fm.h -- header file for software emulation for FM sound generator
 
 */
+
+#ifndef USE_MAME_BSD
+
 #ifndef _H_FM_FM_
 #define _H_FM_FM_
 
@@ -222,3 +225,5 @@ void YM2612Postload(void *chip);
 #endif
 
 #endif /* _H_FM_FM_ */
+
+#endif

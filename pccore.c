@@ -54,6 +54,9 @@
 #if defined(SUPPORT_HOSTDRV)
 #include	<generic/hostdrv.h>
 #endif
+#if defined(SUPPORT_HOSTDRVNT)
+#include	<generic/hostdrvnt.h>
+#endif
 #include	<np2ver.h>
 #include	<calendar.h>
 #include	<timing.h>
@@ -116,7 +119,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2KAI_GIT_TAG " " NP2KAI_GIT_HASH);
 				0, 0, {1, 1, 6, 1, 8, 1},
 				128, 0x00, 1, 
 #if defined(SUPPORT_ASYNC_CPU)
-				0, 
+				0, 0,
 #endif
 				1,
 #if defined(SUPPORT_IDEIO)
@@ -150,7 +153,7 @@ const OEMCHAR np2version[] = OEMTEXT(NP2KAI_GIT_TAG " " NP2KAI_GIT_HASH);
 #if defined(SUPPORT_FMGEN)
 				1,
 #endif	/* SUPPORT_FMGEN */
-				3, 0, 50, 0, 0, 1,
+				3, 0, 50, 0, 0, 1, 0,
 
 				0, {OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
 #if defined(SUPPORT_IDEIO)
@@ -205,8 +208,15 @@ const OEMCHAR np2version[] = OEMTEXT(NP2KAI_GIT_TAG " " NP2KAI_GIT_HASH);
 				0, 0,
 				1, 0,
 #if defined(SUPPORT_GAMEPORT)
-				0,
+				0, 0,
 #endif
+				0, 0, 0, 0,
+				0,
+#if defined(SUPPORT_NP2SCSI)
+				1,
+#endif
+				100,
+				OEMTEXT(""),
 				0,
 				0,
 				0,
@@ -463,6 +473,9 @@ void pccore_init(void) {
 	
 #if defined(SUPPORT_MULTITHREAD)
 	nevent_initialize();
+	pcm86cs_initialize();
+	cs4231cs_initialize();
+	ct1741cs_initialize();
 #endif
 	
 #if defined(SUPPORT_IA32_HAXM)
@@ -505,7 +518,7 @@ void pccore_init(void) {
 	sxsi_initialize();
 
 	font_initialize();
-	font_load(np2cfg.fontfile, TRUE);
+	font_load(np2cfg.fontfile, TRUE, np2cfg.fontface);
 	maketext_initialize();
 	makegrph_initialize();
 	gdcsub_initialize();
@@ -542,6 +555,10 @@ void pccore_init(void) {
 	hostdrv_initialize();
 #endif
 
+#if defined(SUPPORT_HOSTDRVNT)
+	hostdrvNT_initialize();
+#endif
+
 #if defined(SUPPORT_GPIB)
 	gpibio_initialize();
 #endif
@@ -551,6 +568,10 @@ void pccore_term(void) {
 	
 #if defined(SUPPORT_GPIB)
 	gpibio_shutdown();
+#endif
+
+#if defined(SUPPORT_HOSTDRVNT)
+	hostdrvNT_deinitialize();
 #endif
 
 #if defined(SUPPORT_HOSTDRV)
@@ -616,6 +637,9 @@ void pccore_term(void) {
 #endif
 	
 #if defined(SUPPORT_MULTITHREAD)
+	pcm86cs_shutdown();
+	cs4231cs_shutdown();
+	ct1741cs_shutdown();
 	nevent_shutdown();
 #endif
 }
@@ -822,9 +846,30 @@ void pccore_reset(void) {
 	// mov cs,xx許可フラグ
 	i386cpuid.allow_movCS = np2cfg.allowMOVCS;
 
-	// FPU種類を設定
+	// FPU種類を設定 使えないなら別のタイプへ変更する
 	i386cpuid.fpu_type = np2cfg.fpu_type;
-	fpu_initialize();
+#if !defined(SUPPORT_FPU_SOFTFLOAT) && !defined(SUPPORT_FPU_SOFTFLOAT3)
+	if (i386cpuid.fpu_type == FPU_TYPE_SOFTFLOAT) {
+		i386cpuid.fpu_type = FPU_TYPE_DOSBOX2;
+	}
+#elif !defined(SUPPORT_FPU_DOSBOX2)
+	if (i386cpuid.fpu_type == FPU_TYPE_DOSBOX2) {
+#if defined(SUPPORT_FPU_SOFTFLOAT) || defined(SUPPORT_FPU_SOFTFLOAT3)
+		i386cpuid.fpu_type = FPU_TYPE_SOFTFLOAT;
+#else
+		i386cpuid.fpu_type = FPU_TYPE_DOSBOX;
+#endif
+	}
+#elif !defined(SUPPORT_FPU_DOSBOX)
+	if (i386cpuid.fpu_type == FPU_TYPE_DOSBOX) {
+#if defined(SUPPORT_FPU_SOFTFLOAT) || defined(SUPPORT_FPU_SOFTFLOAT3)
+		i386cpuid.fpu_type = FPU_TYPE_SOFTFLOAT;
+#else
+		i386cpuid.fpu_type = FPU_TYPE_DOSBOX2;
+#endif
+	}
+#endif
+	fpu_initialize(1);
 #endif
 
 	pccore_set(&np2cfg);
@@ -904,6 +949,9 @@ void pccore_reset(void) {
 #if defined(SUPPORT_HOSTDRV)
 	hostdrv_reset();
 #endif
+#if defined(SUPPORT_HOSTDRVNT)
+	hostdrvNT_reset();
+#endif
 
 	timing_reset();
 	soundmng_play();
@@ -937,6 +985,8 @@ void pccore_reset(void) {
 	}else{
 		asynccpu_clockpersec.QuadPart = 0;
 	}
+	pccore_asynccpu_initialize();
+	pccore_asynccpu_updatesettings(np2cfg.asynclvl);
 #elif defined(NP2_X) || defined(__LIBRETRO__)
 	{
 		UINT64 c = clock();
@@ -960,6 +1010,18 @@ void pccore_reset(void) {
 	}
 #endif
 #endif
+
+	// エミュレーション速度セット
+	if (np2cfg.emuspeed < 1) np2cfg.emuspeed = 1;
+	timing_setspeed(np2cfg.emuspeed * 128 / 100);
+
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+	// マウスリセット
+	mousemng_reset();
+#endif
+
+	// キーボードリセット
+	keystat_initialize();
 }
 
 static void drawscreen(void) {
@@ -1176,6 +1238,192 @@ void pccore_postevent(UINT32 event) {	// yet!
 	(void)event;
 }
 
+#if defined(SUPPORT_ASYNC_CPU)
+ASYNCCPUSTAT pccore_asynccpustat = {0};
+void pccore_asynccpu_initialize(void)
+{
+	pccore_asynccpustat.drawskip = 1;
+	pccore_asynccpustat.nowait = 0;
+	pccore_asynccpustat.lastTimingValue = 0;
+	pccore_asynccpustat.asyncTarget = 0;
+	pccore_asynccpustat.lastTimingValid = 0;
+	pccore_asynccpustat.screendisp = 0;
+	pccore_asynccpustat.threshold_down = 2;
+	pccore_asynccpustat.threshold_up = 5;
+	memset(pccore_asynccpustat.clockUpTbl, 0, sizeof(pccore_asynccpustat.clockUpTbl));
+	memset(pccore_asynccpustat.clockDownTbl, 0, sizeof(pccore_asynccpustat.clockDownTbl));
+}
+void pccore_asynccpu_updatesettings(int asyncLevel)
+{
+	int i;
+	int upBaseValue;
+	int downBaseValue;
+
+	if (asyncLevel < 0) asyncLevel = 0;
+	if (asyncLevel > 100) asyncLevel = 100;
+	pccore_asynccpustat.asyncTarget = asyncLevel;
+
+	// 上げ下げの頻度を設定　安定性を考慮して最低1はつける
+	pccore_asynccpustat.threshold_down = (6 * asyncLevel + 1 * (100 - asyncLevel)) / 100;
+	pccore_asynccpustat.threshold_up = (1 * asyncLevel + 6 * (100 - asyncLevel)) / 100;
+	if (pccore_asynccpustat.threshold_down < 1) pccore_asynccpustat.threshold_down = 1;
+	if (pccore_asynccpustat.threshold_up < 1) pccore_asynccpustat.threshold_up = 1;
+
+	// 現在のクロック倍率に対してどれだけクロック倍率を上げ下げするかのテーブル
+	upBaseValue = (8 * asyncLevel + 4 * (100 - asyncLevel)) / 100; // ベース値はクロック倍率40に対してどれだけ上げるかの値とする
+	downBaseValue = (10 * asyncLevel + 15 * (100 - asyncLevel)) / 100; // ベース値はクロック倍率40に対してどれだけ下げるかの値とする
+	for (i = 1; i < ASYNCCPU_CLOCKTABLE_MAX; i++) {
+		pccore_asynccpustat.clockUpTbl[i] = (upBaseValue * i + 39) / 40; // 最低1はつけたいので切り上げ
+		pccore_asynccpustat.clockDownTbl[i] = (downBaseValue * i + 39) / 40; // 最低1はつけたいので切り上げ
+		if (pccore_asynccpustat.clockDownTbl[i] > i - 1) {
+			// クロック倍率0以下は不可
+			pccore_asynccpustat.clockDownTbl[i] = i - 1;
+		}
+	}
+	// クロック倍率0はあり得ないが念のため値は書いておく
+	pccore_asynccpustat.clockDownTbl[0] = 0;
+	pccore_asynccpustat.clockUpTbl[0] = 1;
+}
+static void pccore_asynccpu()
+{
+	// 非同期CPU処理
+	static int latecount = 0;
+	static int latecount2 = 0;
+	static unsigned int hltflag = 0;
+	if (np2cfg.asynccpu && !pccore_asynccpustat.nowait)
+	{
+		int remclkcnt = INT_MAX;
+
+		if (latecount2 == 0)
+		{
+			if (latecount > 0)
+			{
+				//latecount--;
+			}
+			else if (latecount < 0)
+			{
+				latecount++;
+			}
+		}
+		latecount2 = (latecount2 + 1) & 0x1fff;
+
+#if defined(CPUCORE_IA32)
+		if (CPU_STAT_HLT)
+		{
+			hltflag = pccore.multiple;
+		}
+#endif
+		if (!asynccpu_fastflag && !asynccpu_lateflag)
+		{
+			UINT32 timimg = pccore_asynccpustat.lastTimingValue;
+			UINT32 shdrawskip = 1 << TIMING_MSSHIFT;
+			if (timimg > shdrawskip)
+			{
+				latecount++;
+				if (latecount > pccore_asynccpustat.threshold_down)
+				{
+					if (pccore.multiple > 1)
+					{
+						UINT32 oldmultiple = pccore.multiple;
+						UINT32 changeValue = pccore_asynccpustat.clockDownTbl[pccore.multiple < ASYNCCPU_CLOCKTABLE_MAX ? pccore.multiple : ASYNCCPU_CLOCKTABLE_MAX - 1];
+						if (timimg > 2 * shdrawskip)
+						{
+							// そのまま
+						}
+						else if (timimg > 15 * shdrawskip / 10)
+						{
+							changeValue = (changeValue + 1) / 2; // 1/2
+						}
+						else if (timimg > 12 * shdrawskip / 10)
+						{
+							changeValue = (changeValue + 2) / 3; // 1/3
+						}
+						else
+						{
+							changeValue = (changeValue + 9) / 10; // 1/10
+						}
+						if (pccore.multiple > changeValue) {
+							pccore.multiple -= changeValue;
+						}
+						else {
+							pccore.multiple = 1;
+						}
+						pccore.realclock = pccore.baseclock * pccore.multiple;
+						pcm86_changeclock(oldmultiple);
+						nevent_changeclock(oldmultiple, pccore.multiple);
+
+						sound_changeclock();
+						beep_changeclock();
+						mpu98ii_changeclock();
+#if defined(SUPPORT_SMPU98)
+						smpu98_changeclock();
+#endif
+						keyboard_changeclock();
+						mouseif_changeclock();
+						gdc_updateclock();
+					}
+					latecount = 0;
+				}
+				asynccpu_lateflag = 1;
+			}
+			else
+			{
+				if (!hltflag && pccore_asynccpustat.screendisp)
+				{
+					latecount--;
+					if (latecount < -pccore_asynccpustat.threshold_up)
+					{
+						if (pccore.multiple < pccore.maxmultiple)
+						{
+							UINT32 oldmultiple = pccore.multiple;
+							UINT32 changeValue = pccore_asynccpustat.clockUpTbl[pccore.multiple < ASYNCCPU_CLOCKTABLE_MAX ? pccore.multiple : ASYNCCPU_CLOCKTABLE_MAX - 1];
+							if (timimg < 5 * shdrawskip / 10)
+							{
+								// そのまま
+							}
+							else if (timimg < 7 * shdrawskip / 10)
+							{
+								changeValue = (changeValue * 3 + 3) / 4; // 3/4
+							}
+							else if (timimg < 8 * shdrawskip / 10)
+							{
+								changeValue = (changeValue + 1) / 2; // 1/2
+							}
+							else
+							{
+								changeValue = (changeValue + 3) / 4; // 1/4
+							}
+							if (pccore.multiple + changeValue < pccore.maxmultiple) {
+								pccore.multiple += changeValue;
+							}
+							else {
+								pccore.multiple = pccore.maxmultiple;
+							}
+							pccore.realclock = pccore.baseclock * pccore.multiple;
+							pcm86_changeclock(oldmultiple);
+							nevent_changeclock(oldmultiple, pccore.multiple);
+
+							sound_changeclock();
+							beep_changeclock();
+							mpu98ii_changeclock();
+#if defined(SUPPORT_SMPU98)
+							smpu98_changeclock();
+#endif
+							keyboard_changeclock();
+							mouseif_changeclock();
+							gdc_updateclock();
+						}
+						latecount = 0;
+					}
+					asynccpu_fastflag = 1;
+				}
+			}
+		}
+	}
+	if (hltflag > 0) hltflag--;
+}
+#endif
+
 void pccore_exec(BOOL draw) {
 
 	// ここでローカル変数を使うとsetjmp周りの最適化で破壊される可能性があるので注意
@@ -1240,16 +1488,24 @@ void pccore_exec(BOOL draw) {
 #if defined(SUPPORT_HOSTDRV)
 			hostdrv_reset(); // XXX: Win9xの再起動で必要
 #endif
+#if defined(SUPPORT_HOSTDRVNT)
+			hostdrvNT_reset(); // XXX: Win9xの再起動で必要
+#endif
 #if defined(SUPPORT_PCI)
 			pcidev_basereset(); // XXX: Win9xの再起動で必要
 #endif
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+			// マウスリセット
+			mousemng_reset();
+#endif
+
 #if defined(SUPPORT_IA32_HAXM)
 			if (!np2hax.emumode && np2hax.enable) {
-				//i386hax_resetVMCPU();
-				//i386haxfunc_vcpu_setREGs(&np2haxstat.state);
-				//i386haxfunc_vcpu_setFPU(&np2haxstat.fpustate);
-				//ia32hax_copyregHAXtoNP2();
-				//CPU_SHUT();
+				i386hax_resetVMCPU();
+				i386haxfunc_vcpu_setREGs(&np2haxstat.state);
+				i386haxfunc_vcpu_setFPU(&np2haxstat.fpustate);
+				ia32hax_copyregHAXtoNP2();
+				i386hax_resetVMMem();
 				np2haxstat.update_regs = np2haxstat.update_fpu = 1;
 				np2haxstat.update_segment_regs = 1;
 				np2haxstat.irq_reqidx_cur = np2haxstat.irq_reqidx_end = 0;
@@ -1292,6 +1548,9 @@ void pccore_exec(BOOL draw) {
 #endif
 #endif
 		nevent_progress();
+#if defined(SUPPORT_ASYNC_CPU)
+		pccore_asynccpu();
+#endif
 	}
 #if defined(SUPPORT_ASYNC_CPU)
 	asynccpu_lateflag = 0;

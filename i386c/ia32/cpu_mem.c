@@ -371,7 +371,7 @@ exc:
 /*
  * code fetch
  */
-UINT8 MEMCALL
+PF_UINT8 MEMCALL
 cpu_codefetch(UINT32 offset)
 {
 	const int ucrw = CPU_PAGE_READ_CODE | CPU_STAT_USER_MODE;
@@ -390,7 +390,7 @@ cpu_codefetch(UINT32 offset)
 	return 0;	/* compiler happy */
 }
 
-UINT16 MEMCALL
+PF_UINT16 MEMCALL
 cpu_codefetch_w(UINT32 offset)
 {
 	const int ucrw = CPU_PAGE_READ_CODE | CPU_STAT_USER_MODE;
@@ -409,7 +409,7 @@ cpu_codefetch_w(UINT32 offset)
 	return 0;	/* compiler happy */
 }
 
-UINT32 MEMCALL
+PF_UINT32 MEMCALL
 cpu_codefetch_d(UINT32 offset)
 {
 	const int ucrw = CPU_PAGE_READ_CODE | CPU_STAT_USER_MODE;
@@ -428,6 +428,41 @@ cpu_codefetch_d(UINT32 offset)
 	EXCEPTION(GP_EXCEPTION, 0);
 	return 0;	/* compiler happy */
 }
+
+#if defined(USE_CPU_MODRMPREFETCH)
+PF_UINT8 MEMCALL
+cpu_opcodefetch(UINT32 offset)
+{
+	const int ucrw = CPU_PAGE_READ_CODE | CPU_STAT_USER_MODE;
+	UINT32 limit;
+	UINT32 addr;
+	UINT32 opcode;
+
+	limit = CPU_CS_DESC.u.seg.limit;
+	addr = CPU_CS_DESC.u.seg.segbase + offset;
+
+	if (!CPU_STAT_PM)
+	{
+		return (opCache = cpu_memoryread_w_codefetch(addr)) & 0xff;
+	}
+	opcode = cpu_lmemoryread_w_codefetch(addr, ucrw);
+	if (offset <= limit - 1)
+	{
+		// 2byteとも違反でない場合キャッシュする
+		opCache = opcode;
+		return opcode & 0xff;
+	}
+	else if (offset <= limit)
+	{
+		// 2バイト目がはみ出している場合、命令長によっては#GPなので1byteだけ読んでキャッシュはしない
+		opCache = 0;
+		return opcode & 0xff;
+	}
+
+	EXCEPTION(GP_EXCEPTION, 0);
+	return 0;	/* compiler happy */
+}
+#endif
 
 /*
  * additional physical address memory access functions
