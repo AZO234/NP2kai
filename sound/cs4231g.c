@@ -11,6 +11,8 @@
 
 extern	CS4231CFG	cs4231cfg;
 
+extern int cs4231_bufdelaycounter;
+
 static SINT32 cs4231_DACvolume_L = 1024;
 static SINT32 cs4231_DACvolume_R = 1024;
 static UINT16 cs4231_DACvolumereg_L = 0xff;
@@ -309,10 +311,9 @@ static const CS4231FN cs4231fn[16] = {
 // ----
 
 void SOUNDCALL cs4231_getpcm(CS4231 cs, SINT32 *pcm, UINT count) {
+	static int lastPlaybackEnable = 0;
 
-	static int bufdelaycounter = 0;
-
-	if (((cs->reg.iface & 1) || bufdelaycounter > 0) && (count)) {
+	if (((cs->reg.iface & 1) || cs4231_bufdelaycounter > 0) && (count)) {
 		// CS4231内蔵ボリューム 
 		if(cs4231_DACvolumereg_L != cs->reg.dac_l){
 			cs4231_DACvolumereg_L = cs->reg.dac_l;
@@ -332,32 +333,48 @@ void SOUNDCALL cs4231_getpcm(CS4231 cs, SINT32 *pcm, UINT count) {
 		}
 		
 		// 再生用バッファに送る
+#if defined(SUPPORT_MULTITHREAD)
+		cs4231cs_enter_criticalsection();
+#endif
 		(*cs4231fn[cs->reg.datafmt >> 4])(cs, pcm, count);
 
-		//// CS4231タイマー割り込みTI（手抜き）
-		//if ((cs->reg.pinctrl & 2) && (cs->dmairq != 0xff) && LOADINTELWORD(cs->reg.timer)) {
-		//	static double timercount = 0;
-		//	int decval = 0;
-		//	timercount += (double)count/44100 * 1000 * 100; // 10usec timer
-		//	decval = (int)(timercount);
-		//	timercount -= (double)decval;
-		//	cs->timercounter -= decval;
-		//	if(cs->timercounter < 0){
-		//		cs->timercounter = LOADINTELWORD(cs->reg.timer);
-		//		cs->intflag |= INt;
-		//		cs->reg.featurestatus |= TI;
-		//		pic_setirq(cs->dmairq);
-		//	}
-		//}
+		// PIO play enable
+		if (cs4231.reg.iface & PPIO)
+		{
+			if (cs4231.bufsize / 2 < cs4231.bufdatas)
+			{
+				cs4231.intflag &= ~PRDY;
+			}
+			else
+			{
+				cs4231.intflag |= PRDY;
+			}
+		}
 
 		// Playback Enableがローになってもバッファのディレイ分は再生する
-		if((cs->reg.iface & 1)){
-			bufdelaycounter = cs->bufdatas;
-		}else if(cs->bufdatas == 0){
-			bufdelaycounter = 0;
-		}else{
-			bufdelaycounter--;
+		if (cs->reg.iface & 1)
+		{
+			cs4231_bufdelaycounter = 0;
+			lastPlaybackEnable = 1;
 		}
+		else
+		{
+			if (lastPlaybackEnable)
+			{
+				cs4231_bufdelaycounter = cs->bufdatas;
+			}
+			else if (cs->bufdatas == 0)
+			{
+				cs4231_bufdelaycounter = 0;
+			}
+			else
+			{
+				cs4231_bufdelaycounter--;
+			}
+			lastPlaybackEnable = 0;
+		}
+#if defined(SUPPORT_MULTITHREAD)
+		cs4231cs_leave_criticalsection();
+#endif
 	}
 }
-

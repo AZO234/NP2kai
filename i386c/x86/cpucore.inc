@@ -1,0 +1,25 @@
+
+USE_HIMEM		equ		0x110000
+
+VRAM_STEP		equ		0x100000
+VRAM_B			equ		0x0a8000
+VRAM_R			equ		0x0b0000
+VRAM_G			equ		0x0b8000
+VRAM_E			equ		0x0e0000
+
+VRAM0_B			equ		VRAM_B
+VRAM0_R			equ		VRAM_R
+VRAM0_G			equ		VRAM_G
+VRAM0_E			equ		VRAM_E
+VRAM1_B			equ		VRAM_B + VRAM_STEP
+VRAM1_R			equ		VRAM_R + VRAM_STEP
+VRAM1_G			equ		VRAM_G + VRAM_STEP
+VRAM1_E			equ		VRAM_E + VRAM_STEP
+
+FONT_ADRS		equ		0x110000
+ITF_ADRS		equ		0x1f8000
+
+%macro VRAMPOS	1
+				and		%1, VRAM_STEP | 7fffh
+%endmacro
+

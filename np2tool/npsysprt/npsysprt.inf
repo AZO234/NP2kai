@@ -1,0 +1,34 @@
+[Version]
+Signature="$Windows NT$"
+Class=LegacyDriver
+Provider=%ProviderName%
+DriverVer=05/03/2025,0.1.0.0
+
+[DestinationDirs]
+DefaultDestDir = 12 ; system32\drivers
+
+[DefaultInstall]
+CopyFiles=NP2SystemPort.Copy
+AddReg=NP2SystemPort.AddReg
+
+[NP2SystemPort.Copy]
+npsysprt.sys
+
+[NP2SystemPort.AddReg]
+HKLM,"System\CurrentControlSet\Services\npsysprt","Type",0x00010001,1
+HKLM,"System\CurrentControlSet\Services\npsysprt","Start",0x00010001,2
+HKLM,"System\CurrentControlSet\Services\npsysprt","ErrorControl",0x00010001,1
+HKLM,"System\CurrentControlSet\Services\npsysprt","ImagePath",0x00020000,"system32\drivers\npsysprt.sys"
+HKLM,"System\CurrentControlSet\Services\npsysprt","DisplayName",0x00000000,"Neko Project II System Port"
+
+[SourceDisksNames]
+1=%DiskName%,,,
+
+[SourceDisksFiles]
+npsysprt.sys=1
+
+[Strings]
+ProviderName="ねこさん開発ちーむ"
+MfgName="Neko Project II"
+NP2SystemPort.DeviceDesc="Neko Project II システムポート"
+DiskName="Neko Project II ユーティリティディスク"

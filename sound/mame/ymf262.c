@@ -39,6 +39,8 @@ differences between OPL2 and OPL3 shown in datasheets:
 
 */
 
+#ifndef USE_MAME_BSD
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -51,7 +53,7 @@ differences between OPL2 and OPL3 shown in datasheets:
 #define PI 3.14159265358979323846
 #endif
 
-// XXX: statsave connect•Û‘¶—p
+// XXX: statsave connectï¿½Û‘ï¿½ï¿½p
 static INT32 connectBuf[18*2] = {0};
 
 
@@ -2506,8 +2508,8 @@ void YMF262Shutdown(void *chip)
 {
 	OPL3Destroy((OPL3*)chip);
 }
-void YMF262ResetChip(void *chip)
-{
+void YMF262ResetChip(void *chip, int samplerate)
+
 	OPL3ResetChip((OPL3*)chip);
 }
 
@@ -2553,14 +2555,14 @@ int YMF262FlagSave(void *chip, void *dstbuf)
 	OPL3* opl3dst = (OPL3*)dstbuf;
 	if(dstbuf!=NULL){
 		*opl3dst = *opl3;
-		// XXX: ƒCƒxƒ“ƒgƒnƒ“ƒhƒ‰ŒniHj‚ÍƒZ[ƒu‚µ‚È‚¢
+		// XXX: ï¿½Cï¿½xï¿½ï¿½ï¿½gï¿½nï¿½ï¿½ï¿½hï¿½ï¿½ï¿½nï¿½iï¿½Hï¿½jï¿½ÍƒZï¿½[ï¿½uï¿½ï¿½ï¿½È‚ï¿½
 		opl3dst->TimerHandler = NULL;
 		opl3dst->TimerParam = NULL;
 		opl3dst->IRQHandler = NULL;
 		opl3dst->IRQParam = NULL;
 		opl3dst->UpdateHandler = NULL;
 		opl3dst->UpdateParam = NULL;
-		// XXX: connect‚Á‚Ä‚È‚ñ‚Åƒ|ƒCƒ“ƒ^‚É‚È‚Á‚Ä‚é‚ñ‚Å‚µ‚å‚¤H‚ß‚ñ‚Ç‚­‚³‚¢¥¥¥
+		// XXX: connectï¿½ï¿½ï¿½Ä‚È‚ï¿½Åƒ|ï¿½Cï¿½ï¿½ï¿½^ï¿½É‚È‚ï¿½ï¿½Ä‚ï¿½ï¿½Å‚ï¿½ï¿½å‚¤ï¿½Hï¿½ß‚ï¿½Ç‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		{
 			int ch, slot;
 			INT32 *opl3connect = (INT32 *)(&(opl3dst[1]));
@@ -2582,26 +2584,110 @@ int YMF262FlagLoad(void *chip, void *srcbuf, int size)
 	OPL3* opl3src = (OPL3*)srcbuf;
 	OPL3 opl3tmp = *opl3;
 
-	OPL3_TIMERHANDLER  TimerHandler;/* TIMER handler                */
-	void *TimerParam;					/* TIMER parameter              */
-	OPL3_IRQHANDLER    IRQHandler;	/* IRQ handler                  */
-	void *IRQParam;					/* IRQ parameter                */
-	OPL3_UPDATEHANDLER UpdateHandler;/* stream update handler       */
-	void *UpdateParam;
-
 	if(srcbuf==NULL) return 0;
-	if(size != sizeof(OPL3) + sizeof(INT32) * 18 * 2) return 0;
+
+	// ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºãŒã‚ã£ã¦ã„ãªãã¦ã‚‚é€šã™
+	if (size != sizeof(OPL3) + sizeof(INT32) * 18 * 2) {
+		// reset
+		OPL3ResetChip((OPL3*)chip);
+
+		// ä¿®æ­£BSDç‰ˆOPL3ã®ã‚¹ãƒ†ãƒ¼ãƒˆã‚»ãƒ¼ãƒ–ã‚’ãƒ­ãƒ¼ãƒ‰ã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹
+		if (1174 <= size && size < 1174 + 1024) { // å°†æ¥æ‹¡å¼µã‚’è€ƒãˆã¦å¤šå°‘å¤§ããã¦ã‚‚èªã‚ã‚‹
+			// ãƒ¬ã‚¸ã‚¹ã‚¿ã‹ã‚‰å¾©å…ƒ
+			int i, j;
+			UINT16 address = *((UINT8*)srcbuf); // register address
+			UINT8 *regdata = (UINT8*)srcbuf + 22; // register data
+			// Expansion Register Setã€€å…ˆã«ã“ã‚Œã‚’è¨­å®šã—ã¦ãŠã‹ãªã„ã¨hiã®ã‚»ãƒƒãƒˆãŒå‡ºæ¥ãªã„ã®ã§å…ˆã«è¨­å®š
+			OPL3Write(opl3, 2, 0x5);
+			OPL3Write(opl3, 1, regdata[0x105]);
+			// 4-Operator Mode Set
+			OPL3Write(opl3, 2, 0x4);
+			OPL3Write(opl3, 1, regdata[0x104]);
+			// Keyboard Split Selection Set
+			OPL3Write(opl3, 0, 0x8);
+			OPL3Write(opl3, 1, regdata[0x8]);
+			// Rhythm Instrument Sel Set
+			OPL3Write(opl3, 0, 0xbd);
+			OPL3Write(opl3, 1, regdata[0xbd]);
+			// Slot Register 7 Set
+			for (i = 0; i < 9; i++) {
+				OPL3Write(opl3, 0, 0xc0 + i);
+				OPL3Write(opl3, 1, regdata[0xc0 + i]);
+				OPL3Write(opl3, 2, 0xc0 + i);
+				OPL3Write(opl3, 1, regdata[0x1c0 + i]);
+			}
+			// Slot Register 1 Set
+			for (i = 0; i < 3; i++) {
+				for (j = 0; j < 6; j++) {
+					int regidx = i * 8 + j;
+					OPL3Write(opl3, 0, 0x20 + regidx);
+					OPL3Write(opl3, 1, regdata[0x20 + i]);
+					OPL3Write(opl3, 2, 0x20 + regidx);
+					OPL3Write(opl3, 1, regdata[0x120 + i]);
+				}
+			}
+			// Slot Register 2 Set
+			for (i = 0; i < 3; i++) {
+				for (j = 0; j < 6; j++) {
+					int regidx = i * 8 + j;
+					OPL3Write(opl3, 0, 0x40 + regidx);
+					OPL3Write(opl3, 1, regdata[0x40 + i]);
+					OPL3Write(opl3, 2, 0x40 + regidx);
+					OPL3Write(opl3, 1, regdata[0x140 + i]);
+				}
+			}
+			// Slot Register 3 Set
+			for (i = 0; i < 3; i++) {
+				for (j = 0; j < 6; j++) {
+					int regidx = i * 8 + j;
+					OPL3Write(opl3, 0, 0x60 + regidx);
+					OPL3Write(opl3, 1, regdata[0x60 + i]);
+					OPL3Write(opl3, 2, 0x60 + regidx);
+					OPL3Write(opl3, 1, regdata[0x160 + i]);
+				}
+			}
+			// Slot Register 4 Set
+			for (i = 0; i < 3; i++) {
+				for (j = 0; j < 6; j++) {
+					int regidx = i * 8 + j;
+					OPL3Write(opl3, 0, 0x80 + regidx);
+					OPL3Write(opl3, 1, regdata[0x80 + i]);
+					OPL3Write(opl3, 2, 0x80 + regidx);
+					OPL3Write(opl3, 1, regdata[0x180 + i]);
+				}
+			}
+			// Slot Register 8 Set
+			for (i = 0; i < 3; i++) {
+				for (j = 0; j < 6; j++) {
+					int regidx = i * 8 + j;
+					OPL3Write(opl3, 0, 0xe0 + regidx);
+					OPL3Write(opl3, 1, regdata[0xe0 + i]);
+					OPL3Write(opl3, 2, 0xe0 + regidx);
+					OPL3Write(opl3, 1, regdata[0x1e0 + i]);
+				}
+			}
+			// Address Register Set
+			if (address & 0x100) {
+				OPL3Write(opl3, 2, address & 0xff);
+			}
+			else {
+				OPL3Write(opl3, 0, address & 0xff);
+			}
+		}
+
+		return size;
+	}
 
 	*opl3 = *opl3src;
 	
-	// XXX: ƒCƒxƒ“ƒgƒnƒ“ƒhƒ‰ŒniHj‚Í•ÏX‚µ‚È‚¢
+	// XXX: ã‚¤ãƒ™ãƒ³ãƒˆãƒãƒ³ãƒ‰ãƒ©ç³»ï¼ˆï¼Ÿï¼‰ã¯å¤‰æ›´ã—ãªã„
 	opl3->TimerHandler = opl3tmp.TimerHandler;
 	opl3->TimerParam = opl3tmp.TimerParam;
 	opl3->IRQHandler = opl3tmp.IRQHandler;
 	opl3->IRQParam = opl3tmp.IRQParam;
 	opl3->UpdateHandler = opl3tmp.UpdateHandler;
 	opl3->UpdateParam = opl3tmp.UpdateParam;
-	// XXX: connect‚Á‚Ä‚È‚ñ‚Åƒ|ƒCƒ“ƒ^‚É‚È‚Á‚Ä‚é‚ñ‚Å‚µ‚å‚¤H‚ß‚ñ‚Ç‚­‚³‚¢¥¥¥
+	// XXX: connectã£ã¦ãªã‚“ã§ãƒã‚¤ãƒ³ã‚¿ã«ãªã£ã¦ã‚‹ã‚“ã§ã—ã‚‡ã†ï¼Ÿã‚ã‚“ã©ãã•ã„ï½¥ï½¥ï½¥
 	{
 		int ch, slot;
 		INT32 *opl3connect = (INT32 *)(&(opl3src[1]));
@@ -2834,3 +2920,5 @@ void YMF262UpdateOne(void *_chip, OPL3SAMPLE **buffers, int length)
 
 }
 #endif /* BUILD_YMF262 */
+
+#endif

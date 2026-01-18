@@ -441,7 +441,7 @@ REG8 sec2352_read_with_ecc(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size) {
 		if (file_read(fh, bufdata, rsize) != rsize) {
 			return(0xd0);
 		}
-		memcpy(buf, bufdata+16, 2048);
+		memcpy(buf, bufdata+16, MIN(size, 2048));
 		memcpy(bufedc, bufdata+16+2048, 4);
 		memcpy(bufecc, bufdata+16+2048+4+8, 276);
 
@@ -750,10 +750,10 @@ BRESULT setsxsidev(SXSIDEV sxsi, const OEMCHAR *path, const _CDTRK *trk, UINT tr
 	sxsi->destroy		= cd_destroy;
 	sxsi->hdl			= (INTPTR)cdinfo;
 //	sxsi->totals		= totals;
-	sxsi->cylinders		= sxsi->totals / 2048;
+	sxsi->cylinders		= (sxsi->totals + 17 * 8 - 1) / (17 * 8);
 	sxsi->size			= 2048;
-	sxsi->sectors		= 1;
-	sxsi->surfaces		= 1;
+	sxsi->sectors		= 8;
+	sxsi->surfaces		= 17;
 	sxsi->headersize	= 0;
 	sxsi->mediatype		= mediatype;
 

@@ -1,3 +1,6 @@
+#pragma once
+#if defined(SUPPORT_FMGEN)
+
 #ifndef FMGEN_FMGWRAP_H
 #define FMGEN_FMGWRAP_H
 
@@ -143,4 +146,6 @@ void	OPM_DataLoad(void* OPM, void* opmdata);
 #endif
 
 #endif	/* FMGEN_FMGWRAP_H */
+
+#endif	/* SUPPORT_FMGEN */
 

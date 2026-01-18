@@ -9,7 +9,24 @@
 #include <pccore.h>
 
 	_NEVENT g_nevent;
-	
+#if 0
+#undef	TRACEOUT
+#define	TRACEOUT(s)	(void)(s)
+static void trace_fmt_ex(const char* fmt, ...)
+{
+	char stmp[2048];
+	va_list ap;
+	va_start(ap, fmt);
+	vsprintf(stmp, fmt, ap);
+	strcat(stmp, "¥n");
+	va_end(ap);
+	OutputDebugStringA(stmp);
+}
+#define	TRACEOUT(s)	trace_fmt_ex s
+#endif	/* 1 */
+
+	_NEVENT g_nevent;
+
 #if defined(SUPPORT_MULTITHREAD)
 static int nevent_cs_initialized = 0;
 static CRITICAL_SECTION nevent_cs;
@@ -154,6 +171,9 @@ void nevent_progress(void)
 			item->flag |= NEVENT_SETEVENT;
 			item->flag &= ~(NEVENT_ENABLE);
 //			TRACEOUT(("event = %x", id));
+#if defined(SUPPORT_ASYNC_CPU)
+			pccore_asynccpustat.screendisp = (id == NEVENT_FLAMES && g_nevent.item[NEVENT_FLAMES].proc == screendisp);
+#endif
 		}
 		fevtchk |= (id==NEVENT_FLAMES ? 1 : 0);
 	}
@@ -178,24 +198,42 @@ void nevent_changeclock(UINT32 oldclock, UINT32 newclock)
 	UINT i;
 	NEVENTID id;
 	NEVENTITEM item;
+	SINT32 baseClock;
+	SINT32 remClock;
 	
 #if defined(SUPPORT_MULTITHREAD)
 	nevent_enter_criticalsection();
 #endif
-	newclock /= pccore.baseclock;
-	oldclock /= pccore.baseclock;
 
-	if(oldclock > 0){
-		for (i = 0; i < g_nevent.readyevents; i++)
+	if (oldclock > 0)
+	{
+		if (g_nevent.readyevents)
 		{
-			id = g_nevent.level[i];
-			item = &g_nevent.item[id];
-			if(item->clock > 0){
-				item->clock = item->clock * newclock / oldclock;
+			// イベントのクロック数を修正
+			for (i = 0; i < g_nevent.readyevents; i++)
+			{
+				id = g_nevent.level[i];
+				item = &g_nevent.item[id];
+				if (item->clock > 0)
+				{
+					SINT64 newClock = ((SINT64)item->clock * newclock + oldclock / 2) / oldclock;
+					if (item->clock > 0 && newClock <= 0) newClock = 1;
+					if (newClock > INT_MAX) newClock = INT_MAX;
+					item->clock = (SINT32)newClock;
+				}
+			}
+
+			// 自動調整のクロック変更のタイミングは CPU_BASECLOCK==CPU_REMCLOCK のタイミングになるように調整済み
+			if (CPU_BASECLOCK == CPU_REMCLOCK) {
+				CPU_BASECLOCK = g_nevent.item[g_nevent.level[0]].clock;
+				CPU_REMCLOCK = CPU_BASECLOCK;/* カウンタへセット */
+			}
+			else {
+				// I/O経由の場合はずれている場合あり。この場合はスケール
+				CPU_BASECLOCK = ((SINT64)CPU_BASECLOCK * newclock + oldclock / 2) / oldclock;
+				CPU_REMCLOCK = ((SINT64)CPU_REMCLOCK * newclock + oldclock / 2) / oldclock;
 			}
 		}
-		CPU_BASECLOCK = CPU_BASECLOCK * newclock / oldclock;
-		CPU_REMCLOCK = CPU_REMCLOCK * newclock / oldclock;
 	}
 #if defined(SUPPORT_MULTITHREAD)
 	nevent_leave_criticalsection();
@@ -328,7 +366,15 @@ void nevent_set(NEVENTID id, SINT32 eventclock, NEVENTCB proc, NEVENTPOSITION ab
 
 void nevent_setbyms(NEVENTID id, SINT32 ms, NEVENTCB proc, NEVENTPOSITION absolute)
 {
-	nevent_set(id, (pccore.realclock / 1000) * ms, proc, absolute);
+	UINT64 waittime = (UINT64)(pccore.realclock / 1000) * ms;
+	if (waittime > INT_MAX - pccore.realclock)
+	{
+		nevent_set(id, INT_MAX - pccore.realclock, proc, absolute);
+	}
+	else
+	{
+		nevent_set(id, (SINT32)waittime, proc, absolute);
+	}
 }
 
 BOOL nevent_iswork(NEVENTID id)

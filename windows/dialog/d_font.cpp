@@ -3,38 +3,37 @@
  * @brief	font dialog
  */
 
-#include <compiler.h>
+#include "compiler.h"
 #include "resource.h"
 #include "dialog.h"
-#include <dosio.h>
-#include <np2.h>
-#include <sysmng.h>
+#include "dosio.h"
+#include "np2.h"
+#include "sysmng.h"
 #include "misc/DlgProc.h"
-#include <pccore.h>
-#include <io/iocore.h>
-#include <font/font.h>
-#include "dialog/winfiledlg.h"
+#include "pccore.h"
+#include "iocore.h"
+#include "font/font.h"
 
 /**
- * „Éï„Ç©„É≥„ÉàÈÅ∏Êäû
- * @param[in] hWnd Ë¶™„Ç¶„Ç£„É≥„Éâ„Ç¶
+ * ÉtÉHÉìÉgëIë
+ * @param[in] hWnd êeÉEÉBÉìÉhÉE
  */
 void dialog_font(HWND hWnd)
 {
-	TCHAR szPath[MAX_PATH];
-	TCHAR szName[MAX_PATH];
 	std::tstring rExt(LoadTString(IDS_FONTEXT));
 	std::tstring rFilter(LoadTString(IDS_FONTFILTER));
 	std::tstring rTitle(LoadTString(IDS_FONTTITLE));
 
-	OPENFILENAMEW ofnw;
-	if (WinFileDialogW(hWnd, &ofnw, WINFILEDIALOGW_MODE_GET1, szPath, szName, rExt.c_str(), rTitle.c_str(), rFilter.c_str(), 3))
+	CFileDlg dlg(TRUE, rExt.c_str(), np2cfg.fontfile, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, rFilter.c_str(), hWnd);
+	dlg.m_ofn.lpstrTitle = rTitle.c_str();
+	dlg.m_ofn.nFilterIndex = 3;
+	if (!dlg.DoModal())
 	{
 		return;
 	}
 
-	LPCTSTR lpFilename = szPath;
-	if (font_load(lpFilename, FALSE))
+	LPCTSTR lpFilename = dlg.GetPathName();
+	if (font_load(lpFilename, FALSE, np2cfg.fontface))
 	{
 		gdcs.textdisp |= GDCSCRN_ALLDRAW2;
 		milstr_ncpy(np2cfg.fontfile, lpFilename, _countof(np2cfg.fontfile));

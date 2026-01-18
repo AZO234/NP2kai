@@ -73,7 +73,7 @@ IMUL_AXEw(UINT32 op)
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(21);
-		src = *(reg16_b20[op]);
+		src = *(CPU_REG16_B20(op));
 	} else {
 		CPU_WORKCLOCK(24);
 		madr = calc_ea_dst(op);
@@ -94,7 +94,7 @@ IMUL_EAXEd(UINT32 op)
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(21);
-		src = *(reg32_b20[op]);
+		src = *(CPU_REG32_B20(op));
 	} else {
 		CPU_WORKCLOCK(24);
 		madr = calc_ea_dst(op);
@@ -221,7 +221,7 @@ MUL_AXEw(UINT32 op)
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(21);
-		src = *(reg16_b20[op]);
+		src = *(CPU_REG16_B20(op));
 	} else {
 		CPU_WORKCLOCK(24);
 		madr = calc_ea_dst(op);
@@ -241,7 +241,7 @@ MUL_EAXEd(UINT32 op)
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(21);
-		src = *(reg32_b20[op]);
+		src = *(CPU_REG32_B20(op));
 	} else {
 		CPU_WORKCLOCK(24);
 		madr = calc_ea_dst(op);
@@ -296,7 +296,7 @@ IDIV_AXEw(UINT32 op)
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(17);
-		src = *(reg16_b20[op]);
+		src = *(CPU_REG16_B20(op));
 	} else {
 		CPU_WORKCLOCK(25);
 		madr = calc_ea_dst(op);
@@ -326,7 +326,7 @@ IDIV_EAXEd(UINT32 op)
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(17);
-		src = *(reg32_b20[op]);
+		src = *(CPU_REG32_B20(op));
 	} else {
 		CPU_WORKCLOCK(25);
 		madr = calc_ea_dst(op);
@@ -389,7 +389,7 @@ DIV_AXEw(UINT32 op)
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(17);
-		src = *(reg16_b20[op]);
+		src = *(CPU_REG16_B20(op));
 	} else {
 		CPU_WORKCLOCK(25);
 		madr = calc_ea_dst(op);
@@ -418,7 +418,7 @@ DIV_EAXEd(UINT32 op)
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(17);
-		src = *(reg32_b20[op]);
+		src = *(CPU_REG16_B20(op));
 	} else {
 		CPU_WORKCLOCK(25);
 		madr = calc_ea_dst(op);
@@ -542,7 +542,7 @@ NEG_Ew(UINT32 op)
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		out = reg16_b20[op];
+		out = CPU_REG16_B20(op);
 		src = *out;
 		WORD_NEG(dst, src);
 		*out = (UINT16)dst;
@@ -561,7 +561,7 @@ NEG_Ed(UINT32 op)
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		out = reg32_b20[op];
+		out = CPU_REG32_B20(op);
 		src = *out;
 		DWORD_NEG(dst, src);
 		*out = dst;
@@ -604,7 +604,7 @@ CMP_EwGw(void)
 	PREPART_EA_REG16(op, src);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		out = reg16_b20[op];
+		out = CPU_REG16_B20(op);
 		dst = *out;
 	} else {
 		CPU_WORKCLOCK(5);
@@ -623,7 +623,7 @@ CMP_EdGd(void)
 	PREPART_EA_REG32(op, src);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		out = reg32_b20[op];
+		out = CPU_REG32_B20(op);
 		dst = *out;
 	} else {
 		CPU_WORKCLOCK(5);
@@ -672,7 +672,7 @@ CMP_ALIb(void)
 	UINT32 src, dst, res;
 
 	CPU_WORKCLOCK(2);
-	GET_PCBYTE(src);
+	GET_MODRM_PCBYTE(src);
 	dst = CPU_AL;
 	BYTE_SUB(res, dst, src);
 }

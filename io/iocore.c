@@ -21,6 +21,9 @@
 #include	<cbus/mpu98ii.h>
 #include	<cbus/smpu98.h>
 #endif
+#if defined(SUPPORT_HOSTDRVNT)
+#include	"generic/hostdrvnt.h"
+#endif
 
 
 	_ARTIC		artic;
@@ -574,6 +577,9 @@ static const FNIOBIND bindfn[] =
 			necio_bind,			epsonio_bind,		emsio_bind,
 #if defined(SUPPORT_PC9821)
 			pcidev_bind,
+#endif
+#if defined(SUPPORT_HOSTDRVNT)
+			hostdrvNT_bind,
 #endif
 };
 

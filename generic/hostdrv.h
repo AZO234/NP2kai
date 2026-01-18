@@ -31,7 +31,8 @@ typedef struct tagHostDrvHandle *HDRVHANDLE;
 
 typedef struct {
 	struct {
-		UINT8	is_mount;
+		UINT8	is_mount:6;
+		UINT8	newprotocol:2;
 		UINT8	drive_no;
 		UINT8	dosver_major;
 		UINT8	dosver_minor;
@@ -44,6 +45,14 @@ typedef struct {
 	LISTARRAY	fhdl;
 	LISTARRAY	flist;
 } HOSTDRV;
+
+typedef struct
+{
+	LISTARRAY	flist;
+	UINT		flistpos; // 検索列挙位置
+	UINT16		flistidx; // 仮想クラスタ番号
+} HOSTDRV_FINDHANDLE;
+
 
 
 #ifdef __cplusplus
@@ -61,6 +70,7 @@ void hostdrv_reset(void);
 void hostdrv_mount(const void *arg1, long arg2);
 void hostdrv_unmount(const void *arg1, long arg2);
 void hostdrv_intr(const void *arg1, long arg2);
+void hostdrv_setn(const void* arg1, long arg2);
 
 int hostdrv_sfsave(STFLAGH sfh, const SFENTRY *tbl);
 int hostdrv_sfload(STFLAGH sfh, const SFENTRY *tbl);

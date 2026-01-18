@@ -6,6 +6,22 @@
 #include <compiler.h>
 #include <sound/pcm86.h>
 
+#if 0
+#undef	TRACEOUT
+#define	TRACEOUT(s)	(void)(s)
+static void trace_fmt_ex(const char* fmt, ...)
+{
+	char stmp[2048];
+	va_list ap;
+	va_start(ap, fmt);
+	vsprintf(stmp, fmt, ap);
+	strcat(stmp, "¥n");
+	va_end(ap);
+	OutputDebugStringA(stmp);
+}
+#define	TRACEOUT(s)	trace_fmt_ex s
+#endif	/* 1 */
+
 #define PCM86GET8(p, a)													\
 	do																	\
 	{																	\
@@ -335,38 +351,44 @@ void SOUNDCALL pcm86gen_getpcm(PCM86 pcm86, SINT32 *lpBuffer, UINT nCount)
 {
 	if ((nCount) && (pcm86->fifo & 0x80) && (pcm86->div))
 	{
+#if defined(SUPPORT_MULTITHREAD)
+		pcm86cs_enter_criticalsection();
+#endif
 		switch (pcm86->dactrl & 0x70)
 		{
-			case 0x00:						/* 16bit-none */
-				break;
+		case 0x00:						/* 16bit-none */
+			break;
 
-			case 0x10:						/* 16bit-right */
-				pcm86mono16(pcm86, lpBuffer + 1, nCount);
-				break;
+		case 0x10:						/* 16bit-right */
+			pcm86mono16(pcm86, lpBuffer + 1, nCount);
+			break;
 
-			case 0x20:						/* 16bit-left */
-				pcm86mono16(pcm86, lpBuffer, nCount);
-				break;
+		case 0x20:						/* 16bit-left */
+			pcm86mono16(pcm86, lpBuffer, nCount);
+			break;
 
-			case 0x30:						/* 16bit-stereo */
-				pcm86stereo16(pcm86, lpBuffer, nCount);
-				break;
+		case 0x30:						/* 16bit-stereo */
+			pcm86stereo16(pcm86, lpBuffer, nCount);
+			break;
 
-			case 0x40:						/* 8bit-none */
-				break;
+		case 0x40:						/* 8bit-none */
+			break;
 
-			case 0x50:						/* 8bit-right */
-				pcm86mono8(pcm86, lpBuffer + 1, nCount);
-				break;
+		case 0x50:						/* 8bit-right */
+			pcm86mono8(pcm86, lpBuffer + 1, nCount);
+			break;
 
-			case 0x60:						/* 8bit-left */
-				pcm86mono8(pcm86, lpBuffer, nCount);
-				break;
+		case 0x60:						/* 8bit-left */
+			pcm86mono8(pcm86, lpBuffer, nCount);
+			break;
 
-			case 0x70:						/* 8bit-stereo */
-				pcm86stereo8(pcm86, lpBuffer, nCount);
-				break;
+		case 0x70:						/* 8bit-stereo */
+			pcm86stereo8(pcm86, lpBuffer, nCount);
+			break;
 		}
+#if defined(SUPPORT_MULTITHREAD)
+		pcm86cs_leave_criticalsection();
+#endif
 		pcm86gen_checkbuf(pcm86, nCount);
 	}
 }

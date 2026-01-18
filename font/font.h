@@ -23,7 +23,7 @@ extern	UINT8	__font[FONTMEMORYSIZE];
 
 void font_initialize(void);
 void font_setchargraph(BOOL epson);
-UINT8 font_load(const OEMCHAR *filename, BOOL force);
+UINT8 font_load(const OEMCHAR *filename, BOOL force, const OEMCHAR* defaultfontface);
 
 #define HF_FILENAME "hook_fontrom.txt"
 typedef void(*hook_fontrom_output_t)(const char* strOutput);

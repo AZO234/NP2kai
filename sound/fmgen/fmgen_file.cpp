@@ -1,5 +1,7 @@
 //	$Id: file.cpp,v 1.6 1999/12/28 11:14:05 cisc Exp $
 
+#if defined(SUPPORT_FMGEN)
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -189,3 +191,5 @@ bool FileIO::SetEndOfFile()
 		return false;
 	return Seek(0, end);
 }
+
+#endif	/* SUPPORT_FMGEN */

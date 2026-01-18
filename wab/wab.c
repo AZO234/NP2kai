@@ -75,6 +75,7 @@ static int		ga_screenupdated = 0;
 #if defined(_WIN32)
 static int wab_cs_initialized = 0;
 static CRITICAL_SECTION wab_cs;
+static HANDLE wab_thread_eventhandle = INVALID_HANDLE_VALUE;
 #endif
 
 static int np2wab_forceupdateflag = 0;
@@ -103,6 +104,7 @@ static void wab_init_criticalsection(void){
 #if defined(_WIN32)
 	if(!wab_cs_initialized){
 		memset(&wab_cs, 0, sizeof(wab_cs));
+		wab_thread_eventhandle = CreateEvent(NULL, FALSE, FALSE, NULL);
 		InitializeCriticalSection(&wab_cs);
 		wab_cs_initialized = 1;
 	}
@@ -112,6 +114,7 @@ static void wab_delete_criticalsection(void){
 #if defined(_WIN32)
 	if(wab_cs_initialized){
 		DeleteCriticalSection(&wab_cs);
+		CloseHandle(wab_thread_eventhandle);
 		wab_cs_initialized = 0;
 	}
 #endif
@@ -568,8 +571,6 @@ void np2wab_drawframe()
 			if(np2wabwnd.ready && (np2wab.relay&0x3)!=0){
 				if(ga_screenupdated){
 					wab_enter_criticalsection();
-					//int suspendcounter = 0;
-					//if(ga_hThread) suspendcounter = SuspendThread(ga_hThread);
 					if(!np2wabwnd.multiwindow){
 						//np2wab_drawWABWindow(np2wabwnd.hDCBuf); // ga_ThreadFuncでやる
 						scrnmng_bltwab();
@@ -580,22 +581,8 @@ void np2wab_drawframe()
 						scrnmng_update();
 					}
 					wab_leave_criticalsection();
-					//if(ga_hThread){
-					//	int i;
-					//	for(i=0;i<suspendcounter+1;i++){
-					//		ResumeThread(ga_hThread);
-					//	}
-					//}
-				//}else{
-				//	int suspendcounter = 0;
-				//	//if(ga_hThread){
-				//	//	int i;
-				//	//	suspendcounter = SuspendThread(ga_hThread);
-				//	//	for(i=0;i<suspendcounter+1;i++){
-				//	//		ResumeThread(ga_hThread);
-				//	//	}
-				//	//}
 				}
+				SetEvent(wab_thread_eventhandle);
 			}
 		}
 	}
@@ -608,42 +595,22 @@ void np2wab_drawframe()
  */
 unsigned int __stdcall ga_ThreadFunc(LPVOID vdParam) {
 	static int skipcounter = 0;
-	DWORD time = GetTickCount();
 	int timeleft = 0;
-	while (!ga_exitThread && ga_threadmode) {
-		if(!ga_screenupdated){
-			wab_enter_criticalsection();
-			wab_leave_criticalsection();
-			if(np2wabwnd.ready && np2wabwnd.hWndWAB!=NULL && np2wabwnd.drawframe!=NULL && (np2wab.relay&0x3)!=0){
-				if (np2wabwnd.drawframe() || np2wab_forceupdateflag)
-				{
-					np2wab_forceupdateflag = 0;
-					np2wab_drawWABWindow(np2wabwnd.hDCBuf);
-					// 画面転送待ち
-					ga_screenupdated = 1;
-					//if(!ga_exitThread) SuspendThread(ga_hThread);
-					skipcounter = 0;
-				}
-				else
-				{
-					skipcounter++;
-					if (skipcounter > 50)
-					{
-						Sleep(8); // 画面更新があまりなさそうなのでサボる
-					}
-					else
-					{
-						Sleep(1);
-						skipcounter++;
-					}
-				}
-			}else{
-				// 描画しないのに高速でぐるぐる回しても仕方ないのでスリープ
+	while (WaitForSingleObject(wab_thread_eventhandle, INFINITE) == WAIT_OBJECT_0)
+	{
+		if (ga_exitThread || !ga_threadmode) break;
+
+		//wab_enter_criticalsection();
+		//wab_leave_criticalsection();
+		if(np2wabwnd.ready && np2wabwnd.hWndWAB!=NULL && np2wabwnd.drawframe!=NULL && (np2wab.relay&0x3)!=0){
+			if (np2wabwnd.drawframe() || np2wab_forceupdateflag)
+			{
+				np2wab_forceupdateflag = 0;
+				np2wab_drawWABWindow(np2wabwnd.hDCBuf);
+				//// 画面転送待ち
 				ga_screenupdated = 1;
-				//if(!ga_exitThread) SuspendThread(ga_hThread);
+				skipcounter = 0;
 			}
-		}else{
-			Sleep(8);
 		}
 	}
 	ga_threadmode = 0;
@@ -737,6 +704,7 @@ void np2wab_reset(const NP2CFG *pConfig)
 		//while(WaitForSingleObject(ga_hThread, 200)==WAIT_TIMEOUT){
 		//	ResumeThread(ga_hThread);
 		//}
+		SetEvent(wab_thread_eventhandle);
 		if(WaitForSingleObject(ga_hThread, 4000)==WAIT_TIMEOUT){
 			TerminateThread(ga_hThread, 0);
 		}
@@ -783,6 +751,7 @@ void np2wab_bind(void)
 		//while(WaitForSingleObject(ga_hThread, 200)==WAIT_TIMEOUT){
 		//	ResumeThread(ga_hThread);
 		//}
+		SetEvent(wab_thread_eventhandle);
 		if(WaitForSingleObject(ga_hThread, 4000)==WAIT_TIMEOUT){
 			TerminateThread(ga_hThread, 0);
 		}
@@ -836,6 +805,7 @@ void np2wab_shutdown()
 	//if(WaitForSingleObject(ga_hThread, 1000)==WAIT_TIMEOUT){
 	//	ResumeThread(ga_hThread);
 	//}
+	SetEvent(wab_thread_eventhandle);
 	if(WaitForSingleObject(ga_hThread, 4000)==WAIT_TIMEOUT){
 		TerminateThread(ga_hThread, 0); // 諦めて強制終了
 	}

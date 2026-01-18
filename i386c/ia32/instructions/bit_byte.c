@@ -49,7 +49,7 @@ BT_EwGw(void)
 	PREPART_EA_REG16(op, src);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		dst = *(reg16_b20[op]);
+		dst = *(CPU_REG16_B20(op));
 	} else {
 		CPU_WORKCLOCK(7);
 		madr = calc_ea_dst(op);
@@ -68,7 +68,7 @@ BT_EdGd(void)
 	PREPART_EA_REG32(op, src);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		dst = *(reg32_b20[op]);
+		dst = *(CPU_REG32_B20(op));
 	} else {
 		CPU_WORKCLOCK(7);
 		madr = calc_ea_dst(op);
@@ -86,12 +86,12 @@ BT_EwIb(UINT32 op)
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		GET_PCBYTE(src);
-		dst = *(reg16_b20[op]);
+		GET_MODRM_PCBYTE(src);
+		dst = *(CPU_REG16_B20(op));
 	} else {
 		CPU_WORKCLOCK(6);
 		madr = calc_ea_dst(op);
-		GET_PCBYTE(src);
+		GET_MODRM_PCBYTE(src);
 		dst = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, madr);
 	}
 	CPU_FLAGL &= ~C_FLAG;
@@ -105,12 +105,12 @@ BT_EdIb(UINT32 op)
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		GET_PCBYTE(src);
-		dst = *(reg32_b20[op]);
+		GET_MODRM_PCBYTE(src);
+		dst = *(CPU_REG32_B20(op));
 	} else {
 		CPU_WORKCLOCK(6);
 		madr = calc_ea_dst(op);
-		GET_PCBYTE(src);
+		GET_MODRM_PCBYTE(src);
 		dst = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, madr);
 	}
 	CPU_FLAGL &= ~C_FLAG;
@@ -131,7 +131,7 @@ BTS_EwGw(void)
 	bit = BIT_MAKEBIT16(src);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		out = reg16_b20[op];
+		out = CPU_REG16_B20(op);
 		dst = *out;
 		if (dst & bit) {
 			CPU_FLAGL |= C_FLAG;
@@ -166,7 +166,7 @@ BTS_EdGd(void)
 	bit = BIT_MAKEBIT32(src);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		out = reg32_b20[op];
+		out = CPU_REG32_B20(op);
 		dst = *out;
 		if (dst & bit) {
 			CPU_FLAGL |= C_FLAG;
@@ -199,8 +199,8 @@ BTS_EwIb(UINT32 op)
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		GET_PCBYTE(src);
-		out = reg16_b20[op];
+		GET_MODRM_PCBYTE(src);
+		out = CPU_REG16_B20(op);
 		dst = *out;
 		bit = BIT_MAKEBIT16(src);
 		if (dst & bit) {
@@ -213,7 +213,7 @@ BTS_EwIb(UINT32 op)
 	} else {
 		CPU_WORKCLOCK(6);
 		madr = calc_ea_dst(op);
-		GET_PCBYTE(src);
+		GET_MODRM_PCBYTE(src);
 		dst = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, madr);
 		bit = BIT_MAKEBIT16(src);
 		if (dst & bit) {
@@ -235,8 +235,8 @@ BTS_EdIb(UINT32 op)
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		GET_PCBYTE(src);
-		out = reg32_b20[op];
+		GET_MODRM_PCBYTE(src);
+		out = CPU_REG32_B20(op);
 		dst = *out;
 		bit = BIT_MAKEBIT32(src);
 		if (dst & bit) {
@@ -249,7 +249,7 @@ BTS_EdIb(UINT32 op)
 	} else {
 		CPU_WORKCLOCK(6);
 		madr = calc_ea_dst(op);
-		GET_PCBYTE(src);
+		GET_MODRM_PCBYTE(src);
 		dst = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, madr);
 		bit = BIT_MAKEBIT32(src);
 		if (dst & bit) {
@@ -276,7 +276,7 @@ BTR_EwGw(void)
 	bit = BIT_MAKEBIT16(src);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		out = reg16_b20[op];
+		out = CPU_REG16_B20(op);
 		dst = *out;
 		if (dst & bit) {
 			CPU_FLAGL |= C_FLAG;
@@ -311,7 +311,7 @@ BTR_EdGd(void)
 	bit = BIT_MAKEBIT32(src);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		out = reg32_b20[op];
+		out = CPU_REG32_B20(op);
 		dst = *out;
 		if (dst & bit) {
 			CPU_FLAGL |= C_FLAG;
@@ -344,8 +344,8 @@ BTR_EwIb(UINT32 op)
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		GET_PCBYTE(src);
-		out = reg16_b20[op];
+		GET_MODRM_PCBYTE(src);
+		out = CPU_REG16_B20(op);
 		dst = *out;
 		bit = BIT_MAKEBIT16(src);
 		if (dst & bit) {
@@ -358,7 +358,7 @@ BTR_EwIb(UINT32 op)
 	} else {
 		CPU_WORKCLOCK(6);
 		madr = calc_ea_dst(op);
-		GET_PCBYTE(src);
+		GET_MODRM_PCBYTE(src);
 		dst = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, madr);
 		bit = BIT_MAKEBIT16(src);
 		if (dst & bit) {
@@ -380,8 +380,8 @@ BTR_EdIb(UINT32 op)
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		GET_PCBYTE(src);
-		out = reg32_b20[op];
+		GET_MODRM_PCBYTE(src);
+		out = CPU_REG32_B20(op);
 		dst = *out;
 		bit = BIT_MAKEBIT32(src);
 		if (dst & bit) {
@@ -394,7 +394,7 @@ BTR_EdIb(UINT32 op)
 	} else {
 		CPU_WORKCLOCK(6);
 		madr = calc_ea_dst(op);
-		GET_PCBYTE(src);
+		GET_MODRM_PCBYTE(src);
 		dst = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, madr);
 		bit = BIT_MAKEBIT32(src);
 		if (dst & bit) {
@@ -421,7 +421,7 @@ BTC_EwGw(void)
 	bit = BIT_MAKEBIT16(src);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		out = reg16_b20[op];
+		out = CPU_REG16_B20(op);
 		dst = *out;
 		if (dst & bit) {
 			CPU_FLAGL |= C_FLAG;
@@ -456,7 +456,7 @@ BTC_EdGd(void)
 	bit = BIT_MAKEBIT32(src);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		out = reg32_b20[op];
+		out = CPU_REG32_B20(op);
 		dst = *out;
 		if (dst & bit) {
 			CPU_FLAGL |= C_FLAG;
@@ -489,8 +489,8 @@ BTC_EwIb(UINT32 op)
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		GET_PCBYTE(src);
-		out = reg16_b20[op];
+		GET_MODRM_PCBYTE(src);
+		out = CPU_REG16_B20(op);
 		dst = *out;
 		bit = BIT_MAKEBIT16(src);
 		if (dst & bit) {
@@ -503,7 +503,7 @@ BTC_EwIb(UINT32 op)
 	} else {
 		CPU_WORKCLOCK(6);
 		madr = calc_ea_dst(op);
-		GET_PCBYTE(src);
+		GET_MODRM_PCBYTE(src);
 		dst = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, madr);
 		bit = BIT_MAKEBIT16(src);
 		if (dst & bit) {
@@ -525,8 +525,8 @@ BTC_EdIb(UINT32 op)
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		GET_PCBYTE(src);
-		out = reg32_b20[op];
+		GET_MODRM_PCBYTE(src);
+		out = CPU_REG32_B20(op);
 		dst = *out;
 		bit = BIT_MAKEBIT32(src);
 		if (dst & bit) {
@@ -539,7 +539,7 @@ BTC_EdIb(UINT32 op)
 	} else {
 		CPU_WORKCLOCK(6);
 		madr = calc_ea_dst(op);
-		GET_PCBYTE(src);
+		GET_MODRM_PCBYTE(src);
 		dst = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, madr);
 		bit = BIT_MAKEBIT32(src);
 		if (dst & bit) {
@@ -651,7 +651,7 @@ SETO_Eb(void)
 	UINT32 op, madr;
 	UINT8 v = CC_O?1:0;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
 		*(reg8_b20[op]) = v;
@@ -668,7 +668,7 @@ SETNO_Eb(void)
 	UINT32 op, madr;
 	UINT8 v = CC_NO?1:0;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
 		*(reg8_b20[op]) = v;
@@ -685,7 +685,7 @@ SETC_Eb(void)
 	UINT32 op, madr;
 	UINT8 v = CC_C?1:0;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
 		*(reg8_b20[op]) = v;
@@ -702,7 +702,7 @@ SETNC_Eb(void)
 	UINT32 op, madr;
 	UINT8 v = CC_NC?1:0;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
 		*(reg8_b20[op]) = v;
@@ -719,7 +719,7 @@ SETZ_Eb(void)
 	UINT32 op, madr;
 	UINT8 v = CC_Z?1:0;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
 		*(reg8_b20[op]) = v;
@@ -736,7 +736,7 @@ SETNZ_Eb(void)
 	UINT32 op, madr;
 	UINT8 v = CC_NZ?1:0;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
 		*(reg8_b20[op]) = v;
@@ -753,7 +753,7 @@ SETA_Eb(void)
 	UINT32 op, madr;
 	UINT8 v = CC_A?1:0;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
 		*(reg8_b20[op]) = v;
@@ -770,7 +770,7 @@ SETNA_Eb(void)
 	UINT32 op, madr;
 	UINT8 v = CC_NA?1:0;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
 		*(reg8_b20[op]) = v;
@@ -787,7 +787,7 @@ SETS_Eb(void)
 	UINT32 op, madr;
 	UINT8 v = CC_S?1:0;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
 		*(reg8_b20[op]) = v;
@@ -804,7 +804,7 @@ SETNS_Eb(void)
 	UINT32 op, madr;
 	UINT8 v = CC_NS?1:0;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
 		*(reg8_b20[op]) = v;
@@ -821,7 +821,7 @@ SETP_Eb(void)
 	UINT32 op, madr;
 	UINT8 v = CC_P?1:0;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
 		*(reg8_b20[op]) = v;
@@ -838,7 +838,7 @@ SETNP_Eb(void)
 	UINT32 op, madr;
 	UINT8 v = CC_NP?1:0;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
 		*(reg8_b20[op]) = v;
@@ -855,7 +855,7 @@ SETL_Eb(void)
 	UINT32 op, madr;
 	UINT8 v = CC_L?1:0;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
 		*(reg8_b20[op]) = v;
@@ -872,7 +872,7 @@ SETNL_Eb(void)
 	UINT32 op, madr;
 	UINT8 v = CC_NL?1:0;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
 		*(reg8_b20[op]) = v;
@@ -889,7 +889,7 @@ SETLE_Eb(void)
 	UINT32 op, madr;
 	UINT8 v = CC_LE?1:0;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
 		*(reg8_b20[op]) = v;
@@ -906,7 +906,7 @@ SETNLE_Eb(void)
 	UINT32 op, madr;
 	UINT8 v = CC_NLE?1:0;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
 		*(reg8_b20[op]) = v;
@@ -945,7 +945,7 @@ TEST_EwGw(void)
 	PREPART_EA_REG16(op, src);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		tmp = *(reg16_b20[op]);
+		tmp = *(CPU_REG16_B20(op));
 	} else {
 		CPU_WORKCLOCK(7);
 		madr = calc_ea_dst(op);
@@ -962,7 +962,7 @@ TEST_EdGd(void)
 	PREPART_EA_REG32(op, src);
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		tmp = *(reg32_b20[op]);
+		tmp = *(CPU_REG32_B20(op));
 	} else {
 		CPU_WORKCLOCK(7);
 		madr = calc_ea_dst(op);
@@ -978,7 +978,7 @@ TEST_ALIb(void)
 
 	CPU_WORKCLOCK(3);
 	tmp = CPU_AL;
-	GET_PCBYTE(src);
+	GET_MODRM_PCBYTE(src);
 	BYTE_AND(tmp, src);
 }
 
@@ -1028,7 +1028,7 @@ TEST_EwIw(UINT32 op)
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		tmp = *(reg16_b20[op]);
+		tmp = *(CPU_REG16_B20(op));
 	} else {
 		CPU_WORKCLOCK(6);
 		madr = calc_ea_dst(op);
@@ -1045,7 +1045,7 @@ TEST_EdId(UINT32 op)
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		tmp = *(reg32_b20[op]);
+		tmp = *(CPU_REG32_B20(op));
 	} else {
 		CPU_WORKCLOCK(6);
 		madr = calc_ea_dst(op);

@@ -31,6 +31,7 @@
 #endif
 #if defined(SUPPORT_HRTIMER)
 #include	<timemng.h>
+#include	<calendar.h>
 #endif
 #include	<sound/fmboard.h>
 
@@ -280,8 +281,17 @@ static void bios_reinitbyswitch(void) {
 			if(sxsi_getdevtype(i)==SXSIDEV_HDD){
 				sxsi_unittbl[idx] = i;
 				idx++;
+			}else if (sxsi_getdevtype(i) == SXSIDEV_CDROM){
+				// skip
 			}else{
 				ncidx = i;
+			}
+		}
+		// CD-ROMはHDDの後ろに追加
+		for(i=0;i<4;i++){
+			if(sxsi_getdevtype(i)==SXSIDEV_CDROM){
+				sxsi_unittbl[idx] = i;
+				idx++;
 			}
 		}
 		for(;idx<4;idx++){
@@ -338,7 +348,7 @@ static void bios_reinitbyswitch(void) {
 		_SYSTIME hrtimertime;
 		UINT32 hrtimertimeuint;
 
-		timemng_gettime(&hrtimertime);
+		calendar_getdt(&hrtimertime);
 		hrtimertimeuint = (((UINT32)hrtimertime.hour*60 + (UINT32)hrtimertime.minute)*60 + (UINT32)hrtimertime.second)*32 + ((UINT32)hrtimertime.milli*32)/1000;
 		hrtimertimeuint |= 0x400000; // こうしないとWin98の時計が1日ずれる?
 		STOREINTELDWORD(mem+0x04F1, hrtimertimeuint); // XXX: 04F4にも書いちゃってるけど差し当たっては問題なさそうなので･･･
@@ -412,7 +422,7 @@ void bios_initialize(void) {
 #if defined(USE_CUSTOM_HOOKINST)
 #if defined(SUPPORT_IA32_HAXM)
 	if (np2hax.enable) {
-		bioshookinfo.hookinst = 0xCC;//0xF4;//;0xCC;//HOOKINST_DEFAULT; // BIOSフックに使う命令（デフォルトはNOP命令をフック）
+		bioshookinfo.hookinst = 0xF4;//;0xCC;//HOOKINST_DEFAULT; // BIOSフックに使う命令（デフォルトはNOP命令をフック）
 	}else
 #endif
 	{

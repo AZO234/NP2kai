@@ -1,34 +1,35 @@
 /**
  * @file	viewer.cpp
- * @brief	DebugUty ç”¨ãƒ“ãƒ¥ãƒ¼ãƒ¯ ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
+ * @brief	DebugUty —pƒrƒ…[ƒ ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
  */
 
-#include <compiler.h>
+#include "compiler.h"
 #include "resource.h"
-#include <np2.h>
+#include "np2.h"
 #include "viewer.h"
 #include "viewitem.h"
-#include <cpucore.h>
+#include "cpucore.h"
+#include "mousemng.h"
 
-//! ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+//! ƒCƒ“ƒXƒ^ƒ“ƒX
 static CDebugUtyView* g_np2view[NP2VIEW_MAX];
 static CDebugUtyView* g_np2view_closed[NP2VIEW_MAX];
 
-//! ãƒ“ãƒ¥ãƒ¼ ã‚¯ãƒ©ã‚¹å
+//! ƒrƒ…[ ƒNƒ‰ƒX–¼
 static const TCHAR s_szViewClass[] = TEXT("NP2-ViewWindow");
 
-//! ãƒ•ã‚©ãƒ³ãƒˆ
-static const TCHAR s_szViewFont[] = _T("ï¼­ï¼³ ã‚´ã‚·ãƒƒã‚¯");
+//! ƒtƒHƒ“ƒg
+static const TCHAR s_szViewFont[] = _T("‚l‚r ƒSƒVƒbƒN");
 
-//! æœ€å¾Œã®Tick
+//! ÅŒã‚ÌTick
 DWORD CDebugUtyView::sm_dwLastTick;
 
-//! ãƒã‚§ãƒƒã‚¯ ãƒã‚¯ãƒ­
+//! ƒ`ƒFƒbƒN ƒ}ƒNƒ
 #define MFCHECK(bChecked) ((bChecked) ? MF_CHECKED : MF_UNCHECKED)
 
 /**
- * åˆæœŸåŒ–
- * @param[in] hInstance ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+ * ‰Šú‰»
+ * @param[in] hInstance ƒCƒ“ƒXƒ^ƒ“ƒX
  */
 void CDebugUtyView::Initialize(HINSTANCE hInstance)
 {
@@ -42,7 +43,7 @@ void CDebugUtyView::Initialize(HINSTANCE hInstance)
 	np2vc.lpfnWndProc = ::DefWindowProc;
 	np2vc.cbClsExtra = 0;
 	np2vc.cbWndExtra = 0;
-	np2vc.hInstance = sm_hInstance;//hInstance; // XXX: è¨€èªãƒªã‚½ãƒ¼ã‚¹ã‚’ä½¿ã†ã¨ãƒ‡ãƒãƒƒã‚°ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£ãŒè¡¨ç¤ºã§ããªããªã‚‹ã®ã‚’ã”ã¾ã‹ã™ np21w ver0.86 rev13
+	np2vc.hInstance = sm_hInstance;//hInstance; // XXX: Œ¾ŒêƒŠƒ\[ƒX‚ğg‚¤‚ÆƒfƒoƒbƒOƒ†[ƒeƒBƒŠƒeƒB‚ª•\¦‚Å‚«‚È‚­‚È‚é‚Ì‚ğ‚²‚Ü‚©‚· np21w ver0.86 rev13
 	np2vc.hIcon = ::LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON2));
 	np2vc.hCursor = ::LoadCursor(NULL, IDC_ARROW);
 	np2vc.hbrBackground = static_cast<HBRUSH>(NULL);
@@ -52,7 +53,7 @@ void CDebugUtyView::Initialize(HINSTANCE hInstance)
 }
 
 /**
- * æ–°ã—ã„ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ä½œæˆã™ã‚‹
+ * V‚µ‚¢ƒEƒBƒ“ƒhƒE‚ğì¬‚·‚é
  */
 void CDebugUtyView::New()
 {
@@ -81,7 +82,7 @@ void CDebugUtyView::New()
 	}
 }
 /**
- * ãƒ¡ãƒ¢ãƒªç ´æ£„
+ * ƒƒ‚ƒŠ”jŠü
  */
 void CDebugUtyView::DisposeAllClosedWindow()
 {
@@ -96,7 +97,7 @@ void CDebugUtyView::DisposeAllClosedWindow()
 }
 
 /**
- * ã™ã¹ã¦é–‰ã˜ã‚‹
+ * ‚·‚×‚Ä•Â‚¶‚é
  */
 void CDebugUtyView::AllClose()
 {
@@ -112,8 +113,8 @@ void CDebugUtyView::AllClose()
 }
 
 /**
- * ã™ã¹ã¦æ›´æ–°
- * @param[in] bForce å¼·åˆ¶çš„ã«æ›´æ–°ã™ã‚‹
+ * ‚·‚×‚ÄXV
+ * @param[in] bForce ‹­§“I‚ÉXV‚·‚é
  */
 void CDebugUtyView::AllUpdate(bool bForce)
 {
@@ -134,7 +135,7 @@ void CDebugUtyView::AllUpdate(bool bForce)
 }
 
 /**
- * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
  */
 CDebugUtyView::CDebugUtyView()
 	: m_bActive(false)
@@ -147,7 +148,7 @@ CDebugUtyView::CDebugUtyView()
 }
 
 /**
- * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒfƒXƒgƒ‰ƒNƒ^
  */
 CDebugUtyView::~CDebugUtyView()
 {
@@ -155,7 +156,7 @@ CDebugUtyView::~CDebugUtyView()
 }
 
 /**
- * ãƒ‡ãƒãƒƒã‚°è¡¨ç¤ºãƒ«ãƒ¼ãƒãƒ³ã‹ã‚‰åˆ‡ã‚Šé›¢ã™
+ * ƒfƒoƒbƒO•\¦ƒ‹[ƒ`ƒ“‚©‚çØ‚è—£‚·
  */
 void CDebugUtyView::DetachDebugView()
 {
@@ -169,7 +170,7 @@ void CDebugUtyView::DetachDebugView()
 	{
 		if (g_np2view[i] == this)
 		{
-			g_np2view_closed[i] = g_np2view[i]; // é–‰ã˜ã‚‰ã‚ŒãŸã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã¨ã—ã¦ç™»éŒ²
+			g_np2view_closed[i] = g_np2view[i]; // •Â‚¶‚ç‚ê‚½ƒEƒBƒ“ƒhƒE‚Æ‚µ‚Ä“o˜^
 			g_np2view[i] = NULL;
 			UpdateActive();
 			break;
@@ -178,7 +179,7 @@ void CDebugUtyView::DetachDebugView()
 }
 
 /**
- * ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³ã®æ›´æ–°
+ * ƒLƒƒƒvƒVƒ‡ƒ“‚ÌXV
  */
 void CDebugUtyView::UpdateCaption()
 {
@@ -200,8 +201,8 @@ void CDebugUtyView::UpdateCaption()
 }
 
 /**
- * V ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ä½ç½®ã®è¨­å®š
- * @param[in] nPos æ–°ã—ã„ä½ç½®
+ * V ƒXƒNƒ[ƒ‹ˆÊ’u‚Ìİ’è
+ * @param[in] nPos V‚µ‚¢ˆÊ’u
  */
 void CDebugUtyView::SetVScrollPos(UINT nPos)
 {
@@ -214,9 +215,9 @@ void CDebugUtyView::SetVScrollPos(UINT nPos)
 }
 
 /**
- * V ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã®è¨­å®š
- * @param[in] nPos æ–°ã—ã„ä½ç½®
- * @param[in] nLines ãƒ©ã‚¤ãƒ³æ•°
+ * V ƒXƒNƒ[ƒ‹‚Ìİ’è
+ * @param[in] nPos V‚µ‚¢ˆÊ’u
+ * @param[in] nLines ƒ‰ƒCƒ“”
  */
 void CDebugUtyView::SetVScroll(UINT nPos, UINT nLines)
 {
@@ -231,7 +232,7 @@ void CDebugUtyView::SetVScroll(UINT nPos, UINT nLines)
 }
 
 /**
- * V ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼ã®æ›´æ–°
+ * V ƒXƒNƒ[ƒ‹ƒo[‚ÌXV
  */
 void CDebugUtyView::UpdateVScroll()
 {
@@ -247,11 +248,11 @@ void CDebugUtyView::UpdateVScroll()
 }
 
 /**
- * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
- * @param[in] message ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
- * @param[in] wParam ãƒ‘ãƒ©ãƒ¡ã‚¿
- * @param[in] lParam ãƒ‘ãƒ©ãƒ¡ã‚¿
- * @return ãƒªã‚¶ãƒ«ãƒˆ ã‚³ãƒ¼ãƒ‰
+ * ƒEƒBƒ“ƒhƒE ƒvƒƒV[ƒWƒƒ
+ * @param[in] message ƒƒbƒZ[ƒW
+ * @param[in] wParam ƒpƒ‰ƒƒ^
+ * @param[in] lParam ƒpƒ‰ƒƒ^
+ * @return ƒŠƒUƒ‹ƒg ƒR[ƒh
  */
 LRESULT CDebugUtyView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -280,6 +281,11 @@ LRESULT CDebugUtyView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			OnActivate(LOWORD(wParam), reinterpret_cast<HWND>(lParam), HIWORD(wParam));
 			break;
 
+		case WM_MOUSEMOVE:
+		case WM_NCMOUSEMOVE:
+			mousemng_updatemouseon(false);
+			break;
+
 		case WM_CLOSE:
 			DetachDebugView();
 			DestroyWindow();
@@ -292,10 +298,10 @@ LRESULT CDebugUtyView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®é …ç›®ã‚’é¸æŠã—ãŸã¨ãã«ã€ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã«ã‚ˆã£ã¦å‘¼ã³å‡ºã•ã‚Œã¾ã™
- * @param[in] wParam ãƒ‘ãƒ©ãƒ¡ã‚¿
- * @param[in] lParam ãƒ‘ãƒ©ãƒ¡ã‚¿
- * @retval TRUE ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒã“ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡¦ç†ã—ãŸ
+ * ƒ†[ƒU[‚ªƒƒjƒ…[‚Ì€–Ú‚ğ‘I‘ğ‚µ‚½‚Æ‚«‚ÉAƒtƒŒ[ƒ€ƒ[ƒN‚É‚æ‚Á‚ÄŒÄ‚Ño‚³‚ê‚Ü‚·
+ * @param[in] wParam ƒpƒ‰ƒƒ^
+ * @param[in] lParam ƒpƒ‰ƒƒ^
+ * @retval TRUE ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ª‚±‚ÌƒƒbƒZ[ƒW‚ğˆ—‚µ‚½
  */
 BOOL CDebugUtyView::OnCommand(WPARAM wParam, LPARAM lParam)
 {
@@ -344,9 +350,9 @@ BOOL CDebugUtyView::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä½œæˆæ™‚ã«ã€ã“ã®ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¾ã™
+ * ƒEƒBƒ“ƒhƒE‚Ìì¬‚ÉA‚±‚Ìƒƒ“ƒo[ŠÖ”‚ğŒÄ‚Ño‚µ‚Ü‚·
  * @param[in] lpCreateStruct
- * @retval 0 æˆåŠŸ
+ * @retval 0 ¬Œ÷
  */
 int CDebugUtyView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
@@ -356,10 +362,10 @@ int CDebugUtyView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 }
 
 /**
- * ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã¯ã€ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚µã‚¤ã‚ºãŒå¤‰ã‚ã£ãŸå¾Œã«ã“ã®ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ã‚’å‘¼ã³ã¾ã™ 
- * @param[in] nType ã‚µã‚¤ã‚ºå¤‰æ›´ã®ç¨®é¡
- * @param[in] cx ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã®æ–°ã—ã„å¹…
- * @param[in] cy ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã®æ–°ã—ã„é«˜ã•
+ * ƒtƒŒ[ƒ€ƒ[ƒN‚ÍAƒEƒBƒ“ƒhƒE‚ÌƒTƒCƒY‚ª•Ï‚í‚Á‚½Œã‚É‚±‚Ìƒƒ“ƒo[ŠÖ”‚ğŒÄ‚Ñ‚Ü‚· 
+ * @param[in] nType ƒTƒCƒY•ÏX‚Ìí—Ş
+ * @param[in] cx ƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚ÌV‚µ‚¢•
+ * @param[in] cy ƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚ÌV‚µ‚¢‚‚³
  */
 void CDebugUtyView::OnSize(UINT nType, int cx, int cy)
 {
@@ -368,7 +374,7 @@ void CDebugUtyView::OnSize(UINT nType, int cx, int cy)
 }
 
 /**
- * å†æç”»è¦æ±‚æ™‚ã«ã€ã“ã®ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¾ã™
+ * Ä•`‰æ—v‹‚ÉA‚±‚Ìƒƒ“ƒo[ŠÖ”‚ğŒÄ‚Ño‚µ‚Ü‚·
  */
 void CDebugUtyView::OnPaint()
 {
@@ -403,10 +409,10 @@ void CDebugUtyView::OnPaint()
 }
 
 /**
- * ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã¯ã€ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«å‚ç›´ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ« ãƒãƒ¼ã‚’ã‚¯ãƒªãƒƒã‚¯ã™ã‚‹ã¨ã€ã“ã®ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¾ã™
- * @param[in] nSBCode ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®è¦æ±‚ã‚’ç¤ºã™ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ« ãƒãƒ¼ ã‚³ãƒ¼ãƒ‰ã‚’æŒ‡å®šã—ã¾ã™
- * @param[in] nPos ç¾åœ¨ã®ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ« ãƒœãƒƒã‚¯ã‚¹ã®ä½ç½®
- * @param[in] hwndScrollBar ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ« ãƒãƒ¼ ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«
+ * ƒtƒŒ[ƒ€ƒ[ƒN‚ÍAƒ†[ƒU[‚ªƒEƒBƒ“ƒhƒE‚É‚’¼ƒXƒNƒ[ƒ‹ ƒo[‚ğƒNƒŠƒbƒN‚·‚é‚ÆA‚±‚Ìƒƒ“ƒo[ŠÖ”‚ğŒÄ‚Ño‚µ‚Ü‚·
+ * @param[in] nSBCode ƒ†[ƒU[‚Ì—v‹‚ğ¦‚·ƒXƒNƒ[ƒ‹ ƒo[ ƒR[ƒh‚ğw’è‚µ‚Ü‚·
+ * @param[in] nPos Œ»İ‚ÌƒXƒNƒ[ƒ‹ ƒ{ƒbƒNƒX‚ÌˆÊ’u
+ * @param[in] hwndScrollBar ƒXƒNƒ[ƒ‹ ƒo[ ƒRƒ“ƒgƒ[ƒ‹
  */
 void CDebugUtyView::OnVScroll(UINT nSBCode, UINT nPos, HWND hwndScrollBar)
 {
@@ -489,10 +495,10 @@ void CDebugUtyView::OnEnterMenuLoop(BOOL bIsTrackPopupMenu)
 }
 
 /**
- * ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã¯ CWnd ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒã‚¢ã‚¯ãƒ†ã‚£ãƒ–åŒ–ã¾ãŸã¯éã‚¢ã‚¯ãƒ†ã‚£ãƒ–åŒ–ã•ã‚ŒãŸã¨ãã«ã“ã®ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ãŒå‘¼ã³å‡ºã•ã‚Œã¾ã™
- * @param[in] nState ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã«ãªã£ã¦ã„ã‚‹ã‹éã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã«ãªã£ã¦ã„ã‚‹ã‹ã‚’æŒ‡å®šã—ã¾ã™
- * @param[in] hwndOther ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã¾ãŸã¯éã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã«ãªã‚‹ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ãƒãƒ³ãƒ‰ãƒ«
- * @param[in] bMinimized ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã¾ãŸã¯éã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã«ãªã‚‹ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®æœ€å°åŒ–ã®çŠ¶æ…‹ã‚’æŒ‡å®šã—ã¾ã™
+ * ƒtƒŒ[ƒ€ƒ[ƒN‚Í CWnd ‚ÌƒIƒuƒWƒFƒNƒg‚ªƒAƒNƒeƒBƒu‰»‚Ü‚½‚Í”ñƒAƒNƒeƒBƒu‰»‚³‚ê‚½‚Æ‚«‚É‚±‚Ìƒƒ“ƒo[ŠÖ”‚ªŒÄ‚Ño‚³‚ê‚Ü‚·
+ * @param[in] nState ƒAƒNƒeƒBƒu‚É‚È‚Á‚Ä‚¢‚é‚©”ñƒAƒNƒeƒBƒu‚É‚È‚Á‚Ä‚¢‚é‚©‚ğw’è‚µ‚Ü‚·
+ * @param[in] hwndOther ƒAƒNƒeƒBƒu‚Ü‚½‚Í”ñƒAƒNƒeƒBƒu‚É‚È‚éƒEƒBƒ“ƒhƒE ƒnƒ“ƒhƒ‹
+ * @param[in] bMinimized ƒAƒNƒeƒBƒu‚Ü‚½‚Í”ñƒAƒNƒeƒBƒu‚É‚È‚éƒEƒBƒ“ƒhƒE‚ÌÅ¬‰»‚Ìó‘Ô‚ğw’è‚µ‚Ü‚·
  */
 void CDebugUtyView::OnActivate(UINT nState, HWND hwndOther, BOOL bMinimized)
 {
@@ -509,8 +515,8 @@ void CDebugUtyView::PostNcDestroy()
 }
 
 /**
- * ãƒ¢ãƒ¼ãƒ‰å¤‰æ›´
- * @param[in] nID ãƒ¢ãƒ¼ãƒ‰
+ * ƒ‚[ƒh•ÏX
+ * @param[in] nID ƒ‚[ƒh
  */
 void CDebugUtyView::SetMode(UINT nID)
 {
@@ -524,7 +530,7 @@ void CDebugUtyView::SetMode(UINT nID)
 }
 
 /**
- * ãƒ“ãƒ¥ãƒ¼æ›´æ–°
+ * ƒrƒ…[XV
  */
 void CDebugUtyView::UpdateView()
 {
@@ -535,11 +541,11 @@ void CDebugUtyView::UpdateView()
 }
 
 /**
- * ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ã‚¢ã‚¤ãƒ†ãƒ ã‚’æ›´æ–°
- * @param[in] hMenu ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ãƒãƒ³ãƒ‰ãƒ«
- * @param[in] nId ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ID
- * @param[in] lpSegment ã‚»ã‚°ãƒ¡ãƒ³ãƒˆå
- * @param[in] nSegment ã‚»ã‚°ãƒ¡ãƒ³ãƒˆå€¤
+ * ƒƒjƒ…[ ƒAƒCƒeƒ€‚ğXV
+ * @param[in] hMenu ƒƒjƒ…[ ƒnƒ“ƒhƒ‹
+ * @param[in] nId ƒƒjƒ…[ ID
+ * @param[in] lpSegment ƒZƒOƒƒ“ƒg–¼
+ * @param[in] nSegment ƒZƒOƒƒ“ƒg’l
  */
 void CDebugUtyView::SetSegmentItem(HMENU hMenu, int nId, LPCTSTR lpSegment, UINT nSegment)
 {
@@ -549,7 +555,7 @@ void CDebugUtyView::SetSegmentItem(HMENU hMenu, int nId, LPCTSTR lpSegment, UINT
 }
 
 /**
- * ã‚¢ã‚¯ãƒ†ã‚£ãƒ– ãƒ•ãƒ©ã‚°ã‚’æ›´æ–°
+ * ƒAƒNƒeƒBƒu ƒtƒ‰ƒO‚ğXV
  */
 void CDebugUtyView::UpdateActive()
 {

@@ -84,7 +84,7 @@ void fmport_a(NEVENTITEM item)
 	if (item->flag & NEVENT_SETEVENT)
 	{
 		if(g_pcm86.irq==opna->s.irq){
-			intreq = pcm86gen_intrq();
+			intreq = pcm86gen_intrq(1);
 			if(!(opna->s.status & 0x01) && g_pcm86.irqflag){
 				intreq = TRUE;
 			}
@@ -123,7 +123,7 @@ void fmport_b(NEVENTITEM item)
 	if (item->flag & NEVENT_SETEVENT)
 	{
 		if(g_pcm86.irq==opna->s.irq){
-			intreq = pcm86gen_intrq();
+			intreq = pcm86gen_intrq(1);
 			if(!(opna->s.status & 0x02) && g_pcm86.irqflag){
 				intreq = TRUE;
 			}

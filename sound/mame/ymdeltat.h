@@ -1,3 +1,6 @@
+
+#ifndef USE_MAME_BSD
+
 #ifndef __YMDELTAT_H_
 #define __YMDELTAT_H_
 
@@ -78,5 +81,7 @@ void YM_DELTAT_ADPCM_CALC(YM_DELTAT *DELTAT);
 
 void YM_DELTAT_postload(YM_DELTAT *DELTAT,UINT8 *regs);
 void YM_DELTAT_savestate(const char *statename,int num,YM_DELTAT *DELTAT);
+
+#endif
 
 #endif

@@ -1,13 +1,16 @@
 /**
  * @file	vstmidievent.cpp
- * @brief	VST MIDI ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
+ * @brief	VST MIDI ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
  */
 
-#include <compiler.h>
+#include "compiler.h"
+
+#ifdef SUPPORT_VSTi
+
 #include "vstmidievent.h"
 
 /**
- * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
  */
 CVstMidiEvent::CVstMidiEvent()
 	: m_nEvents(0)
@@ -15,14 +18,14 @@ CVstMidiEvent::CVstMidiEvent()
 }
 
 /**
- * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒfƒXƒgƒ‰ƒNƒ^
  */
 CVstMidiEvent::~CVstMidiEvent()
 {
 }
 
 /**
- * ã‚¯ãƒªã‚¢
+ * ƒNƒŠƒA
  */
 void CVstMidiEvent::Clear()
 {
@@ -32,9 +35,9 @@ void CVstMidiEvent::Clear()
 }
 
 /**
- * ã‚·ãƒ§ãƒ¼ãƒˆ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
- * @param[in] nTick ãƒ†ã‚£ãƒƒã‚¯
- * @param[in] nMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+ * ƒVƒ‡[ƒg ƒƒbƒZ[ƒW
+ * @param[in] nTick ƒeƒBƒbƒN
+ * @param[in] nMessage ƒƒbƒZ[ƒW
  */
 void CVstMidiEvent::ShortMessage(UINT nTick, UINT nMessage)
 {
@@ -51,10 +54,10 @@ void CVstMidiEvent::ShortMessage(UINT nTick, UINT nMessage)
 }
 
 /**
- * ãƒ­ãƒ³ã‚° ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
- * @param[in] nTick ãƒ†ã‚£ãƒƒã‚¯
- * @param[in] lpMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
- * @param[in] cbMessage ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ã‚µã‚¤ã‚º
+ * ƒƒ“ƒO ƒƒbƒZ[ƒW
+ * @param[in] nTick ƒeƒBƒbƒN
+ * @param[in] lpMessage ƒƒbƒZ[ƒW
+ * @param[in] cbMessage ƒƒbƒZ[ƒW ƒTƒCƒY
  */
 void CVstMidiEvent::LongMessage(UINT nTick, const void* lpMessage, UINT cbMessage)
 {
@@ -69,10 +72,10 @@ void CVstMidiEvent::LongMessage(UINT nTick, const void* lpMessage, UINT cbMessag
 }
 
 /**
- * ã‚¤ãƒ™ãƒ³ãƒˆè¿½åŠ 
- * @param[in] pEvent ã‚¤ãƒ™ãƒ³ãƒˆ
- * @param[in] lpMessage è¿½åŠ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
- * @param[in] cbMessage è¿½åŠ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ã‚µã‚¤ã‚º
+ * ƒCƒxƒ“ƒg’Ç‰Á
+ * @param[in] pEvent ƒCƒxƒ“ƒg
+ * @param[in] lpMessage ’Ç‰ÁƒƒbƒZ[ƒW
+ * @param[in] cbMessage ’Ç‰ÁƒƒbƒZ[ƒW ƒTƒCƒY
  */
 void CVstMidiEvent::Add(const VstEvent* pEvent, const void* lpMessage, UINT cbMessage)
 {
@@ -86,8 +89,8 @@ void CVstMidiEvent::Add(const VstEvent* pEvent, const void* lpMessage, UINT cbMe
 }
 
 /**
- * ã‚¤ãƒ™ãƒ³ãƒˆã®ä½œæˆ
- * @return ã‚¤ãƒ™ãƒ³ãƒˆ
+ * ƒCƒxƒ“ƒg‚Ìì¬
+ * @return ƒCƒxƒ“ƒg
  */
 const VstEvents* CVstMidiEvent::GetEvents()
 {
@@ -113,3 +116,5 @@ const VstEvents* CVstMidiEvent::GetEvents()
 	}
 	return pEvents;
 }
+
+#endif

@@ -62,6 +62,8 @@
 **
 */
 
+#ifndef USE_MAME_BSD
+
 #include "driver.h"
 //#include "state.h"
 #include "fm.h"
@@ -652,3 +654,4 @@ value:   START, REC, MEMDAT, REPEAT, SPOFF, x,x,RESET   meaning:
 	return;
 }
 
+#endif

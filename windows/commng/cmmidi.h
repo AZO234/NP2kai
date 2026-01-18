@@ -1,12 +1,12 @@
 /**
  * @file	cmmidi.h
- * @brief	MIDI ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
+ * @brief	MIDI ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
  */
 
 #pragma once
 
 #include "cmbase.h"
-#include <common/mimpidef.h>
+#include "mimpidef.h"
 
 extern const TCHAR cmmidi_midimapper[];
 extern const TCHAR cmmidi_midivst[];
@@ -24,12 +24,18 @@ class CComMidiIn32;
 class CComMidiOut;
 
 /**
- * @brief commng MIDI ãƒ‡ãƒã‚¤ã‚¹ ã‚¯ãƒ©ã‚¹
+ * @brief commng MIDI ƒfƒoƒCƒX ƒNƒ‰ƒX
  */
 class CComMidi : public CComBase
 {
 public:
 	static CComMidi* CreateInstance(LPCTSTR lpMidiOut, LPCTSTR lpMidiIn, LPCTSTR lpModule);
+	virtual void SendActive();
+
+	UINT8 m_useactivesense;			/*!< ACTIVESENSE‚ğ‘—‚è‘±‚¯‚é */
+	UINT32 m_activesenseInterval;	/*!< ACTIVESENSE‚ğ‘—‚è‘±‚¯‚éŠÔŠu */
+	HANDLE m_activesenseExitRequestEvent; /*!< ACTIVESENSE‘—MƒXƒŒƒbƒhI—¹ƒŠƒNƒGƒXƒg */
+	HANDLE m_activesenseExitEvent; /*!< ACTIVESENSE‘—MƒXƒŒƒbƒhI—¹ƒCƒxƒ“ƒg */
 
 protected:
 	CComMidi();
@@ -46,7 +52,7 @@ private:
 	};
 
 	/**
-	 * ãƒ•ã‚§ã‚¤ã‚º
+	 * ƒtƒFƒCƒY
 	 */
 	enum tagMidiCtrl
 	{
@@ -71,15 +77,17 @@ private:
 
 	CComMidiIn32* m_pMidiIn;		/*!< MIDI IN */
 	CComMidiOut* m_pMidiOut;		/*!< MIDI OUT */
-	UINT m_nModule;					/*!< ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ç•ªå· */
-	tagMidiCtrl m_nMidiCtrl;		/*!< ãƒ•ã‚§ãƒ¼ã‚º */
-	UINT m_nIndex;					/*!< ãƒãƒƒãƒ•ã‚¡ä½ç½® */
-	UINT m_nRecvSize;				/*!< å—ä¿¡ã‚µã‚¤ã‚º */
-	UINT8 m_cLastData;				/*!< æœ€å¾Œã®ãƒ‡ãƒ¼ã‚¿ */
-	bool m_bMimpiDef;				/*!< MIMPIDEF æœ‰åŠ¹ */
+	UINT m_nModule;					/*!< ƒ‚ƒWƒ…[ƒ‹”Ô† */
+	tagMidiCtrl m_nMidiCtrl;		/*!< ƒtƒF[ƒY */
+	UINT m_nIndex;					/*!< ƒoƒbƒtƒ@ˆÊ’u */
+	UINT m_nRecvSize;				/*!< óMƒTƒCƒY */
+	UINT8 m_cLastData;				/*!< ÅŒã‚Ìƒf[ƒ^ */
+	bool m_bMimpiDef;				/*!< MIMPIDEF —LŒø */
 	MIMPIDEF m_mimpiDef;			/*!< MIMPIDEF */
 	MIDICH m_midich[16];			/*!< MIDI CH */
-	UINT8 m_sBuffer[MIDI_BUFFER];	/*!< ãƒãƒƒãƒ•ã‚¡ */
+	UINT8 m_sBuffer[MIDI_BUFFER];	/*!< ƒoƒbƒtƒ@ */
+
+	HANDLE m_activesenseThread;		/*!< ACTIVESENSE‘—MƒXƒŒƒbƒh */
 
 	bool Initialize(LPCTSTR lpMidiOut, LPCTSTR lpMidiIn, LPCTSTR lpModule);
 	static UINT module2number(LPCTSTR lpModule);

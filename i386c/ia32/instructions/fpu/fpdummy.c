@@ -17,7 +17,7 @@ NOFPU_ESC0(void)
 {
 	UINT32 op, madr;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	TRACEOUT(("use FPU d8 %.2x", op));
 	if (op >= 0xc0) {
 		EXCEPTION(NM_EXCEPTION, 0);
@@ -32,7 +32,7 @@ NOFPU_ESC1(void)
 {
 	UINT32 op, madr;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	TRACEOUT(("use FPU d9 %.2x", op));
 	if (op >= 0xc0) {
 		EXCEPTION(NM_EXCEPTION, 0);
@@ -61,7 +61,7 @@ NOFPU_ESC2(void)
 {
 	UINT32 op, madr;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	TRACEOUT(("use FPU da %.2x", op));
 	if (op >= 0xc0) {
 		EXCEPTION(NM_EXCEPTION, 0);
@@ -76,7 +76,7 @@ NOFPU_ESC3(void)
 {
 	UINT32 op, madr;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	TRACEOUT(("use FPU db %.2x", op));
 	if (op >= 0xc0) {
 		if (op != 0xe3) {
@@ -95,7 +95,7 @@ NOFPU_ESC4(void)
 {
 	UINT32 op, madr;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	TRACEOUT(("use FPU dc %.2x", op));
 	if (op >= 0xc0) {
 		EXCEPTION(NM_EXCEPTION, 0);
@@ -110,7 +110,7 @@ NOFPU_ESC5(void)
 {
 	UINT32 op, madr;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	TRACEOUT(("use FPU dd %.2x", op));
 	if (op >= 0xc0) {
 		EXCEPTION(NM_EXCEPTION, 0);
@@ -130,7 +130,7 @@ NOFPU_ESC6(void)
 {
 	UINT32 op, madr;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	TRACEOUT(("use FPU de %.2x", op));
 	if (op >= 0xc0) {
 		EXCEPTION(NM_EXCEPTION, 0);
@@ -145,7 +145,7 @@ NOFPU_ESC7(void)
 {
 	UINT32 op, madr;
 
-	GET_PCBYTE(op);
+	GET_MODRM_PCBYTE(op);
 	TRACEOUT(("use FPU df %.2x", op));
 	if (op >= 0xc0) {
 		if (op != 0xe0) {

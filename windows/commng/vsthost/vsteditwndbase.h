@@ -1,12 +1,12 @@
 /**
  * @file	vsteditwndbase.h
- * @brief	VST edit ウィンドウ基底クラスの宣言およびインターフェイスの定義をします
+ * @brief	VST edit �E�B���h�E���N���X�̐錾����уC���^�[�t�F�C�X�̒�`�����܂�
  */
 
 #pragma once
 
 /**
- * @brief VST edit ウィンドウ基底クラス
+ * @brief VST edit �E�B���h�E���N���X
  */
 class IVstEditWnd
 {

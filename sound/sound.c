@@ -40,7 +40,6 @@ typedef struct {
 
 static	SNDSTREAM	sndstream;
 
-
 static void streamreset(void) {
 
 	SNDCSEC_ENTER;
@@ -329,25 +328,44 @@ void sound_streamregist(void *hdl, SOUNDCB cbfn) {
 
 // ----
 
-void sound_sync(void) {
+void sound_sync(void)
+{
 
 	UINT32	length;
 
-	if (sndstream.buffer == NULL) {
+	if (sndstream.buffer == NULL)
+	{
 		return;
 	}
 
 	length = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK - soundcfg.lastclock;
-	if (length < soundcfg.minclock) {
+	if (length < soundcfg.minclock)
+	{
 		return;
 	}
 	length = (length * soundcfg.hzbase) / soundcfg.clockbase;
-	if (length == 0) {
+	if (length == 0)
+	{
 		return;
 	}
+#ifdef SNDCSEC_TRYENTER
+	if (length < 1024)
+	{
+		if (!SNDCSEC_TRYENTER)
+		{
+			return;
+		}
+	}
+	else 
+	{
+		SNDCSEC_ENTER;
+	}
+#else
 	SNDCSEC_ENTER;
+#endif
 #if defined(SUPPORT_WAVEREC)
-	if (sndstream.rec) {
+	if (sndstream.rec)
+	{
 		streamfilewrite(length);
 	}
 	else
@@ -358,7 +376,8 @@ void sound_sync(void) {
 	SNDCSEC_LEAVE;
 
 	soundcfg.writecount += length;
-	if (soundcfg.writecount >= 100) {
+	if (soundcfg.writecount >= 100)
+	{
 		soundcfg.writecount = 0;
 		soundmng_sync();
 	}

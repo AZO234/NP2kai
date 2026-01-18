@@ -31,7 +31,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Dialog
 //
 
-IDD_CONFIG DIALOG 0, 0, 182, 294
+IDD_CONFIG DIALOG 0, 0, 182, 324
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Configure"
 CLASS "np2dialog"
@@ -66,6 +66,8 @@ BEGIN
     CONTROL         "Confirm dialog (on reset/exit)",IDC_COMFIRM,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,248,162,10
     CONTROL         "Resume",IDC_RESUME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,262,162,10
     CONTROL         "Save window size",IDC_SAVEWINDOWSIZE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,276,162,10
+    CONTROL         "Save settings for each resolution", IDC_SAVEWINDOWSIZEPERRES, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 16, 290, 180, 10
+    CONTROL         "Multi-thread mode", IDC_MULTITHREADMODE, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 8, 304, 162, 10
     DEFPUSHBUTTON   "&OK",IDOK,130,8,44,14,WS_GROUP
     PUSHBUTTON      "Cancel",IDCANCEL,130,26,44,14
 END
@@ -357,7 +359,7 @@ BEGIN
     PUSHBUTTON      "Defaults",IDC_MPUDEF,140,58,44,14
 END
 
-IDD_SNDMIX DIALOGEX 0, 0, 184, 124
+IDD_SNDMIX DIALOGEX 0, 0, 184, 150
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Mixer"
 FONT 9, "MS Sans Serif", 0, 0, 0x1
@@ -524,7 +526,7 @@ BEGIN
     PUSHBUTTON      "Defaults",IDC_SPBDEF,136,102,40,14
 END
 
-IDD_SNDPAD1 DIALOG 0, 0, 184, 124
+IDD_SNDPAD1 DIALOG 0, 0, 184, 140
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "JoyPad"
 FONT 9, "MS Sans Serif"
@@ -545,8 +547,11 @@ BEGIN
     CONTROL         "B",IDC_PAD1_RB,"Button",BS_AUTOCHECKBOX,86,60,21,10
     CONTROL         "C",IDC_PAD1_RC,"Button",BS_AUTOCHECKBOX,108,60,21,10
     CONTROL         "D",IDC_PAD1_RD,"Button",BS_AUTOCHECKBOX,130,60,21,10
-    LTEXT           "JoyPad ID",IDC_STATIC,24,81,40,8
-    COMBOBOX        IDC_PAD1_ID,64,79,120,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "POV -> X-Y Axis", IDC_PAD1_POVXY, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 20, 75, 140, 10
+    LTEXT           "JoyPad ID",IDC_STATIC,24,95,40,8
+    COMBOBOX        IDC_PAD1_ID,68,92,120,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Use Game Port (SB16, 118)", IDC_PAD1_GAMEPORT, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 20, 112, 140, 10
+    CONTROL         "Use Analog Input", IDC_PAD1_ANALOG, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 32, 125, 140, 10
 END
 
 IDD_SNDFMGEN DIALOG 0, 0, 184, 124
@@ -683,6 +688,7 @@ BEGIN
     CONTROL         "Read",IDC_HOSTDRVREAD,"Button",BS_AUTOCHECKBOX | WS_TABSTOP | WS_DISABLED,16,65,140,10
     CONTROL         "Write",IDC_HOSTDRVWRITE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,80,140,10
     CONTROL         "Delete",IDC_HOSTDRVDELETE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,95,140,10
+    CONTROL         "Enable Hostdrv for NT", IDC_HOSTDRVNTENABLE, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 8, 115, 140, 10
     DEFPUSHBUTTON   "&OK",IDOK,92,130,44,14,WS_GROUP
     PUSHBUTTON      "Cancel",IDCANCEL,140,130,44,14
 END
@@ -951,12 +957,15 @@ BEGIN
     MENUITEM "Back&ground sound",           IDM_BGSOUND
     MENUITEM "&Restore window border",      IDM_RESTOREBORDER
     MENUITEM SEPARATOR
-    MENUITEM " 320x200(x0.5)",              IDM_SCRNMUL4
-    MENUITEM " 480x300(x0.75)",             IDM_SCRNMUL6
-    MENUITEM " 640x400(x1)",                IDM_SCRNMUL8
-    MENUITEM " 800x500(x1.25",              IDM_SCRNMUL10
-    MENUITEM " 960x600(x1.5)",              IDM_SCRNMUL12
+    MENUITEM "Allow resize",                IDM_ALLOWRESIZE
+    MENUITEM "320x200(x0.5)",               IDM_SCRNMUL4
+    MENUITEM "480x300(x0.75)",              IDM_SCRNMUL6
+    MENUITEM "640x400(x1)",                 IDM_SCRNMUL8
+    MENUITEM "800x500(x1.25)",              IDM_SCRNMUL10
+    MENUITEM "960x600(x1.5)",               IDM_SCRNMUL12
     MENUITEM "1280x800(x2)",                IDM_SCRNMUL16
+    MENUITEM "1920x1200(x3)",               IDM_SCRNMUL24
+    MENUITEM "2560x1600(x4)",               IDM_SCRNMUL32
     MENUITEM SEPARATOR
 END
 
@@ -997,7 +1006,19 @@ BEGIN
             MENUITEM "&x16",     IDM_CHANGECLK_X16
             MENUITEM "&x30",     IDM_CHANGECLK_X30
             MENUITEM "&x42",     IDM_CHANGECLK_X42
+            MENUITEM "&x52",     IDM_CHANGECLK_X52
+            MENUITEM "&x62",     IDM_CHANGECLK_X62
             MENUITEM "&Restore", IDM_CHANGECLK_RESTORE
+        END
+        POPUP "Change Emulation &Speed"
+        BEGIN
+            MENUITEM "&x0.5",        IDM_EMULSPEED_50
+            MENUITEM "&x0.75",       IDM_EMULSPEED_75
+            MENUITEM "&x1 (Normal)", IDM_EMULSPEED_100
+            MENUITEM "&x1.5",        IDM_EMULSPEED_150
+            MENUITEM "&x2",          IDM_EMULSPEED_200
+            MENUITEM "&x4",          IDM_EMULSPEED_400
+            MENUITEM "&x8",          IDM_EMULSPEED_800
         END
         POPUP "&New disk"
         BEGIN
@@ -1025,7 +1046,12 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&No wait",                    IDM_NOWAIT
         MENUITEM "&CPU clock stabilizer",       IDM_CPUSTABILIZER
-        MENUITEM "&Async CPU (experimental)",   IDM_ASYNCCPU
+        MENUITEM "Dyn&amic CPU clock adjustment",  IDM_ASYNCCPU
+        POPUP "Dynamic CPU clock &priority"
+        BEGIN
+            MENUITEM "Performance", IDM_ASYNCCPU_LEVEL_MAX
+            MENUITEM "Timing stability", IDM_ASYNCCPU_LEVEL_MIN
+        END
         MENUITEM SEPARATOR
         //MENUITEM "&Auto frame",                 IDM_AUTOFPS
         MENUITEM "F&ull frame",                 IDM_60FPS
@@ -1048,6 +1074,7 @@ BEGIN
             MENUITEM "mechanical &GRPH",            IDM_XGRPH
             MENUITEM SEPARATOR
             MENUITEM "Send Ctrl+Alt+Del",           IDM_SENDCAD
+            MENUITEM "Paste Clipboard Text",		IDM_COPYPASTE_PASTE
             MENUITEM SEPARATOR
             MENUITEM "F12 = &Mouse",                IDM_F12MOUSE
             MENUITEM "F12 = Co&py",                 IDM_F12COPY
@@ -1058,6 +1085,7 @@ BEGIN
             MENUITEM "F12 = User2",                 IDM_USERKEY2
             MENUITEM "F12 = No wait",               IDM_F12NOWAIT
             MENUITEM "F12 = No wait(toggle)",       IDM_F12NOWAIT2
+            MENUITEM "F12 = WAB relay SW",          IDM_F12WABRELAY
             MENUITEM SEPARATOR
             MENUITEM "Use &NumLock key",            IDM_USENUMLOCK
             MENUITEM "Swap PageUp/PageDown",        IDM_SWAPPAGEUPDOWN
@@ -1070,6 +1098,7 @@ BEGIN
             MENUITEM "Beep &low",                   IDM_BEEPLOW
             MENUITEM "Beep &mid",                   IDM_BEEPMID
             MENUITEM "Beep &high",                  IDM_BEEPHIGH
+            MENUITEM "Fix beep PCM offset",         IDM_FIXBEEPOFFSET
             MENUITEM SEPARATOR
             MENUITEM "&Disable boards",             IDM_NOSOUND
             MENUITEM "PC-9801-&14",                 IDM_PC9801_14
@@ -1126,6 +1155,7 @@ BEGIN
             MENUITEM "&Raw Input Mode",             IDM_MOUSERAW
             MENUITEM "&Non-capture Control",        IDM_MOUSENC
             MENUITEM "&Change Sound Volume by Wheel",   IDM_MOUSEWHEELCTL
+            MENUITEM "&Limit Max Mouse Speed",  IDM_SLOWMOUSE
             MENUITEM SEPARATOR
             MENUITEM "x3.0",                        IDM_MOUSE30X
             MENUITEM "x2.0",                        IDM_MOUSE20X
@@ -1170,6 +1200,7 @@ BEGIN
         // MENUITEM "Fix &MMTimer",                IDM_TIMERFIX
         // MENUITEM "&Skip over 16MB memcheck",    IDM_SKIP16MEMCHK
         MENUITEM "Fast m&emcheck",              IDM_FASTMEMCHK
+        MENUITEM "Allow &drag and drop",        IDM_ALLOWDRAGDROP
         MENUITEM SEPARATOR
         MENUITEM "&Help...",                    IDM_HELP
         MENUITEM "&About...",                   IDM_ABOUT
@@ -1211,6 +1242,7 @@ BEGIN
         MENUITEM "&Open...",                    IDM_FDD1OPEN
         MENUITEM SEPARATOR
         MENUITEM "&Eject",                      IDM_FDD1EJECT
+        MENUITEM SEPARATOR
     END
 END
 
@@ -1221,6 +1253,7 @@ BEGIN
         MENUITEM "&Open...",                    IDM_FDD2OPEN
         MENUITEM SEPARATOR
         MENUITEM "&Eject",                      IDM_FDD2EJECT
+        MENUITEM SEPARATOR
     END
 END
 
@@ -1231,6 +1264,7 @@ BEGIN
         MENUITEM "&Open...",                    IDM_FDD3OPEN
         MENUITEM SEPARATOR
         MENUITEM "&Eject",                      IDM_FDD3EJECT
+        MENUITEM SEPARATOR
     END
 END
 
@@ -1241,6 +1275,7 @@ BEGIN
         MENUITEM "&Open...",                    IDM_FDD4OPEN
         MENUITEM SEPARATOR
         MENUITEM "&Eject",                      IDM_FDD4EJECT
+        MENUITEM SEPARATOR
     END
 END
 
@@ -1494,9 +1529,9 @@ BEGIN
     IDS_APP_NAME2           "Neko Project II/W"
     IDS_APP_NAME21          "Neko Project 21/W"
     IDS_FILENAME_HELP       "np2.chm"
-    IDS_FONTFACE            "\82l\82r \83S\83V\83b\83N"
+    IDS_FONTFACE            "ÇlÇr ÉSÉVÉbÉN"
     IDS_PFONTFACE           "MS Sans Serif"
-    IDS_FONTFACE_PRIMARY    "\82l\82r \83S\83V\83b\83N"
+    IDS_FONTFACE_PRIMARY    "ÇlÇr ÉSÉVÉbÉN"
     IDS_PFONTFACE_PRIMARY   "MS Sans Serif"
     IDS_FONTFACE_SECONDARY  "MS Gothic"
 END
@@ -1755,7 +1790,7 @@ BEGIN
     IDS_CPU_AMD_K7_ATHLONXP   "AMD K7 Athlon XP"
     IDS_CPU_AMD_K8_ATHLON64   "AMD K8 Athlon 64"
     IDS_CPU_AMD_K8_ATHLON64X2 "AMD K8 Athlon 64X2"
-    IDS_CPU_AMD_K10_PHENOM    "AMD K10 Phenom"
+    IDS_CPU_AMD_K10_PHENOM    "AMD K10 Phenom" 
     IDS_CPU_NEKOPRO           "Neko Processor II"
 END
 
@@ -1827,7 +1862,7 @@ STRINGTABLE
 BEGIN
     IDS_SCSITITLE           "Select SCSI image"
     IDS_SCSIEXT             "hdd"
-    IDS_SCSIFILTER          "Virtual98 harddisk image files (*.hdd)|*.hdd|RaSCSI harddisk image files (*.hdn;*.hds)|*.hdn;*.hds|All supported files|*.hdd;*.hdn;*.hds|"
+    IDS_SCSIFILTER          "Virtual98 harddisk image files (*.hdd)|*.hdd|RaSCSI harddisk image files (*.hdn;*.hds)|*.hdn;*.hds|Anex86 harddisk image files (*.hdi)|*.hdi|T98-Next harddisk image files (*.nhd)|*.nhd|VirtualPC harddisk image files (*.vhd)|*.vhd|All supported files|*.hdd;*.hdn;*.hds;*.hdi;*.nhd;*.vhd|All files (*.*)|*.*|"
     IDS_NEWDISKTITLE        "Create disk image"
 END
 

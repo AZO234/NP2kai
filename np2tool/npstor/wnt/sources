@@ -1,0 +1,8 @@
+TARGETNAME=npstor
+TARGETTYPE=DRIVER
+TARGETPATH=obj
+TARGETLIBS=$(DDK_LIB_PATH)\scsiport.lib
+#TARGETDEF=npstor.def
+SOURCES= \
+    npstor.c \
+    npstor.rc 

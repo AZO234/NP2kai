@@ -88,6 +88,22 @@ do { \
  * instruction pointer
  */
 /* コードフェッチに使用するので、OpSize の影響を受けてはいけない */
+#if defined(USE_CPU_MODRMPREFETCH)
+#define _CLEAR_MODRMCACHE() \
+do { \
+	opCache = 0; \
+} while (/*CONSTCOND*/ 0)
+#else
+#define _CLEAR_MODRMCACHE() (void)0
+#endif
+
+#if defined(USE_CPU_EIPMASK)
+#define	_ADD_EIP(v) \
+do { \
+	CPU_EIP = (CPU_EIP + (v)) & CPU_EIPMASK; \
+	_CLEAR_MODRMCACHE(); \
+} while (/*CONSTCOND*/ 0)
+#else
 #define	_ADD_EIP(v) \
 do { \
 	UINT32 __tmp_ip = CPU_EIP + (v); \
@@ -95,13 +111,29 @@ do { \
 		__tmp_ip &= 0xffff; \
 	} \
 	CPU_EIP = __tmp_ip; \
+	_CLEAR_MODRMCACHE(); \
 } while (/*CONSTCOND*/ 0)
+#endif
 
 #define	GET_PCBYTE(v) \
 do { \
 	(v) = cpu_codefetch(CPU_EIP); \
 	_ADD_EIP(1); \
 } while (/*CONSTCOND*/ 0)
+
+#if defined(USE_CPU_MODRMPREFETCH)
+#define	GET_MODRM_PCBYTE(v) \
+do { \
+	if (opCache) { \
+		(v) = opCache >> 8; \
+	} else { \
+		(v) = cpu_codefetch(CPU_EIP); \
+	} \
+	_ADD_EIP(1); \
+} while (/*CONSTCOND*/ 0)
+#else
+#define	GET_MODRM_PCBYTE(v)		GET_PCBYTE(v)
+#endif
 
 #define	GET_PCBYTES(v) \
 do { \
@@ -135,43 +167,43 @@ do { \
 
 #define	PREPART_EA_REG8(b, d_s) \
 do { \
-	GET_PCBYTE((b)); \
+	GET_MODRM_PCBYTE((b)); \
 	(d_s) = *(reg8_b53[(b)]); \
 } while (/*CONSTCOND*/ 0)
 
 #define	PREPART_EA_REG8P(b, d_s) \
 do { \
-	GET_PCBYTE((b)); \
+	GET_MODRM_PCBYTE((b)); \
 	(d_s) = reg8_b53[(b)]; \
 } while (/*CONSTCOND*/ 0)
 
 #define	PREPART_EA_REG16(b, d_s) \
 do { \
-	GET_PCBYTE((b)); \
-	(d_s) = *(reg16_b53[(b)]); \
+	GET_MODRM_PCBYTE((b)); \
+	(d_s) = CPU_REG16_B53_V(b); \
 } while (/*CONSTCOND*/ 0)
 
 #define	PREPART_EA_REG16P(b, d_s) \
 do { \
-	GET_PCBYTE((b)); \
-	(d_s) = reg16_b53[(b)]; \
+	GET_MODRM_PCBYTE((b)); \
+	(d_s) = CPU_REG16_B53((b)); \
 } while (/*CONSTCOND*/ 0)
 
 #define	PREPART_EA_REG32(b, d_s) \
 do { \
-	GET_PCBYTE((b)); \
-	(d_s) = *(reg32_b53[(b)]); \
+	GET_MODRM_PCBYTE((b)); \
+	(d_s) = CPU_REG32_B53_V(b); \
 } while (/*CONSTCOND*/ 0)
 
 #define	PREPART_EA_REG32P(b, d_s) \
 do { \
-	GET_PCBYTE((b)); \
-	(d_s) = reg32_b53[(b)]; \
+	GET_MODRM_PCBYTE((b)); \
+	(d_s) = CPU_REG32_B53((b)); \
 } while (/*CONSTCOND*/ 0)
 
 #define	PREPART_REG8_EA(b, s, d, regclk, memclk) \
 do { \
-	GET_PCBYTE((b)); \
+	GET_MODRM_PCBYTE((b)); \
 	if ((b) >= 0xc0) { \
 		CPU_WORKCLOCK(regclk); \
 		(s) = *(reg8_b20[(b)]); \
@@ -186,22 +218,22 @@ do { \
 
 #define	PREPART_REG16_EA(b, s, d, regclk, memclk) \
 do { \
-	GET_PCBYTE((b)); \
+	GET_MODRM_PCBYTE((b)); \
 	if ((b) >= 0xc0) { \
 		CPU_WORKCLOCK(regclk); \
-		(s) = *(reg16_b20[(b)]); \
+		(s) = CPU_REG16_B20_V(b); \
 	} else { \
 		UINT32 __t; \
 		CPU_WORKCLOCK(memclk); \
 		__t = calc_ea_dst((b)); \
 		(s) = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, __t); \
 	} \
-	(d) = reg16_b53[(b)]; \
+	(d) = CPU_REG16_B53((b)); \
 } while (/*CONSTCOND*/ 0)
 
 #define	PREPART_REG16_EA8(b, s, d, regclk, memclk) \
 do { \
-	GET_PCBYTE((b)); \
+	GET_MODRM_PCBYTE((b)); \
 	if ((b) >= 0xc0) { \
 		CPU_WORKCLOCK(regclk); \
 		(s) = *(reg8_b20[(b)]); \
@@ -211,27 +243,27 @@ do { \
 		__t = calc_ea_dst((b)); \
 		(s) = cpu_vmemoryread(CPU_INST_SEGREG_INDEX, __t); \
 	} \
-	(d) = reg16_b53[(b)]; \
+	(d) = CPU_REG16_B53((b)); \
 } while (/*CONSTCOND*/ 0)
 
 #define	PREPART_REG32_EA(b, s, d, regclk, memclk) \
 do { \
-	GET_PCBYTE((b)); \
+	GET_MODRM_PCBYTE((b)); \
 	if ((b) >= 0xc0) { \
 		CPU_WORKCLOCK(regclk); \
-		(s) = *(reg32_b20[(b)]); \
+		(s) = CPU_REG32_B20_V(b); \
 	} else { \
 		UINT32 __t; \
 		CPU_WORKCLOCK(memclk); \
 		__t = calc_ea_dst((b)); \
 		(s) = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, __t); \
 	} \
-	(d) = reg32_b53[(b)]; \
+	(d) = CPU_REG32_B53((b)); \
 } while (/*CONSTCOND*/ 0)
 
 #define	PREPART_REG32_EA8(b, s, d, regclk, memclk) \
 do { \
-	GET_PCBYTE((b)); \
+	GET_MODRM_PCBYTE((b)); \
 	if ((b) >= 0xc0) { \
 		CPU_WORKCLOCK(regclk); \
 		(s) = *(reg8_b20[(b)]); \
@@ -241,22 +273,22 @@ do { \
 		__t = calc_ea_dst((b)); \
 		(s) = cpu_vmemoryread(CPU_INST_SEGREG_INDEX, __t); \
 	} \
-	(d) = reg32_b53[(b)]; \
+	(d) = CPU_REG32_B53((b)); \
 } while (/*CONSTCOND*/ 0)
 
 #define	PREPART_REG32_EA16(b, s, d, regclk, memclk) \
 do { \
-	GET_PCBYTE((b)); \
+	GET_MODRM_PCBYTE((b)); \
 	if ((b) >= 0xc0) { \
 		CPU_WORKCLOCK(regclk); \
-		(s) = *(reg16_b20[(b)]); \
+		(s) = CPU_REG16_B20_V(b); \
 	} else { \
 		UINT32 __t; \
 		CPU_WORKCLOCK(memclk); \
 		__t = calc_ea_dst((b)); \
 		(s) = cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, __t); \
 	} \
-	(d) = reg32_b53[(b)]; \
+	(d) = CPU_REG32_B53((b)); \
 } while (/*CONSTCOND*/ 0)
 
 

@@ -35,7 +35,7 @@
 
 #if defined(SUPPORT_IA32_HAXM)
 
-#if 1
+#if 0
 #undef	TRACEOUT
 //#define USE_TRACEOUT_VS
 #ifdef USE_TRACEOUT_VS
@@ -45,7 +45,7 @@ static void trace_fmt_ex(const char *fmt, ...)
 	va_list ap;
 	va_start(ap, fmt);
 	vsprintf(stmp, fmt, ap);
-	strcat(stmp, "\n");
+	strcat(stmp, "Â¥n");
 	va_end(ap);
 	OutputDebugStringA(stmp);
 }
@@ -56,15 +56,9 @@ static void trace_fmt_ex(const char *fmt, ...)
 #endif	/* 1 */
 #include	"haxfunc.h"
 #include	"haxcore.h"
-#include	<np2_tickcount.h>
 
 #if defined(_WINDOWS)
 #include	<process.h>
-#else
-#include	<string.h>
-#include	<sys/types.h>
-#include	<sys/stat.h>
-#include	<fcntl.h>
 #endif
 
 NP2_HAX			np2hax = {0};
@@ -72,40 +66,33 @@ NP2_HAX_STAT	np2haxstat = {0};
 NP2_HAX_CORE	np2haxcore = {0};
 
 static void make_vm_str(OEMCHAR* buf, UINT32 vm_id){
-	_stprintf(buf, OEMTEXT("\\\\.\\hax_vm%02d"), vm_id);
+	_stprintf(buf, OEMTEXT("Â¥Â¥Â¥Â¥.Â¥Â¥hax_vm%02d"), vm_id);
 }
 static void make_vcpu_str(OEMCHAR* buf, UINT32 vm_id, UINT32 vcpu_id){
-	_stprintf(buf, OEMTEXT("\\\\.\\hax_vm%02d_vcpu%02d"), vm_id, vcpu_id);
+	_stprintf(buf, OEMTEXT("Â¥Â¥Â¥Â¥.Â¥Â¥hax_vm%02d_vcpu%02d"), vm_id, vcpu_id);
 }
 
-// HAXM‚ªg‚¦‚»‚¤‚©ƒ`ƒFƒbƒN
+// HAXMãŒä½¿ãˆãã†ã‹ãƒã‚§ãƒƒã‚¯
 UINT8 i386hax_check(void) {
 	
+#if defined(_WIN32)
 	HAX_MODULE_VERSION haxver = {0};
 	HAX_CAPINFO haxcap = {0};
 
-#if defined(_WINDOWS)
-	// HAXMƒJ[ƒlƒ‹ƒ‚[ƒhƒhƒ‰ƒCƒo‚ğŠJ‚­
-	np2hax.hDevice = CreateFile(OEMTEXT("\\\\.\\HAX"), 
+	// HAXMã‚«ãƒ¼ãƒãƒ«ãƒ¢ãƒ¼ãƒ‰ãƒ‰ãƒ©ã‚¤ãƒã‚’é–‹ã
+	np2hax.hDevice = CreateFile(OEMTEXT("Â¥Â¥Â¥Â¥.Â¥Â¥HAX"), 
 		GENERIC_READ|GENERIC_WRITE, 0, NULL, 
 		CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
 	if (np2hax.hDevice == INVALID_HANDLE_VALUE) {
-        msgbox("HAXM check", "Failed to initialize the HAX device.");
-#else
-  np2hax.hDevice = open("/dev/HAX", O_RDWR); 
-	if (np2hax.hDevice == -1) {
-#endif
 		TRACEOUT(("HAXM: Failed to initialize the HAX device."));
-#if defined(_WINDOWS)
         msgbox("HAXM check", "Failed to initialize the HAX device.");
-#endif
 		np2hax.available = 0;
 		np2hax.hDevice = NULL;
         return FAILURE;
 	}
 	
-	// HAXMƒo[ƒWƒ‡ƒ“‚ğæ“¾
+	// HAXMãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚’å–å¾—
 	if(i386haxfunc_getversion(&haxver)==SUCCESS){
 		char buf[256] = {0};
 		TRACEOUT(("HAXM: HAX getversion: compatible version %d, current version %d", haxver.compat_version, haxver.current_version));
@@ -118,7 +105,7 @@ UINT8 i386hax_check(void) {
 		goto initfailure;
 	}
 	
-	// HAXM‚Åg‚¦‚é‹@”\‚ğ’²¸
+	// HAXMã§ä½¿ãˆã‚‹æ©Ÿèƒ½ã‚’èª¿æŸ»
 	if(i386haxfunc_getcapability(&haxcap)==SUCCESS){
 		char buf[256] = {0};
 		TRACEOUT(("HAXM: HAX getcapability: wstatus 0x%.4x, winfo 0x%.4x, win_refcount %d, mem_quota %d", haxcap.wstatus, haxcap.winfo, haxcap.win_refcount, haxcap.mem_quota));
@@ -147,11 +134,7 @@ UINT8 i386hax_check(void) {
 		goto initfailure;
 	}
 	
-#if defined(_WINDOWS)
 	CloseHandle(np2hax.hDevice);
-#else
-	close(np2hax.hDevice);
-#endif
 	np2hax.hDevice = NULL;
 
 	TRACEOUT(("HAXM: HAX available."));
@@ -162,35 +145,30 @@ UINT8 i386hax_check(void) {
 	return SUCCESS;
 
 initfailure:
-#if defined(_WINDOWS)
 	CloseHandle(np2hax.hDevice);
-#else
-	close(np2hax.hDevice);
-#endif
 	np2hax.available = 0;
 	np2hax.enable = 0;
 	np2hax.hDevice = NULL;
 	return FAILURE;
+#else
+	return 1;
+#endif
 }
 
 void i386hax_initialize(void) {
 	
+#if defined(_WIN32)
 	if(!np2hax.available) return;
 	if(!np2hax.enable) return;
 
 	i386hax_deinitialize();
 	
-#if defined(_WINDOWS)
-	// HAXMƒJ[ƒlƒ‹ƒ‚[ƒhƒhƒ‰ƒCƒo‚ğŠJ‚­
-	np2hax.hDevice = CreateFile(OEMTEXT("\\\\.\\HAX"), 
+	// HAXMã‚«ãƒ¼ãƒãƒ«ãƒ¢ãƒ¼ãƒ‰ãƒ‰ãƒ©ã‚¤ãƒã‚’é–‹ã
+	np2hax.hDevice = CreateFile(OEMTEXT("Â¥Â¥Â¥Â¥.Â¥Â¥HAX"), 
 		GENERIC_READ|GENERIC_WRITE, 0, NULL, 
 		CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
 	if (np2hax.hDevice == INVALID_HANDLE_VALUE) {
-#else
-  np2hax.hDevice = open("/dev/HAX", O_RDWR); 
-	if (np2hax.hDevice == -1) {
-#endif
 		TRACEOUT(("HAXM: Failed to initialize the HAX device."));
         return;
 	}
@@ -204,58 +182,14 @@ error1:
 	CloseHandle(np2hax.hDevice);
 	np2hax.hDevice = NULL;
 	return;
-}
-
-#if !defined(_WINDOWS)
-static char *hax_vm_devfs_string(int vm_id)
-{
-    char *name;
-
-    if (vm_id > MAX_VM_ID) {
-        fprintf(stderr, "Too big VM id\n");
-        return NULL;
-    }
-
-#define HAX_VM_DEVFS "/dev/hax_vm/vmxx"
-    name = strdup(HAX_VM_DEVFS);
-    if (!name) {
-        return NULL;
-    }
-
-    snprintf(name, sizeof HAX_VM_DEVFS, "/dev/hax_vm/vm%02d", vm_id);
-    return name;
-}
-
-static char *hax_vcpu_devfs_string(int vm_id, int vcpu_id)
-{
-    char *name;
-
-    if (vm_id > MAX_VM_ID || vcpu_id > MAX_VCPU_ID) {
-        fprintf(stderr, "Too big vm id %x or vcpu id %x\n", vm_id, vcpu_id);
-        return NULL;
-    }
-
-#define HAX_VCPU_DEVFS "/dev/hax_vmxx/vcpuxx"
-    name = strdup(HAX_VCPU_DEVFS);
-    if (!name) {
-        return NULL;
-    }
-
-    snprintf(name, sizeof HAX_VCPU_DEVFS, "/dev/hax_vm%02d/vcpu%02d",
-             vm_id, vcpu_id);
-    return name;
-}
 #endif
+}
 
 void i386hax_createVM(void) {
 	
-#if defined(_WINDOWS)
+#if defined(_WIN32)
 	OEMCHAR vm_str[64] = {0};
 	OEMCHAR vcpu_str[64] = {0};
-#else
-	char* vm_str;
-	char* vcpu_str;
-#endif
 	HAX_DEBUG hax_dbg = {0};
 	HAX_QEMU_VERSION hax_qemu_ver = {0};
 
@@ -265,33 +199,26 @@ void i386hax_createVM(void) {
 
 	i386hax_disposeVM();
 	
-	// HAXM‰¼‘zƒ}ƒVƒ“‚ğì¬
+	// HAXMä»®æƒ³ãƒã‚·ãƒ³ã‚’ä½œæˆ
 	if(i386haxfunc_createVM(&np2hax.vm_id)==FAILURE){
 		TRACEOUT(("HAXM: HAX create VM failed."));
 		msgbox("HAXM VM", "HAX create VM failed.");
 		return;
 	}
 
-#if defined(_WINDOWS)
 	make_vm_str(vm_str, np2hax.vm_id);
 	
-	// HAXM‰¼‘zƒ}ƒVƒ“‚ğŠJ‚­
+	// HAXMä»®æƒ³ãƒã‚·ãƒ³ã‚’é–‹ã
 	np2hax.hVMDevice = CreateFile(vm_str, 
 		GENERIC_READ|GENERIC_WRITE, 0, NULL, 
 		CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
 	if (np2hax.hVMDevice == INVALID_HANDLE_VALUE) {
-#else
-	vm_str = hax_vm_devfs_string(np2hax.vm_id);
-
-  np2hax.hVMDevice = open(vm_str, O_RDWR); 
-	if (np2hax.hVMDevice == -1) {
-#endif
 		TRACEOUT(("HAXM: Failed to initialize the HAX VM device."));
 		return;
 	}
 	
-	// ‚ ‚Ü‚èˆÓ–¡‚È‚µH
+	// ã‚ã¾ã‚Šæ„å‘³ãªã—ï¼Ÿ
 	//hax_qemu_ver.cur_version = 0x0;
 	//if(i386haxfunc_notifyQEMUversion(&hax_qemu_ver)==FAILURE){
 	//	TRACEOUT(("HAXM: HAX notify QEMU version failed."));
@@ -299,82 +226,71 @@ void i386hax_createVM(void) {
 	//	goto error2;
 	//}
 	
-	// ‰¼‘zCPU‚ğì¬
+	// ä»®æƒ³CPUã‚’ä½œæˆ
 	if(i386haxfunc_VCPUcreate(0)==FAILURE){
 		TRACEOUT(("HAXM: HAX create VCPU failed."));
 		msgbox("HAXM VM", "HAX create VCPU failed.");
 		goto error2;
 	}
 	
-#if defined(_WINDOWS)
 	make_vcpu_str(vcpu_str, np2hax.vm_id, 0);
 	
-	// ‰¼‘zCPU‚ğŠJ‚­
+	// ä»®æƒ³CPUã‚’é–‹ã
 	np2hax.hVCPUDevice = CreateFile(vcpu_str, 
 		GENERIC_READ|GENERIC_WRITE, 0, NULL, 
 		CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
 	if (np2hax.hVCPUDevice == INVALID_HANDLE_VALUE) {
-#else
-	vcpu_str = hax_vcpu_devfs_string(np2hax.vm_id, 0);
-
-  np2hax.hVCPUDevice = open(vcpu_str, O_RDWR); 
-	if (np2hax.hVCPUDevice == -1) {
-#endif
 		TRACEOUT(("HAXM: Failed to initialize the HAX VCPU device."));
 		goto error2;
 	}
 	
-	// ‰¼‘zCPU‚Æƒf[ƒ^‚ğ‚â‚è‚Æ‚è‚·‚é‚Ì‚½‚ß‚ÌêŠ‚ğŠm•Û
+	// ä»®æƒ³CPUã¨ãƒ‡ãƒ¼ã‚¿ã‚’ã‚„ã‚Šã¨ã‚Šã™ã‚‹ã®ãŸã‚ã®å ´æ‰€ã‚’ç¢ºä¿
 	if(i386haxfunc_vcpu_setup_tunnel(&np2hax.tunnel)==FAILURE){
 		TRACEOUT(("HAXM: HAX VCPU setup tunnel failed."));
 		msgbox("HAXM VM", "HAX VCPU setup tunnel failed.");
 		goto error2;
 	}
 	
-	// ƒfƒoƒbƒO‹@”\‚ğ—LŒø‚É‚·‚éiHAX_DEBUG_USE_SW_BP‚Í‰¼‘zƒ}ƒVƒ“‚ªINT3 CCh‚ğŒÄ‚Ô‚Æ–³ğŒ‚Å‰¼‘zƒ}ƒVƒ“ƒ‚ƒjƒ^‚ÉˆÚs‚Å‚«‚éj
-	np2hax.bioshookenable = 1;
-	hax_dbg.control = HAX_DEBUG_ENABLE|HAX_DEBUG_USE_SW_BP;//|HAX_DEBUG_USE_HW_BP|HAX_DEBUG_STEP;
-	if(i386haxfunc_vcpu_debug(&hax_dbg)==FAILURE){
-		TRACEOUT(("HAXM: HAX VCPU debug setting failed."));
-		msgbox("HAXM VM", "HAX VCPU debug setting failed.");
-		goto error2;
-	}
+	//// ãƒ‡ãƒãƒƒã‚°æ©Ÿèƒ½ã‚’æœ‰åŠ¹ã«ã™ã‚‹ï¼ˆHAX_DEBUG_USE_SW_BPã¯ä»®æƒ³ãƒã‚·ãƒ³ãŒINT3 CChã‚’å‘¼ã¶ã¨ç„¡æ¡ä»¶ã§ä»®æƒ³ãƒã‚·ãƒ³ãƒ¢ãƒ‹ã‚¿ã«ç§»è¡Œã§ãã‚‹ï¼‰
+	//np2hax.bioshookenable = 1;
+	//hax_dbg.control = HAX_DEBUG_ENABLE|HAX_DEBUG_USE_SW_BP;//|HAX_DEBUG_USE_HW_BP|HAX_DEBUG_STEP;
+	//if(i386haxfunc_vcpu_debug(&hax_dbg)==FAILURE){
+	//	TRACEOUT(("HAXM: HAX VCPU debug setting failed."));
+	//	msgbox("HAXM VM", "HAX VCPU debug setting failed.");
+	//	goto error2;
+	//}
+	np2hax.bioshookenable = 0; // ã‚‚ã†ä½¿ç”¨ã—ãªããªã£ãŸ np21w ver0.86 rev95
 	
 	TRACEOUT(("HAXM: HAX VM initialized."));
     //msgbox("HAXM VM", "HAX VM initialized.");
 	
 	memset(&np2haxcore, 0, sizeof(np2haxcore));
 	
-	// ƒfƒtƒHƒ‹ƒg‚ÌƒŒƒWƒXƒ^İ’è‚ğŠo‚¦‚Ä‚¨‚­
+	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ãƒ¬ã‚¸ã‚¹ã‚¿è¨­å®šã‚’è¦šãˆã¦ãŠã
 	i386haxfunc_vcpu_getREGs(&np2haxstat.state);
 	i386haxfunc_vcpu_getFPU(&np2haxstat.fpustate);
 	memcpy(&np2haxstat.default_state, &np2haxstat.state, sizeof(np2haxstat.state));
 	memcpy(&np2haxstat.default_fpustate, &np2haxstat.fpustate, sizeof(np2haxstat.fpustate));
 
+	np2hax.emumode = 0;
+
 	return;
 	
 error3:
-#if defined(_WINDOWS)
 	CloseHandle(np2hax.hVCPUDevice);
-#else
-	close(np2hax.hVCPUDevice);
-#endif
 	np2hax.hVCPUDevice = NULL;
 error2:
-#if defined(_WINDOWS)
 	CloseHandle(np2hax.hVMDevice);
-#else
-	close(np2hax.hVMDevice);
-#endif
 	np2hax.hVMDevice = NULL;
 error1:
 	return;
+#endif
 }
 
 void i386hax_resetVMMem(void) {
 	
-	// ƒƒ‚ƒŠü‚è‚Ì‰Šúİ’è
+	// ãƒ¡ãƒ¢ãƒªå‘¨ã‚Šã®åˆæœŸè¨­å®š
 	np2haxcore.lastA20en = (CPU_ADRSMASK != 0x000fffff);
 	i386hax_vm_sethmemory(np2haxcore.lastA20en);
 	np2haxcore.lastITFbank = CPU_ITFBANK;
@@ -405,7 +321,7 @@ void i386hax_resetVMMem(void) {
 
 void i386hax_resetVMCPU(void) {
 	
-	// CPUü‚è‚Ì‰Šúİ’è
+	// CPUå‘¨ã‚Šã®åˆæœŸè¨­å®š
 	np2haxstat.irq_reqidx_cur = np2haxstat.irq_reqidx_end = 0;
 	
 	memcpy(&np2haxstat.state, &np2haxstat.default_state, sizeof(np2haxstat.state));
@@ -414,9 +330,9 @@ void i386hax_resetVMCPU(void) {
 	np2haxstat.update_regs = np2haxstat.update_fpu = 1;
 	np2haxstat.update_segment_regs = 1;
 	
-	np2haxcore.clockpersec = NP2_TickCount_GetFrequency();
-	np2haxcore.lastclock = NP2_TickCount_GetCount();
-	np2haxcore.clockcount = NP2_TickCount_GetCount();
+	np2haxcore.clockpersec = GetTickCounter_ClockPerSec();
+	np2haxcore.lastclock = GetTickCounter_Clock();
+	np2haxcore.clockcount = GetTickCounter_Clock();
 }
 
 /*
@@ -437,12 +353,12 @@ ia32hax_bioscall(void)
 		if ((adrs >= 0xf8000) && (adrs < 0x100000)) {
 			if (biosfunc(adrs)) {
 				/* Nothing to do */
-				ret = 1;
 			}
 			LOAD_SEGREG(CPU_ES_INDEX, CPU_ES);
 			LOAD_SEGREG(CPU_CS_INDEX, CPU_CS);
 			LOAD_SEGREG(CPU_SS_INDEX, CPU_SS);
 			LOAD_SEGREG(CPU_DS_INDEX, CPU_DS);
+			ret = 1;
 		}
 	}
 	return ret;
@@ -493,12 +409,10 @@ ia32hax_setHAXtoNP2IOADDR()
 	}
 }
 
-// HAXƒŒƒWƒXƒ^ ¨ NP2 IA-32 ƒŒƒWƒXƒ^
+// HAXãƒ¬ã‚¸ã‚¹ã‚¿ â†’ NP2 IA-32 ãƒ¬ã‚¸ã‚¹ã‚¿
 void
 ia32hax_copyregHAXtoNP2(void)
 {
-	static UINT32 lasteflags = 0;
-
 	CPU_EAX = np2haxstat.state._eax;
 	CPU_EBX = np2haxstat.state._ebx;
 	CPU_ECX = np2haxstat.state._ecx;
@@ -521,84 +435,78 @@ ia32hax_copyregHAXtoNP2(void)
 	GS_BASE = np2haxstat.state._gs.base;
 
 	CPU_CS_DESC.u.seg.limit = np2haxstat.state._cs.limit;
-	CPU_CS_DESC.type = np2haxstat.state._cs.type;
+	CPU_CS_DESC.flag = np2haxstat.state._cs.type;
 	CPU_CS_DESC.s = np2haxstat.state._cs.desc;
 	CPU_CS_DESC.dpl = np2haxstat.state._cs.dpl;
 	CPU_CS_DESC.rpl = np2haxstat.state._cs.selector & 0x3;
-	CPU_CS_DESC.p = np2haxstat.state._cs.present;
-	CPU_CS_DESC.valid = np2haxstat.state._cs.available;
+	CPU_CS_DESC.p = np2haxstat.state._cs.available;
+	CPU_CS_DESC.valid = np2haxstat.state._cs.present;
 	CPU_CS_DESC.d = np2haxstat.state._cs.operand_size;
 	CPU_CS_DESC.u.seg.g = np2haxstat.state._cs.granularity;
-	
+
 	CPU_DS_DESC.u.seg.limit = np2haxstat.state._ds.limit;
-	CPU_DS_DESC.type = np2haxstat.state._ds.type;
+	CPU_DS_DESC.flag = np2haxstat.state._ds.type;
 	CPU_DS_DESC.s = np2haxstat.state._ds.desc;
 	CPU_DS_DESC.dpl = np2haxstat.state._ds.dpl;
 	CPU_DS_DESC.rpl = np2haxstat.state._ds.selector & 0x3;
-	CPU_DS_DESC.p = np2haxstat.state._ds.present;
-	CPU_DS_DESC.valid = np2haxstat.state._ds.available;
+	CPU_DS_DESC.p = np2haxstat.state._ds.available;
+	CPU_DS_DESC.valid = np2haxstat.state._ds.present;
 	CPU_DS_DESC.d = np2haxstat.state._ds.operand_size;
 	CPU_DS_DESC.u.seg.g = np2haxstat.state._ds.granularity;
-	
+
 	CPU_ES_DESC.u.seg.limit = np2haxstat.state._es.limit;
-	CPU_ES_DESC.type = np2haxstat.state._es.type;
+	CPU_ES_DESC.flag = np2haxstat.state._es.type;
 	CPU_ES_DESC.s = np2haxstat.state._es.desc;
 	CPU_ES_DESC.dpl = np2haxstat.state._es.dpl;
 	CPU_ES_DESC.rpl = np2haxstat.state._es.selector & 0x3;
-	CPU_ES_DESC.p = np2haxstat.state._es.present;
-	CPU_ES_DESC.valid = np2haxstat.state._es.available;
+	CPU_ES_DESC.p = np2haxstat.state._es.available;
+	CPU_ES_DESC.valid = np2haxstat.state._es.present;
 	CPU_ES_DESC.d = np2haxstat.state._es.operand_size;
 	CPU_ES_DESC.u.seg.g = np2haxstat.state._es.granularity;
-	
+
 	CPU_SS_DESC.u.seg.limit = np2haxstat.state._ss.limit;
-	CPU_SS_DESC.type = np2haxstat.state._ss.type;
+	CPU_SS_DESC.flag = np2haxstat.state._ss.type;
 	CPU_SS_DESC.s = np2haxstat.state._ss.desc;
 	CPU_SS_DESC.dpl = np2haxstat.state._ss.dpl;
 	CPU_SS_DESC.rpl = np2haxstat.state._ss.selector & 0x3;
-	CPU_SS_DESC.p = np2haxstat.state._ss.present;
-	CPU_SS_DESC.valid = np2haxstat.state._ss.available;
+	CPU_SS_DESC.p = np2haxstat.state._ss.available;
+	CPU_SS_DESC.valid = np2haxstat.state._ss.present;
 	CPU_SS_DESC.d = np2haxstat.state._ss.operand_size;
 	CPU_SS_DESC.u.seg.g = np2haxstat.state._ss.granularity;
-	
+
 	CPU_FS_DESC.u.seg.limit = np2haxstat.state._fs.limit;
-	CPU_FS_DESC.type = np2haxstat.state._fs.type;
+	CPU_FS_DESC.flag = np2haxstat.state._fs.type;
 	CPU_FS_DESC.s = np2haxstat.state._fs.desc;
 	CPU_FS_DESC.dpl = np2haxstat.state._fs.dpl;
 	CPU_FS_DESC.rpl = np2haxstat.state._fs.selector & 0x3;
-	CPU_FS_DESC.p = np2haxstat.state._fs.present;
-	CPU_FS_DESC.valid = np2haxstat.state._fs.available;
+	CPU_FS_DESC.p = np2haxstat.state._fs.available;
+	CPU_FS_DESC.valid = np2haxstat.state._fs.present;
 	CPU_FS_DESC.d = np2haxstat.state._fs.operand_size;
 	CPU_FS_DESC.u.seg.g = np2haxstat.state._fs.granularity;
-	
+
 	CPU_GS_DESC.u.seg.limit = np2haxstat.state._gs.limit;
-	CPU_GS_DESC.type = np2haxstat.state._gs.type;
+	CPU_GS_DESC.flag = np2haxstat.state._gs.type;
 	CPU_GS_DESC.s = np2haxstat.state._gs.desc;
 	CPU_GS_DESC.dpl = np2haxstat.state._gs.dpl;
 	CPU_GS_DESC.rpl = np2haxstat.state._gs.selector & 0x3;
-	CPU_GS_DESC.p = np2haxstat.state._gs.present;
-	CPU_GS_DESC.valid = np2haxstat.state._gs.available;
+	CPU_GS_DESC.p = np2haxstat.state._gs.available;
+	CPU_GS_DESC.valid = np2haxstat.state._gs.present;
 	CPU_GS_DESC.d = np2haxstat.state._gs.operand_size;
 	CPU_GS_DESC.u.seg.g = np2haxstat.state._gs.granularity;
-	
+
 	CPU_EBP = np2haxstat.state._ebp;
 	CPU_ESP = np2haxstat.state._esp;
 	CPU_EIP = np2haxstat.state._eip;
-	CPU_PREV_EIP = np2haxstat.state._eip; // XXX: ‚ ‚ñ‚Ü‚è—Ç‚­‚È‚¢
-	
-	//if(!(lasteflags & I_FLAG) && (np2haxstat.state._eflags & I_FLAG)){
-	//	TRACEOUT(("I_FLAG on"));
-	//}else if((lasteflags & I_FLAG) && !(np2haxstat.state._eflags & I_FLAG)){
-	//	TRACEOUT(("I_FLAG off"));
-	//}
+	CPU_PREV_EIP = np2haxstat.state._eip; // XXX: ã‚ã‚“ã¾ã‚Šè‰¯ããªã„
+
 	CPU_EFLAG = np2haxstat.state._eflags;
-	lasteflags = CPU_EFLAG;
-	
+
 	CPU_CR0 = np2haxstat.state._cr0;
 	//CPU_CR1 = np2haxstat.state._cr1;
 	CPU_CR2 = np2haxstat.state._cr2;
 	CPU_CR3 = np2haxstat.state._cr3;
 	CPU_CR4 = np2haxstat.state._cr4;
-	
+
 	CPU_GDTR_BASE = np2haxstat.state._gdt.base;
 	CPU_GDTR_LIMIT = np2haxstat.state._gdt.limit;
 	CPU_IDTR_BASE = np2haxstat.state._idt.base;
@@ -606,22 +514,25 @@ ia32hax_copyregHAXtoNP2(void)
 	CPU_LDTR = np2haxstat.state._ldt.selector;
 	CPU_LDTR_BASE = np2haxstat.state._ldt.base;
 	CPU_LDTR_LIMIT = np2haxstat.state._ldt.limit;
-	CPU_LDTR_DESC.type = np2haxstat.state._ldt.type;
+	CPU_LDTR_DESC.flag = np2haxstat.state._ldt.type;
 	CPU_LDTR_DESC.s = np2haxstat.state._ldt.desc;
 	CPU_LDTR_DESC.dpl = np2haxstat.state._ldt.dpl;
-	CPU_LDTR_DESC.p = np2haxstat.state._ldt.present;
-	CPU_LDTR_DESC.valid = np2haxstat.state._ldt.available;
+	CPU_LDTR_DESC.p = np2haxstat.state._ldt.available;
+	CPU_LDTR_DESC.valid = np2haxstat.state._ldt.present;
 	CPU_LDTR_DESC.d = np2haxstat.state._ldt.operand_size;
 	CPU_LDTR_DESC.u.seg.g = np2haxstat.state._ldt.granularity;
 	CPU_TR = np2haxstat.state._tr.selector;
 	CPU_TR_BASE = np2haxstat.state._tr.base;
 	CPU_TR_LIMIT = np2haxstat.state._tr.limit;
-	CPU_TR_DESC.type = np2haxstat.state._tr.type;
+	CPU_TR_DESC.flag = np2haxstat.state._tr.type;
 	CPU_TR_DESC.s = np2haxstat.state._tr.desc;
 	CPU_TR_DESC.dpl = np2haxstat.state._tr.dpl;
-	CPU_TR_DESC.p = np2haxstat.state._tr.present;
-	CPU_TR_DESC.valid = np2haxstat.state._tr.available;
+	CPU_TR_DESC.p = np2haxstat.state._tr.available;
+	CPU_TR_DESC.valid = np2haxstat.state._tr.present;
 	CPU_TR_DESC.d = np2haxstat.state._tr.operand_size;
+	CPU_TR_DESC.u.seg.segbase = np2haxstat.state._tr.base;
+	CPU_TR_DESC.u.seg.limit = np2haxstat.state._tr.limit;
+	CPU_TR_DESC.u.seg.c = 0;
 	CPU_TR_DESC.u.seg.g = np2haxstat.state._tr.granularity;
 
 	CPU_DR(0) = np2haxstat.state._dr0;
@@ -632,33 +543,43 @@ ia32hax_copyregHAXtoNP2(void)
 	//CPU_DR(5) = np2haxstat.state._dr5;
 	CPU_DR(6) = np2haxstat.state._dr6;
 	CPU_DR(7) = np2haxstat.state._dr7;
-	
-	CPU_STAT_PM = (np2haxstat.state._cr0 & 0x1)!=0;
-	CPU_STAT_PAGING = (CPU_CR0 & CPU_CR0_PG)!=0;
-	CPU_STAT_VM86 = (np2haxstat.state._eflags & VM_FLAG)!=0;
+
+	CPU_STAT_PM = (np2haxstat.state._cr0 & 0x1) != 0;
+	CPU_STAT_PAGING = (CPU_CR0 & CPU_CR0_PG) != 0;
+	CPU_STAT_VM86 = (np2haxstat.state._eflags & VM_FLAG) != 0;
 	CPU_STAT_WP = (CPU_CR0 & CPU_CR0_WP) ? 0x10 : 0;
 	CPU_STAT_CPL = (UINT8)CPU_CS_DESC.rpl;
 	CPU_STAT_USER_MODE = (CPU_CS_DESC.rpl == 3) ? CPU_MODE_USER : CPU_MODE_SUPERVISER;
-	//CPU_STAT_PDE_BASE = CPU_CR3 & CPU_CR3_PD_MASK;
-	CPU_STAT_PDE_BASE = np2haxstat.state._pde;
-	
-	//ia32hax_setHAXtoNP2IOADDR();
+	CPU_STAT_PDE_BASE = CPU_CR3 & CPU_CR3_PD_MASK;
+	//CPU_STAT_PDE_BASE = np2haxstat.state._pde;
+
+	CPU_OV = CPU_FLAG & O_FLAG;
+	CPU_TRAP = (CPU_FLAG & (I_FLAG | T_FLAG)) == (I_FLAG | T_FLAG);
+	CPU_INST_OP32 = CPU_INST_AS32 =
+		CPU_STATSAVE.cpu_inst_default.op_32 =
+		CPU_STATSAVE.cpu_inst_default.as_32 = CPU_CS_DESC.d;
+#if defined(USE_CPU_EIPMASK)
+	CPU_EIPMASK = CPU_STATSAVE.cpu_inst_default.op_32 ? 0xffffffff : 0xffff;
+#endif
+	CPU_STAT_SS32 = CPU_SS_DESC.d;
+
+	ia32hax_setHAXtoNP2IOADDR();
+
 }
-// NP2 IA-32 ƒŒƒWƒXƒ^ ¨ HAXƒŒƒWƒXƒ^
+// NP2 IA-32 ãƒ¬ã‚¸ã‚¹ã‚¿ â†’ HAXãƒ¬ã‚¸ã‚¹ã‚¿
 void
 ia32hax_copyregNP2toHAX(void)
 {
-	static int wacounter = 0;
-
 	np2haxstat.state._eax = CPU_EAX;
 	np2haxstat.state._ebx = CPU_EBX;
 	np2haxstat.state._ecx = CPU_ECX;
 	np2haxstat.state._edx = CPU_EDX;
-	
+
 	np2haxstat.state._esi = CPU_ESI;
 	np2haxstat.state._edi = CPU_EDI;
-	
-	if(1||np2haxstat.update_segment_regs){
+
+	if (1 || np2haxstat.update_segment_regs)
+	{
 		np2haxstat.state._cs.selector = CPU_CS;
 		np2haxstat.state._ds.selector = CPU_DS;
 		np2haxstat.state._es.selector = CPU_ES;
@@ -674,127 +595,126 @@ ia32hax_copyregNP2toHAX(void)
 
 		np2haxstat.state._cs.base = CPU_CS_DESC.u.seg.segbase;
 		np2haxstat.state._cs.limit = CPU_CS_DESC.u.seg.limit;
-		//if(wacounter > 10)np2haxstat.state._cs.type = CPU_CS_DESC.type;
+		np2haxstat.state._cs.type = CPU_CS_DESC.flag;
 		np2haxstat.state._cs.desc = CPU_CS_DESC.s;
 		np2haxstat.state._cs.dpl = CPU_CS_DESC.dpl;
-		//if(wacounter > 10)np2haxstat.state._cs.selector = (np2haxstat.state._cs.selector & ~0x3) | CPU_CS_DESC.rpl;
-		np2haxstat.state._cs.present = CPU_CS_DESC.p;
-		np2haxstat.state._cs.available = CPU_CS_DESC.valid;
+		//if(wacounter > 10)np2haxstat.state._cs.selector = (np2haxstat.state._cs.selector & â€¾0x3) | CPU_CS_DESC.rpl;
+		np2haxstat.state._cs.present = CPU_CS_DESC.valid;
+		np2haxstat.state._cs.available = CPU_CS_DESC.p;
 		np2haxstat.state._cs.operand_size = CPU_CS_DESC.d;
 		np2haxstat.state._cs.granularity = CPU_CS_DESC.u.seg.g;
-	
+
 		np2haxstat.state._ds.base = CPU_DS_DESC.u.seg.segbase;
 		np2haxstat.state._ds.limit = CPU_DS_DESC.u.seg.limit;
-		//if(wacounter > 10)np2haxstat.state._ds.type = CPU_DS_DESC.type;
+		np2haxstat.state._ds.type = CPU_DS_DESC.flag;
 		np2haxstat.state._ds.desc = CPU_DS_DESC.s;
 		np2haxstat.state._ds.dpl = CPU_DS_DESC.dpl;
-		//if(wacounter > 10)np2haxstat.state._ds.selector = (np2haxstat.state._ds.selector & ~0x3) | CPU_CS_DESC.rpl;
-		np2haxstat.state._ds.present = CPU_DS_DESC.p;
-		np2haxstat.state._ds.available = CPU_DS_DESC.valid;
+		//if(wacounter > 10)np2haxstat.state._ds.selector = (np2haxstat.state._ds.selector & â€¾0x3) | CPU_CS_DESC.rpl;
+		np2haxstat.state._ds.present = CPU_DS_DESC.valid;
+		np2haxstat.state._ds.available = CPU_DS_DESC.p;
 		np2haxstat.state._ds.operand_size = CPU_DS_DESC.d;
 		np2haxstat.state._ds.granularity = CPU_DS_DESC.u.seg.g;
-	
+
 		np2haxstat.state._es.base = CPU_ES_DESC.u.seg.segbase;
 		np2haxstat.state._es.limit = CPU_ES_DESC.u.seg.limit;
-		//if(wacounter > 10)np2haxstat.state._es.type = CPU_ES_DESC.type;
+		np2haxstat.state._es.type = CPU_ES_DESC.flag;
 		np2haxstat.state._es.desc = CPU_ES_DESC.s;
 		np2haxstat.state._es.dpl = CPU_ES_DESC.dpl;
-		//if(wacounter > 10)np2haxstat.state._es.selector = (np2haxstat.state._es.selector & ~0x3) | CPU_CS_DESC.rpl;
-		np2haxstat.state._es.present = CPU_ES_DESC.p;
-		np2haxstat.state._es.available = CPU_ES_DESC.valid;
+		//if(wacounter > 10)np2haxstat.state._es.selector = (np2haxstat.state._es.selector & â€¾0x3) | CPU_CS_DESC.rpl;
+		np2haxstat.state._es.present = CPU_ES_DESC.valid;
+		np2haxstat.state._es.available = CPU_ES_DESC.p;
 		np2haxstat.state._es.operand_size = CPU_ES_DESC.d;
 		np2haxstat.state._es.granularity = CPU_ES_DESC.u.seg.g;
-	
+
 		np2haxstat.state._ss.base = CPU_SS_DESC.u.seg.segbase;
 		np2haxstat.state._ss.limit = CPU_SS_DESC.u.seg.limit;
-		//if(wacounter > 10)np2haxstat.state._ss.type = CPU_SS_DESC.type;
+		np2haxstat.state._ss.type = CPU_SS_DESC.flag;
 		np2haxstat.state._ss.desc = CPU_SS_DESC.s;
 		np2haxstat.state._ss.dpl = CPU_SS_DESC.dpl;
-		//if(wacounter > 10)np2haxstat.state._ss.selector = (np2haxstat.state._ss.selector & ~0x3) | CPU_CS_DESC.rpl;
-		np2haxstat.state._ss.present = CPU_SS_DESC.p;
-		np2haxstat.state._ss.available = CPU_SS_DESC.valid;
+		//if(wacounter > 10)np2haxstat.state._ss.selector = (np2haxstat.state._ss.selector & â€¾0x3) | CPU_CS_DESC.rpl;
+		np2haxstat.state._ss.present = CPU_SS_DESC.valid;
+		np2haxstat.state._ss.available = CPU_SS_DESC.p;
 		np2haxstat.state._ss.operand_size = CPU_SS_DESC.d;
 		np2haxstat.state._ss.granularity = CPU_SS_DESC.u.seg.g;
-	
+
 		np2haxstat.state._fs.base = CPU_FS_DESC.u.seg.segbase;
 		np2haxstat.state._fs.limit = CPU_FS_DESC.u.seg.limit;
-		//if(wacounter > 10)np2haxstat.state._fs.type = CPU_FS_DESC.type;
+		np2haxstat.state._fs.type = CPU_FS_DESC.flag;
 		np2haxstat.state._fs.desc = CPU_FS_DESC.s;
 		np2haxstat.state._fs.dpl = CPU_FS_DESC.dpl;
-		//if(wacounter > 10)np2haxstat.state._fs.selector = (np2haxstat.state._fs.selector & ~0x3) | CPU_CS_DESC.rpl;
-		np2haxstat.state._fs.present = CPU_FS_DESC.p;
-		np2haxstat.state._fs.available = CPU_FS_DESC.valid;
+		//if(wacounter > 10)np2haxstat.state._fs.selector = (np2haxstat.state._fs.selector & â€¾0x3) | CPU_CS_DESC.rpl;
+		np2haxstat.state._fs.present = CPU_FS_DESC.valid;
+		np2haxstat.state._fs.available = CPU_FS_DESC.p;
 		np2haxstat.state._fs.operand_size = CPU_FS_DESC.d;
 		np2haxstat.state._fs.granularity = CPU_FS_DESC.u.seg.g;
-	
+
 		np2haxstat.state._gs.base = CPU_GS_DESC.u.seg.segbase;
 		np2haxstat.state._gs.limit = CPU_GS_DESC.u.seg.limit;
-		//if(wacounter > 10)np2haxstat.state._gs.type = CPU_GS_DESC.type;
+		np2haxstat.state._gs.type = CPU_GS_DESC.flag;
 		np2haxstat.state._gs.desc = CPU_GS_DESC.s;
 		np2haxstat.state._gs.dpl = CPU_GS_DESC.dpl;
-		//if(wacounter > 10)np2haxstat.state._gs.selector = (np2haxstat.state._gs.selector & ~0x3) | CPU_CS_DESC.rpl;
-		np2haxstat.state._gs.present = CPU_GS_DESC.p;
-		np2haxstat.state._gs.available = CPU_GS_DESC.valid;
+		//if(wacounter > 10)np2haxstat.state._gs.selector = (np2haxstat.state._gs.selector & â€¾0x3) | CPU_CS_DESC.rpl;
+		np2haxstat.state._gs.present = CPU_GS_DESC.valid;
+		np2haxstat.state._gs.available = CPU_GS_DESC.p;
 		np2haxstat.state._gs.operand_size = CPU_GS_DESC.d;
 		np2haxstat.state._gs.granularity = CPU_GS_DESC.u.seg.g;
 
 		np2haxstat.update_segment_regs = 0;
 	}
-	
+
 	np2haxstat.state._ebp = CPU_EBP;
 	np2haxstat.state._esp = CPU_ESP;
 	np2haxstat.state._eip = CPU_EIP;
-	
+
 	np2haxstat.state._eflags = CPU_EFLAG;
-	
+
 	np2haxstat.state._cr0 = CPU_CR0;
 	//np2haxstat.state._cr1 = CPU_CR1;
 	np2haxstat.state._cr2 = CPU_CR2;
 	np2haxstat.state._cr3 = CPU_CR3;
 	np2haxstat.state._cr4 = CPU_CR4;
-	
-	//if(wacounter > 10){
-		np2haxstat.state._gdt.base = CPU_GDTR_BASE;
-		np2haxstat.state._gdt.limit = CPU_GDTR_LIMIT;
-		np2haxstat.state._idt.base = CPU_IDTR_BASE;
-		np2haxstat.state._idt.limit = CPU_IDTR_LIMIT;
-		np2haxstat.state._ldt.selector = CPU_LDTR;
-		np2haxstat.state._ldt.base = CPU_LDTR_BASE;
-		np2haxstat.state._ldt.limit = CPU_LDTR_LIMIT;
-		np2haxstat.state._ldt.type = CPU_LDTR_DESC.type;
-		np2haxstat.state._ldt.desc = CPU_LDTR_DESC.s;
-		np2haxstat.state._ldt.dpl = CPU_LDTR_DESC.dpl;
-		np2haxstat.state._ldt.present = CPU_LDTR_DESC.p;
-		np2haxstat.state._ldt.available = CPU_LDTR_DESC.valid;
-		np2haxstat.state._ldt.operand_size = CPU_LDTR_DESC.d;
-		np2haxstat.state._ldt.granularity = CPU_LDTR_DESC.u.seg.g;
-		//np2haxstat.state._tr.selector = CPU_TR;
-		//np2haxstat.state._tr.base = CPU_TR_BASE;
-		//np2haxstat.state._tr.limit = CPU_TR_LIMIT;
-		//np2haxstat.state._tr.type = CPU_TR_DESC.type;
-		//np2haxstat.state._tr.desc = CPU_TR_DESC.s;
-		//np2haxstat.state._tr.dpl = CPU_TR_DESC.dpl;
-		//np2haxstat.state._tr.present = CPU_TR_DESC.p;
-		//np2haxstat.state._tr.available = CPU_TR_DESC.valid;
-		//np2haxstat.state._tr.operand_size = CPU_TR_DESC.d;
-		//np2haxstat.state._tr.granularity = CPU_TR_DESC.u.seg.g;
-	//}else{
-	//	wacounter++;
-	//}
 
-	//np2haxstat.state._dr0 = CPU_DR(0);
-	//np2haxstat.state._dr1 = CPU_DR(1);
-	//np2haxstat.state._dr2 = CPU_DR(2);
-	//np2haxstat.state._dr3 = CPU_DR(3);
-	////np2haxstat.state._dr4 = CPU_DR(4);
-	////np2haxstat.state._dr5 = CPU_DR(5);
-	//np2haxstat.state._dr6 = CPU_DR(6);
-	//np2haxstat.state._dr7 = CPU_DR(7);
-	
-	//np2haxstat.state._pde = CPU_STAT_PDE_BASE;
+	np2haxstat.state._gdt.base = CPU_GDTR_BASE;
+	np2haxstat.state._gdt.limit = CPU_GDTR_LIMIT;
+	np2haxstat.state._idt.base = CPU_IDTR_BASE;
+	np2haxstat.state._idt.limit = CPU_IDTR_LIMIT;
+	np2haxstat.state._ldt.selector = CPU_LDTR;
+	np2haxstat.state._ldt.base = CPU_LDTR_BASE;
+	np2haxstat.state._ldt.limit = CPU_LDTR_LIMIT;
+	np2haxstat.state._ldt.type = CPU_LDTR_DESC.flag;
+	np2haxstat.state._ldt.desc = CPU_LDTR_DESC.s;
+	np2haxstat.state._ldt.dpl = CPU_LDTR_DESC.dpl;
+	//np2haxstat.state._ldt.present = CPU_LDTR_DESC.valid;
+	np2haxstat.state._ldt.available = CPU_LDTR_DESC.p;
+	np2haxstat.state._ldt.operand_size = CPU_LDTR_DESC.d;
+	np2haxstat.state._ldt.granularity = CPU_LDTR_DESC.u.seg.g;
+	np2haxstat.state._tr.selector = CPU_TR;
+	np2haxstat.state._tr.base = CPU_TR_BASE;
+	np2haxstat.state._tr.limit = CPU_TR_LIMIT;
+	np2haxstat.state._tr.type = CPU_TR_DESC.flag;
+	np2haxstat.state._tr.desc = CPU_TR_DESC.s;
+	np2haxstat.state._tr.dpl = CPU_TR_DESC.dpl;
+	//np2haxstat.state._tr.present = CPU_TR_DESC.valid;
+	np2haxstat.state._tr.available = CPU_TR_DESC.p;
+	np2haxstat.state._tr.operand_size = CPU_TR_DESC.d;
+	np2haxstat.state._tr.granularity = CPU_TR_DESC.u.seg.g;
+
+	//np2haxstat.state._tr.base = CPU_TR_DESC.u.seg.segbase;
+	//np2haxstat.state._tr.limit = CPU_TR_DESC.u.seg.limit;
+
+	np2haxstat.state._dr0 = CPU_DR(0);
+	np2haxstat.state._dr1 = CPU_DR(1);
+	np2haxstat.state._dr2 = CPU_DR(2);
+	np2haxstat.state._dr3 = CPU_DR(3);
+	//np2haxstat.state._dr4 = CPU_DR(4);
+	//np2haxstat.state._dr5 = CPU_DR(5);
+	np2haxstat.state._dr6 = CPU_DR(6);
+	np2haxstat.state._dr7 = CPU_DR(7);
+
+	np2haxstat.state._pde = CPU_STAT_PDE_BASE;
 }
 
-// ‰¼‘zƒ}ƒVƒ“Às
+// ä»®æƒ³ãƒã‚·ãƒ³å®Ÿè¡Œ
 void i386hax_vm_exec_part(void) {
 	HAX_TUNNEL *tunnel;
 	UINT8 *iobuf;
@@ -838,13 +758,13 @@ void i386hax_vm_exec_part(void) {
 		memcpy(&np2haxstat.state, &np2haxstat.default_state, sizeof(np2haxstat.state));
 		memcpy(&np2haxstat.fpustate, &np2haxstat.default_fpustate, sizeof(np2haxstat.fpustate));
 	
-		// HAXƒŒƒWƒXƒ^‚ğXV
+		// HAXãƒ¬ã‚¸ã‚¹ã‚¿ã‚’æ›´æ–°
 		ia32hax_copyregNP2toHAX();
 		i386haxfunc_vcpu_setREGs(&np2haxstat.state);
 		i386haxfunc_vcpu_setFPU(&np2haxstat.fpustate);
 		//i386hax_disposeVM();
 		//
-		//// HAXM‰¼‘zƒ}ƒVƒ“‚ğŠJ‚­
+		//// HAXMä»®æƒ³ãƒã‚·ãƒ³ã‚’é–‹ã
 		//make_vm_str(vm_str, np2hax.vm_id);
 		//np2hax.hVMDevice = CreateFile(vm_str, 
 		//	GENERIC_READ|GENERIC_WRITE, 0, NULL, 
@@ -855,7 +775,7 @@ void i386hax_vm_exec_part(void) {
 		//	return;
 		//}
 
-		//// ‰¼‘zCPU‚ğŠJ‚­
+		//// ä»®æƒ³CPUã‚’é–‹ã
 		//make_vcpu_str(vcpu_str, np2hax.vm_id, 0);
 		//np2hax.hVCPUDevice = CreateFile(vcpu_str, 
 		//	GENERIC_READ|GENERIC_WRITE, 0, NULL, 
@@ -865,7 +785,7 @@ void i386hax_vm_exec_part(void) {
 		//	TRACEOUT(("HAXM: Failed to initialize the HAX VCPU device."));
 		//}
 	
-		// ‰¼‘zCPU‚Æƒf[ƒ^‚ğ‚â‚è‚Æ‚è‚·‚é‚Ì‚½‚ß‚ÌêŠ‚ğŠm•Û
+		// ä»®æƒ³CPUã¨ãƒ‡ãƒ¼ã‚¿ã‚’ã‚„ã‚Šã¨ã‚Šã™ã‚‹ã®ãŸã‚ã®å ´æ‰€ã‚’ç¢ºä¿
 		if(i386haxfunc_vcpu_setup_tunnel(&np2hax.tunnel)==FAILURE){
 			TRACEOUT(("HAXM: HAX VCPU setup tunnel failed."));
 		}
@@ -897,21 +817,40 @@ void i386hax_vm_exec_part(void) {
 		}
 	}
 
-	// HAXM‚Æ‚Ìƒf[ƒ^‚â‚è‚Æ‚è—p
+	// XXX: å¤‰ãªã‚¢ãƒ‰ãƒ¬ã‚¹ã«ã¶ã£é£›ã¶ã®ã‚’å›é¿
+	switch (sigsetjmp(exec_1step_jmpbuf, 1))
+	{
+	case 0:
+		break;
+
+	case 1:
+		VERBOSE(("ia32: return from exception"));
+		break;
+
+	case 2:
+		VERBOSE(("ia32: return from panic"));
+		return;
+
+	default:
+		VERBOSE(("ia32: return from unknown cause"));
+		break;
+	}
+
+	// HAXMã¨ã®ãƒ‡ãƒ¼ã‚¿ã‚„ã‚Šã¨ã‚Šç”¨
 	tunnel = (HAX_TUNNEL*)np2hax.tunnel.va;
 	iobuf = (UINT8*)np2hax.tunnel.io_va;
 	
-	// ”LƒŒƒWƒXƒ^‚ğHAXƒŒƒWƒXƒ^‚ÉƒRƒs[
+	// çŒ«ãƒ¬ã‚¸ã‚¹ã‚¿ã‚’HAXãƒ¬ã‚¸ã‚¹ã‚¿ã«ã‚³ãƒ”ãƒ¼
 	ia32hax_copyregNP2toHAX();
 	
-	// •K—v‚È‚çHAXƒŒƒWƒXƒ^‚ğXV
+	// å¿…è¦ãªã‚‰HAXãƒ¬ã‚¸ã‚¹ã‚¿ã‚’æ›´æ–°
 	if(np2haxstat.update_regs) i386haxfunc_vcpu_setREGs(&np2haxstat.state);
 	if(np2haxstat.update_fpu) i386haxfunc_vcpu_setFPU(&np2haxstat.fpustate);
 	
 	np2haxcore.hltflag = 0;
 	
 coutinue_cpu:
-	// ƒƒ‚ƒŠ—‚İ‚Ì\¬‚ª•Ï‚í‚Á‚Ä‚¢‚½‚ç•Ï‚¦‚é
+	// ãƒ¡ãƒ¢ãƒªçµ¡ã¿ã®æ§‹æˆãŒå¤‰ã‚ã£ã¦ã„ãŸã‚‰å¤‰ãˆã‚‹
 	if(np2haxcore.lastA20en != (CPU_ADRSMASK != 0x000fffff)){
 		i386hax_vm_sethmemory(CPU_ADRSMASK != 0x000fffff);
 		np2haxcore.lastA20en = (CPU_ADRSMASK != 0x000fffff);
@@ -926,70 +865,41 @@ coutinue_cpu:
 		np2haxcore.lastVGA256linear = (vramop.mio2[0x2]==0x1 && (gdc.analog & (1 << GDCANALOG_256))!=0);
 	}
 	
-	// ƒvƒƒeƒNƒgƒ‚[ƒh‚ª‘±‚¢‚½‚çBIOSƒGƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“—p‚ÌƒfƒoƒbƒOİ’è‚ğ–³Œø‚É‚·‚éiƒfƒoƒbƒOƒŒƒWƒXƒ^‚ğg‚¤ƒ\ƒtƒg—pj
-	if(CPU_STAT_PM && CPU_STAT_PAGING && !CPU_STAT_VM86){
-		if(pmcounter < PMCOUNTER_THRESHOLD){
-			pmcounter++;
-		}else{
-			if(np2hax.bioshookenable){
-				HAX_DEBUG hax_dbg = {0};
-				hax_dbg.control = 0;
-				i386haxfunc_vcpu_debug(&hax_dbg);
-				np2hax.bioshookenable = 0;
-			}
-		}
-	}else{
-		if(pmcounter > 0){
-			if(!CPU_STAT_PM && !CPU_STAT_PAGING && !CPU_STAT_VM86){
-				// ƒŠƒAƒ‹ƒ‚[ƒh‚Á‚Û‚¢‚Ì‚ÅƒJƒEƒ“ƒ^ƒŠƒZƒbƒg
-				pmcounter = 0;
-			}else{
-				pmcounter--;
-			}
-		}
-		if(!np2hax.bioshookenable){
-			HAX_DEBUG hax_dbg = {0};
-			hax_dbg.control = HAX_DEBUG_ENABLE|HAX_DEBUG_USE_SW_BP;//|HAX_DEBUG_USE_HW_BP|HAX_DEBUG_STEP;
-			i386haxfunc_vcpu_debug(&hax_dbg);
-			np2hax.bioshookenable = 1;
-		}
-	}
-
-	// Š„‚è‚İ‚ğˆ—
+	// å‰²ã‚Šè¾¼ã¿ã‚’å‡¦ç†
 	if(np2haxstat.irq_reqidx_cur != np2haxstat.irq_reqidx_end){
-		if (tunnel->ready_for_interrupt_injection) { // Š„‚è‚İ€”õOKH
+		if (tunnel->ready_for_interrupt_injection) { // å‰²ã‚Šè¾¼ã¿æº–å‚™OKï¼Ÿ
 			i386haxfunc_vcpu_interrupt(np2haxstat.irq_req[np2haxstat.irq_reqidx_cur]);
 			np2haxstat.irq_reqidx_cur++;
 		}
 	}
-	if(np2haxstat.irq_reqidx_cur != np2haxstat.irq_reqidx_end){ // Š„‚è‚İ‚ª•K—v‚È‚çrequest_interrupt_window‚ğ1‚É‚·‚é
+	if(np2haxstat.irq_reqidx_cur != np2haxstat.irq_reqidx_end){ // å‰²ã‚Šè¾¼ã¿ãŒå¿…è¦ãªã‚‰request_interrupt_windowã‚’1ã«ã™ã‚‹
 		tunnel->request_interrupt_window = 1;
 	}else{
 		tunnel->request_interrupt_window = 0;
 	}
 
-	// ƒŠƒZƒbƒg‰Â”\ƒtƒ‰ƒO‚ğƒNƒŠƒA
+	// ãƒªã‚»ãƒƒãƒˆå¯èƒ½ãƒ•ãƒ©ã‚°ã‚’ã‚¯ãƒªã‚¢
 	np2haxcore.ready_for_reset = 0;
 	
 coutinue_cpu_imm:
-	// HAXM CPUÀs
+	// HAXM CPUå®Ÿè¡Œ
 	if(np2hax.emumode){
 		tunnel->_exit_status = HAX_EXIT_STATECHANGE;
 	}else{
 		i386haxfunc_vcpu_run();
 	}
 
-	// Às’â~——R‚ğæ“¾
+	// å®Ÿè¡Œåœæ­¢ç†ç”±ã‚’å–å¾—
 	exitstatus = tunnel->_exit_status;
 
-	// CPUÀsÄŠJ‚Ì‚½‚ß‚Ìˆ—i‚‘¬ˆ—‚ª—v‚é‚à‚Ìj
+	// CPUå®Ÿè¡Œå†é–‹ã®ãŸã‚ã®å‡¦ç†ï¼ˆé«˜é€Ÿå‡¦ç†ãŒè¦ã‚‹ã‚‚ã®ï¼‰
 	switch (exitstatus) {
-	case HAX_EXIT_IO: // I/Oƒ|[ƒg‚Ö‚ÌƒAƒNƒZƒX
-		//printf("HAX_EXIT_IO\n");
+	case HAX_EXIT_IO: // I/Oãƒãƒ¼ãƒˆã¸ã®ã‚¢ã‚¯ã‚»ã‚¹
+		//printf("HAX_EXIT_IOÂ¥n");
 		oldremclock = CPU_REMCLOCK;
-		switch(tunnel->io._direction){ // “ü—Í or o—Í
-		case HAX_IO_OUT: // o—Í
-			if(tunnel->io._df==0){ // ˜A‘±‚Åƒf[ƒ^‚ğo—Í‚·‚éê‡‚Ì•ûŒüH
+		switch(tunnel->io._direction){ // å…¥åŠ› or å‡ºåŠ›
+		case HAX_IO_OUT: // å‡ºåŠ›
+			if(tunnel->io._df==0){ // é€£ç¶šã§ãƒ‡ãƒ¼ã‚¿ã‚’å‡ºåŠ›ã™ã‚‹å ´åˆã®æ–¹å‘ï¼Ÿ
 				int i;
 				UINT8 *bufptr = iobuf;
 				for(i=0;i<tunnel->io._count;i++){
@@ -997,7 +907,7 @@ coutinue_cpu_imm:
 						iocore_out8(tunnel->io._port, *bufptr);
 					}else if(tunnel->io._size==2){ // 2yte
 						iocore_out16(tunnel->io._port, LOADINTELWORD(bufptr));
-					}else{ // tunnel->io._size==4 // ‚»‚êˆÈŠOiÀ¿4bytej
+					}else{ // tunnel->io._size==4 // ãã‚Œä»¥å¤–ï¼ˆå®Ÿè³ª4byteï¼‰
 						iocore_out32(tunnel->io._port, LOADINTELDWORD(bufptr));
 					}
 					bufptr += tunnel->io._size;
@@ -1011,15 +921,15 @@ coutinue_cpu_imm:
 						iocore_out8(tunnel->io._port, *bufptr);
 					}else if(tunnel->io._size==2){ // 2yte
 						iocore_out16(tunnel->io._port, LOADINTELWORD(bufptr));
-					}else{ // tunnel->io._size==4 // ‚»‚êˆÈŠOiÀ¿4bytej
+					}else{ // tunnel->io._size==4 // ãã‚Œä»¥å¤–ï¼ˆå®Ÿè³ª4byteï¼‰
 						iocore_out32(tunnel->io._port, LOADINTELDWORD(bufptr));
 					}
 					bufptr -= tunnel->io._size;
 				}
 			}
 			break;
-		case HAX_IO_IN: // “ü—Í
-			if(tunnel->io._df==0){ // ˜A‘±‚Åƒf[ƒ^‚ğ“ü—Í‚·‚éê‡‚Ì•ûŒüH
+		case HAX_IO_IN: // å…¥åŠ›
+			if(tunnel->io._df==0){ // é€£ç¶šã§ãƒ‡ãƒ¼ã‚¿ã‚’å…¥åŠ›ã™ã‚‹å ´åˆã®æ–¹å‘ï¼Ÿ
 				int i;
 				UINT8 *bufptr = iobuf;
 				for(i=0;i<tunnel->io._count;i++){
@@ -1028,7 +938,7 @@ coutinue_cpu_imm:
 					}else if(tunnel->io._size==2){
 						STOREINTELWORD(bufptr, iocore_inp16(tunnel->io._port)); // 2yte
 					}else{ // tunnel->io._size==4
-						STOREINTELDWORD(bufptr, iocore_inp32(tunnel->io._port)); // ‚»‚êˆÈŠOiÀ¿4bytej
+						STOREINTELDWORD(bufptr, iocore_inp32(tunnel->io._port)); // ãã‚Œä»¥å¤–ï¼ˆå®Ÿè³ª4byteï¼‰
 					}
 					bufptr += tunnel->io._size;
 				}
@@ -1042,15 +952,15 @@ coutinue_cpu_imm:
 					}else if(tunnel->io._size==2){
 						STOREINTELWORD(bufptr, iocore_inp16(tunnel->io._port)); // 2yte
 					}else{ // tunnel->io._size==4
-						STOREINTELDWORD(bufptr, iocore_inp32(tunnel->io._port)); // ‚»‚êˆÈŠOiÀ¿4bytej
+						STOREINTELDWORD(bufptr, iocore_inp32(tunnel->io._port)); // ãã‚Œä»¥å¤–ï¼ˆå®Ÿè³ª4byteï¼‰
 					}
 					bufptr -= tunnel->io._size;
 				}
 			}
 			break;
 		}
-		if(tunnel->io._port==0x1480){
-			// ƒQ[ƒ€ƒ|[ƒg“Ç‚İæ‚è‚Í‘¦À‚É•Ô‚·
+		if(tunnel->io._port==0x1480 || tunnel->io._port == 0x04d2){
+			// ã‚²ãƒ¼ãƒ ãƒãƒ¼ãƒˆèª­ã¿å–ã‚Šã¯å³åº§ã«è¿”ã™
 			goto coutinue_cpu_imm;
 		}
 		if(CPU_REMCLOCK==-1){
@@ -1058,13 +968,13 @@ coutinue_cpu_imm:
 		}
 		//CPU_REMCLOCK = oldremclock;
 		
-		// ‚‘¬‰»‚Ì‚½‚ß‚Éˆê•”‚ÌI/Oƒ|[ƒg‚Ìˆ—‚ğŠÈ—ª‰»
+		// é«˜é€ŸåŒ–ã®ãŸã‚ã«ä¸€éƒ¨ã®I/Oãƒãƒ¼ãƒˆã®å‡¦ç†ã‚’ç°¡ç•¥åŒ–
 		//if(tunnel->io._port != 0x90 && tunnel->io._port != 0x92 && tunnel->io._port != 0x94 && 
 		//	tunnel->io._port != 0xc8 && tunnel->io._port != 0xca && tunnel->io._port != 0xcc && tunnel->io._port != 0xbe && tunnel->io._port != 0x4be) {
 		//	(0x430 <= tunnel->io._port && tunnel->io._port <= 0x64e && !(g_nevent.item[NEVENT_SASIIO].flag & NEVENT_ENABLE)) || 
 		//	(0x7FD9 <= tunnel->io._port && tunnel->io._port <= 0x7FDF)){
 			if(tunnel->io._port==0x640){
-				// Œµ‚µ‚ß‚É‚·‚é
+				// å³ã—ã‚ã«ã™ã‚‹
 				if (np2haxcore.hurryup) {
 					np2haxcore.hurryup = 0;
 					break;
@@ -1072,15 +982,15 @@ coutinue_cpu_imm:
 			}
 			{
 				SINT32 diff; 
-				np2haxcore.clockcount = NP2_TickCount_GetCount();
-				diff = (np2haxcore.clockcount - np2haxcore.lastclock) * pccore.realclock / np2haxcore.clockpersec;
+				np2haxcore.clockcount = GetTickCounter_Clock();
+				diff = (np2haxcore.clockcount.QuadPart - np2haxcore.lastclock.QuadPart) * pccore.realclock / np2haxcore.clockpersec.QuadPart;
 				if(CPU_REMCLOCK > 0){
 					CPU_REMCLOCK -= diff;
 				}
-				np2haxcore.lastclock = np2haxcore.clockcount;
+				np2haxcore.lastclock.QuadPart = np2haxcore.clockcount.QuadPart;
 			}
 	
-			// ŠÔØ‚ê‚È‚ç”²‚¯‚é
+			// æ™‚é–“åˆ‡ã‚Œãªã‚‰æŠœã‘ã‚‹
 			if (CPU_REMCLOCK <= 0) {
 				break;
 			}
@@ -1098,13 +1008,13 @@ coutinue_cpu_imm:
 			goto coutinue_cpu;
 		//}
 		break;
-	case HAX_EXIT_FAST_MMIO: // ƒƒ‚ƒŠƒ}ƒbƒvƒhI/O‚Ö‚ÌƒAƒNƒZƒX
-		//printf("HAX_EXIT_FAST_MMIO\n");
+	case HAX_EXIT_FAST_MMIO: // ãƒ¡ãƒ¢ãƒªãƒãƒƒãƒ—ãƒ‰I/Oã¸ã®ã‚¢ã‚¯ã‚»ã‚¹
+		//printf("HAX_EXIT_FAST_MMIOÂ¥n");
 		{
 			HAX_FASTMMIO *mmio = (HAX_FASTMMIO*)np2hax.tunnel.io_va;
 				
-			switch(mmio->direction){ // ƒf[ƒ^READ/WRITE‚Ì”»’è
-			case 0: // ƒf[ƒ^READ
+			switch(mmio->direction){ // ãƒ‡ãƒ¼ã‚¿READ/WRITEã®åˆ¤å®š
+			case 0: // ãƒ‡ãƒ¼ã‚¿READ
 				if(mmio->size==1){
 					mmio->value = memp_read8((UINT32)mmio->gpa);
 				}else if(mmio->size==2){
@@ -1113,7 +1023,7 @@ coutinue_cpu_imm:
 					mmio->value = memp_read32((UINT32)mmio->gpa);
 				}
 				break;
-			case 1: // ƒf[ƒ^WRITE
+			case 1: // ãƒ‡ãƒ¼ã‚¿WRITE
 				if(mmio->size==1){
 					memp_write8((UINT32)mmio->gpa, (UINT8)mmio->value);
 				}else if(mmio->size==2){
@@ -1122,7 +1032,7 @@ coutinue_cpu_imm:
 					memp_write32((UINT32)mmio->gpa, (UINT32)mmio->value);
 				}
 				break;
-			default: // ƒf[ƒ^READ¨ƒf[ƒ^WRITE
+			default: // ãƒ‡ãƒ¼ã‚¿READâ†’ãƒ‡ãƒ¼ã‚¿WRITE
 				if(mmio->size==1){
 					memp_write8((UINT32)mmio->gpa2, memp_read8((UINT32)mmio->gpa));
 				}else if(mmio->size==2){
@@ -1135,15 +1045,15 @@ coutinue_cpu_imm:
 		}
 		{
 			SINT32 diff; 
-			np2haxcore.clockcount = NP2_TickCount_GetCount();
-			diff = (np2haxcore.clockcount - np2haxcore.lastclock) * pccore.realclock / np2haxcore.clockpersec;
+			np2haxcore.clockcount = GetTickCounter_Clock();
+			diff = (np2haxcore.clockcount.QuadPart - np2haxcore.lastclock.QuadPart) * pccore.realclock / np2haxcore.clockpersec.QuadPart;
 			if(CPU_REMCLOCK > 0){
 				CPU_REMCLOCK -= diff;
 			}
-			np2haxcore.lastclock = np2haxcore.clockcount;
+			np2haxcore.lastclock.QuadPart = np2haxcore.clockcount.QuadPart;
 		}
 	
-		// ŠÔØ‚ê‚È‚ç”²‚¯‚é
+		// æ™‚é–“åˆ‡ã‚Œãªã‚‰æŠœã‘ã‚‹
 		if (CPU_REMCLOCK <= 0) {
 			break;
 		}
@@ -1161,29 +1071,29 @@ coutinue_cpu_imm:
 		break;
 	}
 	
-	// HAXMƒŒƒWƒXƒ^‚ğ“Ç‚İæ‚è
+	// HAXMãƒ¬ã‚¸ã‚¹ã‚¿ã‚’èª­ã¿å–ã‚Š
 	i386haxfunc_vcpu_getREGs(&np2haxstat.state);
 	i386haxfunc_vcpu_getFPU(&np2haxstat.fpustate);
 	np2haxstat.update_regs = np2haxstat.update_fpu = 0;
 	
-	// HAXMƒŒƒWƒXƒ^¨”LƒŒƒWƒXƒ^‚ÉƒRƒs[
+	// HAXMãƒ¬ã‚¸ã‚¹ã‚¿â†’çŒ«ãƒ¬ã‚¸ã‚¹ã‚¿ã«ã‚³ãƒ”ãƒ¼
 	ia32hax_copyregHAXtoNP2();
 	
-	// CPUÀsÄŠJ‚Ì‚½‚ß‚Ìˆ—iˆ—‘¬“x‚Í‚Ç‚¤‚Å‚à‚¢‚¢•¨j
+	// CPUå®Ÿè¡Œå†é–‹ã®ãŸã‚ã®å‡¦ç†ï¼ˆå‡¦ç†é€Ÿåº¦ã¯ã©ã†ã§ã‚‚ã„ã„ç‰©ï¼‰
 	switch (exitstatus) {
-	case HAX_EXIT_MMIO: // ƒƒ‚ƒŠƒ}ƒbƒvƒhI/O‚Ö‚ÌƒAƒNƒZƒXi‹Œ®E‚à‚¤ŒÄ‚Î‚ê‚È‚¢‚Æv‚¤j
-		//printf("HAX_EXIT_MMIO\n");
+	case HAX_EXIT_MMIO: // ãƒ¡ãƒ¢ãƒªãƒãƒƒãƒ—ãƒ‰I/Oã¸ã®ã‚¢ã‚¯ã‚»ã‚¹ï¼ˆæ—§å¼ãƒ»ã‚‚ã†å‘¼ã°ã‚Œãªã„ã¨æ€ã†ï¼‰
+		//printf("HAX_EXIT_MMIOÂ¥n");
 		break;
-	case HAX_EXIT_REALMODE: // –‘Oİ’è‚ğ‚·‚é‚ÆƒŠƒAƒ‹ƒ‚[ƒh‚Ì‚ÉŒÄ‚Î‚ê‚é‚ç‚µ‚¢
-		//printf("HAX_EXIT_REALMODE\n");
+	case HAX_EXIT_REALMODE: // äº‹å‰è¨­å®šã‚’ã™ã‚‹ã¨ãƒªã‚¢ãƒ«ãƒ¢ãƒ¼ãƒ‰ã®æ™‚ã«å‘¼ã°ã‚Œã‚‹ã‚‰ã—ã„
+		//printf("HAX_EXIT_REALMODEÂ¥n");
 		break;
-	case HAX_EXIT_INTERRUPT: // Š„‚è‚İ¥¥¥H
-		//printf("HAX_EXIT_INTERRUPT\n");
-		// ƒŠƒZƒbƒg‰Â”\ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	case HAX_EXIT_INTERRUPT: // å‰²ã‚Šè¾¼ã¿ï½¥ï½¥ï½¥ï¼Ÿ
+		//printf("HAX_EXIT_INTERRUPTÂ¥n");
+		// ãƒªã‚»ãƒƒãƒˆå¯èƒ½ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 		np2haxcore.ready_for_reset = 1;
 		break;
-	case HAX_EXIT_UNKNOWN: // “ä
-		//printf("HAX_EXIT_UNKNOWN\n");
+	case HAX_EXIT_UNKNOWN: // è¬
+		//printf("HAX_EXIT_UNKNOWNÂ¥n");
 		//if(!CPU_RESETREQ){
 		//	np2hax.emumode = 1;
 		//	CPU_REMCLOCK = 0;
@@ -1197,15 +1107,33 @@ coutinue_cpu_imm:
 		//	np2haxstat.update_fpu = 1;
 		//}
 		break;
-	case HAX_EXIT_HLT: // HLT–½—ß‚ªÀs‚³‚ê‚½‚Æ‚«
+	case HAX_EXIT_HLT: // HLTå‘½ä»¤ãŒå®Ÿè¡Œã•ã‚ŒãŸã¨ã
 		np2haxcore.hltflag = 1;
-		//printf("HAX_EXIT_HLT\n");
-		// ƒŠƒZƒbƒg‰Â”\ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+		//printf("HAX_EXIT_HLTÂ¥n");
+		// ãƒªã‚»ãƒƒãƒˆå¯èƒ½ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 		np2haxcore.ready_for_reset = 1;
+		// ãƒªã‚¢ãƒ«ãƒ¢ãƒ¼ãƒ‰ or ä»®æƒ³86
+		if (!CPU_STAT_PM || CPU_STAT_VM86)
+		{
+			CPU_PREV_EIP = CPU_EIP - 1; // HLTã®æ¬¡ã®å‘½ä»¤ã«ç§»ã£ã¦ã—ã¾ã£ã¦ã„ã‚‹ã®ã§ï½¥ï½¥ï½¥
+			addr = CPU_PREV_EIP + (CPU_CS << 4);
+			// BIOSã‚³ãƒ¼ãƒ«
+			if (memp_read8(addr) == bioshookinfo.hookinst)
+			{
+				if (ia32hax_bioscall())
+				{
+					np2haxstat.update_regs = 1;
+					np2haxstat.update_segment_regs = 1;
+					// ã‚«ã‚¦ãƒ³ã‚¿ãƒªã‚»ãƒƒãƒˆ
+					pmcounter = 0;
+					np2haxcore.hltflag = 0; // ã™ãã«å†é–‹
+				}
+			}
+		}
 		break;
-	case HAX_EXIT_STATECHANGE: // CPUó‘Ô‚ª•Ï‚í‚Á‚½‚Æ‚«¥¥¥‚ÆŒ¾‚¢‚Â‚ÂA–ÀãCPU‚ªÀs•s”\(panic)‚É‚È‚Á‚½‚Æ‚«‚µ‚©ŒÄ‚Î‚ê‚È‚¢
-		//printf("HAX_EXIT_STATECHANGE\n");
-		// ƒŠƒZƒbƒg‰Â”\ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	case HAX_EXIT_STATECHANGE: // CPUçŠ¶æ…‹ãŒå¤‰ã‚ã£ãŸã¨ãï½¥ï½¥ï½¥ã¨è¨€ã„ã¤ã¤ã€äº‹å®Ÿä¸ŠCPUãŒå®Ÿè¡Œä¸èƒ½(panic)ã«ãªã£ãŸã¨ãã—ã‹å‘¼ã°ã‚Œãªã„
+		//printf("HAX_EXIT_STATECHANGEÂ¥n");
+		// ãƒªã‚»ãƒƒãƒˆå¯èƒ½ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 		np2haxcore.ready_for_reset = 1;
 		//if(!CPU_RESETREQ){
 		//	np2hax.emumode = 1;
@@ -1226,7 +1154,7 @@ coutinue_cpu_imm:
 		//	UINT8 memdump[0x100];
 		//	UINT32 baseaddr;
 		//	addr = CPU_EIP + (CPU_CS << 4);
-		//	baseaddr = addr & ~0xff;
+		//	baseaddr = addr & â€¾0xff;
 		//	for(i=0;i<0x100;i++){
 		//		memdumpa[i] = baseaddr + i;
 		//		memdump[i] = memp_read8(memdumpa[i]);
@@ -1236,32 +1164,18 @@ coutinue_cpu_imm:
 		//	return;
 		//}
 		break;
-	case HAX_EXIT_PAUSED: // ˆê’â~H
-		//printf("HAX_EXIT_PAUSED\n");
-		// ƒŠƒZƒbƒg‰Â”\ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	case HAX_EXIT_PAUSED: // ä¸€æ™‚åœæ­¢ï¼Ÿ
+		//printf("HAX_EXIT_PAUSEDÂ¥n");
+		// ãƒªã‚»ãƒƒãƒˆå¯èƒ½ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 		np2haxcore.ready_for_reset = 1;
 		break;
-	case HAX_EXIT_PAGEFAULT: // ƒy[ƒWƒtƒH[ƒ‹ƒgH
-		//printf("HAX_EXIT_PAGEFAULT\n");
+	case HAX_EXIT_PAGEFAULT: // ãƒšãƒ¼ã‚¸ãƒ•ã‚©ãƒ¼ãƒ«ãƒˆï¼Ÿ
+		//printf("HAX_EXIT_PAGEFAULTÂ¥n");
 		break;
-	case HAX_EXIT_DEBUG: // ƒfƒoƒbƒO–½—ß(INT3 CCh)‚ªŒÄ‚Î‚ê‚½‚Æ‚«
-		//printf("HAX_EXIT_DEBUG\n");
-		// ƒŠƒZƒbƒg‰Â”\ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	case HAX_EXIT_DEBUG: // ãƒ‡ãƒãƒƒã‚°å‘½ä»¤(INT3 CCh)ãŒå‘¼ã°ã‚ŒãŸã¨ã
+		//printf("HAX_EXIT_DEBUGÂ¥n");
+		// ãƒªã‚»ãƒƒãƒˆå¯èƒ½ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 		np2haxcore.ready_for_reset = 1;
-		// ƒŠƒAƒ‹ƒ‚[ƒh or ‰¼‘z86
-		if(!CPU_STAT_PM || CPU_STAT_VM86){
-			addr = CPU_EIP + (CPU_CS << 4);
-			// BIOSƒR[ƒ‹
-			if(memp_read8(addr)==bioshookinfo.hookinst){
-				CPU_EIP++;
-				if(ia32hax_bioscall()){
-				}
-				np2haxstat.update_regs = 1;
-				np2haxstat.update_segment_regs = 1;
-				// ƒJƒEƒ“ƒ^ƒŠƒZƒbƒg
-				pmcounter = 0;
-			}
-		}
 		break;
 	default:
 		break;
@@ -1279,9 +1193,9 @@ void i386hax_vm_exec(void) {
 		CPU_REMCLOCK = 0;
 		return;
 	}
-	if(!np2haxcore.hltflag || !CPU_isEI){
+	if(!np2haxcore.hltflag || !CPU_isEI || np2haxstat.irq_reqidx_cur != np2haxstat.irq_reqidx_end){
 		CPU_REMCLOCK += remain_clk;
-		np2haxcore.lastclock = NP2_TickCount_GetCount();
+		np2haxcore.lastclock = GetTickCounter_Clock();
 		while(CPU_REMCLOCK > 0){
 			int remclkdiff = 0;
 			i386hax_vm_exec_part();
@@ -1293,7 +1207,7 @@ void i386hax_vm_exec(void) {
 			np2haxcore.lastclock  = np2haxcore.clockcount;
 			if(dmac.working) {
 				for(i=0;i<(remclkdiff+3)/4;i++){
-					dmax86(); // XXX: –{“–‚Í1–½—ßÀs‚²‚Æ‚ÉŒÄ‚Ô‚Ì‚ª³‚µ‚¢‚¯‚Ço—ˆ‚È‚¢‚Ì‚Å‚Ü‚Æ‚ß‚ÄŒÄ‚Ô¥¥¥
+					dmax86(); // XXX: æœ¬å½“ã¯1å‘½ä»¤å®Ÿè¡Œã”ã¨ã«å‘¼ã¶ã®ãŒæ­£ã—ã„ã‘ã©å‡ºæ¥ãªã„ã®ã§ã¾ã¨ã‚ã¦å‘¼ã¶ï½¥ï½¥ï½¥
 				}
 			}
 			if(CPU_RESETREQ) break;
@@ -1330,49 +1244,43 @@ void i386hax_vm_exec(void) {
 
 void i386hax_disposeVM(void) {
 	
+#if defined(_WIN32)
 	if(!np2hax.hDevice) return;
 	if(!np2hax.hVCPUDevice) return;
 	if(!np2hax.hVMDevice) return;
 	
-	// ‰¼‘zƒ}ƒVƒ“‚ğ•Â‚¶‚é
-#if defined(_WINDOWS)
+	// ä»®æƒ³ãƒã‚·ãƒ³ã‚’é–‰ã˜ã‚‹
 	CloseHandle(np2hax.hVCPUDevice);
-#else
-	close(np2hax.hVCPUDevice);
-#endif
 	np2hax.hVCPUDevice = NULL;
-#if defined(_WINDOWS)
 	CloseHandle(np2hax.hVMDevice);
-#else
-	close(np2hax.hVMDevice);
-#endif
 	np2hax.hVMDevice = NULL;
 
 	TRACEOUT(("HAXM: HAX VM disposed."));
     //msgbox("HAXM deinit", "HAX VM disposed.");
+#endif
 }
 
 void i386hax_deinitialize(void) {
 	
+#if defined(_WIN32)
 	if(!np2hax.hDevice) return;
 
 	i386hax_disposeVM();
 	
-	// HAXM‚ğ•Â‚¶‚é
-#if defined(_WINDOWS)
+	// HAXMã‚’é–‰ã˜ã‚‹
 	CloseHandle(np2hax.hDevice);
-#else
-	close(np2hax.hDevice);
-#endif
 	np2hax.hDevice = NULL;
 	
 	TRACEOUT(("HAXM: HAX deinitialized."));
     //msgbox("HAXM deinit", "HAX deinitialized.");
+
+#endif
 }
 
-// HAXM‰¼‘zƒ}ƒVƒ“‚Åg—p‚·‚éƒzƒXƒg‚Ìƒƒ‚ƒŠ—Ìˆæ‚ğ“o˜^i“o˜^Ï‚İƒƒ‚ƒŠ‚Ì‚İ‰¼‘zƒ}ƒVƒ“‚ÉŠ„‚è“–‚Ä‰Â”\j
+// HAXMä»®æƒ³ãƒã‚·ãƒ³ã§ä½¿ç”¨ã™ã‚‹ãƒ›ã‚¹ãƒˆã®ãƒ¡ãƒ¢ãƒªé ˜åŸŸã‚’ç™»éŒ²ï¼ˆç™»éŒ²æ¸ˆã¿ãƒ¡ãƒ¢ãƒªã®ã¿ä»®æƒ³ãƒã‚·ãƒ³ã«å‰²ã‚Šå½“ã¦å¯èƒ½ï¼‰
 void i386hax_vm_allocmemory(void) {
 	
+#if defined(_WIN32)
 	HAX_ALLOC_RAM_INFO info = {0};
 
 	if(!np2hax.hVMDevice) return;
@@ -1409,9 +1317,11 @@ void i386hax_vm_allocmemory(void) {
 
 	TRACEOUT(("HAXM: HAX VM alloc memory."));
     //msgbox("HAXM VM", "HAX VM alloc memory.");
+#endif
 }
 void i386hax_vm_allocmemoryex(UINT8 *vramptr, UINT32 size) {
 	
+#if defined(_WIN32)
 	HAX_ALLOC_RAM_INFO info = {0};
 
 	if(!np2hax.hVMDevice) return;
@@ -1426,11 +1336,13 @@ void i386hax_vm_allocmemoryex(UINT8 *vramptr, UINT32 size) {
 
 	TRACEOUT(("HAXM: HAX VM alloc memory."));
     //msgbox("HAXM VM", "HAX VM alloc memory.");
+#endif
 }
 
-// HAXM‰¼‘zƒ}ƒVƒ“‚ÌƒQƒXƒg•¨—ƒAƒhƒŒƒX(Guest Physical Address; GPA)‚ÉƒzƒXƒg‚Ì‰¼‘zƒAƒhƒŒƒX(Host Virtual Address; HVA)‚ğŠ„‚è“–‚Ä
+// HAXMä»®æƒ³ãƒã‚·ãƒ³ã®ã‚²ã‚¹ãƒˆç‰©ç†ã‚¢ãƒ‰ãƒ¬ã‚¹(Guest Physical Address; GPA)ã«ãƒ›ã‚¹ãƒˆã®ä»®æƒ³ã‚¢ãƒ‰ãƒ¬ã‚¹(Host Virtual Address; HVA)ã‚’å‰²ã‚Šå½“ã¦
 void i386hax_vm_setmemory(void) {
 	
+#if defined(_WIN32)
 	HAX_SET_RAM_INFO info = {0};
 
 	if(!np2hax.enable) return;
@@ -1460,12 +1372,14 @@ void i386hax_vm_setmemory(void) {
 	
 	TRACEOUT(("HAXM: HAX VM set memory."));
     //msgbox("HAXM VM", "HAX VM set memory.");
+#endif
 }
 void i386hax_vm_setbankmemory() {
 
 }
 void i386hax_vm_setitfmemory(UINT8 isitfbank) {
 	
+#if defined(_WIN32)
 	HAX_SET_RAM_INFO info = {0};
 
 	if(!np2hax.hVMDevice) 
@@ -1516,9 +1430,11 @@ void i386hax_vm_setitfmemory(UINT8 isitfbank) {
 		TRACEOUT(("HAXM: HAX VM set ITF bank memory. (OFF)"));
 		//msgbox("HAXM VM", "HAX VM set ITF bank memory. (OFF)");
 	}
+#endif
 }
 void i386hax_vm_sethmemory(UINT8 a20en) {
 	
+#if defined(_WIN32)
 	HAX_SET_RAM_INFO info = {0};
 	
 	if(!np2hax.enable) return;
@@ -1551,9 +1467,11 @@ void i386hax_vm_sethmemory(UINT8 a20en) {
 		TRACEOUT(("HAXM: HAX VM set high memory. (A20 OFF)"));
 		//msgbox("HAXM VM", "HAX VM set ITF bank memory. (A20 OFF)");
 	}
+#endif
 }
 void i386hax_vm_setextmemory(void) {
 	
+#if defined(_WIN32)
 	HAX_SET_RAM_INFO info = {0};
 	
 	if(!np2hax.enable) return;
@@ -1585,10 +1503,12 @@ void i386hax_vm_setextmemory(void) {
 	
 	TRACEOUT(("HAXM: HAX VM set ext memory."));
     //msgbox("HAXM VM", "HAX VM set ext memory.");
+#endif
 }
 
 void i386hax_vm_setvga256linearmemory(void) {
 	
+#if defined(_WIN32)
 	HAX_SET_RAM_INFO info = {0};
 	
 	if(!np2hax.enable) return;
@@ -1623,10 +1543,12 @@ void i386hax_vm_setvga256linearmemory(void) {
 		return;
 	}
     //msgbox("HAXM VM", "HAX VM set ext memory.");
+#endif
 }
 
 void i386hax_vm_setmemoryarea(UINT8 *vramptr, UINT32 addr, UINT32 size) {
 	
+#if defined(_WIN32)
 	HAX_SET_RAM_INFO info = {0};
 	
 	if(!np2hax.enable) return;
@@ -1647,9 +1569,11 @@ void i386hax_vm_setmemoryarea(UINT8 *vramptr, UINT32 addr, UINT32 size) {
 	
 		TRACEOUT(("HAXM: HAX VM set memory area."));
 	}
+#endif
 }
 void i386hax_vm_removememoryarea(UINT8 *vramptr, UINT32 addr, UINT32 size) {
 	
+#if defined(_WIN32)
 	HAX_SET_RAM_INFO info = {0};
 	
 	if(!np2hax.enable) return;
@@ -1659,6 +1583,7 @@ void i386hax_vm_removememoryarea(UINT8 *vramptr, UINT32 addr, UINT32 size) {
 	info.size =  size;
 	info.flags = HAX_RAM_INFO_INVALID;
 	i386haxfunc_setRAM(&info);
+#endif
 }
 
 #endif
