@@ -53,99 +53,165 @@ typedef struct {
 } SCRNDATA;
 
 
-static void screenmix(PALNUM *dest, const UINT8 *src1, const UINT8 *src2) {
+static void screenmix(PALNUM *dest, const UINT8 *src1, const UINT8 *src2, const int normaldisp) {
 
+	int		x, y;
 	int		i;
 
-	for (i=0; i<(SURFACE_WIDTH * SURFACE_HEIGHT); i++) {
-#if defined(SUPPORT_VIDEOFILTER)
-		if(!bVFEnable || src1[i]) {
-			dest[i] = src1[i];
-		} else {
-			VideoFilter_PutDest(hVFMng1, &dest[i], i % SURFACE_WIDTH, i / SURFACE_WIDTH, 4);
+	if (normaldisp) {
+		for (y = 0; y < SURFACE_HEIGHT; y++) {
+			for (x = 0; x < SURFACE_WIDTH - 1; x++) {
+				i = y * SURFACE_WIDTH + x;
+				dest[i] = src1[i + 1];
+			}
 		}
+		for (i = 0; i < (SURFACE_WIDTH * SURFACE_HEIGHT); i++) {
+			dest[i] += src2[i] + NP2PAL_GRPH;
+		}
+	}else{
+		for (i=0; i<(SURFACE_WIDTH * SURFACE_HEIGHT); i++) {
+#if defined(SUPPORT_VIDEOFILTER)
+			if(!bVFEnable || src1[i]) {
+				dest[i] = src1[i];
+			} else {
+				VideoFilter_PutDest(hVFMng1, &dest[i], i % SURFACE_WIDTH, i / SURFACE_WIDTH, 4);
+			}
 #else
-		dest[i] = src1[i] + src2[i] + NP2PAL_GRPH;
+			dest[i] = src1[i] + src2[i] + NP2PAL_GRPH;
 #endif
+		}
 	}
 }
 
-static void screenmix2(PALNUM *dest, const UINT8 *src1, const UINT8 *src2) {
+static void screenmix2(PALNUM *dest, const UINT8 *src1, const UINT8 *src2, const int normaldisp) {
 
 	int		x, y;
 
-	for (y=0; y<(SURFACE_HEIGHT/2); y++) {
-		for (x=0; x<SURFACE_WIDTH; x++) {
-#if defined(SUPPORT_VIDEOFILTER)
-			if(!bVFEnable || src1[x]) {
-				dest[x] = src1[x];
-			} else {
-				VideoFilter_PutDest(hVFMng1, &dest[x], x, y * 2, 4);
+	if (normaldisp) {
+		for (y = 0; y < (SURFACE_HEIGHT / 2); y++) {
+			for (x = 0; x < SURFACE_WIDTH - 1; x++) {
+				dest[x] = src1[x + 1] + src2[x] + NP2PAL_GRPH;
 			}
+			dest[SURFACE_WIDTH - 1] = src2[SURFACE_WIDTH - 1] + NP2PAL_GRPH;
+			dest += SURFACE_WIDTH;
+			src1 += SURFACE_WIDTH;
+			src2 += SURFACE_WIDTH;
+			for (x = 0; x < SURFACE_WIDTH - 1; x++) {
+				dest[x] = (src1[x + 1] >> 4) + NP2PAL_TEXT;
+			}
+			dest[SURFACE_WIDTH - 1] = NP2PAL_TEXT;
+			dest += SURFACE_WIDTH;
+			src1 += SURFACE_WIDTH;
+			src2 += SURFACE_WIDTH;
+		}
+	} else {
+		for (y = 0; y < (SURFACE_HEIGHT / 2); y++) {
+			for (x = 0; x < SURFACE_WIDTH; x++) {
+#if defined(SUPPORT_VIDEOFILTER)
+				if(!bVFEnable || src1[x]) {
+					dest[x] = src1[x];
+				} else {
+					VideoFilter_PutDest(hVFMng1, &dest[x], x, y * 2, 4);
+				}
 #else
-			dest[x] = src1[x] + src2[x] + NP2PAL_GRPH;
+				dest[x] = src1[x] + src2[x] + NP2PAL_GRPH;
 #endif
+			}
+			dest += SURFACE_WIDTH;
+			src1 += SURFACE_WIDTH;
+			src2 += SURFACE_WIDTH;
+			for (x = 0; x < SURFACE_WIDTH; x++) {
+				dest[x] = (src1[x] >> 4) + NP2PAL_TEXT;
+			}
+			dest += SURFACE_WIDTH;
+			src1 += SURFACE_WIDTH;
+			src2 += SURFACE_WIDTH;
 		}
-		dest += SURFACE_WIDTH;
-		src1 += SURFACE_WIDTH;
-		src2 += SURFACE_WIDTH;
-		for (x=0; x<SURFACE_WIDTH; x++) {
-			dest[x] = (src1[x] >> 4) + NP2PAL_TEXT;
-		}
-		dest += SURFACE_WIDTH;
-		src1 += SURFACE_WIDTH;
-		src2 += SURFACE_WIDTH;
 	}
 }
 
-static void screenmix3(PALNUM *dest, const UINT8 *src1, const UINT8 *src2) {
+static void screenmix3(PALNUM *dest, const UINT8 *src1, const UINT8 *src2, const int normaldisp) {
 
 	PALNUM	c;
 	int		x, y;
-
-	for (y=0; y<(SURFACE_HEIGHT/2); y++) {
-		// dest == src1, dest == src2 の時があるので…
-		for (x=0; x<SURFACE_WIDTH; x++) {
-			c = (src1[x + SURFACE_WIDTH]) >> 4;
-			if (!c) {
-				c = src2[x] + NP2PAL_SKIP;
+	
+	if (normaldisp) {
+		for (y = 0; y < (SURFACE_HEIGHT / 2); y++) {
+			// dest == src1, dest == src2 の時があるので…
+			for (x = 0; x < SURFACE_WIDTH - 1; x++) {
+				c = (src1[x + 1 + SURFACE_WIDTH]) >> 4;
+				if (!c) {
+					c = src2[x] + NP2PAL_SKIP;
+				}
+				dest[x + SURFACE_WIDTH] = c;
+				dest[x] = src1[x + 1] + src2[x] + NP2PAL_GRPH;
 			}
-			dest[x + SURFACE_WIDTH] = c;
-#if defined(SUPPORT_VIDEOFILTER)
-			if(!bVFEnable || src1[x]) {
-				dest[x] = src1[x] + NP2PAL_GRPH;
-			} else {
-				VideoFilter_PutDest(hVFMng1, &dest[x], x, y * 2, 4);
-			}
-#else
-			dest[x] = src1[x] + src2[x] + NP2PAL_GRPH;
-#endif
+			c = src2[(SURFACE_WIDTH - 1)] + NP2PAL_SKIP;
+			dest[(SURFACE_WIDTH - 1) + SURFACE_WIDTH] = c;
+			dest[(SURFACE_WIDTH - 1)] = src2[(SURFACE_WIDTH - 1)] + NP2PAL_GRPH;
+			dest += SURFACE_WIDTH * 2;
+			src1 += SURFACE_WIDTH * 2;
+			src2 += SURFACE_WIDTH * 2;
 		}
-		dest += SURFACE_WIDTH * 2;
-		src1 += SURFACE_WIDTH * 2;
-		src2 += SURFACE_WIDTH * 2;
-	}
-}
-
-#if defined(SUPPORT_PC9821)
-static void screenmix4(PALNUM *dest, const UINT8 *src1, const UINT8 *src2) {
-
-	int		i;
-
-	for (i=0; i<(SURFACE_WIDTH * SURFACE_HEIGHT); i++) {
-		if (src1[i]) {
-			dest[i] = (src1[i] >> 4) + NP2PAL_TEXTEX;
-		}
-		else {
+	}else{
+		for (y = 0; y < (SURFACE_HEIGHT / 2); y++) {
+			// dest == src1, dest == src2 の時があるので…
+			for (x = 0; x < SURFACE_WIDTH; x++) {
+				c = (src1[x + SURFACE_WIDTH]) >> 4;
+				if (!c) {
+					c = src2[x] + NP2PAL_SKIP;
+				}
+				dest[x + SURFACE_WIDTH] = c;
 #if defined(SUPPORT_VIDEOFILTER)
-				if(!bVFEnable) {
-					dest[i] = src2[i] + NP2PAL_GRPHEX;
+				if(!bVFEnable || src1[x]) {
+					dest[x] = src1[x] + NP2PAL_GRPH;
 				} else {
-					VideoFilter_PutDest(hVFMng1, &dest[i], i % SURFACE_WIDTH, i / SURFACE_WIDTH, 4);
+					VideoFilter_PutDest(hVFMng1, &dest[x], x, y * 2, 4);
 				}
 #else
-				dest[i] = src2[i] + NP2PAL_GRPHEX;
+				dest[x] = src1[x] + src2[x] + NP2PAL_GRPH;
 #endif
+}
+			}
+			dest += SURFACE_WIDTH * 2;
+			src1 += SURFACE_WIDTH * 2;
+			src2 += SURFACE_WIDTH * 2;
+		}
+	}
+
+#if defined(SUPPORT_PC9821)
+static void screenmix4(PALNUM *dest, const UINT8 *src1, const UINT8 *src2, const int normaldisp) {
+
+	int		x, y;
+	int		i;
+	if (normaldisp) {
+		for (y = 0; y < SURFACE_HEIGHT; y++) {
+			for (x = 0; x < SURFACE_WIDTH; x++) {
+				i = y * SURFACE_WIDTH + x;
+				if (x < SURFACE_WIDTH - 1 && src1[i + 1]) {
+					dest[i] = (src1[i + 1] >> 4) + NP2PAL_TEXTEX;
+				}
+				else {
+#if defined(SUPPORT_VIDEOFILTER)
+					if(!bVFEnable) {
+						dest[i] = src2[i] + NP2PAL_GRPHEX;
+					} else {
+						VideoFilter_PutDest(hVFMng1, &dest[i], i % SURFACE_WIDTH, i / SURFACE_WIDTH, 4);
+					}
+#else
+					dest[i] = src2[i] + NP2PAL_GRPHEX;
+#endif
+				}
+			}
+		}
+	} else {
+		for (i = 0; i < (SURFACE_WIDTH * SURFACE_HEIGHT); i++) {
+			if (src1[i]) {
+				dest[i] = (src1[i] >> 4) + NP2PAL_TEXTEX;
+			}
+			else {
+				dest[i] = src2[i] + NP2PAL_GRPHEX;
+			}
 		}
 	}
 }
@@ -168,7 +234,7 @@ SCRNSAVE scrnsave_create(void)
 	UINT8		*datanull;
 	UINT8		*datatext;
 	UINT8		*datagrph;
-	void		(*mix)(PALNUM *dest, const UINT8 *src1, const UINT8 *src2);
+	void		(*mix)(PALNUM *dest, const UINT8 *src1, const UINT8 *src2, const int src1ofs);
 	PALNUM		*s;
 	UINT		pals;
 	PALNUM		remap[NP2PAL_MAX];
@@ -179,7 +245,7 @@ SCRNSAVE scrnsave_create(void)
 	BMPPAL		curpal;
 	UINT		pos;
 	uint8_t*	dirty[SURFACE_HEIGHT];
-
+	int			normaldisp = 0;
 
 	width = dsync.scrnxmax;
 	height = dsync.scrnymax;
@@ -191,6 +257,8 @@ SCRNSAVE scrnsave_create(void)
 		goto ssg_err;
 	}
 	ZeroMemory(sd, sizeof(SCRNDATA));
+
+	normaldisp = (!(np2cfg.LCD_MODE & 1)) && ((gdc.display & 7) < 3) ? 1 : 0;
 
 	memset(dirty, 1, SURFACE_HEIGHT);
 
@@ -233,7 +301,7 @@ SCRNSAVE scrnsave_create(void)
 		VideoFilter_Calc(hVFMng1);
 	}
 #endif
-	(*mix)(sd->dat, datatext, datagrph);
+	(*mix)(sd->dat, datatext, datagrph, normaldisp);
 
 #if defined(SUPPORT_VIDEOFILTER)
 	sd->width = width;

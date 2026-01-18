@@ -218,7 +218,7 @@ inst##_EwGwIb(void) \
 	if (op >= 0xc0) { \
 		CPU_WORKCLOCK(3); \
 		GET_PCBYTE(arg.cl); \
-		out = reg16_b20[op]; \
+		out = CPU_REG16_B20(op); \
 		dst = *out; \
 		WORD_##inst(dst, arg.src, arg.cl); \
 		*out = (UINT16)dst; \
@@ -241,7 +241,7 @@ inst##_EdGdIb(void) \
 	if (op >= 0xc0) { \
 		CPU_WORKCLOCK(3); \
 		GET_PCBYTE(arg.cl); \
-		out = reg32_b20[op]; \
+		out = CPU_REG32_B20(op); \
 		dst = *out; \
 		DWORD_##inst(dst, arg.src, arg.cl); \
 		*out = dst; \
@@ -264,7 +264,7 @@ inst##_EwGwCL(void) \
 	arg.cl = CPU_CL; \
 	if (op >= 0xc0) { \
 		CPU_WORKCLOCK(3); \
-		out = reg16_b20[op]; \
+		out = CPU_REG16_B20(op); \
 		dst = *out; \
 		WORD_##inst(dst, arg.src, arg.cl); \
 		*out = (UINT16)dst; \
@@ -286,7 +286,7 @@ inst##_EdGdCL(void) \
 	arg.cl = CPU_CL; \
 	if (op >= 0xc0) { \
 		CPU_WORKCLOCK(3); \
-		out = reg32_b20[op]; \
+		out = CPU_REG32_B20(op); \
 		dst = *out; \
 		DWORD_##inst(dst, arg.src, arg.cl); \
 		*out = dst; \

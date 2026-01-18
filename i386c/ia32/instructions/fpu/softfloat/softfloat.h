@@ -179,9 +179,12 @@ char float64_is_signaling_nan( float64 );
 /*----------------------------------------------------------------------------
 | Software IEEE double-extended-precision conversion routines.
 *----------------------------------------------------------------------------*/
+short floatx80_to_int16_np2( floatx80 ); // for np2 FPU by SimK
 int floatx80_to_int32( floatx80 );
+int floatx80_to_int32_np2( floatx80 );
 int floatx80_to_int32_round_to_zero( floatx80 );
 long long floatx80_to_int64( floatx80 );
+long long floatx80_to_int64_np2( floatx80 );
 long long floatx80_to_int64_round_to_zero( floatx80 );
 float32 floatx80_to_float32( floatx80 );
 float64 floatx80_to_float64( floatx80 );

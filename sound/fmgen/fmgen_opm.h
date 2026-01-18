@@ -4,6 +4,9 @@
 // ---------------------------------------------------------------------------
 //	$Id: opm.h,v 1.14 2003/06/07 08:25:53 cisc Exp $
 
+#pragma once
+#if defined(SUPPORT_FMGEN)
+
 #ifndef FM_OPM_H
 #define FM_OPM_H
 
@@ -199,3 +202,5 @@ namespace FM
 }
 
 #endif // FM_OPM_H
+
+#endif	/* SUPPORT_FMGEN */

@@ -66,7 +66,7 @@ include Makefile.common
 
 INCFLAGS := $(SDL_CFLAGS) $(INCFLAGS)
 
-INCFLAGS += 	-I$(NP2_PATH)/i386c \
+INCFLAGS +=	-I$(NP2_PATH)/i386c \
 		-I$(NP2_PATH)/i386c/ia32 \
 		-I$(NP2_PATH)/i386c/ia32/instructions \
 		-I$(NP2_PATH)/i386c/ia32/instructions/fpu \
@@ -74,7 +74,8 @@ INCFLAGS += 	-I$(NP2_PATH)/i386c \
 		-I$(NP2_PATH)/i386c/ia32/instructions/mmx \
 		-I$(NP2_PATH)/i386c/ia32/instructions/sse \
 		-I$(NP2_PATH)/sdl/em
-SOURCES_C += 	$(wildcard $(NP2_PATH)/i386c/*.c) \
+SOURCES_C += $(NP2_PATH)/sdl/generic/hostdrv.c \
+		$(wildcard $(NP2_PATH)/i386c/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/*.c) \
 		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpdummy.c \
@@ -82,6 +83,7 @@ SOURCES_C += 	$(wildcard $(NP2_PATH)/i386c/*.c) \
 		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox2.c \
 		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_softfloat.c \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/fpu/softfloat/*.c) \
+		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/fpu/softfloat3/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/mmx/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse2/*.c) \
@@ -90,6 +92,8 @@ SOURCES_C += 	$(wildcard $(NP2_PATH)/i386c/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse4/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse4a/*.c) \
 		$(NP2_PATH)/sdl/em/main.c
+
+SOURCES_CXX += $(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_softfloat3.cpp
 
 ifeq ($(SDL_VERSION), 1)
 	CFLAGS	+= $(NP2_PATH)/sdl/em/SDL_mixer.c

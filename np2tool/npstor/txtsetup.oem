@@ -1,0 +1,18 @@
+[Disks]
+disk1 = "Neko Project II SCSI Host Controller Driver Disk",\npstor.sys,\
+
+[Defaults]
+SCSI = npstor
+
+[SCSI]
+npstor = "Neko Project II SCSI Host Controller"
+
+
+[Files.SCSI.npstor]
+driver = disk1,npstor.sys, npstor
+inf = disk1,npstor.inf
+
+[Config.npstor]
+
+[HardwareIds.SCSI.npstor]
+id = "SCSI\NP2_____FASTSTORAGE_____1.00", "npstor"

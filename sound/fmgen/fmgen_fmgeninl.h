@@ -4,6 +4,9 @@
 // ---------------------------------------------------------------------------
 //	$Id: fmgeninl.h,v 1.26 2003/06/12 13:14:36 cisc Exp $
 
+#pragma once
+#if defined(SUPPORT_FMGEN)
+
 #ifndef FM_GEN_INL_H
 #define FM_GEN_INL_H
 
@@ -266,3 +269,5 @@ inline void Chip::SetPML(uint l)
 }
 
 #endif // FM_GEN_INL_H
+
+#endif	/* SUPPORT_FMGEN */

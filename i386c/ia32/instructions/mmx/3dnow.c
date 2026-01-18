@@ -188,7 +188,7 @@ AMD3DNOW_PREFETCH(void)
 	AMD3DNOW_check_NM_EXCEPTION();
 	AMD3DNOW_setTag();
 	CPU_MMXWORKCLOCK(a);
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -222,7 +222,7 @@ AMD3DNOW_F0(void)
 	AMD3DNOW_check_NM_EXCEPTION();
 	AMD3DNOW_setTag();
 	CPU_MMXWORKCLOCK(a);
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	if ((op) >= 0xc0) {
@@ -230,7 +230,7 @@ AMD3DNOW_F0(void)
 		UINT8 reg2;
 		reg1 = idx;
 		reg2 = sub;
-		GET_PCBYTE((suffix));
+		GET_MODRM_PCBYTE((suffix));
 		switch(suffix){
 		case AMD3DNOW_SUFFIX_PAVGUSB:
 			AMD3DNOW_PAVGUSB_REG(reg1, reg2);
@@ -313,7 +313,7 @@ AMD3DNOW_F0(void)
 		UINT32 memaddr;
 		reg1 = idx;
 		memaddr = calc_ea_dst(op);
-		GET_PCBYTE((suffix));
+		GET_MODRM_PCBYTE((suffix));
 		switch(suffix){
 		case AMD3DNOW_SUFFIX_PAVGUSB:
 			AMD3DNOW_PAVGUSB_MEM(reg1, memaddr);

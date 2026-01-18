@@ -1,0 +1,45 @@
+
+★ hostdrv
+
+　ホストOSを仮想ドライブして参照します。
+
+
+・準備
+
+　ねこープロジェクトIIの設定ファイル(np2.ini もしくは np2.cfg)を開き、
+　[NekoProjectII] に以下の設定を加えます。
+
+　・仮想ドライブルートの指定
+　　　hdrvroot=フォルダ名
+　　　例: hdrvroot=c:\windows\temp                         (Windows)
+　　　　　hdrvroot=Machintosh HD:users:yui:Desktop         (MacOS)
+　　　　　hdrvroot=/home/yui                               (Unix)
+
+　・アクセス権の指定
+　　　hdrv_acc=1 … 読み込みのみ可能
+　　　hdrv_acc=3 … 読み書き可能
+
+
+・実行
+
+　ねこープロジェクトIIでMS-DOSを起動中に
+
+　A:\>hostdrv ドライブ番号(A～Z)
+
+　として常駐して下さい。
+
+
+・20250803版の変更点
+内部パスを\\HOSTDRVからマウントしたドライブ文字のパスに変更しました。
+Win32上でEXEが実行出来ないなどの問題が修正されます。
+この修正にはNeko Project 21/W ver0.86 rev95β11以降も必要です。
+
+Neko Project 21/Wの旧バージョンや本家np2等で実行した場合、
+互換方式（旧hostdrvと同じ挙動）で動きます。
+
+新方式で常駐している場合、hostdrvでの常駐時に
+「new protocol enabled」と表示されます。
+
+万が一新バージョンで問題を起こした場合のために、OLDディレクトリに
+旧バージョンを置いています。
+

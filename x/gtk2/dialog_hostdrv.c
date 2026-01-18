@@ -36,6 +36,9 @@
 #include "i386c/ia32/cpu.h"
 #endif
 #include <generic/hostdrv.h>
+#if defined(SUPPORT_HOSTDRVNT)
+#include <generic/hostdrvnt.h>
+#endif
 #include <ini.h>
 
 

@@ -103,6 +103,10 @@ static const UINT8 shortmsgleng[0x10] = {
 static const UINT8 hclk_step1[4][4] = {{0, 0, 0, 0}, {1, 0, 0, 0},
 									{1, 0, 1, 0}, {1, 1, 1, 0}};
 
+// XXX: 根拠なし　とりあえず大きめの値にしておく
+#define MPU98_WRITEBUFFER	2048
+static int mpu98_writecounter = 0;
+
 
 static void makeintclock(void) {
 
@@ -353,19 +357,42 @@ void midiint(NEVENTITEM item) {
 
 void midiwaitout(NEVENTITEM item) {
 
-//	TRACE_("midi ready", 0);
-	mpu98.status &= ~MIDIOUT_BUSY;
+	//	TRACE_("midi ready", 0);
+	if (mpu98_writecounter > 0) {
+		mpu98_writecounter--;
+	}
+	if (mpu98_writecounter < MPU98_WRITEBUFFER) {
+		// カウンタがバッファサイズより小さいならBUSY解除
+		mpu98.status &= ~MIDIOUT_BUSY;
+	}
+	if (mpu98_writecounter > 0) {
+		// カウンタが0になるまで再登録
+		nevent_set(NEVENT_MIDIWAIT, mpu98.xferclock, midiwaitout, NEVENT_RELATIVE);
+	}
 	(void)item;
 }
 
 static void midiwait(SINT32 waitclock) {
 
-	if (!nevent_iswork(NEVENT_MIDIWAIT)) {
+	// 転送が多すぎてバッファを溢れるようならBUSYに変える
+	mpu98_writecounter += waitclock / mpu98.xferclock;
+	if (mpu98_writecounter > MPU98_WRITEBUFFER) {
 		mpu98.status |= MIDIOUT_BUSY;
-		nevent_set(NEVENT_MIDIWAIT, waitclock, midiwaitout, NEVENT_ABSOLUTE);
+	}
+	if (!nevent_iswork(NEVENT_MIDIWAIT)) {
+		nevent_set(NEVENT_MIDIWAIT, mpu98.xferclock, midiwaitout, NEVENT_ABSOLUTE);
 	}
 }
 
+static void midicmdwait(SINT32 waitclock) {
+
+	// 一定時間強制BUSY
+	mpu98_writecounter++;
+	mpu98.status |= MIDIOUT_BUSY;
+	if (!nevent_iswork(NEVENT_MIDIWAIT)) {
+		nevent_set(NEVENT_MIDIWAIT, mpu98.xferclock, midiwaitout, NEVENT_ABSOLUTE);
+	}
+}
 
 // ----
 
@@ -1017,7 +1044,7 @@ TRACEOUT(("mpu98ii out %.4x %.2x", port, dat));
 				setrecvdata(MPUMSG_ACK);
 			}
 		}
-		midiwait(pccore.realclock / 10000);
+		midicmdwait(pccore.realclock / 10000);
 	}
 	(void)port;
 }
@@ -1056,6 +1083,9 @@ REG8 IOINPCALL mpu98ii_i0(UINT port) {
 TRACEOUT(("mpu98ii inp %.4x %.2x", port, mpu98.data));
 		return(mpu98.data);
 	}
+	else if ((port & 0xff00) == 0x8000) {
+		return(mpu98.data);
+	}
 	(void)port;
 	return(0xff);
 }
@@ -1067,14 +1097,22 @@ REG8 IOINPCALL mpu98ii_i2(UINT port) {
 	if (cm_mpu98 == NULL) {
 		cm_mpu98 = commng_create(COMCREATE_MPU98II, FALSE);
 	}
-	if (cm_mpu98->connect != COMCONNECT_OFF || g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_118_SB16) {
+	if (cm_mpu98->connect != COMCONNECT_OFF || port == (cs4231.port[10] + 1) || (port & 0xff00) == 0x8100) {
 		ret = mpu98.status;
 		if ((mpu98.r.cnt == 0) && (mpu98.intreq == 0)) {
 			ret |= MIDIIN_AVAIL;
 		}
-// TRACEOUT(("mpu98ii inp %.4x %.2x", port, ret));
-TRACEOUT(("mpu98ii inp %.4x %.2x", port, mpu98.data));
-		return(ret);
+		// TRACEOUT(("mpu98ii inp %.4x %.2x", port, ret));
+		TRACEOUT(("mpu98ii inp %.4x %.2x", port, mpu98.data));
+		if ((port & 0xff00) == 0x8100)
+		{
+			// SB16のMPU互換ポートではMIDIIN_AVAILとMIDIOUT_BUSY以外のビットが常に1らしい
+			return(ret | ~(MIDIIN_AVAIL | MIDIOUT_BUSY));
+		}
+		else
+		{
+			return(ret);
+		}
 	}
 	(void)port;
 	return(0xff);
@@ -1195,7 +1233,7 @@ void mpu98ii_midipanic(void) {
 void mpu98ii_changeclock(void) {
 	
 	if(mpu98.enable){
-		mpu98.xferclock = pccore.realclock / 3125;
+		mpu98.xferclock = pccore.realclock / (31250 / 8);
 		makeintclock();
 	}
 }

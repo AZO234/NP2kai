@@ -282,7 +282,273 @@ static void patchextfnt(UINT8 *ptr, const UINT8 *fnt) {			// 2c24-2c6f
 	} while(--r);
 }
 
-void makepc98bmp(const OEMCHAR *filename) {
+#define COPYGLYPH_LEFTPART		0x1		// 16 -> 8のとき縮小せず左半分をコピー
+#define COPYGLYPH_RIGHTPART		0x2		// 16 -> 8のとき縮小せず右半分をコピー
+#define COPYGLYPH_ADJUSTPART	0x4		// 16 -> 8のときデータがあるX座標を起点にコピー
+#define COPYGLYPH_ADJUSTPARTR	0x8		// 16 -> 8のときデータがあるX座標を起点にコピー（右揃え）
+#define COPYGLYPH_WITHVMARK		0x10	// コピー後に濁点を付ける
+#define COPYGLYPH_WITHPMARK		0x20	// コピー後に半濁点を付ける
+#define COPYGLYPH_REVERSEXSH1	0x40	// 左右反転して1pxシフトする
+#define COPYGLYPH_7TO6			0x80	// 幅を1px縮小
+
+// 文字コピー
+static void copyglyph(UINT8* ptr, UINT srccode, int srcwidth, UINT dstcode, int dstwidth, int copyflag) {
+
+	int i;
+	int stride = 2048 / 8;
+	int stridedst = 2048 / 8;
+	UINT8 reversebuf[16 * 2];
+	UINT8* srcptr;
+	UINT8* dstptr;
+	UINT8* dstptrbase;
+	if (srccode <= 0xff) {
+		srcptr = ptr + (2048 / 16 - 1) * (2048 / 8 * 16) + srccode;
+	}
+	else {
+		int jisy = (srccode & 0xff);
+		int jisx = ((srccode >> 8) & 0xff) - 0x20;
+		srcptr = ptr + (2048 / 16 - 1 - jisy) * (2048 / 8 * 16) + jisx * 2;
+	}
+	if (dstcode <= 0xff) {
+		dstptr = ptr + (2048 / 16 - 1) * (2048 / 8 * 16) + dstcode;
+	}
+	else {
+		int jisy = (dstcode & 0xff);
+		int jisx = ((dstcode >> 8) & 0xff) - 0x20;
+		dstptr = ptr + (2048 / 16 - 1 - jisy) * (2048 / 8 * 16) + jisx * 2;
+	}
+	dstptrbase = dstptr;
+	if (copyflag & COPYGLYPH_REVERSEXSH1) {
+		memset(reversebuf, 0xff, sizeof(reversebuf));
+		if (srcwidth == 8) {
+			UINT8 tmp;
+			UINT8 bitstate = 0xff;
+			for (i = 0; i < 16; i++) {
+				tmp = *srcptr;
+				tmp = ((tmp & 0x0f) << 4) | ((tmp >> 4) & 0x0f);
+				tmp = ((tmp & 0x33) << 2) | ((tmp >> 2) & 0x33);
+				tmp = ((tmp & 0x55) << 1) | ((tmp >> 1) & 0x55);
+				bitstate &= tmp;
+				reversebuf[i * 2] = tmp;
+				srcptr += stride;
+			}
+			if (bitstate & 0x01) {
+				// 右端が空いていれば1pxずらす
+				for (i = 0; i < 16; i++) {
+					*(UINT8*)(reversebuf + i * 2) = (*(UINT8*)(reversebuf + i * 2) >> 1) | 0x80;
+				}
+			}
+		}
+		else if (srcwidth == 16) {
+			UINT16 tmp;
+			UINT16 bitstate = 0xffff;
+			for (i = 0; i < 16; i++) {
+				tmp = *((UINT16*)srcptr);
+				tmp = ((tmp & 0x00ff) << 8) | ((tmp >> 8) & 0x00ff);
+				tmp = ((tmp & 0x0f0f) << 4) | ((tmp >> 4) & 0x0f0f);
+				tmp = ((tmp & 0x3333) << 2) | ((tmp >> 2) & 0x3333);
+				tmp = ((tmp & 0x5555) << 1) | ((tmp >> 1) & 0x5555);
+				bitstate &= tmp;
+				reversebuf[i * 2] = (tmp >> 8) & 0xff;
+				reversebuf[i * 2 + 1] = tmp & 0xff;
+				srcptr += stride;
+			}
+			if (bitstate & 0x0001) {
+				// 右端が空いていれば1pxずらす
+				for (i = 0; i < 16; i++) {
+					*((UINT16*)(reversebuf + i * 2)) = (*((UINT16*)(reversebuf + i * 2)) >> 1) | 0x8000;
+				}
+			}
+		}
+		srcptr = reversebuf;
+		stride = 2;
+	}
+	if (srcwidth == 8 && dstwidth == 8) {
+		// 半角→半角
+		for (i = 0; i < 16; i++) {
+			*dstptr = *srcptr;
+			srcptr += stride;
+			dstptr += stridedst;
+		}
+	}
+	else if (srcwidth == 16 && dstwidth == 16) {
+		// 全角→全角
+		for (i = 0; i < 16; i++) {
+			*dstptr = *srcptr;
+			*(dstptr + 1) = *(srcptr + 1);
+			srcptr += stride;
+			dstptr += stridedst;
+		}
+	}
+	else if (srcwidth == 8 && dstwidth == 16) {
+		// 半角→全角（右側空白）
+		for (i = 0; i < 16; i++) {
+			*dstptr = *srcptr;
+			*(dstptr + 1) = 0xff;
+			srcptr += stride;
+			dstptr += stridedst;
+		}
+	}
+	else if (srcwidth == 16 && dstwidth == 8) {
+		// 全角→半角
+		if (copyflag & COPYGLYPH_LEFTPART) {
+			// 左側のみ
+			for (i = 0; i < 16; i++) {
+				*dstptr = *srcptr;
+				srcptr += stride;
+				dstptr += stridedst;
+			}
+		}
+		else if(copyflag & COPYGLYPH_RIGHTPART) {
+			// 右側のみ
+			for (i = 0; i < 16; i++) {
+				*dstptr = *(srcptr + 1);
+				srcptr += stride;
+				dstptr += stridedst;
+			}
+		}
+		else if (copyflag & (COPYGLYPH_ADJUSTPART | COPYGLYPH_ADJUSTPARTR)) {
+			// データがあるX座標を起点
+			int beginX = 0;
+			int endX = 0;
+			UINT16 bitstate = 0xffff;
+			UINT16 bitstateTmp;
+			UINT8* srcptr2 = srcptr;
+			for (i = 0; i < 16; i++) {
+				bitstate &= (UINT16)(*srcptr2) << 8 | *(srcptr2 + 1);
+				srcptr2 += stride;
+			}
+			bitstateTmp = bitstate;
+			for (beginX = 0; beginX < 16; beginX++) {
+				if (!(bitstateTmp & 0x8000)) break;
+				bitstateTmp <<= 1;
+			}
+			endX = 16;
+			bitstateTmp = bitstate;
+			for (endX = 16; endX > beginX; endX--) {
+				if (!(bitstateTmp & 0x1)) break;
+				bitstateTmp >>= 1;
+			}
+			if (copyflag & COPYGLYPH_ADJUSTPARTR) {
+				beginX -= 8 - (endX - beginX); // 右揃えにする
+				if (beginX < 0) beginX = 0;
+			}
+			else {
+				if (endX - beginX < 8 && beginX > 0) beginX--; // 一番左端は避ける
+			}
+			for (i = 0; i < 16; i++) {
+				UINT8 src1 = *srcptr;
+				UINT8 src2 = *(srcptr + 1);
+				if (beginX < 8) {
+					src1 = src1 << beginX;
+					src1 |= src2 >> (8 - beginX);
+				}
+				else {
+					src1 = src2 << (beginX - 8);
+					src1 |= 0xff >> (8 - (beginX - 8));
+				}
+				*dstptr = src1;
+				srcptr += stride;
+				dstptr += stridedst;
+			}
+		}
+		else {
+			// 半幅化
+			for (i = 0; i < 16; i++) {
+				UINT8 src1 = *srcptr;
+				UINT8 src2 = *(srcptr + 1);
+				src1 &= src1 >> 1;
+				src1 &= 0x55;
+				src2 &= src2 >> 1;
+				src2 &= 0x55;
+				*dstptr = ((src1 << 1) & 0x80) | ((src1 << 2) & 0x40) | ((src1 << 3) & 0x20) | ((src1 << 4) & 0x10) |
+					((src2 >> 3) & 0x08) | ((src2 >> 2) & 0x04) | ((src2 >> 1) & 0x02) | ((src2 >> 0) & 0x01);
+				srcptr += stride;
+				dstptr += stridedst;
+			}
+		}
+	}
+	dstptr = dstptrbase;
+	if (copyflag & COPYGLYPH_WITHVMARK) {
+		dstptr += stridedst * 14;
+		if (dstwidth == 16) {
+			dstptr++; // 右側につける
+		}
+		*dstptr &= 0xfa;
+		*dstptr |= 0x02;
+		dstptr += stridedst;
+		*dstptr &= 0xfa;
+		*dstptr |= 0x02;
+	}
+	else if (copyflag & COPYGLYPH_WITHPMARK) {
+		dstptr += stridedst * 12;
+		if (dstwidth == 16) {
+			dstptr++; // 右側につける
+		}
+		*dstptr &= 0xfd;
+		*dstptr |= 0x05;
+		dstptr += stridedst;
+		*dstptr &= 0xfa;
+		*dstptr |= 0x02;
+		dstptr += stridedst;
+		*dstptr &= 0xfa;
+		*dstptr |= 0x02;
+		dstptr += stridedst;
+		*dstptr &= 0xfd;
+		*dstptr |= 0x05;
+	}
+	dstptr = dstptrbase;
+	if (copyflag & COPYGLYPH_7TO6) {
+		memset(reversebuf, 0xff, sizeof(reversebuf));
+		if (dstwidth == 8) {
+			UINT8 tmp;
+			UINT8 bitstate = 0xff;
+			UINT8 bitsame = 0x00;
+			for (i = 0; i < 16; i++) {
+				tmp = *dstptr;
+				bitstate &= tmp;
+				bitsame |= tmp ^ (tmp << 1);
+				dstptr += stridedst;
+			}
+			if (bitstate & 0x01) {
+				// 右端が空いていれば何もしなくてよい
+			}
+			else if ((bitstate & 0xc0) == 0xc0) {
+				// 左端が2px空いていれば左へ1pxずらす
+				dstptr = dstptrbase;
+				for (i = 0; i < 16; i++) {
+					*dstptr = (*dstptr << 1) | 0x01;
+					dstptr += stridedst;
+				}
+			}
+			else {
+				// 中央に同じ内容が連続していたらそこを削る
+				dstptr = dstptrbase;
+				if (!(bitsame & 0x08)) {
+					for (i = 0; i < 16; i++) {
+						tmp = *dstptr;
+						tmp = (tmp & 0xf0) | ((tmp & 0x7) << 1) | 0x01;
+						*dstptr = tmp;
+						dstptr += stridedst;
+					}
+				}
+				else if (!(bitsame & 0x10)) {
+					for (i = 0; i < 16; i++) {
+						tmp = *dstptr;
+						tmp = (tmp & 0xe0) | ((tmp & 0xf) << 1) | 0x01;
+						*dstptr = tmp;
+						dstptr += stridedst;
+					}
+				}
+			}
+		}
+		else if (srcwidth == 16) {
+			// 未実装
+		}
+	}
+}
+
+void makepc98bmp(const OEMCHAR *filename, const OEMCHAR* fontface) {
 
 	void	*fnt;
 	BMPFILE	bf;
@@ -291,11 +557,12 @@ void makepc98bmp(const OEMCHAR *filename) {
 	UINT8	*ptr;
 	FILEH	fh;
 	BOOL	r;
+	int		i;
 
 #if defined(FDAT_SHIFTJIS)
-	fnt = fontmng_create(16, FDAT_SHIFTJIS, NULL);
+	fnt = fontmng_create(16, FDAT_SHIFTJIS, fontface);
 #else
-	fnt = fontmng_create(16, 0, NULL);
+	fnt = fontmng_create(16, 0, fontface);
 #endif
 	if (fnt == NULL) {
 		goto mfnt_err1;
@@ -313,10 +580,61 @@ void makepc98bmp(const OEMCHAR *filename) {
 	patchank(ptr, fontdata_16 + 1*32*16, 0x80);
 	patchank(ptr, fontdata_16 + 2*32*16, 0xe0);
 	setjis(ptr, fnt);
-	patchextank(ptr, fontdata_29, 0x09);
-	patchextank(ptr, fontdata_2a, 0x0a);
 	patchextank(ptr, fontdata_2b, 0x0b);
 	patchextfnt(ptr, fontdata_2c);
+#ifdef USE_BUILTIN_FONT
+	// ねこー内蔵代替フォント
+	patchextank(ptr, fontdata_29, 0x09);
+	patchextank(ptr, fontdata_2a, 0x0a);
+#else
+	// 指定フォントから擬似的に生成
+	copyglyph(ptr, 0x315f, 16, 0xf1, 8, 0); // 円
+	copyglyph(ptr, 0x472f, 16, 0xf2, 8, 0); // 年
+	copyglyph(ptr, 0x376e, 16, 0xf3, 8, 0); // 月
+	copyglyph(ptr, 0x467c, 16, 0xf4, 8, 0); // 日
+	copyglyph(ptr, 0x3b7e, 16, 0xf5, 8, 0); // 時
+	copyglyph(ptr, 0x4a2c, 16, 0xf6, 8, 0); // 分
+	copyglyph(ptr, 0x4943, 16, 0xf7, 8, 0); // 秒
+	for (i = 0; i < 0x7f - 0x21; i++) {
+		copyglyph(ptr, 0x21 + i, 8, 0x2921 + i, 8, 0); // 数字英字など
+	}
+	for (i = 0x20; i < 0x39; i++) {
+		copyglyph(ptr, 0x21 + i, 8, 0x2921 + i, 8, COPYGLYPH_7TO6); // ascii部分だけ可能なら狭幅にする
+	}
+	for (i = 0x40; i < 0x59; i++) {
+		copyglyph(ptr, 0x21 + i, 8, 0x2921 + i, 8, COPYGLYPH_7TO6); // ascii部分だけ可能なら狭幅にする
+	}
+	for (i = 0; i < 0x60 - 0x21; i++) {
+		copyglyph(ptr, 0xa1 + i, 8, 0x2a21 + i, 8, 0); // カナなど
+	}
+	copyglyph(ptr, 0x2570, 16, 0x2a60, 8, 0); // ヰ
+	copyglyph(ptr, 0x2571, 16, 0x2a61, 8, 0); // ヱ
+	copyglyph(ptr, 0x256e, 16, 0x2a62, 8, 0); // ヮ
+	copyglyph(ptr, 0x2575, 16, 0x2a63, 8, 0); // ヵ
+	copyglyph(ptr, 0x2576, 16, 0x2a64, 8, 0); // ヶ
+	copyglyph(ptr, 0xb3, 8, 0x2a65, 8, COPYGLYPH_WITHVMARK); // ヴ
+	for (i = 0; i < 15; i++) {
+		// ガ行、ザ行、ダ行
+		copyglyph(ptr, 0xb6 + i, 8, 0x2a66 + i, 8, COPYGLYPH_WITHVMARK);
+	}
+	for (i = 0; i < 5; i++) {
+		// バ行、パ行
+		copyglyph(ptr, 0xca + i, 8, 0x2a75 + i * 2, 8, COPYGLYPH_WITHVMARK);
+		copyglyph(ptr, 0xca + i, 8, 0x2a75 + i * 2 + 1, 8, COPYGLYPH_WITHPMARK);
+	}
+	copyglyph(ptr, 0x214c, 16, 0x2b74, 8, COPYGLYPH_ADJUSTPARTR); // 〔
+	copyglyph(ptr, 0x214d, 16, 0x2b75, 8, COPYGLYPH_ADJUSTPART); // 〕
+	copyglyph(ptr, 0x2152, 16, 0x2b76, 8, COPYGLYPH_ADJUSTPARTR); // 〈
+	copyglyph(ptr, 0x2153, 16, 0x2b77, 8, COPYGLYPH_ADJUSTPART); // 〉
+	copyglyph(ptr, 0x2154, 16, 0x2b78, 8, COPYGLYPH_ADJUSTPARTR); // 《
+	copyglyph(ptr, 0x2155, 16, 0x2b79, 8, COPYGLYPH_ADJUSTPART); // 》
+	copyglyph(ptr, 0x2158, 16, 0x2b7a, 8, COPYGLYPH_ADJUSTPARTR); // 『
+	copyglyph(ptr, 0x2159, 16, 0x2b7b, 8, COPYGLYPH_ADJUSTPART); // 』
+	copyglyph(ptr, 0x215a, 16, 0x2b7c, 8, COPYGLYPH_ADJUSTPARTR); // 【
+	copyglyph(ptr, 0x215b, 16, 0x2b7d, 8, COPYGLYPH_ADJUSTPART); // 】
+	copyglyph(ptr, '-', 8, 0x2b7e, 8, 0); // -
+	copyglyph(ptr, '/', 8, 0xfc, 8, COPYGLYPH_REVERSEXSH1); // バックスラッシュ
+#endif
 
 	fh = file_create(filename);
 	if (fh == FILEH_INVALID) {
@@ -340,4 +658,3 @@ mfnt_err2:
 mfnt_err1:
 	return;
 }
-

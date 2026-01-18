@@ -1,26 +1,27 @@
 /**
  * @file	subwnd.cpp
- * @brief	ã‚µãƒ– ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®åŸºåº•ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
+ * @brief	ƒTƒu ƒEƒBƒ“ƒhƒE‚ÌŠî’êƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
  */
 
-#include <compiler.h>
+#include "compiler.h"
 #include "resource.h"
 #include "subwnd.h"
-#include <np2.h>
-#include <np2mt.h>
-#include <soundmng.h>
+#include "np2.h"
+#include "np2mt.h"
+#include "soundmng.h"
+#include "mousemng.h"
 #include "winloc.h"
 #include "dialog/np2class.h"
 #include "misc\tstring.h"
 
 extern WINLOCEX np2_winlocexallwin(HWND base);
 
-//! ã‚¯ãƒ©ã‚¹å
+//! ƒNƒ‰ƒX–¼
 static const TCHAR s_szClassName[] = TEXT("NP2-SubWnd");
 
 /**
- * åˆæœŸåŒ–
- * @param[in] hInstance ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+ * ‰Šú‰»
+ * @param[in] hInstance ƒCƒ“ƒXƒ^ƒ“ƒX
  */
 void CSubWndBase::Initialize(HINSTANCE hInstance)
 {
@@ -38,7 +39,7 @@ void CSubWndBase::Initialize(HINSTANCE hInstance)
 }
 
 /**
- * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
  */
 CSubWndBase::CSubWndBase()
 	: m_wlex(NULL)
@@ -46,52 +47,57 @@ CSubWndBase::CSubWndBase()
 }
 
 /**
- * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒfƒXƒgƒ‰ƒNƒ^
  */
 CSubWndBase::~CSubWndBase()
 {
 }
 
 /**
- * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½œæˆ
- * @param[in] nCaptionID ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³ ID
- * @param[in] dwStyle ã‚¹ã‚¿ã‚¤ãƒ«
- * @param[in] x Xåº§æ¨™
- * @param[in] y Yåº§æ¨™
- * @param[in] nWidth å¹…
- * @param[in] nHeight é«˜ã•
- * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
- * @param[in] nIDorHMenu ID ã‚‚ã—ãã¯ ãƒ¡ãƒ‹ãƒ¥ãƒ¼
- * @retval TRUE æˆåŠŸ
- * @retval FALSE å¤±æ•—
+ * ƒEƒBƒ“ƒhƒEì¬
+ * @param[in] nCaptionID ƒLƒƒƒvƒVƒ‡ƒ“ ID
+ * @param[in] dwStyle ƒXƒ^ƒCƒ‹
+ * @param[in] x XÀ•W
+ * @param[in] y YÀ•W
+ * @param[in] nWidth •
+ * @param[in] nHeight ‚‚³
+ * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * @param[in] nIDorHMenu ID ‚à‚µ‚­‚Í ƒƒjƒ…[
+ * @retval TRUE ¬Œ÷
+ * @retval FALSE ¸”s
  */
 BOOL CSubWndBase::Create(UINT nCaptionID, DWORD dwStyle, int x, int y, int nWidth, int nHeight, HWND hwndParent, HMENU nIDorHMenu)
 {
+	BOOL r;
 	std::tstring rCaption(LoadTString(nCaptionID));
-	return CreateEx(0, s_szClassName, rCaption.c_str(), dwStyle, x, y, nWidth, nHeight, hwndParent, nIDorHMenu);
+	r = CreateEx(0, s_szClassName, rCaption.c_str(), dwStyle, x, y, nWidth, nHeight, hwndParent, nIDorHMenu);
+	winloc_DisableCornerRound(m_hWnd);
+	return r;
 }
 
 /**
- * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½œæˆ
- * @param[in] lpCaption ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³
- * @param[in] dwStyle ã‚¹ã‚¿ã‚¤ãƒ«
- * @param[in] x Xåº§æ¨™
- * @param[in] y Yåº§æ¨™
- * @param[in] nWidth å¹…
- * @param[in] nHeight é«˜ã•
- * @param[in] hwndParent è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
- * @param[in] nIDorHMenu ID ã‚‚ã—ãã¯ ãƒ¡ãƒ‹ãƒ¥ãƒ¼
- * @retval TRUE æˆåŠŸ
- * @retval FALSE å¤±æ•—
+ * ƒEƒBƒ“ƒhƒEì¬
+ * @param[in] lpCaption ƒLƒƒƒvƒVƒ‡ƒ“
+ * @param[in] dwStyle ƒXƒ^ƒCƒ‹
+ * @param[in] x XÀ•W
+ * @param[in] y YÀ•W
+ * @param[in] nWidth •
+ * @param[in] nHeight ‚‚³
+ * @param[in] hwndParent eƒEƒBƒ“ƒhƒE
+ * @param[in] nIDorHMenu ID ‚à‚µ‚­‚Í ƒƒjƒ…[
+ * @retval TRUE ¬Œ÷
+ * @retval FALSE ¸”s
  */
 BOOL CSubWndBase::Create(LPCTSTR lpCaption, DWORD dwStyle, int x, int y, int nWidth, int nHeight, HWND hwndParent, HMENU nIDorHMenu)
 {
-	return CreateEx(0, s_szClassName, lpCaption, dwStyle, x, y, nWidth, nHeight, hwndParent, nIDorHMenu);
+	BOOL r = CreateEx(0, s_szClassName, lpCaption, dwStyle, x, y, nWidth, nHeight, hwndParent, nIDorHMenu);
+	winloc_DisableCornerRound(m_hWnd);
+	return r;
 }
 
 /**
- * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ã‚¿ã‚¤ãƒ—ã®è¨­å®š
- * @param[in] nType ã‚¿ã‚¤ãƒ—
+ * ƒEƒBƒ“ƒhƒE ƒ^ƒCƒv‚Ìİ’è
+ * @param[in] nType ƒ^ƒCƒv
  */
 void CSubWndBase::SetWndType(UINT8 nType)
 {
@@ -103,11 +109,11 @@ void CSubWndBase::SetWndType(UINT8 nType)
 }
 
 /**
- * CWndProc ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã® Windows ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ (WindowProc) ãŒç”¨æ„ã•ã‚Œã¦ã„ã¾ã™
- * @param[in] nMsg å‡¦ç†ã•ã‚Œã‚‹ Windows ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æŒ‡å®šã—ã¾ã™
- * @param[in] wParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
- * @param[in] lParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
- * @return ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã™ã‚‹å€¤ã‚’è¿”ã—ã¾ã™
+ * CWndProc ƒIƒuƒWƒFƒNƒg‚Ì Windows ƒvƒƒV[ƒWƒƒ (WindowProc) ‚ª—pˆÓ‚³‚ê‚Ä‚¢‚Ü‚·
+ * @param[in] nMsg ˆ—‚³‚ê‚é Windows ƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
+ * @param[in] wParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
+ * @param[in] lParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
+ * @return ƒƒbƒZ[ƒW‚ÉˆË‘¶‚·‚é’l‚ğ•Ô‚µ‚Ü‚·
  */
 LRESULT CSubWndBase::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -142,7 +148,7 @@ LRESULT CSubWndBase::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 			break;
 
 		case WM_MOVING:
-			if (np2oscfg.WINSNAP) { // ã‚¹ãƒŠãƒƒãƒ—è¨­å®šã‚’å…±é€šã« np21w ver0.86 rev22
+			if (np2oscfg.WINSNAP) { // ƒXƒiƒbƒvİ’è‚ğ‹¤’Ê‚É np21w ver0.86 rev22
 				winlocex_moving(m_wlex, reinterpret_cast<RECT*>(lParam));
 			}
 			break;
@@ -154,6 +160,11 @@ LRESULT CSubWndBase::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 			{
 				CSoundMng::GetInstance()->Enable(SNDPROC_SUBWIND);
 			}
+			break;
+
+		case WM_MOUSEMOVE:
+		case WM_NCMOUSEMOVE:
+			mousemng_updatemouseon(false);
 			break;
 
 		case WM_CLOSE:

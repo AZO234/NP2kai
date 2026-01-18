@@ -98,7 +98,7 @@ static INLINE void SSE_PART_GETDATA1DATA2_PD(double **data1, double **data2, dou
 	SSSE3_check_NM_EXCEPTION();
 	SSSE3_setTag();
 	CPU_SSSE3WORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	*data1 = (double*)(&(FPU_STAT.xmm_reg[idx]));
@@ -120,7 +120,7 @@ static INLINE void MMX_PART_GETDATA1DATA2_PD(float **data1, float **data2, float
 	SSSE3_check_NM_EXCEPTION();
 	SSSE3_setTag();
 	CPU_SSSE3WORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	*data1 = (float*)(&(FPU_STAT.reg[idx]));
@@ -139,15 +139,19 @@ void SSSE3_PSHUFB(void)
 {
 	int i;
 
+	UINT8 dstbuf[16];
 	UINT8 data2buf[16];
 	UINT8 *data1, *data2;
 	SSE_PART_GETDATA1DATA2_PD((double**)(&data1), (double**)(&data2), (double*)data2buf);
 	for(i=0;i<16;i++){
-		if (data2[i]&128){
-			data1[i] = 0;
+		if (data2[i] & 0x80){
+			dstbuf[i] = 0;
 		} else {
-			data1[i] = data2buf[data2[i]&7];
+			dstbuf[i] = data1[data2[i] & 0xf];
 		}
+	}
+	for(i=0;i<16;i++){
+		data1[i] = dstbuf[i];
 	}
 	TRACEOUT(("SSSE3_PSHUFB"));
 }
@@ -156,15 +160,19 @@ void SSSE3_PSHUFB_MM(void)
 {
 	int i;
 
+	UINT8 dstbuf[8];
 	UINT8 data2buf[8];
 	UINT8 *data1, *data2;
 	MMX_PART_GETDATA1DATA2_PD((float**)(&data1), (float**)(&data2), (float*)data2buf);
 	for(i=0;i<8;i++){
 		if (data2[i]&128){
-			data1[i] = 0;
+			dstbuf[i] = 0;
 		} else {
-			data1[i] = data2buf[data2[i]&7];
+			dstbuf[i] = data1[data2[i] & 0x7];
 		}
+	}
+	for(i=0;i<8;i++){
+		data1[i] = dstbuf[i];
 	}
 	TRACEOUT(("SSSE3_PSHUFB"));
 }
@@ -563,7 +571,7 @@ void SSSE3_PALIGNR(void)
 	UINT64 data2buf[2];
 	UINT64 *data1, *data2;
 	SSE_PART_GETDATA1DATA2_PD((double**)(&data1), (double**)(&data2), (double*)data2buf);
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	if (op > 15) {
 		op -= 16;
 		if (op > 15){
@@ -604,7 +612,7 @@ void SSSE3_PALIGNR_MM(void)
 	UINT32 data2buf[2];
 	UINT32 *data1, *data2;
 	MMX_PART_GETDATA1DATA2_PD((float**)(&data1), (float**)(&data2), (float*)data2buf);
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	if (op > 7) {
 		op -= 8;
 		if (op > 7){

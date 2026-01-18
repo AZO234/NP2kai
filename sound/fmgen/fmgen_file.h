@@ -1,5 +1,8 @@
 //	$Id: file.h,v 1.6 1999/11/26 10:14:09 cisc Exp $
 
+#pragma once
+#if defined(SUPPORT_FMGEN)
+
 #if !defined(win32_file_h)
 #define win32_file_h
 
@@ -62,3 +65,5 @@ private:
 };
 
 #endif // 
+
+#endif	/* SUPPORT_FMGEN */

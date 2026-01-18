@@ -1,5 +1,7 @@
 #pragma once
 
+#ifndef USE_MAME_BSD
+
 #ifndef __DRIVER_H__
 #define __DRIVER_H__
 
@@ -25,3 +27,5 @@
 typedef signed short stream_sample_t;
 
 #endif	/* __DRIVER_H__ */
+
+#endif

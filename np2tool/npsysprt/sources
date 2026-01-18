@@ -1,0 +1,6 @@
+TARGETNAME=npsysprt
+TARGETTYPE=DRIVER
+TARGETPATH=obj
+SOURCES= \
+    npsysprt.c \
+    npsysprt.rc

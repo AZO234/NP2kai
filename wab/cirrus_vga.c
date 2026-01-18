@@ -144,6 +144,9 @@ CPUWriteMemoryFunc *g_cirrus_linear_write[3] = {0}; // CIRRUS VGAの変数のリ
 
 uint8_t* vramptr; // CIRRUS VGAのVRAMへのポインタ（メモリサイズはCIRRUS_VRAM_SIZEで十分のはずだが念のため2倍確保されている）
 uint8_t* cursorptr; // CIRRUS VGAのカーソル画像バッファへのポインタ
+#if defined(SUPPORT_IA32_HAXM)
+uint8_t* vramptr_cmp; // メモリ更新を検出するためのvramptrのコピー
+#endif
 
 DisplayState ds = {0}; // np21/wでは実質的に使われない
 
@@ -4029,6 +4032,11 @@ uint32_t_ vga_convert_ioport(uint32_t_ addr){
 			cirrusvga->device_id = CIRRUS_ID_CLGD5446;
 			cirrusvga->cr[0x27] = cirrusvga->device_id;
 			cirrusvga->bustype = CIRRUS_BUSTYPE_PCI;
+#if defined(SUPPORT_IA32_HAXM)
+			i386hax_vm_removememoryarea(vramptr, mmio_mode_region2, lastlinmmio ? cirrusvga->linear_mmio_mask : cirrusvga->real_vram_size);
+			i386hax_vm_removememoryarea(vramptr, np2clvga.pciLFB_Addr, lastlinmmio ? cirrusvga->linear_mmio_mask : cirrusvga->real_vram_size);
+			lastlinmmio = 0;
+#endif
 			cirrus_update_memory_access(cirrusvga);
 			pc98_cirrus_vga_setvramsize();
 			pc98_cirrus_vga_initVRAMWindowAddr();
@@ -4337,7 +4345,10 @@ static void vga_ioport_write(void *opaque, uint32_t_ addr, uint32_t_ val)
     case 0x3b5:
     case 0x3d5:
 		if (cirrus_hook_write_cr(s, s->cr_index, val))
+		{
+			cirrusvga_updated = 1;
 			break;
+		}
 #ifdef DEBUG_VGA_REG
 		printf("vga: write CR%x = 0x%02x\n", s->cr_index, val);
 #endif
@@ -4346,6 +4357,7 @@ static void vga_ioport_write(void *opaque, uint32_t_ addr, uint32_t_ val)
 			/* can always write bit 4 of CR7 */
 			if (s->cr_index == 7)
 			s->cr[7] = (s->cr[7] & ~0x10) | (val & 0x10);
+			cirrusvga_updated = 1;
 			return;
 		}
 		switch (s->cr_index) {
@@ -4400,6 +4412,7 @@ static void vga_ioport_write(void *opaque, uint32_t_ addr, uint32_t_ val)
 		//		break;
 		//	}
 		//}
+		cirrusvga_updated = 1;
 		break;
     case 0x3ba:
     case 0x3da:
@@ -4869,7 +4882,14 @@ void pc98_cirrus_vga_load()
 	uint32_t_ intbuf;
 	//int width, height;
 	char en[3];
-	
+
+#if defined(SUPPORT_IA32_HAXM)
+	// HAXMはレジューム前にPCIメモリ割り当て解除
+	i386hax_vm_removememoryarea(vramptr, mmio_mode_region2, lastlinmmio ? cirrusvga->linear_mmio_mask : cirrusvga->real_vram_size);
+	i386hax_vm_removememoryarea(vramptr, np2clvga.pciLFB_Addr, lastlinmmio ? cirrusvga->linear_mmio_mask : cirrusvga->real_vram_size);
+	lastlinmmio = 0;
+#endif
+
 	array_read(f, pos, &state_ver, sizeof(state_ver)); // バージョン番号
 	switch(state_ver){
 	case 0:
@@ -5057,9 +5077,17 @@ void pc98_cirrus_vga_load()
 	// 関数アドレス入れ直し
 	pcidev.devices[pcidev_cirrus_deviceid].regwfn = &pcidev_cirrus_cfgreg_w;
 #endif
-		
+
 	pc98_cirrus_vga_updatePCIaddr();
 
+#if defined(SUPPORT_IA32_HAXM)
+	mmio_mode = MMIO_MODE_MMIO; // 0==MMIO, 1==VRAM
+	mmio_mode_region1 = 0; // 0==MMIO, 1==VRAM
+	mmio_mode_region2 = 0; // 0==MMIO, 1==VRAM
+	lastlinmmio = 0;
+	//i386hax_vm_removememoryarea(vramptr, np2clvga.pciLFB_Addr, lastlinmmio ? cirrusvga->linear_mmio_mask : cirrusvga->real_vram_size);
+#endif
+		
     cirrus_update_memory_access(s);
     
     s->graphic_mode = -1;
@@ -5265,11 +5293,24 @@ int cirrusvga_drawGraphic(){
 	if (!cirrusvga_updated && !np2wab.paletteChanged) return 0;
 	cirrusvga_updated = 0;
 
+	static int lastvramoffs = -1;
+
+#if defined(SUPPORT_IA32_HAXM)
+	// XXX: HAXMの仮想CPUがvramptrを書き換えることがあり、これの捕捉はできない。なのでメモリ比較で強引に検出 4MBくらいなら今時のPCならいいでしょう
+	if (memcmp(vramptr_cmp, vramptr, CIRRUS_VRAM_SIZE))
+	{
+		memcpy(vramptr_cmp, vramptr, CIRRUS_VRAM_SIZE);
+		cirrusvga_updated = 1;
+	}
+#endif
+
+	if (!cirrusvga_updated && !np2wab.paletteChanged && lastvramoffs == np2wab.vramoffs) return 0;
 	// VRAM上での1ラインのサイズ（表示幅と等しくない場合有り）
 	line_offset = cirrusvga->cr[0x13] | ((cirrusvga->cr[0x1b] & 0x10) << 4);
 	line_offset <<= 3;
 
 	vram_ptr = cirrusvga->vram_ptr + np2wab.vramoffs;
+	lastvramoffs = np2wab.vramoffs;
 	
 	//if(cirrusvga->device_id == CIRRUS_ID_CLGD5446 || (np2clvga.gd54xxtype & CIRRUS_98ID_GA98NBMASK) == CIRRUS_98ID_GA98NBIC || (np2clvga.gd54xxtype & CIRRUS_98ID_WABMASK) == CIRRUS_98ID_WAB){
 		//if((cirrusvga->cr[0x5e] & 0x7) == 0x1){
@@ -5596,6 +5637,7 @@ int cirrusvga_drawGraphic(){
 #endif
 		}
 	}else{
+		np2wab.paletteChanged = 0; // パレットではないので更新不要
 		if(scanpixW*bpp/8==scanW){
 			if(scanshift){
 				// XXX: スキャン位置シフト
@@ -6887,6 +6929,13 @@ void pc98_cirrus_vga_initVRAMWindowAddr(){
 
 // ボード種類からVRAMサイズを決定する
 void pc98_cirrus_vga_setvramsize(){
+#if defined(SUPPORT_IA32_HAXM)
+	// PCIメモリ割り当て解除
+	i386hax_vm_removememoryarea(vramptr, mmio_mode_region2, lastlinmmio ? cirrusvga->linear_mmio_mask : cirrusvga->real_vram_size);
+	i386hax_vm_removememoryarea(vramptr, np2clvga.pciLFB_Addr, lastlinmmio ? cirrusvga->linear_mmio_mask : cirrusvga->real_vram_size);
+	lastlinmmio = 0;
+#endif
+
 	if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK){
 		cirrusvga->real_vram_size = CIRRUS_VRAM_SIZE;
 	}else if(np2clvga.gd54xxtype == CIRRUS_98ID_96){
@@ -6920,6 +6969,9 @@ void pc98_cirrus_vga_setvramsize(){
 	cirrusvga->cirrus_addr_mask = cirrusvga->real_vram_size - 1;
 	cirrusvga->linear_mmio_mask = cirrusvga->real_vram_size - 256;
 
+#if defined(SUPPORT_IA32_HAXM)
+	cirrus_linear_mmio_update(cirrusvga);
+#endif
 }
 void pc98_cirrus_vga_setVRAMWindowAddr3(UINT32 addr)
 {
@@ -6978,7 +7030,6 @@ static void pc98_cirrus_init_common(CirrusVGAState * s, int device_id, int is_pc
     s->bustype = CIRRUS_BUSTYPE_ISA;
 
 	cirrusvga_wab_46e8 = 0x18; // デフォルトで有効
-	
 	if((np2clvga.gd54xxtype & CIRRUS_98ID_AUTOMSK) == CIRRUS_98ID_AUTOMSK || np2clvga.gd54xxtype <= 0xff){
 		// ONBOARD
 #if defined(SUPPORT_PCI)
@@ -7455,6 +7506,7 @@ void pc98_cirrus_vga_init(void)
 	
 #if defined(SUPPORT_IA32_HAXM)
 	vramptr = (uint8_t*)_aligned_malloc(CIRRUS_VRAM_SIZE*2, 4096); // 2倍取っておく
+	vramptr_cmp = (uint8_t*)_aligned_malloc(CIRRUS_VRAM_SIZE * 2, 4096); // 2倍取っておく
 #else
 	vramptr = (uint8_t*)malloc(CIRRUS_VRAM_SIZE*2); // 2倍取っておく
 #endif
@@ -7511,6 +7563,10 @@ void pc98_cirrus_vga_reset(const NP2CFG *pConfig)
 		i386hax_vm_allocmemoryex(vramptr, CIRRUS_VRAM_SIZE*2);
 		np2haxcore.allocwabmem = 1;
 	}
+	mmio_mode = MMIO_MODE_MMIO; // 0==MMIO, 1==VRAM
+	mmio_mode_region1 = 0; // 0==MMIO, 1==VRAM
+	mmio_mode_region2 = 0; // 0==MMIO, 1==VRAM
+	lastlinmmio = 0;
 #endif
 	
 #if defined(SUPPORT_VGA_MODEX)
@@ -7623,6 +7679,7 @@ void pc98_cirrus_vga_shutdown(void)
 #if defined(SUPPORT_IA32_HAXM)
 #if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
 	_aligned_free(vramptr);
+	_aligned_free(vramptr_cmp);
 #else
 	free(vramptr);
 #endif

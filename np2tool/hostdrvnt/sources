@@ -1,0 +1,8 @@
+TARGETNAME=hostdrv
+TARGETTYPE=DRIVER
+TARGETPATH=obj
+SOURCES= \
+    minisop.c \
+    irplock.c \
+    hostdrv.c \
+    hostdrv.rc

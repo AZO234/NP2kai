@@ -100,7 +100,7 @@ static INLINE void SSE_PART_GETDATA1DATA2_PD(double **data1, double **data2, dou
 	SSE4_2_check_NM_EXCEPTION();
 	SSE4_2_setTag();
 	CPU_SSSE3WORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	*data1 = (double*)(&(FPU_STAT.xmm_reg[idx]));
@@ -129,7 +129,7 @@ static INLINE void MMX_PART_GETDATA1DATA2_PD(float **data1, float **data2, float
 	SSE4_2_check_NM_EXCEPTION();
 	SSE4_2_setTag();
 	CPU_SSSE3WORKCLOCK;
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	idx = (op >> 3) & 7;
 	sub = (op & 7);
 	*data1 = (float*)(&(FPU_STAT.reg[idx]));
@@ -293,7 +293,7 @@ void SSE4_2_PCMPESTRM(void)
 	UINT8 data2buf[16];
 	UINT8 *data1, *data2;
 	SSE_PART_GETDATA1DATA2_PD((double**)(&data1), (double**)(&data2), (double*)data2buf);
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	tmp = sse42_compare_string_explicit_len((UINT8**)(&data1), (UINT8**)(&data2), (UINT8*)data2buf,op,CPU_EDX,CPU_EAX);
 	if (op & 64){
 		switch (op & 1){
@@ -321,7 +321,7 @@ void SSE4_2_PCMPESTRI(void)
 	UINT8 data2buf[16];
 	UINT8 *data1, *data2;
 	SSE_PART_GETDATA1DATA2_PD((double**)(&data1), (double**)(&data2), (double*)data2buf);
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	tmp = sse42_compare_string_explicit_len((UINT8**)(&data1), (UINT8**)(&data2), (UINT8*)data2buf,op,CPU_EDX,CPU_EAX);
 	if (!tmp){
 		CPU_ECX = (op&1)?8:16;
@@ -345,7 +345,7 @@ void SSE4_2_PCMPISTRM(void)
 	UINT8 data2buf[16];
 	UINT8 *data1, *data2;
 	SSE_PART_GETDATA1DATA2_PD((double**)(&data1), (double**)(&data2), (double*)data2buf);
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	tmp = sse42_compare_string_inplicit_len((UINT8**)(&data1), (UINT8**)(&data2), (UINT8*)data2buf,op);
 	if (op & 64){
 		switch (op & 1){
@@ -373,7 +373,7 @@ void SSE4_2_PCMPISTRI(void)
 	UINT8 data2buf[16];
 	UINT8 *data1, *data2;
 	SSE_PART_GETDATA1DATA2_PD((double**)(&data1), (double**)(&data2), (double*)data2buf);
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 	tmp = sse42_compare_string_inplicit_len((UINT8**)(&data1), (UINT8**)(&data2), (UINT8*)data2buf,op);
 	if (!tmp){
 		CPU_ECX = (op&1)?8:16;
@@ -398,7 +398,7 @@ void SSE4_2_CRC32_Gy_Eb(void)
 
 	tmp = 0;
 
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 
 	if (op >= 0xc0)
 	{
@@ -411,7 +411,7 @@ void SSE4_2_CRC32_Gy_Eb(void)
 		madr = calc_ea_dst(op);
 		src = cpu_vmemoryread_b(CPU_INST_SEGREG_INDEX, madr);
 	}
-	out = reg32_b53[op];
+	out = CPU_REG32_B53(op);
 	tmp = *out;
 
 	tmp ^= src;
@@ -438,7 +438,7 @@ void SSE4_2_CRC32_Gy_Eb_16(void)
 
 	tmp = 0;
 
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 
 	if (op >= 0xc0)
 	{
@@ -451,7 +451,7 @@ void SSE4_2_CRC32_Gy_Eb_16(void)
 		madr = calc_ea_dst(op);
 		src = cpu_vmemoryread_b(CPU_INST_SEGREG_INDEX, madr);
 	}
-	out = (UINT32*)reg16_b53[op];
+	out = (UINT32*)CPU_REG16_B53(op);
 	tmp = *out;
 
 	tmp ^= src;
@@ -481,12 +481,12 @@ void SSE4_2_CRC32_Gy_Ev(void)
 
 	tmp = 0;
 
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 
 	if (op >= 0xc0)
 	{
 		CPU_WORKCLOCK(21);
-		src = *(reg32_b20[op]);
+		src = *(CPU_REG32_B20(op));
 	}
 	else
 	{
@@ -494,7 +494,7 @@ void SSE4_2_CRC32_Gy_Ev(void)
 		madr = calc_ea_dst(op);
 		src = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, madr);
 	}
-	out = reg32_b53[op];
+	out = CPU_REG32_B53(op);
 	tmp = *out;
 
 	for(j=0;j<4;j++){
@@ -523,12 +523,12 @@ void SSE4_2_CRC32_Gy_Ev_16(void)
 
 	tmp = 0;
 
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 
 	if (op >= 0xc0)
 	{
 		CPU_WORKCLOCK(21);
-		src = *(reg16_b20[op]);
+		src = *(CPU_REG16_B20(op));
 	}
 	else
 	{
@@ -536,7 +536,7 @@ void SSE4_2_CRC32_Gy_Ev_16(void)
 		madr = calc_ea_dst(op);
 		src = cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, madr);
 	}
-	out = (UINT32*)reg16_b53[op];
+	out = (UINT32*)CPU_REG16_B53(op);
 	tmp = *out;
 
 	for (j = 0; j < 2; j++)
@@ -574,11 +574,11 @@ void SSE4_2_POPCNT_16(void)
 
 	tmp = 0;
 
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(21);
-		src = *(reg16_b20[op]);
+		src = *(CPU_REG16_B20(op));
 	} else {
 		CPU_WORKCLOCK(24);
 		madr = calc_ea_dst(op);
@@ -590,7 +590,7 @@ void SSE4_2_POPCNT_16(void)
 	}
 
 	CPU_WORKCLOCK(2);
-	out = reg16_b53[op];
+	out = CPU_REG16_B53(op);
 	*out = (UINT16)tmp;
 
 	CPU_FLAG &=  ~C_FLAG;
@@ -618,11 +618,11 @@ void SSE4_2_POPCNT_32(void)
 
 	tmp = 0;
 
-	GET_PCBYTE((op));
+	GET_MODRM_PCBYTE((op));
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(21);
-		src = *(reg32_b20[op]);
+		src = *(CPU_REG32_B20(op));
 	} else {
 		CPU_WORKCLOCK(24);
 		madr = calc_ea_dst(op);
@@ -634,7 +634,7 @@ void SSE4_2_POPCNT_32(void)
 	}
 
 	CPU_WORKCLOCK(2);
-	out = reg32_b53[op];
+	out = CPU_REG32_B53(op);
 	*out = (UINT32)tmp;
 
 	CPU_FLAG &=  ~C_FLAG;

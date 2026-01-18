@@ -3,7 +3,7 @@
 extern "C" {
 #endif
 
-void makepc98bmp(const OEMCHAR *filename);
+void makepc98bmp(const OEMCHAR *filename, const OEMCHAR* fontface);
 
 #ifdef __cplusplus
 }

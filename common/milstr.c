@@ -960,6 +960,41 @@ long STRCALL milstr_solveINT(const OEMCHAR *str) {
 	}
 }
 
+long long STRCALL milstr_solveINT64(const OEMCHAR *str) {
+
+	unsigned long long	ret;
+	BOOL				minus;
+	int					c;
+
+	ret = 0;
+	minus = FALSE;
+	c = *str;
+	if (c == '+') {
+		str++;
+	}
+	else if (c == '-') {
+		str++;
+		minus = TRUE;
+	}
+	while(1) {
+		c = *str++;
+		c -= '0';
+		if ((c >= 0) && (c < 10)) {
+			ret *= 10;
+			ret += c;
+		}
+		else {
+			break;
+		}
+	}
+	if (!minus) {
+		return((long long)ret);
+	}
+	else {
+		return((long long)(0 - ret));
+	}
+}
+
 OEMCHAR * STRCALL milstr_list(const OEMCHAR *lststr, UINT pos) {
 
 	if (lststr) {

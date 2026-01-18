@@ -96,6 +96,9 @@ long STRCALL milstr_solveHEX(const OEMCHAR *str);
 // STR2INT
 long STRCALL milstr_solveINT(const OEMCHAR *str);
 
+// STR2INT64
+long long STRCALL milstr_solveINT64(const OEMCHAR* str);
+
 // STRLIST
 OEMCHAR * STRCALL milstr_list(const OEMCHAR *lststr, UINT pos);
 

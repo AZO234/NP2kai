@@ -188,7 +188,7 @@ I286_F6 _not_ea16(UINT op) {
 		I286_WORKCLOCK(7);
 		madr = CALC_EA(op);
 		if (!(INHIBIT_WORDP(madr))) {
-			*(mem + madr) ^= 0xffff;
+			*((UINT16*)(mem + madr)) ^= 0xffff;
 		}
 		else {
 			REG16 value = i286_memoryread_w(madr);

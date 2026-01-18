@@ -1047,6 +1047,11 @@ void profile_iniread(const OEMCHAR *lpPath, const OEMCHAR *lpApp, const PFTBL *l
 					*(UINT32 *)p->value = (UINT32)milstr_solveINT(work);
 					break;
 
+				case PFTYPE_SINT64:
+				case PFTYPE_UINT64:
+					*(UINT64*)p->value = (UINT64)milstr_solveINT64(work);
+					break;
+
 				case PFTYPE_HEX8:
 					*(UINT8 *)p->value = (UINT8)milstr_solveHEX(work);
 					break;
@@ -1131,6 +1136,10 @@ void profile_iniwrite(const OEMCHAR *lpPath, const OEMCHAR *lpApp, const PFTBL *
 					OEMSNPRINTF(work, sizeof(work), str_d, *((SINT32 *)p->value));
 					break;
 
+				case PFTYPE_SINT64:
+					OEMSPRINTF(work, str_lld, *((SINT64*)p->value));
+					break;
+
 				case PFTYPE_UINT8:
 					OEMSNPRINTF(work, sizeof(work), str_u, *((UINT8 *)p->value));
 					break;
@@ -1141,6 +1150,10 @@ void profile_iniwrite(const OEMCHAR *lpPath, const OEMCHAR *lpApp, const PFTBL *
 
 				case PFTYPE_UINT32:
 					OEMSNPRINTF(work, sizeof(work), str_u, *((UINT32 *)p->value));
+					break;
+
+				case PFTYPE_UINT64:
+					OEMSPRINTF(work, str_llu, *((UINT64*)p->value));
 					break;
 
 				case PFTYPE_HEX8:

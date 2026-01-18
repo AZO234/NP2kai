@@ -12,7 +12,7 @@
 #include "opna.h"
 #include "opntimer.h"
 #include <sound/pcm86.h>
-#include <cbus/ct1741io.h>
+#include "ct1741.h"
 
 #if defined(SUPPORT_PX)
 #define OPNA_MAX	5
@@ -20,34 +20,6 @@
 #define OPNA_MAX	3
 #endif	/* defined(SUPPORT_PX) */
 #define OPL3_MAX	8
-
-typedef struct {
-	UINT	addr;
-	UINT	addr2;
-	UINT8	reg[0x1ff];
-} OPL;
-
-typedef struct {
-	UINT8	dmairq;
-	UINT8	dmach;
-	UINT16	base;
-	UINT8	mixsel;
-	UINT8	mixreg[0x100];
-	UINT32	mixregexp[0x100];
-
-	DSP_INFO dsp_info;
-} SB16;
-
-typedef struct { // ステートセーブ互換性維持用（変更禁止）
-	UINT8	dmairq;
-	UINT8	dmach;
-	UINT16	base;
-	UINT8	mixsel;
-	UINT8	mixreg[0x100];
-	UINT32	mixregexp[0x100];
-
-	DSP_INFO_OLD dsp_info;
-} SB16_OLD;
 
 #ifdef __cplusplus
 extern "C"

@@ -1,50 +1,55 @@
 /**
  * @file	skbdwnd.cpp
- * @brief	ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢ ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ ã‚¯ãƒ©ã‚¹ã®å‹•ä½œã®å®šç¾©ã‚’è¡Œã„ã¾ã™
+ * @brief	ƒ\ƒtƒgƒEƒFƒA ƒL[ƒ{[ƒh ƒNƒ‰ƒX‚Ì“®ì‚Ì’è‹`‚ğs‚¢‚Ü‚·
  */
 
-#include <compiler.h>
+#include "compiler.h"
 #include "resource.h"
 #include "skbdwnd.h"
-#include <np2.h>
-#include <ini.h>
-#include <sysmng.h>
+#include "np2.h"
+#include "ini.h"
+#include "sysmng.h"
 #include "dialog/np2class.h"
-#include <generic/softkbd.h>
+#include "generic/softkbd.h"
+#include "menu.h"
 
 #if defined(SUPPORT_SOFTKBD)
 
-//! å”¯ä¸€ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã§ã™
+//! —Bˆê‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Å‚·
 CSoftKeyboardWnd CSoftKeyboardWnd::sm_instance;
 
 /**
- * @brief ã‚³ãƒ³ãƒ•ã‚£ã‚°
+ * @brief ƒRƒ“ƒtƒBƒO
  */
 struct SoftKeyboardConfig
 {
 	int		posx;		//!< X
 	int		posy;		//!< Y
-	UINT8	type;		//!< ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ã‚¿ã‚¤ãƒ—
+	int		width;		//!< Width  0=Invalid
+	int		height;		//!< Height 0=Invalid
+	UINT8	type;		//!< ƒEƒBƒ“ƒhƒE ƒ^ƒCƒv
 };
 
-//! ã‚³ãƒ³ãƒ•ã‚£ã‚°
+//! ƒRƒ“ƒtƒBƒO
 static SoftKeyboardConfig s_skbdcfg;
 
-//! ã‚¿ã‚¤ãƒˆãƒ«
+//! ƒ^ƒCƒgƒ‹
 static const TCHAR s_skbdapp[] = TEXT("Soft Keyboard");
 
 /**
- * è¨­å®š
+ * İ’è
  */
 static const PFTBL s_skbdini[] =
 {
 	PFVAL("WindposX", PFTYPE_SINT32,	&s_skbdcfg.posx),
 	PFVAL("WindposY", PFTYPE_SINT32,	&s_skbdcfg.posy),
+	PFVAL("WindsizW", PFTYPE_SINT32,	&s_skbdcfg.width),
+	PFVAL("WindsizH", PFTYPE_SINT32,	&s_skbdcfg.height),
 	PFVAL("windtype", PFTYPE_BOOL,		&s_skbdcfg.type)
 };
 
 /**
- * åˆæœŸåŒ–
+ * ‰Šú‰»
  */
 void CSoftKeyboardWnd::Initialize()
 {
@@ -52,7 +57,7 @@ void CSoftKeyboardWnd::Initialize()
 }
 
 /**
- * è§£æ”¾
+ * ‰ğ•ú
  */
 void CSoftKeyboardWnd::Deinitialize()
 {
@@ -60,7 +65,7 @@ void CSoftKeyboardWnd::Deinitialize()
 }
 
 /**
- * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
  */
 CSoftKeyboardWnd::CSoftKeyboardWnd()
 	: m_nWidth(0)
@@ -69,14 +74,14 @@ CSoftKeyboardWnd::CSoftKeyboardWnd()
 }
 
 /**
- * ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+ * ƒfƒXƒgƒ‰ƒNƒ^
  */
 CSoftKeyboardWnd::~CSoftKeyboardWnd()
 {
 }
 
 /**
- * ä½œæˆ
+ * ì¬
  */
 void CSoftKeyboardWnd::Create()
 {
@@ -90,7 +95,10 @@ void CSoftKeyboardWnd::Create()
 		return;
 	}
 
-	if (!CSubWndBase::Create(IDS_CAPTION_SOFTKEY, WS_OVERLAPPED | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX, s_skbdcfg.posx, s_skbdcfg.posy, m_nWidth, m_nHeight, NULL, NULL))
+	if (s_skbdcfg.width == 0) s_skbdcfg.width = m_nWidth;
+	if (s_skbdcfg.height == 0) s_skbdcfg.height = m_nHeight;
+
+	if (!CSubWndBase::Create(IDS_CAPTION_SOFTKEY, WS_OVERLAPPED | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | WS_SIZEBOX, s_skbdcfg.posx, s_skbdcfg.posy, s_skbdcfg.width, s_skbdcfg.height, NULL, NULL))
 	{
 		return;
 	}
@@ -107,7 +115,7 @@ void CSoftKeyboardWnd::Create()
 }
 
 /**
- * ã‚¢ã‚¤ãƒ‰ãƒ«å‡¦ç†
+ * ƒAƒCƒhƒ‹ˆ—
  */
 void CSoftKeyboardWnd::OnIdle()
 {
@@ -117,12 +125,24 @@ void CSoftKeyboardWnd::OnIdle()
 	}
 }
 
+void CSoftKeyboardWnd::ConvertClientPointToSoftkbdPoint(int &x, int &y)
+{
+	RECT rect;
+	GetClientRect(&rect);
+
+	if (rect.right - rect.left == 0) return;
+	if (rect.bottom - rect.top == 0) return;
+
+	x = x * m_nWidth / (rect.right - rect.left);
+	y = y * m_nHeight / (rect.bottom - rect.top);
+}
+
 /**
- * CWndProc ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã® Windows ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ (WindowProc) ãŒç”¨æ„ã•ã‚Œã¦ã„ã¾ã™
- * @param[in] nMsg å‡¦ç†ã•ã‚Œã‚‹ Windows ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æŒ‡å®šã—ã¾ã™
- * @param[in] wParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
- * @param[in] lParam ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡¦ç†ã§ä½¿ã†ä»˜åŠ æƒ…å ±ã‚’æä¾›ã—ã¾ã™ã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å€¤ã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã—ã¾ã™
- * @return ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«ä¾å­˜ã™ã‚‹å€¤ã‚’è¿”ã—ã¾ã™
+ * CWndProc ƒIƒuƒWƒFƒNƒg‚Ì Windows ƒvƒƒV[ƒWƒƒ (WindowProc) ‚ª—pˆÓ‚³‚ê‚Ä‚¢‚Ü‚·
+ * @param[in] nMsg ˆ—‚³‚ê‚é Windows ƒƒbƒZ[ƒW‚ğw’è‚µ‚Ü‚·
+ * @param[in] wParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
+ * @param[in] lParam ƒƒbƒZ[ƒW‚Ìˆ—‚Åg‚¤•t‰Áî•ñ‚ğ’ñ‹Ÿ‚µ‚Ü‚·B‚±‚Ìƒpƒ‰ƒ[ƒ^‚Ì’l‚ÍƒƒbƒZ[ƒW‚ÉˆË‘¶‚µ‚Ü‚·
+ * @return ƒƒbƒZ[ƒW‚ÉˆË‘¶‚·‚é’l‚ğ•Ô‚µ‚Ü‚·
  */
 LRESULT CSoftKeyboardWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -130,8 +150,18 @@ LRESULT CSoftKeyboardWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 	{
 		case WM_CREATE:
 			np2class_wmcreate(m_hWnd);
-			winloc_setclientsize(m_hWnd, m_nWidth, m_nHeight);
+			if (s_skbdcfg.width == 0) s_skbdcfg.width = m_nWidth;
+			if (s_skbdcfg.height == 0) s_skbdcfg.height = m_nHeight;
+			winloc_setclientsize(m_hWnd, s_skbdcfg.width, s_skbdcfg.height);
 			np2class_windowtype(m_hWnd, (s_skbdcfg.type & 1) + 1);
+
+			// ƒVƒXƒeƒ€ƒƒjƒ…[’Ç‰Á
+			{
+				HMENU hMenu = GetSystemMenu(FALSE);
+				int pos = menu_addmenures(hMenu, 0, IDR_SOFTKBD_SYS, FALSE);
+				InsertMenu(hMenu, pos, MF_BYPOSITION | MF_SEPARATOR, 0, NULL);
+			}
+
 			break;
 
 		case WM_PAINT:
@@ -139,20 +169,30 @@ LRESULT CSoftKeyboardWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 			break;
 
 		case WM_LBUTTONDOWN:
-			if ((softkbd_down(LOWORD(lParam), HIWORD(lParam))) && (s_skbdcfg.type & 1))
+		{
+			int x = LOWORD(lParam);
+			int y = HIWORD(lParam);
+			ConvertClientPointToSoftkbdPoint(x, y);
+			if ((softkbd_down(x, y)) && (s_skbdcfg.type & 1))
 			{
 				return SendMessage(WM_NCLBUTTONDOWN, HTCAPTION, 0L);
 			}
 			break;
+		}
 
 		case WM_LBUTTONDBLCLK:
-			if (softkbd_down(LOWORD(lParam), HIWORD(lParam)))
+		{
+			int x = LOWORD(lParam);
+			int y = HIWORD(lParam);
+			ConvertClientPointToSoftkbdPoint(x, y);
+			if (softkbd_down(x, y))
 			{
 				s_skbdcfg.type ^= 1;
 				SetWndType((s_skbdcfg.type & 1) + 1);
 				sysmng_update(SYS_UPDATEOSCFG);
 			}
 			break;
+		}
 
 		case WM_LBUTTONUP:
 			softkbd_up();
@@ -168,6 +208,33 @@ LRESULT CSoftKeyboardWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 				sysmng_update(SYS_UPDATEOSCFG);
 			}
 			break;
+
+		case WM_SIZE:
+			if (!(GetWindowLong(m_hWnd, GWL_STYLE) & (WS_MAXIMIZE | WS_MINIMIZE)))
+			{
+				RECT rc;
+				GetClientRect(&rc);
+				s_skbdcfg.width = rc.right - rc.left;
+				s_skbdcfg.height = rc.bottom - rc.top;
+				sysmng_update(SYS_UPDATEOSCFG);
+			}
+			break;
+
+		case WM_GETMINMAXINFO:
+		{
+			MINMAXINFO* pInfo = (MINMAXINFO*)lParam;
+			RECT rc = { 0, 0, m_nWidth, m_nHeight }; // Å¬ƒTƒCƒY
+			AdjustWindowRectEx(
+				&rc,
+				GetWindowLong(m_hWnd, GWL_STYLE),
+				FALSE,
+				GetWindowLong(m_hWnd, GWL_EXSTYLE)
+			);
+
+			pInfo->ptMinTrackSize.x = rc.right - rc.left;
+			pInfo->ptMinTrackSize.y = rc.bottom - rc.top;
+			return 0;
+		}
 			
 		case WM_CLOSE:
 			np2oscfg.skbdwin = 0;
@@ -179,6 +246,25 @@ LRESULT CSoftKeyboardWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 			OnDestroy();
 			break;
 
+		case WM_SYSCOMMAND:
+			if (IDM_SOFTKBD_X1 <= wParam && wParam <= IDM_SOFTKBD_XEND)
+			{
+				s_skbdcfg.width = m_nWidth * (wParam - IDM_SOFTKBD_X1 + 1);
+				s_skbdcfg.height = m_nHeight * (wParam - IDM_SOFTKBD_X1 + 1);
+				winloc_setclientsize(m_hWnd, s_skbdcfg.width, s_skbdcfg.height);
+
+				RECT rc;
+				GetClientRect(&rc);
+				s_skbdcfg.width = rc.right - rc.left;
+				s_skbdcfg.height = rc.bottom - rc.top;
+				sysmng_update(SYS_UPDATEOSCFG);
+			}
+			else 
+			{
+				return CSubWndBase::WindowProc(nMsg, wParam, lParam);
+			}
+			break;
+
 		default:
 			return CSubWndBase::WindowProc(nMsg, wParam, lParam);
 	}
@@ -186,7 +272,7 @@ LRESULT CSoftKeyboardWnd::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /**
- * ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç ´æ£„ã®æ™‚ã«å‘¼ã°ã‚Œã‚‹
+ * ƒEƒBƒ“ƒhƒE”jŠü‚Ì‚ÉŒÄ‚Î‚ê‚é
  */
 void CSoftKeyboardWnd::OnDestroy()
 {
@@ -195,7 +281,7 @@ void CSoftKeyboardWnd::OnDestroy()
 }
 
 /**
- * æç”»ã®æ™‚ã«å‘¼ã°ã‚Œã‚‹
+ * •`‰æ‚Ì‚ÉŒÄ‚Î‚ê‚é
  */
 void CSoftKeyboardWnd::OnPaint()
 {
@@ -206,8 +292,8 @@ void CSoftKeyboardWnd::OnPaint()
 }
 
 /**
- * æç”»
- * @param[in] redraw å†æç”»
+ * •`‰æ
+ * @param[in] redraw Ä•`‰æ
  */
 void CSoftKeyboardWnd::OnDraw(BOOL redraw)
 {
@@ -215,25 +301,30 @@ void CSoftKeyboardWnd::OnDraw(BOOL redraw)
 	GetClientRect(&rect);
 
 	RECT draw;
+	RECT dstrect;
 	draw.left = 0;
 	draw.top = 0;
-	draw.right = min(m_nWidth, rect.right - rect.left);
-	draw.bottom = min(m_nHeight, rect.bottom - rect.top);
+	draw.right = m_nWidth;
+	draw.bottom = m_nHeight;
+	dstrect.left = 0;
+	dstrect.top = 0;
+	dstrect.right = rect.right - rect.left;
+	dstrect.bottom = rect.bottom - rect.top;
 	CMNVRAM* vram = m_dd2.Lock();
 	if (vram)
 	{
 		softkbd_paint(vram, skpalcnv, redraw);
 		m_dd2.Unlock();
-		m_dd2.Blt(NULL, &draw);
+		m_dd2.Blt(NULL, &dstrect, &draw);
 	}
 }
 
 /**
- * ãƒ‘ãƒ¬ãƒƒãƒˆå¤‰æ›ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
- * @param[out] dst å‡ºåŠ›å…ˆ
- * @param[in] src ãƒ‘ãƒ¬ãƒƒãƒˆ
- * @param[in] pals ãƒ‘ãƒ¬ãƒƒãƒˆæ•°
- * @param[in] bpp è‰²æ•°
+ * ƒpƒŒƒbƒg•ÏŠ·ƒR[ƒ‹ƒoƒbƒN
+ * @param[out] dst o—Íæ
+ * @param[in] src ƒpƒŒƒbƒg
+ * @param[in] pals ƒpƒŒƒbƒg”
+ * @param[in] bpp F”
  */
 void CSoftKeyboardWnd::skpalcnv(CMNPAL *dst, const RGB32 *src, UINT pals, UINT bpp)
 {
@@ -264,12 +355,14 @@ void CSoftKeyboardWnd::skpalcnv(CMNPAL *dst, const RGB32 *src, UINT pals, UINT b
 }
 
 /**
- * è¨­å®šèª­ã¿è¾¼ã¿
+ * İ’è“Ç‚İ‚İ
  */
 void skbdwin_readini()
 {
 	s_skbdcfg.posx = CW_USEDEFAULT;
 	s_skbdcfg.posy = CW_USEDEFAULT;
+	s_skbdcfg.width = 0;
+	s_skbdcfg.height = 0;
 
 	TCHAR szPath[MAX_PATH];
 	initgetfile(szPath, _countof(szPath));
@@ -277,7 +370,7 @@ void skbdwin_readini()
 }
 
 /**
- * è¨­å®šæ›¸ãè¾¼ã¿
+ * İ’è‘‚«‚İ
  */
 void skbdwin_writeini()
 {

@@ -16,7 +16,6 @@
 #include <sound/soundrom.h>
 #include <cbus/mpu98ii.h>
 
-
 static int opna_idx = 0;
 static int a460_soundid = 0x80;
 
@@ -25,13 +24,16 @@ static int a460_soundid = 0x80;
 #define G_OPL3_INDEX	0
 
 #ifdef USE_MAME
+#ifdef USE_MAME_BSD
+#if _MSC_VER < 1900
+#include "sound/mamebsdsub/np2interop.h"
+#else
+#include "sound/mamebsd/np2interop.h"
+#endif
+#else
+#include "sound/mame/np2interop.h"
+#endif
 static int samplerate;
-void *YMF262Init(INT clock, INT rate);
-void YMF262ResetChip(void *chip);
-void YMF262Shutdown(void *chip);
-INT YMF262Write(void *chip, INT a, INT v);
-UINT8 YMF262Read(void *chip, INT a);
-void YMF262UpdateOne(void *chip, INT16 **buffer, INT length);
 
 static void IOOUTCALL sb16_o20d2(UINT port, REG8 dat) {
 	(void)port;
@@ -331,10 +333,6 @@ static UINT32 gameport_threshold_y = 0;
 static void IOOUTCALL gameport_o1480(UINT port, REG8 dat)
 {
 	REG8 joyflag;
-#if defined(SUPPORT_IA32_HAXM)
-	LARGE_INTEGER li = {0};
-	QueryPerformanceCounter(&li);
-#endif
 	joyflag = joymng_getstat();
 	if(!joymng_available()){
 		return;
@@ -343,11 +341,11 @@ static void IOOUTCALL gameport_o1480(UINT port, REG8 dat)
 	gameport_joyflag = ((joyflag >> 2) & 0x30)  | ((joyflag << 2) & 0xc0) | 0x0f;
 #if defined(SUPPORT_IA32_HAXM)
 	{
-		//LARGE_INTEGER li = {0};
+		LARGE_INTEGER li = {0};
 		if (QueryPerformanceFrequency(&gameport_qpf)) {
-			//QueryPerformanceCounter(&li);
+			QueryPerformanceCounter(&li);
 			//li.QuadPart = li.QuadPart;
-			gameport_tsc = li.QuadPart;
+			gameport_tsc = (UINT64)li.QuadPart;
 			gameport_useqpc = 1;
 		}else{
 			gameport_tsc = CPU_MSR_TSC;
@@ -357,7 +355,7 @@ static void IOOUTCALL gameport_o1480(UINT port, REG8 dat)
 #else
 #if defined(USE_TSC)
 	if(CPU_REMCLOCK > 0){
-		gameport_tsc = CPU_MSR_TSC - CPU_REMCLOCK * pccore.maxmultiple / pccore.multiple;
+		gameport_tsc = CPU_MSR_TSC - (UINT64)CPU_REMCLOCK * pccore.maxmultiple / pccore.multiple;
 	}else{
 		gameport_tsc = CPU_MSR_TSC;
 	}
@@ -371,22 +369,30 @@ static void IOOUTCALL gameport_o1480(UINT port, REG8 dat)
 static REG8 IOINPCALL gameport_i1480(UINT port)
 {
 	REG8 retval = 0xff;
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+	UINT32 joyAnalogX;
+	UINT32 joyAnalogY;
+#endif
 	UINT64 clockdiff;
 #if defined(SUPPORT_IA32_HAXM)
 	LARGE_INTEGER li = {0};
 	QueryPerformanceCounter(&li);
 #endif
-	if(!joymng_available()){
+	{
 		REG8 joyflag = joymng_getstat();
-		if(!joymng_available()){
-			return 0xff;
-		}
+		gameport_joyflag = ((joyflag >> 2) & 0x30) | ((joyflag << 2) & 0xc0) | (gameport_joyflag & 0x0f);
 	}
+	if(!joymng_available()){
+		return 0xff;
+	}
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+	joyAnalogX = joymng_getAnalogX();
+	joyAnalogY = joymng_getAnalogY();
+#endif
 #if defined(SUPPORT_IA32_HAXM)
 	if(gameport_useqpc){
-		//li.QuadPart = li.QuadPart * GAMEPORT_JOYCOUNTER_TMPCLK / gameport_qpf.QuadPart;
-		clockdiff = (unsigned long long)(li.QuadPart - gameport_tsc);// * GAMEPORT_JOYCOUNTER_TMPCLK / gameport_qpf.QuadPart;
-		gameport_clkmax = gameport_qpf.QuadPart / 1300; // とりあえず0.7msで･･･
+		clockdiff = (unsigned long long)((UINT64)li.QuadPart - gameport_tsc);
+		gameport_clkmax = (UINT64)gameport_qpf.QuadPart / 1300; // とりあえず0.7msで･･･
 	}else{
 		clockdiff = CPU_MSR_TSC - gameport_tsc;
 		gameport_clkmax = pccore.realclock / 1430; // とりあえず0.7msで･･･
@@ -394,13 +400,13 @@ static REG8 IOINPCALL gameport_i1480(UINT port)
 #else
 #if defined(USE_TSC)
 	if(CPU_REMCLOCK > 0){
-		clockdiff = CPU_MSR_TSC - CPU_REMCLOCK * pccore.maxmultiple / pccore.multiple - gameport_tsc;
+		clockdiff = CPU_MSR_TSC - (UINT64)CPU_REMCLOCK * pccore.maxmultiple / pccore.multiple - gameport_tsc;
 	}else{
 		clockdiff = CPU_MSR_TSC - gameport_tsc;
 	}
 	gameport_clkmax = pccore.baseclock * pccore.maxmultiple / 1430; // とりあえず0.7msで･･･
 #if !defined(SUPPORT_IA32_HAXM)
-	if(gameport_tsccounter == 0){
+	if(gameport_tsccounter == 0 || !np2cfg.consttsc){
 		gameport_clkmax = gameport_clkmax * pccore.maxmultiple / pccore.multiple; // CPUクロック依存の場合のfix
 	}
 #endif
@@ -410,19 +416,34 @@ static REG8 IOINPCALL gameport_i1480(UINT port)
 	gameport_tsc++;
 #endif
 #endif
-	gameport_threshold_x = gameport_clkmax / 2;
-	gameport_threshold_y = gameport_clkmax / 2;
-	if(~gameport_joyflag_base & 0x1){
-		gameport_threshold_y = GAMEPORT_JOYCOUNTER_MGN2;
-	}
-	if(~gameport_joyflag_base & 0x2){
-		gameport_threshold_y = gameport_clkmax - GAMEPORT_JOYCOUNTER_MGN2;
-	}
-	if(~gameport_joyflag_base & 0x4){
+	if (np2cfg.analogjoy)
+	{
+		// アナログ入力タイプ
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+		gameport_threshold_x = GAMEPORT_JOYCOUNTER_MGN2 + (UINT32)((UINT64)(gameport_clkmax - GAMEPORT_JOYCOUNTER_MGN2 * 2) * joyAnalogX / 65535);
+		gameport_threshold_y = GAMEPORT_JOYCOUNTER_MGN2 + (UINT32)((UINT64)(gameport_clkmax - GAMEPORT_JOYCOUNTER_MGN2 * 2) * joyAnalogY / 65535);
+#else
 		gameport_threshold_x = GAMEPORT_JOYCOUNTER_MGN2;
+		gameport_threshold_y = GAMEPORT_JOYCOUNTER_MGN2;
+#endif
 	}
-	if(~gameport_joyflag_base & 0x8){
-		gameport_threshold_x = gameport_clkmax - GAMEPORT_JOYCOUNTER_MGN2;
+	else
+	{
+		// ON/OFFタイプ
+		gameport_threshold_x = gameport_clkmax / 2;
+		gameport_threshold_y = gameport_clkmax / 2;
+		if(~gameport_joyflag_base & 0x1){
+			gameport_threshold_y = GAMEPORT_JOYCOUNTER_MGN2;
+		}
+		if(~gameport_joyflag_base & 0x2){
+			gameport_threshold_y = gameport_clkmax - GAMEPORT_JOYCOUNTER_MGN2;
+		}
+		if(~gameport_joyflag_base & 0x4){
+			gameport_threshold_x = GAMEPORT_JOYCOUNTER_MGN2;
+		}
+		if(~gameport_joyflag_base & 0x8){
+			gameport_threshold_x = gameport_clkmax - GAMEPORT_JOYCOUNTER_MGN2;
+		}
 	}
 	retval = gameport_joyflag;
 	if(clockdiff >= (UINT64)gameport_threshold_x){
@@ -549,16 +570,22 @@ static SINT32 oplfm_softvolume_L = 0;
 static SINT32 oplfm_softvolume_R = 0;
 static SINT32 oplfm_softvolumereg_L = 0xff;
 static SINT32 oplfm_softvolumereg_R = 0xff;
+#define OPL3_SAMPLE_BUFFER	4096	
+static INT16 oplfm_s1ls[OPL3_SAMPLE_BUFFER] = { 0 };
+static INT16 oplfm_s1rs[OPL3_SAMPLE_BUFFER] = { 0 };
+static INT16 oplfm_s2ls[OPL3_SAMPLE_BUFFER] = { 0 };
+static INT16 oplfm_s2rs[OPL3_SAMPLE_BUFFER] = { 0 };
 static void SOUNDCALL opl3gen_getpcm2(void* opl3, SINT32 *pcm, UINT count) {
 	UINT i;
 	INT16 *buf[4];
 	INT16 s1l,s1r,s2l,s2r;
 	SINT32 oplfm_volume;
 	SINT32 *outbuf = pcm;
-	buf[0] = &s1l;
-	buf[1] = &s1r;
-	buf[2] = &s2l;
-	buf[3] = &s2r;
+	SINT32 volL, volR;
+	buf[0] = oplfm_s1ls;
+	buf[1] = oplfm_s1rs;
+	buf[2] = oplfm_s2ls;
+	buf[3] = oplfm_s2rs;
 
 	// NP2グローバルFMボリューム(0～127)
 	oplfm_volume = np2cfg.vol_fm * np2cfg.vol_master / 100; 
@@ -582,12 +609,31 @@ static void SOUNDCALL opl3gen_getpcm2(void* opl3, SINT32 *pcm, UINT count) {
 	}
 
 	// PCMサウンドバッファに送る
-	for (i=0; i < count; i++) {
-		s1l = s1r = s2l = s2r = 0;
-		YMF262UpdateOne(opl3, buf, 1);
-		outbuf[0] += ((((SINT32)s1l << 1) * oplfm_volume * oplfm_softvolume_L) >> 10);
-		outbuf[1] += ((((SINT32)s1r << 1) * oplfm_volume * oplfm_softvolume_R) >> 10);
-		outbuf += 2;
+	volL = oplfm_volume * oplfm_softvolume_L;
+	volR = oplfm_volume * oplfm_softvolume_R;
+	while (count > 0) {
+		int cc = MIN(count, OPL3_SAMPLE_BUFFER);
+		YMF262UpdateOne(opl3, buf, cc);
+		for (i = 0; i < cc; i++) {
+			outbuf[0] += (((SINT32)oplfm_s1ls[i] * volL) >> 9);
+			outbuf[1] += (((SINT32)oplfm_s1rs[i] * volR) >> 9);
+			outbuf += 2;
+		}
+		count -= cc;
+	}
+}
+static void SOUNDCALL opl3gen_getpcm2_dummy(void* opl3, SINT32* pcm, UINT count) {
+	UINT i;
+	INT16* buf[4];
+	INT16 s1l, s1r, s2l, s2r;
+	buf[0] = oplfm_s1ls;
+	buf[1] = oplfm_s1rs;
+	buf[2] = oplfm_s2ls;
+	buf[3] = oplfm_s2rs;
+	while (count > 0) {
+		int cc = MIN(count, OPL3_SAMPLE_BUFFER);
+		YMF262UpdateOne(opl3, buf, cc);
+		count -= cc;
 	}
 }
 #endif
@@ -621,6 +667,10 @@ void board118_reset(const NP2CFG *pConfig)
 		// OPNAタイマーをセット
 		UINT irqval = 0x00;
 		UINT8 irqf = np2cfg.snd118irqf;
+		if (g_nSoundID == SOUNDID_WAVESTAR)
+		{
+			irqf = 0xc; // IRQ12固定
+		}
 		if(g_nSoundID==SOUNDID_PC_9801_86_118 || g_nSoundID==SOUNDID_PC_9801_86_118_SB16){
 			UINT8 irq86table[4] = {0x03, 0x0d, 0x0a, 0x0c};
 			UINT8 nIrq86 = (np2cfg.snd86opt & 0x10) | ((np2cfg.snd86opt & 0x4) << 5) | ((np2cfg.snd86opt & 0x8) << 3);
@@ -686,12 +736,12 @@ void board118_reset(const NP2CFG *pConfig)
 #ifdef SUPPORT_SOUND_SB16
 #ifdef USE_MAME
 		if (g_mame_opl3[G_OPL3_INDEX]) {
-			if (samplerate != pConfig->samplingrate) {
+			if (samplerate != soundcfg.rate) {
 				YMF262Shutdown(g_mame_opl3[G_OPL3_INDEX]);
-				g_mame_opl3[G_OPL3_INDEX] = YMF262Init(14400000, pConfig->samplingrate);
-				samplerate = pConfig->samplingrate;
+				g_mame_opl3[G_OPL3_INDEX] = YMF262Init(14400000, soundcfg.rate);
+				samplerate = soundcfg.rate;
 			} else {
-				YMF262ResetChip(g_mame_opl3[G_OPL3_INDEX]);
+				YMF262ResetChip(g_mame_opl3[G_OPL3_INDEX], samplerate);
 			}
 		}
 		//ZeroMemory(&g_sb16, sizeof(g_sb16));
@@ -719,6 +769,7 @@ void board118_reset(const NP2CFG *pConfig)
 			opna_fmgen_setallvolumeRhythmTotal_linear(np2cfg.vol_rhythm * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
 		}
 #endif
+		oplgen_setvol(np2cfg.vol_fm * np2cfg.vol_master / 100);
 	}
 	(void)pConfig;
 }
@@ -728,8 +779,6 @@ void board118_reset(const NP2CFG *pConfig)
  */
 void board118_bind(void)
 {
-	int i;
-
 	// CS4231バインド（I/Oポート割り当てとか）
 	cs4231io_bind();
 	
@@ -748,13 +797,13 @@ void board118_bind(void)
 		a460_soundid = np2cfg.snd118id;//0x80;
 	}
 
-	if(g_nSoundID==SOUNDID_PC_9801_86_WSS || g_nSoundID==SOUNDID_MATE_X_PCM || g_nSoundID==SOUNDID_WAVESTAR || g_nSoundID==SOUNDID_WSS_SB16 || g_nSoundID==SOUNDID_PC_9801_86_WSS_SB16){
+	if(g_nSoundID==SOUNDID_PC_9801_86_WSS || g_nSoundID==SOUNDID_MATE_X_PCM || g_nSoundID==SOUNDID_WSS_SB16 || g_nSoundID==SOUNDID_PC_9801_86_WSS_SB16){
 		// Mate-X PCMの場合、CS4231だけ
-		if(g_nSoundID!=SOUNDID_WAVESTAR){
-			iocore_attachout(cs4231.port[1], ymf_oa460);
-			iocore_attachinp(cs4231.port[1], ymf_ia460);
-			iocore_attachinp(0x881e, wss_i881e);
-		}
+		iocore_attachout(cs4231.port[1], ymf_oa460);
+		iocore_attachinp(cs4231.port[1], ymf_ia460);
+		iocore_attachinp(0x881e, wss_i881e);
+	}else if(g_nSoundID==SOUNDID_WAVESTAR){
+		// WaveStarの場合 なにもない
 	}else{
 		// 118音源の場合、色々割り当て
 
@@ -767,6 +816,7 @@ void board118_bind(void)
 #if defined(SUPPORT_GAMEPORT)
 		// ゲームポート割り当て 1480h～1487hどこでも良いらしい
 		if(np2cfg.gameport){
+			int i;
 			for(i=0;i<=7;i++){
 				iocore_attachout(0x1480+i, gameport_o1480);
 				iocore_attachinp(0x1480+i, gameport_i1480);
@@ -787,7 +837,14 @@ void board118_bind(void)
 			g_mame_opl3[G_OPL3_INDEX] = YMF262Init(14400000, np2cfg.samplingrate);
 			samplerate = np2cfg.samplingrate;
 		}
-		sound_streamregist(g_mame_opl3[G_OPL3_INDEX], (SOUNDCB)opl3gen_getpcm2);
+		if (g_opl3[G_OPL3_INDEX].userdata) {
+			// 外部音源を使用する場合 ダミー登録
+			sound_streamregist(g_mame_opl3[G_OPL3_INDEX], (SOUNDCB)opl3gen_getpcm2_dummy);
+		}
+		else {
+			// 外部音源を使用しない場合 PCM登録
+			sound_streamregist(g_mame_opl3[G_OPL3_INDEX], (SOUNDCB)opl3gen_getpcm2);
+		}
 #else
 		iocore_attachout(cs4231.port[9], ym_o1488);
 		iocore_attachinp(cs4231.port[9], ym_i1488);
@@ -840,11 +897,13 @@ void board118_unbind(void)
 {
 	cs4231io_unbind();
 	
-	if(g_nSoundID==SOUNDID_PC_9801_86_WSS || g_nSoundID==SOUNDID_MATE_X_PCM || g_nSoundID==SOUNDID_WAVESTAR || g_nSoundID==SOUNDID_WSS_SB16 || g_nSoundID==SOUNDID_PC_9801_86_WSS_SB16){
+	if(g_nSoundID==SOUNDID_PC_9801_86_WSS || g_nSoundID==SOUNDID_MATE_X_PCM || g_nSoundID==SOUNDID_WSS_SB16 || g_nSoundID==SOUNDID_PC_9801_86_WSS_SB16){
 		// Mate-X PCMの場合、CS4231だけ
 		iocore_detachout(cs4231.port[1]);
 		iocore_detachinp(cs4231.port[1]);
 		iocore_detachinp(0x881e);
+	}else if(g_nSoundID==SOUNDID_WAVESTAR){
+		// WaveStarの場合 なにもない
 	}else{
 		// 118音源の場合、色々割り当て
 
