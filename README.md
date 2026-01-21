@@ -163,17 +163,17 @@ sudo brew install cmake ninja sdl sdl_mixer sdl_ttf sdl2 sdl2_mixer sdl2_ttf lib
 ```
 cd NP2kai
 ```
-2. Make work directory, and step into there.
+2. Make work directory.
 ```
 mkdir build
-cd build
 ```
 3. Generate the makefile.
 ```
-cmake .. -D BUILD_SDL=ON
+cmake . -B build -D BUILD_SDL=ON
 ```
-4. Make.
+4. Step into `build` and compile the program.
 ```
+cd make
 make -j
 ```
 
