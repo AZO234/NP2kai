@@ -3214,6 +3214,92 @@ flag float64_lt_quiet( float64 a, float64 b )
 
 #ifdef FLOATX80
 
+// for np2 FPU by SimK 2025/10/25
+/*----------------------------------------------------------------------------
+| Returns the result of converting the double-extended-precision floating-
+| point value `a' to the 16-bit two's complement integer format.  The
+| conversion is performed according to the IEEE Standard for Floating-Point
+| Arithmetic---which means in particular that the conversion is rounded
+| according to the current rounding mode.  If `a' is a NaN or the conversion 
+| overflows, the largest negative integer is returned.
+*----------------------------------------------------------------------------*/
+
+int16 floatx80_to_int16_np2(floatx80 a)
+{
+    flag aSign;
+    int32 aExp, shiftCount;
+    bits64 aSig;
+
+    aSig = extractFloatx80Frac(a);
+    aExp = extractFloatx80Exp(a);
+    aSign = extractFloatx80Sign(a);
+    if ((aExp == 0x7FFF) && (bits64)(aSig << 1)) aSign = 0;
+    shiftCount = 0x4037 - aExp;
+    if (shiftCount <= 0) shiftCount = 1;
+    shift64RightJamming(aSig, shiftCount, &aSig);
+    return roundAndPackInt16_np2(aSign, aSig);
+
+}
+
+/*----------------------------------------------------------------------------
+| Returns the result of converting the double-extended-precision floating-
+| point value `a' to the 32-bit two's complement integer format.  The
+| conversion is performed according to the IEEE Standard for Floating-Point
+| Arithmetic---which means in particular that the conversion is rounded
+| according to the current rounding mode.  If `a' is a NaN or the conversion 
+| overflows, the largest negative integer is returned.
+*----------------------------------------------------------------------------*/
+
+int32 floatx80_to_int32_np2(floatx80 a)
+{
+    flag aSign;
+    int32 aExp, shiftCount;
+    bits64 aSig;
+
+    aSig = extractFloatx80Frac(a);
+    aExp = extractFloatx80Exp(a);
+    aSign = extractFloatx80Sign(a);
+    if ((aExp == 0x7FFF) && (bits64)(aSig << 1)) aSign = 0;
+    shiftCount = 0x4037 - aExp;
+    if (shiftCount <= 0) shiftCount = 1;
+    shift64RightJamming(aSig, shiftCount, &aSig);
+    return roundAndPackInt32_np2(aSign, aSig);
+
+}
+
+/*----------------------------------------------------------------------------
+| Returns the result of converting the double-extended-precision floating-
+| point value `a' to the 64-bit two's complement integer format.  The
+| conversion is performed according to the IEEE Standard for Floating-Point
+| Arithmetic---which means in particular that the conversion is rounded
+| according to the current rounding mode.  If `a' is a NaN or the conversion 
+| overflows, the largest negative integer is returned.
+*----------------------------------------------------------------------------*/
+
+int64 floatx80_to_int64_np2(floatx80 a)
+{
+    flag aSign;
+    int32 aExp, shiftCount;
+    bits64 aSig, aSigExtra;
+
+    aSig = extractFloatx80Frac(a);
+    aExp = extractFloatx80Exp(a);
+    aSign = extractFloatx80Sign(a);
+    shiftCount = 0x403E - aExp;
+    if (shiftCount <= 0) {
+        if (shiftCount) {
+            float_raise(float_flag_invalid);
+            return (sbits64)LIT64(0x8000000000000000);
+        }
+        aSigExtra = 0;
+    }
+    else {
+        shift64ExtraRightJamming(aSig, 0, shiftCount, &aSig, &aSigExtra);
+    }
+    return roundAndPackInt64_np2(aSign, aSig, aSigExtra);
+
+}
+
 /*----------------------------------------------------------------------------
 | Returns the result of converting the double-extended-precision floating-
 | point value `a' to the 32-bit two's complement integer format.  The

@@ -115,7 +115,7 @@ Grp1_EwIw(void)
 	idx = (op >> 3) & 7;
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(2);
-		out =  CPU_REG16_B20(op);
+		out = CPU_REG16_B20(op);
 		GET_PCWORD(src);
 		(*insttable_G1EwIx[idx])(out, src);
 	} else {

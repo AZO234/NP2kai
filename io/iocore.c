@@ -22,7 +22,7 @@
 #include	<cbus/smpu98.h>
 #endif
 #if defined(SUPPORT_HOSTDRVNT)
-#include	"generic/hostdrvnt.h"
+#include	<generic/hostdrvnt.h>
 #endif
 
 

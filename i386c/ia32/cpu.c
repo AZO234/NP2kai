@@ -100,7 +100,7 @@ exec_1step(void)
 			int len = d->nopbytes > 8 ? 8 : d->nopbytes;
 			int i;
 
-			buf[0] = '¥0';
+			buf[0] = '\0';
 			for (i = 0; i < len; i++) {
 				snprintf(tmp, sizeof(tmp), "%02x ", d->opbyte[i]);
 				milstr_ncat(buf, tmp, sizeof(buf));
@@ -110,13 +110,13 @@ exec_1step(void)
 			}
 			VERBOSE(("%04x:%08x: %s%s", CPU_CS, CPU_EIP, buf, d->str));
 
-			buf[0] = '¥0';
+			buf[0] = '\0';
 			for (; i < d->nopbytes; i++) {
 				snprintf(tmp, sizeof(tmp), "%02x ", d->opbyte[i]);
 				milstr_ncat(buf, tmp, sizeof(buf));
 				if ((i % 8) == 7) {
 					VERBOSE(("             : %s", buf));
-					buf[0] = '¥0';
+					buf[0] = '\0';
 				}
 			}
 			if ((i % 8) != 0) {
@@ -303,7 +303,7 @@ exec_allstep(void)
 				int len = d->nopbytes > 8 ? 8 : d->nopbytes;
 				int i;
 
-				buf[0] = '¥0';
+				buf[0] = '\0';
 				for (i = 0; i < len; i++) {
 					snprintf(tmp, sizeof(tmp), "%02x ", d->opbyte[i]);
 					milstr_ncat(buf, tmp, sizeof(buf));
@@ -313,13 +313,13 @@ exec_allstep(void)
 				}
 				VERBOSE(("%04x:%08x: %s%s", CPU_CS, CPU_EIP, buf, d->str));
 
-				buf[0] = '¥0';
+				buf[0] = '\0';
 				for (; i < d->nopbytes; i++) {
 					snprintf(tmp, sizeof(tmp), "%02x ", d->opbyte[i]);
 					milstr_ncat(buf, tmp, sizeof(buf));
 					if ((i % 8) == 7) {
 						VERBOSE(("             : %s", buf));
-						buf[0] = '¥0';
+						buf[0] = '\0';
 					}
 				}
 				if ((i % 8) != 0) {

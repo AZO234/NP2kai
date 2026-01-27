@@ -28,7 +28,7 @@ static void trace_fmt_ex(const char* fmt, ...)
 	va_list ap;
 	va_start(ap, fmt);
 	vsprintf(stmp, fmt, ap);
-	strcat(stmp, "¥n");
+	strcat(stmp, "\n");
 	va_end(ap);
 	OutputDebugStringA(stmp);
 }
@@ -40,8 +40,8 @@ static void trace_fmt_ex(const char* fmt, ...)
 #define IS_PERMITWRITE		(np2cfg.hdrvacc & HDFMODE_WRITE)
 #define IS_PERMITDELETE		(np2cfg.hdrvacc & HDFMODE_DELETE)
 
-#define ROOTPATH_NAME_NEW	"A:¥¥"
-#define ROOTPATH_NAME_OLD	"¥¥¥¥HOSTDRV¥¥"
+#define ROOTPATH_NAME_NEW	"A:\\"
+#define ROOTPATH_NAME_OLD	"\\\\HOSTDRV\\"
 #define ROOTPATH_SIZE_NEW	(sizeof(ROOTPATH_NAME_NEW) - 1)
 #define ROOTPATH_SIZE_OLD	(sizeof(ROOTPATH_NAME_OLD) - 1)
 
@@ -912,7 +912,8 @@ static void set_fileattr(INTRST intrst) {
 	attr = MEMR_READ16(CPU_SS, CPU_BP + sizeof(IF4INTR)) & 0x37;
 
 	hostattr = file_attr(hdp.szPath);
-	hostattr &= ‾(FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_ARCHIVE | FILE_ATTRIBUTE_SYSTEM);
+#if defined(_WINDOWS)
+	hostattr &= ~(FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_ARCHIVE | FILE_ATTRIBUTE_SYSTEM);
 	if (attr & 0x01)
 	{
 		hostattr |= FILE_ATTRIBUTE_READONLY;
@@ -941,6 +942,9 @@ static void set_fileattr(INTRST intrst) {
 	{
 		succeed(intrst);
 	}
+#else
+	succeed(intrst);
+#endif
 }
 
 /* 0F */
@@ -957,11 +961,14 @@ static void get_fileattr(INTRST intrst) {
 	}
 
 	TRACEOUT(("get_fileattr: ->%s", intrst->fcbname_ptr));
+#if defined(_WINDOWS)
 	isRoot = intrst->filename_ptr[0] == '¥0' || (intrst->filename_ptr[0] == '¥¥' && intrst->filename_ptr[1] == '¥0');
+#else
+	isRoot = intrst->filename_ptr[0] == '¥0' || (intrst->filename_ptr[0] == '/' && intrst->filename_ptr[1] == '¥0');
+#endif
 	if(!isRoot && (strcmp(intrst->fcbname_ptr, "???????????") || intrst->filename_ptr[0])){ // XXX: Win用特例
 		if (is_wildcards(intrst->fcbname_ptr) || (hostdrvs_getrealpath(&hdp, intrst->filename_ptr) != ERR_NOERROR))
 		{
-			(hostdrvs_getrealpath(&hdp, intrst->filename_ptr) != ERR_NOERROR)) {
 			fail(intrst, ERR_FILENOTFOUND);
 			return;
 		}
@@ -1464,7 +1471,7 @@ static void find_next(INTRST intrst) {
 	srchrec = intrst->srchrec_ptr;
 	if ((!(srchrec->drive_no & 0x40)) ||
 		((srchrec->drive_no & 0x1f) != hostdrv.stat.drive_no)) {
-		CPU_FLAG &= ‾Z_FLAG;	// chain
+		CPU_FLAG &= ~Z_FLAG;	// chain
 		return;
 	}
 	if (find_file(intrst) != SUCCESS) {
@@ -1577,18 +1584,18 @@ static void qualify_remote_filename(INTRST intrst)
 		{
 			srcpath[i] -= 0x20; // 小文字から0x20を引けば大文字のコード
 		}
-		if (srcpath[i] == '¥0') break;
+		if (srcpath[i] == '\0') break;
 		off++;
 	}
 
 	driveLetter = (char)('A' + hostdrv.stat.drive_no);
-	if (srcpath[0] == driveLetter && srcpath[1] == ':' && srcpath[2] == '¥¥')
+	if (srcpath[0] == driveLetter && srcpath[1] == ':' && srcpath[2] == '\\')
 	{
 		// 先頭がドライブレターで始まる場合、ドライブレターをネットワーク名に変更
 		//memcpy(dstpath, srcpath, MAX_PATH);
 		//dstpath[0] = 'Z';
 		strcpy(dstpath, ROOTPATH_NAME);
-		//strcat(dstpath, "SHARE¥¥");
+		//strcat(dstpath, "SHARE\\");
 		strcat(dstpath, srcpath + 3);
 		//strcpy(dstpath, srcpath + 2);
 	}
@@ -1596,14 +1603,14 @@ static void qualify_remote_filename(INTRST intrst)
 	{
 		// 先頭がネットワーク名で始まる場合、変更不要
 		memcpy(dstpath, srcpath, MAX_PATH);
-		//sprintf(dstpath, "%c:¥¥", driveLetter);
+		//sprintf(dstpath, "%c:\\", driveLetter);
 		//strcat(dstpath, srcpath + ROOTPATH_SIZE);
 		//strcpy(dstpath, srcpath + ROOTPATH_SIZE - 1);
 	}
 	else
 	{
 		// HOSTDRVのパスではない
-		CPU_FLAG &= ‾Z_FLAG;	// chain
+		CPU_FLAG &= ~Z_FLAG;	// chain
 		return;
 	}
 
@@ -1614,7 +1621,7 @@ static void qualify_remote_filename(INTRST intrst)
 	for (i = 0; i < 128 - 1; i++)
 	{
 		MEMR_WRITE8(seg, off, dstpath[i]);
-		if (dstpath[i] == '¥0') break; // NULLが来たら終わり
+		if (dstpath[i] == '\0') break; // NULLが来たら終わり
 		off++;
 	}
 

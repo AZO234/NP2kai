@@ -37,7 +37,7 @@
 #endif
 
 #ifdef SUPPORT_IA32_HAXM
-#include "bios/bios.h"
+#include <bios/bios.h>
 #endif
 void
 LEA_GwM(void)

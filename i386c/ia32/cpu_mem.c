@@ -498,6 +498,8 @@ cpu_memoryread_f(UINT32 paddr)
 	value.d.l[0] = cpu_memoryread_d(paddr);
 	value.d.l[1] = cpu_memoryread_d(paddr + 4);
 	value.d.h = cpu_memoryread_w(paddr + 8);
+
+	return value;
 }
 
 void MEMCALL

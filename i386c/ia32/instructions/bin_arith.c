@@ -418,7 +418,7 @@ DIV_EAXEd(UINT32 op)
 
 	if (op >= 0xc0) {
 		CPU_WORKCLOCK(17);
-		src = *(CPU_REG16_B20(op));
+		src = *(CPU_REG32_B20(op));
 	} else {
 		CPU_WORKCLOCK(25);
 		madr = calc_ea_dst(op);

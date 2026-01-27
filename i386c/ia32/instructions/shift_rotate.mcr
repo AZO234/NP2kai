@@ -623,6 +623,20 @@ do { \
 		(d) <<= (c); \
 		(d) >>= 16; \
 		CPU_FLAGL |= szpflag_w[(d)] | A_FLAG; \
+	} else if ((c) > 15) { \
+		CPU_OV = 0; \
+		if ((c) == 17) { \
+			CPU_OV = ((s) ^ ((s) << 1)) & 0x8000; \
+		} \
+		if ((c) == 16) { \
+			CPU_FLAGL = (UINT8)((d) & 1); /*C_FLAG*/\
+		} else { \
+			CPU_FLAGL = (UINT8)(((s) >> (32 - (c))) & 1); /*C_FLAG*/\
+		} \
+		(d) |= (s) << 16; \
+		(d) <<= (c) - 16; \
+		(d) >>= 16; \
+		CPU_FLAGL |= szpflag_w[(d)] | A_FLAG; \
 	} \
 } while (/*CONSTCOND*/ 0)
 

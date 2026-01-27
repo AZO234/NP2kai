@@ -5304,7 +5304,8 @@ int cirrusvga_drawGraphic(){
 	}
 #endif
 
-	if (!cirrusvga_updated && !np2wab.paletteChanged && lastvramoffs == np2wab.vramoffs) return 0;
+// 20260127 Win2k起動不良のためコメントアウト
+//	if (!cirrusvga_updated && !np2wab.paletteChanged && lastvramoffs == np2wab.vramoffs) return 0;
 	// VRAM上での1ラインのサイズ（表示幅と等しくない場合有り）
 	line_offset = cirrusvga->cr[0x13] | ((cirrusvga->cr[0x1b] & 0x10) << 4);
 	line_offset <<= 3;
