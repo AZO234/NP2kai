@@ -54,10 +54,16 @@ SOURCES_C += $(NP2_PATH)/sdl/libretro/libretro.c \
 		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox2.c \
 		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_softfloat.c \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/fpu/softfloat/*.c) \
+		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/fpu/softfloat3/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/mmx/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse/*.c) \
 		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse2/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse3/*.c)
+		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse3/*.c) \
+		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/ssse3/*.c) \
+		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse4/*.c) \
+		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse4a/*.c)
+
+SOURCES_CXX += $(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_softfloat3.cpp
 
 #		$(NP2_PATH)/sdl/libretro/libretro-common/file/archive_file_zlib.c \
 #		$(NP2_PATH)/sdl/libretro/libretro-common/formats/libchdr/libchdr_flac.c \
@@ -116,7 +122,7 @@ ifneq ($(STATIC_LINKING), 1)
 			$(NP2_PATH)/sdl/libretro/libretro-common/string/stdstring.c
 endif
 
-COREFLAGS := -D__LIBRETRO__ $(INCFLAGS) $(NP2DEFINE) $(NP21DEFINE) -DSUPPORT_NP2_TICKCOUNT
+COREFLAGS := -D__LIBRETRO__ $(INCFLAGS) $(NP2DEFINE) $(NP21DEFINE) -DSUPPORT_NP2_TICKCOUNT -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-incompatible-function-pointer-types -Wno-int-conversion -fno-sized-deallocation
 
 ifeq ($(SUPPORT_NP2_THREAD), 1)
 	SOURCES_C += $(NP2_PATH)/sdl/libretro/libretro-common/rthreads/rthreads.c \
@@ -148,6 +154,7 @@ ifneq ($(GIT_VERSION)," unknown")
 	COREFLAGS += -DNP2KAI_GIT_TAG=\"$(GIT_TAG)\" -DNP2KAI_GIT_HASH=\"$(GIT_HASH)\"
 endif
 include $(CLEAR_VARS)
+APP_STL := c++_shared
 LOCAL_MODULE    := retro
 LOCAL_SRC_FILES := $(SOURCES_C) $(SOURCES_CXX)
 LOCAL_CFLAGS    := $(COREFLAGS)

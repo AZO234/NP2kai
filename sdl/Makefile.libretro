@@ -806,7 +806,7 @@ SOURCES_C += $(NP2_PATH)/generic/hostdrv.c \
 	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse3/*.c) \
 	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/ssse3/*.c) \
 	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse4/*.c) \
-	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse4a/*.c) \
+	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse4a/*.c)
 
 SOURCES_CXX += $(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_softfloat3.cpp
 
@@ -952,7 +952,7 @@ else
 endif
 	@echo "** BUILD SUCCESSFUL! GG NO RE **"
 
-COMMON_C_FLAGS := -Wno-implicit-function-declaration  -Wno-incompatible-pointer-types -Wno-int-conversion
+COMMON_C_FLAGS := -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-incompatible-function-pointer-types -Wno-int-conversion
 
 %.o: %.cpp
 	$(CXX) -c $(OBJOUT)$@ $< $(CXXFLAGS) $(INCDIRS) $(COMMON_C_FLAGS)
