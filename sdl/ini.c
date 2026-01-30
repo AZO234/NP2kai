@@ -505,6 +505,10 @@ ini_write(const OEMCHAR *path, const OEMCHAR *title, const INITBL *tbl, UINT cou
 				OEMSNPRINTF(work, sizeof(work), str_d, *((SINT32 *)p->value));
 				break;
 
+			case INITYPE_SINT64:
+				OEMSNPRINTF(work, sizeof(work), str_d, *((SINT64 *)p->value));
+				break;
+
 			case INITYPE_UINT8:
 				OEMSNPRINTF(work, sizeof(work), str_u, *((UINT8 *)p->value));
 				break;
@@ -517,6 +521,10 @@ ini_write(const OEMCHAR *path, const OEMCHAR *title, const INITBL *tbl, UINT cou
 				OEMSNPRINTF(work, sizeof(work), str_u, *((UINT32 *)p->value));
 				break;
 
+			case INITYPE_UINT64:
+				OEMSNPRINTF(work, sizeof(work), str_u, *((UINT64 *)p->value));
+				break;
+
 			case INITYPE_HEX8:
 				OEMSNPRINTF(work, sizeof(work), str_x, *((UINT8 *)p->value));
 				break;
@@ -527,6 +535,10 @@ ini_write(const OEMCHAR *path, const OEMCHAR *title, const INITBL *tbl, UINT cou
 
 			case INITYPE_HEX32:
 				OEMSNPRINTF(work, sizeof(work), str_x, *((UINT32 *)p->value));
+				break;
+
+			case INITYPE_HEX64:
+				OEMSNPRINTF(work, sizeof(work), str_x, *((UINT64 *)p->value));
 				break;
 
 			case INITYPE_KB:
@@ -594,6 +606,9 @@ static const INITBL iniitem[] = {
 	{OEMTEXT("use_hdrv"), INITYPE_BOOL,	&np2cfg.hdrvenable,	0},
 	{OEMTEXT("hdrvroot"), INITYPE_STR,	&np2cfg.hdrvroot,	MAX_PATH},
 	{OEMTEXT("hdrv_acc"), INITYPE_UINT8,	&np2cfg.hdrvacc,	0},
+#endif
+#if defined(SUPPORT_HOSTDRVNT)
+	{OEMTEXT("usehdrvn"), INITYPE_BOOL,	&np2cfg.hdrvntenable,	0},
 #endif
 
 	{OEMTEXT("pc_model"), INITYPE_STR,	np2cfg.model,		sizeof(np2cfg.model)},
@@ -753,7 +768,7 @@ static const INITBL iniitem[] = {
 
 	{OEMTEXT("MEMCHKMX"), INITYPE_UINT8,	&np2cfg.memchkmx,	0},
 	{OEMTEXT("SBEEPLEN"), INITYPE_UINT8,	&np2cfg.sbeeplen,	0},
-	{OEMTEXT("SBEEPLEN"), INITYPE_BOOL,	&np2cfg.sbeepadj,	0},
+	{OEMTEXT("SBEEPADJ"), INITYPE_BOOL,	&np2cfg.sbeepadj,	0},
 	
 	{OEMTEXT("cpu_vend"), INITYPE_STR,	np2cfg.cpu_vendor_o,	15},
 	{OEMTEXT("cpu_fami"), INITYPE_UINT32,	&np2cfg.cpu_family,	0},
@@ -773,6 +788,7 @@ static const INITBL iniitem[] = {
 	{OEMTEXT("USERAM_D"), INITYPE_BOOL,	&np2cfg.useram_d,	0},
 #if defined(SUPPORT_ASYNC_CPU)
 	{OEMTEXT("ASYNCCPU"), INITYPE_BOOL,	&np2cfg.asynccpu,	0},
+	{OEMTEXT("ASYNCLVL"), INITYPE_UINT8,	&np2cfg.asynclvl,	0},
 #endif
 	{OEMTEXT("CONSTTSC"), INITYPE_BOOL,	&np2cfg.consttsc,	0},
 #if defined(SUPPORT_IDEIO)
@@ -780,8 +796,19 @@ static const INITBL iniitem[] = {
 #endif
 #if defined(SUPPORT_GAMEPORT)
 	{OEMTEXT("GAMEPORT"), INITYPE_BOOL,	&np2cfg.gameport,	0},
+	{OEMTEXT("ANLG_JOY"), INITYPE_BOOL,	&np2cfg.analogjoy,	0},
 #endif
 	{OEMTEXT("USEMOVCS"), INIRO_BOOL,	&np2cfg.allowMOVCS,	0},
+	{OEMTEXT("USETHOOK"), INIRO_BOOL,	&np2cfg.usetexthook,	0},
+	{OEMTEXT("RASCSI92"), INIRO_BOOL,	&np2cfg.rascsi92,	0},
+	{OEMTEXT("NBEEPOFS"), INIRO_BOOL,	&np2cfg.nbeepofs,	0},
+	{OEMTEXT("CAL_VOFS"), INITYPE_SINT64,	&np2cfg.cal_vofs,	0},
+#if defined(SUPPORT_NP2SCSI)
+	{OEMTEXT("USENP2ST"), INIRO_BOOL,	&np2cfg.usenp2stor,	0},
+#endif
+	{OEMTEXT("CPUSPEED"), INITYPE_UINT32,	&np2cfg.emuspeed,	0},
+	{OEMTEXT("fontface"), INIRO_STR,		np2cfg.fontface, 255},
+	{OEMTEXT("SLOWMOUS"), INIRO_BOOL,	&np2cfg.slowmous,	0},
 
 	{OEMTEXT("keyboard"), INITYPE_KB,	&np2oscfg.KEYBOARD,	0},
 #if !defined(__LIBRETRO__)

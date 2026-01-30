@@ -309,6 +309,11 @@ inireadcb(void *arg, const char *para, const char *key, const char *data)
 				*((UINT32 *)p->value) = (UINT32)milstr_solveINT(data);
 				break;
 
+			case INITYPE_SINT64:
+			case INITYPE_UINT64:
+				*((UINT64 *)p->value) = (UINT64)milstr_solveINT(data);
+				break;
+
 			case INITYPE_HEX8:
 				*((UINT8 *)p->value) = (UINT8)milstr_solveHEX(data);
 				break;
@@ -319,6 +324,10 @@ inireadcb(void *arg, const char *para, const char *key, const char *data)
 
 			case INITYPE_HEX32:
 				*((UINT32 *)p->value) = (UINT32)milstr_solveHEX(data);
+				break;
+
+			case INITYPE_HEX64:
+				*((UINT64 *)p->value) = (UINT64)milstr_solveHEX(data);
 				break;
 
 			case INITYPE_BYTE3:
@@ -496,6 +505,10 @@ ini_write(const char *path, const char *title, INITBL *tbl, UINT count, BOOL cre
 				g_snprintf(work, sizeof(work), "%d", *((SINT32 *)p->value));
 				break;
 
+			case INITYPE_SINT64:
+				g_snprintf(work, sizeof(work), "%" G_GUINT64_FORMAT, *((SINT64 *)p->value));
+				break;
+
 			case INITYPE_UINT8:
 				g_snprintf(work, sizeof(work), "%u", *((UINT8 *)p->value));
 				break;
@@ -508,6 +521,10 @@ ini_write(const char *path, const char *title, INITBL *tbl, UINT count, BOOL cre
 				g_snprintf(work, sizeof(work), "%u", *((UINT32 *)p->value));
 				break;
 
+			case INITYPE_UINT64:
+				g_snprintf(work, sizeof(work), "%" G_GUINT64_FORMAT "u", *((UINT64 *)p->value));
+				break;
+
 			case INITYPE_HEX8:
 				g_snprintf(work, sizeof(work), "%x", *((UINT8 *)p->value));
 				break;
@@ -518,6 +535,10 @@ ini_write(const char *path, const char *title, INITBL *tbl, UINT count, BOOL cre
 
 			case INITYPE_HEX32:
 				g_snprintf(work, sizeof(work), "%x", *((UINT32 *)p->value));
+				break;
+
+			case INITYPE_HEX64:
+				g_snprintf(work, sizeof(work), "%" G_GUINT64_FORMAT "x", *((UINT64 *)p->value));
 				break;
 
 			case INITYPE_KB:
@@ -769,8 +790,19 @@ static INITBL iniitem[] = {
 #endif
 #if defined(SUPPORT_GAMEPORT)
 	{"GAMEPORT", INITYPE_BOOL,	&np2cfg.gameport,	0},
+	{"ANLG_JOY", INITYPE_BOOL,	&np2cfg.analogjoy,	0},
 #endif
 	{"USEMOVCS", INIRO_BOOL,	&np2cfg.allowMOVCS,	0},
+	{"USETHOOK", INIRO_BOOL,	&np2cfg.usetexthook,	0},
+	{"RASCSI92", INIRO_BOOL,	&np2cfg.rascsi92,	0},
+	{"NBEEPOFS", INIRO_BOOL,	&np2cfg.nbeepofs,	0},
+	{"CAL_VOFS", INITYPE_SINT64,	&np2cfg.cal_vofs,	0},
+#if defined(SUPPORT_NP2SCSI)
+	{"USENP2ST", INIRO_BOOL,	&np2cfg.usenp2stor,	0},
+#endif
+	{"CPUSPEED", INITYPE_UINT32,	&np2cfg.emuspeed,	0},
+	{"fontface", INIRO_STR,		np2cfg.fontface, 255},
+	{"SLOWMOUS", INIRO_BOOL,	&np2cfg.slowmous,	0},
 
 	{"keyboard", INITYPE_KB,	&np2oscfg.KEYBOARD,	0},
 	{"F12_COPY", INITYPE_UINT8,	&np2oscfg.F12KEY,	0},
