@@ -46,7 +46,7 @@ int ENABLE_MOUSE=0; //0--disable
 
 int convertKeyMap(int scancode){
   switch(scancode){
-#if SDL_MAJOR_VERSION != 1
+#if SDL_VERSION_ATLEAST(2, 0, 0)
     case 82: //up
       return SDL_SCANCODE_UP;
     case 81: //down
@@ -201,7 +201,7 @@ void taskmng_rol(void) {
 		case SDL_KEYDOWN:
 
 #if defined(__OPENDINGUX__)
-#if SDL_MAJOR_VERSION != 1
+#if SDL_VERSION_ATLEAST(2, 0, 0)
       e.key.keysym.scancode=convertKeyMap(e.key.keysym.scancode);
       if(e.key.keysym.scancode==SDL_SCANCODE_UNKNOWN || e.key.keysym.scancode ==999){
         return;
@@ -213,10 +213,10 @@ void taskmng_rol(void) {
       }
 #endif
 #endif  // __OPENDINGUX__
-#if SDL_MAJOR_VERSION == 1
-			if (e.key.keysym.sym == SDLK_F11) {
-#else
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 			if (e.key.keysym.scancode == SDL_SCANCODE_F11) {
+#else
+			if (e.key.keysym.sym == SDLK_F11) {
 #endif
 #if defined(EMSCRIPTEN) && !defined(__LIBRETRO__) //in web browsers, F11 is commonly occupied. Use CTRL+F11
 			if ((e.key.keysym.mod == KMOD_LCTRL) || (e.key.keysym.mod == KMOD_RCTRL)) {
@@ -230,10 +230,10 @@ void taskmng_rol(void) {
 			}
 #if defined(EMSCRIPTEN) && !defined(__LIBRETRO__)
 			}
-#if SDL_MAJOR_VERSION == 1
-			if (e.key.keysym.sym == SDLK_F12) {
-#else
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 			else if (e.key.keysym.scancode == SDL_SCANCODE_F12) {
+#else
+			else if (e.key.keysym.sym == SDLK_F12) {
 #endif
 				if ((e.key.keysym.mod == KMOD_LCTRL) || (e.key.keysym.mod == KMOD_RCTRL)) {
 					//use CTRL+F12 to lock mouse like win32 builds do
@@ -241,7 +241,7 @@ void taskmng_rol(void) {
 				}
 			}
 #endif
-#if SDL_MAJOR_VERSION != 1
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 			/* use command-f to toggle fullscreen/windowed mode */
 			if ((e.key.keysym.mod == KMOD_LGUI) || (e.key.keysym.mod == KMOD_RGUI)) {
 				if (e.key.keysym.scancode == SDL_SCANCODE_F) {
@@ -254,10 +254,10 @@ void taskmng_rol(void) {
 			}
 #endif
 			else {
-#if SDL_MAJOR_VERSION == 1
-				sdlkbd_keydown(e.key.keysym.sym);
-#else
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 				sdlkbd_keydown(e.key.keysym.scancode);
+#else
+				sdlkbd_keydown(e.key.keysym.sym);
 #endif
 			}
 			break;
@@ -277,10 +277,10 @@ void taskmng_rol(void) {
 #endif
 #endif  // __OPENDINGUX__
 
-#if SDL_MAJOR_VERSION == 1
-      sdlkbd_keyup(e.key.keysym.sym);
-#else
+#if SDL_VERSION_ATLEAST(2, 0, 0)
       sdlkbd_keyup(e.key.keysym.scancode);
+#else
+      sdlkbd_keyup(e.key.keysym.sym);
 #endif
 			break;
 

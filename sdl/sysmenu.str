@@ -365,18 +365,19 @@ static const MSYSITEM s_vf1[] = {
 #endif
 
 static const MSYSITEM s_screen[] = {
-#if SDL_MAJOR_VERSION != 1
+#if defined(SDL_h_)
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 		{str_window,		NULL,		MID_WINDOW,		0},
 		{str_fullscrn,		NULL,		MID_FULLSCREEN,		0},
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
-#endif
-#if SDL_MAJOR_VERSION == 1
+#else
 		{str_window,		NULL,		MID_WINDOW,		MENU_GRAY},
 		{str_fullscrn,		NULL,		MID_FULLSCREEN,		MENU_GRAY},
 		{NULL,				NULL,		MID_STATIC,			MENU_SEPARATOR},
 		{str_normal,		NULL,		MID_ROLNORMAL,		MENU_GRAY},
 		{str_leftrol,		NULL,		MID_ROLLEFT,		MENU_GRAY},
 		{str_rightrol,		NULL,		MID_ROLRIGHT,		MENU_GRAY},
+#endif
 #else
 		{str_normal,		NULL,		MID_ROLNORMAL,		0},
 		{str_leftrol,		NULL,		MID_ROLLEFT,		0},

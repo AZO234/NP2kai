@@ -22,12 +22,12 @@ extern retro_environment_t environ_cb;
 static SCRNSURF scrnsurf;
 
 #if !defined(__LIBRETRO__)
-#if SDL_MAJOR_VERSION == 1
-static SDL_VideoInfo* s1_videoinfo;
-#else
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 static SDL_Window* s_window;
 static SDL_Renderer* s_renderer;
 static SDL_Texture* s_texture;
+#else
+static SDL_VideoInfo* s1_videoinfo;
 #endif
 #endif	/* __LIBRETRO__ */
 
@@ -89,8 +89,16 @@ BRESULT scrnmng_create(UINT8 mode) {
    if(draw32bit) {
       scrnmng.bpp = 32;
    } else {
-#if defined(EMSCRIPTEN) && !defined(__LIBRETRO__) && SDL_MAJOR_VERSION == 1
+#if defined(EMSCRIPTEN) && !defined(__LIBRETRO__)
+#if defined(SDL_h_)
+#if !SDL_VERSION_ATLEAST(2, 0, 0)
       scrnmng.bpp = 32;
+#else
+      scrnmng.bpp = 16;
+#endif
+#else
+      scrnmng.bpp = 16;
+#endif
 #else
       scrnmng.bpp = 16;
 #endif
@@ -105,19 +113,19 @@ BRESULT scrnmng_create(UINT8 mode) {
 		return(FAILURE);
 	}
 
-#if SDL_MAJOR_VERSION == 1
-	s1_videoinfo = SDL_GetVideoInfo();
-	scrnmng.dispsurf = SDL_SetVideoMode(scrnmng.width, scrnmng.height, scrnmng.bpp, SDL_HWSURFACE);
-	scrnmng.pc98surf = SDL_CreateRGBSurface(SDL_SWSURFACE, scrnmng.width, scrnmng.height, scrnmng.bpp, 0xf800, 0x07e0, 0x001f, 0);
-#else
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 	if(mode & SCRNMODE_ROTATEMASK) {
 		s_window = SDL_CreateWindow(app_name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, scrnmng.height, scrnmng.width, 0);
 	} else {
 		s_window = SDL_CreateWindow(app_name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, scrnmng.width, scrnmng.height, 0);
 	}
 	s_renderer = SDL_CreateRenderer(s_window, -1, 0);
+#else
+	s1_videoinfo = SDL_GetVideoInfo();
+	scrnmng.dispsurf = SDL_SetVideoMode(scrnmng.width, scrnmng.height, scrnmng.bpp, SDL_HWSURFACE);
+	scrnmng.pc98surf = SDL_CreateRGBSurface(SDL_SWSURFACE, scrnmng.width, scrnmng.height, scrnmng.bpp, 0xf800, 0x07e0, 0x001f, 0);
 #endif
-#if SDL_MAJOR_VERSION != 1
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 #if defined(__OPENDINGUX__) && !defined(OPENDINGUX_VGA)
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
 #endif
@@ -157,7 +165,7 @@ BRESULT scrnmng_create(UINT8 mode) {
 
 	scrnmng.enable = TRUE;
 #if !defined(__LIBRETRO__)
-	#if SDL_MAJOR_VERSION != 1
+	#if SDL_VERSION_ATLEAST(2, 0, 0)
 		if((mode & SCRNMODE_FULLSCREEN) && !scrnmng_isfullscreen()) {
 			scrnmng.flag |= SCRNFLAG_FULLSCREEN;
 			SDL_SetWindowFullscreen(s_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
@@ -185,7 +193,7 @@ void scrnmng_destroy(void) {
 #else
 	SDL_FreeSurface(scrnmng.pc98surf);
 	SDL_FreeSurface(scrnmng.dispsurf);
-#if SDL_MAJOR_VERSION != 1
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 	SDL_DestroyTexture(s_texture);
 	SDL_DestroyRenderer(s_renderer);
 	SDL_DestroyWindow(s_window);
@@ -227,7 +235,7 @@ void scrnmng_setwidth(int posx, int width) {
 #else	/* __LIBRETRO__ */
 	SDL_FreeSurface(scrnmng.pc98surf);
 	SDL_FreeSurface(scrnmng.dispsurf);
-#if SDL_MAJOR_VERSION != 1
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 	SDL_DestroyTexture(s_texture);
 
 	if(scrnmode & SCRNMODE_ROTATEMASK) {
@@ -292,7 +300,7 @@ void scrnmng_setheight(int posy, int height) {
 #else	/* __LIBRETRO__ */
 	SDL_FreeSurface(scrnmng.pc98surf);
 	SDL_FreeSurface(scrnmng.dispsurf);
-#if SDL_MAJOR_VERSION != 1
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 	SDL_DestroyTexture(s_texture);
 
 	if(scrnmode & SCRNMODE_ROTATEMASK) {
@@ -547,9 +555,7 @@ scrnmng_update(void)
 #else
 	SDL_Surface	*usesurface;
 
-#if SDL_MAJOR_VERSION == 1
-	SDL_UpdateRect(scrnmng.dispsurf, 0, 0, 0, 0);
-#else
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 	if((scrnmode & SCRNMODE_ROTATEMASK) == SCRNMODE_ROTATELEFT) {
 		usesurface = scrnmng_makerotatesurface(1);
 		SDL_UpdateTexture(s_texture, NULL, usesurface->pixels, usesurface->pitch);
@@ -564,6 +570,8 @@ scrnmng_update(void)
 	SDL_RenderClear(s_renderer);
 	SDL_RenderCopy(s_renderer, s_texture, NULL, NULL);
 	SDL_RenderPresent(s_renderer);
+#else
+	SDL_UpdateRect(scrnmng.dispsurf, 0, 0, 0, 0);
 #endif
 #endif
 }

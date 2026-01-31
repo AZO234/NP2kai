@@ -296,7 +296,8 @@ static void sys_cmd(MENUID id) {
 			diskdrv_setsxsi(0x23, NULL);
 			break;
 #endif
-#if SDL_MAJOR_VERSION != 1
+#if defined(SDL_h_)
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 		case MID_FULLSCREEN:
 			changescreen(scrnmode | SCRNMODE_FULLSCREEN);
 			break;
@@ -304,6 +305,7 @@ static void sys_cmd(MENUID id) {
 		case MID_WINDOW:
 			changescreen(scrnmode & ~SCRNMODE_FULLSCREEN);
 			break;
+#endif
 #endif
 		case MID_ROLNORMAL:
 			changescreen((scrnmode & ~SCRNMODE_ROTATEMASK) | 0);

@@ -998,10 +998,10 @@ void pccore_reset(void) {
 #elif defined(NP2_SDL)
 	{
 		UINT64 c;
-#if SDL_MAJOR_VERSION == 1
-		c = SDL_GetTicks();
-#else
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 		c = SDL_GetPerformanceCounter();
+#else
+		c = SDL_GetTicks();
 #endif
 		COPY64(&asynccpu_lastclock, &c)
 		COPY64(&asynccpu_clockcount, &c)

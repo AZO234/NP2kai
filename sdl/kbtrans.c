@@ -309,10 +309,10 @@ void send_libretro_key_up(UINT lrkey) {
 #else  // __LIBRETRO__
 
 typedef struct {
-#if SDL_MAJOR_VERSION == 1
-   SDLKey sdlkey;
-#else
+#if SDL_VERSION_ATLEAST(2, 0, 0)
    SDL_Scancode sdlkey;
+#else
+   SDLKey sdlkey;
 #endif
    UINT8 keycode;
 } SDLKCNV;
@@ -321,114 +321,7 @@ typedef struct {
 
 /* 101 keyboard key table */
 static const SDLKCNV sdlcnv101[] = {
-#if SDL_MAJOR_VERSION == 1
-  // test result on Linux Twocode/caNnotpush/Miss/Different
-  {SDLK_PAUSE,        0x60},  // STOP
-  {SDLK_PRINT,        0x61},  // COPY (M)
-  {SDLK_F1,           0x62},  // f.1
-  {SDLK_F2,           0x63},  // f.2
-  {SDLK_F3,           0x64},  // f.3
-  {SDLK_F4,           0x65},  // f.4
-  {SDLK_F5,           0x66},  // f.5
-  {SDLK_F6,           0x67},  // f.6
-  {SDLK_F7,           0x68},  // f.7
-  {SDLK_F8,           0x69},  // f.8
-  {SDLK_F9,           0x6a},  // f.9
-  {SDLK_F10,          0x6b},  // f.10
-  // vf.1 - 5
-  {SDLK_ESCAPE,       0x00},  // ESC
-  {SDLK_1,            0x01},  // 1 !
-  {SDLK_2,            0x02},  // 2 "
-  {SDLK_3,            0x03},  // 3 #
-  {SDLK_4,            0x04},  // 4 $
-  {SDLK_5,            0x05},  // 5 %
-  {SDLK_6,            0x06},  // 6 &
-  {SDLK_7,            0x07},  // 7 '
-  {SDLK_8,            0x08},  // 8 (
-  {SDLK_9,            0x09},  // 9 )
-  {SDLK_0,            0x0a},  // 0 0
-  {SDLK_MINUS,        0x0b},  // - =
-  {SDLK_EQUALS,       0x0c},  // ^ `
-  {SDLK_BACKSLASH,    0x0d},  // Yen |
-  {SDLK_BACKSPACE,    0x0e},  // BS
-  {SDLK_TAB,          0x0f},  // TAB
-  {SDLK_q,            0x10},  // q Q
-  {SDLK_w,            0x11},  // w W
-  {SDLK_e,            0x12},  // e E
-  {SDLK_r,            0x13},  // r R
-  {SDLK_t,            0x14},  // t T
-  {SDLK_y,            0x15},  // y Y
-  {SDLK_u,            0x16},  // u U
-  {SDLK_i,            0x17},  // i I
-  {SDLK_o,            0x18},  // o O
-  {SDLK_p,            0x19},  // p P
-  {SDLK_LEFTBRACKET,  0x1a},  // @ ~
-  {SDLK_RIGHTBRACKET, 0x1b},  // [ {
-  {SDLK_RETURN,       0x1c},  // Enter
-  {SDLK_LCTRL,        0x74},  // CTRL
-  {SDLK_CAPSLOCK,     0x71},  // CAPS
-  {SDLK_a,            0x1d},  // a A
-  {SDLK_s,            0x1e},  // s S
-  {SDLK_d,            0x1f},  // d D
-  {SDLK_f,            0x20},  // f F
-  {SDLK_g,            0x21},  // g G
-  {SDLK_h,            0x22},  // h H
-  {SDLK_j,            0x23},  // j J
-  {SDLK_k,            0x24},  // k K
-  {SDLK_l,            0x25},  // l L
-  {SDLK_SEMICOLON,    0x26},  // ; +
-  {SDLK_QUOTE,        0x27},  // : *
-  {SDLK_BACKSLASH,    0x28},  // ] }
-  {SDLK_LSHIFT,       0x70},  // LShift
-  {SDLK_z,            0x29},  // z Z
-  {SDLK_x,            0x2a},  // x X
-  {SDLK_c,            0x2b},  // c C
-  {SDLK_v,            0x2c},  // v V
-  {SDLK_b,            0x2d},  // b B
-  {SDLK_n,            0x2e},  // n N
-  {SDLK_m,            0x2f},  // m M
-  {SDLK_COMMA,        0x30},  // , <
-  {SDLK_PERIOD,       0x31},  // . >
-  {SDLK_SLASH,        0x32},  // / ?
-  // _ _
-  {SDLK_RSHIFT,       0x7d},  // RShift
-  // Kana
-  {SDLK_LSUPER,       0x77},  // LSuper (M)
-  {SDLK_RCTRL,        0x73},  // GRPH
-  {SDLK_LALT,         0x51},  // NFER
-  {SDLK_SPACE,        0x34},  // Space
-  {SDLK_RALT,         0x35},  // XFER
-  {SDLK_RSUPER,       0x78},  // RSuper
-  {SDLK_MENU,         0x79},  // Menu
-  {SDLK_INSERT,       0x38},  // INS
-  {SDLK_DELETE,       0x39},  // DEL
-  {SDLK_PAGEUP,       0x36},  // ROLLUP
-  {SDLK_PAGEDOWN,     0x37},  // ROLLDOWN
-  {SDLK_UP,           0x3a},  // Up
-  {SDLK_LEFT,         0x3b},  // Left
-  {SDLK_RIGHT,        0x3c},  // Right
-  {SDLK_DOWN,         0x3d},  // Down
-  {SDLK_HOME,         0x3e},  // HOME/CLR
-  {SDLK_END,          0x3f},  // HELP
-  {SDLK_KP_MINUS,     0x40},  // KP-
-  {SDLK_KP_DIVIDE,    0x41},  // KP/
-  {SDLK_KP7,          0x42},  // KP7
-  {SDLK_KP8,          0x43},  // KP8
-  {SDLK_KP9,          0x44},  // KP9
-  {SDLK_KP_MULTIPLY,  0x45},  // KP*
-  {SDLK_KP4,          0x46},  // KP4
-  {SDLK_KP5,          0x47},  // KP5
-  {SDLK_KP6,          0x48},  // KP6
-  {SDLK_KP_PLUS,      0x49},  // KP+
-  {SDLK_KP1,          0x4a},  // KP1
-  {SDLK_KP2,          0x4b},  // KP2
-  {SDLK_KP3,          0x4c},  // KP3
-  {SDLK_KP_EQUALS,    0x4d},  // KP= (N)
-  {SDLK_KP0,          0x4e},  // KP0
-//  {SDLK_KP_COMMA,     0x4f},  // KP, (N)
-  {SDLK_KP_PERIOD,    0x50},  // KP.
-  {SDLK_KP_ENTER,     0x1c},  // KPEnter
-#else
+#if SDL_VERSION_ATLEAST(2, 0, 0)
   // test result on Linux Twocode/caNnotpush/Miss/Different
   {SDL_SCANCODE_PAUSE,        0x60},  // STOP
   {SDL_SCANCODE_PRINTSCREEN,  0x61},  // COPY (M)
@@ -535,12 +428,7 @@ static const SDLKCNV sdlcnv101[] = {
   {SDL_SCANCODE_KP_COMMA,     0x4f},  // KP, (N)
   {SDL_SCANCODE_KP_PERIOD,    0x50},  // KP.
   {SDL_SCANCODE_KP_ENTER,     0x1c},  // KPEnter
-#endif
-};
-
-/* 106 keyboard key table */
-static const SDLKCNV sdlcnv106[] = {
-#if SDL_MAJOR_VERSION == 1
+#else
   // test result on Linux Twocode/caNnotpush/Miss/Different
   {SDLK_PAUSE,        0x60},  // STOP
   {SDLK_PRINT,        0x61},  // COPY (M)
@@ -568,6 +456,7 @@ static const SDLKCNV sdlcnv106[] = {
   {SDLK_0,            0x0a},  // 0 0
   {SDLK_MINUS,        0x0b},  // - =
   {SDLK_EQUALS,       0x0c},  // ^ `
+  {SDLK_BACKSLASH,    0x0d},  // Yen |
   {SDLK_BACKSPACE,    0x0e},  // BS
   {SDLK_TAB,          0x0f},  // TAB
   {SDLK_q,            0x10},  // q Q
@@ -646,7 +535,12 @@ static const SDLKCNV sdlcnv106[] = {
 //  {SDLK_KP_COMMA,     0x4f},  // KP, (N)
   {SDLK_KP_PERIOD,    0x50},  // KP.
   {SDLK_KP_ENTER,     0x1c},  // KPEnter
-#else
+#endif
+};
+
+/* 106 keyboard key table */
+static const SDLKCNV sdlcnv106[] = {
+#if SDL_VERSION_ATLEAST(2, 0, 0)
   // test result on Linux Twocode/caNnotpush/Miss/Different
   {SDL_SCANCODE_PAUSE,          0x60},  // STOP
   {SDL_SCANCODE_PRINTSCREEN,    0x61},  // COPY (M)
@@ -753,6 +647,112 @@ static const SDLKCNV sdlcnv106[] = {
   {SDL_SCANCODE_KP_COMMA,       0x4f},  // KP, (N)
   {SDL_SCANCODE_KP_PERIOD,      0x50},  // KP.
   {SDL_SCANCODE_KP_ENTER,       0x1c},  // KPEnter
+#else
+  // test result on Linux Twocode/caNnotpush/Miss/Different
+  {SDLK_PAUSE,        0x60},  // STOP
+  {SDLK_PRINT,        0x61},  // COPY (M)
+  {SDLK_F1,           0x62},  // f.1
+  {SDLK_F2,           0x63},  // f.2
+  {SDLK_F3,           0x64},  // f.3
+  {SDLK_F4,           0x65},  // f.4
+  {SDLK_F5,           0x66},  // f.5
+  {SDLK_F6,           0x67},  // f.6
+  {SDLK_F7,           0x68},  // f.7
+  {SDLK_F8,           0x69},  // f.8
+  {SDLK_F9,           0x6a},  // f.9
+  {SDLK_F10,          0x6b},  // f.10
+  // vf.1 - 5
+  {SDLK_ESCAPE,       0x00},  // ESC
+  {SDLK_1,            0x01},  // 1 !
+  {SDLK_2,            0x02},  // 2 "
+  {SDLK_3,            0x03},  // 3 #
+  {SDLK_4,            0x04},  // 4 $
+  {SDLK_5,            0x05},  // 5 %
+  {SDLK_6,            0x06},  // 6 &
+  {SDLK_7,            0x07},  // 7 '
+  {SDLK_8,            0x08},  // 8 (
+  {SDLK_9,            0x09},  // 9 )
+  {SDLK_0,            0x0a},  // 0 0
+  {SDLK_MINUS,        0x0b},  // - =
+  {SDLK_EQUALS,       0x0c},  // ^ `
+  {SDLK_BACKSPACE,    0x0e},  // BS
+  {SDLK_TAB,          0x0f},  // TAB
+  {SDLK_q,            0x10},  // q Q
+  {SDLK_w,            0x11},  // w W
+  {SDLK_e,            0x12},  // e E
+  {SDLK_r,            0x13},  // r R
+  {SDLK_t,            0x14},  // t T
+  {SDLK_y,            0x15},  // y Y
+  {SDLK_u,            0x16},  // u U
+  {SDLK_i,            0x17},  // i I
+  {SDLK_o,            0x18},  // o O
+  {SDLK_p,            0x19},  // p P
+  {SDLK_LEFTBRACKET,  0x1a},  // @ ~
+  {SDLK_RIGHTBRACKET, 0x1b},  // [ {
+  {SDLK_RETURN,       0x1c},  // Enter
+  {SDLK_LCTRL,        0x74},  // CTRL
+  {SDLK_CAPSLOCK,     0x71},  // CAPS
+  {SDLK_a,            0x1d},  // a A
+  {SDLK_s,            0x1e},  // s S
+  {SDLK_d,            0x1f},  // d D
+  {SDLK_f,            0x20},  // f F
+  {SDLK_g,            0x21},  // g G
+  {SDLK_h,            0x22},  // h H
+  {SDLK_j,            0x23},  // j J
+  {SDLK_k,            0x24},  // k K
+  {SDLK_l,            0x25},  // l L
+  {SDLK_SEMICOLON,    0x26},  // ; +
+  {SDLK_QUOTE,        0x27},  // : *
+  {SDLK_BACKSLASH,    0x28},  // ] }
+  {SDLK_LSHIFT,       0x70},  // LShift
+  {SDLK_z,            0x29},  // z Z
+  {SDLK_x,            0x2a},  // x X
+  {SDLK_c,            0x2b},  // c C
+  {SDLK_v,            0x2c},  // v V
+  {SDLK_b,            0x2d},  // b B
+  {SDLK_n,            0x2e},  // n N
+  {SDLK_m,            0x2f},  // m M
+  {SDLK_COMMA,        0x30},  // , <
+  {SDLK_PERIOD,       0x31},  // . >
+  {SDLK_SLASH,        0x32},  // / ?
+  // _ _
+  {SDLK_RSHIFT,       0x7d},  // RShift
+  // Kana
+  {SDLK_LSUPER,       0x77},  // LSuper (M)
+  {SDLK_RCTRL,        0x73},  // GRPH
+  {SDLK_LALT,         0x51},  // NFER
+  {SDLK_SPACE,        0x34},  // Space
+  {SDLK_RALT,         0x35},  // XFER
+  {SDLK_RSUPER,       0x78},  // RSuper
+  {SDLK_MENU,         0x79},  // Menu
+  {SDLK_INSERT,       0x38},  // INS
+  {SDLK_DELETE,       0x39},  // DEL
+  {SDLK_PAGEUP,       0x36},  // ROLLUP
+  {SDLK_PAGEDOWN,     0x37},  // ROLLDOWN
+  {SDLK_UP,           0x3a},  // Up
+  {SDLK_LEFT,         0x3b},  // Left
+  {SDLK_RIGHT,        0x3c},  // Right
+  {SDLK_DOWN,         0x3d},  // Down
+  {SDLK_HOME,         0x3e},  // HOME/CLR
+  {SDLK_END,          0x3f},  // HELP
+  {SDLK_KP_MINUS,     0x40},  // KP-
+  {SDLK_KP_DIVIDE,    0x41},  // KP/
+  {SDLK_KP7,          0x42},  // KP7
+  {SDLK_KP8,          0x43},  // KP8
+  {SDLK_KP9,          0x44},  // KP9
+  {SDLK_KP_MULTIPLY,  0x45},  // KP*
+  {SDLK_KP4,          0x46},  // KP4
+  {SDLK_KP5,          0x47},  // KP5
+  {SDLK_KP6,          0x48},  // KP6
+  {SDLK_KP_PLUS,      0x49},  // KP+
+  {SDLK_KP1,          0x4a},  // KP1
+  {SDLK_KP2,          0x4b},  // KP2
+  {SDLK_KP3,          0x4c},  // KP3
+  {SDLK_KP_EQUALS,    0x4d},  // KP= (N)
+  {SDLK_KP0,          0x4e},  // KP0
+//  {SDLK_KP_COMMA,     0x4f},  // KP, (N)
+  {SDLK_KP_PERIOD,    0x50},  // KP.
+  {SDLK_KP_ENTER,     0x1c},  // KPEnter
 #endif
 };
 
@@ -761,27 +761,27 @@ static const SDLKCNV sdlcnv106[] = {
  * @param[in] key Key code
  * @return PC-98 data
  */
-#if SDL_MAJOR_VERSION == 1
-static UINT8 getKey(SDLKey key) {
-#else
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 static UINT8 getKey(SDL_Scancode key) {
+#else
+static UINT8 getKey(SDLKey key) {
 #endif
   size_t i;
   size_t imax;
   SDLKCNV* sdlcnv;
 
   if(np2oscfg.xrollkey) {
-#if SDL_MAJOR_VERSION == 1
-    if(key == SDLK_PAGEUP) {
-      key = SDLK_PAGEDOWN;
-    } else if(key == SDLK_PAGEDOWN) {
-      key = SDLK_PAGEUP;
-    }
-#else
+#if SDL_VERSION_ATLEAST(2, 0, 0)
     if(key == SDL_SCANCODE_PAGEUP) {
       key = SDL_SCANCODE_PAGEDOWN;
     } else if(key == SDL_SCANCODE_PAGEDOWN) {
       key = SDL_SCANCODE_PAGEUP;
+    }
+#else
+    if(key == SDLK_PAGEUP) {
+      key = SDLK_PAGEDOWN;
+    } else if(key == SDLK_PAGEDOWN) {
+      key = SDLK_PAGEUP;
     }
 #endif
   }
@@ -818,7 +818,7 @@ void sdlkbd_keydown(UINT key) {
   UINT8   data;
 
   data = getKey(key);
-#if SDL_MAJOR_VERSION == 1
+#if !SDL_VERSION_ATLEAST(2, 0, 0)
   if(key > 0x40000000) {
     key -= 0x40000000;
     key += 0x80;
@@ -838,7 +838,7 @@ void sdlkbd_keyup(UINT key) {
   UINT8   data;
 
   data = getKey(key);
-#if SDL_MAJOR_VERSION == 1
+#if !SDL_VERSION_ATLEAST(2, 0, 0)
   if(key > 0x40000000) {
     key -= 0x40000000;
     key += 0x80;

@@ -3,10 +3,14 @@
 
 
 typedef struct {
-#if SDL_MAJOR_VERSION == 1
-	SDLKey	key;
-#else
+#if defined(SDL_h_)
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 	SDL_Scancode	key;
+#else
+	SDLKey	key;
+#endif
+#else
+	short	key;
 #endif
 	UINT		bit;
 } KEYBIND;
@@ -19,23 +23,34 @@ typedef struct {
 static	INPMNG	inpmng;
 
 static const KEYBIND keybind[] = {
-#if SDL_MAJOR_VERSION == 1
-					{SDLK_UP,		NP2_KEY_UP},
-					{SDLK_DOWN,		NP2_KEY_DOWN},
-					{SDLK_LEFT,		NP2_KEY_LEFT},
-					{SDLK_RIGHT,	NP2_KEY_RIGHT},
-					{SDLK_RETURN,	KEY_ENTER},
-					{SDLK_ESCAPE,	KEY_MENU},
-					{SDLK_TAB,		KEY_SKIP}};		/* とりあえずね… */
-#else
+#if defined(SDL_h_)
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 					{SDL_SCANCODE_UP,		NP2_KEY_UP},
 					{SDL_SCANCODE_DOWN,		NP2_KEY_DOWN},
 					{SDL_SCANCODE_LEFT,		NP2_KEY_LEFT},
 					{SDL_SCANCODE_RIGHT,	NP2_KEY_RIGHT},
 					{SDL_SCANCODE_RETURN,	KEY_ENTER},
 					{SDL_SCANCODE_ESCAPE,	KEY_MENU},
-					{SDL_SCANCODE_TAB,		KEY_SKIP}};		/* とりあえずね… */
+					{SDL_SCANCODE_TAB,		KEY_SKIP}		/* とりあえずね… */
+#else
+					{SDLK_UP,		NP2_KEY_UP},
+					{SDLK_DOWN,		NP2_KEY_DOWN},
+					{SDLK_LEFT,		NP2_KEY_LEFT},
+					{SDLK_RIGHT,	NP2_KEY_RIGHT},
+					{SDLK_RETURN,	KEY_ENTER},
+					{SDLK_ESCAPE,	KEY_MENU},
+					{SDLK_TAB,		KEY_SKIP}		/* とりあえずね… */
 #endif
+#else
+					{RETROK_UP,		NP2_KEY_UP},
+					{RETROK_DOWN,		NP2_KEY_DOWN},
+					{RETROK_LEFT,		NP2_KEY_LEFT},
+					{RETROK_RIGHT,	NP2_KEY_RIGHT},
+					{RETROK_RETURN,	KEY_ENTER},
+					{RETROK_ESCAPE,	KEY_MENU},
+					{RETROK_TAB,		KEY_SKIP}		/* とりあえずね… */
+#endif
+};
 
 
 // ----

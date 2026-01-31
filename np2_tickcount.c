@@ -23,10 +23,10 @@ int64_t NP2_TickCount_GetCount(void) {
   QueryPerformanceCounter(&count);
   return count.QuadPart;
 #elif defined(NP2_SDL)
-#if SDL_MAJOR_VERSION == 1
-  return SDL_GetTicks();
-#else
+#if SDL_VERSION_ATLEAST(2, 0, 0)
   return SDL_GetPerformanceCounter();
+#else
+  return SDL_GetTicks();
 #endif
 #elif defined(__LIBRETRO__)
   lastcount = cpu_features_get_perf_counter();
@@ -45,10 +45,10 @@ int64_t NP2_TickCount_GetFrequency(void) {
   QueryPerformanceFrequency(&freq);
   return freq.QuadPart;
 #elif defined(NP2_SDL)
-#if SDL_MAJOR_VERSION == 1
-  return 100000000;
-#else
+#if SDL_VERSION_ATLEAST(2, 0, 0)
   return SDL_GetPerformanceFrequency();
+#else
+  return 100000000;
 #endif
 #elif defined(__LIBRETRO__)
   int64_t nowcount = cpu_features_get_perf_counter();

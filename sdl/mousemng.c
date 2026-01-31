@@ -22,20 +22,20 @@ static void mousecapture(BOOL capture) {
 	captured = capture;
 	if(captured)
 	{
-#if SDL_MAJOR_VERSION == 1
-		SDL_WM_GrabInput(SDL_GRAB_ON);
-#else
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 		SDL_CaptureMouse(TRUE);
+#else
+		SDL_WM_GrabInput(SDL_GRAB_ON);
 #endif
 		mousemng_hidecursor();
 	}	
 	else
 	{
 		mousemng_showcursor();
-#if SDL_MAJOR_VERSION == 1
-		SDL_WM_GrabInput(SDL_GRAB_OFF);
-#else
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 		SDL_CaptureMouse(FALSE);
+#else
+		SDL_WM_GrabInput(SDL_GRAB_OFF);
 #endif
 	}
 #endif
@@ -154,7 +154,7 @@ void mousemng_hidecursor() {
 #if defined(EMSCRIPTEN) && !defined(__LIBRETRO__)
 	if(captured) {
 		SDL_ShowCursor(SDL_DISABLE);
-#if SDL_MAJOR_VERSION > 1
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 		SDL_SetRelativeMouseMode(SDL_TRUE);
 #else
 		SDL_WM_GrabInput(SDL_GRAB_ON);
@@ -163,10 +163,10 @@ void mousemng_hidecursor() {
 #else
 	if (!--mousemng.showcount) {
 		SDL_ShowCursor(SDL_DISABLE);
-#if SDL_MAJOR_VERSION == 1
-		SDL_WM_GrabInput(SDL_GRAB_ON);
-#else
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 		SDL_SetRelativeMouseMode(SDL_TRUE);
+#else
+		SDL_WM_GrabInput(SDL_GRAB_ON);
 #endif
 	}
 #endif
@@ -177,18 +177,18 @@ void mousemng_showcursor() {
 #if !defined(DEBUG)
 #if defined(EMSCRIPTEN) && !defined(__LIBRETRO__)
 	SDL_ShowCursor(SDL_ENABLE);
-#if SDL_MAJOR_VERSION == 1
-	SDL_WM_GrabInput(SDL_GRAB_OFF);
-#else
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 	SDL_SetRelativeMouseMode(SDL_FALSE);
+#else
+	SDL_WM_GrabInput(SDL_GRAB_OFF);
 #endif
 #else
 	if (!mousemng.showcount++) {
 		SDL_ShowCursor(SDL_ENABLE);
-#if SDL_MAJOR_VERSION == 1
-		SDL_WM_GrabInput(SDL_GRAB_OFF);
-#else
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 		SDL_SetRelativeMouseMode(SDL_FALSE);
+#else
+		SDL_WM_GrabInput(SDL_GRAB_OFF);
 #endif
 	}
 #endif
