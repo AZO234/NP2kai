@@ -4,7 +4,7 @@
 
 typedef struct {
 #if defined(SDL_h_)
-#if SDL_VERSION_ATLEAST(2, 0, 0)
+#if USE_SDL_VERSION >= 2
 	SDL_Scancode	key;
 #else
 	SDLKey	key;
@@ -24,7 +24,7 @@ static	INPMNG	inpmng;
 
 static const KEYBIND keybind[] = {
 #if defined(SDL_h_)
-#if SDL_VERSION_ATLEAST(2, 0, 0)
+#if USE_SDL_VERSION >= 2
 					{SDL_SCANCODE_UP,		NP2_KEY_UP},
 					{SDL_SCANCODE_DOWN,		NP2_KEY_DOWN},
 					{SDL_SCANCODE_LEFT,		NP2_KEY_LEFT},

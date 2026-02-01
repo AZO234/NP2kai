@@ -23,7 +23,7 @@ int64_t NP2_TickCount_GetCount(void) {
   QueryPerformanceCounter(&count);
   return count.QuadPart;
 #elif defined(NP2_SDL)
-#if SDL_VERSION_ATLEAST(2, 0, 0)
+#if USE_SDL_VERSION >= 2
   return SDL_GetPerformanceCounter();
 #else
   return SDL_GetTicks();
@@ -45,7 +45,7 @@ int64_t NP2_TickCount_GetFrequency(void) {
   QueryPerformanceFrequency(&freq);
   return freq.QuadPart;
 #elif defined(NP2_SDL)
-#if SDL_VERSION_ATLEAST(2, 0, 0)
+#if USE_SDL_VERSION >= 2
   return SDL_GetPerformanceFrequency();
 #else
   return 100000000;

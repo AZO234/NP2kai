@@ -297,7 +297,7 @@ static void sys_cmd(MENUID id) {
 			break;
 #endif
 #if defined(SDL_h_)
-#if SDL_VERSION_ATLEAST(2, 0, 0)
+#if USE_SDL_VERSION >= 2
 		case MID_FULLSCREEN:
 			changescreen(scrnmode | SCRNMODE_FULLSCREEN);
 			break;

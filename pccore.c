@@ -998,7 +998,7 @@ void pccore_reset(void) {
 #elif defined(NP2_SDL)
 	{
 		UINT64 c;
-#if SDL_VERSION_ATLEAST(2, 0, 0)
+#if USE_SDL_VERSION >= 2
 		c = SDL_GetPerformanceCounter();
 #else
 		c = SDL_GetTicks();

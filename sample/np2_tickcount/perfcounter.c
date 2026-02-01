@@ -14,7 +14,7 @@
 #include <windows.h>
 #endif
 #if defined(NP2_SDL)
-#include <SDL.h>
+#include "SDL/SDL.h"
 #endif
 
 #include "../../np2_tickcount.h"

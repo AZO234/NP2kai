@@ -10,7 +10,7 @@ SUPPORT_NP2_THREAD ?= 0
 SUPPORT_NP2_TICKCOUNT ?= 0
 SUPPORT_NET ?= 0
 SUPPORT_ASYNC_CPU ?= 0
-SDL_VERSION ?= 2
+SDL_VERSION ?= 3
 
 # Nixpkgs has not Git. Need version and hash is given by env variants.
 ifneq ($(NP2KAI_VERSION),)

@@ -911,7 +911,7 @@ static void sdlaudio_callback(void *, unsigned char *, int);
 
 #if !defined(SUPPORT_SDL_MIXER)
 
-#if SDL_VERSION_ATLEAST(2, 0, 0)
+#if USE_SDL_VERSION >= 2
 static UINT8 sound_silence;
 #endif
 
@@ -943,7 +943,7 @@ sdlaudio_init(UINT rate, UINT samples)
 		return FAILURE;
 	}
 
-#if SDL_VERSION_ATLEAST(2, 0, 0)
+#if USE_SDL_VERSION >= 2
 	sound_silence = fmt.silence;
 #endif
 	return SUCCESS;
@@ -1164,7 +1164,7 @@ sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 	const UINT frame_size = PTR_TO_UINT32(userdata);
 	struct sndbuf *sndbuf;
 
-#if !defined(SUPPORT_SDL_MIXER) && SDL_VERSION_ATLEAST(2, 0, 0)
+#if !defined(SUPPORT_SDL_MIXER) && USE_SDL_VERSION >= 2
 	/* SDL2 から SDL 側で stream を無音で初期化しなくなった */
 	memset(stream, sound_silence, len);
 #endif
@@ -1179,7 +1179,7 @@ sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 		SNDBUF_FILLED_QUEUE_REMOVE_HEAD();
 		sndbuf_unlock();
 
-#if SDL_VERSION_ATLEAST(2, 0, 0)
+#if USE_SDL_VERSION >= 2
 		SDL_MixAudioFormat(stream,
 		    sndbuf->buf + (sndbuf->size - sndbuf->remain),
 		    AUDIO_S16LSB,
@@ -1205,7 +1205,7 @@ sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 		sndbuf_unlock();
 	}
 
-#if SDL_VERSION_ATLEAST(2, 0, 0)
+#if USE_SDL_VERSION >= 2
 	SDL_MixAudioFormat(stream, sndbuf->buf + (sndbuf->size - sndbuf->remain), AUDIO_S16LSB,
 	    len, (int)(((float)SDL_MIX_MAXVOLUME / 100) * np2cfg.vol_master));
 #else

@@ -309,7 +309,7 @@ void send_libretro_key_up(UINT lrkey) {
 #else  // __LIBRETRO__
 
 typedef struct {
-#if SDL_VERSION_ATLEAST(2, 0, 0)
+#if USE_SDL_VERSION >= 2
    SDL_Scancode sdlkey;
 #else
    SDLKey sdlkey;
@@ -321,7 +321,7 @@ typedef struct {
 
 /* 101 keyboard key table */
 static const SDLKCNV sdlcnv101[] = {
-#if SDL_VERSION_ATLEAST(2, 0, 0)
+#if USE_SDL_VERSION >= 2
   // test result on Linux Twocode/caNnotpush/Miss/Different
   {SDL_SCANCODE_PAUSE,        0x60},  // STOP
   {SDL_SCANCODE_PRINTSCREEN,  0x61},  // COPY (M)
@@ -540,7 +540,7 @@ static const SDLKCNV sdlcnv101[] = {
 
 /* 106 keyboard key table */
 static const SDLKCNV sdlcnv106[] = {
-#if SDL_VERSION_ATLEAST(2, 0, 0)
+#if USE_SDL_VERSION >= 2
   // test result on Linux Twocode/caNnotpush/Miss/Different
   {SDL_SCANCODE_PAUSE,          0x60},  // STOP
   {SDL_SCANCODE_PRINTSCREEN,    0x61},  // COPY (M)
@@ -761,7 +761,7 @@ static const SDLKCNV sdlcnv106[] = {
  * @param[in] key Key code
  * @return PC-98 data
  */
-#if SDL_VERSION_ATLEAST(2, 0, 0)
+#if USE_SDL_VERSION >= 2
 static UINT8 getKey(SDL_Scancode key) {
 #else
 static UINT8 getKey(SDLKey key) {
@@ -771,7 +771,7 @@ static UINT8 getKey(SDLKey key) {
   SDLKCNV* sdlcnv;
 
   if(np2oscfg.xrollkey) {
-#if SDL_VERSION_ATLEAST(2, 0, 0)
+#if USE_SDL_VERSION >= 2
     if(key == SDL_SCANCODE_PAGEUP) {
       key = SDL_SCANCODE_PAGEDOWN;
     } else if(key == SDL_SCANCODE_PAGEDOWN) {
@@ -818,7 +818,7 @@ void sdlkbd_keydown(UINT key) {
   UINT8   data;
 
   data = getKey(key);
-#if !SDL_VERSION_ATLEAST(2, 0, 0)
+#if USE_SDL_VERSION < 2
   if(key > 0x40000000) {
     key -= 0x40000000;
     key += 0x80;
@@ -838,7 +838,7 @@ void sdlkbd_keyup(UINT key) {
   UINT8   data;
 
   data = getKey(key);
-#if !SDL_VERSION_ATLEAST(2, 0, 0)
+#if USE_SDL_VERSION < 2
   if(key > 0x40000000) {
     key -= 0x40000000;
     key += 0x80;

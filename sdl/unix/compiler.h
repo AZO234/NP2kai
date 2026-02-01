@@ -11,7 +11,14 @@
 #include "compiler_base.h"
 
 #include	<pthread.h>
-#include	<SDL.h>
+
+#if USE_SDL_VERSION >= 3
+#include	<SDL3/SDL.h>
+#elif USE_SDL_VERSION == 2
+#include	<SDL2/SDL.h>
+#elif USE_SDL_VERSION == 1
+#include	<SDL/SDL.h>
+#endif
 
 #define	msgbox(title, msg)
 
