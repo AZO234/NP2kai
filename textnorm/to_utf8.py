@@ -24,7 +24,7 @@ def decode_best_effort(raw: bytes) -> Optional[str]:
             continue
     return None
 
-def convert_one(path: Path, add_bom: bool) -> Tuple[str, str]:
+def convert_one(path: Path, add_bom: bool, dry_run: bool) -> Tuple[str, str]:
     """
     Returns (status, note)
       status: OK / NOOP / SKIP / PERM / READERR / WRITEERR
@@ -47,6 +47,9 @@ def convert_one(path: Path, add_bom: bool) -> Tuple[str, str]:
 
     if out == raw:
         return ("NOOP", "already normalized")
+
+    if dry_run:
+        return ("OK", "would normalize utf-8")
 
     try:
         safe_write_bytes(path, out)
@@ -81,7 +84,7 @@ def main() -> int:
     rep = Reporter(dry_run=args.dry_run, verbose=args.verbose)
 
     for f in iter_files(args.dir, opt):
-        status, note = convert_one(f, args.bom)
+        status, note = convert_one(f, args.bom, args.dry_run)
         if status == "OK":
             rep.ok(f, note)
         elif status == "NOOP":
