@@ -756,7 +756,8 @@ SOURCES_CXX :=
 
 include Makefile.common
 
-INCFLAGS += -I$(NP2_PATH)/sdl/libretro \
+INCFLAGS += $(NP21_INCFLAGS) \
+	-I$(NP2_PATH)/sdl/libretro \
 	-I$(NP2_PATH)/sdl/libretro/libretro-common/include \
 	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/array \
 	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/audio \
@@ -783,32 +784,12 @@ INCFLAGS += -I$(NP2_PATH)/sdl/libretro \
 	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/string \
 	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/utils \
 	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/vfs \
-	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/vulkan \
-	-I$(NP2_PATH)/i386c \
-	-I$(NP2_PATH)/i386c/ia32 \
-	-I$(NP2_PATH)/i386c/ia32/instructions \
-	-I$(NP2_PATH)/i386c/ia32/instructions/fpu
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/vulkan
 
-SOURCES_C += $(NP2_PATH)/generic/hostdrv.c \
-	$(NP2_PATH)/sdl/libretro/libretro.c \
-	$(wildcard $(NP2_PATH)/i386c/*.c) \
-	$(wildcard $(NP2_PATH)/i386c/ia32/*.c) \
-	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/*.c) \
-	$(NP2_PATH)/i386c/ia32/instructions/fpu/fpdummy.c \
-	$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox.c \
-	$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox2.c \
-	$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_softfloat.c \
-	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/fpu/softfloat/*.c) \
-	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/fpu/softfloat3/*.c) \
-	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/mmx/*.c) \
-	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse/*.c) \
-	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse2/*.c) \
-	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse3/*.c) \
-	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/ssse3/*.c) \
-	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse4/*.c) \
-	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse4a/*.c)
+SOURCES_C += $(NP21_SOURCES_C) \
+	$(NP2_PATH)/sdl/libretro/libretro.c
 
-SOURCES_CXX += $(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_softfloat3.cpp
+SOURCES_CXX += $(NP21_SOURCES_CXX)
 
 #	$(NP2_PATH)/sdl/libretro/libretro-common/file/archive_file_zlib.c \
 #	$(NP2_PATH)/sdl/libretro/libretro-common/formats/libchdr/libchdr_flac.c \
@@ -951,8 +932,6 @@ else
 	$(LD) $(LINKOUT)$@ $(SHARED) $(OBJECTS) $(LDFLAGS) $(LIBS)
 endif
 	@echo "** BUILD SUCCESSFUL! GG NO RE **"
-
-COMMON_C_FLAGS := -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-incompatible-function-pointer-types -Wno-int-conversion
 
 %.o: %.cpp
 	$(CXX) -c $(OBJOUT)$@ $< $(CXXFLAGS) $(INCDIRS) $(COMMON_C_FLAGS)

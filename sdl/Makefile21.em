@@ -66,44 +66,18 @@ include Makefile.common
 
 INCFLAGS := $(SDL_CFLAGS) $(INCFLAGS)
 
-INCFLAGS += 	-I$(NP2_PATH)/i386c \
-		-I$(NP2_PATH)/i386c/ia32 \
-		-I$(NP2_PATH)/i386c/ia32/instructions \
-		-I$(NP2_PATH)/i386c/ia32/instructions/fpu \
-		-I$(NP2_PATH)/i386c/ia32/instructions/fpu/softfloat \
-		-I$(NP2_PATH)/i386c/ia32/instructions/mmx \
-		-I$(NP2_PATH)/i386c/ia32/instructions/sse \
+INCFLAGS += $(NP21_INCFLAGS) \
 		-I$(NP2_PATH)/sdl/em
-SOURCES_C += $(NP2_PATH)/generic/hostdrv.c \
-		$(wildcard $(NP2_PATH)/i386c/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/*.c) \
-		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpdummy.c \
-		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox.c \
-		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox2.c \
-		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_softfloat.c \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/fpu/softfloat/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/fpu/softfloat3/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/mmx/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse2/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse3/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/ssse3/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse4/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse4a/*.c) \
+SOURCES_C += $(NP21_SOURCES_C) \
 		$(NP2_PATH)/sdl/em/main.c
 
 SOURCES_CXX += $(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_softfloat3.cpp
 
-ifeq ($(SDL_VERSION), 1)
-	CFLAGS	+= $(NP2_PATH)/sdl/em/SDL_mixer.c
-endif
-
-NP2SDLDEFINE := -DNP2_SDL -DUSE_SDLAUDIO
+NP2SDLDEFINE := -DNP2_SDL -DUSE_SDL_VERSION=$(SDL_VERSION) -DSUPPORT_SDL_AUDIO
 
 OBJECTS  = $(SOURCES_CXX:.cpp=.o) $(SOURCES_C:.c=.o)
-CXXFLAGS += $(fpic) $(INCFLAGS) $(COMMONFLAGS) $(NP2DEFINE) $(NP21DEFINE) $(NP2SDLDEFINE)
-CFLAGS   += $(fpic) $(INCFLAGS) $(COMMONFLAGS) $(NP2DEFINE) $(NP21DEFINE) $(NP2SDLDEFINE)
+CXXFLAGS += $(fpic) $(INCFLAGS) $(COMMONFLAGS) $(COMMON_C_FLAGS) $(NP2DEFINE) $(NP2SDLDEFINE)
+CFLAGS   += $(fpic) $(INCFLAGS) $(COMMONFLAGS) $(COMMON_C_FLAGS) $(NP2DEFINE) $(NP2SDLDEFINE)
 LDFLAGS  += $(fpic) -lm -lssl -lcrypto $(SDL_LIBS) -static
 
 all: $(TARGET)

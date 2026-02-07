@@ -24,8 +24,17 @@ INCFLAGS :=	-I$(NP2_PATH) \
 	-I$(NP2_PATH)/wab \
 	-I$(NP2_PATH)/sdl
 
+NP2_INCFLAGS += -I$(NP2_PATH)/i286c
+
+NP21_INCFLAGS += -I$(NP2_PATH)/i386c \
+	-I$(NP2_PATH)/i386c/ia32 \
+	-I$(NP2_PATH)/i386c/ia32/instructions \
+	-I$(NP2_PATH)/i386c/ia32/instructions/fpu \
+	-I$(NP2_PATH)/i386c/ia32/instructions/fpu/softfloat \
+	-I$(NP2_PATH)/i386c/ia32/instructions/mmx \
+	-I$(NP2_PATH)/i386c/ia32/instructions/sse
+
 SOURCES_C :=	$(NP2_PATH)/calendar.c \
-	$(NP2_PATH)/debugsub.c \
 	$(NP2_PATH)/keystat.c \
 	$(NP2_PATH)/nevent.c \
 	$(NP2_PATH)/pccore.c \
@@ -98,8 +107,33 @@ SOURCES_C :=	$(NP2_PATH)/calendar.c \
 	$(wildcard $(NP2_PATH)/vram/*.c) \
 	$(wildcard $(NP2_PATH)/wab/*.c)
 
+NP2_SOURCES_C := $(NP2_PATH)/debugsub.c \
+    $(NP2_PATH)/generic/hostdrv.c \
+	$(wildcard $(NP2_PATH)/i286c/*.c)
+
+NP21_SOURCES_C := $(NP2_PATH)/debugsub386.c \
+    $(NP2_PATH)/generic/hostdrv.c \
+	$(wildcard $(NP2_PATH)/i386c/*.c) \
+	$(wildcard $(NP2_PATH)/i386c/ia32/*.c) \
+	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/*.c) \
+	$(NP2_PATH)/i386c/ia32/instructions/fpu/fpdummy.c \
+	$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox.c \
+	$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox2.c \
+	$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_softfloat.c \
+	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/fpu/softfloat/*.c) \
+	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/fpu/softfloat3/*.c) \
+	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/mmx/*.c) \
+	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse/*.c) \
+	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse2/*.c) \
+	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse3/*.c) \
+	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/ssse3/*.c) \
+	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse4/*.c) \
+	$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse4a/*.c)
+
 SOURCES_CXX := $(wildcard $(NP2_PATH)/sound/fmgen/*.cpp) \
 	$(wildcard $(NP2_PATH)/sound/mamebsd/*.cpp)
+
+NP21_SOURCES_CXX += $(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_softfloat3.cpp
 
 NP2DEFINE := -DBIOS_IO_EMULATION -DOSLANG_UTF8 -DOSLINEBREAK_CRLF -DSUPPORT_8BPP -DSUPPORT_16BPP -DSUPPORT_24BPP -DSUPPORT_32BPP -DSUPPORT_CL_GD5430 -DSUPPORT_CRT15KHZ -DSUPPORT_FAST_MEMORYCHECK -DSUPPORT_FMGEN -DSUPPORT_GPIB -DSUPPORT_HRTIMER -DSUPPORT_KAI_IMAGES -DSUPPORT_LARGE_HDD -DSUPPORT_NORMALDISP -DSUPPORT_PC9861K -DSUPPORT_PX -DSUPPORT_RESUME -DSUPPORT_RS232C_FIFO -DSUPPORT_S98 -DSUPPORT_SCSI -DSUPPORT_SMPU98 -DSUPPORT_SOFTKBD=0 -DSUPPORT_SOUND_SB16 -DSUPPORT_STATSAVE=10 -DSUPPORT_UTF8 -DSUPPORT_V30EXT -DSUPPORT_V30ORIGINAL -DSUPPORT_VIDEOFILTER -DSUPPORT_VPCVHD -DSUPPORT_WAB -DUSE_MAME -DUSE_MAME_BSD -DVAEG_FIX -DVERMOUTH_LIB -DSUPPORT_DEBUGSS
 # -DSUPPORT_NVL_IMAGES
@@ -126,3 +160,5 @@ ifeq ($(SUPPORT_ASYNC_CPU), 1)
 	NP2DEFINE += -DSUPPORT_ASYNC_CPU
 endif
 
+COMMON_C_FLAGS := -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-incompatible-function-pointer-types -Wno-int-conversion -fno-sized-deallocation
+ 

@@ -96,7 +96,11 @@ static struct {
 	void (*pcmstop)(void *cookie, UINT num);
 	void (*pcmvolume)(void *cookie, UINT num, int volume);
 } snddrv;
+#if USE_SDL_VERSION >= 3
+static SDL_AudioStream* audio_st = NULL;
+#else
 static int audio_fd = -1;
+#endif
 static BOOL opened = FALSE;
 static UINT opna_frame;
 
@@ -212,14 +216,14 @@ snddrv_setup(void)
 
 	if (np2oscfg.snddrv < SNDDRV_DRVMAX) {
 		switch (np2oscfg.snddrv) {
-#if defined(SUPPORT_SDL_AUDIO) || defined(SUPPORT_SDL_MIXER)
+#if defined(SUPPORT_SDL_AUDIO)
 		case SNDDRV_SDL:
 			sdlaudio_setup();
 			return;
 #endif
 		}
 	} else {
-#if defined(SUPPORT_SDL_AUDIO) || defined(SUPPORT_SDL_MIXER)
+#if defined(SUPPORT_SDL_AUDIO)
 		if (sdlaudio_setup() == SUCCESS) {
 			np2oscfg.snddrv = SNDDRV_SDL;
 			sysmng_update(SYS_UPDATEOSCFG);
@@ -318,7 +322,11 @@ soundmng_create(UINT rate, UINT bufmsec)
 	opna_frame = samples * 2 * sizeof(SINT16);
 
 	if ((*snddrv.drvinit)(rate, samples) != SUCCESS) {
+#if USE_SDL_VERSION >= 3
+		audio_st = NULL;
+#else
 		audio_fd = -1;
+#endif
 		nosound_setup();
 		np2oscfg.snddrv = SNDDRV_NODRV;
 		sysmng_update(SYS_UPDATEOSCFG);
@@ -380,7 +388,11 @@ soundmng_destroy(void)
 		(*snddrv.sndstop)();
 		(*snddrv.drvterm)();
 		nosound_setup();
+#if USE_SDL_VERSION >= 3
+		audio_st = NULL;
+#else
 		audio_fd = -1;
+#endif
 		opened = FALSE;
 	}
 #endif	/* __LIBRETRO__ */
@@ -968,31 +980,44 @@ saturation_s16mmx(SINT16 *dst, const SINT32 *src, UINT size)
 }
 #endif	/* GCC_CPU_ARCH_AMD64 */
 
-//#if defined(SUPPORT_SDL_AUDIO) || defined(SUPPORT_SDL_MIXER)
+#if defined(SUPPORT_SDL_AUDIO)
 
-#if !defined(__LIBRETRO__)
-#include <SDL.h>
+#if USE_SDL_VERSION >= 3
+#include <SDL3/SDL.h>
+#elif USE_SDL_VERSION == 2
+#include <SDL2/SDL.h>
+#elif USE_SDL_VERSION == 1
+#include <SDL/SDL.h>
+#endif
 
+#if USE_SDL_VERSION >= 3
+static void sdlaudio_callback(void *userdata, SDL_AudioStream *stream, int additional_amount, int total_amount);
+#else
 static void sdlaudio_callback(void *, unsigned char *, int);
+#endif
 
-#if !defined(SUPPORT_SDL_MIXER)
-
-#if USE_SDL_VERSION >= 2
+#if USE_SDL_VERSION == 2
 static UINT8 sound_silence;
 #endif
 
 static BRESULT
 sdlaudio_init(UINT rate, UINT samples)
 {
-	static SDL_AudioSpec fmt;
 	int rv;
 
+	static SDL_AudioSpec fmt;
+#if USE_SDL_VERSION >= 3
+	fmt.format = SDL_AUDIO_S16;
+	fmt.channels = 2;
+	fmt.freq = rate;
+#else
 	fmt.freq = rate;
 	fmt.format = AUDIO_S16SYS;
 	fmt.channels = 2;
 	fmt.samples = samples;
 	fmt.callback = sdlaudio_callback;
 	fmt.userdata = (void *)(samples * 2 * sizeof(SINT16));
+#endif
 
 	rv = SDL_InitSubSystem(SDL_INIT_AUDIO);
 	if (rv < 0) {
@@ -1001,6 +1026,13 @@ sdlaudio_init(UINT rate, UINT samples)
 		return FAILURE;
 	}
 
+#if USE_SDL_VERSION >= 3
+	audio_st = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &fmt, sdlaudio_callback, NULL);
+	if (audio_st == NULL) {
+		SDL_QuitSubSystem(SDL_INIT_AUDIO);
+		return FAILURE;
+	}
+#else
 	audio_fd = SDL_OpenAudio(&fmt, NULL);
 	if (audio_fd < 0) {
 		g_printerr("sdlaudio_init: SDL_OpenAudio(): %s\n",
@@ -1008,8 +1040,12 @@ sdlaudio_init(UINT rate, UINT samples)
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);
 		return FAILURE;
 	}
+#endif
+#if USE_SDL_VERSION >= 3
+	SDL_ResumeAudioStreamDevice(audio_st);
+#endif
 
-#if USE_SDL_VERSION >= 2
+#if USE_SDL_VERSION == 2
 	sound_silence = fmt.silence;
 #endif
 	return SUCCESS;
@@ -1019,8 +1055,13 @@ static BRESULT
 sdlaudio_term(void)
 {
 
+#if USE_SDL_VERSION >= 3
+	SDL_PauseAudioStreamDevice(audio_st);
+	SDL_DestroyAudioStream(audio_st);
+#else
 	SDL_PauseAudio(1);
 	SDL_CloseAudio();
+#endif
 
 	return SUCCESS;
 }
@@ -1029,28 +1070,44 @@ static void
 sdlaudio_lock(void)
 {
 
+#if USE_SDL_VERSION >= 3
+	SDL_LockAudioStream(audio_st);
+#else
 	SDL_LockAudio();
+#endif
 }
 
 static void
 sdlaudio_unlock(void)
 {
 
+#if USE_SDL_VERSION >= 3
+	SDL_UnlockAudioStream(audio_st);
+#else
 	SDL_UnlockAudio();
+#endif
 }
 
 static void
 sdlaudio_play(void)
 {
 
+#if USE_SDL_VERSION >= 3
+	SDL_ResumeAudioStreamDevice(audio_st);
+#else
 	SDL_PauseAudio(0);
+#endif
 }
 
 static void
 sdlaudio_stop(void)
 {
 
+#if USE_SDL_VERSION >= 3
+	SDL_PauseAudioStreamDevice(audio_st);
+#else
 	SDL_PauseAudio(1);
+#endif
 }
 
 static BRESULT
@@ -1072,166 +1129,21 @@ sdlaudio_setup(void)
 	return SUCCESS;
 }
 
-#else	/* SUPPORT_SDL_MIXER */
-
-#include <SDL_mixer.h>
-
-static SDL_mutex *audio_lock = NULL;
-
-static BRESULT
-sdlmixer_init(UINT rate, UINT samples)
-{
-	int rv;
-
-	if (audio_lock != NULL)
-		SDL_DestroyMutex(audio_lock);
-	audio_lock = SDL_CreateMutex();
-
-	rv = SDL_InitSubSystem(SDL_INIT_AUDIO);
-	if (rv < 0) {
-		g_printerr("sdlmixer_init: SDL_InitSubSystem(): %s\n",
-		    SDL_GetError());
-		goto failure;
-	}
-
-	rv = Mix_OpenAudio(rate, AUDIO_S16SYS, 2, samples);
-	if (rv < 0) {
-		g_printerr("sdlmixer_init: Mix_OpenAudio(): %s\n",
-		    Mix_GetError());
-		goto failure1;
-	}
-
-	rv = Mix_AllocateChannels(SOUND_MAXPCM);
-	if (rv < 0) {
-		g_printerr("sdlmixer_init: Mix_AllocateChannels(): %s\n",
-		    Mix_GetError());
-		goto failure1;
-	}
-
-	Mix_HookMusic(sdlaudio_callback,
-	    (void *)(samples * 2 * sizeof(SINT16)));
-
-	return SUCCESS;
-
-failure1:
-	Mix_CloseAudio();
-failure:
-	if (audio_lock != NULL)
-		SDL_DestroyMutex(audio_lock);
-	return FAILURE;
-}
-
-static BRESULT
-sdlmixer_term(void)
-{
-
-	Mix_Pause(-1);
-	Mix_CloseAudio();
-	SDL_DestroyMutex(audio_lock);
-	audio_lock = NULL;
-
-	return SUCCESS;
-}
-
-static void *
-sdlmixer_pcmload(UINT num, const char *path)
-{
-
-	return Mix_LoadWAV(path);
-}
-
-static void
-sdlmixer_pcmdestroy(void *cookie, UINT num)
-{
-	Mix_Chunk *chunk = cookie;
-
-	Mix_FreeChunk(chunk);
-}
-
-static void
-sdlmixer_pcmplay(void *cookie, UINT num, BOOL loop)
-{
-	Mix_Chunk *chunk = cookie;
-
-	Mix_PlayChannel(num, chunk, loop ? -1 : 1);
-}
-
-static void
-sdlmixer_pcmstop(void *cookie, UINT num)
-{
-
-	Mix_HaltChannel(num);
-}
-
-static void
-sdlmixer_pcmvolume(void *cookie, UINT num, int volume)
-{
-
-	Mix_Volume(num, (MIX_MAX_VOLUME * volume) / 100);
-}
-
-static void
-sdlmixer_lock(void)
-{
-
-	SDL_LockMutex(audio_lock);
-}
-
-static void
-sdlmixer_unlock(void)
-{
-
-	SDL_UnlockMutex(audio_lock);
-}
-
-static void
-sdlmixer_play(void)
-{
-
-	Mix_Resume(-1);
-}
-
-static void
-sdlmixer_stop(void)
-{
-
-	Mix_Pause(-1);
-}
-
-static BRESULT
-sdlaudio_setup(void)
-{
-
-	snddrv.drvinit = sdlmixer_init;
-	snddrv.drvterm = sdlmixer_term;
-	snddrv.drvlock = sdlmixer_lock;
-	snddrv.drvunlock = sdlmixer_unlock;
-	snddrv.sndplay = sdlmixer_play;
-	snddrv.sndstop = sdlmixer_stop;
-	snddrv.pcmload = sdlmixer_pcmload;
-	snddrv.pcmdestroy = sdlmixer_pcmdestroy;
-	snddrv.pcmplay = sdlmixer_pcmplay;
-	snddrv.pcmstop = sdlmixer_pcmstop;
-	snddrv.pcmvolume = sdlmixer_pcmvolume;
-
-	return SUCCESS;
-}
-
-#undef	sndbuf_lock
-#undef	sndbuf_unlock
-#define	sndbuf_lock()	sdlmixer_lock()
-#define	sndbuf_unlock()	sdlmixer_unlock()
-
-#endif	/* !SUPPORT_SDL_MIXER */
 
 #endif	/* __LIBRETRO__ */
 
 #if defined(__LIBRETRO__)
 void
-#else	/* __LIBRETRO__ */
-static void
-#endif	/* __LIBRETRO__ */
 sdlaudio_callback(void *userdata, unsigned char *stream, int len)
+#else	/* __LIBRETRO__ */
+#if USE_SDL_VERSION >= 3
+static void
+sdlaudio_callback(void *userdata, SDL_AudioStream *stream, int additional_amount, int total_amount)
+#else
+static void
+sdlaudio_callback(void *userdata, unsigned char *stream, int len)
+#endif
+#endif	/* __LIBRETRO__ */
 {
 	const UINTPTR frame_size = (UINTPTR)(userdata);
 	struct sndbuf *sndbuf;
@@ -1251,22 +1163,38 @@ sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 	}
    	audio_batch_cb(soundbuf,len/4);
 #else	/* __LIBRETRO__ */
-#if !defined(SUPPORT_SDL_MIXER) && USE_SDL_VERSION >= 2
-	/* SDL2 から SDL 側で stream を無音で初期化しなくなった */
+#if USE_SDL_VERSION == 2
+	/* 無音で初期化 */
 	memset(stream, sound_silence, len);
 #endif
 
 	sndbuf_lock();
 
 	sndbuf = SNDBUF_FILLED_QUEUE_FIRST();
-	if (sndbuf == NULL)
+	if (sndbuf == NULL) {
+#if USE_SDL_VERSION >= 3
+		/* SDL3では明示的に無音データを送る */
+		static SINT16 silence[4096] = {0};
+		int silence_size = MIN(additional_amount, sizeof(silence));
+		SDL_PutAudioStreamData(stream, silence, silence_size);
+#endif
 		goto out;
+	}
 
+#if USE_SDL_VERSION >= 3
+	while (sndbuf->remain < additional_amount) {
+#else
 	while (sndbuf->remain < len) {
+#endif
 		SNDBUF_FILLED_QUEUE_REMOVE_HEAD();
 		sndbuf_unlock();
 
-#if USE_SDL_VERSION >= 2
+#if USE_SDL_VERSION >= 3
+		SDL_SetAudioStreamGain(stream, (float)np2cfg.vol_master / 100);
+		SDL_PutAudioStreamData(stream,
+			sndbuf->buf + (sndbuf->size - sndbuf->remain),
+			sndbuf->remain);
+#elif USE_SDL_VERSION == 2
 		SDL_MixAudioFormat(stream,
 		    sndbuf->buf + (sndbuf->size - sndbuf->remain),
 		    AUDIO_S16LSB,
@@ -1276,8 +1204,12 @@ sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 		    sndbuf->buf + (sndbuf->size - sndbuf->remain),
 		    sndbuf->remain, SDL_MIX_MAXVOLUME);
 #endif
+#if USE_SDL_VERSION >= 3
+		additional_amount -= sndbuf->remain;
+#else
 		stream += sndbuf->remain;
 		len -= sndbuf->remain;
+#endif
 		sndbuf->remain = 0;
 
 		sndbuf_lock();
@@ -1287,19 +1219,28 @@ sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 			goto out;
 	}
 
+#if USE_SDL_VERSION >= 3
+	if (sndbuf->remain == additional_amount) {
+#else
 	if (sndbuf->remain == len) {
+#endif
 		SNDBUF_FILLED_QUEUE_REMOVE_HEAD();
 		sndbuf_unlock();
 	}
 
-#if USE_SDL_VERSION >= 2
-	SDL_MixAudioFormat(stream, sndbuf->buf + (sndbuf->size - sndbuf->remain), AUDIO_S16LSB,
+#if USE_SDL_VERSION >= 3
+	SDL_PutAudioStreamData(stream, sndbuf->buf + (sndbuf->size - sndbuf->remain),
+		additional_amount);
+	sndbuf->remain -= additional_amount;
+#elif USE_SDL_VERSION == 2
+	SDL_MixAudioFormat(stream, sndbuf->buf + (sndbuf->size - sndbuf->remain), AUDIO_S16SYS,
 	    len, (int)(((float)SDL_MIX_MAXVOLUME / 100) * np2cfg.vol_master));
-#else
+	sndbuf->remain -= len;
+#elif USE_SDL_VERSION == 1
 	SDL_MixAudio(stream, sndbuf->buf + (sndbuf->size - sndbuf->remain),
 	    len, (int)(((float)SDL_MIX_MAXVOLUME / 100) * np2cfg.vol_master));
-#endif
 	sndbuf->remain -= len;
+#endif
 
 	if (sndbuf->remain == 0) {
 		sndbuf_lock();
@@ -1309,7 +1250,5 @@ sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 	sndbuf_unlock();
 #endif	/* __LIBRETRO__ */
 }
-
-//#endif	/* SUPPORT_SDL_AUDIO || SUPPORT_SDL_MIXER */
 
 #endif	/* !NOSOUND */
