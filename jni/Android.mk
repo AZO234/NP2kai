@@ -12,58 +12,40 @@ CORE_DIR := $(LOCAL_PATH)/..
 
 include $(CORE_DIR)/sdl/Makefile.common
 
-INCFLAGS += 	-I$(NP2_PATH)/sdl/libretro \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/array \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/audio \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/audio/conversion \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/compat \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/dynamic \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/encodings \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/features \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/file \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/formats \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/gfx \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/gfx/math \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/gfx/scaler \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/glsm \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/glsym \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/glsym/switch \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/libchdr \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/lists \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/math \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/net \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/queues \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/rthreads \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/streams \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/string \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/utils \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/vfs \
-		-I$(NP2_PATH)/sdl/libretro/libretro-common/include/vulkan \
-		-I$(NP2_PATH)/i386c \
-		-I$(NP2_PATH)/i386c/ia32 \
-		-I$(NP2_PATH)/i386c/ia32/instructions \
-		-I$(NP2_PATH)/i386c/ia32/instructions/fpu
+INCFLAGS += (NP21_INCFLAGS) \
+	-I$(NP2_PATH)/sdl/libretro \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/array \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/audio \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/audio/conversion \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/compat \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/dynamic \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/encodings \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/features \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/file \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/formats \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/gfx \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/gfx/math \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/gfx/scaler \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/glsm \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/glsym \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/glsym/switch \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/libchdr \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/lists \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/math \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/net \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/queues \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/rthreads \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/streams \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/string \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/utils \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/vfs \
+	-I$(NP2_PATH)/sdl/libretro/libretro-common/include/vulkan
 
-SOURCES_C += $(NP2_PATH)/sdl/libretro/libretro.c \
-		$(wildcard $(NP2_PATH)/i386c/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/*.c) \
-		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpdummy.c \
-		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox.c \
-		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox2.c \
-		$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_softfloat.c \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/fpu/softfloat/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/fpu/softfloat3/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/mmx/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse2/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse3/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/ssse3/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse4/*.c) \
-		$(wildcard $(NP2_PATH)/i386c/ia32/instructions/sse4a/*.c)
+SOURCES_C += $(NP21_SOURCES_C) \
+	$(NP2_PATH)/sdl/libretro/libretro.c
 
-SOURCES_CXX += $(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_softfloat3.cpp
+SOURCES_CXX += $(NP21_SOURCES_CXX)
 
 #		$(NP2_PATH)/sdl/libretro/libretro-common/file/archive_file_zlib.c \
 #		$(NP2_PATH)/sdl/libretro/libretro-common/formats/libchdr/libchdr_flac.c \
@@ -122,7 +104,7 @@ ifneq ($(STATIC_LINKING), 1)
 			$(NP2_PATH)/sdl/libretro/libretro-common/string/stdstring.c
 endif
 
-COREFLAGS := -D__LIBRETRO__ $(INCFLAGS) $(NP2DEFINE) $(NP21DEFINE) -DSUPPORT_NP2_TICKCOUNT -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-incompatible-function-pointer-types -Wno-int-conversion -fno-sized-deallocation
+COREFLAGS := -D__LIBRETRO__ $(INCFLAGS) $(NP2DEFINE) $(COMMON_C_FLAGS) $(NP21DEFINE) -DSUPPORT_NP2_TICKCOUNT
 
 ifeq ($(SUPPORT_NP2_THREAD), 1)
 	SOURCES_C += $(NP2_PATH)/sdl/libretro/libretro-common/rthreads/rthreads.c \

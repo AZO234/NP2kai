@@ -32,10 +32,6 @@
 #include <unistd.h>
 #include <libgen.h>
 
-#if defined(SUPPORT_SDL_AUDIO) || defined(SUPPORT_SDL_MIXER)
-#include <SDL.h>
-#endif
-
 #include <np2.h>
 #include <fdd/diskdrv.h>
 #include <dosio.h>
