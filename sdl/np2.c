@@ -370,7 +370,7 @@ char np2_main_read_m3u(const char *file)
 #if defined(__LIBRETRO__)
   while (filestream_gets(f, line, sizeof(line)) && np2_main_disk_images_count < sizeof(np2_main_disk_images_paths) / MAX_PATH)
 #else
-  while (fgets(f, line, sizeof(line)) && np2_main_disk_images_count < sizeof(np2_main_disk_images_paths) / MAX_PATH)
+  while (fgets(f, sizeof(line), line) && np2_main_disk_images_count < sizeof(np2_main_disk_images_paths) / MAX_PATH)
 #endif
   {
     if (line[0] == '#')
