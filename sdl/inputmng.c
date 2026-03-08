@@ -3,13 +3,11 @@
 
 
 typedef struct {
-#if defined(SDL_h_)
-#if USE_SDL_VERSION >= 2
+#if USE_SDL >= 2
 	SDL_Scancode	key;
-#else
+#elif USE_SDL == 1
 	SDLKey	key;
-#endif
-#else
+#elif defined(__LIBRETRO__)
 	short	key;
 #endif
 	UINT		bit;
@@ -23,8 +21,7 @@ typedef struct {
 static	INPMNG	inpmng;
 
 static const KEYBIND keybind[] = {
-#if defined(SDL_h_)
-#if USE_SDL_VERSION >= 2
+#if USE_SDL >= 2
 					{SDL_SCANCODE_UP,		NP2_KEY_UP},
 					{SDL_SCANCODE_DOWN,		NP2_KEY_DOWN},
 					{SDL_SCANCODE_LEFT,		NP2_KEY_LEFT},
@@ -32,7 +29,7 @@ static const KEYBIND keybind[] = {
 					{SDL_SCANCODE_RETURN,	KEY_ENTER},
 					{SDL_SCANCODE_ESCAPE,	KEY_MENU},
 					{SDL_SCANCODE_TAB,		KEY_SKIP}		/* とりあえずね… */
-#else
+#elif USE_SDL == 1
 					{SDLK_UP,		NP2_KEY_UP},
 					{SDLK_DOWN,		NP2_KEY_DOWN},
 					{SDLK_LEFT,		NP2_KEY_LEFT},
@@ -40,8 +37,7 @@ static const KEYBIND keybind[] = {
 					{SDLK_RETURN,	KEY_ENTER},
 					{SDLK_ESCAPE,	KEY_MENU},
 					{SDLK_TAB,		KEY_SKIP}		/* とりあえずね… */
-#endif
-#else
+#elif defined(__LIBRETRO__)
 					{RETROK_UP,		NP2_KEY_UP},
 					{RETROK_DOWN,		NP2_KEY_DOWN},
 					{RETROK_LEFT,		NP2_KEY_LEFT},

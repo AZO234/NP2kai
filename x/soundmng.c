@@ -82,7 +82,7 @@ static struct {
 	void (*pcmstop)(void *cookie, UINT num);
 	void (*pcmvolume)(void *cookie, UINT num, int volume);
 } snddrv;
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 static SDL_AudioStream* audio_st = NULL;
 #else
 static int audio_fd = -1;
@@ -274,7 +274,7 @@ soundmng_create(UINT rate, UINT bufmsec)
 	opna_frame = samples * 2 * sizeof(SINT16);
 
 	if ((*snddrv.drvinit)(rate, samples) != SUCCESS) {
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 		audio_st = NULL;
 #else
 		audio_fd = -1;
@@ -332,7 +332,7 @@ soundmng_destroy(void)
 		(*snddrv.sndstop)();
 		(*snddrv.drvterm)();
 		nosound_setup();
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 		audio_st = NULL;
 #else
 		audio_fd = -1;
@@ -919,21 +919,13 @@ saturation_s16mmx(SINT16 *dst, const SINT32 *src, UINT size)
 
 #if defined(SUPPORT_SDL_AUDIO)
 
-#if USE_SDL_VERSION >= 3
-#include <SDL3/SDL.h>
-#elif USE_SDL_VERSION == 2
-#include <SDL2/SDL.h>
-#elif USE_SDL_VERSION == 1
-#include <SDL/SDL.h>
-#endif
-
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 static void sdlaudio_callback(void *userdata, SDL_AudioStream *stream, int additional_amount, int total_amount);
 #else
 static void sdlaudio_callback(void *, unsigned char *, int);
 #endif
 
-#if USE_SDL_VERSION == 2
+#if USE_SDL == 2
 static UINT8 sound_silence;
 #endif
 
@@ -943,7 +935,7 @@ sdlaudio_init(UINT rate, UINT samples)
 	int rv;
 
 	static SDL_AudioSpec fmt;
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 	fmt.format = SDL_AUDIO_S16;
 	fmt.channels = 2;
 	fmt.freq = rate;
@@ -963,7 +955,7 @@ sdlaudio_init(UINT rate, UINT samples)
 		return FAILURE;
 	}
 
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 	audio_st = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &fmt, sdlaudio_callback, NULL);
 	if (audio_st == NULL) {
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);
@@ -978,11 +970,11 @@ sdlaudio_init(UINT rate, UINT samples)
 		return FAILURE;
 	}
 #endif
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 	SDL_ResumeAudioStreamDevice(audio_st);
 #endif
 
-#if USE_SDL_VERSION == 2
+#if USE_SDL == 2
 	sound_silence = fmt.silence;
 #endif
 	return SUCCESS;
@@ -992,7 +984,7 @@ static BRESULT
 sdlaudio_term(void)
 {
 
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 	SDL_PauseAudioStreamDevice(audio_st);
 	SDL_DestroyAudioStream(audio_st);
 #else
@@ -1007,7 +999,7 @@ static void
 sdlaudio_lock(void)
 {
 
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 	SDL_LockAudioStream(audio_st);
 #else
 	SDL_LockAudio();
@@ -1018,7 +1010,7 @@ static void
 sdlaudio_unlock(void)
 {
 
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 	SDL_UnlockAudioStream(audio_st);
 #else
 	SDL_UnlockAudio();
@@ -1029,7 +1021,7 @@ static void
 sdlaudio_play(void)
 {
 
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 	SDL_ResumeAudioStreamDevice(audio_st);
 #else
 	SDL_PauseAudio(0);
@@ -1040,7 +1032,7 @@ static void
 sdlaudio_stop(void)
 {
 
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 	SDL_PauseAudioStreamDevice(audio_st);
 #else
 	SDL_PauseAudio(1);
@@ -1067,7 +1059,7 @@ sdlaudio_setup(void)
 }
 
 static void
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 sdlaudio_callback(void *userdata, SDL_AudioStream *stream, int additional_amount, int total_amount)
 #else
 sdlaudio_callback(void *userdata, unsigned char *stream, int len)
@@ -1076,7 +1068,7 @@ sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 	const UINT frame_size = PTR_TO_UINT32(userdata);
 	struct sndbuf *sndbuf;
 
-#if USE_SDL_VERSION == 2
+#if USE_SDL == 2
 	/* 無音で初期化 */
 	memset(stream, sound_silence, len);
 #endif
@@ -1085,7 +1077,7 @@ sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 
 	sndbuf = SNDBUF_FILLED_QUEUE_FIRST();
 	if (sndbuf == NULL) {
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 		/* SDL3では明示的に無音データを送る */
 		static SINT16 silence[4096] = {0};
 		int silence_size = MIN(additional_amount, sizeof(silence));
@@ -1095,7 +1087,7 @@ sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 	}
 
 
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 	while (sndbuf->remain < additional_amount) {
 #else
 	while (sndbuf->remain < len) {
@@ -1103,12 +1095,12 @@ sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 		SNDBUF_FILLED_QUEUE_REMOVE_HEAD();
 		sndbuf_unlock();
 
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 		SDL_SetAudioStreamGain(stream, (float)np2cfg.vol_master / 100);
 		SDL_PutAudioStreamData(stream,
 			sndbuf->buf + (sndbuf->size - sndbuf->remain),
 			sndbuf->remain);
-#elif USE_SDL_VERSION == 2
+#elif USE_SDL == 2
 		SDL_MixAudioFormat(stream,
 		    sndbuf->buf + (sndbuf->size - sndbuf->remain),
 		    AUDIO_S16LSB,
@@ -1118,7 +1110,7 @@ sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 		    sndbuf->buf + (sndbuf->size - sndbuf->remain),
 		    sndbuf->remain, SDL_MIX_MAXVOLUME);
 #endif
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 		additional_amount -= sndbuf->remain;
 #else
 		stream += sndbuf->remain;
@@ -1133,7 +1125,7 @@ sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 			goto out;
 	}
 
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 	if (sndbuf->remain == additional_amount) {
 #else
 	if (sndbuf->remain == len) {
@@ -1142,15 +1134,15 @@ sdlaudio_callback(void *userdata, unsigned char *stream, int len)
 		sndbuf_unlock();
 	}
 
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 	SDL_PutAudioStreamData(stream, sndbuf->buf + (sndbuf->size - sndbuf->remain),
 		additional_amount);
 	sndbuf->remain -= additional_amount;
-#elif USE_SDL_VERSION == 2
+#elif USE_SDL == 2
 	SDL_MixAudioFormat(stream, sndbuf->buf + (sndbuf->size - sndbuf->remain), AUDIO_S16SYS,
 	    len, (int)(((float)SDL_MIX_MAXVOLUME / 100) * np2cfg.vol_master));
 	sndbuf->remain -= len;
-#elif USE_SDL_VERSION == 1
+#else
 	SDL_MixAudio(stream, sndbuf->buf + (sndbuf->size - sndbuf->remain),
 	    len, (int)(((float)SDL_MIX_MAXVOLUME / 100) * np2cfg.vol_master));
 	sndbuf->remain -= len;

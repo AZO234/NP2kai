@@ -464,7 +464,7 @@ extern int GetCpuTypeIndex();
 extern int SetCpuTypeIndex(UINT index);
 #endif
 
-#if !defined(_WINDOWS) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+#if defined(NP2_WIN)
 extern BOOL QueryPerformanceCounter(LARGE_INTEGER* count);
 extern BOOL QueryPerformanceFrequency(LARGE_INTEGER* freq);
 #endif

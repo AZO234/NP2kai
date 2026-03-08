@@ -1,6 +1,6 @@
-#ifndef	NP2_X_CMPARA_H__
-#define	NP2_X_CMPARA_H__
+#ifndef	NP2_SDL_CMPARA_H__
+#define	NP2_SDL_CMPARA_H__
 
 // ---- com manager parallel for unix
 
-#endif	/* NP2_X_CMPARA_H__ */
+#endif	/* NP2_SDL_CMPARA_H__ */

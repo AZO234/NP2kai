@@ -350,12 +350,12 @@ char np2_main_read_m3u(const char *file)
   FILE *f;
 #endif
 
-#if defined(__LIBRETRO__)
-  f = filestream_open(file, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
-#elif defined(_WINDOWS)
+#if defined(NP2_WIN)
 	wchar_t	wfile[MAX_PATH];
 	codecnv_utf8toucs2(wfile, MAX_PATH, file, -1);
   f = _wfopen(wfile, "r");
+#elif defined(__LIBRETRO__)
+  f = filestream_open(file, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
 #else
   f = fopen(file, "r");
 #endif
@@ -450,13 +450,13 @@ int np2_main(int argc, char *argv[]) {
 		}*/
 	}
 
-#if defined(__LIBRETRO__)
-	milstr_ncpy(base_dir, lr_game_base_dir, MAX_PATH);
-#elif defined(EMSCRIPTEN) && !defined(__LIBRETRO__)
-	milstr_ncat(np2cfg.biospath, datadir, sizeof(np2cfg.biospath));
-	file_setcd(np2cfg.biospath);
-#elif defined(_WINDOWS) && !defined(__LIBRETRO__)
+#if defined(NP2_WIN)
 	milstr_ncpy(np2cfg.biospath, "./", sizeof(np2cfg.biospath));
+	file_setcd(np2cfg.biospath);
+#elif defined(__LIBRETRO__)
+	milstr_ncpy(base_dir, lr_game_base_dir, MAX_PATH);
+#elif defined(EMSCRIPTEN)
+	milstr_ncat(np2cfg.biospath, datadir, sizeof(np2cfg.biospath));
 	file_setcd(np2cfg.biospath);
 #else
 	char *config_home = getenv("XDG_CONFIG_HOME");

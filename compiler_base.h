@@ -5,10 +5,6 @@
 #ifndef _COMPILER_BASE_H_
 #define _COMPILER_BASE_H_
 
-#if defined(__LIBRETRO__)
-#include <libretro.h>
-#endif
-
 // secure
 #if defined(__MINGW32__) || defined(__MINGW64__)
 #define MINGW_HAS_SECURE_API 1
@@ -17,36 +13,7 @@
 // Windows
 #if defined(_WIN32) || defined(_WIN64) || defined(__MINGW32__) || defined(__MINGW64__) || defined(__CYGWIN__)
 #if !defined(_WINDOWS)
-#define _WINDOWS
-#endif
-#endif
-
-/* archtecture */
-#if defined(amd64) || defined(__AMD64__) || defined(__amd64__) || \
-    defined(x86_64) || defined(__x86_64__) || defined(__X86_64__) || \
-    defined(__aarch64__) || defined(_WIN64) || defined(_M_X64) || \
-    defined(__LP64__) || defined(__LLP64__) || defined(__LLP64__)
-#define	NP2_CPU_64BIT
-#endif
-#if defined(i386) || defined(__i386__) || defined(__arm__) || \
-    defined(_WIN32) || defined(_M_IX86) || \
-    defined(NP2_CPU_ARCH_AMD64)
-#define	NP2_CPU_32BIT
-#endif
-
-#if defined(amd64) || defined(__AMD64__) || defined(__amd64__) || \
-    defined(x86_64) || defined(__x86_64__) || defined(__X86_64__)
-#define	NP2_CPU_ARCH_AMD64
-#endif
-#if defined(i386) || defined(__i386__) || defined(NP2_CPU_ARCH_AMD64)
-#define	NP2_CPU_ARCH_IA32
-#endif
-#if defined(__GNUC__)
-#if defined(NP2_CPU_ARCH_IA32)
-#define	GCC_CPU_ARCH_IA32
-#endif
-#if defined(NP2_CPU_ARCH_AMD64)
-#define	GCC_CPU_ARCH_AMD64
+#define _WINDOWS 1
 #endif
 #endif
 
@@ -55,7 +22,27 @@
 #include <windows.h>
 #include <tchar.h>
 // not define _UNICODE, UNICODE now
+#include <minwindef.h>
+#include <winnt.h>
 #endif
+
+#if defined(NP2_WIN)
+#elif defined(USE_SDL)
+#if USE_SDL >= 3
+#include <SDL3/SDL.h>
+#elif USE_SDL == 2
+#include <SDL3/SDL.h>
+#elif USE_SDL == 1
+#include <SDL/SDL.h>
+#else
+#error USE_SDL must be 3, 2, 1
+#endif
+#elif defined(__LIBRETRO__)
+#include <libretro.h>
+#else
+#error NP2 must be define target
+#endif
+
 #if defined(__cplusplus)
 #include <cstdio>
 #include <cstdlib>  // include cwchar
@@ -142,11 +129,12 @@
 #endif
 #endif
 
+// XOPEN_SOURCE
 #if __STDC_VERSION__ >= 199901L
 #define _XOPEN_SOURCE 600
 #else
 #define _XOPEN_SOURCE 500
-#endif /* __STDC_VERSION__ */
+#endif
 
 // size fixed integer
 #if !defined(__cplusplus) && !defined(C99)
@@ -156,95 +144,48 @@ typedef short              int16_t;
 typedef unsigned short     uint16_t;
 typedef long               int32_t;
 typedef unsigned long      uint32_t;
-#if defined(NP2_CPU_64BIT)
 typedef long long          int64_t;   // literal: nnnLL  format: %PRId64
 typedef unsigned long long uint64_t;  // literal: nnnULL format: %PRIu64
-#else
-typedef int32_t            int64_t;
-typedef uint32_t           uint64_t;
-#endif
-#if defined(NP2_CPU_64BIT)
-typedef int64_t  intptr_t;
-typedef uint64_t uintptr_t;
-typedef int64_t  intmax_t;
-typedef uint64_t uintmax_t;
-#else
-typedef int32_t  intptr_t;
-typedef uint32_t uintptr_t;
-typedef int32_t  intmax_t;
-typedef uint32_t uintmax_t;
-#endif
+typedef int64_t            intptr_t;
+typedef uint64_t           uintptr_t;
+typedef int64_t            intmax_t;
+typedef uint64_t           uintmax_t;
 #endif
 
-#if !defined(_MSC_VER)
-typedef	int32_t  INT;
-typedef	uint32_t UINT;
-typedef	int8_t   INT8;
-typedef	uint8_t  UINT8;
-typedef	int32_t  INT32;
-typedef	uint32_t UINT32;
-#endif
+typedef	int      INT;
 typedef	INT      SINT;
+typedef	unsigned int UINT;
+typedef	int8_t   INT8;
 typedef	INT8     SINT8;
+typedef	uint8_t  UINT8;
 typedef	int16_t  INT16;
 typedef	INT16    SINT16;
 typedef	uint16_t UINT16;
+typedef	int32_t  INT32;
 typedef	INT32    SINT32;
-#if defined(NP2_CPU_64BIT) || defined(__arm__)
+typedef	uint32_t UINT32;
 typedef	int64_t  INT64;
-typedef	uint64_t UINT64;
 typedef	INT64    SINT64;
-#else
-#if !defined(__MINGW32__) && !defined(__arm__)  // for libretro
-//#if !defined(_WINDOWS) && !defined(__arm__)  // for me
-typedef	int32_t  INT64;
-typedef	uint32_t UINT64;
-#endif
-typedef	INT32    SINT64;
-#endif
+typedef	uint64_t UINT64;
 
 // variable size
 typedef size_t    SIZET;    // format: %zu
 typedef intptr_t  INTPTR;   // format: %PRIdPTR
 typedef uintptr_t UINTPTR;  // format: %PRIuPTR
-#if !defined(_MSC_VER)
 typedef intptr_t  INT_PTR;  // format: %PRIdPTR
 typedef uintptr_t UINT_PTR; // format: %PRIuPTR
-#endif
 typedef intmax_t  INTMAX;   // format: %PRIdMAX
 typedef uintmax_t UINTMAX;  // format: %PRIuMAX
 
 // bool
-#if defined(__cplusplus)
-#if !defined(_WINDOWS)  // BOOL typedefed as int in winnt.h
-typedef bool BOOL;
-#endif
-#if !defined(TRUE)
-#define TRUE  true
-#endif
-#if !defined(FALSE)
-#define FALSE false
-#endif
-#else
-#if defined(C99)
+#if !defined(_WINDOWS)
 #include <stdbool.h>
-#if !defined(_WINDOWS)  // BOOL typedefed as int in winnt.h
 typedef bool BOOL;
-#endif
-#if !defined(TRUE)
-#define TRUE  true
-#endif
-#if !defined(FALSE)
-#define FALSE false
-#endif
-#else
-typedef int  BOOL;
 #if !defined(TRUE)
 #define TRUE  (1==1)
 #endif
 #if !defined(FALSE)
 #define FALSE (1==0)
-#endif
 #endif
 #endif
 
@@ -369,9 +310,10 @@ typedef int  BOOL;
 #endif
 #endif
 
-#if !defined(_WINDOWS)
+#if !defined(NP2_WIN)
 #define WINAPI
 
+#if !defined(_WINDOWS)
 typedef uint8_t  BYTE;
 typedef uint16_t WORD;
 typedef uint32_t DWORD;
@@ -385,6 +327,7 @@ typedef union {
   } u;
   SINT64 QuadPart;
 } LARGE_INTEGER;
+#endif
 
 #define _T(string) string
 #define _tcscpy    OEMSTRCPY
@@ -441,10 +384,12 @@ typedef uint16_t REG16;
 
 #define COPY64(pd, ps) *(UINT64*)(pd) = *(UINT64*)(ps);
 
+// MAXPATH
 #ifndef MAX_PATH
 #define MAX_PATH 4096
 #endif
 
+// min max 2 params
 #ifndef	MAX
 #define	MAX(a, b) (((a) > (b)) ? (a) : (b))
 #endif
@@ -456,13 +401,14 @@ typedef uint16_t REG16;
 #define	NELEMENTS(a) (sizeof(a) / sizeof(a[0]))
 #endif
 
+// MEMORYSIZE
 #if defined(SUPPORT_LARGE_MEMORY)
 #define MEMORY_MAXSIZE 4000
 #else
 #define MEMORY_MAXSIZE 230
 #endif
 
-#if defined(NP2_CPU_64BIT)
+// FILELEN
 #if defined(SUPPORT_LARGE_HDD)
 typedef int64_t FILEPOS;
 typedef int64_t FILELEN;
@@ -475,13 +421,8 @@ typedef int32_t FILELEN;
 #define	NHD_MAXSIZE  2000
 #define	NHD_MAXSIZE2 2000
 #endif
-#else
-typedef int32_t FILEPOS;
-typedef int32_t FILELEN;
-#define	NHD_MAXSIZE  2000
-#define	NHD_MAXSIZE2 2000
-#endif
 
+// MEMOPTIMIZE
 #undef  MEMOPTIMIZE
 #if defined(arm) || defined (__arm__)
 #define	MEMOPTIMIZE 2

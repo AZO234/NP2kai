@@ -7,30 +7,17 @@
 
 #include <compiler.h>
 
-#if defined(NP2_THREAD_WIN)
-#include <windows.h>
+#if defined(NP2_WIN)
 #include <process.h>
-#elif defined(NP2_THREAD_POSIX)
-#include <pthread.h>
-#include <semaphore.h>
-#include <unistd.h>
-#elif defined(NP2_SDL)
-#if defined(USE_SDL_CONFIG)
-#include "SDL.h"
-#else
-#include <SDL.h>
-#endif
 #elif defined(__LIBRETRO__)
 #include <rthreads/rthreads.h>
 #include <retro_timers.h>
 #include <libretro/rsemaphore.h>
 #endif
 
-#if defined(NP2_THREAD_WIN)
+#if defined(NP2_WIN)
 typedef HANDLE NP2_Thread_t;
-#elif defined(NP2_THREAD_POSIX)
-typedef pthread_t NP2_Thread_t;
-#elif defined(NP2_SDL)
+#elif defined(USE_SDL)
 typedef SDL_Thread* NP2_Thread_t;
 #elif defined(__LIBRETRO__)
 typedef sthread_t* NP2_Thread_t;
@@ -55,11 +42,9 @@ extern void NP2_Thread_Detach(NP2_Thread_t* pth);
 
 /* --- semaphore --- */
 
-#if defined(NP2_THREAD_WIN)
+#if defined(NP2_WIN)
 typedef HANDLE NP2_Semaphore_t;
-#elif defined(NP2_THREAD_POSIX)
-typedef sem_t NP2_Semaphore_t;
-#elif defined(NP2_SDL)
+#elif defined(USE_SDL)
 typedef SDL_sem* NP2_Semaphore_t;
 #elif defined(__LIBRETRO__)
 typedef ssem_t* NP2_Semaphore_t;
@@ -129,17 +114,15 @@ extern void NP2_WaitQueue_Shift_Wait(NP2_WaitQueue_t* pque, NP2_Semaphore_t* pse
 
 /* --- sleep ms --- */
 
-#if defined(NP2_THREAD_WIN)
+#if defined(NP2_WIN)
 #define NP2_Sleep_ms(ms) Sleep(ms);
-#elif defined(NP2_THREAD_POSIX)
-#define NP2_Sleep_ms(ms) usleep(ms * 1000);
-#elif defined(NP2_SDL)
+#elif defined(USE_SDL)
 #define NP2_Sleep_ms(ms) SDL_Delay(ms);
 #elif defined(__LIBRETRO__)
 #define NP2_Sleep_ms(ms) retro_sleep(ms);
 #endif
 
-#if !defined(_WINDOWS)
+#if !defined(NP2_WIN)
 extern BOOL QueryPerformanceCounter(LARGE_INTEGER* count);
 extern BOOL QueryPerformanceFrequency(LARGE_INTEGER* freq);
 #endif

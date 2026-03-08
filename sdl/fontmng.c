@@ -14,14 +14,6 @@
 
 #if defined(SUPPORT_SDL_TTF)		/* use TTF */
 
-#if USE_SDL_VERSION >= 3
-#include	<SDL3_ttf/SDL_ttf.h>
-#elif USE_SDL_VERSION == 2
-#include	<SDL2_ttf/SDL_ttf.h>
-#elif USE_SDL_VERSION == 1
-#include	<SDL_ttf/SDL_ttf.h>
-#endif
-
 #define FONTMNG_CACHE		64						/*!< Cache count */
 
 /*! White */
@@ -403,7 +395,7 @@ static UINT8 TTFGetPixelDepth(const SDL_Surface *s, int x, int y)
 
 	if ((x >= 0) && (x < s->w) && (y >= 0) && (y < s->h))
 	{
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 		nXAlign = SDL_BYTESPERPIXEL(s->format);
 #else
 		nXAlign = s->format->BytesPerPixel;
@@ -438,7 +430,7 @@ static void TTFGetLength1(FNTMNG _this, FNTDAT fdat, UINT16 c)
 	s = NULL;
 	if (_this->ttf_font)
 	{
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 		s = TTF_RenderText_Solid(_this->ttf_font, sString, strlen(sString), s_white);
 #else
 		s = TTF_RenderUNICODE_Solid(_this->ttf_font, sString, s_white);
@@ -447,7 +439,7 @@ static void TTFGetLength1(FNTMNG _this, FNTDAT fdat, UINT16 c)
 	if (s)
 	{
 		TTFSetFontHeader(_this, fdat, s);
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 		SDL_DestroySurface(s);
 #else
 		SDL_FreeSurface(s);
@@ -473,18 +465,16 @@ static void TTFGetFont1(FNTMNG _this, FNTDAT fdat, UINT16 c)
 	int			x;
 	int			y;
 	int			depth;
-#if !defined(_WINDOWS)
 	int			minx;
 	int			maxy;
 	int			advance;
-#endif
 
 	sString[0] = c;
 	sString[1] = 0;
 	s = NULL;
 	if (_this->ttf_font)
 	{
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 		s = TTF_RenderText_Solid(_this->ttf_font, sString, strlen(sString), s_white);
 #else
 		s = TTF_RenderUNICODE_Solid(_this->ttf_font, sString, s_white);
@@ -496,19 +486,16 @@ static void TTFGetFont1(FNTMNG _this, FNTDAT fdat, UINT16 c)
 		dst = (UINT8 *)(fdat + 1);
 		if (_this->fonttype & FDAT_ALIAS)
 		{
-#if !defined(_WINDOWS)
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 			TTF_GetGlyphMetrics(_this->ttf_font,s,&minx,NULL,NULL,&maxy,&advance);
 #else
 			TTF_GlyphMetrics(_this->ttf_font,s,&minx,NULL,NULL,&maxy,&advance);
-#endif
 #endif
 			for (y = 0; y < fdat->height; y++)
 			{
 				for (x = 0; x < fdat->width; x++)
 				{
-#if !defined(_WINDOWS)
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 					depth = TTFGetPixelDepth(s, (x-minx)*2+0, (y+(TTF_GetFontAscent(_this->ttf_font)-maxy))*2+0);
 					depth += TTFGetPixelDepth(s, (x-minx)*2+1, (y+(TTF_GetFontAscent(_this->ttf_font)-maxy))*2+0);
 					depth += TTFGetPixelDepth(s, (x-minx)*2+0, (y+(TTF_GetFontAscent(_this->ttf_font)-maxy))*2+1);
@@ -519,41 +506,29 @@ static void TTFGetFont1(FNTMNG _this, FNTDAT fdat, UINT16 c)
 					depth += TTFGetPixelDepth(s, (x-minx)*2+0, (y+(TTF_FontAscent(_this->ttf_font)-maxy))*2+1);
 					depth += TTFGetPixelDepth(s, (x-minx)*2+1, (y+(TTF_FontAscent(_this->ttf_font)-maxy))*2+1);
 #endif
-#else
-					depth = TTFGetPixelDepth(s, x*2+0, y*2+0);
-					depth += TTFGetPixelDepth(s, x*2+1, y*2+0);
-					depth += TTFGetPixelDepth(s, x*2+0, y*2+1);
-					depth += TTFGetPixelDepth(s, x*2+1, y*2+1);
-#endif
 				}
 			}
 		}
 		else
 		{
-#if !defined(_WINDOWS)
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 			TTF_GetGlyphMetrics(_this->ttf_font,s,&minx,NULL,NULL,&maxy,&advance);
 #else
 			TTF_GlyphMetrics(_this->ttf_font,s,&minx,NULL,NULL,&maxy,&advance);
-#endif
 #endif
 			for (y = 0; y < fdat->height; y++)
 			{
 				for (x = 0; x < fdat->width; x++)
 				{
-#if !defined(_WINDOWS)
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 					*dst++ = TTFGetPixelDepth(s, x-minx, (y+(TTF_GetFontAscent(_this->ttf_font)-maxy)));
 #else
 					*dst++ = TTFGetPixelDepth(s, x-minx, (y+(TTF_FontAscent(_this->ttf_font)-maxy)));
 #endif
-#else
-					*dst++ = TTFGetPixelDepth(s, x, y);
-#endif
 				}
 			}
 		}
-#if USE_SDL_VERSION >= 3
+#if USE_SDL >= 3
 		SDL_DestroySurface(s);
 #else
 		SDL_FreeSurface(s);

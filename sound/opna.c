@@ -2,7 +2,7 @@
  * @file	opna.c
  * @brief	Implementation of OPNA
  */
-#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
+#if defined(NP2_WIN)
 #define bool _Bool
 #define false FALSE
 #endif

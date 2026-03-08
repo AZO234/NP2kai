@@ -9,12 +9,10 @@
 
 /* for caller */
 void NP2_Thread_Create(NP2_Thread_t* pth, void *(*thread)(void *), void* param) {
-#if defined(NP2_THREAD_WIN)
+#if defined(NP2_WIN)
   *pth = (NP2_Thread_t)_beginthread((void (__cdecl *)(void *))thread, 0, param);
-#elif defined(NP2_THREAD_POSIX)
-  pthread_create(pth, NULL, thread, param);
-#elif defined(NP2_SDL)
-#if USE_SDL_VERSION >= 2
+#elif defined(USE_SDL)
+#if USE_SDL >= 2
   *(SDL_Thread**)pth = SDL_CreateThread((SDL_ThreadFunction)thread, NULL, param);
 #else
   *(SDL_Thread**)pth = SDL_CreateThread(thread, param);
@@ -36,14 +34,11 @@ void NP2_Thread_Destroy(NP2_Thread_t* pth) {
 
 /* for callee */
 int NP2_Thread_Exit(void* retval) {
-#if defined(NP2_THREAD_WIN)
+#if defined(NP2_WIN)
   (void)retval;
   _endthread();
   return 0;
-#elif defined(NP2_THREAD_POSIX)
-  pthread_exit(retval);
-  return 0;
-#elif defined(NP2_SDL)
+#elif defined(USE_SDL)
   return (intptr_t)retval;
 #elif defined(__LIBRETRO__)
   (void)retval;
@@ -53,15 +48,11 @@ int NP2_Thread_Exit(void* retval) {
 
 /* for caller */
 void NP2_Thread_Wait(NP2_Thread_t* pth, void **retval) {
-#if defined(NP2_THREAD_WIN)
+#if defined(NP2_WIN)
   (void)retval;
   if(*pth)
     WaitForSingleObject(*pth, INFINITE);
-#elif defined(NP2_THREAD_POSIX)
-  if(pth)
-    pthread_join(*pth, retval);
-  pth = NULL;
-#elif defined(NP2_SDL)
+#elif defined(USE_SDL)
   if(pth)
     SDL_WaitThread((SDL_Thread*)*pth, (int*)retval);
   pth = NULL;
@@ -75,17 +66,13 @@ void NP2_Thread_Wait(NP2_Thread_t* pth, void **retval) {
 
 /* for caller */
 void NP2_Thread_Detach(NP2_Thread_t* pth) {
-#if defined(NP2_THREAD_WIN)
+#if defined(NP2_WIN)
   if(*pth)
     CloseHandle(*pth);
   *pth = NULL;
-#elif defined(NP2_THREAD_POSIX)
-  if(pth)
-    pthread_detach(*pth);
-  pth = NULL;
-#elif defined(NP2_SDL)
+#elif defined(USE_SDL)
   if(*pth)
-#if USE_SDL_VERSION >= 2
+#if USE_SDL >= 2
     SDL_DetachThread((SDL_Thread*)*pth);
 #else
     SDL_KillThread((SDL_Thread*)*pth);
@@ -102,11 +89,9 @@ void NP2_Thread_Detach(NP2_Thread_t* pth) {
 
 /* for caller */
 void NP2_Semaphore_Create(NP2_Semaphore_t* psem, const unsigned int initcount) {
-#if defined(NP2_THREAD_WIN)
+#if defined(NP2_WIN)
   *psem = CreateSemaphore(NULL, initcount, initcount, NULL);
-#elif defined(NP2_THREAD_POSIX)
-  sem_init(psem, 0, initcount);
-#elif defined(NP2_SDL)
+#elif defined(USE_SDL)
   *(SDL_sem**)psem = SDL_CreateSemaphore(initcount);
 #elif defined(__LIBRETRO__)
   *psem = ssem_new(initcount);
@@ -115,15 +100,11 @@ void NP2_Semaphore_Create(NP2_Semaphore_t* psem, const unsigned int initcount) {
 
 /* for caller */
 void NP2_Semaphore_Destroy(NP2_Semaphore_t* psem) {
-#if defined(NP2_THREAD_WIN)
+#if defined(NP2_WIN)
   if(*psem)
     CloseHandle(*psem);
   *psem = NULL;
-#elif defined(NP2_THREAD_POSIX)
-  if(psem)
-    sem_destroy(psem);
-  psem = NULL;
-#elif defined(NP2_SDL)
+#elif defined(USE_SDL)
   if(*psem)
     SDL_DestroySemaphore((SDL_sem*)*psem);
   *psem = NULL;
@@ -136,11 +117,9 @@ void NP2_Semaphore_Destroy(NP2_Semaphore_t* psem) {
 
 /* for caller/callee */
 void NP2_Semaphore_Wait(NP2_Semaphore_t* psem) {
-#if defined(NP2_THREAD_WIN)
+#if defined(NP2_WIN)
   WaitForSingleObject(*psem, INFINITE);
-#elif defined(NP2_THREAD_POSIX)
-  sem_wait(psem);
-#elif defined(NP2_SDL)
+#elif defined(USE_SDL)
   SDL_SemWait((SDL_sem*)*psem);
 #elif defined(__LIBRETRO__)
   ssem_wait(*psem);
@@ -149,13 +128,10 @@ void NP2_Semaphore_Wait(NP2_Semaphore_t* psem) {
 
 /* for caller/callee */
 void NP2_Semaphore_Release(NP2_Semaphore_t* psem) {
-#if defined(NP2_THREAD_WIN)
+#if defined(NP2_WIN)
   if(psem)
     ReleaseSemaphore(*psem, 1, NULL);
-#elif defined(NP2_THREAD_POSIX)
-  if(psem)
-    sem_post(psem);
-#elif defined(NP2_SDL)
+#elif defined(USE_SDL)
   if(*psem)
     SDL_SemPost((SDL_sem*)*psem);
 #elif defined(__LIBRETRO__)

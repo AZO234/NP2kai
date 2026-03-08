@@ -3,24 +3,28 @@
 
 /* --- Windows --- */
 /* > cl /Feperfcounter.exe -DNP2_WIN perfcounter.c ../../np2_tickcount.c */
-/* --- POSIX --- */
-/* $ gcc -o perfcounter -DNP2_X perfcounter.c ../../np2_tickcount.c */
-/* --- SDL2 --- */
-/* $ gcc -o perfcounter -DNP2_SDL perfcounter.c ../../np2_tickcount.c \ */
+/* --- SDL --- */
+/* $ gcc -o perfcounter -DUSE_SDL perfcounter.c ../../np2_tickcount.c \ */
 /*   `sdl2-config --cflags --libs` */
 
 #include <stdio.h>
 #if defined(NP2_WIN)
 #include <windows.h>
 #endif
-#if defined(NP2_SDL)
-#include "SDL/SDL.h"
+#if defined(USE_SDL)
+#if USE_SDL >= 3
+#include <SDL3/SDL.h>
+#elif USE_SDL == 2
+#include <SDL2/SDL.h>
+#else
+#include <SDL/SDL.h>
+#endif
 #endif
 
 #include "../../np2_tickcount.h"
 
 void main(void) {
-#if defined(NP2_SDL)
+#if defined(USE_SDL)
   SDL_Init(SDL_INIT_EVERYTHING);
 #endif
   NP2_TickCount_Initialize();

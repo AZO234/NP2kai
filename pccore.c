@@ -434,14 +434,14 @@ static void sound_term(void) {
 int pccore_mem_malloc_virtualalloc = 0;
 void pccore_mem_malloc(void) {
 	if(!mem){
-#if defined(_WINDOWS)
+#if defined(NP2_WIN)
 		mem = (UINT8*)_aligned_malloc(0x200000, 4096);
 #else
 		mem = (UINT8*)aligned_alloc(4096, 0x200000);
 #endif
 	}
 	if(!vramex || vramex==vramex_base){
-#if defined(_WINDOWS)
+#if defined(NP2_WIN)
 		vramex = (UINT8*)_aligned_malloc(0x80000, 4096);
 #else
 		vramex = (UINT8*)aligned_alloc(4096, 0x80000);
@@ -451,7 +451,7 @@ void pccore_mem_malloc(void) {
 }
 void pccore_mem_free(void) {
 	if(mem){
-#if defined(_WINDOWS)
+#if defined(NP2_WIN)
 		_aligned_free(mem);
 #else
 		free(mem);
@@ -459,7 +459,7 @@ void pccore_mem_free(void) {
 		mem = NULL;
 	}
 	if(vramex && vramex!=vramex_base){
-#if defined(_WINDOWS)
+#if defined(NP2_WIN)
 		_aligned_free(vramex);
 #else
 		free(vramex);
@@ -977,7 +977,7 @@ void pccore_reset(void) {
 	}
 #endif
 #ifdef SUPPORT_ASYNC_CPU
-#if !defined(__LIBRETRO__) && !defined(NP2_SDL) && !defined(NP2_X)
+#if defined(NP2_WIN)
 	if(GetTickCounterMode()==TCMODE_PERFORMANCECOUNTER){
 		asynccpu_clockpersec = GetTickCounter_ClockPerSec();
 		asynccpu_lastclock = GetTickCounter_Clock();
@@ -987,7 +987,7 @@ void pccore_reset(void) {
 	}
 	pccore_asynccpu_initialize();
 	pccore_asynccpu_updatesettings(np2cfg.asynclvl);
-#elif defined(NP2_X) || defined(__LIBRETRO__)
+#elif defined(__LIBRETRO__)
 	{
 		UINT64 c = clock();
 		COPY64(&asynccpu_lastclock, &c)
@@ -995,10 +995,10 @@ void pccore_reset(void) {
 		c = CLOCKS_PER_SEC;
 		COPY64(&asynccpu_clockpersec, &c)
 	}
-#elif defined(NP2_SDL)
+#elif defined(USE_SDL)
 	{
 		UINT64 c;
-#if USE_SDL_VERSION >= 2
+#if USE_SDL >= 2
 		c = SDL_GetPerformanceCounter();
 #else
 		c = SDL_GetTicks();
@@ -1015,7 +1015,7 @@ void pccore_reset(void) {
 	if (np2cfg.emuspeed < 1) np2cfg.emuspeed = 1;
 	timing_setspeed(np2cfg.emuspeed * 128 / 100);
 
-#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+#if defined(NP2_WIN)
 	// マウスリセット
 	mousemng_reset();
 #endif
@@ -1494,7 +1494,7 @@ void pccore_exec(BOOL draw) {
 #if defined(SUPPORT_PCI)
 			pcidev_basereset(); // XXX: Win9xの再起動で必要
 #endif
-#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+#if defined(NP2_WIN)
 			// マウスリセット
 			mousemng_reset();
 #endif
@@ -1543,7 +1543,7 @@ void pccore_exec(BOOL draw) {
 		upd4990_hrtimer_count();
 #endif
 #if defined(SUPPORT_IDEIO)
-#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
+#if defined(NP2_WIN)
 	atapi_dataread_asyncwait(INFINITE);
 #endif
 #endif

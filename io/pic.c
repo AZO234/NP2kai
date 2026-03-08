@@ -21,7 +21,7 @@ enum {
 	PIC_OCW3_ESMM	= 0x40
 };
 
-#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+#if defined(NP2_WIN)
 static int pic_cs_initialized = 0;
 static CRITICAL_SECTION pic_cs;
 #else
@@ -29,7 +29,7 @@ static CRITICAL_SECTION pic_cs;
 #endif
 
 static void pic_enter_criticalsection(void){
-#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+#if defined(NP2_WIN)
 	if(!pic_cs_initialized) return;
 	EnterCriticalSection(&pic_cs);
 #else
@@ -37,7 +37,7 @@ static void pic_enter_criticalsection(void){
 #endif
 }
 static void pic_leave_criticalsection(void){
-#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+#if defined(NP2_WIN)
 	if(!pic_cs_initialized) return;
 	LeaveCriticalSection(&pic_cs);
 #else
@@ -409,7 +409,7 @@ static const IOINP pici00[4] = {
 #endif
 
 void pic_initialize(void) {
-#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+#if defined(NP2_WIN)
 	if(!pic_cs_initialized){
 		memset(&pic_cs, 0, sizeof(pic_cs));
 		InitializeCriticalSection(&pic_cs);
@@ -421,7 +421,7 @@ void pic_initialize(void) {
 }
 
 void pic_deinitialize(void) {
-#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+#if defined(NP2_WIN)
 	if(pic_cs_initialized){
 		DeleteCriticalSection(&pic_cs);
 		pic_cs_initialized = 0;

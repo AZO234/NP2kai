@@ -592,7 +592,7 @@ static void IOOUTCALL ideio_o430(UINT port, REG8 dat) {
 
 	TRACEOUT(("ideio setbank%d %.2x [%.4x:%.8x]",
 									(port >> 1) & 1, dat, CPU_CS, CPU_EIP));
-#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
+#if defined(NP2_WIN)
 	atapi_dataread_asyncwait(INFINITE);
 #endif
 
@@ -769,7 +769,7 @@ static void IOOUTCALL ideio_o64c(UINT port, REG8 dat) {
 	IDEDEV	dev;
 	UINT	drvnum;
 	
-#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
+#if defined(NP2_WIN)
 	atapi_dataread_asyncwait(INFINITE);
 #endif
 
@@ -812,7 +812,7 @@ static void IOOUTCALL ideio_o64e(UINT port, REG8 dat) {
 	IDEDEV	dev;
 	int		i;
 	
-#if !defined(NP2_X) && !defined(NP2_SDL) && !defined(__LIBRETRO__)
+#if defined(NP2_WIN)
 	atapi_dataread_asyncwait(INFINITE);
 #endif
 

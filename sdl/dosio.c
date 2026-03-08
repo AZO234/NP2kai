@@ -2,7 +2,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <time.h>
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 #include "oemtext.h"
 #include <codecnv/codecnv.h>
 #endif
@@ -11,11 +11,11 @@
 #include <retro_dirent.h>
 #include <file_path.h>
 #include "libretro/libretro_exports.h"
-#if !defined(_MSC_VER)
+#if !(defined(_WINDOWS) && !defined(__LIBRETRO__))
 #include <unistd.h>
 #endif
 #else
-#if defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 #include <direct.h>
 #else
 #include <dirent.h>
@@ -48,7 +48,11 @@ dosio_term(void)
 FILEH file_open(const OEMCHAR *path) {
   FILEH hRes = NULL;
 
-#if defined(__LIBRETRO__)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__) && defined(OSLANG_UTF8)
+	wchar_t	wpath[MAX_PATH];
+	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
+  hRes = _wfopen(wpath, L"rb+");
+#elif defined(__LIBRETRO__)
   if(log_cb) {
     log_cb(RETRO_LOG_INFO, "Open file (RW) %s.\n", path);
   }
@@ -56,10 +60,6 @@ FILEH file_open(const OEMCHAR *path) {
   if(!hRes && log_cb) {
     log_cb(RETRO_LOG_WARN, "Couldn't open file (RW) %s.\n", path);
   }
-#elif defined(_WINDOWS) && defined(OSLANG_UTF8)
-	wchar_t	wpath[MAX_PATH];
-	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
-  hRes = _wfopen(wpath, L"rb+");
 #else
   hRes = fopen(path, "rb+");
 #endif
@@ -70,7 +70,11 @@ FILEH file_open(const OEMCHAR *path) {
 FILEH file_open_rb(const OEMCHAR *path) {
   FILEH hRes = NULL;
 
-#if defined(__LIBRETRO__)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__) && defined(OSLANG_UTF8)
+	wchar_t	wpath[MAX_PATH];
+	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
+  hRes = _wfopen(wpath, L"rb");
+#elif defined(__LIBRETRO__)
   if(log_cb) {
     log_cb(RETRO_LOG_INFO, "Open file (RO) %s.\n", path);
   }
@@ -78,10 +82,6 @@ FILEH file_open_rb(const OEMCHAR *path) {
   if(!hRes && log_cb) {
     log_cb(RETRO_LOG_WARN, "Couldn't open file (RO) %s.\n", path);
   }
-#elif defined(_WINDOWS) && defined(OSLANG_UTF8)
-	wchar_t	wpath[MAX_PATH];
-	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
-  hRes = _wfopen(wpath, L"rb");
 #else
   hRes = fopen(path, "rb");
 #endif
@@ -92,7 +92,11 @@ FILEH file_open_rb(const OEMCHAR *path) {
 FILEH file_create(const OEMCHAR *path) {
   FILEH hRes = NULL;
 
-#if defined(__LIBRETRO__)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__) && defined(OSLANG_UTF8)
+	wchar_t	wpath[MAX_PATH];
+	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
+	hRes = _wfopen(wpath, L"wb+");
+#elif defined(__LIBRETRO__)
   if(log_cb) {
     log_cb(RETRO_LOG_INFO, "Open file (W) %s.\n", path);
   }
@@ -100,10 +104,6 @@ FILEH file_create(const OEMCHAR *path) {
   if(!hRes && log_cb) {
     log_cb(RETRO_LOG_WARN, "Couldn't open file (W) %s.\n", path);
   }
-#elif defined(_WINDOWS) && defined(OSLANG_UTF8)
-	wchar_t	wpath[MAX_PATH];
-	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
-	hRes = _wfopen(wpath, L"wb+");
 #else
 	hRes = fopen(path, "wb+");
 #endif
@@ -180,15 +180,15 @@ short file_close(FILEH handle) {
 FILELEN file_getsize(FILEH handle) {
 
 #if defined(SUPPORT_LARGE_HDD)
-#if defined(__LIBRETRO__)
-	return (FILELEN)filestream_get_size(handle);
-#elif defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 	struct _stati64 sb;
 
 	if (_fstati64(fileno(handle), &sb) == 0)
 	{
 		return (FILELEN)sb.st_size;
 	}
+#elif defined(__LIBRETRO__)
+	return (FILELEN)filestream_get_size(handle);
 #else
 	struct stat sb;
 
@@ -215,7 +215,19 @@ FILELEN file_getsize(FILEH handle) {
 short file_attr(const OEMCHAR *path) {
   short	attr = 0;
 
-#if defined(__LIBRETRO__)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__) && defined(OSLANG_UTF8)
+  struct _stat sb;
+  wchar_t	wpath[MAX_PATH];
+  codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
+  if(_wstat(wpath, &sb) == 0) {
+    if(sb.st_mode & _S_IFDIR) {
+      attr |= FILEATTR_DIRECTORY;
+    }
+    if(!(sb.st_mode & S_IWRITE)) {
+      attr |= FILEATTR_READONLY;
+    }
+  }
+#elif defined(__LIBRETRO__)
   FILEH fh = NULL;
 
   if(path_is_directory(path)) {
@@ -241,18 +253,6 @@ short file_attr(const OEMCHAR *path) {
         file_close(fh);
         attr |= FILEATTR_READONLY;
       }
-    }
-  }
-#elif defined(_WINDOWS) && defined(OSLANG_UTF8)
-  struct _stat sb;
-  wchar_t	wpath[MAX_PATH];
-  codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
-  if(_wstat(wpath, &sb) == 0) {
-    if(sb.st_mode & _S_IFDIR) {
-      attr |= FILEATTR_DIRECTORY;
-    }
-    if(!(sb.st_mode & S_IWRITE)) {
-      attr |= FILEATTR_READONLY;
     }
   }
 #else
@@ -313,12 +313,12 @@ struct stat sb;
 
 short file_delete(const OEMCHAR *path) {
 
-#if defined(__LIBRETRO__)
-	return(filestream_delete(path));
-#elif defined(_WINDOWS) && defined(OSLANG_UTF8)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__) && defined(OSLANG_UTF8)
 	wchar_t	wpath[MAX_PATH];
 	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
 	return(_wremove(wpath));
+#elif defined(__LIBRETRO__)
+	return(filestream_delete(path));
 #else
 	return(remove(path));
 #endif
@@ -326,14 +326,14 @@ short file_delete(const OEMCHAR *path) {
 
 short file_rename(const OEMCHAR *existpath, const OEMCHAR *newpath) {
 
-#if defined(__LIBRETRO__)
-	return((short)filestream_rename(existpath, newpath));
-#elif defined(_WINDOWS) && defined(OSLANG_UTF8)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__) && defined(OSLANG_UTF8)
 	wchar_t	wepath[MAX_PATH];
 	wchar_t	wnpath[MAX_PATH];
 	codecnv_utf8toucs2(wepath, MAX_PATH, existpath, -1);
 	codecnv_utf8toucs2(wnpath, MAX_PATH, newpath, -1);
 	return((short)_wrename(wepath, wnpath));
+#elif defined(__LIBRETRO__)
+	return((short)filestream_rename(existpath, newpath));
 #else
 	return((short)rename(existpath, newpath));
 #endif
@@ -341,12 +341,12 @@ short file_rename(const OEMCHAR *existpath, const OEMCHAR *newpath) {
 
 short file_dircreate(const OEMCHAR *path) {
 
-#if defined(__LIBRETRO__)
-	return((short)path_mkdir(path) ? 0:-1);
-#elif defined(_WINDOWS) && defined(OSLANG_UTF8)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__) && defined(OSLANG_UTF8)
 	wchar_t	wpath[MAX_PATH];
 	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
 	return((short)_wmkdir(wpath));
+#elif defined(__LIBRETRO__)
+	return((short)path_mkdir(path) ? 0:-1);
 #else
 	return((short)mkdir(path, 0777));
 #endif
@@ -355,16 +355,16 @@ short file_dircreate(const OEMCHAR *path) {
 short file_dirdelete(const OEMCHAR *path) {
 
 // libretro not support rmdir()?
-#if defined(__LIBRETRO__)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__) && defined(OSLANG_UTF8)
+	wchar_t	wpath[MAX_PATH];
+	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
+	return((short)_wrmdir(wpath));
+#elif defined(__LIBRETRO__)
 #if !defined(VITA)
 	return((short)rmdir(path));
 #endif
 #elif defined(EMSCRIPTEN)
 	// Nothing to do
-#elif defined(_WINDOWS) && defined(OSLANG_UTF8)
-	wchar_t	wpath[MAX_PATH];
-	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
-	return((short)_wrmdir(wpath));
 #else
 	return((short)rmdir(path));
 #endif
@@ -414,7 +414,7 @@ short file_attr_c(const OEMCHAR *path) {
 	return(file_attr_c(curpath));
 }
 
-#if !defined(__LIBRETRO__) && defined(_WINDOWS)
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
 static BRESULT cnvdatetime(FILETIME *file, DOSDATE *dosdate, DOSTIME *dostime) {
 
 	FILETIME	localtime;
@@ -609,15 +609,9 @@ void file_catname(OEMCHAR *path, const OEMCHAR *name, int maxlen) {
 	}
 	file_cpyname(path, name, maxlen);
 	while((csize = milstr_charsize(path)) != 0) {
-#if defined(_WINDOWS)
-		if ((csize == 1) && (*path == '\\')) {
-			*path = '\\';
+		if ((csize == 1) && (*path == OEMPATHDIVC)) {
+			*path = OEMPATHDIVC;
 		}
-#else
-		if ((csize == 1) && (*path == '/')) {
-			*path = '/';
-		}
-#endif
 		path += csize;
 	}
 }
@@ -629,11 +623,7 @@ const OEMCHAR	*ret;
 
 	ret = path;
 	while((csize = milstr_charsize(path)) != 0) {
-#if defined(_WINDOWS)
-		if ((csize == 1) && (*path == '\\')) {
-#else
-		if ((csize == 1) && (*path == '/')) {
-#endif
+		if ((csize == 1) && (*path == OEMPATHDIVC)) {
 			ret = path + 1;
 		}
 		path += csize;
@@ -692,11 +682,7 @@ void file_cutseparator(OEMCHAR *path) {
 
 	pos = (int)strlen(path) - 1;
 	if ((pos > 0) &&							// 2文字以上でー
-#if defined(_WINDOWS)
-		(path[pos] == '\\') &&					// ケツが \ でー
-#else
-		(path[pos] == '/') &&					// ケツが \ でー
-#endif
+		(path[pos] == OEMPATHDIVC) &&					// ケツが \ or / でー
 		((pos != 1) || (path[0] != '.'))) {		// './' ではなかったら
 		path[pos] = '\0';
 	}
@@ -707,13 +693,8 @@ void file_setseparator(OEMCHAR *path, int maxlen) {
 	int		pos;
 
 	pos = (int)OEMSTRNLEN(path, maxlen);
-#if defined(_WINDOWS)
-	if ((pos) && (path[pos-1] != '\\') && ((pos + 2) < maxlen)) {
-		path[pos++] = '\\';
-#else	/* _WINDOWS */
-	if ((pos) && (path[pos-1] != '/') && ((pos + 2) < maxlen)) {
-		path[pos++] = '/';
-#endif	/* _WINDOWS */
+	if ((pos) && (path[pos-1] != OEMPATHDIVC) && ((pos + 2) < maxlen)) {
+		path[pos++] = OEMPATHDIVC;
 		path[pos] = '\0';
 	}
 }
