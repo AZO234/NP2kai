@@ -1,5 +1,5 @@
 
-// �˂���p�w�b�_
+// ねこ専用ヘッダ
 
 #define SMPU_IMMBUF_W_LEN	32
 #define SMPU_IMMBUF_R_LEN	16
@@ -9,8 +9,8 @@
 
 typedef struct {
 	UINT8	enable;
-	UINT8	portBready; // �|�[�gB�̎g�p�������ł��Ă����1
-	UINT8	muteB; // MPU-PC98II�݊����[�h�̎��A�|�[�gB�ɏo�͂��Ȃ�
+	UINT8	portBready; // ポートBの使用準備ができていれば1
+	UINT8	muteB; // MPU-PC98II互換モードの時、ポートBに出力しない
 
 	UINT16	port;
 	UINT8	irqnum;

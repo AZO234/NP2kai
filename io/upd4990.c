@@ -151,7 +151,7 @@ void upd4990_hrtimer_count(void) {
 	//		hrtimertimeuint = LOADINTELDWORD(mem+0x04F1);
 	//		hrtimertimeuint++;
 	//		if((hrtimertimeuint & 0x3fffff) >= 24*60*60*32){
-	//			hrtimertimeuint = ((hrtimertimeuint & ‾0x3fffff) + 0x400000) & 0xffffff; // 日付変わった
+	//			hrtimertimeuint = ((hrtimertimeuint & ~0x3fffff) + 0x400000) & 0xffffff; // 日付変わった
 	//		}
 	//		STOREINTELDWORD(mem+0x04F1, hrtimertimeuint); // XXX: 04F4にも書いちゃってるけど差し当たっては問題なさそうなので･･･
 	//	}

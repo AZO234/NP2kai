@@ -42,7 +42,7 @@ static void trace_fmt_ex(const char* fmt, ...)
 	va_list ap;
 	va_start(ap, fmt);
 	vsprintf(stmp, fmt, ap);
-	strcat(stmp, "¥n");
+	strcat(stmp, "\n");
 	va_end(ap);
 	OutputDebugStringA(stmp);
 }
@@ -53,7 +53,7 @@ static void trace_fmt_exw(const WCHAR* fmt, ...)
 	va_list ap;
 	va_start(ap, fmt);
 	vswprintf(stmp, 2048, fmt, ap);
-	wcscat(stmp, L"¥n");
+	wcscat(stmp, L"\n");
 	va_end(ap);
 	OutputDebugStringW(stmp);
 }
@@ -198,7 +198,7 @@ void hostdrvNT_updateHDrvRoot(void)
 	// パス長さが制限オーバーならエラー
 	if (_tcslen(np2cfg.hdrvroot) >= MAX_PATH)
 	{
-		s_hdrvRoot[0] = '¥0';
+		s_hdrvRoot[0] = '\0';
 		s_hdrvAcc = 0;
 		return;
 	}
@@ -212,7 +212,7 @@ void hostdrvNT_updateHDrvRoot(void)
 	int lengthUnicode = MultiByteToWideChar(CP_ACP, 0, np2cfg.hdrvroot, strlen(np2cfg.hdrvroot) + 1, NULL, 0);
 	if (lengthUnicode < 0 || lengthUnicode > MAX_PATH)
 	{
-		s_hdrvRoot[0] = '¥0';
+		s_hdrvRoot[0] = '\0';
 		s_hdrvAcc = 0;
 		return;
 	}
@@ -222,9 +222,9 @@ void hostdrvNT_updateHDrvRoot(void)
 
 	// 最後の文字が¥なら除去
 	slen = wcslen(s_hdrvRoot);
-	if (slen > 0 && s_hdrvRoot[slen - 1] == '¥¥')
+	if (slen > 0 && s_hdrvRoot[slen - 1] == '\\')
 	{
-		s_hdrvRoot[slen - 1] = '¥0';
+		s_hdrvRoot[slen - 1] = '\0';
 	}
 	s_hdrvAcc = np2cfg.hdrvacc;
 
@@ -349,8 +349,8 @@ static int hostdrvNT_getHostPath(WCHAR* virPath, WCHAR* hostPath, UINT8* isRoot,
 	hdrvPathLen = wcslen(hdrvPath);
 
 	// ホストのパスと結合
-	if (virPath[0] == '¥¥') virPath++;
-	hostPath[0] = '¥0';
+	if (virPath[0] == '\\') virPath++;
+	hostPath[0] = '\0';
 	if (!PathCombineW(pathTmp, hdrvPath, virPath))
 	{
 		return 1;
@@ -368,7 +368,7 @@ static int hostdrvNT_getHostPath(WCHAR* virPath, WCHAR* hostPath, UINT8* isRoot,
 	if (wcslen(hostPath) > hdrvPathLen + 1)
 	{
 		UINT32 vlen = wcslen(hostPath + hdrvPathLen + 1);
-		*isRoot = (vlen == 0 || (vlen == 1 && *(hostPath + hdrvPathLen + 1) == '¥¥'));
+		*isRoot = (vlen == 0 || (vlen == 1 && *(hostPath + hdrvPathLen + 1) == '\\'));
 	}
 	else
 	{
@@ -386,10 +386,10 @@ static int hostdrvNT_getHostPath(WCHAR* virPath, WCHAR* hostPath, UINT8* isRoot,
 		else
 		{
 			// 最後の区切り文字以降を削除
-			WCHAR* sepaPos = wcsrchr(hostPath, '¥¥');
+			WCHAR* sepaPos = wcsrchr(hostPath, '\\');
 			if (sepaPos != NULL)
 			{
-				*sepaPos = '¥0';
+				*sepaPos = '\0';
 			}
 		}
 	}
@@ -401,7 +401,7 @@ static int hostdrvNT_hasInvalidWildcard(WCHAR* name)
 {
 	int i;
 	int hasWildcard = 0;
-	for (i = 0; name[i] != '¥0'; i++)
+	for (i = 0; name[i] != '\0'; i++)
 	{
 		WCHAR c = name[i];
 		if (!hasWildcard)
@@ -413,7 +413,7 @@ static int hostdrvNT_hasInvalidWildcard(WCHAR* name)
 		}
 		else
 		{
-			if ((c == L'¥¥'))
+			if ((c == L'\\'))
 			{
 				return 1;
 			}
@@ -650,18 +650,18 @@ static void hostdrvNT_notifyChange(WCHAR* changedHostFileName, UINT32 action, UI
 				{
 					// ファイルなら最後のドライブ区切り文字以降をカット
 					WCHAR* hostSepa;
-					if (hostSepa = wcsrchr(changedHostDir, '¥¥'))
+					if (hostSepa = wcsrchr(changedHostDir, '\\'))
 					{
-						*hostSepa = '¥0';
+						*hostSepa = '\0';
 					}
 				}
 				else
 				{
 					// ディレクトリなら最後の文字が¥の時カット
 					UINT32 changedHostDirLen = wcslen(changedHostDir);
-					if (changedHostDirLen >= 1 && changedHostDir[changedHostDirLen - 1] == '¥¥')
+					if (changedHostDirLen >= 1 && changedHostDir[changedHostDirLen - 1] == '\\')
 					{
-						changedHostDir[changedHostDirLen - 1] = '¥0';
+						changedHostDir[changedHostDirLen - 1] = '\0';
 					}
 				}
 
@@ -756,9 +756,9 @@ static int hostdrvNT_getOneEntry(NP2HOSTDRVNT_FILEINFO* fi, NP2_FILE_BOTH_DIR_IN
 		findPathLen = wcslen(findPath);
 		if (fi->isDirectory)
 		{
-			if (findPath[findPathLen - 1] != '¥¥')
+			if (findPath[findPathLen - 1] != '\\')
 			{
-				wcscat(findPath, L"¥¥");
+				wcscat(findPath, L"\\");
 			}
 			wcscat(findPath, pattern);
 		}
@@ -809,7 +809,7 @@ static int hostdrvNT_getOneEntry(NP2HOSTDRVNT_FILEINFO* fi, NP2_FILE_BOTH_DIR_IN
 		//	WCHAR *shortFileName;
 		//	UINT32 shortLen;
 		//	// 最後の区切り文字以降を採用
-		//	shortFileName = wcsrchr(shortPath, '¥¥');
+		//	shortFileName = wcsrchr(shortPath, '\\');
 		//	if (shortFileName == NULL)
 		//	{
 		//		shortFileName = shortPath;
@@ -847,7 +847,7 @@ static int hostdrvNT_getOneEntry(NP2HOSTDRVNT_FILEINFO* fi, NP2_FILE_BOTH_DIR_IN
 		//	WCHAR* shortFileName;
 		//	UINT32 shortLen;
 		//	// 最後の区切り文字以降を採用
-		//	shortFileName = wcsrchr(shortPath, '¥¥');
+		//	shortFileName = wcsrchr(shortPath, '\\');
 		//	if (shortFileName == NULL)
 		//	{
 		//		shortFileName = shortPath;
@@ -986,9 +986,9 @@ static void hostdrvNT_IRP_MJ_CREATE(HOSTDRVNT_INVOKEINFO *invokeInfo)
 		{
 			WCHAR *pathTmp;
 			UINT32 combineLen;
-			if (dirName[dirNameLen - 1] == '¥¥')
+			if (dirName[dirNameLen - 1] == '\\')
 			{
-				dirName[dirNameLen - 1] = '¥0';
+				dirName[dirNameLen - 1] = '\0';
 			}
 			combineLen = wcslen(dirName) + 1 + wcslen(fileName);
 			if (combineLen >= MAX_PATH)
@@ -1008,7 +1008,7 @@ static void hostdrvNT_IRP_MJ_CREATE(HOSTDRVNT_INVOKEINFO *invokeInfo)
 				return;
 			}
 			wcscpy(pathTmp, dirName);
-			wcscat(pathTmp, L"¥¥");
+			wcscat(pathTmp, L"\\");
 			wcscat(pathTmp, fileName);
 			free(fileName);
 			fileName = pathTmp; // ディレクトリ付きに入れ替え
@@ -1022,7 +1022,7 @@ static void hostdrvNT_IRP_MJ_CREATE(HOSTDRVNT_INVOKEINFO *invokeInfo)
 		hostdrvDesiredAccess = cpu_kmemoryread_d(invokeInfo->stack.parameters.create.securityContext + 4 * 2); // DesiredAccessはポインタの先の3番目の変数
 	}
 	hostdrvOptions = invokeInfo->stack.parameters.create.options;
-	hostdrvFileAttributes = (UCHAR)(invokeInfo->stack.parameters.create.fileAttributes & ‾FILE_ATTRIBUTE_NORMAL);
+	hostdrvFileAttributes = (UCHAR)(invokeInfo->stack.parameters.create.fileAttributes & ~FILE_ATTRIBUTE_NORMAL);
 	hostdrvShareAccess = invokeInfo->stack.parameters.create.shareAccess;
 	hostdrvEALength = invokeInfo->stack.parameters.create.eaLength;
 
@@ -1131,7 +1131,7 @@ static void hostdrvNT_IRP_MJ_CREATE(HOSTDRVNT_INVOKEINFO *invokeInfo)
 		DWORD attrs;
 
 		// パスに無効な文字が含まれる場合はSTATUS_OBJECT_NAME_INVALID　ここでSTATUS_OBJECT_NAME_NOT_FOUNDを返すとワイルドカード付きcopyコマンドなどがうまく動かない
-		if (wcschr(fileName, '?') || wcschr(fileName, '*') || wcschr(fileName, '¥"') || wcschr(fileName, '|') || wcschr(fileName, '<') || wcschr(fileName, '>'))
+		if (wcschr(fileName, '?') || wcschr(fileName, '*') || wcschr(fileName, '\"') || wcschr(fileName, '|') || wcschr(fileName, '<') || wcschr(fileName, '>'))
 		{
 			TRACEOUTW((L"INVALID PATH", fileName));
 			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_OBJECT_NAME_INVALID); // Status STATUS_OBJECT_NAME_INVALID
@@ -1164,9 +1164,9 @@ static void hostdrvNT_IRP_MJ_CREATE(HOSTDRVNT_INVOKEINFO *invokeInfo)
 
 		// パスの末尾が¥なら除去
 		hostPathLength = wcslen(hostPath);
-		if (hostPathLength > 0 && hostPath[hostPathLength - 1] == '¥¥')
+		if (hostPathLength > 0 && hostPath[hostPathLength - 1] == '\\')
 		{
-			hostPath[hostPathLength - 1] = '¥0';
+			hostPath[hostPathLength - 1] = '\0';
 		}
 
 		// とりあえずオープン
@@ -2019,9 +2019,9 @@ static void hostdrvNT_IRP_MJ_QUERY_INFORMATION(HOSTDRVNT_INVOKEINFO* invokeInfo)
 		// ディレクトリ内の全ファイル検索
 		wcscpy(findPath, fi->hostFileName);
 		findPathLen = wcslen(findPath);
-		if (findPath[findPathLen - 1] != '¥¥')
+		if (findPath[findPathLen - 1] != '\\')
 		{
-			wcscat(findPath, L"¥¥");
+			wcscat(findPath, L"\\");
 		}
 		wcscat(findPath, L"*");
 
@@ -2204,7 +2204,7 @@ static void hostdrvNT_IRP_MJ_SET_INFORMATION(HOSTDRVNT_INVOKEINFO* invokeInfo)
 		fileInfo.dwFileAttributes = basicInfo.FileAttributes;
 		if (fi->isDirectory)
 		{
-			fileInfo.dwFileAttributes &= ‾FILE_ATTRIBUTE_DIRECTORY; // エラーになるので付けない
+			fileInfo.dwFileAttributes &= ~FILE_ATTRIBUTE_DIRECTORY; // エラーになるので付けない
 		}
 		else if (fileInfo.dwFileAttributes == 0)
 		{
@@ -2499,7 +2499,7 @@ static void hostdrvNT_IRP_MJ_SET_INFORMATION(HOSTDRVNT_INVOKEINFO* invokeInfo)
 		hostdrvNT_memread(invokeInfo->inBufferAddr + 4 + 4 + 4, newPath, renameInfo.FileNameLength);
 
 		// 新ファイルパスを¥??¥の形式で指定された場合、特例
-		if (wcsnicmp(newPath, L"¥¥??¥¥", 4) == 0)
+		if (wcsnicmp(newPath, L"\\??\\", 4) == 0)
 		{
 			// ドライブ文字がないタイプならNG
 			if (wcslen(newPath) < 5)
@@ -2514,7 +2514,7 @@ static void hostdrvNT_IRP_MJ_SET_INFORMATION(HOSTDRVNT_INVOKEINFO* invokeInfo)
 			newPath[4] = 'z';
 
 			// ¥??¥Z:¥の形式のパスが来た場合、特例で¥??¥Z:¥をカットして新ファイルパスとする
-			if (wcsnicmp(newPath, L"¥¥??¥¥z:¥¥", 7) == 0)
+			if (wcsnicmp(newPath, L"\\??\\z:\\", 7) == 0)
 			{
 				WCHAR* pathTmp = newPath;
 				while (*(pathTmp + 7))
@@ -2534,13 +2534,13 @@ static void hostdrvNT_IRP_MJ_SET_INFORMATION(HOSTDRVNT_INVOKEINFO* invokeInfo)
 			}
 		}
 		// 新ファイルパスを¥DosDevices¥z:¥の形式で指定された場合、特例
-		if (wcslen(newPath) >= 15 && wcsnicmp(newPath, L"¥¥DosDevices¥¥", 12) == 0 && newPath[13]==':')
+		if (wcslen(newPath) >= 15 && wcsnicmp(newPath, L"\\DosDevices\\", 12) == 0 && newPath[13]==':')
 		{
 			// ¥DosDevices¥Z:¥の形式のパスを前提に、ドライブ文字部分を適当にzに書き換え
 			newPath[12] = 'z';
 
 			// ¥DosDevices¥Z:¥の形式のパスが来た場合、特例で¥DosDevices¥Z:¥をカットして新ファイルパスとする
-			if (wcsnicmp(newPath, L"¥¥DosDevices¥¥z:¥¥", 15) == 0)
+			if (wcsnicmp(newPath, L"\\DosDevices\\z:\\", 15) == 0)
 			{
 				WCHAR* pathTmp = newPath;
 				while (*(pathTmp + 15))
@@ -3087,7 +3087,7 @@ static void hostdrvNT_invoke()
 {
 	HOSTDRVNT_INVOKEINFO invokeInfo;
 
-	if ((s_hdrvRoot[0] == '¥0') || (!np2cfg.hdrvenable))
+	if ((s_hdrvRoot[0] == '\0') || (!np2cfg.hdrvenable))
 	{
 		// 無効の場合何もせずに抜ける
 		return;
@@ -3256,7 +3256,7 @@ static void hostdrvNT_invokeNotify()
 {
 	HOSTDRVNT_INVOKEINFO invokeInfo;
 
-	if ((s_hdrvRoot[0] == '¥0') || (!np2cfg.hdrvenable))
+	if ((s_hdrvRoot[0] == '\0') || (!np2cfg.hdrvenable))
 	{
 		// 無効の場合何もせずに抜ける
 		return;

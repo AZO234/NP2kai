@@ -281,7 +281,7 @@ void txtpacking(BYTE *str) {
 	}
 }
 
-// ----------------------------------------- ÉÅÉCÉì
+// ----------------------------------------- „É°„Ç§„É≥
 
 void main(int argc, BYTE *argv[], BYTE *envp[]) {
 
@@ -293,12 +293,12 @@ void main(int argc, BYTE *argv[], BYTE *envp[]) {
 	keyinit();
 
 	if (argc < 2) {
-		printf("ì¸óÕñºÇéwíËÇµÇƒâ∫Ç≥Ç¢.\n");
+		printf("ÂÖ•ÂäõÂêç„ÇíÊåáÂÆö„Åó„Å¶‰∏ã„Åï„ÅÑ.\n");
 		return;
 	}
 
 	if ((fh = file_open(argv[1])) == -1) {
-		printf("ÉtÉ@ÉCÉãÇ™å©Ç¬Ç©ÇËÇ‹ÇπÇÒ.\n");
+		printf("„Éï„Ç°„Ç§„É´„ÅåË¶ã„Å§„Åã„Çä„Åæ„Åõ„Çì.\n");
 		return;
 	}
 

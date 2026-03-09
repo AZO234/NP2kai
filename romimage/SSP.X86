@@ -1,11 +1,11 @@
-sspm_initmsgs	db		0e1h				; ‰æ–Ê¶‚Ì˜g
+sspm_initmsgs	db		0e1h				; ç”»é¢å·¦ã®æ 
 				dw		0100h, 1124h
-				db		0e1h				; ‰æ–Ê‰E‚Ì˜g
+				db		0e1h				; ç”»é¢å³ã®æ 
 				dw		0224h, 102ch
-				db		0a1h				; ‰æ–Ê‰º‚Ì˜g
+				db		0a1h				; ç”»é¢ä¸‹ã®æ 
 				dw		1200h, 0650h
 				db		0
-				db		0e1h				; ‚±‚±‚©‚çƒeƒLƒXƒg
+				db		0e1h				; ã“ã“ã‹ã‚‰ãƒ†ã‚­ã‚¹ãƒˆ
 				dw		0004h, offset menu_title
 				db		0e1h
 				dw		010ah, offset ssp_mntitle

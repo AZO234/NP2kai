@@ -9,7 +9,7 @@
 //	va_list ap;
 //	va_start(ap, fmt);
 //	vsprintf(stmp, fmt, ap);
-//	strcat(stmp, "¥n");
+//	strcat(stmp, "\n");
 //	va_end(ap);
 //	OutputDebugStringA(stmp);
 //}
@@ -606,7 +606,7 @@ static void IOOUTCALL ideio_o430(UINT port, REG8 dat) {
 			// 430h
 			ideio.bank[(port >> 1) & 1] = dat & 0x71;
 		}
-		//sprintf(buf, "0x%x¥n", dat);
+		//sprintf(buf, "0x%x\n", dat);
 		//OutputDebugStringA(buf);
 	}
 	
@@ -668,7 +668,7 @@ static REG8 IOINPCALL ideio_i433(UINT port) {
 	if(ret == 0x2 && ideio.dev[1].drv[0].device==IDETYPE_NONE && ideio.dev[1].drv[1].device==IDETYPE_NONE){
 		ret = 0;
 	}
-	//OutputDebugStringA("IN 433h¥n");
+	//OutputDebugStringA("IN 433h\n");
 	return(ret);
 }
 

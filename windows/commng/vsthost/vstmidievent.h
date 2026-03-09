@@ -1,6 +1,6 @@
 /**
  * @file	vstmidievent.h
- * @brief	VST MIDI ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	VST MIDI ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -9,7 +9,7 @@
 #include <pluginterfaces/vst2.x/aeffectx.h>
 
 /**
- * @brief VST MIDI ƒNƒ‰ƒX
+ * @brief VST MIDI ã‚¯ãƒ©ã‚¹
  */
 class CVstMidiEvent
 {
@@ -24,8 +24,8 @@ public:
 protected:
 
 private:
-	UINT m_nEvents;							/*!< ƒCƒxƒ“ƒg” */
-	std::vector<unsigned char> m_header;	/*!< ƒwƒbƒ_ */
-	std::vector<unsigned char> m_event;		/*!< ƒCƒxƒ“ƒg */
+	UINT m_nEvents;							/*!< ã‚¤ãƒ™ãƒ³ãƒˆæ•° */
+	std::vector<unsigned char> m_header;	/*!< ãƒ˜ãƒƒãƒ€ */
+	std::vector<unsigned char> m_event;		/*!< ã‚¤ãƒ™ãƒ³ãƒˆ */
 	void Add(const VstEvent* pEvent, const void* lpMessage = NULL, UINT cbMessage = 0);
 };

@@ -6,32 +6,32 @@ void PrintFileSizeUsingGetFileSize(HANDLE hFile) {
     DWORD lowPart = GetFileSize(hFile, &highPart);
     ULONGLONG size;
     if (lowPart == INVALID_FILE_SIZE && GetLastError() != NO_ERROR) {
-        printf("GetFileSize: ƒGƒ‰[ %lu\n", GetLastError());
+        printf("GetFileSize: ã‚¨ãƒ©ãƒ¼ %lu\n", GetLastError());
         return;
     }
     size = ((ULONGLONG)highPart << 32) | lowPart;
-    printf("[GetFileSize]      ƒTƒCƒY: %llu ƒoƒCƒg\n", size);
+    printf("[GetFileSize]      ã‚µã‚¤ã‚º: %llu ãƒã‚¤ãƒˆ\n", size);
 }
 
 void PrintFileSizeUsingGetFileSizeEx(HANDLE hFile) {
     LARGE_INTEGER fileSize;
     if (!GetFileSizeEx(hFile, &fileSize)) {
-        printf("GetFileSizeEx: ƒGƒ‰[ %lu\n", GetLastError());
+        printf("GetFileSizeEx: ã‚¨ãƒ©ãƒ¼ %lu\n", GetLastError());
         return;
     }
-    printf("[GetFileSizeEx]    ƒTƒCƒY: %lld ƒoƒCƒg\n", fileSize.QuadPart);
+    printf("[GetFileSizeEx]    ã‚µã‚¤ã‚º: %lld ãƒã‚¤ãƒˆ\n", fileSize.QuadPart);
 }
 
 void PrintFileSizeUsingGetFileAttributesEx(LPCSTR filePath) {
     WIN32_FILE_ATTRIBUTE_DATA fileInfo;
     ULONGLONG size;
     if (!GetFileAttributesExA(filePath, GetFileExInfoStandard, &fileInfo)) {
-        printf("GetFileAttributesEx: ƒGƒ‰[ %lu\n", GetLastError());
+        printf("GetFileAttributesEx: ã‚¨ãƒ©ãƒ¼ %lu\n", GetLastError());
         return;
     }
 
     size = ((ULONGLONG)fileInfo.nFileSizeHigh << 32) | fileInfo.nFileSizeLow;
-    printf("[GetFileAttributesEx] ƒTƒCƒY: %llu ƒoƒCƒg\n", size);
+    printf("[GetFileAttributesEx] ã‚µã‚¤ã‚º: %llu ãƒã‚¤ãƒˆ\n", size);
 }
 
 int main(int argc, char *argv[]) {
@@ -48,11 +48,11 @@ int main(int argc, char *argv[]) {
     );
 
     if (hFile == INVALID_HANDLE_VALUE) {
-        printf("ƒtƒ@ƒCƒ‹‚ðŠJ‚¯‚Ü‚¹‚ñ‚Å‚µ‚½: %lu\n", GetLastError());
+        printf("ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã‘ã¾ã›ã‚“ã§ã—ãŸ: %lu\n", GetLastError());
         return 1;
     }
 
-    printf("ƒtƒ@ƒCƒ‹: %s\n", filePath);
+    printf("ãƒ•ã‚¡ã‚¤ãƒ«: %s\n", filePath);
 
     PrintFileSizeUsingGetFileSize(hFile);
     PrintFileSizeUsingGetFileSizeEx(hFile);

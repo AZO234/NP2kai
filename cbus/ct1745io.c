@@ -19,7 +19,7 @@ static void trace_fmt_ex(const char *fmt, ...)
 	va_list ap;
 	va_start(ap, fmt);
 	vsprintf(stmp, fmt, ap);
-	strcat(stmp, "¥n");
+	strcat(stmp, "\n");
 	va_end(ap);
 	OutputDebugStringA(stmp);
 }
@@ -61,7 +61,7 @@ static void IOOUTCALL sb16_o2400(UINT port, REG8 dat) {
 	g_sb16.mixsel = dat;
 }
 static void IOOUTCALL sb16_o2500(UINT port, REG8 dat) {
-//printf("mixer port write %x %x¥n",dat,g_sb16.mixsel);
+//printf("mixer port write %x %x\n",dat,g_sb16.mixsel);
 	if (g_sb16.mixsel >= MIXER_VOL_START &&
 		g_sb16.mixsel <= MIXER_VOL_END) {
 		g_sb16.mixreg[g_sb16.mixsel] = dat;
@@ -150,7 +150,7 @@ static REG8 IOINPCALL sb16_i2400(UINT port) {
 	return g_sb16.mixsel;
 }
 static REG8 IOINPCALL sb16_i2500(UINT port) {
-//printf("mixer port read %x %x¥n",g_sb16.mixreg[g_sb16.mixsel],g_sb16.mixsel);
+//printf("mixer port read %x %x\n",g_sb16.mixreg[g_sb16.mixsel],g_sb16.mixsel);
 	if (g_sb16.mixsel >= MIXER_VOL_START && g_sb16.mixsel <= MIXER_VOL_END) {
 		return g_sb16.mixreg[g_sb16.mixsel];
 	}

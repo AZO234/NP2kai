@@ -1,9 +1,9 @@
 KEYVECT		equ		9
 
-; ˆê‰ñ‚µ‚©ƒR[ƒ‹‚µ‚È‚¢•¨‚Í ƒ}ƒNƒ‚É‚·‚é
+; ä¸€å›žã—ã‹ã‚³ãƒ¼ãƒ«ã—ãªã„ç‰©ã¯ ãƒžã‚¯ãƒ­ã«ã™ã‚‹
 
 
-; ƒL[ƒ{[ƒhˆ—ŠJŽn
+; ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å‡¦ç†é–‹å§‹
 KEYINT_INIT		macro
 				cli
 				xor		ax, ax
@@ -39,7 +39,7 @@ endif
 				endm
 
 
-; ƒL[ƒ{[ƒhI—¹ / CLI‚ÅƒR[ƒ‹‚³‚ê‚é”¤
+; ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰çµ‚äº† / CLIã§ã‚³ãƒ¼ãƒ«ã•ã‚Œã‚‹ç­ˆ
 KEYINT_TERM		macro
 				xor		ax, ax
 				mov		es, ax

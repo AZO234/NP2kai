@@ -319,7 +319,7 @@ static void mousecapture(BOOL capture) {
 		rct.bottom = cp.y + MOUSEMNG_RANGE;
 		SetCursorPos(cp.x, cp.y);
 		ClipCursor(&rct);
-		style &= ‾(CS_DBLCLKS);
+		style &= ~(CS_DBLCLKS);
 		mousecaptureflg = 1;
 		if(np2oscfg.rawmouse && fndi8create){
 			initDirectInput();
@@ -329,7 +329,7 @@ static void mousecapture(BOOL capture) {
 		ShowCursor(TRUE);
 		ClipCursor(NULL);
 		if (np2oscfg.mouse_nc) {
-			style &= ‾(CS_DBLCLKS);
+			style &= ~(CS_DBLCLKS);
 		}
 		else {
 			style |= CS_DBLCLKS;
@@ -459,7 +459,7 @@ BOOL mousemng_buttonevent(UINT event) {
 	if (!mousemng.flag || (np2oscfg.mouse_nc/* && !scrnmng_isfullscreen()*/ && mousemng.flag)) {
 		switch(event) {
 			case MOUSEMNG_LEFTDOWN:
-				mousemng.btn &= ‾(uPD8255A_LEFTBIT);
+				mousemng.btn &= ~(uPD8255A_LEFTBIT);
 				break;
 
 			case MOUSEMNG_LEFTUP:
@@ -467,7 +467,7 @@ BOOL mousemng_buttonevent(UINT event) {
 				break;
 
 			case MOUSEMNG_RIGHTDOWN:
-				mousemng.btn &= ‾(uPD8255A_RIGHTBIT);
+				mousemng.btn &= ~(uPD8255A_RIGHTBIT);
 				break;
 
 			case MOUSEMNG_RIGHTUP:
@@ -490,7 +490,7 @@ void mousemng_enable(UINT proc) {
 	np2_multithread_EnterCriticalSection();
 	bit = 1 << proc;
 	if (mousemng.flag & bit) {
-		mousemng.flag &= ‾bit;
+		mousemng.flag &= ~bit;
 		if (!mousemng.flag) {
 			mousecapture(TRUE);
 		}

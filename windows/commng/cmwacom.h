@@ -1,6 +1,6 @@
 /**
  * @file	cmwacom.h
- * @brief	Wacom Tablet ƒNƒ‰ƒX‚ÌéŒ¾‚¨‚æ‚ÑƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ì’è‹`‚ğ‚µ‚Ü‚·
+ * @brief	Wacom Tablet ã‚¯ãƒ©ã‚¹ã®å®£è¨€ãŠã‚ˆã³ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®å®šç¾©ã‚’ã—ã¾ã™
  */
 
 #pragma once
@@ -18,14 +18,14 @@
 
 #pragma pack(1)
 typedef struct tagCMWACOM_CONFIG {
-	bool enable; // ƒyƒ“ƒ^ƒuƒ‚[ƒh—LŒøi”Lƒ}ƒEƒX‘€ì•s‰Âj
-	bool start; // ST‚Åtrue, SP‚ÅfalseiÀ•W‘—MÄŠJ^ˆê’â~Hj
-	bool scrnsizemode; // ‰æ–ÊƒTƒCƒYw’èƒ‚[ƒh
-	bool disablepressure; // •Mˆ³–³Œøƒ‚[ƒhiƒf[ƒ^Œ`®‚ª•Ï‚í‚éj
-	bool relmode; // ‘Š‘ÎÀ•Wƒ‚[ƒh
-	bool csvmode; // CSVÀ•Wƒ‚[ƒhi•Mˆ³–³Œøƒ‚[ƒh‚Å‚Ì‚İ—LŒøj
-	bool suppress; // —}§ƒ‚[ƒhi“¯‚¶À•W’l‚Í‘—‚ç‚È‚¢j
-	bool mode19200; // 19200bpsƒ‚[ƒh
+	bool enable; // ãƒšãƒ³ã‚¿ãƒ–ãƒ¢ãƒ¼ãƒ‰æœ‰åŠ¹ï¼ˆçŒ«ãƒã‚¦ã‚¹æ“ä½œä¸å¯ï¼‰
+	bool start; // STã§true, SPã§falseï¼ˆåº§æ¨™é€ä¿¡å†é–‹ï¼ä¸€æ™‚åœæ­¢ï¼Ÿï¼‰
+	bool scrnsizemode; // ç”»é¢ã‚µã‚¤ã‚ºæŒ‡å®šãƒ¢ãƒ¼ãƒ‰
+	bool disablepressure; // ç­†åœ§ç„¡åŠ¹ãƒ¢ãƒ¼ãƒ‰ï¼ˆãƒ‡ãƒ¼ã‚¿å½¢å¼ãŒå¤‰ã‚ã‚‹ï¼‰
+	bool relmode; // ç›¸å¯¾åº§æ¨™ãƒ¢ãƒ¼ãƒ‰
+	bool csvmode; // CSVåº§æ¨™ãƒ¢ãƒ¼ãƒ‰ï¼ˆç­†åœ§ç„¡åŠ¹ãƒ¢ãƒ¼ãƒ‰ã§ã®ã¿æœ‰åŠ¹ï¼‰
+	bool suppress; // æŠ‘åˆ¶ãƒ¢ãƒ¼ãƒ‰ï¼ˆåŒã˜åº§æ¨™å€¤ã¯é€ã‚‰ãªã„ï¼‰
+	bool mode19200; // 19200bpsãƒ¢ãƒ¼ãƒ‰
 	SINT32 resolution_w;
 	SINT32 resolution_h;
 	SINT32 screen_w;
@@ -40,7 +40,7 @@ bool cmwacom_skipMouseEvent(void);
 void cmwacom_setNCControl(bool enable);
 
 /**
- * @brief commng Wacom Tablet ƒfƒoƒCƒX ƒNƒ‰ƒX
+ * @brief commng Wacom Tablet ãƒ‡ãƒã‚¤ã‚¹ ã‚¯ãƒ©ã‚¹
  */
 class CComWacom : public CComBase
 {
@@ -82,9 +82,9 @@ private:
 	HCTX m_hTab;					/*!< WinTab Handle */
 	HMGR m_hMgr;
 	BOOL m_ObtBuf[64];
-	UINT8 m_sBuffer[WACOM_BUFFER];	/*!< ƒoƒbƒtƒ@ */
-	SINT32 m_sBuffer_wpos;			/*!< ƒoƒbƒtƒ@‘‚«‚İˆÊ’u */
-	SINT32 m_sBuffer_rpos;			/*!< ƒoƒbƒtƒ@“Ç‚İ‚İˆÊ’u */
+	UINT8 m_sBuffer[WACOM_BUFFER];	/*!< ãƒãƒƒãƒ•ã‚¡ */
+	SINT32 m_sBuffer_wpos;			/*!< ãƒãƒƒãƒ•ã‚¡æ›¸ãè¾¼ã¿ä½ç½® */
+	SINT32 m_sBuffer_rpos;			/*!< ãƒãƒƒãƒ•ã‚¡èª­ã¿è¾¼ã¿ä½ç½® */
 
 	UINT8 m_lastdata[32];
 	SINT32 m_lastdatalen;
@@ -94,7 +94,7 @@ private:
 	bool m_nccontrol;
 	
 	SINT32 m_wait;
-	bool m_sendlastdata; // ÅŒã‚Ìƒf[ƒ^‚ğÄ‘—M‚·‚é
+	bool m_sendlastdata; // æœ€å¾Œã®ãƒ‡ãƒ¼ã‚¿ã‚’å†é€ä¿¡ã™ã‚‹
 	
 	SINT32 m_mousedown;
 	SINT32 m_mouseX;

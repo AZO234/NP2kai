@@ -430,7 +430,7 @@ unsigned short font_Jis2Sjis( unsigned short jis )
 		if (SJis > 0x8775 && SJis < 0x877E) return 0;
 		if (SJis > 0x879C && SJis < 0x889F) return 0;
 									
-		th[0] = ubyte; th[1] = lbyte; th[2] = '¥0';
+		th[0] = ubyte; th[1] = lbyte; th[2] = '\0';
 		lstrlenA((char*)th);
 		return SJis;
 			
@@ -488,7 +488,7 @@ unsigned short font_Jis2Sjis2( unsigned short jis )
 		if (SJis > 0x8775 && SJis < 0x877E) return 0;
 		if (SJis > 0x879C && SJis < 0x889F) return 0;
 										
-		th[0] = ubyte; th[1] = lbyte; th[2] = '¥0';
+		th[0] = ubyte; th[1] = lbyte; th[2] = '\0';
 		CharNextA((char*)th);
 		return SJis;
 			

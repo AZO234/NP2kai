@@ -99,12 +99,12 @@ void Np2Arg::Parse()
 	if(lpIniFile){ // np21w ver0.86 rev8
 		LPTSTR strbuf;
 		strbuf = (LPTSTR)calloc(500, sizeof(TCHAR));
-		if(!(_tcsstr(lpIniFile,_T(":"))!=NULL || (lpIniFile[0]=='¥¥'))){
+		if(!(_tcsstr(lpIniFile,_T(":"))!=NULL || (lpIniFile[0]=='\\'))){
 			// ファイル名のみの指定っぽかったら現在のディレクトリを結合
 			//getcwd(pathname, 300);
 			GetCurrentDirectory(500, strbuf);
-			if(strbuf[_tcslen(strbuf)-1]!='¥¥'){
-				_tcscat(strbuf, _T("¥¥")); // XXX: Linuxとかだったらスラッシュじゃないと駄目だよね？ -> Win専用だから問題ない
+			if(strbuf[_tcslen(strbuf)-1]!='\\'){
+				_tcscat(strbuf, _T("\\")); // XXX: Linuxとかだったらスラッシュじゃないと駄目だよね？ -> Win専用だから問題ない
 			}
 		}
 		_tcscat(strbuf, lpIniFile);

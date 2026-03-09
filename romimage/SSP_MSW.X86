@@ -292,7 +292,7 @@ msws_miheader:		mov		si, bx
 					mov		si, cs:mswsub_items[si]
 					ret
 
-; “ª‚ğŒÄ‚Ño‚µc
+; é ­ã‚’å‘¼ã³å‡ºã—â€¦
 msws_mihead:		call	msws_miheader
 					push	ax
 					inc		si
@@ -340,7 +340,7 @@ mews_main:			push	ax
 					mov		si, offset memswline
 					call	TEXTOUT_CS
 
-					; ƒƒjƒ…[‚ğ‚Ñ‚é‚Ç
+					; ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ã³ã‚‹ã©
 					mov		cl, 0e1h
 					xor		ax, ax
 
@@ -438,7 +438,7 @@ mswsev_esc:			pop		ax
 					jmp		msw_main
 
 mswsev_stop:		pop		ax
-					ret						; –ß‚é
+					ret						; æˆ»ã‚‹
 
 memswsub_event		db		3ah
 					dw		offset mswsev_up

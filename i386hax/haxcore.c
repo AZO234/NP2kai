@@ -45,7 +45,7 @@ static void trace_fmt_ex(const char *fmt, ...)
 	va_list ap;
 	va_start(ap, fmt);
 	vsprintf(stmp, fmt, ap);
-	strcat(stmp, "¥n");
+	strcat(stmp, "\n");
 	va_end(ap);
 	OutputDebugStringA(stmp);
 }
@@ -66,10 +66,10 @@ NP2_HAX_STAT	np2haxstat = {0};
 NP2_HAX_CORE	np2haxcore = {0};
 
 static void make_vm_str(OEMCHAR* buf, UINT32 vm_id){
-	_stprintf(buf, OEMTEXT("¥¥¥¥.¥¥hax_vm%02d"), vm_id);
+	_stprintf(buf, OEMTEXT("\\\\.\\hax_vm%02d"), vm_id);
 }
 static void make_vcpu_str(OEMCHAR* buf, UINT32 vm_id, UINT32 vcpu_id){
-	_stprintf(buf, OEMTEXT("¥¥¥¥.¥¥hax_vm%02d_vcpu%02d"), vm_id, vcpu_id);
+	_stprintf(buf, OEMTEXT("\\\\.\\hax_vm%02d_vcpu%02d"), vm_id, vcpu_id);
 }
 
 // HAXMが使えそうかチェック
@@ -80,7 +80,7 @@ UINT8 i386hax_check(void) {
 	HAX_CAPINFO haxcap = {0};
 
 	// HAXMカーネルモードドライバを開く
-	np2hax.hDevice = CreateFile(OEMTEXT("¥¥¥¥.¥¥HAX"), 
+	np2hax.hDevice = CreateFile(OEMTEXT("\\\\.\\HAX"), 
 		GENERIC_READ|GENERIC_WRITE, 0, NULL, 
 		CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
@@ -164,7 +164,7 @@ void i386hax_initialize(void) {
 	i386hax_deinitialize();
 	
 	// HAXMカーネルモードドライバを開く
-	np2hax.hDevice = CreateFile(OEMTEXT("¥¥¥¥.¥¥HAX"), 
+	np2hax.hDevice = CreateFile(OEMTEXT("\\\\.\\HAX"), 
 		GENERIC_READ|GENERIC_WRITE, 0, NULL, 
 		CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
@@ -598,7 +598,7 @@ ia32hax_copyregNP2toHAX(void)
 		np2haxstat.state._cs.type = CPU_CS_DESC.flag;
 		np2haxstat.state._cs.desc = CPU_CS_DESC.s;
 		np2haxstat.state._cs.dpl = CPU_CS_DESC.dpl;
-		//if(wacounter > 10)np2haxstat.state._cs.selector = (np2haxstat.state._cs.selector & ‾0x3) | CPU_CS_DESC.rpl;
+		//if(wacounter > 10)np2haxstat.state._cs.selector = (np2haxstat.state._cs.selector & ~0x3) | CPU_CS_DESC.rpl;
 		np2haxstat.state._cs.present = CPU_CS_DESC.valid;
 		np2haxstat.state._cs.available = CPU_CS_DESC.p;
 		np2haxstat.state._cs.operand_size = CPU_CS_DESC.d;
@@ -609,7 +609,7 @@ ia32hax_copyregNP2toHAX(void)
 		np2haxstat.state._ds.type = CPU_DS_DESC.flag;
 		np2haxstat.state._ds.desc = CPU_DS_DESC.s;
 		np2haxstat.state._ds.dpl = CPU_DS_DESC.dpl;
-		//if(wacounter > 10)np2haxstat.state._ds.selector = (np2haxstat.state._ds.selector & ‾0x3) | CPU_CS_DESC.rpl;
+		//if(wacounter > 10)np2haxstat.state._ds.selector = (np2haxstat.state._ds.selector & ~0x3) | CPU_CS_DESC.rpl;
 		np2haxstat.state._ds.present = CPU_DS_DESC.valid;
 		np2haxstat.state._ds.available = CPU_DS_DESC.p;
 		np2haxstat.state._ds.operand_size = CPU_DS_DESC.d;
@@ -620,7 +620,7 @@ ia32hax_copyregNP2toHAX(void)
 		np2haxstat.state._es.type = CPU_ES_DESC.flag;
 		np2haxstat.state._es.desc = CPU_ES_DESC.s;
 		np2haxstat.state._es.dpl = CPU_ES_DESC.dpl;
-		//if(wacounter > 10)np2haxstat.state._es.selector = (np2haxstat.state._es.selector & ‾0x3) | CPU_CS_DESC.rpl;
+		//if(wacounter > 10)np2haxstat.state._es.selector = (np2haxstat.state._es.selector & ~0x3) | CPU_CS_DESC.rpl;
 		np2haxstat.state._es.present = CPU_ES_DESC.valid;
 		np2haxstat.state._es.available = CPU_ES_DESC.p;
 		np2haxstat.state._es.operand_size = CPU_ES_DESC.d;
@@ -631,7 +631,7 @@ ia32hax_copyregNP2toHAX(void)
 		np2haxstat.state._ss.type = CPU_SS_DESC.flag;
 		np2haxstat.state._ss.desc = CPU_SS_DESC.s;
 		np2haxstat.state._ss.dpl = CPU_SS_DESC.dpl;
-		//if(wacounter > 10)np2haxstat.state._ss.selector = (np2haxstat.state._ss.selector & ‾0x3) | CPU_CS_DESC.rpl;
+		//if(wacounter > 10)np2haxstat.state._ss.selector = (np2haxstat.state._ss.selector & ~0x3) | CPU_CS_DESC.rpl;
 		np2haxstat.state._ss.present = CPU_SS_DESC.valid;
 		np2haxstat.state._ss.available = CPU_SS_DESC.p;
 		np2haxstat.state._ss.operand_size = CPU_SS_DESC.d;
@@ -642,7 +642,7 @@ ia32hax_copyregNP2toHAX(void)
 		np2haxstat.state._fs.type = CPU_FS_DESC.flag;
 		np2haxstat.state._fs.desc = CPU_FS_DESC.s;
 		np2haxstat.state._fs.dpl = CPU_FS_DESC.dpl;
-		//if(wacounter > 10)np2haxstat.state._fs.selector = (np2haxstat.state._fs.selector & ‾0x3) | CPU_CS_DESC.rpl;
+		//if(wacounter > 10)np2haxstat.state._fs.selector = (np2haxstat.state._fs.selector & ~0x3) | CPU_CS_DESC.rpl;
 		np2haxstat.state._fs.present = CPU_FS_DESC.valid;
 		np2haxstat.state._fs.available = CPU_FS_DESC.p;
 		np2haxstat.state._fs.operand_size = CPU_FS_DESC.d;
@@ -653,7 +653,7 @@ ia32hax_copyregNP2toHAX(void)
 		np2haxstat.state._gs.type = CPU_GS_DESC.flag;
 		np2haxstat.state._gs.desc = CPU_GS_DESC.s;
 		np2haxstat.state._gs.dpl = CPU_GS_DESC.dpl;
-		//if(wacounter > 10)np2haxstat.state._gs.selector = (np2haxstat.state._gs.selector & ‾0x3) | CPU_CS_DESC.rpl;
+		//if(wacounter > 10)np2haxstat.state._gs.selector = (np2haxstat.state._gs.selector & ~0x3) | CPU_CS_DESC.rpl;
 		np2haxstat.state._gs.present = CPU_GS_DESC.valid;
 		np2haxstat.state._gs.available = CPU_GS_DESC.p;
 		np2haxstat.state._gs.operand_size = CPU_GS_DESC.d;
@@ -895,7 +895,7 @@ coutinue_cpu_imm:
 	// CPU実行再開のための処理（高速処理が要るもの）
 	switch (exitstatus) {
 	case HAX_EXIT_IO: // I/Oポートへのアクセス
-		//printf("HAX_EXIT_IO¥n");
+		//printf("HAX_EXIT_IO\n");
 		oldremclock = CPU_REMCLOCK;
 		switch(tunnel->io._direction){ // 入力 or 出力
 		case HAX_IO_OUT: // 出力
@@ -1009,7 +1009,7 @@ coutinue_cpu_imm:
 		//}
 		break;
 	case HAX_EXIT_FAST_MMIO: // メモリマップドI/Oへのアクセス
-		//printf("HAX_EXIT_FAST_MMIO¥n");
+		//printf("HAX_EXIT_FAST_MMIO\n");
 		{
 			HAX_FASTMMIO *mmio = (HAX_FASTMMIO*)np2hax.tunnel.io_va;
 				
@@ -1082,18 +1082,18 @@ coutinue_cpu_imm:
 	// CPU実行再開のための処理（処理速度はどうでもいい物）
 	switch (exitstatus) {
 	case HAX_EXIT_MMIO: // メモリマップドI/Oへのアクセス（旧式・もう呼ばれないと思う）
-		//printf("HAX_EXIT_MMIO¥n");
+		//printf("HAX_EXIT_MMIO\n");
 		break;
 	case HAX_EXIT_REALMODE: // 事前設定をするとリアルモードの時に呼ばれるらしい
-		//printf("HAX_EXIT_REALMODE¥n");
+		//printf("HAX_EXIT_REALMODE\n");
 		break;
 	case HAX_EXIT_INTERRUPT: // 割り込み･･･？
-		//printf("HAX_EXIT_INTERRUPT¥n");
+		//printf("HAX_EXIT_INTERRUPT\n");
 		// リセット可能フラグを立てる
 		np2haxcore.ready_for_reset = 1;
 		break;
 	case HAX_EXIT_UNKNOWN: // 謎
-		//printf("HAX_EXIT_UNKNOWN¥n");
+		//printf("HAX_EXIT_UNKNOWN\n");
 		//if(!CPU_RESETREQ){
 		//	np2hax.emumode = 1;
 		//	CPU_REMCLOCK = 0;
@@ -1109,7 +1109,7 @@ coutinue_cpu_imm:
 		break;
 	case HAX_EXIT_HLT: // HLT命令が実行されたとき
 		np2haxcore.hltflag = 1;
-		//printf("HAX_EXIT_HLT¥n");
+		//printf("HAX_EXIT_HLT\n");
 		// リセット可能フラグを立てる
 		np2haxcore.ready_for_reset = 1;
 		// リアルモード or 仮想86
@@ -1132,7 +1132,7 @@ coutinue_cpu_imm:
 		}
 		break;
 	case HAX_EXIT_STATECHANGE: // CPU状態が変わったとき･･･と言いつつ、事実上CPUが実行不能(panic)になったときしか呼ばれない
-		//printf("HAX_EXIT_STATECHANGE¥n");
+		//printf("HAX_EXIT_STATECHANGE\n");
 		// リセット可能フラグを立てる
 		np2haxcore.ready_for_reset = 1;
 		//if(!CPU_RESETREQ){
@@ -1154,7 +1154,7 @@ coutinue_cpu_imm:
 		//	UINT8 memdump[0x100];
 		//	UINT32 baseaddr;
 		//	addr = CPU_EIP + (CPU_CS << 4);
-		//	baseaddr = addr & ‾0xff;
+		//	baseaddr = addr & ~0xff;
 		//	for(i=0;i<0x100;i++){
 		//		memdumpa[i] = baseaddr + i;
 		//		memdump[i] = memp_read8(memdumpa[i]);
@@ -1165,15 +1165,15 @@ coutinue_cpu_imm:
 		//}
 		break;
 	case HAX_EXIT_PAUSED: // 一時停止？
-		//printf("HAX_EXIT_PAUSED¥n");
+		//printf("HAX_EXIT_PAUSED\n");
 		// リセット可能フラグを立てる
 		np2haxcore.ready_for_reset = 1;
 		break;
 	case HAX_EXIT_PAGEFAULT: // ページフォールト？
-		//printf("HAX_EXIT_PAGEFAULT¥n");
+		//printf("HAX_EXIT_PAGEFAULT\n");
 		break;
 	case HAX_EXIT_DEBUG: // デバッグ命令(INT3 CCh)が呼ばれたとき
-		//printf("HAX_EXIT_DEBUG¥n");
+		//printf("HAX_EXIT_DEBUG\n");
 		// リセット可能フラグを立てる
 		np2haxcore.ready_for_reset = 1;
 		break;

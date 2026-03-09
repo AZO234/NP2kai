@@ -77,7 +77,7 @@
 //	va_list ap;
 //	va_start(ap, fmt);
 //	vsprintf(stmp, fmt, ap);
-//	strcat(stmp, "¥n");
+//	strcat(stmp, "\n");
 //	va_end(ap);
 //	OutputDebugStringA(stmp);
 //}
