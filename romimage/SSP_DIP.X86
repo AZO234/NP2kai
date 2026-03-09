@@ -81,7 +81,7 @@ dipswput_hit:	mov		es:[di+0000h], ax
 
 
 
-dipsw_start:	push	ax							; ax = ƒƒjƒ…[‚©‚ç“ü—Í
+dipsw_start:	push	ax							; ax = ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‹ã‚‰å…¥åŠ›
 				mov		si, offset dips_initmsgs
 				call	ssp_resdisp
 				call	dipsw_dispall

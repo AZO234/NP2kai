@@ -57,7 +57,7 @@ EARG4	equ		EARG1+6
 
 pushall	macro
 		pushf
-		db		60h					; Ç–Ç≈Å[(èŒ) PUSHAñΩóﬂÇ≈Ç∑ÅB
+		db		60h					; „Å≤„Åß„Éº(Á¨ë) PUSHAÂëΩ‰ª§„Åß„Åô„ÄÇ
 		push	ds
 		push	es
 		endm
@@ -65,11 +65,11 @@ pushall	macro
 popall	macro
 		pop		es
 		pop		ds
-		db		61h					; Ç±Ç¡ÇøÇÕ POPAÇ≈Ç∑ÅBñ¢égópÇæÇØÇ«
+		db		61h					; „Åì„Å£„Å°„ÅØ POPA„Åß„Åô„ÄÇÊú™‰ΩøÁî®„Å†„Åë„Å©
 		popf
 		endm
 
-jmps	macro	label				; N88BASIC MONÇÃ JMPSÇÀ
+jmps	macro	label				; N88BASIC MON„ÅÆ JMPS„Å≠
 		jmp		short label
 		endm
 

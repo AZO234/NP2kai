@@ -1,4 +1,4 @@
-; テキスト操作系
+; 繝�繧ｭ繧ｹ繝域桃菴懃ｳｻ
 
 SCREEN_CLEAR:	mov		ax, 0a000h
 				mov		es, ax
@@ -195,7 +195,7 @@ textoutskpka:	inc		si
 
 ; ---------------------------------------------------------------------------
 
-; boxclear: 黒色のboxfill - in: adrs->di, y->ch x->cl
+; boxclear: 鮟定牡縺ｮboxfill - in: adrs->di, y->ch x->cl
 
 boxclear:		push	bx
 				mov		ax, 20h
@@ -217,7 +217,7 @@ boxclearxlp:	mov		es:[di+2000h], bh
 
 
 
-; puttextbox: 枠 - in: start->dx, size->bx, color->cl
+; puttextbox: 譫 - in: start->dx, size->bx, color->cl
 
 puttextbox:		push	bx
 				push	cx

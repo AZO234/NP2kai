@@ -1,5 +1,5 @@
 
-; CPUモードの表示
+; CPU繝｢繝ｼ繝峨�ｮ陦ｨ遉ｺ
 
 cpumoderes		db		"CPU MODE  ", 0
 				db		"High", 0
@@ -18,7 +18,7 @@ cpumodedisp1:	call	TEXTOUT_CS
 
 ; ----------------------------------------------------------------------------
 
-; BIOS UPDATEのダミー
+; BIOS UPDATE縺ｮ繝繝溘�ｼ
 
 FLASH_WRITE:	mov		cl, 0e1h
 				mov		si, offset res_wflash

@@ -34,7 +34,7 @@ CALLC		macro	calllabel
 
 
 
-jmps	macro	label				; N88BASIC MONÇÃ JMPSÇÀ
+jmps	macro	label				; N88BASIC MON„ÅÆ JMPS„Å≠
 		jmp		short label
 		endm
 

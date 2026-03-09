@@ -12,7 +12,7 @@ void PrintFileTime(FILETIME ft) {
 }
 
 void PrintAttributes(DWORD attrs) {
-    printf("ƒtƒ@ƒCƒ‹‘®«: 0x%08lX (", attrs);
+    printf("ãƒ•ã‚¡ã‚¤ãƒ«å±æ€§: 0x%08lX (", attrs);
     if (attrs & FILE_ATTRIBUTE_READONLY)        printf("READONLY ");
     if (attrs & FILE_ATTRIBUTE_HIDDEN)          printf("HIDDEN ");
     if (attrs & FILE_ATTRIBUTE_SYSTEM)          printf("SYSTEM ");
@@ -47,12 +47,12 @@ int main(int argc, char *argv[]) {
     );
 
     if (hFile == INVALID_HANDLE_VALUE) {
-        printf("ƒtƒ@ƒCƒ‹‚ğŠJ‚¯‚Ü‚¹‚ñ‚Å‚µ‚½: ƒGƒ‰[ƒR[ƒh %lu\n", GetLastError());
+        printf("ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã‘ã¾ã›ã‚“ã§ã—ãŸ: ã‚¨ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰ %lu\n", GetLastError());
         return 1;
     }
 
     if (!GetFileInformationByHandle(hFile, &info)) {
-        printf("GetFileInformationByHandle ¸”s: ƒGƒ‰[ƒR[ƒh %lu\n", GetLastError());
+        printf("GetFileInformationByHandle å¤±æ•—: ã‚¨ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰ %lu\n", GetLastError());
         CloseHandle(hFile);
         return 1;
     }
@@ -60,18 +60,18 @@ int main(int argc, char *argv[]) {
     fileSize = ((ULONGLONG)info.nFileSizeHigh << 32) | info.nFileSizeLow;
     index = ((ULONGLONG)info.nFileIndexHigh << 32) | info.nFileIndexLow;
 
-    printf("ƒtƒ@ƒCƒ‹: %s\n", filePath);
+    printf("ãƒ•ã‚¡ã‚¤ãƒ«: %s\n", filePath);
     PrintAttributes(info.dwFileAttributes);
-    printf("ì¬“ú: ");
+    printf("ä½œæˆæ—¥æ™‚: ");
     PrintFileTime(info.ftCreationTime);
-    printf("ÅIƒAƒNƒZƒX“ú: ");
+    printf("æœ€çµ‚ã‚¢ã‚¯ã‚»ã‚¹æ—¥æ™‚: ");
     PrintFileTime(info.ftLastAccessTime);
-    printf("ÅI‘‚«‚İ“ú: ");
+    printf("æœ€çµ‚æ›¸ãè¾¼ã¿æ—¥æ™‚: ");
     PrintFileTime(info.ftLastWriteTime);
-    printf("ƒ{ƒŠƒ…[ƒ€ƒVƒŠƒAƒ‹”Ô†: 0x%08lX\n", info.dwVolumeSerialNumber);
-    printf("ƒtƒ@ƒCƒ‹ƒTƒCƒY: %llu ƒoƒCƒg\n", fileSize);
-    printf("ƒŠƒ“ƒN”: %lu\n", info.nNumberOfLinks);
-    printf("ƒtƒ@ƒCƒ‹ƒCƒ“ƒfƒbƒNƒX: %llu (High: 0x%08lX, Low: 0x%08lX)\n",
+    printf("ãƒœãƒªãƒ¥ãƒ¼ãƒ ã‚·ãƒªã‚¢ãƒ«ç•ªå·: 0x%08lX\n", info.dwVolumeSerialNumber);
+    printf("ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚º: %llu ãƒã‚¤ãƒˆ\n", fileSize);
+    printf("ãƒªãƒ³ã‚¯æ•°: %lu\n", info.nNumberOfLinks);
+    printf("ãƒ•ã‚¡ã‚¤ãƒ«ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹: %llu (High: 0x%08lX, Low: 0x%08lX)\n",
            index, info.nFileIndexHigh, info.nFileIndexLow);
 
     CloseHandle(hFile);

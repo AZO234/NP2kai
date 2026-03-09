@@ -36,36 +36,36 @@ enum {
 };
 
 #ifdef USE_CUSTOM_HOOKINST
-#define HOOKINST_DEFAULT	0x90	// NOP����
+#define HOOKINST_DEFAULT	0x90	// NOP命令
 
 typedef struct {
-	UINT8	hookinst; // BIOS�t�b�N���閽�� default:NOP(0x90)
+	UINT8	hookinst; // BIOSフックする命令 default:NOP(0x90)
 } BIOSHOOKINFO;
 #endif
 
 #if defined(BIOS_IO_EMULATION)
 // np21w ver0.86 rev46 BIOS I/O emulation
 
-// XXX: I/O�A�N�Z�X�͍ő�20�񕪂��炢����Ώ\�����Ǝv���̂Ō��ߑł�
+// XXX: I/Oアクセスは最大20回分くらいあれば十分だと思うので決め打ち
 #define BIOSIOEMU_DATA_MAX	20 
 
 enum {
 	BIOSIOEMU_FLAG_NONE	= 0x0,
-	BIOSIOEMU_FLAG_MB	= 0x1, // �r�b�g�𗧂Ă��DX, AX(16bit)�܂���DX, EAX(32bit)�ɂȂ�i���ĂȂ����8bit�A�N�Z�X�j
-	BIOSIOEMU_FLAG_READ	= 0x2, // �r�b�g�𗧂Ă�Ƌ�ǂ݂���
+	BIOSIOEMU_FLAG_MB	= 0x1, // ビットを立てるとDX, AX(16bit)またはDX, EAX(32bit)になる（立てなければ8bitアクセス）
+	BIOSIOEMU_FLAG_READ	= 0x2, // ビットを立てると空読みする
 };
 typedef struct {
-	UINT8	flag; // �A�N�Z�X�t���O(����ł�BIOSIOEMU_FLAG_NONE�̂�)
-	UINT16	port; // ���o�͐�|�[�g
-	UINT32	data; // �o�̓f�[�^(����ł�8bit�l�̂ݗL��)
+	UINT8	flag; // アクセスフラグ(現状ではBIOSIOEMU_FLAG_NONEのみ)
+	UINT16	port; // 入出力先ポート
+	UINT32	data; // 出力データ(現状では8bit値のみ有効)
 } BIOSIOEMU_IODATA;
 
 typedef struct {
-	UINT8	enable; // BIOS I/O �G�~�����[�V�����L��
-	UINT8	count; // �o�̓f�[�^��
-	UINT32	oldEAX; // EAX�ޔ�p
-	UINT32	oldEDX; // EDX�ޔ�p
-	BIOSIOEMU_IODATA	data[BIOSIOEMU_DATA_MAX]; // �o�͐�|�[�g�ƃ|�[�g�ɏo�͂������f�[�^�B�f�[�^����LIFO�Ȃ̂Œ���
+	UINT8	enable; // BIOS I/O エミュレーション有効
+	UINT8	count; // 出力データ数
+	UINT32	oldEAX; // EAX退避用
+	UINT32	oldEDX; // EDX退避用
+	BIOSIOEMU_IODATA	data[BIOSIOEMU_DATA_MAX]; // 出力先ポートとポートに出力したいデータ。データ順がLIFOなので注意
 } BIOSIOEMU;
 
 #endif

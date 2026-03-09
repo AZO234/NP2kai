@@ -4,8 +4,8 @@ keyint_proc:	push	ax
 				push	cx
 				push	ds
 				push	es
-				mov		ax, DATASEG			; ds���W�X�^�͐ݒ肵�Ȃ��Ă�������
-				mov		ds, ax				; ������ DEBUG���ɍ���ˁc
+				mov		ax, DATASEG			; dsレジスタは設定しなくてもいいん
+				mov		ds, ax				; だけど DEBUG時に困るね…
 				xor		ax, ax
 				mov		es, ax
 				in		al, 43h

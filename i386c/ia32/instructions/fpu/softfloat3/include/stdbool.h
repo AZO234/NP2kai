@@ -1,4 +1,4 @@
-/* stdbool.h‚ª‚È‚¢ŠÂ‹«—p */
+/* stdbool.hãŒãªã„ç’°å¢ƒç”¨ */
 
 #pragma once
 

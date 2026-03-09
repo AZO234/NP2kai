@@ -1,6 +1,6 @@
 
 
-; ƒ\ƒtƒgƒfƒBƒbƒvƒXƒCƒbƒ`ŠÖŒW
+; ã‚½ãƒ•ãƒˆãƒ‡ã‚£ãƒƒãƒ—ã‚¹ã‚¤ãƒƒãƒé–¢ä¿‚
 
 ; ds:[DIPSW_1]	DIPSW-1
 ; ds:[DIPSW_2]	DIPSW-2
@@ -8,7 +8,7 @@
 
 
 
-_xchgbits:		push	cx					; al‚Ìbit‚ð‹t“]...
+_xchgbits:		push	cx					; alã®bitã‚’é€†è»¢...
 				mov		cx, 8
 xchgbitslp:		rcr		al, 1
 				rcl		ah, 1
@@ -27,7 +27,7 @@ INIT_DIPSW:		mov		byte ptr ds:[DIPSW_1], 01111100b
 
 
 
-; NP2ˆË‘¶•”•ª
+; NP2ä¾å­˜éƒ¨åˆ†
 
 GET_DIPSW:		mov		dx, 841eh
 				in		al, dx

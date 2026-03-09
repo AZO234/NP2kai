@@ -21,9 +21,9 @@ typedef struct {
 } FILEFIND32;
 
 
-											// DOSIO:ŠÖ”‚Ì€”õ
+											// DOSIO:é–¢æ•°ã®æº–å‚™
 BYTE	dosio_init(void);
-											// ƒtƒ@ƒCƒ‹‘€ì
+											// ãƒ•ã‚¡ã‚¤ãƒ«æ“ä½œ
 FILEH	file_open(BYTE *filename);
 FILEH	file_create(BYTE *filename);
 long	file_seek(FILEH handle, long pointer, short mode);
@@ -32,21 +32,21 @@ WORD	file_read(FILEH handle, void far *data, unsigned short length);
 WORD	file_write(FILEH handle, void far *data, unsigned short length);
 short	file_close(FILEH handle);
 short	file_attr(BYTE *filename);
-											// ƒJƒŒƒ“ƒgƒtƒ@ƒCƒ‹‘€ì
+											// ã‚«ãƒ¬ãƒ³ãƒˆãƒ•ã‚¡ã‚¤ãƒ«æ“ä½œ
 void	file_setcd(BYTE *exename);
 FILEH	file_open_c(BYTE *filename);
 FILEH	file_create_c(BYTE *filename);
 short	file_attr_c(BYTE *filename);
 
-											// “ú‚Ìæ“¾
+											// æ—¥æ™‚ã®å–å¾—
 void	dosdateset(BYTE *dat);
 void	dostimeset(BYTE *dat);
-											// ’v–½“IƒGƒ‰[‚ÌƒtƒbƒN
+											// è‡´å‘½çš„ã‚¨ãƒ©ãƒ¼ã®ãƒ•ãƒƒã‚¯
 void	int24_set(void);
 void	int24_reset(void);
-											// ƒhƒ‰ƒCƒu‚ÌƒeƒLƒXƒgFæ“¾
+											// ãƒ‰ãƒ©ã‚¤ãƒ–ã®ãƒ†ã‚­ã‚¹ãƒˆè‰²å–å¾—
 BYTE	check_drive(BYTE drive);
-											// ƒtƒ@ƒCƒ‹ŒŸõŠÖ”
+											// ãƒ•ã‚¡ã‚¤ãƒ«æ¤œç´¢é–¢æ•°
 BYTE	file_find1st(void *path, WORD attr, FILEFIND32 *dta);
 BYTE	file_findnext(FILEFIND32 *dta);
 void	file_findclose(void);

@@ -15,8 +15,8 @@
 #include "font/font.h"
 
 /**
- * ƒtƒHƒ“ƒg‘I‘ğ
- * @param[in] hWnd eƒEƒBƒ“ƒhƒE
+ * ãƒ•ã‚©ãƒ³ãƒˆé¸æŠ
+ * @param[in] hWnd è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
  */
 void dialog_font(HWND hWnd)
 {

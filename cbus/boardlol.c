@@ -90,7 +90,7 @@ static const IOINP opn_i[4] = {
 			opn_i188,	opn_i18a,	NULL,		NULL};
 
 static void psgpanset(OPNA* psg) {
-	// SSGÇÕRå≈íË
+	// SSG„ÅØRÂõ∫ÂÆö
 	psggen_setpan(psg, 0, 1);
 	psggen_setpan(psg, 1, 1);
 	psggen_setpan(psg, 2, 1);
@@ -110,7 +110,7 @@ void boardlol_reset(const NP2CFG *pConfig) {
 void boardlol_bind(void) {
 	psgpanset(&g_opna[0]);
 //	fmboard_fmrestore(0, 0);
-	opngen_setreg(&g_opna[0].opngen, 0, 0xb4, 1 << 7);		// OPNÇÕLå≈íË
+	opngen_setreg(&g_opna[0].opngen, 0, 0xb4, 1 << 7);		// OPN„ÅØLÂõ∫ÂÆö
 	opngen_setreg(&g_opna[0].opngen, 0, 0xb5, 1 << 7);
 	opngen_setreg(&g_opna[0].opngen, 0, 0xb6, 1 << 7);
 	psggen_restore(&g_opna[0]);

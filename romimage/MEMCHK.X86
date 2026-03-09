@@ -82,7 +82,7 @@ extmemory_chk:	push	ax
 
 MEMORY_TEST:	mov		bp, offset sub_memchk
 
-				; ƒƒCƒ“ƒƒ‚ƒŠ `128KB
+				; ãƒ¡ã‚¤ãƒ³ãƒ¡ãƒ¢ãƒª ï½128KB
 				mov		bx, 2000h
 				mov		cl, 0
 				call	bp
@@ -90,7 +90,7 @@ MEMORY_TEST:	mov		bp, offset sub_memchk
 				mov		si, offset res_memory128ok
 				call	TEXTOUT_CS
 
-				; ƒƒCƒ“ƒƒ‚ƒŠ 128KB`640KB
+				; ãƒ¡ã‚¤ãƒ³ãƒ¡ãƒ¢ãƒª 128KBï½640KB
 				mov		ch, es:[MEM_MSW3]
 				and		ch, 7
 				je		short mainmemtest_ed
@@ -121,7 +121,7 @@ mainmemtest_ed:
 				push	dx
 				in		al, 42h
 				test	al, 2
-				jne		short extmemtest_end	; lowƒ‚[ƒh‚ÍŠg’£ƒƒ‚ƒŠ–³‚µ
+				jne		short extmemtest_end	; lowãƒ¢ãƒ¼ãƒ‰ã¯æ‹¡å¼µãƒ¡ãƒ¢ãƒªç„¡ã—
 				xor		bx, bx
 				push	ds
 				mov		ds, bx
@@ -166,14 +166,14 @@ extmemtest_end:	pop		dx
 
 ; ---- epson
 
-epson_memtest:	mov		bx, 2000h				; ƒƒCƒ“ƒƒ‚ƒŠ `128KB
+epson_memtest:	mov		bx, 2000h				; ãƒ¡ã‚¤ãƒ³ãƒ¡ãƒ¢ãƒª ï½128KB
 				mov		cl, 0
 				call	sub_memchk
 				mov		cl, 0e1h
 				mov		si, offset res_ramchk
 				call	TEXTOUT_CS
 
-				mov		ch, es:[MEM_MSW3]		; ƒƒCƒ“ƒƒ‚ƒŠ 128KB`640KB
+				mov		ch, es:[MEM_MSW3]		; ãƒ¡ã‚¤ãƒ³ãƒ¡ãƒ¢ãƒª 128KBï½640KB
 				and		ch, 7
 				je		short epmt_ext
 				cmp		ch, 4
@@ -196,7 +196,7 @@ epmt_main_lp:	mov		cl, 0
 				dec		ch
 				jne		epmt_main_lp
 
-epmt_ext:		in		al, 42h					; Šg’£ƒƒ‚ƒŠ
+epmt_ext:		in		al, 42h					; æ‹¡å¼µãƒ¡ãƒ¢ãƒª
 				test	al, 2
 				jne		short epmt_exit
 				xor		ax, ax

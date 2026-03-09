@@ -1,6 +1,6 @@
 
-�@NP2����������ł��� �e��ROM�C���[�W�̃\�[�X�ł��B
-�@MASM5.1 + EXE2BIN�ł��B
+　NP2が抱き込んでいる 各種ROMイメージのソースです。
+　MASM5.1 + EXE2BINです。
 
-�@NP2���r���h���鎞�ɂ́A�A�Z���u���̕K�v�͂���܂���B
+　NP2をビルドする時には、アセンブルの必要はありません。
 
