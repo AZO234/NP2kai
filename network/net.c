@@ -194,13 +194,13 @@ static int doWriteTap(HANDLE hTap, const UCHAR *pSendBuf, DWORD len, OVERLAPPED 
 				return 1;
 			}
 		} else {
-			TRACEOUT(("LGY-98: WriteFile err=0x%08X¥n", err));
+			TRACEOUT(("LGY-98: WriteFile err=0x%08X\n", err));
 			return -1;
 		}
 	}else{
 		np2net_cs_LeaveCriticalSection();
 	}
-	//TRACEOUT(("LGY-98: send %u bytes¥n", dwWriteLen));
+	//TRACEOUT(("LGY-98: send %u bytes\n", dwWriteLen));
 	return 0;
 }
 #else
@@ -334,7 +334,7 @@ static unsigned int __stdcall np2net_ThreadFuncR(LPVOID vdParam) {
 					Sleep(0);
 				}
 				if(dwLen>0){
-					//TRACEOUT(("LGY-98: recieve %u bytes¥n", dwLen));
+					//TRACEOUT(("LGY-98: recieve %u bytes\n", dwLen));
 					np2net.recieve_packet((UINT8*)np2net_Buf, dwLen); // 受信できたので通知する
 				}
 			} else {

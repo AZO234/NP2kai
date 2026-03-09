@@ -70,10 +70,10 @@ static void IOOUTCALL cgrom_oa1(UINT port, REG8 dat) {
 //		UINT16 SJis;
 //		UINT8 th[3];
 //		UINT16 thw[2];
-//		thw[1]='¥0';
+//		thw[1]='\0';
 //		SJis = font_Jis2Sjis(((cr->code + 0x20) << 8) | (cr->code >> 8));
 //		if(SJis){
-//			th[0] = SJis >> 8; th[1] = SJis & 0x00ff; th[2] = '¥0';
+//			th[0] = SJis >> 8; th[1] = SJis & 0x00ff; th[2] = '\0';
 //			codecnv_sjistoucs2(thw, 1, (const char*)th, 2);
 //			font_outhooktest((wchar_t*)thw);
 //		}
@@ -98,10 +98,10 @@ static void IOOUTCALL cgrom_oa3(UINT port, REG8 dat) {
 		UINT16 SJis;
 		UINT8 th[3];
 		UINT16 thw[2];
-		thw[1]='¥0';
+		thw[1]='\0';
 		SJis = font_Jis2Sjis(((cr->code + 0x20) << 8) | (cr->code >> 8));
 		if(SJis){
-			th[0] = SJis >> 8; th[1] = SJis & 0x00ff; th[2] = '¥0';
+			th[0] = SJis >> 8; th[1] = SJis & 0x00ff; th[2] = '\0';
 			codecnv_sjistoucs2(thw, 1, (const char*)th, 2);
 			font_outhooktest((wchar_t*)thw);
 		}
@@ -124,10 +124,10 @@ static void IOOUTCALL cgrom_oa5(UINT port, REG8 dat) {
 		UINT16 SJis;
 		UINT8 th[3];
 		UINT16 thw[2];
-		thw[1]='¥0';
+		thw[1]='\0';
 		SJis = font_Jis2Sjis(((cr->code + 0x20) << 8) | (cr->code >> 8));
 		if(SJis){
-			th[0] = SJis >> 8; th[1] = SJis & 0x00ff; th[2] = '¥0';
+			th[0] = SJis >> 8; th[1] = SJis & 0x00ff; th[2] = '\0';
 			codecnv_sjistoucs2(thw, 1, (const char*)th, 2);
 			font_outhooktest((wchar_t*)thw);
 		}

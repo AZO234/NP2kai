@@ -18,7 +18,7 @@ static void trace_fmt_ex(const char* fmt, ...)
 	va_list ap;
 	va_start(ap, fmt);
 	vsprintf(stmp, fmt, ap);
-	strcat(stmp, "¥n");
+	strcat(stmp, "\n");
 	va_end(ap);
 	OutputDebugStringA(stmp);
 }
@@ -184,7 +184,7 @@ void nevent_progress(void)
 
 	// NEVENT_FLAMESが消える問題に暫定対処
 	if(!fevtchk){
-		//printf("NEVENT_FLAMES is missing!!¥n");
+		//printf("NEVENT_FLAMES is missing!!\n");
 		pcstat.screendispflag = 0;
 	}
 #if defined(SUPPORT_MULTITHREAD)

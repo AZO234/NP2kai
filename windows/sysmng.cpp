@@ -62,7 +62,7 @@ BOOL sysmng_workclockrenewal(void) {
 }
 
 OEMCHAR* DOSIOCALL sysmng_file_getname(OEMCHAR* lpPathName){
-	if(_tcsnicmp(lpPathName, OEMTEXT("¥¥¥¥.¥¥"), 4)==0){
+	if(_tcsnicmp(lpPathName, OEMTEXT("\\\\.\\"), 4)==0){
 		return lpPathName;
 	}else{
 		return file_getname(lpPathName);
@@ -84,7 +84,7 @@ void sysmng_updatecaption(UINT8 flag) {
 	OEMCHAR	fddtext[16] = {0};
 	
 	if (flag & 1) {
-		title[0] = '¥0';
+		title[0] = '\0';
 		for(i=0;i<4;i++){
 			OEMSPRINTF(fddtext, OEMTEXT("  FDD%d:"), i+1);
 			if (fdd_diskready(i)) {
@@ -269,7 +269,7 @@ void sysmng_updatecaption(UINT8 flag) {
 	}
 	
 	if (flag & 2) {
-		clock[0] = '¥0';
+		clock[0] = '\0';
 		if (np2oscfg.DISPCLK & 2) {
 			if (workclock.fps) {
 				OEMSPRINTF(clock, OEMTEXT(" - %u.%1uFPS"),
@@ -282,7 +282,7 @@ void sysmng_updatecaption(UINT8 flag) {
 		if (!np2userpause && (np2oscfg.DISPCLK & 1)) {
 			OEMSPRINTF(work, OEMTEXT(" %2u.%03uMHz"),
 								workclock.khz / 1000, workclock.khz % 1000);
-			if (clock[0] == '¥0') {
+			if (clock[0] == '\0') {
 				milstr_ncpy(clock, OEMTEXT(" -"), NELEMENTS(clock));
 			}
 			milstr_ncat(clock, work, NELEMENTS(clock));
@@ -296,7 +296,7 @@ void sysmng_updatecaption(UINT8 flag) {
 	}
 	
 	if (flag & 4) {
-		misc[0] = '¥0';
+		misc[0] = '\0';
 		if(sys_miscinfo.showvolume && sys_miscinfo.showmousespeed){
 			OEMSPRINTF(misc, OEMTEXT(" (Volume: %d%%, Mouse speed: %d%%)"), np2cfg.vol_master, 100 * np2oscfg.mousemul/np2oscfg.mousediv);
 		}else if(sys_miscinfo.showvolume){

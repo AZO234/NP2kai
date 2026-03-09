@@ -54,7 +54,7 @@ static void trace_fmt_ex(const char* fmt, ...)
 	va_list ap;
 	va_start(ap, fmt);
 	vsprintf(stmp, fmt, ap);
-	strcat(stmp, "¥n");
+	strcat(stmp, "\n");
 	va_end(ap);
 	OutputDebugStringA(stmp);
 }
@@ -65,7 +65,7 @@ static void trace_fmt_exw(const WCHAR* fmt, ...)
 	va_list ap;
 	va_start(ap, fmt);
 	vswprintf(stmp, 2048, fmt, ap);
-	wcscat(stmp, L"¥n");
+	wcscat(stmp, L"\n");
 	va_end(ap);
 	OutputDebugStringW(stmp);
 }

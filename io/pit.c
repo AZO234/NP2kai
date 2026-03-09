@@ -131,7 +131,7 @@ void rs232ctimer(NEVENTITEM item) {
 	if (item->flag & NEVENT_SETEVENT) {
 		pitch = pit.ch + 2;
 		if (pitch->flag & PIT_FLAG_I) {
-			//pitch->flag &= ‾PIT_FLAG_I;
+			//pitch->flag &= ~PIT_FLAG_I;
 			rs232c_callback();
 		}
 #if defined(SUPPORT_RS232C_FIFO)

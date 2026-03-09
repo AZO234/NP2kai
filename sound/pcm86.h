@@ -23,18 +23,18 @@ enum {
 #define	PCM86_REALBUFSIZE	(PCM86_LOGICALBUF + PCM86_EXTBUF)
 
 void RECALC_NOWCLKWAIT(UINT64 cnt);
-//#define RECALC_NOWCLKWAIT(cnt)											¥
-//	do																	¥
-//	{																	¥
-//		SINT64 decvalue =(SINT64)(cnt << g_pcm86.stepbit);				¥
-//		if (g_pcm86.virbuf - decvalue < g_pcm86.virbuf) 				¥
-//		{																¥
-//			g_pcm86.virbuf -= decvalue;									¥
-//		}																¥
-//		if (g_pcm86.virbuf < 0)											¥
-//		{																¥
-//			g_pcm86.virbuf &= g_pcm86.stepmask;							¥
-//		}																¥
+//#define RECALC_NOWCLKWAIT(cnt)											\
+//	do																	\
+//	{																	\
+//		SINT64 decvalue =(SINT64)(cnt << g_pcm86.stepbit);				\
+//		if (g_pcm86.virbuf - decvalue < g_pcm86.virbuf) 				\
+//		{																\
+//			g_pcm86.virbuf -= decvalue;									\
+//		}																\
+//		if (g_pcm86.virbuf < 0)											\
+//		{																\
+//			g_pcm86.virbuf &= g_pcm86.stepmask;							\
+//		}																\
 //	} while (0 /*CONSTCOND*/)
 
 typedef struct {
