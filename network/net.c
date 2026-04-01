@@ -76,6 +76,9 @@ unsigned GetTickCount()
 #include <sys/kern_control.h>
 #include <net/if.h>
 #include <net/if_utun.h>
+#elif defined(__FreeBSD__)
+#include <net/if.h>
+#include <net/if_tun.h>
 #else
 #include <linux/if.h>
 #include <linux/if_tun.h>
@@ -511,13 +514,13 @@ static int np2net_openTAP(const char* tapname){
 	np2net_hThreadW = (HANDLE)_beginthreadex(NULL , 0 , np2net_ThreadFuncW , NULL , 0 , &dwID);
 #else
 	struct ifreq ifr;
-#if defined(__APPLE__)
+#if defined(__APPLE__) || defined(__FreeBSD__)
 	np2net_hTap = open("/dev/tap0", O_RDWR);
 #else
 	np2net_hTap = open("/dev/net/tun", O_RDWR);
 #endif
 	if(np2net_hTap < 0){
-#if defined(__APPLE__)
+#if defined(__APPLE__) || defined(__FreeBSD__)
 		TRACEOUT(("LGY-98: Failed to open [%s]", "/dev/tap0"));
 #else
 		TRACEOUT(("LGY-98: Failed to open [%s]", "/dev/net/tun"));
@@ -526,9 +529,7 @@ static int np2net_openTAP(const char* tapname){
 	}
 	memset(&ifr, 0, sizeof(ifr));
 
-#if defined(__APPLE__)
-	strcpy(ifr.ifr_name, "tap%d");
-#else
+#if ! (defined(__APPLE__) || defined(__FreeBSD__))
 	ifr.ifr_flags = IFF_TAP | IFF_NO_PI;
 	strcpy(ifr.ifr_name, "tap%d");
 	

@@ -961,7 +961,7 @@ static void get_fileattr(INTRST intrst) {
 	}
 
 	TRACEOUT(("get_fileattr: ->%s", intrst->fcbname_ptr));
-	isRoot = intrst->filename_ptr[0] == '¥0' || (intrst->filename_ptr[0] == OEMPATHDIVC && intrst->filename_ptr[1] == '¥0');
+	isRoot = intrst->filename_ptr[0] == '\0' || (intrst->filename_ptr[0] == OEMPATHDIVC && intrst->filename_ptr[1] == '\0');
 	if(!isRoot && (strcmp(intrst->fcbname_ptr, "???????????") || intrst->filename_ptr[0])){ // XXX: Win用特例
 		if (is_wildcards(intrst->fcbname_ptr) || (hostdrvs_getrealpath(&hdp, intrst->filename_ptr) != ERR_NOERROR))
 		{
