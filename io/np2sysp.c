@@ -288,7 +288,7 @@ static void np2sysp_getconfig(const void *arg1, long arg2) {
 		break;
 #endif
 	case NP21W_SWITCH_AUTOHIDECURSOR:
-#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+#if defined(NP2_WIN)
 		configvalue = mousemng_getautohidecursor();
 #endif
 		break;
@@ -535,7 +535,7 @@ static void np2sysp_cngconfig(const void *arg1, long arg2) {
 		break;
 #endif
 	case NP21W_SWITCH_AUTOHIDECURSOR:
-#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+#if defined(NP2_WIN)
 	mousemng_setautohidecursor(configvalue);
 #endif
 	break;
@@ -659,7 +659,7 @@ static void np2sysp_getmpos(const void* arg1, long arg2)
 
 	if (mode == 0 || mode == 1 || mode == 2 || mode == 3)
 	{
-#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+#if defined(NP2_WIN)
 		if (mousemng_getabspos(&mouseX, &mouseY))
 #else
 		if (0)

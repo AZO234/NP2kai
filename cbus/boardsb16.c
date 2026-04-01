@@ -317,7 +317,7 @@ static void IOOUTCALL gameport_o4d2(UINT port, REG8 dat)
 static REG8 IOINPCALL gameport_i4d2(UINT port)
 {
 	REG8 retval = 0xff;
-#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+#if defined(NP2_WIN)
 	UINT32 joyAnalogX;
 	UINT32 joyAnalogY;
 #endif
@@ -334,7 +334,7 @@ static REG8 IOINPCALL gameport_i4d2(UINT port)
 	{
 		return 0xff;
 	}
-#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+#if defined(NP2_WIN)
 	joyAnalogX = joymng_getAnalogX();
 	joyAnalogY = joymng_getAnalogY();
 #endif
@@ -368,7 +368,7 @@ static REG8 IOINPCALL gameport_i4d2(UINT port)
 	if (np2cfg.analogjoy)
 	{
 		// アナログ入力タイプ
-#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+#if defined(NP2_WIN)
 		gameport_threshold_x = GAMEPORT_JOYCOUNTER_MGN2 + (UINT32)((UINT64)(gameport_clkmax - GAMEPORT_JOYCOUNTER_MGN2 * 2) * joyAnalogX / 65535);
 		gameport_threshold_y = GAMEPORT_JOYCOUNTER_MGN2 + (UINT32)((UINT64)(gameport_clkmax - GAMEPORT_JOYCOUNTER_MGN2 * 2) * joyAnalogY / 65535);
 #else

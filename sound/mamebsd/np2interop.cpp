@@ -17,7 +17,7 @@
  // 旧np21wとのステートセーブ互換を維持する　旧→新のみ互換
 #include "np2compatible.h"
 
-#if defined(_WINDOWS)
+#if defined(NP2_WIN)
 __declspec(noinline)
 #endif
 void* YMF262Init(int clock, int rate)
@@ -38,7 +38,7 @@ void* YMF262Init(int clock, int rate)
 	return chipbsd;
 }
 
-#if defined(_WINDOWS)
+#if defined(NP2_WIN)
 __declspec(noinline)
 #endif
 void YMF262Shutdown(void* chipptr)
@@ -49,7 +49,7 @@ void YMF262Shutdown(void* chipptr)
 
 	delete chipbsd;
 }
-#if defined(_WINDOWS)
+#if defined(NP2_WIN)
 __declspec(noinline)
 #endif
 void YMF262ResetChip(void* chipptr, int samplerate)

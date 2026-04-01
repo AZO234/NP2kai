@@ -208,7 +208,7 @@ static const SFENTRY np2tbl[] = {
 #if defined(USE_CUSTOM_HOOKINST)
 	{"BIOSHOOK",	0,	STATFLAG_BIN,	&bioshookinfo,		sizeof(bioshookinfo)},
 #endif
-#if !defined(NP2_SDL) && !defined(__LIBRETRO__) && !defined(NP2_X)
+#if defined(NP2_WIN)
 	{"MOUSEMNGST",	0,	STATFLAG_BIN|STATFLAG_FWD_COMPATIBLE|STATFLAG_BWD_COMPATIBLE,	&mousemngstat,		sizeof(mousemngstat)},
 #endif
 	{"TERMINATE",	0,	STATFLAG_TERM,	NULL,			0}};

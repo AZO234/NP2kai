@@ -49,7 +49,7 @@
 
 
 typedef struct {
-#if defined(_WINDOWS)
+#if defined(_MSC_VER)
 	HANDLE	hdl;
 #else
 	int		hdl;
@@ -134,14 +134,14 @@ static UINT
 serialwriteretry(COMMNG self)
 {
 	CMSER serial = (CMSER)(self + 1);
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 	DWORD size;
 #else
 	size_t size;
 #endif
 
 	if(self->lastdatafail) {
-#if defined(_WIN32)
+#if defined(_WINDOWS)
 		size = WriteFile(serial->hdl, &self->lastdata, 1, &size, NULL);
 #else
 		size = write(serial->hdl, &self->lastdata, 1);

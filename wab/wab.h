@@ -50,25 +50,25 @@ typedef struct {
 typedef struct {
 	int multiwindow; // 別窓モード
 	int ready; // 0以外なら描いても良いよ
-#if defined(NP2_SDL) || defined(__LIBRETRO__)
-	unsigned int* pBuffer;
-#elif defined(NP2_X)
-	GtkWidget *pWABWnd;
-	GdkPixbuf *pPixbuf;
-#else
+#if defined(NP2_WIN)
 	HWND hWndMain; // メインウィンドウのハンドル
 	HWND hWndWAB; // ウィンドウアクセラレータ別窓のハンドル
 	HDC hDCWAB; // ウィンドウアクセラレータ別窓のHDC
 	HBITMAP hBmpBuf; // バッファビットマップ（常に等倍）
 	HDC     hDCBuf; // バッファのHDC
+#elif defined(NP2_X)
+	GtkWidget *pWABWnd;
+	GdkPixbuf *pPixbuf;
+#else
+	unsigned int* pBuffer;
 #endif
 	NP2WAB_DrawFrame *drawframe; // 画面描画関数。hDCBufにアクセラレータ画面データを転送する。
 } NP2WABWND;
 
-#if defined(NP2_SDL) || defined(NP2_X) || defined(__LIBRETRO__)
-void np2wab_init(void);
-#else
+#if defined(NP2_WIN)
 void np2wab_init(HINSTANCE hInstance, HWND g_hWndMain);
+#else
+void np2wab_init(void);
 #endif
 void np2wab_reset(const NP2CFG *pConfig);
 void np2wab_bind(void);

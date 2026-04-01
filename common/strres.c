@@ -36,7 +36,7 @@ const OEMCHAR str_hd4[] = OEMTEXT("hd4");
 
 const OEMCHAR str_d[] = OEMTEXT("%d");
 const OEMCHAR str_u[] = OEMTEXT("%u");
-#if defined(_WINDOWS)
+#if defined(_MSC_VER)
 const OEMCHAR str_lld[] = OEMTEXT("%I64d");
 const OEMCHAR str_llu[] = OEMTEXT("%I64u");
 #else

@@ -350,7 +350,7 @@ joydrv_open(const char *dvname)
 
 	dev = &shdl->dev;
 	dev->devindex = drv;
-#if USE_SDL_VERSION >= 2
+#if USE_SDL >= 2
 	dev->devname = strdup(SDL_JoystickName(joy));
 #else
 	dev->devname = strdup(SDL_JoystickName(drv));

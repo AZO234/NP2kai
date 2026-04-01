@@ -912,7 +912,7 @@ static void set_fileattr(INTRST intrst) {
 	attr = MEMR_READ16(CPU_SS, CPU_BP + sizeof(IF4INTR)) & 0x37;
 
 	hostattr = file_attr(hdp.szPath);
-#if defined(_WINDOWS)
+#if defined(NP2_WIN)
 	hostattr &= ~(FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_ARCHIVE | FILE_ATTRIBUTE_SYSTEM);
 	if (attr & 0x01)
 	{
@@ -961,11 +961,7 @@ static void get_fileattr(INTRST intrst) {
 	}
 
 	TRACEOUT(("get_fileattr: ->%s", intrst->fcbname_ptr));
-#if defined(_WINDOWS)
-	isRoot = intrst->filename_ptr[0] == '¥0' || (intrst->filename_ptr[0] == '¥¥' && intrst->filename_ptr[1] == '¥0');
-#else
-	isRoot = intrst->filename_ptr[0] == '¥0' || (intrst->filename_ptr[0] == '/' && intrst->filename_ptr[1] == '¥0');
-#endif
+	isRoot = intrst->filename_ptr[0] == '¥0' || (intrst->filename_ptr[0] == OEMPATHDIVC && intrst->filename_ptr[1] == '¥0');
 	if(!isRoot && (strcmp(intrst->fcbname_ptr, "???????????") || intrst->filename_ptr[0])){ // XXX: Win用特例
 		if (is_wildcards(intrst->fcbname_ptr) || (hostdrvs_getrealpath(&hdp, intrst->filename_ptr) != ERR_NOERROR))
 		{

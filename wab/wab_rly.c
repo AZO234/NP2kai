@@ -87,9 +87,7 @@ static void wabrly_event(void) {
 #if defined(SUPPORT_SWWABRLYSND)
 			wabrlysnd_play(0, FALSE);
 #else
-#if !defined(NP2_SDL)
 			soundmng_pcmstop(SOUND_RELAY1);
-#endif
 #endif
 			wabrly.curevent = 0;
 			break;
@@ -105,9 +103,7 @@ void wabrly_initialize(void) {
 #if defined(SUPPORT_SWWABRLYSND)
 	wabrlysnd_play(0, FALSE);
 #else
-#if !defined(NP2_SDL)
 	soundmng_pcmstop(SOUND_RELAY1);
-#endif
 #endif
 	ZeroMemory(&wabrly, sizeof(wabrly));
 	FillMemory(wabrly.head, sizeof(wabrly.head), 42);
@@ -137,9 +133,7 @@ void wabrly_switch(void) {
 #if defined(SUPPORT_SWWABRLYSND)
 	wabrlysnd_play(0, TRUE);
 #else
-#if !defined(NP2_SDL)
 	soundmng_pcmplay(SOUND_RELAY1, FALSE);
-#endif
 #endif
 	wabrly.curevent = 100;
 	wabrly.nextevent = GETTICK() + 30;

@@ -1,5 +1,5 @@
-#ifndef	NP2_X_SOUNGMNG_H__
-#define	NP2_X_SOUNGMNG_H__
+#ifndef	NP2_SDL_SOUNGMNG_H__
+#define	NP2_SDL_SOUNGMNG_H__
 
 #include <compiler.h>
 
@@ -64,4 +64,4 @@ extern int pcm_volume_default;
 
 #endif	/* !NOSOUND */
 
-#endif	/* NP2_X_SOUNGMNG_H__ */
+#endif	/* NP2_SDL_SOUNGMNG_H__ */

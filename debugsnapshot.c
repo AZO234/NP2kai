@@ -560,7 +560,13 @@ int debugsnapshot_save(const UINT uNo) {
 
   memset(&tDebugSnapshot, 0, sizeof(NP2_DebugSnapshot_t));
 
-#if defined(__LIBRETRO__)
+#if defined(NP2_WIN)
+#if defined(SUPPORT_PC9821)
+  milstr_ncpy(tDebugSnapshot.strProgramType, "Windows IA-32", sizeof(tDebugSnapshot.strProgramType));
+#else
+  milstr_ncpy(tDebugSnapshot.strProgramType, "Windows", sizeof(tDebugSnapshot.strProgramType));
+#endif
+#elif defined(__LIBRETRO__)
   milstr_ncpy(tDebugSnapshot.strProgramType, "libretro", sizeof(tDebugSnapshot.strProgramType));
 #elif defined(EMSCRIPTEN)
 #if defined(SUPPORT_PC9821)
@@ -579,12 +585,6 @@ int debugsnapshot_save(const UINT uNo) {
   milstr_ncpy(tDebugSnapshot.strProgramType, "X IA-32", sizeof(tDebugSnapshot.strProgramType));
 #else
   milstr_ncpy(tDebugSnapshot.strProgramType, "X", sizeof(tDebugSnapshot.strProgramType));
-#endif
-#elif defined(NP2_WIN)
-#if defined(SUPPORT_PC9821)
-  milstr_ncpy(tDebugSnapshot.strProgramType, "Windows IA-32", sizeof(tDebugSnapshot.strProgramType));
-#else
-  milstr_ncpy(tDebugSnapshot.strProgramType, "Windows", sizeof(tDebugSnapshot.strProgramType));
 #endif
 #else
   milstr_ncpy(tDebugSnapshot.strProgramType, "(unknown)", sizeof(tDebugSnapshot.strProgramType));
@@ -758,7 +758,13 @@ int debugsnapshot_load(const UINT uNo) {
   }
 
   if(!uRes) {
-#if defined(__LIBRETRO__)
+#if defined(NP2_WIN)
+#if defined(SUPPORT_PC9821)
+    if(milstr_cmp(tDebugSnapshot.strProgramType, "Windwos IA-32") != 0) {
+#else
+    if(milstr_cmp(tDebugSnapshot.strProgramType, "Windwos") != 0) {
+#endif
+#elif defined(__LIBRETRO__)
     if(milstr_cmp(tDebugSnapshot.strProgramType, "libretro") != 0) {
 #elif defined(EMSCRIPTEN)
 #if defined(SUPPORT_PC9821)
@@ -777,12 +783,6 @@ int debugsnapshot_load(const UINT uNo) {
     if(milstr_cmp(tDebugSnapshot.strProgramType, "X IA-32") != 0) {
 #else
     if(milstr_cmp(tDebugSnapshot.strProgramType, "X") != 0) {
-#endif
-#elif defined(NP2_WIN)
-#if defined(SUPPORT_PC9821)
-    if(milstr_cmp(tDebugSnapshot.strProgramType, "Windwos IA-32") != 0) {
-#else
-    if(milstr_cmp(tDebugSnapshot.strProgramType, "Windwos") != 0) {
 #endif
 #else
     if(milstr_cmp(tDebugSnapshot.strProgramType, "(unknown)") == 0) {

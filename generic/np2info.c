@@ -62,6 +62,7 @@ static void info_ver(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
 static void info_cpu(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 
+#if defined(NP2_WIN)
 #if defined(CPUCORE_IA32)
 #ifdef UNICODE
 	MultiByteToWideChar(CP_ACP, 0, i386cpuid.cpu_brandstring, -1, str, maxlen);
@@ -80,6 +81,7 @@ static void info_cpu(OEMCHAR *str, int maxlen, const NP2INFOEX *ex) {
 #endif
 	milstr_ncpy(str, milstr_list(str_cpu, family), maxlen);
 	
+#endif
 #endif
 	
 	(void)ex;

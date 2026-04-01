@@ -21,6 +21,9 @@
 #ifdef SUPPORT_PHYSICAL_CDDRV
 #include	"diskimage/cd/cdd_real.h"
 #endif
+#ifdef SUPPORT_LIBCDIO
+#include	"diskimage/cd/cdd_libcdio.h"
+#endif
 
 BRESULT sxsicd_open(SXSIDEV sxsi, const OEMCHAR *fname) {
 
@@ -52,7 +55,11 @@ BRESULT sxsicd_open(SXSIDEV sxsi, const OEMCHAR *fname) {
 		return(opennrg(sxsi, fname));
 	}
 
+#ifdef SUPPORT_LIBCDIO
+	return opencdio(sxsi, fname);				//	libcdio で全フォーマット対応
+#else
 	return(openiso(sxsi, fname));				//	知らない拡張子なら、とりあえずISOとして開いてみる
+#endif
 }
 
 CDTRK sxsicd_gettrk(SXSIDEV sxsi, UINT *tracks) {
@@ -115,6 +122,11 @@ BRESULT sxsicd_readraw(SXSIDEV sxsi, FILEPOS pos, void *buf) {
 	}
 
 	fh = ((CDINFO)sxsi->hdl)->fh;
+#ifdef SUPPORT_LIBCDIO
+	if (fh == FILEH_INVALID) {
+		return lcdd_readraw_sector(sxsi, pos, buf);
+	}
+#endif
 	fpos = 0;
 	secs = 0;
 	for (i = 0; i < cdinfo->trks; i++) {
@@ -179,6 +191,11 @@ UINT sxsicd_readraw_forhash(SXSIDEV sxsi, UINT uSecNo, UINT8 *pu8Buf, UINT* puSi
 #endif
   if(!uRes) {
     fh = ((CDINFO)sxsi->hdl)->fh;
+#ifdef SUPPORT_LIBCDIO
+    if (!fh || fh == FILEH_INVALID) {
+      return (int)lcdd_readraw_forhash(sxsi, uSecNo, pu8Buf, puSize);
+    }
+#endif
     if(!fh) {
       uRes = 5;
     }
