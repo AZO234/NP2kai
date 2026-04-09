@@ -31,7 +31,7 @@
 #if USE_SDL >= 3
 #include <SDL3/SDL.h>
 #elif USE_SDL == 2
-#include <SDL3/SDL.h>
+#include <SDL2/SDL.h>
 #elif USE_SDL == 1
 #include <SDL/SDL.h>
 #else
