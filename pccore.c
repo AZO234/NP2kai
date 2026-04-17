@@ -332,10 +332,10 @@ static void pccore_set(const NP2CFG *pConfig)
 	{
 		pccore.hddif |= PCHDD_IDE;
 #if defined(SUPPORT_IDEIO)
-		sxsi_setdevtype(0x00, np2cfg.idetype[0]==SXSIDEV_CDROM ? SXSIDEV_CDROM : SXSIDEV_NC);
-		sxsi_setdevtype(0x01, np2cfg.idetype[1]==SXSIDEV_CDROM ? SXSIDEV_CDROM : SXSIDEV_NC);
-		sxsi_setdevtype(0x02, np2cfg.idetype[2]==SXSIDEV_CDROM ? SXSIDEV_CDROM : SXSIDEV_NC);
-		sxsi_setdevtype(0x03, np2cfg.idetype[3]==SXSIDEV_CDROM ? SXSIDEV_CDROM : SXSIDEV_NC);
+		sxsi_setdevtype(0x00, np2cfg.idetype[0]);
+		sxsi_setdevtype(0x01, np2cfg.idetype[1]);
+		sxsi_setdevtype(0x02, np2cfg.idetype[2]);
+		sxsi_setdevtype(0x03, np2cfg.idetype[3]);
 #endif
 	}
 	else
@@ -469,6 +469,33 @@ void pccore_mem_free(void) {
 }
 #endif
 	
+void pccore_setdefault(void) {
+	/* Just a simplistic implementation for now: re-initialize with defaults */
+	/* In a real scenario, we might want to keep a copy of the original struct. */
+	UINT8 fddequip = np2cfg.fddequip; /* preserve some runtime state if needed? no, full reset */
+	(void)fddequip;
+
+	memset(&np2cfg, 0, sizeof(np2cfg));
+	np2cfg.uPD72020 = 0;
+	np2cfg.DISPSYNC = 1;
+	np2cfg.RASTER = 0;
+	np2cfg.realpal = 32;
+	np2cfg.LCD_MODE = 0;
+	np2cfg.skipline = 0;
+	np2cfg.skiplight = 0x40;
+	milstr_ncpy(np2cfg.model, OEMTEXT("VX"), sizeof(np2cfg.model));
+	np2cfg.baseclock = PCBASECLOCK25;
+	np2cfg.multiple = PCBASEMULTIPLE;
+	np2cfg.samplingrate = 44100;
+	np2cfg.delayms = 150;
+	np2cfg.BEEP_VOL = 3;
+	np2cfg.emuspeed = 100;
+	np2cfg.fddequip = 0x03; /* FDD1 + FDD2 equipped by default */
+	np2cfg.grcg = 3;        /* GRCG+ by default */
+	np2cfg.color16 = 1;     /* 16 color board ON by default */
+	/* ... add other defaults as per the static initializer ... */
+}
+
 void pccore_init(void) {
 	
 #if defined(SUPPORT_MULTITHREAD)

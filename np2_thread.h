@@ -45,7 +45,11 @@ extern void NP2_Thread_Detach(NP2_Thread_t* pth);
 #if defined(NP2_WIN)
 typedef HANDLE NP2_Semaphore_t;
 #elif defined(USE_SDL)
+#if USE_SDL >= 3
+typedef SDL_Semaphore* NP2_Semaphore_t;
+#else
 typedef SDL_sem* NP2_Semaphore_t;
+#endif
 #elif defined(__LIBRETRO__)
 typedef ssem_t* NP2_Semaphore_t;
 #endif

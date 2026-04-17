@@ -202,7 +202,7 @@ const OEMCHAR	*p;
 		fdd->ftype = ftype;
 		fdd->ro = ro;
 	}
-	return(FAILURE);
+	return(r);
 }
 
 BRESULT fdd_eject(REG8 drv) {
@@ -684,7 +684,7 @@ const OEMCHAR	*p;
 		fdd->ftype = ftype;
 		fdd->ro = ro;
 	}
-	return(FAILURE);
+	return(r);
 }
 
 BRESULT fdd_eject(REG8 drv) {

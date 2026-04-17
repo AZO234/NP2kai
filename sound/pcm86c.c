@@ -9,6 +9,9 @@
 #include <cpucore.h>
 #include <io/iocore.h>
 #include <sound/fmboard.h>
+#include <sound/sndmtcs.h>
+
+SNDMTCS_DECL(pcm86);
 
 #if 0
 #undef	TRACEOUT
@@ -49,40 +52,10 @@ static const UINT clk20_128[] = {
 	static SINT32 vbufunferflag = 0;
 
 #if defined(SUPPORT_MULTITHREAD)
-	static int pcm86_cs_initialized = 0;
-	static CRITICAL_SECTION pcm86_cs;
-
-	void pcm86cs_enter_criticalsection(void)
-	{
-		if (!pcm86_cs_initialized) return;
-		EnterCriticalSection(&pcm86_cs);
-	}
-	void pcm86cs_leave_criticalsection(void)
-	{
-		if (!pcm86_cs_initialized) return;
-		LeaveCriticalSection(&pcm86_cs);
-	}
-
-	void pcm86cs_initialize(void)
-	{
-		/* クリティカルセクション準備 */
-		if (!pcm86_cs_initialized)
-		{
-			memset(&pcm86_cs, 0, sizeof(pcm86_cs));
-			InitializeCriticalSection(&pcm86_cs);
-			pcm86_cs_initialized = 1;
-		}
-	}
-	void pcm86cs_shutdown(void)
-	{
-		/* クリティカルセクション破棄 */
-		if (pcm86_cs_initialized)
-		{
-			memset(&pcm86_cs, 0, sizeof(pcm86_cs));
-			DeleteCriticalSection(&pcm86_cs);
-			pcm86_cs_initialized = 0;
-		}
-	}
+void pcm86cs_enter_criticalsection(void) { SNDMTCS_ENTER(pcm86); }
+void pcm86cs_leave_criticalsection(void) { SNDMTCS_LEAVE(pcm86); }
+void pcm86cs_initialize(void)            { SNDMTCS_INIT(pcm86);  }
+void pcm86cs_shutdown(void)              { SNDMTCS_TERM(pcm86);  }
 #endif
 
 void pcm86gen_initialize(UINT rate)

@@ -11,42 +11,15 @@
 #include "fmboard.h"
 #include <io/dmac.h>
 #include <cpucore.h>
+#include "sndmtcs.h"
+
+SNDMTCS_DECL(ct1741);
 
 #if defined(SUPPORT_MULTITHREAD)
-static int ct1741_cs_initialized = 0;
-static CRITICAL_SECTION ct1741_cs;
-
-void ct1741cs_enter_criticalsection(void)
-{
-	if (!ct1741_cs_initialized) return;
-	EnterCriticalSection(&ct1741_cs);
-}
-void ct1741cs_leave_criticalsection(void)
-{
-	if (!ct1741_cs_initialized) return;
-	LeaveCriticalSection(&ct1741_cs);
-}
-
-void ct1741cs_initialize(void)
-{
-	/* クリティカルセクション準備 */
-	if (!ct1741_cs_initialized)
-	{
-		memset(&ct1741_cs, 0, sizeof(ct1741_cs));
-		InitializeCriticalSection(&ct1741_cs);
-		ct1741_cs_initialized = 1;
-	}
-}
-void ct1741cs_shutdown(void)
-{
-	/* クリティカルセクション破棄 */
-	if (ct1741_cs_initialized)
-	{
-		memset(&ct1741_cs, 0, sizeof(ct1741_cs));
-		DeleteCriticalSection(&ct1741_cs);
-		ct1741_cs_initialized = 0;
-	}
-}
+void ct1741cs_enter_criticalsection(void) { SNDMTCS_ENTER(ct1741); }
+void ct1741cs_leave_criticalsection(void) { SNDMTCS_LEAVE(ct1741); }
+void ct1741cs_initialize(void)            { SNDMTCS_INIT(ct1741);  }
+void ct1741cs_shutdown(void)              { SNDMTCS_TERM(ct1741);  }
 #endif
 
 void ct1741_initialize(UINT rate) {

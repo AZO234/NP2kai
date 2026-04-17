@@ -92,7 +92,11 @@ void NP2_Semaphore_Create(NP2_Semaphore_t* psem, const unsigned int initcount) {
 #if defined(NP2_WIN)
   *psem = CreateSemaphore(NULL, initcount, initcount, NULL);
 #elif defined(USE_SDL)
+#if USE_SDL >= 3
+  *(SDL_Semaphore**)psem = SDL_CreateSemaphore(initcount);
+#else
   *(SDL_sem**)psem = SDL_CreateSemaphore(initcount);
+#endif
 #elif defined(__LIBRETRO__)
   *psem = ssem_new(initcount);
 #endif
@@ -105,8 +109,13 @@ void NP2_Semaphore_Destroy(NP2_Semaphore_t* psem) {
     CloseHandle(*psem);
   *psem = NULL;
 #elif defined(USE_SDL)
-  if(*psem)
+  if(*psem) {
+#if USE_SDL >= 3
+    SDL_DestroySemaphore((SDL_Semaphore*)*psem);
+#else
     SDL_DestroySemaphore((SDL_sem*)*psem);
+#endif
+  }
   *psem = NULL;
 #elif defined(__LIBRETRO__)
   if(*psem)
@@ -120,7 +129,11 @@ void NP2_Semaphore_Wait(NP2_Semaphore_t* psem) {
 #if defined(NP2_WIN)
   WaitForSingleObject(*psem, INFINITE);
 #elif defined(USE_SDL)
+#if USE_SDL >= 3
+  SDL_WaitSemaphore((SDL_Semaphore*)*psem);
+#else
   SDL_SemWait((SDL_sem*)*psem);
+#endif
 #elif defined(__LIBRETRO__)
   ssem_wait(*psem);
 #endif
@@ -132,8 +145,13 @@ void NP2_Semaphore_Release(NP2_Semaphore_t* psem) {
   if(psem)
     ReleaseSemaphore(*psem, 1, NULL);
 #elif defined(USE_SDL)
-  if(*psem)
+  if(*psem) {
+#if USE_SDL >= 3
+    SDL_SignalSemaphore((SDL_Semaphore*)*psem);
+#else
     SDL_SemPost((SDL_sem*)*psem);
+#endif
+  }
 #elif defined(__LIBRETRO__)
   if(*psem)
     ssem_signal(*psem);

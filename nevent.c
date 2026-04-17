@@ -28,6 +28,9 @@ static void trace_fmt_ex(const char* fmt, ...)
 	_NEVENT g_nevent;
 
 #if defined(SUPPORT_MULTITHREAD)
+
+#if defined(NP2_WIN)
+
 static int nevent_cs_initialized = 0;
 static CRITICAL_SECTION nevent_cs;
 
@@ -43,10 +46,9 @@ static void nevent_leave_criticalsection(void){
 	if(!nevent_cs_initialized) return;
 	LeaveCriticalSection(&nevent_cs);
 }
-	
+
 void nevent_initialize(void)
 {
-	/* クリティカルセクション準備 */
 	if(!nevent_cs_initialized){
 		memset(&nevent_cs, 0, sizeof(nevent_cs));
 		InitializeCriticalSection(&nevent_cs);
@@ -55,14 +57,69 @@ void nevent_initialize(void)
 }
 void nevent_shutdown(void)
 {
-	/* クリティカルセクション破棄 */
 	if(nevent_cs_initialized){
 		memset(&nevent_cs, 0, sizeof(nevent_cs));
 		DeleteCriticalSection(&nevent_cs);
 		nevent_cs_initialized = 0;
 	}
 }
-#endif
+
+#elif defined(USE_SDL) && USE_SDL >= 3
+
+static SDL_Mutex *nevent_cs = NULL;
+static int nevent_cs_initialized = 0;
+
+static BOOL nevent_tryenter_criticalsection(void){
+	if(!nevent_cs_initialized || !nevent_cs) return TRUE;
+	return SDL_TryLockMutex(nevent_cs) == 0;
+}
+static void nevent_enter_criticalsection(void){
+	if(!nevent_cs_initialized || !nevent_cs) return;
+	SDL_LockMutex(nevent_cs);
+}
+static void nevent_leave_criticalsection(void){
+	if(!nevent_cs_initialized || !nevent_cs) return;
+	SDL_UnlockMutex(nevent_cs);
+}
+
+void nevent_initialize(void)
+{
+	if(!nevent_cs_initialized){
+		nevent_cs = SDL_CreateMutex();
+		nevent_cs_initialized = 1;
+	}
+}
+void nevent_shutdown(void)
+{
+	if(nevent_cs_initialized && nevent_cs){
+		SDL_DestroyMutex(nevent_cs);
+		nevent_cs = NULL;
+		nevent_cs_initialized = 0;
+	}
+}
+
+#elif defined(SUPPORT_PTHREAD)
+
+#include <pthread.h>
+static pthread_mutex_t nevent_cs = PTHREAD_MUTEX_INITIALIZER;
+static int nevent_cs_initialized = 1;
+
+static BOOL nevent_tryenter_criticalsection(void){
+	return pthread_mutex_trylock(&nevent_cs) == 0;
+}
+static void nevent_enter_criticalsection(void){
+	pthread_mutex_lock(&nevent_cs);
+}
+static void nevent_leave_criticalsection(void){
+	pthread_mutex_unlock(&nevent_cs);
+}
+
+void nevent_initialize(void) { (void)nevent_cs_initialized; }
+void nevent_shutdown(void) { }
+
+#endif /* NP2_WIN / USE_SDL / SUPPORT_PTHREAD */
+
+#endif /* SUPPORT_MULTITHREAD */
 
 void nevent_allreset(void)
 {

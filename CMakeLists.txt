@@ -87,6 +87,8 @@ list(APPEND NP2kai_OpenDingux_include_dirs ${NP2kai_SDL_include_dirs} "sdl/opend
 
 list(APPEND NP2kai_X_include_dirs "x")
 
+list(APPEND NP2kai_WX_include_dirs "wx")
+
 list(APPEND NP2kai_Windows_include_dirs "windows" "windows/misc")
 
 # NP2kai sources
@@ -295,6 +297,41 @@ file(GLOB NP2kai_temp "windows/subwnd/*.cpp")
 list(APPEND NP2kai_Windows_sources ${NP2kai_temp})
 list(APPEND NP2kai_Windows_sources "windows/resources/1252/np2.rc")
 
+list(APPEND NP2kai_WX_sources
+	"embed/vramhdl.c"
+	"embed/vrammix.c"
+)
+
+list(APPEND NP2kai_WX_sources
+	"wx/np2app.cpp"
+	"wx/np2frame.cpp"
+	"wx/np2panel.cpp"
+	"wx/np2.cpp"
+	"wx/np2mt.cpp"
+	"wx/ini.cpp"
+	"wx/dosio.cpp"
+	"wx/scrnmng.cpp"
+	"wx/soundmng.cpp"
+	"wx/kbdmng.cpp"
+	"wx/kbtrans.cpp"
+	"wx/mousemng.cpp"
+	"wx/joymng.cpp"
+	"wx/inputmng.cpp"
+	"wx/sysmng.cpp"
+	"wx/taskmng.cpp"
+	"wx/fontmng.cpp"
+	"wx/commng.cpp"
+	"wx/cmmidi.cpp"
+	"wx/cmserial.cpp"
+	"wx/dialog/prefframe.cpp"
+	"wx/subwnd/keydisp.cpp"
+	"codecnv/textcnv.c"
+	"sound/opl3.c"
+	"sound/opna.c"
+	"wx/trace.cpp"
+	"np2_thread.c"
+)
+
 # NP2kai definitions
 list(APPEND NP2kai_common_definitions "BIOS_IO_EMULATION" "OSLANG_UTF8" "SUPPORT_8BPP" "SUPPORT_16BPP" "SUPPORT_24BPP" "SUPPORT_32BPP" "SUPPORT_CL_GD5430" "SUPPORT_CRT15KHZ" "SUPPORT_FAST_MEMORYCHECK" "SUPPORT_FMGEN" "SUPPORT_GPIB" "SUPPORT_HRTIMER" "SUPPORT_KAI_IMAGES" "SUPPORT_LARGE_HDD" "SUPPORT_NORMALDISP" "SUPPORT_PC9861K" "SUPPORT_PX" "SUPPORT_RESUME" "SUPPORT_RS232C_FIFO" "SUPPORT_S98" "SUPPORT_SCSI" "SUPPORT_SMPU98" "SUPPORT_SOFTKBD=0" "SUPPORT_SOUND_SB16" "SUPPORT_STATSAVE=10" "SUPPORT_UTF8" "SUPPORT_V30EXT" "SUPPORT_V30ORIGINAL" "SUPPORT_VIDEOFILTER" "SUPPORT_VPCVHD" "SUPPORT_WAB" "USE_MAME" "USE_MAME_BSD" "VAEG_FIX" "VERMOUTH_LIB")
 
@@ -319,6 +356,8 @@ endif()
 
 list(APPEND NP2kai_X_definitions "NP2_X" "USE_RESOURCE_BMP" "SUPPORT_BMS")
 
+list(APPEND NP2kai_WX_definitions "OSLINEBREAK_LF" "SUPPORT_SDL_AUDIO" "SUPPORT_NP2_TICKCOUNT" "SUPPORT_NP2_THREAD" "SUPPORT_PTHREAD" "SUPPORT_KEYDISP=1" "SUPPORT_BMS" "USE_RESOURCE_BMP" "SUPPORT_MULTITHREAD" "SOUND_CRITICAL")
+
 list(APPEND NP2kai_Windows_definitions "NP2_WIN" "USE_RESOURCE_BMP" "SUPPORT_MULTITHREAD")
 
 # build type
@@ -326,9 +365,10 @@ if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "RelWithDebInfo")
 endif()
 if(NOT EMSCRIPTEN)
-set(COMMON_C_CXX_FLAGS "-Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-incompatible-function-pointer-types -Wno-int-conversion -fno-sized-deallocation")
-set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -DDEBUG -DTRACE ${COMMON_C_CXX_FLAGS}")
-set(CMAKE_CXX_FLAGS_RELEASE "-O2 -Wall -DNDEBUG ${COMMON_C_CXX_FLAGS}")
+set(COMMON_C_CXX_FLAGS "-Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-incompatible-function-pointer-types -Wno-int-conversion")
+set(COMMON_CXX_ONLY_FLAGS "-fno-sized-deallocation")
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -DDEBUG -DTRACE ${COMMON_C_CXX_FLAGS} ${COMMON_CXX_ONLY_FLAGS}")
+set(CMAKE_CXX_FLAGS_RELEASE "-O2 -Wall -DNDEBUG ${COMMON_C_CXX_FLAGS} ${COMMON_CXX_ONLY_FLAGS}")
 set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -Wall")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-Og -g -Wall -DNDEBUG")
 set(CMAKE_C_FLAGS ${COMMON_C_CXX_FLAGS})
@@ -357,16 +397,15 @@ if(OPENDINGUX)
 endif()
 
 if(NOT CMAKE_CROSSCOMPILING)
-	if(MINGW OR MSYS OR CYGWIN OR CMAKE_HOST_APPLE)
-		option(BUILD_SDL "Build SDL port" ON)
+	# wxWidgets port is the default for Linux, macOS, Cygwin, MSYS2, MinGW
+	if(UNIX OR MINGW OR MSYS OR CYGWIN OR CMAKE_HOST_APPLE)
+		option(BUILD_WX "Build wxWidgets port" ON)
 	else()
-		option(BUILD_SDL "Build SDL port" OFF)
+		option(BUILD_WX "Build wxWidgets port" OFF)
 	endif()
-	if(UNIX AND NOT CMAKE_HOST_APPLE)
-		option(BUILD_X "Build X port" ON)
-	else()
-		option(BUILD_X "Build X port" OFF)
-	endif()
+	# SDL/X ports are off by default when wxWidgets is the default
+	option(BUILD_SDL "Build SDL port" OFF)
+	option(BUILD_X "Build X port" OFF)
 	option(BUILD_HAXM "Build HAXM port" OFF)
 	option(USE_HAXM "Use HAXM" OFF)
 
@@ -531,6 +570,33 @@ if(NOT CMAKE_CROSSCOMPILING)
 		list(APPEND lib_SDL_ttf_definitions "SUPPORT_SDL_TTF")
 		if(NP2kai_Windows AND NOT MSVC_VERSION)
 			list(APPEND lib_SDL_ttf_depend_libraries freetype)
+		endif()
+	endif()
+
+	# wxWidgets
+	if(BUILD_WX)
+		find_package(wxWidgets COMPONENTS core base adv REQUIRED)
+		if(wxWidgets_FOUND)
+			message("-- Found: wxWidgets (" ${wxWidgets_VERSION_STRING} ")")
+			include(${wxWidgets_USE_FILE})
+		else()
+			message(FATAL_ERROR "-- Not found: wxWidgets")
+		endif()
+
+		# toml++ (tomlplusplus)
+		find_package(tomlplusplus QUIET)
+		if(tomlplusplus_FOUND)
+			message("-- Found: toml++")
+			list(APPEND lib_tomlplusplus_libraries tomlplusplus::tomlplusplus)
+		else()
+			# fall back to pkg-config
+			pkg_check_modules(TOMLPLUSPLUS QUIET tomlplusplus)
+			if(TOMLPLUSPLUS_FOUND)
+				message("-- Found: toml++ (pkg-config)")
+				list(APPEND lib_tomlplusplus_include_dirs ${TOMLPLUSPLUS_INCLUDE_DIRS})
+			else()
+				message("-- toml++ not found via cmake/pkg-config, assuming header-only in system include path")
+			endif()
 		endif()
 	endif()
 
@@ -888,6 +954,18 @@ else()
 		target_compile_definitions(NP2kai_X_SDL3_base INTERFACE ${NP2kai_X_definitions} "USE_SDL=3" "SUPPORT_SDL_AUDIO" ${lib_SDL_ttf_definitions} ${NP2kai_extra_definitions} ${NP2kai_LinkBreak_definitions} ${NP2kai_TickCount_definitions} ${NP2kai_Network_definitions} ${GTK2_DEFINITIONS} ${libcdio_definitions} ${libusb_1_definitions} "SYSRESPATH=\"resources\"")
 		target_include_directories(NP2kai_X_SDL3_base INTERFACE ${NP2kai_X_include_dirs} ${lib_glib_include_dirs} ${lib_glibconfig_include_dirs} ${GTK2_INCLUDE_DIRS} ${X11_INCLUDE_DIRS} ${Fontconfig_INCLUDE_DIRS} ${Freetype_INCLUDE_DIRS} ${LIBCDIO_INCLUDE_DIRS} ${LIBUSB_1_INCLUDE_DIRS} ${lib_vst3sdk_include_dirs})
 		target_link_libraries(NP2kai_X_SDL3_base INTERFACE ${lib_math_libraries} ${lib_glib_libraries} ${GTK2_LIBRARIES} ${X11_LIBRARIES} ${Fontconfig_LIBRARIES} ${Freetype_LIBRARIES} ${lib_vst3sdk_libraries} ${lib_Threads_libraries} SDL3::SDL3 SDL3_ttf::SDL3_ttf ${LIBCDIO_LINK_LIBRARIES} ${LIBUSB_1_LINK_LIBRARIES} ${lib_dl_libraries})
+	endif()
+
+	if(BUILD_WX)
+		add_library(NP2kai_WX_base INTERFACE)
+		target_sources(NP2kai_WX_base INTERFACE ${NP2kai_WX_sources} ${NP2kai_TickCount_sources})
+		target_compile_definitions(NP2kai_WX_base INTERFACE ${NP2kai_WX_definitions} ${NP2kai_extra_definitions} ${NP2kai_TickCount_definitions} ${libcdio_definitions})
+		# wxWidgets include dirs must come BEFORE NP2kai root to avoid "wx/compiler.h"
+		# collision: wx/cpp.h includes "wx/compiler.h" which would otherwise resolve to
+		# our port header instead of wxWidgets' own header.
+		target_include_directories(NP2kai_WX_base BEFORE INTERFACE ${wxWidgets_INCLUDE_DIRS})
+		target_include_directories(NP2kai_WX_base INTERFACE ${NP2kai_WX_include_dirs} ${lib_tomlplusplus_include_dirs} ${LIBCDIO_INCLUDE_DIRS})
+		target_link_libraries(NP2kai_WX_base INTERFACE ${lib_math_libraries} ${wxWidgets_LIBRARIES} ${lib_tomlplusplus_libraries} ${lib_Threads_libraries} SDL3::SDL3 SDL3_ttf::SDL3_ttf ${LIBCDIO_LINK_LIBRARIES} ${lib_dl_libraries})
 	endif()
 
 	if(MSVC_VERSION)
@@ -1298,7 +1376,19 @@ else()
 		set_target_properties(sdlnp21kai_HAXM_sdl1 sdlnp21kai_HAXM_sdl2 sdlnp21kai_HAXM xnp21kai_HAXM_sdl1 xnp21kai_HAXM_sdl2 xnp21kai_HAXM PROPERTIES EXCLUDE_FROM_ALL true)
 	endif()
 
-	if((UNIX OR MINGW OR MSYS OR CYGWIN OR CMAKE_HOST_APPLE) AND NOT BUILD_SDL AND NOT BUILD_X)
+	if(BUILD_WX)
+		add_executable(wxnp2kai)
+		target_link_libraries(wxnp2kai NP2kai_base NP2kai_WX_base)
+
+		add_executable(wxnp21kai)
+		target_link_libraries(wxnp21kai NP21kai_base NP2kai_WX_base)
+
+		if(NOT BUILD_I286)
+			set_target_properties(wxnp2kai PROPERTIES EXCLUDE_FROM_ALL true)
+		endif()
+	endif()
+
+	if((UNIX OR MINGW OR MSYS OR CYGWIN OR CMAKE_HOST_APPLE) AND NOT BUILD_SDL AND NOT BUILD_X AND NOT BUILD_WX)
 		message(FATAL_ERROR "Nothing build target.")
 	endif()
 
@@ -1416,6 +1506,19 @@ else()
 	if(X_MISC_INSTALL)
 		install(FILES ${NP2kai_SOURCE_DIR}/misc/np2.svg DESTINATION ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps CONFIGURATIONS RelWithDebInfo COMPONENT RelWithDebInfo)
 		install(FILES ${NP2kai_SOURCE_DIR}/misc/np2.svg DESTINATION ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps CONFIGURATIONS Release COMPONENT Release)
+	endif()
+
+	if(BUILD_WX)
+		get_target_property(NP2kai_temp wxnp2kai EXCLUDE_FROM_ALL)
+		if(NOT NP2kai_temp)
+			install(TARGETS wxnp2kai CONFIGURATIONS RelWithDebInfo COMPONENT RelWithDebInfo)
+			install(TARGETS wxnp2kai CONFIGURATIONS Release COMPONENT Release)
+		endif()
+		get_target_property(NP2kai_temp wxnp21kai EXCLUDE_FROM_ALL)
+		if(NOT NP2kai_temp)
+			install(TARGETS wxnp21kai CONFIGURATIONS RelWithDebInfo COMPONENT RelWithDebInfo)
+			install(TARGETS wxnp21kai CONFIGURATIONS Release COMPONENT Release)
+		endif()
 	endif()
 
 	if(MSVC_VERSION)

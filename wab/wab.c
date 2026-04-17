@@ -59,7 +59,7 @@ static int		ga_exitThread = 0;
 #if defined(NP2_WIN)
 static int		ga_threadmode = 1;
 #else
-static int		ga_threadmode = 0;
+static int		ga_threadmode = 1;
 #endif
 static int		ga_lastwabwidth = 640;
 static int		ga_lastwabheight = 480;
@@ -159,7 +159,7 @@ void wabwin_readini()
 	memset(&np2wabcfg, 0, sizeof(np2wabcfg));
 	np2wabcfg.posx = 0;
 	np2wabcfg.posy = 0;
-	np2wabcfg.multithread = 0;
+	np2wabcfg.multithread = 1;
 #endif
 	np2wabcfg.multiwindow = 0;
 	np2wabcfg.halftone = 0;

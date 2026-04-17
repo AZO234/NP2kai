@@ -1,4 +1,4 @@
-build/
+build-*/
 .cache/
 *.o
 *.a
@@ -37,3 +37,12 @@ xnp21kai.1*
 CMakeCache*
 *py_cache*
 __pycache__
+
+# AI
+.claude/
+AI.md
+CLAUDE.md
+GEMINI.md
+AGENTS.md
+
+build_wx/

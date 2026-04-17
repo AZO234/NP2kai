@@ -444,6 +444,7 @@ void pccore_mem_free(void);
 void pccore_init(void);
 void pccore_term(void);
 void pccore_reset(void);
+void pccore_setdefault(void);
 void pccore_exec(BOOL draw);
 
 void pccore_postevent(UINT32 event);

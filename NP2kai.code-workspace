@@ -11,5 +11,133 @@
 			"cpu.h": "c",
 			"pc9861k.h": "c"
 		}
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "Build: wxWidgets Port",
+				"type": "shell",
+				"command": "cmake -S . -B build_wx -DBUILD_WX=ON && cmake --build build_wx -j$(nproc)",
+				"group": "build"
+			},
+			{
+				"label": "Build: SDL Port",
+				"type": "shell",
+				"command": "cmake -S . -B build_sdl -DBUILD_SDL2=ON && cmake --build build_sdl -j$(nproc)",
+				"group": "build"
+			},
+			{
+				"label": "Build: Windows Port",
+				"type": "shell",
+				"command": "cmake -S . -B build_win -DCMAKE_SYSTEM_NAME=Windows && cmake --build build_win -j$(nproc)",
+				"group": "build"
+			},
+			{
+				"label": "Build: libretro Port",
+				"type": "shell",
+				"command": "cd sdl && make -j$(nproc)",
+				"group": "build"
+			},
+			{
+				"label": "Debug Build: wxWidgets Port",
+				"type": "shell",
+				"command": "cmake -S . -B build_wx -DCMAKE_BUILD_TYPE=Debug -DBUILD_WX=ON && cmake --build build_wx -j$(nproc)",
+				"group": "build"
+			},
+			{
+				"label": "Debug Build: SDL Port",
+				"type": "shell",
+				"command": "cmake -S . -B build_sdl -DCMAKE_BUILD_TYPE=Debug -DBUILD_SDL2=ON && cmake --build build_sdl -j$(nproc)",
+				"group": "build"
+			},
+			{
+				"label": "Debug Build: Windows Port",
+				"type": "shell",
+				"command": "cmake -S . -B build_win -DCMAKE_BUILD_TYPE=Debug -DCMAKE_SYSTEM_NAME=Windows && cmake --build build_win -j$(nproc)",
+				"group": "build"
+			},
+			{
+				"label": "Debug Build: libretro Port",
+				"type": "shell",
+				"command": "cd sdl && make -j$(nproc) DEBUG=1",
+				"group": "build"
+			}
+		]
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Debug: wxWidgets Port",
+				"type": "cppdbg",
+				"request": "launch",
+				"program": "${workspaceFolder}/build_wx/wxnp21kai",
+				"args": [],
+				"stopAtEntry": false,
+				"cwd": "${workspaceFolder}",
+				"environment": [],
+				"externalConsole": false,
+				"MIMode": "gdb",
+				"setupCommands": [
+					{
+						"description": "Enable pretty-printing for gdb",
+						"text": "-enable-pretty-printing",
+						"ignoreFailures": true
+					}
+				],
+				"preLaunchTask": "Debug Build: wxWidgets Port"
+			},
+			{
+				"name": "Debug: SDL Port",
+				"type": "cppdbg",
+				"request": "launch",
+				"program": "${workspaceFolder}/build_sdl/sdlnp21kai",
+				"args": [],
+				"stopAtEntry": false,
+				"cwd": "${workspaceFolder}",
+				"environment": [],
+				"externalConsole": false,
+				"MIMode": "gdb",
+				"setupCommands": [
+					{
+						"description": "Enable pretty-printing for gdb",
+						"text": "-enable-pretty-printing",
+						"ignoreFailures": true
+					}
+				],
+				"preLaunchTask": "Debug Build: SDL Port"
+			},
+			{
+				"name": "Debug: Windows Port (Wine)",
+				"type": "cppdbg",
+				"request": "launch",
+				"program": "/usr/bin/wine",
+				"args": [
+					"${workspaceFolder}/build_win/np21kai.exe"
+				],
+				"stopAtEntry": false,
+				"cwd": "${workspaceFolder}",
+				"environment": [],
+				"externalConsole": false,
+				"MIMode": "gdb"
+			},
+			{
+				"name": "Debug: libretro Port (retroarch)",
+				"type": "cppdbg",
+				"request": "launch",
+				"program": "retroarch",
+				"args": [
+					"-L",
+					"${workspaceFolder}/sdl/np21kai_libretro.so"
+				],
+				"stopAtEntry": false,
+				"cwd": "${workspaceFolder}",
+				"environment": [],
+				"externalConsole": false,
+				"MIMode": "gdb",
+				"preLaunchTask": "Debug Build: libretro Port"
+			}
+		]
 	}
 }
