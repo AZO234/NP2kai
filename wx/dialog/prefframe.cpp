@@ -64,30 +64,30 @@ static const wxString s_cpumodel_names[] = {
 #if defined(SUPPORT_CL_GD5430)
 /* ---- CL-GD54xx type names and values ---- */
 static const wxString s_clgd_names[] = {
-	"PC-9821Be",
-	"PC-9821Xe",
-	"PC-9821Cb",
-	"PC-9821Cf",
-	"PC-9821Xe10,Xa7e,Xb10 build-in",
-	"PC-9821Cb2",
-	"PC-9821Cx2",
-	"PC-9821 PCI",
-	"WAB",
-	"WSN-A2F",
-	"WSN",
-	"GA-98NB I/C",
-	"GA-98NB II",
-	"GA-98NB IV",
-	"PC-9821-96",
-	"Auto XE G1 PCI",
-	"Auto XE G2 PCI",
-	"Auto XE G4 PCI",
-	"Auto XE WA PCI",
-	"Auto XE WS PCI",
-	"Auto XE W4 PCI",
-	"Auto XE10 WABS",
-	"Auto XE10 WSN2",
-	"Auto XE10 WSN4",
+	"PC-9821Bp,Bs,Be,Bf built-in",
+	"PC-9821Xe built-in",
+	"PC-9821Cb built-in",
+	"PC-9821Cf built-in",
+	"PC-9821Xe10,Xa7e,Xb10 built-in",
+	"PC-9821Cb2 built-in",
+	"PC-9821Cx2 built-in",
+	"PC-9821 PCI CL-GD5446 built-in",
+	"MELCO WAB-S",
+	"MELCO WSN-A2F",
+	"MELCO WSN-A4F",
+	"I-O DATA GA-98NBI/C",
+	"I-O DATA GA-98NBII",
+	"I-O DATA GA-98NBIV",
+	"PC-9801-96(PC-9801B3-E02)",
+	"Auto Select(Xe10, GA-98NBI/C, PCI)",
+	"Auto Select(Xe10, GA-98NBII, PCI)",
+	"Auto Select(Xe10, GA-98NBIV, PCI)",
+	"Auto Select(Xe10, WAB-S, PCI)",
+	"Auto Select(Xe10, WSN-A2F, PCI)",
+	"Auto Select(Xe10, WSN-A4F, PCI)",
+	"Auto Select(Xe10, WAB-S)",
+	"Auto Select(Xe10, WSN-A2F)",
+	"Auto Select(Xe10, WSN-A4F)",
 };
 static const UINT16 s_clgd_vals[] = {
 	CIRRUS_98ID_Be,
@@ -975,23 +975,60 @@ wxPanel *PrefFrame::BuildMidiPage(wxNotebook *nb)
 
 wxPanel *PrefFrame::BuildSerialPage(wxNotebook *nb)
 {
-	wxScrolledWindow *page = new wxScrolledWindow(nb, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL | wxVSCROLL);
-	page->SetScrollRate(0, 20);
-
+	wxPanel *page = new wxPanel(nb, wxID_ANY);
 	wxBoxSizer *vs = new wxBoxSizer(wxVERTICAL);
 
-	/* COM1 full settings */
-	vs->Add(BuildComPortBox(page, 1, "com1port", "com1_bps", "com1_dsr"), 0, wxEXPAND | wxALL, 4);
-	/* COM2 */
-	vs->Add(BuildComPortBox(page, 2, "com2port", "com2_bps", "com2_dsr"), 0, wxEXPAND | wxALL, 4);
-	/* COM3 */
-	vs->Add(BuildComPortBox(page, 3, "com3port", "com3_bps", "com3_dsr"), 0, wxEXPAND | wxALL, 4);
+	wxNotebook *snb = new wxNotebook(page, wxID_ANY);
 
-	/* PC-9861K T.B.D. */
-	vs->Add(new wxStaticText(page, wxID_ANY, "PC-9861K, CH.1, CH.2, Parallel: T.B.D."),
-	        0, wxALL, 8);
+	/* COM1 tab */
+	{
+		wxScrolledWindow *tab = new wxScrolledWindow(snb, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL | wxVSCROLL);
+		tab->SetScrollRate(0, 20);
+		wxBoxSizer *ts = new wxBoxSizer(wxVERTICAL);
+		ts->Add(BuildComPortBox(tab, 1, "com1port", "com1_bps", "com1_dsr"), 0, wxEXPAND | wxALL, 4);
+		tab->SetSizer(ts);
+		snb->AddPage(tab, "COM1");
+	}
 
-	vs->AddStretchSpacer(1);
+	/* PC-9861K tab (T.B.D.) */
+	{
+		wxPanel *tab = new wxPanel(snb, wxID_ANY);
+		wxBoxSizer *ts = new wxBoxSizer(wxVERTICAL);
+		ts->Add(new wxStaticText(tab, wxID_ANY, "PC-9861K: T.B.D."), 0, wxALL, 8);
+		tab->SetSizer(ts);
+		snb->AddPage(tab, "PC-9861K");
+	}
+
+	/* CH.1 tab (PC-9861K CH.1 = com[1]) */
+	{
+		wxScrolledWindow *tab = new wxScrolledWindow(snb, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL | wxVSCROLL);
+		tab->SetScrollRate(0, 20);
+		wxBoxSizer *ts = new wxBoxSizer(wxVERTICAL);
+		ts->Add(BuildComPortBox(tab, 1, "com2port", "com2_bps", "com2_dsr"), 0, wxEXPAND | wxALL, 4);
+		tab->SetSizer(ts);
+		snb->AddPage(tab, "CH.1");
+	}
+
+	/* CH.2 tab (PC-9861K CH.2 = com[2]) */
+	{
+		wxScrolledWindow *tab = new wxScrolledWindow(snb, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL | wxVSCROLL);
+		tab->SetScrollRate(0, 20);
+		wxBoxSizer *ts = new wxBoxSizer(wxVERTICAL);
+		ts->Add(BuildComPortBox(tab, 1, "com3port", "com3_bps", "com3_dsr"), 0, wxEXPAND | wxALL, 4);
+		tab->SetSizer(ts);
+		snb->AddPage(tab, "CH.2");
+	}
+
+	/* Parallel tab (T.B.D.) */
+	{
+		wxPanel *tab = new wxPanel(snb, wxID_ANY);
+		wxBoxSizer *ts = new wxBoxSizer(wxVERTICAL);
+		ts->Add(new wxStaticText(tab, wxID_ANY, "Parallel: T.B.D."), 0, wxALL, 8);
+		tab->SetSizer(ts);
+		snb->AddPage(tab, "Parallel");
+	}
+
+	vs->Add(snb, 1, wxEXPAND | wxALL, 4);
 	vs->Add(new wxButton(page, ID_PREF_DEFAULT, "Default"), 0, wxALIGN_RIGHT | wxALL, 8);
 	page->SetSizer(vs);
 	return page;

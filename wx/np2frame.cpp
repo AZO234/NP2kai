@@ -313,6 +313,21 @@ void Np2Frame::BuildMenuBar(void)
 	rotateMenu->AppendRadioItem(ID_DISP_ROTATE_180, "&180 rotated");
 	rotateMenu->AppendRadioItem(ID_DISP_ROTATE_270, "&Right rotated");
 	AppendSubArt(menuDisp, rotateMenu, "&Rotate", wxART_UNDO);
+	menuDisp->AppendSeparator();
+	{
+		wxMenuItem *ki = new wxMenuItem(menuDisp, ID_VIEW_KEYDISP,
+		    "&Key Display", "Show/hide key display window", wxITEM_CHECK);
+		menuDisp->Append(ki);
+	}
+	{
+		wxMenu *scrnMenu = new wxMenu;
+		scrnMenu->AppendRadioItem(ID_SCREEN_X1,   "&x1 (640x400)");
+		scrnMenu->AppendRadioItem(ID_SCREEN_X2,   "&x2 (1280x800)");
+		scrnMenu->AppendRadioItem(ID_SCREEN_X3,   "&x3 (1920x1200)");
+		scrnMenu->AppendRadioItem(ID_SCREEN_FULL, "&Full Screen");
+		scrnMenu->Check(ID_SCREEN_X1, true);
+		AppendSubArt(menuDisp, scrnMenu, "&Screen Size", wxART_FULL_SCREEN);
+	}
 	bar->Append(menuDisp, "&Display");
 
 	/* --- Input --- */
@@ -320,23 +335,6 @@ void Np2Frame::BuildMenuBar(void)
 	AppendArt(menuInput, ID_INPUT_CTRL_ALT_DEL, "Send Ctrl+Alt+Del\tCtrl+Alt+Del", "Send hardware reset sequence", wxART_GO_HOME);
 	AppendArt(menuInput, ID_INPUT_PASTE,        "Paste Clipboard Text\tCtrl+V", "Paste text from clipboard", wxART_PASTE);
 	bar->Append(menuInput, "&Input");
-
-	/* --- View --- */
-	wxMenu *menuView = new wxMenu;
-	{
-		wxMenuItem *ki = new wxMenuItem(menuView, ID_VIEW_KEYDISP,
-		    "&Key Display", "Show/hide key display window", wxITEM_CHECK);
-		menuView->Append(ki);
-	}
-	menuView->AppendSeparator();
-	wxMenu *scrnMenu = new wxMenu;
-	scrnMenu->AppendRadioItem(ID_SCREEN_X1,   "&x1 (640x400)");
-	scrnMenu->AppendRadioItem(ID_SCREEN_X2,   "&x2 (1280x800)");
-	scrnMenu->AppendRadioItem(ID_SCREEN_X3,   "&x3 (1920x1200)");
-	scrnMenu->AppendRadioItem(ID_SCREEN_FULL, "&Full Screen");
-	scrnMenu->Check(ID_SCREEN_X1, true);
-	AppendSubArt(menuView, scrnMenu, "&Screen Size", wxART_FULL_SCREEN);
-	bar->Append(menuView, "&View");
 
 	/* --- Other --- */
 	wxMenu *menuOther = new wxMenu;

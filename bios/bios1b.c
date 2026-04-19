@@ -1,15 +1,15 @@
+#include <compiler.h>
+#include <cpucore.h>
+#include <pccore.h>
+#include <io/iocore.h>
 #include <bios/bios.h>
 #include <bios/biosmem.h>
 #include <bios/sxsibios.h>
 #include <cbus/ideio.h>
 #include <cbus/scsicmd.h>
-#include <compiler.h>
-#include <cpucore.h>
 #include <diskimage/fddfile.h>
 #include <fdd/fdd_mtr.h>
 #include <fdd/sxsi.h>
-#include <io/iocore.h>
-#include <pccore.h>
 
 enum { CACHE_TABLES = 4, CACHE_BUFFER = 32768 };
 

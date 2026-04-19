@@ -438,4 +438,8 @@ typedef int32_t FILELEN;
 #include "common/rect.h"
 #include "common/lstarray.h"
 
+#if !defined(CPU_MULTIPLE_MAX)
+#define CPU_MULTIPLE_MAX	2048
+#endif
+
 #endif  // _COMPILER_BASE_H_

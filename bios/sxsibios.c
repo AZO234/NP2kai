@@ -3,14 +3,14 @@
  * @brief	Implementation of SxSI BIOS
  */
 
+#include <compiler.h>
+#include <cpucore.h>
+#include <pccore.h>
+#include <timing.h>
 #include <bios/biosmem.h>
 #include <bios/sxsibios.h>
 #include <cbus/scsicmd.h>
-#include <compiler.h>
-#include <cpucore.h>
 #include <fdd/sxsi.h>
-#include <pccore.h>
-#include <timing.h>
 
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 #include <bios/bios.h>
@@ -376,7 +376,7 @@ static REG8 sasibios_init(UINT type, SXSIDEV sxsi) {
 #endif
     // sxsi = sxsi_getptr(i);
     // if ((sxsi) && ((sxsi->flag & SXSIFLAG_READY) &&
-    // sxsi->devtype==SXSIDEV_HDD || sxsi->devtype==SXSIDEV_CDROM)) { 	diskequip
+    // sxsi->devtype==SXSIDEV_HDD || sxsi->devtype==SXSIDEV_CDROM)) { diskequip
     //|= bit;
     // }
     sxsi = sxsi_getptr(sxsi_unittbl[i]);

@@ -4,7 +4,6 @@
 #include "iocore.h"
 #include "pccore.h"
 
-
 #if 0
 #undef TRACEOUT
 static void trace_fmt_ex(const char* fmt, ...)
@@ -106,7 +105,7 @@ static REG8 IOINPCALL prt_i42(UINT port) {
   }
   if (selectBusyFlag) {
     // Selectすると一瞬だけBusyが立つ（負論理なのでビットは0になる）らしい
-    ret &= ‾0x04;
+    ret &= ~0x04;
     selectBusyFlag = 0;
   }
   (void)port;
@@ -162,7 +161,7 @@ static void IOOUTCALL prt_o142(UINT port, REG8 dat) {
       cm_prt = prt;
     }
     prt->write(prt, (UINT8)prtIEEE_data);
-    prtIEEE_status &= ‾PARALLEL_IEEE_STATUS_NOACK;
+    prtIEEE_status &= ~PARALLEL_IEEE_STATUS_NOACK;
   }
   if ((prtIEEE_control & PARALLEL_IEEE_CONTROL_INIT) &&
       !(dat & PARALLEL_IEEE_CONTROL_INIT)) {
@@ -248,7 +247,7 @@ static REG8 IOINPCALL prt_i141(UINT port) {
     prt = commng_create(COMCREATE_PRINTER, FALSE);
     cm_prt = prt;
     if (prt == NULL) {
-      ret &= ‾PARALLEL_IEEE_STATUS_SELECT;
+      ret &= ~PARALLEL_IEEE_STATUS_SELECT;
     }
   }
   (void)port;

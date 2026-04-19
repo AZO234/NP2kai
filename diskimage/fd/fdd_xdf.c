@@ -1,11 +1,9 @@
 #include <compiler.h>
-#include <dosio.h>
-#include <io/iocore.h>
 #include <pccore.h>
-
-
-#include "diskimage/fd/fdd_xdf.h"
+#include <io/iocore.h>
+#include <dosio.h>
 #include <diskimage/fddfile.h>
+#include "diskimage/fd/fdd_xdf.h"
 
 
 #ifdef SUPPORT_KAI_IMAGES

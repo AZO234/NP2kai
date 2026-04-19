@@ -20,18 +20,18 @@
 
 #if defined(SUPPORT_IDEIO)
 
-#include "idebios.res"
-#include <bios/biosmem.h>
-#include <cbus/atapicmd.h>
-#include <cbus/cs4231io.h>
-#include <cbus/ideio.h>
 #include <cpucore.h>
+#include <pccore.h>
+#include <io/iocore.h>
 #include <dosio.h>
 #include <fdd/sxsi.h>
-#include <io/iocore.h>
-#include <pccore.h>
+#include <bios/biosmem.h>
+#include <cbus/ideio.h>
+#include <cbus/atapicmd.h>
+#include <cbus/cs4231io.h>
 #include <sound/fmboard.h>
 #include <sound/sound.h>
+#include "idebios.res"
 
 IDEIO ideio;
 

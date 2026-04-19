@@ -792,6 +792,9 @@ add_library(NP2kai_bbase INTERFACE)
 target_compile_definitions(NP2kai_bbase INTERFACE ${NP2kai_common_definitions} "NP2KAI_GIT_TAG=\"${NP2kai_GIT_TAG}\"" "NP2KAI_GIT_HASH=\"${NP2kai_GIT_HASH}\"")
 target_include_directories(NP2kai_bbase INTERFACE ${NP2kai_common_include_dirs})
 target_sources(NP2kai_bbase INTERFACE ${NP2kai_common_sources})
+# Force compiler.h as the first include for all C translation units to fix
+# alphabetically-sorted include order introduced in recent upstream merges.
+target_compile_options(NP2kai_bbase INTERFACE $<$<COMPILE_LANGUAGE:C>:-include compiler.h>)
 if(NP2kai_Windows AND NOT MSVC_VERSION)
 target_link_libraries(NP2kai_bbase INTERFACE stdc++)
 elseif(NOT NP2kai_Windows)

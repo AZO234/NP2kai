@@ -6,19 +6,19 @@
  * @date	$Date: 2011/02/23 10:11:44 $
  */
 
-#include <cbus/cbuscore.h>
-#include <cbus/mpu98ii.h>
-#include <cbus/pc9861k.h>
-#include <common/strres.h>
 #include <compiler.h>
-#include <cpucore.h>
+#include <common/strres.h>
 #include <dosio.h>
-#include <io/gdc_sub.h>
-#include <io/iocore.h>
-#include <pccore.h>
 #include <soundmng.h>
 #include <sysmng.h>
 #include <timemng.h>
+#include <cpucore.h>
+#include <pccore.h>
+#include <io/iocore.h>
+#include <io/gdc_sub.h>
+#include <cbus/cbuscore.h>
+#include <cbus/mpu98ii.h>
+#include <cbus/pc9861k.h>
 
 #if defined(SUPPORT_SMPU98)
 #include <cbus/smpu98.h>
@@ -74,9 +74,8 @@
 #include <wab/cirrus_vga_extern.h>
 #endif
 #if defined(SUPPORT_IDEIO)
-#include <cbus/atapicmd.h>
 #include <cbus/ideio.h>
-
+#include <cbus/atapicmd.h>
 #endif
 #if defined(SUPPORT_GPIB)
 #include <cbus/gpibio.h>

@@ -32,7 +32,7 @@ void mouseif_sync(void) {
       // 全く動かないと反応しないことがあるので、1pxぶれさせる
       int absx = mouseif.sx >= 0 ? mouseif.sx : -mouseif.sx;
       int absy = mouseif.sy >= 0 ? mouseif.sy : -mouseif.sy;
-      int delta = max(absx, absy);
+      int delta = MAX(absx, absy);
       if (delta > 0) {
         mouseif.sx /= delta;
         mouseif.sy /= delta;
