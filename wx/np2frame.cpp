@@ -210,9 +210,11 @@ static wxMenuItem *AppendArt(wxMenu *menu, int id,
                               const wxArtID &artId, wxItemKind kind = wxITEM_NORMAL)
 {
 	wxMenuItem *item = new wxMenuItem(menu, id, text, help, kind);
-	wxBitmap bmp = wxArtProvider::GetBitmap(artId, wxART_MENU);
-	if (bmp.IsOk())
-		item->SetBitmap(bmp);
+	if (kind == wxITEM_NORMAL) {
+		wxBitmap bmp = wxArtProvider::GetBitmap(artId, wxART_MENU);
+		if (bmp.IsOk())
+			item->SetBitmap(bmp);
+	}
 	menu->Append(item);
 	return item;
 }
@@ -324,8 +326,6 @@ void Np2Frame::BuildMenuBar(void)
 	{
 		wxMenuItem *ki = new wxMenuItem(menuView, ID_VIEW_KEYDISP,
 		    "&Key Display", "Show/hide key display window", wxITEM_CHECK);
-		wxBitmap bmp = wxArtProvider::GetBitmap(wxART_FIND, wxART_MENU);
-		if (bmp.IsOk()) ki->SetBitmap(bmp);
 		menuView->Append(ki);
 	}
 	menuView->AppendSeparator();
@@ -609,25 +609,32 @@ void Np2Frame::OnFdOpen(wxCommandEvent &evt)
 	    fddfolder, "",
 	    "FD Images (*.d88;*.d98;*.fdi;*.hdm)|*.d88;*.d98;*.fdi;*.hdm|All files (*.*)|*.*",
 	    wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-	if (dlg.ShowModal() == wxID_OK) {
-		wxString path = dlg.GetPath();
-		/* ensure drive is equipped so diskdrv_setfdd succeeds */
-		np2cfg.fddequip |= (UINT8)(1 << drv);
-		fdc.equip       |= (UINT8)(1 << drv);   /* update runtime state immediately */
-		diskdrv_setfdd(drv, path.ToUTF8().data(), 0);
-		milstr_ncpy(fddfolder, dlg.GetDirectory().ToUTF8().data(), MAX_PATH);
-		sysmng_update(SYS_UPDATEFDD | SYS_UPDATECFG);
-		UpdateMenuStatus();
-	}
+	if (dlg.ShowModal() != wxID_OK) return;
+
+	wxString path = dlg.GetPath();
+	StopEmulation();
+
+	np2cfg.fddequip |= (UINT8)(1 << drv);
+	fdc.equip       |= (UINT8)(1 << drv);
+	/* diskdrv_readyfdd: immediate mount (same as startup), not delayed */
+	diskdrv_readyfdd((REG8)drv, path.ToUTF8().data(), 0);
+	milstr_ncpy(np2cfg.fddfile[drv], path.ToUTF8().data(), MAX_PATH);
+	milstr_ncpy(fddfolder, dlg.GetDirectory().ToUTF8().data(), MAX_PATH);
+	sysmng_update(SYS_UPDATEFDD | SYS_UPDATECFG);
+	UpdateMenuStatus();
+
+	StartEmulation();
 }
 
 void Np2Frame::OnFdEject(wxCommandEvent &evt)
 {
 	int drv = fdDriveFromId(evt.GetId());
+	StopEmulation();
 	np2cfg.fddfile[drv][0] = '\0';
-	diskdrv_setfdd(drv, NULL, 0);
+	fdd_eject((REG8)drv);
 	sysmng_update(SYS_UPDATEFDD | SYS_UPDATECFG);
 	UpdateMenuStatus();
+	StartEmulation();
 }
 
 /* ---- HD handlers ---- */
@@ -645,29 +652,33 @@ void Np2Frame::OnHdOpen(wxCommandEvent &evt)
 	    hddfolder, "",
 	    "HD Images (*.nhd;*.hdi;*.thd;*.vhd)|*.nhd;*.hdi;*.thd;*.vhd|All files (*.*)|*.*",
 	    wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-	if (dlg.ShowModal() == wxID_OK) {
-		wxString path = dlg.GetPath();
-		milstr_ncpy(hddfolder, dlg.GetDirectory().ToUTF8().data(), MAX_PATH);
+	if (dlg.ShowModal() != wxID_OK) return;
+
+	wxString path = dlg.GetPath();
+	StopEmulation();
+
+	milstr_ncpy(hddfolder, dlg.GetDirectory().ToUTF8().data(), MAX_PATH);
+	milstr_ncpy(np2cfg.sasihdd[drv], path.ToUTF8().data(), MAX_PATH);
 #if defined(SUPPORT_IDEIO)
-		milstr_ncpy(np2cfg.sasihdd[drv], path.ToUTF8().data(), MAX_PATH);
-		np2cfg.idetype[drv] = SXSIDEV_HDD;
-#else
-		milstr_ncpy(np2cfg.sasihdd[drv], path.ToUTF8().data(), MAX_PATH);
+	np2cfg.idetype[drv] = SXSIDEV_HDD;
 #endif
-		/* diskdrv_hddbind() (called via SYS_UPDATEHDD) reads np2cfg.sasihdd[]
-		 * and np2cfg.idetype[] to open the drive. */
-		sysmng_update(SYS_UPDATEHDD | SYS_UPDATECFG);
-		UpdateMenuStatus();
-	}
+	sysmng_update(SYS_UPDATEHDD | SYS_UPDATECFG);
+	UpdateMenuStatus();
+
+	StartEmulation();
 }
 
 void Np2Frame::OnHdEject(wxCommandEvent &evt)
 {
 	int drv = hdDriveFromId(evt.GetId());
+	StopEmulation();
 	np2cfg.sasihdd[drv][0] = '\0';
-	/* diskdrv_hddbind() will see empty path and mark drive NC at runtime */
+#if defined(SUPPORT_IDEIO)
+	np2cfg.idetype[drv] = SXSIDEV_NC;
+#endif
 	sysmng_update(SYS_UPDATEHDD | SYS_UPDATECFG);
 	UpdateMenuStatus();
+	StartEmulation();
 }
 
 /* ---- CD handlers ---- */
@@ -682,27 +693,34 @@ void Np2Frame::OnCdOpen(wxCommandEvent & /*evt*/)
 	wxFileDialog dlg(this, "Mount CD Image", "", "",
 	    "CD Images (*.iso;*.cue;*.mds)|*.iso;*.cue;*.mds|All files (*.*)|*.*",
 	    wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-	if (dlg.ShowModal() == wxID_OK) {
-		wxString path = dlg.GetPath();
-		sxsi_devopen((REG8)cd_drv, path.ToUTF8().data());
-		/* Ensure np2cfg.idecd is set to the new path for config save.
-		 * sxsi_devopen may have cleared it if a delayed disc-change is pending. */
+	if (dlg.ShowModal() != wxID_OK) return;
+
+	wxString path = dlg.GetPath();
+	StopEmulation();
+
+	sxsi_devopen((REG8)cd_drv, path.ToUTF8().data());
 #if defined(SUPPORT_IDEIO)
-		milstr_ncpy(np2cfg.idecd[cd_drv & 0x03], path.ToUTF8().data(), MAX_PATH);
+	milstr_ncpy(np2cfg.idecd[cd_drv & 0x03], path.ToUTF8().data(), MAX_PATH);
 #endif
-		sysmng_update(SYS_UPDATECFG);
-		UpdateMenuStatus();
-	}
+	sysmng_update(SYS_UPDATECFG);
+	UpdateMenuStatus();
+
+	StartEmulation();
 }
 
 void Np2Frame::OnCdEject(wxCommandEvent & /*evt*/)
 {
 	int cd_drv = findCdromDrive();
-	if (cd_drv >= 0) {
-		sxsi_devopen((REG8)cd_drv, NULL);
-		sysmng_update(SYS_UPDATECFG);
-		UpdateMenuStatus();
-	}
+	if (cd_drv < 0) return;
+
+	StopEmulation();
+	sxsi_devopen((REG8)cd_drv, NULL);
+#if defined(SUPPORT_IDEIO)
+	np2cfg.idecd[cd_drv & 0x03][0] = '\0';
+#endif
+	sysmng_update(SYS_UPDATECFG);
+	UpdateMenuStatus();
+	StartEmulation();
 }
 
 void Np2Frame::OnDispFullScreen(wxCommandEvent &evt)

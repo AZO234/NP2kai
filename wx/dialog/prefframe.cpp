@@ -275,11 +275,12 @@ PrefFrame::PrefFrame(wxWindow *parent)
 	m_notebook->AddPage(BuildInputPage(m_notebook),    "Input",    false, 3);
 	m_notebook->AddPage(BuildFddPage(m_notebook),      "FDD",      false, 4);
 	m_notebook->AddPage(BuildHddPage(m_notebook),      "HDD",      false, 5);
-	m_notebook->AddPage(BuildSerialPage(m_notebook),   "Serial",   false, 6);
-	m_notebook->AddPage(BuildNetworkPage(m_notebook),  "Network",  false, 7);
-	m_notebook->AddPage(BuildHostdrvPage(m_notebook),  "Hostdrv",  false, 8);
-	m_notebook->AddPage(BuildDipswPage(m_notebook),    "DIP SW",   false, 9);
-	m_notebook->AddPage(BuildMiscPage(m_notebook),     "Misc",     false, 10);
+	m_notebook->AddPage(BuildMidiPage(m_notebook),     "MIDI",     false, 6);
+	m_notebook->AddPage(BuildSerialPage(m_notebook),   "Serial",   false, 7);
+	m_notebook->AddPage(BuildNetworkPage(m_notebook),  "Network",  false, 8);
+	m_notebook->AddPage(BuildHostdrvPage(m_notebook),  "Hostdrv",  false, 9);
+	m_notebook->AddPage(BuildDipswPage(m_notebook),    "DIP SW",   false, 10);
+	m_notebook->AddPage(BuildMiscPage(m_notebook),     "Misc",     false, 11);
 
 	rootSizer->Add(m_notebook, 1, wxEXPAND | wxALL, 4);
 
@@ -585,7 +586,9 @@ wxPanel *PrefFrame::BuildSoundPage(wxNotebook *nb)
 		cb->SetName(name);
 		gs->Add(cb, wxGBPosition(row++, 0), wxGBSpan(1, 4));
 	};
-	addCheck("Use MPU-98",          "USEMPU98");
+#if defined(SUPPORT_WAB)
+	addCheck("CRT relay sound",     "wabasw");
+#endif
 #if defined(SUPPORT_FMGEN)
 	addCheck("Use fmgen",           "USEFMGEN");
 #endif
@@ -814,6 +817,162 @@ static wxStaticBoxSizer *BuildComPortBox(wxWindow *parent, int portnum,
 	return box;
 }
 
+wxPanel *PrefFrame::BuildMidiPage(wxNotebook *nb)
+{
+	static const char *s_ioports[] = {
+		"C0D0","C4D0","C8D0","CCD0","D0D0","D4D0","D8D0","DCD0",
+		"E0D0","E4D0","E8D0","ECD0","F0D0","F4D0","F8D0","FCD0"
+	};
+	static const char *s_irqs[] = { "INT0","INT1","INT2","INT5" };
+	static const char *s_modules[] = {
+		"none","MT-32","CM-32L","CM-64","CM-300",
+		"CM-500(LA)","CM-500(GS)","SC-55","SC-88","LA","GM","GS","XG"
+	};
+
+	wxScrolledWindow *page = new wxScrolledWindow(nb, wxID_ANY, wxDefaultPosition,
+	                                               wxDefaultSize, wxTAB_TRAVERSAL | wxVSCROLL);
+	page->SetScrollRate(0, 20);
+	wxBoxSizer *vs = new wxBoxSizer(wxVERTICAL);
+
+	/* ---- MPU-PC98II ---- */
+	auto *mpuBox = new wxStaticBoxSizer(wxVERTICAL, page, "MPU-PC98II");
+	auto *mpuGs  = new wxGridBagSizer(4, 8);
+	int row = 0;
+
+	auto *mpuEn = new wxCheckBox(page, wxID_ANY, "Enable");
+	mpuEn->SetName("USEMPU98");
+	mpuGs->Add(mpuEn, wxGBPosition(row++, 0), wxGBSpan(1, 4));
+
+	/* IO port */
+	mpuGs->Add(new wxStaticText(page, wxID_ANY, "IO port:"),
+	           wxGBPosition(row, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+	auto *mpuPort = new wxChoice(page, wxID_ANY);
+	mpuPort->SetName("MPU_PORT");
+	for (auto &s : s_ioports) mpuPort->Append(s);
+	mpuPort->SetSelection(8); /* E0D0 */
+	mpuGs->Add(mpuPort, wxGBPosition(row, 1), wxDefaultSpan);
+
+	/* Interrupt */
+	mpuGs->Add(new wxStaticText(page, wxID_ANY, "Interrupt:"),
+	           wxGBPosition(row, 2), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+	auto *mpuIrq = new wxChoice(page, wxID_ANY);
+	mpuIrq->SetName("MPU_IRQ");
+	for (auto &s : s_irqs) mpuIrq->Append(s);
+	mpuIrq->SetSelection(2); /* INT2 */
+	mpuGs->Add(mpuIrq, wxGBPosition(row, 3), wxDefaultSpan);
+	row++;
+
+	/* MIDIOUT */
+	mpuGs->Add(new wxStaticText(page, wxID_ANY, "MIDIOUT:"),
+	           wxGBPosition(row, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+	auto *mpuOut = new wxChoice(page, wxID_ANY);
+	mpuOut->SetName("MPU_OUT");
+	mpuOut->Append("N/C");
+	mpuOut->Append("VERMOUTH");
+	mpuOut->SetSelection(0);
+	mpuGs->Add(mpuOut, wxGBPosition(row, 1), wxGBSpan(1, 3), wxEXPAND);
+	row++;
+
+	/* MIDIIN */
+	mpuGs->Add(new wxStaticText(page, wxID_ANY, "MIDIIN:"),
+	           wxGBPosition(row, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+	auto *mpuIn = new wxChoice(page, wxID_ANY);
+	mpuIn->SetName("MPU_IN");
+	mpuIn->Append("N/C");
+	mpuIn->SetSelection(0);
+	mpuGs->Add(mpuIn, wxGBPosition(row, 1), wxGBSpan(1, 3), wxEXPAND);
+	row++;
+
+	/* Module */
+	mpuGs->Add(new wxStaticText(page, wxID_ANY, "Module:"),
+	           wxGBPosition(row, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+	auto *mpuMdl = new wxChoice(page, wxID_ANY);
+	mpuMdl->SetName("MPU_MDL");
+	for (auto &s : s_modules) mpuMdl->Append(s);
+	mpuMdl->SetSelection(0); /* none */
+	mpuGs->Add(mpuMdl, wxGBPosition(row, 1), wxGBSpan(1, 3), wxEXPAND);
+	row++;
+
+	/* Use program define file */
+	auto *mpuDefEn = new wxCheckBox(page, wxID_ANY, "Use program define file (MIMPI define)");
+	mpuDefEn->SetName("MPU_DEF_EN");
+	mpuGs->Add(mpuDefEn, wxGBPosition(row++, 0), wxGBSpan(1, 4));
+	{
+		auto *defBox = new wxBoxSizer(wxHORIZONTAL);
+		auto *mpuDefPath = new wxTextCtrl(page, wxID_ANY, "");
+		mpuDefPath->SetName("MPU_DEF");
+		defBox->Add(mpuDefPath, 1, wxEXPAND);
+		auto *btnBrowse = new wxButton(page, wxID_ANY, "...", wxDefaultPosition, wxSize(30,-1));
+		btnBrowse->Bind(wxEVT_BUTTON, [mpuDefPath](wxCommandEvent &) {
+			wxFileDialog dlg(mpuDefPath, "Select define file", "", "",
+			    "Define files (*.def)|*.def|All files (*.*)|*.*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+			if (dlg.ShowModal() == wxID_OK)
+				mpuDefPath->SetValue(dlg.GetPath());
+		});
+		defBox->Add(btnBrowse, 0, wxLEFT, 4);
+		mpuGs->Add(defBox, wxGBPosition(row++, 0), wxGBSpan(1, 4), wxEXPAND);
+	}
+
+	mpuGs->AddGrowableCol(1, 1);
+	mpuGs->AddGrowableCol(3, 1);
+	mpuBox->Add(mpuGs, 0, wxEXPAND | wxALL, 4);
+	vs->Add(mpuBox, 0, wxEXPAND | wxALL, 6);
+
+#if defined(SUPPORT_SMPU98)
+	/* ---- S-MPUI ---- */
+	auto *smpuBox = new wxStaticBoxSizer(wxVERTICAL, page, "S-MPUI");
+	auto *smpuGs  = new wxGridBagSizer(4, 8);
+	int srow = 0;
+
+	auto *smpuEn = new wxCheckBox(page, wxID_ANY, "Enable");
+	smpuEn->SetName("USE_SMPU");
+	smpuGs->Add(smpuEn, wxGBPosition(srow, 0), wxGBSpan(1, 2));
+	auto *smpuMuteB = new wxCheckBox(page, wxID_ANY, "Mute port B during MPU-401 mode");
+	smpuMuteB->SetName("SMPUMUTB");
+	smpuGs->Add(smpuMuteB, wxGBPosition(srow++, 2), wxGBSpan(1, 2));
+
+	smpuGs->Add(new wxStaticText(page, wxID_ANY, "IO port:"),
+	            wxGBPosition(srow, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+	auto *smpuPort = new wxChoice(page, wxID_ANY);
+	smpuPort->SetName("SMPU_PORT");
+	for (auto &s : s_ioports) smpuPort->Append(s);
+	smpuPort->SetSelection(8);
+	smpuGs->Add(smpuPort, wxGBPosition(srow, 1), wxDefaultSpan);
+	smpuGs->Add(new wxStaticText(page, wxID_ANY, "Interrupt:"),
+	            wxGBPosition(srow, 2), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+	auto *smpuIrq = new wxChoice(page, wxID_ANY);
+	smpuIrq->SetName("SMPU_IRQ");
+	for (auto &s : s_irqs) smpuIrq->Append(s);
+	smpuIrq->SetSelection(2);
+	smpuGs->Add(smpuIrq, wxGBPosition(srow++, 3), wxDefaultSpan);
+
+	/* Port A */
+	smpuGs->Add(new wxStaticText(page, wxID_ANY, "Port A MIDIOUT:"),
+	            wxGBPosition(srow, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+	auto *smpuAOut = new wxChoice(page, wxID_ANY);
+	smpuAOut->SetName("SMPUA_OUT"); smpuAOut->Append("N/C"); smpuAOut->Append("VERMOUTH");
+	smpuAOut->SetSelection(0);
+	smpuGs->Add(smpuAOut, wxGBPosition(srow++, 1), wxGBSpan(1, 3), wxEXPAND);
+
+	/* Port B */
+	smpuGs->Add(new wxStaticText(page, wxID_ANY, "Port B MIDIOUT:"),
+	            wxGBPosition(srow, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+	auto *smpuBOut = new wxChoice(page, wxID_ANY);
+	smpuBOut->SetName("SMPUB_OUT"); smpuBOut->Append("N/C"); smpuBOut->Append("VERMOUTH");
+	smpuBOut->SetSelection(0);
+	smpuGs->Add(smpuBOut, wxGBPosition(srow++, 1), wxGBSpan(1, 3), wxEXPAND);
+
+	smpuGs->AddGrowableCol(1, 1);
+	smpuGs->AddGrowableCol(3, 1);
+	smpuBox->Add(smpuGs, 0, wxEXPAND | wxALL, 4);
+	vs->Add(smpuBox, 0, wxEXPAND | wxALL, 6);
+#endif
+
+	vs->Add(new wxButton(page, ID_PREF_DEFAULT, "Default"), 0, wxALIGN_RIGHT | wxALL, 8);
+	page->SetSizer(vs);
+	return page;
+}
+
 wxPanel *PrefFrame::BuildSerialPage(wxNotebook *nb)
 {
 	wxScrolledWindow *page = new wxScrolledWindow(nb, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL | wxVSCROLL);
@@ -1012,6 +1171,33 @@ wxPanel *PrefFrame::BuildMiscPage(wxNotebook *nb)
 		gs->Add(cb, wxGBPosition(row++, 0), wxGBSpan(1, 2));
 	};
 
+#if defined(SUPPORT_PCI)
+	/* PCI */
+	gs->Add(new wxStaticText(page, wxID_ANY, "PCI"),
+	        wxGBPosition(row++, 0), wxGBSpan(1, 2), wxALIGN_CENTER_VERTICAL);
+	{
+		auto *enPci = new wxCheckBox(page, wxID_ANY, "Enable PCI bus");
+		enPci->SetName("USE_PCI");
+		gs->Add(enPci, wxGBPosition(row++, 0), wxGBSpan(1, 2));
+
+		gs->Add(new wxStaticText(page, wxID_ANY, "PCMC:"),
+		        wxGBPosition(row, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+		wxChoice *pcmc = new wxChoice(page, wxID_ANY);
+		pcmc->SetName("PCI_PCMC");
+		pcmc->Append("Intel 82434LX");
+		pcmc->Append("Intel 82441FX");
+		pcmc->Append("VLSI Wildcat");
+		pcmc->SetSelection(0);
+		gs->Add(pcmc, wxGBPosition(row, 1), wxDefaultSpan, wxEXPAND);
+		row++;
+
+		auto *b32 = new wxCheckBox(page, wxID_ANY, "Use BIOS32 (not recommended)");
+		b32->SetName("PCI_B32");
+		gs->Add(b32, wxGBPosition(row++, 0), wxGBSpan(1, 2));
+	}
+	gs->Add(new wxStaticLine(page), wxGBPosition(row++, 0), wxGBSpan(1, 2), wxEXPAND);
+#endif
+
 	addCheck("No Wait (max speed)",     "s_NOWAIT");
 	addCheck("Resume on start",         "e_resume");
 	addCheck("Save state on exit",      "STATSAVE");
@@ -1101,13 +1287,15 @@ static void SetCheckByName(wxWindow *root, const char *name, bool val)
 static void SetSpinByName(wxWindow *root, const char *name, int val)
 {
 	auto *w = FindByName(root, name);
-	if (auto *sc = wxDynamicCast(w, wxSpinCtrl)) sc->SetValue(val);
+	if (auto *sc = wxDynamicCast(w, wxSpinCtrl))   sc->SetValue(val);
+	else if (auto *sl = wxDynamicCast(w, wxSlider)) sl->SetValue(val);
 }
 
 static int GetSpinByName(wxWindow *root, const char *name, int defval)
 {
 	auto *w = FindByName(root, name);
-	if (auto *sc = wxDynamicCast(w, wxSpinCtrl)) return sc->GetValue();
+	if (auto *sc = wxDynamicCast(w, wxSpinCtrl))   return sc->GetValue();
+	if (auto *sl = wxDynamicCast(w, wxSlider))      return sl->GetValue();
 	return defval;
 }
 
@@ -1299,13 +1487,79 @@ void PrefFrame::LoadFromConfig(void)
 		if (m_beepvol[vol]) m_beepvol[vol]->SetValue(true);
 	}
 	
-	SetCheckByName(this, "USEMPU98", np2cfg.mpuenable != 0);
 #if defined(SUPPORT_FMGEN)
 	SetCheckByName(this, "USEFMGEN", np2cfg.usefmgen != 0);
 #endif
 	SetCheckByName(this, "Seek_Snd", np2cfg.MOTOR != 0);
 #if defined(SUPPORT_WAB)
 	SetCheckByName(this, "wabasw",   np2cfg.wabasw == 0); // "CRT relay sound" checked means wabasw=0
+#endif
+
+	/* MIDI */
+	SetCheckByName(this, "USEMPU98", np2cfg.mpuenable != 0);
+	if (auto *w = FindByName(this, "MPU_PORT")) {
+		if (auto *ch = wxDynamicCast(w, wxChoice))
+			ch->SetSelection((np2cfg.mpuopt >> 4) & 0x0f);
+	}
+	if (auto *w = FindByName(this, "MPU_IRQ")) {
+		if (auto *ch = wxDynamicCast(w, wxChoice))
+			ch->SetSelection(np2cfg.mpuopt & 3);
+	}
+	if (auto *w = FindByName(this, "MPU_OUT")) {
+		if (auto *ch = wxDynamicCast(w, wxChoice)) {
+			int sel = 0;
+			if (np2oscfg.MIDIDEV[0][0]) {
+				int idx = ch->FindString(wxString::FromUTF8(np2oscfg.MIDIDEV[0]));
+				if (idx != wxNOT_FOUND) sel = idx;
+			}
+			ch->SetSelection(sel);
+		}
+	}
+	if (auto *w = FindByName(this, "MPU_IN")) {
+		if (auto *ch = wxDynamicCast(w, wxChoice)) {
+			int sel = 0;
+			if (np2oscfg.MIDIDEV[1][0]) {
+				int idx = ch->FindString(wxString::FromUTF8(np2oscfg.MIDIDEV[1]));
+				if (idx != wxNOT_FOUND) sel = idx;
+			}
+			ch->SetSelection(sel);
+		}
+	}
+	if (auto *w = FindByName(this, "MPU_MDL")) {
+		if (auto *ch = wxDynamicCast(w, wxChoice)) {
+			int sel = 0;
+			if (np2oscfg.mpu.mdl[0]) {
+				int idx = ch->FindString(wxString::FromUTF8(np2oscfg.mpu.mdl));
+				if (idx != wxNOT_FOUND) sel = idx;
+			}
+			ch->SetSelection(sel);
+		}
+	}
+	SetCheckByName(this, "MPU_DEF_EN", np2oscfg.mpu.def_en != 0);
+	SetTextByName(this, "MPU_DEF", np2oscfg.mpu.def);
+#if defined(SUPPORT_SMPU98)
+	SetCheckByName(this, "USE_SMPU",  np2cfg.smpuenable != 0);
+	SetCheckByName(this, "SMPUMUTB",  np2cfg.smpumuteB  != 0);
+	if (auto *w = FindByName(this, "SMPU_PORT")) {
+		if (auto *ch = wxDynamicCast(w, wxChoice))
+			ch->SetSelection((np2cfg.smpuopt >> 4) & 0x0f);
+	}
+	if (auto *w = FindByName(this, "SMPU_IRQ")) {
+		if (auto *ch = wxDynamicCast(w, wxChoice))
+			ch->SetSelection(np2cfg.smpuopt & 3);
+	}
+	if (auto *w = FindByName(this, "SMPUA_OUT")) {
+		if (auto *ch = wxDynamicCast(w, wxChoice)) {
+			int idx = ch->FindString(wxString::FromUTF8(np2oscfg.MIDIDEVA[0]));
+			ch->SetSelection(idx != wxNOT_FOUND ? idx : 0);
+		}
+	}
+	if (auto *w = FindByName(this, "SMPUB_OUT")) {
+		if (auto *ch = wxDynamicCast(w, wxChoice)) {
+			int idx = ch->FindString(wxString::FromUTF8(np2oscfg.MIDIDEVB[0]));
+			ch->SetSelection(idx != wxNOT_FOUND ? idx : 0);
+		}
+	}
 #endif
 
 	/* Input */
@@ -1467,6 +1721,14 @@ void PrefFrame::LoadFromConfig(void)
 	}
 #endif
 
+	/* PCI */
+#if defined(SUPPORT_PCI)
+	SetCheckByName(this, "USE_PCI", np2cfg.usepci != 0);
+	if (auto *w = FindByName(this, "PCI_PCMC"))
+		if (auto *ch = wxDynamicCast(w, wxChoice)) ch->SetSelection(np2cfg.pci_pcmc < 3 ? np2cfg.pci_pcmc : 0);
+	SetCheckByName(this, "PCI_B32", np2cfg.pci_bios32 != 0);
+#endif
+
 	/* Misc */
 	SetCheckByName(this, "s_NOWAIT", np2oscfg.NOWAIT != 0);
 	SetCheckByName(this, "e_resume", np2oscfg.resume != 0);
@@ -1586,13 +1848,70 @@ void PrefFrame::SaveToConfig(void)
 			break;
 		}
 	}
-	np2cfg.mpuenable = GetCheckByName(this, "USEMPU98") ? 1 : 0;
 #if defined(SUPPORT_FMGEN)
 	np2cfg.usefmgen  = GetCheckByName(this, "USEFMGEN") ? 1 : 0;
 #endif
 	np2cfg.MOTOR     = GetCheckByName(this, "Seek_Snd") ? 1 : 0;
 #if defined(SUPPORT_WAB)
 	np2cfg.wabasw    = GetCheckByName(this, "wabasw") ? 0 : 1; // Checked means relay sound (wabasw=0)
+#endif
+
+	/* MIDI */
+	np2cfg.mpuenable = GetCheckByName(this, "USEMPU98") ? 1 : 0;
+	{
+		int port = 8, irq = 2;
+		if (auto *w = FindByName(this, "MPU_PORT"))
+			if (auto *ch = wxDynamicCast(w, wxChoice)) port = ch->GetSelection();
+		if (auto *w = FindByName(this, "MPU_IRQ"))
+			if (auto *ch = wxDynamicCast(w, wxChoice)) irq  = ch->GetSelection();
+		np2cfg.mpuopt = (UINT8)(((port & 0x0f) << 4) | (irq & 3));
+	}
+	if (auto *w = FindByName(this, "MPU_OUT")) {
+		if (auto *ch = wxDynamicCast(w, wxChoice)) {
+			wxString s = ch->GetSelection() > 0 ? ch->GetString(ch->GetSelection()) : "";
+			milstr_ncpy(np2oscfg.MIDIDEV[0], s.ToUTF8().data(), MAX_PATH);
+		}
+	}
+	if (auto *w = FindByName(this, "MPU_IN")) {
+		if (auto *ch = wxDynamicCast(w, wxChoice)) {
+			wxString s = ch->GetSelection() > 0 ? ch->GetString(ch->GetSelection()) : "";
+			milstr_ncpy(np2oscfg.MIDIDEV[1], s.ToUTF8().data(), MAX_PATH);
+		}
+	}
+	if (auto *w = FindByName(this, "MPU_MDL")) {
+		if (auto *ch = wxDynamicCast(w, wxChoice)) {
+			wxString s = ch->GetSelection() > 0 ? ch->GetString(ch->GetSelection()) : "";
+			milstr_ncpy(np2oscfg.mpu.mdl, s.ToUTF8().data(), sizeof(np2oscfg.mpu.mdl));
+		}
+	}
+	np2oscfg.mpu.def_en = GetCheckByName(this, "MPU_DEF_EN") ? 1 : 0;
+	{
+		wxString def = GetTextByName(this, "MPU_DEF");
+		milstr_ncpy(np2oscfg.mpu.def, def.ToUTF8().data(), MAX_PATH);
+	}
+#if defined(SUPPORT_SMPU98)
+	np2cfg.smpuenable = GetCheckByName(this, "USE_SMPU")  ? 1 : 0;
+	np2cfg.smpumuteB  = GetCheckByName(this, "SMPUMUTB") ? 1 : 0;
+	{
+		int sport = 8, sirq = 2;
+		if (auto *w = FindByName(this, "SMPU_PORT"))
+			if (auto *ch = wxDynamicCast(w, wxChoice)) sport = ch->GetSelection();
+		if (auto *w = FindByName(this, "SMPU_IRQ"))
+			if (auto *ch = wxDynamicCast(w, wxChoice)) sirq  = ch->GetSelection();
+		np2cfg.smpuopt = (UINT8)(((sport & 0x0f) << 4) | (sirq & 3));
+	}
+	if (auto *w = FindByName(this, "SMPUA_OUT")) {
+		if (auto *ch = wxDynamicCast(w, wxChoice)) {
+			wxString s = ch->GetSelection() > 0 ? ch->GetString(ch->GetSelection()) : "";
+			milstr_ncpy(np2oscfg.MIDIDEVA[0], s.ToUTF8().data(), MAX_PATH);
+		}
+	}
+	if (auto *w = FindByName(this, "SMPUB_OUT")) {
+		if (auto *ch = wxDynamicCast(w, wxChoice)) {
+			wxString s = ch->GetSelection() > 0 ? ch->GetString(ch->GetSelection()) : "";
+			milstr_ncpy(np2oscfg.MIDIDEVB[0], s.ToUTF8().data(), MAX_PATH);
+		}
+	}
 #endif
 
 	/* Input */
@@ -1748,6 +2067,14 @@ void PrefFrame::SaveToConfig(void)
 		snprintf(name, sizeof(name), "IDE%dEQUIP", i + 1);
 		if (!GetCheckByName(this, name)) np2cfg.idetype[i] = SXSIDEV_NC;
 	}
+#endif
+
+	/* PCI */
+#if defined(SUPPORT_PCI)
+	np2cfg.usepci     = GetCheckByName(this, "USE_PCI") ? 1 : 0;
+	if (auto *w = FindByName(this, "PCI_PCMC"))
+		if (auto *ch = wxDynamicCast(w, wxChoice)) np2cfg.pci_pcmc = (UINT8)(ch->GetSelection() < 3 ? ch->GetSelection() : 0);
+	np2cfg.pci_bios32 = GetCheckByName(this, "PCI_B32") ? 1 : 0;
 #endif
 
 	/* Misc */

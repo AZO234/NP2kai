@@ -33,6 +33,7 @@ private:
 	wxPanel *BuildInputPage(wxNotebook *nb);
 	wxPanel *BuildFddPage(wxNotebook *nb);
 	wxPanel *BuildHddPage(wxNotebook *nb);
+	wxPanel *BuildMidiPage(wxNotebook *nb);
 	wxPanel *BuildSerialPage(wxNotebook *nb);
 	wxPanel *BuildNetworkPage(wxNotebook *nb);
 	wxPanel *BuildHostdrvPage(wxNotebook *nb);

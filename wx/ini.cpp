@@ -502,6 +502,11 @@ static INITBL np2_tbl[] = {
 	{"GDMELOFS",  INITYPE_UINT8,  &np2cfg.gd5430melofs,0},
 #endif
 	{"pegcplane", INITYPE_BOOL,   &np2cfg.usepegcplane,0},
+#if defined(SUPPORT_PCI)
+	{"USE_PCI",   INITYPE_BOOL,   &np2cfg.usepci,      0},
+	{"PCI_PCMC",  INITYPE_UINT8,  &np2cfg.pci_pcmc,    0},
+	{"PCI_B32",   INITYPE_BOOL,   &np2cfg.pci_bios32,  0},
+#endif
 #if defined(SUPPORT_HOSTDRV)
 	{"hdrvnt",    INITYPE_BOOL,   &np2cfg.hdrvntenable,0},
 #endif

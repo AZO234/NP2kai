@@ -139,5 +139,16 @@
 				"preLaunchTask": "Debug Build: libretro Port"
 			}
 		]
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-vscode.cmake-tools",
+			"jbenden.c-cpp-flylint",
+			"eclipse-cdt.cdt-gdb-vscode",
+			"ms-ceintl.vscode-language-pack-ja",
+			"caponetto.vscode-diff-viewer",
+			"ms-python.python",
+			"shd101wyy.markdown-preview-enhanced"
+		]
 	}
 }
