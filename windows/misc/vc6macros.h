@@ -1,6 +1,6 @@
 /**
  * @file	vc6macros.h
- * @brief	VC6 Áî®„Éû„ÇØ„É≠
+ * @brief	VC6 ópÉ}ÉNÉç
  */
 
 #pragma once

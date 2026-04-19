@@ -4,7 +4,6 @@ enum {
 	uPD8255A_RIGHTBIT	= 0x20
 };
 
-
 typedef struct
 {
 	UINT32	autohide;
@@ -51,8 +50,8 @@ void mousemng_disable(UINT proc);
 void mousemng_toggle(UINT proc);
 void mousemng_destroy(void);
 
-UINT8 mousemng_supportrawinput(); // ç”Ÿãƒ‡ãƒ¼ã‚¿å…¥åŠ›ã‚µãƒãƒ¼ãƒˆ
-void mousemng_updatespeed(); // ç”Ÿãƒ‡ãƒ¼ã‚¿å…¥åŠ›ã‚µãƒãƒ¼ãƒˆ
+UINT8 mousemng_supportrawinput(); // ¶ƒf[ƒ^“ü—ÍƒTƒ|[ƒg
+void mousemng_updatespeed(); // ¶ƒf[ƒ^“ü—ÍƒTƒ|[ƒg
 
 #ifdef __cplusplus
 extern "C" {

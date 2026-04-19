@@ -1,0 +1,31 @@
+[Version]
+Signature="$Windows NT$"
+Class=Mouse
+ClassGuid={4D36E96F-E325-11CE-BFC1-08002BE10318}
+Provider=%ProviderName%
+DriverVer=05/03/2025,0.1.0.0
+
+[DestinationDirs]
+DefaultDestDir = 12 ; system32\drivers
+
+[DefaultUninstall]
+DelReg   = NP2Mouse.DelReg
+DelFiles = NP2Mouse.Del
+
+[NP2Mouse.Del]
+npmouse.sys
+
+[NP2Mouse.DelReg]
+HKLM,"System\CurrentControlSet\Services\npmouse"
+
+[SourceDisksNames]
+1=%DiskName%,,,
+
+[SourceDisksFiles]
+npmouse.sys=1
+
+[Strings]
+ProviderName="ねこさん開発ちーむ"
+MfgName="Neko Project II"
+NP2Mouse.DeviceDesc="Neko Project II シームレスマウス"
+DiskName="Neko Project II ユーティリティディスク"

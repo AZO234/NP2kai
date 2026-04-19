@@ -3,31 +3,30 @@
  * @brief	load VM configuration dialog
  */
 
-#include <compiler.h>
+#include "compiler.h"
 #include "resource.h"
 #include "dialog.h"
-#include <dosio.h>
-#include <np2.h>
-#include <np2mt.h>
-#include <sysmng.h>
+#include "dosio.h"
+#include "np2.h"
+#include "np2mt.h"
+#include "sysmng.h"
 #include "misc/DlgProc.h"
-#include <cpucore.h>
-#include <pccore.h>
-#include <io/iocore.h>
-#include <common/strres.h>
+#include "cpucore.h"
+#include "pccore.h"
+#include "iocore.h"
+#include "common/strres.h"
 #include "np2arg.h"
-#include <common/profile.h>
-#include <ini.h>
+#include "profile.h"
+#include "ini.h"
 #include "subwnd/toolwnd.h"
 #include "subwnd/kdispwnd.h"
 #include "subwnd/skbdwnd.h"
 #include "subwnd/mdbgwnd.h"
 #if defined(SUPPORT_WAB)
-#include <wab/wab.h>
+#include "wab/wab.h"
 #endif
-#include "dialog/winfiledlg.h"
 
-/** 繝輔ぅ繝ｫ繧ｿ繝ｼ */
+/** フィルター */
 static const UINT s_nFilter[1] =
 {
 	IDS_CFGFILTER_L
@@ -42,8 +41,8 @@ static int messagebox(HWND hWnd, LPCTSTR lpcszText, UINT uType)
 }
 
 /**
- * VM configuration 隱ｭ縺ｿ霎ｼ縺ｿ
- * @param[in] hWnd 隕ｪ繧ｦ繧｣繝ｳ繝峨え
+ * VM configuration 読み込み
+ * @param[in] hWnd 親ウィンドウ
  */
 int dialog_readnpcfg(HWND hWnd)
 {
@@ -52,14 +51,12 @@ int dialog_readnpcfg(HWND hWnd)
 	std::tstring rTitle(LoadTString(IDS_CFGTITLE_L));
 
 	TCHAR szPath[MAX_PATH] = {0};
-	TCHAR szName[MAX_PATH] = {0};
 	file_cpyname(szPath, npcfgfilefolder, _countof(szPath));
 	
 	CFileDlg dlg(TRUE, rExt.c_str(), szPath, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, rFilter.c_str(), hWnd);
 	dlg.m_ofn.lpstrTitle = rTitle.c_str();
 	dlg.m_ofn.nFilterIndex = 1;
-	OPENFILENAMEW ofnw;
-	if (WinFileDialogW(hWnd, &ofnw, WINFILEDIALOGW_MODE_GET1, szPath, szName, rExt.c_str(), rTitle.c_str(), rFilter.c_str(), 1))
+	if (dlg.DoModal())
 	{
 		LPCTSTR lpFilename = dlg.GetPathName();
 		file_cpyname(npcfgfilefolder, lpFilename, _countof(bmpfilefolder));

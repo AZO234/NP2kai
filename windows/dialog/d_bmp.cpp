@@ -3,25 +3,24 @@
  * @brief	bmp dialog
  */
 
-#include <compiler.h>
+#include "compiler.h"
 #include "resource.h"
 #include "dialog.h"
-#include <dosio.h>
-#include <np2.h>
-#include <sysmng.h>
+#include "dosio.h"
+#include "np2.h"
+#include "sysmng.h"
 #include "misc/DlgProc.h"
-#include <pccore.h>
-#include <io/iocore.h>
-#include <common/strres.h>
-#include <common/bmpdata.h>
-#include <vram/scrnsave.h>
+#include "pccore.h"
+#include "iocore.h"
+#include "common/strres.h"
+#include "bmpdata.h"
+#include "vram/scrnsave.h"
 #ifdef SUPPORT_WAB
-#include <wab/wab.h>
-#include <wab/wabbmpsave.h>
+#include "wab/wab.h"
+#include "wab/wabbmpsave.h"
 #endif
-#include "dialog/winfiledlg.h"
 
-/** ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼ */
+/** ƒtƒBƒ‹ƒ^[ */
 static const UINT s_nFilter[4] =
 {
 	IDS_BMPFILTER1,
@@ -31,10 +30,10 @@ static const UINT s_nFilter[4] =
 };
 
 /**
- * ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å¾—ã‚‹
- * @param[in] lpExt æ‹¡å¼µå­
- * @param[out] lpFilename ãƒ•ã‚¡ã‚¤ãƒ«å
- * @param[in] cchFilename ãƒ•ã‚¡ã‚¤ãƒ«åé•·
+ * ƒfƒtƒHƒ‹ƒg ƒtƒ@ƒCƒ‹‚ğ“¾‚é
+ * @param[in] lpExt Šg’£q
+ * @param[out] lpFilename ƒtƒ@ƒCƒ‹–¼
+ * @param[in] cchFilename ƒtƒ@ƒCƒ‹–¼’·
  */
 static void GetDefaultFilename(LPCTSTR lpExt, LPTSTR lpFilename, UINT cchFilename)
 {
@@ -56,8 +55,8 @@ static void GetDefaultFilename(LPCTSTR lpExt, LPTSTR lpFilename, UINT cchFilenam
 
 
 /**
- * BMP å‡ºåŠ›
- * @param[in] hWnd è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
+ * BMP o—Í
+ * @param[in] hWnd eƒEƒBƒ“ƒhƒE
  */
 void dialog_writebmp(HWND hWnd)
 {
@@ -78,13 +77,14 @@ void dialog_writebmp(HWND hWnd)
 	std::tstring rTitle(LoadTString(IDS_BMPTITLE));
 
 	TCHAR szPath[MAX_PATH];
-	TCHAR szName[MAX_PATH];
 	GetDefaultFilename(rExt.c_str(), szPath, _countof(szPath));
 
-	OPENFILENAMEW ofnw;
-	if (WinFileDialogW(hWnd, &ofnw, WINFILEDIALOGW_MODE_SET, szPath, szName, rExt.c_str(), rTitle.c_str(), rFilter.c_str(), 1))
+	CFileDlg dlg(FALSE, rExt.c_str(), szPath, OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY, rFilter.c_str(), hWnd);
+	dlg.m_ofn.lpstrTitle = rTitle.c_str();
+	dlg.m_ofn.nFilterIndex = 1;
+	if (dlg.DoModal())
 	{
-		LPCTSTR lpFilename = szPath;
+		LPCTSTR lpFilename = dlg.GetPathName();
 		file_cpyname(bmpfilefolder, lpFilename, _countof(bmpfilefolder));
 		sysmng_update(SYS_UPDATEOSCFG);
 

@@ -1,0 +1,65 @@
+' remove_multisz.vbs
+Option Explicit
+
+Dim hivePath, valueName, delStr
+hivePath = WScript.Arguments(0) ' 例: HKLM\Software\MyCo\MyKey
+valueName = WScript.Arguments(1) ' 例: MyMultiSz
+delStr = WScript.Arguments(2) ' 例: RemoveMe
+
+Dim shell : Set shell = CreateObject("WScript.Shell")
+Dim fullPath : fullPath = hivePath & "\" & valueName
+
+On Error Resume Next
+Dim v : v = shell.RegRead(fullPath)
+If Err.Number <> 0 Then
+  WScript.Quit 0 ' 値が無いなら何もしない
+End If
+On Error GoTo 0
+
+' RegRead で REG_MULTI_SZ は配列として返る
+Dim arr, i, n
+
+Select Case VarType(v)
+    Case 8204 ' vbArray + vbVariant → REG_MULTI_SZ配列
+        arr = v
+    Case 8    ' vbString → 要素1個扱い
+        ReDim arr(0)
+        arr(0) = CStr(v)
+    Case Else
+        ' 想定外の型
+        WScript.Quit 9
+End Select
+' 削除対象以外を詰める
+Dim tmp()
+ReDim tmp(-1) ' 空配列
+n = -1
+For i = LBound(arr) To UBound(arr)
+
+
+  If CStr(arr(i)) <> delStr And CStr(arr(i)) <> "" Then
+    n = n + 1
+    ReDim Preserve tmp(n)
+    tmp(n) = CStr(arr(i))
+  End If
+Next
+
+
+' 全部消えたら値を削除、残るなら書き戻し
+If n < 0 Then
+  shell.RegDelete fullPath
+Else
+  Const HKEY_LOCAL_MACHINE = &H80000002
+  
+  If UCase(Left(hivePath, 5)) = "HKLM\" Then
+    hivePath = Mid(hivePath, 6)
+  End If
+  Dim locator, svc, reg, rc
+  Set locator = CreateObject("WbemScripting.SWbemLocator")
+  Set svc     = locator.ConnectServer(".", "root\default")
+  Set reg     = svc.Get("StdRegProv")
+  rc = reg.SetMultiStringValue(HKEY_LOCAL_MACHINE, hivePath, valueName, tmp)
+  If rc <> 0 Then
+      ' MsgBox "WMI Write Failed: " & rc, 16, "Error"
+      WScript.Quit rc
+  End If
+End If

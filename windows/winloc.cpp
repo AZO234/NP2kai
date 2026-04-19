@@ -1,4 +1,4 @@
-#include	<compiler.h>
+#include	"compiler.h"
 #include	"winloc.h"
 
 
@@ -10,32 +10,53 @@ typedef HRESULT (WINAPI *pfnDwmIsCompositionEnabled)(
 	BOOL *pfEnabled
 );
 typedef HRESULT (WINAPI *pfnDwmGetWindowAttribute)(
-	   HWND  hwnd,
-	   DWORD dwAttribute,
-       PVOID pvAttribute, 
-	   DWORD cbAttribute
+	HWND  hwnd,
+	DWORD dwAttribute,
+	PVOID pvAttribute, 
+	DWORD cbAttribute
 );
-typedef enum _DWMWINDOWATTRIBUTE { 
-  DWMWA_NCRENDERING_ENABLED          = 1,
-  DWMWA_NCRENDERING_POLICY,
-  DWMWA_TRANSITIONS_FORCEDISABLED,
-  DWMWA_ALLOW_NCPAINT,
-  DWMWA_CAPTION_BUTTON_BOUNDS,
-  DWMWA_NONCLIENT_RTL_LAYOUT,
-  DWMWA_FORCE_ICONIC_REPRESENTATION,
-  DWMWA_FLIP3D_POLICY,
-  DWMWA_EXTENDED_FRAME_BOUNDS,
-  DWMWA_HAS_ICONIC_BITMAP,
-  DWMWA_DISALLOW_PEEK,
-  DWMWA_EXCLUDED_FROM_PEEK,
-  DWMWA_CLOAK,
-  DWMWA_CLOAKED,
-  DWMWA_FREEZE_REPRESENTATION,
-  DWMWA_LAST
+typedef HRESULT(WINAPI* pfnDwmSetWindowAttribute)(
+	HWND hwnd,
+	DWORD dwAttribute,
+	LPCVOID pvAttribute,
+	DWORD cbAttribute
+);
+typedef enum _DWMWINDOWATTRIBUTE {
+	DWMWA_NCRENDERING_ENABLED = 1,       
+	DWMWA_NCRENDERING_POLICY,            
+	DWMWA_TRANSITIONS_FORCEDISABLED,     
+	DWMWA_ALLOW_NCPAINT,                 
+	DWMWA_CAPTION_BUTTON_BOUNDS,         
+	DWMWA_NONCLIENT_RTL_LAYOUT,          
+	DWMWA_FORCE_ICONIC_REPRESENTATION,   
+	DWMWA_FLIP3D_POLICY,                 
+	DWMWA_EXTENDED_FRAME_BOUNDS,         
+	DWMWA_HAS_ICONIC_BITMAP,             
+	DWMWA_DISALLOW_PEEK,                 
+	DWMWA_EXCLUDED_FROM_PEEK,            
+	DWMWA_CLOAK,                         
+	DWMWA_CLOAKED,                       
+	DWMWA_FREEZE_REPRESENTATION,         
+	DWMWA_PASSIVE_UPDATE_MODE,           
+	DWMWA_USE_HOSTBACKDROPBRUSH,         
+	DWMWA_USE_IMMERSIVE_DARK_MODE = 20,  
+	DWMWA_WINDOW_CORNER_PREFERENCE = 33, 
+	DWMWA_BORDER_COLOR,                  
+	DWMWA_CAPTION_COLOR,                 
+	DWMWA_TEXT_COLOR,                    
+	DWMWA_VISIBLE_FRAME_BORDER_THICKNESS,
+	DWMWA_LAST
 } DWMWINDOWATTRIBUTE;
+typedef enum {
+	DWMWCP_DEFAULT = 0,
+	DWMWCP_DONOTROUND = 1,
+	DWMWCP_ROUND = 2,
+	DWMWCP_ROUNDSMALL = 3
+} DWM_WINDOW_CORNER_PREFERENCE;
 
 static pfnDwmIsCompositionEnabled	F_DwmIsCompositionEnabled = NULL;
 static pfnDwmGetWindowAttribute	F_DwmGetWindowAttribute = NULL;
+static pfnDwmSetWindowAttribute	F_DwmSetWindowAttribute = NULL;
 static HMODULE hDwmModule = NULL;
 static int noDWM = 0;
 
@@ -45,28 +66,31 @@ BOOL winloc_InitDwmFunc() {
 	RECT r = {0};
 
 	if(noDWM){
-		// DWMÁí∞Â¢É„Åß„Å™„ÅÑ
+		// DWMä¬ã´Ç≈Ç»Ç¢
 		return FALSE;
 	}else{
 		if(!hDwmModule){
 			hDwmModule = LoadLibrary(_T("dwmapi.dll"));
 			if(!hDwmModule){
-				// DWMÁí∞Â¢É„Åß„Å™„ÅÑ
+				// DWMä¬ã´Ç≈Ç»Ç¢
 				noDWM = 1;
 				return FALSE;
 			}
 			F_DwmIsCompositionEnabled = (pfnDwmIsCompositionEnabled)GetProcAddress(hDwmModule, "DwmIsCompositionEnabled");
 			F_DwmGetWindowAttribute = (pfnDwmGetWindowAttribute)GetProcAddress(hDwmModule, "DwmGetWindowAttribute");
-			if(!F_DwmIsCompositionEnabled || !F_DwmGetWindowAttribute){
-				// ‰ΩïÊïÖ„ÅãDwmGetWindowAttribute„ÇÑDwmIsCompositionEnabled„ÅåÁÑ°„ÅÑÔºü
+			F_DwmSetWindowAttribute = (pfnDwmSetWindowAttribute)GetProcAddress(hDwmModule, "DwmSetWindowAttribute");
+			if(!F_DwmIsCompositionEnabled || !F_DwmGetWindowAttribute || !F_DwmSetWindowAttribute){
+				// âΩåÃÇ©DwmGetWindowAttributeÇ‚DwmIsCompositionEnabledÇ»Ç«Ç™ñ≥Ç¢ÅH
 				FreeLibrary(hDwmModule);
 				hDwmModule = NULL;
+				F_DwmIsCompositionEnabled = NULL;
 				F_DwmGetWindowAttribute = NULL;
+				F_DwmSetWindowAttribute = NULL;
 				noDWM = 1;
 				return FALSE;
 			}
 		}
-		// DWMÁí∞Â¢É
+		// DWMä¬ã´
 		return TRUE;
 	}
 }
@@ -74,8 +98,16 @@ void winloc_DisposeDwmFunc() {
 	if(hDwmModule){
 		F_DwmIsCompositionEnabled = NULL;
 		F_DwmGetWindowAttribute = NULL;
+		F_DwmSetWindowAttribute = NULL;
 		FreeLibrary(hDwmModule);
 		hDwmModule = NULL;
+	}
+}
+
+void winloc_DisableCornerRound(HWND hwnd) {
+	if (F_DwmSetWindowAttribute) {
+		DWM_WINDOW_CORNER_PREFERENCE cornerReference = DWMWCP_DONOTROUND;
+		F_DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, &cornerReference, sizeof(DWM_WINDOW_CORNER_PREFERENCE));
 	}
 }
 
@@ -85,7 +117,7 @@ BOOL winloc_GetWindowRect(HWND hwnd, LPRECT lpRect) {
 		BOOL dwmenable = FALSE;
 		hr = F_DwmIsCompositionEnabled(&dwmenable);
 		if(SUCCEEDED(hr) && dwmenable){
-			// DWMÁí∞Â¢É
+			// DWMä¬ã´
 			hr = F_DwmGetWindowAttribute(hwnd, DWMWA_EXTENDED_FRAME_BOUNDS, lpRect, sizeof(RECT));
 			if(SUCCEEDED(hr)){
 				return 1;
@@ -93,11 +125,11 @@ BOOL winloc_GetWindowRect(HWND hwnd, LPRECT lpRect) {
 				return GetWindowRect(hwnd, lpRect);
 			}
 		}else{
-			// „Ç≥„É≥„Éù„Ç∏„Ç∑„Éß„É≥OFF
+			// ÉRÉìÉ|ÉWÉVÉáÉìOFF
 			return GetWindowRect(hwnd, lpRect);
 		}
 	}else{
-		// DWMÁí∞Â¢É„Åß„Å™„ÅÑ
+		// DWMä¬ã´Ç≈Ç»Ç¢
 		return GetWindowRect(hwnd, lpRect);
 	}
 }
@@ -120,12 +152,11 @@ void winloc_setclientsize(HWND hwnd, int width, int height) {
 	RECT	rectClient;
 	int		x, y, w, h;
 
-	SystemParametersInfo(SPI_GETWORKAREA, 0, &rectDisktop, 0);
-	scx = GetSystemMetrics(SM_CXSCREEN);
-	scy = GetSystemMetrics(SM_CYSCREEN);
-	// „Éû„É´„ÉÅ„É¢„Éã„ÇøÊö´ÂÆöÂØæÂøú ver0.86 rev30
-	rectDisktop.right = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-	rectDisktop.bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+	// É}ÉãÉ`ÉÇÉjÉ^ëŒâû
+	rectDisktop.left = GetSystemMetrics(SM_XVIRTUALSCREEN);
+	rectDisktop.top = GetSystemMetrics(SM_YVIRTUALSCREEN);
+	rectDisktop.right = GetSystemMetrics(SM_CXVIRTUALSCREEN) + rectDisktop.left;
+	rectDisktop.bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN) + rectDisktop.top;
 
 	cnt = 2;
 	do {
@@ -138,8 +169,18 @@ void winloc_setclientsize(HWND hwnd, int width, int height) {
 
 		x = rectWindow.left;
 		y = rectWindow.top;
+
+		// É}ÉãÉ`ÉÇÉjÉ^ëŒâû
+		POINT pt = { x, y };
+		HMONITOR hMon = MonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST);
+		MONITORINFOEX monInfoEx;
+		monInfoEx.cbSize = sizeof(monInfoEx);
+		GetMonitorInfo(hMon, &monInfoEx);
+		scx = monInfoEx.rcMonitor.right - monInfoEx.rcMonitor.left;
+		scy = monInfoEx.rcMonitor.bottom - monInfoEx.rcMonitor.top;
+		
 		if (scx < w) {
-			x = (scx - w) / 2;
+			x = (scx - w) / 2 + monInfoEx.rcWork.left;
 		}
 		else {
 			if ((x + w) > rectDisktop.right) {
@@ -150,7 +191,7 @@ void winloc_setclientsize(HWND hwnd, int width, int height) {
 			}
 		}
 		if (scy < h) {
-			y = (scy - h) / 2;
+			y = (scy - h) / 2 + monInfoEx.rcWork.top;
 		}
 		else {
 			if ((y + h) > rectDisktop.bottom) {
@@ -161,7 +202,7 @@ void winloc_setclientsize(HWND hwnd, int width, int height) {
 			}
 		}
 		if(!noDWM){
-			// DWMË£úÊ≠£
+			// DWMï‚ê≥
 			RECT	rectmp1;
 			RECT	rectmp2;
 			GetWindowRect(hwnd, &rectmp1);
@@ -194,7 +235,7 @@ void winloc_movingproc(WINLOC *wl, RECT *rect) {
 	RECT	rectmp1;
 	RECT	rectmp2;
 	if(!noDWM){
-		// DWMË£úÊ≠£
+		// DWMï‚ê≥
 		GetWindowRect(GetActiveWindow(), &rectmp1);
 		winloc_GetWindowRect(GetActiveWindow(), &rectmp2);
 		rect->left   += rectmp2.left   - rectmp1.left;
@@ -203,17 +244,18 @@ void winloc_movingproc(WINLOC *wl, RECT *rect) {
 		rect->bottom += rectmp2.bottom - rectmp1.bottom;
 	}
 
-	SystemParametersInfo(SPI_GETWORKAREA, 0, &workrc, 0);
 	winlx = rect->right - rect->left;
 	winly = rect->bottom - rect->top;
-	// „Éû„É´„ÉÅ„É¢„Éã„ÇøÊö´ÂÆöÂØæÂøú ver0.86 rev30
-	workrc.right = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-	workrc.bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+	// É}ÉãÉ`ÉÇÉjÉ^ëŒâû
+	workrc.left = GetSystemMetrics(SM_XVIRTUALSCREEN);
+	workrc.top = GetSystemMetrics(SM_YVIRTUALSCREEN);
+	workrc.right = GetSystemMetrics(SM_CXVIRTUALSCREEN) + workrc.left;
+	workrc.bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN) + workrc.top;
 
 	if ((winlx > (workrc.right - workrc.left)) ||
 		(winly > (workrc.bottom - workrc.top))) {
 		if(!noDWM){
-			// DWMË£úÊ≠£
+			// DWMï‚ê≥
 			rect->left   -= rectmp2.left   - rectmp1.left;
 			rect->top    -= rectmp2.top    - rectmp1.top;
 			rect->right  -= rectmp2.right  - rectmp1.right;
@@ -282,7 +324,7 @@ void winloc_movingproc(WINLOC *wl, RECT *rect) {
 		}
 	}
 	if(!noDWM){
-		// DWMË£úÊ≠£
+		// DWMï‚ê≥
 		rect->left   -= rectmp2.left   - rectmp1.left;
 		rect->top    -= rectmp2.top    - rectmp1.top;
 		rect->right  -= rectmp2.right  - rectmp1.right;
@@ -386,7 +428,7 @@ WINLOCEX winlocex_create(HWND base, const HWND *child, UINT count) {
 	wnd = (WLEXWND *)(ret + 1);
 
 	if (base) {
-		// Ë¶™„Å®Êé•Á∂ö„Åï„Çå„Å¶„ÇãÔºü
+		// êeÇ∆ê⁄ë±Ç≥ÇÍÇƒÇÈÅH
 		ret->base = base;
 		winloc_GetWindowRect(base, &ret->rect);
 		for (i=0; i<inlist; i++) {
@@ -405,7 +447,7 @@ WINLOCEX winlocex_create(HWND base, const HWND *child, UINT count) {
 				}
 			}
 		}
-		// Â≠ê„Å®Êé•Á∂ö„Åï„Çå„Å¶„ÇãÔºü
+		// éqÇ∆ê⁄ë±Ç≥ÇÍÇƒÇÈÅH
 		p = (WLEXWND *)(ret + 1);
 		for (i=0; i<ret->count; i++, p++) {
 			for (j=0; j<inlist; j++) {
@@ -462,10 +504,11 @@ void winlocex_setholdwnd(WINLOCEX wle, HWND hold) {
 	if ((wle == NULL) || (hold == NULL)) {
 		return;
 	}
-	SystemParametersInfo(SPI_GETWORKAREA, 0, &workrc, 0);
-	// „Éû„É´„ÉÅ„É¢„Éã„ÇøÊö´ÂÆöÂØæÂøú ver0.86 rev30
-	workrc.right = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-	workrc.bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+	// É}ÉãÉ`ÉÇÉjÉ^ëŒâû
+	workrc.left = GetSystemMetrics(SM_XVIRTUALSCREEN);
+	workrc.top = GetSystemMetrics(SM_YVIRTUALSCREEN);
+	workrc.right = GetSystemMetrics(SM_CXVIRTUALSCREEN) + workrc.left;
+	workrc.bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN) + workrc.top;
 
 	winloc_GetWindowRect(hold, &rect);
 	flag = 0;
@@ -530,10 +573,11 @@ static BOOL gravityx(WINLOCEX wle, RECT *rect) {
 		return(TRUE);
 	}
 
-	SystemParametersInfo(SPI_GETWORKAREA, 0, &workrc, 0);
-	// „Éû„É´„ÉÅ„É¢„Éã„ÇøÊö´ÂÆöÂØæÂøú ver0.86 rev30
-	workrc.right = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-	workrc.bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+	// É}ÉãÉ`ÉÇÉjÉ^ëŒâû
+	workrc.left = GetSystemMetrics(SM_XVIRTUALSCREEN);
+	workrc.top = GetSystemMetrics(SM_YVIRTUALSCREEN);
+	workrc.right = GetSystemMetrics(SM_CXVIRTUALSCREEN) + workrc.left;
+	workrc.bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN) + workrc.top;
 
 	wnd = (WLEXWND *)(wle + 1);
 	for (i=0; i<wle->count; i++, wnd++) {
@@ -618,10 +662,11 @@ static BOOL gravityy(WINLOCEX wle, RECT *rect) {
 		return(TRUE);
 	}
 
-	SystemParametersInfo(SPI_GETWORKAREA, 0, &workrc, 0);
-	// „Éû„É´„ÉÅ„É¢„Éã„ÇøÊö´ÂÆöÂØæÂøú ver0.86 rev30
-	workrc.right = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-	workrc.bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+	// É}ÉãÉ`ÉÇÉjÉ^ëŒâû
+	workrc.left = GetSystemMetrics(SM_XVIRTUALSCREEN);
+	workrc.top = GetSystemMetrics(SM_YVIRTUALSCREEN);
+	workrc.right = GetSystemMetrics(SM_CXVIRTUALSCREEN) + workrc.left;
+	workrc.bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN) + workrc.top;
 
 	wnd = (WLEXWND *)(wle + 1);
 	for (i=0; i<wle->count; i++, wnd++) {
@@ -676,7 +721,7 @@ void winlocex_moving(WINLOCEX wle, RECT *rect) {
 	}
 	
 	if(!noDWM){
-		// DWMË£úÊ≠£
+		// DWMï‚ê≥
 		GetWindowRect(GetActiveWindow(), &rectmp1);
 		winloc_GetWindowRect(GetActiveWindow(), &rectmp2);
 		rect->left   += rectmp2.left   - rectmp1.left;
@@ -685,7 +730,7 @@ void winlocex_moving(WINLOCEX wle, RECT *rect) {
 		rect->bottom += rectmp2.bottom - rectmp1.bottom;
 	}
 
-	// „Å≤„Å£„Å§„ÅÑ„Å¶„ÅüÊôÇ
+	// Ç–Ç¡Ç¬Ç¢ÇƒÇΩéû
 	if (wle->flagx) {
 		d = rect->left - wle->tx;
 		wle->gx += d;
@@ -711,7 +756,7 @@ void winlocex_moving(WINLOCEX wle, RECT *rect) {
 		}
 	}
 
-	// „É™„É™„Éº„ÇπÂá¶ÁêÜ
+	// ÉäÉäÅ[ÉXèàóù
 	num = wle->flagx - 1;
 	if (num < wle->count) {
 		rc = &(((WLEXWND *)(wle + 1))[num].rect);
@@ -735,7 +780,7 @@ void winlocex_moving(WINLOCEX wle, RECT *rect) {
 		}
 	}
 
-	// ÈáçÂäõ
+	// èdóÕ
 	do {
 		changes = FALSE;
 		if (!wle->flagx) {
@@ -747,7 +792,7 @@ void winlocex_moving(WINLOCEX wle, RECT *rect) {
 	} while(changes);
 	
 	if(!noDWM){
-		// DWMË£úÊ≠£
+		// DWMï‚ê≥
 		rect->left   -= rectmp2.left   - rectmp1.left;
 		rect->top    -= rectmp2.top    - rectmp1.top;
 		rect->right  -= rectmp2.right  - rectmp1.right;
@@ -780,10 +825,11 @@ void winlocex_move(WINLOCEX wle) {
 		}
 	}
 	if ((i >= wle->count) && (wle->holdflag)) {
-		SystemParametersInfo(SPI_GETWORKAREA, 0, &workrc, 0);
-		// „Éû„É´„ÉÅ„É¢„Éã„ÇøÊö´ÂÆöÂØæÂøú ver0.86 rev30
-		workrc.right = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-		workrc.bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+		// É}ÉãÉ`ÉÇÉjÉ^ëŒâû
+		workrc.left = GetSystemMetrics(SM_XVIRTUALSCREEN);
+		workrc.top = GetSystemMetrics(SM_YVIRTUALSCREEN);
+		workrc.right = GetSystemMetrics(SM_CXVIRTUALSCREEN) + workrc.left;
+		workrc.bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN) + workrc.top;
 
 		winloc_GetWindowRect(wle->hold, &rect);
 		cx = rect.right - rect.left;
@@ -807,7 +853,7 @@ void winlocex_move(WINLOCEX wle) {
 				break;
 		}
 		if(!noDWM){
-			// DWMË£úÊ≠£
+			// DWMï‚ê≥
 			RECT	rectmp1;
 			RECT	rectmp2;
 			GetWindowRect(wle->hold, &rectmp1);
@@ -875,7 +921,7 @@ void winlocex_move(WINLOCEX wle) {
 					break;
 			}
 			if(!noDWM){
-				// DWMË£úÊ≠£
+				// DWMï‚ê≥
 				RECT	rectmp1;
 				RECT	rectmp2;
 				GetWindowRect(wnd->hwnd, &rectmp1);

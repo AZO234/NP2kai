@@ -129,7 +129,7 @@ struct ASIOCallbacks
 };
 
 /**
- * @brief ASIO 繧､繝ｳ繧ｿ繝輔ぉ繧､繧ｹ
+ * @brief ASIO インタフェイス
  */
 interface IASIO : public IUnknown
 {

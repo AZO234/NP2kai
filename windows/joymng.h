@@ -5,6 +5,8 @@ extern "C" {
 
 REG8 joymng_getstat(void);
 REG8 joymng_available(void);
+UINT32 joymng_getAnalogX(void);
+UINT32 joymng_getAnalogY(void);
 
 #ifdef __cplusplus
 }

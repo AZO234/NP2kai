@@ -1,5 +1,5 @@
-#include	<compiler.h>
-#include	<taskmng.h>
+#include	"compiler.h"
+#include	"taskmng.h"
 #if defined(SUPPORT_MULTITHREAD)
 #include	"np2.h"
 #endif

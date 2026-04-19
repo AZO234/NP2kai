@@ -36,7 +36,7 @@ void hostdrv_setcurrentpath(const TCHAR* newpath);
 
 static TCHAR s_hostdrvdir[10][MAX_PATH] = {0};
 
-int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
+static int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
 {
     if(uMsg==BFFM_INITIALIZED){
         SendMessage(hwnd, BFFM_SETSELECTION, (WPARAM)TRUE, lpData);
@@ -222,7 +222,7 @@ BOOL CHostdrvDlg::OnCommand(WPARAM wParam, LPARAM lParam)
     
 				m_cmbdir.GetWindowText(hdrvroottmp, NELEMENTS(hdrvroottmp));
 
-				binfo.hwndOwner = g_hWndMain;
+				binfo.hwndOwner = m_hWnd;
 				binfo.pidlRoot = NULL;
 				binfo.pszDisplayName = name;
 				binfo.lpszTitle = OEMTEXT("");

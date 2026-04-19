@@ -15,7 +15,7 @@
 class CComPipe : public CComBase
 {
 public:
-	static CComPipe* CreateInstance(LPCSTR pipename, LPCSTR servername);
+	static CComPipe* CreateInstance(LPCTSTR pipename, LPCTSTR servername);
 
 protected:
 	CComPipe();
@@ -36,7 +36,7 @@ private:
 	UINT8 m_lastdatafail; // データを送るのに失敗していたら0以外
 	DWORD m_lastdatatime; // データを送るのに失敗した時間（あまりにも失敗し続けるようなら無視する）
 
-	bool Initialize(LPCSTR pipename, LPCSTR servername);
+	bool Initialize(LPCTSTR pipename, LPCTSTR servername);
 };
 
 #endif

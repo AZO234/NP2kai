@@ -3,12 +3,12 @@
  * @brief	Implementation of OPL3
  */
 
-#include <compiler.h>
-#include <sound/opl3.h>
-#include <pccore.h>
-#include <io/iocore.h>
-#include <sound/fmboard.h>
-#include <generic/keydisp.h>
+#include "compiler.h"
+#include "sound/opl3.h"
+#include "pccore.h"
+#include "iocore.h"
+#include "sound/fmboard.h"
+#include "generic/keydisp.h"
 #include "externalchipmanager.h"
 #include "externalopl3.h"
 

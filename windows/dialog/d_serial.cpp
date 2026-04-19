@@ -3,7 +3,7 @@
  * @brief	Serial configure dialog procedure
  */
 
-#include <compiler.h>
+#include "compiler.h"
 #include "resource.h"
 #include "dialog.h"
 #include "c_combodata.h"
@@ -11,15 +11,18 @@
 #include "c_midi.h"
 #include "np2class.h"
 #include "commng\cmserial.h"
-#include <dosio.h>
-#include <np2.h>
-#include <sysmng.h>
+#include "dosio.h"
+#include "np2.h"
+#include "sysmng.h"
 #include "misc\PropProc.h"
-#include <pccore.h>
-#include <io/iocore.h>
+#include "pccore.h"
+#include "iocore.h"
 #include "cbus\pc9861k.h"
 #include "common\strres.h"
 #include "generic\dipswbmp.h"
+#include "commng\cmspooler.h"
+
+#include <shlobj.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -28,6 +31,7 @@ extern "C"
 extern COMMNG cm_rs232c;
 extern COMMNG cm_pc9861ch1;
 extern COMMNG cm_pc9861ch2;
+extern COMMNG cm_prt;
 #ifdef __cplusplus
 }
 #endif
@@ -38,7 +42,7 @@ extern COMMNG cm_pc9861ch2;
 class SerialOptComPage : public CPropPageProc
 {
 public:
-	SerialOptComPage(UINT nCaption, COMMNG cm, COMCFG& cfg);
+	SerialOptComPage(UINT nCaption, COMMNG cm, COMCFG& cfg, bool isSerial = true, bool isParallel = false);
 	virtual ~SerialOptComPage();
 
 protected:
@@ -47,27 +51,40 @@ protected:
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 
 private:
-	COMMNG m_cm;				//!< パラメタ
-	COMCFG& m_cfg;				//!< コンフィグ
-	UINT8 m_pentabfa;			//!< ペンタブアスペクト比固定
-	CWndProc m_chkpentabfa;		//!< Pen tablet fixed aspect mode
-	CWndProc m_chkfixedspeed;	//!< Fixed speed mode
-	CWndProc m_chkDSRcheck;		//!< Hardware DSR check mode
-	CComboData m_port;			//!< Port
-	CComboData m_speed;			//!< Speed
-	CComboData m_chars;			//!< Chars
-	CComboData m_parity;		//!< Parity
-	CComboData m_sbit;			//!< Stop bits
-	CComboMidiDevice m_midiout;	//!< MIDI OUT
-	CComboMidiModule m_module;	//!< MIDI Module
-	CEditMimpiFile m_mimpifile;	//!< MIMPI
-	CWndProc m_pipename;		//!< Pipe name
-	CWndProc m_pipeserv;		//!< Pipe server
+	const CComboData::Entry* m_portlist;	//!< 使用可能なポート設定リスト
+	int m_portlistlen;				//!< 使用可能なポート設定リストのサイズ
+	COMMNG m_cm;					//!< パラメタ
+	COMCFG& m_cfg;					//!< コンフィグ
+	UINT8 m_pentabfa;				//!< ペンタブアスペクト比固定
+	CWndProc m_chkpentabfa;			//!< Pen tablet fixed aspect mode
+	CWndProc m_chkfixedspeed;		//!< Fixed speed mode
+	CWndProc m_chkDSRcheck;			//!< Hardware DSR check mode
+	CComboData m_port;				//!< Port
+	CComboData m_speed;				//!< Speed
+	CComboData m_chars;				//!< Chars
+	CComboData m_parity;			//!< Parity
+	CComboData m_sbit;				//!< Stop bits
+	CComboMidiDevice m_midiout;		//!< MIDI OUT
+	CComboMidiModule m_module;		//!< MIDI Module
+	CEditMimpiFile m_mimpifile;		//!< MIMPI
+	CWndProc m_pipename;			//!< Pipe name
+	CWndProc m_pipeserv;			//!< Pipe server
+	CWndProc m_txtdirpath;			//!< Directory path
+	CWndProc m_nudfiletimeout;		//!< File dump timeout
+	CComboData m_cmbspname;			//!< Printer name
+	CWndProc m_nudsptimeout;		//!< Spooler timeout
+	CWndProc m_chkspcfg;			//!< Spooler show config
+	CComboData m_cmbspemumode;		//!< Spooler emulation mode
+	CWndProc m_nudspemu_dotsize;	//!< Spooler emulation dot size
+	CWndProc m_chkspemu_rectdot;	//!< Spooler emulation rectangle dot mode
+	CWndProc m_nudspemu_offsetx;	//!< Spooler emulation position offset X
+	CWndProc m_nudspemu_offsety;	//!< Spooler emulation position offset y
+	CWndProc m_nudspemu_scale;		//!< Spooler emulation scale
 	void UpdateControls();
 };
 
 //! ポート
-static const CComboData::Entry s_port[] =
+static const CComboData::Entry s_portALL[] =
 {
 	{MAKEINTRESOURCE(IDS_NONCONNECT),	COMPORT_NONE},
 	{MAKEINTRESOURCE(IDS_COM1),			COMPORT_COM1},
@@ -81,6 +98,41 @@ static const CComboData::Entry s_port[] =
 #if defined(SUPPORT_NAMED_PIPE)
 	{MAKEINTRESOURCE(IDS_PIPE),			COMPORT_PIPE},
 #endif
+	{MAKEINTRESOURCE(IDS_CFILE),		COMPORT_FILE},
+	{MAKEINTRESOURCE(IDS_LPT1),			COMPORT_LPT1},
+	{MAKEINTRESOURCE(IDS_LPT2),			COMPORT_LPT2},
+	{MAKEINTRESOURCE(IDS_LPT3),			COMPORT_LPT3},
+	{MAKEINTRESOURCE(IDS_LPT4),			COMPORT_LPT4},
+	{MAKEINTRESOURCE(IDS_SPOOLER),		COMPORT_SPOOLER},
+};
+static const CComboData::Entry s_portCOM[] =
+{
+	{MAKEINTRESOURCE(IDS_NONCONNECT),	COMPORT_NONE},
+	{MAKEINTRESOURCE(IDS_COM1),			COMPORT_COM1},
+	{MAKEINTRESOURCE(IDS_COM2),			COMPORT_COM2},
+	{MAKEINTRESOURCE(IDS_COM3),			COMPORT_COM3},
+	{MAKEINTRESOURCE(IDS_COM4),			COMPORT_COM4},
+	{MAKEINTRESOURCE(IDS_MIDI),			COMPORT_MIDI},
+#if defined(SUPPORT_WACOM_TABLET)
+	{MAKEINTRESOURCE(IDS_TABLET),		COMPORT_TABLET},
+#endif
+#if defined(SUPPORT_NAMED_PIPE)
+	{MAKEINTRESOURCE(IDS_PIPE),			COMPORT_PIPE},
+#endif
+	{MAKEINTRESOURCE(IDS_CFILE),		COMPORT_FILE},
+};
+static const CComboData::Entry s_portLPT[] =
+{
+	{MAKEINTRESOURCE(IDS_NONCONNECT),	COMPORT_NONE},
+	{MAKEINTRESOURCE(IDS_LPT1),			COMPORT_LPT1},
+	{MAKEINTRESOURCE(IDS_LPT2),			COMPORT_LPT2},
+	{MAKEINTRESOURCE(IDS_LPT3),			COMPORT_LPT3},
+	{MAKEINTRESOURCE(IDS_LPT4),			COMPORT_LPT4},
+#if defined(SUPPORT_NAMED_PIPE)
+	{MAKEINTRESOURCE(IDS_PIPE),			COMPORT_PIPE},
+#endif
+	{MAKEINTRESOURCE(IDS_CFILE),		COMPORT_FILE},
+	{MAKEINTRESOURCE(IDS_SPOOLER),		COMPORT_SPOOLER},
 };
 
 //! キャラクタ サイズ
@@ -109,16 +161,50 @@ static const CComboData::Entry s_sbit[] =
 };
 
 /**
+ * エミュレーションモードリスト
+ */
+static const CComboData::Entry s_emumode[] =
+{
+	{MAKEINTRESOURCE(IDC_COM1SPOOLEREMUMODE_RAW),		PRINT_EMU_MODE_RAW},
+#ifdef SUPPORT_PRINT_PR201
+	{MAKEINTRESOURCE(IDC_COM1SPOOLEREMUMODE_PR201),		PRINT_EMU_MODE_PR201},
+#endif
+#ifdef SUPPORT_PRINT_ESCP
+	{MAKEINTRESOURCE(IDC_COM1SPOOLEREMUMODE_ESCP),		PRINT_EMU_MODE_ESCP},
+#endif
+};
+
+static int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
+{
+	if (uMsg == BFFM_INITIALIZED) {
+		SendMessage(hwnd, BFFM_SETSELECTION, (WPARAM)TRUE, lpData);
+	}
+	return 0;
+}
+
+/**
  * コンストラクタ
  * @param[in] nCaption キャプション ID
  * @param[in] cm パラメータ
  * @param[in] cfg コンフィグ
  */
-SerialOptComPage::SerialOptComPage(UINT nCaption, COMMNG cm, COMCFG& cfg)
+SerialOptComPage::SerialOptComPage(UINT nCaption, COMMNG cm, COMCFG& cfg, bool isSerial, bool isParallel)
 	: CPropPageProc(IDD_SERIAL1, nCaption)
 	, m_cm(cm)
 	, m_cfg(cfg)
 {
+	if (isSerial && isParallel) {
+		m_portlist = s_portALL;
+		m_portlistlen = _countof(s_portALL);
+	}
+	else if (isParallel) {
+		m_portlist = s_portLPT;
+		m_portlistlen = _countof(s_portLPT);
+	}
+	else {
+		m_portlist = s_portCOM;
+		m_portlistlen = _countof(s_portCOM);
+	}
 }
 
 /**
@@ -135,8 +221,10 @@ SerialOptComPage::~SerialOptComPage()
  */
 BOOL SerialOptComPage::OnInitDialog()
 {
+	TCHAR numbuf[64];
+
 	m_port.SubclassDlgItem(IDC_COM1PORT, this);
-	m_port.Add(s_port, _countof(s_port));
+	m_port.Add(m_portlist, m_portlistlen);
 	m_port.SetCurItemData(m_cfg.port);
 
 	m_speed.SubclassDlgItem(IDC_COM1SPEED, this);
@@ -206,6 +294,72 @@ BOOL SerialOptComPage::OnInitDialog()
 		SetDlgItemText(IDC_COM1STR32, pipecmd);
 	}
 #endif
+
+	m_txtdirpath.SubclassDlgItem(IDC_COM1FILEPATH, this);
+	m_txtdirpath.SetWindowText(m_cfg.dirpath); 
+	m_nudfiletimeout.SubclassDlgItem(IDC_COM1FILETIMEOUT, this);
+	_stprintf(numbuf, _T("%d"), m_cfg.fileTimeout);
+	m_nudfiletimeout.SetWindowTextW(numbuf);
+
+	m_cmbspname.SubclassDlgItem(IDC_COM1SPOOLERNAME, this);
+	m_cmbspname.SetWindowText(m_cfg.spoolPrinterName);
+	m_nudsptimeout.SubclassDlgItem(IDC_COM1SPOOLERTIMEOUT, this);
+	_stprintf(numbuf, _T("%d"), m_cfg.spoolTimeout);
+	m_chkspcfg.SubclassDlgItem(IDC_COM1SPOOLERCFG, this);
+	CheckDlgButton(IDC_COM1SPOOLERCFG, (np2oscfg.prncfgpp) ? BST_CHECKED : BST_UNCHECKED);
+	m_nudsptimeout.SetWindowTextW(numbuf);
+	m_cmbspemumode.SetWindowText(m_cfg.spoolPrinterName);
+	m_cmbspemumode.SubclassDlgItem(IDC_COM1SPOOLEREMUMODE, this);
+	m_cmbspemumode.Add(s_emumode, _countof(s_emumode));
+	m_cmbspemumode.SetCurItemData(m_cfg.spoolEmulation);
+	m_nudspemu_dotsize.SubclassDlgItem(IDC_COM1SPOOLEREMU_DOTSIZE, this);
+	_stprintf(numbuf, _T("%d"), m_cfg.spoolDotSize);
+	m_nudspemu_dotsize.SetWindowTextW(numbuf);
+	m_chkspemu_rectdot.SubclassDlgItem(IDC_COM1SPOOLEREMU_RECTDOT, this);
+	CheckDlgButton(IDC_COM1SPOOLEREMU_RECTDOT, (m_cfg.spoolRectDot) ? BST_CHECKED : BST_UNCHECKED);
+	m_nudspemu_offsetx.SubclassDlgItem(IDC_COM1SPOOLEREMU_OFFSETX, this);
+	_stprintf(numbuf, _T("%d"), m_cfg.spoolOffsetXmm);
+	m_nudspemu_offsetx.SetWindowTextW(numbuf);
+	m_nudspemu_offsety.SubclassDlgItem(IDC_COM1SPOOLEREMU_OFFSETY, this);
+	_stprintf(numbuf, _T("%d"), m_cfg.spoolOffsetYmm);
+	m_nudspemu_offsety.SetWindowTextW(numbuf);
+	m_nudspemu_scale.SubclassDlgItem(IDC_COM1SPOOLEREMU_SCALE, this);
+	_stprintf(numbuf, _T("%d"), m_cfg.spoolScale);
+	m_nudspemu_scale.SetWindowTextW(numbuf);
+	if(m_cmbspname)
+	{
+		int indexsel = -1;
+		int index = 0;
+		DWORD needed = 0, returned = 0;
+
+		m_cmbspname.Add(_T(""), index);
+		index++;
+
+		// まず必要サイズを取得
+		EnumPrinters(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, nullptr, 2, nullptr, 0, &needed, &returned);
+
+		if (needed > 0) {
+			BYTE* buffer = (BYTE*)malloc(needed);
+			if (buffer) {
+				if (EnumPrinters(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, nullptr, 2, buffer, needed, &needed, &returned)) {
+					PRINTER_INFO_2* pi2 = (PRINTER_INFO_2*)buffer;
+					for (DWORD i = 0; i < returned; i++) {
+						m_cmbspname.Add(pi2[i].pPrinterName, index);
+						if (_tcscmp(pi2[i].pPrinterName, m_cfg.spoolPrinterName) == 0) {
+							m_cmbspname.SetCurSel(index);
+							indexsel = index;
+						}
+						index++;
+					}
+					if (indexsel == -1) {
+						// 存在しないプリンタ名
+						m_cmbspname.SetWindowText(m_cfg.spoolPrinterName);
+					}
+				}
+				free(buffer);
+			}
+		}
+	}
 
 	UpdateControls();
 
@@ -322,6 +476,83 @@ void SerialOptComPage::OnOK()
 	}
 #endif
 
+	TCHAR dirpath[MAX_PATH];
+	GetDlgItemText(IDC_COM1FILEPATH, dirpath, _countof(dirpath));
+	if (milstr_cmp(m_cfg.dirpath, dirpath))
+	{
+		milstr_ncpy(m_cfg.dirpath, dirpath, _countof(m_cfg.dirpath));
+		nUpdated |= SYS_UPDATEOSCFG;
+	}
+	const UINT fileTimeout = GetDlgItemInt(IDC_COM1FILETIMEOUT, NULL, FALSE);
+	if (m_cfg.fileTimeout != fileTimeout)
+	{
+		m_cfg.fileTimeout = fileTimeout;
+		nUpdated |= SYS_UPDATEOSCFG;
+	}
+	const UINT8 spoolShowConfig = (IsDlgButtonChecked(IDC_COM1SPOOLERCFG) != BST_UNCHECKED) ? 1 : 0;
+	if (np2oscfg.prncfgpp != spoolShowConfig)
+	{
+		np2oscfg.prncfgpp = spoolShowConfig;
+		nUpdated |= SYS_UPDATEOSCFG;
+	}
+
+	TCHAR printername[MAX_PATH];
+	GetDlgItemText(IDC_COM1SPOOLERNAME, printername, _countof(printername));
+	if (milstr_cmp(m_cfg.spoolPrinterName, printername))
+	{
+		milstr_ncpy(m_cfg.spoolPrinterName, printername, _countof(m_cfg.spoolPrinterName));
+		nUpdated |= SYS_UPDATEOSCFG;
+	}
+	const UINT spoolTimeout = GetDlgItemInt(IDC_COM1SPOOLERTIMEOUT, NULL, FALSE);
+	if (m_cfg.spoolTimeout != spoolTimeout)
+	{
+		m_cfg.spoolTimeout = spoolTimeout;
+		nUpdated |= SYS_UPDATEOSCFG;
+	}
+	const UINT32 spoolEmulation = m_cmbspemumode.GetCurItemData(PRINT_EMU_MODE_RAW);
+	if (m_cfg.spoolEmulation != spoolEmulation)
+	{
+		m_cfg.spoolEmulation = spoolEmulation;
+		nUpdated |= SYS_UPDATEOSCFG;
+	}
+	UINT spoolDotSize = GetDlgItemInt(IDC_COM1SPOOLEREMU_DOTSIZE, NULL, FALSE);
+	if (m_cfg.spoolDotSize != spoolDotSize)
+	{
+		if (spoolDotSize < 50) spoolDotSize = 50;
+		if (spoolDotSize > 200) spoolDotSize = 200;
+		m_cfg.spoolDotSize = spoolDotSize;
+		nUpdated |= SYS_UPDATEOSCFG;
+	}
+	const UINT8 spoolRectDot = (IsDlgButtonChecked(IDC_COM1SPOOLEREMU_RECTDOT) != BST_UNCHECKED) ? 1 : 0;
+	if (m_cfg.spoolRectDot != spoolRectDot)
+	{
+		m_cfg.spoolRectDot = spoolRectDot;
+		nUpdated |= SYS_UPDATEOSCFG;
+	}
+	UINT spoolOffsetX = GetDlgItemInt(IDC_COM1SPOOLEREMU_OFFSETX, NULL, TRUE);
+	if (m_cfg.spoolOffsetXmm != spoolOffsetX)
+	{
+		m_cfg.spoolOffsetXmm = spoolOffsetX;
+		nUpdated |= SYS_UPDATEOSCFG;
+	}
+	UINT spoolOffsetY = GetDlgItemInt(IDC_COM1SPOOLEREMU_OFFSETY, NULL, TRUE);
+	if (m_cfg.spoolOffsetYmm != spoolOffsetY)
+	{
+		m_cfg.spoolOffsetYmm = spoolOffsetY;
+		nUpdated |= SYS_UPDATEOSCFG;
+	}
+	UINT spoolScale = GetDlgItemInt(IDC_COM1SPOOLEREMU_SCALE, NULL, FALSE);
+	if (m_cfg.spoolScale != spoolScale)
+	{
+		if (spoolDotSize < 1) spoolDotSize = 1;
+		if (spoolDotSize > 200) spoolDotSize = 200;
+		m_cfg.spoolScale = spoolScale;
+		nUpdated |= SYS_UPDATEOSCFG;
+	}
+	if (nUpdated && cm_prt) {
+		cm_prt->msg(cm_prt, COMMSG_REOPEN, (INTPTR)(&np2oscfg.lpt1));
+	}
+
 	sysmng_update(nUpdated);
 }
 
@@ -361,6 +592,52 @@ BOOL SerialOptComPage::OnCommand(WPARAM wParam, LPARAM lParam)
 			return TRUE;
 		}
 #endif
+
+		case IDC_COM1FILEBROWSE:
+		{
+			OEMCHAR tmp[MAX_PATH];
+			OEMCHAR name[MAX_PATH], dir[MAX_PATH];
+			BROWSEINFO  binfo;
+			LPITEMIDLIST idlist;
+			TCHAR curdirpath[MAX_PATH];
+
+			m_txtdirpath.GetWindowText(tmp, NELEMENTS(tmp));
+			_tcscpy(curdirpath, tmp);
+
+			binfo.hwndOwner = m_hWnd;
+			binfo.pidlRoot = NULL;
+			binfo.pszDisplayName = name;
+			binfo.lpszTitle = OEMTEXT("");
+			binfo.ulFlags = BIF_RETURNONLYFSDIRS;
+			binfo.lpfn = BrowseCallbackProc;
+			binfo.lParam = (LPARAM)(tmp);
+			binfo.iImage = 0;
+
+			if ((idlist = SHBrowseForFolder(&binfo)) != NULL) {
+				SHGetPathFromIDList(idlist, dir);
+				_tcscpy(tmp, dir);
+				int tmppathlen = (int)_tcslen(tmp);
+				if (tmp[tmppathlen - 1] == '\\') {
+					tmp[tmppathlen - 1] = '\0';
+				}
+				if (_tcscmp(tmp, curdirpath) != 0) {
+					m_txtdirpath.SetWindowText(tmp);
+				}
+				CoTaskMemFree(idlist);
+			}
+			return TRUE;
+		}
+
+		case IDC_COM1SPOOLEREMUMODE:
+		{
+			BOOL spemumode = m_cmbspemumode.GetCurItemData(PRINT_EMU_MODE_RAW) != PRINT_EMU_MODE_RAW;
+			m_nudspemu_dotsize.EnableWindow(spemumode);
+			m_chkspemu_rectdot.EnableWindow(spemumode);
+			m_nudspemu_offsetx.EnableWindow(spemumode);
+			m_nudspemu_offsety.EnableWindow(spemumode);
+			m_nudspemu_scale.EnableWindow(spemumode);
+			return TRUE;
+		}
 	}
 	return FALSE;
 }
@@ -383,6 +660,9 @@ void SerialOptComPage::UpdateControls()
 #else
 	const bool bPipeShow = false;
 #endif
+	const bool bParallelShow = ((nPort >= COMPORT_LPT1) && (nPort <= COMPORT_LPT4));
+	const bool bFileShow = (nPort == COMPORT_FILE);
+	const bool bSpoolerShow = (nPort == COMPORT_SPOOLER);
 
 	// Physical serial port
 	static const UINT serial[] =
@@ -434,6 +714,45 @@ void SerialOptComPage::UpdateControls()
 		wnd.EnableWindow(bPipeShow ? TRUE : FALSE);
 		wnd.ShowWindow(bPipeShow ? SW_SHOW : SW_HIDE);
 	}
+
+	// Physical parallel port
+    // nothing to do.
+
+	// File dump
+	static const UINT filedump[] =
+	{
+		IDC_COM1FILEPATH, IDC_COM1FILEBROWSE, IDC_COM1FILETIMEOUT,
+		IDC_COM1FILESTR00, IDC_COM1FILESTR01, IDC_COM1FILESTR02,
+	};
+	for (UINT i = 0; i < _countof(filedump); i++)
+	{
+		CWndBase wnd = GetDlgItem(filedump[i]);
+		wnd.EnableWindow(bFileShow ? TRUE : FALSE);
+		wnd.ShowWindow(bFileShow ? SW_SHOW : SW_HIDE);
+	}
+
+	// Spooler
+	static const UINT spooler[] =
+	{
+		IDC_COM1SPOOLERNAME, IDC_COM1SPOOLERTIMEOUT, IDC_COM1SPOOLERTIMEOUTSPIN, IDC_COM1SPOOLERCFG, IDC_COM1SPOOLEREMUMODE,
+		IDC_COM1SPOOLEREMU_DOTSIZE, IDC_COM1SPOOLEREMU_RECTDOT,
+		IDC_COM1SPOOLEREMU_OFFSETX, IDC_COM1SPOOLEREMU_OFFSETY, IDC_COM1SPOOLEREMU_SCALE,
+		IDC_COM1SPOOLERSTR00, IDC_COM1SPOOLERSTR01, IDC_COM1SPOOLERSTR02, IDC_COM1SPOOLERSTR03, IDC_COM1SPOOLERSTR04,
+		IDC_COM1SPOOLERSTR05, IDC_COM1SPOOLERSTR06, IDC_COM1SPOOLERSTR07,
+	};
+	for (UINT i = 0; i < _countof(spooler); i++)
+	{
+		CWndBase wnd = GetDlgItem(spooler[i]);
+		wnd.EnableWindow(bSpoolerShow ? TRUE : FALSE);
+		wnd.ShowWindow(bSpoolerShow ? SW_SHOW : SW_HIDE);
+	}
+
+	BOOL spemumode = m_cmbspemumode.GetCurItemData(PRINT_EMU_MODE_RAW) != PRINT_EMU_MODE_RAW;
+	m_nudspemu_dotsize.EnableWindow(spemumode);
+	m_chkspemu_rectdot.EnableWindow(spemumode);
+	m_nudspemu_offsetx.EnableWindow(spemumode);
+	m_nudspemu_offsety.EnableWindow(spemumode);
+	m_nudspemu_scale.EnableWindow(spemumode);
 }
 
 
@@ -831,19 +1150,24 @@ void SerialOpt61Page::OnDipSw()
  */
 void dialog_serial(HWND hwndParent)
 {
+	const bool allports = np2oscfg.allports;
+
 	CPropSheetProc prop(IDS_SERIALOPTION, hwndParent);
 
-	SerialOptComPage com1(IDS_SERIAL1, cm_rs232c, np2oscfg.com1);
+	SerialOptComPage com1(IDS_SERIAL1, cm_rs232c, np2oscfg.com1, true || allports, false || allports);
 	prop.AddPage(&com1);
 
 	SerialOpt61Page pc9861;
 	prop.AddPage(&pc9861);
 
-	SerialOptComPage com2(IDS_PC9861B, cm_pc9861ch1, np2oscfg.com2);
+	SerialOptComPage com2(IDS_PC9861B, cm_pc9861ch1, np2oscfg.com2, true || allports, false || allports);
 	prop.AddPage(&com2);
 
-	SerialOptComPage com3(IDS_PC9861C, cm_pc9861ch2, np2oscfg.com3);
+	SerialOptComPage com3(IDS_PC9861C, cm_pc9861ch2, np2oscfg.com3, true || allports, false || allports);
 	prop.AddPage(&com3);
+
+	SerialOptComPage lpt1(IDS_PARALLEL, cm_prt, np2oscfg.lpt1, false || allports, true || allports);
+	prop.AddPage(&lpt1);
 
 	prop.m_psh.dwFlags |= PSH_NOAPPLYNOW | PSH_USEHICON | PSH_USECALLBACK;
 	prop.m_psh.hIcon = LoadIcon(CWndProc::GetResourceHandle(), MAKEINTRESOURCE(IDI_ICON2));

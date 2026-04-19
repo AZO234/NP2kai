@@ -143,7 +143,7 @@ makegrph:		sub			rsp, byte 40
 					jne			short .storewidth
 					add			eax, eax
 .storewidth:		mov			ecx, esi
-					and			eax, 0000feh				; uPD72020„ÅßÁ¢∫Ë™ç‚Ä¶
+					and			eax, 0000feh				; uPD72020Ç≈ämîFÅc
 					shr			ecx, 4+16
 					and			esi, 3fffh
 					mov			[LINE_WIDTH+8], eax

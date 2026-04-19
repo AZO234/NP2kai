@@ -25,6 +25,8 @@ enum {
 	SYS_UPDATECAPTION_ALL	= 0xff,
 };
 
+#define FDDMENU_ITEMS_MAX	20
+
 typedef struct {
 	UINT8	showvolume;
 	UINT8	showmousespeed;
@@ -75,8 +77,14 @@ void sysmng_updatecaption(UINT8 flag);
 void sysmng_requestupdatecaption(UINT8 flag);
 void sysmng_requestupdatecheck(void);
 
+void sysmng_findfile_Initialize(void);
+void sysmng_findfile_Finalize(void);
+OEMCHAR* sysmng_getfddlistitem(int drv, int index);
+OEMCHAR* sysmng_getlastfddlistitem(int drv);
+
 void toolwin_fddaccess(UINT8 drv);
 void toolwin_hddaccess(UINT8 drv);
+
 
 #ifdef __cplusplus
 }

@@ -217,7 +217,6 @@ static void renewalclientsize(BOOL winloc) {
 	int			height;
 	int			extend;
 	UINT		fscrnmod;
-	int			multiple;
 	int			scrnwidth;
 	int			scrnheight;
 	int			tmpcy;
@@ -237,9 +236,6 @@ static void renewalclientsize(BOOL winloc) {
 			extend = min(scrnstat.extend, d3d.extend);
 		}
 		fscrnmod = FSCRNCFG_fscrnmod & FSCRNMOD_ASPECTMASK;
-		if(fscrnmod==FSCRNMOD_ASPECTFIX8) {
-			multiple = min(width, height);
-		}
 		d3d.scrn.left = (d3d.width - scrnwidth) / 2;
 		d3d.scrn.top = (d3d.height - scrnheight) / 2;
 		d3d.scrn.right = d3d.scrn.left + scrnwidth;
@@ -283,6 +279,7 @@ static void renewalclientsize(BOOL winloc) {
 		}
 	}
 	else {
+		int multiple;
 		fscrnmod = FSCRNCFG_fscrnmod & FSCRNMOD_ASPECTMASK;
 		multiple = scrnstat.multiple;
 		getscreensize(&scrnwidth, &scrnheight, d3d.scrnmode);
@@ -290,23 +287,26 @@ static void renewalclientsize(BOOL winloc) {
 			if ((np2oscfg.paddingx)/* && (multiple == 8)*/) {
 				extend = min(scrnstat.extend, d3d.extend);
 			}
+			d3d.rect.left = 0;
 			d3d.rect.right = width + extend;
-			d3d.rect.left = (multiple != 8 ? extend : 0);
+			d3d.rect.top = 0;
 			d3d.rect.bottom = height;
-			d3d.scrn.left = np2oscfg.paddingx - (multiple == 8 ? extend : 0);
-			d3d.scrn.top = np2oscfg.paddingy;
+			d3d.scrn.left = (np2oscfg.paddingx - extend) * scrnstat.multiple / 8;
+			d3d.scrn.top = np2oscfg.paddingy * scrnstat.multiple / 8;
 		}
 		else {
 			if ((np2oscfg.paddingy)/* && (multiple == 8)*/) {
 				extend = min(scrnstat.extend, d3d.extend);
 			}
+			d3d.rect.left = 0;
 			d3d.rect.right = height;
-			d3d.rect.bottom = width + (multiple == 8 ? extend : 0);
-			d3d.scrn.left = np2oscfg.paddingx;
-			d3d.scrn.top = np2oscfg.paddingy - (multiple == 8 ? extend : 0);
+			d3d.rect.top = 0;
+			d3d.rect.bottom = width + extend;
+			d3d.scrn.left = np2oscfg.paddingx * scrnstat.multiple / 8;
+			d3d.scrn.top = (np2oscfg.paddingy - extend) * scrnstat.multiple / 8;
 		}
-		d3d.scrn.right = np2oscfg.paddingx + scrnwidth;
-		d3d.scrn.bottom = np2oscfg.paddingy + scrnheight;
+		d3d.scrn.right = np2oscfg.paddingx * scrnstat.multiple / 8 + scrnwidth;
+		d3d.scrn.bottom = np2oscfg.paddingy * scrnstat.multiple / 8 + scrnheight;
 
 		wlex = NULL;
 		if (winloc) {
@@ -447,29 +447,39 @@ static void make16mask(DWORD bmask, DWORD rmask, DWORD gmask)
 {
 }
 
-static void update_backbuffer2size(){
+static void update_backbuffer2size(UINT8 scrnmode){
 	if(current_d3d_imode == D3D_IMODE_PIXEL || current_d3d_imode == D3D_IMODE_PIXEL2 || current_d3d_imode == D3D_IMODE_PIXEL3){
-		UINT backbufwidth = d3d.d3dparam.BackBufferWidth - scrnstat.extend * 2;
+		UINT backbufwidth = d3d.d3dparam.BackBufferWidth;
 		UINT backbufheight = d3d.d3dparam.BackBufferHeight;
-		d3d.backsurf2width = max(scrnstat.width, 320);
-		d3d.backsurf2height = max(scrnstat.height, 200);
+		UINT backsurf2widthbase;
+		UINT backsurf2heightbase;
+		if (scrnmode & SCRNMODE_ROTATE) {
+			backsurf2widthbase = max(scrnstat.height + 2, 200); // 常時extendがある前提で確保
+			backsurf2heightbase = max(scrnstat.width + 2, 320); // 常時extendがある前提で確保 
+		}else{
+			backsurf2widthbase = max(scrnstat.width + 2, 320); // 常時extendがある前提で確保
+			backsurf2heightbase = max(scrnstat.height + 2, 200); // 常時extendがある前提で確保
+		}
 		d3d.backsurf2mul = 1;
 		switch(current_d3d_imode){
 		case D3D_IMODE_PIXEL3:
-			backbufwidth += backbufwidth;
-			backbufheight += backbufheight;
+			backbufwidth += backsurf2widthbase - 1;
+			backbufheight += backsurf2heightbase - 1;
 			break;
 		case D3D_IMODE_PIXEL2:
-			backbufwidth += backbufwidth / 3;
-			backbufheight += backbufheight / 3;
+			backbufwidth += backsurf2widthbase / 3;
+			backbufheight += backsurf2heightbase / 3;
 			break;
 		}
 		if(backbufheight < 480) backbufheight = UINT_MAX;
-		while(d3d.backsurf2width * 2 < (int)backbufwidth && d3d.backsurf2height * 2 < (int)backbufheight){
-			d3d.backsurf2width *= 2;
-			d3d.backsurf2height *= 2;
-			d3d.backsurf2mul++;
+		if (backbufwidth / backsurf2widthbase < backbufheight / backsurf2heightbase) {
+			d3d.backsurf2mul = backbufwidth / backsurf2widthbase;
+		}else{
+			d3d.backsurf2mul = backbufheight / backsurf2heightbase;
 		}
+		if (d3d.backsurf2mul < 1) d3d.backsurf2mul = 1;
+		d3d.backsurf2width = backsurf2widthbase * d3d.backsurf2mul;
+		d3d.backsurf2height = backsurf2heightbase * d3d.backsurf2mul;
 		if(d3d.backsurf2height < 480){
 			d3d.backsurf2height = 480;
 		}
@@ -478,17 +488,18 @@ static void update_backbuffer2size(){
 			d3d.backsurf2->Release();
 			d3d.backsurf2 = NULL;
 		}
-		if(d3d.backsurf2width/2 == d3d.d3dparam.BackBufferWidth || d3d.backsurf2width/2+2 == d3d.d3dparam.BackBufferWidth || d3d.d3ddev->CreateRenderTarget(d3d.backsurf2width + 2, d3d.backsurf2height + 2, d3d.d3dparam.BackBufferFormat, D3DMULTISAMPLE_NONE, 0, FALSE, &d3d.backsurf2, NULL) != D3D_OK){
-			d3d.backsurf2width /= 2;
-			d3d.backsurf2height /= 2;
+		if(d3d.d3ddev->CreateRenderTarget(d3d.backsurf2width, d3d.backsurf2height, d3d.d3dparam.BackBufferFormat, D3DMULTISAMPLE_NONE, 0, FALSE, &d3d.backsurf2, NULL) != D3D_OK){
 			d3d.backsurf2mul--;
-			if(d3d.backsurf2mul <= 0 ||  d3d.d3ddev->CreateRenderTarget(d3d.backsurf2width + 2, d3d.backsurf2height + 2, d3d.d3dparam.BackBufferFormat, D3DMULTISAMPLE_NONE, 0, FALSE, &d3d.backsurf2, NULL) != D3D_OK){
+			d3d.backsurf2width = backsurf2widthbase * d3d.backsurf2mul;
+			d3d.backsurf2height = backsurf2heightbase * d3d.backsurf2mul;
+			if (d3d.backsurf2height < 480) {
+				d3d.backsurf2height = 480;
+			}
+			if(d3d.backsurf2mul <= 0 || d3d.d3ddev->CreateRenderTarget(d3d.backsurf2width, d3d.backsurf2height, d3d.d3dparam.BackBufferFormat, D3DMULTISAMPLE_NONE, 0, FALSE, &d3d.backsurf2, NULL) != D3D_OK){
 				d3d.backsurf2 = NULL;
 			}
 		}
 		d3d_leave_criticalsection();
-		d3d.backsurf2width += 2;
-		d3d.backsurf2height += 2;
 	}
 }
 
@@ -579,7 +590,7 @@ void scrnmngD3D_restoresurfaces() {
 				d3d.d3ddev->CreateOffscreenPlainSurface(wabwidth, wabheight, d3d.d3dparam.BackBufferFormat, D3DPOOL_DEFAULT, &d3d.wabsurf, NULL);
 #endif
 			}
-			update_backbuffer2size();
+			update_backbuffer2size(g_scrnmode);
 			d3d.d3ddev->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &d3d.d3dbacksurf);
 			//scrnmngD3D_destroy();
 			//scrnmngD3D_create(g_scrnmode);
@@ -695,11 +706,21 @@ BRESULT scrnmngD3D_check() {
 	if(!(test_d3d = Direct3DCreate9(D3D_SDK_VERSION))){
 		goto scre_err2;
 	}
-	if(test_d3d->GetAdapterIdentifier(D3DADAPTER_DEFAULT, 0, &identifier) == D3D_OK){
-		if(identifier.VendorId == 0x10DE){
-			// NVIDIA Adapter
-			nvidia_fixflag = 1;
+	if (np2oscfg.scrscfix == 0) {
+		if (test_d3d->GetAdapterIdentifier(D3DADAPTER_DEFAULT, 0, &identifier) == D3D_OK) {
+			if (identifier.VendorId == 0x10DE) {
+				// NVIDIA Adapter
+				nvidia_fixflag = 1;
+			}
 		}
+	}
+	else if (np2oscfg.scrscfix == 2) {
+		// NVIDIA向け
+		nvidia_fixflag = 1;
+	}
+	else {
+		// 一般向け
+		nvidia_fixflag = 0;
 	}
 
 	ZeroMemory(&test_d3dparam, sizeof(test_d3dparam));
@@ -776,11 +797,6 @@ BRESULT scrnmngD3D_create(UINT8 scrnmode) {
 	winstyle = GetWindowLong(g_hWndMain, GWL_STYLE);
 	winstyleex = GetWindowLong(g_hWndMain, GWL_EXSTYLE);
 	if (scrnmode & SCRNMODE_FULLSCREEN) {
-		//if(np2oscfg.mouse_nc){
-		//	winstyle &= ~CS_DBLCLKS;
-		//}else{
-			winstyle |= CS_DBLCLKS;
-		//}
 		if(!(lastscrnmode & SCRNMODE_FULLSCREEN)){
 			GetWindowPlacement(g_hWndMain, &wp);
 		}
@@ -799,7 +815,6 @@ BRESULT scrnmngD3D_create(UINT8 scrnmode) {
 		scrnmng.flag = SCRNFLAG_HAVEEXTEND;
 		winstyle |= WS_SYSMENU;
 		if(np2oscfg.mouse_nc){
-			winstyle &= ~CS_DBLCLKS;
 			if (np2oscfg.wintype != 0) {
 				WINLOCEX	wlex;
 				// XXX: メニューが出せなくなって詰むのを回避（暫定）
@@ -811,8 +826,6 @@ BRESULT scrnmngD3D_create(UINT8 scrnmode) {
 				winlocex_move(wlex);
 				winlocex_destroy(wlex);
 			}
-		}else{
-			winstyle |= CS_DBLCLKS;
 		}
 		if (np2oscfg.thickframe) {
 			winstyle |= WS_THICKFRAME;
@@ -1051,7 +1064,7 @@ BRESULT scrnmngD3D_create(UINT8 scrnmode) {
 		d3d.extend = 1;
 	}
 
-	update_backbuffer2size();
+	update_backbuffer2size(scrnmode);
 
 	d3d.d3ddev->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &d3d.d3dbacksurf);
 	
@@ -1265,7 +1278,7 @@ void scrnmngD3D_setwidth(int posx, int width) {
 		if(d3d.d3dbacksurf){
 			if (d3d.scrnmode & SCRNMODE_FULLSCREEN) {
 				renewalclientsize(TRUE);
-				update_backbuffer2size();
+				update_backbuffer2size(g_scrnmode);
 				clearoutfullscreen();
 			}else{
 				DEVMODE devmode;
@@ -1298,7 +1311,7 @@ void scrnmngD3D_setextend(int extend) {
 		if(d3d.d3dbacksurf){
 			if (d3d.scrnmode & SCRNMODE_FULLSCREEN) {
 				renewalclientsize(TRUE);
-				update_backbuffer2size();
+				update_backbuffer2size(g_scrnmode);
 				clearoutfullscreen();
 			}else{
 				d3d_enter_criticalsection();
@@ -1329,7 +1342,7 @@ void scrnmngD3D_setheight(int posy, int height) {
 		if(d3d.d3dbacksurf){
 			if (d3d.scrnmode & SCRNMODE_FULLSCREEN) {
 				renewalclientsize(TRUE);
-				update_backbuffer2size();
+				update_backbuffer2size(g_scrnmode);
 				clearoutfullscreen();
 			}else{
 				DEVMODE devmode;
@@ -1370,7 +1383,7 @@ void scrnmngD3D_setsize(int posx, int posy, int width, int height) {
 		if(d3d.d3dbacksurf){
 			if (d3d.scrnmode & SCRNMODE_FULLSCREEN) {
 				renewalclientsize(TRUE);
-				update_backbuffer2size();
+				update_backbuffer2size(g_scrnmode);
 				clearoutfullscreen();
 			}else{
 				DEVMODE devmode;
@@ -1520,26 +1533,26 @@ void scrnmngD3D_update(void) {
 					rectdstbuf = rectbuf;
 					if(nvidia_fixflag){
 						rectsrcbuf.left = rectsrcbuf.right - 1;
-						rectdstbuf.left = rectdstbuf.right - ((1 << (d3d.backsurf2mul-1)) >> 1);
-						rectdstbuf.bottom -= ((1 << (d3d.backsurf2mul-1)) >> 1);
+						rectdstbuf.left = rectdstbuf.right - (d3d.backsurf2mul - 1);
+						rectdstbuf.bottom -= (d3d.backsurf2mul - 1);
 						r = d3d.d3ddev->StretchRect(d3d.backsurf, &rectsrcbuf, d3d.backsurf2, &rectdstbuf, D3DTEXF_POINT); // 右端
 						rectsrcbuf = *rect;
 						rectdstbuf = rectbuf;
 						rectsrcbuf.top = rectsrcbuf.bottom - 1;
-						rectdstbuf.top = rectdstbuf.bottom - ((1 << (d3d.backsurf2mul-1)) >> 1);
-						rectdstbuf.right -= ((1 << (d3d.backsurf2mul-1)) >> 1);
+						rectdstbuf.top = rectdstbuf.bottom - (d3d.backsurf2mul - 1);
+						rectdstbuf.right -= (d3d.backsurf2mul - 1);
 						r = d3d.d3ddev->StretchRect(d3d.backsurf, &rectsrcbuf, d3d.backsurf2, &rectdstbuf, D3DTEXF_POINT); // 下端
 						rectsrcbuf = *rect;
 						rectdstbuf = rectbuf;
 						rectsrcbuf.left = rectsrcbuf.right - 1;
-						rectdstbuf.left = rectdstbuf.right - ((1 << (d3d.backsurf2mul-1)) >> 1);
+						rectdstbuf.left = rectdstbuf.right - (d3d.backsurf2mul - 1);
 						rectsrcbuf.top = rectsrcbuf.bottom - 1;
-						rectdstbuf.top = rectdstbuf.bottom - ((1 << (d3d.backsurf2mul-1)) >> 1);
+						rectdstbuf.top = rectdstbuf.bottom - (d3d.backsurf2mul - 1);
 						r = d3d.d3ddev->StretchRect(d3d.backsurf, &rectsrcbuf, d3d.backsurf2, &rectdstbuf, D3DTEXF_POINT); // 右下隅
 						rectsrcbuf = *rect;
 						rectdstbuf = rectbuf;
-						rectdstbuf.right -= ((1 << (d3d.backsurf2mul-1)) >> 1);
-						rectdstbuf.bottom -= ((1 << (d3d.backsurf2mul-1)) >> 1);
+						rectdstbuf.right -= (d3d.backsurf2mul - 1);
+						rectdstbuf.bottom -= (d3d.backsurf2mul - 1);
 					}
 					r = d3d.d3ddev->StretchRect(d3d.backsurf, &rectsrcbuf, d3d.backsurf2, &rectdstbuf, D3DTEXF_POINT);
 					r = d3d.d3ddev->StretchRect(d3d.backsurf2, &rectbuf, d3d.d3dbacksurf, scrn, D3DTEXF_LINEAR);
@@ -1575,26 +1588,26 @@ void scrnmngD3D_update(void) {
 					rectdstbuf = rectbuf;
 					if(nvidia_fixflag){
 						rectsrcbuf.left = rectsrcbuf.right - 1;
-						rectdstbuf.left = rectdstbuf.right - ((1 << (d3d.backsurf2mul-1)) >> 1);
-						rectdstbuf.bottom -= ((1 << (d3d.backsurf2mul-1)) >> 1);
+						rectdstbuf.left = rectdstbuf.right - (d3d.backsurf2mul - 1);
+						rectdstbuf.bottom -= (d3d.backsurf2mul - 1);
 						r = d3d.d3ddev->StretchRect(d3d.backsurf, &rectsrcbuf, d3d.backsurf2, &rectdstbuf, D3DTEXF_POINT); // 右端
 						rectsrcbuf = d3d.rect;
 						rectdstbuf = rectbuf;
 						rectsrcbuf.top = rectsrcbuf.bottom - 1;
-						rectdstbuf.top = rectdstbuf.bottom - ((1 << (d3d.backsurf2mul-1)) >> 1);
-						rectdstbuf.right -= ((1 << (d3d.backsurf2mul-1)) >> 1);
+						rectdstbuf.top = rectdstbuf.bottom - (d3d.backsurf2mul - 1);
+						rectdstbuf.right -= (d3d.backsurf2mul - 1);
 						r = d3d.d3ddev->StretchRect(d3d.backsurf, &rectsrcbuf, d3d.backsurf2, &rectdstbuf, D3DTEXF_POINT); // 下端
 						rectsrcbuf = d3d.rect;
 						rectdstbuf = rectbuf;
 						rectsrcbuf.left = rectsrcbuf.right - 1;
-						rectdstbuf.left = rectdstbuf.right - ((1 << (d3d.backsurf2mul-1)) >> 1);
+						rectdstbuf.left = rectdstbuf.right - (d3d.backsurf2mul - 1);
 						rectsrcbuf.top = rectsrcbuf.bottom - 1;
-						rectdstbuf.top = rectdstbuf.bottom - ((1 << (d3d.backsurf2mul-1)) >> 1);
+						rectdstbuf.top = rectdstbuf.bottom - (d3d.backsurf2mul - 1);
 						r = d3d.d3ddev->StretchRect(d3d.backsurf, &rectsrcbuf, d3d.backsurf2, &rectdstbuf, D3DTEXF_POINT); // 右下隅
 						rectsrcbuf = d3d.rect;
 						rectdstbuf = rectbuf;
-						rectdstbuf.right -= ((1 << (d3d.backsurf2mul-1)) >> 1);
-						rectdstbuf.bottom -= ((1 << (d3d.backsurf2mul-1)) >> 1);
+						rectdstbuf.right -= (d3d.backsurf2mul - 1);
+						rectdstbuf.bottom -= (d3d.backsurf2mul - 1);
 					}
 					r = d3d.d3ddev->StretchRect(d3d.backsurf, &rectsrcbuf, d3d.backsurf2, &rectdstbuf, D3DTEXF_POINT);
 					if(dst.bottom > bufheight){
@@ -1702,7 +1715,7 @@ void scrnmngD3D_setmultiple(int multiple)
 		if(d3d.d3dbacksurf){
 			if (d3d.scrnmode & SCRNMODE_FULLSCREEN) {
 				renewalclientsize(TRUE);
-				update_backbuffer2size();
+				update_backbuffer2size(g_scrnmode);
 				clearoutfullscreen();
 			}else{
 				DEVMODE devmode;
@@ -1821,10 +1834,10 @@ void scrnmngD3D_entersizing(void) {
 
 	GetWindowRect(g_hWndMain, &rectwindow);
 	GetClientRect(g_hWndMain, &rectclient);
-	scrnsizing.bx = (np2oscfg.paddingx * 2) +
+	scrnsizing.bx = (np2oscfg.paddingx * 2 * scrnstat.multiple / 8) +
 					(rectwindow.right - rectwindow.left) -
 					(rectclient.right - rectclient.left);
-	scrnsizing.by = (np2oscfg.paddingy * 2) +
+	scrnsizing.by = (np2oscfg.paddingy * 2 * scrnstat.multiple / 8) +
 					(rectwindow.bottom - rectwindow.top) -
 					(rectclient.bottom - rectclient.top);
 	cx = min(scrnstat.width, d3d.width);
@@ -1847,7 +1860,7 @@ void scrnmngD3D_sizing(UINT side, RECT *rect) {
 	int		width;
 	int		height;
 	int		mul;
-	const int	mul_max = 32;
+	const int	mul_max = 255;
 
 	if(scrnsizing.cx==0 || scrnsizing.cy==0) return;
 
@@ -2073,7 +2086,7 @@ void scrnmngD3D_bltwab() {
 			dst = &d3d.rect;
 		}else{
 			dst = &d3d.rect;
-			exmgn = (scrnstat.multiple == 8 ? scrnstat.extend : 0);
+			exmgn = scrnstat.extend;
 		}
 		src.left = src.top = 0;
 		
@@ -2087,12 +2100,15 @@ void scrnmngD3D_bltwab() {
 			src.right = scrnstat.height;
 			src.bottom = scrnstat.width;
 			dstmp = *dst;
-			dstmp.left += exmgn;
-			dstmp.right = dstmp.left + scrnstat.height;
+			dstmp.top += exmgn;
+			dstmp.bottom = dstmp.top + scrnstat.width;
 		}
 		d3d_enter_criticalsection();
 		if (d3d.d3ddev)
 		{
+			D3DSURFACE_DESC desc;
+			d3d.wabsurf->GetDesc(&desc);
+			d3d.backsurf->GetDesc(&desc);
 			d3d.d3ddev->StretchRect(d3d.wabsurf, &src, d3d.backsurf, &dstmp, D3DTEXF_POINT);
 		}
 		d3d_leave_criticalsection();

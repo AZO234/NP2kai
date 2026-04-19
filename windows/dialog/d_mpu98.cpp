@@ -3,20 +3,20 @@
  * @brief	MIDI 設定ダイアログ
  */
 
-#include <compiler.h>
+#include "compiler.h"
 #include "resource.h"
 #include "dialog.h"
 #include "c_combodata.h"
 #include "c_dipsw.h"
 #include "c_midi.h"
 #include "np2class.h"
-#include <np2.h>
-#include <commng.h>
-#include <sysmng.h>
+#include "np2.h"
+#include "commng.h"
+#include "sysmng.h"
 #include "misc/PropProc.h"
-#include <pccore.h>
-#include <common/strres.h>
-#include <generic/dipswbmp.h>
+#include "pccore.h"
+#include "common/strres.h"
+#include "generic/dipswbmp.h"
 
 #ifdef __cplusplus
 extern "C"

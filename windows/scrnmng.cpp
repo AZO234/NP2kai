@@ -159,11 +159,11 @@ void scrnmng_setwindowsize(HWND hWnd, int width, int height)
 		int winx = (np2oscfg.winx != CW_USEDEFAULT) ? np2oscfg.winx : rectwindow.left;
 		int winy = (np2oscfg.winy != CW_USEDEFAULT) ? np2oscfg.winy : rectwindow.top;
 		int cx = width;
-		cx += np2oscfg.paddingx * 2;
+		cx += np2oscfg.paddingx * 2 * scrnstat.multiple / 8;
 		cx += rectwindow.right - rectwindow.left;
 		cx -= rectclient.right - rectclient.left;
 		int cy = height;
-		cy += np2oscfg.paddingy * 2;
+		cy += np2oscfg.paddingy * 2 * scrnstat.multiple / 8;
 		cy += rectwindow.bottom - rectwindow.top;
 		cy -= rectclient.bottom - rectclient.top;
 
@@ -464,6 +464,7 @@ void scrnmng_setsize(int posx, int posy, int width, int height) {
 }
 
 const SCRNSURF *scrnmng_surflock(void) {
+	if (scrnmng_changemode_pending) return NULL; // 作成待ちならロック失敗とする
 	
 #ifdef SUPPORT_SCRN_DIRECT3D
 	if(scrnmng_current_drawtype==DRAWTYPE_INVALID) {return NULL;}
@@ -663,6 +664,8 @@ void scrnmng_updatefsres(void) {
 
 // ウィンドウアクセラレータ画面転送
 void scrnmng_blthdc(HDC hdc) {
+	if (scrnmng_changemode_pending) return; // 作成待ちなら転送しない
+
 #ifdef SUPPORT_SCRN_DIRECT3D
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
 		scrnmngD3D_blthdc(hdc);
@@ -697,7 +700,7 @@ void scrnmng_getrect(RECT *lpRect){
 }
 
 void scrnmng_delaychangemode(void){
-	//if(scrnmng_UIthreadID != GetCurrentThreadId()) return; // 別のスレッドからのアクセスは不可
+	if(scrnmng_UIthreadID != GetCurrentThreadId()) return; // 別のスレッドからのアクセスは不可
 	
 	if(scrnmng_changemode_pending){
 		DWORD oldThreadID;

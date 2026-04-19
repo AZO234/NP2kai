@@ -6,10 +6,12 @@
  * @date	$Date: 2011/03/07 09:54:11 $
  */
 
-#include <compiler.h>
-#include <np2.h>
-#include <joymng.h>
+#include "compiler.h"
+#include "np2.h"
+#include "joymng.h"
 #include "menu.h"
+
+#include <math.h>
 
 #if !defined(__GNUC__)
 #pragma comment(lib, "winmm.lib")
@@ -28,6 +30,9 @@ static	REG8	joyflag = 0xff;
 static	UINT8	joypad1btn[4];
 
 static	REG8	joyavailable = 0;
+
+static UINT32	joyAnalogX = 0x8000;
+static UINT32	joyAnalogY = 0x8000;
 
 void joymng_initialize(void) {
 
@@ -63,6 +68,36 @@ REG8 joymng_getstat(void) {
 				joyavailable = 1;
 				np2oscfg.JOYPAD1 |= 0x80;
 				joyflag = 0xff;
+				if (np2oscfg.JOYPAD1POVXY)
+				{
+					if (ji.dwPOV == 0xffff)
+					{
+						ji.dwXpos = 32767;
+						ji.dwYpos = 32767;
+					}
+					else
+					{
+						double angle = ji.dwPOV * 3.14159265358979323846 / 18000;
+						double xf = sin(angle);
+						double yf = -cos(angle);
+						double xfa = xf >= 0 ? xf : -xf;
+						double yfa = yf >= 0 ? yf : -yf;
+						if (xfa > yfa)
+						{
+							xf /= xfa;
+							yf /= xfa;
+						}
+						else
+						{
+							xf /= yfa;
+							yf /= yfa;
+						}
+						ji.dwXpos = (DWORD)((xf * 32767) + 32767);
+						ji.dwYpos = (DWORD)((yf * 32767) + 32767);
+					}
+				}
+				joyAnalogX = ji.dwXpos;
+				joyAnalogY = ji.dwYpos;
 				if (ji.dwXpos < 0x4000U) {
 					joyflag &= ~JOY_LEFT_BIT;
 				}
@@ -101,6 +136,15 @@ REG8 joymng_getstat(void) {
 REG8 joymng_available(void) {
 	return(joyavailable);
 }
+UINT32 joymng_getAnalogX(void)
+{
+	return joyAnalogX;
+}
+UINT32 joymng_getAnalogY(void)
+{
+	return joyAnalogY;
+}
+
 
 // joyflag	bit:0		up
 // 			bit:1		down

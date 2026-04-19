@@ -32,5 +32,5 @@ npmouse.sys=1
 [Strings]
 ProviderName="ねこさん開発ちーむ"
 MfgName="Neko Project II"
-NP2Mouse.DeviceDesc="Neko Project II シームレスマウスドライバ"
+NP2Mouse.DeviceDesc="Neko Project II シームレスマウス"
 DiskName="Neko Project II ユーティリティディスク"

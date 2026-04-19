@@ -6,250 +6,390 @@
  * @date	$Date: 2011/02/23 10:11:44 $
  */
 
-#include	<compiler.h>
-#include	<common/strres.h>
-#include	<dosio.h>
-#include	<soundmng.h>
-#include	<sysmng.h>
-#include	<timemng.h>
-#include	<cpucore.h>
-#include	<pccore.h>
-#include	<io/iocore.h>
-#include	<io/gdc_sub.h>
-#include	<cbus/cbuscore.h>
-#include	<cbus/pc9861k.h>
-#include	<cbus/mpu98ii.h>
+#include <cbus/cbuscore.h>
+#include <cbus/mpu98ii.h>
+#include <cbus/pc9861k.h>
+#include <common/strres.h>
+#include <compiler.h>
+#include <cpucore.h>
+#include <dosio.h>
+#include <io/gdc_sub.h>
+#include <io/iocore.h>
+#include <pccore.h>
+#include <soundmng.h>
+#include <sysmng.h>
+#include <timemng.h>
+
 #if defined(SUPPORT_SMPU98)
-#include	<cbus/smpu98.h>
+#include <cbus/smpu98.h>
 #endif
-#include	<cbus/amd98.h>
 #include <bios/bios.h>
 #include <bios/biosmem.h>
-#include	<vram/vram.h>
-#include	<vram/scrndraw.h>
-#include	<vram/dispsync.h>
-#include	<vram/palettes.h>
-#include	<vram/maketext.h>
-#include	<vram/maketgrp.h>
-#include	<vram/makegrph.h>
-#include	<vram/makegrex.h>
+#include <cbus/amd98.h>
+#include <vram/dispsync.h>
+#include <vram/makegrex.h>
+#include <vram/makegrph.h>
+#include <vram/maketext.h>
+#include <vram/maketgrp.h>
+#include <vram/palettes.h>
+#include <vram/scrndraw.h>
+#include <vram/vram.h>
+
 #if defined(SUPPORT_VIDEOFILTER)
-#include	<vram/videofilter.h>
+#include <vram/videofilter.h>
 #endif
-#include	<sound/sound.h>
-#include	<sound/fmboard.h>
+#include <sound/fmboard.h>
+#include <sound/sound.h>
+
 #ifdef SUPPORT_SOUND_SB16
-#include	<cbus/ct1741io.h>
+#include <cbus/ct1741io.h>
 #endif
-#include	<sound/beep.h>
-#include	<sound/s98.h>
-#include	<sound/tms3631.h>
-#include	<fdd/diskdrv.h>
-#include	<diskimage/fddfile.h>
-#include	<fdd/fdd_mtr.h>
-#include	<wab/wab_rly.h>
-#include	<fdd/sxsi.h>
-#include	<font/font.h>
-#include	<io/bmsio.h>
+#include <diskimage/fddfile.h>
+#include <fdd/diskdrv.h>
+#include <fdd/fdd_mtr.h>
+#include <fdd/sxsi.h>
+#include <font/font.h>
+#include <io/bmsio.h>
+#include <sound/beep.h>
+#include <sound/s98.h>
+#include <sound/tms3631.h>
+#include <wab/wab_rly.h>
+
 #if defined(SUPPORT_HOSTDRV)
-#include	<generic/hostdrv.h>
+#include <generic/hostdrv.h>
 #endif
 #if defined(SUPPORT_HOSTDRVNT)
-#include	<generic/hostdrvnt.h>
+#include <generic/hostdrvnt.h>
 #endif
-#include	<np2ver.h>
-#include	<calendar.h>
-#include	<timing.h>
-#include	<keystat.h>
-#include	<debugsub.h>
+#include <calendar.h>
+#include <debugsub.h>
+#include <keystat.h>
+#include <np2ver.h>
+#include <timing.h>
+
 #if defined(SUPPORT_WAB)
-#include	<wab/wab.h>
+#include <wab/wab.h>
 #endif
 #if defined(SUPPORT_CL_GD5430)
-#include	<wab/cirrus_vga_extern.h>
+#include <wab/cirrus_vga_extern.h>
 #endif
 #if defined(SUPPORT_IDEIO)
-#include	<cbus/ideio.h>
-#include	<cbus/atapicmd.h>
+#include <cbus/atapicmd.h>
+#include <cbus/ideio.h>
+
 #endif
 #if defined(SUPPORT_GPIB)
-#include	<cbus/gpibio.h>
+#include <cbus/gpibio.h>
 #endif
 #if defined(CPUCORE_IA32)
-#include	<ia32/cpu.h>
-#include	<ia32/instructions/fpu/fp.h>
+#include <ia32/cpu.h>
+#include <ia32/instructions/fpu/fp.h>
 #else
-#define	CPU_VENDOR		"GenuineIntel"
-#define	CPU_FAMILY	2
-#define	CPU_MODEL	1
-#define	CPU_STEPPING	1
-#define	CPU_FEATURES		(0)
-#define	CPU_FEATURES_EX		(0)
-#define	CPU_BRAND_STRING	"Intel(R) 80286 Processor "
-#define	CPU_FEATURES_ECX	(0)
-#define	CPU_FEATURES_EX_ECX	(0)
-#define	CPU_BRAND_ID_AUTO	(0xffffffff)
-#define	CPU_EFLAGS_MASK		(0)
+#define CPU_VENDOR "GenuineIntel"
+#define CPU_FAMILY 2
+#define CPU_MODEL 1
+#define CPU_STEPPING 1
+#define CPU_FEATURES (0)
+#define CPU_FEATURES_EX (0)
+#define CPU_BRAND_STRING "Intel(R) 80286 Processor "
+#define CPU_FEATURES_ECX (0)
+#define CPU_FEATURES_EX_ECX (0)
+#define CPU_BRAND_ID_AUTO (0xffffffff)
+#define CPU_EFLAGS_MASK (0)
 #endif
 #if defined(SUPPORT_IA32_HAXM)
 #if !defined(SUPPORT_NP2_TICKCOUNT)
 #error HAXM need NP2_TickCount
 #endif
-#include	<np2_tickcount.h>
-#include	<i386hax/haxfunc.h>
-#include	<i386hax/haxcore.h>
-#include	<mem/dmax86.h>
+#include <i386hax/haxcore.h>
+#include <i386hax/haxfunc.h>
+#include <mem/dmax86.h>
+#include <np2_tickcount.h>
+
 #endif
 #include <time.h>
-
 
 const OEMCHAR np2version[] = OEMTEXT(NP2KAI_GIT_TAG " " NP2KAI_GIT_HASH);
 
 #if defined(_WIN32_WCE)
-#define	PCBASEMULTIPLE	2
+#define PCBASEMULTIPLE 2
 #else
-#define	PCBASEMULTIPLE	20
+#define PCBASEMULTIPLE 20
 #endif
 
-
-	NP2CFG	np2cfg = {
-				0, 1, 0, 32, 0, 0, 0x40,
-				0, 0, 0, 0,
-				{0x3e, 0xe3, 0x7b}, 0,
-				0, 0, {1, 1, 6, 1, 8, 1},
-				128, 0x00, 1, 
+NP2CFG np2cfg = {
+    0,
+    1,
+    0,
+    32,
+    0,
+    0,
+    0x40,
+    0,
+    0,
+    0,
+    0,
+    {0x3e, 0xe3, 0x7b},
+    0,
+    0,
+    0,
+    {1, 1, 6, 1, 8, 1},
+    128,
+    0x00,
+    1,
 #if defined(SUPPORT_ASYNC_CPU)
-				0, 0,
+    0,
+    0,
 #endif
-				1,
+    1,
 #if defined(SUPPORT_IDEIO)
-				0xD8,
+    0xD8,
 #endif
 
-				OEMTEXT("VX"), PCBASECLOCK25, PCBASEMULTIPLE, 1,
-				{0x48, 0x05, 0x04, 0x08, 0x01, 0x00, 0x00, 0x6e},
-				1, 13, 2, 1, 0x000000, 0xffffff,
-				44100, 150, 4, 0,
-				{0, 0, 0}, 0xd1, 0x7f, 0xd1, 0, 0, 1, 
-				
-				0x0188, 0x80, 3, 12, 12, 0xff, 0, // 118
+    OEMTEXT("VX"),
+    PCBASECLOCK25,
+    PCBASEMULTIPLE,
+    1,
+    {0x48, 0x05, 0x04, 0x08, 0x01, 0x00, 0x00, 0x6e},
+    1,
+    13,
+    2,
+    1,
+    0x000000,
+    0xffffff,
+    44100,
+    150,
+    4,
+    0,
+    {0, 0, 0},
+    0xd1,
+    0x7f,
+    0xd1,
+    0,
+    0,
+    1,
 
-				0x70, 1, 3, // Mate-X PCM
+    0x0188,
+    0x80,
+    3,
+    12,
+    12,
+    0xff,
+    0, // 118
+
+    0x70,
+    1,
+    3, // Mate-X PCM
 
 #if defined(SUPPORT_SOUND_SB16)
-				0xd2, 3, 5, 0,
-#endif	/* SUPPORT_SOUND_SB16 */
+    0xd2,
+    3,
+    5,
+    0,
+#endif /* SUPPORT_SOUND_SB16 */
 
 #if defined(SUPPORT_FMGEN)
-				3, {0x0c, 0x0c, 0x08, 0x06, 0x03, 0x0c}, 100, 64, 64, 64, 64, 64, 128,
-#else	/* SUPPORT_FMGEN */
-				3, {0x0c, 0x0c, 0x08, 0x06, 0x03, 0x0c}, 100, 64, 64, 64, 64, 64,
-#endif	/* SUPPORT_FMGEN */
-				1, 0x82, 0,
+    3,
+    {0x0c, 0x0c, 0x08, 0x06, 0x03, 0x0c},
+    100,
+    64,
+    64,
+    64,
+    64,
+    64,
+    128,
+#else  /* SUPPORT_FMGEN */
+    3,
+    {0x0c, 0x0c, 0x08, 0x06, 0x03, 0x0c},
+    100,
+    64,
+    64,
+    64,
+    64,
+    64,
+#endif /* SUPPORT_FMGEN */
+    1,
+    0x82,
+    0,
 #if defined(SUPPORT_SMPU98)
-				0, 0x82, 0,
-#endif	/* SUPPORT_SMPU98 */
-				0, {0x17, 0x04, 0x17}, {0x0c, 0x0c, 0x02, 0x10, 0x3f, 0x3f},
+    0,
+    0x82,
+    0,
+#endif /* SUPPORT_SMPU98 */
+    0,
+    {0x17, 0x04, 0x17},
+    {0x0c, 0x0c, 0x02, 0x10, 0x3f, 0x3f},
 #if defined(SUPPORT_FMGEN)
-				1,
-#endif	/* SUPPORT_FMGEN */
-				3, 0, 50, 0, 0, 1, 0,
+    1,
+#endif /* SUPPORT_FMGEN */
+    3,
+    0,
+    50,
+    0,
+    0,
+    1,
+    0,
 
-				0, {OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
+    0,
+    {OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
 #if defined(SUPPORT_IDEIO)
-				{OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")}, 
-				{SXSIDEV_HDD, SXSIDEV_HDD, SXSIDEV_CDROM, SXSIDEV_HDD}, 
-				{OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
-				1, 1, 0, 0, 0, 0, 0, 0, 0,
+    {OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
+    {SXSIDEV_HDD, SXSIDEV_HDD, SXSIDEV_CDROM, SXSIDEV_HDD},
+    {OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
 #else
-				{OEMTEXT(""), OEMTEXT("")},
+    {OEMTEXT(""), OEMTEXT("")},
 #endif
 #if defined(SUPPORT_SCSI)
-				{OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
+    {OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
 #endif
-				OEMTEXT(""), OEMTEXT(""), OEMTEXT(""),
+    OEMTEXT(""),
+    OEMTEXT(""),
+    OEMTEXT(""),
 #if defined(SUPPORT_NET)
-				OEMTEXT(""), 0,
+    OEMTEXT(""),
+    0,
 #endif
 #if defined(SUPPORT_LGY98)
-				0, 0x10D0, 5, {0x00, 0x40, 0x26, 0x12, 0x34, 0x56},
+    0,
+    0x10D0,
+    5,
+    {0x00, 0x40, 0x26, 0x12, 0x34, 0x56},
 #endif
 #if defined(SUPPORT_WAB)
 #if defined(__LIBRETRO__)
-				1,
+    1,
 #else
-				0,
+    0,
 #endif
 #endif
 #if defined(SUPPORT_CL_GD5430)
-				0, 0x5B, 0, CIRRUS_MELCOWAB_OFS_DEFAULT, 0, 
+    0,
+    0x5B,
+    0,
+    CIRRUS_MELCOWAB_OFS_DEFAULT,
+    0,
 #endif
 #if defined(SUPPORT_VGA_MODEX)
-				0,
+    0,
 #endif
 #if defined(SUPPORT_GPIB)
-				0, 12, 1, 0, 0, 
+    0,
+    12,
+    1,
+    0,
+    0,
 #endif
 #if defined(SUPPORT_PCI)
-				0, 0, 0,
+    0,
+    0,
+    0,
 #endif
 #if defined(SUPPORT_STATSAVE)
-				0,			/* statsave */
+    0, /* statsave */
 #endif
-				0, 0,
-				0, 0xff00, 
-				0, 0, 0,
-				1,
-				CPU_VENDOR, CPU_FAMILY, CPU_MODEL, CPU_STEPPING, CPU_FEATURES, CPU_FEATURES_EX, CPU_BRAND_STRING, OEMTEXT(""), OEMTEXT(""), CPU_BRAND_ID_AUTO, CPU_FEATURES_ECX, CPU_EFLAGS_MASK, CPU_FEATURES_EX_ECX,
-				FPU_TYPE_SOFTFLOAT,
+    0,
+    0,
+    0,
+    0xff00,
+    0,
+    0,
+    0,
+    1,
+    CPU_VENDOR,
+    CPU_FAMILY,
+    CPU_MODEL,
+    CPU_STEPPING,
+    CPU_FEATURES,
+    CPU_FEATURES_EX,
+    CPU_BRAND_STRING,
+    OEMTEXT(""),
+    OEMTEXT(""),
+    CPU_BRAND_ID_AUTO,
+    CPU_FEATURES_ECX,
+    CPU_EFLAGS_MASK,
+    CPU_FEATURES_EX_ECX,
+    FPU_TYPE_SOFTFLOAT,
 #if defined(SUPPORT_FAST_MEMORYCHECK)
-				1,
+    1,
 #endif
-				0, 0,
-				1, 0,
+    0,
+    0,
+    1,
+    0,
 #if defined(SUPPORT_GAMEPORT)
-				0, 0,
+    0,
+    0,
 #endif
-				0, 0, 0, 0,
-				0,
+    0,
+    0,
+    0,
+    0,
+    0,
 #if defined(SUPPORT_NP2SCSI)
-				1,
+    1,
 #endif
-				100,
-				OEMTEXT(""),
-				0,
-				0,
-				0,
+    100,
+    OEMTEXT(""),
+    0,
+    0,
+    0,
 #if defined(SUPPORT_DEBUGSS)
-				0,
+    0,
 #endif
 #if defined(SUPPORT_VIDEOFILTER)
-				0, 0, 3, 0,
-				{{3, 2}, {3, 2}, {3, 2}},
-				{
-					{{1, 1, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}},
-					{{1, 2, 6, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}},
-					{{1, 3, 8, 0, 0, 255, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}},
-				},
+    0,
+    0,
+    3,
+    0,
+    {{3, 2}, {3, 2}, {3, 2}},
+    {
+        {{1, 1, 0, 0, 0, 0, 0, 0},
+         {0, 0, 0, 0, 0, 0, 0, 0},
+         {0, 0, 0, 0, 0, 0, 0, 0}},
+        {{1, 2, 6, 0, 0, 0, 0, 0},
+         {0, 0, 0, 0, 0, 0, 0, 0},
+         {0, 0, 0, 0, 0, 0, 0, 0}},
+        {{1, 3, 8, 0, 0, 255, 0, 0},
+         {0, 0, 0, 0, 0, 0, 0, 0},
+         {0, 0, 0, 0, 0, 0, 0, 0}},
+    },
 #endif
-				0, 500, 50,
-	};
+    0,
+    500,
+    50,
+};
 
-	PCCORE	pccore = {	PCBASECLOCK25, PCBASEMULTIPLE,
-						0, PCMODEL_VX, 0, 0, {0x3e, 0xe3, 0x7b}, 0,
-						SOUNDID_NONE, 0,
-						PCBASECLOCK25 * PCBASEMULTIPLE};
-	PCSTAT	pcstat = {3, TRUE, FALSE, FALSE};
+PCCORE pccore = {PCBASECLOCK25,
+                 PCBASEMULTIPLE,
+                 0,
+                 PCMODEL_VX,
+                 0,
+                 0,
+                 {0x3e, 0xe3, 0x7b},
+                 0,
+                 SOUNDID_NONE,
+                 0,
+                 PCBASECLOCK25 *PCBASEMULTIPLE};
+PCSTAT pcstat = {3, TRUE, FALSE, FALSE};
 
 //	UINT8	screenupdate = 3;
 //	int		screendispflag = 1;
-	UINT8	soundrenewal = 0;
+UINT8 soundrenewal = 0;
 //	BOOL	drawframe;
-	UINT	drawcount = 0;
+UINT drawcount = 0;
 //	BOOL	hardwarereset = FALSE;
 #if defined(SUPPORT_FMGEN)
-	UINT8	enable_fmgen = 0;
-#endif	/* SUPPORT_FMGEN */
+UINT8 enable_fmgen = 0;
+#endif /* SUPPORT_FMGEN */
 
 #ifdef SUPPORT_ASYNC_CPU
 int asynccpu_lateflag = 0;
@@ -263,440 +403,422 @@ LARGE_INTEGER asynccpu_clockcount = {0};
 
 void getbiospath(OEMCHAR *path, const OEMCHAR *fname, int maxlen) {
 
-const OEMCHAR	*p;
+  const OEMCHAR *p;
 
-	p = np2cfg.biospath;
-	if (p[0]) {
-		file_cpyname(path, p, maxlen);
-		file_setseparator(path, maxlen);
-		file_catname(path, fname, maxlen);
-	}
-	else {
-		file_cpyname(path, file_getcd(fname), maxlen);
-	}
+  p = np2cfg.biospath;
+  if (p[0]) {
+    file_cpyname(path, p, maxlen);
+    file_setseparator(path, maxlen);
+    file_catname(path, fname, maxlen);
+  } else {
+    file_cpyname(path, file_getcd(fname), maxlen);
+  }
 }
-
 
 // ----
 
-static void pccore_set(const NP2CFG *pConfig)
-{
-	UINT8	model;
-	UINT32	multiple;
+static void pccore_set(const NP2CFG *pConfig) {
+  UINT8 model;
+  UINT32 multiple;
 #if defined(SUPPORT_LARGE_MEMORY)
-	UINT16	extsize;
+  UINT16 extsize;
 #else
-	UINT8	extsize;
+  UINT8 extsize;
 #endif
 
-	ZeroMemory(&pccore, sizeof(pccore));
-	model = PCMODEL_VX;
-	if (!milstr_cmp(pConfig->model, str_VM)) {
-		model = PCMODEL_VM;
-	}
-	else if (!milstr_cmp(pConfig->model, str_EPSON)) {
-		model = PCMODEL_EPSON | PCMODEL_VM;
-	}
-	pccore.model = model;
+  ZeroMemory(&pccore, sizeof(pccore));
+  model = PCMODEL_VX;
+  if (!milstr_cmp(pConfig->model, str_VM)) {
+    model = PCMODEL_VM;
+  } else if (!milstr_cmp(pConfig->model, str_EPSON)) {
+    model = PCMODEL_EPSON | PCMODEL_VM;
+  }
+  pccore.model = model;
 
-	CPU_TYPE = 0;
-	if (pConfig->dipsw[2] & 0x80) {
-		CPU_TYPE = CPUTYPE_V30;
-	}
+  CPU_TYPE = 0;
+  if (pConfig->dipsw[2] & 0x80) {
+    CPU_TYPE = CPUTYPE_V30;
+  }
 
-	if (np2cfg.baseclock >= ((PCBASECLOCK25 + PCBASECLOCK20) / 2))
-	{
-		pccore.baseclock = PCBASECLOCK25;			// 2.5MHz
-		pccore.cpumode = 0;
-	}
-	else
-	{
-		pccore.baseclock = PCBASECLOCK20;			// 2.0MHz
-		pccore.cpumode = CPUMODE_8MHZ;
-	}
-	multiple = pConfig->multiple;
-	if (multiple == 0)
-	{
-		multiple = 1;
-	}
-	else if (multiple > 2048)
-	{
-		multiple = 2048;
-	}
-	pccore.multiple = multiple;
-	pccore.maxmultiple = pccore.multiple;
-	pccore.realclock = pccore.baseclock * multiple;
+  if (np2cfg.baseclock >= ((PCBASECLOCK25 + PCBASECLOCK20) / 2)) {
+    pccore.baseclock = PCBASECLOCK25; // 2.5MHz
+    pccore.cpumode = 0;
+  } else {
+    pccore.baseclock = PCBASECLOCK20; // 2.0MHz
+    pccore.cpumode = CPUMODE_8MHZ;
+  }
+  multiple = pConfig->multiple;
+  if (multiple == 0) {
+    multiple = 1;
+  } else if (multiple > CPU_MULTIPLE_MAX) {
+    multiple = CPU_MULTIPLE_MAX;
+  }
+  pccore.multiple = multiple;
+  pccore.maxmultiple = pccore.multiple;
+  pccore.realclock = pccore.baseclock * multiple;
 
-	// HDDの接続 (I/Oの使用状態が変わるので..
-	if (pConfig->dipsw[1] & 0x20)
-	{
-		pccore.hddif |= PCHDD_IDE;
+  // HDDの接続 (I/Oの使用状態が変わるので..
+  if (pConfig->dipsw[1] & 0x20) {
+    pccore.hddif |= PCHDD_IDE;
 #if defined(SUPPORT_IDEIO)
-		sxsi_setdevtype(0x00, np2cfg.idetype[0]);
-		sxsi_setdevtype(0x01, np2cfg.idetype[1]);
-		sxsi_setdevtype(0x02, np2cfg.idetype[2]);
-		sxsi_setdevtype(0x03, np2cfg.idetype[3]);
+    sxsi_setdevtype(0x00, np2cfg.idetype[0]);
+    sxsi_setdevtype(0x01, np2cfg.idetype[1]);
+    sxsi_setdevtype(0x02, np2cfg.idetype[2]);
+    sxsi_setdevtype(0x03, np2cfg.idetype[3]);
 #endif
-	}
-	else
-	{
-		sxsi_setdevtype(0x02, SXSIDEV_NC);
-		sxsi_setdevtype(0x03, SXSIDEV_NC);
-	}
+  } else {
+    sxsi_setdevtype(0x02, SXSIDEV_NC);
+    sxsi_setdevtype(0x03, SXSIDEV_NC);
+  }
 
-	// 拡張メモリ
-	extsize = 0;
-	if (!(pConfig->dipsw[2] & 0x80))
-	{
-		extsize = np2cfg.EXTMEM;
+  // 拡張メモリ
+  extsize = 0;
+  if (!(pConfig->dipsw[2] & 0x80)) {
+    extsize = np2cfg.EXTMEM;
 #if defined(CPUCORE_IA32)
-		extsize = MIN(extsize, MEMORY_MAXSIZE);
+    extsize = MIN(extsize, MEMORY_MAXSIZE);
 #else
-		extsize = MIN(extsize, 13);
+    extsize = MIN(extsize, 13);
 #endif
-	}
-	pccore.extmem = extsize;
-	CopyMemory(pccore.dipsw, pConfig->dipsw, 3);
+  }
+  pccore.extmem = extsize;
+  CopyMemory(pccore.dipsw, pConfig->dipsw, 3);
 
-	// サウンドボードの接続
-	pccore.sound = (SOUNDID)pConfig->SOUND_SW;
+  // サウンドボードの接続
+  pccore.sound = (SOUNDID)pConfig->SOUND_SW;
 
-	// その他CBUSの接続
-	pccore.device = 0;
-	if (pConfig->pc9861enable)
-	{
-		pccore.device |= PCCBUS_PC9861K;
-	}
+  // その他CBUSの接続
+  pccore.device = 0;
+  if (pConfig->pc9861enable) {
+    pccore.device |= PCCBUS_PC9861K;
+  }
 #if defined(SUPPORT_SMPU98)
-	if (pConfig->smpuenable)
-	{
-		pccore.device |= PCCBUS_SMPU98;
-	}
-	else 
+  if (pConfig->smpuenable) {
+    pccore.device |= PCCBUS_SMPU98;
+  } else
 #endif
-	if (pConfig->mpuenable)
-	{
-		pccore.device |= PCCBUS_MPU98;
-	}
+      if (pConfig->mpuenable) {
+    pccore.device |= PCCBUS_MPU98;
+  }
 }
-
 
 // --------------------------------------------------------------------------
 
 #if !defined(DISABLE_SOUND)
-static void sound_init(void)
-{
-	UINT rate;
+static void sound_init(void) {
+  UINT rate;
 
-	rate = np2cfg.samplingrate;
-	if (sound_create(rate, np2cfg.delayms) != SUCCESS)
-	{
-		rate = 0;
-	}
-	fddmtrsnd_initialize(rate);
-	wabrlysnd_initialize(rate);
-	beep_initialize(rate);
-	beep_setvol(np2cfg.BEEP_VOL);
-	tms3631_initialize(rate);
-	tms3631_setvol(np2cfg.vol14);
-	opngen_initialize(rate);
-	opngen_setvol(np2cfg.vol_fm * np2cfg.vol_master / 100);
-	psggen_initialize(rate);
-	psggen_setvol(np2cfg.vol_ssg * np2cfg.vol_master / 100);
-	rhythm_initialize(rate);
-	rhythm_setvol(np2cfg.vol_rhythm * np2cfg.vol_master / 100);
-	adpcm_initialize(rate);
-	adpcm_setvol(np2cfg.vol_adpcm * np2cfg.vol_master / 100);
-	pcm86gen_initialize(rate);
-	pcm86gen_setvol(np2cfg.vol_pcm * np2cfg.vol_master / 100);
-	cs4231_initialize(rate);
+  rate = np2cfg.samplingrate;
+  if (sound_create(rate, np2cfg.delayms) != SUCCESS) {
+    rate = 0;
+  }
+  fddmtrsnd_initialize(rate);
+  wabrlysnd_initialize(rate);
+  beep_initialize(rate);
+  beep_setvol(np2cfg.BEEP_VOL);
+  tms3631_initialize(rate);
+  tms3631_setvol(np2cfg.vol14);
+  opngen_initialize(rate);
+  opngen_setvol(np2cfg.vol_fm * np2cfg.vol_master / 100);
+  psggen_initialize(rate);
+  psggen_setvol(np2cfg.vol_ssg * np2cfg.vol_master / 100);
+  rhythm_initialize(rate);
+  rhythm_setvol(np2cfg.vol_rhythm * np2cfg.vol_master / 100);
+  adpcm_initialize(rate);
+  adpcm_setvol(np2cfg.vol_adpcm * np2cfg.vol_master / 100);
+  pcm86gen_initialize(rate);
+  pcm86gen_setvol(np2cfg.vol_pcm * np2cfg.vol_master / 100);
+  cs4231_initialize(rate);
 #ifdef SUPPORT_SOUND_SB16
-	ct1741_initialize(rate);
+  ct1741_initialize(rate);
 #endif
-	amd98_initialize(rate);
-	oplgen_initialize(rate);
-	oplgen_setvol(np2cfg.vol_fm * np2cfg.vol_master / 100);
+  amd98_initialize(rate);
+  oplgen_initialize(rate);
+  oplgen_setvol(np2cfg.vol_fm * np2cfg.vol_master / 100);
 }
 
 static void sound_term(void) {
 
-	soundmng_stop();
-	amd98_deinitialize();
-	rhythm_deinitialize();
-	beep_deinitialize();
-	wabrlysnd_deinitialize();
-	fddmtrsnd_deinitialize();
-	sound_destroy();
+  soundmng_stop();
+  amd98_deinitialize();
+  rhythm_deinitialize();
+  beep_deinitialize();
+  wabrlysnd_deinitialize();
+  fddmtrsnd_deinitialize();
+  sound_destroy();
 }
 #endif
 
 #if defined(SUPPORT_IA32_HAXM)
 int pccore_mem_malloc_virtualalloc = 0;
 void pccore_mem_malloc(void) {
-	if(!mem){
+  if (!mem) {
 #if defined(NP2_WIN)
-		mem = (UINT8*)_aligned_malloc(0x200000, 4096);
+    mem = (UINT8 *)_aligned_malloc(0x200000, 4096);
 #else
-		mem = (UINT8*)aligned_alloc(4096, 0x200000);
+    mem = (UINT8 *)aligned_alloc(4096, 0x200000);
 #endif
-	}
-	if(!vramex || vramex==vramex_base){
+  }
+  if (!vramex || vramex == vramex_base) {
 #if defined(NP2_WIN)
-		vramex = (UINT8*)_aligned_malloc(0x80000, 4096);
+    vramex = (UINT8 *)_aligned_malloc(0x80000, 4096);
 #else
-		vramex = (UINT8*)aligned_alloc(4096, 0x80000);
+    vramex = (UINT8 *)aligned_alloc(4096, 0x80000);
 #endif
-		memset(vramex, 0, 0x80000);
-	}
+    memset(vramex, 0, 0x80000);
+  }
 }
 void pccore_mem_free(void) {
-	if(mem){
+  if (mem) {
 #if defined(NP2_WIN)
-		_aligned_free(mem);
+    _aligned_free(mem);
 #else
-		free(mem);
+    free(mem);
 #endif
-		mem = NULL;
-	}
-	if(vramex && vramex!=vramex_base){
+    mem = NULL;
+  }
+  if (vramex && vramex != vramex_base) {
 #if defined(NP2_WIN)
-		_aligned_free(vramex);
+    _aligned_free(vramex);
 #else
-		free(vramex);
+    free(vramex);
 #endif
-		vramex = vramex_base;
-	}
+    vramex = vramex_base;
+  }
 }
 #endif
-	
-void pccore_setdefault(void) {
-	/* Just a simplistic implementation for now: re-initialize with defaults */
-	/* In a real scenario, we might want to keep a copy of the original struct. */
-	UINT8 fddequip = np2cfg.fddequip; /* preserve some runtime state if needed? no, full reset */
-	(void)fddequip;
 
-	memset(&np2cfg, 0, sizeof(np2cfg));
-	np2cfg.uPD72020 = 0;
-	np2cfg.DISPSYNC = 1;
-	np2cfg.RASTER = 0;
-	np2cfg.realpal = 32;
-	np2cfg.LCD_MODE = 0;
-	np2cfg.skipline = 0;
-	np2cfg.skiplight = 0x40;
-	milstr_ncpy(np2cfg.model, OEMTEXT("VX"), sizeof(np2cfg.model));
-	np2cfg.baseclock = PCBASECLOCK25;
-	np2cfg.multiple = PCBASEMULTIPLE;
-	np2cfg.samplingrate = 44100;
-	np2cfg.delayms = 150;
-	np2cfg.BEEP_VOL = 3;
-	np2cfg.emuspeed = 100;
-	np2cfg.fddequip = 0x03; /* FDD1 + FDD2 equipped by default */
-	np2cfg.grcg = 3;        /* GRCG+ by default */
-	np2cfg.color16 = 1;     /* 16 color board ON by default */
-	/* ... add other defaults as per the static initializer ... */
+void pccore_setdefault(void) {
+  /* Just a simplistic implementation for now: re-initialize with defaults */
+  /* In a real scenario, we might want to keep a copy of the original struct. */
+  UINT8 fddequip =
+      np2cfg
+          .fddequip; /* preserve some runtime state if needed? no, full reset */
+  (void)fddequip;
+
+  memset(&np2cfg, 0, sizeof(np2cfg));
+  np2cfg.uPD72020 = 0;
+  np2cfg.DISPSYNC = 1;
+  np2cfg.RASTER = 0;
+  np2cfg.realpal = 32;
+  np2cfg.LCD_MODE = 0;
+  np2cfg.skipline = 0;
+  np2cfg.skiplight = 0x40;
+  milstr_ncpy(np2cfg.model, OEMTEXT("VX"), sizeof(np2cfg.model));
+  np2cfg.baseclock = PCBASECLOCK25;
+  np2cfg.multiple = PCBASEMULTIPLE;
+  np2cfg.samplingrate = 44100;
+  np2cfg.delayms = 150;
+  np2cfg.BEEP_VOL = 3;
+  np2cfg.emuspeed = 100;
+  np2cfg.fddequip = 0x03; /* FDD1 + FDD2 equipped by default */
+  np2cfg.grcg = 3;        /* GRCG+ by default */
+  np2cfg.color16 = 1;     /* 16 color board ON by default */
+  /* ... add other defaults as per the static initializer ... */
 }
 
 void pccore_init(void) {
-	
+
 #if defined(SUPPORT_MULTITHREAD)
-	nevent_initialize();
-	pcm86cs_initialize();
-	cs4231cs_initialize();
-	ct1741cs_initialize();
-#endif
-	
-#if defined(SUPPORT_IA32_HAXM)
-	i386hax_check();
-	np2hax.enable = 1;
-	i386hax_initialize();
-#endif
-	
-#if defined(SUPPORT_IA32_HAXM)
-	pccore_mem_malloc();
+  nevent_initialize();
+  pcm86cs_initialize();
+  cs4231cs_initialize();
+  ct1741cs_initialize();
 #endif
 
-	CPU_TYPE = 0;
-	if (np2cfg.dipsw[2] & 0x80) {
-		CPU_TYPE = CPUTYPE_V30;
-	}
+#if defined(SUPPORT_IA32_HAXM)
+  i386hax_check();
+  np2hax.enable = 1;
+  i386hax_initialize();
+#endif
 
-	CPU_INITIALIZE();
-	
-	pic_initialize();
+#if defined(SUPPORT_IA32_HAXM)
+  pccore_mem_malloc();
+#endif
+
+  CPU_TYPE = 0;
+  if (np2cfg.dipsw[2] & 0x80) {
+    CPU_TYPE = CPUTYPE_V30;
+  }
+
+  CPU_INITIALIZE();
+
+  pic_initialize();
 
 #if defined(SUPPORT_VIDEOFILTER)
-	{
-		uint8_t vf_i, vf_j;
+  {
+    uint8_t vf_i, vf_j;
 
-		hVFMng1 = VideoFilter_Init(640, 480, 25, 10);
-		VideoFilterMng_LoadSetting(hVFMng1, np2cfg.vf1_enable, np2cfg.vf1_pcount, np2cfg.vf1_pno);
-		for(vf_j = 0; vf_j < np2cfg.vf1_pcount; vf_j++) {
-			VideoFilter_LoadProfile(hVFMng1, vf_j, np2cfg.vf1_profile[vf_j][0], np2cfg.vf1_profile[vf_j][1]);
-			for(vf_i = 0; vf_i < np2cfg.vf1_profile[vf_j][0]; vf_i++) {
-				VideoFilter_LoadFilter(hVFMng1, vf_j, vf_i, np2cfg.vf1_param[vf_j][vf_i]);
-			}
-		}
-	}
+    hVFMng1 = VideoFilter_Init(640, 480, 25, 10);
+    VideoFilterMng_LoadSetting(hVFMng1, np2cfg.vf1_enable, np2cfg.vf1_pcount,
+                               np2cfg.vf1_pno);
+    for (vf_j = 0; vf_j < np2cfg.vf1_pcount; vf_j++) {
+      VideoFilter_LoadProfile(hVFMng1, vf_j, np2cfg.vf1_profile[vf_j][0],
+                              np2cfg.vf1_profile[vf_j][1]);
+      for (vf_i = 0; vf_i < np2cfg.vf1_profile[vf_j][0]; vf_i++) {
+        VideoFilter_LoadFilter(hVFMng1, vf_j, vf_i,
+                               np2cfg.vf1_param[vf_j][vf_i]);
+      }
+    }
+  }
 #endif
-	pal_initlcdtable();
-	pal_makelcdpal();
-	pal_makeskiptable();
-	dispsync_initialize();
-	sxsi_initialize();
+  pal_initlcdtable();
+  pal_makelcdpal();
+  pal_makeskiptable();
+  dispsync_initialize();
+  sxsi_initialize();
 
-	font_initialize();
-	font_load(np2cfg.fontfile, TRUE, np2cfg.fontface);
-	maketext_initialize();
-	makegrph_initialize();
-	gdcsub_initialize();
-	fddfile_initialize();
+  font_initialize();
+  font_load(np2cfg.fontfile, TRUE, np2cfg.fontface);
+  maketext_initialize();
+  makegrph_initialize();
+  gdcsub_initialize();
+  fddfile_initialize();
 
 #if !defined(DISABLE_SOUND)
 #if defined(SUPPORT_FMGEN)
-	enable_fmgen = 0;
-	if(np2cfg.usefmgen == 1)
-		enable_fmgen = 1;
+  enable_fmgen = 0;
+  if (np2cfg.usefmgen == 1)
+    enable_fmgen = 1;
 #ifdef WIIU
-		enable_fmgen = 0;
+  enable_fmgen = 0;
 #endif
-#endif	/* SUPPORT_FMGEN */
+#endif /* SUPPORT_FMGEN */
 
-	fmboard_construct();
-	sound_init();
+  fmboard_construct();
+  sound_init();
 #endif
 
-	rs232c_construct();
-	mpu98ii_construct();
+  rs232c_construct();
+  mpu98ii_construct();
 #if defined(SUPPORT_SMPU98)
-	smpu98_construct();
+  smpu98_construct();
 #endif
-	pc9861k_initialize();
+  pc9861k_initialize();
 
-	iocore_create();
+  iocore_create();
 
 #if defined(SUPPORT_IDEIO)
-	ideio_initialize();
+  ideio_initialize();
 #endif
 
 #if defined(SUPPORT_HOSTDRV)
-	hostdrv_initialize();
+  hostdrv_initialize();
 #endif
 
 #if defined(SUPPORT_HOSTDRVNT)
-	hostdrvNT_initialize();
+  hostdrvNT_initialize();
 #endif
 
 #if defined(SUPPORT_GPIB)
-	gpibio_initialize();
+  gpibio_initialize();
 #endif
 }
 
 void pccore_term(void) {
-	
+
 #if defined(SUPPORT_GPIB)
-	gpibio_shutdown();
+  gpibio_shutdown();
 #endif
 
 #if defined(SUPPORT_HOSTDRVNT)
-	hostdrvNT_deinitialize();
+  hostdrvNT_deinitialize();
 #endif
 
 #if defined(SUPPORT_HOSTDRV)
-	hostdrv_deinitialize();
+  hostdrv_deinitialize();
 #endif
 
 #if !defined(DISABLE_SOUND)
-	sound_term();
-	fmboard_destruct();
+  sound_term();
+  fmboard_destruct();
 #endif
 
-	fdd_eject(0);
-	fdd_eject(1);
-	fdd_eject(2);
-	fdd_eject(3);
-	
+  fdd_eject(0);
+  fdd_eject(1);
+  fdd_eject(2);
+  fdd_eject(3);
+
 #if defined(SUPPORT_IDEIO)
-	ideio_deinitialize();
+  ideio_deinitialize();
 #endif
 
-	iocore_destroy();
+  iocore_destroy();
 
-	pc9861k_deinitialize();
+  pc9861k_deinitialize();
 #if defined(SUPPORT_SMPU98)
-	smpu98_destruct();
+  smpu98_destruct();
 #endif
-	mpu98ii_destruct();
-	rs232c_destruct();
-	
-	printif_finalize();
+  mpu98ii_destruct();
+  rs232c_destruct();
 
-	hook_fontrom_flush();
-	hook_fontrom_defdisable();
+  printif_finalize();
 
-	sxsi_alltrash();
+  hook_fontrom_flush();
+  hook_fontrom_defdisable();
+
+  sxsi_alltrash();
 
 #if defined(SUPPORT_VIDEOFILTER)
-	{
-		uint8_t vf_i, vf_j;
+  {
+    uint8_t vf_i, vf_j;
 
-		VideoFilterMng_SaveSetting(hVFMng1, &np2cfg.vf1_enable, &np2cfg.vf1_pcount, &np2cfg.vf1_pno);
-		for(vf_j = 0; vf_j < np2cfg.vf1_pcount; vf_j++) {
-			VideoFilter_SaveProfile(hVFMng1, &np2cfg.vf1_profile[vf_j][0], &np2cfg.vf1_profile[vf_j][1], vf_j);
-			for(vf_i = 0; vf_i < np2cfg.vf1_profile[vf_j][0]; vf_i++) {
-				VideoFilter_SaveFilter(hVFMng1, np2cfg.vf1_param[vf_j][vf_i], vf_j, vf_i);
-			}
-		}
-		VideoFilter_Deinit(hVFMng1);
-	}
+    VideoFilterMng_SaveSetting(hVFMng1, &np2cfg.vf1_enable, &np2cfg.vf1_pcount,
+                               &np2cfg.vf1_pno);
+    for (vf_j = 0; vf_j < np2cfg.vf1_pcount; vf_j++) {
+      VideoFilter_SaveProfile(hVFMng1, &np2cfg.vf1_profile[vf_j][0],
+                              &np2cfg.vf1_profile[vf_j][1], vf_j);
+      for (vf_i = 0; vf_i < np2cfg.vf1_profile[vf_j][0]; vf_i++) {
+        VideoFilter_SaveFilter(hVFMng1, np2cfg.vf1_param[vf_j][vf_i], vf_j,
+                               vf_i);
+      }
+    }
+    VideoFilter_Deinit(hVFMng1);
+  }
 #endif
-	
-	pic_deinitialize();
 
-	CPU_SETEXTSIZE(0);	// メモリ解放
-	CPU_DEINITIALIZE();
-	
+  pic_deinitialize();
+
+  CPU_SETEXTSIZE(0); // メモリ解放
+  CPU_DEINITIALIZE();
+
 #if defined(SUPPORT_IA32_HAXM)
-	i386hax_deinitialize();
+  i386hax_deinitialize();
 #endif
-	
+
 #if defined(SUPPORT_IA32_HAXM)
-	pccore_mem_free();
+  pccore_mem_free();
 #endif
-	
+
 #if defined(SUPPORT_MULTITHREAD)
-	pcm86cs_shutdown();
-	cs4231cs_shutdown();
-	ct1741cs_shutdown();
-	nevent_shutdown();
+  pcm86cs_shutdown();
+  cs4231cs_shutdown();
+  ct1741cs_shutdown();
+  nevent_shutdown();
 #endif
 }
 
-
 void pccore_cfgupdate(void) {
 
-	BOOL	renewal;
-	int		i;
+  BOOL renewal;
+  int i;
 
-	renewal = FALSE;
-	for (i=0; i<8; i++)
-	{
-		if (np2cfg.memsw[i] != mem[MEMX_MSW + i*4])
-		{
-			np2cfg.memsw[i] = mem[MEMX_MSW + i*4];
-			renewal = TRUE;
-		}
-	}
-	for (i=0; i<3; i++)
-	{
-		if (np2cfg.dipsw[i] != pccore.dipsw[i])
-		{
-			np2cfg.dipsw[i] = pccore.dipsw[i];
-			renewal = TRUE;
-		}
-	}
-	if (renewal) {
-		sysmng_update(SYS_UPDATECFG);
-	}
+  renewal = FALSE;
+  for (i = 0; i < 8; i++) {
+    if (np2cfg.memsw[i] != mem[MEMX_MSW + i * 4]) {
+      np2cfg.memsw[i] = mem[MEMX_MSW + i * 4];
+      renewal = TRUE;
+    }
+  }
+  for (i = 0; i < 3; i++) {
+    if (np2cfg.dipsw[i] != pccore.dipsw[i]) {
+      np2cfg.dipsw[i] = pccore.dipsw[i];
+      renewal = TRUE;
+    }
+  }
+  if (renewal) {
+    sysmng_update(SYS_UPDATECFG);
+  }
 }
 
 /**
@@ -704,551 +826,580 @@ void pccore_cfgupdate(void) {
  */
 void pccore_reset(void) {
 
-	int		i;
-	BOOL	epson;
-	
+  int i;
+  BOOL epson;
+
 #if defined(SUPPORT_IA32_HAXM)
-	if(np2hax.enable){
-		i386hax_createVM();
-		i386hax_resetVMCPU();
-	}
+  if (np2hax.enable) {
+    i386hax_createVM();
+    i386hax_resetVMCPU();
+  }
 #endif
 
-	soundmng_stop();
+  soundmng_stop();
 #if !defined(DISABLE_SOUND)
 #if defined(SUPPORT_FMGEN)
-	enable_fmgen = 0;
-	if(np2cfg.usefmgen == 1)
-		enable_fmgen = 1;
+  enable_fmgen = 0;
+  if (np2cfg.usefmgen == 1)
+    enable_fmgen = 1;
 #ifdef WIIU
-		enable_fmgen = 0;
+  enable_fmgen = 0;
 #endif
-#endif	/* SUPPORT_FMGEN */
+#endif /* SUPPORT_FMGEN */
 
-	if (soundrenewal) {
-		soundrenewal = 0;
-		sound_term();
-		sound_init();
-	}
+  if (soundrenewal) {
+    soundrenewal = 0;
+    sound_term();
+    sound_init();
+  }
 #endif
-	ZeroMemory(mem, 0x110000);
-	FillMemory(mem + 0xC0000, 0xE8000 - 0xC0000, 0xff); // なぞ
-	ZeroMemory(mem + VRAM1_B, 0x18000);
-	ZeroMemory(mem + VRAM1_E, 0x08000);
-	ZeroMemory(mem + FONT_ADRS, 0x08000);
+  ZeroMemory(mem, 0x110000);
+  FillMemory(mem + 0xC0000, 0xE8000 - 0xC0000, 0xff); // なぞ
+  ZeroMemory(mem + VRAM1_B, 0x18000);
+  ZeroMemory(mem + VRAM1_E, 0x08000);
+  ZeroMemory(mem + FONT_ADRS, 0x08000);
 
-	//メモリスイッチ
-	for (i=0; i<8; i++)
-	{
-		mem[0xa3fe2 + i*4] = np2cfg.memsw[i];
-	}
-	
+  // メモリスイッチ
+  for (i = 0; i < 8; i++) {
+    mem[0xa3fe2 + i * 4] = np2cfg.memsw[i];
+  }
+
 #if defined(CPUCORE_IA32)
-	if(np2cfg.cpu_family == CPU_80386_FAMILY && np2cfg.cpu_model == CPU_80386_MODEL){
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_80386);
-	}else if(np2cfg.cpu_family == CPU_I486SX_FAMILY && np2cfg.cpu_model == CPU_I486SX_MODEL){
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_I486SX);
-	}else if(np2cfg.cpu_family == CPU_I486DX_FAMILY && np2cfg.cpu_model == CPU_I486DX_MODEL){
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_I486DX);
-	}else if(np2cfg.cpu_family == CPU_PENTIUM_FAMILY && np2cfg.cpu_model == CPU_PENTIUM_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM);
-	}else if(np2cfg.cpu_family == CPU_MMX_PENTIUM_FAMILY && np2cfg.cpu_model == CPU_MMX_PENTIUM_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_MMX_PENTIUM);
-	}else if(np2cfg.cpu_family == CPU_PENTIUM_PRO_FAMILY && np2cfg.cpu_model == CPU_PENTIUM_PRO_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_PRO);
-	}else if(np2cfg.cpu_family == CPU_PENTIUM_II_FAMILY && np2cfg.cpu_model == CPU_PENTIUM_II_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_II);
-	}else if(np2cfg.cpu_family == CPU_PENTIUM_III_FAMILY && np2cfg.cpu_model == CPU_PENTIUM_III_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_III);
-	}else if(np2cfg.cpu_family == CPU_PENTIUM_M_FAMILY && np2cfg.cpu_model == CPU_PENTIUM_M_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_M);
-	}else if(np2cfg.cpu_family == CPU_PENTIUM_4_FAMILY && np2cfg.cpu_model == CPU_PENTIUM_4_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_4);
-	}else if(np2cfg.cpu_family == CPU_CORE_2_DUO_FAMILY && np2cfg.cpu_model == CPU_CORE_2_DUO_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_CORE_2_DUO);
-	}else if(np2cfg.cpu_family == CPU_CORE_2_DUOW_FAMILY && np2cfg.cpu_model == CPU_CORE_2_DUOW_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_CORE_2_DUOW);
-	}else if(np2cfg.cpu_family == CPU_CORE_I_FAMILY && np2cfg.cpu_model == CPU_CORE_I_MODEL && !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)){
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_CORE_I);
+  if (np2cfg.cpu_family == CPU_80386_FAMILY &&
+      np2cfg.cpu_model == CPU_80386_MODEL) {
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_80386);
+  } else if (np2cfg.cpu_family == CPU_I486SX_FAMILY &&
+             np2cfg.cpu_model == CPU_I486SX_MODEL) {
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_I486SX);
+  } else if (np2cfg.cpu_family == CPU_I486DX_FAMILY &&
+             np2cfg.cpu_model == CPU_I486DX_MODEL) {
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_I486DX);
+  } else if (np2cfg.cpu_family == CPU_PENTIUM_FAMILY &&
+             np2cfg.cpu_model == CPU_PENTIUM_MODEL &&
+             !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)) {
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM);
+  } else if (np2cfg.cpu_family == CPU_MMX_PENTIUM_FAMILY &&
+             np2cfg.cpu_model == CPU_MMX_PENTIUM_MODEL &&
+             !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)) {
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_MMX_PENTIUM);
+  } else if (np2cfg.cpu_family == CPU_PENTIUM_PRO_FAMILY &&
+             np2cfg.cpu_model == CPU_PENTIUM_PRO_MODEL &&
+             !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)) {
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_PRO);
+  } else if (np2cfg.cpu_family == CPU_PENTIUM_II_FAMILY &&
+             np2cfg.cpu_model == CPU_PENTIUM_II_MODEL &&
+             !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)) {
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_II);
+  } else if (np2cfg.cpu_family == CPU_PENTIUM_III_FAMILY &&
+             np2cfg.cpu_model == CPU_PENTIUM_III_MODEL &&
+             !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)) {
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_III);
+  } else if (np2cfg.cpu_family == CPU_PENTIUM_M_FAMILY &&
+             np2cfg.cpu_model == CPU_PENTIUM_M_MODEL &&
+             !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)) {
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_M);
+  } else if (np2cfg.cpu_family == CPU_PENTIUM_4_FAMILY &&
+             np2cfg.cpu_model == CPU_PENTIUM_4_MODEL &&
+             !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)) {
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_4);
+  } else if (np2cfg.cpu_family == CPU_CORE_2_DUO_FAMILY &&
+             np2cfg.cpu_model == CPU_CORE_2_DUO_MODEL &&
+             !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)) {
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_CORE_2_DUO);
+  } else if (np2cfg.cpu_family == CPU_CORE_2_DUOW_FAMILY &&
+             np2cfg.cpu_model == CPU_CORE_2_DUOW_MODEL &&
+             !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)) {
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_CORE_2_DUOW);
+  } else if (np2cfg.cpu_family == CPU_CORE_I_FAMILY &&
+             np2cfg.cpu_model == CPU_CORE_I_MODEL &&
+             !(np2cfg.cpu_feature_ex & CPU_FEATURE_EX_3DNOW)) {
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_CORE_I);
 
-	}else if(np2cfg.cpu_family == CPU_AMD_K6_2_FAMILY && np2cfg.cpu_model == CPU_AMD_K6_2_MODEL){
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K6_2);
-	}else if(np2cfg.cpu_family == CPU_AMD_K6_III_FAMILY && np2cfg.cpu_model == CPU_AMD_K6_III_MODEL){
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K6_III);
-	}else if(np2cfg.cpu_family == CPU_AMD_K7_ATHLON_FAMILY && np2cfg.cpu_model == CPU_AMD_K7_ATHLON_MODEL){
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K7_ATHLON);
-	}else if(np2cfg.cpu_family == CPU_AMD_K7_ATHLON_XP_FAMILY && np2cfg.cpu_model == CPU_AMD_K7_ATHLON_XP_MODEL){
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K7_ATHLON_XP);
-	}else if(np2cfg.cpu_family == CPU_AMD_K8_ATHLON_64_FAMILY && np2cfg.cpu_model == CPU_AMD_K8_ATHLON_64_MODEL){
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K8_ATHLON_64);
-	}else if(np2cfg.cpu_family == CPU_AMD_K8_ATHLON_64X2_FAMILY && np2cfg.cpu_model == CPU_AMD_K8_ATHLON_64X2_MODEL){
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K8_ATHLON_64X2);
-	}else if(np2cfg.cpu_family == CPU_AMD_K10_PHENOM_FAMILY && np2cfg.cpu_model == CPU_AMD_K10_PHENOM_MODEL){
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K10_PHENOM);
+  } else if (np2cfg.cpu_family == CPU_AMD_K6_2_FAMILY &&
+             np2cfg.cpu_model == CPU_AMD_K6_2_MODEL) {
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K6_2);
+  } else if (np2cfg.cpu_family == CPU_AMD_K6_III_FAMILY &&
+             np2cfg.cpu_model == CPU_AMD_K6_III_MODEL) {
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K6_III);
+  } else if (np2cfg.cpu_family == CPU_AMD_K7_ATHLON_FAMILY &&
+             np2cfg.cpu_model == CPU_AMD_K7_ATHLON_MODEL) {
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K7_ATHLON);
+  } else if (np2cfg.cpu_family == CPU_AMD_K7_ATHLON_XP_FAMILY &&
+             np2cfg.cpu_model == CPU_AMD_K7_ATHLON_XP_MODEL) {
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K7_ATHLON_XP);
+  } else if (np2cfg.cpu_family == CPU_AMD_K8_ATHLON_64_FAMILY &&
+             np2cfg.cpu_model == CPU_AMD_K8_ATHLON_64_MODEL) {
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K8_ATHLON_64);
+  } else if (np2cfg.cpu_family == CPU_AMD_K8_ATHLON_64X2_FAMILY &&
+             np2cfg.cpu_model == CPU_AMD_K8_ATHLON_64X2_MODEL) {
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K8_ATHLON_64X2);
+  } else if (np2cfg.cpu_family == CPU_AMD_K10_PHENOM_FAMILY &&
+             np2cfg.cpu_model == CPU_AMD_K10_PHENOM_MODEL) {
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K10_PHENOM);
 
-	}else if(np2cfg.cpu_family == 0 && np2cfg.cpu_model == 0 && np2cfg.cpu_stepping == 0 && np2cfg.cpu_feature == 0){
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_NEKOPRO);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_NEKOPRO2);
-	}else{
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_NEKOPRO);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_NEKOPRO);
-	}
+  } else if (np2cfg.cpu_family == 0 && np2cfg.cpu_model == 0 &&
+             np2cfg.cpu_stepping == 0 && np2cfg.cpu_feature == 0) {
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_NEKOPRO);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_NEKOPRO2);
+  } else {
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_NEKOPRO);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_NEKOPRO);
+  }
 #if defined(CPUCORE_IA32)
-	if(strlen(np2cfg.cpu_vendor_o)!=0){
-		memset(np2cfg.cpu_vendor, 0, 12);
-		strcpy(np2cfg.cpu_vendor, np2cfg.cpu_vendor_o);
-		// 字数が足りない時スペースで埋める
-		for(i=0;i<12;i++){
-			if(np2cfg.cpu_vendor[i] == '\0'){
-				np2cfg.cpu_vendor[i] = ' ';
-			}
-		}
-		np2cfg.cpu_vendor[12] = '\0';
-	}
-	if(strlen(np2cfg.cpu_brandstring_o)!=0){
-		memset(np2cfg.cpu_brandstring, 0, 48);
-		strcpy(np2cfg.cpu_brandstring, np2cfg.cpu_brandstring_o);
-		// 最後に1文字スペースを入れる
-		strcat(np2cfg.cpu_brandstring, " ");
-	}
+  if (strlen(np2cfg.cpu_vendor_o) != 0) {
+    memset(np2cfg.cpu_vendor, 0, 12);
+    strcpy(np2cfg.cpu_vendor, np2cfg.cpu_vendor_o);
+    // 字数が足りない時スペースで埋める
+    for (i = 0; i < 12; i++) {
+      if (np2cfg.cpu_vendor[i] == '\0') {
+        np2cfg.cpu_vendor[i] = ' ';
+      }
+    }
+    np2cfg.cpu_vendor[12] = '\0';
+  }
+  if (strlen(np2cfg.cpu_brandstring_o) != 0) {
+    memset(np2cfg.cpu_brandstring, 0, 48);
+    strcpy(np2cfg.cpu_brandstring, np2cfg.cpu_brandstring_o);
+    // 最後に1文字スペースを入れる
+    strcat(np2cfg.cpu_brandstring, " ");
+  }
 #endif
-	strcpy(i386cpuid.cpu_vendor, np2cfg.cpu_vendor);
-	if(np2cfg.cpu_family == 0 && np2cfg.cpu_model == 0 && np2cfg.cpu_stepping == 0 && np2cfg.cpu_feature == 0 && np2cfg.cpu_feature_ex == 0){
-		// 設定に関係なく全部使えるようにする
-		i386cpuid.cpu_family = CPU_FAMILY;
-		i386cpuid.cpu_model = CPU_MODEL;
-		i386cpuid.cpu_stepping = CPU_STEPPING;
-		i386cpuid.cpu_feature = CPU_FEATURES_ALL;
-		i386cpuid.cpu_feature_ex = CPU_FEATURES_EX_ALL;
-		i386cpuid.cpu_feature_ecx = CPU_FEATURES_ECX_ALL;
-		i386cpuid.cpu_feature_ex_ecx = CPU_FEATURES_EX_ECX_ALL;
-		i386cpuid.cpu_eflags_mask = 0;
-		i386cpuid.cpu_brandid = 0;
-	}else{
-		i386cpuid.cpu_family = np2cfg.cpu_family;
-		i386cpuid.cpu_model = np2cfg.cpu_model;
-		i386cpuid.cpu_stepping = np2cfg.cpu_stepping;
-		i386cpuid.cpu_feature = CPU_FEATURES_ALL & np2cfg.cpu_feature;
-		i386cpuid.cpu_feature_ex = CPU_FEATURES_EX_ALL & np2cfg.cpu_feature_ex;
-		i386cpuid.cpu_feature_ecx = CPU_FEATURES_ECX_ALL & np2cfg.cpu_feature_ecx;
-		i386cpuid.cpu_feature_ex_ecx = CPU_FEATURES_EX_ECX_ALL & np2cfg.cpu_feature_ex_ecx;
-		i386cpuid.cpu_eflags_mask = (AC_FLAG) & np2cfg.cpu_eflags_mask;
-		i386cpuid.cpu_brandid = np2cfg.cpu_brandid;
-	}
-	strcpy(i386cpuid.cpu_brandstring, np2cfg.cpu_brandstring);
+  strcpy(i386cpuid.cpu_vendor, np2cfg.cpu_vendor);
+  if (np2cfg.cpu_family == 0 && np2cfg.cpu_model == 0 &&
+      np2cfg.cpu_stepping == 0 && np2cfg.cpu_feature == 0 &&
+      np2cfg.cpu_feature_ex == 0) {
+    // 設定に関係なく全部使えるようにする
+    i386cpuid.cpu_family = CPU_FAMILY;
+    i386cpuid.cpu_model = CPU_MODEL;
+    i386cpuid.cpu_stepping = CPU_STEPPING;
+    i386cpuid.cpu_feature = CPU_FEATURES_ALL;
+    i386cpuid.cpu_feature_ex = CPU_FEATURES_EX_ALL;
+    i386cpuid.cpu_feature_ecx = CPU_FEATURES_ECX_ALL;
+    i386cpuid.cpu_feature_ex_ecx = CPU_FEATURES_EX_ECX_ALL;
+    i386cpuid.cpu_eflags_mask = 0;
+    i386cpuid.cpu_brandid = 0;
+  } else {
+    i386cpuid.cpu_family = np2cfg.cpu_family;
+    i386cpuid.cpu_model = np2cfg.cpu_model;
+    i386cpuid.cpu_stepping = np2cfg.cpu_stepping;
+    i386cpuid.cpu_feature = CPU_FEATURES_ALL & np2cfg.cpu_feature;
+    i386cpuid.cpu_feature_ex = CPU_FEATURES_EX_ALL & np2cfg.cpu_feature_ex;
+    i386cpuid.cpu_feature_ecx = CPU_FEATURES_ECX_ALL & np2cfg.cpu_feature_ecx;
+    i386cpuid.cpu_feature_ex_ecx =
+        CPU_FEATURES_EX_ECX_ALL & np2cfg.cpu_feature_ex_ecx;
+    i386cpuid.cpu_eflags_mask = (AC_FLAG)&np2cfg.cpu_eflags_mask;
+    i386cpuid.cpu_brandid = np2cfg.cpu_brandid;
+  }
+  strcpy(i386cpuid.cpu_brandstring, np2cfg.cpu_brandstring);
 
-	// BrandID自動設定（過去バージョンとの互換維持用）
-	if(i386cpuid.cpu_brandid == CPU_BRAND_ID_AUTO){
-		if(strncmp(i386cpuid.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_III, 27)==0){
-			CPU_EBX = 0x2;
-		}else if(strncmp(i386cpuid.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_M, 27)==0){
-			CPU_EBX = 0x16;
-		}else if(strncmp(i386cpuid.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_4, 27)==0){
-			CPU_EBX = 0x9;
-		}else{
-			CPU_EBX = 0;
-		}
-	}
-	
-	// mov cs,xx許可フラグ
-	i386cpuid.allow_movCS = np2cfg.allowMOVCS;
+  // BrandID自動設定（過去バージョンとの互換維持用）
+  if (i386cpuid.cpu_brandid == CPU_BRAND_ID_AUTO) {
+    if (strncmp(i386cpuid.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_III, 27) ==
+        0) {
+      CPU_EBX = 0x2;
+    } else if (strncmp(i386cpuid.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_M,
+                       27) == 0) {
+      CPU_EBX = 0x16;
+    } else if (strncmp(i386cpuid.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_4,
+                       27) == 0) {
+      CPU_EBX = 0x9;
+    } else {
+      CPU_EBX = 0;
+    }
+  }
 
-	// FPU種類を設定 使えないなら別のタイプへ変更する
-	i386cpuid.fpu_type = np2cfg.fpu_type;
+  // mov cs,xx許可フラグ
+  i386cpuid.allow_movCS = np2cfg.allowMOVCS;
+
+  // FPU種類を設定 使えないなら別のタイプへ変更する
+  i386cpuid.fpu_type = np2cfg.fpu_type;
 #if !defined(SUPPORT_FPU_SOFTFLOAT) && !defined(SUPPORT_FPU_SOFTFLOAT3)
-	if (i386cpuid.fpu_type == FPU_TYPE_SOFTFLOAT) {
-		i386cpuid.fpu_type = FPU_TYPE_DOSBOX2;
-	}
+  if (i386cpuid.fpu_type == FPU_TYPE_SOFTFLOAT) {
+    i386cpuid.fpu_type = FPU_TYPE_DOSBOX2;
+  }
 #elif !defined(SUPPORT_FPU_DOSBOX2)
-	if (i386cpuid.fpu_type == FPU_TYPE_DOSBOX2) {
+  if (i386cpuid.fpu_type == FPU_TYPE_DOSBOX2) {
 #if defined(SUPPORT_FPU_SOFTFLOAT) || defined(SUPPORT_FPU_SOFTFLOAT3)
-		i386cpuid.fpu_type = FPU_TYPE_SOFTFLOAT;
+    i386cpuid.fpu_type = FPU_TYPE_SOFTFLOAT;
 #else
-		i386cpuid.fpu_type = FPU_TYPE_DOSBOX;
+    i386cpuid.fpu_type = FPU_TYPE_DOSBOX;
 #endif
-	}
+  }
 #elif !defined(SUPPORT_FPU_DOSBOX)
-	if (i386cpuid.fpu_type == FPU_TYPE_DOSBOX) {
+  if (i386cpuid.fpu_type == FPU_TYPE_DOSBOX) {
 #if defined(SUPPORT_FPU_SOFTFLOAT) || defined(SUPPORT_FPU_SOFTFLOAT3)
-		i386cpuid.fpu_type = FPU_TYPE_SOFTFLOAT;
+    i386cpuid.fpu_type = FPU_TYPE_SOFTFLOAT;
 #else
-		i386cpuid.fpu_type = FPU_TYPE_DOSBOX2;
+    i386cpuid.fpu_type = FPU_TYPE_DOSBOX2;
 #endif
-	}
+  }
 #endif
-	fpu_initialize(1);
+  fpu_initialize(1);
 #endif
 
-	pccore_set(&np2cfg);
+  pccore_set(&np2cfg);
 #if defined(SUPPORT_BMS)
-	bmsio_set();
+  bmsio_set();
 #endif
-	nevent_allreset();
+  nevent_allreset();
 
-	CPU_RESET();
-	CPU_SETEXTSIZE((UINT32)pccore.extmem);
+  CPU_RESET();
+  CPU_SETEXTSIZE((UINT32)pccore.extmem);
 
-	epson = (pccore.model & PCMODEL_EPSON) ? TRUE : FALSE;
-	if (epson || np2cfg.useram_d) {
-		/* enable RAM (D0000-DFFFF) */
-		CPU_RAM_D000 = 0xffff;
-	}
-	font_setchargraph(epson);
-	
+  epson = (pccore.model & PCMODEL_EPSON) ? TRUE : FALSE;
+  if (epson || np2cfg.useram_d) {
+    /* enable RAM (D0000-DFFFF) */
+    CPU_RAM_D000 = 0xffff;
+  }
+  font_setchargraph(epson);
+
 #if defined(SUPPORT_IA32_HAXM)
-	if(np2hax.hVMDevice){
-		i386hax_vm_allocmemory();
-	}
+  if (np2hax.hVMDevice) {
+    i386hax_vm_allocmemory();
+  }
 #endif
 
-	// HDDセット
-	diskdrv_hddbind();
-	// SASI/IDEどっち？
+  // HDDセット
+  diskdrv_hddbind();
+  // SASI/IDEどっち？
 #if defined(SUPPORT_SASI)
-	if (sxsi_issasi()) {
-		pccore.hddif &= ~PCHDD_IDE;
-		pccore.hddif |= PCHDD_SASI;
-		TRACEOUT(("supported SASI"));
-	}
+  if (sxsi_issasi()) {
+    pccore.hddif &= ~PCHDD_IDE;
+    pccore.hddif |= PCHDD_SASI;
+    TRACEOUT(("supported SASI"));
+  }
 #endif
 #if defined(SUPPORT_SCSI)
-	if (sxsi_isscsi()) {
-		pccore.hddif |= PCHDD_SCSI;
-		TRACEOUT(("supported SCSI"));
-	}
+  if (sxsi_isscsi()) {
+    pccore.hddif |= PCHDD_SCSI;
+    TRACEOUT(("supported SCSI"));
+  }
 #endif
 
-	sound_changeclock();
-	beep_changeclock();
-	sound_reset();
-	fddmtrsnd_bind();
-	wabrlysnd_bind();
+  sound_changeclock();
+  beep_changeclock();
+  sound_reset();
+  fddmtrsnd_bind();
+  wabrlysnd_bind();
 
-	fddfile_reset2dmode();
-	bios0x18_16(0x20, 0xe1);
+  fddfile_reset2dmode();
+  bios0x18_16(0x20, 0xe1);
 
-	iocore_reset(&np2cfg);								// サウンドでpicを呼ぶので…
-	cbuscore_reset(&np2cfg);
-	fmboard_reset(&np2cfg, pccore.sound);
+  iocore_reset(&np2cfg); // サウンドでpicを呼ぶので…
+  cbuscore_reset(&np2cfg);
+  fmboard_reset(&np2cfg, pccore.sound);
 
-	MEMM_ARCH((epson) ? 1 : 0);
-	iocore_build();
-	iocore_bind();
-	cbuscore_bind();
-	fmboard_bind();
+  MEMM_ARCH((epson) ? 1 : 0);
+  iocore_build();
+  iocore_bind();
+  cbuscore_bind();
+  fmboard_bind();
 
-	fddmtr_initialize();
-	wabrly_initialize();
-	calendar_initialize();
-	vram_initialize();
+  fddmtr_initialize();
+  wabrly_initialize();
+  calendar_initialize();
+  vram_initialize();
 
-	pal_change(1);
+  pal_change(1);
 
-	bios_initialize();
-	
-	CS_BASE = 0xf0000;
-	CPU_CS = 0xf000;
-	CPU_IP = 0xfff0;
+  bios_initialize();
 
-	CPU_CLEARPREFETCH();
-	sysmng_cpureset();
+  CS_BASE = 0xf0000;
+  CPU_CS = 0xf000;
+  CPU_IP = 0xfff0;
+
+  CPU_CLEARPREFETCH();
+  sysmng_cpureset();
 
 #if defined(SUPPORT_HOSTDRV)
-	hostdrv_reset();
+  hostdrv_reset();
 #endif
 #if defined(SUPPORT_HOSTDRVNT)
-	hostdrvNT_reset();
+  hostdrvNT_reset();
 #endif
 
-	timing_reset();
-	soundmng_play();
-	
+  timing_reset();
+  soundmng_play();
+
 #if defined(SUPPORT_IA32_HAXM)
-	if(np2hax.enable){
-		if(np2hax.hVMDevice){
-			i386hax_vm_setmemory();
-			i386hax_vm_setbankmemory();
-			i386hax_vm_setextmemory();
-		
-			i386hax_resetVMMem();
+  if (np2hax.enable) {
+    if (np2hax.hVMDevice) {
+      i386hax_vm_setmemory();
+      i386hax_vm_setbankmemory();
+      i386hax_vm_setextmemory();
 
-			np2haxcore.clockpersec = NP2_TickCount_GetFrequency();
-			np2haxcore.lastclock = NP2_TickCount_GetCount();
-			np2haxcore.clockcount = NP2_TickCount_GetCount();
-			np2haxcore.I_ratio = 0;
+      i386hax_resetVMMem();
 
-			np2haxstat.update_regs = np2haxstat.update_fpu = 0;
-		}else{
-			np2hax.enable = 1;
-		}
-	}
+      np2haxcore.clockpersec = NP2_TickCount_GetFrequency();
+      np2haxcore.lastclock = NP2_TickCount_GetCount();
+      np2haxcore.clockcount = NP2_TickCount_GetCount();
+      np2haxcore.I_ratio = 0;
+
+      np2haxstat.update_regs = np2haxstat.update_fpu = 0;
+    } else {
+      np2hax.enable = 1;
+    }
+  }
 #endif
 #ifdef SUPPORT_ASYNC_CPU
 #if defined(NP2_WIN)
-	if(GetTickCounterMode()==TCMODE_PERFORMANCECOUNTER){
-		asynccpu_clockpersec = GetTickCounter_ClockPerSec();
-		asynccpu_lastclock = GetTickCounter_Clock();
-		asynccpu_clockcount = GetTickCounter_Clock();
-	}else{
-		asynccpu_clockpersec.QuadPart = 0;
-	}
-	pccore_asynccpu_initialize();
-	pccore_asynccpu_updatesettings(np2cfg.asynclvl);
+  if (GetTickCounterMode() == TCMODE_PERFORMANCECOUNTER) {
+    asynccpu_clockpersec = GetTickCounter_ClockPerSec();
+    asynccpu_lastclock = GetTickCounter_Clock();
+    asynccpu_clockcount = GetTickCounter_Clock();
+  } else {
+    asynccpu_clockpersec.QuadPart = 0;
+  }
+  pccore_asynccpu_initialize();
+  pccore_asynccpu_updatesettings(np2cfg.asynclvl);
 #elif defined(__LIBRETRO__)
-	{
-		UINT64 c = clock();
-		COPY64(&asynccpu_lastclock, &c)
-		COPY64(&asynccpu_clockcount, &c)
-		c = CLOCKS_PER_SEC;
-		COPY64(&asynccpu_clockpersec, &c)
-	}
+  {
+    UINT64 c = clock();
+    COPY64(&asynccpu_lastclock, &c)
+    COPY64(&asynccpu_clockcount, &c)
+    c = CLOCKS_PER_SEC;
+    COPY64(&asynccpu_clockpersec, &c)
+  }
 #elif defined(USE_SDL)
-	{
-		UINT64 c;
+  {
+    UINT64 c;
 #if USE_SDL >= 2
-		c = SDL_GetPerformanceCounter();
+    c = SDL_GetPerformanceCounter();
 #else
-		c = SDL_GetTicks();
+    c = SDL_GetTicks();
 #endif
-		COPY64(&asynccpu_lastclock, &c)
-		COPY64(&asynccpu_clockcount, &c)
-		c = SDL_GetPerformanceFrequency();
-		COPY64(&asynccpu_clockpersec, &c)
-	}
+    COPY64(&asynccpu_lastclock, &c)
+    COPY64(&asynccpu_clockcount, &c)
+    c = SDL_GetPerformanceFrequency();
+    COPY64(&asynccpu_clockpersec, &c)
+  }
 #endif
 #endif
 
-	// エミュレーション速度セット
-	if (np2cfg.emuspeed < 1) np2cfg.emuspeed = 1;
-	timing_setspeed(np2cfg.emuspeed * 128 / 100);
+  // エミュレーション速度セット
+  if (np2cfg.emuspeed < 1)
+    np2cfg.emuspeed = 1;
+  timing_setspeed(np2cfg.emuspeed * 128 / 100);
 
 #if defined(NP2_WIN)
-	// マウスリセット
-	mousemng_reset();
+  // マウスリセット
+  mousemng_reset();
 #endif
 
-	// キーボードリセット
-	keystat_initialize();
+  // キーボードリセット
+  keystat_initialize();
 }
 
 static void drawscreen(void) {
 
-	UINT8	timing;
-	void	(VRAMCALL * grphfn)(int page, int alldraw);
-	UINT8	bit;
-	
+  UINT8 timing;
+  void(VRAMCALL * grphfn)(int page, int alldraw);
+  UINT8 bit;
 
-	tramflag.timing++;
-	timing = ((LOADINTELWORD(gdc.m.para + GDC_CSRFORM + 1)) >> 5) & 0x3e;
-	if (!timing) {
-		timing = 0x40;
-	}
-	if (tramflag.timing >= timing) {
-		tramflag.timing = 0;
-		tramflag.count++;
-		tramflag.renewal |= (tramflag.count ^ 2) & 2;
-		tramflag.renewal |= 1;
-	}
+  tramflag.timing++;
+  timing = ((LOADINTELWORD(gdc.m.para + GDC_CSRFORM + 1)) >> 5) & 0x3e;
+  if (!timing) {
+    timing = 0x40;
+  }
+  if (tramflag.timing >= timing) {
+    tramflag.timing = 0;
+    tramflag.count++;
+    tramflag.renewal |= (tramflag.count ^ 2) & 2;
+    tramflag.renewal |= 1;
+  }
 
-	if (gdcs.textdisp & GDCSCRN_EXT) {
-		gdc_updateclock();
-	}
+  if (gdcs.textdisp & GDCSCRN_EXT) {
+    gdc_updateclock();
+  }
 
-	if (!pcstat.drawframe) {
-		return;
-	}
+  if (!pcstat.drawframe) {
+    return;
+  }
 #ifdef SUPPORT_WAB
-	if(np2wab.relay & 0x3){
-		if(!np2wabcfg.multiwindow){
-			pcstat.screenupdate = scrndraw_draw((UINT8)(pcstat.screenupdate & 2));
-			drawcount++;
-			return;
-		}else{
-			pcstat.screenupdate = 1;
-			drawcount++;
-		}
-	}
+  if (np2wab.relay & 0x3) {
+    if (!np2wabcfg.multiwindow) {
+      pcstat.screenupdate = scrndraw_draw((UINT8)(pcstat.screenupdate & 2));
+      drawcount++;
+      return;
+    } else {
+      pcstat.screenupdate = 1;
+      drawcount++;
+    }
+  }
 #endif
-	if ((gdcs.textdisp & GDCSCRN_EXT) || (gdcs.grphdisp & GDCSCRN_EXT)) {
-		if (dispsync_renewalvertical()) {
-			gdcs.textdisp |= GDCSCRN_ALLDRAW2;
-			gdcs.grphdisp |= GDCSCRN_ALLDRAW2;
-		}
-	}
-	if (gdcs.textdisp & GDCSCRN_EXT) {
-		gdcs.textdisp &= ~GDCSCRN_EXT;
-		dispsync_renewalhorizontal();
-		tramflag.renewal |= 1;
-		if (dispsync_renewalmode()) {
-			pcstat.screenupdate |= 2;
-		}
-	}
-	if (gdcs.palchange) {
-		gdcs.palchange = 0;
-		pal_change(0);
-		pcstat.screenupdate |= 1;
-	}
-	if (gdcs.grphdisp & GDCSCRN_EXT) {
-		gdcs.grphdisp &= ~GDCSCRN_EXT;
-		if (((gdc.clock & 0x80) && (gdc.clock != 0x83)) ||
-			(gdc.clock == 0x03)) {
-			gdc.clock ^= 0x80;
-			gdcs.grphdisp |= GDCSCRN_ALLDRAW2;
-		}
-	}
-	if (gdcs.grphdisp & GDCSCRN_ENABLE) {
-		if (!(gdc.mode1 & 2)) {
-			grphfn = makegrph;
-			bit = GDCSCRN_MAKE;
-			if (gdcs.disp) {
-				bit <<= 1;
-			}
+  if ((gdcs.textdisp & GDCSCRN_EXT) || (gdcs.grphdisp & GDCSCRN_EXT)) {
+    if (dispsync_renewalvertical()) {
+      gdcs.textdisp |= GDCSCRN_ALLDRAW2;
+      gdcs.grphdisp |= GDCSCRN_ALLDRAW2;
+    }
+  }
+  if (gdcs.textdisp & GDCSCRN_EXT) {
+    gdcs.textdisp &= ~GDCSCRN_EXT;
+    dispsync_renewalhorizontal();
+    tramflag.renewal |= 1;
+    if (dispsync_renewalmode()) {
+      pcstat.screenupdate |= 2;
+    }
+  }
+  if (gdcs.palchange) {
+    gdcs.palchange = 0;
+    pal_change(0);
+    pcstat.screenupdate |= 1;
+  }
+  if (gdcs.grphdisp & GDCSCRN_EXT) {
+    gdcs.grphdisp &= ~GDCSCRN_EXT;
+    if (((gdc.clock & 0x80) && (gdc.clock != 0x83)) || (gdc.clock == 0x03)) {
+      gdc.clock ^= 0x80;
+      gdcs.grphdisp |= GDCSCRN_ALLDRAW2;
+    }
+  }
+  if (gdcs.grphdisp & GDCSCRN_ENABLE) {
+    if (!(gdc.mode1 & 2)) {
+      grphfn = makegrph;
+      bit = GDCSCRN_MAKE;
+      if (gdcs.disp) {
+        bit <<= 1;
+      }
 #if defined(SUPPORT_PC9821)
-			if (gdc.analog & 2) {
-				grphfn = makegrphex;
-				if (gdc.analog & 4) {
-					bit = GDCSCRN_MAKE | (GDCSCRN_MAKE << 1);
-				}
-			}
+      if (gdc.analog & 2) {
+        grphfn = makegrphex;
+        if (gdc.analog & 4) {
+          bit = GDCSCRN_MAKE | (GDCSCRN_MAKE << 1);
+        }
+      }
 #endif
-			if (gdcs.grphdisp & bit) {
-				(*grphfn)(gdcs.disp, gdcs.grphdisp & bit & GDCSCRN_ALLDRAW2);
-				gdcs.grphdisp &= ~bit;
-				pcstat.screenupdate |= 1;
-			}
-		}
-		else {
-			if (gdcs.textdisp & GDCSCRN_ENABLE) {
-				if (!gdcs.disp) {
-					if ((gdcs.grphdisp & GDCSCRN_MAKE) ||
-						(gdcs.textdisp & GDCSCRN_MAKE)) {
-						if (!(gdc.mode1 & 0x4)) {
-							maketextgrph(0, gdcs.textdisp & GDCSCRN_ALLDRAW,
-									gdcs.grphdisp & GDCSCRN_ALLDRAW);
-						}
-						else {
-							maketextgrph40(0, gdcs.textdisp & GDCSCRN_ALLDRAW,
-									gdcs.grphdisp & GDCSCRN_ALLDRAW);
-						}
-						gdcs.grphdisp &= ~GDCSCRN_MAKE;
-						pcstat.screenupdate |= 1;
-					}
-				}
-				else {
-					if ((gdcs.grphdisp & (GDCSCRN_MAKE << 1)) ||
-						(gdcs.textdisp & GDCSCRN_MAKE)) {
-						if (!(gdc.mode1 & 0x4)) {
-							maketextgrph(1, gdcs.textdisp & GDCSCRN_ALLDRAW,
-									gdcs.grphdisp & (GDCSCRN_ALLDRAW << 1));
-						}
-						else {
-							maketextgrph40(1, gdcs.textdisp & GDCSCRN_ALLDRAW,
-									gdcs.grphdisp & (GDCSCRN_ALLDRAW << 1));
-						}
-						gdcs.grphdisp &= ~(GDCSCRN_MAKE << 1);
-						pcstat.screenupdate |= 1;
-					}
-				}
-			}else{
-				// 白黒グラフィック
-				grphfn = makegrph;
-				bit = GDCSCRN_MAKE;
-				if (gdcs.disp) {
-					bit <<= 1;
-				}
-				if (gdcs.grphdisp & bit) {
-					(*grphfn)(gdcs.disp, gdcs.grphdisp & bit & GDCSCRN_ALLDRAW2);
-					gdcs.grphdisp &= ~bit;
-					pcstat.screenupdate |= 1;
-				}
-			}
-		}
-	}
-	if (gdcs.textdisp & GDCSCRN_ENABLE) {
-		if (tramflag.renewal) {
-			gdcs.textdisp |= maketext_curblink();
-		}
-		if ((cgwindow.writable & 0x80) && (tramflag.gaiji)) {
-			gdcs.textdisp |= GDCSCRN_ALLDRAW;
-		}
-		cgwindow.writable &= ~0x80;
-		if (gdcs.textdisp & GDCSCRN_MAKE) {
-			if (!(gdc.mode1 & 0x4)) {
-				maketext(gdcs.textdisp & GDCSCRN_ALLDRAW);
-			}
-			else {
-				maketext40(gdcs.textdisp & GDCSCRN_ALLDRAW);
-			}
-			gdcs.textdisp &= ~GDCSCRN_MAKE;
-			pcstat.screenupdate |= 1;
-		}
-	}
-	if (pcstat.screenupdate) {
-		pcstat.screenupdate = scrndraw_draw((UINT8)(pcstat.screenupdate & 2));
-		drawcount++;
-	}
+      if (gdcs.grphdisp & bit) {
+        (*grphfn)(gdcs.disp, gdcs.grphdisp & bit & GDCSCRN_ALLDRAW2);
+        gdcs.grphdisp &= ~bit;
+        pcstat.screenupdate |= 1;
+      }
+    } else {
+      if (gdcs.textdisp & GDCSCRN_ENABLE) {
+        if (!gdcs.disp) {
+          if ((gdcs.grphdisp & GDCSCRN_MAKE) ||
+              (gdcs.textdisp & GDCSCRN_MAKE)) {
+            if (!(gdc.mode1 & 0x4)) {
+              maketextgrph(0, gdcs.textdisp & GDCSCRN_ALLDRAW,
+                           gdcs.grphdisp & GDCSCRN_ALLDRAW);
+            } else {
+              maketextgrph40(0, gdcs.textdisp & GDCSCRN_ALLDRAW,
+                             gdcs.grphdisp & GDCSCRN_ALLDRAW);
+            }
+            gdcs.grphdisp &= ~GDCSCRN_MAKE;
+            pcstat.screenupdate |= 1;
+          }
+        } else {
+          if ((gdcs.grphdisp & (GDCSCRN_MAKE << 1)) ||
+              (gdcs.textdisp & GDCSCRN_MAKE)) {
+            if (!(gdc.mode1 & 0x4)) {
+              maketextgrph(1, gdcs.textdisp & GDCSCRN_ALLDRAW,
+                           gdcs.grphdisp & (GDCSCRN_ALLDRAW << 1));
+            } else {
+              maketextgrph40(1, gdcs.textdisp & GDCSCRN_ALLDRAW,
+                             gdcs.grphdisp & (GDCSCRN_ALLDRAW << 1));
+            }
+            gdcs.grphdisp &= ~(GDCSCRN_MAKE << 1);
+            pcstat.screenupdate |= 1;
+          }
+        }
+      } else {
+        // 白黒グラフィック
+        grphfn = makegrph;
+        bit = GDCSCRN_MAKE;
+        if (gdcs.disp) {
+          bit <<= 1;
+        }
+        if (gdcs.grphdisp & bit) {
+          (*grphfn)(gdcs.disp, gdcs.grphdisp & bit & GDCSCRN_ALLDRAW2);
+          gdcs.grphdisp &= ~bit;
+          pcstat.screenupdate |= 1;
+        }
+      }
+    }
+  }
+  if (gdcs.textdisp & GDCSCRN_ENABLE) {
+    if (tramflag.renewal) {
+      gdcs.textdisp |= maketext_curblink();
+    }
+    if ((cgwindow.writable & 0x80) && (tramflag.gaiji)) {
+      gdcs.textdisp |= GDCSCRN_ALLDRAW;
+    }
+    cgwindow.writable &= ~0x80;
+    if (gdcs.textdisp & GDCSCRN_MAKE) {
+      if (!(gdc.mode1 & 0x4)) {
+        maketext(gdcs.textdisp & GDCSCRN_ALLDRAW);
+      } else {
+        maketext40(gdcs.textdisp & GDCSCRN_ALLDRAW);
+      }
+      gdcs.textdisp &= ~GDCSCRN_MAKE;
+      pcstat.screenupdate |= 1;
+    }
+  }
+  if (pcstat.screenupdate) {
+    pcstat.screenupdate = scrndraw_draw((UINT8)(pcstat.screenupdate & 2));
+    drawcount++;
+  }
 }
 
 void screendisp(NEVENTITEM item) {
 
-	PICITEM		pi;
+  PICITEM pi;
 
-	gdc_work(GDCWORK_SLAVE);
-	gdc.vsync = 0;
-	pcstat.screendispflag = 0;
+  gdc_work(GDCWORK_SLAVE);
+  gdc.vsync = 0;
+  pcstat.screendispflag = 0;
 #if !defined(SUPPORT_IA32_HAXM)
-	if (!np2cfg.DISPSYNC) {
-		drawscreen();
-	}
+  if (!np2cfg.DISPSYNC) {
+    drawscreen();
+  }
 #endif
-	pi = &pic.pi[0];
-	if (pi->irr & PIC_CRTV) {
-		pi->irr &= ~PIC_CRTV;
-		gdc.vsyncint = 1;
-	}
-	(void)item;
+  pi = &pic.pi[0];
+  if (pi->irr & PIC_CRTV) {
+    pi->irr &= ~PIC_CRTV;
+    gdc.vsyncint = 1;
+  }
+  (void)item;
 }
 
 void screenvsync(NEVENTITEM item) {
 
-	MEMWAIT_TRAM = np2cfg.wait[1];
-	MEMWAIT_VRAM = np2cfg.wait[3];
-	MEMWAIT_GRCG = np2cfg.wait[5];
-	gdc_work(GDCWORK_MASTER);
-	gdc.vsync = 0x20;
-	if (gdc.vsyncint) {
-		gdc.vsyncint = 0;
-		pic_setirq(2);
-	}
-	nevent_set(NEVENT_FLAMES, gdc.vsyncclock, screendisp, NEVENT_RELATIVE);
+  MEMWAIT_TRAM = np2cfg.wait[1];
+  MEMWAIT_VRAM = np2cfg.wait[3];
+  MEMWAIT_GRCG = np2cfg.wait[5];
+  gdc_work(GDCWORK_MASTER);
+  gdc.vsync = 0x20;
+  if (gdc.vsyncint) {
+    gdc.vsyncint = 0;
+    pic_setirq(2);
+  }
+  nevent_set(NEVENT_FLAMES, gdc.vsyncclock, screendisp, NEVENT_RELATIVE);
 
-	// drawscreenで pccore.vsyncclockが変更される可能性があります
-	if (np2cfg.DISPSYNC) {
-		drawscreen();
-	}
-	(void)item;
+  // drawscreenで pccore.vsyncclockが変更される可能性があります
+  if (np2cfg.DISPSYNC) {
+    drawscreen();
+  }
+  (void)item;
 }
-
 
 // ---------------------------------------------------------------------------
 
@@ -1260,704 +1411,737 @@ static int execcnt = 0;
 int piccnt = 0;
 #endif
 
-void pccore_postevent(UINT32 event) {	// yet!
+void pccore_postevent(UINT32 event) { // yet!
 
-	(void)event;
+  (void)event;
 }
 
 #if defined(SUPPORT_ASYNC_CPU)
 ASYNCCPUSTAT pccore_asynccpustat = {0};
-void pccore_asynccpu_initialize(void)
-{
-	pccore_asynccpustat.drawskip = 1;
-	pccore_asynccpustat.nowait = 0;
-	pccore_asynccpustat.lastTimingValue = 0;
-	pccore_asynccpustat.asyncTarget = 0;
-	pccore_asynccpustat.lastTimingValid = 0;
-	pccore_asynccpustat.screendisp = 0;
-	pccore_asynccpustat.threshold_down = 2;
-	pccore_asynccpustat.threshold_up = 5;
-	memset(pccore_asynccpustat.clockUpTbl, 0, sizeof(pccore_asynccpustat.clockUpTbl));
-	memset(pccore_asynccpustat.clockDownTbl, 0, sizeof(pccore_asynccpustat.clockDownTbl));
+void pccore_asynccpu_initialize(void) {
+  pccore_asynccpustat.drawskip = 1;
+  pccore_asynccpustat.nowait = 0;
+  pccore_asynccpustat.lastTimingValue = 0;
+  pccore_asynccpustat.asyncTarget = 0;
+  pccore_asynccpustat.lastTimingValid = 0;
+  pccore_asynccpustat.screendisp = 0;
+  pccore_asynccpustat.threshold_down = 2;
+  pccore_asynccpustat.threshold_up = 5;
+  memset(pccore_asynccpustat.clockUpTbl, 0,
+         sizeof(pccore_asynccpustat.clockUpTbl));
+  memset(pccore_asynccpustat.clockDownTbl, 0,
+         sizeof(pccore_asynccpustat.clockDownTbl));
 }
-void pccore_asynccpu_updatesettings(int asyncLevel)
-{
-	int i;
-	int upBaseValue;
-	int downBaseValue;
+void pccore_asynccpu_updatesettings(int asyncLevel) {
+  int i;
+  int upBaseValue;
+  int downBaseValue;
 
-	if (asyncLevel < 0) asyncLevel = 0;
-	if (asyncLevel > 100) asyncLevel = 100;
-	pccore_asynccpustat.asyncTarget = asyncLevel;
+  if (asyncLevel < 0)
+    asyncLevel = 0;
+  if (asyncLevel > 100)
+    asyncLevel = 100;
+  pccore_asynccpustat.asyncTarget = asyncLevel;
 
-	// 上げ下げの頻度を設定　安定性を考慮して最低1はつける
-	pccore_asynccpustat.threshold_down = (6 * asyncLevel + 1 * (100 - asyncLevel)) / 100;
-	pccore_asynccpustat.threshold_up = (1 * asyncLevel + 6 * (100 - asyncLevel)) / 100;
-	if (pccore_asynccpustat.threshold_down < 1) pccore_asynccpustat.threshold_down = 1;
-	if (pccore_asynccpustat.threshold_up < 1) pccore_asynccpustat.threshold_up = 1;
+  // 上げ下げの頻度を設定　安定性を考慮して最低1はつける
+  pccore_asynccpustat.threshold_down =
+      (6 * asyncLevel + 1 * (100 - asyncLevel)) / 100;
+  pccore_asynccpustat.threshold_up =
+      (1 * asyncLevel + 6 * (100 - asyncLevel)) / 100;
+  if (pccore_asynccpustat.threshold_down < 1)
+    pccore_asynccpustat.threshold_down = 1;
+  if (pccore_asynccpustat.threshold_up < 1)
+    pccore_asynccpustat.threshold_up = 1;
 
-	// 現在のクロック倍率に対してどれだけクロック倍率を上げ下げするかのテーブル
-	upBaseValue = (8 * asyncLevel + 4 * (100 - asyncLevel)) / 100; // ベース値はクロック倍率40に対してどれだけ上げるかの値とする
-	downBaseValue = (10 * asyncLevel + 15 * (100 - asyncLevel)) / 100; // ベース値はクロック倍率40に対してどれだけ下げるかの値とする
-	for (i = 1; i < ASYNCCPU_CLOCKTABLE_MAX; i++) {
-		pccore_asynccpustat.clockUpTbl[i] = (upBaseValue * i + 39) / 40; // 最低1はつけたいので切り上げ
-		pccore_asynccpustat.clockDownTbl[i] = (downBaseValue * i + 39) / 40; // 最低1はつけたいので切り上げ
-		if (pccore_asynccpustat.clockDownTbl[i] > i - 1) {
-			// クロック倍率0以下は不可
-			pccore_asynccpustat.clockDownTbl[i] = i - 1;
-		}
-	}
-	// クロック倍率0はあり得ないが念のため値は書いておく
-	pccore_asynccpustat.clockDownTbl[0] = 0;
-	pccore_asynccpustat.clockUpTbl[0] = 1;
+  // 現在のクロック倍率に対してどれだけクロック倍率を上げ下げするかのテーブル
+  upBaseValue =
+      (8 * asyncLevel + 4 * (100 - asyncLevel)) /
+      100; // ベース値はクロック倍率40に対してどれだけ上げるかの値とする
+  downBaseValue =
+      (10 * asyncLevel + 15 * (100 - asyncLevel)) /
+      100; // ベース値はクロック倍率40に対してどれだけ下げるかの値とする
+  for (i = 1; i < ASYNCCPU_CLOCKTABLE_MAX; i++) {
+    pccore_asynccpustat.clockUpTbl[i] =
+        (upBaseValue * i + 39) / 40; // 最低1はつけたいので切り上げ
+    pccore_asynccpustat.clockDownTbl[i] =
+        (downBaseValue * i + 39) / 40; // 最低1はつけたいので切り上げ
+    if (pccore_asynccpustat.clockDownTbl[i] > i - 1) {
+      // クロック倍率0以下は不可
+      pccore_asynccpustat.clockDownTbl[i] = i - 1;
+    }
+  }
+  // クロック倍率0はあり得ないが念のため値は書いておく
+  pccore_asynccpustat.clockDownTbl[0] = 0;
+  pccore_asynccpustat.clockUpTbl[0] = 1;
 }
-static void pccore_asynccpu()
-{
-	// 非同期CPU処理
-	static int latecount = 0;
-	static int latecount2 = 0;
-	static unsigned int hltflag = 0;
-	if (np2cfg.asynccpu && !pccore_asynccpustat.nowait)
-	{
-		int remclkcnt = INT_MAX;
+static void pccore_asynccpu() {
+  // 非同期CPU処理
+  static int latecount = 0;
+  static int latecount2 = 0;
+  static unsigned int hltflag = 0;
+  if (np2cfg.asynccpu && !pccore_asynccpustat.nowait) {
+    int remclkcnt = INT_MAX;
 
-		if (latecount2 == 0)
-		{
-			if (latecount > 0)
-			{
-				//latecount--;
-			}
-			else if (latecount < 0)
-			{
-				latecount++;
-			}
-		}
-		latecount2 = (latecount2 + 1) & 0x1fff;
+    if (latecount2 == 0) {
+      if (latecount > 0) {
+        // latecount--;
+      } else if (latecount < 0) {
+        latecount++;
+      }
+    }
+    latecount2 = (latecount2 + 1) & 0x1fff;
 
 #if defined(CPUCORE_IA32)
-		if (CPU_STAT_HLT)
-		{
-			hltflag = pccore.multiple;
-		}
+    if (CPU_STAT_HLT) {
+      hltflag = pccore.multiple;
+    }
 #endif
-		if (!asynccpu_fastflag && !asynccpu_lateflag)
-		{
-			UINT32 timimg = pccore_asynccpustat.lastTimingValue;
-			UINT32 shdrawskip = 1 << TIMING_MSSHIFT;
-			if (timimg > shdrawskip)
-			{
-				latecount++;
-				if (latecount > pccore_asynccpustat.threshold_down)
-				{
-					if (pccore.multiple > 1)
-					{
-						UINT32 oldmultiple = pccore.multiple;
-						UINT32 changeValue = pccore_asynccpustat.clockDownTbl[pccore.multiple < ASYNCCPU_CLOCKTABLE_MAX ? pccore.multiple : ASYNCCPU_CLOCKTABLE_MAX - 1];
-						if (timimg > 2 * shdrawskip)
-						{
-							// そのまま
-						}
-						else if (timimg > 15 * shdrawskip / 10)
-						{
-							changeValue = (changeValue + 1) / 2; // 1/2
-						}
-						else if (timimg > 12 * shdrawskip / 10)
-						{
-							changeValue = (changeValue + 2) / 3; // 1/3
-						}
-						else
-						{
-							changeValue = (changeValue + 9) / 10; // 1/10
-						}
-						if (pccore.multiple > changeValue) {
-							pccore.multiple -= changeValue;
-						}
-						else {
-							pccore.multiple = 1;
-						}
-						pccore.realclock = pccore.baseclock * pccore.multiple;
-						pcm86_changeclock(oldmultiple);
-						nevent_changeclock(oldmultiple, pccore.multiple);
+    if (!asynccpu_fastflag && !asynccpu_lateflag) {
+      UINT32 timimg = pccore_asynccpustat.lastTimingValue;
+      UINT32 shdrawskip = 1 << TIMING_MSSHIFT;
+      if (timimg > shdrawskip) {
+        latecount++;
+        if (latecount > pccore_asynccpustat.threshold_down) {
+          if (pccore.multiple > 1) {
+            UINT32 oldmultiple = pccore.multiple;
+            UINT32 changeValue =
+                pccore_asynccpustat
+                    .clockDownTbl[pccore.multiple < ASYNCCPU_CLOCKTABLE_MAX
+                                      ? pccore.multiple
+                                      : ASYNCCPU_CLOCKTABLE_MAX - 1];
+            if (timimg > 2 * shdrawskip) {
+              // そのまま
+            } else if (timimg > 15 * shdrawskip / 10) {
+              changeValue = (changeValue + 1) / 2; // 1/2
+            } else if (timimg > 12 * shdrawskip / 10) {
+              changeValue = (changeValue + 2) / 3; // 1/3
+            } else {
+              changeValue = (changeValue + 9) / 10; // 1/10
+            }
+            if (pccore.multiple > changeValue) {
+              pccore.multiple -= changeValue;
+            } else {
+              pccore.multiple = 1;
+            }
+            pccore.realclock = pccore.baseclock * pccore.multiple;
+            pcm86_changeclock(oldmultiple);
+            nevent_changeclock(oldmultiple, pccore.multiple);
 
-						sound_changeclock();
-						beep_changeclock();
-						mpu98ii_changeclock();
+            sound_changeclock();
+            beep_changeclock();
+            mpu98ii_changeclock();
 #if defined(SUPPORT_SMPU98)
-						smpu98_changeclock();
+            smpu98_changeclock();
 #endif
-						keyboard_changeclock();
-						mouseif_changeclock();
-						gdc_updateclock();
-					}
-					latecount = 0;
-				}
-				asynccpu_lateflag = 1;
-			}
-			else
-			{
-				if (!hltflag && pccore_asynccpustat.screendisp)
-				{
-					latecount--;
-					if (latecount < -pccore_asynccpustat.threshold_up)
-					{
-						if (pccore.multiple < pccore.maxmultiple)
-						{
-							UINT32 oldmultiple = pccore.multiple;
-							UINT32 changeValue = pccore_asynccpustat.clockUpTbl[pccore.multiple < ASYNCCPU_CLOCKTABLE_MAX ? pccore.multiple : ASYNCCPU_CLOCKTABLE_MAX - 1];
-							if (timimg < 5 * shdrawskip / 10)
-							{
-								// そのまま
-							}
-							else if (timimg < 7 * shdrawskip / 10)
-							{
-								changeValue = (changeValue * 3 + 3) / 4; // 3/4
-							}
-							else if (timimg < 8 * shdrawskip / 10)
-							{
-								changeValue = (changeValue + 1) / 2; // 1/2
-							}
-							else
-							{
-								changeValue = (changeValue + 3) / 4; // 1/4
-							}
-							if (pccore.multiple + changeValue < pccore.maxmultiple) {
-								pccore.multiple += changeValue;
-							}
-							else {
-								pccore.multiple = pccore.maxmultiple;
-							}
-							pccore.realclock = pccore.baseclock * pccore.multiple;
-							pcm86_changeclock(oldmultiple);
-							nevent_changeclock(oldmultiple, pccore.multiple);
+            keyboard_changeclock();
+            mouseif_changeclock();
+            gdc_updateclock();
+          }
+          latecount = 0;
+        }
+        asynccpu_lateflag = 1;
+      } else {
+        if (!hltflag && pccore_asynccpustat.screendisp) {
+          latecount--;
+          if (latecount < -pccore_asynccpustat.threshold_up) {
+            if (pccore.multiple < pccore.maxmultiple) {
+              UINT32 oldmultiple = pccore.multiple;
+              UINT32 changeValue =
+                  pccore_asynccpustat
+                      .clockUpTbl[pccore.multiple < ASYNCCPU_CLOCKTABLE_MAX
+                                      ? pccore.multiple
+                                      : ASYNCCPU_CLOCKTABLE_MAX - 1];
+              if (timimg < 5 * shdrawskip / 10) {
+                // そのまま
+              } else if (timimg < 7 * shdrawskip / 10) {
+                changeValue = (changeValue * 3 + 3) / 4; // 3/4
+              } else if (timimg < 8 * shdrawskip / 10) {
+                changeValue = (changeValue + 1) / 2; // 1/2
+              } else {
+                changeValue = (changeValue + 3) / 4; // 1/4
+              }
+              if (pccore.multiple + changeValue < pccore.maxmultiple) {
+                pccore.multiple += changeValue;
+              } else {
+                pccore.multiple = pccore.maxmultiple;
+              }
+              pccore.realclock = pccore.baseclock * pccore.multiple;
+              pcm86_changeclock(oldmultiple);
+              nevent_changeclock(oldmultiple, pccore.multiple);
 
-							sound_changeclock();
-							beep_changeclock();
-							mpu98ii_changeclock();
+              sound_changeclock();
+              beep_changeclock();
+              mpu98ii_changeclock();
 #if defined(SUPPORT_SMPU98)
-							smpu98_changeclock();
+              smpu98_changeclock();
 #endif
-							keyboard_changeclock();
-							mouseif_changeclock();
-							gdc_updateclock();
-						}
-						latecount = 0;
-					}
-					asynccpu_fastflag = 1;
-				}
-			}
-		}
-	}
-	if (hltflag > 0) hltflag--;
+              keyboard_changeclock();
+              mouseif_changeclock();
+              gdc_updateclock();
+            }
+            latecount = 0;
+          }
+          asynccpu_fastflag = 1;
+        }
+      }
+    }
+  }
+  if (hltflag > 0)
+    hltflag--;
 }
 #endif
 
 void pccore_exec(BOOL draw) {
 
-	// ここでローカル変数を使うとsetjmp周りの最適化で破壊される可能性があるので注意
-	static UINT32 baseclk = 0;
-	//UINT32 lastclock;
-	//UINT32 mflag = 0;
+  // ここでローカル変数を使うとsetjmp周りの最適化で破壊される可能性があるので注意
+  static UINT32 baseclk = 0;
+  // UINT32 lastclock;
+  // UINT32 mflag = 0;
 
-	pcstat.drawframe = (UINT8)draw;
-//	keystat_sync();
-	soundmng_sync();
-	mouseif_sync();
-	pal_eventclear();
-	
+  pcstat.drawframe = (UINT8)draw;
+  //	keystat_sync();
+  soundmng_sync();
+  mouseif_sync();
+  pal_eventclear();
+
 #if defined(SUPPORT_IA32_HAXM)
-	// HAXMの場合、先に描画
-	if (!np2cfg.DISPSYNC) {
-		drawscreen();
-	}
+  // HAXMの場合、先に描画
+  if (!np2cfg.DISPSYNC) {
+    drawscreen();
+  }
 #endif
 
-	gdc.vsync = 0;
-	pcstat.screendispflag = 1;
-	MEMWAIT_TRAM = np2cfg.wait[0];
-	MEMWAIT_VRAM = np2cfg.wait[2];
-	MEMWAIT_GRCG = np2cfg.wait[4];
-	
-	nevent_set(NEVENT_FLAMES, gdc.dispclock, screenvsync, NEVENT_RELATIVE);
+  gdc.vsync = 0;
+  pcstat.screendispflag = 1;
+  MEMWAIT_TRAM = np2cfg.wait[0];
+  MEMWAIT_VRAM = np2cfg.wait[2];
+  MEMWAIT_GRCG = np2cfg.wait[4];
 
-//	nevent_get1stevent();
+  nevent_set(NEVENT_FLAMES, gdc.dispclock, screenvsync, NEVENT_RELATIVE);
 
-	if(np2cfg.keyrepeat_enable) {
-		keyrepeat_proc();
-	}
-	
-	while(pcstat.screendispflag) {
+  //	nevent_get1stevent();
+
+  if (np2cfg.keyrepeat_enable) {
+    keyrepeat_proc();
+  }
+
+  while (pcstat.screendispflag) {
 #if defined(TRACE)
-		resetcnt++;
+    resetcnt++;
 #endif
 #if defined(USE_TSC)
-		CPU_MSR_TSC += CPU_BASECLOCK * pccore.maxmultiple / pccore.multiple;
-		baseclk = CPU_BASECLOCK * pccore.maxmultiple / pccore.multiple;
+    CPU_MSR_TSC += CPU_BASECLOCK * pccore.maxmultiple / pccore.multiple;
+    baseclk = CPU_BASECLOCK * pccore.maxmultiple / pccore.multiple;
 #endif
-		pic_irq();
+    pic_irq();
 #if defined(SUPPORT_IA32_HAXM)
-		if (CPU_RESETREQ && (np2hax.emumode || !np2hax.enable || np2haxcore.ready_for_reset)) {
+    if (CPU_RESETREQ &&
+        (np2hax.emumode || !np2hax.enable || np2haxcore.ready_for_reset)) {
 #else
-		if (CPU_RESETREQ) {
+    if (CPU_RESETREQ) {
 #endif
-			CPU_RESETREQ = 0;
+      CPU_RESETREQ = 0;
 #if defined(SUPPORT_WAB)
-			np2wab.relaystateint = np2wab.relaystateext = 0;
-			np2wab_setRelayState(0); // XXX:
+      np2wab.relaystateint = np2wab.relaystateext = 0;
+      np2wab_setRelayState(0); // XXX:
 #endif
 #if defined(SUPPORT_CL_GD5430)
-			np2clvga.gd54xxtype = np2clvga.defgd54xxtype; // Auto Select用
-			pc98_cirrus_vga_initVRAMWindowAddr();
-			pc98_cirrus_vga_resetresolution();
+      np2clvga.gd54xxtype = np2clvga.defgd54xxtype; // Auto Select用
+      pc98_cirrus_vga_initVRAMWindowAddr();
+      pc98_cirrus_vga_resetresolution();
 #endif
 #if defined(SUPPORT_IDEIO)
-			ideio_basereset(); // XXX: Win9xの再起動で必要
+      ideio_basereset(); // XXX: Win9xの再起動で必要
 #endif
 #if defined(SUPPORT_HOSTDRV)
-			hostdrv_reset(); // XXX: Win9xの再起動で必要
+      hostdrv_reset(); // XXX: Win9xの再起動で必要
 #endif
 #if defined(SUPPORT_HOSTDRVNT)
-			hostdrvNT_reset(); // XXX: Win9xの再起動で必要
+      hostdrvNT_reset(); // XXX: Win9xの再起動で必要
 #endif
 #if defined(SUPPORT_PCI)
-			pcidev_basereset(); // XXX: Win9xの再起動で必要
+      pcidev_basereset(); // XXX: Win9xの再起動で必要
 #endif
 #if defined(NP2_WIN)
-			// マウスリセット
-			mousemng_reset();
+      // マウスリセット
+      mousemng_reset();
 #endif
 
 #if defined(SUPPORT_IA32_HAXM)
-			if (!np2hax.emumode && np2hax.enable) {
-				i386hax_resetVMCPU();
-				i386haxfunc_vcpu_setREGs(&np2haxstat.state);
-				i386haxfunc_vcpu_setFPU(&np2haxstat.fpustate);
-				ia32hax_copyregHAXtoNP2();
-				i386hax_resetVMMem();
-				np2haxstat.update_regs = np2haxstat.update_fpu = 1;
-				np2haxstat.update_segment_regs = 1;
-				np2haxstat.irq_reqidx_cur = np2haxstat.irq_reqidx_end = 0;
-				pic_reset(&np2cfg);
-				np2haxcore.hltflag = 0;
-			}
+      if (!np2hax.emumode && np2hax.enable) {
+        i386hax_resetVMCPU();
+        i386haxfunc_vcpu_setREGs(&np2haxstat.state);
+        i386haxfunc_vcpu_setFPU(&np2haxstat.fpustate);
+        ia32hax_copyregHAXtoNP2();
+        i386hax_resetVMMem();
+        np2haxstat.update_regs = np2haxstat.update_fpu = 1;
+        np2haxstat.update_segment_regs = 1;
+        np2haxstat.irq_reqidx_cur = np2haxstat.irq_reqidx_end = 0;
+        pic_reset(&np2cfg);
+        np2haxcore.hltflag = 0;
+      }
 #endif
-			CPU_SHUT();
-		}
+      CPU_SHUT();
+    }
 #if defined(SUPPORT_IA32_HAXM)
-		if (np2hax.enable) {
-			i386hax_vm_exec();
-		}else
+    if (np2hax.enable) {
+      i386hax_vm_exec();
+    } else
 #endif
-		{
+    {
 #if !defined(SINGLESTEPONLY)
-			if (CPU_REMCLOCK > 0) {
-				if (!(CPU_TYPE & CPUTYPE_V30)) {
-					CPU_EXEC();
-				}
-				else {
-					CPU_EXECV30();
-				}
-			}
+      if (CPU_REMCLOCK > 0) {
+        if (!(CPU_TYPE & CPUTYPE_V30)) {
+          CPU_EXEC();
+        } else {
+          CPU_EXECV30();
+        }
+      }
 #else
-			while(CPU_REMCLOCK > 0) {
-				CPU_STEPEXEC();
-			}
+      while (CPU_REMCLOCK > 0) {
+        CPU_STEPEXEC();
+      }
 #endif
-		}
+    }
 #if defined(USE_TSC)
-		CPU_MSR_TSC = CPU_MSR_TSC - baseclk + CPU_BASECLOCK * pccore.maxmultiple / pccore.multiple;
+    CPU_MSR_TSC = CPU_MSR_TSC - baseclk +
+                  CPU_BASECLOCK * pccore.maxmultiple / pccore.multiple;
 #endif
 #if defined(SUPPORT_HRTIMER)
-		upd4990_hrtimer_count();
+    upd4990_hrtimer_count();
 #endif
 #if defined(SUPPORT_IDEIO)
 #if defined(NP2_WIN)
-	atapi_dataread_asyncwait(INFINITE);
+    atapi_dataread_asyncwait(INFINITE);
 #endif
 #endif
-		nevent_progress();
+    nevent_progress();
 #if defined(SUPPORT_ASYNC_CPU)
-		pccore_asynccpu();
+    pccore_asynccpu();
 #endif
-	}
+  }
 #if defined(SUPPORT_ASYNC_CPU)
-	asynccpu_lateflag = 0;
-	asynccpu_fastflag = 0;
+  asynccpu_lateflag = 0;
+  asynccpu_fastflag = 0;
 #endif
-	artic_callback();
-	mpu98ii_callback();
+  artic_callback();
+  mpu98ii_callback();
 #if defined(SUPPORT_SMPU98)
-	smpu98_callback();
+  smpu98_callback();
 #endif
-	diskdrv_callback();
-	calendar_inc();
-	S98_sync();
-	sound_sync();
-	fdc_intdelay();	// FDC SEEK & RECALIBRATE, etc. np21w ver0.86 rev46
+  diskdrv_callback();
+  calendar_inc();
+  S98_sync();
+  sound_sync();
+  fdc_intdelay(); // FDC SEEK & RECALIBRATE, etc. np21w ver0.86 rev46
 
-	if (pcstat.hardwarereset) {
-		pcstat.hardwarereset = FALSE;
-		pccore_cfgupdate();
-		if(nevent_iswork(NEVENT_CDWAIT)){
-			nevent_forceexecute(NEVENT_CDWAIT);
-		}
-		pccore_reset();
-	}
+  if (pcstat.hardwarereset) {
+    pcstat.hardwarereset = FALSE;
+    pccore_cfgupdate();
+    if (nevent_iswork(NEVENT_CDWAIT)) {
+      nevent_forceexecute(NEVENT_CDWAIT);
+    }
+    pccore_reset();
+  }
 
 #if defined(TRACE)
-	execcnt++;
-	if (execcnt >= 60) {
-//		TRACEOUT(("resetcnt = %d / pic %d", resetcnt, piccnt));
-		execcnt = 0;
-		resetcnt = 0;
-		piccnt = 0;
-	}
+  execcnt++;
+  if (execcnt >= 60) {
+    //		TRACEOUT(("resetcnt = %d / pic %d", resetcnt, piccnt));
+    execcnt = 0;
+    resetcnt = 0;
+    piccnt = 0;
+  }
 #endif
 }
 
 #if defined(CPUCORE_IA32)
-int GetCpuTypeIndex(){
-	if((CPU_FEATURES_ALL & CPU_FEATURES_80386) != CPU_FEATURES_80386) goto AMDCPUCheck;
-	if(np2cfg.cpu_family == CPU_80386_FAMILY && 
-	   np2cfg.cpu_model == CPU_80386_MODEL &&
-	   np2cfg.cpu_stepping == CPU_80386_STEPPING &&
-	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_80386 &&
-	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_80386 &&
-	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_80386 &&
-	   np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_80386){
-		return 1;
-	}
-	if((CPU_FEATURES_ALL & CPU_FEATURES_I486SX) != CPU_FEATURES_I486SX) goto AMDCPUCheck;
-	if(np2cfg.cpu_family == CPU_I486SX_FAMILY && 
-	   np2cfg.cpu_model == CPU_I486SX_MODEL &&
-	   np2cfg.cpu_stepping == CPU_I486SX_STEPPING &&
-	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_I486SX &&
-	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_I486SX &&
-	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_I486SX &&
-	   np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_I486SX){
-		return 2;
-	}
-	if((CPU_FEATURES_ALL & CPU_FEATURES_I486DX) != CPU_FEATURES_I486DX) goto AMDCPUCheck;
-	if(np2cfg.cpu_family == CPU_I486DX_FAMILY && 
-	   np2cfg.cpu_model == CPU_I486DX_MODEL &&
-	   np2cfg.cpu_stepping == CPU_I486DX_STEPPING &&
-	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_I486DX &&
-	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_I486DX &&
-	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_I486DX &&
-	   np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_I486DX){
-		return 3;
-	}
-	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM) != CPU_FEATURES_PENTIUM) goto AMDCPUCheck;
-	if(np2cfg.cpu_family == CPU_PENTIUM_FAMILY && 
-	   np2cfg.cpu_model == CPU_PENTIUM_MODEL &&
-	   np2cfg.cpu_stepping == CPU_PENTIUM_STEPPING &&
-	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM &&
-	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_PENTIUM &&
-	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_PENTIUM &&
-	   np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_PENTIUM){
-		return 4;
-	}
-	if((CPU_FEATURES_ALL & CPU_FEATURES_MMX_PENTIUM) != CPU_FEATURES_MMX_PENTIUM) goto AMDCPUCheck;
-	if(np2cfg.cpu_family == CPU_MMX_PENTIUM_FAMILY && 
-	   np2cfg.cpu_model == CPU_MMX_PENTIUM_MODEL &&
-	   np2cfg.cpu_stepping == CPU_MMX_PENTIUM_STEPPING &&
-	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_MMX_PENTIUM &&
-	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_MMX_PENTIUM &&
-	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_MMX_PENTIUM &&
-	   np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_MMX_PENTIUM){
-		return 5;
-	}
-	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_PRO) != CPU_FEATURES_PENTIUM_PRO) goto AMDCPUCheck;
-	if(np2cfg.cpu_family == CPU_PENTIUM_PRO_FAMILY && 
-	   np2cfg.cpu_model == CPU_PENTIUM_PRO_MODEL &&
-	   np2cfg.cpu_stepping == CPU_PENTIUM_PRO_STEPPING &&
-	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM_PRO &&
-	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_PENTIUM_PRO &&
-	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_PENTIUM_PRO &&
-	   np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_PENTIUM_PRO){
-		return 6;
-	}
-	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_II) != CPU_FEATURES_PENTIUM_II) goto AMDCPUCheck;
-	if(np2cfg.cpu_family == CPU_PENTIUM_II_FAMILY && 
-	   np2cfg.cpu_model == CPU_PENTIUM_II_MODEL &&
-	   np2cfg.cpu_stepping == CPU_PENTIUM_II_STEPPING &&
-	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM_II &&
-	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_PENTIUM_II &&
-	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_PENTIUM_II &&
-	   np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_PENTIUM_II){
-		return 7;
-	}
-	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_III) != CPU_FEATURES_PENTIUM_III) goto AMDCPUCheck;
-	if(np2cfg.cpu_family == CPU_PENTIUM_III_FAMILY && 
-	   np2cfg.cpu_model == CPU_PENTIUM_III_MODEL &&
-	   np2cfg.cpu_stepping == CPU_PENTIUM_III_STEPPING &&
-	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM_III &&
-	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_PENTIUM_III &&
-	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_PENTIUM_III &&
-	   np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_PENTIUM_III){
-		return 8;
-	}
-	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_M) != CPU_FEATURES_PENTIUM_M) goto AMDCPUCheck;
-	if(np2cfg.cpu_family == CPU_PENTIUM_M_FAMILY && 
-	   np2cfg.cpu_model == CPU_PENTIUM_M_MODEL &&
-	   np2cfg.cpu_stepping == CPU_PENTIUM_M_STEPPING &&
-	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM_M &&
-	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_PENTIUM_M &&
-	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_PENTIUM_M &&
-	   np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_PENTIUM_M){
-		return 9;
-	}
-	if((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_4) != CPU_FEATURES_PENTIUM_4) goto AMDCPUCheck;
-	if(np2cfg.cpu_family == CPU_PENTIUM_4_FAMILY && 
-	   np2cfg.cpu_model == CPU_PENTIUM_4_MODEL &&
-	   np2cfg.cpu_stepping == CPU_PENTIUM_4_STEPPING &&
-	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM_4 &&
-	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_PENTIUM_4 &&
-	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_PENTIUM_4 &&
-	   np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_PENTIUM_4){
-		return 10;
-	}
+int GetCpuTypeIndex() {
+  if ((CPU_FEATURES_ALL & CPU_FEATURES_80386) != CPU_FEATURES_80386)
+    goto AMDCPUCheck;
+  if (np2cfg.cpu_family == CPU_80386_FAMILY &&
+      np2cfg.cpu_model == CPU_80386_MODEL &&
+      np2cfg.cpu_stepping == CPU_80386_STEPPING &&
+      (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_80386 &&
+      (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) ==
+          CPU_FEATURES_ECX_80386 &&
+      (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_80386 &&
+      np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_80386) {
+    return 1;
+  }
+  if ((CPU_FEATURES_ALL & CPU_FEATURES_I486SX) != CPU_FEATURES_I486SX)
+    goto AMDCPUCheck;
+  if (np2cfg.cpu_family == CPU_I486SX_FAMILY &&
+      np2cfg.cpu_model == CPU_I486SX_MODEL &&
+      np2cfg.cpu_stepping == CPU_I486SX_STEPPING &&
+      (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_I486SX &&
+      (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) ==
+          CPU_FEATURES_ECX_I486SX &&
+      (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_I486SX &&
+      np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_I486SX) {
+    return 2;
+  }
+  if ((CPU_FEATURES_ALL & CPU_FEATURES_I486DX) != CPU_FEATURES_I486DX)
+    goto AMDCPUCheck;
+  if (np2cfg.cpu_family == CPU_I486DX_FAMILY &&
+      np2cfg.cpu_model == CPU_I486DX_MODEL &&
+      np2cfg.cpu_stepping == CPU_I486DX_STEPPING &&
+      (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_I486DX &&
+      (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) ==
+          CPU_FEATURES_ECX_I486DX &&
+      (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_I486DX &&
+      np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_I486DX) {
+    return 3;
+  }
+  if ((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM) != CPU_FEATURES_PENTIUM)
+    goto AMDCPUCheck;
+  if (np2cfg.cpu_family == CPU_PENTIUM_FAMILY &&
+      np2cfg.cpu_model == CPU_PENTIUM_MODEL &&
+      np2cfg.cpu_stepping == CPU_PENTIUM_STEPPING &&
+      (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM &&
+      (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) ==
+          CPU_FEATURES_ECX_PENTIUM &&
+      (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) ==
+          CPU_FEATURES_EX_PENTIUM &&
+      np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_PENTIUM) {
+    return 4;
+  }
+  if ((CPU_FEATURES_ALL & CPU_FEATURES_MMX_PENTIUM) != CPU_FEATURES_MMX_PENTIUM)
+    goto AMDCPUCheck;
+  if (np2cfg.cpu_family == CPU_MMX_PENTIUM_FAMILY &&
+      np2cfg.cpu_model == CPU_MMX_PENTIUM_MODEL &&
+      np2cfg.cpu_stepping == CPU_MMX_PENTIUM_STEPPING &&
+      (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_MMX_PENTIUM &&
+      (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) ==
+          CPU_FEATURES_ECX_MMX_PENTIUM &&
+      (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) ==
+          CPU_FEATURES_EX_MMX_PENTIUM &&
+      np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_MMX_PENTIUM) {
+    return 5;
+  }
+  if ((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_PRO) != CPU_FEATURES_PENTIUM_PRO)
+    goto AMDCPUCheck;
+  if (np2cfg.cpu_family == CPU_PENTIUM_PRO_FAMILY &&
+      np2cfg.cpu_model == CPU_PENTIUM_PRO_MODEL &&
+      np2cfg.cpu_stepping == CPU_PENTIUM_PRO_STEPPING &&
+      (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM_PRO &&
+      (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) ==
+          CPU_FEATURES_ECX_PENTIUM_PRO &&
+      (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) ==
+          CPU_FEATURES_EX_PENTIUM_PRO &&
+      np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_PENTIUM_PRO) {
+    return 6;
+  }
+  if ((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_II) != CPU_FEATURES_PENTIUM_II)
+    goto AMDCPUCheck;
+  if (np2cfg.cpu_family == CPU_PENTIUM_II_FAMILY &&
+      np2cfg.cpu_model == CPU_PENTIUM_II_MODEL &&
+      np2cfg.cpu_stepping == CPU_PENTIUM_II_STEPPING &&
+      (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM_II &&
+      (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) ==
+          CPU_FEATURES_ECX_PENTIUM_II &&
+      (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) ==
+          CPU_FEATURES_EX_PENTIUM_II &&
+      np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_PENTIUM_II) {
+    return 7;
+  }
+  if ((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_III) != CPU_FEATURES_PENTIUM_III)
+    goto AMDCPUCheck;
+  if (np2cfg.cpu_family == CPU_PENTIUM_III_FAMILY &&
+      np2cfg.cpu_model == CPU_PENTIUM_III_MODEL &&
+      np2cfg.cpu_stepping == CPU_PENTIUM_III_STEPPING &&
+      (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM_III &&
+      (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) ==
+          CPU_FEATURES_ECX_PENTIUM_III &&
+      (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) ==
+          CPU_FEATURES_EX_PENTIUM_III &&
+      np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_PENTIUM_III) {
+    return 8;
+  }
+  if ((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_M) != CPU_FEATURES_PENTIUM_M)
+    goto AMDCPUCheck;
+  if (np2cfg.cpu_family == CPU_PENTIUM_M_FAMILY &&
+      np2cfg.cpu_model == CPU_PENTIUM_M_MODEL &&
+      np2cfg.cpu_stepping == CPU_PENTIUM_M_STEPPING &&
+      (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM_M &&
+      (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) ==
+          CPU_FEATURES_ECX_PENTIUM_M &&
+      (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) ==
+          CPU_FEATURES_EX_PENTIUM_M &&
+      np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_PENTIUM_M) {
+    return 9;
+  }
+  if ((CPU_FEATURES_ALL & CPU_FEATURES_PENTIUM_4) != CPU_FEATURES_PENTIUM_4)
+    goto AMDCPUCheck;
+  if (np2cfg.cpu_family == CPU_PENTIUM_4_FAMILY &&
+      np2cfg.cpu_model == CPU_PENTIUM_4_MODEL &&
+      np2cfg.cpu_stepping == CPU_PENTIUM_4_STEPPING &&
+      (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_PENTIUM_4 &&
+      (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) ==
+          CPU_FEATURES_ECX_PENTIUM_4 &&
+      (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) ==
+          CPU_FEATURES_EX_PENTIUM_4 &&
+      np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_PENTIUM_4) {
+    return 10;
+  }
 
 AMDCPUCheck:
-	if((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K6_2) != CPU_FEATURES_AMD_K6_2 ||
-		(CPU_FEATURES_EX_ALL & CPU_FEATURES_EX_AMD_K6_2) != CPU_FEATURES_EX_AMD_K6_2) goto NekoCPUCheck;
-	if(np2cfg.cpu_family == CPU_AMD_K6_2_FAMILY && 
-	   np2cfg.cpu_model == CPU_AMD_K6_2_MODEL &&
-	   np2cfg.cpu_stepping == CPU_AMD_K6_2_STEPPING &&
-	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_AMD_K6_2 &&
-	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_AMD_K6_2 &&
-	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_AMD_K6_2 &&
-	   np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_AMD_K6_2){
-		return 15;
-	}
-	if((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K6_III) != CPU_FEATURES_AMD_K6_III ||
-		(CPU_FEATURES_EX_ALL & CPU_FEATURES_EX_AMD_K6_III) != CPU_FEATURES_EX_AMD_K6_III) goto NekoCPUCheck;
-	if(np2cfg.cpu_family == CPU_AMD_K6_III_FAMILY && 
-	   np2cfg.cpu_model == CPU_AMD_K6_III_MODEL &&
-	   np2cfg.cpu_stepping == CPU_AMD_K6_III_STEPPING &&
-	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_AMD_K6_III &&
-	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_AMD_K6_III &&
-	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_AMD_K6_III &&
-	   np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_AMD_K6_III){
-		return 16;
-	}
-	if((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K7_ATHLON) != CPU_FEATURES_AMD_K7_ATHLON ||
-		(CPU_FEATURES_EX_ALL & CPU_FEATURES_EX_AMD_K7_ATHLON) != CPU_FEATURES_EX_AMD_K7_ATHLON) goto NekoCPUCheck;
-	if(np2cfg.cpu_family == CPU_AMD_K7_ATHLON_FAMILY && 
-	   np2cfg.cpu_model == CPU_AMD_K7_ATHLON_MODEL &&
-	   np2cfg.cpu_stepping == CPU_AMD_K7_ATHLON_STEPPING &&
-	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_AMD_K7_ATHLON &&
-	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_AMD_K7_ATHLON &&
-	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_AMD_K7_ATHLON &&
-	   np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_AMD_K7_ATHLON){
-		return 17;
-	}
-	if((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K7_ATHLON_XP) != CPU_FEATURES_AMD_K7_ATHLON_XP ||
-		(CPU_FEATURES_EX_ALL & CPU_FEATURES_EX_AMD_K7_ATHLON_XP) != CPU_FEATURES_EX_AMD_K7_ATHLON_XP) goto NekoCPUCheck;
-	if(np2cfg.cpu_family == CPU_AMD_K7_ATHLON_XP_FAMILY && 
-	   np2cfg.cpu_model == CPU_AMD_K7_ATHLON_XP_MODEL &&
-	   np2cfg.cpu_stepping == CPU_AMD_K7_ATHLON_XP_STEPPING &&
-	   (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_AMD_K7_ATHLON_XP &&
-	   (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) == CPU_FEATURES_ECX_AMD_K7_ATHLON_XP &&
-	   (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) == CPU_FEATURES_EX_AMD_K7_ATHLON_XP &&
-	   np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_AMD_K7_ATHLON_XP){
-		return 18;
-	}
-	
+  if ((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K6_2) != CPU_FEATURES_AMD_K6_2 ||
+      (CPU_FEATURES_EX_ALL & CPU_FEATURES_EX_AMD_K6_2) !=
+          CPU_FEATURES_EX_AMD_K6_2)
+    goto NekoCPUCheck;
+  if (np2cfg.cpu_family == CPU_AMD_K6_2_FAMILY &&
+      np2cfg.cpu_model == CPU_AMD_K6_2_MODEL &&
+      np2cfg.cpu_stepping == CPU_AMD_K6_2_STEPPING &&
+      (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_AMD_K6_2 &&
+      (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) ==
+          CPU_FEATURES_ECX_AMD_K6_2 &&
+      (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) ==
+          CPU_FEATURES_EX_AMD_K6_2 &&
+      np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_AMD_K6_2) {
+    return 15;
+  }
+  if ((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K6_III) != CPU_FEATURES_AMD_K6_III ||
+      (CPU_FEATURES_EX_ALL & CPU_FEATURES_EX_AMD_K6_III) !=
+          CPU_FEATURES_EX_AMD_K6_III)
+    goto NekoCPUCheck;
+  if (np2cfg.cpu_family == CPU_AMD_K6_III_FAMILY &&
+      np2cfg.cpu_model == CPU_AMD_K6_III_MODEL &&
+      np2cfg.cpu_stepping == CPU_AMD_K6_III_STEPPING &&
+      (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_AMD_K6_III &&
+      (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) ==
+          CPU_FEATURES_ECX_AMD_K6_III &&
+      (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) ==
+          CPU_FEATURES_EX_AMD_K6_III &&
+      np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_AMD_K6_III) {
+    return 16;
+  }
+  if ((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K7_ATHLON) !=
+          CPU_FEATURES_AMD_K7_ATHLON ||
+      (CPU_FEATURES_EX_ALL & CPU_FEATURES_EX_AMD_K7_ATHLON) !=
+          CPU_FEATURES_EX_AMD_K7_ATHLON)
+    goto NekoCPUCheck;
+  if (np2cfg.cpu_family == CPU_AMD_K7_ATHLON_FAMILY &&
+      np2cfg.cpu_model == CPU_AMD_K7_ATHLON_MODEL &&
+      np2cfg.cpu_stepping == CPU_AMD_K7_ATHLON_STEPPING &&
+      (np2cfg.cpu_feature & CPU_FEATURES_ALL) == CPU_FEATURES_AMD_K7_ATHLON &&
+      (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) ==
+          CPU_FEATURES_ECX_AMD_K7_ATHLON &&
+      (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) ==
+          CPU_FEATURES_EX_AMD_K7_ATHLON &&
+      np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_AMD_K7_ATHLON) {
+    return 17;
+  }
+  if ((CPU_FEATURES_ALL & CPU_FEATURES_AMD_K7_ATHLON_XP) !=
+          CPU_FEATURES_AMD_K7_ATHLON_XP ||
+      (CPU_FEATURES_EX_ALL & CPU_FEATURES_EX_AMD_K7_ATHLON_XP) !=
+          CPU_FEATURES_EX_AMD_K7_ATHLON_XP)
+    goto NekoCPUCheck;
+  if (np2cfg.cpu_family == CPU_AMD_K7_ATHLON_XP_FAMILY &&
+      np2cfg.cpu_model == CPU_AMD_K7_ATHLON_XP_MODEL &&
+      np2cfg.cpu_stepping == CPU_AMD_K7_ATHLON_XP_STEPPING &&
+      (np2cfg.cpu_feature & CPU_FEATURES_ALL) ==
+          CPU_FEATURES_AMD_K7_ATHLON_XP &&
+      (np2cfg.cpu_feature_ecx & CPU_FEATURES_ECX_ALL) ==
+          CPU_FEATURES_ECX_AMD_K7_ATHLON_XP &&
+      (np2cfg.cpu_feature_ex & CPU_FEATURES_EX_ALL) ==
+          CPU_FEATURES_EX_AMD_K7_ATHLON_XP &&
+      np2cfg.cpu_eflags_mask == CPU_EFLAGS_MASK_AMD_K7_ATHLON_XP) {
+    return 18;
+  }
+
 NekoCPUCheck:
-	if(np2cfg.cpu_family == 0 && 
-	   np2cfg.cpu_model == 0 &&
-	   np2cfg.cpu_stepping == 0 &&
-	   np2cfg.cpu_feature == 0 &&
-	   np2cfg.cpu_feature_ex == 0){
-		return 255;
-	}
-	return 0;
+  if (np2cfg.cpu_family == 0 && np2cfg.cpu_model == 0 &&
+      np2cfg.cpu_stepping == 0 && np2cfg.cpu_feature == 0 &&
+      np2cfg.cpu_feature_ex == 0) {
+    return 255;
+  }
+  return 0;
 }
-int SetCpuTypeIndex(UINT index){
-	switch(index){
-	case 1:
-		np2cfg.cpu_family = CPU_80386_FAMILY;
-		np2cfg.cpu_model = CPU_80386_MODEL;
-		np2cfg.cpu_stepping = CPU_80386_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_80386;
-		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_80386;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_80386;
-		np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_80386;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_80386);
-		np2cfg.cpu_brandid = CPU_BRAND_ID_80386;
-		break;
-	case 2:
-		np2cfg.cpu_family = CPU_I486SX_FAMILY;
-		np2cfg.cpu_model = CPU_I486SX_MODEL;
-		np2cfg.cpu_stepping = CPU_I486SX_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_I486SX;
-		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_I486SX;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_I486SX;
-		np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_I486SX;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_I486SX);
-		np2cfg.cpu_brandid = CPU_BRAND_ID_I486SX;
-		break;
-	case 3:
-		np2cfg.cpu_family = CPU_I486DX_FAMILY;
-		np2cfg.cpu_model = CPU_I486DX_MODEL;
-		np2cfg.cpu_stepping = CPU_I486DX_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_I486DX;
-		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_I486DX;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_I486DX;
-		np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_I486DX;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_I486DX);
-		np2cfg.cpu_brandid = CPU_BRAND_ID_I486DX;
-		break;
-	case 4:
-		np2cfg.cpu_family = CPU_PENTIUM_FAMILY;
-		np2cfg.cpu_model = CPU_PENTIUM_MODEL;
-		np2cfg.cpu_stepping = CPU_PENTIUM_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_PENTIUM;
-		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_PENTIUM;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM;
-		np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_PENTIUM;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM);
-		np2cfg.cpu_brandid = CPU_BRAND_ID_PENTIUM;
-		break;
-	case 5:
-		np2cfg.cpu_family = CPU_MMX_PENTIUM_FAMILY;
-		np2cfg.cpu_model = CPU_MMX_PENTIUM_MODEL;
-		np2cfg.cpu_stepping = CPU_MMX_PENTIUM_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_MMX_PENTIUM;
-		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_MMX_PENTIUM;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_MMX_PENTIUM;
-		np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_MMX_PENTIUM;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_MMX_PENTIUM);
-		np2cfg.cpu_brandid = CPU_BRAND_ID_MMX_PENTIUM;
-		break;
-	case 6:
-		np2cfg.cpu_family = CPU_PENTIUM_PRO_FAMILY;
-		np2cfg.cpu_model = CPU_PENTIUM_PRO_MODEL;
-		np2cfg.cpu_stepping = CPU_PENTIUM_PRO_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_PENTIUM_PRO;
-		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_PENTIUM_PRO;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM_PRO;
-		np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_PENTIUM_PRO;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_PRO);
-		np2cfg.cpu_brandid = CPU_BRAND_ID_PENTIUM_PRO;
-		break;
-	case 7:
-		np2cfg.cpu_family = CPU_PENTIUM_II_FAMILY;
-		np2cfg.cpu_model = CPU_PENTIUM_II_MODEL;
-		np2cfg.cpu_stepping = CPU_PENTIUM_II_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_PENTIUM_II;
-		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_PENTIUM_II;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM_II;
-		np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_PENTIUM_II;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_II);
-		np2cfg.cpu_brandid = CPU_BRAND_ID_PENTIUM_II;
-		break;
-	case 8:
-		np2cfg.cpu_family = CPU_PENTIUM_III_FAMILY;
-		np2cfg.cpu_model = CPU_PENTIUM_III_MODEL;
-		np2cfg.cpu_stepping = CPU_PENTIUM_III_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_PENTIUM_III;
-		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_PENTIUM_III;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM_III;
-		np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_PENTIUM_III;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_III);
-		np2cfg.cpu_brandid = CPU_BRAND_ID_PENTIUM_III;
-		break;
-	case 9:
-		np2cfg.cpu_family = CPU_PENTIUM_M_FAMILY;
-		np2cfg.cpu_model = CPU_PENTIUM_M_MODEL;
-		np2cfg.cpu_stepping = CPU_PENTIUM_M_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_PENTIUM_M;
-		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_PENTIUM_M;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM_M;
-		np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_PENTIUM_M;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_M);
-		np2cfg.cpu_brandid = CPU_BRAND_ID_PENTIUM_M;
-		break;
-	case 10:
-		np2cfg.cpu_family = CPU_PENTIUM_4_FAMILY;
-		np2cfg.cpu_model = CPU_PENTIUM_4_MODEL;
-		np2cfg.cpu_stepping = CPU_PENTIUM_4_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_PENTIUM_4;
-		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_PENTIUM_4;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM_4;
-		np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_PENTIUM_4;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_4);
-		np2cfg.cpu_brandid = CPU_BRAND_ID_PENTIUM_4;
-		break;
-	case 15:
-		np2cfg.cpu_family = CPU_AMD_K6_2_FAMILY;
-		np2cfg.cpu_model = CPU_AMD_K6_2_MODEL;
-		np2cfg.cpu_stepping = CPU_AMD_K6_2_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_AMD_K6_2;
-		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_AMD_K6_2;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_AMD_K6_2;
-		np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_AMD_K6_2;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K6_2);
-		np2cfg.cpu_brandid = CPU_BRAND_ID_AMD_K6_2;
-		break;
-	case 16:
-		np2cfg.cpu_family = CPU_AMD_K6_III_FAMILY;
-		np2cfg.cpu_model = CPU_AMD_K6_III_MODEL;
-		np2cfg.cpu_stepping = CPU_AMD_K6_III_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_AMD_K6_III;
-		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_AMD_K6_III;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_AMD_K6_III;
-		np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_AMD_K6_III;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K6_III);
-		np2cfg.cpu_brandid = CPU_BRAND_ID_AMD_K6_III;
-		break;
-	case 17:
-		np2cfg.cpu_family = CPU_AMD_K7_ATHLON_FAMILY;
-		np2cfg.cpu_model = CPU_AMD_K7_ATHLON_MODEL;
-		np2cfg.cpu_stepping = CPU_AMD_K7_ATHLON_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_AMD_K7_ATHLON;
-		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_AMD_K7_ATHLON;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_AMD_K7_ATHLON;
-		np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_AMD_K7_ATHLON;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K7_ATHLON);
-		np2cfg.cpu_brandid = CPU_BRAND_ID_AMD_K7_ATHLON;
-		break;
-	case 18:
-		np2cfg.cpu_family = CPU_AMD_K7_ATHLON_XP_FAMILY;
-		np2cfg.cpu_model = CPU_AMD_K7_ATHLON_XP_MODEL;
-		np2cfg.cpu_stepping = CPU_AMD_K7_ATHLON_XP_STEPPING;
-		np2cfg.cpu_feature = CPU_FEATURES_AMD_K7_ATHLON_XP;
-		np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_AMD_K7_ATHLON_XP;
-		np2cfg.cpu_feature_ex = CPU_FEATURES_EX_AMD_K7_ATHLON_XP;
-		np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_AMD_K7_ATHLON_XP;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K7_ATHLON_XP);
-		np2cfg.cpu_brandid = CPU_BRAND_ID_AMD_K7_ATHLON_XP;
-		break;
-	case 255: // 全機能使用可能
-		np2cfg.cpu_family = 0;
-		np2cfg.cpu_model = 0;
-		np2cfg.cpu_stepping = 0;
-		np2cfg.cpu_feature = 0;
-		np2cfg.cpu_feature_ecx = 0;
-		np2cfg.cpu_feature_ex = 0;
-		np2cfg.cpu_eflags_mask = 0;
-		strcpy(np2cfg.cpu_vendor, CPU_VENDOR_NEKOPRO);
-		strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_NEKOPRO);
-		np2cfg.cpu_brandid = 0;
-		break;
-	default:
-		return 0;
-	}
+int SetCpuTypeIndex(UINT index) {
+  switch (index) {
+  case 1:
+    np2cfg.cpu_family = CPU_80386_FAMILY;
+    np2cfg.cpu_model = CPU_80386_MODEL;
+    np2cfg.cpu_stepping = CPU_80386_STEPPING;
+    np2cfg.cpu_feature = CPU_FEATURES_80386;
+    np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_80386;
+    np2cfg.cpu_feature_ex = CPU_FEATURES_EX_80386;
+    np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_80386;
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_80386);
+    np2cfg.cpu_brandid = CPU_BRAND_ID_80386;
+    break;
+  case 2:
+    np2cfg.cpu_family = CPU_I486SX_FAMILY;
+    np2cfg.cpu_model = CPU_I486SX_MODEL;
+    np2cfg.cpu_stepping = CPU_I486SX_STEPPING;
+    np2cfg.cpu_feature = CPU_FEATURES_I486SX;
+    np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_I486SX;
+    np2cfg.cpu_feature_ex = CPU_FEATURES_EX_I486SX;
+    np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_I486SX;
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_I486SX);
+    np2cfg.cpu_brandid = CPU_BRAND_ID_I486SX;
+    break;
+  case 3:
+    np2cfg.cpu_family = CPU_I486DX_FAMILY;
+    np2cfg.cpu_model = CPU_I486DX_MODEL;
+    np2cfg.cpu_stepping = CPU_I486DX_STEPPING;
+    np2cfg.cpu_feature = CPU_FEATURES_I486DX;
+    np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_I486DX;
+    np2cfg.cpu_feature_ex = CPU_FEATURES_EX_I486DX;
+    np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_I486DX;
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_I486DX);
+    np2cfg.cpu_brandid = CPU_BRAND_ID_I486DX;
+    break;
+  case 4:
+    np2cfg.cpu_family = CPU_PENTIUM_FAMILY;
+    np2cfg.cpu_model = CPU_PENTIUM_MODEL;
+    np2cfg.cpu_stepping = CPU_PENTIUM_STEPPING;
+    np2cfg.cpu_feature = CPU_FEATURES_PENTIUM;
+    np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_PENTIUM;
+    np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM;
+    np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_PENTIUM;
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM);
+    np2cfg.cpu_brandid = CPU_BRAND_ID_PENTIUM;
+    break;
+  case 5:
+    np2cfg.cpu_family = CPU_MMX_PENTIUM_FAMILY;
+    np2cfg.cpu_model = CPU_MMX_PENTIUM_MODEL;
+    np2cfg.cpu_stepping = CPU_MMX_PENTIUM_STEPPING;
+    np2cfg.cpu_feature = CPU_FEATURES_MMX_PENTIUM;
+    np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_MMX_PENTIUM;
+    np2cfg.cpu_feature_ex = CPU_FEATURES_EX_MMX_PENTIUM;
+    np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_MMX_PENTIUM;
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_MMX_PENTIUM);
+    np2cfg.cpu_brandid = CPU_BRAND_ID_MMX_PENTIUM;
+    break;
+  case 6:
+    np2cfg.cpu_family = CPU_PENTIUM_PRO_FAMILY;
+    np2cfg.cpu_model = CPU_PENTIUM_PRO_MODEL;
+    np2cfg.cpu_stepping = CPU_PENTIUM_PRO_STEPPING;
+    np2cfg.cpu_feature = CPU_FEATURES_PENTIUM_PRO;
+    np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_PENTIUM_PRO;
+    np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM_PRO;
+    np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_PENTIUM_PRO;
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_PRO);
+    np2cfg.cpu_brandid = CPU_BRAND_ID_PENTIUM_PRO;
+    break;
+  case 7:
+    np2cfg.cpu_family = CPU_PENTIUM_II_FAMILY;
+    np2cfg.cpu_model = CPU_PENTIUM_II_MODEL;
+    np2cfg.cpu_stepping = CPU_PENTIUM_II_STEPPING;
+    np2cfg.cpu_feature = CPU_FEATURES_PENTIUM_II;
+    np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_PENTIUM_II;
+    np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM_II;
+    np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_PENTIUM_II;
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_II);
+    np2cfg.cpu_brandid = CPU_BRAND_ID_PENTIUM_II;
+    break;
+  case 8:
+    np2cfg.cpu_family = CPU_PENTIUM_III_FAMILY;
+    np2cfg.cpu_model = CPU_PENTIUM_III_MODEL;
+    np2cfg.cpu_stepping = CPU_PENTIUM_III_STEPPING;
+    np2cfg.cpu_feature = CPU_FEATURES_PENTIUM_III;
+    np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_PENTIUM_III;
+    np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM_III;
+    np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_PENTIUM_III;
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_III);
+    np2cfg.cpu_brandid = CPU_BRAND_ID_PENTIUM_III;
+    break;
+  case 9:
+    np2cfg.cpu_family = CPU_PENTIUM_M_FAMILY;
+    np2cfg.cpu_model = CPU_PENTIUM_M_MODEL;
+    np2cfg.cpu_stepping = CPU_PENTIUM_M_STEPPING;
+    np2cfg.cpu_feature = CPU_FEATURES_PENTIUM_M;
+    np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_PENTIUM_M;
+    np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM_M;
+    np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_PENTIUM_M;
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_M);
+    np2cfg.cpu_brandid = CPU_BRAND_ID_PENTIUM_M;
+    break;
+  case 10:
+    np2cfg.cpu_family = CPU_PENTIUM_4_FAMILY;
+    np2cfg.cpu_model = CPU_PENTIUM_4_MODEL;
+    np2cfg.cpu_stepping = CPU_PENTIUM_4_STEPPING;
+    np2cfg.cpu_feature = CPU_FEATURES_PENTIUM_4;
+    np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_PENTIUM_4;
+    np2cfg.cpu_feature_ex = CPU_FEATURES_EX_PENTIUM_4;
+    np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_PENTIUM_4;
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_INTEL);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_PENTIUM_4);
+    np2cfg.cpu_brandid = CPU_BRAND_ID_PENTIUM_4;
+    break;
+  case 15:
+    np2cfg.cpu_family = CPU_AMD_K6_2_FAMILY;
+    np2cfg.cpu_model = CPU_AMD_K6_2_MODEL;
+    np2cfg.cpu_stepping = CPU_AMD_K6_2_STEPPING;
+    np2cfg.cpu_feature = CPU_FEATURES_AMD_K6_2;
+    np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_AMD_K6_2;
+    np2cfg.cpu_feature_ex = CPU_FEATURES_EX_AMD_K6_2;
+    np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_AMD_K6_2;
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K6_2);
+    np2cfg.cpu_brandid = CPU_BRAND_ID_AMD_K6_2;
+    break;
+  case 16:
+    np2cfg.cpu_family = CPU_AMD_K6_III_FAMILY;
+    np2cfg.cpu_model = CPU_AMD_K6_III_MODEL;
+    np2cfg.cpu_stepping = CPU_AMD_K6_III_STEPPING;
+    np2cfg.cpu_feature = CPU_FEATURES_AMD_K6_III;
+    np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_AMD_K6_III;
+    np2cfg.cpu_feature_ex = CPU_FEATURES_EX_AMD_K6_III;
+    np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_AMD_K6_III;
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K6_III);
+    np2cfg.cpu_brandid = CPU_BRAND_ID_AMD_K6_III;
+    break;
+  case 17:
+    np2cfg.cpu_family = CPU_AMD_K7_ATHLON_FAMILY;
+    np2cfg.cpu_model = CPU_AMD_K7_ATHLON_MODEL;
+    np2cfg.cpu_stepping = CPU_AMD_K7_ATHLON_STEPPING;
+    np2cfg.cpu_feature = CPU_FEATURES_AMD_K7_ATHLON;
+    np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_AMD_K7_ATHLON;
+    np2cfg.cpu_feature_ex = CPU_FEATURES_EX_AMD_K7_ATHLON;
+    np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_AMD_K7_ATHLON;
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K7_ATHLON);
+    np2cfg.cpu_brandid = CPU_BRAND_ID_AMD_K7_ATHLON;
+    break;
+  case 18:
+    np2cfg.cpu_family = CPU_AMD_K7_ATHLON_XP_FAMILY;
+    np2cfg.cpu_model = CPU_AMD_K7_ATHLON_XP_MODEL;
+    np2cfg.cpu_stepping = CPU_AMD_K7_ATHLON_XP_STEPPING;
+    np2cfg.cpu_feature = CPU_FEATURES_AMD_K7_ATHLON_XP;
+    np2cfg.cpu_feature_ecx = CPU_FEATURES_ECX_AMD_K7_ATHLON_XP;
+    np2cfg.cpu_feature_ex = CPU_FEATURES_EX_AMD_K7_ATHLON_XP;
+    np2cfg.cpu_eflags_mask = CPU_EFLAGS_MASK_AMD_K7_ATHLON_XP;
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_AMD);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_AMD_K7_ATHLON_XP);
+    np2cfg.cpu_brandid = CPU_BRAND_ID_AMD_K7_ATHLON_XP;
+    break;
+  case 255: // 全機能使用可能
+    np2cfg.cpu_family = 0;
+    np2cfg.cpu_model = 0;
+    np2cfg.cpu_stepping = 0;
+    np2cfg.cpu_feature = 0;
+    np2cfg.cpu_feature_ecx = 0;
+    np2cfg.cpu_feature_ex = 0;
+    np2cfg.cpu_eflags_mask = 0;
+    strcpy(np2cfg.cpu_vendor, CPU_VENDOR_NEKOPRO);
+    strcpy(np2cfg.cpu_brandstring, CPU_BRAND_STRING_NEKOPRO);
+    np2cfg.cpu_brandid = 0;
+    break;
+  default:
+    return 0;
+  }
 }
 #endif
-

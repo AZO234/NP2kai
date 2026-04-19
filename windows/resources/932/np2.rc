@@ -233,6 +233,7 @@ FONT 9, "‚l‚r ‚oƒSƒVƒbƒN"
 BEGIN
     LTEXT           "Port",IDC_STATIC,8,10,30,8
     COMBOBOX        IDC_COM1PORT,40,8,48,96,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+
     GROUPBOX        "Assign",IDC_COM1STR00,8,28,202,84
     LTEXT           "Speed",IDC_COM1STR01,16,45,40,8
     COMBOBOX        IDC_COM1SPEED,60,42,48,128,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
@@ -247,6 +248,7 @@ BEGIN
     LTEXT           "Stop bits",IDC_COM1STR06,16,93,40,8
     COMBOBOX        IDC_COM1STOPBIT,60,90,48,64,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "bit(s)",IDC_COM1STR07,112,93,26,8
+
     GROUPBOX        "Assign",IDC_COM1STR10,8,28,186,84
     LTEXT           "Device",IDC_COM1STR11,16,45,30,8
     COMBOBOX        IDC_COM1MMAP,50,42,136,96,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
@@ -256,12 +258,40 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,82,170,10
     LTEXT           "",IDC_COM1DEFF,26,94,148,10,SS_SUNKEN
     PUSHBUTTON      "...",IDC_COM1DEFB,176,94,10,10
+
     CONTROL         "Fixed aspect mode (1:1)",IDC_COM1PENTABFA,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,28,150,10
+
     LTEXT           "Pipe Name",IDC_COM1STR30,8,28,50,8
     EDITTEXT        IDC_COM1PIPENAME,55,25,80,14, ES_AUTOHSCROLL
     LTEXT           "Server Name",IDC_COM1STR31,8,44,50,8
     EDITTEXT        IDC_COM1PIPESERV,55,41,80,14, ES_AUTOHSCROLL
     EDITTEXT        IDC_COM1STR32,8,60,150,14, ES_READONLY
+
+    LTEXT           "Output Directory Path", IDC_COM1FILESTR00, 8, 28, 100, 8
+    EDITTEXT        IDC_COM1FILEPATH, 8, 38, 146, 14, ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse...", IDC_COM1FILEBROWSE, 158, 38, 44, 14
+    LTEXT           "Timeout (0=Disable)", IDC_COM1FILESTR01, 8, 58, 130, 8
+    LTEXT           "msec", IDC_COM1FILESTR02, 115, 58, 32, 8
+    EDITTEXT        IDC_COM1FILETIMEOUT, 75, 55, 37, 14, ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+
+    LTEXT           "Printer", IDC_COM1SPOOLERSTR00, 8, 30, 100, 8
+    COMBOBOX        IDC_COM1SPOOLERNAME, 34, 27, 140, 52, CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP | CBS_AUTOHSCROLL
+    LTEXT           "Timeout (0=Disable)", IDC_COM1SPOOLERSTR01, 8, 48, 130, 8
+    LTEXT           "msec", IDC_COM1SPOOLERSTR02, 115, 48, 32, 8
+    EDITTEXT        IDC_COM1SPOOLERTIMEOUT, 75, 45, 37, 14, ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Show print settings before printing", IDC_COM1SPOOLERCFG, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 8, 64, 150, 10
+    LTEXT           "Emulation", IDC_COM1SPOOLERSTR03, 8, 81, 80, 10
+    COMBOBOX        IDC_COM1SPOOLEREMUMODE, 50, 78, 100, 52, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP | CBS_AUTOHSCROLL
+    LTEXT           "Dot Size (%)", IDC_COM1SPOOLERSTR04, 16, 97, 80, 10
+    EDITTEXT        IDC_COM1SPOOLEREMU_DOTSIZE, 60, 94, 37, 14, ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Use Rectangle Dot", IDC_COM1SPOOLEREMU_RECTDOT, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 110, 95, 150, 10
+    LTEXT           "Offset (mm)  X", IDC_COM1SPOOLERSTR05, 16, 113, 60, 10
+    LTEXT           "Y", IDC_COM1SPOOLERSTR06, 100, 113, 20, 10
+    EDITTEXT        IDC_COM1SPOOLEREMU_OFFSETX, 64, 110, 27, 14, ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_COM1SPOOLEREMU_OFFSETY, 108, 110, 27, 14, ES_RIGHT | ES_AUTOHSCROLL
+    LTEXT           "Scale (%)", IDC_COM1SPOOLERSTR07, 140, 113, 80, 10
+    EDITTEXT        IDC_COM1SPOOLEREMU_SCALE, 170, 110, 20, 14, ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+
 END
 
 IDD_PC9861A DIALOG 0, 0, 224, 140
@@ -1166,7 +1196,9 @@ BEGIN
             MENUITEM "x1/3",                        IDM_MOUSED3X
             MENUITEM "x1/4",                        IDM_MOUSED4X
         END
-        MENUITEM "Se&rial option...",               IDM_SERIAL1
+        MENUITEM SEPARATOR
+        MENUITEM "Se&rial/Parallel option...",      IDM_SERIAL1
+        MENUITEM "Finish Current Print Job",        IDM_PARALLEL_ENDPRINTJOB
         MENUITEM SEPARATOR
         MENUITEM "MIDI &option...",                 IDM_MPUPC98
         MENUITEM "MIDI &panic",                     IDM_MIDIPANIC
@@ -1555,7 +1587,7 @@ STRINGTABLE
 BEGIN
     IDS_SCREENOPTION        "Screen option"
     IDS_SOUNDOPTION         "Sound board option"
-    IDS_SERIALOPTION        "Serial option"
+    IDS_SERIALOPTION        "Serial/Parallel option"
     IDS_NETWORKOPTION       "Network option"
     IDS_WABOPTION           "Window Accelerator board option"
     IDS_PCIOPTION           "PCI option"
@@ -1622,6 +1654,7 @@ BEGIN
     IDS_SERIAL1             "COM1"
     IDS_PC9861B             "CH.1"
     IDS_PC9861C             "CH.2"
+    IDS_PARALLEL            "Parallel"
     IDS_COM1                "COM1"
 END
 
@@ -1633,8 +1666,21 @@ BEGIN
     IDS_MIDI                "MIDI"
     IDS_TABLET              "PENTAB"
     IDS_PIPE                "PIPE"
+    IDS_CFILE               "FILE"
+    IDS_LPT1                "LPT1"
+    IDS_LPT2                "LPT2"
+    IDS_LPT3                "LPT3"
+    IDS_LPT4                "LPT4"
+    IDS_SPOOLER             "PRINTER"
     IDS_2_0MHZ              "1.9968MHz"
     IDS_2_5MHZ              "2.4576MHz"
+END
+
+STRINGTABLE
+BEGIN
+    IDC_COM1SPOOLEREMUMODE_RAW    "Bypass (RAW)"
+    IDC_COM1SPOOLEREMUMODE_PR201  "PC-PR201"
+    IDC_COM1SPOOLEREMUMODE_ESCP   "ESC/P"
 END
 
 STRINGTABLE
