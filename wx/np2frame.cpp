@@ -86,10 +86,7 @@ wxBEGIN_EVENT_TABLE(Np2Frame, wxFrame)
 	EVT_MENU(ID_EMU_NEW_HD_IMAGE, Np2Frame::OnEmuNewHdImage)
 	EVT_MENU(ID_EMU_PREFERENCE,   Np2Frame::OnEmuPreference)
 	EVT_MENU(ID_EMU_EXIT,         Np2Frame::OnEmuExit)
-	/* System */
-	EVT_MENU(ID_SYS_FAST_MEMCHECK, Np2Frame::OnSysFastMemCheck)
-	EVT_MENU(ID_SYS_MULTITHREAD,   Np2Frame::OnSysMultiThread)
-	EVT_MENU_RANGE(ID_SYS_SPEED_05, ID_SYS_SPEED_16, Np2Frame::OnSysSpeed)
+	EVT_MENU_RANGE(ID_EMU_SPEED_05, ID_EMU_SPEED_16, Np2Frame::OnSysSpeed)
 	/* FD */
 	EVT_MENU(ID_FD1_OPEN,  Np2Frame::OnFdOpen)
 	EVT_MENU(ID_FD1_EJECT, Np2Frame::OnFdEject)
@@ -243,6 +240,19 @@ void Np2Frame::BuildMenuBar(void)
 	          "Start or pause emulation", wxART_GO_FORWARD);
 	AppendArt(menuEmu, ID_EMU_RESET, "&Reset",
 	          "Hardware reset",           wxART_UNDO);
+
+	/* Emulation Speed sub-menu */
+	{
+		wxMenu *menuSpeed = new wxMenu;
+		menuSpeed->AppendRadioItem(ID_EMU_SPEED_05, "x0.5");
+		menuSpeed->AppendRadioItem(ID_EMU_SPEED_1,  "x1");
+		menuSpeed->AppendRadioItem(ID_EMU_SPEED_2,  "x2");
+		menuSpeed->AppendRadioItem(ID_EMU_SPEED_4,  "x4");
+		menuSpeed->AppendRadioItem(ID_EMU_SPEED_8,  "x8");
+		menuSpeed->AppendRadioItem(ID_EMU_SPEED_16, "x16");
+		menuSpeed->Check(ID_EMU_SPEED_1, true);
+		AppendSubArt(menuEmu, menuSpeed, "&Emulation Speed", wxART_LIST_VIEW);
+	}
 	menuEmu->AppendSeparator();
 
 	/* State Slot sub-menu */
@@ -271,21 +281,6 @@ void Np2Frame::BuildMenuBar(void)
 	          "Exit the emulator", wxART_QUIT);
 
 	bar->Append(menuEmu, "&Emulate");
-
-	/* --- System --- */
-	wxMenu *menuSys = new wxMenu;
-	AppendArt(menuSys, ID_SYS_FAST_MEMCHECK, "&Fast Memory Check", "Enable fast memory check on reset", wxART_TICK_MARK, wxITEM_CHECK);
-	AppendArt(menuSys, ID_SYS_MULTITHREAD,   "&Multi Thread",      "Enable multi-threaded rendering",  wxART_EXECUTABLE_FILE, wxITEM_CHECK);
-	menuSys->AppendSeparator();
-	wxMenu *menuSpeed = new wxMenu;
-	menuSpeed->AppendRadioItem(ID_SYS_SPEED_05, "x0.5");
-	menuSpeed->AppendRadioItem(ID_SYS_SPEED_1,  "x1");
-	menuSpeed->AppendRadioItem(ID_SYS_SPEED_2,  "x2");
-	menuSpeed->AppendRadioItem(ID_SYS_SPEED_4,  "x4");
-	menuSpeed->AppendRadioItem(ID_SYS_SPEED_8,  "x8");
-	menuSpeed->AppendRadioItem(ID_SYS_SPEED_16, "x16");
-	AppendSubArt(menuSys, menuSpeed, "&Emulation Speed", wxART_LIST_VIEW);
-	bar->Append(menuSys, "&System");
 
 	/* --- FD drives --- */
 	wxMenu *menuFD = new wxMenu;
@@ -407,10 +402,6 @@ void Np2Frame::UpdateMenuStatus(void)
 {
 	wxMenuBar *bar = GetMenuBar();
 	if (!bar) return;
-
-	/* System */
-	bar->Check(ID_SYS_FAST_MEMCHECK, np2cfg.memcheckspeed > 1);
-	bar->Check(ID_SYS_MULTITHREAD,   np2wabcfg.multithread != 0);
 
 	/* FDD: np2cfg.fddfile は diskdrv_setfddex で即座に更新される */
 	for (int i = 0; i < 4; i++) {
@@ -568,22 +559,10 @@ void Np2Frame::OnEmuExit(wxCommandEvent & /*evt*/)
 	Close(true);
 }
 
-void Np2Frame::OnSysFastMemCheck(wxCommandEvent &evt)
-{
-	np2cfg.memcheckspeed = evt.IsChecked() ? 8 : 1;
-	sysmng_update(SYS_UPDATECFG);
-}
-
-void Np2Frame::OnSysMultiThread(wxCommandEvent &evt)
-{
-	np2wabcfg.multithread = evt.IsChecked() ? 1 : 0;
-	sysmng_update(SYS_UPDATECFG);
-}
-
 void Np2Frame::OnSysSpeed(wxCommandEvent &evt)
 {
 	const UINT32 speeds[] = {50, 100, 200, 400, 800, 1600};
-	int idx = evt.GetId() - ID_SYS_SPEED_05;
+	int idx = evt.GetId() - ID_EMU_SPEED_05;
 	if (idx >= 0 && idx < 6) {
 		np2cfg.emuspeed = speeds[idx];
 		sysmng_update(SYS_UPDATECFG);

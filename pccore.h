@@ -235,6 +235,9 @@ struct tagNP2Config
 #if defined(SUPPORT_SCSI)
 	OEMCHAR	scsihdd[4][MAX_PATH];									// ver0.74
 #endif
+#if defined(SUPPORT_LIBCDIO)
+	UINT8	libcdio;
+#endif
 	OEMCHAR	fontfile[MAX_PATH];
 	OEMCHAR	biospath[MAX_PATH];
 	OEMCHAR	hdrvroot[MAX_PATH];

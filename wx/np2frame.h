@@ -24,15 +24,13 @@ enum {
 	ID_EMU_PREFERENCE,
 	ID_EMU_EXIT,
 
-	/* System */
-	ID_SYS_FAST_MEMCHECK,
-	ID_SYS_MULTITHREAD,
-	ID_SYS_SPEED_05,
-	ID_SYS_SPEED_1,
-	ID_SYS_SPEED_2,
-	ID_SYS_SPEED_4,
-	ID_SYS_SPEED_8,
-	ID_SYS_SPEED_16,
+	/* Emulation Speed */
+	ID_EMU_SPEED_05,
+	ID_EMU_SPEED_1,
+	ID_EMU_SPEED_2,
+	ID_EMU_SPEED_4,
+	ID_EMU_SPEED_8,
+	ID_EMU_SPEED_16,
 
 	/* FD drives */
 	ID_FD1_OPEN,
@@ -137,8 +135,6 @@ private:
 	void OnEmuPreference(wxCommandEvent &evt);
 	void OnEmuExit(wxCommandEvent &evt);
 
-	void OnSysFastMemCheck(wxCommandEvent &evt);
-	void OnSysMultiThread(wxCommandEvent &evt);
 	void OnSysSpeed(wxCommandEvent &evt);
 
 	void OnFdOpen(wxCommandEvent &evt);

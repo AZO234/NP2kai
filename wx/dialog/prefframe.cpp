@@ -17,6 +17,9 @@
 #include <common/bmpdata.h>
 #include <fdd/diskdrv.h>
 #include <generic/dipswbmp.h>
+#if defined(SUPPORT_VIDEOFILTER)
+#include <vram/videofilter.h>
+#endif
 
 #include <wx/artprov.h>
 #include <wx/gbsizer.h>
@@ -397,6 +400,49 @@ wxPanel *PrefFrame::BuildSystemPage(wxNotebook *nb)
 	return page;
 }
 
+#if defined(SUPPORT_VIDEOFILTER)
+static const char *s_vf_types[] = {
+	"Thru", "NegaPosi", "DepthDown", "Grey",
+	"Gamma", "Rotate Hue", "HSV smooth", "RGB smooth"
+};
+
+static wxStaticBoxSizer *BuildVideoFilterBox(wxWindow *parent, int filter_idx)
+{
+	wxString title = wxString::Format("Filter%d", filter_idx + 1);
+	auto *box = new wxStaticBoxSizer(wxVERTICAL, parent, title);
+	auto *gs  = new wxGridBagSizer(3, 6);
+	int row = 0;
+
+	auto *en = new wxCheckBox(parent, wxID_ANY, "Enable");
+	en->SetName(wxString::Format("vf_f%d_en", filter_idx));
+	gs->Add(en, wxGBPosition(row, 0), wxGBSpan(1, 4));
+	row++;
+
+	gs->Add(new wxStaticText(parent, wxID_ANY, "Type:"),
+	        wxGBPosition(row, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+	auto *tp = new wxChoice(parent, wxID_ANY);
+	tp->SetName(wxString::Format("vf_f%d_type", filter_idx));
+	for (auto &s : s_vf_types) tp->Append(s);
+	tp->SetSelection(0);
+	gs->Add(tp, wxGBPosition(row, 1), wxGBSpan(1, 3), wxEXPAND);
+	row++;
+
+	for (int p = 0; p < 8; p++) {
+		gs->Add(new wxStaticText(parent, wxID_ANY,
+		    wxString::Format("Param%d:", p + 1)),
+		    wxGBPosition(row, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+		auto *txt = new wxTextCtrl(parent, wxID_ANY, "");
+		txt->SetName(wxString::Format("vf_f%d_p%d", filter_idx, p));
+		gs->Add(txt, wxGBPosition(row, 1), wxGBSpan(1, 3), wxEXPAND);
+		row++;
+	}
+
+	gs->AddGrowableCol(1, 1);
+	box->Add(gs, 0, wxEXPAND | wxALL, 4);
+	return box;
+}
+#endif /* SUPPORT_VIDEOFILTER */
+
 wxPanel *PrefFrame::BuildDisplayPage(wxNotebook *nb)
 {
 	wxScrolledWindow *page = new wxScrolledWindow(nb, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL | wxVSCROLL);
@@ -504,6 +550,15 @@ wxPanel *PrefFrame::BuildDisplayPage(wxNotebook *nb)
 
 	gs->AddGrowableCol(1, 1);
 	vs->Add(gs, 0, wxEXPAND | wxALL, 8);
+
+#if defined(SUPPORT_VIDEOFILTER)
+	auto *vfBox = new wxStaticBoxSizer(wxVERTICAL, page, "VideoFilter");
+	for (int f = 0; f < 3; f++) {
+		vfBox->Add(BuildVideoFilterBox(page, f), 0, wxEXPAND | wxALL, 4);
+	}
+	vs->Add(vfBox, 0, wxEXPAND | wxALL, 8);
+#endif
+
 	vs->AddStretchSpacer(1);
 	vs->Add(new wxButton(page, ID_PREF_DEFAULT, "Default"), 0, wxALIGN_RIGHT | wxALL, 8);
 	page->SetSizer(vs);
@@ -723,7 +778,6 @@ wxPanel *PrefFrame::BuildHddPage(wxNotebook *nb)
 		type->SetName(wxString::Format("IDE%dTYPE", i + 1));
 		gs->Add(type, wxGBPosition(row, 1), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
 
-		/* Equipment checkbox */
 		auto *eq = new wxCheckBox(page, wxID_ANY, "Equipped");
 		eq->SetName(wxString::Format("IDE%dEQUIP", i + 1));
 		gs->Add(eq, wxGBPosition(row, 2), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
@@ -737,6 +791,27 @@ wxPanel *PrefFrame::BuildHddPage(wxNotebook *nb)
 		auto *eq = new wxCheckBox(page, wxID_ANY, "Equipped");
 		eq->SetName(wxString::Format("SASI%dEQUIP", i + 1));
 		gs->Add(eq, wxGBPosition(row, 1), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+		row++;
+	}
+#endif
+
+#if defined(SUPPORT_SCSI)
+	for (int i = 0; i < 4; i++) {
+		gs->Add(new wxStaticText(page, wxID_ANY,
+		    wxString::Format("SCSI HDD %d:", i + 1)),
+		    wxGBPosition(row, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+		auto *eq = new wxCheckBox(page, wxID_ANY, "Equipped");
+		eq->SetName(wxString::Format("SCSI%dEQUIP", i + 1));
+		gs->Add(eq, wxGBPosition(row, 1), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+		row++;
+	}
+#endif
+
+#if defined(SUPPORT_LIBCDIO)
+	{
+		auto *cb = new wxCheckBox(page, wxID_ANY, "Enable libcdio");
+		cb->SetName("LIBCDIO");
+		gs->Add(cb, wxGBPosition(row, 0), wxGBSpan(1, 2), wxALIGN_CENTER_VERTICAL);
 		row++;
 	}
 #endif
@@ -1174,17 +1249,17 @@ wxPanel *PrefFrame::BuildDipswPage(wxNotebook *nb)
 
 	vs->Add(new wxStaticLine(page), 0, wxEXPAND | wxLEFT | wxRIGHT, 8);
 
-	/* Checkbox grid: 3 banks × 8 bits */
-	wxGridBagSizer *gs = new wxGridBagSizer(2, 4);
+	/* Checkbox grid: 3 banks stacked vertically (one row per bank) */
+	wxGridBagSizer *gs = new wxGridBagSizer(4, 6);
 	for (int bank = 0; bank < 3; bank++) {
 		gs->Add(new wxStaticText(page, wxID_ANY,
 		    wxString::Format("SW%d:", bank + 1)),
-		    wxGBPosition(0, bank * 9), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+		    wxGBPosition(bank, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
 		for (int bit = 0; bit < 8; bit++) {
 			auto *cb = new wxCheckBox(page, ID_DIPSW_BASE + bank * 8 + bit,
 			    wxString::Format("%d", bit + 1));
 			m_dipsw[bank][bit] = cb;
-			gs->Add(cb, wxGBPosition(1, bank * 9 + bit), wxDefaultSpan);
+			gs->Add(cb, wxGBPosition(bank, 1 + bit), wxDefaultSpan);
 		}
 	}
 	vs->Add(gs, 0, wxALL | wxCENTER, 8);
@@ -1411,9 +1486,6 @@ void PrefFrame::UpdateMHz(void)
 
 void PrefFrame::OnDefault(wxCommandEvent & /*evt*/)
 {
-	if (wxMessageBox("Reset all settings to default?", "Preference", wxYES_NO | wxICON_QUESTION) != wxYES)
-		return;
-
 	extern void pccore_setdefault(void);
 	pccore_setdefault();
 	LoadFromConfig();
@@ -1494,6 +1566,34 @@ void PrefFrame::LoadFromConfig(void)
 		}
 	}
 	SetCheckByName(this, "CLGDFCUR",     np2cfg.gd5430fakecur != 0);
+#endif
+
+#if defined(SUPPORT_VIDEOFILTER)
+	{
+		uint8_t pno = np2cfg.vf1_pno;
+		if (pno >= 3) pno = 0;
+		for (int f = 0; f < 3; f++) {
+			char nm[16];
+			snprintf(nm, sizeof(nm), "vf_f%d_en", f);
+			SetCheckByName(this, nm, np2cfg.vf1_param[pno][f][0] != 0);
+			snprintf(nm, sizeof(nm), "vf_f%d_type", f);
+			if (auto *w = FindByName(this, nm)) {
+				if (auto *ch = wxDynamicCast(w, wxChoice)) {
+					uint32_t t = np2cfg.vf1_param[pno][f][1];
+					if (t > 7) t = 0;
+					ch->SetSelection((int)t);
+				}
+			}
+			for (int p = 0; p < 8; p++) {
+				snprintf(nm, sizeof(nm), "vf_f%d_p%d", f, p);
+				if (auto *w = FindByName(this, nm)) {
+					if (auto *tx = wxDynamicCast(w, wxTextCtrl))
+						tx->ChangeValue(wxString::Format("%u",
+						    (unsigned)np2cfg.vf1_param[pno][f][p]));
+				}
+			}
+		}
+	}
 #endif
 
 	/* Sound board */
@@ -1614,12 +1714,14 @@ void PrefFrame::LoadFromConfig(void)
 	}
 	if (auto *w = FindByName(this, "Mouse_sp")) {
 		if (auto *ch = wxDynamicCast(w, wxChoice)) {
-			int sel = 2;
-			if      (np2oscfg.mouse_move_ratio <= 1) sel = 0;
-			else if (np2oscfg.mouse_move_ratio <= 2) sel = 1;
-			else if (np2oscfg.mouse_move_ratio <= 4) sel = 2;
-			else if (np2oscfg.mouse_move_ratio <= 8) sel = 3;
-			else                                     sel = 4;
+			int sel = 2; /* default x1 (also for unset / value 4) */
+			switch (np2oscfg.mouse_move_ratio) {
+			case 1:  sel = 0; break;
+			case 2:  sel = 1; break;
+			case 8:  sel = 3; break;
+			case 16: sel = 4; break;
+			default: sel = 2; break;
+			}
 			ch->SetSelection(sel);
 		}
 	}
@@ -1757,6 +1859,16 @@ void PrefFrame::LoadFromConfig(void)
 		SetCheckByName(this, name, np2cfg.sasihdd[i][0] != 0);
 	}
 #endif
+#if defined(SUPPORT_SCSI)
+	for (int i = 0; i < 4; i++) {
+		char name[16];
+		snprintf(name, sizeof(name), "SCSI%dEQUIP", i + 1);
+		SetCheckByName(this, name, np2cfg.scsihdd[i][0] != 0);
+	}
+#endif
+#if defined(SUPPORT_LIBCDIO)
+	SetCheckByName(this, "LIBCDIO", np2cfg.libcdio != 0);
+#endif
 
 	/* PCI */
 #if defined(SUPPORT_PCI)
@@ -1862,6 +1974,39 @@ void PrefFrame::SaveToConfig(void)
 		}
 	}
 	np2cfg.gd5430fakecur = GetCheckByName(this, "CLGDFCUR")  ? 1 : 0;
+#endif
+
+#if defined(SUPPORT_VIDEOFILTER)
+	{
+		uint8_t pno = np2cfg.vf1_pno;
+		if (pno >= 3) pno = 0;
+		for (int f = 0; f < 3; f++) {
+			char nm[16];
+			/* Param1..8 textboxes are authoritative for the 8 raw entries */
+			for (int p = 0; p < 8; p++) {
+				snprintf(nm, sizeof(nm), "vf_f%d_p%d", f, p);
+				wxString s = GetTextByName(this, nm);
+				if (s.IsEmpty()) {
+					np2cfg.vf1_param[pno][f][p] = 0;
+				} else {
+					unsigned long v = 0;
+					s.ToULong(&v);
+					np2cfg.vf1_param[pno][f][p] = (uint32_t)v;
+				}
+			}
+			/* Enable / Type override the first two indices */
+			snprintf(nm, sizeof(nm), "vf_f%d_en", f);
+			np2cfg.vf1_param[pno][f][0] = GetCheckByName(this, nm) ? 1 : 0;
+			snprintf(nm, sizeof(nm), "vf_f%d_type", f);
+			if (auto *w = FindByName(this, nm)) {
+				if (auto *ch = wxDynamicCast(w, wxChoice)) {
+					int sel = ch->GetSelection();
+					if (sel >= 0 && sel < 8)
+						np2cfg.vf1_param[pno][f][1] = (uint32_t)sel;
+				}
+			}
+		}
+	}
 #endif
 
 	/* Sound */
@@ -2097,13 +2242,23 @@ void PrefFrame::SaveToConfig(void)
 #endif
 #endif
 
-	/* HDD Equipment: if unchecked, clear the drive type */
+	/* HDD Equipment: if unchecked, clear the drive type / image path */
 #if defined(SUPPORT_IDEIO)
 	for (int i = 0; i < 4; i++) {
 		char name[16];
 		snprintf(name, sizeof(name), "IDE%dEQUIP", i + 1);
 		if (!GetCheckByName(this, name)) np2cfg.idetype[i] = SXSIDEV_NC;
 	}
+#endif
+#if defined(SUPPORT_SCSI)
+	for (int i = 0; i < 4; i++) {
+		char name[16];
+		snprintf(name, sizeof(name), "SCSI%dEQUIP", i + 1);
+		if (!GetCheckByName(this, name)) np2cfg.scsihdd[i][0] = '\0';
+	}
+#endif
+#if defined(SUPPORT_LIBCDIO)
+	np2cfg.libcdio = GetCheckByName(this, "LIBCDIO") ? 1 : 0;
 #endif
 
 	/* PCI */

@@ -250,6 +250,9 @@ NP2CFG np2cfg = {
 #if defined(SUPPORT_SCSI)
     {OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
 #endif
+#if defined(SUPPORT_LIBCDIO)
+    0,
+#endif
     OEMTEXT(""),
     OEMTEXT(""),
     OEMTEXT(""),

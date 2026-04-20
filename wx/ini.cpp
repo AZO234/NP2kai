@@ -423,6 +423,9 @@ static INITBL np2_tbl[] = {
 	{"IDEWWAIT",  INITYPE_UINT32, &np2cfg.idewwait,    0},
 	{"IDEMWAIT",  INITYPE_UINT32, &np2cfg.idemwait,    0},
 #endif
+#if defined(SUPPORT_LIBCDIO)
+	{"LIBCDIO",  INITYPE_UINT32, &np2cfg.libcdio,    0},
+#endif
 	{"SampleHz",  INITYPE_UINT32, &np2cfg.samplingrate,0},
 	{"Latencys",  INITYPE_UINT16, &np2cfg.delayms,     0},
 	{"SNDboard",  INITYPE_HEX8,   &np2cfg.SOUND_SW,    0},
@@ -463,6 +466,7 @@ static INITBL np2_tbl[] = {
 	{"GRCG_EGC",  INIAND_UINT8,   &np2cfg.grcg,        3},
 	{"color16b",  INITYPE_BOOL,   &np2cfg.color16,     0},
 	{"skipline",  INITYPE_BOOL,   &np2cfg.skipline,    0},
+	{"draw32bit", INITYPE_BOOL,   &draw32bit,          0},
 	{"skplight",  INITYPE_SINT16, &np2cfg.skiplight,   0},
 	{"LCD_MODE",  INIAND_UINT8,   &np2cfg.LCD_MODE,    0x03},
 	{"calendar",  INITYPE_BOOL,   &np2cfg.calendar,    0},
@@ -486,13 +490,14 @@ static INITBL np2_tbl[] = {
 	{"LGY98MAC",  INITYPE_ARGH8,  np2cfg.lgy98mac,     6},
 #endif
 	{"TIMERFIX",  INITYPE_BOOL,   &np2cfg.timerfix,    0},
+	{"CONSTTSC",  INITYPE_BOOL,   &np2cfg.consttsc,    0},
 	{"WINNTFIX",  INITYPE_BOOL,   &np2cfg.winntfix,    0},
 	{"FPU_TYPE",  INITYPE_UINT8,  &np2cfg.fpu_type,    0},
 #if defined(SUPPORT_ASYNC_CPU)
 	{"ASYNCCPU",  INITYPE_BOOL,   &np2cfg.asynccpu,    0},
 #endif
 #if defined(SUPPORT_WAB)
-	{"wabasw  ",  INITYPE_BOOL,   &np2cfg.wabasw,      0},
+	{"wabasw",    INITYPE_BOOL,   &np2cfg.wabasw,      0},
 	{"MULTIWND",  INITYPE_BOOL,   &np2wabcfg.multiwindow, 0},
 #endif
 #if defined(SUPPORT_CL_GD5430)
