@@ -38,6 +38,7 @@ private:
 	wxPanel *BuildNetworkPage(wxNotebook *nb);
 	wxPanel *BuildHostdrvPage(wxNotebook *nb);
 	wxPanel *BuildDipswPage(wxNotebook *nb);
+	wxPanel *BuildCalendarPage(wxNotebook *nb);
 	wxPanel *BuildMiscPage(wxNotebook *nb);
 
 	/* DIP switch picture */
@@ -65,7 +66,7 @@ private:
 	wxStaticText  *m_cpuMHz;
 	void UpdateMHz(void);
 
-	void LoadFromConfig(void);
+	void LoadFromConfig(int tabId = -1);
 	void SaveToConfig(void);
 
 	void UpdateDipswBmp(void);

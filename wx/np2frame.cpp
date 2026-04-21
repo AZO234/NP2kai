@@ -527,6 +527,8 @@ void Np2Frame::OnEmuNewFdImage(wxCommandEvent & /*evt*/)
 	    "D88 Images (*.d88)|*.d88|All files (*.*)|*.*",
 	    wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	if (dlg.ShowModal() == wxID_OK) {
+		milstr_ncpy(fddfolder, dlg.GetDirectory().ToUTF8().data(), MAX_PATH);
+		sysmng_update(SYS_UPDATECFG);
 		/* disk_newdisk would create the image - stub */
 		wxMessageBox("New FD image: not yet implemented.", "Info", wxOK);
 	}
@@ -538,6 +540,8 @@ void Np2Frame::OnEmuNewHdImage(wxCommandEvent & /*evt*/)
 	    "NHD Images (*.nhd)|*.nhd|All files (*.*)|*.*",
 	    wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	if (dlg.ShowModal() == wxID_OK) {
+		milstr_ncpy(hddfolder, dlg.GetDirectory().ToUTF8().data(), MAX_PATH);
+		sysmng_update(SYS_UPDATECFG);
 		wxMessageBox("New HD image: not yet implemented.", "Info", wxOK);
 	}
 }
@@ -667,7 +671,7 @@ void Np2Frame::OnCdOpen(wxCommandEvent & /*evt*/)
 		wxMessageBox("No CD-ROM drive configured.", "Info", wxOK | wxICON_INFORMATION);
 		return;
 	}
-	wxFileDialog dlg(this, "Mount CD Image", "", "",
+	wxFileDialog dlg(this, "Mount CD Image", cdfolder, "",
 	    "CD Images (*.iso;*.cue;*.mds)|*.iso;*.cue;*.mds|All files (*.*)|*.*",
 	    wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 	if (dlg.ShowModal() != wxID_OK) return;
@@ -675,6 +679,7 @@ void Np2Frame::OnCdOpen(wxCommandEvent & /*evt*/)
 	wxString path = dlg.GetPath();
 	StopEmulation();
 
+	milstr_ncpy(cdfolder, dlg.GetDirectory().ToUTF8().data(), MAX_PATH);
 	sxsi_devopen((REG8)cd_drv, path.ToUTF8().data());
 #if defined(SUPPORT_IDEIO)
 	milstr_ncpy(np2cfg.idecd[cd_drv & 0x03], path.ToUTF8().data(), MAX_PATH);
@@ -907,6 +912,7 @@ void Np2Frame::OnOtherPngSave(wxCommandEvent & /*evt*/)
 		if (bmp.IsOk()) {
 			bmp.ConvertToImage().SaveFile(dlg.GetPath(), wxBITMAP_TYPE_PNG);
 			milstr_ncpy(bmpfilefolder, dlg.GetDirectory().ToUTF8().data(), MAX_PATH);
+			sysmng_update(SYS_UPDATECFG);
 		}
 	}
 }

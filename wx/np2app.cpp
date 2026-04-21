@@ -16,7 +16,7 @@ bool Np2App::OnInit()
 	wxInitAllImageHandlers();
 
 	/* SDL: init audio only (no video - that's wxWidgets' job) */
-	if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_GAMEPAD) < 0) {
+	if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) < 0) {
 		wxMessageBox(wxString::Format("SDL_Init failed: %s", SDL_GetError()),
 		             "Error", wxOK | wxICON_ERROR);
 		return false;

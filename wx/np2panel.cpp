@@ -10,6 +10,8 @@
 #include "np2.h"
 
 #include <wx/dcclient.h>
+#include <wx/dcbuffer.h>
+#include <wx/dcmemory.h>
 #include <wx/image.h>
 
 wxBEGIN_EVENT_TABLE(Np2Panel, wxPanel)
@@ -93,46 +95,52 @@ void Np2Panel::UpdateScreen(void)
 
 	scrnmng_unlockbuf();
 
+	/* Apply rotation based on scrnmode bits:
+	 *   0x00 = normal
+	 *   0x10 = SCRNMODE_ROTATELEFT  (90° CCW)
+	 *   0x20 = 180°
+	 *   0x30 = SCRNMODE_ROTATERIGHT (90° CW) */
+	UINT8 rot = scrnmode & SCRNMODE_ROTATEMASK;
+	if (rot == SCRNMODE_ROTATELEFT) {
+		m_bitmap = wxBitmap(m_image.Rotate90(false));   /* 90° CCW */
+	} else if (rot == SCRNMODE_ROTATERIGHT) {
+		m_bitmap = wxBitmap(m_image.Rotate90(true));    /* 90° CW */
+	} else if (rot == 0x20) {
+		m_bitmap = wxBitmap(m_image.Rotate90(true).Rotate90(true)); /* 180° */
+	} else {
+		m_bitmap = wxBitmap(m_image);
+	}
+
 	Refresh(false);
 }
 
 wxBitmap Np2Panel::GetBitmap(void)
 {
-	if (m_image.IsOk()) {
-		return wxBitmap(m_image);
-	}
-	return wxNullBitmap;
+	return m_bitmap;
 }
 
 /* ---- paint ---- */
 
 void Np2Panel::OnPaint(wxPaintEvent & /*evt*/)
 {
-	wxPaintDC dc(this);
+	wxAutoBufferedPaintDC dc(this);
 	dc.SetBackground(*wxBLACK_BRUSH);
 	dc.Clear();
-	if (!m_image.IsOk()) {
+	if (!m_bitmap.IsOk()) {
 		return;
 	}
 	int pw = GetClientSize().x;
 	int ph = GetClientSize().y;
 	if (pw > 0 && ph > 0) {
-		/* Apply rotation based on scrnmode bits:
-		 *   0x00 = normal
-		 *   0x10 = SCRNMODE_ROTATELEFT  (90° CCW)
-		 *   0x20 = 180°
-		 *   0x30 = SCRNMODE_ROTATERIGHT (90° CW) */
-		wxImage img = m_image;
-		UINT8 rot = scrnmode & SCRNMODE_ROTATEMASK;
-		if (rot == SCRNMODE_ROTATELEFT) {
-			img = img.Rotate90(false);   /* 90° CCW */
-		} else if (rot == SCRNMODE_ROTATERIGHT) {
-			img = img.Rotate90(true);    /* 90° CW */
-		} else if (rot == 0x20) {
-			img = img.Rotate90(true).Rotate90(true); /* 180° */
+		int bw = m_bitmap.GetWidth();
+		int bh = m_bitmap.GetHeight();
+		if (pw == bw && ph == bh) {
+			dc.DrawBitmap(m_bitmap, 0, 0);
+		} else {
+			wxMemoryDC memDC;
+			memDC.SelectObject(m_bitmap);
+			dc.StretchBlit(0, 0, pw, ph, &memDC, 0, 0, bw, bh);
 		}
-		wxImage scaled = img.Scale(pw, ph, wxIMAGE_QUALITY_NEAREST);
-		dc.DrawBitmap(wxBitmap(scaled), 0, 0);
 	}
 }
 

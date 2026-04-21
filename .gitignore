@@ -34,6 +34,11 @@ xnp21kai
 xnp21kai_HAXM
 xnp2kai.1*
 xnp21kai.1*
+wxnp2kai
+wxnp21kai
+wxnp21kai_HAXM
+wxnp2kai.1*
+wxnp21kai.1*
 CMakeCache*
 *py_cache*
 __pycache__
@@ -45,4 +50,4 @@ CLAUDE.md
 GEMINI.md
 AGENTS.md
 
-build_wx/
+build_*/

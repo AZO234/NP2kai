@@ -591,32 +591,254 @@ void pccore_mem_free(void) {
 #endif
 
 void pccore_setdefault(void) {
-  /* Just a simplistic implementation for now: re-initialize with defaults */
-  /* In a real scenario, we might want to keep a copy of the original struct. */
-  UINT8 fddequip =
-      np2cfg
-          .fddequip; /* preserve some runtime state if needed? no, full reset */
-  (void)fddequip;
-
-  memset(&np2cfg, 0, sizeof(np2cfg));
-  np2cfg.uPD72020 = 0;
-  np2cfg.DISPSYNC = 1;
-  np2cfg.RASTER = 0;
-  np2cfg.realpal = 32;
-  np2cfg.LCD_MODE = 0;
-  np2cfg.skipline = 0;
-  np2cfg.skiplight = 0x40;
-  milstr_ncpy(np2cfg.model, OEMTEXT("VX"), sizeof(np2cfg.model));
-  np2cfg.baseclock = PCBASECLOCK25;
-  np2cfg.multiple = PCBASEMULTIPLE;
-  np2cfg.samplingrate = 44100;
-  np2cfg.delayms = 150;
-  np2cfg.BEEP_VOL = 3;
-  np2cfg.emuspeed = 100;
-  np2cfg.fddequip = 0x03; /* FDD1 + FDD2 equipped by default */
-  np2cfg.grcg = 3;        /* GRCG+ by default */
-  np2cfg.color16 = 1;     /* 16 color board ON by default */
-  /* ... add other defaults as per the static initializer ... */
+  static const NP2CFG def = {
+      0,
+      1,
+      0,
+      32,
+      0,
+      0,
+      0x40,
+      0,
+      0,
+      0,
+      0,
+      {0x3e, 0xe3, 0x7b},
+      0,
+      0,
+      0,
+      {1, 1, 6, 1, 8, 1},
+      128,
+      0x00,
+      1,
+#if defined(SUPPORT_ASYNC_CPU)
+      0,
+      0,
+#endif
+      1,
+#if defined(SUPPORT_IDEIO)
+      0xD8,
+#endif
+      OEMTEXT("VX"),
+      PCBASECLOCK25,
+      PCBASEMULTIPLE,
+      1,
+      {0x48, 0x05, 0x04, 0x08, 0x01, 0x00, 0x00, 0x6e},
+      1,
+      13,
+      2,
+      1,
+      0x000000,
+      0xffffff,
+      44100,
+      93,
+      4,
+      0,
+      {0, 0, 0},
+      0xd1,
+      0x7f,
+      0xd1,
+      0,
+      0,
+      1,
+      0x0188,
+      0x80,
+      3,
+      12,
+      12,
+      0xff,
+      0,
+      0x70,
+      1,
+      3,
+#if defined(SUPPORT_SOUND_SB16)
+      0xd2,
+      3,
+      5,
+      0,
+#endif
+#if defined(SUPPORT_FMGEN)
+      3,
+      {0x0c, 0x0c, 0x08, 0x06, 0x03, 0x0c},
+      100,
+      64,
+      64,
+      64,
+      64,
+      64,
+      128,
+#else
+      3,
+      {0x0c, 0x0c, 0x08, 0x06, 0x03, 0x0c},
+      100,
+      64,
+      64,
+      64,
+      64,
+      64,
+#endif
+      1,
+      0x82,
+      0,
+#if defined(SUPPORT_SMPU98)
+      0,
+      0x82,
+      0,
+#endif
+      0,
+      {0x17, 0x04, 0x17},
+      {0x0c, 0x0c, 0x02, 0x10, 0x3f, 0x3f},
+#if defined(SUPPORT_FMGEN)
+      1,
+#endif
+      3,
+      0,
+      50,
+      0,
+      0,
+      1,
+      0,
+      0,
+      {OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
+#if defined(SUPPORT_IDEIO)
+      {OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
+      {SXSIDEV_HDD, SXSIDEV_CDROM, SXSIDEV_HDD, SXSIDEV_HDD},
+      {OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+#else
+      {OEMTEXT(""), OEMTEXT("")},
+#endif
+#if defined(SUPPORT_SCSI)
+      {OEMTEXT(""), OEMTEXT(""), OEMTEXT(""), OEMTEXT("")},
+#endif
+#if defined(SUPPORT_LIBCDIO)
+      0,
+#endif
+      OEMTEXT(""),
+      OEMTEXT(""),
+      OEMTEXT(""),
+#if defined(SUPPORT_NET)
+      OEMTEXT(""),
+      0,
+#endif
+#if defined(SUPPORT_LGY98)
+      0,
+      0x10D0,
+      1,
+      {0x00, 0x40, 0x26, 0x12, 0x34, 0x56},
+#endif
+#if defined(SUPPORT_WAB)
+#if defined(__LIBRETRO__)
+      1,
+#else
+      0,
+#endif
+#endif
+#if defined(SUPPORT_CL_GD5430)
+      0,
+      0x5B,
+      0,
+      CIRRUS_MELCOWAB_OFS_DEFAULT,
+      0,
+#endif
+#if defined(SUPPORT_VGA_MODEX)
+      0,
+#endif
+#if defined(SUPPORT_GPIB)
+      0,
+      12,
+      1,
+      0,
+      0,
+#endif
+#if defined(SUPPORT_PCI)
+      0,
+      0,
+      0,
+#endif
+#if defined(SUPPORT_STATSAVE)
+      0,
+#endif
+      0,
+      0,
+      0,
+      0xff00,
+      0,
+      0,
+      0,
+      1,
+      CPU_VENDOR,
+      CPU_FAMILY,
+      CPU_MODEL,
+      CPU_STEPPING,
+      CPU_FEATURES,
+      CPU_FEATURES_EX,
+      CPU_BRAND_STRING,
+      OEMTEXT(""),
+      OEMTEXT(""),
+      CPU_BRAND_ID_AUTO,
+      CPU_FEATURES_ECX,
+      CPU_EFLAGS_MASK,
+      CPU_FEATURES_EX_ECX,
+      FPU_TYPE_SOFTFLOAT,
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+      1,
+#endif
+      0,
+      0,
+      1,
+      0,
+#if defined(SUPPORT_GAMEPORT)
+      0,
+      0,
+#endif
+      0,
+      0,
+      0,
+      0,
+      0,
+#if defined(SUPPORT_NP2SCSI)
+      1,
+#endif
+      100,
+      OEMTEXT(""),
+      0,
+      0,
+      0,
+#if defined(SUPPORT_DEBUGSS)
+      0,
+#endif
+#if defined(SUPPORT_VIDEOFILTER)
+      0,
+      0,
+      3,
+      0,
+      {{3, 2}, {3, 2}, {3, 2}},
+      {
+          {{1, 1, 0, 0, 0, 0, 0, 0},
+           {0, 0, 0, 0, 0, 0, 0, 0},
+           {0, 0, 0, 0, 0, 0, 0, 0}},
+          {{1, 2, 6, 0, 0, 0, 0, 0},
+           {0, 0, 0, 0, 0, 0, 0, 0},
+           {0, 0, 0, 0, 0, 0, 0, 0}},
+          {{1, 3, 8, 0, 0, 255, 0, 0},
+           {0, 0, 0, 0, 0, 0, 0, 0},
+           {0, 0, 0, 0, 0, 0, 0, 0}},
+      },
+#endif
+      0,
+      500,
+      50,
+  };
+  np2cfg = def;
 }
 
 void pccore_init(void) {

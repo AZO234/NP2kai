@@ -376,6 +376,7 @@ enum {
 static INITBL np2_tbl[] = {
 	{"FDfolder",  INITYPE_STR,    fddfolder,           MAX_PATH},
 	{"HDfolder",  INITYPE_STR,    hddfolder,           MAX_PATH},
+	{"CDfolder",  INITYPE_STR,    cdfolder,            MAX_PATH},
 	{"bmap_Dir",  INITYPE_STR,    bmpfilefolder,       MAX_PATH},
 	{"bmap_Num",  INITYPE_UINT32, &bmpfilenumber,      0},
 	{"fontfile",  INITYPE_STR,    np2cfg.fontfile,     MAX_PATH},
@@ -400,6 +401,8 @@ static INITBL np2_tbl[] = {
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 	{"MemCheck",  INITYPE_UINT8,  &np2cfg.memcheckspeed, 0},
 #endif
+	{"SYSIOMSK",  INITYPE_HEX16,  &np2cfg.sysiomsk,     0},
+	{"nousemmx",  INITYPE_BOOL,   &np2oscfg.disablemmx, 0},
 	{"HDD1FILE",  INITYPE_STR,    np2cfg.sasihdd[0],   MAX_PATH},
 	{"HDD2FILE",  INITYPE_STR,    np2cfg.sasihdd[1],   MAX_PATH},
 #if defined(SUPPORT_SCSI)
@@ -422,6 +425,9 @@ static INITBL np2_tbl[] = {
 	{"IDERWAIT",  INITYPE_UINT32, &np2cfg.iderwait,    0},
 	{"IDEWWAIT",  INITYPE_UINT32, &np2cfg.idewwait,    0},
 	{"IDEMWAIT",  INITYPE_UINT32, &np2cfg.idemwait,    0},
+	{"IDE_BIOS",  INITYPE_BOOL,   &np2cfg.idebios,     0},
+	{"AIDEBIOS",  INITYPE_BOOL,   &np2cfg.autoidebios, 0},
+	{"CD_ASYNC",  INITYPE_BOOL,   &np2cfg.useasynccd,  0},
 #endif
 #if defined(SUPPORT_LIBCDIO)
 	{"LIBCDIO",  INITYPE_UINT32, &np2cfg.libcdio,    0},

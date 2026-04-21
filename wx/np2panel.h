@@ -25,6 +25,7 @@ public:
 
 private:
 	wxImage   m_image;
+	wxBitmap  m_bitmap;
 	bool      m_mouseCaptured;
 	wxPoint   m_lastMousePos;
 

@@ -86,7 +86,7 @@ int pcm_volume_default = PCM_VOULE_DEFAULT;
 
 /* ---- buffer management ---- */
 #ifndef NSOUNDBUFFER
-#define NSOUNDBUFFER 4
+#define NSOUNDBUFFER 16
 #endif
 static struct sndbuf {
 	struct sndbuf *next;
@@ -117,8 +117,8 @@ static struct {
 	if (sndbuf_filled.first == NULL) sndbuf_filled.last = &sndbuf_filled.first; \
 } while(0)
 
-#define sndbuf_lock()
-#define sndbuf_unlock()
+#define sndbuf_lock()     sounddrv_lock()
+#define sndbuf_unlock()   sounddrv_unlock()
 
 static BRESULT buffer_init(void);
 static void    buffer_destroy(void);
@@ -190,7 +190,7 @@ UINT soundmng_create(UINT rate, UINT bufmsec)
 
 	snddrv_setup();
 
-	samples = (rate * bufmsec) / 1000 / 2;
+	samples = (rate * bufmsec) / 1000 / NSOUNDBUFFER;
 	samples = calc_blocksize(samples);
 	opna_frame = samples * 2 * sizeof(SINT16);
 

@@ -88,6 +88,7 @@ int   s98log_count = 0;
 
 char  hddfolder[MAX_PATH]    = "";
 char  fddfolder[MAX_PATH]    = "";
+char  cdfolder[MAX_PATH]     = "";
 char  bmpfilefolder[MAX_PATH]= "";
 UINT  bmpfilenumber          = 0;
 char  modulefile[MAX_PATH]   = "";
@@ -99,6 +100,70 @@ int   np2_stateslotnow       = 0;
 int   mmxflag                = 0;
 
 int havemmx(void) { return 0; }
+
+void np2oscfg_setdefault(void)
+{
+	static const NP2OSCFG def = {
+		"",
+		0, 0,
+		0,
+		0,
+		0,
+		KEY_KEY106,
+		0,
+		0,
+		0, 0,
+		{1,2,5,6},
+		{{0,1},{0,1}},
+		{{0,1,0xff,0xff},{0,1,0xff,0xff}},
+		{"",""},
+		{FALSE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", ""},
+#if defined(SUPPORT_SMPU98)
+		{FALSE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", ""},
+		{FALSE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", ""},
+#endif
+		{
+			{TRUE, COMPORT_NONE, 0, 0x3e, 19200, "", "", "", ""},
+			{TRUE, COMPORT_NONE, 0, 0x3e, 19200, "", "", "", ""},
+			{TRUE, COMPORT_NONE, 0, 0x3e, 19200, "", "", "", ""},
+		},
+		0,
+		0,
+		0, 0, 0, 0, 0,
+		0, 0, 1,
+		SNDDRV_SDL,
+		{"",""},
+#if defined(SUPPORT_SMPU98)
+		{"",""},
+		{"",""},
+#endif
+		0,
+		100,
+		0, INTERP_NEAREST, 0,
+		0,
+		-1, -1,
+		640, 400,
+	};
+	np2oscfg = def;
+}
+
+extern "C" {
+#if defined(SUPPORT_WAB)
+#include <wab/wab.h>
+#endif
+}
+
+void np2wabcfg_setdefault(void)
+{
+#if defined(SUPPORT_WAB)
+	memset(&np2wabcfg, 0, sizeof(np2wabcfg));
+	np2wabcfg.posx = 0;
+	np2wabcfg.posy = 0;
+	np2wabcfg.multithread = 1;
+	np2wabcfg.multiwindow = 0;
+	np2wabcfg.halftone = 0;
+#endif
+}
 
 /* ---- state save ---- */
 

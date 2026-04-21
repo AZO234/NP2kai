@@ -882,8 +882,8 @@ else()
 
 	if(BUILD_WX)
 		add_library(NP2kai_WX_base INTERFACE)
-		target_sources(NP2kai_WX_base INTERFACE ${NP2kai_WX_sources} ${NP2kai_TickCount_sources})
-		target_compile_definitions(NP2kai_WX_base INTERFACE ${NP2kai_WX_definitions} ${NP2kai_extra_definitions} ${NP2kai_TickCount_definitions} ${libcdio_definitions})
+		target_sources(NP2kai_WX_base INTERFACE ${NP2kai_WX_sources} ${NP2kai_TickCount_sources} ${NP2kai_Network_sources})
+		target_compile_definitions(NP2kai_WX_base INTERFACE ${NP2kai_WX_definitions} ${NP2kai_extra_definitions} ${NP2kai_TickCount_definitions} ${NP2kai_Network_definitions} ${libcdio_definitions})
 		# wxWidgets include dirs must come BEFORE NP2kai root to avoid "wx/compiler.h"
 		# collision: wx/cpp.h includes "wx/compiler.h" which would otherwise resolve to
 		# our port header instead of wxWidgets' own header.

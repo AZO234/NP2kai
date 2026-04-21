@@ -3,6 +3,7 @@
 #include <compiler.h>
 #include "prefframe.h"
 #include "np2.h"
+#include "joymng.h"
 #include "kbdmng.h"
 #include "scrnmng.h"
 #include "soundmng.h"
@@ -17,6 +18,8 @@
 #include <common/bmpdata.h>
 #include <fdd/diskdrv.h>
 #include <generic/dipswbmp.h>
+#include "timemng.h"
+#include <calendar.h>
 #if defined(SUPPORT_VIDEOFILTER)
 #include <vram/videofilter.h>
 #endif
@@ -35,10 +38,17 @@
 enum {
 	ID_PREF_OK      = wxID_OK,
 	ID_PREF_CANCEL  = wxID_CANCEL,
-	ID_PREF_DEFAULT = wxID_LOWEST + 100,
+	ID_PREF_DEFAULT = wxID_HIGHEST + 1,
 
 	ID_DIPSW_BASE = 2000,  /* 2000..2023 = dipsw[0][0..7], [1][0..7], [2][0..7] */
 };
+
+/* Tab indices matching AddPage() order in the ctor. */
+enum {
+	TAB_SYSTEM = 0, TAB_DISPLAY, TAB_SOUND, TAB_INPUT, TAB_FDD, TAB_HDD,
+	TAB_MIDI, TAB_SERIAL, TAB_NETWORK, TAB_HOSTDRV, TAB_DIPSW, TAB_CALENDAR, TAB_MISC
+};
+#define IF_TAB(x) if (tabId < 0 || tabId == (x))
 
 /* ---- sound board names ---- */
 static const wxString s_sndboard_names[] = {
@@ -267,7 +277,9 @@ PrefFrame::PrefFrame(wxWindow *parent)
 		imgs->Add(wxArtProvider::GetBitmap(wxART_FOLDER_OPEN,     ctx, sz));
 		// 9 DIP SW
 		imgs->Add(wxArtProvider::GetBitmap(wxART_TICK_MARK,       ctx, sz));
-		// 10 Misc
+		// 10 Calendar
+		imgs->Add(wxArtProvider::GetBitmap(wxART_REPORT_VIEW,     ctx, sz));
+		// 11 Misc
 		imgs->Add(wxArtProvider::GetBitmap(wxART_HELP,            ctx, sz));
 		m_notebook->AssignImageList(imgs);
 	}
@@ -283,7 +295,8 @@ PrefFrame::PrefFrame(wxWindow *parent)
 	m_notebook->AddPage(BuildNetworkPage(m_notebook),  "Network",  false, 8);
 	m_notebook->AddPage(BuildHostdrvPage(m_notebook),  "Hostdrv",  false, 9);
 	m_notebook->AddPage(BuildDipswPage(m_notebook),    "DIP SW",   false, 10);
-	m_notebook->AddPage(BuildMiscPage(m_notebook),     "Misc",     false, 11);
+	m_notebook->AddPage(BuildCalendarPage(m_notebook), "Calendar", false, 11);
+	m_notebook->AddPage(BuildMiscPage(m_notebook),     "Misc",     false, 12);
 
 	rootSizer->Add(m_notebook, 1, wxEXPAND | wxALL, 4);
 
@@ -386,6 +399,8 @@ wxPanel *PrefFrame::BuildSystemPage(wxNotebook *nb)
 		cb->SetName(name);
 		gs->Add(cb, wxGBPosition(row++, 0), wxGBSpan(1, 4));
 	};
+	addCheck("16bit I/O port addressing (PC-9821)", "SYSIOMSK");
+	addCheck("Disable MMX",         "DisableMMX");
 	addCheck("Fast memory check",   "SUPPORT_FAST_MEMORYCHECK");
 	addCheck("Multi-threaded",      "MULTITHREAD");
 #if defined(SUPPORT_ASYNC_CPU)
@@ -598,13 +613,17 @@ wxPanel *PrefFrame::BuildSoundPage(wxNotebook *nb)
 	gs->Add(rate, wxGBPosition(row, 1), wxDefaultSpan);
 	row++;
 
-	/* Latency (Buffer) */
-	gs->Add(new wxStaticText(page, wxID_ANY, "Buffer (ms):"),
+	/* Buffer delay */
+	gs->Add(new wxStaticText(page, wxID_ANY, "Buffer delay:"),
 	        wxGBPosition(row, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
-	auto *slLat = new wxSlider(page, wxID_ANY, 150, 0, 1000,
-	                           wxDefaultPosition, wxSize(200, -1), wxSL_HORIZONTAL | wxSL_LABELS);
-	slLat->SetName("Latencys");
-	gs->Add(slLat, wxGBPosition(row, 1), wxGBSpan(1, 3), wxEXPAND);
+	wxChoice *delay = new wxChoice(page, wxID_ANY);
+	delay->SetName("Latencys");
+	delay->Append("Short (47ms)");
+	delay->Append("Normal (93ms)");
+	delay->Append("Long (186ms)");
+	delay->Append("Max (372ms)");
+	delay->SetSelection(1);
+	gs->Add(delay, wxGBPosition(row, 1), wxGBSpan(1, 3), wxEXPAND);
 	row++;
 
 	/* Beep Volume */
@@ -673,6 +692,16 @@ wxPanel *PrefFrame::BuildInputPage(wxNotebook *nb)
 	kbd->Append("JoyKey-2");
 	kbd->SetSelection(0);
 	gs->Add(kbd, wxGBPosition(row, 1), wxGBSpan(1, 3), wxEXPAND);
+	row++;
+
+	/* Joypad */
+	gs->Add(new wxStaticText(page, wxID_ANY, "Joypad device:"),
+	        wxGBPosition(row, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+	wxChoice *joy = new wxChoice(page, wxID_ANY);
+	joy->SetName("joypad");
+	joy->Append("None");
+	joy->SetSelection(0);
+	gs->Add(joy, wxGBPosition(row, 1), wxGBSpan(1, 3), wxEXPAND);
 	row++;
 
 	/* F12 key */
@@ -758,67 +787,122 @@ wxPanel *PrefFrame::BuildFddPage(wxNotebook *nb)
 
 wxPanel *PrefFrame::BuildHddPage(wxNotebook *nb)
 {
-	wxScrolledWindow *page = new wxScrolledWindow(nb, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL | wxVSCROLL);
-	page->SetScrollRate(0, 20);
+	wxPanel *page = new wxPanel(nb, wxID_ANY);
 	wxBoxSizer *vs = new wxBoxSizer(wxVERTICAL);
 
-	auto *gs = new wxGridBagSizer(4, 8);
-	int row = 0;
+	wxNotebook *snb = new wxNotebook(page, wxID_ANY);
 
 #if defined(SUPPORT_IDEIO)
-	for (int i = 0; i < 4; i++) {
-		gs->Add(new wxStaticText(page, wxID_ANY,
-		    wxString::Format("IDE Slot %d:", i + 1)),
-		    wxGBPosition(row, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+	/* ---- IDE sub-tab ---- */
+	{
+		wxScrolledWindow *ide = new wxScrolledWindow(snb, wxID_ANY, wxDefaultPosition,
+		                                             wxDefaultSize, wxTAB_TRAVERSAL | wxVSCROLL);
+		ide->SetScrollRate(0, 20);
+		auto *gs = new wxGridBagSizer(4, 8);
+		int row = 0;
 
-		wxChoice *type = new wxChoice(page, wxID_ANY);
-		type->Append("None");
-		type->Append("HDD");
-		type->Append("CD-ROM");
-		type->SetName(wxString::Format("IDE%dTYPE", i + 1));
-		gs->Add(type, wxGBPosition(row, 1), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+		static const char *idelabels[4] = {
+			"Master-Primary:", "Master-Secondary:", "Slave-Primary:", "Slave-Secondary:"
+		};
+		for (int i = 0; i < 4; i++) {
+			gs->Add(new wxStaticText(ide, wxID_ANY, idelabels[i]),
+			        wxGBPosition(row, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+			wxChoice *type = new wxChoice(ide, wxID_ANY);
+			type->Append("None");
+			type->Append("HDD");
+			type->Append("CD-ROM");
+			type->SetName(wxString::Format("IDE%dTYPE", i + 1));
+			gs->Add(type, wxGBPosition(row, 1), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
 
-		auto *eq = new wxCheckBox(page, wxID_ANY, "Equipped");
-		eq->SetName(wxString::Format("IDE%dEQUIP", i + 1));
-		gs->Add(eq, wxGBPosition(row, 2), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
-		row++;
+			auto *eq = new wxCheckBox(ide, wxID_ANY, "Equipped");
+			eq->SetName(wxString::Format("IDE%dEQUIP", i + 1));
+			gs->Add(eq, wxGBPosition(row, 2), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+			row++;
+		}
+
+		auto *asyncCd = new wxCheckBox(ide, wxID_ANY, "Async CD-ROM Access");
+		asyncCd->SetName("CD_ASYNC");
+		gs->Add(asyncCd, wxGBPosition(row++, 0), wxGBSpan(1, 3));
+
+		auto *ideBios = new wxCheckBox(ide, wxID_ANY, "Use IDE BIOS");
+		ideBios->SetName("IDE_BIOS");
+		gs->Add(ideBios, wxGBPosition(row++, 0), wxGBSpan(1, 3));
+
+		auto *autoIdeBios = new wxCheckBox(ide, wxID_ANY, "Auto IDE BIOS");
+		autoIdeBios->SetName("AIDEBIOS");
+		gs->Add(autoIdeBios, wxGBPosition(row++, 0), wxGBSpan(1, 3));
+
+#if defined(SUPPORT_LIBCDIO)
+		{
+			auto *cb = new wxCheckBox(ide, wxID_ANY, "Enable libcdio");
+			cb->SetName("LIBCDIO");
+			gs->Add(cb, wxGBPosition(row++, 0), wxGBSpan(1, 3));
+		}
+#endif
+
+		gs->AddGrowableCol(1, 1);
+		auto *boxSz = new wxBoxSizer(wxVERTICAL);
+		boxSz->Add(gs, 0, wxEXPAND | wxALL, 8);
+		ide->SetSizer(boxSz);
+		snb->AddPage(ide, "IDE");
 	}
 #else
-	for (int i = 0; i < 2; i++) {
-		gs->Add(new wxStaticText(page, wxID_ANY,
-		    wxString::Format("SASI HDD %d:", i + 1)),
-		    wxGBPosition(row, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
-		auto *eq = new wxCheckBox(page, wxID_ANY, "Equipped");
-		eq->SetName(wxString::Format("SASI%dEQUIP", i + 1));
-		gs->Add(eq, wxGBPosition(row, 1), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
-		row++;
+	/* SASI fallback */
+	{
+		wxScrolledWindow *sasi = new wxScrolledWindow(snb, wxID_ANY, wxDefaultPosition,
+		                                              wxDefaultSize, wxTAB_TRAVERSAL | wxVSCROLL);
+		sasi->SetScrollRate(0, 20);
+		auto *gs = new wxGridBagSizer(4, 8);
+		int row = 0;
+		for (int i = 0; i < 2; i++) {
+			gs->Add(new wxStaticText(sasi, wxID_ANY,
+			    wxString::Format("SASI HDD %d:", i + 1)),
+			    wxGBPosition(row, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+			auto *eq = new wxCheckBox(sasi, wxID_ANY, "Equipped");
+			eq->SetName(wxString::Format("SASI%dEQUIP", i + 1));
+			gs->Add(eq, wxGBPosition(row, 1), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+			row++;
+		}
+		auto *boxSz = new wxBoxSizer(wxVERTICAL);
+		boxSz->Add(gs, 0, wxEXPAND | wxALL, 8);
+		sasi->SetSizer(boxSz);
+		snb->AddPage(sasi, "SASI");
 	}
 #endif
 
 #if defined(SUPPORT_SCSI)
-	for (int i = 0; i < 4; i++) {
-		gs->Add(new wxStaticText(page, wxID_ANY,
-		    wxString::Format("SCSI HDD %d:", i + 1)),
-		    wxGBPosition(row, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
-		auto *eq = new wxCheckBox(page, wxID_ANY, "Equipped");
-		eq->SetName(wxString::Format("SCSI%dEQUIP", i + 1));
-		gs->Add(eq, wxGBPosition(row, 1), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
-		row++;
-	}
-#endif
-
-#if defined(SUPPORT_LIBCDIO)
+	/* ---- SCSI sub-tab ---- */
 	{
-		auto *cb = new wxCheckBox(page, wxID_ANY, "Enable libcdio");
-		cb->SetName("LIBCDIO");
-		gs->Add(cb, wxGBPosition(row, 0), wxGBSpan(1, 2), wxALIGN_CENTER_VERTICAL);
-		row++;
+		wxScrolledWindow *scsi = new wxScrolledWindow(snb, wxID_ANY, wxDefaultPosition,
+		                                              wxDefaultSize, wxTAB_TRAVERSAL | wxVSCROLL);
+		scsi->SetScrollRate(0, 20);
+		auto *gs = new wxGridBagSizer(4, 8);
+		int row = 0;
+		for (int i = 0; i < 4; i++) {
+			gs->Add(new wxStaticText(scsi, wxID_ANY,
+			    wxString::Format("ID%d:", i)),
+			    wxGBPosition(row, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+			wxChoice *type = new wxChoice(scsi, wxID_ANY);
+			type->Append("None");
+			type->Append("HDD");
+			type->SetName(wxString::Format("SCSI%dTYPE", i));
+			gs->Add(type, wxGBPosition(row, 1), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+
+			auto *eq = new wxCheckBox(scsi, wxID_ANY, "Equipped");
+			eq->SetName(wxString::Format("SCSI%dEQUIP", i + 1));
+			gs->Add(eq, wxGBPosition(row, 2), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+			row++;
+		}
+		gs->AddGrowableCol(1, 1);
+		auto *boxSz = new wxBoxSizer(wxVERTICAL);
+		boxSz->Add(gs, 0, wxEXPAND | wxALL, 8);
+		scsi->SetSizer(boxSz);
+		snb->AddPage(scsi, "SCSI");
 	}
 #endif
 
-	gs->AddGrowableCol(1, 1);
-	vs->Add(gs, 0, wxEXPAND | wxALL, 8);
-	vs->AddStretchSpacer(1);
+	vs->Add(snb, 1, wxEXPAND | wxALL, 4);
+	vs->AddStretchSpacer(0);
 	vs->Add(new wxButton(page, ID_PREF_DEFAULT, "Default"), 0, wxALIGN_RIGHT | wxALL, 8);
 	page->SetSizer(vs);
 	return page;
@@ -1021,25 +1105,108 @@ wxPanel *PrefFrame::BuildMidiPage(wxNotebook *nb)
 	smpuIrq->SetSelection(2);
 	smpuGs->Add(smpuIrq, wxGBPosition(srow++, 3), wxDefaultSpan);
 
-	/* Port A */
-	smpuGs->Add(new wxStaticText(page, wxID_ANY, "Port A MIDIOUT:"),
-	            wxGBPosition(srow, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
-	auto *smpuAOut = new wxChoice(page, wxID_ANY);
-	smpuAOut->SetName("SMPUA_OUT"); smpuAOut->Append("N/C"); smpuAOut->Append("VERMOUTH");
-	smpuAOut->SetSelection(0);
-	smpuGs->Add(smpuAOut, wxGBPosition(srow++, 1), wxGBSpan(1, 3), wxEXPAND);
-
-	/* Port B */
-	smpuGs->Add(new wxStaticText(page, wxID_ANY, "Port B MIDIOUT:"),
-	            wxGBPosition(srow, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
-	auto *smpuBOut = new wxChoice(page, wxID_ANY);
-	smpuBOut->SetName("SMPUB_OUT"); smpuBOut->Append("N/C"); smpuBOut->Append("VERMOUTH");
-	smpuBOut->SetSelection(0);
-	smpuGs->Add(smpuBOut, wxGBPosition(srow++, 1), wxGBSpan(1, 3), wxEXPAND);
-
 	smpuGs->AddGrowableCol(1, 1);
 	smpuGs->AddGrowableCol(3, 1);
 	smpuBox->Add(smpuGs, 0, wxEXPAND | wxALL, 4);
+
+	/* Port A sub-group */
+	auto *smpuAGroup = new wxStaticBoxSizer(wxVERTICAL, page, "Port A");
+	auto *sagGs = new wxGridBagSizer(4, 8);
+	int sarow = 0;
+
+	sagGs->Add(new wxStaticText(page, wxID_ANY, "MIDIOUT:"),
+	           wxGBPosition(sarow, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+	auto *smpuAOut = new wxChoice(page, wxID_ANY);
+	smpuAOut->SetName("SMPUA_OUT"); smpuAOut->Append("N/C"); smpuAOut->Append("VERMOUTH");
+	smpuAOut->SetSelection(0);
+	sagGs->Add(smpuAOut, wxGBPosition(sarow++, 1), wxGBSpan(1, 3), wxEXPAND);
+
+	sagGs->Add(new wxStaticText(page, wxID_ANY, "MIDIIN:"),
+	           wxGBPosition(sarow, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+	auto *smpuAIn = new wxChoice(page, wxID_ANY);
+	smpuAIn->SetName("SMPUA_IN"); smpuAIn->Append("N/C"); smpuAIn->SetSelection(0);
+	sagGs->Add(smpuAIn, wxGBPosition(sarow++, 1), wxGBSpan(1, 3), wxEXPAND);
+
+	sagGs->Add(new wxStaticText(page, wxID_ANY, "Module:"),
+	           wxGBPosition(sarow, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+	auto *smpuAMdl = new wxChoice(page, wxID_ANY);
+	smpuAMdl->SetName("SMPUA_MDL");
+	for (auto &s : s_modules) smpuAMdl->Append(s);
+	smpuAMdl->SetSelection(0);
+	sagGs->Add(smpuAMdl, wxGBPosition(sarow++, 1), wxGBSpan(1, 3), wxEXPAND);
+
+	auto *smpuADefEn = new wxCheckBox(page, wxID_ANY, "Use program define file (MIMPI define)");
+	smpuADefEn->SetName("SMPUA_DEF_EN");
+	sagGs->Add(smpuADefEn, wxGBPosition(sarow++, 0), wxGBSpan(1, 4));
+	{
+		auto *defBox = new wxBoxSizer(wxHORIZONTAL);
+		auto *smpuADefPath = new wxTextCtrl(page, wxID_ANY, "");
+		smpuADefPath->SetName("SMPUA_DEF");
+		defBox->Add(smpuADefPath, 1, wxEXPAND);
+		auto *btnBrowse = new wxButton(page, wxID_ANY, "...", wxDefaultPosition, wxSize(30,-1));
+		btnBrowse->Bind(wxEVT_BUTTON, [smpuADefPath](wxCommandEvent &) {
+			wxFileDialog dlg(smpuADefPath, "Select define file", "", "",
+			    "Define files (*.def)|*.def|All files (*.*)|*.*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+			if (dlg.ShowModal() == wxID_OK)
+				smpuADefPath->SetValue(dlg.GetPath());
+		});
+		defBox->Add(btnBrowse, 0, wxLEFT, 4);
+		sagGs->Add(defBox, wxGBPosition(sarow++, 0), wxGBSpan(1, 4), wxEXPAND);
+	}
+	sagGs->AddGrowableCol(1, 1);
+	sagGs->AddGrowableCol(3, 1);
+	smpuAGroup->Add(sagGs, 0, wxEXPAND | wxALL, 4);
+	smpuBox->Add(smpuAGroup, 0, wxEXPAND | wxALL, 4);
+
+	/* Port B sub-group */
+	auto *smpuBGroup = new wxStaticBoxSizer(wxVERTICAL, page, "Port B");
+	auto *sbgGs = new wxGridBagSizer(4, 8);
+	int sbrow = 0;
+
+	sbgGs->Add(new wxStaticText(page, wxID_ANY, "MIDIOUT:"),
+	           wxGBPosition(sbrow, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+	auto *smpuBOut = new wxChoice(page, wxID_ANY);
+	smpuBOut->SetName("SMPUB_OUT"); smpuBOut->Append("N/C"); smpuBOut->Append("VERMOUTH");
+	smpuBOut->SetSelection(0);
+	sbgGs->Add(smpuBOut, wxGBPosition(sbrow++, 1), wxGBSpan(1, 3), wxEXPAND);
+
+	sbgGs->Add(new wxStaticText(page, wxID_ANY, "MIDIIN:"),
+	           wxGBPosition(sbrow, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+	auto *smpuBIn = new wxChoice(page, wxID_ANY);
+	smpuBIn->SetName("SMPUB_IN"); smpuBIn->Append("N/C"); smpuBIn->SetSelection(0);
+	sbgGs->Add(smpuBIn, wxGBPosition(sbrow++, 1), wxGBSpan(1, 3), wxEXPAND);
+
+	sbgGs->Add(new wxStaticText(page, wxID_ANY, "Module:"),
+	           wxGBPosition(sbrow, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+	auto *smpuBMdl = new wxChoice(page, wxID_ANY);
+	smpuBMdl->SetName("SMPUB_MDL");
+	for (auto &s : s_modules) smpuBMdl->Append(s);
+	smpuBMdl->SetSelection(0);
+	sbgGs->Add(smpuBMdl, wxGBPosition(sbrow++, 1), wxGBSpan(1, 3), wxEXPAND);
+
+	auto *smpuBDefEn = new wxCheckBox(page, wxID_ANY, "Use program define file (MIMPI define)");
+	smpuBDefEn->SetName("SMPUB_DEF_EN");
+	sbgGs->Add(smpuBDefEn, wxGBPosition(sbrow++, 0), wxGBSpan(1, 4));
+	{
+		auto *defBox = new wxBoxSizer(wxHORIZONTAL);
+		auto *smpuBDefPath = new wxTextCtrl(page, wxID_ANY, "");
+		smpuBDefPath->SetName("SMPUB_DEF");
+		defBox->Add(smpuBDefPath, 1, wxEXPAND);
+		auto *btnBrowse = new wxButton(page, wxID_ANY, "...", wxDefaultPosition, wxSize(30,-1));
+		btnBrowse->Bind(wxEVT_BUTTON, [smpuBDefPath](wxCommandEvent &) {
+			wxFileDialog dlg(smpuBDefPath, "Select define file", "", "",
+			    "Define files (*.def)|*.def|All files (*.*)|*.*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+			if (dlg.ShowModal() == wxID_OK)
+				smpuBDefPath->SetValue(dlg.GetPath());
+		});
+		defBox->Add(btnBrowse, 0, wxLEFT, 4);
+		sbgGs->Add(defBox, wxGBPosition(sbrow++, 0), wxGBSpan(1, 4), wxEXPAND);
+	}
+	sbgGs->AddGrowableCol(1, 1);
+	sbgGs->AddGrowableCol(3, 1);
+	smpuBGroup->Add(sbgGs, 0, wxEXPAND | wxALL, 4);
+	smpuBox->Add(smpuBGroup, 0, wxEXPAND | wxALL, 4);
+
 	vs->Add(smpuBox, 0, wxEXPAND | wxALL, 6);
 #endif
 
@@ -1270,6 +1437,83 @@ wxPanel *PrefFrame::BuildDipswPage(wxNotebook *nb)
 	return page;
 }
 
+wxPanel *PrefFrame::BuildCalendarPage(wxNotebook *nb)
+{
+	wxPanel *page = new wxPanel(nb, wxID_ANY);
+	wxBoxSizer *vs = new wxBoxSizer(wxVERTICAL);
+	wxGridBagSizer *gs = new wxGridBagSizer(6, 8);
+	int row = 0;
+
+	/* Real / Virtual radio */
+	auto *rbReal = new wxRadioButton(page, wxID_ANY, "Real", wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
+	rbReal->SetName("cal_real");
+	gs->Add(rbReal, wxGBPosition(row, 0), wxDefaultSpan);
+	auto *rbVir  = new wxRadioButton(page, wxID_ANY, "Virtual");
+	rbVir->SetName("cal_vir");
+	gs->Add(rbVir, wxGBPosition(row, 1), wxDefaultSpan);
+	row++;
+
+	/* Date line: YY / MM / DD */
+	gs->Add(new wxStaticText(page, wxID_ANY, "Date (YY/MM/DD):"),
+	        wxGBPosition(row, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+	auto *dateBox = new wxBoxSizer(wxHORIZONTAL);
+	auto *yyTc = new wxTextCtrl(page, wxID_ANY, "00", wxDefaultPosition, wxSize(40, -1));
+	yyTc->SetName("cal_yy");
+	auto *mmTc = new wxTextCtrl(page, wxID_ANY, "01", wxDefaultPosition, wxSize(40, -1));
+	mmTc->SetName("cal_mm");
+	auto *ddTc = new wxTextCtrl(page, wxID_ANY, "01", wxDefaultPosition, wxSize(40, -1));
+	ddTc->SetName("cal_dd");
+	dateBox->Add(yyTc, 0);
+	dateBox->Add(new wxStaticText(page, wxID_ANY, " / "), 0, wxALIGN_CENTER_VERTICAL);
+	dateBox->Add(mmTc, 0);
+	dateBox->Add(new wxStaticText(page, wxID_ANY, " / "), 0, wxALIGN_CENTER_VERTICAL);
+	dateBox->Add(ddTc, 0);
+	gs->Add(dateBox, wxGBPosition(row, 1), wxGBSpan(1, 3));
+	row++;
+
+	/* Time line: HH : MM : SS */
+	gs->Add(new wxStaticText(page, wxID_ANY, "Time (HH:MM:SS):"),
+	        wxGBPosition(row, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+	auto *timeBox = new wxBoxSizer(wxHORIZONTAL);
+	auto *hhTc = new wxTextCtrl(page, wxID_ANY, "00", wxDefaultPosition, wxSize(40, -1));
+	hhTc->SetName("cal_hh");
+	auto *miTc = new wxTextCtrl(page, wxID_ANY, "00", wxDefaultPosition, wxSize(40, -1));
+	miTc->SetName("cal_mi");
+	auto *ssTc = new wxTextCtrl(page, wxID_ANY, "00", wxDefaultPosition, wxSize(40, -1));
+	ssTc->SetName("cal_ss");
+	timeBox->Add(hhTc, 0);
+	timeBox->Add(new wxStaticText(page, wxID_ANY, " : "), 0, wxALIGN_CENTER_VERTICAL);
+	timeBox->Add(miTc, 0);
+	timeBox->Add(new wxStaticText(page, wxID_ANY, " : "), 0, wxALIGN_CENTER_VERTICAL);
+	timeBox->Add(ssTc, 0);
+	gs->Add(timeBox, wxGBPosition(row, 1), wxGBSpan(1, 3));
+	row++;
+
+	/* Now button: sets virtual time to real-time */
+	auto *btnNow = new wxButton(page, wxID_ANY, "Now");
+	btnNow->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
+		UINT8 cbuf[6];
+		calendar_getreal(cbuf);
+		char tmp[8];
+		static const char *nms[6] = {"cal_yy","cal_mm","cal_dd","cal_hh","cal_mi","cal_ss"};
+		for (int i = 0; i < 6; i++) {
+			UINT8 v = cbuf[i];
+			/* BCD: high nibble = tens, low = units */
+			snprintf(tmp, sizeof(tmp), "%02X", v);
+			if (auto *w = FindWindowByName(nms[i]))
+				if (auto *t = wxDynamicCast(w, wxTextCtrl)) t->SetValue(tmp);
+		}
+	});
+	gs->Add(btnNow, wxGBPosition(row, 1), wxDefaultSpan);
+	row++;
+
+	vs->Add(gs, 0, wxEXPAND | wxALL, 8);
+	vs->AddStretchSpacer(1);
+	vs->Add(new wxButton(page, ID_PREF_DEFAULT, "Default"), 0, wxALIGN_RIGHT | wxALL, 8);
+	page->SetSizer(vs);
+	return page;
+}
+
 wxPanel *PrefFrame::BuildMiscPage(wxNotebook *nb)
 {
 	wxScrolledWindow *page = new wxScrolledWindow(nb, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL | wxVSCROLL);
@@ -1486,276 +1730,362 @@ void PrefFrame::UpdateMHz(void)
 
 void PrefFrame::OnDefault(wxCommandEvent & /*evt*/)
 {
+	int curTab = m_notebook ? m_notebook->GetSelection() : -1;
+	NP2CFG    cfg_bk = np2cfg;
+	NP2OSCFG  os_bk  = np2oscfg;
+#if defined(SUPPORT_WAB)
+	NP2WABCFG wab_bk = np2wabcfg;
+#endif
 	extern void pccore_setdefault(void);
 	pccore_setdefault();
-	LoadFromConfig();
+	np2oscfg_setdefault();
+	np2wabcfg_setdefault();
+	LoadFromConfig(curTab);
+	np2cfg    = cfg_bk;
+	np2oscfg  = os_bk;
+#if defined(SUPPORT_WAB)
+	np2wabcfg = wab_bk;
+#endif
 }
 
-void PrefFrame::LoadFromConfig(void)
+void PrefFrame::LoadFromConfig(int tabId)
 {
 	/* System */
-	{
-		int sel = 1; // Default VX
-		if (milstr_cmp(np2cfg.model, "VM") == 0) sel = 0;
-		else if (milstr_cmp(np2cfg.model, "286") == 0) sel = 2;
-		if (m_arch[sel]) m_arch[sel]->SetValue(true);
-	}
-	if (auto *w = FindByName(this, "clk_base")) {
-		if (auto *ch = wxDynamicCast(w, wxChoice))
-			ch->SetSelection(np2cfg.baseclock == 1996800 ? 0 : 1);
-	}
-	SetSpinByName(this, "clk_mult", (int)np2cfg.multiple);
-	UpdateMHz();
-	SetSpinByName(this, "extmem",   (int)np2cfg.EXTMEM);
+	IF_TAB(TAB_SYSTEM) {
+		{
+			int sel = 1; // Default VX
+			if (milstr_cmp(np2cfg.model, "VM") == 0) sel = 0;
+			else if (milstr_cmp(np2cfg.model, "286") == 0) sel = 2;
+			if (m_arch[sel]) m_arch[sel]->SetValue(true);
+		}
+		if (auto *w = FindByName(this, "clk_base")) {
+			if (auto *ch = wxDynamicCast(w, wxChoice))
+				ch->SetSelection(np2cfg.baseclock == 1996800 ? 0 : 1);
+		}
+		SetSpinByName(this, "clk_mult", (int)np2cfg.multiple);
+		UpdateMHz();
+		SetSpinByName(this, "extmem",   (int)np2cfg.EXTMEM);
 
-	if (auto *w = FindByName(this, "EmuSpeed")) {
-		if (auto *ch = wxDynamicCast(w, wxChoice)) {
-			int sel = 1; // Default 100%
-			if      (np2cfg.emuspeed <= 50)  sel = 0;
-			else if (np2cfg.emuspeed <= 100) sel = 1;
-			else if (np2cfg.emuspeed <= 200) sel = 2;
-			else if (np2cfg.emuspeed <= 400) sel = 3;
-			else if (np2cfg.emuspeed <= 800) sel = 4;
-			else                             sel = 5;
-			ch->SetSelection(sel);
-		}
-	}
-
-#if defined(SUPPORT_FAST_MEMORYCHECK)
-	SetCheckByName(this, "SUPPORT_FAST_MEMORYCHECK", np2cfg.memcheckspeed > 1);
-#endif
-	SetCheckByName(this, "MULTITHREAD", np2wabcfg.multithread != 0);
-	SetCheckByName(this, "calendar",   np2cfg.calendar != 0);
-	SetCheckByName(this, "USE144FD",   np2cfg.usefd144 != 0);
-	SetCheckByName(this, "TIMERFIX",   np2cfg.timerfix != 0);
-	SetCheckByName(this, "CONSTTSC",   np2cfg.consttsc != 0);
-#if defined(SUPPORT_ASYNC_CPU)
-	SetCheckByName(this, "ASYNCCPU",   np2cfg.asynccpu != 0);
-#endif
-
-	/* Display */
-	SetCheckByName(this, "DispSync",     np2cfg.DISPSYNC != 0);
-	SetCheckByName(this, "Real_Pal",     np2cfg.RASTER != 0);
-	/* GDC radio */
-	if (auto *w = FindByName(this, np2cfg.uPD72020 ? "gdc_72020" : "gdc_7220"))
-		if (auto *rb = wxDynamicCast(w, wxRadioButton)) rb->SetValue(true);
-	/* Graphic Charger choice */
-	if (auto *w = FindByName(this, "GRCG_EGC"))
-		if (auto *ch = wxDynamicCast(w, wxChoice)) ch->SetSelection(np2cfg.grcg & 3);
-#if defined(SUPPORT_PEGC)
-	SetCheckByName(this, "pegcplane",    np2cfg.usepegcplane != 0);
-#endif
-	SetCheckByName(this, "LCD_MODE_en",  (np2cfg.LCD_MODE & 1) != 0);
-	SetCheckByName(this, "LCD_MODE_rev", (np2cfg.LCD_MODE & 2) != 0);
-	SetCheckByName(this, "color16b",     np2cfg.color16 != 0);
-	SetCheckByName(this, "skipline",     np2cfg.skipline != 0);
-	SetCheckByName(this, "draw32bit",    draw32bit != 0);
-	SetSpinByName(this,  "skplight",    (int)(SINT16)np2cfg.skiplight);
-#if defined(SUPPORT_WAB)
-	SetCheckByName(this, "MULTIWND",     np2wabcfg.multiwindow != 0);
-#endif
-#if defined(SUPPORT_CL_GD5430)
-	SetCheckByName(this, "USE_CLGD",     np2cfg.usegd5430 != 0);
-	if (auto *w = FindByName(this, "CLGDTYPE")) {
-		if (auto *ch = wxDynamicCast(w, wxChoice)) {
-			int sel = 4; /* default Xe10 */
-			for (int i = 0; i < (int)NELEMENTS(s_clgd_vals); i++) {
-				if (s_clgd_vals[i] == np2cfg.gd5430type) { sel = i; break; }
-			}
-			ch->SetSelection(sel);
-		}
-	}
-	SetCheckByName(this, "CLGDFCUR",     np2cfg.gd5430fakecur != 0);
-#endif
-
-#if defined(SUPPORT_VIDEOFILTER)
-	{
-		uint8_t pno = np2cfg.vf1_pno;
-		if (pno >= 3) pno = 0;
-		for (int f = 0; f < 3; f++) {
-			char nm[16];
-			snprintf(nm, sizeof(nm), "vf_f%d_en", f);
-			SetCheckByName(this, nm, np2cfg.vf1_param[pno][f][0] != 0);
-			snprintf(nm, sizeof(nm), "vf_f%d_type", f);
-			if (auto *w = FindByName(this, nm)) {
-				if (auto *ch = wxDynamicCast(w, wxChoice)) {
-					uint32_t t = np2cfg.vf1_param[pno][f][1];
-					if (t > 7) t = 0;
-					ch->SetSelection((int)t);
-				}
-			}
-			for (int p = 0; p < 8; p++) {
-				snprintf(nm, sizeof(nm), "vf_f%d_p%d", f, p);
-				if (auto *w = FindByName(this, nm)) {
-					if (auto *tx = wxDynamicCast(w, wxTextCtrl))
-						tx->ChangeValue(wxString::Format("%u",
-						    (unsigned)np2cfg.vf1_param[pno][f][p]));
-				}
-			}
-		}
-	}
-#endif
-
-	/* Sound board */
-	if (m_sndboard) {
-		int sel = 0;
-		for (int i = 0; i < (int)(sizeof(s_sndboard_vals)); i++) {
-			if (s_sndboard_vals[i] == np2cfg.SOUND_SW) { sel = i; break; }
-		}
-		m_sndboard->SetSelection(sel);
-		UpdateDipswBmp();
-	}
-	if (auto *w = FindByName(this, "SampleHz")) {
-		if (auto *ch = wxDynamicCast(w, wxChoice)) {
-			int sel = 2; // Default 44100
-			if      (np2cfg.samplingrate <= 11025) sel = 0;
-			else if (np2cfg.samplingrate <= 22050) sel = 1;
-			else if (np2cfg.samplingrate <= 44100) sel = 2;
-			else if (np2cfg.samplingrate <= 48000) sel = 3;
-			else if (np2cfg.samplingrate <= 88200) sel = 4;
-			else                                   sel = 5;
-			ch->SetSelection(sel);
-		}
-	}
-	SetSpinByName(this, "Latencys",  (int)np2cfg.delayms);
-	/* Beep Volume */
-	{
-		int vol = np2cfg.BEEP_VOL & 3;
-		if (m_beepvol[vol]) m_beepvol[vol]->SetValue(true);
-	}
-	
-#if defined(SUPPORT_FMGEN)
-	SetCheckByName(this, "USEFMGEN", np2cfg.usefmgen != 0);
-#endif
-	SetCheckByName(this, "Seek_Snd", np2cfg.MOTOR != 0);
-#if defined(SUPPORT_WAB)
-	SetCheckByName(this, "wabasw",   np2cfg.wabasw == 0); // "CRT relay sound" checked means wabasw=0
-#endif
-
-	/* MIDI */
-	SetCheckByName(this, "USEMPU98", np2cfg.mpuenable != 0);
-	if (auto *w = FindByName(this, "MPU_PORT")) {
-		if (auto *ch = wxDynamicCast(w, wxChoice))
-			ch->SetSelection((np2cfg.mpuopt >> 4) & 0x0f);
-	}
-	if (auto *w = FindByName(this, "MPU_IRQ")) {
-		if (auto *ch = wxDynamicCast(w, wxChoice))
-			ch->SetSelection(np2cfg.mpuopt & 3);
-	}
-	if (auto *w = FindByName(this, "MPU_OUT")) {
-		if (auto *ch = wxDynamicCast(w, wxChoice)) {
-			int sel = 0;
-			if (np2oscfg.MIDIDEV[0][0]) {
-				int idx = ch->FindString(wxString::FromUTF8(np2oscfg.MIDIDEV[0]));
-				if (idx != wxNOT_FOUND) sel = idx;
-			}
-			ch->SetSelection(sel);
-		}
-	}
-	if (auto *w = FindByName(this, "MPU_IN")) {
-		if (auto *ch = wxDynamicCast(w, wxChoice)) {
-			int sel = 0;
-			if (np2oscfg.MIDIDEV[1][0]) {
-				int idx = ch->FindString(wxString::FromUTF8(np2oscfg.MIDIDEV[1]));
-				if (idx != wxNOT_FOUND) sel = idx;
-			}
-			ch->SetSelection(sel);
-		}
-	}
-	if (auto *w = FindByName(this, "MPU_MDL")) {
-		if (auto *ch = wxDynamicCast(w, wxChoice)) {
-			int sel = 0;
-			if (np2oscfg.mpu.mdl[0]) {
-				int idx = ch->FindString(wxString::FromUTF8(np2oscfg.mpu.mdl));
-				if (idx != wxNOT_FOUND) sel = idx;
-			}
-			ch->SetSelection(sel);
-		}
-	}
-	SetCheckByName(this, "MPU_DEF_EN", np2oscfg.mpu.def_en != 0);
-	SetTextByName(this, "MPU_DEF", np2oscfg.mpu.def);
-#if defined(SUPPORT_SMPU98)
-	SetCheckByName(this, "USE_SMPU",  np2cfg.smpuenable != 0);
-	SetCheckByName(this, "SMPUMUTB",  np2cfg.smpumuteB  != 0);
-	if (auto *w = FindByName(this, "SMPU_PORT")) {
-		if (auto *ch = wxDynamicCast(w, wxChoice))
-			ch->SetSelection((np2cfg.smpuopt >> 4) & 0x0f);
-	}
-	if (auto *w = FindByName(this, "SMPU_IRQ")) {
-		if (auto *ch = wxDynamicCast(w, wxChoice))
-			ch->SetSelection(np2cfg.smpuopt & 3);
-	}
-	if (auto *w = FindByName(this, "SMPUA_OUT")) {
-		if (auto *ch = wxDynamicCast(w, wxChoice)) {
-			int idx = ch->FindString(wxString::FromUTF8(np2oscfg.MIDIDEVA[0]));
-			ch->SetSelection(idx != wxNOT_FOUND ? idx : 0);
-		}
-	}
-	if (auto *w = FindByName(this, "SMPUB_OUT")) {
-		if (auto *ch = wxDynamicCast(w, wxChoice)) {
-			int idx = ch->FindString(wxString::FromUTF8(np2oscfg.MIDIDEVB[0]));
-			ch->SetSelection(idx != wxNOT_FOUND ? idx : 0);
-		}
-	}
-#endif
-
-	/* Input */
-	if (auto *w = FindByName(this, "keyboard")) {
-		if (auto *ch = wxDynamicCast(w, wxChoice)) {
-			int sel = 0;
-			if      (np2oscfg.KEYBOARD == KEY_KEY101) sel = 1;
-			else if (np2oscfg.KEYBOARD >= 2)          sel = 2; // Stub for JoyKey
-			ch->SetSelection(sel);
-		}
-	}
-	if (auto *w = FindByName(this, "F12KEY")) {
-		if (auto *ch = wxDynamicCast(w, wxChoice))
-			ch->SetSelection(np2oscfg.F12KEY & 7);
-	}
-	if (auto *w = FindByName(this, "Mouse_sp")) {
-		if (auto *ch = wxDynamicCast(w, wxChoice)) {
-			int sel = 2; /* default x1 (also for unset / value 4) */
-			switch (np2oscfg.mouse_move_ratio) {
-			case 1:  sel = 0; break;
-			case 2:  sel = 1; break;
-			case 8:  sel = 3; break;
-			case 16: sel = 4; break;
-			default: sel = 2; break;
-			}
-			ch->SetSelection(sel);
-		}
-	}
-	SetCheckByName(this, "XSHIFT",   np2oscfg.xrollkey != 0);
-	SetCheckByName(this, "DragDrop", np2oscfg.confirm != 0);
-	SetCheckByName(this, "btnRAPID", np2cfg.BTN_RAPID != 0);
-	SetCheckByName(this, "MS_RAPID", np2cfg.MOUSERAPID != 0);
-
-	/* FDD */
-	for (int i = 0; i < 4; i++) {
-		char name[16];
-		snprintf(name, sizeof(name), "FDDRIVE%d", i + 1);
-		SetCheckByName(this, name, ((np2cfg.fddequip >> i) & 1) != 0);
-	}
-	SetSpinByName(this, "Seek_Vol",  (int)np2cfg.MOTORVOL);
-
-	/* HDD / IDE type */
-#if defined(SUPPORT_IDEIO)
-	for (int i = 0; i < 4; i++) {
-		char name[16];
-		snprintf(name, sizeof(name), "IDE%dTYPE", i + 1);
-		if (auto *w = FindByName(this, name)) {
+		if (auto *w = FindByName(this, "EmuSpeed")) {
 			if (auto *ch = wxDynamicCast(w, wxChoice)) {
-				int sel = 0;
-				if      (np2cfg.idetype[i] == SXSIDEV_HDD)   sel = 1;
-				else if (np2cfg.idetype[i] == SXSIDEV_CDROM) sel = 2;
+				int sel = 1; // Default 100%
+				if      (np2cfg.emuspeed <= 50)  sel = 0;
+				else if (np2cfg.emuspeed <= 100) sel = 1;
+				else if (np2cfg.emuspeed <= 200) sel = 2;
+				else if (np2cfg.emuspeed <= 400) sel = 3;
+				else if (np2cfg.emuspeed <= 800) sel = 4;
+				else                             sel = 5;
 				ch->SetSelection(sel);
 			}
 		}
+
+#if defined(SUPPORT_FAST_MEMORYCHECK)
+		SetCheckByName(this, "SUPPORT_FAST_MEMORYCHECK", np2cfg.memcheckspeed > 1);
+#endif
+		SetCheckByName(this, "SYSIOMSK",   np2cfg.sysiomsk != 0);
+		SetCheckByName(this, "DisableMMX", np2oscfg.disablemmx != 0);
+		SetCheckByName(this, "MULTITHREAD", np2wabcfg.multithread != 0);
+		SetCheckByName(this, "USE144FD",   np2cfg.usefd144 != 0);
+		SetCheckByName(this, "TIMERFIX",   np2cfg.timerfix != 0);
+		SetCheckByName(this, "CONSTTSC",   np2cfg.consttsc != 0);
+#if defined(SUPPORT_ASYNC_CPU)
+		SetCheckByName(this, "ASYNCCPU",   np2cfg.asynccpu != 0);
+#endif
 	}
+
+	/* Display */
+	IF_TAB(TAB_DISPLAY) {
+		SetCheckByName(this, "DispSync",     np2cfg.DISPSYNC != 0);
+		SetCheckByName(this, "Real_Pal",     np2cfg.RASTER != 0);
+		/* GDC radio */
+		if (auto *w = FindByName(this, np2cfg.uPD72020 ? "gdc_72020" : "gdc_7220"))
+			if (auto *rb = wxDynamicCast(w, wxRadioButton)) rb->SetValue(true);
+		/* Graphic Charger choice */
+		if (auto *w = FindByName(this, "GRCG_EGC"))
+			if (auto *ch = wxDynamicCast(w, wxChoice)) ch->SetSelection(np2cfg.grcg & 3);
+#if defined(SUPPORT_PEGC)
+		SetCheckByName(this, "pegcplane",    np2cfg.usepegcplane != 0);
+#endif
+		SetCheckByName(this, "LCD_MODE_en",  (np2cfg.LCD_MODE & 1) != 0);
+		SetCheckByName(this, "LCD_MODE_rev", (np2cfg.LCD_MODE & 2) != 0);
+		SetCheckByName(this, "color16b",     np2cfg.color16 != 0);
+		SetCheckByName(this, "skipline",     np2cfg.skipline != 0);
+		SetCheckByName(this, "draw32bit",    draw32bit != 0);
+		SetSpinByName(this,  "skplight",    (int)(SINT16)np2cfg.skiplight);
+#if defined(SUPPORT_WAB)
+		SetCheckByName(this, "MULTIWND",     np2wabcfg.multiwindow != 0);
+#endif
+#if defined(SUPPORT_CL_GD5430)
+		SetCheckByName(this, "USE_CLGD",     np2cfg.usegd5430 != 0);
+		if (auto *w = FindByName(this, "CLGDTYPE")) {
+			if (auto *ch = wxDynamicCast(w, wxChoice)) {
+				int sel = 4; /* default Xe10 */
+				for (int i = 0; i < (int)NELEMENTS(s_clgd_vals); i++) {
+					if (s_clgd_vals[i] == np2cfg.gd5430type) { sel = i; break; }
+				}
+				ch->SetSelection(sel);
+			}
+		}
+		SetCheckByName(this, "CLGDFCUR",     np2cfg.gd5430fakecur != 0);
 #endif
 
+#if defined(SUPPORT_VIDEOFILTER)
+		{
+			uint8_t pno = np2cfg.vf1_pno;
+			if (pno >= 3) pno = 0;
+			for (int f = 0; f < 3; f++) {
+				char nm[16];
+				snprintf(nm, sizeof(nm), "vf_f%d_en", f);
+				SetCheckByName(this, nm, np2cfg.vf1_param[pno][f][0] != 0);
+				snprintf(nm, sizeof(nm), "vf_f%d_type", f);
+				if (auto *w = FindByName(this, nm)) {
+					if (auto *ch = wxDynamicCast(w, wxChoice)) {
+						uint32_t t = np2cfg.vf1_param[pno][f][1];
+						if (t > 7) t = 0;
+						ch->SetSelection((int)t);
+					}
+				}
+				for (int p = 0; p < 8; p++) {
+					snprintf(nm, sizeof(nm), "vf_f%d_p%d", f, p);
+					if (auto *w = FindByName(this, nm)) {
+						if (auto *tx = wxDynamicCast(w, wxTextCtrl))
+							tx->ChangeValue(wxString::Format("%u",
+							    (unsigned)np2cfg.vf1_param[pno][f][p]));
+					}
+				}
+			}
+		}
+#endif
+	}
+
+	/* Sound board */
+	IF_TAB(TAB_SOUND) {
+		if (m_sndboard) {
+			int sel = 0;
+			for (int i = 0; i < (int)(sizeof(s_sndboard_vals)); i++) {
+				if (s_sndboard_vals[i] == np2cfg.SOUND_SW) { sel = i; break; }
+			}
+			m_sndboard->SetSelection(sel);
+			UpdateDipswBmp();
+		}
+		if (auto *w = FindByName(this, "SampleHz")) {
+			if (auto *ch = wxDynamicCast(w, wxChoice)) {
+				int sel = 2; // Default 44100
+				if      (np2cfg.samplingrate <= 11025) sel = 0;
+				else if (np2cfg.samplingrate <= 22050) sel = 1;
+				else if (np2cfg.samplingrate <= 44100) sel = 2;
+				else if (np2cfg.samplingrate <= 48000) sel = 3;
+				else if (np2cfg.samplingrate <= 88200) sel = 4;
+				else                                   sel = 5;
+				ch->SetSelection(sel);
+			}
+		}
+		if (auto *w = FindByName(this, "Latencys")) {
+			if (auto *ch = wxDynamicCast(w, wxChoice)) {
+				int sel = 1; /* Normal */
+				if      (np2cfg.delayms <= 47)  sel = 0;
+				else if (np2cfg.delayms <= 93)  sel = 1;
+				else if (np2cfg.delayms <= 186) sel = 2;
+				else                            sel = 3;
+				ch->SetSelection(sel);
+			}
+		}
+		/* Beep Volume */
+		{
+			int vol = np2cfg.BEEP_VOL & 3;
+			if (m_beepvol[vol]) m_beepvol[vol]->SetValue(true);
+		}
+#if defined(SUPPORT_FMGEN)
+		SetCheckByName(this, "USEFMGEN", np2cfg.usefmgen != 0);
+#endif
+		SetCheckByName(this, "Seek_Snd", np2cfg.MOTOR != 0);
+#if defined(SUPPORT_WAB)
+		SetCheckByName(this, "wabasw",   np2cfg.wabasw == 0); // "CRT relay sound" checked means wabasw=0
+#endif
+	}
+
+	/* MIDI */
+	IF_TAB(TAB_MIDI) {
+		SetCheckByName(this, "USEMPU98", np2cfg.mpuenable != 0);
+		if (auto *w = FindByName(this, "MPU_PORT")) {
+			if (auto *ch = wxDynamicCast(w, wxChoice))
+				ch->SetSelection((np2cfg.mpuopt >> 4) & 0x0f);
+		}
+		if (auto *w = FindByName(this, "MPU_IRQ")) {
+			if (auto *ch = wxDynamicCast(w, wxChoice))
+				ch->SetSelection(np2cfg.mpuopt & 3);
+		}
+		if (auto *w = FindByName(this, "MPU_OUT")) {
+			if (auto *ch = wxDynamicCast(w, wxChoice)) {
+				int sel = 0;
+				if (np2oscfg.MIDIDEV[0][0]) {
+					int idx = ch->FindString(wxString::FromUTF8(np2oscfg.MIDIDEV[0]));
+					if (idx != wxNOT_FOUND) sel = idx;
+				}
+				ch->SetSelection(sel);
+			}
+		}
+		if (auto *w = FindByName(this, "MPU_IN")) {
+			if (auto *ch = wxDynamicCast(w, wxChoice)) {
+				int sel = 0;
+				if (np2oscfg.MIDIDEV[1][0]) {
+					int idx = ch->FindString(wxString::FromUTF8(np2oscfg.MIDIDEV[1]));
+					if (idx != wxNOT_FOUND) sel = idx;
+				}
+				ch->SetSelection(sel);
+			}
+		}
+		if (auto *w = FindByName(this, "MPU_MDL")) {
+			if (auto *ch = wxDynamicCast(w, wxChoice)) {
+				int sel = 0;
+				if (np2oscfg.mpu.mdl[0]) {
+					int idx = ch->FindString(wxString::FromUTF8(np2oscfg.mpu.mdl));
+					if (idx != wxNOT_FOUND) sel = idx;
+				}
+				ch->SetSelection(sel);
+			}
+		}
+		SetCheckByName(this, "MPU_DEF_EN", np2oscfg.mpu.def_en != 0);
+		SetTextByName(this, "MPU_DEF", np2oscfg.mpu.def);
+#if defined(SUPPORT_SMPU98)
+		SetCheckByName(this, "USE_SMPU",  np2cfg.smpuenable != 0);
+		SetCheckByName(this, "SMPUMUTB",  np2cfg.smpumuteB  != 0);
+		if (auto *w = FindByName(this, "SMPU_PORT")) {
+			if (auto *ch = wxDynamicCast(w, wxChoice))
+				ch->SetSelection((np2cfg.smpuopt >> 4) & 0x0f);
+		}
+		if (auto *w = FindByName(this, "SMPU_IRQ")) {
+			if (auto *ch = wxDynamicCast(w, wxChoice))
+				ch->SetSelection(np2cfg.smpuopt & 3);
+		}
+		if (auto *w = FindByName(this, "SMPUA_OUT")) {
+			if (auto *ch = wxDynamicCast(w, wxChoice)) {
+				int idx = ch->FindString(wxString::FromUTF8(np2oscfg.MIDIDEVA[0]));
+				ch->SetSelection(idx != wxNOT_FOUND ? idx : 0);
+			}
+		}
+		if (auto *w = FindByName(this, "SMPUB_OUT")) {
+			if (auto *ch = wxDynamicCast(w, wxChoice)) {
+				int idx = ch->FindString(wxString::FromUTF8(np2oscfg.MIDIDEVB[0]));
+				ch->SetSelection(idx != wxNOT_FOUND ? idx : 0);
+			}
+		}
+#endif
+	}
+
+	/* Input */
+	IF_TAB(TAB_INPUT) {
+		if (auto *w = FindByName(this, "keyboard")) {
+			if (auto *ch = wxDynamicCast(w, wxChoice)) {
+				int sel = 0;
+				if      (np2oscfg.KEYBOARD == KEY_KEY101) sel = 1;
+				else if (np2oscfg.KEYBOARD >= 2)          sel = 2; // Stub for JoyKey
+				ch->SetSelection(sel);
+			}
+		}
+		if (auto *w = FindByName(this, "joypad")) {
+			if (auto *ch = wxDynamicCast(w, wxChoice)) {
+				ch->Clear();
+				ch->Append("None");
+				int sel = 0;
+				joymng_devinfo_t **list = joymng_get_devinfo_list();
+				if (list) {
+					for (int i = 0; list[i]; i++) {
+						ch->Append(wxString::FromUTF8(list[i]->devname));
+						if (np2oscfg.JOYDEV[0][0] &&
+						    strcmp(list[i]->devname, np2oscfg.JOYDEV[0]) == 0) {
+							sel = i + 1;
+						}
+					}
+				}
+				ch->SetSelection(sel);
+			}
+		}
+		if (auto *w = FindByName(this, "F12KEY")) {
+			if (auto *ch = wxDynamicCast(w, wxChoice))
+				ch->SetSelection(np2oscfg.F12KEY & 7);
+		}
+		if (auto *w = FindByName(this, "Mouse_sp")) {
+			if (auto *ch = wxDynamicCast(w, wxChoice)) {
+				int sel = 2; /* default x1 (also for unset / value 4) */
+				switch (np2oscfg.mouse_move_ratio) {
+				case 1:  sel = 0; break;
+				case 2:  sel = 1; break;
+				case 8:  sel = 3; break;
+				case 16: sel = 4; break;
+				default: sel = 2; break;
+				}
+				ch->SetSelection(sel);
+			}
+		}
+		SetCheckByName(this, "XSHIFT",   np2oscfg.xrollkey != 0);
+		SetCheckByName(this, "DragDrop", np2oscfg.confirm != 0);
+		SetCheckByName(this, "btnRAPID", np2cfg.BTN_RAPID != 0);
+		SetCheckByName(this, "MS_RAPID", np2cfg.MOUSERAPID != 0);
+	}
+
+	/* FDD */
+	IF_TAB(TAB_FDD) {
+		for (int i = 0; i < 4; i++) {
+			char name[16];
+			snprintf(name, sizeof(name), "FDDRIVE%d", i + 1);
+			SetCheckByName(this, name, ((np2cfg.fddequip >> i) & 1) != 0);
+		}
+		SetSpinByName(this, "Seek_Vol",  (int)np2cfg.MOTORVOL);
+	}
+
+	/* HDD / IDE type + HDD Equipment */
+	IF_TAB(TAB_HDD) {
+#if defined(SUPPORT_IDEIO)
+		for (int i = 0; i < 4; i++) {
+			char name[16];
+			snprintf(name, sizeof(name), "IDE%dTYPE", i + 1);
+			if (auto *w = FindByName(this, name)) {
+				if (auto *ch = wxDynamicCast(w, wxChoice)) {
+					int sel = 0;
+					if      (np2cfg.idetype[i] == SXSIDEV_HDD)   sel = 1;
+					else if (np2cfg.idetype[i] == SXSIDEV_CDROM) sel = 2;
+					ch->SetSelection(sel);
+				}
+			}
+		}
+#endif
+#if defined(SUPPORT_IDEIO)
+		for (int i = 0; i < 4; i++) {
+			char name[16];
+			snprintf(name, sizeof(name), "IDE%dEQUIP", i + 1);
+			SetCheckByName(this, name, np2cfg.idetype[i] != SXSIDEV_NC);
+		}
+#else
+		for (int i = 0; i < 2; i++) {
+			char name[16];
+			snprintf(name, sizeof(name), "SASI%dEQUIP", i + 1);
+			SetCheckByName(this, name, np2cfg.sasihdd[i][0] != 0);
+		}
+#endif
+#if defined(SUPPORT_IDEIO)
+		SetCheckByName(this, "CD_ASYNC", np2cfg.useasynccd != 0);
+		SetCheckByName(this, "IDE_BIOS", np2cfg.idebios != 0);
+		SetCheckByName(this, "AIDEBIOS", np2cfg.autoidebios != 0);
+#endif
+#if defined(SUPPORT_SCSI)
+		for (int i = 0; i < 4; i++) {
+			char name[16];
+			snprintf(name, sizeof(name), "SCSI%dEQUIP", i + 1);
+			SetCheckByName(this, name, np2cfg.scsihdd[i][0] != 0);
+			snprintf(name, sizeof(name), "SCSI%dTYPE", i);
+			if (auto *w = FindByName(this, name))
+				if (auto *ch = wxDynamicCast(w, wxChoice))
+					ch->SetSelection(np2cfg.scsihdd[i][0] != 0 ? 1 : 0);
+		}
+#endif
+#if defined(SUPPORT_LIBCDIO)
+		SetCheckByName(this, "LIBCDIO", np2cfg.libcdio != 0);
+#endif
+	}
+
 	/* Serial: all 3 ports (port, bps, data bits, parity, stop bits, DSR check) */
-	{
+	IF_TAB(TAB_SERIAL) {
 		const UINT32 bpsRates[] = {110,300,600,1200,2400,4800,9600,14400,19200,28800,38400,57600,115200};
 		for (int i = 0; i < 3; i++) {
 			char portname[16], bpsname[16], dbname[16], parname[16], sbname[16], dsrname[16];
@@ -1810,83 +2140,79 @@ void PrefFrame::LoadFromConfig(void)
 	}
 
 	/* Network */
+	IF_TAB(TAB_NETWORK) {
 #if defined(SUPPORT_NET)
-	SetTextByName(this, "NP2NETTAP", np2cfg.np2nettap);
+		SetTextByName(this, "NP2NETTAP", np2cfg.np2nettap);
 #endif
 #if defined(SUPPORT_LGY98)
-	SetCheckByName(this, "USELGY98", np2cfg.uselgy98 != 0);
-	if (auto *w = FindByName(this, "LGY98_IO")) {
-		if (auto *ch = wxDynamicCast(w, wxChoice)) {
-			const UINT16 ios[] = {0x00D0,0x10D0,0x20D0,0x30D0,0x40D0,0x50D0,0x60D0,0x70D0};
-			int sel = 1;
-			for (int i = 0; i < 8; i++) { if (ios[i] == np2cfg.lgy98io) { sel = i; break; } }
-			ch->SetSelection(sel);
+		SetCheckByName(this, "USELGY98", np2cfg.uselgy98 != 0);
+		if (auto *w = FindByName(this, "LGY98_IO")) {
+			if (auto *ch = wxDynamicCast(w, wxChoice)) {
+				const UINT16 ios[] = {0x00D0,0x10D0,0x20D0,0x30D0,0x40D0,0x50D0,0x60D0,0x70D0};
+				int sel = 1;
+				for (int i = 0; i < 8; i++) { if (ios[i] == np2cfg.lgy98io) { sel = i; break; } }
+				ch->SetSelection(sel);
+			}
 		}
-	}
-	if (auto *w = FindByName(this, "LGY98IRQ")) {
-		if (auto *ch = wxDynamicCast(w, wxChoice)) {
-			const UINT8 irqs[] = {0, 1, 2, 5};
-			int sel = 1;
-			for (int i = 0; i < 4; i++) { if (irqs[i] == np2cfg.lgy98irq) { sel = i; break; } }
-			ch->SetSelection(sel);
+		if (auto *w = FindByName(this, "LGY98IRQ")) {
+			if (auto *ch = wxDynamicCast(w, wxChoice)) {
+				const UINT8 irqs[] = {0, 1, 2, 5};
+				int sel = 1;
+				for (int i = 0; i < 4; i++) { if (irqs[i] == np2cfg.lgy98irq) { sel = i; break; } }
+				ch->SetSelection(sel);
+			}
 		}
-	}
 #endif
+	}
 
 	/* Hostdrv */
+	IF_TAB(TAB_HOSTDRV) {
 #if defined(SUPPORT_HOSTDRV)
-	SetCheckByName(this, "use_hdrv", np2cfg.hdrvenable != 0);
-	SetTextByName(this, "hdrvroot", np2cfg.hdrvroot);
-	SetCheckByName(this, "hdrv_acc_r", (np2cfg.hdrvacc & 1) != 0);
-	SetCheckByName(this, "hdrv_acc_w", (np2cfg.hdrvacc & 2) != 0);
-	SetCheckByName(this, "hdrv_acc_d", (np2cfg.hdrvacc & 4) != 0);
+		SetCheckByName(this, "use_hdrv", np2cfg.hdrvenable != 0);
+		SetTextByName(this, "hdrvroot", np2cfg.hdrvroot);
+		SetCheckByName(this, "hdrv_acc_r", (np2cfg.hdrvacc & 1) != 0);
+		SetCheckByName(this, "hdrv_acc_w", (np2cfg.hdrvacc & 2) != 0);
+		SetCheckByName(this, "hdrv_acc_d", (np2cfg.hdrvacc & 4) != 0);
 #if defined(SUPPORT_HOSTDRVNT)
-	SetCheckByName(this, "hdrv_nt", np2cfg.hdrvntenable != 0);
+		SetCheckByName(this, "hdrv_nt", np2cfg.hdrvntenable != 0);
 #endif
 #endif
+	}
 
-	/* HDD Equipment */
-#if defined(SUPPORT_IDEIO)
-	for (int i = 0; i < 4; i++) {
-		char name[16];
-		snprintf(name, sizeof(name), "IDE%dEQUIP", i + 1);
-		SetCheckByName(this, name, np2cfg.idetype[i] != SXSIDEV_NC);
-	}
-#else
-	for (int i = 0; i < 2; i++) {
-		char name[16];
-		snprintf(name, sizeof(name), "SASI%dEQUIP", i + 1);
-		SetCheckByName(this, name, np2cfg.sasihdd[i][0] != 0);
-	}
-#endif
-#if defined(SUPPORT_SCSI)
-	for (int i = 0; i < 4; i++) {
-		char name[16];
-		snprintf(name, sizeof(name), "SCSI%dEQUIP", i + 1);
-		SetCheckByName(this, name, np2cfg.scsihdd[i][0] != 0);
-	}
-#endif
-#if defined(SUPPORT_LIBCDIO)
-	SetCheckByName(this, "LIBCDIO", np2cfg.libcdio != 0);
-#endif
-
-	/* PCI */
+	/* PCI + Misc (both live on the Misc tab) */
+	IF_TAB(TAB_MISC) {
 #if defined(SUPPORT_PCI)
-	SetCheckByName(this, "USE_PCI", np2cfg.usepci != 0);
-	if (auto *w = FindByName(this, "PCI_PCMC"))
-		if (auto *ch = wxDynamicCast(w, wxChoice)) ch->SetSelection(np2cfg.pci_pcmc < 3 ? np2cfg.pci_pcmc : 0);
-	SetCheckByName(this, "PCI_B32", np2cfg.pci_bios32 != 0);
+		SetCheckByName(this, "USE_PCI", np2cfg.usepci != 0);
+		if (auto *w = FindByName(this, "PCI_PCMC"))
+			if (auto *ch = wxDynamicCast(w, wxChoice)) ch->SetSelection(np2cfg.pci_pcmc < 3 ? np2cfg.pci_pcmc : 0);
+		SetCheckByName(this, "PCI_B32", np2cfg.pci_bios32 != 0);
 #endif
-
-	/* Misc */
-	SetCheckByName(this, "s_NOWAIT", np2oscfg.NOWAIT != 0);
-	SetCheckByName(this, "e_resume", np2oscfg.resume != 0);
+		SetCheckByName(this, "s_NOWAIT", np2oscfg.NOWAIT != 0);
+		SetCheckByName(this, "e_resume", np2oscfg.resume != 0);
 #if defined(SUPPORT_STATSAVE)
-	SetCheckByName(this, "STATSAVE", np2cfg.statsave != 0);
+		SetCheckByName(this, "STATSAVE", np2cfg.statsave != 0);
 #endif
-	SetSpinByName(this, "SkpFrame", (int)np2oscfg.DRAW_SKIP);
+		SetSpinByName(this, "SkpFrame", (int)np2oscfg.DRAW_SKIP);
+	}
 
-	UpdateDipswPicture();
+	/* DIP SW */
+	IF_TAB(TAB_DIPSW) {
+		UpdateDipswPicture();
+	}
+
+	/* Calendar */
+	IF_TAB(TAB_CALENDAR) {
+		SetCheckByName(this, "cal_real", np2cfg.calendar != 0);
+		SetCheckByName(this, "cal_vir",  np2cfg.calendar == 0);
+		UINT8 cbuf[6];
+		calendar_getvir(cbuf);
+		char tmp[8];
+		static const char *nms[6] = {"cal_yy","cal_mm","cal_dd","cal_hh","cal_mi","cal_ss"};
+		for (int i = 0; i < 6; i++) {
+			snprintf(tmp, sizeof(tmp), "%02X", cbuf[i]);
+			SetTextByName(this, nms[i], tmp);
+		}
+	}
 }
 
 void PrefFrame::SaveToConfig(void)
@@ -1922,11 +2248,34 @@ void PrefFrame::SaveToConfig(void)
 #if defined(SUPPORT_FAST_MEMORYCHECK)
 	np2cfg.memcheckspeed = GetCheckByName(this, "SUPPORT_FAST_MEMORYCHECK") ? 8 : 1;
 #endif
+	np2cfg.sysiomsk = GetCheckByName(this, "SYSIOMSK") ? 0xFF00 : 0;
+	np2oscfg.disablemmx = GetCheckByName(this, "DisableMMX") ? 1 : 0;
 	np2wabcfg.multithread = GetCheckByName(this, "MULTITHREAD") ? 1 : 0;
 
 	// np2cfg.grcg      = GetCheckByName(this, "grcg")    ? 3 : 0;
 	np2cfg.color16   = GetCheckByName(this, "color16b") ? 1 : 0;
-	np2cfg.calendar  = GetCheckByName(this, "calendar") ? 1 : 0;
+	np2cfg.calendar  = GetCheckByName(this, "cal_real") ? 1 : 0;
+
+	/* Virtual calendar textboxes → calendar_set(BCD UINT8[6]) */
+	{
+		static const char *nms[6] = {"cal_yy","cal_mm","cal_dd","cal_hh","cal_mi","cal_ss"};
+		UINT8 cbuf[6] = {0};
+		bool got = false;
+		for (int i = 0; i < 6; i++) {
+			if (auto *w = FindByName(this, nms[i])) {
+				if (auto *t = wxDynamicCast(w, wxTextCtrl)) {
+					unsigned int v = 0;
+					wxString s = t->GetValue();
+					if (sscanf(s.c_str(), "%x", &v) == 1) {
+						cbuf[i] = (UINT8)v;
+						got = true;
+					}
+				}
+			}
+		}
+		if (got) calendar_set(cbuf);
+	}
+
 	np2cfg.usefd144  = GetCheckByName(this, "USE144FD") ? 1 : 0;
 	np2cfg.timerfix  = GetCheckByName(this, "TIMERFIX") ? 1 : 0;
 	np2cfg.consttsc  = GetCheckByName(this, "CONSTTSC") ? 1 : 0;
@@ -2022,7 +2371,13 @@ void PrefFrame::SaveToConfig(void)
 			if (sel >= 0 && sel < 6) np2cfg.samplingrate = rates[sel];
 		}
 	}
-	np2cfg.delayms   = (UINT16)GetSpinByName(this, "Latencys", 150);
+	if (auto *w = FindByName(this, "Latencys")) {
+		if (auto *ch = wxDynamicCast(w, wxChoice)) {
+			const UINT16 delays[] = {47, 93, 186, 372};
+			int sel = ch->GetSelection();
+			if (sel >= 0 && sel < 4) np2cfg.delayms = delays[sel];
+		}
+	}
 	/* Beep Volume */
 	for (int i = 0; i < 4; i++) {
 		if (m_beepvol[i] && m_beepvol[i]->GetValue()) {
@@ -2105,6 +2460,17 @@ void PrefFrame::SaveToConfig(void)
 			else               np2oscfg.KEYBOARD = 2; // JoyKey stub
 		}
 	}
+	if (auto *w = FindByName(this, "joypad")) {
+		if (auto *ch = wxDynamicCast(w, wxChoice)) {
+			int sel = ch->GetSelection();
+			if (sel > 0) {
+				wxString s = ch->GetString(sel);
+				milstr_ncpy(np2oscfg.JOYDEV[0], s.ToUTF8().data(), MAX_PATH);
+			} else {
+				np2oscfg.JOYDEV[0][0] = '\0';
+			}
+		}
+	}
 	if (auto *w = FindByName(this, "F12KEY")) {
 		if (auto *ch = wxDynamicCast(w, wxChoice)) np2oscfg.F12KEY = (UINT8)ch->GetSelection();
 	}
@@ -2143,6 +2509,9 @@ void PrefFrame::SaveToConfig(void)
 			}
 		}
 	}
+	np2cfg.useasynccd  = GetCheckByName(this, "CD_ASYNC") ? 1 : 0;
+	np2cfg.idebios     = GetCheckByName(this, "IDE_BIOS") ? 1 : 0;
+	np2cfg.autoidebios = GetCheckByName(this, "AIDEBIOS") ? 1 : 0;
 #endif
 
 	/* Serial: all 3 ports (port, bps, data bits, parity, stop bits, DSR check) */

@@ -108,6 +108,7 @@ extern int  s98log_count;
 
 extern char hddfolder[MAX_PATH];
 extern char fddfolder[MAX_PATH];
+extern char cdfolder[MAX_PATH];
 extern char bmpfilefolder[MAX_PATH];
 extern UINT bmpfilenumber;
 extern char modulefile[MAX_PATH];
@@ -132,6 +133,9 @@ int  havemmx(void);
 BRESULT np2_initialize(const char *argv0);
 void    np2_terminate(void);
 void    np2_exec(void);
+
+void    np2oscfg_setdefault(void);
+void    np2wabcfg_setdefault(void);
 
 /* clipboard text paste: sjis_text must be Shift_JIS encoded */
 void autokey_start(const char *sjis_text);
