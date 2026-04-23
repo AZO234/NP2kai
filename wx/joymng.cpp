@@ -21,10 +21,20 @@ REG8 joymng_getstat(void)
 
 void joymng_initialize(void)
 {
-	SDL_InitSubSystem(SDL_INIT_JOYSTICK);
+	/* Disable modern HIDAPI which requires udev, force classic linux /dev/input/js* */
+	SDL_SetHint("SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS", "1");
+	SDL_SetHint("SDL_JOYSTICK_HIDAPI", "0");
+	SDL_SetHint("SDL_JOYSTICK_LINUX_CLASSIC", "1");
+
+	if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) < 0) {
+		fprintf(stderr, "NP2kai debug: SDL_InitSubSystem(JOYSTICK) failed: %s\n", SDL_GetError());
+		return;
+	}
+	fprintf(stderr, "NP2kai debug: joymng_initialize called\n");
 
 	int count = 0;
 	SDL_JoystickID *ids = SDL_GetJoysticks(&count);
+	fprintf(stderr, "NP2kai debug: joymng_initialize found %d devices\n", count);
 	if (ids && count > 0) {
 		int target = 0;
 		/* prioritize device name in config */
@@ -38,6 +48,9 @@ void joymng_initialize(void)
 			}
 		}
 		s_joystick[0] = SDL_OpenJoystick(ids[target]);
+		if (s_joystick[0]) {
+			fprintf(stderr, "NP2kai debug: Opened joystick: %s\n", SDL_GetJoystickName(s_joystick[0]));
+		}
 		if (count > 1) {
 			int second = (target == 0) ? 1 : 0;
 			s_joystick[1] = SDL_OpenJoystick(ids[second]);
@@ -49,6 +62,7 @@ void joymng_initialize(void)
 void joymng_deinitialize(void)
 {
 	int i;
+	fprintf(stderr, "NP2kai debug: joymng_deinitialize called\n");
 	for (i = 0; i < 2; i++) {
 		if (s_joystick[i]) {
 			SDL_CloseJoystick(s_joystick[i]);
@@ -102,9 +116,13 @@ joymng_devinfo_t **joymng_get_devinfo_list(void)
 
 	/* ensure SDL's internal device list is updated */
 	SDL_PumpEvents();
+	SDL_UpdateJoysticks();
 
 	int count = 0;
 	SDL_JoystickID *ids = SDL_GetJoysticks(&count);
+	fprintf(stderr, "NP2kai debug: joymng_get_devinfo_list count = %d\n", count);
+	fflush(stderr);
+
 	if (!ids || count <= 0) {
 		if (ids) SDL_free(ids);
 		return NULL;

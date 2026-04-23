@@ -9,6 +9,33 @@ NP2kai is a PC-9801 series emulator<br>
 
 ## Build and Install
 
+### wxWidgets port (alpha, walk-through)
+
+- Ubuntu
+
+``` bash
+$ sudo apt install build-essential cmake libsdl3-dev libsdl3-ttf-dev libtomlplusplus-dev libcdio-dev libusb-1.0-0-dev
+
+$ cd ~
+$ git clone --recurse-submodules https://github.com/wxWidgets/wxWidgets.git
+$ cd wxWidgets
+$ mkdir buildgtk
+$ cd buildgtk
+$ ../configure --with-gtk
+$ make -j4
+$ sudo make install
+
+$ cd ~
+$ git clone https://github.com/AZO234/NP2kai.git
+$ cd NP2kai
+$ cmake -S . -B build_wx -DBUILD_WX=ON -DUSE_NETWORK=ON && cmake --build build_wx -j4
+$ cd build_wx
+$ ./wxnp21kai
+```
+
+- Windows, macOS (Coming soon)
+
+
 ### libretro core
 
 <details><summary>
