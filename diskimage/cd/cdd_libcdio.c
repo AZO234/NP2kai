@@ -173,8 +173,8 @@ static REG8 lcdd_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size)
 {
 	LCDD_HDL  h;
 	lsn_t     lsn;
-	UINT      i, nsecs;
 	UINT16    secsize;
+	UINT      rsize;
 
 	if (sxsi_prepare(sxsi) != SUCCESS) {
 		return 0x60;
@@ -185,29 +185,39 @@ static REG8 lcdd_read(SXSIDEV sxsi, FILEPOS pos, UINT8 *buf, UINT size)
 
 	h     = LCDD(sxsi);
 	lsn   = (lsn_t)pos;
-	nsecs = (size + CDIO_CD_FRAMESIZE - 1) / CDIO_CD_FRAMESIZE;
 
-	for (i = 0; i < nsecs; i++) {
-		secsize = secsize_at_lsn(h, lsn + (lsn_t)i);
+	while (size > 0) {
+		secsize = secsize_at_lsn(h, lsn);
+		rsize = MIN(size, (UINT)secsize);
 
 		if (secsize == CDIO_CD_FRAMESIZE) {
 			/* データセクタ: 2048 バイトのユーザーデータ */
-			if (cdio_read_data_sectors(h->cdio, buf, lsn + (lsn_t)i,
-			                           CDIO_CD_FRAMESIZE, 1) != DRIVER_OP_SUCCESS) {
-				return 0xd0;
+			if (rsize == CDIO_CD_FRAMESIZE) {
+				if (cdio_read_data_sectors(h->cdio, buf, lsn,
+				                           CDIO_CD_FRAMESIZE, 1) != DRIVER_OP_SUCCESS) {
+					return 0xd0;
+				}
+			} else {
+				UINT8 tmp[CDIO_CD_FRAMESIZE];
+				if (cdio_read_data_sectors(h->cdio, tmp, lsn,
+				                           CDIO_CD_FRAMESIZE, 1) != DRIVER_OP_SUCCESS) {
+					return 0xd0;
+				}
+				memcpy(buf, tmp, rsize);
 			}
-			buf += CDIO_CD_FRAMESIZE;
 		}
 		else {
 			/* オーディオ / Mode-2: 2352 バイト RAW フレーム */
 			UINT8 raw[CDIO_CD_FRAMESIZE_RAW];
-			if (cdio_read_sector(h->cdio, raw, lsn + (lsn_t)i,
+			if (cdio_read_sector(h->cdio, raw, lsn,
 			                     TRACK_FORMAT_AUDIO) != DRIVER_OP_SUCCESS) {
 				return 0xd0;
 			}
-			memcpy(buf, raw, CDIO_CD_FRAMESIZE_RAW);
-			buf += CDIO_CD_FRAMESIZE_RAW;
+			memcpy(buf, raw, rsize);
 		}
+		buf += rsize;
+		size -= rsize;
+		lsn++;
 	}
 	return 0x00;
 }
