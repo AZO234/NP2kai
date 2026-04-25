@@ -33,6 +33,8 @@
 #include <wx/statbmp.h>
 #include <wx/dc.h>
 #include <wx/mstream.h>
+#include <wx/filepicker.h>
+#include <wx/statline.h>
 
 /* ---- IDs ---- */
 enum {
@@ -1576,6 +1578,27 @@ wxPanel *PrefFrame::BuildMiscPage(wxNotebook *nb)
 	gs->Add(fontpath, wxGBPosition(row, 1), wxDefaultSpan, wxEXPAND);
 	row++;
 
+	/* Cycle Screenshot */
+	gs->Add(new wxStaticLine(page), wxGBPosition(row++, 0), wxGBSpan(1, 2), wxEXPAND | wxTOP | wxBOTTOM, 8);
+	gs->Add(new wxStaticText(page, wxID_ANY, "Cycle Screenshot"),
+	        wxGBPosition(row++, 0), wxGBSpan(1, 2));
+
+	gs->Add(new wxStaticText(page, wxID_ANY, "Output Path:"),
+	        wxGBPosition(row, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+	auto *cyclepath = new wxFilePickerCtrl(page, wxID_ANY, "", "Select screenshot file",
+	        "PNG files (*.png)|*.png|All files (*.*)|*.*",
+	        wxDefaultPosition, wxDefaultSize, wxFLP_SAVE | wxFLP_OVERWRITE_PROMPT | wxFLP_USE_TEXTCTRL);
+	cyclepath->SetName("CyclePath");
+	gs->Add(cyclepath, wxGBPosition(row++, 1), wxDefaultSpan, wxEXPAND);
+
+	gs->Add(new wxStaticText(page, wxID_ANY, "Interval (ms):"),
+	        wxGBPosition(row, 0), wxDefaultSpan, wxALIGN_CENTER_VERTICAL);
+	auto *cycleint = new wxSpinCtrl(page, wxID_ANY, "3000",
+	                                wxDefaultPosition, wxDefaultSize,
+	                                wxSP_ARROW_KEYS, 100, 600000, 3000);
+	cycleint->SetName("CycleInt");
+	gs->Add(cycleint, wxGBPosition(row++, 1), wxDefaultSpan);
+
 	gs->AddGrowableCol(1, 1);
 	page->SetSizer(new wxBoxSizer(wxVERTICAL));
 	page->GetSizer()->Add(gs, 0, wxEXPAND | wxALL, 8);
@@ -2193,6 +2216,10 @@ void PrefFrame::LoadFromConfig(int tabId)
 		SetCheckByName(this, "STATSAVE", np2cfg.statsave != 0);
 #endif
 		SetSpinByName(this, "SkpFrame", (int)np2oscfg.DRAW_SKIP);
+
+		if (auto *w = FindByName(this, "CyclePath"))
+			if (auto *fp = wxDynamicCast(w, wxFilePickerCtrl)) fp->SetPath(wxString::FromUTF8(cycle_shot_path));
+		SetSpinByName(this, "CycleInt", (int)cycle_shot_interval);
 	}
 
 	/* DIP SW */
@@ -2645,6 +2672,10 @@ void PrefFrame::SaveToConfig(void)
 	np2cfg.statsave    = GetCheckByName(this, "STATSAVE") ? 1 : 0;
 #endif
 	np2oscfg.DRAW_SKIP = (UINT8)GetSpinByName(this, "SkpFrame", 0);
+
+	if (auto *w = FindByName(this, "CyclePath"))
+		if (auto *fp = wxDynamicCast(w, wxFilePickerCtrl)) milstr_ncpy(cycle_shot_path, fp->GetPath().ToUTF8().data(), 512);
+	cycle_shot_interval = (UINT32)GetSpinByName(this, "CycleInt", 3000);
 
 	/* DIP switches already written on-change */
 

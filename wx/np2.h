@@ -94,7 +94,13 @@ typedef struct {
 	int		winy;
 	UINT	winwidth;
 	UINT	winheight;
+
+	UINT8	cycle_shot_enabled;
 } NP2OSCFG;
+
+/* cycle screenshot (defined in np2.cpp) */
+extern char   cycle_shot_path[512];
+extern UINT32 cycle_shot_interval;
 
 enum {
 	FULLSCREEN_WIDTH	= 640,

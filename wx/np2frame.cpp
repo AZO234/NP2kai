@@ -124,6 +124,7 @@ wxBEGIN_EVENT_TABLE(Np2Frame, wxFrame)
 	/* Other */
 	EVT_MENU(ID_OTHER_COPY_SCREEN, Np2Frame::OnOtherCopyScreen)
 	EVT_MENU(ID_OTHER_PNG_SAVE,    Np2Frame::OnOtherPngSave)
+	EVT_MENU(ID_OTHER_CYCLE_SCREENSHOT, Np2Frame::OnOtherCycleScreenshot)
 	EVT_MENU(ID_OTHER_TEXT_HOOK,   Np2Frame::OnOtherTextHook)
 	EVT_MENU(ID_OTHER_ABOUT,       Np2Frame::OnOtherAbout)
 	/* Redraw / caption hooks (posted from C side via np2frame_requestRedraw etc.) */
@@ -142,16 +143,26 @@ Np2Frame::Np2Frame(const wxString &title, const wxPoint &pos, const wxSize &size
 	: wxFrame(nullptr, wxID_ANY, title, pos, size)
 	, m_panel(nullptr)
 	, m_emuTimer(this)
+	, m_cycleScreenshotTimer(this)
 	, m_running(true)
 	, m_textHookEnabled(false)
+	, m_cycleScreenshotEnabled(np2oscfg.cycle_shot_enabled != 0)
 	, m_stateSlot(0)
 {
 	s_frame = this;
+
+	Bind(wxEVT_TIMER, &Np2Frame::OnCycleScreenshotTimer, this, m_cycleScreenshotTimer.GetId());
 
 	SetMinSize(wxSize(320, 200));
 
 	/* Create screen panel */
 	m_panel = new Np2Panel(this);
+
+	if (m_cycleScreenshotEnabled && cycle_shot_interval >= 1000) {
+		m_cycleScreenshotTimer.Start(cycle_shot_interval);
+	} else {
+		m_cycleScreenshotEnabled = false;
+	}
 
 	/* Menu */
 	BuildMenuBar();
@@ -335,6 +346,7 @@ void Np2Frame::BuildMenuBar(void)
 	wxMenu *menuOther = new wxMenu;
 	AppendArt(menuOther, ID_OTHER_COPY_SCREEN, "&Copy Screen\tCtrl+C", "Copy screen to clipboard", wxART_COPY);
 	AppendArt(menuOther, ID_OTHER_PNG_SAVE,    "&PNG Save...", "Save screen as PNG image", wxART_FILE_SAVE_AS);
+	AppendArt(menuOther, ID_OTHER_CYCLE_SCREENSHOT, "Cycle Screenshot", "Periodically save screenshots to a file", wxART_REDO, wxITEM_CHECK);
 	AppendArt(menuOther, ID_OTHER_TEXT_HOOK,   "&Text ROM Hook...", "Start/stop text ROM hook", wxART_LIST_VIEW, wxITEM_CHECK);
 	menuOther->AppendSeparator();
 	AppendArt(menuOther, ID_OTHER_ABOUT,       "&About...", "Show about dialog", wxART_HELP);
@@ -398,6 +410,52 @@ void Np2Frame::OnEmuTimer(wxTimerEvent &evt)
 	}
 }
 
+/* Returns the current screen as wxBitmap.
+ * When the Window Accelerator Board relay is active, captures the WAB
+ * framebuffer; otherwise reads from the normal VRAM panel. */
+static wxBitmap CaptureScreen(Np2Panel *panel)
+{
+#if defined(SUPPORT_WAB)
+	if (np2wab.relay) {
+		/* Save WAB screen to a temp BMP and load it back as wxImage */
+		wxString tmpPath = wxFileName::GetTempDir() + wxFILE_SEP_PATH + "np2wab_tmp.bmp";
+		if (np2wab_writebmp(tmpPath.ToUTF8().data()) == SUCCESS) {
+			wxImage img;
+			if (img.LoadFile(tmpPath, wxBITMAP_TYPE_BMP)) {
+				wxRemoveFile(tmpPath);
+				return wxBitmap(img);
+			}
+			wxRemoveFile(tmpPath);
+		}
+	}
+#endif
+	return panel ? panel->GetBitmap() : wxNullBitmap;
+}
+
+void Np2Frame::OnCycleScreenshotTimer(wxTimerEvent & /*evt*/)
+{
+	if (!m_cycleScreenshotEnabled) return;
+
+	bool success = false;
+	wxBitmap bmp = CaptureScreen(m_panel);
+	if (bmp.IsOk()) {
+		wxString path = wxString::FromUTF8(cycle_shot_path);
+		if (!path.empty()) {
+			if (bmp.ConvertToImage().SaveFile(path, wxBITMAP_TYPE_PNG)) {
+				success = true;
+			}
+		}
+	}
+
+	if (!success) {
+		m_cycleScreenshotEnabled = false;
+		m_cycleScreenshotTimer.Stop();
+		np2oscfg.cycle_shot_enabled = 0;
+		sysmng_update(SYS_UPDATECFG);
+		UpdateMenuStatus();
+	}
+}
+
 void Np2Frame::UpdateMenuStatus(void)
 {
 	wxMenuBar *bar = GetMenuBar();
@@ -456,6 +514,7 @@ void Np2Frame::UpdateMenuStatus(void)
 
 	/* Other */
 	bar->Check(ID_OTHER_TEXT_HOOK, m_textHookEnabled);
+	bar->Check(ID_OTHER_CYCLE_SCREENSHOT, m_cycleScreenshotEnabled);
 }
 
 void Np2Frame::OnRefreshEvent(wxCommandEvent &evt)
@@ -869,28 +928,6 @@ void Np2Frame::OnSize(wxSizeEvent &evt)
 
 /* ---- Other handlers ---- */
 
-/* Returns the current screen as wxBitmap.
- * When the Window Accelerator Board relay is active, captures the WAB
- * framebuffer; otherwise reads from the normal VRAM panel. */
-static wxBitmap CaptureScreen(Np2Panel *panel)
-{
-#if defined(SUPPORT_WAB)
-	if (np2wab.relay) {
-		/* Save WAB screen to a temp BMP and load it back as wxImage */
-		wxString tmpPath = wxFileName::GetTempDir() + wxFILE_SEP_PATH + "np2wab_tmp.bmp";
-		if (np2wab_writebmp(tmpPath.ToUTF8().data()) == SUCCESS) {
-			wxImage img;
-			if (img.LoadFile(tmpPath, wxBITMAP_TYPE_BMP)) {
-				wxRemoveFile(tmpPath);
-				return wxBitmap(img);
-			}
-			wxRemoveFile(tmpPath);
-		}
-	}
-#endif
-	return panel ? panel->GetBitmap() : wxNullBitmap;
-}
-
 void Np2Frame::OnOtherCopyScreen(wxCommandEvent & /*evt*/)
 {
 	wxBitmap bmp = CaptureScreen(m_panel);
@@ -914,6 +951,21 @@ void Np2Frame::OnOtherPngSave(wxCommandEvent & /*evt*/)
 			milstr_ncpy(bmpfilefolder, dlg.GetDirectory().ToUTF8().data(), MAX_PATH);
 			sysmng_update(SYS_UPDATECFG);
 		}
+	}
+}
+
+void Np2Frame::OnOtherCycleScreenshot(wxCommandEvent &evt)
+{
+	m_cycleScreenshotEnabled = evt.IsChecked();
+	np2oscfg.cycle_shot_enabled = (UINT8)(m_cycleScreenshotEnabled ? 1 : 0);
+	sysmng_update(SYS_UPDATECFG);
+
+	if (m_cycleScreenshotEnabled && cycle_shot_interval >= 1000) {
+		m_cycleScreenshotTimer.Start(cycle_shot_interval);
+	} else {
+		m_cycleScreenshotEnabled = false;
+		m_cycleScreenshotTimer.Stop();
+		UpdateMenuStatus();
 	}
 }
 

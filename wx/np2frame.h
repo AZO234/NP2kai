@@ -90,6 +90,7 @@ enum {
 	/* Other */
 	ID_OTHER_COPY_SCREEN,
 	ID_OTHER_PNG_SAVE,
+	ID_OTHER_CYCLE_SCREENSHOT,
 	ID_OTHER_TEXT_HOOK,
 	ID_OTHER_ABOUT,
 };
@@ -114,8 +115,10 @@ public:
 private:
 	Np2Panel *m_panel;
 	wxTimer   m_emuTimer;
+	wxTimer   m_cycleScreenshotTimer;
 	bool      m_running;
 	bool      m_textHookEnabled;
+	bool      m_cycleScreenshotEnabled;
 	int       m_stateSlot;
 
 	void BuildMenuBar(void);
@@ -159,11 +162,14 @@ private:
 
 	void OnOtherCopyScreen(wxCommandEvent &evt);
 	void OnOtherPngSave(wxCommandEvent &evt);
+	void OnOtherCycleScreenshot(wxCommandEvent &evt);
 	void OnOtherTextHook(wxCommandEvent &evt);
 	void OnOtherAbout(wxCommandEvent &evt);
 
 	/* Timer: emulation step */
 	void OnEmuTimer(wxTimerEvent &evt);
+	/* Timer: cycle screenshot */
+	void OnCycleScreenshotTimer(wxTimerEvent &evt);
 	/* Refresh events posted from C threads */
 	void OnRefreshEvent(wxCommandEvent &evt);
 

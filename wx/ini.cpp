@@ -575,6 +575,9 @@ static INITBL np2_tbl[] = {
 	{"win_y",     INITYPE_SINT32, &np2oscfg.winy,          0},
 	{"win_w",     INITYPE_UINT32, &np2oscfg.winwidth,      0},
 	{"win_h",     INITYPE_UINT32, &np2oscfg.winheight,     0},
+	{"CycleEna",  INITYPE_BOOL,   &np2oscfg.cycle_shot_enabled, 0},
+	{"CyclePath", INITYPE_STR,    cycle_shot_path,         512},
+	{"CycleInt",  INITYPE_UINT32, &cycle_shot_interval,     0},
 };
 
 static const UINT np2_tbl_count = (UINT)(sizeof(np2_tbl) / sizeof(np2_tbl[0]));

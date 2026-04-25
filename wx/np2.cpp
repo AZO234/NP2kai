@@ -83,6 +83,9 @@ NP2OSCFG np2oscfg = {
 	640, 400,   /* winwidth, winheight */
 };
 
+char   cycle_shot_path[512] = "np2kai_capture.png";
+UINT32 cycle_shot_interval = 3000;
+
 BOOL  s98logging   = FALSE;
 int   s98log_count = 0;
 
@@ -103,48 +106,49 @@ int havemmx(void) { return 0; }
 
 void np2oscfg_setdefault(void)
 {
-	static const NP2OSCFG def = {
-		"",
-		0, 0,
-		0,
-		0,
-		0,
-		KEY_KEY106,
-		0,
-		0,
-		0, 0,
-		{1,2,5,6},
-		{{0,1},{0,1}},
-		{{0,1,0xff,0xff},{0,1,0xff,0xff}},
-		{"",""},
-		{FALSE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", ""},
+	memset(&np2oscfg, 0, sizeof(np2oscfg));
+
+	/* Default values matching NP2OSCFG structure in wx/np2.h */
+	np2oscfg.KEYBOARD = KEY_KEY106;
+
+	/* MPU-98 */
+	np2oscfg.mpu.direct = FALSE;
+	np2oscfg.mpu.port = COMPORT_MIDI;
+	np2oscfg.mpu.speed = 19200;
+	np2oscfg.mpu.param = 0x3e;
+
 #if defined(SUPPORT_SMPU98)
-		{FALSE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", ""},
-		{FALSE, COMPORT_MIDI, 0, 0x3e, 19200, "", "", "", ""},
+	np2oscfg.smpuA.direct = FALSE;
+	np2oscfg.smpuA.port = COMPORT_MIDI;
+	np2oscfg.smpuA.speed = 19200;
+	np2oscfg.smpuA.param = 0x3e;
+	np2oscfg.smpuB.direct = FALSE;
+	np2oscfg.smpuB.port = COMPORT_MIDI;
+	np2oscfg.smpuB.speed = 19200;
+	np2oscfg.smpuB.param = 0x3e;
 #endif
-		{
-			{TRUE, COMPORT_NONE, 0, 0x3e, 19200, "", "", "", ""},
-			{TRUE, COMPORT_NONE, 0, 0x3e, 19200, "", "", "", ""},
-			{TRUE, COMPORT_NONE, 0, 0x3e, 19200, "", "", "", ""},
-		},
-		0,
-		0,
-		0, 0, 0, 0, 0,
-		0, 0, 1,
-		SNDDRV_SDL,
-		{"",""},
-#if defined(SUPPORT_SMPU98)
-		{"",""},
-		{"",""},
-#endif
-		0,
-		100,
-		0, INTERP_NEAREST, 0,
-		0,
-		-1, -1,
-		640, 400,
-	};
-	np2oscfg = def;
+
+	/* COM1-3 */
+	for (int i = 0; i < 3; i++) {
+		np2oscfg.com[i].direct = TRUE;
+		np2oscfg.com[i].port = COMPORT_NONE;
+		np2oscfg.com[i].speed = 19200;
+		np2oscfg.com[i].param = 0x3e;
+	}
+
+	np2oscfg.mouse_move_ratio = 1;
+	np2oscfg.snddrv = SNDDRV_SDL;
+
+	np2oscfg.winx = -1;
+	np2oscfg.winy = -1;
+	np2oscfg.winwidth = 640;
+	np2oscfg.winheight = 400;
+
+	np2oscfg.cycle_shot_enabled = 0;
+
+	/* cycle screenshot */
+	milstr_ncpy(cycle_shot_path, "np2kai_capture.png", sizeof(cycle_shot_path));
+	cycle_shot_interval = 3000;
 }
 
 extern "C" {
@@ -562,8 +566,8 @@ BRESULT np2_initialize(const char *argv0)
 	dosio_init();
 
 	/* determine base path from executable location */
-	char base[MAX_PATH];
-	milstr_ncpy(base, argv0, MAX_PATH);
+	static char base[2048];
+	milstr_ncpy(base, argv0, sizeof(base));
 	file_cutname(base);
 	file_setcd(base);
 
@@ -573,9 +577,9 @@ BRESULT np2_initialize(const char *argv0)
 	/* If biospath not configured, default it to the config directory
 	 * (where the user places ROM files alongside wxnp21kai.toml) */
 	if (np2cfg.biospath[0] == '\0') {
-		char inipath[MAX_PATH];
+		static char inipath[2048];
 		initgetfile(inipath, sizeof(inipath));
-		milstr_ncpy(np2cfg.biospath, inipath, MAX_PATH);
+		milstr_ncpy(np2cfg.biospath, inipath, sizeof(np2cfg.biospath));
 		file_cutname(np2cfg.biospath);
 		/* Also redirect file_setcd so font_load finds ROM files there */
 		file_setcd(np2cfg.biospath);
@@ -610,12 +614,15 @@ BRESULT np2_initialize(const char *argv0)
 
 	/* PC core — pccore_init() internally calls sound_create() → soundmng_create() */
 	pccore_init();
+
 #if defined(SUPPORT_WAB)
 	np2wab_init();
 #endif
+
 #if defined(SUPPORT_CL_GD5430)
 	pc98_cirrus_vga_init();
 #endif
+
 	pccore_reset();
 	/* pccore_reset() calls diskdrv_hddbind() internally, which reads
 	 * np2cfg.idetype[], np2cfg.sasihdd[], and np2cfg.idecd[] to open
