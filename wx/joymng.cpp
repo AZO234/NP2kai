@@ -106,6 +106,14 @@ joymng_devinfo_t **joymng_get_devinfo_list(void)
 	static joymng_devinfo_t *list[16];
 	static joymng_devinfo_t  infos[16];
 	static char              names[16][256];
+	static Uint32            last_update = 0;
+
+	Uint32 now = SDL_GetTicks();
+	if (last_update != 0 && (now - last_update) < 3000) {
+		/* Return cached list */
+		return list[0] ? list : NULL;
+	}
+	last_update = now;
 
 	/* ensure SDL's internal device list is updated */
 	SDL_PumpEvents();

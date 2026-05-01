@@ -105,6 +105,7 @@ public:
 	void RequestRedraw(void);
 	void UpdateCaption(UINT8 flag);
 	void UpdateMenuStatus(void);
+	void UpdateStatusBar(void);
 
 	Np2Panel *GetPanel(void) { return m_panel; }
 	bool IsRunning(void)     const { return m_running; }
@@ -120,12 +121,20 @@ private:
 	bool      m_textHookEnabled;
 	bool      m_cycleScreenshotEnabled;
 	int       m_stateSlot;
+	UINT8     m_lastVol;
+	UINT32    m_lastSpeed;
 
 	void BuildMenuBar(void);
 	void BuildStatusBar(void);
 	wxMenu *BuildFdMenu(int drive);
 	wxMenu *BuildHdMenu(void);
 	wxMenu *BuildCdMenu(void);
+
+	/* Status bar controls */
+	wxStaticBitmap *m_volIcon;
+	wxStaticBitmap *m_speedIcon;
+	void OnVolClick(wxMouseEvent &evt);
+	void OnSpeedClick(wxMouseEvent &evt);
 
 	/* Menu handlers */
 	void OnEmuStartPause(wxCommandEvent &evt);

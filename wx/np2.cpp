@@ -51,6 +51,7 @@ NP2OSCFG np2oscfg = {
 	0,          /* F12KEY */
 	0,          /* MOUSE_SW */
 	0, 0,       /* JOYPAD1, JOYPAD2 */
+	0, 0,       /* JOYPAD1POVXY, JOYPAD2POVXY */
 	{1,2,5,6},  /* JOY1BTN */
 	{{0,1},{0,1}}, /* JOYAXISMAP */
 	{{0,1,0xff,0xff},{0,1,0xff,0xff}}, /* JOYBTNMAP */

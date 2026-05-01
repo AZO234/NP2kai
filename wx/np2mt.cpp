@@ -77,7 +77,7 @@ void np2_multithread_suspend(void)
 {
 	s_pause_req = 1;
 	/* wait until emulator thread reports it is idle (≤ 1 frame + margin) */
-	int timeout_ms = 2000;
+	int timeout_ms = 500;
 	while (!s_paused && timeout_ms > 0) {
 		SDL_Delay(5);
 		timeout_ms -= 5;

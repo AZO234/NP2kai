@@ -582,7 +582,11 @@ static INITBL np2_tbl[] = {
 
 static const UINT np2_tbl_count = (UINT)(sizeof(np2_tbl) / sizeof(np2_tbl[0]));
 
+#if defined(CPUCORE_IA32)
+static const OEMCHAR ini_section[] = "NP21kai";
+#else
 static const OEMCHAR ini_section[] = "NP2kai";
+#endif
 
 void initload(void)
 {

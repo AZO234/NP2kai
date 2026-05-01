@@ -30,6 +30,16 @@ private:
 	wxPanel *BuildSystemPage(wxNotebook *nb);
 	wxPanel *BuildDisplayPage(wxNotebook *nb);
 	wxPanel *BuildSoundPage(wxNotebook *nb);
+	wxPanel *BuildSndMixerPage(wxNotebook *nb);
+	wxPanel *BuildSnd14Page(wxNotebook *nb);
+	wxPanel *BuildSnd26Page(wxNotebook *nb);
+	wxPanel *BuildSnd86Page(wxNotebook *nb);
+	wxPanel *BuildSnd118Page(wxNotebook *nb);
+	wxPanel *BuildSndWSSPage(wxNotebook *nb);
+	wxPanel *BuildSndSB16Page(wxNotebook *nb);
+	wxPanel *BuildSndSpbPage(wxNotebook *nb);
+	wxPanel *BuildSndJoyPage(wxNotebook *nb);
+	wxPanel *BuildSndFMGenPage(wxNotebook *nb);
 	wxPanel *BuildInputPage(wxNotebook *nb);
 	wxPanel *BuildFddPage(wxNotebook *nb);
 	wxPanel *BuildHddPage(wxNotebook *nb);
@@ -58,6 +68,10 @@ private:
 	/* Sound board choice */
 	wxChoice *m_sndboard;
 	wxPanel  *m_sndDipsw;
+	wxPanel  *m_snd26Dipsw;
+	wxPanel  *m_snd86Dipsw;
+	wxPanel  *m_snd118Dipsw;
+	wxPanel  *m_sndSpbDipsw;
 	wxRadioButton *m_beepvol[4];
 
 	/* CPU model choice */

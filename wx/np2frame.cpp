@@ -40,8 +40,179 @@
 #include "dialog/prefframe.h"
 #include "subwnd/keydisp.h"
 
+#include <wx/popupwin.h>
+#include <wx/slider.h>
+#include <wx/statbmp.h>
+
+static const char *s_vol_xpm[] = {
+"16 16 4 1",
+"  c None",
+". c #000000",
+"+ c #0000FF",
+"@ c #808080",
+"                ",
+"       +        ",
+"      ++        ",
+"     +++        ",
+" @@@ +++ +      ",
+" @@@ +++  +     ",
+" @@@ +++  +     ",
+" @@@ +++  +     ",
+" @@@ +++ +      ",
+" @@@ +++        ",
+"     +++        ",
+"      ++        ",
+"       +        ",
+"                ",
+"                ",
+"                "
+};
+
+static const char *s_speed_xpm[] = {
+"16 16 3 1",
+"  c None",
+". c #000000",
+"+ c #00AA00",
+"                ",
+"                ",
+"                ",
+"  +      +      ",
+"  ++     ++     ",
+"  +++    +++    ",
+"  ++++   ++++   ",
+"  +++++  +++++  ",
+"  ++++   ++++   ",
+"  +++    +++    ",
+"  ++     ++     ",
+"  +      +      ",
+"                ",
+"                ",
+"                ",
+"                "
+};
+
+static const char *s_mute_xpm[] = {
+"16 16 5 1",
+"  c None",
+". c #000000",
+"+ c #0000FF",
+"@ c #808080",
+"X c #FF0000",
+"                ",
+"       +        ",
+"      ++   X   X",
+"     +++    X X ",
+" @@@ +++ +   X  ",
+" @@@ +++    X X ",
+" @@@ +++   X   X",
+" @@@ +++  +     ",
+" @@@ +++ +      ",
+" @@@ +++        ",
+"     +++        ",
+"      ++        ",
+"       +        ",
+"                ",
+"                ",
+"                "
+};
+
+#include <sysmng.h>
+
+extern "C" {
+void opngen_setvol(UINT vol);
+void psggen_setvol(UINT vol);
+void rhythm_setvol(UINT vol);
+void adpcm_setvol(UINT vol);
+void pcm86gen_setvol(UINT vol);
+void oplgen_setvol(UINT vol);
+#if defined(SUPPORT_FMGEN)
+void opna_fmgen_setallvolumeFM_linear(UINT vol);
+void opna_fmgen_setallvolumePSG_linear(UINT vol);
+void opna_fmgen_setallvolumeRhythmTotal_linear(UINT vol);
+void opna_fmgen_setallvolumeADPCM_linear(UINT vol);
+#endif
+}
+
+static void pccore_set_volmaster(UINT8 vol)
+{
+	np2cfg.vol_master = vol;
+
+	opngen_setvol(np2cfg.vol_fm * np2cfg.vol_master / 100);
+	psggen_setvol(np2cfg.vol_ssg * np2cfg.vol_master / 100);
+	rhythm_setvol(np2cfg.vol_rhythm * np2cfg.vol_master / 100);
+	adpcm_setvol(np2cfg.vol_adpcm * np2cfg.vol_master / 100);
+	pcm86gen_setvol(np2cfg.vol_pcm * np2cfg.vol_master / 100);
+	oplgen_setvol(np2cfg.vol_fm * np2cfg.vol_master / 100);
+#if defined(SUPPORT_FMGEN)
+	opna_fmgen_setallvolumeFM_linear(np2cfg.vol_fm * np2cfg.vol_master / 100);
+	opna_fmgen_setallvolumePSG_linear(np2cfg.vol_ssg * np2cfg.vol_master / 100);
+	opna_fmgen_setallvolumeRhythmTotal_linear(np2cfg.vol_rhythm * np2cfg.vol_master / 100);
+	opna_fmgen_setallvolumeADPCM_linear(np2cfg.vol_adpcm * np2cfg.vol_master / 100);
+#endif
+}
+
 /* ---- module-level frame pointer for C hooks ---- */
 static Np2Frame *s_frame = nullptr;
+
+/* ---- Popup for Volume/Speed in StatusBar ---- */
+
+class VolPopup : public wxPopupTransientWindow
+{
+public:
+	VolPopup(wxWindow *parent, UINT8 *pVol) : wxPopupTransientWindow(parent), m_pVol(pVol) {
+		wxPanel *panel = new wxPanel(this);
+		wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+		m_slider = new wxSlider(panel, wxID_ANY, *m_pVol, 0, 100, wxDefaultPosition, wxSize(-1, 150), wxSL_VERTICAL | wxSL_INVERSE | wxSL_LABELS);
+		sizer->Add(m_slider, 1, wxEXPAND | wxALL, 5);
+		panel->SetSizerAndFit(sizer);
+		SetClientSize(panel->GetSize());
+		m_slider->Bind(wxEVT_SLIDER, &VolPopup::OnSlider, this);
+	}
+	void OnSlider(wxCommandEvent & /*evt*/) {
+		*m_pVol = (UINT8)m_slider->GetValue();
+		sysmng_update(SYS_UPDATECFG);
+		/* notify pccore to update actual generator volumes */
+		pccore_set_volmaster(*m_pVol);
+		if (s_frame) s_frame->UpdateStatusBar();
+	}
+private:
+	UINT8 *m_pVol;
+	wxSlider *m_slider;
+};
+
+class SpeedPopup : public wxPopupTransientWindow
+{
+public:
+	SpeedPopup(wxWindow *parent, UINT32 *pSpeed) : wxPopupTransientWindow(parent), m_pSpeed(pSpeed) {
+		wxPanel *panel = new wxPanel(this);
+		wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+		int idx = 1;
+		if (*m_pSpeed <= 50) idx = 0;
+		else if (*m_pSpeed <= 100) idx = 1;
+		else if (*m_pSpeed <= 200) idx = 2;
+		else if (*m_pSpeed <= 400) idx = 3;
+		else if (*m_pSpeed <= 800) idx = 4;
+		else idx = 5;
+
+		m_slider = new wxSlider(panel, wxID_ANY, idx, 0, 5, wxDefaultPosition, wxSize(-1, 150), wxSL_VERTICAL | wxSL_INVERSE | wxSL_AUTOTICKS);
+		sizer->Add(m_slider, 1, wxEXPAND | wxALL, 5);
+		panel->SetSizerAndFit(sizer);
+		SetClientSize(panel->GetSize());
+		m_slider->Bind(wxEVT_SLIDER, &SpeedPopup::OnSlider, this);
+	}
+	void OnSlider(wxCommandEvent & /*evt*/) {
+		const UINT32 speeds[] = {50, 100, 200, 400, 800, 1600};
+		int val = m_slider->GetValue();
+		if (val >= 0 && val <= 5) {
+			*m_pSpeed = speeds[val];
+			sysmng_update(SYS_UPDATECFG);
+			if (s_frame) s_frame->UpdateStatusBar();
+		}
+	}
+private:
+	UINT32 *m_pSpeed;
+	wxSlider *m_slider;
+};
 
 void np2frame_requestRedraw(void)
 {
@@ -147,9 +318,14 @@ Np2Frame::Np2Frame(const wxString &title, const wxPoint &pos, const wxSize &size
 	, m_running(true)
 	, m_textHookEnabled(false)
 	, m_cycleScreenshotEnabled(np2oscfg.cycle_shot_enabled != 0)
-	, m_stateSlot(0)
-{
+	,m_stateSlot(0)
+	,m_lastVol(np2cfg.vol_master)
+	,m_lastSpeed(np2cfg.emuspeed)
+	,m_volIcon(nullptr)
+	,m_speedIcon(nullptr)
+	{
 	s_frame = this;
+
 
 	Bind(wxEVT_TIMER, &Np2Frame::OnCycleScreenshotTimer, this, m_cycleScreenshotTimer.GetId());
 
@@ -389,11 +565,121 @@ wxMenu *Np2Frame::BuildCdMenu(void)
 
 void Np2Frame::BuildStatusBar(void)
 {
-	CreateStatusBar(2);
+	wxStatusBar *sb = CreateStatusBar(4);
+	int widths[] = {-1, 50, 40, 40};
+	sb->SetStatusWidths(4, widths);
+
 	SetStatusText("NP2kai wx", 0);
+
+	m_volIcon = new wxStaticBitmap(sb, wxID_ANY, wxBitmap(s_vol_xpm));
+	m_speedIcon = new wxStaticBitmap(sb, wxID_ANY, wxBitmap(s_speed_xpm));
+
+	/* Bind events to both the status bar and the icons */
+	sb->Bind(wxEVT_LEFT_DOWN, &Np2Frame::OnVolClick, this);
+	sb->Bind(wxEVT_RIGHT_DOWN, &Np2Frame::OnVolClick, this);
+	m_volIcon->Bind(wxEVT_LEFT_DOWN, &Np2Frame::OnVolClick, this);
+	m_volIcon->Bind(wxEVT_RIGHT_DOWN, &Np2Frame::OnVolClick, this);
+	m_speedIcon->Bind(wxEVT_LEFT_DOWN, &Np2Frame::OnSpeedClick, this);
+	m_speedIcon->Bind(wxEVT_RIGHT_DOWN, &Np2Frame::OnSpeedClick, this);
+
+	sb->Bind(wxEVT_SIZE, [this, sb](wxSizeEvent& e) {
+		e.Skip();
+		wxRect r2, r3;
+		sb->GetFieldRect(2, r2);
+		sb->GetFieldRect(3, r3);
+		if (m_volIcon) {
+			wxSize vSize = m_volIcon->GetSize();
+			m_volIcon->Move(r2.x + (r2.width - vSize.x)/2, r2.y + (r2.height - vSize.y)/2);
+		}
+		if (m_speedIcon) {
+			wxSize sSize = m_speedIcon->GetSize();
+			m_speedIcon->Move(r3.x + (r3.width - sSize.x)/2, r3.y + (r3.height - sSize.y)/2);
+		}
+	});
+}
+
+void Np2Frame::UpdateStatusBar(void)
+{
+	wxStatusBar *sb = GetStatusBar();
+	if (!sb) return;
+
+	if (m_volIcon) {
+		if (np2cfg.vol_master == 0) {
+			m_volIcon->SetBitmap(wxBitmap(s_mute_xpm));
+		} else {
+			m_volIcon->SetBitmap(wxBitmap(s_vol_xpm));
+		}
+		m_volIcon->SetToolTip(wxString::Format("Vol: %d", np2cfg.vol_master));
+	}
+	if (m_speedIcon) m_speedIcon->SetToolTip(wxString::Format("Speed: x%.1f", (float)np2cfg.emuspeed / 100.0f));
 }
 
 /* ---- emulation timer / redraw ---- */
+
+void Np2Frame::OnVolClick(wxMouseEvent &evt)
+{
+	wxStatusBar *sb = GetStatusBar();
+	if (!sb) return;
+
+	wxRect rect2, rect3;
+	sb->GetFieldRect(2, rect2);
+	sb->GetFieldRect(3, rect3);
+
+	wxPoint pos = evt.GetPosition();
+	
+	// Adjust pos if event came from the icon
+	wxObject *obj = evt.GetEventObject();
+	if (obj == m_volIcon) {
+		pos.x += rect2.x;
+		pos.y += rect2.y;
+	} else if (obj == m_speedIcon) {
+		pos.x += rect3.x;
+		pos.y += rect3.y;
+	}
+
+	if (rect2.Contains(pos)) {
+		if (evt.LeftDown()) {
+			if (np2cfg.vol_master > 0) {
+				m_lastVol = np2cfg.vol_master;
+				pccore_set_volmaster(0);
+			} else {
+				pccore_set_volmaster(m_lastVol ? m_lastVol : 100);
+			}
+			UpdateStatusBar();
+			sysmng_update(SYS_UPDATECFG);
+		} else if (evt.RightDown()) {
+			VolPopup *pop = new VolPopup(this, &np2cfg.vol_master);
+			wxPoint screenPos = sb->ClientToScreen(rect2.GetTopLeft());
+			/* Show popup above the status bar */
+			pop->Position(screenPos - wxPoint(0, pop->GetSize().y), wxSize(0, 0));
+			pop->Popup();
+			/* We need a way to update status bar while slider is moving.
+			 * For now, it updates when popup closes or we could use a timer. */
+		}
+	} else if (rect3.Contains(pos)) {
+		if (evt.LeftDown()) {
+			if (np2cfg.emuspeed != 100) {
+				m_lastSpeed = np2cfg.emuspeed;
+				np2cfg.emuspeed = 100;
+			} else {
+				np2cfg.emuspeed = (m_lastSpeed ? m_lastSpeed : 100);
+			}
+			UpdateStatusBar();
+			sysmng_update(SYS_UPDATECFG);
+		} else if (evt.RightDown()) {
+			SpeedPopup *pop = new SpeedPopup(this, &np2cfg.emuspeed);
+			wxPoint screenPos = sb->ClientToScreen(rect3.GetTopLeft());
+			pop->Position(screenPos - wxPoint(0, pop->GetSize().y), wxSize(0, 0));
+			pop->Popup();
+		}
+	}
+}
+
+void Np2Frame::OnSpeedClick(wxMouseEvent &evt)
+{
+	/* Handled in OnVolClick for now as they are on the same status bar */
+	OnVolClick(evt);
+}
 
 void Np2Frame::OnEmuTimer(wxTimerEvent &evt)
 {
@@ -401,12 +687,14 @@ void Np2Frame::OnEmuTimer(wxTimerEvent &evt)
 	if (np2wabcfg.multithread) {
 		/* Emulator thread is running — timer is UI-refresh only */
 		UpdateMenuStatus();
+		UpdateStatusBar();
 	} else {
 		/* Single-thread mode: drive emulation from timer */
 		if (m_running) {
 			extern void np2_exec(void);
 			np2_exec();
 		}
+		UpdateStatusBar();
 	}
 }
 
@@ -644,9 +932,15 @@ static int fdDriveFromId(int id)
 void Np2Frame::OnFdOpen(wxCommandEvent &evt)
 {
 	int drv = fdDriveFromId(evt.GetId());
+	wxString defPath = wxString::FromUTF8(fddfolder);
+	if (np2cfg.fddfile[drv][0] != '\0') {
+		wxFileName fn(wxString::FromUTF8(np2cfg.fddfile[drv]));
+		defPath = fn.GetPath();
+	}
+
 	wxFileDialog dlg(this,
 	    wxString::Format("Open FD%d Image", drv + 1),
-	    fddfolder, "",
+	    defPath, "",
 	    "FD Images (*.d88;*.d98;*.fdi;*.hdm)|*.d88;*.d98;*.fdi;*.hdm|All files (*.*)|*.*",
 	    wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 	if (dlg.ShowModal() != wxID_OK) return;
@@ -687,9 +981,15 @@ static int hdDriveFromId(int id)
 void Np2Frame::OnHdOpen(wxCommandEvent &evt)
 {
 	int drv = hdDriveFromId(evt.GetId());
+	wxString defPath = wxString::FromUTF8(hddfolder);
+	if (np2cfg.sasihdd[drv][0] != '\0') {
+		wxFileName fn(wxString::FromUTF8(np2cfg.sasihdd[drv]));
+		defPath = fn.GetPath();
+	}
+
 	wxFileDialog dlg(this,
 	    wxString::Format("Open HD%d Image", drv + 1),
-	    hddfolder, "",
+	    defPath, "",
 	    "HD Images (*.nhd;*.hdi;*.thd;*.vhd)|*.nhd;*.hdi;*.thd;*.vhd|All files (*.*)|*.*",
 	    wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 	if (dlg.ShowModal() != wxID_OK) return;
@@ -730,7 +1030,16 @@ void Np2Frame::OnCdOpen(wxCommandEvent & /*evt*/)
 		wxMessageBox("No CD-ROM drive configured.", "Info", wxOK | wxICON_INFORMATION);
 		return;
 	}
-	wxFileDialog dlg(this, "Mount CD Image", cdfolder, "",
+
+	wxString defPath = wxString::FromUTF8(cdfolder);
+#if defined(SUPPORT_IDEIO)
+	if (np2cfg.idecd[cd_drv & 0x03][0] != '\0') {
+		wxFileName fn(wxString::FromUTF8(np2cfg.idecd[cd_drv & 0x03]));
+		defPath = fn.GetPath();
+	}
+#endif
+
+	wxFileDialog dlg(this, "Mount CD Image", defPath, "",
 	    "CD Images (*.iso;*.cue;*.mds)|*.iso;*.cue;*.mds|All files (*.*)|*.*",
 	    wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 	if (dlg.ShowModal() != wxID_OK) return;

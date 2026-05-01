@@ -294,6 +294,14 @@ void soundmng_setreverse(BOOL reverse)
 	fnmix = reverse ? satuation_s16x : satuation_s16;
 }
 
+void soundmng_setvolume(int volume)
+{
+	if (audio_st) {
+		float gain = (float)volume / 100.0f;
+		SDL_SetAudioStreamGain(audio_st, gain);
+	}
+}
+
 /* ---- PCM ---- */
 static void soundmng_pcminit(void)
 {

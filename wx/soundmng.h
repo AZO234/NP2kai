@@ -34,6 +34,7 @@ void  soundmng_play(void);
 void  soundmng_stop(void);
 void  soundmng_sync(void);
 void  soundmng_setreverse(BOOL reverse);
+void  soundmng_setvolume(int volume);
 
 BRESULT soundmng_pcmplay(UINT num, BOOL loop);
 void    soundmng_pcmstop(UINT num);
