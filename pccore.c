@@ -839,6 +839,35 @@ void pccore_setdefault(void) {
       50,
   };
   np2cfg = def;
+
+  /* Merge latest specifications into the working base */
+  np2cfg.BEEP_VOL = 2; /* Mid */
+  np2cfg.memcheckspeed = 8; /* Fast memory check: ON */
+  np2cfg.ITF_WORK = 1; /* Ensure POST screen with BEEP */
+  np2cfg.usecdecc = 1;
+
+#if defined(CPUCORE_IA32)
+  np2cfg.EXTMEM = 32; /* 32MB for NP21 */
+#else
+  np2cfg.EXTMEM = 13; /* 13MB for NP2 */
+#endif
+
+#if defined(CPUCORE_IA32)
+  np2cfg.sysiomsk = 0xd1; /* 16bit I/O port addressing ON */
+#endif
+
+  np2cfg.MOTOR    = 0; /* HDD seek sound: OFF */
+  np2cfg.MOTORVOL = 0;
+  
+#if defined(SUPPORT_WAB)
+  np2cfg.wabasw   = 1; /* CRT relay sound OFF (1: no sound) */
+#endif
+#if defined(SUPPORT_CL_GD5430)
+  np2cfg.usegd5430 = 1;
+  np2cfg.ga98nb_bigscrn_ex = 1;
+#endif
+
+  np2cfg.mpuopt = 0x82; /* E0D0, INT2 */
 }
 
 void pccore_init(void) {

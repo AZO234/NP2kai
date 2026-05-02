@@ -45,6 +45,8 @@ __pycache__
 
 # AI
 .claude/
+.gemini/
+.codex/
 AI.md
 CLAUDE.md
 GEMINI.md
