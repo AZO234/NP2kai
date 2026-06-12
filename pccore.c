@@ -281,6 +281,9 @@ NP2CFG np2cfg = {
     CIRRUS_MELCOWAB_OFS_DEFAULT,
     0,
 #endif
+#if defined(SUPPORT_WAB_NPDISP)
+    0,
+#endif
 #if defined(SUPPORT_VGA_MODEX)
     0,
 #endif
