@@ -58,6 +58,7 @@ extern "C" {
 #endif
 void mousemng_updateclip();
 UINT8 mousemng_getabspos(int* x, int* y);
+UINT8 mousemng_getabspospixel(int* x, int* y);
 void mousemng_setabspos(int x, int y);
 void mousemng_reset(void);
 void mousemng_setautohidecursor(int autohide);

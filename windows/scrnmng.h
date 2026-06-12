@@ -140,7 +140,7 @@ void scrnmng_sizing(UINT side, RECT *rect);
 void scrnmng_exitsizing(void);
 
 void scrnmng_updatefsres(void);
-void scrnmng_blthdc(HDC hdc);
+void scrnmng_blthdc(HDC hdc, RECT dirtyRect);
 void scrnmng_bltwab(void);
 
 void scrnmng_getrect(RECT *lpRect);

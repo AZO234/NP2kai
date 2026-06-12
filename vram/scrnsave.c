@@ -52,7 +52,7 @@ typedef struct {
 	UINT	pals;
 	UINT	type;
 	BMPPAL	pal[NP2PAL_MAX];
-	PALNUM	dat[SURFACE_WIDTH * SURFACE_HEIGHT];
+	PALNUM	dat[SURFACE_WIDTH * SURFACE_HEIGHT * 2];
 } SCRNDATA;
 
 

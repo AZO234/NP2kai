@@ -152,6 +152,8 @@ typedef struct {
 							//		CCD:
 							//		CDM:
 							//		MDS:MDS_TrackExtraBlock.length(リトルエンディアン)
+							// 
+	UINT32	pregap_offset_ex;	//	このトラックのPREGAPオフセット 上のpregap_offsetの効果がよく分からないので一旦別枠で設ける
 //	--------
 } _CDTRK, *CDTRK;
 

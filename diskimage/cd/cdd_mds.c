@@ -259,6 +259,7 @@ BRESULT openmds(SXSIDEV sxsi, const OEMCHAR *fname) {
 			trk[i].end_sector		= trk[i].start_sector + trk[i].track_sectors - 1;
 
 			trk[i].pregap_offset	= trk[i].start_offset;
+			trk[i].pregap_offset_ex = 0;
 			trk[i].end_offset		= trk[i].start_offset + (trk[i].track_sectors * trk[i].sector_size);
 		}
 	}

@@ -1,0 +1,26 @@
+
+★ np2chk
+
+　Neko Project 21/W系、Neko Project II系、それ以外を判定します。
+　それぞれで挙動を変えるような処理を実現できます。
+
+【動作環境】
+　・MS-DOS
+
+【使用方法】
+　NP2CHKを実行すると、ERRORLEVELに判定結果が返ります。
+
+　　ERRORLEVEL=2 … Neko Project 21/W系
+　　ERRORLEVEL=1 … Neko Project II系またはその派生
+　　ERRORLEVEL=0 … それ以外
+
+  これを用いて分岐するサンプルバッチファイルNP2C.BATを付属させています。
+
+【動作原理】
+　Neko Project II系の判定はNeko Project IIシステムポートのNP2コマンドを
+　使用しています。このコマンドは意図的に削除されていない限りNP2系には必ず
+　存在しますので、Neko Project II系またはその派生の全てが該当します。
+
+　Neko Project 21/W系の判定はNeko Project IIシステムポートのNP21/W拡張
+　コマンドを用いて判定されています。このため、NP21/W拡張コマンドのない
+　ver0.86 rev43以前のバージョンは通常のNeko Project II系と判定されます。

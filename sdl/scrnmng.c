@@ -6,6 +6,7 @@
 #include	<pccore.h>
 #include	"np2.h"
 
+#if !defined(__LIBRETRO__)
 #if USE_SDL >= 3
 #include <SDL3/SDL.h>
 #elif USE_SDL == 2
@@ -13,6 +14,7 @@
 #else
 #include <SDL/SDL.h>
 #endif
+#endif  /* __LIBRETRO__ */
 
 SCRNMNG		scrnmng;
 

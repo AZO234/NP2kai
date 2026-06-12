@@ -1,5 +1,5 @@
 # Neko Project II 0.86 kai
-Jan 18, 2026<br>
+Jun 12, 2026<br>
 
 NP2kai is a PC-9801 series emulator<br>
 
@@ -644,7 +644,7 @@ Tuning performance
   1. Map the 'enable hotkeys' hotkey in settings > input > input hotkey binds and RetroArch will stop listening for hotkeys unless/until you hold that button/key
   2. Enable the "game focus mode" (mapped to scroll_lock by default) and it will send all of your inputs to the core instead of the frontend. However, some people have reported having trouble getting out of game focus mode.
   (Thanks hasenbanck)
-</div></details>
+  </div></details>
 
 ## Keyboard mapping (libretro)
 
@@ -1388,7 +1388,7 @@ Next boot computer, you command from 4.
 - Jun 21, 2019
   - Fix SDL2 build and install
   - Merge NP21/W 0.86 rev.57-61
-...<br>
+  ...<br>
 - Jan 24, 2019
   - Merge NP21/W 0.86 rev.56
 - Jan 13, 2019

@@ -424,6 +424,16 @@ typedef int32_t FILELEN;
 #define	NHD_MAXSIZE2 2000
 #endif
 
+// RECT
+#if !defined(_MSC_VER)
+typedef struct tagRECT {
+  long left;
+  long top;
+  long right;
+  long bottom;
+} RECT, *PRECT, *NPRECT, *LPRECT;
+#endif
+
 // MEMOPTIMIZE
 #undef  MEMOPTIMIZE
 #if defined(arm) || defined (__arm__)

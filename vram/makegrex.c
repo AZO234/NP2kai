@@ -9,6 +9,7 @@
 #include	<vram/scrndraw.h>
 #include	<vram/dispsync.h>
 #include	<vram/makegrex.h>
+#include	"maketext.h"
 
 
 typedef struct {
@@ -35,7 +36,7 @@ static BOOL grphput_indirty0(MKGREX mkgrex, int gpos) {
 	while(1) {
 		vc = vad;
 		p = mg.vm;
-		pterm = p + (80 * 2);
+		pterm = p + (TEXTXMAX * 2);
 		do {
 			if (vramupdate[vc] & 1) {
 				renewal_line[mg.liney] |= 1;
@@ -49,7 +50,7 @@ static BOOL grphput_indirty0(MKGREX mkgrex, int gpos) {
 		if (mg.liney >= dsync.grphymax) {
 			return(TRUE);
 		}
-		mg.vm += 80*2;
+		mg.vm += TEXTXMAX *2;
 		remain--;
 		if (!remain) {
 			break;
@@ -78,7 +79,7 @@ static BOOL grphput_all0(MKGREX mkgrex, int gpos) {
 	while(1) {
 		vc = vad;
 		p = mg.vm;
-		pterm = p + (80 * 2);
+		pterm = p + (TEXTXMAX * 2);
 		do {
 			p[0] = *(UINT32 *)(vramex + (vc * 8) + 0);
 			p[1] = *(UINT32 *)(vramex + (vc * 8) + 4);
@@ -90,7 +91,7 @@ static BOOL grphput_all0(MKGREX mkgrex, int gpos) {
 		if (mg.liney >= dsync.grphymax) {
 			return(TRUE);
 		}
-		mg.vm += 80*2;
+		mg.vm += TEXTXMAX *2;
 		remain--;
 		if (!remain) {
 			break;
@@ -119,7 +120,7 @@ static BOOL grphput_indirty1(MKGREX mkgrex, int gpos) {
 	while(1) {
 		vc = vad;
 		p = mg.vm;
-		pterm = p + (80 * 2);
+		pterm = p + (TEXTXMAX * 2);
 		do {
 			if (vramupdate[vc] & 2) {
 				renewal_line[mg.liney] |= 2;
@@ -133,7 +134,7 @@ static BOOL grphput_indirty1(MKGREX mkgrex, int gpos) {
 		if (mg.liney >= dsync.grphymax) {
 			return(TRUE);
 		}
-		mg.vm += 80*2;
+		mg.vm += TEXTXMAX *2;
 		remain--;
 		if (!remain) {
 			break;
@@ -162,7 +163,7 @@ static BOOL grphput_all1(MKGREX mkgrex, int gpos) {
 	while(1) {
 		vc = vad;
 		p = mg.vm;
-		pterm = p + (80 * 2);
+		pterm = p + (TEXTXMAX * 2);
 		do {
 			p[0] = *(UINT32 *)(vramex + 0x40000 + (vc * 8) + 0);
 			p[1] = *(UINT32 *)(vramex + 0x40000 + (vc * 8) + 4);
@@ -174,7 +175,7 @@ static BOOL grphput_all1(MKGREX mkgrex, int gpos) {
 		if (mg.liney >= dsync.grphymax) {
 			return(TRUE);
 		}
-		mg.vm += 80*2;
+		mg.vm += TEXTXMAX *2;
 		remain--;
 		if (!remain) {
 			break;
@@ -206,7 +207,7 @@ static BOOL grphput_indirty(MKGREX mkgrex, int gpos) {
 	while(1) {
 		vc = vad;
 		p = mg.vm;
-		pterm = p + (80 * 2);
+		pterm = p + (TEXTXMAX * 2);
 		do {
 			if (vramupdate[LOW15(vc)] & 3) {
 				renewal_line[mg.liney] |= 3;
@@ -220,7 +221,7 @@ static BOOL grphput_indirty(MKGREX mkgrex, int gpos) {
 		if (mg.liney >= dsync.grphymax) {
 			return(TRUE);
 		}
-		mg.vm += 80*2;
+		mg.vm += TEXTXMAX *2;
 		remain--;
 		if (!remain) {
 			break;
@@ -249,7 +250,7 @@ static BOOL grphput_all(MKGREX mkgrex, int gpos) {
 	while(1) {
 		vc = vad;
 		p = mg.vm;
-		pterm = p + (80 * 2);
+		pterm = p + (TEXTXMAX * 2);
 		do {
 			p[0] = *(UINT32 *)(vramex + (vc * 8) + 0);
 			p[1] = *(UINT32 *)(vramex + (vc * 8) + 4);
@@ -261,7 +262,7 @@ static BOOL grphput_all(MKGREX mkgrex, int gpos) {
 		if (mg.liney >= dsync.grphymax) {
 			return(TRUE);
 		}
-		mg.vm += 80*2;
+		mg.vm += TEXTXMAX *2;
 		remain--;
 		if (!remain) {
 			break;

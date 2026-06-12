@@ -2406,6 +2406,24 @@
     <ClCompile Include="commng\print\pmpr201.cpp">
       <Filter>ソース ファイル\win9x\commng\print</Filter>
     </ClCompile>
+    <ClCompile Include="..\wab\npdisp.cpp">
+      <Filter>ソース ファイル\wab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wab\npdisp_rle.cpp">
+      <Filter>ソース ファイル\wab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wab\npdisp_mem.cpp">
+      <Filter>ソース ファイル\wab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wab\npdisp_palette.cpp">
+      <Filter>ソース ファイル\wab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wab\npdisp_gdioutput.cpp">
+      <Filter>ソース ファイル\wab</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wab\npdisp_gdibitblt.cpp">
+      <Filter>ソース ファイル\wab</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\calendar.h">
@@ -3580,6 +3598,30 @@
     </ClInclude>
     <ClInclude Include="commng\print\pmpr201.h">
       <Filter>ヘッダー ファイル\win9x\commng\print</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wab\npdisp.h">
+      <Filter>ヘッダー ファイル\wab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wab\npdispdef.h">
+      <Filter>ヘッダー ファイル\wab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wab\npdisp_rle.h">
+      <Filter>ヘッダー ファイル\wab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wab\npdisp_mem.h">
+      <Filter>ヘッダー ファイル\wab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wab\npdisp_palette.h">
+      <Filter>ヘッダー ファイル\wab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wab\npdisp_gdioutput.h">
+      <Filter>ヘッダー ファイル\wab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wab\npdisp_gdibitblt.h">
+      <Filter>ヘッダー ファイル\wab</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wab\npdisp_statsave.h">
+      <Filter>ヘッダー ファイル\wab</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

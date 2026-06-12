@@ -37,7 +37,7 @@ void scrnmngDD_sizing(UINT side, RECT *rect);
 void scrnmngDD_exitsizing(void);
 
 void scrnmngDD_updatefsres(void);
-void scrnmngDD_blthdc(HDC hdc);
+void scrnmngDD_blthdc(HDC hdc, RECT dirtyRect);
 void scrnmngDD_bltwab(void);
 
 void scrnmngDD_getrect(RECT *lpRect);

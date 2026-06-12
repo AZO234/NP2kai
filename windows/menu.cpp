@@ -473,7 +473,16 @@ void xmenu_update(HMENU hMenu)
 	// Device-Mouse
 	CheckMenuItem(hMenu, IDM_MOUSERAW, MF_BYCOMMAND | MFCHECK(np2oscfg.rawmouse));
 	CheckMenuItem(hMenu, IDM_MOUSENC,  MF_BYCOMMAND | MFCHECK(np2oscfg.mouse_nc));
-	CheckMenuItem(hMenu, IDM_MOUSEWHEELCTL, MF_BYCOMMAND | MFCHECK(np2oscfg.usewheel));
+	CheckMenuItem(hMenu, IDM_MOUSEWHEELNONE, MF_BYCOMMAND | MFCHECK(np2oscfg.wheelact == WHEELACTION_NONE));
+	CheckMenuItem(hMenu, IDM_MOUSEWHEELVOLCTL, MF_BYCOMMAND | MFCHECK(np2oscfg.wheelact == WHEELACTION_VOLUME));
+	CheckMenuItem(hMenu, IDM_MOUSEWHEELMSPDCTL, MF_BYCOMMAND | MFCHECK(np2oscfg.wheelact == WHEELACTION_MOUSESPEED));
+	CheckMenuItem(hMenu, IDM_MOUSEWHEELUPDOWN, MF_BYCOMMAND | MFCHECK(np2oscfg.wheelact == WHEELACTION_UPDOWN));
+	CheckMenuItem(hMenu, IDM_MOUSEWHEELROLLUPDOWN, MF_BYCOMMAND | MFCHECK(np2oscfg.wheelact == WHEELACTION_ROLLUPDOWN));
+	CheckMenuItem(hMenu, IDM_MOUSEWHEEL2NONE, MF_BYCOMMAND | MFCHECK(np2oscfg.wheelac2 == WHEELACTION_NONE));
+	CheckMenuItem(hMenu, IDM_MOUSEWHEEL2VOLCTL, MF_BYCOMMAND | MFCHECK(np2oscfg.wheelac2 == WHEELACTION_VOLUME));
+	CheckMenuItem(hMenu, IDM_MOUSEWHEEL2MSPDCTL, MF_BYCOMMAND | MFCHECK(np2oscfg.wheelac2 == WHEELACTION_MOUSESPEED));
+	CheckMenuItem(hMenu, IDM_MOUSEWHEEL2UPDOWN, MF_BYCOMMAND | MFCHECK(np2oscfg.wheelac2 == WHEELACTION_UPDOWN));
+	CheckMenuItem(hMenu, IDM_MOUSEWHEEL2ROLLUPDOWN, MF_BYCOMMAND | MFCHECK(np2oscfg.wheelac2 == WHEELACTION_ROLLUPDOWN));
 	CheckMenuItem(hMenu, IDM_SLOWMOUSE, MF_BYCOMMAND | MFCHECK(np2cfg.slowmous));
 	const UINT8 MMUL = (UINT8)np2oscfg.mousemul;
 	const UINT8 MDIV = (UINT8)np2oscfg.mousediv;

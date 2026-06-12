@@ -39,7 +39,7 @@ void scrnmngD3D_sizing(UINT side, RECT *rect);
 void scrnmngD3D_exitsizing(void);
 
 void scrnmngD3D_updatefsres(void);
-void scrnmngD3D_blthdc(HDC hdc);
+void scrnmngD3D_blthdc(HDC hdc, RECT dirtyRect);
 void scrnmngD3D_bltwab(void);
 
 void scrnmngD3D_getrect(RECT *lpRect);

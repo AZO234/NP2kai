@@ -1,5 +1,7 @@
 
-SCRN_BUFSIZE	equ		0x4b000
+SCRN_TXTWIDTH	equ		128
+SCRN_BUFWIDTH	equ		1024
+SCRN_BUFSIZE	equ		(1024 * 800)
 
 
 				struc	vramop_t

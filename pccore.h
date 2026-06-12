@@ -262,6 +262,9 @@ struct tagNP2Config
 	UINT8	gd5430melofs;
 	UINT8	ga98nb_bigscrn_ex;
 #endif
+#if defined(SUPPORT_WAB_NPDISP)
+	UINT8	usenpdisp;
+#endif
 #if defined(SUPPORT_VGA_MODEX)
 	UINT8	usemodex;
 #endif
@@ -339,6 +342,7 @@ struct tagNP2Config
 	OEMCHAR	fontface[256];
 
 	UINT8	slowmous; // 4ビット切り捨ての低速マウスを使う
+	UINT8	gdcwovrg; // 98標準グラフィックで画面幅80桁超えを認める
 
 #if defined(SUPPORT_DEBUGSS)
 	UINT8	debugss;

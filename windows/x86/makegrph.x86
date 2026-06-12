@@ -151,7 +151,7 @@ grphline1_lp:		test	bl, 1
 					je		short grph_putline
 					test	byte [_gdc + gdc_t.mode1], 10h
 					je		short grph_putline
-					add		edi, 640
+					add		edi, SCRN_BUFWIDTH
 					cmp		byte [esp+20+12], 0			; ALL_DRAWFLAG
 					je		near putline_end
 					mov		al, [esp+21+12]				; DISPPAGE
@@ -160,7 +160,7 @@ grphline1_lp:		test	bl, 1
 
 grph_putline:		push	esi
 					push	ecx
-					mov		ebp, 80
+					mov		ebp, SCRN_TXTWIDTH
 					cmp		byte [esp+21+20], 1			; DISPPAGE
 					jne		near bank1_linelp
 bank0_linelp:		test	byte [_vramupdate + esi], 1
@@ -236,7 +236,7 @@ grph_break:		add		esp, byte 8
 				jae		short deldirty
 				xor		eax, eax
 bottomfill0_lp:	or		[_renewal_line + ebx], dl
-				mov		ecx, 640/4
+				mov		ecx, SCRN_BUFWIDTH/4
 bottomfill1_lp:	mov		[edi], eax
 				add		edi, byte 4
 				loop	bottomfill1_lp

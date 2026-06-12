@@ -57,6 +57,7 @@ BRESULT openiso(SXSIDEV sxsi, const OEMCHAR *path) {
 	trk[0].img_end_sec		= totals;
 
 	trk[0].pregap_offset	= 0;
+	trk[0].pregap_offset_ex = 0;
 	trk[0].start_offset		= 0;
 	trk[0].end_offset		= totals * sector_size;
 

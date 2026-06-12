@@ -84,6 +84,7 @@ BRESULT openccd(SXSIDEV sxsi, const OEMCHAR *fname) {
 				trk[index].point		= curtrk;
 				trk[index].pos			= (UINT32)milstr_solveINT(argv[1] + 2);
 				trk[index].pos0			= curpos0;
+				trk[index].pregap_offset_ex = 0;
 
 				trk[index].sector_size	= curssize;
 

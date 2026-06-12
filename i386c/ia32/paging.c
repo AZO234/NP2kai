@@ -27,6 +27,18 @@
 #include "cpu.h"
 #include "ia32.mcr"
 
+#if defined(SUPPORT_WAB_NPDISP)
+#define NPDISP_WINDOW_MAGIC	0x504e
+extern UINT32	g_npdisp_windowAddr;
+#ifdef __cplusplus
+extern "C" {
+#endif
+void npdisp_exec(void);
+#ifdef __cplusplus
+}
+#endif
+#endif
+
 /*
  * ページフォルト例外
  *
@@ -506,6 +518,24 @@ cpu_linear_memory_read_f(UINT32 laddr, int ucrw)
 	return value;
 }
 
+void MEMCALL
+cpu_linear_memory_reads(UINT32 laddr, void* dat, UINT leng, int ucrw)
+{
+	UINT32 paddr;
+	UINT64 value;
+	UINT8* p = (UINT8*)dat;
+
+	while (leng > 0) {
+		UINT32 inPageSize = CPU_PAGE_SIZE - (laddr & CPU_PAGE_MASK);
+		inPageSize = MIN(inPageSize, leng);
+		paddr = paging(laddr, ucrw);
+		memp_reads(paddr, p, inPageSize);
+		p += inPageSize;
+		laddr += inPageSize;
+		leng -= inPageSize;
+	}
+}
+
 /* write */
 void MEMCALL
 cpu_linear_memory_write_b(UINT32 laddr, UINT8 value, int ucrw)
@@ -654,6 +684,24 @@ cpu_linear_memory_write_f(UINT32 laddr, const REG80 *value, int ucrw)
 	}
 	for (j = 0; i < 10; ++i, ++j) {
 		cpu_memorywrite(paddr[1] + j, value->b[i]);
+	}
+}
+
+void MEMCALL
+cpu_linear_memory_writes(UINT32 laddr, void* dat, UINT leng, int ucrw)
+{
+	UINT32 paddr;
+	UINT64 value;
+	UINT8* p = (UINT8*)dat;
+
+	while (leng > 0) {
+		UINT32 inPageSize = CPU_PAGE_SIZE - (laddr & CPU_PAGE_MASK);
+		inPageSize = MIN(inPageSize, leng);
+		paddr = paging(laddr, ucrw);
+		memp_writes(paddr, p, inPageSize);
+		p += inPageSize;
+		laddr += inPageSize;
+		leng -= inPageSize;
 	}
 }
 

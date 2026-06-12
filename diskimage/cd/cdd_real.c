@@ -446,6 +446,7 @@ BRESULT openrealcdd(SXSIDEV sxsi, const OEMCHAR *path) {
 		trk[i].pregap_offset	= (UINT64)trk[i].start_sector * trk[i].sector_size;
 		trk[i].start_offset		= (UINT64)trk[i].start_sector * trk[i].sector_size;
 		trk[i].end_offset		= (UINT64)trk[i].end_sector * trk[i].sector_size;
+		trk[i].pregap_offset_ex = 0;
 	}
 
 	//trk[0].adr_ctl			= TRACKTYPE_DATA;

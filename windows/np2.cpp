@@ -95,6 +95,9 @@
 #if defined(SUPPORT_CL_GD5430)
 #include "wab/cirrus_vga_extern.h"
 #endif
+#ifdef SUPPORT_WAB_NPDISP
+#include "wab/npdisp.h"
+#endif
 #include "fmboard.h"
 #include "pcm86.h"
 #if defined(SUPPORT_PHYSICAL_CDDRV)
@@ -207,7 +210,7 @@ static	TCHAR		szClassName[] = _T("NP2-MainWindow");
 						0, 0, 1, 0, 1, 1, 
 						0, 0, 
 						0, 8, 
-						1, 0, 0, 0, TCMODE_DEFAULT, 0, 100,
+						1, 0, 0, 1, 2, TCMODE_DEFAULT, 0, 100,
 						0,
 #if defined(SUPPORT_WACOM_TABLET)
 						0,
@@ -1879,8 +1882,53 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 			update |= SYS_UPDATEOSCFG;
 			break;
 
-		case IDM_MOUSEWHEELCTL:
-			np2oscfg.usewheel = !np2oscfg.usewheel;
+		case IDM_MOUSEWHEELNONE:
+			np2oscfg.wheelact = WHEELACTION_NONE;
+			update |= SYS_UPDATEOSCFG;
+			break;
+
+		case IDM_MOUSEWHEELVOLCTL:
+			np2oscfg.wheelact = WHEELACTION_VOLUME;
+			update |= SYS_UPDATEOSCFG;
+			break;
+
+		case IDM_MOUSEWHEELMSPDCTL:
+			np2oscfg.wheelact = WHEELACTION_MOUSESPEED;
+			update |= SYS_UPDATEOSCFG;
+			break;
+
+		case IDM_MOUSEWHEELUPDOWN:
+			np2oscfg.wheelact = WHEELACTION_UPDOWN;
+			update |= SYS_UPDATEOSCFG;
+			break;
+
+		case IDM_MOUSEWHEELROLLUPDOWN:
+			np2oscfg.wheelact = WHEELACTION_ROLLUPDOWN;
+			update |= SYS_UPDATEOSCFG;
+			break;
+
+		case IDM_MOUSEWHEEL2NONE:
+			np2oscfg.wheelact = WHEELACTION_NONE;
+			update |= SYS_UPDATEOSCFG;
+			break;
+
+		case IDM_MOUSEWHEEL2VOLCTL:
+			np2oscfg.wheelac2 = WHEELACTION_VOLUME;
+			update |= SYS_UPDATEOSCFG;
+			break;
+
+		case IDM_MOUSEWHEEL2MSPDCTL:
+			np2oscfg.wheelac2 = WHEELACTION_MOUSESPEED;
+			update |= SYS_UPDATEOSCFG;
+			break;
+
+		case IDM_MOUSEWHEEL2UPDOWN:
+			np2oscfg.wheelac2 = WHEELACTION_UPDOWN;
+			update |= SYS_UPDATEOSCFG;
+			break;
+
+		case IDM_MOUSEWHEEL2ROLLUPDOWN:
+			np2oscfg.wheelac2 = WHEELACTION_ROLLUPDOWN;
 			update |= SYS_UPDATEOSCFG;
 			break;
 
@@ -3149,34 +3197,57 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			break;
 
 		case WM_MOUSEWHEEL:
-			if(np2oscfg.usewheel){
-				if ((wParam & (MK_CONTROL|MK_SHIFT)) == (MK_CONTROL|MK_SHIFT)) {
+			{
+				UINT8 action = (wParam & (MK_CONTROL | MK_SHIFT)) ? np2oscfg.wheelac2 : np2oscfg.wheelact;
+				if (action == WHEELACTION_VOLUME) {
+					// 音量
+					int cMaster = np2cfg.vol_master;
+					cMaster += GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA * 2;
+					if (cMaster < 0) cMaster = 0;
+					if (cMaster > np2oscfg.mastervolumemax) cMaster = np2oscfg.mastervolumemax;
+					if (np2cfg.vol_master != cMaster)
+					{
+						np2_multithread_EnterCriticalSection();
+						np2cfg.vol_master = cMaster;
+						soundmng_setvolume(cMaster);
+						fmboard_updatevolume();
+						np2_multithread_LeaveCriticalSection();
+					}
+					sys_miscinfo.showvolume = 1;
+					sysmng_updatecaption(SYS_UPDATECAPTION_MISC);
+					tmrSysMngHide = SetTimer(hWnd, TMRSYSMNG_ID, 5000, SysMngHideTimerProc);
+				}
+				else if(action == WHEELACTION_MOUSESPEED) {
+					// マウス
 					int mmul = np2oscfg.mousemul;
 					int mdiv = np2oscfg.mousediv;
-					// 面倒なので x/2にする
-					if(mdiv == 1) {
+					// 後々面倒なので 2x/2の形にする
+					if (mdiv == 1) {
 						mdiv *= 2;
 						mmul *= 2;
 					}
-					if(GET_WHEEL_DELTA_WPARAM(wParam) > 0){
-						if(mdiv <= 2){
+					if (GET_WHEEL_DELTA_WPARAM(wParam) > 0) {
+						if (mdiv <= 2) {
 							mdiv = 2;
 							mmul++;
-						}else{
+						}
+						else {
 							mdiv--;
 						}
-					}else{
-						if(mmul <= 2){
+					}
+					else {
+						if (mmul <= 2) {
 							mmul = 2;
 							mdiv++;
-						}else{
+						}
+						else {
 							mmul--;
 						}
 					}
-					if(mmul > 8) mmul = 8;
-					if(mdiv > 8) mdiv = 8;
+					if (mmul > 8) mmul = 8;
+					if (mdiv > 8) mdiv = 8;
 					// 2で割れるなら割っておく
-					if(mdiv == 2 && mmul%2 == 0) {
+					if (mdiv == 2 && mmul % 2 == 0) {
 						mdiv /= 2;
 						mmul /= 2;
 					}
@@ -3186,24 +3257,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					sys_miscinfo.showmousespeed = 1;
 					sysmng_updatecaption(SYS_UPDATECAPTION_MISC);
 					tmrSysMngHide = SetTimer(hWnd, TMRSYSMNG_ID, 5000, SysMngHideTimerProc);
-				}else{
-					//if(np2oscfg.usemastervolume){
-						int cMaster = np2cfg.vol_master;
-						cMaster += GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA * 2;
-						if(cMaster < 0) cMaster = 0;
-						if(cMaster > np2oscfg.mastervolumemax) cMaster = np2oscfg.mastervolumemax;
-						if (np2cfg.vol_master != cMaster)
-						{
-							np2_multithread_EnterCriticalSection();
-							np2cfg.vol_master = cMaster;
-							soundmng_setvolume(cMaster);
-							fmboard_updatevolume();
-							np2_multithread_LeaveCriticalSection();
-						}
-						sys_miscinfo.showvolume = 1;
-						sysmng_updatecaption(SYS_UPDATECAPTION_MISC);
-						tmrSysMngHide = SetTimer(hWnd, TMRSYSMNG_ID, 5000, SysMngHideTimerProc);
-					//}
+				}
+				else if (action == WHEELACTION_UPDOWN) {
+					if (GET_WHEEL_DELTA_WPARAM(wParam) > 0) {
+						keystat_senddata(0x3a);
+						keystat_senddata(0x3a | 0x80);
+					}
+					else {
+						keystat_senddata(0x3d);
+						keystat_senddata(0x3d | 0x80);
+					}
+				}
+				else if (action == WHEELACTION_ROLLUPDOWN) {
+					if (GET_WHEEL_DELTA_WPARAM(wParam) > 0) {
+						keystat_senddata(0x37);
+						keystat_senddata(0x37 | 0x80);
+					}
+					else {
+						keystat_senddata(0x36);
+						keystat_senddata(0x36 | 0x80);
+					}
 				}
 			}
 			break;
@@ -4273,7 +4346,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	BOOL		xrollkey;
 	int			winx, winy;
 	int			terminateFlag = 0;
-	
+
+	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #ifdef _DEBUG
 	// 使うときはstdlib.hとcrtdbg.hをインクルードする
 	_CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -4327,10 +4401,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 
 	rand_setseed((unsigned)time(NULL));
 
-	szClassName[0] = (TCHAR)np2oscfg.winid[0];
-	szClassName[1] = (TCHAR)np2oscfg.winid[1];
-	szClassName[2] = (TCHAR)np2oscfg.winid[2];
-	
 #ifndef ALLOW_MULTIRUN
 	if ((hWnd = FindWindow(szClassName, NULL)) != NULL) {
 		ShowWindow(hWnd, SW_RESTORE);
@@ -4880,6 +4950,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 
 #ifdef SUPPORT_WAB
 	np2wab_shutdown();
+#endif
+#ifdef SUPPORT_WAB_NPDISP
+	npdisp_shutdown();
 #endif
 #ifdef SUPPORT_NET
 	np2net_shutdown();

@@ -913,9 +913,10 @@ static void sendmpudata(REG8 data) {
 
 	if (mpu98.cmd.phase) {
 		sendmpucmd(&mpu98.cmd, data);
+		mpu98.status |= MIDIOUT_BUSY; // 一瞬だけBUSY
 		return;
 	}
-
+	mpu98_writecounter = MPU98_WRITEBUFFER + 1;
 	if (mpu98.recvevent & MIDIE_STEP) {
 		MPUTR *tr;
 		mpu98.recvevent ^= MIDIE_STEP;
@@ -1097,10 +1098,14 @@ REG8 IOINPCALL mpu98ii_i2(UINT port) {
 	if (cm_mpu98 == NULL) {
 		cm_mpu98 = commng_create(COMCREATE_MPU98II, FALSE);
 	}
-	if (cm_mpu98->connect != COMCONNECT_OFF || port == (cs4231.port[10] + 1) || (port & 0xff00) == 0x8100) {
+	if (cm_mpu98->connect != COMCONNECT_OFF || port == (cs4231.port[10] + 1)) {
 		ret = mpu98.status;
 		if ((mpu98.r.cnt == 0) && (mpu98.intreq == 0)) {
 			ret |= MIDIIN_AVAIL;
+		}
+		if (mpu98_writecounter < MPU98_WRITEBUFFER) {
+			// カウンタがバッファサイズより小さいならBUSY解除（次回に反映）
+			mpu98.status &= ~MIDIOUT_BUSY;
 		}
 		// TRACEOUT(("mpu98ii inp %.4x %.2x", port, ret));
 		TRACEOUT(("mpu98ii inp %.4x %.2x", port, mpu98.data));
@@ -1113,6 +1118,9 @@ REG8 IOINPCALL mpu98ii_i2(UINT port) {
 		{
 			return(ret);
 		}
+	}
+	else if ((port & 0xff00) == 0x8100) {
+		return(0x00);
 	}
 	(void)port;
 	return(0xff);
@@ -1233,7 +1241,7 @@ void mpu98ii_midipanic(void) {
 void mpu98ii_changeclock(void) {
 	
 	if(mpu98.enable){
-		mpu98.xferclock = pccore.realclock / (31250 / 8);
+		mpu98.xferclock = pccore.realclock / 3125;
 		makeintclock();
 	}
 }

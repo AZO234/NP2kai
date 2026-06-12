@@ -183,7 +183,7 @@ BEGIN
     COMBOBOX        IDC_RENDERER_TYPE,70,12,96,80,CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP
     LTEXT           "Interpolation Mode",IDC_STATIC,8,35,60,8
     COMBOBOX        IDC_RENDERER_IMODE,70,32,96,80,CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP
-    CONTROL         "Use Direct3D fullscreen exclusive mode",IDC_RENDERER_EXCLUSIVE,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,52,200,10
+    CONTROL         "Use Direct3D exclusive mode (not recommended)",IDC_RENDERER_EXCLUSIVE,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,52,200,10
     CONTROL         "Use DirectDraw software rendering",IDC_SOFTWARERENDERING,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,68,200,10
 END
 
@@ -202,6 +202,7 @@ BEGIN
     CONTROL         "EGC",IDC_EGC,"Button",BS_AUTORADIOBUTTON,128,54,34,10
     CONTROL         "&Enable PEGC plane mode",IDC_PEGC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,68,110,10
     CONTROL         "&Enable 16color-board (PC-9801-24)",IDC_PC980124,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,90,148,10
+    CONTROL         "&Allow more than 80 columns", IDC_GDCOVER80COL, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 16, 106, 148, 10
 END
 
 IDD_SCROPT3 DIALOG 0, 0, 172, 96
@@ -666,6 +667,14 @@ BEGIN
     PUSHBUTTON      "Defaults",IDC_GD5430DEF,136,102,40,14
 END
 
+IDD_NPDISP DIALOGEX 0, 0, 184, 124
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "NPDISP"
+FONT 9, "‚l‚r ‚oƒSƒVƒbƒN", 0, 0, 0x0
+BEGIN
+CONTROL         "Enable", IDC_NPDISPENABLED, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 8, 8, 40, 10
+END
+
 IDD_IDE DIALOGEX 0, 0, 195, 186
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "IDE Configure"
@@ -921,6 +930,14 @@ BEGIN
     END
 
     IDD_GD5430, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 176
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 112
+    END
+
+    IDD_NPDISP, DIALOG
     BEGIN
         LEFTMARGIN, 8
         RIGHTMARGIN, 176
@@ -1185,7 +1202,22 @@ BEGIN
             MENUITEM "&Mouse Capture",              IDM_MOUSE
             MENUITEM "&Raw Input Mode",             IDM_MOUSERAW
             MENUITEM "&Non-capture Control",        IDM_MOUSENC
-            MENUITEM "&Change Sound Volume by Wheel",   IDM_MOUSEWHEELCTL
+            POPUP "&Mouse Wheel Action"
+            BEGIN
+                MENUITEM "&None",                   IDM_MOUSEWHEELNONE
+                MENUITEM "&Change Volume",          IDM_MOUSEWHEELVOLCTL
+                MENUITEM "&Change Mouse Speed",     IDM_MOUSEWHEELMSPDCTL
+                MENUITEM "&Up/Down Arrow Key",      IDM_MOUSEWHEELUPDOWN
+                MENUITEM "&Roll Up/Down Key",       IDM_MOUSEWHEELROLLUPDOWN
+            END
+            POPUP "&Mouse Wheel Action (+Ctrl or Shift)"
+            BEGIN
+                MENUITEM "&None",                   IDM_MOUSEWHEEL2NONE
+                MENUITEM "&Change Volume",          IDM_MOUSEWHEEL2VOLCTL
+                MENUITEM "&Change Mouse Speed",     IDM_MOUSEWHEEL2MSPDCTL
+                MENUITEM "&Up/Down Arrow Key",      IDM_MOUSEWHEEL2UPDOWN
+                MENUITEM "&Roll Up/Down Key",       IDM_MOUSEWHEEL2ROLLUPDOWN
+            END
             MENUITEM "&Limit Max Mouse Speed",      IDM_SLOWMOUSE
             MENUITEM SEPARATOR
             MENUITEM "x3.0",                        IDM_MOUSE30X

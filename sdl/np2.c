@@ -428,7 +428,9 @@ int np2_main(int argc, char *argv[]) {
 	OEMCHAR	*ext;
 	OEMCHAR	base_dir[MAX_PATH];
 	OEMCHAR	fullpath[MAX_PATH];
+#if !defined(__LIBRETRO__)
 	extern SDL_Window* s_window;
+#endif	/* __LIBRETRO__ */
   FILEH fcheck;
 
 	pos = 1;

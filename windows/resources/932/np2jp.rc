@@ -183,7 +183,7 @@ BEGIN
     COMBOBOX        IDC_RENDERER_TYPE,70,12,96,80,CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP
     LTEXT           "補間モード",IDC_STATIC,8,35,60,8
     COMBOBOX        IDC_RENDERER_IMODE,70,32,96,80,CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP
-    CONTROL         "Direct3D排他モードフルスクリーンを使用する",IDC_RENDERER_EXCLUSIVE,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,52,200,10
+    CONTROL         "Direct3D排他モードを使用する(非推奨)",IDC_RENDERER_EXCLUSIVE,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,52,200,10
     CONTROL         "DirectDrawエミュレーションモードを使う",IDC_SOFTWARERENDERING,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,8,68,200,10
 END
 
@@ -202,6 +202,7 @@ BEGIN
     CONTROL         "EGC",IDC_EGC,"Button",BS_AUTORADIOBUTTON,128,54,34,10
     CONTROL         "&PEGCプレーンモードを使用",IDC_PEGC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,68,110,10
     CONTROL         "&16色グラフィックボード(PC-9801-24)を使用",IDC_PC980124,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,90,148,10
+    CONTROL         "80桁を超える表示を許可", IDC_GDCOVER80COL, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 16, 106, 148, 10
 END
 
 IDD_SCROPT3 DIALOG 0, 0, 172, 96
@@ -665,6 +666,14 @@ BEGIN
     PUSHBUTTON      "既定値",IDC_GD5430DEF,136,102,40,14
 END
 
+IDD_NPDISP DIALOGEX 0, 0, 184, 124
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "NPDISP"
+FONT 9, "ＭＳ Ｐゴシック", 0, 0, 0x0
+BEGIN
+CONTROL         "有効", IDC_NPDISPENABLED, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 8, 8, 40, 10
+END
+
 IDD_IDE DIALOGEX 0, 0, 195, 186
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "IDE機器設定"
@@ -927,6 +936,14 @@ BEGIN
         BOTTOMMARGIN, 112
     END
 
+    IDD_NPDISP, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 176
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 112
+    END
+
     IDD_IDE, DIALOG
     BEGIN
         LEFTMARGIN, 8
@@ -1176,7 +1193,22 @@ BEGIN
             MENUITEM "マウスキャプチャ(&M)",        IDM_MOUSE
             MENUITEM "高解像度マウス(&R)",          IDM_MOUSERAW
             MENUITEM "キャプチャ無し操作(&N)",      IDM_MOUSENC
-            MENUITEM "マウスホイールで音量設定(&C)",   IDM_MOUSEWHEELCTL
+            POPUP "マウスホイール機能割当"
+            BEGIN
+                MENUITEM "なし",                     IDM_MOUSEWHEELNONE
+                MENUITEM "音量変更",                 IDM_MOUSEWHEELVOLCTL
+                MENUITEM "マウス速度変更",           IDM_MOUSEWHEELMSPDCTL
+                MENUITEM "上下カーソルキー",         IDM_MOUSEWHEELUPDOWN
+                MENUITEM "Roll Up / Roll Down キー", IDM_MOUSEWHEELROLLUPDOWN
+            END
+            POPUP "Ctrl or Shift + マウスホイール機能割当"
+            BEGIN
+                MENUITEM "なし",                     IDM_MOUSEWHEEL2NONE
+                MENUITEM "音量変更",                 IDM_MOUSEWHEEL2VOLCTL
+                MENUITEM "マウス速度変更",           IDM_MOUSEWHEEL2MSPDCTL
+                MENUITEM "上下カーソルキー",         IDM_MOUSEWHEEL2UPDOWN
+                MENUITEM "Roll Up / Roll Down キー", IDM_MOUSEWHEEL2ROLLUPDOWN
+            END
             MENUITEM "マウス最大速度制限(&S)",     IDM_SLOWMOUSE
             MENUITEM SEPARATOR
             MENUITEM "x3.0",                        IDM_MOUSE30X

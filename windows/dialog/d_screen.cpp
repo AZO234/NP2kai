@@ -22,6 +22,7 @@
 #include "common\strres.h"
 #include "vram\scrndraw.h"
 #include "vram\palettes.h"
+#include "vram\dispsync.h"
 
 static int resetScreen = 0;
 
@@ -204,6 +205,7 @@ BOOL ScrOptChipPage::OnInitDialog()
 	CheckDlgButton(s_gdcchip[np2cfg.grcg & 3], BST_CHECKED);
 	CheckDlgButton(IDC_PC980124, (np2cfg.color16) ? BST_CHECKED : BST_UNCHECKED);
 	CheckDlgButton(IDC_PEGC, (np2cfg.usepegcplane) ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(IDC_GDCOVER80COL, (np2cfg.gdcwovrg) ? BST_CHECKED : BST_UNCHECKED);
 
 #if defined(SUPPORT_PC9821)
 	static const UINT s_disabled[] =
@@ -270,6 +272,14 @@ void ScrOptChipPage::OnOK()
 	if (np2cfg.usepegcplane != cPEGC)
 	{
 		np2cfg.usepegcplane = cPEGC;
+		bUpdated = true;
+	}
+
+	const UINT8 cOver80Col = (IsDlgButtonChecked(IDC_GDCOVER80COL) != BST_UNCHECKED) ? 1 : 0;
+	if (np2cfg.gdcwovrg != cOver80Col)
+	{
+		np2cfg.gdcwovrg = cOver80Col;
+		dispsync_updateoverrange();
 		bUpdated = true;
 	}
 
@@ -634,7 +644,7 @@ BOOL ScrOptRendererPage::OnInitDialog()
 	
 	m_chkexclusive.SubclassDlgItem(IDC_RENDERER_EXCLUSIVE, this);
 	m_chkexclusive.SendMessage(BM_SETCHECK , (np2oscfg.d3d_exclusive) ? BST_CHECKED : BST_UNCHECKED , 0);
-	::ShowWindow(m_chkexclusive.GetSafeHwnd(), SW_HIDE);
+	//::ShowWindow(m_chkexclusive.GetSafeHwnd(), SW_HIDE);
 	
 	return TRUE;
 }

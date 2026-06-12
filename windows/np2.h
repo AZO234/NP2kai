@@ -11,6 +11,14 @@
 #define PROJECTSUBNAME		" x64"
 #endif
 
+enum {
+	WHEELACTION_NONE = 0,
+	WHEELACTION_VOLUME = 1,
+	WHEELACTION_MOUSESPEED = 2,
+	WHEELACTION_UPDOWN = 3,
+	WHEELACTION_ROLLUPDOWN = 4,
+};
+
 typedef struct {
 	UINT8	port;
 	UINT8	def_en;
@@ -137,7 +145,8 @@ typedef struct {
 	UINT8	mouse_nc; // Always notify mouse event
 	UINT16	cpustabf; // CPU clock stabilizer frame
 	UINT8	readonly; // No save changed settings
-	UINT8	usewheel; // Use mouse wheel
+	UINT8	wheelact; // Mouse wheel action
+	UINT8	wheelac2; // Mouse wheel action (+Ctrl or Shift)
 	UINT8	tickmode; // Force Set Tick Counter Mode
 	//UINT8	usemastervolume; // Use Master Volume
 	UINT8	usemidivolume; // Use MIDI Volume

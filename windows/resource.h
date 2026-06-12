@@ -38,6 +38,7 @@
 #define IDD_NETWORK                     181
 #define IDD_GD5430                      190
 #define IDD_WAB                         191
+#define IDD_NPDISP                      192
 #define IDD_PCI                         197
 #define IDD_HOSTDRV                     198
 #define IDD_IDE                         199
@@ -132,6 +133,7 @@
 #define IDC_EGC                         13307
 #define IDC_PC980124                    13308
 #define IDC_PEGC                        13309
+#define IDC_GDCOVER80COL                13310
 #define IDC_TRAMWAIT                    13401
 #define IDC_TRAMSTR                     13402
 #define IDC_VRAMWAIT                    13403
@@ -340,6 +342,7 @@
 #define IDC_WABMULTIWIN                 19015
 #define IDC_WABMULTHREAD                19016
 #define IDC_GD5430FAKECURSOR            19017
+#define IDC_NPDISPENABLED               19020
 #define IDC_PCIENABLE                   19070
 #define IDC_PCIPCMCTYPE                 19071
 #define IDC_PCIBIOS32                   19072
@@ -827,6 +830,16 @@
 #define IDM_FPU64INT                    49682
 #define IDM_SLOWMOUSE                   40687
 #define IDM_MOUSEWHEELCTL               40688
+#define IDM_MOUSEWHEELNONE				48689
+#define IDM_MOUSEWHEELVOLCTL            48690
+#define IDM_MOUSEWHEELMSPDCTL           48691
+#define IDM_MOUSEWHEELUPDOWN            48692
+#define IDM_MOUSEWHEELROLLUPDOWN        48693
+#define IDM_MOUSEWHEEL2NONE				49689
+#define IDM_MOUSEWHEEL2VOLCTL           49690
+#define IDM_MOUSEWHEEL2MSPDCTL          49691
+#define IDM_MOUSEWHEEL2UPDOWN           49692
+#define IDM_MOUSEWHEEL2ROLLUPDOWN       49693
 #define IDM_MOUSENC                     40689
 #define IDM_MOUSERAW                    40690
 #define IDM_MOUSE30X                    40691

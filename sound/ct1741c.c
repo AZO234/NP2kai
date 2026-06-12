@@ -18,8 +18,26 @@ SNDMTCS_DECL(ct1741);
 #if defined(SUPPORT_MULTITHREAD)
 void ct1741cs_enter_criticalsection(void) { SNDMTCS_ENTER(ct1741); }
 void ct1741cs_leave_criticalsection(void) { SNDMTCS_LEAVE(ct1741); }
-void ct1741cs_initialize(void)            { SNDMTCS_INIT(ct1741);  }
-void ct1741cs_shutdown(void)              { SNDMTCS_TERM(ct1741);  }
+void ct1741cs_initialize(void)
+{
+	/* クリティカルセクション準備 */
+	if (!ct1741_cs_initialized)
+	{
+		memset(&ct1741_cs, 0, sizeof(ct1741_cs));
+		SNDMTCS_INIT(ct1741);
+		ct1741_cs_initialized = 1;
+	}
+}
+void ct1741cs_shutdown(void)
+{
+	/* クリティカルセクション破棄 */
+	if (ct1741_cs_initialized)
+	{
+		SNDMTCS_TERM(ct1741);
+		memset(&ct1741_cs, 0, sizeof(ct1741_cs));
+		ct1741_cs_initialized = 0;
+	}
+}
 #endif
 
 void ct1741_initialize(UINT rate) {

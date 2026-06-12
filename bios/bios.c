@@ -42,6 +42,9 @@
 #if defined(SUPPORT_CL_GD5430)
 #include	<wab/cirrus_vga_extern.h>
 #endif
+#if defined(SUPPORT_WAB_NPDISP)
+#include	"wab/npdisp.h"
+#endif
 #endif
 
 #if defined(SUPPORT_IA32_HAXM)
@@ -1007,40 +1010,50 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 // np21w ver0.86 rev70 VGA BIOS for MODE X
 #if defined(SUPPORT_VGA_MODEX)
 		case BIOS_BASE + BIOSOFST_10:
-			CPU_REMCLOCK -= 500;
-			TRACEOUT(("VGA INT: AH=%02x, AL=%02x", CPU_AH, CPU_AL));
-			switch(CPU_AH){
-			case 0x00:
-#if defined(SUPPORT_CL_GD5430)
-				if(CPU_AL == 0x13){
-					// MODE X
-					np2clvga.modex = 1;
-					np2clvga.VRAMWindowAddr3 = 0xa0000;
-					np2wab.relaystateext |= 0x02;
-					np2wab_setRelayState(np2wab.relaystateint|np2wab.relaystateext);
-				}else{
-					np2clvga.modex = 0;
-					np2clvga.VRAMWindowAddr3 = 0;
-					//np2wab.relaystateext &= ~0x01;
-					np2wab_setRelayState(np2wab.relaystateint|np2wab.relaystateext);
-				}
+#if defined(SUPPORT_WAB_NPDISP)
+			if (!npdisp.active)
 #endif
-				break;
-			case 0x1a:
-				// XXX: WAB有効の時だけ返す
-				if(np2clvga.modex || np2wab.relaystateint || np2wab.relaystateext){
-					if(CPU_AL==0x00){
-						CPU_BH = 0x00;
-						CPU_BL = 0x08;
+			{
+				CPU_REMCLOCK -= 500;
+				TRACEOUT(("VGA INT: AH=%02x, AL=%02x", CPU_AH, CPU_AL));
+				switch (CPU_AH) {
+				case 0x00:
+#if defined(SUPPORT_CL_GD5430)
+					if (CPU_AL == 0x13) {
+						// MODE X
+						np2clvga.modex = 1;
+						np2clvga.VRAMWindowAddr3 = 0xa0000;
+						np2wab.relaystateext |= 0x02;
+						np2wab_setRelayState(np2wab.relaystateint | np2wab.relaystateext);
 					}
-					CPU_AL = 0x1a;
+					else {
+						np2clvga.modex = 0;
+						np2clvga.VRAMWindowAddr3 = 0;
+						//np2wab.relaystateext &= ‾0x01;
+						np2wab_setRelayState(np2wab.relaystateint | np2wab.relaystateext);
+					}
+#endif
+					break;
+				case 0x1a:
+					// XXX: WAB有効の時だけ返す
+					if (np2clvga.modex || np2wab.relaystateint || np2wab.relaystateext) {
+						if (CPU_AL == 0x00) {
+							CPU_BH = 0x00;
+							CPU_BL = 0x08;
+						}
+						CPU_AL = 0x1a;
+					}
+					break;
+				default:
+					// nothing to do
+					break;
 				}
-				break;
-			default:
-				// nothing to do
-				break;
+				// XXX: WAB有効の時だけ返す
+				if (np2clvga.modex || np2wab.relaystateint || np2wab.relaystateext) {
+					return(1);
+				}
 			}
-			return(1);
+			break;
 #endif
 
 		case BIOS_BASE + BIOSOFST_12:

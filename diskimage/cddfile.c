@@ -263,8 +263,10 @@ long set_trkinfo(FILEH fh, _CDTRK *trk, UINT trks, FILELEN imagesize) {
 	UINT	i;
 	FILELEN	fsize;
 	long	total;
+	long	pregaptotal;
 
 	total = 0;
+	pregaptotal = 0;
 
 	if (trks == 1) {
 		trk[0].sector_size = 2048;
@@ -309,7 +311,9 @@ long set_trkinfo(FILEH fh, _CDTRK *trk, UINT trks, FILELEN imagesize) {
 		}
 		trk[i-1].end_sec = trk[i].str_sec - 1;
 		trk[i-1].sectors = trk[i-1].end_sec - trk[i-1].str_sec + 1;
+
 		total += trk[i-1].sectors;
+		pregaptotal += trk[i-1].pregap_sectors - (trk[i-1].pos - trk[i-1].pos0);
 		fsize -= trk[i-1].sectors * trk[i-1].sector_size;
 	}
 	if (fsize % trk[trks-1].sector_size != 0) {
@@ -324,8 +328,11 @@ long set_trkinfo(FILEH fh, _CDTRK *trk, UINT trks, FILELEN imagesize) {
 	trk[trks-1].end_sec = (UINT32)(trk[trks-1].str_sec + (fsize / trk[trks-1].sector_size));
 	trk[trks-1].sectors = trk[trks-1].end_sec - trk[trks-1].str_sec + 1;
 	total += trk[trks-1].sectors;
+	pregaptotal += trk[trks-1].pregap_sectors - (trk[trks-1].pos - trk[trks-1].pos0);
 
-	return(total);
+	total += pregaptotal;
+
+	return(total - 1); // XXX: 何故か1多くなるので引く・・・
 }
 
 
@@ -740,7 +747,15 @@ BRESULT setsxsidev(SXSIDEV sxsi, const OEMCHAR *path, const _CDTRK *trk, UINT tr
 	cdinfo->trk[trks].adr_ctl	= 0x10;
 	cdinfo->trk[trks].point		= 0xaa;
 //	cdinfo->trk[trks].pos		= totals;
-	cdinfo->trk[trks].pos		= (UINT32)sxsi->totals;
+	cdinfo->trk[trks].pos = (UINT32)sxsi->totals;
+	cdinfo->trk[trks].pos0 = cdinfo->trk[trks].pos;
+	cdinfo->trk[trks].pregap_sectors = cdinfo->trk[trks].pos;
+	if (trks >= 1) {
+		cdinfo->trk[trks].pregap_offset_ex = cdinfo->trk[trks - 1].pregap_offset_ex;
+	}
+	else {
+		cdinfo->trk[trks].pregap_offset_ex = 0;
+	}
 
 	cdinfo->trks = trks;
 	file_cpyname(cdinfo->path, path, NELEMENTS(cdinfo->path));

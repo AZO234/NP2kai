@@ -1,6 +1,8 @@
 #ifndef NP2_COMMNG_H__
 #define NP2_COMMNG_H__
 
+#include <compiler.h>
+
 // ---- com manager interface
 
 enum {

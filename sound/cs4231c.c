@@ -98,8 +98,26 @@ static const UINT8 cs4231cnt64[8] = {
 #if defined(SUPPORT_MULTITHREAD)
 void cs4231cs_enter_criticalsection(void) { SNDMTCS_ENTER(cs4231); }
 void cs4231cs_leave_criticalsection(void) { SNDMTCS_LEAVE(cs4231); }
-void cs4231cs_initialize(void)            { SNDMTCS_INIT(cs4231);  }
-void cs4231cs_shutdown(void)              { SNDMTCS_TERM(cs4231);  }
+void cs4231cs_initialize(void)
+{
+    /* クリティカルセクション準備 */
+    if (!cs4231_cs_initialized)
+    {
+	memset(&cs4231_cs, 0, sizeof(cs4231_cs));
+	SNDMTCS_INIT(cs4231);
+        cs4231_cs_initialized = 1;
+    }
+}
+void cs4231cs_shutdown(void)
+{
+    /* クリティカルセクション破棄 */
+    if (cs4231_cs_initialized)
+    {
+        SNDMTCS_TERM(cs4231);
+        memset(&cs4231_cs, 0, sizeof(cs4231_cs));
+	cs4231_cs_initialized = 0;
+    }
+}
 #endif
 
 void cs4231_initialize(UINT rate) {

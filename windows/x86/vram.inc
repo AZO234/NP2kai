@@ -1,5 +1,7 @@
 
-%define	SCRN_BUFSIZE	0x4b000
+%define	SCRN_TXTWIDTH	128
+%define	SCRN_BUFWIDTH	1024
+%define	SCRN_BUFSIZE	(1024 * 800)
 
 
 				struc	vramop_t

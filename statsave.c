@@ -60,6 +60,9 @@
 #if defined(SUPPORT_CL_GD5430)
 #include <wab/cirrus_vga_extern.h>
 #endif
+#if defined(SUPPORT_WAB_NPDISP)
+#include <wab/npdisp_statsave.h>
+#endif
 #if defined(SUPPORT_NET)
 #include <network/net.h>
 #endif
@@ -150,6 +153,7 @@ enum {
 #endif
   STATFLAG_SXSI,
   STATFLAG_HDRVNT,
+  STATFLAG_NPDISP,
   STATFLAG_MASK = 0x3fff,
 
   STATFLAG_BWD_COMPATIBLE =
@@ -1606,6 +1610,11 @@ int statsave_save_d(void) {
       ret |= hostdrvNT_sfsave(&sffh->sfh, tbl);
       break;
 #endif
+#if defined(SUPPORT_WAB_NPDISP)
+			case STATFLAG_NPDISP:
+				ret |= npdisp_sfsave(&sffh->sfh, tbl);
+				break;
+#endif
 
     case STATFLAG_MEM:
       ret |= flagsave_mem(&sffh->sfh, tbl);
@@ -1678,15 +1687,21 @@ int statsave_check(const OEMCHAR *filename, OEMCHAR *buf, int size) {
         break;
 
 #if defined(SUPPORT_HOSTDRV)
-      case STATFLAG_HDRV:
-        ret |= flagcheck_veronly(&sffh->sfh, tbl);
-        break;
+				case STATFLAG_HDRV:
+					ret |= flagcheck_veronly(&sffh->sfh, tbl);
+					break;
 #endif
 
 #if defined(SUPPORT_HOSTDRVNT)
-      case STATFLAG_HDRVNT:
-        ret |= flagcheck_veronly(&sffh->sfh, tbl);
-        break;
+				case STATFLAG_HDRVNT:
+					ret |= flagcheck_veronly(&sffh->sfh, tbl);
+					break;
+#endif
+
+#if defined(SUPPORT_WAB_NPDISP)
+				case STATFLAG_NPDISP:
+					ret |= flagcheck_veronly(&sffh->sfh, tbl);
+					break;
 #endif
 
       case STATFLAG_FDD:

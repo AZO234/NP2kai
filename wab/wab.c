@@ -36,6 +36,12 @@
 #if defined(NP2_WIN)
 #include	<process.h>
 #endif
+#if defined(SUPPORT_WAB_NPDISP)
+#include "npdisp.h"
+#endif
+#if defined(SUPPORT_CL_GD5430)
+#include "cirrus_vga_extern.h"
+#endif
 #include <wab/wab_rly.h>
 #if defined(NP2_X)
 #include <gtk2/xnp2.h>
@@ -79,6 +85,13 @@ static HANDLE wab_thread_eventhandle = INVALID_HANDLE_VALUE;
 #endif
 
 static int np2wab_forceupdateflag = 0;
+
+static RECT np2wab_dirtyrect = { 0 };
+
+void np2wab_setDirtyRect(RECT r)
+{
+	np2wab_dirtyrect = r;
+}
 
 static BOOL wab_tryenter_criticalsection(void){
 #if defined(NP2_WIN)
@@ -211,6 +224,11 @@ void scrnmng_bltwab(void);
  */
 void np2wab_setScreenSize(int width, int height)
 {
+	int bufWidth, bufHeight;
+	if (width < 32 || height < 32) {
+		width = 640;
+		height = 480;
+	}
 	if(np2wabwnd.multiwindow){
 #if defined(NP2_WIN)
 		// 別窓モードなら別窓サイズを更新する
@@ -229,27 +247,30 @@ void np2wab_setScreenSize(int width, int height)
 		np2wab.wndWidth = ga_lastwabwidth = width;
 		np2wab.wndHeight = ga_lastwabheight = height;
 		if(np2wab.relay & 0x3){
-			if(width < 32 || height < 32){
 #if defined(NP2_WIN)
-				scrnmng_setsize(0, 0, 640, 480);
-#else
-				scrnmng_setwidth(0, 640);
-				scrnmng_setheight(0, 480);
+			scrnmng_setsize(0, 0, width, height);
 #endif
-			}else{
-#if defined(NP2_WIN)
-				scrnmng_setsize(0, 0, width, height);
-#else
-				scrnmng_setwidth(0, width);
-				scrnmng_setheight(0, height);
-#endif
-			}
+
 			scrnmng_updatefsres(); // フルスクリーン解像度更新
 #if defined(NP2_WIN)
 			mousemng_updateclip(); // マウスキャプチャのクリップ範囲を修正
 #endif
 		}
 	}
+	// バッファサイズ変更が必要なら変更
+	bufWidth = MAX(width, WAB_RESERVED_WIDTH);
+	bufHeight = MAX(height, WAB_RESERVED_HEIGHT);
+#if defined(_WIN32)
+	if (np2wabwnd.curWidth < bufWidth || np2wabwnd.curHeight < bufHeight) {
+		HDC hdc = np2wabwnd.multiwindow ? GetDC(NULL) : np2wabwnd.hDCWAB;
+		np2wabwnd.curWidth = bufWidth;
+		np2wabwnd.curHeight = bufHeight;
+		SelectObject(np2wabwnd.hDCBuf, np2wabwnd.hBmpOld);
+		DeleteObject(np2wabwnd.hBmpBuf);
+		np2wabwnd.hBmpBuf = CreateCompatibleBitmap(hdc, np2wabwnd.curWidth, np2wabwnd.curHeight);
+		SelectObject(np2wabwnd.hDCBuf, np2wabwnd.hBmpBuf);
+	}
+#endif
 	// とりあえずパレットは更新しておく
 	np2wab.paletteChanged = 1;
 
@@ -524,10 +545,14 @@ void np2wab_drawWABWindow(void)
 		//scrnmng_blthdc(np2wabwnd.hDCBuf);
 		// DirectDraw Surfaceに転送
 #if defined(NP2_WIN)
-		scrnmng_blthdc(np2wabwnd.hDCBuf);
+		scrnmng_blthdc(np2wabwnd.hDCBuf, np2wab_dirtyrect);
 #else
 		scrnmng_blthdc();
 #endif
+		np2wab_dirtyrect.left = 0;
+		np2wab_dirtyrect.right = 0;
+		np2wab_dirtyrect.top = 0;
+		np2wab_dirtyrect.bottom = 0;
 	}
 }
 
@@ -538,7 +563,13 @@ void np2wab_drawframe()
 {
 #if defined(NP2_WIN)
 	if(!ga_threadmode){
-		if(np2wabwnd.ready && np2wabwnd.hWndWAB!=NULL && (np2wab.relay&0x3)!=0){
+			NP2WAB_DrawFrame drawFrameFunc = np2wabwnd.drawframe;
+#if defined(SUPPORT_WAB_NPDISP)
+			if (npdisp.active) {
+				drawFrameFunc = npdisp_drawGraphic;
+			}
+#endif
+			if (drawFrameFunc != NULL && drawFrameFunc())
 #endif
 			// マルチスレッドじゃない場合はここで描画処理
 			if (np2wabwnd.drawframe())
@@ -596,13 +627,40 @@ unsigned int __stdcall ga_ThreadFunc(LPVOID vdParam) {
 	int timeleft = 0;
 	while (WaitForSingleObject(wab_thread_eventhandle, INFINITE) == WAIT_OBJECT_0)
 	{
+		NP2WAB_DrawFrame drawFrameFunc;
+
 		if (ga_exitThread || !ga_threadmode) break;
 
-		//wab_enter_criticalsection();
-		//wab_leave_criticalsection();
-		if(np2wabwnd.ready && np2wabwnd.hWndWAB!=NULL && np2wabwnd.drawframe!=NULL && (np2wab.relay&0x3)!=0){
-			if (np2wabwnd.drawframe() || np2wab_forceupdateflag)
+		wab_enter_criticalsection();
+		if (ga_screenupdated) {
+			wab_leave_criticalsection();
+			continue;
+		}
+		wab_leave_criticalsection();
+
+		drawFrameFunc = np2wabwnd.drawframe;
+#if defined(SUPPORT_WAB_NPDISP)
+		if (npdisp.active) {
+			drawFrameFunc = npdisp_drawGraphic;
+		}
+#endif
+		if(np2wabwnd.ready && np2wabwnd.hWndWAB!=NULL && drawFrameFunc !=NULL && (np2wab.relay&0x3)!=0){
+			if (drawFrameFunc() || np2wab_forceupdateflag)
 			{
+				if (np2wab_forceupdateflag) {
+#if defined(SUPPORT_WAB_NPDISP)
+					if (npdisp.active) {
+						npdisp.paletteUpdated = 1; // パレット強制更新
+						npdisp_setDirtyAll();
+						npdisp.updated = 1; // 強制更新
+					}
+#endif
+#if defined(SUPPORT_CL_GD5430)
+					if (np2clvga.enabled && cirrusvga_opaque) {
+						np2wab.paletteChanged = 1; // パレット含めて強制更新
+					}
+#endif
+				}
 				np2wab_forceupdateflag = 0;
 				np2wab_drawWABWindow(np2wabwnd.hDCBuf);
 				//// 画面転送待ち
@@ -681,9 +739,11 @@ void np2wab_init(void)
 	// HWNDとかHDCとかバッファ用ビットマップとかを先に作っておく
 	np2wabwnd.hDCWAB = GetDC(np2wabwnd.hWndWAB);
 	hdc = np2wabwnd.multiwindow ? GetDC(NULL) : np2wabwnd.hDCWAB;
-	np2wabwnd.hBmpBuf = CreateCompatibleBitmap(hdc, WAB_MAX_WIDTH, WAB_MAX_HEIGHT);
+	np2wabwnd.curWidth = WAB_RESERVED_WIDTH;
+	np2wabwnd.curHeight = WAB_RESERVED_HEIGHT;
+	np2wabwnd.hBmpBuf = CreateCompatibleBitmap(hdc, np2wabwnd.curWidth, np2wabwnd.curHeight);
 	np2wabwnd.hDCBuf = CreateCompatibleDC(hdc);
-	SelectObject(np2wabwnd.hDCBuf, np2wabwnd.hBmpBuf);
+	np2wabwnd.hBmpOld = SelectObject(np2wabwnd.hDCBuf, np2wabwnd.hBmpBuf);
 #elif defined(NP2_X)
 	np2wabwnd.pPixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, WAB_MAX_WIDTH, WAB_MAX_HEIGHT);
 #else
@@ -723,14 +783,25 @@ void np2wab_reset(const NP2CFG *pConfig)
 	np2wab.realWidth = 0;
 	np2wab.realHeight = 0;
 	np2wab.relaystateint = 0;
+	np2wab.relaystateext = 0;
 	np2wab_setRelayState(np2wab.relaystateint|np2wab.relaystateext);
+
+	if (np2wabwnd.curWidth != WAB_RESERVED_WIDTH && np2wabwnd.curHeight != WAB_RESERVED_HEIGHT) {
+		np2wabwnd.curWidth = WAB_RESERVED_WIDTH;
+		np2wabwnd.curHeight = WAB_RESERVED_HEIGHT;
+#if defined(_WIN32)
+		SelectObject(np2wabwnd.hDCBuf, np2wabwnd.hBmpOld);
+		DeleteObject(np2wabwnd.hBmpBuf);
+		np2wabwnd.hBmpBuf = CreateCompatibleBitmap(np2wabwnd.hDCBuf, np2wabwnd.curWidth, np2wabwnd.curHeight);
+#endif
+        }
 
 	// 設定値更新とか
 	np2wab.wndWidth = 640;
 	np2wab.wndHeight = 480;
 	np2wab.fps = 60;
-	ga_lastwabwidth = 640;
-	ga_lastwabheight = 480;
+	ga_lastwabwidth = 0;
+	ga_lastwabheight = 0;
 	ga_reqChangeWindowSize = 0;
 	
 	// パレットを更新させる
@@ -807,6 +878,7 @@ void np2wab_shutdown()
 	ga_hThread = NULL;
 
 	// いろいろ解放
+	SelectObject(np2wabwnd.hDCBuf, np2wabwnd.hBmpOld);
 	DeleteDC(np2wabwnd.hDCBuf);
 	DeleteObject(np2wabwnd.hBmpBuf);
 	ReleaseDC(np2wabwnd.hWndWAB, np2wabwnd.hDCWAB);
@@ -848,10 +920,12 @@ void np2wab_setRelayState(REG8 state)
 #endif
 			}else{
 				// 統合モードなら画面を乗っ取る
+#if defined(NP2_WIN)
 #if defined(SUPPORT_MULTITHREAD)
 				if(np2_multithread_Enabled()){
 					np2wab_setScreenSizeMT(ga_lastwabwidth, ga_lastwabheight);
 				}else
+#endif
 #endif
 				{
 					np2wab_setScreenSize(ga_lastwabwidth, ga_lastwabheight);
@@ -913,6 +987,8 @@ BRESULT np2wab_getbmp(BMPFILE *lpbf, BMPINFO *lpbi, UINT8 **lplppal, UINT8 **lpl
 #if defined(NP2_WIN)
 	HBITMAP     hBmpTmp;
 #endif
+	int			bufWidth;
+	int			bufHeight;
 
 	// 24bit固定
 	bd.width = np2wab.wndWidth;
@@ -942,26 +1018,27 @@ BRESULT np2wab_getbmp(BMPFILE *lpbf, BMPINFO *lpbi, UINT8 **lplppal, UINT8 **lpl
 
 	// Copy Pixels
 	bitmp = bi;
-	STOREINTELDWORD(bitmp.biWidth, WAB_MAX_WIDTH);
-	STOREINTELDWORD(bitmp.biHeight, WAB_MAX_HEIGHT);
+	bufWidth = np2wabwnd.curWidth;
+	bufHeight = np2wabwnd.curHeight;
+	STOREINTELDWORD(bitmp.biWidth, bufWidth);
+	STOREINTELDWORD(bitmp.biHeight, bufHeight);
 #if defined(NP2_WIN)
 	hBmpTmp = CreateDIBSection(NULL, (LPBITMAPINFO)&bitmp, DIB_RGB_COLORS, &lpbits, NULL, 0);
-	GetDIBits(np2wabwnd.hDCBuf, np2wabwnd.hBmpBuf, 0, WAB_MAX_HEIGHT, lpbits, (LPBITMAPINFO)&bitmp, DIB_RGB_COLORS);
-	buf = (UINT8*)(lpbits) + (WAB_MAX_HEIGHT - bd.height) * WAB_MAX_WIDTH*bd.bpp/8;
+	GetDIBits(np2wabwnd.hDCBuf, np2wabwnd.hBmpBuf, 0, bufHeight, lpbits, (LPBITMAPINFO)&bitmp, DIB_RGB_COLORS);
 #elif defined(NP2_X)
 	buf = (UINT8*)(gdk_pixbuf_get_pixels(np2wabwnd.pPixbuf)) + (np2wab.wndHeight - 1) * WAB_MAX_WIDTH*bd.bpp/8;
 #else
-	buf = (UINT8*)(np2wabwnd.pBuffer) + (np2wab.wndHeight - 1) * np2wab.wndWidth*4;
+	buf = (UINT8*)(lpbits) + (bufHeight - bd.height) * bufWidth * bd.bpp/8;
 #endif
 	do {
 #if defined(NP2_WIN)
 		CopyMemory(dstpix, buf, np2wab.wndWidth*bd.bpp/8);
 		dstpix += align;
-		buf += WAB_MAX_WIDTH*bd.bpp/8;
+		buf += bufWidth * bd.bpp/8;
 #elif defined(NP2_X)
 		CopyMemory(dstpix, buf, np2wab.wndWidth*bd.bpp/8);
 		dstpix += align;
-		buf -= WAB_MAX_WIDTH*bd.bpp/8;
+		buf -= bufWidth * bd.bpp/8;
 #else
 		int i;
 		for(i = 0; i < np2wab.wndWidth; i++) {

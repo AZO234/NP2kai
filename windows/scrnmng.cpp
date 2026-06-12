@@ -663,16 +663,16 @@ void scrnmng_updatefsres(void) {
 }
 
 // ウィンドウアクセラレータ画面転送
-void scrnmng_blthdc(HDC hdc) {
+void scrnmng_blthdc(HDC hdc, RECT dirtyRect) {
 	if (scrnmng_changemode_pending) return; // 作成待ちなら転送しない
 
 #ifdef SUPPORT_SCRN_DIRECT3D
 	if(scrnmng_current_drawtype==DRAWTYPE_DIRECT3D){
-		scrnmngD3D_blthdc(hdc);
+		scrnmngD3D_blthdc(hdc, dirtyRect);
 	}else
 #endif
 	{
-		scrnmngDD_blthdc(hdc);
+		scrnmngDD_blthdc(hdc, dirtyRect);
 	}
 }
 void scrnmng_bltwab() {

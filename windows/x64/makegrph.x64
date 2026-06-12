@@ -154,12 +154,12 @@ makegrph:		sub			rsp, byte 40
 					push		rcx
 
 .grphlineput_lp:	mov			ecx, [GRP_LR+16]
-.grphline1_lp:		mov			ebp, 79*2
+.grphline1_lp:		mov			ebp, (SCRN_TXTWIDTH-1)*2
 					test		bl, 1
 					je			short .putline
 					test		byte [gdc + gdc_t.mode1], 10h
 					je			short .putline
-					add			edi, 640
+					add			edi, SCRN_BUFWIDTH
 
 					cmp			dh, 0						; ALL_DRAWFLAG
 					je			short .putlineskip
@@ -211,7 +211,7 @@ makegrph:		sub			rsp, byte 40
 				cmp			ebx, [dsync + dsync_t.scrnymax]
 				jae			short .deldirty
 .bottomfill0:	or			[renewal_line + rbx], dl
-				mov			ecx, 640/32
+				mov			ecx, SCRN_BUFWIDTH/32
 .bottomfill1:	movdqa		[rdi], xmm0
 				movdqa		[rdi+16], xmm0
 				add			rdi, byte 32

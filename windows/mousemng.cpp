@@ -156,6 +156,13 @@ UINT8 mousemng_getabspos(int* x, int* y)
 	LeaveCriticalSection(&mousemng_multithread_mousepos_cs);
 	return 1;
 }
+UINT8 mousemng_getabspospixel(int* x, int* y)
+{
+	if (!mousemng_getabspos(x, y)) return 0;
+	*x = *x * scrnstat.width / 65535;
+	*y = *y * scrnstat.height / 65535;
+	return 1;
+}
 void mousemng_setabspos(int x, int y)
 {
 	EnterCriticalSection(&mousemng_multithread_mousepos_cs);

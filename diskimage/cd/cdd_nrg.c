@@ -299,6 +299,7 @@ BRESULT opennrg(SXSIDEV sxsi, const OEMCHAR *fname) {
 				trk[i].pregap_offset	= UINT64_FROM_BE(NRG_DB.pregap_offset);
 				trk[i].start_offset		= UINT64_FROM_BE(NRG_DB.start_offset);
 				trk[i].end_offset		= UINT64_FROM_BE(NRG_DB.end_offset);
+				trk[i].pregap_offset_ex = 0;
 			}
 		}
 		else {
@@ -313,6 +314,7 @@ BRESULT opennrg(SXSIDEV sxsi, const OEMCHAR *fname) {
 				trk[i].pregap_offset	= UINT32_FROM_BE(NRG_DB.pregap_offset);
 				trk[i].start_offset		= UINT32_FROM_BE(NRG_DB.start_offset);
 				trk[i].end_offset		= UINT32_FROM_BE(NRG_DB.end_offset);
+				trk[i].pregap_offset_ex = 0;
 			}
 		}
 	}

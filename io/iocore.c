@@ -24,6 +24,9 @@
 #if defined(SUPPORT_HOSTDRVNT)
 #include	<generic/hostdrvnt.h>
 #endif
+#if defined(SUPPORT_WAB_NPDISP)
+#include	"wab/npdisp.h"
+#endif
 
 
 	_ARTIC		artic;
@@ -558,6 +561,9 @@ static const FNIORESET resetfn[] =
 #if defined(SUPPORT_PC9821)
 			pcidev_reset,
 #endif
+#if defined(SUPPORT_WAB_NPDISP)
+			npdisp_reset,
+#endif
 };
 
 static const FNIOBIND bindfn[] =
@@ -580,6 +586,9 @@ static const FNIOBIND bindfn[] =
 #endif
 #if defined(SUPPORT_HOSTDRVNT)
 			hostdrvNT_bind,
+#endif
+#if defined(SUPPORT_WAB_NPDISP)
+			npdisp_bind,
 #endif
 };
 

@@ -628,6 +628,9 @@ static const PFTBL s_IniItems[] =
 	PFVAL("GDMELOFS", PFTYPE_UINT8,		&np2cfg.gd5430melofs),
 	PFVAL("GANBBSEX", PFTYPE_BOOL,		&np2cfg.ga98nb_bigscrn_ex),
 #endif
+#if defined(SUPPORT_WAB_NPDISP)
+	PFVAL("USENPDSP", PFTYPE_BOOL,		&np2cfg.usenpdisp),
+#endif
 #if defined(SUPPORT_VGA_MODEX)
 	PFVAL("USEMODEX", PFTYPE_BOOL,		&np2cfg.usemodex),
 #endif
@@ -706,6 +709,7 @@ static const PFTBL s_IniItems[] =
 	PFVAL("CPUSPEED", PFTYPE_UINT32,	&np2cfg.emuspeed),
 	PFSTR("fontface", PFRO_STR,			np2cfg.fontface),
 	PFVAL("SLOWMOUS", PFTYPE_BOOL,		&np2cfg.slowmous),
+	PFVAL("GDCWOVRG", PFTYPE_BOOL,		&np2cfg.gdcwovrg), // 98標準グラフィックで画面幅80桁超えを認める
 	
 
 	// OS依存？
@@ -890,7 +894,8 @@ static const PFTBL s_IniItems[] =
 	PFVAL("CPUSTABF", PFTYPE_UINT16,	&np2oscfg.cpustabf), // クロック安定器適用限界時間（フレーム）
 	PFVAL("READONLY", PFRO_BOOL,		&np2oscfg.readonly), // 変更を設定ファイルに書き込まない
 	PFVAL("TICKMODE", PFRO_UINT8,		&np2oscfg.tickmode), // Tickカウンタのモードを強制的に設定する
-	PFVAL("USEWHEEL", PFTYPE_BOOL,		&np2oscfg.usewheel), // マウスホイールによる音量・マウス速度設定を使用する
+	PFVAL("WHEELACT", PFTYPE_UINT8,		&np2oscfg.wheelact), // マウスホイールによる動作を設定する(0=無効, 1=音量, 2=マウス速度設定, 3=Arrow Key, 4=Roll Up Down)
+	PFVAL("WHEELAC2", PFTYPE_UINT8,		&np2oscfg.wheelac2), // Ctrl or Shift + マウスホイールによる動作を設定する(0=無効, 1=音量, 2=マウス速度設定, 3=Arrow Key, 4=Roll Up Down)
 	//PFVAL("USE_MVOL", PFRO_BOOL,		&np2oscfg.usemastervolume), // マスタボリューム設定を使用する
 	PFVAL("USEMIDIV", PFRO_BOOL,		&np2oscfg.usemidivolume), // MIDI疑似ボリューム設定を使用する
 	PFMAX("MVOL_MAX", PFRO_UINT8,		&np2oscfg.mastervolumemax, 255), // マスタボリュームの最大値を設定する

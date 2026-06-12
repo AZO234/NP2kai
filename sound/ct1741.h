@@ -163,6 +163,8 @@ extern "C"
 #if defined(SUPPORT_MULTITHREAD)
 void ct1741cs_enter_criticalsection(void);
 void ct1741cs_leave_criticalsection(void);
+void ct1741cs_initialize(void);
+void ct1741cs_shutdown(void);
 #endif
 
 void ct1741_initialize(UINT rate);

@@ -29,7 +29,9 @@
 #include <float.h>
 
 #if defined(_WIN32) && !defined(__LIBRETRO__)
-#define isnan(x) (_isnan(x))
+#if defined(_MSC_VER) && _MSC_VER < 1800
+#define isnan _isnan
+#endif
 #endif
 
 #include "../../cpu.h"

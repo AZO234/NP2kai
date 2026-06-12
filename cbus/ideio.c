@@ -1676,6 +1676,9 @@ static BRESULT SOUNDCALL playdevaudio(IDEDRV drv, SINT32 *pcm, UINT count) {
   SINT32 sampcount2_d;
   UINT mute = 0;
 
+	CDTRK	trk;
+	UINT	tracks;
+
   samplen_n = soundcfg.rate;
   samplen_d = 44100;
   // if(samplen_n > samplen_d){
@@ -1780,17 +1783,15 @@ static BRESULT SOUNDCALL playdevaudio(IDEDRV drv, SINT32 *pcm, UINT count) {
       drv->daflag = 0x13;
       return (FAILURE);
     }
-    if (np2cfg.cddtskip) {
-      CDTRK trk;
-      UINT tracks;
-      trk = sxsicd_gettrk(sxsi, &tracks);
-      r = tracks;
-      while (r) {
-        r--;
-        if (trk[r].pos <= drv->dacurpos) {
-          break;
-        }
-      }
+		trk = sxsicd_gettrk(sxsi, &tracks);
+		r = tracks;
+		while (r) {
+			r--;
+			if (trk[r].pos <= drv->dacurpos) {
+				break;
+			}
+		}
+		if(np2cfg.cddtskip){
       if (trk[r].adr_ctl != TRACKTYPE_AUDIO) {
         if (drv->dacurpos != 0) {
           // オーディオトラックでない場合は強制的に次に飛ばす
@@ -1806,7 +1807,8 @@ static BRESULT SOUNDCALL playdevaudio(IDEDRV drv, SINT32 *pcm, UINT count) {
     if (mute) {
       memset(drv->dabuf, 0, sizeof(drv->dabuf));
     } else {
-      if (sxsicd_readraw(sxsi, drv->dacurpos, drv->dabuf) != SUCCESS) {
+			int curTrk = 0;
+			if (sxsicd_readraw(sxsi, drv->dacurpos - trk[r].pregap_offset_ex, drv->dabuf) != SUCCESS) {
         drv->daflag = 0x14;
         return (FAILURE);
       }

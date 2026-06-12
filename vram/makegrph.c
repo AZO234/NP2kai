@@ -7,6 +7,7 @@
 #include	<vram/dispsync.h>
 #include	<vram/makegrph.h>
 #include	"makegrph.mcr"
+#include	"maketext.h"
 
 
 typedef struct {
@@ -154,7 +155,7 @@ static BOOL grphput_indirty0(MKGRPH mkgrph, int gpos) {
 		if ((!(mg.liney & 1)) || (!(gdc.mode1 & 0x10))) {
 			vc = vad;
 			p = mg.vm;
-			pterm = p + (80 * 2);
+			pterm = p + (TEXTXMAX * 2);
 			do {
 				if (vramupdate[vc] & 1) {
 					renewal_line[mg.liney] |= 1;
@@ -168,7 +169,7 @@ static BOOL grphput_indirty0(MKGRPH mkgrph, int gpos) {
 		if (mg.liney >= dsync.grphymax) {
 			return(TRUE);
 		}
-		mg.vm += 80*2;
+		mg.vm += TEXTXMAX *2;
 		remain--;
 		if (!remain) {
 			break;
@@ -210,7 +211,7 @@ static BOOL grphput_indirty1(MKGRPH mkgrph, int gpos) {
 		if ((!(mg.liney & 1)) || (!(gdc.mode1 & 0x10))) {
 			vc = vad;
 			p = mg.vm;
-			pterm = p + (80 * 2);
+			pterm = p + (TEXTXMAX * 2);
 			do {
 				if (vramupdate[vc] & 2) {
 					renewal_line[mg.liney] |= 2;
@@ -224,7 +225,7 @@ static BOOL grphput_indirty1(MKGRPH mkgrph, int gpos) {
 		if (mg.liney >= dsync.grphymax) {
 			return(TRUE);
 		}
-		mg.vm += 80*2;
+		mg.vm += TEXTXMAX *2;
 		remain--;
 		if (!remain) {
 			break;
@@ -266,7 +267,7 @@ static BOOL grphput_all0(MKGRPH mkgrph, int gpos) {
 		if ((!(mg.liney & 1)) || (!(gdc.mode1 & 0x10))) {
 			vc = vad;
 			p = mg.vm;
-			pterm = p + (80 * 2);
+			pterm = p + (TEXTXMAX * 2);
 			do {
 				GRPHDATASET(p, vc);
 				vc = LOW15(vc + 1);
@@ -278,7 +279,7 @@ static BOOL grphput_all0(MKGRPH mkgrph, int gpos) {
 		if (mg.liney >= dsync.grphymax) {
 			return(TRUE);
 		}
-		mg.vm += 80*2;
+		mg.vm += TEXTXMAX *2;
 		remain--;
 		if (!remain) {
 			break;
@@ -320,7 +321,7 @@ static BOOL grphput_all1(MKGRPH mkgrph, int gpos) {
 		if ((!(mg.liney & 1)) || (!(gdc.mode1 & 0x10))) {
 			vc = vad;
 			p = mg.vm;
-			pterm = p + (80 * 2);
+			pterm = p + (TEXTXMAX * 2);
 			do {
 				GRPHDATASET(p, vc + VRAM_STEP);
 				vc = LOW15(vc + 1);
@@ -332,7 +333,7 @@ static BOOL grphput_all1(MKGRPH mkgrph, int gpos) {
 		if (mg.liney >= dsync.grphymax) {
 			return(TRUE);
 		}
-		mg.vm += 80*2;
+		mg.vm += TEXTXMAX *2;
 		remain--;
 		if (!remain) {
 			break;

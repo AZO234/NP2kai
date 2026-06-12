@@ -55,6 +55,14 @@ static void cgwindowset(CGROM cr) {
 
 // ---- I/O
 
+#if defined(SUPPORT_TEXTHOOK)
+static UINT64 cgrom_readlow_clk = 0;
+static UINT64 cgrom_readhigh_clk = 0;
+static UINT64 cgrom_readlowtohigh_clkdiff = 0;
+static UINT64 cgrom_readhightolow_clkdiff = 0;
+static int cgrom_lastreadhigh = 0;
+#endif
+
 // write charactor code low
 static void IOOUTCALL cgrom_oa1(UINT port, REG8 dat) {
 
@@ -65,20 +73,47 @@ static void IOOUTCALL cgrom_oa1(UINT port, REG8 dat) {
 	hf_count = 0;
 	cr = &cgrom;
 	cr->code = (dat << 8) | (cr->code & 0xff);
-//#if defined(SUPPORT_TEXTHOOK)
-//	if(np2cfg.usetexthook){
-//		UINT16 SJis;
-//		UINT8 th[3];
-//		UINT16 thw[2];
-//		thw[1]='¥0';
-//		SJis = font_Jis2Sjis(((cr->code + 0x20) << 8) | (cr->code >> 8));
-//		if(SJis){
-//			th[0] = SJis >> 8; th[1] = SJis & 0x00ff; th[2] = '¥0';
-//			codecnv_sjistoucs2(thw, 1, (const char*)th, 2);
-//			font_outhooktest((wchar_t*)thw);
-//		}
-//	}
-//#endif
+#if defined(SUPPORT_TEXTHOOK)
+	if(np2cfg.usetexthook){
+		// High -> Lowまでのクロック数計算
+		cgrom_readlow_clk = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
+		if (cgrom_lastreadhigh) {
+			cgrom_readhightolow_clkdiff = cgrom_readlow_clk - cgrom_readhigh_clk;
+			cgrom_lastreadhigh = 0;
+		}
+		else if (cgrom_readlowtohigh_clkdiff && cgrom_readhightolow_clkdiff) {
+			// Low連続書き込みはLowを採用する
+			cgrom_readhightolow_clkdiff = 1; // 最短時間扱い
+			cgrom_readlowtohigh_clkdiff = 2;
+		}
+		if (cgrom_readlowtohigh_clkdiff && cgrom_readhightolow_clkdiff && cgrom_readhightolow_clkdiff < cgrom_readlowtohigh_clkdiff) {
+			// よりクロック数が少ないHigh -> Lowの順に書き込んでいると思われる
+		// Low -> Highまでのクロック数計算
+		cgrom_readhigh_clk = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
+		if (!cgrom_lastreadhigh) {
+			cgrom_readlowtohigh_clkdiff = cgrom_readhigh_clk - cgrom_readlow_clk;
+			cgrom_lastreadhigh = 1;
+		}
+		else if (cgrom_readlowtohigh_clkdiff && cgrom_readhightolow_clkdiff) {
+			// High連続書き込みはHighを採用する
+			cgrom_readlowtohigh_clkdiff = 1; // 最短時間扱い
+			cgrom_readhightolow_clkdiff = 2;
+		}
+		if (!(cgrom_readlowtohigh_clkdiff && cgrom_readhightolow_clkdiff) || cgrom_readlowtohigh_clkdiff <= cgrom_readhightolow_clkdiff) {
+			// よりクロック数が少ないLow -> Highの順に書き込んでいると思われる
+			UINT16 SJis;
+			UINT8 th[3];
+			UINT16 thw[2];
+			thw[1] = '¥0';
+			SJis = font_Jis2Sjis(((cr->code + 0x20) << 8) | (cr->code >> 8));
+			if (SJis) {
+				th[0] = SJis >> 8; th[1] = SJis & 0x00ff; th[2] = '¥0';
+				codecnv_sjistoucs2(thw, 1, (const char*)th, 2);
+				font_outhooktest((wchar_t*)thw);
+			}
+		}
+	}
+#endif
 	cgwindowset(cr);
 	(void)port;
 }
@@ -215,6 +250,15 @@ void cgrom_reset(const NP2CFG *pConfig) {
 	cgw->low = 0x7fff0;
 	cgw->high = 0x7fff0;
 	cgw->writable = 0;
+
+#if defined(SUPPORT_TEXTHOOK)
+	// for hook
+	cgrom_readlow_clk = 0;
+	cgrom_readhigh_clk = 0;
+	cgrom_readlowtohigh_clkdiff = 0;
+	cgrom_readhightolow_clkdiff = 0;
+	cgrom_lastreadhigh = 0;
+#endif
 
 	(void)pConfig;
 }

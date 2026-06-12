@@ -139,6 +139,8 @@ UINT8 MEMCALL cpu_linear_memory_read_b(UINT32 laddr, int ucrw);
 UINT16 MEMCALL cpu_linear_memory_read_w(UINT32 laddr, int ucrw);
 UINT32 MEMCALL cpu_linear_memory_read_d(UINT32 laddr, int ucrw);
 UINT64 MEMCALL cpu_linear_memory_read_q(UINT32 laddr, int ucrw);
+REG80 MEMCALL cpu_linear_memory_read_f(UINT32 laddr, int ucrw);
+void MEMCALL cpu_linear_memory_reads(UINT32 laddr, void* dat, UINT leng, int ucrw);
 PF_UINT8 MEMCALL cpu_linear_memory_read_b_codefetch(UINT32 laddr, int ucrw);
 PF_UINT16 MEMCALL cpu_linear_memory_read_w_codefetch(UINT32 laddr, int ucrw);
 PF_UINT32 MEMCALL cpu_linear_memory_read_d_codefetch(UINT32 laddr, int ucrw);
@@ -148,6 +150,7 @@ void MEMCALL cpu_linear_memory_write_w(UINT32 laddr, UINT16 value, int ucrw);
 void MEMCALL cpu_linear_memory_write_d(UINT32 laddr, UINT32 value, int ucrw);
 void MEMCALL cpu_linear_memory_write_q(UINT32 laddr, UINT64 value, int ucrw);
 void MEMCALL cpu_linear_memory_write_f(UINT32 laddr, const REG80 *value, int ucrw);
+void MEMCALL cpu_linear_memory_writes(UINT32 laddr, void* dat, UINT leng, int ucrw);
 
 /*
  * linear address memory access function with TLB

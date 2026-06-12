@@ -42,8 +42,9 @@
 #include <sound/sound.h>
 
 #ifdef SUPPORT_SOUND_SB16
-#include <cbus/ct1741io.h>
+#include <sound/ct1741.h>
 #endif
+#include <sound/cs4231.h>
 #include <diskimage/fddfile.h>
 #include <fdd/diskdrv.h>
 #include <fdd/fdd_mtr.h>
@@ -747,6 +748,9 @@ void pccore_setdefault(void) {
       CIRRUS_MELCOWAB_OFS_DEFAULT,
       0,
 #endif
+#if defined(SUPPORT_WAB_NPDISP)
+      0,
+#endif
 #if defined(SUPPORT_VGA_MODEX)
       0,
 #endif
@@ -791,7 +795,7 @@ void pccore_setdefault(void) {
       1,
 #endif
       0,
-      0,
+      1,
       1,
       0,
 #if defined(SUPPORT_GAMEPORT)
@@ -808,7 +812,7 @@ void pccore_setdefault(void) {
 #endif
       100,
       OEMTEXT(""),
-      0,
+      0, 1,
 #if defined(SUPPORT_DEBUGSS)
       0,
 #endif
