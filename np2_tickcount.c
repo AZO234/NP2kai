@@ -89,6 +89,23 @@ BOOL QueryPerformanceFrequency(LARGE_INTEGER* freq) {
   COPY64(freq, &ifreq);
   return TRUE;
 }
+
+/* Cross-platform stand-ins for the Windows tickcounter API used by HAXM. */
+int GetTickCounterMode(void) {
+  return 3; /* TCMODE_PERFORMANCECOUNTER */
+}
+LARGE_INTEGER GetTickCounter_Clock(void) {
+  LARGE_INTEGER li;
+  int64_t v = NP2_TickCount_GetCount();
+  COPY64(&li, &v);
+  return li;
+}
+LARGE_INTEGER GetTickCounter_ClockPerSec(void) {
+  LARGE_INTEGER li;
+  int64_t v = NP2_TickCount_GetFrequency();
+  COPY64(&li, &v);
+  return li;
+}
 #endif
 
 #endif  // SUPPORT_NP2_TICKCOUNT

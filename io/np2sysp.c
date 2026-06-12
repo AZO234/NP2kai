@@ -1,5 +1,5 @@
-#include <compiler.h>
 #include <common/strres.h>
+#include <compiler.h>
 
 #if defined(OSLANG_UCS2)
 #include "oemtext.h"

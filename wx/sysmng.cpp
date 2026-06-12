@@ -164,7 +164,7 @@ void sysmng_updatecaption(UINT8 flag)
 	milstr_ncat(work, " wx", sizeof(work));
 #if defined(SUPPORT_STATSAVE)
 	if (np2_stateslotnow > 0) {
-		char slot[16];
+		char slot[32];
 		snprintf(slot, sizeof(slot), " [Slot %d]", np2_stateslotnow);
 		milstr_ncat(work, slot, sizeof(work));
 	}

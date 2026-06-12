@@ -836,7 +836,7 @@ void menusys_moving(int x, int y, int btn) {
 				}
 			}
 			else if (btn == 2) {
-				if ((cur.menu->id) && (!(cur.menu->flag & MENU_NOSEND)) && (cur.menu->id != MID_DBSS)) {
+				if ((cur.menu->id) && (!(cur.menu->flag & MENU_NOSEND))) {
 					menubase_close();
 					sys->cmd(cur.menu->id);
 					return;

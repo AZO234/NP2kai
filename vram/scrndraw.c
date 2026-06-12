@@ -279,6 +279,15 @@ const SDRAWFN	*sdrawfn;
 	sdraw.y = 0;
 	sdraw.xalign = surf->xalign;
 	sdraw.yalign = surf->yalign;
+#if defined(SUPPORT_VIDEOFILTER)
+	if (bVFEnable) {
+		sdraw.vfDest = VideoFilter_GetDest(hVFMng1);
+		sdraw.vfW    = VideoFilter_GetWidth(hVFMng1);
+	} else {
+		sdraw.vfDest = NULL;
+		sdraw.vfW    = 0;
+	}
+#endif
 	if (((gdc.analog & 3) != 1) || (palevent.events >= PALEVENTMAX)) {
 		(*(*sdrawfn))(&sdraw, height);
 	}

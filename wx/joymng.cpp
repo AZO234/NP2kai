@@ -26,7 +26,7 @@ void joymng_initialize(void)
 	SDL_SetHint("SDL_JOYSTICK_HIDAPI", "0");
 	SDL_SetHint("SDL_JOYSTICK_LINUX_CLASSIC", "1");
 
-	if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) < 0) {
+	if (!SDL_InitSubSystem(SDL_INIT_JOYSTICK)) {
 		return;
 	}
 

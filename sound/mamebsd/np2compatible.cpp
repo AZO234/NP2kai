@@ -153,6 +153,7 @@ int YMF262FlagLoad_NP2REV97(opl3bsd* chipbsd, void* srcbuf, int size) {
 	else {
 		return 0; // 無効
 	}
+	(void)NP2REV97OPL_SAVESIZE;
 
 	ymfm::ymf262& chipcore = chipbsd->m_chip->GetChip();
 

@@ -100,8 +100,8 @@
 #if !defined(SUPPORT_NP2_TICKCOUNT)
 #error HAXM need NP2_TickCount
 #endif
-#include <i386hax/haxcore.h>
 #include <i386hax/haxfunc.h>
+#include <i386hax/haxcore.h>
 #include <mem/dmax86.h>
 #include <np2_tickcount.h>
 
@@ -341,8 +341,6 @@ NP2CFG np2cfg = {
 #endif
     100,
     OEMTEXT(""),
-    0,
-    0,
     0,
 #if defined(SUPPORT_DEBUGSS)
     0,
@@ -810,8 +808,6 @@ void pccore_setdefault(void) {
 #endif
       100,
       OEMTEXT(""),
-      0,
-      0,
       0,
 #if defined(SUPPORT_DEBUGSS)
       0,
@@ -1403,9 +1399,9 @@ void pccore_reset(void) {
 
       i386hax_resetVMMem();
 
-      np2haxcore.clockpersec = NP2_TickCount_GetFrequency();
-      np2haxcore.lastclock = NP2_TickCount_GetCount();
-      np2haxcore.clockcount = NP2_TickCount_GetCount();
+      np2haxcore.clockpersec.QuadPart = NP2_TickCount_GetFrequency();
+      np2haxcore.lastclock.QuadPart = NP2_TickCount_GetCount();
+      np2haxcore.clockcount.QuadPart = NP2_TickCount_GetCount();
       np2haxcore.I_ratio = 0;
 
       np2haxstat.update_regs = np2haxstat.update_fpu = 0;
@@ -2396,5 +2392,6 @@ int SetCpuTypeIndex(UINT index) {
   default:
     return 0;
   }
+  return 0;
 }
 #endif

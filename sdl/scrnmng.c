@@ -6,6 +6,14 @@
 #include	<pccore.h>
 #include	"np2.h"
 
+#if USE_SDL >= 3
+#include <SDL3/SDL.h>
+#elif USE_SDL == 2
+#include <SDL2/SDL.h>
+#else
+#include <SDL/SDL.h>
+#endif
+
 SCRNMNG		scrnmng;
 
 #if defined(SUPPORT_WAB)
@@ -23,7 +31,7 @@ static SCRNSURF scrnsurf;
 
 #if !defined(__LIBRETRO__)
 #if USE_SDL >= 2
-static SDL_Window* s_window;
+SDL_Window* s_window;
 static SDL_Renderer* s_renderer;
 static SDL_Texture* s_texture;
 #else
@@ -108,12 +116,23 @@ BRESULT scrnmng_create(UINT8 mode) {
    scrnmng.pc98surf = malloc(scrnmng.width * scrnmng.height * scrnmng.bpp / 8);
    scrnmng.dispsurf = malloc(scrnmng.width * scrnmng.height * scrnmng.bpp / 8);
 #else	/* __LIBRETRO__ */
+#if USE_SDL >= 3
+	if(SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
+#else
 	if(SDL_InitSubSystem(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
+#endif
 		fprintf(stderr, "Error: SDL_Init: %s\n", SDL_GetError());
 		return(FAILURE);
 	}
 
-#if USE_SDL >= 2
+#if USE_SDL >= 3
+	if(mode & SCRNMODE_ROTATEMASK) {
+		s_window = SDL_CreateWindow(app_name, scrnmng.height, scrnmng.width, 0);
+	} else {
+		s_window = SDL_CreateWindow(app_name, scrnmng.width, scrnmng.height, 0);
+	}
+	s_renderer = SDL_CreateRenderer(s_window, NULL);
+#elif USE_SDL >= 2
 	if(mode & SCRNMODE_ROTATEMASK) {
 		s_window = SDL_CreateWindow(app_name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, scrnmng.height, scrnmng.width, 0);
 	} else {
@@ -129,11 +148,19 @@ BRESULT scrnmng_create(UINT8 mode) {
 #if defined(__OPENDINGUX__) && !defined(OPENDINGUX_VGA)
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
 #endif
+#if USE_SDL >= 3
+	if(mode & SCRNMODE_ROTATEMASK) {
+		SDL_SetWindowRelativeMouseMode(scrnmng.height, true);
+	} else {
+		SDL_SetWindowRelativeMouseMode(scrnmng.width, true);
+	}
+#else
 	if(mode & SCRNMODE_ROTATEMASK) {
 		SDL_RenderSetLogicalSize(s_renderer, scrnmng.height, scrnmng.width);
 	} else {
 		SDL_RenderSetLogicalSize(s_renderer, scrnmng.width, scrnmng.height);
 	}
+#endif
 	switch(scrnmng.bpp) {
 	case 16:
 		if(mode & SCRNMODE_ROTATEMASK) {
@@ -141,8 +168,13 @@ BRESULT scrnmng_create(UINT8 mode) {
 		} else {
 			s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STATIC, scrnmng.width, scrnmng.height);
 		}
+#if USE_SDL >= 3
+		scrnmng.pc98surf = SDL_CreateSurface(scrnmng.width, scrnmng.height, SDL_PIXELFORMAT_RGB565);
+		scrnmng.dispsurf = SDL_CreateSurface(scrnmng.width, scrnmng.height, SDL_PIXELFORMAT_RGB565);
+#else
 		scrnmng.pc98surf = SDL_CreateRGBSurface(SDL_SWSURFACE, scrnmng.width, scrnmng.height, scrnmng.bpp, 0xf800, 0x07e0, 0x001f, 0);
 		scrnmng.dispsurf = SDL_CreateRGBSurface(SDL_SWSURFACE, scrnmng.width, scrnmng.height, scrnmng.bpp, 0xf800, 0x07e0, 0x001f, 0);
+#endif
 		break;
 	case 32:
 		if(mode & SCRNMODE_ROTATEMASK) {
@@ -150,8 +182,13 @@ BRESULT scrnmng_create(UINT8 mode) {
 		} else {
 			s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, scrnmng.width, scrnmng.height);
 		}
+#if USE_SDL >= 3
+		scrnmng.pc98surf = SDL_CreateSurface(scrnmng.width, scrnmng.height, SDL_PIXELFORMAT_XBGR1555);
+		scrnmng.dispsurf = SDL_CreateSurface(scrnmng.width, scrnmng.height, SDL_PIXELFORMAT_XBGR1555);
+#else
 		scrnmng.pc98surf = SDL_CreateRGBSurface(SDL_SWSURFACE, scrnmng.width, scrnmng.height, scrnmng.bpp, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
 		scrnmng.dispsurf = SDL_CreateRGBSurface(SDL_SWSURFACE, scrnmng.width, scrnmng.height, scrnmng.bpp, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+#endif
 		break;
 	}
 #endif
@@ -168,7 +205,11 @@ BRESULT scrnmng_create(UINT8 mode) {
 	#if USE_SDL >= 2
 		if((mode & SCRNMODE_FULLSCREEN) && !scrnmng_isfullscreen()) {
 			scrnmng.flag |= SCRNFLAG_FULLSCREEN;
+#if USE_SDL >= 3
+			SDL_SetWindowFullscreen(s_window, true);
+#else
 			SDL_SetWindowFullscreen(s_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+#endif
 		} else { 
 			if(!(mode & SCRNMODE_FULLSCREEN) && scrnmng_isfullscreen()) {
 				scrnmng.flag &= ~SCRNFLAG_FULLSCREEN;
@@ -191,8 +232,13 @@ void scrnmng_destroy(void) {
 	free(scrnmng.dispsurf);
 	scrnmng.dispsurf = NULL;
 #else
+#if USE_SDL >= 3
+	SDL_DestroySurface(scrnmng.pc98surf);
+	SDL_DestroySurface(scrnmng.dispsurf);
+#else
 	SDL_FreeSurface(scrnmng.pc98surf);
 	SDL_FreeSurface(scrnmng.dispsurf);
+#endif
 #if USE_SDL >= 2
 	SDL_DestroyTexture(s_texture);
 	SDL_DestroyRenderer(s_renderer);
@@ -233,8 +279,13 @@ void scrnmng_setwidth(int posx, int width) {
 	info.geometry.aspect_ratio = (double)scrnmng.width / scrnmng.height;
 	environ_cb(RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO, &info);
 #else	/* __LIBRETRO__ */
+#if USE_SDL >= 3
+	SDL_DestroySurface(scrnmng.pc98surf);
+	SDL_DestroySurface(scrnmng.dispsurf);
+#else
 	SDL_FreeSurface(scrnmng.pc98surf);
 	SDL_FreeSurface(scrnmng.dispsurf);
+#endif
 #if USE_SDL >= 2
 	SDL_DestroyTexture(s_texture);
 
@@ -243,11 +294,19 @@ void scrnmng_setwidth(int posx, int width) {
 	} else {
 		SDL_SetWindowSize(s_window, width, scrnmng.height);
 	}
+#if USE_SDL >= 3
+	if(scrnmode & SCRNMODE_ROTATEMASK) {
+		SDL_SetRenderLogicalPresentation(s_renderer, scrnmng.height, width, SDL_LOGICAL_PRESENTATION_STRETCH);
+	} else {
+		SDL_SetRenderLogicalPresentation(s_renderer, width, scrnmng.height, SDL_LOGICAL_PRESENTATION_STRETCH);
+	}
+#else
 	if(scrnmode & SCRNMODE_ROTATEMASK) {
 		SDL_RenderSetLogicalSize(s_renderer, scrnmng.height, width);
 	} else {
 		SDL_RenderSetLogicalSize(s_renderer, width, scrnmng.height);
 	}
+#endif
 #if defined(__OPENDINGUX__) && !defined(OPENDINGUX_VGA)
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
 #endif
@@ -258,8 +317,13 @@ void scrnmng_setwidth(int posx, int width) {
 		} else {
 			s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STATIC, width, scrnmng.height);
 		}
+#if USE_SDL >= 3
+		scrnmng.pc98surf = SDL_CreateSurface(width, scrnmng.height, SDL_PIXELFORMAT_RGB565);
+		scrnmng.dispsurf = SDL_CreateSurface(width, scrnmng.height, SDL_PIXELFORMAT_RGB565);
+#else
 		scrnmng.pc98surf = SDL_CreateRGBSurface(SDL_SWSURFACE, width, scrnmng.height, scrnmng.bpp, 0xf800, 0x07e0, 0x001f, 0);
 		scrnmng.dispsurf = SDL_CreateRGBSurface(SDL_SWSURFACE, width, scrnmng.height, scrnmng.bpp, 0xf800, 0x07e0, 0x001f, 0);
+#endif
 		break;
 	case 32:
 		if(scrnmode & SCRNMODE_ROTATEMASK) {
@@ -267,8 +331,13 @@ void scrnmng_setwidth(int posx, int width) {
 		} else {
 			s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, width, scrnmng.height);
 		}
+#if USE_SDL >= 3
+		scrnmng.pc98surf = SDL_CreateSurface(width, scrnmng.height, SDL_PIXELFORMAT_RGBA8888);
+		scrnmng.dispsurf = SDL_CreateSurface(width, scrnmng.height, SDL_PIXELFORMAT_RGBA8888);
+#else
 		scrnmng.pc98surf = SDL_CreateRGBSurface(SDL_SWSURFACE, width, scrnmng.height, scrnmng.bpp, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
 		scrnmng.dispsurf = SDL_CreateRGBSurface(SDL_SWSURFACE, width, scrnmng.height, scrnmng.bpp, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+#endif
 		break;
 	}
 #endif
@@ -298,8 +367,13 @@ void scrnmng_setheight(int posy, int height) {
 	info.geometry.aspect_ratio = (double)scrnmng.width / scrnmng.height;
 	environ_cb(RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO, &info);
 #else	/* __LIBRETRO__ */
+#if USE_SDL >= 3
+	SDL_DestroySurface(scrnmng.pc98surf);
+	SDL_DestroySurface(scrnmng.dispsurf);
+#else
 	SDL_FreeSurface(scrnmng.pc98surf);
 	SDL_FreeSurface(scrnmng.dispsurf);
+#endif
 #if USE_SDL >= 2
 	SDL_DestroyTexture(s_texture);
 
@@ -308,11 +382,19 @@ void scrnmng_setheight(int posy, int height) {
 	} else {
 		SDL_SetWindowSize(s_window, scrnmng.width, height);
 	}
+#if USE_SDL >= 3
+	if(scrnmode & SCRNMODE_ROTATEMASK) {
+		SDL_SetRenderLogicalPresentation(s_renderer, height, scrnmng.width, SDL_LOGICAL_PRESENTATION_STRETCH);
+	} else {
+		SDL_SetRenderLogicalPresentation(s_renderer, scrnmng.width, height, SDL_LOGICAL_PRESENTATION_STRETCH);
+	}
+#else
 	if(scrnmode & SCRNMODE_ROTATEMASK) {
 		SDL_RenderSetLogicalSize(s_renderer, height, scrnmng.width);
 	} else {
 		SDL_RenderSetLogicalSize(s_renderer, scrnmng.width, height);
 	}
+#endif
 #if defined(__OPENDINGUX__) && !defined(OPENDINGUX_VGA)
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
 #endif
@@ -323,8 +405,13 @@ void scrnmng_setheight(int posy, int height) {
 		} else {
 			s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STATIC, scrnmng.width, height);
 		}
+#if USE_SDL >= 3
+		scrnmng.pc98surf = SDL_CreateSurface(scrnmng.width, height, SDL_PIXELFORMAT_RGB565);
+		scrnmng.dispsurf = SDL_CreateSurface(scrnmng.width, height, SDL_PIXELFORMAT_RGB565);
+#else
 		scrnmng.pc98surf = SDL_CreateRGBSurface(SDL_SWSURFACE, scrnmng.width, height, scrnmng.bpp, 0xf800, 0x07e0, 0x001f, 0);
 		scrnmng.dispsurf = SDL_CreateRGBSurface(SDL_SWSURFACE, scrnmng.width, height, scrnmng.bpp, 0xf800, 0x07e0, 0x001f, 0);
+#endif
 		break;
 	case 32:
 		if(scrnmode & SCRNMODE_ROTATEMASK) {
@@ -332,8 +419,13 @@ void scrnmng_setheight(int posy, int height) {
 		} else {
 			s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, scrnmng.width, height);
 		}
+#if USE_SDL >= 3
+		scrnmng.pc98surf = SDL_CreateSurface(scrnmng.width, height, SDL_PIXELFORMAT_RGBA8888);
+		scrnmng.dispsurf = SDL_CreateSurface(scrnmng.width, height, SDL_PIXELFORMAT_RGBA8888);
+#else
 		scrnmng.pc98surf = SDL_CreateRGBSurface(SDL_SWSURFACE, scrnmng.width, height, scrnmng.bpp, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
 		scrnmng.dispsurf = SDL_CreateRGBSurface(SDL_SWSURFACE, scrnmng.width, height, scrnmng.bpp, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+#endif
 		break;
 	}
 	scrnmng.height = height;
@@ -352,7 +444,11 @@ SDL_Surface* scrnmng_makerotatesurface(char bLeft) {
 
 	switch(scrnmng.bpp) {
 	case 16:
+#if USE_SDL >= 3
+		output = SDL_CreateSurface(scrnmng.height, scrnmng.width, SDL_PIXELFORMAT_RGB565);
+#else
 		output = SDL_CreateRGBSurface(0, scrnmng.height, scrnmng.width, scrnmng.bpp, 0xf800, 0x07e0, 0x001f, 0);
+#endif
 		if(output) {
 			SDL_LockSurface(output);
 			for(y = 0; y < scrnmng.height; y++) {
@@ -367,7 +463,11 @@ SDL_Surface* scrnmng_makerotatesurface(char bLeft) {
 		}
 		break;
 	case 32:
+#if USE_SDL >= 3
+		output = SDL_CreateSurface(scrnmng.height, scrnmng.width, SDL_PIXELFORMAT_RGBA8888);
+#else
 		output = SDL_CreateRGBSurface(0, scrnmng.height, scrnmng.width, scrnmng.bpp, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+#endif
 		if(output) {
 			SDL_LockSurface(output);
 			for(y = 0; y < scrnmng.height; y++) {
@@ -434,7 +534,7 @@ BRESULT scrnmng_entermenu(SCRNMENU *smenu) {
 	smenu->height = scrnmng.height;
 	smenu->bpp = scrnmng.bpp;
 #if !defined(__LIBRETRO__)
-	mousemng_showcursor();
+	mousemng_showcursor(s_window);
 #endif	/* __LIBRETRO__ */
 	return(SUCCESS);
 }
@@ -443,9 +543,9 @@ void scrnmng_leavemenu(void) {
 #if !defined(__LIBRETRO__)
 #if defined(EMSCRIPTEN)
 	if(ismouse_captured())
-		mousemng_hidecursor();
+		mousemng_hidecursor(s_window);
 #else
-	mousemng_hidecursor();
+	mousemng_hidecursor(s_window);
 #endif
 #endif	/* __LIBRETRO__ */
 }
@@ -559,16 +659,28 @@ scrnmng_update(void)
 	if((scrnmode & SCRNMODE_ROTATEMASK) == SCRNMODE_ROTATELEFT) {
 		usesurface = scrnmng_makerotatesurface(1);
 		SDL_UpdateTexture(s_texture, NULL, usesurface->pixels, usesurface->pitch);
+#if USE_SDL >= 3
+		SDL_DestroySurface(usesurface);
+#else
 		SDL_FreeSurface(usesurface);
+#endif
 	} else if((scrnmode & SCRNMODE_ROTATEMASK) == SCRNMODE_ROTATERIGHT) {
 		usesurface = scrnmng_makerotatesurface(0);
 		SDL_UpdateTexture(s_texture, NULL, usesurface->pixels, usesurface->pitch);
+#if USE_SDL >= 3
+		SDL_DestroySurface(usesurface);
+#else
 		SDL_FreeSurface(usesurface);
+#endif
 	} else {
 		SDL_UpdateTexture(s_texture, NULL, scrnmng.dispsurf->pixels, scrnmng.dispsurf->pitch);
 	}
 	SDL_RenderClear(s_renderer);
+#if USE_SDL >= 3
+	SDL_RenderTexture(s_renderer, s_texture, NULL, NULL);
+#else
 	SDL_RenderCopy(s_renderer, s_texture, NULL, NULL);
+#endif
 	SDL_RenderPresent(s_renderer);
 #else
 	SDL_UpdateRect(scrnmng.dispsurf, 0, 0, 0, 0);

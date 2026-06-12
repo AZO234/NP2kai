@@ -13,7 +13,7 @@
 #include	<unistd.h>
 #include	<assert.h>
 
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
 
@@ -21,7 +21,9 @@
 
 #define	GETTICK()			SDL_GetTicks()
 #define	__ASSERT(s)
+#undef SPRINTF
 #define	SPRINTF				sprintf
+#undef STRLEN
 #define	STRLEN				strlen
 #define	SDL_main			main
 

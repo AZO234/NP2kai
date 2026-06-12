@@ -14,21 +14,48 @@ BOOL	bVFImport;
 
 #if !defined(NP2_SIZE_QVGA) || defined(SIZE_VGATEST)
 
+#if defined(SUPPORT_VIDEOFILTER)
+/* Fast inline VF pixel write per BPP. Reads pre-filtered RGB from sdraw->vfDest
+ * directly instead of paying VideoFilter_PutDest()'s per-call overhead.
+ * 8BPP variant intentionally a no-op: original PutDest had no case for BPP=1. */
+#define VFPUTPIXEL_8(ptr, x, y)   ((void)0)
+#define VFPUTPIXEL_16(ptr, x, y)  do { \
+		uint32_t _vp = sdraw->vfDest[(y) * sdraw->vfW + (x)]; \
+		*(UINT16 *)(ptr) = (UINT16)((((_vp) & 0xF8) >> 3) | (((_vp) & 0xFC00) >> 5) | (((_vp) & 0xF80000) >> 8)); \
+	} while(0)
+#define VFPUTPIXEL_24(ptr, x, y)  do { \
+		uint32_t _vp = sdraw->vfDest[(y) * sdraw->vfW + (x)]; \
+		(ptr)[RGB24_R] = (UINT8)(((_vp) >> 16) & 0xFF); \
+		(ptr)[RGB24_G] = (UINT8)(((_vp) >> 8) & 0xFF); \
+		(ptr)[RGB24_B] = (UINT8)((_vp) & 0xFF); \
+	} while(0)
+#define VFPUTPIXEL_32(ptr, x, y)  (*(UINT32 *)(ptr) = sdraw->vfDest[(y) * sdraw->vfW + (x)])
+#else
+#define VFPUTPIXEL_8(ptr, x, y)   ((void)0)
+#define VFPUTPIXEL_16(ptr, x, y)  ((void)0)
+#define VFPUTPIXEL_24(ptr, x, y)  ((void)0)
+#define VFPUTPIXEL_32(ptr, x, y)  ((void)0)
+#endif
+
 #if defined(SUPPORT_8BPP)
 #define	SDSYM(sym)				sdraw8##sym
 #define	SDSETPIXEL(ptr, pal)	*(ptr) = (pal) + START_PAL
+#define	VFPUTPIXEL(ptr, x, y)	VFPUTPIXEL_8(ptr, x, y)
 #include	"sdraw.mcr"
 #undef	SDSYM
 #undef	SDSETPIXEL
+#undef	VFPUTPIXEL
 #endif
 
 #if defined(SUPPORT_16BPP)
 #define	SDSYM(sym)				sdraw16##sym
 #define	SDSETPIXEL(ptr, pal)	*(UINT16 *)(ptr) = np2_pal16[(pal)]
+#define	VFPUTPIXEL(ptr, x, y)	VFPUTPIXEL_16(ptr, x, y)
 #include	"sdraw.mcr"
 #include	"sdrawex.mcr"
 #undef	SDSYM
 #undef	SDSETPIXEL
+#undef	VFPUTPIXEL
 #endif
 
 #if defined(SUPPORT_24BPP)
@@ -36,19 +63,23 @@ BOOL	bVFImport;
 #define	SDSETPIXEL(ptr, pal)	(ptr)[RGB24_R] = np2_pal32[(pal)].p.r;	\
 								(ptr)[RGB24_G] = np2_pal32[(pal)].p.g;	\
 								(ptr)[RGB24_B] = np2_pal32[(pal)].p.b
+#define	VFPUTPIXEL(ptr, x, y)	VFPUTPIXEL_24(ptr, x, y)
 #include	"sdraw.mcr"
 #include	"sdrawex.mcr"
 #undef	SDSYM
 #undef	SDSETPIXEL
+#undef	VFPUTPIXEL
 #endif
 
 #if defined(SUPPORT_32BPP)
 #define	SDSYM(sym)				sdraw32##sym
 #define	SDSETPIXEL(ptr, pal)	*(UINT32 *)(ptr) = np2_pal32[(pal)].d
+#define	VFPUTPIXEL(ptr, x, y)	VFPUTPIXEL_32(ptr, x, y)
 #include	"sdraw.mcr"
 #include	"sdrawex.mcr"
 #undef	SDSYM
 #undef	SDSETPIXEL
+#undef	VFPUTPIXEL
 #endif
 
 

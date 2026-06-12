@@ -59,6 +59,8 @@ static void trace_fmt_ex(const char *fmt, ...)
 
 #if defined(_WINDOWS)
 #include	<process.h>
+#else
+#include	<np2_tickcount.h>
 #endif
 
 NP2_HAX			np2hax = {0};

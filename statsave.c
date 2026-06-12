@@ -74,8 +74,8 @@
 #include <bios/bios.h>
 #endif
 #if defined(SUPPORT_IA32_HAXM)
-#include <i386hax/haxcore.h>
 #include <i386hax/haxfunc.h>
+#include <i386hax/haxcore.h>
 
 #endif
 
@@ -1515,6 +1515,7 @@ int statsave_save(const OEMCHAR *filename) {
     milstr_ncpy(m_strStateFilename, filename, MAX_PATH);
     g_u8ControlState = 1;
   }
+  return SUCCESS;
 }
 
 #if defined(__LIBRETRO__)
@@ -1713,6 +1714,7 @@ int statsave_load(const OEMCHAR *filename) {
     milstr_ncpy(m_strStateFilename, filename, MAX_PATH);
     g_u8ControlState = 2;
   }
+  return SUCCESS;
 }
 
 #if defined(__LIBRETRO__)
@@ -1889,9 +1891,9 @@ int statsave_load_d(void) {
   i386hax_vm_sethmemory(CPU_ADRSMASK != 0x000fffff);
   i386hax_vm_setitfmemory(CPU_ITFBANK);
   i386hax_vm_setvga256linearmemory();
-  np2haxcore.clockpersec = NP2_TickCount_GetFrequency();
-  np2haxcore.lastclock = NP2_TickCount_GetCount();
-  np2haxcore.clockcount = NP2_TickCount_GetCount();
+  np2haxcore.clockpersec.QuadPart = NP2_TickCount_GetFrequency();
+  np2haxcore.lastclock.QuadPart = NP2_TickCount_GetCount();
+  np2haxcore.clockcount.QuadPart = NP2_TickCount_GetCount();
   np2haxcore.I_ratio = 0;
 #endif
 

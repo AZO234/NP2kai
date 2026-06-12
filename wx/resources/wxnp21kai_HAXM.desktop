@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=wxNP21kai HAXM
+GenericName=PC-9821 Emulator IA-32 HAXM
+GenericName[ja]=PC-9821エミュレータ IA-32 HAXM
+Comment=PC-9821 Emulator IA-32 HAXM
+Comment[ja]=PC-9821エミュレータ IA-32 HAXM
+Exec=wxnp21kai_HAXM
+Icon=np2
+Categories=Game;Emulator;
+Name[ja]=wxNP21kai HAXM
+

@@ -1,5 +1,7 @@
 /* === NP2 debug snapshot === (c) 2020 AZO */
 
+#include <compiler.h>
+
 #if defined(SUPPORT_DEBUGSS)
 
 #include <debugsnapshot.h>
@@ -10,7 +12,7 @@
 #include <np2ver.h>
 #include <statsave.h>
 
-#if(__LIBRETRO__)
+#if(defined(__LIBRETRO__) || defined(__EMSCRIPTEN__))
 // Nothing
 #elif(_MSC_VER)
 #include <windows.h>
@@ -29,7 +31,7 @@ UINT NP2_DebugSnapshot_Count;
 
 NP2_DebugSnapshot_t tDebugSnapshot;
 
-#if defined(__LIBRETRO__)
+#if defined(__LIBRETRO__) || defined(__EMSCRIPTEN__)
 static int sha1_calculate(const char *path, char *result);
 
 struct sha1_context
@@ -311,7 +313,9 @@ static void SHA1Input(struct sha1_context *context,
    }
 }
 
+#if defined(__LIBRETRO__) || defined(__EMSCRIPTEN__)
 static int sha1_calculate(const char *path, char *result)
+#if defined(__LIBRETRO__)
 {
    struct sha1_context sha;
    unsigned char buff[4096];
@@ -353,7 +357,14 @@ error:
       filestream_close(fd);
    return -1;
 }
-#endif  // __LIBRETRO__
+#else // __EMSCRIPTEN__
+{
+   (void)path;
+   (void)result;
+   return -1;
+}
+#endif
+#endif // __LIBRETRO__ || __EMSCRIPTEN__
 
 #if defined(_MSC_VER)
 struct CALCSHA1 {
@@ -365,10 +376,10 @@ struct CALCSHA1 {
 HCALCSHA1 calc_sha1_begin(void) {
   HCALCSHA1 hRes;
 
-#if defined(__LIBRETRO__)
+#if defined(__LIBRETRO__) || defined(__EMSCRIPTEN__)
   hRes = (HCALCSHA1)malloc(sizeof(struct sha1_context));
   if(hRes) {
-    SHA1Reset(hRes);
+    SHA1Reset((struct sha1_context*)hRes);
   }
 #elif defined(_MSC_VER)
   struct CALCSHA1 {
@@ -422,7 +433,7 @@ UINT calc_sha1_add(HCALCSHA1 hCalc, const UINT8* pu8Data, const UINT uLen) {
     uRes = 1;
   }
   if(!uRes && uLen > 0) {
-#if defined(__LIBRETRO__)
+#if defined(__LIBRETRO__) || defined(__EMSCRIPTEN__)
     SHA1Input((struct sha1_context*)hCalc, pu8Data, uLen);
 #elif defined(_MSC_VER)
     if(!CryptHashData(((struct CALCSHA1*)hCalc)->hHash, pu8Data, uLen, 0)) {
@@ -449,7 +460,7 @@ UINT calc_sha1_end(HCALCSHA1 hCalc, UINT8 au8SHA1[20]) {
     uRes = 1;
   }
   if(!uRes) {
-#if defined(__LIBRETRO__)
+#if defined(__LIBRETRO__) || defined(__EMSCRIPTEN__)
     if(!SHA1Result((struct sha1_context*)hCalc)) {
       uRes = 2;
       free(hCalc);
@@ -525,7 +536,7 @@ UINT calc_sha1(UINT8 au8SHA1[20], const OEMCHAR* strFilePath) {
     }
   }
   if(!uRes) {
-    while(uLen = file_read(f, pu8Buf, CALC_HASH_BUFFERSIZE)) {
+    while((uLen = file_read(f, pu8Buf, CALC_HASH_BUFFERSIZE))) {
       if(calc_sha1_add(hCalc, pu8Buf, uLen)) {
         uRes = 6;
         calc_sha1_destruct(hCalc);
@@ -568,7 +579,7 @@ int debugsnapshot_save(const UINT uNo) {
 #endif
 #elif defined(__LIBRETRO__)
   milstr_ncpy(tDebugSnapshot.strProgramType, "libretro", sizeof(tDebugSnapshot.strProgramType));
-#elif defined(EMSCRIPTEN)
+#elif defined(__EMSCRIPTEN__)
 #if defined(SUPPORT_PC9821)
   milstr_ncpy(tDebugSnapshot.strProgramType, "Emscripten IA-32", sizeof(tDebugSnapshot.strProgramType));
 #else
@@ -766,7 +777,7 @@ int debugsnapshot_load(const UINT uNo) {
 #endif
 #elif defined(__LIBRETRO__)
     if(milstr_cmp(tDebugSnapshot.strProgramType, "libretro") != 0) {
-#elif defined(EMSCRIPTEN)
+#elif defined(__EMSCRIPTEN__)
 #if defined(SUPPORT_PC9821)
     if(milstr_cmp(tDebugSnapshot.strProgramType, "Emscripten IA-32") != 0) {
 #else
@@ -913,4 +924,5 @@ int debugsnapshot_load(const UINT uNo) {
 }
 
 #endif  // SUPPORT_DEBUGSS
+#endif
 

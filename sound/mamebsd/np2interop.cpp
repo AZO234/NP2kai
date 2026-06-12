@@ -213,7 +213,7 @@ int YMF262FlagLoad(void *chipptr, void *srcbuf, int size) {
                      (uint8_t *)(&chipbsd->m_data + 1));
 
   // バッファサイズがあっていなくても通す
-  if (size != dummybuffer.size()) {
+  if ((size_t)size != dummybuffer.size()) {
     // reset
     chipcore.reset();
 

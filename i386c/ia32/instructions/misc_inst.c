@@ -179,7 +179,7 @@ _CPUID(void)
 			char cpu_brandstringbuf[64] = {0};
 			int stroffset = (CPU_EAX - 0x80000002) * 16;
 			clkMHz = pccore.realclock/1000/1000;
-			sprintf(cpu_brandstringbuf, "%s%u MHz", i386cpuid.cpu_brandstring, clkMHz);
+			snprintf(cpu_brandstringbuf, sizeof(cpu_brandstringbuf), "%s%u MHz", i386cpuid.cpu_brandstring, clkMHz);
 			CPU_EAX = LOADINTELDWORD(((UINT8*)(cpu_brandstringbuf + stroffset + 0)));
 			CPU_EBX = LOADINTELDWORD(((UINT8*)(cpu_brandstringbuf + stroffset + 4)));
 			CPU_ECX = LOADINTELDWORD(((UINT8*)(cpu_brandstringbuf + stroffset + 8)));

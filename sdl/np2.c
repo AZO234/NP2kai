@@ -428,6 +428,7 @@ int np2_main(int argc, char *argv[]) {
 	OEMCHAR	*ext;
 	OEMCHAR	base_dir[MAX_PATH];
 	OEMCHAR	fullpath[MAX_PATH];
+	extern SDL_Window* s_window;
   FILEH fcheck;
 
 	pos = 1;
@@ -644,7 +645,7 @@ int np2_main(int argc, char *argv[]) {
 	pc98_cirrus_vga_init();
 #endif
 #if !defined(__LIBRETRO__)
-	mousemng_hidecursor();
+	mousemng_hidecursor(s_window);
 #endif	/* __LIBRETRO__ */
 	scrndraw_redraw();
 	pccore_reset();

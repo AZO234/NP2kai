@@ -16,6 +16,9 @@
 #if defined(SUPPORT_VIDEOFILTER)
 #include	<vram/videofilter.h>
 #endif
+#if defined(SUPPORT_PNG)
+#include	<png.h>
+#endif
 
 /**
  * @brief The structure of screen saver
@@ -57,6 +60,10 @@ static void screenmix(PALNUM *dest, const UINT8 *src1, const UINT8 *src2, const 
 
 	int		x, y;
 	int		i;
+#if defined(SUPPORT_VIDEOFILTER)
+	const uint32_t *vfDest = bVFEnable ? VideoFilter_GetDest(hVFMng1) : NULL;
+	const uint16_t  vfW    = bVFEnable ? VideoFilter_GetWidth(hVFMng1) : 0;
+#endif
 
 	if (normaldisp) {
 		for (y = 0; y < SURFACE_HEIGHT; y++) {
@@ -71,10 +78,12 @@ static void screenmix(PALNUM *dest, const UINT8 *src1, const UINT8 *src2, const 
 	}else{
 		for (i=0; i<(SURFACE_WIDTH * SURFACE_HEIGHT); i++) {
 #if defined(SUPPORT_VIDEOFILTER)
-			if(!bVFEnable || src1[i]) {
+			if (!bVFEnable) {
+				dest[i] = src1[i] + src2[i] + NP2PAL_GRPH;
+			} else if (src1[i]) {
 				dest[i] = src1[i];
 			} else {
-				VideoFilter_PutDest(hVFMng1, &dest[i], i % SURFACE_WIDTH, i / SURFACE_WIDTH, 4);
+				dest[i] = vfDest[(i / SURFACE_WIDTH) * vfW + (i % SURFACE_WIDTH)];
 			}
 #else
 			dest[i] = src1[i] + src2[i] + NP2PAL_GRPH;
@@ -86,6 +95,10 @@ static void screenmix(PALNUM *dest, const UINT8 *src1, const UINT8 *src2, const 
 static void screenmix2(PALNUM *dest, const UINT8 *src1, const UINT8 *src2, const int normaldisp) {
 
 	int		x, y;
+#if defined(SUPPORT_VIDEOFILTER)
+	const uint32_t *vfDest = bVFEnable ? VideoFilter_GetDest(hVFMng1) : NULL;
+	const uint16_t  vfW    = bVFEnable ? VideoFilter_GetWidth(hVFMng1) : 0;
+#endif
 
 	if (normaldisp) {
 		for (y = 0; y < (SURFACE_HEIGHT / 2); y++) {
@@ -108,10 +121,12 @@ static void screenmix2(PALNUM *dest, const UINT8 *src1, const UINT8 *src2, const
 		for (y = 0; y < (SURFACE_HEIGHT / 2); y++) {
 			for (x = 0; x < SURFACE_WIDTH; x++) {
 #if defined(SUPPORT_VIDEOFILTER)
-				if(!bVFEnable || src1[x]) {
+				if (!bVFEnable) {
+					dest[x] = src1[x] + src2[x] + NP2PAL_GRPH;
+				} else if (src1[x]) {
 					dest[x] = src1[x];
 				} else {
-					VideoFilter_PutDest(hVFMng1, &dest[x], x, y * 2, 4);
+					dest[x] = vfDest[(y * 2) * vfW + x];
 				}
 #else
 				dest[x] = src1[x] + src2[x] + NP2PAL_GRPH;
@@ -134,7 +149,11 @@ static void screenmix3(PALNUM *dest, const UINT8 *src1, const UINT8 *src2, const
 
 	PALNUM	c;
 	int		x, y;
-	
+#if defined(SUPPORT_VIDEOFILTER)
+	const uint32_t *vfDest = bVFEnable ? VideoFilter_GetDest(hVFMng1) : NULL;
+	const uint16_t  vfW    = bVFEnable ? VideoFilter_GetWidth(hVFMng1) : 0;
+#endif
+
 	if (normaldisp) {
 		for (y = 0; y < (SURFACE_HEIGHT / 2); y++) {
 			// dest == src1, dest == src2 の時があるので…
@@ -163,27 +182,33 @@ static void screenmix3(PALNUM *dest, const UINT8 *src1, const UINT8 *src2, const
 				}
 				dest[x + SURFACE_WIDTH] = c;
 #if defined(SUPPORT_VIDEOFILTER)
-				if(!bVFEnable || src1[x]) {
+				if (!bVFEnable) {
+					dest[x] = src1[x] + src2[x] + NP2PAL_GRPH;
+				} else if (src1[x]) {
 					dest[x] = src1[x] + NP2PAL_GRPH;
 				} else {
-					VideoFilter_PutDest(hVFMng1, &dest[x], x, y * 2, 4);
+					dest[x] = vfDest[(y * 2) * vfW + x];
 				}
 #else
 				dest[x] = src1[x] + src2[x] + NP2PAL_GRPH;
 #endif
-}
 			}
 			dest += SURFACE_WIDTH * 2;
 			src1 += SURFACE_WIDTH * 2;
 			src2 += SURFACE_WIDTH * 2;
 		}
 	}
+}
 
 #if defined(SUPPORT_PC9821)
 static void screenmix4(PALNUM *dest, const UINT8 *src1, const UINT8 *src2, const int normaldisp) {
 
 	int		x, y;
 	int		i;
+#if defined(SUPPORT_VIDEOFILTER)
+	const uint32_t *vfDest = bVFEnable ? VideoFilter_GetDest(hVFMng1) : NULL;
+	const uint16_t  vfW    = bVFEnable ? VideoFilter_GetWidth(hVFMng1) : 0;
+#endif
 	if (normaldisp) {
 		for (y = 0; y < SURFACE_HEIGHT; y++) {
 			for (x = 0; x < SURFACE_WIDTH; x++) {
@@ -196,7 +221,7 @@ static void screenmix4(PALNUM *dest, const UINT8 *src1, const UINT8 *src2, const
 					if(!bVFEnable) {
 						dest[i] = src2[i] + NP2PAL_GRPHEX;
 					} else {
-						VideoFilter_PutDest(hVFMng1, &dest[i], i % SURFACE_WIDTH, i / SURFACE_WIDTH, 4);
+						dest[i] = vfDest[y * vfW + x];
 					}
 #else
 					dest[i] = src2[i] + NP2PAL_GRPHEX;
@@ -510,7 +535,13 @@ const PALNUM	*s;
 			case SCRNSAVE_24BIT:
 				for (x=0; x<bd.width; x++) {
 #if defined(SUPPORT_VIDEOFILTER)
-					curpal.d = s[x];
+					if ((UINT)s[x] < (UINT)NP2PAL_MAX) {
+						curpal.rgb[0] = np2_pal32[s[x]].p.b;
+						curpal.rgb[1] = np2_pal32[s[x]].p.g;
+						curpal.rgb[2] = np2_pal32[s[x]].p.r;
+					} else {
+						curpal.d = s[x];
+					}
 #else
 					curpal.d = sd->pal[s[x]].d;
 #endif
@@ -673,6 +704,119 @@ sswb_err2:
 sswb_err1:
 	return(FAILURE);
 }
+
+
+// ---- PNG
+
+#if defined(SUPPORT_PNG)
+static void png_write_func(png_structp png_ptr, png_bytep data, png_size_t length) {
+	FILEH fh = (FILEH)png_get_io_ptr(png_ptr);
+	file_write(fh, data, (UINT)length);
+}
+
+static void png_flush_func(png_structp png_ptr) {
+	(void)png_ptr;
+}
+
+BRESULT scrnsave_writepng(SCRNSAVE hdl, const OEMCHAR *filename, UINT flag) {
+	const SCRNDATA	*sd;
+	FILEH			fh;
+	png_structp		png_ptr = NULL;
+	png_infop		info_ptr = NULL;
+	const PALNUM	*s;
+	int				y;
+	png_bytep		row_pointer = NULL;
+	BMPPAL			curpal;
+	int				x;
+
+	(void)flag;
+
+	if (hdl == NULL) {
+		return(FAILURE);
+	}
+	sd = (SCRNDATA *)hdl;
+
+	fh = file_create(filename);
+	if (fh == FILEH_INVALID) {
+		return(FAILURE);
+	}
+
+	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	if (!png_ptr) {
+		goto sswp_err1;
+	}
+
+	info_ptr = png_create_info_struct(png_ptr);
+	if (!info_ptr) {
+		goto sswp_err2;
+	}
+
+	if (setjmp(png_jmpbuf(png_ptr))) {
+		goto sswp_err2;
+	}
+
+	png_set_write_fn(png_ptr, (png_voidp)fh, png_write_func, png_flush_func);
+
+	png_set_IHDR(png_ptr, info_ptr, sd->width, sd->height, 8, PNG_COLOR_TYPE_RGB,
+				 PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+
+	png_write_info(png_ptr, info_ptr);
+
+	row_pointer = (png_bytep)_MALLOC(sd->width * 3, "png row");
+	if (!row_pointer) {
+		goto sswp_err2;
+	}
+
+	s = sd->dat;
+	for (y = 0; y < sd->height; y++) {
+		for (x = 0; x < sd->width; x++) {
+#if defined(SUPPORT_VIDEOFILTER)
+			/* s[x] may be either a palette index (when VideoFilter is
+			 * inactive or in normaldisp mode) or a raw 32-bit BGR color
+			 * (when VideoFilter wrote directly). Distinguish by range. */
+			if ((UINT)s[x] < (UINT)NP2PAL_MAX) {
+				curpal.rgb[0] = np2_pal32[s[x]].p.b;
+				curpal.rgb[1] = np2_pal32[s[x]].p.g;
+				curpal.rgb[2] = np2_pal32[s[x]].p.r;
+			} else {
+				curpal.d = s[x];
+			}
+#else
+			curpal.d = sd->pal[s[x]].d;
+#endif
+			row_pointer[x * 3 + 0] = curpal.rgb[2]; // R
+			row_pointer[x * 3 + 1] = curpal.rgb[1]; // G
+			row_pointer[x * 3 + 2] = curpal.rgb[0]; // B
+		}
+		png_write_row(png_ptr, row_pointer);
+		s += SURFACE_WIDTH;
+	}
+	_MFREE(row_pointer);
+
+	png_write_end(png_ptr, NULL);
+	png_destroy_write_struct(&png_ptr, &info_ptr);
+	file_close(fh);
+	return(SUCCESS);
+
+sswp_err2:
+	if (row_pointer) {
+		_MFREE(row_pointer);
+		row_pointer = NULL;
+	}
+	png_destroy_write_struct(&png_ptr, &info_ptr);
+sswp_err1:
+	file_close(fh);
+	file_delete(filename);
+	return(FAILURE);
+}
+#else
+BRESULT scrnsave_writepng(SCRNSAVE hdl, const OEMCHAR *filename, UINT flag) {
+	(void)hdl;
+	(void)filename;
+	(void)flag;
+	return(FAILURE);
+}
+#endif
 
 
 // ---- GIF

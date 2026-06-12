@@ -106,7 +106,11 @@ void mousemng_buttonevent(SDL_MouseButtonEvent *button) {
 	default:
 		return;
 	}
+#if USE_SDL >= 3
+	if (button->type == SDL_EVENT_MOUSE_BUTTON_DOWN)
+#else
 	if (button->type == SDL_MOUSEBUTTONDOWN)
+#endif
 		mousemng.btn &= ~bit;
 	else
 		mousemng.btn |= bit;
@@ -149,12 +153,18 @@ void mousemng_toggle(UINT proc) {
 }
 
 #if !defined(__LIBRETRO__)
-void mousemng_hidecursor() {
+void mousemng_hidecursor(SDL_Window *window) {
 #if !defined(DEBUG)
 #if defined(EMSCRIPTEN) && !defined(__LIBRETRO__)
 	if(captured) {
+#if USE_SDL >= 3
+		SDL_HideCursor();
+#else
 		SDL_ShowCursor(SDL_DISABLE);
-#if USE_SDL >= 2
+#endif
+#if USE_SDL >= 3
+		SDL_SetWindowRelativeMouseMode(window, true);
+#elif USE_SDL == 2
 		SDL_SetRelativeMouseMode(SDL_TRUE);
 #else
 		SDL_WM_GrabInput(SDL_GRAB_ON);
@@ -162,8 +172,14 @@ void mousemng_hidecursor() {
 	}
 #else
 	if (!--mousemng.showcount) {
+#if USE_SDL >= 3
+		SDL_HideCursor();
+#else
 		SDL_ShowCursor(SDL_DISABLE);
-#if USE_SDL >= 2
+#endif
+#if USE_SDL >= 3
+		SDL_SetWindowRelativeMouseMode(window, true);
+#elif USE_SDL == 2
 		SDL_SetRelativeMouseMode(SDL_TRUE);
 #else
 		SDL_WM_GrabInput(SDL_GRAB_ON);
@@ -173,19 +189,31 @@ void mousemng_hidecursor() {
 #endif
 }
 
-void mousemng_showcursor() {
+void mousemng_showcursor(SDL_Window *window) {
 #if !defined(DEBUG)
 #if defined(EMSCRIPTEN) && !defined(__LIBRETRO__)
+#if USE_SDL >= 3
+	SDL_HidrCursor();
+#else
 	SDL_ShowCursor(SDL_ENABLE);
-#if USE_SDL >= 2
+#endif
+#if USE_SDL >= 3
+	SDL_SetWindowRelativeMouseMode(window, false);
+#elif USE_SDL == 2
 	SDL_SetRelativeMouseMode(SDL_FALSE);
 #else
 	SDL_WM_GrabInput(SDL_GRAB_OFF);
 #endif
 #else
 	if (!mousemng.showcount++) {
+#if USE_SDL >= 3
+		SDL_ShowCursor();
+#else
 		SDL_ShowCursor(SDL_ENABLE);
-#if USE_SDL >= 2
+#endif
+#if USE_SDL >= 3
+		SDL_SetWindowRelativeMouseMode(window, false);
+#elif USE_SDL == 2
 		SDL_SetRelativeMouseMode(SDL_FALSE);
 #else
 		SDL_WM_GrabInput(SDL_GRAB_OFF);

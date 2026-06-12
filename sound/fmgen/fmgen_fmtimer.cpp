@@ -8,6 +8,7 @@
 
 #include "fmgen_headers.h"
 #include "fmgen_fmtimer.h"
+//#include <io/pic.h>
 
 using namespace FM;
 
@@ -67,7 +68,7 @@ bool Timer::Count(int32 us)
 		{
 			event = true;
 			TimerA();
-
+//			pic_setirq((OPNA)this->s.irq);
 			while (timera_count <= 0)
 				timera_count += timera;
 			
@@ -172,7 +173,7 @@ bool Timer::Count(int32 us)
 		{
 			event = true;
 			TimerA();
-
+//			pic_setirq((OPNA)this->s.irq);
 			while (timera_count <= 0)
 				timera_count += timera;
 			
@@ -186,6 +187,7 @@ bool Timer::Count(int32 us)
 		if (timerb_count <= 0)
 		{
 			event = true;
+//			pic_setirq((OPNA)this->s.irq);
 			while (timerb_count <= 0)
 				timerb_count += timerb;
 			

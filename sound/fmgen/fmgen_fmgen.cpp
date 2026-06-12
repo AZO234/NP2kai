@@ -1,6 +1,9 @@
 // ---------------------------------------------------------------------------
 //	FM Sound Generator - Core Unit
 //	Copyright (C) cisc 1998, 2003.
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wswitch"
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 // ---------------------------------------------------------------------------
 //	$Id: fmgen.cpp,v 1.49 2003/09/02 14:51:04 cisc Exp $
 // ---------------------------------------------------------------------------

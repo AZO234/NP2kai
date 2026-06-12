@@ -43,7 +43,7 @@ snddrv_num2drv(UINT8 num)
 MIDIMOD vermouth_module = NULL;
 #endif
 
-#define g_printerr (void)
+#define g_printerr(...) do { } while(0)
 
 static struct {
 	BRESULT (*drvinit)(UINT rate, UINT samples);
@@ -459,7 +459,7 @@ static BRESULT sdlaudio_init(UINT rate, UINT samples)
 {
 	SDL_AudioSpec fmt;
 
-	if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0) {
+	if (!SDL_InitSubSystem(SDL_INIT_AUDIO)) {
 		g_printerr("sdlaudio_init: SDL_InitSubSystem: %s\n", SDL_GetError());
 		return FAILURE;
 	}

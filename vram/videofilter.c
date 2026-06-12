@@ -75,9 +75,15 @@ static uint32_t RGBtoHSV(const uint32_t u32RGB) {
 }
 
 static void HSVtoRGB_d(uint8_t* pu8R, uint8_t* pu8G, uint8_t* pu8B, const uint16_t u16H, const uint8_t u8S, const uint8_t u8V) {
-	uint16_t u16UseH = u16H % 360;
+	uint16_t u16UseH = u16H;
 	uint8_t u8Min = u8V - (u8S * u8V) / 255;
 	uint8_t u8R, u8G, u8B;
+
+	/* normalize hue without an expensive modulo for the common case */
+	if(u16UseH >= 360) {
+		if(u16UseH < 720) u16UseH -= 360;
+		else              u16UseH %= 360;
+	}
 
 //	if(!pu8R || !pu8G || !pu8B) {
 //		return;
@@ -359,6 +365,12 @@ typedef struct VF_Mng_t_ {
 	BOOL             bWorkHSV;
 	uint8_t          u8MaxSample;
 	VF_CalcSample_t* ptCalcSample;
+
+	/* cache to avoid rebuilding au32WorkFF / ptCalcSample every frame */
+	uint8_t          u8CachedRadius;
+	uint8_t          u8CachedSample;
+	uint8_t          u8CachedWType;
+	BOOL             bCalcSampleValid;
 } VF_Mng_t;
 
 h_VideoFilterMng VideoFilter_Init(const uint16_t u16MaxWidth, const uint16_t u16MaxHeight, const uint8_t u8MaxRadius, const uint8_t u8MaxSample) {
@@ -488,6 +500,7 @@ void VideoFilter_LoadFilter(h_VideoFilterMng hMng, const uint8_t u8ProfileNo, co
 		ptMng->atProfile[u8ProfileNo].atFilters[u8FilterNo].tBase.bEnable = au32Param[0];
 		ptMng->atProfile[u8ProfileNo].atFilters[u8FilterNo].tBase.tType = au32Param[1];
 		memcpy(ptMng->atProfile[u8ProfileNo].atFilters[u8FilterNo].tMaxParam.au32Param, &au32Param[2], VF_PARAM_COUNT * sizeof(uint32_t));
+		ptMng->bCalcSampleValid = FALSE;
 	}
 }
 
@@ -783,6 +796,16 @@ void VideoFilter_Import(h_VideoFilterMng hMng, void* pInputBuf, const uint8_t u8
 			pu8YInput += u8InputBPP;
 		}
 	}
+}
+
+uint16_t VideoFilter_GetWidth(h_VideoFilterMng hMng) {
+	VF_Mng_t *ptMng = (VF_Mng_t *) hMng;
+	return hMng ? ptMng->u16Width : 0;
+}
+
+uint16_t VideoFilter_GetHeight(h_VideoFilterMng hMng) {
+	VF_Mng_t *ptMng = (VF_Mng_t *) hMng;
+	return hMng ? ptMng->u16Height : 0;
 }
 
 uint32_t* VideoFilter_GetDest(h_VideoFilterMng hMng) {
@@ -1092,14 +1115,7 @@ static void FetchWork(h_VideoFilterMng hMng) {
 					if(ptMng->pu8VRAM) {
 						pu8YVRAMSrc = &ptMng->pu8VRAM[i16SelectY * ptMng->u16Width + i16SelectX];
 						if(ptMng->bWorkHSV) {
-							RGBtoHSV_d(
-								&ptWorkPos->tHSV.u16H,
-								&ptWorkPos->tHSV.u8S,
-								&ptWorkPos->tHSV.u8V,
-								m_atPalette[*pu8YVRAMSrc].tRGB.u8R,
-								m_atPalette[*pu8YVRAMSrc].tRGB.u8G,
-								m_atPalette[*pu8YVRAMSrc].tRGB.u8B
-							);
+							ptWorkPos->u32HSV = m_atPalette[*pu8YVRAMSrc].u32HSV;
 						} else {
 							ptWorkPos->u32RGB = m_atPalette[*pu8YVRAMSrc].u32RGB;
 						}
@@ -1165,14 +1181,7 @@ static void WorkRight(h_VideoFilterMng hMng) {
 				if(ptMng->pu8VRAM) {
 					pu8YVRAMSrc = &ptMng->pu8VRAM[i16SelectY * ptMng->u16Width + i16SelectX];
 					if(ptMng->bWorkHSV) {
-						RGBtoHSV_d(
-							&ptWorkPos->tHSV.u16H,
-							&ptWorkPos->tHSV.u8S,
-							&ptWorkPos->tHSV.u8V,
-							m_atPalette[*pu8YVRAMSrc].tRGB.u8R,
-							m_atPalette[*pu8YVRAMSrc].tRGB.u8G,
-							m_atPalette[*pu8YVRAMSrc].tRGB.u8B
-						);
+						ptWorkPos->u32HSV = m_atPalette[*pu8YVRAMSrc].u32HSV;
 					} else {
 						ptWorkPos->u32RGB = m_atPalette[*pu8YVRAMSrc].u32RGB;
 					}
@@ -1248,33 +1257,47 @@ void VideoFilter_HSVSmooth(h_VideoFilterMng hMng, const uint8_t u8Radius, const 
 		u8UseVDiff = 128;
 	}
 
-	switch(u8WType) {
-	case 1:
-		for(u32SampleCount = 0; u32SampleCount < 90; u32SampleCount++) {
-			ptMng->au32WorkFF[u32SampleCount] = (uint8_t)(((90 - u32SampleCount) * 255) / 90);
+	if(!ptMng->bCalcSampleValid
+	   || ptMng->u8CachedRadius != u8Radius
+	   || ptMng->u8CachedSample != u8Sample
+	   || ptMng->u8CachedWType  != u8WType) {
+		switch(u8WType) {
+		case 1:
+			for(u32SampleCount = 0; u32SampleCount < 90; u32SampleCount++) {
+				ptMng->au32WorkFF[u32SampleCount] = (uint8_t)(((90 - u32SampleCount) * 255) / 90);
+			}
+			break;
+		case 2:
+			for(u32SampleCount = 0; u32SampleCount < 90; u32SampleCount++) {
+				ptMng->au32WorkFF[u32SampleCount] = (uint8_t)(cos(u32SampleCount * 3.141592 / 180.0) * 255);
+			}
+			break;
+		default:
+			for(u32SampleCount = 0; u32SampleCount < 90; u32SampleCount++) {
+				ptMng->au32WorkFF[u32SampleCount] = 255;
+			}
+			break;
 		}
-		break;
-	case 2:
-		for(u32SampleCount = 0; u32SampleCount < 90; u32SampleCount++) {
-			ptMng->au32WorkFF[u32SampleCount] = (uint8_t)(cos(u32SampleCount * 3.141592 / 180.0) * 255);
-		}
-		break;
-	default:
-		for(u32SampleCount = 0; u32SampleCount < 90; u32SampleCount++) {
-			ptMng->au32WorkFF[u32SampleCount] = 255;
-		}
-		break;
-	}
 
-	u32Half = (uint32_t)((u8Radius * 10) / 1.414);  // x100
-	for(u8SampleY = 0; u8SampleY < u8UseSample; u8SampleY++) {
-		ptCalcSample = &ptMng->ptCalcSample[u8SampleY * u8UseSample];
-		for(u8SampleX = 0; u8SampleX < u8UseSample; u8SampleX++) {
-			ptCalcSample->u32X = (((u32Half * 2) * u8SampleX / (u8UseSample - 1)) + u8UseRadius * 10 - u32Half) / 100;
-			ptCalcSample->u32Y = (((u32Half * 2) * u8SampleY / (u8UseSample - 1)) + u8UseRadius * 10 - u32Half) / 100;
-			ptCalcSample->u8Weight = ptMng->au32WorkFF[(uint32_t)sqrt(((int32_t)((u32Half * 2) * u8SampleX / (u8UseSample - 1)) - u32Half) * ((int32_t)((u32Half * 2) * u8SampleX / (u8UseSample - 1)) - u32Half) + ((int32_t)((u32Half * 2) * u8SampleY / (u8UseSample - 1)) - u32Half) * ((int32_t)((u32Half * 2) * u8SampleY / (u8UseSample - 1)) - u32Half)) * 90 / (u8Radius * 10)];
-			ptCalcSample++;
+		u32Half = (uint32_t)((u8Radius * 10) / 1.414);  // x100
+		for(u8SampleY = 0; u8SampleY < u8UseSample; u8SampleY++) {
+			ptCalcSample = &ptMng->ptCalcSample[u8SampleY * u8UseSample];
+			for(u8SampleX = 0; u8SampleX < u8UseSample; u8SampleX++) {
+				/* hoist common subexpressions */
+				int32_t i32SX = (int32_t)((u32Half * 2) * u8SampleX / (u8UseSample - 1));
+				int32_t i32SY = (int32_t)((u32Half * 2) * u8SampleY / (u8UseSample - 1));
+				int32_t i32DX = i32SX - (int32_t)u32Half;
+				int32_t i32DY = i32SY - (int32_t)u32Half;
+				ptCalcSample->u32X = (i32SX + u8UseRadius * 10 - (int32_t)u32Half) / 100;
+				ptCalcSample->u32Y = (i32SY + u8UseRadius * 10 - (int32_t)u32Half) / 100;
+				ptCalcSample->u8Weight = ptMng->au32WorkFF[(uint32_t)sqrt((double)(i32DX * i32DX + i32DY * i32DY)) * 90 / (u8Radius * 10)];
+				ptCalcSample++;
+			}
 		}
+		ptMng->u8CachedRadius   = u8Radius;
+		ptMng->u8CachedSample   = u8Sample;
+		ptMng->u8CachedWType    = u8WType;
+		ptMng->bCalcSampleValid = TRUE;
 	}
 
 	ptDest = &ptMng->ptBuffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];
@@ -1355,11 +1378,13 @@ void VideoFilter_HSVSmooth(h_VideoFilterMng hMng, const uint8_t u8Radius, const 
 						ptCalcSample++;
 					}
 				}
-				while(i32AllH < 0) {
-					i32AllH += 360;
+				/* normalize hue with O(1) arithmetic instead of a while-loop */
+				if(i32AllH < 0) {
+					int32_t turns = (-i32AllH + 359) / 360;
+					i32AllH += turns * 360;
 				}
 				i32AllH /= u32SampleCount;
-				if(i32AllH > 360) {
+				if(i32AllH >= 360) {
 					i32AllH %= 360;
 				}
 				HSVtoRGB_d(
@@ -1422,33 +1447,46 @@ void VideoFilter_RGBSmooth(h_VideoFilterMng hMng, const uint8_t u8Radius, const 
 		u8UseBDiff = 128;
 	}
 
-	switch(u8WType) {
-	case 1:
-		for(u32SampleCount = 0; u32SampleCount < 90; u32SampleCount++) {
-			ptMng->au32WorkFF[u32SampleCount] = (uint8_t)(((90 - u32SampleCount) * 255) / 90);
+	if(!ptMng->bCalcSampleValid
+	   || ptMng->u8CachedRadius != u8Radius
+	   || ptMng->u8CachedSample != u8Sample
+	   || ptMng->u8CachedWType  != u8WType) {
+		switch(u8WType) {
+		case 1:
+			for(u32SampleCount = 0; u32SampleCount < 90; u32SampleCount++) {
+				ptMng->au32WorkFF[u32SampleCount] = (uint8_t)(((90 - u32SampleCount) * 255) / 90);
+			}
+			break;
+		case 2:
+			for(u32SampleCount = 0; u32SampleCount < 90; u32SampleCount++) {
+				ptMng->au32WorkFF[u32SampleCount] = (uint8_t)(cos(u32SampleCount * 3.141592 / 180.0) * 255);
+			}
+			break;
+		default:
+			for(u32SampleCount = 0; u32SampleCount < 90; u32SampleCount++) {
+				ptMng->au32WorkFF[u32SampleCount] = 255;
+			}
+			break;
 		}
-		break;
-	case 2:
-		for(u32SampleCount = 0; u32SampleCount < 90; u32SampleCount++) {
-			ptMng->au32WorkFF[u32SampleCount] = (uint8_t)(cos(u32SampleCount * 3.141592 / 180.0) * 255);
-		}
-		break;
-	default:
-		for(u32SampleCount = 0; u32SampleCount < 90; u32SampleCount++) {
-			ptMng->au32WorkFF[u32SampleCount] = 255;
-		}
-		break;
-	}
 
-	u32Half = (uint32_t)((u8Radius * 10) / 1.414);  // x100
-	for(u8SampleY = 0; u8SampleY < u8UseSample; u8SampleY++) {
-		ptCalcSample = &ptMng->ptCalcSample[u8SampleY * u8UseSample];
-		for(u8SampleX = 0; u8SampleX < u8UseSample; u8SampleX++) {
-			ptCalcSample->u32X = (((u32Half * 2) * u8SampleX / (u8UseSample - 1)) + u8UseRadius * 10 - u32Half) / 100;
-			ptCalcSample->u32Y = (((u32Half * 2) * u8SampleY / (u8UseSample - 1)) + u8UseRadius * 10 - u32Half) / 100;
-			ptCalcSample->u8Weight = ptMng->au32WorkFF[(uint32_t)sqrt(((int32_t)((u32Half * 2) * u8SampleX / (u8UseSample - 1)) - u32Half) * ((int32_t)((u32Half * 2) * u8SampleX / (u8UseSample - 1)) - u32Half) + ((int32_t)((u32Half * 2) * u8SampleY / (u8UseSample - 1)) - u32Half) * ((int32_t)((u32Half * 2) * u8SampleY / (u8UseSample - 1)) - u32Half)) * 90 / (u8Radius * 10)];
-			ptCalcSample++;
+		u32Half = (uint32_t)((u8Radius * 10) / 1.414);  // x100
+		for(u8SampleY = 0; u8SampleY < u8UseSample; u8SampleY++) {
+			ptCalcSample = &ptMng->ptCalcSample[u8SampleY * u8UseSample];
+			for(u8SampleX = 0; u8SampleX < u8UseSample; u8SampleX++) {
+				int32_t i32SX = (int32_t)((u32Half * 2) * u8SampleX / (u8UseSample - 1));
+				int32_t i32SY = (int32_t)((u32Half * 2) * u8SampleY / (u8UseSample - 1));
+				int32_t i32DX = i32SX - (int32_t)u32Half;
+				int32_t i32DY = i32SY - (int32_t)u32Half;
+				ptCalcSample->u32X = (i32SX + u8UseRadius * 10 - (int32_t)u32Half) / 100;
+				ptCalcSample->u32Y = (i32SY + u8UseRadius * 10 - (int32_t)u32Half) / 100;
+				ptCalcSample->u8Weight = ptMng->au32WorkFF[(uint32_t)sqrt((double)(i32DX * i32DX + i32DY * i32DY)) * 90 / (u8Radius * 10)];
+				ptCalcSample++;
+			}
 		}
+		ptMng->u8CachedRadius   = u8Radius;
+		ptMng->u8CachedSample   = u8Sample;
+		ptMng->u8CachedWType    = u8WType;
+		ptMng->bCalcSampleValid = TRUE;
 	}
 
 	ptDest = &ptMng->ptBuffer[!ptMng->bBufferMain * ptMng->u16Width * ptMng->u16Height];

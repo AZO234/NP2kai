@@ -499,6 +499,7 @@ UINT8 i386haxfunc_vcpu_debug(HAX_DEBUG *inbuf){
 
 	return SUCCESS;
 }
+#if defined(_WINDOWS)
 UINT8 i386haxfunc_vcpu_setCPUID(HAX_CPUID *inbuf){
 	int ret = 0;
 	DWORD dwSize;
@@ -509,7 +510,7 @@ UINT8 i386haxfunc_vcpu_setCPUID(HAX_CPUID *inbuf){
 
 	ret = DeviceIoControl(np2hax.hVCPUDevice, HAX_VCPU_IOCTL_SET_CPUID,
                           inbuf, sizeof(HAX_CPUID) - sizeof(HAX_CPUID_ENTRY) * (HAX_MAX_CPUID_ENTRIES - inbuf->total),
-						  NULL, 0, &dwSize, 
+						  NULL, 0, &dwSize,
 						  (LPOVERLAPPED)NULL);
 	if (!ret) {
         return FAILURE;
@@ -517,4 +518,5 @@ UINT8 i386haxfunc_vcpu_setCPUID(HAX_CPUID *inbuf){
 
 	return SUCCESS;
 }
+#endif
 #endif

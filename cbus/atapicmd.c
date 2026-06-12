@@ -14,6 +14,7 @@ static void trace_fmt_ex(const char* fmt, ...)
 }
 #define	TRACEOUT(s)	trace_fmt_ex s
 #else
+#undef	TRACEOUT
 #define	TRACEOUT(s)	(void)(s)
 #endif	/* 1 */
 

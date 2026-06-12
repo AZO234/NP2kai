@@ -12,6 +12,10 @@ const UINT8	*src2;
 	int		xalign;
 	int		yalign;
 	UINT8	dirty[SURFACE_HEIGHT];
+#if defined(SUPPORT_VIDEOFILTER)
+	const UINT32	*vfDest;	/* cached VideoFilter dest buffer pointer */
+	UINT16		vfW;		/* cached VideoFilter buffer width (stride) */
+#endif
 } _SDRAW, *SDRAW;
 
 typedef void (SCRNCALL * SDRAWFN)(SDRAW sdraw, int maxy);

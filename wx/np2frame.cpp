@@ -22,6 +22,7 @@
 #include <fdd/diskdrv.h>
 #include <fdd/sxsi.h>
 #include <vram/scrndraw.h>
+#include <vram/scrnsave.h>
 #include <statsave.h>
 #include <font/font.h>
 #include <io/iocore.h>   /* for fdc.equip */
@@ -565,9 +566,9 @@ wxMenu *Np2Frame::BuildCdMenu(void)
 
 void Np2Frame::BuildStatusBar(void)
 {
-	wxStatusBar *sb = CreateStatusBar(4);
-	int widths[] = {-1, 50, 40, 40};
-	sb->SetStatusWidths(4, widths);
+	wxStatusBar *sb = CreateStatusBar(3);
+	int widths[] = {-1, 24, 24};
+	sb->SetStatusWidths(3, widths);
 
 	SetStatusText("NP2kai wx", 0);
 
@@ -584,16 +585,16 @@ void Np2Frame::BuildStatusBar(void)
 
 	sb->Bind(wxEVT_SIZE, [this, sb](wxSizeEvent& e) {
 		e.Skip();
-		wxRect r2, r3;
+		wxRect r1, r2;
+		sb->GetFieldRect(1, r1);
 		sb->GetFieldRect(2, r2);
-		sb->GetFieldRect(3, r3);
 		if (m_volIcon) {
 			wxSize vSize = m_volIcon->GetSize();
-			m_volIcon->Move(r2.x + (r2.width - vSize.x)/2, r2.y + (r2.height - vSize.y)/2);
+			m_volIcon->Move(r1.x + (r1.width - vSize.x)/2, r1.y + (r1.height - vSize.y)/2);
 		}
 		if (m_speedIcon) {
 			wxSize sSize = m_speedIcon->GetSize();
-			m_speedIcon->Move(r3.x + (r3.width - sSize.x)/2, r3.y + (r3.height - sSize.y)/2);
+			m_speedIcon->Move(r2.x + (r2.width - sSize.x)/2, r2.y + (r2.height - sSize.y)/2);
 		}
 	});
 }
@@ -621,23 +622,23 @@ void Np2Frame::OnVolClick(wxMouseEvent &evt)
 	wxStatusBar *sb = GetStatusBar();
 	if (!sb) return;
 
-	wxRect rect2, rect3;
+	wxRect rect1, rect2;
+	sb->GetFieldRect(1, rect1);
 	sb->GetFieldRect(2, rect2);
-	sb->GetFieldRect(3, rect3);
 
 	wxPoint pos = evt.GetPosition();
 	
 	// Adjust pos if event came from the icon
 	wxObject *obj = evt.GetEventObject();
 	if (obj == m_volIcon) {
+		pos.x += rect1.x;
+		pos.y += rect1.y;
+	} else if (obj == m_speedIcon) {
 		pos.x += rect2.x;
 		pos.y += rect2.y;
-	} else if (obj == m_speedIcon) {
-		pos.x += rect3.x;
-		pos.y += rect3.y;
 	}
 
-	if (rect2.Contains(pos)) {
+	if (rect1.Contains(pos)) {
 		if (evt.LeftDown()) {
 			if (np2cfg.vol_master > 0) {
 				m_lastVol = np2cfg.vol_master;
@@ -649,14 +650,14 @@ void Np2Frame::OnVolClick(wxMouseEvent &evt)
 			sysmng_update(SYS_UPDATECFG);
 		} else if (evt.RightDown()) {
 			VolPopup *pop = new VolPopup(this, &np2cfg.vol_master);
-			wxPoint screenPos = sb->ClientToScreen(rect2.GetTopLeft());
+			wxPoint screenPos = sb->ClientToScreen(rect1.GetTopLeft());
 			/* Show popup above the status bar */
 			pop->Position(screenPos - wxPoint(0, pop->GetSize().y), wxSize(0, 0));
 			pop->Popup();
 			/* We need a way to update status bar while slider is moving.
 			 * For now, it updates when popup closes or we could use a timer. */
 		}
-	} else if (rect3.Contains(pos)) {
+	} else if (rect2.Contains(pos)) {
 		if (evt.LeftDown()) {
 			if (np2cfg.emuspeed != 100) {
 				m_lastSpeed = np2cfg.emuspeed;
@@ -668,7 +669,7 @@ void Np2Frame::OnVolClick(wxMouseEvent &evt)
 			sysmng_update(SYS_UPDATECFG);
 		} else if (evt.RightDown()) {
 			SpeedPopup *pop = new SpeedPopup(this, &np2cfg.emuspeed);
-			wxPoint screenPos = sb->ClientToScreen(rect3.GetTopLeft());
+			wxPoint screenPos = sb->ClientToScreen(rect2.GetTopLeft());
 			pop->Position(screenPos - wxPoint(0, pop->GetSize().y), wxSize(0, 0));
 			pop->Popup();
 		}
@@ -725,15 +726,18 @@ void Np2Frame::OnCycleScreenshotTimer(wxTimerEvent & /*evt*/)
 	if (!m_cycleScreenshotEnabled) return;
 
 	bool success = false;
-	wxBitmap bmp = CaptureScreen(m_panel);
-	if (bmp.IsOk()) {
+	np2_multithread_suspend();
+	SCRNSAVE hdl = scrnsave_create();
+	if (hdl) {
 		wxString path = wxString::FromUTF8(cycle_shot_path);
 		if (!path.empty()) {
-			if (bmp.ConvertToImage().SaveFile(path, wxBITMAP_TYPE_PNG)) {
+			if (scrnsave_writepng(hdl, path.ToUTF8().data(), 0) == SUCCESS) {
 				success = true;
 			}
 		}
+		scrnsave_destroy(hdl);
 	}
+	np2_multithread_resume();
 
 	if (!success) {
 		m_cycleScreenshotEnabled = false;
@@ -1254,11 +1258,26 @@ void Np2Frame::OnOtherPngSave(wxCommandEvent & /*evt*/)
 	    "PNG files (*.png)|*.png|All files (*.*)|*.*",
 	    wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	if (dlg.ShowModal() == wxID_OK) {
-		wxBitmap bmp = CaptureScreen(m_panel);
-		if (bmp.IsOk()) {
-			bmp.ConvertToImage().SaveFile(dlg.GetPath(), wxBITMAP_TYPE_PNG);
-			milstr_ncpy(bmpfilefolder, dlg.GetDirectory().ToUTF8().data(), MAX_PATH);
+		wxString path = dlg.GetPath();
+		wxString dir  = dlg.GetDirectory();
+		bool ok = false;
+
+		np2_multithread_suspend();
+		SCRNSAVE hdl = scrnsave_create();
+		if (hdl) {
+			if (scrnsave_writepng(hdl, path.ToUTF8().data(), 0) == SUCCESS) {
+				ok = true;
+			}
+			scrnsave_destroy(hdl);
+		}
+		np2_multithread_resume();
+
+		if (ok) {
+			milstr_ncpy(bmpfilefolder, dir.ToUTF8().data(), MAX_PATH);
 			sysmng_update(SYS_UPDATECFG);
+		} else {
+			wxMessageBox(wxT("Failed to save PNG.\nThe screen may be in transition; please try again."),
+			             wxT("PNG save"), wxOK | wxICON_WARNING, this);
 		}
 	}
 }

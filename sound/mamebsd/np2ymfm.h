@@ -50,9 +50,9 @@ class opl3bsd {
 public:
 	opl3bsd() :
 		m_chip(new chip_wrapper<ymfm::ymf262>()),
-		m_data(),
 		m_output(nullptr),
-		m_outputlen(0)
+		m_outputlen(0),
+		m_data()
 	{
 		m_outputlen = 4096;
 		m_output = new ymfm::ymf262::output_data[m_outputlen];

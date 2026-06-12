@@ -112,7 +112,10 @@ void	OPNB_DataLoad(void* OPNB, void* opnbdata, void* adpcmadata) { ((FM::OPNB*)O
 
 //	YM2151(OPM) ----------------------------------------------------
 void*	OPM_Construct(void) { return new FM::OPM; }
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
 void	OPM_Destruct(void* OPM) { if(OPM) delete (FM::OPM*)OPM; }
+#pragma GCC diagnostic pop
 
 bool	OPM_Init(void* OPM, uint c, uint r, bool ip) { return ((FM::OPM*)OPM)->Init(c, r, ip); }
 bool	OPM_SetRate(void* OPM, uint c, uint r, bool b) { return ((FM::OPM*)OPM)->SetRate(c, r, b); }

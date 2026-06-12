@@ -40,6 +40,7 @@ void scrnsave_destroy(SCRNSAVE hdl);
 int scrnsave_gettype(SCRNSAVE hdl);
 BRESULT scrnsave_writebmp(SCRNSAVE hdl, const OEMCHAR *filename, UINT flag);
 BRESULT scrnsave_getbmp(SCRNSAVE hdl, BMPFILE *lpbf, BMPINFO *lpbi, UINT8 **lplppal, UINT8 **lplppixels, UINT flag);
+BRESULT scrnsave_writepng(SCRNSAVE hdl, const OEMCHAR *filename, UINT flag);
 BRESULT scrnsave_writegif(SCRNSAVE hdl, const OEMCHAR *filename, UINT flag);
 
 #ifdef __cplusplus

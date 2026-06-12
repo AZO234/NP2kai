@@ -118,7 +118,11 @@ void taskmng_rol(void) {
 		return;
 	}
 	switch(e.type) {
+#if USE_SDL >= 3
+		case SDL_EVENT_MOUSE_MOTION:
+#else
 		case SDL_MOUSEMOTION:
+#endif
 			if (menuvram == NULL) {
 				mousemng_onmove(&e.motion);
 			} else {
@@ -136,7 +140,11 @@ void taskmng_rol(void) {
 			}
 			break;
 
+#if USE_SDL >= 3
+		case SDL_EVENT_MOUSE_BUTTON_UP:
+#else
 		case SDL_MOUSEBUTTONUP:
+#endif
 			switch(e.button.button) {
 				case SDL_BUTTON_LEFT:
 					if (menuvram != NULL)
@@ -169,7 +177,11 @@ void taskmng_rol(void) {
 			}
 			break;
 
+#if USE_SDL >= 3
+		case SDL_EVENT_MOUSE_BUTTON_DOWN:
+#else
 		case SDL_MOUSEBUTTONDOWN:
+#endif
 			switch(e.button.button) {
 				case SDL_BUTTON_LEFT:
 					if (menuvram != NULL)
@@ -198,7 +210,11 @@ void taskmng_rol(void) {
 			}
 			break;
 
+#if USE_SDL >= 3
+		case SDL_EVENT_KEY_DOWN:
+#else
 		case SDL_KEYDOWN:
+#endif
 
 #if defined(__OPENDINGUX__)
 #if USE_SDL >= 2
@@ -213,7 +229,9 @@ void taskmng_rol(void) {
       }
 #endif
 #endif  // __OPENDINGUX__
-#if USE_SDL >= 2
+#if USE_SDL >= 3
+			if (e.key.scancode == SDL_SCANCODE_F11) {
+#elif USE_SDL >= 2
 			if (e.key.keysym.scancode == SDL_SCANCODE_F11) {
 #else
 			if (e.key.keysym.sym == SDLK_F11) {
@@ -241,7 +259,18 @@ void taskmng_rol(void) {
 				}
 			}
 #endif
-#if USE_SDL >= 2
+#if USE_SDL >= 3
+			/* use command-f to toggle fullscreen/windowed mode */
+			if ((e.key.mod == SDL_KMOD_LGUI) || (e.key.mod == SDL_KMOD_RGUI)) {
+				if (e.key.scancode == SDL_SCANCODE_F) {
+					if (!scrnmng_isfullscreen()) {
+						changescreen(scrnmode | SCRNMODE_FULLSCREEN);
+					} else {
+						changescreen(scrnmode & ~SCRNMODE_FULLSCREEN);
+					}
+				}
+			}
+#elif USE_SDL == 2
 			/* use command-f to toggle fullscreen/windowed mode */
 			if ((e.key.keysym.mod == KMOD_LGUI) || (e.key.keysym.mod == KMOD_RGUI)) {
 				if (e.key.keysym.scancode == SDL_SCANCODE_F) {
@@ -254,7 +283,9 @@ void taskmng_rol(void) {
 			}
 #endif
 			else {
-#if USE_SDL >= 2
+#if USE_SDL >= 3
+				sdlkbd_keydown(e.key.scancode);
+#elif USE_SDL == 2
 				sdlkbd_keydown(e.key.keysym.scancode);
 #else
 				sdlkbd_keydown(e.key.keysym.sym);
@@ -262,13 +293,23 @@ void taskmng_rol(void) {
 			}
 			break;
 
+#if USE_SDL >= 3
+		case SDL_EVENT_KEY_UP:
+#else
 		case SDL_KEYUP:
+#endif
 #if defined(__OPENDINGUX__)
 #if SDL_MAJOR_VERSION != 1
       e.key.keysym.scancode=convertKeyMap(e.key.keysym.scancode);
+#if USE_SDL >= 3
+      if(e.key.keysym.scancode==SDL_SCANCODE_UNKNOWN || e.key.scancode ==999){
+        return;
+      }
+#else
       if(e.key.keysym.scancode==SDL_SCANCODE_UNKNOWN || e.key.keysym.scancode ==999){
         return;
       }
+#endif
 #else
       e.key.keysym.sym=convertKeyMap(e.key.keysym.sym);
       if(e.key.keysym.sym==SDLK_UNKNOWN || e.key.keysym.sym ==999){
@@ -277,14 +318,20 @@ void taskmng_rol(void) {
 #endif
 #endif  // __OPENDINGUX__
 
-#if USE_SDL >= 2
+#if USE_SDL >= 3
+      sdlkbd_keyup(e.key.scancode);
+#elif USE_SDL == 2
       sdlkbd_keyup(e.key.keysym.scancode);
 #else
       sdlkbd_keyup(e.key.keysym.sym);
 #endif
 			break;
 
+#if USE_SDL >= 3
+		case SDL_EVENT_QUIT:
+#else
 		case SDL_QUIT:
+#endif
 			task_avail = FALSE;
 			break;
 	}

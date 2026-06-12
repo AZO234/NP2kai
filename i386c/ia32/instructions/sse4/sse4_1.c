@@ -24,11 +24,15 @@
  */
 
 #include "compiler.h"
+#pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
 
 #include <math.h>
 #include <float.h>
 
+#if defined(_WIN32) && !defined(__LIBRETRO__)
 #define isnan(x) (_isnan(x))
+#endif
 
 #include "../../cpu.h"
 #include "../../ia32.mcr"

@@ -26,6 +26,7 @@ extern "C" void np2frame_requestRedraw(void);
 
 /* ---- utilities ---- */
 
+__attribute__((unused))
 static BRESULT calcdrawrect(int *srcpos, int *dstpos, int *w, int *h, const RECT_T *rt)
 {
 	*srcpos = 0;

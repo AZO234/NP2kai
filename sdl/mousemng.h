@@ -33,8 +33,8 @@ void mousemng_enable(UINT proc);
 void mousemng_disable(UINT proc);
 void mousemng_toggle(UINT proc);
 #if !defined(__LIBRETRO__)
-void mousemng_hidecursor();
-void mousemng_showcursor();
+void mousemng_hidecursor(SDL_Window *window);
+void mousemng_showcursor(SDL_Window *window);
 void mousemng_onmove(SDL_MouseMotionEvent *motion);
 void mousemng_buttonevent(SDL_MouseButtonEvent *button);
 #if defined(EMSCRIPTEN) && !defined(__LIBRETRO__)

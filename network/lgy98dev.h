@@ -36,6 +36,7 @@ extern "C" {
 typedef void IOReadHandler(void *opaque, const UINT8 *buf, int size);
 typedef int IOCanRWHandler(void *opaque);
 //typedef ssize_t (IOReadvHandler)(void *, const struct iovec *, int);
+struct tagVLANClientState;
 typedef void (NetCleanup) (struct tagVLANClientState *);
 typedef void (LinkStatusChanged)(struct tagVLANClientState *);
 

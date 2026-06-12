@@ -91,6 +91,7 @@ typedef struct DisplaySurface {
     struct PixelFormat pf;
 } DisplaySurface;
 
+struct DisplayState;
 typedef struct DisplayChangeListener {
     int idle;
     UINT64 gui_timer_interval;
