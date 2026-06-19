@@ -213,7 +213,7 @@ void i286c_setextsize(UINT32 size) {
 			extmem = NULL;
 		}
 		if (size != 0) {
-			extmem = (UINT8 *)_MALLOC(size + 16, "EXTMEM");
+			extmem = (size <= (UINT32)(~0) - 16) ? (UINT8 *)_MALLOC(size + 16, "EXTMEM") : NULL;
 		}
 		if (extmem != NULL) {
 			CPU_EXTMEM = extmem;
