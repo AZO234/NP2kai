@@ -43,6 +43,7 @@ glue(glue(glue(cirrus_patternfill_, ROP_NAME), _),DEPTH)
       int dstpitch, int srcpitch,
       int bltwidth, int bltheight)
 {
+    (void)srcpitch; // unused
     uint8_t *d;
     int x, y, pattern_y, pattern_pitch, pattern_x;
     unsigned int col;
@@ -98,6 +99,7 @@ glue(glue(glue(cirrus_colorexpand_transp_, ROP_NAME), _),DEPTH)
       int dstpitch, int srcpitch,
       int bltwidth, int bltheight)
 {
+    (void)srcpitch; // unused
     uint8_t *d;
     int x, y;
     unsigned bits, bits_xor;
@@ -147,6 +149,7 @@ glue(glue(glue(cirrus_colorexpand_, ROP_NAME), _),DEPTH)
       int dstpitch, int srcpitch,
       int bltwidth, int bltheight)
 {
+    (void)srcpitch; // unused
     uint32_t_ colors[2];
     uint8_t *d;
     int x, y;
@@ -183,6 +186,7 @@ glue(glue(glue(cirrus_colorexpand_pattern_transp_, ROP_NAME), _),DEPTH)
       int dstpitch, int srcpitch,
       int bltwidth, int bltheight)
 {
+    (void)srcpitch; // unused
     uint8_t *d;
     int x, y, bitpos, pattern_y;
     unsigned int bits, bits_xor;
@@ -227,6 +231,7 @@ glue(glue(glue(cirrus_colorexpand_pattern_, ROP_NAME), _),DEPTH)
       int dstpitch, int srcpitch,
       int bltwidth, int bltheight)
 {
+    (void)srcpitch; // unused
     uint32_t_ colors[2];
     uint8_t *d;
     int x, y, bitpos, pattern_y;
