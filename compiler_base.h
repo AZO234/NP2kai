@@ -129,7 +129,8 @@
 #endif
 #endif
 
-// XOPEN_SOURCE
+// XOPEN_SOURCE may already be defined by the build environment.
+// Do not redefine it if an existing value is provided.
 #if !defined(_XOPEN_SOURCE)
 #if __STDC_VERSION__ >= 199901L
 #define _XOPEN_SOURCE 600
