@@ -934,7 +934,7 @@ endif
 	@echo "** BUILD SUCCESSFUL! GG NO RE **"
 
 %.o: %.cpp
-	$(CXX) -c $(OBJOUT)$@ $< $(CXXFLAGS) $(INCDIRS) $(COMMON_C_FLAGS)
+	$(CXX) -c $(OBJOUT)$@ $< $(CXXFLAGS) $(INCDIRS) $(COMMON_CXX_FLAGS)
 
 %.o: %.c
 	$(CC) -c $(OBJOUT)$@ $< $(CFLAGS) $(INCDIRS) $(COMMON_C_FLAGS)

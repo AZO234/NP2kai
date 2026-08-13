@@ -160,5 +160,5 @@ ifeq ($(SUPPORT_ASYNC_CPU), 1)
 	NP2DEFINE += -DSUPPORT_ASYNC_CPU
 endif
 
-COMMON_C_FLAGS := -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-incompatible-function-pointer-types -Wno-int-conversion -fno-sized-deallocation
- 
+COMMON_C_FLAGS := -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-incompatible-function-pointer-types -Wno-int-conversion
+COMMON_CXX_FLAGS := -fno-sized-deallocation
