@@ -616,7 +616,11 @@ if(NOT CMAKE_CROSSCOMPILING)
 
 	# libcdio
 	pkg_check_modules(LIBCDIO libcdio)
-	list(APPEND libcdio_definitions "SUPPORT_LIBCDIO")
+	if(LIBCDIO_FOUND)
+		list(APPEND libcdio_definitions "SUPPORT_LIBCDIO")
+	else()
+		message("-- Not found: libcdio (CD image support disabled)")
+	endif()
 
 	# libusb
 	if(NOT MSVC_VERSION)  # temporaly
