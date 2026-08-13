@@ -13,7 +13,7 @@
 #if USE_SDL >= 3
 #include	<SDL3_ttf/SDL_ttf.h>
 #elif USE_SDL == 2
-#include	<SDL2_ttf/SDL_ttf.h>
+#include	<SDL_ttf.h>
 #elif USE_SDL == 1
 #include	<SDL_ttf/SDL_ttf.h>
 #endif
