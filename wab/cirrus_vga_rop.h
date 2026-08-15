@@ -28,6 +28,7 @@ glue(cirrus_bitblt_rop_fwd_, ROP_NAME)(CirrusVGAState *s,
                              int dstpitch,int srcpitch,
                              int bltwidth,int bltheight)
 {
+    (void)s; // unused
     int x,y;
     dstpitch -= bltwidth;
 	srcpitch -= bltwidth;
@@ -61,6 +62,7 @@ glue(cirrus_bitblt_rop_bkwd_, ROP_NAME)(CirrusVGAState *s,
                                         int dstpitch,int srcpitch,
                                         int bltwidth,int bltheight)
 {
+    (void)s; // unused
     int x,y;
     dstpitch += bltwidth;
     srcpitch += bltwidth;

@@ -430,17 +430,18 @@ endif()
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "RelWithDebInfo")
 endif()
-set(COMMON_C_CXX_FLAGS "-Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-incompatible-function-pointer-types -Wno-int-conversion")
-set(COMMON_CXX_ONLY_FLAGS "-fno-sized-deallocation")
+# Compiler options shared by C and C++ sources.
+set(COMMON_C_FLAGS "-Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-int-conversion")
+set(COMMON_CXX_FLAGS "${COMMON_C_FLAGS} -fno-sized-deallocation")
 if(NOT EMSCRIPTEN)
-set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -DDEBUG -DTRACE ${COMMON_C_CXX_FLAGS} ${COMMON_CXX_ONLY_FLAGS}")
-set(CMAKE_CXX_FLAGS_RELEASE "-O2 -Wall -DNDEBUG ${COMMON_C_CXX_FLAGS} ${COMMON_CXX_ONLY_FLAGS}")
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -DDEBUG -DTRACE ${COMMON_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS_RELEASE "-O2 -Wall -DNDEBUG ${COMMON_CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -Wall")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-Og -g -Wall -DNDEBUG")
-set(CMAKE_C_FLAGS ${COMMON_C_CXX_FLAGS})
+set(CMAKE_C_FLAGS ${COMMON_C_FLAGS})
 else()
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_C_CXX_FLAGS} ${COMMON_CXX_ONLY_FLAGS}")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_C_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_CXX_FLAGS}")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_C_FLAGS}")
 endif()
 set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 
@@ -615,7 +616,11 @@ if(NOT CMAKE_CROSSCOMPILING)
 
 	# libcdio
 	pkg_check_modules(LIBCDIO libcdio)
-	list(APPEND libcdio_definitions "SUPPORT_LIBCDIO")
+	if(LIBCDIO_FOUND)
+		list(APPEND libcdio_definitions "SUPPORT_LIBCDIO")
+	else()
+		message("-- Not found: libcdio (CD image support disabled)")
+	endif()
 
 	# libusb
 	if(NOT MSVC_VERSION)  # temporaly

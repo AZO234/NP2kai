@@ -104,7 +104,7 @@ ifneq ($(STATIC_LINKING), 1)
 			$(NP2_PATH)/sdl/libretro/libretro-common/string/stdstring.c
 endif
 
-COREFLAGS := -D__LIBRETRO__ $(INCFLAGS) $(NP2DEFINE) $(COMMON_C_FLAGS) $(NP21DEFINE) -DSUPPORT_NP2_TICKCOUNT
+COREFLAGS := -D__LIBRETRO__ $(INCFLAGS) $(NP2DEFINE) $(NP21DEFINE) -DSUPPORT_NP2_TICKCOUNT
 
 ifeq ($(SUPPORT_NP2_THREAD), 1)
 	SOURCES_C += $(NP2_PATH)/sdl/libretro/libretro-common/rthreads/rthreads.c \
@@ -139,7 +139,7 @@ include $(CLEAR_VARS)
 APP_STL := c++_shared
 LOCAL_MODULE    := retro
 LOCAL_SRC_FILES := $(SOURCES_C) $(SOURCES_CXX)
-LOCAL_CFLAGS    := $(COREFLAGS)
-LOCAL_CXXFLAGS  := $(COREFLAGS)
+LOCAL_CFLAGS    := $(COREFLAGS) $(COMMON_C_FLAGS)
+LOCAL_CXXFLAGS  := $(COREFLAGS) $(COMMON_CXX_FLAGS)
 LOCAL_LDFLAGS   := -Wl,-version-script=$(CORE_DIR)/sdl/link.T
 include $(BUILD_SHARED_LIBRARY)
