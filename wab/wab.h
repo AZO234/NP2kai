@@ -68,7 +68,7 @@ typedef struct {
 	NP2WAB_DrawFrame drawframe; // 画面描画関数。hDCBufにアクセラレータ画面データを転送する。
 	int curWidth; // 実際に確保済み領域サイズ(幅)
 	int curHeight; // 実際に確保済み領域サイズ(高さ)
-#if defined(_WIN32)
+#if defined(NP2_WIN)
         HGDIOBJ hBmpOld;
 #endif
 } NP2WABWND;

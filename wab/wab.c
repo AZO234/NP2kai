@@ -260,7 +260,7 @@ void np2wab_setScreenSize(int width, int height)
 	// バッファサイズ変更が必要なら変更
 	bufWidth = MAX(width, WAB_RESERVED_WIDTH);
 	bufHeight = MAX(height, WAB_RESERVED_HEIGHT);
-#if defined(_WIN32)
+#if defined(NP2_WIN)
 	if (np2wabwnd.curWidth < bufWidth || np2wabwnd.curHeight < bufHeight) {
 		HDC hdc = np2wabwnd.multiwindow ? GetDC(NULL) : np2wabwnd.hDCWAB;
 		np2wabwnd.curWidth = bufWidth;
@@ -789,7 +789,7 @@ void np2wab_reset(const NP2CFG *pConfig)
 	if (np2wabwnd.curWidth != WAB_RESERVED_WIDTH && np2wabwnd.curHeight != WAB_RESERVED_HEIGHT) {
 		np2wabwnd.curWidth = WAB_RESERVED_WIDTH;
 		np2wabwnd.curHeight = WAB_RESERVED_HEIGHT;
-#if defined(_WIN32)
+#if defined(NP2_WIN)
 		SelectObject(np2wabwnd.hDCBuf, np2wabwnd.hBmpOld);
 		DeleteObject(np2wabwnd.hBmpBuf);
 		np2wabwnd.hBmpBuf = CreateCompatibleBitmap(np2wabwnd.hDCBuf, np2wabwnd.curWidth, np2wabwnd.curHeight);
