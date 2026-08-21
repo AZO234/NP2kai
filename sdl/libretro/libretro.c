@@ -16,6 +16,8 @@
 #include "libretro_params.h"
 #include "libretro_core_options.h"
 #include "file_stream.h"
+#include "file_path.h"
+#include "retro_dirent.h"
 
 #include <compiler.h>//required to prevent missing type errors
 #include <sound/beep.h>
@@ -856,6 +858,7 @@ void lowerstring(char* str)
 void retro_set_environment(retro_environment_t cb)
 {
    struct retro_log_callback logging;
+   struct retro_vfs_interface_info vfs_iface_info;
    BOOL allow_no_game = true;
 
    environ_cb = cb;
@@ -864,6 +867,20 @@ void retro_set_environment(retro_environment_t cb)
    //environ_cb(RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME, &no_rom);
 
    environ_cb(RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME, &allow_no_game);
+
+   /* The core needs the full path to its disk images, and on Android that path
+    * is a Storage Access Framework content:// URI, which no C library call can
+    * open. Hand libretro-common the frontend's VFS so that dosio.c - which
+    * already goes through filestream/retro_dirent - opens those paths through
+    * the frontend instead. Each init checks the version it needs itself. */
+   vfs_iface_info.required_interface_version = 3;
+   vfs_iface_info.iface                      = NULL;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VFS_INTERFACE, &vfs_iface_info))
+   {
+      filestream_vfs_init(&vfs_iface_info);
+      path_vfs_init(&vfs_iface_info);
+      dirent_vfs_init(&vfs_iface_info);
+   }
 
    libretro_set_core_options(environ_cb);
 }
