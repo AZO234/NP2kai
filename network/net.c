@@ -6,7 +6,7 @@
  */
 
 #include	<compiler.h>
-#if defined(NP2_WIN)
+#if defined(_WINDOWS)
 #include	<io.h>
 #else
 #include	<unistd.h>
@@ -24,7 +24,7 @@
 #include	<network/lgy98.h>
 #endif
 
-#if defined(NP2_WIN)
+#if defined(_WINDOWS)
 #include <winioctl.h>
 #include <tchar.h>
 #include	<process.h>
@@ -85,7 +85,7 @@ unsigned GetTickCount()
 #include <linux/if_ether.h>	/* struct ethhdr */
 #endif
 
-#endif // defined(NP2_WIN)
+#endif // defined(_WINDOWS)
  
 #define NET_BUFLEN (16*1024) // バッファ1つの長さ（XXX: パケットサイズの最大値にしないと無駄。もっと言えば可変長で大きな1つのバッファに入れるべき？）
 #define NET_ARYLEN (128) // バッファの数
@@ -96,7 +96,7 @@ static OEMCHAR np2net_tapName[MAX_PATH]; // TAPデバイス名
 
 static int		np2net_hThreadexit = 0; // スレッド終了フラグ
 
-#if defined(NP2_WIN)
+#if defined(_WINDOWS)
 static char *GetNetWorkDeviceGuid(const char *, char *, DWORD); // TAPデバイス名からGUIDを取得する
 
 static HANDLE	np2net_hTap = INVALID_HANDLE_VALUE; // TAPデバイスの読み書きハンドル
@@ -111,7 +111,7 @@ static int			np2net_hThreadE = 0; // Thread Running Flag
 static pthread_t	np2net_hThreadR = NULL; // Read用スレッド
 static pthread_t	np2net_hThreadW = NULL; // Write用スレッド
 static pthread_t	np2net_thread_eventhandle = 0; // 送受信要求用
-#endif // defined(NP2_WIN)
+#endif // defined(_WINDOWS)
 
 static UINT8	np2net_membuf[NET_ARYLEN][NET_BUFLEN]; // 送信用バッファ
 static int		np2net_membuflen[NET_ARYLEN]; // 送信用バッファにあるデータの長さ
@@ -122,7 +122,7 @@ static int		np2net_pmm = 0; // CPU負荷低減モード（通信は若干遅く�
 static int		np2net_highspeedmode = 0; // 高速送受信モード
 static UINT32		np2net_highspeeddatacount = 0; // 送受信データ数カウンタ
 
-#if defined(NP2_WIN)
+#if defined(_WINDOWS)
 static BOOL np2net_cs_initialized = 0; // np2net クリティカルセクション 初期化済みフラグ
 static CRITICAL_SECTION	np2net_cs = {0}; // np2net クリティカルセクション
 static void np2net_cs_Initialize(){
@@ -149,9 +149,9 @@ void np2net_cs_LeaveCriticalSection(){
 		LeaveCriticalSection(&np2net_cs);
 	}
 }
-#endif // defined(NP2_WIN)
+#endif // defined(_WINDOWS)
 
-#if defined(NP2_WIN)
+#if defined(_WINDOWS)
 // パケットデータを TAP へ書き出す
 static int doWriteTap(HANDLE hTap, const UCHAR *pSendBuf, DWORD len, OVERLAPPED *ovl)
 {
@@ -223,7 +223,7 @@ static int doWriteTap(int hTap, const UINT8 *pSendBuf, UINT32 len)
 	return 0;
 }
 
-#endif // defined(NP2_WIN)
+#endif // defined(_WINDOWS)
 
 // パケットデータをバッファに送る（実際の送信はnp2net_ThreadFuncW内で行われる）
 static int sendDataToBuffer(const UINT8 *pSendBuf, UINT32 len){
@@ -245,7 +245,7 @@ static int sendDataToBuffer(const UINT8 *pSendBuf, UINT32 len){
 	memcpy(np2net_membuf[np2net_membuf_writepos], pSendBuf, len);
 	np2net_membuflen[np2net_membuf_writepos] = len;
 	np2net_membuf_writepos = (np2net_membuf_writepos+1)%NET_ARYLEN;
-#if defined(NP2_WIN)
+#if defined(_WINDOWS)
 	SetEvent(np2net_thread_eventhandle);
 #endif
 	return 0;
@@ -262,7 +262,7 @@ static void np2net_default_recieve_packet(const UINT8 *buf, int size)
 	// 何もしない
 }
 
-#if defined(NP2_WIN)
+#if defined(_WINDOWS)
 //  非同期で通信してみる（Write）
 static unsigned int __stdcall np2net_ThreadFuncW(LPVOID vdParam) {
 	HANDLE hEvent = NULL;
@@ -406,11 +406,11 @@ static void* np2net_ThreadFuncR(void *thdata) {
 	return (void*) NULL;
 }
 
-#endif // defined(NP2_WIN)
+#endif // defined(_WINDOWS)
 
 //  TAPデバイスを閉じる
 static void np2net_closeTAP(){
-#if defined(NP2_WIN)
+#if defined(_WINDOWS)
 	ULONG status = FALSE;
 	DWORD dwLen;
     if (np2net_hTap != INVALID_HANDLE_VALUE) {
@@ -459,11 +459,11 @@ static void np2net_closeTAP(){
 		np2net_hTap = -1;
 		TRACEOUT(("LGY-98: TAP is closed"));
     }
-#endif // defined(NP2_WIN)
+#endif // defined(_WINDOWS)
 }
 //  TAPデバイスを開く
 static int np2net_openTAP(const char* tapname){
-#if defined(NP2_WIN)
+#if defined(_WINDOWS)
 	unsigned int dwID;
 	DWORD dwLen;
 	ULONG status = TRUE;
@@ -551,14 +551,14 @@ static int np2net_openTAP(const char* tapname){
 	}
 
 	TRACEOUT(("LGY-98: TAP is opened"));
-#endif // defined(NP2_WIN)
+#endif // defined(_WINDOWS)
 	return 0;
 }
 
 // NP2起動時の処理
 void np2net_init(void)
 {
-#if defined(NP2_WIN)
+#if defined(_WINDOWS)
 	np2net_cs_Initialize();
 #endif // defined(NP2_WIN)
 
@@ -580,7 +580,7 @@ void np2net_bind(void){
 void np2net_shutdown(void)
 {
 	np2net_hThreadexit = 1;
-#if defined(NP2_WIN)
+#if defined(_WINDOWS)
 	SetEvent(np2net_thread_eventhandle);
 #endif
 	np2net_closeTAP();
@@ -588,13 +588,13 @@ void np2net_shutdown(void)
 #ifdef SUPPORT_LGY98
 	lgy98_shutdown();
 #endif
-#if defined(NP2_WIN)
+#if defined(_WINDOWS)
 	np2net_cs_Finalize();
 #endif
 
 }
 
-#if defined(NP2_WIN)
+#if defined(_WINDOWS)
 // 参考文献: http://dsas.blog.klab.org/archives/51012690.html
 
 // ネットワークデバイス表示名からデバイス GUID 文字列を検索

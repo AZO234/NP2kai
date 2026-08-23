@@ -314,7 +314,9 @@ typedef bool BOOL;
 #endif
 
 #if !defined(NP2_WIN)
+#ifndef WINAPI
 #define WINAPI
+#endif
 
 #if !defined(_WINDOWS)
 typedef uint8_t  BYTE;
@@ -332,10 +334,18 @@ typedef union {
 } LARGE_INTEGER;
 #endif
 
+#ifndef _T
 #define _T(string) string
+#endif
+#ifndef _tcscpy
 #define _tcscpy    OEMSTRCPY
+#endif
+#ifndef _tcsicmp
 #define	_tcsicmp   milstr_cmp
+#endif
+#ifndef _tcsnicmp
 #define	_tcsnicmp  strncasecmp
+#endif
 
 #ifndef ZeroMemory
 #define ZeroMemory(d, z)    memset((d), 0, (z))
@@ -426,7 +436,7 @@ typedef int32_t FILELEN;
 #endif
 
 // RECT
-#if !defined(_MSC_VER)
+#if !defined(_MSC_VER) && !defined(_WINDOWS)
 typedef struct tagRECT {
   long left;
   long top;
