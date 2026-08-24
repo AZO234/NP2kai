@@ -126,7 +126,7 @@ extern void NP2_WaitQueue_Shift_Wait(NP2_WaitQueue_t* pque, NP2_Semaphore_t* pse
 #define NP2_Sleep_ms(ms) retro_sleep(ms);
 #endif
 
-#if !defined(NP2_WIN)
+#if !defined(_WINDOWS)
 extern BOOL QueryPerformanceCounter(LARGE_INTEGER* count);
 extern BOOL QueryPerformanceFrequency(LARGE_INTEGER* freq);
 #endif
@@ -142,4 +142,3 @@ extern BOOL QueryPerformanceFrequency(LARGE_INTEGER* freq);
 #endif  // SUPPORT_NP2_THREAD
 
 #endif  /* _NP2_THREAD_H_ */
-

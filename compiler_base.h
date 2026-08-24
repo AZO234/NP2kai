@@ -19,6 +19,7 @@
 
 // standard include
 #if defined(_WINDOWS)
+#include <winsock2.h>
 #include <windows.h>
 #include <tchar.h>
 // not define _UNICODE, UNICODE now
