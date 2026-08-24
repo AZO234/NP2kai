@@ -356,7 +356,9 @@ BOOL PathIsRelative(char *path) {
   return FALSE;
 }
 
+#ifndef _countof
 #define _countof(array) (sizeof(array) / sizeof(array[0]))
+#endif
 
 UINT hostdrvs_getrealdir(HDRVPATH *phdp, char *lpFcbname,
                          const char *lpDosPath) {

@@ -7,7 +7,9 @@
 #define win32_types_h
 
 #if !defined(_MSC_VER)
+#ifndef __stdcall
 #define __stdcall
+#endif
 #define HANDLE void *
 #endif
 
