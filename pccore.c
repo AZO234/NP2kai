@@ -350,12 +350,12 @@ NP2CFG np2cfg = {
     0,
 #endif
 #if defined(SUPPORT_VIDEOFILTER)
-    0,
-    0,
-    3,
-    0,
-    {{3, 2}, {3, 2}, {3, 2}},
-    {
+    .vf1_enable = 0,
+    .vf1_bmponly = 0,
+    .vf1_pcount = 3,
+    .vf1_pno = 0,
+    .vf1_profile = {{3, 2}, {3, 2}, {3, 2}},
+    .vf1_param = {
         {{1, 1, 0, 0, 0, 0, 0, 0},
          {0, 0, 0, 0, 0, 0, 0, 0},
          {0, 0, 0, 0, 0, 0, 0, 0}},
@@ -820,12 +820,12 @@ void pccore_setdefault(void) {
       0,
 #endif
 #if defined(SUPPORT_VIDEOFILTER)
-      0,
-      0,
-      3,
-      0,
-      {{3, 2}, {3, 2}, {3, 2}},
-      {
+      .vf1_enable = 0,
+      .vf1_bmponly = 0,
+      .vf1_pcount = 3,
+      .vf1_pno = 0,
+      .vf1_profile = {{3, 2}, {3, 2}, {3, 2}},
+      .vf1_param = {
           {{1, 1, 0, 0, 0, 0, 0, 0},
            {0, 0, 0, 0, 0, 0, 0, 0},
            {0, 0, 0, 0, 0, 0, 0, 0}},
