@@ -912,17 +912,11 @@ static void atapi_cmd_read_cd(IDEDRV drv, UINT32 lba, UINT32 nsec) {
 			bufsize += 2048;
 		}
 		if (hasedcecc){
-			//// MODE1
-			//memcpy(bufptr, rawdata + 12 + 4 + 8 + 2048, 4);
-			//memcpy(bufptr + 4, rawdata + 12 + 4 + 8 + 2048 + 12, 276);
-
-			////// XA
-			////memcpy(bufptr, rawdata + 12 + 4 + 8 + 2048, 280);
-			
-			//bufptr += 280;
-			//bufsize += 280;
-
-			memcpy(bufptr, rawdata + 12 + 4 + 8 + 2048, 288);
+			// MODE1 raw sector:
+			// Sync [0..11], Header [12..15], User Data [16..2063],
+			// EDC [2064..2067], Pad [2068..2075], ECC [2076..2351].
+			// EDC/ECC field including Pad: [2064..2351] (288 bytes).
+			memcpy(bufptr, rawdata + 12 + 4 + 2048, 288);
 			bufptr += 288;
 			bufsize += 288;
 		}
