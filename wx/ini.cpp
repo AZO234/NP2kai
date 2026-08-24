@@ -26,15 +26,6 @@
 #include <unistd.h>
 #endif
 
-/* ---- helper for memory switches / dipswitches ---- */
-
-static void inisetbmp(UINT8 *ptr, UINT32 pos, bool set)
-{
-	UINT8 bit = (UINT8)(1 << (pos & 7));
-	ptr += (pos >> 3);
-	if (set) *ptr |= bit; else *ptr &= ~bit;
-}
-
 /* ---- value → TOML node ---- */
 
 static void ini_tbl_write(toml::table &sec, const INITBL *p)
