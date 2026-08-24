@@ -337,8 +337,8 @@ list(APPEND NP2kai_WX_sources
 )
 
 if(WIN32)
-	# The wx copies are POSIX-only. Reuse the existing Win32-aware
-	# communication backends used by the SDL port.
+	# The wx communication implementations are POSIX-specific. On Windows,
+	# reuse the Win32-aware SDL implementations instead.
 	list(APPEND NP2kai_WX_sources
 		"${CMAKE_CURRENT_SOURCE_DIR}/sdl/cmmidi.c"
 		"${CMAKE_CURRENT_SOURCE_DIR}/sdl/cmserial.c"
