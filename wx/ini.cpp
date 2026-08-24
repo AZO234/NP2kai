@@ -19,8 +19,12 @@
 #include <vector>
 
 #include <sys/types.h>
+#ifdef _WIN32
+#include <direct.h>
+#else
 #include <pwd.h>
 #include <unistd.h>
+#endif
 
 /* ---- helper for memory switches / dipswitches ---- */
 
@@ -290,9 +294,15 @@ void initgetfile(char *lpPath, unsigned int cbPath)
 			if (!confdir) {
 				const char *home = getenv("HOME");
 				if (!home) {
+#ifdef _WIN32
+					// HOME may be unset outside a POSIX shell; use Windows' user directory.
+					home = getenv("USERPROFILE");
+#else
 					struct passwd *pw = getpwuid(getuid());
 					home = pw ? pw->pw_dir : "/tmp";
+#endif
 				}
+				if (!home) home = ".";
 				snprintf(buf, sizeof(buf), "%s/.config", home);
 				confdir = buf;
 			}
@@ -359,7 +369,11 @@ void initsave(void)
 	char dir[MAX_PATH];
 	milstr_ncpy(dir, path, MAX_PATH);
 	file_cutname(dir);
+#ifdef _WIN32
+	_mkdir(dir);
+#else
 	mkdir(dir, 0755);
+#endif
 
 	ini_write(path, ini_section, np2_tbl, np2_tbl_count);
 }
