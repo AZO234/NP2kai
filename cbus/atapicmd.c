@@ -847,6 +847,18 @@ static void atapi_cmd_read_cd(IDEDRV drv, UINT32 lba, UINT32 nsec) {
 		bufsize = 2352;
 	}else{
 		UINT8 rawdata[2352];
+		/*
+		 * MODE1 raw sector reference layout:
+		 * Sync          12 bytes  [0    .. 11]
+		 * Header         4 bytes  [12   .. 15]
+		 * User Data   2048 bytes  [16   .. 2063]
+		 * EDC            4 bytes  [2064 .. 2067]
+		 * Pad            8 bytes  [2068 .. 2075]
+		 * ECC          276 bytes  [2076 .. 2351]
+		 *
+		 * 参照: MMC-3 Draft Revision 10g, 5.17 READ CD Command
+		 * https://www.13thmonkey.org/documentation/SCSI/mmc3r10g.pdf
+		 */
 		const UINT8 data_selection = drv->buf[9];
 		const UINT8 header_code = (data_selection >> 5) & 0x03;
 		const UINT8 has_header = (header_code == 1) || (header_code == 3);
