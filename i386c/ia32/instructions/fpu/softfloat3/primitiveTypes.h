@@ -37,7 +37,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef primitiveTypes_h
 #define primitiveTypes_h 1
 
+#ifndef LITTLEENDIAN
 #define LITTLEENDIAN 1
+#endif
 #define SOFTFLOAT_FAST_INT64
 
 #include <stdint.h>
@@ -85,4 +87,3 @@ struct uint128_extra { struct uint128 v; uint64_t extra; };
 #endif
 
 #endif
-

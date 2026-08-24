@@ -37,7 +37,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef softfloat_types_h
 #define softfloat_types_h 1
 
+#ifndef LITTLEENDIAN
 #define LITTLEENDIAN 1
+#endif
 #define SOFTFLOAT_FAST_INT64
 
 #include <stdint.h>
@@ -81,4 +83,3 @@ struct extFloat80M { uint16_t signExp; uint64_t signif; };
 typedef struct extFloat80M sw_extFloat80_t;
 
 #endif
-

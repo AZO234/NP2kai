@@ -2913,6 +2913,7 @@ void PrefFrame::SaveToConfig(void)
 	/* Graphic Charger */
 	if (auto *w = FindByName(this, "GRCG_EGC")) {
 #if defined(CPUCORE_IA32)
+		(void)w;
 		np2cfg.grcg = 3; /* Always EGC */
 #else
 		if (auto *ch = wxDynamicCast(w, wxChoice)) {

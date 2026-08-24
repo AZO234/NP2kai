@@ -8,6 +8,9 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef _WIN32
+#include <direct.h>
+#endif
 
 #include <dosio.h>
 
@@ -96,7 +99,14 @@ short file_attr(const OEMCHAR *path)
 }
 short file_rename(const OEMCHAR *existpath, const OEMCHAR *newpath)
 { return (short)rename(existpath, newpath); }
-short file_dircreate(const OEMCHAR *path) { return (short)mkdir(path, 0755); }
+short file_dircreate(const OEMCHAR *path)
+{
+#ifdef _WIN32
+	return (short)_mkdir(path);
+#else
+	return (short)mkdir(path, 0755);
+#endif
+}
 short file_dirdelete(const OEMCHAR *path) { return (short)rmdir(path); }
 
 /* ---- current-directory helpers ---- */

@@ -117,6 +117,11 @@ const OEMCHAR np2version[] = OEMTEXT(NP2KAI_GIT_TAG " " NP2KAI_GIT_HASH);
 #define PCBASEMULTIPLE 20
 #endif
 
+/*
+ * Use designated initializers for optional members so changes controlled by
+ * SUPPORT_DEBUGSS or SUPPORT_VIDEOFILTER do not shift subsequent fields.
+ * Unspecified members are initialized to zero by the C language rules.
+ */
 NP2CFG np2cfg = {
     0,
     1,
@@ -347,15 +352,15 @@ NP2CFG np2cfg = {
     OEMTEXT(""),
     0,
 #if defined(SUPPORT_DEBUGSS)
-    0,
+    .debugss = 0,
 #endif
 #if defined(SUPPORT_VIDEOFILTER)
-    0,
-    0,
-    3,
-    0,
-    {{3, 2}, {3, 2}, {3, 2}},
-    {
+    .vf1_enable = 0,
+    .vf1_bmponly = 0,
+    .vf1_pcount = 3,
+    .vf1_pno = 0,
+    .vf1_profile = {{3, 2}, {3, 2}, {3, 2}},
+    .vf1_param = {
         {{1, 1, 0, 0, 0, 0, 0, 0},
          {0, 0, 0, 0, 0, 0, 0, 0},
          {0, 0, 0, 0, 0, 0, 0, 0}},
@@ -817,15 +822,15 @@ void pccore_setdefault(void) {
       OEMTEXT(""),
       0, 1,
 #if defined(SUPPORT_DEBUGSS)
-      0,
+      .debugss = 0,
 #endif
 #if defined(SUPPORT_VIDEOFILTER)
-      0,
-      0,
-      3,
-      0,
-      {{3, 2}, {3, 2}, {3, 2}},
-      {
+      .vf1_enable = 0,
+      .vf1_bmponly = 0,
+      .vf1_pcount = 3,
+      .vf1_pno = 0,
+      .vf1_profile = {{3, 2}, {3, 2}, {3, 2}},
+      .vf1_param = {
           {{1, 1, 0, 0, 0, 0, 0, 0},
            {0, 0, 0, 0, 0, 0, 0, 0},
            {0, 0, 0, 0, 0, 0, 0, 0}},

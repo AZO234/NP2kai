@@ -327,8 +327,6 @@ list(APPEND NP2kai_WX_sources
 	"${CMAKE_CURRENT_SOURCE_DIR}/wx/taskmng.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/wx/fontmng.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/wx/commng.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/wx/cmmidi.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/wx/cmserial.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/wx/dialog/prefframe.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/wx/subwnd/keydisp.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/codecnv/textcnv.c"
@@ -337,6 +335,20 @@ list(APPEND NP2kai_WX_sources
 	"${CMAKE_CURRENT_SOURCE_DIR}/wx/trace.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/np2_thread.c"
 )
+
+if(WIN32)
+	# The wx communication implementations are POSIX-specific. On Windows,
+	# reuse the Win32-aware SDL implementations instead.
+	list(APPEND NP2kai_WX_sources
+		"${CMAKE_CURRENT_SOURCE_DIR}/sdl/cmmidi.c"
+		"${CMAKE_CURRENT_SOURCE_DIR}/sdl/cmserial.c"
+	)
+else()
+	list(APPEND NP2kai_WX_sources
+		"${CMAKE_CURRENT_SOURCE_DIR}/wx/cmmidi.cpp"
+		"${CMAKE_CURRENT_SOURCE_DIR}/wx/cmserial.cpp"
+	)
+endif()
 
 # NP2kai definitions
 list(APPEND NP2kai_common_definitions "BIOS_IO_EMULATION" "OSLANG_UTF8" "SUPPORT_8BPP" "SUPPORT_16BPP" "SUPPORT_24BPP" "SUPPORT_32BPP" "SUPPORT_CL_GD5430" "SUPPORT_CRT15KHZ" "SUPPORT_FAST_MEMORYCHECK" "SUPPORT_FMGEN" "SUPPORT_GPIB" "SUPPORT_HRTIMER" "SUPPORT_KAI_IMAGES" "SUPPORT_LARGE_HDD" "SUPPORT_NORMALDISP" "SUPPORT_PC9861K" "SUPPORT_PX" "SUPPORT_RESUME" "SUPPORT_RS232C_FIFO" "SUPPORT_S98" "SUPPORT_SCSI" "SUPPORT_SMPU98" "SUPPORT_SOFTKBD=0" "SUPPORT_SOUND_SB16" "SUPPORT_STATSAVE=10" "SUPPORT_UTF8" "SUPPORT_V30EXT" "SUPPORT_V30ORIGINAL" "SUPPORT_VIDEOFILTER" "SUPPORT_VPCVHD" "SUPPORT_WAB" "USE_MAME" "USE_MAME_BSD" "VAEG_FIX" "VERMOUTH_LIB" "SUPPORT_PNG")
@@ -890,7 +902,7 @@ else()
 		target_compile_definitions(NP2kai_SDL3_base INTERFACE ${NP2kai_SDL_definitions} "USE_SDL=3" "SUPPORT_SDL_AUDIO" ${lib_SDL_ttf_definitions} ${NP2kai_extra_definitions} ${NP2kai_LinkBreak_definitions} ${NP2kai_TickCount_definitions} ${NP2kai_Network_definitions} ${libcdio_definitions} ${libusb_1_definitions})
 		target_include_directories(NP2kai_SDL3_base INTERFACE ${LIBCDIO_INCLUDE_DIRS} ${LIBUSB_1_INCLUDE_DIRS} ${lib_vst3sdk_include_dirs})
 		if(MINGW OR MSYS OR CYGWIN)
-	  	target_link_libraries(NP2kai_SDL3_base INTERFACE ${lib_math_libraries} ${lib_vst3sdk_libraries} SDL3::SDL3 SDL3_ttf::SDL3_ttf ${LIBCDIO_LINK_LIBRARIES} ${LIBUSB_1_LINK_LIBRARIES} ${lib_dl_libraries} dxguid mad)
+	  	target_link_libraries(NP2kai_SDL3_base INTERFACE ${lib_math_libraries} ${lib_vst3sdk_libraries} SDL3::SDL3 SDL3_ttf::SDL3_ttf ${LIBCDIO_LINK_LIBRARIES} ${LIBUSB_1_LINK_LIBRARIES} ${lib_dl_libraries} dxguid mad winmm)
 		else()
 	  	target_link_libraries(NP2kai_SDL3_base INTERFACE ${lib_math_libraries} ${lib_vst3sdk_libraries} SDL3::SDL3 SDL3_ttf::SDL3_ttf ${LIBCDIO_LINK_LIBRARIES} ${LIBUSB_1_LINK_LIBRARIES} ${lib_dl_libraries})
 		endif()
@@ -926,6 +938,9 @@ else()
 		target_include_directories(NP2kai_WX_base BEFORE INTERFACE ${wxWidgets_INCLUDE_DIRS})
 		target_include_directories(NP2kai_WX_base INTERFACE ${NP2kai_WX_include_dirs} ${lib_tomlplusplus_include_dirs} ${LIBCDIO_INCLUDE_DIRS})
 		target_link_libraries(NP2kai_WX_base INTERFACE ${lib_math_libraries} ${wxWidgets_LIBRARIES} ${lib_tomlplusplus_libraries} SDL3::SDL3 SDL3_ttf::SDL3_ttf ${LIBCDIO_LINK_LIBRARIES} ${lib_dl_libraries})
+		if(WIN32)
+			target_link_libraries(NP2kai_WX_base INTERFACE winmm)
+		endif()
 	endif()
 
 	if(MSVC_VERSION)

@@ -2,7 +2,7 @@
 #define _NP2_H_
 
 #include <compiler.h>
-#include <commng.h>
+#include "commng.h"
 
 typedef struct {
 	UINT8	direct;

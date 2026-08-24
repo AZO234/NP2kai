@@ -34,10 +34,10 @@
 #define	__CWDE(src)	((SINT16)(src))
 
 #ifndef	PTR_TO_UINT32
-#define	PTR_TO_UINT32(p)	((UINT32)((unsigned long)(p)))
+#define	PTR_TO_UINT32(p)	((UINT32)(uintptr_t)(p))
 #endif
 #ifndef	UINT32_TO_PTR
-#define	UINT32_TO_PTR(v)	((void *)((unsigned long)(UINT32)(v)))
+#define	UINT32_TO_PTR(v)	((void *)(uintptr_t)(UINT32)(v))
 #endif
 
 #define	SWAP_BYTE(p, q) \
