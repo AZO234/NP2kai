@@ -810,33 +810,11 @@ static void atapi_cmd_read(IDEDRV drv, UINT32 lba, UINT32 nsec) {
 }
 static void atapi_cmd_read_cd(IDEDRV drv, UINT32 lba, UINT32 nsec) {
 	
-	int i;
-	SXSIDEV	sxsi;
-	CDTRK	trk;
-	UINT	tracks;
-	UINT8 *bufptr;
-	UINT bufsize;
-
-	UINT8 rawdata[2352];
-
-	UINT8 hassync;
-	UINT8 hashead;
-	UINT8 hassubhead;
-	UINT8 hasdata;
-	UINT8 hasedcecc;
-
-	UINT16 isCDDA = 1;
+	UINT bufsize = 0;
 	
 #if defined(NP2_WIN)
 	atapi_thread_drv = drv;
 #endif
-	sxsi = sxsi_getptr(drv->sxsidrv);
-
-	hassync = (drv->buf[9] & 0x80) ? 1 : 0;
-	hassubhead = (drv->buf[9] & 0x40) ? 1 : 0;
-	hashead = (drv->buf[9] & 0x20) ? 1 : 0;
-	hasdata = (drv->buf[9] & 0x10) ? 1 : 0;
-	hasedcecc = (drv->buf[9] & 0x08) ? 1 : 0;
 
 	drv->sector = lba;
 	drv->nsectors = nsec;
@@ -847,16 +825,19 @@ static void atapi_cmd_read_cd(IDEDRV drv, UINT32 lba, UINT32 nsec) {
 		return;
 	}
 
+	SXSIDEV sxsi = sxsi_getptr(drv->sxsidrv);
 	sxsi->cdflag_ecc = (sxsi->cdflag_ecc & ~CD_ECC_BITMASK) | CD_ECC_NOERROR;
-	
-	trk = sxsicd_gettrk(sxsi, &tracks);
-	for (i = 0; i < tracks; i++) {
+
+	UINT tracks = 0;
+	CDTRK trk = sxsicd_gettrk(sxsi, &tracks);
+	UINT16 isCDDA = 1;
+	for (int i = 0; i < tracks; i++) {
 		if (trk[i].str_sec <= (UINT32)drv->sector && (UINT32)drv->sector <= trk[i].end_sec) {
 			isCDDA = (trk[i].adr_ctl == TRACKTYPE_AUDIO);
 			break;
 		}
 	}
-	
+
 	if(isCDDA){
 		// Audio
 		if (sxsicd_readraw(sxsi, drv->sector, drv->buf) != SUCCESS) {
@@ -865,64 +846,63 @@ static void atapi_cmd_read_cd(IDEDRV drv, UINT32 lba, UINT32 nsec) {
 		}
 		bufsize = 2352;
 	}else{
+		UINT8 rawdata[2352];
+		/*
+		 * MODE1 raw sector reference layout:
+		 * Sync          12 bytes  [0    .. 11]
+		 * Header         4 bytes  [12   .. 15]
+		 * User Data   2048 bytes  [16   .. 2063]
+		 * EDC            4 bytes  [2064 .. 2067]
+		 * Pad            8 bytes  [2068 .. 2075]
+		 * ECC          276 bytes  [2076 .. 2351]
+		 *
+		 * 参照: MMC-3 Draft Revision 10g, 5.17 READ CD Command
+		 * https://www.13thmonkey.org/documentation/SCSI/mmc3r10g.pdf
+		 */
+		const UINT8 data_selection = drv->buf[9];
+		const UINT8 header_code = (data_selection >> 5) & 0x03;
+		const UINT8 has_header = (header_code == 1) || (header_code == 3);
+		const UINT8 has_subheader = (header_code == 2) || (header_code == 3);
+		const UINT8 has_sync = ((data_selection & 0x80) != 0) && has_header;
+		const UINT8 has_data = (data_selection & 0x10) != 0;
+		const UINT8 has_edcecc = (data_selection & 0x08) != 0;
+
 		// 条件がかなり複雑。
 		// ATAPI CD-ROM Specificationの
 		// Table 99 - Number of Bytes Returned Based on Data Selection Field
 		// を参照
 
-		// MODE1決め打ち
 		if (sxsicd_readraw(sxsi, drv->sector, rawdata) != SUCCESS) {
 			atapi_dataread_errorend(0);
 			return;
 		}
 
 		bufsize = 0;
-		bufptr = drv->buf;
-		if (hassync){
-			if(hashead){
-				// Headerがいるときだけ有効
-				memcpy(bufptr, rawdata, 12);
-				bufptr += 12;
-				bufsize += 12;
-			}
+		UINT8 *bufptr = drv->buf;
+		if (has_sync){
+			memcpy(bufptr, rawdata, 12);
+			bufptr += 12;
+			bufsize += 12;
 		}
-		if (hashead){
+		if (has_header){
 			memcpy(bufptr, rawdata + 12, 4);
 			bufptr += 4;
 			bufsize += 4;
 		}
-		if (hassubhead){
-			// MODE1（本来ないが、User Dataが無いときだけ特例で書く）
-			if(!hasdata){
+		if (has_subheader){
+			if (!has_data) {
 				memset(bufptr, 0, 8);
 				bufptr += 8;
 				bufsize += 8;
-
 			}
-
-			//// XA
-			//memcpy(bufptr, rawdata + 12 + 4, 8);
-
-			//bufptr += 8;
-			//bufsize += 8;
 		}
-		if (hasdata){
+		if (has_data){
 			memcpy(bufptr, rawdata + 12 + 4 + 8, 2048);
 			bufptr += 2048;
 			bufsize += 2048;
 		}
-		if (hasedcecc){
-			//// MODE1
-			//memcpy(bufptr, rawdata + 12 + 4 + 8 + 2048, 4);
-			//memcpy(bufptr + 4, rawdata + 12 + 4 + 8 + 2048 + 12, 276);
-
-			////// XA
-			////memcpy(bufptr, rawdata + 12 + 4 + 8 + 2048, 280);
-			
-			//bufptr += 280;
-			//bufsize += 280;
-
-			memcpy(bufptr, rawdata + 12 + 4 + 8 + 2048, 288);
+		if (has_edcecc){
+			memcpy(bufptr, rawdata + 12 + 4 + 2048, 288);
 			bufptr += 288;
 			bufsize += 288;
 		}
