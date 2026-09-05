@@ -31,6 +31,7 @@
 #include <io/iocore.h>
 #include <mem/dmax86.h>
 #include <bios/bios.h>
+#include <sound/soundrom.h>
 
 #include <ia32/instructions/fpu/fp.h>
 
@@ -114,6 +115,8 @@ ia32reset(void)
 		ia32hax_copyregHAXtoNP2();
 	}
 #endif
+	// MMIOマップリセット
+	memp_mmio_map_reset();
 }
 
 void
@@ -137,8 +140,12 @@ ia32shut(void)
 void
 ia32a20enable(BOOL enable)
 {
+	UINT32 newmask = (enable) ? 0xffffffff : 0x000fffff;
 
-	CPU_ADRSMASK = (enable)?0xffffffff:0x00ffffff;
+	if (CPU_ADRSMASK != newmask) {
+		CPU_ADRSMASK = newmask;
+		tlb_flush_all();
+	}
 }
 
 //#pragma optimize("", off)
@@ -317,10 +324,17 @@ ia32_bioscall(void)
 #else
 		adrs = CPU_PREV_EIP + CPU_STAT_CS_BASE;
 #endif
+#if defined(SUPPORT_EMU_SOUNDBIOS)
+		if (soundrom_biosfunc(adrs)) {
+			LOAD_SEGREG(CPU_ES_INDEX, CPU_ES);
+			LOAD_SEGREG(CPU_CS_INDEX, CPU_CS);
+			LOAD_SEGREG(CPU_SS_INDEX, CPU_SS);
+			LOAD_SEGREG(CPU_DS_INDEX, CPU_DS);
+		}
+		else
+#endif
 		if ((adrs >= 0xf8000) && (adrs < 0x100000)) {
-			if (biosfunc(adrs)) {
-				/* Nothing to do */
-			}
+			biosfunc(adrs);
 			LOAD_SEGREG(CPU_ES_INDEX, CPU_ES);
 			LOAD_SEGREG(CPU_CS_INDEX, CPU_CS);
 			LOAD_SEGREG(CPU_SS_INDEX, CPU_SS);

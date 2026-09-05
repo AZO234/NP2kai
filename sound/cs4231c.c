@@ -12,10 +12,32 @@
 
 SNDMTCS_DECL(cs4231);
 #include <cpucore.h>
+
+#ifndef min
+#define min(a,b) ((a) < (b) ? (a) : (b))
+#endif
+#ifndef max
+#define max(a,b) ((a) > (b) ? (a) : (b))
+#endif
 #ifndef CPU_STAT_PM
 #define CPU_STAT_PM	0
 #endif
 #define CS4231_BUFREADSMP	128
+
+#if 0
+#undef  TRACEOUT
+static void trace_fmt_ex(const char* fmt, ...)
+{
+	char stmp[2048];
+	va_list ap;
+	va_start(ap, fmt);
+	vsprintf(stmp, fmt, ap);
+	strcat(stmp, "¥n");
+	va_end(ap);
+	OutputDebugStringA(stmp);
+}
+#define TRACEOUT(s) trace_fmt_ex s
+#endif
 
 	CS4231CFG	cs4231cfg;
 
@@ -81,6 +103,7 @@ enum {
 
 
 UINT dmac_getdata_(DMACH dmach, UINT8 *buf, UINT offset, UINT size);
+static UINT dmac_putcapture_(DMACH dmach, UINT size);
 static const UINT32 cs4231xtal64[2] = {24576000/64, 16934400/64};
 
 static const UINT8 cs4231cnt64[8] = {
@@ -153,36 +176,47 @@ void cs4231_dma(NEVENTITEM item) {
 	UINT	pos;
 	UINT	size;
 	UINT	r = 0;
-	//SINT32	cnt;
+	BOOL	playback_dma;
+	BOOL	capture_dma;
+
 	if (item->flag & NEVENT_SETEVENT) {
-		if (cs4231.dmach != 0xff && !(cs4231.reg.iface & PPIO)) {
+		if (cs4231.dmach != 0xff) {
 			dmach = dmac.dmach + cs4231.dmach;
+			playback_dma = ((cs4231.reg.iface & (PEN | PPIO)) == PEN);
+			capture_dma = ((cs4231.reg.iface & (CEN | CPIO)) == CEN);
 
-			// サウンド再生用バッファに送る(cs4231g.c)
-			sound_sync();
+			if (playback_dma) {
+				// サウンド再生用バッファに送る(cs4231g.c)
+				sound_sync();
 
-			// バッファに空きがあればデータを読み出す
 #if defined(SUPPORT_MULTITHREAD)
-			cs4231cs_enter_criticalsection();
+				cs4231cs_enter_criticalsection();
 #endif
-			if (cs4231.bufsize * cs4231_playcountshift[cs4231.reg.datafmt >> 4] / 4 - 4 > cs4231.bufdatas) {
-				rem = MIN(cs4231.bufsize - 4 - cs4231.bufdatas, CS4231_MAXDMAREADBYTES); //読み取り単位は16bitステレオの1サンプル分(4byte)にしておかないと雑音化する
-				pos = cs4231.bufwpos & CS4231_BUFMASK; // バッファ書き込み位置
-				size = MIN(rem, (UINT)dmach->startcount + 1); // バッファ書き込みサイズ
-				r = dmac_getdata_(dmach, cs4231.buffer, pos, size); // DMA読み取り実行
-				cs4231.bufwpos = (cs4231.bufwpos + r) & CS4231_BUFMASK; // バッファ書き込み位置を更新
-				cs4231.bufdatas += r; // バッファ内の有効なデータ数を更新 = (bufwpos-bufpos)&CS4231_BUFMASK
+				if (cs4231.bufsize * cs4231_playcountshift[cs4231.reg.datafmt >> 4] / 4 - 4 > cs4231.bufdatas) {
+					rem = min(cs4231.bufsize - 4 - cs4231.bufdatas, CS4231_MAXDMAREADBYTES);
+					pos = cs4231.bufwpos & CS4231_BUFMASK;
+					size = min(rem, (UINT)dmach->startcount + 1);
+					r = dmac_getdata_(dmach, cs4231.buffer, pos, size);
+					cs4231.bufwpos = (cs4231.bufwpos + r) & CS4231_BUFMASK;
+					cs4231.bufdatas += r;
+				}
+#if defined(SUPPORT_MULTITHREAD)
+				cs4231cs_leave_criticalsection();
+#endif
 			}
-#if defined(SUPPORT_MULTITHREAD)
-			cs4231cs_leave_criticalsection();
-#endif
+			else if (capture_dma) {
+				size = min((UINT)dmach->startcount + 1, (UINT)CS4231_MAXDMAREADBYTES);
+				r = dmac_putcapture_(dmach, size);
+			}
 
-			// NEVENTをセット
-			if (cs4231cfg.rate) {
+			// NEVENTをセット。TC/停止後はdmac.maskまたはreadyで再登録されない。
+			if (cs4231cfg.rate &&
+				!(dmac.mask & (1 << cs4231.dmach)) && dmach->ready &&
+				(playback_dma || capture_dma)) {
 				playcountsmp_Ictl += ((CS4231_BUFREADSMP - (int)r) / cs4231_playcountshift[cs4231.reg.datafmt >> 4])/2;
 				if(playcountsmp_Ictl < 1)
 					playcountsmp_Ictl = 1;
-				if(playcountsmp_Ictl > CS4231_MAXDMAREADBYTES) 
+				if(playcountsmp_Ictl > CS4231_MAXDMAREADBYTES)
 					playcountsmp_Ictl = CS4231_MAXDMAREADBYTES;
 				nevent_set(NEVENT_CS4231, pccore.realclock / cs4231cfg.rate * playcountsmp_Ictl, cs4231_dma, NEVENT_RELATIVE);
 			}
@@ -215,6 +249,41 @@ void cs4231_datasend(REG8 dat) {
 		else
 		{
 			cs4231.intflag |= PRDY;
+		}
+
+		if (cs4231.reg.iface & PEN) {
+			UINT32 bytespercount;
+			UINT32 playbytes;
+			UINT32 basecount;
+			REG8 format;
+
+			format = cs4231.reg.datafmt;
+			if ((format & 0xe0) == 0xa0) {
+				bytespercount = 4;	/* ADPCM: count is based on 4-byte words */
+			}
+			else {
+				bytespercount = 1;
+				if ((format & 0xe0) == 0x40 || (format & 0xe0) == 0xc0) {
+					bytespercount <<= 1;	/* 16-bit sample */
+				}
+				if (format & 0x10) {
+					bytespercount <<= 1;	/* stereo sample frame */
+				}
+			}
+
+			basecount = ((UINT32)cs4231.reg.playcount[0] << 8) |
+						(UINT32)cs4231.reg.playcount[1];
+			playbytes = (basecount + 1) * bytespercount;
+			cs4231.totalsample++;
+
+			if ((UINT32)cs4231.totalsample >= playbytes) {
+				cs4231.totalsample = 0;	/* reload current count */
+				cs4231.reg.featurestatus |= PI;
+				cs4231.intflag |= INt;
+				if ((cs4231.reg.pinctrl & IEN) && (cs4231.dmairq != 0xff)) {
+					pic_setirq(cs4231.dmairq);
+				}
+			}
 		}
 #if defined(SUPPORT_MULTITHREAD)
 		cs4231cs_leave_criticalsection();
@@ -297,31 +366,7 @@ void cs4231_control(UINT idx, REG8 dat) {
 	DMACH	dmach;
 	switch(idx){
 	case 0x2: // Left Auxiliary #1 Input Control
-		if(g_nSoundID==SOUNDID_WAVESTAR){
-			UINT i;
-			if(dat >= 0x10) dat = 15;
-			cs4231.devvolume[0xff] = (~dat) & 15;
-			opngen_setvol(np2cfg.vol_fm * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
-			psggen_setvol(np2cfg.vol_ssg * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
-			rhythm_setvol(np2cfg.vol_rhythm * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
-#if defined(SUPPORT_FMGEN)
-			if(np2cfg.usefmgen) {
-				opna_fmgen_setallvolumeFM_linear(np2cfg.vol_fm * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
-				opna_fmgen_setallvolumePSG_linear(np2cfg.vol_ssg * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
-				opna_fmgen_setallvolumeRhythmTotal_linear(np2cfg.vol_rhythm * cs4231.devvolume[0xff] / 15 * np2cfg.vol_master / 100);
-			}
-#endif
-			for (i = 0; i < NELEMENTS(g_opna); i++)
-			{
-				rhythm_update(&g_opna[i].rhythm);
-			}
-			oplgen_setvol(np2cfg.vol_fm * np2cfg.vol_master / 100);
-		}
-		break;
 	case 0x3: // Right Auxiliary #1 Input Control
-		if(g_nSoundID==SOUNDID_WAVESTAR){
-			// XXX: 本当は左右のボリューム調整が必要
-		}
 		break;
 	case 0xd:
 		break;
@@ -379,18 +424,23 @@ void cs4231_control(UINT idx, REG8 dat) {
 		break;
 	case CS4231REG_INTERFACE:
 		// 再生録音の有効無効とかDMAとかの設定　Interface Configuration (I9)
-		if (modify & PEN ) {
+		if ((modify & (PEN | CEN)) && (dat & (PEN | CEN))) {
+			/* Starting playback/capture reloads the codec-side sample counter. */
+			cs4231.totalsample = 0;
+		}
+		if (modify & (PEN | CEN | PPIO | CPIO)) {
 			if (cs4231.dmach != 0xff) {
+				BOOL playback_dma;
+				BOOL capture_dma;
+
 				dmach = dmac.dmach + cs4231.dmach;
-				if ((dat & (PEN)) == (PEN)){
-					dmach->ready = 1; 
-				}
-				else {
-					dmach->ready = 0;
-				}
+				playback_dma = ((dat & (PEN | PPIO)) == PEN);
+				capture_dma = ((dat & (CEN | CPIO)) == CEN);
+
+				dmach->ready = (playback_dma || capture_dma) ? 1 : 0;
 				dmac_check();
 			}	
-			if (!(dat & PEN)) {		// stop!
+			if (!(dat & PEN)) {		// playback stop
 				cs4231.pos12 = 0;
 			}
 		}
@@ -400,20 +450,38 @@ void cs4231_control(UINT idx, REG8 dat) {
 
 // CS4231 DMAデータ読み取り
 UINT dmac_getdata_(DMACH dmach, UINT8 *buf, UINT offset, UINT size) {
-	UINT	leng; // 読み取り数
-	UINT	lengsum; // 合計読み取り数
+	UINT	leng;						// 読み取り数
+	UINT	lengsum;					// 合計読み取り数
+	UINT	remain;						// DMA Terminal Countまでの残り転送数
+	UINT	channel;
+	REG8	channelbit;
 	UINT32	addr;
 	UINT	i;
-	SINT32	sampleirq = 0; // 割り込みまでに必要なデータ転送数(byte)
-	
+	SINT32	sampleirq = 0;			// 割り込みまでに必要なデータ転送数(byte)
+	BOOL	autoinit;
+
 	lengsum = 0;
+	channel = (UINT)(dmach - dmac.dmach);
+	channelbit = (channel < 4) ? (REG8)(1 << channel) : 0;
+	autoinit = (dmach->mode & 0x10) ? TRUE : FALSE;
+
 	while(size > 0) {
-		leng = MIN(dmach->leng.w, size);
+		// Current Countは残り転送数-1
+		if (!autoinit && channelbit &&
+			(dmac.stat & channelbit) && dmach->leng.w == 0xffff) {
+			break;
+		}
+
+		remain = (UINT)dmach->leng.w + 1;
+		leng = min(remain, size);
 		if (leng) {
 			int playcount = ((cs4231.reg.playcount[1]|(cs4231.reg.playcount[0] << 8))) * cs4231_playcountshift[cs4231.reg.datafmt >> 4]+4; // PI割り込みを発生させるサンプル数(Playback Base register) * サンプルあたりのバイト数
 			if(cs4231.totalsample + (SINT32)leng > playcount){
 				// DMA再生サンプル数カウンタ(Playback DMA count register)がPI割り込みを発生させるサンプル数(Playback Base register)を超えないように調整
 				leng = playcount - cs4231.totalsample;
+			}
+			if (!leng) {
+				break;
 			}
 
 			addr = dmach->adrs.d; // 現在のメモリ読み取り位置
@@ -422,42 +490,49 @@ UINT dmac_getdata_(DMACH dmach, UINT8 *buf, UINT offset, UINT size) {
 				for (i=0; i<leng ; i++) {
 					buf[offset] = MEMP_READ8(addr); // DMA MEM -> CS4231 BUFFER
 					addr++;
-					if(addr > dmach->lastaddr){
-						addr = dmach->startaddr; // DMA読み取りアドレスがアドレス範囲の最後に到達したら最初に戻す
-					}
-					offset = (offset+1) & CS4231_BUFMASK; // DMAデータ読み取りバッファの書き込み位置を進める（＆最後に到達したら最初に戻す）
+					offset = (offset+1) & CS4231_BUFMASK;
 				}
-
-				dmach->adrs.d = addr; // DMA読み取りアドレス現在位置を更新
 			}
 			else {									// dir -
 				// -方向にDMA転送
 				for (i=0; i<leng; i++) {
 					buf[offset] = MEMP_READ8(addr); // DMA MEM -> CS4231 BUFFER
 					addr--;
-					if(addr < dmach->startaddr){
-						addr = dmach->lastaddr; // DMA読み取りアドレスがアドレス範囲の最初に到達したら最後に戻す
-					}
-					offset = (offset+1) & CS4231_BUFMASK; // DMAデータ読み取りバッファの書き込み位置を進める（＆最後に到達したら最初に戻す）
+					offset = (offset+1) & CS4231_BUFMASK;
 				}
-				dmach->adrs.d = addr;
 			}
+			dmach->adrs.d = addr;
 
-			// 読み取りバイト数だけdmach->leng.wを減らす（0以下になったらdmach->startcount+1に戻す）
-			if (dmach->leng.w <= leng) {
-				dmach->leng.w = (UINT16)((UINT)dmach->leng.w + dmach->startcount + 1 - leng); // 戻す
+			if (leng >= remain) {
+				dmach->leng.w = 0xffff;
+				if (channelbit) {
+					dmac.stat |= channelbit;		// Terminal Count status
+				}
 				dmach->proc.extproc(DMAEXT_END);
-			}else{
-				dmach->leng.w -= leng;
+
+
+				if (autoinit) {
+					// Auto-initialize: Base Address/Countを再ロードして継続
+					dmach->adrs.d = dmach->startaddr;
+					dmach->leng.w = dmach->startcount;
+				}
+				else if (channelbit) {
+					// Auto-initialize無効ならTCでチャネルmask＆DMA停止
+					dmac.mask |= channelbit;
+					dmac_check();
+				}
+			}
+			else {
+				dmach->leng.w -= (UINT16)leng;
 			}
 
 			// 読み取り数と残り数更新
 			lengsum += leng;
 			size -= leng;
-			
+
 			// 読み取り数カウント
 			cs4231.totalsample += leng;
-			
+
 			// DMA再生バイト数カウンタ(Playback DMA count register)がPI割り込みを発生させるバイト数になったらPI割り込みを発生させる
 			if(cs4231.totalsample >= playcount){
 				cs4231.totalsample -= playcount;
@@ -469,11 +544,91 @@ UINT dmac_getdata_(DMACH dmach, UINT8 *buf, UINT offset, UINT size) {
 				}
 				break;
 			}
-		}else{
+
+			// Auto-initialize無効でTCなら終了
+			if (!autoinit && dmach->leng.w == 0xffff && channelbit && (dmac.stat & channelbit)) {
+				// 割り込みが有効な場合割り込みを発生させる
+				if ((cs4231.reg.pinctrl & IEN) && (cs4231.dmairq != 0xff)) {
+					cs4231.intflag |= INt; // 割り込み中(Interrupt Status)ビットをセット
+					cs4231.reg.featurestatus |= PI; // PI(Playback Interrupt)ビットをセット
+					pic_setirq(cs4231.dmairq); // 割り込みを発生させる
+				}
+				break;
+			}
+		}
+		else{
 			break;
 		}
 	}
 
 	return(lengsum);
+}
+
+
+// 録音仮　とりあえず無音
+static UINT dmac_putcapture_(DMACH dmach, UINT size) {
+	UINT	leng;
+	UINT	remain;
+	UINT	channel;
+	REG8	channelbit;
+	UINT32	addr;
+	UINT	i;
+	REG8	silence;
+	BOOL	autoinit;
+
+	channel = (UINT)(dmach - dmac.dmach);
+	channelbit = (channel < 4) ? (REG8)(1 << channel) : 0;
+	autoinit = (dmach->mode & 0x10) ? TRUE : FALSE;
+
+	if (!autoinit && channelbit &&
+		(dmac.stat & channelbit) && dmach->leng.w == 0xffff) {
+		return 0;
+	}
+
+	remain = (UINT)dmach->leng.w + 1;
+	leng = min(remain, size);
+	if (!leng) {
+		return 0;
+	}
+
+	/* 8-bit linear PCM is unsigned.  Other formats are harmlessly zeroed. */
+	silence = ((cs4231.reg.cap_datafmt & 0xe0) == 0x00) ? 0x80 : 0x00;
+	addr = dmach->adrs.d;
+	if (!(dmach->mode & 0x20)) {
+		for (i = 0; i < leng; i++) {
+			MEMP_WRITE8(addr, silence);
+			addr++;
+		}
+	}
+	else {
+		for (i = 0; i < leng; i++) {
+			MEMP_WRITE8(addr, silence);
+			addr--;
+		}
+	}
+	dmach->adrs.d = addr;
+
+	if (leng >= remain) {
+		dmach->leng.w = 0xffff;
+		if (channelbit) {
+			dmac.stat |= channelbit;
+		}
+		dmach->proc.extproc(DMAEXT_END);
+
+
+		if (autoinit) {
+			dmach->adrs.d = dmach->startaddr;
+			dmach->leng.w = dmach->startcount;
+		}
+		else if (channelbit) {
+			dmac.mask |= channelbit;
+			dmac_check();
+		}
+	}
+	else {
+		dmach->leng.w -= (UINT16)leng;
+	}
+
+	return leng;
 }
 

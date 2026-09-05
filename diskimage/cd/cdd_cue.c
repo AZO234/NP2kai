@@ -90,7 +90,7 @@ BRESULT opencue(SXSIDEV sxsi, const OEMCHAR *fname) {
 	UINT16		curssize = 0;
 	UINT32		curpos0;
 	UINT32		curpregap;
-	UINT32		pregapoffset= 0;
+	UINT32		pregapoffset = 0;
 
 	ZeroMemory(trk, sizeof(trk));
 	path[0] = '\0';
@@ -144,21 +144,30 @@ BRESULT opencue(SXSIDEV sxsi, const OEMCHAR *fname) {
 					continue;
 				}
 
-				pregapoffset += curpregap;
+				{
+					UINT32 index1pos;
+					UINT32 index0pos;
 
-				trk[index].adr_ctl			= curtype;
-				trk[index].point			= curtrk;
-				trk[index].pos				= pregapoffset + getpos(argv[2]);
-				trk[index].pos0				= pregapoffset + ((curpos0 == 0) ? trk[index].pos : curpos0);
+					if (index != 0) {
+						pregapoffset += curpregap;
+					}
+					index1pos = getpos(argv[2]);
+					index0pos = (curpos0 == 0) ? index1pos : curpos0;
 
-				trk[index].sector_size		= curssize;
+					trk[index].adr_ctl			= curtype;
+					trk[index].point			= curtrk;
+					trk[index].pos				= pregapoffset + index1pos;
+					trk[index].pos0				= pregapoffset + index0pos;
 
-				trk[index].pregap_sectors	= curpregap + (trk[index].pos - trk[index].pos0);
+					trk[index].sector_size		= curssize;
 
-				trk[index].img_pregap_sec	= (trk[index].pos0 == 0) ? trk[index].pos : trk[index].pos0;
-				trk[index].img_start_sec	= trk[index].pos;
+					trk[index].pregap_sectors	= curpregap + (index1pos - index0pos);
 
-				trk[index].pregap_offset_ex = pregapoffset;
+					trk[index].img_pregap_sec	= index0pos;
+					trk[index].img_start_sec	= index1pos;
+
+					trk[index].pregap_offset_ex = pregapoffset;
+				}
 
 //				trk[index].pregap_sector	= trk[index].start_sector - trk[index].pregap_sectors;
 

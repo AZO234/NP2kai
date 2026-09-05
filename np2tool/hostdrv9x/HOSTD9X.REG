@@ -1,0 +1,20 @@
+REGEDIT4
+
+[HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\VxD\HOSTD9X]
+"StaticVxD"="HOSTD9X.VXD"
+"DriveMode"=dword:00000000
+"DriveLetter"="Z:"
+"FallbackToAuto"=dword:00000001
+"UseRealCapacity"=dword:00000000
+"FakeCapacityMB"=dword:00000800
+"FakeFreeMB"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\NetworkProvider\Order]
+"HOSTD9XNP"=""
+
+[HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\HOSTD9XNP\NetworkProvider]
+"Name"="NP2 HOSTD9X Network Provider"
+"ProviderPath"="HOSTD9X.DLL"
+"Description"="NP2 HOSTD9X Provider"
+"NetID"=hex:00,00,25,00
+"CallOrder"=hex:00,00,00,30

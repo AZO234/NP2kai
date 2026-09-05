@@ -18,7 +18,8 @@ enum {
 	FILEATTR_SYSTEM		= 0x04,
 	FILEATTR_VOLUME		= 0x08,
 	FILEATTR_DIRECTORY	= 0x10,
-	FILEATTR_ARCHIVE	= 0x20
+	FILEATTR_ARCHIVE	= 0x20,
+	FILEATTR_NORMAL		= 0x80
 };
 
 enum {
@@ -53,6 +54,7 @@ typedef struct {
 	DOSDATE	date;
 	DOSTIME	time;
 	char	path[MAX_PATH];
+	char	shortpath[64];
 } FLINFO;
 
 
@@ -62,19 +64,29 @@ void dosio_term(void);
 
 /* ファイル操作 */
 FILEH file_open(const OEMCHAR *path);
+FILEH file_open_rw(const OEMCHAR *path);
 FILEH file_open_rb(const OEMCHAR *path);
 FILEH file_create(const OEMCHAR *path);
-long file_seek(FILEH handle, long pointer, int method);
+FILEPOS file_seek(FILEH handle, FILEPOS pointer, int method);
 UINT file_read(FILEH handle, void *data, UINT length);
 UINT file_write(FILEH handle, const void *data, UINT length);
 short file_close(FILEH handle);
-UINT file_getsize(FILEH handle);
+FILELEN file_getsize(FILEH handle);
+short file_sync(FILEH handle);
+short file_setsize(FILEH handle, FILELEN length);
 short file_getdatetime(FILEH handle, DOSDATE *dosdate, DOSTIME *dostime);
+short file_setdatetime(FILEH handle, const DOSDATE *dosdate, const DOSTIME *dostime);
+BRESULT file_getshortname(const OEMCHAR *path, OEMCHAR *shortname, UINT cchShortName);
+BOOL file_islink(const OEMCHAR *path);
+BOOL file_infoislink(const FLINFO *fli, const OEMCHAR *path);
+BOOL file_islocked(const OEMCHAR *path);
+BRESULT file_getinfo(const OEMCHAR *path, FLINFO *fli);
 short file_delete(const OEMCHAR *path);
 short file_attr(const OEMCHAR *path);
+short file_setattr(const OEMCHAR *path, short attr);
+short file_rename(const OEMCHAR *oldpath, const OEMCHAR *newpath);
 short file_dircreate(const OEMCHAR *path);
 short file_dirdelete(const OEMCHAR *path);
-short file_rename(const char* ExistFile, const char* NewFile);
 
 /* カレントファイル操作 */
 void file_setcd(const OEMCHAR *exepath);

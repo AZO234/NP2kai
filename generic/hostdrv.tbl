@@ -18,7 +18,12 @@ typedef struct {
 	UINT8	dosver_minor;
 	UINT8	sda_off[2];
 	UINT8	sda_seg[2];
+	UINT8	handoff_sig[4];	/* "H9X2" when CDS hand-off fields are valid */
+	UINT8	cds_off[2];
+	UINT8	cds_seg[2];
 } IF4DOS;
+
+#define IF4DOS_HANDOFF_SIGNATURE	0x32583948UL	/* "H9X2" little endian */
 
 typedef struct {
 	UINT8	es[2];

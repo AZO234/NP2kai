@@ -61,6 +61,8 @@ static const OEMCHAR file_i286ds[] = OEMTEXT("i286_ds.%.3u");
 static const OEMCHAR file_i286es[] = OEMTEXT("i286_es.%.3u");
 static const OEMCHAR file_i286ss[] = OEMTEXT("i286_ss.%.3u");
 static const OEMCHAR file_memorybin[] = OEMTEXT("memory.bin");
+static const OEMCHAR file_extmemorybin[] = OEMTEXT("extmemory.bin");
+static const OEMCHAR file_registerlog[] = OEMTEXT("register.log");
 
 static const OEMCHAR str_register[] =								\
 				OEMTEXT("AX=%.4x  BX=%.4x  CX=%.4x  DX=%.4x  ")		\
@@ -102,7 +104,7 @@ static OEMCHAR	work[128];
 
 const OEMCHAR *debugsub_regs(void) {
 
-static OEMCHAR	work[512];
+static OEMCHAR	work[256];
 
 	OEMSNPRINTF(work, sizeof(work), str_register,	CPU_AX, CPU_BX, CPU_CX, CPU_DX,
 									CPU_SP, CPU_BP, CPU_SI, CPU_DI,
@@ -110,6 +112,44 @@ static OEMCHAR	work[512];
 	milstr_ncat(work, debugsub_flags(CPU_FLAG), NELEMENTS(work));
 	milstr_ncat(work, CRCONST, NELEMENTS(work));
 	return(work);
+}
+
+static void debugsub_registerdump(void) {
+
+	FILEH	fh;
+	char	work[1024];
+
+	fh = file_create_c(file_registerlog);
+	if (fh == FILEH_INVALID) {
+		return;
+	}
+#if defined(CPUCORE_IA32)
+	SPRINTF(work,
+			"EAX=%.8x  EBX=%.8x  ECX=%.8x  EDX=%.8x" CRLITERAL
+			"ESP=%.8x  EBP=%.8x  ESI=%.8x  EDI=%.8x" CRLITERAL
+			"DS=%.4x  ES=%.4x  SS=%.4x  CS=%.4x  FS=%.4x  GS=%.4x" CRLITERAL
+			"EIP=%.8x  PREV_EIP=%.8x  EFLAGS=%.8x" CRLITERAL
+			"CR0=%.8x  CR2=%.8x  CR3=%.8x" CRLITERAL
+			"GDTR=%.8x:%.4x  IDTR=%.8x:%.4x" CRLITERAL,
+			CPU_EAX, CPU_EBX, CPU_ECX, CPU_EDX,
+			CPU_ESP, CPU_EBP, CPU_ESI, CPU_EDI,
+			CPU_DS, CPU_ES, CPU_SS, CPU_CS, CPU_FS, CPU_GS,
+			CPU_EIP, CPU_PREV_EIP, CPU_EFLAG,
+			CPU_CR0, CPU_CR2, CPU_CR3,
+			CPU_GDTR_BASE, CPU_GDTR_LIMIT, CPU_IDTR_BASE, CPU_IDTR_LIMIT);
+#else
+	SPRINTF(work,
+			"AX=%.4x  BX=%.4x  CX=%.4x  DX=%.4x" CRLITERAL
+			"SP=%.4x  BP=%.4x  SI=%.4x  DI=%.4x" CRLITERAL
+			"DS=%.4x  ES=%.4x  SS=%.4x  CS=%.4x" CRLITERAL
+			"IP=%.4x  FLAGS=%.4x  MSW=%.4x" CRLITERAL,
+			CPU_AX, CPU_BX, CPU_CX, CPU_DX,
+			CPU_SP, CPU_BP, CPU_SI, CPU_DI,
+			CPU_DS, CPU_ES, CPU_SS, CPU_CS,
+			CPU_IP, CPU_FLAG, CPU_MSW);
+#endif
+	file_write(fh, work, STRLEN(work));
+	file_close(fh);
 }
 
 static void writeseg(const OEMCHAR *fname, UINT32 addr, UINT limit) {
@@ -170,6 +210,7 @@ void debugsub_memorydump(void) {
 	FILEH	fh;
 	int		i;
 
+	debugsub_registerdump();
 	fh = file_create_c(file_memorybin);
 	if (fh != FILEH_INVALID) {
 		for (i=0; i<34; i++)
@@ -177,6 +218,30 @@ void debugsub_memorydump(void) {
 		{
 			file_write(fh, mem + i*0x8000, 0x8000);
 		}
+		file_close(fh);
+	}
+}
+
+void debugsub_memorydumpall(void) {
+
+	FILEH	fh;
+	int		i;
+
+	debugsub_registerdump();
+	fh = file_create_c(file_memorybin);
+	if (fh != FILEH_INVALID) {
+		for (i = 0; i < 34; i++)
+		{
+			file_write(fh, mem + i * 0x8000, 0x8000);
+		}
+		file_close(fh);
+	}
+
+	fh = file_create_c(file_extmemorybin);
+	if (fh != FILEH_INVALID) {
+		UINT8* extmem = CPU_EXTMEM;
+		UINT32 extsize = CPU_EXTMEMSIZE;
+		file_write(fh, extmem, extsize);
 		file_close(fh);
 	}
 }

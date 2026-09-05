@@ -148,9 +148,7 @@ void board86_reset(const NP2CFG *pConfig, BOOL adpcm)
 		cCaps |= OPNA_HAS_ADPCM;
 	}
 	nIrq = (pConfig->snd86opt & 0x10) | ((pConfig->snd86opt & 0x4) << 5) | ((pConfig->snd86opt & 0x8) << 3);
-	if(g_nSoundID==SOUNDID_WAVESTAR){
-		nIrq |= (0x3 << 6) | 0x10; // IRQ12固定
-	}
+	nIrq = (pConfig->snd86opt & 0x10) | ((pConfig->snd86opt & 0x4) << 5) | ((pConfig->snd86opt & 0x8) << 3);
 
 	opna_reset(&g_opna[0], cCaps);
 	opna_timer(&g_opna[0], nIrq, NEVENT_FMTIMERA, NEVENT_FMTIMERB);
@@ -160,17 +158,9 @@ void board86_reset(const NP2CFG *pConfig, BOOL adpcm)
 	{
 		soundrom_load(0xcc000, OEMTEXT("86"));
 	}
-	if(g_nSoundID==SOUNDID_WAVESTAR){
-		g_opna[0].s.base = 0x000; // 0x188固定
-	}else{
-		g_opna[0].s.base = (pConfig->snd86opt & 0x01) ? 0x000 : 0x100;
-	}
+	g_opna[0].s.base = (pConfig->snd86opt & 0x01) ? 0x000 : 0x100;
 	fmboard_extreg(extendchannel);
-	if(g_nSoundID==SOUNDID_WAVESTAR){
-		pcm86io_setopt(pConfig->snd86opt | (0x7 << 2)); // IRQ12固定
-	}else{
-		pcm86io_setopt(pConfig->snd86opt);
-	}
+	pcm86io_setopt(pConfig->snd86opt);
 }
 
 /**

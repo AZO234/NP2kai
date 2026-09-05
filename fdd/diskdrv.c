@@ -152,9 +152,16 @@ void diskdrv_hddbind(void)
 				sxsi_setdevtype(drv, SXSIDEV_NC);
 				if(np2cfg.sasihdd[drv & 0x0f]!=NULL && np2cfg.sasihdd[drv & 0x0f][0]!='\0')
 				{
-					char strbuf[] = "IDE#  file open error";
-					strbuf[4] = '0'+drv;
-					msgbox("HD image file open error", strbuf); 
+					if (file_islocked(np2cfg.sasihdd[drv & 0x0f])) {
+						char strbuf[] = "IDE#  file already opened";
+						strbuf[4] = '0' + (drv & 0x0f);
+						msgbox("HD image file open error", strbuf);
+					}
+					else {
+						char strbuf[] = "IDE#  file open error";
+						strbuf[4] = '0' + (drv & 0x0f);
+						msgbox("HD image file open error", strbuf);
+					}
 				}
 			}
 		}
@@ -190,6 +197,19 @@ void diskdrv_hddbind(void)
 		if (sxsi_devopen(drv, np2cfg.scsihdd[drv & 0x0f]) != SUCCESS)
 		{
 			sxsi_setdevtype(drv, SXSIDEV_NC);
+			if (np2cfg.scsihdd[drv & 0x0f] != NULL && np2cfg.scsihdd[drv & 0x0f][0] != '\0')
+			{
+				if (file_islocked(np2cfg.scsihdd[drv & 0x0f])) {
+					char strbuf[] = "SCSI#  file already opened";
+					strbuf[5] = '0' + (drv & 0x0f);
+					msgbox("HD image file open error", strbuf);
+				}
+				else {
+					char strbuf[] = "SCSI#  file open error";
+					strbuf[5] = '0' + (drv & 0x0f);
+					msgbox("HD image file open error", strbuf);
+				}
+			}
 		}
 	}
 #endif /* defined(SUPPORT_SCSI) */

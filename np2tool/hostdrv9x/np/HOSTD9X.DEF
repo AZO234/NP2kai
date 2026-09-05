@@ -1,0 +1,9 @@
+LIBRARY HOSTD9X
+DESCRIPTION 'NP2 HOSTD9X Minimal Network Provider'
+
+EXPORTS
+    NPGetConnection=_NPGetConnection@12 @12 NONAME
+    NPGetCaps=_NPGetCaps@4 @13
+    NPGetUniversalName=_NPGetUniversalName@16 @40 NONAME
+    DllRegisterServer=_DllRegisterServer@0 @100 PRIVATE
+    DllUnregisterServer=_DllUnregisterServer@0 @101 PRIVATE

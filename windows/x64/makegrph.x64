@@ -17,7 +17,7 @@ section .bss
 grph_table		resd	4*256*2
 
 
-GDC_S_SYNC		equ		gdc + gdc_t.s + gdcd_t.para
+GDC_S_SYNC		equ		gdc_t.s + gdcd_t.para
 GDC_S_ZOOM		equ		(GDC_S_SYNC+8)
 GDC_S_CSRFORM	equ		(GDC_S_ZOOM+1)
 GDC_S_SCROLL	equ		(GDC_S_CSRFORM+3)
@@ -49,7 +49,7 @@ makegrph_initialize:
 				loop	.1
 
 				add		ecx, byte 4
-				lea		r9, [grph_table + 4]
+				lea		r9, [rel grph_table + 4]
 .2:				mov		[r9 + r8*8], eax
 				add		eax, eax
 				add		r9, 512*4
@@ -83,20 +83,26 @@ makegrph_initialize:
 	GRP_LR			equ		rsp + 0
 	LINE_WIDTH		equ		rsp + 4
 
-makegrph:		sub			rsp, byte 40
+makegrph:		sub			rsp, byte 72
 				mov			[rsp+8], rbx
 				mov			[rsp+16], rsi
 				mov			[rsp+24], rdi
 				mov			[rsp+32], rbp
+				mov			[rsp+40], r12
+				mov			[rsp+48], r13
+				mov			[rsp+56], r14
 
-				lea			r8, [mem]
+				lea			r8, [rel mem]
+				lea			r12, [rel vramupdate]
+				lea			r13, [rel grph_table]
+				lea			r14, [rel renewal_line]
 
-				mov			eax, [dsync + dsync_t.grphvad]
+				mov			eax, [rel dsync + dsync_t.grphvad]
 				and			ecx, byte 1
 				je			short .adjustpage
 				add			eax, SCRN_BUFSIZE
 				add			r8, VRAM_STEP
-.adjustpage:	lea			rdi, [np2_vram]
+.adjustpage:	lea			rdi, [rel np2_vram]
 				inc			ecx
 				add			rdi, rax
 				pxor		xmm0, xmm0
@@ -110,7 +116,7 @@ makegrph:		sub			rsp, byte 40
 				cmp			dh, 0
 				je			short .calcmaxline
 
-				lea			rbx, [vramupdate]
+				mov			rbx, r12
 				mov			ecx, 8000h/32
 .dirtyfilllp:	movdqa		xmm2, [rbx]
 				movdqa		xmm3, [rbx+16]
@@ -121,24 +127,24 @@ makegrph:		sub			rsp, byte 40
 				add			rbx, byte 32
 				loop		.dirtyfilllp
 
-.calcmaxline:	movzx		eax, byte [GDC_S_CSRFORM]
+.calcmaxline:	movzx		eax, byte [rel gdc + GDC_S_CSRFORM]
 				and			eax, byte 01fh
 				mov			[GRP_LR], eax
 
-				mov			ebx, [dsync + dsync_t.grph_vbp]
-.drawlp:		mov			esi, [GDC_S_SCROLL+ 0]
+				mov			ebx, [rel dsync + dsync_t.grph_vbp]
+.drawlp:		mov			esi, [rel gdc + GDC_S_SCROLL+ 0]
 				call		.grphputlines
-				mov			esi, [GDC_S_SCROLL+ 4]
+				mov			esi, [rel gdc + GDC_S_SCROLL+ 4]
 				call		.grphputlines
-				cmp			byte [np2cfg + np2cfg_t.uPD72020], 0
+				cmp			byte [rel np2cfg + np2cfg_t.uPD72020], 0
 				jne			short .drawlp
-				mov			esi, [GDC_S_SCROLL+ 8]
+				mov			esi, [rel gdc + GDC_S_SCROLL+ 8]
 				call		.grphputlines
-				mov			esi, [GDC_S_SCROLL+12]
+				mov			esi, [rel gdc + GDC_S_SCROLL+12]
 				call		.grphputlines
 				jmp			short .drawlp
 
-.grphputlines:		movzx		eax, byte [GDC_S_PITCH]
+.grphputlines:		movzx		eax, byte [rel gdc + GDC_S_PITCH]
 					test		esi, 40000000h
 					jne			short .storewidth
 					add			eax, eax
@@ -157,25 +163,25 @@ makegrph:		sub			rsp, byte 40
 .grphline1_lp:		mov			ebp, (SCRN_TXTWIDTH-1)*2
 					test		bl, 1
 					je			short .putline
-					test		byte [gdc + gdc_t.mode1], 10h
+					test		byte [rel gdc + gdc_t.mode1], 10h
 					je			short .putline
-					add			edi, SCRN_BUFWIDTH
+					add			rdi, SCRN_BUFWIDTH
 
 					cmp			dh, 0						; ALL_DRAWFLAG
 					je			short .putlineskip
 					jmp			short .linedirtyon
 
 .putline:			push		rsi
-.linelp:			test		[vramupdate + rsi], dl
+.linelp:			test		[r12 + rsi], dl
 					je			short .nodirty
 					movzx		eax, byte [r8 + rsi + VRAM0_B]
 					movzx		r9d, byte [r8 + rsi + VRAM0_R]
-					mov			r10, [grph_table + rax*8 + 0*0x800]
+					mov			r10, [r13 + rax*8 + 0*0x800]
 					movzx		eax, byte [r8 + rsi + VRAM0_G]
-					or			r10, [grph_table + r9*8 + 1*0x800]
+					or			r10, [r13 + r9*8 + 1*0x800]
 					movzx		r9d, byte [r8 + rsi + VRAM0_E]
-					or			r10, [grph_table + rax*8 + 2*0x800]
-					or			r10, [grph_table + r9*8 + 3*0x800]
+					or			r10, [r13 + rax*8 + 2*0x800]
+					or			r10, [r13 + r9*8 + 3*0x800]
 					or			ebp, byte 1
 					mov			[rdi], r10
 .nodirty:			inc			esi
@@ -187,10 +193,10 @@ makegrph:		sub			rsp, byte 40
 
 					test		bpl, 1
 					je			short .putlineskip
-.linedirtyon:		or			[renewal_line + rbx], dl
+.linedirtyon:		or			[r14 + rbx], dl
 
 .putlineskip:		inc			ebx
-					cmp			ebx, [dsync + dsync_t.grphymax]
+					cmp			ebx, [rel dsync + dsync_t.grphymax]
 					jnc			short .grphbreak
 					dec			dword [rsp]
 					je			short .grphline1ed
@@ -208,20 +214,20 @@ makegrph:		sub			rsp, byte 40
 				cmp			dh, 0						; ALL_DRAWFLAG
 				je			short .deldirty
 
-				cmp			ebx, [dsync + dsync_t.scrnymax]
+				cmp			ebx, [rel dsync + dsync_t.scrnymax]
 				jae			short .deldirty
-.bottomfill0:	or			[renewal_line + rbx], dl
+.bottomfill0:	or			[r14 + rbx], dl
 				mov			ecx, SCRN_BUFWIDTH/32
 .bottomfill1:	movdqa		[rdi], xmm0
 				movdqa		[rdi+16], xmm0
 				add			rdi, byte 32
 				loop		.bottomfill1
 				inc			ebx
-				cmp			ebx, [dsync + dsync_t.scrnymax]
+				cmp			ebx, [rel dsync + dsync_t.scrnymax]
 				jb			short .bottomfill0
 
 .deldirty:		pcmpeqd		xmm2, xmm2
-				lea			rbx, [vramupdate]
+				mov			rbx, r12
 				pandn		xmm1, xmm2
 				mov			ecx, 8000h/32
 .deldirtylp:	movdqa		xmm2, [rbx]
@@ -237,7 +243,10 @@ makegrph:		sub			rsp, byte 40
 				mov			rsi, [rsp+16]
 				mov			rdi, [rsp+24]
 				mov			rbp, [rsp+32]
-				add			rsp, byte 40
+				mov			r12, [rsp+40]
+				mov			r13, [rsp+48]
+				mov			r14, [rsp+56]
+				add			rsp, byte 72
 				ret
 
 	ends

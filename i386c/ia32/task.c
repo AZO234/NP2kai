@@ -55,15 +55,11 @@ set_task_free(UINT16 selector)
 	UINT32 addr;
 	UINT32 h;
 
+	// freeは何度実行してもよい　実機確認済み
 	addr = CPU_GDTR_BASE + (selector & CPU_SEGMENT_SELECTOR_INDEX_MASK);
 	h = cpu_kmemoryread_d(addr + 4);
-	if (h & CPU_TSS_H_BUSY) {
-		h &= ~CPU_TSS_H_BUSY;
-		cpu_kmemorywrite_d(addr + 4, h);
-	} else {
-		ia32_panic("set_task_free: already free(%04x:%08x)",
-		    selector, h);
-	}
+	h &= ~CPU_TSS_H_BUSY;
+	cpu_kmemorywrite_d(addr + 4, h);
 }
 
 void CPUCALL
@@ -199,13 +195,32 @@ task_switch(selector_t *task_sel, task_switch_type_t type)
 	selector_t cs_sel, ss_sel;
 	int rv;
 
-	UINT32 cur_base, cur_paddr;	/* current task state */
-	UINT32 task_base, task_paddr;	/* new task state */
+	UINT32 cur_base;	/* current task state */
+	UINT32 task_base;	/* new task state */
 	UINT32 old_flags = REAL_EFLAGREG;
 	BOOL task16;
+	BOOL cur_task16;
 	UINT i;
 
 	VERBOSE(("task_switch: start"));
+
+	// TRで決まる
+	switch (CPU_TR_DESC.type) {
+	case CPU_SYSDESC_TYPE_TSS_32:
+	case CPU_SYSDESC_TYPE_TSS_BUSY_32:
+		cur_task16 = 0;
+		break;
+
+	case CPU_SYSDESC_TYPE_TSS_16:
+	case CPU_SYSDESC_TYPE_TSS_BUSY_16:
+		cur_task16 = 1;
+		break;
+
+	default:
+		ia32_panic("task_switch: current task descriptor type is invalid.");
+		cur_task16 = 0;		/* compiler happy */
+		break;
+	}
 
 	switch (task_sel->desc.type) {
 	case CPU_SYSDESC_TYPE_TSS_32:
@@ -231,15 +246,15 @@ task_switch(selector_t *task_sel, task_switch_type_t type)
 	}
 
 	cur_base = CPU_TR_BASE;
-	cur_paddr = laddr_to_paddr(cur_base, CPU_PAGE_WRITE_DATA|CPU_MODE_SUPERVISER);
+	//cur_paddr = laddr_to_paddr(cur_base, CPU_PAGE_WRITE_DATA|CPU_MODE_SUPERVISER);
 	task_base = task_sel->desc.u.seg.segbase;
-	task_paddr = laddr_to_paddr(task_base, CPU_PAGE_WRITE_DATA|CPU_MODE_SUPERVISER);
-	VERBOSE(("task_switch: current task (%04x) = 0x%08x:%08x (p0x%08x)",
-	    CPU_TR, cur_base, CPU_TR_LIMIT, cur_paddr));
-	VERBOSE(("task_switch: new task (%04x) = 0x%08x:%08x (p0x%08x)",
-	    task_sel->selector, task_base, task_sel->desc.u.seg.limit,
-	    task_paddr));
-	VERBOSE(("task_switch: %dbit task switch", task16 ? 16 : 32));
+	//task_paddr = laddr_to_paddr(task_base, CPU_PAGE_WRITE_DATA|CPU_MODE_SUPERVISER);
+	//VERBOSE(("task_switch: current task (%04x) = 0x%08x:%08x (p0x%08x)",
+	//    CPU_TR, cur_base, CPU_TR_LIMIT, cur_paddr));
+	//VERBOSE(("task_switch: new task (%04x) = 0x%08x:%08x (p0x%08x)",
+	//    task_sel->selector, task_base, task_sel->desc.u.seg.limit,
+	//    task_paddr));
+	//VERBOSE(("task_switch: %dbit task switch", task16 ? 16 : 32));
 
 #if defined(MORE_DEBUG)
 	VERBOSE(("task_switch: new task"));
@@ -251,43 +266,41 @@ task_switch(selector_t *task_sel, task_switch_type_t type)
 
 	/* load task state */
 	if (!task16) {
-		if (CPU_STAT_PAGING) {
-			cr3 = cpu_memoryread_d(task_paddr + 28);
-		}
-		eip = cpu_memoryread_d(task_paddr + 32);
-		new_flags = cpu_memoryread_d(task_paddr + 36);
+		cr3 = cpu_kmemoryread_d(task_base + 28);
+		eip = cpu_kmemoryread_d(task_base + 32);
+		new_flags = cpu_kmemoryread_d(task_base + 36);
 		for (i = 0; i < CPU_REG_NUM; i++) {
-			regs[i] = cpu_memoryread_d(task_paddr + 40 + i * 4);
+			regs[i] = cpu_kmemoryread_d(task_base + 40 + i * 4);
 		}
 		for (i = 0; i < CPU_SEGREG_NUM; i++) {
-			sreg[i] = cpu_memoryread_w(task_paddr + 72 + i * 4);
+			sreg[i] = cpu_kmemoryread_w(task_base + 72 + i * 4);
 		}
-		ldtr = cpu_memoryread_w(task_paddr + 96);
-		t = cpu_memoryread_w(task_paddr + 100);
+		ldtr = cpu_kmemoryread_w(task_base + 96);
+		t = cpu_kmemoryread_w(task_base + 100);
 		if (t & 1) {
 			CPU_STAT_BP_EVENT |= CPU_STAT_BP_EVENT_TASK;
 		}
-		iobase = cpu_memoryread_w(task_paddr + 102);
+		iobase = cpu_kmemoryread_w(task_base + 102);
 	} else {
-		eip = cpu_memoryread_w(task_paddr + 14);
-		new_flags = cpu_memoryread_w(task_paddr + 16);
+		eip = cpu_kmemoryread_w(task_base + 14);
+		new_flags = cpu_kmemoryread_w(task_base + 16);
 		for (i = 0; i < CPU_REG_NUM; i++) {
-			regs[i] = cpu_memoryread_w(task_paddr + 18 + i * 2);
+			regs[i] = cpu_kmemoryread_w(task_base + 18 + i * 2);
 		}
 		for (i = 0; i < CPU_SEGREG286_NUM; i++) {
-			sreg[i] = cpu_memoryread_w(task_paddr + 34 + i * 2);
+			sreg[i] = cpu_kmemoryread_w(task_base + 34 + i * 2);
 		}
 		for (; i < CPU_SEGREG_NUM; i++) {
 			sreg[i] = 0;
 		}
-		ldtr = cpu_memoryread_w(task_paddr + 42);
+		ldtr = cpu_kmemoryread_w(task_base + 42);
 		iobase = 0;
 		t = 0;
 	}
 
 #if defined(DEBUG)
 	VERBOSE(("task_switch: current task"));
-	if (!task16) {
+	if (!cur_task16) {
 		VERBOSE(("task_switch: CR3     = 0x%08x", CPU_CR3));
 	}
 	VERBOSE(("task_switch: eip     = 0x%08x", CPU_EIP));
@@ -344,26 +357,26 @@ task_switch(selector_t *task_sel, task_switch_type_t type)
 	}
 
 	/* store current task state in current TSS */
-	if (!task16) {
-		cpu_memorywrite_d(cur_paddr + 32, CPU_EIP);
-		cpu_memorywrite_d(cur_paddr + 36, old_flags);
+	if (!cur_task16) {
+		cpu_kmemorywrite_d(cur_base + 32, CPU_EIP);
+		cpu_kmemorywrite_d(cur_base + 36, old_flags);
 		for (i = 0; i < CPU_REG_NUM; i++) {
-			cpu_memorywrite_d(cur_paddr + 40 + i * 4,
+			cpu_kmemorywrite_d(cur_base + 40 + i * 4,
 			    CPU_REGS_DWORD(i));
 		}
 		for (i = 0; i < CPU_SEGREG_NUM; i++) {
-			cpu_memorywrite_w(cur_paddr + 72 + i * 4,
+			cpu_kmemorywrite_w(cur_base + 72 + i * 4,
 			    CPU_REGS_SREG(i));
 		}
 	} else {
-		cpu_memorywrite_w(cur_paddr + 14, CPU_IP);
-		cpu_memorywrite_w(cur_paddr + 16, (UINT16)old_flags);
+		cpu_kmemorywrite_w(cur_base + 14, CPU_IP);
+		cpu_kmemorywrite_w(cur_base + 16, (UINT16)old_flags);
 		for (i = 0; i < CPU_REG_NUM; i++) {
-			cpu_memorywrite_w(cur_paddr + 18 + i * 2,
+			cpu_kmemorywrite_w(cur_base + 18 + i * 2,
 			    CPU_REGS_WORD(i));
 		}
 		for (i = 0; i < CPU_SEGREG286_NUM; i++) {
-			cpu_memorywrite_w(cur_paddr + 34 + i * 2,
+			cpu_kmemorywrite_w(cur_base + 34 + i * 2,
 			    CPU_REGS_SREG(i));
 		}
 	}
@@ -373,7 +386,7 @@ task_switch(selector_t *task_sel, task_switch_type_t type)
 	case TASK_SWITCH_CALL:
 	case TASK_SWITCH_INTR:
 		/* set back link selector */
-		cpu_memorywrite_w(task_paddr, CPU_TR);
+		cpu_kmemorywrite_w(task_base, CPU_TR);
 		break;
 
 	case TASK_SWITCH_IRET:
@@ -437,7 +450,7 @@ task_switch(selector_t *task_sel, task_switch_type_t type)
 	 */
 
 	/* set new CR3 */
-	if (!task16 && CPU_STAT_PAGING) {
+	if (!task16) {
 		set_cr3(cr3);
 	}
 

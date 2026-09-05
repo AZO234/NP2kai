@@ -4,6 +4,7 @@
 #include	<pccore.h>
 #include	<io/iocore.h>
 #include	<bios/bios.h>
+#include	<sound/soundrom.h>
 #include	"i286c.mcr"
 #if defined(ENABLE_TRAP)
 #include "trap/inttrap.h"
@@ -1733,6 +1734,18 @@ I286FN _nop(void) {							// 90: nop / bios func
 	UINT32	adrs;
 
 	adrs = LOW16(I286_IP - 1) + CS_BASE;
+#if defined(SUPPORT_EMU_SOUNDBIOS)
+	if ((adrs >= 0xc8000) && (adrs < 0xd8000) &&
+		soundrom_biosfunc(adrs)) {
+		ES_BASE = I286_ES << 4;
+		CS_BASE = I286_CS << 4;
+		SS_BASE = I286_SS << 4;
+		SS_FIX = SS_BASE;
+		DS_BASE = I286_DS << 4;
+		DS_FIX = DS_BASE;
+	}
+	else
+#endif
 	if ((adrs >= 0xf8000) && (adrs < 0x100000)) {
 		biosfunc(adrs);
 		ES_BASE = I286_ES << 4;

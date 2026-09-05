@@ -1,0 +1,6 @@
+!include $(BASEDIR)\inc\master.mk
+
+DEVICE=HOSTD9X
+OBJS=$(BIN)\hostdrv9x.obj $(BIN)\hostdrv9xvxd.obj
+
+!include HOSTD9X.MK

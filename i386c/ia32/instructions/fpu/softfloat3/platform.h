@@ -35,29 +35,39 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =============================================================================*/
 
 /*----------------------------------------------------------------------------
+| SoftFloat uses the native 64-bit integer path and inlines its small integer
+| primitives aggressively.  These primitives dominate extended-precision add,
+| divide, normalize, and conversion paths.
 *----------------------------------------------------------------------------*/
 #define LITTLEENDIAN 1
 #define SOFTFLOAT_FAST_INT64
+#define INLINE_LEVEL 5
 
 /*----------------------------------------------------------------------------
+| SoftFloat defines many small primitives in headers when INLINE_LEVEL enables
+| them.  Internal linkage lets each translation unit inline those helpers while
+| the separately compiled primitive sources keep their single external symbols.
 *----------------------------------------------------------------------------*/
 #ifndef INLINE
 #if defined(_MSC_VER)
 #pragma warning(disable: 4244)
 #pragma warning(disable: 4245)
-#define INLINE __inline
+#define INLINE static __forceinline
 #elif defined(__BORLANDC__)
-#define INLINE __inline
+#define INLINE static __inline
 #elif defined(__GNUC__)
-#define INLINE __inline__ __attribute__((always_inline))
+#define INLINE static __inline__ __attribute__((always_inline))
 #else
-#define INLINE
+#define INLINE static
 #endif
 #endif
 
 /*----------------------------------------------------------------------------
+| Use compiler bit-scan/count-leading-zero primitives when they are available.
 *----------------------------------------------------------------------------*/
-#ifndef _MSC_VER
+#if defined(_MSC_VER)
+#include "opts-MSVC.h"
+#else
 #define SOFTFLOAT_BUILTIN_CLZ 1
 #include "opts-GCC.h"
 #endif

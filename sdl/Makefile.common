@@ -61,7 +61,11 @@ SOURCES_C :=	$(NP2_PATH)/calendar.c \
 	$(NP2_PATH)/generic/cmndraw.c \
 	$(NP2_PATH)/generic/cmver.c \
 	$(NP2_PATH)/generic/dipswbmp.c \
+	$(NP2_PATH)/generic/hostdrv.c \
 	$(NP2_PATH)/generic/hostdrvs.c \
+	$(NP2_PATH)/generic/hostdrv9x.c \
+	$(NP2_PATH)/generic/hostdrvnt.c \
+	$(NP2_PATH)/generic/hostdrvwincompat.c \
 	$(NP2_PATH)/generic/keydisp.c \
 	$(NP2_PATH)/generic/memdbg32.c \
 	$(NP2_PATH)/generic/np2info.c \
@@ -108,7 +112,6 @@ SOURCES_C :=	$(NP2_PATH)/calendar.c \
 	$(wildcard $(NP2_PATH)/wab/*.c)
 
 NP2_SOURCES_C := $(NP2_PATH)/debugsub.c \
-    $(NP2_PATH)/generic/hostdrv.c \
 	$(wildcard $(NP2_PATH)/i286c/*.c)
 
 NP21_SOURCES_C := $(NP2_PATH)/debugsub386.c \

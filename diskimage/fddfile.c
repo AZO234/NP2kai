@@ -21,6 +21,7 @@
 	_FDDFILE	fddfile[MAX_FDDFILE];
 	_FDDFUNC	fddfunc[MAX_FDDFILE];	//	追加(Kai1)
 	UINT8		fddlasterror;
+	UINT8		fddbioscmd; // NFD用
 
 //	追加(kai9)
 void fddfunc_init(FDDFUNC fdd_fn) {
@@ -29,6 +30,7 @@ void fddfunc_init(FDDFUNC fdd_fn) {
 	fdd_fn->diskaccess	= fdd_dummy_xxx;
 	fdd_fn->seek		= fdd_dummy_xxx;
 	fdd_fn->seeksector	= fdd_dummy_xxx;
+	fdd_fn->readdiag	= fdd_dummy_xxx;
 	fdd_fn->read		= fdd_dummy_xxx;
 	fdd_fn->write		= fdd_dummy_xxx;
 	fdd_fn->readid		= fdd_dummy_xxx;
@@ -446,6 +448,24 @@ BRESULT fdd_read(void) {
 	}
 	return(FAILURE);
 #endif
+}
+
+BRESULT fdd_diagread(void) {
+
+	FDDFILE		fdd;
+	FDDFUNC		fdd_fn;
+
+	fdd = fddfile + fdc.us;
+	//	特殊読み込みはNFD r1専用。その他の形式はここには来ない
+	if (fdd->type != DISKTYPE_NFD || !fdd->inf.nfd.revision) {
+		fddlasterror = 0xc0;
+		return(FAILURE);
+	}
+	sysmng_fddaccess(fdc.us);
+	fdd_fn = fddfunc + fdc.us;
+	//	0xc0は一致する特殊読み込み情報無し。FDC側で通常READへフォールバックする
+	fddlasterror = 0xc0;
+	return(fdd_fn->readdiag(fdd));
 }
 
 BRESULT fdd_write(void) {

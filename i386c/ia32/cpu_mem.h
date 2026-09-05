@@ -54,6 +54,9 @@ void MEMCALL cpu_vmemorywrite_b(int idx, UINT32 offset, UINT8 value);
 #define	cpu_vmemorywrite(i,o,v)		cpu_vmemorywrite_b(i,o,v)
 void MEMCALL cpu_vmemorywrite_w(int idx, UINT32 offset, UINT16 value);
 void MEMCALL cpu_vmemorywrite_d(int idx, UINT32 offset, UINT32 value);
+#if defined(USE_CPU_BULKREP)
+UINT8 * MEMCALL cpu_vmemory_get_direct_host_ptr(int idx, UINT32 offset, UINT leng, int ucrw);
+#endif
 void MEMCALL cpu_vmemorywrite_q(int idx, UINT32 offset, UINT64 value);
 void MEMCALL cpu_vmemorywrite_f(int idx, UINT32 offset, const REG80 *value);
 UINT8 MEMCALL cpu_vmemoryread_b(int idx, UINT32 offset);
@@ -65,6 +68,15 @@ REG80 MEMCALL cpu_vmemoryread_f(int idx, UINT32 offset);
 UINT32 MEMCALL cpu_vmemory_RMW_b(int idx, UINT32 offset, UINT32 (CPUCALL *func)(UINT32, void *), void *arg);
 UINT32 MEMCALL cpu_vmemory_RMW_w(int idx, UINT32 offset, UINT32 (CPUCALL *func)(UINT32, void *), void *arg);
 UINT32 MEMCALL cpu_vmemory_RMW_d(int idx, UINT32 offset, UINT32 (CPUCALL *func)(UINT32, void *), void *arg);
+
+// 事前アドレス解決タイプ　実書き込み前にページフォールトが起こるか確認できる
+// prepareで実アドレス取得、commitで実際に書き込み
+void MEMCALL cpu_vmemorywrite_prepare_b(int idx, UINT32 offset, UINT32* paddr);
+void MEMCALL cpu_vmemorywrite_prepare_w(int idx, UINT32 offset, UINT32 paddr[2], UINT* remain);
+void MEMCALL cpu_vmemorywrite_prepare_d(int idx, UINT32 offset, UINT32 paddr[2], UINT* remain);
+#define	cpu_vmemorywrite_commit_b(a,v)	cpu_memorywrite(a,v)
+void MEMCALL cpu_vmemorywrite_commit_w(UINT32 paddr[2], UINT remain, UINT16 data);
+void MEMCALL cpu_vmemorywrite_commit_d(UINT32 paddr[2], UINT remain, UINT32 data);
 
 /*
  * code fetch

@@ -49,7 +49,12 @@ check_limit_upstairs(descriptor_t *sdp, UINT32 offset, UINT len, BOOL is32bit)
 
 	if (SEG_IS_DATA(sdp) && SEG_IS_EXPANDDOWN_DATA(sdp)) {
 		/* expand-down data segment */
-		limit = SEG_IS_32BIT(sdp) ? 0xffffffff : 0x0000ffff;
+		limit = is32bit ? 0xffffffff : 0x0000ffff;
+
+		if (sdp->u.seg.limit >= limit) {
+			goto exc; // 16bit範囲を超えていたら全範囲無効
+		}
+
 		if (sdp->u.seg.limit == 0) {
 			/*
 			 *   32bit       16bit
@@ -60,14 +65,14 @@ check_limit_upstairs(descriptor_t *sdp, UINT32 offset, UINT len, BOOL is32bit)
 			 * |       |   +-------+ 0000FFFFh - len -1
 			 * |       |   | valid |
 			 * +-------+   +-------+ 00000000h
+			 * Expand-down segments start at limit + 1.  Therefore
+			 * offset 0 is not valid even when the descriptor limit is 0.
 			 */
-			if (!SEG_IS_32BIT(sdp)) {
-				if ((len > limit)		/* len check */
-				 || (end > limit)) {		/* [1] */
-					goto exc;
-				}
-			} else {
-				sdp->flag |= CPU_DESC_FLAG_WHOLEADR;
+			if ((len > limit)			/* len check */
+			 || (end < offset)			/* wrap check */
+			 || (offset == 0)			/* lower bound */
+			 || (end > limit)) {			/* upper bound */
+				goto exc;
 			}
 		} else {
 			/*
@@ -86,7 +91,7 @@ check_limit_upstairs(descriptor_t *sdp, UINT32 offset, UINT len, BOOL is32bit)
 			 */
 			if ((len > limit - sdp->u.seg.limit)	/* len check */
 			 || (end < offset)			/* wrap check */
-			 || (offset < sdp->u.seg.limit) 	/* [1] */
+			 || (offset <= sdp->u.seg.limit)	/* [1] */
 			 || (end > limit)) {			/* [2] */
 				goto exc;
 			}
@@ -120,7 +125,7 @@ check_limit_upstairs(descriptor_t *sdp, UINT32 offset, UINT len, BOOL is32bit)
 			 */
 			if ((len > sdp->u.seg.limit)		/* len check */
 			 || (end < offset)			/* wrap check */
-			 || (end > sdp->u.seg.limit + 1)) {	/* [1] */
+			 || (end > sdp->u.seg.limit)) {		/* [1] */
 				goto exc;
 			}
 		}
@@ -221,6 +226,7 @@ cpu_stack_push_check(UINT16 s, descriptor_t *sdp, UINT32 sp, UINT len,
     BOOL is32bit)
 {
 	UINT32 limit;
+	UINT32 seglimit;
 	UINT32 start;
 
 	__ASSERT(sdp != NULL);
@@ -250,6 +256,11 @@ cpu_stack_push_check(UINT16 s, descriptor_t *sdp, UINT32 sp, UINT len,
 				goto exc;
 			}
 		}
+
+		if (sdp->u.seg.limit >= limit) {
+			goto exc; // 16bit範囲を超えていたら全範囲無効
+		}
+
 		if (sdp->u.seg.limit == 0) {
 			/*
 			 *   32bit       16bit
@@ -289,7 +300,12 @@ cpu_stack_push_check(UINT16 s, descriptor_t *sdp, UINT32 sp, UINT len,
 		}
 	} else {
 		/* expand-up stack */
-		if (sdp->u.seg.limit == limit) {
+		seglimit = sdp->u.seg.limit;
+		if (seglimit > limit) {
+			seglimit = limit; // 16bit範囲を超えていたら全範囲有効
+		}
+
+		if (seglimit == limit) {
 			/*
 			 *   32bit       16bit
 			 * +-------+   +-------+ FFFFFFFFh
@@ -300,11 +316,7 @@ cpu_stack_push_check(UINT16 s, descriptor_t *sdp, UINT32 sp, UINT len,
 			 * |       |   |       |
 			 * +-------+   +-------+ 00000000h
 			 */
-			if (!SEG_IS_32BIT(sdp)) {
-				if (sp > limit) {		/* [1] */
-					goto exc;
-				}
-			} else {
+			if (sdp->u.seg.limit == 0xffffffff) {
 				sdp->flag |= CPU_DESC_FLAG_WHOLEADR;
 			}
 		} else {
@@ -322,9 +334,9 @@ cpu_stack_push_check(UINT16 s, descriptor_t *sdp, UINT32 sp, UINT len,
 			 *
 			 * [+]: wrap check
 			 */
-			if ((len > sdp->u.seg.limit)		/* len check */
+			if ((len > seglimit)			/* len check */
 			 || (start > sp)			/* wrap check */
-			 || (sp > sdp->u.seg.limit + 1)) {	/* [1] */
+			 || (sp > seglimit + 1)) {		/* [1] */
 				goto exc;
 			}
 		}
@@ -522,6 +534,173 @@ cpu_memorywrite_f(UINT32 paddr, const REG80 *value)
 	(((sreg) == CPU_SS_INDEX) ? SS_EXCEPTION : GP_EXCEPTION)
 
 #include "cpu_mem.mcr"
+
+static void MEMCALL
+cpu_vmemorywrite_prepare_common(int idx, UINT32 offset, UINT length, UINT32 paddr[2], UINT *remain)
+{
+	descriptor_t *sdp;
+	UINT32 addr;
+	UINT first;
+	int exc;
+
+	__ASSERT((unsigned int)idx < CPU_SEGREG_NUM);
+	__ASSERT(length > 0);
+
+	sdp = &CPU_STAT_SREG(idx);
+	addr = sdp->u.seg.segbase + offset;
+
+	if (!CPU_STAT_PM) {
+		paddr[0] = addr;
+		if (remain != NULL) {
+			*remain = length;
+		}
+		return;
+	}
+
+	if (!SEG_IS_VALID(sdp)) {
+		exc = GP_EXCEPTION;
+		goto err;
+	}
+	if (!(sdp->flag & CPU_DESC_FLAG_WRITABLE)) {
+		cpu_memorywrite_check(sdp, offset, length, CHOOSE_EXCEPTION(idx));
+	} else if (!(sdp->flag & CPU_DESC_FLAG_WHOLEADR)) {
+		if (!check_limit_upstairs(sdp, offset, length, SEG_IS_32BIT(sdp))) {
+			goto range_failure;
+		}
+	}
+
+	if (!CPU_STAT_PAGING) {
+		paddr[0] = addr;
+		if (remain != NULL) {
+			*remain = length;
+		}
+		return;
+	}
+
+	first = CPU_PAGE_SIZE - (addr & CPU_PAGE_MASK);
+	paddr[0] = laddr2paddr(addr, CPU_PAGE_WRITE_DATA | CPU_STAT_USER_MODE);
+	if (first < length) {
+		paddr[1] = laddr2paddr(addr + first, CPU_PAGE_WRITE_DATA | CPU_STAT_USER_MODE);
+		if (remain != NULL) {
+			*remain = first;
+		}
+	} else if (remain != NULL) {
+		*remain = length;
+	}
+	return;
+
+range_failure:
+	VERBOSE(("cpu_vmemorywrite_prepare: type = %d, offset = %08x, length = %d, limit = %08x", sdp->type, offset, length, sdp->u.seg.limit));
+	exc = CHOOSE_EXCEPTION(idx);
+err:
+	EXCEPTION(exc, 0);
+}
+
+void MEMCALL
+cpu_vmemorywrite_prepare_b(int idx, UINT32 offset, UINT32 *paddr)
+{
+	UINT32 tmp[2];
+	UINT remain;
+
+	cpu_vmemorywrite_prepare_common(idx, offset, 1, tmp, &remain);
+	*paddr = tmp[0];
+}
+
+void MEMCALL
+cpu_vmemorywrite_prepare_w(int idx, UINT32 offset, UINT32 paddr[2], UINT *remain)
+{
+	cpu_vmemorywrite_prepare_common(idx, offset, 2, paddr, remain);
+}
+
+void MEMCALL
+cpu_vmemorywrite_prepare_d(int idx, UINT32 offset, UINT32 paddr[2], UINT *remain)
+{
+	cpu_vmemorywrite_prepare_common(idx, offset, 4, paddr, remain);
+}
+void MEMCALL
+cpu_vmemorywrite_commit_w(UINT32 paddr[2], UINT remain, UINT16 data)
+{
+	if (remain >= 2) {
+		cpu_memorywrite_w(paddr[0], data);
+	}
+	else {
+		cpu_memorywrite(paddr[0], (UINT8)data);
+		cpu_memorywrite(paddr[1], (UINT8)(data >> 8));
+	}
+}
+void MEMCALL
+cpu_vmemorywrite_commit_d(UINT32 paddr[2], UINT remain, UINT32 data)
+{
+	switch (remain) {
+	case 1:
+		cpu_memorywrite(paddr[0], (UINT8)data);
+		cpu_memorywrite_w(paddr[1], (UINT16)(data >> 8));
+		cpu_memorywrite(paddr[1] + 2, (UINT8)(data >> 24));
+		break;
+
+	case 2:
+		cpu_memorywrite_w(paddr[0], (UINT16)data);
+		cpu_memorywrite_w(paddr[1], (UINT16)(data >> 16));
+		break;
+
+	case 3:
+		cpu_memorywrite(paddr[0], (UINT8)data);
+		cpu_memorywrite_w(paddr[0] + 1, (UINT16)(data >> 8));
+		cpu_memorywrite(paddr[1], (UINT8)(data >> 24));
+		break;
+
+	default:
+		cpu_memorywrite_d(paddr[0], data);
+		break;
+	}
+}
+
+
+#if defined(USE_CPU_BULKREP)
+UINT8 * MEMCALL
+cpu_vmemory_get_direct_host_ptr(int idx, UINT32 offset, UINT leng, int ucrw)
+{
+	descriptor_t *sdp;
+	UINT32 addr;
+
+	__ASSERT((unsigned int)idx < CPU_SEGREG_NUM);
+	__ASSERT(leng > 0);
+
+	sdp = &CPU_STAT_SREG(idx);
+	addr = sdp->u.seg.segbase + offset;
+
+	if (!CPU_STAT_PM) {
+		return cpu_lmemory_get_direct_host_ptr(addr, leng, ucrw);
+	}
+
+	/*
+	 * Non-faulting segment probe for REP bulk fast paths.
+	 * If the descriptor has not already been validated for the whole
+	 * address space, fall back to the old one-element path so that segment
+	 * limit exceptions occur at exactly the normal instruction point.
+	 */
+	if (!SEG_IS_VALID(sdp) || !SEG_IS_PRESENT(sdp) || SEG_IS_SYSTEM(sdp)) {
+		return NULL;
+	}
+	if ((ucrw & CPU_PAGE_WRITE) != 0) {
+		if (SEG_IS_CODE(sdp) ||
+		    (SEG_IS_DATA(sdp) && !SEG_IS_WRITABLE_DATA(sdp)) ||
+		    !(sdp->flag & CPU_DESC_FLAG_WRITABLE)) {
+			return NULL;
+		}
+	} else {
+		if ((SEG_IS_CODE(sdp) && !SEG_IS_READABLE_CODE(sdp)) ||
+		    !(sdp->flag & CPU_DESC_FLAG_READABLE)) {
+			return NULL;
+		}
+	}
+	if (!(sdp->flag & CPU_DESC_FLAG_WHOLEADR)) {
+		return NULL;
+	}
+	return cpu_lmemory_get_direct_host_ptr(addr, leng, ucrw);
+}
+#endif
+
 
 DECLARE_VIRTUAL_ADDRESS_MEMORY_RW_FUNCTIONS(b, UINT8, 1)
 DECLARE_VIRTUAL_ADDRESS_MEMORY_RMW_FUNCTIONS(b, UINT8, 1)

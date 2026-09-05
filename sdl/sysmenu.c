@@ -641,7 +641,7 @@ static void sys_cmd(MENUID id) {
 			break;
 
 		case MID_MMORCHESTRA:
-			np2cfg.SOUND_SW = SOUNDID_MMORCHESTRA;
+			np2cfg.SOUND_SW = SOUNDID_MULTIMEDIAORCHESTRA;
 			update |= SYS_UPDATECFG;
 			break;
 

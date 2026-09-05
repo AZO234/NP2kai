@@ -57,24 +57,44 @@ extern	UINT8	mem[0x200000];
 
 void MEMCALL memm_arch(UINT type);
 void MEMCALL memm_vram(UINT operate);
+void MEMCALL memp_mmio_range_add(UINT32 address, UINT32 leng);
+void MEMCALL memp_mmio_range_remove(UINT32 address, UINT32 leng);
+void MEMCALL memp_mmio_map_reset(void);
+UINT8 * MEMCALL memp_get_direct_host_page(UINT32 address);
 
 REG8 MEMCALL memp_read8(UINT32 address);
 REG16 MEMCALL memp_read16(UINT32 address);
 UINT32 MEMCALL memp_read32(UINT32 address);
+REG8 MEMCALL memp_read8_fast(UINT32 address);
+REG16 MEMCALL memp_read16_fast(UINT32 address);
+UINT32 MEMCALL memp_read32_fast(UINT32 address);
 void MEMCALL memp_write8(UINT32 address, REG8 value);
 void MEMCALL memp_write16(UINT32 address, REG16 value);
 void MEMCALL memp_write32(UINT32 address, UINT32 value);
+void MEMCALL memp_write8_fast(UINT32 address, REG8 value);
+void MEMCALL memp_write16_fast(UINT32 address, REG16 value);
+void MEMCALL memp_write32_fast(UINT32 address, UINT32 value);
 void MEMCALL memp_reads(UINT32 address, void *dat, UINT leng);
 void MEMCALL memp_writes(UINT32 address, const void *dat, UINT leng);
 PF_UINT8 MEMCALL memp_read8_codefetch(UINT32 address);
 PF_UINT16 MEMCALL memp_read16_codefetch(UINT32 address);
 PF_UINT32 MEMCALL memp_read32_codefetch(UINT32 address);
+PF_UINT8 MEMCALL memp_read8_codefetch_fast(UINT32 address);
+PF_UINT16 MEMCALL memp_read16_codefetch_fast(UINT32 address);
+PF_UINT32 MEMCALL memp_read32_codefetch_fast(UINT32 address);
 PF_UINT8 MEMCALL memp_read8_paging(UINT32 address);
 PF_UINT16 MEMCALL memp_read16_paging(UINT32 address);
 PF_UINT32 MEMCALL memp_read32_paging(UINT32 address);
+PF_UINT8 MEMCALL memp_read8_paging_fast(UINT32 address);
+PF_UINT16 MEMCALL memp_read16_paging_fast(UINT32 address);
+PF_UINT32 MEMCALL memp_read32_paging_fast(UINT32 address);
 void MEMCALL memp_write8_paging(UINT32 address, REG8 value);
 void MEMCALL memp_write16_paging(UINT32 address, REG16 value);
 void MEMCALL memp_write32_paging(UINT32 address, UINT32 value);
+void MEMCALL memp_write8_paging_fast(UINT32 address, REG8 value);
+void MEMCALL memp_write16_paging_fast(UINT32 address, REG16 value);
+void MEMCALL memp_write32_paging_fast(UINT32 address, UINT32 value);
+
 
 REG8 MEMCALL meml_read8(UINT32 address);
 REG16 MEMCALL meml_read16(UINT32 address);

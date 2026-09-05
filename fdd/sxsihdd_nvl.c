@@ -84,10 +84,16 @@ BOOL nvl_check()
 
 	return TRUE;
 check_err:
+#if defined(_WIN32)
+	FreeLibrary(hModule);
+#else
+	dlclose(hModule);
+#endif
 	return FALSE;
 }
 
 
+//__declspec(noinline)
 static void nvl_close(sxsihdd_nvl *p)
 {
 	if (p == NULL)
@@ -138,6 +144,20 @@ static sxsihdd_nvl *nvl_open(const OEMCHAR *fname)
 #endif
 	if (p->hModule == NULL)
 	{
+#if defined(_WIN32)
+		OEMCHAR* ext;
+		DWORD e = GetLastError();
+		ext = file_getext(fname);
+		if (!file_cmpname(ext, str_vhd)) {
+
+			if (e == ERROR_BAD_EXE_FORMAT || e == ERROR_EXE_MACHINE_TYPE_MISMATCH) {
+				MessageBox(NULL, OEMTEXT("Failed to load NVL.DLL. \nInvalid DLL format or architecture mismatch (32-bit/64-bit)."), OEMTEXT("HD image file open error"), MB_OK | MB_ICONWARNING);
+			}
+			else {
+				MessageBox(NULL, OEMTEXT("NVL.DLL is required to use dynamically expanding VHD images."), OEMTEXT("HD image file open error"), MB_OK | MB_ICONWARNING);
+			}
+		}
+#endif
 		goto sxsiope_err;
 	}
 
@@ -321,7 +341,7 @@ static REG8 hdd_format(SXSIDEV sxsi, FILEPOS pos)
 	return (0x00);
 }
 
-
+//__declspec(noinline)
 static void hdd_close(SXSIDEV sxsi)
 {
 	sxsihdd_nvl *p = (sxsihdd_nvl *)sxsi->hdl;
@@ -461,7 +481,7 @@ sxsiope_err:
 	return (r);
 }
 
-
+//__declspec(noinline)
 BRESULT sxsihdd_nvl_open(SXSIDEV sxsi, const OEMCHAR *fname)
 {
 	sxsihdd_nvl *p = NULL;

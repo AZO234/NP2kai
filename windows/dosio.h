@@ -15,6 +15,12 @@
 #define FLISTH				HANDLE						/*!< ファイル検索ハンドル */
 #define FLISTH_INVALID		(INVALID_HANDLE_VALUE)		/*!< ファイル検索エラー値 */
 
+#if !defined(_WIN32_WCE)
+#define DOSIO_HAS_DIRMONITOR	1
+#define FDIRMONH			HANDLE
+#define FDIRMONH_INVALID	(INVALID_HANDLE_VALUE)
+#endif
+
 /**
  * ファイル ポインタ移動の開始点
  */
@@ -35,7 +41,8 @@ enum
 	FILEATTR_SYSTEM		= 0x04,		/*!< システム ファイル */
 	FILEATTR_VOLUME		= 0x08,		/*!< ヴォリューム */
 	FILEATTR_DIRECTORY	= 0x10,		/*!< ディレクトリ */
-	FILEATTR_ARCHIVE	= 0x20		/*!< アーカイブ ファイル */
+	FILEATTR_ARCHIVE	= 0x20,		/*!< アーカイブ ファイル */
+	FILEATTR_NORMAL		= 0x80		/*!< normal */
 };
 
 /**
@@ -82,6 +89,7 @@ struct _flinfo
 	DOSDATE	date;			/*!< 日付 */
 	DOSTIME	time;			/*!< 時刻 */
 	OEMCHAR	path[MAX_PATH];	/*!< ファイル名 */
+	OEMCHAR	shortpath[64];	/*!< ホストOSが持つ8.3別名（存在しない場合は空） */
 };
 typedef struct _flinfo		FLINFO;			/*!< FLINFO 定義 */
 
@@ -96,6 +104,7 @@ extern "C"
 
 /* ファイル操作 */
 FILEH DOSIOCALL file_open(const OEMCHAR* lpPathName);
+FILEH DOSIOCALL file_open_rw(const OEMCHAR* lpPathName);
 FILEH DOSIOCALL file_open_rb(const OEMCHAR* lpPathName);
 FILEH DOSIOCALL file_create(const OEMCHAR* lpPathName);
 FILEPOS DOSIOCALL file_seek(FILEH hFile, FILEPOS pointer, int method);
@@ -103,11 +112,18 @@ UINT DOSIOCALL file_read(FILEH hFile, void *data, UINT length);
 UINT DOSIOCALL file_write(FILEH hFile, const void *data, UINT length);
 short DOSIOCALL file_close(FILEH hFile);
 FILELEN DOSIOCALL file_getsize(FILEH hFile);
+short DOSIOCALL file_sync(FILEH hFile);
+short DOSIOCALL file_setsize(FILEH hFile, FILELEN length);
 short DOSIOCALL file_getdatetime(FILEH hFile, DOSDATE* dosdate, DOSTIME* dostime);
+BRESULT DOSIOCALL file_getshortname(const OEMCHAR* lpPathName, OEMCHAR* lpShortName, UINT cchShortName);
+BOOL DOSIOCALL file_islink(const OEMCHAR* lpPathName);
+BOOL DOSIOCALL file_infoislink(const FLINFO* fli, const OEMCHAR* lpPathName);
+short DOSIOCALL file_setdatetime(FILEH hFile, const DOSDATE* dosdate, const DOSTIME* dostime);
 short DOSIOCALL file_delete(const OEMCHAR* lpPathName);
 short DOSIOCALL file_attr(const OEMCHAR* lpPathName);
 short DOSIOCALL file_setattr(const OEMCHAR* lpPathName, short attr);
 short DOSIOCALL file_rename(const OEMCHAR* lpExistFile, const OEMCHAR* lpNewFile);
+short DOSIOCALL file_islocked(const OEMCHAR* lpPathName);
 short DOSIOCALL file_dircreate(const OEMCHAR* lpPathName);
 short DOSIOCALL file_dirdelete(const OEMCHAR* lpPathName);
 
@@ -121,9 +137,18 @@ short DOSIOCALL file_delete_c(const OEMCHAR* lpFilename);
 short DOSIOCALL file_attr_c(const OEMCHAR* lpFilename);
 
 /* ファイル検索 */
+BRESULT DOSIOCALL file_getinfo(const OEMCHAR* lpPathName, FLINFO* fli);
 FLISTH DOSIOCALL file_list1st(const OEMCHAR* lpPathName, FLINFO* fli);
 BRESULT DOSIOCALL file_listnext(FLISTH hList, FLINFO* fli);
 void DOSIOCALL file_listclose(FLISTH hList);
+
+#if defined(DOSIO_HAS_DIRMONITOR)
+/* Optional directory namespace-change monitor.  Other dosio backends may omit
+ * DOSIO_HAS_DIRMONITOR entirely; hostdrvs.c will then use an unmonitored cache. */
+FDIRMONH DOSIOCALL file_dirmonitor_open(const OEMCHAR* lpPathName);
+BOOL DOSIOCALL file_dirmonitor_changed(FDIRMONH hMonitor);
+void DOSIOCALL file_dirmonitor_close(FDIRMONH hMonitor);
+#endif
 
 #define file_cpyname(a, b, c)	milstr_ncpy(a, b, c)		/*!< ファイル名コピー */
 #define file_catname(a, b, c)	milstr_ncat(a, b, c)		/*!< ファイル名追加 */

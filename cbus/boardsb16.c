@@ -11,7 +11,7 @@
 #include	<cbus/smpu98.h>
 #include	<joymng.h>
 #include	<cpucore.h>
-//#include	<sound/s98.h>
+#include	<sound/s98.h>
 
 #include	<math.h>
 
@@ -50,6 +50,46 @@ static const UINT8 sb16base[] = {0xd2,0xd4,0xd6,0xd8,0xda,0xdc,0xde};
 
 static UINT8 seq[] = {0x60, 0x80, 0xff, 0x21}; // XXX: Win2kドライバのチェックを通すためだけの暫定シーケンス
 static int forceopl3mode = 0;
+
+/* S98 v3 device slot for the SB16 OPL3 block.
+ * - SB16/WSS+SB16:    device 0 (ports 0/1)
+ * - 86+SB16:          device 1 (ports 2/3)
+ * - 118+SB16:         device 2 (ports 4/5)
+ * - 86+118+SB16:      device 3 (ports 6/7)
+ */
+static int sb16_s98module(void)
+{
+	switch (g_nSoundID)
+	{
+		case SOUNDID_SB16:
+		case SOUNDID_WSS_SB16:
+			return NORMAL2608;
+
+		case SOUNDID_PC_9801_86_SB16:
+		case SOUNDID_PC_9801_86_WSS_SB16:
+			return NORMAL2608_2;
+
+		case SOUNDID_PC_9801_118_SB16:
+			return NORMAL2608_3;
+
+		case SOUNDID_PC_9801_86_118_SB16:
+			return NORMAL2608_4;
+
+		default:
+			return -1;
+	}
+}
+
+static void sb16_s98put(REG8 bank, UINT addr, REG8 dat)
+{
+	int module;
+
+	module = sb16_s98module();
+	if (module >= 0)
+	{
+		S98_put((REG8)(module + bank), addr, dat);
+	}
+}
 static int seqpos = 0;
 
 #ifdef USE_MAME
@@ -121,6 +161,7 @@ static void IOOUTCALL sb16_o2100(UINT port, REG8 dat) {
 #ifdef USE_MAME
 	YMF262Write(g_mame_opl3[G_OPL3_INDEX], 1, dat);
 #endif
+	sb16_s98put(0, g_opl3[G_OPL3_INDEX].s.addrl, dat);
 	opl3_writeRegister(&g_opl3[G_OPL3_INDEX], g_opl3[G_OPL3_INDEX].s.addrl, dat); // Key Display用
 	if(g_opl3[G_OPL3_INDEX].s.addrl==2 || g_opl3[G_OPL3_INDEX].s.addrl==4){
 		if(seqpos < sizeof(seq) && seq[seqpos]==dat){
@@ -147,6 +188,7 @@ static void IOOUTCALL sb16_o2300(UINT port, REG8 dat) {
 #ifdef USE_MAME
 	YMF262Write(g_mame_opl3[G_OPL3_INDEX], 3, dat);
 #endif
+	sb16_s98put(1, g_opl3[G_OPL3_INDEX].s.addrh, dat);
 	opl3_writeExtendedRegister(&g_opl3[G_OPL3_INDEX], g_opl3[G_OPL3_INDEX].s.addrh, dat); // Key Display用
 	//TRACEOUT(("OPL3 PORT=0x%04x, DATA=0x%02x", port, dat));
 }
@@ -167,6 +209,7 @@ static void IOOUTCALL sb16_o2900(UINT port, REG8 dat) {
 #ifdef USE_MAME
 	YMF262Write(g_mame_opl3[G_OPL3_INDEX], 1, dat);
 #endif
+	sb16_s98put(0, g_opl3[G_OPL3_INDEX].s.addrl, dat);
 	opl3_writeRegister(&g_opl3[G_OPL3_INDEX], g_opl3[G_OPL3_INDEX].s.addrl, dat); // Key Display用
 }
 

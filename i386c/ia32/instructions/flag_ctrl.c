@@ -104,6 +104,20 @@ PUSHF_Fw(void)
 		return;
 	}
 	/* VM86 && IOPL != 3 */
+#if defined(USE_VME)
+	if (CPU_CR4 & CPU_CR4_VME) {
+		UINT16 flags;
+		if (CPU_EFLAG & VIP_FLAG) {
+			EXCEPTION(GP_EXCEPTION, 0);
+		}
+		flags = REAL_FLAGREG;
+		flags = (flags & ALL_FLAG) | 2;
+		flags = (flags & ~I_FLAG) | ((CPU_EFLAG & VIF_FLAG) ? I_FLAG : 0);
+		flags |= IOPL_FLAG;
+		PUSH0_16(flags);
+		return;
+	}
+#endif
 	EXCEPTION(GP_EXCEPTION, 0);
 }
 
@@ -120,29 +134,27 @@ PUSHFD_Fd(void)
 	}
 	/* VM86 && IOPL != 3 */
 #if defined(USE_VME)
-	if(CPU_CR4 & CPU_CR4_VME){
-		if(CPU_EFLAG & VIP_FLAG){
+	if (CPU_CR4 & CPU_CR4_VME) {
+		UINT32 flags;
+		if (CPU_EFLAG & VIP_FLAG) {
 			EXCEPTION(GP_EXCEPTION, 0);
-		}else{
-			UINT32 flags = REAL_EFLAGREG & ~(RF_FLAG|VM_FLAG);
-			flags = (flags & ALL_EFLAG) | 2;
-			flags = (flags & ~I_FLAG) | ((flags & VIF_FLAG) >> 10); // VIF → IFにコピー
-			flags |= IOPL_FLAG; // IOPL == 3 の振りをする
-			PUSH0_32(flags);
-			return;
 		}
-	}else{
-		EXCEPTION(GP_EXCEPTION, 0);
+		flags = REAL_EFLAGREG & ~(RF_FLAG|VM_FLAG|VIF_FLAG|VIP_FLAG);
+		flags = (flags & ALL_EFLAG) | 2;
+		flags = (flags & ~I_FLAG) | ((CPU_EFLAG & VIF_FLAG) ? I_FLAG : 0);
+		flags |= IOPL_FLAG;
+		PUSH0_32(flags);
+		return;
 	}
-#else
-	EXCEPTION(GP_EXCEPTION, 0);
 #endif
+	EXCEPTION(GP_EXCEPTION, 0);
 }
 
 void
 POPF_Fw(void)
 {
-	UINT16 flags, mask;
+	UINT32 flags;
+	UINT32 mask;
 
 	CPU_WORKCLOCK(3);
 	CPU_SET_PREV_ESP();
@@ -165,10 +177,25 @@ POPF_Fw(void)
 		POP0_16(flags);
 		mask = I_FLAG;
 	} else {
+		/* Virtual-8086 Mode, IOPL != 3 */
+#if defined(USE_VME)
+		if (CPU_CR4 & CPU_CR4_VME) {
+			POP0_16(flags);
+			if ((flags & I_FLAG) && (CPU_EFLAG & VIP_FLAG)) {
+				EXCEPTION(GP_EXCEPTION, 0);
+			}
+			flags = (flags & ~VIF_FLAG) | ((flags & I_FLAG) ? VIF_FLAG : 0);
+			mask = VIF_FLAG;
+		} else {
+			EXCEPTION(GP_EXCEPTION, 0);
+			flags = 0;
+			mask = 0;
+		}
+#else
 		EXCEPTION(GP_EXCEPTION, 0);
 		flags = 0;
 		mask = 0;
-		/* compiler happy */
+#endif
 	}
 	set_eflags(flags, mask);
 	CPU_CLEAR_PREV_ESP();
@@ -207,17 +234,14 @@ POPFD_Fd(void)
 	} else {
 		/* Virtual-8086 Mode, IOPL != 3 */
 #if defined(USE_VME)
-		if(CPU_CR4 & CPU_CR4_VME){
-			if((CPU_EFLAG & VIP_FLAG) || (CPU_EFLAG & T_FLAG)){
+		if (CPU_CR4 & CPU_CR4_VME) {
+			POP0_32(flags);
+			if ((flags & I_FLAG) && (CPU_EFLAG & VIP_FLAG)) {
 				EXCEPTION(GP_EXCEPTION, 0);
-				flags = 0;
-				mask = 0;
-			}else{
-				POP0_32(flags);
-				flags = (flags & ~VIF_FLAG) | ((flags & I_FLAG) << 10); // IF → VIFにコピー
-				mask = I_FLAG | IOPL_FLAG; // IF, IOPLは変更させない
 			}
-		}else{
+			flags = (flags & ~VIF_FLAG) | ((flags & I_FLAG) ? VIF_FLAG : 0);
+			mask = VIF_FLAG | RF_FLAG;
+		} else {
 			EXCEPTION(GP_EXCEPTION, 0);
 			flags = 0;
 			mask = 0;
@@ -226,7 +250,6 @@ POPFD_Fd(void)
 		EXCEPTION(GP_EXCEPTION, 0);
 		flags = 0;
 		mask = 0;
-		/* compiler happy */
 #endif
 	}
 	set_eflags(flags, mask);
@@ -277,8 +300,12 @@ STI(void)
 		}
 	}
 	CPU_FLAG |= I_FLAG;
-	CPU_TRAP = (CPU_FLAG & (I_FLAG|T_FLAG)) == (I_FLAG|T_FLAG);
+	CPU_TRAP = (CPU_FLAG & (T_FLAG)) == (T_FLAG);
 	exec_1step();
+	if (CPU_TRAP) {
+		CPU_DR6 |= CPU_DR6_BS;
+		INTERRUPT(1, INTR_TYPE_EXCEPTION);
+	}
 	IRQCHECKTERM();
 }
 

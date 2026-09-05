@@ -167,7 +167,7 @@ static REG8 sasibios_read(UINT type, SXSIDEV sxsi) {
 #ifdef SUPPORT_IDEIO
   if ((oldAL & 0xf0) == 0x80) {
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
-    if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
+		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable && biosioemu.active) {
 #if defined(SUPPORT_IDEIO_48BIT)
       if (sxsi->totals > 0xffffff) {
         // 大容量ディスク用

@@ -53,7 +53,7 @@ static const HDRVFILE hdd_volume = {{'_','H','O','S','T','D','R','I','V','E','_'
 
 // XXX: DTA単位の複数検索に対応　本当はステートセーブすべき
 #define HOSTDRV_FINDHANDLE_INVALID	0xffffffff
-#define HOSTDRV_FINDHANDLE_MAX	256 // さすがに同時に256検索出来れば十分でしょう…
+#define HOSTDRV_FINDHANDLE_MAX	1024 // さすがに同時に256検索出来れば十分でしょう… → 駄目なこともあるらしいと分かったため1024に緩和
 static UINT32 hostdrv_findhandle_currentindex = HOSTDRV_FINDHANDLE_INVALID; // 現在有効なハンドルが格納されているインデックス
 static HOSTDRV_FINDHANDLE hostdrv_findhandles[HOSTDRV_FINDHANDLE_MAX] = { 0 }; // 検索ハンドルリスト
 static UINT32 hostdrv_writepos = 0; // リストへの書き込み位置
@@ -203,6 +203,15 @@ static void fetch_if4dos(void) {
 	hostdrv.stat.dosver_minor = if4dos.dosver_minor;
 	hostdrv.stat.sda_off = LOADINTELWORD(if4dos.sda_off);
 	hostdrv.stat.sda_seg = LOADINTELWORD(if4dos.sda_seg);
+
+	ZeroMemory(&hostdrv.stat.handoff, sizeof(hostdrv.stat.handoff));
+	if (LOADINTELDWORD(if4dos.handoff_sig) == IF4DOS_HANDOFF_SIGNATURE) {
+		hostdrv.stat.handoff.cds_off = LOADINTELWORD(if4dos.cds_off);
+		hostdrv.stat.handoff.cds_seg = LOADINTELWORD(if4dos.cds_seg);
+		hostdrv.stat.handoff.cds_size = (hostdrv.stat.dosver_major == 3) ? sizeof(_CDS3) : sizeof(_CDS4);
+		if (hostdrv.stat.handoff.cds_seg || hostdrv.stat.handoff.cds_off)
+			hostdrv.stat.handoff.valid = TRUE;
+	}
 
 	TRACEOUT(("hostdrv:drive_no = %d", if4dos.drive_no));
 	TRACEOUT(("hostdrv:dosver = %d.%.2d", if4dos.dosver_major, if4dos.dosver_minor));
@@ -383,6 +392,36 @@ static void init_sft(SFTREC sft) {
 }
 
 
+/*
+ * SFT に格納された DOS 日時をホストファイルへ反映
+ *
+ * DOS の COPY などはコピー元の日時をコピー先 SFT へ設定してから
+ * commit/close を行うため、この値を書き戻す必要がある。
+ */
+static BRESULT hostdrv_set_file_datetime(FILEH fh, const _SFTREC *sft) {
+
+	UINT16		datestamp;
+	UINT16		timestamp;
+	DOSDATE		date;
+	DOSTIME		time;
+
+	datestamp = LOADINTELWORD(sft->file_date);
+	timestamp = LOADINTELWORD(sft->file_time);
+	if (datestamp == 0) {
+		return(SUCCESS);
+	}
+
+	date.year = (UINT16)(1980 + ((datestamp >> 9) & 0x7f));
+	date.month = (UINT8)((datestamp >> 5) & 0x0f);
+	date.day = (UINT8)(datestamp & 0x1f);
+	time.hour = (UINT8)((timestamp >> 11) & 0x1f);
+	time.minute = (UINT8)((timestamp >> 5) & 0x3f);
+	time.second = (UINT8)((timestamp & 0x1f) << 1);
+
+	return(file_setdatetime(fh, &date, &time) == 0 ? SUCCESS : FAILURE);
+}
+
+
 static BOOL is_wildcards(const char *path) {
 
 	int		i;
@@ -464,7 +503,7 @@ static BRESULT read_data(UINT num, UINT32 pos, UINT size, UINT seg, UINT off) {
 	UINT		r;
 
 	hdf = (HDRVHANDLE)listarray_getitem(hostdrv.fhdl, num);
-	if (hdf == NULL) {
+	if ((hdf == NULL) || (hdf->hdl == (INTPTR)FILEH_INVALID)) {
 		return(FAILURE);
 	}
 	fh = (FILEH)hdf->hdl;
@@ -491,7 +530,7 @@ static BRESULT write_data(UINT num, UINT32 pos, UINT size, UINT seg, UINT off) {
 	UINT		r;
 
 	hdf = (HDRVHANDLE)listarray_getitem(hostdrv.fhdl, num);
-	if (hdf == NULL) {
+	if ((hdf == NULL) || (hdf->hdl == (INTPTR)FILEH_INVALID)) {
 		return(FAILURE);
 	}
 	fh = (FILEH)hdf->hdl;
@@ -573,7 +612,7 @@ static void remove_dir(INTRST intrst)
 			nResult = ERR_PATHNOTFOUND;
 			break;
 		}
-		if ((hdp.file.attr & 0x10) == 0)
+		if ((hdp.file.attr & 0x10) == 0 || hostdrvs_isroot(&hdp))
 		{
 			nResult = ERR_ACCESSDENIED;
 			break;
@@ -591,6 +630,7 @@ static void remove_dir(INTRST intrst)
 			nResult = ERR_ACCESSDENIED;
 			break;
 		}
+		hostdrvs_invalidateshortnamecache();
 		succeed(intrst);
 		return;
 	} while (FALSE /*CONSTCOND*/);
@@ -642,6 +682,7 @@ static void make_dir(INTRST intrst)
 			nResult = ERR_ACCESSDENIED;
 			break;
 		}
+		hostdrvs_invalidateshortnamecache();
 		nResult = ERR_NOERROR;
 	} while (FALSE /*CONSTCOND*/);
 
@@ -695,10 +736,12 @@ static void close_file(INTRST intrst) {
 	UINT16		handle_count;
 	UINT16		start_sector;
 	HDRVHANDLE	hdf;
+	BRESULT		datetime_result;
 
 	fetch_sda_currcds(&sc);
 	fetch_sft(intrst, &sft);
 	setup_ptrs(intrst, &sc);
+	datetime_result = SUCCESS;
 
 	if ((sft.dev_info_word[0] & 0x3f) != hostdrv.stat.drive_no) {
 		CPU_FLAG &= ~Z_FLAG;	// chain
@@ -713,14 +756,24 @@ static void close_file(INTRST intrst) {
 		start_sector = LOADINTELWORD(sft.start_sector);
 		hdf = (HDRVHANDLE)listarray_getitem(hostdrv.fhdl, start_sector);
 		if (hdf) {
-			file_close((FILEH)hdf->hdl);
+			if (hdf->hdl != (INTPTR)FILEH_INVALID) {
+				if (hdf->mode & HDFMODE_WRITE) {
+					datetime_result = hostdrv_set_file_datetime((FILEH)hdf->hdl, &sft);
+				}
+				file_close((FILEH)hdf->hdl);
+			}
 			hdf->hdl = (INTPTR)FILEH_INVALID;
 			hdf->path[0] = '\0';
 		}
 	}
 	STOREINTELWORD(sft.handle_count, handle_count);
 	store_sft(intrst, &sft);
-	succeed(intrst);
+	if (datetime_result == SUCCESS) {
+		succeed(intrst);
+	}
+	else {
+		fail(intrst, ERR_ACCESSDENIED);
+	}
 }
 
 /* 07 */
@@ -728,6 +781,8 @@ static void commit_file(INTRST intrst) {
 
 	_SDACDS		sc;
 	_SFTREC		sft;
+	UINT16		start_sector;
+	HDRVHANDLE	hdf;
 
 	fetch_sda_currcds(&sc);
 	fetch_sft(intrst, &sft);
@@ -737,7 +792,17 @@ static void commit_file(INTRST intrst) {
 		return;
 	}
 
-	// なんもしないよー
+	// 日付を直す
+	start_sector = LOADINTELWORD(sft.start_sector);
+	hdf = (HDRVHANDLE)listarray_getitem(hostdrv.fhdl, start_sector);
+	if ((hdf != NULL) &&
+		(hdf->hdl != (INTPTR)FILEH_INVALID) &&
+		(hdf->mode & HDFMODE_WRITE)) {
+		if (hostdrv_set_file_datetime((FILEH)hdf->hdl, &sft) != SUCCESS) {
+			fail(intrst, ERR_ACCESSDENIED);
+			return;
+		}
+	}
 	succeed(intrst);
 }
 
@@ -913,26 +978,26 @@ static void set_fileattr(INTRST intrst) {
 
 	hostattr = file_attr(hdp.szPath);
 #if defined(NP2_WIN)
-	hostattr &= ~(FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_ARCHIVE | FILE_ATTRIBUTE_SYSTEM);
+	hostattr &= ~(FILEATTR_READONLY | FILEATTR_HIDDEN | FILEATTR_ARCHIVE | FILEATTR_SYSTEM);
 	if (attr & 0x01)
 	{
-		hostattr |= FILE_ATTRIBUTE_READONLY;
+		hostattr |= FILEATTR_READONLY;
 	}
 	if (attr & 0x02)
 	{
-		hostattr |= FILE_ATTRIBUTE_HIDDEN;
+		hostattr |= FILEATTR_HIDDEN;
 	}
 	if (attr & 0x04)
 	{
-		hostattr |= FILE_ATTRIBUTE_SYSTEM;
+		hostattr |= FILEATTR_SYSTEM;
 	}
 	if (attr & 0x20)
 	{
-		hostattr |= FILE_ATTRIBUTE_ARCHIVE;
+		hostattr |= FILEATTR_ARCHIVE;
 	}
 	if (hostattr == 0)
 	{
-		hostattr |= FILE_ATTRIBUTE_NORMAL;
+		hostattr |= FILEATTR_NORMAL;
 	}
 	if (file_setattr(hdp.szPath, hostattr))
 	{
@@ -1061,6 +1126,16 @@ static void rename_file(INTRST intrst)
 			{
 				break;
 			}
+			// .と..は不正
+			if (((phdl->szFilename[0] == (OEMCHAR)'.') &&
+				 (phdl->szFilename[1] == (OEMCHAR)'\0')) ||
+				((phdl->szFilename[0] == (OEMCHAR)'.') &&
+				 (phdl->szFilename[1] == (OEMCHAR)'.') &&
+				 (phdl->szFilename[2] == (OEMCHAR)'\0')))
+			{
+				nResult = ERR_ACCESSDENIED;
+				break;
+			}
 			file_cpyname(szPath, hdp1.szPath, NELEMENTS(szPath));
 			file_setseparator(szPath, NELEMENTS(szPath));
 			file_catname(szPath, phdl->szFilename, NELEMENTS(szPath));
@@ -1082,6 +1157,7 @@ static void rename_file(INTRST intrst)
 				nResult = ERR_ACCESSDENIED;
 				break;
 			}
+			hostdrvs_invalidateshortnamecache();
 		}
 	} while (FALSE /*CONSTCOND*/);
 
@@ -1152,6 +1228,7 @@ static void delete_file(INTRST intrst)
 				nResult = ERR_ACCESSDENIED;
 				break;
 			}
+			hostdrvs_invalidateshortnamecache();
 		}
 		else
 		{
@@ -1186,6 +1263,7 @@ static void delete_file(INTRST intrst)
 					nResult = ERR_ACCESSDENIED;
 					break;
 				}
+				hostdrvs_invalidateshortnamecache();
 			}
 		}
 	} while (FALSE /*CONSTCOND*/);
@@ -1272,7 +1350,7 @@ static void open_file(INTRST intrst)
 				nResult = ERR_ACCESSDENIED;
 				break;
 			}
-			fh = file_open(hdp.szPath);
+			fh = file_open_rw(hdp.szPath);
 		}
 		else
 		{
@@ -1376,6 +1454,7 @@ static void create_file(INTRST intrst)
 			nResult = ERR_ACCESSDENIED;
 			break;
 		}
+		hostdrvs_invalidateshortnamecache();
 
 		hdf->hdl = (INTPTR)fh;
 		hdf->mode = HDFMODE_READ | HDFMODE_WRITE;
@@ -1449,6 +1528,13 @@ static void find_next(INTRST intrst) {
 	fetch_sda_currcds(&sc);
 	setup_ptrs(intrst, &sc);
 
+	srchrec = intrst->srchrec_ptr;
+	if ((!(srchrec->drive_no & 0x40)) ||
+		((srchrec->drive_no & 0x1f) != hostdrv.stat.drive_no)) {
+		CPU_FLAG &= ~Z_FLAG;	// chain
+		return;
+	}
+
 	// DTAを読み取ってクラスタ番号を取得
 	flistidx = MEMR_READ16(LOADINTELWORD(sc.ver3.sda.current_dta.seg), LOADINTELWORD(sc.ver3.sda.current_dta.off) + 0x0f);
 	findHandle = hostdrv_findhandles_getcurrent();
@@ -1462,14 +1548,14 @@ static void find_next(INTRST intrst) {
 			hostdrv.flist = findHandle->flist;
 			hostdrv.stat.flistpos = findHandle->flistpos;
 		}
+		else {
+			// 異常
+			fail(intrst, ERR_NOMOREFILES);
+			store_sda_currcds(&sc);
+			return;
+		}
 	}
 
-	srchrec = intrst->srchrec_ptr;
-	if ((!(srchrec->drive_no & 0x40)) ||
-		((srchrec->drive_no & 0x1f) != hostdrv.stat.drive_no)) {
-		CPU_FLAG &= ~Z_FLAG;	// chain
-		return;
-	}
 	if (find_file(intrst) != SUCCESS) {
 		hostdrv_findhandles_close(); // 列挙が終わったならハンドル閉じる
 		fail(intrst, ERR_NOMOREFILES);
@@ -1749,7 +1835,7 @@ static void ext_openfile(INTRST intrst)
 		{
 			if (IS_PERMITWRITE)
 			{
-				fh = file_open(hdp.szPath);
+				fh = file_open_rw(hdp.szPath);
 			}
 		}
 		else
@@ -1762,6 +1848,10 @@ static void ext_openfile(INTRST intrst)
 			TRACEOUT(("file open error!"));
 			nResult = ERR_ACCESSDENIED;
 			break;
+		}
+		if (create)
+		{
+			hostdrvs_invalidateshortnamecache();
 		}
 
 		hdf = hostdrvs_fhdlsea(hostdrv.fhdl);
@@ -1878,6 +1968,7 @@ void hostdrv_deinitialize(void) {
 	hostdrv_findhandles_clear();
 	hostdrvs_fhdlallclose(hostdrv.fhdl);
 	listarray_destroy(hostdrv.fhdl);
+	hostdrvs_invalidateshortnamecache();
 	TRACEOUT(("hostdrv_deinitialize"));
 }
 
@@ -1897,6 +1988,7 @@ void hostdrv_mount(const void *arg1, long arg2) {
 		np2sysp_outstr(OEMTEXT("ng"), 0);
 		return;
 	}
+	hostdrvs_invalidateshortnamecache();
 	hostdrv.stat.is_mount = 1;
 	hostdrv.stat.newprotocol = 0;
 	fetch_if4dos();
@@ -1926,6 +2018,10 @@ void hostdrv_intr(const void *arg1, long arg2) {
 		return;
 	}
 	if (!hostdrv.stat.is_mount) {
+		return;
+	}
+	// 2の場合常駐状態だが常にchainする（for HOSTDRV9x）
+	if (hostdrv.stat.is_mount == 2) {
 		return;
 	}
 
@@ -1966,6 +2062,66 @@ void hostdrv_setn(const void* arg1, long arg2)
 	(void)arg2;
 }
 
+
+// ---- for win9x suspend
+
+int hostdrv_ismounted(void)
+{
+	return hostdrv.stat.is_mount ? TRUE : FALSE;
+}
+
+int hostdrv_issuspended(void)
+{
+	return (hostdrv.stat.is_mount == 2) ? TRUE : FALSE;
+}
+
+int hostdrv_iscddshidden(void)
+{
+	return hostdrv.stat.handoff.hidden;
+}
+
+UINT32 hostdrv_getdriveno(void)
+{
+	return hostdrv.stat.is_mount ? hostdrv.stat.drive_no : (UINT32)-1;
+}
+
+// DOS版HOSTDRVを休止・再開する
+void hostdrv_setsuspended(int suspend)
+{
+	UINT16 flags;
+
+	if (!hostdrv.stat.is_mount) return;
+
+	if (suspend) {
+		if (hostdrv.stat.is_mount == 2) return; // すでに休止中なら無視
+
+		// CDSにあるHOSTDRVを一旦消す。こうしないとWin9xでドライブが残る。
+		// CDS取得に対応した新版DOS HOSTDRVが必要
+		if (hostdrv.stat.handoff.valid && !hostdrv.stat.handoff.hidden) {
+			if (hostdrv.stat.handoff.cds_size > sizeof(hostdrv.stat.handoff.cds_saved)) {
+				TRACEOUT(("hostdrv: CDS size too large!!"));
+				return;
+			}
+			MEMR_READS(hostdrv.stat.handoff.cds_seg, hostdrv.stat.handoff.cds_off, hostdrv.stat.handoff.cds_saved, hostdrv.stat.handoff.cds_size);
+			flags = 0;
+			MEMR_WRITE16(hostdrv.stat.handoff.cds_seg, hostdrv.stat.handoff.cds_off + 67, flags);
+			hostdrv.stat.handoff.hidden = TRUE;
+		}
+		hostdrv.stat.is_mount = 2; // 休止中
+	}
+	else {
+		// CDSを戻す
+		if (hostdrv.stat.handoff.hidden) {
+			MEMR_WRITES(hostdrv.stat.handoff.cds_seg, hostdrv.stat.handoff.cds_off, hostdrv.stat.handoff.cds_saved, hostdrv.stat.handoff.cds_size);
+			hostdrv.stat.handoff.hidden = FALSE;
+		}
+		hostdrv.stat.is_mount = 1; // 再開
+	}
+
+	TRACEOUT(("hostdrv: %s for HOSTD9X hand-off (CDS %s)",
+		(hostdrv.stat.is_mount == 2) ? "suspended" : "resumed",
+		hostdrv.stat.handoff.hidden ? "hidden" : "visible"));
+}
 
 
 // ---- for statsave
@@ -2036,14 +2192,24 @@ int hostdrv_sfload(STFLAGH sfh, const SFENTRY *tbl) {
 	FILEH		fh;
 	HDRVLST		hdl;
 
+	hostdrv_deinitialize();
+	hostdrv_initialize();
+
 	listarray_clr(hostdrv.fhdl);
 	listarray_clr(hostdrv.flist);
 
 	ret = statflag_read(sfh, &sfhdrv, sizeof(sfhdrv));
-	if (sfhdrv.stat != sizeof(hostdrv.stat)) {
-		return(STATFLAG_FAILURE);
+	if (sfhdrv.stat > sizeof(hostdrv.stat)) {
+		void* dummy;
+		ret |= statflag_read(sfh, &hostdrv.stat, sizeof(hostdrv.stat));
+		dummy = malloc(sfhdrv.stat - sizeof(hostdrv.stat));
+		if (!dummy) return STATFLAG_FAILURE;
+		statflag_read(sfh, &hostdrv.stat, sfhdrv.stat - sizeof(hostdrv.stat));
+		free(dummy);
 	}
-	ret |= statflag_read(sfh, &hostdrv.stat, sizeof(hostdrv.stat));
+	else {
+		ret |= statflag_read(sfh, &hostdrv.stat, sfhdrv.stat);
+	}
 	for (i=0; i<sfhdrv.files; i++) {
 		hdf = (HDRVHANDLE)listarray_append(hostdrv.fhdl, NULL);
 		if (hdf == NULL) {
@@ -2052,8 +2218,12 @@ int hostdrv_sfload(STFLAGH sfh, const SFENTRY *tbl) {
 		ret |= statflag_read(sfh, &len, sizeof(len));
 		if (len) {
 			ret |= statflag_read(sfh, hdf, sizeof(_HDRVHANDLE));
+			if (!hostdrvs_issafehostpath(hdf->path)) {
+				hdf->hdl = (INTPTR)FILEH_INVALID;
+				continue;
+			}
 			if (hdf->mode & HDFMODE_WRITE) {
-				fh = file_open(hdf->path);
+				fh = file_open_rw(hdf->path);
 			}
 			else {
 				fh = file_open_rb(hdf->path);

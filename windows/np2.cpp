@@ -42,6 +42,7 @@
 #include "mousemng.h"
 #include "scrnmng.h"
 #include "soundmng.h"
+#include "soundmng\fddsndout.h"
 #include "sysmng.h"
 #include "winkbd.h"
 #include "ini.h"
@@ -97,6 +98,9 @@
 #endif
 #ifdef SUPPORT_WAB_NPDISP
 #include "wab/npdisp.h"
+#endif
+#ifdef SUPPORT_WAB_GA1280A
+#include "wab/ga1280a.h"
 #endif
 #include "fmboard.h"
 #include "pcm86.h"
@@ -831,6 +835,10 @@ static void OpenSoundDevice(HWND hWnd)
 		pSoundMng->SetPCMVolume(SOUND_RELAY1, np2cfg.MOTORVOL);
 		pSoundMng->SetMasterVolume(np2cfg.vol_master);
 	}
+#if defined(SUPPORT_FDDSNDDEV)
+	fddsndout_setwindow(hWnd);
+	fddsndout_reconfig();
+#endif
 }
 
 // ---- proc
@@ -1724,28 +1732,33 @@ static void OnCommand(HWND hWnd, WPARAM wParam)
 
 #if defined(SUPPORT_PX)
 		case IDM_PX1:
-			np2cfg.SOUND_SW = 0x30;
+			np2cfg.SOUND_SW = SOUNDID_PX1;
 			update |= SYS_UPDATECFG | SYS_UPDATESBOARD;
 			break;
 
 		case IDM_PX2:
-			np2cfg.SOUND_SW = 0x50;
+			np2cfg.SOUND_SW = SOUNDID_PX2;
 			update |= SYS_UPDATECFG | SYS_UPDATESBOARD;
 			break;
 #endif	// defined(SUPPORT_PX)
 
 		case IDM_SOUNDORCHESTRA:
-			np2cfg.SOUND_SW = 0x32;
+			np2cfg.SOUND_SW = SOUNDID_SOUNDORCHESTRA;
 			update |= SYS_UPDATECFG | SYS_UPDATESBOARD;
 			break;
 
 		case IDM_SOUNDORCHESTRAV:
-			np2cfg.SOUND_SW = 0x82;
+			np2cfg.SOUND_SW = SOUNDID_SOUNDORCHESTRAV;
+			update |= SYS_UPDATECFG | SYS_UPDATESBOARD;
+			break;
+
+		case IDM_MULTIMEDIAORCHESTRA:
+			np2cfg.SOUND_SW = SOUNDID_MULTIMEDIAORCHESTRA;
 			update |= SYS_UPDATECFG | SYS_UPDATESBOARD;
 			break;
 
 		case IDM_AMD98:
-			np2cfg.SOUND_SW = 0x80;
+			np2cfg.SOUND_SW = SOUNDID_AMD98;
 			update |= SYS_UPDATECFG | SYS_UPDATESBOARD;
 			break;
 			
@@ -2553,6 +2566,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 				case IDM_MEMORYDUMP:
 					debugsub_memorydump();
+					break;
+
+				case IDM_MEMORYDUMPALL:
+					debugsub_memorydumpall();
 					break;
 
 				case IDM_DEBUGUTY:
@@ -4833,6 +4850,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 							if (framecnt < drawskip)
 							{
 								ExecuteOneFrame(framecnt == 0);
+								if (framecnt == 0) processasyncwait();
 								framecnt++;
 							}
 							else
@@ -4872,6 +4890,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 										timing_setcount(cnt - framecnt);
 									}
 									framereset(0);
+									if (framecnt == 0) processasyncwait();
 								}
 							}
 							else
@@ -4953,6 +4972,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 #endif
 #ifdef SUPPORT_WAB_NPDISP
 	npdisp_shutdown();
+#endif
+#ifdef SUPPORT_WAB_GA1280A
+	ga1280a_shutdown();
 #endif
 #ifdef SUPPORT_NET
 	np2net_shutdown();

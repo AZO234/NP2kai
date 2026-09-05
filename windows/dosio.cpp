@@ -6,6 +6,10 @@
 #include "compiler.h"
 #include "dosio.h"
 
+#ifndef FILE_ATTRIBUTE_REPARSE_POINT
+#define FILE_ATTRIBUTE_REPARSE_POINT 0x00000400
+#endif
+
 //! カレント パス バッファ
 static OEMCHAR curpath[MAX_PATH];
 
@@ -39,6 +43,16 @@ FILEH DOSIOCALL file_open(const OEMCHAR* lpPathName)
 		hFile = ::CreateFile(lpPathName, GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	}
 	return hFile;
+}
+
+/**
+ * リードライト両方可能でファイルを開きます。リードオンリーの場合は失敗します。
+ * @param[in] lpPathName ファイル名
+ * @return ファイル ハンドル
+ */
+FILEH DOSIOCALL file_open_rw(const OEMCHAR* lpPathName)
+{
+	return ::CreateFile(lpPathName, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 }
 
 /**
@@ -119,6 +133,29 @@ UINT DOSIOCALL file_write(FILEH hFile, const void* lpBuffer, UINT cbBuffer)
 		::SetEndOfFile(hFile);
 	}
 	return 0;
+}
+
+short DOSIOCALL file_sync(FILEH hFile)
+{
+	return ::FlushFileBuffers(hFile) ? 0 : -1;
+}
+
+short DOSIOCALL file_setsize(FILEH hFile, FILELEN length)
+{
+	FILEPOS current;
+
+	if (length < 0)
+		return -1;
+	current = file_seek(hFile, 0, FSEEK_CUR);
+	if (current < 0)
+		return -1;
+	if (file_seek(hFile, (FILEPOS)length, FSEEK_SET) != (FILEPOS)length)
+		return -1;
+	if (!::SetEndOfFile(hFile)) {
+		file_seek(hFile, current, FSEEK_SET);
+		return -1;
+	}
+	return (file_seek(hFile, current, FSEEK_SET) == current) ? 0 : -1;
 }
 
 /**
@@ -204,6 +241,90 @@ short DOSIOCALL file_getdatetime(FILEH hFile, DOSDATE* dosdate, DOSTIME* dostime
 }
 
 /**
+ * ホストファイルシステムが持つ短いファイル名を取得する。ない場合はFAILUREを返す。
+ * @param[in] lpPathName 変換元
+ * @param[out] lpShortName 結果格納先
+ * @param[in] cchShortName 結果格納先バッファサイズ
+ * @retval SUCCESS 成功
+ * @retval FAILURE 失敗
+ */
+BRESULT DOSIOCALL file_getshortname(const OEMCHAR* lpPathName, OEMCHAR* lpShortName, UINT cchShortName)
+{
+	OEMCHAR szShortPath[MAX_PATH];
+	DWORD nLength;
+	OEMCHAR* lpLeaf;
+
+	if ((lpPathName == NULL) || (lpShortName == NULL) || (cchShortName == 0))
+	{
+		return FAILURE;
+	}
+	lpShortName[0] = '\0';
+	nLength = ::GetShortPathName(lpPathName, szShortPath, NELEMENTS(szShortPath));
+	if ((nLength == 0) || (nLength >= NELEMENTS(szShortPath)))
+	{
+		return FAILURE;
+	}
+	lpLeaf = file_getname(szShortPath);
+	if ((lpLeaf[0] == '\0') || (OEMSTRLEN(lpLeaf) >= cchShortName))
+	{
+		return FAILURE;
+	}
+	file_cpyname(lpShortName, lpLeaf, cchShortName);
+	return SUCCESS;
+}
+
+BOOL DOSIOCALL file_islink(const OEMCHAR* lpPathName)
+{
+	const DWORD attr = ::GetFileAttributes(lpPathName);
+	return (attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_REPARSE_POINT)) ? TRUE : FALSE;
+}
+
+BOOL DOSIOCALL file_infoislink(const FLINFO* fli, const OEMCHAR* lpPathName)
+{
+	if ((fli != NULL) && (fli->caps & FLICAPS_ATTR))
+	{
+		return (fli->attr & FILE_ATTRIBUTE_REPARSE_POINT) ? TRUE : FALSE;
+	}
+	return file_islink(lpPathName);
+}
+
+/**
+ * ファイルのタイム スタンプを設定
+ * @param[in] hFile ファイル ハンドル
+ * @param[in] dosdate DOS日付
+ * @param[in] dostime DOS時刻
+ * @retval 0 成功
+ * @retval -1 失敗
+ */
+short DOSIOCALL file_setdatetime(FILEH hFile, const DOSDATE* dosdate, const DOSTIME* dostime)
+{
+	SYSTEMTIME st;
+	FILETIME ftLocalTime;
+	FILETIME ft;
+
+	if ((dosdate == NULL) || (dostime == NULL))
+	{
+		return -1;
+	}
+
+	::ZeroMemory(&st, sizeof(st));
+	st.wYear = dosdate->year;
+	st.wMonth = dosdate->month;
+	st.wDay = dosdate->day;
+	st.wHour = dostime->hour;
+	st.wMinute = dostime->minute;
+	st.wSecond = dostime->second;
+
+	if ((!::SystemTimeToFileTime(&st, &ftLocalTime)) ||
+		(!::LocalFileTimeToFileTime(&ftLocalTime, &ft)) ||
+		(!::SetFileTime(hFile, NULL, NULL, &ft)))
+	{
+		return -1;
+	}
+	return 0;
+}
+
+/**
  * ファイルの削除
  * @param[in] lpPathName ファイル名
  * @retval 0 成功
@@ -246,6 +367,30 @@ short DOSIOCALL file_setattr(const OEMCHAR* lpPathName, short attr)
 short DOSIOCALL file_rename(const OEMCHAR* lpExistFile, const OEMCHAR* lpNewFile)
 {
 	return (::MoveFile(lpExistFile, lpNewFile)) ? 0 : -1;
+}
+
+/**
+ * ファイルロックの確認
+ * @param[in] lpPathName ファイル名
+ * @retval 0 ロックされていない
+ * @retval それ以外 ロックされている
+ */
+short DOSIOCALL file_islocked(const OEMCHAR* lpPathName)
+{
+	FILEH hFile = ::CreateFile(lpPathName, GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hFile == INVALID_HANDLE_VALUE)
+	{
+		const DWORD err = GetLastError();
+		if (err == ERROR_SHARING_VIOLATION)
+		{
+			return -1; // ファイルロック
+		}
+		else {
+			return 0; // ファイルロックではない
+		}
+	}
+	CloseHandle(hFile);
+	return 0; // 普通に開ける
 }
 
 /**
@@ -375,8 +520,36 @@ static bool DOSIOCALL setFLInfo(const WIN32_FIND_DATA& w32fd, FLINFO *fli)
 		fli->attr = w32fd.dwFileAttributes;
 		convertDateTime(w32fd.ftLastWriteTime, &fli->date, &fli->time);
 		file_cpyname(fli->path, w32fd.cFileName, NELEMENTS(fli->path));
+#if !defined(_WIN32_WCE)
+		file_cpyname(fli->shortpath, w32fd.cAlternateFileName, NELEMENTS(fli->shortpath));
+#else
+		fli->shortpath[0] = '\0';
+#endif
 	}
 	return true;
+}
+
+/**
+ * ファイル/ディレクトリ1件の情報を得る（ワイルドカードを付加しない）
+ * @param[in] lpPathName パス
+ * @param[out] fli 検索結果
+ * @retval SUCCESS 成功
+ * @retval FAILURE 失敗
+ */
+BRESULT DOSIOCALL file_getinfo(const OEMCHAR* lpPathName, FLINFO* fli)
+{
+	WIN32_FIND_DATA w32fd;
+	HANDLE hFile;
+	bool result;
+
+	hFile = ::FindFirstFile(lpPathName, &w32fd);
+	if (hFile == INVALID_HANDLE_VALUE)
+	{
+		return FAILURE;
+	}
+	result = setFLInfo(w32fd, fli);
+	::FindClose(hFile);
+	return result ? SUCCESS : FAILURE;
 }
 
 /**
@@ -438,6 +611,38 @@ void DOSIOCALL file_listclose(FLISTH hList)
 {
 	::FindClose(hList);
 }
+
+#if defined(DOSIO_HAS_DIRMONITOR)
+FDIRMONH DOSIOCALL file_dirmonitor_open(const OEMCHAR* lpPathName)
+{
+	if (lpPathName == NULL || lpPathName[0] == '\0')
+	{
+		return FDIRMONH_INVALID;
+	}
+	return ::FindFirstChangeNotification(lpPathName, FALSE,
+		FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME);
+}
+
+BOOL DOSIOCALL file_dirmonitor_changed(FDIRMONH hMonitor)
+{
+	DWORD dwWait;
+
+	if (hMonitor == NULL || hMonitor == FDIRMONH_INVALID)
+	{
+		return TRUE;
+	}
+	dwWait = ::WaitForSingleObject(hMonitor, 0);
+	return (dwWait == WAIT_TIMEOUT) ? FALSE : TRUE;
+}
+
+void DOSIOCALL file_dirmonitor_close(FDIRMONH hMonitor)
+{
+	if (hMonitor != NULL && hMonitor != FDIRMONH_INVALID)
+	{
+		::FindCloseChangeNotification(hMonitor);
+	}
+}
+#endif
 
 
 

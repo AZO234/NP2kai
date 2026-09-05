@@ -18,6 +18,32 @@ enum {
 };
 
 /**
+ * 短いファイル名の生成方式
+ */
+enum {
+	HOSTDRV_SHORTNAME_LEGACY	= 0,	/*!< Original truncation; colliding entries are omitted */
+	HOSTDRV_SHORTNAME_TILDE	= 1	/*!< Host short name, then long-name ordered NAME‾n */
+};
+
+#ifndef HOSTDRV_SHORTNAME_DEFAULT
+#if defined(USE_HOSTDRV_LEGACY_SHORTNAME)
+#define HOSTDRV_SHORTNAME_DEFAULT	HOSTDRV_SHORTNAME_LEGACY
+#else
+#define HOSTDRV_SHORTNAME_DEFAULT	HOSTDRV_SHORTNAME_TILDE
+#endif
+#endif
+
+// CDS退避用
+typedef struct {
+	BOOL	valid;
+	BOOL	hidden;
+	UINT16	cds_off;
+	UINT16	cds_seg;
+	UINT	cds_size;
+	UINT8	cds_saved[100]; // 100もあれば十分なはず
+} HOSTDRV_HANDOFF;
+
+/**
  * @brief ファイル ハンドル
  */
 struct tagHostDrvHandle
@@ -39,6 +65,7 @@ typedef struct {
 		UINT16	sda_off;
 		UINT16	sda_seg;
 		UINT	flistpos;
+		HOSTDRV_HANDOFF handoff;
 	}			stat;
 
 //	LISTARRAY	cache[DIRMAX_DEPTH];
@@ -71,6 +98,12 @@ void hostdrv_mount(const void *arg1, long arg2);
 void hostdrv_unmount(const void *arg1, long arg2);
 void hostdrv_intr(const void *arg1, long arg2);
 void hostdrv_setn(const void* arg1, long arg2);
+
+int hostdrv_ismounted(void);
+int hostdrv_issuspended(void);
+int hostdrv_iscddshidden(void);
+UINT32 hostdrv_getdriveno(void);
+void hostdrv_setsuspended(int suspend);
 
 int hostdrv_sfsave(STFLAGH sfh, const SFENTRY *tbl);
 int hostdrv_sfload(STFLAGH sfh, const SFENTRY *tbl);

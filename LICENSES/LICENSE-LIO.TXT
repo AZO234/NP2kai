@@ -1,0 +1,30 @@
+LIO GCIRCLE（lio/gcircle.c）のうち、円、楕円および円弧、楕円弧の輪郭計算部分について適用
+参照元：https://github.com/msonrm/quubee
+
+MIT License
+
+Copyright (c) 2026 msonrm
+
+QuuBee 独自のソースコード（msonrm 著作の部分。`native/` の `bridge`・`dos_loader`・
+`dos_int21`・`qb_*`、`web/player/`、`web/index.html`、`tools/`、`emscripten/`、`docs/` 等。
+第三者由来のファイル／`core/np2kai` サブモジュールを除く）は **MIT ライセンス**で利用できる。
+本ファイルはその全文である。配布バイナリ全体は GPL 部品を含まない寛容ライセンスの集合体であり、
+その内訳・各部品の全文の所在はリポジトリ直下の `LICENSE` と `CREDITS.md` を参照のこと。
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

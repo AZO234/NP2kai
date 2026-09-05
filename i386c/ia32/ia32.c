@@ -181,6 +181,9 @@ ia32_setextsize(UINT32 size)
 	CPU_EMSPTR[1] = mem + 0xc4000;
 	CPU_EMSPTR[2] = mem + 0xc8000;
 	CPU_EMSPTR[3] = mem + 0xcc000;
+
+	// MMIOマップ再構築
+	memp_mmio_map_reset();
 }
 
 void
@@ -276,7 +279,7 @@ modify_eflags(UINT32 new_flags, UINT32 mask)
 	CPU_EFLAG = (REAL_EFLAGREG & ~mask) | (new_flags & mask);
 
 	CPU_OV = CPU_FLAG & O_FLAG;
-	CPU_TRAP = (CPU_FLAG & (I_FLAG|T_FLAG)) == (I_FLAG|T_FLAG);
+	CPU_TRAP = (CPU_FLAG & (T_FLAG)) == (T_FLAG);
 	if (CPU_STAT_PM) {
 		if ((orig ^ CPU_EFLAG) & VM_FLAG) {
 			if (CPU_EFLAG & VM_FLAG) {

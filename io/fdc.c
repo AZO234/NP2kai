@@ -221,6 +221,9 @@ static void get_eotgsldtl(void) {
 
 // --------------------------------------------------------------------------
 
+static void readsector(void);
+static void FDC_ReadData(void);
+
 static void FDC_Invalid(void) {							// cmd: xx
 
 	fdc.event = FDCEVENT_BUFSEND;
@@ -232,24 +235,101 @@ static void FDC_Invalid(void) {							// cmd: xx
 }
 
 #ifdef SUPPORT_KAI_IMAGES
+static BOOL fdc_diag_nfd1_mode;
+
+static BOOL fdc_nfd1_diag_target(void) {
+
+	UINT	drv;
+
+	//	get_hdus()前なので、FDC状態を変更せずコマンドバイトから対象ドライブを得る
+	drv = fdc.cmds[0] & 3;
+	return(fddfile[drv].type == DISKTYPE_NFD &&
+		fddfile[drv].inf.nfd.revision);
+}
+
+static void fdc_nfd1_diag_ready(void) {
+
+#if defined(SUPPORT_SWSEEKSND)
+	if(np2cfg.MOTOR) fddmtrsnd_play(1, TRUE);
+#else
+	if(np2cfg.MOTOR) {
+		if(fdc_seeksndtimeout[fdc.us]!=0){
+			soundmng_pcmplay(SOUND_PCMSEEK, FALSE);
+		}else{
+			soundmng_pcmstop(SOUND_PCMSEEK1);
+			soundmng_pcmplay(SOUND_PCMSEEK1, FALSE);
+		}
+	}
+#endif
+	fdc_seeksndtimeout[fdc.us] = FDC_SEEKSOUND_TIMEOUT;
+
+	fdc.event = FDCEVENT_BUFSEND2;
+	fdc.bufp = 0;
+#if 0
+	fdc.status = FDCSTAT_NDM | FDCSTAT_CB;
+	if (!(fdc.ctrlreg & 0x10)) {
+		fdc.status |= FDCSTAT_RQM | FDCSTAT_DIO;
+	}
+#else
+	fdc.status &= 0x0f;
+	fdc.status |= (1 << fdc.us);
+	fdc.status |= FDCSTAT_RQM | FDCSTAT_DIO | FDCSTAT_CB;
+	if (fdc.nd) {
+		fdc.status |= FDCSTAT_NDM;
+	}
+#endif
+	fdc_dmaready(1);
+	dmac_check();
+}
+
 static void FDC_ReadDiagnostic(void) {					// cmd: 02
+
+	//	コマンド開始時にNFD r1かを確認　NFD以外は従来のREAD DATA
+	if (fdc.event == FDCEVENT_CMDRECV) {
+		fdc_diag_nfd1_mode = fdc_nfd1_diag_target();
+	}
+	if (!fdc_diag_nfd1_mode) {
+		FDC_ReadData();
+		return;
+	}
 
 	switch(fdc.event) {
 		case FDCEVENT_CMDRECV:
 			get_hdus();
 			get_chrn();
 			get_eotgsldtl();
-			fdc.stat[fdc.us] = (fdc.hd << 2) | fdc.us;
-
-			if (FDC_DriveCheck(FALSE)) {
-				fdc.event = FDCEVENT_BUFSEND;
-//				fdc.bufcnt = makedianosedata();
-				fdc.bufp = 0;
+			if (fdc_lasttreg[fdc.us] != fdc.treg[fdc.us]) {
+				fdc.treg[fdc.us] = fdc.C;
 			}
+			fdc.stat[fdc.us] = (fdc.hd << 2) | fdc.us;
+			if (!FDC_DriveCheck(FALSE)) {
+				fdc_diag_nfd1_mode = FALSE;
+				return;
+			}
+			if (fdd_diagread() == SUCCESS) {
+				fdc_nfd1_diag_ready();
+				break;
+			}
+			//	0xc0は特殊読み込み情報無し。従来のREAD DATAへ切り替える
+			if (fddlasterror == 0xc0) {
+				fdc_diag_nfd1_mode = FALSE;
+				FDC_ReadData();
+				break;
+			}
+			fdc_diag_nfd1_mode = FALSE;
+			fdc.stat[fdc.us] = fdc.us | (fdc.hd << 2) | FDCRLT_IC0 | FDCRLT_ND;
+			fdcsend_error7();
+			break;
+
+		case FDCEVENT_NEXTDATA:
+			fdc_diag_nfd1_mode = FALSE;
+			fdc.bufcnt = 0;
+			fdcsend_success7();
 			break;
 
 		default:
-			fdc.event = FDCEVENT_NEUTRAL;
+			fdc_diag_nfd1_mode = FALSE;
+			FDC_ReadData();
 			break;
 	}
 }
@@ -263,7 +343,7 @@ static void FDC_Specify(void) {							// cmd: 03
 			fdc.hut = fdc.cmds[0] & 0x0f;
 			fdc.hlt = fdc.cmds[1] >> 1;
 			fdc.nd = fdc.cmds[1] & 1;
-			fdc.stat[fdc.us] = (fdc.hd << 2) | fdc.us;
+			//fdc.stat[fdc.us] = (fdc.hd << 2) | fdc.us;
 			break;
 	}
 	fdc.event = FDCEVENT_NEUTRAL;
@@ -277,7 +357,8 @@ static void FDC_SenseDeviceStatus(void) {				// cmd: 04
 		case FDCEVENT_CMDRECV:
 			get_hdus();
 			fdc.buf[0] = (fdc.hd << 2) | fdc.us;
-			fdc.stat[fdc.us] = (fdc.hd << 2) | fdc.us;
+			//fdc.stat[fdc.us] = (fdc.hd << 2) | fdc.us;
+			//fdc.stat[fdc.us] = fdc.us;
 			if (fdc.equip & (1 << fdc.us)) {
 				fdc.buf[0] |= 0x08;
 				if (!fdc.treg[fdc.us]) {
@@ -802,7 +883,11 @@ typedef void (*FDCOPE)(void);
 static const FDCOPE FDC_Ope[0x20] = {
 				FDC_Invalid,
 				FDC_Invalid,
-				FDC_ReadData,			// FDC_ReadDiagnostic,
+#ifdef SUPPORT_KAI_IMAGES
+				FDC_ReadDiagnostic,
+#else
+				FDC_ReadData,
+#endif
 				FDC_Specify,
 				FDC_SenseDeviceStatus,
 				FDC_WriteData,
@@ -852,6 +937,9 @@ static void fdcstatusreset(void) {
 
 	fdc.event = FDCEVENT_NEUTRAL;
 	fdc.status = FDCSTAT_RQM;
+#ifdef SUPPORT_KAI_IMAGES
+	fdc_diag_nfd1_mode = FALSE;
+#endif
 }
 
 void DMACCALL fdc_datawrite(REG8 data) {
@@ -1146,6 +1234,9 @@ static const IOINP fdcibe[1] = {fdc_ibe};
 void fdc_reset(const NP2CFG *pConfig) {
 
 	ZeroMemory(&fdc, sizeof(fdc));
+#ifdef SUPPORT_KAI_IMAGES
+	fdc_diag_nfd1_mode = FALSE;
+#endif
 	fdc.equip = pConfig->fddequip;
 #if defined(SUPPORT_PC9821)
 	fdc.support144 = 1;

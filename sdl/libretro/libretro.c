@@ -1137,7 +1137,7 @@ static void update_variables(void)
       else if (strcmp(var.value, "Little Orchestra L") == 0)
          np2cfg.SOUND_SW = SOUNDID_LITTLEORCHESTRAL;
       else if (strcmp(var.value, "Multimedia Orchestra") == 0)
-         np2cfg.SOUND_SW = SOUNDID_MMORCHESTRA;
+         np2cfg.SOUND_SW = SOUNDID_MULTIMEDIAORCHESTRA;
 #if defined(SUPPORT_SOUND_SB16)
       else if (strcmp(var.value, "Sound Blaster 16") == 0)
          np2cfg.SOUND_SW = SOUNDID_SB16;

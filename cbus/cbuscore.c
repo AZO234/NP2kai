@@ -2,6 +2,7 @@
 #include	<pccore.h>
 #include	<io/iocore.h>
 #include	<cbus/cbuscore.h>
+#include	<cbus/cbuspnp.h>
 #include	<cbus/ideio.h>
 #include	<cbus/sasiio.h>
 #include	<cbus/scsiio.h>
@@ -28,6 +29,7 @@
 #endif
 
 static const FNIORESET resetfn[] = {
+			cbuspnp_reset,
 #if defined(SUPPORT_IDEIO)
 			ideio_reset,
 #endif
@@ -68,6 +70,7 @@ static const FNIORESET resetfn[] = {
 	};
 
 static const FNIOBIND bindfn[] = {
+			cbuspnp_bind,
 #if defined(SUPPORT_IDEIO)
 			ideio_bind,
 #endif

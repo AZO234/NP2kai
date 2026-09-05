@@ -320,40 +320,6 @@ static REG8 IOINPCALL pci_i18f2(UINT port) {
 	return pcidev.unkreg[(pcidev.unkreg_bank2++) & 3][pcidev.unkreg_bank1];
 }
 
-// Cバス PnP関連
-static UINT8 pnp_addr = 0;
-static UINT8 pnp_data[0x100] = {0};
-static REG8 IOINPCALL pnp_iReg(UINT port) {
-	
-    return 0xff;
-}
-static void IOOUTCALL pnp_o259(UINT port, REG8 dat) {
-	
-    pnp_addr = dat;
-	(void)port;
-}
-static REG8 IOINPCALL pnp_i259(UINT port) {
-
-	return pnp_addr;
-}
-static void IOOUTCALL pnp_oA59(UINT port, REG8 dat) {
-	
-	if(pnp_addr==0){
-		iocore_detachinp((pnp_data[pnp_addr] << 2) | 0x3);
-		iocore_attachinp((dat << 2) | 0x3, pnp_iReg);
-		mem[0x5B7] = dat;
-	}
-    pnp_data[pnp_addr] = dat;
-	(void)port;
-}
-static REG8 IOINPCALL pnp_iA59(UINT port) {
-	
-	if(pnp_addr==0){
-		pnp_data[pnp_addr] = mem[0x5B7];
-	}
-	return pnp_data[pnp_addr];
-}
-
 void pcidev_basereset() {
 	OEMCHAR	path[MAX_PATH];
 	FILEH	fh;
@@ -533,16 +499,6 @@ void pcidev_bind(void) {
 	//iocore_attachinp(0x18f2, pci_i18f2);
 	memset(pcidev.unkreg, 0, sizeof(pcidev.unkreg));
     pcidev.unkreg_bank1 = pcidev.unkreg_bank2 = 0;
-	
-	//// C-Bus PnP
-	//pnp_data[0] = (0x277 >> 2); // READ_DATA port address 0000 00xx xxxx xx11b
-	//mem[0x5B7] = pnp_data[0]; // READ_DATA port address
-	//mem[0x5B8] = 0x00; // No C-Bus PnP boards
-	//iocore_attachinp((pnp_data[pnp_addr] << 2) | 0x3, pnp_iReg);
-	//iocore_attachout(0x259, pnp_o259);
-	//iocore_attachout(0xA59, pnp_oA59);
-	//iocore_attachinp(0x259, pnp_i259);
-	//iocore_attachinp(0xA59, pnp_iA59);
 	
 	if(pcidev.enable){
 		// 関数アドレス入れ直し（ステートセーブ用）

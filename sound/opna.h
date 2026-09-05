@@ -6,6 +6,7 @@
 #pragma once
 
 #include "adpcm.h"
+#include "ymzadpcm.h" // 暫定
 #include <sound/opngen.h>
 #include "psggen.h"
 #include "rhythm.h"

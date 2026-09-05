@@ -1,8 +1,8 @@
-#include	<compiler.h>
-#include	<cpucore.h>
-#include	<pccore.h>
+#include	"compiler.h"
+#include	"cpucore.h"
+#include	"pccore.h"
 #include	<io/iocore.h>
-#include	<bios/bios.h>
+#include	"bios/bios.h"
 #include	"lio.h"
 #include	<vram/vram.h>
 
@@ -321,6 +321,22 @@ const UINT8	*src;
 
 // ----
 
+static UINT getputplanemask(const _GLIO *lio) {
+
+	if (lio->draw.flag & LIODRAW_MONO) {
+		return(1U << (lio->draw.flag & LIODRAW_PMASK));
+	}
+	return((lio->draw.flag & LIODRAW_4BPP)?0x0f:0x07);
+}
+
+static UINT getputplanes(const _GLIO *lio) {
+
+	if (lio->draw.flag & LIODRAW_MONO) {
+		return(1);
+	}
+	return((lio->draw.flag & LIODRAW_4BPP)?4:3);
+}
+
 static REG8 putsub(GLIO lio, const LIOPUT *lput) {
 
 	UINT	addr;
@@ -332,14 +348,15 @@ static REG8 putsub(GLIO lio, const LIOPUT *lput) {
 	UINT	pl;
 	UINT	writecnt;
 
-	if ((lput->x < lio->draw.x1) ||
-		(lput->y < lio->draw.y1) ||
-		((lput->x + lput->width - 1) > lio->draw.x2) ||
-		((lput->y + lput->height - 1) > lio->draw.y2)) {
-		return(LIO_ILLEGALFUNC);
-	}
-	if ((lput->width <= 0) || (lput->height <= 0)) {
+	if ((lput->width == 0) || (lput->height == 0)) {
 		return(LIO_SUCCESS);
+	}
+	if ((lput->mode > 4) ||
+		(lput->x < lio->draw.x1) ||
+		(lput->y < lio->draw.y1) ||
+		(((SINT32)lput->x + (SINT32)lput->width - 1) > lio->draw.x2) ||
+		(((SINT32)lput->y + (SINT32)lput->height - 1) > lio->draw.y2)) {
+		return(LIO_ILLEGALFUNC);
 	}
 
 	addr = (lput->x >> 3) + (lput->y * 80);
@@ -356,13 +373,28 @@ static REG8 putsub(GLIO lio, const LIOPUT *lput) {
 	pt.masklr = (UINT8)(pt.maskl >> pt.sft);
 
 	datacnt = (lput->width + 7) >> 3;
+	if (datacnt > sizeof(pt.pat)) {
+		return(LIO_ILLEGALFUNC);
+	}
 	off = lput->off;
 
-	flag = (lio->draw.flag & LIODRAW_4BPP)?0x0f:0x07;
-	flag |= (lput->fg & 15) << 4;
-	flag |= (lput->bg & 15) << 8;
+	flag = getputplanemask(lio);
+	if (lio->draw.flag & LIODRAW_MONO) {
+		UINT pmask;
+		pmask = flag;
+		if (lput->fg) {
+			flag |= pmask << 4;
+		}
+		if (lput->bg) {
+			flag |= pmask << 8;
+		}
+	}
+	else {
+		flag |= (lput->fg & 15) << 4;
+		flag |= (lput->bg & 15) << 8;
+	}
 
-	// „Åï„Å¶Ë°®Á§∫„ÄÇ
+	// Ç≥Çƒï\é¶ÅB
 	writecnt = 0;
 	height = lput->height;
 	do {
@@ -408,7 +440,7 @@ static REG8 putsub(GLIO lio, const LIOPUT *lput) {
 						writecnt += 2;
 						break;
 
-					case 2:		// OR
+					case 2:		// OR ÅiíçÅFPC-9801ÉvÉçÉOÉâÉ}Å[ÉYBibleÇ≈åÎêAÇ†ÇËÅj
 						if (flag & (8 << 4)) {
 							putor(&pt);
 							writecnt++;
@@ -419,7 +451,7 @@ static REG8 putsub(GLIO lio, const LIOPUT *lput) {
 						}
 						break;
 
-					case 3:		// AND
+					case 3:		// AND ÅiíçÅFPC-9801ÉvÉçÉOÉâÉ}Å[ÉYBibleÇ≈åÎêAÇ†ÇËÅj
 						if (!(flag & (8 << 4))) {
 							putandn(&pt);
 							writecnt++;
@@ -488,7 +520,7 @@ REG8 lio_gget(GLIO lio) {
 		return(LIO_ILLEGALFUNC);
 	}
 	off = LOADINTELWORD(dat.off);
-	seg = (SINT16)LOADINTELWORD(dat.seg);
+	seg = LOADINTELWORD(dat.seg);
 
 	datacnt = (x2 + 7) >> 3;
 	size = datacnt * y2;
@@ -556,32 +588,35 @@ REG8 lio_gput1(GLIO lio) {
 	leng = LOADINTELWORD(dat.leng);
 	lput.width = MEMR_READ16(lput.seg, lput.off - 4);
 	lput.height = MEMR_READ16(lput.seg, lput.off - 2);
-	size = ((lput.width + 7) >> 3) * lput.height;
-	if (leng < (size + 4)) {
+	if ((lput.mode > 4) || (dat.colorsw > 1)) {
 		return(LIO_ILLEGALFUNC);
 	}
-	if (leng < ((size * 3) + 4)) {
+	size = ((lput.width + 7) >> 3) * lput.height;
+	if (dat.colorsw) {
+		if (leng < (size + 4)) {
+			return(LIO_ILLEGALFUNC);
+		}
 		lput.sw = 0;
-		if (dat.colorsw) {
-			lput.fg = dat.fg;
-			lput.bg = dat.bg;
+		if (lio->draw.flag & LIODRAW_MONO) {
+			lput.fg = dat.fg ? 1 : 0;
+			lput.bg = dat.bg ? 1 : 0;
 		}
 		else {
-			lput.fg = lio->work.fgcolor;
-			lput.bg = lio->work.bgcolor;
+			if ((dat.fg >= lio->draw.palmax) ||
+				(dat.bg >= lio->draw.palmax)) {
+				return(LIO_ILLEGALFUNC);
+			}
+			lput.fg = dat.fg;
+			lput.bg = dat.bg;
 		}
 	}
 	else {
-		if (dat.colorsw) {
-			lput.sw = 0;
-			lput.fg = dat.fg;
-			lput.bg = dat.bg;
+		if (leng < (size + 4)) {
+			return(LIO_ILLEGALFUNC);
 		}
-		else {
-			lput.sw = 1;
-			lput.fg = 0x0f;
-			lput.bg = 0;
-		}
+		lput.sw = 1;
+		lput.fg = 0x0f;
+		lput.bg = 0;
 	}
 	return(putsub(lio, &lput));
 }
@@ -641,9 +676,22 @@ REG8 lio_gput2(GLIO lio) {
 	lput.height = (size & 0xff) << 3;
 	lput.mode = dat.mode;
 	lput.sw = 0;
+	if ((dat.mode > 4) || (dat.colorsw > 1)) {
+		return(LIO_ILLEGALFUNC);
+	}
 	if (dat.colorsw) {
-		lput.fg = dat.fg;
-		lput.bg = dat.bg;
+		if (lio->draw.flag & LIODRAW_MONO) {
+			lput.fg = dat.fg ? 1 : 0;
+			lput.bg = dat.bg ? 1 : 0;
+		}
+		else {
+			if ((dat.fg >= lio->draw.palmax) ||
+				(dat.bg >= lio->draw.palmax)) {
+				return(LIO_ILLEGALFUNC);
+			}
+			lput.fg = dat.fg;
+			lput.bg = dat.bg;
+		}
 	}
 	else {
 		lput.fg = lio->work.fgcolor;

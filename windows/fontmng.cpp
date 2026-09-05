@@ -292,7 +292,7 @@ static void fontmng_getchar(FNTMNG fhdl, FNTDAT fdat, const OEMCHAR *string) {
 			if (ofsx < -gm.gmptGlyphOrigin.x) ofsx = -gm.gmptGlyphOrigin.x;
 		}
 		realY = (fhdl->tmAscent - gm.gmptGlyphOrigin.y);
-		if (realY + gm.gmBlackBoxY > fdat->height - 1) {
+		if (!(0x21 <= string[0] && string[0] <= 0x7f) && realY + gm.gmBlackBoxY > fdat->height - 1) { // ASCII‚Í’²®‚©‚çœŠO
 			ofsy = fdat->height - 1 - (realY + gm.gmBlackBoxY);
 			if (ofsy < -realY) ofsy = -realY;
 		}

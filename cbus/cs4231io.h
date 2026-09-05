@@ -1,17 +1,22 @@
-
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#define CS4231IO_BIND_CTRL_C2X 0x01
+#define CS4231IO_BIND_CTRL_480 0x02
+
 void cs4231io_reset(void);
+void cs4231io_reset_ex(UINT8 sndirq, UINT8 snddma, UINT16 soundid_port,
+                       UINT16 midi_port, UINT8 chipid);
 void cs4231io_bind(void);
 void cs4231io_unbind(void);
+void cs4231io_bind_ex(UINT flags);
+void cs4231io_unbind_ex(UINT flags);
 
 void IOOUTCALL cs4231io0_w8(UINT port, REG8 value);
 REG8 IOINPCALL cs4231io0_r8(UINT port);
-void IOOUTCALL cs4231io0_w8_wavestar(UINT port, REG8 value);
-REG8 IOINPCALL cs4231io0_r8_wavestar(UINT port);
 void IOOUTCALL cs4231io2_w8(UINT port, REG8 value);
 REG8 IOINPCALL cs4231io2_r8(UINT port);
 void IOOUTCALL cs4231io5_w8(UINT port, REG8 value);

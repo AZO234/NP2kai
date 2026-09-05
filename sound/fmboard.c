@@ -9,6 +9,7 @@
 #include	<cbus/board86.h>
 #include	<cbus/boardx2.h>
 #include	<cbus/board118.h>
+#include	<cbus/boardws.h>
 #include	<cbus/boardspb.h>
 #if defined(SUPPORT_PX)
 #include	<cbus/boardpx.h>
@@ -98,7 +99,7 @@ void fmboard_updatevolume(){
 	UINT volex = 15;
 	UINT i;
 	if(g_nSoundID==SOUNDID_WAVESTAR){
-		volex = cs4231.devvolume[0xff];
+		volex = boardws_getfmvolume();
 	}
 	opngen_setvol(np2cfg.vol_fm * volex / 15 * np2cfg.vol_master / 100);
 #if defined(SUPPORT_FMGEN)
@@ -110,12 +111,14 @@ void fmboard_updatevolume(){
 #endif	/* SUPPORT_FMGEN */
 
 	adpcm_setvol(np2cfg.vol_adpcm * np2cfg.vol_master / 100);
+	ymzadpcm_setvol(np2cfg.vol_adpcm * np2cfg.vol_master / 100);
 #if defined(SUPPORT_FMGEN)
 	opna_fmgen_setallvolumeADPCM_linear(np2cfg.vol_adpcm * np2cfg.vol_master / 100);
 #endif	/* SUPPORT_FMGEN */
 	for (i = 0; i < OPNA_MAX; i++)
 	{
 		adpcm_update(&g_opna[i].adpcm);
+		ymzadpcm_update(&g_opna[i].adpcm);
 	}
 
 	pcm86gen_setvol(np2cfg.vol_pcm * np2cfg.vol_master / 100);
@@ -264,8 +267,7 @@ void fmboard_reset(const NP2CFG *pConfig, SOUNDID nSoundID)
 			break;
 
 		case SOUNDID_WAVESTAR:
-			board118_reset(pConfig);
-			board86_reset(pConfig, FALSE);
+			boardws_reset(pConfig);
 			break;
 
 		case SOUNDID_SPEAKBOARD:
@@ -300,7 +302,7 @@ void fmboard_reset(const NP2CFG *pConfig, SOUNDID nSoundID)
 			boardlol_reset(pConfig);
 			break;
 
-		case SOUNDID_MMORCHESTRA:
+		case SOUNDID_MULTIMEDIAORCHESTRA:
 			boardmo_reset(pConfig);
 			break;
 			
@@ -400,8 +402,7 @@ void fmboard_bind(void) {
 			break;
 
 		case SOUNDID_WAVESTAR:
-			board118_bind();
-			board86_bind();
+			boardws_bind();
 			break;
 			
 		case SOUNDID_SPEAKBOARD:
@@ -430,7 +431,7 @@ void fmboard_bind(void) {
 			boardlol_bind();
 			break;
 
-		case SOUNDID_MMORCHESTRA:
+		case SOUNDID_MULTIMEDIAORCHESTRA:
 			boardmo_bind();
 			break;
 
@@ -527,8 +528,7 @@ void fmboard_unbind(void) {
 			break;
 
 		case SOUNDID_WAVESTAR:
-			board118_unbind();
-			board86_unbind();
+			boardws_unbind();
 			break;
 			
 		case SOUNDID_SPEAKBOARD:
@@ -557,7 +557,7 @@ void fmboard_unbind(void) {
 			boardlol_unbind();
 			break;
 
-		case SOUNDID_MMORCHESTRA:
+		case SOUNDID_MULTIMEDIAORCHESTRA:
 			boardmo_unbind();
 			break;
 

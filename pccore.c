@@ -62,6 +62,9 @@
 #if defined(SUPPORT_HOSTDRVNT)
 #include <generic/hostdrvnt.h>
 #endif
+#if defined(SUPPORT_HOSTDRV9X)
+#include	"hostdrv9x.h"
+#endif
 #include <calendar.h>
 #include <debugsub.h>
 #include <keystat.h>
@@ -181,6 +184,8 @@ NP2CFG np2cfg = {
     1,
     3, // Mate-X PCM
 
+				0x0188, 3, 12, 1, 1, // WaveStar
+
 #if defined(SUPPORT_SOUND_SB16)
     0xd2,
     3,
@@ -225,6 +230,9 @@ NP2CFG np2cfg = {
     3,
     0,
     50,
+#if defined(SUPPORT_FDDSNDDEV)
+				OEMTEXT(""), OEMTEXT(""), 100, 100,
+#endif
     0,
     0,
     1,
@@ -283,6 +291,9 @@ NP2CFG np2cfg = {
 #endif
 #if defined(SUPPORT_WAB_NPDISP)
     0,
+#endif
+#if defined(SUPPORT_WAB_GA1280A)
+				0,
 #endif
 #if defined(SUPPORT_VGA_MODEX)
     0,
@@ -345,7 +356,7 @@ NP2CFG np2cfg = {
 #endif
     100,
     OEMTEXT(""),
-    0,
+    0, 1,
 #if defined(SUPPORT_DEBUGSS)
     0,
 #endif
@@ -530,6 +541,8 @@ static void sound_init(void) {
   rhythm_setvol(np2cfg.vol_rhythm * np2cfg.vol_master / 100);
   adpcm_initialize(rate);
   adpcm_setvol(np2cfg.vol_adpcm * np2cfg.vol_master / 100);
+  ymzadpcm_initialize(rate);
+  ymzadpcm_setvol(np2cfg.vol_adpcm * np2cfg.vol_master / 100);
   pcm86gen_initialize(rate);
   pcm86gen_setvol(np2cfg.vol_pcm * np2cfg.vol_master / 100);
   cs4231_initialize(rate);
@@ -653,6 +666,7 @@ void pccore_setdefault(void) {
       0x70,
       1,
       3,
+      0x0188, 3, 12, 1, 1,
 #if defined(SUPPORT_SOUND_SB16)
       0xd2,
       3,
@@ -696,6 +710,9 @@ void pccore_setdefault(void) {
       3,
       0,
       50,
+#if defined(SUPPORT_FDDSNDDEV)
+      OEMTEXT(""), OEMTEXT(""), 100, 100,
+#endif
       0,
       0,
       1,
@@ -752,6 +769,9 @@ void pccore_setdefault(void) {
       0,
 #endif
 #if defined(SUPPORT_WAB_NPDISP)
+      0,
+#endif
+#if defined(SUPPORT_WAB_GA1280A)
       0,
 #endif
 #if defined(SUPPORT_VGA_MODEX)
@@ -1393,6 +1413,9 @@ void pccore_reset(void) {
 #if defined(SUPPORT_HOSTDRVNT)
   hostdrvNT_reset();
 #endif
+#if defined(SUPPORT_HOSTDRV9X)
+	hostdrv9x_reset();
+#endif
 
   timing_reset();
   soundmng_play();
@@ -1782,6 +1805,7 @@ static void pccore_asynccpu() {
             pccore.realclock = pccore.baseclock * pccore.multiple;
             pcm86_changeclock(oldmultiple);
             nevent_changeclock(oldmultiple, pccore.multiple);
+						S98_changeclock();
 
             sound_changeclock();
             beep_changeclock();
@@ -1824,6 +1848,7 @@ static void pccore_asynccpu() {
               pccore.realclock = pccore.baseclock * pccore.multiple;
               pcm86_changeclock(oldmultiple);
               nevent_changeclock(oldmultiple, pccore.multiple);
+						S98_changeclock();
 
               sound_changeclock();
               beep_changeclock();
@@ -1911,6 +1936,9 @@ void pccore_exec(BOOL draw) {
 #endif
 #if defined(SUPPORT_HOSTDRV)
       hostdrv_reset(); // XXX: Win9xの再起動で必要
+#endif
+#if defined(SUPPORT_HOSTDRV9X)
+			hostdrv9x_reset();
 #endif
 #if defined(SUPPORT_HOSTDRVNT)
       hostdrvNT_reset(); // XXX: Win9xの再起動で必要

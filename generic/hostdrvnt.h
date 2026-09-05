@@ -7,18 +7,24 @@
 
 #if defined(SUPPORT_HOSTDRVNT)
 
+#if !defined(WIN32) && !defined(_WIN32)
+#include "hostdrvwincompat.h"
+#endif
 #include "statsave.h"
 
 #define NP2HOSTDRVNT_FILES_MAX	65536
 
 typedef struct
 {
-	OEMCHAR fileName[65536];
-	OEMCHAR hostFileName[65536];
+	WCHAR* fileName;
+	WCHAR* hostFileName;
 	UINT8 isRoot;
 	UINT8 isDirectory;
-	INTPTR hFindFile;
-	INTPTR hFile;
+	HANDLE hFindFile;
+	HANDLE hFile;
+	void *sfnMap;
+	UINT32 sfnCount;
+	UINT8 sfnMapBuilt;
 
 	UINT32 hostdrvWinAPIDesiredAccess;
 	UINT32 hostdrvShareAccess;
@@ -26,16 +32,23 @@ typedef struct
 	UINT32 hostdrvFileAttributes;
 
 	UINT8 deleteOnClose;
+	UINT8 deleteIdentityValid;
 	UINT8 allowDeleteChild;
-	UINT16 extendLength; // å¾Œç¶šã®æ‹¡å¼µé ˜åŸŸã®é•·ã•
+	UINT8 reservedSecurityState;
+	UINT16 extendLength; // Œã‘±‚ÌŠg’£—Ìˆæ‚Ì’·‚³
+
+	// •Û‘¶‚µ‚È‚¢—Ìˆæ
+	DWORD deleteVolumeSerialNumber;
+	DWORD deleteFileIndexHigh;
+	DWORD deleteFileIndexLow;
 } NP2HOSTDRVNT_FILEINFO;
 
 typedef struct
 {
-	int version; // ãƒãƒ¼ã‚¸ãƒ§ãƒ³
-	int cmdBaseVersion; // I/Oã‚³ãƒãƒ³ãƒ‰åŸºæœ¬ãƒãƒ¼ã‚¸ãƒ§ãƒ³
-	int cmdInvokePos; // I/Oã‚³ãƒãƒ³ãƒ‰æ–‡å­—åˆ—ã®ä½ç½®
-	UINT32 dataAddr; // I/Oã‚³ãƒãƒ³ãƒ‰ã®ãƒ‡ãƒ¼ã‚¿ãƒ¡ãƒ¢ãƒªã‚¢ãƒ‰ãƒ¬ã‚¹
+	int version; // ƒo[ƒWƒ‡ƒ“
+	int cmdBaseVersion; // I/OƒRƒ}ƒ“ƒhŠî–{ƒo[ƒWƒ‡ƒ“
+	int cmdInvokePos; // I/OƒRƒ}ƒ“ƒh•¶š—ñ‚ÌˆÊ’u
+	UINT32 dataAddr; // I/OƒRƒ}ƒ“ƒh‚Ìƒf[ƒ^ƒƒ‚ƒŠƒAƒhƒŒƒX
 	NP2HOSTDRVNT_FILEINFO files[NP2HOSTDRVNT_FILES_MAX];
 } HOSTDRVNT;
 

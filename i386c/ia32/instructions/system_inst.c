@@ -32,6 +32,7 @@
 
 #if defined(USE_CUSTOM_HOOKINST)
 #include <bios/bios.h>
+#include <sound/soundrom.h>
 #endif
 
 
@@ -330,6 +331,7 @@ MOV_CdRd(void)
 			}
 
 			CPU_STAT_WP = (CPU_CR0 & CPU_CR0_WP) ? 0x10 : 0;
+			tlb_update_access_flags();
 			break;
 
 		case 2: /* CR2 */
@@ -1058,7 +1060,11 @@ HLT(void)
 		{
 			UINT32 adrs;
 			adrs = CPU_PREV_EIP + (CPU_CS << 4);
-			if ((adrs >= 0xf8000) && (adrs < 0x100000))
+			if (
+#if defined(SUPPORT_EMU_SOUNDBIOS)
+				soundrom_isbiosaddr(adrs) ||
+#endif
+				((adrs >= 0xf8000) && (adrs < 0x100000)))
 			{
 				ia32_bioscall();
 				return;

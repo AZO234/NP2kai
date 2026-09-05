@@ -296,6 +296,11 @@ FPU_FINIT(void)
 	int i;
 	FPU_SetCW(0x37F);
 	FPU_STATUSWORD = 0;
+	FPU_INSTPTR_SEG = 0;
+	FPU_INSTPTR_OFFSET = 0;
+	FPU_DATAPTR_SEG = 0;
+	FPU_DATAPTR_OFFSET = 0;
+	FPU_LASTINSTOP = 0;
 	FPU_STAT_TOP=FP_TOP_GET();
 	for(i=0;i<8;i++){
 		// Emptyセットしてもレジスタの内容は消してはいけない
@@ -735,81 +740,247 @@ static void FPU_FXTRACT(void) {
 }
 
 // 環境ロード・ストア
+
+/* The x87 environment identifies the last non-control x87 instruction.
+ * CPU_PREV_EIP is the address of the instruction start, including prefixes. */
+static INLINE void FPU_RecordInstruction(UINT esc, UINT modrm)
+{
+	FPU_INSTPTR_SEG = CPU_CS;
+	FPU_INSTPTR_OFFSET = CPU_PREV_EIP;
+	FPU_LASTINSTOP = (UINT16)(((esc & 7) << 8) | (modrm & 0xff));
+}
+
+static INLINE int FPU_IsControlInstruction(UINT esc, UINT modrm)
+{
+	UINT idx = (modrm >> 3) & 7;
+	UINT sub = modrm & 7;
+
+	/* These forms manipulate or inspect x87 control/state rather than data. */
+	if (esc == 1 && modrm < 0xc0 && idx >= 4)
+		return 1;
+	if (esc == 3 && modrm >= 0xc0 && idx == 4)
+		return 1;
+	if (esc == 5 && modrm < 0xc0 && (idx == 4 || idx == 6 || idx == 7))
+		return 1;
+	if (esc == 7 && modrm >= 0xc0 && idx == 4 && sub == 0)
+		return 1;
+	return 0;
+}
+
+static INLINE void FPU_RecordInstructionIfNeeded(UINT esc, UINT modrm)
+{
+	if (!FPU_IsControlInstruction(esc, modrm))
+		FPU_RecordInstruction(esc, modrm);
+}
+
+/* x87 environment/control-state memory operands do not replace the saved
+ * data-operand pointer, so they bypass the normal FPU data access helpers. */
+static INLINE UINT8 FPU_EnvRead8(UINT32 addr)
+{
+	return cpu_vmemoryread_b(CPU_INST_SEGREG_INDEX, addr);
+}
+static INLINE UINT16 FPU_EnvRead16(UINT32 addr)
+{
+	return cpu_vmemoryread_w(CPU_INST_SEGREG_INDEX, addr);
+}
+static INLINE UINT32 FPU_EnvRead32(UINT32 addr)
+{
+	return cpu_vmemoryread_d(CPU_INST_SEGREG_INDEX, addr);
+}
+static INLINE UINT64 FPU_EnvRead64(UINT32 addr)
+{
+	return cpu_vmemoryread_q(CPU_INST_SEGREG_INDEX, addr);
+}
+static INLINE void FPU_EnvWrite8(UINT32 addr, UINT8 value)
+{
+	cpu_vmemorywrite_b(CPU_INST_SEGREG_INDEX, addr, value);
+}
+static INLINE void FPU_EnvWrite16(UINT32 addr, UINT16 value)
+{
+	cpu_vmemorywrite_w(CPU_INST_SEGREG_INDEX, addr, value);
+}
+static INLINE void FPU_EnvWrite32(UINT32 addr, UINT32 value)
+{
+	cpu_vmemorywrite_d(CPU_INST_SEGREG_INDEX, addr, value);
+}
+static INLINE void FPU_EnvWrite64(UINT32 addr, UINT64 value)
+{
+	cpu_vmemorywrite_q(CPU_INST_SEGREG_INDEX, addr, value);
+}
+
+static INLINE UINT32 FPU_RealLinear(FPU_PTR p)
+{
+	return (((UINT32)p.seg) << 4) + p.offset;
+}
+
 static void FPU_FSTENV(UINT32 addr)
 {
+	const int protected_mode = ((CPU_CR0 & CPU_CR0_PE) != 0) && ((CPU_EFLAG & VM_FLAG) == 0);
+	const FPU_PTR inst = FPU_INSTPTR;
+	const FPU_PTR data = FPU_DATAPTR;
+	const UINT16 lastop = (UINT16)(FPU_LASTINSTOP & 0x07ff);
+
 	FP_TOP_SET(FPU_STAT_TOP);
 
-	switch ((CPU_CR0 & 1) | (CPU_INST_OP32 ? 0x100 : 0x000))
-	{
-	case 0x000: case 0x001:
-		fpu_memorywrite_w(addr + 0, FPU_CTRLWORD);
-		fpu_memorywrite_w(addr + 2, FPU_STATUSWORD);
-		fpu_memorywrite_w(addr + 4, FPU_GetTag());
-		fpu_memorywrite_w(addr + 10, FPU_LASTINSTOP);
-		break;
-
-	case 0x100: case 0x101:
-		fpu_memorywrite_d(addr + 0, (UINT32)(FPU_CTRLWORD));
-		fpu_memorywrite_d(addr + 4, (UINT32)(FPU_STATUSWORD));
-		fpu_memorywrite_d(addr + 8, (UINT32)(FPU_GetTag()));
-		fpu_memorywrite_d(addr + 20, FPU_LASTINSTOP);
-		break;
+	if (!CPU_INST_OP32) {
+		FPU_EnvWrite16(addr + 0, FPU_CTRLWORD);
+		FPU_EnvWrite16(addr + 2, FPU_STATUSWORD);
+		FPU_EnvWrite16(addr + 4, FPU_GetTag());
+		if (protected_mode) {
+			/* m14byte protected-mode image stores selector:offset pointers. */
+			FPU_EnvWrite16(addr + 6, (UINT16)inst.offset);
+			FPU_EnvWrite16(addr + 8, inst.seg);
+			FPU_EnvWrite16(addr + 10, (UINT16)data.offset);
+			FPU_EnvWrite16(addr + 12, data.seg);
+		} else {
+			/* Real/v86 images encode 20-bit physical instruction/data addresses. */
+			UINT32 ip = FPU_RealLinear(inst);
+			UINT32 dp = FPU_RealLinear(data);
+			FPU_EnvWrite16(addr + 6, (UINT16)ip);
+			FPU_EnvWrite16(addr + 8,
+			    (UINT16)((((ip >> 16) & 0x0f) << 12) | lastop));
+			FPU_EnvWrite16(addr + 10, (UINT16)dp);
+			FPU_EnvWrite16(addr + 12,
+			    (UINT16)(((dp >> 16) & 0x0f) << 12));
+		}
+	} else {
+		FPU_EnvWrite32(addr + 0, (UINT32)FPU_CTRLWORD);
+		FPU_EnvWrite32(addr + 4, (UINT32)FPU_STATUSWORD);
+		FPU_EnvWrite32(addr + 8, (UINT32)FPU_GetTag());
+		if (protected_mode) {
+			/* m28byte protected-mode image stores offsets, selectors and FOP. */
+			FPU_EnvWrite32(addr + 12, inst.offset);
+			FPU_EnvWrite32(addr + 16, ((UINT32)lastop << 16) | inst.seg);
+			FPU_EnvWrite32(addr + 20, data.offset);
+			FPU_EnvWrite32(addr + 24, (UINT32)data.seg);
+		} else {
+			UINT32 ip = FPU_RealLinear(inst);
+			UINT32 dp = FPU_RealLinear(data);
+			FPU_EnvWrite32(addr + 12, ip & 0xffff);
+			FPU_EnvWrite32(addr + 16, ((ip >> 16) << 12) | lastop);
+			FPU_EnvWrite32(addr + 20, dp & 0xffff);
+			FPU_EnvWrite32(addr + 24, (dp >> 16) << 12);
+		}
 	}
+
+	/* The saved image contains the old control word; the live x87 masks all
+	 * exceptions after FSTENV/FNSTENV. */
+	FPU_SetCW((UINT16)(FPU_CTRLWORD | 0x003f));
 }
+
 static void FPU_FLDENV(UINT32 addr)
 {
-	switch ((CPU_CR0 & 1) | (CPU_INST_OP32 ? 0x100 : 0x000)) {
-	case 0x000: case 0x001:
-		FPU_SetCW(fpu_memoryread_w(addr + 0));
-		FPU_STATUSWORD = fpu_memoryread_w(addr + 2);
-		FPU_SetTag(fpu_memoryread_w(addr + 4));
-		FPU_LASTINSTOP = fpu_memoryread_w(addr + 10);
-		break;
+	const int protected_mode = ((CPU_CR0 & CPU_CR0_PE) != 0) && ((CPU_EFLAG & VM_FLAG) == 0);
 
-	case 0x100: case 0x101:
-		FPU_SetCW((UINT16)fpu_memoryread_d(addr + 0));
-		FPU_STATUSWORD = (UINT16)fpu_memoryread_d(addr + 4);
-		FPU_SetTag((UINT16)fpu_memoryread_d(addr + 8));
-		FPU_LASTINSTOP = (UINT16)fpu_memoryread_d(addr + 20);
-		break;
+	if (!CPU_INST_OP32) {
+		FPU_SetCW(FPU_EnvRead16(addr + 0));
+		FPU_STATUSWORD = FPU_EnvRead16(addr + 2);
+		FPU_SetTag(FPU_EnvRead16(addr + 4));
+		if (protected_mode) {
+			FPU_INSTPTR_OFFSET = FPU_EnvRead16(addr + 6);
+			FPU_INSTPTR_SEG = FPU_EnvRead16(addr + 8);
+			FPU_DATAPTR_OFFSET = FPU_EnvRead16(addr + 10);
+			FPU_DATAPTR_SEG = FPU_EnvRead16(addr + 12);
+		} else {
+			UINT16 iplo = FPU_EnvRead16(addr + 6);
+			UINT16 iphi_op = FPU_EnvRead16(addr + 8);
+			UINT16 dplo = FPU_EnvRead16(addr + 10);
+			UINT16 dphi = FPU_EnvRead16(addr + 12);
+			FPU_INSTPTR_SEG = 0;
+			FPU_INSTPTR_OFFSET = (UINT32)iplo |
+			    ((UINT32)((iphi_op >> 12) & 0x0f) << 16);
+			FPU_DATAPTR_SEG = 0;
+			FPU_DATAPTR_OFFSET = (UINT32)dplo |
+			    ((UINT32)((dphi >> 12) & 0x0f) << 16);
+			FPU_LASTINSTOP = (UINT16)(iphi_op & 0x07ff);
+		}
+	} else {
+		FPU_SetCW((UINT16)FPU_EnvRead32(addr + 0));
+		FPU_STATUSWORD = (UINT16)FPU_EnvRead32(addr + 4);
+		FPU_SetTag((UINT16)FPU_EnvRead32(addr + 8));
+		if (protected_mode) {
+			UINT32 cssel_op;
+			FPU_INSTPTR_OFFSET = FPU_EnvRead32(addr + 12);
+			cssel_op = FPU_EnvRead32(addr + 16);
+			FPU_INSTPTR_SEG = (UINT16)cssel_op;
+			FPU_LASTINSTOP = (UINT16)((cssel_op >> 16) & 0x07ff);
+			FPU_DATAPTR_OFFSET = FPU_EnvRead32(addr + 20);
+			FPU_DATAPTR_SEG = (UINT16)FPU_EnvRead32(addr + 24);
+		} else {
+			UINT32 iplo = FPU_EnvRead32(addr + 12);
+			UINT32 iphi_op = FPU_EnvRead32(addr + 16);
+			UINT32 dplo = FPU_EnvRead32(addr + 20);
+			UINT32 dphi = FPU_EnvRead32(addr + 24);
+			FPU_INSTPTR_SEG = 0;
+			FPU_INSTPTR_OFFSET = (iplo & 0xffff) | ((iphi_op >> 12) << 16);
+			FPU_DATAPTR_SEG = 0;
+			FPU_DATAPTR_OFFSET = (dplo & 0xffff) | ((dphi >> 12) << 16);
+			FPU_LASTINSTOP = (UINT16)(iphi_op & 0x07ff);
+		}
 	}
 	FPU_STAT_TOP = FP_TOP_GET();
 }
+
 static void FPU_FSAVE(UINT32 addr)
 {
 	UINT start;
 	UINT i;
 
 	FPU_FSTENV(addr);
-	start = ((CPU_INST_OP32) ? 28 : 14);
+	start = CPU_INST_OP32 ? 28 : 14;
 	for (i = 0; i < 8; i++) {
 		FPU_ST80(addr + start, FPU_ST(i));
 		start += 10;
 	}
 	FPU_FINIT();
 }
+
 static void FPU_FRSTOR(UINT32 addr)
 {
 	UINT start;
 	UINT i;
+	FPU_PTR inst;
+	FPU_PTR data;
+	UINT16 lastop;
 
 	FPU_FLDENV(addr);
-	start = ((CPU_INST_OP32) ? 28 : 14);
+	inst = FPU_INSTPTR;
+	data = FPU_DATAPTR;
+	lastop = FPU_LASTINSTOP;
+	start = CPU_INST_OP32 ? 28 : 14;
 	for (i = 0; i < 8; i++) {
 		FPU_FLD80(addr + start, FPU_ST(i));
 		start += 10;
 	}
+	/* Register-image memory reads are part of restoring state, not a new
+	 * x87 data operand, so keep the pointer restored from the environment. */
+	FPU_INSTPTR = inst;
+	FPU_DATAPTR = data;
+	FPU_LASTINSTOP = lastop;
 }
-static void FPU_FXSAVE(UINT32 addr) {
+
+static void FPU_FXSAVE(UINT32 addr)
+{
 	UINT start;
 	UINT i;
+	const FPU_PTR inst = FPU_INSTPTR;
+	const FPU_PTR data = FPU_DATAPTR;
+	const UINT16 lastop = FPU_LASTINSTOP;
 
 	FP_TOP_SET(FPU_STAT_TOP);
-	fpu_memorywrite_w(addr + 0, FPU_CTRLWORD);
-	fpu_memorywrite_w(addr + 2, FPU_STATUSWORD);
-	fpu_memorywrite_b(addr + 4, FPU_GetTag8());
+	FPU_EnvWrite16(addr + 0, FPU_CTRLWORD);
+	FPU_EnvWrite16(addr + 2, FPU_STATUSWORD);
+	FPU_EnvWrite8(addr + 4, FPU_GetTag8());
+	FPU_EnvWrite8(addr + 5, 0);
+	FPU_EnvWrite16(addr + 6, (UINT16)(lastop & 0x07ff));
+	FPU_EnvWrite32(addr + 8, inst.offset);
+	FPU_EnvWrite16(addr + 12, inst.seg);
+	FPU_EnvWrite16(addr + 14, 0);
+	FPU_EnvWrite32(addr + 16, data.offset);
+	FPU_EnvWrite16(addr + 20, data.seg);
+	FPU_EnvWrite16(addr + 22, 0);
 #ifdef USE_SSE
-	fpu_memorywrite_d(addr + 24, SSE_MXCSR);
+	FPU_EnvWrite32(addr + 24, SSE_MXCSR);
 #endif
 	start = 32;
 	for (i = 0; i < 8; i++) {
@@ -819,22 +990,37 @@ static void FPU_FXSAVE(UINT32 addr) {
 #ifdef USE_SSE
 	start = 160;
 	for (i = 0; i < 8; i++) {
-		fpu_memorywrite_q(addr + start + 0, SSE_XMMREG(i).ul64[0]);
-		fpu_memorywrite_q(addr + start + 8, SSE_XMMREG(i).ul64[1]);
+		FPU_EnvWrite64(addr + start + 0, SSE_XMMREG(i).ul64[0]);
+		FPU_EnvWrite64(addr + start + 8, SSE_XMMREG(i).ul64[1]);
 		start += 16;
 	}
 #endif
+	FPU_INSTPTR = inst;
+	FPU_DATAPTR = data;
+	FPU_LASTINSTOP = lastop;
 }
-static void FPU_FXRSTOR(UINT32 addr) {
+
+static void FPU_FXRSTOR(UINT32 addr)
+{
 	UINT start;
 	UINT i;
+	FPU_PTR inst;
+	FPU_PTR data;
+	UINT16 lastop;
 
-	FPU_SetCW(fpu_memoryread_w(addr + 0));
-	FPU_STATUSWORD = fpu_memoryread_w(addr + 2);
-	FPU_SetTag8(fpu_memoryread_b(addr + 4));
+	FPU_SetCW(FPU_EnvRead16(addr + 0));
+	FPU_STATUSWORD = FPU_EnvRead16(addr + 2);
+	FPU_SetTag8(FPU_EnvRead8(addr + 4));
 	FPU_STAT_TOP = FP_TOP_GET();
+	lastop = (UINT16)(FPU_EnvRead16(addr + 6) & 0x07ff);
+	inst.offset = FPU_EnvRead32(addr + 8);
+	inst.seg = FPU_EnvRead16(addr + 12);
+	inst.pad = 0;
+	data.offset = FPU_EnvRead32(addr + 16);
+	data.seg = FPU_EnvRead16(addr + 20);
+	data.pad = 0;
 #ifdef USE_SSE
-	SSE_MXCSR = fpu_memoryread_d(addr + 24);
+	SSE_MXCSR = FPU_EnvRead32(addr + 24);
 #endif
 	start = 32;
 	for (i = 0; i < 8; i++) {
@@ -844,12 +1030,16 @@ static void FPU_FXRSTOR(UINT32 addr) {
 #ifdef USE_SSE
 	start = 160;
 	for (i = 0; i < 8; i++) {
-		SSE_XMMREG(i).ul64[0] = fpu_memoryread_q(addr + start + 0);
-		SSE_XMMREG(i).ul64[1] = fpu_memoryread_q(addr + start + 8);
+		SSE_XMMREG(i).ul64[0] = FPU_EnvRead64(addr + start + 0);
+		SSE_XMMREG(i).ul64[1] = FPU_EnvRead64(addr + start + 8);
 		start += 16;
 	}
 #endif
+	FPU_INSTPTR = inst;
+	FPU_DATAPTR = data;
+	FPU_LASTINSTOP = lastop;
 }
+
 void SF_FPU_FXSAVERSTOR(void) {
 	UINT32 op;
 	UINT idx, sub;
@@ -966,6 +1156,7 @@ SF_ESC0(void)
 	
 	fpu_check_NM_EXCEPTION();
 	fpu_checkexception();
+	FPU_RecordInstructionIfNeeded(0, op);
 	if (op >= 0xc0) {
 		/* Fxxx ST(0), ST(i) */
 		switch (idx) {
@@ -1035,6 +1226,7 @@ SF_ESC1(void)
 	if(!(op < 0xc0 && idx>=4)){
 		fpu_checkexception();
 	}
+	FPU_RecordInstructionIfNeeded(1, op);
 	if (op >= 0xc0) 
 	{
 		switch (idx) {
@@ -1311,6 +1503,7 @@ SF_ESC2(void)
 	
 	fpu_check_NM_EXCEPTION();
 	fpu_checkexception();
+	FPU_RecordInstructionIfNeeded(2, op);
 	if (op >= 0xc0) {
 		/* Fxxx ST(0), ST(i) */
 		switch (idx) {
@@ -1375,6 +1568,7 @@ SF_ESC3(void)
 	if(!(op >= 0xc0 && idx==4)){
 		fpu_checkexception();
 	}
+	FPU_RecordInstructionIfNeeded(3, op);
 	if (op >= 0xc0) 
 	{
 		/* Fxxx ST(0), ST(i) */
@@ -1501,6 +1695,7 @@ SF_ESC4(void)
 	
 	fpu_check_NM_EXCEPTION();
 	fpu_checkexception();
+	FPU_RecordInstructionIfNeeded(4, op);
 	if (op >= 0xc0) {
 		/* Fxxx ST(i), ST(0) */
 		switch (idx) {
@@ -1570,6 +1765,7 @@ SF_ESC5(void)
 	if(op >= 0xc0 || (idx!=4 && idx!=6 && idx!=7)){
 		fpu_checkexception();
 	}
+	FPU_RecordInstructionIfNeeded(5, op);
 	if (op >= 0xc0) {
 		/* FUCOM ST(i), ST(0) */
 		/* Fxxx ST(i) */
@@ -1669,6 +1865,7 @@ SF_ESC6(void)
 	
 	fpu_check_NM_EXCEPTION();
 	fpu_checkexception();
+	FPU_RecordInstructionIfNeeded(6, op);
 	if (op >= 0xc0) {
 		/* Fxxx ST(i), ST(0) */
 		switch (idx) {
@@ -1743,6 +1940,7 @@ SF_ESC7(void)
 	if(!(op >= 0xc0 && idx==4 && sub==0)){
 		fpu_checkexception();
 	}
+	FPU_RecordInstructionIfNeeded(7, op);
 	if (op >= 0xc0) {
 		/* Fxxx ST(0), ST(i) */
 		switch (idx) {

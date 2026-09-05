@@ -64,6 +64,7 @@ static const OEMCHAR file_i386ds[] = OEMTEXT("i386_ds.%.3u");
 static const OEMCHAR file_i386es[] = OEMTEXT("i386_es.%.3u");
 static const OEMCHAR file_i386ss[] = OEMTEXT("i386_ss.%.3u");
 static const OEMCHAR file_memorybin[] = OEMTEXT("memory.bin");
+static const OEMCHAR file_registerlog[] = OEMTEXT("register.log");
 
 static const OEMCHAR str_register[] =									\
 					OEMTEXT("EAX=%.8x  EBX=%.8x  ECX=%.8x  EDX=%.8x")	\
@@ -84,24 +85,13 @@ static const OEMCHAR str_picstat[] = 									\
 
 const OEMCHAR *debugsub_flags(UINT16 flag) {
 
-static OEMCHAR	work[128];
-	int			i;
-	UINT16		bit;
+static OEMCHAR	work[256];
 
-	work[0] = 0;
-	for (i=0, bit=0x8000; bit; i++, bit>>=1) {
-		if (flagstr[i][0]) {
-			if (flag & bit) {
-				milstr_ncat(work, flagstr[i][1], NELEMENTS(work));
-			}
-			else {
-				milstr_ncat(work, flagstr[i][0], NELEMENTS(work));
-			}
-			if (bit != 1) {
-				milstr_ncat(work, str_space, NELEMENTS(work));
-			}
-		}
-	}
+	OEMSPRINTF(work, str_register,	CPU_EAX, CPU_EBX, CPU_ECX, CPU_EDX,
+									CPU_ESP, CPU_EBP, CPU_ESI, CPU_EDI,
+									CPU_DS, CPU_ES, CPU_SS, CPU_CS, CPU_EIP);
+	milstr_ncat(work, debugsub_flags(CPU_FLAG), NELEMENTS(work));
+	milstr_ncat(work, CRCONST, NELEMENTS(work));
 	return(work);
 }
 
@@ -115,6 +105,29 @@ static OEMCHAR	work[256];
 	milstr_ncat(work, debugsub_flags(CPU_FLAG), NELEMENTS(work));
 	milstr_ncat(work, CRCONST, NELEMENTS(work));
 	return(work);
+}
+
+static void debugsub_registerdump(void) {
+
+	FILEH	fh;
+	OEMCHAR	work[512];
+const OEMCHAR	*p;
+
+	fh = file_create_c(file_registerlog);
+	if (fh == FILEH_INVALID) {
+		return;
+	}
+	p = debugsub_regs();
+	file_write(fh, p, OEMSTRLEN(p) * sizeof(OEMCHAR));
+	OEMSPRINTF(work,
+			OEMTEXT("FS=%.4x  GS=%.4x  EFLAGS=%.8x  PREV_EIP=%.8x") OEMTEXT(CRLITERAL)
+			OEMTEXT("CR0=%.8x  CR2=%.8x  CR3=%.8x") OEMTEXT(CRLITERAL)
+			OEMTEXT("GDTR=%.8x:%.4x  IDTR=%.8x:%.4x") OEMTEXT(CRLITERAL),
+			CPU_FS, CPU_GS, CPU_EFLAG, CPU_PREV_EIP,
+			CPU_CR0, CPU_CR2, CPU_CR3,
+			CPU_GDTR_BASE, CPU_GDTR_LIMIT, CPU_IDTR_BASE, CPU_IDTR_LIMIT);
+	file_write(fh, work, OEMSTRLEN(work) * sizeof(OEMCHAR));
+	file_close(fh);
 }
 
 void debugwriteseg(const OEMCHAR *fname, const descriptor_t *sd,
@@ -186,6 +199,7 @@ void debugsub_memorydump(void) {
 	FILEH	fh;
 	int		i;
 
+	debugsub_registerdump();
 	fh = file_create_c(file_memorybin);
 	if (fh != FILEH_INVALID) {
 		for (i=0; i<34; i++) {
@@ -199,6 +213,7 @@ void debugsub_memorydumpall(void) {
 
 	FILEH	fh;
 
+	debugsub_registerdump();
 	fh = file_create_c(file_memorybin);
 	if (fh != FILEH_INVALID) {
 		file_write(fh, mem, 0x110000);

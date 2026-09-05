@@ -54,7 +54,7 @@ void maketextgrph(int plane, int text_renewal, int grph_renewal) {
 	UINT	x;
 	int		i;
 	UINT8	color[TEXTXMAX];
-	UINT32	bit[160];
+	UINT32	bit[TEXTXMAX * 2];
 
 	TEXT_LR = gdc.m.para[GDC_CSRFORM] & 0x1f;
 	TEXT_PL = crtc.reg.pl;
@@ -312,7 +312,7 @@ void maketextgrph40(int plane, int text_renewal, int grph_renewal) {
 	UINT	x;
 	int		i;
 	UINT8	color[TEXTXMAX];
-	UINT32	bit[160];
+	UINT32	bit[TEXTXMAX * 2];
 
 	TEXT_LR = gdc.m.para[GDC_CSRFORM] & 0x1f;
 	TEXT_PL = crtc.reg.pl;

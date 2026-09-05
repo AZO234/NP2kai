@@ -13,7 +13,7 @@
 
 #include "np2ymfm.h"
 
- // ‹Œnp21w‚Æ‚ÌƒXƒe[ƒgƒZ[ƒuŒİŠ·‚ğˆÛ‚·‚é@‹Œ¨V‚Ì‚İŒİŠ·
+ // æ—§np21wã¨ã®ã‚¹ãƒ†ãƒ¼ãƒˆã‚»ãƒ¼ãƒ–äº’æ›ã‚’ç¶­æŒã™ã‚‹ã€€æ—§â†’æ–°ã®ã¿äº’æ›
 #include "np2compatible.h"
 
 void* YMF262Init(int clock, int rate)
@@ -71,7 +71,7 @@ int YMF262Write(void* chipptr, int a, int v)
 
 	chipcore.write(a, v);
 
-	// ‰¼À‘•ƒ^ƒCƒ}[
+	// ä»®å®Ÿè£…ã‚¿ã‚¤ãƒãƒ¼
 	if (a == 0) 
 	{
 		chipbsd->m_data.reg_addr = v;
@@ -143,17 +143,17 @@ unsigned char YMF262Read(void* chipptr, int a)
 	opl3bsd* chipbsd = (opl3bsd*)chipptr;
 	ymfm::ymf262& chipcore = chipbsd->m_chip->GetChip();
 
-	// ‰¼À‘•ƒ^ƒCƒ}[ ƒ|[ƒg‚ğŒÄ‚ñ‚¾‚Æ‚«‚É”»’è‚·‚éiŠ„‚è‚İ”­¶‚È‚Ç‚Í‚µ‚È‚¢j
+	// ä»®å®Ÿè£…ã‚¿ã‚¤ãƒãƒ¼ ãƒãƒ¼ãƒˆã‚’å‘¼ã‚“ã ã¨ãã«åˆ¤å®šã™ã‚‹ï¼ˆå‰²ã‚Šè¾¼ã¿ç™ºç”Ÿãªã©ã¯ã—ãªã„ï¼‰
 	if (chipbsd->m_data.timer_valid[0] && !(chipbsd->m_data.reg_timerctrl & 0x40))
 	{
 		if (chipbsd->m_data.timer_intr[0])
 		{
-			// Ä”»’è•s—v Š„‚è‚İ‚à—§‚Ä‚Ä‚¨‚­
+			// å†åˆ¤å®šä¸è¦ å‰²ã‚Šè¾¼ã¿ã‚‚ç«‹ã¦ã¦ãŠã
 			tmr |= 0xc0;
 		}
 		else if (CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK - chipbsd->m_data.timer_startclock[0] >= pccore.realclock / 1000 * (256 - chipbsd->m_data.reg_timer1) * 808 / 10000)
 		{
-			// ŠÔŒo‰ß‚µ‚½@•ª‰ğ”\‚Í 80.8 usec
+			// æ™‚é–“çµŒéã—ãŸã€€åˆ†è§£èƒ½ã¯ 80.8 usec
 			chipbsd->m_data.timer_intr[0] = true;
 			tmr |= 0xc0;
 		}
@@ -162,12 +162,12 @@ unsigned char YMF262Read(void* chipptr, int a)
 	{
 		if (chipbsd->m_data.timer_intr[1])
 		{
-			// Ä”»’è•s—v Š„‚è‚İ‚à—§‚Ä‚Ä‚¨‚­
+			// å†åˆ¤å®šä¸è¦ å‰²ã‚Šè¾¼ã¿ã‚‚ç«‹ã¦ã¦ãŠã
 			tmr |= 0xa0;
 		}
-		else if (CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK - chipbsd->m_data.timer_startclock[1] >= pccore.realclock / 1000 * (256 - chipbsd->m_data.reg_timer1) * 3231 / 10000)
+		else if (CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK - chipbsd->m_data.timer_startclock[1] >= pccore.realclock / 1000 * (256 - chipbsd->m_data.reg_timer2) * 3231 / 10000)
 		{
-			// ŠÔŒo‰ß‚µ‚½@•ª‰ğ”\‚Í 323.1 usec
+			// æ™‚é–“çµŒéã—ãŸã€€åˆ†è§£èƒ½ã¯ 323.1 usec
 			chipbsd->m_data.timer_intr[1] = true;
 			tmr |= 0xa0;
 		}
@@ -183,7 +183,7 @@ int YMF262FlagSave(void* chipptr, void* dstbuf)
 	opl3bsd* chipbsd = (opl3bsd*)chipptr;
 	ymfm::ymf262& chipcore = chipbsd->m_chip->GetChip();
 
-	// •Û‘¶
+	// ä¿å­˜
 	std::vector<uint8_t> buffer;
 	ymfm::ymfm_saved_state saver(buffer, true);
 	chipcore.save_restore(saver);
@@ -204,30 +204,30 @@ int YMF262FlagLoad(void* chipptr, void* srcbuf, int size)
 
 	if (srcbuf == NULL) return 0;
 
-	// ƒoƒbƒtƒ@ƒTƒCƒY‚ğæ“¾
+	// ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’å–å¾—
 	std::vector<uint8_t> dummybuffer;
 	ymfm::ymfm_saved_state saver(dummybuffer, true);
 	chipcore.save_restore(saver);
 	const int fmbufsize = dummybuffer.size();
 	dummybuffer.insert(dummybuffer.end(), (uint8_t*)&chipbsd->m_data, (uint8_t*)(&chipbsd->m_data + 1));
 	
-	// ƒoƒbƒtƒ@ƒTƒCƒY‚ª‚ ‚Á‚Ä‚¢‚È‚­‚Ä‚à’Ê‚·
+	// ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºãŒã‚ã£ã¦ã„ãªãã¦ã‚‚é€šã™
 	if (size != dummybuffer.size()) {
 		// reset
 		chipcore.reset();
 
-		// ‹Œ”ÅŒİŠ·ˆÛ—p@ŒİŠ·ƒ[ƒh•s‰Â‚È‚ç0‚ğ•Ô‚·
+		// æ—§ç‰ˆäº’æ›ç¶­æŒç”¨ã€€äº’æ›ãƒ­ãƒ¼ãƒ‰ä¸å¯ãªã‚‰0ã‚’è¿”ã™
 		const int ret = YMF262FlagLoad_NP2REV97(chipbsd, srcbuf, size);
 		if (ret) return ret;
 
 		return dummybuffer.size();
 	}
 
-	// ƒf[ƒ^“Ç‚İæ‚èƒoƒbƒtƒ@‚Ö‘—‚é
+	// ãƒ‡ãƒ¼ã‚¿èª­ã¿å–ã‚Šãƒãƒƒãƒ•ã‚¡ã¸é€ã‚‹
 	std::vector<uint8_t> buffer;
 	buffer.insert(buffer.end(), (uint8_t*)srcbuf, (uint8_t*)srcbuf + fmbufsize);
 
-	// •œŒ³Às
+	// å¾©å…ƒå®Ÿè¡Œ
 	ymfm::ymfm_saved_state restorer(buffer, false);
 	chipcore.save_restore(restorer);
 	memcpy(&chipbsd->m_data, (uint8_t*)srcbuf + fmbufsize, sizeof(chipbsd->m_data));

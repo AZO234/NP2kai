@@ -16,6 +16,7 @@
 #include "soundmng\sdasio.h"
 #endif	// defined(SUPPORT_ASIO)
 #include "soundmng\sddsound3.h"
+#include "soundmng\fddsndout.h"
 #if defined(SUPPORT_WASAPI)
 #include "soundmng\sdwasapi.h"
 #endif	// defined(SUPPORT_WASAPI)
@@ -93,6 +94,9 @@ void CSoundMng::Deinitialize()
 	::CoUninitialize();
 #endif	// defined(SUPPORT_ASIO) || defined(SUPPORT_WASAPI)
 	
+#if defined(SUPPORT_FDDSNDDEV)
+	fddsndout_close();
+#endif
 	CSoundMng::GetInstance()->FinalizeSoundCriticalSection();
 }
 
@@ -157,7 +161,7 @@ bool CSoundMng::Open(DeviceType nType, LPCTSTR lpName, HWND hWnd)
 
 	if (pSoundDevice == NULL)
 	{
-		LeaveSoundCriticalSection();
+		LeaveAllCriticalSection();
 		return false;
 	}
 
@@ -236,6 +240,9 @@ void CSoundMng::Disable(SoundProc nProc)
 #endif	// defined(SUPPORT_ROMEO)
 	}
 	m_nMute |= (1 << nProc);
+#if defined(SUPPORT_FDDSNDDEV)
+	fddsndout_stopall();
+#endif
 	LeaveSoundCriticalSection();
 }
 
@@ -250,7 +257,7 @@ UINT CSoundMng::CreateStream(UINT nSamplingRate, UINT ms)
 	EnterAllCriticalSection();
 	if (m_pSoundDevice == NULL)
 	{
-		LeaveSoundCriticalSection();
+		LeaveAllCriticalSection();
 		return 0;
 	}
 
@@ -268,7 +275,7 @@ UINT CSoundMng::CreateStream(UINT nSamplingRate, UINT ms)
 	nBuffer = m_pSoundDevice->CreateStream(nSamplingRate, 2, nBuffer);
 	if (nBuffer == 0)
 	{
-		LeaveSoundCriticalSection();
+		LeaveAllCriticalSection();
 		return 0;
 	}
 	m_pSoundDevice->SetStreamData(this);
@@ -470,17 +477,14 @@ void CSoundMng::SetPCMVolume(SoundPCMNumber nNum, int nVolume)
  */
 inline bool CSoundMng::PlayPCM(SoundPCMNumber nNum, BOOL bLoop)
 {
+	bool result = false;
 	EnterSoundCriticalSection();
-	if (!m_nMute)
+	if ((!m_nMute) && (m_pSoundDevice))
 	{
-		if (m_pSoundDevice)
-		{
-			LeaveSoundCriticalSection();
-			return m_pSoundDevice->PlayPCM(nNum, bLoop);
-		}
+		result = m_pSoundDevice->PlayPCM(nNum, bLoop);
 	}
 	LeaveSoundCriticalSection();
-	return false;
+	return result;
 }
 
 /**
@@ -610,6 +614,12 @@ void soundmng_setvolume(int nVolume)
 BRESULT soundmng_pcmplay(enum SoundPCMNumber nNum, BOOL bLoop)
 {
 	BRESULT result;
+#if defined(SUPPORT_FDDSNDDEV)
+	if (fddsndout_pcmplay(nNum, bLoop))
+	{
+		return SUCCESS;
+	}
+#endif
 	result = (CSoundMng::GetInstance()->PlayPCM(nNum, bLoop)) ? SUCCESS : FAILURE;
 	return result;
 }
@@ -620,6 +630,12 @@ BRESULT soundmng_pcmplay(enum SoundPCMNumber nNum, BOOL bLoop)
  */
 void soundmng_pcmstop(enum SoundPCMNumber nNum)
 {
+#if defined(SUPPORT_FDDSNDDEV)
+	/* stop on the aux device if routed there, then also stop on the main
+	   device unconditionally (no-op when idle) so a sound orphaned on the
+	   main device by a mid-play routing change is always silenced. */
+	fddsndout_pcmstop(nNum);
+#endif
 	CSoundMng::GetInstance()->StopPCM(nNum);
 }
 

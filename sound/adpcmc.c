@@ -19,6 +19,24 @@ void adpcm_setvol(UINT vol) {
 	adpcmcfg.vol = vol;
 }
 
+static void adpcm_cpufifo_reset(ADPCM ad) {
+
+	ad->cfifo.cpufiford = 0;
+	ad->cfifo.cpufifowr = 0;
+	ad->cfifo.cpufifocount = 0;
+	ad->cpufifolow = 0;
+	ad->cfifo.cpufifocur = 0;
+}
+
+static void adpcm_cpuwrite(ADPCM ad, REG8 data) {
+
+	if (ad->cfifo.cpufifocount < ADPCM_CPUFIFO_SIZE) {
+		ad->cfifo.cpufifo[ad->cfifo.cpufifowr & ADPCM_CPUFIFO_MASK] = data;
+		ad->cfifo.cpufifowr++;
+		ad->cfifo.cpufifocount++;
+	}
+}
+
 void adpcm_reset(ADPCM ad) {
 
 	memset(ad, 0, sizeof(*ad));
@@ -40,8 +58,8 @@ void adpcm_update(ADPCM ad) {
 	}
 	addr = LOADINTELWORD(ad->reg.delta);
 	addr = (addr * ad->base) >> 16;
-	if (addr < 0x80) {
-		addr = 0x80;
+	if (addr < 0x100) {
+		addr = 0x100;
 	}
 	ad->step = addr;
 	ad->pertim = (1 << (ADTIMING_BIT * 2)) / addr;
@@ -59,12 +77,24 @@ void adpcm_setreg(ADPCM ad, UINT reg, REG8 value) {
 			if ((value & 0x80) && (!ad->play)) {
 				ad->play = 0x20;
 				ad->pos = ad->start;
+				ad->cpustream = ((value & 0xe0) == 0x80);
+				if (!ad->cpustream) {
+					ad->pos = ad->start;
+				}
+				else {
+					adpcm_cpufifo_reset(ad);
+				}
 				ad->samp = 0;
 				ad->delta = 127;
 				ad->remain = 0;
+				ad->out0 = 0;
+				ad->out1 = 0;
+				ad->fb = 0;
 			}
 			if (value & 1) {
 				ad->play = 0;
+				ad->cpustream = 0;
+				adpcm_cpufifo_reset(ad);
 			}
 			break;
 
@@ -91,8 +121,11 @@ void adpcm_setreg(ADPCM ad, UINT reg, REG8 value) {
 		case 0x09:	case 0x0a:					// delta
 			addr = LOADINTELWORD(ad->reg.delta);
 			addr = (addr * ad->base) >> 16;
-			if (addr < 0x80) {
-				addr = 0x80;
+			if (addr < 0x100) {
+				addr = 0x100;
+			}
+			else if ((ad->reg.ctrl1 & 0xe0) == 0x80) {
+				adpcm_cpuwrite(ad, value);
 			}
 			ad->step = addr;
 			ad->pertim = (1 << (ADTIMING_BIT * 2)) / addr;
@@ -123,7 +156,13 @@ void adpcm_setreg(ADPCM ad, UINT reg, REG8 value) {
 }
 
 REG8 adpcm_status(ADPCM ad) {
+	
+	REG8 brdy;
 
-	return(((ad->status | 8) & ad->mask) | ad->play);
+	brdy = 8;
+	if (ad->cpustream) {
+		brdy = (ad->cfifo.cpufifocount < (ADPCM_CPUFIFO_SIZE - 16)) ? 8 : 0;
+	}
+	return(((ad->status | brdy) & ad->mask) | ad->play);
 }
 

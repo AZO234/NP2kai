@@ -1807,8 +1807,19 @@ static BRESULT SOUNDCALL playdevaudio(IDEDRV drv, SINT32 *pcm, UINT count) {
     if (mute) {
       memset(drv->dabuf, 0, sizeof(drv->dabuf));
     } else {
-			int curTrk = 0;
-			if (sxsicd_readraw(sxsi, drv->dacurpos - trk[r].pregap_offset_ex, drv->dabuf) != SUCCESS) {
+			FILEPOS rawpos;
+
+			rawpos = drv->dacurpos;
+			if (rawpos >= (FILEPOS)trk[r].pregap_offset_ex) {
+				rawpos -= (FILEPOS)trk[r].pregap_offset_ex;
+			}
+			else {
+				mute = 1;
+			}
+			if (mute) {
+				memset(drv->dabuf, 0, sizeof(drv->dabuf));
+			}
+			else if (sxsicd_readraw(sxsi, rawpos, drv->dabuf) != SUCCESS) {
         drv->daflag = 0x14;
         return (FAILURE);
       }

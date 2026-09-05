@@ -24,10 +24,10 @@
 
 extern NPDISP_WINDOWS	npdispwin;
 
- // ƒpƒŒƒbƒgƒJƒ‰[w’è or RGBw’è‚ğ’²®
+ // ãƒ‘ãƒ¬ãƒƒãƒˆã‚«ãƒ©ãƒ¼æŒ‡å®š or RGBæŒ‡å®šã‚’èª¿æ•´
 #define NPDISP_ADJUST_COLORREF(a)	(((a) & 0xff000000) == 0x01000000 ? (a) : ((a) & 0xffffff))
 
-// ƒ‚ƒmƒNƒ‚Ìê‡RGBw’è‚ğ”’•‚Ö•ÏŠ·
+// ãƒ¢ãƒã‚¯ãƒ­ã®å ´åˆRGBæŒ‡å®šã‚’ç™½é»’ã¸å¤‰æ›
 #define NPDISP_ADJUST_MONOCOLOR_R(a)	((a) & 0xff)
 #define NPDISP_ADJUST_MONOCOLOR_G(a)	(((a) >> 8) & 0xff)
 #define NPDISP_ADJUST_MONOCOLOR_B(a)	(((a) >> 16) & 0xff)
@@ -90,7 +90,11 @@ void npdisp_palette_makeTable()
 	p256[254].r = 0x00; p256[254].g = 0xff; p256[254].b = 0xff;
 	p256[255].r = 0xff; p256[255].g = 0xff; p256[255].b = 0xff;
 
-	// ‚Æ‚è‚ ‚¦‚¸ƒJƒ‰[ƒLƒ…[ƒu‚Å–„‚ß‚é
+	// Win 3.0ã¯ä»¥ä¸‹ã®ã‚ˆã†ã«å…¥ã‚Œæ›¿ã‚ã‚‹ã‚‰ã—ã„
+	//p256[7].r = 0x80; p256[7].g = 0x80; p256[7].b = 0x80;
+	//p256[248].r = 0xc0; p256[248].g = 0xc0; p256[248].b = 0xc0;
+
+	// ã¨ã‚Šã‚ãˆãšã‚«ãƒ©ãƒ¼ã‚­ãƒ¥ãƒ¼ãƒ–ã§åŸ‹ã‚ã‚‹
 	int index = 10;
 	for (int r = 0; r < 6; r++) {
 		for (int g = 0; g < 6; g++) {
@@ -103,25 +107,25 @@ void npdisp_palette_makeTable()
 		}
 	}
 
-	// ƒOƒŒ[ƒXƒP[ƒ‹256F
+	// ã‚°ãƒ¬ãƒ¼ã‚¹ã‚±ãƒ¼ãƒ«256è‰²
 	for (int i = 0; i < NELEMENTS(npdisp_palette_gray256); i++) {
 		npdisp_palette_gray256[i].r = i;
 		npdisp_palette_gray256[i].g = i;
 		npdisp_palette_gray256[i].b = i;
 	}
 
-	//// ƒOƒŒ[ƒXƒP[ƒ‹16F
+	//// ã‚°ãƒ¬ãƒ¼ã‚¹ã‚±ãƒ¼ãƒ«16è‰²
 	//for (int i = 0; i < NELEMENTS(npdisp_palette_rgb16); i++) {
 	//	npdisp_palette_rgb16[i].r = i * 255 / 15;
 	//	npdisp_palette_rgb16[i].g = i * 255 / 15;
 	//	npdisp_palette_rgb16[i].b = i * 255 / 15;
 	//}
 
-	//// •Ï‚ÈƒpƒŒƒbƒgƒeƒXƒg
+	//// å¤‰ãªãƒ‘ãƒ¬ãƒƒãƒˆãƒ†ã‚¹ãƒˆ
 	//npdisp_palette_rgb16[5].r = 0x60; npdisp_palette_rgb16[5].g = 0x38; npdisp_palette_rgb16[5].b = 0x30;
 	//npdisp_palette_rgb16[6].r = 0xff; npdisp_palette_rgb16[6].g = 0xe0; npdisp_palette_rgb16[6].b = 0xd0;
 
-	// •ÏŠ·–³‚µ
+	// å¤‰æ›ç„¡ã—
 	for (int i = 0; i < NELEMENTS(npdisp_palette_transTbl); i++) {
 		npdisp_palette_transTbl[i] = i;
 	}
@@ -172,7 +176,7 @@ int npdisp_FindNearest256(UINT8 r, UINT8 g, UINT8 b, bool fromSystemColor)
 	int i;
 	int best = 0;
 	long bestDist = 0x7FFFFFFFL;
-	// ƒVƒXƒeƒ€ƒJƒ‰[iŒÅ’èFj—Dæ‚Å’T‚·
+	// ã‚·ã‚¹ãƒ†ãƒ ã‚«ãƒ©ãƒ¼ï¼ˆå›ºå®šè‰²ï¼‰å„ªå…ˆã§æ¢ã™
 	for (i = 246; i < 256; i++) {
 		long dr = (long)r - npdisp_palette_rgb256[i].r;
 		long dg = (long)g - npdisp_palette_rgb256[i].g;
@@ -194,7 +198,7 @@ int npdisp_FindNearest256(UINT8 r, UINT8 g, UINT8 b, bool fromSystemColor)
 		}
 	}
 	if (!fromSystemColor) {
-		// –³‚¯‚ê‚Î©—RF‚Å
+		// ç„¡ã‘ã‚Œã°è‡ªç”±è‰²ã§
 		for (i = 10; i < 246; i++) {
 			long dr = (long)r - npdisp_palette_rgb256[i].r;
 			long dg = (long)g - npdisp_palette_rgb256[i].g;
@@ -213,7 +217,7 @@ int npdisp_FindNearest256Tbl(UINT8 r, UINT8 g, UINT8 b)
 	int i;
 	int best = 0;
 	long bestDist = 0x7FFFFFFFL;
-	// ƒe[ƒuƒ‹‚©‚çˆø‚­
+	// ãƒ†ãƒ¼ãƒ–ãƒ«ã‹ã‚‰å¼•ã
 	for (i = 0; i < 256; i++) {
 		long dr = (long)r - npdisp_palette_rgb256[npdisp_palette_transTbl[i]].r;
 		long dg = (long)g - npdisp_palette_rgb256[npdisp_palette_transTbl[i]].g;
@@ -230,22 +234,22 @@ int npdisp_FindNearest256Tbl(UINT8 r, UINT8 g, UINT8 b)
 UINT32 npdisp_FindNearestColor(UINT8 r, UINT8 g, UINT8 b)
 {
 	if (npdisp.bpp == 1) {
-		// 2’l
+		// 2å€¤
 		int idx = npdisp_FindNearest2(r, g, b);
 		return ((UINT32)npdisp_palette_rgb2[idx].r) | ((UINT32)npdisp_palette_rgb2[idx].g << 8) | ((UINT32)npdisp_palette_rgb2[idx].b << 16);
 	}
 	else if (npdisp.bpp == 4) {
-		// 16F
+		// 16è‰²
 		int idx = npdisp_FindNearest16(r, g, b);
 		return ((UINT32)npdisp_palette_rgb16[idx].r) | ((UINT32)npdisp_palette_rgb16[idx].g << 8) | ((UINT32)npdisp_palette_rgb16[idx].b << 16);
 	}
 	else if (npdisp.bpp == 8) {
-		// 256F
+		// 256è‰²
 		int idx = npdisp_FindNearest256(r, g, b);
 		return ((UINT32)npdisp_palette_rgb16[idx].r) | ((UINT32)npdisp_palette_rgb16[idx].g << 8) | ((UINT32)npdisp_palette_rgb16[idx].b << 16);
 	}
 	else {
-		// ‚»‚Ì‚Ü‚Ü
+		// ãã®ã¾ã¾
 		return ((UINT32)r) | ((UINT32)g << 8) | ((b << 16));
 	}
 }
@@ -259,19 +263,19 @@ UINT32 npdisp_FindNearestColorUINT32(UINT32 color)
 UINT32 npdisp_FindNearestColorIndex(UINT8 r, UINT8 g, UINT8 b)
 {
 	if (npdisp.bpp == 1) {
-		// 2’l
+		// 2å€¤
 		return npdisp_FindNearest2(r, g, b);
 	}
 	else if (npdisp.bpp == 4) {
-		// 16F
+		// 16è‰²
 		return npdisp_FindNearest16(r, g, b);
 	}
 	else if (npdisp.bpp == 8) {
-		// 256F
+		// 256è‰²
 		return npdisp_FindNearest256(r, g, b);
 	}
 	else {
-		// ‚È‚¢
+		// ãªã„
 		return 0xffffffff;
 	}
 }
@@ -286,19 +290,19 @@ UINT32 npdisp_FindNearestColorIndexUINT32(UINT32 color)
 UINT32 npdisp_ObjIdxToColor(int idx)
 {
 	if (npdisp.bpp == 1) {
-		// 2’lƒJƒ‰[‚ğ•Ô‚·
+		// 2å€¤ã‚«ãƒ©ãƒ¼ã‚’è¿”ã™
 		if (idx < NELEMENTS(npdisp_palette_rgb2)) {
 			return ((UINT32)npdisp_palette_rgb2[idx].r) | ((UINT32)npdisp_palette_rgb2[idx].g << 8) | ((UINT32)npdisp_palette_rgb2[idx].b << 16);
 		}
 	}
 	else if (npdisp.bpp == 4) {
-		// 16FƒpƒŒƒbƒgƒJƒ‰[‚ğ•Ô‚·
+		// 16è‰²ãƒ‘ãƒ¬ãƒƒãƒˆã‚«ãƒ©ãƒ¼ã‚’è¿”ã™
 		if (idx < NELEMENTS(npdisp_palette_rgb16)) {
 			return ((UINT32)npdisp_palette_rgb16[idx].r) | ((UINT32)npdisp_palette_rgb16[idx].g << 8) | ((UINT32)npdisp_palette_rgb16[idx].b << 16);
 		}
 	}
 	else {
-		// 256FŒÅ’èƒJƒ‰[‚ğ•Ô‚·
+		// 256è‰²å›ºå®šã‚«ãƒ©ãƒ¼ã‚’è¿”ã™
 		if (idx < 10) {
 			return ((UINT32)npdisp_palette_rgb256[idx].r) | ((UINT32)npdisp_palette_rgb256[idx].g << 8) | ((UINT32)npdisp_palette_rgb256[idx].b << 16);
 		}
@@ -350,14 +354,14 @@ UINT32 npdisp_AdjustColorRefForGDI(UINT32 color, bool* preferDither)
 	if (preferDither) *preferDither = false;
 	if (npdisp.bpp == 1) {
 		if (color & 0xff000000) {
-			// ƒpƒŒƒbƒg‚Å“n‚³‚ê‚½ê‡A”’••ÏŠ·
+			// ãƒ‘ãƒ¬ãƒƒãƒˆã§æ¸¡ã•ã‚ŒãŸå ´åˆã€ç™½é»’å¤‰æ›
 			int colorIdx = color & 0x1;
 			return ((UINT32)npdisp_palette_rgb2[colorIdx].r) | ((UINT32)npdisp_palette_rgb2[colorIdx].g << 8) | ((UINT32)npdisp_palette_rgb2[colorIdx].b << 16);
 		}
 		else {
-			// F‚Å“n‚³‚ê‚½ê‡A‘f’Ê‚µ
+			// è‰²ã§æ¸¡ã•ã‚ŒãŸå ´åˆã€ç´ é€šã—
 			if (preferDither) {
-				// ƒF‚©’²‚×A‚»‚¤‚Å‚È‚¯‚ê‚ÎƒfƒBƒU„§‚Æ‚·‚é
+				// ç´”è‰²ã‹èª¿ã¹ã€ãã†ã§ãªã‘ã‚Œã°ãƒ‡ã‚£ã‚¶æ¨å¥¨ã¨ã™ã‚‹
 				int physicalColor = npdisp_FindNearestColorUINT32(color);
 				*preferDither = (physicalColor != color);
 			}
@@ -366,14 +370,14 @@ UINT32 npdisp_AdjustColorRefForGDI(UINT32 color, bool* preferDither)
 	}
 	else if (npdisp.bpp == 4) {
 		if (color & 0xff000000) {
-			// ƒpƒŒƒbƒg‚Å“n‚³‚ê‚½ê‡AF•ÏŠ·
+			// ãƒ‘ãƒ¬ãƒƒãƒˆã§æ¸¡ã•ã‚ŒãŸå ´åˆã€è‰²å¤‰æ›
 			int colorIdx = color & 0xf;
 			return ((UINT32)npdisp_palette_rgb16[colorIdx].r) | ((UINT32)npdisp_palette_rgb16[colorIdx].g << 8) | ((UINT32)npdisp_palette_rgb16[colorIdx].b << 16);
 		}
 		else {
-			// F‚Å“n‚³‚ê‚½ê‡A‘f’Ê‚µ
+			// è‰²ã§æ¸¡ã•ã‚ŒãŸå ´åˆã€ç´ é€šã—
 			if (preferDither) {
-				// ƒF‚©’²‚×A‚»‚¤‚Å‚È‚¯‚ê‚ÎƒfƒBƒU„§‚Æ‚·‚é
+				// ç´”è‰²ã‹èª¿ã¹ã€ãã†ã§ãªã‘ã‚Œã°ãƒ‡ã‚£ã‚¶æ¨å¥¨ã¨ã™ã‚‹
 				int physicalColor = npdisp_FindNearestColorUINT32(color);
 				*preferDither = (physicalColor != color);
 			}
@@ -383,25 +387,25 @@ UINT32 npdisp_AdjustColorRefForGDI(UINT32 color, bool* preferDither)
 	else if (npdisp.bpp == 8) {
 		UINT32 idx = 0;
 		if (color & 0xff000000) {
-			// ƒpƒŒƒbƒg‚Å“n‚³‚ê‚½ê‡AŠù‚É•¨—ƒpƒŒƒbƒg‚È‚Ì‚Å‚»‚Ì‚Ü‚Ü
+			// ãƒ‘ãƒ¬ãƒƒãƒˆã§æ¸¡ã•ã‚ŒãŸå ´åˆã€æ—¢ã«ç‰©ç†ãƒ‘ãƒ¬ãƒƒãƒˆãªã®ã§ãã®ã¾ã¾
 			idx = color & 0xff;
 		}
 		else {
-			// F‚Å“n‚³‚ê‚½ê‡A•¨—ƒpƒŒƒbƒgƒCƒ“ƒfƒbƒNƒX‚Ö•ÏŠ·
+			// è‰²ã§æ¸¡ã•ã‚ŒãŸå ´åˆã€ç‰©ç†ãƒ‘ãƒ¬ãƒƒãƒˆã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¸å¤‰æ›
 			idx = npdisp_FindNearest256(color & 0xff, (color >> 8) & 0xff, (color >> 16) & 0xff);
 			if (preferDither) {
-				// ƒF‚©’²‚×A‚»‚¤‚Å‚È‚¯‚ê‚ÎƒfƒBƒU„§‚Æ‚·‚é
+				// ç´”è‰²ã‹èª¿ã¹ã€ãã†ã§ãªã‘ã‚Œã°ãƒ‡ã‚£ã‚¶æ¨å¥¨ã¨ã™ã‚‹
 				int physicalColor = ((UINT32)npdisp_palette_rgb256[idx].r) | ((UINT32)npdisp_palette_rgb256[idx].g << 8) | ((UINT32)npdisp_palette_rgb256[idx].b << 16);
 				if (physicalColor != color) {
 					*preferDither = true;
-					return color; // •Ô‚·F‚àÀÛ‚ÌF‚Æ‚·‚é
+					return color; // è¿”ã™è‰²ã‚‚å®Ÿéš›ã®è‰²ã¨ã™ã‚‹
 				}
 			}
 		}
 		return idx | (idx << 8) | (idx << 16);
 	}
 	else {
-		// ‘f’Ê‚µ
+		// ç´ é€šã—
 		return color;
 	}
 }
@@ -411,17 +415,17 @@ void npdisp_AdjustDrawModeColor(NPDISP_DRAWMODE* drawMode, bool use24buf) {
 		drawMode->LbkColor = npdisp_AdjustColorRefForGDI(drawMode->bkColor);
 	}
 	else if (npdisp.bpp == 15) {
-		// RGB555‚ª“WŠJ‚³‚ê‚½ÀÛ‚ÌF‚ğİ’è
+		// RGB555ãŒå±•é–‹ã•ã‚ŒãŸå®Ÿéš›ã®è‰²ã‚’è¨­å®š
 		drawMode->LTextColor = npdisp_AdjustRGB555(drawMode->TextColor, use24buf);
 		drawMode->LbkColor = npdisp_AdjustRGB555(drawMode->bkColor, use24buf);
 	}
 	else if (npdisp.bpp == 16) {
-		// RGB565‚ª“WŠJ‚³‚ê‚½ÀÛ‚ÌF‚ğİ’è
+		// RGB565ãŒå±•é–‹ã•ã‚ŒãŸå®Ÿéš›ã®è‰²ã‚’è¨­å®š
 		drawMode->LTextColor = npdisp_AdjustRGB565(drawMode->TextColor, use24buf);
 		drawMode->LbkColor = npdisp_AdjustRGB565(drawMode->bkColor, use24buf);
 	}
 	else if (npdisp.bpp == 24) {
-		//// ‰¼‘zƒpƒŒƒbƒgF‚ª“n‚³‚ê‚½‚ç256Fˆµ‚¢‚Å•ÏŠ·
+		//// ä»®æƒ³ãƒ‘ãƒ¬ãƒƒãƒˆè‰²ãŒæ¸¡ã•ã‚ŒãŸã‚‰256è‰²æ‰±ã„ã§å¤‰æ›
 		//if ((drawMode->LTextColor & 0xff000000) == 0x01000000) {
 		//	int idx = drawMode->LTextColor & 0xff;
 		//	drawMode->LTextColor = ((UINT32)npdisp_palette_rgb256[idx].r) | ((UINT32)npdisp_palette_rgb256[idx].g << 8) | ((UINT32)npdisp_palette_rgb256[idx].b << 16);
@@ -430,7 +434,7 @@ void npdisp_AdjustDrawModeColor(NPDISP_DRAWMODE* drawMode, bool use24buf) {
 		//	int idx = drawMode->LbkColor & 0xff;
 		//	drawMode->LbkColor = ((UINT32)npdisp_palette_rgb256[idx].r) | ((UINT32)npdisp_palette_rgb256[idx].g << 8) | ((UINT32)npdisp_palette_rgb256[idx].b << 16);
 		//}
-		// XXX: ƒpƒŒƒbƒgF‚ª“n‚³‚ê‚½‚çTextColor‚âbkColor‚ğ‘f’Ê‚µ
+		// XXX: ãƒ‘ãƒ¬ãƒƒãƒˆè‰²ãŒæ¸¡ã•ã‚ŒãŸã‚‰TextColorã‚„bkColorã‚’ç´ é€šã—
 		if ((drawMode->LTextColor & 0xff000000) == 0x01000000) {
 			drawMode->LTextColor = drawMode->TextColor;
 		}
@@ -477,7 +481,7 @@ static double Clamp01(double x)
 	return x;
 }
 
-// c0 + t*(c1-c0) ‚ª target ‚ÉÅ‚à‹ß‚­‚È‚é t ‚ğ‹‚ß‚é
+// c0 + t*(c1-c0) ãŒ target ã«æœ€ã‚‚è¿‘ããªã‚‹ t ã‚’æ±‚ã‚ã‚‹
 static double MixFactor(const NPDISP_RGB3& c0, const NPDISP_RGB3& c1, BYTE tr, BYTE tg, BYTE tb)
 {
 	double v0r = c0.r, v0g = c0.g, v0b = c0.b;
@@ -519,18 +523,18 @@ void MakePaletteDitherBrushColor(UINT32 target, UINT32* actual1, UINT32* actual2
 	BYTE tg = GetGValue(target);
 	BYTE tb = GetBValue(target);
 
-	// ’PFÅ‹ß–T‚à‰Šú’l‚Æ‚µ‚Ä•Û‚µ‚Ä‚¨‚­
+	// å˜è‰²æœ€è¿‘å‚ã‚‚åˆæœŸå€¤ã¨ã—ã¦ä¿æŒã—ã¦ãŠã
 	int i0 = 0;
 	int i1 = 0;
 	double bestErr = Dist2(colors[0], tr, tg, tb);
 	double bestT = 0.0;
 
-	// 2F‚ª—£‚ê‚·‚¬‚é‘g‚ğ”ğ‚¯‚é‚½‚ß‚Ìd‚İ
+	// 2è‰²ãŒé›¢ã‚Œã™ãã‚‹çµ„ã‚’é¿ã‘ã‚‹ãŸã‚ã®é‡ã¿
 	const double pairPenaltyWeight = 0.005;
 
 	if (npdisp.bpp == 8) {
 		if (tr == tg && tg == tb) {
-			// “Á—á@ƒOƒŒ[‚Ì”ÍˆÍ‚ÌF‚¾‚¯‚ğ’T‚·
+			// ç‰¹ä¾‹ã€€ã‚°ãƒ¬ãƒ¼ã®ç¯„å›²ã®è‰²ã ã‘ã‚’æ¢ã™
 			for (int a = 0; a < n; ++a) {
 				if (a == 10) a += n - 20;
 				for (int b = 0; b < n; ++b) {
@@ -551,7 +555,7 @@ void MakePaletteDitherBrushColor(UINT32 target, UINT32* actual1, UINT32* actual2
 					double eb = mb - tb;
 					double err = er * er + eg * eg + eb * eb;
 
-					// —£‚ê‚·‚¬‚½2F‚Ì‘g‚Éƒyƒiƒ‹ƒeƒB
+					// é›¢ã‚Œã™ããŸ2è‰²ã®çµ„ã«ãƒšãƒŠãƒ«ãƒ†ã‚£
 					err += pairPenaltyWeight * Dist2Color(colors[a], colors[b]);
 
 					if (err < bestErr) {
@@ -564,7 +568,7 @@ void MakePaletteDitherBrushColor(UINT32 target, UINT32* actual1, UINT32* actual2
 			}
 		}
 		else {
-			// ‘S‘g‚İ‡‚í‚¹‚ğ’Tõ
+			// å…¨çµ„ã¿åˆã‚ã›ã‚’æ¢ç´¢
 			for (int a = 0; a < n; ++a) {
 				if (a == 10) a += n - 20;
 				for (int b = 0; b < n; ++b) {
@@ -582,7 +586,7 @@ void MakePaletteDitherBrushColor(UINT32 target, UINT32* actual1, UINT32* actual2
 					double eb = mb - tb;
 					double err = er * er + eg * eg + eb * eb;
 
-					// —£‚ê‚·‚¬‚½2F‚Ì‘g‚Éƒyƒiƒ‹ƒeƒB
+					// é›¢ã‚Œã™ããŸ2è‰²ã®çµ„ã«ãƒšãƒŠãƒ«ãƒ†ã‚£
 					err += pairPenaltyWeight * Dist2Color(colors[a], colors[b]);
 
 					if (err < bestErr) {
@@ -596,13 +600,13 @@ void MakePaletteDitherBrushColor(UINT32 target, UINT32* actual1, UINT32* actual2
 		}
 	}
 	else if (npdisp.bpp == 1) {
-		// ‘I‘ğ‚Ì—]’n–³‚µ
+		// é¸æŠã®ä½™åœ°ç„¡ã—
 		i0 = 0;
 		i1 = 1;
 		bestT = MixFactor(colors[0], colors[1], tr, tg, tb);
 	}
 	else {
-		// ‘S‘g‚İ‡‚í‚¹‚ğ’Tõ
+		// å…¨çµ„ã¿åˆã‚ã›ã‚’æ¢ç´¢
 		for (int a = 0; a < n; ++a) {
 			for (int b = 0; b < n; ++b) {
 				if (a == b) continue;
@@ -618,7 +622,7 @@ void MakePaletteDitherBrushColor(UINT32 target, UINT32* actual1, UINT32* actual2
 				double eb = mb - tb;
 				double err = er * er + eg * eg + eb * eb;
 
-				// —£‚ê‚·‚¬‚½2F‚Ì‘g‚Éƒyƒiƒ‹ƒeƒB
+				// é›¢ã‚Œã™ããŸ2è‰²ã®çµ„ã«ãƒšãƒŠãƒ«ãƒ†ã‚£
 				err += pairPenaltyWeight * Dist2Color(colors[a], colors[b]);
 
 				if (err < bestErr) {
@@ -674,7 +678,7 @@ HBRUSH CreatePaletteDitherBrush(UINT32 actual1, UINT32 actual2, double bestTValu
 	const int W = 8;
 	const int H = 8;
 	const int paletteSize = n;
-	const int stride = ((W + 3) & ~3); // 8bpp‚È‚Ì‚Å1pixel=1byte
+	const int stride = ((W + 3) & ~3); // 8bppãªã®ã§1pixel=1byte
 	const int imageSize = stride * H;
 
 	size_t totalSize =

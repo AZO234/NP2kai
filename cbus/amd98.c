@@ -311,6 +311,10 @@ static void IOOUTCALL amd_oda(UINT port, REG8 dat)
 	addr = g_amd98.s.psg1reg;
 	if (addr < 0x10)
 	{
+		if (addr < 0x0e)
+		{
+			S98_put(NORMAL2608, addr, dat);
+		}
 		S98_put(NORMAL2608, addr, dat);
 		psggen_setreg(&g_amd98.psg[0], addr, dat);
 		keydisp_psg((UINT8 *)&g_amd98.psg[0].reg, addr);

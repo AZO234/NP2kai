@@ -9,6 +9,9 @@
 #if defined(SUPPORT_BMS)
 #include <io/bmsio.h>
 #endif
+#if defined(SUPPORT_CL_GD5430)
+#include <wab/cirrus_vga_extern.h>
+#endif
 
 #include <commng.h>
 #include <joymng.h>
@@ -680,6 +683,12 @@ static const INITBL iniitem[] = {
 	{OEMTEXT("optwssdm"), INITYPE_UINT8,	&np2cfg.sndwssdma,	0},
 	{OEMTEXT("optwssip"), INITYPE_UINT8,	&np2cfg.sndwssirq,	0},
 
+	{OEMTEXT("optwsio"), INITYPE_HEX16,	&np2cfg.sndwsio,	0},
+	{OEMTEXT("optwsdm"), INITYPE_UINT8,	&np2cfg.sndwsdma,	0},
+	{OEMTEXT("optwsirq"), INITYPE_UINT8,	&np2cfg.sndwsirq,	0},
+	{OEMTEXT("optwspnp"), INITYPE_BOOL,	&np2cfg.sndwspnp,	0},
+	{OEMTEXT("optwspcm"), INITYPE_BOOL,	&np2cfg.sndwspcm,	0},
+
 #if defined(SUPPORT_SOUND_SB16)
 	{OEMTEXT("optsb16p"), INITYPE_HEX8,	&np2cfg.sndsb16io,	0},
 	{OEMTEXT("optsb16d"), INITYPE_UINT8,	&np2cfg.sndsb16dma,	0},
@@ -700,6 +709,12 @@ static const INITBL iniitem[] = {
 
 	{OEMTEXT("Seek_Snd"), INITYPE_BOOL,	&np2cfg.MOTOR,		0},
 	{OEMTEXT("Seek_Vol"), INIMAX_UINT8,	&np2cfg.MOTORVOL,	100},
+#if defined(SUPPORT_FDDSNDDEV)
+	{OEMTEXT("FDDSndDev"), INITYPE_STR,	&np2cfg.fddSndDevice,	0},
+	{OEMTEXT("FDDSndVol"), INITYPE_UINT16,	&np2cfg.fddSndVol,	200},
+	{OEMTEXT("BrdSndDev"), INITYPE_STR,	&np2cfg.boardSndDevice,	0},
+	{OEMTEXT("BrdSndVol"), INITYPE_UINT16,	&np2cfg.boardSndVol,	200},
+#endif
 
 	{OEMTEXT("btnRAPID"), INITYPE_BOOL,	&np2cfg.BTN_RAPID,	0},
 	{OEMTEXT("btn_MODE"), INITYPE_BOOL,	&np2cfg.BTN_MODE,	0},
@@ -750,10 +765,27 @@ static const INITBL iniitem[] = {
 #endif
 #if defined(SUPPORT_CL_GD5430)
 	{OEMTEXT("USE_CLGD"), INITYPE_BOOL,	&np2cfg.usegd5430,	0},
-	{OEMTEXT("CLGDTYPE"), INITYPE_UINT16,	&np2cfg.gd5430type,	0},
+	{OEMTEXT("CLGDTYPE"), INITYPE_UINT16,	&np2cfg.gd5430type,	0x5B},
 	{OEMTEXT("CLGDFCUR"), INITYPE_BOOL,	&np2cfg.gd5430fakecur,	0},
-	{OEMTEXT("GDMELOFS"), INITYPE_UINT8,	&np2cfg.gd5430melofs,	0},
+	{OEMTEXT("GDMELOFS"), INITYPE_UINT8,	&np2cfg.gd5430melofs,	CIRRUS_MELCOWAB_OFS_DEFAULT},
 	{OEMTEXT("GANBBSEX"), INITYPE_BOOL,	&np2cfg.ga98nb_bigscrn_ex,	0},
+#endif
+
+#if defined(SUPPORT_WAB_NPDISP)
+	{OEMTEXT("USENPDSP"), INITYPE_BOOL,	&np2cfg.usenpdisp,	0},
+#endif
+#if defined(SUPPORT_WAB_GA1280A)
+	{OEMTEXT("USEGADSP"), INITYPE_BOOL,	&np2cfg.usega1280a,	0},
+#endif
+#if defined(SUPPORT_VGA_MODEX)
+	{OEMTEXT("USEMODEX"), INITYPE_BOOL,	&np2cfg.usemodex,	0},
+#endif
+#if defined(SUPPORT_GPIB)
+	{OEMTEXT("USE_GPIB"), INITYPE_BOOL,	&np2cfg.usegpib,	0},
+	{OEMTEXT("GPIB_IRQ"), INITYPE_UINT8,	&np2cfg.gpibirq,	12},
+	{OEMTEXT("GPIBMODE"), INITYPE_UINT8,	&np2cfg.gpibmode,	1},
+	{OEMTEXT("GPIBADDR"), INITYPE_UINT8,	&np2cfg.gpibaddr,	0},
+	{OEMTEXT("GPIBEXIO"), INITYPE_UINT8,	&np2cfg.gpibexio,	0},
 #endif
 #if defined(SUPPORT_PCI)
 	{OEMTEXT("USE98PCI"), INITYPE_BOOL,	&np2cfg.usepci,	0},

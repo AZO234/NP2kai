@@ -10,7 +10,9 @@
 enum {
 	ADTIMING_BIT	= 11,
 	ADTIMING		= (1 << ADTIMING_BIT),
-	ADPCM_SHIFT		= 3
+	ADPCM_SHIFT		= 3,
+	ADPCM_CPUFIFO_SIZE = 0x10000,
+	ADPCM_CPUFIFO_MASK = ADPCM_CPUFIFO_SIZE - 1
 };
 
 typedef struct {
@@ -53,8 +55,21 @@ typedef struct {
 	UINT8		mask;
 	UINT8		fifopos;
 	UINT8		fifo[2];
-	UINT8		padding[2];
-	UINT8		buf[0x40000];
+	UINT8		cpustream;
+	UINT8		cpufifolow;
+	union {
+		UINT8		buf[0x40000];
+		struct {
+			// ステートセーブ互換のために非CPU経路のバッファを流用…
+			UINT8		dummy[0x20000];
+			UINT8		cpufifocur;
+			UINT8		padding[3];
+			UINT32		cpufiford;
+			UINT32		cpufifowr;
+			UINT32		cpufifocount;
+			UINT8		cpufifo[ADPCM_CPUFIFO_SIZE];
+		} cfifo;
+	};
 } _ADPCM, *ADPCM;
 
 typedef struct {

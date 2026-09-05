@@ -77,9 +77,33 @@ void
 _NOP(void)
 {
 #if defined(SUPPORT_IA32_HAXM) && defined(USE_CUSTOM_HOOKINST)
-	if(bioshookinfo.hookinst == 0x90)
+	if (bioshookinfo.hookinst != 0x90) {
+		return;
+	}
 #endif
-	ia32_bioscall();
+
+	/*
+	 * In real mode/VM86 the NOP hook is only used by the option Sound BIOS
+	 * area and the main BIOS area.  Avoid calling ia32_bioscall() for every
+	 * ordinary NOP executed by guest software.
+	 *
+	 * Protected mode is intentionally left on the legacy path because the
+	 * same NOP hook is also used by the PCI BIOS32 entry point.
+	 */
+	if (!CPU_STAT_PM || CPU_STAT_VM86) {
+		UINT32 adrs;
+
+		adrs = CPU_PREV_EIP + (CPU_CS << 4);
+		if (((adrs >= 0xc8000) && (adrs < 0xd8000)) ||
+			((adrs >= 0xf8000) && (adrs < 0x100000))) {
+			ia32_bioscall();
+		}
+	}
+	else {
+#ifdef SUPPORT_PCI
+		ia32_bioscall();
+#endif
+	}
 }
 
 void
@@ -179,7 +203,7 @@ _CPUID(void)
 			char cpu_brandstringbuf[64] = {0};
 			int stroffset = (CPU_EAX - 0x80000002) * 16;
 			clkMHz = pccore.realclock/1000/1000;
-			snprintf(cpu_brandstringbuf, sizeof(cpu_brandstringbuf), "%s%u MHz", i386cpuid.cpu_brandstring, clkMHz);
+			sprintf(cpu_brandstringbuf, "%s%u MHz", i386cpuid.cpu_brandstring, clkMHz);
 			CPU_EAX = LOADINTELDWORD(((UINT8*)(cpu_brandstringbuf + stroffset + 0)));
 			CPU_EBX = LOADINTELDWORD(((UINT8*)(cpu_brandstringbuf + stroffset + 4)));
 			CPU_ECX = LOADINTELDWORD(((UINT8*)(cpu_brandstringbuf + stroffset + 8)));

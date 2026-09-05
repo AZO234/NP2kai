@@ -1,0 +1,244 @@
+/**
+ * @file hostdrv9xdef.h
+ * @brief Private HOSTDRV9X guest/backend ABI and Win9x IFSMgr layouts.
+ *
+ * This file deliberately does not include HOSTDRVNT definitions.  All pointers
+ * are 32-bit guest linear addresses and all structures use the Win9x x86 ABI.
+ */
+#pragma once
+
+#if defined(SUPPORT_HOSTDRV9X)
+
+#define NP2HOSTDRV9X_IO_ADDR        0x07e4
+#define NP2HOSTDRV9X_IO_CMD         0x07e6
+#define NP2HOSTDRV9X_IO_DIAG_TAG    0x07e0
+#define NP2HOSTDRV9X_IO_DIAG_TEXT   0x07e1
+#define NP2HOSTDRV9X_IO_DIAG_DATA   0x07e2
+#define NP2HOSTDRV9X_PROBE_ADDR     0x39
+#define NP2HOSTDRV9X_PROBE_CMD      0x21
+#define NP2HOSTDRV9X_CALL_SIGNATURE 0x43583948UL /* "H9XC" */
+#define NP2HOSTDRV9X_CALL_VERSION   0x00010000UL
+#define NP2HOSTDRV9X_COMMAND        "H9X100"
+
+
+/* Private control calls carried over the existing 07E4h/07E6h channel. */
+#define NP2HOSTDRV9X_CONTROL_BASE          0x80000000UL
+#define NP2HOSTDRV9X_CTL_QUERY_DOS         0x80000001UL
+#define NP2HOSTDRV9X_CTL_SUSPEND_DOS       0x80000002UL
+#define NP2HOSTDRV9X_CTL_RESUME_DOS        0x80000003UL
+#define NP2HOSTDRV9X_CTL_SET_CONFIG        0x80000004UL
+#define NP2HOSTDRV9X_CONTROL_VERSION       0x00010000UL
+#define NP2HOSTDRV9X_CONTROL_DOS_MOUNTED   0x00000001UL
+#define NP2HOSTDRV9X_CONTROL_DOS_SUSPENDED 0x00000002UL
+#define NP2HOSTDRV9X_CONTROL_REAL_CAPACITY 0x00000004UL
+#define NP2HOSTDRV9X_CONTROL_DOS_CDS_HIDDEN 0x00000008UL
+#define NP2HOSTDRV9X_CONTROL_WIN95_COMPAT    0x00000010UL
+#define NP2HOSTDRV9X_INVALID_DRIVE         0xffffffffUL
+#define NP2HOSTDRV9X_FAKE_TOTAL_MB_DEFAULT 2048UL
+#define NP2HOSTDRV9X_FAKE_FREE_MB_DEFAULT  1024UL
+
+/* IFSMgr function numbers from the Windows 98 DDK IFS.H. */
+#define H9X_IFSFN_READ          0
+#define H9X_IFSFN_WRITE         1
+#define H9X_IFSFN_FINDNEXT      2
+#define H9X_IFSFN_SEEK          10
+#define H9X_IFSFN_CLOSE         11
+#define H9X_IFSFN_COMMIT        12
+#define H9X_IFSFN_FILELOCKS     13
+#define H9X_IFSFN_FILETIMES     14
+#define H9X_IFSFN_PIPEREQUEST   15
+#define H9X_IFSFN_HANDLEINFO    16
+#define H9X_IFSFN_ENUMHANDLE    17
+#define H9X_IFSFN_FINDCLOSE     18
+#define H9X_IFSFN_CONNECT       30
+#define H9X_IFSFN_DELETE        31
+#define H9X_IFSFN_DIR           32
+#define H9X_IFSFN_FILEATTRIB    33
+#define H9X_IFSFN_FLUSH         34
+#define H9X_IFSFN_GETDISKINFO   35
+#define H9X_IFSFN_OPEN          36
+#define H9X_IFSFN_RENAME        37
+#define H9X_IFSFN_SEARCH        38
+#define H9X_IFSFN_QUERY         39
+#define H9X_IFSFN_DISCONNECT    40
+#define H9X_IFSFN_UNCPIPEREQ    41
+#define H9X_IFSFN_IOCTL16DRIVE  42
+#define H9X_IFSFN_GETDISKPARMS  43
+#define H9X_IFSFN_FINDOPEN      44
+#define H9X_IFSFN_DASDIO        45
+
+/* Win32/DOS errors returned in ioreq.ir_error. */
+#define H9X_ERROR_SUCCESS             0
+#define H9X_ERROR_INVALID_FUNCTION    1
+#define H9X_ERROR_FILE_NOT_FOUND      2
+#define H9X_ERROR_PATH_NOT_FOUND      3
+#define H9X_ERROR_TOO_MANY_OPEN_FILES 4
+#define H9X_ERROR_ACCESS_DENIED       5
+#define H9X_ERROR_INVALID_HANDLE      6
+#define H9X_ERROR_NOT_ENOUGH_MEMORY   8
+#define H9X_ERROR_INVALID_DATA        13
+#define H9X_ERROR_INVALID_DRIVE       15
+#define H9X_ERROR_NO_MORE_FILES       18
+#define H9X_ERROR_WRITE_PROTECT       19
+#define H9X_ERROR_NOT_READY           21
+#define H9X_ERROR_SHARING_VIOLATION   32
+#define H9X_ERROR_LOCK_VIOLATION      33
+#define H9X_ERROR_HANDLE_EOF          38
+#define H9X_ERROR_NOT_SUPPORTED       50
+#define H9X_ERROR_FILE_EXISTS         80
+#define H9X_ERROR_CANNOT_MAKE         82
+#define H9X_ERROR_INVALID_PARAMETER   87
+#define H9X_ERROR_DISK_FULL           112
+#define H9X_ERROR_DIR_NOT_EMPTY       145
+#define H9X_ERROR_ALREADY_EXISTS      183
+#define H9X_ERROR_FILENAME_EXCED_RANGE 206
+#define H9X_ERROR_BAD_NETPATH          53
+#define H9X_ERROR_BAD_NET_NAME         67
+
+/* ioreq offsets (Win98 IFS.H, x86, default 4-byte packing). */
+#define H9X_IR_LENGTH    0
+#define H9X_IR_FLAGS     4
+#define H9X_IR_USER      5
+#define H9X_IR_SFN       6
+#define H9X_IR_PID       8
+#define H9X_IR_PPATH     12
+#define H9X_IR_AUX1      16
+#define H9X_IR_DATA      20
+#define H9X_IR_OPTIONS   24
+#define H9X_IR_ERROR     26
+#define H9X_IR_RH        28
+#define H9X_IR_FH        32
+#define H9X_IR_POS       36
+#define H9X_IR_AUX2      40
+#define H9X_IR_AUX3      44
+#define H9X_IR_PEV       48
+#define H9X_IR_FSD       52
+#define H9X_IOREQ_SIZE   116
+
+#define H9X_IR_ATTR      H9X_IR_LENGTH
+#define H9X_IR_PATHSKIP  H9X_IR_LENGTH
+#define H9X_IR_SIZE      H9X_IR_POS
+#define H9X_IR_ATTR2     H9X_IR_POS
+#define H9X_IR_VFUNC     H9X_IR_AUX1
+#define H9X_IR_HFUNC     H9X_IR_AUX1
+#define H9X_IR_PPATH2    H9X_IR_AUX1
+#define H9X_IR_NUMFREE   H9X_IR_AUX2
+#define H9X_IR_LOCKLEN   H9X_IR_AUX2
+#define H9X_IR_DOSTIME   H9X_IR_AUX2
+#define H9X_IR_UPATH     H9X_IR_AUX3
+#define H9X_IR_SECTORS   H9X_IR_OPTIONS
+
+/* Request sub-functions/options from IFS.H. */
+#define H9X_CREATE_DIR   0
+#define H9X_DELETE_DIR   1
+#define H9X_CHECK_DIR    2
+#define H9X_QUERY83_DIR  3
+#define H9X_QUERYLONG_DIR 4
+
+#define H9X_GET_ATTRIBUTES                  0
+#define H9X_SET_ATTRIBUTES                  1
+#define H9X_GET_ATTRIB_COMP_FILESIZE        2
+#define H9X_SET_ATTRIB_MODIFY_DATETIME      3
+#define H9X_GET_ATTRIB_MODIFY_DATETIME      4
+#define H9X_SET_ATTRIB_LAST_ACCESS_DATETIME 5
+#define H9X_GET_ATTRIB_LAST_ACCESS_DATETIME 6
+#define H9X_SET_ATTRIB_CREATION_DATETIME    7
+#define H9X_GET_ATTRIB_CREATION_DATETIME    8
+#define H9X_GET_ATTRIB_FIRST_CLUST          9
+
+#define H9X_GET_MODIFY_DATETIME       0
+#define H9X_SET_MODIFY_DATETIME       1
+#define H9X_GET_LAST_ACCESS_DATETIME  4
+#define H9X_SET_LAST_ACCESS_DATETIME  5
+#define H9X_GET_CREATION_DATETIME     6
+#define H9X_SET_CREATION_DATETIME     7
+
+#define H9X_FILE_BEGIN 0
+#define H9X_FILE_END   2
+#define H9X_CLOSE_HANDLE      0
+#define H9X_CLOSE_FOR_PROCESS 1
+#define H9X_CLOSE_FINAL       2
+#define H9X_LOCK_REGION 0
+#define H9X_UNLOCK_REGION 1
+
+#define H9X_ACCESS_MODE_MASK 0x0007
+#define H9X_ACCESS_READONLY  0x0000
+#define H9X_ACCESS_WRITEONLY 0x0001
+#define H9X_ACCESS_READWRITE 0x0002
+#define H9X_ACCESS_EXECUTE   0x0003
+#define H9X_SHARE_MODE_MASK  0x0070
+#define H9X_SHARE_COMPATIBILITY 0x0000
+#define H9X_SHARE_DENYREADWRITE 0x0010
+#define H9X_SHARE_DENYWRITE     0x0020
+#define H9X_SHARE_DENYREAD      0x0030
+#define H9X_SHARE_DENYNONE      0x0040
+#define H9X_SHARE_FCB           0x0070
+#define H9X_ACTION_MASK            0x00ff
+#define H9X_ACTION_OPENEXISTING    0x0001
+#define H9X_ACTION_REPLACEEXISTING 0x0002
+#define H9X_ACTION_CREATENEW       0x0010
+#define H9X_ACTION_OPENALWAYS      0x0011
+#define H9X_ACTION_CREATEALWAYS    0x0012
+#define H9X_ACTION_OPENED          1
+#define H9X_ACTION_CREATED         2
+#define H9X_ACTION_REPLACED        3
+
+#define H9X_SEARCH_FIRST 0
+#define H9X_SEARCH_NEXT  1
+#define H9X_RESSTAT_OK   0
+#define H9X_RESTYPE_WILD  0
+#define H9X_RESTYPE_DISK  1
+
+/* QueryResource level 2 result flags (GetVolumeInformation-compatible). */
+#define H9X_FS_CASE_IS_PRESERVED        0x00000002UL
+#define H9X_FS_UNICODE_STORED_ON_DISK   0x00000004UL
+#define H9X_FS_VOL_SUPPORTS_LONG_NAMES  0x00004000UL
+#define H9X_MAX_COMPONENT_LENGTH        255
+#define H9X_MAX_PATH_LENGTH             MAX_PATH
+#define H9X_CACHE_BLOCK_SIZE            4096
+
+#define H9X_FILE_ATTRIBUTE_READONLY  0x01
+#define H9X_FILE_ATTRIBUTE_HIDDEN    0x02
+#define H9X_FILE_ATTRIBUTE_SYSTEM    0x04
+#define H9X_FILE_ATTRIBUTE_LABEL     0x08
+#define H9X_FILE_ATTRIBUTE_DIRECTORY 0x10
+#define H9X_FILE_ATTRIBUTE_ARCHIVE   0x20
+#define H9X_FILE_ATTRIBUTE_DEVICE    0x40
+
+#define H9X_ENUMH_GETFILEINFO 0
+#define H9X_ENUMH_GETFILENAME 1
+#define H9X_ENUMH_GETFINDINFO 2
+#define H9X_ENUMH_RESUMEFIND  3
+#define H9X_ENUMH_RESYNCFILEDIR 4
+
+#pragma pack(push, 1)
+typedef struct {
+	UINT32 signature;
+	UINT32 version;
+	UINT32 function;
+	UINT32 ioreq;
+} NP2HOSTDRV9X_CALL;
+
+typedef struct {
+	UINT32 size;
+	UINT32 version;
+	UINT32 flags;
+	UINT32 drive;
+	UINT32 fakeTotalMB;
+	UINT32 fakeFreeMB;
+	UINT32 result;
+} NP2HOSTDRV9X_CONTROL;
+
+typedef struct {
+	UINT32 version;
+	UINT32 size;
+	UINT8 useRealCapacity;
+	UINT8 win95Compat;
+	UINT16 reserved;
+	UINT32 fakeTotalMB;
+	UINT32 fakeFreeMB;
+} NP2HOSTDRV9X_SFCONFIG;
+
+#pragma pack(pop)
+
+#endif /* SUPPORT_HOSTDRV9X */

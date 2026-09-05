@@ -1,0 +1,43 @@
+[Version]
+Signature="$CHICAGO$"
+Class=System
+Provider=%ProviderName%
+
+[DefaultInstall]
+CopyFiles=HostD9x.Copy
+AddReg=HostD9x.AddReg
+
+[DefaultInstall.NT]
+
+[DestinationDirs]
+HostD9x.Copy=11
+
+[HostD9x.Copy]
+HOSTD9X.VXD
+HOSTD9X.DLL
+
+[HostD9x.AddReg]
+HKLM,System\CurrentControlSet\Services\VxD\HOSTD9X,StaticVxD,0,"HOSTD9X.VXD"
+HKLM,System\CurrentControlSet\Services\VxD\HOSTD9X,DriveMode,0x00010001,0
+HKLM,System\CurrentControlSet\Services\VxD\HOSTD9X,DriveLetter,0,"Z:"
+HKLM,System\CurrentControlSet\Services\VxD\HOSTD9X,FallbackToAuto,0x00010001,1
+HKLM,System\CurrentControlSet\Services\VxD\HOSTD9X,UseRealCapacity,0x00010001,0
+HKLM,System\CurrentControlSet\Services\VxD\HOSTD9X,FakeCapacityMB,0x00010001,2048
+HKLM,System\CurrentControlSet\Services\VxD\HOSTD9X,FakeFreeMB,0x00010001,1024
+HKLM,System\CurrentControlSet\Control\NetworkProvider\Order,HOSTD9XNP,0,""
+HKLM,System\CurrentControlSet\Services\HOSTD9XNP\NetworkProvider,Name,0,"NP2 HOSTD9X Network Provider"
+HKLM,System\CurrentControlSet\Services\HOSTD9XNP\NetworkProvider,ProviderPath,0,"HOSTD9X.DLL"
+HKLM,System\CurrentControlSet\Services\HOSTD9XNP\NetworkProvider,Description,0,"NP2 HOSTD9X Provider"
+HKLM,System\CurrentControlSet\Services\HOSTD9XNP\NetworkProvider,NetID,0x00000001,00,00,25,00
+HKLM,System\CurrentControlSet\Services\HOSTD9XNP\NetworkProvider,CallOrder,0x00000001,00,00,00,30
+
+[SourceDisksNames]
+1=%DiskName%,,
+
+[SourceDisksFiles]
+HOSTD9X.VXD=1
+HOSTD9X.DLL=1
+
+[Strings]
+ProviderName="NP2 Project"
+DiskName="NP2 HOSTD9X Installation Disk"

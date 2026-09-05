@@ -13,6 +13,7 @@ BRESULT fdd_formatinit_nfd(FDDFILE fdd);	/* 170107 to support format command */
 
 BRESULT fdd_seeksector_nfd1(FDDFILE fdd);	//	追加(kaiD)
 BRESULT	fdd_read_nfd1(FDDFILE fdd);			//	追加(kaiD)
+BRESULT	fdd_readdiag_nfd1(FDDFILE fdd);		//	NFD r1特殊読み込み
 BRESULT	fdd_write_nfd1(FDDFILE fdd);		//	追加(kaiD)
 BRESULT fdd_readid_nfd1(FDDFILE fdd);		//	追加(kaiD)
 

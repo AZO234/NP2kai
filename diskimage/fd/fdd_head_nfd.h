@@ -6,7 +6,8 @@ enum {
 	NFD_TRKMAX1		= 164,
 	NFD_SECMAX		= 26,
 	NFD_HEADERSIZE	= 288 + (16 * NFD_TRKMAX * NFD_SECMAX) + 0x10,
-	NFD_HEADERSIZE1	= 288 + (16 * NFD_TRKMAX * NFD_SECMAX) + 0x10,
+	//	r1固定ヘッダは0x3c0バイトとする　dwHeadSizeは後続の可変トラック情報を含む
+	NFD_HEADERSIZE1	= 0x3c0,
 };
 
 #if defined(__GNUC__)

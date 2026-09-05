@@ -11,14 +11,14 @@ section .text
 	global	satuation_s16x
 
 				align	16
-rand_get:		mov		eax, dword [_randseed]
+rand_get:		mov		eax, dword [rel _randseed]
 				imul	eax, 343fdh
 				add		eax, 269ec3h
-				mov		dword [_randseed], eax
+				mov		dword [rel _randseed], eax
 				sar		eax, 16
 				ret
 
-rand_setseed:	mov		dword [_randseed], ecx
+rand_setseed:	mov		dword [rel _randseed], ecx
 				ret
 
 				align	16

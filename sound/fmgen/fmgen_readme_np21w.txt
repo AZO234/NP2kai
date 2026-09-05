@@ -2,3 +2,8 @@
 #if defined(SUPPORT_FMGEN)
 
 SUPPORT_FMGENを定義しない場合、fmgenのソースはコンパイルされません。
+
+2026/06/20
+CPUから供給するタイプのADPCM Streamを追加
+fmgen_opna.cppおよびfmgen_opna.hに変更があります
+

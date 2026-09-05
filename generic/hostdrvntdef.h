@@ -76,7 +76,7 @@ typedef enum
 	FileMaximumInformation
 } FILE_INFORMATION_CLASS;
 
-// ä½¿ã†ç‰©ã ã‘ç”¨æ„
+// g‚¤•¨‚¾‚¯—pˆÓ
 #define NP2_IRP_MJ_CREATE					0x00
 #define NP2_IRP_MJ_CLOSE					0x02
 #define NP2_IRP_MJ_READ						0x03
@@ -126,8 +126,8 @@ typedef enum
 #define NP2_FO_SYNCHRONOUS_IO				0x00000002
 
 
-#define NP2HOSTDRVNT_VOLUMELABEL	L"HOSTDRV"
-#define NP2HOSTDRVNT_FILESYSTEM		L"HOSTFS"
+#define NP2HOSTDRVNT_VOLUMELABEL	HD_W("HOSTDRV")
+#define NP2HOSTDRVNT_FILESYSTEM		HD_W("HOSTFS")
 
 #define NP2_FILE_SUPERSEDE                  0x00000000
 #define NP2_FILE_OPEN                       0x00000001
@@ -377,7 +377,7 @@ typedef struct
 	UINT32 Characteristics;
 } NP2_FILE_FS_DEVICE_INFORMATION;
 
-// ä½¿ã†ç¯„å›²ã§å®šç¾©ã€€OSãƒãƒ¼ã‚¸ãƒ§ãƒ³ãŒæ–°ã—ããªã‚‹ã¨æ–°ã—ã„é …ç›®ãŒå¢—ãˆã¦ã„ãŸã‚Šã™ã‚‹
+// g‚¤”ÍˆÍ‚Å’è‹`@OSƒo[ƒWƒ‡ƒ“‚ªV‚µ‚­‚È‚é‚ÆV‚µ‚¢€–Ú‚ª‘‚¦‚Ä‚¢‚½‚è‚·‚é
 typedef struct
 {
 	SINT16                                Type;
@@ -401,7 +401,7 @@ typedef struct
 	UINT32                                 Flags;
 	NP2_UNICODE_STRING                        FileName;
 	UINT64                         CurrentByteOffset;
-	// ã“ã‚Œä»¥é™ã«ã‚‚ãƒ‡ãƒ¼ã‚¿ã‚ã‚‹ãŒã€OSãƒãƒ¼ã‚¸ãƒ§ãƒ³ã«ã‚ˆã£ã¦ç„¡ã‹ã£ãŸã‚Šã™ã‚‹ã®ã§ã€èª­ã‚€ç¯„å›²ã¯æœ€å°é™ã«ã™ã‚‹
+	// ‚±‚êˆÈ~‚É‚àƒf[ƒ^‚ ‚é‚ªAOSƒo[ƒWƒ‡ƒ“‚É‚æ‚Á‚Ä–³‚©‚Á‚½‚è‚·‚é‚Ì‚ÅA“Ç‚Ş”ÍˆÍ‚ÍÅ¬ŒÀ‚É‚·‚é
 } NP2_FILE_OBJECT;
 typedef struct
 {
@@ -544,13 +544,13 @@ typedef struct
 
 typedef struct
 {
-	NP2_IO_STACK_LOCATION stack; // IoGetCurrentIrpStackLocation(Irp)ã§å–å¾—ã•ã‚Œã‚‹ãƒ‡ãƒ¼ã‚¿
-	UINT32 statusAddr; // Irp->IoStatusã¸ã®ã‚¢ãƒ‰ãƒ¬ã‚¹
-	UINT32 inBufferAddr; // ã‚²ã‚¹ãƒˆOSâ†’ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚¿ã¸ã®ãƒãƒƒãƒ•ã‚¡
-	UINT32 deviceFlags; // irpSp->DeviceObject->Flagsã®å€¤
-	UINT32 outBufferAddr; // ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚¿â†’ã‚²ã‚¹ãƒˆOSã¸ã®ãƒãƒƒãƒ•ã‚¡
-	UINT32 sectionObjectPointerAddr; // irpSp->FileObject->SectionObjectPointerã¸ã®ã‚¢ãƒ‰ãƒ¬ã‚¹
-	UINT32 version; // ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚¿é€šä¿¡ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±
+	NP2_IO_STACK_LOCATION stack; // IoGetCurrentIrpStackLocation(Irp)‚Åæ“¾‚³‚ê‚éƒf[ƒ^
+	UINT32 statusAddr; // Irp->IoStatus‚Ö‚ÌƒAƒhƒŒƒX
+	UINT32 inBufferAddr; // ƒQƒXƒgOS¨ƒGƒ~ƒ…ƒŒ[ƒ^‚Ö‚Ìƒoƒbƒtƒ@
+	UINT32 deviceFlags; // irpSp->DeviceObject->Flags‚Ì’l
+	UINT32 outBufferAddr; // ƒGƒ~ƒ…ƒŒ[ƒ^¨ƒQƒXƒgOS‚Ö‚Ìƒoƒbƒtƒ@
+	UINT32 sectionObjectPointerAddr; // irpSp->FileObject->SectionObjectPointer‚Ö‚ÌƒAƒhƒŒƒX
+	UINT32 version; // ƒGƒ~ƒ…ƒŒ[ƒ^’ÊMƒo[ƒWƒ‡ƒ“î•ñ
 } HOSTDRVNT_INVOKEINFO;
 
 #endif

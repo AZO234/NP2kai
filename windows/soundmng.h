@@ -88,6 +88,7 @@ public:
 	bool PlayPCM(SoundPCMNumber nNum, BOOL bLoop);
 	void StopPCM(SoundPCMNumber nNum);
 	virtual UINT Get16(SINT16* lpBuffer, UINT nBufferCount);
+	bool IsMuted() const { return m_nMute != 0; }
 
 private:
 	static CSoundMng sm_instance;		//!< 唯一のインスタンスです

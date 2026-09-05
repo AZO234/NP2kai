@@ -1,5 +1,5 @@
-#include	<compiler.h>
-#include	<cpucore.h>
+#include	"compiler.h"
+#include	"cpucore.h"
 #include	"lio.h"
 
 
@@ -31,9 +31,15 @@ REG8 lio_gpset(GLIO lio) {
 		if (CPU_AH == 1) {
 			dat.pal = lio->work.fgcolor;
 		}
-		else {
+		else if (CPU_AH == 2) {
 			dat.pal = lio->work.bgcolor;
 		}
+		else {
+			return(LIO_ILLEGALFUNC);
+		}
+	}
+	if (dat.pal >= lio->draw.palmax) {
+		return(LIO_ILLEGALFUNC);
 	}
 	lio_pset(lio, x, y, dat.pal);
 	return(LIO_SUCCESS);

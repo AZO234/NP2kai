@@ -228,10 +228,16 @@ BRESULT setsxsidev_SPTI(SXSIDEV sxsi, const OEMCHAR *path, const _CDTRK *trk, UI
 	}
 
 	//	リードアウトトラックを生成
-	cdinfo->trk[trks].adr_ctl	= 0x10;
+	cdinfo->trk[trks].adr_ctl	= (trks >= 1) ? cdinfo->trk[trks - 1].adr_ctl : 0x10;
 	cdinfo->trk[trks].point		= 0xaa;
 //	cdinfo->trk[trks].pos		= totals;
 	cdinfo->trk[trks].pos		= (UINT32)sxsi->totals;
+	cdinfo->trk[trks].pos0		= cdinfo->trk[trks].pos;
+	cdinfo->trk[trks].str_sec	= cdinfo->trk[trks].pos;
+	cdinfo->trk[trks].end_sec	= cdinfo->trk[trks].pos;
+	cdinfo->trk[trks].sectors	= 0;
+	cdinfo->trk[trks].pregap_sectors = 0;
+	cdinfo->trk[trks].pregap_offset_ex = (trks >= 1) ? cdinfo->trk[trks - 1].pregap_offset_ex : 0;
 
 	cdinfo->trks = trks;
 	file_cpyname(cdinfo->path, path, NELEMENTS(cdinfo->path));
@@ -425,9 +431,9 @@ BRESULT openrealcdd(SXSIDEV sxsi, const OEMCHAR *path) {
 		trk[i].sector_size	= sector_size;
 
 		trk[i].pregap_sector	= trk[i].pos;
-		//trk[i].start_sector	= trk[i].pos;
+		trk[i].start_sector	= trk[i].pos;
 		if(i==trks-1){
-			trk[i].end_sector	= (UINT32)totals;
+			trk[i].end_sector	= (UINT32)(totals - 1);
 		}else{
 			trk[i].end_sector	= (UINT32)(msf2lba(LOADMOTOROLADWORD(tocCDROM.TrackData[i+1].Address)) - 150 - 1);
 		}
@@ -472,7 +478,7 @@ BRESULT openrealcdd(SXSIDEV sxsi, const OEMCHAR *path) {
 	//trk[0].track_sectors	= totals;
 	//trks = 1;
 
-	sxsi->totals = trk[trks-1].end_sector;
+	sxsi->totals = trk[trks-1].end_sector + 1;
 
 	file_close(fh);
 
@@ -608,7 +614,7 @@ openiso_err1:
 //	//trk[0].track_sectors	= totals;
 //	//trks = 1;
 //
-//	sxsi->totals = trk[trks-1].end_sector;
+//	sxsi->totals = trk[trks-1].end_sector + 1;
 //
 //	file_close(fh);
 //

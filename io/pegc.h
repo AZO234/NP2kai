@@ -19,23 +19,33 @@
 #define PEGC_REG_PALETTE2		0x018 // mio2 E0118h
 #define PEGC_REG_PATTERN		0x020 // mio2 E0120h
 
+#pragma pack(push, 1)
 typedef struct {
-	UINT8 enable; // PEGCプレーンモード使用可能
-	
-	UINT8 lastdata[64]; // PEGCプレーンモード 最後にVRAMから読み取ったデータ
-	SINT32 lastdatalen; // PEGCプレーンモード 読み取り済みデータ長さ
-	UINT32 remain; // PEGCプレーンモード 転送データ残り？
+	UINT8 enable;
+	UINT8 reserved1[3];
+	UINT8 lastdata[64];
+	UINT16 lastdatalen; // �V�t�g�o�b�t�@�̒���
+	UINT16 databit32; // �p�^�[�����W�X�^��32pixel�Ȃ�1�A16pixel�Ȃ�0
+	UINT16 remain;
+	UINT8 reserved2;
+	UINT8 flags;
 } _PEGC, *PEGC;
-
+#pragma pack(pop)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-	
+
 REG16 MEMCALL pegc_memvgaplane_rd16(UINT32 address);
 void MEMCALL pegc_memvgaplane_wr16(UINT32 address, REG16 value);
 UINT32 MEMCALL pegc_memvgaplane_rd32(UINT32 address);
 void MEMCALL pegc_memvgaplane_wr32(UINT32 address, UINT32 value);
+
+REG8 pegc_pattern_rd8(UINT pos);
+void pegc_pattern_wr8(UINT pos, REG8 value);
+void pegc_pattern_wr16(UINT pos, REG16 value);
+void pegc_pattern_wr32(UINT pos, UINT32 value);
+void pegc_transfer_reset(void);
 
 void pegc_reset(const NP2CFG *pConfig);
 void pegc_bind(void);

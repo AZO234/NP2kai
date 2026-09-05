@@ -1156,14 +1156,14 @@ do { \
 #define CPU_CLI \
 do { \
 	CPU_FLAG &= ~I_FLAG; \
-	CPU_TRAP = 0; \
+	CPU_TRAP = (CPU_FLAG & (T_FLAG)) == (T_FLAG); \
 	np2haxstat.update_regs = 1; \
 } while (/*CONSTCOND*/0)
 
 #define CPU_STI \
 do { \
 	CPU_FLAG |= I_FLAG; \
-	CPU_TRAP = (CPU_FLAG & (I_FLAG|T_FLAG)) == (I_FLAG|T_FLAG) ; \
+	CPU_TRAP = (CPU_FLAG & (T_FLAG)) == (T_FLAG) ; \
 	np2haxstat.update_regs = 1; \
 } while (/*CONSTCOND*/0)
 
@@ -1171,13 +1171,13 @@ do { \
 #define CPU_CLI \
 do { \
 	CPU_FLAG &= ~I_FLAG; \
-	CPU_TRAP = 0; \
+	CPU_TRAP = (CPU_FLAG & (T_FLAG)) == (T_FLAG); \
 } while (/*CONSTCOND*/0)
 
 #define CPU_STI \
 do { \
 	CPU_FLAG |= I_FLAG; \
-	CPU_TRAP = (CPU_FLAG & (I_FLAG|T_FLAG)) == (I_FLAG|T_FLAG) ; \
+	CPU_TRAP = (CPU_FLAG & (T_FLAG)) == (T_FLAG) ; \
 } while (/*CONSTCOND*/0)
 #endif
 

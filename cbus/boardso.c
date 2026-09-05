@@ -10,6 +10,7 @@
 #include <sound/fmboard.h>
 #include <sound/sound.h>
 #include <sound/soundrom.h>
+#include <sound/s98.h>
 
 #define G_OPL3_INDEX	2
 
@@ -59,6 +60,7 @@ static void IOOUTCALL opl2_o18c(UINT port, REG8 dat)
 
 static void IOOUTCALL opl2_o18e(UINT port, REG8 dat)
 {
+	S98_put(NORMAL2608_2, g_opl3[G_OPL3_INDEX].s.addrl, dat);
 	opl3_writeRegister(&g_opl3[G_OPL3_INDEX], g_opl3[G_OPL3_INDEX].s.addrl, dat);
 }
 

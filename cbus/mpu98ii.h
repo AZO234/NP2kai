@@ -94,6 +94,7 @@ void mpu98ii_destruct(void);
 
 void mpu98ii_reset(const NP2CFG *pConfig);
 void mpu98ii_bind(void);
+void mpu98ii_setaux(UINT16 port, UINT8 irqnum);
 
 void mpu98ii_callback(void);
 void mpu98ii_midipanic(void);

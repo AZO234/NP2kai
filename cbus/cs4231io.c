@@ -172,59 +172,29 @@ static REG8 IOINPCALL ifab(UINT port) {
 
 // ----
 
-void cs4231io_reset(void) {
-	
-	UINT8 sndirq, snddma;
+void cs4231io_reset_ex(UINT8 sndirq, UINT8 snddma, UINT16 soundid_port,
+					 UINT16 midi_port, UINT8 chipid) {
 
 	cs4231.enable = 1;
 
-/* [cs4231.adrsの書き方]
-		bit	
-		7	未使用
-	R/W	6	不明
-	R/W	5-3	PCM音源割り込みアドレス
-			000b= サウンド機能を使用しない
-			001b= INT 0
-			010b= INT 1
-			011b= INT 41
-			100b= INT 5
-	R/W	2-0	DMAチャネル設定
-			000b= DMAを使用しない
-			001b= DMA #0
-			010b= DMA #1 (PC-9821Npを除く)
-			011b= DMA #3
-			100b〜101b= 未定義
-			111b= DMAを使用しない
-*/		
-	if(g_nSoundID==SOUNDID_PC_9801_86_WSS || g_nSoundID==SOUNDID_MATE_X_PCM || g_nSoundID==SOUNDID_WSS_SB16 || g_nSoundID==SOUNDID_PC_9801_86_WSS_SB16){
-		sndirq = np2cfg.sndwssirq;
-		snddma = np2cfg.sndwssdma;
-		//cs4231.adrs = 0x0a;////0b00 001 010  INT0 DMA1
-		//cs4231.adrs = 0x22;////0b00 100 010  INT5 DMA1
-	}else if(g_nSoundID==SOUNDID_PC_9801_86_118 || g_nSoundID==SOUNDID_PC_9801_86_118_SB16){
-		UINT8 irq86table[4] = {0x03, 0x0d, 0x0a, 0x0c};
-		UINT8 nIrq86 = (np2cfg.snd86opt & 0x10) | ((np2cfg.snd86opt & 0x4) << 5) | ((np2cfg.snd86opt & 0x8) << 3);
-		UINT8 irq86 = irq86table[nIrq86 >> 6];
-		sndirq = np2cfg.snd118irqp;
-		snddma = np2cfg.snd118dma;
-		if(sndirq == irq86){
-			if(irq86!=3){
-				sndirq = 0x3;
-			}else{
-				sndirq = 0xC;
-			}
-		}
-	}else if(g_nSoundID==SOUNDID_WAVESTAR){
-		//UINT8 irq86table[4] = {0x03, 0x0d, 0x0a, 0x0c};
-		//UINT8 nIrq86 = (np2cfg.snd86opt & 0x10) | ((np2cfg.snd86opt & 0x4) << 5) | ((np2cfg.snd86opt & 0x8) << 3);
-		//UINT8 irq86 = irq86table[nIrq86 >> 6];
-		sndirq = 12;// IRQ12固定　irq86;
-		snddma = 3;// DMA#3固定 np2cfg.snd118dma; 
-	}else{
-		sndirq = np2cfg.snd118irqp;
-		snddma = np2cfg.snd118dma;
-		//cs4231.adrs = 0x23;////0b00 100 011  INT5 DMA3
-	}
+	/* [cs4231.adrsの書き方]
+			bit
+			7	未使用
+		R/W	6	不明
+		R/W	5-3	PCM音源割り込みアドレス
+				000b= サウンド機能を使用しない
+				001b= INT 0
+				010b= INT 1
+				011b= INT 41
+				100b= INT 5
+		R/W	2-0	DMAチャネル設定
+				000b= DMAを使用しない
+				001b= DMA #0
+				010b= DMA #1 (PC-9821Npを除く)
+				011b= DMA #3
+				100b〜101b= 未定義
+				111b= DMAを使用しない
+	*/
 	cs4231.adrs = 0;
 	switch(sndirq){
 	case 3:
@@ -244,32 +214,28 @@ void cs4231io_reset(void) {
 	}
 	switch(snddma){
 	case 0:
-		cs4231.adrs |= (0x1);
+		cs4231.adrs |= 0x1;
 		break;
 	case 1:
-		cs4231.adrs |= (0x2);
+		cs4231.adrs |= 0x2;
 		break;
 	case 3:
-		cs4231.adrs |= (0x3);
+		cs4231.adrs |= 0x3;
 		break;
 	default:
 		break;
 	}
 	cs4231.dmairq = cs4231irq[(cs4231.adrs >> 3) & 7]; // IRQをセット
-	cs4231.dmach = cs4231dma[cs4231.adrs & 7]; // DMAチャネルをセット
+	cs4231.dmach = cs4231dma[cs4231.adrs & 7];; // DMAチャネルをセット
 	cs4231.port[0] = 0x0f40; //WSS BASE I/O port
-	if(g_nSoundID==SOUNDID_PC_9801_86_WSS || g_nSoundID==SOUNDID_PC_9801_86_118 || g_nSoundID==SOUNDID_PC_9801_86_WSS_SB16 || g_nSoundID==SOUNDID_PC_9801_86_118_SB16){
-		cs4231.port[1] = 0xb460; // Sound ID I/O port (A460hは86音源が使うのでB460hに変更)
-	}else{
-		cs4231.port[1] = 0xa460; // Sound ID I/O port
-	}
+	cs4231.port[1] = soundid_port; // Sound ID I/O port
 	cs4231.port[2] = 0x0f48; // WSS FIFO port
-	cs4231.port[4] = np2cfg.snd118io;//0x0188; // OPN port
+	cs4231.port[4] = np2cfg.snd118io; // OPN port
 	cs4231.port[5] = 0x0f4a; // canbe mixer i/o port?
 	cs4231.port[6] = 0x548e; // YMF-701/715?
 	cs4231.port[8] = 0x1480; // Joystick
 	cs4231.port[9] = 0x1488; // OPL3
-	cs4231.port[10] = 0x148c; // MIDI
+	cs4231.port[10] = midi_port; // MPU-401
 	cs4231.port[11] = 0x0480; //9801-118 control?
 	cs4231.port[14] = 0x148e; //9801-118 config 
 	cs4231.port[15] = 0xa460; //空いてるのでこっちを利用
@@ -287,30 +253,73 @@ void cs4231io_reset(void) {
 	cs4231.reg.line_r = 0x88;//13
 	cs4231.reg.reserved1=0x80; //16 from PC-9821Nr166
 	cs4231.reg.reserved2=0x80; //17 from PC-9821Nr166
-	if(g_nSoundID==SOUNDID_PC_9801_118 || g_nSoundID==SOUNDID_PC_9801_86_118 || g_nSoundID == SOUNDID_PC_9801_118_SB16 || g_nSoundID == SOUNDID_PC_9801_86_118_SB16){
-		cs4231.reg.chipid	=0xa2;//19 from PC-9801-118 CS4231
-	}else{
-		cs4231.reg.chipid	=0x80;//19 from PC-9821Nr166 YMF715
-	}
-	cs4231.reg.monoinput=0xc0;//1a from PC-9821Nr166
-	cs4231.reg.reserved3=0x80; //1b from PC-9821Nr166
-	cs4231.reg.reserved4=0x80; //1d from PC-9821Nr166
+	cs4231.reg.chipid = chipid; // Chip ID
+	cs4231.reg.monoinput = 0xc0; //1a from PC-9821Nr166
+	cs4231.reg.reserved3 = 0x80; //1b from PC-9821Nr166
+	cs4231.reg.reserved4 = 0x80; //1d from PC-9821Nr166
 	cs4231.intflag = 0xcc;
 
 	sa3data[7] = 7;
 	sa3data[8] = 7;
 	switch (cs4231.dmairq){
-		case 0x0c:f4bdata[1] = 0;break;
-		case 0x0a:f4bdata[1] = 0x02;break;
-		case 0x03:f4bdata[1] = 0x03;break;
-		case 0x05:f4bdata[1] = 0x08;break;
+	case 0x0c: f4bdata[1] = 0; break;
+	case 0x0a: f4bdata[1] = 0x02; break;
+	case 0x03: f4bdata[1] = 0x03; break;
+	case 0x05: f4bdata[1] = 0x08; break;
 	}
 }
 
-void cs4231io_bind(void) {
+void cs4231io_reset(void) {
+	UINT8 sndirq;
+	UINT8 snddma;
+	UINT16 soundid_port;
+	UINT8 chipid;
 
+	if (g_nSoundID == SOUNDID_PC_9801_86_WSS ||
+		g_nSoundID == SOUNDID_MATE_X_PCM ||
+		g_nSoundID == SOUNDID_WSS_SB16 ||
+		g_nSoundID == SOUNDID_PC_9801_86_WSS_SB16) {
+		sndirq = np2cfg.sndwssirq;
+		snddma = np2cfg.sndwssdma;
+	}
+	else if (g_nSoundID == SOUNDID_PC_9801_86_118 ||
+			 g_nSoundID == SOUNDID_PC_9801_86_118_SB16) {
+		UINT8 irq86table[4] = {0x03, 0x0d, 0x0a, 0x0c};
+		UINT8 nIrq86 = (np2cfg.snd86opt & 0x10) |
+			((np2cfg.snd86opt & 0x4) << 5) |
+			((np2cfg.snd86opt & 0x8) << 3);
+		UINT8 irq86 = irq86table[nIrq86 >> 6];
+		sndirq = np2cfg.snd118irqp;
+		snddma = np2cfg.snd118dma;
+		if (sndirq == irq86) {
+			sndirq = (irq86 != 3) ? 3 : 12;
+		}
+	}
+	else {
+		sndirq = np2cfg.snd118irqp;
+		snddma = np2cfg.snd118dma;
+	}
+
+	if (g_nSoundID == SOUNDID_PC_9801_86_WSS ||
+		g_nSoundID == SOUNDID_PC_9801_86_118 ||
+		g_nSoundID == SOUNDID_PC_9801_86_WSS_SB16 ||
+		g_nSoundID == SOUNDID_PC_9801_86_118_SB16) {
+		soundid_port = 0xb460;
+	}
+	else {
+		soundid_port = 0xa460;
+	}
+
+	chipid = (g_nSoundID == SOUNDID_PC_9801_118 ||
+			  g_nSoundID == SOUNDID_PC_9801_86_118 ||
+			  g_nSoundID == SOUNDID_PC_9801_118_SB16 ||
+			  g_nSoundID == SOUNDID_PC_9801_86_118_SB16) ? 0xa2 : 0x80;
+	cs4231io_reset_ex(sndirq, snddma, soundid_port, 0x148c, chipid);
+}
+
+void cs4231io_bind_ex(UINT flags) {
 	sound_streamregist(&cs4231, (SOUNDCB)cs4231_getpcm); // CS4231用 オーディオ再生ストリーム
-	if(g_nSoundID!=SOUNDID_WAVESTAR){
+	if (flags & CS4231IO_BIND_CTRL_C2X) {
 		iocore_attachout(0xc24, csctrl_oc24);
 		iocore_attachout(0xc2b, csctrl_oc2b);
 		iocore_attachout(0xc2d, csctrl_oc2d);
@@ -319,58 +328,55 @@ void cs4231io_bind(void) {
 		iocore_attachinp(0xc2d, csctrl_ic2d);
 	}
 	if (cs4231.dmach != 0xff) {
-		dmac_attach(DMADEV_CS4231, cs4231.dmach); // CS4231のDMAチャネルを割り当て
+		dmac_attach(DMADEV_CS4231, cs4231.dmach);
 	}
-	if(!(g_nSoundID==SOUNDID_PC_9801_86_WSS || g_nSoundID==SOUNDID_MATE_X_PCM || g_nSoundID==SOUNDID_WSS_SB16 || g_nSoundID==SOUNDID_PC_9801_86_WSS_SB16)){
+	if (flags & CS4231IO_BIND_CTRL_480) {
 		iocore_attachout(0x480, csctrl_o480);
 		iocore_attachinp(0x480, csctrl_i480);
 		iocore_attachinp(0x481, csctrl_i481);
 		iocore_attachinp(0xac6d, csctrl_iac6d);
 		iocore_attachinp(0xac6e, csctrl_iac6e);
-
-/*　必要な時だけ有効にすべき
-//WSN-F???
-		iocore_attachinp(0x51ee, srnf_i51ee);//7番めに読まれる
-		iocore_attachinp(0x51ef, srnf_i51ef);//1番最初にC2を返す
-//		iocore_attachinp(0x52ef, srnf_i52ef);//f40等を読み書きしたあとここを読んでエラー
-		iocore_attachinp(0x56ef, srnf_i56ef);//2番めに読まれて割り込み等の設定？　4番めに2回読まれ直す
-		iocore_attachinp(0x57ef, srnf_i57ef);//5番めに読まれる
-		iocore_attachinp(0x59ef, srnf_i59ef);//3番めに読まれて何か調査 ３と４でとりあえず通る
-//		iocore_attachinp(0x5aef, srnf_i5aef);//8番めに読まれて終わり
-		iocore_attachinp(0x5bef, srnf_i5bef);//6番めに読まれる
-*/
 	}
 }
-void cs4231io_unbind(void) {
 
-	iocore_detachout(0xc24);
-	iocore_detachout(0xc2b);
-	iocore_detachout(0xc2d);
-	iocore_detachinp(0xc24);
-	iocore_detachinp(0xc2b);
-	iocore_detachinp(0xc2d);
-	if (cs4231.dmach != 0xff) {
-		dmac_detach(DMADEV_CS4231); // CS4231のDMAチャネルを割り当て
+void cs4231io_unbind_ex(UINT flags) {
+	if (flags & CS4231IO_BIND_CTRL_C2X) {
+		iocore_detachout(0xc24);
+		iocore_detachout(0xc2b);
+		iocore_detachout(0xc2d);
+		iocore_detachinp(0xc24);
+		iocore_detachinp(0xc2b);
+		iocore_detachinp(0xc2d);
 	}
-	if(!(g_nSoundID==SOUNDID_PC_9801_86_WSS || g_nSoundID==SOUNDID_MATE_X_PCM || g_nSoundID==SOUNDID_WAVESTAR || g_nSoundID==SOUNDID_WSS_SB16 || g_nSoundID==SOUNDID_PC_9801_86_WSS_SB16)){
+	if (cs4231.dmach != 0xff) {
+		dmac_detach(DMADEV_CS4231);
+	}
+	if (flags & CS4231IO_BIND_CTRL_480) {
 		iocore_detachout(0x480);
 		iocore_detachinp(0x480);
 		iocore_detachinp(0x481);
 		iocore_detachinp(0xac6d);
 		iocore_detachinp(0xac6e);
-
-/*　必要な時だけ有効にすべき
-//WSN-F???
-		iocore_detachinp(0x51ee);//7番めに読まれる
-		iocore_detachinp(0x51ef);//1番最初にC2を返す
-//		iocore_detachinp(0x52ef);//f40等を読み書きしたあとここを読んでエラー
-		iocore_detachinp(0x56ef);//2番めに読まれて割り込み等の設定？　4番めに2回読まれ直す
-		iocore_detachinp(0x57ef);//5番めに読まれる
-		iocore_detachinp(0x59ef);//3番めに読まれて何か調査 ３と４でとりあえず通る
-//		iocore_detachinp(0x5aef);//8番めに読まれて終わり
-		iocore_detachinp(0x5bef);//6番めに読まれる
-*/
 	}
+}
+
+static UINT cs4231io_default_bind_flags(void) {
+	UINT flags = CS4231IO_BIND_CTRL_C2X;
+	if (!(g_nSoundID == SOUNDID_PC_9801_86_WSS ||
+		  g_nSoundID == SOUNDID_MATE_X_PCM ||
+		  g_nSoundID == SOUNDID_WSS_SB16 ||
+		  g_nSoundID == SOUNDID_PC_9801_86_WSS_SB16)) {
+		flags |= CS4231IO_BIND_CTRL_480;
+	}
+	return flags;
+}
+
+void cs4231io_bind(void) {
+	cs4231io_bind_ex(cs4231io_default_bind_flags());
+}
+
+void cs4231io_unbind(void) {
+	cs4231io_unbind_ex(cs4231io_default_bind_flags());
 }
 
 int acicounter;
@@ -427,9 +433,6 @@ void IOOUTCALL cs4231io0_w8(UINT port, REG8 value) {
 			break;
 	}
 }
-void IOOUTCALL cs4231io0_w8_wavestar(UINT port, REG8 value) {
-	cs4231io0_w8(((port - 0xA460) >> 1) + cs4231.port[0] + 1, value);
-}
 // CS4231 I/O READ
 REG8 IOINPCALL cs4231io0_r8(UINT port) {
 
@@ -467,9 +470,6 @@ REG8 IOINPCALL cs4231io0_r8(UINT port) {
 			return (0x80);
 	}
 	return(0);
-}
-REG8 IOINPCALL cs4231io0_r8_wavestar(UINT port) {
-	return cs4231io0_r8(((port - 0xA460) >> 1) + cs4231.port[0] + 1);
 }
 
 // canbe mixer i/o port? WRITE

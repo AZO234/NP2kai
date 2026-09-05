@@ -1412,8 +1412,8 @@ void scrnmngDD_dispclock(void)
 typedef struct {
 	int		bx;
 	int		by;
-	int		cx;
-	int		cy;
+	int		cx; // ver0.86 rev103 beta5より 8で割った値ではなく実ピクセル数で保持
+	int		cy; // ver0.86 rev103 beta5より 8で割った値ではなく実ピクセル数で保持
 	int		mul;
 } SCRNSIZING;
 
@@ -1439,9 +1439,7 @@ void scrnmngDD_entersizing(void) {
 					(rectwindow.bottom - rectwindow.top) -
 					(rectclient.bottom - rectclient.top);
 	cx = min(scrnstat.width, ddraw.width);
-	cx = (cx + 7) >> 3;
 	cy = min(scrnstat.height, ddraw.height);
-	cy = (cy + 7) >> 3;
 	if (!(ddraw.scrnmode & SCRNMODE_ROTATE)) {
 		scrnsizing.cx = cx;
 		scrnsizing.cy = cy;
@@ -1462,14 +1460,14 @@ void scrnmngDD_sizing(UINT side, RECT *rect) {
 
 	if ((side != WMSZ_TOP) && (side != WMSZ_BOTTOM)) {
 		width = rect->right - rect->left - scrnsizing.bx + SIZING_ADJUST;
-		width /= scrnsizing.cx;
+		width = width * 8 / scrnsizing.cx;
 	}
 	else {
 		width = mul_max;
 	}
 	if ((side != WMSZ_LEFT) && (side != WMSZ_RIGHT)) {
 		height = rect->bottom - rect->top - scrnsizing.by + SIZING_ADJUST;
-		height /= scrnsizing.cy;
+		height = height * 8 / scrnsizing.cy;
 	}
 	else {
 		height = mul_max;
@@ -1481,8 +1479,8 @@ void scrnmngDD_sizing(UINT side, RECT *rect) {
 	else if (mul > mul_max) {
 		mul = mul_max;
 	}
-	width = scrnsizing.bx + (scrnsizing.cx * mul);
-	height = scrnsizing.by + (scrnsizing.cy * mul);
+	width = scrnsizing.bx + scrnsizing.cx * mul / 8;
+	height = scrnsizing.by + scrnsizing.cy * mul / 8;
 	switch(side) {
 		case WMSZ_LEFT:
 		case WMSZ_TOPLEFT:

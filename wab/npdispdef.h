@@ -16,8 +16,8 @@
 #define NPDISP_RETCODE_SUCCESS	1
 #define NPDISP_RETCODE_FAILED	2
 
-// ŠÖ””Ô†@“Á‚ÉˆÓ–¡‚Í–³‚¢‚ªSDK‹LÚ‚Ì˜”‚Æ‡‚í‚¹‚Ä‚¨‚­
-#define NPDISP_FUNCORDER_NP2INITIALIZE			0 // ‰Šú‰»—p
+// é–¢æ•°ç•ªå·ã€€ç‰¹ã«æ„å‘³ã¯ç„¡ã„ãŒSDKè¨˜è¼‰ã®åºæ•°ã¨åˆã‚ã›ã¦ãŠã
+#define NPDISP_FUNCORDER_NP2INITIALIZE			0 // åˆæœŸåŒ–ç”¨
 #define NPDISP_FUNCORDER_Enable					5
 #define NPDISP_FUNCORDER_Disable				4
 #define NPDISP_FUNCORDER_RealizeObject			10
@@ -55,14 +55,14 @@
 #define NPDISP_FUNCORDER_MoveCursor				103
 #define NPDISP_FUNCORDER_SaveScreenBitmap		92
 #define NPDISP_FUNCORDER_SetCursor				102
-#define NPDISP_FUNCORDER_UserRepaintDisable		500 // DDK HELP‚É‚È‚¢‚ª‚±‚ê‚ª‚È‚¢‚ÆƒvƒƒOƒ‰ƒ€I—¹‚É—áŠO 
+#define NPDISP_FUNCORDER_UserRepaintDisable		500 // DDK HELPã«ãªã„ãŒã“ã‚ŒãŒãªã„ã¨ãƒ—ãƒ­ã‚°ãƒ©ãƒ çµ‚äº†æ™‚ã«ä¾‹å¤– 
 #define NPDISP_FUNCORDER_DCI_BEGINACCESS		0xfe00
 #define NPDISP_FUNCORDER_DCI_ENDACCESS			0xfe01
 #define NPDISP_FUNCORDER_DCI_DESTROYSURFACE		0xfe02
-#define NPDISP_FUNCORDER_INT2Fh					0xff2f // ˜”‚ª‚È‚¢‚Ì‚Å0xff2f‚Æ‚µ‚Ä‚¨‚­
-#define NPDISP_FUNCORDER_MEMORYMAP				0xfffc // ˜”‚ª‚È‚¢‚Ì‚Å0xfffc‚Æ‚µ‚Ä‚¨‚­
-#define NPDISP_FUNCORDER_WEP					0xffff // ˜”‚ª‚È‚¢‚Ì‚Å0xffff‚Æ‚µ‚Ä‚¨‚­
-// ˆÈ~ Win9x—p
+#define NPDISP_FUNCORDER_INT2Fh					0xff2f // åºæ•°ãŒãªã„ã®ã§0xff2fã¨ã—ã¦ãŠã
+#define NPDISP_FUNCORDER_MEMORYMAP				0xfffc // åºæ•°ãŒãªã„ã®ã§0xfffcã¨ã—ã¦ãŠã
+#define NPDISP_FUNCORDER_WEP					0xffff // åºæ•°ãŒãªã„ã®ã§0xffffã¨ã—ã¦ãŠã
+// ä»¥é™ Win9xç”¨
 #define NPDISP_FUNCORDER_ReEnable				31
 #define NPDISP_FUNCORDER_ValidateMode			700
 #define NPDISP_FUNCORDER_SelectBitmap			29
@@ -199,6 +199,8 @@
 #define NPDISP_CONTROL_DCI_DDCREATEDRIVEROBJECT	10
 #define NPDISP_CONTROL_DCI_DDGET32BITDRIVERNAME	11
 #define NPDISP_CONTROL_DCI_DDNEWCALLBACKFNS		12
+
+#define NPDISP_FONT_CACHE_MAX	16
 
 #ifdef __cplusplus
 extern "C" {
@@ -407,8 +409,8 @@ extern "C" {
 				UINT32 lpRetValueAddr; // 0=Complete, 1=hasData
 				UINT32 lpDestDevAddr;
 				UINT16 wStyle; // 1=pen, 2=brush
-				UINT16 enumIdx; // •Ô‚·ƒIƒuƒWƒFƒNƒg‚Ì—v‘f”Ô†
-				UINT32 lpLogObjAddr; // ƒIƒuƒWƒFƒNƒg‚Ì“à—e‘‚«‚İæ
+				UINT16 enumIdx; // è¿”ã™ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è¦ç´ ç•ªå·
+				UINT32 lpLogObjAddr; // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å†…å®¹æ›¸ãè¾¼ã¿å…ˆ
 			} enumObj;
 			struct
 			{
@@ -701,7 +703,7 @@ extern "C" {
 		UINT16 bmFillBytes;    
 		UINT16 reserved1;
 		UINT16 reserved2;
-		UINT32 ddbmpKey; // np2‘¤‚ÌƒL[ 
+		UINT32 ddbmpKey; // np2å´ã®ã‚­ãƒ¼ 
 	} NPDISP_PBITMAP_EXT;
 
 	typedef struct {
@@ -732,16 +734,16 @@ extern "C" {
 	} NPDISP_PDEVICE;
 
 	typedef struct {
-		NPDISP_LPEN lpen; // NPDISP_PEN‚Ìæ“ª‚ÍLPEN‚Æ‚·‚é
-		int key; // np2‘¤‚ÌƒL[ 
+		NPDISP_LPEN lpen; // NPDISP_PENã®å…ˆé ­ã¯LPENã¨ã™ã‚‹
+		int key; // np2å´ã®ã‚­ãƒ¼ 
 	} NPDISP_PEN;
 	typedef struct {
-		NPDISP_LBRUSH lbrush; // NPDISP_BRUSH‚Ìæ“ª‚ÍLBRUSH‚Æ‚·‚é
-		int key; // np2‘¤‚ÌƒL[ 
+		NPDISP_LBRUSH lbrush; // NPDISP_BRUSHã®å…ˆé ­ã¯LBRUSHã¨ã™ã‚‹
+		int key; // np2å´ã®ã‚­ãƒ¼ 
 	} NPDISP_BRUSH;
 	typedef struct {
-		NPDISP_LFONT lfont; // NPDISP_FONT‚Ìæ“ª‚ÍNPDISP_LFONT‚Æ‚·‚é
-		int key; // np2‘¤‚ÌƒL[ 
+		NPDISP_LFONT lfont; // NPDISP_FONTã®å…ˆé ­ã¯NPDISP_LFONTã¨ã™ã‚‹
+		int key; // np2å´ã®ã‚­ãƒ¼ 
 	} NPDISP_FONT;
 
 	typedef struct {
@@ -1052,8 +1054,8 @@ extern "C" {
 		UINT8 dfBreakChar;
 
 		SINT16 dfWidthBytes;
-		SINT32 dfDevice;
-		SINT32 dfFace;
+		UINT32 dfDevice;
+		UINT32 dfFace;
 		UINT32 dfBitsPointer;
 		UINT32 dfBitsOffset;
 		SINT8 dfReserved;
@@ -1067,7 +1069,7 @@ extern "C" {
 	} NPDISP_FONTINFO;
 
 
-	// np2‘¤‚ÅT‚¦‚Ä‚¨‚­î•ñ
+	// np2å´ã§æ§ãˆã¦ãŠãæƒ…å ±
 
 	typedef struct {
 		BITMAPINFOHEADER bmiHeader;
@@ -1096,30 +1098,30 @@ extern "C" {
 	typedef struct {
 		BITMAPINFOHEADER biHeader;
 		RGBQUAD pal[256];
-		char bmBits[4 * 8 * 8]; // Win3.1‚Í8x8pxãŒÀ
+		char bmBits[4 * 8 * 8]; // Win3.1ã¯8x8pxä¸Šé™
 	} NPDISP_HOSTPATTERNBITMAP;
 
 	typedef struct {
 		NPDISP_LBRUSH lbrush;
 		NPDISP_HOSTPATTERNBITMAP pattern;
-		UINT8 actualColorNum; // ÀÛ‚ÌF‚Ì” 0=–³ŒøiŒvZ‚ª•K—vj, 1=1F, 2=2F
-		UINT32 actualColor; // ÀÛ‚ÌF
-		UINT32 actualColor2; // ƒfƒBƒU‚Ìê‡‚Ì‘æ2F–Ú
-		double actualColor2Ratio; // ƒfƒBƒU‚Ìê‡‚Ì¬‡”ä
-		HBRUSH brs; // WindowsŒü‚¯
-		UINT32 refCount; // QÆ”
+		UINT8 actualColorNum; // å®Ÿéš›ã®è‰²ã®æ•° 0=ç„¡åŠ¹ï¼ˆè¨ˆç®—ãŒå¿…è¦ï¼‰, 1=1è‰², 2=2è‰²
+		UINT32 actualColor; // å®Ÿéš›ã®è‰²
+		UINT32 actualColor2; // ãƒ‡ã‚£ã‚¶ã®å ´åˆã®ç¬¬2è‰²ç›®
+		double actualColor2Ratio; // ãƒ‡ã‚£ã‚¶ã®å ´åˆã®æ··åˆæ¯”
+		HBRUSH brs; // Windowså‘ã‘
+		UINT32 refCount; // å‚ç…§æ•°
 	} NPDISP_HOSTBRUSH;
 
 	typedef struct {
 		NPDISP_LPEN lpen;
-		UINT8 actualColorNum; // ÀÛ‚ÌF‚Ì” 0=–³ŒøiŒvZ‚ª•K—vj, 1=1F
-		UINT32 actualColor; // ÀÛ‚ÌF
-		HPEN pen; // WindowsŒü‚¯
-		UINT32 refCount; // QÆ”
+		UINT8 actualColorNum; // å®Ÿéš›ã®è‰²ã®æ•° 0=ç„¡åŠ¹ï¼ˆè¨ˆç®—ãŒå¿…è¦ï¼‰, 1=1è‰²
+		UINT32 actualColor; // å®Ÿéš›ã®è‰²
+		HPEN pen; // Windowså‘ã‘
+		UINT32 refCount; // å‚ç…§æ•°
 	} NPDISP_HOSTPEN;
 
 
-	// WindowsŒü‚¯ƒR[ƒhŒQ
+	// Windowså‘ã‘ã‚³ãƒ¼ãƒ‰ç¾¤
 
 	typedef struct {
 		HDC hdc;
@@ -1190,17 +1192,21 @@ extern "C" {
 		RECT dciDirtyRect;
 
 		NPDISP_DRAWMODE lastScreenDrawMode;
+
+		HFONT hFontCache[NPDISP_FONT_CACHE_MAX];
+		LOGFONTA logFontCache[NPDISP_FONT_CACHE_MAX];
+		char fontFaceCache[NPDISP_FONT_CACHE_MAX][32];
 	} NPDISP_WINDOWS;
 
 	typedef struct {
 		UINT32 funcId;
 
-		std::vector<UINT8> npdisp_memread_buf; // ƒŠƒNƒGƒXƒg‚³‚ê‚Ä‚©‚ç“Ç‚İ‚İŠ®—¹‚µ‚Ä‚¢‚éƒf[ƒ^‚ğ•\‚·
-		UINT32 npdisp_memwrite_bufwpos; // ƒŠƒNƒGƒXƒg‚³‚ê‚Ä‚©‚ç‘‚«‚İŠ®—¹‚µ‚Ä‚¢‚éˆÊ’u‚ğ•\‚·
+		std::vector<UINT8> npdisp_memread_buf; // ãƒªã‚¯ã‚¨ã‚¹ãƒˆã•ã‚Œã¦ã‹ã‚‰èª­ã¿è¾¼ã¿å®Œäº†ã—ã¦ã„ã‚‹ãƒ‡ãƒ¼ã‚¿ã‚’è¡¨ã™
+		UINT32 npdisp_memwrite_bufwpos; // ãƒªã‚¯ã‚¨ã‚¹ãƒˆã•ã‚Œã¦ã‹ã‚‰æ›¸ãè¾¼ã¿å®Œäº†ã—ã¦ã„ã‚‹ä½ç½®ã‚’è¡¨ã™
 
-		UINT32 npdisp_memread_curpos; // ƒŠƒNƒGƒXƒg‚³‚ê‚Ä‚©‚ç‚Ìƒf[ƒ^“Ç‚İæ‚èƒoƒCƒg”
-		UINT32 npdisp_memread_preloadcount; // ƒf[ƒ^ƒvƒŠƒ[ƒhƒoƒCƒg”
-		UINT32 npdisp_memwrite_curpos; // ƒŠƒNƒGƒXƒg‚³‚ê‚Ä‚©‚ç‚Ìƒf[ƒ^‘‚«‚İƒoƒCƒg”
+		UINT32 npdisp_memread_curpos; // ãƒªã‚¯ã‚¨ã‚¹ãƒˆã•ã‚Œã¦ã‹ã‚‰ã®ãƒ‡ãƒ¼ã‚¿èª­ã¿å–ã‚Šãƒã‚¤ãƒˆæ•°
+		UINT32 npdisp_memread_preloadcount; // ãƒ‡ãƒ¼ã‚¿ãƒ—ãƒªãƒ­ãƒ¼ãƒ‰ãƒã‚¤ãƒˆæ•°
+		UINT32 npdisp_memwrite_curpos; // ãƒªã‚¯ã‚¨ã‚¹ãƒˆã•ã‚Œã¦ã‹ã‚‰ã®ãƒ‡ãƒ¼ã‚¿æ›¸ãè¾¼ã¿ãƒã‚¤ãƒˆæ•°
 
 		UINT32 last_npdisp_memread_bufsize;
 		UINT32 last_npdisp_memwrite_bufwpos;

@@ -1,5 +1,6 @@
 #include <compiler.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <time.h>
 #if defined(_WINDOWS) && !defined(__LIBRETRO__)
@@ -84,6 +85,28 @@ FILEH file_open_rb(const OEMCHAR *path) {
   }
 #else
   hRes = fopen(path, "rb");
+#endif
+
+  return hRes;
+}
+
+FILEH file_open_rw(const OEMCHAR *path) {
+  FILEH hRes = NULL;
+
+#if defined(_WINDOWS) && !defined(__LIBRETRO__) && defined(OSLANG_UTF8)
+	wchar_t	wpath[MAX_PATH];
+	codecnv_utf8toucs2(wpath, MAX_PATH, path, -1);
+  hRes = _wfopen(wpath, L"rb+");
+#elif defined(__LIBRETRO__)
+  if(log_cb) {
+    log_cb(RETRO_LOG_INFO, "Open file (RW) %s.\n", path);
+  }
+  hRes = filestream_open(path, RETRO_VFS_FILE_ACCESS_READ_WRITE, RETRO_VFS_FILE_ACCESS_HINT_NONE);
+  if(!hRes && log_cb) {
+    log_cb(RETRO_LOG_WARN, "Couldn't open file (RW) %s.\n", path);
+  }
+#else
+  hRes = fopen(path, "rb+");
 #endif
 
   return hRes;
@@ -309,6 +332,164 @@ struct stat sb;
 	}
 #endif
 	return(-1);
+}
+
+short file_sync(FILEH handle) {
+
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+	if (!FlushFileBuffers((HANDLE)_get_osfhandle(_fileno(handle)))) {
+		return(-1);
+	}
+	return(0);
+#elif defined(__LIBRETRO__)
+	return(filestream_flush(handle) == 0 ? 0 : -1);
+#else
+	if (fflush(handle) != 0) {
+		return(-1);
+	}
+	return(fsync(fileno(handle)) == 0 ? 0 : -1);
+#endif
+}
+
+short file_setsize(FILEH handle, FILELEN length) {
+
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+	FILEPOS cur = file_seek(handle, 0, FSEEK_CUR);
+	if (file_seek(handle, length, FSEEK_SET) != length) {
+		return(-1);
+	}
+	if (!SetEndOfFile((HANDLE)_get_osfhandle(_fileno(handle)))) {
+		file_seek(handle, cur, FSEEK_SET);
+		return(-1);
+	}
+	file_seek(handle, cur, FSEEK_SET);
+	return(0);
+#elif defined(__LIBRETRO__)
+	return(filestream_truncate(handle, length) == 0 ? 0 : -1);
+#else
+	if (fflush(handle) != 0) {
+		return(-1);
+	}
+	return(ftruncate(fileno(handle), (off_t)length) == 0 ? 0 : -1);
+#endif
+}
+
+short file_setdatetime(FILEH handle, const DOSDATE *dosdate, const DOSTIME *dostime) {
+
+struct tm	tmv;
+time_t		mtime;
+
+	if (handle == NULL || dosdate == NULL || dostime == NULL) {
+		return(-1);
+	}
+	memset(&tmv, 0, sizeof(tmv));
+	tmv.tm_year = (int)dosdate->year - 1900;
+	tmv.tm_mon = (int)dosdate->month - 1;
+	tmv.tm_mday = dosdate->day;
+	tmv.tm_hour = dostime->hour;
+	tmv.tm_min = dostime->minute;
+	tmv.tm_sec = dostime->second;
+	tmv.tm_isdst = -1;
+	mtime = mktime(&tmv);
+	if (mtime == (time_t)-1) {
+		return(-1);
+	}
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+{
+	FILETIME ft;
+	ULARGE_INTEGER ull;
+	ull.QuadPart = ((ULONGLONG)mtime * 10000000ULL) + 116444736000000000ULL;
+	ft.dwLowDateTime = ull.LowPart;
+	ft.dwHighDateTime = ull.HighPart;
+	if (!SetFileTime((HANDLE)_get_osfhandle(_fileno(handle)), NULL, NULL, &ft)) {
+		return(-1);
+	}
+	return(0);
+}
+#elif defined(__LIBRETRO__)
+	/* libretro's VFS has no facility to change an open file's mtime */
+	(void)mtime;
+	return(-1);
+#else
+{
+	struct stat sb;
+	struct timeval tv[2];
+
+	if (fstat(fileno(handle), &sb) != 0) {
+		return(-1);
+	}
+	tv[0].tv_sec = sb.st_atime;
+	tv[0].tv_usec = 0;
+	tv[1].tv_sec = mtime;
+	tv[1].tv_usec = 0;
+	return(futimes(fileno(handle), tv) == 0 ? 0 : -1);
+}
+#endif
+}
+
+/* short filenames (8.3) have no equivalent outside Windows FAT/NTFS */
+BRESULT file_getshortname(const OEMCHAR *path, OEMCHAR *shortname, UINT cchShortName) {
+
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+	if (GetShortPathNameA(path, shortname, cchShortName) != 0) {
+		return(SUCCESS);
+	}
+#else
+	(void)path;
+	(void)shortname;
+	(void)cchShortName;
+#endif
+	return(FAILURE);
+}
+
+BOOL file_islink(const OEMCHAR *path) {
+
+#if defined(_WINDOWS) && !defined(__LIBRETRO__)
+	DWORD attr = GetFileAttributesA(path);
+	return((attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_REPARSE_POINT)) ? TRUE : FALSE);
+#else
+	struct stat sb;
+	return((lstat(path, &sb) == 0 && S_ISLNK(sb.st_mode)) ? TRUE : FALSE);
+#endif
+}
+
+BOOL file_infoislink(const FLINFO *fli, const OEMCHAR *path) {
+
+	(void)fli;
+	return(file_islink(path));
+}
+
+/* Whether another process holds this disk image open cannot be detected
+ * portably (NP2 does not itself take an OS lock on open); always report
+ * "not locked" so callers fall back to a generic open-error message. */
+BOOL file_islocked(const OEMCHAR *path) {
+
+	(void)path;
+	return(FALSE);
+}
+
+BRESULT file_getinfo(const OEMCHAR *path, FLINFO *fli) {
+
+struct stat sb;
+
+	if (stat(path, &sb) != 0) {
+		return(FAILURE);
+	}
+	if (fli != NULL) {
+		memset(fli, 0, sizeof(*fli));
+		fli->caps = FLICAPS_SIZE | FLICAPS_ATTR | FLICAPS_DATE | FLICAPS_TIME;
+		fli->size = (UINT32)sb.st_size;
+		if (S_ISDIR(sb.st_mode)) {
+			fli->attr |= FILEATTR_DIRECTORY;
+		}
+		if (!(sb.st_mode & S_IWUSR)) {
+			fli->attr |= FILEATTR_READONLY;
+		}
+		cnv_sttime(&sb.st_mtime, &fli->date, &fli->time);
+		file_cpyname(fli->path, file_getname(path), sizeof(fli->path));
+		fli->shortpath[0] = '\0';
+	}
+	return(SUCCESS);
 }
 
 short file_delete(const OEMCHAR *path) {

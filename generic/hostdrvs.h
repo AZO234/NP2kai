@@ -7,8 +7,8 @@
 
 #if defined(SUPPORT_HOSTDRV)
 
-#include <generic/hostdrv.h>
-#include <dosio.h>
+#include "hostdrv.h"
+#include "dosio.h"
 
 /**
  * dos error codes : see int2159-BX0000
@@ -30,45 +30,79 @@ enum
 };
 
 /**
- * @brief DOS ãƒ•ã‚¡ã‚¤ãƒ«æƒ…å ±
+ * @brief DOS ƒtƒ@ƒCƒ‹î•ñ
  */
 struct tagHostDrvFile
 {
-	char	fcbname[11];	/*!< FCB å */
-	UINT	caps;			/*!< æƒ…å ±ãƒ•ãƒ©ã‚° */
-	UINT32	size;			/*!< ã‚µã‚¤ã‚º */
-	UINT32	attr;			/*!< å±æ€§ */
-	DOSDATE	date;			/*!< æ—¥ä»˜ */
-	DOSTIME	time;			/*!< æ™‚é–“ */
+	char	fcbname[11];	/*!< FCB –¼ */
+	UINT	caps;			/*!< î•ñƒtƒ‰ƒO */
+	UINT32	size;			/*!< ƒTƒCƒY */
+	UINT32	attr;			/*!< ‘®« */
+	DOSDATE	date;			/*!< “ú•t */
+	DOSTIME	time;			/*!< ŠÔ */
 };
-typedef struct tagHostDrvFile HDRVFILE;		/*!< å®šç¾© */
+typedef struct tagHostDrvFile HDRVFILE;
 
 /**
- * @brief ãƒ•ã‚¡ã‚¤ãƒ« ãƒªã‚¹ãƒˆæƒ…å ±
+ * @brief ƒtƒ@ƒCƒ‹ ƒŠƒXƒgî•ñ
  */
 struct tagHostDrvList
 {
-	HDRVFILE file;					/*!< DOS ãƒ•ã‚¡ã‚¤ãƒ«æƒ…å ± */
-	OEMCHAR szFilename[MAX_PATH];	/*!< ãƒ•ã‚¡ã‚¤ãƒ«å */
+	HDRVFILE file;
+	OEMCHAR szFilename[MAX_PATH];
 };
-typedef struct tagHostDrvList _HDRVLST;		/*!< å®šç¾© */
-typedef struct tagHostDrvList *HDRVLST;		/*!< å®šç¾© */
+typedef struct tagHostDrvList _HDRVLST;
+typedef struct tagHostDrvList *HDRVLST;
 
 /**
- * @brief ãƒ‘ã‚¹æƒ…å ±
+ * @brief ƒpƒXî•ñ
  */
 struct tagHostDrvPath
 {
-	HDRVFILE file;				/*!< DOS ãƒ•ã‚¡ã‚¤ãƒ«æƒ…å ± */
-	OEMCHAR szPath[MAX_PATH];	/*!< ãƒ‘ã‚¹ */
+	HDRVFILE file;
+	OEMCHAR szPath[MAX_PATH];
 };
-typedef struct tagHostDrvPath HDRVPATH;		/*!< å®šç¾© */
+typedef struct tagHostDrvPath HDRVPATH;
+
+/**
+ * @brief ’Z‚¢ƒtƒ@ƒCƒ‹–¼ƒ}ƒbƒv
+ *
+ * file.fcbname: DOSŒİŠ·FCB–¼
+ * szShortFilename: ƒzƒXƒg‚©‚çæ“¾‚µ‚½’Z‚¢ƒtƒ@ƒCƒ‹–¼i‚ ‚ê‚Îj
+ */
+struct tagHostDrvShortNameEntry
+{
+	HDRVFILE file;
+	OEMCHAR szFilename[MAX_PATH];
+	OEMCHAR szShortFilename[64];
+	UINT nOrder;
+	BOOL bAssigned;
+};
+typedef struct tagHostDrvShortNameEntry HDRVSFNENTRY;
+
+BRESULT hostdrvs_getshortnamemap(const OEMCHAR *lpPath, HDRVSFNENTRY **ppEntries, UINT *pnEntries);
+void hostdrvs_freeshortnamemap(HDRVSFNENTRY *pEntries);
+void hostdrvs_invalidateshortnamecache(void);
+BOOL hostdrvs_lookupshortnamecached(const OEMCHAR *lpPath, const OEMCHAR *lpFilename,
+								 OEMCHAR *lpShortName, UINT cchShortName);
+BOOL hostdrvs_lookuplongnamecached(const OEMCHAR *lpPath, const OEMCHAR *lpShortName,
+								 OEMCHAR *lpFilename, UINT cchFilename, UINT32 *lpAttr);
+BOOL hostdrvs_lookupshortname(const HDRVSFNENTRY *pEntries, UINT nEntries,
+							  const OEMCHAR *lpFilename, OEMCHAR *lpShortName, UINT cchShortName);
+BOOL hostdrvs_lookuplongname(const HDRVSFNENTRY *pEntries, UINT nEntries,
+							 const OEMCHAR *lpShortName, OEMCHAR *lpFilename, UINT cchFilename,
+							 UINT32 *lpAttr);
 
 LISTARRAY hostdrvs_getpathlist(const HDRVPATH *phdp, const char *lpMask, UINT nAttr);
 UINT hostdrvs_getrealdir(HDRVPATH *phdp, char *lpFcbname, const char *lpDosPath);
 UINT hostdrvs_appendname(HDRVPATH *phdp, const char *lpFcbname);
 UINT hostdrvs_getrealpath(HDRVPATH *phdp, const char *lpDosPath);
+BOOL hostdrvs_isroot(const HDRVPATH *phdp);
+BOOL hostdrvs_issafehostpath(const OEMCHAR *lpPath);
 void hostdrvs_fhdlallclose(LISTARRAY fileArray);
 HDRVHANDLE hostdrvs_fhdlsea(LISTARRAY fileArray);
+
+void hostdrvs_setshortnamemode(UINT nMode);
+UINT hostdrvs_getshortnamemode(void);
 
 #endif	/* defined(SUPPORT_HOSTDRV) */

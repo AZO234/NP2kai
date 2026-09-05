@@ -73,6 +73,10 @@ typedef struct {
 	UINT32		ptr[NFD_TRKMAX1][0xff];
 	UINT32		tptr[NFD_TRKMAX1];
 	UINT32		trksize[NFD_TRKMAX1];
+	UINT8		retrycnt[NFD_TRKMAX1][0x100];	//	RetryData読み出し位置
+	UINT8		diagretry[NFD_TRKMAX1][0x100];	//	特殊読み込みRetryData位置
+	UINT8		revision;				//	NFDリビジョン
+	UINT16		trackcount;			//	物理トラックスロット数
 	union {
 		NFD_FILE_HEAD	r0;
 		NFD_FILE_HEAD1	r1;
@@ -115,7 +119,7 @@ typedef struct {
 	BRESULT	(*diskaccess)(FDDFILE fdd);
 	BRESULT	(*seek)(FDDFILE fdd);
 	BRESULT	(*seeksector)(FDDFILE fdd);
-	BRESULT	(*readdiag)(FDDFILE fdd);
+	BRESULT	(*readdiag)(FDDFILE fdd);		//	特殊読み込み
 	BRESULT	(*read)(FDDFILE fdd);
 	BRESULT	(*write)(FDDFILE fdd);
 	BRESULT	(*readid)(FDDFILE fdd);
@@ -134,6 +138,7 @@ extern "C" {
 
 extern	_FDDFILE	fddfile[MAX_FDDFILE];
 extern	UINT8		fddlasterror;
+extern	UINT8		fddbioscmd;		//	BIOS INT 1Bhコマンド
 
 // 起動時に一回だけ初期化
 void fddfile_initialize(void);

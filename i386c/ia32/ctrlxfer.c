@@ -29,6 +29,20 @@
 
 #include "ctrlxfer.h"
 
+#if 0
+#undef	VERBOSE
+static void trace_fmt_ex(const char* fmt, ...)
+{
+	char stmp[2048];
+	va_list ap;
+	va_start(ap, fmt);
+	vsprintf(stmp, fmt, ap);
+	strcat(stmp, "¥n");
+	va_end(ap);
+	OutputDebugStringA(stmp);
+}
+#define	VERBOSE(s)	trace_fmt_ex s
+#endif
 
 /*------------------------------------------------------------------------------
  * JMPfar_pm
@@ -391,6 +405,44 @@ CALLfar_pm(UINT16 selector, UINT32 new_ip)
 	VERBOSE(("CALLfar_pm: new EIP = %04x:%08x, new ESP = %04x:%08x", CPU_CS, CPU_EIP, CPU_SS, CPU_ESP));
 }
 
+static void
+current_stack_push16(UINT32 *sp, UINT16 value, BOOL ss32)
+{
+	UINT32 mask;
+	UINT32 new_sp;
+
+	mask = ss32 ? 0xffffffff : 0x0000ffff;
+	new_sp = (*sp - 2) & mask;
+
+	cpu_vmemorywrite_w(CPU_SS_INDEX, new_sp, value);
+
+	*sp = new_sp;
+}
+
+static void
+current_stack_push32(UINT32 *sp, UINT32 value, BOOL ss32)
+{
+	UINT32 mask;
+	UINT32 new_sp;
+
+	mask = ss32 ? 0xffffffff : 0x0000ffff;
+	new_sp = (*sp - 4) & mask;
+
+	cpu_vmemorywrite_d(CPU_SS_INDEX, new_sp, value);
+
+	*sp = new_sp;
+}
+
+static void
+commit_current_stack_pointer(UINT32 sp)
+{
+	if (CPU_STAT_SS32) {
+		CPU_ESP = sp;
+	} else {
+		CPU_SP = (UINT16)sp;
+	}
+}
+
 /*---
  * CALLfar_pm: code segment
  */
@@ -398,6 +450,7 @@ static void CPUCALL
 CALLfar_pm_code_segment(const selector_t *cs_sel, UINT32 new_ip)
 {
 	UINT32 sp;
+	UINT32 tmp_sp;
 
 	VERBOSE(("CALLfar_pm: CODE-SEGMENT"));
 
@@ -442,8 +495,9 @@ CALLfar_pm_code_segment(const selector_t *cs_sel, UINT32 new_ip)
 			EXCEPTION(GP_EXCEPTION, 0);
 		}
 
-		PUSH0_32(CPU_CS);
-		PUSH0_32(CPU_EIP);
+		tmp_sp = sp;
+		current_stack_push32(&tmp_sp, CPU_CS, CPU_STAT_SS32);
+		current_stack_push32(&tmp_sp, CPU_EIP, CPU_STAT_SS32);
 	} else {
 		SS_PUSH_CHECK(sp, 4);
 
@@ -453,10 +507,13 @@ CALLfar_pm_code_segment(const selector_t *cs_sel, UINT32 new_ip)
 			EXCEPTION(GP_EXCEPTION, 0);
 		}
 
-		PUSH0_16(CPU_CS);
-		PUSH0_16(CPU_IP);
+		tmp_sp = sp;
+		current_stack_push16(&tmp_sp, CPU_CS, CPU_STAT_SS32);
+		current_stack_push16(&tmp_sp, CPU_IP, CPU_STAT_SS32);
 	}
 
+	/* Commit only after all faultable stack writes succeeded. */
+	commit_current_stack_pointer(tmp_sp);
 	load_cs(cs_sel->selector, &cs_sel->desc, CPU_STAT_CPL);
 	CPU_EIP = new_ip;
 }
@@ -540,6 +597,7 @@ static void CPUCALL
 CALLfar_pm_call_gate_same_privilege(const selector_t *callgate_sel, selector_t *cs_sel)
 {
 	UINT32 sp;
+	UINT32 tmp_sp;
 
 	VERBOSE(("CALLfar_pm: SAME-PRIVILEGE"));
 
@@ -551,17 +609,53 @@ CALLfar_pm_call_gate_same_privilege(const selector_t *callgate_sel, selector_t *
 	if (callgate_sel->desc.type == CPU_SYSDESC_TYPE_CALL_32) {
 		SS_PUSH_CHECK(sp, 8);
 
-		PUSH0_32(CPU_CS);
-		PUSH0_32(CPU_EIP);
+		tmp_sp = sp;
+		current_stack_push32(&tmp_sp, CPU_CS, CPU_STAT_SS32);
+		current_stack_push32(&tmp_sp, CPU_EIP, CPU_STAT_SS32);
 	} else {
 		SS_PUSH_CHECK(sp, 4);
 
-		PUSH0_16(CPU_CS);
-		PUSH0_16(CPU_IP);
+		tmp_sp = sp;
+		current_stack_push16(&tmp_sp, CPU_CS, CPU_STAT_SS32);
+		current_stack_push16(&tmp_sp, CPU_IP, CPU_STAT_SS32);
 	}
 
+	/* Commit only after all faultable stack writes succeeded. */
+	commit_current_stack_pointer(tmp_sp);
 	load_cs(cs_sel->selector, &cs_sel->desc, CPU_STAT_CPL);
 	CPU_EIP = callgate_sel->desc.u.gate.offset;
+}
+
+static void
+callgate_stack_push16(selector_t* ss_sel, UINT32* sp, UINT16 value, BOOL ss32, int ucrw)
+{
+	UINT32 mask;
+	UINT32 new_sp;
+	UINT32 laddr;
+
+	mask = ss32 ? 0xffffffff : 0x0000ffff;
+	new_sp = (*sp - 2) & mask;
+
+	laddr = ss_sel->desc.u.seg.segbase + new_sp;
+	cpu_lmemorywrite_w(laddr, value, CPU_PAGE_WRITE_DATA | ucrw);
+
+	*sp = new_sp;
+}
+
+static void
+callgate_stack_push32(selector_t* ss_sel, UINT32* sp, UINT32 value, BOOL ss32, int ucrw)
+{
+	UINT32 mask;
+	UINT32 new_sp;
+	UINT32 laddr;
+
+	mask = ss32 ? 0xffffffff : 0x0000ffff;
+	new_sp = (*sp - 4) & mask;
+
+	laddr = ss_sel->desc.u.seg.segbase + new_sp;
+	cpu_lmemorywrite_d(laddr, value, CPU_PAGE_WRITE_DATA | ucrw);
+
+	*sp = new_sp;
 }
 
 /*---
@@ -634,76 +728,101 @@ CALLfar_pm_call_gate_more_privilege(const selector_t *callgate_sel, selector_t *
 
 	param_count = callgate_sel->desc.u.gate.count;
 	VERBOSE(("CALLfar_pm: param_count = %d", param_count));
-
-	/* check stack size */
-	if (cs_sel->desc.d) {
-		stacksize = 16;
-	} else {
-		stacksize = 8;
-	}
+	
+	/*
+	 * stack size must be based on call gate type, not target CS D-bit.
+	 */
 	if (callgate_sel->desc.type == CPU_SYSDESC_TYPE_CALL_32) {
-		stacksize += param_count * 4;
-	} else {
-		stacksize += param_count * 2;
+		stacksize = 16 + param_count * 4;
 	}
-	cpu_stack_push_check(ss_sel.idx, &ss_sel.desc, new_esp, stacksize, ss_sel.desc.d);
+	else {
+		stacksize = 8 + param_count * 2;
+	}
+
+	cpu_stack_push_check(ss_sel.idx, &ss_sel.desc, new_esp,
+		stacksize, ss_sel.desc.d);
+
+	/*
+	 * Page access privilege for the new stack.
+	 * During a more-privilege call, stack writes are effectively done at
+	 * the destination privilege level.
+	 */
+	rv = (cs_sel->desc.dpl == 3) ? CPU_MODE_USER : CPU_MODE_SUPERVISER;
 
 	if (callgate_sel->desc.type == CPU_SYSDESC_TYPE_CALL_32) {
-		/* dump param */
+		UINT32 tmp_esp;
+
+		/* Read parameters from old stack before changing CPU state. */
 		for (i = 0; i < param_count; i++) {
 			param[i] = cpu_vmemoryread_d(CPU_SS_INDEX, old_esp + i * 4);
 			VERBOSE(("CALLfar_pm: get param[%d] = %08x", i, param[i]));
 		}
 
+		tmp_esp = new_esp;
+
+		/*
+		 * Write the new stack frame without loading SS/CS yet.
+		 * If #PF happens here, the CPU still points to the original
+		 * call gate instruction, which is required for a fault.
+		 */
+		callgate_stack_push32(&ss_sel, &tmp_esp, old_ss, ss_sel.desc.d, rv);
+		callgate_stack_push32(&ss_sel, &tmp_esp, old_esp, ss_sel.desc.d, rv);
+
+		for (i = param_count; i > 0; i--) {
+			callgate_stack_push32(&ss_sel, &tmp_esp, param[i - 1],
+				ss_sel.desc.d, rv);
+			VERBOSE(("CALLfar_pm: set param[%d] = %08x", i - 1, param[i - 1]));
+		}
+
+		callgate_stack_push32(&ss_sel, &tmp_esp, old_cs, ss_sel.desc.d, rv);
+		callgate_stack_push32(&ss_sel, &tmp_esp, old_eip, ss_sel.desc.d, rv);
+
+		/*
+		 * Commit only after all faultable memory accesses succeeded.
+		 */
 		load_ss(ss_sel.selector, &ss_sel.desc, ss_sel.desc.dpl);
 		if (CPU_STAT_SS32) {
-			CPU_ESP = new_esp;
-		} else {
-			CPU_SP = (UINT16)new_esp;
+			CPU_ESP = tmp_esp;
+		}
+		else {
+			CPU_SP = (UINT16)tmp_esp;
 		}
 
 		load_cs(cs_sel->selector, &cs_sel->desc, cs_sel->desc.dpl);
 		CPU_EIP = callgate_sel->desc.u.gate.offset;
+	}
+	else {
+		UINT32 tmp_esp;
 
-		PUSH0_32(old_ss);
-		PUSH0_32(old_esp);
-
-		/* restore param */
-		for (i = param_count; i > 0; i--) {
-			PUSH0_32(param[i - 1]);
-			VERBOSE(("CALLfar_pm: set param[%d] = %08x", i - 1, param[i - 1]));
-		}
-
-		PUSH0_32(old_cs);
-		PUSH0_32(old_eip);
-	} else {
-		/* dump param */
 		for (i = 0; i < param_count; i++) {
 			param[i] = cpu_vmemoryread_w(CPU_SS_INDEX, old_esp + i * 2);
 			VERBOSE(("CALLfar_pm: get param[%d] = %04x", i, param[i]));
 		}
 
+		tmp_esp = new_esp;
+
+		callgate_stack_push16(&ss_sel, &tmp_esp, old_ss, ss_sel.desc.d, rv);
+		callgate_stack_push16(&ss_sel, &tmp_esp, (UINT16)old_esp, ss_sel.desc.d, rv);
+
+		for (i = param_count; i > 0; i--) {
+			callgate_stack_push16(&ss_sel, &tmp_esp, (UINT16)param[i - 1],
+				ss_sel.desc.d, rv);
+			VERBOSE(("CALLfar_pm: set param[%d] = %04x", i - 1, param[i - 1]));
+		}
+
+		callgate_stack_push16(&ss_sel, &tmp_esp, old_cs, ss_sel.desc.d, rv);
+		callgate_stack_push16(&ss_sel, &tmp_esp, (UINT16)old_eip, ss_sel.desc.d, rv);
+
 		load_ss(ss_sel.selector, &ss_sel.desc, ss_sel.desc.dpl);
 		if (CPU_STAT_SS32) {
-			CPU_ESP = new_esp;
-		} else {
-			CPU_SP = (UINT16)new_esp;
+			CPU_ESP = tmp_esp;
+		}
+		else {
+			CPU_SP = (UINT16)tmp_esp;
 		}
 
 		load_cs(cs_sel->selector, &cs_sel->desc, cs_sel->desc.dpl);
 		CPU_EIP = callgate_sel->desc.u.gate.offset;
-
-		PUSH0_16(old_ss);
-		PUSH0_16(old_esp);
-
-		/* restore param */
-		for (i = param_count; i > 0; i--) {
-			PUSH0_16(param[i - 1]);
-			VERBOSE(("CALLfar_pm: set param[%d] = %04x", i - 1, param[i - 1]));
-		}
-
-		PUSH0_16(old_cs);
-		PUSH0_16(old_eip);
 	}
 }
 
@@ -860,9 +979,19 @@ RETfar_pm(UINT nbytes)
 		VERBOSE(("RETfar_pm: RPL(%d) < CPL(%d)", cs_sel.rpl, CPU_STAT_CPL));
 		EXCEPTION(GP_EXCEPTION, cs_sel.idx);
 	}
-	if (!SEG_IS_CONFORMING_CODE(&cs_sel.desc) && (cs_sel.desc.dpl > cs_sel.rpl)) {
-		VERBOSE(("RETfar_pm: NON-COMFORMING-CODE-SEGMENT and DPL(%d) > RPL(%d)", cs_sel.desc.dpl, cs_sel.rpl));
-		EXCEPTION(GP_EXCEPTION, cs_sel.idx);
+	//if (!SEG_IS_CONFORMING_CODE(&cs_sel.desc) && (cs_sel.desc.dpl > cs_sel.rpl)) {
+	//	VERBOSE(("RETfar_pm: NON-COMFORMING-CODE-SEGMENT and DPL(%d) > RPL(%d)", cs_sel.desc.dpl, cs_sel.rpl));
+	//	EXCEPTION(GP_EXCEPTION, cs_sel.idx);
+	//}
+	if (!SEG_IS_CONFORMING_CODE(&cs_sel.desc)) {
+		if (cs_sel.desc.dpl != cs_sel.rpl) {
+			EXCEPTION(GP_EXCEPTION, cs_sel.idx);
+		}
+	}
+	else {
+		if (cs_sel.desc.dpl > cs_sel.rpl) {
+			EXCEPTION(GP_EXCEPTION, cs_sel.idx);
+		}
 	}
 
 	/* not present */
@@ -1154,9 +1283,19 @@ IRET_pm_protected_mode_return(UINT16 new_cs, UINT32 new_ip, UINT32 new_flags)
 		VERBOSE(("IRET_pm: RPL(%d) < CPL(%d)", cs_sel.rpl, CPU_STAT_CPL));
 		EXCEPTION(GP_EXCEPTION, cs_sel.idx);
 	}
-	if (SEG_IS_CONFORMING_CODE(&cs_sel.desc) && (cs_sel.desc.dpl > cs_sel.rpl)) {
-		VERBOSE(("IRET_pm: CONFORMING-CODE-SEGMENT and DPL(%d) > RPL(%d)", cs_sel.desc.dpl, cs_sel.rpl));
-		EXCEPTION(GP_EXCEPTION, cs_sel.idx);
+	//if (SEG_IS_CONFORMING_CODE(&cs_sel.desc) && (cs_sel.desc.dpl > cs_sel.rpl)) {
+	//	VERBOSE(("IRET_pm: CONFORMING-CODE-SEGMENT and DPL(%d) > RPL(%d)", cs_sel.desc.dpl, cs_sel.rpl));
+	//	EXCEPTION(GP_EXCEPTION, cs_sel.idx);
+	//}
+	if (!SEG_IS_CONFORMING_CODE(&cs_sel.desc)) {
+		if (cs_sel.desc.dpl != cs_sel.rpl) {
+			EXCEPTION(GP_EXCEPTION, cs_sel.idx);
+		}
+	}
+	else {
+		if (cs_sel.desc.dpl > cs_sel.rpl) {
+			EXCEPTION(GP_EXCEPTION, cs_sel.idx);
+		}
 	}
 
 	/* not present */
@@ -1380,7 +1519,7 @@ IRET_pm_return_to_vm86(UINT16 new_cs, UINT32 new_ip, UINT32 new_flags)
 	CPU_EIP = new_ip & 0xffff;
 
 	/* to VM86 mode */
-	set_eflags(new_flags, IOPL_FLAG|I_FLAG|VM_FLAG|RF_FLAG);
+	set_eflags(new_flags, IOPL_FLAG|I_FLAG|VM_FLAG|RF_FLAG|VIF_FLAG|VIP_FLAG);
 }
 
 /*---
@@ -1418,19 +1557,41 @@ IRET_pm_return_from_vm86(UINT16 new_cs, UINT32 new_ip, UINT32 new_flags)
 	}
 	VERBOSE(("IRET_pm: trap to virtual-8086 monitor: VM=1, IOPL<3"));
 #if defined(USE_VME)
-	//if(CPU_CR4 & CPU_CR4_VME){
-	//	if((CPU_EFLAG & VIP_FLAG) || (CPU_EFLAG & T_FLAG)){
-	//		EXCEPTION(GP_EXCEPTION, 0);
-	//	}else{
-	//		new_flags = (new_flags & ~VIF_FLAG) | ((new_flags & I_FLAG) << 10); // IF → VIFにコピー
-	//		new_flags = (new_flags & ~(IOPL_FLAG|I_FLAG)) | (CPU_EFLAG & (IOPL_FLAG|I_FLAG)); // IF, IOPLは変更させない
-	//		goto vme_emulate;
-	//	}
-	//}else{
-	//	EXCEPTION(GP_EXCEPTION, 0);
-	//}
-	EXCEPTION(GP_EXCEPTION, 0); // XXX: 一応動いてるけど実装しないとまずい･･･？
-#else
-	EXCEPTION(GP_EXCEPTION, 0);
+	if (CPU_CR4 & CPU_CR4_VME) {
+		/*
+		 * Virtual-8086 mode extensions emulate IRET in VM86 when
+		 * IOPL < 3.  The real IF bit is not modified; the IF bit
+		 * from the stack image is copied to VIF instead.  If the
+		 * guest is trying to enable virtual interrupts while VIP is
+		 * set, the operation traps to the VM86 monitor.
+		 */
+		if ((new_flags & I_FLAG) && (CPU_EFLAG & VIP_FLAG)) {
+			EXCEPTION(GP_EXCEPTION, 0);
+		}
+
+		if (CPU_INST_OP32) {
+			stacksize = 12;
+		} else {
+			stacksize = 6;
+		}
+		if (CPU_STAT_SS32) {
+			CPU_ESP += stacksize;
+		} else {
+			CPU_SP += (UINT16)stacksize;
+		}
+
+		LOAD_SEGREG(CPU_CS_INDEX, new_cs);
+		if (new_ip > CPU_STAT_CS_LIMIT) {
+			EXCEPTION(GP_EXCEPTION, 0);
+		}
+		CPU_EIP = new_ip;
+
+		new_flags = (new_flags & ~VIF_FLAG)
+		          | ((new_flags & I_FLAG) ? VIF_FLAG : 0)
+		          | (CPU_EFLAG & I_FLAG);
+		set_eflags(new_flags, VIF_FLAG|RF_FLAG);
+		return;
+	}
 #endif
+	EXCEPTION(GP_EXCEPTION, 0);
 }

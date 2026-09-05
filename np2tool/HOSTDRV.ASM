@@ -60,6 +60,9 @@ inf				db		0
 				dw		0
 				dw		0
 				dw		0
+				db		HDRV_HANDOFF_SIG
+				dw		0		; CDS offset for HOSTD9X hand-off
+				dw		0		; CDS segment for HOSTD9X hand-off
 
 ;						76543210   fedcba98
 i2f_nochkbmp	db		11010101b, 00111111b
@@ -86,99 +89,101 @@ errexit_lv1:	sti
 				mov		ax, 4c01h
 				int		21h
 
-main:			cld ; ã‚«ã‚¦ãƒ³ã‚¿ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆæŒ‡ç¤º
-				push	cs ; CSã‚’ã‚¹ã‚¿ãƒƒã‚¯ã«
-				pop		ds ; ã‚¹ã‚¿ãƒƒã‚¯ã‹ã‚‰DSã«ã‚»ãƒƒãƒˆ(CS -> DS)
-				mov		ah, 9 ; $ çµ‚ç«¯æ–‡å­—åˆ—è¡¨ç¤º
-				mov		dx, title_msg ; ã‚¿ã‚¤ãƒˆãƒ«
-				int		21h ; å®Ÿè¡Œ
+main:			cld ; ƒJƒEƒ“ƒ^ƒCƒ“ƒNƒŠƒƒ“ƒgw¦
+				push	cs ; CS‚ğƒXƒ^ƒbƒN‚É
+				pop		ds ; ƒXƒ^ƒbƒN‚©‚çDS‚ÉƒZƒbƒg(CS -> DS)
+				mov		ah, 9 ; $ I’[•¶š—ñ•\¦
+				mov		dx, title_msg ; ƒ^ƒCƒgƒ‹
+				int		21h ; Às
 
-				; æ©Ÿç¨®ãƒã‚§ãƒƒã‚¯
-				cli ; å‰²ã‚Šè¾¼ã¿ç¦æ­¢
-				call	np2_check ; np2ç¢ºèª
-				mov		dx, macerr_msg ; æ©Ÿç¨®ã‚¨ãƒ©ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ç”¨æ„
-				jne		short errexit_lv2 ; ã‚¨ãƒ©ãƒ¼ãªã‚‰çµ‚äº†
+				; ‹@íƒ`ƒFƒbƒN
+				cli ; Š„‚è‚İ‹Ö~
+				call	np2_check ; np2Šm”F
+				mov		dx, macerr_msg ; ‹@íƒGƒ‰[ƒƒbƒZ[ƒW—pˆÓ
+				jne		short errexit_lv2 ; ƒGƒ‰[‚È‚çI—¹
 
-				mov		ax, 352fh ; ç¾åœ¨ã®INT 2Fh ã®ãƒ™ã‚¯ã‚¿ã‚’å–å¾—
-				int		21h ; å®Ÿè¡Œ
-				mov		si, id ; IDãŒHOSTDRVã®ã‚‚ã®ã‹ã‚’ç¢ºèª
+				mov		ax, 352fh ; Œ»İ‚ÌINT 2Fh ‚ÌƒxƒNƒ^‚ğæ“¾
+				int		21h ; Às
+				mov		si, id ; ID‚ªHOSTDRV‚Ì‚à‚Ì‚©‚ğŠm”F
 				mov		di, si
-				mov		cl, 4 ; WORDx4ã¤ã¾ã‚Š8æ–‡å­—æ¯”è¼ƒ
-				repe cmpsw ; æ–‡å­—åˆ—æ¯”è¼ƒ
-				jne		short stay ; å¸¸é§å‡¦ç†ã¸é£›ã¶
-				jmp		release ; æ—¢ã«å¸¸é§æ¸ˆã¿
+				mov		cl, 4 ; WORDx4‚Â‚Ü‚è8•¶š”äŠr
+				repe cmpsw ; •¶š—ñ”äŠr
+				jne		short stay ; í’“ˆ—‚Ö”ò‚Ô
+				jmp		release ; Šù‚Éí’“Ï‚İ
 
 
-stay:			mov		si, 0080h ; ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³å¼•æ•°å–å¾—
-				mov		dx, usage_msg ; ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³å¼•æ•°ã‚¨ãƒ©ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ç”¨æ„
+stay:			mov		si, 0080h ; ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ˆø”æ“¾
+				mov		dx, usage_msg ; ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ˆø”ƒGƒ‰[ƒƒbƒZ[ƒW—pˆÓ
 				xor		cx, cx
 				lodsb
-				add		cl, al ; å¼•æ•°ã®é•·ã•ã€€-> CL
-				je		short stay_error ; å¼•æ•°æŒ‡å®šãŒãªã„ï¼ˆ0æ–‡å­—ï¼‰ã®ã§ã‚¨ãƒ©ãƒ¼
+				add		cl, al ; ˆø”‚Ì’·‚³@-> CL
+				je		short stay_error ; ˆø”w’è‚ª‚È‚¢i0•¶šj‚Ì‚ÅƒGƒ‰[
 cmdlnchk:		lodsb
 				cmp		al, 20h
-				ja		short drvcheck ; ã‚¹ãƒšãƒ¼ã‚¹æ–‡å­—ä»¥å¤–ãŒç¾ã‚ŒãŸã‚‰å‡¦ç†ç¶šè¡Œ
+				ja		short drvcheck ; ƒXƒy[ƒX•¶šˆÈŠO‚ªŒ»‚ê‚½‚çˆ—‘±s
 				loop	cmdlnchk
-stay_error:		jmp		errexit_lv1 ; ã‚¹ãƒšãƒ¼ã‚¹ãŒç¾ã‚Œãªã„ã®ã§ã‚¨ãƒ©ãƒ¼
+stay_error:		jmp		errexit_lv1 ; ƒXƒy[ƒX‚ªŒ»‚ê‚È‚¢‚Ì‚ÅƒGƒ‰[
 
-drvcheck:		and		al, 0dfh ; å°æ–‡å­— -> å¤§æ–‡å­—ã¸å¤‰æ›
-				sub		al, 'A' ; Aã‹ã‚‰é †ã«0, 1, 2, ...
-				cmp		al, 26 ; Zã‚ˆã‚Šå¾Œãªã‚‰ã‚¨ãƒ©ãƒ¼
-				mov		dx, drverr0_msg ; ãƒ‰ãƒ©ã‚¤ãƒ–æ–‡å­—ã‚¨ãƒ©ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
-				jae		short stay_error ; ã‚¨ãƒ©ãƒ¼ãªã‚‰çµ‚äº†
+drvcheck:		and		al, 0dfh ; ¬•¶š -> ‘å•¶š‚Ö•ÏŠ·
+				sub		al, 'A' ; A‚©‚ç‡‚É0, 1, 2, ...
+				cmp		al, 26 ; Z‚æ‚èŒã‚È‚çƒGƒ‰[
+				mov		dx, drverr0_msg ; ƒhƒ‰ƒCƒu•¶šƒGƒ‰[ƒƒbƒZ[ƒW
+				jae		short stay_error ; ƒGƒ‰[‚È‚çI—¹
 
-				mov		[inf + HDRVIF.drive_no], al ; ãƒ‰ãƒ©ã‚¤ãƒ–ç•ªå·ä¿å­˜
-				mov		ah, 30h ; DOSãƒãƒ¼ã‚¸ãƒ§ãƒ³å–å¾—
-				int		21h ; å®Ÿè¡Œ
-				mov		[inf + HDRVIF.dosver], ax ; DOSãƒãƒ¼ã‚¸ãƒ§ãƒ³ä¿å­˜
+				mov		[inf + HDRVIF.drive_no], al ; ƒhƒ‰ƒCƒu”Ô†•Û‘¶
+				mov		ah, 30h ; DOSƒo[ƒWƒ‡ƒ“æ“¾
+				int		21h ; Às
+				mov		[inf + HDRVIF.dosver], ax ; DOSƒo[ƒWƒ‡ƒ“•Û‘¶
 				xchg	al, ah
-				cmp		ax, 030ah ; DOSãƒãƒ¼ã‚¸ãƒ§ãƒ³ãŒ3.1ä»¥ä¸Šã‹ï¼Ÿ
-				mov		dx, doserr_msg ; DOSãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚¨ãƒ©ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
-				jc		short stay_error ; DOSãƒãƒ¼ã‚¸ãƒ§ãƒ³ãŒé§„ç›®ãªã‚‰ã‚¨ãƒ©ãƒ¼
-				mov		ax, 1100h					; HOSTDRVå¸¸é§å‰å¿œç­”ãƒã‚§ãƒƒã‚¯
+				cmp		ax, 030ah ; DOSƒo[ƒWƒ‡ƒ“‚ª3.1ˆÈã‚©H
+				mov		dx, doserr_msg ; DOSƒo[ƒWƒ‡ƒ“ƒGƒ‰[ƒƒbƒZ[ƒW
+				jc		short stay_error ; DOSƒo[ƒWƒ‡ƒ“‚ª‘Ê–Ú‚È‚çƒGƒ‰[
+				mov		ax, 1100h					; HOSTDRVí’“‘O‰“šƒ`ƒFƒbƒN
 				int		2fh
-				cmp		ax, 1 ; not installed, not OK to install ã‹ã‚’åˆ¤å®š
-				mov		dx, cntsty_msg ; ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ä¸å¯ã‚¨ãƒ©ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
-				je		short stay_error ; ã‚¨ãƒ©ãƒ¼ãªã‚‰çµ‚äº†
-				mov		ax, 5d06h					; SDAã‚¢ãƒ‰ãƒ¬ã‚¹å–å¾—
+				cmp		ax, 1 ; not installed, not OK to install ‚©‚ğ”»’è
+				mov		dx, cntsty_msg ; ƒCƒ“ƒXƒg[ƒ‹•s‰ÂƒGƒ‰[ƒƒbƒZ[ƒW
+				je		short stay_error ; ƒGƒ‰[‚È‚çI—¹
+				mov		ax, 5d06h					; SDAƒAƒhƒŒƒXæ“¾
 				int		21h
-				mov		[cs:inf + HDRVIF.sda_off], si ; SDA offsetä¿å­˜
-				mov		[cs:inf + HDRVIF.sda_seg], ds ; SDA segmentä¿å­˜
+				mov		[cs:inf + HDRVIF.sda_off], si ; SDA offset•Û‘¶
+				mov		[cs:inf + HDRVIF.sda_seg], ds ; SDA segment•Û‘¶
 				push	cs
 				pop		ds
 
-				; ãƒãƒ¼ã‚¸ãƒ§ãƒ³ãƒã‚§ãƒƒã‚¯
+				; ƒo[ƒWƒ‡ƒ“ƒ`ƒFƒbƒN
 				mov		si, stay_param
-				call	sendnp2port ; NULLæ–‡å­—ã¾ã§é€ã‚‹ï¼ˆæ–‡å­—åˆ—check_hostdrvãŒé€ã‚‰ã‚Œã‚‹ï¼‰
-				call	checknp2port ; NULLæ–‡å­—ã¾ã§æ¯”è¼ƒï¼ˆæ–‡å­—åˆ—0.74ã¨æ¯”è¼ƒï¼‰
-				mov		dx, np2err_msg ; ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚¨ãƒ©ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æº–å‚™
-				jne		short stay_error ; ã‚¨ãƒ©ãƒ¼ãªã‚‰çµ‚äº†
+				call	sendnp2port ; NULL•¶š‚Ü‚Å‘—‚éi•¶š—ñcheck_hostdrv‚ª‘—‚ç‚ê‚éj
+				call	checknp2port ; NULL•¶š‚Ü‚Å”äŠri•¶š—ñ0.74‚Æ”äŠrj
+				mov		dx, np2err_msg ; ƒo[ƒWƒ‡ƒ“ƒGƒ‰[ƒƒbƒZ[ƒW€”õ
+				jne		short stay_error ; ƒGƒ‰[‚È‚çI—¹
 
-				; assign_cds CDSã®å¿…è¦é …ç›®ã‚’æ ¼ç´
+				; assign_cds CDS‚Ì•K—v€–Ú‚ğŠi”[
 				call	getcds
+				mov		[inf + HDRVIF.cds_off], di
+				mov		[inf + HDRVIF.cds_seg], es
 				mov		dx, drverr1_msg
-				jc		short stay_error ; ãƒ‰ãƒ©ã‚¤ãƒ–ç•ªå·ç®¡ç†å¤–ã‚¨ãƒ©ãƒ¼
+				jc		short stay_error ; ƒhƒ‰ƒCƒu”Ô†ŠÇ—ŠOƒGƒ‰[
 				test	byte [es:di + CDS.flag + 1], 0c0h
 				mov		dx, drverr2_msg
-				jne		short stay_error ; ãƒ‰ãƒ©ã‚¤ãƒ–ç•ªå·ä½¿ç”¨ä¸­ã‚¨ãƒ©ãƒ¼
+				jne		short stay_error ; ƒhƒ‰ƒCƒu”Ô†g—p’†ƒGƒ‰[
 
-				; æ–°ãƒ—ãƒ­ãƒˆã‚³ãƒ«ã‚µãƒãƒ¼ãƒˆç¢ºèªã€€ãƒã‚¦ãƒ³ãƒˆå‰ã¯æ–°ãƒ—ãƒ­ãƒˆã‚³ãƒ«æœ‰åŠ¹åŒ–ã›ãšã«æ–‡å­—åˆ—pokã ã‘ãŒè¿”ã‚‹
+				; VƒvƒƒgƒRƒ‹ƒTƒ|[ƒgŠm”F@ƒ}ƒEƒ“ƒg‘O‚ÍVƒvƒƒgƒRƒ‹—LŒø‰»‚¹‚¸‚É•¶š—ñpok‚¾‚¯‚ª•Ô‚é
 				mov		si, enable_newp
-				call	sendnp2port ; NULLæ–‡å­—ã¾ã§é€ã‚‹ï¼ˆæ–‡å­—åˆ—setn_hostdrvãŒé€ã‚‰ã‚Œã‚‹ï¼‰
-				call	checknp2port ; NULLæ–‡å­—ã¾ã§æ¯”è¼ƒï¼ˆæ–‡å­—åˆ—pokã¨æ¯”è¼ƒï¼‰
-				jne		short protocol_old ; ã‚¨ãƒ©ãƒ¼ãªã‚‰æ—§ãƒ—ãƒ­ãƒˆã‚³ãƒ«
+				call	sendnp2port ; NULL•¶š‚Ü‚Å‘—‚éi•¶š—ñsetn_hostdrv‚ª‘—‚ç‚ê‚éj
+				call	checknp2port ; NULL•¶š‚Ü‚Å”äŠri•¶š—ñpok‚Æ”äŠrj
+				jne		short protocol_old ; ƒGƒ‰[‚È‚ç‹ŒƒvƒƒgƒRƒ‹
 				
-				; æ–°ãƒ—ãƒ­ãƒˆã‚³ãƒ«
+				; VƒvƒƒgƒRƒ‹
 				mov		al, [inf + HDRVIF.drive_no]
 				add		al, 'A'
 				mov		byte [stay_type2 + 1], al
-				mov		si, stay_type2 ; SIã‚’æ–°ãƒ—ãƒ­ãƒˆã‚³ãƒ«ç”¨ã«è¨­å®š
+				mov		si, stay_type2 ; SI‚ğVƒvƒƒgƒRƒ‹—p‚Éİ’è
 				jmp		protocol_end
 				
-				; æ—§ãƒ—ãƒ­ãƒˆã‚³ãƒ«
-protocol_old:	mov		si, stay_type1 ; SIã‚’æ—§ãƒ—ãƒ­ãƒˆã‚³ãƒ«ç”¨ã«è¨­å®š
+				; ‹ŒƒvƒƒgƒRƒ‹
+protocol_old:	mov		si, stay_type1 ; SI‚ğ‹ŒƒvƒƒgƒRƒ‹—p‚Éİ’è
 				
-				; CDSè¨­å®šã®ç¶šã
+				; CDSİ’è‚Ì‘±‚«
 protocol_end:	xor		cx, cx
 				lodsb
 				mov		cl, al
@@ -213,22 +218,22 @@ protocol_end:	xor		cx, cx
 				mov		ax, 5e01h
 				int		21h
 
-				; æ–°ãƒ—ãƒ­ãƒˆã‚³ãƒ«æœ‰åŠ¹åŒ–
+				; VƒvƒƒgƒRƒ‹—LŒø‰»
 				push	si
 				mov		si, enable_newp
-				call	sendnp2port ; NULLæ–‡å­—ã¾ã§é€ã‚‹ï¼ˆæ–‡å­—åˆ—setn_hostdrvãŒé€ã‚‰ã‚Œã‚‹ï¼‰
-				call	checknp2port ; NULLæ–‡å­—ã¾ã§æ¯”è¼ƒï¼ˆæ–‡å­—åˆ—pokã¨æ¯”è¼ƒï¼‰å¤±æ•—ã—ã¦ã‚‚ç„¡è¦–
-				jne		short protocol_skip ; ã‚¨ãƒ©ãƒ¼ãªã‚‰æ—§ãƒ—ãƒ­ãƒˆã‚³ãƒ«
-				mov		ah, 9 ; $ çµ‚ç«¯æ–‡å­—åˆ—è¡¨ç¤º
-				mov		dx, newpro_msg ; æ–°ãƒ—ãƒ­ãƒˆã‚³ãƒ«è¡¨ç¤ºæ–‡å­—åˆ—
+				call	sendnp2port ; NULL•¶š‚Ü‚Å‘—‚éi•¶š—ñsetn_hostdrv‚ª‘—‚ç‚ê‚éj
+				call	checknp2port ; NULL•¶š‚Ü‚Å”äŠri•¶š—ñpok‚Æ”äŠrj¸”s‚µ‚Ä‚à–³‹
+				jne		short protocol_skip ; ƒGƒ‰[‚È‚ç‹ŒƒvƒƒgƒRƒ‹
+				mov		ah, 9 ; $ I’[•¶š—ñ•\¦
+				mov		dx, newpro_msg ; VƒvƒƒgƒRƒ‹•\¦•¶š—ñ
 				int		21h
 protocol_skip:	pop		si
 				
 				sti
-				mov		al, [inf + HDRVIF.drive_no] ; ãƒ‰ãƒ©ã‚¤ãƒ–ç•ªå· -> AL
-				add		byte [sty_drive], al ; ãƒ‰ãƒ©ã‚¤ãƒ–æ–‡å­—æ›¸ãè¾¼ã¿
-				mov		ah, 9 ; $ çµ‚ç«¯æ–‡å­—åˆ—è¡¨ç¤º
-				mov		dx, si ; å‰²å½“å…ˆãƒ‰ãƒ©ã‚¤ãƒ–è¡¨ç¤ºæ–‡å­—åˆ—
+				mov		al, [inf + HDRVIF.drive_no] ; ƒhƒ‰ƒCƒu”Ô† -> AL
+				add		byte [sty_drive], al ; ƒhƒ‰ƒCƒu•¶š‘‚«‚İ
+				mov		ah, 9 ; $ I’[•¶š—ñ•\¦
+				mov		dx, si ; Š„“–æƒhƒ‰ƒCƒu•\¦•¶š—ñ
 				int		21h
 				
 				mov		ax, 3100h
@@ -299,9 +304,9 @@ str_user		db	"NekoProjectII  "
 
 stay_param		db	13, "check_hostdrv"
 				db	 5, "0.74",0
-stay_type1		db	 9, "Â¥Â¥HOSTDRV" ; æ—§np2äº’æ›
-stay_type2		db	 2, "A:" ; æ–°ãƒ—ãƒ­ãƒˆã‚³ãƒ«
-stay_param2		db		"Â¥", 0
+stay_type1		db	 9, "\\HOSTDRV" ; ‹Œnp2ŒİŠ·
+stay_type2		db	 2, "A:" ; VƒvƒƒgƒRƒ‹
+stay_param2		db		"\", 0
 				db	12, "open_hostdrv"
 				db	 3, "ok",0
 				db	"assigned host-drive to "
@@ -328,3 +333,4 @@ newpro_msg		db	"new protocol enabled"
 				db	13, 10, "$"
 
 	ends
+

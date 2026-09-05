@@ -277,7 +277,7 @@ interrupt(int num, int intrtype, int errorp, int error_code)
 
 		idt_idx = num * 8;
 		exc_errcode = idt_idx + 2;
-		if (intrtype == INTR_TYPE_EXTINTR)
+		if (intrtype != INTR_TYPE_SOFTINTR)
 			exc_errcode++;
 
 		if (idt_idx + 7 > CPU_IDTR_LIMIT) {
@@ -355,14 +355,18 @@ static void CPUCALL
 interrupt_task_gate(const descriptor_t *gsdp, int intrtype, int errorp, int error_code)
 {
 	selector_t task_sel;
+	int exc_errcode;
 	int rv;
 
 	VERBOSE(("interrupt: TASK-GATE"));
 
 	rv = parse_selector(&task_sel, gsdp->u.gate.selector);
+	exc_errcode = task_sel.idx;
+	if (intrtype != INTR_TYPE_SOFTINTR)
+		exc_errcode++;
 	if (rv < 0 || task_sel.ldt || !SEG_IS_SYSTEM(&task_sel.desc)) {
 		VERBOSE(("interrupt: parse_selector (selector = %04x, rv = %d, %cDT, type = %s)", gsdp->u.gate.selector, rv, task_sel.ldt ? 'L' : 'G', task_sel.desc.s ? "code/data" : "system"));
-		EXCEPTION(TS_EXCEPTION, task_sel.idx);
+		EXCEPTION(GP_EXCEPTION, exc_errcode);
 	}
 
 	/* check gate type */
@@ -377,14 +381,14 @@ interrupt_task_gate(const descriptor_t *gsdp, int intrtype, int errorp, int erro
 		/*FALLTHROUGH*/
 	default:
 		VERBOSE(("interrupt: invalid gate type (%d)", task_sel.desc.type));
-		EXCEPTION(TS_EXCEPTION, task_sel.idx);
+		EXCEPTION(GP_EXCEPTION, exc_errcode);
 		break;
 	}
 
 	/* not present */
 	if (selector_is_not_present(&task_sel)) {
 		VERBOSE(("interrupt: selector is not present"));
-		EXCEPTION(NP_EXCEPTION, task_sel.idx);
+		EXCEPTION(NP_EXCEPTION, exc_errcode);
 	}
 
 	task_switch(&task_sel, TASK_SWITCH_INTR);
@@ -451,7 +455,7 @@ interrupt_intr_or_trap(const descriptor_t *gsdp, int intrtype, int errorp, int e
 	}
 
 	exc_errcode = gsdp->u.gate.selector & ~3;
-	if (intrtype == INTR_TYPE_EXTINTR)
+	if (intrtype != INTR_TYPE_SOFTINTR)
 		exc_errcode++;
 
 	rv = parse_selector(&cs_sel, gsdp->u.gate.selector);
@@ -509,7 +513,7 @@ interrupt_intr_or_trap(const descriptor_t *gsdp, int intrtype, int errorp, int e
 
 		/* update exception error code */
 		exc_errcode = ss_sel.idx;
-		if (intrtype == INTR_TYPE_EXTINTR)
+		if (intrtype != INTR_TYPE_SOFTINTR)
 			exc_errcode++;
 
 		if (rv < 0) {

@@ -435,19 +435,24 @@ void CSoundDeviceDSound3::FillStream(DWORD dwPosition)
  */
 void CSoundDeviceDSound3::DestroyAllPCM()
 {
-	for (std::map<UINT, LPDIRECTSOUNDBUFFER>::iterator it = m_pcm.begin(); it != m_pcm.begin(); ++it)
+	while (!m_pcm.empty())
 	{
+		std::map<UINT, LPDIRECTSOUNDBUFFER>::iterator it = m_pcm.begin();
 		LPDIRECTSOUNDBUFFER lpDSBuffer = it->second;
-		lpDSBuffer->Stop();
-		lpDSBuffer->Release();
+		m_pcm.erase(it);
+		if (lpDSBuffer)
+		{
+			lpDSBuffer->Stop();
+			lpDSBuffer->Release();
+		}
 	}
-	m_pcm.clear();
-	for (std::map<UINT, TCHAR*>::iterator it = m_pcmfile.begin(); it != m_pcmfile.begin(); ++it)
+	while (!m_pcmfile.empty())
 	{
+		std::map<UINT, TCHAR*>::iterator it = m_pcmfile.begin();
 		TCHAR* lpFilename = it->second;
+		m_pcmfile.erase(it);
 		delete[] lpFilename;
 	}
-	m_pcmfile.clear();
 }
 
 /**
@@ -455,10 +460,13 @@ void CSoundDeviceDSound3::DestroyAllPCM()
  */
 void CSoundDeviceDSound3::StopAllPCM()
 {
-	for (std::map<UINT, LPDIRECTSOUNDBUFFER>::iterator it = m_pcm.begin(); it != m_pcm.begin(); ++it)
+	for (std::map<UINT, LPDIRECTSOUNDBUFFER>::iterator it = m_pcm.begin(); it != m_pcm.end(); ++it)
 	{
 		LPDIRECTSOUNDBUFFER lpDSBuffer = it->second;
-		lpDSBuffer->Stop();
+		if (lpDSBuffer)
+		{
+			lpDSBuffer->Stop();
+		}
 	}
 }
 
@@ -471,32 +479,40 @@ void CSoundDeviceDSound3::StopAllPCM()
  */
 bool CSoundDeviceDSound3::LoadPCM(UINT nNum, LPCTSTR lpFilename)
 {
+	if ((lpFilename == NULL) || (lpFilename[0] == '\0'))
+	{
+		return false;
+	}
+
 	UnloadPCM(nNum);
-	
+
+	TCHAR* filename = new TCHAR[OEMSTRLEN(lpFilename) + 1];
+	_tcscpy(filename, lpFilename);
+
 	int nVolume = 100;
 	if(nNum	< PCMVOLUME_MAXCOUNT){
 		nVolume = m_pcmvolume[nNum];
 	}
 	nVolume = nVolume * m_mastervolume / 100;
 	LPDIRECTSOUNDBUFFER lpDSBuffer = CreateWaveBuffer(lpFilename, nVolume);
-	if (lpDSBuffer)
+	if (!lpDSBuffer)
 	{
-		m_pcm[nNum] = lpDSBuffer;
-		if(m_pcmfile.find(nNum)==m_pcmfile.end()){
-			// êVãKçÏê¨
-			TCHAR *filename = new TCHAR[OEMSTRLEN(lpFilename)+1];
-			_tcscpy(filename, lpFilename);
-			m_pcmfile[nNum] = filename;
-		}else{
-			// çXêV
-			_tcscpy(m_pcmfile[nNum], lpFilename);
-		}
-		return true;
+		delete[] filename;
+		return false;
+	}
+
+	std::map<UINT, TCHAR*>::iterator fit = m_pcmfile.find(nNum);
+	if (fit != m_pcmfile.end())
+	{
+		delete[] fit->second;
+		fit->second = filename;
 	}
 	else
 	{
-		return false;
+		m_pcmfile[nNum] = filename;
 	}
+	m_pcm[nNum] = lpDSBuffer;
+	return true;
 }
 
 /**
@@ -508,25 +524,28 @@ bool CSoundDeviceDSound3::LoadPCM(UINT nNum, LPCTSTR lpFilename)
  */
 bool CSoundDeviceDSound3::ReloadPCM(UINT nNum)
 {
-	if(m_pcm.find(nNum) == m_pcm.end()) return false; // ë∂ç›ÇµÇƒÇ¢Ç»Ç¢
+	std::map<UINT, LPDIRECTSOUNDBUFFER>::iterator it = m_pcm.find(nNum);
+	std::map<UINT, TCHAR*>::iterator fit = m_pcmfile.find(nNum);
+	if ((it == m_pcm.end()) || (fit == m_pcmfile.end()) || (fit->second == NULL))
+	{
+		return false;
+	}
 
+	LPCTSTR lpFilename = fit->second;
 	UnloadPCM(nNum);
-	
+
 	int nVolume = 100;
 	if(nNum	< PCMVOLUME_MAXCOUNT){
 		nVolume = m_pcmvolume[nNum];
 	}
 	nVolume = nVolume * m_mastervolume / 100;
-	LPDIRECTSOUNDBUFFER lpDSBuffer = CreateWaveBuffer(m_pcmfile[nNum], nVolume);
+	LPDIRECTSOUNDBUFFER lpDSBuffer = CreateWaveBuffer(lpFilename, nVolume);
 	if (lpDSBuffer)
 	{
 		m_pcm[nNum] = lpDSBuffer;
 		return true;
 	}
-	else
-	{
-		return false;
-	}
+	return false;
 }
 
 /**
@@ -536,6 +555,11 @@ bool CSoundDeviceDSound3::ReloadPCM(UINT nNum)
  */
 LPDIRECTSOUNDBUFFER CSoundDeviceDSound3::CreateWaveBuffer(LPCTSTR lpFilename, int volume100)
 {
+	if ((m_lpDSound == NULL) || (lpFilename == NULL) || (lpFilename[0] == '\0'))
+	{
+		return NULL;
+	}
+
 	LPDIRECTSOUNDBUFFER lpDSBuffer = NULL;
 	CExtRom extrom;
 
@@ -638,7 +662,8 @@ LPDIRECTSOUNDBUFFER CSoundDeviceDSound3::CreateWaveBuffer(LPCTSTR lpFilename, in
 			unsigned char *buf = new unsigned char[cbBlock1];
 			extrom.Read(buf, cbBlock1);
 			for(DWORD i=0;i<cbBlock1;i++){
-				buf[i] = (unsigned char)((buf[i] - 0x80) * volume100 / 100 + 0x80);
+				int nv = (buf[i] - 0x80) * volume100 / 100 + 0x80;
+					buf[i] = (unsigned char)((nv < 0) ? 0 : ((nv > 255) ? 255 : nv));
 			}
 			memcpy(lpBlock1, buf, cbBlock1);
 			delete[] buf;
@@ -648,7 +673,8 @@ LPDIRECTSOUNDBUFFER CSoundDeviceDSound3::CreateWaveBuffer(LPCTSTR lpFilename, in
 			short *buf = new short[cbBlock1/2];
 			extrom.Read(buf, cbBlock1);
 			for(DWORD i=0;i<cbBlock1/2;i++){
-				buf[i] = (short)((int)buf[i] * volume100 / 100);
+				int nv = (int)buf[i] * volume100 / 100;
+					buf[i] = (short)((nv < -32768) ? -32768 : ((nv > 32767) ? 32767 : nv));
 			}
 			memcpy(lpBlock1, buf, cbBlock1);
 			delete[] buf;
@@ -663,7 +689,8 @@ LPDIRECTSOUNDBUFFER CSoundDeviceDSound3::CreateWaveBuffer(LPCTSTR lpFilename, in
 				unsigned char *buf = new unsigned char[cbBlock2];
 				extrom.Read(buf, cbBlock2);
 				for(DWORD i=0;i<cbBlock2;i++){
-					buf[i] = (unsigned char)((buf[i] - 0x80) * volume100 / 100 + 0x80);
+					int nv = (buf[i] - 0x80) * volume100 / 100 + 0x80;
+					buf[i] = (unsigned char)((nv < 0) ? 0 : ((nv > 255) ? 255 : nv));
 				}
 				memcpy(lpBlock2, buf, cbBlock2);
 				delete[] buf;
@@ -673,7 +700,8 @@ LPDIRECTSOUNDBUFFER CSoundDeviceDSound3::CreateWaveBuffer(LPCTSTR lpFilename, in
 				short *buf = new short[cbBlock2/2];
 				extrom.Read(buf, cbBlock2);
 				for(DWORD i=0;i<cbBlock2/2;i++){
-					buf[i] = (short)((int)buf[i] * volume100 / 100);
+					int nv = (int)buf[i] * volume100 / 100;
+					buf[i] = (short)((nv < -32768) ? -32768 : ((nv > 32767) ? 32767 : nv));
 				}
 				memcpy(lpBlock2, buf, cbBlock2);
 				delete[] buf;
@@ -700,8 +728,11 @@ void CSoundDeviceDSound3::UnloadPCM(UINT nNum)
 		LPDIRECTSOUNDBUFFER lpDSBuffer = it->second;
 		m_pcm.erase(it);
 
-		lpDSBuffer->Stop();
-		lpDSBuffer->Release();
+		if (lpDSBuffer)
+		{
+			lpDSBuffer->Stop();
+			lpDSBuffer->Release();
+		}
 	}
 }
 
@@ -734,9 +765,12 @@ bool CSoundDeviceDSound3::PlayPCM(UINT nNum, BOOL bLoop)
 	if (it != m_pcm.end())
 	{
 		LPDIRECTSOUNDBUFFER lpDSBuffer = it->second;
-//		lpDSBuffer->SetCurrentPosition(0);
-		lpDSBuffer->Play(0, 0, (bLoop) ? DSBPLAY_LOOPING : 0);
-		return true;
+		if (lpDSBuffer)
+		{
+//			lpDSBuffer->SetCurrentPosition(0);
+			lpDSBuffer->Play(0, 0, (bLoop) ? DSBPLAY_LOOPING : 0);
+			return true;
+		}
 	}
 	return false;
 }
@@ -751,6 +785,9 @@ void CSoundDeviceDSound3::StopPCM(UINT nNum)
 	if (it != m_pcm.end())
 	{
 		LPDIRECTSOUNDBUFFER lpDSBuffer = it->second;
-		lpDSBuffer->Stop();
+		if (lpDSBuffer)
+		{
+			lpDSBuffer->Stop();
+		}
 	}
 }

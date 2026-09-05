@@ -18,9 +18,14 @@
 #include "pccore.h"
 #include "iocore.h"
 #include "soundmng.h"
+#if defined(SUPPORT_FDDSNDDEV)
+#include "soundmng\sddsound3.h"
+#include "soundmng\fddsndout.h"
+#endif
 #include "generic/dipswbmp.h"
 #include "sound/sound.h"
 #include "sound/fmboard.h"
+#include "cbus/boardws.h"
 #include "sound/tms3631.h"
 #if defined(SUPPORT_FMGEN)
 #include "sound/opna.h"
@@ -154,11 +159,8 @@ void SndOptMixerPage::OnOK()
 	//}
 
 	UINT volex = 15;
-	if(g_nSoundID == SOUNDID_WAVESTAR){
-		volex = cs4231.devvolume[0xff];
-	}
 	if (g_nSoundID == SOUNDID_WAVESTAR) {
-		volex = cs4231.devvolume[0xff];
+		volex = boardws_getfmvolume();
 	}
 	const UINT8 cFM = static_cast<UINT8>(m_fm.GetPos());
 	if (np2cfg.vol_fm != cFM || bMasterChange)
@@ -194,6 +196,7 @@ void SndOptMixerPage::OnOK()
 		for (UINT i = 0; i < _countof(g_opna); i++)
 		{
 			adpcm_update(&g_opna[i].adpcm);
+			ymzadpcm_update(&g_opna[i].adpcm);
 		}
 		bUpdated = true;
 	}
@@ -335,6 +338,183 @@ LRESULT SndOptMixerPage::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 			case IDC_VOLHW:
 				m_hardware.UpdateValue();
 				break;
+			default:
+				break;
+		}
+	}
+	return CDlgProc::WindowProc(nMsg, wParam, lParam);
+}
+
+
+#if defined(SUPPORT_FDDSNDDEV)
+// ---- mapper
+
+/**
+ * @brief Mapper page
+ */
+class SndOptMapperPage : public CPropPageProc
+{
+public:
+	SndOptMapperPage();
+	virtual ~SndOptMapperPage();
+
+protected:
+	virtual BOOL OnInitDialog();
+	virtual void OnOK();
+	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
+
+private:
+	CComboData m_fddDev;			//!< FDD sound output device
+	CComboData m_brdDev;			//!< board(relay) sound output device
+	CSliderValue m_volFdd;		//!< FDD separate-output volume
+	CSliderValue m_volBrd;		//!< board separate-output volume
+	std::vector<LPCTSTR> m_devlist;	//!< enumerated device names
+};
+
+/**
+ * Constructor
+ */
+SndOptMapperPage::SndOptMapperPage()
+	: CPropPageProc(IDD_SNDMAPPER)
+{
+}
+
+/**
+ * Destructor
+ */
+SndOptMapperPage::~SndOptMapperPage()
+{
+}
+
+/**
+ * Initialize Mapper page.
+ */
+BOOL SndOptMapperPage::OnInitDialog()
+{
+	m_fddDev.SubclassDlgItem(IDC_FDDSNDDEV, this);
+	m_brdDev.SubclassDlgItem(IDC_BRDSNDDEV, this);
+	m_devlist.clear();
+	CSoundDeviceDSound3::EnumerateDevices(m_devlist);
+	m_fddDev.Add(TEXT("(Main device)"), 0);
+	m_brdDev.Add(TEXT("(Main device)"), 0);
+	for (UINT i = 0; i < m_devlist.size(); i++)
+	{
+		m_fddDev.Add(m_devlist[i], i + 1);
+		m_brdDev.Add(m_devlist[i], i + 1);
+	}
+
+	UINT32 nFdd = 0;
+	UINT32 nBrd = 0;
+	for (UINT i = 0; i < m_devlist.size(); i++)
+	{
+		if (!::lstrcmpi(np2cfg.fddSndDevice, m_devlist[i])) nFdd = i + 1;
+		if (!::lstrcmpi(np2cfg.boardSndDevice, m_devlist[i])) nBrd = i + 1;
+	}
+	if ((nFdd == 0) && (np2cfg.fddSndDevice[0] != '\0'))
+	{
+		m_fddDev.Add(np2cfg.fddSndDevice, 0xFFFF);
+		nFdd = 0xFFFF;
+	}
+	if ((nBrd == 0) && (np2cfg.boardSndDevice[0] != '\0'))
+	{
+		m_brdDev.Add(np2cfg.boardSndDevice, 0xFFFF);
+		nBrd = 0xFFFF;
+	}
+	m_fddDev.SetCurItemData(nFdd);
+	m_brdDev.SetCurItemData(nBrd);
+
+	m_volFdd.SubclassDlgItem(IDC_VOLFDD, this);
+	m_volFdd.SetStaticId(IDC_VOLFDDSTR);
+	m_volFdd.SetRange(0, 200);
+	m_volFdd.SetPos(np2cfg.fddSndVol);
+
+	m_volBrd.SubclassDlgItem(IDC_VOLBRD, this);
+	m_volBrd.SetStaticId(IDC_VOLBRDSTR);
+	m_volBrd.SetRange(0, 200);
+	m_volBrd.SetPos(np2cfg.boardSndVol);
+
+	return TRUE;
+}
+
+/**
+ * Apply Mapper settings.
+ */
+void SndOptMapperPage::OnOK()
+{
+	bool bUpdated = false;
+	bool bReconf = false;
+	OEMCHAR szDev[MAX_PATH];
+
+	const UINT32 nFdd = m_fddDev.GetCurItemData(0);
+	if (nFdd == 0xFFFF)
+	{
+		::lstrcpyn(szDev, np2cfg.fddSndDevice, _countof(szDev));
+	}
+	else
+	{
+		szDev[0] = '\0';
+		if ((nFdd > 0) && (nFdd <= m_devlist.size()))
+		{
+			::lstrcpyn(szDev, m_devlist[nFdd - 1], _countof(szDev));
+		}
+	}
+	const UINT16 cFddVol = static_cast<UINT16>(m_volFdd.GetPos());
+	if ((::lstrcmpi(np2cfg.fddSndDevice, szDev)) || (np2cfg.fddSndVol != cFddVol))
+	{
+		::lstrcpyn(np2cfg.fddSndDevice, szDev, _countof(np2cfg.fddSndDevice));
+		np2cfg.fddSndVol = cFddVol;
+		bReconf = true;
+		bUpdated = true;
+	}
+
+	const UINT32 nBrd = m_brdDev.GetCurItemData(0);
+	if (nBrd == 0xFFFF)
+	{
+		::lstrcpyn(szDev, np2cfg.boardSndDevice, _countof(szDev));
+	}
+	else
+	{
+		szDev[0] = '\0';
+		if ((nBrd > 0) && (nBrd <= m_devlist.size()))
+		{
+			::lstrcpyn(szDev, m_devlist[nBrd - 1], _countof(szDev));
+		}
+	}
+	const UINT16 cBrdVol = static_cast<UINT16>(m_volBrd.GetPos());
+	if ((::lstrcmpi(np2cfg.boardSndDevice, szDev)) || (np2cfg.boardSndVol != cBrdVol))
+	{
+		::lstrcpyn(np2cfg.boardSndDevice, szDev, _countof(np2cfg.boardSndDevice));
+		np2cfg.boardSndVol = cBrdVol;
+		bReconf = true;
+		bUpdated = true;
+	}
+
+	if (bReconf)
+	{
+		fddsndout_reconfig();
+	}
+	if (bUpdated)
+	{
+		::sysmng_update(SYS_UPDATECFG);
+	}
+}
+
+/**
+ * Handle Mapper slider updates.
+ */
+LRESULT SndOptMapperPage::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
+{
+	if (nMsg == WM_HSCROLL)
+	{
+		switch (::GetDlgCtrlID(reinterpret_cast<HWND>(lParam)))
+		{
+			case IDC_VOLFDD:
+				m_volFdd.UpdateValue();
+				break;
+
+			case IDC_VOLBRD:
+				m_volBrd.UpdateValue();
+				break;
 
 			default:
 				break;
@@ -342,6 +522,7 @@ LRESULT SndOptMixerPage::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 	}
 	return CDlgProc::WindowProc(nMsg, wParam, lParam);
 }
+#endif	/* SUPPORT_FDDSNDDEV */
 
 
 
@@ -1414,7 +1595,167 @@ LRESULT SndOptWSSPage::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 }
 
 
-	
+// ---- Q-Vision WaveStar
+
+/**
+ * @brief WaveStar page
+ */
+class SndOptWaveStarPage : public CPropPageProc
+{
+public:
+	SndOptWaveStarPage();
+	virtual ~SndOptWaveStarPage();
+
+protected:
+	virtual BOOL OnInitDialog();
+	virtual void OnOK();
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+
+private:
+	UINT16 m_io;
+	UINT8 m_dma;
+	UINT8 m_irq;
+	UINT8 m_pnp;
+	UINT8 m_pcm86;
+	CComboData m_cmbio;
+	CComboData m_cmbdma;
+	CComboData m_cmbirq;
+	CWndProc m_chkpnp;
+	CWndProc m_chkpcm;
+};
+
+static const CComboData::Entry s_iowavestar[] =
+{
+	{MAKEINTRESOURCE(IDS_0188), 0x0188},
+	{MAKEINTRESOURCE(IDS_0288), 0x0288},
+};
+
+static const CComboData::Entry s_dmawavestar[] =
+{
+	{MAKEINTRESOURCE(IDS_DMA0), 0},
+	{MAKEINTRESOURCE(IDS_DMA3), 3},
+};
+
+static const CComboData::Entry s_irqwavestar[] =
+{
+	{MAKEINTRESOURCE(IDS_INT5IRQ12), 12},
+	{MAKEINTRESOURCE(IDS_INT6IRQ13), 13},
+};
+
+SndOptWaveStarPage::SndOptWaveStarPage()
+	: CPropPageProc(IDD_SNDWAVESTAR)
+	, m_io(0x0188)
+	, m_dma(3)
+	, m_irq(12)
+	, m_pnp(1)
+	, m_pcm86(1)
+{
+}
+
+SndOptWaveStarPage::~SndOptWaveStarPage()
+{
+}
+
+BOOL SndOptWaveStarPage::OnInitDialog()
+{
+	m_io = np2cfg.sndwsio;
+	m_dma = np2cfg.sndwsdma;
+	m_irq = np2cfg.sndwsirq;
+	m_pnp = np2cfg.sndwspnp;
+	m_pcm86 = np2cfg.sndwspcm;
+
+	m_cmbio.SubclassDlgItem(IDC_SND118IO, this);
+	m_cmbio.Add(s_iowavestar, _countof(s_iowavestar));
+	m_cmbio.SetCurItemData(m_io);
+
+	m_cmbdma.SubclassDlgItem(IDC_SND118DMA, this);
+	m_cmbdma.Add(s_dmawavestar, _countof(s_dmawavestar));
+	m_cmbdma.SetCurItemData(m_dma);
+
+	m_cmbirq.SubclassDlgItem(IDC_SND118INTF, this);
+	m_cmbirq.Add(s_irqwavestar, _countof(s_irqwavestar));
+	m_cmbirq.SetCurItemData(m_irq);
+
+	m_chkpnp.SubclassDlgItem(IDC_SNDWSPNP, this);
+	m_chkpnp.SendMessage(BM_SETCHECK, m_pnp ? BST_CHECKED : BST_UNCHECKED, 0);
+	m_chkpcm.SubclassDlgItem(IDC_SNDWSPCM, this);
+	m_chkpcm.SendMessage(BM_SETCHECK, m_pcm86 ? BST_CHECKED : BST_UNCHECKED, 0);
+
+	m_cmbio.SetFocus();
+	return FALSE;
+}
+
+void SndOptWaveStarPage::OnOK()
+{
+	UINT update = 0;
+
+	if (np2cfg.sndwsio != m_io) {
+		np2cfg.sndwsio = m_io;
+		update |= SYS_UPDATECFG;
+	}
+	if (np2cfg.sndwsdma != m_dma) {
+		np2cfg.sndwsdma = m_dma;
+		update |= SYS_UPDATECFG;
+	}
+	if (np2cfg.sndwsirq != m_irq) {
+		np2cfg.sndwsirq = m_irq;
+		update |= SYS_UPDATECFG;
+	}
+	if (np2cfg.sndwspnp != m_pnp) {
+		np2cfg.sndwspnp = m_pnp;
+		update |= SYS_UPDATECFG;
+	}
+	if (np2cfg.sndwspcm != m_pcm86) {
+		np2cfg.sndwspcm = m_pcm86;
+		update |= SYS_UPDATECFG;
+	}
+	if (update) {
+		::sysmng_update(update);
+	}
+}
+
+BOOL SndOptWaveStarPage::OnCommand(WPARAM wParam, LPARAM lParam)
+{
+	(void)lParam;
+	switch (LOWORD(wParam))
+	{
+		case IDC_SND118IO:
+			m_io = (UINT16)m_cmbio.GetCurItemData(0x0188);
+			return TRUE;
+
+		case IDC_SND118DMA:
+			m_dma = m_cmbdma.GetCurItemData(3);
+			return TRUE;
+
+		case IDC_SND118INTF:
+			m_irq = m_cmbirq.GetCurItemData(12);
+			return TRUE;
+
+		case IDC_SNDWSPNP:
+			m_pnp = (m_chkpnp.SendMessage(BM_GETCHECK, 0, 0) != BST_UNCHECKED) ? 1 : 0;
+			return TRUE;
+
+		case IDC_SNDWSPCM:
+			m_pcm86 = (m_chkpcm.SendMessage(BM_GETCHECK, 0, 0) != BST_UNCHECKED) ? 1 : 0;
+			return TRUE;
+
+		case IDC_SND118DEF:
+			m_io = 0x0188;
+			m_dma = 3;
+			m_irq = 12;
+			m_pnp = 1;
+			m_pcm86 = 1;
+			m_cmbio.SetCurItemData(m_io);
+			m_cmbdma.SetCurItemData(m_dma);
+			m_cmbirq.SetCurItemData(m_irq);
+			m_chkpnp.SendMessage(BM_SETCHECK, BST_CHECKED, 0);
+			m_chkpcm.SendMessage(BM_SETCHECK, BST_CHECKED, 0);
+			return TRUE;
+	}
+	return FALSE;
+}
+
+
 #if defined(SUPPORT_SOUND_SB16)
 
 // ---- Sound Blaster 16(98)
@@ -2195,6 +2536,11 @@ void dialog_sndopt(HWND hwndParent)
 	SndOptMixerPage mixer;
 	prop.AddPage(&mixer);
 
+#if defined(SUPPORT_FDDSNDDEV)
+	SndOptMapperPage mapper;
+	prop.AddPage(&mapper);
+#endif	/* SUPPORT_FDDSNDDEV */
+
 	SndOpt14Page pc980114;
 	prop.AddPage(&pc980114);
 
@@ -2209,7 +2555,7 @@ void dialog_sndopt(HWND hwndParent)
 	
 	SndOptWSSPage wss;
 	prop.AddPage(&wss);
-	
+
 #if defined(SUPPORT_SOUND_SB16)
 	SndOptSB16Page sb16;
 	prop.AddPage(&sb16);
@@ -2217,6 +2563,9 @@ void dialog_sndopt(HWND hwndParent)
 
 	SndOptSpbPage spb;
 	prop.AddPage(&spb);
+
+	SndOptWaveStarPage wavestar;
+	prop.AddPage(&wavestar);
 
 	SndOptPadPage pad;
 	prop.AddPage(&pad);

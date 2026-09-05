@@ -17,6 +17,9 @@
 #if defined(SUPPORT_HOSTDRVNT)
 #include "hostdrvNT.h"
 #endif
+#if defined(SUPPORT_HOSTDRV9X)
+#include "hostdrv9x.h"
+#endif
 #include "ini.h"
 
 #include <shlobj.h>
@@ -157,6 +160,9 @@ void CHostdrvDlg::OnOK()
 	}
 #if defined(SUPPORT_HOSTDRVNT)
 	hostdrvNT_updateHDrvRoot();
+#endif
+#if defined(SUPPORT_HOSTDRV9X)
+	hostdrv9x_updateHDrvRoot();
 #endif
 
 	sysmng_update(update);

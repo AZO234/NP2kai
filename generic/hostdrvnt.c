@@ -1,74 +1,87 @@
-#include "compiler.h"
+#include	"compiler.h"
 
 #if defined(SUPPORT_HOSTDRVNT)
 
 /*
-        ã‚²ã‚¹ãƒˆOS(WinNTç³»)ã‹ã‚‰ãƒ›ã‚¹ãƒˆOS(Win)ã«ã‚¢ã‚¯ã‚»ã‚¹
-        HOSTDRVã®WindowsNTå¯¾å¿œãƒãƒ¼ã‚¸ãƒ§ãƒ³ã§ã™
+	ƒQƒXƒgOS(WinNTŒn)‚©‚çƒzƒXƒgOS(Win)‚ÉƒAƒNƒZƒX
+	HOSTDRV‚ÌWindowsNT‘Î‰ƒo[ƒWƒ‡ƒ“‚Å‚·
 */
 
-#include <process.h>
-#include <shlwapi.h>
-
-#include "cpucore.h"
-#include "ini.h"
-#include "iocore.h"
-#include "pccore.h"
-#if defined(SUPPORT_IA32_HAXM)
-#include "i386hax/haxcore.h"
-#include "i386hax/haxfunc.h"
+#if defined(WIN32) || defined(_WIN32)
+#include	<shlwapi.h>
+#include	<process.h>
+#define HD_W(s) L##s
+#define HD_WC(c) L##c
+#else
+#include "hostdrvwincompat.h"
 #endif
-#include "dosio.h"
 
-#include "hostdrv.h"
-#include "hostdrvnt.h"
-#include "hostdrvntdef.h"
+#include	"pccore.h"
+#include	"ini.h"
+#include	"iocore.h"
+#include	"cpucore.h"
+#if defined(SUPPORT_IA32_HAXM)
+#include	"i386hax/haxfunc.h"
+#include	"i386hax/haxcore.h"
+#endif
+#include	"dosio.h"
 
-// æ€§èƒ½ä¸Šæœ€é©åŒ–ã§å„ªå…ˆã—ãªã„æ–¹ãŒã„ã„ã‚³ãƒ¼ãƒ‰ãªã®ã§ã‚ã–ã¨åˆ¥ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã«ç½®ã
+#include	"hostdrv.h"
+#include	"hostdrvs.h"
+#include	"hostdrvnt.h"
+#include	"hostdrvntdef.h"
+
+#ifndef FILE_ATTRIBUTE_REPARSE_POINT
+#define FILE_ATTRIBUTE_REPARSE_POINT 0x00000400
+#endif
+
+// «”\ãÅ“K‰»‚Å—Dæ‚µ‚È‚¢•û‚ª‚¢‚¢ƒR[ƒh‚È‚Ì‚Å‚í‚´‚Æ•ÊƒZƒOƒƒ“ƒg‚É’u‚­
 #pragma code_seg(".MISCCODE")
 #if !defined(CPUCORE_IA32)
-#define cpu_kmemorywrite(a, v) memp_write8(a, v)
-#define cpu_kmemorywrite_w(a, v) memp_write16(a, v)
-#define cpu_kmemorywrite_d(a, v) memp_write32(a, v)
-#define cpu_kmemoryread(a) memp_read8(a)
-#define cpu_kmemoryread_w(a) memp_read16(a)
-#define cpu_kmemoryread_d(a) memp_read32(a)
+#define	cpu_kmemorywrite(a,v)	memp_write8(a,v)
+#define	cpu_kmemorywrite_w(a,v)	memp_write16(a,v)
+#define	cpu_kmemorywrite_d(a,v)	memp_write32(a,v)
+#define	cpu_kmemoryread(a)		memp_read8(a)
+#define	cpu_kmemoryread_w(a)	memp_read16(a)
+#define	cpu_kmemoryread_d(a)	memp_read32(a)
 #endif
 
 #if 0
-#undef TRACEOUT
+#undef	TRACEOUT
 static void trace_fmt_ex(const char* fmt, ...)
 {
 	char stmp[2048];
 	va_list ap;
 	va_start(ap, fmt);
 	vsprintf(stmp, fmt, ap);
-	strcat(stmp, "Â¥n");
+	strcat(stmp, "\n");
 	va_end(ap);
 	OutputDebugStringA(stmp);
 }
-#define TRACEOUT(s) trace_fmt_ex s
+#define	TRACEOUT(s)	trace_fmt_ex s
 static void trace_fmt_exw(const WCHAR* fmt, ...)
 {
 	WCHAR stmp[2048];
 	va_list ap;
 	va_start(ap, fmt);
 	vswprintf(stmp, 2048, fmt, ap);
-	wcscat(stmp, L"Â¥n");
+	wcscat(stmp, HD_W("\n"));
 	va_end(ap);
 	OutputDebugStringW(stmp);
 }
-#define TRACEOUTW(s) trace_fmt_exw s
+#define	TRACEOUTW(s)	trace_fmt_exw s
 #else
-#define TRACEOUTW(s) (void)0
-#endif /* 1 */
+#define	TRACEOUTW(s)	(void)0
+#endif	/* 1 */
+
+
 
 HOSTDRVNT hostdrvNT;
 
-static WCHAR s_hdrvRoot[MAX_PATH] = {0};
+static WCHAR s_hdrvRoot[MAX_PATH] = { 0 };
 static UINT8 s_hdrvAcc = 0;
 
-// I/Oå¾…æ©Ÿç”¨ã„ã‚ã„ã‚
+// I/O‘Ò‹@—p‚¢‚ë‚¢‚ë
 static UINT32 s_pendingListCount = 0;
 static UINT32 s_pendingIrpListAddr = 0;
 static UINT32 s_pendingAliveListAddr = 0;
@@ -80,3373 +93,4093 @@ static int s_FSChanged = 0;
 
 static int s_fsContextUserDataOffset = 0;
 
-#define HOSTDRVNTOPTIONS_NONE 0x0
-#define HOSTDRVNTOPTIONS_REMOVABLEDEVICE 0x1
-#define HOSTDRVNTOPTIONS_USEREALCAPACITY 0x2
-#define HOSTDRVNTOPTIONS_USECHECKNOTIFY 0x4
-#define HOSTDRVNTOPTIONS_AUTOMOUNTDRIVE 0x8
-#define HOSTDRVNTOPTIONS_DISKDEVICE 0x10
+#define HOSTDRVNTOPTIONS_NONE				0x0
+#define HOSTDRVNTOPTIONS_REMOVABLEDEVICE	0x1
+#define HOSTDRVNTOPTIONS_USEREALCAPACITY	0x2
+#define HOSTDRVNTOPTIONS_USECHECKNOTIFY		0x4
+#define HOSTDRVNTOPTIONS_AUTOMOUNTDRIVE		0x8
+#define HOSTDRVNTOPTIONS_DISKDEVICE			0x10
 
-// FSCONTEXTã§å›ºæœ‰ãƒ‡ãƒ¼ã‚¿ãŒæ ¼ç´ã•ã‚Œã¦ã„ã‚‹ä½ç½®ã‚ªãƒ•ã‚»ãƒƒãƒˆï¼ˆver4ä»¥é™ï¼‰
-#define HOSTDRVNT_FSCONTEXT_USERDATA_OFFSET 40
+// FSCONTEXT‚ÅŒÅ—Lƒf[ƒ^‚ªŠi”[‚³‚ê‚Ä‚¢‚éˆÊ’uƒIƒtƒZƒbƒgiver4ˆÈ~j
+#define HOSTDRVNT_FSCONTEXT_USERDATA_OFFSET	40
 
-// ãŠã·ã—ã‚‡ã‚“
+// ‚¨‚Õ‚µ‚å‚ñ
 static UINT32 s_hostdrvNTOptions = HOSTDRVNTOPTIONS_NONE;
 
-static void hostdrvNT_notifyChange(WCHAR *changedHostFileName, UINT32 action,
-                                   UINT32 forceRequestEnumDir);
+static void hostdrvNT_notifyChange(WCHAR* changedHostFileName, UINT32 action, UINT32 forceRequestEnumDir);
 
 // ---------- Host File System Monitor
 
-static unsigned int __stdcall hostdrvNT_changeFSMonitorThread(LPVOID vdParam) {
-  HANDLE hChangeFSEvent = NULL;
+#if defined(WIN32) || defined(_WIN32)
+static unsigned int __stdcall hostdrvNT_changeFSMonitorThread(LPVOID vdParam)
+{
+	HANDLE hChangeFSEvent = NULL;
 
-  hChangeFSEvent = FindFirstChangeNotificationW(
-      s_hdrvRoot, TRUE,
-      FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME);
-  if (hChangeFSEvent != NULL && hChangeFSEvent != INVALID_HANDLE_VALUE) {
-    HANDLE handles[] = {hChangeFSEvent, s_hChangeFSStopEvent};
-    while (1) {
-      DWORD dwWait = WaitForMultipleObjects(2, handles, FALSE, INFINITE);
-      if (dwWait == WAIT_OBJECT_0) {
-        s_FSChanged = 1;
-        if (!FindNextChangeNotification(hChangeFSEvent)) {
-          break;
-        }
-      } else if (dwWait == WAIT_OBJECT_0 + 1) {
-        break;
-      }
-    }
+	hChangeFSEvent = FindFirstChangeNotificationW(s_hdrvRoot, TRUE, FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME);
+	if (hChangeFSEvent != NULL && hChangeFSEvent != INVALID_HANDLE_VALUE)
+	{
+		HANDLE handles[] = { hChangeFSEvent, s_hChangeFSStopEvent };
+		while (1)
+		{
+			DWORD dwWait = WaitForMultipleObjects(2, handles, FALSE, INFINITE);
+			if (dwWait == WAIT_OBJECT_0)
+			{
+				s_FSChanged = 1;
+				if (!FindNextChangeNotification(hChangeFSEvent))
+				{
+					break;
+				}
+			}
+			else if (dwWait == WAIT_OBJECT_0 + 1)
+			{
+				break;
+			}
+		}
 
-    FindCloseChangeNotification(hChangeFSEvent); // ãƒ•ã‚¡ã‚¤ãƒ«ã‚·ã‚¹ãƒ†ãƒ ç›£è¦–åœæ­¢
-  }
+		FindCloseChangeNotification(hChangeFSEvent); // ƒtƒ@ƒCƒ‹ƒVƒXƒeƒ€ŠÄ‹’â~
+	}
 
-  return 0;
+	return 0;
 }
 
-void hostdrvNT_stopMonitorChangeFS() {
-  if (s_hChangeFSStopEvent != NULL &&
-      s_hChangeFSStopEvent != INVALID_HANDLE_VALUE) {
-    SetEvent(s_hChangeFSStopEvent);
-    if (WaitForSingleObject(s_hThreadChangeFS, 10000) == WAIT_TIMEOUT) {
-      TerminateThread(s_hThreadChangeFS, 0); // ã‚¾ãƒ³ãƒ“ã‚¹ãƒ¬ãƒƒãƒ‰æ­»ã™ã¹ã—
-    }
-    CloseHandle(s_hChangeFSStopEvent); // åœæ­¢ã‚¤ãƒ™ãƒ³ãƒˆã‚’é–‰ã˜ã‚‹
-    CloseHandle(s_hThreadChangeFS);    // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚‚é–‰ã˜ã‚‹
+void hostdrvNT_stopMonitorChangeFS()
+{
+	if (s_hChangeFSStopEvent != NULL && s_hChangeFSStopEvent != INVALID_HANDLE_VALUE)
+	{
+		SetEvent(s_hChangeFSStopEvent);
+		if (WaitForSingleObject(s_hThreadChangeFS, 10000) == WAIT_TIMEOUT)
+		{
+			TerminateThread(s_hThreadChangeFS, 0); // ƒ]ƒ“ƒrƒXƒŒƒbƒh€‚·‚×‚µ
+		}
+		CloseHandle(s_hChangeFSStopEvent); // ’â~ƒCƒxƒ“ƒg‚ğ•Â‚¶‚é
+		CloseHandle(s_hThreadChangeFS); // ƒXƒŒƒbƒh‚à•Â‚¶‚é
 
-    s_hThreadChangeFS = NULL;
-    s_hChangeFSStopEvent = NULL;
-  }
+		s_hThreadChangeFS = NULL;
+		s_hChangeFSStopEvent = NULL;
+	}
 }
 
-void hostdrvNT_beginMonitorChangeFS() {
-  DWORD dwID = 0;
+void hostdrvNT_beginMonitorChangeFS()
+{
+	DWORD dwID = 0;
 
-  hostdrvNT_stopMonitorChangeFS();
+	hostdrvNT_stopMonitorChangeFS();
 
-  if (s_hostdrvNTOptions & HOSTDRVNTOPTIONS_USECHECKNOTIFY) {
-    s_hChangeFSStopEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	if (s_hostdrvNTOptions & HOSTDRVNTOPTIONS_USECHECKNOTIFY)
+	{
+		s_hChangeFSStopEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
-    s_hThreadChangeFS = (HANDLE)_beginthreadex(
-        NULL, 0, hostdrvNT_changeFSMonitorThread, NULL, 0, &dwID);
-  }
+		s_hThreadChangeFS = (HANDLE)_beginthreadex(NULL, 0, hostdrvNT_changeFSMonitorThread, NULL, 0, &dwID);
+	}
 }
 
-void hostdrvNT_invokeMonitorChangeFS() {
-  if ((s_hostdrvNTOptions & HOSTDRVNTOPTIONS_USECHECKNOTIFY)) {
-    // æœ‰åŠ¹
-    if (s_hChangeFSStopEvent == NULL ||
-        s_hChangeFSStopEvent == INVALID_HANDLE_VALUE) {
-      hostdrvNT_beginMonitorChangeFS();
-    }
-    if (s_FSChanged) {
-      s_FSChanged = 0;
-      hostdrvNT_notifyChange(NULL, NP2_FILE_ACTION_ADDED, 1);
-    }
-  } else {
-    // ç„¡åŠ¹
-    if (s_hChangeFSStopEvent != NULL &&
-        s_hChangeFSStopEvent != INVALID_HANDLE_VALUE) {
-      hostdrvNT_stopMonitorChangeFS();
-    }
-  }
+void hostdrvNT_invokeMonitorChangeFS()
+{
+	if ((s_hostdrvNTOptions & HOSTDRVNTOPTIONS_USECHECKNOTIFY))
+	{
+		// —LŒø
+		if (s_hChangeFSStopEvent == NULL || s_hChangeFSStopEvent == INVALID_HANDLE_VALUE)
+		{
+			hostdrvNT_beginMonitorChangeFS();
+		}
+		if (s_FSChanged)
+		{
+			s_FSChanged = 0;
+			hostdrvNT_notifyChange(NULL, NP2_FILE_ACTION_ADDED, 1);
+		}
+	}
+	else
+	{
+		// –³Œø
+		if (s_hChangeFSStopEvent != NULL && s_hChangeFSStopEvent != INVALID_HANDLE_VALUE)
+		{
+			hostdrvNT_stopMonitorChangeFS();
+		}
+	}
 }
+
+#else
+// ”ñWindowsŠÂ‹«‚Íƒtƒ@ƒCƒ‹ŠÄ‹”ñ‘Î‰‚Æ‚·‚éB•K—v‚È‚çÀ‘•‚µ‚Ä‚à‚æ‚¢B
+void hostdrvNT_stopMonitorChangeFS(void)
+{
+	s_hThreadChangeFS = NULL;
+	s_hChangeFSStopEvent = NULL;
+}
+
+void hostdrvNT_beginMonitorChangeFS(void)
+{
+	hostdrvNT_stopMonitorChangeFS();
+}
+
+void hostdrvNT_invokeMonitorChangeFS(void)
+{
+	// ‘Î‰‚µ‚Ä‚¢‚È‚¢‚Ì‚Å‰½‚à‚µ‚È‚¢
+}
+#endif
+
 
 // ---------- Utility Functions
 
+static int hostdrvNT_isSafeHostPath(const WCHAR* path);
+
 /// <summary>
-/// ãƒ›ã‚¹ãƒˆå…±æœ‰ãƒ‰ãƒ©ã‚¤ãƒ–ã®ãƒ«ãƒ¼ãƒˆãƒ‘ã‚¹ã‚’å–å¾—ã—ã¦Unicodeæ–‡å­—åˆ—ã¨ã—ã¦è¨˜æ†¶ã€‚æœ€å¾Œã®åŒºåˆ‡ã‚Šæ–‡å­—ï¼ˆÂ¥ï¼‰ãŒã‚ã‚‹å ´åˆã¯å‰Šé™¤ã™ã‚‹ã€‚
+/// ƒzƒXƒg‹¤—Lƒhƒ‰ƒCƒu‚Ìƒ‹[ƒgƒpƒX‚ğæ“¾‚µ‚ÄUnicode•¶š—ñ‚Æ‚µ‚Ä‹L‰¯BÅŒã‚Ì‹æØ‚è•¶ši\j‚ª‚ ‚éê‡‚Ííœ‚·‚éB
 /// </summary>
-void hostdrvNT_updateHDrvRoot(void) {
-  TCHAR cfghdrvroot[MAX_PATH + 1] = {0};
-  int slen;
+void hostdrvNT_updateHDrvRoot(void)
+{
+	TCHAR cfghdrvroot[MAX_PATH + 1] = { 0 };
+	int slen;
 
-  // ãƒ‘ã‚¹é•·ã•ãŒåˆ¶é™ã‚ªãƒ¼ãƒãƒ¼ãªã‚‰ã‚¨ãƒ©ãƒ¼
-  if (_tcslen(np2cfg.hdrvroot) >= MAX_PATH) {
-    s_hdrvRoot[0] = 'Â¥0';
-    s_hdrvAcc = 0;
-    return;
-  }
+	hostdrvs_invalidateshortnamecache();
 
-  // ç›¸å¯¾ãƒ‘ã‚¹ãªã‚‰çµ¶å¯¾ãƒ‘ã‚¹ã¸å¤‰æ›
-  if (PathIsRelative(np2cfg.hdrvroot)) {
-    TCHAR pathbuf[MAX_PATH + 1] = {0};
-    TCHAR *pathtmp;
-    initgetfile(pathbuf, _countof(pathbuf));
-    pathtmp = _tcsrchr(pathbuf, 'Â¥Â¥');
-    if (pathtmp) {
-      *(pathtmp + 1) = 0;
-    } else {
-      pathbuf[0] = 0;
-    }
-    _tcscat(pathbuf, np2cfg.hdrvroot);
-    slen = GetFullPathName(pathbuf, MAX_PATH, cfghdrvroot, NULL);
-    if (slen <= 0 || slen > MAX_PATH) {
-      // ç„¡åŠ¹
-      s_hdrvRoot[0] = 'Â¥0';
-      s_hdrvAcc = 0;
-      return;
-    }
-  } else {
-    file_cpyname(cfghdrvroot, np2cfg.hdrvroot, NELEMENTS(cfghdrvroot));
-  }
+	// ƒpƒX’·‚³‚ª§ŒÀƒI[ƒo[‚È‚çƒGƒ‰[
+	if (_tcslen(np2cfg.hdrvroot) >= MAX_PATH)
+	{
+		s_hdrvRoot[0] = '\0';
+		s_hdrvAcc = 0;
+		return;
+	}
 
-  // ãƒ‘ã‚¹é•·ã•ãŒåˆ¶é™ã‚ªãƒ¼ãƒãƒ¼ãªã‚‰ã‚¨ãƒ©ãƒ¼
-#ifdef UNICODE
-  // å¤‰æ›ä¸è¦
-  wcscpy(s_hdrvRoot, cfghdrvroot);
+	// ‘Š‘ÎƒpƒX‚È‚çâ‘ÎƒpƒX‚Ö•ÏŠ·
+	if (PathIsRelative(np2cfg.hdrvroot)) {
+		TCHAR pathbuf[MAX_PATH + 1] = { 0 };
+		TCHAR* pathtmp;
+#if defined(WIN32) || defined(_WIN32)
+		initgetfile(pathbuf, _countof(pathbuf));
 #else
-  // Unicodeã¸å¤‰æ›
-  int lengthUnicode = MultiByteToWideChar(CP_ACP, 0, cfghdrvroot,
-                                          strlen(cfghdrvroot) + 1, NULL, 0);
-  if (lengthUnicode < 0 || lengthUnicode > MAX_PATH) {
-    s_hdrvRoot[0] = 'Â¥0';
-    s_hdrvAcc = 0;
-    return;
-  }
-  ZeroMemory(s_hdrvRoot, sizeof(s_hdrvRoot));
-  MultiByteToWideChar(CP_UTF8, 0, cfghdrvroot, strlen(cfghdrvroot) + 1,
-                      s_hdrvRoot, lengthUnicode);
+		{
+			const OEMCHAR *hostBase = file_getcd(OEMTEXT(""));
+			if (hostBase == NULL) { s_hdrvRoot[0] = 0; s_hdrvAcc = 0; return; }
+			file_cpyname((OEMCHAR *)pathbuf, hostBase, NELEMENTS(pathbuf));
+		}
+#endif
+		pathtmp = _tcsrchr(pathbuf, '\\');
+		if (pathtmp) {
+			*(pathtmp + 1) = 0;
+		}
+		else {
+			pathbuf[0] = 0;
+		}
+		_tcscat(pathbuf, np2cfg.hdrvroot);
+		slen = GetFullPathName(pathbuf, MAX_PATH, cfghdrvroot, NULL);
+		if (slen <= 0 || slen > MAX_PATH) {
+			// –³Œø
+			s_hdrvRoot[0] = '\0';
+			s_hdrvAcc = 0;
+			return;
+		}
+	}
+	else {
+		file_cpyname(cfghdrvroot, np2cfg.hdrvroot, NELEMENTS(cfghdrvroot));
+	}
+
+	// ƒpƒX’·‚³‚ª§ŒÀƒI[ƒo[‚È‚çƒGƒ‰[
+#ifdef UNICODE
+	// •ÏŠ·•s—v
+	wcscpy(s_hdrvRoot, cfghdrvroot);
+#else
+	// Unicode‚Ö•ÏŠ·
+	int lengthUnicode = MultiByteToWideChar(CP_ACP, 0, cfghdrvroot, strlen(cfghdrvroot) + 1, NULL, 0);
+	if (lengthUnicode < 0 || lengthUnicode > MAX_PATH)
+	{
+		s_hdrvRoot[0] = '\0';
+		s_hdrvAcc = 0;
+		return;
+	}
+	ZeroMemory(s_hdrvRoot, sizeof(s_hdrvRoot));
+	MultiByteToWideChar(CP_UTF8, 0, cfghdrvroot, strlen(cfghdrvroot) + 1, s_hdrvRoot, lengthUnicode);
 #endif
 
-  // æœ€å¾Œã®æ–‡å­—ãŒÂ¥ãªã‚‰é™¤å»
-  slen = wcslen(s_hdrvRoot);
-  if (slen > 0 && s_hdrvRoot[slen - 1] == 'Â¥Â¥') {
-    s_hdrvRoot[slen - 1] = 'Â¥0';
-  }
-  s_hdrvAcc = np2cfg.hdrvacc;
+	// ÅŒã‚Ì•¶š‚ª\‚È‚çœ‹
+	slen = wcslen(s_hdrvRoot);
+	if (slen > 0 && s_hdrvRoot[slen - 1] == '\\' &&
+		!(slen == 3 && s_hdrvRoot[1] == HD_WC(':') && s_hdrvRoot[2] == HD_WC('\\')))
+	{
+		s_hdrvRoot[slen - 1] = '\0';
+	}
+	s_hdrvAcc = np2cfg.hdrvacc;
 
-  // ãƒ¢ãƒ‹ã‚¿ãƒ¼å¯¾è±¡æ›´æ–°
-  hostdrvNT_beginMonitorChangeFS();
+	// ƒ‚ƒjƒ^[‘ÎÛXV
+	hostdrvNT_beginMonitorChangeFS();
 
-  // æ›´æ–°ã™ã‚‹
-  s_FSChanged = 1;
+	// XV‚·‚é
+	s_FSChanged = 1;
 }
 
-static int hostdrvNT_getEmptyFile() {
-  int i;
-  for (i = 1; i < NP2HOSTDRVNT_FILES_MAX; i++) { // 0ã¯ä½¿ã‚ãªã„ã“ã¨ã«ã™ã‚‹
-    if (!hostdrvNT.files[i].fileName)
-      return i;
-  }
-  return -1;
+#if !defined(WIN32) && !defined(_WIN32)
+static int hostdrvNT_sfn_wtooem(const WCHAR *src, OEMCHAR *dst, UINT cchDst)
+{
+	return src && dst && cchDst &&
+		WideCharToMultiByte(CP_UTF8, 0, src, -1, dst, (int)cchDst, NULL, NULL) != 0;
 }
-static void hostdrvNT_preCloseFile(int index) {
-  if (hostdrvNT.files[index].hFile &&
-      hostdrvNT.files[index].hFile != INVALID_HANDLE_VALUE) {
-    CloseHandle(hostdrvNT.files[index].hFile);
-    hostdrvNT.files[index].hFile = NULL;
-  }
+static int hostdrvNT_sfn_oemtow(const OEMCHAR *src, WCHAR *dst, UINT cchDst)
+{
+	return src && dst && cchDst &&
+		MultiByteToWideChar(CP_UTF8, 0, src, -1, dst, (int)cchDst) != 0;
 }
-static void hostdrvNT_closeFile(int index) {
-  if (hostdrvNT.files[index].hFindFile &&
-      hostdrvNT.files[index].hFindFile != INVALID_HANDLE_VALUE) {
-    FindClose(hostdrvNT.files[index].hFindFile);
-    hostdrvNT.files[index].hFindFile = NULL;
-  }
-  if (hostdrvNT.files[index].hFile &&
-      hostdrvNT.files[index].hFile != INVALID_HANDLE_VALUE) {
-    CloseHandle(hostdrvNT.files[index].hFile);
-    hostdrvNT.files[index].hFile = NULL;
-  }
-  if (hostdrvNT.files[index].deleteOnClose) {
-    // å‰Šé™¤æ¨©é™ãŒã‚ã‚Œã°å‰Šé™¤
-    if (s_hdrvAcc & HDFMODE_DELETE) {
-      if (hostdrvNT.files[index].isDirectory) {
-        RemoveDirectoryW(hostdrvNT.files[index].hostFileName);
-      } else {
-        DeleteFileW(hostdrvNT.files[index].hostFileName);
-      }
-      hostdrvNT_notifyChange(hostdrvNT.files[index].hostFileName,
-                             NP2_FILE_ACTION_REMOVED, 0);
-    }
-    hostdrvNT.files[index].deleteOnClose = 0;
-  }
-  if (hostdrvNT.files[index].fileName != NULL) {
-    free(hostdrvNT.files[index].fileName);
-    hostdrvNT.files[index].fileName = NULL;
-  }
-  if (hostdrvNT.files[index].hostFileName != NULL) {
-    free(hostdrvNT.files[index].hostFileName);
-    hostdrvNT.files[index].hostFileName = NULL;
-  }
-}
-static void hostdrvNT_closeAllFiles() {
-  int i;
-  // 0ã¯ä½¿ã‚ãªã„ã“ã¨ã«ã™ã‚‹
-  for (i = 1; i < NP2HOSTDRVNT_FILES_MAX; i++) {
-    hostdrvNT_closeFile(i);
-  }
-}
-static int hostdrvNT_reopenFile(int index) {
-  HANDLE fh;
-  NP2HOSTDRVNT_FILEINFO *fi;
+#endif
 
-  if (index < 0 || index >= NP2HOSTDRVNT_FILES_MAX)
-    return 0;
+// SFNƒ}ƒbƒv‚©‚çSFN‚ğˆø‚­
+static int hostdrvNT_getAlternateShortName(const NP2HOSTDRVNT_FILEINFO *fi, WCHAR *shortName, UINT cchShortName)
+{
+	WCHAR parent[MAX_PATH];
+	WCHAR longName[MAX_PATH];
+	WCHAR *sep;
 
-  fi = &hostdrvNT.files[index];
-  fh = fi->hFile;
-  if (!fh || fh == INVALID_HANDLE_VALUE) {
-    TRACEOUTW((L"REPOEN: %d %s", index, fi->hostFileName));
-    if (fi->isDirectory) {
-      // ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®å ´åˆã®ç‰¹ä¾‹ï¼ˆå®Ÿè³ªçš„ã«ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªæ—¥ä»˜å¤‰æ›´å°‚ç”¨ï¼‰
-      if ((fi->hFile = CreateFileW(fi->hostFileName, FILE_WRITE_ATTRIBUTES,
-                                   FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
-                                   OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS,
-                                   NULL)) == INVALID_HANDLE_VALUE) {
-        DWORD error = GetLastError();
-        TRACEOUTW((L"OPEN FILE ERROR (code %d): %d %s", error, index,
-                   fi->hostFileName));
-        fi->hFile = NULL;
-        return 0;
-      }
-    } else {
-      // ãƒ•ã‚¡ã‚¤ãƒ«ã®å ´åˆ
-      if ((fi->hFile = CreateFileW(
-               fi->hostFileName, fi->hostdrvWinAPIDesiredAccess,
-               fi->hostdrvShareAccess, NULL, fi->hostdrvWinAPICreateDisposition,
-               fi->hostdrvFileAttributes, NULL)) == INVALID_HANDLE_VALUE) {
-        DWORD error = GetLastError();
-        TRACEOUTW((L"OPEN FILE ERROR (code %d): %d %s", error, index,
-                   fi->hostFileName));
-        fi->hFile = NULL;
-        return 0;
-      }
-    }
-  }
-  return 1;
+	if (fi == NULL || fi->hostFileName == NULL || shortName == NULL ||
+		cchShortName == 0 || fi->isRoot)
+	{
+		return 0;
+	}
+	if (wcslen(fi->hostFileName) >= NELEMENTS(parent))
+	{
+		return 0;
+	}
+
+	wcscpy(parent, fi->hostFileName);
+	sep = wcsrchr(parent, HD_WC('\\'));
+#if !defined(WIN32) && !defined(_WIN32)
+	{
+		WCHAR *slash = wcsrchr(parent, HD_WC('/'));
+		if (slash != NULL && (sep == NULL || slash > sep))
+		{
+			sep = slash;
+		}
+	}
+#endif
+	if (sep == NULL || sep[1] == HD_WC('\0'))
+	{
+		return 0;
+	}
+	if (wcslen(sep + 1) >= NELEMENTS(longName))
+	{
+		return 0;
+	}
+	wcscpy(longName, sep + 1);
+
+	// ƒ‹[ƒg‚Ì‚Í\‚ğc‚·
+	if (sep == parent + 2 && parent[1] == HD_WC(':'))
+	{
+		sep[1] = HD_WC('\0');
+	}
+	else if (sep == parent)
+	{
+		sep[1] = HD_WC('\0');
+	}
+	else
+	{
+		*sep = HD_WC('\0');
+	}
+
+#if defined(WIN32) || defined(_WIN32)
+	return hostdrvs_lookupshortnamecached(parent, longName, shortName, cchShortName) ? 1 : 0;
+#else
+	{
+		OEMCHAR oemParent[MAX_PATH * 4];
+		OEMCHAR oemLong[MAX_PATH * 4];
+		OEMCHAR oemShort[64];
+
+		if (!hostdrvNT_sfn_wtooem(parent, oemParent, NELEMENTS(oemParent)) ||
+			!hostdrvNT_sfn_wtooem(longName, oemLong, NELEMENTS(oemLong)) ||
+			!hostdrvs_lookupshortnamecached(oemParent, oemLong, oemShort, NELEMENTS(oemShort)) ||
+			!hostdrvNT_sfn_oemtow(oemShort, shortName, cchShortName))
+		{
+			return 0;
+		}
+		return 1;
+	}
+#endif
 }
 
-static int hostdrvNT_getHostPath(WCHAR *virPath, WCHAR *hostPath, UINT8 *isRoot,
-                                 int getTargetDir) {
-  WCHAR hdrvPath[MAX_PATH];
-  WCHAR pathTmp[MAX_PATH];
-  UINT32 hdrvPathLen = 0;
-
-  wcscpy(hdrvPath, s_hdrvRoot);
-  hdrvPathLen = wcslen(hdrvPath);
-
-  // ãƒ›ã‚¹ãƒˆã®ãƒ‘ã‚¹ã¨çµåˆ
-  if (virPath[0] == 'Â¥Â¥')
-    virPath++;
-  hostPath[0] = 'Â¥0';
-  if (!PathCombineW(pathTmp, hdrvPath, virPath)) {
-    return 1;
-  }
-  // .ã¨..ã‚’æ¶ˆã™
-  if (!PathCanonicalizeW(hostPath, pathTmp)) {
-    return 1;
-  }
-
-  // ãƒ›ã‚¹ãƒˆã®ãƒ‘ã‚¹éƒ¨åˆ†ãŒç„¡ããªã£ã¦ã„ãŸã‚‰æ‹’å¦
-  if (wcsncmp(hdrvPath, hostPath, hdrvPathLen) != 0)
-    return 1;
-
-  // ãƒ«ãƒ¼ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªåˆ¤å®š
-  if (wcslen(hostPath) > hdrvPathLen + 1) {
-    UINT32 vlen = wcslen(hostPath + hdrvPathLen + 1);
-    *isRoot =
-        (vlen == 0 || (vlen == 1 && *(hostPath + hdrvPathLen + 1) == 'Â¥Â¥'));
-  } else {
-    *isRoot = 1;
-  }
-
-  // å¿…è¦ãªã‚‰ãƒ•ã‚¡ã‚¤ãƒ«åã‹ã‚‰ãã®ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹ã¸å¤‰æ›
-  if (getTargetDir) {
-    if (*isRoot) {
-      // ãƒ«ãƒ¼ãƒˆãªã‚‰ãƒ›ã‚¹ãƒˆã®ãƒ‘ã‚¹ã¨åŒã˜
-      wcscpy(hostPath, hdrvPath);
-    } else {
-      // æœ€å¾Œã®åŒºåˆ‡ã‚Šæ–‡å­—ä»¥é™ã‚’å‰Šé™¤
-      WCHAR *sepaPos = wcsrchr(hostPath, 'Â¥Â¥');
-      if (sepaPos != NULL) {
-        *sepaPos = 'Â¥0';
-      }
-    }
-  }
-
-  return 0;
-}
-
-static int hostdrvNT_hasInvalidWildcard(WCHAR *name) {
-  int i;
-  int hasWildcard = 0;
-  for (i = 0; name[i] != 'Â¥0'; i++) {
-    WCHAR c = name[i];
-    if (!hasWildcard) {
-      if ((c == L'*' || c == L'?')) {
-        hasWildcard = 1;
-      }
-    } else {
-      if ((c == L'Â¥Â¥')) {
-        return 1;
-      }
-    }
-  }
-  return 0;
-}
-
-static void hostdrvNT_memread(UINT32 vaddr, void *buffer, UINT32 size) {
-  UINT32 readaddr = vaddr;
-  UINT32 readsize = size;
-  UINT8 *readptr = (UINT8 *)buffer;
-  while (readsize >= 4) {
-    *((UINT32 *)readptr) = cpu_kmemoryread_d(readaddr);
-    readsize -= 4;
-    readptr += 4;
-    readaddr += 4;
-  }
-  while (readsize > 0) {
-    *readptr = cpu_kmemoryread(readaddr);
-    readsize--;
-    readptr++;
-    readaddr++;
-  }
-}
-static void hostdrvNT_memwrite(UINT32 vaddr, void *buffer, UINT32 size) {
-  UINT32 writeaddr = vaddr;
-  UINT32 writesize = size;
-  UINT8 *writeptr = (UINT8 *)buffer;
-  while (writesize >= 4) {
-    cpu_kmemorywrite_d(writeaddr, *((UINT32 *)writeptr));
-    writesize -= 4;
-    writeptr += 4;
-    writeaddr += 4;
-  }
-  while (writesize > 0) {
-    cpu_kmemorywrite(writeaddr, *writeptr);
-    writesize--;
-    writeptr++;
-    writeaddr++;
-  }
-}
-
-static void hostdrvNT_readFileObject(HOSTDRVNT_INVOKEINFO *invokeInfo,
-                                     NP2_FILE_OBJECT *lpFileObject) {
-  hostdrvNT_memread(invokeInfo->stack.fileObject, lpFileObject,
-                    sizeof(NP2_FILE_OBJECT));
-}
-static WCHAR *hostdrvNT_readUnicodeString(UINT32 vaddr, UINT32 length) {
-  WCHAR *unicodeString = (WCHAR *)malloc(length + sizeof(WCHAR));
-  if (!unicodeString)
-    return NULL;
-  ZeroMemory(unicodeString, length + sizeof(WCHAR));
-  hostdrvNT_memread(vaddr, unicodeString, length);
-  return unicodeString;
-}
-static int hostdrvNT_writeQueryInformationData(HOSTDRVNT_INVOKEINFO *invokeInfo,
-                                               void *srcBuffer,
-                                               UINT32 srcLength,
-                                               int allowOverflow) {
-  UINT32 length =
-      invokeInfo->stack.parameters.queryFile
-          .Length; // ã©ã®QueryInformationã‚‚æœ€åˆã®ãƒ‡ãƒ¼ã‚¿ãŒãƒãƒƒãƒ•ã‚¡é•·ã•ãªã®ã§ã“ã‚Œã§ã‚ˆã„
-  if (length < srcLength) {
-    if (!allowOverflow) {
-      return 0;
-    }
-    srcLength = length;
-  }
-
-  // æ›¸ãè¾¼ã¿
-  hostdrvNT_memwrite(invokeInfo->outBufferAddr, srcBuffer, srcLength);
-
-  return srcLength;
-}
-static void
-hostdrvNT_setQueryInformationResult(HOSTDRVNT_INVOKEINFO *invokeInfo,
-                                    void *returnData, UINT32 dataLen,
-                                    int allowOverflow) {
-  if (returnData) {
-    UINT32 writeLen = 0;
-    writeLen = hostdrvNT_writeQueryInformationData(invokeInfo, returnData,
-                                                   dataLen, allowOverflow);
-    if (writeLen < dataLen) {
-      if (allowOverflow) {
-        TRACEOUTW((L"OVERFLOW"));
-        cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_OVERFLOW);
-        cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, writeLen); // Information
-      } else {
-        TRACEOUTW((L"BUFFER_TOO_SMALL"));
-        cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_TOO_SMALL);
-        cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      }
-    } else {
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, writeLen); // Information
-    }
-  } else {
-    cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-  }
-}
-static int hostdrvNT_readSetInformationData(HOSTDRVNT_INVOKEINFO *invokeInfo,
-                                            void *dstBuffer, UINT32 dstLength) {
-  UINT32 length = invokeInfo->stack.parameters.queryFile.Length;
-  if (length < dstLength) {
-    cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_TOO_SMALL);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    return 0;
-  }
-
-  // èª­ã¿è¾¼ã¿
-  hostdrvNT_memread(invokeInfo->inBufferAddr, dstBuffer, dstLength);
-
-  return dstLength;
-}
-
-static NP2HOSTDRVNT_FILEINFO *
-hostdrvNT_getFileInfo(NP2_FILE_OBJECT *fileObject) {
-  UINT32 fsContextFileIndex =
-      cpu_kmemoryread_d(fileObject->FsContext + s_fsContextUserDataOffset);
-  if (fsContextFileIndex == 0 || NP2HOSTDRVNT_FILES_MAX <= fsContextFileIndex ||
-      hostdrvNT.files[fsContextFileIndex].fileName == NULL) {
-    return NULL;
-  }
-  TRACEOUTW((L"FILE #%d", fsContextFileIndex));
-  return &hostdrvNT.files[fsContextFileIndex];
+static int hostdrvNT_getEmptyFile()
+{
+	int i;
+	for (i = 1; i < NP2HOSTDRVNT_FILES_MAX; i++)
+	{ // 0‚Íg‚í‚È‚¢‚±‚Æ‚É‚·‚é
+		if (!hostdrvNT.files[i].fileName) return i;
+	}
+	return -1;
 }
 
 /// <summary>
-/// IRP_MN_NOTIFY_CHANGE_DIRECTORYã§ç›£è¦–ä¸­ã®å¤‰æ›´ã‚’å‡¦ç†ã™ã‚‹
+/// ’Z‚¢ƒtƒ@ƒCƒ‹–¼ƒLƒƒƒbƒVƒ…íœ
 /// </summary>
-/// <param
-/// name="changedHostFileName">å¤‰æ›´ã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«åã€‚ä»®æƒ³ãƒ‘ã‚¹ã§ã¯ãªããƒ›ã‚¹ãƒˆã®ãƒ•ã‚¡ã‚¤ãƒ«åã§æŒ‡å®šã€‚NULLã«ã™ã‚‹ã¨ç„¡æ¡ä»¶ã§æ›´æ–°é€šçŸ¥ã€‚</param>
-/// <param name="action">é€šçŸ¥ã™ã‚‹ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ NP2_FILE_ACTION_ã€œã‚’æŒ‡å®š</param>
-/// <param name="forceRequestEnumDir">å¼·åˆ¶æ›´æ–°ã•ã›ã‚‹å ´åˆã¯trueã€‚XXX:
-/// 1å€‹ã§é€šçŸ¥ã§ããªã„å ´åˆã¯ã“ã‚Œã‚’ä½¿ã†ã€‚</param>
-static void hostdrvNT_notifyChange(WCHAR *changedHostFileName, UINT32 action,
-                                   UINT32 forceRequestEnumDir) {
-  WCHAR changedHostDir[MAX_PATH]; // å¤‰æ›´ã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ã‚‹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªå
-  WCHAR changedHostFileNameTmp[MAX_PATH];
-  NP2HOSTDRVNT_FILEINFO *fi;
-  int i;
-  WCHAR hdrvPath[MAX_PATH];
-  int forceMatch = changedHostFileName == NULL;
-
-  wcscpy(hdrvPath, s_hdrvRoot);
-
-  for (i = 0; i < s_pendingListCount; i++) {
-    UINT32 irpListAddr = s_pendingIrpListAddr + i * sizeof(UINT32);
-    UINT32 fileIdxListAddr = s_pendingAliveListAddr + i * sizeof(UINT32);
-    UINT32 irpAddr = cpu_kmemoryread_d(irpListAddr);
-    UINT32 fileIdx = cpu_kmemoryread_d(fileIdxListAddr);
-    if (irpAddr != 0 && fileIdx != 0) {
-      DWORD attr; // ãƒ•ã‚¡ã‚¤ãƒ«å±æ€§å‡¦ç†ç”¨ãƒ†ãƒ³ãƒãƒ©ãƒª
-      UINT32 irpStatusAddr =
-          irpAddr + 4 + 4 + 4 + 4 + 4 +
-          4; // IRPæ§‹é€ ä½“ã®StatusãŒæ›¸ãè¾¼ã¾ã‚Œã¦ã„ã‚‹ä½ç½®ã®ã‚¢ãƒ‰ãƒ¬ã‚¹
-      UINT32 irpInfoAddr =
-          irpStatusAddr +
-          4; // IRPæ§‹é€ ä½“ã®InformationãŒæ›¸ãè¾¼ã¾ã‚Œã¦ã„ã‚‹ä½ç½®ã®ã‚¢ãƒ‰ãƒ¬ã‚¹
-      UINT32 irpOutBufferAddr;     // SystemBufferã®ã‚¢ãƒ‰ãƒ¬ã‚¹
-      UINT32 length;               // SystemBufferã®é•·ã•
-      UINT32 completionFilter = 0; // ç›£è¦–å¯¾è±¡ã®æ¡ä»¶ã®ãƒ•ã‚£ãƒ«ã‚¿
-      UINT32 irpstackFlags = 0;    // IRPã‚¹ã‚¿ãƒƒã‚¯ã®Flags
-      UINT32 watchTree = 0; // ä¸‹ã«ã‚ã‚‹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ„ãƒªãƒ¼å…¨ä½“ã‚’ç›£è¦–
-      UINT32 match = 0; // ä»Šå›ã®å¤‰æ›´ãŒæ¡ä»¶ã«ãƒãƒƒãƒã—ã¦ã„ã‚‹ã‹ã©ã†ã‹
-
-      // ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—
-      fi = &hostdrvNT.files[fileIdx];
-      if (fi->fileName == NULL) {
-        // ãƒ•ã‚¡ã‚¤ãƒ«ãŒé–‰ã˜ã¦ã„ãŸã‚‰ã‚‚ã†ç›£è¦–ã§ããªã„ã®ã§ã‚¨ãƒ©ãƒ¼
-        cpu_kmemorywrite_d(irpStatusAddr, NP2_STATUS_INVALID_PARAMETER);
-        cpu_kmemorywrite_d(irpInfoAddr, 0);     // Information
-        cpu_kmemorywrite_d(fileIdxListAddr, 0); // ã‚¤ãƒ™ãƒ³ãƒˆç™ºç”Ÿè¦æ±‚
-        if (s_pendingIndexOrCompleteCount < 0)
-          s_pendingIndexOrCompleteCount = 0;
-        s_pendingIndexOrCompleteCount++;
-        continue;
-      }
-
-      // æ›¸ãè¾¼ã¿å…ˆãƒ¡ãƒ¢ãƒªã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å–å¾—
-      irpOutBufferAddr = cpu_kmemoryread_d(
-          irpAddr + 4 + 4 + 4); // IRPæ§‹é€ ä½“ã®SystemBufferãŒæ›¸ãè¾¼ã¾ã‚Œã¦ã„ã‚‹ä½ç½®
-      if (irpOutBufferAddr == NULL) {
-        // NULLã¯ãŠã‹ã—ã„ã®ã§ã‚¨ãƒ©ãƒ¼
-        cpu_kmemorywrite_d(irpStatusAddr, NP2_STATUS_INVALID_PARAMETER);
-        cpu_kmemorywrite_d(irpInfoAddr, 0);     // Information
-        cpu_kmemorywrite_d(fileIdxListAddr, 0); // ã‚¤ãƒ™ãƒ³ãƒˆç™ºç”Ÿè¦æ±‚
-        if (s_pendingIndexOrCompleteCount < 0)
-          s_pendingIndexOrCompleteCount = 0;
-        s_pendingIndexOrCompleteCount++;
-        continue;
-      }
-
-      // æ›¸ãè¾¼ã¿å…ˆã‚µã‚¤ã‚ºã‚’å–å¾—ã€€XXX:è¨˜éŒ²ã™ã‚‹å ´æ‰€ãŒãªã„ã®ã§SystemBufferã®æœ€åˆã®éƒ¨åˆ†ã‚’å€Ÿã‚Šã¦ã„ã‚‹
-      length = cpu_kmemoryread_d(irpOutBufferAddr);
-
-      // ãƒ•ã‚£ãƒ«ã‚¿æ¡ä»¶ã‚’å–å¾—ã€€XXX:è¨˜éŒ²ã™ã‚‹å ´æ‰€ãŒãªã„ã®ã§SystemBufferã®æœ€åˆã®éƒ¨åˆ†ã‚’å€Ÿã‚Šã¦ã„ã‚‹
-      completionFilter = cpu_kmemoryread_d(irpOutBufferAddr + 4);
-      if (!((completionFilter & (NP2_FILE_NOTIFY_CHANGE_FILE_NAME |
-                                 NP2_FILE_NOTIFY_CHANGE_DIR_NAME)) &&
-            (action == NP2_FILE_ACTION_ADDED ||
-             action == NP2_FILE_ACTION_REMOVED ||
-             action == NP2_FILE_ACTION_MODIFIED ||
-             action == NP2_FILE_ACTION_REMOVED_BY_DELETE ||
-             action == NP2_FILE_ACTION_RENAMED_OLD_NAME ||
-             action == NP2_FILE_ACTION_RENAMED_NEW_NAME)) &&
-          !((completionFilter & NP2_FILE_NOTIFY_CHANGE_ATTRIBUTES) &&
-            (action == NP2_FILE_ACTION_MODIFIED)) &&
-          !((completionFilter & NP2_FILE_NOTIFY_CHANGE_SIZE) &&
-            (action == NP2_FILE_ACTION_MODIFIED)) &&
-          !((completionFilter & NP2_FILE_NOTIFY_CHANGE_LAST_WRITE) &&
-            (action == NP2_FILE_ACTION_MODIFIED)) &&
-          !((completionFilter & NP2_FILE_NOTIFY_CHANGE_LAST_ACCESS) &&
-            (action == NP2_FILE_ACTION_MODIFIED)) &&
-          !((completionFilter & NP2_FILE_NOTIFY_CHANGE_CREATION) &&
-            (action == NP2_FILE_ACTION_MODIFIED)) &&
-          !((completionFilter & NP2_FILE_NOTIFY_CHANGE_SECURITY) &&
-            (action == NP2_FILE_ACTION_MODIFIED))) {
-        // æ¡ä»¶ã«åˆã‚ãªã„ã®ã§ã‚¹ã‚­ãƒƒãƒ—
-        continue;
-      }
-
-      // ãƒ•ãƒ©ã‚°ã‚’å–å¾—ã€€XXX:è¨˜éŒ²ã™ã‚‹å ´æ‰€ãŒãªã„ã®ã§SystemBufferã®æœ€åˆã®éƒ¨åˆ†ã‚’å€Ÿã‚Šã¦ã„ã‚‹
-      irpstackFlags = cpu_kmemoryread(irpOutBufferAddr + 8);
-      watchTree = !!(irpstackFlags & NP2_SL_WATCH_TREE);
-
-      if (forceMatch) {
-        // ãƒ›ã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ãŒNULLãªã‚‰ç„¡æ¡ä»¶é€šçŸ¥ã¨ã™ã‚‹
-        wcscpy(changedHostFileNameTmp, fi->hostFileName);
-        changedHostFileName = changedHostFileNameTmp;
-        match = 1;
-      } else {
-        // ãƒ•ã‚¡ã‚¤ãƒ«åã‚’é™¤ã„ã¦ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨åˆ†ã‚’å–å¾—
-        wcscpy(changedHostDir, changedHostFileName);
-        attr = GetFileAttributesW(changedHostDir);
-        if (attr == INVALID_FILE_ATTRIBUTES ||
-            !(attr & FILE_ATTRIBUTE_DIRECTORY)) {
-          // ãƒ•ã‚¡ã‚¤ãƒ«ãªã‚‰æœ€å¾Œã®ãƒ‰ãƒ©ã‚¤ãƒ–åŒºåˆ‡ã‚Šæ–‡å­—ä»¥é™ã‚’ã‚«ãƒƒãƒˆ
-          WCHAR *hostSepa;
-          if (hostSepa = wcsrchr(changedHostDir, 'Â¥Â¥')) {
-            *hostSepa = 'Â¥0';
-          }
-        } else {
-          // ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãªã‚‰æœ€å¾Œã®æ–‡å­—ãŒÂ¥ã®æ™‚ã‚«ãƒƒãƒˆ
-          UINT32 changedHostDirLen = wcslen(changedHostDir);
-          if (changedHostDirLen >= 1 &&
-              changedHostDir[changedHostDirLen - 1] == 'Â¥Â¥') {
-            changedHostDir[changedHostDirLen - 1] = 'Â¥0';
-          }
-        }
-
-        // ãƒ‘ã‚¹ã‚’æ¯”è¼ƒã—ã¦å¿…è¦ã«å¿œã˜ã¦å¤‰æ›´é€šçŸ¥
-        if (wcscmp(fi->hostFileName, changedHostDir) == 0) {
-          // å®Œå…¨ä¸€è‡´ãƒ‘ã‚¿ãƒ¼ãƒ³
-          match = 1;
-        } else if (watchTree) {
-          // ä¸‹ã®éšå±¤ã¾ã§è¦‹ã‚‹ãƒ¢ãƒ¼ãƒ‰
-          UINT32 path1Len = 0;
-          UINT32 path2Len = 0;
-          path1Len = wcslen(fi->hostFileName);
-          path2Len = wcslen(changedHostDir);
-          if (path1Len < path2Len &&
-              wcsncmp(fi->hostFileName, changedHostDir, path1Len) == 0) {
-            // ä¸‹å±¤ä¸€è‡´ãƒ‘ã‚¿ãƒ¼ãƒ³
-            match = 1;
-          }
-        }
-      }
-
-      // æ¡ä»¶ã«ä¸€è‡´ã—ãŸ
-      if (match) {
-        WCHAR *fileNamePart;
-        NP2_FILE_NOTIFY_INFORMATION info = {0};
-
-        // ç›£è¦–ã—ã¦ã„ã‚‹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‹ã‚‰ã®ç›¸å¯¾ãƒ‘ã‚¹ã«å¤‰æ›
-        if (wcslen(changedHostFileName) > wcslen(fi->hostFileName) + 1) {
-          fileNamePart = changedHostFileName + wcslen(fi->hostFileName) + 1;
-        } else {
-          fileNamePart = changedHostFileName + wcslen(fi->hostFileName);
-        }
-
-        // å¤‰æ›´å†…å®¹ã‚’ã‚»ãƒƒãƒˆ
-        info.Action = action;
-
-        // ãƒ•ã‚¡ã‚¤ãƒ«åã‚’ã‚»ãƒƒãƒˆ
-        info.FileNameLength = wcslen(fileNamePart) * sizeof(WCHAR);
-        wcscpy(info.FileName, fileNamePart);
-
-        // XXX: æ¬¡ã‚¨ãƒ³ãƒˆãƒªã¯ä½¿ã‚ãªã„ã“ã¨ã«ã™ã‚‹
-        info.NextEntryOffset = 0;
-
-        // æ›¸ãè¾¼ã¿
-        if (sizeof(info) <= length && !forceRequestEnumDir) {
-          length = sizeof(info);
-          cpu_kmemorywrite_d(irpStatusAddr, NP2_STATUS_SUCCESS);
-        } else {
-          cpu_kmemorywrite_d(irpStatusAddr, NP2_STATUS_NOTIFY_ENUM_DIR);
-        }
-        hostdrvNT_memwrite(irpOutBufferAddr, &info, length);
-
-        TRACEOUTW((L"FILE CHANGED: %s", fileNamePart));
-        cpu_kmemorywrite_d(irpInfoAddr,
-                           length); // Informationï¼ˆæ›¸ãè¾¼ã‚“ã ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºï¼‰
-        cpu_kmemorywrite_d(fileIdxListAddr, 0); // ã‚¤ãƒ™ãƒ³ãƒˆç™ºç”Ÿè¦æ±‚
-        if (s_pendingIndexOrCompleteCount < 0)
-          s_pendingIndexOrCompleteCount = 0;
-        s_pendingIndexOrCompleteCount++;
-      }
-    }
-  }
+static void hostdrvNT_clearShortNameMap(NP2HOSTDRVNT_FILEINFO *fi)
+{
+	if (fi->sfnMap != NULL)
+	{
+		hostdrvs_freeshortnamemap((HDRVSFNENTRY *)fi->sfnMap);
+		fi->sfnMap = NULL;
+	}
+	fi->sfnCount = 0;
+	fi->sfnMapBuilt = 0;
 }
 
-static int hostdrvNT_getOneEntry(NP2HOSTDRVNT_FILEINFO *fi,
-                                 NP2_FILE_BOTH_DIR_INFORMATION *dirInfo,
-                                 WCHAR *pattern) {
-  WIN32_FIND_DATA findFileData;
-  UINT32 bytesReturned;
+/// <summary>
+/// ’Z‚¢ƒtƒ@ƒCƒ‹–¼ƒLƒƒƒbƒVƒ…‚ª‚ ‚é‚©Šm”Fi•K—v‚È‚ç¶¬j
+/// </summary>
+static int hostdrvNT_ensureShortNameMap(NP2HOSTDRVNT_FILEINFO *fi)
+{
+	HDRVSFNENTRY *entries;
+	UINT count;
 
-  if (fi->hFindFile == NULL || fi->hFindFile == INVALID_HANDLE_VALUE) {
-    WCHAR defaultPattern[] = L"*";
-    WCHAR findPath[MAX_PATH * 2];
-    UINT32 findPathLen = 0;
-    if (pattern == NULL) {
-      pattern = defaultPattern;
-    }
-    if (wcslen(fi->hostFileName) >= MAX_PATH || wcslen(pattern) >= MAX_PATH) {
-      return 0;
-    }
-    wcscpy(findPath, fi->hostFileName);
-    findPathLen = wcslen(findPath);
-    if (fi->isDirectory) {
-      if (findPath[findPathLen - 1] != 'Â¥Â¥') {
-        wcscat(findPath, L"Â¥Â¥");
-      }
-      wcscat(findPath, pattern);
-    }
-    fi->hFindFile = FindFirstFile(findPath, &findFileData);
-    if (fi->hFindFile == INVALID_HANDLE_VALUE) {
-      fi->hFindFile = NULL;
-      return 0;
-    }
-  } else {
-    if (!FindNextFile(fi->hFindFile, &findFileData)) {
-      return 0;
-    }
-  }
-  // é•·ã™ãã‚‹ãƒ•ã‚¡ã‚¤ãƒ«åã¯æ‹’å¦ã€‚ãƒ«ãƒ¼ãƒˆãªã‚‰.ã¨..ã¯åˆ—æŒ™é™¤å¤–
-  while (1) {
-    if ((!fi->isRoot || wcscmp(findFileData.cFileName, L".") != 0 &&
-                            wcscmp(findFileData.cFileName, L"..") != 0) &&
-        wcslen(findFileData.cFileName) < MAX_PATH) {
-      break;
-    }
-    if (!FindNextFile(fi->hFindFile, &findFileData)) {
-      return 0;
-    }
-  }
-
-  bytesReturned = sizeof(NP2_FILE_BOTH_DIR_INFORMATION);
-  if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-    // ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
-    // WCHAR longPath[MAX_PATH];
-    // WCHAR shortPath[MAX_PATH];
-    dirInfo->FileNameLength = wcslen(findFileData.cFileName) * sizeof(WCHAR);
-    wcscpy(dirInfo->FileName, findFileData.cFileName);
-    dirInfo->FileAttributes = findFileData.dwFileAttributes;
-    dirInfo->CreationTime = *((UINT64 *)&findFileData.ftCreationTime);
-    dirInfo->LastAccessTime = *((UINT64 *)&findFileData.ftLastAccessTime);
-    dirInfo->LastWriteTime = *((UINT64 *)&findFileData.ftLastWriteTime);
-    dirInfo->ChangeTime = *((UINT64 *)&findFileData.ftLastWriteTime);
-
-    // PathCombineW(longPath, fi->hostFileName, findFileData.cFileName);
-    // if (GetShortPathNameW(longPath, shortPath, MAX_PATH))
-    //{
-    //	WCHAR *shortFileName;
-    //	UINT32 shortLen;
-    //	// æœ€å¾Œã®åŒºåˆ‡ã‚Šæ–‡å­—ä»¥é™ã‚’æ¡ç”¨
-    //	shortFileName = wcsrchr(shortPath, 'Â¥Â¥');
-    //	if (shortFileName == NULL)
-    //	{
-    //		shortFileName = shortPath;
-    //	}
-    //	else
-    //	{
-    //		shortFileName++; // Â¥ã¯æ¶ˆã™
-    //	}
-    //	shortLen = wcslen(shortFileName);
-    //	if (shortLen <= sizeof(dirInfo->ShortName) / sizeof(WCHAR))
-    //	{
-    //		memcpy(dirInfo->ShortName, shortFileName, shortLen *
-    //sizeof(WCHAR)); 		dirInfo->ShortNameLength = shortLen * sizeof(WCHAR);
-    //	}
-    // }
-  } else {
-    // ãƒ•ã‚¡ã‚¤ãƒ«
-    // WCHAR longPath[MAX_PATH];
-    // WCHAR shortPath[MAX_PATH];
-    dirInfo->CreationTime = *((UINT64 *)&findFileData.ftCreationTime);
-    dirInfo->LastAccessTime = *((UINT64 *)&findFileData.ftLastAccessTime);
-    dirInfo->LastWriteTime = *((UINT64 *)&findFileData.ftLastWriteTime);
-    dirInfo->ChangeTime = *((UINT64 *)&findFileData.ftLastWriteTime);
-    dirInfo->EndOfFile =
-        ((UINT64)findFileData.nFileSizeHigh << 32) | findFileData.nFileSizeLow;
-    dirInfo->AllocationSize = dirInfo->EndOfFile;
-    dirInfo->FileAttributes = findFileData.dwFileAttributes;
-    dirInfo->FileNameLength = wcslen(findFileData.cFileName) * sizeof(WCHAR);
-    wcscpy(dirInfo->FileName, findFileData.cFileName);
-
-    // PathCombineW(longPath, fi->hostFileName, findFileData.cFileName);
-    // if (GetShortPathNameW(longPath, shortPath, MAX_PATH))
-    //{
-    //	WCHAR* shortFileName;
-    //	UINT32 shortLen;
-    //	// æœ€å¾Œã®åŒºåˆ‡ã‚Šæ–‡å­—ä»¥é™ã‚’æ¡ç”¨
-    //	shortFileName = wcsrchr(shortPath, 'Â¥Â¥');
-    //	if (shortFileName == NULL)
-    //	{
-    //		shortFileName = shortPath;
-    //	}
-    //	else
-    //	{
-    //		shortFileName++; // Â¥ã¯æ¶ˆã™
-    //	}
-    //	shortLen = wcslen(shortFileName);
-    //	if (shortLen <= sizeof(dirInfo->ShortName) / sizeof(WCHAR))
-    //	{
-    //		memcpy(dirInfo->ShortName, shortFileName, shortLen *
-    //sizeof(WCHAR)); 		dirInfo->ShortNameLength = shortLen * sizeof(WCHAR);
-    //	}
-    // }
-  }
-  TRACEOUTW((L"FIND: %s", findFileData.cFileName));
-
-  return bytesReturned;
+	if (fi == NULL || fi->hostFileName == NULL ||
+		!hostdrvNT_isSafeHostPath(fi->hostFileName))
+	{
+		return 0;
+	}
+	if (fi->sfnMapBuilt)
+	{
+		return 1;
+	}
+	entries = NULL;
+	count = 0;
+#if defined(WIN32) || defined(_WIN32)
+	if (hostdrvs_getshortnamemap(fi->hostFileName, &entries, &count) != SUCCESS)
+	{
+		return 0;
+	}
+#else
+	{
+		OEMCHAR oemPath[MAX_PATH * 4];
+		if (!hostdrvNT_sfn_wtooem(fi->hostFileName, oemPath, NELEMENTS(oemPath)) ||
+			hostdrvs_getshortnamemap(oemPath, &entries, &count) != SUCCESS) return 0;
+	}
+#endif
+	fi->sfnMap = entries;
+	fi->sfnCount = (UINT32)count;
+	fi->sfnMapBuilt = 1;
+	return 1;
 }
 
-int hostdrvNT_dirHasFiles(LPCWSTR hostPath) {
-  int hasFile = 0;
-  WCHAR searchPath[MAX_PATH];
-  WIN32_FIND_DATAW findData;
-  HANDLE hFind;
+/// <summary>
+/// ƒpƒX‚ªHOSTDRVƒ‹[ƒgˆÈ‰º‚©Šm”F@‘Š‘ÎƒpƒX‚âƒVƒ“ƒ{ƒŠƒbƒNƒŠƒ“ƒN‚ğl—¶‚µ‚È‚¢Œ`®“I‚ÈŠm”F
+/// </summary>
+/// <param name="path">Šm”F‚µ‚½‚¢ƒpƒX</param>
+/// <returns></returns>
+static int hostdrvNT_isPathInsideRoot(const WCHAR *path)
+{
+	UINT32 rootLen;
 
-  if (!PathCombineW(searchPath, hostPath, L"*")) {
-    return 1;
-  }
+	if (path == NULL || s_hdrvRoot[0] == HD_WC('\0')) return 0;
+	rootLen = (UINT32)wcslen(s_hdrvRoot);
+	if (_wcsnicmp(path, s_hdrvRoot, rootLen) != 0) return 0;
+	if (path[rootLen] == HD_WC('\0')) return 1;
+	if (rootLen > 0 && s_hdrvRoot[rootLen - 1] == HD_WC('\\')) return 1;
+	return path[rootLen] == HD_WC('\\');
+}
 
-  hFind = FindFirstFileW(searchPath, &findData);
-  if (hFind == INVALID_HANDLE_VALUE) {
-    return 0;
-  }
+/// <summary>
+/// ƒpƒX‚ªHOSTDRVƒ‹[ƒgˆÈ‰º‚©Šm”F@‘Š‘ÎƒpƒX‚âƒVƒ“ƒ{ƒŠƒbƒNƒŠƒ“ƒN‚àl—¶
+/// </summary>
+/// <param name="path">Šm”F‚µ‚½‚¢ƒpƒX</param>
+/// <returns></returns>
+static int hostdrvNT_isSafeHostPath(const WCHAR *path)
+{
+	WCHAR current[MAX_PATH];
+	WCHAR relative[MAX_PATH];
+	WCHAR component[MAX_PATH];
+	WCHAR candidate[MAX_PATH];
+	WCHAR *p;
+	UINT32 rootLen;
 
-  do {
-    if (wcscmp(findData.cFileName, L".") != 0 &&
-        wcscmp(findData.cFileName, L"..") != 0) {
-      hasFile = 1;
-      break;
-    }
-  } while (FindNextFileW(hFind, &findData));
+	// Œ`®“I‚ÈŠm”F
+	if (!hostdrvNT_isPathInsideRoot(path)) return 0;
 
-  FindClose(hFind);
+	// HOSTDRVƒ‹[ƒg‚Æ“¯‚¶‚È‚çˆÀ‘S
+	rootLen = (UINT32)wcslen(s_hdrvRoot);
+	if (path[rootLen] == HD_WC('\0')) return 1;
+	
+	// ƒpƒX‚ÌŠeŠK‘w‚²‚Æ‚É–â‘è‚È‚¢‚©Šm”F
+	// ƒpƒX‚©‚çHOSTDRVƒ‹[ƒg•”•ª‚ğcurrent‚ÖAc‚è‚ğrelative‚Ö“ü‚ê‚é
+	wcscpy(current, s_hdrvRoot);
+	wcsncpy(relative, path + rootLen, NELEMENTS(relative) - 1);
+	relative[NELEMENTS(relative) - 1] = HD_WC('\0');
+	p = relative;
+	while (*p == HD_WC('\\')) p++; // relativeæ“ª‚Ì\‚ğ‚Æ‚Î‚·
+	while (*p != HD_WC('\0'))
+	{
+		WCHAR *next = wcschr(p, HD_WC('\\'));
+		UINT32 len = next ? (UINT32)(next - p) : (UINT32)wcslen(p);
+		DWORD attrs;
 
-  return hasFile;
+		// Œ»İ‚ÌŠK‘w‚ğ’Šo ’·‚·‚¬‚é‚à‚Ì‚Í•s‰Â
+		if (len == 0 || len >= NELEMENTS(component)) return 0;
+		wcsncpy(component, p, len);
+		component[len] = HD_WC('\0');
+
+		// ƒpƒXŒ‹‡‚µ‚ÄƒVƒ“ƒ{ƒŠƒbƒNƒŠƒ“ƒN“™‚Å‚È‚¢‚±‚Æ‚ğŠm”F
+		if (!PathCombineW(candidate, current, component)) return 0;
+		attrs = GetFileAttributesW(candidate);
+		if (attrs == INVALID_FILE_ATTRIBUTES) return 0;
+		if (attrs & FILE_ATTRIBUTE_REPARSE_POINT) return 0;
+
+		// ŠK‘w‚ğ1‚Âi‚ß‚é
+		wcscpy(current, candidate);
+		if (!next) break;
+
+		p = next + 1;
+		while (*p == HD_WC('\\')) p++; // relativeæ“ª‚Ì\‚ğ‚Æ‚Î‚·
+	}
+	return _wcsicmp(current, path) == 0;
+}
+
+/// <summary>
+/// DOS/Windows—\–ñ–¼‚©‚ğŠm”F
+/// </summary>
+/// <param name="component"></param>
+/// <returns></returns>
+static int hostdrvNT_isReservedDosName(const WCHAR *component)
+{
+	WCHAR base[16];
+	UINT i;
+	UINT len;
+
+	if (component == NULL || component[0] == HD_WC('\0')) return 0;
+	len = 0;
+	while (component[len] != HD_WC('\0') && component[len] != HD_WC('.') && component[len] != HD_WC(':'))
+	{
+		if (len + 1 >= NELEMENTS(base)) break;
+		base[len] = component[len];
+		len++;
+	}
+	while (len > 0 && (base[len - 1] == HD_WC(' ') || base[len - 1] == HD_WC('.'))) len--;
+	base[len] = HD_WC('\0');
+	for (i = 0; i < len; i++)
+	{
+		if (base[i] >= HD_WC('a') && base[i] <= HD_WC('z')) base[i] -= (HD_WC('a') - HD_WC('A'));
+	}
+	if (!wcscmp(base, HD_W("CON")) || !wcscmp(base, HD_W("PRN")) ||
+		!wcscmp(base, HD_W("AUX")) || !wcscmp(base, HD_W("NUL")) ||
+		!wcscmp(base, HD_W("CLOCK$"))) return 1;
+	if (len == 4 && (!wcsncmp(base, HD_W("COM"), 3) || !wcsncmp(base, HD_W("LPT"), 3)) &&
+		base[3] >= HD_WC('1') && base[3] <= HD_WC('9')) return 1;
+	return 0;
+}
+
+/// <summary>
+/// ƒQƒXƒg‚ÌƒpƒX‚ğŒŸØ@—\–ñ–¼‚âƒhƒ‰ƒCƒu‹æØ‚è•¶š‚È‚Ç‚ğ‚Í‚¶‚­
+/// </summary>
+/// <param name="path"></param>
+/// <returns></returns>
+static int hostdrvNT_validateVirtualPath(const WCHAR *path)
+{
+	WCHAR component[MAX_PATH];
+	const WCHAR *p;
+
+	if (path == NULL) return 0;
+	if (wcschr(path, HD_WC(':')) != NULL || wcschr(path, HD_WC('/')) != NULL) return 0;
+	p = path;
+	while (*p != HD_WC('\0'))
+	{
+		UINT len;
+		while (*p == HD_WC('\\')) p++;
+		if (*p == HD_WC('\0')) break;
+		len = 0;
+		while (p[len] != HD_WC('\0') && p[len] != HD_WC('\\'))
+		{
+			if (p[len] < 0x20) return 0;
+			len++;
+		}
+		if (len >= NELEMENTS(component)) return 0;
+		wcsncpy(component, p, len);
+		component[len] = HD_WC('\0');
+		if (wcscmp(component, HD_W(".")) != 0 && wcscmp(component, HD_W("..")) != 0)
+		{
+			if (component[len - 1] == HD_WC(' ') || component[len - 1] == HD_WC('.')) return 0;
+			if (hostdrvNT_isReservedDosName(component)) return 0;
+		}
+		p += len;
+	}
+	return 1;
+}
+
+/// <summary>
+/// ƒnƒ“ƒhƒ‹‚©‚çƒtƒ@ƒCƒ‹Ú×î•ñ‚ğæ“¾
+/// </summary>
+static int hostdrvNT_getIdentityFromHandle(HANDLE hFile, BY_HANDLE_FILE_INFORMATION *info)
+{
+	if (hFile == NULL || hFile == INVALID_HANDLE_VALUE || info == NULL) return 0;
+	ZeroMemory(info, sizeof(*info));
+	return GetFileInformationByHandle(hFile, info) ? 1 : 0;
+}
+
+/// <summary>
+/// ƒpƒX‚©‚çƒtƒ@ƒCƒ‹Ú×î•ñ‚ğæ“¾
+/// </summary>
+static int hostdrvNT_getIdentityFromPath(const WCHAR *path, int isDirectory, BY_HANDLE_FILE_INFORMATION *info)
+{
+	HANDLE hFile;
+	DWORD flags;
+	int result;
+
+	if (path == NULL || info == NULL) return 0;
+	if (!hostdrvNT_isSafeHostPath(path)) return 0;
+	flags = isDirectory ? FILE_FLAG_BACKUP_SEMANTICS : FILE_ATTRIBUTE_NORMAL;
+	hFile = CreateFileW(path, FILE_READ_ATTRIBUTES,
+		FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+		NULL, OPEN_EXISTING, flags, NULL);
+	if (hFile == INVALID_HANDLE_VALUE) return 0;
+	result = hostdrvNT_getIdentityFromHandle(hFile, info);
+	CloseHandle(hFile);
+	return result;
+}
+
+/// <summary>
+/// ƒtƒ@ƒCƒ‹“¯ˆê«ŒŸØ—p‚Ìî•ñ‚ğ•Û‘¶
+/// </summary>
+static int hostdrvNT_captureDeleteIdentity(NP2HOSTDRVNT_FILEINFO *fi)
+{
+	BY_HANDLE_FILE_INFORMATION info;
+	int result;
+
+	if (fi == NULL || fi->hostFileName == NULL || fi->isRoot) return 0;
+	result = hostdrvNT_getIdentityFromHandle(fi->hFile, &info);
+	if (!result)
+	{
+		result = hostdrvNT_getIdentityFromPath(fi->hostFileName, fi->isDirectory, &info);
+	}
+	if (!result)
+	{
+		fi->deleteIdentityValid = 0;
+		return 0;
+	}
+	fi->deleteVolumeSerialNumber = info.dwVolumeSerialNumber;
+	fi->deleteFileIndexHigh = info.nFileIndexHigh;
+	fi->deleteFileIndexLow = info.nFileIndexLow;
+	fi->deleteIdentityValid = 1;
+	return 1;
+}
+
+/// <summary>
+/// æŠ‚·‚éƒtƒ@ƒCƒ‹‚ªŠJ‚¢‚½‚à‚Ì‚Æ“¯ˆê‚©‚ğŠm”F
+/// </summary>
+static int hostdrvNT_deleteIdentityMatchesPath(const NP2HOSTDRVNT_FILEINFO *fi)
+{
+	BY_HANDLE_FILE_INFORMATION info;
+
+	if (fi == NULL || !fi->deleteIdentityValid || fi->hostFileName == NULL || fi->isRoot) return 0;
+	if (!hostdrvNT_getIdentityFromPath(fi->hostFileName, fi->isDirectory, &info)) return 0;
+	return info.dwVolumeSerialNumber == fi->deleteVolumeSerialNumber &&
+		info.nFileIndexHigh == fi->deleteFileIndexHigh &&
+		info.nFileIndexLow == fi->deleteFileIndexLow;
+}
+
+static void hostdrvNT_preCloseFile(int index)
+{
+	if (hostdrvNT.files[index].hFile && hostdrvNT.files[index].hFile != INVALID_HANDLE_VALUE)
+	{
+		CloseHandle(hostdrvNT.files[index].hFile);
+		hostdrvNT.files[index].hFile = NULL;
+	}
+}
+static void hostdrvNT_closeFile(int index)
+{
+	NP2HOSTDRVNT_FILEINFO *fi = &hostdrvNT.files[index];
+	if (fi->hFindFile && fi->hFindFile != INVALID_HANDLE_VALUE)
+	{
+		FindClose(fi->hFindFile);
+		fi->hFindFile = NULL;
+	}
+	hostdrvNT_clearShortNameMap(fi);
+	if (fi->hFile && fi->hFile != INVALID_HANDLE_VALUE)
+	{
+		CloseHandle(fi->hFile);
+		fi->hFile = NULL;
+	}
+	if (fi->deleteOnClose)
+	{
+		// ƒtƒ@ƒCƒ‹“¯ˆê«‚ªŠm”F‚Å‚«‚È‚©‚Á‚½ê‡‚Ííœ‚µ‚È‚¢
+		if ((s_hdrvAcc & HDFMODE_DELETE) && !fi->isRoot && hostdrvNT_deleteIdentityMatchesPath(fi))
+		{
+			BOOL deleted = fi->isDirectory ?
+				RemoveDirectoryW(fi->hostFileName) : DeleteFileW(fi->hostFileName);
+			if (deleted)
+			{
+				hostdrvNT_notifyChange(fi->hostFileName, NP2_FILE_ACTION_REMOVED, 0);
+			}
+		}
+		fi->deleteOnClose = 0;
+		fi->deleteIdentityValid = 0;
+	}
+	if (fi->fileName != NULL)
+	{
+		free(fi->fileName);
+		fi->fileName = NULL;
+	}
+	if (fi->hostFileName != NULL)
+	{
+		free(fi->hostFileName);
+		fi->hostFileName = NULL;
+	}
+}
+static void hostdrvNT_closeAllFiles()
+{
+	int i;
+	// 0‚Íg‚í‚È‚¢‚±‚Æ‚É‚·‚é
+	for (i = 1; i < NP2HOSTDRVNT_FILES_MAX; i++)
+	{
+		hostdrvNT_closeFile(i);
+	}
+}
+static int hostdrvNT_reopenFile(int index)
+{
+	HANDLE fh;
+	NP2HOSTDRVNT_FILEINFO *fi;
+
+	if (index < 0 || index >= NP2HOSTDRVNT_FILES_MAX) return 0;
+
+	fi = &hostdrvNT.files[index];
+	if (fi->fileName == NULL || fi->hostFileName == NULL ||
+		!hostdrvNT_isSafeHostPath(fi->hostFileName)) return 0;
+	fh = fi->hFile;
+	if (!fh || fh == INVALID_HANDLE_VALUE)
+	{
+		TRACEOUTW((HD_W("REPOEN: %d %s"), index, fi->hostFileName));
+		if (fi->isDirectory)
+		{
+			// ƒfƒBƒŒƒNƒgƒŠ‚Ìê‡‚Ì“Á—áiÀ¿“I‚ÉƒfƒBƒŒƒNƒgƒŠ“ú•t•ÏXê—pj
+			if ((fi->hFile = CreateFileW(fi->hostFileName, FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL)) == INVALID_HANDLE_VALUE)
+			{
+				DWORD error = GetLastError();
+				TRACEOUTW((HD_W("OPEN FILE ERROR (code %d): %d %s"), error, index, fi->hostFileName));
+				fi->hFile = NULL;
+				return 0;
+			}
+		}
+		else
+		{
+			// ƒtƒ@ƒCƒ‹‚Ìê‡
+			if ((fi->hFile = CreateFileW(fi->hostFileName, fi->hostdrvWinAPIDesiredAccess, fi->hostdrvShareAccess, NULL, OPEN_EXISTING, fi->hostdrvFileAttributes, NULL)) == INVALID_HANDLE_VALUE)
+			{
+				DWORD error = GetLastError();
+				TRACEOUTW((HD_W("OPEN FILE ERROR (code %d): %d %s"), error, index, fi->hostFileName));
+				fi->hFile = NULL;
+				return 0;
+			}
+		}
+	}
+	if (fi->deleteOnClose && !fi->deleteIdentityValid)
+	{
+		hostdrvNT_captureDeleteIdentity(fi);
+	}
+	return 1;
+}
+
+static int hostdrvNT_resolveShortPath(WCHAR *hostPath)
+{
+	WCHAR current[MAX_PATH];
+	WCHAR relative[MAX_PATH];
+	WCHAR component[MAX_PATH];
+	WCHAR candidate[MAX_PATH];
+	WCHAR mapped[MAX_PATH];
+	WCHAR *p;
+	UINT32 rootLen;
+
+	if (hostPath == NULL || hostPath[0] == HD_WC('\0'))
+	{
+		return 1;
+	}
+	rootLen = (UINT32)wcslen(s_hdrvRoot);
+	if (!hostdrvNT_isPathInsideRoot(hostPath))
+	{
+		return 1;
+	}
+	wcscpy(current, s_hdrvRoot);
+	wcsncpy(relative, hostPath + rootLen, MAX_PATH - 1);
+	relative[MAX_PATH - 1] = HD_WC('\0');
+	p = relative;
+	while (*p == HD_WC('\\')) p++;
+
+	while (*p != HD_WC('\0'))
+	{
+		WCHAR *next;
+		UINT32 len;
+		int usedSynthetic;
+
+		next = wcschr(p, HD_WC('\\'));
+		len = next ? (UINT32)(next - p) : (UINT32)wcslen(p);
+		if (len >= MAX_PATH)
+		{
+			return 1;
+		}
+		wcsncpy(component, p, len);
+		component[len] = HD_WC('\0');
+		usedSynthetic = 0;
+		if (!PathCombineW(candidate, current, component))
+		{
+			return 1;
+		}
+
+		// LFN‚Ì‚Ü‚Ü‘¶İ‚·‚é‚È‚çOK@‚»‚¤‚Å‚È‚¢‚È‚çSFN•ÏŠ·
+		{
+			DWORD candidateAttr = GetFileAttributesW(candidate);
+			if (candidateAttr != INVALID_FILE_ATTRIBUTES &&
+				(candidateAttr & FILE_ATTRIBUTE_REPARSE_POINT))
+			{
+				return 1;
+			}
+			if (candidateAttr == INVALID_FILE_ATTRIBUTES)
+			{
+#if defined(WIN32) || defined(_WIN32)
+				if (hostdrvs_lookuplongnamecached(current, component, mapped,
+					NELEMENTS(mapped), NULL))
+#else
+				OEMCHAR oemCurrent[MAX_PATH * 4];
+				OEMCHAR oemComponent[64];
+				OEMCHAR oemMapped[MAX_PATH * 4];
+				if (hostdrvNT_sfn_wtooem(current, oemCurrent, NELEMENTS(oemCurrent)) &&
+					hostdrvNT_sfn_wtooem(component, oemComponent, NELEMENTS(oemComponent)) &&
+					hostdrvs_lookuplongnamecached(oemCurrent, oemComponent, oemMapped,
+						NELEMENTS(oemMapped), NULL) &&
+					hostdrvNT_sfn_oemtow(oemMapped, mapped, NELEMENTS(mapped)))
+#endif
+				{
+					if (!PathCombineW(candidate, current, mapped)) return 1;
+					usedSynthetic = 1;
+				}
+			}
+		}
+		{
+			DWORD resolvedAttr = GetFileAttributesW(candidate);
+
+			if (resolvedAttr == INVALID_FILE_ATTRIBUTES && usedSynthetic)
+			{
+				// ‰½‚©•Ï‚í‚Á‚Ä‚µ‚Ü‚Á‚Ä‚¢‚é‚Ì‚ÅSFNƒLƒƒƒbƒVƒ…‚ğÁ‚·
+				hostdrvs_invalidateshortnamecache();
+				return 1;
+			}
+			if (resolvedAttr != INVALID_FILE_ATTRIBUTES &&
+				(resolvedAttr & FILE_ATTRIBUTE_REPARSE_POINT)) return 1;
+		}
+		wcscpy(current, candidate);
+		if (!next)
+		{
+			break;
+		}
+		p = next + 1;
+		while (*p == HD_WC('\\')) p++;
+	}
+	wcscpy(hostPath, current);
+	return hostdrvNT_isPathInsideRoot(hostPath) ? 0 : 1;
+}
+
+static int hostdrvNT_getHostPath(WCHAR* virPath, WCHAR* hostPath, UINT8* isRoot, int getTargetDir)
+{
+	WCHAR hdrvPath[MAX_PATH];
+	WCHAR pathTmp[MAX_PATH];
+
+	wcscpy(hdrvPath, s_hdrvRoot);
+
+	if (!hostdrvNT_validateVirtualPath(virPath)) return 1;
+
+	// ƒzƒXƒg‚ÌƒpƒX‚ÆŒ‹‡
+	if (virPath[0] == '\\') virPath++;
+	hostPath[0] = '\0';
+	if (!PathCombineW(pathTmp, hdrvPath, virPath))
+	{
+		return 1;
+	}
+	// .‚Æ..‚ğÁ‚·
+	if (!PathCanonicalizeW(hostPath, pathTmp))
+	{
+		return 1;
+	}
+
+	// ƒzƒXƒg‚ÌƒpƒX•”•ª‚ª–³‚­‚È‚Á‚Ä‚¢‚½‚ç‹‘”Û
+	if (!hostdrvNT_isPathInsideRoot(hostPath)) return 1;
+
+	if (hostdrvNT_resolveShortPath(hostPath) != 0) return 1;
+	if (!hostdrvNT_isPathInsideRoot(hostPath)) return 1;
+
+	// ƒ‹[ƒgƒfƒBƒŒƒNƒgƒŠ”»’è
+	*isRoot = (_wcsicmp(hostPath, hdrvPath) == 0) ? 1 : 0;
+
+	// •K—v‚È‚çƒtƒ@ƒCƒ‹–¼‚©‚ç‚»‚Ìƒtƒ@ƒCƒ‹‚ÌƒfƒBƒŒƒNƒgƒŠƒpƒX‚Ö•ÏŠ·
+	if (getTargetDir)
+	{
+		if (*isRoot)
+		{
+			// ƒ‹[ƒg‚È‚çƒzƒXƒg‚ÌƒpƒX‚Æ“¯‚¶
+			wcscpy(hostPath, hdrvPath);
+		}
+		else
+		{
+			// ÅŒã‚Ì‹æØ‚è•¶šˆÈ~‚ğíœ
+			WCHAR* sepaPos = wcsrchr(hostPath, '\\');
+			if (sepaPos != NULL)
+			{
+				*sepaPos = '\0';
+			}
+		}
+	}
+
+	return 0;
+}
+
+static int hostdrvNT_hasInvalidWildcard(WCHAR* name)
+{
+	int i;
+	int hasWildcard = 0;
+	for (i = 0; name[i] != '\0'; i++)
+	{
+		WCHAR c = name[i];
+		if (!hasWildcard)
+		{
+			if ((c == HD_WC('*') || c == HD_WC('?')))
+			{
+				hasWildcard = 1;
+			}
+		}
+		else
+		{
+			if ((c == HD_WC('\\')))
+			{
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+
+static void hostdrvNT_memread(UINT32 vaddr, void* buffer, UINT32 size)
+{
+	UINT32 readaddr = vaddr;
+	UINT32 readsize = size;
+	UINT8* readptr = (UINT8*)buffer;
+	while (readsize >= 4)
+	{
+		*((UINT32*)readptr) = cpu_kmemoryread_d(readaddr);
+		readsize -= 4;
+		readptr += 4;
+		readaddr += 4;
+	}
+	while (readsize > 0)
+	{
+		*readptr = cpu_kmemoryread(readaddr);
+		readsize--;
+		readptr++;
+		readaddr++;
+	}
+}
+static void hostdrvNT_memwrite(UINT32 vaddr, void* buffer, UINT32 size)
+{
+	UINT32 writeaddr = vaddr;
+	UINT32 writesize = size;
+	UINT8* writeptr = (UINT8*)buffer;
+	while (writesize >= 4)
+	{
+		cpu_kmemorywrite_d(writeaddr, *((UINT32*)writeptr));
+		writesize -= 4;
+		writeptr += 4;
+		writeaddr += 4;
+	}
+	while (writesize > 0)
+	{
+		cpu_kmemorywrite(writeaddr, *writeptr);
+		writesize--;
+		writeptr++;
+		writeaddr++;
+	}
+}
+
+static void hostdrvNT_readFileObject(HOSTDRVNT_INVOKEINFO* invokeInfo, NP2_FILE_OBJECT *lpFileObject)
+{
+	hostdrvNT_memread(invokeInfo->stack.fileObject, lpFileObject, sizeof(NP2_FILE_OBJECT));
+}
+static WCHAR* hostdrvNT_readUnicodeString(UINT32 vaddr, UINT32 length)
+{
+	WCHAR* unicodeString = (WCHAR*)malloc(length + sizeof(WCHAR));
+	if (!unicodeString) return NULL;
+	ZeroMemory(unicodeString, length + sizeof(WCHAR));
+	hostdrvNT_memread(vaddr, unicodeString, length);
+	return unicodeString;
+}
+static int hostdrvNT_writeQueryInformationData(HOSTDRVNT_INVOKEINFO* invokeInfo, void* srcBuffer, UINT32 srcLength, int allowOverflow)
+{
+	UINT32 length = invokeInfo->stack.parameters.queryFile.Length; // ‚Ç‚ÌQueryInformation‚àÅ‰‚Ìƒf[ƒ^‚ªƒoƒbƒtƒ@’·‚³‚È‚Ì‚Å‚±‚ê‚Å‚æ‚¢
+	if (length < srcLength)
+	{
+		if (!allowOverflow)
+		{
+			return 0;
+		}
+		srcLength = length;
+	}
+
+	// ‘‚«‚İ
+	hostdrvNT_memwrite(invokeInfo->outBufferAddr, srcBuffer, srcLength);
+
+	return srcLength;
+}
+static void hostdrvNT_setQueryInformationResult(HOSTDRVNT_INVOKEINFO* invokeInfo, void* returnData, UINT32 dataLen, int allowOverflow)
+{
+	if (returnData)
+	{
+		UINT32 writeLen = 0;
+		writeLen = hostdrvNT_writeQueryInformationData(invokeInfo, returnData, dataLen, allowOverflow);
+		if (writeLen < dataLen)
+		{
+			if (allowOverflow)
+			{
+				TRACEOUTW((HD_W("OVERFLOW")));
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_OVERFLOW);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, writeLen); // Information
+			}
+			else
+			{
+				TRACEOUTW((HD_W("BUFFER_TOO_SMALL")));
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_TOO_SMALL);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			}
+		}
+		else
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, writeLen); // Information
+		}
+	}
+	else
+	{
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+	}
+}
+static int hostdrvNT_readSetInformationData(HOSTDRVNT_INVOKEINFO* invokeInfo, void* dstBuffer, UINT32 dstLength)
+{
+	UINT32 length = invokeInfo->stack.parameters.queryFile.Length;
+	if (length < dstLength)
+	{
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_TOO_SMALL);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		return 0;
+	}
+
+	// “Ç‚İ‚İ
+	hostdrvNT_memread(invokeInfo->inBufferAddr, dstBuffer, dstLength);
+
+	return dstLength;
+}
+
+static NP2HOSTDRVNT_FILEINFO* hostdrvNT_getFileInfo(NP2_FILE_OBJECT* fileObject)
+{
+	UINT32 fsContextFileIndex = cpu_kmemoryread_d(fileObject->FsContext + s_fsContextUserDataOffset);
+	if (fsContextFileIndex == 0 || NP2HOSTDRVNT_FILES_MAX <= fsContextFileIndex || hostdrvNT.files[fsContextFileIndex].fileName == NULL)
+	{
+		return NULL;
+	}
+	TRACEOUTW((HD_W("FILE #%d"), fsContextFileIndex));
+	return &hostdrvNT.files[fsContextFileIndex];
+}
+
+/// <summary>
+/// IRP_MN_NOTIFY_CHANGE_DIRECTORY‚ÅŠÄ‹’†‚Ì•ÏX‚ğˆ—‚·‚é
+/// </summary>
+/// <param name="changedHostFileName">•ÏX‚³‚ê‚½ƒtƒ@ƒCƒ‹–¼B‰¼‘zƒpƒX‚Å‚Í‚È‚­ƒzƒXƒg‚Ìƒtƒ@ƒCƒ‹–¼‚Åw’èBNULL‚É‚·‚é‚Æ–³ğŒ‚ÅXV’Ê’mB</param>
+/// <param name="action">’Ê’m‚·‚éƒAƒNƒVƒ‡ƒ“ NP2_FILE_ACTION_`‚ğw’è</param>
+/// <param name="forceRequestEnumDir">‹­§XV‚³‚¹‚éê‡‚ÍtrueBXXX: 1ŒÂ‚Å’Ê’m‚Å‚«‚È‚¢ê‡‚Í‚±‚ê‚ğg‚¤B</param>
+static void hostdrvNT_notifyChange(WCHAR* changedHostFileName, UINT32 action, UINT32 forceRequestEnumDir)
+{
+	WCHAR changedHostDir[MAX_PATH]; // •ÏX‚³‚ê‚½ƒtƒ@ƒCƒ‹‚Ì‚ ‚éƒfƒBƒŒƒNƒgƒŠ–¼
+	WCHAR changedHostFileNameTmp[MAX_PATH];
+	NP2HOSTDRVNT_FILEINFO* fi;
+	int i;
+	WCHAR hdrvPath[MAX_PATH];
+	int forceMatch = changedHostFileName == NULL;
+
+	if (changedHostFileName == NULL ||
+		action == NP2_FILE_ACTION_ADDED ||
+		action == NP2_FILE_ACTION_REMOVED ||
+		action == NP2_FILE_ACTION_REMOVED_BY_DELETE ||
+		action == NP2_FILE_ACTION_RENAMED_OLD_NAME ||
+		action == NP2_FILE_ACTION_RENAMED_NEW_NAME)
+	{
+		hostdrvs_invalidateshortnamecache();
+	}
+
+	wcscpy(hdrvPath, s_hdrvRoot);
+
+	for (i = 0; i < s_pendingListCount; i++)
+	{
+		UINT32 irpListAddr = s_pendingIrpListAddr + i * sizeof(UINT32);
+		UINT32 fileIdxListAddr = s_pendingAliveListAddr + i * sizeof(UINT32);
+		UINT32 irpAddr = cpu_kmemoryread_d(irpListAddr);
+		UINT32 fileIdx = cpu_kmemoryread_d(fileIdxListAddr);
+		if (irpAddr != 0 && fileIdx != 0)
+		{
+			DWORD attr; // ƒtƒ@ƒCƒ‹‘®«ˆ——pƒeƒ“ƒ|ƒ‰ƒŠ
+			UINT32 irpStatusAddr = irpAddr + 4 + 4 + 4 + 4 + 4 + 4; // IRP\‘¢‘Ì‚ÌStatus‚ª‘‚«‚Ü‚ê‚Ä‚¢‚éˆÊ’u‚ÌƒAƒhƒŒƒX
+			UINT32 irpInfoAddr = irpStatusAddr + 4; // IRP\‘¢‘Ì‚ÌInformation‚ª‘‚«‚Ü‚ê‚Ä‚¢‚éˆÊ’u‚ÌƒAƒhƒŒƒX
+			UINT32 irpOutBufferAddr; // SystemBuffer‚ÌƒAƒhƒŒƒX
+			UINT32 length; // SystemBuffer‚Ì’·‚³
+			UINT32 completionFilter = 0; // ŠÄ‹‘ÎÛ‚ÌğŒ‚ÌƒtƒBƒ‹ƒ^
+			UINT32 irpstackFlags = 0; // IRPƒXƒ^ƒbƒN‚ÌFlags
+			UINT32 watchTree = 0; // ‰º‚É‚ ‚éƒfƒBƒŒƒNƒgƒŠƒcƒŠ[‘S‘Ì‚ğŠÄ‹
+			UINT32 match = 0; // ¡‰ñ‚Ì•ÏX‚ªğŒ‚Éƒ}ƒbƒ`‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©
+
+			// ƒtƒ@ƒCƒ‹ƒIƒuƒWƒFƒNƒg‚ğæ“¾
+			fi = &hostdrvNT.files[fileIdx];
+			if (fi->fileName == NULL)
+			{
+				// ƒtƒ@ƒCƒ‹‚ª•Â‚¶‚Ä‚¢‚½‚ç‚à‚¤ŠÄ‹‚Å‚«‚È‚¢‚Ì‚ÅƒGƒ‰[
+				cpu_kmemorywrite_d(irpStatusAddr, NP2_STATUS_INVALID_PARAMETER);
+				cpu_kmemorywrite_d(irpInfoAddr, 0); // Information
+				cpu_kmemorywrite_d(fileIdxListAddr, 0); // ƒCƒxƒ“ƒg”­¶—v‹
+				if (s_pendingIndexOrCompleteCount < 0) s_pendingIndexOrCompleteCount = 0;
+				s_pendingIndexOrCompleteCount++;
+				continue;
+			}
+
+			// ‘‚«‚İæƒƒ‚ƒŠƒAƒhƒŒƒX‚ğæ“¾
+			irpOutBufferAddr = cpu_kmemoryread_d(irpAddr + 4 + 4 + 4); // IRP\‘¢‘Ì‚ÌSystemBuffer‚ª‘‚«‚Ü‚ê‚Ä‚¢‚éˆÊ’u
+			if (irpOutBufferAddr == NULL)
+			{
+				// NULL‚Í‚¨‚©‚µ‚¢‚Ì‚ÅƒGƒ‰[
+				cpu_kmemorywrite_d(irpStatusAddr, NP2_STATUS_INVALID_PARAMETER);
+				cpu_kmemorywrite_d(irpInfoAddr, 0); // Information
+				cpu_kmemorywrite_d(fileIdxListAddr, 0); // ƒCƒxƒ“ƒg”­¶—v‹
+				if (s_pendingIndexOrCompleteCount < 0) s_pendingIndexOrCompleteCount = 0;
+				s_pendingIndexOrCompleteCount++;
+				continue;
+			}
+
+			// ‘‚«‚İæƒTƒCƒY‚ğæ“¾@XXX:‹L˜^‚·‚éêŠ‚ª‚È‚¢‚Ì‚ÅSystemBuffer‚ÌÅ‰‚Ì•”•ª‚ğØ‚è‚Ä‚¢‚é
+			length = cpu_kmemoryread_d(irpOutBufferAddr);
+
+			// ƒtƒBƒ‹ƒ^ğŒ‚ğæ“¾@XXX:‹L˜^‚·‚éêŠ‚ª‚È‚¢‚Ì‚ÅSystemBuffer‚ÌÅ‰‚Ì•”•ª‚ğØ‚è‚Ä‚¢‚é
+			completionFilter = cpu_kmemoryread_d(irpOutBufferAddr + 4);
+			if (!((completionFilter & (NP2_FILE_NOTIFY_CHANGE_FILE_NAME | NP2_FILE_NOTIFY_CHANGE_DIR_NAME)) && (action == NP2_FILE_ACTION_ADDED || action == NP2_FILE_ACTION_REMOVED || action == NP2_FILE_ACTION_MODIFIED || action == NP2_FILE_ACTION_REMOVED_BY_DELETE || action == NP2_FILE_ACTION_RENAMED_OLD_NAME || action == NP2_FILE_ACTION_RENAMED_NEW_NAME)) &&
+				!((completionFilter & NP2_FILE_NOTIFY_CHANGE_ATTRIBUTES) && (action == NP2_FILE_ACTION_MODIFIED)) &&
+				!((completionFilter & NP2_FILE_NOTIFY_CHANGE_SIZE) && (action == NP2_FILE_ACTION_MODIFIED)) &&
+				!((completionFilter & NP2_FILE_NOTIFY_CHANGE_LAST_WRITE) && (action == NP2_FILE_ACTION_MODIFIED)) &&
+				!((completionFilter & NP2_FILE_NOTIFY_CHANGE_LAST_ACCESS) && (action == NP2_FILE_ACTION_MODIFIED)) &&
+				!((completionFilter & NP2_FILE_NOTIFY_CHANGE_CREATION) && (action == NP2_FILE_ACTION_MODIFIED)) &&
+				!((completionFilter & NP2_FILE_NOTIFY_CHANGE_SECURITY) && (action == NP2_FILE_ACTION_MODIFIED)))
+			{
+				// ğŒ‚É‡‚í‚È‚¢‚Ì‚ÅƒXƒLƒbƒv
+				continue;
+			}
+
+			// ƒtƒ‰ƒO‚ğæ“¾@XXX:‹L˜^‚·‚éêŠ‚ª‚È‚¢‚Ì‚ÅSystemBuffer‚ÌÅ‰‚Ì•”•ª‚ğØ‚è‚Ä‚¢‚é
+			irpstackFlags = cpu_kmemoryread(irpOutBufferAddr + 8);
+			watchTree = !!(irpstackFlags & NP2_SL_WATCH_TREE);
+
+			if (forceMatch)
+			{
+				// ƒzƒXƒgƒtƒ@ƒCƒ‹ƒpƒX‚ªNULL‚È‚ç–³ğŒ’Ê’m‚Æ‚·‚é
+				wcscpy(changedHostFileNameTmp, fi->hostFileName);
+				changedHostFileName = changedHostFileNameTmp;
+				match = 1;
+			}
+			else
+			{
+				// ƒtƒ@ƒCƒ‹–¼‚ğœ‚¢‚ÄƒfƒBƒŒƒNƒgƒŠ•”•ª‚ğæ“¾
+				wcscpy(changedHostDir, changedHostFileName);
+				attr = GetFileAttributesW(changedHostDir);
+				if (attr == INVALID_FILE_ATTRIBUTES || !(attr & FILE_ATTRIBUTE_DIRECTORY))
+				{
+					// ƒtƒ@ƒCƒ‹‚È‚çÅŒã‚Ìƒhƒ‰ƒCƒu‹æØ‚è•¶šˆÈ~‚ğƒJƒbƒg
+					WCHAR* hostSepa;
+					if (hostSepa = wcsrchr(changedHostDir, '\\'))
+					{
+						*hostSepa = '\0';
+					}
+				}
+				else
+				{
+					// ƒfƒBƒŒƒNƒgƒŠ‚È‚çÅŒã‚Ì•¶š‚ª\‚ÌƒJƒbƒg
+					UINT32 changedHostDirLen = wcslen(changedHostDir);
+					if (changedHostDirLen >= 1 && changedHostDir[changedHostDirLen - 1] == '\\')
+					{
+						changedHostDir[changedHostDirLen - 1] = '\0';
+					}
+				}
+
+				// ƒpƒX‚ğ”äŠr‚µ‚Ä•K—v‚É‰‚¶‚Ä•ÏX’Ê’m
+				if (wcscmp(fi->hostFileName, changedHostDir) == 0)
+				{
+					// Š®‘Sˆê’vƒpƒ^[ƒ“
+					match = 1;
+				}
+				else if (watchTree)
+				{
+					// ‰º‚ÌŠK‘w‚Ü‚ÅŒ©‚éƒ‚[ƒh
+					UINT32 path1Len = 0;
+					UINT32 path2Len = 0;
+					path1Len = wcslen(fi->hostFileName);
+					path2Len = wcslen(changedHostDir);
+					if (path1Len < path2Len && wcsncmp(fi->hostFileName, changedHostDir, path1Len) == 0)
+					{
+						// ‰º‘wˆê’vƒpƒ^[ƒ“
+						match = 1;
+					}
+				}
+			}
+
+			// ğŒ‚Éˆê’v‚µ‚½
+			if (match)
+			{
+				WCHAR* fileNamePart;
+				NP2_FILE_NOTIFY_INFORMATION info = { 0 };
+
+				// ŠÄ‹‚µ‚Ä‚¢‚éƒfƒBƒŒƒNƒgƒŠ‚©‚ç‚Ì‘Š‘ÎƒpƒX‚É•ÏŠ·
+				if (wcslen(changedHostFileName) > wcslen(fi->hostFileName) + 1)
+				{
+					fileNamePart = changedHostFileName + wcslen(fi->hostFileName) + 1;
+				}
+				else
+				{
+					fileNamePart = changedHostFileName + wcslen(fi->hostFileName);
+				}
+
+				// •ÏX“à—e‚ğƒZƒbƒg
+				info.Action = action;
+
+				// ƒtƒ@ƒCƒ‹–¼‚ğƒZƒbƒg
+				info.FileNameLength = wcslen(fileNamePart) * sizeof(WCHAR);
+				wcscpy(info.FileName, fileNamePart);
+
+				// XXX: ŸƒGƒ“ƒgƒŠ‚Íg‚í‚È‚¢‚±‚Æ‚É‚·‚é
+				info.NextEntryOffset = 0;
+
+				// ‘‚«‚İ
+				if (sizeof(info) <= length && !forceRequestEnumDir)
+				{
+					length = sizeof(info);
+					cpu_kmemorywrite_d(irpStatusAddr, NP2_STATUS_SUCCESS);
+				}
+				else
+				{
+					cpu_kmemorywrite_d(irpStatusAddr, NP2_STATUS_NOTIFY_ENUM_DIR);
+				}
+				hostdrvNT_memwrite(irpOutBufferAddr, &info, length);
+
+				TRACEOUTW((HD_W("FILE CHANGED: %s"), fileNamePart));
+				cpu_kmemorywrite_d(irpInfoAddr, length); // Informationi‘‚«‚ñ‚¾ƒf[ƒ^ƒTƒCƒYj
+				cpu_kmemorywrite_d(fileIdxListAddr, 0); // ƒCƒxƒ“ƒg”­¶—v‹
+				if (s_pendingIndexOrCompleteCount < 0) s_pendingIndexOrCompleteCount = 0;
+				s_pendingIndexOrCompleteCount++;
+			}
+		}
+	}
+}
+
+static int hostdrvNT_getOneEntry(NP2HOSTDRVNT_FILEINFO* fi, NP2_FILE_BOTH_DIR_INFORMATION* dirInfo, WCHAR* pattern)
+{
+	WIN32_FIND_DATA findFileData;
+	UINT32 bytesReturned;
+
+	if (fi->hFindFile == NULL || fi->hFindFile == INVALID_HANDLE_VALUE)
+	{
+		WCHAR defaultPattern[] = HD_W("*");
+		WCHAR findPath[MAX_PATH * 2];
+		UINT32 findPathLen = 0;
+		if (pattern == NULL)
+		{
+			pattern = defaultPattern;
+		}
+		if (wcslen(fi->hostFileName) >= MAX_PATH || wcslen(pattern) >= MAX_PATH)
+		{
+			return 0;
+		}
+		wcscpy(findPath, fi->hostFileName);
+		findPathLen = wcslen(findPath);
+		if (fi->isDirectory)
+		{
+			if (findPath[findPathLen - 1] != '\\')
+			{
+				wcscat(findPath, HD_W("\\"));
+			}
+			wcscat(findPath, pattern);
+		}
+		fi->hFindFile = FindFirstFile(findPath, &findFileData);
+		if (fi->hFindFile == INVALID_HANDLE_VALUE)
+		{
+			fi->hFindFile = NULL;
+			return 0;
+		}
+	}
+	else
+	{
+		if (!FindNextFile(fi->hFindFile, &findFileData))
+		{
+			return 0;
+		}
+	}
+	// ’·‚·‚¬‚éƒtƒ@ƒCƒ‹–¼‚Í‹‘”ÛBƒ‹[ƒg‚È‚ç.‚Æ..‚Í—ñ‹“œŠO
+	while (1)
+	{
+		if ((!fi->isRoot || wcscmp(findFileData.cFileName, HD_W(".")) != 0 && wcscmp(findFileData.cFileName, HD_W("..")) != 0) && wcslen(findFileData.cFileName) < MAX_PATH)
+		{
+			break;
+		}
+		if (!FindNextFile(fi->hFindFile, &findFileData))
+		{
+			return 0;
+		}
+	}
+
+	bytesReturned = sizeof(NP2_FILE_BOTH_DIR_INFORMATION);
+	if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+	{
+		// ƒfƒBƒŒƒNƒgƒŠ
+		dirInfo->FileNameLength = wcslen(findFileData.cFileName) * sizeof(WCHAR);
+		wcscpy(dirInfo->FileName, findFileData.cFileName);
+		dirInfo->FileAttributes = findFileData.dwFileAttributes;
+		dirInfo->CreationTime = *((UINT64*)&findFileData.ftCreationTime);
+		dirInfo->LastAccessTime = *((UINT64*)&findFileData.ftLastAccessTime);
+		dirInfo->LastWriteTime = *((UINT64*)&findFileData.ftLastWriteTime);
+		dirInfo->ChangeTime = *((UINT64*)&findFileData.ftLastWriteTime);
+	}
+	else
+	{
+		// ƒtƒ@ƒCƒ‹
+		dirInfo->CreationTime = *((UINT64*)&findFileData.ftCreationTime);
+		dirInfo->LastAccessTime = *((UINT64*)&findFileData.ftLastAccessTime);
+		dirInfo->LastWriteTime = *((UINT64*)&findFileData.ftLastWriteTime);
+		dirInfo->ChangeTime = *((UINT64*)&findFileData.ftLastWriteTime);
+		dirInfo->EndOfFile = ((UINT64)findFileData.nFileSizeHigh << 32) | findFileData.nFileSizeLow;
+		dirInfo->AllocationSize = dirInfo->EndOfFile;
+		dirInfo->FileAttributes = findFileData.dwFileAttributes;
+		dirInfo->FileNameLength = wcslen(findFileData.cFileName) * sizeof(WCHAR);
+		wcscpy(dirInfo->FileName, findFileData.cFileName);
+	}
+
+	// SFNˆ—
+	dirInfo->ShortNameLength = 0;
+	ZeroMemory(dirInfo->ShortName, sizeof(dirInfo->ShortName));
+	if (hostdrvNT_ensureShortNameMap(fi))
+	{
+		WCHAR shortName[14];
+		UINT32 shortLen;
+
+#if defined(WIN32) || defined(_WIN32)
+		if (hostdrvs_lookupshortname((const HDRVSFNENTRY *)fi->sfnMap,
+			(UINT)fi->sfnCount, findFileData.cFileName, shortName, NELEMENTS(shortName)))
+#else
+		{
+			OEMCHAR oemLong[MAX_PATH * 4];
+			OEMCHAR oemShort[64];
+			BOOL sfnFound = hostdrvNT_sfn_wtooem(findFileData.cFileName, oemLong, NELEMENTS(oemLong)) &&
+				hostdrvs_lookupshortname((const HDRVSFNENTRY *)fi->sfnMap, (UINT)fi->sfnCount,
+					oemLong, oemShort, NELEMENTS(oemShort)) &&
+				hostdrvNT_sfn_oemtow(oemShort, shortName, NELEMENTS(shortName));
+			if (sfnFound)
+#endif
+		{
+			shortLen = (UINT32)wcslen(shortName);
+			if (shortLen <= NELEMENTS(dirInfo->ShortName))
+			{
+				memcpy(dirInfo->ShortName, shortName, shortLen * sizeof(WCHAR));
+				dirInfo->ShortNameLength = (SINT8)(shortLen * sizeof(WCHAR));
+			}
+		}
+#if !defined(WIN32) && !defined(_WIN32)
+		}
+#endif
+	}
+
+	TRACEOUTW((HD_W("FIND: %s"), findFileData.cFileName));
+
+	return bytesReturned;
+}
+
+int hostdrvNT_dirHasFiles(LPCWSTR hostPath)
+{
+	int hasFile = 0;
+	WCHAR searchPath[MAX_PATH];
+	WIN32_FIND_DATAW findData;
+	HANDLE hFind;
+
+	if (!PathCombineW(searchPath, hostPath, HD_W("*")))
+	{
+		return 1;
+	}
+
+	hFind = FindFirstFileW(searchPath, &findData);
+	if (hFind == INVALID_HANDLE_VALUE)
+	{
+		return 0;
+	}
+
+	do
+	{
+		if (wcscmp(findData.cFileName, HD_W(".")) != 0 && wcscmp(findData.cFileName, HD_W("..")) != 0)
+		{
+			hasFile = 1;
+			break;
+		}
+	} while (FindNextFileW(hFind, &findData));
+
+	FindClose(hFind);
+
+	return hasFile;
 }
 
 // ---------- Major Functions
 
-static void hostdrvNT_IRP_MJ_CREATE(HOSTDRVNT_INVOKEINFO *invokeInfo) {
-  int fileIndex;
-  UINT32 returnInformation = 0;
+static void hostdrvNT_IRP_MJ_CREATE(HOSTDRVNT_INVOKEINFO *invokeInfo)
+{
+	int fileIndex;
+	UINT32 returnInformation = 0;
 
-  UINT32 hostdrvDesiredAccess = 0;
-  UINT32 hostdrvOptions = 0;
-  UINT32 hostdrvFileAttributes = 0;
-  UINT32 hostdrvShareAccess = 0;
-  UINT32 hostdrvEALength = 0;
-  UINT32 hostdrvDirectoryFile;
-  UINT32 hostdrvNonDirectoryFile;
-  UINT32 hostdrvSequentialOnly;
-  UINT32 hostdrvNoIntermediateBuffering;
-  UINT32 hostdrvNoEaKnowledge;
-  UINT32 hostdrvDeleteOnClose;
+	UINT32 hostdrvDesiredAccess = 0;
+	UINT32 hostdrvOptions = 0;
+	UINT32 hostdrvFileAttributes = 0;
+	UINT32 hostdrvShareAccess = 0;
+	UINT32 hostdrvEALength = 0;
+	UINT32 hostdrvDirectoryFile;
+	UINT32 hostdrvNonDirectoryFile;
+	UINT32 hostdrvSequentialOnly;
+	UINT32 hostdrvNoIntermediateBuffering;
+	UINT32 hostdrvNoEaKnowledge;
+	UINT32 hostdrvDeleteOnClose;
 
-  UINT32 hostdrvTemporaryFile;
-  UINT8 hostdrvCreateDisposition;
-  UINT32 hostdrvIsPagingFile;
-  UINT32 hostdrvOpenTargetDirectory;
-  UINT32 hostdrvCreateFileOrDir;
-  UINT32 hostdrvOpenFileOrDir;
-  UINT32 hostdrvCreateDirectory;
-  UINT32 hostdrvOpenDirectory;
-  UINT32 hostdrvCreateFile;
-  UINT32 hostdrvOpenFile;
-  UINT32 hostdrvWinAPICreateDisposition;
-  UINT32 hostdrvWinAPIDesiredAccess;
+	UINT32 hostdrvTemporaryFile;
+	UINT8 hostdrvCreateDisposition;
+	UINT32 hostdrvIsPagingFile;
+	UINT32 hostdrvOpenTargetDirectory;
+	UINT32 hostdrvCreateFileOrDir;
+	UINT32 hostdrvOpenFileOrDir;
+	UINT32 hostdrvCreateDirectory;
+	UINT32 hostdrvOpenDirectory;
+	UINT32 hostdrvCreateFile;
+	UINT32 hostdrvOpenFile;
+	UINT32 hostdrvWinAPICreateDisposition;
+	UINT32 hostdrvWinAPIDesiredAccess;
 
-  WCHAR *fileName = NULL; // é–‹ã“ã†ã¨ã—ã¦ã„ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«å
-  NP2_FILE_OBJECT fileObject = {
-      0}; // ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆï¼ˆI/Oãƒãƒãƒ¼ã‚¸ãƒ£ãŒCREATEå‘¼ã³å‡ºã—å˜ä½ã§ãƒ¡ãƒ¢ãƒªè‡ªå‹•å‰²ã‚Šå½“ã¦ã™ã‚‹ï¼‰
-  UINT32 fsContextFileIndex; // ãƒ›ã‚¹ãƒˆå´ã®ãƒ•ã‚¡ã‚¤ãƒ«ç®¡ç†ç•ªå·
+	WCHAR* fileName = NULL; // ŠJ‚±‚¤‚Æ‚µ‚Ä‚¢‚éƒtƒ@ƒCƒ‹–¼
+	NP2_FILE_OBJECT fileObject = { 0 }; // ƒtƒ@ƒCƒ‹ƒIƒuƒWƒFƒNƒgiI/Oƒ}ƒl[ƒWƒƒ‚ªCREATEŒÄ‚Ño‚µ’PˆÊ‚Åƒƒ‚ƒŠ©“®Š„‚è“–‚Ä‚·‚éj
+	UINT32 fsContextFileIndex; // ƒzƒXƒg‘¤‚Ìƒtƒ@ƒCƒ‹ŠÇ—”Ô†
 
-  if (!invokeInfo->stack.fileObject) {
-    TRACEOUTW((L"ERROR: FileObject is null"));
-    cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    return;
-  }
+	if (!invokeInfo->stack.fileObject)
+	{
+		TRACEOUTW((HD_W("ERROR: FileObject is null")));
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		return;
+	}
 
-  // ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¨FsContextã®ãƒ•ã‚¡ã‚¤ãƒ«ç®¡ç†ç•ªå·ã‚’å–å¾—
-  hostdrvNT_readFileObject(invokeInfo, &fileObject);
-  if (!fileObject.FsContext) {
-    TRACEOUTW((L"ERROR: FsContext is null"));
-    cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    return;
-  }
-  fsContextFileIndex =
-      cpu_kmemoryread_d(fileObject.FsContext + s_fsContextUserDataOffset);
+	// ƒtƒ@ƒCƒ‹ƒIƒuƒWƒFƒNƒg‚ÆFsContext‚Ìƒtƒ@ƒCƒ‹ŠÇ—”Ô†‚ğæ“¾
+	hostdrvNT_readFileObject(invokeInfo, &fileObject);
+	if (!fileObject.FsContext)
+	{
+		TRACEOUTW((HD_W("ERROR: FsContext is null")));
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		return;
+	}
+	fsContextFileIndex = cpu_kmemoryread_d(fileObject.FsContext + s_fsContextUserDataOffset);
 
-  // å¯¾è±¡ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å–å¾—
-  fileName = hostdrvNT_readUnicodeString(fileObject.FileName.Buffer,
-                                         fileObject.FileName.Length);
-  if (!fileName) {
-    TRACEOUTW((L"ERROR: read FileName Failed"));
-    cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    return;
-  }
+	// ‘ÎÛƒtƒ@ƒCƒ‹–¼‚ğæ“¾
+	fileName = hostdrvNT_readUnicodeString(fileObject.FileName.Buffer, fileObject.FileName.Length);
+	if (!fileName)
+	{
+		TRACEOUTW((HD_W("ERROR: read FileName Failed")));
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		return;
+	}
 
-  // æŒ‡å®šã—ãŸå ´æ‰€ã‹ã‚‰ã®ç›¸å¯¾æŒ‡å®šã®å ´åˆ
-  if (fileObject.RelatedFileObject != NULL) {
-    WCHAR *dirName;
-    UINT32 dirNameLen;
-    NP2_FILE_OBJECT relFileObject = {0}; // ãƒ‘ã‚¹ã®åŸºæº–ã«ã™ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
-    hostdrvNT_memread(fileObject.RelatedFileObject, &relFileObject,
-                      sizeof(NP2_FILE_OBJECT));
-    dirName = hostdrvNT_readUnicodeString(relFileObject.FileName.Buffer,
-                                          relFileObject.FileName.Length);
-    if (!dirName) {
-      TRACEOUTW((L"ERROR: read dirName Failed"));
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
-    dirNameLen = wcslen(dirName);
-    if (dirNameLen > 0) {
-      WCHAR *pathTmp;
-      UINT32 combineLen;
-      if (dirName[dirNameLen - 1] == 'Â¥Â¥') {
-        dirName[dirNameLen - 1] = 'Â¥0';
-      }
-      combineLen = wcslen(dirName) + 1 + wcslen(fileName);
-      if (combineLen >= MAX_PATH) {
-        TRACEOUTW((L"ERROR: too long path"));
-        cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                           NP2_STATUS_INVALID_PARAMETER);
-        cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-        return;
-      }
-      pathTmp = (WCHAR *)malloc((combineLen + 1) * sizeof(WCHAR));
-      ZeroMemory(pathTmp, (combineLen + 1) * sizeof(WCHAR));
-      if (!pathTmp) {
-        TRACEOUTW((L"ERROR: read dirName alloc Failed"));
-        cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                           NP2_STATUS_INVALID_PARAMETER);
-        cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-        return;
-      }
-      wcscpy(pathTmp, dirName);
-      wcscat(pathTmp, L"Â¥Â¥");
-      wcscat(pathTmp, fileName);
-      free(fileName);
-      fileName = pathTmp; // ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªä»˜ãã«å…¥ã‚Œæ›¿ãˆ
-    }
-    free(dirName);
-  }
+	// w’è‚µ‚½êŠ‚©‚ç‚Ì‘Š‘Îw’è‚Ìê‡
+	if (fileObject.RelatedFileObject != NULL)
+	{
+		WCHAR* dirName;
+		UINT32 dirNameLen;
+		NP2_FILE_OBJECT relFileObject = { 0 }; // ƒpƒX‚ÌŠî€‚É‚·‚éƒtƒ@ƒCƒ‹ƒIƒuƒWƒFƒNƒg
+		hostdrvNT_memread(fileObject.RelatedFileObject, &relFileObject, sizeof(NP2_FILE_OBJECT));
+		dirName = hostdrvNT_readUnicodeString(relFileObject.FileName.Buffer, relFileObject.FileName.Length);
+		if (!dirName)
+		{
+			TRACEOUTW((HD_W("ERROR: read dirName Failed")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
+		dirNameLen = wcslen(dirName);
+		if (dirNameLen > 0)
+		{
+			WCHAR *pathTmp;
+			UINT32 combineLen;
+			if (dirName[dirNameLen - 1] == '\\')
+			{
+				dirName[dirNameLen - 1] = '\0';
+			}
+			combineLen = wcslen(dirName) + 1 + wcslen(fileName);
+			if (combineLen >= MAX_PATH)
+			{
+				TRACEOUTW((HD_W("ERROR: too long path")));
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+				return;
+			}
+			pathTmp = (WCHAR*)malloc((combineLen + 1) * sizeof(WCHAR));
+			ZeroMemory(pathTmp, (combineLen + 1) * sizeof(WCHAR));
+			if (!pathTmp)
+			{
+				TRACEOUTW((HD_W("ERROR: read dirName alloc Failed")));
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+				return;
+			}
+			wcscpy(pathTmp, dirName);
+			wcscat(pathTmp, HD_W("\\"));
+			wcscat(pathTmp, fileName);
+			free(fileName);
+			fileName = pathTmp; // ƒfƒBƒŒƒNƒgƒŠ•t‚«‚É“ü‚ê‘Ö‚¦
+		}
+		free(dirName);
+	}
 
-  // ãƒ•ãƒ©ã‚°ç³»ã‚’å–å¾—
-  if (invokeInfo->stack.parameters.create.securityContext) {
-    hostdrvDesiredAccess =
-        cpu_kmemoryread_d(invokeInfo->stack.parameters.create.securityContext +
-                          4 * 2); // DesiredAccessã¯ãƒã‚¤ãƒ³ã‚¿ã®å…ˆã®3ç•ªç›®ã®å¤‰æ•°
-  }
-  hostdrvOptions = invokeInfo->stack.parameters.create.options;
-  hostdrvFileAttributes = (UCHAR)(invokeInfo->stack.parameters.create
-                                      .fileAttributes & â€¾FILE_ATTRIBUTE_NORMAL);
-  hostdrvShareAccess = invokeInfo->stack.parameters.create.shareAccess;
-  hostdrvEALength = invokeInfo->stack.parameters.create.eaLength;
+	// ƒtƒ‰ƒOŒn‚ğæ“¾
+	if (invokeInfo->stack.parameters.create.securityContext)
+	{
+		hostdrvDesiredAccess = cpu_kmemoryread_d(invokeInfo->stack.parameters.create.securityContext + 4 * 2); // DesiredAccess‚Íƒ|ƒCƒ“ƒ^‚Ìæ‚Ì3”Ô–Ú‚Ì•Ï”
+	}
+	hostdrvOptions = invokeInfo->stack.parameters.create.options;
+	hostdrvFileAttributes = (UCHAR)(invokeInfo->stack.parameters.create.fileAttributes & ~FILE_ATTRIBUTE_NORMAL);
+	hostdrvShareAccess = invokeInfo->stack.parameters.create.shareAccess;
+	hostdrvEALength = invokeInfo->stack.parameters.create.eaLength;
 
-  // ãƒ•ãƒ©ã‚°ã‚’åˆ¶é™
-  hostdrvFileAttributes &= (FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_HIDDEN |
-                            FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_ARCHIVE);
+	// ƒtƒ‰ƒO‚ğ§ŒÀ
+	hostdrvFileAttributes &= (FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_ARCHIVE);
 
-  // ãƒ“ãƒƒãƒˆãƒ•ãƒ©ã‚°ç³»ã‚’åˆ¤å®šã—ã¦ãŠã
-  hostdrvDirectoryFile = !!(hostdrvOptions & NP2_FILE_DIRECTORY_FILE);
-  hostdrvNonDirectoryFile = !!(hostdrvOptions & NP2_FILE_NON_DIRECTORY_FILE);
-  hostdrvSequentialOnly = !!(hostdrvOptions & NP2_FILE_SEQUENTIAL_ONLY);
-  hostdrvNoIntermediateBuffering =
-      !!(hostdrvOptions & NP2_FILE_NO_INTERMEDIATE_BUFFERING);
-  hostdrvNoEaKnowledge = !!(hostdrvOptions & NP2_FILE_NO_EA_KNOWLEDGE);
-  hostdrvDeleteOnClose = !!(hostdrvOptions & NP2_FILE_DELETE_ON_CLOSE);
+	// ƒrƒbƒgƒtƒ‰ƒOŒn‚ğ”»’è‚µ‚Ä‚¨‚­
+	hostdrvDirectoryFile = !!(hostdrvOptions & NP2_FILE_DIRECTORY_FILE);
+	hostdrvNonDirectoryFile = !!(hostdrvOptions & NP2_FILE_NON_DIRECTORY_FILE);
+	hostdrvSequentialOnly = !!(hostdrvOptions & NP2_FILE_SEQUENTIAL_ONLY);
+	hostdrvNoIntermediateBuffering = !!(hostdrvOptions & NP2_FILE_NO_INTERMEDIATE_BUFFERING);
+	hostdrvNoEaKnowledge = !!(hostdrvOptions & NP2_FILE_NO_EA_KNOWLEDGE);
+	hostdrvDeleteOnClose = !!(hostdrvOptions & NP2_FILE_DELETE_ON_CLOSE);
 
-  hostdrvTemporaryFile = !!(invokeInfo->stack.parameters.create.fileAttributes &
-                            FILE_ATTRIBUTE_TEMPORARY);
-  hostdrvCreateDisposition =
-      (UINT8)((hostdrvOptions >> 24) &
-              0xff); // ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ãƒ¢ãƒ¼ãƒ‰ æ–°è¦ä½œæˆãªã©
-  hostdrvIsPagingFile = !!(invokeInfo->stack.flags & NP2_SL_OPEN_PAGING_FILE);
-  hostdrvOpenTargetDirectory =
-      !!(invokeInfo->stack.flags & NP2_SL_OPEN_TARGET_DIRECTORY);
+	hostdrvTemporaryFile = !!(invokeInfo->stack.parameters.create.fileAttributes & FILE_ATTRIBUTE_TEMPORARY);
+	hostdrvCreateDisposition = (UINT8)((hostdrvOptions >> 24) & 0xff); // ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“ƒ‚[ƒh V‹Kì¬‚È‚Ç
+	hostdrvIsPagingFile = !!(invokeInfo->stack.flags & NP2_SL_OPEN_PAGING_FILE);
+	hostdrvOpenTargetDirectory = !!(invokeInfo->stack.flags & NP2_SL_OPEN_TARGET_DIRECTORY);
 
-  // CreateDispositionã‚’ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒ¢ãƒ¼ãƒ‰WinAPIã®ã‚‚ã®ã«å¤‰æ›
-  hostdrvWinAPICreateDisposition = 0;
-  switch (hostdrvCreateDisposition) {
-  case NP2_FILE_SUPERSEDE:
-    hostdrvWinAPICreateDisposition = CREATE_ALWAYS;
-    TRACEOUTW((L"MODE FILE_SUPERSEDE"));
-    returnInformation = NP2_FILE_SUPERSEDED;
-    break;
-  case NP2_FILE_OPEN:
-    hostdrvWinAPICreateDisposition = OPEN_EXISTING;
-    TRACEOUTW((L"MODE FILE_OPEN"));
-    returnInformation = NP2_FILE_OPENED;
-    break;
-  case NP2_FILE_CREATE:
-    hostdrvWinAPICreateDisposition = CREATE_NEW;
-    TRACEOUTW((L"MODE FILE_CREATE"));
-    returnInformation = NP2_FILE_CREATED;
-    break;
-  case NP2_FILE_OPEN_IF:
-    hostdrvWinAPICreateDisposition = OPEN_ALWAYS;
-    TRACEOUTW((L"MODE FILE_OPEN_IF"));
-    returnInformation = NP2_FILE_OPENED;
-    break;
-  case NP2_FILE_OVERWRITE:
-    hostdrvWinAPICreateDisposition = TRUNCATE_EXISTING;
-    TRACEOUTW((L"MODE FILE_OVERWRITE"));
-    returnInformation = NP2_FILE_OVERWRITTEN;
-    break;
-  case NP2_FILE_OVERWRITE_IF:
-    hostdrvWinAPICreateDisposition = CREATE_ALWAYS;
-    TRACEOUTW((L"MODE FILE_OVERWRITE_IF"));
-    returnInformation = NP2_FILE_OVERWRITTEN;
-    break;
-  }
+	// CreateDisposition‚ğƒ†[ƒU[ƒ‚[ƒhWinAPI‚Ì‚à‚Ì‚É•ÏŠ·
+	hostdrvWinAPICreateDisposition = 0;
+	switch (hostdrvCreateDisposition)
+	{
+	case NP2_FILE_SUPERSEDE:
+		hostdrvWinAPICreateDisposition = CREATE_ALWAYS;
+		TRACEOUTW((HD_W("MODE FILE_SUPERSEDE")));
+		returnInformation = NP2_FILE_SUPERSEDED;
+		break;
+	case NP2_FILE_OPEN:
+		hostdrvWinAPICreateDisposition = OPEN_EXISTING;
+		TRACEOUTW((HD_W("MODE FILE_OPEN")));
+		returnInformation = NP2_FILE_OPENED;
+		break;
+	case NP2_FILE_CREATE:
+		hostdrvWinAPICreateDisposition = CREATE_NEW;
+		TRACEOUTW((HD_W("MODE FILE_CREATE")));
+		returnInformation = NP2_FILE_CREATED;
+		break;
+	case NP2_FILE_OPEN_IF:
+		hostdrvWinAPICreateDisposition = OPEN_ALWAYS;
+		TRACEOUTW((HD_W("MODE FILE_OPEN_IF")));
+		returnInformation = NP2_FILE_OPENED;
+		break;
+	case NP2_FILE_OVERWRITE:
+		hostdrvWinAPICreateDisposition = TRUNCATE_EXISTING;
+		TRACEOUTW((HD_W("MODE FILE_OVERWRITE")));
+		returnInformation = NP2_FILE_OVERWRITTEN;
+		break;
+	case NP2_FILE_OVERWRITE_IF:
+		hostdrvWinAPICreateDisposition = CREATE_ALWAYS;
+		TRACEOUTW((HD_W("MODE FILE_OVERWRITE_IF")));
+		returnInformation = NP2_FILE_OVERWRITTEN;
+		break;
+	}
 
-  // DesiredAccessã‚’ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒ¢ãƒ¼ãƒ‰WinAPIã®ã‚‚ã®ã«å¤‰æ›
-  hostdrvWinAPIDesiredAccess = 0;
-  if ((hostdrvDesiredAccess & FILE_ALL_ACCESS) == FILE_ALL_ACCESS)
-    hostdrvWinAPIDesiredAccess |= GENERIC_READ | GENERIC_WRITE | DELETE;
-  if (hostdrvDesiredAccess & FILE_ADD_FILE)
-    hostdrvWinAPIDesiredAccess |= GENERIC_READ;
-  if (hostdrvDesiredAccess & FILE_ADD_SUBDIRECTORY)
-    hostdrvWinAPIDesiredAccess |= GENERIC_READ;
-  if (hostdrvDesiredAccess & FILE_APPEND_DATA)
-    hostdrvWinAPIDesiredAccess |= GENERIC_READ | GENERIC_WRITE;
-  if (hostdrvDesiredAccess & FILE_DELETE_CHILD)
-    hostdrvWinAPIDesiredAccess |= GENERIC_READ | GENERIC_WRITE;
-  if (hostdrvWinAPIDesiredAccess == 0) {
-    if (hostdrvDesiredAccess & FILE_EXECUTE)
-      hostdrvWinAPIDesiredAccess |= GENERIC_EXECUTE;
-    if (hostdrvDesiredAccess & FILE_READ_DATA)
-      hostdrvWinAPIDesiredAccess |= GENERIC_READ;
-    if (hostdrvDesiredAccess & FILE_LIST_DIRECTORY)
-      hostdrvWinAPIDesiredAccess |= GENERIC_READ;
-    if (hostdrvDesiredAccess & FILE_READ_ATTRIBUTES)
-      hostdrvWinAPIDesiredAccess |= GENERIC_READ;
-    if (hostdrvDesiredAccess & FILE_READ_EA)
-      hostdrvWinAPIDesiredAccess |= GENERIC_READ;
-    if (hostdrvDesiredAccess & FILE_TRAVERSE)
-      hostdrvWinAPIDesiredAccess |= GENERIC_READ;
-    if (hostdrvDesiredAccess & READ_CONTROL)
-      hostdrvWinAPIDesiredAccess |= GENERIC_READ;
-    // if (hostdrvDesiredAccess & FILE_WRITE_ATTRIBUTES)
-    // hostdrvWinAPIDesiredAccess |= GENERIC_WRITE; //
-    // å±æ€§å¤‰æ›´ã¯æ›¸ãè¾¼ã¿æ¨©é™è¦ã‚‰ãªã„
-    if (hostdrvDesiredAccess & FILE_WRITE_EA)
-      hostdrvWinAPIDesiredAccess |= GENERIC_WRITE;
-    if (hostdrvDesiredAccess & FILE_WRITE_DATA)
-      hostdrvWinAPIDesiredAccess |= GENERIC_WRITE;
-  }
-  if (hostdrvDesiredAccess & DELETE)
-    hostdrvWinAPIDesiredAccess |= DELETE;
+	// DesiredAccess‚ğƒ†[ƒU[ƒ‚[ƒhWinAPI‚Ì‚à‚Ì‚É•ÏŠ·
+	hostdrvWinAPIDesiredAccess = 0;
+	if ((hostdrvDesiredAccess & FILE_ALL_ACCESS) == FILE_ALL_ACCESS) hostdrvWinAPIDesiredAccess |= GENERIC_READ | GENERIC_WRITE | DELETE;
+	if (hostdrvDesiredAccess & FILE_ADD_FILE) hostdrvWinAPIDesiredAccess |= GENERIC_READ;
+	if (hostdrvDesiredAccess & FILE_ADD_SUBDIRECTORY) hostdrvWinAPIDesiredAccess |= GENERIC_READ;
+	if (hostdrvDesiredAccess & FILE_APPEND_DATA) hostdrvWinAPIDesiredAccess |= GENERIC_READ | GENERIC_WRITE;
+	if (hostdrvDesiredAccess & FILE_DELETE_CHILD) hostdrvWinAPIDesiredAccess |= GENERIC_READ | GENERIC_WRITE;
+	if (hostdrvWinAPIDesiredAccess == 0)
+	{
+		if (hostdrvDesiredAccess & FILE_EXECUTE) hostdrvWinAPIDesiredAccess |= GENERIC_EXECUTE;
+		if (hostdrvDesiredAccess & FILE_READ_DATA) hostdrvWinAPIDesiredAccess |= GENERIC_READ;
+		if (hostdrvDesiredAccess & FILE_LIST_DIRECTORY) hostdrvWinAPIDesiredAccess |= GENERIC_READ;
+		if (hostdrvDesiredAccess & FILE_READ_ATTRIBUTES) hostdrvWinAPIDesiredAccess |= GENERIC_READ;
+		if (hostdrvDesiredAccess & FILE_READ_EA) hostdrvWinAPIDesiredAccess |= GENERIC_READ;
+		if (hostdrvDesiredAccess & FILE_TRAVERSE) hostdrvWinAPIDesiredAccess |= GENERIC_READ;
+		if (hostdrvDesiredAccess & READ_CONTROL) hostdrvWinAPIDesiredAccess |= GENERIC_READ;
+		//if (hostdrvDesiredAccess & FILE_WRITE_ATTRIBUTES) hostdrvWinAPIDesiredAccess |= GENERIC_WRITE; // ‘®«•ÏX‚Í‘‚«‚İŒ ŒÀ—v‚ç‚È‚¢
+		if (hostdrvDesiredAccess & FILE_WRITE_EA) hostdrvWinAPIDesiredAccess |= GENERIC_WRITE;
+		if (hostdrvDesiredAccess & FILE_WRITE_DATA) hostdrvWinAPIDesiredAccess |= GENERIC_WRITE;
+	}
+	if (hostdrvDesiredAccess & DELETE) hostdrvWinAPIDesiredAccess |= DELETE;
 
-  // ãƒªãƒ¼ãƒ‰ã‚ªãƒ³ãƒªãƒ¼ãªã‚‰Ceateã‚„Writeãƒ•ãƒ©ã‚°ã¯ã‚¨ãƒ©ãƒ¼
-  if (!(s_hdrvAcc & HDFMODE_WRITE) &&
-      ((hostdrvWinAPIDesiredAccess & GENERIC_WRITE) ||
-       hostdrvCreateDisposition != NP2_FILE_OPEN)) {
-    TRACEOUTW((L"ERROR: HOSTDRV is readonly mode."));
-    cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                       NP2_STATUS_MEDIA_WRITE_PROTECTED);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    free(fileName);
-    return; // ãƒ‘ã‚¹ãŒå¤‰
-  }
+	// ƒŠ[ƒhƒIƒ“ƒŠ[‚È‚çCeate‚âWriteƒtƒ‰ƒO‚ÍƒGƒ‰[
+	if (!(s_hdrvAcc & HDFMODE_WRITE) && 
+		((hostdrvWinAPIDesiredAccess & GENERIC_WRITE) || hostdrvCreateDisposition != NP2_FILE_OPEN))
+	{
+		TRACEOUTW((HD_W("ERROR: HOSTDRV is readonly mode.")));
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_MEDIA_WRITE_PROTECTED);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		free(fileName);
+		return; // ƒpƒX‚ª•Ï
+	}
 
-  // åŒºåˆ†ã‚’ã‚ã‚‰ã‹ã˜ã‚è¨ˆç®—
-  hostdrvCreateFileOrDir = (hostdrvCreateDisposition == NP2_FILE_CREATE) ||
-                           (hostdrvCreateDisposition == NP2_FILE_OPEN_IF);
-  hostdrvOpenFileOrDir = (hostdrvCreateDisposition == NP2_FILE_OPEN) ||
-                         (hostdrvCreateDisposition == NP2_FILE_OPEN_IF);
-  hostdrvCreateDirectory = (hostdrvDirectoryFile &&
-                            ((hostdrvCreateDisposition == NP2_FILE_CREATE) ||
-                             (hostdrvCreateDisposition == NP2_FILE_OPEN_IF)));
-  hostdrvOpenDirectory = (hostdrvDirectoryFile &&
-                          ((hostdrvCreateDisposition == NP2_FILE_OPEN) ||
-                           (hostdrvCreateDisposition == NP2_FILE_OPEN_IF)));
-  hostdrvCreateFile = (hostdrvNonDirectoryFile &&
-                       ((hostdrvCreateDisposition == NP2_FILE_CREATE) ||
-                        (hostdrvCreateDisposition == NP2_FILE_OPEN_IF)));
-  hostdrvOpenFile = (hostdrvNonDirectoryFile &&
-                     ((hostdrvCreateDisposition == NP2_FILE_OPEN) ||
-                      (hostdrvCreateDisposition == NP2_FILE_OPEN_IF)));
 
-  // ãƒ›ã‚¹ãƒˆå´ã®ãƒ•ã‚¡ã‚¤ãƒ«ç®¡ç†ç•ªå·ã®ç©ºãã‚’å–å¾—
-  fileIndex = hostdrvNT_getEmptyFile();
-  if (fileIndex >= 0) {
-    NP2HOSTDRVNT_FILEINFO *fi = &hostdrvNT.files[fileIndex];
-    WCHAR hostPath[MAX_PATH] = {0}; // ãƒ‘ã‚¹é ˜åŸŸç¢ºä¿
-    UINT8 isRoot;
-    UINT32 hostPathLength;
-    DWORD attrs;
+	// ‹æ•ª‚ğ‚ ‚ç‚©‚¶‚ßŒvZ
+	hostdrvCreateFileOrDir = (hostdrvCreateDisposition == NP2_FILE_CREATE) || (hostdrvCreateDisposition == NP2_FILE_OPEN_IF);
+	hostdrvOpenFileOrDir = (hostdrvCreateDisposition == NP2_FILE_OPEN) || (hostdrvCreateDisposition == NP2_FILE_OPEN_IF);
+	hostdrvCreateDirectory = (hostdrvDirectoryFile && ((hostdrvCreateDisposition == NP2_FILE_CREATE) || (hostdrvCreateDisposition == NP2_FILE_OPEN_IF)));
+	hostdrvOpenDirectory = (hostdrvDirectoryFile && ((hostdrvCreateDisposition == NP2_FILE_OPEN) || (hostdrvCreateDisposition == NP2_FILE_OPEN_IF)));
+	hostdrvCreateFile = (hostdrvNonDirectoryFile && ((hostdrvCreateDisposition == NP2_FILE_CREATE) || (hostdrvCreateDisposition == NP2_FILE_OPEN_IF)));
+	hostdrvOpenFile = (hostdrvNonDirectoryFile && ((hostdrvCreateDisposition == NP2_FILE_OPEN) || (hostdrvCreateDisposition == NP2_FILE_OPEN_IF)));
 
-    // ãƒ‘ã‚¹ã«ç„¡åŠ¹ãªæ–‡å­—ãŒå«ã¾ã‚Œã‚‹å ´åˆã¯STATUS_OBJECT_NAME_INVALIDã€€ã“ã“ã§STATUS_OBJECT_NAME_NOT_FOUNDã‚’è¿”ã™ã¨ãƒ¯ã‚¤ãƒ«ãƒ‰ã‚«ãƒ¼ãƒ‰ä»˜ãcopyã‚³ãƒãƒ³ãƒ‰ãªã©ãŒã†ã¾ãå‹•ã‹ãªã„
-    if (wcschr(fileName, '?') || wcschr(fileName, '*') ||
-        wcschr(fileName, 'Â¥"') || wcschr(fileName, '|') ||
-        wcschr(fileName, '<') || wcschr(fileName, '>')) {
-      TRACEOUTW((L"INVALID PATH", fileName));
-      cpu_kmemorywrite_d(
-          invokeInfo->statusAddr,
-          NP2_STATUS_OBJECT_NAME_INVALID); // Status STATUS_OBJECT_NAME_INVALID
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      free(fileName);
-      return;
-    }
+	// ƒzƒXƒg‘¤‚Ìƒtƒ@ƒCƒ‹ŠÇ—”Ô†‚Ì‹ó‚«‚ğæ“¾
+	fileIndex = hostdrvNT_getEmptyFile();
+	if (fileIndex >= 0)
+	{
+		NP2HOSTDRVNT_FILEINFO *fi = &hostdrvNT.files[fileIndex];
+		WCHAR hostPath[MAX_PATH] = { 0 }; // ƒpƒX—ÌˆæŠm•Û
+		UINT8 isRoot;
+		UINT32 hostPathLength;
+		DWORD attrs;
 
-    // ãƒãƒƒãƒ•ã‚¡ã‚’æº¢ã‚Œã‚‹ãã‚‰ã„ãƒ‘ã‚¹ãŒé•·ã„ã¨ãã¯ç„¡åŠ¹
-    if (wcslen(fileName) > MAX_PATH || wcslen(s_hdrvRoot) > MAX_PATH) {
-      TRACEOUTW((L"TOO LONG PATH", fileName));
-      cpu_kmemorywrite_d(
-          invokeInfo->statusAddr,
-          NP2_STATUS_OBJECT_NAME_INVALID); // Status STATUS_OBJECT_NAME_INVALID
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      free(fileName);
-      return; // ãƒ‘ã‚¹ãŒå¤‰
-    }
-    if (hostdrvOpenTargetDirectory) {
-      TRACEOUTW((L"OPEN TARGET DIR of %s", fileName));
-    }
-    if (hostdrvNT_getHostPath(fileName, hostPath, &isRoot,
-                              hostdrvOpenTargetDirectory)) {
-      TRACEOUTW((L"ERROR: invalid FileName"));
-      cpu_kmemorywrite_d(
-          invokeInfo->statusAddr,
-          NP2_STATUS_OBJECT_NAME_INVALID); // Status STATUS_OBJECT_NAME_INVALID
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      free(fileName);
-      return; // ãƒ‘ã‚¹ãŒå¤‰
-    }
+		fi->deleteOnClose = 0;
+		fi->deleteIdentityValid = 0;
+		fi->deleteVolumeSerialNumber = 0;
+		fi->deleteFileIndexHigh = 0;
+		fi->deleteFileIndexLow = 0;
 
-    // ãƒ‘ã‚¹ã®æœ«å°¾ãŒÂ¥ãªã‚‰é™¤å»
-    hostPathLength = wcslen(hostPath);
-    if (hostPathLength > 0 && hostPath[hostPathLength - 1] == 'Â¥Â¥') {
-      hostPath[hostPathLength - 1] = 'Â¥0';
-    }
+		// ƒpƒX‚É–³Œø‚È•¶š‚ªŠÜ‚Ü‚ê‚éê‡‚ÍSTATUS_OBJECT_NAME_INVALID@‚±‚±‚ÅSTATUS_OBJECT_NAME_NOT_FOUND‚ğ•Ô‚·‚ÆƒƒCƒ‹ƒhƒJ[ƒh•t‚«copyƒRƒ}ƒ“ƒh‚È‚Ç‚ª‚¤‚Ü‚­“®‚©‚È‚¢
+		if (wcschr(fileName, '?') || wcschr(fileName, '*') || wcschr(fileName, '\"') || wcschr(fileName, '|') || wcschr(fileName, '<') || wcschr(fileName, '>'))
+		{
+			TRACEOUTW((HD_W("INVALID PATH"), fileName));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_OBJECT_NAME_INVALID); // Status STATUS_OBJECT_NAME_INVALID
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			free(fileName);
+			return;
+		}
 
-    // ã¨ã‚Šã‚ãˆãšã‚ªãƒ¼ãƒ—ãƒ³
-    attrs = GetFileAttributesW(hostPath); // ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªæƒ…å ±ã‚’å–å¾—
-    TRACEOUTW((L">>> OPEN: FILE %d %s", fileIndex, hostPath));
-    if (attrs == INVALID_FILE_ATTRIBUTES) {
-      // ãƒ‘ã‚¹ãŒå­˜åœ¨ã—ãªã„ã€ã¾ãŸã¯ã‚¨ãƒ©ãƒ¼
-      if (hostdrvCreateDisposition == NP2_FILE_OPEN ||
-          hostdrvCreateDisposition == NP2_FILE_OVERWRITE) {
-        // ãªã„ã®ã§é–‹ã‘ãªã„
-        TRACEOUTW((L"OPEN ERROR: FILE %d %s", fileIndex, hostPath));
-        cpu_kmemorywrite_d(
-            invokeInfo->statusAddr,
-            NP2_STATUS_OBJECT_NAME_NOT_FOUND); // Status
-                                               // STATUS_OBJECT_NAME_NOT_FOUND
-        cpu_kmemorywrite_d(invokeInfo->statusAddr + 4,
-                           NP2_FILE_DOES_NOT_EXIST); // Information
-        TRACEOUTW((L"returns STATUS_OBJECT_NAME_NOT_FOUND"));
-        free(fileName);
-        return;
-      } else {
-        // æ–°è¦ä½œæˆ
-        if (hostdrvDirectoryFile) {
-          // ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªä½œæˆ
-          TRACEOUTW((L"-> CREATE DIR: FILE %d %s", fileIndex, hostPath));
-          if (!CreateDirectory(hostPath, NULL)) {
-            // ä½œæˆã§ããªã‹ã£ãŸ
-            TRACEOUTW((L"OPEN CREATE ERROR: FILE %d %s", fileIndex, hostPath));
-            cpu_kmemorywrite_d(
-                invokeInfo->statusAddr,
-                NP2_STATUS_OBJECT_NAME_INVALID); // Status
-                                                 // STATUS_OBJECT_NAME_INVALID
-            cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-            TRACEOUTW((L"returns STATUS_OBJECT_NAME_INVALID"));
-            free(fileName);
-            return;
-          }
-          // åˆæœŸå±æ€§ã‚‚è¨­å®šã€€å¤±æ•—ã—ã¦ã‚‚æ°—ã«ã—ãªã„
-          SetFileAttributesW(hostPath, hostdrvFileAttributes);
-        } else {
-          // ãƒ•ã‚¡ã‚¤ãƒ«ä½œæˆã€€å†ã‚ªãƒ¼ãƒ—ãƒ³ã®ãŸã‚ã«ä½œæˆæ¡ä»¶ã‚’è¦šãˆã¦ãŠãã€‚ã“ã®éš›ãƒ•ã‚¡ã‚¤ãƒ«ãŒã‚ã‚‹å‰æã®ãƒ•ãƒ©ã‚°ã«æ›¸ãæ›ãˆ
-          TRACEOUTW((L"-> CREATE FILE: FILE %d %s", fileIndex, hostPath));
-          fi->hostdrvWinAPIDesiredAccess = hostdrvWinAPIDesiredAccess;
-          fi->hostdrvShareAccess = hostdrvShareAccess;
-          fi->hostdrvWinAPICreateDisposition = hostdrvWinAPICreateDisposition;
-          if (fi->hostdrvWinAPICreateDisposition == CREATE_NEW)
-            fi->hostdrvWinAPICreateDisposition = OPEN_EXISTING;
-          if (fi->hostdrvWinAPICreateDisposition == CREATE_ALWAYS)
-            fi->hostdrvWinAPICreateDisposition = OPEN_EXISTING;
-          if (fi->hostdrvWinAPICreateDisposition == TRUNCATE_EXISTING)
-            fi->hostdrvWinAPICreateDisposition = OPEN_EXISTING;
-          fi->hostdrvFileAttributes = hostdrvFileAttributes;
-          if ((fi->hFile = CreateFileW(
-                   hostPath, hostdrvWinAPIDesiredAccess, hostdrvShareAccess,
-                   NULL, hostdrvWinAPICreateDisposition, hostdrvFileAttributes,
-                   NULL)) == INVALID_HANDLE_VALUE) {
-            // ä½œæˆã§ããªã‹ã£ãŸ
-            DWORD error = GetLastError();
-            if (error == ERROR_PATH_NOT_FOUND) {
-              TRACEOUTW((L"OPEN CREATE ERROR (ERROR_PATH_NOT_FOUND code %d): "
-                         L"FILE %d %s",
-                         error, fileIndex, hostPath));
-              cpu_kmemorywrite_d(
-                  invokeInfo->statusAddr,
-                  NP2_STATUS_OBJECT_PATH_NOT_FOUND); // Status
-                                                     // STATUS_OBJECT_PATH_NOT_FOUND
-              cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-              TRACEOUTW((L"returns STATUS_OBJECT_PATH_NOT_FOUND"));
-            } else {
-              TRACEOUTW((L"OPEN CREATE ERROR (code %d): FILE %d %s", error,
-                         fileIndex, hostPath));
-              cpu_kmemorywrite_d(
-                  invokeInfo->statusAddr,
-                  NP2_STATUS_OBJECT_NAME_INVALID); // Status
-                                                   // STATUS_OBJECT_NAME_INVALID
-              cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-              TRACEOUTW((L"returns STATUS_OBJECT_NAME_INVALID"));
-            }
-            free(fileName);
-            return;
-          }
-        }
-        // ã‚ã‚‰ãŸã‚ã¦å±æ€§ã‚’å–å¾—
-        attrs = GetFileAttributesW(hostPath);
-        returnInformation = NP2_FILE_CREATED;
+		// ƒoƒbƒtƒ@‚ğˆì‚ê‚é‚­‚ç‚¢ƒpƒX‚ª’·‚¢‚Æ‚«‚Í–³Œø
+		if (wcslen(fileName) > MAX_PATH || wcslen(s_hdrvRoot) > MAX_PATH)
+		{
+			TRACEOUTW((HD_W("TOO LONG PATH"), fileName));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_OBJECT_NAME_INVALID); // Status STATUS_OBJECT_NAME_INVALID
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			free(fileName);
+			return; // ƒpƒX‚ª•Ï
+		}
+		if (hostdrvOpenTargetDirectory)
+		{
+			TRACEOUTW((HD_W("OPEN TARGET DIR of %s"), fileName));
+		}
+		if (hostdrvNT_getHostPath(fileName, hostPath, &isRoot, hostdrvOpenTargetDirectory))
+		{
+			TRACEOUTW((HD_W("ERROR: invalid FileName")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_OBJECT_NAME_INVALID); // Status STATUS_OBJECT_NAME_INVALID
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			free(fileName);
+			return; // ƒpƒX‚ª•Ï
+		}
 
-        hostdrvNT_notifyChange(hostPath, NP2_FILE_ACTION_ADDED, 0);
-      }
-    } else {
-      // ãƒ‘ã‚¹ãŒå­˜åœ¨ã™ã‚‹
-      if (hostdrvCreateDisposition == NP2_FILE_CREATE) {
-        // åå‰é‡è¤‡ã®ãŸã‚æ–°è¦ä½œæˆã§ããªã„
-        TRACEOUTW((L"OPRN ERROR: FILE %d %s", fileIndex, hostPath));
-        cpu_kmemorywrite_d(
-            invokeInfo->statusAddr,
-            NP2_STATUS_OBJECT_NAME_COLLISION); // Status
-                                               // STATUS_OBJECT_NAME_COLLISION
-        cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-        TRACEOUTW((L"returns STATUS_OBJECT_NAME_COLLISION"));
-        free(fileName);
-        return;
-      }
-      if (attrs & FILE_ATTRIBUTE_DIRECTORY) {
-        // å¯¾è±¡ãŒãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
-        TRACEOUTW((L"OPEN DIR: FILE %d %s", fileIndex, hostPath));
-        if (hostdrvNonDirectoryFile) {
-          // ãƒ•ã‚¡ã‚¤ãƒ«ã¨ã—ã¦é–‹ã“ã†ã¨ã—ã¦ã„ãŸã‚‰ã‚¨ãƒ©ãƒ¼
-          TRACEOUTW((L"IS NOT FILE: FILE %d %s", fileIndex, hostPath));
-          cpu_kmemorywrite_d(
-              invokeInfo->statusAddr,
-              NP2_STATUS_FILE_IS_A_DIRECTORY); // Status
-                                               // STATUS_FILE_IS_A_DIRECTORY
-          cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-          TRACEOUTW((L"returns STATUS_FILE_IS_A_DIRECTORY"));
-          free(fileName);
-          return;
-        }
-      } else {
-        // å¯¾è±¡ãŒãƒ•ã‚¡ã‚¤ãƒ«
-        hostdrvFileAttributes = attrs;
-        if (hostdrvDirectoryFile) {
-          // ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã¨ã—ã¦é–‹ã“ã†ã¨ã—ã¦ã„ãŸã‚‰ã‚¨ãƒ©ãƒ¼
-          TRACEOUTW((L"IS NOT DIR: FILE %d %s", fileIndex, hostPath));
-          cpu_kmemorywrite_d(
-              invokeInfo->statusAddr,
-              NP2_STATUS_NOT_A_DIRECTORY); // Status STATUS_NOT_A_DIRECTORY
-          cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-          free(fileName);
-          return;
-        }
+		// ƒpƒX‚Ì––”ö‚ª\‚È‚çœ‹
+		hostPathLength = wcslen(hostPath);
+		if (!isRoot && hostPathLength > 0 && hostPath[hostPathLength - 1] == '\\')
+		{
+			hostPath[hostPathLength - 1] = '\0';
+		}
 
-        // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ãã€€å†ã‚ªãƒ¼ãƒ—ãƒ³ã®ãŸã‚ã«ã‚ªãƒ¼ãƒ—ãƒ³æ¡ä»¶ã‚’è¦šãˆã¦ãŠã
-        TRACEOUTW((L"OPEN FILE: FILE %d %s", fileIndex, hostPath));
-        fi->hostdrvWinAPIDesiredAccess = hostdrvWinAPIDesiredAccess;
-        fi->hostdrvShareAccess = hostdrvShareAccess;
-        fi->hostdrvWinAPICreateDisposition = hostdrvWinAPICreateDisposition;
-        if (fi->hostdrvWinAPICreateDisposition == CREATE_NEW)
-          fi->hostdrvWinAPICreateDisposition = OPEN_EXISTING;
-        if (fi->hostdrvWinAPICreateDisposition == CREATE_ALWAYS)
-          fi->hostdrvWinAPICreateDisposition = OPEN_EXISTING;
-        if (fi->hostdrvWinAPICreateDisposition == TRUNCATE_EXISTING)
-          fi->hostdrvWinAPICreateDisposition = OPEN_EXISTING;
-        fi->hostdrvFileAttributes = hostdrvFileAttributes;
-        if ((fi->hFile = CreateFileW(
-                 hostPath, hostdrvWinAPIDesiredAccess, hostdrvShareAccess, NULL,
-                 hostdrvWinAPICreateDisposition, hostdrvFileAttributes,
-                 NULL)) == INVALID_HANDLE_VALUE) {
-          // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã‘ãªã‹ã£ãŸ
-          DWORD error = GetLastError();
-          if (error == ERROR_SHARING_VIOLATION) {
-            // ãƒ•ã‚¡ã‚¤ãƒ«ãŒæ—¢ã«é–‹ã‹ã‚Œã¦ãƒ­ãƒƒã‚¯ã•ã‚Œã¦ã„ã‚‹
-            TRACEOUTW((L"OPEN FILE ERROR (ERROR_SHARING_VIOLATION code %d): "
-                       L"FILE %d %s",
-                       error, fileIndex, hostPath));
-            cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                               NP2_STATUS_SHARING_VIOLATION);
-            cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-            TRACEOUTW((L"returns STATUS_SHARING_VIOLATION"));
-          } else if (error == ERROR_ACCESS_DENIED) {
-            // æ›¸ãè¾¼ã¿ç¦æ­¢çŠ¶æ…‹ãªã©
-            TRACEOUTW((L"OPEN FILE ERROR (NP2_STATUS_ACCESS_DENIED code %d): "
-                       L"FILE %d %s",
-                       error, fileIndex, hostPath));
-            cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                               NP2_STATUS_ACCESS_DENIED);
-            cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-            TRACEOUTW((L"returns NP2_STATUS_ACCESS_DENIED"));
-          } else {
-            TRACEOUTW((L"OPEN FILE ERROR (code %d): FILE %d %s", error,
-                       fileIndex, hostPath));
-            cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                               NP2_STATUS_OBJECT_NAME_INVALID);
-            cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-            TRACEOUTW((L"returns STATUS_OBJECT_NAME_INVALID"));
-          }
-          free(fileName);
-          return;
-        }
-      }
-    }
+		// ‚Æ‚è‚ ‚¦‚¸ƒI[ƒvƒ“
+		attrs = GetFileAttributesW(hostPath); // ƒfƒBƒŒƒNƒgƒŠî•ñ‚ğæ“¾
+		TRACEOUTW((HD_W(">>> OPEN: FILE %d %s"), fileIndex, hostPath));
+		if (hostdrvDeleteOnClose)
+		{
+			int deleteTargetIsDirectory = (attrs != INVALID_FILE_ATTRIBUTES) ? !!(attrs & FILE_ATTRIBUTE_DIRECTORY) : !!hostdrvDirectoryFile;
+			// æ‚ÉDelete‰Â”Û‚ğŒŸØ
+			if (isRoot)
+			{
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_CANNOT_DELETE);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0);
+				free(fileName);
+				return;
+			}
+			if (!(s_hdrvAcc & HDFMODE_DELETE))
+			{
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_ACCESS_DENIED);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0);
+				free(fileName);
+				return;
+			}
+			if (!deleteTargetIsDirectory && !(hostdrvDesiredAccess & DELETE))
+			{
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_CANNOT_DELETE);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0);
+				free(fileName);
+				return;
+			}
+			if (attrs != INVALID_FILE_ATTRIBUTES && deleteTargetIsDirectory &&
+				hostdrvNT_dirHasFiles(hostPath))
+			{
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_DIRECTORY_NOT_EMPTY);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0);
+				free(fileName);
+				return;
+			}
+		}
+		if (attrs == INVALID_FILE_ATTRIBUTES)
+		{
+			// ƒpƒX‚ª‘¶İ‚µ‚È‚¢A‚Ü‚½‚ÍƒGƒ‰[
+			if (hostdrvCreateDisposition == NP2_FILE_OPEN || hostdrvCreateDisposition == NP2_FILE_OVERWRITE)
+			{
+				// ‚È‚¢‚Ì‚ÅŠJ‚¯‚È‚¢
+				TRACEOUTW((HD_W("OPEN ERROR: FILE %d %s"), fileIndex, hostPath));
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_OBJECT_NAME_NOT_FOUND); // Status STATUS_OBJECT_NAME_NOT_FOUND
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, NP2_FILE_DOES_NOT_EXIST); // Information
+				TRACEOUTW((HD_W("returns STATUS_OBJECT_NAME_NOT_FOUND")));
+				free(fileName);
+				return;
+			}
+			else
+			{
+				// V‹Kì¬
+				if (hostdrvDirectoryFile)
+				{
+					// ƒfƒBƒŒƒNƒgƒŠì¬
+					TRACEOUTW((HD_W("-> CREATE DIR: FILE %d %s"), fileIndex, hostPath));
+					if (!CreateDirectory(hostPath, NULL))
+					{
+						// ì¬‚Å‚«‚È‚©‚Á‚½
+						TRACEOUTW((HD_W("OPEN CREATE ERROR: FILE %d %s"), fileIndex, hostPath));
+						cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_OBJECT_NAME_INVALID); // Status STATUS_OBJECT_NAME_INVALID
+						cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+						TRACEOUTW((HD_W("returns STATUS_OBJECT_NAME_INVALID")));
+						free(fileName);
+						return;
+					}
+					// ‰Šú‘®«‚àİ’è@¸”s‚µ‚Ä‚à‹C‚É‚µ‚È‚¢
+					SetFileAttributesW(hostPath, hostdrvFileAttributes);
+				}
+				else
+				{
+					// ƒtƒ@ƒCƒ‹ì¬@ÄƒI[ƒvƒ“‚Ì‚½‚ß‚Éì¬ğŒ‚ğŠo‚¦‚Ä‚¨‚­B‚±‚ÌÛƒtƒ@ƒCƒ‹‚ª‚ ‚é‘O’ñ‚Ìƒtƒ‰ƒO‚É‘‚«Š·‚¦
+					TRACEOUTW((HD_W("-> CREATE FILE: FILE %d %s"), fileIndex, hostPath));
+					fi->hostdrvWinAPIDesiredAccess = hostdrvWinAPIDesiredAccess;
+					fi->hostdrvShareAccess = hostdrvShareAccess;
+					fi->hostdrvWinAPICreateDisposition = OPEN_EXISTING;
+					fi->hostdrvFileAttributes = hostdrvFileAttributes;
+					if ((fi->hFile = CreateFileW(hostPath, hostdrvWinAPIDesiredAccess, hostdrvShareAccess, NULL, hostdrvWinAPICreateDisposition, hostdrvFileAttributes, NULL)) == INVALID_HANDLE_VALUE)
+					{
+						// ì¬‚Å‚«‚È‚©‚Á‚½
+						DWORD error = GetLastError();
+						if (error == ERROR_PATH_NOT_FOUND)
+						{
+							TRACEOUTW((HD_W("OPEN CREATE ERROR (ERROR_PATH_NOT_FOUND code %d): FILE %d %s"), error, fileIndex, hostPath));
+							cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_OBJECT_PATH_NOT_FOUND); // Status STATUS_OBJECT_PATH_NOT_FOUND
+							cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+							TRACEOUTW((HD_W("returns STATUS_OBJECT_PATH_NOT_FOUND")));
+						}
+						else
+						{
+							TRACEOUTW((HD_W("OPEN CREATE ERROR (code %d): FILE %d %s"), error, fileIndex, hostPath));
+							cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_OBJECT_NAME_INVALID); // Status STATUS_OBJECT_NAME_INVALID
+							cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+							TRACEOUTW((HD_W("returns STATUS_OBJECT_NAME_INVALID")));
+						}
+						free(fileName);
+						return;
+					}
+				}
+				// ‚ ‚ç‚½‚ß‚Ä‘®«‚ğæ“¾
+				attrs = GetFileAttributesW(hostPath);
+				returnInformation = NP2_FILE_CREATED;
 
-    // ãƒ•ãƒ©ã‚°ã‚’è¨˜æ†¶
-    fi->isDirectory = !!(attrs & FILE_ATTRIBUTE_DIRECTORY);
-    if (fi->isDirectory) {
-      fi->isRoot = isRoot;
-    } else {
-      fi->isRoot = 0;
-    }
-    fi->allowDeleteChild =
-        (hostdrvDesiredAccess & FILE_DELETE_CHILD)
-            ? 1
-            : 0; // TODO: åŠ¹æœãŒåˆ†ã‹ã£ã¦ã„ãªã„ã€‚ç„¡è¦–ã—ã¦ã‚‚ã¨ã‚Šã‚ãˆãšå‹•ã
-    if (hostdrvDeleteOnClose) {
-      if (isRoot || (!(hostdrvDesiredAccess & DELETE) && !fi->isDirectory)) {
-        cpu_kmemorywrite_d(
-            invokeInfo->statusAddr,
-            NP2_STATUS_CANNOT_DELETE); // Status STATUS_CANNOT_DELETE
-        cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-        free(fileName);
-        return;
-      } else {
-        if (!(s_hdrvAcc & HDFMODE_DELETE)) {
-          TRACEOUTW((L"ERROR: delete command is disabled by HOSTDRV."));
-          cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_ACCESS_DENIED);
-          cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-          free(fileName);
-          return;
-        }
-        if (fi->isDirectory && hostdrvNT_dirHasFiles(fi->hostFileName)) {
-          TRACEOUTW((L"ERROR: STATUS_DIRECTORY_NOT_EMPTY."));
-          cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                             NP2_STATUS_DIRECTORY_NOT_EMPTY);
-          cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-          free(fileName);
-          return;
-        }
-        fi->deleteOnClose = 1;
-      }
-    }
+				hostdrvNT_notifyChange(hostPath, NP2_FILE_ACTION_ADDED, 0);
+			}
+		}
+		else
+		{
+			// ƒpƒX‚ª‘¶İ‚·‚é
+			if (hostdrvCreateDisposition == NP2_FILE_CREATE)
+			{
+				// –¼‘Od•¡‚Ì‚½‚ßV‹Kì¬‚Å‚«‚È‚¢
+				TRACEOUTW((HD_W("OPRN ERROR: FILE %d %s"), fileIndex, hostPath));
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_OBJECT_NAME_COLLISION); // Status STATUS_OBJECT_NAME_COLLISION
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+				TRACEOUTW((HD_W("returns STATUS_OBJECT_NAME_COLLISION")));
+				free(fileName);
+				return;
+			}
+			if (attrs & FILE_ATTRIBUTE_DIRECTORY)
+			{
+				// ‘ÎÛ‚ªƒfƒBƒŒƒNƒgƒŠ
+				TRACEOUTW((HD_W("OPEN DIR: FILE %d %s"), fileIndex, hostPath));
+				if (hostdrvNonDirectoryFile)
+				{
+					// ƒtƒ@ƒCƒ‹‚Æ‚µ‚ÄŠJ‚±‚¤‚Æ‚µ‚Ä‚¢‚½‚çƒGƒ‰[
+					TRACEOUTW((HD_W("IS NOT FILE: FILE %d %s"), fileIndex, hostPath));
+					cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_FILE_IS_A_DIRECTORY); // Status STATUS_FILE_IS_A_DIRECTORY
+					cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+					TRACEOUTW((HD_W("returns STATUS_FILE_IS_A_DIRECTORY")));
+					free(fileName);
+					return;
+				}
+			}
+			else
+			{
+				// ‘ÎÛ‚ªƒtƒ@ƒCƒ‹
+				hostdrvFileAttributes = attrs;
+				if (hostdrvDirectoryFile)
+				{
+					// ƒfƒBƒŒƒNƒgƒŠ‚Æ‚µ‚ÄŠJ‚±‚¤‚Æ‚µ‚Ä‚¢‚½‚çƒGƒ‰[
+					TRACEOUTW((HD_W("IS NOT DIR: FILE %d %s"), fileIndex, hostPath));
+					cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_A_DIRECTORY); // Status STATUS_NOT_A_DIRECTORY
+					cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+					free(fileName);
+					return;
+				}
 
-    // ä»®æƒ³ãƒã‚·ãƒ³å†…ã¨ãƒ›ã‚¹ãƒˆã®ãƒ•ã‚¡ã‚¤ãƒ«åã‚’è¨˜æ†¶
-    fi->hostFileName = (WCHAR *)malloc((wcslen(hostPath) + 1) * sizeof(WCHAR));
-    if (!fi->hostFileName) {
-      TRACEOUTW((L"ERROR: cannot alloc hostFileName"));
-      cpu_kmemorywrite_d(
-          invokeInfo->statusAddr,
-          NP2_STATUS_OBJECT_NAME_INVALID); // Status STATUS_OBJECT_NAME_INVALID
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      free(fileName);
-      return;
-    }
-    wcscpy(fi->hostFileName, hostPath);
-    fi->fileName = fileName; // fileNameã¯ä½¿ã„å›ã™ã®ã§freeã¯ã—ãªã„ã“ã¨
+				// ƒtƒ@ƒCƒ‹‚ğŠJ‚­@ÄƒI[ƒvƒ“‚Ì‚½‚ß‚ÉƒI[ƒvƒ“ğŒ‚ğŠo‚¦‚Ä‚¨‚­
+				TRACEOUTW((HD_W("OPEN FILE: FILE %d %s"), fileIndex, hostPath));
+				fi->hostdrvWinAPIDesiredAccess = hostdrvWinAPIDesiredAccess;
+				fi->hostdrvShareAccess = hostdrvShareAccess;
+				fi->hostdrvWinAPICreateDisposition = OPEN_EXISTING;
+				fi->hostdrvFileAttributes = hostdrvFileAttributes;
+				if ((fi->hFile = CreateFileW(hostPath, hostdrvWinAPIDesiredAccess, hostdrvShareAccess, NULL, hostdrvWinAPICreateDisposition, hostdrvFileAttributes, NULL)) == INVALID_HANDLE_VALUE)
+				{
+					// ƒtƒ@ƒCƒ‹‚ğŠJ‚¯‚È‚©‚Á‚½
+					DWORD error = GetLastError();
+					if (error == ERROR_SHARING_VIOLATION)
+					{
+						// ƒtƒ@ƒCƒ‹‚ªŠù‚ÉŠJ‚©‚ê‚ÄƒƒbƒN‚³‚ê‚Ä‚¢‚é
+						TRACEOUTW((HD_W("OPEN FILE ERROR (ERROR_SHARING_VIOLATION code %d): FILE %d %s"), error, fileIndex, hostPath));
+						cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SHARING_VIOLATION);
+						cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+						TRACEOUTW((HD_W("returns STATUS_SHARING_VIOLATION")));
+					}
+					else if (error == ERROR_ACCESS_DENIED)
+					{
+						// ‘‚«‚İ‹Ö~ó‘Ô‚È‚Ç
+						TRACEOUTW((HD_W("OPEN FILE ERROR (NP2_STATUS_ACCESS_DENIED code %d): FILE %d %s"), error, fileIndex, hostPath));
+						cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_ACCESS_DENIED);
+						cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+						TRACEOUTW((HD_W("returns NP2_STATUS_ACCESS_DENIED")));
+					}
+					else
+					{
+						TRACEOUTW((HD_W("OPEN FILE ERROR (code %d): FILE %d %s"), error, fileIndex, hostPath));
+						cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_OBJECT_NAME_INVALID);
+						cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+						TRACEOUTW((HD_W("returns STATUS_OBJECT_NAME_INVALID")));
+					}
+					free(fileName);
+					return;
+				}
+			}
+		}
 
-    // ãƒ›ã‚¹ãƒˆå´ã®ãƒ•ã‚¡ã‚¤ãƒ«ç®¡ç†ç•ªå·ã‚’ãƒ¡ãƒ¢ãƒªã«æ›¸ãè¾¼ã¿
-    fsContextFileIndex = fileIndex;
-    cpu_kmemorywrite_d(fileObject.FsContext + s_fsContextUserDataOffset,
-                       fsContextFileIndex);
+		// ƒtƒ‰ƒO‚ğ‹L‰¯
+		fi->isDirectory = !!(attrs & FILE_ATTRIBUTE_DIRECTORY);
+		if (fi->isDirectory)
+		{
+			fi->isRoot = isRoot;
+		}
+		else
+		{
+			fi->isRoot = 0;
+		}
+		fi->allowDeleteChild = (hostdrvDesiredAccess & FILE_DELETE_CHILD) ? 1 : 0; // TODO: Œø‰Ê‚ª•ª‚©‚Á‚Ä‚¢‚È‚¢B–³‹‚µ‚Ä‚à‚Æ‚è‚ ‚¦‚¸“®‚­
 
-    // OK
-    cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                       NP2_STATUS_SUCCESS); // Status 0=STATUS_SUCCESS
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4,
-                       returnInformation); // Information
-  } else {
-    // åŒæ™‚ã‚ªãƒ¼ãƒ—ãƒ³æ•°è¶…é
-    cpu_kmemorywrite_d(
-        invokeInfo->statusAddr,
-        NP2_STATUS_TOO_MANY_OPENED_FILES); // Status
-                                           // STATUS_TOO_MANY_OPENED_FILES
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    free(fileName);
-  }
+		// ‰¼‘zƒ}ƒVƒ““à‚ÆƒzƒXƒg‚Ìƒtƒ@ƒCƒ‹–¼‚ğ‹L‰¯
+		fi->hostFileName = (WCHAR*)malloc((wcslen(hostPath) + 1) * sizeof(WCHAR));
+		if (!fi->hostFileName)
+		{
+			TRACEOUTW((L"ERROR: cannot alloc hostFileName"));
+			hostdrvNT_preCloseFile(fileIndex);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_OBJECT_NAME_INVALID); // Status STATUS_OBJECT_NAME_INVALID
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			free(fileName);
+			return;
+		}
+		wcscpy(fi->hostFileName, hostPath);
+		fi->fileName = fileName; // fileName‚Íg‚¢‰ñ‚·‚Ì‚Åfree‚Í‚µ‚È‚¢‚±‚Æ
+		if (hostdrvDeleteOnClose)
+		{
+			fi->deleteOnClose = 1;
+			if (!hostdrvNT_captureDeleteIdentity(fi))
+			{
+				// “¯ˆê«ŒŸØ‚ÅƒGƒ‰[‚Ìê‡‚Ííœ‚µ‚È‚¢
+				fi->deleteOnClose = 0;
+			}
+		}
+
+		// ƒzƒXƒg‘¤‚Ìƒtƒ@ƒCƒ‹ŠÇ—”Ô†‚ğƒƒ‚ƒŠ‚É‘‚«‚İ
+		fsContextFileIndex = fileIndex;
+		cpu_kmemorywrite_d(fileObject.FsContext + s_fsContextUserDataOffset, fsContextFileIndex);
+		
+		// OK
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS); // Status 0=STATUS_SUCCESS
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, returnInformation); // Information
+	}
+	else
+	{
+		// “¯ƒI[ƒvƒ“”’´‰ß
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_TOO_MANY_OPENED_FILES); // Status STATUS_TOO_MANY_OPENED_FILES
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		free(fileName);
+	}
 }
 
-static void
-hostdrvNT_IRP_MJ_QUERY_VOLUME_INFORMATION(HOSTDRVNT_INVOKEINFO *invokeInfo) {
-  FS_INFORMATION_CLASS fsInfoClass =
-      invokeInfo->stack.parameters.queryVolume.fsInformationClass;
-  void *returnData = NULL;
-  UINT32 dataLen = 0;
-  UINT32 allowOverflow = 1;
+static void hostdrvNT_IRP_MJ_QUERY_VOLUME_INFORMATION(HOSTDRVNT_INVOKEINFO* invokeInfo)
+{
+	FS_INFORMATION_CLASS fsInfoClass = invokeInfo->stack.parameters.queryVolume.fsInformationClass;
+	void* returnData = NULL;
+	UINT32 dataLen = 0;
+	UINT32 allowOverflow = 1;
 
-  // ãƒœãƒªãƒ¥ãƒ¼ãƒ æƒ…å ±å–å¾—
-  if (fsInfoClass == FileFsVolumeInformation) {
-    WCHAR volumeLabel[] = NP2HOSTDRVNT_VOLUMELABEL;
-    NP2_FILE_FS_VOLUME_INFORMATION info = {0};
+	// ƒ{ƒŠƒ…[ƒ€î•ñæ“¾
+	if (fsInfoClass == FileFsVolumeInformation)
+	{
+		WCHAR volumeLabel[] = NP2HOSTDRVNT_VOLUMELABEL;
+		NP2_FILE_FS_VOLUME_INFORMATION info = { 0 };
 
-    info.volumeCreationTime = 0x01C3F8D688000000ULL;
-    info.volumeSerialNumber = 0x19822004;
-    info.supportsObjects = 0;
-    info.volumeLabelLength = sizeof(volumeLabel);
-    CopyMemory(info.volumeLabel, volumeLabel, info.volumeLabelLength);
+		info.volumeCreationTime = 0x01C3F8D688000000ULL;
+		info.volumeSerialNumber = 0x19822004;
+		info.supportsObjects = 0;
+		info.volumeLabelLength = sizeof(volumeLabel);
+		CopyMemory(info.volumeLabel, volumeLabel, info.volumeLabelLength);
 
-    dataLen = sizeof(info);
-    returnData = &info;
+		dataLen = sizeof(info);
+		returnData = &info;
 
-    // çµæœã‚’ã‚»ãƒƒãƒˆ
-    hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen,
-                                        allowOverflow);
-  } else if (fsInfoClass == FileFsAttributeInformation) {
-    WCHAR fileSystem[] = NP2HOSTDRVNT_FILESYSTEM;
-    NP2_FILE_FS_ATTRIBUTE_INFORMATION info = {0};
+		// Œ‹‰Ê‚ğƒZƒbƒg
+		hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen, allowOverflow);
+	}
+	else if (fsInfoClass == FileFsAttributeInformation)
+	{
+		WCHAR fileSystem[] = NP2HOSTDRVNT_FILESYSTEM;
+		NP2_FILE_FS_ATTRIBUTE_INFORMATION info = { 0 };
 
-    info.fileSystemAttributes = FILE_CASE_PRESERVED_NAMES |
-                                FILE_CASE_SENSITIVE_SEARCH |
-                                FILE_UNICODE_ON_DISK;
-    info.maximumComponentNameLength = 255;
-    info.fileSystemNameLength = sizeof(fileSystem);
-    CopyMemory(info.fileSystemName, fileSystem, info.fileSystemNameLength);
+		info.fileSystemAttributes = FILE_CASE_PRESERVED_NAMES | FILE_CASE_SENSITIVE_SEARCH | FILE_UNICODE_ON_DISK;
+		info.maximumComponentNameLength = 255;
+		info.fileSystemNameLength = sizeof(fileSystem);
+		CopyMemory(info.fileSystemName, fileSystem, info.fileSystemNameLength);
 
-    dataLen = sizeof(info);
-    returnData = &info;
+		dataLen = sizeof(info);
+		returnData = &info;
 
-    // çµæœã‚’ã‚»ãƒƒãƒˆ
-    hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen,
-                                        allowOverflow);
-  } else if (fsInfoClass == FileFsSizeInformation) {
-    MP2_FILE_FS_SIZE_INFORMATION info = {0};
-    ULARGE_INTEGER freeBytesAvailable;
-    ULARGE_INTEGER totalNumberOfBytes;
-    ULARGE_INTEGER totalNumberOfFreeBytes;
+		// Œ‹‰Ê‚ğƒZƒbƒg
+		hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen, allowOverflow);
+	}
+	else if (fsInfoClass == FileFsSizeInformation)
+	{
+		MP2_FILE_FS_SIZE_INFORMATION info = { 0 };
+		ULARGE_INTEGER freeBytesAvailable;
+		ULARGE_INTEGER totalNumberOfBytes;
+		ULARGE_INTEGER totalNumberOfFreeBytes;
 
-    if ((s_hostdrvNTOptions & HOSTDRVNTOPTIONS_USEREALCAPACITY) &&
-        GetDiskFreeSpaceEx(s_hdrvRoot, &freeBytesAvailable, &totalNumberOfBytes,
-                           &totalNumberOfFreeBytes)) {
-      // å®Ÿå®¹é‡ã‚’è¿”ã™
-      info.SectorsPerAllocationUnit = 8; // 8 ã‚»ã‚¯ã‚¿ã§ 1 ã‚¯ãƒ©ã‚¹ã‚¿
-      info.BytesPerSector = 512;         // 512 ãƒã‚¤ãƒˆ/ã‚»ã‚¯ã‚¿
-      info.TotalAllocationUnits =
-          (UINT64)totalNumberOfBytes.QuadPart /
-          (info.SectorsPerAllocationUnit * info.BytesPerSector);
-      info.AvailableAllocationUnits =
-          (UINT64)freeBytesAvailable.QuadPart /
-          (info.SectorsPerAllocationUnit * info.BytesPerSector);
-    } else {
-      // ãƒ€ãƒŸãƒ¼ã‚’è¿”ã™
-      info.SectorsPerAllocationUnit = 8; // 8 ã‚»ã‚¯ã‚¿ã§ 1 ã‚¯ãƒ©ã‚¹ã‚¿
-      info.BytesPerSector = 512;         // 512 ãƒã‚¤ãƒˆ/ã‚»ã‚¯ã‚¿
-      info.TotalAllocationUnits =
-          (UINT64)2 * 1024 * 1024 * 1024 /
-          (info.SectorsPerAllocationUnit * info.BytesPerSector);
-      info.AvailableAllocationUnits = info.TotalAllocationUnits / 2;
-    }
+		if ((s_hostdrvNTOptions & HOSTDRVNTOPTIONS_USEREALCAPACITY) && GetDiskFreeSpaceEx(s_hdrvRoot, &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes))
+		{
+			// À—e—Ê‚ğ•Ô‚·
+			info.SectorsPerAllocationUnit = 8;      // 8 ƒZƒNƒ^‚Å 1 ƒNƒ‰ƒXƒ^
+			info.BytesPerSector = 512;              // 512 ƒoƒCƒg/ƒZƒNƒ^
+			info.TotalAllocationUnits = (UINT64)totalNumberOfBytes.QuadPart / (info.SectorsPerAllocationUnit * info.BytesPerSector);
+			info.AvailableAllocationUnits = (UINT64)freeBytesAvailable.QuadPart / (info.SectorsPerAllocationUnit * info.BytesPerSector);
+		}
+		else
+		{
+			// ƒ_ƒ~[‚ğ•Ô‚·
+			info.SectorsPerAllocationUnit = 8;      // 8 ƒZƒNƒ^‚Å 1 ƒNƒ‰ƒXƒ^
+			info.BytesPerSector = 512;              // 512 ƒoƒCƒg/ƒZƒNƒ^
+			info.TotalAllocationUnits = (UINT64)2 * 1024 * 1024 * 1024 / (info.SectorsPerAllocationUnit * info.BytesPerSector);
+			info.AvailableAllocationUnits = info.TotalAllocationUnits / 2;
+		}
 
-    dataLen = sizeof(info);
-    returnData = &info;
+		dataLen = sizeof(info);
+		returnData = &info;
 
-    // çµæœã‚’ã‚»ãƒƒãƒˆ
-    hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen,
-                                        allowOverflow);
-  } else if (fsInfoClass == FileFsFullSizeInformation) {
-    MP2_FILE_FS_FULL_SIZE_INFORMATION info = {0};
-    ULARGE_INTEGER freeBytesAvailable;
-    ULARGE_INTEGER totalNumberOfBytes;
-    ULARGE_INTEGER totalNumberOfFreeBytes;
+		// Œ‹‰Ê‚ğƒZƒbƒg
+		hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen, allowOverflow);
+	}
+	else if (fsInfoClass == FileFsFullSizeInformation)
+	{
+		MP2_FILE_FS_FULL_SIZE_INFORMATION info = { 0 };
+		ULARGE_INTEGER freeBytesAvailable;
+		ULARGE_INTEGER totalNumberOfBytes;
+		ULARGE_INTEGER totalNumberOfFreeBytes;
 
-    if ((s_hostdrvNTOptions & HOSTDRVNTOPTIONS_USEREALCAPACITY) &&
-        GetDiskFreeSpaceEx(s_hdrvRoot, &freeBytesAvailable, &totalNumberOfBytes,
-                           &totalNumberOfFreeBytes)) {
-      // å®Ÿå®¹é‡ã‚’è¿”ã™
-      info.SectorsPerAllocationUnit = 8; // 8 ã‚»ã‚¯ã‚¿ã§ 1 ã‚¯ãƒ©ã‚¹ã‚¿
-      info.BytesPerSector = 512;         // 512 ãƒã‚¤ãƒˆ/ã‚»ã‚¯ã‚¿
-      info.TotalAllocationUnits =
-          (UINT64)totalNumberOfBytes.QuadPart /
-          (info.SectorsPerAllocationUnit * info.BytesPerSector);
-      info.ActualAvailableAllocationUnits =
-          (UINT64)totalNumberOfFreeBytes.QuadPart /
-          (info.SectorsPerAllocationUnit * info.BytesPerSector);
-      info.CallerAvailableAllocationUnits =
-          (UINT64)freeBytesAvailable.QuadPart /
-          (info.SectorsPerAllocationUnit * info.BytesPerSector);
-    } else {
-      // ãƒ€ãƒŸãƒ¼ã‚’è¿”ã™
-      info.SectorsPerAllocationUnit = 8; // 8 ã‚»ã‚¯ã‚¿ã§ 1 ã‚¯ãƒ©ã‚¹ã‚¿
-      info.BytesPerSector = 512;         // 512 ãƒã‚¤ãƒˆ/ã‚»ã‚¯ã‚¿
-      info.TotalAllocationUnits =
-          (UINT64)2 * 1024 * 1024 * 1024 /
-          (info.SectorsPerAllocationUnit * info.BytesPerSector);
-      info.ActualAvailableAllocationUnits =
-          info.CallerAvailableAllocationUnits = info.TotalAllocationUnits / 2;
-    }
+		if ((s_hostdrvNTOptions & HOSTDRVNTOPTIONS_USEREALCAPACITY) && GetDiskFreeSpaceEx(s_hdrvRoot, &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes))
+		{
+			// À—e—Ê‚ğ•Ô‚·
+			info.SectorsPerAllocationUnit = 8;      // 8 ƒZƒNƒ^‚Å 1 ƒNƒ‰ƒXƒ^
+			info.BytesPerSector = 512;              // 512 ƒoƒCƒg/ƒZƒNƒ^
+			info.TotalAllocationUnits = (UINT64)totalNumberOfBytes.QuadPart / (info.SectorsPerAllocationUnit * info.BytesPerSector);
+			info.ActualAvailableAllocationUnits = (UINT64)totalNumberOfFreeBytes.QuadPart / (info.SectorsPerAllocationUnit * info.BytesPerSector);
+			info.CallerAvailableAllocationUnits = (UINT64)freeBytesAvailable.QuadPart / (info.SectorsPerAllocationUnit * info.BytesPerSector);
+		}
+		else
+		{
+			// ƒ_ƒ~[‚ğ•Ô‚·
+			info.SectorsPerAllocationUnit = 8;      // 8 ƒZƒNƒ^‚Å 1 ƒNƒ‰ƒXƒ^
+			info.BytesPerSector = 512;              // 512 ƒoƒCƒg/ƒZƒNƒ^
+			info.TotalAllocationUnits = (UINT64)2 * 1024 * 1024 * 1024 / (info.SectorsPerAllocationUnit * info.BytesPerSector);
+			info.ActualAvailableAllocationUnits = info.CallerAvailableAllocationUnits = info.TotalAllocationUnits / 2;
+		}
 
-    dataLen = sizeof(info);
-    returnData = &info;
+		dataLen = sizeof(info);
+		returnData = &info;
 
-    // çµæœã‚’ã‚»ãƒƒãƒˆ
-    hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen,
-                                        allowOverflow);
-  } else if (fsInfoClass == FileFsDeviceInformation) {
-    NP2_FILE_FS_DEVICE_INFORMATION info = {0};
+		// Œ‹‰Ê‚ğƒZƒbƒg
+		hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen, allowOverflow);
+	}
+	else if (fsInfoClass == FileFsDeviceInformation)
+	{
+		NP2_FILE_FS_DEVICE_INFORMATION info = { 0 };
 
-    info.DeviceType =
-        NP2_FILE_DEVICE_DISK_FILE_SYSTEM; // XXX:
-                                          // FILE_DEVICE_NETWORK_FILE_SYSTEMã‚’è¿”ã™ã¨COPY
-                                          // CONã¨ã‹ãŒãŠã‹ã—ããªã‚‹ãƒ»ãƒ»ãƒ»
-    if (s_hostdrvNTOptions & HOSTDRVNTOPTIONS_REMOVABLEDEVICE) {
-      info.Characteristics =
-          NP2_FILE_REMOVABLE_MEDIA | NP2_FILE_DEVICE_IS_MOUNTED;
-    } else if (s_hostdrvNTOptions & HOSTDRVNTOPTIONS_DISKDEVICE) {
-      info.Characteristics = NP2_FILE_DEVICE_IS_MOUNTED;
-    } else {
-      info.Characteristics =
-          NP2_FILE_REMOTE_DEVICE | NP2_FILE_DEVICE_IS_MOUNTED;
-    }
+		info.DeviceType = NP2_FILE_DEVICE_DISK_FILE_SYSTEM; // XXX: FILE_DEVICE_NETWORK_FILE_SYSTEM‚ğ•Ô‚·‚ÆCOPY CON‚Æ‚©‚ª‚¨‚©‚µ‚­‚È‚éEEE
+		if (s_hostdrvNTOptions & HOSTDRVNTOPTIONS_REMOVABLEDEVICE)
+		{
+			info.Characteristics = NP2_FILE_REMOVABLE_MEDIA | NP2_FILE_DEVICE_IS_MOUNTED;
+		}
+		else if (s_hostdrvNTOptions & HOSTDRVNTOPTIONS_DISKDEVICE)
+		{
+			info.Characteristics = NP2_FILE_DEVICE_IS_MOUNTED;
+		}
+		else
+		{
+			info.Characteristics = NP2_FILE_REMOTE_DEVICE | NP2_FILE_DEVICE_IS_MOUNTED;
+		}
 
-    dataLen = sizeof(info);
-    returnData = &info;
+		dataLen = sizeof(info);
+		returnData = &info;
 
-    // çµæœã‚’ã‚»ãƒƒãƒˆ
-    hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen,
-                                        allowOverflow);
-  } else {
-    TRACEOUTW(
-        (L"Not implemented fsInfoClass %d (0x%02x)", fsInfoClass, fsInfoClass));
+		// Œ‹‰Ê‚ğƒZƒbƒg
+		hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen, allowOverflow);
+	}
+	else
+	{
+		TRACEOUTW((HD_W("Not implemented fsInfoClass %d (0x%02x)"), fsInfoClass, fsInfoClass));
 
-    // çµæœã‚’ã‚»ãƒƒãƒˆ
-    hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen,
-                                        allowOverflow);
-  }
+		// Œ‹‰Ê‚ğƒZƒbƒg
+		hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen, allowOverflow);
+	}
 }
 
-static void
-hostdrvNT_IRP_MJ_DIRECTORY_CONTROL(HOSTDRVNT_INVOKEINFO *invokeInfo) {
-  if (invokeInfo->stack.minorFunction == NP2_IRP_MN_QUERY_DIRECTORY) {
-    NP2_FILE_OBJECT fileObject = {0};
-    WCHAR filePattern[MAX_PATH] = L"*";
-    NP2HOSTDRVNT_FILEINFO *fi;
-    UINT8 restartScan;
-    UINT8 returnSingleEntry;
+static void hostdrvNT_IRP_MJ_DIRECTORY_CONTROL(HOSTDRVNT_INVOKEINFO* invokeInfo)
+{
+	if (invokeInfo->stack.minorFunction == NP2_IRP_MN_QUERY_DIRECTORY)
+	{
+		NP2_FILE_OBJECT fileObject = { 0 };
+		WCHAR filePattern[MAX_PATH] = HD_W("*");
+		NP2HOSTDRVNT_FILEINFO *fi;
+		UINT8 restartScan;
+		UINT8 returnSingleEntry;
 
-    // å¯¾è±¡ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—
-    if (invokeInfo->stack.fileObject == NULL) {
-      TRACEOUTW((L"Invalid FileObject"));
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
-    hostdrvNT_memread(invokeInfo->stack.fileObject, &fileObject,
-                      sizeof(fileObject));
-    fi = hostdrvNT_getFileInfo(&fileObject);
-    if (!fi) {
-      TRACEOUTW((L"Invalid FsContext"));
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// ‘ÎÛ‚Ìƒtƒ@ƒCƒ‹ƒIƒuƒWƒFƒNƒg‚ğæ“¾
+		if (invokeInfo->stack.fileObject == NULL)
+		{
+			TRACEOUTW((HD_W("Invalid FileObject")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
+		hostdrvNT_memread(invokeInfo->stack.fileObject, &fileObject, sizeof(fileObject));
+		fi = hostdrvNT_getFileInfo(&fileObject);
+		if (!fi)
+		{
+			TRACEOUTW((HD_W("Invalid FsContext")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‹ã©ã†ã‹ç¢ºèª
-    if (!fi->isDirectory) {
-      TRACEOUTW((L"It is not directory."));
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// ƒfƒBƒŒƒNƒgƒŠ‚©‚Ç‚¤‚©Šm”F
+		if (!fi->isDirectory)
+		{
+			TRACEOUTW((HD_W("It is not directory.")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¿ãƒ¼ãƒ³ã®èª­ã¿å–ã‚Š
-    if (invokeInfo->stack.parameters.queryDirectory.FileName) {
-      NP2_UNICODE_STRING patternStr = {0};
-      hostdrvNT_memread(invokeInfo->stack.parameters.queryDirectory.FileName,
-                        &patternStr, sizeof(NP2_UNICODE_STRING));
-      if (patternStr.Length != 0) {
-        if (0 < patternStr.Length &&
-            patternStr.Length < MAX_PATH * sizeof(WCHAR)) {
-          hostdrvNT_memread(patternStr.Buffer, &filePattern, patternStr.Length);
-        } else {
-          TRACEOUTW((L"Invalid Pattern FileName"));
-          cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                             NP2_STATUS_INVALID_PARAMETER);
-          cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-          return;
-        }
-      }
-    }
-    TRACEOUTW((L"FILE PATTERN: %s", filePattern));
+		// ƒtƒ@ƒCƒ‹ƒpƒ^[ƒ“‚Ì“Ç‚İæ‚è
+		if (invokeInfo->stack.parameters.queryDirectory.FileName)
+		{
+			NP2_UNICODE_STRING patternStr = { 0 };
+			hostdrvNT_memread(invokeInfo->stack.parameters.queryDirectory.FileName, &patternStr, sizeof(NP2_UNICODE_STRING));
+			if (patternStr.Length != 0)
+			{
+				if (0 < patternStr.Length && patternStr.Length < MAX_PATH * sizeof(WCHAR))
+				{
+					hostdrvNT_memread(patternStr.Buffer, &filePattern, patternStr.Length);
+				}
+				else
+				{
+					TRACEOUTW((HD_W("Invalid Pattern FileName")));
+					cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+					cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+					return;
+				}
+			}
+		}
+		TRACEOUTW((HD_W("FILE PATTERN: %s"), filePattern));
 
-    // ã‚¹ã‚­ãƒ£ãƒ³ã‚’æœ€åˆã‹ã‚‰ã‚„ã‚Šç›´ã™ã‹ã©ã†ã‹ç¢ºèª
-    restartScan = invokeInfo->stack.flags & NP2_SL_RESTART_SCAN;
-    if (restartScan) {
-      // æœ€åˆã‹ã‚‰ã‚„ã‚Šç›´ã™å ´åˆã€åˆ—æŒ™ç”¨ã®ãƒãƒ³ãƒ‰ãƒ«ã‚’ä¸€æ—¦é–‰ã˜ã‚‹
-      if (fi->hFindFile != NULL) {
-        FindClose(fi->hFindFile);
-        fi->hFindFile = NULL;
-      }
-    }
+		// ƒXƒLƒƒƒ“‚ğÅ‰‚©‚ç‚â‚è’¼‚·‚©‚Ç‚¤‚©Šm”F
+		restartScan = invokeInfo->stack.flags & NP2_SL_RESTART_SCAN;
+		if (restartScan)
+		{
+			// Å‰‚©‚ç‚â‚è’¼‚·ê‡A—ñ‹“—p‚Ìƒnƒ“ƒhƒ‹‚ğˆê’U•Â‚¶‚é
+			if (fi->hFindFile != NULL)
+			{
+				FindClose(fi->hFindFile);
+				fi->hFindFile = NULL;
+			}
+			hostdrvNT_clearShortNameMap(fi);
+		}
 
-    // ãƒ•ã‚©ãƒ«ãƒ€ã‚¹ã‚­ãƒ£ãƒ³å®Ÿæ–½
-    returnSingleEntry = invokeInfo->stack.flags & NP2_SL_RETURN_SINGLE_ENTRY;
-    if (returnSingleEntry) {
-      // 1ã¤ã ã‘è¿”ã™ãƒ¢ãƒ¼ãƒ‰
-      UINT32 length = invokeInfo->stack.parameters.read.length;
-      FILE_INFORMATION_CLASS fileInfoClass =
-          invokeInfo->stack.parameters.queryDirectory.FileInformationClass;
-      TRACEOUTW((L"Single Entry Mode"));
-      if (fileInfoClass == FileBothDirectoryInformation) {
-        NP2_FILE_BOTH_DIR_INFORMATION dirInfo = {0};
-        UINT32 bytesReturned = sizeof(dirInfo);
+		// ƒtƒHƒ‹ƒ_ƒXƒLƒƒƒ“À{
+		returnSingleEntry = invokeInfo->stack.flags & NP2_SL_RETURN_SINGLE_ENTRY;
+		if (returnSingleEntry)
+		{
+			// 1‚Â‚¾‚¯•Ô‚·ƒ‚[ƒh
+			UINT32 length = invokeInfo->stack.parameters.read.length;
+			FILE_INFORMATION_CLASS fileInfoClass = invokeInfo->stack.parameters.queryDirectory.FileInformationClass;
+			TRACEOUTW((HD_W("Single Entry Mode")));
+			if (fileInfoClass == FileBothDirectoryInformation)
+			{
+				NP2_FILE_BOTH_DIR_INFORMATION dirInfo = { 0 };
+				UINT32 bytesReturned = sizeof(dirInfo);
 
-        // ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®èª­ã¿å–ã‚Š
-        if (!hostdrvNT_getOneEntry(fi, &dirInfo, filePattern)) {
-          if (fi->hFindFile == NULL) {
-            // è©²å½“ãŒ1å€‹ã‚‚ãªã„å ´åˆ
-            cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                               NP2_STATUS_OBJECT_NAME_NOT_FOUND);
-            cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-            return;
-          } else {
-            // è©²å½“ãŒ1å€‹ä»¥ä¸Šã‚ã‚‹ãŒã‚‚ã†è¿”ã™ã‚‚ã®ãŒãªã„å ´åˆ
-            cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                               NP2_STATUS_NO_MORE_FILES);
-            cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-            return;
-          }
-        }
+				// ƒfƒBƒŒƒNƒgƒŠ‚Ì“Ç‚İæ‚è
+				if (!hostdrvNT_getOneEntry(fi, &dirInfo, filePattern))
+				{
+					if (fi->hFindFile == NULL)
+					{
+						// ŠY“–‚ª1ŒÂ‚à‚È‚¢ê‡
+						cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_OBJECT_NAME_NOT_FOUND);
+						cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+						return;
+					}
+					else
+					{
+						// ŠY“–‚ª1ŒÂˆÈã‚ ‚é‚ª‚à‚¤•Ô‚·‚à‚Ì‚ª‚È‚¢ê‡
+						cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NO_MORE_FILES);
+						cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+						return;
+					}
+				}
 
-        // ãƒãƒƒãƒ•ã‚¡ãŒè¶³ã‚Šã¦ã„ã‚‹ã‹ç¢ºèª
-        if (length < bytesReturned) {
-          cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                             NP2_STATUS_BUFFER_TOO_SMALL);
-          cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-          return;
-        }
+				// ƒoƒbƒtƒ@‚ª‘«‚è‚Ä‚¢‚é‚©Šm”F
+				if (length < bytesReturned)
+				{
+					cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_TOO_SMALL);
+					cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+					return;
+				}
 
-        // æ›¸ãè¾¼ã¿
-        hostdrvNT_memwrite(invokeInfo->outBufferAddr, &dirInfo, bytesReturned);
+				// ‘‚«‚İ
+				hostdrvNT_memwrite(invokeInfo->outBufferAddr, &dirInfo, bytesReturned);
 
-        cpu_kmemorywrite_d(invokeInfo->statusAddr, 0); // Status STATUS_SUCCESS
-        cpu_kmemorywrite_d(invokeInfo->statusAddr + 4,
-                           bytesReturned); // Information
-      } else {
-        TRACEOUTW((L"Unsupported fileInfoClass: %d (0x%02x)", fileInfoClass,
-                   fileInfoClass));
-        cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                           0xC0000010); // Status STATUS_INVALID_DEVICE_REQUEST
-        cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      }
-    } else {
-      // è¤‡æ•°ã‚’è¿”ã™ãƒ¢ãƒ¼ãƒ‰
-      UINT32 wLength = 0;
-      UINT32 length = invokeInfo->stack.parameters.read.length;
-      FILE_INFORMATION_CLASS fileInfoClass =
-          invokeInfo->stack.parameters.queryDirectory.FileInformationClass;
-      TRACEOUTW((L"Multi Entry Mode"));
-      if (fileInfoClass == FileBothDirectoryInformation) {
-        UINT32 lastWriteAddr = invokeInfo->outBufferAddr;
-        UINT32 writeAddr = invokeInfo->outBufferAddr;
-        NP2_FILE_BOTH_DIR_INFORMATION dirInfo = {0};
-        UINT32 bytesReturnedOne = sizeof(NP2_FILE_BOTH_DIR_INFORMATION);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, 0); // Status STATUS_SUCCESS
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, bytesReturned); // Information
+			}
+			else
+			{
+				TRACEOUTW((HD_W("Unsupported fileInfoClass: %d (0x%02x)"), fileInfoClass, fileInfoClass));
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, 0xC0000010); // Status STATUS_INVALID_DEVICE_REQUEST
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			}
+		}
+		else
+		{
+			// •¡”‚ğ•Ô‚·ƒ‚[ƒh
+			UINT32 wLength = 0;
+			UINT32 length = invokeInfo->stack.parameters.read.length;
+			FILE_INFORMATION_CLASS fileInfoClass = invokeInfo->stack.parameters.queryDirectory.FileInformationClass;
+			TRACEOUTW((HD_W("Multi Entry Mode")));
+			if (fileInfoClass == FileBothDirectoryInformation)
+			{
+				UINT32 lastWriteAddr = invokeInfo->outBufferAddr;
+				UINT32 writeAddr = invokeInfo->outBufferAddr;
+				NP2_FILE_BOTH_DIR_INFORMATION dirInfo = { 0 };
+				UINT32 bytesReturnedOne = sizeof(NP2_FILE_BOTH_DIR_INFORMATION);
 
-        if (length < bytesReturnedOne) {
-          // ãƒãƒƒãƒ•ã‚¡ã«1ã¤ã‚‚æ ¼ç´ã§ããªã„ãªã‚‰STATUS_BUFFER_TOO_SMALL
-          cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                             NP2_STATUS_BUFFER_TOO_SMALL);
-          cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-          return;
-        }
-        while (wLength < length - bytesReturnedOne) {
-          // ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®èª­ã¿å–ã‚Š
-          if (!hostdrvNT_getOneEntry(fi, &dirInfo, filePattern)) {
-            // ã‚‚ã†ãƒ•ã‚¡ã‚¤ãƒ«ãŒãªã„
-            break;
-          }
+				if (length < bytesReturnedOne)
+				{
+					// ƒoƒbƒtƒ@‚É1‚Â‚àŠi”[‚Å‚«‚È‚¢‚È‚çSTATUS_BUFFER_TOO_SMALL
+					cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_TOO_SMALL);
+					cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+					return;
+				}
+				while (wLength < length - bytesReturnedOne)
+				{
+					// ƒfƒBƒŒƒNƒgƒŠ‚Ì“Ç‚İæ‚è
+					if (!hostdrvNT_getOneEntry(fi, &dirInfo, filePattern))
+					{
+						// ‚à‚¤ƒtƒ@ƒCƒ‹‚ª‚È‚¢
+						break;
+					}
 
-          // æ¬¡ã‚¨ãƒ³ãƒˆãƒªã¸ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ
-          dirInfo.NextEntryOffset = bytesReturnedOne;
+					// ŸƒGƒ“ƒgƒŠ‚Ö‚ÌƒIƒtƒZƒbƒg
+					dirInfo.NextEntryOffset = bytesReturnedOne;
 
-          // æ›¸ãè¾¼ã¿
-          hostdrvNT_memwrite(writeAddr, &dirInfo, bytesReturnedOne);
+					// ‘‚«‚İ
+					hostdrvNT_memwrite(writeAddr, &dirInfo, bytesReturnedOne);
 
-          // æ¬¡ã®ã‚¨ãƒ³ãƒˆãƒªã«ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’é€²ã‚ã‚‹
-          wLength += bytesReturnedOne;
-          lastWriteAddr = writeAddr;
-          writeAddr += bytesReturnedOne;
-        }
+					// Ÿ‚ÌƒGƒ“ƒgƒŠ‚ÉƒAƒhƒŒƒX‚ği‚ß‚é
+					wLength += bytesReturnedOne;
+					lastWriteAddr = writeAddr;
+					writeAddr += bytesReturnedOne;
+				}
 
-        if (wLength == 0) {
-          // ä»Šå›1ã¤ã‚‚è¿”ã™ã‚‚ã®ãŒãªã„
-          if (fi->hFindFile == NULL) {
-            // è©²å½“ãŒ1å€‹ã‚‚ãªã„å ´åˆ
-            cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                               NP2_STATUS_OBJECT_NAME_NOT_FOUND);
-            cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-            return;
-          } else {
-            // è©²å½“ãŒ1å€‹ä»¥ä¸Šã‚ã‚‹ãŒã‚‚ã†è¿”ã™ã‚‚ã®ãŒãªã„å ´åˆ
-            cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                               NP2_STATUS_NO_MORE_FILES);
-            cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-            return;
-          }
-        } else {
-          // å°‘ãªãã¨ã‚‚1ã¤ã®ãƒ‡ãƒ¼ã‚¿ã‚’è¿”ã—ãŸ
+				if (wLength == 0)
+				{
+					// ¡‰ñ1‚Â‚à•Ô‚·‚à‚Ì‚ª‚È‚¢
+					if (fi->hFindFile == NULL)
+					{
+						// ŠY“–‚ª1ŒÂ‚à‚È‚¢ê‡
+						cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_OBJECT_NAME_NOT_FOUND);
+						cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+						return;
+					}
+					else
+					{
+						// ŠY“–‚ª1ŒÂˆÈã‚ ‚é‚ª‚à‚¤•Ô‚·‚à‚Ì‚ª‚È‚¢ê‡
+						cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NO_MORE_FILES);
+						cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+						return;
+					}
+				}
+				else
+				{
+					// ­‚È‚­‚Æ‚à1‚Â‚Ìƒf[ƒ^‚ğ•Ô‚µ‚½
 
-          // ç›´å‰ãƒ‡ãƒ¼ã‚¿ã®æ¬¡ãƒ‡ãƒ¼ã‚¿ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’æ¶ˆã™
-          dirInfo.NextEntryOffset = 0;
-          hostdrvNT_memwrite(lastWriteAddr, &dirInfo, bytesReturnedOne);
+					// ’¼‘Oƒf[ƒ^‚ÌŸƒf[ƒ^ƒIƒtƒZƒbƒg‚ğÁ‚·
+					dirInfo.NextEntryOffset = 0;
+					hostdrvNT_memwrite(lastWriteAddr, &dirInfo, bytesReturnedOne);
 
-          cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS);
-          cpu_kmemorywrite_d(invokeInfo->statusAddr + 4,
-                             wLength); // Information
-        }
-      } else {
-        TRACEOUTW((L"Not implemented fileInfoClass: %d (0x%02x)", fileInfoClass,
-                   fileInfoClass));
-        cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                           NP2_STATUS_INVALID_DEVICE_REQUEST);
-        cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      }
-    }
-  } else if (invokeInfo->stack.minorFunction ==
-             NP2_IRP_MN_NOTIFY_CHANGE_DIRECTORY) {
-    NP2_FILE_OBJECT fileObject = {0};
-    NP2HOSTDRVNT_FILEINFO *fi;
-    UINT32 length;
-    int i;
+					cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS);
+					cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, wLength); // Information
+				}
+			}
+			else
+			{
+				TRACEOUTW((HD_W("Not implemented fileInfoClass: %d (0x%02x)"), fileInfoClass, fileInfoClass));
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_DEVICE_REQUEST);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			}
+		}
+	}
+	else if (invokeInfo->stack.minorFunction == NP2_IRP_MN_NOTIFY_CHANGE_DIRECTORY)
+	{
+		NP2_FILE_OBJECT fileObject = { 0 };
+		NP2HOSTDRVNT_FILEINFO* fi;
+		UINT32 length;
+		int i;
 
-    // éå¯¾å¿œã®å ´åˆæŠœã‘ã‚‹
-    if (s_pendingListCount == 0) {
-      TRACEOUTW((L"Not implemented minorFunction: %d (0x%02x)",
-                 invokeInfo->stack.minorFunction,
-                 invokeInfo->stack.minorFunction));
-      cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                         NP2_STATUS_INVALID_DEVICE_REQUEST);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// ”ñ‘Î‰‚Ìê‡”²‚¯‚é
+		if (s_pendingListCount == 0)
+		{
+			TRACEOUTW((HD_W("Not implemented minorFunction: %d (0x%02x)"), invokeInfo->stack.minorFunction, invokeInfo->stack.minorFunction));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_DEVICE_REQUEST);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // å¯¾è±¡ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—
-    if (invokeInfo->stack.fileObject == NULL) {
-      TRACEOUTW((L"Invalid FileObject"));
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
-    hostdrvNT_memread(invokeInfo->stack.fileObject, &fileObject,
-                      sizeof(fileObject));
-    fi = hostdrvNT_getFileInfo(&fileObject);
-    if (!fi) {
-      TRACEOUTW((L"Invalid FsContext"));
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// ‘ÎÛ‚Ìƒtƒ@ƒCƒ‹ƒIƒuƒWƒFƒNƒg‚ğæ“¾
+		if (invokeInfo->stack.fileObject == NULL)
+		{
+			TRACEOUTW((HD_W("Invalid FileObject")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
+		hostdrvNT_memread(invokeInfo->stack.fileObject, &fileObject, sizeof(fileObject));
+		fi = hostdrvNT_getFileInfo(&fileObject);
+		if (!fi)
+		{
+			TRACEOUTW((HD_W("Invalid FsContext")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // ç›£è¦–ã‚’é–‹å§‹ã™ã‚‹
-    length = invokeInfo->stack.parameters.notifyDirectory.length;
-    if (length < 9) {
-      // å¾Œã§é ˜åŸŸã‚’å€Ÿã‚Šã‚‹ã®ã§ã€ãƒãƒƒãƒ•ã‚¡ã«9byteæ ¼ç´ã§ããªã„ãªã‚‰STATUS_BUFFER_TOO_SMALL
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_TOO_SMALL);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// ŠÄ‹‚ğŠJn‚·‚é
+		length = invokeInfo->stack.parameters.notifyDirectory.length;
+		if (length < 9)
+		{
+			// Œã‚Å—Ìˆæ‚ğØ‚è‚é‚Ì‚ÅAƒoƒbƒtƒ@‚É9byteŠi”[‚Å‚«‚È‚¢‚È‚çSTATUS_BUFFER_TOO_SMALL
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_TOO_SMALL);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // ã‚ã„ã¦ã„ã‚‹ã¨ã“ã‚ã¸æ”¾ã‚Šè¾¼ã‚€
-    for (i = 0; i < s_pendingListCount; i++) {
-      UINT32 irpListAddr = s_pendingIrpListAddr + i * sizeof(UINT32);
-      UINT32 fileIdxListAddr = s_pendingAliveListAddr + i * sizeof(UINT32);
-      UINT32 irpAddr = cpu_kmemoryread_d(irpListAddr);
-      UINT32 fileIdx = cpu_kmemoryread_d(fileIdxListAddr);
-      if (irpAddr == 0 && fileIdx == 0) {
-        // ç›£è¦–é–‹å§‹
-        TRACEOUTW((L"IRP_MN_NOTIFY_CHANGE_DIRECTORY: Start pending idx=%d", i));
-        cpu_kmemorywrite_d(
-            fileIdxListAddr,
-            cpu_kmemoryread_d(
-                fileObject.FsContext +
-                s_fsContextUserDataOffset)); // ãƒ•ã‚¡ã‚¤ãƒ«ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¨˜æ†¶
-        s_pendingIndexOrCompleteCount = i; // å¾…æ©Ÿé–‹å§‹å¯¾è±¡ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’ã‚»ãƒƒãƒˆ
-        cpu_kmemorywrite_d(
-            invokeInfo->outBufferAddr,
-            invokeInfo->stack.parameters.notifyDirectory
-                .length); // XXX: å‡ºåŠ›ç”¨ãƒãƒƒãƒ•ã‚¡ã‚’å€Ÿã‚Šã¦lengthã‚’ç„¡ç†ã‚„ã‚Šè¨˜æ†¶
-        cpu_kmemorywrite_d(
-            invokeInfo->outBufferAddr + 4,
-            invokeInfo->stack.parameters.notifyDirectory
-                .completionFilter); // XXX:
-                                    // å‡ºåŠ›ç”¨ãƒãƒƒãƒ•ã‚¡ã‚’å€Ÿã‚Šã¦completionFilterã‚’ç„¡ç†ã‚„ã‚Šè¨˜æ†¶
-        cpu_kmemorywrite(
-            invokeInfo->outBufferAddr + 8,
-            invokeInfo->stack
-                .flags); // XXX: å‡ºåŠ›ç”¨ãƒãƒƒãƒ•ã‚¡ã‚’å€Ÿã‚Šã¦flagsã‚’ç„¡ç†ã‚„ã‚Šè¨˜æ†¶
-        cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_PENDING);
-        cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-        return;
-      }
-    }
+		// ‚ ‚¢‚Ä‚¢‚é‚Æ‚±‚ë‚Ö•ú‚è‚Ş
+		for (i = 0; i < s_pendingListCount; i++)
+		{
+			UINT32 irpListAddr = s_pendingIrpListAddr + i * sizeof(UINT32);
+			UINT32 fileIdxListAddr = s_pendingAliveListAddr + i * sizeof(UINT32);
+			UINT32 irpAddr = cpu_kmemoryread_d(irpListAddr);
+			UINT32 fileIdx = cpu_kmemoryread_d(fileIdxListAddr);
+			if (irpAddr == 0 && fileIdx == 0)
+			{
+				// ŠÄ‹ŠJn
+				TRACEOUTW((HD_W("IRP_MN_NOTIFY_CHANGE_DIRECTORY: Start pending idx=%d"), i));
+				cpu_kmemorywrite_d(fileIdxListAddr, cpu_kmemoryread_d(fileObject.FsContext + s_fsContextUserDataOffset)); // ƒtƒ@ƒCƒ‹ƒCƒ“ƒfƒbƒNƒX‚ğ‹L‰¯
+				s_pendingIndexOrCompleteCount = i; // ‘Ò‹@ŠJn‘ÎÛ‚ÌƒCƒ“ƒfƒbƒNƒX‚ğƒZƒbƒg
+				cpu_kmemorywrite_d(invokeInfo->outBufferAddr, invokeInfo->stack.parameters.notifyDirectory.length); // XXX: o—Í—pƒoƒbƒtƒ@‚ğØ‚è‚Älength‚ğ–³—‚â‚è‹L‰¯
+				cpu_kmemorywrite_d(invokeInfo->outBufferAddr + 4, invokeInfo->stack.parameters.notifyDirectory.completionFilter); // XXX: o—Í—pƒoƒbƒtƒ@‚ğØ‚è‚ÄcompletionFilter‚ğ–³—‚â‚è‹L‰¯
+				cpu_kmemorywrite(invokeInfo->outBufferAddr + 8, invokeInfo->stack.flags); // XXX: o—Í—pƒoƒbƒtƒ@‚ğØ‚è‚Äflags‚ğ–³—‚â‚è‹L‰¯
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_PENDING);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+				return;
+			}
+		}
 
-    // ã‚ã„ã¦ãªã„ã®ã§ã‚¨ãƒ©ãƒ¼
-    TRACEOUTW((L"IRP_MN_NOTIFY_CHANGE_DIRECTORY: Cannot pending because of too "
-               L"meny pending objects."));
-    cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                       NP2_STATUS_INSUFFICIENT_RESOURCES);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-  } else {
-    TRACEOUTW((L"Not implemented minorFunction: %d (0x%02x)",
-               invokeInfo->stack.minorFunction,
-               invokeInfo->stack.minorFunction));
-    cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                       NP2_STATUS_INVALID_DEVICE_REQUEST);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-  }
+		// ‚ ‚¢‚Ä‚È‚¢‚Ì‚ÅƒGƒ‰[
+		TRACEOUTW((HD_W("IRP_MN_NOTIFY_CHANGE_DIRECTORY: Cannot pending because of too meny pending objects.")));
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INSUFFICIENT_RESOURCES);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+	}
+	else
+	{
+		TRACEOUTW((HD_W("Not implemented minorFunction: %d (0x%02x)"), invokeInfo->stack.minorFunction, invokeInfo->stack.minorFunction));
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_DEVICE_REQUEST);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+	}
 }
 
-static void
-hostdrvNT_IRP_MJ_QUERY_INFORMATION(HOSTDRVNT_INVOKEINFO *invokeInfo) {
-  UINT32 infoClass =
-      invokeInfo->stack.parameters.queryFile.FileInformationClass;
-  void *returnData = NULL;
-  UINT32 dataLen = 0;
-  NP2_FILE_OBJECT fileObject = {0};
-  NP2HOSTDRVNT_FILEINFO *fi;
-  UINT32 allowOverflow = 1;
+static void hostdrvNT_IRP_MJ_QUERY_INFORMATION(HOSTDRVNT_INVOKEINFO* invokeInfo)
+{
+	UINT32 infoClass = invokeInfo->stack.parameters.queryFile.FileInformationClass;
+	void* returnData = NULL;
+	UINT32 dataLen = 0;
+	NP2_FILE_OBJECT fileObject = { 0 };
+	NP2HOSTDRVNT_FILEINFO* fi;
+	UINT32 allowOverflow = 1;
 
-  // å¯¾è±¡ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—
-  if (invokeInfo->stack.fileObject == NULL) {
-    TRACEOUTW((L"Invalid FileObject"));
-    cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    return;
-  }
-  hostdrvNT_memread(invokeInfo->stack.fileObject, &fileObject,
-                    sizeof(fileObject));
-  fi = hostdrvNT_getFileInfo(&fileObject);
-  if (!fi) {
-    TRACEOUTW((L"Invalid FsContext"));
-    cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    return;
-  }
+	// ‘ÎÛ‚Ìƒtƒ@ƒCƒ‹ƒIƒuƒWƒFƒNƒg‚ğæ“¾
+	if (invokeInfo->stack.fileObject == NULL)
+	{
+		TRACEOUTW((HD_W("Invalid FileObject")));
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		return;
+	}
+	hostdrvNT_memread(invokeInfo->stack.fileObject, &fileObject, sizeof(fileObject));
+	fi = hostdrvNT_getFileInfo(&fileObject);
+	if (!fi)
+	{
+		TRACEOUTW((HD_W("Invalid FsContext")));
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		return;
+	}
 
-  // ãƒ•ã‚¡ã‚¤ãƒ« or ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªæƒ…å ±å–å¾—
-  if (infoClass == FileBasicInformation) {
-    NP2_FILE_BASIC_INFORMATION basicInfo = {0};
-    WIN32_FILE_ATTRIBUTE_DATA fileInfo;
+	// ƒtƒ@ƒCƒ‹ or ƒfƒBƒŒƒNƒgƒŠî•ñæ“¾
+	if (infoClass == FileBasicInformation)
+	{
+		NP2_FILE_BASIC_INFORMATION basicInfo = { 0 };
+		WIN32_FILE_ATTRIBUTE_DATA fileInfo;
 
-    if (GetFileAttributesEx(fi->hostFileName, GetFileExInfoStandard,
-                            &fileInfo)) {
-      basicInfo.CreationTime = *((UINT64 *)&fileInfo.ftCreationTime);
-      basicInfo.LastAccessTime = *((UINT64 *)&fileInfo.ftLastAccessTime);
-      basicInfo.LastWriteTime = *((UINT64 *)&fileInfo.ftLastWriteTime);
-      basicInfo.ChangeTime = *((UINT64 *)&fileInfo.ftLastWriteTime);
-      basicInfo.FileAttributes = fileInfo.dwFileAttributes;
-      if (!fi->isDirectory && basicInfo.FileAttributes == 0) {
-        basicInfo.FileAttributes |= FILE_ATTRIBUTE_NORMAL;
-      }
+		if (GetFileAttributesEx(fi->hostFileName, GetFileExInfoStandard, &fileInfo))
+		{
+			basicInfo.CreationTime = *((UINT64*)&fileInfo.ftCreationTime);
+			basicInfo.LastAccessTime = *((UINT64*)&fileInfo.ftLastAccessTime);
+			basicInfo.LastWriteTime = *((UINT64*)&fileInfo.ftLastWriteTime);
+			basicInfo.ChangeTime = *((UINT64*)&fileInfo.ftLastWriteTime);
+			basicInfo.FileAttributes = fileInfo.dwFileAttributes;
+			if (!fi->isDirectory && basicInfo.FileAttributes == 0)
+			{
+				basicInfo.FileAttributes |= FILE_ATTRIBUTE_NORMAL;
+			}
 
-      dataLen = sizeof(basicInfo);
-      returnData = &basicInfo;
-    }
+			dataLen = sizeof(basicInfo);
+			returnData = &basicInfo;
+		}
 
-    // çµæœã‚’ã‚»ãƒƒãƒˆ
-    hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen,
-                                        allowOverflow);
-  } else if (infoClass == FileStandardInformation) {
-    NP2_FILE_STANDARD_INFORMATION stdInfo = {0};
-    WIN32_FILE_ATTRIBUTE_DATA fileInfo;
+		// Œ‹‰Ê‚ğƒZƒbƒg
+		hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen, allowOverflow);
+	}
+	else if (infoClass == FileStandardInformation)
+	{
+		NP2_FILE_STANDARD_INFORMATION stdInfo = { 0 };
+		WIN32_FILE_ATTRIBUTE_DATA fileInfo;
 
-    if (GetFileAttributesEx(fi->hostFileName, GetFileExInfoStandard,
-                            &fileInfo)) {
-      stdInfo.EndOfFile =
-          ((UINT64)fileInfo.nFileSizeHigh << 32) | fileInfo.nFileSizeLow;
-      stdInfo.AllocationSize = stdInfo.EndOfFile;
-      stdInfo.NumberOfLinks = 1;
-      stdInfo.DeletePending = fi->deleteOnClose ? 1 : 0;
-      stdInfo.Directory =
-          (fileInfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? 1 : 0;
+		if (GetFileAttributesEx(fi->hostFileName, GetFileExInfoStandard, &fileInfo))
+		{
+			stdInfo.EndOfFile = ((UINT64)fileInfo.nFileSizeHigh << 32) | fileInfo.nFileSizeLow;
+			stdInfo.AllocationSize = stdInfo.EndOfFile;
+			stdInfo.NumberOfLinks = 1;
+			stdInfo.DeletePending = fi->deleteOnClose ? 1 : 0;
+			stdInfo.Directory = (fileInfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? 1 : 0;
 
-      dataLen = sizeof(stdInfo);
-      returnData = &stdInfo;
-    }
+			dataLen = sizeof(stdInfo);
+			returnData = &stdInfo;
+		}
 
-    // çµæœã‚’ã‚»ãƒƒãƒˆ
-    hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen,
-                                        allowOverflow);
-  } else if (infoClass == FileEaInformation) {
-    NP2_FILE_EA_INFORMATION info = {0};
+		// Œ‹‰Ê‚ğƒZƒbƒg
+		hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen, allowOverflow);
+	}
+	else if (infoClass == FileEaInformation)
+	{
+		NP2_FILE_EA_INFORMATION info = { 0 };
 
-    info.EaSize = 0;
+		info.EaSize = 0;
 
-    dataLen = sizeof(info);
-    returnData = &info;
+		dataLen = sizeof(info);
+		returnData = &info;
 
-    // çµæœã‚’ã‚»ãƒƒãƒˆ
-    hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen,
-                                        allowOverflow);
-  } else if (infoClass == FileModeInformation) {
-    NP2_FILE_MODE_INFORMATION info = {0};
+		// Œ‹‰Ê‚ğƒZƒbƒg
+		hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen, allowOverflow);
+	}
+	else if (infoClass == FileModeInformation)
+	{
+		NP2_FILE_MODE_INFORMATION info = { 0 };
 
-    info.Mode = 0;
+		info.Mode = 0;
 
-    dataLen = sizeof(info);
-    returnData = &info;
+		dataLen = sizeof(info);
+		returnData = &info;
 
-    // çµæœã‚’ã‚»ãƒƒãƒˆ
-    hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen,
-                                        allowOverflow);
-  } else if (infoClass == FileAllInformation) {
-    NP2_FILE_ALL_INFORMATION allInfo = {0};
-    WIN32_FILE_ATTRIBUTE_DATA fileInfo;
-    UINT32 fileNameBytes = wcslen(fi->fileName) * sizeof(WCHAR);
+		// Œ‹‰Ê‚ğƒZƒbƒg
+		hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen, allowOverflow);
+	}
+	else if (infoClass == FileAllInformation)
+	{
+		NP2_FILE_ALL_INFORMATION allInfo = { 0 };
+		WIN32_FILE_ATTRIBUTE_DATA fileInfo;
+		UINT32 fileNameBytes = wcslen(fi->fileName) * sizeof(WCHAR);
 
-    if (fileNameBytes < sizeof(allInfo.NameInformation.FileName)) {
-      if (GetFileAttributesEx(fi->hostFileName, GetFileExInfoStandard,
-                              &fileInfo)) {
-        if (!fi->isDirectory && fileInfo.dwFileAttributes == 0) {
-          fileInfo.dwFileAttributes |= FILE_ATTRIBUTE_NORMAL;
-        }
-        allInfo.BasicInformation.CreationTime =
-            *((UINT64 *)&fileInfo.ftCreationTime);
-        allInfo.BasicInformation.LastAccessTime =
-            *((UINT64 *)&fileInfo.ftLastAccessTime);
-        allInfo.BasicInformation.LastWriteTime =
-            *((UINT64 *)&fileInfo.ftLastWriteTime);
-        allInfo.BasicInformation.ChangeTime =
-            *((UINT64 *)&fileInfo.ftLastWriteTime);
-        allInfo.BasicInformation.FileAttributes = fileInfo.dwFileAttributes;
-        allInfo.StandardInformation.EndOfFile =
-            ((UINT64)fileInfo.nFileSizeHigh << 32) | fileInfo.nFileSizeLow;
-        allInfo.StandardInformation.AllocationSize =
-            allInfo.StandardInformation.EndOfFile;
-        allInfo.StandardInformation.NumberOfLinks = 1;
-        allInfo.StandardInformation.DeletePending = 0;
-        allInfo.StandardInformation.Directory =
-            (fileInfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? 1 : 0;
-        allInfo.InternalInformation.IndexNumber =
-            (UINT64)fi->hFile; // XXX: é©å½“ãªç•ªå·ã‚’è¿”ã™
-        allInfo.EaInformation.EaSize = 0;
-        allInfo.AccessInformation.AccessFlags = STANDARD_RIGHTS_ALL;
-        allInfo.PositionInformation.CurrentByteOffset =
-            fileObject.CurrentByteOffset;
-        allInfo.ModeInformation.Mode = 0;
-        allInfo.AlignmentInformation.AlignmentRequirement = 0;
-        allInfo.NameInformation.FileNameLength = fileNameBytes;
-        wcscpy(allInfo.NameInformation.FileName, fi->fileName);
+		if (fileNameBytes < sizeof(allInfo.NameInformation.FileName))
+		{
+			if (GetFileAttributesEx(fi->hostFileName, GetFileExInfoStandard, &fileInfo))
+			{
+				if (!fi->isDirectory && fileInfo.dwFileAttributes == 0)
+				{
+					fileInfo.dwFileAttributes |= FILE_ATTRIBUTE_NORMAL;
+				}
+				allInfo.BasicInformation.CreationTime = *((UINT64*)&fileInfo.ftCreationTime);
+				allInfo.BasicInformation.LastAccessTime = *((UINT64*)&fileInfo.ftLastAccessTime);
+				allInfo.BasicInformation.LastWriteTime = *((UINT64*)&fileInfo.ftLastWriteTime);
+				allInfo.BasicInformation.ChangeTime = *((UINT64*)&fileInfo.ftLastWriteTime);
+				allInfo.BasicInformation.FileAttributes = fileInfo.dwFileAttributes;
+				allInfo.StandardInformation.EndOfFile = ((UINT64)fileInfo.nFileSizeHigh << 32) | fileInfo.nFileSizeLow;
+				allInfo.StandardInformation.AllocationSize = allInfo.StandardInformation.EndOfFile;
+				allInfo.StandardInformation.NumberOfLinks = 1;
+				allInfo.StandardInformation.DeletePending = 0;
+				allInfo.StandardInformation.Directory = (fileInfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? 1 : 0;
+				allInfo.InternalInformation.IndexNumber = (UINT64)fi->hFile; // XXX: “K“–‚È”Ô†‚ğ•Ô‚·
+				allInfo.EaInformation.EaSize = 0;
+				allInfo.AccessInformation.AccessFlags = STANDARD_RIGHTS_ALL;
+				allInfo.PositionInformation.CurrentByteOffset = fileObject.CurrentByteOffset;
+				allInfo.ModeInformation.Mode = 0;
+				allInfo.AlignmentInformation.AlignmentRequirement = 0;
+				allInfo.NameInformation.FileNameLength = fileNameBytes;
+				wcscpy(allInfo.NameInformation.FileName, fi->fileName);
 
-        // ãƒ•ã‚¡ã‚¤ãƒ«åã®å®Ÿéš›ã®é•·ã•ã«åŸºã¥ã„ã¦è¨ˆç®—
-        dataLen = sizeof(allInfo) - sizeof(allInfo.NameInformation.FileName) +
-                  fileNameBytes;
-        returnData = &allInfo;
-      }
-    }
+				// ƒtƒ@ƒCƒ‹–¼‚ÌÀÛ‚Ì’·‚³‚ÉŠî‚Ã‚¢‚ÄŒvZ
+				dataLen = sizeof(allInfo) - sizeof(allInfo.NameInformation.FileName) + fileNameBytes;
+				returnData = &allInfo;
+			}
+		}
 
-    // çµæœã‚’ã‚»ãƒƒãƒˆ
-    hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen,
-                                        allowOverflow);
-  } else if (infoClass == FileAttributeTagInformation) {
-    NP2_FILE_ATTRIBUTE_TAG_INFORMATION info = {0};
-    WIN32_FILE_ATTRIBUTE_DATA fileInfo;
+		// Œ‹‰Ê‚ğƒZƒbƒg
+		hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen, allowOverflow);
+	}
+	else if (infoClass == FileAttributeTagInformation)
+	{
+		NP2_FILE_ATTRIBUTE_TAG_INFORMATION info = { 0 };
+		WIN32_FILE_ATTRIBUTE_DATA fileInfo;
 
-    if (GetFileAttributesEx(fi->hostFileName, GetFileExInfoStandard,
-                            &fileInfo)) {
-      if (!fi->isDirectory && fileInfo.dwFileAttributes == 0) {
-        fileInfo.dwFileAttributes |= FILE_ATTRIBUTE_NORMAL;
-      }
-      info.FileAttributes = fileInfo.dwFileAttributes;
-      info.ReparseTag = 0;
+		if (GetFileAttributesEx(fi->hostFileName, GetFileExInfoStandard, &fileInfo))
+		{
+			if (!fi->isDirectory && fileInfo.dwFileAttributes == 0)
+			{
+				fileInfo.dwFileAttributes |= FILE_ATTRIBUTE_NORMAL;
+			}
+			info.FileAttributes = fileInfo.dwFileAttributes;
+			info.ReparseTag = 0;
 
-      dataLen = sizeof(info);
-      returnData = &info;
-    }
+			dataLen = sizeof(info);
+			returnData = &info;
+		}
 
-    // çµæœã‚’ã‚»ãƒƒãƒˆ
-    hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen,
-                                        allowOverflow);
-  } else if (infoClass == FileNameInformation) {
-    NP2_FILE_NAME_INFORMATION_FIXED info = {0};
-    UINT32 fileNameBytes = wcslen(fi->fileName) * sizeof(WCHAR);
+		// Œ‹‰Ê‚ğƒZƒbƒg
+		hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen, allowOverflow);
+	}
+	else if (infoClass == FileNameInformation)
+	{
+		NP2_FILE_NAME_INFORMATION_FIXED info = { 0 };
+		UINT32 fileNameBytes = wcslen(fi->fileName) * sizeof(WCHAR);
 
-    if (fileNameBytes < sizeof(info.FileName)) {
-      info.FileNameLength = fileNameBytes;
-      wcscpy(info.FileName, fi->fileName);
+		if (fileNameBytes < sizeof(info.FileName))
+		{
+			info.FileNameLength = fileNameBytes;
+			wcscpy(info.FileName, fi->fileName);
 
-      // ãƒ•ã‚¡ã‚¤ãƒ«åã®å®Ÿéš›ã®é•·ã•ã«åŸºã¥ã„ã¦è¨ˆç®—
-      dataLen = sizeof(info) - sizeof(info.FileName) + fileNameBytes;
-      returnData = &info;
-    }
+			// ƒtƒ@ƒCƒ‹–¼‚ÌÀÛ‚Ì’·‚³‚ÉŠî‚Ã‚¢‚ÄŒvZ
+			dataLen = sizeof(info) - sizeof(info.FileName) + fileNameBytes;
+			returnData = &info;
+		}
 
-    // çµæœã‚’ã‚»ãƒƒãƒˆ
-    hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen,
-                                        allowOverflow);
-  } else if (infoClass == FileNamesInformation) {
-    UINT32 length;
-    NP2_FILE_OBJECT fileObject = {0};
-    UINT32 isOverflow = 0;
-    UINT32 writeLength = 0;
-    WIN32_FIND_DATA findFileData;
-    WCHAR findPath[MAX_PATH * 2];
-    UINT32 findPathLen;
-    HANDLE hFindFile = NULL;
+		// Œ‹‰Ê‚ğƒZƒbƒg
+		hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen, allowOverflow);
+	}
+	else if (infoClass == FileAlternateNameInformation)
+	{
+		NP2_FILE_NAME_INFORMATION_FIXED info = { 0 };
+		WCHAR shortName[64];
 
-    // ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‹ã©ã†ã‹ç¢ºèª
-    if (!fi->isDirectory) {
-      TRACEOUTW((L"It is not directory."));
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		ZeroMemory(shortName, sizeof(shortName));
+		if (hostdrvNT_getAlternateShortName(fi, shortName, NELEMENTS(shortName)))
+		{
+			UINT32 shortNameBytes = (UINT32)wcslen(shortName) * sizeof(WCHAR);
 
-    // ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªå†…ã®å…¨ãƒ•ã‚¡ã‚¤ãƒ«æ¤œç´¢
-    wcscpy(findPath, fi->hostFileName);
-    findPathLen = wcslen(findPath);
-    if (findPath[findPathLen - 1] != 'Â¥Â¥') {
-      wcscat(findPath, L"Â¥Â¥");
-    }
-    wcscat(findPath, L"*");
+			if (shortNameBytes < sizeof(info.FileName))
+			{
+				info.FileNameLength = shortNameBytes;
+				memcpy(info.FileName, shortName, shortNameBytes);
 
-    length = invokeInfo->stack.parameters.queryFile.Length;
-    while (writeLength + sizeof(NP2_FILE_NAMES_INFORMATION) <= length) {
-      NP2_FILE_NAMES_INFORMATION data = {0};
-      UINT32 cFileNameLength;
+				// ƒtƒ@ƒCƒ‹–¼‚ÌÀÛ‚Ì’·‚³‚ÉŠî‚Ã‚¢‚ÄŒvZ
+				dataLen = sizeof(info.FileNameLength) + shortNameBytes;
+				returnData = &info;
+			}
+		}
 
-      if (hFindFile == NULL || hFindFile == INVALID_HANDLE_VALUE) {
-        hFindFile = FindFirstFile(findPath, &findFileData);
-        if (hFindFile == INVALID_HANDLE_VALUE) {
-          hFindFile = NULL;
-          break;
-        }
-      } else {
-        if (!FindNextFile(hFindFile, &findFileData)) {
-          break;
-        }
-      }
+		TRACEOUTW((HD_W("FileAlternateNameInformation: %s -> %s"), fi->fileName, returnData ? shortName : HD_W("<none>")));
+		hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen, allowOverflow);
+	}
+	else if (infoClass == FileNamesInformation)
+	{
+		UINT32 length;
+		NP2_FILE_OBJECT fileObject = { 0 };
+		UINT32 isOverflow = 0;
+		UINT32 writeLength = 0;
+		WIN32_FIND_DATA findFileData;
+		WCHAR findPath[MAX_PATH * 2];
+		UINT32 findPathLen;
+		HANDLE hFindFile = NULL;
 
-      // é•·ã™ãã‚‹ãƒ•ã‚¡ã‚¤ãƒ«åã¯åˆ—æŒ™é™¤å¤–
-      cFileNameLength = wcslen(findFileData.cFileName);
-      if (cFileNameLength >= MAX_PATH) {
-        TRACEOUTW((L"Too long fileName: %s", findFileData.cFileName));
-        continue;
-      }
+		// ƒfƒBƒŒƒNƒgƒŠ‚©‚Ç‚¤‚©Šm”F
+		if (!fi->isDirectory)
+		{
+			TRACEOUTW((HD_W("It is not directory.")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-      // ãƒ‡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆ
-      data.NextEntryOffset = sizeof(FileNamesInformation);
-      data.FileIndex = 0;
-      data.FileNameLength = wcslen(findFileData.cFileName) * sizeof(WCHAR);
-      wcscpy(data.FileName, findFileData.cFileName);
+		// ƒfƒBƒŒƒNƒgƒŠ“à‚Ì‘Sƒtƒ@ƒCƒ‹ŒŸõ
+		wcscpy(findPath, fi->hostFileName);
+		findPathLen = wcslen(findPath);
+		if (findPath[findPathLen - 1] != '\\')
+		{
+			wcscat(findPath, HD_W("\\"));
+		}
+		wcscat(findPath, HD_W("*"));
 
-      // æ›¸ãè¾¼ã¿
-      hostdrvNT_memwrite(invokeInfo->outBufferAddr + writeLength, &data,
-                         sizeof(data));
+		length = invokeInfo->stack.parameters.queryFile.Length;
+		while (writeLength + sizeof(NP2_FILE_NAMES_INFORMATION) <= length)
+		{
+			NP2_FILE_NAMES_INFORMATION data = { 0 };
+			UINT32 cFileNameLength;
 
-      TRACEOUTW((L"FileNamesInformation FIND: %s", findFileData.cFileName));
+			if (hFindFile == NULL || hFindFile == INVALID_HANDLE_VALUE)
+			{
+				hFindFile = FindFirstFile(findPath, &findFileData);
+				if (hFindFile == INVALID_HANDLE_VALUE)
+				{
+					hFindFile = NULL;
+					break;
+				}
+			}
+			else
+			{
+				if (!FindNextFile(hFindFile, &findFileData))
+				{
+					break;
+				}
+			}
 
-      writeLength += sizeof(NP2_FILE_NAMES_INFORMATION);
-    }
+			// ’·‚·‚¬‚éƒtƒ@ƒCƒ‹–¼‚Í—ñ‹“œŠO
+			cFileNameLength = wcslen(findFileData.cFileName);
+			if (cFileNameLength >= MAX_PATH)
+			{
+				TRACEOUTW((HD_W("Too long fileName: %s"), findFileData.cFileName));
+				continue;
+			}
 
-    // 1ã¤ã‚‚å–å¾—ã§ããªã‹ã£ãŸå ´åˆ
-    if (hFindFile == NULL || hFindFile == INVALID_HANDLE_VALUE) {
-      TRACEOUTW((L"FAILED"));
-      cpu_kmemorywrite_d(
-          invokeInfo->statusAddr,
-          NP2_STATUS_BUFFER_TOO_SMALL); // Status 0=STATUS_BUFFER_TOO_SMALL
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+			// ƒf[ƒ^ƒZƒbƒg
+			data.NextEntryOffset = sizeof(FileNamesInformation);
+			data.FileIndex = 0;
+			data.FileNameLength = wcslen(findFileData.cFileName) * sizeof(WCHAR);
+			wcscpy(data.FileName, findFileData.cFileName);
 
-    // ã¾ã æ®‹ã‚Šã®ãƒ•ã‚¡ã‚¤ãƒ«ãŒã‚ã‚‹ã‹ç¢ºèª
-    if (FindNextFile(hFindFile, &findFileData)) {
-      isOverflow = 1;
-    }
-    FindClose(hFindFile);
+			// ‘‚«‚İ
+			hostdrvNT_memwrite(invokeInfo->outBufferAddr + writeLength, &data, sizeof(data));
 
-    // å°‘ãªãã¨ã‚‚1ãƒ‡ãƒ¼ã‚¿ãŒå®Œå…¨ã«ã‹ã‘ã¦ã„ã‚Œã°æœ€å¾Œã®ã‚¨ãƒ³ãƒˆãƒªã®æ¬¡ã‚¨ãƒ³ãƒˆãƒªã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’å‰Šé™¤
-    if (writeLength > sizeof(NP2_FILE_NAMES_INFORMATION)) {
-      cpu_kmemorywrite_d(invokeInfo->outBufferAddr + writeLength -
-                             sizeof(NP2_FILE_NAMES_INFORMATION),
-                         writeLength); // Information
-    }
+			TRACEOUTW((HD_W("FileNamesInformation FIND: %s"), findFileData.cFileName));
 
-    // ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’è¿”ã™
-    if (isOverflow) {
-      TRACEOUTW((L"OVERFLOW"));
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_OVERFLOW);
-    } else {
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS);
-    }
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, writeLength); // Information
+			writeLength += sizeof(NP2_FILE_NAMES_INFORMATION);
+		}
 
-    return; // æ—¢ã«çµæœã¾ã§è¿”ã—ã¦ã„ã‚‹ã®ã§æŠœã‘ã‚‹
-  } else {
-    TRACEOUTW((L"Not implemented FileInformationClass %d (0x%02x)", infoClass,
-               infoClass));
+		// 1‚Â‚àæ“¾‚Å‚«‚È‚©‚Á‚½ê‡
+		if (hFindFile == NULL || hFindFile == INVALID_HANDLE_VALUE)
+		{
+			TRACEOUTW((HD_W("FAILED")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_TOO_SMALL); // Status 0=STATUS_BUFFER_TOO_SMALL
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // çµæœã‚’ã‚»ãƒƒãƒˆ
-    hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen,
-                                        allowOverflow);
-  }
+		// ‚Ü‚¾c‚è‚Ìƒtƒ@ƒCƒ‹‚ª‚ ‚é‚©Šm”F
+		if (FindNextFile(hFindFile, &findFileData))
+		{
+			isOverflow = 1;
+		}
+		FindClose(hFindFile);
+
+		// ­‚È‚­‚Æ‚à1ƒf[ƒ^‚ªŠ®‘S‚É‚©‚¯‚Ä‚¢‚ê‚ÎÅŒã‚ÌƒGƒ“ƒgƒŠ‚ÌŸƒGƒ“ƒgƒŠƒIƒtƒZƒbƒg‚ğíœ
+		if (writeLength > sizeof(NP2_FILE_NAMES_INFORMATION))
+		{
+			cpu_kmemorywrite_d(invokeInfo->outBufferAddr + writeLength - sizeof(NP2_FILE_NAMES_INFORMATION), writeLength); // Information
+		}
+
+		// ƒXƒe[ƒ^ƒX‚ğ•Ô‚·
+		if (isOverflow)
+		{
+			TRACEOUTW((HD_W("OVERFLOW")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_OVERFLOW);
+		}
+		else
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS);
+		}
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, writeLength); // Information
+
+		return; // Šù‚ÉŒ‹‰Ê‚Ü‚Å•Ô‚µ‚Ä‚¢‚é‚Ì‚Å”²‚¯‚é
+	}
+	else
+	{
+		TRACEOUTW((HD_W("Not implemented FileInformationClass %d (0x%02x)"), infoClass, infoClass));
+
+		// Œ‹‰Ê‚ğƒZƒbƒg
+		hostdrvNT_setQueryInformationResult(invokeInfo, returnData, dataLen, allowOverflow);
+	}
 }
 
-static void hostdrvNT_IRP_MJ_SET_INFORMATION(HOSTDRVNT_INVOKEINFO *invokeInfo) {
-  UINT32 infoClass =
-      invokeInfo->stack.parameters.queryFile.FileInformationClass;
-  NP2_FILE_OBJECT fileObject = {0};
-  NP2HOSTDRVNT_FILEINFO *fi;
-  UINT32 allowOverflow = 1;
-  UINT32 length = invokeInfo->stack.parameters.queryFile.Length;
-  int reopenIndex = 0;
+static void hostdrvNT_IRP_MJ_SET_INFORMATION(HOSTDRVNT_INVOKEINFO* invokeInfo)
+{
+	UINT32 infoClass = invokeInfo->stack.parameters.queryFile.FileInformationClass;
+	NP2_FILE_OBJECT fileObject = { 0 };
+	NP2HOSTDRVNT_FILEINFO* fi;
+	UINT32 allowOverflow = 1;
+	UINT32 length = invokeInfo->stack.parameters.queryFile.Length;
+	int reopenIndex = 0;
 
-  // ãƒªãƒ¼ãƒ‰ã‚ªãƒ³ãƒªãƒ¼ãªã‚‰æ‹’å¦
-  if (!(s_hdrvAcc & HDFMODE_WRITE)) {
-    TRACEOUTW((L"ERROR: set command is disabled by HOSTDRV."));
-    cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                       NP2_STATUS_MEDIA_WRITE_PROTECTED);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    return;
-  }
+	// ƒŠ[ƒhƒIƒ“ƒŠ[‚È‚ç‹‘”Û
+	if (!(s_hdrvAcc & HDFMODE_WRITE))
+	{
+		TRACEOUTW((HD_W("ERROR: set command is disabled by HOSTDRV.")));
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_MEDIA_WRITE_PROTECTED);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		return;
+	}
 
-  // å¯¾è±¡ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—
-  if (invokeInfo->stack.fileObject == NULL) {
-    TRACEOUTW((L"Invalid FileObject"));
-    cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    return;
-  }
-  hostdrvNT_memread(invokeInfo->stack.fileObject, &fileObject,
-                    sizeof(fileObject));
-  fi = hostdrvNT_getFileInfo(&fileObject);
-  if (!fi) {
-    TRACEOUTW((L"Invalid FsContext"));
-    cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    return;
-  }
+	// ‘ÎÛ‚Ìƒtƒ@ƒCƒ‹ƒIƒuƒWƒFƒNƒg‚ğæ“¾
+	if (invokeInfo->stack.fileObject == NULL)
+	{
+		TRACEOUTW((HD_W("Invalid FileObject")));
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		return;
+	}
+	hostdrvNT_memread(invokeInfo->stack.fileObject, &fileObject, sizeof(fileObject));
+	fi = hostdrvNT_getFileInfo(&fileObject);
+	if (!fi)
+	{
+		TRACEOUTW((HD_W("Invalid FsContext")));
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		return;
+	}
 
-  // ãƒ•ã‚¡ã‚¤ãƒ« or ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªæƒ…å ±è¨­å®š
-  if (infoClass == FileBasicInformation) {
-    NP2_FILE_BASIC_INFORMATION basicInfo = {0};
-    WIN32_FILE_ATTRIBUTE_DATA fileInfo;
-    UINT32 changeFileTime = 0;
+	// ƒtƒ@ƒCƒ‹ or ƒfƒBƒŒƒNƒgƒŠî•ñİ’è
+	if (infoClass == FileBasicInformation)
+	{
+		NP2_FILE_BASIC_INFORMATION basicInfo = { 0 };
+		WIN32_FILE_ATTRIBUTE_DATA fileInfo;
+		UINT32 changeFileTime = 0;
 
-    // å…¥åŠ›ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºãŒæœŸå¾…é€šã‚Šã‹ç¢ºèª
-    if (length < sizeof(basicInfo)) {
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_TOO_SMALL);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// “ü—Íƒf[ƒ^ƒTƒCƒY‚ªŠú‘Ò’Ê‚è‚©Šm”F
+		if (length < sizeof(basicInfo))
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_TOO_SMALL);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // èª­ã¿è¾¼ã¿
-    hostdrvNT_memread(invokeInfo->inBufferAddr, &basicInfo, sizeof(basicInfo));
+		// “Ç‚İ‚İ
+		hostdrvNT_memread(invokeInfo->inBufferAddr, &basicInfo, sizeof(basicInfo));
 
-    if (!GetFileAttributesEx(fi->hostFileName, GetFileExInfoStandard,
-                             &fileInfo)) {
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		if (!GetFileAttributesEx(fi->hostFileName, GetFileExInfoStandard, &fileInfo))
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // ãƒ•ã‚¡ã‚¤ãƒ«å±æ€§ã‚’è¨­å®š
-    if (basicInfo.CreationTime != 0xffffffffffffffffull &&
-        (fileInfo.ftCreationTime.dwHighDateTime !=
-             (UINT32)(basicInfo.CreationTime >> 32) ||
-         fileInfo.ftCreationTime.dwLowDateTime !=
-             (UINT32)(basicInfo.CreationTime))) {
-      fileInfo.ftCreationTime.dwHighDateTime =
-          (UINT32)(basicInfo.CreationTime >> 32);
-      fileInfo.ftCreationTime.dwLowDateTime = (UINT32)(basicInfo.CreationTime);
-      changeFileTime = 1;
-    }
-    if (basicInfo.LastAccessTime != 0xffffffffffffffffull &&
-        (fileInfo.ftLastAccessTime.dwHighDateTime !=
-             (UINT32)(basicInfo.LastAccessTime >> 32) ||
-         fileInfo.ftLastAccessTime.dwLowDateTime !=
-             (UINT32)(basicInfo.LastAccessTime))) {
-      fileInfo.ftLastAccessTime.dwHighDateTime =
-          (UINT32)(basicInfo.LastAccessTime >> 32);
-      fileInfo.ftLastAccessTime.dwLowDateTime =
-          (UINT32)(basicInfo.LastAccessTime);
-      changeFileTime = 1;
-    }
-    if (basicInfo.LastWriteTime != 0xffffffffffffffffull &&
-        (fileInfo.ftLastWriteTime.dwHighDateTime !=
-             (UINT32)(basicInfo.LastWriteTime >> 32) ||
-         fileInfo.ftLastWriteTime.dwLowDateTime !=
-             (UINT32)(basicInfo.LastWriteTime))) {
-      fileInfo.ftLastWriteTime.dwHighDateTime =
-          (UINT32)(basicInfo.LastWriteTime >> 32);
-      fileInfo.ftLastWriteTime.dwLowDateTime =
-          (UINT32)(basicInfo.LastWriteTime);
-      changeFileTime = 1;
-    }
-    fileInfo.dwFileAttributes = basicInfo.FileAttributes;
-    if (fi->isDirectory) {
-      fileInfo
-          .dwFileAttributes &= â€¾FILE_ATTRIBUTE_DIRECTORY; // ã‚¨ãƒ©ãƒ¼ã«ãªã‚‹ã®ã§ä»˜ã‘ãªã„
-    } else if (fileInfo.dwFileAttributes == 0) {
-      fileInfo.dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
-    }
-    if (!SetFileAttributesW(fi->hostFileName, fileInfo.dwFileAttributes)) {
-      DWORD error = GetLastError();
-      TRACEOUTW((L"Error: SetFileAttributesW code: %d (0x%08x)", error, error));
-    }
-    if (changeFileTime) {
-      HANDLE fh = fi->hFile;
-      if (!fh || fh == INVALID_HANDLE_VALUE) {
-        // ãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒ³ãƒ‰ãƒ«ãŒé–‰ã˜ã¦ã„ãŸã‚‰å†ã‚ªãƒ¼ãƒ—ãƒ³
-        UINT32 fsContextFileIndex =
-            cpu_kmemoryread_d(fileObject.FsContext + s_fsContextUserDataOffset);
-        if (!hostdrvNT_reopenFile(fsContextFileIndex)) {
-          cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                             NP2_STATUS_OBJECT_NAME_INVALID);
-          cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-          return;
-        }
-        fh = fi->hFile;
-        if (!fh || fh == INVALID_HANDLE_VALUE) {
-          cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                             NP2_STATUS_INVALID_PARAMETER);
-          cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-          return;
-        }
-        reopenIndex = fsContextFileIndex;
-      }
-      if (!SetFileTime(fh, &fileInfo.ftCreationTime, &fileInfo.ftLastAccessTime,
-                       &fileInfo.ftLastWriteTime)) {
-        DWORD error = GetLastError();
-        TRACEOUTW((L"Error: SetFileTime code: %d (0x%08x)", error, error));
-      }
-    }
+		// ƒtƒ@ƒCƒ‹‘®«‚ğİ’è
+		if (basicInfo.CreationTime != 0xffffffffffffffffull && 
+			(fileInfo.ftCreationTime.dwHighDateTime != (UINT32)(basicInfo.CreationTime >> 32) ||
+			 fileInfo.ftCreationTime.dwLowDateTime != (UINT32)(basicInfo.CreationTime)))
+		{
+			fileInfo.ftCreationTime.dwHighDateTime = (UINT32)(basicInfo.CreationTime >> 32);
+			fileInfo.ftCreationTime.dwLowDateTime = (UINT32)(basicInfo.CreationTime);
+			changeFileTime = 1;
+		}
+		if (basicInfo.LastAccessTime != 0xffffffffffffffffull &&
+			(fileInfo.ftLastAccessTime.dwHighDateTime != (UINT32)(basicInfo.LastAccessTime >> 32) ||
+			 fileInfo.ftLastAccessTime.dwLowDateTime != (UINT32)(basicInfo.LastAccessTime)))
+		{
+			fileInfo.ftLastAccessTime.dwHighDateTime = (UINT32)(basicInfo.LastAccessTime >> 32);
+			fileInfo.ftLastAccessTime.dwLowDateTime = (UINT32)(basicInfo.LastAccessTime);
+			changeFileTime = 1;
+		}
+		if (basicInfo.LastWriteTime != 0xffffffffffffffffull &&
+			(fileInfo.ftLastWriteTime.dwHighDateTime != (UINT32)(basicInfo.LastWriteTime >> 32) ||
+			 fileInfo.ftLastWriteTime.dwLowDateTime != (UINT32)(basicInfo.LastWriteTime)))
+		{
+			fileInfo.ftLastWriteTime.dwHighDateTime = (UINT32)(basicInfo.LastWriteTime >> 32);
+			fileInfo.ftLastWriteTime.dwLowDateTime = (UINT32)(basicInfo.LastWriteTime);
+			changeFileTime = 1;
+		}
+		fileInfo.dwFileAttributes = basicInfo.FileAttributes;
+		if (fi->isDirectory)
+		{
+			fileInfo.dwFileAttributes &= ~FILE_ATTRIBUTE_DIRECTORY; // ƒGƒ‰[‚É‚È‚é‚Ì‚Å•t‚¯‚È‚¢
+		}
+		else if (fileInfo.dwFileAttributes == 0)
+		{
+			fileInfo.dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
+		}
+		if (!hostdrvNT_isSafeHostPath(fi->hostFileName))
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_ACCESS_DENIED);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0);
+			return;
+		}
+		if (!SetFileAttributesW(fi->hostFileName, fileInfo.dwFileAttributes))
+		{
+			DWORD error = GetLastError();
+			TRACEOUTW((HD_W("Error: SetFileAttributesW code: %d (0x%08x)"), error, error));
+		}
+		if (changeFileTime)
+		{
+			HANDLE fh = fi->hFile;
+			if (!fh || fh == INVALID_HANDLE_VALUE)
+			{
+				// ƒtƒ@ƒCƒ‹ƒnƒ“ƒhƒ‹‚ª•Â‚¶‚Ä‚¢‚½‚çÄƒI[ƒvƒ“
+				UINT32 fsContextFileIndex = cpu_kmemoryread_d(fileObject.FsContext + s_fsContextUserDataOffset);
+				if (!hostdrvNT_reopenFile(fsContextFileIndex))
+				{
+					cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_OBJECT_NAME_INVALID);
+					cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+					return;
+				}
+				fh = fi->hFile;
+				if (!fh || fh == INVALID_HANDLE_VALUE)
+				{
+					cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+					cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+					return;
+				}
+				reopenIndex = fsContextFileIndex;
+			}
+			if (!SetFileTime(fh, &fileInfo.ftCreationTime, &fileInfo.ftLastAccessTime, &fileInfo.ftLastWriteTime))
+			{
+				DWORD error = GetLastError();
+				TRACEOUTW((HD_W("Error: SetFileTime code: %d (0x%08x)"), error, error));
+			}
+		}
 
-    hostdrvNT_notifyChange(fi->hostFileName, NP2_FILE_ACTION_MODIFIED, 0);
-  } else if (infoClass == FileEndOfFileInformation) {
-    NP2_FILE_END_OF_FILE_INFORMATION eofInfo = {0};
-    WIN32_FILE_ATTRIBUTE_DATA fileInfo;
-    LARGE_INTEGER liAllocationSize;
-    HANDLE fh;
+		hostdrvNT_notifyChange(fi->hostFileName, NP2_FILE_ACTION_MODIFIED, 0);
+	}
+	else if (infoClass == FileEndOfFileInformation)
+	{
+		NP2_FILE_END_OF_FILE_INFORMATION eofInfo = { 0 };
+		WIN32_FILE_ATTRIBUTE_DATA fileInfo;
+		LARGE_INTEGER liAllocationSize;
+		HANDLE fh;
 
-    // å…¥åŠ›ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºãŒæœŸå¾…é€šã‚Šã‹ç¢ºèª
-    if (length < sizeof(eofInfo)) {
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_TOO_SMALL);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// “ü—Íƒf[ƒ^ƒTƒCƒY‚ªŠú‘Ò’Ê‚è‚©Šm”F
+		if (length < sizeof(eofInfo))
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_TOO_SMALL);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // èª­ã¿è¾¼ã¿
-    hostdrvNT_memread(invokeInfo->inBufferAddr, &eofInfo, sizeof(eofInfo));
+		// “Ç‚İ‚İ
+		hostdrvNT_memread(invokeInfo->inBufferAddr, &eofInfo, sizeof(eofInfo));
 
-    // ãƒ•ã‚¡ã‚¤ãƒ«é•·ã•ã‚’è¨­å®š
-    fh = fi->hFile;
-    if (!fh || fh == INVALID_HANDLE_VALUE) {
-      // ãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒ³ãƒ‰ãƒ«ãŒé–‰ã˜ã¦ã„ãŸã‚‰å†ã‚ªãƒ¼ãƒ—ãƒ³
-      UINT32 fsContextFileIndex =
-          cpu_kmemoryread_d(fileObject.FsContext + s_fsContextUserDataOffset);
-      if (!hostdrvNT_reopenFile(fsContextFileIndex)) {
-        cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                           NP2_STATUS_OBJECT_NAME_INVALID);
-        cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-        return;
-      }
-      fh = fi->hFile;
-      if (!fh || fh == INVALID_HANDLE_VALUE) {
-        cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                           NP2_STATUS_INVALID_PARAMETER);
-        cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-        return;
-      }
-      reopenIndex = fsContextFileIndex;
-    }
-    if (eofInfo.EndOfFile > UINT_MAX) {
-      // å®‰å…¨ç­–ã€€UINTæœ€å¤§å€¤ã‚ˆã‚Šå¤§ãã„ã‚‚ã®ã¯ç•°å¸¸ã¨ã™ã‚‹
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
-    liAllocationSize.QuadPart = eofInfo.EndOfFile;
-    SetFilePointerEx(fh, liAllocationSize, NULL, FILE_BEGIN);
-    if (!SetEndOfFile(fh)) {
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// ƒtƒ@ƒCƒ‹’·‚³‚ğİ’è
+		fh = fi->hFile;
+		if (!fh || fh == INVALID_HANDLE_VALUE)
+		{
+			// ƒtƒ@ƒCƒ‹ƒnƒ“ƒhƒ‹‚ª•Â‚¶‚Ä‚¢‚½‚çÄƒI[ƒvƒ“
+			UINT32 fsContextFileIndex = cpu_kmemoryread_d(fileObject.FsContext + s_fsContextUserDataOffset);
+			if (!hostdrvNT_reopenFile(fsContextFileIndex))
+			{
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_OBJECT_NAME_INVALID);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+				return;
+			}
+			fh = fi->hFile;
+			if (!fh || fh == INVALID_HANDLE_VALUE)
+			{
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+				return;
+			}
+			reopenIndex = fsContextFileIndex;
+		}
+		if (eofInfo.EndOfFile > UINT_MAX)
+		{
+			// ˆÀ‘Sô@UINTÅ‘å’l‚æ‚è‘å‚«‚¢‚à‚Ì‚ÍˆÙí‚Æ‚·‚é
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
+		liAllocationSize.QuadPart = eofInfo.EndOfFile;
+		SetFilePointerEx(fh, liAllocationSize, NULL, FILE_BEGIN);
+		if (!SetEndOfFile(fh))
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    hostdrvNT_notifyChange(fi->hostFileName, NP2_FILE_ACTION_MODIFIED, 0);
-  } else if (infoClass == FileAllocationInformation) {
-    NP2_FILE_ALLOCATION_INFORMATION allocInfo = {0};
-    WIN32_FILE_ATTRIBUTE_DATA fileInfo;
-    LARGE_INTEGER currentFileSize;
-    HANDLE fh;
+		hostdrvNT_notifyChange(fi->hostFileName, NP2_FILE_ACTION_MODIFIED, 0);
+	}
+	else if (infoClass == FileAllocationInformation)
+	{
+		NP2_FILE_ALLOCATION_INFORMATION allocInfo = { 0 };
+		WIN32_FILE_ATTRIBUTE_DATA fileInfo;
+		LARGE_INTEGER currentFileSize;
+		HANDLE fh;
 
-    // å…¥åŠ›ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºãŒæœŸå¾…é€šã‚Šã‹ç¢ºèª
-    if (length < sizeof(allocInfo)) {
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_TOO_SMALL);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// “ü—Íƒf[ƒ^ƒTƒCƒY‚ªŠú‘Ò’Ê‚è‚©Šm”F
+		if (length < sizeof(allocInfo))
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_TOO_SMALL);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // èª­ã¿è¾¼ã¿
-    hostdrvNT_memread(invokeInfo->inBufferAddr, &allocInfo, sizeof(allocInfo));
+		// “Ç‚İ‚İ
+		hostdrvNT_memread(invokeInfo->inBufferAddr, &allocInfo, sizeof(allocInfo));
 
-    // ãƒ•ã‚¡ã‚¤ãƒ«é•·ã•ã‚’è¨­å®š
-    fh = fi->hFile;
-    if (!fh || fh == INVALID_HANDLE_VALUE) {
-      // ãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒ³ãƒ‰ãƒ«ãŒé–‰ã˜ã¦ã„ãŸã‚‰å†ã‚ªãƒ¼ãƒ—ãƒ³
-      UINT32 fsContextFileIndex =
-          cpu_kmemoryread_d(fileObject.FsContext + s_fsContextUserDataOffset);
-      if (!hostdrvNT_reopenFile(fsContextFileIndex)) {
-        cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                           NP2_STATUS_OBJECT_NAME_INVALID);
-        cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-        return;
-      }
-      fh = fi->hFile;
-      if (!fh || fh == INVALID_HANDLE_VALUE) {
-        cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                           NP2_STATUS_INVALID_PARAMETER);
-        cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-        return;
-      }
-      reopenIndex = fsContextFileIndex;
-    }
-    if (allocInfo.AllocationSize > UINT_MAX) {
-      // å®‰å…¨ç­–ã€€UINTæœ€å¤§å€¤ã‚ˆã‚Šå¤§ãã„ã‚‚ã®ã¯ç•°å¸¸ã¨ã™ã‚‹
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
-    // å®Ÿéš›ã®ã‚µã‚¤ã‚ºã¯ç¸®å°ã™ã‚‹å ´åˆã®ã¿å¤‰ãˆã‚‹
-    if (GetFileSizeEx(fh, &currentFileSize)) {
-      if (allocInfo.AllocationSize < currentFileSize.QuadPart) {
-        LARGE_INTEGER liAllocationSize;
-        liAllocationSize.QuadPart = allocInfo.AllocationSize;
-        SetFilePointerEx(fh, liAllocationSize, NULL, FILE_BEGIN);
-        if (!SetEndOfFile(fh)) {
-          cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                             NP2_STATUS_INVALID_PARAMETER);
-          cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-          return;
-        }
-      }
-    }
+		// ƒtƒ@ƒCƒ‹’·‚³‚ğİ’è
+		fh = fi->hFile;
+		if (!fh || fh == INVALID_HANDLE_VALUE)
+		{
+			// ƒtƒ@ƒCƒ‹ƒnƒ“ƒhƒ‹‚ª•Â‚¶‚Ä‚¢‚½‚çÄƒI[ƒvƒ“
+			UINT32 fsContextFileIndex = cpu_kmemoryread_d(fileObject.FsContext + s_fsContextUserDataOffset);
+			if (!hostdrvNT_reopenFile(fsContextFileIndex))
+			{
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_OBJECT_NAME_INVALID);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+				return;
+			}
+			fh = fi->hFile;
+			if (!fh || fh == INVALID_HANDLE_VALUE)
+			{
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+				return;
+			}
+			reopenIndex = fsContextFileIndex;
+		}
+		if (allocInfo.AllocationSize > UINT_MAX)
+		{
+			// ˆÀ‘Sô@UINTÅ‘å’l‚æ‚è‘å‚«‚¢‚à‚Ì‚ÍˆÙí‚Æ‚·‚é
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
+		// ÀÛ‚ÌƒTƒCƒY‚Ík¬‚·‚éê‡‚Ì‚İ•Ï‚¦‚é
+		if (GetFileSizeEx(fh, &currentFileSize))
+		{
+			if (allocInfo.AllocationSize < currentFileSize.QuadPart)
+			{
+				LARGE_INTEGER liAllocationSize;
+				liAllocationSize.QuadPart = allocInfo.AllocationSize;
+				SetFilePointerEx(fh, liAllocationSize, NULL, FILE_BEGIN);
+				if (!SetEndOfFile(fh))
+				{
+					cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+					cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+					return;
+				}
+			}
+		}
 
-    hostdrvNT_notifyChange(fi->hostFileName, NP2_FILE_ACTION_MODIFIED, 0);
-  } else if (infoClass == FileDispositionInformation) {
-    NP2_FILE_DISPOSITION_INFORMATION disposeInfo = {0};
-    WIN32_FILE_ATTRIBUTE_DATA fileInfo;
+		hostdrvNT_notifyChange(fi->hostFileName, NP2_FILE_ACTION_MODIFIED, 0);
+	}
+	else if (infoClass == FileDispositionInformation)
+	{
+		NP2_FILE_DISPOSITION_INFORMATION disposeInfo = { 0 };
+		WIN32_FILE_ATTRIBUTE_DATA fileInfo;
 
-    // å…¥åŠ›ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºãŒæœŸå¾…é€šã‚Šã‹ç¢ºèª
-    if (length < sizeof(disposeInfo)) {
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_TOO_SMALL);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// “ü—Íƒf[ƒ^ƒTƒCƒY‚ªŠú‘Ò’Ê‚è‚©Šm”F
+		if (length < sizeof(disposeInfo))
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_TOO_SMALL);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // å‰Šé™¤ä¸å¯ãªã‚‰æ‹’å¦
-    if (!(s_hdrvAcc & HDFMODE_DELETE)) {
-      TRACEOUTW((L"ERROR: delete is disabled by HOSTDRV."));
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_ACCESS_DENIED);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// ‹¤—Lƒ‹[ƒg‚È‚ç‹‘”Û
+		if (fi->isRoot)
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_CANNOT_DELETE);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0);
+			return;
+		}
 
-    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³æ™‚ã«DELETEæ¨©é™ãŒãªã‘ã‚Œã°æ‹’å¦ï¼ˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã¯OKï¼‰
-    if (!(fi->hostdrvWinAPIDesiredAccess & DELETE) && !fi->isDirectory) {
-      TRACEOUTW((L"ERROR: no DELETE flag."));
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_ACCESS_DENIED);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// íœ•s‰Â‚È‚ç‹‘”Û
+		if (!(s_hdrvAcc & HDFMODE_DELETE))
+		{
+			TRACEOUTW((HD_W("ERROR: delete is disabled by HOSTDRV.")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_ACCESS_DENIED);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®å ´åˆã€ç©ºã§ãªã„ãªã‚‰ã‚¨ãƒ©ãƒ¼
-    if (fi->isDirectory && hostdrvNT_dirHasFiles(fi->hostFileName)) {
-      TRACEOUTW((L"ERROR: STATUS_DIRECTORY_NOT_EMPTY."));
-      cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                         NP2_STATUS_DIRECTORY_NOT_EMPTY);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“‚ÉDELETEŒ ŒÀ‚ª‚È‚¯‚ê‚Î‹‘”ÛiƒfƒBƒŒƒNƒgƒŠ‚ÍOKj
+		if (!(fi->hostdrvWinAPIDesiredAccess & DELETE) && !fi->isDirectory)
+		{
+			TRACEOUTW((HD_W("ERROR: no DELETE flag.")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_ACCESS_DENIED);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // ãƒ•ã‚¡ã‚¤ãƒ«å±æ€§ãŒèª­ã¿å–ã‚Šå°‚ç”¨ãªã‚‰æ‹’å¦
-    if (!GetFileAttributesEx(fi->hostFileName, GetFileExInfoStandard,
-                             &fileInfo)) {
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
-    if (fileInfo.dwFileAttributes & FILE_ATTRIBUTE_READONLY) {
-      TRACEOUTW((L"ERROR: file is readonly."));
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_CANNOT_DELETE);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// ˆÀ‘S‚ÈƒpƒX‚Å‚È‚¢‚È‚ç•s‰Â
+		if (!hostdrvNT_isSafeHostPath(fi->hostFileName))
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_ACCESS_DENIED);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0);
+			return;
+		}
 
-    // èª­ã¿è¾¼ã¿
-    hostdrvNT_memread(invokeInfo->inBufferAddr, &disposeInfo,
-                      sizeof(disposeInfo));
+		// ƒfƒBƒŒƒNƒgƒŠ‚Ìê‡A‹ó‚Å‚È‚¢‚È‚çƒGƒ‰[
+		if (fi->isDirectory && hostdrvNT_dirHasFiles(fi->hostFileName))
+		{
+			TRACEOUTW((HD_W("ERROR: STATUS_DIRECTORY_NOT_EMPTY.")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_DIRECTORY_NOT_EMPTY);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // å‰Šé™¤ãƒ•ãƒ©ã‚°ã‚’ã‚»ãƒƒãƒˆ
-    if (disposeInfo.DeleteFileOnClose) {
-      fi->deleteOnClose = 1;
-    } else {
-      fi->deleteOnClose = 0;
-    }
-  } else if (infoClass == FileRenameInformation) {
-    NP2_FILE_RENAME_INFORMATION renameInfo = {0};
-    WCHAR *newPath = NULL;
-    WCHAR newHostPath[MAX_PATH * 2] = {0};
-    WIN32_FILE_ATTRIBUTE_DATA fileInfo;
-    int pathLengthInBytes;
-    UINT8 isRoot;
-    UINT32 fsContextFileIndex;
-    WCHAR *oldFileName;
-    WCHAR *oldHostFileName;
+		// ƒtƒ@ƒCƒ‹‘®«‚ª“Ç‚İæ‚èê—p‚È‚ç‹‘”Û
+		if (!GetFileAttributesEx(fi->hostFileName, GetFileExInfoStandard, &fileInfo))
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
+		if (fileInfo.dwFileAttributes & FILE_ATTRIBUTE_READONLY)
+		{
+			TRACEOUTW((HD_W("ERROR: file is readonly.")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_CANNOT_DELETE);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // å…¥åŠ›ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºãŒæœŸå¾…é€šã‚Šã‹ç¢ºèª
-    if (length < sizeof(renameInfo)) {
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_TOO_SMALL);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// “Ç‚İ‚İ
+		hostdrvNT_memread(invokeInfo->inBufferAddr, &disposeInfo, sizeof(disposeInfo));
 
-    // å‰Šé™¤ä¸å¯ãªã‚‰æ‹’å¦
-    if (!(s_hdrvAcc & HDFMODE_DELETE)) {
-      TRACEOUTW((L"ERROR: delete is disabled by HOSTDRV."));
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_ACCESS_DENIED);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// íœƒtƒ‰ƒO‚ğƒZƒbƒg
+		if (disposeInfo.DeleteFileOnClose)
+		{
+			if (!hostdrvNT_captureDeleteIdentity(fi))
+			{
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_CANNOT_DELETE);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0);
+				return;
+			}
+			fi->deleteOnClose = 1;
+		}
+		else
+		{
+			fi->deleteOnClose = 0;
+			fi->deleteIdentityValid = 0;
+		}
+	}
+	else if (infoClass == FileRenameInformation)
+	{
+		NP2_FILE_RENAME_INFORMATION renameInfo = { 0 };
+		WCHAR* newPath = NULL;
+		WCHAR newHostPath[MAX_PATH * 2] = { 0 };
+		WIN32_FILE_ATTRIBUTE_DATA fileInfo;
+		int pathLengthInBytes;
+		UINT8 isRoot;
+		UINT32 fsContextFileIndex;
+		WCHAR* oldFileName;
+		WCHAR* oldHostFileName;
 
-    // èª­ã¿è¾¼ã¿
-    hostdrvNT_memread(invokeInfo->inBufferAddr, &renameInfo,
-                      sizeof(renameInfo));
+		// ‹¤—Lƒ‹[ƒg‚È‚ç•s‰Â
+		if (fi->isRoot)
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_ACCESS_DENIED);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0);
+			return;
+		}
 
-    // å¤‰æ›´å¾Œã®ãƒ‘ã‚¹é•·ã•ãŒç•°å¸¸ãªã‚‰æ‹’å¦
-    if (renameInfo.FileNameLength == 0 ||
-        renameInfo.FileNameLength > MAX_PATH) {
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// “ü—Íƒf[ƒ^ƒTƒCƒY‚ªŠú‘Ò’Ê‚è‚©Šm”F
+		if (length < sizeof(renameInfo))
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_BUFFER_TOO_SMALL);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // XXX:
-    // ç›¸å¯¾ãƒ‘ã‚¹ã«ã—ã‚ˆã†ã¨ã—ã¦ããŸå ´åˆã€å¯¾å¿œã—ã¦ã„ãªã„ã®ã§é•ã†ãƒ‡ãƒã‚¤ã‚¹æ‰±ã„ã¨ã—ã¦ãŠã
-    if (renameInfo.RootDirectory != 0) {
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_SAME_DEVICE);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// íœ•s‰Â‚È‚ç‹‘”Û
+		if (!(s_hdrvAcc & HDFMODE_DELETE))
+		{
+			TRACEOUTW((HD_W("ERROR: delete is disabled by HOSTDRV.")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_ACCESS_DENIED);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // æ–°ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹æ–‡å­—åˆ—å‰²ã‚Šå½“ã¦
-    pathLengthInBytes = renameInfo.FileNameLength;
-    newPath = (WCHAR *)malloc(renameInfo.FileNameLength + sizeof(WCHAR));
-    if (!newPath) {
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
-    memset(newPath, 0, renameInfo.FileNameLength + sizeof(WCHAR));
+		// “Ç‚İ‚İ
+		hostdrvNT_memread(invokeInfo->inBufferAddr, &renameInfo, sizeof(renameInfo));
 
-    // æ–°ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹éƒ¨åˆ†ã‚’èª­ã¿å–ã‚Š
-    hostdrvNT_memread(invokeInfo->inBufferAddr + 4 + 4 + 4, newPath,
-                      renameInfo.FileNameLength);
+		// •ÏXŒã‚ÌƒpƒX’·‚³‚ªˆÙí‚È‚ç‹‘”Û
+		if (renameInfo.FileNameLength == 0 || renameInfo.FileNameLength > MAX_PATH)
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // æ–°ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’Â¥??Â¥ã®å½¢å¼ã§æŒ‡å®šã•ã‚ŒãŸå ´åˆã€ç‰¹ä¾‹
-    if (wcsnicmp(newPath, L"Â¥Â¥??Â¥Â¥", 4) == 0) {
-      // ãƒ‰ãƒ©ã‚¤ãƒ–æ–‡å­—ãŒãªã„ã‚¿ã‚¤ãƒ—ãªã‚‰NG
-      if (wcslen(newPath) < 5) {
-        free(newPath);
-        cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_SAME_DEVICE);
-        cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-        return;
-      }
+		// XXX: ‘Š‘ÎƒpƒX‚É‚µ‚æ‚¤‚Æ‚µ‚Ä‚«‚½ê‡A‘Î‰‚µ‚Ä‚¢‚È‚¢‚Ì‚Åˆá‚¤ƒfƒoƒCƒXˆµ‚¢‚Æ‚µ‚Ä‚¨‚­
+		if (renameInfo.RootDirectory != 0)
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_SAME_DEVICE);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-      // Â¥??Â¥Z:Â¥ã®å½¢å¼ã®ãƒ‘ã‚¹ã‚’å‰æã«ã€ãƒ‰ãƒ©ã‚¤ãƒ–æ–‡å­—éƒ¨åˆ†ã‚’é©å½“ã«zã«æ›¸ãæ›ãˆ
-      newPath[4] = 'z';
+		// Vƒtƒ@ƒCƒ‹ƒpƒX•¶š—ñŠ„‚è“–‚Ä
+		pathLengthInBytes = renameInfo.FileNameLength;
+		newPath = (WCHAR*)malloc(renameInfo.FileNameLength + sizeof(WCHAR));
+		if (!newPath)
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
+		memset(newPath, 0, renameInfo.FileNameLength + sizeof(WCHAR));
 
-      // Â¥??Â¥Z:Â¥ã®å½¢å¼ã®ãƒ‘ã‚¹ãŒæ¥ãŸå ´åˆã€ç‰¹ä¾‹ã§Â¥??Â¥Z:Â¥ã‚’ã‚«ãƒƒãƒˆã—ã¦æ–°ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã¨ã™ã‚‹
-      if (wcsnicmp(newPath, L"Â¥Â¥??Â¥Â¥z:Â¥Â¥", 7) == 0) {
-        WCHAR *pathTmp = newPath;
-        while (*(pathTmp + 7)) {
-          *pathTmp = *(pathTmp + 7);
-          pathTmp++;
-        }
-        *pathTmp = *(pathTmp + 7);
-      } else {
-        // ãã®ä»–ã®å½¢å¼ãªã‚‰ä¸å¯
-        free(newPath);
-        cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_SAME_DEVICE);
-        cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-        return;
-      }
-    }
-    // æ–°ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’Â¥DosDevicesÂ¥z:Â¥ã®å½¢å¼ã§æŒ‡å®šã•ã‚ŒãŸå ´åˆã€ç‰¹ä¾‹
-    if (wcslen(newPath) >= 15 &&
-        wcsnicmp(newPath, L"Â¥Â¥DosDevicesÂ¥Â¥", 12) == 0 && newPath[13] == ':') {
-      // Â¥DosDevicesÂ¥Z:Â¥ã®å½¢å¼ã®ãƒ‘ã‚¹ã‚’å‰æã«ã€ãƒ‰ãƒ©ã‚¤ãƒ–æ–‡å­—éƒ¨åˆ†ã‚’é©å½“ã«zã«æ›¸ãæ›ãˆ
-      newPath[12] = 'z';
+		// Vƒtƒ@ƒCƒ‹ƒpƒX•”•ª‚ğ“Ç‚İæ‚è
+		hostdrvNT_memread(invokeInfo->inBufferAddr + 4 + 4 + 4, newPath, renameInfo.FileNameLength);
 
-      // Â¥DosDevicesÂ¥Z:Â¥ã®å½¢å¼ã®ãƒ‘ã‚¹ãŒæ¥ãŸå ´åˆã€ç‰¹ä¾‹ã§Â¥DosDevicesÂ¥Z:Â¥ã‚’ã‚«ãƒƒãƒˆã—ã¦æ–°ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã¨ã™ã‚‹
-      if (wcsnicmp(newPath, L"Â¥Â¥DosDevicesÂ¥Â¥z:Â¥Â¥", 15) == 0) {
-        WCHAR *pathTmp = newPath;
-        while (*(pathTmp + 15)) {
-          *pathTmp = *(pathTmp + 15);
-          pathTmp++;
-        }
-        *pathTmp = *(pathTmp + 15);
-      } else {
-        // ãã®ä»–ã®å½¢å¼ãªã‚‰ä¸å¯
-        free(newPath);
-        cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_SAME_DEVICE);
-        cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-        return;
-      }
-    }
+		// Vƒtƒ@ƒCƒ‹ƒpƒX‚ğ\??\‚ÌŒ`®‚Åw’è‚³‚ê‚½ê‡A“Á—á
+		if (wcsnicmp(newPath, HD_W("\\??\\"), 4) == 0)
+		{
+			// ƒhƒ‰ƒCƒu•¶š‚ª‚È‚¢ƒ^ƒCƒv‚È‚çNG
+			if (wcslen(newPath) < 5)
+			{
+				free(newPath);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_SAME_DEVICE);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+				return;
+			}
 
-    // é•·ã™ãã‚‹ãƒ•ã‚¡ã‚¤ãƒ«åã¯ä¸å¯
-    if (wcslen(newPath) >= MAX_PATH) {
-      free(newPath);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+			// \??\Z:\‚ÌŒ`®‚ÌƒpƒX‚ğ‘O’ñ‚ÉAƒhƒ‰ƒCƒu•¶š•”•ª‚ğ“K“–‚Éz‚É‘‚«Š·‚¦
+			newPath[4] = 'z';
 
-    // ãƒ›ã‚¹ãƒˆã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹ã¸å¤‰æ›
-    if (hostdrvNT_getHostPath(newPath, newHostPath, &isRoot, 0)) {
-      // ãƒ‘ã‚¹ãŒå¤‰
-      free(newPath);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+			// \??\Z:\‚ÌŒ`®‚ÌƒpƒX‚ª—ˆ‚½ê‡A“Á—á‚Å\??\Z:\‚ğƒJƒbƒg‚µ‚ÄVƒtƒ@ƒCƒ‹ƒpƒX‚Æ‚·‚é
+			if (wcsnicmp(newPath, HD_W("\\??\\z:\\"), 7) == 0)
+			{
+				WCHAR* pathTmp = newPath;
+				while (*(pathTmp + 7))
+				{
+					*pathTmp = *(pathTmp + 7);
+					pathTmp++;
+				}
+				*pathTmp = *(pathTmp + 7);
+			}
+			else
+			{
+				// ‚»‚Ì‘¼‚ÌŒ`®‚È‚ç•s‰Â
+				free(newPath);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_SAME_DEVICE);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+				return;
+			}
+		}
+		// Vƒtƒ@ƒCƒ‹ƒpƒX‚ğ\DosDevices\z:\‚ÌŒ`®‚Åw’è‚³‚ê‚½ê‡A“Á—á
+		if (wcslen(newPath) >= 15 && wcsnicmp(newPath, HD_W("\\DosDevices\\"), 12) == 0 && newPath[13]==':')
+		{
+			// \DosDevices\Z:\‚ÌŒ`®‚ÌƒpƒX‚ğ‘O’ñ‚ÉAƒhƒ‰ƒCƒu•¶š•”•ª‚ğ“K“–‚Éz‚É‘‚«Š·‚¦
+			newPath[12] = 'z';
 
-    // ãƒ«ãƒ¼ãƒˆã®ç§»å‹•ã¯ä¸å¯
-    if (isRoot) {
-      free(newPath);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+			// \DosDevices\Z:\‚ÌŒ`®‚ÌƒpƒX‚ª—ˆ‚½ê‡A“Á—á‚Å\DosDevices\Z:\‚ğƒJƒbƒg‚µ‚ÄVƒtƒ@ƒCƒ‹ƒpƒX‚Æ‚·‚é
+			if (wcsnicmp(newPath, HD_W("\\DosDevices\\z:\\"), 15) == 0)
+			{
+				WCHAR* pathTmp = newPath;
+				while (*(pathTmp + 15))
+				{
+					*pathTmp = *(pathTmp + 15);
+					pathTmp++;
+				}
+				*pathTmp = *(pathTmp + 15);
+			}
+			else
+			{
+				// ‚»‚Ì‘¼‚ÌŒ`®‚È‚ç•s‰Â
+				free(newPath);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_SAME_DEVICE);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+				return;
+			}
+		}
 
-    // ä¸€æ—¦ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‰ã˜ã¦ã‹ã‚‰ç§»å‹•ã•ã›ã‚‹
-    fsContextFileIndex =
-        cpu_kmemoryread_d(fileObject.FsContext + s_fsContextUserDataOffset);
-    hostdrvNT_preCloseFile(fsContextFileIndex);
-    if (!MoveFileExW(
-            fi->hostFileName, newHostPath,
-            (renameInfo.ReplaceIfExists ? MOVEFILE_REPLACE_EXISTING : 0) |
-                MOVEFILE_COPY_ALLOWED)) {
-      DWORD err = GetLastError();
-      if (err == ERROR_FILE_NOT_FOUND) {
-        cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                           NP2_STATUS_OBJECT_NAME_NOT_FOUND);
-      } else if (err == ERROR_ALREADY_EXISTS) {
-        cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                           NP2_STATUS_OBJECT_NAME_COLLISION);
-      } else {
-        cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                           NP2_STATUS_INVALID_PARAMETER);
-      }
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      free(newPath);
-      return;
-    }
-    TRACEOUTW((L"MOVE %s -> %s", fi->hostFileName, newHostPath));
+		// ’·‚·‚¬‚éƒtƒ@ƒCƒ‹–¼‚Í•s‰Â
+		if (wcslen(newPath) >= MAX_PATH)
+		{
+			free(newPath);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒ‘ã‚¹ã‚’æ–°ãƒ‘ã‚¹ã«å¤‰ãˆã¦ãŠã
-    oldFileName = fi->fileName;
-    oldHostFileName = fi->hostFileName;
-    fi->fileName = newPath;
-    fi->hostFileName =
-        (WCHAR *)malloc((wcslen(newHostPath) + 1) * sizeof(WCHAR));
-    wcscpy(fi->hostFileName, newHostPath);
-    free(oldFileName);
-    free(oldHostFileName);
+		// ƒzƒXƒg‚ÌƒfƒBƒŒƒNƒgƒŠƒpƒX‚Ö•ÏŠ·
+		if (hostdrvNT_getHostPath(newPath, newHostPath, &isRoot, 0))
+		{
+			// ƒpƒX‚ª•Ï
+			free(newPath);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return; 
+		}
 
-    hostdrvNT_notifyChange(fi->hostFileName, NP2_FILE_ACTION_RENAMED_NEW_NAME,
-                           1);
-  } else {
-    TRACEOUTW((L"Not implemented FileInformationClass %d (0x%02x)", infoClass,
-               infoClass));
-    cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_IMPLEMENTED);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    return;
-  }
+		// ƒ‹[ƒg‚ÌˆÚ“®‚Í•s‰Â
+		if (isRoot)
+		{
+			free(newPath);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-  if (reopenIndex)
-    hostdrvNT_preCloseFile(reopenIndex);
+		// ˆÀ‘S‚ÈƒpƒX‚Å‚È‚¢‚È‚ç•s‰Â
+		if (!hostdrvNT_isSafeHostPath(fi->hostFileName))
+		{
+			free(newPath);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_ACCESS_DENIED);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0);
+			return;
+		}
 
-  // çµæœï¼ˆæˆåŠŸï¼‰ã‚’ã‚»ãƒƒãƒˆ
-  cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS);
-  cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		// ˆê’Uƒtƒ@ƒCƒ‹‚ğ•Â‚¶‚Ä‚©‚çˆÚ“®‚³‚¹‚é
+		fsContextFileIndex = cpu_kmemoryread_d(fileObject.FsContext + s_fsContextUserDataOffset);
+		hostdrvNT_preCloseFile(fsContextFileIndex);
+		if (!MoveFileExW(fi->hostFileName, newHostPath, (renameInfo.ReplaceIfExists ? MOVEFILE_REPLACE_EXISTING : 0) | MOVEFILE_COPY_ALLOWED))
+		{
+			DWORD err = GetLastError();
+			if (err == ERROR_FILE_NOT_FOUND)
+			{
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_OBJECT_NAME_NOT_FOUND);
+			}
+			else if (err == ERROR_ALREADY_EXISTS)
+			{
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_OBJECT_NAME_COLLISION);
+			}
+			else
+			{
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			}
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			free(newPath);
+			return;
+		}
+		TRACEOUTW((HD_W("MOVE %s -> %s"), fi->hostFileName, newHostPath));
+
+		// ƒtƒ@ƒCƒ‹ƒIƒuƒWƒFƒNƒg‚ÌƒpƒX‚ğVƒpƒX‚É•Ï‚¦‚Ä‚¨‚­
+		oldFileName = fi->fileName;
+		oldHostFileName = fi->hostFileName;
+		fi->fileName = newPath;
+		fi->hostFileName = (WCHAR*)malloc((wcslen(newHostPath) + 1) * sizeof(WCHAR));
+		wcscpy(fi->hostFileName, newHostPath);
+		free(oldFileName);
+		free(oldHostFileName);
+
+		hostdrvNT_notifyChange(fi->hostFileName, NP2_FILE_ACTION_RENAMED_NEW_NAME, 1);
+	}
+	else
+	{
+		TRACEOUTW((HD_W("Not implemented FileInformationClass %d (0x%02x)"), infoClass, infoClass));
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_IMPLEMENTED);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		return;
+	}
+
+	if (reopenIndex)
+		hostdrvNT_preCloseFile(reopenIndex);
+
+	// Œ‹‰Êi¬Œ÷j‚ğƒZƒbƒg
+	cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS);
+	cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
 }
 
-static void hostdrvNT_IRP_MJ_CLEANUP(HOSTDRVNT_INVOKEINFO *invokeInfo) {
-  // ãƒ•ã‚¡ã‚¤ãƒ«ãƒ­ãƒƒã‚¯ãªã©ã‚’è§£é™¤ã™ã‚‹ã€‚ã¾ãŸè¦æ±‚ãŒæ¥ãŸã‚‰å†ã‚ªãƒ¼ãƒ—ãƒ³ã¯å‡ºæ¥ã‚‹ã‚ˆã†ã«ã—ã¦ãŠã
-  NP2_FILE_OBJECT fileObject = {0};
-  UINT32 fsContextFileIndex;
-  hostdrvNT_memread(invokeInfo->stack.fileObject, &fileObject,
-                    sizeof(fileObject));
-  fsContextFileIndex =
-      cpu_kmemoryread_d(fileObject.FsContext + s_fsContextUserDataOffset);
+static void hostdrvNT_IRP_MJ_CLEANUP(HOSTDRVNT_INVOKEINFO* invokeInfo)
+{
+	// ƒtƒ@ƒCƒ‹ƒƒbƒN‚È‚Ç‚ğ‰ğœ‚·‚éB‚Ü‚½—v‹‚ª—ˆ‚½‚çÄƒI[ƒvƒ“‚Ío—ˆ‚é‚æ‚¤‚É‚µ‚Ä‚¨‚­
+	NP2_FILE_OBJECT fileObject = { 0 };
+	UINT32 fsContextFileIndex;
+	hostdrvNT_memread(invokeInfo->stack.fileObject, &fileObject, sizeof(fileObject));
+	fsContextFileIndex = cpu_kmemoryread_d(fileObject.FsContext + s_fsContextUserDataOffset);
 
-  if (1 <= fsContextFileIndex && fsContextFileIndex < NP2HOSTDRVNT_FILES_MAX &&
-      hostdrvNT.files[fsContextFileIndex].fileName != NULL) {
-    if (hostdrvNT.files[fsContextFileIndex].isDirectory) {
-      TRACEOUTW((L"CLEANUP DIR: FILE %d %s", fsContextFileIndex,
-                 hostdrvNT.files[fsContextFileIndex].hostFileName));
-    } else {
-      TRACEOUTW((L"CLEANUP FILE: FILE %d %s", fsContextFileIndex,
-                 hostdrvNT.files[fsContextFileIndex].hostFileName));
-    }
-    hostdrvNT_preCloseFile(fsContextFileIndex);
-    hostdrvNT.files[fsContextFileIndex].hostdrvShareAccess =
-        FILE_SHARE_READ | FILE_SHARE_WRITE |
-        FILE_SHARE_DELETE; // XXX: CLEANUPå¾Œã®å†ã‚ªãƒ¼ãƒ—ãƒ³æ™‚ã«ã¯ALLè¨±å¯ã«ã™ã‚‹
-    // hostdrvNT.files[fsContextFileIndex].hostdrvWinAPIDesiredAccess =
-    // GENERIC_READ; // XXX: CLEANUPå¾Œã®å†ã‚ªãƒ¼ãƒ—ãƒ³æ™‚ã«ã¯GENERIC_READã«ã™ã‚‹
-  }
+	if (1 <= fsContextFileIndex && fsContextFileIndex < NP2HOSTDRVNT_FILES_MAX && hostdrvNT.files[fsContextFileIndex].fileName != NULL)
+	{
+		if (hostdrvNT.files[fsContextFileIndex].isDirectory)
+		{
+			TRACEOUTW((HD_W("CLEANUP DIR: FILE %d %s"), fsContextFileIndex, hostdrvNT.files[fsContextFileIndex].hostFileName));
+		}
+		else
+		{
+			TRACEOUTW((HD_W("CLEANUP FILE: FILE %d %s"), fsContextFileIndex, hostdrvNT.files[fsContextFileIndex].hostFileName));
+		}
+		hostdrvNT_preCloseFile(fsContextFileIndex);
+		hostdrvNT.files[fsContextFileIndex].hostdrvShareAccess = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE; // XXX: CLEANUPŒã‚ÌÄƒI[ƒvƒ“‚É‚ÍALL‹–‰Â‚É‚·‚é
+		//hostdrvNT.files[fsContextFileIndex].hostdrvWinAPIDesiredAccess = GENERIC_READ; // XXX: CLEANUPŒã‚ÌÄƒI[ƒvƒ“‚É‚ÍGENERIC_READ‚É‚·‚é
+	}
 
-  cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS);
-  cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+	cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS);
+	cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
 }
 
-static void hostdrvNT_IRP_MJ_CLOSE(HOSTDRVNT_INVOKEINFO *invokeInfo) {
-  // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å®Œå…¨ã«é–‰ã˜ã‚‹
-  NP2_FILE_OBJECT fileObject = {0};
-  UINT32 fsContextFileIndex;
-  hostdrvNT_memread(invokeInfo->stack.fileObject, &fileObject,
-                    sizeof(fileObject));
-  fsContextFileIndex =
-      cpu_kmemoryread_d(fileObject.FsContext + s_fsContextUserDataOffset);
+static void hostdrvNT_IRP_MJ_CLOSE(HOSTDRVNT_INVOKEINFO* invokeInfo)
+{
+	// ƒtƒ@ƒCƒ‹‚ğŠ®‘S‚É•Â‚¶‚é
+	NP2_FILE_OBJECT fileObject = { 0 };
+	UINT32 fsContextFileIndex;
+	hostdrvNT_memread(invokeInfo->stack.fileObject, &fileObject, sizeof(fileObject));
+	fsContextFileIndex = cpu_kmemoryread_d(fileObject.FsContext + s_fsContextUserDataOffset);
 
-  if (1 <= fsContextFileIndex && fsContextFileIndex < NP2HOSTDRVNT_FILES_MAX &&
-      hostdrvNT.files[fsContextFileIndex].fileName != NULL) {
-    if (hostdrvNT.files[fsContextFileIndex].isDirectory) {
-      TRACEOUTW((L"<<< CLOSE DIR: FILE #%d %s", fsContextFileIndex,
-                 hostdrvNT.files[fsContextFileIndex].hostFileName));
-    } else {
-      TRACEOUTW((L"<<< CLOSE FILE: FILE #%d %s", fsContextFileIndex,
-                 hostdrvNT.files[fsContextFileIndex].hostFileName));
-    }
-    hostdrvNT_closeFile(fsContextFileIndex);
-  }
+	if (1 <= fsContextFileIndex && fsContextFileIndex < NP2HOSTDRVNT_FILES_MAX && hostdrvNT.files[fsContextFileIndex].fileName != NULL)
+	{
+		if (hostdrvNT.files[fsContextFileIndex].isDirectory)
+		{
+			TRACEOUTW((HD_W("<<< CLOSE DIR: FILE #%d %s"), fsContextFileIndex, hostdrvNT.files[fsContextFileIndex].hostFileName));
+		}
+		else
+		{
+			TRACEOUTW((HD_W("<<< CLOSE FILE: FILE #%d %s"), fsContextFileIndex, hostdrvNT.files[fsContextFileIndex].hostFileName));
+		}
+		hostdrvNT_closeFile(fsContextFileIndex);
+	}
 
-  cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS);
-  cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+	cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS);
+	cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
 }
 
-static void hostdrvNT_IRP_MJ_READ(HOSTDRVNT_INVOKEINFO *invokeInfo) {
-  NP2_FILE_OBJECT fileObject = {0};
-  NP2HOSTDRVNT_FILEINFO *fi;
-  UINT32 length = invokeInfo->stack.parameters.read.length;
+static void hostdrvNT_IRP_MJ_READ(HOSTDRVNT_INVOKEINFO* invokeInfo)
+{
+	NP2_FILE_OBJECT fileObject = { 0 };
+	NP2HOSTDRVNT_FILEINFO* fi;
+	UINT32 length = invokeInfo->stack.parameters.read.length;
 
-  // å¯¾è±¡ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—
-  if (invokeInfo->stack.fileObject == NULL) {
-    TRACEOUTW((L"Invalid FileObject"));
-    cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    return;
-  }
-  hostdrvNT_memread(invokeInfo->stack.fileObject, &fileObject,
-                    sizeof(fileObject));
-  fi = hostdrvNT_getFileInfo(&fileObject);
-  if (!fi) {
-    TRACEOUTW((L"Invalid FsContext"));
-    cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    return;
-  }
+	// ‘ÎÛ‚Ìƒtƒ@ƒCƒ‹ƒIƒuƒWƒFƒNƒg‚ğæ“¾
+	if (invokeInfo->stack.fileObject == NULL)
+	{
+		TRACEOUTW((HD_W("Invalid FileObject")));
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		return;
+	}
+	hostdrvNT_memread(invokeInfo->stack.fileObject, &fileObject, sizeof(fileObject));
+	fi = hostdrvNT_getFileInfo(&fileObject);
+	if (!fi)
+	{
+		TRACEOUTW((HD_W("Invalid FsContext")));
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		return;
+	}
 
-  // ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‹ã©ã†ã‹åˆ¤å®š
-  if (fi->isDirectory) {
-    // ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ãƒªãƒ¼ãƒ‰ã¯æœªã‚µãƒãƒ¼ãƒˆ
-    TRACEOUTW((L"INVALID!!!  READ DIR: %s", fi->fileName));
-    cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    return;
-  } else {
-    // ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒªãƒ¼ãƒ‰
-    HANDLE fh;
-    UINT64 offset;
-    LARGE_INTEGER offsetLI;
-    UINT64 fileLength;
-    UINT64 copySize;
-    BYTE *fileReadBuffer;
-    DWORD bytesRead;
-    int reopenIndex = 0;
+	// ƒfƒBƒŒƒNƒgƒŠ‚©‚Ç‚¤‚©”»’è
+	if (fi->isDirectory)
+	{
+		// ƒfƒBƒŒƒNƒgƒŠ‚ÌƒŠ[ƒh‚Í–¢ƒTƒ|[ƒg
+		TRACEOUTW((HD_W("INVALID!!!  READ DIR: %s"), fi->fileName));
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		return;
+	}
+	else
+	{
+		// ƒtƒ@ƒCƒ‹‚ÌƒŠ[ƒh
+		HANDLE fh;
+		UINT64 offset;
+		LARGE_INTEGER offsetLI;
+		UINT64 fileLength;
+		UINT64 copySize;
+		BYTE* fileReadBuffer;
+		DWORD bytesRead;
+		int reopenIndex = 0;
 
-    TRACEOUTW((L"READ FILE: %s", fi->hostFileName));
+		TRACEOUTW((HD_W("READ FILE: %s"), fi->hostFileName));
 
-    // é•·ã•0ãªã‚‰æˆåŠŸæ‰±ã„ã«ã™ã‚‹
-    if (length == 0) {
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// ’·‚³0‚È‚ç¬Œ÷ˆµ‚¢‚É‚·‚é
+		if (length == 0)
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // èª­ã¿å‡ºã—ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’å–å¾—
-    if (invokeInfo->stack.parameters.read.byteOffset !=
-        NP2_FILE_USE_FILE_POINTER_POSITION) {
-      offset = invokeInfo->stack.parameters.read.byteOffset;
-    } else {
-      offset = fileObject.CurrentByteOffset;
-    }
+		// “Ç‚İo‚µƒIƒtƒZƒbƒg‚ğæ“¾
+		if (invokeInfo->stack.parameters.read.byteOffset != NP2_FILE_USE_FILE_POINTER_POSITION)
+		{
+			offset = invokeInfo->stack.parameters.read.byteOffset;
+		}
+		else
+		{
+			offset = fileObject.CurrentByteOffset;
+		}
 
-    // ãƒ•ã‚¡ã‚¤ãƒ«å†…å®¹èª­ã¿å‡ºã—
-    fh = fi->hFile;
-    if (!fh || fh == INVALID_HANDLE_VALUE) {
-      // ãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒ³ãƒ‰ãƒ«ãŒé–‰ã˜ã¦ã„ãŸã‚‰å†ã‚ªãƒ¼ãƒ—ãƒ³
-      UINT32 fsContextFileIndex =
-          cpu_kmemoryread_d(fileObject.FsContext + s_fsContextUserDataOffset);
-      if (!hostdrvNT_reopenFile(fsContextFileIndex)) {
-        cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                           NP2_STATUS_OBJECT_NAME_INVALID);
-        cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-        return;
-      }
-      fh = fi->hFile;
-      if (!fh || fh == INVALID_HANDLE_VALUE) {
-        cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                           NP2_STATUS_INVALID_PARAMETER);
-        cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-        return;
-      }
-      reopenIndex = fsContextFileIndex;
-    }
+		// ƒtƒ@ƒCƒ‹“à—e“Ç‚İo‚µ
+		fh = fi->hFile;
+		if (!fh || fh == INVALID_HANDLE_VALUE)
+		{
+			// ƒtƒ@ƒCƒ‹ƒnƒ“ƒhƒ‹‚ª•Â‚¶‚Ä‚¢‚½‚çÄƒI[ƒvƒ“
+			UINT32 fsContextFileIndex = cpu_kmemoryread_d(fileObject.FsContext + s_fsContextUserDataOffset);
+			if (!hostdrvNT_reopenFile(fsContextFileIndex))
+			{
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_OBJECT_NAME_INVALID);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+				return;
+			}
+			fh = fi->hFile;
+			if (!fh || fh == INVALID_HANDLE_VALUE)
+			{
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+				return;
+			}
+			reopenIndex = fsContextFileIndex;
+		}
 
-    // ãƒ•ã‚¡ã‚¤ãƒ«çµ‚ç«¯ãªã‚‰STATUS_END_OF_FILE
-    offsetLI.QuadPart = offset;
-    if (!SetFilePointerEx(fh, offsetLI, NULL, FILE_BEGIN)) {
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_END_OF_FILE);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
-    fileLength = file_getsize(fh);
-    if (offset >= fileLength) {
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_END_OF_FILE);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// ƒtƒ@ƒCƒ‹I’[‚È‚çSTATUS_END_OF_FILE
+		offsetLI.QuadPart = offset;
+		if (!SetFilePointerEx(fh, offsetLI, NULL, FILE_BEGIN))
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_END_OF_FILE);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
+#if defined(_WIN32) || defined(WIN32)
+		fileLength = file_getsize(fh);
+#else
+		{
+			LARGE_INTEGER hostFileSize;
+			if (!GetFileSizeEx(fh, &hostFileSize) || hostFileSize.QuadPart < 0)
+			{
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_END_OF_FILE);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0);
+				return;
+			}
+			fileLength = (UINT64)hostFileSize.QuadPart;
+		}
+#endif
+		if (offset >= fileLength)
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_END_OF_FILE);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
+		
+		// ƒf[ƒ^ƒRƒs[ƒTƒCƒYŒvZ
+		copySize = fileLength - offset;
+		if (length < copySize)
+		{
+			copySize = length;
+		}
 
-    // ãƒ‡ãƒ¼ã‚¿ã‚³ãƒ”ãƒ¼ã‚µã‚¤ã‚ºè¨ˆç®—
-    copySize = fileLength - offset;
-    if (length < copySize) {
-      copySize = length;
-    }
+		// ƒoƒbƒtƒ@‚ğŠm•Û
+		fileReadBuffer = (BYTE*)malloc(copySize);
+		if (!fileReadBuffer)
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
+		bytesRead = 0;
+		if (!ReadFile(fh, fileReadBuffer, copySize, &bytesRead, NULL))
+		{
+			free(fileReadBuffer);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
-    fileReadBuffer = (BYTE *)malloc(copySize);
-    if (!fileReadBuffer) {
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
-    bytesRead = 0;
-    if (!ReadFile(fh, fileReadBuffer, copySize, &bytesRead, NULL)) {
-      free(fileReadBuffer);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// ‘‚«‚İ
+		if (invokeInfo->outBufferAddr != 0)
+		{
+			hostdrvNT_memwrite(invokeInfo->outBufferAddr, fileReadBuffer, copySize);
+		}
+		else
+		{
+			copySize = 0;
+		}
 
-    // æ›¸ãè¾¼ã¿
-    if (invokeInfo->outBufferAddr != 0) {
-      hostdrvNT_memwrite(invokeInfo->outBufferAddr, fileReadBuffer, copySize);
-    } else {
-      copySize = 0;
-    }
+		// ‚à‚¤—v‚ç‚È‚¢‚Ì‚Åƒƒ‚ƒŠ‰ğ•ú
+		free(fileReadBuffer);
 
-    // ã‚‚ã†è¦ã‚‰ãªã„ã®ã§ãƒ¡ãƒ¢ãƒªè§£æ”¾
-    free(fileReadBuffer);
+		// “¯ŠúƒAƒNƒZƒX‚È‚çƒoƒCƒgƒIƒtƒZƒbƒg‚ğXV
+		if (fileObject.Flags & NP2_FO_SYNCHRONOUS_IO)
+		{
+			fileObject.CurrentByteOffset = offset + copySize;
+			cpu_kmemorywrite_d(invokeInfo->stack.fileObject + offsetof(NP2_FILE_OBJECT, CurrentByteOffset), (UINT32)fileObject.CurrentByteOffset);
+			cpu_kmemorywrite_d(invokeInfo->stack.fileObject + offsetof(NP2_FILE_OBJECT, CurrentByteOffset) + 4, (UINT32)(fileObject.CurrentByteOffset >> 32));
+		}
 
-    // åŒæœŸã‚¢ã‚¯ã‚»ã‚¹ãªã‚‰ãƒã‚¤ãƒˆã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’æ›´æ–°
-    if (fileObject.Flags & NP2_FO_SYNCHRONOUS_IO) {
-      fileObject.CurrentByteOffset = offset + copySize;
-      cpu_kmemorywrite_d(invokeInfo->stack.fileObject +
-                             offsetof(NP2_FILE_OBJECT, CurrentByteOffset),
-                         (UINT32)fileObject.CurrentByteOffset);
-      cpu_kmemorywrite_d(invokeInfo->stack.fileObject +
-                             offsetof(NP2_FILE_OBJECT, CurrentByteOffset) + 4,
-                         (UINT32)(fileObject.CurrentByteOffset >> 32));
-    }
+		if (reopenIndex)
+			hostdrvNT_preCloseFile(reopenIndex);
 
-    if (reopenIndex)
-      hostdrvNT_preCloseFile(reopenIndex);
-
-    cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, copySize); // Information
-  }
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, copySize); // Information
+	}
 }
 
-static void hostdrvNT_IRP_MJ_WRITE(HOSTDRVNT_INVOKEINFO *invokeInfo) {
-  NP2_FILE_OBJECT fileObject = {0};
-  NP2HOSTDRVNT_FILEINFO *fi;
-  UINT32 length = invokeInfo->stack.parameters.write.length;
+static void hostdrvNT_IRP_MJ_WRITE(HOSTDRVNT_INVOKEINFO* invokeInfo)
+{
+	NP2_FILE_OBJECT fileObject = { 0 };
+	NP2HOSTDRVNT_FILEINFO* fi;
+	UINT32 length = invokeInfo->stack.parameters.write.length;
 
-  // ãƒªãƒ¼ãƒ‰ã‚ªãƒ³ãƒªãƒ¼ãªã‚‰æ‹’å¦
-  if (!(s_hdrvAcc & HDFMODE_WRITE)) {
-    TRACEOUTW((L"ERROR: write command is disabled by HOSTDRV."));
-    cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                       NP2_STATUS_MEDIA_WRITE_PROTECTED);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    return;
-  }
+	// ƒŠ[ƒhƒIƒ“ƒŠ[‚È‚ç‹‘”Û
+	if (!(s_hdrvAcc & HDFMODE_WRITE))
+	{
+		TRACEOUTW((HD_W("ERROR: write command is disabled by HOSTDRV.")));
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_MEDIA_WRITE_PROTECTED);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		return;
+	}
 
-  // å¯¾è±¡ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—
-  if (invokeInfo->stack.fileObject == NULL) {
-    TRACEOUTW((L"Invalid FileObject"));
-    cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    return;
-  }
-  hostdrvNT_memread(invokeInfo->stack.fileObject, &fileObject,
-                    sizeof(fileObject));
-  fi = hostdrvNT_getFileInfo(&fileObject);
-  if (!fi) {
-    TRACEOUTW((L"Invalid FsContext"));
-    cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    return;
-  }
+	// ‘ÎÛ‚Ìƒtƒ@ƒCƒ‹ƒIƒuƒWƒFƒNƒg‚ğæ“¾
+	if (invokeInfo->stack.fileObject == NULL)
+	{
+		TRACEOUTW((HD_W("Invalid FileObject")));
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		return;
+	}
+	hostdrvNT_memread(invokeInfo->stack.fileObject, &fileObject, sizeof(fileObject));
+	fi = hostdrvNT_getFileInfo(&fileObject);
+	if (!fi)
+	{
+		TRACEOUTW((HD_W("Invalid FsContext")));
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		return;
+	}
 
-  // ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‹ã©ã†ã‹åˆ¤å®š
-  if (fi->isDirectory) {
-    // ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã¸ã®æ›¸ãè¾¼ã¿ã¯ä¸å¯
-    TRACEOUTW((L"INVALID!!!  WRITE DIR: %s", fi->fileName));
-    cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    return;
-  } else {
-    HANDLE fh;
-    UINT64 offset;
-    LARGE_INTEGER offsetLI;
-    UINT64 fileLength;
-    UINT64 copySize;
-    BYTE *fileWriteBuffer;
-    DWORD bytesWrite;
-    int reopenIndex = 0;
+	// ƒfƒBƒŒƒNƒgƒŠ‚©‚Ç‚¤‚©”»’è
+	if (fi->isDirectory)
+	{
+		// ƒfƒBƒŒƒNƒgƒŠ‚Ö‚Ì‘‚«‚İ‚Í•s‰Â
+		TRACEOUTW((HD_W("INVALID!!!  WRITE DIR: %s"), fi->fileName));
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		return;
+	}
+	else
+	{
+		HANDLE fh;
+		UINT64 offset;
+		LARGE_INTEGER offsetLI;
+		UINT64 fileLength;
+		UINT64 copySize;
+		BYTE* fileWriteBuffer;
+		DWORD bytesWrite;
+		int reopenIndex = 0;
 
-    TRACEOUTW((L"WRITE FILE: %s", fi->hostFileName));
+		TRACEOUTW((HD_W("WRITE FILE: %s"), fi->hostFileName));
 
-    // é•·ã•0ãªã‚‰æˆåŠŸæ‰±ã„ã«ã™ã‚‹
-    if (length == 0) {
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// ’·‚³0‚È‚ç¬Œ÷ˆµ‚¢‚É‚·‚é
+		if (length == 0)
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // æ›¸ãè¾¼ã¿ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’å–å¾—
-    if (invokeInfo->stack.parameters.write.byteOffset !=
-        0xfffffffe) // FILE_USE_FILE_POINTER_POSITION
-    {
-      offset = invokeInfo->stack.parameters.write.byteOffset;
-    } else {
-      offset = fileObject.CurrentByteOffset;
-    }
+		// ‘‚«‚İƒIƒtƒZƒbƒg‚ğæ“¾
+		if (invokeInfo->stack.parameters.write.byteOffset != 0xfffffffe) // FILE_USE_FILE_POINTER_POSITION
+		{
+			offset = invokeInfo->stack.parameters.write.byteOffset;
+		}
+		else
+		{
+			offset = fileObject.CurrentByteOffset;
+		}
 
-    // ãƒ•ã‚¡ã‚¤ãƒ«å†…å®¹æ›¸ãè¾¼ã¿
-    fh = fi->hFile;
-    if (!fh || fh == INVALID_HANDLE_VALUE) {
-      // ãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒ³ãƒ‰ãƒ«ãŒé–‰ã˜ã¦ã„ãŸã‚‰å†ã‚ªãƒ¼ãƒ—ãƒ³
-      UINT32 fsContextFileIndex =
-          cpu_kmemoryread_d(fileObject.FsContext + s_fsContextUserDataOffset);
-      if (!hostdrvNT_reopenFile(fsContextFileIndex)) {
-        cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                           NP2_STATUS_OBJECT_NAME_INVALID);
-        cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-        return;
-      }
-      fh = fi->hFile;
-      if (!fh || fh == INVALID_HANDLE_VALUE) {
-        cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                           NP2_STATUS_INVALID_PARAMETER);
-        cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-        return;
-      }
-      reopenIndex = fsContextFileIndex;
-    }
+		// ƒtƒ@ƒCƒ‹“à—e‘‚«‚İ
+		fh = fi->hFile;
+		if (!fh || fh == INVALID_HANDLE_VALUE)
+		{
+			// ƒtƒ@ƒCƒ‹ƒnƒ“ƒhƒ‹‚ª•Â‚¶‚Ä‚¢‚½‚çÄƒI[ƒvƒ“
+			UINT32 fsContextFileIndex = cpu_kmemoryread_d(fileObject.FsContext + s_fsContextUserDataOffset);
+			if (!hostdrvNT_reopenFile(fsContextFileIndex))
+			{
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_OBJECT_NAME_INVALID);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+				return;
+			}
+			fh = fi->hFile;
+			if (!fh || fh == INVALID_HANDLE_VALUE)
+			{
+				cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+				cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+				return;
+			}
+			reopenIndex = fsContextFileIndex;
+		}
 
-    // ãƒ•ã‚¡ã‚¤ãƒ«æ›¸ãè¾¼ã¿ä½ç½®ã®è¨­å®š
-    offsetLI.QuadPart = offset;
-    if (!SetFilePointerEx(fh, offsetLI, NULL, FILE_BEGIN)) {
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_END_OF_FILE);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// ƒtƒ@ƒCƒ‹‘‚«‚İˆÊ’u‚Ìİ’è
+		offsetLI.QuadPart = offset;
+		if (!SetFilePointerEx(fh, offsetLI, NULL, FILE_BEGIN))
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_END_OF_FILE);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
+		
+		// ‘‚«‚İƒTƒCƒY
+		copySize = length;
 
-    // æ›¸ãè¾¼ã¿ã‚µã‚¤ã‚º
-    copySize = length;
+		// ƒoƒbƒtƒ@‚ğŠm•Û
+		fileWriteBuffer = (BYTE*)malloc(copySize);
+		if (!fileWriteBuffer)
+		{
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
-    fileWriteBuffer = (BYTE *)malloc(copySize);
-    if (!fileWriteBuffer) {
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// ‘‚«‚İƒf[ƒ^‚ğƒƒ‚ƒŠ‚©‚ç“Ç‚İæ‚è
+		if (invokeInfo->inBufferAddr != 0)
+		{
+			hostdrvNT_memread(invokeInfo->inBufferAddr, fileWriteBuffer, copySize);
+		}
+		else
+		{
+			free(fileWriteBuffer);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // æ›¸ãè¾¼ã¿ãƒ‡ãƒ¼ã‚¿ã‚’ãƒ¡ãƒ¢ãƒªã‹ã‚‰èª­ã¿å–ã‚Š
-    if (invokeInfo->inBufferAddr != 0) {
-      hostdrvNT_memread(invokeInfo->inBufferAddr, fileWriteBuffer, copySize);
-    } else {
-      free(fileWriteBuffer);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// ƒtƒ@ƒCƒ‹‚É‘‚«‚Ş
+		bytesWrite = 0;
+		if (!WriteFile(fh, fileWriteBuffer, copySize, &bytesWrite, NULL))
+		{
+			free(fileWriteBuffer);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			return;
+		}
 
-    // ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãè¾¼ã‚€
-    bytesWrite = 0;
-    if (!WriteFile(fh, fileWriteBuffer, copySize, &bytesWrite, NULL)) {
-      free(fileWriteBuffer);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_PARAMETER);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      return;
-    }
+		// ƒtƒ@ƒCƒ‹‚ğ•Â‚¶‚é
+		free(fileWriteBuffer);
 
-    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‰ã˜ã‚‹
-    free(fileWriteBuffer);
+		// “¯ŠúƒAƒNƒZƒX‚È‚çƒoƒCƒgƒIƒtƒZƒbƒg‚ğXV
+		if (fileObject.Flags & 0x00000002) // FO_SYNCHRONOUS_IO
+		{
+			fileObject.CurrentByteOffset = offset + copySize;
+			cpu_kmemorywrite_d(invokeInfo->stack.fileObject + offsetof(NP2_FILE_OBJECT, CurrentByteOffset), (UINT32)fileObject.CurrentByteOffset);
+			cpu_kmemorywrite_d(invokeInfo->stack.fileObject + offsetof(NP2_FILE_OBJECT, CurrentByteOffset) + 4, (UINT32)(fileObject.CurrentByteOffset >> 32));
+		}
 
-    // åŒæœŸã‚¢ã‚¯ã‚»ã‚¹ãªã‚‰ãƒã‚¤ãƒˆã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’æ›´æ–°
-    if (fileObject.Flags & 0x00000002) // FO_SYNCHRONOUS_IO
-    {
-      fileObject.CurrentByteOffset = offset + copySize;
-      cpu_kmemorywrite_d(invokeInfo->stack.fileObject +
-                             offsetof(NP2_FILE_OBJECT, CurrentByteOffset),
-                         (UINT32)fileObject.CurrentByteOffset);
-      cpu_kmemorywrite_d(invokeInfo->stack.fileObject +
-                             offsetof(NP2_FILE_OBJECT, CurrentByteOffset) + 4,
-                         (UINT32)(fileObject.CurrentByteOffset >> 32));
-    }
+		if (reopenIndex)
+			hostdrvNT_preCloseFile(reopenIndex);
 
-    if (reopenIndex)
-      hostdrvNT_preCloseFile(reopenIndex);
-
-    cpu_kmemorywrite_d(invokeInfo->statusAddr, 0); // Status STATUS_SUCCESS
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, copySize); // Information
-  }
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, 0); // Status STATUS_SUCCESS
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, copySize); // Information
+	}
 }
 
-static void
-hostdrvNT_IRP_MJ_FILE_SYSTEM_CONTROL(HOSTDRVNT_INVOKEINFO *invokeInfo) {
-  if (invokeInfo->stack.minorFunction == NP2_IRP_MN_USER_FS_REQUEST) {
-    TRACEOUTW((L" IRP_MN_USER_FS_REQUEST: %d(0x%02x)",
-               invokeInfo->stack.parameters.fileSystemControl.FsControlCode,
-               invokeInfo->stack.parameters.fileSystemControl.FsControlCode));
-    if (invokeInfo->stack.parameters.fileSystemControl.FsControlCode ==
-        FSCTL_INVALIDATE_VOLUMES) {
-      TRACEOUTW((L"FSCTL_INVALIDATE_VOLUMES"));
-      cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                         NP2_STATUS_INVALID_DEVICE_REQUEST);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    } else if (invokeInfo->stack.parameters.fileSystemControl.FsControlCode ==
-               FSCTL_REQUEST_OPLOCK_LEVEL_1) {
-      TRACEOUTW((L"FSCTL_REQUEST_OPLOCK_LEVEL_1"));
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_SUPPORTED);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    } else if (invokeInfo->stack.parameters.fileSystemControl.FsControlCode ==
-               FSCTL_REQUEST_OPLOCK_LEVEL_2) {
-      TRACEOUTW((L"FSCTL_REQUEST_OPLOCK_LEVEL_2"));
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_SUPPORTED);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    } else if (invokeInfo->stack.parameters.fileSystemControl.FsControlCode ==
-               FSCTL_REQUEST_FILTER_OPLOCK) {
-      TRACEOUTW((L"FSCTL_REQUEST_FILTER_OPLOCK"));
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_SUPPORTED);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    } else if (invokeInfo->stack.parameters.fileSystemControl.FsControlCode ==
-               FSCTL_REQUEST_BATCH_OPLOCK) {
-      TRACEOUTW((L"FSCTL_REQUEST_BATCH_OPLOCK"));
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_SUPPORTED);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    } else if (invokeInfo->stack.parameters.fileSystemControl.FsControlCode ==
-               FSCTL_IS_VOLUME_MOUNTED) {
-      TRACEOUTW((L"FSCTL_IS_VOLUME_MOUNTED"));
-      cpu_kmemorywrite_d(
-          invokeInfo->statusAddr,
-          NP2_STATUS_NOT_SUPPORTED); // Status STATUS_NOT_SUPPORTED
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-      // cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS);
-      // cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    } else if (invokeInfo->stack.parameters.fileSystemControl.FsControlCode ==
-               FSCTL_DISMOUNT_VOLUME) {
-      TRACEOUTW((L"FSCTL_DISMOUNT_VOLUME"));
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    } else if (invokeInfo->stack.parameters.fileSystemControl.FsControlCode ==
-               FSCTL_GET_COMPRESSION) {
-      TRACEOUTW((L"FSCTL_GET_COMPRESSION"));
-      cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_SUPPORTED);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    } else {
-      TRACEOUTW((L"UNKNOWN"));
-      cpu_kmemorywrite_d(invokeInfo->statusAddr,
-                         NP2_STATUS_INVALID_DEVICE_REQUEST);
-      cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-    }
-  } else {
-    cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_IMPLEMENTED);
-    cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
-  }
+static void hostdrvNT_IRP_MJ_FILE_SYSTEM_CONTROL(HOSTDRVNT_INVOKEINFO* invokeInfo)
+{
+	if (invokeInfo->stack.minorFunction == NP2_IRP_MN_USER_FS_REQUEST)
+	{
+		TRACEOUTW((HD_W(" IRP_MN_USER_FS_REQUEST: %d(0x%02x)"), invokeInfo->stack.parameters.fileSystemControl.FsControlCode, invokeInfo->stack.parameters.fileSystemControl.FsControlCode));
+		if (invokeInfo->stack.parameters.fileSystemControl.FsControlCode == FSCTL_INVALIDATE_VOLUMES)
+		{
+			TRACEOUTW((HD_W("FSCTL_INVALIDATE_VOLUMES")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_DEVICE_REQUEST);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		}
+		else if (invokeInfo->stack.parameters.fileSystemControl.FsControlCode == FSCTL_REQUEST_OPLOCK_LEVEL_1)
+		{
+			TRACEOUTW((HD_W("FSCTL_REQUEST_OPLOCK_LEVEL_1")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_SUPPORTED);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		}
+		else if (invokeInfo->stack.parameters.fileSystemControl.FsControlCode == FSCTL_REQUEST_OPLOCK_LEVEL_2)
+		{
+			TRACEOUTW((HD_W("FSCTL_REQUEST_OPLOCK_LEVEL_2")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_SUPPORTED);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		}
+		else if (invokeInfo->stack.parameters.fileSystemControl.FsControlCode == FSCTL_REQUEST_FILTER_OPLOCK)
+		{
+			TRACEOUTW((HD_W("FSCTL_REQUEST_FILTER_OPLOCK")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_SUPPORTED);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		}
+		else if (invokeInfo->stack.parameters.fileSystemControl.FsControlCode == FSCTL_REQUEST_BATCH_OPLOCK)
+		{
+			TRACEOUTW((HD_W("FSCTL_REQUEST_BATCH_OPLOCK")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_SUPPORTED);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		}
+		else if (invokeInfo->stack.parameters.fileSystemControl.FsControlCode == FSCTL_IS_VOLUME_MOUNTED)
+		{
+			TRACEOUTW((HD_W("FSCTL_IS_VOLUME_MOUNTED")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_SUPPORTED); // Status STATUS_NOT_SUPPORTED
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+			//cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS);
+			//cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		}
+		else if (invokeInfo->stack.parameters.fileSystemControl.FsControlCode == FSCTL_DISMOUNT_VOLUME)
+		{
+			TRACEOUTW((HD_W("FSCTL_DISMOUNT_VOLUME")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_SUCCESS);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		}
+		else if (invokeInfo->stack.parameters.fileSystemControl.FsControlCode == FSCTL_GET_COMPRESSION)
+		{
+			TRACEOUTW((HD_W("FSCTL_GET_COMPRESSION")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_SUPPORTED);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		}
+		else
+		{
+			TRACEOUTW((HD_W("UNKNOWN")));
+			cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_INVALID_DEVICE_REQUEST);
+			cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+		}
+	}
+	else
+	{
+		cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_IMPLEMENTED);
+		cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+	}
 }
 
-static void hostdrvNT_IRP_MJ_DEVICE_CONTROL(HOSTDRVNT_INVOKEINFO *invokeInfo) {
-  UINT32 ioControlCode =
-      invokeInfo->stack.parameters.deviceIoControl.IoControlCode;
-  TRACEOUTW((L"IoControlCode: %d(0x%08x)", ioControlCode, ioControlCode));
-  cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_IMPLEMENTED);
-  cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
+static void hostdrvNT_IRP_MJ_DEVICE_CONTROL(HOSTDRVNT_INVOKEINFO* invokeInfo)
+{
+	UINT32 ioControlCode = invokeInfo->stack.parameters.deviceIoControl.IoControlCode;
+	TRACEOUTW((HD_W("IoControlCode: %d(0x%08x)"), ioControlCode, ioControlCode));
+	cpu_kmemorywrite_d(invokeInfo->statusAddr, NP2_STATUS_NOT_IMPLEMENTED);
+	cpu_kmemorywrite_d(invokeInfo->statusAddr + 4, 0); // Information
 }
 
 // ---------- Entry Function
-static void hostdrvNT_invoke() {
-  HOSTDRVNT_INVOKEINFO invokeInfo;
+static void hostdrvNT_invoke()
+{
+	HOSTDRVNT_INVOKEINFO invokeInfo;
 
-  if ((s_hdrvRoot[0] == 'Â¥0') || (!np2cfg.hdrvenable)) {
-    // ç„¡åŠ¹ã®å ´åˆä½•ã‚‚ã›ãšã«æŠœã‘ã‚‹
-    return;
-  }
+	if ((s_hdrvRoot[0] == '\0') || (!np2cfg.hdrvenable))
+	{
+		// –³Œø‚Ìê‡‰½‚à‚¹‚¸‚É”²‚¯‚é
+		return;
+	}
 
 #if defined(SUPPORT_IA32_HAXM)
-  // HAXMãƒ¬ã‚¸ã‚¹ã‚¿ã‚’èª­ã¿å–ã‚Š
-  i386haxfunc_vcpu_getREGs(&np2haxstat.state);
-  i386haxfunc_vcpu_getFPU(&np2haxstat.fpustate);
-  np2haxstat.update_regs = np2haxstat.update_fpu = 0;
-  // HAXMãƒ¬ã‚¸ã‚¹ã‚¿â†’çŒ«ãƒ¬ã‚¸ã‚¹ã‚¿ã«ã‚³ãƒ”ãƒ¼
-  ia32hax_copyregHAXtoNP2();
+	// HAXMƒŒƒWƒXƒ^‚ğ“Ç‚İæ‚è
+	i386haxfunc_vcpu_getREGs(&np2haxstat.state);
+	i386haxfunc_vcpu_getFPU(&np2haxstat.fpustate);
+	np2haxstat.update_regs = np2haxstat.update_fpu = 0;
+	// HAXMƒŒƒWƒXƒ^¨”LƒŒƒWƒXƒ^‚ÉƒRƒs[
+	ia32hax_copyregHAXtoNP2();
 #endif
 
-  // ãƒ‰ãƒ©ã‚¤ãƒã‹ã‚‰æ¸¡ã•ã‚ŒãŸãƒ¡ãƒ¢ãƒªã‚¢ãƒ‰ãƒ¬ã‚¹ã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚’ç›´æ¥èª­ã¿å–ã‚Š
-  hostdrvNT_memread(cpu_kmemoryread_d(hostdrvNT.dataAddr), &invokeInfo.stack,
-                    sizeof(NP2_IO_STACK_LOCATION));
-  invokeInfo.statusAddr = cpu_kmemoryread_d(hostdrvNT.dataAddr + 4);
-  invokeInfo.inBufferAddr = cpu_kmemoryread_d(hostdrvNT.dataAddr + 8);
-  invokeInfo.deviceFlags = cpu_kmemoryread_d(hostdrvNT.dataAddr + 12);
-  invokeInfo.outBufferAddr = cpu_kmemoryread_d(hostdrvNT.dataAddr + 16);
-  invokeInfo.sectionObjectPointerAddr =
-      cpu_kmemoryread_d(hostdrvNT.dataAddr + 20);
-  if (hostdrvNT.cmdBaseVersion >= 1) {
-    hostdrvNT.version = cpu_kmemoryread_d(hostdrvNT.dataAddr + 24);
-  } else {
-    hostdrvNT.version = 0;
-  }
-  if (hostdrvNT.version >= 4) {
-    s_fsContextUserDataOffset = HOSTDRVNT_FSCONTEXT_USERDATA_OFFSET;
-  } else {
-    s_fsContextUserDataOffset = 0;
-  }
-  if (hostdrvNT.version >= 2) {
-    // IOå¾…æ©Ÿç”¨
-    s_pendingListCount = cpu_kmemoryread_d(hostdrvNT.dataAddr + 28);
-    s_pendingIrpListAddr = cpu_kmemoryread_d(hostdrvNT.dataAddr + 32);
-    s_pendingAliveListAddr = cpu_kmemoryread_d(hostdrvNT.dataAddr + 36);
-    s_pendingIndexOrCompleteCount = cpu_kmemoryread_d(hostdrvNT.dataAddr + 40);
-  } else {
-    // å¯¾å¿œã—ã¦ã„ãªã„æ—§ãƒ‰ãƒ©ã‚¤ãƒ
-    s_pendingListCount = 0;
-  }
-  if (hostdrvNT.version >= 3) {
-    // ãŠã·ã—ã‚‡ã‚“
-    s_hostdrvNTOptions = cpu_kmemoryread_d(hostdrvNT.dataAddr + 44);
+	// ƒhƒ‰ƒCƒo‚©‚ç“n‚³‚ê‚½ƒƒ‚ƒŠƒAƒhƒŒƒX‚©‚çƒf[ƒ^‚ğ’¼Ú“Ç‚İæ‚è
+	hostdrvNT_memread(cpu_kmemoryread_d(hostdrvNT.dataAddr), &invokeInfo.stack, sizeof(NP2_IO_STACK_LOCATION));
+	invokeInfo.statusAddr = cpu_kmemoryread_d(hostdrvNT.dataAddr + 4);
+	invokeInfo.inBufferAddr = cpu_kmemoryread_d(hostdrvNT.dataAddr + 8);
+	invokeInfo.deviceFlags = cpu_kmemoryread_d(hostdrvNT.dataAddr + 12);
+	invokeInfo.outBufferAddr = cpu_kmemoryread_d(hostdrvNT.dataAddr + 16);
+	invokeInfo.sectionObjectPointerAddr = cpu_kmemoryread_d(hostdrvNT.dataAddr + 20);
+	if (hostdrvNT.cmdBaseVersion >= 1)
+	{
+		hostdrvNT.version = cpu_kmemoryread_d(hostdrvNT.dataAddr + 24);
+	}
+	else
+	{
+		hostdrvNT.version = 0;
+	}
+	if (hostdrvNT.version >= 4)
+	{
+		s_fsContextUserDataOffset = HOSTDRVNT_FSCONTEXT_USERDATA_OFFSET;
+	}
+	else
+	{
+		s_fsContextUserDataOffset = 0;
+	}
+	if (hostdrvNT.version >= 2)
+	{
+		// IO‘Ò‹@—p
+		s_pendingListCount = cpu_kmemoryread_d(hostdrvNT.dataAddr + 28);
+		s_pendingIrpListAddr = cpu_kmemoryread_d(hostdrvNT.dataAddr + 32);
+		s_pendingAliveListAddr = cpu_kmemoryread_d(hostdrvNT.dataAddr + 36);
+		s_pendingIndexOrCompleteCount = cpu_kmemoryread_d(hostdrvNT.dataAddr + 40);
+	}
+	else
+	{
+		// ‘Î‰‚µ‚Ä‚¢‚È‚¢‹Œƒhƒ‰ƒCƒo
+		s_pendingListCount = 0;
+	}
+	if (hostdrvNT.version >= 3)
+	{
+		// ‚¨‚Õ‚µ‚å‚ñ
+		s_hostdrvNTOptions = cpu_kmemoryread_d(hostdrvNT.dataAddr + 44);
 
-    // ãƒ›ã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã‚·ã‚¹ãƒ†ãƒ ç›£è¦–
-    hostdrvNT_invokeMonitorChangeFS();
-  } else {
-    // å¯¾å¿œã—ã¦ã„ãªã„æ—§ãƒ‰ãƒ©ã‚¤ãƒ
-    s_hostdrvNTOptions = HOSTDRVNTOPTIONS_NONE;
-  }
+		// ƒzƒXƒgƒtƒ@ƒCƒ‹ƒVƒXƒeƒ€ŠÄ‹
+		hostdrvNT_invokeMonitorChangeFS();
+	}
+	else
+	{
+		// ‘Î‰‚µ‚Ä‚¢‚È‚¢‹Œƒhƒ‰ƒCƒo
+		s_hostdrvNTOptions = HOSTDRVNTOPTIONS_NONE;
+	}
 
-  switch (invokeInfo.stack.majorFunction) {
+	switch (invokeInfo.stack.majorFunction)
+	{
 
-  case NP2_IRP_MJ_CREATE: {
-    TRACEOUTW((L"IRP_MJ_CREATE %d (0x%02x)", invokeInfo.stack.majorFunction,
-               invokeInfo.stack.majorFunction));
-    hostdrvNT_IRP_MJ_CREATE(&invokeInfo);
-    break;
-  }
-  case NP2_IRP_MJ_QUERY_VOLUME_INFORMATION: {
-    TRACEOUTW((L"IRP_MJ_QUERY_VOLUME_INFORMATION: %d (0x%02x) CLASS=%d(0x%02x)",
-               invokeInfo.stack.majorFunction, invokeInfo.stack.majorFunction,
-               invokeInfo.stack.parameters.queryVolume.fsInformationClass,
-               invokeInfo.stack.parameters.queryVolume.fsInformationClass));
-    hostdrvNT_IRP_MJ_QUERY_VOLUME_INFORMATION(&invokeInfo);
-    break;
-  }
-  case NP2_IRP_MJ_DIRECTORY_CONTROL: {
-    TRACEOUTW((L"IRP_MJ_DIRECTORY_CONTROL: %d (0x%02x)",
-               invokeInfo.stack.majorFunction, invokeInfo.stack.majorFunction));
-    hostdrvNT_IRP_MJ_DIRECTORY_CONTROL(&invokeInfo);
-    break;
-  }
-  case NP2_IRP_MJ_QUERY_INFORMATION: {
-    TRACEOUTW((L"IRP_MJ_QUERY_INFORMATION: %d(0x%02x) CLASS=%d(0x%02x)",
-               invokeInfo.stack.majorFunction, invokeInfo.stack.majorFunction,
-               invokeInfo.stack.parameters.queryFile.FileInformationClass,
-               invokeInfo.stack.parameters.queryFile.FileInformationClass));
-    hostdrvNT_IRP_MJ_QUERY_INFORMATION(&invokeInfo);
-    break;
-  }
-  case NP2_IRP_MJ_SET_INFORMATION: {
-    TRACEOUTW((L"IRP_MJ_SET_INFORMATION: %d(0x%02x) CLASS=%d(0x%02x)",
-               invokeInfo.stack.majorFunction, invokeInfo.stack.majorFunction,
-               invokeInfo.stack.parameters.queryFile.FileInformationClass,
-               invokeInfo.stack.parameters.queryFile.FileInformationClass));
-    hostdrvNT_IRP_MJ_SET_INFORMATION(&invokeInfo);
-    break;
-  }
-  case NP2_IRP_MJ_CLEANUP: {
-    TRACEOUTW((L"IRP_MJ_CLEANUP: %d (0x%02x)", invokeInfo.stack.majorFunction,
-               invokeInfo.stack.majorFunction));
-    hostdrvNT_IRP_MJ_CLEANUP(&invokeInfo);
-    break;
-  }
-  case NP2_IRP_MJ_CLOSE: {
-    TRACEOUTW((L"IRP_MJ_CLOSE: %d (0x%02x)", invokeInfo.stack.majorFunction,
-               invokeInfo.stack.majorFunction));
-    hostdrvNT_IRP_MJ_CLOSE(&invokeInfo);
-    break;
-  }
-  case NP2_IRP_MJ_READ: {
-    TRACEOUTW((L"IRP_MJ_READ: %d (0x%02x)", invokeInfo.stack.majorFunction,
-               invokeInfo.stack.majorFunction));
-    hostdrvNT_IRP_MJ_READ(&invokeInfo);
-    break;
-  }
-  case NP2_IRP_MJ_WRITE: {
-    TRACEOUTW((L"IRP_MJ_WRITE: %d (0x%02x)", invokeInfo.stack.majorFunction,
-               invokeInfo.stack.majorFunction));
-    hostdrvNT_IRP_MJ_WRITE(&invokeInfo);
-    break;
-  }
-  case NP2_IRP_MJ_FILE_SYSTEM_CONTROL: {
-    TRACEOUTW((L"IRP_MJ_FILE_SYSTEM_CONTROL: %d (0x%02x)",
-               invokeInfo.stack.majorFunction, invokeInfo.stack.majorFunction));
-    hostdrvNT_IRP_MJ_FILE_SYSTEM_CONTROL(&invokeInfo);
-    break;
-  }
-  case NP2_IRP_MJ_DEVICE_CONTROL: {
-    TRACEOUTW((L"IRP_MJ_DEVICE_CONTROL: %d (0x%02x)",
-               invokeInfo.stack.majorFunction, invokeInfo.stack.majorFunction));
-    hostdrvNT_IRP_MJ_DEVICE_CONTROL(&invokeInfo);
-    break;
-  }
-  case NP2_IRP_MJ_LOCK_CONTROL: {
-    TRACEOUTW((L"IRP_MJ_LOCK_CONTROL: %d (0x%02x)",
-               invokeInfo.stack.majorFunction, invokeInfo.stack.majorFunction));
-    cpu_kmemorywrite_d(
-        invokeInfo.statusAddr,
-        NP2_STATUS_SUCCESS); // XXX: æˆåŠŸã—ãŸã“ã¨ã«ã™ã‚‹
-                             // æœ¬å½“ã¯ãƒ•ã‚¡ã‚¤ãƒ«ãƒ­ãƒƒã‚¯ã‚’çœŸé¢ç›®ã«ä½œã‚‹ã¹ã
-    cpu_kmemorywrite_d(invokeInfo.statusAddr + 4, 0); // Information
-    break;
-  }
-  case NP2_IRP_MJ_FLUSH_BUFFERS: {
-    TRACEOUTW((L"IRP_MJ_FLUSH_BUFFERS: %d (0x%02x)",
-               invokeInfo.stack.majorFunction, invokeInfo.stack.majorFunction));
-    cpu_kmemorywrite_d(invokeInfo.statusAddr, NP2_STATUS_SUCCESS);
-    cpu_kmemorywrite_d(invokeInfo.statusAddr + 4, 0); // Information
-    break;
-  }
-  default: {
-    TRACEOUTW((L"UNKNOWN IRP_MJ: %d (0x%02x)", invokeInfo.stack.majorFunction,
-               invokeInfo.stack.majorFunction));
-    break;
-  }
-  }
+	case NP2_IRP_MJ_CREATE:
+	{
+		TRACEOUTW((HD_W("IRP_MJ_CREATE %d (0x%02x)"), invokeInfo.stack.majorFunction, invokeInfo.stack.majorFunction));
+		hostdrvNT_IRP_MJ_CREATE(&invokeInfo);
+		break;
+	}
+	case NP2_IRP_MJ_QUERY_VOLUME_INFORMATION:
+	{
+		TRACEOUTW((HD_W("IRP_MJ_QUERY_VOLUME_INFORMATION: %d (0x%02x) CLASS=%d(0x%02x)"), invokeInfo.stack.majorFunction, invokeInfo.stack.majorFunction, invokeInfo.stack.parameters.queryVolume.fsInformationClass, invokeInfo.stack.parameters.queryVolume.fsInformationClass));
+		hostdrvNT_IRP_MJ_QUERY_VOLUME_INFORMATION(&invokeInfo);
+		break;
+	}
+	case NP2_IRP_MJ_DIRECTORY_CONTROL:
+	{
+		TRACEOUTW((HD_W("IRP_MJ_DIRECTORY_CONTROL: %d (0x%02x)"), invokeInfo.stack.majorFunction, invokeInfo.stack.majorFunction));
+		hostdrvNT_IRP_MJ_DIRECTORY_CONTROL(&invokeInfo);
+		break;
+	}
+	case NP2_IRP_MJ_QUERY_INFORMATION:
+	{
+		TRACEOUTW((HD_W("IRP_MJ_QUERY_INFORMATION: %d(0x%02x) CLASS=%d(0x%02x)"), invokeInfo.stack.majorFunction, invokeInfo.stack.majorFunction, invokeInfo.stack.parameters.queryFile.FileInformationClass, invokeInfo.stack.parameters.queryFile.FileInformationClass));
+		hostdrvNT_IRP_MJ_QUERY_INFORMATION(&invokeInfo);
+		break;
+	}
+	case NP2_IRP_MJ_SET_INFORMATION:
+	{
+		TRACEOUTW((HD_W("IRP_MJ_SET_INFORMATION: %d(0x%02x) CLASS=%d(0x%02x)"), invokeInfo.stack.majorFunction, invokeInfo.stack.majorFunction, invokeInfo.stack.parameters.queryFile.FileInformationClass, invokeInfo.stack.parameters.queryFile.FileInformationClass));
+		hostdrvNT_IRP_MJ_SET_INFORMATION(&invokeInfo);
+		break;
+	}
+	case NP2_IRP_MJ_CLEANUP:
+	{
+		TRACEOUTW((HD_W("IRP_MJ_CLEANUP: %d (0x%02x)"), invokeInfo.stack.majorFunction, invokeInfo.stack.majorFunction));
+		hostdrvNT_IRP_MJ_CLEANUP(&invokeInfo);
+		break;
+	}
+	case NP2_IRP_MJ_CLOSE:
+	{
+		TRACEOUTW((HD_W("IRP_MJ_CLOSE: %d (0x%02x)"), invokeInfo.stack.majorFunction, invokeInfo.stack.majorFunction));
+		hostdrvNT_IRP_MJ_CLOSE(&invokeInfo);
+		break;
+	}
+	case NP2_IRP_MJ_READ:
+	{
+		TRACEOUTW((HD_W("IRP_MJ_READ: %d (0x%02x)"), invokeInfo.stack.majorFunction, invokeInfo.stack.majorFunction));
+		hostdrvNT_IRP_MJ_READ(&invokeInfo);
+		break;
+	}
+	case NP2_IRP_MJ_WRITE:
+	{
+		TRACEOUTW((HD_W("IRP_MJ_WRITE: %d (0x%02x)"), invokeInfo.stack.majorFunction, invokeInfo.stack.majorFunction));
+		hostdrvNT_IRP_MJ_WRITE(&invokeInfo);
+		break;
+	}
+	case NP2_IRP_MJ_FILE_SYSTEM_CONTROL:
+	{
+		TRACEOUTW((HD_W("IRP_MJ_FILE_SYSTEM_CONTROL: %d (0x%02x)"), invokeInfo.stack.majorFunction, invokeInfo.stack.majorFunction));
+		hostdrvNT_IRP_MJ_FILE_SYSTEM_CONTROL(&invokeInfo);
+		break;
+	}
+	case NP2_IRP_MJ_DEVICE_CONTROL:
+	{
+		TRACEOUTW((HD_W("IRP_MJ_DEVICE_CONTROL: %d (0x%02x)"), invokeInfo.stack.majorFunction, invokeInfo.stack.majorFunction));
+		hostdrvNT_IRP_MJ_DEVICE_CONTROL(&invokeInfo);
+		break;
+	}
+	case NP2_IRP_MJ_LOCK_CONTROL:
+	{
+		TRACEOUTW((HD_W("IRP_MJ_LOCK_CONTROL: %d (0x%02x)"), invokeInfo.stack.majorFunction, invokeInfo.stack.majorFunction));
+		cpu_kmemorywrite_d(invokeInfo.statusAddr, NP2_STATUS_SUCCESS); // XXX: ¬Œ÷‚µ‚½‚±‚Æ‚É‚·‚é –{“–‚Íƒtƒ@ƒCƒ‹ƒƒbƒN‚ğ^–Ê–Ú‚Éì‚é‚×‚«
+		cpu_kmemorywrite_d(invokeInfo.statusAddr + 4, 0); // Information
+		break;
+	}
+	case NP2_IRP_MJ_FLUSH_BUFFERS:
+	{
+		TRACEOUTW((HD_W("IRP_MJ_FLUSH_BUFFERS: %d (0x%02x)"), invokeInfo.stack.majorFunction, invokeInfo.stack.majorFunction));
+		cpu_kmemorywrite_d(invokeInfo.statusAddr, NP2_STATUS_SUCCESS);
+		cpu_kmemorywrite_d(invokeInfo.statusAddr + 4, 0); // Information
+		break;
+	}
+	default:
+	{
+		TRACEOUTW((HD_W("UNKNOWN IRP_MJ: %d (0x%02x)"), invokeInfo.stack.majorFunction, invokeInfo.stack.majorFunction));
+		break;
+	}
 
-  TRACEOUTW((L"  -> Return Status: 0x%08x",
-             cpu_kmemoryread_d(invokeInfo.statusAddr)));
+	}
 
-  if (hostdrvNT.version >= 2) {
-    cpu_kmemorywrite_d(hostdrvNT.dataAddr + 40, s_pendingIndexOrCompleteCount);
-  }
+	TRACEOUTW((HD_W("  -> Return Status: 0x%08x"), cpu_kmemoryread_d(invokeInfo.statusAddr)));
+
+	if (hostdrvNT.version >= 2)
+	{
+		cpu_kmemorywrite_d(hostdrvNT.dataAddr + 40, s_pendingIndexOrCompleteCount);
+	}
 }
 
-// ãƒ›ã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã‚·ã‚¹ãƒ†ãƒ å¤‰æ›´ã®ç›£è¦–å°‚ç”¨ç°¡ç•¥ç‰ˆ
-static void hostdrvNT_invokeNotify() {
-  HOSTDRVNT_INVOKEINFO invokeInfo;
+// ƒzƒXƒgƒtƒ@ƒCƒ‹ƒVƒXƒeƒ€•ÏX‚ÌŠÄ‹ê—pŠÈ—ª”Å
+static void hostdrvNT_invokeNotify()
+{
+	HOSTDRVNT_INVOKEINFO invokeInfo;
 
-  if ((s_hdrvRoot[0] == 'Â¥0') || (!np2cfg.hdrvenable)) {
-    // ç„¡åŠ¹ã®å ´åˆä½•ã‚‚ã›ãšã«æŠœã‘ã‚‹
-    return;
-  }
+	if ((s_hdrvRoot[0] == '\0') || (!np2cfg.hdrvenable))
+	{
+		// –³Œø‚Ìê‡‰½‚à‚¹‚¸‚É”²‚¯‚é
+		return;
+	}
 
 #if defined(SUPPORT_IA32_HAXM)
-  // HAXMãƒ¬ã‚¸ã‚¹ã‚¿ã‚’èª­ã¿å–ã‚Š
-  i386haxfunc_vcpu_getREGs(&np2haxstat.state);
-  i386haxfunc_vcpu_getFPU(&np2haxstat.fpustate);
-  np2haxstat.update_regs = np2haxstat.update_fpu = 0;
-  // HAXMãƒ¬ã‚¸ã‚¹ã‚¿â†’çŒ«ãƒ¬ã‚¸ã‚¹ã‚¿ã«ã‚³ãƒ”ãƒ¼
-  ia32hax_copyregHAXtoNP2();
+	// HAXMƒŒƒWƒXƒ^‚ğ“Ç‚İæ‚è
+	i386haxfunc_vcpu_getREGs(&np2haxstat.state);
+	i386haxfunc_vcpu_getFPU(&np2haxstat.fpustate);
+	np2haxstat.update_regs = np2haxstat.update_fpu = 0;
+	// HAXMƒŒƒWƒXƒ^¨”LƒŒƒWƒXƒ^‚ÉƒRƒs[
+	ia32hax_copyregHAXtoNP2();
 #endif
 
-  // ãƒ‰ãƒ©ã‚¤ãƒã‹ã‚‰æ¸¡ã•ã‚ŒãŸãƒ¡ãƒ¢ãƒªã‚¢ãƒ‰ãƒ¬ã‚¹ã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚’ç›´æ¥èª­ã¿å–ã‚Š
-  hostdrvNT.version = cpu_kmemoryread_d(hostdrvNT.dataAddr);
-  s_pendingListCount = cpu_kmemoryread_d(hostdrvNT.dataAddr + 4);
-  s_pendingIrpListAddr = cpu_kmemoryread_d(hostdrvNT.dataAddr + 8);
-  s_pendingAliveListAddr = cpu_kmemoryread_d(hostdrvNT.dataAddr + 12);
-  s_pendingIndexOrCompleteCount = cpu_kmemoryread_d(hostdrvNT.dataAddr + 16);
+	// ƒhƒ‰ƒCƒo‚©‚ç“n‚³‚ê‚½ƒƒ‚ƒŠƒAƒhƒŒƒX‚©‚çƒf[ƒ^‚ğ’¼Ú“Ç‚İæ‚è
+	hostdrvNT.version = cpu_kmemoryread_d(hostdrvNT.dataAddr);
+	s_pendingListCount = cpu_kmemoryread_d(hostdrvNT.dataAddr + 4);
+	s_pendingIrpListAddr = cpu_kmemoryread_d(hostdrvNT.dataAddr + 8);
+	s_pendingAliveListAddr = cpu_kmemoryread_d(hostdrvNT.dataAddr + 12);
+	s_pendingIndexOrCompleteCount = cpu_kmemoryread_d(hostdrvNT.dataAddr + 16);
 
-  if (hostdrvNT.version >= 4) {
-    s_fsContextUserDataOffset = HOSTDRVNT_FSCONTEXT_USERDATA_OFFSET;
-  } else {
-    s_fsContextUserDataOffset = 0;
-  }
+	if (hostdrvNT.version >= 4)
+	{
+		s_fsContextUserDataOffset = HOSTDRVNT_FSCONTEXT_USERDATA_OFFSET;
+	}
+	else
+	{
+		s_fsContextUserDataOffset = 0;
+	}
 
-  // ãƒ›ã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã‚·ã‚¹ãƒ†ãƒ ç›£è¦–
-  hostdrvNT_invokeMonitorChangeFS();
+	// ƒzƒXƒgƒtƒ@ƒCƒ‹ƒVƒXƒeƒ€ŠÄ‹
+	hostdrvNT_invokeMonitorChangeFS();
 
-  cpu_kmemorywrite_d(hostdrvNT.dataAddr + 16, s_pendingIndexOrCompleteCount);
+	cpu_kmemorywrite_d(hostdrvNT.dataAddr + 16, s_pendingIndexOrCompleteCount);
 }
 
 // ---------- IO Ports
 
-static void IOOUTCALL hostdrvNT_o7ec(UINT port, REG8 dat) {
+static void IOOUTCALL hostdrvNT_o7ec(UINT port, REG8 dat)
+{
 
-  hostdrvNT.dataAddr = (dat << 24) | (hostdrvNT.dataAddr >> 8);
-  (void)port;
+	hostdrvNT.dataAddr = (dat << 24) | (hostdrvNT.dataAddr >> 8);
+	(void)port;
 }
 
-static void IOOUTCALL hostdrvNT_o7ee(UINT port, REG8 dat) {
-  if (dat == 'H') {
-    hostdrvNT.cmdInvokePos = 1;
-  } else if (dat == 'D' && hostdrvNT.cmdInvokePos == 1) {
-    hostdrvNT.cmdInvokePos++;
-  } else if (dat == 'R' && hostdrvNT.cmdInvokePos == 2) {
-    hostdrvNT.cmdInvokePos++;
-  } else if (dat == '9' && hostdrvNT.cmdInvokePos == 3) {
-    hostdrvNT.cmdInvokePos++;
-  } else if (dat == '8' && hostdrvNT.cmdInvokePos == 4) {
-    hostdrvNT.cmdInvokePos++;
-  } else if (hostdrvNT.cmdInvokePos == 5) {
-    if ('0' <= dat && dat <= '9') {
-      hostdrvNT.cmdBaseVersion = (UINT32)(dat - '0') * 10;
-      hostdrvNT.cmdInvokePos++;
-    } else if (dat == 'M') {
-      // ãƒ•ã‚¡ã‚¤ãƒ«ã‚·ã‚¹ãƒ†ãƒ ç›£è¦–ç”¨å‘¼ã³å‡ºã—
-      hostdrvNT_invokeNotify();
-      hostdrvNT.cmdInvokePos = 0;
-    }
-  } else if ('0' <= dat && dat <= '9' && hostdrvNT.cmdInvokePos == 6) {
-    hostdrvNT.cmdBaseVersion += (UINT32)(dat - '0');
-    if (hostdrvNT.dataAddr) {
-      // å‘¼ã³å‡ºã—
-      hostdrvNT_invoke();
-    } else {
-      // ãƒªã‚»ãƒƒãƒˆ
-      hostdrvNT_reset();
-    }
-    hostdrvNT.cmdInvokePos = 0;
-  } else {
-    hostdrvNT.cmdInvokePos = 0;
-  }
-  (void)port;
+static void IOOUTCALL hostdrvNT_o7ee(UINT port, REG8 dat)
+{
+	if (dat == 'H')
+	{
+		hostdrvNT.cmdInvokePos = 1;
+	}
+	else if (dat == 'D' && hostdrvNT.cmdInvokePos == 1)
+	{
+		hostdrvNT.cmdInvokePos++;
+	}
+	else if (dat == 'R' && hostdrvNT.cmdInvokePos == 2)
+	{
+		hostdrvNT.cmdInvokePos++;
+	}
+	else if (dat == '9' && hostdrvNT.cmdInvokePos == 3)
+	{
+		hostdrvNT.cmdInvokePos++;
+	}
+	else if (dat == '8' && hostdrvNT.cmdInvokePos == 4)
+	{
+		hostdrvNT.cmdInvokePos++;
+	}
+	else if (hostdrvNT.cmdInvokePos == 5)
+	{
+		if ('0' <= dat && dat <= '9')
+		{
+			hostdrvNT.cmdBaseVersion = (UINT32)(dat - '0') * 10;
+			hostdrvNT.cmdInvokePos++;
+		}
+		else if (dat == 'M')
+		{
+			// ƒtƒ@ƒCƒ‹ƒVƒXƒeƒ€ŠÄ‹—pŒÄ‚Ño‚µ
+			hostdrvNT_invokeNotify();
+			hostdrvNT.cmdInvokePos = 0;
+		}
+	}
+	else if ('0' <= dat && dat <= '9' && hostdrvNT.cmdInvokePos == 6)
+	{
+		hostdrvNT.cmdBaseVersion += (UINT32)(dat - '0');
+		if (hostdrvNT.dataAddr)
+		{
+			// ŒÄ‚Ño‚µ
+			hostdrvNT_invoke();
+		}
+		else
+		{
+			// ƒŠƒZƒbƒg
+			hostdrvNT_reset();
+		}
+		hostdrvNT.cmdInvokePos = 0;
+	}
+	else
+	{
+		hostdrvNT.cmdInvokePos = 0;
+	}
+	(void)port;
 }
 
-static REG8 IOINPCALL hostdrvNT_i7ec(UINT port) { return (98); }
+static REG8 IOINPCALL hostdrvNT_i7ec(UINT port)
+{
+	return(98);
+}
 
-static REG8 IOINPCALL hostdrvNT_i7ee(UINT port) { return (21); }
+static REG8 IOINPCALL hostdrvNT_i7ee(UINT port)
+{
+	return(21);
+}
 
 // System Function
 
-void hostdrvNT_initialize(void) {
-  ZeroMemory(&hostdrvNT, sizeof(hostdrvNT));
+void hostdrvNT_initialize(void)
+{
+	ZeroMemory(&hostdrvNT, sizeof(hostdrvNT));
 
-  hostdrvNT_updateHDrvRoot();
+	hostdrvNT_updateHDrvRoot();
 
-  TRACEOUT(("hostdrvNT_initialize"));
+	TRACEOUT(("hostdrvNT_initialize"));
 }
 
-void hostdrvNT_deinitialize(void) {
-  hostdrvNT_stopMonitorChangeFS();
-  hostdrvNT_closeAllFiles();
+void hostdrvNT_deinitialize(void)
+{
+	hostdrvNT_stopMonitorChangeFS();
+	hostdrvNT_closeAllFiles();
+	hostdrvs_invalidateshortnamecache();
 
-  TRACEOUT(("hostdrv_deinitialize"));
+	TRACEOUT(("hostdrv_deinitialize"));
 }
 
-// ãƒªã‚»ãƒƒãƒˆãƒ«ãƒ¼ãƒãƒ³ã§å‘¼ã¶ã¹ã—
-void hostdrvNT_reset(void) {
-  hostdrvNT_deinitialize();
-  hostdrvNT_initialize();
+// ƒŠƒZƒbƒgƒ‹[ƒ`ƒ“‚ÅŒÄ‚Ô‚×‚µ
+void hostdrvNT_reset(void)
+{
+	hostdrvNT_deinitialize();
+	hostdrvNT_initialize();
 }
 
-void hostdrvNT_bind(void) {
-  if (np2cfg.hdrvntenable) {
-    iocore_attachout(0x07ec, hostdrvNT_o7ec);
-    iocore_attachout(0x07ee, hostdrvNT_o7ee);
-    iocore_attachinp(0x07ec, hostdrvNT_i7ec);
-    iocore_attachinp(0x07ee, hostdrvNT_i7ee);
-  }
+void hostdrvNT_bind(void)
+{
+	if (np2cfg.hdrvntenable)
+	{
+		iocore_attachout(0x07ec, hostdrvNT_o7ec);
+		iocore_attachout(0x07ee, hostdrvNT_o7ee);
+		iocore_attachinp(0x07ec, hostdrvNT_i7ec);
+		iocore_attachinp(0x07ee, hostdrvNT_i7ee);
+	}
 }
 
 // ---------- state save
 
-int hostdrvNT_sfsave(STFLAGH sfh, const SFENTRY *tbl) {
-  int sfVersion = 0;
-  int validDataCount = 0;
-  int i;
-  int ret;
+int hostdrvNT_sfsave(STFLAGH sfh, const SFENTRY* tbl)
+{
+	int	sfVersion = 0;
+	int validDataCount = 0;
+	int i;
+	int	ret;
 
-  ret = statflag_write(sfh, &sfVersion, sizeof(int));
-  if (ret != STATFLAG_SUCCESS)
-    return ret;
-  ret |= statflag_write(sfh, &hostdrvNT.cmdInvokePos,
-                        sizeof(hostdrvNT.cmdInvokePos));
-  for (i = 1; i < NP2HOSTDRVNT_FILES_MAX; i++) {
-    if (hostdrvNT.files[i].fileName != NULL) {
-      validDataCount++;
-    }
-  }
-  ret |= statflag_write(sfh, &validDataCount, sizeof(validDataCount));
-  for (i = 1; i < NP2HOSTDRVNT_FILES_MAX; i++) {
-    if (hostdrvNT.files[i].fileName != NULL) {
-      UINT32 fileNameLength = 0;
-      UINT32 hostFileNameLength = 0;
-      NP2HOSTDRVNT_FILEINFO *fi = &hostdrvNT.files[i];
+	ret = statflag_write(sfh, &sfVersion, sizeof(int));
+	if (ret != STATFLAG_SUCCESS) return ret;
+	ret |= statflag_write(sfh, &hostdrvNT.cmdInvokePos, sizeof(hostdrvNT.cmdInvokePos));
+	for (i = 1; i < NP2HOSTDRVNT_FILES_MAX; i++)
+	{
+		if (hostdrvNT.files[i].fileName != NULL)
+		{
+			validDataCount++;
+		}
+	}
+	ret |= statflag_write(sfh, &validDataCount, sizeof(validDataCount));
+	for (i = 1; i < NP2HOSTDRVNT_FILES_MAX; i++)
+	{
+		if (hostdrvNT.files[i].fileName != NULL)
+		{
+			UINT32 fileNameLength = 0;
+			UINT32 hostFileNameLength = 0;
+			NP2HOSTDRVNT_FILEINFO *fi = &hostdrvNT.files[i];
 
-      statflag_write(sfh, &i, sizeof(i));
-      fileNameLength = (wcslen(fi->fileName) + 1) * sizeof(WCHAR);
-      statflag_write(sfh, &fileNameLength, sizeof(fileNameLength));
-      statflag_write(sfh, fi->fileName, fileNameLength);
-      if (fi->hostFileName) {
-        hostFileNameLength = (wcslen(fi->hostFileName) + 1) * sizeof(WCHAR);
-        statflag_write(sfh, &hostFileNameLength, sizeof(hostFileNameLength));
-        statflag_write(sfh, fi->hostFileName, hostFileNameLength);
-      } else {
-        hostFileNameLength = 0;
-        statflag_write(sfh, &hostFileNameLength, sizeof(hostFileNameLength));
-      }
-      statflag_write(sfh, &fi->isRoot, sizeof(fi->isRoot));
-      statflag_write(sfh, &fi->isDirectory, sizeof(fi->isDirectory));
-      statflag_write(sfh, &fi->hostdrvWinAPIDesiredAccess,
-                     sizeof(fi->hostdrvWinAPIDesiredAccess));
-      statflag_write(sfh, &fi->hostdrvShareAccess,
-                     sizeof(fi->hostdrvShareAccess));
-      statflag_write(sfh, &fi->hostdrvWinAPICreateDisposition,
-                     sizeof(fi->hostdrvWinAPICreateDisposition));
-      statflag_write(sfh, &fi->hostdrvFileAttributes,
-                     sizeof(fi->hostdrvFileAttributes));
-      statflag_write(sfh, &fi->deleteOnClose, sizeof(fi->deleteOnClose));
-      statflag_write(sfh, &fi->allowDeleteChild, sizeof(fi->allowDeleteChild));
-      fi->extendLength = 0;
-      statflag_write(sfh, &fi->extendLength, sizeof(fi->extendLength));
+			statflag_write(sfh, &i, sizeof(i));
+			fileNameLength = (wcslen(fi->fileName) + 1) * sizeof(WCHAR);
+			statflag_write(sfh, &fileNameLength, sizeof(fileNameLength));
+			statflag_write(sfh, fi->fileName, fileNameLength);
+			if (fi->hostFileName)
+			{
+				hostFileNameLength = (wcslen(fi->hostFileName) + 1) * sizeof(WCHAR);
+				statflag_write(sfh, &hostFileNameLength, sizeof(hostFileNameLength));
+				statflag_write(sfh, fi->hostFileName, hostFileNameLength);
+			}
+			else
+			{
+				hostFileNameLength = 0;
+				statflag_write(sfh, &hostFileNameLength, sizeof(hostFileNameLength));
+			}
+			statflag_write(sfh, &fi->isRoot, sizeof(fi->isRoot));
+			statflag_write(sfh, &fi->isDirectory, sizeof(fi->isDirectory));
+			statflag_write(sfh, &fi->hostdrvWinAPIDesiredAccess, sizeof(fi->hostdrvWinAPIDesiredAccess));
+			statflag_write(sfh, &fi->hostdrvShareAccess, sizeof(fi->hostdrvShareAccess));
+			statflag_write(sfh, &fi->hostdrvWinAPICreateDisposition, sizeof(fi->hostdrvWinAPICreateDisposition));
+			statflag_write(sfh, &fi->hostdrvFileAttributes, sizeof(fi->hostdrvFileAttributes));
+			{
+				UINT8 savedDeleteOnClose = 0;
+				// íœî•ñ‚Í•Û‘¶‚µ‚È‚¢
+				statflag_write(sfh, &savedDeleteOnClose, sizeof(savedDeleteOnClose));
+			}
+			statflag_write(sfh, &fi->allowDeleteChild, sizeof(fi->allowDeleteChild));
+			fi->extendLength = 0;
+			statflag_write(sfh, &fi->extendLength, sizeof(fi->extendLength));
 
-      fi->deleteOnClose =
-          0; // XXX:
-             // ã‚¹ãƒ†ãƒ¼ãƒˆã‚»ãƒ¼ãƒ–å¾Œã®çµ‚äº†å‡¦ç†ã§ãƒ•ã‚¡ã‚¤ãƒ«å‰Šé™¤ãŒè¡Œã‚ã‚Œãªã„ã‚ˆã†ã«ã™ã‚‹ã€‚æœ¬å½“ã¯ãƒ¬ã‚¸ãƒ¥ãƒ¼ãƒ ã§ã¯ãªã„æ™®é€šã®ã‚¹ãƒ†ãƒ¼ãƒˆã‚»ãƒ¼ãƒ–ã®æ™‚ã¯ãã®ã¾ã¾ã«ã—ãªã‘ã‚Œã°ãªã‚‰ãªã„ã€‚
+			fi->deleteOnClose = 0; // ƒXƒe[ƒgƒZ[ƒuŒã‚ÌI—¹ˆ—‚Åƒtƒ@ƒCƒ‹íœ‚ªs‚í‚ê‚È‚¢‚æ‚¤‚É‚·‚éBˆÀ‘S‚Ì‚½‚ßƒ[ƒh‚Ì•œŒ³‚à‚µ‚È‚¢
 
-      validDataCount++;
-    }
-  }
-  (void)tbl;
-  return (ret);
+			validDataCount++;
+		}
+	}
+	(void)tbl;
+	return(ret);
 }
 
-int hostdrvNT_sfload(STFLAGH sfh, const SFENTRY *tbl) {
-  int sfVersion = 0;
-  int validDataCount = 0;
-  int k;
-  int i;
-  int ret;
+int hostdrvNT_sfload(STFLAGH sfh, const SFENTRY* tbl)
+{
+	int	sfVersion = 0;
+	int validDataCount = 0;
+	int k;
+	int i;
+	int	ret;
 
-  hostdrvNT_closeAllFiles();
+	hostdrvNT_closeAllFiles();
 
-  ret = statflag_read(sfh, &sfVersion, sizeof(sfVersion));
-  if (ret != STATFLAG_SUCCESS)
-    return ret;
-  if (sfVersion == 0) {
-    statflag_read(sfh, &hostdrvNT.cmdInvokePos, sizeof(hostdrvNT.cmdInvokePos));
-    statflag_read(sfh, &validDataCount, sizeof(validDataCount));
-    for (k = 0; k < validDataCount; k++) {
-      UINT32 fileNameLength = 0;
-      UINT32 hostFileNameLength = 0;
-      NP2HOSTDRVNT_FILEINFO *fi;
+	ret = statflag_read(sfh, &sfVersion, sizeof(sfVersion));
+	if (ret != STATFLAG_SUCCESS) return ret;
+	if (sfVersion == 0)
+	{
+		statflag_read(sfh, &hostdrvNT.cmdInvokePos, sizeof(hostdrvNT.cmdInvokePos));
+		statflag_read(sfh, &validDataCount, sizeof(validDataCount));
+		for (k = 0; k < validDataCount; k++)
+		{
+			UINT32 fileNameLength = 0;
+			UINT32 hostFileNameLength = 0;
+			NP2HOSTDRVNT_FILEINFO* fi;
 
-      statflag_read(sfh, &i, sizeof(i));
-      if (i >= NP2HOSTDRVNT_FILES_MAX) {
-        return STATFLAG_FAILURE;
-      }
-      fi = &hostdrvNT.files[i];
+			statflag_read(sfh, &i, sizeof(i));
+			if (i >= NP2HOSTDRVNT_FILES_MAX)
+			{
+				return STATFLAG_FAILURE;
+			}
+			fi = &hostdrvNT.files[i];
+			fi->deleteIdentityValid = 0;
+			fi->deleteVolumeSerialNumber = 0;
+			fi->deleteFileIndexHigh = 0;
+			fi->deleteFileIndexLow = 0;
 
-      statflag_read(sfh, &fileNameLength, sizeof(fileNameLength));
-      fi->fileName = (WCHAR *)malloc(fileNameLength);
-      statflag_read(sfh, fi->fileName, fileNameLength);
+			statflag_read(sfh, &fileNameLength, sizeof(fileNameLength));
+			fi->fileName = (WCHAR*)malloc(fileNameLength);
+			statflag_read(sfh, fi->fileName, fileNameLength);
 
-      statflag_read(sfh, &hostFileNameLength, sizeof(hostFileNameLength));
-      if (hostFileNameLength > 0) {
-        fi->hostFileName = (WCHAR *)malloc(hostFileNameLength);
-        statflag_read(sfh, fi->hostFileName, hostFileNameLength);
-      }
+			statflag_read(sfh, &hostFileNameLength, sizeof(hostFileNameLength));
+			if (hostFileNameLength > 0)
+			{
+				fi->hostFileName = (WCHAR*)malloc(hostFileNameLength);
+				statflag_read(sfh, fi->hostFileName, hostFileNameLength);
+			}
 
-      statflag_read(sfh, &fi->isRoot, sizeof(fi->isRoot));
-      statflag_read(sfh, &fi->isDirectory, sizeof(fi->isDirectory));
-      statflag_read(sfh, &fi->hostdrvWinAPIDesiredAccess,
-                    sizeof(fi->hostdrvWinAPIDesiredAccess));
-      statflag_read(sfh, &fi->hostdrvShareAccess,
-                    sizeof(fi->hostdrvShareAccess));
-      statflag_read(sfh, &fi->hostdrvWinAPICreateDisposition,
-                    sizeof(fi->hostdrvWinAPICreateDisposition));
-      statflag_read(sfh, &fi->hostdrvFileAttributes,
-                    sizeof(fi->hostdrvFileAttributes));
-      statflag_read(sfh, &fi->deleteOnClose, sizeof(fi->deleteOnClose));
-      statflag_read(sfh, &fi->allowDeleteChild, sizeof(fi->allowDeleteChild));
-      statflag_read(sfh, &fi->extendLength, sizeof(fi->extendLength));
-      if (fi->extendLength > 0) {
-        // ãƒ€ãƒŸãƒ¼ãƒªãƒ¼ãƒ‰
-        char *dummyBuffer = malloc(fi->extendLength);
-        statflag_read(sfh, dummyBuffer, fi->extendLength);
-        free(dummyBuffer);
-      }
-      // ãƒ•ã‚¡ã‚¤ãƒ«ãƒ­ãƒƒã‚¯ãŒã‹ã‹ã‚‹ã¨ä¸å‘³ã„ã®ã§ã“ã“ã§å†ã‚ªãƒ¼ãƒ—ãƒ³ã¯ã—ãªã„
-    }
-  } else {
-    return (STATFLAG_FAILURE);
-  }
-  return (ret);
+			statflag_read(sfh, &fi->isRoot, sizeof(fi->isRoot));
+			statflag_read(sfh, &fi->isDirectory, sizeof(fi->isDirectory));
+			statflag_read(sfh, &fi->hostdrvWinAPIDesiredAccess, sizeof(fi->hostdrvWinAPIDesiredAccess));
+			statflag_read(sfh, &fi->hostdrvShareAccess, sizeof(fi->hostdrvShareAccess));
+			statflag_read(sfh, &fi->hostdrvWinAPICreateDisposition, sizeof(fi->hostdrvWinAPICreateDisposition));
+			// CreateDisposition‚ªV‹Kì¬‚È‚Ç‚Ìê‡‚Í’ÊíƒI[ƒvƒ“‚Ö‘‚«Š·‚¦‚é
+			fi->hostdrvWinAPICreateDisposition = OPEN_EXISTING;
+			statflag_read(sfh, &fi->hostdrvFileAttributes, sizeof(fi->hostdrvFileAttributes));
+			statflag_read(sfh, &fi->deleteOnClose, sizeof(fi->deleteOnClose));
+			statflag_read(sfh, &fi->allowDeleteChild, sizeof(fi->allowDeleteChild));
+			statflag_read(sfh, &fi->extendLength, sizeof(fi->extendLength));
+			if (fi->extendLength > 0)
+			{
+				// ƒ_ƒ~[ƒŠ[ƒh
+				char* dummyBuffer = malloc(fi->extendLength);
+				statflag_read(sfh, dummyBuffer, fi->extendLength);
+				free(dummyBuffer);
+			}
+			{
+				WCHAR safeHostPath[MAX_PATH];
+				UINT8 safeIsRoot;
+				if (fi->fileName == NULL || hostdrvNT_getHostPath(fi->fileName, safeHostPath, &safeIsRoot, 0) != 0)
+				{
+					free(fi->fileName);
+					fi->fileName = NULL;
+					if (fi->hostFileName) free(fi->hostFileName);
+					fi->hostFileName = NULL;
+					fi->deleteOnClose = 0;
+					fi->deleteIdentityValid = 0;
+					continue;
+				}
+				if (fi->hostFileName) free(fi->hostFileName);
+				fi->hostFileName = (WCHAR*)malloc((wcslen(safeHostPath) + 1) * sizeof(WCHAR));
+				if (fi->hostFileName == NULL) return STATFLAG_FAILURE;
+				wcscpy(fi->hostFileName, safeHostPath);
+				fi->isRoot = fi->isDirectory ? safeIsRoot : 0;
+				// “¯ˆê«•ÛØ‚ª“ï‚µ‚¢‚Ì‚ÅDeleteƒtƒ‰ƒO‚Í•œŒ³‚µ‚È‚¢‚Ù‚¤‚ªˆÀ‘S
+				fi->deleteOnClose = 0;
+				fi->deleteIdentityValid = 0;
+			}
+			// ƒtƒ@ƒCƒ‹ƒƒbƒN‚ª‚©‚©‚é‚Æ•s–¡‚¢‚Ì‚Å‚±‚±‚ÅÄƒI[ƒvƒ“‚Í‚µ‚È‚¢
+		}
+	}
+	else
+	{
+		return(STATFLAG_FAILURE);
+	}
+	return(ret);
 }
 #pragma code_seg()
 

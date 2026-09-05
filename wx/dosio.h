@@ -51,6 +51,7 @@ typedef struct {
 	DOSDATE date;
 	DOSTIME time;
 	char   path[MAX_PATH];
+	char   shortpath[64];
 } FLINFO;
 
 #ifdef __cplusplus
@@ -62,18 +63,27 @@ void dosio_term(void);
 
 FILEH   file_open(const OEMCHAR *path);
 FILEH   file_open_rb(const OEMCHAR *path);
+FILEH   file_open_rw(const OEMCHAR *path);
 FILEH   file_create(const OEMCHAR *path);
 FILEPOS file_seek(FILEH handle, FILEPOS pointer, int method);
 UINT    file_read(FILEH handle, void *data, UINT length);
 UINT    file_write(FILEH handle, const void *data, UINT length);
 short   file_close(FILEH handle);
 FILELEN file_getsize(FILEH handle);
+short   file_sync(FILEH handle);
+short   file_setsize(FILEH handle, FILELEN length);
 short   file_getdatetime(FILEH handle, DOSDATE *dosdate, DOSTIME *dostime);
+short   file_setdatetime(FILEH handle, const DOSDATE *dosdate, const DOSTIME *dostime);
 short   file_delete(const OEMCHAR *path);
 short   file_attr(const OEMCHAR *path);
 short   file_rename(const OEMCHAR *existpath, const OEMCHAR *newpath);
 short   file_dircreate(const OEMCHAR *path);
 short   file_dirdelete(const OEMCHAR *path);
+BRESULT file_getshortname(const OEMCHAR *path, OEMCHAR *shortname, UINT cchShortName);
+BOOL    file_islink(const OEMCHAR *path);
+BOOL    file_infoislink(const FLINFO *fli, const OEMCHAR *path);
+BOOL    file_islocked(const OEMCHAR *path);
+BRESULT file_getinfo(const OEMCHAR *path, FLINFO *fli);
 
 void    file_setcd(const OEMCHAR *exepath);
 OEMCHAR *file_getcd(const OEMCHAR *path);

@@ -80,20 +80,50 @@ static const UINT8 sync200m[8] = {0x02,0x26,0x03,0x11,0x83,0x07,0x90,0x65};
 static const UINT8 sync400m[8] = {0x02,0x4e,0x07,0x25,0x87,0x07,0x90,0x65};
 #endif	/* 0 */
 
+// ページング有効なときはそれを経由して読み書きしないと駄目
+static REG8 bioskbd_read8(UINT off) {
+
+	return MEMR_READ8(0, off);
+}
+
+static REG16 bioskbd_read16(UINT off) {
+
+	return MEMR_READ16(0, off);
+}
+
+static void bioskbd_write8(UINT off, REG8 value) {
+
+	MEMR_WRITE8(0, off, value);
+}
+
+static void bioskbd_write16(UINT off, REG16 value) {
+
+	MEMR_WRITE16(0, off, value);
+}
+
+static void bioskbd_clear(UINT off, UINT size) {
+
+	while (size--) {
+		bioskbd_write8(off++, 0);
+	}
+}
+
 static UINT16 keyget(void) {
 
 	UINT	pos;
 	UINT	kbbufhead;
+	REG8	count;
 
-	if (mem[MEMB_KB_COUNT]) {
-		mem[MEMB_KB_COUNT]--;
-		pos = GETBIOSMEM16(MEMW_KB_BUF_HEAD);
+	count = bioskbd_read8(MEMB_KB_COUNT);
+	if (count) {
+		bioskbd_write8(MEMB_KB_COUNT, (REG8)(count - 1));
+		pos = bioskbd_read16(MEMW_KB_BUF_HEAD);
 		kbbufhead = pos + 2;
 		if (kbbufhead >= 0x522) {
 			kbbufhead = 0x502;
 		}
-		SETBIOSMEM16(MEMW_KB_BUF_HEAD, kbbufhead);
-		return(GETBIOSMEM16(pos));
+		bioskbd_write16(MEMW_KB_BUF_HEAD, (REG16)kbbufhead);
+		return bioskbd_read16(pos);
 	}
 	return(0xffff);
 }
@@ -136,7 +166,7 @@ const CRTDATA	*crt;
 	bios0x18_10(0);
 //#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 //	// np21w ver0.86 rev62 BIOS I/O emulation
-//	if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
+//	if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable && biosioemu.active) {
 //		if (!(pccore.dipsw[0] & 1)) {
 //			biosioemu_enq8(0x68, 0x08|0x01);
 //		}else{
@@ -334,7 +364,7 @@ const CRTDATA	*p;
 		if (rate & 0xc) { // np21w ver0.86 rev47 workaround
 //#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 //			// XXX: Windows3.1 DOS�v�����v�g�p �������
-//			if (CPU_STAT_PM && CPU_STAT_VM86) {
+//			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.active) {
 //				biosioemu_enq8(0x6a, 0x21);
 //				mem[MEMB_PRXDUPD] |= 0x80;
 //				crt = 4;
@@ -382,7 +412,7 @@ const CRTDATA	*p;
 		else {
 //#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 //			// XXX: Windows3.1 DOS�v�����v�g�p �������
-//			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
+//			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable && biosioemu.active) {
 //				biosioemu_enq8(0x6a, 0x20); // ����͑ʖ�
 //			}else
 //#endif	
@@ -393,7 +423,7 @@ const CRTDATA	*p;
 		}
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 		// XXX: Windows3.1 DOS�v�����v�g�p �������
-		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
+		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable && biosioemu.active) {
 			biosioemu_enq8(0x6a, 0x68);
 		}else
 #endif	
@@ -444,7 +474,7 @@ const CRTDATA	*p;
 	if (slave & 1) {
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 		// XXX: Windows3.1 DOS�v�����v�g�p �������
-		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
+		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable && biosioemu.active) {
 			biosioemu_enq8(0xa2, CMD_PITCH);
 			biosioemu_enq8(0xa0, 80);
 		}else
@@ -459,7 +489,7 @@ const CRTDATA	*p;
 	else {
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 		// XXX: Windows3.1 DOS�v�����v�g�p �������
-		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
+		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable && biosioemu.active) {
 			biosioemu_enq8(0xa2, CMD_PITCH);
 			biosioemu_enq8(0xa0, 40);
 		}else
@@ -485,7 +515,7 @@ const CRTDATA	*p;
 
 #if defined(BIOS_IO_EMULATION)
 	// XXX: Windows3.1 DOS�v�����v�g�p �������
-	if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
+	if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable && biosioemu.active) {
 		biosioemu_enq8(0x6a, 0x40 | ((gdc.display & (1 << GDCDISP_PLAZMA)) ? 1 : 0)); // gdcs.textdisp |= GDCSCRN_EXT; �̑���E�E�E
 		biosioemu_enq8(0x6a, 0x82 | (gdc.clock & 1)); // gdcs.grphdisp |= GDCSCRN_EXT;
 		biosioemu_enq8(0x62, CMD_STOP); // gdcs.textdisp &= ~GDCSCRN_ENABLE; pcstat.screenupdate |= 2;
@@ -592,7 +622,7 @@ void bios0x18_42(REG8 mode) {
 				mem[MEMB_PRXDUPD] |= 0x08;
 			}
 //#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
-//			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
+//			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable && biosioemu.active) {
 //				biosioemu_enq8(0x6a, 0x83);
 //				biosioemu_enq8(0x6a, 0x85);
 //			}
@@ -612,7 +642,7 @@ void bios0x18_42(REG8 mode) {
 				gdcs.grphdisp |= GDCSCRN_EXT;
 				mem[MEMB_PRXDUPD] |= 0x08;
 //#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
-//				if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
+//				if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable && biosioemu.active) {
 //					biosioemu_enq8(0x6a, 0x82);
 //					biosioemu_enq8(0x6a, 0x84);
 //				}
@@ -628,12 +658,12 @@ void bios0x18_42(REG8 mode) {
 		}
 		if ((crtmode == 2) || (!(mem[MEMB_PRXCRT] & 0x40))) {
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
-			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
+			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable && biosioemu.active) {
 				biosioemu_enq8(0x68, 0x08);
 				biosioemu_enq8(0xa2, CMD_CSRFORM);
-				biosioemu_enq8(0xa0, 0x40);
 				biosioemu_enq8(0xa0, 0x00);
-				biosioemu_enq8(0xa0, 0x00);
+				biosioemu_enq8(0xa0, gdc.s.para[GDC_CSRFORM + 1]);
+				biosioemu_enq8(0xa0, gdc.s.para[GDC_CSRFORM + 2]);
 			}else
 #endif
 			{
@@ -643,12 +673,12 @@ void bios0x18_42(REG8 mode) {
 		}
 		else {
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
-			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
+			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable && biosioemu.active) {
 				biosioemu_enq8(0x68, 0x09);
 				biosioemu_enq8(0xa2, CMD_CSRFORM);
-				biosioemu_enq8(0xa0, 0x41);
-				biosioemu_enq8(0xa0, 0x00);
-				biosioemu_enq8(0xa0, 0x00);
+				biosioemu_enq8(0xa0, 0x01);
+				biosioemu_enq8(0xa0, gdc.s.para[GDC_CSRFORM + 1]);
+				biosioemu_enq8(0xa0, gdc.s.para[GDC_CSRFORM + 2]);
 			}else
 #endif
 			{
@@ -665,7 +695,7 @@ void bios0x18_42(REG8 mode) {
 		gdcs.disp = (mode >> 4) & 1;
 //#if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 //		// np21w ver0.86 rev62 BIOS I/O emulation
-//		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
+//		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable && biosioemu.active) {
 //			biosioemu_enq8(0xa4, (mode >> 4));
 //		}
 //#endif
@@ -674,9 +704,10 @@ void bios0x18_42(REG8 mode) {
 		gdc.mode1 &= ~0x02;
 		gdc.mode2 &= ~0x04;
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
-		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable)
+		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable && biosioemu.active)
 		{
 			biosioemu_enq8(0x68, 0x02);
+			biosioemu_enq8(0x6a, 0x04);
 		}
 #endif
 }
@@ -684,9 +715,10 @@ void bios0x18_42(REG8 mode) {
 		gdc.mode1 |= 0x02;
 		gdc.mode2 |= 0x04;
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
-		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable)
+		if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable && biosioemu.active)
 		{
 			biosioemu_enq8(0x68, 0x03);
+			biosioemu_enq8(0x6a, 0x05);
 		}
 #endif
 	}
@@ -1010,8 +1042,8 @@ void bios0x18(void) {
 #endif
 	
 	switch(CPU_AH) {
-		case 0x00:						// �L�[�E�f�[�^�̓ǂ݂���
-			if (mem[MEMB_KB_COUNT]) {
+		case 0x00:						// キー・データの読みだし
+			if (bioskbd_read8(MEMB_KB_COUNT)) {
 				CPU_AX = keyget();
 			}
 			else {
@@ -1021,10 +1053,10 @@ void bios0x18(void) {
 			}
 			break;
 
-   		case 0x01:						// �L�[�E�o�b�t�@��Ԃ̃Z���X
-			if (mem[MEMB_KB_COUNT]) {
-				tmp.d = GETBIOSMEM16(MEMW_KB_BUF_HEAD);
-				CPU_AX = GETBIOSMEM16(tmp.d);
+   		case 0x01:						// キー・バッファ状態のセンス
+			if (bioskbd_read8(MEMB_KB_COUNT)) {
+				tmp.d = bioskbd_read16(MEMW_KB_BUF_HEAD);
+				CPU_AX = bioskbd_read16(tmp.d);
 				CPU_BH = 1;
 			}
 			else {
@@ -1032,37 +1064,43 @@ void bios0x18(void) {
 			}
 			break;
 
-   		case 0x02:						// �V�t�g�E�L�[��Ԃ̃Z���X
-			CPU_AL = mem[MEMB_SHIFT_STS];
+   		case 0x02:						// シフト・キー状態のセンス
+			CPU_AL = bioskbd_read8(MEMB_SHIFT_STS);
 			break;
 
-   		case 0x03:						// �L�[�{�[�h�E�C���^�t�F�C�X�̏�����
+   		case 0x03:						// キーボード・インタフェイスの初期化
+			//bios0x09_init();
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 			// np21w ver0.86 rev47 BIOS I/O emulation
-			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
+			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable && biosioemu.active) {
 				biosioemu_enq8(0x43, 0x3a);
 				biosioemu_enq8(0x43, 0x32);
 				biosioemu_enq8(0x43, 0x16);
-				ZeroMemory(mem + 0x00502, 0x20);
-				ZeroMemory(mem + 0x00528, 0x13);
-				SETBIOSMEM16(MEMW_KB_SHIFT_TBL, 0x0e00);
-				SETBIOSMEM16(MEMW_KB_BUF_HEAD, 0x0502);
-				SETBIOSMEM16(MEMW_KB_BUF_TAIL, 0x0502);
-				SETBIOSMEM16(MEMW_KB_CODE_OFF, 0x0e00);
-				SETBIOSMEM16(MEMW_KB_CODE_SEG, 0xfd80);
-			}else
+			}
+			else
 #endif
 			{
-				bios0x09_init();
+				iocore_out8(0x43, 0x3a);
+				iocore_out8(0x43, 0x32);
+				iocore_out8(0x43, 0x16);
 			}
+
+			/* 呼びだし元のメモリ空間のメモリをセット */
+			bioskbd_clear(0x00502, 0x20);
+			bioskbd_clear(0x00528, 0x13);
+			bioskbd_write16(MEMW_KB_SHIFT_TBL, 0x0e00);
+			bioskbd_write16(MEMW_KB_BUF_HEAD, 0x0502);
+			bioskbd_write16(MEMW_KB_BUF_TAIL, 0x0502);
+			bioskbd_write16(MEMW_KB_CODE_OFF, 0x0e00);
+			bioskbd_write16(MEMW_KB_CODE_SEG, 0xfd80);
 			break;
 
-   		case 0x04:						// �L�[���͏�Ԃ̃Z���X
-			CPU_AH = mem[MEMX_KB_KY_STS + (CPU_AL & 0x0f)];
+   		case 0x04:						// キー入力状態のセンス
+			CPU_AH = bioskbd_read8(MEMX_KB_KY_STS + (CPU_AL & 0x0f));
  			break;
 
-   		case 0x05:						// �L�[���̓Z���X
-			if (mem[MEMB_KB_COUNT]) {
+   		case 0x05:						// キー入力センス
+			if (bioskbd_read8(MEMB_KB_COUNT)) {
 				CPU_AX = keyget();
 				CPU_BH = 1;
 			}
@@ -1071,18 +1109,18 @@ void bios0x18(void) {
 			}
  			break;
 
-   		case 0x0a:						// CRT���[�h�̐ݒ�(15/24khz)
+   		case 0x0a:						// CRTモードの設定(15/24khz)
 			bios0x18_0a(CPU_AL);
 			break;
 
-   		case 0x0b:						// CRT���[�h�̃Z���X
+   		case 0x0b:						// CRTモードのセンス
 			CPU_AL = mem[MEMB_CRT_STS_FLAG];
  			break;
 
-   		case 0x0c:						// �e�L�X�g��ʂ̕\���J�n
+   		case 0x0c:						// テキスト画面の表示開始
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 			// np21w ver0.86 rev47 BIOS I/O emulation
-			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
+			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable && biosioemu.active) {
 				if (!(gdcs.textdisp & GDCSCRN_ENABLE)) {
 					pcstat.screenupdate |= 2;
  				}
@@ -1094,10 +1132,10 @@ void bios0x18(void) {
 			}
  			break;
 
-   		case 0x0d:						// �e�L�X�g��ʂ̕\���I��
+   		case 0x0d:						// テキスト画面の表示終了
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 			// np21w ver0.86 rev47 BIOS I/O emulation
-			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
+			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable && biosioemu.active) {
 				if (gdcs.textdisp & GDCSCRN_ENABLE) {
 					pcstat.screenupdate |= 2;
 				}
@@ -1232,7 +1270,7 @@ void bios0x18(void) {
    		case 0x40:						// �O���t�B�b�N��ʂ̕\���J�n
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 			// np21w ver0.86 rev47 BIOS I/O emulation
-			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
+			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable && biosioemu.active) {
 				gdc_forceready(GDCWORK_SLAVE);
 				if (!(gdcs.grphdisp & GDCSCRN_ENABLE)) {
 					pcstat.screenupdate |= 2;
@@ -1249,7 +1287,7 @@ void bios0x18(void) {
    		case 0x41:						// �O���t�B�b�N��ʂ̕\���I��
 #if defined(BIOS_IO_EMULATION) && defined(CPUCORE_IA32)
 			// np21w ver0.86 rev47 BIOS I/O emulation
-			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable) {
+			if (CPU_STAT_PM && CPU_STAT_VM86 && biosioemu.enable && biosioemu.active) {
 				gdc_forceready(GDCWORK_SLAVE);
 				if (gdcs.grphdisp & GDCSCRN_ENABLE) {
 					pcstat.screenupdate |= 2;

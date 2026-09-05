@@ -1,0 +1,34 @@
+#include <windows.h>
+#include "RESOURCE.H"
+#include "VERSION.H"
+
+IDI_NP2IDLE ICON DISCARDABLE "np2idle.ico"
+
+1 VERSIONINFO
+ FILEVERSION NP2IDLE_VERSION_TUPLE
+ PRODUCTVERSION NP2IDLE_VERSION_TUPLE
+ FILEFLAGSMASK 0x3fL
+ FILEFLAGS 0x0L
+ FILEOS VOS__WINDOWS32
+ FILETYPE VFT_APP
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "041103a4"
+        BEGIN
+            VALUE "CompanyName",      "Neko Project II\0"
+            VALUE "FileDescription",  "NP2IDLE task tray controller\0"
+            VALUE "FileVersion",      "1.0.0.0\0"
+            VALUE "InternalName",     "NP2ITRAY\0"
+            VALUE "LegalCopyright",   "ÇÀÇ±Ç≥ÇÒäJî≠ÇøÅ[Çﬁ\0"
+            VALUE "OriginalFilename", "NP2ITRAY.EXE\0"
+            VALUE "ProductName",      "NP2IDLE\0"
+            VALUE "ProductVersion",   "1.0.0.0\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0411, 932
+    END
+END

@@ -1,6 +1,11 @@
 /**
  * @file	lio.c
  * @brief	Implementation of LIO
+ * 
+ * 参考文献
+ * ・PC-9800シリーズテクニカルデータブック
+ * ・PC-9801プログラマーズBible : 98を98%使う本
+ * ・PC-Techknow 98V : PC-9801シリーズテクニカルノウハウ
  */
 
 #include <compiler.h>
@@ -28,6 +33,7 @@ void bios_lio(REG8 cmd) {
 	MEMR_READS(CPU_DS, 0x0620, &lio.work, sizeof(lio.work));
 	lio.palmode = MEMR_READ8(CPU_DS, 0x0a08);
 	lio.wait = 0;
+
 	switch(cmd) {
 		case 0x00:			// a0: GINIT
 			ret = lio_ginit(&lio);
@@ -65,11 +71,13 @@ void bios_lio(REG8 cmd) {
 			ret = lio_gcircle(&lio);
 			break;
 
-//		case 0x09:			// a9: GPAINT1
-//			break;
+		case 0x09:			// a9: GPAINT1
+			ret = lio_gpaint1(&lio);
+			break;
 
-//		case 0x0a:			// aa: GPAINT2
-//			break;
+		case 0x0a:			// aa: GPAINT2
+			ret = lio_gpaint2(&lio);
+			break;
 
 		case 0x0b:			// ab: GGET
 			ret = lio_gget(&lio);
@@ -83,15 +91,17 @@ void bios_lio(REG8 cmd) {
 			ret = lio_gput2(&lio);
 			break;
 
-//		case 0x0e:			// ae: GROLL
-//			break;
+		case 0x0e:			// ae: GROLL
+			ret = lio_groll(&lio);
+			break;
 
 		case 0x0f:			// af: GPOINT2
 			ret = lio_gpoint2(&lio);
 			break;
 
-//		case 0x10:			// ce: GCOPY
-//			break;
+		//case 0x10:			// ce: GCOPY
+		//	ret = lio_gcopy(&lio);
+		//	break;
 
 		default:
 			ret = LIO_SUCCESS;
@@ -155,7 +165,7 @@ void lio_updatedraw(GLIO lio) {
 	lio->draw.x2 = MIN(tmp, 639);
 	tmp = (SINT16)LOADINTELWORD(lio->work.viewy2);
 	lio->draw.y2 = MIN(tmp, maxline);
-	if (!gdcs.access) {
+	if (!lio->work.access) {
 		lio->draw.base = 0;
 		lio->draw.bank = 0;
 		lio->draw.sbit = 0x01;
@@ -234,7 +244,6 @@ void lio_pset(const _GLIO *lio, SINT16 x, SINT16 y, REG8 pal) {
 	pixed8(lio, addr, bit, pal);
 }
 
-#if 0
 void lio_line(const _GLIO *lio, SINT16 x1, SINT16 x2, SINT16 y, REG8 pal) {
 
 	UINT	addr;
@@ -284,5 +293,4 @@ void lio_line(const _GLIO *lio, SINT16 x1, SINT16 x2, SINT16 y, REG8 pal) {
 		pixed8(lio, addr, dbit, pal);
 	}
 }
-#endif
 

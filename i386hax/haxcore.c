@@ -30,6 +30,7 @@
 #include	<timing.h>
 #include	<mem/dmax86.h>
 #include	<bios/bios.h>
+#include	<sound/soundrom.h>
 #include	<vram/vram.h>
 #include	<wab/cirrus_vga_extern.h>
 
@@ -352,10 +353,18 @@ ia32hax_bioscall(void)
 #else
 		adrs = CPU_PREV_EIP + CPU_STAT_CS_BASE;
 #endif
+#if defined(SUPPORT_EMU_SOUNDBIOS)
+		if (soundrom_biosfunc(adrs)) {
+			LOAD_SEGREG(CPU_ES_INDEX, CPU_ES);
+			LOAD_SEGREG(CPU_CS_INDEX, CPU_CS);
+			LOAD_SEGREG(CPU_SS_INDEX, CPU_SS);
+			LOAD_SEGREG(CPU_DS_INDEX, CPU_DS);
+			ret = 1;
+		}
+		else
+#endif
 		if ((adrs >= 0xf8000) && (adrs < 0x100000)) {
-			if (biosfunc(adrs)) {
-				/* Nothing to do */
-			}
+			biosfunc(adrs);
 			LOAD_SEGREG(CPU_ES_INDEX, CPU_ES);
 			LOAD_SEGREG(CPU_CS_INDEX, CPU_CS);
 			LOAD_SEGREG(CPU_SS_INDEX, CPU_SS);

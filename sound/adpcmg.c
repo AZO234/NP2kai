@@ -8,6 +8,25 @@
 
 #define	ADPCM_NBR	0x80000000
 
+static int SOUNDCALL adpcm_cpugetnibble(ADPCM ad, UINT *data) {
+
+	if (!ad->cpufifolow) {
+		if (ad->cfifo.cpufifocount == 0) {
+			return(0);
+		}
+		ad->cfifo.cpufifocur = ad->cfifo.cpufifo[ad->cfifo.cpufiford & ADPCM_CPUFIFO_MASK];
+		ad->cfifo.cpufiford++;
+		ad->cfifo.cpufifocount--;
+		*data = ad->cfifo.cpufifocur >> 4;
+		ad->cpufifolow = 1;
+	}
+	else {
+		*data = ad->cfifo.cpufifocur & 0x0f;
+		ad->cpufifolow = 0;
+	}
+	return(1);
+}
+
 static const UINT adpcmdeltatable[8] = {
 		//	0.89,	0.89,	0.89,	0.89,	1.2,	1.6,	2.0,	2.4
 			228,	228,	228,	228,	308,	408,	512,	612};
@@ -19,7 +38,17 @@ REG8 SOUNDCALL adpcm_readsample(ADPCM ad) {
 	REG8	data;
 	REG8	ret;
 
-	if ((ad->reg.ctrl1 & 0x60) == 0x20) {
+	if (ad->cpustream) {
+		UINT	data32;
+		if (!adpcm_cpugetnibble(ad, &data32)) {
+			ad->out0 = 0;
+			ad->out1 = 0;
+			ad->fb = 0;
+			return 0;
+		}
+		data = data32 & 0xff;
+	}
+	else if (!(ad->reg.ctrl2 & 2)) {
 		pos = ad->pos & 0x1fffff;
 		if (!(ad->reg.ctrl2 & 2)) {
 			data = ad->buf[pos >> 3];
@@ -130,7 +159,15 @@ static void SOUNDCALL getadpcmdata(ADPCM ad) {
 	SINT32	samp;
 
 	pos = ad->pos;
-	if (!(ad->reg.ctrl2 & 2)) {
+	if (ad->cpustream) {
+		if (!adpcm_cpugetnibble(ad, &data)) {
+			ad->out0 = 0;
+			ad->out1 = 0;
+			ad->fb = 0;
+			return;
+		}
+	}
+	else if (!(ad->reg.ctrl2 & 2)) {
 		data = ad->buf[(pos >> 3) & 0x3ffff];
 		if (!(pos & ADPCM_NBR)) {
 			data >>= 4;
@@ -167,8 +204,8 @@ static void SOUNDCALL getadpcmdata(ADPCM ad) {
 	if (dlt < 127) {
 		dlt = 127;
 	}
-	else if (dlt > 24000) {
-		dlt = 24000;
+	else if (dlt > 24576) {
+		dlt = 24576;
 	}
 	samp = ad->delta;
 	ad->delta = dlt;
@@ -182,35 +219,45 @@ static void SOUNDCALL getadpcmdata(ADPCM ad) {
 	}
 	else {
 		samp = ad->samp - samp;
-		if (samp < -32767) {
-			samp = -32767;
+		if (samp < -32768) {
+			samp = -32768;
 		}
 	}
 	ad->samp = samp;
 
-	if (!(pos & ADPCM_NBR)) {
-		if (pos == ad->stop) {
-			if (ad->reg.ctrl1 & 0x10) {
-				pos = ad->start;
-				ad->samp = 0;
-				ad->delta = 127;
-			}
-			else {
-				pos &= 0x1fffff;
-				ad->status |= 4;
-				ad->play = 0;
-			}
-		}
-		else if (pos >= ad->limit) {
-			pos = 0;
-		}
+
+	if (ad->cpustream) {
+		samp *= ad->level;
+		samp >>= 12;
+		ad->out0 = ad->out1;
+		ad->out1 = samp + ad->fb;
+		ad->fb = samp;
 	}
-	ad->pos = pos;
-	samp *= ad->level;
-	samp >>= (10 + 1);
-	ad->out0 = ad->out1;
-	ad->out1 = samp + ad->fb;
-	ad->fb = samp >> 1;
+	else {
+		if (!(pos & ADPCM_NBR)) {
+			if (pos == ad->stop) {
+				if (ad->reg.ctrl1 & 0x10) {
+					pos = ad->start;
+					ad->samp = 0;
+					ad->delta = 127;
+				}
+				else {
+					pos &= 0x1fffff;
+					ad->status |= 4;
+					ad->play = 0;
+				}
+			}
+			else if (pos >= ad->limit) {
+				pos = 0;
+			}
+		}
+		ad->pos = pos;
+		samp *= ad->level;
+		samp >>= (10 + 1);
+		ad->out0 = ad->out1;
+		ad->out1 = samp + ad->fb;
+		ad->fb = samp >> 1;
+	}
 }
 
 void SOUNDCALL adpcm_getpcm(ADPCM ad, SINT32 *pcm, UINT count) {

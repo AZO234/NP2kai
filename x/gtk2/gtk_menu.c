@@ -408,7 +408,7 @@ static GtkRadioActionEntry soundboard_entries[] = {
 { "sndorchestra",          NULL, "Sound Orchestra",                                  NULL, NULL, SOUNDID_SOUNDORCHESTRA },
 { "sndorchestrav",         NULL, "Sound Orchestra-V",                                NULL, NULL, SOUNDID_SOUNDORCHESTRAV },
 { "littleorchestral",      NULL, "Little Orchestra L",                               NULL, NULL, SOUNDID_LITTLEORCHESTRAL },
-{ "multiorchestra",        NULL, "Multimedia Orchestra",                             NULL, NULL, SOUNDID_MMORCHESTRA },
+{ "multiorchestra",        NULL, "Multimedia Orchestra",                             NULL, NULL, SOUNDID_MULTIMEDIAORCHESTRA },
 #if defined(SUPPORT_SOUND_SB16)
 { "sb16",	                 NULL, "Sound Blaster 16",                                 NULL, NULL, SOUNDID_SB16 },
 { "pc-9801-86-sb16",       NULL, "PC-9801-86 + Sound Blaster 16",                    NULL, NULL, SOUNDID_PC_9801_86_SB16 },

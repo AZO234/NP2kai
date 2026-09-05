@@ -10,6 +10,7 @@
 #include <common/strres.h>
 #include <cpucore.h>
 #include <pccore.h>
+#include <cbus/cbuspnp.h>
 #include <io/iocore.h>
 #include "lio/lio.h"
 #include <vram/vram.h>
@@ -34,6 +35,7 @@
 #include	<calendar.h>
 #endif
 #include	<sound/fmboard.h>
+#include	<sound/soundrom.h>
 
 #if defined(SUPPORT_VGA_MODEX)
 #if defined(SUPPORT_WAB)
@@ -336,14 +338,19 @@ static void bios_reinitbyswitch(void) {
 	
 #if defined(SUPPORT_PCI)
 	mem[0xF8E80+0x0004] |= 0x2c;
-	//mem[0x5B7] = (0x277 >> 2); // READ_DATA port address
-	mem[0x5B8] = 0x00; // No C-Bus PnP boards
 #endif
+	/* Reflect all registered C-Bus PnP boards in the BIOS work area. */
+	cbuspnp_bios_update();
 	mem[0xF8E80+0x0002] |= 0x04; // set 19200bps support flag
 #if defined(SUPPORT_RS232C_FIFO)
 	mem[0xF8E80+0x0011] |= 0x10; // set 115200bps support flag
 #else
 	mem[0xF8E80+0x0011] &= ~0x10; // clear 115200bps support flag
+#endif
+#if defined(SUPPORT_PEGC)
+	if (np2cfg.usepegcplane) {
+		mem[0xF8E80 + 0x0005] &= ~0x80; // clear X-MATE (No PEGC Plane Mode) flag
+	}
 #endif
 	
 #if defined(SUPPORT_HRTIMER)
@@ -669,6 +676,10 @@ void bios_initialize(void) {
 #ifdef USE_CUSTOM_HOOKINST
 	bios_updatehookinst(mem + 0xf8000, 0x100000 - 0xf8000);
 #endif
+	// サウンドBIOSのフック命令書き換え
+#if defined(SUPPORT_EMU_SOUNDBIOS)
+	soundrom_patchhookinst();
+#endif
 }
 
 static void bios_itfcall(void) {
@@ -701,6 +712,7 @@ static void bios_itfcall(void) {
 
 // np21w ver0.86 rev46-69 BIOS I/O emulation
 #if defined(BIOS_IO_EMULATION)
+int biosioemu_active = 0;
 // LIFO（若干高速だが逆順のため注意）
 void biosioemu_push8(UINT16 port, UINT8 data) {
 	
@@ -984,8 +996,14 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 			if (((pccore.model & PCMODELMASK) >= PCMODEL_VX) &&
 				(pccore.sound & 0x7e)) {
 				if(g_nSoundID == SOUNDID_MATE_X_PCM || ((g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_118 || g_nSoundID == SOUNDID_PC_9801_118_SB16 || g_nSoundID == SOUNDID_PC_9801_86_118_SB16) && np2cfg.snd118irqf == np2cfg.snd118irqp) || g_nSoundID == SOUNDID_PC_9801_86_WSS || g_nSoundID == SOUNDID_WAVESTAR || g_nSoundID == SOUNDID_PC_9801_86_WSS_SB16){
-					iocore_out8(0x188, 0x27);
-					iocore_out8(0x18a, 0x30);
+					if (g_nSoundID == SOUNDID_WAVESTAR) {
+						iocore_out8(np2cfg.sndwsio, 0x27);
+						iocore_out8(np2cfg.sndwsio + 2, 0x30);
+					}
+					else {
+						iocore_out8(0x188, 0x27);
+						iocore_out8(0x18a, 0x30);
+					}
 					if(g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_118 || g_nSoundID == SOUNDID_PC_9801_118_SB16 || g_nSoundID == SOUNDID_PC_9801_86_118_SB16){
 						iocore_out8(cs4231.port[4], 0x27);
 						iocore_out8(cs4231.port[4]+2, 0x30);
@@ -1071,6 +1089,7 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 #if defined(BIOS_IO_EMULATION)
 			oldEIP = CPU_EIP;
 			biosioemu.count = 0; 
+			biosioemu.active = 1;
 #endif
 			bios0x18();
 #if defined(BIOS_IO_EMULATION)
@@ -1080,6 +1099,7 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 			}else{
 				biosioemu.count = 0; 
 			}
+			biosioemu.active = 0;
 #endif
 			return(1);
 			
@@ -1119,6 +1139,7 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 #if defined(BIOS_IO_EMULATION)
 			oldEIP = CPU_EIP;
 			biosioemu.count = 0;
+			biosioemu.active = 1;
 #endif
 			bios0x1b();
 #if defined(BIOS_IO_EMULATION)
@@ -1128,6 +1149,7 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 			}else{
 				biosioemu.count = 0; 
 			}
+			biosioemu.active = 0;
 #endif
 			return(1);
 			
@@ -1141,7 +1163,8 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 			CPU_REMCLOCK -= 200;
 #if defined(BIOS_IO_EMULATION)
 			oldEIP = CPU_EIP;
-			biosioemu.count = 0; 
+			biosioemu.count = 0;
+			biosioemu.active = 1;
 #endif
 			bios0x1c();
 #if defined(BIOS_IO_EMULATION)
@@ -1151,6 +1174,7 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 			}else{
 				biosioemu.count = 0; 
 			}
+			biosioemu.active = 0;
 #endif
 			return(1);
 			

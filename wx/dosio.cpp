@@ -2,6 +2,7 @@
 
 #include <compiler.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <time.h>
 #include <dirent.h>
@@ -26,6 +27,7 @@ FILEH file_open(const OEMCHAR *path)
 	return fh;
 }
 FILEH file_open_rb(const OEMCHAR *path)    { return fopen(path, "rb"); }
+FILEH file_open_rw(const OEMCHAR *path)    { return fopen(path, "rb+"); }
 FILEH file_create(const OEMCHAR *path)     { return fopen(path, "wb+"); }
 
 FILEPOS file_seek(FILEH handle, FILEPOS pointer, int method)
@@ -82,6 +84,102 @@ short file_getdatetime(FILEH handle, DOSDATE *dosdate, DOSTIME *dostime)
 		dostime->second = (UINT8)tm->tm_sec;
 	}
 	return 0;
+}
+
+short file_sync(FILEH handle)
+{
+	if (!handle) return -1;
+	if (fflush((FILE *)handle) != 0) return -1;
+	return (fsync(fileno((FILE *)handle)) == 0) ? 0 : -1;
+}
+
+short file_setsize(FILEH handle, FILELEN length)
+{
+	if (!handle) return -1;
+	if (fflush((FILE *)handle) != 0) return -1;
+	return (ftruncate(fileno((FILE *)handle), (off_t)length) == 0) ? 0 : -1;
+}
+
+short file_setdatetime(FILEH handle, const DOSDATE *dosdate, const DOSTIME *dostime)
+{
+	struct tm tmv;
+	struct stat st;
+	struct timeval tv[2];
+	time_t mtime;
+
+	if (!handle || !dosdate || !dostime) return -1;
+	memset(&tmv, 0, sizeof(tmv));
+	tmv.tm_year = (int)dosdate->year - 1900;
+	tmv.tm_mon  = (int)dosdate->month - 1;
+	tmv.tm_mday = dosdate->day;
+	tmv.tm_hour = dostime->hour;
+	tmv.tm_min  = dostime->minute;
+	tmv.tm_sec  = dostime->second;
+	tmv.tm_isdst = -1;
+	mtime = mktime(&tmv);
+	if (mtime == (time_t)-1 || fstat(fileno((FILE *)handle), &st) != 0) return -1;
+	tv[0].tv_sec  = st.st_atime;
+	tv[0].tv_usec = 0;
+	tv[1].tv_sec  = mtime;
+	tv[1].tv_usec = 0;
+	return (futimes(fileno((FILE *)handle), tv) == 0) ? 0 : -1;
+}
+
+/* short filenames (8.3) have no POSIX equivalent */
+BRESULT file_getshortname(const OEMCHAR *path, OEMCHAR *shortname, UINT cchShortName)
+{
+	(void)path;
+	(void)shortname;
+	(void)cchShortName;
+	return FAILURE;
+}
+
+BOOL file_islink(const OEMCHAR *path)
+{
+	struct stat st;
+	return (lstat(path, &st) == 0 && S_ISLNK(st.st_mode)) ? TRUE : FALSE;
+}
+
+BOOL file_infoislink(const FLINFO *fli, const OEMCHAR *path)
+{
+	(void)fli;
+	return file_islink(path);
+}
+
+/* POSIX has no reliable way to detect that another process holds an
+ * exclusive lock on a disk image unless NP2 itself takes one on open,
+ * which it does not; always report "not locked" so callers fall back
+ * to a generic open-error message. */
+BOOL file_islocked(const OEMCHAR *path)
+{
+	(void)path;
+	return FALSE;
+}
+
+BRESULT file_getinfo(const OEMCHAR *path, FLINFO *fli)
+{
+	struct stat st;
+
+	if (stat(path, &st) != 0) return FAILURE;
+	if (fli != NULL) {
+		memset(fli, 0, sizeof(*fli));
+		fli->caps = FLICAPS_SIZE | FLICAPS_ATTR | FLICAPS_DATE | FLICAPS_TIME;
+		fli->size = (UINT32)st.st_size;
+		if (S_ISDIR(st.st_mode)) fli->attr |= FILEATTR_DIRECTORY;
+		if (!(st.st_mode & S_IWUSR)) fli->attr |= FILEATTR_READONLY;
+		struct tm *tm = localtime(&st.st_mtime);
+		if (tm) {
+			fli->date.year  = (UINT16)(tm->tm_year + 1900);
+			fli->date.month = (UINT8)(tm->tm_mon + 1);
+			fli->date.day   = (UINT8)tm->tm_mday;
+			fli->time.hour   = (UINT8)tm->tm_hour;
+			fli->time.minute = (UINT8)tm->tm_min;
+			fli->time.second = (UINT8)tm->tm_sec;
+		}
+		milstr_ncpy(fli->path, file_getname(path), sizeof(fli->path));
+		fli->shortpath[0] = '\0';
+	}
+	return SUCCESS;
 }
 
 short file_delete(const OEMCHAR *path)   { return (short)remove(path); }
@@ -237,6 +335,7 @@ BRESULT file_listnext(FLISTH hdl, FLINFO *fli)
 	while ((de = readdir(fh->dir)) != NULL) {
 		if (de->d_name[0] == '.') continue;
 		milstr_ncpy(fli->path, de->d_name, MAX_PATH);
+		fli->shortpath[0] = '\0';
 		OEMCHAR fullpath[MAX_PATH];
 		milstr_ncpy(fullpath, fh->basepath, MAX_PATH);
 		milstr_ncat(fullpath, de->d_name, MAX_PATH);

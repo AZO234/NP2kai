@@ -65,7 +65,7 @@ BOOL dispsync_renewalhorizontal(void) {
 		// 80桁以上を許可
 		if ((scrnxpos + scrnxmax) > TEXTXMAX) {
 			scrnxmax = MIN(scrnxmax, TEXTXMAX);
-			scrnxpos = 80 - scrnxmax;
+			scrnxpos = TEXTXMAX - scrnxmax;
 		}
 	}
 	else {

@@ -1,0 +1,59 @@
+# NP2IDLE - Windows 98 DDK / MASM and Visual C++ 6.0 build
+#
+# Targets:
+#   vxd   - NP2IDLE.VXD       (Win98 DDK/MASM environment)
+#   ctl   - NP2IDLECTL.EXE    (VC6 command prompt)
+#   tray  - NP2IDLETRAY.EXE   (VC6 command prompt)
+#   apps  - both Win32 applications
+#
+# The default target remains the VxD so BUILD.BAT works in the DDK shell.
+
+NAME=NP2IDLE
+CTL=NP2IDLECTL
+TRAY=NP2IDLETRAY
+
+AFLAGS=-coff -c -Cx -DMASM6 -DBLD_COFF -DIS_32
+LFLAGS=-vxd -def:$(NAME).DEF -map:$(NAME).MAP -out:$(NAME).VXD
+
+CFLAGS=/nologo /W3 /O1 /MT /DWINVER=0x0400 /D_WIN32_WINNT=0x0400
+
+all: vxd
+
+vxd: $(NAME).VXD
+
+$(NAME).OBJ: $(NAME).ASM
+	ml $(AFLAGS) -Fo$(NAME).OBJ $(NAME).ASM
+
+$(NAME).VXD: $(NAME).OBJ $(NAME).DEF
+	link $(LFLAGS) $(NAME).OBJ
+
+ctl: NP2ICTRL.EXE
+
+$(CTL).OBJ: $(CTL).C $(NAME).H
+	cl $(CFLAGS) /c /Fo$(CTL).OBJ $(CTL).C
+
+NP2ICTRL.EXE: $(CTL).OBJ
+	link /nologo /subsystem:console,4.0 /machine:I386 /out:NP2ICTRL.EXE $(CTL).OBJ kernel32.lib
+
+tray: NP2ITRAY.EXE
+
+$(TRAY).OBJ: $(TRAY).C $(NAME).H RESOURCE.H VERSION.H
+	cl $(CFLAGS) /c /Fo$(TRAY).OBJ $(TRAY).C
+
+$(TRAY).RES: $(TRAY).RC RESOURCE.H VERSION.H np2idle.ico
+	rc /fo$(TRAY).RES $(TRAY).RC
+
+NP2ITRAY.EXE: $(TRAY).OBJ $(TRAY).RES
+	link /nologo /subsystem:windows,4.0 /machine:I386 /out:NP2ITRAY.EXE $(TRAY).OBJ $(TRAY).RES kernel32.lib user32.lib shell32.lib
+
+apps: ctl tray
+
+clean:
+	-del $(NAME).OBJ
+	-del $(NAME).VXD
+	-del $(NAME).MAP
+	-del $(CTL).OBJ
+	-del $(CTL).EXE
+	-del $(TRAY).OBJ
+	-del $(TRAY).RES
+	-del $(TRAY).EXE

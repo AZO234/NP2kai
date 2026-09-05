@@ -471,7 +471,7 @@ void CWndProc::OnNcDestroy(WPARAM wParam, LPARAM lParam)
 {
 	LONG_PTR pfnWndProc = ::GetWindowLongPtr(m_hWnd, GWLP_WNDPROC);
 	DefWindowProc(WM_NCDESTROY, wParam, lParam);
-	if (::GetWindowLong(m_hWnd, GWLP_WNDPROC) == pfnWndProc)
+	if (::GetWindowLongPtr(m_hWnd, GWLP_WNDPROC) == pfnWndProc)
 	{
 		if (m_pfnSuper != NULL)
 		{

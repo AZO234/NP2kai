@@ -97,6 +97,30 @@ enum {
 
 static const UINT8 mpuirqnum[4] = {3, 5, 6, 12};
 
+static UINT16 mpu98ii_auxport;
+static UINT8 mpu98ii_auxenable;
+
+static BOOL mpu98ii_isauxport(UINT port)
+{
+	return (mpu98ii_auxenable && ((port & ~2) == mpu98ii_auxport)) ? TRUE : FALSE;
+}
+
+void mpu98ii_setaux(UINT16 port, UINT8 irqnum)
+{
+	if (port) {
+		mpu98ii_auxport = port;
+		mpu98ii_auxenable = 1;
+		mpu98.enable = 1;
+		mpu98.irqnum = irqnum;
+	}
+	else {
+		mpu98ii_auxport = 0;
+		mpu98ii_auxenable = 0;
+		mpu98.enable = np2cfg.mpuenable ? 1 : 0;
+		mpu98.irqnum = mpuirqnum[np2cfg.mpuopt & 3];
+	}
+}
+
 static const UINT8 shortmsgleng[0x10] = {
 		0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 2, 2, 3, 1};
 
@@ -243,10 +267,6 @@ static void mpu98ii_int(void) {
 	//}
 	//// PC-9801-118
 	//if(g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_118 || g_nSoundID == SOUNDID_PC_9801_118_SB16 || g_nSoundID == SOUNDID_PC_9801_86_118_SB16){
-	//	pic_setirq(10);
-	//}
-	//// WaveStar
-	//if(g_nSoundID == SOUNDID_WAVESTAR){
 	//	pic_setirq(10);
 	//}
 }
@@ -1003,12 +1023,12 @@ TRACEOUT(("mpu98ii out %.4x %.2x", port, dat));
 	if (cm_mpu98 == NULL) {
 		cm_mpu98 = commng_create(COMCREATE_MPU98II, FALSE);
 	}
-	if (cm_mpu98->connect != COMCONNECT_OFF) {
+	if (cm_mpu98->connect != COMCONNECT_OFF || mpu98ii_isauxport(port)) {
 		if (mpu98.mode) {
 			sent = cm_mpu98->write(cm_mpu98, (UINT8)dat);
 		}
 		else {
-//			TRACEOUT(("send data->%.2x", dat));
+			//			TRACEOUT(("send data->%.2x", dat));
 			sendmpudata(dat);
 			sent = 1;
 		}
@@ -1025,14 +1045,19 @@ TRACEOUT(("mpu98ii out %.4x %.2x", port, dat));
 	if (cm_mpu98 == NULL) {
 		cm_mpu98 = commng_create(COMCREATE_MPU98II, FALSE);
 	}
-	if (cm_mpu98->connect != COMCONNECT_OFF) {
+	if (cm_mpu98->connect != COMCONNECT_OFF || mpu98ii_isauxport(port)) {
 		if (!mpu98.mode) {
 			REG8 phase;
 //			TRACEOUT(("send cmd->%.2x", dat));
 			mpu98.cmd.cmd = dat;
 			phase = (*mpucmds[dat])(dat);
 			setrecvdata(MPUMSG_ACK);
-			mpu98ii_int();
+			if ((g_nSoundID == SOUNDID_WAVESTAR) && ((dat == 0xff) || (dat == 0x3f))) {
+				TRACEOUT(("WaveStar MPU: command ACK queued without IRQ cmd=%02x", dat));
+			}
+			else {
+				mpu98ii_int();
+			}
 			if (phase & MPUCMDP_REQ) {
 				phase &= ~MPUCMDP_REQ;
 				reqmpucmdgroupd(dat);
@@ -1055,7 +1080,7 @@ REG8 IOINPCALL mpu98ii_i0(UINT port) {
 	if (cm_mpu98 == NULL) {
 		cm_mpu98 = commng_create(COMCREATE_MPU98II, FALSE);
 	}
-	if (cm_mpu98->connect != COMCONNECT_OFF) {
+	if (cm_mpu98->connect != COMCONNECT_OFF || mpu98ii_isauxport(port)) {
 		if (mpu98.r.cnt) {
 			mpu98.r.cnt--;
 #if 0
@@ -1098,7 +1123,8 @@ REG8 IOINPCALL mpu98ii_i2(UINT port) {
 	if (cm_mpu98 == NULL) {
 		cm_mpu98 = commng_create(COMCREATE_MPU98II, FALSE);
 	}
-	if (cm_mpu98->connect != COMCONNECT_OFF || port == (cs4231.port[10] + 1)) {
+	if (cm_mpu98->connect != COMCONNECT_OFF ||
+		port == (cs4231.port[10] + 1) || mpu98ii_isauxport(port)) {
 		ret = mpu98.status;
 		if ((mpu98.r.cnt == 0) && (mpu98.intreq == 0)) {
 			ret |= MIDIIN_AVAIL;
@@ -1146,13 +1172,15 @@ void mpu98ii_reset(const NP2CFG *pConfig) {
 	cm_mpu98 = NULL;
 
 	ZeroMemory(&mpu98, sizeof(mpu98));
-	mpu98.enable = (pConfig->mpuenable ? 1 : 0);
+	mpu98ii_auxport = 0;
+	mpu98ii_auxenable = 0;
+	mpu98.enable = pConfig->mpuenable ? 1 : 0;
 	mpu98.data = MPUMSG_ACK;
 	mpu98.port = 0xc0d0 | ((pConfig->mpuopt & 0xf0) << 6);
 	mpu98.irqnum = mpuirqnum[pConfig->mpuopt & 3];
 	setdefaultcondition();
 //	pic_registext(mpu98.irqnum);
-	
+
 	if (cm_mpu98 == NULL) {
 		cm_mpu98 = commng_create(COMCREATE_MPU98II, TRUE);
 	}
@@ -1167,24 +1195,24 @@ void mpu98ii_bind(void) {
 	if(mpu98.enable){
 		mpu98ii_changeclock();
 
-		port = mpu98.port;
-		iocore_attachout(port, mpu98ii_o0);
-		iocore_attachinp(port, mpu98ii_i0);
-		//iocore_attachout(port+1, mpu98ii_o2);
-		//iocore_attachinp(port+1, mpu98ii_i2);
-		//iocore_attachout(port+0x100, mpu98ii_o2);
-		//iocore_attachinp(port+0x100, mpu98ii_i2);
-		port |= 2;
-		iocore_attachout(port, mpu98ii_o2);
-		iocore_attachinp(port, mpu98ii_i2);
-	
-		// PC/AT MPU-401
-		if(np2cfg.mpu_at){
-			iocore_attachout(0x330, mpu98ii_o0);
-			iocore_attachinp(0x330, mpu98ii_i0);
-			iocore_attachout(0x331, mpu98ii_o2);
-			iocore_attachinp(0x331, mpu98ii_i2);
+		/* Optional stand-alone MPU-98II selected by the emulator setting. */
+		if (np2cfg.mpuenable) {
+			port = mpu98.port;
+			iocore_attachout(port, mpu98ii_o0);
+			iocore_attachinp(port, mpu98ii_i0);
+			port |= 2;
+			iocore_attachout(port, mpu98ii_o2);
+			iocore_attachinp(port, mpu98ii_i2);
+
+			// PC/AT MPU-401
+			if(np2cfg.mpu_at){
+				iocore_attachout(0x330, mpu98ii_o0);
+				iocore_attachinp(0x330, mpu98ii_i0);
+				iocore_attachout(0x331, mpu98ii_o2);
+				iocore_attachinp(0x331, mpu98ii_i2);
+			}
 		}
+
 		// PC-9801-118
 		if(g_nSoundID == SOUNDID_PC_9801_118 || g_nSoundID == SOUNDID_PC_9801_86_118 || g_nSoundID == SOUNDID_PC_9801_118_SB16 || g_nSoundID == SOUNDID_PC_9801_86_118_SB16){
 			iocore_attachout(cs4231.port[10], mpu98ii_o0);

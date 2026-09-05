@@ -224,6 +224,9 @@ namespace FM
 
 		void	WriteRAM(uint data);
 		uint	ReadRAM();
+		void	ResetCPUADPCM();
+		void	WriteCPUADPCM(uint data);
+		bool	ReadCPUADPCMN(uint * data);
 		int		ReadRAMN();
 		int		DecodeADPCMBSample(uint);
 		
@@ -268,6 +271,14 @@ namespace FM
 		bool	adpcmplay;		// ADPCM 再生中
 		int8	granuality;		
 		bool	adpcmmask_;
+
+		bool	cpustream;		// CPU経由のADPCM-Bストリーム
+		uint	cpufiford;
+		uint	cpufifowr;
+		uint	cpufifocount;
+		uint8	cpufifocur;
+		bool	cpufifolow;
+		uint8	cpufifo[0x10000];
 
 		uint8	control1;		// ADPCM コントロールレジスタ１
 		uint8	control2;		// ADPCM コントロールレジスタ２

@@ -274,6 +274,17 @@ cpu_lmemoryread_f(UINT32 laddr, int ucrw)
 	return cpu_linear_memory_read_f(laddr, ucrw);
 }
 
+STATIC_INLINE void
+cpu_lmemoryreads(UINT32 laddr, void* dat, UINT leng, int ucrw)
+{
+	if (!CPU_STAT_PAGING) {
+		memp_reads(laddr, dat, leng);
+	}
+	else {
+		cpu_linear_memory_reads(laddr, dat, leng, ucrw);
+	}
+}
+
 /* write */
 STATIC_INLINE void MEMCALL
 cpu_lmemorywrite_b(UINT32 laddr, UINT8 value, int ucrw)
@@ -331,6 +342,17 @@ cpu_lmemorywrite_f(UINT32 laddr, const REG80 *value, int ucrw)
 	cpu_linear_memory_write_f(laddr, value, ucrw);
 }
 
+STATIC_INLINE void
+cpu_lmemorywrites(UINT32 laddr, void* dat, UINT leng, int ucrw)
+{
+	if (!CPU_STAT_PAGING) {
+		memp_writes(laddr, dat, leng);
+	}
+	else {
+		cpu_linear_memory_writes(laddr, dat, leng, ucrw);
+	}
+}
+
 
 /*
  * linear address memory access with superviser mode
@@ -353,6 +375,9 @@ cpu_lmemorywrite_f(UINT32 laddr, const REG80 *value, int ucrw)
  */
 void MEMCALL cpu_memory_access_la_region(UINT32 address, UINT length, int ucrw, UINT8 *data);
 UINT32 MEMCALL laddr2paddr(UINT32 laddr, int ucrw);
+#if defined(USE_CPU_BULKREP)
+UINT8 * MEMCALL cpu_lmemory_get_direct_host_ptr(UINT32 laddr, UINT leng, int ucrw);
+#endif
 
 STATIC_INLINE UINT32 MEMCALL
 laddr_to_paddr(UINT32 laddr, int ucrw)
@@ -368,6 +393,7 @@ laddr_to_paddr(UINT32 laddr, int ucrw)
  */
 struct tlb_entry;
 void tlb_init(void);
+void MEMCALL tlb_update_access_flags(void);
 void MEMCALL tlb_flush();
 void MEMCALL tlb_flush_all();
 void MEMCALL tlb_flush_page(UINT32 laddr);

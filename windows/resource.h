@@ -33,12 +33,15 @@
 #define IDD_CALENDAR                    161
 #define IDD_SNDSB16                     162
 #define IDD_SMPU98                      163
+#define IDD_SNDMAPPER                   164
+#define IDD_SNDWAVESTAR                 165
 #define IDD_ABOUT                       171
 #define IDD_LGY98                       180
 #define IDD_NETWORK                     181
 #define IDD_GD5430                      190
 #define IDD_WAB                         191
 #define IDD_NPDISP                      192
+#define IDD_GA1280A                     193
 #define IDD_PCI                         197
 #define IDD_HOSTDRV                     198
 #define IDD_IDE                         199
@@ -244,6 +247,12 @@
 #define IDC_VOLMIDISTR                  15223
 #define IDC_VOLHW                       15224
 #define IDC_VOLHWSTR                    15225
+#define IDC_FDDSNDDEV                   15260
+#define IDC_VOLFDD                      15261
+#define IDC_VOLFDDSTR                   15262
+#define IDC_BRDSNDDEV                   15263
+#define IDC_VOLBRD                      15264
+#define IDC_VOLBRDSTR                   15265
 #define IDC_VOL14L                      15301
 #define IDC_VOL14LSTR                   15302
 #define IDC_VOL14R                      15303
@@ -277,6 +286,8 @@
 #define IDC_SND118DEF                   15557
 #define IDC_SND118ROM                   15558
 #define IDC_SND118JMP                   15559
+#define IDC_SNDWSPNP                    15560
+#define IDC_SNDWSPCM                    15561
 #define IDC_SPBIO                       15601
 #define IDC_SPBINT                      15602
 #define IDC_SPBROM                      15603
@@ -343,6 +354,7 @@
 #define IDC_WABMULTHREAD                19016
 #define IDC_GD5430FAKECURSOR            19017
 #define IDC_NPDISPENABLED               19020
+#define IDC_GA1280AENABLED              19030
 #define IDC_PCIENABLE                   19070
 #define IDC_PCIPCMCTYPE                 19071
 #define IDC_PCIBIOS32                   19072
@@ -617,6 +629,7 @@
 #define IDM_SOFTKBD_X2                  40015
 #define IDM_SOFTKBD_X3                  40016
 #define IDM_SOFTKBD_XEND                40019
+#define IDM_MEMORYDUMPALL               40020
 #define IDM_ALLOWRESIZE					40048
 #define IDM_SAVEWINDOWSIZE				40049
 #define IDM_SCRNMUL                     40050
@@ -802,6 +815,7 @@
 #define IDM_PC9801_86_WSS_SB16          49657
 #define IDM_WSS_SB16					49658
 #define IDM_PC9801_86_SB16              49659
+#define IDM_MULTIMEDIAORCHESTRA         49660
 #define IDM_MEM640                      40661
 #define IDM_MEM16                       40662
 #define IDM_MEM36                       40663

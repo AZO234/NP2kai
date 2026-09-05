@@ -190,7 +190,90 @@ void npdisp_resetDirty()
 	npdispwin.dirtyRect.left = npdispwin.dirtyRect.top = npdispwin.dirtyRect.right = npdispwin.dirtyRect.bottom = 0;
 }
 
-// *** ”r‘¼§Œä—p *****************
+static HFONT npdisp_getFont(NPDISP_FONTINFO* lpFontInfo, UINT32 fontInfoAddr)
+{
+	if ((UINT8)lpFontInfo->dfCharSet != 0x80) return NULL;
+
+	// æš«å®š: æœ¬æ¥ã¯WIFEMANã‹ã‚‰ãƒ•ã‚©ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿ã‚’ã¨ã‚‹ãŒã€ä»•æ§˜ãŒã‚ˆãåˆ†ã‹ã‚‰ãªã„ã®ã§ãƒ›ã‚¹ãƒˆãŒæŒã¤è¿‘ã„ãƒ•ã‚©ãƒ³ãƒˆã§ç½®ãæ›ãˆ
+	char* faceName = npdisp_readMemoryString((fontInfoAddr & 0xffff0000) | lpFontInfo->dfFace);
+	//if (stricmp(faceName, "System") == 0) {
+	//	// æ—¥æœ¬èªãŒä½¿ãˆã‚‹ãƒ•ã‚©ãƒ³ãƒˆã¸ç½®ãæ›ãˆ
+	//	free(faceName);
+	//	faceName = (char*)malloc(32);
+	//	strcpy(faceName, "MS Gothic");
+	//}
+	if (stricmp(faceName, "ã‚´ã‚·ãƒƒã‚¯") == 0 || stricmp(faceName, "ï½ºï¾ï½¼ï½¯ï½¸") == 0) {
+		// æ—¥æœ¬èªãŒä½¿ãˆã‚‹ãƒ•ã‚©ãƒ³ãƒˆã¸ç½®ãæ›ãˆ
+		free(faceName);
+		faceName = (char*)malloc(32);
+		strcpy(faceName, "MS Gothic");
+	}
+	else if (stricmp(faceName, "æ˜æœ") == 0) {
+		// æ—¥æœ¬èªãŒä½¿ãˆã‚‹ãƒ•ã‚©ãƒ³ãƒˆã¸ç½®ãæ›ãˆ
+		free(faceName);
+		faceName = (char*)malloc(32);
+		strcpy(faceName, "MS Mincho");
+	}
+	else if (stricmp(faceName, "@ã‚´ã‚·ãƒƒã‚¯") == 0 || stricmp(faceName, "@ï½ºï¾ï½¼ï½¯ï½¸") == 0) {
+		// æ—¥æœ¬èªãŒä½¿ãˆã‚‹ãƒ•ã‚©ãƒ³ãƒˆã¸ç½®ãæ›ãˆ
+		free(faceName);
+		faceName = (char*)malloc(32);
+		strcpy(faceName, "@MS Gothic");
+	}
+	else if (stricmp(faceName, "@æ˜æœ") == 0) {
+		// æ—¥æœ¬èªãŒä½¿ãˆã‚‹ãƒ•ã‚©ãƒ³ãƒˆã¸ç½®ãæ›ãˆ
+		free(faceName);
+		faceName = (char*)malloc(32);
+		strcpy(faceName, "@MS Mincho");
+	}
+	int lfHeight = -lpFontInfo->dfPixHeight;// -MulDiv(lpFontInfo->dfPoints, npdisp.dpiX, 72);
+	int invalidIndex = -1;
+	for (int i = 0; i < NPDISP_FONT_CACHE_MAX; i++) {
+		if (npdispwin.hFontCache[i]) {
+			if (npdispwin.logFontCache[i].lfHeight == lfHeight && stricmp(npdispwin.fontFaceCache[i], faceName) == 0) {
+				free(faceName);
+				return npdispwin.hFontCache[i];
+			}
+		}
+		else if (invalidIndex == -1) {
+			invalidIndex = i;
+		}
+	}
+	if (invalidIndex == -1) {
+		// é©å½“ã«æ¨ã¦ã‚‹
+		invalidIndex = rand() % NPDISP_FONT_CACHE_MAX;
+	}
+	if (npdispwin.hFontCache[invalidIndex]) {
+		DeleteObject(npdispwin.hFontCache[invalidIndex]);
+		npdispwin.hFontCache[invalidIndex] = NULL;
+	}
+
+	LOGFONTA lf = { 0 };
+	if (strlen(faceName) < sizeof(lf.lfFaceName)) {
+		lf.lfHeight = lfHeight;
+		lf.lfWeight = FW_NORMAL;
+		lf.lfCharSet = DEFAULT_CHARSET;
+		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+		strcpy(lf.lfFaceName, faceName);
+		npdispwin.hFontCache[invalidIndex] = CreateFontIndirectA(&lf);
+		if (!npdispwin.hFontCache[invalidIndex]) {
+			strcpy(lf.lfFaceName, "MS Gothic");
+			npdispwin.hFontCache[invalidIndex] = CreateFontIndirectA(&lf);
+		}
+		if (npdispwin.hFontCache[invalidIndex]) {
+			npdispwin.logFontCache[invalidIndex] = lf;
+			strcpy(npdispwin.fontFaceCache[invalidIndex], faceName);
+
+			free(faceName);
+			return npdispwin.hFontCache[invalidIndex];
+		}
+	}
+
+	free(faceName);
+	return NULL;
+}
+
+// *** æ’ä»–åˆ¶å¾¡ç”¨ *****************
 
 static int npdisp_cs_initialized = 0;
 static CRITICAL_SECTION npdisp_cs;
@@ -214,7 +297,7 @@ void npdispcs_leave_criticalsection(void)
 
 void npdispcs_initialize(void)
 {
-	/* ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“€”õ */
+	/* ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³æº–å‚™ */
 	if (!npdisp_cs_initialized)
 	{
 		memset(&npdisp_cs, 0, sizeof(npdisp_cs));
@@ -224,7 +307,7 @@ void npdispcs_initialize(void)
 }
 void npdispcs_shutdown(void)
 {
-	/* ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“”jŠü */
+	/* ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ç ´æ£„ */
 	if (npdisp_cs_initialized)
 	{
 		DeleteCriticalSection(&npdisp_cs);
@@ -233,14 +316,14 @@ void npdispcs_shutdown(void)
 	}
 }
 
-// *** ƒGƒNƒXƒ|[ƒgŠÖ”ˆ— *****************
+// *** ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆé–¢æ•°å‡¦ç† *****************
 
 static void npdisp_func_NP2Initialize(UINT16 dpiX, UINT16 dpiY, UINT16 width, UINT16 height, UINT16 bpp, UINT8 isWin9x, UINT32 bmpinfoAddr, UINT32 beginAccessAddr, UINT32 endAccessAddr, UINT32 dcibufAddr, UINT32 dciBeginAccessAddr, UINT32 dciEndAccessAddr, UINT32 dciDestroySurfaceAddr, UINT32 vramLinearAddr, UINT32 vramPhysicalAddr)
 {
 	bool resize = npdisp.enabled && npdisp.active;
 
 	if (!resize) {
-		// ‰Šú‰»
+		// åˆæœŸåŒ–
 		npdisp.enabled = 0;
 		npdisp.active = 0;
 		np2wab.relaystateext = 0;
@@ -301,7 +384,7 @@ static void npdisp_func_NP2Initialize(UINT16 dpiX, UINT16 dpiY, UINT16 width, UI
 		npdisp.mm_dciEnable = 0;
 	}
 	
-	// ƒo[ƒWƒ‡ƒ“‚ğ•Ô‚·
+	// ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚’è¿”ã™
 	npdisp_writeMemory16(npdisp.version, npdisp.dataAddr);
 }
 
@@ -315,7 +398,7 @@ static UINT16 npdisp_func_Enable_PDEVICE(NPDISP_PDEVICE *lpDevInfo, UINT16 wStyl
 	//lpDevInfo->bmp.bmBitsPixel = 1;
 	//lpDevInfo->bmp.bmPlanes = 4;
 
-	// DIB EngineŒİŠ·  DirectDraw‚ÍDIB EngineŒİŠ·‚ğ—v‹‚·‚éB¯•Êq‚Í0x5250‚Å‚È‚¢‚ÆNGB
+	// DIB Engineäº’æ›  DirectDrawã¯DIB Engineäº’æ›ã‚’è¦æ±‚ã™ã‚‹ã€‚è­˜åˆ¥å­ã¯0x5250ã§ãªã„ã¨NGã€‚
 	lpDevInfo->dibe.deType = NPDISP_DEVTYPE;
 	lpDevInfo->dibe.deWidth = npdisp.width;
 	lpDevInfo->dibe.deHeight = npdisp.height;
@@ -351,7 +434,7 @@ static UINT16 npdisp_func_Enable_PDEVICE(NPDISP_PDEVICE *lpDevInfo, UINT16 wStyl
 			npdisp_writeMemory(&bi, npdisp.mm_bmpinfoAddr, sizeof(BITMAPINFO_8BPP));
 		}
 		if (npdisp.isWin9x) {
-			// WORKAROUND: Win3.1ŠÂ‹«‰º‚ÅWinG‚ªVRAM’¼ÚƒAƒNƒZƒX‚·‚é‚æ‚¤‚É‚È‚é‚ªAƒŠƒAƒ‹ƒ^ƒCƒ€‚ÌVRAMXV‚É‘Î‰‚µ‚Ä‚¨‚ç‚¸ƒoƒO‚é‚Ì‚ÅAb’è‚ÅWin9xŒÀ’è‚Åİ’è
+			// WORKAROUND: Win3.1ç’°å¢ƒä¸‹ã§WinGãŒVRAMç›´æ¥ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ã‚ˆã†ã«ãªã‚‹ãŒã€ãƒªã‚¢ãƒ«ã‚¿ã‚¤ãƒ ã®VRAMæ›´æ–°ã«å¯¾å¿œã—ã¦ãŠã‚‰ãšãƒã‚°ã‚‹ã®ã§ã€æš«å®šã§Win9xé™å®šã§è¨­å®š
 			lpDevInfo->dibe.deBitmapInfoAddr = npdisp.mm_bmpinfoAddr;
 		}
 	}
@@ -371,15 +454,15 @@ static UINT16 npdisp_func_Enable_GDIINFO(NPDISP_GDIINFO *lpDevInfo, UINT16 wStyl
 	//lpDevInfo->dpVersion = 0x030A;
 	lpDevInfo->dpVersion = 0x0400;
 	lpDevInfo->dpTechnology = NPDISP_DT_RASDISPLAY;
-	// ’l‚ª‘å‚«‚¢‚ÆƒI[ƒo[ƒtƒ[‚µ‚Ä‚¨‚©‚µ‚­‚È‚é‚Ì‚ÅA‰ğ‘œ“x640x400‚Ì‰æ–ÊƒTƒCƒY’l‚ğŠî€‚É‚µ‚ÄƒXƒP[ƒ‹
+	// å€¤ãŒå¤§ãã„ã¨ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼ã—ã¦ãŠã‹ã—ããªã‚‹ã®ã§ã€è§£åƒåº¦640x400ã®ç”»é¢ã‚µã‚¤ã‚ºå€¤ã‚’åŸºæº–ã«ã—ã¦ã‚¹ã‚±ãƒ¼ãƒ«
 	int virtualWidth = 640;
 	int virtualHeight = 400;
 	if (npdisp.width * 400 > npdisp.height * 640) {
-		// 640x400‚æ‚è‚à‰¡’· ¨ ‰¡‚ğ640‘Š“–‚É‚·‚é
+		// 640x400ã‚ˆã‚Šã‚‚æ¨ªé•· â†’ æ¨ªã‚’640ç›¸å½“ã«ã™ã‚‹
 		virtualHeight = npdisp.height * 640 / npdisp.width;
 	}
 	else {
-		// 640x400‚æ‚è‚àc’· ¨ c‚ğ400‘Š“–‚É‚·‚é
+		// 640x400ã‚ˆã‚Šã‚‚ç¸¦é•· â†’ ç¸¦ã‚’400ç›¸å½“ã«ã™ã‚‹
 		virtualWidth = npdisp.width * 400 / npdisp.height;
 	}
 	lpDevInfo->dpHorzSize = 240 * virtualWidth / 640;
@@ -406,12 +489,12 @@ static UINT16 npdisp_func_Enable_GDIINFO(NPDISP_GDIINFO *lpDevInfo, UINT16 wStyl
 	lpDevInfo->dpAspectY = 71;
 	lpDevInfo->dpAspectXY = 100;
 	lpDevInfo->dpStyleLen = lpDevInfo->dpAspectXY * 2;
-	lpDevInfo->dpLogPixelsX = 96; // ‚±‚±‚ÌDPI‚ÍƒAƒCƒRƒ“‚Ì•¶šƒTƒCƒY“™‚ª•Ï‚í‚é@•Ï‚¦‚È‚¢•û‚ª‚æ‚³‚»‚¤H
-	lpDevInfo->dpLogPixelsY = 96; // ‚±‚±‚ÌDPI‚ÍƒAƒCƒRƒ“‚Ì•¶šƒTƒCƒY“™‚ª•Ï‚í‚é@•Ï‚¦‚È‚¢•û‚ª‚æ‚³‚»‚¤H
+	lpDevInfo->dpLogPixelsX = 96; // ã“ã“ã®DPIã¯ã‚¢ã‚¤ã‚³ãƒ³ã®æ–‡å­—ã‚µã‚¤ã‚ºç­‰ãŒå¤‰ã‚ã‚‹ã€€å¤‰ãˆãªã„æ–¹ãŒã‚ˆã•ãã†ï¼Ÿ
+	lpDevInfo->dpLogPixelsY = 96; // ã“ã“ã®DPIã¯ã‚¢ã‚¤ã‚³ãƒ³ã®æ–‡å­—ã‚µã‚¤ã‚ºç­‰ãŒå¤‰ã‚ã‚‹ã€€å¤‰ãˆãªã„æ–¹ãŒã‚ˆã•ãã†ï¼Ÿ
 	lpDevInfo->dpDCManage = 0x0004;
 	lpDevInfo->dpCaps1 = NPDISP_C1_TRANSPARENT | NPDISP_C1_REINIT_ABLE | NPDISP_C1_COLORCURSOR;
 	if (npdisp.version >= 3) {
-		// DIB Engine€‹’
+		// DIB Engineæº–æ‹ 
 		lpDevInfo->dpCaps1 |= NPDISP_C1_DIBENGINE;
 	}
 	lpDevInfo->dpSpotSizeX = 0;
@@ -439,38 +522,38 @@ static UINT16 npdisp_func_Enable_GDIINFO(NPDISP_GDIINFO *lpDevInfo, UINT16 wStyl
 
 	switch (npdisp.bpp) {
 	case 1:
-		// 2F
+		// 2è‰²
 		lpDevInfo->dpBitsPixel = 1;
 		lpDevInfo->dpPlanes = 1;
 		lpDevInfo->dpNumColors = 2;
 		break;
 	case 4:
-		// 16F
+		// 16è‰²
 		lpDevInfo->dpBitsPixel = 4;
 		lpDevInfo->dpPlanes = 1;
 		lpDevInfo->dpNumColors = 16;
 		break;
 	case 8:
-		// 256F
+		// 256è‰²
 		lpDevInfo->dpBitsPixel = 8;
 		lpDevInfo->dpPlanes = 1;
 		lpDevInfo->dpNumColors = 20; // 20;
 		break;
 	case 15:
 	case 16:
-		// 64kF
+		// 64kè‰²
 		lpDevInfo->dpBitsPixel = 16;
 		lpDevInfo->dpPlanes = 1;
 		lpDevInfo->dpNumColors = 4096;
 		break;
 	case 24:
-		// 16MF(24bit)
+		// 16Mè‰²(24bit)
 		lpDevInfo->dpBitsPixel = 24;
 		lpDevInfo->dpPlanes = 1;
 		lpDevInfo->dpNumColors = 4096;
 		break;
 	case 32:
-		// 16MF(32bit)
+		// 16Mè‰²(32bit)
 		lpDevInfo->dpBitsPixel = 32;
 		lpDevInfo->dpPlanes = 1;
 		lpDevInfo->dpNumColors = 4096;
@@ -488,7 +571,7 @@ static UINT16 npdisp_func_Enable_GDIINFO(NPDISP_GDIINFO *lpDevInfo, UINT16 wStyl
 		lpDevInfo->dpPalResolution = 0;
 	}
 
-	return sizeof(NPDISP_GDIINFO); // ƒhƒLƒ…ƒƒ“ƒg‚É‘‚©‚ê‚Ä‚¢‚È‚¢‚ªƒTƒCƒY‚ğ•Ô‚³‚È‚¢‚Æ‘Ê–Ú
+	return sizeof(NPDISP_GDIINFO); // ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆã«æ›¸ã‹ã‚Œã¦ã„ãªã„ãŒã‚µã‚¤ã‚ºã‚’è¿”ã•ãªã„ã¨é§„ç›®
 }
 static UINT16 npdisp_func_Enable(UINT32 lpDevInfoAddr, UINT16 wStyle, UINT32 lpDestDevTypeAddr, UINT32 lpOutputFileAddr, UINT32 lpDataAddr)
 {
@@ -591,7 +674,7 @@ static UINT16 npdisp_func_ValidateMode(UINT32 lpValModeAddr)
 
 static UINT32 npdisp_func_SelectBitmap(UINT32 lpDeviceAddr, UINT32 lpPrevBitmapAddr, UINT32 lpBitmapAddr, UINT32 fFlags)
 {
-	// ˆÓ–¡‚ ‚è‚°‚ÈŠÖ”‚¾‚ª‰½‚à‚µ‚È‚­‚Ä‚æ‚¢
+	// æ„å‘³ã‚ã‚Šã’ãªé–¢æ•°ã ãŒä½•ã‚‚ã—ãªãã¦ã‚ˆã„
 	return 1;
 }
 static UINT32 npdisp_func_BitmapBits(UINT32 lpDeviceAddr, UINT32 fFlags, UINT32 dwCount, UINT32 lpBitsAddr)
@@ -621,7 +704,7 @@ static UINT32 npdisp_func_BitmapBits(UINT32 lpDeviceAddr, UINT32 fFlags, UINT32 
 			}
 			else if (fFlags == NPDISP_DBB_SET) {
 				int stride = ((npdisp.width * npdisp.bpp + 31) / 32) * 4;
-				int memstride = ((npdisp.width * npdisp.bpp + 15) / 16) * 16 / 8; // lpBits‚ÍWORDƒAƒ‰ƒCƒƒ“ƒg‘O’ñ
+				int memstride = ((npdisp.width * npdisp.bpp + 15) / 16) * 16 / 8; // lpBitsã¯WORDã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆå‰æ
 				int remain = min(copyCount, stride * npdisp.height);
 				UINT32 selector = (lpBitsAddr >> 16) & 0xffff;
 				UINT32 offset = lpBitsAddr & 0xffff;
@@ -636,7 +719,7 @@ static UINT32 npdisp_func_BitmapBits(UINT32 lpDeviceAddr, UINT32 fFlags, UINT32 
 			}
 			else if (fFlags == NPDISP_DBB_GET) {
 				int stride = ((npdisp.width * npdisp.bpp + 31) / 32) * 4;
-				int memstride = ((npdisp.width * npdisp.bpp + 15) / 16) * 16 / 8; // lpBits‚ÍWORDƒAƒ‰ƒCƒƒ“ƒg‘O’ñ
+				int memstride = ((npdisp.width * npdisp.bpp + 15) / 16) * 16 / 8; // lpBitsã¯WORDã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆå‰æ
 				int remain = min(copyCount, stride * npdisp.height);
 				UINT32 selector = (lpBitsAddr >> 16) & 0xffff;
 				UINT32 offset = lpBitsAddr & 0xffff;
@@ -680,7 +763,7 @@ static UINT32 npdisp_func_BitmapBits(UINT32 lpDeviceAddr, UINT32 fFlags, UINT32 
 				}
 				else if (fFlags == NPDISP_DBB_SET) {
 					int stride = ((hostbmp->bmphdc.lpbi->bmiHeader.biWidth * hostbmp->bmphdc.lpbi->bmiHeader.biBitCount + 31) / 32) * 4;
-					int memstride = ((hostbmp->bmphdc.lpbi->bmiHeader.biWidth * hostbmp->bmphdc.lpbi->bmiHeader.biBitCount + 15) / 16) * 16 / 8; // lpBits‚ÍWORDƒAƒ‰ƒCƒƒ“ƒg‘O’ñ
+					int memstride = ((hostbmp->bmphdc.lpbi->bmiHeader.biWidth * hostbmp->bmphdc.lpbi->bmiHeader.biBitCount + 15) / 16) * 16 / 8; // lpBitsã¯WORDã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆå‰æ
 					int height = hostbmp->bmphdc.lpbi->bmiHeader.biHeight;
 					if (height < 0) height = -height;
 					int remain = min(copyCount, stride * height);
@@ -697,7 +780,7 @@ static UINT32 npdisp_func_BitmapBits(UINT32 lpDeviceAddr, UINT32 fFlags, UINT32 
 				}
 				else if (fFlags == NPDISP_DBB_GET) {
 					int stride = ((hostbmp->bmphdc.lpbi->bmiHeader.biWidth * hostbmp->bmphdc.lpbi->bmiHeader.biBitCount + 31) / 32) * 4;
-					int memstride = ((hostbmp->bmphdc.lpbi->bmiHeader.biWidth * hostbmp->bmphdc.lpbi->bmiHeader.biBitCount + 15) / 16) * 16 / 8; // lpBits‚ÍWORDƒAƒ‰ƒCƒƒ“ƒg‘O’ñ
+					int memstride = ((hostbmp->bmphdc.lpbi->bmiHeader.biWidth * hostbmp->bmphdc.lpbi->bmiHeader.biBitCount + 15) / 16) * 16 / 8; // lpBitsã¯WORDã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆå‰æ
 					int height = hostbmp->bmphdc.lpbi->bmiHeader.biHeight;
 					if (height < 0) height = -height;
 					int remain = min(copyCount, stride * height);
@@ -714,7 +797,7 @@ static UINT32 npdisp_func_BitmapBits(UINT32 lpDeviceAddr, UINT32 fFlags, UINT32 
 				}
 				else if (fFlags == NPDISP_DBB_SETWITHFILLER) {
 					int stride = ((hostbmp->bmphdc.lpbi->bmiHeader.biWidth * hostbmp->bmphdc.lpbi->bmiHeader.biBitCount + 31) / 32) * 4;
-					int memstride = ((hostbmp->bmphdc.lpbi->bmiHeader.biWidth * hostbmp->bmphdc.lpbi->bmiHeader.biBitCount + 15) / 16) * 16 / 8; // lpBits‚ÍWORDƒAƒ‰ƒCƒƒ“ƒg‘O’ñ
+					int memstride = ((hostbmp->bmphdc.lpbi->bmiHeader.biWidth * hostbmp->bmphdc.lpbi->bmiHeader.biBitCount + 15) / 16) * 16 / 8; // lpBitsã¯WORDã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆå‰æ
 					int height = hostbmp->bmphdc.lpbi->bmiHeader.biHeight;
 					if (height < 0) height = -height;
 					int remain = min(copyCount, stride * height);
@@ -751,7 +834,7 @@ static void npdisp_func_Disable(UINT32 lpDestDevAddr)
 
 static SINT16 npdisp_func_GetDriverResourceID(SINT16 iResId, UINT32 lpResTypeAddr)
 {
-	// DPI–ˆ‚ÌƒŠƒ\[ƒX•ÏŠ·H
+	// DPIæ¯ã®ãƒªã‚½ãƒ¼ã‚¹å¤‰æ›ï¼Ÿ
 	if (lpResTypeAddr) {
 		if (lpResTypeAddr & 0xffff0000) {
 			char* lpResType;
@@ -759,7 +842,7 @@ static SINT16 npdisp_func_GetDriverResourceID(SINT16 iResId, UINT32 lpResTypeAdd
 			if (lpResType) free(lpResType);
 		}
 		else {
-			// ãˆÊ‚ª0‚Ì‚Í‚½‚¾‚Ì’l
+			// ä¸Šä½ãŒ0ã®æ™‚ã¯ãŸã ã®å€¤
 			SINT16 iResType = lpResTypeAddr;
 		}
 	}
@@ -772,7 +855,7 @@ static SINT16 npdisp_func_GetDriverResourceID(SINT16 iResId, UINT32 lpResTypeAdd
 static UINT32 npdisp_func_ColorInfo(NPDISP_PDEVICE* lpDestDev, UINT32 dwColorin, UINT32* lpPColor)
 {
 	if (npdisp.bpp != 8) {
-		// 256FˆÈŠO@F‚ğ‘f’Ê‚µ‚·‚é
+		// 256è‰²ä»¥å¤–ã€€è‰²ã‚’ç´ é€šã—ã™ã‚‹
 		if (lpPColor) {
 			if (dwColorin & 0xff000000) {
 				if (npdisp.bpp == 1) {
@@ -794,13 +877,13 @@ static UINT32 npdisp_func_ColorInfo(NPDISP_PDEVICE* lpDestDev, UINT32 dwColorin,
 		return dwColorin;
 	}
 	else {
-		// 256F
+		// 256è‰²
 		UINT32 rgb;
 		int idx = 0;
 		if (lpPColor) {
-			// ˜_—ƒJƒ‰[’l‚ğÅ‚à‹ß‚¢•¨—ƒfƒoƒCƒXƒJƒ‰[’l‚Ö•ÏŠ·@
+			// è«–ç†ã‚«ãƒ©ãƒ¼å€¤ã‚’æœ€ã‚‚è¿‘ã„ç‰©ç†ãƒ‡ãƒã‚¤ã‚¹ã‚«ãƒ©ãƒ¼å€¤ã¸å¤‰æ›ã€€
 			if (dwColorin & 0xff000000) {
-				// dwColorin‚Í˜_—ƒJƒ‰[ƒCƒ“ƒfƒbƒNƒXH
+				// dwColorinã¯è«–ç†ã‚«ãƒ©ãƒ¼ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ï¼Ÿ
 				*lpPColor = dwColorin;
 				idx = dwColorin & 0xffffff;
 				if (idx < 0 || (1 << npdisp.bpp) <= idx) {
@@ -808,18 +891,18 @@ static UINT32 npdisp_func_ColorInfo(NPDISP_PDEVICE* lpDestDev, UINT32 dwColorin,
 				}
 			}
 			else {
-				// dwColorin‚Í˜_—ƒJƒ‰[’liRGB’lj
+				// dwColorinã¯è«–ç†ã‚«ãƒ©ãƒ¼å€¤ï¼ˆRGBå€¤ï¼‰
 				UINT8 r, g, b;
 				r = (UINT8)(dwColorin & 0xFF);
 				g = (UINT8)((dwColorin >> 8) & 0xFF);
 				b = (UINT8)((dwColorin >> 16) & 0xFF);
 				idx = npdisp_FindNearest256(r, g, b);
 				if (idx < 20 || 256 - 20 <= idx) {
-					// ƒXƒ^ƒeƒBƒbƒNƒJƒ‰[‚ÍRGB‚Å
+					// ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ã‚«ãƒ©ãƒ¼ã¯RGBã§
 					*lpPColor = ((UINT32)npdisp_palette_rgb256[idx].r) | ((UINT32)npdisp_palette_rgb256[idx].g << 8) | ((UINT32)npdisp_palette_rgb256[idx].b << 16);
 				}
 				else {
-					// ‚»‚Ì‘¼‚ÌF‚Í•¨—ƒpƒŒƒbƒg”Ô†‚Å
+					// ãã®ä»–ã®è‰²ã¯ç‰©ç†ãƒ‘ãƒ¬ãƒƒãƒˆç•ªå·ã§
 					*lpPColor = (UINT32)idx | 0xff000000;
 				}
 				if (idx != 0 && idx != 0xff) {
@@ -831,14 +914,14 @@ static UINT32 npdisp_func_ColorInfo(NPDISP_PDEVICE* lpDestDev, UINT32 dwColorin,
 			}
 		}
 		else {
-			// •¨—ƒfƒoƒCƒXƒJƒ‰[’l‚ğ˜_—ƒJƒ‰[’l‚Ö•ÏŠ·@dwColorin‚Í•¨—ƒfƒoƒCƒXƒJƒ‰[’liƒpƒŒƒbƒg”Ô†‚È‚Çj
+			// ç‰©ç†ãƒ‡ãƒã‚¤ã‚¹ã‚«ãƒ©ãƒ¼å€¤ã‚’è«–ç†ã‚«ãƒ©ãƒ¼å€¤ã¸å¤‰æ›ã€€dwColorinã¯ç‰©ç†ãƒ‡ãƒã‚¤ã‚¹ã‚«ãƒ©ãƒ¼å€¤ï¼ˆãƒ‘ãƒ¬ãƒƒãƒˆç•ªå·ãªã©ï¼‰
 			idx = dwColorin & 0xffffff;
 			if (idx < 0 || (1 << npdisp.bpp) <= idx) {
 				return 0;
 			}
 		}
 
-		// ‹‚ß‚½ƒJƒ‰[ƒpƒŒƒbƒg‚ÌF‚ğRGB‚Å•Ô‚·
+		// æ±‚ã‚ãŸã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆã®è‰²ã‚’RGBã§è¿”ã™
 		return ((UINT32)npdisp_palette_rgb256[idx].r) | ((UINT32)npdisp_palette_rgb256[idx].g << 8) | ((UINT32)npdisp_palette_rgb256[idx].b << 16);
 	}
 }
@@ -846,7 +929,7 @@ static UINT32 npdisp_func_ColorInfo(NPDISP_PDEVICE* lpDestDev, UINT32 dwColorin,
 static UINT32 npdisp_func_RealizeObject_DeletePen(UINT32 lpInObjAddr)
 {
 	if (lpInObjAddr) {
-		// w’è‚³‚ê‚½ƒL[‚Ìƒyƒ“‚ğíœ
+		// æŒ‡å®šã•ã‚ŒãŸã‚­ãƒ¼ã®ãƒšãƒ³ã‚’å‰Šé™¤
 		NPDISP_PEN pen = { {NPDISP_PEN_STYLE_SOLID, {1, 0}, 0} };
 		npdisp_readMemory(&pen, lpInObjAddr, sizeof(NPDISP_PEN));
 		if (pen.key != 0) {
@@ -869,13 +952,13 @@ static UINT32 npdisp_func_RealizeObject_DeletePen(UINT32 lpInObjAddr)
 	}
 	TRACEOUT(("RealizeObject Release OBJ_PEN"));
 
-	// ƒTƒCƒY‚ğ•Ô‚·
+	// ã‚µã‚¤ã‚ºã‚’è¿”ã™
 	return sizeof(NPDISP_PEN);
 }
 static UINT32 npdisp_func_RealizeObject_DeleteBrush(UINT32 lpInObjAddr)
 {
 	if (lpInObjAddr) {
-		// w’è‚³‚ê‚½ƒL[‚Ìƒuƒ‰ƒV‚ğíœ
+		// æŒ‡å®šã•ã‚ŒãŸã‚­ãƒ¼ã®ãƒ–ãƒ©ã‚·ã‚’å‰Šé™¤
 		NPDISP_BRUSH brush = { {NPDISP_BRUSH_STYLE_SOLID, 15, NPDISP_BRUSH_HATCH_HORIZONTAL, 15} };
 		npdisp_readMemory(&brush, lpInObjAddr, sizeof(NPDISP_BRUSH));
 		if (brush.key != 0) {
@@ -898,17 +981,17 @@ static UINT32 npdisp_func_RealizeObject_DeleteBrush(UINT32 lpInObjAddr)
 	}
 	TRACEOUT(("RealizeObject Release OBJ_BRUSH"));
 
-	// ƒTƒCƒY‚ğ•Ô‚·
+	// ã‚µã‚¤ã‚ºã‚’è¿”ã™
 	return sizeof(NPDISP_BRUSH);
 }
 static UINT32 npdisp_func_RealizeObject_DeleteBitmap(UINT32 lpInObjAddr)
 {
 	if (lpInObjAddr) {
-		// w’è‚³‚ê‚½ƒL[‚ÌDDBitmap‚ğíœ
+		// æŒ‡å®šã•ã‚ŒãŸã‚­ãƒ¼ã®DDBitmapã‚’å‰Šé™¤
 		NPDISP_PBITMAP_EXT ddbmp = { 0 };
 		npdisp_readMemory(&ddbmp, lpInObjAddr, sizeof(NPDISP_PBITMAP_EXT));
 		if (ddbmp.bmType == NPDISP_DEVTYPE_DDB) {
-			// ƒL[‚ª—LŒø‚©Šm”F
+			// ã‚­ãƒ¼ãŒæœ‰åŠ¹ã‹ç¢ºèª
 			if (ddbmp.ddbmpKey) {
 				auto it = npdispwin.bitmaps.find(ddbmp.ddbmpKey);
 				if (it != npdispwin.bitmaps.end()) {
@@ -918,7 +1001,7 @@ static UINT32 npdisp_func_RealizeObject_DeleteBitmap(UINT32 lpInObjAddr)
 						//if (ddbmp.bmBitsAddr) {
 						//	npdisp_WriteBitmapToPBITMAP(&ddbmp, &value.bmphdc);
 						//}
-						value.bmphdc.hdc = NULL; // hdc‚ÍÌ‚Ä‚È‚¢
+						value.bmphdc.hdc = NULL; // hdcã¯æ¨ã¦ãªã„
 						npdisp_FreeBitmap(&value.bmphdc, true);
 					}
 					if (it->first + 1 == npdispwin.bitmapsIdx) {
@@ -940,35 +1023,35 @@ static UINT32 npdisp_func_RealizeObject_DeleteBitmap(UINT32 lpInObjAddr)
 	}
 	TRACEOUT(("RealizeObject Release OBJ_PBITMAP"));
 
-	// ƒTƒCƒY‚ğ•Ô‚·
+	// ã‚µã‚¤ã‚ºã‚’è¿”ã™
 	return sizeof(NPDISP_PBITMAP_EXT);
 }
 static void npdisp_createPen(NPDISP_HOSTPEN *lpHostPen) 
 {
-	if (lpHostPen->pen) return; // Šù‚É‚ ‚é‚È‚çì‚è’¼‚³‚È‚¢
+	if (lpHostPen->pen) return; // æ—¢ã«ã‚ã‚‹ãªã‚‰ä½œã‚Šç›´ã•ãªã„
 
 	if (lpHostPen->lpen.opnStyle != PS_NULL) {
 		if (lpHostPen->actualColorNum == 0) {
 			lpHostPen->actualColorNum = 1;
 			lpHostPen->actualColor = npdisp_AdjustColorRefForGDI(lpHostPen->lpen.lopnColor);
 		}
-		// ÀüŒÅ’è
+		// å®Ÿç·šå›ºå®š
 		SINT16 style = lpHostPen->lpen.opnStyle;
 		if (style == PS_INSIDEFRAME) {
 			style = PS_SOLID;
 		}
-		lpHostPen->pen = CreatePen(style, lpHostPen->lpen.lopnWidth.x, lpHostPen->actualColor); // PS_INSIDEFRAME‚Í“ñd•â³‚É‚È‚é‚Ì‚ÅÁ‚·
+		lpHostPen->pen = CreatePen(style, lpHostPen->lpen.lopnWidth.x, lpHostPen->actualColor); // PS_INSIDEFRAMEã¯äºŒé‡è£œæ­£ã«ãªã‚‹ã®ã§æ¶ˆã™
 	}
 }
 static UINT32 npdisp_func_RealizeObject_CreatePen(UINT32 lpInObjAddr, UINT32 lpOutObjAddr)
 {
 	TRACEOUT(("RealizeObject Create OBJ_PEN"));
 	if (lpOutObjAddr) {
-		// ì¬
+		// ä½œæˆ
 		NPDISP_PEN pen = { {NPDISP_PEN_STYLE_SOLID, {1, 0}, 0} };
 		NPDISP_HOSTPEN hostpen = { 0 };
 		if (lpInObjAddr) {
-			// w’è‚µ‚½İ’è‚Åì‚é
+			// æŒ‡å®šã—ãŸè¨­å®šã§ä½œã‚‹
 			npdisp_readMemory(&(pen.lpen), lpInObjAddr, sizeof(NPDISP_LPEN));
 		}
 		TRACEOUT((" -> Color %08x", pen.lpen.lopnColor));
@@ -989,46 +1072,46 @@ static UINT32 npdisp_func_RealizeObject_CreatePen(UINT32 lpInObjAddr, UINT32 lpO
 		}
 		else {
 			hostpen.lpen = pen.lpen;
-			npdisp_createPen(&hostpen); // ƒyƒ“¶¬
+			npdisp_createPen(&hostpen); // ãƒšãƒ³ç”Ÿæˆ
 			hostpen.refCount = 1;
 			pen.key = npdispwin.pensIdx;
 			npdispwin.pensIdx++;
-			if (npdispwin.pensIdx == 0) npdispwin.pensIdx++; // 0‚Íg‚í‚È‚¢‚±‚Æ‚É‚·‚é
+			if (npdispwin.pensIdx == 0) npdispwin.pensIdx++; // 0ã¯ä½¿ã‚ãªã„ã“ã¨ã«ã™ã‚‹
 			npdispwin.pens[pen.key] = hostpen;
 		}
 
-		// ‘‚«‚İ
+		// æ›¸ãè¾¼ã¿
 		npdisp_writeMemory(&pen, lpOutObjAddr, sizeof(NPDISP_PEN));
 	}
-	// ƒTƒCƒY‚ğ•Ô‚·
+	// ã‚µã‚¤ã‚ºã‚’è¿”ã™
 	return sizeof(NPDISP_PEN);
 }
 static void npdisp_createBrush(NPDISP_HOSTBRUSH* lpHostBrush) 
 {
-	if (lpHostBrush->brs) return; // Šù‚É‚ ‚é‚È‚çì‚è’¼‚³‚È‚¢
+	if (lpHostBrush->brs) return; // æ—¢ã«ã‚ã‚‹ãªã‚‰ä½œã‚Šç›´ã•ãªã„
 
 	if (lpHostBrush->lbrush.lbStyle == NPDISP_BRUSH_STYLE_SOLID) {
-		// ’PFƒuƒ‰ƒV¶¬
+		// å˜è‰²ãƒ–ãƒ©ã‚·ç”Ÿæˆ
 		if (lpHostBrush->actualColorNum == 0) {
 			bool preferDither;
 			UINT32 color = npdisp_AdjustColorRefForGDI(lpHostBrush->lbrush.lbColor, &preferDither);
 			if (!preferDither) {
-				// ƒF
+				// ç´”è‰²
 				lpHostBrush->actualColorNum = 1;
 				lpHostBrush->actualColor = color;
 			}
 			else {
-				// ƒfƒBƒU
+				// ãƒ‡ã‚£ã‚¶
 				MakePaletteDitherBrushColor(color, &lpHostBrush->actualColor, &lpHostBrush->actualColor2, &lpHostBrush->actualColor2Ratio);
 				lpHostBrush->actualColorNum = 2;
 			}
 		}
 		if (lpHostBrush->actualColorNum == 1) {
-			// ƒF
+			// ç´”è‰²
 			lpHostBrush->brs = CreateSolidBrush(lpHostBrush->actualColor);
 		}
 		else {
-			// ƒfƒBƒU
+			// ãƒ‡ã‚£ã‚¶
 			lpHostBrush->brs = CreatePaletteDitherBrush(lpHostBrush->actualColor, lpHostBrush->actualColor2, lpHostBrush->actualColor2Ratio);
 		}
 		if (!lpHostBrush->brs) {
@@ -1037,7 +1120,7 @@ static void npdisp_createBrush(NPDISP_HOSTBRUSH* lpHostBrush)
 		TRACEOUT((" -> Style:%d, Color:%08x", lpHostBrush->lbrush.lbStyle, lpHostBrush->lbrush.lbColor));
 	}
 	else if (lpHostBrush->lbrush.lbStyle == NPDISP_BRUSH_STYLE_HATCHED) {
-		// ƒnƒbƒ`ƒuƒ‰ƒV¶¬
+		// ãƒãƒƒãƒãƒ–ãƒ©ã‚·ç”Ÿæˆ
 		if (lpHostBrush->actualColorNum == 0) {
 			lpHostBrush->actualColorNum = 1;
 			lpHostBrush->actualColor = npdisp_AdjustColorRefForGDI(lpHostBrush->lbrush.lbColor);
@@ -1049,7 +1132,7 @@ static void npdisp_createBrush(NPDISP_HOSTBRUSH* lpHostBrush)
 		TRACEOUT((" -> Style:%d, Color:%08x", lpHostBrush->lbrush.lbStyle, lpHostBrush->lbrush.lbColor));
 	}
 	else if (lpHostBrush->lbrush.lbStyle == NPDISP_BRUSH_STYLE_PATTERN) {
-		// ƒpƒ^[ƒ“ƒuƒ‰ƒV¶¬
+		// ãƒ‘ã‚¿ãƒ¼ãƒ³ãƒ–ãƒ©ã‚·ç”Ÿæˆ
 		HDC hdcSrc = npdispwin.hdcCache[0];
 		void* pBits = NULL;
 		HBITMAP hPatBmpSrc = CreateDIBSection(hdcSrc, (BITMAPINFO*)(&(lpHostBrush->pattern)), DIB_RGB_COLORS, &pBits, NULL, 0);
@@ -1060,7 +1143,7 @@ static void npdisp_createBrush(NPDISP_HOSTBRUSH* lpHostBrush)
 			if (hPatBmpSrc) {
 				if (lpHostBrush->pattern.biHeader.biBitCount == 1) {
 					HGDIOBJ hOldBmpSrc = SelectObject(hdcSrc, hPatBmpSrc);
-					HBITMAP hPatBmp = CreateBitmap(8, 8, 1, 1, NULL); // DDB‚Å‚È‚¢‚Æƒpƒ^[ƒ“‚É‚Å‚«‚È‚¢H
+					HBITMAP hPatBmp = CreateBitmap(8, 8, 1, 1, NULL); // DDBã§ãªã„ã¨ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ã§ããªã„ï¼Ÿ
 					if (hPatBmp) {
 						HDC hdcPat = npdispwin.hdcCache[1];
 						HGDIOBJ hOldBmp = SelectObject(hdcPat, hPatBmp);
@@ -1086,7 +1169,7 @@ static void npdisp_createBrush(NPDISP_HOSTBRUSH* lpHostBrush)
 		}
 	}
 	else if (lpHostBrush->lbrush.lbStyle == NPDISP_BRUSH_STYLE_HOLLOW) {
-		// ‰½‚à‚µ‚È‚¢ƒuƒ‰ƒV¶¬
+		// ä½•ã‚‚ã—ãªã„ãƒ–ãƒ©ã‚·ç”Ÿæˆ
 		lpHostBrush->brs = NULL;
 	}
 }
@@ -1101,11 +1184,11 @@ static UINT32 npdisp_func_RealizeObject_CreateBrush(UINT32 lpInObjAddr, UINT32 l
 		if (ptOrigin.y < 0) ptOrigin.y += 8;
 	}
 	if (lpOutObjAddr) {
-		// ì¬
+		// ä½œæˆ
 		NPDISP_BRUSH brush = { {NPDISP_BRUSH_STYLE_SOLID, 15, NPDISP_BRUSH_HATCH_HORIZONTAL, 15} };
 		NPDISP_HOSTBRUSH hostbrush = { 0 };
 		if (lpInObjAddr) {
-			// w’è‚µ‚½İ’è‚Åì‚é
+			// æŒ‡å®šã—ãŸè¨­å®šã§ä½œã‚‹
 			npdisp_readMemory(&(brush.lbrush), lpInObjAddr, sizeof(NPDISP_LBRUSH));
 		}
 		int key = 0;
@@ -1130,14 +1213,14 @@ static UINT32 npdisp_func_RealizeObject_CreateBrush(UINT32 lpInObjAddr, UINT32 l
 		else {
 			hostbrush.lbrush = brush.lbrush;
 			if (brush.lbrush.lbStyle == NPDISP_BRUSH_STYLE_PATTERN) {
-				// ƒpƒ^[ƒ“ƒuƒ‰ƒVƒf[ƒ^æ“¾
+				// ãƒ‘ã‚¿ãƒ¼ãƒ³ãƒ–ãƒ©ã‚·ãƒ‡ãƒ¼ã‚¿å–å¾—
 				NPDISP_PBITMAP_EXT patternBmp = { 0 };
 				if (npdisp_readPBitmap(&patternBmp, brush.lbrush.lbColor)) {
 					NPDISP_WINDOWS_BMPHDC patternBmphdc = { 0 };
 					if (npdisp_MakeBitmapFromPBITMAP(&patternBmp, &patternBmphdc, 0)) {
 						if (patternBmp.bmHeight < 0) patternBmp.bmHeight = -patternBmp.bmHeight;
 						if (patternBmp.bmBitsPixel == 1) {
-							HBITMAP hPatBmp = CreateBitmap(8, 8, 1, 1, NULL); // DDB‚Å‚È‚¢‚Æƒpƒ^[ƒ“‚É‚Å‚«‚È‚¢H
+							HBITMAP hPatBmp = CreateBitmap(8, 8, 1, 1, NULL); // DDBã§ãªã„ã¨ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ã§ããªã„ï¼Ÿ
 							if (hPatBmp) {
 								HDC hdcPat = npdispwin.hdcCache[1];
 								HGDIOBJ hOldBmp = SelectObject(hdcPat, hPatBmp);
@@ -1150,7 +1233,7 @@ static UINT32 npdisp_func_RealizeObject_CreateBrush(UINT32 lpInObjAddr, UINT32 l
 									BitBlt(hdcPat, ptOrigin.x - 8, ptOrigin.y, 8, 8, patternBmphdc.hdc, 0, 0, SRCCOPY);
 									BitBlt(hdcPat, ptOrigin.x, ptOrigin.y, 8, 8, patternBmphdc.hdc, 0, 0, SRCCOPY);
 								}
-								hostbrush.brs = CreatePatternBrush(hPatBmp); // æ“¾‚Ì‚Â‚¢‚Å‚É¶¬‚Ü‚Å‚â‚é@npdisp_createBrush‚Ínop
+								hostbrush.brs = CreatePatternBrush(hPatBmp); // å–å¾—ã®ã¤ã„ã§ã«ç”Ÿæˆã¾ã§ã‚„ã‚‹ã€€npdisp_createBrushã¯nop
 								hostbrush.pattern.biHeader.biSize = sizeof(BITMAPINFOHEADER);
 								hostbrush.pattern.biHeader.biWidth = 8;
 								hostbrush.pattern.biHeader.biHeight = -8;
@@ -1191,7 +1274,7 @@ static UINT32 npdisp_func_RealizeObject_CreateBrush(UINT32 lpInObjAddr, UINT32 l
 									BitBlt(hdcPat, ptOrigin.x - 8, ptOrigin.y, 8, 8, patternBmphdc.hdc, 0, 0, SRCCOPY);
 									BitBlt(hdcPat, ptOrigin.x, ptOrigin.y, 8, 8, patternBmphdc.hdc, 0, 0, SRCCOPY);
 								}
-								hostbrush.brs = CreatePatternBrush(hPatBmp); // æ“¾‚Ì‚Â‚¢‚Å‚É¶¬‚Ü‚Å‚â‚é@npdisp_createBrush‚Ínop
+								hostbrush.brs = CreatePatternBrush(hPatBmp); // å–å¾—ã®ã¤ã„ã§ã«ç”Ÿæˆã¾ã§ã‚„ã‚‹ã€€npdisp_createBrushã¯nop
 								const int height = hostbrush.pattern.biHeader.biHeight >= 0 ? hostbrush.pattern.biHeader.biHeight : -hostbrush.pattern.biHeader.biHeight;
 								const int stride = ((hostbrush.pattern.biHeader.biWidth * hostbrush.pattern.biHeader.biBitCount + 31) / 32) * 4;
 								memcpy(hostbrush.pattern.bmBits, pBits, stride * height);
@@ -1207,35 +1290,35 @@ static UINT32 npdisp_func_RealizeObject_CreateBrush(UINT32 lpInObjAddr, UINT32 l
 					}
 				}
 			}
-			npdisp_createBrush(&hostbrush); // ƒuƒ‰ƒV¶¬
+			npdisp_createBrush(&hostbrush); // ãƒ–ãƒ©ã‚·ç”Ÿæˆ
 			hostbrush.refCount = 1;
 			brush.key = npdispwin.brushesIdx;
 			npdispwin.brushesIdx++;
-			if (npdispwin.brushesIdx == 0) npdispwin.brushesIdx++; // 0‚Íg‚í‚È‚¢‚±‚Æ‚É‚·‚é
+			if (npdispwin.brushesIdx == 0) npdispwin.brushesIdx++; // 0ã¯ä½¿ã‚ãªã„ã“ã¨ã«ã™ã‚‹
 			npdispwin.brushes[brush.key] = hostbrush;
 		}
-		// ‘‚«‚İ
+		// æ›¸ãè¾¼ã¿
 		npdisp_writeMemory(&brush, lpOutObjAddr, sizeof(NPDISP_BRUSH));
-		// F‚É‰‚¶‚Ä•Ô‚·H
+		// è‰²ã«å¿œã˜ã¦è¿”ã™ï¼Ÿ
 		return brush.lbrush.lbStyle == NPDISP_BRUSH_STYLE_SOLID ? 0x8002 : 0x8000;
 	}
-	// ƒTƒCƒY‚ğ•Ô‚·
+	// ã‚µã‚¤ã‚ºã‚’è¿”ã™
 	return sizeof(NPDISP_BRUSH);
 }
 static UINT32 npdisp_func_RealizeObject_CreateBitmap(UINT32 lpInObjAddr, UINT32 lpOutObjAddr)
 {
 	TRACEOUT(("RealizeObject Create OBJ_PBITMAP"));
 	if (lpOutObjAddr) {
-		// ì¬
+		// ä½œæˆ
 		NPDISP_PBITMAP_EXT ddbmp = { 0 };
 		NPDISP_HOSTBITMAP hostbmp = { 0 };
 		int bitmapsIdx = npdispwin.bitmapsIdx;
 		if (lpInObjAddr) {
-			// w’è‚µ‚½İ’è‚Åì‚é
+			// æŒ‡å®šã—ãŸè¨­å®šã§ä½œã‚‹
 			npdisp_readMemory(&ddbmp, lpInObjAddr, sizeof(NPDISP_PBITMAP));
 
-			// WORKAROUND: Win3.1ƒtƒ@ƒCƒ‹‘I‘ğƒ_ƒCƒAƒƒO“Á—á@bmBitsAddr‚ª0‚©‚ÂˆÙí‚Èbpp‚âplanes‚ªw’è‚³‚ê‚½‚Æ‚«AƒfƒoƒCƒX‚Æ“¯‚¶bpp‚Åì¬‚·‚é
-			// ‚à‚µ‚©‚·‚é‚ÆAbmBitsAddr‚ª0‚Æ‚¢‚¤ğŒ‚¾‚¯‚Å‚æ‚¢H
+			// WORKAROUND: Win3.1ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°ç‰¹ä¾‹ã€€bmBitsAddrãŒ0ã‹ã¤ç•°å¸¸ãªbppã‚„planesãŒæŒ‡å®šã•ã‚ŒãŸã¨ãã€ãƒ‡ãƒã‚¤ã‚¹ã¨åŒã˜bppã§ä½œæˆã™ã‚‹
+			// ã‚‚ã—ã‹ã™ã‚‹ã¨ã€bmBitsAddrãŒ0ã¨ã„ã†æ¡ä»¶ã ã‘ã§ã‚ˆã„ï¼Ÿ
 			if (((ddbmp.bmBitsPixel != 1 &&
 				  ddbmp.bmBitsPixel != 4 &&
 				  ddbmp.bmBitsPixel != 8 &&
@@ -1255,7 +1338,7 @@ static UINT32 npdisp_func_RealizeObject_CreateBitmap(UINT32 lpInObjAddr, UINT32 
 		}
 		if (ddbmp.bmType != NPDISP_DEVTYPE_DDB) {
 			if (npdisp_MakeBitmapFromPBITMAP(&ddbmp, &hostbmp.bmphdc, 2)) {
-				// HDCØ‚è—£‚µ
+				// HDCåˆ‡ã‚Šé›¢ã—
 				if (hostbmp.bmphdc.hdc) {
 					SelectObject(hostbmp.bmphdc.hdc, hostbmp.bmphdc.hOldBmp);
 					hostbmp.bmphdc.hdc = NULL;
@@ -1264,37 +1347,37 @@ static UINT32 npdisp_func_RealizeObject_CreateBitmap(UINT32 lpInObjAddr, UINT32 
 				ddbmp.ddbmpKey = bitmapsIdx;
 				if (bitmapsIdx == npdispwin.bitmapsIdx) {
 					npdispwin.bitmapsIdx++;
-					if (npdispwin.bitmapsIdx > UINT_MAX) npdispwin.bitmapsIdx = 1; // 32bit‚Ì”ÍˆÍ‚Å§ŒÀA0‚Íg‚í‚È‚¢‚±‚Æ‚É‚·‚é
-					if (npdispwin.bitmapsIdx == 0) npdispwin.bitmapsIdx++; // 0‚Íg‚í‚È‚¢‚±‚Æ‚É‚·‚é
+					if (npdispwin.bitmapsIdx > UINT_MAX) npdispwin.bitmapsIdx = 1; // 32bitã®ç¯„å›²ã§åˆ¶é™ã€0ã¯ä½¿ã‚ãªã„ã“ã¨ã«ã™ã‚‹
+					if (npdispwin.bitmapsIdx == 0) npdispwin.bitmapsIdx++; // 0ã¯ä½¿ã‚ãªã„ã“ã¨ã«ã™ã‚‹
 				}
 				npdispwin.bitmaps[ddbmp.ddbmpKey] = hostbmp;
-				if (npdispwin.bitmaps.size() < 2000000) { // —¬Î‚É‚±‚Ì”‚ ‚é‚Ì‚ÍˆÙí‚©‚ÆEEE
-					// ‹ó‚«‚ÌˆÊ’u‚É‚µ‚Ä‚¨‚­
+				if (npdispwin.bitmaps.size() < 2000000) { // æµçŸ³ã«ã“ã®æ•°ã‚ã‚‹ã®ã¯ç•°å¸¸ã‹ã¨ãƒ»ãƒ»ãƒ»
+					// ç©ºãã®ä½ç½®ã«ã—ã¦ãŠã
 					auto it = npdispwin.bitmaps.find(bitmapsIdx);
 					while (it != npdispwin.bitmaps.end()) {
 						bitmapsIdx++;
-						if (npdispwin.bitmapsIdx > UINT_MAX) npdispwin.bitmapsIdx = 1; // 32bit‚Ì”ÍˆÍ‚Å§ŒÀA0‚Íg‚í‚È‚¢‚±‚Æ‚É‚·‚é
+						if (npdispwin.bitmapsIdx > UINT_MAX) npdispwin.bitmapsIdx = 1; // 32bitã®ç¯„å›²ã§åˆ¶é™ã€0ã¯ä½¿ã‚ãªã„ã“ã¨ã«ã™ã‚‹
 						it = npdispwin.bitmaps.find(bitmapsIdx);
 					}
 				}
 
 				TRACEOUT10(("Realize Bitmap %d %08x", npdispwin.bitmapsIdx, lpOutObjAddr));
 
-				// ‘‚«‚İ
+				// æ›¸ãè¾¼ã¿
 				ddbmp.bmType = NPDISP_DEVTYPE_DDB;
 				npdisp_writePBitmap(&ddbmp, lpOutObjAddr);
 			}
 		}
 	}
-	// ƒTƒCƒY‚ğ•Ô‚·
+	// ã‚µã‚¤ã‚ºã‚’è¿”ã™
 	return sizeof(NPDISP_PBITMAP_EXT);
 }
 static UINT32 npdisp_func_RealizeObject(UINT32 lpDestDevAddr, UINT16 wStyle, UINT32 lpInObjAddr, UINT32 lpOutObjAddr, UINT32 lpTextXFormAddr)
 {
 	UINT32 retValue = 0;
 	if ((SINT16)wStyle < 0) {
-		// íœ
-		retValue = 1; // í‚É¬Œ÷‚µ‚½‚±‚Æ‚É‚·‚é
+		// å‰Šé™¤
+		retValue = 1; // å¸¸ã«æˆåŠŸã—ãŸã“ã¨ã«ã™ã‚‹
 		switch (-((SINT16)wStyle)) {
 		case 1: // OBJ_PEN
 		{
@@ -1309,7 +1392,7 @@ static UINT32 npdisp_func_RealizeObject(UINT32 lpDestDevAddr, UINT16 wStyle, UIN
 		case 3: // OBJ_FONT
 		{
 			TRACEOUT(("RealizeObject Release OBJ_FONT"));
-			// ¸”s‚Æ‚¢‚¤‚±‚Æ‚É‚µ‚Ä0‚ğ•Ô‚·
+			// å¤±æ•—ã¨ã„ã†ã“ã¨ã«ã—ã¦0ã‚’è¿”ã™
 			retValue = 0;
 			break;
 		}
@@ -1340,7 +1423,7 @@ static UINT32 npdisp_func_RealizeObject(UINT32 lpDestDevAddr, UINT16 wStyle, UIN
 		case 3: // OBJ_FONT
 		{
 			TRACEOUT(("RealizeObject Create OBJ_FONT"));
-			// ¸”s‚Æ‚¢‚¤‚±‚Æ‚É‚µ‚Ä0‚ğ•Ô‚·
+			// å¤±æ•—ã¨ã„ã†ã“ã¨ã«ã—ã¦0ã‚’è¿”ã™
 			retValue = 0;
 			break;
 		}
@@ -1351,7 +1434,7 @@ static UINT32 npdisp_func_RealizeObject(UINT32 lpDestDevAddr, UINT16 wStyle, UIN
 		}
 		default:
 		{
-			retValue = 0; // ƒfƒoƒCƒXì¬•s‰Â
+			retValue = 0; // ãƒ‡ãƒã‚¤ã‚¹ä½œæˆä¸å¯
 			TRACEOUT(("RealizeObject Create UNKNOWN"));
 			break;
 		}
@@ -1371,7 +1454,7 @@ static UINT16 npdisp_func_Control(UINT32 lpDestDevAddr, UINT16 wFunction, UINT32
 		{
 			UINT16 escNum = npdisp_readMemory16(lpInDataAddr);
 			switch (escNum) {
-			case NPDISP_CONTROL_QUERYESCSUPPORT: // QUERYESCSUPPORT‚Í•K‚¸ƒTƒ|[ƒg
+			case NPDISP_CONTROL_QUERYESCSUPPORT: // QUERYESCSUPPORTã¯å¿…ãšã‚µãƒãƒ¼ãƒˆ
 			case NPDISP_CONTROL_OPENGL_CMD:
 			case NPDISP_CONTROL_OPENGL_GETINFO:
 			case NPDISP_CONTROL_WNDOBJ_SETUP:
@@ -1379,7 +1462,7 @@ static UINT16 npdisp_func_Control(UINT32 lpDestDevAddr, UINT16 wFunction, UINT32
 				retValue = 1;
 				break;
 			}
-			case NPDISP_CONTROL_QUERYDIBSUPPORT: // Undocumented: DIB Support? ‚±‚ê‚ğ•Ô‚·‚¾‚¯‚ÅƒpƒtƒH[ƒ}ƒ“ƒX‚ª‘å•‚Éã‚ª‚é
+			case NPDISP_CONTROL_QUERYDIBSUPPORT: // Undocumented: DIB Support? ã“ã‚Œã‚’è¿”ã™ã ã‘ã§ãƒ‘ãƒ•ã‚©ãƒ¼ãƒãƒ³ã‚¹ãŒå¤§å¹…ã«ä¸ŠãŒã‚‹
 			{
 				retValue = NPDISP_QDI_SETDIBITS | NPDISP_QDI_GETDIBITS | NPDISP_QDI_DIBTOSCREEN | NPDISP_QDI_STRETCHDIB;
 				break;
@@ -1456,7 +1539,7 @@ static UINT16 npdisp_func_Control(UINT32 lpDestDevAddr, UINT16 wFunction, UINT32
 			if (lpInDataAddr) {
 				NPDISP_DCICMD dciCmd;
 				if (npdisp_readMemory(&dciCmd, lpInDataAddr, sizeof(dciCmd))) {
-					// NOTE: DirectDrawŠÖŒW‚ÌƒRƒ}ƒ“ƒh‚ªŒÄ‚Î‚ê‚é‚½‚ß‚É‚ÍDIB EngineŒİŠ·‚Å‚È‚¢‚Æ‚¾‚ß
+					// NOTE: DirectDrawé–¢ä¿‚ã®ã‚³ãƒãƒ³ãƒ‰ãŒå‘¼ã°ã‚Œã‚‹ãŸã‚ã«ã¯DIB Engineäº’æ›ã§ãªã„ã¨ã ã‚
 					switch (dciCmd.dwCommand) {
 					case NPDISP_CONTROL_DCI_DCICREATEPRIMARYSURFACE:
 					{
@@ -1477,13 +1560,13 @@ static UINT16 npdisp_func_Control(UINT32 lpDestDevAddr, UINT16 wFunction, UINT32
 							surfaceInfo.dwCompression = BI_RGB;
 							if (npdisp.bpp == 15 || npdisp.bpp == 16 || npdisp.bpp == 32) {
 								if (npdisp.bpp == 16) {
-									// ƒrƒbƒgƒtƒB[ƒ‹ƒh 565
+									// ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ 565
 									surfaceInfo.dwMask[0] = 0x0000F800;
 									surfaceInfo.dwMask[1] = 0x000007E0;
 									surfaceInfo.dwMask[2] = 0x0000001F;
 								}
 								else if (npdisp.bpp == 15) {
-									// ƒrƒbƒgƒtƒB[ƒ‹ƒh 555
+									// ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ 555
 									surfaceInfo.dwMask[0] = 0x00007C00;
 									surfaceInfo.dwMask[1] = 0x000003E0;
 									surfaceInfo.dwMask[2] = 0x0000001F;
@@ -1555,7 +1638,7 @@ static UINT16 npdisp_func_Control(UINT32 lpDestDevAddr, UINT16 wFunction, UINT32
 			break;
 		}
 		}
-		// •K—v‚È‚çƒTƒ|[ƒg
+		// å¿…è¦ãªã‚‰ã‚µãƒãƒ¼ãƒˆ
 	}
 	return retValue;
 }
@@ -1588,7 +1671,7 @@ static UINT16 npdisp_func_BitBlt(UINT32 lpDestDevAddr, SINT16 wDestX, SINT16 wDe
 		}
 	}
 	else {
-		retValue = 1; // ¬Œ÷‚µ‚½‚±‚Æ‚É‚·‚é
+		retValue = 1; // æˆåŠŸã—ãŸã“ã¨ã«ã™ã‚‹
 	}
 	return retValue;
 }
@@ -1603,7 +1686,7 @@ static UINT16 npdisp_func_StretchBlt(UINT32 lpDestDevAddr, SINT16 wDestX, SINT16
 	UINT16 retValue = 0;
 
 	if (wDestXext < 0 || wDestYext < 0 || wSrcXext < 0 || wSrcYext < 0) {
-		// b’è@”½“]“]‘—‚Í‚â‚â‚±‚µ‚¢‚Ì‚ÅGDI‚É‚â‚ç‚¹‚é
+		// æš«å®šã€€åè»¢è»¢é€ã¯ã‚„ã‚„ã“ã—ã„ã®ã§GDIã«ã‚„ã‚‰ã›ã‚‹
 		return 0xffff;
 	}
 
@@ -1628,7 +1711,7 @@ static UINT16 npdisp_func_StretchBlt(UINT32 lpDestDevAddr, SINT16 wDestX, SINT16
 		}
 	}
 	else {
-		retValue = 1; // ¬Œ÷‚µ‚½‚±‚Æ‚É‚·‚é
+		retValue = 1; // æˆåŠŸã—ãŸã“ã¨ã«ã™ã‚‹
 	}
 	return retValue;
 }
@@ -1641,7 +1724,7 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 		if (npdisp_readPBitmap(&tgtPBmp, lpBitmapAddr)) {
 			BITMAPINFOHEADER biHeader = { 0 };
 			npdisp_readMemory(&biHeader, lpBitmapInfoAddr, sizeof(BITMAPINFOHEADER));
-			if (biHeader.biPlanes == 1 && (biHeader.biBitCount == 1 || biHeader.biBitCount == 4 || biHeader.biBitCount == 8 || biHeader.biBitCount == 15 || biHeader.biBitCount == 16 || biHeader.biBitCount == 24 || biHeader.biBitCount == 32) && biHeader.biHeight > iStart) { // XXX: biHeader.biHeight‚ªƒ}ƒCƒiƒX‚Í‚ ‚è“¾‚é‚©HH@—vŠm”F
+			if (biHeader.biPlanes == 1 && (biHeader.biBitCount == 1 || biHeader.biBitCount == 4 || biHeader.biBitCount == 8 || biHeader.biBitCount == 15 || biHeader.biBitCount == 16 || biHeader.biBitCount == 24 || biHeader.biBitCount == 32) && biHeader.biHeight > iStart) { // XXX: biHeader.biHeightãŒãƒã‚¤ãƒŠã‚¹ã¯ã‚ã‚Šå¾—ã‚‹ã‹ï¼Ÿï¼Ÿã€€è¦ç¢ºèª
 				NPDISP_WINDOWS_BMPHDC tgtbmphdc = { 0 };
 				int stride = ((biHeader.biWidth * biHeader.biBitCount + 31) / 32) * 4;
 				int height = cScans;
@@ -1687,12 +1770,12 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 					npdisp_readMemory(lpbi, lpBitmapInfoAddr, lpbiReadLen);
 					if (lpDIBitsAddr) {
 						bool useRGBBlt = false;
-						UINT16* transTbl = NULL; // transTbl‚ÍbiBitCount‚É‚æ‚ç‚¸UINT16”z—ñ‚É•ÏŠ·‚·‚é
+						UINT16* transTbl = NULL; // transTblã¯biBitCountã«ã‚ˆã‚‰ãšUINT16é…åˆ—ã«å¤‰æ›ã™ã‚‹
 						int colors = (1 << lpbi->bmiHeader.biBitCount);
 						if (lpTranslateAddr && npdisp.bpp <= 8) {
 							if (lpbi->bmiHeader.biBitCount == 8) {
 								if (fGet) {
-									// 1byte x 256F ‚Å“n‚³‚ê‚é
+									// 1byte x 256è‰² ã§æ¸¡ã•ã‚Œã‚‹
 									UINT8* transTbl8 = (UINT8*)malloc(colors);
 									if (transTbl8) {
 										if (npdisp_readMemory(transTbl8, lpTranslateAddr, colors)) {
@@ -1707,7 +1790,7 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 									}
 								}
 								else {
-									// 2byte x 256F ‚Å“n‚³‚ê‚é?
+									// 2byte x 256è‰² ã§æ¸¡ã•ã‚Œã‚‹?
 									transTbl = (UINT16*)malloc(colors * sizeof(UINT16));
 									if (transTbl) {
 										npdisp_readMemory(transTbl, lpTranslateAddr, colors * sizeof(UINT16));
@@ -1716,19 +1799,19 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 							}
 							else {
 								if (fGet) {
-									// XXX: ‚æ‚­•ª‚©‚ç‚È‚¢
+									// XXX: ã‚ˆãåˆ†ã‹ã‚‰ãªã„
 									useRGBBlt = true;
 								}
 								else {
 									if (lpbi->bmiHeader.biBitCount == 4) {
-										// 2byte x 16F ‚Å“n‚³‚ê‚é?
+										// 2byte x 16è‰² ã§æ¸¡ã•ã‚Œã‚‹?
 										transTbl = (UINT16*)malloc(colors * sizeof(UINT16));
 										if (transTbl) {
 											npdisp_readMemory(transTbl, lpTranslateAddr, colors * sizeof(UINT16));
 										}
 									}
 									else if (lpbi->bmiHeader.biBitCount == 1) {
-										// 2byte x 2F ‚Å“n‚³‚ê‚éH
+										// 2byte x 2è‰² ã§æ¸¡ã•ã‚Œã‚‹ï¼Ÿ
 										transTbl = (UINT16*)malloc(colors * sizeof(UINT16));
 										if (transTbl) {
 											npdisp_readMemory(transTbl, lpTranslateAddr, colors * sizeof(UINT16));
@@ -1739,10 +1822,10 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 						}
 						npdisp_PreloadBitmapFromPBITMAP(&tgtPBmp, 0, beginLine, height);
 						if (lpbi->bmiHeader.biCompression == BI_RGB || lpbi->bmiHeader.biCompression == BI_BITFIELDS) {
-							npdisp_preloadMemory(lpDIBitsAddr, stride * height); // –³ˆ³k‚È‚ç‰æ‘œƒTƒCƒY‚Åæ“Ç‚İ
+							npdisp_preloadMemory(lpDIBitsAddr, stride * height); // ç„¡åœ§ç¸®ãªã‚‰ç”»åƒã‚µã‚¤ã‚ºã§å…ˆèª­ã¿
 						}
 						else if (lpbi->bmiHeader.biSizeImage) {
-							npdisp_preloadMemory(lpDIBitsAddr, lpbi->bmiHeader.biSizeImage); // RLEˆ³k‚ÅƒTƒCƒYŠù’m‚È‚çæ“Ç‚İ
+							npdisp_preloadMemory(lpDIBitsAddr, lpbi->bmiHeader.biSizeImage); // RLEåœ§ç¸®ã§ã‚µã‚¤ã‚ºæ—¢çŸ¥ãªã‚‰å…ˆèª­ã¿
 						}
 						if (npdisp.longjmpnum == 0 && npdisp_MakeBitmapFromPBITMAP(&tgtPBmp, &tgtbmphdc, 0, beginLine, height)) {
 							npdisp_ConvertToDDBMonoBitmap(&tgtbmphdc);
@@ -1752,7 +1835,7 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 							}
 							lpbi->bmiHeader.biHeight = height;
 							//if (lpbi->bmiHeader.biSizeImage == 0 && lpbi->bmiHeader.biBitCount <= 8) {
-							//	// XXX: ‰æ‘œƒf[ƒ^‚ª‚È‚¯‚ê‚ÎƒpƒŒƒbƒgƒZƒbƒgA‚ ‚ê‚Î‚»‚Ì‚Ü‚Ü@ª‹’–³‚µ
+							//	// XXX: ç”»åƒãƒ‡ãƒ¼ã‚¿ãŒãªã‘ã‚Œã°ãƒ‘ãƒ¬ãƒƒãƒˆã‚»ãƒƒãƒˆã€ã‚ã‚Œã°ãã®ã¾ã¾ã€€æ ¹æ‹ ç„¡ã—
 							//	int colors = (1 << lpbi->bmiHeader.biBitCount);
 							//	for (i = 0; i < colors; i++) {
 							//		if (lpbi->bmiColors[i].rgbReserved || fGet) {
@@ -1766,7 +1849,7 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 							if (npdisp.usePalette) {
 								if (lpbi->bmiHeader.biBitCount <= 8) {
 									if (lpTranslateAddr) {
-										// transTbl‚ÉƒCƒ“ƒfƒbƒNƒX•ÏŠ·•\‚ª“ü‚é
+										// transTblã«ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹å¤‰æ›è¡¨ãŒå…¥ã‚‹
 										if (transTbl) {
 											for (i = 0; i < colors; i++) {
 												lpbi->bmiColors[i].rgbRed = transTbl[i] & 0xff;
@@ -1791,7 +1874,7 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 							}
 							else if (fGet) {
 								if (lpbi->bmiHeader.biBitCount == 1) {
-									// —LŒø‚ÈƒpƒŒƒbƒg‚Å‚È‚¯‚ê‚Î2FƒpƒŒƒbƒgƒZƒbƒg
+									// æœ‰åŠ¹ãªãƒ‘ãƒ¬ãƒƒãƒˆã§ãªã‘ã‚Œã°2è‰²ãƒ‘ãƒ¬ãƒƒãƒˆã‚»ãƒƒãƒˆ
 									if (lpbi->bmiColors[0].rgbRed != 0 || lpbi->bmiColors[0].rgbGreen != 0 || lpbi->bmiColors[0].rgbBlue != 0 || lpbi->bmiColors[0].rgbReserved != 0 ||
 										lpbi->bmiColors[1].rgbRed != 0xff || lpbi->bmiColors[1].rgbGreen != 0xff || lpbi->bmiColors[1].rgbBlue != 0xff || lpbi->bmiColors[1].rgbReserved != 0) {
 										for (i = biHeader.biClrUsed; i < NELEMENTS(npdisp_palette_rgb2); i++) {
@@ -1801,12 +1884,12 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 											lpbi->bmiColors[i].rgbReserved = 0;
 										}
 										if (fGet) {
-											npdisp_writeMemory(lpbi, lpBitmapInfoAddr, lpbiReadLen); // •ÏX‚µ‚½ƒpƒŒƒbƒg‚ğ‘‚«–ß‚µ
+											npdisp_writeMemory(lpbi, lpBitmapInfoAddr, lpbiReadLen); // å¤‰æ›´ã—ãŸãƒ‘ãƒ¬ãƒƒãƒˆã‚’æ›¸ãæˆ»ã—
 										}
 									}
 								}
 								else if (lpbi->bmiHeader.biBitCount == 4) {
-									// —LŒø‚ÈƒpƒŒƒbƒg‚Å‚È‚¯‚ê‚Î16FƒpƒŒƒbƒgƒZƒbƒg
+									// æœ‰åŠ¹ãªãƒ‘ãƒ¬ãƒƒãƒˆã§ãªã‘ã‚Œã°16è‰²ãƒ‘ãƒ¬ãƒƒãƒˆã‚»ãƒƒãƒˆ
 									if (lpbi->bmiColors[0].rgbRed != 0 || lpbi->bmiColors[0].rgbGreen != 0 || lpbi->bmiColors[0].rgbBlue != 0 ||
 										lpbi->bmiColors[15].rgbRed != 0xff || lpbi->bmiColors[15].rgbGreen != 0xff || lpbi->bmiColors[15].rgbBlue != 0xff) {
 										for (i = biHeader.biClrUsed; i < NELEMENTS(npdisp_palette_rgb16); i++) {
@@ -1816,12 +1899,12 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 											lpbi->bmiColors[i].rgbReserved = 0;
 										}
 										if (fGet) {
-											npdisp_writeMemory(lpbi, lpBitmapInfoAddr, lpbiReadLen); // •ÏX‚µ‚½ƒpƒŒƒbƒg‚ğ‘‚«–ß‚µ
+											npdisp_writeMemory(lpbi, lpBitmapInfoAddr, lpbiReadLen); // å¤‰æ›´ã—ãŸãƒ‘ãƒ¬ãƒƒãƒˆã‚’æ›¸ãæˆ»ã—
 										}
 									}
 								}
 								else if (lpbi->bmiHeader.biBitCount == 8) {
-									// —LŒø‚ÈƒpƒŒƒbƒg‚Å‚È‚¯‚ê‚Î256FƒpƒŒƒbƒgƒZƒbƒg
+									// æœ‰åŠ¹ãªãƒ‘ãƒ¬ãƒƒãƒˆã§ãªã‘ã‚Œã°256è‰²ãƒ‘ãƒ¬ãƒƒãƒˆã‚»ãƒƒãƒˆ
 									if (lpbi->bmiColors[0].rgbRed != 0 || lpbi->bmiColors[0].rgbGreen != 0 || lpbi->bmiColors[0].rgbBlue != 0 ||
 										lpbi->bmiColors[255].rgbRed != 0xff || lpbi->bmiColors[255].rgbGreen != 0xff || lpbi->bmiColors[255].rgbBlue != 0xff) {
 										for (i = biHeader.biClrUsed; i < NELEMENTS(npdisp_palette_rgb256); i++) {
@@ -1831,7 +1914,7 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 											lpbi->bmiColors[i].rgbReserved = 0;
 										}
 										if (fGet) {
-											npdisp_writeMemory(lpbi, lpBitmapInfoAddr, lpbiReadLen); // •ÏX‚µ‚½ƒpƒŒƒbƒg‚ğ‘‚«–ß‚µ
+											npdisp_writeMemory(lpbi, lpBitmapInfoAddr, lpbiReadLen); // å¤‰æ›´ã—ãŸãƒ‘ãƒ¬ãƒƒãƒˆã‚’æ›¸ãæˆ»ã—
 										}
 									}
 								}
@@ -1842,7 +1925,7 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 							}
 							bool isCompress = !(biCompression == BI_RGB || biCompression == BI_BITFIELDS);
 							if (isCompress) {
-								// ˆ³k‚È‚çí‚É‘S•”‚ğ“Ç‚Ş
+								// åœ§ç¸®ãªã‚‰å¸¸ã«å…¨éƒ¨ã‚’èª­ã‚€
 								if (biHeader.biHeight < 0) {
 									lpbi->bmiHeader.biHeight = -biHeader.biHeight;
 								}
@@ -1860,14 +1943,14 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 								RGBQUAD oldpal0 = lpbi->bmiColors[0];
 								RGBQUAD oldpalf = lpbi->bmiColors[colors - 1];
 
-								// ƒ}ƒXƒN—pƒpƒŒƒbƒg‚É•ÏX
+								// ãƒã‚¹ã‚¯ç”¨ãƒ‘ãƒ¬ãƒƒãƒˆã«å¤‰æ›´
 								lpbi->bmiHeader.biClrUsed = colors;
 								lpbi->bmiColors[0].rgbRed = lpbi->bmiColors[0].rgbGreen = lpbi->bmiColors[0].rgbBlue = lpbi->bmiColors[0].rgbReserved = 0x00;
 								lpbi->bmiColors[colors - 1].rgbRed = lpbi->bmiColors[colors - 1].rgbGreen = lpbi->bmiColors[colors - 1].rgbBlue = lpbi->bmiColors[colors - 1].rgbReserved = 0xff;
 
 								hBmpValid = CreateDIBSection(npdispwin.hdc, lpbi, DIB_RGB_COLORS, &pBitsValid, NULL, 0);
 
-								// Œ³‚ÌƒpƒŒƒbƒg‚Ö–ß‚·
+								// å…ƒã®ãƒ‘ãƒ¬ãƒƒãƒˆã¸æˆ»ã™
 								lpbi->bmiHeader.biClrUsed = oldColorUsed;
 								lpbi->bmiColors[0] = oldpal0;
 								lpbi->bmiColors[colors - 1] = oldpalf;
@@ -1882,20 +1965,20 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 								else {
 									UINT32 rleSize = lpbi->bmiHeader.biSizeImage;
 									if (rleSize == 0) {
-										rleSize = stride * height; // ‚Æ‚è‚ ‚¦‚¸–³ˆ³k‚ÌƒTƒCƒY‚ğŠm•Û
+										rleSize = stride * height; // ã¨ã‚Šã‚ãˆãšç„¡åœ§ç¸®ã®ã‚µã‚¤ã‚ºã‚’ç¢ºä¿
 									}
 									UINT8* cdata = (UINT8*)malloc(rleSize);
 									if (cdata) {
 										BITMAPINFOHEADER bmiHeaderRLE = lpbi->bmiHeader;
 										bmiHeaderRLE.biCompression = biCompression;
 										if (bmiHeaderRLE.biHeight > 0) {
-											bmiHeaderRLE.biHeight = -bmiHeaderRLE.biHeight; // ‹t‚³‚Åo—Í
+											bmiHeaderRLE.biHeight = -bmiHeaderRLE.biHeight; // é€†ã•ã§å‡ºåŠ›
 										}
 										if (lpbi->bmiHeader.biSizeImage != 0) {
 											npdisp_readMemory(cdata, lpDIBitsAddr, rleSize);
 										}
 										else {
-											// RLEI’[‚ª—ˆ‚é‚Ü‚Å“Ç‚Ş Å‘å“Ç‚İæ‚èƒTƒCƒY‚Í–³ˆ³kƒTƒCƒY‚Æ‚·‚é
+											// RLEçµ‚ç«¯ãŒæ¥ã‚‹ã¾ã§èª­ã‚€ æœ€å¤§èª­ã¿å–ã‚Šã‚µã‚¤ã‚ºã¯ç„¡åœ§ç¸®ã‚µã‚¤ã‚ºã¨ã™ã‚‹
 											rleSize = npdisp_RLEBMPReadAndCalcSize(lpDIBitsAddr, bmiHeaderRLE.biCompression, cdata, rleSize);
 										}
 										npdisp_DecompressRLEBMP(&bmiHeaderRLE, cdata, rleSize, (UINT8*)pBits, (UINT8*)pBitsValid);
@@ -1906,7 +1989,7 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 									bool palChanged = false;
 									if (npdisp.usePalette) {
 										if (lpbi->bmiHeader.biBitCount > 8 || useRGBBlt) {
-											// ƒOƒŒ[ƒXƒP[ƒ‹‚©‚çÀÛ‚ÌƒfƒoƒCƒXF‚Ö’u‚«Š·‚¦
+											// ã‚°ãƒ¬ãƒ¼ã‚¹ã‚±ãƒ¼ãƒ«ã‹ã‚‰å®Ÿéš›ã®ãƒ‡ãƒã‚¤ã‚¹è‰²ã¸ç½®ãæ›ãˆ
 											if (npdisp.bpp == 8) {
 												RGBQUAD pal[256];
 												for (int i = 0; i < 256; i++) {
@@ -1949,7 +2032,7 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 											}
 										}
 										else {
-											// ƒTƒ|[ƒg‚µ‚È‚¢
+											// ã‚µãƒãƒ¼ãƒˆã—ãªã„
 											//UINT8* cdata = (UINT8*)malloc(lpbi->bmiHeader.biSizeImage);
 											//if (cdata) {
 
@@ -1969,7 +2052,7 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 										//					lpbi->bmiColors[i].rgbBlue = npdisp_palette_rgb256[idx].b;
 										//					lpbi->bmiColors[i].rgbReserved = 0;
 										//				}
-										//				npdisp_writeMemory(lpbi, lpBitmapInfoAddr, lpbiWriteLen); // ˜_—ƒJƒ‰[‚ğ‘‚«–ß‚µ
+										//				npdisp_writeMemory(lpbi, lpBitmapInfoAddr, lpbiWriteLen); // è«–ç†ã‚«ãƒ©ãƒ¼ã‚’æ›¸ãæˆ»ã—
 										//			}
 										//			//else if (lpbi->bmiHeader.biBitCount == 4) {
 										//			//	for (i = 0; i < colors; i++) {
@@ -1979,7 +2062,7 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 										//			//		lpbi->bmiColors[i].rgbBlue = npdisp_palette_rgb16[idx].b;
 										//			//		lpbi->bmiColors[i].rgbReserved = 0;
 										//			//	}
-										//			//	npdisp_writeMemory(lpbi, lpBitmapInfoAddr, lpbiWriteLen); // ˜_—ƒJƒ‰[‚ğ‘‚«–ß‚µ
+										//			//	npdisp_writeMemory(lpbi, lpBitmapInfoAddr, lpbiWriteLen); // è«–ç†ã‚«ãƒ©ãƒ¼ã‚’æ›¸ãæˆ»ã—
 										//			//}
 										//		}
 										//	}
@@ -1989,10 +2072,10 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 										// Set Bits
 										if (isCompress && pBitsValid) {
 											int y = biHeader.biHeight - height - iStart;
-											// —LŒø”ÍˆÍ‚ğƒ}ƒXƒNiRLE‚Ì–¢’è‹`ƒsƒNƒZƒ‹‚Í•`‰æ‚µ‚È‚¢j
+											// æœ‰åŠ¹ç¯„å›²ã‚’ãƒã‚¹ã‚¯ï¼ˆRLEã®æœªå®šç¾©ãƒ”ã‚¯ã‚»ãƒ«ã¯æç”»ã—ãªã„ï¼‰
 											HGDIOBJ hOldBmp2 = SelectObject(hdc, hBmpValid);
 											BitBlt(tgtbmphdc.hdc, 0, biHeader.biHeight - height - iStart, biHeader.biWidth, height, hdc, 0, y, SRCAND);
-											// —LŒø”ÍˆÍ‚ğ“]‘—
+											// æœ‰åŠ¹ç¯„å›²ã‚’è»¢é€
 											SelectObject(hdc, hOldBmp2);
 											BitBlt(tgtbmphdc.hdc, 0, biHeader.biHeight - height - iStart, biHeader.biWidth, height, hdc, 0, y, SRCPAINT);
 										}
@@ -2005,7 +2088,7 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 									}
 
 									if (palChanged) {
-										// F‚ğ–ß‚·
+										// è‰²ã‚’æˆ»ã™
 										SetDIBColorTable(tgtbmphdc.hdc, 0, 256, (RGBQUAD*)npdisp_palette_gray256);
 									}
 								}
@@ -2024,20 +2107,20 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 					}
 					else {
 						int i;
-						// lpDIBits‚ªNULL‚ÌAbiSizeImage‚ğİ’è‚·‚é
+						// lpDIBitsãŒNULLã®æ™‚ã€biSizeImageã‚’è¨­å®šã™ã‚‹
 						lpbi->bmiHeader.biSizeImage = stride * (biHeader.biHeight >= 0 ? biHeader.biHeight : -biHeader.biHeight);
 						if (lpbi->bmiHeader.biBitCount == 16 || lpbi->bmiHeader.biBitCount == 15) {
-							// ƒhƒLƒ…ƒƒ“ƒg‚É–¾Œ¾‚³‚ê‚Ä‚¢‚È‚¢‚ªA16bitƒJƒ‰[‚Ì‚ÍƒrƒbƒgƒtƒB[ƒ‹ƒh‚ğ•Ô‚³‚È‚¢‚Æ‘Ê–Ú
+							// ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆã«æ˜è¨€ã•ã‚Œã¦ã„ãªã„ãŒã€16bitã‚«ãƒ©ãƒ¼ã®æ™‚ã¯ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚’è¿”ã•ãªã„ã¨é§„ç›®
 							if (lpbi->bmiHeader.biCompression) {
 								if (npdisp.bpp == 16 && lpbi->bmiHeader.biBitCount != 15) {
-									// ƒrƒbƒgƒtƒB[ƒ‹ƒh 565
+									// ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ 565
 									lpbi->bmiHeader.biCompression = BI_BITFIELDS;
 									*((DWORD*)(lpbi->bmiColors + 0)) = 0x0000F800;
 									*((DWORD*)(lpbi->bmiColors + 1)) = 0x000007E0;
 									*((DWORD*)(lpbi->bmiColors + 2)) = 0x0000001F;
 								}
 								else {
-									// ƒrƒbƒgƒtƒB[ƒ‹ƒh 555
+									// ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ 555
 									lpbi->bmiHeader.biCompression = BI_BITFIELDS;
 									*((DWORD*)(lpbi->bmiColors + 0)) = 0x00007C00;
 									*((DWORD*)(lpbi->bmiColors + 1)) = 0x000003E0;
@@ -2047,17 +2130,17 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 							}
 						}
 						else if (lpbi->bmiHeader.biBitCount == 1) {
-							// 2FƒpƒŒƒbƒgƒZƒbƒg
+							// 2è‰²ãƒ‘ãƒ¬ãƒƒãƒˆã‚»ãƒƒãƒˆ
 							memcpy(lpbi->bmiColors, npdisp_palette_rgb2, sizeof(npdisp_palette_rgb2));
 						}
 						else if (lpbi->bmiHeader.biBitCount == 4) {
-							// 16FƒpƒŒƒbƒgƒZƒbƒg
+							// 16è‰²ãƒ‘ãƒ¬ãƒƒãƒˆã‚»ãƒƒãƒˆ
 							memcpy(lpbi->bmiColors, npdisp_palette_rgb16, sizeof(npdisp_palette_rgb16));
 						}
 						//else if (lpbi->bmiHeader.biBitCount == 8) {
-						//	// 256FƒpƒŒƒbƒgƒZƒbƒg
+						//	// 256è‰²ãƒ‘ãƒ¬ãƒƒãƒˆã‚»ãƒƒãƒˆ
 						//	if (npdisp.usePalette) {
-						//		// ƒpƒŒƒbƒg”Ô†•ÏŠ·‚Ìã“]‘—
+						//		// ãƒ‘ãƒ¬ãƒƒãƒˆç•ªå·å¤‰æ›ã®ä¸Šè»¢é€
 						//		for (i = 0; i < NELEMENTS(npdisp_palette_rgb256); i++) {
 						//			lpbi->bmiColors[i].rgbRed = npdisp_palette_rgb256[npdisp_palette_transTbl[i] & 0xff].r;
 						//			lpbi->bmiColors[i].rgbGreen = npdisp_palette_rgb256[npdisp_palette_transTbl[i] & 0xff].g;
@@ -2076,14 +2159,14 @@ static UINT16 npdisp_func_DeviceBitmapBits(UINT32 lpBitmapAddr, UINT16 fGet, UIN
 						//}
 						else if (lpbi->bmiHeader.biBitCount == 32) {
 							if (lpbi->bmiHeader.biCompression == BI_BITFIELDS) {
-								// ƒrƒbƒgƒtƒB[ƒ‹ƒh 32bit
+								// ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ 32bit
 								*((DWORD*)(lpbi->bmiColors + 0)) = 0x00FF0000;
 								*((DWORD*)(lpbi->bmiColors + 1)) = 0x0000FF00;
 								*((DWORD*)(lpbi->bmiColors + 2)) = 0x000000FF;
 							}
 						}
 						npdisp_writeMemory(lpbi, lpBitmapInfoAddr, lpbiReadLen);
-						retValue = height; // ‚±‚±‚Å’l‚ğ•Ô‚·‚ÆƒAƒCƒRƒ“ƒLƒƒƒbƒVƒ…‚ğg‚¤‚æ‚¤‚É‚È‚éH
+						retValue = height; // ã“ã“ã§å€¤ã‚’è¿”ã™ã¨ã‚¢ã‚¤ã‚³ãƒ³ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚’ä½¿ã†ã‚ˆã†ã«ãªã‚‹ï¼Ÿ
 					}
 					free(lpbi);
 				}
@@ -2105,7 +2188,7 @@ static UINT32 npdisp_func_ExtTextOut(UINT32 lpDestDevAddr, SINT16 wDestXOrg, SIN
 		lpText = (UINT8*)npdisp_readMemoryStringWithCount(lpStringAddr, wCount < 0 ? -wCount : wCount);
 	}
 	else {
-		// ƒ_ƒ~[‚ğ‚¢‚ê‚Ä‚¨‚­
+		// ãƒ€ãƒŸãƒ¼ã‚’ã„ã‚Œã¦ãŠã
 		lpText = (UINT8*)malloc(1);
 		lpText[0] = '\0';
 	}
@@ -2134,6 +2217,7 @@ static UINT32 npdisp_func_ExtTextOut(UINT32 lpDestDevAddr, SINT16 wDestXOrg, SIN
 			//HGDIOBJ oldFont = SelectObject(tgtDC, npdispwin.hFont);
 			NPDISP_FONTINFO fontInfo;
 			if (npdisp_readMemory(&fontInfo, lpFontInfoAddr, sizeof(NPDISP_FONTINFO))) {
+				bool hasDBCS = (UINT8)fontInfo.dfCharSet == 0x80;
 				SIZE sz = { 0, fontInfo.dfPixHeight };
 				int maxCharWidth = 0;
 				int loopLen = wCount >= 0 ? wCount : -wCount;
@@ -2150,6 +2234,7 @@ static UINT32 npdisp_func_ExtTextOut(UINT32 lpDestDevAddr, SINT16 wDestXOrg, SIN
 				}
 				if (loopLen == 0 || (charOffsets && charRealWidths && charOffsets)) {
 					if (npdisp.longjmpnum == 0) {
+						bool is2Byte = false;
 						for (i = 0; i < loopLen; i++) {
 							NPDISP_FONTCHARINFO3 charInfo;
 							int charIdx = (int)lpText[i] - fontInfo.dfFirstChar;
@@ -2163,7 +2248,7 @@ static UINT32 npdisp_func_ExtTextOut(UINT32 lpDestDevAddr, SINT16 wDestXOrg, SIN
 									charOffsets[i] = charInfo.offset;
 									charRealWidths[i] = charInfo.width;
 									if (i == loopLen - 1) {
-										// ÅŒã‚Ì•¶š‚ÍÀÛ‚Ì•`‰æ••ª‚ğŠm•Û
+										// æœ€å¾Œã®æ–‡å­—ã¯å®Ÿéš›ã®æç”»å¹…åˆ†ã‚’ç¢ºä¿
 										if (charInfo.width > charWidth) {
 											charWidth = charInfo.width;
 										}
@@ -2171,7 +2256,23 @@ static UINT32 npdisp_func_ExtTextOut(UINT32 lpDestDevAddr, SINT16 wDestXOrg, SIN
 								}
 							}
 							else {
-								if (npdisp_readMemory(&charInfo, lpFontInfoAddr + sizeof(NPDISP_FONTINFO) + sizeof(NPDISP_FONTCHARINFO3) * charIdx, sizeof(NPDISP_FONTCHARINFO3))) {
+								bool skipRender = false;
+								if (hasDBCS) {
+									if (is2Byte) {
+										is2Byte = false;
+										skipRender = true;
+									}
+									else {
+										if (0x81 <= lpText[i] && lpText[i] <= 0x9f || 0xe0 <= lpText[i] && lpText[i] <= 0xef) {
+											is2Byte = true;
+											skipRender = true;
+										}
+									}
+									if (skipRender) {
+										charWidth = fontInfo.dfMaxWidth / 2;
+									}
+								}
+								if (!skipRender && npdisp_readMemory(&charInfo, lpFontInfoAddr + sizeof(NPDISP_FONTINFO) + sizeof(NPDISP_FONTCHARINFO3) * charIdx, sizeof(NPDISP_FONTCHARINFO3))) {
 									charWidth = charInfo.width;
 									charOffsets[i] = charInfo.offset;
 									charRealWidths[i] = charInfo.width;
@@ -2186,13 +2287,13 @@ static UINT32 npdisp_func_ExtTextOut(UINT32 lpDestDevAddr, SINT16 wDestXOrg, SIN
 						retValue = ((UINT32)sz.cx) | ((UINT32)sz.cy << 16);
 					}
 					if (npdisp.longjmpnum != 0 && sz.cy > npdisp.height) {
-						// ƒy[ƒWƒtƒH[ƒ‹ƒg or ‚‚³ˆÙí
+						// ãƒšãƒ¼ã‚¸ãƒ•ã‚©ãƒ¼ãƒ«ãƒˆ or é«˜ã•ç•°å¸¸
 					}
 					else if (wCount < 0) {
 						// nothing to do
 					}
 					else if (wCount == 0) {
-						// “h‚è‚Â‚Ô‚µ
+						// å¡—ã‚Šã¤ã¶ã—
 						TRACEOUT(("-> FILL"));
 						if (wOptions & 2) {
 							NPDISP_PBITMAP_EXT dstPBmp;
@@ -2236,17 +2337,17 @@ static UINT32 npdisp_func_ExtTextOut(UINT32 lpDestDevAddr, SINT16 wDestXOrg, SIN
 										bool isWhite = false;
 										bool preferDither;
 										if ((drawMode.bkColor & 0xffffff) == 0) {
-											// •‚ÅŠm’è
+											// é»’ã§ç¢ºå®š
 											isBlack = true;
 										}
 										else if ((drawMode.bkColor & 0xffffff) == 0xffffff) {
-											// ”’‚ÅŠm’è
+											// ç™½ã§ç¢ºå®š
 											isWhite = true;
 										}
 										else {
 											UINT32 color = npdisp_AdjustColorRefForGDI(drawMode.bkColor, &preferDither);
 											if (!preferDither) {
-												// ƒF
+												// ç´”è‰²
 												if (color == 0) {
 													isBlack = true;
 												}
@@ -2258,7 +2359,7 @@ static UINT32 npdisp_func_ExtTextOut(UINT32 lpDestDevAddr, SINT16 wDestXOrg, SIN
 												}
 											}
 											else {
-												// ƒfƒBƒU
+												// ãƒ‡ã‚£ã‚¶
 												UINT32 actualColor1;
 												UINT32 actualColor2;
 												double ratio;
@@ -2284,7 +2385,7 @@ static UINT32 npdisp_func_ExtTextOut(UINT32 lpDestDevAddr, SINT16 wDestXOrg, SIN
 											DeleteObject(hBrush);
 										}
 										if (bmphdc.hdc) {
-											// ‘‚«–ß‚µ
+											// æ›¸ãæˆ»ã—
 											npdisp_WriteBitmapToPBITMAP(&dstPBmp, &bmphdc);
 										}
 										else {
@@ -2300,7 +2401,7 @@ static UINT32 npdisp_func_ExtTextOut(UINT32 lpDestDevAddr, SINT16 wDestXOrg, SIN
 						}
 					}
 					else {
-						// •`‰æ
+						// æç”»
 						TRACEOUT(("-> TEXT"));
 
 						BITMAPINFO* lpbi = (BITMAPINFO*)malloc(sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * 2);
@@ -2310,7 +2411,7 @@ static UINT32 npdisp_func_ExtTextOut(UINT32 lpDestDevAddr, SINT16 wDestXOrg, SIN
 							int stride = ((ddbWidth + 7) / 8 + 1) / 2 * 2;
 							int stride4 = ((ddbWidth + 31) / 32) * 4;
 							if (stride != stride4) {
-								ddbWidth += 16; // 16dot = 2byte‘‚â‚·‚±‚Æ‚Å4ƒoƒCƒgƒAƒ‰ƒCƒƒ“ƒg‹­§‚·‚é
+								ddbWidth += 16; // 16dot = 2byteå¢—ã‚„ã™ã“ã¨ã§4ãƒã‚¤ãƒˆã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆå¼·åˆ¶ã™ã‚‹
 								stride = stride4;
 							}
 							void* pBits = (char*)malloc(stride * sz.cy);
@@ -2320,35 +2421,51 @@ static UINT32 npdisp_func_ExtTextOut(UINT32 lpDestDevAddr, SINT16 wDestXOrg, SIN
 								int maxCharXLen = (maxCharWidth + 7) / 8;
 								UINT8* srcBuf = (UINT8*)malloc(maxCharXLen * sz.cy);
 								if (srcBuf) {
-									// ‚Ä‚ñ‚»‚¤
+									// ã¦ã‚“ãã†
 									int baseXbyte = 0;
 									int baseXbit = 0;
+									bool is2Byte = false;
 									for (i = 0; i < loopLen; i++) {
+										bool skipRender = false;
 										int charIdx = (int)lpText[i] - fontInfo.dfFirstChar;
 										if (charIdx < 0 || fontInfo.dfLastChar < charIdx) {
 											charIdx = fontInfo.dfDefaultChar;
 										}
-										int y, x;
-										int charXLen = (charRealWidths[i] + 7) / 8;
-										npdisp_readMemoryWith32Offset(srcBuf, fontInfo.dfBitsPointer >> 16, charOffsets[i], charXLen * sz.cy);
-										for (x = 0; x < charXLen; x++) {
-											int curWidth = charRealWidths[i] - x * 8;
-											if (curWidth > 8) curWidth = 8;
-											int bitMask = ((1 << curWidth) - 1) << (8 - curWidth);
-											int dstBitMask1 = (bitMask >> baseXbit) & 0xff;
-											int dstBitMask2 = (bitMask << (8 - baseXbit)) & 0xff;
-											char* buf = (char*)pBits + baseXbyte + x;
-											for (y = 0; y < sz.cy; y++) {
-												UINT8 data = srcBuf[x * sz.cy + y] & bitMask;
-												UINT8 data1 = (data >> baseXbit) & 0xff;
-												UINT8 data2 = (data << (8 - baseXbit)) & 0xff;
-												//*buf = (*buf & ~dstBitMask1) | (data1 & dstBitMask1);
-												*buf |= data1 & dstBitMask1;
-												if (dstBitMask2) {
-													//*(buf + 1) = (*(buf + 1) & ~dstBitMask2) | (data2 & dstBitMask2);
-													*(buf + 1) |= data2 & dstBitMask2;
+										if (hasDBCS) {
+											if (is2Byte) {
+												is2Byte = false;
+												skipRender = true;
+											}
+											else {
+												if (0x81 <= lpText[i] && lpText[i] <= 0x9f || 0xe0 <= lpText[i] && lpText[i] <= 0xef) {
+													is2Byte = true;
+													skipRender = true;
 												}
-												buf += stride;
+											}
+										}
+										if (!skipRender) {
+											int y, x;
+											int charXLen = (charRealWidths[i] + 7) / 8;
+											npdisp_readMemoryWith32Offset(srcBuf, fontInfo.dfBitsPointer >> 16, charOffsets[i], charXLen * sz.cy);
+											for (x = 0; x < charXLen; x++) {
+												int curWidth = charRealWidths[i] - x * 8;
+												if (curWidth > 8) curWidth = 8;
+												int bitMask = ((1 << curWidth) - 1) << (8 - curWidth);
+												int dstBitMask1 = (bitMask >> baseXbit) & 0xff;
+												int dstBitMask2 = (bitMask << (8 - baseXbit)) & 0xff;
+												char* buf = (char*)pBits + baseXbyte + x;
+												for (y = 0; y < sz.cy; y++) {
+													UINT8 data = srcBuf[x * sz.cy + y] & bitMask;
+													UINT8 data1 = (data >> baseXbit) & 0xff;
+													UINT8 data2 = (data << (8 - baseXbit)) & 0xff;
+													//*buf = (*buf & â€¾dstBitMask1) | (data1 & dstBitMask1);
+													*buf |= data1 & dstBitMask1;
+													if (dstBitMask2) {
+														//*(buf + 1) = (*(buf + 1) & â€¾dstBitMask2) | (data2 & dstBitMask2);
+														*(buf + 1) |= data2 & dstBitMask2;
+													}
+													buf += stride;
+												}
 											}
 										}
 										baseXbyte += (baseXbit + charWidths[i]) / 8;
@@ -2397,17 +2514,17 @@ static UINT32 npdisp_func_ExtTextOut(UINT32 lpDestDevAddr, SINT16 wDestXOrg, SIN
 												bool isWhite = false;
 												bool preferDither;
 												if ((drawMode.bkColor & 0xffffff) == 0) {
-													// •‚ÅŠm’è
+													// é»’ã§ç¢ºå®š
 													isBlack = true;
 												}
 												else if ((drawMode.bkColor & 0xffffff) == 0xffffff) {
-													// ”’‚ÅŠm’è
+													// ç™½ã§ç¢ºå®š
 													isWhite = true;
 												}
 												else {
 													UINT32 color = npdisp_AdjustColorRefForGDI(drawMode.bkColor, &preferDither);
 													if (!preferDither) {
-														// ƒF
+														// ç´”è‰²
 														if (color == 0) {
 															isBlack = true;
 														}
@@ -2419,7 +2536,7 @@ static UINT32 npdisp_func_ExtTextOut(UINT32 lpDestDevAddr, SINT16 wDestXOrg, SIN
 														}
 													}
 													else {
-														// ƒfƒBƒU
+														// ãƒ‡ã‚£ã‚¶
 														UINT32 actualColor1;
 														UINT32 actualColor2;
 														double ratio;
@@ -2481,7 +2598,7 @@ static UINT32 npdisp_func_ExtTextOut(UINT32 lpDestDevAddr, SINT16 wDestXOrg, SIN
 													bool preferDither;
 													UINT32 color = npdisp_AdjustColorRefForGDI(drawMode.bkColor, &preferDither);
 													if (preferDither) {
-														// ƒfƒBƒU”wŒi
+														// ãƒ‡ã‚£ã‚¶èƒŒæ™¯
 														UINT32 actualColor1;
 														UINT32 actualColor2;
 														double ratio;
@@ -2492,32 +2609,73 @@ static UINT32 npdisp_func_ExtTextOut(UINT32 lpDestDevAddr, SINT16 wDestXOrg, SIN
 														FillRect(tgtDC, &gdiopaquerect, hBrush);
 														SelectObject(tgtDC, oldBrush);
 														DeleteObject(hBrush);
-														// ”wŒi‚Í‚à‚¤•`‚¢‚½‚Ì‚Å”wŒi“§‰ßˆµ‚¢‚É‚·‚é
+														// èƒŒæ™¯ã¯ã‚‚ã†æã„ãŸã®ã§èƒŒæ™¯é€éæ‰±ã„ã«ã™ã‚‹
 														isTransparentBk = true;
 													}
 												}
-												if (isTransparentBk) {
-													// ”wŒi“§‰ß ROP‚ª—v‚é‚Ì‚ÅDDBŒo—R
+				HFONT hFont = npdisp_getFont(&fontInfo, lpFontInfoAddr);
+												if (isTransparentBk || hFont) {
+													// èƒŒæ™¯é€é or FONTæŒ‡ç¤ºã‚ã‚Š ROPãŒè¦ã‚‹oræç”»ãŒå¿…è¦ãªã®ã§DDBçµŒç”±
 													TRACEOUT(("FG:%08x BG:TRANS", drawMode.LTextColor));
 													HBITMAP hBmp = CreateBitmap(ddbWidth, sz.cy, 1, 1, pBits);
 													if (hBmp) {
 														HGDIOBJ hbmpOld;
 														hbmpOld = SelectObject(hdcText, hBmp);
+														HGDIOBJ hFontOld = hFont ? SelectObject(hdcText, hFont) : NULL;
+
+														if (hFont) {
+															// DBCSã¦ã‚“ãã†
+															int baseX = 0;
+															int dbcsX = 0;
+															bool is2Byte = false;
+															char dbcsBuf[2];
+															SetBkMode(hdcText, TRANSPARENT);
+															SetBkColor(hdcText, 0x000000);
+															SetTextColor(hdcText, 0xffffff);
+															for (i = 0; i < loopLen; i++) {
+																bool skipRender = false;
+																int charIdx = (int)lpText[i] - fontInfo.dfFirstChar;
+																if (charIdx < 0 || fontInfo.dfLastChar < charIdx) {
+																	charIdx = fontInfo.dfDefaultChar;
+																}
+																if (is2Byte) {
+																	dbcsBuf[1] = (char)lpText[i];
+																	TextOutA(hdcText, dbcsX, 0, dbcsBuf, 2);
+																	is2Byte = false;
+																}
+																else {
+																	if (hasDBCS && (0x81 <= lpText[i] && lpText[i] <= 0x9f || 0xe0 <= lpText[i] && lpText[i] <= 0xef)) {
+																		dbcsBuf[0] = (char)lpText[i];
+																		dbcsX = baseX;
+																		is2Byte = true;
+																	}
+																}
+																baseX += charWidths[i];
+															}
+														}
 
 														SetBkMode(tgtDC, OPAQUE);
-														SetBkColor(tgtDC, 0x000000);
-														SetTextColor(tgtDC, 0xffffff);
-														BitBlt(tgtDC, dstX, dstY, srcW, srcH, hdcText, srcX, srcY, SRCAND);
-														SetBkColor(tgtDC, drawMode.LTextColor);
-														SetTextColor(tgtDC, 0x000000);
-														BitBlt(tgtDC, dstX, dstY, srcW, srcH, hdcText, srcX, srcY, SRCPAINT);
+														if (isTransparentBk) {
+															SetBkColor(tgtDC, 0x000000);
+															SetTextColor(tgtDC, 0xffffff);
+															BitBlt(tgtDC, dstX, dstY, srcW, srcH, hdcText, srcX, srcY, SRCAND);
+															SetBkColor(tgtDC, drawMode.LTextColor);
+															SetTextColor(tgtDC, 0x000000);
+															BitBlt(tgtDC, dstX, dstY, srcW, srcH, hdcText, srcX, srcY, SRCPAINT);
+														}
+														else {
+															SetBkColor(tgtDC, drawMode.LTextColor);
+															SetTextColor(tgtDC, drawMode.LbkColor);
+															BitBlt(tgtDC, dstX, dstY, srcW, srcH, hdcText, srcX, srcY, SRCCOPY);
+														}
 
+														if (hFont) SelectObject(hdcText, hFontOld);
 														SelectObject(hdcText, hbmpOld);
 														DeleteObject(hBmp);
 													}
 												}
 												else if (drawMode.bkMode == 2) {
-													// ”wŒi•s“§–¾ SetDIBitsToDevice‚ğg‚¤
+													// èƒŒæ™¯ä¸é€æ˜ SetDIBitsToDeviceã‚’ä½¿ã†
 													TRACEOUT(("FG:%08x BG:%08x", drawMode.LTextColor, drawMode.LbkColor));
 
 													BITMAPINFO_1BPP biText;
@@ -2544,7 +2702,7 @@ static UINT32 npdisp_func_ExtTextOut(UINT32 lpDestDevAddr, SINT16 wDestXOrg, SIN
 													SetDIBitsToDevice(tgtDC, dstX, dstY, srcW, srcH, srcX, 0, 0, srcH, (UINT8*)pBits + srcY * stride, (BITMAPINFO*)&biText, DIB_RGB_COLORS);
 												}
 												if (bmphdc.hdc) {
-													// ‘‚«–ß‚µ
+													// æ›¸ãæˆ»ã—
 													npdisp_WriteBitmapToPBITMAP(&dstPBmp, &bmphdc);
 												}
 												else {
@@ -2642,7 +2800,7 @@ static UINT16 npdisp_func_SetDIBitsToDevice(UINT32 lpDestDevAddr, SINT16 X, SINT
 					}
 				}
 
-				// ƒNƒŠƒbƒv—Ìˆæ‚¾‚¯“]‘—
+				// ã‚¯ãƒªãƒƒãƒ—é ˜åŸŸã ã‘è»¢é€
 				const int clipYBegin = cliprect.top - Y;
 				const int clipYEnd = cliprect.bottom - Y;
 				int iScanTmp = (int)iScanHost;
@@ -2703,26 +2861,26 @@ static UINT16 npdisp_func_SetDIBitsToDevice(UINT32 lpDestDevAddr, SINT16 X, SINT
 							else {
 								UINT32 rleSize = lpbi->bmiHeader.biSizeImage;
 								if (rleSize == 0) {
-									rleSize = stride * height; // ‚Æ‚è‚ ‚¦‚¸–³ˆ³k‚ÌƒTƒCƒY‚ğŠm•Û
+									rleSize = stride * height; // ã¨ã‚Šã‚ãˆãšç„¡åœ§ç¸®ã®ã‚µã‚¤ã‚ºã‚’ç¢ºä¿
 								}
 								UINT8* cdata = (UINT8*)malloc(rleSize);
 								if (cdata) {
 									BITMAPINFOHEADER bmiHeaderRLE = lpbi->bmiHeader;
 									bmiHeaderRLE.biCompression = biCompression;
 									if (bmiHeaderRLE.biHeight > 0) {
-										bmiHeaderRLE.biHeight = -bmiHeaderRLE.biHeight; // ‹t‚³‚Åo—Í
+										bmiHeaderRLE.biHeight = -bmiHeaderRLE.biHeight; // é€†ã•ã§å‡ºåŠ›
 									}
 									if (lpbi->bmiHeader.biSizeImage != 0) {
 										npdisp_readMemory(cdata, lpDIBitsAddr, rleSize);
 									}
 									else {
-										// RLEI’[‚ª—ˆ‚é‚Ü‚Å“Ç‚Ş Å‘å“Ç‚İæ‚èƒTƒCƒY‚Í–³ˆ³kƒTƒCƒY‚Æ‚·‚é
+										// RLEçµ‚ç«¯ãŒæ¥ã‚‹ã¾ã§èª­ã‚€ æœ€å¤§èª­ã¿å–ã‚Šã‚µã‚¤ã‚ºã¯ç„¡åœ§ç¸®ã‚µã‚¤ã‚ºã¨ã™ã‚‹
 										rleSize = npdisp_RLEBMPReadAndCalcSize(lpDIBitsAddr, bmiHeaderRLE.biCompression, cdata, rleSize);
 									}
 									npdisp_DecompressRLEBMP(&bmiHeaderRLE, cdata, rleSize, (UINT8*)pBitsBase, (UINT8*)pBitsValid);
 									free(cdata);
 								}
-								pBits = pBitsBase + (iScanHost - (int)iScan) * stride; // ŠJnƒAƒhƒŒƒX•ª‚ğ‚¸‚ç‚·
+								pBits = pBitsBase + (iScanHost - (int)iScan) * stride; // é–‹å§‹ã‚¢ãƒ‰ãƒ¬ã‚¹åˆ†ã‚’ãšã‚‰ã™
 							}
 							if (npdisp.longjmpnum == 0) {
 								HDC tgtDC = npdispwin.hdc;
@@ -2757,7 +2915,7 @@ static UINT16 npdisp_func_SetDIBitsToDevice(UINT32 lpDestDevAddr, SINT16 X, SINT
 										}
 										else {
 											if (lpbi->bmiHeader.biBitCount == 1) {
-												// 2FƒpƒŒƒbƒgƒZƒbƒg
+												// 2è‰²ãƒ‘ãƒ¬ãƒƒãƒˆã‚»ãƒƒãƒˆ
 												for (i = 0; i < NELEMENTS(npdisp_palette_rgb2); i++) {
 													lpbi->bmiColors[i].rgbRed = npdisp_palette_rgb2[i].r;
 													lpbi->bmiColors[i].rgbGreen = npdisp_palette_rgb2[i].g;
@@ -2767,7 +2925,7 @@ static UINT16 npdisp_func_SetDIBitsToDevice(UINT32 lpDestDevAddr, SINT16 X, SINT
 											}
 											else if (lpbi->bmiHeader.biBitCount == 4) {
 												if (lpbi->bmiHeader.biClrUsed == 0 || lpbi->bmiHeader.biClrImportant == 0) {
-													// —LŒø‚ÈƒpƒŒƒbƒg‚Å‚È‚¯‚ê‚Î16FƒpƒŒƒbƒgƒZƒbƒg
+													// æœ‰åŠ¹ãªãƒ‘ãƒ¬ãƒƒãƒˆã§ãªã‘ã‚Œã°16è‰²ãƒ‘ãƒ¬ãƒƒãƒˆã‚»ãƒƒãƒˆ
 													if (lpbi->bmiColors[0].rgbReserved != 0 || lpbi->bmiColors[15].rgbReserved != 0) {
 														for (i = 0; i < NELEMENTS(npdisp_palette_rgb16); i++) {
 															lpbi->bmiColors[i].rgbRed = npdisp_palette_rgb16[i].r;
@@ -2790,7 +2948,7 @@ static UINT16 npdisp_func_SetDIBitsToDevice(UINT32 lpDestDevAddr, SINT16 X, SINT
 												SetROP2(tgtDC, drawMode.Rop2);
 											}
 											if (lpbi->bmiHeader.biBitCount == 1) {
-												// ƒ‚ƒmƒNƒ“Á—á
+												// ãƒ¢ãƒã‚¯ãƒ­ç‰¹ä¾‹
 												lpbi->bmiColors[0].rgbRed = drawMode.LTextColor & 0xff;
 												lpbi->bmiColors[0].rgbGreen = (drawMode.LTextColor >> 8) & 0xff;
 												lpbi->bmiColors[0].rgbBlue = (drawMode.LTextColor >> 16) & 0xff;
@@ -2812,7 +2970,7 @@ static UINT16 npdisp_func_SetDIBitsToDevice(UINT32 lpDestDevAddr, SINT16 X, SINT
 										bool palChanged = false;
 										if (npdisp.usePalette) {
 											if (lpbi->bmiHeader.biBitCount > 8) {
-												// ƒOƒŒ[ƒXƒP[ƒ‹‚©‚çÀÛ‚ÌƒfƒoƒCƒXF‚Ö’u‚«Š·‚¦
+												// ã‚°ãƒ¬ãƒ¼ã‚¹ã‚±ãƒ¼ãƒ«ã‹ã‚‰å®Ÿéš›ã®ãƒ‡ãƒã‚¤ã‚¹è‰²ã¸ç½®ãæ›ãˆ
 												if (npdisp.bpp == 8) {
 													RGBQUAD pal[256];
 													for (int i = 0; i < 256; i++) {
@@ -2833,7 +2991,7 @@ static UINT16 npdisp_func_SetDIBitsToDevice(UINT32 lpDestDevAddr, SINT16 X, SINT
 											RGBQUAD oldpal0 = lpbi->bmiColors[0];
 											RGBQUAD oldpalf = lpbi->bmiColors[colors - 1];
 
-											// —LŒø”ÍˆÍ‚ğƒ}ƒXƒNiRLE‚Ì–¢’è‹`ƒsƒNƒZƒ‹‚Í•`‰æ‚µ‚È‚¢j
+											// æœ‰åŠ¹ç¯„å›²ã‚’ãƒã‚¹ã‚¯ï¼ˆRLEã®æœªå®šç¾©ãƒ”ã‚¯ã‚»ãƒ«ã¯æç”»ã—ãªã„ï¼‰
 											lpbi->bmiHeader.biClrUsed = colors;
 											lpbi->bmiColors[0].rgbRed = lpbi->bmiColors[0].rgbGreen = lpbi->bmiColors[0].rgbBlue = lpbi->bmiColors[0].rgbReserved = 0x00;
 											lpbi->bmiColors[colors - 1].rgbRed = lpbi->bmiColors[colors - 1].rgbGreen = lpbi->bmiColors[colors - 1].rgbBlue = lpbi->bmiColors[colors - 1].rgbReserved = 0xff;
@@ -2843,7 +3001,7 @@ static UINT16 npdisp_func_SetDIBitsToDevice(UINT32 lpDestDevAddr, SINT16 X, SINT
 											}
 											BitBlt(tgtDC, X, Y, biHeader.biWidth, height, npdispwin.hdcBltBuf, X, Y, SRCAND);
 
-											// —LŒø”ÍˆÍ‚ğ“]‘—
+											// æœ‰åŠ¹ç¯„å›²ã‚’è»¢é€
 											lpbi->bmiHeader.biClrUsed = oldColorUsed;
 											lpbi->bmiColors[0] = oldpal0;
 											lpbi->bmiColors[colors - 1] = oldpalf;
@@ -2866,7 +3024,7 @@ static UINT16 npdisp_func_SetDIBitsToDevice(UINT32 lpDestDevAddr, SINT16 X, SINT
 										}
 
 										if (palChanged) {
-											// F‚ğ–ß‚·
+											// è‰²ã‚’æˆ»ã™
 											SetDIBColorTable(tgtDC, 0, 256, (RGBQUAD*)npdisp_palette_gray256);
 										}
 
@@ -2962,14 +3120,14 @@ static void npdisp_func_SetCursor_Make(void** ppBitsCursor, HBITMAP* phBmpCursor
 	HBITMAP hBmp = NULL;
 	void* pBitsCursor = NULL;
 	if (npdisp.cursorStride == dstStride && *ppBitsCursor && *phBmpCursor) {
-		// Šù‘¶‚Ì—¬—p
+		// æ—¢å­˜ã®æµç”¨
 		pBitsCursor = *ppBitsCursor;
 		hBmp = *phBmpCursor;
 	}
 	else {
-		// V‹Kì¬
+		// æ–°è¦ä½œæˆ
 		if (dstBpp > 1) {
-			// ƒ‚ƒmƒNƒˆÈŠO‚ÍDIBSection‚Å
+			// ãƒ¢ãƒã‚¯ãƒ­ä»¥å¤–ã¯DIBSectionã§
 			BITMAPINFO_8BPP bi;
 			bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 			bi.bmiHeader.biWidth = width;
@@ -2992,34 +3150,34 @@ static void npdisp_func_SetCursor_Make(void** ppBitsCursor, HBITMAP* phBmpCursor
 			}
 			else if (dstBpp == 15 || dstBpp == 16) {
 				if (dstBpp == 16) {
-					// ƒrƒbƒgƒtƒB[ƒ‹ƒh 565
+					// ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ 565
 					bi.bmiHeader.biCompression = BI_BITFIELDS;
 					*((DWORD*)(bi.bmiColors + 0)) = 0x0000F800;
 					*((DWORD*)(bi.bmiColors + 1)) = 0x000007E0;
 					*((DWORD*)(bi.bmiColors + 2)) = 0x0000001F;
 				}
 				else if (dstBpp == 15) {
-					// ƒrƒbƒgƒtƒB[ƒ‹ƒh 555
+					// ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ 555
 					bi.bmiHeader.biCompression = BI_BITFIELDS;
 					*((DWORD*)(bi.bmiColors + 0)) = 0x00007C00;
 					*((DWORD*)(bi.bmiColors + 1)) = 0x000003E0;
 					*((DWORD*)(bi.bmiColors + 2)) = 0x0000001F;
 					bi.bmiHeader.biBitCount = 16;
 				}
-				bi.bmiHeader.biBitCount = 16; // 16ˆµ‚¢‚É‚·‚é
+				bi.bmiHeader.biBitCount = 16; // 16æ‰±ã„ã«ã™ã‚‹
 			}
 			hBmp = CreateDIBSection(hdcCursor, (BITMAPINFO*)(&bi), DIB_RGB_COLORS, &pBitsCursor, NULL, 0);
 			if (!hBmp) return;
 		}
 		else {
-			// ƒ‚ƒmƒNƒ‚ÍDDB‚ÅiŒã‚Åì¬j
+			// ãƒ¢ãƒã‚¯ãƒ­ã¯DDBã§ï¼ˆå¾Œã§ä½œæˆï¼‰
 			pBitsCursor = (char*)malloc(dstStride * height);
 			if (!pBitsCursor) return;
 		}
 	}
 	int x, y;
 	if (srcBpp == dstBpp) {
-		// bpp“¯‚¶
+		// bppåŒã˜
 		UINT8* pBits8 = (UINT8*)pBitsCursor;
 		for (y = 0; y < height; y++) {
 			for (x = 0; x < srcStride; x++) {
@@ -3030,12 +3188,12 @@ static void npdisp_func_SetCursor_Make(void** ppBitsCursor, HBITMAP* phBmpCursor
 			}
 		}
 		if (dstBpp == 1) {
-			// 1bpp‚Í‚±‚±‚Åì¬ ‚»‚êˆÈŠO‚ÍDIBSection‚Å”½‰fÏ‚İ
+			// 1bppã¯ã“ã“ã§ä½œæˆ ãã‚Œä»¥å¤–ã¯DIBSectionã§åæ˜ æ¸ˆã¿
 			hBmp = CreateBitmap(width, height, 1, 1, pBitsCursor);
 		}
 	}
 	else if (srcBpp == 1 && dstBpp == 4) {
-		// bpp•ÏX 1bpp -> 4bpp
+		// bppå¤‰æ›´ 1bpp -> 4bpp
 		UINT8* pBits8 = (UINT8*)pBitsCursor;
 		for (y = 0; y < height; y++) {
 			for (x = 0; x < srcStride; x++) {
@@ -3051,7 +3209,7 @@ static void npdisp_func_SetCursor_Make(void** ppBitsCursor, HBITMAP* phBmpCursor
 		}
 	}
 	else if (srcBpp == 1 && dstBpp == 8) {
-		// bpp•ÏX 1bpp -> 8bpp
+		// bppå¤‰æ›´ 1bpp -> 8bpp
 		UINT8* pBits8 = (UINT8*)pBitsCursor;
 		for (y = 0; y < height; y++) {
 			for (x = 0; x < srcStride; x++) {
@@ -3066,7 +3224,7 @@ static void npdisp_func_SetCursor_Make(void** ppBitsCursor, HBITMAP* phBmpCursor
 		}
 	}
 	else if (srcBpp == 1 && dstBpp == 16) {
-		// bpp•ÏX 1bpp -> 16bpp
+		// bppå¤‰æ›´ 1bpp -> 16bpp
 		UINT16* pBits16 = (UINT16*)pBitsCursor;
 		for (y = 0; y < height; y++) {
 			for (x = 0; x < srcStride; x++) {
@@ -3081,7 +3239,7 @@ static void npdisp_func_SetCursor_Make(void** ppBitsCursor, HBITMAP* phBmpCursor
 		}
 	}
 	else if (srcBpp == 1 && dstBpp == 24) {
-		// bpp•ÏX 1bpp -> 24bpp
+		// bppå¤‰æ›´ 1bpp -> 24bpp
 		UINT8* pBits8 = (UINT8*)pBitsCursor;
 		for (y = 0; y < height; y++) {
 			for (x = 0; x < srcStride; x++) {
@@ -3101,7 +3259,7 @@ static void npdisp_func_SetCursor_Make(void** ppBitsCursor, HBITMAP* phBmpCursor
 		}
 	}
 	else if (srcBpp == 1 && dstBpp == 32) {
-		// bpp•ÏX 1bpp -> 32bpp
+		// bppå¤‰æ›´ 1bpp -> 32bpp
 		UINT8* pBits8 = (UINT8*)pBitsCursor;
 		for (y = 0; y < height; y++) {
 			for (x = 0; x < srcStride; x++) {
@@ -3122,7 +3280,7 @@ static void npdisp_func_SetCursor_Make(void** ppBitsCursor, HBITMAP* phBmpCursor
 	}
 	if (hBmp) {
 		if (*phBmpCursor && *phBmpCursor != hBmp) {
-			// V‹Kì¬‚³‚ê‚Ä‚¢‚½‚çŠù‘¶‚Ì•¨‚ÍÌ‚Ä‚é
+			// æ–°è¦ä½œæˆã•ã‚Œã¦ã„ãŸã‚‰æ—¢å­˜ã®ç‰©ã¯æ¨ã¦ã‚‹
 			SelectObject(hdcCursor, *phOldBmpCursor);
 			DeleteObject(*phBmpCursor);
 		}
@@ -3133,7 +3291,7 @@ static void npdisp_func_SetCursor_Make(void** ppBitsCursor, HBITMAP* phBmpCursor
 	void* oldpBitsCursor = *ppBitsCursor;
 	*ppBitsCursor = pBitsCursor;
 	if (npdisp.cursorBpp <= 1 && oldpBitsCursor && oldpBitsCursor != pBitsCursor) {
-		// ƒ‚ƒmƒNƒ‚Ìê‡ƒrƒbƒgƒf[ƒ^‚Ífree‚ÅÌ‚Ä‚é
+		// ãƒ¢ãƒã‚¯ãƒ­ã®å ´åˆãƒ“ãƒƒãƒˆãƒ‡ãƒ¼ã‚¿ã¯freeã§æ¨ã¦ã‚‹
 		free(oldpBitsCursor);
 	}
 }
@@ -3151,12 +3309,12 @@ static void npdisp_func_SetCursor(UINT32 lpCursorShapeAddr)
 			int strideXOR = cursorXORBpp == 1 ? ((cursorShape.csWidth + 15) / 16 * 16 / 8) : ((cursorShape.csWidth * cursorXORBpp + 31) / 32 * 32 / 8);
 			int stride = max(strideMask, strideXOR);
 			if (cursorShape.csWidth > 0 && cursorShape.csHeight > 0) {
-				// AND‰æ‘œ
+				// ANDç”»åƒ
 				UINT32 pixelBufAddr = lpCursorShapeAddr + sizeof(cursorShape);
 				npdisp_func_SetCursor_Make(&npdispwin.pBitsCursorMask, &npdispwin.hBmpCursorMask, &npdispwin.hOldBmpCursorMask, npdispwin.hdcCursorMask,
 					pixelBufAddr, cursorShape.csWidth, cursorShape.csHeight, strideMask, stride, cursorMaskBpp, cursorBpp);
 
-				// XOR‰æ‘œ
+				// XORç”»åƒ
 				pixelBufAddr += strideMask * cursorShape.csHeight;
 				npdisp_func_SetCursor_Make(&npdispwin.pBitsCursor, &npdispwin.hBmpCursor, &npdispwin.hOldBmpCursor, npdispwin.hdcCursor,
 					pixelBufAddr, cursorShape.csWidth, cursorShape.csHeight, strideXOR, stride, cursorXORBpp, cursorBpp);
@@ -3171,7 +3329,7 @@ static void npdisp_func_SetCursor(UINT32 lpCursorShapeAddr)
 				npdisp.updated = 1;
 			}
 			else {
-				// ”jŠü
+				// ç ´æ£„
 				if (npdispwin.hBmpCursorMask) {
 					SelectObject(npdispwin.hdcCursorMask, npdispwin.hOldBmpCursorMask);
 					DeleteObject(npdispwin.hBmpCursorMask);
@@ -3190,7 +3348,7 @@ static void npdisp_func_SetCursor(UINT32 lpCursorShapeAddr)
 		}
 	}
 	else {
-		// ”jŠü
+		// ç ´æ£„
 		if (npdispwin.hBmpCursorMask) {
 			SelectObject(npdispwin.hdcCursorMask, npdispwin.hOldBmpCursorMask);
 			DeleteObject(npdispwin.hBmpCursorMask);
@@ -3230,7 +3388,7 @@ static UINT16 npdisp_func_FastBorder(UINT32 lpRectAddr, UINT16 wHorizBorderThick
 	if (dstDevType != 0) {
 		// PDEVICE
 		if (lpPBrushAddr) {
-			// ƒuƒ‰ƒV‚ª‚ ‚ê‚Î‘I‘ğ
+			// ãƒ–ãƒ©ã‚·ãŒã‚ã‚Œã°é¸æŠ
 			NPDISP_BRUSH brush = { 0 };
 			if (npdisp_readMemory(&brush, lpPBrushAddr, sizeof(NPDISP_BRUSH))) {
 				if (brush.key != 0) {
@@ -3307,7 +3465,7 @@ static UINT16 npdisp_func_Output(UINT32 lpDestDevAddr, UINT16 wStyle, UINT16 wCo
 	HPEN curPen = NULL;
 	int curPenWidth = 0;
 	if (lpPPenAddr) {
-		// ƒyƒ“‚ª‚ ‚ê‚Îæ“¾
+		// ãƒšãƒ³ãŒã‚ã‚Œã°å–å¾—
 		NPDISP_PEN pen = { 0 };
 		if (npdisp_readMemory(&pen, lpPPenAddr, sizeof(NPDISP_PEN))) {
 			if (pen.key != 0) {
@@ -3327,7 +3485,7 @@ static UINT16 npdisp_func_Output(UINT32 lpDestDevAddr, UINT16 wStyle, UINT16 wCo
 	}
 	HBRUSH curBrush = NULL;
 	if (lpPBrushAddr) {
-		// ƒuƒ‰ƒV‚ª‚ ‚ê‚Îæ“¾
+		// ãƒ–ãƒ©ã‚·ãŒã‚ã‚Œã°å–å¾—
 		NPDISP_BRUSH brush = { 0 };
 		if (npdisp_readMemory(&brush, lpPBrushAddr, sizeof(NPDISP_BRUSH))) {
 			if (brush.key != 0) {
@@ -3353,7 +3511,7 @@ static UINT16 npdisp_func_Output(UINT32 lpDestDevAddr, UINT16 wStyle, UINT16 wCo
 	int dstBeginX = 0;
 	int dstWidth = -1;
 	if (dstDevType != NPDISP_DEVTYPE_DDB) {
-		// “]‘—æ‚ªDDB‚Å‚È‚¢‚Æ‚«‚ÍƒŒƒ“ƒWƒ`ƒFƒbƒN
+		// è»¢é€å…ˆãŒDDBã§ãªã„ã¨ãã¯ãƒ¬ãƒ³ã‚¸ãƒã‚§ãƒƒã‚¯
 		switch (wStyle) {
 		case 18: // OS_POLYLINE
 		{
@@ -3426,7 +3584,7 @@ static UINT16 npdisp_func_Output(UINT32 lpDestDevAddr, UINT16 wStyle, UINT16 wCo
 		}
 	}
 	else {
-		// ’¸“_æ“Ç‚İ‚Ìê‡‚Í“Ç‚İ‚İ
+		// é ‚ç‚¹å…ˆèª­ã¿ã®å ´åˆã¯èª­ã¿è¾¼ã¿
 		switch (wStyle) {
 			case 6: // OS_RECTANGLE
 			case 55: // OS_CIRCLE
@@ -3439,7 +3597,7 @@ static UINT16 npdisp_func_Output(UINT32 lpDestDevAddr, UINT16 wStyle, UINT16 wCo
 		}
 	}
 
-	// •‰‚É‚È‚Á‚Ä‚¢‚½‚ç•â³
+	// è² ã«ãªã£ã¦ã„ãŸã‚‰è£œæ­£
 	if (dstBeginLine < 0) {
 		dstNumLines += dstBeginLine;
 		dstBeginLine = 0;
@@ -3466,14 +3624,14 @@ static UINT16 npdisp_func_Output(UINT32 lpDestDevAddr, UINT16 wStyle, UINT16 wCo
 			}
 		}
 		if (npdisp.longjmpnum == 0) {
-			// ƒyƒ“‚ª‚ ‚ê‚Î‘I‘ğ
+			// ãƒšãƒ³ãŒã‚ã‚Œã°é¸æŠ
 			if (curPen) {
 				SelectObject(tgtDC, curPen);
 			}
 			else {
 				SelectObject(tgtDC, GetStockObject(NULL_PEN));
 			}
-			// ƒuƒ‰ƒV‚ª‚ ‚ê‚Î‘I‘ğ
+			// ãƒ–ãƒ©ã‚·ãŒã‚ã‚Œã°é¸æŠ
 			if (curBrush) {
 				SelectObject(tgtDC, curBrush);
 			}
@@ -3596,7 +3754,7 @@ static UINT16 npdisp_func_Output(UINT32 lpDestDevAddr, UINT16 wStyle, UINT16 wCo
 			}
 			}
 			if (success && bmphdc.hdc) {
-				// ‘‚«–ß‚µ
+				// æ›¸ãæˆ»ã—
 				npdisp_WriteBitmapToPBITMAP(&dstPBmp, &bmphdc, dstBeginLine, dstNumLines, dstBeginX, dstWidth);
 			}
 			if (hRgn) {
@@ -3624,7 +3782,7 @@ static UINT16 npdisp_func_Output(UINT32 lpDestDevAddr, UINT16 wStyle, UINT16 wCo
 		}
 	}
 	else {
-		// ¬Œ÷‚µ‚½‚±‚Æ‚É‚·‚é 
+		// æˆåŠŸã—ãŸã“ã¨ã«ã™ã‚‹ 
 		retValue = 1;
 	}
 	return retValue;
@@ -3718,7 +3876,7 @@ static UINT16 npdisp_func_ScanLR(UINT32 lpDestDevAddr, UINT16 X, UINT16 Y, UINT3
 			const UINT8 g = (UINT8)((devColor >> 8) & 0xFF);
 			const UINT8 b = (UINT8)((devColor >> 16) & 0xFF);
 			if (npdisp.bpp == 24 || npdisp.bpp == 32) {
-				// RGB‹t‡’ˆÓ
+				// RGBé€†é †æ³¨æ„
 				devColor = (r << 16) | (g << 8) | b;
 			}
 			else if (npdisp.bpp == 16) {
@@ -3760,7 +3918,7 @@ static UINT16 npdisp_func_ScanLR(UINT32 lpDestDevAddr, UINT16 X, UINT16 Y, UINT3
 			int stride = ((lpBiHeader->biWidth * lpBiHeader->biBitCount + 31) / 32) * 4;
 			int x;
 			if (Style & 2) {
-				// ¶‚ÖƒXƒLƒƒƒ“
+				// å·¦ã¸ã‚¹ã‚­ãƒ£ãƒ³
 				lpBits += stride * Y;
 				for (x = X; x >= 0; x--) {
 					UINT8* p = lpBits + x * stepBit / 8;
@@ -3776,14 +3934,14 @@ static UINT16 npdisp_func_ScanLR(UINT32 lpDestDevAddr, UINT16 X, UINT16 Y, UINT3
 					}
 					else {
 						int bitPos = (x * stepBit) % 8;
-						bitPos = 7 - bitPos - (stepBit - 1); // •À‚Ñ‚ğ”½“]
+						bitPos = 7 - bitPos - (stepBit - 1); // ä¸¦ã³ã‚’åè»¢
 						if ((((*p >> bitPos) & compMask) == devColor) == !!(Style & 0x1)) {
 							break;
 						}
 					}
 				}
 				if (x == -1) {
-					retValue = -1; // ’[‚Ü‚Å“’B
+					retValue = -1; // ç«¯ã¾ã§åˆ°é”
 				}
 				else {
 					retValue = x;
@@ -3791,7 +3949,7 @@ static UINT16 npdisp_func_ScanLR(UINT32 lpDestDevAddr, UINT16 X, UINT16 Y, UINT3
 				}
 			}
 			else {
-				// ‰E‚ÖƒXƒLƒƒƒ“
+				// å³ã¸ã‚¹ã‚­ãƒ£ãƒ³
 				lpBits += stride * Y;
 				for (x = X; x < w; x++) {
 					UINT8* p = lpBits + x * stepBit / 8;
@@ -3807,14 +3965,14 @@ static UINT16 npdisp_func_ScanLR(UINT32 lpDestDevAddr, UINT16 X, UINT16 Y, UINT3
 					}
 					else {
 						int bitPos = (x * stepBit) % 8;
-						bitPos = 7 - bitPos - (stepBit - 1); // •À‚Ñ‚ğ”½“]
+						bitPos = 7 - bitPos - (stepBit - 1); // ä¸¦ã³ã‚’åè»¢
 						if ((((*p >> bitPos) & compMask) == devColor) == !!(Style & 0x1)) {
 							break;
 						}
 					}
 				}
 				if (x == w) {
-					retValue = -1; // ’[‚Ü‚Å“’B
+					retValue = -1; // ç«¯ã¾ã§åˆ°é”
 				}
 				else {
 					retValue = x;
@@ -3951,7 +4109,7 @@ static void npdisp_func_UpdateColors(SINT16 wStartX, SINT16 wStartY, UINT16 wExt
 	if ((UINT32)wStartX + wExtX > npdisp.width) wExtX = npdisp.width - wStartX;
 	if ((UINT32)wStartY + wExtY > npdisp.height) wExtY = npdisp.height - wStartY;
 
-	// —^‚¦‚ç‚ê‚½•ÏŠ·ƒe[ƒuƒ‹‚ğg—p‚µ‚ÄƒpƒŒƒbƒgF‚ğ’u‚«Š·‚¦
+	// ä¸ãˆã‚‰ã‚ŒãŸå¤‰æ›ãƒ†ãƒ¼ãƒ–ãƒ«ã‚’ä½¿ç”¨ã—ã¦ãƒ‘ãƒ¬ãƒƒãƒˆè‰²ã‚’ç½®ãæ›ãˆ
 	int stride = npdispwin.stride;
 	UINT8 *lpBuf = (UINT8*)npdispwin.pBits + wStartY * stride + wStartX;
 	for (int y = 0; y < wExtY; y++) {
@@ -4030,14 +4188,14 @@ static UINT16 npdisp_func_StretchDIBits(UINT32 lpPDevice, UINT16 fGet, SINT16 De
 			}
 		}
 		if (npdisp.version >= 4 && npdisp.isWin9x) {
-			if (lpDrawModeAddr) stretchMode = npdisp_readMemory16(lpDrawModeAddr + 36); // Win9x StretchBltMode‚ğ“Ç‚Ş
+			if (lpDrawModeAddr) stretchMode = npdisp_readMemory16(lpDrawModeAddr + 36); // Win9x StretchBltModeã‚’èª­ã‚€
 		}
 		else {
 			if (toBitmap) {
-				if (dstPBmp.bmBitsPixel == 1) return 0xffff; //ƒ‚ƒmƒNƒƒ\[ƒX‚Ì‚ÍCOLORONCOLORˆÈŠO‚¾‚Æ’v–½“I‚È‚Ì‚ÅGDI‚É‚â‚ç‚¹‚é
+				if (dstPBmp.bmBitsPixel == 1) return 0xffff; //ãƒ¢ãƒã‚¯ãƒ­ã‚½ãƒ¼ã‚¹ã®æ™‚ã¯COLORONCOLORä»¥å¤–ã ã¨è‡´å‘½çš„ãªã®ã§GDIã«ã‚„ã‚‰ã›ã‚‹
 			}
 			else {
-				if (npdisp.bpp == 1) return 0xffff; //ƒ‚ƒmƒNƒƒ\[ƒX‚Ì‚ÍCOLORONCOLORˆÈŠO‚¾‚Æ’v–½“I‚È‚Ì‚ÅGDI‚É‚â‚ç‚¹‚é
+				if (npdisp.bpp == 1) return 0xffff; //ãƒ¢ãƒã‚¯ãƒ­ã‚½ãƒ¼ã‚¹ã®æ™‚ã¯COLORONCOLORä»¥å¤–ã ã¨è‡´å‘½çš„ãªã®ã§GDIã«ã‚„ã‚‰ã›ã‚‹
 			}
 		}
 		if (npdisp.longjmpnum == 0 && biHeader.biPlanes == 1 && (biHeader.biBitCount == 1 || biHeader.biBitCount == 4 || biHeader.biBitCount == 8 || biHeader.biBitCount == 15 || biHeader.biBitCount == 16 || biHeader.biBitCount == 24 || biHeader.biBitCount == 32) && (biHeader.biHeight > SrcY || -biHeader.biHeight > SrcY)) {
@@ -4086,12 +4244,12 @@ static UINT16 npdisp_func_StretchDIBits(UINT32 lpPDevice, UINT16 fGet, SINT16 De
 				npdisp_readMemory(lpbi, lpBitmapInfoAddr, lpbiReadLen);
 				if (lpBitsAddr) {
 					bool useRGBBlt = false;
-					UINT16* transTbl = NULL; // transTbl‚ÍbiBitCount‚É‚æ‚ç‚¸UINT16”z—ñ‚É•ÏŠ·‚·‚é
+					UINT16* transTbl = NULL; // transTblã¯biBitCountã«ã‚ˆã‚‰ãšUINT16é…åˆ—ã«å¤‰æ›ã™ã‚‹
 					int colors = (1 << lpbi->bmiHeader.biBitCount);
 					if (lpTranslateAddr && npdisp.bpp <= 8) {
 						if (lpbi->bmiHeader.biBitCount == 8) {
 							if (fGet) {
-								// 1byte x 256F ‚Å“n‚³‚ê‚é
+								// 1byte x 256è‰² ã§æ¸¡ã•ã‚Œã‚‹
 								UINT8* transTbl8 = (UINT8*)malloc(colors);
 								if (transTbl8) {
 									if (npdisp_readMemory(transTbl8, lpTranslateAddr, colors)) {
@@ -4106,7 +4264,7 @@ static UINT16 npdisp_func_StretchDIBits(UINT32 lpPDevice, UINT16 fGet, SINT16 De
 								}
 							}
 							else {
-								// 2byte x 256F ‚Å“n‚³‚ê‚é?
+								// 2byte x 256è‰² ã§æ¸¡ã•ã‚Œã‚‹?
 								transTbl = (UINT16*)malloc(colors * sizeof(UINT16));
 								if (transTbl) {
 									npdisp_readMemory(transTbl, lpTranslateAddr, colors * sizeof(UINT16));
@@ -4115,19 +4273,19 @@ static UINT16 npdisp_func_StretchDIBits(UINT32 lpPDevice, UINT16 fGet, SINT16 De
 						}
 						else {
 							if (fGet) {
-								// XXX: ‚æ‚­•ª‚©‚ç‚È‚¢
+								// XXX: ã‚ˆãåˆ†ã‹ã‚‰ãªã„
 								useRGBBlt = true;
 							}
 							else {
 								if (lpbi->bmiHeader.biBitCount == 4) {
-									// 2byte x 16F ‚Å“n‚³‚ê‚é?
+									// 2byte x 16è‰² ã§æ¸¡ã•ã‚Œã‚‹?
 									transTbl = (UINT16*)malloc(colors * sizeof(UINT16));
 									if (transTbl) {
 										npdisp_readMemory(transTbl, lpTranslateAddr, colors * sizeof(UINT16));
 									}
 								}
 								else if (lpbi->bmiHeader.biBitCount == 1) {
-									// 2byte x 2F ‚Å“n‚³‚ê‚éH
+									// 2byte x 2è‰² ã§æ¸¡ã•ã‚Œã‚‹ï¼Ÿ
 									transTbl = (UINT16*)malloc(colors * sizeof(UINT16));
 									if (transTbl) {
 										npdisp_readMemory(transTbl, lpTranslateAddr, colors * sizeof(UINT16));
@@ -4137,10 +4295,10 @@ static UINT16 npdisp_func_StretchDIBits(UINT32 lpPDevice, UINT16 fGet, SINT16 De
 						}
 					}
 					//if (lpbi->bmiHeader.biCompression == BI_RGB || lpbi->bmiHeader.biCompression == BI_BITFIELDS) {
-					//	npdisp_preloadMemoryWith32Offset(lpBitsAddr >> 16, (lpBitsAddr & 0xffff) + stride * SrcY, stride * height); // –³ˆ³k‚È‚ç‰æ‘œƒTƒCƒY‚Åæ“Ç‚İ
+					//	npdisp_preloadMemoryWith32Offset(lpBitsAddr >> 16, (lpBitsAddr & 0xffff) + stride * SrcY, stride * height); // ç„¡åœ§ç¸®ãªã‚‰ç”»åƒã‚µã‚¤ã‚ºã§å…ˆèª­ã¿
 					//}
 					//else if (lpbi->bmiHeader.biSizeImage) {
-					//	npdisp_preloadMemory(lpBitsAddr, lpbi->bmiHeader.biSizeImage); // RLEˆ³k‚ÅƒTƒCƒYŠù’m‚È‚çæ“Ç‚İ
+					//	npdisp_preloadMemory(lpBitsAddr, lpbi->bmiHeader.biSizeImage); // RLEåœ§ç¸®ã§ã‚µã‚¤ã‚ºæ—¢çŸ¥ãªã‚‰å…ˆèª­ã¿
 					//}
 					void* pBits = NULL;
 					int i;
@@ -4150,7 +4308,7 @@ static UINT16 npdisp_func_StretchDIBits(UINT32 lpPDevice, UINT16 fGet, SINT16 De
 					if (npdisp.usePalette) {
 						if (lpbi->bmiHeader.biBitCount <= 8) {
 							if (lpTranslateAddr) {
-								// transTbl‚ÉƒCƒ“ƒfƒbƒNƒX•ÏŠ·•\‚ª“ü‚é
+								// transTblã«ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹å¤‰æ›è¡¨ãŒå…¥ã‚‹
 								if (transTbl) {
 									for (i = 0; i < colors; i++) {
 										lpbi->bmiColors[i].rgbRed = transTbl[i] & 0xff;
@@ -4174,7 +4332,7 @@ static UINT16 npdisp_func_StretchDIBits(UINT32 lpPDevice, UINT16 fGet, SINT16 De
 					}
 					else if (fGet) {
 						if (lpbi->bmiHeader.biBitCount == 1) {
-							// —LŒø‚ÈƒpƒŒƒbƒg‚Å‚È‚¯‚ê‚Î2FƒpƒŒƒbƒgƒZƒbƒg
+							// æœ‰åŠ¹ãªãƒ‘ãƒ¬ãƒƒãƒˆã§ãªã‘ã‚Œã°2è‰²ãƒ‘ãƒ¬ãƒƒãƒˆã‚»ãƒƒãƒˆ
 							if (lpbi->bmiColors[0].rgbRed != 0 || lpbi->bmiColors[0].rgbGreen != 0 || lpbi->bmiColors[0].rgbBlue != 0 || lpbi->bmiColors[0].rgbReserved != 0 ||
 								lpbi->bmiColors[1].rgbRed != 0xff || lpbi->bmiColors[1].rgbGreen != 0xff || lpbi->bmiColors[1].rgbBlue != 0xff || lpbi->bmiColors[1].rgbReserved != 0) {
 								for (i = biHeader.biClrUsed; i < NELEMENTS(npdisp_palette_rgb2); i++) {
@@ -4184,12 +4342,12 @@ static UINT16 npdisp_func_StretchDIBits(UINT32 lpPDevice, UINT16 fGet, SINT16 De
 									lpbi->bmiColors[i].rgbReserved = 0;
 								}
 								if (fGet) {
-									npdisp_writeMemory(lpbi, lpBitmapInfoAddr, lpbiReadLen); // •ÏX‚µ‚½ƒpƒŒƒbƒg‚ğ‘‚«–ß‚µ
+									npdisp_writeMemory(lpbi, lpBitmapInfoAddr, lpbiReadLen); // å¤‰æ›´ã—ãŸãƒ‘ãƒ¬ãƒƒãƒˆã‚’æ›¸ãæˆ»ã—
 								}
 							}
 						}
 						else if (lpbi->bmiHeader.biBitCount == 4) {
-							// —LŒø‚ÈƒpƒŒƒbƒg‚Å‚È‚¯‚ê‚Î16FƒpƒŒƒbƒgƒZƒbƒg
+							// æœ‰åŠ¹ãªãƒ‘ãƒ¬ãƒƒãƒˆã§ãªã‘ã‚Œã°16è‰²ãƒ‘ãƒ¬ãƒƒãƒˆã‚»ãƒƒãƒˆ
 							if (lpbi->bmiColors[0].rgbRed != 0 || lpbi->bmiColors[0].rgbGreen != 0 || lpbi->bmiColors[0].rgbBlue != 0 ||
 								lpbi->bmiColors[15].rgbRed != 0xff || lpbi->bmiColors[15].rgbGreen != 0xff || lpbi->bmiColors[15].rgbBlue != 0xff) {
 								for (i = biHeader.biClrUsed; i < NELEMENTS(npdisp_palette_rgb16); i++) {
@@ -4199,12 +4357,12 @@ static UINT16 npdisp_func_StretchDIBits(UINT32 lpPDevice, UINT16 fGet, SINT16 De
 									lpbi->bmiColors[i].rgbReserved = 0;
 								}
 								if (fGet) {
-									npdisp_writeMemory(lpbi, lpBitmapInfoAddr, lpbiReadLen); // •ÏX‚µ‚½ƒpƒŒƒbƒg‚ğ‘‚«–ß‚µ
+									npdisp_writeMemory(lpbi, lpBitmapInfoAddr, lpbiReadLen); // å¤‰æ›´ã—ãŸãƒ‘ãƒ¬ãƒƒãƒˆã‚’æ›¸ãæˆ»ã—
 								}
 							}
 						}
 						else if (lpbi->bmiHeader.biBitCount == 8) {
-							// —LŒø‚ÈƒpƒŒƒbƒg‚Å‚È‚¯‚ê‚Î256FƒpƒŒƒbƒgƒZƒbƒg
+							// æœ‰åŠ¹ãªãƒ‘ãƒ¬ãƒƒãƒˆã§ãªã‘ã‚Œã°256è‰²ãƒ‘ãƒ¬ãƒƒãƒˆã‚»ãƒƒãƒˆ
 							if (lpbi->bmiColors[0].rgbRed != 0 || lpbi->bmiColors[0].rgbGreen != 0 || lpbi->bmiColors[0].rgbBlue != 0 ||
 								lpbi->bmiColors[255].rgbRed != 0xff || lpbi->bmiColors[255].rgbGreen != 0xff || lpbi->bmiColors[255].rgbBlue != 0xff) {
 								for (i = biHeader.biClrUsed; i < NELEMENTS(npdisp_palette_rgb256); i++) {
@@ -4214,7 +4372,7 @@ static UINT16 npdisp_func_StretchDIBits(UINT32 lpPDevice, UINT16 fGet, SINT16 De
 									lpbi->bmiColors[i].rgbReserved = 0;
 								}
 								if (fGet) {
-									npdisp_writeMemory(lpbi, lpBitmapInfoAddr, lpbiReadLen); // •ÏX‚µ‚½ƒpƒŒƒbƒg‚ğ‘‚«–ß‚µ
+									npdisp_writeMemory(lpbi, lpBitmapInfoAddr, lpbiReadLen); // å¤‰æ›´ã—ãŸãƒ‘ãƒ¬ãƒƒãƒˆã‚’æ›¸ãæˆ»ã—
 								}
 							}
 						}
@@ -4222,13 +4380,13 @@ static UINT16 npdisp_func_StretchDIBits(UINT32 lpPDevice, UINT16 fGet, SINT16 De
 					UINT32 biCompression = lpbi->bmiHeader.biCompression;
 					bool isCompress = !(biCompression == BI_RGB || biCompression == BI_BITFIELDS); 
 					if (isCompress) {
-						// StretchDIBits‚Ìˆ³kƒtƒH[ƒ}ƒbƒg‚Í‚â‚â‚±‚µ‚»‚¤‚È‚Ì‚ÅGDIƒGƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚É‚â‚ç‚¹‚é
-						// –¢’è‹`ƒsƒNƒZƒ‹‚ğœ‚¢‚Äƒ‰ƒXƒ^ƒIƒyƒŒ[ƒVƒ‡ƒ“‚ª•K—vH
+						// StretchDIBitsã®åœ§ç¸®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã¯ã‚„ã‚„ã“ã—ãã†ãªã®ã§GDIã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã«ã‚„ã‚‰ã›ã‚‹
+						// æœªå®šç¾©ãƒ”ã‚¯ã‚»ãƒ«ã‚’é™¤ã„ã¦ãƒ©ã‚¹ã‚¿ã‚ªãƒšãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ãŒå¿…è¦ï¼Ÿ
 						retValue = -1;
 					}
 					else {
 						if (lpbi->bmiHeader.biHeight >= 0) {
-							SrcY = bmpHeight - SrcY - height; // Bottom-upŠ·Z???
+							SrcY = bmpHeight - SrcY - height; // Bottom-upæ›ç®—???
 						}
 						HBITMAP hBmp = CreateDIBSection(npdispwin.hdc, lpbi, DIB_RGB_COLORS, &pBits, NULL, 0);
 						if (hBmp) {
@@ -4240,7 +4398,7 @@ static UINT16 npdisp_func_StretchDIBits(UINT32 lpPDevice, UINT16 fGet, SINT16 De
 								npdisp_readMemoryWith32Offset((UINT8*)pBits + stride * SrcY, lpBitsAddr >> 16, (lpBitsAddr & 0xffff) + stride * bottomUpY, stride * height);
 							}
 							else {
-								// Bottom-upŠ·Z
+								// Bottom-upæ›ç®—
 								int bottomUpY = bmpHeight - SrcY - height;
 								npdisp_readMemoryWith32Offset((UINT8*)pBits + stride * bottomUpY, lpBitsAddr >> 16, (lpBitsAddr & 0xffff) + stride * bottomUpY, stride * height);
 							}
@@ -4248,7 +4406,7 @@ static UINT16 npdisp_func_StretchDIBits(UINT32 lpPDevice, UINT16 fGet, SINT16 De
 								bool palChanged = false;
 								if (npdisp.usePalette) {
 									if (lpbi->bmiHeader.biBitCount > 8 || useRGBBlt) {
-										// ƒOƒŒ[ƒXƒP[ƒ‹‚©‚çÀÛ‚ÌƒfƒoƒCƒXF‚Ö’u‚«Š·‚¦
+										// ã‚°ãƒ¬ãƒ¼ã‚¹ã‚±ãƒ¼ãƒ«ã‹ã‚‰å®Ÿéš›ã®ãƒ‡ãƒã‚¤ã‚¹è‰²ã¸ç½®ãæ›ãˆ
 										if (npdisp.bpp == 8) {
 											RGBQUAD pal[256];
 											for (int i = 0; i < 256; i++) {
@@ -4276,7 +4434,7 @@ static UINT16 npdisp_func_StretchDIBits(UINT32 lpPDevice, UINT16 fGet, SINT16 De
 
 								HBRUSH brs = NULL;
 								if (lpPBrushAddr) {
-									// ƒuƒ‰ƒV‚ª‚ ‚ê‚Î‘I‘ğ
+									// ãƒ–ãƒ©ã‚·ãŒã‚ã‚Œã°é¸æŠ
 									NPDISP_BRUSH brush = { 0 };
 									if (npdisp_readMemory(&brush, lpPBrushAddr, sizeof(NPDISP_BRUSH))) {
 										if (brush.key != 0) {
@@ -4314,7 +4472,7 @@ static UINT16 npdisp_func_StretchDIBits(UINT32 lpPDevice, UINT16 fGet, SINT16 De
 										npdisp_writeMemoryWith32Offset((UINT8*)pBits + stride * SrcY, lpBitsAddr >> 16, (lpBitsAddr & 0xffff), stride * height);
 									}
 									else {
-										// Bottom-upŠ·Z
+										// Bottom-upæ›ç®—
 										npdisp_writeMemoryWith32Offset((UINT8*)pBits + stride * bottomUpY, lpBitsAddr >> 16, (lpBitsAddr & 0xffff) + stride * bottomUpY, stride * height);
 									}
 									if (brs) {
@@ -4364,7 +4522,7 @@ static UINT16 npdisp_func_StretchDIBits(UINT32 lpPDevice, UINT16 fGet, SINT16 De
 								}
 
 								if (palChanged) {
-									// F‚ğ–ß‚·
+									// è‰²ã‚’æˆ»ã™
 									SetDIBColorTable(tgtDC, 0, 256, (RGBQUAD*)npdisp_palette_gray256);
 								}
 							}
@@ -4390,13 +4548,13 @@ static UINT16 npdisp_func_StretchDIBits(UINT32 lpPDevice, UINT16 fGet, SINT16 De
 static void npdisp_func_INT2Fh(UINT16 ax)
 {
 	if (ax == 0x4001) {
-		// DOS‘‹‘S‰æ–Êƒ‚[ƒhİ’è
+		// DOSçª“å…¨ç”»é¢ãƒ¢ãƒ¼ãƒ‰è¨­å®š
 		np2wab.relaystateext = 0;
 		np2wab_setRelayState(np2wab.relaystateint | np2wab.relaystateext);
 		npdisp.active = 0;
 	}
 	else if (ax == 0x4002) {
-		// DOS‘‹‘S‰æ–Êƒ‚[ƒh‰ğœ
+		// DOSçª“å…¨ç”»é¢ãƒ¢ãƒ¼ãƒ‰è§£é™¤
 		npdisp.active = 1;
 		npdisp_setDirtyAll();
 		npdisp.updated = 1;
@@ -4445,7 +4603,7 @@ static void npdisp_func_DCI_DestroySurface(UINT32 lpDeviceAddr) {
 
 static void npdisp_func_WEP()
 {
-	// WindowsI—¹
+	// Windowsçµ‚äº†
 	npdisp.enabled = 0;
 	npdisp.active = 0;
 	np2wab.relaystateext = 0;
@@ -4454,30 +4612,30 @@ static void npdisp_func_WEP()
 }
 
 
-// *** ƒGƒNƒXƒ|[ƒgŠÖ”ˆ— ƒGƒ“ƒgƒŠ *****************
+// *** ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆé–¢æ•°å‡¦ç† ã‚¨ãƒ³ãƒˆãƒª *****************
 
 /// <summary>
-/// ƒQƒXƒg‚©‚ç“n‚³‚ê‚½˜”‚É‘Î‰‚·‚é‹@”\‚ğÀs‚·‚é@ƒf[ƒ^‚Ínpdisp.dataAddr‚©‚çó‚¯æ‚é
+/// ã‚²ã‚¹ãƒˆã‹ã‚‰æ¸¡ã•ã‚ŒãŸåºæ•°ã«å¯¾å¿œã™ã‚‹æ©Ÿèƒ½ã‚’å®Ÿè¡Œã™ã‚‹ã€€ãƒ‡ãƒ¼ã‚¿ã¯npdisp.dataAddrã‹ã‚‰å—ã‘å–ã‚‹
 /// </summary>
 /// <param name=""></param>
 void npdisp_exec(void) {
 
-	// ‹¤—pæ“Ç‚İ‚ğw’è
+	// å…±ç”¨å…ˆèª­ã¿ã‚’æŒ‡å®š
 	npdisp_memory_setFunctionId(0);
 
-	// “Ç‚İ‘‚«ŠJnˆÊ’u‚ğæ“ª‚Ö–ß‚·
+	// èª­ã¿æ›¸ãé–‹å§‹ä½ç½®ã‚’å…ˆé ­ã¸æˆ»ã™
 	npdisp_memory_resetposition();
 
-	UINT16 version = npdisp_readMemory16(npdisp.dataAddr); // ƒo[ƒWƒ‡ƒ“‚¾‚¯æ“¾
+	UINT16 version = npdisp_readMemory16(npdisp.dataAddr); // ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã ã‘å–å¾—
 
-	// ”r‘¼ŠJn
+	// æ’ä»–é–‹å§‹
 	npdispcs_enter_criticalsection();
 
 	if (version >= 1) {
 		UINT16 retCode = NPDISP_RETCODE_SUCCESS;
 		NPDISP_REQUEST req;
-		npdisp_readMemory(&req, npdisp.dataAddr, sizeof(req)); // ‘S‘Ì“Ç‚İ‚İ
-		npdisp.version = req.version; // ƒvƒƒgƒRƒ‹ƒo[ƒWƒ‡ƒ“
+		npdisp_readMemory(&req, npdisp.dataAddr, sizeof(req)); // å…¨ä½“èª­ã¿è¾¼ã¿
+		npdisp.version = req.version; // ãƒ—ãƒ­ãƒˆã‚³ãƒ«ãƒãƒ¼ã‚¸ãƒ§ãƒ³
 		switch (req.funcOrder) {
 		case NPDISP_FUNCORDER_NP2INITIALIZE:
 		{
@@ -4508,7 +4666,7 @@ void npdisp_exec(void) {
 		case NPDISP_FUNCORDER_ColorInfo:
 		{
 			//TRACEOUT(("ColorInfo"));
-			// F‚Ì•ÏŠ·
+			// è‰²ã®å¤‰æ›
 			UINT32 retValue = 0;
 			NPDISP_PDEVICE devInfo;
 			UINT32 pcolor;
@@ -4532,7 +4690,7 @@ void npdisp_exec(void) {
 		case NPDISP_FUNCORDER_RealizeObject:
 		{
 			TRACEOUT(("RealizeObject"));
-			// ƒIƒuƒWƒFƒNƒg¶¬‚Æ”jŠü
+			// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆã¨ç ´æ£„
 			const UINT32 retValue = npdisp_func_RealizeObject(req.parameters.RealizeObject.lpDestDevAddr, req.parameters.RealizeObject.wStyle, req.parameters.RealizeObject.lpInObjAddr, req.parameters.RealizeObject.lpOutObjAddr, req.parameters.RealizeObject.lpTextXFormAddr);
 			npdisp_writeMemory32(retValue, req.parameters.RealizeObject.lpRetValueAddr);
 			break;
@@ -4735,7 +4893,7 @@ void npdisp_exec(void) {
 		case NPDISP_FUNCORDER_MEMORYMAP:
 		{
 			TRACEOUT9(("MEMORYMAP"));
-			// VxD—p‚¾‚Á‚½‚ª”p~
+			// VxDç”¨ã ã£ãŸãŒå»ƒæ­¢
 			//npdisp_func_MEMORYMAP(req.parameters.MEMORYMAP.physicalAddr, req.parameters.MEMORYMAP.linearAddr, req.parameters.MEMORYMAP.farSelector, req.parameters.MEMORYMAP.farOffset);
 			break;
 		}
@@ -4762,24 +4920,24 @@ void npdisp_exec(void) {
 			retCode = NPDISP_RETCODE_FAILED;
 			break;
 		}
-		npdisp_writeReturnCode(&req, npdisp.dataAddr, retCode); // ReturnCode‘‚«‚İ
+		npdisp_writeReturnCode(&req, npdisp.dataAddr, retCode); // ReturnCodeæ›¸ãè¾¼ã¿
 	}
 	
-	// ”r‘¼I—¹
+	// æ’ä»–çµ‚äº†
 	npdispcs_leave_criticalsection();
 
-	// —áŠO‚ª”­¶‚µ‚Ä‚¢‚½‚çlongjmp‚Å–ß‚é
+	// ä¾‹å¤–ãŒç™ºç”Ÿã—ã¦ã„ãŸã‚‰longjmpã§æˆ»ã‚‹
 	if (npdisp.longjmpnum) {
 		if (npdisp_memory_hasNewCacheData()) {
-			CPU_STAT_EXCEPTION_COUNTER_CLEAR(); // “Ç‚İ‘‚«‚ªi‚ñ‚Å‚¢‚½‚ç—áŠOŒJ‚è•Ô‚µ‚Å‚Í‚È‚¢
+			CPU_STAT_EXCEPTION_COUNTER_CLEAR(); // èª­ã¿æ›¸ããŒé€²ã‚“ã§ã„ãŸã‚‰ä¾‹å¤–ç¹°ã‚Šè¿”ã—ã§ã¯ãªã„
 		}
 		int longjmpnum = npdisp.longjmpnum;
-		npdisp.longjmpnum_nonfast = longjmpnum; // ÅŒã‚Ì—áŠO”­¶‚ğ‹L‰¯
-		siglongjmp(exec_1step_jmpbuf, longjmpnum); // “]‘—
+		npdisp.longjmpnum_nonfast = longjmpnum; // æœ€å¾Œã®ä¾‹å¤–ç™ºç”Ÿã‚’è¨˜æ†¶
+		siglongjmp(exec_1step_jmpbuf, longjmpnum); // è»¢é€
 	}
 
-	// —áŠO”­¶‚¹‚¸‚É‘S•”‘—‚ê‚½‚çCPUƒNƒƒbƒN‚ği‚ßA“Ç‚İ‘‚«ƒoƒbƒtƒ@‚ÍƒNƒŠƒA‚·‚é
-	CPU_REMCLOCK -= (npdisp_memory_getTotalReadSize() + npdisp_memory_getTotalWriteSize()) / 4; // 4byteƒƒ‚ƒŠƒAƒNƒZƒX‚ ‚½‚è1clock
+	// ä¾‹å¤–ç™ºç”Ÿã›ãšã«å…¨éƒ¨é€ã‚ŒãŸã‚‰CPUã‚¯ãƒ­ãƒƒã‚¯ã‚’é€²ã‚ã€èª­ã¿æ›¸ããƒãƒƒãƒ•ã‚¡ã¯ã‚¯ãƒªã‚¢ã™ã‚‹
+	CPU_REMCLOCK -= (npdisp_memory_getTotalReadSize() + npdisp_memory_getTotalWriteSize()) / 4; // 4byteãƒ¡ãƒ¢ãƒªã‚¢ã‚¯ã‚»ã‚¹ã‚ãŸã‚Š1clock
 	npdisp_memory_clearpreload();
 }
 
@@ -4787,7 +4945,7 @@ void npdisp_exec(void) {
 #define NPDISP_REQUEST_READFROMSTACK(a, b, c)  npdisp_readMemoryWith32Offset(&(a.b.c), CPU_SS, CPU_BP + 6 + sizeof(a.b) - ((UINT32)((char*)&a.b.c - (char*)&a) - offsetof(NPDISP_REQUEST, parameters.others.arguments)) - sizeof(a.b.c), sizeof(a.b.c))
 
 /// <summary>
-/// npdisp_exec‚Ì‚‘¬Às”ÅBƒXƒ^ƒbƒN‚©‚ç’¼Úƒpƒ‰ƒ[ƒ^‚ğ“Ç‚İæ‚éBˆê•”‚ÌfuncOrder‚É‚Í”ñ‘Î‰‚Ì‚½‚ß’ˆÓBg—p‚·‚é‚É‚Íˆê“xver.2‚ğw’è‚µ‚Änpdisp_exec‚ğÀs‚·‚é•K—v‚ ‚èB
+/// npdisp_execã®é«˜é€Ÿå®Ÿè¡Œç‰ˆã€‚ã‚¹ã‚¿ãƒƒã‚¯ã‹ã‚‰ç›´æ¥ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’èª­ã¿å–ã‚‹ã€‚ä¸€éƒ¨ã®funcOrderã«ã¯éå¯¾å¿œã®ãŸã‚æ³¨æ„ã€‚ä½¿ç”¨ã™ã‚‹ã«ã¯ä¸€åº¦ver.2ã‚’æŒ‡å®šã—ã¦npdisp_execã‚’å®Ÿè¡Œã™ã‚‹å¿…è¦ã‚ã‚Šã€‚
 /// </summary>
 /// <param name=""></param>
 void npdisp_exec_fast(void) {
@@ -4796,25 +4954,25 @@ void npdisp_exec_fast(void) {
 
 	UINT16 bx = CPU_BX;
 
-	// ŠÖ””Ô†w’è
+	// é–¢æ•°ç•ªå·æŒ‡å®š
 	npdisp_memory_setFunctionId(bx);
 
-	// “Ç‚İ‘‚«ŠJnˆÊ’u‚ğæ“ª‚Ö–ß‚·
+	// èª­ã¿æ›¸ãé–‹å§‹ä½ç½®ã‚’å…ˆé ­ã¸æˆ»ã™
 	npdisp_memory_resetposition();
 
-	UINT16 version = npdisp_readMemory16(npdisp.dataAddr); // ƒo[ƒWƒ‡ƒ“‚¾‚¯æ“¾
+	UINT16 version = npdisp_readMemory16(npdisp.dataAddr); // ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã ã‘å–å¾—
 
-	// ”r‘¼ŠJn
+	// æ’ä»–é–‹å§‹
 	npdispcs_enter_criticalsection();
 
-	// ƒXƒ^ƒbƒN‚Ìó‘Ô‚ÍŸ‚Ì‚æ‚¤‚É‚È‚Á‚Ä‚¢‚é‘O’ñ
-	// [bp + 6ˆÈ~]@ˆø”iPASCALƒR[ƒ‹j
+	// ã‚¹ã‚¿ãƒƒã‚¯ã®çŠ¶æ…‹ã¯æ¬¡ã®ã‚ˆã†ã«ãªã£ã¦ã„ã‚‹å‰æ
+	// [bp + 6ä»¥é™]ã€€å¼•æ•°ï¼ˆPASCALã‚³ãƒ¼ãƒ«ï¼‰
 	// [bp + 4]  return CS
 	// [bp + 2]  return IP
 	// [bp + 0]  old BP
 
 	switch (bx) {
-	//case NPDISP_FUNCORDER_NP2INITIALIZE: // ”ñ‘Î‰
+	//case NPDISP_FUNCORDER_NP2INITIALIZE: // éå¯¾å¿œ
 	//{
 	//	break;
 	//}
@@ -4831,10 +4989,10 @@ void npdisp_exec_fast(void) {
 		const UINT16 retValue = npdisp_func_Enable(req.parameters.enable.lpDevInfoAddr, req.parameters.enable.wStyle, req.parameters.enable.lpDestDevTypeAddr, req.parameters.enable.lpOutputFileAddr, req.parameters.enable.lpDataAddr);
 
 		if (!npdisp.longjmpnum) {
-			// –ß‚è’l
+			// æˆ»ã‚Šå€¤
 			CPU_AX = retValue;
 
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -4857,10 +5015,10 @@ void npdisp_exec_fast(void) {
 		const SINT16 retValue = npdisp_func_GetDriverResourceID(req.parameters.GetDriverResourceID.iResId, req.parameters.GetDriverResourceID.lpResTypeAddr);
 
 		if (!npdisp.longjmpnum) {
-			// –ß‚è’l
+			// æˆ»ã‚Šå€¤
 			CPU_AX = retValue;
 
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -4871,7 +5029,7 @@ void npdisp_exec_fast(void) {
 		NPDISP_REQUEST_READFROMSTACK(req, parameters.ColorInfo, dwColorin);
 		NPDISP_REQUEST_READFROMSTACK(req, parameters.ColorInfo, lpPColorAddr);
 
-		// F‚Ì•ÏŠ·
+		// è‰²ã®å¤‰æ›
 		UINT32 retValue = 0;
 		NPDISP_PDEVICE devInfo;
 		UINT32 pcolor;
@@ -4889,11 +5047,11 @@ void npdisp_exec_fast(void) {
 		}
 
 		if (!npdisp.longjmpnum) {
-			// –ß‚è’l
+			// æˆ»ã‚Šå€¤
 			CPU_AX = retValue & 0xffff;
 			CPU_DX = (retValue >> 16) & 0xffff;
 
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -4907,15 +5065,15 @@ void npdisp_exec_fast(void) {
 		NPDISP_REQUEST_READFROMSTACK(req, parameters.RealizeObject, lpTextXFormAddr);
 
 		TRACEOUT(("RealizeObject"));
-		// ƒIƒuƒWƒFƒNƒg¶¬‚Æ”jŠü
+		// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆã¨ç ´æ£„
 		const UINT32 retValue = npdisp_func_RealizeObject(req.parameters.RealizeObject.lpDestDevAddr, req.parameters.RealizeObject.wStyle, req.parameters.RealizeObject.lpInObjAddr, req.parameters.RealizeObject.lpOutObjAddr, req.parameters.RealizeObject.lpTextXFormAddr);
 
 		if (!npdisp.longjmpnum) {
-			// –ß‚è’l
+			// æˆ»ã‚Šå€¤
 			CPU_AX = retValue & 0xffff;
 			CPU_DX = (retValue >> 16) & 0xffff;
 
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 
 		break;
@@ -4932,10 +5090,10 @@ void npdisp_exec_fast(void) {
 		const UINT16 retValue = npdisp_func_Control(req.parameters.Control.lpDestDevAddr, req.parameters.Control.wFunction, req.parameters.Control.lpInDataAddr, req.parameters.Control.lpOutDataAddr);
 
 		if (!npdisp.longjmpnum) {
-			// –ß‚è’l
+			// æˆ»ã‚Šå€¤
 			CPU_AX = retValue;
 
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -4957,12 +5115,12 @@ void npdisp_exec_fast(void) {
 		const UINT16 retValue = npdisp_func_BitBlt(req.parameters.BitBlt.lpDestDevAddr, req.parameters.BitBlt.wDestX, req.parameters.BitBlt.wDestY, req.parameters.BitBlt.lpSrcDevAddr, req.parameters.BitBlt.wSrcX, req.parameters.BitBlt.wSrcY, req.parameters.BitBlt.wXext, req.parameters.BitBlt.wYext, req.parameters.BitBlt.Rop3, req.parameters.BitBlt.lpPBrushAddr, req.parameters.BitBlt.lpDrawModeAddr);
 
 		if (!npdisp.longjmpnum) {
-			// –ß‚è’l
+			// æˆ»ã‚Šå€¤
 			CPU_AX = retValue;
 
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 
-			// ˆ—•‰‰×ƒoƒ‰ƒ“ƒX’²®
+			// å‡¦ç†è² è·ãƒãƒ©ãƒ³ã‚¹èª¿æ•´
 			int w = req.parameters.BitBlt.wXext < 0 ? -req.parameters.BitBlt.wXext : req.parameters.BitBlt.wXext;
 			int h = req.parameters.BitBlt.wYext < 0 ? -req.parameters.BitBlt.wYext : req.parameters.BitBlt.wYext;
 			CPU_REMCLOCK -= w * h * pccore.multiple / 8000;
@@ -4991,12 +5149,12 @@ void npdisp_exec_fast(void) {
 		const UINT16 retValue = npdisp_func_StretchBlt(req.parameters.stretchBlt.lpDestDevAddr, req.parameters.stretchBlt.wDestX, req.parameters.stretchBlt.wDestY, req.parameters.stretchBlt.wDestXext, req.parameters.stretchBlt.wDestYext, req.parameters.stretchBlt.lpSrcDevAddr, req.parameters.stretchBlt.wSrcX, req.parameters.stretchBlt.wSrcY, req.parameters.stretchBlt.wSrcXext, req.parameters.stretchBlt.wSrcYext, req.parameters.stretchBlt.Rop3, req.parameters.stretchBlt.lpPBrushAddr, req.parameters.stretchBlt.lpDrawModeAddr, req.parameters.stretchBlt.lpClipAddr);
 
 		if (!npdisp.longjmpnum) {
-			// –ß‚è’l
+			// æˆ»ã‚Šå€¤
 			CPU_AX = retValue;
 
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 
-			// ˆ—•‰‰×ƒoƒ‰ƒ“ƒX’²®
+			// å‡¦ç†è² è·ãƒãƒ©ãƒ³ã‚¹èª¿æ•´
 			int w = req.parameters.stretchBlt.wDestXext < 0 ? -req.parameters.stretchBlt.wDestXext : req.parameters.stretchBlt.wDestXext;
 			int h = req.parameters.stretchBlt.wDestYext < 0 ? -req.parameters.stretchBlt.wDestYext : req.parameters.stretchBlt.wDestYext;
 			CPU_REMCLOCK -= w * h * pccore.multiple / 8000;
@@ -5019,10 +5177,10 @@ void npdisp_exec_fast(void) {
 		const UINT16 retValue = npdisp_func_DeviceBitmapBits(req.parameters.DeviceBitmapBits.lpBitmapAddr, req.parameters.DeviceBitmapBits.fGet, req.parameters.DeviceBitmapBits.iStart, req.parameters.DeviceBitmapBits.cScans, req.parameters.DeviceBitmapBits.lpDIBitsAddr, req.parameters.DeviceBitmapBits.lpBitmapInfoAddr, req.parameters.DeviceBitmapBits.lpDrawModeAddr, req.parameters.DeviceBitmapBits.lpTranslateAddr);
 
 		if (!npdisp.longjmpnum) {
-			// –ß‚è’l
+			// æˆ»ã‚Šå€¤
 			CPU_AX = retValue;
 
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5063,13 +5221,13 @@ void npdisp_exec_fast(void) {
 		const UINT32 retValue = npdisp_func_ExtTextOut(req.parameters.extTextOut.lpDestDevAddr, req.parameters.extTextOut.wDestXOrg, req.parameters.extTextOut.wDestYOrg, req.parameters.extTextOut.lpClipRectAddr, req.parameters.extTextOut.lpStringAddr, req.parameters.extTextOut.wCount, req.parameters.extTextOut.lpFontInfoAddr, req.parameters.extTextOut.lpDrawModeAddr, req.parameters.extTextOut.lpTextXFormAddr, req.parameters.extTextOut.lpCharWidthsAddr, req.parameters.extTextOut.lpOpaqueRectAddr, req.parameters.extTextOut.wOptions);
 		
 		if (!npdisp.longjmpnum) {
-			// –ß‚è’l
+			// æˆ»ã‚Šå€¤
 			CPU_AX = retValue & 0xffff;
 			CPU_DX = (retValue >> 16) & 0xffff;
 
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 
-			// ˆ—•‰‰×ƒoƒ‰ƒ“ƒX’²®
+			// å‡¦ç†è² è·ãƒãƒ©ãƒ³ã‚¹èª¿æ•´
 			if (req.parameters.extTextOut.wCount > 0) {
 				CPU_REMCLOCK -= (int)req.parameters.extTextOut.wCount * pccore.multiple * 10;
 			}
@@ -5094,10 +5252,10 @@ void npdisp_exec_fast(void) {
 		const UINT16 retValue = npdisp_func_SetDIBitsToDevice(req.parameters.SetDIBitsToDevice.lpDestDevAddr, req.parameters.SetDIBitsToDevice.X, req.parameters.SetDIBitsToDevice.Y, req.parameters.SetDIBitsToDevice.iScan, req.parameters.SetDIBitsToDevice.cScans, req.parameters.SetDIBitsToDevice.lpClipRectAddr, req.parameters.SetDIBitsToDevice.lpDrawModeAddr, req.parameters.SetDIBitsToDevice.lpDIBitsAddr, req.parameters.SetDIBitsToDevice.lpBitmapInfoAddr, req.parameters.SetDIBitsToDevice.lpTranslateAddr);
 
 		if (!npdisp.longjmpnum) {
-			// –ß‚è’l
+			// æˆ»ã‚Šå€¤
 			CPU_AX = retValue;
 
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5111,10 +5269,10 @@ void npdisp_exec_fast(void) {
 		const UINT16 retValue = npdisp_func_SaveScreenBitmap(req.parameters.SaveScreenBitmap.lpRect, req.parameters.SaveScreenBitmap.wCommand);
 
 		if (!npdisp.longjmpnum) {
-			// –ß‚è’l
+			// æˆ»ã‚Šå€¤
 			CPU_AX = retValue;
 
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5126,7 +5284,7 @@ void npdisp_exec_fast(void) {
 		npdisp_func_SetCursor(req.parameters.SetCursor.lpCursorShapeAddr);
 
 		if (!npdisp.longjmpnum) {
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5139,7 +5297,7 @@ void npdisp_exec_fast(void) {
 		npdisp_func_MoveCursor(req.parameters.MoveCursor.wAbsX, req.parameters.MoveCursor.wAbsY);
 
 		if (!npdisp.longjmpnum) {
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5148,7 +5306,7 @@ void npdisp_exec_fast(void) {
 		npdisp_func_CheckCursor();
 
 		if (!npdisp.longjmpnum) {
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5168,10 +5326,10 @@ void npdisp_exec_fast(void) {
 		const UINT16 retValue = npdisp_func_FastBorder(req.parameters.fastBorder.lpRectAddr, req.parameters.fastBorder.wHorizBorderThick, req.parameters.fastBorder.wVertBorderThick, req.parameters.fastBorder.dwRasterOp, req.parameters.fastBorder.lpDestDevAddr, req.parameters.fastBorder.lpPBrushAddr, req.parameters.fastBorder.lpDrawModeAddr, req.parameters.fastBorder.lpClipRectAddr);
 
 		if (!npdisp.longjmpnum) {
-			// –ß‚è’l
+			// æˆ»ã‚Šå€¤
 			CPU_AX = retValue;
 
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5190,10 +5348,10 @@ void npdisp_exec_fast(void) {
 		const UINT16 retValue = npdisp_func_Output(req.parameters.output.lpDestDevAddr, req.parameters.output.wStyle, req.parameters.output.wCount, req.parameters.output.lpPointsAddr, req.parameters.output.lpPPenAddr, req.parameters.output.lpPBrushAddr, req.parameters.output.lpDrawModeAddr, req.parameters.output.lpClipRectAddr);
 
 		if (!npdisp.longjmpnum) {
-			// –ß‚è’l
+			// æˆ»ã‚Šå€¤
 			CPU_AX = retValue;
 
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5210,11 +5368,11 @@ void npdisp_exec_fast(void) {
 		const UINT32 retValue = npdisp_func_Pixel(req.parameters.pixel.lpDestDevAddr, req.parameters.pixel.X, req.parameters.pixel.Y, req.parameters.pixel.dwPhysColor, req.parameters.pixel.lpDrawModeAddr);
 
 		if (!npdisp.longjmpnum) {
-			// –ß‚è’l
+			// æˆ»ã‚Šå€¤
 			CPU_AX = retValue & 0xffff;
 			CPU_DX = (retValue >> 16) & 0xffff;
 
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5231,14 +5389,14 @@ void npdisp_exec_fast(void) {
 		const UINT16 retValue = npdisp_func_ScanLR(req.parameters.scanLR.lpDestDevAddr, req.parameters.scanLR.X, req.parameters.scanLR.Y, req.parameters.scanLR.dwPhysColor, req.parameters.scanLR.Style);
 
 		if (!npdisp.longjmpnum) {
-			// –ß‚è’l
+			// æˆ»ã‚Šå€¤
 			CPU_AX = retValue;
 
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
-	//case NPDISP_FUNCORDER_EnumObj: // ”ñ‘Î‰
+	//case NPDISP_FUNCORDER_EnumObj: // éå¯¾å¿œ
 	//{
 	//	break;
 	//}
@@ -5253,7 +5411,7 @@ void npdisp_exec_fast(void) {
 		npdisp_func_GetPalette(req.parameters.getPalette.nStartIndex, req.parameters.getPalette.nNumEntries, req.parameters.getPalette.lpPaletteAddr);
 
 		if (!npdisp.longjmpnum) {
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5268,7 +5426,7 @@ void npdisp_exec_fast(void) {
 		npdisp_func_SetPalette(req.parameters.setPalette.nStartIndex, req.parameters.setPalette.nNumEntries, req.parameters.setPalette.lpPaletteAddr);
 
 		if (!npdisp.longjmpnum) {
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5281,7 +5439,7 @@ void npdisp_exec_fast(void) {
 		npdisp_func_GetPalTrans(req.parameters.getPalTrans.lpIndexesAddr);
 
 		if (!npdisp.longjmpnum) {
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5294,7 +5452,7 @@ void npdisp_exec_fast(void) {
 		npdisp_func_SetPalTrans(req.parameters.setPalTrans.lpIndexesAddr);
 
 		if (!npdisp.longjmpnum) {
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5311,7 +5469,7 @@ void npdisp_exec_fast(void) {
 		npdisp_func_UpdateColors(req.parameters.updateColors.wStartX, req.parameters.updateColors.wStartY, req.parameters.updateColors.wExtX, req.parameters.updateColors.wExtY, req.parameters.updateColors.lpTranslateAddr);
 
 		if (!npdisp.longjmpnum) {
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5330,10 +5488,10 @@ void npdisp_exec_fast(void) {
 		const UINT16 retValue = npdisp_func_GetCharWidth(req.parameters.getCharWidth.lpDestDevAddr, req.parameters.getCharWidth.lpBufferAddr, req.parameters.getCharWidth.wFirstChar, req.parameters.getCharWidth.wLastChar, req.parameters.getCharWidth.lpFontInfoAddr, req.parameters.getCharWidth.lpDrawModeAddr, req.parameters.getCharWidth.lpFontTransAddr);
 
 		if (!npdisp.longjmpnum) {
-			// –ß‚è’l
+			// æˆ»ã‚Šå€¤
 			CPU_AX = retValue;
 
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5362,10 +5520,10 @@ void npdisp_exec_fast(void) {
 		const UINT16 retValue = npdisp_func_StretchDIBits(req.parameters.stretchDIBits.lpPDevice, req.parameters.stretchDIBits.fGet, req.parameters.stretchDIBits.DestX, req.parameters.stretchDIBits.DestY, req.parameters.stretchDIBits.DestXE, req.parameters.stretchDIBits.DestYE, req.parameters.stretchDIBits.SrcX, req.parameters.stretchDIBits.SrcY, req.parameters.stretchDIBits.SrcXE, req.parameters.stretchDIBits.SrcYE, req.parameters.stretchDIBits.lpBitsAddr, req.parameters.stretchDIBits.lpBitmapInfoAddr, req.parameters.stretchDIBits.lpTranslateAddr, req.parameters.stretchDIBits.dwROP, req.parameters.stretchDIBits.lpPBrushAddr, req.parameters.stretchDIBits.lpDrawModeAddr, req.parameters.stretchDIBits.lpClipRecAddr);
 
 		if (!npdisp.longjmpnum) {
-			// –ß‚è’l
+			// æˆ»ã‚Šå€¤
 			CPU_AX = retValue;
 
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5378,10 +5536,10 @@ void npdisp_exec_fast(void) {
 		const UINT16 retValue = npdisp_func_ValidateMode(req.parameters.validateMode.lpValModeAddr);
 
 		if (!npdisp.longjmpnum) {
-			// –ß‚è’l
+			// æˆ»ã‚Šå€¤
 			CPU_AX = retValue;
 
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5397,11 +5555,11 @@ void npdisp_exec_fast(void) {
 		const UINT32 retValue = npdisp_func_SelectBitmap(req.parameters.selectBitmap.lpDeviceAddr, req.parameters.selectBitmap.lpPrevBitmapAddr, req.parameters.selectBitmap.lpBitmapAddr, req.parameters.selectBitmap.fFlags);
 
 		if (!npdisp.longjmpnum) {
-			// –ß‚è’l
+			// æˆ»ã‚Šå€¤
 			CPU_AX = retValue & 0xffff;
 			CPU_DX = (retValue >> 16) & 0xffff;
 
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5417,11 +5575,11 @@ void npdisp_exec_fast(void) {
 		const UINT32 retValue = npdisp_func_BitmapBits(req.parameters.bitmapBits.lpDeviceAddr, req.parameters.bitmapBits.fFlags, req.parameters.bitmapBits.dwCount, req.parameters.bitmapBits.lpBitsAddr);
 
 		if (!npdisp.longjmpnum) {
-			// –ß‚è’l
+			// æˆ»ã‚Šå€¤
 			CPU_AX = retValue & 0xffff;
 			CPU_DX = (retValue >> 16) & 0xffff;
 
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5435,10 +5593,10 @@ void npdisp_exec_fast(void) {
 		const UINT16 retValue = npdisp_func_DCI_BeginAccess(req.parameters.DCI_BeginAccess.lpDeviceAddr, req.parameters.DCI_BeginAccess.lpRectAddr);
 
 		if (!npdisp.longjmpnum) {
-			// –ß‚è’l
+			// æˆ»ã‚Šå€¤
 			CPU_AX = retValue & 0xffff;
 
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5451,7 +5609,7 @@ void npdisp_exec_fast(void) {
 		npdisp_func_DCI_EndAccess(req.parameters.DCI_EndAccess.lpDeviceAddr);
 
 		if (!npdisp.longjmpnum) {
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5464,17 +5622,17 @@ void npdisp_exec_fast(void) {
 		npdisp_func_DCI_DestroySurface(req.parameters.DCI_DestroySurface.lpDeviceAddr);
 
 		if (!npdisp.longjmpnum) {
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
 	case NPDISP_FUNCORDER_INT2Fh:
 	{
 		TRACEOUT(("INT2Fh"));
-		npdisp_func_INT2Fh(CPU_SI); // “Á—á SI‚ÉŒ³‚ÌAX‚Ì’l‚ğŠi”[‚·‚é‚±‚Æ
+		npdisp_func_INT2Fh(CPU_SI); // ç‰¹ä¾‹ SIã«å…ƒã®AXã®å€¤ã‚’æ ¼ç´ã™ã‚‹ã“ã¨
 
 		if (!npdisp.longjmpnum) {
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5484,7 +5642,7 @@ void npdisp_exec_fast(void) {
 		npdisp_func_WEP();
 
 		if (!npdisp.longjmpnum) {
-			CPU_CX = 0; // ¬Œ÷‚ÌCX‚ğ0‚É
+			CPU_CX = 0; // æˆåŠŸã®æ™‚CXã‚’0ã«
 		}
 		break;
 	}
@@ -5495,27 +5653,27 @@ void npdisp_exec_fast(void) {
 	}
 	}
 
-	// ”r‘¼I—¹
+	// æ’ä»–çµ‚äº†
 	npdispcs_leave_criticalsection();
 
-	// —áŠO‚ª”­¶‚µ‚Ä‚¢‚½‚çlongjmp‚Å–ß‚é
+	// ä¾‹å¤–ãŒç™ºç”Ÿã—ã¦ã„ãŸã‚‰longjmpã§æˆ»ã‚‹
 	if (npdisp.longjmpnum) {
 		if (npdisp_memory_hasNewCacheData()) {
-			CPU_STAT_EXCEPTION_COUNTER_CLEAR(); // “Ç‚İ‘‚«‚ªi‚ñ‚Å‚¢‚½‚ç—áŠOŒJ‚è•Ô‚µ‚Å‚Í‚È‚¢
+			CPU_STAT_EXCEPTION_COUNTER_CLEAR(); // èª­ã¿æ›¸ããŒé€²ã‚“ã§ã„ãŸã‚‰ä¾‹å¤–ç¹°ã‚Šè¿”ã—ã§ã¯ãªã„
 		}
 		TRACEOUTF(("EXCEPTION!!!!!!"));
 
-		// –ß‚ê‚é‚æ‚¤‚ÉƒŒƒWƒXƒ^ƒZƒbƒg
+		// æˆ»ã‚Œã‚‹ã‚ˆã†ã«ãƒ¬ã‚¸ã‚¹ã‚¿ã‚»ãƒƒãƒˆ
 		CPU_AX = lastAX;
 		CPU_DX = lastDX;
 		CPU_CX = (NPDISP_EXEC_MAGIC & 0xffff);
 
 		int longjmpnum = npdisp.longjmpnum;
-		siglongjmp(exec_1step_jmpbuf, longjmpnum); // “]‘—
+		siglongjmp(exec_1step_jmpbuf, longjmpnum); // è»¢é€
 	}
 
-	// —áŠO”­¶‚¹‚¸‚É‘S•”‘—‚ê‚½‚çCPUƒNƒƒbƒN‚ği‚ßA“Ç‚İ‘‚«ƒoƒbƒtƒ@‚ÍƒNƒŠƒA‚·‚é
-	CPU_REMCLOCK -= (npdisp_memory_getTotalReadSize() + npdisp_memory_getTotalWriteSize()) / 4; // 4byteƒƒ‚ƒŠƒAƒNƒZƒX‚ ‚½‚è1clock
+	// ä¾‹å¤–ç™ºç”Ÿã›ãšã«å…¨éƒ¨é€ã‚ŒãŸã‚‰CPUã‚¯ãƒ­ãƒƒã‚¯ã‚’é€²ã‚ã€èª­ã¿æ›¸ããƒãƒƒãƒ•ã‚¡ã¯ã‚¯ãƒªã‚¢ã™ã‚‹
+	CPU_REMCLOCK -= (npdisp_memory_getTotalReadSize() + npdisp_memory_getTotalWriteSize()) / 4; // 4byteãƒ¡ãƒ¢ãƒªã‚¢ã‚¯ã‚»ã‚¹ã‚ãŸã‚Š1clock
 	npdisp_memory_clearpreload();
 }
 
@@ -5550,7 +5708,7 @@ static void IOOUTCALL npdisp_o7e8(UINT port, REG8 dat)
 static void IOOUTCALL npdisp_o7e9(UINT port, REG8 dat)
 {
 	if (npdisp.version >= 2 && npdisp.enabled && dat == 'F' && CPU_CX == (NPDISP_EXEC_MAGIC & 0xffff)) {
-		// ‚‘¬ÀsƒpƒX ver.2ˆÈ~‚Å‘Î‰
+		// é«˜é€Ÿå®Ÿè¡Œãƒ‘ã‚¹ ver.2ä»¥é™ã§å¯¾å¿œ
 		npdisp_exec_fast();
 		return;
 	}
@@ -5559,18 +5717,18 @@ static void IOOUTCALL npdisp_o7e9(UINT port, REG8 dat)
 	if (npdisp.cmdBuf != NPDISP_EXEC_MAGIC || !retFromException) {
 		npdisp.cmdBuf = (dat << 24) | (npdisp.cmdBuf >> 8);
 		if (npdisp.longjmpnum_nonfast && npdisp_memory_getLastEIP() != CPU_EIP) {
-			// —áŠOˆ—’†‚É‘¼‚ª—ˆ‚½ê‡‚Í•úŠü
-			npdisp_memory_setFunctionId(0); // ‹¤—pæ“Ç‚İƒoƒbƒtƒ@
+			// ä¾‹å¤–å‡¦ç†ä¸­ã«ä»–ãŒæ¥ãŸå ´åˆã¯æ”¾æ£„
+			npdisp_memory_setFunctionId(0); // å…±ç”¨å…ˆèª­ã¿ãƒãƒƒãƒ•ã‚¡
 			npdisp_memory_clearpreload();
 			TRACEOUTF(("DISCARD! %c %08x", (char)dat, CPU_EIP));
 		}
 	}
 	else {
-		// —áŠO•œ‹A‚ÌÄÀs‚ğ”F‚ß‚é
+		// ä¾‹å¤–å¾©å¸°ã®å†å®Ÿè¡Œã‚’èªã‚ã‚‹
 		TRACEOUTF(("EXCEPTION!!!!!!!!!!!!: %c", (char)dat));
 	}
 
-	// ƒGƒNƒXƒ|[ƒgŠÖ”ˆ—Às
+	// ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆé–¢æ•°å‡¦ç†å®Ÿè¡Œ
 	if (npdisp.cmdBuf == NPDISP_EXEC_MAGIC) {
 		npdisp_debug_seqCounter = 0;
 		npdisp_exec();
@@ -5612,10 +5770,10 @@ int npdisp_drawGraphic(void)
 	//	npdisp_updatePalette();
 	//}
 
-	// ƒJ[ƒ\ƒ‹Ä•`‰æ”»’è
+	// ã‚«ãƒ¼ã‚½ãƒ«å†æç”»åˆ¤å®š
 	if (npdispwin.hBmpCursorMask && npdispwin.hBmpCursor) {
 		if (npdispwin.cursorUpdated) {
-			// ƒJ[ƒ\ƒ‹©‘Ì‚ÉXV‚ª‚ ‚ê‚Î‹ŒƒJ[ƒ\ƒ‹—Ìˆæ‚ÆVƒJ[ƒ\ƒ‹—Ìˆæ‚ğ‘«‚·
+			// ã‚«ãƒ¼ã‚½ãƒ«è‡ªä½“ã«æ›´æ–°ãŒã‚ã‚Œã°æ—§ã‚«ãƒ¼ã‚½ãƒ«é ˜åŸŸã¨æ–°ã‚«ãƒ¼ã‚½ãƒ«é ˜åŸŸã‚’è¶³ã™
 			if (npdispwin.lastCursorRect.left != npdispwin.lastCursorRect.right && npdispwin.lastCursorRect.top != npdispwin.lastCursorRect.bottom) {
 				npdisp_setDirty(npdispwin.lastCursorRect.left, npdispwin.lastCursorRect.top, npdispwin.lastCursorRect.right, npdispwin.lastCursorRect.bottom);
 			}
@@ -5627,7 +5785,7 @@ int npdisp_drawGraphic(void)
 			npdispwin.cursorUpdated = 0;
 		}
 		else if (npdispwin.dirtyRect.left != npdispwin.dirtyRect.right && npdispwin.dirtyRect.top != npdispwin.dirtyRect.bottom) {
-			// ƒJ[ƒ\ƒ‹©‘Ì‚ÉXV‚ª‚È‚¢ê‡AƒJ[ƒ\ƒ‹—Ìˆæ‚ÆDirtyRect‚ªŒğ·‚µ‚Ä‚¢‚ê‚Î—Ìˆæ‚É’Ç‰Á‚·‚é
+			// ã‚«ãƒ¼ã‚½ãƒ«è‡ªä½“ã«æ›´æ–°ãŒãªã„å ´åˆã€ã‚«ãƒ¼ã‚½ãƒ«é ˜åŸŸã¨DirtyRectãŒäº¤å·®ã—ã¦ã„ã‚Œã°é ˜åŸŸã«è¿½åŠ ã™ã‚‹
 			bool intersects = npdisp.cursorX - npdisp.cursorHotSpotX < npdispwin.dirtyRect.right &&
 				npdispwin.dirtyRect.left < npdisp.cursorX - npdisp.cursorHotSpotX + npdisp.cursorWidth &&
 				npdisp.cursorY - npdisp.cursorHotSpotY < npdispwin.dirtyRect.bottom &&
@@ -5642,15 +5800,15 @@ int npdisp_drawGraphic(void)
 		}
 	}
 	else if(npdispwin.lastCursorRect.left != npdispwin.lastCursorRect.right && npdispwin.lastCursorRect.top != npdispwin.lastCursorRect.bottom) {
-		// ƒJ[ƒ\ƒ‹”ñ•\¦‚Å‘O‰ñƒJ[ƒ\ƒ‹•\¦ó‘Ô‚È‚ç‘O‰ñƒJ[ƒ\ƒ‹—Ìˆæ‚ğ‘«‚·
+		// ã‚«ãƒ¼ã‚½ãƒ«éè¡¨ç¤ºã§å‰å›ã‚«ãƒ¼ã‚½ãƒ«è¡¨ç¤ºçŠ¶æ…‹ãªã‚‰å‰å›ã‚«ãƒ¼ã‚½ãƒ«é ˜åŸŸã‚’è¶³ã™
 		npdisp_setDirty(npdispwin.lastCursorRect.left, npdispwin.lastCursorRect.top, npdispwin.lastCursorRect.right, npdispwin.lastCursorRect.bottom);
 	}
 
-	// DirtyRect‚Ì”ÍˆÍ‚ÅXV
+	// DirtyRectã®ç¯„å›²ã§æ›´æ–°
 	if (npdispwin.dirtyRect.left != npdispwin.dirtyRect.right && npdispwin.dirtyRect.top != npdispwin.dirtyRect.bottom) {
 		bool palChanged = false;
 		if (npdisp.usePalette) {
-			// ƒOƒŒ[ƒXƒP[ƒ‹‚©‚çÀÛ‚ÌƒfƒoƒCƒXF‚Ö’u‚«Š·‚¦
+			// ã‚°ãƒ¬ãƒ¼ã‚¹ã‚±ãƒ¼ãƒ«ã‹ã‚‰å®Ÿéš›ã®ãƒ‡ãƒã‚¤ã‚¹è‰²ã¸ç½®ãæ›ãˆ
 			SetDIBColorTable(npdispwin.hdc, 0, 256, (RGBQUAD*)npdisp_palette_rgb256);
 			palChanged = true;
 		}
@@ -5665,29 +5823,29 @@ int npdisp_drawGraphic(void)
 			BitBlt(hdc, npdisp.cursorX - npdisp.cursorHotSpotX, npdisp.cursorY - npdisp.cursorHotSpotY, npdisp.cursorWidth, npdisp.cursorHeight, npdispwin.hdcCursor, 0, 0, SRCINVERT);
 		}
 		else {
-			//// Test—p
+			//// Testç”¨
 			//BitBlt(hdc, npdisp.cursorX, npdisp.cursorY, 4, 4, NULL, 0, 0, BLACKNESS);
 			//BitBlt(hdc, npdisp.cursorX + 1, npdisp.cursorY + 1, 2, 2, NULL, 0, 0, WHITENESS);
 		}
 		if (palChanged) {
-			// •`‰æŒã‚ÉŒ³‚ÌƒOƒŒ[ƒXƒP[ƒ‹‚Ö–ß‚·
+			// æç”»å¾Œã«å…ƒã®ã‚°ãƒ¬ãƒ¼ã‚¹ã‚±ãƒ¼ãƒ«ã¸æˆ»ã™
 			SetDIBColorTable(npdispwin.hdc, 0, 256, (RGBQUAD*)npdisp_palette_gray256);
 		}
 
-		//// DEBUG: DirtyRectŠm”F—p
+		//// DEBUG: DirtyRectç¢ºèªç”¨
 		//HGDIOBJ oldPen = SelectObject(npdispwin.hdc, GetStockObject(BLACK_PEN));
 		//HGDIOBJ oldBrush = SelectObject(npdispwin.hdc, GetStockObject(NULL_BRUSH));
 		//Rectangle(npdispwin.hdc, npdispwin.dirtyRect.left, npdispwin.dirtyRect.top, npdispwin.dirtyRect.right, npdispwin.dirtyRect.bottom);
 		//SelectObject(npdispwin.hdc, oldPen);
 		//SelectObject(npdispwin.hdc, oldBrush);
 
-		// WAB“]‘—‚ÌDirtyRectİ’è
+		// WABè»¢é€æ™‚ã®DirtyRectè¨­å®š
 		np2wab_setDirtyRect(npdispwin.dirtyRect);
 
-		// DirtyRectƒŠƒZƒbƒg
+		// DirtyRectãƒªã‚»ãƒƒãƒˆ
 		npdisp_resetDirty();
 
-		// ‹ŒƒJ[ƒ\ƒ‹ˆÊ’u‚ğ‹L‰¯
+		// æ—§ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã‚’è¨˜æ†¶
 		if (npdispwin.hBmpCursorMask && npdispwin.hBmpCursor) {
 			npdispwin.lastCursorRect.left = npdisp.cursorX - npdisp.cursorHotSpotX;
 			npdispwin.lastCursorRect.top = npdisp.cursorY - npdisp.cursorHotSpotY;
@@ -5695,7 +5853,7 @@ int npdisp_drawGraphic(void)
 			npdispwin.lastCursorRect.bottom = npdisp.cursorY - npdisp.cursorHotSpotY + npdisp.cursorHeight;
 		}
 		else {
-			// ƒJ[ƒ\ƒ‹”ñ•\¦‚È‚çƒNƒŠƒA
+			// ã‚«ãƒ¼ã‚½ãƒ«éè¡¨ç¤ºãªã‚‰ã‚¯ãƒªã‚¢
 			npdispwin.lastCursorRect.left = npdispwin.lastCursorRect.top = npdispwin.lastCursorRect.right = npdispwin.lastCursorRect.bottom = 0;
 		}
 	}
@@ -5724,6 +5882,14 @@ static void npdisp_releaseScreen(bool resize) {
 			}
 			npdispwin.bitmaps.clear();
 			npdispwin.bitmapsIdx = 1;
+
+			// DBCSç”¨
+			for (int i = 0; i < NPDISP_FONT_CACHE_MAX; i++) {
+				if (npdispwin.hFontCache[i]) {
+					DeleteObject(npdispwin.hFontCache[i]);
+					npdispwin.hFontCache[i] = NULL;
+				}
+			}
 		}
 		SelectObject(npdispwin.hdc, npdispwin.hOldBmp);
 		DeleteObject(npdispwin.hBmp);
@@ -5756,7 +5922,7 @@ static void npdisp_releaseScreen(bool resize) {
 		npdispwin.hOldhFont = NULL;
 
 		if (npdisp.cursorBpp <= 1) {
-			// 1bpp‚Í©‘Omalloc‚È‚Ì‚Åfree‚·‚é
+			// 1bppã¯è‡ªå‰mallocãªã®ã§freeã™ã‚‹
 			if (npdispwin.pBitsCursor) {
 				free(npdispwin.pBitsCursor);
 			}
@@ -5829,27 +5995,27 @@ static void npdisp_createScreen(bool resize) {
 	npdispwin.bi.bmiHeader.biClrImportant = colors;
 
 	if (colors == 2) {
-		// 2FƒpƒŒƒbƒgƒZƒbƒg
+		// 2è‰²ãƒ‘ãƒ¬ãƒƒãƒˆã‚»ãƒƒãƒˆ
 		memcpy(npdispwin.bi.bmiColors, npdisp_palette_rgb2, sizeof(RGBQUAD) * NELEMENTS(npdisp_palette_rgb2));
 	}
 	else if (colors == 16) {
-		// 16FƒpƒŒƒbƒgƒZƒbƒg
+		// 16è‰²ãƒ‘ãƒ¬ãƒƒãƒˆã‚»ãƒƒãƒˆ
 		memcpy(npdispwin.bi.bmiColors, npdisp_palette_rgb16, sizeof(RGBQUAD) * NELEMENTS(npdisp_palette_rgb16));
 	}
 	else if (colors == 256) {
-		// 256FƒpƒŒƒbƒgƒZƒbƒg
+		// 256è‰²ãƒ‘ãƒ¬ãƒƒãƒˆã‚»ãƒƒãƒˆ
 		memcpy(npdispwin.bi.bmiColors, npdisp_palette_gray256, sizeof(RGBQUAD) * NELEMENTS(npdisp_palette_gray256));
 	}
 
 	if (npdisp.bpp == 16) {
-		// ƒrƒbƒgƒtƒB[ƒ‹ƒh 565
+		// ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ 565
 		npdispwin.bi.bmiHeader.biCompression = BI_BITFIELDS;
 		*((DWORD*)(npdispwin.bi.bmiColors + 0)) = 0x0000F800;
 		*((DWORD*)(npdispwin.bi.bmiColors + 1)) = 0x000007E0;
 		*((DWORD*)(npdispwin.bi.bmiColors + 2)) = 0x0000001F;
 	}
 	else if (npdisp.bpp == 15) {
-		// ƒrƒbƒgƒtƒB[ƒ‹ƒh 555
+		// ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ 555
 		npdispwin.bi.bmiHeader.biCompression = BI_BITFIELDS;
 		*((DWORD*)(npdispwin.bi.bmiColors + 0)) = 0x00007C00;
 		*((DWORD*)(npdispwin.bi.bmiColors + 1)) = 0x000003E0;
@@ -5899,7 +6065,7 @@ static void npdisp_createScreen(bool resize) {
 
 	//npdispwin.hBmp16BltBuf = CreateCompatibleBitmap(hdcScreen, width, height);
 
-	ReleaseDC(NULL, hdcScreen); // ‚à‚¤‚¢‚ç‚È‚¢
+	ReleaseDC(NULL, hdcScreen); // ã‚‚ã†ã„ã‚‰ãªã„
 
 	npdispwin.hOldPen = SelectObject(npdispwin.hdc, GetStockObject(WHITE_PEN));
 	npdispwin.hOldBrush = SelectObject(npdispwin.hdc, GetStockObject(BLACK_BRUSH));
@@ -5934,7 +6100,7 @@ static void npdisp_createScreen(bool resize) {
 
 	memset(&npdispwin.lastScreenDrawMode, 0, sizeof(NPDISP_DRAWMODE));
 
-	// ƒfƒoƒbƒO—pƒtƒHƒ“ƒg
+	// ãƒ‡ãƒãƒƒã‚°ç”¨ãƒ•ã‚©ãƒ³ãƒˆ
 	LOGFONT lf = { 0 };
 	lf.lfHeight = -9;
 	lf.lfWeight = FW_NORMAL;
@@ -5944,7 +6110,8 @@ static void npdisp_createScreen(bool resize) {
 	npdispwin.hFont = CreateFontIndirect(&lf);
 	npdispwin.hOldhFont = SelectObject(npdispwin.hdc, npdispwin.hFont);
 
-	//// DDB‚ÌF”‚ğ•ÏX
+
+	//// DDBã®è‰²æ•°ã‚’å¤‰æ›´
 	//for (auto it = npdispwin.bitmaps.begin(); it != npdispwin.bitmaps.end(); ++it) {
 	//	if (it->second.bmphdc.hBmp) {
 	//		HDC hdcTmp = npdispwin.hdcCache[0];
@@ -5958,7 +6125,7 @@ static void npdisp_createScreen(bool resize) {
 	//			lpbi->bmiHeader.biHeight = bmpHDC->lpbi->bmiHeader.biHeight;
 	//			hBmpNew = CreateDIBSection(npdispwin.hdcCache[0], (BITMAPINFO*)lpbi, DIB_RGB_COLORS, &pBits, NULL, 0);
 	//			if (hBmpNew) {
-	//				// DDB‘‚«–ß‚µ
+	//				// DDBæ›¸ãæˆ»ã—
 	//				if (bmpHDC->hBmpDDB) {
 	//					const int ddbWidth = bmpHDC->lpbi->bmiHeader.biWidth;
 	//					const int ddbHeight = (bmpHDC->lpbi->bmiHeader.biHeight >= 0) ? bmpHDC->lpbi->bmiHeader.biHeight : -bmpHDC->lpbi->bmiHeader.biHeight;
@@ -5970,7 +6137,7 @@ static void npdisp_createScreen(bool resize) {
 	//					SelectObject(hdcTemp, hOldBmp);
 	//				}
 
-	//				// ‹Œ¨V “]‘—
+	//				// æ—§â†’æ–° è»¢é€
 	//				const int w = lpbi->bmiHeader.biWidth;
 	//				const int h = lpbi->bmiHeader.biHeight >= 0 ? lpbi->bmiHeader.biHeight : -lpbi->bmiHeader.biHeight;
 	//				HGDIOBJ hBmpOld0 = SelectObject(npdispwin.hdcCache[0], bmpHDC->hBmp);
@@ -5999,9 +6166,9 @@ static void npdisp_createScreen(bool resize) {
 	//				SelectObject(npdispwin.hdcCache[0], hBmpOld0);
 	//				SelectObject(npdispwin.hdcCache[1], hBmpOld1);
 
-	//				// ‹ŒBMPíœ
+	//				// æ—§BMPå‰Šé™¤
 	//				if (bmpHDC->hBmpDDB) {
-	//					// DDBíœ
+	//					// DDBå‰Šé™¤
 	//					if (bmpHDC->hdc && bmpHDC->hOldBmp) {
 	//						SelectObject(bmpHDC->hdc, bmpHDC->hOldBmp);
 	//					}
@@ -6021,7 +6188,7 @@ static void npdisp_createScreen(bool resize) {
 	//					bmpHDC->pBits = NULL;
 	//				}
 
-	//				// VBMPİ’è
+	//				// æ–°BMPè¨­å®š
 	//				bmpHDC->hBmp = hBmpNew;
 	//				bmpHDC->pBits = pBits;
 	//				bmpHDC->lpbi = (BITMAPINFO*)lpbi;
@@ -6083,6 +6250,10 @@ void npdisp_reset(const NP2CFG* pConfig)
 	npdispwin.dirtyRect.left = npdispwin.dirtyRect.top = npdispwin.dirtyRect.right = npdispwin.dirtyRect.bottom = 0;
 	npdispwin.lastCursorRect.left = npdispwin.lastCursorRect.top = npdispwin.lastCursorRect.right = npdispwin.lastCursorRect.bottom = 0;
 
+	// DBCSç”¨
+	memset(npdispwin.hFontCache, 0, sizeof(npdispwin.hFontCache));
+	memset(npdispwin.logFontCache, 0, sizeof(npdispwin.logFontCache));
+
 	npdisp.cursorHotSpotX = 0;
 	npdisp.cursorHotSpotY = 0;
 	npdisp.cursorWidth = 0;
@@ -6132,16 +6303,16 @@ int npdisp_sfsave(STFLAGH sfh, const SFENTRY* tbl)
 
 	std::vector<UINT8> buffer;
 
-	// •K—v‚È”ÍˆÍ‚Å‹L˜^
-	// ‹¤’Ê
+	// å¿…è¦ãªç¯„å›²ã§è¨˜éŒ²
+	// å…±é€š
 	UINT32 npdisplen = sizeof(npdisp);
 	buffer.insert(buffer.end(), (UINT8*)(&npdisplen), (UINT8*)(&npdisplen + 1));
 	buffer.insert(buffer.end(), (UINT8*)(&npdisp), (UINT8*)(&npdisp + 1));
 
-	// WAB—LŒø‚È‚ç•Û‘¶
+	// WABæœ‰åŠ¹ãªã‚‰ä¿å­˜
 	if (npdisp.enabled) {
-		// OSˆË‘¶•”
-		// ƒXƒNƒŠ[ƒ“
+		// OSä¾å­˜éƒ¨
+		// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³
 		buffer.insert(buffer.end(), (UINT8*)(&npdispwin.bi), (UINT8*)(&npdispwin.bi + 1));
 		UINT32 screenBufSize = npdispwin.stride * npdisp.height;
 		if (npdispwin.pBits) {
@@ -6152,7 +6323,7 @@ int npdisp_sfsave(STFLAGH sfh, const SFENTRY* tbl)
 			screenBufSize = 0;
 			buffer.insert(buffer.end(), (UINT8*)(&screenBufSize), (UINT8*)(&screenBufSize + 1));
 		}
-		// ƒJ[ƒ\ƒ‹
+		// ã‚«ãƒ¼ã‚½ãƒ«
 		UINT32 cursorBufSize = 0;
 		cursorBufSize = npdisp.cursorStride * npdisp.cursorHeight;
 		if (npdispwin.pBitsCursorMask && npdispwin.pBitsCursor) {
@@ -6164,7 +6335,7 @@ int npdisp_sfsave(STFLAGH sfh, const SFENTRY* tbl)
 			cursorBufSize = 0;
 			buffer.insert(buffer.end(), (UINT8*)(&cursorBufSize), (UINT8*)(&cursorBufSize + 1));
 		}
-		// ƒpƒŒƒbƒg
+		// ãƒ‘ãƒ¬ãƒƒãƒˆ
 		if (npdisp.bpp == 1) {
 			buffer.insert(buffer.end(), (UINT8*)npdisp_palette_rgb2, (UINT8*)npdisp_palette_rgb2 + sizeof(npdisp_palette_rgb2));
 		}
@@ -6175,7 +6346,7 @@ int npdisp_sfsave(STFLAGH sfh, const SFENTRY* tbl)
 			buffer.insert(buffer.end(), (UINT8*)npdisp_palette_rgb256, (UINT8*)npdisp_palette_rgb256 + sizeof(npdisp_palette_rgb256));
 			buffer.insert(buffer.end(), (UINT8*)npdisp_palette_transTbl, (UINT8*)npdisp_palette_transTbl + sizeof(npdisp_palette_transTbl));
 		}
-		// ƒyƒ“
+		// ãƒšãƒ³
 		buffer.insert(buffer.end(), (UINT8*)(&npdispwin.pensIdx), (UINT8*)(&npdispwin.pensIdx + 1));
 		UINT32 penCount = npdispwin.pens.size();
 		buffer.insert(buffer.end(), (UINT8*)(&penCount), (UINT8*)(&penCount + 1));
@@ -6183,7 +6354,7 @@ int npdisp_sfsave(STFLAGH sfh, const SFENTRY* tbl)
 			buffer.insert(buffer.end(), (UINT8*)(&(it->first)), (UINT8*)(&(it->first) + 1));
 			buffer.insert(buffer.end(), (UINT8*)(&(it->second)), (UINT8*)(&(it->second) + 1));
 		}
-		// ƒuƒ‰ƒV
+		// ãƒ–ãƒ©ã‚·
 		buffer.insert(buffer.end(), (UINT8*)(&npdispwin.brushesIdx), (UINT8*)(&npdispwin.brushesIdx + 1));
 		UINT32 brushCount = npdispwin.brushes.size();
 		buffer.insert(buffer.end(), (UINT8*)(&brushCount), (UINT8*)(&brushCount + 1));
@@ -6191,7 +6362,7 @@ int npdisp_sfsave(STFLAGH sfh, const SFENTRY* tbl)
 			buffer.insert(buffer.end(), (UINT8*)(&(it->first)), (UINT8*)(&(it->first) + 1));
 			buffer.insert(buffer.end(), (UINT8*)(&(it->second)), (UINT8*)(&(it->second) + 1));
 		}
-		// ƒrƒbƒgƒ}ƒbƒv
+		// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—
 		buffer.insert(buffer.end(), (UINT8*)(&npdispwin.bitmapsIdx), (UINT8*)(&npdispwin.bitmapsIdx + 1));
 		UINT32 bitmapCount = npdispwin.bitmaps.size();
 		buffer.insert(buffer.end(), (UINT8*)(&bitmapCount), (UINT8*)(&bitmapCount + 1));
@@ -6229,7 +6400,7 @@ int npdisp_sfsave(STFLAGH sfh, const SFENTRY* tbl)
 		}
 	}
 
-	// ‘‚«‚İ
+	// æ›¸ãè¾¼ã¿
 	int statLen = buffer.size();
 	ret = statflag_write(sfh, &statLen, sizeof(int));
 	if (ret != STATFLAG_SUCCESS) return ret;
@@ -6247,35 +6418,35 @@ int npdisp_sfload(STFLAGH sfh, const SFENTRY* tbl)
 	int statLen = 0;
 	int	ret = STATFLAG_SUCCESS;
 
-	// ‰æ–Ê‚È‚Ç‰ğ•ú
+	// ç”»é¢ãªã©è§£æ”¾
 	npdisp_releaseScreen();
 
 	ret = statflag_read(sfh, &sfVersion, sizeof(sfVersion));
 	if (ret != STATFLAG_SUCCESS) return ret;
 	ret = statflag_read(sfh, &statLen, sizeof(statLen));
 	if (ret != STATFLAG_SUCCESS) return ret;
-	if (statLen == 0) return STATFLAG_SUCCESS; // ƒf[ƒ^’·‚³0‚Íƒo[ƒWƒ‡ƒ“‚ÉŠÖŒW‚È‚­OK
+	if (statLen == 0) return STATFLAG_SUCCESS; // ãƒ‡ãƒ¼ã‚¿é•·ã•0ã¯ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã«é–¢ä¿‚ãªãOK
 
 	int readBufLen = 0;
 
 	int oldCursorBpp = npdisp.cursorBpp;
 	int oldCursorStride = npdisp.cursorStride;
 
-	// ‹¤’Ê
+	// å…±é€š
 	if (sfVersion == 1) {
-		// ƒXƒe[ƒgƒZ[ƒu ver.1
+		// ã‚¹ãƒ†ãƒ¼ãƒˆã‚»ãƒ¼ãƒ– ver.1
 		ret = statflag_read(sfh, &npdisp, sizeof(npdisp) - 1);
 		if (ret != STATFLAG_SUCCESS) return ret;
 		readBufLen += sizeof(npdisp) - 1;
 		npdisp.active = npdisp.enabled;
 	}
 	else {
-		// ƒXƒe[ƒgƒZ[ƒu ver.2ˆÈ~
+		// ã‚¹ãƒ†ãƒ¼ãƒˆã‚»ãƒ¼ãƒ– ver.2ä»¥é™
 		UINT32 npdisplen = 0;
 		ret = statflag_read(sfh, &npdisplen, sizeof(npdisplen));
 		readBufLen += sizeof(npdisplen);
 		if (ret != STATFLAG_SUCCESS) return ret;
-		if (npdisplen < 0 || npdisplen > 32768) return STATFLAG_FAILURE; // ˆÙí
+		if (npdisplen < 0 || npdisplen > 32768) return STATFLAG_FAILURE; // ç•°å¸¸
 		std::vector<UINT8> temp(npdisplen);
 		ret = statflag_read(sfh, &(temp[0]), npdisplen);
 		if (ret != STATFLAG_SUCCESS) return ret;
@@ -6283,15 +6454,15 @@ int npdisp_sfload(STFLAGH sfh, const SFENTRY* tbl)
 		memcpy(&npdisp, &(temp[0]), min(sizeof(npdisp), npdisplen));
 	}
 
-	// WAB—LŒø‚È‚ç“Ç‚İ‚İ
+	// WABæœ‰åŠ¹ãªã‚‰èª­ã¿è¾¼ã¿
 	if (npdisp.enabled) {
 		if (sfVersion == 1 || sfVersion == 2)
 		{
-			// ‰æ–Ê‚È‚Ç¶¬
+			// ç”»é¢ãªã©ç”Ÿæˆ
 			npdisp_createScreen();
 
-			// OSˆË‘¶•”
-			// ƒXƒNƒŠ[ƒ“
+			// OSä¾å­˜éƒ¨
+			// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³
 			ret = statflag_read(sfh, &npdispwin.bi, sizeof(npdispwin.bi));
 			if (ret != STATFLAG_SUCCESS) goto error;
 			readBufLen += sizeof(npdispwin.bi);
@@ -6304,20 +6475,20 @@ int npdisp_sfload(STFLAGH sfh, const SFENTRY* tbl)
 				if (ret != STATFLAG_SUCCESS) goto error;
 				readBufLen += screenBufSize;
 			}
-			// ƒJ[ƒ\ƒ‹
+			// ã‚«ãƒ¼ã‚½ãƒ«
 			UINT32 cursorBufSize;
 			ret = statflag_read(sfh, &cursorBufSize, sizeof(cursorBufSize));
 			if (ret != STATFLAG_SUCCESS) goto error;
 			readBufLen += sizeof(cursorBufSize);
 			if (cursorBufSize) {
-				// “Ç‚İæ‚è‚ÆÄ¶¬
+				// èª­ã¿å–ã‚Šã¨å†ç”Ÿæˆ
 				HBITMAP hBmpCursorMask = NULL;
 				HBITMAP hBmpCursor = NULL;
 
 				void* pBitsCursorMask = NULL;
 				void* pBitsCursor = NULL;
 				if (npdisp.cursorBpp > 1) {
-					// ƒ‚ƒmƒNƒˆÈŠO‚ÍDIBSection‚Å
+					// ãƒ¢ãƒã‚¯ãƒ­ä»¥å¤–ã¯DIBSectionã§
 					BITMAPINFO_8BPP bi;
 					bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 					bi.bmiHeader.biWidth = npdisp.cursorWidth;
@@ -6340,21 +6511,21 @@ int npdisp_sfload(STFLAGH sfh, const SFENTRY* tbl)
 					}
 					else if (npdisp.cursorBpp == 15 || npdisp.cursorBpp == 16) {
 						if (npdisp.cursorBpp == 16) {
-							// ƒrƒbƒgƒtƒB[ƒ‹ƒh 565
+							// ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ 565
 							bi.bmiHeader.biCompression = BI_BITFIELDS;
 							*((DWORD*)(bi.bmiColors + 0)) = 0x0000F800;
 							*((DWORD*)(bi.bmiColors + 1)) = 0x000007E0;
 							*((DWORD*)(bi.bmiColors + 2)) = 0x0000001F;
 						}
 						else if (npdisp.cursorBpp == 15) {
-							// ƒrƒbƒgƒtƒB[ƒ‹ƒh 555
+							// ãƒ“ãƒƒãƒˆãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ 555
 							bi.bmiHeader.biCompression = BI_BITFIELDS;
 							*((DWORD*)(bi.bmiColors + 0)) = 0x00007C00;
 							*((DWORD*)(bi.bmiColors + 1)) = 0x000003E0;
 							*((DWORD*)(bi.bmiColors + 2)) = 0x0000001F;
 							bi.bmiHeader.biBitCount = 16;
 						}
-						bi.bmiHeader.biBitCount = 16; // 16ˆµ‚¢‚É‚·‚é
+						bi.bmiHeader.biBitCount = 16; // 16æ‰±ã„ã«ã™ã‚‹
 					}
 					hBmpCursorMask = CreateDIBSection(npdispwin.hdcCursorMask, (BITMAPINFO*)(&bi), DIB_RGB_COLORS, &pBitsCursorMask, NULL, 0);
 					if (!hBmpCursorMask) goto error;
@@ -6365,7 +6536,7 @@ int npdisp_sfload(STFLAGH sfh, const SFENTRY* tbl)
 					}
 				}
 				else {
-					// ƒ‚ƒmƒNƒ‚ÍDDB‚ÅiŒã‚Åì¬j
+					// ãƒ¢ãƒã‚¯ãƒ­ã¯DDBã§ï¼ˆå¾Œã§ä½œæˆï¼‰
 					pBitsCursorMask = (char*)malloc(cursorBufSize);
 					if (!pBitsCursorMask) goto error;
 					pBitsCursor = (char*)malloc(cursorBufSize);
@@ -6383,12 +6554,12 @@ int npdisp_sfload(STFLAGH sfh, const SFENTRY* tbl)
 				readBufLen += cursorBufSize;
 
 				if (npdisp.cursorBpp <= 1) {
-					// ƒ‚ƒmƒNƒ‚ÍDDB‚ÅiŒãì¬j
+					// ãƒ¢ãƒã‚¯ãƒ­ã¯DDBã§ï¼ˆå¾Œä½œæˆï¼‰
 					hBmpCursorMask = CreateBitmap(npdisp.cursorWidth, npdisp.cursorHeight, 1, 1, pBitsCursorMask);
 					hBmpCursor = CreateBitmap(npdisp.cursorWidth, npdisp.cursorHeight, 1, 1, pBitsCursor);
 				}
 
-				// ƒrƒbƒgƒ}ƒbƒv’u‚«Š·‚¦
+				// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ç½®ãæ›ãˆ
 				if (hBmpCursorMask) {
 					if (npdispwin.hBmpCursorMask) {
 						SelectObject(npdispwin.hdcCursorMask, npdispwin.hOldBmpCursorMask);
@@ -6408,18 +6579,18 @@ int npdisp_sfload(STFLAGH sfh, const SFENTRY* tbl)
 					npdispwin.hBmpCursor = hBmpCursor;
 				}
 
-				// ƒsƒNƒZƒ‹ƒoƒbƒtƒ@‚ğ’u‚«Š·‚¦
+				// ãƒ”ã‚¯ã‚»ãƒ«ãƒãƒƒãƒ•ã‚¡ã‚’ç½®ãæ›ãˆ
 				void* oldpBitsCursor = npdispwin.pBitsCursor;
 				void* oldpBitsCursorMask = npdispwin.pBitsCursorMask;
 				npdispwin.pBitsCursor = pBitsCursor;
 				npdispwin.pBitsCursorMask = pBitsCursorMask;
 				if (oldCursorBpp <= 1) {
-					// 1bpp‚Í©‘Omalloc‚È‚Ì‚Åfree‚·‚é
+					// 1bppã¯è‡ªå‰mallocãªã®ã§freeã™ã‚‹
 					if (oldpBitsCursor) free(oldpBitsCursor);
 					if (oldpBitsCursorMask) free(oldpBitsCursorMask);
 				}
 			}
-			// ƒpƒŒƒbƒg
+			// ãƒ‘ãƒ¬ãƒƒãƒˆ
 			if (npdisp.bpp == 1) {
 				ret = statflag_read(sfh, npdisp_palette_rgb2, sizeof(npdisp_palette_rgb2));
 				if (ret != STATFLAG_SUCCESS) goto error;
@@ -6438,7 +6609,7 @@ int npdisp_sfload(STFLAGH sfh, const SFENTRY* tbl)
 				if (ret != STATFLAG_SUCCESS) goto error;
 				readBufLen += sizeof(npdisp_palette_transTbl);
 			}
-			// ƒyƒ“
+			// ãƒšãƒ³
 			ret = statflag_read(sfh, &npdispwin.pensIdx, sizeof(npdispwin.pensIdx));
 			if (ret != STATFLAG_SUCCESS) goto error;
 			readBufLen += sizeof(npdispwin.pensIdx);
@@ -6455,12 +6626,12 @@ int npdisp_sfload(STFLAGH sfh, const SFENTRY* tbl)
 				ret = statflag_read(sfh, &pen, sizeof(pen));
 				if (ret != STATFLAG_SUCCESS) goto error;
 				readBufLen += sizeof(pen);
-				pen.pen = NULL; // statƒ[ƒh‚È‚Ì‚Å–³Œø
-				npdisp_createPen(&pen); // ƒuƒ‰ƒV¶¬
+				pen.pen = NULL; // statãƒ­ãƒ¼ãƒ‰ãªã®ã§ç„¡åŠ¹
+				npdisp_createPen(&pen); // ãƒ–ãƒ©ã‚·ç”Ÿæˆ
 				npdispwin.pens[key] = pen;
 
 			}
-			// ƒuƒ‰ƒV
+			// ãƒ–ãƒ©ã‚·
 			ret = statflag_read(sfh, &npdispwin.brushesIdx, sizeof(npdispwin.brushesIdx));
 			if (ret != STATFLAG_SUCCESS) goto error;
 			readBufLen += sizeof(npdispwin.brushesIdx);
@@ -6477,13 +6648,13 @@ int npdisp_sfload(STFLAGH sfh, const SFENTRY* tbl)
 				ret = statflag_read(sfh, &brush, sizeof(brush));
 				if (ret != STATFLAG_SUCCESS) goto error;
 				readBufLen += sizeof(brush);
-				brush.brs = NULL; // statƒ[ƒh‚È‚Ì‚Å–³Œø
-				npdisp_createBrush(&brush); // ƒuƒ‰ƒV¶¬
+				brush.brs = NULL; // statãƒ­ãƒ¼ãƒ‰ãªã®ã§ç„¡åŠ¹
+				npdisp_createBrush(&brush); // ãƒ–ãƒ©ã‚·ç”Ÿæˆ
 				npdispwin.brushes[key] = brush;
 			}
 
 			if (readBufLen < statLen) {
-				// ƒrƒbƒgƒ}ƒbƒv
+				// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—
 				ret = statflag_read(sfh, &npdispwin.bitmapsIdx, sizeof(npdispwin.bitmapsIdx));
 				if (ret != STATFLAG_SUCCESS) goto error;
 				readBufLen += sizeof(npdispwin.bitmapsIdx);
@@ -6524,12 +6695,12 @@ int npdisp_sfload(STFLAGH sfh, const SFENTRY* tbl)
 
 			if (readBufLen != statLen) goto error;
 
-			// “Ç‚İ‚İƒoƒbƒtƒ@ƒŠƒZƒbƒg
+			// èª­ã¿è¾¼ã¿ãƒãƒƒãƒ•ã‚¡ãƒªã‚»ãƒƒãƒˆ
 			int longjmpnum = npdisp.longjmpnum;
 			npdisp_memory_clearallpreload();
-			npdisp.longjmpnum = longjmpnum; // “Ç‚İ‚İ’†—áŠO‚Ìƒtƒ‰ƒO‚Íc‚·
+			npdisp.longjmpnum = longjmpnum; // èª­ã¿è¾¼ã¿ä¸­ä¾‹å¤–ã®ãƒ•ãƒ©ã‚°ã¯æ®‹ã™
 			
-			// ‰æ–ÊXV
+			// ç”»é¢æ›´æ–°
 			npdisp_setDirtyAll();
 			npdisp.paletteUpdated = 1;
 			npdisp.updated = 1;

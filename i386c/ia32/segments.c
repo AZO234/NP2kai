@@ -170,19 +170,19 @@ load_ldtr(UINT16 selector, int exc)
 			memset(&CPU_LDTR_DESC, 0, sizeof(CPU_LDTR_DESC));
 			return;
 		}
-		EXCEPTION(exc, sel.selector);
+		EXCEPTION(exc, sel.idx);
 	}
 
 	/* check descriptor type */
 	if (!SEG_IS_SYSTEM(&sel.desc)
 	 || (sel.desc.type != CPU_SYSDESC_TYPE_LDT)) {
-		EXCEPTION(exc, sel.selector);
+		EXCEPTION(exc, sel.idx);
 	}
 
 	/* not present */
 	rv = selector_is_not_present(&sel);
 	if (rv < 0) {
-		EXCEPTION((exc == TS_EXCEPTION) ? TS_EXCEPTION : NP_EXCEPTION, sel.selector);
+		EXCEPTION((exc == TS_EXCEPTION) ? TS_EXCEPTION : NP_EXCEPTION, sel.idx);
 	}
 
 #if defined(MORE_DEBUG)
@@ -230,10 +230,7 @@ load_descriptor(descriptor_t *sdp, UINT32 addr)
 		sdp->u.seg.limit = (h & 0xf0000) | (l & 0xffff);
 		if (sdp->u.seg.g) {
 			sdp->u.seg.limit <<= 12;
-			if (SEG_IS_CODE(sdp) || !SEG_IS_EXPANDDOWN_DATA(sdp)) {
-				/* expand-up segment */
-				sdp->u.seg.limit |= 0xfff;
-			}
+			sdp->u.seg.limit |= 0xfff;
 		}
 	} else {
 		/* system */
@@ -280,6 +277,18 @@ load_descriptor(descriptor_t *sdp, UINT32 addr)
 		case CPU_SYSDESC_TYPE_CALL_16:		/* 286 call gate */
 		case CPU_SYSDESC_TYPE_INTR_16:		/* 286 interrupt gate */
 		case CPU_SYSDESC_TYPE_TRAP_16:		/* 286 trap gate */
+			if ((h & 0x0000000e0) == 0) {
+				sdp->valid = 1;
+				sdp->d = (h & CPU_GATEDESC_H_D) ? 1 : 0;
+				sdp->u.gate.selector = (UINT16)(l >> 16);
+				sdp->u.gate.offset = l & 0xffff;
+				sdp->u.gate.count = (UINT8)(h & 0x1f);
+			}
+			else {
+				sdp->valid = 0;
+				VERBOSE(("load_descriptor: gate is invalid"));
+			}
+			break;
 		case CPU_SYSDESC_TYPE_CALL_32:		/* 386 call gate */
 		case CPU_SYSDESC_TYPE_INTR_32:		/* 386 interrupt gate */
 		case CPU_SYSDESC_TYPE_TRAP_32:		/* 386 trap gate */

@@ -258,15 +258,27 @@ sec_err:
 //		UINT32	end_sec;
 //		UINT32	sectors;
 //		等のメンバの設定
+static long get_extra_pregap_sectors(const _CDTRK *prev, const _CDTRK *cur) {
+
+	/*
+	 * Only CUE PREGAP creates sectors that exist in the logical disc
+	 * address space but not in the image file.  Other formats may fill
+	 * pregap_sectors too, but their pregap is already represented by
+	 * INDEX 00 / file offsets and must not be subtracted here.
+	 */
+	if (cur->pregap_offset_ex > prev->pregap_offset_ex) {
+		return((long)(cur->pregap_offset_ex - prev->pregap_offset_ex));
+	}
+	return(0);
+}
+
 long set_trkinfo(FILEH fh, _CDTRK *trk, UINT trks, FILELEN imagesize) {
 
 	UINT	i;
 	FILELEN	fsize;
+	FILELEN	real_sectors;
+	FILELEN	extra_pregap;
 	long	total;
-	long	pregaptotal;
-
-	total = 0;
-	pregaptotal = 0;
 
 	if (trks == 1) {
 		trk[0].sector_size = 2048;
@@ -296,44 +308,49 @@ long set_trkinfo(FILEH fh, _CDTRK *trk, UINT trks, FILELEN imagesize) {
 	else {
 		fsize = imagesize;
 	}
-	if (trk[0].pos0 == 0) {
-		trk[0].str_sec = trk[0].pos;
-	}
-	else {
-		trk[0].str_sec = trk[0].pos0;
-	}
+
+	trk[0].str_sec = (trk[0].pos0 == 0) ? trk[0].pos : trk[0].pos0;
 	for (i = 1; i < trks; i++) {
-		if (trk[i].pos0 == 0) {
-			trk[i].str_sec = trk[i].pos;
-		}
-		else {
-			trk[i].str_sec = trk[i].pos0;
+		trk[i].str_sec = (trk[i].pos0 == 0) ? trk[i].pos : trk[i].pos0;
+
+		if (trk[i].str_sec <= trk[i-1].str_sec) {
+			return(-1);
 		}
 		trk[i-1].end_sec = trk[i].str_sec - 1;
 		trk[i-1].sectors = trk[i-1].end_sec - trk[i-1].str_sec + 1;
 
-		total += trk[i-1].sectors;
-		pregaptotal += trk[i-1].pregap_sectors - (trk[i-1].pos - trk[i-1].pos0);
-		fsize -= trk[i-1].sectors * trk[i-1].sector_size;
+		/*
+		 * CUE PREGAP may exist only in the logical disc address space.
+		 * It must affect READ TOC / lead-out LBA, but must not be
+		 * subtracted from the image file size.  CCD INDEX 00 is recorded
+		 * in the image, so it is not treated as an extra pregap here.
+		 */
+		extra_pregap = (FILELEN)get_extra_pregap_sectors(&trk[i-1], &trk[i]);
+		real_sectors = trk[i-1].sectors;
+		if (real_sectors < extra_pregap) {
+			return(-1);
+		}
+		real_sectors -= extra_pregap;
+		if (fsize < real_sectors * trk[i-1].sector_size) {
+			return(-1);
+		}
+		fsize -= real_sectors * trk[i-1].sector_size;
 	}
+
 	if (fsize % trk[trks-1].sector_size != 0) {
 		return(-1);
 	}
-	if (trk[trks-1].pos0 == 0) {
-		trk[trks-1].str_sec = trk[trks-1].pos;
+	trk[trks-1].str_sec = (trk[trks-1].pos0 == 0) ? trk[trks-1].pos : trk[trks-1].pos0;
+	real_sectors = fsize / trk[trks-1].sector_size;
+	if (real_sectors == 0) {
+		return(-1);
 	}
-	else {
-		trk[trks-1].str_sec = trk[trks-1].pos0;
-	}
-	trk[trks-1].end_sec = (UINT32)(trk[trks-1].str_sec + (fsize / trk[trks-1].sector_size));
+	trk[trks-1].end_sec = (UINT32)(trk[trks-1].str_sec + real_sectors - 1);
 	trk[trks-1].sectors = trk[trks-1].end_sec - trk[trks-1].str_sec + 1;
-	total += trk[trks-1].sectors;
-	pregaptotal += trk[trks-1].pregap_sectors - (trk[trks-1].pos - trk[trks-1].pos0);
 
-	total += pregaptotal;
-
-	return(total - 1); // XXX: 何故か1多くなるので引く・・・
+	return((long)(trk[trks-1].end_sec + 1));
 }
+
 
 
 //	----
@@ -744,18 +761,16 @@ BRESULT setsxsidev(SXSIDEV sxsi, const OEMCHAR *path, const _CDTRK *trk, UINT tr
 	}
 
 	//	リードアウトトラックを生成
-	cdinfo->trk[trks].adr_ctl	= 0x10;
+	cdinfo->trk[trks].adr_ctl	= (trks >= 1) ? cdinfo->trk[trks - 1].adr_ctl : 0x10;
 	cdinfo->trk[trks].point		= 0xaa;
 //	cdinfo->trk[trks].pos		= totals;
-	cdinfo->trk[trks].pos = (UINT32)sxsi->totals;
-	cdinfo->trk[trks].pos0 = cdinfo->trk[trks].pos;
-	cdinfo->trk[trks].pregap_sectors = cdinfo->trk[trks].pos;
-	if (trks >= 1) {
-		cdinfo->trk[trks].pregap_offset_ex = cdinfo->trk[trks - 1].pregap_offset_ex;
-	}
-	else {
-		cdinfo->trk[trks].pregap_offset_ex = 0;
-	}
+	cdinfo->trk[trks].pos		= (UINT32)sxsi->totals;
+	cdinfo->trk[trks].pos0		= cdinfo->trk[trks].pos;
+	cdinfo->trk[trks].str_sec	= cdinfo->trk[trks].pos;
+	cdinfo->trk[trks].end_sec	= cdinfo->trk[trks].pos;
+	cdinfo->trk[trks].sectors	= 0;
+	cdinfo->trk[trks].pregap_sectors = 0;
+	cdinfo->trk[trks].pregap_offset_ex = (trks >= 1) ? cdinfo->trk[trks - 1].pregap_offset_ex : 0;
 
 	cdinfo->trks = trks;
 	file_cpyname(cdinfo->path, path, NELEMENTS(cdinfo->path));

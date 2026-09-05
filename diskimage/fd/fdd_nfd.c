@@ -13,237 +13,600 @@ static const UINT8 nfd_FileID_r0[15] =
 static const UINT8 nfd_FileID_r1[15] =
 						{'T','9','8','F','D','D','I','M','A','G','E','.','R','1',0x00};
 
+#define	NFD_FDCBUFSIZE	0x8000U
+
+static UINT16 nfd_load_le16(const void *ptr) {
+
+	const UINT8	*p;
+
+	p = (const UINT8 *)ptr;
+	return((UINT16)(p[0] | ((UINT16)p[1] << 8)));
+}
+
+static UINT32 nfd_load_le32(const void *ptr) {
+
+	const UINT8	*p;
+
+	p = (const UINT8 *)ptr;
+	return((UINT32)p[0] | ((UINT32)p[1] << 8) |
+		((UINT32)p[2] << 16) | ((UINT32)p[3] << 24));
+}
+
+//	保存されているデータ数の範囲で順番に選択する
+static UINT32 nfd_retry_select(UINT8 *counter, UINT32 copies) {
+
+	UINT32	select;
+
+	select = *counter;
+	if (select >= copies) {
+		select = 0;
+	}
+	*counter = (UINT8)((select + 1U) % copies);
+	return(select);
+}
+
+static BRESULT nfd_get_secsize(BYTE n, UINT32 *size) {
+
+	if (n > 8) {
+		return(FAILURE);
+	}
+	*size = ((UINT32)128) << n;
+	return(SUCCESS);
+}
+
+static BYTE nfd_media_pda(FDDFILE fdd) {
+
+	if (fdd->inf.xdf.disktype == DISKTYPE_2DD) {
+		return(0x10);
+	}
+	return(fdd->inf.xdf.rpm ? 0x30 : 0x90);
+}
+
+static BYTE nfd_current_pda(void);
+
+static BRESULT nfd_set_media(FDDFILE fdd, BYTE pda, BYTE n, UINT sectors) {
+
+	if (pda == 0) {
+		if (n == 2) {
+			if (sectors <= 9) {
+				pda = 0x10;
+			}
+			else if (sectors >= 17) {
+				pda = 0x30;
+			}
+			else {
+				pda = 0x90;
+			}
+		}
+		else {
+			pda = 0x90;
+		}
+	}
+	switch (pda) {
+		case	0x10:
+			fdd->inf.xdf.disktype = DISKTYPE_2DD;
+			fdd->inf.xdf.rpm = 0;
+			break;
+		case	0x30:
+			fdd->inf.xdf.disktype = DISKTYPE_2HD;
+			fdd->inf.xdf.rpm = 1;
+			break;
+		case	0x90:
+			fdd->inf.xdf.disktype = DISKTYPE_2HD;
+			fdd->inf.xdf.rpm = 0;
+			break;
+		default:
+			return(FAILURE);
+	}
+	return(SUCCESS);
+}
+
+static BRESULT nfd_range_ok(UINT32 pos, UINT32 len, UINT32 limit) {
+
+	if (pos > limit || len > (limit - pos)) {
+		return(FAILURE);
+	}
+	return(SUCCESS);
+}
+
+static BRESULT nfd_track_index(FDDFILE fdd, UINT cylinder, UINT head, UINT *trk) {
+
+	UINT	heads;
+
+	heads = fdd->inf.nfd.revision ? fdd->inf.nfd.head.r1.byHead : fdd->inf.nfd.head.r0.byHead;
+	if (head >= heads) {
+		return(FAILURE);
+	}
+	//	NFDのトラック番号はC/Hの物理スロット。片面でもC*2+Hの番号を維持する
+	*trk = cylinder * 2U + head;
+	if (*trk >= fdd->inf.nfd.trackcount) {
+		return(FAILURE);
+	}
+	return(SUCCESS);
+}
+
+static BRESULT fdd_seek_nfd_common(FDDFILE fdd) {
+
+	UINT	trk;
+	UINT	i;
+
+	if (!nfd_current_pda() || nfd_track_index(fdd, fdc.ncn, fdc.hd, &trk)) {
+		return(FAILURE);
+	}
+	if (fdd->inf.nfd.revision) {
+		return(nfd_load_le32(&fdd->inf.nfd.head.r1.dwTrackHead[trk]) ? SUCCESS : FAILURE);
+	}
+	for (i = 0; i < NFD_SECMAX; i++) {
+		if (fdd->inf.nfd.head.r0.si[trk][i].C != 0xff) {
+			return(SUCCESS);
+		}
+	}
+	return(FAILURE);
+}
+
+static BRESULT nfd1_read_track(FILEH hdl, FDDFILE fdd, UINT trk, NFD_TRACK_ID1 *trk_id) {
+
+	UINT32	pos;
+	UINT32	headsize;
+	UINT32	infosize;
+	UINT	sectors;
+	UINT	diags;
+
+	pos = nfd_load_le32(&fdd->inf.nfd.head.r1.dwTrackHead[trk]);
+	if (!pos) {
+		return(FAILURE);
+	}
+	headsize = nfd_load_le32(&fdd->inf.nfd.head.r1.dwHeadSize);
+	//	トラック情報はr1固定ヘッダ以降、dwHeadSizeより前に存在する
+	if (pos < sizeof(NFD_FILE_HEAD1) ||
+		nfd_range_ok(pos, sizeof(*trk_id), headsize)) {
+		return(FAILURE);
+	}
+	if ((file_seek(hdl, pos, FSEEK_SET) != (FILEPOS)pos) ||
+		(file_read(hdl, trk_id, sizeof(*trk_id)) != sizeof(*trk_id))) {
+		return(FAILURE);
+	}
+	sectors = nfd_load_le16(&trk_id->wSector);
+	diags = nfd_load_le16(&trk_id->wDiag);
+	infosize = sizeof(*trk_id) + ((UINT32)sectors + (UINT32)diags) * 16U;
+	if (nfd_range_ok(pos, infosize, headsize)) {
+		return(FAILURE);
+	}
+	return(SUCCESS);
+}
+
+static BYTE nfd_current_cmd(void) {
+
+	//	BIOS INT 1Bh経由ではfdc.cmdが更新されないため、BIOS用コマンド値を参照する
+	if (fdc.mf == 0xff) {
+		return((BYTE)(fddbioscmd & 0x0f));
+	}
+	return((BYTE)(fdc.cmd & 0x1f));
+}
+
+static BOOL nfd_mfm_match(BYTE image_mfm) {
+
+	if (fdc.mf == 0xff) {
+		return(TRUE);
+	}
+	return(image_mfm ? (fdc.mf == 0x40) : (fdc.mf == 0));
+}
+
+static BOOL nfd_mark_match(BYTE image_ddam) {
+
+	BYTE	cmd;
+
+	cmd = nfd_current_cmd();
+	if (cmd == 0x0c) {
+		return(image_ddam != 0);
+	}
+	if (cmd == 0x06) {
+		return(image_ddam == 0);
+	}
+	return(TRUE);
+}
+
+static BYTE nfd_current_pda(void) {
+
+	if (CTRL_FDMEDIA == DISKTYPE_2DD) {
+		return(0x10);
+	}
+	if (CTRL_FDMEDIA == DISKTYPE_2HD) {
+		return(fdc.rpm[fdc.us] ? 0x30 : 0x90);
+	}
+	return(0);
+}
+
+static BOOL nfd_pda_match(FDDFILE fdd, BYTE pda) {
+
+	BYTE	current;
+
+	current = nfd_current_pda();
+	if (!current) {
+		return(FALSE);
+	}
+	//	PDAはイメージ全体ではなく各エントリの属性。0の場合はマウント時の判定値を使用する
+	if (!pda) {
+		pda = nfd_media_pda(fdd);
+	}
+	return(pda == current);
+}
+
+static UINT nfd0_find_sector(FDDFILE fdd, UINT trk, BOOL exact_mark) {
+
+	NFD_SECT_ID	*id;
+	UINT		i;
+
+	for (i = 0; i < NFD_SECMAX; i++) {
+		id = &fdd->inf.nfd.head.r0.si[trk][i];
+		if (id->C == fdc.C && id->H == fdc.H && id->R == fdc.R && id->N == fdc.N &&
+			nfd_mfm_match(id->flMFM) && nfd_pda_match(fdd, id->byPDA) &&
+			(!exact_mark || nfd_mark_match(id->flDDAM))) {
+			return(i);
+		}
+	}
+	return(NFD_SECMAX);
+}
+
+static BRESULT nfd1_find_sector(FILEH hdl, FDDFILE fdd, UINT trk, NFD_SECT_ID1 *found,
+	UINT32 *datapos, UINT *secindex, BOOL exact_mark) {
+	NFD_TRACK_ID1	trk_id;
+	NFD_SECT_ID1	sec;
+	UINT32	pos;
+	UINT32	data;
+	UINT32	size;
+	UINT32	copies;
+	UINT	sectors;
+	UINT	i;
+
+	if (nfd1_read_track(hdl, fdd, trk, &trk_id)) {
+		return(FAILURE);
+	}
+	pos = nfd_load_le32(&fdd->inf.nfd.head.r1.dwTrackHead[trk]) + sizeof(trk_id);
+	data = fdd->inf.nfd.tptr[trk];
+	sectors = nfd_load_le16(&trk_id.wSector);
+	for (i = 0; i < sectors; i++) {
+		if ((file_seek(hdl, pos, FSEEK_SET) != (FILEPOS)pos) ||
+			(file_read(hdl, &sec, sizeof(sec)) != sizeof(sec)) ||
+			nfd_get_secsize(sec.N, &size)) {
+			return(FAILURE);
+		}
+		copies = (UINT32)sec.byRetry + 1U;
+		if (sec.C == fdc.C && sec.H == fdc.H && sec.R == fdc.R && sec.N == fdc.N &&
+			nfd_mfm_match(sec.flMFM) && nfd_pda_match(fdd, sec.byPDA) &&
+			(!exact_mark || nfd_mark_match(sec.flDDAM))) {
+			*found = sec;
+			*datapos = data;
+			*secindex = i;
+			return(SUCCESS);
+		}
+		data += size * copies;
+		pos += sizeof(sec);
+	}
+	return(FAILURE);
+}
+
+static BRESULT nfd1_find_diag(FILEH hdl, FDDFILE fdd, UINT trk, NFD_DIAG_ID1 *found,
+	UINT32 *datapos, UINT *diagindex) {
+	NFD_TRACK_ID1	trk_id;
+	NFD_SECT_ID1	sec;
+	NFD_DIAG_ID1	dia;
+	UINT32	pos;
+	UINT32	data;
+	UINT32	size;
+	UINT32	copies;
+	UINT	sectors;
+	UINT	diags;
+	UINT	i;
+	BYTE	cmd;
+
+	if (nfd1_read_track(hdl, fdd, trk, &trk_id)) {
+		return(FAILURE);
+	}
+	pos = nfd_load_le32(&fdd->inf.nfd.head.r1.dwTrackHead[trk]) + sizeof(trk_id);
+	data = fdd->inf.nfd.tptr[trk];
+	sectors = nfd_load_le16(&trk_id.wSector);
+	diags = nfd_load_le16(&trk_id.wDiag);
+	for (i = 0; i < sectors; i++) {
+		if ((file_seek(hdl, pos, FSEEK_SET) != (FILEPOS)pos) ||
+			(file_read(hdl, &sec, sizeof(sec)) != sizeof(sec)) ||
+			nfd_get_secsize(sec.N, &size)) {
+			return(FAILURE);
+		}
+		copies = (UINT32)sec.byRetry + 1U;
+		data += size * copies;
+		pos += sizeof(sec);
+	}
+	cmd = (BYTE)(nfd_current_cmd() & 0x0f);
+	for (i = 0; i < diags; i++) {
+		if ((file_seek(hdl, pos, FSEEK_SET) != (FILEPOS)pos) ||
+			(file_read(hdl, &dia, sizeof(dia)) != sizeof(dia))) {
+			return(FAILURE);
+		}
+		size = nfd_load_le32(&dia.dwDataLen);
+		copies = (UINT32)dia.byRetry + 1U;
+		if (!size || size > NFD_FDCBUFSIZE) {
+			return(FAILURE);
+		}
+		if ((dia.Cmd & 0x0f) == cmd && dia.C == fdc.C && dia.H == fdc.H &&
+			dia.R == fdc.R && dia.N == fdc.N && nfd_pda_match(fdd, dia.byPDA)) {
+			*found = dia;
+			*datapos = data;
+			*diagindex = i;
+			return(SUCCESS);
+		}
+		data += size * copies;
+		pos += sizeof(dia);
+	}
+	return(FAILURE);
+}
+
 BRESULT fdd_set_nfd(FDDFILE fdd, FDDFUNC fdd_fn, const OEMCHAR *fname, int ro) {
 
-	short		attr;
-	FILEH		fh;
-	UINT		rsize;
-	UINT32		ptr;
-	UINT		i;
-	UINT		j;
+	short	attr;
+	FILEH	fh;
+	FILELEN	flen;
+	UINT32	filesize;
+	UINT32	headsize;
+	UINT32	data;
+	UINT32	tpos;
+	UINT32	infosize;
+	UINT32	secsize;
+	UINT32	copies;
+	UINT	i;
+	UINT	j;
+	UINT	k;
+	UINT	order[NFD_TRKMAX1];
+	UINT	ordercnt;
+	UINT	best;
+	UINT32	bestpos;
+	UINT32	prevend;
+	UINT	maxtrk;
+	UINT	maxsec;
+	UINT	sectors;
+	UINT	diags;
+	BOOL	media_set;
+	BYTE	id[15];
+	NFD_TRACK_ID1	trk_id;
+	NFD_SECT_ID1	sec_id;
+	NFD_DIAG_ID1	dia_id;
 
 	attr = file_attr(fname);
 	if (attr & 0x18) {
 		return(FAILURE);
 	}
-	if(!ro) {
-		if(attr & FILEATTR_READONLY) {
-			ro = 1;
-		}
-	}
-	if(ro) {
-		fh = file_open_rb(fname);
-	} else {
-		fh = file_open(fname);
-	}
+	fh = file_open_rb(fname);
 	if (fh == FILEH_INVALID) {
 		return(FAILURE);
 	}
-	rsize = file_read(fh, &fdd->inf.nfd.head, NFD_HEADERSIZE);	//	nfdヘッダ読込(とりあえずr0で)
-	file_close(fh);
-	if (rsize != NFD_HEADERSIZE) {
+	flen = file_getsize(fh);
+	if (flen < 15 || flen > (FILELEN)0xffffffffUL) {
+		file_close(fh);
+		return(FAILURE);
+	}
+	filesize = (UINT32)flen;
+	if ((file_seek(fh, 0, FSEEK_SET) != 0) || file_read(fh, id, sizeof(id)) != sizeof(id)) {
+		file_close(fh);
 		return(FAILURE);
 	}
 
-	//	識別IDチェック
-	if (memcmp(fdd->inf.nfd.head.r0.szFileID, nfd_FileID_r0, 15) == 0) {
-		//	NFD r0形式
-		const	NFD_SECT_ID	*sec_nfd;
+	ZeroMemory(&fdd->inf.nfd, sizeof(fdd->inf.nfd));
+	fdd->type = DISKTYPE_NFD;
+	fdd->protect = ((attr & 0x01) || ro) ? TRUE : FALSE;
 
-		fdd->type = DISKTYPE_NFD;
-		fdd->protect = ((attr & 0x01) || (ro)) ? TRUE : FALSE;
+	if (memcmp(id, nfd_FileID_r0, sizeof(id)) == 0) {
+		NFD_SECT_ID	*sec;
+		if (filesize < sizeof(NFD_FILE_HEAD) ||
+			(file_seek(fh, 0, FSEEK_SET) != 0) ||
+			(file_read(fh, &fdd->inf.nfd.head.r0, sizeof(NFD_FILE_HEAD)) != sizeof(NFD_FILE_HEAD))) {
+			file_close(fh);
+			return(FAILURE);
+		}
+		headsize = nfd_load_le32(&fdd->inf.nfd.head.r0.dwHeadSize);
+		if (headsize < sizeof(NFD_FILE_HEAD) || headsize > filesize) {
+			file_close(fh);
+			return(FAILURE);
+		}
+		if (fdd->inf.nfd.head.r0.byHead < 1 || fdd->inf.nfd.head.r0.byHead > 2) {
+			file_close(fh);
+			return(FAILURE);
+		}
 		if (fdd->inf.nfd.head.r0.flProtect) {
 			fdd->protect = TRUE;
 		}
-
-		/* 170101 ST modified to work on Windows 9x/2000 from ... */
-		//	最大値入れて平気？
-		// fdd->inf.xdf.tracks		= NFD_TRKMAX;
-		// fdd->inf.xdf.sectors	= NFD_SECMAX;
-		/* 170101 ST modified to work on Windows 9x/2000 ... to */
-			
-		//	期待した値が入ってないことが…orz
-		ptr = LOADINTELDWORD(&fdd->inf.nfd.head.r0.dwHeadSize);
-//		ptr = NFD_HEADERSIZE;
-//TRACEOUT(("NFD(r0) TopSec Offset[%08x]", ptr));
-		//	先頭格納セクタを見て決め打ち
-		//	…2DD/2HD混在フォーマットでまずい気がする
-		sec_nfd = &fdd->inf.nfd.head.r0.si[0][0];
-//TRACEOUT(("NFD(r0) TopSec PDA[%02x]", sec_nfd->byPDA));
-		switch (sec_nfd->byPDA) {
-			case	0x10:	//	640K
-				fdd->inf.xdf.disktype = DISKTYPE_2DD;
-				fdd->inf.xdf.rpm = 0;
-				break;
-			case	0x30:	//	1.44M
-				fdd->inf.xdf.disktype = DISKTYPE_2HD;
-				fdd->inf.xdf.rpm = 1;
-				break;
-			case	0x90:	//	1.2M
-				fdd->inf.xdf.disktype = DISKTYPE_2HD;
-				fdd->inf.xdf.rpm = 0;
-				break;
-			default:
-				return(FAILURE);
-				break;
-		}
-		/* 170101 ST modified to work on Windows 9x/2000 from ... */
-		fdd->inf.xdf.tracks		= 0;
-		fdd->inf.xdf.sectors	= 0;
-		ZeroMemory(fdd->inf.nfd.ptr, sizeof(fdd->inf.nfd.ptr));
-		fdd->inf.xdf.headersize = ptr;
-		/* 170101 ST modified to work on Windows 9x/2000 ... to */
-		//	ディスクアクセス時用に各セクタのオフセットを算出し格納
+		fdd->inf.nfd.revision = 0;
+		fdd->inf.xdf.headersize = headsize;
+		data = headsize;
+		maxtrk = 0;
+		maxsec = 0;
+		media_set = FALSE;
 		for (i = 0; i < NFD_TRKMAX; i++) {
+			fdd->inf.nfd.tptr[i] = data;
 			for (j = 0; j < NFD_SECMAX; j++) {
-TRACEOUT(("NFD(r0) C[%02x]:H[%02x]:R[%02x]:N[%02x]",
-	sec_nfd->C, sec_nfd->H, sec_nfd->R, sec_nfd->N));
-				if (sec_nfd->C != 0xff) {
-TRACEOUT(("\tSetOffset Trk[%03d]Sec[%02x] = Offset[%08x]", i, j, ptr));
-					fdd->inf.nfd.ptr[i][j] = ptr;
-					ptr += 128 << sec_nfd->N;
-					/* 170101 ST modified to work on Windows 9x/2000 from ... */
-					fdd->inf.xdf.tracks = i;
-					if (fdd->inf.xdf.sectors < j) {
-						fdd->inf.xdf.sectors = j;
-					}
-					/* 170101 ST modified to work on Windows 9x/2000 ... to */
+				sec = &fdd->inf.nfd.head.r0.si[i][j];
+				if (sec->C == 0xff) {
+					continue;
 				}
-				sec_nfd++;
+				if (nfd_get_secsize(sec->N, &secsize) || nfd_range_ok(data, secsize, filesize)) {
+					file_close(fh);
+					return(FAILURE);
+				}
+				fdd->inf.nfd.ptr[i][j] = data;
+				data += secsize;
+				if (i + 1 > maxtrk) {
+					maxtrk = i + 1;
+				}
+				if (j + 1 > maxsec) {
+					maxsec = j + 1;
+				}
+				if (!media_set) {
+					if (nfd_set_media(fdd, sec->byPDA, sec->N, NFD_SECMAX)) {
+						file_close(fh);
+						return(FAILURE);
+					}
+					media_set = TRUE;
+				}
 			}
+			fdd->inf.nfd.trksize[i] = data - fdd->inf.nfd.tptr[i];
 		}
-		/* 170101 ST modified to work on Windows 9x/2000 from ... */
-		fdd->inf.xdf.tracks++;
-		fdd->inf.xdf.sectors++;
-		/* 170101 ST modified to work on Windows 9x/2000 ... to */
+		if (!media_set || !maxtrk) {
+			file_close(fh);
+			return(FAILURE);
+		}
+		fdd->inf.nfd.trackcount = (UINT16)maxtrk;
+		fdd->inf.xdf.tracks = (UINT8)maxtrk;
+		fdd->inf.xdf.sectors = (UINT8)maxsec;
 
-		//	処理関数群を登録
 		fdd_fn->eject		= fdd_eject_xxx;
 		fdd_fn->diskaccess	= fdd_diskaccess_common;
-		fdd_fn->seek		= fdd_seek_common;
-		fdd_fn->seeksector	= fdd_seeksector_nfd;	//	変更(kaiE)
+		fdd_fn->seek		= fdd_seek_nfd_common;
+		fdd_fn->seeksector	= fdd_seeksector_nfd;
 		fdd_fn->read		= fdd_read_nfd;
 		fdd_fn->write		= fdd_write_nfd;
 		fdd_fn->readid		= fdd_readid_nfd;
 		fdd_fn->writeid		= fdd_dummy_xxx;
-		fdd_fn->formatinit	= fdd_formatinit_nfd;	/* 170107 to support format command */
+		fdd_fn->formatinit	= fdd_formatinit_nfd;
 		fdd_fn->formating	= fdd_formating_xxx;
 		fdd_fn->isformating	= fdd_isformating_xxx;
 		fdd_fn->fdcresult	= TRUE;
 	}
-	else if (memcmp(fdd->inf.nfd.head.r1.szFileID, nfd_FileID_r1, 15) == 0) {
-		//	NFD r1形式
-		NFD_TRACK_ID1	trk_id;
-		NFD_SECT_ID1	sec_id;
-		NFD_DIAG_ID1	dia_id;
-		UINT32			trksize;
-
-TRACEOUT(("This is NFD(r1) IMAGE!"));
-		//	ヘッダ再読込
-		if(fdd->protect) {
-			fh = file_open_rb(fname);
-		} else {
-			fh = file_open(fname);
-		}
-		if (fh == FILEH_INVALID) {
+	else if (memcmp(id, nfd_FileID_r1, sizeof(id)) == 0) {
+		if (filesize < sizeof(NFD_FILE_HEAD1) ||
+			(file_seek(fh, 0, FSEEK_SET) != 0) ||
+			(file_read(fh, &fdd->inf.nfd.head.r1, sizeof(NFD_FILE_HEAD1)) != sizeof(NFD_FILE_HEAD1))) {
+			file_close(fh);
 			return(FAILURE);
 		}
-		rsize = file_read(fh, &fdd->inf.nfd.head, sizeof(NFD_FILE_HEAD1));
-
-		fdd->type = DISKTYPE_NFD;
-		fdd->protect = ((attr & 0x01) || (ro)) ? TRUE : FALSE;
+		headsize = nfd_load_le32(&fdd->inf.nfd.head.r1.dwHeadSize);
+		//	dwAddInfoはr1仕様では予約(0固定)。未知の拡張形式は誤認防止のため拒否する
+		if (headsize < sizeof(NFD_FILE_HEAD1) || headsize > filesize ||
+			nfd_load_le32(&fdd->inf.nfd.head.r1.dwAddInfo) != 0 ||
+			fdd->inf.nfd.head.r1.byHead < 1 || fdd->inf.nfd.head.r1.byHead > 2) {
+			file_close(fh);
+			return(FAILURE);
+		}
 		if (fdd->inf.nfd.head.r1.flProtect) {
 			fdd->protect = TRUE;
 		}
-
-		/* 170101 ST modified to work on Windows 9x/2000 from ... */
-		//	最大値入れて平気？
-		//fdd->inf.xdf.tracks		= NFD_TRKMAX;
-		//fdd->inf.xdf.sectors	= NFD_SECMAX;
-		/* 170101 modified to work on Windows 9x/2000 ... to */
-
-		ptr = LOADINTELDWORD(&fdd->inf.nfd.head.r1.dwHeadSize);
-		/* 170107 modified to work on Windows 9x/2000 from ... */
-		fdd->inf.xdf.tracks		= 0;
-		fdd->inf.xdf.sectors	= 0;
-		ZeroMemory(fdd->inf.nfd.ptr, sizeof(fdd->inf.nfd.ptr));
-		fdd->inf.xdf.headersize = ptr;
-		/* 170107 modified to work on Windows 9x/2000 ... to */
+		fdd->inf.nfd.revision = 1;
+		fdd->inf.xdf.headersize = headsize;
+		ordercnt = 0;
 		for (i = 0; i < NFD_TRKMAX1; i++) {
-			//	トラック情報ヘッダ読込
-			/* 170107 modified to work on Windows 9x/2000 from ... */
-			if (LOADINTELDWORD(&(fdd->inf.nfd.head.r1.dwTrackHead[i])) == 0) {
-				continue;
+			tpos = nfd_load_le32(&fdd->inf.nfd.head.r1.dwTrackHead[i]);
+			if (tpos) {
+				order[ordercnt++] = i;
 			}
-			/* 170107 modified to work on Windows 9x/2000 ... to */
-			if ((file_seek(fh, LOADINTELDWORD(&(fdd->inf.nfd.head.r1.dwTrackHead[i])), FSEEK_SET) != LOADINTELDWORD(&(fdd->inf.nfd.head.r1.dwTrackHead[i]))) ||
-				(file_read(fh, &trk_id, sizeof(NFD_TRACK_ID1)) != sizeof(NFD_TRACK_ID1))) {
+		}
+		//	データ部はトラック情報がヘッダに格納された物理順に並ぶ
+		for (i = 0; i < ordercnt; i++) {
+			best = i;
+			bestpos = nfd_load_le32(&fdd->inf.nfd.head.r1.dwTrackHead[order[i]]);
+			for (j = i + 1; j < ordercnt; j++) {
+				tpos = nfd_load_le32(&fdd->inf.nfd.head.r1.dwTrackHead[order[j]]);
+				if (tpos < bestpos) {
+					best = j;
+					bestpos = tpos;
+				}
+			}
+			if (best != i) {
+				k = order[i];
+				order[i] = order[best];
+				order[best] = k;
+			}
+		}
+		data = headsize;
+		maxtrk = 0;
+		maxsec = 0;
+		media_set = FALSE;
+		prevend = sizeof(NFD_FILE_HEAD1);
+		for (k = 0; k < ordercnt; k++) {
+			i = order[k];
+			tpos = nfd_load_le32(&fdd->inf.nfd.head.r1.dwTrackHead[i]);
+			if (nfd1_read_track(fh, fdd, i, &trk_id)) {
 				file_close(fh);
 				return(FAILURE);
 			}
-			trksize = 0;
-			//	セクタ情報ヘッダ読込
-			for (j = 0; j < LOADINTELWORD(&(trk_id.wSector)); j++) {
-				file_read(fh, &sec_id, sizeof(NFD_SECT_ID1));
-//				if (sec_id.R < NFD_SECMAX) {
-					fdd->inf.nfd.ptr[i][sec_id.R - 1] = ptr;
-//					fdd->inf.nfd.ptr[i][j] = ptr;
-//				}
-				ptr += 128 << sec_id.N;
-				trksize += 128 << sec_id.N;
-				if (sec_id.byRetry > 0) {
-					ptr += (128 << sec_id.N) * sec_id.byRetry;
-					trksize += (128 << sec_id.N) * sec_id.byRetry;
+			sectors = nfd_load_le16(&trk_id.wSector);
+			diags = nfd_load_le16(&trk_id.wDiag);
+			//	トラック情報の重複・オーバーラップを拒否する
+			infosize = sizeof(trk_id) + ((UINT32)sectors + diags) * 16U;
+			if (tpos < prevend || nfd_range_ok(tpos, infosize, headsize)) {
+				file_close(fh);
+				return(FAILURE);
+			}
+			prevend = tpos + infosize;
+			fdd->inf.nfd.tptr[i] = data;
+			infosize = sizeof(trk_id);
+			for (j = 0; j < sectors; j++) {
+				if ((file_seek(fh, tpos + infosize, FSEEK_SET) != (FILEPOS)(tpos + infosize)) ||
+					file_read(fh, &sec_id, sizeof(sec_id)) != sizeof(sec_id) ||
+					nfd_get_secsize(sec_id.N, &secsize)) {
+					file_close(fh);
+					return(FAILURE);
 				}
-				if (i == 0 && j == 0) {
-					//	先頭格納セクタを見て決め打ち
-					//	…2DD/2HD混在フォーマットでまずい気がする
-TRACEOUT(("NFD(r1) TopSec PDA[%02x]", sec_id.byPDA));
-					switch (sec_id.byPDA) {
-						case	0x10:	//	640K
-							fdd->inf.xdf.disktype = DISKTYPE_2DD;
-							fdd->inf.xdf.rpm = 0;
-							break;
-						case	0x30:	//	1.44M
-							fdd->inf.xdf.disktype = DISKTYPE_2HD;
-							fdd->inf.xdf.rpm = 1;
-							break;
-						case	0x00:	//	1.2M…？
-						case	0x90:	//	1.2M
-							fdd->inf.xdf.disktype = DISKTYPE_2HD;
-							fdd->inf.xdf.rpm = 0;
-							break;
-						default:
-							file_close(fh);
-							return(FAILURE);
-							break;
+				copies = (UINT32)sec_id.byRetry + 1U;
+				if (nfd_range_ok(data, secsize * copies, filesize)) {
+					file_close(fh);
+					return(FAILURE);
+				}
+				if (sec_id.R && !fdd->inf.nfd.ptr[i][sec_id.R - 1]) {
+					fdd->inf.nfd.ptr[i][sec_id.R - 1] = data;
+				}
+				data += secsize * copies;
+				infosize += sizeof(sec_id);
+				if (!media_set) {
+					if (nfd_set_media(fdd, sec_id.byPDA, sec_id.N, sectors)) {
+						file_close(fh);
+						return(FAILURE);
 					}
+					media_set = TRUE;
 				}
 			}
-			fdd->inf.nfd.trksize[i] = trksize;
-			//	特殊読み込み情報ヘッダ読込
-			for (j = 0; j < LOADINTELWORD(&(trk_id.wDiag)); j++) {
-				file_read(fh, &dia_id, sizeof(NFD_DIAG_ID1));
-				ptr += LOADINTELDWORD(&dia_id.dwDataLen);
-				if (dia_id.byRetry > 0) {
-					ptr += LOADINTELDWORD(&dia_id.dwDataLen) * dia_id.byRetry;
+			for (j = 0; j < diags; j++) {
+				if ((file_seek(fh, tpos + infosize, FSEEK_SET) != (FILEPOS)(tpos + infosize)) ||
+					file_read(fh, &dia_id, sizeof(dia_id)) != sizeof(dia_id)) {
+					file_close(fh);
+					return(FAILURE);
+				}
+				secsize = nfd_load_le32(&dia_id.dwDataLen);
+				copies = (UINT32)dia_id.byRetry + 1U;
+				if (!secsize || secsize > NFD_FDCBUFSIZE ||
+					nfd_range_ok(data, secsize * copies, filesize)) {
+					file_close(fh);
+					return(FAILURE);
+				}
+				data += secsize * copies;
+				infosize += sizeof(dia_id);
+				//	通常セクタが無くても特殊読み込み情報のPDAからメディアを判定できる
+				if (!media_set && dia_id.byPDA) {
+					if (nfd_set_media(fdd, dia_id.byPDA, dia_id.N, 0)) {
+						file_close(fh);
+						return(FAILURE);
+					}
+					media_set = TRUE;
 				}
 			}
-			/* 170107 modified to work on Windows 9x/2000 from ... */
-			if(fdd->inf.xdf.tracks == 0) {
-				fdd->inf.xdf.sectors = (UINT8)trk_id.wSector;
+			fdd->inf.nfd.trksize[i] = data - fdd->inf.nfd.tptr[i];
+			if (i + 1 > maxtrk) {
+				maxtrk = i + 1;
 			}
-			fdd->inf.xdf.tracks++;
-			/* 170107 modified to work on Windows 9x/2000 ... to */
+			if (sectors > maxsec) {
+				maxsec = sectors;
+			}
 		}
+		if (!media_set || !maxtrk) {
+			file_close(fh);
+			return(FAILURE);
+		}
+		fdd->inf.nfd.trackcount = (UINT16)maxtrk;
+		fdd->inf.xdf.tracks = (UINT8)maxtrk;
+		fdd->inf.xdf.sectors = (UINT8)((maxsec > 255) ? 255 : maxsec);
 
-		file_close(fh);
-
-		//	処理関数群を登録
 		fdd_fn->eject		= fdd_eject_xxx;
 		fdd_fn->diskaccess	= fdd_diskaccess_common;
-		fdd_fn->seek		= fdd_seek_common;
+		fdd_fn->seek		= fdd_seek_nfd_common;
 		fdd_fn->seeksector	= fdd_seeksector_nfd1;
+		fdd_fn->readdiag	= fdd_readdiag_nfd1;
 		fdd_fn->read		= fdd_read_nfd1;
 		fdd_fn->write		= fdd_write_nfd1;
 		fdd_fn->readid		= fdd_readid_nfd1;
@@ -252,12 +615,12 @@ TRACEOUT(("NFD(r1) TopSec PDA[%02x]", sec_id.byPDA));
 		fdd_fn->formating	= fdd_formating_xxx;
 		fdd_fn->isformating	= fdd_isformating_xxx;
 		fdd_fn->fdcresult	= TRUE;
-TRACEOUT(("Build ImageAccess Info OK ... maybe"));
 	}
 	else {
+		file_close(fh);
 		return(FAILURE);
 	}
-
+	file_close(fh);
 	return(SUCCESS);
 }
 
@@ -265,136 +628,67 @@ TRACEOUT(("Build ImageAccess Info OK ... maybe"));
 BRESULT fdd_seeksector_nfd(FDDFILE fdd) {
 
 	UINT	trk;
-	BYTE	MaxR;
 	UINT	i;
 
-	TRACEOUT(("NFD(r0) seeksector [%03d]", (fdc.treg[fdc.us] << 1) + fdc.hd));
-
-	if ((CTRL_FDMEDIA != fdd->inf.xdf.disktype) ||
-		(fdc.rpm[fdc.us] != fdd->inf.xdf.rpm) ||
-		(fdc.treg[fdc.us] >= (fdd->inf.xdf.tracks >> 1))) {
-		TRACEOUT(("fdd_seek_nfd FAILURE CTRL_FDMEDIA[%02x], DISKTYPE[%02x]", CTRL_FDMEDIA, fdd->inf.xdf.disktype));
-		TRACEOUT(("fdd_seek_nfd FAILURE fdc.rpm[%02x], fdd->rpm[%02x]", fdc.rpm[fdc.us], fdd->inf.xdf.rpm));
-		TRACEOUT(("fdd_seek_nfd FAILURE fdc.treg[%02x], fdd->trk[%02x]", fdc.treg[fdc.us], (fdd->inf.xdf.tracks >> 1)));
+	if (!nfd_current_pda()) {
 		fddlasterror = 0xe0;
 		return(FAILURE);
 	}
-	if (!fdc.R) {
-		TRACEOUT(("fdd_seek_nfd FAILURE fdc.R[%02x]", fdc.R));
-		fddlasterror = 0xc0;
+	if (nfd_track_index(fdd, fdc.treg[fdc.us], fdc.hd, &trk)) {
+		fddlasterror = 0xe0;
 		return(FAILURE);
 	}
-
-	trk = (fdc.treg[fdc.us] << 1) + fdc.hd;
-	MaxR = 0;
 	for (i = 0; i < NFD_SECMAX; i++) {
-//		TRACEOUT(("fdd_seek_nfd1 read sector_id[C:%02x,H:%02x,R:%02x,N:%02x]", sec_id.C, sec_id.H, sec_id.R, sec_id.N));
-		if (fdd->inf.nfd.head.r0.si[trk][i].R > MaxR) {
-			MaxR = fdd->inf.nfd.head.r0.si[trk][i].R;
+		if (fdd->inf.nfd.head.r0.si[trk][i].C != 0xff) {
+			return(SUCCESS);
 		}
 	}
-
-	if (fdc.R > MaxR) {
-		TRACEOUT(("fdd_seek_nfd FAILURE fdc.R[%02x],MaxR[%02x]", fdc.R, MaxR));
-		fddlasterror = 0xc0;
-		return(FAILURE);
-	}
-	if ((fdc.mf != 0xff) && (fdc.mf != 0x40)) {
-		TRACEOUT(("fdd_seek_nfd FAILURE fdc.mf[%02x]", fdc.mf));
-		fddlasterror = 0xc0;
-		return(FAILURE);
-	}
-	return(SUCCESS);
+	fddlasterror = 0xc0;
+	return(FAILURE);
 }
-//
 
 BRESULT fdd_read_nfd(FDDFILE fdd) {
 
 	FILEH	hdl;
 	UINT	trk;
 	UINT	sec;
-	UINT	secR;
-	UINT	secsize;
-	long	seekp;
-	UINT	i;
+	UINT32	secsize;
+	UINT32	seekp;
+	NFD_SECT_ID	*id;
 
-	fddlasterror = 0x00;
-//	変更(kaiE)
-//	if (fdd_seeksector_common(fdd)) {
+	fddlasterror = 0;
 	if (fdd_seeksector_nfd(fdd)) {
-		TRACEOUT(("NFD(r0) read FAILURE seeksector"));
 		return(FAILURE);
 	}
-	trk = (fdc.treg[fdc.us] << 1) + fdc.hd;
-	/* 170107 modified to work on Windows 9x/2000 form ... */
-	if (fdc.eot && !fdd->inf.nfd.ptr[trk][fdc.eot - 1]) {
+	if (nfd_track_index(fdd, fdc.treg[fdc.us], fdc.hd, &trk)) {
+		fddlasterror = 0xe0;
+		return(FAILURE);
+	}
+	sec = nfd0_find_sector(fdd, trk, TRUE);
+	if (sec == NFD_SECMAX) {
+		//	DAM/DDAM不一致でもデータは読み出し、保存されているリザルトを返す
+		sec = nfd0_find_sector(fdd, trk, FALSE);
+	}
+	if (sec == NFD_SECMAX || nfd_get_secsize(fdd->inf.nfd.head.r0.si[trk][sec].N, &secsize)) {
 		fddlasterror = 0xc0;
 		return(FAILURE);
 	}
-	/* 170107 modified to work on Windows 9x/2000 ... to */
-	sec = fdc.R - 1;
-	secR = 0xff;
-	for (i = 0; i < NFD_SECMAX; i++) {
-#if 0
-		TRACEOUT(("NFD(r0) read NOR trk[%03d]:        C[%02x]:H[%02x]:R[%02x]:N[%02x]:MF[%02x]",
-			trk,
-			fdd->inf.nfd.head.r0.si[trk][i].C,
-			fdd->inf.nfd.head.r0.si[trk][i].H,
-			fdd->inf.nfd.head.r0.si[trk][i].R,
-			fdd->inf.nfd.head.r0.si[trk][i].N,
-			fdd->inf.nfd.head.r0.si[trk][i].flMFM));
-#endif
-		if (fdd->inf.nfd.head.r0.si[trk][i].R == fdc.R) {
-			secR = i;
-//			break;
-		}
-	}
-	if (secR == 0xff) {
-		TRACEOUT(("NFD(r0) read FAILURE R[%02x] not found", fdc.R));
-		fddlasterror = 0xc0;	//	抜けてた…追加(kaiE)
+	seekp = fdd->inf.nfd.ptr[trk][sec];
+	hdl = file_open_rb(fdd->fname);
+	if (hdl == FILEH_INVALID) {
+		fddlasterror = 0xe0;
 		return(FAILURE);
 	}
-	if (fdc.N != fdd->inf.nfd.head.r0.si[trk][secR].N) {
-		TRACEOUT(("NFD(r0) read FAILURE N not match FDC[%02x],DSK[%02x]", fdc.N, fdd->inf.nfd.head.r0.si[trk][secR].N));
-		fddlasterror = 0xc0;
-		return(FAILURE);
-	}
-
-	if (fdd->type == DISKTYPE_NFD) {
-		secsize = 128 << fdd->inf.nfd.head.r0.si[trk][secR].N;
-		seekp = fdd->inf.nfd.ptr[trk][secR];
-
-		hdl = file_open_rb(fdd->fname);
-		if (hdl == FILEH_INVALID) {
-			fddlasterror = 0xe0;
-			return(FAILURE);
-		}
-		TRACEOUT(("NFD(r0) read seek to ... [%08x]", seekp));
-		if ((file_seek(hdl, seekp, FSEEK_SET) != seekp) ||
-			(file_read(hdl, fdc.buf, secsize) != secsize)) {
-			file_close(hdl);
-			fddlasterror = 0xe0;
-			return(FAILURE);
-		}
+	if ((file_seek(hdl, seekp, FSEEK_SET) != (FILEPOS)seekp) || file_read(hdl, fdc.buf, secsize) != secsize) {
 		file_close(hdl);
+		fddlasterror = 0xe0;
+		return(FAILURE);
 	}
-
+	file_close(hdl);
+	id = &fdd->inf.nfd.head.r0.si[trk][sec];
+	fdc.stat[fdc.us] = id->byST0 | (id->byST1 << 8) | (id->byST2 << 16);
+	fddlasterror = id->byStatus;
 	fdc.bufcnt = secsize;
-//	変更(kaiD)
-//	fddlasterror = 0x00;
-	//	イメージ内情報のREAD DATA(FDDBIOS)の結果を反映
-	fdc.stat[fdc.us] = fdd->inf.nfd.head.r0.si[trk][secR].byST0 + (fdd->inf.nfd.head.r0.si[trk][secR].byST1 *256) + (fdd->inf.nfd.head.r0.si[trk][secR].byST2 * 256 * 256);
-	fddlasterror = fdd->inf.nfd.head.r0.si[trk][secR].byStatus;
-	TRACEOUT(("NFD(r0) read FDC Result Status[%02x],STS0[%02x],STS1[%02x],STS2[%02x]",
-			fdd->inf.nfd.head.r0.si[trk][secR].byStatus,
-			fdd->inf.nfd.head.r0.si[trk][secR].byST0,
-			fdd->inf.nfd.head.r0.si[trk][secR].byST1,
-			fdd->inf.nfd.head.r0.si[trk][secR].byST2));
-	TRACEOUT(("NFD(r0) read C:%02x,H:%02x,R:%02x,N:%02x", fdc.C, fdc.H, fdc.R, fdc.N));
-	TRACEOUT(("NFD(r0) read dump"));
-	TRACEOUT(("\t%02x %02x %02x %02x %02x %02x %02x %02x",
-			fdc.buf[0x00], fdc.buf[0x01], fdc.buf[0x02], fdc.buf[0x03], fdc.buf[0x04], fdc.buf[0x05], fdc.buf[0x06], fdc.buf[0x07]));
-//
 	return(SUCCESS);
 }
 
@@ -403,135 +697,161 @@ BRESULT fdd_write_nfd(FDDFILE fdd) {
 	FILEH	hdl;
 	UINT	trk;
 	UINT	sec;
-	UINT	secR;
-	UINT	secsize;
-	long	seekp;
-	UINT	i;
+	UINT32	secsize;
+	UINT32	seekp;
+	UINT32	idpos;
+	NFD_SECT_ID	*id;
+	NFD_SECT_ID	newid;
 
-	fddlasterror = 0x00;
-//	変更(kaiE)
-//	if (fdd_seeksector_common(fdd)) {
+	fddlasterror = 0;
 	if (fdd_seeksector_nfd(fdd)) {
-		fddlasterror = 0xe0;
 		return(FAILURE);
 	}
 	if (fdd->protect) {
 		fddlasterror = 0x70;
 		return(FAILURE);
 	}
-	trk = (fdc.treg[fdc.us] << 1) + fdc.hd;
-	/* 170107 modified to work on Windows 9x/2000 form ... */
-	if (fdc.eot && !fdd->inf.nfd.ptr[trk][fdc.eot - 1]) {
+	if (nfd_track_index(fdd, fdc.treg[fdc.us], fdc.hd, &trk)) {
+		fddlasterror = 0xe0;
+		return(FAILURE);
+	}
+	sec = nfd0_find_sector(fdd, trk, FALSE);
+	if (sec == NFD_SECMAX || nfd_get_secsize(fdd->inf.nfd.head.r0.si[trk][sec].N, &secsize)) {
 		fddlasterror = 0xc0;
 		return(FAILURE);
 	}
-	/* 170107 modified to work on Windows 9x/2000 ... to */
-	sec = fdc.R - 1;
-	secR = 0xff;
-	for (i = 0; i < NFD_SECMAX; i++) {
-		if (fdd->inf.nfd.head.r0.si[trk][i].R == fdc.R) {
-			secR = i;
-			break;
-		}
-	}
-	if (secR == 0xff) {
-		return(FAILURE);
-	}
-	if (fdc.N != fdd->inf.nfd.head.r0.si[trk][secR].N) {
+	seekp = fdd->inf.nfd.ptr[trk][sec];
+	hdl = file_open(fdd->fname);
+	if (hdl == FILEH_INVALID) {
 		fddlasterror = 0xc0;
 		return(FAILURE);
 	}
-
-	if (fdd->type == DISKTYPE_NFD) {
-		secsize = 128 << fdd->inf.nfd.head.r0.si[trk][secR].N;
-		seekp = fdd->inf.nfd.ptr[trk][secR];
-
-		hdl = file_open(fdd->fname);
-		if (hdl == FILEH_INVALID) {
-			fddlasterror = 0xc0;
-			return(FAILURE);
-		}
-		if ((file_seek(hdl, seekp, FSEEK_SET) != seekp) ||
-			(file_write(hdl, fdc.buf, secsize) != secsize)) {
-			file_close(hdl);
-			fddlasterror = 0xc0;
-			return(FAILURE);
-		}
+	if ((file_seek(hdl, seekp, FSEEK_SET) != (FILEPOS)seekp) || file_write(hdl, fdc.buf, secsize) != secsize) {
 		file_close(hdl);
-	}
-	else {
 		fddlasterror = 0xc0;
 		return(FAILURE);
 	}
-
+	id = &fdd->inf.nfd.head.r0.si[trk][sec];
+	newid = *id;
+	newid.flDDAM = (nfd_current_cmd() == 0x09) ? 1 : 0;
+	newid.byStatus = 0;
+	newid.byST0 = (BYTE)((fdc.hd << 2) | fdc.us);
+	newid.byST1 = 0;
+	newid.byST2 = 0;
+	idpos = (UINT32)((const UINT8 *)id - (const UINT8 *)&fdd->inf.nfd.head.r0);
+	if ((file_seek(hdl, idpos, FSEEK_SET) != (FILEPOS)idpos) ||
+		file_write(hdl, &newid, sizeof(newid)) != sizeof(newid)) {
+		file_close(hdl);
+		fddlasterror = 0xc0;
+		return(FAILURE);
+	}
+	file_close(hdl);
+	*id = newid;
 	fdc.bufcnt = secsize;
-	fddlasterror = 0x00;
-
 	return(SUCCESS);
 }
 
 BRESULT fdd_readid_nfd(FDDFILE fdd) {
 
 	UINT	trk;
-	UINT	sec;
+	UINT	total;
+	UINT	start;
+	UINT	ordinal;
+	UINT	step;
 	UINT	i;
+	UINT	seen;
+	NFD_SECT_ID	*id;
 
-	/* 170101 ST modified to work on Windows 9x/2000 form ... */
-	if (fdc.crcn >= fdd->inf.xdf.sectors) {
-		fdc.crcn = 0;
-		if(fdc.mt) {
-			fdc.hd ^= 1;
-			if (fdc.hd == 0) {
-				fdc.treg[fdc.us]++;
+	fddlasterror = 0;
+	if (!nfd_current_pda()) {
+		fddlasterror = 0xe0;
+		return(FAILURE);
+	}
+	if (nfd_track_index(fdd, fdc.treg[fdc.us], fdc.hd, &trk)) {
+		fddlasterror = 0xe0;
+		return(FAILURE);
+	}
+	total = 0;
+	for (i = 0; i < NFD_SECMAX; i++) {
+		if (fdd->inf.nfd.head.r0.si[trk][i].C != 0xff) {
+			total++;
+		}
+	}
+	if (!total) {
+		fddlasterror = 0xe0;
+		return(FAILURE);
+	}
+
+	//	FM/MFM混在時は指定密度と一致する次のIDまで読み飛ばす
+	start = fdc.crcn % total;
+	for (step = 0; step < total; step++) {
+		ordinal = (start + step) % total;
+		seen = 0;
+		id = NULL;
+		for (i = 0; i < NFD_SECMAX; i++) {
+			if (fdd->inf.nfd.head.r0.si[trk][i].C == 0xff) {
+				continue;
+			}
+			if (seen++ == ordinal) {
+				id = &fdd->inf.nfd.head.r0.si[trk][i];
+				break;
 			}
 		}
-		else {
-			fdc.treg[fdc.us]++;
+		if (id && nfd_mfm_match(id->flMFM) && nfd_pda_match(fdd, id->byPDA)) {
+			fdc.crcn = (UINT8)((ordinal + 1) % total);
+			fdc.C = id->C;
+			fdc.H = id->H;
+			fdc.R = id->R;
+			fdc.N = id->N;
+			fdc.stat[fdc.us] = id->byST0 | (id->byST1 << 8) | (id->byST2 << 16);
+			fddlasterror = id->byStatus;
+			return(SUCCESS);
 		}
 	}
-	/* 170101 ST modified to work on Windows 9x/2000 ... to */
-	fddlasterror = 0x00;
-	if ((!fdc.mf) ||
-		(fdc.rpm[fdc.us] != fdd->inf.xdf.rpm) ||
-		(CTRL_FDMEDIA != fdd->inf.xdf.disktype)) {
-		//(fdc.crcn >= fdd->inf.xdf.sectors)) {
-		fddlasterror = 0xe0;
-		return(FAILURE);
-	}
-	fdc.C = fdc.treg[fdc.us];
-	fdc.H = fdc.hd;
-	fdc.R = ++fdc.crcn;
-	trk = (fdc.C << 1) + fdc.H;
-	sec = 0xff;
-	for (i = 0; i < NFD_SECMAX; i++) {
-		if (fdd->inf.nfd.head.r0.si[trk][i].R == fdc.R) {
-			sec = i;
-			break;
-		}
-	}
-	if (sec == 0xff) {
-		fddlasterror = 0xe0;
-		return(FAILURE);
-	}
-	fdc.N = fdd->inf.nfd.head.r0.si[trk][sec].N;
-	return(SUCCESS);
+	fddlasterror = 0xe0;
+	return(FAILURE);
 }
 
-/* 170107 to supprt format command form ... */
-/* ヘッダの更新頻度が多いのが気になります */
 BRESULT fdd_formatinit_nfd(FDDFILE fdd) {
+
 	FILEH	hdl;
-	UINT32	fddtype;
-	UINT32	cylinders;
-	UINT32  offset;
+	UINT32	offset;
 	UINT	trk;
-	UINT    secsize;
-	UINT    size;
+	UINT	secsize;
+	UINT	size;
 	UINT	i;
+	BOOL	tailresize;
+	BYTE	fddtype;
 
 	if (fdd->protect) {
 		fddlasterror = 0x70;
 		return(FAILURE);
+	}
+	if (fdc.sc == 0 || fdc.sc > NFD_SECMAX || nfd_get_secsize(fdc.N, &offset)) {
+		fddlasterror = 0xc0;
+		return(FAILURE);
+	}
+	secsize = (UINT)offset;
+	if (secsize > NFD_FDCBUFSIZE / fdc.sc) {
+		fddlasterror = 0xc0;
+		return(FAILURE);
+	}
+	size = secsize * fdc.sc;
+	if (nfd_track_index(fdd, fdc.treg[fdc.us], fdc.hd, &trk)) {
+		fddlasterror = 0xc0;
+		return(FAILURE);
+	}
+
+	//	r0はデータ部が連続配置されるため、後続データがあるトラックのサイズ変更は行わない
+	tailresize = (fdd->inf.nfd.trksize[trk] != size);
+	if (tailresize) {
+		for (i = trk + 1; i < NFD_TRKMAX; i++) {
+			if (fdd->inf.nfd.trksize[i]) {
+				fddlasterror = 0xc0;
+				return(FAILURE);
+			}
+		}
+		tailresize = TRUE;
 	}
 
 	hdl = file_open(fdd->fname);
@@ -540,100 +860,65 @@ BRESULT fdd_formatinit_nfd(FDDFILE fdd) {
 		return(FAILURE);
 	}
 
-	secsize = 128 << fdc.N;
-	size = secsize * fdc.sc;
-	trk = (fdc.treg[fdc.us] << 1) + fdc.hd;
+	offset = fdd->inf.nfd.tptr[trk];
+	if (offset < fdd->inf.xdf.headersize) {
+		file_close(hdl);
+		fddlasterror = 0xc0;
+		return(FAILURE);
+	}
 	memset(fdc.buf, fdc.d, size);
-
-	fddtype = 0x90;
-	if (fdc.N == 2) {
-		if (fdc.sc < 10) {
-			fddtype = 0x10;
-		}
-		else if (fdc.sc > 16) {
-			fddtype = 0x30;
-		}
+	fddtype = nfd_current_pda();
+	if (!fddtype) {
+		fddtype = nfd_media_pda(fdd);
 	}
 
-	if (trk == 0) {
-		ZeroMemory(fdd->inf.nfd.head.r0.si, sizeof(fdd->inf.nfd.head.r0.si));
-		offset = fdd->inf.xdf.headersize;
-	} else {
-		offset = fdd->inf.nfd.tptr[trk];
+	//	古いセクタIDを残すと次回マウント時のオフセット計算が狂うため、対象トラックを先に消去する
+	for (i = 0; i < NFD_SECMAX; i++) {
+		NFD_SECT_ID	*id = &fdd->inf.nfd.head.r0.si[trk][i];
+		memset(id, 0, sizeof(*id));
+		id->C = 0xff;
+		fdd->inf.nfd.ptr[trk][i] = 0;
 	}
-	fdd->inf.nfd.tptr[trk + 1] = offset + size;
 
+	fdd->inf.nfd.tptr[trk] = offset;
+	fdd->inf.nfd.trksize[trk] = size;
 	for (i = 0; i < fdc.sc; i++) {
-		fdd->inf.nfd.head.r0.si[trk][i].C = fdc.treg[fdc.us];
-		fdd->inf.nfd.head.r0.si[trk][i].H = fdc.hd;
-		fdd->inf.nfd.head.r0.si[trk][i].R = i + 1;
-		fdd->inf.nfd.head.r0.si[trk][i].N = fdc.N;
-		fdd->inf.nfd.head.r0.si[trk][i].flMFM = 1;
-		fdd->inf.nfd.head.r0.si[trk][i].flDDAM = 0;
-		fdd->inf.nfd.head.r0.si[trk][i].byStatus = 0;
-		fdd->inf.nfd.head.r0.si[trk][i].byST0 = fdc.hd << 2;
-		fdd->inf.nfd.head.r0.si[trk][i].byST1 = 0;
-		fdd->inf.nfd.head.r0.si[trk][i].byST2 = 0;
-		fdd->inf.nfd.head.r0.si[trk][i].byPDA = fddtype;
-		fdd->inf.nfd.ptr[trk][i] = offset;
-		offset += secsize;
-	}
-	if (trk == 0) {
-		for (; i < NFD_TRKMAX * NFD_SECMAX; i++) {
-			fdd->inf.nfd.head.r0.si[trk][i].C = 0xff;
-			fdd->inf.nfd.head.r0.si[trk][i].H = 0xff;
-			fdd->inf.nfd.head.r0.si[trk][i].R = 0xff;
-			fdd->inf.nfd.head.r0.si[trk][i].N = 0xff;
-			fdd->inf.nfd.head.r0.si[trk][i].flMFM = 0xff;
-			fdd->inf.nfd.head.r0.si[trk][i].flDDAM = 0xff;
-			fdd->inf.nfd.head.r0.si[trk][i].byStatus = 0xe0;
-			fdd->inf.nfd.head.r0.si[trk][i].byST0 = 0x40 | (fdc.hd << 2);
-			fdd->inf.nfd.head.r0.si[trk][i].byST1 = 1;
-			fdd->inf.nfd.head.r0.si[trk][i].byST2 = 0;
-			fdd->inf.nfd.head.r0.si[trk][i].byPDA = 0;
-		}
+		NFD_SECT_ID	*id = &fdd->inf.nfd.head.r0.si[trk][i];
+		id->C = fdc.treg[fdc.us];
+		id->H = fdc.hd;
+		id->R = (BYTE)(i + 1);
+		id->N = fdc.N;
+		id->flMFM = (fdc.mf != 0);
+		id->flDDAM = 0;
+		id->byStatus = 0;
+		id->byST0 = (BYTE)(fdc.hd << 2);
+		id->byST1 = 0;
+		id->byST2 = 0;
+		id->byPDA = fddtype;
+		fdd->inf.nfd.ptr[trk][i] = offset + secsize * i;
 	}
 
-	if ((file_seek(hdl, 0, FSEEK_SET) != 0) ||
-		(file_write(hdl, &fdd->inf.nfd.head, NFD_HEADERSIZE) != NFD_HEADERSIZE)) {
+	//	書き込み失敗時にヘッダだけ更新されないよう、データを書いてからヘッダを更新する
+	if ((file_seek(hdl, (FILEPOS)offset, FSEEK_SET) != (FILEPOS)offset) ||
+		(file_write(hdl, fdc.buf, size) != size) ||
+		(file_seek(hdl, 0, FSEEK_SET) != 0) ||
+		(file_write(hdl, &fdd->inf.nfd.head.r0, NFD_HEADERSIZE) != NFD_HEADERSIZE)) {
 		file_close(hdl);
 		fddlasterror = 0xc0;
 		return(FAILURE);
 	}
 
-	offset = fdd->inf.nfd.ptr[trk][0];
-	if ((file_seek(hdl, offset, FSEEK_SET) != offset) ||
-		(file_write(hdl, fdc.buf, size) != size)) {
-		file_close(hdl);
-		fddlasterror = 0xc0;
-		return(FAILURE);
-	}
-
-	if (trk == 0) {
-		fdd->inf.xdf.disktype = DISKTYPE_2HD;
-		cylinders = 77;
-		switch(fdc.N) {
-			case 1:		// BASIC (sector size = 256)
-				break;
-			case 2:		// 1.44M/1.21M/2DD
-				if (fdc.sc < 10) {
-					fdd->inf.xdf.disktype = DISKTYPE_2DD;
-				}
-				cylinders = 80;
-				break;
-			default:	// 1.25M
-				break;
+	if (tailresize) {
+		UINT32 newend = offset + size;
+		if (file_setsize(hdl, newend) != 0) {
+			file_close(hdl);
+			fddlasterror = 0xc0;
+			return(FAILURE);
 		}
-
-		fdd->inf.xdf.tracks = (UINT8)(cylinders * 2);
-		fdd->inf.xdf.sectors = fdc.sc;
-		fdd->inf.xdf.n = fdc.N;
-		fdd->inf.xdf.rpm = fdc.rpm[fdc.us];
-
-		// trim media image
-		offset = fdd->inf.xdf.tracks * size + fdd->inf.xdf.headersize;
-		file_seek(hdl, offset, FSEEK_SET);
-		file_write(hdl, fdc.buf, 0);
+		//	末尾の空きトラックはすべてEOFを指す
+		for (i = trk + 1; i < NFD_TRKMAX1; i++) {
+			fdd->inf.nfd.tptr[i] = newend;
+		}
 	}
 
 	file_close(hdl);
@@ -647,187 +932,151 @@ BRESULT fdd_seeksector_nfd1(FDDFILE fdd) {
 
 	FILEH	hdl;
 	UINT	trk;
-	BYTE	MaxR;
-	UINT	i;
 	NFD_TRACK_ID1	trk_id;
-	NFD_SECT_ID1	sec_id;
 
-	if ((CTRL_FDMEDIA != fdd->inf.xdf.disktype) ||
-		(fdc.rpm[fdc.us] != fdd->inf.xdf.rpm) ||
-		(fdc.treg[fdc.us] >= (fdd->inf.xdf.tracks >> 1))) {
-		TRACEOUT(("fdd_seek_nfd1 FAILURE CTRL_FDMEDIA[%02x], DISKTYPE[%02x]", CTRL_FDMEDIA, fdd->inf.xdf.disktype));
-		TRACEOUT(("fdd_seek_nfd1 FAILURE fdc.rpm[%02x], fdd->rpm[%02x]", fdc.rpm[fdc.us], fdd->inf.xdf.rpm));
-		TRACEOUT(("fdd_seek_nfd1 FAILURE fdc.treg[%02x], fdd->trk[%02x]", fdc.treg[fdc.us], (fdd->inf.xdf.tracks >> 1)));
+	if (!nfd_current_pda()) {
 		fddlasterror = 0xe0;
 		return(FAILURE);
 	}
-	if (!fdc.R) {
-		TRACEOUT(("fdd_seek_nfd1 FAILURE fdc.R[%02x]", fdc.R));
-		fddlasterror = 0xc0;
+	if (nfd_track_index(fdd, fdc.treg[fdc.us], fdc.hd, &trk) ||
+		!nfd_load_le32(&fdd->inf.nfd.head.r1.dwTrackHead[trk])) {
+		fddlasterror = 0xe0;
 		return(FAILURE);
 	}
-
 	hdl = file_open_rb(fdd->fname);
 	if (hdl == FILEH_INVALID) {
-		TRACEOUT(("fdd_seek_nfd1 FAILURE ... 1"));
 		fddlasterror = 0xe0;
 		return(FAILURE);
 	}
-	trk = (fdc.treg[fdc.us] << 1) + fdc.hd;
-	file_seek(hdl, LOADINTELDWORD(&(fdd->inf.nfd.head.r1.dwTrackHead[trk])), FSEEK_SET);
-	file_read(hdl, &trk_id, sizeof(NFD_TRACK_ID1));
-//	TRACEOUT(("fdd_seek_nfd1 read track_id[%03d:%08x]", trk, fdd->inf.nfd.head.r1.dwTrackHead[trk]));
-	MaxR = 0;
-	for (i = 0; i < LOADINTELWORD(&(trk_id.wSector)); i++) {
-		file_read(hdl, &sec_id, sizeof(NFD_SECT_ID1));
-//		TRACEOUT(("fdd_seek_nfd1 read sector_id[C:%02x,H:%02x,R:%02x,N:%02x]", sec_id.C, sec_id.H, sec_id.R, sec_id.N));
-		if (sec_id.R > MaxR) {
-			MaxR = sec_id.R;
-		}
-	}
-	file_close(hdl);
-
-	if (fdc.R > MaxR) {
-		TRACEOUT(("fdd_seek_nfd1 FAILURE fdc.R[%02x],MaxR[%02x]", fdc.R, MaxR));
-		fddlasterror = 0xc0;
+	if (nfd1_read_track(hdl, fdd, trk, &trk_id)) {
+		file_close(hdl);
+		fddlasterror = 0xe0;
 		return(FAILURE);
 	}
-	if ((fdc.mf != 0xff) && (fdc.mf != 0x40)) {
-		TRACEOUT(("fdd_seek_nfd1 FAILURE fdc.mf[%02x]", fdc.mf));
+	file_close(hdl);
+	if (!nfd_load_le16(&trk_id.wSector) && !nfd_load_le16(&trk_id.wDiag)) {
 		fddlasterror = 0xc0;
 		return(FAILURE);
 	}
 	return(SUCCESS);
 }
 
-//	RetryData有の対応…いいのか？これで
-static	UINT8	rcnt = 0;
-
 BRESULT fdd_read_nfd1(FDDFILE fdd) {
 
 	FILEH	hdl;
 	UINT	trk;
-	UINT	sec;
-	UINT	secR;
-	UINT	secsize;
-	long	seekp;
-	long	ex_offset;
-	long	ex_offset2;
-	UINT	i;
-	UINT8	MaxRetry;
-	NFD_TRACK_ID1	trk_id;
+	UINT32	seekp;
+	UINT32	secsize;
+	UINT32	copies;
+	UINT32	select;
+	UINT	secindex;
+	UINT	diagindex;
 	NFD_SECT_ID1	sec_id;
-	NFD_SECT_ID1	sec_idx;
 	NFD_DIAG_ID1	dia_id;
-
-	//	RetryData有の対応…いいのか？これで
-	rcnt++;
 
 	fddlasterror = 0x00;
 	if (fdd_seeksector_nfd1(fdd)) {
-		TRACEOUT(("NFD(r1) read failure ... seeksector"));
 		return(FAILURE);
 	}
-	trk = (fdc.treg[fdc.us] << 1) + fdc.hd;
-	/* 170107 modified to work on Windows 9x/2000 form ... */
-	if (fdc.eot && !fdd->inf.nfd.ptr[trk][fdc.eot - 1]) {
-		fddlasterror = 0xc0;
-		return(FAILURE);
-	}
-	/* 170107 modified to work on Windows 9x/2000 ... to */
-	sec = fdc.R - 1;
-	secR = 0xff;
-	ex_offset = 0;
-	ex_offset2 = 0;
-	MaxRetry = 0;
-	hdl = file_open_rb(fdd->fname);
-	if (hdl == FILEH_INVALID) {
-		TRACEOUT(("NFD(r1) read failure ... FILE OPEN"));
+	if (nfd_track_index(fdd, fdc.treg[fdc.us], fdc.hd, &trk)) {
 		fddlasterror = 0xe0;
 		return(FAILURE);
 	}
-	file_seek(hdl, LOADINTELDWORD(&(fdd->inf.nfd.head.r1.dwTrackHead[trk])), FSEEK_SET);
-	file_read(hdl, &trk_id, sizeof(NFD_TRACK_ID1));
-	for (i = 0; i < LOADINTELWORD(&(trk_id.wSector)); i++) {
-		file_read(hdl, &sec_idx, sizeof(NFD_SECT_ID1));
-		TRACEOUT(("NFD(r1) read NOR trk[%03d]:        C[%02x]:H[%02x]:R[%02x]:N[%02x]:MFM[%02x]:DDAM[%02x]:Retry[%02x]:PDA[%02x]",
-			trk, sec_idx.C, sec_idx.H, sec_idx.R, sec_idx.N, sec_idx.flMFM, sec_idx.flDDAM, sec_idx.byRetry, sec_idx.byPDA));
-		if (sec_idx.R == fdc.R) {
-			secR = i;
-			memcpy(&sec_id, &sec_idx, sizeof(NFD_SECT_ID1));
-			MaxRetry = sec_idx.byRetry;
-//			break;
-		}
-//		ex_offset += 128 << sec_id.N;
-	}
-	if (secR == 0xff) {
-		TRACEOUT(("NFD(r1) read failure ... R[%0x2] not found", fdc.R));
-		file_close(hdl);
+	hdl = file_open_rb(fdd->fname);
+	if (hdl == FILEH_INVALID) {
+		fddlasterror = 0xe0;
 		return(FAILURE);
 	}
 
-	if (fdc.N != sec_id.N) {
-		BOOL	flg;
-		TRACEOUT(("NFD(r1) read failure ... N not match : fdc.n:[%02x],sec_id.N:[%02x]", fdc.N, sec_id.N));
-#if 1
-		flg = FALSE;
-		for (i = 0; i < LOADINTELWORD(&(trk_id.wDiag)); i++) {
-			file_read(hdl, &dia_id, sizeof(NFD_DIAG_ID1));
-			TRACEOUT(("NFD(r1) read DIA trk[%03d]:Cmd[%02x]:C[%02x]:H[%02x]:R[%02x]:N[%02x]:Len[%08x]:Retry[%02x]",
-			 trk, dia_id.Cmd, dia_id.C, dia_id.H, dia_id.R, dia_id.N, dia_id.dwDataLen, dia_id.byRetry));
-			if (fdc.N == dia_id.N) {
-				TRACEOUT(("\tfound diag data"));
-				flg = TRUE;
-				break;
-			}
-			ex_offset2 += LOADINTELDWORD(&(dia_id.dwDataLen));
-		}
-#endif
-		if (flg == FALSE) {
-			fddlasterror = 0xc0;
-			file_close(hdl);
-			return(FAILURE);
-		}
-	}
-
-	if (fdd->type == DISKTYPE_NFD) {
-		if (fdc.N == sec_id.N) {
-			secsize = 128 << sec_id.N;
-			seekp = fdd->inf.nfd.ptr[trk][sec];
-			//	RetryData有の対応…いいのか？これで
-			seekp += secsize * (MaxRetry ? (rcnt % MaxRetry) : 0);
-		}
-		else {
-			secsize = LOADINTELDWORD(&(dia_id.dwDataLen));
-			seekp = fdd->inf.nfd.ptr[trk][sec] + fdd->inf.nfd.trksize[trk] + ex_offset2;
-		}
-
-		TRACEOUT(("NFD(r1) read seek to ... [%08x]", seekp));
-		if ((file_seek(hdl, seekp, FSEEK_SET) != seekp) ||
+	//	r1では特殊読み込み情報を通常セクタ情報より優先する
+	if (nfd1_find_diag(hdl, fdd, trk, &dia_id, &seekp, &diagindex) == SUCCESS) {
+		secsize = nfd_load_le32(&dia_id.dwDataLen);
+		copies = (UINT32)dia_id.byRetry + 1U;
+		select = nfd_retry_select(&fdd->inf.nfd.diagretry[trk][diagindex & 0xff], copies);
+		seekp += secsize * select;
+		if ((file_seek(hdl, seekp, FSEEK_SET) != (FILEPOS)seekp) ||
 			(file_read(hdl, fdc.buf, secsize) != secsize)) {
 			file_close(hdl);
 			fddlasterror = 0xe0;
-			TRACEOUT(("NFD(r1) read failure ... FILE SEEK or READ"));
 			return(FAILURE);
 		}
-	}
-	else {
-		fddlasterror = 0xc0;
+		fdc.stat[fdc.us] = dia_id.bySTS0 | (dia_id.bySTS1 << 8) | (dia_id.bySTS2 << 16);
+		fddlasterror = dia_id.byStatus;
+		fdc.bufcnt = secsize;
 		file_close(hdl);
+		return(SUCCESS);
+	}
+	//	READ DATA / READ DELETED DATAで要求されたデータマークを優先する
+	if (nfd1_find_sector(hdl, fdd, trk, &sec_id, &seekp, &secindex, TRUE) &&
+		nfd1_find_sector(hdl, fdd, trk, &sec_id, &seekp, &secindex, FALSE)) {
+		file_close(hdl);
+		fddlasterror = 0xc0;
+		return(FAILURE);
+	}
+	if (nfd_get_secsize(sec_id.N, &secsize)) {
+		file_close(hdl);
+		fddlasterror = 0xc0;
+		return(FAILURE);
+	}
+	copies = (UINT32)sec_id.byRetry + 1U;
+	select = nfd_retry_select(&fdd->inf.nfd.retrycnt[trk][secindex & 0xff], copies);
+	seekp += secsize * select;
+	if ((file_seek(hdl, seekp, FSEEK_SET) != (FILEPOS)seekp) ||
+		(file_read(hdl, fdc.buf, secsize) != secsize)) {
+		file_close(hdl);
+		fddlasterror = 0xe0;
 		return(FAILURE);
 	}
 	file_close(hdl);
-
-	//	イメージ内情報のREAD DATA RESULTを反映
 	fdc.stat[fdc.us] = sec_id.bySTS0 | (sec_id.bySTS1 << 8) | (sec_id.bySTS2 << 16);
 	fddlasterror = sec_id.byStatus;
 	fdc.bufcnt = secsize;
-	TRACEOUT(("NFD(r1) read FDC Result Status[%02x],STS0[%02x],STS1[%02x],STS2[%02x]",
-			sec_id.byStatus, sec_id.bySTS0, sec_id.bySTS1, sec_id.bySTS2));
-	TRACEOUT(("NFD(r1) read C:%02x,H:%02x,R:%02x,N:%02x", fdc.C, fdc.H, fdc.R, fdc.N));
-	TRACEOUT(("NFD(r1) read dump"));
-	TRACEOUT(("\t%02x %02x %02x %02x %02x %02x %02x %02x",
-			fdc.buf[0x00], fdc.buf[0x01], fdc.buf[0x02], fdc.buf[0x03], fdc.buf[0x04], fdc.buf[0x05], fdc.buf[0x06], fdc.buf[0x07]));
+	return(SUCCESS);
+}
+
+BRESULT fdd_readdiag_nfd1(FDDFILE fdd) {
+
+	FILEH	hdl;
+	UINT	trk;
+	UINT32	seekp;
+	UINT32	size;
+	UINT32	copies;
+	UINT32	select;
+	UINT	diagindex;
+	NFD_DIAG_ID1	dia_id;
+
+	fddlasterror = 0xc0;
+	if (fdd_seeksector_nfd1(fdd)) {
+		return(FAILURE);
+	}
+	if (nfd_track_index(fdd, fdc.treg[fdc.us], fdc.hd, &trk)) {
+		fddlasterror = 0xe0;
+		return(FAILURE);
+	}
+	hdl = file_open_rb(fdd->fname);
+	if (hdl == FILEH_INVALID) {
+		fddlasterror = 0xe0;
+		return(FAILURE);
+	}
+	if (nfd1_find_diag(hdl, fdd, trk, &dia_id, &seekp, &diagindex)) {
+		file_close(hdl);
+		fddlasterror = 0xc0;
+		return(FAILURE);
+	}
+	size = nfd_load_le32(&dia_id.dwDataLen);
+	copies = (UINT32)dia_id.byRetry + 1U;
+	select = nfd_retry_select(&fdd->inf.nfd.diagretry[trk][diagindex & 0xff], copies);
+	seekp += size * select;
+	if ((file_seek(hdl, seekp, FSEEK_SET) != (FILEPOS)seekp) ||
+		(file_read(hdl, fdc.buf, size) != size)) {
+		file_close(hdl);
+		fddlasterror = 0xe0;
+		return(FAILURE);
+	}
+	file_close(hdl);
+	fdc.stat[fdc.us] = dia_id.bySTS0 | (dia_id.bySTS1 << 8) | (dia_id.bySTS2 << 16);
+	fddlasterror = dia_id.byStatus;
+	fdc.bufcnt = size;
 	return(SUCCESS);
 }
 
@@ -835,76 +1084,68 @@ BRESULT fdd_write_nfd1(FDDFILE fdd) {
 
 	FILEH	hdl;
 	UINT	trk;
-	UINT	sec;
-	UINT	secR;
-	UINT	secsize;
-	long	seekp;
-	UINT	i;
-	NFD_TRACK_ID1	trk_id;
+	UINT32	seekp;
+	UINT32	idpos;
+	UINT	secindex;
+	UINT32	secsize;
+	UINT32	copies;
+	UINT32	i;
+	UINT32	pos;
 	NFD_SECT_ID1	sec_id;
 
 	fddlasterror = 0x00;
 	if (fdd_seeksector_nfd1(fdd)) {
-		fddlasterror = 0xe0;
 		return(FAILURE);
 	}
 	if (fdd->protect) {
 		fddlasterror = 0x70;
 		return(FAILURE);
 	}
-	trk = (fdc.treg[fdc.us] << 1) + fdc.hd;
-	/* 170107 modified to work on Windows 9x/2000 form ... */
-	if (fdc.eot && !fdd->inf.nfd.ptr[trk][fdc.eot - 1]) {
-		fddlasterror = 0xc0;
+	if (nfd_track_index(fdd, fdc.treg[fdc.us], fdc.hd, &trk)) {
+		fddlasterror = 0xe0;
 		return(FAILURE);
 	}
-	/* 170107 modified to work on Windows 9x/2000 ... to */
-	sec = fdc.R - 1;
-	secR = 0xff;
 	hdl = file_open(fdd->fname);
 	if (hdl == FILEH_INVALID) {
 		fddlasterror = 0xe0;
 		return(FAILURE);
 	}
-	file_seek(hdl, LOADINTELDWORD(&(fdd->inf.nfd.head.r1.dwTrackHead[trk])), FSEEK_SET);
-	file_read(hdl, &trk_id, sizeof(NFD_TRACK_ID1));
-	for (i = 0; i < LOADINTELWORD(&(trk_id.wSector)); i++) {
-		file_read(hdl, &sec_id, sizeof(NFD_SECT_ID1));
-		if (sec_id.R == fdc.R) {
-			secR = i;
-			break;
-		}
-	}
-	if (secR == 0xff) {
+	if (nfd1_find_sector(hdl, fdd, trk, &sec_id, &seekp, &secindex, FALSE) ||
+		nfd_get_secsize(sec_id.N, &secsize)) {
 		file_close(hdl);
-		return(FAILURE);
-	}
-	if (fdc.N != sec_id.N) {
 		fddlasterror = 0xc0;
-		file_close(hdl);
 		return(FAILURE);
 	}
 
-	if (fdd->type == DISKTYPE_NFD) {
-		secsize = 128 << sec_id.N;
-		seekp = fdd->inf.nfd.ptr[trk][sec];
-		if ((file_seek(hdl, seekp, FSEEK_SET) != seekp) ||
+	//	書き込み後に古いRetryDataが再出現しないよう全コピーを更新する
+	copies = (UINT32)sec_id.byRetry + 1U;
+	for (i = 0; i < copies; i++) {
+		pos = seekp + secsize * i;
+		if ((file_seek(hdl, pos, FSEEK_SET) != (FILEPOS)pos) ||
 			(file_write(hdl, fdc.buf, secsize) != secsize)) {
 			file_close(hdl);
 			fddlasterror = 0xc0;
 			return(FAILURE);
 		}
 	}
-	else {
-		fddlasterror = 0xc0;
+
+	//	CHRNは維持し、データマークと正常終了ステータスを更新する
+	idpos = nfd_load_le32(&fdd->inf.nfd.head.r1.dwTrackHead[trk]) +
+		sizeof(NFD_TRACK_ID1) + (UINT32)secindex * sizeof(NFD_SECT_ID1);
+	sec_id.flDDAM = (nfd_current_cmd() == 0x09) ? 1 : 0;
+	sec_id.byStatus = 0;
+	sec_id.bySTS0 = (BYTE)((fdc.hd << 2) | fdc.us);
+	sec_id.bySTS1 = 0;
+	sec_id.bySTS2 = 0;
+	if ((file_seek(hdl, idpos, FSEEK_SET) != (FILEPOS)idpos) ||
+		(file_write(hdl, &sec_id, sizeof(sec_id)) != sizeof(sec_id))) {
 		file_close(hdl);
+		fddlasterror = 0xc0;
 		return(FAILURE);
 	}
-
 	file_close(hdl);
+	fdd->inf.nfd.retrycnt[trk][secindex & 0xff] = 0;
 	fdc.bufcnt = secsize;
-	fddlasterror = 0x00;
-
 	return(SUCCESS);
 }
 
@@ -912,60 +1153,68 @@ BRESULT fdd_readid_nfd1(FDDFILE fdd) {
 
 	FILEH	hdl;
 	UINT	trk;
-	UINT	sec;
-	UINT	i;
+	UINT	count;
+	UINT	start;
+	UINT	index;
+	UINT	step;
+	UINT32	pos;
 	NFD_TRACK_ID1	trk_id;
 	NFD_SECT_ID1	sec_id;
 
-	/* 170107 modified to work on Windows 9x/2000 form ... */
-	if (fdc.crcn >= fdd->inf.xdf.sectors) {
-		fdc.crcn = 0;
-		if(fdc.mt) {
-			fdc.hd ^= 1;
-			if (fdc.hd == 0) {
-				fdc.treg[fdc.us]++;
-			}
-		}
-		else {
-			fdc.treg[fdc.us]++;
-		}
-	}
-	/* 170107 modified to work on Windows 9x/2000 ... to */
 	fddlasterror = 0x00;
-	if ((!fdc.mf) ||
-		(fdc.rpm[fdc.us] != fdd->inf.xdf.rpm) ||
-		(CTRL_FDMEDIA != fdd->inf.xdf.disktype)) {
-		//(fdc.crcn >= fdd->inf.xdf.sectors)) {
+	if (!nfd_current_pda()) {
 		fddlasterror = 0xe0;
 		return(FAILURE);
 	}
-	fdc.C = fdc.treg[fdc.us];
-	fdc.H = fdc.hd;
-	fdc.R = ++fdc.crcn;
-	trk = (fdc.C << 1) + fdc.H;
-	sec = 0xff;
+	if (nfd_track_index(fdd, fdc.treg[fdc.us], fdc.hd, &trk) ||
+		!nfd_load_le32(&fdd->inf.nfd.head.r1.dwTrackHead[trk])) {
+		fddlasterror = 0xe0;
+		return(FAILURE);
+	}
 	hdl = file_open_rb(fdd->fname);
 	if (hdl == FILEH_INVALID) {
 		fddlasterror = 0xe0;
 		return(FAILURE);
 	}
-	file_seek(hdl, LOADINTELDWORD(&(fdd->inf.nfd.head.r1.dwTrackHead[trk])), FSEEK_SET);
-	file_read(hdl, &trk_id, sizeof(NFD_TRACK_ID1));
-	for (i = 0; i < LOADINTELWORD(&(trk_id.wSector)); i++) {
-		file_read(hdl, &sec_id, sizeof(NFD_SECT_ID1));
-		if (sec_id.R == fdc.R) {
-			sec = i;
-			break;
-		}
-	}
-	file_close(hdl);
-	if (sec == 0xff) {
+	if (nfd1_read_track(hdl, fdd, trk, &trk_id)) {
+		file_close(hdl);
 		fddlasterror = 0xe0;
 		return(FAILURE);
 	}
-	fdc.N = sec_id.N;
-	return(SUCCESS);
+	count = nfd_load_le16(&trk_id.wSector);
+	if (!count) {
+		file_close(hdl);
+		fddlasterror = 0xe0;
+		return(FAILURE);
+	}
+	start = fdc.crcn % count;
+	for (step = 0; step < count; step++) {
+		index = (start + step) % count;
+		pos = nfd_load_le32(&fdd->inf.nfd.head.r1.dwTrackHead[trk]) +
+			sizeof(trk_id) + (UINT32)index * sizeof(sec_id);
+		if ((file_seek(hdl, pos, FSEEK_SET) != (FILEPOS)pos) ||
+			(file_read(hdl, &sec_id, sizeof(sec_id)) != sizeof(sec_id))) {
+			file_close(hdl);
+			fddlasterror = 0xe0;
+			return(FAILURE);
+		}
+		if (nfd_mfm_match(sec_id.flMFM) && nfd_pda_match(fdd, sec_id.byPDA)) {
+			file_close(hdl);
+			fdc.crcn = (UINT8)((index + 1) % count);
+			fdc.C = sec_id.C;
+			fdc.H = sec_id.H;
+			fdc.R = sec_id.R;
+			fdc.N = sec_id.N;
+			fdc.stat[fdc.us] = sec_id.bySTS0 | (sec_id.bySTS1 << 8) | (sec_id.bySTS2 << 16);
+			fddlasterror = sec_id.byStatus;
+			return(SUCCESS);
+		}
+	}
+	file_close(hdl);
+	fddlasterror = 0xe0;
+	return(FAILURE);
 }
+
 //
 
 #endif

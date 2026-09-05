@@ -41,6 +41,10 @@ static const PROCTBL evtproc[] = {
 			{PROCID('e','p','k','1'), pc9861ch1cb},
 			{PROCID('e','p','k','2'), pc9861ch2cb},
 #endif
+#if defined(SUPPORT_IDEIO)
+			{PROCID('e','i','d','1'), ideioint},
+			{PROCID('e','i','d','2'), ideioint2},
+#endif
 };
 
 static const ENUMTBL evtnum[] = {
@@ -150,6 +154,7 @@ static const SFENTRY np2tbl[] = {
 	{"CALENDAR",	0,	STATFLAG_BIN,	&cal,			sizeof(cal)},
 	{"KEYSTAT",		0,	STATFLAG_BIN,	&keyctrl,		sizeof(keyctrl)},
 	{"PALEVENT",	0,	STATFLAG_BIN,	&palevent,		sizeof(palevent)},
+	{"CBUSPNP",		0,	STATFLAG_BIN|STATFLAG_BWD_COMPATIBLE|STATFLAG_FWD_COMPATIBLE,	&cbuspnp,			sizeof(cbuspnp)},
 	{"MPU98II",		0,	STATFLAG_BIN,	&mpu98,			sizeof(mpu98)},
 #if defined(SUPPORT_SMPU98)
 	{"SMPU98",		0,	STATFLAG_BIN,	&smpu98,		sizeof(smpu98)},
@@ -164,6 +169,7 @@ static const SFENTRY np2tbl[] = {
 	{"SXSI",		0,	STATFLAG_SXSI,	NULL,			0},
 #if !defined(DISABLE_SOUND)
 	{"FMBOARD",		0,	STATFLAG_FM,	NULL,			0},
+	{"WAVESTAR",	0,	STATFLAG_BIN|STATFLAG_BWD_COMPATIBLE|STATFLAG_FWD_COMPATIBLE,	&wavestar,			sizeof(wavestar)},
 	{"BEEP",		0,	STATFLAG_BIN,	&g_beep,		sizeof(g_beep)},
 #endif
 #if defined(SUPPORT_IDEIO)
@@ -193,8 +199,17 @@ static const SFENTRY np2tbl[] = {
 	{"NP2CLVGA",	0,	STATFLAG_BIN|STATFLAG_BWD_COMPATIBLE,	&np2clvga,		sizeof(np2clvga)},
 	{"CLVGA",		0,	STATFLAG_BIN,	cirrusvga_statsavebuf, sizeof(cirrusvga_statsavebuf)},
 #endif
+#if defined(SUPPORT_WAB_NPDISP)
+	{"NPDISP",		0,	STATFLAG_NPDISP,NULL,			0},
+#endif
+#if defined(SUPPORT_WAB_GA1280A)
+	{"GA1280A",		0,	STATFLAG_GA1280A|STATFLAG_FWD_COMPATIBLE|STATFLAG_BWD_COMPATIBLE,NULL,			0},
+#endif
 #if defined(SUPPORT_HOSTDRV)
 	{"HOSTDRV",		0,	STATFLAG_HDRV,	NULL,			0},
+#endif
+#if defined(SUPPORT_HOSTDRV9X)
+	{"HOSTDRV9X",	0,	STATFLAG_HDRV9X,NULL,			0},
 #endif
 #if defined(SUPPORT_HOSTDRVNT)
 	{"HOSTDRVNT",	0,	STATFLAG_HDRVNT,NULL,			0},

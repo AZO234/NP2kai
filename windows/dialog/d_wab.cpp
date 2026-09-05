@@ -463,6 +463,109 @@ LRESULT CNPDISPPage::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
 
 #endif
 
+#if defined(SUPPORT_WAB_GA1280A)
+
+/**
+ * @brief GA-1280A  設定ページ
+ * @param[in] hwndParent 親ウィンドウ
+ */
+class CGA1280APage : public CPropPageProc
+{
+public:
+	CGA1280APage();
+	virtual ~CGA1280APage();
+
+protected:
+	virtual BOOL OnInitDialog();
+	virtual void OnOK();
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+	virtual LRESULT WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam);
+
+private:
+	UINT8 m_enabled;			//!< 有効フラグ
+	CWndProc m_chkenabled;		//!< ENABLED
+};
+
+/**
+ * コンストラクタ
+ */
+CGA1280APage::CGA1280APage()
+	: CPropPageProc(IDD_GA1280A)
+{
+}
+/**
+ * デストラクタ
+ */
+CGA1280APage::~CGA1280APage()
+{
+}
+
+/**
+ * このメソッドは WM_INITDIALOG のメッセージに応答して呼び出されます
+ * @retval TRUE 最初のコントロールに入力フォーカスを設定
+ * @retval FALSE 既に設定済
+ */
+BOOL CGA1280APage::OnInitDialog()
+{
+	m_enabled = np2cfg.usega1280a;
+
+	m_chkenabled.SubclassDlgItem(IDC_GA1280AENABLED, this);
+	if (m_enabled)
+		m_chkenabled.SendMessage(BM_SETCHECK, BST_CHECKED, 0);
+	else
+		m_chkenabled.SendMessage(BM_SETCHECK, BST_UNCHECKED, 0);
+
+	m_chkenabled.SetFocus();
+
+	return FALSE;
+}
+
+/**
+ * ユーザーが OK のボタン (IDOK ID がのボタン) をクリックすると呼び出されます
+ */
+void CGA1280APage::OnOK()
+{
+	UINT update = 0;
+
+	if (np2cfg.usega1280a != m_enabled)
+	{
+		np2cfg.usega1280a = m_enabled;
+		update |= SYS_UPDATECFG;
+	}
+	::sysmng_update(update);
+}
+
+/**
+ * ユーザーがメニューの項目を選択したときに、フレームワークによって呼び出されます
+ * @param[in] wParam パラメタ
+ * @param[in] lParam パラメタ
+ * @retval TRUE アプリケーションがこのメッセージを処理した
+ */
+BOOL CGA1280APage::OnCommand(WPARAM wParam, LPARAM lParam)
+{
+	switch (LOWORD(wParam))
+	{
+	case IDC_GA1280AENABLED:
+		m_enabled = (m_chkenabled.SendMessage(BM_GETCHECK, 0, 0) ? 1 : 0);
+		return TRUE;
+	}
+	return FALSE;
+}
+
+/**
+ * CWndProc オブジェクトの Windows プロシージャ (WindowProc) が用意されています
+ * @param[in] nMsg 処理される Windows メッセージを指定します
+ * @param[in] wParam メッセージの処理で使う付加情報を提供します。このパラメータの値はメッセージに依存します
+ * @param[in] lParam メッセージの処理で使う付加情報を提供します。このパラメータの値はメッセージに依存します
+ * @return メッセージに依存する値を返します
+ */
+LRESULT CGA1280APage::WindowProc(UINT nMsg, WPARAM wParam, LPARAM lParam)
+{
+	return CDlgProc::WindowProc(nMsg, wParam, lParam);
+}
+
+#endif
+
 
 /**
  * コンフィグ ダイアログ
@@ -483,6 +586,11 @@ void dialog_wabopt(HWND hwndParent)
 #if defined(SUPPORT_WAB_NPDISP)
 	CNPDISPPage npDisp;
 	prop.AddPage(&npDisp);
+#endif
+
+#if defined(SUPPORT_WAB_GA1280A)
+	CGA1280APage ga1280a;
+	prop.AddPage(&ga1280a);
 #endif
 
 	prop.m_psh.dwFlags |= PSH_NOAPPLYNOW | PSH_USEHICON | PSH_USECALLBACK;
