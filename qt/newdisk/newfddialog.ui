@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>NewFdDialog</class>
+ <widget class="QDialog" name="NewFdDialog">
+  <property name="windowTitle">
+   <string>New Floppy Disk Image</string>
+  </property>
+  <layout class="QVBoxLayout" name="mainLayout">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetFixedSize</enum>
+   </property>
+   <item>
+    <widget class="QLabel" name="fileName">
+     <property name="textFormat">
+      <enum>Qt::PlainText</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QFormLayout" name="formLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="diskLabelLabel">
+       <property name="text">
+        <string>Disk &amp;label:</string>
+       </property>
+       <property name="buddy">
+        <cstring>diskLabel</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="diskLabel">
+       <property name="toolTip">
+        <string>Stored in the D88 header, up to 16 bytes in Shift_JIS (8 full-width characters)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="diskTypeLabel">
+       <property name="text">
+        <string>Disk type:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <layout class="QHBoxLayout" name="diskTypeLayout">
+       <item>
+        <widget class="QRadioButton" name="make2DD">
+         <property name="text">
+          <string notr="true">2&amp;DD</string>
+         </property>
+         <property name="toolTip">
+          <string notr="true">640 KB</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="make2HD">
+         <property name="text">
+          <string notr="true">2&amp;HD</string>
+         </property>
+         <property name="toolTip">
+          <string notr="true">1.25 MB</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="make144">
+         <property name="text">
+          <string notr="true">1.&amp;44 MB</string>
+         </property>
+         <property name="toolTip">
+          <string>Needs 1.44 MB floppy support in the FDD settings</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>NewFdDialog</receiver>
+   <slot>accept()</slot>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>NewFdDialog</receiver>
+   <slot>reject()</slot>
+  </connection>
+ </connections>
+</ui>

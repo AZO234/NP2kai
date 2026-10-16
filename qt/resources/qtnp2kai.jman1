@@ -1,0 +1,107 @@
+.TH @NP2kai_QT_NAME_UPPER@ 1 "2026年10月" "NP2kai" "ユーザーコマンド"
+.ad l
+.SH 名前
+@NP2kai_QT_NAME@ \- @NP2kai_QT_SUMMARY_JA@
+.SH 書式
+.B @NP2kai_QT_NAME@
+[
+.B \-c
+.I ファイル
+]
+[
+.I FD1
+[
+.I FD2
+[
+.I FD3
+[
+.I FD4
+]
+]
+]
+]
+.SH 説明
+.B @NP2kai_QT_NAME@
+は NEC PC-9801 シリーズのエミュレータ NP2kai の Qt 6 版フロントエンドです。Wayland ではマウスポインタをウィンドウ内にロックして動作し、X11 でも動作します。
+.PP
+メニューのショートカットキーはマウスが取り込まれていない間だけ有効です。PC-98 がマウスを取り込んでいる間は、Alt+Enter、F11、F12 を除くすべてのキーが PC-98 に送られます。フロッピーディスク、ハードディスク、CD-ROM のイメージは Media メニューまたはステータスバーのドライブアイコンから交換します。新しいイメージは
+.B Media > New Floppy Image
+と
+.B Media > New Hard Disk Image
+で作成します。
+.SH オプション
+.TP
+.BI \-c " ファイル" "\fR, \fP\-\-config " ファイル
+既定の設定ファイルの代わりに
+.I ファイル
+を読み書きします。
+.TP
+.BR \-h ", " \-\-help
+オプションの一覧を表示して終了します。
+.TP
+.I FD1 FD2 FD3 FD4
+設定に記録されたイメージの代わりに、これらのフロッピーディスクイメージをドライブ 1〜4 に挿入します。
+.SH 操作
+.TP
+.B 左ボタン
+マウスを PC-98 に取り込みます。
+.TP
+.B 中ボタン
+マウスの取り込みと解放を切り替えます。
+.TP
+.B Alt+Enter
+ウィンドウ表示とフルスクリーン表示を切り替えます。
+.TP
+.B F11
+F11 キーの設定により、何もしない、フルスクリーン時にメニューバーを表示する、またはフルスクリーンに切り替えます。
+.TP
+.B F12
+F12 キーの設定により、マウスの取り込みと解放を切り替えるか、PC-98 のキーを送ります。
+.TP
+.B ステータスバー
+スピーカーのボタンで消音、矢印のボタンで標準速度に戻します。どちらも右クリックでスライダーを表示します。
+.SH ファイル
+設定ディレクトリは
+.I $XDG_CONFIG_HOME/@NP2kai_QT_NAME@
+(既定では
+.IR ~/.config/@NP2kai_QT_NAME@ )
+です。ROM イメージもここから読み込みます。
+.TP
+.I @NP2kai_QT_NAME@.toml
+設定ファイル。
+.TP
+.I bios.rom, itf.rom, sound.rom
+実機の PC-98 から吸い出した BIOS、ITF、サウンド BIOS の ROM イメージ。
+.TP
+.I font.rom, font.bmp
+文字フォント。どちらもない場合は TrueType フォントから
+.I font.tmp
+を作成します (フォントを変更したらこのファイルを削除してください)。
+.TP
+.I default.ttf
+文字フォントの作成に使う、日本語を含む TrueType フォント。ない場合はいくつかの一般的なシステムフォントを探します。
+.TP
+.I 2608_bd.wav, 2608_sd.wav, 2608_top.wav, 2608_hh.wav, 2608_tom.wav, 2608_rim.wav
+YM2608 リズム音源のサンプル (バスドラム、スネアドラム、シンバル、ハイハット、タム、リムショット)。
+.TP
+.I @NP2kai_QT_NAME@.s00 ... @NP2kai_QT_NAME@.s09
+スロット 0〜9 に保存したステート。
+.TP
+.I @NP2kai_QT_NAME@.s0
+レジュームが有効なとき、終了時に保存し起動時に復元するステート。
+.TP
+.I hook_fontrom.txt
+.B Tools > Text ROM Hook
+が有効な間にフォント ROM から読み取ったテキスト。
+.SH 作者
+Yui \- Neko Project II の開発者。
+.br
+NONAKA Kimihiro \- Neko Project II の UNIX への移植者。
+.br
+AZO234 \- Neko Project II kai の開発者。
+.br
+SimK \- NP2kai に統合された Neko Project 21/W の開発者。
+.SH 関連項目
+.BR wx@NP2kai_QT_BASE@ (1)
+.PP
+https://github.com/AZO234/NP2kai

@@ -1,0 +1,577 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DisplayPage</class>
+ <widget class="QWidget" name="DisplayPage">
+  <layout class="QVBoxLayout" name="mainLayout">
+   <item>
+    <widget class="QTabWidget" name="displayTabs">
+     <widget class="QWidget" name="videoTab">
+      <attribute name="title">
+       <string>Video</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="videoLayout">
+       <item>
+        <widget class="QCheckBox" name="LCD_MODE_en">
+         <property name="text">
+          <string>&amp;Liquid crystal display</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="lcdRevLayout">
+         <property name="leftMargin">
+          <number>20</number>
+         </property>
+         <item>
+          <widget class="QCheckBox" name="LCD_MODE_rev">
+           <property name="text">
+            <string>&amp;Reverse</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="skipline">
+         <property name="text">
+          <string>Use &amp;skip line revisions</string>
+         </property>
+         <property name="toolTip">
+          <string>Draws the lines the 400-line modes skip, dimmed by the ratio below</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="skipLightLayout">
+         <property name="leftMargin">
+          <number>20</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="skipLightLabel">
+           <property name="text">
+            <string>Ratio:</string>
+           </property>
+           <property name="buddy">
+            <cstring>skplight</cstring>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSlider" name="skplight">
+           <property name="maximum">
+            <number>255</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="skplightValue">
+           <property name="minimumSize">
+            <size>
+             <width>32</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="DispSync">
+         <property name="text">
+          <string>&amp;Display sync</string>
+         </property>
+         <property name="toolTip">
+          <string>Draws the screen in step with the emulated display timing</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="Real_Pal">
+         <property name="text">
+          <string>Real &amp;palettes</string>
+         </property>
+         <property name="toolTip">
+          <string>Follows palette changes made in the middle of a frame</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QFormLayout" name="hostLayout">
+         <item row="0" column="0">
+          <widget class="QLabel" name="interpLabel">
+           <property name="text">
+            <string>S&amp;caling:</string>
+           </property>
+           <property name="buddy">
+            <cstring>INTERPOL</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="INTERPOL">
+           <item>
+            <property name="text">
+             <string>Nearest neighbour</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Smooth</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="draw32bit">
+         <property name="text">
+          <string>Draw in &amp;32-bit colour</string>
+         </property>
+         <property name="toolTip">
+          <string>Without it the screen is drawn in 16-bit colour, which rounds 256-colour palettes</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="videoSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="chipTab">
+      <attribute name="title">
+       <string>Chip</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="chipLayout">
+       <item>
+        <widget class="QGroupBox" name="gdcGroup">
+         <property name="title">
+          <string>Graphic display controller</string>
+         </property>
+         <layout class="QHBoxLayout" name="gdcLayout">
+          <item>
+           <widget class="QRadioButton" name="gdc_7220">
+            <property name="text">
+             <string notr="true">uPD&amp;7220</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="gdc_72020">
+            <property name="text">
+             <string notr="true">uPD72&amp;020</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="gdcSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="grcgGroup">
+         <property name="title">
+          <string>Graphic charger</string>
+         </property>
+         <layout class="QVBoxLayout" name="grcgLayout">
+          <item>
+           <widget class="QComboBox" name="GRCG_EGC">
+            <item>
+             <property name="text">
+              <string>None</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string notr="true">GRCG</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string notr="true">GRCG+</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string notr="true">EGC</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="pegcplane">
+            <property name="text">
+             <string>Enable PEGC &amp;plane mode</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="color16b">
+         <property name="text">
+          <string>&amp;16-colour board (PC-9801-24)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="GDCWOVRG">
+         <property name="text">
+          <string>Allow more than &amp;80 columns</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="chipSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="timingTab">
+      <attribute name="title">
+       <string>Timing</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="timingOuterLayout">
+       <item>
+        <widget class="QGroupBox" name="waitGroup">
+         <property name="title">
+          <string>Memory wait (clocks)</string>
+         </property>
+         <layout class="QGridLayout" name="waitLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="tramWaitLabel">
+            <property name="text">
+             <string>&amp;T-RAM:</string>
+            </property>
+            <property name="buddy">
+             <cstring>tramwait</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSlider" name="tramwait">
+            <property name="maximum">
+             <number>32</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="tramwaitValue">
+            <property name="minimumSize">
+             <size>
+              <width>32</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="vramWaitLabel">
+            <property name="text">
+             <string>&amp;V-RAM:</string>
+            </property>
+            <property name="buddy">
+             <cstring>vramwait</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSlider" name="vramwait">
+            <property name="maximum">
+             <number>32</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="vramwaitValue">
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="grcgWaitLabel">
+            <property name="text">
+             <string>&amp;GRCG:</string>
+            </property>
+            <property name="buddy">
+             <cstring>grcgwait</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSlider" name="grcgwait">
+            <property name="maximum">
+             <number>32</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QLabel" name="grcgwaitValue">
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="realPalGroup">
+         <property name="title">
+          <string>Real palettes adjust</string>
+         </property>
+         <layout class="QHBoxLayout" name="realPalLayout">
+          <item>
+           <widget class="QSlider" name="RPal_tim">
+            <property name="minimum">
+             <number>-32</number>
+            </property>
+            <property name="maximum">
+             <number>32</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="RPal_timValue">
+            <property name="minimumSize">
+             <size>
+              <width>32</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="timingSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="accelTab">
+      <attribute name="title">
+       <string>Accelerator</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="accelLayout">
+       <item>
+        <widget class="QCheckBox" name="wabasw">
+         <property name="text">
+          <string>Use the &amp;analog switch IC</string>
+         </property>
+         <property name="toolTip">
+          <string>Switches between the PC-98 and the accelerator output without the relay click</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="USE_CLGD">
+         <property name="title">
+          <string notr="true">&amp;CL-GD54xx</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <layout class="QFormLayout" name="clgdLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="clgdTypeLabel">
+            <property name="text">
+             <string>T&amp;ype:</string>
+            </property>
+            <property name="buddy">
+             <cstring>CLGDTYPE</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="CLGDTYPE">
+            <item>
+             <property name="text">
+              <string>PC-9821Bp, Bs, Be, Bf built-in</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>PC-9821Xe built-in</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>PC-9821Cb built-in</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>PC-9821Cf built-in</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>PC-9821Xe10, Xa7e, Xb10 built-in</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>PC-9821Cb2 built-in</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>PC-9821Cx2 built-in</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>PC-9821 PCI CL-GD5446 built-in</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string notr="true">MELCO WAB-S</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string notr="true">MELCO WSN-A2F</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string notr="true">MELCO WSN-A4F</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string notr="true">I-O DATA GA-98NBI/C</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string notr="true">I-O DATA GA-98NBII</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string notr="true">I-O DATA GA-98NBIV</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string notr="true">PC-9801-96 (PC-9801B3-E02)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Auto select (Xe10, GA-98NBI/C, PCI)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Auto select (Xe10, GA-98NBII, PCI)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Auto select (Xe10, GA-98NBIV, PCI)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Auto select (Xe10, WAB-S, PCI)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Auto select (Xe10, WSN-A2F, PCI)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Auto select (Xe10, WSN-A4F, PCI)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Auto select (Xe10, WAB-S)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Auto select (Xe10, WSN-A2F)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Auto select (Xe10, WSN-A4F)</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="2">
+           <widget class="QCheckBox" name="CLGDFCUR">
+            <property name="text">
+             <string>Use a fake hardware &amp;cursor</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="accelSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

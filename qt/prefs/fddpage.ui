@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>FddPage</class>
+ <widget class="QWidget" name="FddPage">
+  <layout class="QVBoxLayout" name="mainLayout">
+   <item>
+    <widget class="QGroupBox" name="drivesGroup">
+     <property name="title">
+      <string>Installed drives</string>
+     </property>
+     <layout class="QHBoxLayout" name="drivesLayout">
+      <item>
+       <widget class="QCheckBox" name="FDDRIVE1">
+        <property name="text">
+         <string notr="true">FD &amp;1</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="FDDRIVE2">
+        <property name="text">
+         <string notr="true">FD &amp;2</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="FDDRIVE3">
+        <property name="text">
+         <string notr="true">FD &amp;3</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="FDDRIVE4">
+        <property name="text">
+         <string notr="true">FD &amp;4</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="drivesSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="USE144FD">
+     <property name="text">
+      <string>Use &amp;1.44 MB floppy disks (3-mode drives)</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="Seek_Snd">
+     <property name="text">
+      <string>&amp;Seek sound</string>
+     </property>
+     <property name="toolTip">
+      <string>Its volume is the Seek, relay slider in Sound &gt; Mixer</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="bottomSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

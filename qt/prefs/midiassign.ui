@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MidiAssign</class>
+ <widget class="QWidget" name="MidiAssign">
+  <layout class="QFormLayout" name="mainLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item row="0" column="0">
+    <widget class="QLabel" name="midiOutLabel">
+     <property name="text">
+      <string notr="true">MIDI-&amp;OUT:</string>
+     </property>
+     <property name="buddy">
+      <cstring>midiOut</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <layout class="QHBoxLayout" name="midiOutRow">
+     <item>
+      <widget class="QComboBox" name="midiOut">
+       <item>
+        <property name="text">
+         <string>Not connected</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>VERMOUTH (software synthesizer)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>MIDI device</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="midiOutDevice">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>1</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>A raw MIDI device such as /dev/snd/midiC1D0</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="midiInLabel">
+     <property name="text">
+      <string notr="true">MIDI-&amp;IN:</string>
+     </property>
+     <property name="buddy">
+      <cstring>midiIn</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <layout class="QHBoxLayout" name="midiInRow">
+     <item>
+      <widget class="QComboBox" name="midiIn">
+       <item>
+        <property name="text">
+         <string>Not connected</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>MIDI device</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="midiInDevice">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>1</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="moduleLabel">
+     <property name="text">
+      <string>&amp;Module:</string>
+     </property>
+     <property name="buddy">
+      <cstring>module</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QComboBox" name="module">
+     <property name="editable">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string>The sound module the guest expects; exclusive messages for another one are converted</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <widget class="QCheckBox" name="defineEnabled">
+     <property name="text">
+      <string>Use a program &amp;define file (MIMPI)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="2">
+    <layout class="QHBoxLayout" name="defineRow">
+     <property name="leftMargin">
+      <number>20</number>
+     </property>
+     <item>
+      <widget class="QLineEdit" name="defineFile"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="defineBrowse">
+       <property name="text">
+        <string>&amp;Browse...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

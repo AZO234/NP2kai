@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MidiPage</class>
+ <widget class="QWidget" name="MidiPage">
+  <layout class="QVBoxLayout" name="mainLayout">
+   <item>
+    <widget class="QTabWidget" name="midiTabs">
+     <widget class="QWidget" name="mpuTab">
+      <attribute name="title">
+       <string notr="true">MPU-PC98II</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="mpuTabLayout">
+       <item>
+        <widget class="QCheckBox" name="USEMPU98">
+         <property name="text">
+          <string>&amp;Enable</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="mpuBoardRow">
+         <item>
+          <layout class="QFormLayout" name="mpuBoardForm">
+           <item row="0" column="0">
+            <widget class="QLabel" name="mpuPortLabel">
+             <property name="text">
+              <string>&amp;I/O port:</string>
+             </property>
+             <property name="buddy">
+              <cstring>MPU_PORT</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QComboBox" name="MPU_PORT"/>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="mpuIrqLabel">
+             <property name="text">
+              <string>I&amp;nterrupt:</string>
+             </property>
+             <property name="buddy">
+              <cstring>MPU_IRQ</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QComboBox" name="MPU_IRQ">
+             <item>
+              <property name="text">
+               <string notr="true">INT0</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string notr="true">INT1</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string notr="true">INT2</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string notr="true">INT5</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="DipSwView" name="mpuDipsw"/>
+         </item>
+         <item>
+          <spacer name="mpuBoardSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="mpuDefaults">
+           <property name="text">
+            <string>Board &amp;defaults</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="mpuAssignGroup">
+         <property name="title">
+          <string>Connection</string>
+         </property>
+         <layout class="QVBoxLayout" name="mpuAssignLayout">
+          <item>
+           <widget class="MidiAssign" name="mpuAssign"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="vermouthNote">
+         <property name="text">
+          <string>VERMOUTH plays MIDI with the instruments listed in timidity.cfg in the configuration folder; a link to the system timidity.cfg will do.</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="mpuSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="smpuTab">
+      <attribute name="title">
+       <string notr="true">S-MPU</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="smpuTabLayout">
+       <item>
+        <layout class="QHBoxLayout" name="smpuEnableRow">
+         <item>
+          <widget class="QCheckBox" name="USE_SMPU">
+           <property name="text">
+            <string>&amp;Enable</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="SMPUMUTB">
+           <property name="text">
+            <string>&amp;Mute port B in MPU-401 mode</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="smpuEnableSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="smpuBoardRow">
+         <item>
+          <layout class="QFormLayout" name="smpuBoardForm">
+           <item row="0" column="0">
+            <widget class="QLabel" name="smpuPortLabel">
+             <property name="text">
+              <string>&amp;I/O port:</string>
+             </property>
+             <property name="buddy">
+              <cstring>SMPU_PORT</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QComboBox" name="SMPU_PORT"/>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="smpuIrqLabel">
+             <property name="text">
+              <string>I&amp;nterrupt:</string>
+             </property>
+             <property name="buddy">
+              <cstring>SMPU_IRQ</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QComboBox" name="SMPU_IRQ">
+             <item>
+              <property name="text">
+               <string notr="true">INT0</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string notr="true">INT1</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string notr="true">INT2</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string notr="true">INT5</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="DipSwView" name="smpuDipsw"/>
+         </item>
+         <item>
+          <spacer name="smpuBoardSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="smpuDefaults">
+           <property name="text">
+            <string>Board &amp;defaults</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="smpuAGroup">
+         <property name="title">
+          <string>Port A</string>
+         </property>
+         <layout class="QVBoxLayout" name="smpuALayout">
+          <item>
+           <widget class="MidiAssign" name="smpuAAssign"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="smpuBGroup">
+         <property name="title">
+          <string>Port B</string>
+         </property>
+         <layout class="QVBoxLayout" name="smpuBLayout">
+          <item>
+           <widget class="MidiAssign" name="smpuBAssign"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="smpuSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>DipSwView</class>
+   <extends>QWidget</extends>
+   <header>prefs/dipswview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MidiAssign</class>
+   <extends>QWidget</extends>
+   <header>prefs/midiassign.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

@@ -190,14 +190,6 @@ private:
 };
 
 /* C-callable hooks (called from sysmng.cpp etc.) */
-#ifdef __cplusplus
-extern "C" {
-#endif
-void np2frame_requestRedraw(void);
-void np2frame_updateCaption(UINT8 flag);
-void np2frame_setTitle(const char *title);
-#ifdef __cplusplus
-}
-#endif
+#include "np2ui.h"
 
 #endif /* NP2_WX_NP2FRAME_H */

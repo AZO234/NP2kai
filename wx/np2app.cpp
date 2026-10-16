@@ -45,11 +45,7 @@ bool Np2App::OnInit()
 	if (np2oscfg.winx >= 0 && np2oscfg.winy >= 0)
 		pos = wxPoint(np2oscfg.winx, np2oscfg.winy);
 
-#if defined(CPUCORE_IA32)
-	wxString title = "wx NP21kai (IA-32)";
-#else
-	wxString title = "wx NP2kai (286)";
-#endif
+	wxString title = NP2_WX_TITLE;
 
 	Np2Frame *frame = new Np2Frame(title, pos, wxSize(w, h));
 	/* w/h are client-area dimensions; adjust frame size accordingly */

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CalendarPage</class>
+ <widget class="QWidget" name="CalendarPage">
+  <layout class="QVBoxLayout" name="mainLayout">
+   <item>
+    <widget class="QRadioButton" name="cal_real">
+     <property name="text">
+      <string>&amp;Real time (the host clock)</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="cal_vir">
+     <property name="text">
+      <string>&amp;Virtual calendar</string>
+     </property>
+     <property name="toolTip">
+      <string>Runs from the time set here and keeps its distance from the host clock across restarts</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="virtualRow">
+     <property name="leftMargin">
+      <number>20</number>
+     </property>
+     <item>
+      <widget class="QDateTimeEdit" name="virtualTime">
+       <property name="displayFormat">
+        <string>yyyy-MM-dd HH:mm:ss</string>
+       </property>
+       <property name="calendarPopup">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="setNow">
+       <property name="text">
+        <string>&amp;Now</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="virtualSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <spacer name="bottomSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

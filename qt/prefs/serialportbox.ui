@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SerialPortBox</class>
+ <widget class="QWidget" name="SerialPortBox">
+  <layout class="QVBoxLayout" name="mainLayout">
+   <item>
+    <layout class="QFormLayout" name="connectForm">
+     <item row="0" column="0">
+      <widget class="QLabel" name="connectLabel">
+       <property name="text">
+        <string>&amp;Connect to:</string>
+       </property>
+       <property name="buddy">
+        <cstring>connectTo</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="connectTo">
+       <item>
+        <property name="text">
+         <string>Nothing</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>A serial port of the host</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">MIDI</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QStackedWidget" name="connectPages">
+     <widget class="QWidget" name="nonePage"/>
+     <widget class="QWidget" name="serialPage">
+      <layout class="QFormLayout" name="serialForm">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <item row="0" column="0">
+        <widget class="QLabel" name="deviceLabel">
+         <property name="text">
+          <string>&amp;Device:</string>
+         </property>
+         <property name="buddy">
+          <cstring>device</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="device">
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QCheckBox" name="direct">
+         <property name="text">
+          <string>Speed and format set by the PC-98 &amp;program</string>
+         </property>
+         <property name="toolTip">
+          <string>Otherwise the host port always uses the values below</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="speedLabel">
+         <property name="text">
+          <string>&amp;Speed:</string>
+         </property>
+         <property name="buddy">
+          <cstring>speed</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QComboBox" name="speed"/>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="dataBitsLabel">
+         <property name="text">
+          <string>D&amp;ata bits:</string>
+         </property>
+         <property name="buddy">
+          <cstring>dataBits</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QComboBox" name="dataBits">
+         <item>
+          <property name="text">
+           <string notr="true">5</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string notr="true">6</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string notr="true">7</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string notr="true">8</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="parityLabel">
+         <property name="text">
+          <string>&amp;Parity:</string>
+         </property>
+         <property name="buddy">
+          <cstring>parity</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QComboBox" name="parity">
+         <item>
+          <property name="text">
+           <string>None</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Odd</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Even</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="stopBitsLabel">
+         <property name="text">
+          <string>S&amp;top bits:</string>
+         </property>
+         <property name="buddy">
+          <cstring>stopBits</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QComboBox" name="stopBits">
+         <item>
+          <property name="text">
+           <string notr="true">1</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string notr="true">1.5</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string notr="true">2</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="midiPage">
+      <layout class="QVBoxLayout" name="midiLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="MidiAssign" name="midi"/>
+       </item>
+       <item>
+        <spacer name="midiSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <spacer name="bottomSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MidiAssign</class>
+   <extends>QWidget</extends>
+   <header>prefs/midiassign.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>connectTo</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>connectPages</receiver>
+   <slot>setCurrentIndex(int)</slot>
+  </connection>
+ </connections>
+</ui>

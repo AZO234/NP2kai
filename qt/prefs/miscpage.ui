@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MiscPage</class>
+ <widget class="QWidget" name="MiscPage">
+  <layout class="QVBoxLayout" name="mainLayout">
+   <item>
+    <widget class="QGroupBox" name="runGroup">
+     <property name="title">
+      <string>Running</string>
+     </property>
+     <layout class="QFormLayout" name="runLayout">
+      <item row="0" column="0" colspan="2">
+       <widget class="QCheckBox" name="s_NOWAIT">
+        <property name="text">
+         <string>&amp;No wait (run as fast as the host allows)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="skpFrameLabel">
+        <property name="text">
+         <string>&amp;Frames drawn:</string>
+        </property>
+        <property name="buddy">
+         <cstring>SkpFrame</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="SkpFrame">
+        <item>
+         <property name="text">
+          <string>Automatic</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>All</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">1/2</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">1/3</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">1/4</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QCheckBox" name="e_resume">
+        <property name="text">
+         <string>&amp;Resume: save the machine on exit and restore it at start</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="fontGroup">
+     <property name="title">
+      <string>Font</string>
+     </property>
+     <layout class="QHBoxLayout" name="fontLayout">
+      <item>
+       <widget class="QLineEdit" name="fontfile">
+        <property name="placeholderText">
+         <string>None: characters are drawn with a host font</string>
+        </property>
+        <property name="toolTip">
+         <string>A *.bmp font of the PC-98 or the ROM of another machine: FONT.ROM (Virtual98), PC88.FNT, SUBSYS_C.ROM (FM-7), FNT0808.X1, CGROM.DAT (X68000)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="fontBrowse">
+        <property name="text">
+         <string>&amp;Browse...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="USE_PCI">
+     <property name="title">
+      <string>&amp;PCI bus</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <layout class="QFormLayout" name="pciLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="pcmcLabel">
+        <property name="text">
+         <string>PC&amp;MC:</string>
+        </property>
+        <property name="buddy">
+         <cstring>PCI_PCMC</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="PCI_PCMC">
+        <item>
+         <property name="text">
+          <string notr="true">Intel 82434LX</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">Intel 82441FX</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">VLSI Wildcat</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QCheckBox" name="PCI_B32">
+        <property name="text">
+         <string>Use BIOS&amp;32 (not recommended)</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="jast_snd">
+     <property name="text">
+      <string>&amp;JAST SOUND on the printer port</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="bottomSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

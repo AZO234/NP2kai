@@ -1,0 +1,106 @@
+.TH @NP2kai_QT_NAME_UPPER@ 1 "October 2026" "NP2kai" "User Commands"
+.SH NAME
+@NP2kai_QT_NAME@ \- @NP2kai_QT_SUMMARY@
+.SH SYNOPSIS
+.B @NP2kai_QT_NAME@
+[
+.B \-c
+.I file
+]
+[
+.I FD1
+[
+.I FD2
+[
+.I FD3
+[
+.I FD4
+]
+]
+]
+]
+.SH DESCRIPTION
+.B @NP2kai_QT_NAME@
+is the Qt 6 frontend of NP2kai, an emulator of the NEC PC-9801 series. It runs under Wayland, where it locks the pointer to the window, and under X11.
+.PP
+The menu shortcuts work while the mouse is free; once the PC-98 has captured it, every key goes to the PC-98, except Alt+Enter, F11 and F12. Floppy, hard disk and CD-ROM images are changed from the Media menu or the drive icons of the status bar; new images are made with
+.B Media > New Floppy Image
+and
+.BR "Media > New Hard Disk Image" .
+.SH OPTIONS
+.TP
+.BI \-c " file" "\fR, \fP\-\-config " file
+Read and write the configuration in
+.I file
+instead of the default one.
+.TP
+.BR \-h ", " \-\-help
+Print the options and exit.
+.TP
+.I FD1 FD2 FD3 FD4
+Insert these floppy disk images in drives 1 to 4, in place of those the configuration remembers.
+.SH CONTROLS
+.TP
+.B Left button
+Captures the mouse for the PC-98.
+.TP
+.B Middle button
+Captures or releases the mouse.
+.TP
+.B Alt+Enter
+Switches between a window and full screen.
+.TP
+.B F11
+Depending on the F11 key setting: nothing, shows the menu bar in full screen, or switches to full screen.
+.TP
+.B F12
+Depending on the F12 key setting: captures or releases the mouse, or sends a PC-98 key.
+.TP
+.B Status bar
+The loudspeaker button mutes the sound and the arrow button goes back to normal speed; a right click on either shows a slider.
+.SH FILES
+The configuration directory is
+.IR $XDG_CONFIG_HOME/@NP2kai_QT_NAME@ ,
+by default
+.IR ~/.config/@NP2kai_QT_NAME@ .
+The emulator looks for its ROM images there.
+.TP
+.I @NP2kai_QT_NAME@.toml
+Configuration.
+.TP
+.I bios.rom, itf.rom, sound.rom
+BIOS, ITF and sound BIOS ROM images, dumped from a real PC-98.
+.TP
+.I font.rom, font.bmp
+Character font. Without either, it is built from a TrueType font into
+.I font.tmp
+(delete that file after changing the font).
+.TP
+.I default.ttf
+TrueType font, with Japanese characters, to build the character font from. Without it a few common system fonts are tried.
+.TP
+.I 2608_bd.wav, 2608_sd.wav, 2608_top.wav, 2608_hh.wav, 2608_tom.wav, 2608_rim.wav
+Samples of the YM2608 rhythm part (bass drum, snare drum, cymbal, hi-hat, tom, rim shot).
+.TP
+.I @NP2kai_QT_NAME@.s00 ... @NP2kai_QT_NAME@.s09
+States saved in slots 0 to 9.
+.TP
+.I @NP2kai_QT_NAME@.s0
+State saved on exit and restored on start when Resume is set.
+.TP
+.I hook_fontrom.txt
+Text read from the font ROM while
+.B Tools > Text ROM Hook
+is on.
+.SH AUTHORS
+Yui, the main developer of Neko Project II.
+.br
+NONAKA Kimihiro, who ported Neko Project II to UNIX.
+.br
+AZO234, who develops Neko Project II kai.
+.br
+SimK, who develops Neko Project 21/W, merged into NP2kai.
+.SH "SEE ALSO"
+.BR wx@NP2kai_QT_BASE@ (1)
+.PP
+https://github.com/AZO234/NP2kai

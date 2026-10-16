@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Name=wxNP2kai
+Name=NP2kai (wx)
 GenericName=PC-9801 Emulator
 GenericName[ja]=PC-9801エミュレータ
 Comment=PC-9801 Emulator
@@ -8,5 +8,5 @@ Comment[ja]=PC-9801エミュレータ
 Exec=wxnp2kai
 Icon=np2
 Categories=Game;Emulator;
-Name[ja]=wxNP2kai
+Name[ja]=NP2kai (wx)
 

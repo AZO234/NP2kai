@@ -473,7 +473,7 @@ BRESULT fdd_write(void) {
 	FDDFILE		fdd;
 	FDDFUNC		fdd_fn;			//	追加(Kai1)
 
-	sysmng_fddaccess(fdc.us);
+	sysmng_fddwrite(fdc.us);
 	fdd = fddfile + fdc.us;
 	fdd_fn = fddfunc + fdc.us;	//	追加(Kai1)
 #if 1							//	変更(Kai1)
@@ -539,7 +539,7 @@ BRESULT fdd_formating(const UINT8 *ID) {
 	FDDFILE		fdd;			//	追加(Kai1)
 	FDDFUNC		fdd_fn;			//	追加(Kai1)
 
-	sysmng_fddaccess(fdc.us);
+	sysmng_fddwrite(fdc.us);
 	fdd = fddfile + fdc.us;		//	追加(Kai1)
 	fdd_fn = fddfunc + fdc.us;	//	追加(Kai1)
 #if 1							//	変更(Kai1)

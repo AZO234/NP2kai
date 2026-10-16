@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SerialPage</class>
+ <widget class="QWidget" name="SerialPage">
+  <layout class="QVBoxLayout" name="mainLayout">
+   <item>
+    <widget class="QTabWidget" name="serialTabs">
+     <widget class="SerialPortBox" name="com1Box">
+      <attribute name="title">
+       <string notr="true">COM1</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="pc9861Tab">
+      <attribute name="title">
+       <string notr="true">PC-9861K</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="pc9861Layout">
+       <item>
+        <widget class="QCheckBox" name="pc9861_e">
+         <property name="text">
+          <string>&amp;Enable the PC-9861K board (two more channels)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QGridLayout" name="pc9861Grid">
+         <item row="0" column="1">
+          <widget class="QLabel" name="speedHeader">
+           <property name="text">
+            <string>Speed</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="intHeader">
+           <property name="text">
+            <string>Interrupt</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QLabel" name="modeHeader">
+           <property name="text">
+            <string>Mode</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="ch1Label">
+           <property name="text">
+            <string notr="true">CH.1:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="ch1Speed"/>
+         </item>
+         <item row="1" column="2">
+          <widget class="QComboBox" name="ch1Int"/>
+         </item>
+         <item row="1" column="3">
+          <widget class="QComboBox" name="ch1Mode"/>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="ch2Label">
+           <property name="text">
+            <string notr="true">CH.2:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QComboBox" name="ch2Speed"/>
+         </item>
+         <item row="2" column="2">
+          <widget class="QComboBox" name="ch2Int"/>
+         </item>
+         <item row="2" column="3">
+          <widget class="QComboBox" name="ch2Mode"/>
+         </item>
+         <item row="1" column="4">
+          <spacer name="pc9861GridSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="pc9861DipRow">
+         <item>
+          <widget class="QLabel" name="pc9861DipLabel">
+           <property name="text">
+            <string>DIP switches and jumpers:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="DipSwView" name="pc9861Dipsw"/>
+         </item>
+         <item>
+          <spacer name="pc9861DipSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="pc9861Spacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="SerialPortBox" name="ch1Box">
+      <attribute name="title">
+       <string notr="true">CH.1</string>
+      </attribute>
+     </widget>
+     <widget class="SerialPortBox" name="ch2Box">
+      <attribute name="title">
+       <string notr="true">CH.2</string>
+      </attribute>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>DipSwView</class>
+   <extends>QWidget</extends>
+   <header>prefs/dipswview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SerialPortBox</class>
+   <extends>QWidget</extends>
+   <header>prefs/serialportbox.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

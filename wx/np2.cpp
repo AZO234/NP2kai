@@ -82,6 +82,11 @@ NP2OSCFG np2oscfg = {
 	0,          /* readonly */
 	-1, -1,     /* winx, winy */
 	640, 400,   /* winwidth, winheight */
+	0,          /* cycle_shot_enabled */
+	1, 1,       /* mousemul, mousediv */
+	1,          /* rawmouse */
+	0, 0,       /* pixelperfect, force43 */
+	1,          /* statusbar */
 };
 
 char   cycle_shot_path[512] = "np2kai_capture.png";
@@ -146,6 +151,12 @@ void np2oscfg_setdefault(void)
 	np2oscfg.winheight = 400;
 
 	np2oscfg.cycle_shot_enabled = 0;
+	np2oscfg.mousemul = 1;
+	np2oscfg.mousediv = 1;
+	np2oscfg.rawmouse = 1;
+	np2oscfg.pixelperfect = 0;
+	np2oscfg.force43 = 0;
+	np2oscfg.statusbar = 1;
 
 	/* cycle screenshot */
 	milstr_ncpy(cycle_shot_path, "np2kai_capture.png", sizeof(cycle_shot_path));
@@ -177,6 +188,20 @@ static void getstatfilename(OEMCHAR *path, const OEMCHAR *ext, int size)
 	OEMCHAR filename[64];
 	OEMSNPRINTF(filename, sizeof(filename), "%s.%s", NP2_WX_APPNAME, ext);
 	file_cpyname(path, file_getcd(filename), size);
+}
+
+/* statsave_save() and statsave_load() only note the file; the state is read
+ * or written between two frames, as the SDL port does */
+int np2_statsave_flush(void)
+{
+	int ret = STATFLAG_SUCCESS;
+	if (g_u8ControlState == 1) {
+		ret = statsave_save_d();
+	} else if (g_u8ControlState == 2) {
+		ret = statsave_load_d();
+	}
+	g_u8ControlState = 0;
+	return ret;
 }
 
 int flagsave(const OEMCHAR *ext)
@@ -487,6 +512,7 @@ static void processwait(UINT cnt)
 
 void np2_exec(void)
 {
+	np2_statsave_flush();
 	taskmng_rol();
 	autokey_exec();
 
@@ -653,6 +679,7 @@ void np2_terminate(void)
 	/* save resume state */
 	if (np2oscfg.resume) {
 		flagsave("s0");
+		np2_statsave_flush();   /* no frame comes after this one */
 	}
 
 	pccore_term();

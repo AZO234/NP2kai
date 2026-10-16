@@ -56,10 +56,12 @@ BRESULT sxsicd_open(SXSIDEV sxsi, const OEMCHAR *fname) {
 	}
 
 #ifdef SUPPORT_LIBCDIO
-	return opencdio(sxsi, fname);				//	libcdio で全フォーマット対応
-#else
-	return(openiso(sxsi, fname));				//	知らない拡張子なら、とりあえずISOとして開いてみる
+	if (opencdio(sxsi, fname) == SUCCESS) {		//	libcdio で全フォーマット対応
+		return(SUCCESS);
+	}
+	//	libcdio does not open a bare ISO image
 #endif
+	return(openiso(sxsi, fname));				//	知らない拡張子なら、とりあえずISOとして開いてみる
 }
 
 CDTRK sxsicd_gettrk(SXSIDEV sxsi, UINT *tracks) {

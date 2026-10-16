@@ -109,6 +109,9 @@ static BRESULT writehddiplex2(FILEH fh, UINT ssize, FILELEN tsize, int blank, in
 	if(tsize > 1024*1024) worksize = 1024*1024;
 	if(tsize > 8*1024*1024) worksize = 8*1024*1024;
 	if(worksize < sizeof(hdddiskboot)) worksize = sizeof(hdddiskboot);
+	// The 55AA mark below goes to the end of the first sector, past the boot
+	// code; with tsize 0 (THD, Virtual98 HDD) the buffer must still hold it
+	if(worksize < (int)ssize) worksize = (int)ssize;
 	work = (UINT8*)malloc(worksize);
 	if (!work) {
 		return(FAILURE);

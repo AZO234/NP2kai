@@ -94,6 +94,7 @@ list(APPEND NP2kai_OpenDingux_include_dirs ${NP2kai_SDL_include_dirs} "${NP2kai_
 list(APPEND NP2kai_X_include_dirs "${NP2kai_SOURCE_DIR}/x")
 
 list(APPEND NP2kai_WX_include_dirs "${NP2kai_SOURCE_DIR}/wx")
+list(APPEND NP2kai_QT_include_dirs "${NP2kai_SOURCE_DIR}/qt" "${NP2kai_SOURCE_DIR}/wx")
 
 list(APPEND NP2kai_Windows_include_dirs "${NP2kai_SOURCE_DIR}/windows" "${NP2kai_SOURCE_DIR}/windows/misc")
 
@@ -336,6 +337,82 @@ list(APPEND NP2kai_WX_sources
 	"${CMAKE_CURRENT_SOURCE_DIR}/wx/trace.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/np2_thread.c"
 )
+# The Qt port: its own GUI in qt/, plus the toolkit-independent files of wx/
+list(APPEND NP2kai_QT_sources
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/main.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/mainwindow.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/screenwidget.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/pointercapture.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/qtkbtrans.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/qtmsgbox.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/keydispwindow.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/statusindicators.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/cycleshotdialog.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/cycleshotdialog.ui"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/newdisk/diskcreator.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/newdisk/newfddialog.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/newdisk/newfddialog.ui"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/newdisk/newhddialog.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/newdisk/newhddialog.ui"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/resources/np2kai.qrc"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/prefdialog.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/prefdialog.ui"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/systempage.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/systempage.ui"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/displaypage.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/displaypage.ui"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/soundpage.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/soundpage.ui"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/inputpage.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/inputpage.ui"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/fddpage.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/fddpage.ui"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/hddpage.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/hddpage.ui"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/miscpage.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/miscpage.ui"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/dipswview.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/midipage.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/midipage.ui"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/midiassign.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/midiassign.ui"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/serialpage.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/serialpage.ui"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/serialportbox.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/serialportbox.ui"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/networkpage.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/networkpage.ui"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/hostdrvpage.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/hostdrvpage.ui"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/dipswpage.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/dipswpage.ui"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/calendarpage.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/calendarpage.ui"
+	"${CMAKE_CURRENT_SOURCE_DIR}/qt/prefs/dipswitchpanel.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/embed/vramhdl.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/embed/vrammix.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/wx/np2.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/wx/np2mt.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/wx/ini.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/wx/dosio.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/wx/scrnmng.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/wx/soundmng.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/wx/kbdmng.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/wx/mousemng.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/wx/joymng.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/wx/inputmng.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/wx/sysmng.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/wx/taskmng.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/wx/fontmng.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/wx/commng.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/wx/cmmidi.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/wx/cmserial.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/codecnv/textcnv.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/sound/opl3.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/sound/opna.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/wx/trace.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/np2_thread.c"
+)
 
 # NP2kai definitions
 list(APPEND NP2kai_common_definitions "BIOS_IO_EMULATION" "OSLANG_UTF8" "SUPPORT_8BPP" "SUPPORT_16BPP" "SUPPORT_24BPP" "SUPPORT_32BPP" "SUPPORT_CL_GD5430" "SUPPORT_CRT15KHZ" "SUPPORT_FAST_MEMORYCHECK" "SUPPORT_FMGEN" "SUPPORT_GPIB" "SUPPORT_HRTIMER" "SUPPORT_KAI_IMAGES" "SUPPORT_LARGE_HDD" "SUPPORT_NORMALDISP" "SUPPORT_PC9861K" "SUPPORT_PX" "SUPPORT_RESUME" "SUPPORT_RS232C_FIFO" "SUPPORT_S98" "SUPPORT_EMU_SOUNDBIOS" "SUPPORT_SCSI" "SUPPORT_HOSTDRV" "SUPPORT_FDDSNDDEV" "SUPPORT_SMPU98" "SUPPORT_SOFTKBD=0" "SUPPORT_SOUND_SB16" "SUPPORT_STATSAVE=10" "SUPPORT_UTF8" "SUPPORT_V30EXT" "SUPPORT_V30ORIGINAL" "SUPPORT_VIDEOFILTER" "SUPPORT_VPCVHD" "SUPPORT_WAB" "USE_MAME" "USE_MAME_BSD" "VAEG_FIX" "VERMOUTH_LIB" "SUPPORT_PNG")
@@ -375,6 +452,7 @@ option(USE_VST3SDK "Use VST3SDK" OFF)
 if(EMSCRIPTEN)
 	set(BUILD_SDL ON)
 	set(BUILD_WX OFF)
+	set(BUILD_QT OFF)
 	set(BUILD_X OFF)
 	set(BUILD_WINDOWS OFF)
 	set(USE_SDL "2" CACHE STRING "SDL version" FORCE)
@@ -382,10 +460,12 @@ elseif(MSVC)
 	set(BUILD_WINDOWS ON)
 	set(BUILD_SDL OFF)
 	set(BUILD_WX OFF)
+	set(BUILD_QT OFF)
 	set(BUILD_X OFF)
 	option(BUILD_DLL "Build as DLL" ON)
 else()
 	option(BUILD_WX "Build wxWidgets port" ON)
+	option(BUILD_QT "Build Qt6 port" OFF)
 	option(BUILD_SDL "Build SDL port" ON)
 	option(BUILD_X "Build X port" OFF)
 	set(BUILD_WINDOWS OFF)
@@ -432,7 +512,11 @@ set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -DDEBUG -DTRACE ${COMMON_CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2 -Wall -DNDEBUG ${COMMON_CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -Wall")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-Og -g -Wall -DNDEBUG")
-set(CMAKE_C_FLAGS ${COMMON_C_FLAGS})
+# Append rather than assign, so CFLAGS/CXXFLAGS from the environment survive.
+# C++ gets its one switch under every build type, not just the named ones; the
+# -Wno-* switches are C-only and would only draw warnings from cc1plus.
+string(APPEND CMAKE_C_FLAGS " ${COMMON_C_FLAGS}")
+string(APPEND CMAKE_CXX_FLAGS " -fno-sized-deallocation")
 else()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_CXX_FLAGS}")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_C_FLAGS}")
@@ -587,7 +671,60 @@ if(NOT CMAKE_CROSSCOMPILING)
 		else()
 			message(FATAL_ERROR "-- Not found: wxWidgets")
 		endif()
+	endif()
 
+	# Qt6 (the Qt port reuses the toolkit-independent sources of wx/)
+	if(BUILD_QT)
+		find_package(Qt6 6.8 REQUIRED COMPONENTS Core Gui Widgets)
+		message("-- Found: Qt6 (" ${Qt6_VERSION} ")")
+
+		# Wayland pointer locking: libwayland, the protocol files and Qt's private Gui headers
+		set(USE_WAYLAND "AUTO" CACHE STRING "Lock the pointer under Wayland in the Qt port (AUTO, ON or OFF)")
+		set(NP2kai_QT_wayland OFF)
+		if(USE_WAYLAND STREQUAL "AUTO" OR USE_WAYLAND)
+			if(USE_WAYLAND STREQUAL "AUTO")
+				set(wayland_find QUIET)
+			else()
+				set(wayland_find REQUIRED)
+			endif()
+			pkg_check_modules(WAYLAND_CLIENT ${wayland_find} wayland-client)
+			pkg_check_modules(WAYLAND_PROTOCOLS ${wayland_find} wayland-protocols)
+			find_program(WAYLAND_SCANNER wayland-scanner)
+			# Since Qt 6.10 the private modules are packages of their own
+			if(Qt6_VERSION VERSION_GREATER_EQUAL 6.10)
+				set(QT_NO_PRIVATE_MODULE_WARNING ON)
+				find_package(Qt6 ${wayland_find} COMPONENTS GuiPrivate)
+			endif()
+			if(WAYLAND_CLIENT_FOUND AND WAYLAND_PROTOCOLS_FOUND AND WAYLAND_SCANNER AND TARGET Qt6::GuiPrivate)
+				set(NP2kai_QT_wayland ON)
+				pkg_get_variable(WAYLAND_PROTOCOLS_DIR wayland-protocols pkgdatadir)
+				message("-- Found: Wayland pointer locking (wayland-protocols " ${WAYLAND_PROTOCOLS_VERSION} ")")
+			elseif(wayland_find STREQUAL "REQUIRED")
+				message(FATAL_ERROR "-- Not found: wayland-scanner or Qt6 GuiPrivate")
+			else()
+				message("-- Not found: Wayland pointer locking (the pointer stops at the window edge under Wayland)")
+			endif()
+		endif()
+
+		# Interface translations, built into the program; the language follows the system's
+		set(USE_QT_TRANSLATIONS "AUTO" CACHE STRING "Translate the Qt port's interface (AUTO, ON or OFF)")
+		set(NP2kai_QT_translations OFF)
+		if(USE_QT_TRANSLATIONS STREQUAL "AUTO" OR USE_QT_TRANSLATIONS)
+			if(USE_QT_TRANSLATIONS STREQUAL "AUTO")
+				find_package(Qt6 QUIET COMPONENTS LinguistTools)
+			else()
+				find_package(Qt6 REQUIRED COMPONENTS LinguistTools)
+			endif()
+			if(TARGET Qt6::lrelease)
+				set(NP2kai_QT_translations ON)
+				message("-- Found: Qt6 LinguistTools (interface in English, German, Japanese and Polish)")
+			else()
+				message("-- Not found: Qt6 LinguistTools (the interface stays in English)")
+			endif()
+		endif()
+	endif()
+
+	if(BUILD_WX OR BUILD_QT)
 		# toml++ (tomlplusplus)
 		find_package(tomlplusplus QUIET)
 		if(tomlplusplus_FOUND)
@@ -920,6 +1057,42 @@ else()
 		target_include_directories(NP2kai_WX_base BEFORE INTERFACE ${wxWidgets_INCLUDE_DIRS})
 		target_include_directories(NP2kai_WX_base INTERFACE ${NP2kai_WX_include_dirs} ${lib_tomlplusplus_include_dirs} ${LIBCDIO_INCLUDE_DIRS})
 		target_link_libraries(NP2kai_WX_base INTERFACE ${lib_math_libraries} ${wxWidgets_LIBRARIES} ${lib_tomlplusplus_libraries} SDL3::SDL3 SDL3_ttf::SDL3_ttf ${LIBCDIO_LINK_LIBRARIES} ${lib_dl_libraries})
+	endif()
+
+	if(BUILD_QT)
+		add_library(NP2kai_QT_base INTERFACE)
+		target_sources(NP2kai_QT_base INTERFACE ${NP2kai_QT_sources} ${NP2kai_TickCount_sources} ${NP2kai_Network_sources})
+		# Same feature set as the wx port, whose toolkit-independent files it builds
+		target_compile_definitions(NP2kai_QT_base INTERFACE ${NP2kai_WX_definitions} ${NP2kai_extra_definitions} ${NP2kai_TickCount_definitions} ${NP2kai_Network_definitions} ${libcdio_definitions} "QT_NO_KEYWORDS" "QT_DISABLE_DEPRECATED_UP_TO=0x060800")
+		# qt/ before wx/: qt/compiler.h replaces wx/compiler.h, every other header comes from wx/
+		target_include_directories(NP2kai_QT_base INTERFACE ${NP2kai_QT_include_dirs} ${lib_tomlplusplus_include_dirs} ${LIBCDIO_INCLUDE_DIRS})
+		target_link_libraries(NP2kai_QT_base INTERFACE ${lib_math_libraries} Qt6::Widgets ${lib_tomlplusplus_libraries} SDL3::SDL3 SDL3_ttf::SDL3_ttf ${LIBCDIO_LINK_LIBRARIES} ${lib_dl_libraries})
+		if(NP2kai_QT_wayland)
+			# Client code for the two protocols, built apart from the emulator sources and their forced includes
+			set(wayland_gen_dir "${CMAKE_CURRENT_BINARY_DIR}/qt-wayland")
+			file(MAKE_DIRECTORY ${wayland_gen_dir})
+			set(wayland_gen_sources)
+			foreach(protocol "unstable/pointer-constraints/pointer-constraints-unstable-v1" "unstable/relative-pointer/relative-pointer-unstable-v1")
+				get_filename_component(protocol_name ${protocol} NAME)
+				set(protocol_xml "${WAYLAND_PROTOCOLS_DIR}/${protocol}.xml")
+				add_custom_command(
+					OUTPUT "${wayland_gen_dir}/${protocol_name}-client-protocol.h"
+					COMMAND ${WAYLAND_SCANNER} client-header ${protocol_xml} "${wayland_gen_dir}/${protocol_name}-client-protocol.h"
+					DEPENDS ${protocol_xml})
+				add_custom_command(
+					OUTPUT "${wayland_gen_dir}/${protocol_name}-protocol.c"
+					COMMAND ${WAYLAND_SCANNER} private-code ${protocol_xml} "${wayland_gen_dir}/${protocol_name}-protocol.c"
+					DEPENDS ${protocol_xml})
+				list(APPEND wayland_gen_sources "${wayland_gen_dir}/${protocol_name}-client-protocol.h" "${wayland_gen_dir}/${protocol_name}-protocol.c")
+			endforeach()
+			add_library(NP2kai_QT_wayland_protocols STATIC ${wayland_gen_sources})
+			target_include_directories(NP2kai_QT_wayland_protocols PUBLIC ${wayland_gen_dir} ${WAYLAND_CLIENT_INCLUDE_DIRS})
+			target_link_libraries(NP2kai_QT_wayland_protocols PUBLIC ${WAYLAND_CLIENT_LINK_LIBRARIES})
+
+			target_sources(NP2kai_QT_base INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/qt/waylandpointerlock.cpp")
+			target_compile_definitions(NP2kai_QT_base INTERFACE "NP2_QT_WAYLAND")
+			target_link_libraries(NP2kai_QT_base INTERFACE NP2kai_QT_wayland_protocols Qt6::GuiPrivate)
+		endif()
 	endif()
 
 	if(MSVC_VERSION)
@@ -1399,7 +1572,49 @@ else()
 		endif()
 	endif()
 
-	if((UNIX OR MINGW OR MSYS OR CYGWIN OR CMAKE_HOST_APPLE) AND NOT BUILD_SDL AND NOT BUILD_X AND NOT BUILD_WX)
+	if(BUILD_QT)
+		add_executable(qtnp2kai)
+		target_link_libraries(qtnp2kai NP2kai_base NP2kai_QT_base)
+		add_executable(qtnp21kai)
+		target_link_libraries(qtnp21kai NP21kai_base NP2kai_QT_base)
+		set_target_properties(qtnp2kai qtnp21kai PROPERTIES AUTOMOC ON AUTOUIC ON AUTORCC ON)
+		if(NOT BUILD_I286)
+			set_target_properties(qtnp2kai PROPERTIES EXCLUDE_FROM_ALL true)
+		else()
+			set_target_properties(qtnp21kai PROPERTIES EXCLUDE_FROM_ALL true)
+		endif()
+
+		if(NP2kai_QT_translations)
+			# One set of .ts files for both programs, whose sources are the
+			# same; lupdate reads only the files of qt/. The update_translations
+			# target refreshes the .ts files after the strings change.
+			set(NP2kai_QT_tr_sources ${NP2kai_QT_sources})
+			list(FILTER NP2kai_QT_tr_sources INCLUDE REGEX "/qt/.*\\.(cpp|ui)$")
+			qt_add_translations(TARGETS qtnp2kai qtnp21kai
+				TS_FILES "${CMAKE_CURRENT_SOURCE_DIR}/qt/translations/qtnp2kai_de.ts" "${CMAKE_CURRENT_SOURCE_DIR}/qt/translations/qtnp2kai_ja.ts" "${CMAKE_CURRENT_SOURCE_DIR}/qt/translations/qtnp2kai_pl.ts"
+				SOURCES ${NP2kai_QT_tr_sources}
+				LUPDATE_OPTIONS -no-obsolete -locations none
+				RESOURCE_PREFIX "/i18n")
+		endif()
+
+		# One English and one Japanese man page for both programs, filled in
+		# with the name of each
+		foreach(NP2kai_QT_BASE np2kai np21kai)
+			set(NP2kai_QT_NAME "qt${NP2kai_QT_BASE}")
+			string(TOUPPER "${NP2kai_QT_NAME}" NP2kai_QT_NAME_UPPER)
+			if(NP2kai_QT_BASE STREQUAL "np21kai")
+				set(NP2kai_QT_SUMMARY "PC-9801 series emulator with IA-32 emulation")
+				set(NP2kai_QT_SUMMARY_JA "IA-32 コアを使用した PC-9801 シリーズエミュレータ")
+			else()
+				set(NP2kai_QT_SUMMARY "PC-9801 series emulator")
+				set(NP2kai_QT_SUMMARY_JA "PC-9801 シリーズエミュレータ")
+			endif()
+			configure_file(qt/resources/qtnp2kai.man1 ${NP2kai_QT_NAME}.1 @ONLY)
+			configure_file(qt/resources/qtnp2kai.jman1 ${NP2kai_QT_NAME}.ja.1 @ONLY)
+		endforeach()
+	endif()
+
+	if((UNIX OR MINGW OR MSYS OR CYGWIN OR CMAKE_HOST_APPLE) AND NOT BUILD_SDL AND NOT BUILD_X AND NOT BUILD_WX AND NOT BUILD_QT)
 		message(FATAL_ERROR "Nothing build target.")
 	endif()
 
@@ -1550,6 +1765,22 @@ else()
 				set(GUI_MISC_INSTALL ON)
 			endif()
 		endif()
+	endif()
+
+	# Not limited to configurations as the rules above are, so that a
+	# distribution's own build type installs the Qt port too
+	if(BUILD_QT)
+		include(GNUInstallDirs)
+		foreach(NP2kai_QT_NAME qtnp2kai qtnp21kai)
+			get_target_property(NP2kai_temp ${NP2kai_QT_NAME} EXCLUDE_FROM_ALL)
+			if(NOT NP2kai_temp)
+				install(TARGETS ${NP2kai_QT_NAME})
+				install(FILES ${NP2kai_SOURCE_DIR}/qt/resources/${NP2kai_QT_NAME}.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
+				install(FILES ${NP2kai_BINARY_DIR}/${NP2kai_QT_NAME}.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
+				install(FILES ${NP2kai_BINARY_DIR}/${NP2kai_QT_NAME}.ja.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/ja/man1 RENAME ${NP2kai_QT_NAME}.1)
+			endif()
+		endforeach()
+		install(FILES ${NP2kai_SOURCE_DIR}/misc/np2.svg DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps)
 	endif()
 
 	if(MSVC)

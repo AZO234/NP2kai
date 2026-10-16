@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>InputPage</class>
+ <widget class="QWidget" name="InputPage">
+  <layout class="QVBoxLayout" name="mainLayout">
+   <item>
+    <widget class="QGroupBox" name="keyboardGroup">
+     <property name="title">
+      <string>Keyboard</string>
+     </property>
+     <layout class="QFormLayout" name="keyboardLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="keyboardLabel">
+        <property name="text">
+         <string>&amp;Layout:</string>
+        </property>
+        <property name="buddy">
+         <cstring>keyboard</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="keyboard">
+        <property name="toolTip">
+         <string>The layout of the host keyboard, which decides where the PC-98 keys are found</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>106 keys (Japanese)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>101 keys (US)</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="f11KeyLabel">
+        <property name="text">
+         <string>F1&amp;1 key:</string>
+        </property>
+        <property name="buddy">
+         <cstring>F11KEY</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="F11KEY">
+        <item>
+         <property name="text">
+          <string>Not used</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Shows or hides the menu bar</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Switches full screen</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="f12KeyLabel">
+        <property name="text">
+         <string>F1&amp;2 key:</string>
+        </property>
+        <property name="buddy">
+         <cstring>F12KEY</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="F12KEY">
+        <item>
+         <property name="text">
+          <string>Captures the mouse</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>COPY</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>STOP</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Ten-key ,</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Ten-key =</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>User 1</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>User 2</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>HELP</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <widget class="QCheckBox" name="XSHIFT">
+        <property name="text">
+         <string>Swap the &amp;ROLL UP and ROLL DOWN keys</string>
+        </property>
+        <property name="toolTip">
+         <string>Page Up then scrolls the way it does on the host</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0" colspan="2">
+       <widget class="QGroupBox" name="keyrepeat_enable">
+        <property name="title">
+         <string>Key &amp;repeat by the emulator</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <layout class="QFormLayout" name="keyRepeatLayout">
+         <item row="0" column="0">
+          <widget class="QLabel" name="keyRepeatDelayLabel">
+           <property name="text">
+            <string>&amp;Delay:</string>
+           </property>
+           <property name="buddy">
+            <cstring>keyrepeat_delay</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QSpinBox" name="keyrepeat_delay">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="suffix">
+            <string notr="true"> ms</string>
+           </property>
+           <property name="minimum">
+            <number>10</number>
+           </property>
+           <property name="maximum">
+            <number>5000</number>
+           </property>
+           <property name="singleStep">
+            <number>50</number>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="keyRepeatIntervalLabel">
+           <property name="text">
+            <string>&amp;Interval:</string>
+           </property>
+           <property name="buddy">
+            <cstring>keyrepeat_interval</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QSpinBox" name="keyrepeat_interval">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="suffix">
+            <string notr="true"> ms</string>
+           </property>
+           <property name="minimum">
+            <number>10</number>
+           </property>
+           <property name="maximum">
+            <number>1000</number>
+           </property>
+           <property name="singleStep">
+            <number>10</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="mouseGroup">
+     <property name="title">
+      <string>Mouse</string>
+     </property>
+     <layout class="QFormLayout" name="mouseLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="mouseSpeedLabel">
+        <property name="text">
+         <string>S&amp;peed:</string>
+        </property>
+        <property name="buddy">
+         <cstring>Mouse_sp</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <layout class="QHBoxLayout" name="mouseSpeedLayout">
+        <item>
+         <widget class="QSlider" name="Mouse_sp">
+          <property name="toolTip">
+           <string>How far the PC-98 mouse moves for a move of the host mouse; full speed follows the host pointer pixel for pixel</string>
+          </property>
+          <property name="maximum">
+           <number>5</number>
+          </property>
+          <property name="pageStep">
+           <number>1</number>
+          </property>
+          <property name="value">
+           <number>5</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="tickPosition">
+           <enum>QSlider::TicksBelow</enum>
+          </property>
+          <property name="tickInterval">
+           <number>1</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="mouseSpeedValue">
+          <property name="minimumWidth">
+           <number>40</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QCheckBox" name="mouseAccel">
+        <property name="text">
+         <string>Use the host's pointer &amp;acceleration</string>
+        </property>
+        <property name="toolTip">
+         <string>The guest OS, e.g. Windows 95, accelerates the mouse on its own; with both, fast moves go too far. Under X11 the pointer is always accelerated.</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="buttonsGroup">
+     <property name="title">
+      <string>Buttons</string>
+     </property>
+     <layout class="QVBoxLayout" name="buttonsLayout">
+      <item>
+       <widget class="QCheckBox" name="btnMODE">
+        <property name="text">
+         <string>&amp;Swap the joypad buttons</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="btnRAPID">
+        <property name="text">
+         <string>Joypad rapid &amp;fire</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="MS_RAPID">
+        <property name="text">
+         <string>&amp;Mouse rapid fire</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="bottomSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

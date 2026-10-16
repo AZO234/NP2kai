@@ -1,0 +1,2138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SoundPage</class>
+ <widget class="QWidget" name="SoundPage">
+  <layout class="QVBoxLayout" name="mainLayout">
+   <item>
+    <layout class="QFormLayout" name="topLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="sndboardLabel">
+       <property name="text">
+        <string>Sound &amp;board:</string>
+       </property>
+       <property name="buddy">
+        <cstring>SNDboard</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="SNDboard"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="sampleHzLabel">
+       <property name="text">
+        <string>Sampling &amp;rate:</string>
+       </property>
+       <property name="buddy">
+        <cstring>SampleHz</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="SampleHz">
+       <item>
+        <property name="text">
+         <string notr="true">11025 Hz</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">22050 Hz</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">44100 Hz</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">48000 Hz</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">88200 Hz</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">96000 Hz</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="latencysLabel">
+       <property name="text">
+        <string>B&amp;uffer:</string>
+       </property>
+       <property name="buddy">
+        <cstring>Latencys</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QSpinBox" name="Latencys">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="suffix">
+        <string notr="true"> ms</string>
+       </property>
+       <property name="minimum">
+        <number>20</number>
+       </property>
+       <property name="maximum">
+        <number>1000</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTabWidget" name="soundTabs">
+     <widget class="QWidget" name="mixerTab">
+      <attribute name="title">
+       <string>Mixer</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="mixerTabLayout">
+       <item>
+        <layout class="QFormLayout" name="mixerTabForm">
+         <item row="0" column="0">
+          <widget class="QLabel" name="vol_masterLabel">
+           <property name="text">
+            <string>&amp;Master:</string>
+           </property>
+           <property name="buddy">
+            <cstring>vol_master</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <layout class="QHBoxLayout" name="vol_masterRow">
+           <item>
+            <widget class="QSlider" name="vol_master">
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="vol_masterValue">
+             <property name="minimumSize">
+              <size>
+               <width>32</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="vol_fmLabel">
+           <property name="text">
+            <string notr="true">&amp;FM:</string>
+           </property>
+           <property name="buddy">
+            <cstring>vol_fm</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <layout class="QHBoxLayout" name="vol_fmRow">
+           <item>
+            <widget class="QSlider" name="vol_fm">
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>128</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="vol_fmValue">
+             <property name="minimumSize">
+              <size>
+               <width>32</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="vol_ssgLabel">
+           <property name="text">
+            <string notr="true">&amp;PSG:</string>
+           </property>
+           <property name="buddy">
+            <cstring>vol_ssg</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <layout class="QHBoxLayout" name="vol_ssgRow">
+           <item>
+            <widget class="QSlider" name="vol_ssg">
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>128</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="vol_ssgValue">
+             <property name="minimumSize">
+              <size>
+               <width>32</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="vol_adpcmLabel">
+           <property name="text">
+            <string notr="true">&amp;ADPCM:</string>
+           </property>
+           <property name="buddy">
+            <cstring>vol_adpcm</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <layout class="QHBoxLayout" name="vol_adpcmRow">
+           <item>
+            <widget class="QSlider" name="vol_adpcm">
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>128</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="vol_adpcmValue">
+             <property name="minimumSize">
+              <size>
+               <width>32</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="vol_pcmLabel">
+           <property name="text">
+            <string notr="true">P&amp;CM:</string>
+           </property>
+           <property name="buddy">
+            <cstring>vol_pcm</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <layout class="QHBoxLayout" name="vol_pcmRow">
+           <item>
+            <widget class="QSlider" name="vol_pcm">
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>128</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="vol_pcmValue">
+             <property name="minimumSize">
+              <size>
+               <width>32</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="vol_rhythmLabel">
+           <property name="text">
+            <string>&amp;Rhythm:</string>
+           </property>
+           <property name="buddy">
+            <cstring>vol_rhythm</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <layout class="QHBoxLayout" name="vol_rhythmRow">
+           <item>
+            <widget class="QSlider" name="vol_rhythm">
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>128</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="vol_rhythmValue">
+             <property name="minimumSize">
+              <size>
+               <width>32</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="davolumeLabel">
+           <property name="text">
+            <string notr="true">CD-&amp;DA:</string>
+           </property>
+           <property name="buddy">
+            <cstring>davolume</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <layout class="QHBoxLayout" name="davolumeRow">
+           <item>
+            <widget class="QSlider" name="davolume">
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>255</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="davolumeValue">
+             <property name="minimumSize">
+              <size>
+               <width>32</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="vol_midiLabel">
+           <property name="text">
+            <string notr="true">M&amp;IDI:</string>
+           </property>
+           <property name="buddy">
+            <cstring>vol_midi</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1">
+          <layout class="QHBoxLayout" name="vol_midiRow">
+           <item>
+            <widget class="QSlider" name="vol_midi">
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>128</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="vol_midiValue">
+             <property name="minimumSize">
+              <size>
+               <width>32</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="8" column="0">
+          <widget class="QLabel" name="MOTORVOLLabel">
+           <property name="text">
+            <string>&amp;Seek, relay:</string>
+           </property>
+           <property name="buddy">
+            <cstring>MOTORVOL</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="1">
+          <layout class="QHBoxLayout" name="MOTORVOLRow">
+           <item>
+            <widget class="QSlider" name="MOTORVOL">
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="MOTORVOLValue">
+             <property name="minimumSize">
+              <size>
+               <width>32</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="9" column="0">
+          <widget class="QLabel" name="beepLabel">
+           <property name="text">
+            <string>Beep:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="1">
+          <layout class="QHBoxLayout" name="beepRow">
+           <item>
+            <widget class="QRadioButton" name="beep_off">
+             <property name="text">
+              <string>&amp;Off</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="beep_low">
+             <property name="text">
+              <string>&amp;Low</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="beep_mid">
+             <property name="text">
+              <string>Mi&amp;d</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="beep_high">
+             <property name="text">
+              <string>&amp;High</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="beepSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="mixerTabSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="snd14Tab">
+      <attribute name="title">
+       <string notr="true">14</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="snd14TabLayout">
+       <item>
+        <layout class="QFormLayout" name="snd14TabForm">
+         <item row="0" column="0">
+          <widget class="QLabel" name="vol14_0Label">
+           <property name="text">
+            <string>&amp;Left:</string>
+           </property>
+           <property name="buddy">
+            <cstring>vol14_0</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <layout class="QHBoxLayout" name="vol14_0Row">
+           <item>
+            <widget class="QSlider" name="vol14_0">
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>15</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="vol14_0Value">
+             <property name="minimumSize">
+              <size>
+               <width>32</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="vol14_1Label">
+           <property name="text">
+            <string>&amp;Right:</string>
+           </property>
+           <property name="buddy">
+            <cstring>vol14_1</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <layout class="QHBoxLayout" name="vol14_1Row">
+           <item>
+            <widget class="QSlider" name="vol14_1">
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>15</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="vol14_1Value">
+             <property name="minimumSize">
+              <size>
+               <width>32</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="vol14_2Label">
+           <property name="text">
+            <string notr="true">f&amp;2:</string>
+           </property>
+           <property name="buddy">
+            <cstring>vol14_2</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <layout class="QHBoxLayout" name="vol14_2Row">
+           <item>
+            <widget class="QSlider" name="vol14_2">
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>15</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="vol14_2Value">
+             <property name="minimumSize">
+              <size>
+               <width>32</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="vol14_3Label">
+           <property name="text">
+            <string notr="true">f&amp;4:</string>
+           </property>
+           <property name="buddy">
+            <cstring>vol14_3</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <layout class="QHBoxLayout" name="vol14_3Row">
+           <item>
+            <widget class="QSlider" name="vol14_3">
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>15</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="vol14_3Value">
+             <property name="minimumSize">
+              <size>
+               <width>32</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="vol14_4Label">
+           <property name="text">
+            <string notr="true">f&amp;8:</string>
+           </property>
+           <property name="buddy">
+            <cstring>vol14_4</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <layout class="QHBoxLayout" name="vol14_4Row">
+           <item>
+            <widget class="QSlider" name="vol14_4">
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>15</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="vol14_4Value">
+             <property name="minimumSize">
+              <size>
+               <width>32</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="vol14_5Label">
+           <property name="text">
+            <string notr="true">f1&amp;6:</string>
+           </property>
+           <property name="buddy">
+            <cstring>vol14_5</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <layout class="QHBoxLayout" name="vol14_5Row">
+           <item>
+            <widget class="QSlider" name="vol14_5">
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>15</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="vol14_5Value">
+             <property name="minimumSize">
+              <size>
+               <width>32</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="snd14TabSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="snd26Tab">
+      <attribute name="title">
+       <string notr="true">26K</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="snd26TabLayout">
+       <item>
+        <layout class="QFormLayout" name="snd26TabForm">
+         <item row="0" column="0">
+          <widget class="QLabel" name="SND26IOLabel">
+           <property name="text">
+            <string>&amp;I/O port:</string>
+           </property>
+           <property name="buddy">
+            <cstring>SND26IO</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="SND26IO">
+           <item>
+            <property name="text">
+             <string notr="true">0088h</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">0188h</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="SND26INTLabel">
+           <property name="text">
+            <string>I&amp;nterrupt:</string>
+           </property>
+           <property name="buddy">
+            <cstring>SND26INT</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="SND26INT">
+           <item>
+            <property name="text">
+             <string notr="true">INT0</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT41</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT5</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT6</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="SND26ROMLabel">
+           <property name="text">
+            <string>&amp;ROM:</string>
+           </property>
+           <property name="buddy">
+            <cstring>SND26ROM</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QComboBox" name="SND26ROM">
+           <item>
+            <property name="text">
+             <string notr="true">C8000h</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">CC000h</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">D0000h</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">D4000h</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Not connected</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="snd26TabDipRow">
+         <item>
+          <widget class="QLabel" name="snd26JumperLabel">
+           <property name="text">
+            <string>Jumpers:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="DipSwView" name="snd26Jumper"/>
+         </item>
+         <item>
+          <spacer name="snd26JumperSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="snd26TabSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="snd26TabButtons">
+         <item>
+          <spacer name="snd26TabButtonSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="snd26TabDefaults">
+           <property name="text">
+            <string>Board &amp;defaults</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="snd86Tab">
+      <attribute name="title">
+       <string notr="true">86</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="snd86TabLayout">
+       <item>
+        <layout class="QFormLayout" name="snd86TabForm">
+         <item row="0" column="0">
+          <widget class="QLabel" name="SND86IOLabel">
+           <property name="text">
+            <string>&amp;I/O port:</string>
+           </property>
+           <property name="buddy">
+            <cstring>SND86IO</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="SND86IO">
+           <item>
+            <property name="text">
+             <string notr="true">0188h</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">0288h</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QCheckBox" name="SND86INT">
+           <property name="text">
+            <string>I&amp;nterrupt:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="SND86INTA">
+           <item>
+            <property name="text">
+             <string notr="true">INT0</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT41</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT5</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT6</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="SND86IDLabel">
+           <property name="text">
+            <string>Sound I&amp;D:</string>
+           </property>
+           <property name="buddy">
+            <cstring>SND86ID</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QComboBox" name="SND86ID">
+           <item>
+            <property name="text">
+             <string notr="true">0x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">1x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">2x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">3x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">4x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">5x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">6x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">7x</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="3" column="0" colspan="2">
+          <widget class="QCheckBox" name="SND86ROM">
+           <property name="text">
+            <string>&amp;ROM</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="snd86TabDipRow">
+         <item>
+          <widget class="QLabel" name="snd86DipswLabel">
+           <property name="text">
+            <string>DIP switches:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="DipSwView" name="snd86Dipsw"/>
+         </item>
+         <item>
+          <spacer name="snd86DipswSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="snd86TabSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="snd86TabButtons">
+         <item>
+          <spacer name="snd86TabButtonSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="snd86TabDefaults">
+           <property name="text">
+            <string>Board &amp;defaults</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="snd118Tab">
+      <attribute name="title">
+       <string notr="true">118</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="snd118TabLayout">
+       <item>
+        <layout class="QFormLayout" name="snd118TabForm">
+         <item row="0" column="0">
+          <widget class="QLabel" name="SND118IOLabel">
+           <property name="text">
+            <string>&amp;I/O port:</string>
+           </property>
+           <property name="buddy">
+            <cstring>SND118IO</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="SND118IO">
+           <item>
+            <property name="text">
+             <string notr="true">0088h</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">0188h</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">0288h</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">0388h</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="SND118IDLabel">
+           <property name="text">
+            <string>Sound I&amp;D:</string>
+           </property>
+           <property name="buddy">
+            <cstring>SND118ID</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="SND118ID">
+           <item>
+            <property name="text">
+             <string notr="true">0x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">1x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">2x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">3x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">4x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">5x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">6x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">7x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">8x</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="SND118DMALabel">
+           <property name="text">
+            <string>D&amp;MA:</string>
+           </property>
+           <property name="buddy">
+            <cstring>SND118DMA</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QComboBox" name="SND118DMA">
+           <item>
+            <property name="text">
+             <string notr="true">DMA0</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">DMA1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">DMA3</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="SND118INTFLabel">
+           <property name="text">
+            <string>Interrupt (&amp;FM):</string>
+           </property>
+           <property name="buddy">
+            <cstring>SND118INTF</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QComboBox" name="SND118INTF">
+           <item>
+            <property name="text">
+             <string notr="true">INT0 (IRQ3)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT41 (IRQ10)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT5 (IRQ12)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT6 (IRQ13)</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="SND118INTPLabel">
+           <property name="text">
+            <string>Interrupt (&amp;PCM):</string>
+           </property>
+           <property name="buddy">
+            <cstring>SND118INTP</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QComboBox" name="SND118INTP">
+           <item>
+            <property name="text">
+             <string notr="true">INT0 (IRQ3)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT1 (IRQ5)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT41 (IRQ10)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT5 (IRQ12)</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="SND118INTMLabel">
+           <property name="text">
+            <string>Interrupt (MID&amp;I):</string>
+           </property>
+           <property name="buddy">
+            <cstring>SND118INTM</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QComboBox" name="SND118INTM">
+           <item>
+            <property name="text">
+             <string>Disabled</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT41 (IRQ10)</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="6" column="0" colspan="2">
+          <widget class="QCheckBox" name="SND118ROM">
+           <property name="text">
+            <string>&amp;ROM</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="snd118TabDipRow">
+         <item>
+          <widget class="QLabel" name="snd118JumperLabel">
+           <property name="text">
+            <string>Jumpers:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="DipSwView" name="snd118Jumper"/>
+         </item>
+         <item>
+          <spacer name="snd118JumperSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="snd118TabSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="snd118TabButtons">
+         <item>
+          <spacer name="snd118TabButtonSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="snd118TabDefaults">
+           <property name="text">
+            <string>Board &amp;defaults</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="sndWssTab">
+      <attribute name="title">
+       <string notr="true">Mate-X PCM</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="sndWssTabLayout">
+       <item>
+        <layout class="QFormLayout" name="sndWssTabForm">
+         <item row="0" column="0">
+          <widget class="QLabel" name="SNDWSSIDLabel">
+           <property name="text">
+            <string>Sound I&amp;D:</string>
+           </property>
+           <property name="buddy">
+            <cstring>SNDWSSID</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="SNDWSSID">
+           <item>
+            <property name="text">
+             <string notr="true">0x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">1x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">2x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">3x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">4x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">5x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">6x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">7x</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">8x</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="SNDWSSDMALabel">
+           <property name="text">
+            <string>D&amp;MA:</string>
+           </property>
+           <property name="buddy">
+            <cstring>SNDWSSDMA</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="SNDWSSDMA">
+           <item>
+            <property name="text">
+             <string notr="true">DMA0</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">DMA1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">DMA3</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="SNDWSSINTLabel">
+           <property name="text">
+            <string>I&amp;nterrupt:</string>
+           </property>
+           <property name="buddy">
+            <cstring>SNDWSSINT</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QComboBox" name="SNDWSSINT">
+           <item>
+            <property name="text">
+             <string notr="true">INT0 (IRQ3)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT1 (IRQ5)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT41 (IRQ10)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT5 (IRQ12)</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="sndWssTabSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="sndWssTabButtons">
+         <item>
+          <spacer name="sndWssTabButtonSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="sndWssTabDefaults">
+           <property name="text">
+            <string>Board &amp;defaults</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="sndWaveStarTab">
+      <attribute name="title">
+       <string notr="true">Wave Star</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="sndWaveStarTabLayout">
+       <item>
+        <layout class="QFormLayout" name="sndWaveStarTabForm">
+         <item row="0" column="0">
+          <widget class="QLabel" name="SNDWSIOLabel">
+           <property name="text">
+            <string>&amp;I/O port:</string>
+           </property>
+           <property name="buddy">
+            <cstring>SNDWSIO</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="SNDWSIO">
+           <item>
+            <property name="text">
+             <string notr="true">0188h</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">0288h</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="SNDWSDMALabel">
+           <property name="text">
+            <string>D&amp;MA:</string>
+           </property>
+           <property name="buddy">
+            <cstring>SNDWSDMA</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="SNDWSDMA">
+           <item>
+            <property name="text">
+             <string notr="true">DMA0</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">DMA3</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="SNDWSINTLabel">
+           <property name="text">
+            <string>I&amp;nterrupt:</string>
+           </property>
+           <property name="buddy">
+            <cstring>SNDWSINT</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QComboBox" name="SNDWSINT">
+           <item>
+            <property name="text">
+             <string notr="true">INT5 (IRQ12)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT6 (IRQ13)</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="3" column="0" colspan="2">
+          <widget class="QCheckBox" name="SNDWSPCM">
+           <property name="text">
+            <string>Enable &amp;86-compatible PCM</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0" colspan="2">
+          <widget class="QCheckBox" name="SNDWSPNP">
+           <property name="text">
+            <string>Enable &amp;Plug and Play</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QLabel" name="sndWaveStarTabNote">
+         <property name="text">
+          <string>MIDI uses the MPU-PC98II settings.</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="sndWaveStarTabSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="sndWaveStarTabButtons">
+         <item>
+          <spacer name="sndWaveStarTabButtonSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="sndWaveStarTabDefaults">
+           <property name="text">
+            <string>Board &amp;defaults</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="sndSb16Tab">
+      <attribute name="title">
+       <string notr="true">SB16</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="sndSb16TabLayout">
+       <item>
+        <layout class="QFormLayout" name="sndSb16TabForm">
+         <item row="0" column="0">
+          <widget class="QLabel" name="SNDSB16IOLabel">
+           <property name="text">
+            <string>&amp;I/O port:</string>
+           </property>
+           <property name="buddy">
+            <cstring>SNDSB16IO</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="SNDSB16IO">
+           <item>
+            <property name="text">
+             <string notr="true">20D2h</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">20D4h</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">20D6h</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">20D8h</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">20DAh</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">20DCh</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">20DEh</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="SNDSB16DMALabel">
+           <property name="text">
+            <string>D&amp;MA:</string>
+           </property>
+           <property name="buddy">
+            <cstring>SNDSB16DMA</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="SNDSB16DMA">
+           <item>
+            <property name="text">
+             <string notr="true">DMA0</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">DMA3</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="SNDSB16INTLabel">
+           <property name="text">
+            <string>I&amp;nterrupt:</string>
+           </property>
+           <property name="buddy">
+            <cstring>SNDSB16INT</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QComboBox" name="SNDSB16INT">
+           <item>
+            <property name="text">
+             <string notr="true">INT0 (IRQ3)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT1 (IRQ5)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT41 (IRQ10)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT5 (IRQ12)</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="sndSb16TabSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="sndSb16TabButtons">
+         <item>
+          <spacer name="sndSb16TabButtonSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="sndSb16TabDefaults">
+           <property name="text">
+            <string>Board &amp;defaults</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="sndSpbTab">
+      <attribute name="title">
+       <string notr="true">SPB</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="sndSpbTabLayout">
+       <item>
+        <layout class="QFormLayout" name="sndSpbTabForm">
+         <item row="0" column="0">
+          <widget class="QLabel" name="SPBIOLabel">
+           <property name="text">
+            <string>&amp;I/O port:</string>
+           </property>
+           <property name="buddy">
+            <cstring>SPBIO</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="SPBIO">
+           <item>
+            <property name="text">
+             <string notr="true">0088h</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">0188h</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="SPBINTLabel">
+           <property name="text">
+            <string>I&amp;nterrupt:</string>
+           </property>
+           <property name="buddy">
+            <cstring>SPBINT</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="SPBINT">
+           <item>
+            <property name="text">
+             <string notr="true">INT0</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT41</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT5</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">INT6</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="SPBROMLabel">
+           <property name="text">
+            <string>&amp;ROM:</string>
+           </property>
+           <property name="buddy">
+            <cstring>SPBROM</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QComboBox" name="SPBROM">
+           <item>
+            <property name="text">
+             <string notr="true">C8000h</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">CC000h</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">D0000h</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">D4000h</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Not connected</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="spbVrLabel">
+           <property name="text">
+            <string notr="true">VR:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <layout class="QHBoxLayout" name="spbVrRow">
+           <item>
+            <widget class="QCheckBox" name="SPBVRL">
+             <property name="text">
+              <string notr="true">&amp;L</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="SPBVRR">
+             <property name="text">
+              <string notr="true">R</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="spbVrSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="SPBVRLEVELLabel">
+           <property name="text">
+            <string>VR &amp;level:</string>
+           </property>
+           <property name="buddy">
+            <cstring>SPBVRLEVEL</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <layout class="QHBoxLayout" name="SPBVRLEVELRow">
+           <item>
+            <widget class="QSlider" name="SPBVRLEVEL">
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>24</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="SPBVRLEVELValue">
+             <property name="minimumSize">
+              <size>
+               <width>32</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="5" column="0" colspan="2">
+          <widget class="QCheckBox" name="SPBREVERSE">
+           <property name="text">
+            <string>Re&amp;versed channels</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="sndSpbTabDipRow">
+         <item>
+          <widget class="QLabel" name="sndSpbJumperLabel">
+           <property name="text">
+            <string>Jumpers:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="DipSwView" name="sndSpbJumper"/>
+         </item>
+         <item>
+          <spacer name="sndSpbJumperSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="sndSpbTabSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="sndSpbTabButtons">
+         <item>
+          <spacer name="sndSpbTabButtonSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="sndSpbTabDefaults">
+           <property name="text">
+            <string>Board &amp;defaults</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="sndJoyTab">
+      <attribute name="title">
+       <string>Joypad</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="sndJoyTabLayout">
+       <item>
+        <layout class="QFormLayout" name="sndJoyTabForm">
+         <item row="0" column="0">
+          <widget class="QLabel" name="joypadLabel">
+           <property name="text">
+            <string>&amp;Device:</string>
+           </property>
+           <property name="buddy">
+            <cstring>joypad</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="joypad">
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="2">
+          <widget class="QCheckBox" name="PAD1_GAMEPORT">
+           <property name="text">
+            <string>Use the &amp;game port (SB16, PC-9801-118)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" colspan="2">
+          <widget class="QCheckBox" name="PAD1_ANALOG">
+           <property name="text">
+            <string>Use &amp;analog input</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="sndJoyTabSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="sndFmgenTab">
+      <attribute name="title">
+       <string notr="true">fmgen</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="sndFmgenTabLayout">
+       <item>
+        <layout class="QFormLayout" name="sndFmgenTabForm">
+         <item row="0" column="0" colspan="2">
+          <widget class="QCheckBox" name="USEFMGEN">
+           <property name="text">
+            <string>Use &amp;fmgen</string>
+           </property>
+           <property name="toolTip">
+            <string>The more accurate FM sound generator by cisc</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="sndFmgenTabSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>DipSwView</class>
+   <extends>QWidget</extends>
+   <header>prefs/dipswview.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

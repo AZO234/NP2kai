@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>HddPage</class>
+ <widget class="QWidget" name="HddPage">
+  <layout class="QVBoxLayout" name="mainLayout">
+   <item>
+    <widget class="QGroupBox" name="ideGroup">
+     <property name="title">
+      <string>IDE devices</string>
+     </property>
+     <layout class="QGridLayout" name="ideLayout">
+      <item row="0" column="1">
+       <widget class="QLabel" name="primaryLabel">
+        <property name="text">
+         <string>Primary</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="secondaryLabel">
+        <property name="text">
+         <string>Secondary</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="masterLabel">
+        <property name="text">
+         <string>Master:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="IDE1TYPE">
+        <property name="toolTip">
+         <string notr="true">HD 1</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>None</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Hard disk</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">CD-ROM</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QComboBox" name="IDE3TYPE">
+        <property name="toolTip">
+         <string notr="true">HD 3</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>None</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Hard disk</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">CD-ROM</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="slaveLabel">
+        <property name="text">
+         <string>Slave:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="IDE2TYPE">
+        <property name="toolTip">
+         <string notr="true">HD 2</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>None</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Hard disk</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">CD-ROM</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QComboBox" name="IDE4TYPE">
+        <property name="toolTip">
+         <string notr="true">HD 4</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>None</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Hard disk</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">CD-ROM</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <spacer name="ideSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="delayGroup">
+     <property name="title">
+      <string>Interrupt delay</string>
+     </property>
+     <layout class="QFormLayout" name="delayLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="ideRWaitLabel">
+        <property name="text">
+         <string>&amp;Read:</string>
+        </property>
+        <property name="buddy">
+         <cstring>IDERWAIT</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="IDERWAIT">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="suffix">
+         <string> clocks</string>
+        </property>
+        <property name="maximum">
+         <number>9999999</number>
+        </property>
+        <property name="singleStep">
+         <number>1000</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="ideWWaitLabel">
+        <property name="text">
+         <string>&amp;Write:</string>
+        </property>
+        <property name="buddy">
+         <cstring>IDEWWAIT</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSpinBox" name="IDEWWAIT">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="suffix">
+         <string> clocks</string>
+        </property>
+        <property name="maximum">
+         <number>9999999</number>
+        </property>
+        <property name="singleStep">
+         <number>1000</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="cdGroup">
+     <property name="title">
+      <string notr="true">CD-ROM</string>
+     </property>
+     <layout class="QVBoxLayout" name="cdLayout">
+      <item>
+       <widget class="QCheckBox" name="CD_ASYNC">
+        <property name="text">
+         <string>&amp;Asynchronous access</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="USECDECC">
+        <property name="text">
+         <string>Emulate &amp;EDC/ECC</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="CDTRAYOP">
+        <property name="text">
+         <string>Allow the &amp;tray open and close commands</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="biosGroup">
+     <property name="title">
+      <string>BIOS</string>
+     </property>
+     <layout class="QVBoxLayout" name="biosLayout">
+      <item>
+       <widget class="QCheckBox" name="IDE_BIOS">
+        <property name="text">
+         <string>Use the IDE &amp;BIOS</string>
+        </property>
+        <property name="toolTip">
+         <string>Loads a real IDE BIOS (ide.rom, d8000.rom, bank3.bin or bios9821.rom) instead of the built-in one</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="AIDEBIOS">
+        <property name="text">
+         <string>Turn it off &amp;automatically for disks it cannot handle</string>
+        </property>
+        <property name="toolTip">
+         <string>The real BIOS only knows hard disks with 8 heads and 17 sectors per track</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="bottomSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

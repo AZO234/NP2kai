@@ -1,0 +1,6 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+ <qresource prefix="/">
+  <file alias="np2.svg">../../misc/np2.svg</file>
+ </qresource>
+</RCC>

@@ -1572,6 +1572,10 @@ void IOOUTCALL ideio_w16(UINT port, REG16 value) {
         break;
 
       case 0xa0:
+        if (drv->buftc == IDETC_ATAPIWRITE) {
+          atapi_datawrite_end(drv);
+          break;
+        }
         TRACEOUT(("ideio: execute atapi packet command"));
         atapicmd_a0(drv);
         break;

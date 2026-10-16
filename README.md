@@ -36,6 +36,50 @@ $ ./wxnp21kai
 - Windows, macOS (Coming soon)
 
 
+### Qt port (walk-through)
+
+- Ubuntu
+
+``` bash
+$ sudo apt install build-essential cmake libsdl3-dev libsdl3-ttf-dev libtomlplusplus-dev libcdio-dev libusb-1.0-0-dev qt6-base-dev qt6-base-private-dev qt6-svg-dev qt6-tools-dev qt6-l10n-tools qt6-translations-l10n libwayland-dev wayland-protocols
+
+$ cd ~
+$ git clone https://github.com/AZO234/NP2kai.git
+$ cd NP2kai
+$ cmake -S . -B build_qt -DBUILD_QT=ON -DBUILD_WX=OFF -DBUILD_SDL=OFF -DUSE_NETWORK=ON && cmake --build build_qt -j4
+$ cd build_qt
+$ ./qtnp21kai
+```
+
+- Install (any build type; program, desktop entry, icon and man pages)
+
+``` bash
+$ sudo cmake --install build_qt
+```
+
+- CMake options of Qt port (*=default)
+
+|name|value|work|output|
+|:---:|:---:|:---:|:---:|
+|BUILD_QT|ON|Build Qt port (Qt 6.8 or later)||
+|USE_WAYLAND|AUTO*|Lock the pointer under Wayland when wayland-client, wayland-protocols, wayland-scanner and Qt's private Gui headers are found||
+|USE_WAYLAND|ON|Same, failing when one is missing||
+|USE_WAYLAND|OFF|No pointer lock; the pointer stops at the window edge under Wayland||
+|USE_QT_TRANSLATIONS|AUTO*|Build the German, Japanese and Polish translations in when Qt's LinguistTools are found||
+|USE_QT_TRANSLATIONS|ON|Same, failing when they are missing||
+|USE_QT_TRANSLATIONS|OFF|English only||
+|BUILD_I286|ON|Build i286|qtnp2kai|
+|BUILD_I286|OFF*|Build IA-32|qtnp21kai|
+
+- Locate BIOS files to `~/.config/qtnp21kai` (`~/.config/qtnp2kai` for i286).
+- Settings are in Emulate > Preferences; the Media menu mounts the drives and makes new disk images.
+- A click with the left mouse button captures the mouse for the PC-98 (the click itself is not passed on), the middle button or F12 releases it. Menu shortcuts work while the mouse is free; once it is captured, every key goes to the PC-98 except Alt+Enter (full screen), F11 and F12.
+- The status bar shows the floppy drives, the four IDE slots (two SASI drives for i286) with a hard disk or CD-ROM icon as set in the preferences, the network card, the CAPS and カナ locks and the mouse, with the keys that release it lit while it is captured. A drive is dimmed when empty and lights up green while it reads and red while it writes; a click opens its menu.
+- Runs under Wayland and X11 (`QT_QPA_PLATFORM=xcb`).
+- The interface follows the system language: German, Japanese, Polish, or English for any other. `LANGUAGE=en` (or `de`, `ja`, `pl`) picks one for a single run. The standard buttons and file dialogs take their words from Qt's own translations (`qt6-translations-l10n`).
+- Translations are in `qt/translations`. After strings change in the sources, `cmake --build build_qt --target update_translations` refreshes the `.ts` files; new strings are left unfinished for Qt Linguist and show in English until translated.
+
+
 ### libretro core
 
 <details><summary>

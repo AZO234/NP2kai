@@ -38,6 +38,14 @@ BRESULT fontmng_init(void)
 		s_ttf_inited = true;
 	}
 	if (s_deffont[0] == '\0') {
+		/* default.ttf in the configuration directory first, as in the SDL
+		 * and X ports */
+		const char *own = file_getcd("default.ttf");
+		if (access(own, R_OK) == 0) {
+			milstr_ncpy(s_deffont, own, MAX_PATH);
+		}
+	}
+	if (s_deffont[0] == '\0') {
 		for (int i = 0; s_candidates[i]; i++) {
 			if (access(s_candidates[i], R_OK) == 0) {
 				milstr_ncpy(s_deffont, s_candidates[i], MAX_PATH);

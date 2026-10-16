@@ -463,6 +463,7 @@ REG8 sxsi_write(REG8 drv, FILEPOS pos, const UINT8 *buf, UINT size) {
 
 	sxsi = sxsi_getptr(drv);
 	if (sxsi != NULL) {
+		sysmng_hddwrite(sxsi->drv);
 		return(sxsi->write(sxsi, pos, buf, size));
 	}
 	else {
@@ -476,6 +477,7 @@ REG8 sxsi_format(REG8 drv, FILEPOS pos) {
 
 	sxsi = sxsi_getptr(drv);
 	if (sxsi != NULL) {
+		sysmng_hddwrite(sxsi->drv);
 		return(sxsi->format(sxsi, pos));
 	}
 	else {

@@ -342,18 +342,18 @@ cmserial_create(UINT port, UINT8 param, UINT32 speed)
 	int hdl;
 	UINT i;
 
-	if(np2oscfg.com[port].direct) {
-		convert_np2tocm(port, &param, &speed);
-	}
-
-	VERBOSE(("cmserial_create: port = %d, param = %02x, speed = %d", port, param, speed));
-
 	if (port == 0 || port > MAX_SERIAL_PORT_NUM) {
 		VERBOSE(("cmserial_create: port is invalid"));
 		goto cscre_failure;
 	}
 
+	/* From here on the port counts from 0, as com[] and convert_np2tocm() do */
 	port--;
+	if(np2oscfg.com[port].direct) {
+		convert_np2tocm(port, &param, &speed);
+	}
+
+	VERBOSE(("cmserial_create: port = %d, param = %02x, speed = %d", port, param, speed));
 	if (np2oscfg.com[port].mout[0] == '\0') {
 		VERBOSE(("cmserial_create: com device file is disable"));
 		goto cscre_failure;

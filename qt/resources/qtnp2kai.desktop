@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Application
+Name=NP2kai (Qt)
+GenericName=PC-9801 Emulator
+GenericName[de]=PC-9801-Emulator
+GenericName[ja]=PC-9801エミュレータ
+GenericName[pl]=Emulator PC-9801
+Comment=Emulator of the NEC PC-9801 series, Qt frontend
+Comment[de]=Emulator der NEC-PC-9801-Serie (Qt-Version)
+Comment[ja]=NEC PC-9801シリーズのエミュレータ（Qt版）
+Comment[pl]=Emulator komputerów NEC serii PC-9801 (wersja Qt)
+Exec=qtnp2kai
+Icon=np2
+Categories=Game;Emulator;
+StartupWMClass=qtnp2kai
+Name[ja]=NP2kai (Qt)

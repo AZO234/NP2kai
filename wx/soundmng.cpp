@@ -265,6 +265,9 @@ void soundmng_deinitialize(void)
 	buffer_destroy();
 }
 
+/* Fills every free buffer, not just one as the SDL port does: with the latency
+ * split into NSOUNDBUFFER small blocks, the core calls this less often than the
+ * device plays a block, and the queue ran dry at x1 (crackling). */
 void soundmng_sync(void)
 {
 	struct sndbuf *sndbuf;
@@ -272,8 +275,7 @@ void soundmng_sync(void)
 
 	if (opened) {
 		sounddrv_lock();
-		sndbuf = SNDBUF_FREELIST_FIRST();
-		if (sndbuf) {
+		while ((sndbuf = SNDBUF_FREELIST_FIRST()) != NULL) {
 			SNDBUF_FREELIST_REMOVE_HEAD();
 			sounddrv_unlock();
 			pcm = sound_pcmlock();

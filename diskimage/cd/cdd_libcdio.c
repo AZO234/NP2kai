@@ -330,6 +330,11 @@ BRESULT opencdio(SXSIDEV sxsi, const OEMCHAR *path)
 
 	ZeroMemory(trk, sizeof(trk));
 
+	/* An empty path would make libcdio probe the default drives */
+	if (path == NULL || path[0] == '\0') {
+		goto err_out;
+	}
+
 	/* 1. イメージを開く（フォーマット自動判別） */
 	cdio = cdio_open(path, DRIVER_UNKNOWN);
 	if (cdio == NULL) {

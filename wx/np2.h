@@ -98,6 +98,21 @@ typedef struct {
 	UINT	winheight;
 
 	UINT8	cycle_shot_enabled;
+
+	/* Mouse speed as a fraction, as MOUSEMUL/MOUSEDIV in the Windows port */
+	SINT16	mousemul;
+	SINT16	mousediv;
+	/* Mouse moves without the host's acceleration, which the guest OS adds
+	 * on its own (RAWMOUSE in the Windows port) */
+	UINT8	rawmouse;
+
+	/* Whole multiples of the PC-98 pixels only; the screen stretched to 4:3,
+	 * as a 640x400 picture filled a CRT */
+	UINT8	pixelperfect;
+	UINT8	force43;
+
+	/* The status bar of the window is shown */
+	UINT8	statusbar;
 } NP2OSCFG;
 
 /* cycle screenshot (defined in np2.cpp) */
@@ -133,6 +148,9 @@ extern "C" {
 int  flagsave(const OEMCHAR *ext);
 void flagdelete(const OEMCHAR *ext);
 int  flagload(const OEMCHAR *ext, const OEMCHAR *title, BOOL force);
+/* Does the save or load flagsave()/flagload() asked for; with the emulation
+ * stopped only, np2_exec() does it otherwise. Returns the STATFLAG result. */
+int  np2_statsave_flush(void);
 void changescreen(UINT8 newmode);
 
 extern int  mmxflag;

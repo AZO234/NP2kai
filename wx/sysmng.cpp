@@ -8,7 +8,7 @@
 #include <ini.h>
 #include "np2.h"
 #include "dosio.h"
-#include "np2frame.h"
+#include "np2ui.h"
 #include <pccore.h>
 #include <cpucore.h>
 #include <io/iocore.h>
@@ -19,6 +19,12 @@
 #include <common/milstr.h>
 #include <time.h>
 #include <stdio.h>
+#include <atomic>
+
+/* The program's name in the title, from compiler.h */
+#ifndef NP2_WX_TITLE
+#define NP2_WX_TITLE NP2_WX_APPNAME
+#endif
 
 #if defined(SUPPORT_IDEIO)
 extern REG8 cdchange_drv;
@@ -37,6 +43,35 @@ static struct {
 	SINT32	fps;
 	SINT32	khz;
 } workclock;
+
+/* Set with one atomic OR per access, without locks; the interface collects
+ * them on its own timer */
+static std::atomic<UINT32> fddread_bits{0};
+static std::atomic<UINT32> fddwrite_bits{0};
+static std::atomic<UINT32> hddread_bits{0};
+static std::atomic<UINT32> hddwrite_bits{0};
+static std::atomic<UINT32> net_bits{0};
+
+static UINT32 hddbit(UINT8 drv)
+{
+	return (drv & 0x20) ? (0x100u << (drv & 0x07)) : (1u << (drv & 0x03));
+}
+
+void sysmng_fddaccess(UINT8 drv) { fddread_bits.fetch_or(1u << (drv & 0x03), std::memory_order_relaxed); }
+void sysmng_fddwrite(UINT8 drv)  { fddwrite_bits.fetch_or(1u << (drv & 0x03), std::memory_order_relaxed); }
+void sysmng_hddaccess(UINT8 drv) { hddread_bits.fetch_or(hddbit(drv), std::memory_order_relaxed); }
+void sysmng_hddwrite(UINT8 drv)  { hddwrite_bits.fetch_or(hddbit(drv), std::memory_order_relaxed); }
+void sysmng_netsend(void)        { net_bits.fetch_or(SYS_ACCESS_NETSEND, std::memory_order_relaxed); }
+void sysmng_netrecv(void)        { net_bits.fetch_or(SYS_ACCESS_NETRECV, std::memory_order_relaxed); }
+
+void sysmng_takeaccess(SYSMNGACCESS *access)
+{
+	access->fddread = fddread_bits.exchange(0, std::memory_order_relaxed);
+	access->fddwrite = fddwrite_bits.exchange(0, std::memory_order_relaxed);
+	access->hddread = hddread_bits.exchange(0, std::memory_order_relaxed);
+	access->hddwrite = hddwrite_bits.exchange(0, std::memory_order_relaxed);
+	access->net = net_bits.exchange(0, std::memory_order_relaxed);
+}
 
 void sysmng_initialize(void)  { sys_updates = 0; }
 void sysmng_deinitialize(void) {}
@@ -128,7 +163,9 @@ void sysmng_updatecaption(UINT8 flag)
 		for (i = 0; i < 4; i++) {
 			if (sxsi_getdevtype(i) == SXSIDEV_CDROM) {
 				snprintf(work, sizeof(work), "  CDD%d:", cddrvnum++);
-				const OEMCHAR *fname = diskdrv_getsxsi((REG8)i);
+				/* The disc's own name: diskdrv_getsxsi() gives the
+				 * slot's hard disk image, empty for a CD-ROM drive */
+				const OEMCHAR *fname = sxsi_getfilename((REG8)i);
 				if (fname && fname[0]) {
 					milstr_ncat(titlestr, work, NELEMENTS(titlestr));
 					milstr_ncat(titlestr, file_getname((char *)fname), NELEMENTS(titlestr));
@@ -160,8 +197,7 @@ void sysmng_updatecaption(UINT8 flag)
 		}
 	}
 
-	milstr_ncpy(work, NP2_WX_APPNAME, sizeof(work));
-	milstr_ncat(work, " wx", sizeof(work));
+	milstr_ncpy(work, NP2_WX_TITLE, sizeof(work));
 #if defined(SUPPORT_STATSAVE)
 	if (np2_stateslotnow > 0) {
 		char slot[32];

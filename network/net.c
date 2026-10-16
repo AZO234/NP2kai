@@ -19,6 +19,7 @@
 #if defined(SUPPORT_NET)
 
 #include	<pccore.h>
+#include	<sysmng.h>
 #include	<network/net.h>
 #ifdef SUPPORT_LGY98
 #include	<network/lgy98.h>
@@ -254,6 +255,7 @@ static int sendDataToBuffer(const UINT8 *pSendBuf, UINT32 len){
 // パケット送信時に呼ばれる（デフォルト処理）
 static void np2net_default_send_packet(const UINT8 *buf, int size)
 {
+	sysmng_netsend();
 	sendDataToBuffer(buf, size);
 }
 // パケット受信時に呼ばれる（デフォルト処理）
@@ -339,6 +341,7 @@ static unsigned int __stdcall np2net_ThreadFuncR(LPVOID vdParam) {
 				if(dwLen>0){
 					//TRACEOUT(("LGY-98: recieve %u bytes¥n", dwLen));
 					np2net.recieve_packet((UINT8*)np2net_Buf, dwLen); // 受信できたので通知する
+					sysmng_netrecv();
 				}
 			} else {
 				// 読み取りエラー
@@ -353,6 +356,7 @@ static unsigned int __stdcall np2net_ThreadFuncR(LPVOID vdParam) {
 			if(dwLen>0){
 				//TRACEOUT(("LGY-98: recieve %u bytes\n", dwLen));
 				np2net.recieve_packet((UINT8*)np2net_Buf, dwLen); // 受信できたので通知する
+				sysmng_netrecv();
 			}else{
 				Sleep(1);
 			}
@@ -397,6 +401,7 @@ static void* np2net_ThreadFuncR(void *thdata) {
 			if(dwLen>0){
 				//TRACEOUT(("LGY-98: recieve %u bytes\n", dwLen));
 				np2net.recieve_packet((UINT8*)np2net_Buf, dwLen); // 受信できたので通知する
+				sysmng_netrecv();
 				np2net_highspeeddatacount += dwLen;
 			}else{
 				sched_yield();

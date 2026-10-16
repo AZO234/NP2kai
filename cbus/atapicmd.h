@@ -53,6 +53,7 @@ void atapicmd_a0(IDEDRV drv);
 
 void atapi_dataread(IDEDRV drv);
 void atapi_dataread_asyncwait(int wait);
+void atapi_datawrite_end(IDEDRV drv);
 
 #ifdef __cplusplus
 }

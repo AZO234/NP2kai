@@ -66,6 +66,15 @@ void sysmng_hddaccess(UINT8 drv);
 #define	sysmng_hddaccess(a)												\
 			toolwin_hddaccess((a));
 
+#define	sysmng_fddwrite(a)												\
+			toolwin_fddaccess((a))
+
+#define	sysmng_hddwrite(a)												\
+			toolwin_hddaccess((a));
+
+#define	sysmng_netsend()
+#define	sysmng_netrecv()
+
 #endif
 
 

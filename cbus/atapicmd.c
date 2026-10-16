@@ -100,6 +100,26 @@ static void senddata(IDEDRV drv, UINT size, UINT limit) {
 	}
 }
 
+static void receivedata(IDEDRV drv, UINT size) {
+
+	drv->sc = 0;	// data, host->device
+	drv->cy = size;
+	drv->status &= ~(IDESTAT_BSY|IDESTAT_DMRD|IDESTAT_SERV|IDESTAT_CHK);
+	drv->status |= IDESTAT_DRQ|IDESTAT_DSC;
+	drv->error = 0;
+	ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_NO_SENSE);
+	drv->asc = ATAPI_ASC_NO_ADDITIONAL_SENSE_INFORMATION;
+	drv->bufdir = IDEDIR_OUT;
+	drv->buftc = IDETC_ATAPIWRITE;
+	drv->bufpos = 0;
+	drv->bufsize = (size + 1) & ~1;
+
+	if (!(drv->ctrl & IDECTRL_NIEN)) {
+		ideio.bank[0] = ideio.bank[1] | 0x80;
+		pic_setirq(IDE_IRQ);
+	}
+}
+
 static void cmddone(IDEDRV drv) {
 
 	drv->sc = IDEINTR_IO|IDEINTR_CD;
@@ -1033,12 +1053,26 @@ static void atapi_cmd_mode_select(IDEDRV drv) {
 		return;
 	}
 
-#if 1
-	cmddone(drv);	/* workaround */
-#else
-	sendabort(drv);	/* XXX */
-#endif
+	if (leng == 0) {
+		cmddone(drv);
+		return;
+	}
+	if (leng > IDEIO_BUFSIZE_MAX) {
+		ATAPI_SET_SENSE_KEY(drv, ATAPI_SK_ILLEGAL_REQUEST);
+		drv->asc = ATAPI_ASC_PARAMETER_LIST_LENGTH_ERROR;
+		senderror(drv);
+		return;
+	}
 
+	// The host sends the parameter list before the command completes; drivers such as NECCDM.SYS wait for this data phase until they time out.
+	receivedata(drv, leng);
+}
+
+// End of the MODE SELECT data phase; the parameters are accepted and ignored.
+void atapi_datawrite_end(IDEDRV drv) {
+
+	drv->buftc = IDETC_TRANSFEREND;
+	cmddone(drv);
 }
 
 // 0x5a: MODE SENSE

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>HostdrvPage</class>
+ <widget class="QWidget" name="HostdrvPage">
+  <layout class="QVBoxLayout" name="mainLayout">
+   <item>
+    <widget class="QGroupBox" name="use_hdrv">
+     <property name="title">
+      <string>&amp;Share a host folder with the PC-98</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <layout class="QVBoxLayout" name="hdrvLayout">
+      <item>
+       <layout class="QHBoxLayout" name="rootRow">
+        <item>
+         <widget class="QLabel" name="rootLabel">
+          <property name="text">
+           <string>&amp;Folder:</string>
+          </property>
+          <property name="buddy">
+           <cstring>hdrvroot</cstring>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="hdrvroot"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="rootBrowse">
+          <property name="text">
+           <string>&amp;Browse...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="permissionLabel">
+        <property name="text">
+         <string>Permissions:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="permissionRow">
+        <property name="leftMargin">
+         <number>20</number>
+        </property>
+        <item>
+         <widget class="QCheckBox" name="hdrv_acc_r">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Read</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="hdrv_acc_w">
+          <property name="text">
+           <string>&amp;Write</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="hdrv_acc_d">
+          <property name="text">
+           <string>&amp;Delete</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="permissionSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="hostdrvNote">
+     <property name="text">
+      <string>DOS reaches the folder through HOSTDRV.COM, which assigns it a drive letter; a change applies the next time the drive is attached.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="bottomSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -50,6 +50,10 @@ void sysmng_update(UINT update);
 void sysmng_cpureset(void);
 #define	sysmng_fddaccess(a)
 #define	sysmng_hddaccess(a)
+#define	sysmng_fddwrite(a)
+#define	sysmng_hddwrite(a)
+#define	sysmng_netsend()
+#define	sysmng_netrecv()
 void sysmng_updatecaption(UINT8 flag);
 
 #ifdef __cplusplus

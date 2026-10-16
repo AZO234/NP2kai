@@ -67,8 +67,10 @@
 #define NP2_WX_CONFIGDIR ".config"
 #if defined(CPUCORE_IA32)
 #define NP2_WX_APPNAME  "wxnp21kai"
+#define NP2_WX_TITLE    "NP21kai (wx)"   /* the name the window shows */
 #else
 #define NP2_WX_APPNAME  "wxnp2kai"
+#define NP2_WX_TITLE    "NP2kai (wx)"
 #endif
 
 #include <common/milstr.h>

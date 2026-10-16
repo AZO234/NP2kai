@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Name=wxNP21kai IA-32
+Name=NP21kai (wx)
 GenericName=PC-9821 Emulator IA-32
 GenericName[ja]=PC-9821エミュレータ IA-32
 Comment=PC-9821 Emulator IA-32
@@ -8,5 +8,5 @@ Comment[ja]=PC-9821エミュレータ IA-32
 Exec=wxnp21kai
 Icon=np2
 Categories=Game;Emulator;
-Name[ja]=wxNP21kai IA-32
+Name[ja]=NP21kai (wx)
 

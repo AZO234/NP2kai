@@ -20,9 +20,10 @@ SCRNMNG scrnmng;
 
 static SCRNSURF scrnsurf;
 static pthread_mutex_t scrnmutex = PTHREAD_MUTEX_INITIALIZER;
+static size_t pixbufsize;
 
-/* forward declarations for UI notification (implemented in np2frame.cpp) */
-extern "C" void np2frame_requestRedraw(void);
+/* UI notification (implemented in np2frame.cpp) */
+#include "np2ui.h"
 
 /* ---- utilities ---- */
 
@@ -74,6 +75,7 @@ BRESULT scrnmng_create(UINT8 mode)
 	bufsz = (size_t)scrnmng.width * scrnmng.height * (scrnmng.bpp / 8);
 	free(scrnmng.pixbuf);
 	scrnmng.pixbuf = (UINT8 *)malloc(bufsz);
+	pixbufsize = scrnmng.pixbuf ? bufsz : 0;
 	if (!scrnmng.pixbuf) {
 		return FAILURE;
 	}
@@ -101,6 +103,7 @@ void scrnmng_destroy(void)
 	}
 	free(scrnmng.pixbuf);
 	scrnmng.pixbuf = NULL;
+	pixbufsize = 0;
 }
 
 void scrnmng_getsize(int *pw, int *ph)
@@ -109,11 +112,36 @@ void scrnmng_getsize(int *pw, int *ph)
 	*ph = scrnmng.height;
 }
 
+/* The core changes the size when the guest switches modes (640x480 on the
+ * PC-9821, for one), and draws the new size straight away: the buffer has to
+ * grow with it. It never shrinks, so a smaller mode needs no new buffer. */
+static void resizepixbuf(int width, int height)
+{
+	size_t bufsz;
+	UINT8 *buf;
+
+	pthread_mutex_lock(&scrnmutex);
+	bufsz = (size_t)width * height * (scrnmng.bpp / 8);
+	if (scrnmng.pixbuf && bufsz > pixbufsize) {
+		buf = (UINT8 *)calloc(1, bufsz);
+		if (buf) {
+			free(scrnmng.pixbuf);
+			scrnmng.pixbuf = buf;
+			pixbufsize = bufsz;
+		}
+	}
+	if (!scrnmng.pixbuf || bufsz <= pixbufsize) {   /* scrnmng_create() sizes it */
+		scrnmng.width  = width;
+		scrnmng.height = height;
+	}
+	pthread_mutex_unlock(&scrnmutex);
+}
+
 void scrnmng_setwidth(int posx, int width)
 {
 	(void)posx;
 	if (width != scrnmng.width) {
-		scrnmng.width = width;
+		resizepixbuf(width, scrnmng.height);
 	}
 }
 
@@ -121,7 +149,7 @@ void scrnmng_setheight(int posy, int height)
 {
 	(void)posy;
 	if (height != scrnmng.height) {
-		scrnmng.height = height;
+		resizepixbuf(scrnmng.width, height);
 	}
 }
 

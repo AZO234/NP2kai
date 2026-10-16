@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>NewHdDialog</class>
+ <widget class="QDialog" name="NewHdDialog">
+  <property name="windowTitle">
+   <string>New Hard Disk Image</string>
+  </property>
+  <layout class="QVBoxLayout" name="mainLayout">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetFixedSize</enum>
+   </property>
+   <item>
+    <widget class="QLabel" name="fileName">
+     <property name="textFormat">
+      <enum>Qt::PlainText</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="sizeLayout">
+     <item>
+      <widget class="QLabel" name="hddSizeLabel">
+       <property name="text">
+        <string>Disk &amp;size:</string>
+       </property>
+       <property name="buddy">
+        <cstring>hddSize</cstring>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="hddSize">
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+       <property name="insertPolicy">
+        <enum>QComboBox::NoInsert</enum>
+       </property>
+       <property name="minimumContentsLength">
+        <number>10</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="hddSizeUnit">
+       <property name="text">
+        <string notr="true">MB</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="hddLimit"/>
+     </item>
+     <item>
+      <spacer name="sizeSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="geometryGroup">
+     <property name="title">
+      <string>Geometry</string>
+     </property>
+     <layout class="QFormLayout" name="geometryLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="hddCLabel">
+        <property name="text">
+         <string>&amp;Cylinders:</string>
+        </property>
+        <property name="buddy">
+         <cstring>hddC</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="hddC">
+        <property name="editable">
+         <bool>true</bool>
+        </property>
+        <property name="insertPolicy">
+         <enum>QComboBox::NoInsert</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="hddHLabel">
+        <property name="text">
+         <string>&amp;Heads:</string>
+        </property>
+        <property name="buddy">
+         <cstring>hddH</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="hddH">
+        <property name="editable">
+         <bool>true</bool>
+        </property>
+        <property name="insertPolicy">
+         <enum>QComboBox::NoInsert</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="hddSLabel">
+        <property name="text">
+         <string>Sectors per &amp;track:</string>
+        </property>
+        <property name="buddy">
+         <cstring>hddS</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="hddS">
+        <property name="editable">
+         <bool>true</bool>
+        </property>
+        <property name="insertPolicy">
+         <enum>QComboBox::NoInsert</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="hddSSLabel">
+        <property name="text">
+         <string>Sector si&amp;ze (bytes):</string>
+        </property>
+        <property name="buddy">
+         <cstring>hddSS</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="hddSS"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="vhdTypeGroup">
+     <property name="title">
+      <string>VHD type</string>
+     </property>
+     <layout class="QHBoxLayout" name="vhdTypeLayout">
+      <item>
+       <widget class="QRadioButton" name="fixedSize">
+        <property name="text">
+         <string>&amp;Fixed size</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="dynamicSize">
+        <property name="text">
+         <string>&amp;Dynamically expanding</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="blankDisk">
+     <property name="text">
+      <string>&amp;Blank disk (no boot code)</string>
+     </property>
+     <property name="toolTip">
+      <string>Leave the first sector empty instead of writing the emulator's small boot stub (IPL1) there</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>NewHdDialog</receiver>
+   <slot>accept()</slot>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>NewHdDialog</receiver>
+   <slot>reject()</slot>
+  </connection>
+ </connections>
+</ui>

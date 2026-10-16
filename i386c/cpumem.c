@@ -767,7 +767,8 @@ static REG8 MEMCALL memp_read8_slow(UINT32 address) {
 					return CIRRUS_VRAMWND3_FUNC_rb(cirrusvga_opaque, addr3);
 				}
 			}
-			if (vramWndAddr2 && (vramWndAddr2 != 0xE0000 || !(gdc.analog & ((1 << GDCANALOG_16) | (1 << GDCANALOG_256) | (1 << GDCANALOG_256E))))) {
+			// In 256-colour mode the window lies on PEGC memory: writes reach both, reads must come from PEGC as for window 3
+			if (vramWndAddr2 && !(gdc.analog & ((1 << GDCANALOG_256) | (1 << GDCANALOG_256E))) && (vramWndAddr2 != 0xE0000 || !(gdc.analog & (1 << GDCANALOG_16)))) {
 				UINT32 addr2 = address;
 				if ((vramWndAddr2 & 0xfff00000UL) == 0) {
 					UINT32 addrtmp = addr2 & 0xfff80000UL;
@@ -867,7 +868,8 @@ static REG16 MEMCALL memp_read16_slow(UINT32 address) {
 						return CIRRUS_VRAMWND3_FUNC_rw(cirrusvga_opaque, addr3);
 					}
 				}
-				if (vramWndAddr2 && (vramWndAddr2 != 0xE0000 || !(gdc.analog & ((1 << GDCANALOG_16) | (1 << GDCANALOG_256) | (1 << GDCANALOG_256E))))) {
+				// In 256-colour mode the window lies on PEGC memory: writes reach both, reads must come from PEGC as for window 3
+				if (vramWndAddr2 && !(gdc.analog & ((1 << GDCANALOG_256) | (1 << GDCANALOG_256E))) && (vramWndAddr2 != 0xE0000 || !(gdc.analog & (1 << GDCANALOG_16)))) {
 					UINT32 addr2 = address;
 					if ((vramWndAddr2 & 0xfff00000UL) == 0) {
 						UINT32 addrtmp = addr2 & 0xfff80000UL;
@@ -973,7 +975,8 @@ static UINT32 MEMCALL memp_read32_slow(UINT32 address) {
 						return CIRRUS_VRAMWND3_FUNC_rl(cirrusvga_opaque, addr3);
 					}
 				}
-				if (vramWndAddr2 && (vramWndAddr2 != 0xE0000 || !(gdc.analog & ((1 << GDCANALOG_16) | (1 << GDCANALOG_256) | (1 << GDCANALOG_256E))))) {
+				// In 256-colour mode the window lies on PEGC memory: writes reach both, reads must come from PEGC as for window 3
+				if (vramWndAddr2 && !(gdc.analog & ((1 << GDCANALOG_256) | (1 << GDCANALOG_256E))) && (vramWndAddr2 != 0xE0000 || !(gdc.analog & (1 << GDCANALOG_16)))) {
 					UINT32 addr2 = address;
 					if ((vramWndAddr2 & 0xfff00000UL) == 0) {
 						UINT32 addrtmp = addr2 & 0xfff80000UL;
@@ -1692,7 +1695,8 @@ REG8 MEMCALL memp_read8(UINT32 address) {
 						return CIRRUS_VRAMWND3_FUNC_rb(cirrusvga_opaque, addr3);
 					}
 				}
-				if(vramWndAddr2 && (vramWndAddr2 != 0xE0000 || !(gdc.analog & ((1 << GDCANALOG_16) | (1 << GDCANALOG_256) | (1 << GDCANALOG_256E))))){
+				// In 256-colour mode the window lies on PEGC memory: writes reach both, reads must come from PEGC as for window 3
+				if(vramWndAddr2 && !(gdc.analog & ((1 << GDCANALOG_256) | (1 << GDCANALOG_256E))) && (vramWndAddr2 != 0xE0000 || !(gdc.analog & (1 << GDCANALOG_16)))){
 					UINT32 addr2 = address;
 					if((vramWndAddr2 & 0xfff00000UL) == 0){
 						UINT32 addrtmp = addr2 & 0xfff80000UL;
@@ -1815,7 +1819,8 @@ REG16 MEMCALL memp_read16(UINT32 address) {
 							return CIRRUS_VRAMWND3_FUNC_rw(cirrusvga_opaque, addr3);
 						}
 					}
-					if(vramWndAddr2 && (vramWndAddr2 != 0xE0000 || !(gdc.analog & ((1 << GDCANALOG_16) | (1 << GDCANALOG_256) | (1 << GDCANALOG_256E))))){
+					// In 256-colour mode the window lies on PEGC memory: writes reach both, reads must come from PEGC as for window 3
+					if(vramWndAddr2 && !(gdc.analog & ((1 << GDCANALOG_256) | (1 << GDCANALOG_256E))) && (vramWndAddr2 != 0xE0000 || !(gdc.analog & (1 << GDCANALOG_16)))){
 						UINT32 addr2 = address;
 						if((vramWndAddr2 & 0xfff00000UL) == 0){
 							UINT32 addrtmp = addr2 & 0xfff80000UL;
@@ -1945,7 +1950,8 @@ UINT32 MEMCALL memp_read32(UINT32 address) {
 							return CIRRUS_VRAMWND3_FUNC_rl(cirrusvga_opaque, addr3);
 						}
 					}
-					if(vramWndAddr2 && (vramWndAddr2 != 0xE0000 || !(gdc.analog & ((1 << GDCANALOG_16) | (1 << GDCANALOG_256) | (1 << GDCANALOG_256E))))){
+					// In 256-colour mode the window lies on PEGC memory: writes reach both, reads must come from PEGC as for window 3
+					if(vramWndAddr2 && !(gdc.analog & ((1 << GDCANALOG_256) | (1 << GDCANALOG_256E))) && (vramWndAddr2 != 0xE0000 || !(gdc.analog & (1 << GDCANALOG_16)))){
 						UINT32 addr2 = address;
 						if((vramWndAddr2 & 0xfff00000UL) == 0){
 							UINT32 addrtmp = addr2 & 0xfff80000UL;

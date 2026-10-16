@@ -29,6 +29,22 @@ typedef struct {
 	UINT8 showmousespeed;
 } SYSMNGMISCINFO;
 
+/* Drive and network activity since the last sysmng_takeaccess(), one bit per
+ * drive: floppies by drive number, SxSI drives 0-3 (SASI/IDE) and 8-15 (SCSI).
+ * The core reports it from the emulation thread and the network threads. */
+enum {
+	SYS_ACCESS_NETSEND = 0x01,
+	SYS_ACCESS_NETRECV = 0x02
+};
+
+typedef struct {
+	UINT32 fddread;
+	UINT32 fddwrite;
+	UINT32 hddread;
+	UINT32 hddwrite;
+	UINT32 net;
+} SYSMNGACCESS;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -40,11 +56,16 @@ void sysmng_initialize(void);
 void sysmng_deinitialize(void);
 void sysmng_update(UINT update);
 void sysmng_cpureset(void);
-#define sysmng_fddaccess(a)
-#define sysmng_hddaccess(a)
+void sysmng_fddaccess(UINT8 drv);
+void sysmng_fddwrite(UINT8 drv);
+void sysmng_hddaccess(UINT8 drv);
+void sysmng_hddwrite(UINT8 drv);
+void sysmng_netsend(void);
+void sysmng_netrecv(void);
 void sysmng_workclockreset(void);
 BOOL sysmng_workclockrenewal(void);
 void sysmng_updatecaption(UINT8 flag);
+void sysmng_takeaccess(SYSMNGACCESS *access);
 
 #ifdef __cplusplus
 }

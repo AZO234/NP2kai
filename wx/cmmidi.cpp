@@ -12,6 +12,8 @@
 #include "soundmng.h"
 
 #include <sys/time.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #if defined(VERMOUTH_LIB)
 const char cmmidi_vermouth[] = "VERMOUTH";
@@ -141,7 +143,8 @@ static int
 getmidiout(const UINT device, const char *midiout)
 {
 	int hmidiout = -1;
-	char* devfile = NULL;
+	/* The serial ports share the MPU-PC98II device */
+	char* devfile = np2oscfg.MIDIDEV[0];
 
 #if defined(SUPPORT_SMPU98)
 	switch(device) {
@@ -175,7 +178,8 @@ static int
 getmidiin(const UINT device, const char *midiin)
 {
 	int hmidiin = -1;
-	char* devfile = NULL;
+	/* The serial ports share the MPU-PC98II device */
+	char* devfile = np2oscfg.MIDIDEV[1];
 
 #if defined(SUPPORT_SMPU98)
 	switch(device) {

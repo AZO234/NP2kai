@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DipswPage</class>
+ <widget class="QWidget" name="DipswPage">
+  <layout class="QVBoxLayout" name="mainLayout">
+   <item>
+    <layout class="QHBoxLayout" name="panelRow">
+     <item>
+      <widget class="DipSwitchPanel" name="DIPswtch"/>
+     </item>
+     <item>
+      <spacer name="panelSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="dipswNote">
+     <property name="text">
+      <string>The switches on the back of the machine. Most programs never need them changed; the PC-98 reads them when it is reset.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="bottomSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>DipSwitchPanel</class>
+   <extends>QWidget</extends>
+   <header>prefs/dipswitchpanel.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

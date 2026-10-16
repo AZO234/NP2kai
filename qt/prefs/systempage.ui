@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SystemPage</class>
+ <widget class="QWidget" name="SystemPage">
+  <layout class="QVBoxLayout" name="mainLayout">
+   <item>
+    <widget class="QGroupBox" name="archGroup">
+     <property name="title">
+      <string>Base architecture</string>
+     </property>
+     <layout class="QVBoxLayout" name="archLayout">
+      <item>
+       <layout class="QHBoxLayout" name="archModelLayout">
+        <item>
+         <widget class="QRadioButton" name="pc_model_VM">
+          <property name="text">
+           <string notr="true">PC-9801&amp;VM</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="pc_model_VX">
+          <property name="text">
+           <string notr="true">PC-9801V&amp;X</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="pc_model_286">
+          <property name="text">
+           <string notr="true">PC-&amp;286</string>
+          </property>
+          <property name="toolTip">
+           <string>EPSON compatible machine</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="archSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="SYSIOMSK">
+        <property name="text">
+         <string>Always use 16-bit I/O port addressing (PC-9821)</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="cpuGroup">
+     <property name="title">
+      <string>CPU</string>
+     </property>
+     <layout class="QFormLayout" name="cpuLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="clkBaseLabel">
+        <property name="text">
+         <string>&amp;Base clock:</string>
+        </property>
+        <property name="buddy">
+         <cstring>clk_base</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="clk_base">
+        <item>
+         <property name="text">
+          <string notr="true">1.9968 MHz</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">2.4576 MHz</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="clkMultLabel">
+        <property name="text">
+         <string>&amp;Multiplier:</string>
+        </property>
+        <property name="buddy">
+         <cstring>clk_mult</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <layout class="QHBoxLayout" name="clkMultLayout">
+        <item>
+         <widget class="QSpinBox" name="clk_mult">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="prefix">
+           <string notr="true">x</string>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="cpuMHz"/>
+        </item>
+        <item>
+         <spacer name="clkMultSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="cpuTypeLabel">
+        <property name="text">
+         <string>&amp;Type:</string>
+        </property>
+        <property name="buddy">
+         <cstring>CPUType</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="CPUType">
+        <property name="toolTip">
+         <string>The processor the guest sees through CPUID</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>(custom)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">Intel 80386</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">Intel i486SX</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">Intel i486DX</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">Intel Pentium</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">Intel MMX Pentium</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">Intel Pentium Pro</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">Intel Pentium II</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">Intel Pentium III</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">Intel Pentium M</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">Intel Pentium 4</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">Intel Core 2 Duo</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">Intel Core 2 Duo W</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">Intel Core i</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">AMD K6-2</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">AMD K6-III</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">AMD K7 Athlon</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">AMD K7 Athlon XP</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">Neko Processor II</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="fpuTypeLabel">
+        <property name="text">
+         <string notr="true">&amp;FPU:</string>
+        </property>
+        <property name="buddy">
+         <cstring>FPU_TYPE</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="FPU_TYPE">
+        <item>
+         <property name="text">
+          <string>Berkeley SoftFloat (80-bit extended)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>DOSBox FPU (64-bit double)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>DOSBox FPU with 64-bit integers</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="emuSpeedLabel">
+        <property name="text">
+         <string>Emulation &amp;speed:</string>
+        </property>
+        <property name="buddy">
+         <cstring>EmuSpeed</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QComboBox" name="EmuSpeed">
+        <item>
+         <property name="text">
+          <string notr="true">x0.5</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">x1</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">x2</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">x4</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">x8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">x16</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="2">
+       <widget class="QCheckBox" name="DisableMMX">
+        <property name="text">
+         <string>Disable M&amp;MX</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0" colspan="2">
+       <widget class="QCheckBox" name="CONSTTSC">
+        <property name="text">
+         <string>Constant &amp;TSC rate</string>
+        </property>
+        <property name="toolTip">
+         <string>RDTSC counts at the same rate whatever the clock multiplier</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="memoryGroup">
+     <property name="title">
+      <string>Memory</string>
+     </property>
+     <layout class="QFormLayout" name="memoryLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="extmemLabel">
+        <property name="text">
+         <string>&amp;Extended memory:</string>
+        </property>
+        <property name="buddy">
+         <cstring>extmem</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="extmem">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="suffix">
+         <string notr="true"> MB</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QCheckBox" name="MemCheck">
+        <property name="text">
+         <string>Fast memory &amp;check</string>
+        </property>
+        <property name="toolTip">
+         <string>The BIOS counts the memory in bigger steps at power on</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="MULTITHREAD">
+     <property name="text">
+      <string>Run the emulation in its own &amp;thread (takes effect after a restart)</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="bottomSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
