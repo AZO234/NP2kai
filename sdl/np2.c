@@ -28,6 +28,7 @@
 #include	<sound/s98.h>
 #include	<fdd/sxsi.h>
 #include	<fdd/diskdrv.h>
+#include	<fdd/fdd_live.h>
 #include	"timing.h"
 #include	<keystat.h>
 #include	<embed/vramhdl.h>
@@ -143,6 +144,9 @@ static void usage(const char *progname) {
 	printf("Usage: %s [options]\n", progname);
 	printf("\t--help   [-h]        : print this message\n");
 	printf("\t--config [-c] <file> : specify config file\n");
+#if defined(SUPPORT_FDD_LIVE)
+	printf("\t-l                   : D88 floppy images are served from a real drive\n");
+#endif
 }
 
 
@@ -436,6 +440,10 @@ int np2_main(int argc, char *argv[]) {
 		if ((!milstr_cmp(p, "-h")) || (!milstr_cmp(p, "--help"))) {
 			usage(argv[0]);
 			goto np2main_err1;
+#if defined(SUPPORT_FDD_LIVE)
+		} else if (!milstr_cmp(p, "-l")) {
+			fddlive_enable = TRUE;
+#endif
 		} else if ((!milstr_cmp(p, "-c")) || (!milstr_cmp(p, "--config"))) {
 			if(pos < argc) {
 				milstr_ncpy(modulefile, argv[pos++], sizeof(modulefile));

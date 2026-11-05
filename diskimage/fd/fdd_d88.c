@@ -192,9 +192,21 @@ static void drvflush(FDDFILE fdd) {
 	D88TRK	trk;
 
 	trk = &d88trk;
-	if (trk->fdd == fdd && !fdd->protect) {
-		d88trk_flushdata(trk);
+	if (trk->fdd == fdd) {
+		d88trk_flushdata(trk);		/* writes nothing to a protected disk */
 		trk->fdd = NULL;
+	}
+}
+
+/* Writes a changed track back to its file now, and keeps it in the buffer */
+void fdd_writeback_d88(void) {
+
+	FDDFILE	fdd;
+
+	fdd = d88trk.fdd;
+	if ((fdd != NULL) && (d88trk.write) && (!fdd->protect)) {
+		d88trk_flushdata(&d88trk);
+		d88trk.fdd = fdd;			/* if the write failed, it is tried again */
 	}
 }
 
@@ -925,6 +937,18 @@ static void drvflush(FDDFILE fdd) {
 	if (trk->fdd == fdd) {
 		d88trk_flushdata(trk);
 		trk->fdd = NULL;
+	}
+}
+
+/* Writes a changed track back to its file now, and keeps it in the buffer */
+void fdd_writeback_d88(void) {
+
+	FDDFILE	fdd;
+
+	fdd = d88trk.fdd;
+	if ((fdd != NULL) && (d88trk.write) && (!fdd->protect)) {
+		d88trk_flushdata(&d88trk);
+		d88trk.fdd = fdd;			/* if the write failed, it is tried again */
 	}
 }
 
