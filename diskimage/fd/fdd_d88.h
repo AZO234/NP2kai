@@ -20,6 +20,7 @@ BRESULT	fdd_writeid_d88(FDDFILE fdd);	//	未実装
 BRESULT	fdd_formatinit_d88(FDDFILE fdd);
 BRESULT	fdd_formating_d88(FDDFILE fdd, const UINT8 *ID);
 BOOL	fdd_isformating_d88(FDDFILE fdd);
+void	fdd_writeback_d88(void);
 #else
 BRESULT fddd88_set(FDDFILE fdd, const OEMCHAR *fname, int ro);
 BRESULT fddd88_eject(FDDFILE fdd);
@@ -36,6 +37,7 @@ BRESULT fdd_writeid_d88(void);
 BRESULT fdd_formatinit_d88(void);
 BRESULT fdd_formating_d88(const UINT8 *ID);
 BOOL fdd_isformating_d88(void);
+void fdd_writeback_d88(void);
 #endif
 
 #ifdef __cplusplus
@@ -62,6 +64,7 @@ BRESULT fdd_writeid_d88(void);
 BRESULT fdd_formatinit_d88(void);
 BRESULT fdd_formating_d88(const UINT8 *ID);
 BOOL fdd_isformating_d88(void);
+void fdd_writeback_d88(void);
 
 #ifdef __cplusplus
 }

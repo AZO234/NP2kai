@@ -15,6 +15,7 @@
 #include <vram/vram.h>
 #include <diskimage/fddfile.h>
 #include <fdd/fdd_mtr.h>
+#include <fdd/fdd_live.h>
 #include "fdfmt.h"
 #include <dosio.h>
 #include "keytable.res"
@@ -1102,6 +1103,11 @@ UINT MEMCALL biosfunc(UINT32 adrs) {
 
 		case BIOS_BASE + BIOSOFST_1b:
 			CPU_STI;
+			if (fddlive_wait()) {
+				CPU_REMCLOCK -= 1000;
+				CPU_IP--;
+				return(1);
+			}
 			CPU_REMCLOCK -= 200;
 #if defined(BIOS_IO_EMULATION)
 			oldEIP = CPU_EIP;
