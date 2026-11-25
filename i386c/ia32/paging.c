@@ -1587,7 +1587,7 @@ tlb_init(void)
 }
 
 void MEMCALL
-tlb_flush()
+tlb_flush(void)
 {
 	struct tlb_entry *ep;
 	int i;
@@ -1611,7 +1611,7 @@ tlb_flush()
 }
 
 void MEMCALL
-tlb_flush_all()
+tlb_flush_all(void)
 {
 	tlb_init();
 }
